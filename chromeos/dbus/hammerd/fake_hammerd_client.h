@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/hammerd/hammerd_client.h"
 
@@ -17,6 +16,10 @@ namespace chromeos {
 class COMPONENT_EXPORT(HAMMERD) FakeHammerdClient : public HammerdClient {
  public:
   FakeHammerdClient();
+
+  FakeHammerdClient(const FakeHammerdClient&) = delete;
+  FakeHammerdClient& operator=(const FakeHammerdClient&) = delete;
+
   ~FakeHammerdClient() override;
 
   // Checks that a FakeHammerdClient instance was initialized and returns it.
@@ -37,8 +40,6 @@ class COMPONENT_EXPORT(HAMMERD) FakeHammerdClient : public HammerdClient {
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHammerdClient);
 };
 
 }  // namespace chromeos

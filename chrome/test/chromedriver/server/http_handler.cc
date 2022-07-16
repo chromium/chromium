@@ -15,12 +15,12 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"  // For CHECK macros.
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/server/http_server_request_info.h"
 #include "net/server/http_server_response_info.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
@@ -85,6 +86,9 @@ class WrapperURLLoaderFactory : public network::mojom::URLLoaderFactory {
       : url_loader_factory_(std::move(url_loader_factory)),
         network_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
+  WrapperURLLoaderFactory(const WrapperURLLoaderFactory&) = delete;
+  WrapperURLLoaderFactory& operator=(const WrapperURLLoaderFactory&) = delete;
+
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       int32_t request_id,
@@ -116,8 +120,6 @@ class WrapperURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
   // Runner for URLRequestContextGetter network thread.
   scoped_refptr<base::SequencedTaskRunner> network_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrapperURLLoaderFactory);
 };
 
 CommandMapping::CommandMapping(HttpMethod method,
@@ -262,6 +264,20 @@ HttpHandler::HttpHandler(
           kGet, "session/:sessionId/element/active",
           WrapToCommand("GetActiveElement",
                         base::BindRepeating(&ExecuteGetActiveElement))),
+      CommandMapping(
+          kGet, "session/:sessionId/element/:id/shadow",
+          WrapToCommand("GetElementShadowRoot",
+                        base::BindRepeating(&ExecuteGetElementShadowRoot))),
+      CommandMapping(
+          kPost, "session/:sessionId/shadow/:id/element",
+          WrapToCommand(
+              "FindChildElementFromShadowRoot",
+              base::BindRepeating(&ExecuteFindChildElementFromShadowRoot, 50))),
+      CommandMapping(
+          kPost, "session/:sessionId/shadow/:id/elements",
+          WrapToCommand("FindChildElementsFromShadowRoot",
+                        base::BindRepeating(
+                            &ExecuteFindChildElementsFromShadowRoot, 50))),
       CommandMapping(
           kPost, "session/:sessionId/element",
           WrapToCommand("FindElement",
@@ -841,6 +857,13 @@ HttpHandler::HttpHandler(
                             &ExecuteWebAuthnCommand,
                             base::BindRepeating(&ExecuteSetUserVerified)))),
 
+      // Extensions for Secure Payment Confirmation API:
+      // https://w3c.github.io/secure-payment-confirmation/#sctn-automation
+      CommandMapping(
+          kPost, "session/:sessionId/secure-payment-confirmation/set-mode",
+          WrapToCommand("SetSPCTransactionMode",
+                        base::BindRepeating(&ExecuteSetSPCTransactionMode))),
+
       // Extension for Permissions Standard Automation "set permission" command:
       // https://w3c.github.io/permissions/#set-permission-command
       CommandMapping(kPost, "session/:sessionId/permissions",
@@ -1280,6 +1303,14 @@ HttpHandler::PrepareStandardResponse(
     case kTabCrashed:
       response = std::make_unique<net::HttpServerResponseInfo>(
           net::HTTP_INTERNAL_SERVER_ERROR);
+      break;
+    case kNoSuchShadowRoot:
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
+      break;
+    case kDetachedShadowRoot:
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
 
     default:

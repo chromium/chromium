@@ -70,14 +70,14 @@ void PepperPlaybackObserver::PepperStartsPlayback(
   if (players_map_.count(id))
     return;
 
-  players_map_[id] =
-      std::make_unique<PepperPlayerDelegate>(render_frame_host, pp_instance);
-
-  MediaSessionImpl::Get(contents_)->AddPlayer(
-      players_map_[id].get(), PepperPlayerDelegate::kPlayerId,
+  players_map_[id] = std::make_unique<PepperPlayerDelegate>(
+      render_frame_host, pp_instance,
       base::FeatureList::IsEnabled(media::kAudioFocusDuckFlash)
           ? media::MediaContentType::Pepper
           : media::MediaContentType::OneShot);
+
+  MediaSessionImpl::Get(contents_)->AddPlayer(players_map_[id].get(),
+                                              PepperPlayerDelegate::kPlayerId);
 }
 
 void PepperPlaybackObserver::PepperStopsPlayback(

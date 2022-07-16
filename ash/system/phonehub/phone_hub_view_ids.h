@@ -19,8 +19,13 @@ enum PhoneHubViewID {
 
   // Notification opt in view and its components.
   kNotificationOptInView,
-  kNotificationOptInSetUpButton,
-  kNotificationOptInDismissButton,
+
+  // Camera Roll opt in view and its components.
+  kCameraRollOptInView,
+
+  // Sub feature opt in view buttons
+  kSubFeatureOptInConfirmButton,
+  kSubFeatureOptInDismissButton,
 
   // Onboarding view and its components.
   kOnboardingView,
@@ -44,6 +49,9 @@ enum PhoneHubViewID {
   kTetherConnectionPendingView,
 
   kPhoneHubRecentAppsView,
+
+  // Camera roll view and its components.
+  kCameraRollView,
 };
 
 }  // namespace ash

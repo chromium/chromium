@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 #include "components/translate/core/common/translate_switches.h"
 
 namespace translate {
@@ -26,7 +27,15 @@ const base::Feature kTranslateSubFrames{"TranslateSubFrames",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kTFLiteLanguageDetectionEnabled{
-    "TFLiteLanguageDetectionEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+  "TFLiteLanguageDetectionEnabled",
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
+    defined(OS_MAC)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else  // !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_WIN) &&
+       // !defined(OS_MAC)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 GURL GetTranslateSecurityOrigin() {
   std::string security_origin(kSecurityOrigin);

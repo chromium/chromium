@@ -26,13 +26,13 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -50,7 +50,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
-#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
@@ -62,10 +61,12 @@
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
-#include "chrome/browser/ui/ash/shelf/browser_apps_tracker.h"
+#include "chrome/browser/ui/ash/shelf/browser_app_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_status_monitor.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_extension_app_updater.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
@@ -77,7 +78,8 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
@@ -112,14 +114,6 @@ using extension_misc::kGmailAppId;
 
 namespace {
 
-// Calls ItemSelected with |source|, default arguments, and no callback.
-void SelectItemWithSource(ash::ShelfItemDelegate* delegate,
-                          ash::ShelfLaunchSource source,
-                          int64_t display_id) {
-  delegate->ItemSelected(nullptr, display_id, source, base::DoNothing(),
-                         base::NullCallback());
-}
-
 // Returns true if the given |item| has a pinned shelf item type.
 bool ItemTypeIsPinned(const ash::ShelfItem& item) {
   return ash::IsPinnedShelfItemType(item.type);
@@ -145,6 +139,12 @@ class ChromeShelfControllerUserSwitchObserver
     DCHECK(user_manager::UserManager::IsInitialized());
     user_manager::UserManager::Get()->AddSessionStateObserver(this);
   }
+
+  ChromeShelfControllerUserSwitchObserver(
+      const ChromeShelfControllerUserSwitchObserver&) = delete;
+  ChromeShelfControllerUserSwitchObserver& operator=(
+      const ChromeShelfControllerUserSwitchObserver&) = delete;
+
   ~ChromeShelfControllerUserSwitchObserver() override {
     user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
   }
@@ -165,8 +165,6 @@ class ChromeShelfControllerUserSwitchObserver
   // Users which were just added to the system, but which profiles were not yet
   // (fully) loaded.
   std::set<std::string> added_user_ids_waiting_for_profiles_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeShelfControllerUserSwitchObserver);
 };
 
 void ChromeShelfControllerUserSwitchObserver::UserAddedToSession(
@@ -210,8 +208,11 @@ void ChromeShelfControllerUserSwitchObserver::AddUser(Profile* profile) {
 ChromeShelfController* ChromeShelfController::instance_ = nullptr;
 
 ChromeShelfController::ChromeShelfController(Profile* profile,
-                                             ash::ShelfModel* model)
-    : model_(model) {
+                                             ash::ShelfModel* model,
+                                             ChromeShelfItemFactory* creator)
+    : model_(model),
+      shelf_item_factory_(creator),
+      shelf_prefs_(std::make_unique<ChromeShelfPrefs>(profile)) {
   DCHECK(!instance_);
   instance_ = this;
 
@@ -255,11 +256,9 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
   app_window_controllers_.emplace_back(std::move(app_service_controller));
   // Create the browser monitor which will inform the shelf of status changes.
   browser_status_monitor_ = std::make_unique<BrowserStatusMonitor>(this);
-  if (base::FeatureList::IsEnabled(BrowserAppsTracker::kEnabled)) {
-    apps::AppServiceProxyChromeOs* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile);
-    browser_apps_tracker_ = std::make_unique<BrowserAppsTracker>(
-        proxy->AppRegistryCache(), ash::Shell::Get()->activation_client());
+  if (web_app::IsWebAppsCrosapiEnabled()) {
+    browser_app_shelf_controller_ = std::make_unique<BrowserAppShelfController>(
+        profile, *model_, *shelf_item_factory_, *shelf_spinner_controller_);
   }
 }
 
@@ -307,9 +306,6 @@ void ChromeShelfController::Init() {
 
   UpdatePinnedAppsFromSync();
   browser_status_monitor_->Initialize();
-  if (base::FeatureList::IsEnabled(BrowserAppsTracker::kEnabled)) {
-    browser_apps_tracker_->Initialize();
-  }
 }
 
 ash::ShelfID ChromeShelfController::CreateAppItem(
@@ -355,13 +351,14 @@ void ChromeShelfController::SetItemTitle(const ash::ShelfID& id,
   }
 }
 
-void ChromeShelfController::CloseItem(const ash::ShelfID& id) {
+void ChromeShelfController::ReplaceWithAppShortcutOrRemove(
+    const ash::ShelfID& id) {
   CHECK(!id.IsNull());
   if (IsPinned(id)) {
     // Create a new shortcut delegate.
     SetItemStatus(id, ash::STATUS_CLOSED);
-    model_->SetShelfItemDelegate(id,
-                                 AppShortcutShelfItemController::Create(id));
+    model_->ReplaceShelfItemDelegate(
+        id, std::make_unique<AppShortcutShelfItemController>(id));
   } else {
     RemoveShelfItem(id);
   }
@@ -383,6 +380,15 @@ void ChromeShelfController::SetItemStatusOrRemove(const ash::ShelfID& id,
     SetItemStatus(id, status);
 }
 
+bool ChromeShelfController::ShouldSyncItemWithReentrancy(
+    const ash::ShelfItem& item) {
+  return should_sync_pin_changes_ && ShouldSyncItem(item);
+}
+
+bool ChromeShelfController::ShouldSyncItem(const ash::ShelfItem& item) {
+  return ItemTypeIsPinned(item);
+}
+
 bool ChromeShelfController::IsPinned(const ash::ShelfID& id) {
   const ash::ShelfItem* item = GetItem(id);
   return item && ItemTypeIsPinned(*item);
@@ -395,8 +401,9 @@ void ChromeShelfController::SetAppStatus(const std::string& app_id,
   if (item) {
     SetItemStatusOrRemove(id, status);
   } else if (status != ash::STATUS_CLOSED && !app_id.empty()) {
-    InsertAppItem(AppShortcutShelfItemController::Create(ash::ShelfID(app_id)),
-                  status, model_->item_count(), ash::TYPE_APP);
+    InsertAppItem(
+        std::make_unique<AppShortcutShelfItemController>(ash::ShelfID(app_id)),
+        status, model_->item_count(), ash::TYPE_APP);
   }
 }
 
@@ -435,26 +442,6 @@ void ChromeShelfController::LaunchApp(const ash::ShelfID& id,
                                       int event_flags,
                                       int64_t display_id) {
   shelf_controller_helper_->LaunchApp(id, source, event_flags, display_id);
-}
-
-void ChromeShelfController::ActivateApp(const std::string& app_id,
-                                        ash::ShelfLaunchSource source,
-                                        int event_flags,
-                                        int64_t display_id) {
-  // If there is an existing delegate for this app, select it.
-  const ash::ShelfID shelf_id(app_id);
-  if (auto* delegate = model_->GetShelfItemDelegate(shelf_id)) {
-    SelectItemWithSource(delegate, source, display_id);
-    return;
-  }
-
-  std::unique_ptr<AppShortcutShelfItemController> item_delegate =
-      AppShortcutShelfItemController::Create(shelf_id);
-  if (item_delegate->HasRunningApplications()) {
-    SelectItemWithSource(item_delegate.get(), source, display_id);
-  } else {
-    LaunchApp(shelf_id, source, event_flags, display_id);
-  }
 }
 
 void ChromeShelfController::SetItemImage(const ash::ShelfID& shelf_id,
@@ -531,20 +518,6 @@ ash::ShelfID ChromeShelfController::GetShelfIDForAppId(
   const ash::ShelfItem* item =
       !app_id.empty() ? GetItem(ash::ShelfID(app_id)) : nullptr;
   return item ? item->id : ash::ShelfID(kChromeAppId);
-}
-
-void ChromeShelfController::SetRefocusURLPatternForTest(const ash::ShelfID& id,
-                                                        const GURL& url) {
-  const ash::ShelfItem* item = GetItem(id);
-  if (item && !IsPlatformApp(id) &&
-      (item->type == ash::TYPE_PINNED_APP || item->type == ash::TYPE_APP)) {
-    ash::ShelfItemDelegate* delegate = model_->GetShelfItemDelegate(id);
-    AppShortcutShelfItemController* item_controller =
-        static_cast<AppShortcutShelfItemController*>(delegate);
-    item_controller->set_refocus_url(url);
-  } else {
-    NOTREACHED() << "Invalid shelf item or type";
-  }
 }
 
 ash::ShelfAction ChromeShelfController::ActivateWindowOrMinimizeIfActive(
@@ -788,10 +761,6 @@ bool ChromeShelfController::AllowedToSetAppPinState(const std::string& app_id,
   return model_->AllowedToSetAppPinState(app_id, target_pin);
 }
 
-void ChromeShelfController::PinAppWithID(const std::string& app_id) {
-  model_->PinAppWithID(app_id);
-}
-
 bool ChromeShelfController::IsAppPinned(const std::string& app_id) {
   return model_->IsAppPinned(app_id);
 }
@@ -813,7 +782,8 @@ void ChromeShelfController::ReplacePinnedItem(const std::string& old_app_id,
 
   // Remove old_app at index and replace with new app.
   model_->RemoveItemAt(index);
-  model_->AddAt(index, item);
+  model_->AddAt(index, item,
+                std::make_unique<AppShortcutShelfItemController>(item.id));
 }
 
 void ChromeShelfController::PinAppAtIndex(const std::string& app_id,
@@ -826,7 +796,8 @@ void ChromeShelfController::PinAppAtIndex(const std::string& app_id,
   item.type = ash::TYPE_PINNED_APP;
   item.id = new_shelf_id;
 
-  model_->AddAt(target_index, item);
+  model_->AddAt(target_index, item,
+                std::make_unique<AppShortcutShelfItemController>(item.id));
 }
 
 int ChromeShelfController::PinnedItemIndexByAppID(const std::string& app_id) {
@@ -856,7 +827,7 @@ bool ChromeShelfController::CanDoShowAppInfoFlow(
 
 void ChromeShelfController::DoShowAppInfoFlow(Profile* profile,
                                               const std::string& app_id) {
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
 
   auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
@@ -976,7 +947,7 @@ void ChromeShelfController::OnAppUninstalledPrepared(
   if (IsAppPinned(app_id) && profile == this->profile()) {
     bool show_in_shelf_changed = false;
     bool is_app_disabled = false;
-    apps::AppServiceProxyChromeOs* proxy =
+    apps::AppServiceProxy* proxy =
         apps::AppServiceProxyFactory::GetForProfile(this->profile());
     proxy->AppRegistryCache().ForOneApp(
         app_id, [&show_in_shelf_changed,
@@ -1057,20 +1028,6 @@ void ChromeShelfController::UpdateAppImage(const std::string& app_id,
 ///////////////////////////////////////////////////////////////////////////////
 // ChromeShelfController private:
 
-ash::ShelfID ChromeShelfController::CreateAppShortcutItem(
-    const ash::ShelfID& shelf_id,
-    int index) {
-  return CreateAppShortcutItem(shelf_id, index, std::u16string());
-}
-
-ash::ShelfID ChromeShelfController::CreateAppShortcutItem(
-    const ash::ShelfID& shelf_id,
-    int index,
-    const std::u16string& title) {
-  return InsertAppItem(AppShortcutShelfItemController::Create(shelf_id),
-                       ash::STATUS_CLOSED, index, ash::TYPE_PINNED_APP, title);
-}
-
 void ChromeShelfController::RememberUnpinnedRunningApplicationOrder() {
   RunningAppListIds list;
   for (int i = 0; i < model_->item_count(); i++) {
@@ -1146,22 +1103,23 @@ void ChromeShelfController::SyncPinPosition(const ash::ShelfID& shelf_id) {
   std::vector<ash::ShelfID> shelf_ids_after;
 
   for (int i = index - 1; i >= 0; --i) {
-    shelf_id_before = model_->items()[i].id;
-    if (IsPinned(shelf_id_before))
+    if (ShouldSyncItem(model_->items()[i])) {
+      shelf_id_before = model_->items()[i].id;
       break;
+    }
   }
 
   for (int i = index + 1; i < max_index; ++i) {
     const ash::ShelfID& shelf_id_after = model_->items()[i].id;
-    if (IsPinned(shelf_id_after))
+    if (ShouldSyncItem(model_->items()[i]))
       shelf_ids_after.push_back(shelf_id_after);
   }
 
-  SetPinPosition(profile(), shelf_id, shelf_id_before, shelf_ids_after);
+  shelf_prefs_->SetPinPosition(shelf_id, shelf_id_before, shelf_ids_after);
 }
 
 void ChromeShelfController::OnSyncModelUpdated() {
-  UpdatePinnedAppsFromSync();
+  ScheduleUpdatePinnedAppsFromSync();
 }
 
 void ChromeShelfController::OnIsSyncingChanged() {
@@ -1169,16 +1127,18 @@ void ChromeShelfController::OnIsSyncingChanged() {
 
   // Wait until the initial sync happens.
   auto* pref_service = PrefServiceSyncableFromProfile(profile());
-  bool is_syncing = chromeos::features::IsSplitSettingsSyncEnabled()
+  bool is_syncing = chromeos::features::IsSyncSettingsCategorizationEnabled()
                         ? pref_service->AreOsPrefsSyncing()
                         : pref_service->IsSyncing();
   if (!is_syncing)
     return;
   // Initialize the local prefs if this is the first time sync has occurred.
-  InitLocalPref(profile()->GetPrefs(), ash::prefs::kShelfAlignmentLocal,
-                ash::prefs::kShelfAlignment);
-  InitLocalPref(profile()->GetPrefs(), ash::prefs::kShelfAutoHideBehaviorLocal,
-                ash::prefs::kShelfAutoHideBehavior);
+  shelf_prefs_->InitLocalPref(profile()->GetPrefs(),
+                              ash::prefs::kShelfAlignmentLocal,
+                              ash::prefs::kShelfAlignment);
+  shelf_prefs_->InitLocalPref(profile()->GetPrefs(),
+                              ash::prefs::kShelfAutoHideBehaviorLocal,
+                              ash::prefs::kShelfAutoHideBehavior);
 }
 
 void ChromeShelfController::ScheduleUpdatePinnedAppsFromSync() {
@@ -1194,11 +1154,11 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
   // cyclically trigger sync changes (eg. ShelfItemAdded calls SyncPinPosition).
   ScopedPinSyncDisabler scoped_pin_sync_disabler = GetScopedPinSyncDisabler();
 
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
 
   const std::vector<ash::ShelfID> pinned_apps =
-      GetPinnedAppsFromSync(shelf_controller_helper_.get());
+      shelf_prefs_->GetPinnedAppsFromSync(shelf_controller_helper_.get());
 
   int index = 0;
 
@@ -1240,8 +1200,15 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
       // but Lacros becomes the primary browser so that the browser
       // shortcut is unpinned. Do nothing then.
       if (pref_shelf_id.app_id != kChromeAppId) {
-        // This is fresh pin. Create new one.
-        CreateAppShortcutItem(pref_shelf_id, index);
+        // We need to create a new pin for a synced app.
+        ash::ShelfItem item;
+        std::unique_ptr<ash::ShelfItemDelegate> item_delegate;
+        bool success = shelf_item_factory()->CreateShelfItemForAppId(
+            pref_shelf_id.app_id, &item, &item_delegate);
+        if (success) {
+          InsertAppItem(std::move(item_delegate), ash::STATUS_CLOSED, index,
+                        ash::TYPE_PINNED_APP, /*title=*/std::u16string());
+        }
       }
     }
     ++index;
@@ -1297,9 +1264,13 @@ ash::ShelfID ChromeShelfController::InsertAppItem(
     const std::u16string& title) {
   CHECK(item_delegate);
   if (GetItem(item_delegate->shelf_id())) {
+    static bool once = true;
     // TODO(crbug.com/1090134): try and identify why this would be called when
     // there is an already existing shelf item for this ID.
-    base::debug::DumpWithoutCrashing();
+    if (once) {
+      base::debug::DumpWithoutCrashing();
+      once = false;
+    }
     return item_delegate->shelf_id();
   }
 
@@ -1310,9 +1281,7 @@ ash::ShelfID ChromeShelfController::InsertAppItem(
   item.title = title;
   item.app_status = ShelfControllerHelper::GetAppStatus(
       latest_active_profile_, item_delegate->shelf_id().app_id);
-  // Set the delegate first to avoid constructing one in ShelfItemAdded.
-  model_->SetShelfItemDelegate(item.id, std::move(item_delegate));
-  model_->AddAt(index, item);
+  model_->AddAt(index, item, std::move(item_delegate));
   return item.id;
 }
 
@@ -1332,17 +1301,16 @@ void ChromeShelfController::CreateBrowserShortcutItem(bool pinned) {
       ash::NotificationBadgeColorCache::GetInstance().GetBadgeColorForApp(
           kChromeAppId, browser_shortcut.image);
   browser_shortcut.title = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
-  // Set the delegate first to avoid constructing another one in ShelfItemAdded.
-  model_->SetShelfItemDelegate(
-      browser_shortcut.id,
-      std::make_unique<BrowserShortcutShelfItemController>(model_));
 
   // If pinned, add the item towards the start of the shelf, it will be ordered
   // by weight. Otherwise put at the end as usual.
-  if (pinned)
-    model_->AddAt(0, browser_shortcut);
-  else
-    model_->Add(browser_shortcut);
+  if (pinned) {
+    model_->AddAt(0, browser_shortcut,
+                  std::make_unique<BrowserShortcutShelfItemController>(model_));
+  } else {
+    model_->Add(browser_shortcut,
+                std::make_unique<BrowserShortcutShelfItemController>(model_));
+  }
 }
 
 int ChromeShelfController::FindInsertionPoint() {
@@ -1434,6 +1402,7 @@ void ChromeShelfController::AttachProfile(Profile* profile_to_attach) {
   profile_ = profile_to_attach;
   latest_active_profile_ = profile_to_attach;
 
+  shelf_prefs_->AttachProfile(profile_to_attach);
   AddAppUpdaterAndIconLoader(profile_to_attach);
 
   pref_change_registrar_.Init(profile()->GetPrefs());
@@ -1474,14 +1443,6 @@ void ChromeShelfController::ReleaseProfile() {
 
 void ChromeShelfController::ShelfItemAdded(int index) {
   ash::ShelfID id = model_->items()[index].id;
-  // Construct a ShelfItemDelegate for the item if one does not yet exist.
-  // The delegate must be set before FetchImage() so that shelf item icon is
-  // set properly when FetchImage() calls OnAppImageUpdated() synchronously.
-  if (!model_->GetShelfItemDelegate(id)) {
-    model_->SetShelfItemDelegate(id,
-                                 AppShortcutShelfItemController::Create(id));
-  }
-
   // Fetch the app icon, this may synchronously update the item's image.
   AppIconLoader* app_icon_loader = GetAppIconLoaderForApp(id.app_id);
   if (app_icon_loader)
@@ -1515,15 +1476,15 @@ void ChromeShelfController::ShelfItemAdded(int index) {
   }
 
   // Update the pin position preference as needed.
-  if (ItemTypeIsPinned(item) && should_sync_pin_changes_)
+  if (ShouldSyncItemWithReentrancy(item))
     SyncPinPosition(item.id);
 }
 
 void ChromeShelfController::ShelfItemRemoved(int index,
                                              const ash::ShelfItem& old_item) {
   // Remove the pin position from preferences as needed.
-  if (ItemTypeIsPinned(old_item) && should_sync_pin_changes_)
-    RemovePinPosition(profile(), old_item.id);
+  if (ShouldSyncItemWithReentrancy(old_item))
+    shelf_prefs_->RemovePinPosition(profile(), old_item.id);
   if (auto* app_icon_loader = GetAppIconLoaderForApp(old_item.id.app_id))
     app_icon_loader->ClearImage(old_item.id.app_id);
 }
@@ -1531,19 +1492,16 @@ void ChromeShelfController::ShelfItemRemoved(int index,
 void ChromeShelfController::ShelfItemMoved(int start_index, int target_index) {
   // Update the pin position preference as needed.
   const ash::ShelfItem& item = model_->items()[target_index];
-  if (ItemTypeIsPinned(item) && should_sync_pin_changes_)
+  if (ShouldSyncItemWithReentrancy(item))
     SyncPinPosition(item.id);
 }
 
 void ChromeShelfController::ShelfItemChanged(int index,
                                              const ash::ShelfItem& old_item) {
-  if (!should_sync_pin_changes_)
-    return;
-
   // Add or remove the pin position from preferences as needed.
   const ash::ShelfItem& item = model_->items()[index];
-  if (!ItemTypeIsPinned(old_item) && ItemTypeIsPinned(item))
+  if (!ItemTypeIsPinned(old_item) && ShouldSyncItemWithReentrancy(item))
     SyncPinPosition(item.id);
-  else if (ItemTypeIsPinned(old_item) && !ItemTypeIsPinned(item))
-    RemovePinPosition(profile(), old_item.id);
+  else if (ShouldSyncItemWithReentrancy(old_item) && !ItemTypeIsPinned(item))
+    shelf_prefs_->RemovePinPosition(profile(), old_item.id);
 }

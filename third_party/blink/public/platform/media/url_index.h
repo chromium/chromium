@@ -183,8 +183,8 @@ class BLINK_PLATFORM_EXPORT UrlData : public base::RefCounted<UrlData> {
   // the same url.
   const GURL url_;
 
-  // Origin of the data, should only be different from the url_.GetOrigin()
-  // when service workers are involved.
+  // Origin of the data, should only be different from the
+  // url_.DeprecatedGetOriginAsURL() when service workers are involved.
   GURL data_origin_;
   bool have_data_origin_;
 

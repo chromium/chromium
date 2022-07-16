@@ -27,7 +27,14 @@ if (optimize_webui) {
       "../../../../../ui/webui/resources:preprocess",
     ]
 
-    excludes = [ "chrome://resources/js/cr.m.js" ]
+    excludes = [
+      "chrome://resources/js/cr.m.js",
+      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js",
+      "chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-lite.js",
+      "chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js",
+    ]
   }
 }
 
@@ -62,7 +69,8 @@ js_type_check("closure_compile") {
 
 js_library("bluetooth_pairing_dialog") {
   deps = [
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_dialog.m",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_dialog",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_ui",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]

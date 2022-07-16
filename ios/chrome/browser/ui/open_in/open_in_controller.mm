@@ -15,9 +15,9 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/strings/grit/components_strings.h"
@@ -313,6 +313,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 
 - (void)disable {
   _disabled = YES;
+  [self removeOverlayedView];
   [self openInToolbar].alpha = 0.0f;
   [_openInTimer invalidate];
   [self.baseView removeGestureRecognizer:_tapRecognizer];

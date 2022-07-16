@@ -6,7 +6,6 @@
 #define UI_NATIVE_THEME_NATIVE_THEME_MAC_H_
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/native_theme/native_theme_aura.h"
@@ -32,6 +31,9 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
     PRESSED,
     COUNT
   };
+
+  NativeThemeMac(const NativeThemeMac&) = delete;
+  NativeThemeMac& operator=(const NativeThemeMac&) = delete;
 
   // Adjusts an SkColor based on the current system control tint. For example,
   // if the current tint is "graphite", this function maps the provided value to
@@ -88,6 +90,11 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
                                         bool round_left,
                                         bool round_right,
                                         bool focus);
+
+  // Returns the minimum size for the thumb. We will not inset the thumb if it
+  // will be smaller than this size. The scale parameter should be the device
+  // scale factor.
+  gfx::Size GetThumbMinSize(bool vertical, float scale) const;
 
  protected:
   friend class NativeTheme;
@@ -152,10 +159,6 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
     return scale_from_dip * (is_overlay ? 2.0f : 3.0f);
   }
 
-  // Returns the minimum size for the thumb. We will not inset the thumb if it
-  // will be smaller than this size.
-  gfx::Size GetThumbMinSize(bool vertical) const;
-
   base::scoped_nsobject<NativeThemeEffectiveAppearanceObserver>
       appearance_observer_;
   id high_contrast_notification_token_;
@@ -164,8 +167,6 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   // contrast.
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
       color_scheme_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeThemeMac);
 };
 
 // Mac implementation of native theme support for web controls.
@@ -174,12 +175,6 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
 class NativeThemeMacWeb : public NativeThemeAura {
  public:
   NativeThemeMacWeb();
-
-  float AdjustBorderWidthByZoom(float border_width,
-                                float zoom_level) const override;
-  float AdjustBorderRadiusByZoom(Part part,
-                                 float border_width,
-                                 float zoom_level) const override;
 
   static NativeThemeMacWeb* instance();
 };

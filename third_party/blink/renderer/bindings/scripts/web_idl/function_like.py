@@ -101,7 +101,7 @@ class OverloadGroup(WithIdentifier):
     class EffectiveOverloadItem(object):
         """
         Represents an item in an effective overload set.
-        https://heycam.github.io/webidl/#dfn-effective-overload-set
+        https://webidl.spec.whatwg.org/#dfn-effective-overload-set
         """
 
         def __init__(self, function_like, type_list, opt_list):
@@ -170,7 +170,7 @@ class OverloadGroup(WithIdentifier):
     def effective_overload_set(self, argument_count=None):
         """
         Returns the effective overload set.
-        https://heycam.github.io/webidl/#compute-the-effective-overload-set
+        https://webidl.spec.whatwg.org/#compute-the-effective-overload-set
         """
         assert argument_count is None or isinstance(argument_count, int)
 
@@ -213,7 +213,7 @@ class OverloadGroup(WithIdentifier):
     def distinguishing_argument_index(items_of_effective_overload_set):
         """
         Returns the distinguishing argument index.
-        https://heycam.github.io/webidl/#dfn-distinguishing-argument-index
+        https://webidl.spec.whatwg.org/#dfn-distinguishing-argument-index
         """
         items = items_of_effective_overload_set
         assert isinstance(items, (list, tuple))
@@ -234,7 +234,7 @@ class OverloadGroup(WithIdentifier):
     def are_distinguishable_types(idl_type1, idl_type2):
         """
         Returns True if the two given types are distinguishable.
-        https://heycam.github.io/webidl/#dfn-distinguishable
+        https://webidl.spec.whatwg.org/#dfn-distinguishable
         """
         assert isinstance(idl_type1, IdlType)
         assert isinstance(idl_type2, IdlType)

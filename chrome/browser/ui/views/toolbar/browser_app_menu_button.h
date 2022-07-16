@@ -16,14 +16,12 @@
 #include "ui/views/view.h"
 
 class ToolbarView;
-enum class InProductHelpFeature;
 
 // The app menu button in the main browser window (as opposed to web app
 // windows, which is implemented in WebAppMenuButton).
 class BrowserAppMenuButton : public AppMenuButton {
  public:
   METADATA_HEADER(BrowserAppMenuButton);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(BrowserAppMenuButton, kIdentifier);
 
   explicit BrowserAppMenuButton(ToolbarView* toolbar_view);
   BrowserAppMenuButton(const BrowserAppMenuButton&) = delete;

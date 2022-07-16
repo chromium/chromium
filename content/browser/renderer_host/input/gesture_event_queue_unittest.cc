@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -67,7 +67,7 @@ class GestureEventQueueTest : public testing::Test,
         true;
     gesture_config.fling_config.touchscreen_tap_suppression_config
         .max_cancel_to_down_time =
-        base::TimeDelta::FromMilliseconds(max_cancel_to_down_time_ms);
+        base::Milliseconds(max_cancel_to_down_time_ms);
     queue_ =
         std::make_unique<GestureEventQueue>(this, this, this, gesture_config);
   }
@@ -314,7 +314,7 @@ TEST_F(GestureEventQueueTest, DebounceDefersFollowingGestureEvents) {
   EXPECT_EQ(2U, GestureEventQueueSize());
   EXPECT_EQ(2U, GestureEventDebouncingQueueSize());
 
-  FastForwardBy(base::TimeDelta::FromMilliseconds(5));
+  FastForwardBy(base::Milliseconds(5));
 
   // The deferred events are correctly queued in coalescing queue.
   EXPECT_EQ(2U, GetAndResetSentGestureEventCount());

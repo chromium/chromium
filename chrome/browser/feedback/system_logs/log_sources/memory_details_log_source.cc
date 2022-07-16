@@ -4,7 +4,6 @@
 
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
 
-#include "base/macros.h"
 #include "chrome/browser/memory_details.h"
 #include "components/feedback/feedback_report.h"
 #include "content/public/browser/browser_thread.h"
@@ -16,6 +15,9 @@ class SystemLogsMemoryHandler : public MemoryDetails {
  public:
   explicit SystemLogsMemoryHandler(SysLogsSourceCallback callback)
       : callback_(std::move(callback)) {}
+
+  SystemLogsMemoryHandler(const SystemLogsMemoryHandler&) = delete;
+  SystemLogsMemoryHandler& operator=(const SystemLogsMemoryHandler&) = delete;
 
   // Sends the data to the callback.
   // MemoryDetails override.
@@ -33,8 +35,6 @@ class SystemLogsMemoryHandler : public MemoryDetails {
  private:
   ~SystemLogsMemoryHandler() override {}
   SysLogsSourceCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemLogsMemoryHandler);
 };
 
 MemoryDetailsLogSource::MemoryDetailsLogSource()

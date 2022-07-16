@@ -32,6 +32,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkChangeManager
   explicit NetworkChangeManager(
       std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier);
 
+  NetworkChangeManager(const NetworkChangeManager&) = delete;
+  NetworkChangeManager& operator=(const NetworkChangeManager&) = delete;
+
   ~NetworkChangeManager() override;
 
   // Binds a NetworkChangeManager receiver to this object. Mojo messages
@@ -67,8 +70,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkChangeManager
   mojo::ReceiverSet<mojom::NetworkChangeManager> receivers_;
   std::vector<mojo::Remote<mojom::NetworkChangeManagerClient>> clients_;
   mojom::ConnectionType connection_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeManager);
 };
 
 }  // namespace network

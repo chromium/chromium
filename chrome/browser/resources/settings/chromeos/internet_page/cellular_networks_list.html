@@ -26,7 +26,7 @@
   }
 
   .cellular-not-setup {
-    color: var(--google-grey-700);
+    color: var(--cr-secondary-text-color);
     font-size: small;
     margin-bottom: 16px;
   }
@@ -130,7 +130,8 @@
           show-technology-badge="[[showTechnologyBadge]]"
           networks="[[eSimNetworks_]]"
           custom-items="[[eSimPendingProfileItems_]]"
-          device-state="[[cellularDeviceState]]">
+          device-state="[[cellularDeviceState]]"
+          global-policy="[[globalPolicy]]">
       </network-list>
     </div>
   </template>
@@ -138,11 +139,11 @@
       eSimPendingProfileItems_)]]" restamp>
     <div id="eSimNoNetworkFound"
         class="cellular-network-content cellular-not-setup">
-      <settings-localized-link
+      <localized-link
           link-disabled = "[[isDeviceInhibited_]]"
           on-link-clicked="onEsimLearnMoreClicked_"
           localized-string="$i18n{eSimNetworkNotSetup}">
-      </settings-localized-link>
+      </localized-link>
     </div>
   </template>
 </template>
@@ -161,7 +162,8 @@
           id="psimNetworkList" show-buttons
           show-technology-badge="[[showTechnologyBadge]]"
           networks="[[pSimNetworks_]]"
-          device-state="[[cellularDeviceState]]">
+          device-state="[[cellularDeviceState]]"
+          global-policy="[[globalPolicy]]">
       </network-list>
     </div>
   </template>
@@ -195,9 +197,9 @@
       if="[[!shouldShowNetworkSublist_(tetherNetworks_)]]" restamp>
     <div id="tetherNetworksNotSetup"
         class="cellular-network-content cellular-not-setup">
-      <settings-localized-link
+      <localized-link
           localized-string="[[i18nAdvanced('tetherNetworkNotSetup')]]">
-      </settings-localized-link>
+      </localized-link>
     </div>
   </template>
 </template>

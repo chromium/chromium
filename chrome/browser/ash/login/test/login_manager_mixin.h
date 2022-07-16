@@ -8,24 +8,25 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/session_flags_manager.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/login/auth/stub_authenticator_builder.h"
+#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace test {
+
 constexpr char kTestEmail[] = "test_user@gmail.com";
 constexpr char kTestGaiaId[] = "111111111";
-}  // namespace test
 
-class StubAuthenticatorBuilder;
-class UserContext;
+}  // namespace test
 
 // Mixin browser tests can use for setting up test login manager environment.
 // It sets up command line so test starts on the login screen UI, and
@@ -75,6 +76,9 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   LoginManagerMixin(InProcessBrowserTestMixinHost* host,
                     const UserList& initial_users,
                     FakeGaiaMixin* gaia_mixin);
+
+  LoginManagerMixin(const LoginManagerMixin&) = delete;
+  LoginManagerMixin& operator=(const LoginManagerMixin&) = delete;
 
   ~LoginManagerMixin() override;
 
@@ -131,7 +135,9 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
 
   // Logs in as a regular user with default user context. Should be used for
   // proceeding into the session from the login screen.
-  void LoginAsNewRegularUser();
+  // If |user_context| is not set, built-in default will be used.
+  void LoginAsNewRegularUser(
+      absl::optional<UserContext> user_context = absl::nullopt);
 
   // Logs in as a child user with default user context.Should be used for
   // proceeding into the session from the login screen.
@@ -155,20 +161,18 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
 
   LocalStateMixin local_state_mixin_;
   FakeGaiaMixin* fake_gaia_mixin_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginManagerMixin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-using ::chromeos::LoginManagerMixin;
-namespace ash {
+namespace chromeos {
 namespace test {
-using ::chromeos::test::kTestEmail;
-using ::chromeos::test::kTestGaiaId;
+using ::ash::test::kTestEmail;
+using ::ash::test::kTestGaiaId;
 }  // namespace test
-}  // namespace ash
+using ::ash::LoginManagerMixin;
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_LOGIN_MANAGER_MIXIN_H_

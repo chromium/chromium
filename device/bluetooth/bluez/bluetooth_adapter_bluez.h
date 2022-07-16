@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -41,6 +42,7 @@
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/mojom/ble_scan_parser.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
@@ -108,6 +110,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
 
   static scoped_refptr<BluetoothAdapterBlueZ> CreateAdapter();
 
+  BluetoothAdapterBlueZ(const BluetoothAdapterBlueZ&) = delete;
+  BluetoothAdapterBlueZ& operator=(const BluetoothAdapterBlueZ&) = delete;
+
   // BluetoothAdapter:
   void Initialize(base::OnceClosure callback) override;
   void Shutdown() override;
@@ -171,12 +176,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
                            base::OnceClosure callback,
                            ErrorCallback error_callback) override;
 
+  LowEnergyScanSessionHardwareOffloadingStatus
+  GetLowEnergyScanSessionHardwareOffloadingStatus() override;
+
   std::unique_ptr<device::BluetoothLowEnergyScanSession>
   StartLowEnergyScanSession(
       std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
       base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate)
       override;
-
 #endif
 
   // These functions are specifically for use with ARC. They have no need to
@@ -597,13 +604,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   // is registered.
   base::queue<std::unique_ptr<BluetoothAdvertisementMonitorServiceProvider>>
       pending_advertisement_monitors_;
+
+  LowEnergyScanSessionHardwareOffloadingStatus
+      low_energy_scan_session_hardware_offloading_status_ =
+          LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined;
 #endif
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdapterBlueZ> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterBlueZ);
 };
 
 }  // namespace bluez

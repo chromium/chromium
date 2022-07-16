@@ -14,7 +14,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 
@@ -45,6 +44,11 @@ class CAPTURE_EXPORT VideoCaptureDeviceDeckLinkMac : public VideoCaptureDevice {
 
   explicit VideoCaptureDeviceDeckLinkMac(
       const VideoCaptureDeviceDescriptor& descriptor);
+
+  VideoCaptureDeviceDeckLinkMac(const VideoCaptureDeviceDeckLinkMac&) = delete;
+  VideoCaptureDeviceDeckLinkMac& operator=(
+      const VideoCaptureDeviceDeckLinkMac&) = delete;
+
   ~VideoCaptureDeviceDeckLinkMac() override;
 
   // Copy of VideoCaptureDevice::Client::OnIncomingCapturedData(). Used by
@@ -86,8 +90,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceDeckLinkMac : public VideoCaptureDevice {
 
   // Checks for Device (a.k.a. Audio) thread.
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceDeckLinkMac);
 };
 
 }  // namespace media

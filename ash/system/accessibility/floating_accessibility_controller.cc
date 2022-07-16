@@ -26,8 +26,7 @@ namespace ash {
 namespace {
 
 constexpr int kFloatingMenuHeight = 64;
-constexpr base::TimeDelta kAnimationDuration =
-    base::TimeDelta::FromMilliseconds(150);
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(150);
 
 }  // namespace
 

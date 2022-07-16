@@ -14,14 +14,15 @@
 namespace ash {
 
 // Creates a Scanner with a device name that can be used to interact with a
-// scanner via the sane-airscan backend. If errors occur, absl::nullopts is
-// returned. The device name must be in the format "airscan:escl:name:url",
-// where  name is an arbitrary name. The IP address is used instead of the host
-// name since sane-airscan may not be able to resolve host names it did not
-// discover itself. See mdns_make_escl_endpoint() at
-// https://github.com/alexpevzner/sane-airscan/blob/master/airscan-mdns.c for
+// scanner via the given backend. If errors occur, absl::nullopts is
+// returned. The device name format depends on the backend. Sane-airscan
+// scanners will have an "airscan:escl:name:url" string where name is an
+// arbitrary name, while Epsonds scanners will have "epsonds:net:|IP|". The IP
+// address is used instead of the host name since the backend may not be able to
+// resolve host names it did not discover itself. See mdns_make_escl_endpoint()
+// at https://github.com/alexpevzner/sane-airscan/blob/master/airscan-mdns.c for
 // more details.
-absl::optional<chromeos::Scanner> CreateSaneAirscanScanner(
+absl::optional<chromeos::Scanner> CreateSaneScanner(
     const std::string& name,
     const std::string& service_type,
     const std::string& rs,

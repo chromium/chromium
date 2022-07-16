@@ -11,8 +11,8 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -198,15 +198,14 @@ void PhishingDOMFeatureExtractor::ExtractFeaturesWithTimeout() {
         num_elements = 0;
         base::TimeTicks now = clock_->NowTicks();
         if (now - page_feature_state_->start_time >=
-            base::TimeDelta::FromMilliseconds(kMaxTotalTimeMs)) {
+            base::Milliseconds(kMaxTotalTimeMs)) {
           // We expect this to happen infrequently, so record when it does.
           UMA_HISTOGRAM_COUNTS_1M("SBClientPhishing.DOMFeatureTimeout", 1);
           RunCallback(false);
           return;
         }
         base::TimeDelta chunk_elapsed = now - current_chunk_start_time;
-        if (chunk_elapsed >=
-            base::TimeDelta::FromMilliseconds(kMaxTimePerChunkMs)) {
+        if (chunk_elapsed >= base::Milliseconds(kMaxTimePerChunkMs)) {
           // The time limit for the current chunk is up, so post a task to
           // continue extraction.
           //

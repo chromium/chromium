@@ -85,11 +85,11 @@ bool ForceInstallProvider::MustRemainEnabled(const Extension* extension,
 DelayTracker::DelayTracker()
     : action_(base::BindRepeating(&DelayTracker::ReinstallAction,
                                   base::Unretained(this))) {
-  PolicyExtensionReinstaller::set_policy_reinstall_action_for_test(&action_);
+  CorruptedExtensionReinstaller::set_reinstall_action_for_test(&action_);
 }
 
 DelayTracker::~DelayTracker() {
-  PolicyExtensionReinstaller::set_policy_reinstall_action_for_test(nullptr);
+  CorruptedExtensionReinstaller::set_reinstall_action_for_test(nullptr);
 }
 
 const std::vector<base::TimeDelta>& DelayTracker::calls() {
@@ -112,7 +112,7 @@ void DelayTracker::Proceed() {
 }
 
 void DelayTracker::StopWatching() {
-  PolicyExtensionReinstaller::set_policy_reinstall_action_for_test(nullptr);
+  CorruptedExtensionReinstaller::set_reinstall_action_for_test(nullptr);
 }
 
 }  // namespace content_verifier_test

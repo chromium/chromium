@@ -53,7 +53,7 @@ ManagedUIHandler::~ManagedUIHandler() {
 }
 
 void ManagedUIHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "observeManagedUI",
       base::BindRepeating(&ManagedUIHandler::HandleObserveManagedUI,
                           base::Unretained(this)));

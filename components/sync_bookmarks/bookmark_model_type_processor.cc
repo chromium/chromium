@@ -22,6 +22,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
+#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/model_type_processor_metrics.h"
 #include "components/sync/engine/model_type_processor_proxy.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -60,6 +61,10 @@ class ScopedRemoteUpdateBookmarks {
     bookmark_model_->RemoveObserver(observer_);
   }
 
+  ScopedRemoteUpdateBookmarks(const ScopedRemoteUpdateBookmarks&) = delete;
+  ScopedRemoteUpdateBookmarks& operator=(const ScopedRemoteUpdateBookmarks&) =
+      delete;
+
   ~ScopedRemoteUpdateBookmarks() {
     // Notify UI intensive observers of BookmarkModel that all updates have been
     // applied, and that they may now be consumed. This prevents issues like the
@@ -76,8 +81,6 @@ class ScopedRemoteUpdateBookmarks {
   ScopedSuspendBookmarkUndo suspend_undo_;
 
   bookmarks::BookmarkModelObserver* const observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedRemoteUpdateBookmarks);
 };
 
 std::string ComputeServerDefinedUniqueTagForDebugging(
@@ -522,12 +525,9 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
   data.modification_time =
       syncer::ProtoTimeToTime(metadata->modification_time());
   data.name = base::UTF16ToUTF8(node->GetTitle());
-  data.is_folder = node->is_folder();
-  data.unique_position =
-      syncer::UniquePosition::FromProto(metadata->unique_position());
-  data.specifics =
-      CreateSpecificsFromBookmarkNode(node, bookmark_model_,
-                                      /*force_favicon_load=*/false);
+  data.specifics = CreateSpecificsFromBookmarkNode(
+      node, bookmark_model_, metadata->unique_position(),
+      /*force_favicon_load=*/false);
 
   if (node->is_permanent_node()) {
     data.server_defined_unique_tag =
@@ -565,6 +565,7 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
                           base::Value::FromUniquePtrValue(
                               syncer::EntityMetadataToValue(*metadata)));
   data_dictionary->SetString("modelType", "Bookmarks");
+  data_dictionary->SetBoolean("IS_DIR", node->is_folder());
   all_nodes->Append(std::move(data_dictionary));
 
   int i = 0;

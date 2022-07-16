@@ -11,8 +11,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/stream_texture_shared_image_interface.h"
 #include "media/gpu/android/codec_output_buffer_renderer.h"
 #include "media/gpu/android/promotion_hint_aggregator.h"
@@ -27,9 +28,14 @@ class ScopedHardwareBufferFenceSync;
 namespace media {
 
 // A GLImage that renders MediaCodec buffers to a TextureOwner or overlay
-// as needed in order to draw them.
+// as needed in order to draw them. Note that when DrDc is enabled(kEnableDrDc),
+// a per codec dr-dc lock is expected to be held while calling methods of this
+// class. This is ensured by adding AssertAcquiredDrDcLock() to those methods.
+// We are not adding a Locked suffix on those methods since many of those
+// methods are either overrides or virtual.
 class MEDIA_GPU_EXPORT CodecImage
-    : public gpu::StreamTextureSharedImageInterface {
+    : public gpu::StreamTextureSharedImageInterface,
+      gpu::RefCountedLockHelperDrDc {
  public:
   // Callback to notify that a codec image is now unused in the sense of not
   // being out for display.  This lets us signal interested folks once a video
@@ -42,7 +48,11 @@ class MEDIA_GPU_EXPORT CodecImage
   // destroying it.
   using UnusedCB = base::OnceCallback<void(CodecImage*)>;
 
-  CodecImage(const gfx::Size& coded_size);
+  CodecImage(const gfx::Size& coded_size,
+             scoped_refptr<gpu::RefCountedLock> drdc_lock);
+
+  CodecImage(const CodecImage&) = delete;
+  CodecImage& operator=(const CodecImage&) = delete;
 
   // (Re-)Initialize this CodecImage to use |output_buffer| et. al.
   //
@@ -68,16 +78,6 @@ class MEDIA_GPU_EXPORT CodecImage
   bool CopyTexSubImage(unsigned target,
                        const gfx::Point& offset,
                        const gfx::Rect& rect) override;
-  // Currently this API is depended on the implementation of
-  // NotifyOverlayPromotion. since we expect overlay to use SharedImage in the
-  // future.
-  bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int z_order,
-                            gfx::OverlayTransform transform,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
   void SetColorSpace(const gfx::ColorSpace& color_space) override {}
   void Flush() override {}
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
@@ -178,7 +178,9 @@ class MEDIA_GPU_EXPORT CodecImage
 
   std::vector<UnusedCB> unused_cbs_;
 
-  DISALLOW_COPY_AND_ASSIGN(CodecImage);
+  // Bound to the gpu main thread on which this CodecImage is created. Some
+  // methods can only be called on this thread.
+  THREAD_CHECKER(gpu_main_thread_checker_);
 };
 
 // Temporary helper class to prevent touching a non-threadsafe-ref-counted
@@ -191,6 +193,9 @@ class MEDIA_GPU_EXPORT CodecImageHolder
   CodecImageHolder(scoped_refptr<base::SequencedTaskRunner> task_runner,
                    scoped_refptr<CodecImage> codec_image);
 
+  CodecImageHolder(const CodecImageHolder&) = delete;
+  CodecImageHolder& operator=(const CodecImageHolder&) = delete;
+
   // Safe from any thread.
   CodecImage* codec_image_raw() const { return codec_image_.get(); }
 
@@ -201,8 +206,6 @@ class MEDIA_GPU_EXPORT CodecImageHolder
   friend class base::DeleteHelper<CodecImageHolder>;
 
   scoped_refptr<CodecImage> codec_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(CodecImageHolder);
 };
 
 }  // namespace media

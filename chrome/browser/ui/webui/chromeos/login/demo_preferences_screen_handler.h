@@ -42,6 +42,11 @@ class DemoPreferencesScreenHandler : public BaseScreenHandler,
   using TView = DemoPreferencesScreenView;
 
   explicit DemoPreferencesScreenHandler(JSCallsContainer* js_calls_container);
+
+  DemoPreferencesScreenHandler(const DemoPreferencesScreenHandler&) = delete;
+  DemoPreferencesScreenHandler& operator=(const DemoPreferencesScreenHandler&) =
+      delete;
+
   ~DemoPreferencesScreenHandler() override;
 
   // DemoPreferencesScreenView:
@@ -64,8 +69,6 @@ class DemoPreferencesScreenHandler : public BaseScreenHandler,
   void HandleSetDemoModeCountry(const std::string& country_id);
 
   ash::DemoPreferencesScreen* screen_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoPreferencesScreenHandler);
 };
 
 }  // namespace chromeos

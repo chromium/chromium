@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_SESSION_SYNC_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SYNC_SESSION_SYNC_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class GURL;
@@ -25,6 +24,10 @@ class SessionSyncServiceFactory : public BrowserContextKeyedServiceFactory {
   static sync_sessions::SessionSyncService* GetForProfile(Profile* profile);
   static SessionSyncServiceFactory* GetInstance();
 
+  SessionSyncServiceFactory(const SessionSyncServiceFactory&) = delete;
+  SessionSyncServiceFactory& operator=(const SessionSyncServiceFactory&) =
+      delete;
+
   static bool ShouldSyncURLForTesting(const GURL& url);
 
  private:
@@ -36,8 +39,6 @@ class SessionSyncServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionSyncServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_SYNC_SESSION_SYNC_SERVICE_FACTORY_H_

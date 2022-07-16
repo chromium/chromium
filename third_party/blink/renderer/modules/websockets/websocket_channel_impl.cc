@@ -465,6 +465,8 @@ void WebSocketChannelImpl::Close(int code, const String& reason) {
       code == kCloseEventCodeNotSpecified ? kCloseEventCodeNoStatusRcvd : code);
   messages_.push_back(Message(code_to_send, reason));
   ProcessSendQueue();
+  // Make the page back/forward cache-able.
+  feature_handle_for_scheduler_.reset();
 }
 
 void WebSocketChannelImpl::Fail(const String& reason,

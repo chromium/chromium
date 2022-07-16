@@ -51,14 +51,15 @@ class TestPatchOrderFile(unittest.TestCase):
   def testPatchedSymbolsWithOutlining(self):
     # As above, but add outlined functions at the end. The aliased outlined
     # function should be ignored.
-    self.assertEquals(list('abd') +
-                      ['OUTLINED_FUNCTION_{}'.format(i)
-                       for i in xrange(5)],
-                      list(patch_orderfile._PatchedSymbols(
-                          {'a': 'a',
-                           'b': ['b', 'OUTLINED_FUNCTION_4'],
-                           'd': 'd'},
-                          ['a', 'b', 'OUTLINED_FUNCTION_2', 'c', 'd'], 2)))
+    self.assertEquals(
+        list('abd') + ['OUTLINED_FUNCTION_{}'.format(i) for i in range(5)],
+        list(
+            patch_orderfile._PatchedSymbols(
+                {
+                    'a': 'a',
+                    'b': ['b', 'OUTLINED_FUNCTION_4'],
+                    'd': 'd'
+                }, ['a', 'b', 'OUTLINED_FUNCTION_2', 'c', 'd'], 2)))
 
 
 if __name__ == '__main__':

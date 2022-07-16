@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -13,10 +12,10 @@ source_set("eg2_tests") {
     "automation_action.h",
     "automation_action.mm",
     "automation_action_egtest.mm",
-    "automation_app_interface.h",
     "automation_egtest.mm",
   ]
   deps = [
+    ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser",
@@ -35,7 +34,6 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -60,4 +58,17 @@ source_set("eg_app_support+eg2") {
     "//ios/web/public/js_messaging",
   ]
   frameworks = [ "XCTest.framework" ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "automation_app_interface.h",
+    "automation_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }

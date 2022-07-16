@@ -83,7 +83,7 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
   // it may be used by multiple documents at the same time.
   virtual const CSSValue* GetPropertyCSSValueInternal(CSSPropertyID) = 0;
   virtual const CSSValue* GetPropertyCSSValueInternal(
-      AtomicString custom_property_name) = 0;
+      const AtomicString& custom_property_name) = 0;
   virtual String GetPropertyValueInternal(CSSPropertyID) = 0;
   virtual void SetPropertyInternal(CSSPropertyID,
                                    const String& property_value,

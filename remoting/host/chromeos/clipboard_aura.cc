@@ -25,8 +25,7 @@ const int64_t kClipboardPollingIntervalMs = 500;
 namespace remoting {
 
 ClipboardAura::ClipboardAura()
-    : polling_interval_(
-          base::TimeDelta::FromMilliseconds(kClipboardPollingIntervalMs)) {}
+    : polling_interval_(base::Milliseconds(kClipboardPollingIntervalMs)) {}
 
 ClipboardAura::~ClipboardAura() {
   DCHECK(thread_checker_.CalledOnValidThread());

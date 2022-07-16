@@ -37,10 +37,6 @@ import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.payments.ShippingStrings;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
-import org.chromium.chrome.browser.payments.minimal.MinimalUICoordinator;
-import org.chromium.chrome.browser.payments.minimal.MinimalUICoordinator.ConfirmObserver;
-import org.chromium.chrome.browser.payments.minimal.MinimalUICoordinator.DismissObserver;
-import org.chromium.chrome.browser.payments.minimal.MinimalUICoordinator.ReadyObserver;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSection.FocusChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -53,7 +49,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.autofill.EditableOption;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BasicCardUtils;
@@ -81,7 +76,6 @@ import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentShippingOption;
 import org.chromium.payments.mojom.PaymentValidationErrors;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -144,11 +138,9 @@ public class PaymentUiService
     private AutofillPaymentAppCreator mAutofillPaymentAppCreator;
     private boolean mHaveRequestedAutofillData = true;
     private List<AutofillProfile> mAutofillProfiles;
-    private boolean mCanUserAddCreditCard;
     private TabModelSelector mObservedTabModelSelector;
     private TabModel mObservedTabModel;
     private LayoutStateProvider mLayoutStateProvider;
-    private MinimalUICoordinator mMinimalUi;
 
     /** The delegate of this class. */
     public interface Delegate {
@@ -225,9 +217,8 @@ public class PaymentUiService
     }
 
     /**
-     * This class is to coordinate the show state of a bottom sheet UI (either expandable payment
-     * handler or minimal UI) and the Payment Request UI so that these visibility rules are
-     * enforced:
+     * This class is to coordinate the show state of a bottom sheet UI (i.e., expandable payment
+     * handler) and the Payment Request UI so that these visibility rules are enforced:
      * 1. At most one UI is shown at any moment in case the Payment Request UI obstructs the bottom
      * sheet.
      * 2. Bottom sheet is prioritized to show over Payment Request UI
@@ -424,7 +415,7 @@ public class PaymentUiService
      */
     public boolean canUserAddCreditCard() {
         assert mHasInitialized;
-        return mCanUserAddCreditCard;
+        return mMerchantSupportsAutofillCards;
     }
 
     /**
@@ -459,72 +450,13 @@ public class PaymentUiService
     }
 
     /**
-     * Closes the minimal UI and shows an error message, called only when isShowingMinimalUi()
-     * returns true.
-     * @param onClosed Called when the minimal UI is closed.
-     */
-    public void closeMinimalUiOnError(Runnable onClosed) {
-        assert mMinimalUi != null;
-        mMinimalUi.showErrorAndClose(
-                /*observer=*/onClosed::run, R.string.payments_error_message);
-    }
-
-    /** @return Whether the minimal UI is showing. */
-    public boolean isShowingMinimalUi() {
-        return mMinimalUi != null;
-    }
-
-    // Implements PaymentUiServiceTestInterface:
-    @Override
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    public boolean confirmMinimalUIForTest() {
-        if (mMinimalUi == null) return false;
-        mMinimalUi.confirmForTest();
-        return true;
-    }
-
-    // Implements PaymentUiServiceTestInterface:
-    @Override
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    public boolean dismissMinimalUIForTest() {
-        if (mMinimalUi == null) return false;
-        mMinimalUi.dismissForTest();
-        return true;
-    }
-
-    /**
-     * Triggers the minimal UI.
-     * @param windowAndroid The window of the main activity.
-     * @param mRawTotal The raw total of the payment item.
-     * @param readyObserver The onMinimalUIReady function.
-     * @param confirmObserver The onMinimalUiConfirmed function.
-     * @param dismissObserver The onMinimalUiDismissed function.
-     * @return Whether the triggering is successful.
-     */
-    public boolean triggerMinimalUI(WindowAndroid windowAndroid, PaymentItem mRawTotal,
-            ReadyObserver readyObserver, ConfirmObserver confirmObserver,
-            DismissObserver dismissObserver) {
-        Context context = windowAndroid.getContext().get();
-        if (context == null) return false;
-        // Do not show the Payment Request UI dialog even if the minimal UI is suppressed.
-        mPaymentUisShowStateReconciler.onBottomSheetShown();
-        mMinimalUi = new MinimalUICoordinator();
-        PaymentApp selectedApp = getSelectedPaymentApp();
-        return mMinimalUi.show(context, BottomSheetControllerProvider.from(windowAndroid),
-                selectedApp, mCurrencyFormatterMap.get(mRawTotal.amount.currency),
-                mUiShoppingCart.getTotal(), readyObserver, confirmObserver, dismissObserver);
-    }
-
-    /**
      * Called when the merchant calls complete() to complete the payment request.
      * @param result The completion status of the payment request, defined in {@link
      *         PaymentComplete}, provided by the merchant with
      * PaymentResponse.complete(paymentResult).
-     * @param onMinimalUiErroredAndClosed The function called when MinimalUI errors and closes.
      * @param onUiCompleted The function called when the opened UI has handled the completion.
      */
     public void onPaymentRequestComplete(int result,
-            MinimalUICoordinator.ErrorAndCloseObserver onMinimalUiErroredAndClosed,
             Runnable onUiCompleted) {
         // Update records of the used payment app for sorting payment apps next time.
         PaymentApp paymentApp = getSelectedPaymentApp();
@@ -534,14 +466,9 @@ public class PaymentUiService
         PaymentPreferencesUtil.setPaymentAppLastUseDate(
                 selectedPaymentMethod, System.currentTimeMillis());
 
-        if (mMinimalUi != null) {
-            mMinimalUi.onPaymentRequestComplete(result,
-                    onMinimalUiErroredAndClosed, /*onCompletedAndClosed=*/
-                    onUiCompleted::run);
-            return;
-        }
-
-        // When non-minimal UI is opened.
+        // TODO(https://crbug.com/1188895): The caller should execute the function at onUiCompleted
+        // directly instead of passing the Runnable here, because there are no asynchronous
+        // operations in this code path.
         onUiCompleted.run();
     }
 
@@ -626,13 +553,8 @@ public class PaymentUiService
         }
         // Checks whether the merchant supports autofill cards before show is called.
         mMerchantSupportsAutofillCards =
-                BasicCardUtils.merchantSupportsBasicCard(mParams.getMethodData());
-
-        // If in strict mode, don't give user an option to add an autofill card during the checkout
-        // to avoid the "unhappy" basic-card flow.
-        mCanUserAddCreditCard = mMerchantSupportsAutofillCards
-                && !PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT);
+                PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD)
+                && BasicCardUtils.merchantSupportsBasicCard(mParams.getMethodData());
 
         if (PaymentOptionsUtils.requestAnyInformation(mParams.getPaymentOptions())) {
             mAutofillProfiles = Collections.unmodifiableList(
@@ -1697,11 +1619,6 @@ public class PaymentUiService
         if (mPaymentHandlerUi != null) {
             mPaymentHandlerUi.hide();
             mPaymentHandlerUi = null;
-        }
-
-        if (mMinimalUi != null) {
-            mMinimalUi.hide();
-            mMinimalUi = null;
         }
 
         if (mPaymentRequestUI != null) {

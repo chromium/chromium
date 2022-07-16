@@ -7,6 +7,10 @@
 namespace permissions {
 namespace prefs {
 
+// List containing a history of past permission actions, for all permission
+// types.
+const char kPermissionActions[] = "profile.content_settings.permission_actions";
+
 #if defined(OS_ANDROID)
 // The current level of backoff for showing the location settings dialog for the
 // default search engine.

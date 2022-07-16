@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/deferred_sequenced_task_runner.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "components/sync/engine/cancelation_signal.h"
@@ -59,19 +59,19 @@ class ModelTypeRegistryTest : public ::testing::Test {
 };
 
 TEST_F(ModelTypeRegistryTest, ConnectDataTypes) {
-  EXPECT_TRUE(registry()->GetEnabledTypes().Empty());
+  EXPECT_TRUE(registry()->GetConnectedTypes().Empty());
 
   registry()->ConnectDataType(THEMES, MakeDataTypeActivationResponse(
                                           MakeInitialModelTypeState(THEMES)));
-  EXPECT_EQ(ModelTypeSet(THEMES), registry()->GetEnabledTypes());
+  EXPECT_EQ(ModelTypeSet(THEMES), registry()->GetConnectedTypes());
 
   registry()->ConnectDataType(
       SESSIONS,
       MakeDataTypeActivationResponse(MakeInitialModelTypeState(SESSIONS)));
-  EXPECT_EQ(ModelTypeSet(THEMES, SESSIONS), registry()->GetEnabledTypes());
+  EXPECT_EQ(ModelTypeSet(THEMES, SESSIONS), registry()->GetConnectedTypes());
 
   registry()->DisconnectDataType(THEMES);
-  EXPECT_EQ(ModelTypeSet(SESSIONS), registry()->GetEnabledTypes());
+  EXPECT_EQ(ModelTypeSet(SESSIONS), registry()->GetConnectedTypes());
 
   // Allow ModelTypeRegistry destruction to delete the
   // Sessions' ModelTypeSyncWorker.

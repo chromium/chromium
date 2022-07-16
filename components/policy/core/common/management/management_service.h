@@ -6,15 +6,12 @@
 #define COMPONENTS_POLICY_CORE_COMMON_MANAGEMENT_MANAGEMENT_SERVICE_H_
 
 #include <memory>
+#include <vector>
 
-#include "base/containers/flat_set.h"
 #include "components/policy/policy_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
-
-class ScopedManagementServiceOverrideForTesting;
-
-enum class ManagementTarget { PLATFORM = 0, BROWSER = 1, kMaxValue = BROWSER };
 
 enum class ManagementAuthorityTrustworthiness {
   NONE = 0,           // No management authority found
@@ -25,11 +22,13 @@ enum class ManagementAuthorityTrustworthiness {
   kMaxValue = FULLY_TRUSTED
 };
 
-enum class EnterpriseManagementAuthority {
-  COMPUTER_LOCAL = 0,  // local GPO or registry, /etc files, local root profile
-  DOMAIN_LOCAL = 1,    // AD joined, puppet
-  CLOUD = 2,           // MDM, GSuite user
-  CLOUD_DOMAIN = 3,    // Azure AD, CBCM, CrosEnrolled
+enum EnterpriseManagementAuthority : uint64_t {
+  NONE = 0,
+  COMPUTER_LOCAL =
+      1 << 0,  // local GPO or registry, /etc files, local root profile
+  DOMAIN_LOCAL = 1 << 1,  // AD joined, puppet
+  CLOUD = 1 << 2,         // MDM, GSuite user
+  CLOUD_DOMAIN = 1 << 3,  // Azure AD, CBCM, CrosEnrolled
   kMaxValue = CLOUD_DOMAIN
 };
 
@@ -40,22 +39,19 @@ class POLICY_EXPORT ManagementStatusProvider {
  public:
   virtual ~ManagementStatusProvider();
 
-  // Returns |true| if the service or component is managed.
-  virtual bool IsManaged() = 0;
-
-  // Returns the authority responsible for the management.
+  // Returns a valid authority if the service or component is managed.
   virtual EnterpriseManagementAuthority GetAuthority() = 0;
 };
 
 // Interface to gives information related to an entity's management state.
 class POLICY_EXPORT ManagementService {
  public:
-  explicit ManagementService(ManagementTarget target);
+  explicit ManagementService(
+      std::vector<std::unique_ptr<ManagementStatusProvider>> providers);
   virtual ~ManagementService();
 
-  // Returns all the active management authorities on the managed entity.
-  // Returns an empty set if the entity is not managed.
-  base::flat_set<EnterpriseManagementAuthority> GetManagementAuthorities();
+  // Returns true if `authority` is are actively managed.
+  bool HasManagementAuthority(EnterpriseManagementAuthority authority);
 
   // Returns the highest trustworthiness of the active management authorities.
   ManagementAuthorityTrustworthiness GetManagementAuthorityTrustworthiness();
@@ -63,24 +59,25 @@ class POLICY_EXPORT ManagementService {
   // Returns whether there is any management authority at all.
   bool IsManaged();
 
- protected:
-  // Initializes the management status providers.
-  virtual void InitManagementStatusProviders() = 0;
+  const absl::optional<uint64_t>& management_authorities_for_testing() {
+    return management_authorities_for_testing_;
+  }
+  void SetManagementAuthoritiesForTesting(uint64_t management_authorities);
+  void ClearManagementAuthoritiesForTesting();
 
+ protected:
   // Sets the management status providers to be used by the service.
   void SetManagementStatusProvider(
       std::vector<std::unique_ptr<ManagementStatusProvider>> providers);
 
  private:
+  // Returns a bitset of with the active `EnterpriseManagementAuthority` on the
+  // managed entity.
+  uint64_t GetManagementAuthorities();
+
+  absl::optional<uint64_t> management_authorities_for_testing_;
   std::vector<std::unique_ptr<ManagementStatusProvider>>
       management_status_providers_;
-  ManagementTarget target_;
-
-  static void SetManagementAuthoritiesForTesting(
-      ManagementTarget target,
-      base::flat_set<EnterpriseManagementAuthority> authorities);
-  static void RemoveManagementAuthoritiesForTesting(ManagementTarget target);
-  friend ScopedManagementServiceOverrideForTesting;
 };
 
 }  // namespace policy

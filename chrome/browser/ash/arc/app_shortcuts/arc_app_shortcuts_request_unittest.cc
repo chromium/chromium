@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,6 +23,11 @@ namespace arc {
 class ArcAppShortcutsRequestTest : public testing::Test {
  public:
   ArcAppShortcutsRequestTest() = default;
+
+  ArcAppShortcutsRequestTest(const ArcAppShortcutsRequestTest&) = delete;
+  ArcAppShortcutsRequestTest& operator=(const ArcAppShortcutsRequestTest&) =
+      delete;
+
   ~ArcAppShortcutsRequestTest() override = default;
 
   void SetUp() override {
@@ -42,8 +46,6 @@ class ArcAppShortcutsRequestTest : public testing::Test {
   ArcAppTest arc_app_test_;
 
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppShortcutsRequestTest);
 };
 
 TEST_F(ArcAppShortcutsRequestTest, Basic) {

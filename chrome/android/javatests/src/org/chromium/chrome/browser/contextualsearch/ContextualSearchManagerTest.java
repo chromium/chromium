@@ -19,7 +19,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
@@ -105,7 +104,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.components.browser_ui.widget.chips.Chip;
+import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.navigation_interception.NavigationParams;
 import org.chromium.content_public.browser.SelectionClient;
@@ -126,9 +125,11 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
@@ -188,6 +189,19 @@ public class ContextualSearchManagerTest {
     private static final String LOW_PRIORITY_SEARCH_ENDPOINT = "/s?";
     private static final String LOW_PRIORITY_INVALID_SEARCH_ENDPOINT = "/s/invalid";
     private static final String CONTEXTUAL_SEARCH_PREFETCH_PARAM = "&pf=c";
+
+    // DOM element IDs in our test page based on what functions they trigger.
+    // TODO(donnd): add more, and also the associated Search Term, or build a similar mapping.
+    /**
+     * The DOM node for the word "search" on the test page, which causes a plain search response
+     * with the Search Term "Search" from the Fake server.
+     */
+    private static final String SIMPLE_SEARCH_NODE_ID = "search";
+    /**
+     * The DOM node for the word "intelligence" on the test page, which causes a search response
+     * for the Search Term "Intelligence" and also includes Related Searches suggestions.
+     */
+    private static final String RELATED_SEARCHES_NODE_ID = "intelligence";
 
     /**
      * Feature maps that we use for parameterized tests.
@@ -328,11 +342,14 @@ public class ContextualSearchManagerTest {
         mLatestSlowResolveSearch = null;
         if (mActionTester != null) mActionTester.tearDown();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> forgetHistograms());
+        FeatureList.setTestFeatures(null);
+        CompositorAnimationHandler.setTestingMode(false);
     }
 
     private class ContextualSearchManagerTestHost implements ContextualSearchTestHost {
         @Override
         public void triggerNonResolve(String nodeId) throws TimeoutException {
+            // TODO(donnd): remove support for the LiteralSearchTap Feature.
             if (mPolicy.isLiteralSearchTapEnabled()) {
                 clickWordNode(nodeId);
             } else if (!mPolicy.canResolveLongpress()) {
@@ -1454,10 +1471,10 @@ public class ContextualSearchManagerTest {
                         "Search.ContextualSearch.All.Searches", relatedSearchesCount));
         Assert.assertEquals(
                 "Failed to log the correct count of Related Searches suggestions clicked in the "
-                        + "Search.RelatedSearches.NumberOfSuggestionsClicked histogram!",
-                1,
+                        + "Search.RelatedSearches.NumberOfSuggestionsClicked2 histogram!",
+                relatedSearchesCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
-                        "Search.RelatedSearches.NumberOfSuggestionsClicked"));
+                        "Search.RelatedSearches.NumberOfSuggestionsClicked2"));
         Assert.assertEquals("Failed to log all the right Related Searches chips as clicked in the "
                         + "Search.RelatedSearches.SelectedCarouselIndex histogram!",
                 relatedSearchesCount,
@@ -1497,6 +1514,42 @@ public class ContextualSearchManagerTest {
                         + "in the Search.RelatedSearches.CTR histogram!",
                 relatedSearchesCount,
                 RecordHistogram.getHistogramValueCountForTesting("Search.RelatedSearches.CTR", 1));
+        Assert.assertEquals("Failed to log that the carousel is shown and it was not scrolled "
+                        + "in the Search.RelatedSearches.CarouselScrolled histogram!",
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Search.RelatedSearches.CarouselScrolled", 0));
+        Assert.assertEquals(
+                "Failed to log that the carousel is shown and its scroll and click status "
+                        + "in the Search.RelatedSearches.CarouselScrollAndClick histogram!",
+                1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Search.RelatedSearches.CarouselScrollAndClick"));
+        if (relatedSearchesCount > 0) {
+            Assert.assertEquals(
+                    "Failed to log that the carousel is shown and it was not scrolled and clicked "
+                            + "in the Search.RelatedSearches.CarouselScrollAndClick histogram!",
+                    1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            "Search.RelatedSearches.CarouselScrollAndClick",
+                            1 /* int NO_SCROLL_CLICKED = 1 */));
+        } else {
+            Assert.assertEquals(
+                    "Failed to log that the carousel is shown and it was not scrolled and not "
+                            + "clicked in the "
+                            + "Search.RelatedSearches.CarouselScrollAndClick histogram!",
+                    1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            "Search.RelatedSearches.CarouselScrollAndClick",
+                            0 /* int NO_SCROLL_NO_CLICK = 0 */));
+        }
+        Assert.assertTrue(
+                "Failed to log the last visible position index for a chip in the carousel "
+                        + "in the Search.RelatedSearches.CarouselLastVisibleItemPosition "
+                        + "histogram!",
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Search.RelatedSearches.CarouselLastVisibleItemPosition")
+                        >= 0);
     }
 
     /** Forgets all the histograms that we care about. */
@@ -1504,12 +1557,27 @@ public class ContextualSearchManagerTest {
         RecordHistogram.forgetHistogramForTesting("Search.ContextualSearch.All.ResultsSeen");
         RecordHistogram.forgetHistogramForTesting("Search.ContextualSearch.All.Searches");
         RecordHistogram.forgetHistogramForTesting(
-                "Search.RelatedSearches.NumberOfSuggestionsClicked");
+                "Search.RelatedSearches.NumberOfSuggestionsClicked2");
         RecordHistogram.forgetHistogramForTesting("Search.RelatedSearches.SelectedCarouselIndex");
         RecordHistogram.forgetHistogramForTesting("Search.RelatedSearches.SelectedSuggestionIndex");
         RecordHistogram.forgetHistogramForTesting("Search.RelatedSearches.CTR");
         RecordHistogram.forgetHistogramForTesting("Search.ContextualSearch.TranslationNeeded");
         RecordHistogram.forgetHistogramForTesting("Search.ContextualSearch.OutcomesDuration");
+        RecordHistogram.forgetHistogramForTesting("Search.RelatedSearches.CarouselScrolled");
+        RecordHistogram.forgetHistogramForTesting("Search.RelatedSearches.CarouselScrollAndClick");
+        RecordHistogram.forgetHistogramForTesting(
+                "Search.RelatedSearches.CarouselLastVisibleItemPosition");
+    }
+
+    /**
+     * Returns whether all the supported gestures for opted-in users trigger a Resolve request,
+     * aka intelligent search.
+     */
+    private boolean isConfigurationForResolvingGesturesOnly() {
+        // The current interpretation of the ability to resolve Longpress (which is forced by the
+        // Translations Feature as well as the LongpressResolve Feature) preserves a resolving Tap
+        // so there is no non-resolving gesture for opted-in users.
+        return mPolicy.canResolveLongpress();
     }
 
     //============================================================================================
@@ -1620,6 +1688,7 @@ public class ContextualSearchManagerTest {
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testNonResolveTrigger(@EnabledFeature int enabledFeature) throws Exception {
+        if (isConfigurationForResolvingGesturesOnly()) return;
         triggerNonResolve("states");
 
         Assert.assertNull(mFakeServer.getSearchTermRequested());
@@ -1817,7 +1886,7 @@ public class ContextualSearchManagerTest {
         longPressNode("intelligence");
         Assert.assertEquals("Intelligence", getSelectedText());
         waitForPanelToPeek();
-        assertLoadedNoUrl();  // No load after long-press until opening panel.
+        assertLoadedNoUrl(); // No load (preload) after long-press until opening panel.
         clickNode("question-mark");
         waitForPanelToCloseAndSelectionEmpty();
         Assert.assertTrue(TextUtils.isEmpty(getSelectedText()));
@@ -2491,6 +2560,7 @@ public class ContextualSearchManagerTest {
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testNotifyObserversAfterNonResolve(@EnabledFeature int enabledFeature)
             throws Exception {
+        if (isConfigurationForResolvingGesturesOnly()) return;
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
         TestThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));
         triggerNonResolve("states");
@@ -3187,10 +3257,36 @@ public class ContextualSearchManagerTest {
         Assert.assertTrue(mManager.getRequest().isTranslationForced());
     }
 
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    public void testSerpTranslationDisabledWhenPartialTranslationEnabled(
+            @EnabledFeature int enabledFeature) throws Exception {
+        // Resolving a German word should trigger translation.
+        simulateResolveSearch("german");
+        // Simulate a JavaScript translate message from the SERP to the manager
+        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.onSetCaption("caption", true));
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS)) {
+            Assert.assertFalse(
+                    "The SERP Translation caption should not show when Partial Translations "
+                            + "is enabled!",
+                    mPanel.getSearchBarControl().getCaptionVisible());
+        } else {
+            Assert.assertTrue(
+                    "The SERP Translation caption should show without Partial Translations "
+                            + "enabled!",
+                    mPanel.getSearchBarControl().getCaptionVisible());
+        }
+    }
+
     /**
      * Tests the Translate Caption on a resolve gesture.
      * This test is disabled because it relies on the network and a live search result,
      * which would be flaky for bots.
+     * TODO(donnd) Load a fake SERP into the panel to trigger SERP-translation and similar
+     * features.
      */
     @DisabledTest(message = "Useful for manual testing when a network is connected.")
     @Test
@@ -3341,6 +3437,7 @@ public class ContextualSearchManagerTest {
     public void testNetworkDisconnectedDeactivatesSearch(@EnabledFeature int enabledFeature)
             throws Exception {
         setOnlineStatusAndReload(false);
+        // We use the longpress gesture here because unlike Tap it's never suppressed.
         longPressNodeWithoutWaiting("states");
         waitForSelectActionBarVisible();
         // Verify the panel didn't open.  It should open by now if CS has not been disabled.
@@ -3467,7 +3564,7 @@ public class ContextualSearchManagerTest {
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1075895")
     @DisabledTest(message = "Flaky https://crbug.com/1127796")
-    public void testQuickActionUrl_Longpress(@EnabledFeature int enabledFeature) throws Exception {
+    public void testQuickActionUrl(@EnabledFeature int enabledFeature) throws Exception {
         final String testUrl = mTestServer.getURL("/chrome/test/data/android/google.html");
 
         // Simulate a resolving search to show the Bar, then set the quick action data.
@@ -3879,10 +3976,8 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.O,
-            message = "Flaky < P, https://crbug.com/1048827; Flaky on P, crbug.com/1181088")
-    public void
-    testLongpressExtendingSelectionExactResolve() throws Exception {
+    @DisabledTest(message = "https://crbug.com/1048827, https://crbug.com/1181088")
+    public void testLongpressExtendingSelectionExactResolve() throws Exception {
         // Enabling Translations implicitly enables Longpress too.
         FeatureList.setTestFeatures(ENABLE_TRANSLATIONS);
 
@@ -3919,9 +4014,10 @@ public class ContextualSearchManagerTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "crbug.com/1240342")
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesItemNotSelected() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_PANEL);
+        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
         Assert.assertFalse("Related Searches should have been requested but were not!",
@@ -3941,8 +4037,9 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1182040")
+    @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "crbug.com/1240342")
     public void testRelatedSearchesItemSelected() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_PANEL);
+        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
         mFakeServer.reset();
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
@@ -3952,12 +4049,12 @@ public class ContextualSearchManagerTest {
         tapPeekingBarToExpandAndAssert();
 
         // Select a Related Searches suggestion.
-        RelatedSearchesControl relatedSearchesControl = mPanel.getRelatedSearchesInContentControl();
+        RelatedSearchesControl relatedSearchesControl = mPanel.getRelatedSearchesInBarControl();
         final int chipToSelect = 2;
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> relatedSearchesControl.selectChipForTest(chipToSelect));
         Assert.assertEquals("The Related Searches query was not shown in the Bar!",
-                "Related Search 3", mPanel.getSearchBarControl().getSearchTerm());
+                "Selection Related 3", mPanel.getSearchBarControl().getSearchTerm());
 
         // Collapse the panel back to the peeking state
         peekPanel();
@@ -3989,6 +4086,37 @@ public class ContextualSearchManagerTest {
         // Close the panel
         closePanel();
         // TODO(donnd): Validate UMA metrics once we log in-bar selections.
+    }
+
+    /**
+     * Tests that the offset of the SERP is unaffected by whether we are showing Related Searches
+     * in the Bar or not. See https://crbug.com/1250546.
+     * @throws Exception
+     */
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    public void testRelatedSearchesInBarSerpOffset() throws Exception {
+        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
+        mFakeServer.reset();
+        simulateResolveSearch(SIMPLE_SEARCH_NODE_ID);
+        float plainSearchBarHeight = mPanel.getBarHeight();
+        float plainSearchContentY = mPanel.getContentY();
+        closePanel();
+
+        // Bring up a panel with Related Searches in order to expand the Bar
+        simulateResolveSearch(RELATED_SEARCHES_NODE_ID);
+        // Wait for the animation to start growing the Bar.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    mPanel.getInBarRelatedSearchesAnimatedHeightDps(), Matchers.greaterThan(0f));
+        });
+        // We should have a taller Bar, but that should not affect the Y offset of the content.
+        Assert.assertNotEquals(
+                "Test code failure - unable to open panels with differing Bar heights!",
+                plainSearchBarHeight, mPanel.getBarHeight(), 0.1f);
+        Assert.assertEquals("SERP content offsets with and without Related Searches should match!",
+                plainSearchContentY, mPanel.getContentY(), 0.1f);
     }
 
     @Test
@@ -4026,6 +4154,7 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisabledTest(message = "https://crbug.com/1244089")
     public void testRelatedSearchesInBarWithDefaultQuery_HighlightDefaultQuery() throws Exception {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.setFeatureFlagsOverride(ENABLE_RELATED_SEARCHES_IN_BAR);
@@ -4079,13 +4208,79 @@ public class ContextualSearchManagerTest {
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
-                    mPanel.getRelatedSearchesInBarControl().getChipsForTest().get(0).textMaxWidthPx,
-                    Matchers.not(Chip.SHOW_WHOLE_TEXT));
+                    mPanel.getRelatedSearchesInBarControl().getChipsForTest().get(0).model.get(
+                            ChipProperties.TEXT_MAX_WIDTH_PX),
+                    Matchers.not(ChipProperties.SHOW_WHOLE_TEXT));
         });
 
         // Close the panel
         closePanel();
         // TODO(donnd): Validate UMA metrics once we log in-bar selections.
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    public void testRelatedSearchesInBarForDefinitionCard() throws Exception {
+        CompositorAnimationHandler.setTestingMode(true);
+        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
+        mFakeServer.reset();
+        // Do a normal search without Related Searches or Definition cards.
+        simulateResolveSearch("search");
+        float normalHeight = mPanel.getHeight();
+
+        // Simulate a response that includes both a definition and Related Searches
+        List<String> inBarSuggestions = new ArrayList<String>();
+        inBarSuggestions.add("Related Suggestion 1");
+        inBarSuggestions.add("Related Suggestion 2");
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mPanel.onSearchTermResolved("obscure · əbˈskyo͝or", null, null,
+                                QuickActionCategory.NONE, CardTag.CT_DEFINITION, inBarSuggestions,
+                                false /* showDefaultSearchInBar */,
+                                null /* relatedSearchesInContent */,
+                                false /* showDefaultSearchInContent */));
+        boolean didPanelGetTaller = mPanel.getHeight() > normalHeight;
+        Assert.assertTrue(
+                "Related Searches should show in a taller Bar when there's a definition card, "
+                        + "but they did not!",
+                didPanelGetTaller);
+        // Clean up
+        closePanel();
+        CompositorAnimationHandler.setTestingMode(false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    @DisabledTest(message = "https://crbug.com/1251774")
+    public void testRelatedSearchesDismissDuringAnimation() throws Exception {
+        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
+        mFakeServer.reset();
+        // Use the "intelligence" node to generate Related Searches suggestions.
+        simulateResolveSearch("intelligence");
+
+        // Wait for the animation to start growing the Bar.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    mPanel.getInBarRelatedSearchesAnimatedHeightDps(), Matchers.greaterThan(0f));
+        });
+
+        // Wait for the animation to change to make sure that doesn't bring the Bar back
+        final boolean[] didAnimationChange = {false};
+        mPanel.getSearchBarControl().setInBarAnimationTestNotifier(
+                () -> { didAnimationChange[0] = true; });
+        CriteriaHelper.pollUiThread(
+                () -> { Criteria.checkThat(didAnimationChange[0], Matchers.is(true)); });
+        // Repeatedly closing the panel should not bring it back even during ongoing animation.
+        closePanel();
+        Assert.assertFalse("The panel is showing again due to Animation!", mPanel.isShowing());
+        // Another scroll might try to close the panel when it thinks it's already closed, which
+        // could fail due to inconsistencies in internal logic, so test that too.
+        closePanel();
+        Assert.assertFalse("Expected the panel to not be showing after a close! "
+                        + "Animation of the Bar height is the likely cause.",
+                mPanel.isShowing());
     }
 
     // --------------------------------------------------------------------------------------------
@@ -4100,6 +4295,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @DisabledTest(message = "Enable when rolling out the Forced Caption Features")
     public void testNonResolveCaption() throws Exception {
         // Simulate a non-resolve search and make sure no Caption is shown.
         FeatureList.setTestFeatures(DISABLE_FORCE_CAPTION);

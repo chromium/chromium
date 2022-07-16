@@ -333,7 +333,7 @@ TEST_F(ResolveContextTest, HostCacheInvalidation) {
   context.host_cache()->Set(
       key,
       HostCache::Entry(OK, AddressList(), HostCache::Entry::SOURCE_UNKNOWN),
-      now, base::TimeDelta::FromSeconds(10));
+      now, base::Seconds(10));
   ASSERT_TRUE(context.host_cache()->Lookup(key, now));
 
   DnsConfig config =
@@ -348,7 +348,7 @@ TEST_F(ResolveContextTest, HostCacheInvalidation) {
   context.host_cache()->Set(
       key,
       HostCache::Entry(OK, AddressList(), HostCache::Entry::SOURCE_UNKNOWN),
-      now, base::TimeDelta::FromSeconds(10));
+      now, base::Seconds(10));
   context.RecordServerSuccess(0u /* server_index */, true /* is_doh_server */,
                               session.get());
   ASSERT_TRUE(context.host_cache()->Lookup(key, now));
@@ -384,7 +384,7 @@ TEST_F(ResolveContextTest, HostCacheInvalidation_SameSession) {
   context.host_cache()->Set(
       key,
       HostCache::Entry(OK, AddressList(), HostCache::Entry::SOURCE_UNKNOWN),
-      now, base::TimeDelta::FromSeconds(10));
+      now, base::Seconds(10));
   context.RecordServerSuccess(0u /* server_index */, true /* is_doh_server */,
                               session.get());
   ASSERT_TRUE(context.host_cache()->Lookup(key, now));
@@ -883,11 +883,11 @@ TEST_F(ResolveContextTest, FallbackPeriod_Default) {
       context.NextClassicFallbackPeriod(0 /* server_index */, 0 /* attempt */,
                                         session.get()) -
       config.fallback_period;
-  EXPECT_LE(delta, base::TimeDelta::FromMilliseconds(10));
+  EXPECT_LE(delta, base::Milliseconds(10));
   delta =
       context.NextDohFallbackPeriod(0 /* doh_server_index */, session.get()) -
       config.fallback_period;
-  EXPECT_LE(delta, base::TimeDelta::FromMilliseconds(10));
+  EXPECT_LE(delta, base::Milliseconds(10));
 }
 
 // Expect short calculated fallback period to be within 10ms of
@@ -897,7 +897,7 @@ TEST_F(ResolveContextTest, FallbackPeriod_ShortConfigured) {
                          false /* enable_caching */);
   DnsConfig config =
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
-  config.fallback_period = base::TimeDelta::FromMilliseconds(15);
+  config.fallback_period = base::Milliseconds(15);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
   context.InvalidateCachesAndPerSessionData(session.get(),
                                             false /* network_change */);
@@ -906,11 +906,11 @@ TEST_F(ResolveContextTest, FallbackPeriod_ShortConfigured) {
       context.NextClassicFallbackPeriod(0 /* server_index */, 0 /* attempt */,
                                         session.get()) -
       config.fallback_period;
-  EXPECT_LE(delta, base::TimeDelta::FromMilliseconds(10));
+  EXPECT_LE(delta, base::Milliseconds(10));
   delta =
       context.NextDohFallbackPeriod(0 /* doh_server_index */, session.get()) -
       config.fallback_period;
-  EXPECT_LE(delta, base::TimeDelta::FromMilliseconds(10));
+  EXPECT_LE(delta, base::Milliseconds(10));
 }
 
 // Expect long calculated fallback period to be equal to
@@ -922,7 +922,7 @@ TEST_F(ResolveContextTest, FallbackPeriod_LongConfigured) {
                          false /* enable_caching */);
   DnsConfig config =
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
-  config.fallback_period = base::TimeDelta::FromSeconds(15);
+  config.fallback_period = base::Seconds(15);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
   context.InvalidateCachesAndPerSessionData(session.get(),
                                             false /* network_change */);
@@ -947,9 +947,9 @@ TEST_F(ResolveContextTest, FallbackPeriod_LongRtt) {
 
   for (int i = 0; i < 50; ++i) {
     context.RecordRtt(0u /* server_index */, false /* is_doh_server */,
-                      base::TimeDelta::FromMinutes(10), OK, session.get());
+                      base::Minutes(10), OK, session.get());
     context.RecordRtt(1u /* server_index */, true /* is_doh_server */,
-                      base::TimeDelta::FromMinutes(10), OK, session.get());
+                      base::Minutes(10), OK, session.get());
   }
 
   // Expect servers with high recorded RTT to have increased fallback periods
@@ -958,20 +958,20 @@ TEST_F(ResolveContextTest, FallbackPeriod_LongRtt) {
       context.NextClassicFallbackPeriod(0u /* server_index */, 0 /* attempt */,
                                         session.get()) -
       config.fallback_period;
-  EXPECT_GT(delta, base::TimeDelta::FromMilliseconds(10));
+  EXPECT_GT(delta, base::Milliseconds(10));
   delta =
       context.NextDohFallbackPeriod(1u, session.get()) - config.fallback_period;
-  EXPECT_GT(delta, base::TimeDelta::FromMilliseconds(10));
+  EXPECT_GT(delta, base::Milliseconds(10));
 
   // Servers without recorded RTT expected to remain the same (<=10ms).
   delta = context.NextClassicFallbackPeriod(1u /* server_index */,
                                             0 /* attempt */, session.get()) -
           config.fallback_period;
-  EXPECT_LE(delta, base::TimeDelta::FromMilliseconds(10));
+  EXPECT_LE(delta, base::Milliseconds(10));
   delta =
       context.NextDohFallbackPeriod(0u /* doh_server_index */, session.get()) -
       config.fallback_period;
-  EXPECT_LE(delta, base::TimeDelta::FromMilliseconds(10));
+  EXPECT_LE(delta, base::Milliseconds(10));
 }
 
 // Expect recording round-trip times to have no affect on fallback period
@@ -985,20 +985,20 @@ TEST_F(ResolveContextTest, FallbackPeriod_NoSession) {
 
   for (int i = 0; i < 50; ++i) {
     context.RecordRtt(0u /* server_index */, false /* is_doh_server */,
-                      base::TimeDelta::FromMinutes(10), OK, session.get());
+                      base::Minutes(10), OK, session.get());
     context.RecordRtt(1u /* server_index */, true /* is_doh_server */,
-                      base::TimeDelta::FromMinutes(10), OK, session.get());
+                      base::Minutes(10), OK, session.get());
   }
 
   base::TimeDelta delta =
       context.NextClassicFallbackPeriod(0u /* server_index */, 0 /* attempt */,
                                         session.get()) -
       config.fallback_period;
-  EXPECT_LE(delta, base::TimeDelta::FromMilliseconds(10));
+  EXPECT_LE(delta, base::Milliseconds(10));
   delta =
       context.NextDohFallbackPeriod(1u /* doh_server_index */, session.get()) -
       config.fallback_period;
-  EXPECT_LE(delta, base::TimeDelta::FromMilliseconds(10));
+  EXPECT_LE(delta, base::Milliseconds(10));
 }
 
 // Expect recording round-trip times to have no affect on fallback periods
@@ -1020,9 +1020,9 @@ TEST_F(ResolveContextTest, FallbackPeriod_DifferentSession) {
   // Record RTT's to increase fallback periods for current session.
   for (int i = 0; i < 50; ++i) {
     context.RecordRtt(0u /* server_index */, false /* is_doh_server */,
-                      base::TimeDelta::FromMinutes(10), OK, session2.get());
+                      base::Minutes(10), OK, session2.get());
     context.RecordRtt(1u /* server_index */, true /* is_doh_server */,
-                      base::TimeDelta::FromMinutes(10), OK, session2.get());
+                      base::Minutes(10), OK, session2.get());
   }
 
   // Expect normal short fallback periods for other session.
@@ -1030,11 +1030,11 @@ TEST_F(ResolveContextTest, FallbackPeriod_DifferentSession) {
       context.NextClassicFallbackPeriod(0u /* server_index */, 0 /* attempt */,
                                         session1.get()) -
       config1.fallback_period;
-  EXPECT_LE(delta, base::TimeDelta::FromMilliseconds(10));
+  EXPECT_LE(delta, base::Milliseconds(10));
   delta =
       context.NextDohFallbackPeriod(0u /* doh_server_index */, session1.get()) -
       config1.fallback_period;
-  EXPECT_LE(delta, base::TimeDelta::FromMilliseconds(10));
+  EXPECT_LE(delta, base::Milliseconds(10));
 
   // Recording RTT's for other session should have no effect on current session
   // fallback periods.
@@ -1042,7 +1042,7 @@ TEST_F(ResolveContextTest, FallbackPeriod_DifferentSession) {
       0u /* server_index */, 0 /* attempt */, session2.get());
   for (int i = 0; i < 50; ++i) {
     context.RecordRtt(0u /* server_index */, false /* is_doh_server */,
-                      base::TimeDelta::FromMilliseconds(1), OK, session1.get());
+                      base::Milliseconds(1), OK, session1.get());
   }
   EXPECT_EQ(fallback_period,
             context.NextClassicFallbackPeriod(0u /* server_index */,
@@ -1070,7 +1070,7 @@ TEST_F(ResolveContextTest, SecureTransactionTimeout_SmallFallbackPeriod) {
 TEST_F(ResolveContextTest, SecureTransactionTimeout_LongFallbackPeriod) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
-  const base::TimeDelta kFallbackPeriod = base::TimeDelta::FromMinutes(5);
+  const base::TimeDelta kFallbackPeriod = base::Minutes(5);
   DnsConfig config =
       CreateDnsConfig(0 /* num_servers */, 1 /* num_doh_servers */);
   config.fallback_period = kFallbackPeriod;
@@ -1100,7 +1100,7 @@ TEST_F(ResolveContextTest, SecureTransactionTimeout_LongRtt) {
   // Record long RTTs for only 1 server.
   for (int i = 0; i < 50; ++i) {
     context.RecordRtt(1u /* server_index */, true /* is_doh_server */,
-                      base::TimeDelta::FromMinutes(10), OK, session.get());
+                      base::Minutes(10), OK, session.get());
   }
 
   // No expected change from recording RTT to single server because lowest
@@ -1112,7 +1112,7 @@ TEST_F(ResolveContextTest, SecureTransactionTimeout_LongRtt) {
   // Record long RTTs for remaining server.
   for (int i = 0; i < 50; ++i) {
     context.RecordRtt(0u /* server_index */, true /* is_doh_server */,
-                      base::TimeDelta::FromMinutes(10), OK, session.get());
+                      base::Minutes(10), OK, session.get());
   }
 
   // Expect longer timeouts.
@@ -1122,7 +1122,7 @@ TEST_F(ResolveContextTest, SecureTransactionTimeout_LongRtt) {
 }
 
 TEST_F(ResolveContextTest, SecureTransactionTimeout_DifferentSession) {
-  const base::TimeDelta kFallbackPeriod = base::TimeDelta::FromMinutes(5);
+  const base::TimeDelta kFallbackPeriod = base::Minutes(5);
   DnsConfig config1 =
       CreateDnsConfig(0 /* num_servers */, 1 /* num_doh_servers */);
   config1.fallback_period = kFallbackPeriod;
@@ -1169,7 +1169,7 @@ TEST_F(ResolveContextTest, ClassicTransactionTimeout_SmallFallbackPeriod) {
 TEST_F(ResolveContextTest, ClassicTransactionTimeout_LongFallbackPeriod) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
-  const base::TimeDelta kFallbackPeriod = base::TimeDelta::FromMinutes(5);
+  const base::TimeDelta kFallbackPeriod = base::Minutes(5);
   DnsConfig config =
       CreateDnsConfig(1 /* num_servers */, 0 /* num_doh_servers */);
   config.fallback_period = kFallbackPeriod;
@@ -1197,7 +1197,7 @@ TEST_F(ResolveContextTest, ClassicTransactionTimeout_LongRtt) {
   // Record long RTTs for only 1 server.
   for (int i = 0; i < 50; ++i) {
     context.RecordRtt(1u /* server_index */, false /* is_doh_server */,
-                      base::TimeDelta::FromMinutes(10), OK, session.get());
+                      base::Minutes(10), OK, session.get());
   }
 
   // No expected change from recording RTT to single server because lowest
@@ -1208,7 +1208,7 @@ TEST_F(ResolveContextTest, ClassicTransactionTimeout_LongRtt) {
   // Record long RTTs for remaining server.
   for (int i = 0; i < 50; ++i) {
     context.RecordRtt(0u /* server_index */, false /* is_doh_server */,
-                      base::TimeDelta::FromMinutes(10), OK, session.get());
+                      base::Minutes(10), OK, session.get());
   }
 
   // Expect longer timeouts.
@@ -1217,7 +1217,7 @@ TEST_F(ResolveContextTest, ClassicTransactionTimeout_LongRtt) {
 }
 
 TEST_F(ResolveContextTest, ClassicTransactionTimeout_DifferentSession) {
-  const base::TimeDelta kFallbackPeriod = base::TimeDelta::FromMinutes(5);
+  const base::TimeDelta kFallbackPeriod = base::Minutes(5);
   DnsConfig config1 =
       CreateDnsConfig(1 /* num_servers */, 0 /* num_doh_servers */);
   config1.fallback_period = kFallbackPeriod;
@@ -1258,11 +1258,9 @@ TEST_F(ResolveContextTest, NegativeRtt) {
                                             false /* network_change */);
 
   context.RecordRtt(0 /* server_index */, false /* is_doh_server */,
-                    base::TimeDelta::FromMilliseconds(-1), OK /* rv */,
-                    session.get());
+                    base::Milliseconds(-1), OK /* rv */, session.get());
   context.RecordRtt(0 /* server_index */, true /* is_doh_server */,
-                    base::TimeDelta::FromMilliseconds(-1), OK /* rv */,
-                    session.get());
+                    base::Milliseconds(-1), OK /* rv */, session.get());
 }
 
 TEST_F(ResolveContextTest, SessionChange) {

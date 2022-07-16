@@ -27,6 +27,10 @@ class OpenTabsUIDelegateImpl : public OpenTabsUIDelegate {
       const SyncSessionsClient* sessions_client,
       const SyncedSessionTracker* session_tracker,
       const DeleteForeignSessionCallback& delete_foreign_session_cb);
+
+  OpenTabsUIDelegateImpl(const OpenTabsUIDelegateImpl&) = delete;
+  OpenTabsUIDelegateImpl& operator=(const OpenTabsUIDelegateImpl&) = delete;
+
   ~OpenTabsUIDelegateImpl() override;
 
   // OpenTabsUIDelegate implementation.
@@ -48,8 +52,6 @@ class OpenTabsUIDelegateImpl : public OpenTabsUIDelegate {
   const SyncSessionsClient* const sessions_client_;
   const SyncedSessionTracker* session_tracker_;
   DeleteForeignSessionCallback delete_foreign_session_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenTabsUIDelegateImpl);
 };
 
 }  // namespace sync_sessions

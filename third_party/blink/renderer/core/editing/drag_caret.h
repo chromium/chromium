@@ -27,8 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_DRAG_CARET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_DRAG_CARET_H_
 
-#include <memory>
-
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/editing/caret_display_item_client.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -74,7 +72,7 @@ class DragCaret final : public GarbageCollected<DragCaret>,
   void NodeWillBeRemoved(Node&) final;
 
   PositionWithAffinity position_;
-  const std::unique_ptr<CaretDisplayItemClient> display_item_client_;
+  const Member<CaretDisplayItemClient> display_item_client_;
 };
 
 }  // namespace blink

@@ -10,5 +10,6 @@ declare_args() {
   # but for distributed build system uses (like goma or rbe) or when
   # doing official builds.
   # On Linux it slows down the build, so don't enable it by default.
-  enable_precompiled_headers = !is_official_build && !(use_goma || use_rbe) && !is_linux
+  enable_precompiled_headers =
+      !is_official_build && !(use_goma || use_remoteexec) && !is_linux
 }

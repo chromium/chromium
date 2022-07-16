@@ -143,7 +143,7 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
   if (v8_return_value->IsNullOrUndefined())
     return;
 
-  // https://heycam.github.io/webidl/#invoke-a-callback-function
+  // https://webidl.spec.whatwg.org/#invoke-a-callback-function
   // step 13: Set completion to the result of converting callResult.[[Value]] to
   //          an IDL value of the same type as the operation's return type.
   //

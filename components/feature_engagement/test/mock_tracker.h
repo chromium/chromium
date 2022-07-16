@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -18,11 +17,17 @@ namespace test {
 class MockTracker : public Tracker {
  public:
   MockTracker();
+
+  MockTracker(const MockTracker&) = delete;
+  MockTracker& operator=(const MockTracker&) = delete;
+
   ~MockTracker() override;
 
   // Tracker implememtation.
   MOCK_METHOD1(NotifyEvent, void(const std::string& event));
   MOCK_METHOD1(ShouldTriggerHelpUI, bool(const base::Feature& feature));
+  MOCK_METHOD1(ShouldTriggerHelpUIWithSnooze,
+               TriggerDetails(const base::Feature& feature));
   MOCK_CONST_METHOD1(WouldTriggerHelpUI, bool(const base::Feature& feature));
   MOCK_CONST_METHOD2(HasEverTriggered,
                      bool(const base::Feature& feature, bool from_window));
@@ -30,11 +35,11 @@ class MockTracker : public Tracker {
                      Tracker::TriggerState(const base::Feature& feature));
   MOCK_CONST_METHOD0(IsInitialized, bool());
   MOCK_METHOD1(Dismissed, void(const base::Feature& feature));
+  MOCK_METHOD2(DismissedWithSnooze,
+               void(const base::Feature& feature,
+                    absl::optional<SnoozeAction> snooze_action));
   MOCK_METHOD0(AcquireDisplayLock, std::unique_ptr<DisplayLockHandle>());
   MOCK_METHOD1(AddOnInitializedCallback, void(OnInitializedCallback callback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockTracker);
 };
 
 }  // namespace test

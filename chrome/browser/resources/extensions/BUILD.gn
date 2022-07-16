@@ -100,6 +100,7 @@ preprocess_if_expr("preprocess_generated") {
     "shared_vars.ts",
     "shortcut_input.ts",
     "sidebar.ts",
+    "site_access.ts",
     "toggle_row.ts",
     "toolbar.ts",
   ]
@@ -139,6 +140,7 @@ html_to_js("web_components_local") {
     "shared_vars.ts",
     "shortcut_input.ts",
     "sidebar.ts",
+    "site_access.ts",
     "toggle_row.ts",
     "toolbar.ts",
   ]
@@ -204,6 +206,7 @@ ts_library("build_ts") {
     "shortcut_input.ts",
     "shortcut_util.ts",
     "sidebar.ts",
+    "site_access.ts",
     "toggle_row.ts",
     "toolbar.ts",
   ]

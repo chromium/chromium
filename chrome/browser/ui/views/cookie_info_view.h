@@ -11,12 +11,11 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace views {
-class GridLayout;
+class TableLayout;
 class Textfield;
 }
 
@@ -27,7 +26,7 @@ class CanonicalCookie;
 ///////////////////////////////////////////////////////////////////////////////
 // CookieInfoView
 //
-//  Responsible for displaying a tabular grid of Cookie information.
+//  Responsible for displaying a table of Cookie information.
 class CookieInfoView : public views::ScrollView {
  public:
   METADATA_HEADER(CookieInfoView);
@@ -61,8 +60,7 @@ class CookieInfoView : public views::ScrollView {
   };
 
   // Layout helper routines.
-  views::Textfield* AddTextfieldRow(int layout_id,
-                                    views::GridLayout* layout,
+  views::Textfield* AddTextfieldRow(views::TableLayout* layout,
                                     int label_message_id);
 
   void SetTextfieldColors();

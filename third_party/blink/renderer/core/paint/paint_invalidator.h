@@ -118,7 +118,7 @@ class PaintInvalidator final {
       const PaintPropertyTreeBuilderFragmentContext&,
       PaintInvalidatorContext&);
 
-  Vector<const LayoutObject*> pending_delayed_paint_invalidations_;
+  HeapVector<Member<const LayoutObject>> pending_delayed_paint_invalidations_;
 };
 
 }  // namespace blink

@@ -26,7 +26,7 @@ class LookalikeUrlTabHelper
   // web::WebStatePolicyDecider implementation
   void ShouldAllowResponse(
       NSURLResponse* response,
-      bool for_main_frame,
+      web::WebStatePolicyDecider::ResponseInfo response_info,
       web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
 };
 

@@ -17,6 +17,8 @@
 ; Reads from /System.
 (allow file-read-data
   (subpath "/System/Library/ColorSync/Profiles")  ; https://crbug.com/822218
+  ; https://crbug.com/1237384
+  (subpath "/System/Library/CoreServices/SystemAppearance.bundle")
 )
 
 ; This is available in 10.15+, and rolled out as a Finch experiment.

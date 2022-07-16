@@ -10,11 +10,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
-#include "base/sequenced_task_runner_helpers.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "content/public/browser/browser_thread.h"
@@ -29,6 +28,11 @@ class ThreatDetailsRedirectsCollector
  public:
   explicit ThreatDetailsRedirectsCollector(
       const base::WeakPtr<history::HistoryService>& history_service);
+
+  ThreatDetailsRedirectsCollector(const ThreatDetailsRedirectsCollector&) =
+      delete;
+  ThreatDetailsRedirectsCollector& operator=(
+      const ThreatDetailsRedirectsCollector&) = delete;
 
   // Collects urls' redirects chain information from the history service.
   // We get access to history service via web_contents in UI thread.
@@ -78,8 +82,6 @@ class ThreatDetailsRedirectsCollector
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThreatDetailsRedirectsCollector);
 };
 
 }  // namespace safe_browsing

@@ -13,8 +13,7 @@ namespace chromeos {
 
 namespace device_sync {
 
-constexpr const base::TimeDelta kMaxAsyncExecutionTime =
-    base::TimeDelta::FromSeconds(30);
+constexpr const base::TimeDelta kMaxAsyncExecutionTime = base::Seconds(30);
 
 // Log metrics related to async function execution times. The function uses
 // custom bucket sizes with a max execution time of kMaxAsyncExecutionTime.

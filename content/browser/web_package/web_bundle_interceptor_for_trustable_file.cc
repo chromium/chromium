@@ -64,6 +64,13 @@ void WebBundleInterceptorForTrustableFile::CreateURLLoader(
     return;
   }
 
+  if (primary_url_.is_empty()) {
+    web_bundle_utils::CompleteWithInvalidWebBundleError(
+        mojo::Remote<network::mojom::URLLoaderClient>(std::move(client)),
+        frame_tree_node_id_, web_bundle_utils::kNoPrimaryUrlErrorMessage);
+    return;
+  }
+
   // Currently |source_| must be a local file. And the bundle's primary URL
   // can't be a local file URL. So while handling redirected request to the
   // primary URL, |resource_request.url| must not be same as the |source_|'s

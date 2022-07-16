@@ -11,7 +11,7 @@ namespace device {
 
 class PlatformSensorProviderLinuxBase : public PlatformSensorProvider {
  protected:
-  static bool IsFusionSensorType(mojom::SensorType type);
+  virtual bool IsFusionSensorType(mojom::SensorType type) const;
 
   void CreateFusionSensor(mojom::SensorType type,
                           SensorReadingSharedBuffer* reading_buffer,

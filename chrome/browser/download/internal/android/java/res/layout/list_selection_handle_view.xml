@@ -16,7 +16,7 @@
         android:scaleType="center"
         android:background="@drawable/list_item_icon_modern_bg"
         android:visibility="gone"
-        app:tint="@color/default_icon_color_inverse"
+        app:tint="?attr/default_icon_color_inverse"
         app:layout_gravity="center"
         tools:ignore="ContentDescription" />
 

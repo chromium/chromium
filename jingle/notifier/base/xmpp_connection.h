@@ -75,6 +75,9 @@ class XmppConnection : public sigslot::has_slots<> {
                  jingle_xmpp::PreXmppAuth* pre_xmpp_auth,
                  const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
+  XmppConnection(const XmppConnection&) = delete;
+  XmppConnection& operator=(const XmppConnection&) = delete;
+
   // Invalidates any weak pointers passed to the delegate by
   // OnConnect(), but does not trigger a call to the delegate's
   // OnError() function.
@@ -100,8 +103,6 @@ class XmppConnection : public sigslot::has_slots<> {
   Delegate* delegate_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(XmppConnection);
 };
 
 }  // namespace notifier

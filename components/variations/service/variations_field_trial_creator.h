@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -27,6 +26,27 @@ class MetricsStateManager;
 }
 
 namespace variations {
+
+// Denotes whether Chrome used a variations seed. Also captures (a) the kind of
+// seed and (b) the conditions under which the seed was used or failed to be
+// used. Exposed for testing.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SeedUsage {
+  kRegularSeedUsed = 0,
+  kExpiredRegularSeedNotUsed = 1,
+  kCorruptedSeedNotUsed = 2,
+  kSafeSeedUsed = 3,
+  kExpiredSafeSeedNotUsed = 4,
+  kCorruptedSafeSeedNotUsed = 5,
+  kRegularSeedUsedAfterEmptySafeSeedLoaded = 6,
+  kExpiredRegularSeedNotUsedAfterEmptySafeSeedLoaded = 7,
+  kCorruptedRegularSeedNotUsedAfterEmptySafeSeedLoaded = 8,
+  kRegularSeedForFutureMilestoneNotUsed = 9,
+  kSafeSeedForFutureMilestoneNotUsed = 10,
+  kMaxValue = kSafeSeedForFutureMilestoneNotUsed,
+};
 
 // Denotes a variations seed's expiry state. Exposed for testing.
 //
@@ -58,7 +78,7 @@ class PlatformFieldTrials;
 class SafeSeedManager;
 class VariationsServiceClient;
 
-// Used to setup field trials based on stored variations seed data.
+// Used to set up field trials based on stored variations seed data.
 class VariationsFieldTrialCreator {
  public:
   // Caller is responsible for ensuring that objects passed to the constructor
@@ -66,6 +86,11 @@ class VariationsFieldTrialCreator {
   VariationsFieldTrialCreator(VariationsServiceClient* client,
                               std::unique_ptr<VariationsSeedStore> seed_store,
                               const UIStringOverrider& ui_string_overrider);
+
+  VariationsFieldTrialCreator(const VariationsFieldTrialCreator&) = delete;
+  VariationsFieldTrialCreator& operator=(const VariationsFieldTrialCreator&) =
+      delete;
+
   virtual ~VariationsFieldTrialCreator();
 
   // Returns what variations will consider to be the latest country. Returns
@@ -77,33 +102,34 @@ class VariationsFieldTrialCreator {
   // Sets up field trials based on stored variations seed data. Returns whether
   // setup completed successfully.
   //
-  // |kEnableGpuBenchmarking|, |kEnableFeatures|, |kDisableFeatures| are
-  // feature-controlling flags not directly accessible from variations.
   // |variation_ids| allows for forcing ids selected in chrome://flags and/or
   // specified using the command-line flag.
   // |extra_overrides| gives a list of feature overrides that should be applied
   // after the features explicitly disabled/enabled from the command line via
   // --disable-features and --enable-features, but before field trials.
-  // |low_entropy_provider| allows for field trial randomization.
+  // |low_entropy_provider| allows for field trial randomization. May be null.
   // |feature_list| contains the list of all active features for this client.
+  // Must not be null.
   // |metrics_state_manager| facilitates signaling that Chrome has not yet
-  // exited cleanly.
-  // |platform_field_trials| provides the platform-specific field trial set up
-  // for Chrome.
+  // exited cleanly. Must not be null.
+  // |platform_field_trials| provides the platform-specific field trial setup
+  // for Chrome. Must not be null.
   // |safe_seed_manager| should be notified of the combined server and client
   // state that was activated to create the field trials (only when the return
-  // value is true).
+  // value is true). Must not be null.
   // |low_entropy_source_value| contains the low entropy source value that was
   // used for client-side randomization of variations.
+  // |extend_variations_safe_mode| indicates whether the client should
+  // participate in the extended variations safe mode field trial. This should
+  // be the case for all platforms that use a VariationsSeed with the exception
+  // of Android WebView, which has its own safe mode mechanism: crbug/1220131.
+  // TODO(crbug/1245646): Remove |extend_variations_safe_mode| param.
   //
   // NOTE: The ordering of the FeatureList method calls is such that the
   // explicit --disable-features and --enable-features from the command line
   // take precedence over |extra_overrides|, which takes precedence over the
   // field trials.
-  bool SetupFieldTrials(
-      const char* kEnableGpuBenchmarking,
-      const char* kEnableFeatures,
-      const char* kDisableFeatures,
+  bool SetUpFieldTrials(
       const std::vector<std::string>& variation_ids,
       const std::vector<base::FeatureList::FeatureOverrideInfo>&
           extra_overrides,
@@ -113,7 +139,8 @@ class VariationsFieldTrialCreator {
       metrics::MetricsStateManager* metrics_state_manager,
       PlatformFieldTrials* platform_field_trials,
       SafeSeedManager* safe_seed_manager,
-      absl::optional<int> low_entropy_source_value);
+      absl::optional<int> low_entropy_source_value,
+      bool extend_variations_safe_mode = true);
 
   // Returns all of the client state used for filtering studies.
   // As a side-effect, may update the stored permanent consistency country.
@@ -150,6 +177,14 @@ class VariationsFieldTrialCreator {
   // Returns the locale that was used for evaluating trials.
   const std::string& application_locale() const { return application_locale_; }
 
+ protected:
+  // If the client is in an Extended Variations Safe Mode experiment group,
+  // applies group-specific behavior. Does nothing if the client is not in the
+  // experiment. See CleanExitBeacon::Initialize() for group assignment details.
+  // Protected and virtual for testing.
+  virtual void MaybeExtendVariationsSafeMode(
+      metrics::MetricsStateManager* metrics_state_manager);
+
  private:
   // Returns true if the loaded VariationsSeed has expired. An expired seed is
   // one that (a) was fetched over |kMaxVariationsSeedAgeDays| ago and (b) is
@@ -157,6 +192,12 @@ class VariationsFieldTrialCreator {
   //
   // Also, records a couple VariationsSeed-related metrics.
   bool HasSeedExpired(bool is_safe_seed);
+
+  // Returns true if the loaded VariationsSeed is for a future milestone (e.g.
+  // if the client is on M92 and the seed was fetched with M93). A seed for a
+  // future milestone is invalid as it may be missing studies filtered out by
+  // the server.
+  bool IsSeedForFutureMilestone(bool is_safe_seed);
 
   // Creates field trials based on the variations seed loaded from local state.
   // If there is a problem loading the seed data, all trials specified by the
@@ -182,14 +223,6 @@ class VariationsFieldTrialCreator {
 
   // Get the platform we're running on, respecting OverrideVariationsPlatform().
   Study::Platform GetPlatform();
-
-#if !defined(OS_ANDROID)
-  // On channels that support the ExtendedVariationsSafeMode experiment, (a)
-  // assigns the client to an experiment group and (b) applies group-specific
-  // behavior. Does nothing if the channel does not support the experiment.
-  void MaybeExtendVariationsSafeMode(
-      metrics::MetricsStateManager* metrics_state_manager) const;
-#endif
 
   PrefService* local_state() { return seed_store_->local_state(); }
   const PrefService* local_state() const { return seed_store_->local_state(); }
@@ -222,9 +255,11 @@ class VariationsFieldTrialCreator {
   std::unordered_map<int, std::u16string> overridden_strings_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsFieldTrialCreator);
 };
+
+// A testing feature that forces a crash during field trial creation
+// on developer and test builds.
+extern const base::Feature kForceFieldTrialSetupCrashForTesting;
 
 }  // namespace variations
 

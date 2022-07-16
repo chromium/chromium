@@ -23,14 +23,15 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/load_states.h"
-#include "net/http/http_raw_request_headers.h"
+#include "net/base/network_delegate.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
-#include "services/network/public/cpp/cross_origin_read_blocking.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
+#include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
@@ -102,6 +103,30 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   using DeleteCallback = base::OnceCallback<void(mojom::URLLoader* loader)>;
 
+  // Holds a sync and async implementation of URLLoaderClient. The sync
+  // implementation can be used if present to avoid posting a task to call back
+  // into CorsURLLoader.
+  class MaybeSyncURLLoaderClient {
+   public:
+    MaybeSyncURLLoaderClient(
+        mojo::PendingRemote<mojom::URLLoaderClient> mojo_client,
+        base::WeakPtr<mojom::URLLoaderClient> sync_client);
+    ~MaybeSyncURLLoaderClient();
+
+    // Resets both URLLoaderClients.
+    void Reset();
+
+    // Rebinds the mojo URLLoaderClient and uses it for future calls.
+    mojo::PendingReceiver<mojom::URLLoaderClient> BindNewPipeAndPassReceiver();
+
+    // Gets the sync URLLoaderClient if available, otherwise the mojo remote.
+    mojom::URLLoaderClient* Get();
+
+   private:
+    mojo::Remote<mojom::URLLoaderClient> mojo_client_;
+    base::WeakPtr<mojom::URLLoaderClient> sync_client_;
+  };
+
   // |delete_callback| tells the URLLoader's owner to destroy the URLLoader.
   // The URLLoader must be destroyed before the |url_request_context|.
   // The |origin_policy_manager| must always be provided for requests that
@@ -121,6 +146,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       int32_t options,
       const ResourceRequest& request,
       mojo::PendingRemote<mojom::URLLoaderClient> url_loader_client,
+      base::WeakPtr<mojom::URLLoaderClient> sync_url_loader_client,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       const mojom::URLLoaderFactoryParams* factory_params,
       mojom::CrossOriginEmbedderPolicyReporter* reporter,
@@ -140,6 +166,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer);
+
+  URLLoader(const URLLoader&) = delete;
+  URLLoader& operator=(const URLLoader&) = delete;
+
   ~URLLoader() override;
 
   // mojom::URLLoader implementation:
@@ -173,8 +203,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // These methods are called by the network delegate to forward these events to
   // the |header_client_|.
-  int OnBeforeStartTransaction(net::CompletionOnceCallback callback,
-                               net::HttpRequestHeaders* headers);
+  int OnBeforeStartTransaction(
+      const net::HttpRequestHeaders& headers,
+      net::NetworkDelegate::OnBeforeStartTransactionCallback callback);
   int OnHeadersReceived(
       net::CompletionOnceCallback callback,
       const net::HttpResponseHeaders* original_response_headers,
@@ -231,7 +262,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     return url_loader_factory_;
   }
 
-  void SetAllowReportingRawHeaders(bool allow);
+  void SetEnableReportingRawHeaders(bool enable);
 
   mojom::LoadInfoPtr CreateLoadInfo();
 
@@ -255,12 +286,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
    public:
     explicit UnownedPointer(URLLoader* pointer) : pointer_(pointer) {}
 
+    UnownedPointer(const UnownedPointer&) = delete;
+    UnownedPointer& operator=(const UnownedPointer&) = delete;
+
     URLLoader* get() const { return pointer_; }
 
    private:
     URLLoader* const pointer_;
-
-    DISALLOW_COPY_AND_ASSIGN(UnownedPointer);
   };
 
   class FileOpenerForUpload;
@@ -335,6 +367,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void SetRawResponseHeaders(scoped_refptr<const net::HttpResponseHeaders>);
   void NotifyEarlyResponse(scoped_refptr<const net::HttpResponseHeaders>);
   void SetRawRequestHeadersAndNotify(net::HttpRawRequestHeaders);
+  void DispatchOnRawRequest(
+      std::vector<network::mojom::HttpRawHeaderPairPtr> headers);
+  bool DispatchOnRawResponse();
   void SendUploadProgress(const net::UploadProgress& progress);
   void OnUploadProgressACK();
   void OnSSLCertificateErrorResponse(const net::SSLInfo& ssl_info,
@@ -343,8 +378,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void RecordBodyReadFromNetBeforePausedIfNeeded();
   void ResumeStart();
   void OnBeforeSendHeadersComplete(
-      net::CompletionOnceCallback callback,
-      net::HttpRequestHeaders* out_headers,
+      net::NetworkDelegate::OnBeforeStartTransactionCallback callback,
       int result,
       const absl::optional<net::HttpRequestHeaders>& headers);
   void OnHeadersReceivedComplete(
@@ -369,7 +403,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     // processing the request (e.g. by calling ReadMore as necessary).
     kContinueRequest,
   };
-  BlockResponseForCorbResult BlockResponseForCorb();
+  BlockResponseForCorbResult BlockResponseForCorb(
+      bool should_report_corb_blocking);
 
   void ReportFlaggedResponseCookies();
   void StartReading();
@@ -382,13 +417,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // net::URLRequest.
   bool ShouldForceIgnoreTopFramePartyForCookies() const;
 
-  // Returns whether the request initiator should be allowed to make requests to
-  // an endpoint in |resource_address_space|.
+  // Applies Private Network Access checks to the current request.
   //
-  // See the CORS-RFC1918 spec: https://wicg.github.io/cors-rfc1918.
+  // `resource_address_space` specifies the IP address space of the remote
+  // endpoint.
   //
-  // Helper for OnConnected().
-  bool CanConnectToAddressSpace(
+  // Helper for `OnConnected()`.
+  PrivateNetworkAccessCheckResult PrivateNetworkAccessCheck(
       mojom::IPAddressSpace resource_address_space) const;
 
   mojom::DevToolsObserver* GetDevToolsObserver() const;
@@ -436,7 +471,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       auth_challenge_responder_receiver_{this};
   mojo::Receiver<mojom::ClientCertificateResponder>
       client_cert_responder_receiver_{this};
-  mojo::Remote<mojom::URLLoaderClient> url_loader_client_;
+  MaybeSyncURLLoaderClient url_loader_client_;
   int64_t total_written_bytes_ = 0;
 
   mojo::ScopedDataPipeProducerHandle response_body_stream_;
@@ -458,18 +493,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
 
   // Sniffing state.
-  std::unique_ptr<CrossOriginReadBlocking::ResponseAnalyzer> corb_analyzer_;
+  std::unique_ptr<corb::ResponseAnalyzer> corb_analyzer_;
   bool is_more_corb_sniffing_needed_ = false;
   bool is_more_mime_sniffing_needed_ = false;
 
   std::unique_ptr<ResourceScheduler::ScheduledResourceRequest>
       resource_scheduler_request_handle_;
 
-  // Whether client requested raw headers.
-  const bool want_raw_headers_;
-  // Whether we actually should report them.
-  bool report_raw_headers_ = false;
-  net::HttpRawRequestHeaders raw_request_headers_;
+  bool enable_reporting_raw_headers_ = false;
+  bool seen_raw_request_headers_ = false;
   scoped_refptr<const net::HttpResponseHeaders> raw_response_headers_;
 
   std::unique_ptr<UploadProgressTracker> upload_progress_tracker_;
@@ -528,6 +560,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // network::ResourceRequest::fetch_window_id for details.
   absl::optional<base::UnguessableToken> fetch_window_id_;
 
+  // See |ResourceRequest::target_ip_address_space_|.
+  mojom::IPAddressSpace target_ip_address_space_ =
+      mojom::IPAddressSpace::kUnknown;
+
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;
 
   std::unique_ptr<FileOpenerForUpload> file_opener_for_upload_;
@@ -582,11 +618,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Even if this is false but there is a QUIC/H2 stream, the upload is allowed.
   const bool allow_http1_for_streaming_upload_;
 
+  bool emitted_devtools_raw_request_ = false;
+  bool emitted_devtools_raw_response_ = false;
+
   mojo::Remote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer_;
 
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoader);
 };
 
 }  // namespace network

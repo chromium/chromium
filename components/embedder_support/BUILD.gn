@@ -29,6 +29,8 @@ static_library("browser_util") {
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/permissions",
+    "//components/policy/core/common",
+    "//components/prefs",
     "//components/version_info",
     "//content/public/browser",
   ]
@@ -60,6 +62,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom:mojom_platform_headers",
+    "//third_party/re2",
   ]
 
   if (is_android) {

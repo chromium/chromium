@@ -5,7 +5,6 @@
 #ifndef UI_AURA_TEST_TEST_WINDOW_TARGETER_H_
 #define UI_AURA_TEST_TEST_WINDOW_TARGETER_H_
 
-#include "base/macros.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/events/event_targeter.h"
 
@@ -18,6 +17,10 @@ namespace test {
 class TestWindowTargeter : public WindowTargeter {
  public:
   TestWindowTargeter();
+
+  TestWindowTargeter(const TestWindowTargeter&) = delete;
+  TestWindowTargeter& operator=(const TestWindowTargeter&) = delete;
+
   ~TestWindowTargeter() override;
 
  protected:
@@ -26,9 +29,6 @@ class TestWindowTargeter : public WindowTargeter {
                                       ui::Event* event) override;
   ui::EventTarget* FindNextBestTarget(ui::EventTarget* previous_target,
                                       ui::Event* event) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWindowTargeter);
 };
 
 }  // namespace test

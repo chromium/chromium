@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/secure_context.h"
 #include "chromeos/services/secure_channel/session_keys.h"
@@ -33,6 +32,10 @@ class DeviceToDeviceSecureContext : public SecureContext {
       const SessionKeys& session_keys,
       const std::string& responder_auth_message_,
       ProtocolVersion protocol_version);
+
+  DeviceToDeviceSecureContext(const DeviceToDeviceSecureContext&) = delete;
+  DeviceToDeviceSecureContext& operator=(const DeviceToDeviceSecureContext&) =
+      delete;
 
   ~DeviceToDeviceSecureContext() override;
 
@@ -75,8 +78,6 @@ class DeviceToDeviceSecureContext : public SecureContext {
   int last_decode_sequence_number_;
 
   base::WeakPtrFactory<DeviceToDeviceSecureContext> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceToDeviceSecureContext);
 };
 
 }  // namespace secure_channel

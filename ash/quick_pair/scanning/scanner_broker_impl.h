@@ -21,11 +21,13 @@ namespace ash {
 namespace quick_pair {
 
 class FastPairDiscoverableScanner;
+class FastPairNotDiscoverableScanner;
 struct Device;
+class QuickPairProcessManager;
 
 class ScannerBrokerImpl : public ScannerBroker {
  public:
-  ScannerBrokerImpl();
+  explicit ScannerBrokerImpl(QuickPairProcessManager* process_manager);
   ScannerBrokerImpl(const ScannerBrokerImpl&) = delete;
   ScannerBrokerImpl& operator=(const ScannerBrokerImpl&) = delete;
   ~ScannerBrokerImpl() override;
@@ -45,9 +47,12 @@ class ScannerBrokerImpl : public ScannerBroker {
   void NotifyDeviceLost(scoped_refptr<Device> device);
 
   SEQUENCE_CHECKER(sequence_checker_);
+  QuickPairProcessManager* process_manager_ = nullptr;
   std::vector<base::OnceClosure> start_scanning_on_adapter_callbacks_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   std::unique_ptr<FastPairDiscoverableScanner> fast_pair_discoverable_scanner_;
+  std::unique_ptr<FastPairNotDiscoverableScanner>
+      fast_pair_not_discoverable_scanner_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<ScannerBrokerImpl> weak_pointer_factory_{this};
 };

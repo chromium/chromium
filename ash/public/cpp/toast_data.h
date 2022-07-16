@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -31,6 +32,7 @@ struct ASH_PUBLIC_EXPORT ToastData {
   absl::optional<std::u16string> dismiss_text;
   bool visible_on_lock_screen;
   bool is_managed = false;
+  base::RepeatingClosure dismiss_callback;
 };
 
 }  // namespace ash

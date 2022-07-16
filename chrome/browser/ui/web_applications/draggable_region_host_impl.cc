@@ -14,7 +14,7 @@
 DraggableRegionsHostImpl::DraggableRegionsHostImpl(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<chrome::mojom::DraggableRegions> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)) {}
+    : DocumentService(render_frame_host, std::move(receiver)) {}
 
 DraggableRegionsHostImpl::~DraggableRegionsHostImpl() = default;
 
@@ -31,7 +31,7 @@ void DraggableRegionsHostImpl::CreateIfAllowed(
     return;
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
-  // connection. See DocumentServiceBase for details.
+  // connection. See DocumentService for details.
   new DraggableRegionsHostImpl(render_frame_host, std::move(receiver));
 }
 

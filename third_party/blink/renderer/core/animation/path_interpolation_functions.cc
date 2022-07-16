@@ -165,19 +165,33 @@ static bool PathSegTypesMatch(const Vector<SVGPathSegType>& a,
   return true;
 }
 
-PairwiseInterpolationValue PathInterpolationFunctions::MaybeMergeSingles(
-    InterpolationValue&& start,
-    InterpolationValue&& end) {
-  auto& start_path =
-      To<SVGPathNonInterpolableValue>(*start.non_interpolable_value);
-  auto& end_path = To<SVGPathNonInterpolableValue>(*end.non_interpolable_value);
+bool PathInterpolationFunctions::IsPathNonInterpolableValue(
+    const NonInterpolableValue& value) {
+  return DynamicTo<SVGPathNonInterpolableValue>(value);
+}
+
+bool PathInterpolationFunctions::PathsAreCompatible(
+    const NonInterpolableValue& start,
+    const NonInterpolableValue& end) {
+  auto& start_path = To<SVGPathNonInterpolableValue>(start);
+  auto& end_path = To<SVGPathNonInterpolableValue>(end);
 
   if (start_path.GetWindRule() != end_path.GetWindRule())
-    return nullptr;
+    return false;
 
   const Vector<SVGPathSegType>& start_types = start_path.PathSegTypes();
   const Vector<SVGPathSegType>& end_types = end_path.PathSegTypes();
   if (start_types.size() == 0 || !PathSegTypesMatch(start_types, end_types))
+    return false;
+
+  return true;
+}
+
+PairwiseInterpolationValue PathInterpolationFunctions::MaybeMergeSingles(
+    InterpolationValue&& start,
+    InterpolationValue&& end) {
+  if (!PathsAreCompatible(*start.non_interpolable_value.get(),
+                          *end.non_interpolable_value.get()))
     return nullptr;
 
   return PairwiseInterpolationValue(std::move(start.interpolable_value),

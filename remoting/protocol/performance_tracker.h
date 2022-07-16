@@ -35,6 +35,10 @@ class PerformanceTracker : public FrameStatsConsumer {
       UpdateUmaEnumHistogramCallback;
 
   PerformanceTracker();
+
+  PerformanceTracker(const PerformanceTracker&) = delete;
+  PerformanceTracker& operator=(const PerformanceTracker&) = delete;
+
   ~PerformanceTracker() override;
 
   // Constant used to calculate the average for rate metrics and used by the
@@ -98,8 +102,6 @@ class PerformanceTracker : public FrameStatsConsumer {
   bool is_paused_ = false;
 
   base::RepeatingTimer upload_uma_stats_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerformanceTracker);
 };
 
 }  // namespace protocol

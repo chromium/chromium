@@ -159,8 +159,7 @@ bool SettingsResetPromptConfig::Init() {
         CONFIG_ERROR_BAD_DELAY_BEFORE_PROMPT_SECONDS_PARAM, CONFIG_ERROR_MAX);
     return false;
   }
-  delay_before_prompt_ =
-      base::TimeDelta::FromSeconds(delay_before_prompt_seconds);
+  delay_before_prompt_ = base::Seconds(delay_before_prompt_seconds);
 
   // Get the prompt_wave feature paramter.
   prompt_wave_ = base::GetFieldTrialParamByFeatureAsInt(kSettingsResetPrompt,
@@ -181,8 +180,7 @@ bool SettingsResetPromptConfig::Init() {
         CONFIG_ERROR_BAD_TIME_BETWEEN_PROMPTS_SECONDS_PARAM, CONFIG_ERROR_MAX);
     return false;
   }
-  time_between_prompts_ =
-      base::TimeDelta::FromSeconds(time_between_prompts_seconds);
+  time_between_prompts_ = base::Seconds(time_between_prompts_seconds);
 
   UMA_HISTOGRAM_ENUMERATION("SettingsResetPrompt.ConfigError", CONFIG_ERROR_OK,
                             CONFIG_ERROR_MAX);
@@ -223,16 +221,17 @@ SettingsResetPromptConfig::ParseDomainHashes(
       return CONFIG_ERROR_BAD_DOMAIN_HASH;
 
     // Convert the ID string to an integer.
-    std::string domain_id_string;
+    const std::string* domain_id_string = iter.value().GetIfString();
     int domain_id = -1;
-    if (!iter.value().GetAsString(&domain_id_string) ||
-        !base::StringToInt(domain_id_string, &domain_id) || domain_id < 0) {
+    if (!domain_id_string ||
+        !base::StringToInt(*domain_id_string, &domain_id) || domain_id < 0) {
       return CONFIG_ERROR_BAD_DOMAIN_ID;
     }
 
     if (!domain_hashes_.insert(std::make_pair(std::move(hash), domain_id))
-             .second)
+             .second) {
       return CONFIG_ERROR_DUPLICATE_DOMAIN_HASH;
+    }
   }
 
   return CONFIG_ERROR_OK;

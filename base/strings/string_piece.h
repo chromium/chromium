@@ -23,6 +23,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iosfwd>
 #include <limits>
 #include <string>

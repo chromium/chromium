@@ -12,6 +12,11 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
+#include "components/segmentation_platform/internal/platform_options.h"
+
+namespace base {
+class Clock;
+}  // namespace base
 
 namespace segmentation_platform {
 
@@ -24,10 +29,12 @@ class SignalStorageConfig;
 
 class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
  public:
-  ModelExecutionSchedulerImpl(Observer* observer,
+  ModelExecutionSchedulerImpl(std::vector<Observer*>&& observers,
                               SegmentInfoDatabase* segment_database,
                               SignalStorageConfig* signal_storage_config,
-                              ModelExecutionManager* model_execution_manager);
+                              ModelExecutionManager* model_execution_manager,
+                              base::Clock* clock,
+                              const PlatformOptions& platform_options);
   ~ModelExecutionSchedulerImpl() override;
 
   // Disallow copy/assign.
@@ -54,9 +61,9 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
 
   void OnResultSaved(OptimizationTarget segment_id, bool success);
 
-  // Observer listening to model exeuction events. Required by the segment
+  // Observers listening to model exeuction events. Required by the segment
   // selection pipeline.
-  Observer* observer_;
+  std::vector<Observer*> observers_;
 
   // The database storing metadata and results.
   SegmentInfoDatabase* segment_database_;
@@ -66,6 +73,11 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
 
   // The class that executes the models.
   ModelExecutionManager* model_execution_manager_;
+
+  // The time provider.
+  base::Clock* clock_;
+
+  const PlatformOptions platform_options_;
 
   // In-flight model execution requests. Will be killed if we get a model
   // update.

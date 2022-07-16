@@ -13,15 +13,20 @@ import android.support.test.uiautomator.UiDevice;
 
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
 import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;
+import org.chromium.chrome.test.pagecontroller.utils.NonInstrumentedCrashDetector;
 import org.chromium.chrome.test.pagecontroller.utils.Ui2Locators;
+
+import java.util.concurrent.Callable;
 
 /**
  * Smoke Test for Chrome Android.
@@ -36,8 +41,29 @@ public class ChromeSmokeTest {
     public static final long UI_CHECK_INTERVAL = 1000L;
     private String mPackageName;
 
+    private static Runnable toNotSatisfiedRunnable(
+            Callable<Boolean> criteria, Callable<String> failureReasonCallable) {
+        return () -> {
+            try {
+                boolean isSatisfied = criteria.call();
+                String failureReason = failureReasonCallable.call();
+                Criteria.checkThat(failureReason, isSatisfied, Matchers.is(true));
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    private String computeTimeoutFailureMessage() {
+        return NonInstrumentedCrashDetector.checkDidChromeCrash()
+                ? mPackageName + " should not have crashed. Check logcat."
+                : mPackageName + " should have loaded";
+    }
+
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         mPackageName = InstrumentationRegistry.getArguments().getString(
                 ChromeUiApplicationTestRule.PACKAGE_NAME_ARG, "org.chromium.chrome");
     }
@@ -55,12 +81,17 @@ public class ChromeSmokeTest {
         // TODO (aluo): Check that the data url is loaded after pagecontroller lands.
         IUi2Locator locatorChrome = Ui2Locators.withPackageName(mPackageName);
 
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                return locatorChrome.locateOne(device) != null;
-            } catch (NullPointerException e) {
-                return false; // Throws an NPE on older Android versions.
-            }
-        }, mPackageName + " should have loaded", TIMEOUT_MS, UI_CHECK_INTERVAL);
+        CriteriaHelper.pollInstrumentationThread(
+                toNotSatisfiedRunnable(
+                        ()
+                                -> {
+                            try {
+                                return locatorChrome.locateOne(device) != null;
+                            } catch (NullPointerException e) {
+                                return false; // Throws an NPE on older Android versions.
+                            }
+                        },
+                        () -> { return computeTimeoutFailureMessage(); }),
+                TIMEOUT_MS, UI_CHECK_INTERVAL);
     }
 }

@@ -140,8 +140,6 @@ static_library("browser") {
       "android/visit_sql_handler.h",
     ]
   }
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 }
 
 bundle_data("unit_tests_bundle_data") {
@@ -176,6 +174,12 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/history/history.42.sql",
     "//components/test/data/history/history.43.sql",
     "//components/test/data/history/history.44.sql",
+    "//components/test/data/history/history.45.sql",
+    "//components/test/data/history/history.46.sql",
+    "//components/test/data/history/history.47.sql",
+    "//components/test/data/history/history.48.sql",
+    "//components/test/data/history/history.49.sql",
+    "//components/test/data/history/history.50.sql",
     "//components/test/data/history/thumbnail_wild/Favicons.corrupt_meta.disable",
     "//components/test/data/history/thumbnail_wild/Favicons.v2.init.sql",
     "//components/test/data/history/thumbnail_wild/Favicons.v3.init.sql",
@@ -222,6 +226,7 @@ source_set("unit_tests") {
     ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
+    "//components/enterprise/common:download_item_reroute_info",
     "//components/favicon/core:database",
     "//components/favicon_base",
     "//components/history/core/common",

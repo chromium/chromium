@@ -69,6 +69,10 @@ class NET_EXPORT_PRIVATE HttpServerPropertiesManager {
       NetLog* net_log,
       const base::TickClock* clock = nullptr);
 
+  HttpServerPropertiesManager(const HttpServerPropertiesManager&) = delete;
+  HttpServerPropertiesManager& operator=(const HttpServerPropertiesManager&) =
+      delete;
+
   ~HttpServerPropertiesManager();
 
   // Populates passed in objects with data from preferences. If pref data is not
@@ -211,8 +215,6 @@ class NET_EXPORT_PRIVATE HttpServerPropertiesManager {
 
   base::WeakPtrFactory<HttpServerPropertiesManager> pref_load_weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(HttpServerPropertiesManager);
 };
 
 }  // namespace net

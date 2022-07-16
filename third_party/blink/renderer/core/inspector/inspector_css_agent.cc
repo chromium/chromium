@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -715,9 +716,12 @@ void InspectorCSSAgent::UpdateActiveStyleSheets(Document* document) {
 void InspectorCSSAgent::SetActiveStyleSheets(
     Document* document,
     const HeapVector<Member<CSSStyleSheet>>& all_sheets_vector) {
-  HeapHashSet<Member<CSSStyleSheet>>* document_css_style_sheets =
-      document_to_css_style_sheets_.at(document);
-  if (!document_css_style_sheets) {
+  auto it = document_to_css_style_sheets_.find(document);
+  HeapHashSet<Member<CSSStyleSheet>>* document_css_style_sheets = nullptr;
+
+  if (it != document_to_css_style_sheets_.end()) {
+    document_css_style_sheets = it->value;
+  } else {
     document_css_style_sheets =
         MakeGarbageCollected<HeapHashSet<Member<CSSStyleSheet>>>();
     document_to_css_style_sheets_.Set(document, document_css_style_sheets);
@@ -746,8 +750,6 @@ void InspectorCSSAgent::SetActiveStyleSheets(
   for (CSSStyleSheet* css_style_sheet : removed_sheets) {
     InspectorStyleSheet* inspector_style_sheet =
         css_style_sheet_to_inspector_style_sheet_.at(css_style_sheet);
-    DCHECK(inspector_style_sheet);
-
     document_css_style_sheets->erase(css_style_sheet);
     if (id_to_inspector_style_sheet_.Contains(inspector_style_sheet->Id())) {
       String id = UnbindStyleSheet(inspector_style_sheet);
@@ -1095,8 +1097,10 @@ void InspectorCSSAgent::CollectPlatformFontsForLayoutObject(
       return;
 
     // Skip recursing inside a display-locked tree.
-    if (DisplayLockUtilities::NearestLockedInclusiveAncestor(*layout_object))
+    if (DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
+            *layout_object)) {
       return;
+    }
 
     if (!layout_object->IsAnonymous())
       --descendants_depth;
@@ -1108,7 +1112,7 @@ void InspectorCSSAgent::CollectPlatformFontsForLayoutObject(
   }
 
   // Don't gather text on a display-locked tree.
-  if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object))
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object))
     return;
 
   FontCachePurgePreventer preventer;
@@ -1692,42 +1696,49 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
   MediaQueryEvaluator* media_evaluator =
       MakeGarbageCollected<MediaQueryEvaluator>(frame);
 
-  InspectorStyleSheet* inspector_style_sheet =
-      parent_style_sheet
-          ? css_style_sheet_to_inspector_style_sheet_.at(parent_style_sheet)
-          : nullptr;
+  InspectorStyleSheet* inspector_style_sheet = nullptr;
+  if (parent_style_sheet) {
+    auto it =
+        css_style_sheet_to_inspector_style_sheet_.find(parent_style_sheet);
+    if (it != css_style_sheet_to_inspector_style_sheet_.end())
+      inspector_style_sheet = it->value;
+  }
+
   auto media_list_array =
       std::make_unique<protocol::Array<protocol::CSS::MediaQuery>>();
   MediaValues* media_values = MediaValues::CreateDynamicIfFrameExists(frame);
   bool has_media_query_items = false;
   for (wtf_size_t i = 0; i < query_vector.size(); ++i) {
     MediaQuery& query = *query_vector.at(i);
-    const ExpressionHeapVector& expressions = query.Expressions();
+    Vector<MediaQueryExp> expressions;
+    if (query.ExpNode())
+      query.ExpNode()->CollectExpressions(expressions);
     auto expression_array = std::make_unique<
         protocol::Array<protocol::CSS::MediaQueryExpression>>();
     bool has_expression_items = false;
     for (wtf_size_t j = 0; j < expressions.size(); ++j) {
       const MediaQueryExp& media_query_exp = expressions.at(j);
       MediaQueryExpValue exp_value = media_query_exp.ExpValue();
-      if (!exp_value.is_value)
+      if (!exp_value.IsNumeric())
         continue;
       const char* value_name =
-          CSSPrimitiveValue::UnitTypeToString(exp_value.unit);
+          CSSPrimitiveValue::UnitTypeToString(exp_value.Unit());
       std::unique_ptr<protocol::CSS::MediaQueryExpression>
           media_query_expression =
               protocol::CSS::MediaQueryExpression::create()
-                  .setValue(exp_value.value)
+                  .setValue(exp_value.Value())
                   .setUnit(String(value_name))
                   .setFeature(media_query_exp.MediaFeature())
                   .build();
 
-      if (inspector_style_sheet && media->ParentRule())
+      if (inspector_style_sheet && media->ParentRule()) {
         media_query_expression->setValueRange(
             inspector_style_sheet->MediaQueryExpValueSourceRange(
                 media->ParentRule(), i, j));
+      }
 
       int computed_length;
-      if (media_values->ComputeLength(exp_value.value, exp_value.unit,
+      if (media_values->ComputeLength(exp_value.Value(), exp_value.Unit(),
                                       computed_length))
         media_query_expression->setComputedLength(computed_length);
 
@@ -1738,7 +1749,7 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
       continue;
     std::unique_ptr<protocol::CSS::MediaQuery> media_query =
         protocol::CSS::MediaQuery::create()
-            .setActive(media_evaluator->Eval(query, nullptr))
+            .setActive(media_evaluator->Eval(query))
             .setExpressions(std::move(expression_array))
             .build();
     media_list_array->emplace_back(std::move(media_query));
@@ -1862,18 +1873,18 @@ InspectorCSSAgent::BuildContainerQueryObject(const MediaList* media,
           .setText(media->mediaText(/*execution_context=*/nullptr))
           .build();
 
-  InspectorStyleSheet* inspector_style_sheet =
-      parent_style_sheet
-          ? css_style_sheet_to_inspector_style_sheet_.at(parent_style_sheet)
-          : nullptr;
-  if (inspector_style_sheet)
+  auto it = css_style_sheet_to_inspector_style_sheet_.find(parent_style_sheet);
+  if (it != css_style_sheet_to_inspector_style_sheet_.end()) {
+    InspectorStyleSheet* inspector_style_sheet = it->value;
     container_query_object->setStyleSheetId(inspector_style_sheet->Id());
+  }
 
   CSSRule* parent_rule = media->ParentRule();
   if (!parent_rule)
     return container_query_object;
 
-  inspector_style_sheet = BindStyleSheet(parent_rule->parentStyleSheet());
+  InspectorStyleSheet* inspector_style_sheet =
+      BindStyleSheet(parent_rule->parentStyleSheet());
   container_query_object->setRange(
       inspector_style_sheet->RuleHeaderSourceRange(parent_rule));
 
@@ -1956,19 +1967,20 @@ void InspectorCSSAgent::CollectStyleSheets(
 
 InspectorStyleSheet* InspectorCSSAgent::BindStyleSheet(
     CSSStyleSheet* style_sheet) {
+  auto it = css_style_sheet_to_inspector_style_sheet_.find(style_sheet);
+  if (it != css_style_sheet_to_inspector_style_sheet_.end())
+    return it->value;
+
+  Document* document = style_sheet->OwnerDocument();
   InspectorStyleSheet* inspector_style_sheet =
-      css_style_sheet_to_inspector_style_sheet_.at(style_sheet);
-  if (!inspector_style_sheet) {
-    Document* document = style_sheet->OwnerDocument();
-    inspector_style_sheet = MakeGarbageCollected<InspectorStyleSheet>(
-        network_agent_, style_sheet, DetectOrigin(style_sheet, document),
-        InspectorDOMAgent::DocumentURLString(document), this,
-        resource_container_);
-    id_to_inspector_style_sheet_.Set(inspector_style_sheet->Id(),
-                                     inspector_style_sheet);
-    css_style_sheet_to_inspector_style_sheet_.Set(style_sheet,
-                                                  inspector_style_sheet);
-  }
+      MakeGarbageCollected<InspectorStyleSheet>(
+          network_agent_, style_sheet, DetectOrigin(style_sheet, document),
+          InspectorDOMAgent::DocumentURLString(document), this,
+          resource_container_);
+  id_to_inspector_style_sheet_.Set(inspector_style_sheet->Id(),
+                                   inspector_style_sheet);
+  css_style_sheet_to_inspector_style_sheet_.Set(style_sheet,
+                                                inspector_style_sheet);
   return inspector_style_sheet;
 }
 
@@ -2016,7 +2028,9 @@ InspectorStyleSheet* InspectorCSSAgent::ViaInspectorStyleSheet(
 
   FlushPendingProtocolNotifications();
 
-  return css_style_sheet_to_inspector_style_sheet_.at(&inspector_sheet);
+  auto it = css_style_sheet_to_inspector_style_sheet_.find(&inspector_sheet);
+  return it != css_style_sheet_to_inspector_style_sheet_.end() ? it->value
+                                                               : nullptr;
 }
 
 Response InspectorCSSAgent::AssertEnabled() {
@@ -2214,10 +2228,10 @@ void InspectorCSSAgent::DidModifyDOMAttr(Element* element) {
 }
 
 void InspectorCSSAgent::DidMutateStyleSheet(CSSStyleSheet* css_style_sheet) {
-  InspectorStyleSheet* style_sheet =
-      css_style_sheet_to_inspector_style_sheet_.at(css_style_sheet);
-  if (!style_sheet)
+  auto it = css_style_sheet_to_inspector_style_sheet_.find(css_style_sheet);
+  if (it == css_style_sheet_to_inspector_style_sheet_.end())
     return;
+  InspectorStyleSheet* style_sheet = it->value;
   style_sheet->MarkForSync();
   StyleSheetChanged(style_sheet);
 }
@@ -2257,7 +2271,13 @@ HeapVector<Member<CSSStyleDeclaration>> InspectorCSSAgent::MatchingStyles(
     element = element->parentElement();
   StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
 
-  element->UpdateDistributionForUnknownReasons();
+  // TODO(masonf,futhark): We need to update slot assignments here, so that
+  // the flat tree is up to date for the call to PseudoCSSRulesForElement().
+  // Eventually, RecalcSlotAssignments() should be called directly in
+  // PseudoCSSRulesForElement(), but there are a number of sites within
+  // inspector code that traverse the tree and call PseudoCSSRulesForElement()
+  // for each element.
+  element->GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
 
   // This ensures that active stylesheets are up-to-date, such that
   // the subsequent collection of matching rules actually match against
@@ -2502,12 +2522,11 @@ void InspectorCSSAgent::BuildRulesMap(
     }
     if (css_rule->GetType() == CSSRule::kImportRule) {
       CSSImportRule* css_import_rule = DynamicTo<CSSImportRule>(css_rule.Get());
-      InspectorStyleSheet* imported_style_sheet =
-          css_style_sheet_to_inspector_style_sheet_.at(
-              const_cast<CSSStyleSheet*>(css_import_rule->styleSheet()));
-      if (!imported_style_sheet)
+      auto it = css_style_sheet_to_inspector_style_sheet_.find(
+          const_cast<CSSStyleSheet*>(css_import_rule->styleSheet()));
+      if (it == css_style_sheet_to_inspector_style_sheet_.end())
         continue;
-
+      InspectorStyleSheet* imported_style_sheet = it->value;
       BuildRulesMap(imported_style_sheet, rule_to_css_rule);
     }
   }
@@ -2528,11 +2547,12 @@ Response InspectorCSSAgent::takeCoverageDelta(
 
   for (const auto& entry : coverage_delta) {
     const CSSStyleSheet* css_style_sheet = entry.key.Get();
-    InspectorStyleSheet* style_sheet =
-        css_style_sheet_to_inspector_style_sheet_.at(
-            const_cast<CSSStyleSheet*>(css_style_sheet));
-    if (!style_sheet)
+
+    auto style_sheet_it = css_style_sheet_to_inspector_style_sheet_.find(
+        const_cast<CSSStyleSheet*>(css_style_sheet));
+    if (style_sheet_it == css_style_sheet_to_inspector_style_sheet_.end())
       continue;
+    InspectorStyleSheet* style_sheet = style_sheet_it->value;
 
     HeapHashMap<Member<const StyleRule>, Member<CSSStyleRule>> rule_to_css_rule;
     BuildRulesMap(style_sheet, &rule_to_css_rule);
@@ -2541,13 +2561,13 @@ Response InspectorCSSAgent::takeCoverageDelta(
       CSSStyleRule* css_style_rule = rule_to_css_rule.at(used_rule);
       if (!css_style_rule)
         continue;
+      auto it = css_style_sheet_to_inspector_style_sheet_.find(
+          const_cast<CSSStyleSheet*>(css_style_rule->parentStyleSheet()));
+      if (it == css_style_sheet_to_inspector_style_sheet_.end())
+        continue;
       // If the rule comes from an @import'ed file, the `rule_style_sheet` is
       // different from `style_sheet`.
-      InspectorStyleSheet* rule_style_sheet =
-          css_style_sheet_to_inspector_style_sheet_.at(
-              const_cast<CSSStyleSheet*>(css_style_rule->parentStyleSheet()));
-      if (!rule_style_sheet)
-        continue;
+      InspectorStyleSheet* rule_style_sheet = it->value;
       if (std::unique_ptr<protocol::CSS::RuleUsage> rule_usage_object =
               rule_style_sheet->BuildObjectForRuleUsage(css_style_rule, true)) {
         (*result)->emplace_back(std::move(rule_usage_object));

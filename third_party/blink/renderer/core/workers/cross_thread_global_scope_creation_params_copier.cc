@@ -116,6 +116,9 @@ CrossThreadCopier<std::unique_ptr<blink::GlobalScopeCreationParams>>::Copy(
   pointer->outside_content_security_policies = CrossThreadCopier<
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>>::
       Copy(pointer->outside_content_security_policies);
+  pointer->response_content_security_policies = CrossThreadCopier<
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>>::
+      Copy(pointer->response_content_security_policies);
   return pointer;
 }
 

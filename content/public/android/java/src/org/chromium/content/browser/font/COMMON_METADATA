@@ -1,0 +1,6 @@
+monorail {
+  component: "UI>Browser>Mobile"
+}
+
+team_email: "clank-dev@google.com"
+

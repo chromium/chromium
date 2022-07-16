@@ -17,7 +17,7 @@ SyncChange::SyncChange(const base::Location& from_here,
   DCHECK(IsValid()) << " from " << from_here.ToString();
 }
 
-SyncChange::~SyncChange() {}
+SyncChange::~SyncChange() = default;
 
 bool SyncChange::IsValid() const {
   // TODO(crbug.com/1152824): This implementation could be simplified if the
@@ -63,9 +63,9 @@ std::string SyncChange::ChangeTypeToString(SyncChangeType change_type) {
 }
 
 std::string SyncChange::ToString() const {
-  return "{ " + location_.ToString() + ", changeType: " +
-         ChangeTypeToString(change_type_) + ", syncData: " +
-         sync_data_.ToString() + "}";
+  return "{ " + location_.ToString() +
+         ", changeType: " + ChangeTypeToString(change_type_) +
+         ", syncData: " + sync_data_.ToString() + "}";
 }
 
 void PrintTo(const SyncChange& sync_change, std::ostream* os) {

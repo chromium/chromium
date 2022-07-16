@@ -19,6 +19,9 @@ class VideoDecoderWrapper::RevokedVideoDecoder
   explicit RevokedVideoDecoder(const Statistics& statistics)
       : statistics_(statistics) {}
 
+  RevokedVideoDecoder(const RevokedVideoDecoder&) = delete;
+  RevokedVideoDecoder& operator=(const RevokedVideoDecoder&) = delete;
+
   ~RevokedVideoDecoder() override = default;
 
  private:
@@ -36,7 +39,6 @@ class VideoDecoderWrapper::RevokedVideoDecoder
   }
 
   Statistics statistics_;
-  DISALLOW_COPY_AND_ASSIGN(RevokedVideoDecoder);
 };
 
 VideoDecoderWrapper::VideoDecoderWrapper(

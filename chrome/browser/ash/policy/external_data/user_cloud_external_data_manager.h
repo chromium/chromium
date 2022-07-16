@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_POLICY_EXTERNAL_DATA_USER_CLOUD_EXTERNAL_DATA_MANAGER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base.h"
 #include "components/policy/core/common/policy_details.h"
@@ -37,6 +36,11 @@ class UserCloudExternalDataManager : public CloudExternalDataManagerBase {
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
       const base::FilePath& cache_path,
       CloudPolicyStore* policy_store);
+
+  UserCloudExternalDataManager(const UserCloudExternalDataManager&) = delete;
+  UserCloudExternalDataManager& operator=(const UserCloudExternalDataManager&) =
+      delete;
+
   ~UserCloudExternalDataManager() override;
 
  private:
@@ -57,8 +61,6 @@ class UserCloudExternalDataManager : public CloudExternalDataManagerBase {
   //   |resource_cache_|.
   // Because of this destruction sequence, a scoped_ptr cannot be used.
   ResourceCache* resource_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudExternalDataManager);
 };
 
 }  // namespace policy

@@ -21,6 +21,10 @@ class InputStub;
 class HostEventDispatcher : public ChannelDispatcherBase {
  public:
   HostEventDispatcher();
+
+  HostEventDispatcher(const HostEventDispatcher&) = delete;
+  HostEventDispatcher& operator=(const HostEventDispatcher&) = delete;
+
   ~HostEventDispatcher() override;
 
   // Set InputStub that will be called for each incoming input
@@ -46,8 +50,6 @@ class HostEventDispatcher : public ChannelDispatcherBase {
   scoped_refptr<InputEventTimestampsSourceImpl> event_timestamps_source_;
 
   InputStub* input_stub_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(HostEventDispatcher);
 };
 
 }  // namespace protocol

@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_main_delegate.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
@@ -54,13 +55,15 @@ DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
                                  int64_t exe_entry_point_ticks,
                                  base::PrefetchResultCode prefetch_result_code);
 }
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 extern "C" {
 // This function must be marked with NO_STACK_PROTECTOR or it may crash on
 // return, see the --change-stack-guard-on-fork command line flag.
 __attribute__((visibility("default"))) int NO_STACK_PROTECTOR
 ChromeMain(int argc, const char** argv);
 }
+#else
+#error Unknown platform.
 #endif
 
 #if defined(OS_WIN)
@@ -69,9 +72,11 @@ DLLEXPORT int __cdecl ChromeMain(
     sandbox::SandboxInterfaceInfo* sandbox_info,
     int64_t exe_entry_point_ticks,
     base::PrefetchResultCode prefetch_result_code) {
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 int ChromeMain(int argc, const char** argv) {
   int64_t exe_entry_point_ticks = 0;
+#else
+#error Unknown platform.
 #endif
 
 #if defined(OS_WIN)
@@ -137,13 +142,16 @@ int ChromeMain(int argc, const char** argv) {
   MainThreadStackSamplingProfiler scoped_sampling_profiler;
 
   // Chrome-specific process modes.
+  if (headless::IsChromeNativeHeadless()) {
+    headless::SetUpCommandLine(command_line);
+  } else {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
     defined(OS_WIN)
-  if (command_line->HasSwitch(switches::kHeadless)) {
-    return headless::HeadlessShellMain(params);
-  }
+    if (command_line->HasSwitch(switches::kHeadless))
+      return headless::HeadlessShellMain(std::move(params));
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
         // defined(OS_WIN)
+  }
 
 #if defined(OS_LINUX)
   // TODO(https://crbug.com/1176772): Remove when Chrome Linux is fully migrated
@@ -161,7 +169,7 @@ int ChromeMain(int argc, const char** argv) {
   }
 #endif
 
-  int rv = content::ContentMain(params);
+  int rv = content::ContentMain(std::move(params));
 
   return rv;
 }

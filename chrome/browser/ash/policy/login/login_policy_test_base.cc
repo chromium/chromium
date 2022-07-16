@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "ash/constants/ash_switches.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/login_display_webui.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
+#include "chromeos/login/auth/user_context.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,18 +34,27 @@ constexpr char kTestAuthLSIDCookie[] = "fake-auth-LSID-cookie";
 constexpr char kTestSessionSIDCookie[] = "fake-session-SID-cookie";
 constexpr char kTestSessionLSIDCookie[] = "fake-session-LSID-cookie";
 
+// Cannot use LoginManagerMixin default account because it's on gmail.com,
+// which cannot be enterprise domain. See kNonManagedDomainPatterns in
+// browser_policy_connector.cc.
+constexpr char kAccountId[] = "user@example.com";
+constexpr char kAccountGaiaId[] = "user-example-com-test-gaia-id";
 }  // namespace
 
-const char LoginPolicyTestBase::kAccountPassword[] = "letmein";
-const char LoginPolicyTestBase::kAccountId[] = "user@example.com";
-// Empty services list for userInfo.
-const char LoginPolicyTestBase::kEmptyServices[] = "[]";
-
-LoginPolicyTestBase::LoginPolicyTestBase() {
+LoginPolicyTestBase::LoginPolicyTestBase()
+    : account_id_(AccountId::FromUserEmailGaiaId(kAccountId, kAccountGaiaId)) {
   set_open_about_blank_on_browser_launch(false);
+  login_manager_.set_should_launch_browser(true);
 }
 
 LoginPolicyTestBase::~LoginPolicyTestBase() = default;
+
+void LoginPolicyTestBase::SetUpCommandLine(base::CommandLine* command_line) {
+  OobeBaseTest::SetUpCommandLine(command_line);
+  command_line->AppendSwitch(chromeos::switches::kDisableGaiaServices);
+  command_line->AppendSwitch(
+      chromeos::switches::kSkipForceOnlineSignInForTesting);
+}
 
 void LoginPolicyTestBase::SetUpInProcessBrowserTestFixture() {
   OobeBaseTest::SetUpInProcessBrowserTestFixture();
@@ -51,22 +63,19 @@ void LoginPolicyTestBase::SetUpInProcessBrowserTestFixture() {
   base::DictionaryValue recommended;
   GetRecommendedPoliciesValue(&recommended);
   user_policy_helper_ = std::make_unique<UserPolicyTestHelper>(
-      GetAccount(), &local_policy_server_);
+      account_id().GetUserEmail(), &local_policy_server_);
   user_policy_helper_->SetPolicy(mandatory, recommended);
 }
 
 void LoginPolicyTestBase::SetUpOnMainThread() {
   SetMergeSessionParams();
-  fake_gaia_.SetupFakeGaiaForLogin(GetAccount(), "", kTestRefreshToken);
+  fake_gaia_.SetupFakeGaiaForLogin(account_id().GetUserEmail(),
+                                   account_id().GetGaiaId(), kTestRefreshToken);
   OobeBaseTest::SetUpOnMainThread();
 
   FakeGaia::MergeSessionParams params;
   params.id_token = GetIdToken();
   fake_gaia_.fake_gaia()->UpdateMergeSessionParams(params);
-}
-
-std::string LoginPolicyTestBase::GetAccount() const {
-  return kAccountId;
 }
 
 std::string LoginPolicyTestBase::GetIdToken() const {
@@ -99,7 +108,7 @@ void LoginPolicyTestBase::SetMergeSessionParams() {
   params.gaia_uber_token = kTestGaiaUberToken;
   params.session_sid_cookie = kTestSessionSIDCookie;
   params.session_lsid_cookie = kTestSessionLSIDCookie;
-  params.email = GetAccount();
+  params.email = account_id().GetUserEmail();
   fake_gaia_.fake_gaia()->SetMergeSessionParams(params);
 }
 
@@ -108,20 +117,17 @@ void LoginPolicyTestBase::SkipToLoginScreen() {
   OobeBaseTest::WaitForSigninScreen();
 }
 
-void LoginPolicyTestBase::TriggerLogIn(const std::string& user_id,
-                                       const std::string& password,
-                                       const std::string& services) {
-  ash::LoginDisplayHost::default_host()
-      ->GetOobeUI()
-      ->GetView<chromeos::GaiaScreenHandler>()
-      ->ShowSigninScreenForTest(user_id, password, services);
+void LoginPolicyTestBase::TriggerLogIn() {
+  const ash::LoginManagerMixin::TestUserInfo test_user(account_id());
+  auto user_context =
+      ash::LoginManagerMixin::CreateDefaultUserContext(test_user);
+  login_manager_.LoginAsNewRegularUser(user_context);
 }
 
-void LoginPolicyTestBase::LogIn(const std::string& user_id,
-                                const std::string& password,
-                                const std::string& services) {
-  TriggerLogIn(user_id, password, services);
-  chromeos::test::WaitForPrimaryUserSessionStart();
+void LoginPolicyTestBase::LogIn() {
+  ash::WizardController::SkipPostLoginScreensForTesting();
+  TriggerLogIn();
+  ash::test::WaitForPrimaryUserSessionStart();
 }
 
 }  // namespace policy

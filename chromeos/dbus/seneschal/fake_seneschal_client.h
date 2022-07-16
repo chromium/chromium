@@ -18,6 +18,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeSeneschalClient
   // Returns the fake global instance if initialized. May return null.
   static FakeSeneschalClient* Get();
 
+  FakeSeneschalClient(const FakeSeneschalClient&) = delete;
+  FakeSeneschalClient& operator=(const FakeSeneschalClient&) = delete;
+
   // SeneschalClient:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -75,8 +78,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeSeneschalClient
   vm_tools::seneschal::UnsharePathRequest last_unshare_path_request_;
   vm_tools::seneschal::SharePathResponse share_path_response_;
   vm_tools::seneschal::UnsharePathResponse unshare_path_response_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSeneschalClient);
 };
 
 }  // namespace chromeos

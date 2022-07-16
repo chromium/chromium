@@ -8,7 +8,6 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -39,6 +38,9 @@ class COMPONENT_EXPORT(CROS_HEALTHD) CrosHealthdClient {
   // Returns the global instance which may be null if not initialized.
   static CrosHealthdClient* Get();
 
+  CrosHealthdClient(const CrosHealthdClient&) = delete;
+  CrosHealthdClient& operator=(const CrosHealthdClient&) = delete;
+
   // Uses D-Bus to bootstrap the Mojo connection between the cros_healthd daemon
   // and the browser. Returns a bound remote.
   virtual mojo::Remote<cros_healthd::mojom::CrosHealthdServiceFactory>
@@ -48,9 +50,6 @@ class COMPONENT_EXPORT(CROS_HEALTHD) CrosHealthdClient {
   // Initialize/Shutdown should be used instead.
   CrosHealthdClient();
   virtual ~CrosHealthdClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrosHealthdClient);
 };
 
 }  // namespace chromeos

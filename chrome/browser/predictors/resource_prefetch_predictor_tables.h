@@ -12,8 +12,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.pb.h"
 #include "components/sqlite_proto/key_value_table.h"
 #include "components/sqlite_proto/table_manager.h"
@@ -29,6 +28,11 @@ namespace predictors {
 //  - OriginTable - key: host, value: OriginData
 class ResourcePrefetchPredictorTables : public sqlite_proto::TableManager {
  public:
+  ResourcePrefetchPredictorTables(const ResourcePrefetchPredictorTables&) =
+      delete;
+  ResourcePrefetchPredictorTables& operator=(
+      const ResourcePrefetchPredictorTables&) = delete;
+
   virtual sqlite_proto::KeyValueTable<RedirectData>* host_redirect_table();
   virtual sqlite_proto::KeyValueTable<OriginData>* origin_table();
 
@@ -80,8 +84,6 @@ class ResourcePrefetchPredictorTables : public sqlite_proto::TableManager {
   std::unique_ptr<sqlite_proto::KeyValueTable<RedirectData>>
       host_redirect_table_;
   std::unique_ptr<sqlite_proto::KeyValueTable<OriginData>> origin_table_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourcePrefetchPredictorTables);
 };
 
 }  // namespace predictors

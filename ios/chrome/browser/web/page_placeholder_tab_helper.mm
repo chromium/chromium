@@ -113,7 +113,7 @@ void PagePlaceholderTabHelper::AddPlaceholder() {
       FROM_HERE,
       base::BindOnce(&PagePlaceholderTabHelper::RemovePlaceholder,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSecondsD(kPlaceholderMaxDisplayTimeInSeconds));
+      base::Seconds(kPlaceholderMaxDisplayTimeInSeconds));
 }
 
 void PagePlaceholderTabHelper::DisplaySnapshotImage(UIImage* snapshot) {

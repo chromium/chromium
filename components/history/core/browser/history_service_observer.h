@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_SERVICE_OBSERVER_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_SERVICE_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_id.h"
 
@@ -16,6 +15,10 @@ class HistoryService;
 class HistoryServiceObserver {
  public:
   HistoryServiceObserver() {}
+
+  HistoryServiceObserver(const HistoryServiceObserver&) = delete;
+  HistoryServiceObserver& operator=(const HistoryServiceObserver&) = delete;
+
   virtual ~HistoryServiceObserver() {}
 
   // Called when user visits an URL.
@@ -64,9 +67,6 @@ class HistoryServiceObserver {
   // `url_id` is the id of the url row.
   virtual void OnKeywordSearchTermDeleted(HistoryService* history_service,
                                           URLID url_id) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HistoryServiceObserver);
 };
 
 }  // namespace history

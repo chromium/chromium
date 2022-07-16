@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/buildflags.h"

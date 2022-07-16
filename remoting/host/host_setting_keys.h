@@ -5,7 +5,7 @@
 #ifndef REMOTING_HOST_HOST_SETTING_KEYS_H_
 #define REMOTING_HOST_HOST_SETTING_KEYS_H_
 
-#include "remoting/host/host_settings.h"
+#include "remoting/base/host_settings.h"
 
 namespace remoting {
 

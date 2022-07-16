@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -32,15 +31,20 @@ namespace {
 
 enum class NetworkConnectionStatus { kDisconnected, kConnecting, kConnected };
 
-constexpr base::TimeDelta kZeroTimeDelta = base::TimeDelta::FromSeconds(0);
-constexpr base::TimeDelta kImmediateRetryDelay =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kZeroTimeDelta = base::Seconds(0);
+constexpr base::TimeDelta kImmediateRetryDelay = base::Minutes(5);
 const char kWifiServiceGuid[] = "wifiGuid";
 const char kSessionId[] = "sessionId";
 
 }  // namespace
 
 class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
+ public:
+  DeviceSyncCryptAuthSchedulerImplTest(
+      const DeviceSyncCryptAuthSchedulerImplTest&) = delete;
+  DeviceSyncCryptAuthSchedulerImplTest& operator=(
+      const DeviceSyncCryptAuthSchedulerImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthSchedulerImplTest() = default;
 
@@ -251,9 +255,9 @@ class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
       const cryptauthv2::ClientDirective& expected_client_directive) {
     EXPECT_EQ(util::EncodeProtoMessageAsValueString(&expected_client_directive),
               *pref_service_.Get(prefs::kCryptAuthSchedulerClientDirective));
-    EXPECT_EQ(base::TimeDelta::FromMilliseconds(
-                  expected_client_directive.checkin_delay_millis()),
-              scheduler()->GetRefreshPeriod());
+    EXPECT_EQ(
+        base::Milliseconds(expected_client_directive.checkin_delay_millis()),
+        scheduler()->GetRefreshPeriod());
   }
 
   void VerifyScheduledEnrollment(
@@ -358,8 +362,6 @@ class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
       false /* use_default_devices_and_services */};
   std::string wifi_network_service_path_;
   std::unique_ptr<CryptAuthScheduler> scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthSchedulerImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
@@ -368,8 +370,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
   const base::Time kStartTime = base::Time::FromDoubleT(1600600000);
-  const base::Time kInitializationFinishTime =
-      kStartTime + base::TimeDelta::FromSeconds(5);
+  const base::Time kInitializationFinishTime = kStartTime + base::Seconds(5);
 
   clock()->SetNow(kStartTime);
 
@@ -451,8 +452,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
   const base::Time kStartTime = base::Time::FromDoubleT(1600600000);
-  const base::Time kInitializationFinishTime =
-      kStartTime + base::TimeDelta::FromSeconds(5);
+  const base::Time kInitializationFinishTime = kStartTime + base::Seconds(5);
 
   clock()->SetNow(kStartTime);
 
@@ -565,9 +565,8 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest, FailedRequests) {
     base::TimeDelta expected_delay =
         attempt < cryptauthv2::GetClientDirectiveForTest().retry_attempts()
             ? kImmediateRetryDelay
-            : base::TimeDelta::FromMilliseconds(
-                  cryptauthv2::GetClientDirectiveForTest()
-                      .retry_period_millis());
+            : base::Milliseconds(cryptauthv2::GetClientDirectiveForTest()
+                                     .retry_period_millis());
     VerifyScheduledEnrollment(expected_request, expected_delay);
     VerifyScheduledDeviceSync(expected_request, expected_delay);
   }
@@ -711,7 +710,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
 
   const base::Time kLastEnrollmentTime = base::Time::FromDoubleT(1600600000);
   const base::Time kLastEnrollmentAttemptTime =
-      kLastEnrollmentTime + base::TimeDelta::FromDays(30);
+      kLastEnrollmentTime + base::Days(30);
   const base::Time kStartTime =
       kLastEnrollmentAttemptTime + (kImmediateRetryDelay / 2);
 
@@ -755,8 +754,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest, HandleInvokeNext) {
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
   const base::Time kLastSuccessTime = base::Time::FromDoubleT(1600600000);
-  const base::Time kLastAttemptTime =
-      kLastSuccessTime + base::TimeDelta::FromDays(30);
+  const base::Time kLastAttemptTime = kLastSuccessTime + base::Days(30);
   const base::Time kStartTime = kLastAttemptTime + (kImmediateRetryDelay / 2);
   clock()->SetNow(kStartTime);
 
@@ -847,7 +845,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
                                        absl::nullopt /* session_id */);
   VerifyScheduledEnrollment(
       expected_enrollment_request,
-      base::TimeDelta::FromMilliseconds(
+      base::Milliseconds(
           old_client_directive.checkin_delay_millis()) /* expected_delay */);
 
   VerifyScheduledDeviceSync(expected_device_sync_request,
@@ -869,11 +867,11 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
       new_client_directive));
   VerifyScheduledEnrollment(
       expected_enrollment_request,
-      base::TimeDelta::FromMilliseconds(
+      base::Milliseconds(
           new_client_directive.checkin_delay_millis()) /* expected_delay */);
   VerifyScheduledDeviceSync(
       expected_device_sync_request,
-      base::TimeDelta::FromMilliseconds(
+      base::Milliseconds(
           new_client_directive.retry_period_millis()) /* expected_delay */);
 }
 
@@ -974,7 +972,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest, RequestsMadeWithNoWifiNetwork) {
   VerifyNoDeviceSyncsTriggeredButRequestQueued(expected_device_sync_request);
 
   // Once Wifi network connected, reschedule enrollment.
-  const base::TimeDelta kTimeElapsed = base::TimeDelta::FromHours(10);
+  const base::TimeDelta kTimeElapsed = base::Hours(10);
   clock()->SetNow(kNow + kTimeElapsed);
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);

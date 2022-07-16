@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/builders.star", "builder", "defaults", "goma", "os")
+load("//lib/ci.star", "rbe_instance", "rbe_jobs")
 load("//lib/swarming.star", swarming_lib = "swarming")
 
 luci.bucket(
@@ -36,11 +37,9 @@ defaults.bucket.set("findit")
 defaults.build_numbers.set(True)
 defaults.builderless.set(True)
 defaults.ssd.set(True)
-defaults.configure_kitchen.set(True)
 defaults.execution_timeout.set(8 * time.hour)
 defaults.pool.set("luci.chromium.findit")
 defaults.service_account.set("findit-builder@chops-service-accounts.iam.gserviceaccount.com")
-defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 
 defaults.caches.set([
     swarming.cache(
@@ -57,6 +56,8 @@ builder(
     name = "findit-rerun",
     executable = "recipe:findit/chromium/single_revision",
     goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
 )
 
 # Dimensionless trybot for findit.
@@ -74,6 +75,8 @@ builder(
     # Also, to illustrate the typical use case of this bucket.
     executable = "recipe:findit/chromium/compile",
     goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
 )
 
 builder(

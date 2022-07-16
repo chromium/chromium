@@ -35,7 +35,7 @@ component("init") {
     deps += [ "//ui/base/ime/mac" ]
   }
   if (is_chromeos_ash) {
-    deps += [ "//ui/base/ime/chromeos" ]
+    deps += [ "//ui/base/ime/ash" ]
   }
   if (is_linux || is_chromeos_lacros) {
     deps += [ "//ui/base/ime/linux" ]

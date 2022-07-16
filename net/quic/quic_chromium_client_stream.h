@@ -42,6 +42,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   // Wrapper for interacting with the session in a restricted fashion.
   class NET_EXPORT_PRIVATE Handle {
    public:
+    Handle(const Handle&) = delete;
+    Handle& operator=(const Handle&) = delete;
+
     ~Handle();
 
     // Returns true if the stream is still connected.
@@ -211,8 +214,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     base::TimeTicks first_early_hints_time_;
 
     base::WeakPtrFactory<Handle> weak_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(Handle);
   };
 
   QuicChromiumClientStream(
@@ -224,9 +225,11 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   QuicChromiumClientStream(
       quic::PendingStream* pending,
       quic::QuicSpdyClientSessionBase* session,
-      quic::StreamType type,
       const NetLogWithSource& net_log,
       const NetworkTrafficAnnotationTag& traffic_annotation);
+
+  QuicChromiumClientStream(const QuicChromiumClientStream&) = delete;
+  QuicChromiumClientStream& operator=(const QuicChromiumClientStream&) = delete;
 
   ~QuicChromiumClientStream() override;
 
@@ -348,8 +351,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   base::circular_deque<EarlyHints> early_hints_;
 
   base::WeakPtrFactory<QuicChromiumClientStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicChromiumClientStream);
 };
 
 }  // namespace net

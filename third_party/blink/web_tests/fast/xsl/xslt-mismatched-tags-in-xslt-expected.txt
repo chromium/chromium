@@ -1,10 +1,10 @@
-CONSOLE ERROR: line 9: Opening and ending tag mismatch: p line 8 and body
+CONSOLE ERROR: Opening and ending tag mismatch: p line 8 and body
 
-CONSOLE ERROR: line 10: Opening and ending tag mismatch: body line 6 and html
+CONSOLE ERROR: Opening and ending tag mismatch: body line 6 and html
 
-CONSOLE ERROR: line 11: Opening and ending tag mismatch: html line 5 and xsl:template
+CONSOLE ERROR: Opening and ending tag mismatch: html line 5 and xsl:template
 
-CONSOLE ERROR: line 12: Opening and ending tag mismatch: template line 4 and stylesheet
+CONSOLE ERROR: Opening and ending tag mismatch: template line 4 and stylesheet
 
-CONSOLE ERROR: line 12: Premature end of data in tag stylesheet line 2
+CONSOLE ERROR: Premature end of data in tag stylesheet line 2
 

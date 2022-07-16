@@ -12,12 +12,11 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -58,6 +57,10 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
                       kEnterpriseURL);
   }
 
+  FakePasswordManagerClient(const FakePasswordManagerClient&) = delete;
+  FakePasswordManagerClient& operator=(const FakePasswordManagerClient&) =
+      delete;
+
   ~FakePasswordManagerClient() override {
     password_store_->ShutdownOnUIThread();
   }
@@ -66,7 +69,7 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   url::Origin GetLastCommittedOrigin() const override {
     return last_committed_origin_;
   }
-  MockPasswordStore* GetProfilePasswordStore() const override {
+  MockPasswordStoreInterface* GetProfilePasswordStore() const override {
     return password_store_.get();
   }
   signin::IdentityManager* GetIdentityManager() override {
@@ -85,13 +88,11 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
 
  private:
   url::Origin last_committed_origin_;
-  scoped_refptr<testing::NiceMock<MockPasswordStore>> password_store_ =
-      new testing::NiceMock<MockPasswordStore>;
+  scoped_refptr<testing::NiceMock<MockPasswordStoreInterface>> password_store_ =
+      new testing::NiceMock<MockPasswordStoreInterface>;
   bool is_incognito_ = false;
   signin::IdentityManager* identity_manager_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePasswordManagerClient);
 };
 
 }  // namespace
@@ -120,7 +121,8 @@ class CredentialsFilterTest : public SyncUsernameTestBase,
     form_manager_ = std::make_unique<PasswordFormManager>(
         client_.get(), driver_.AsWeakPtr(), pending_.form_data, &fetcher_,
         std::make_unique<PasswordSaveManagerImpl>(
-            std::make_unique<StubFormSaver>()),
+            /*profile_form_saver=*/std::make_unique<StubFormSaver>(),
+            /*account_form_saver=*/nullptr),
         nullptr /* metrics_recorder */);
     filter_ = std::make_unique<SyncCredentialsFilter>(
         client_.get(), base::BindRepeating(&SyncUsernameTestBase::sync_service,

@@ -12,11 +12,10 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/mime_util.h"
@@ -66,6 +65,9 @@ class DataSegment {
               std::unique_ptr<std::string> data,
               const std::map<std::string, std::string>& header_entries);
 
+  DataSegment(const DataSegment&) = delete;
+  DataSegment& operator=(const DataSegment&) = delete;
+
   // Returns the header entries for this DataSegment.
   const std::map<std::string, std::string>& GetHeaderEntries() const;
 
@@ -90,8 +92,6 @@ class DataSegment {
   const std::string filename_;
   std::unique_ptr<std::string> data_;
   std::map<std::string, std::string> header_entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataSegment);
 };
 
 DataSegment::DataSegment(
@@ -390,16 +390,15 @@ void UploadJobImpl::HandleError(ErrorCode error_code) {
           FROM_HERE,
           base::BindOnce(&UploadJobImpl::RequestAccessToken,
                          weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(g_retry_delay_ms));
+          base::Milliseconds(g_retry_delay_ms));
     } else {
       // Retry without a new token.
       state_ = ACQUIRING_TOKEN;
       SYSLOG(WARNING) << "Retrying upload with the same token.";
-      task_runner_->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&UploadJobImpl::StartUpload,
-                         weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(g_retry_delay_ms));
+      task_runner_->PostDelayedTask(FROM_HERE,
+                                    base::BindOnce(&UploadJobImpl::StartUpload,
+                                                   weak_factory_.GetWeakPtr()),
+                                    base::Milliseconds(g_retry_delay_ms));
     }
   }
 }

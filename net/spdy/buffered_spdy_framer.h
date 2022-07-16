@@ -29,6 +29,11 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
  public:
   BufferedSpdyFramerVisitorInterface() {}
 
+  BufferedSpdyFramerVisitorInterface(
+      const BufferedSpdyFramerVisitorInterface&) = delete;
+  BufferedSpdyFramerVisitorInterface& operator=(
+      const BufferedSpdyFramerVisitorInterface&) = delete;
+
   // Called if an error is detected in the spdy::SpdySerializedFrame protocol.
   virtual void OnError(
       http2::Http2DecoderAdapter::SpdyFramerError spdy_framer_error) = 0;
@@ -119,9 +124,6 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
 
  protected:
   virtual ~BufferedSpdyFramerVisitorInterface() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BufferedSpdyFramerVisitorInterface);
 };
 
 class NET_EXPORT_PRIVATE BufferedSpdyFramer
@@ -133,6 +135,10 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
                      const NetLogWithSource& net_log,
                      TimeFunc time_func = base::TimeTicks::Now);
   BufferedSpdyFramer() = delete;
+
+  BufferedSpdyFramer(const BufferedSpdyFramer&) = delete;
+  BufferedSpdyFramer& operator=(const BufferedSpdyFramer&) = delete;
+
   ~BufferedSpdyFramer() override;
 
   // Sets callbacks to be called from the buffered spdy framer.  A visitor must
@@ -279,8 +285,6 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
   const uint32_t max_header_list_size_;
   NetLogWithSource net_log_;
   TimeFunc time_func_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferedSpdyFramer);
 };
 
 }  // namespace net

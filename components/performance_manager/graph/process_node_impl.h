@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -58,6 +57,9 @@ class ProcessNodeImpl
 
   ProcessNodeImpl(content::ProcessType process_type,
                   RenderProcessHostProxy render_process_proxy);
+
+  ProcessNodeImpl(const ProcessNodeImpl&) = delete;
+  ProcessNodeImpl& operator=(const ProcessNodeImpl&) = delete;
 
   ~ProcessNodeImpl() override;
 
@@ -151,6 +153,11 @@ class ProcessNodeImpl
     return priority_.value();
   }
 
+  ContentTypes hosted_content_types() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return hosted_content_types_;
+  }
+
   // Add |frame_node| to this process.
   void AddFrame(FrameNodeImpl* frame_node);
   // Removes |frame_node| from the set of frames hosted by this process. Invoked
@@ -164,6 +171,9 @@ class ProcessNodeImpl
   void RemoveWorker(WorkerNodeImpl* worker_node);
 
   void set_priority(base::TaskPriority priority);
+
+  // Adds a new type of hosted content to the |hosted_content_types| bit field.
+  void add_hosted_content_type(ContentType content_type);
 
   void OnAllFramesInProcessFrozenForTesting() { OnAllFramesInProcessFrozen(); }
   static void FireBackgroundTracingTriggerOnUIForTesting(
@@ -201,6 +211,7 @@ class ProcessNodeImpl
   RenderProcessHostId GetRenderProcessHostId() const override;
   const RenderProcessHostProxy& GetRenderProcessHostProxy() const override;
   base::TaskPriority GetPriority() const override;
+  ContentTypes GetHostedContentTypes() const override;
 
   void OnAllFramesInProcessFrozen();
 
@@ -246,6 +257,10 @@ class ProcessNodeImpl
       priority_ GUARDED_BY_CONTEXT(sequence_checker_){
           base::TaskPriority::LOWEST};
 
+  // A bit field that indicates which type of content this process has hosted,
+  // either currently or in the past.
+  ContentTypes hosted_content_types_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   base::flat_set<FrameNodeImpl*> frame_nodes_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -263,8 +278,6 @@ class ProcessNodeImpl
   base::WeakPtr<ProcessNodeImpl> weak_this_;
   base::WeakPtrFactory<ProcessNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessNodeImpl);
 };
 
 }  // namespace performance_manager

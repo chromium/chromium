@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/table_model.h"
 #include "ui/views/controls/table/table_grouper.h"
@@ -27,6 +26,10 @@ class VIEWS_EXAMPLES_EXPORT TableExample : public ExampleBase,
                                            public TableViewObserver {
  public:
   TableExample();
+
+  TableExample(const TableExample&) = delete;
+  TableExample& operator=(const TableExample&) = delete;
+
   ~TableExample() override;
 
   // ExampleBase:
@@ -59,8 +62,6 @@ class VIEWS_EXAMPLES_EXPORT TableExample : public ExampleBase,
 
   SkBitmap icon1_;
   SkBitmap icon2_;
-
-  DISALLOW_COPY_AND_ASSIGN(TableExample);
 };
 
 }  // namespace examples

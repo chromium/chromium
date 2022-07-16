@@ -22,6 +22,9 @@ class NativeTimerTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  NativeTimerTest(const NativeTimerTest&) = delete;
+  NativeTimerTest& operator=(const NativeTimerTest&) = delete;
+
   ~NativeTimerTest() override = default;
 
   // testing::Test:
@@ -56,9 +59,6 @@ class NativeTimerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NativeTimerTest);
 };
 
 TEST_F(NativeTimerTest, CheckCreateFailure) {
@@ -69,8 +69,7 @@ TEST_F(NativeTimerTest, CheckCreateFailure) {
   create_timer_loop.RunUntilIdle();
 
   // Starting the timer should fail as timer creation failed.
-  EXPECT_FALSE(CheckStartTimerAndExpiration(
-      &timer, base::TimeDelta::FromMilliseconds(1000)));
+  EXPECT_FALSE(CheckStartTimerAndExpiration(&timer, base::Milliseconds(1000)));
 }
 
 TEST_F(NativeTimerTest, CheckCreateAndStartTimer) {
@@ -80,13 +79,11 @@ TEST_F(NativeTimerTest, CheckCreateAndStartTimer) {
   create_timer_loop.RunUntilIdle();
 
   // Start timer and check if starting the timer and its expiration succeeded.
-  EXPECT_TRUE(CheckStartTimerAndExpiration(
-      &timer, base::TimeDelta::FromMilliseconds(1000)));
+  EXPECT_TRUE(CheckStartTimerAndExpiration(&timer, base::Milliseconds(1000)));
 
   // Start another timer and check if starting the timer and its expiration
   // succeeded.
-  EXPECT_TRUE(CheckStartTimerAndExpiration(
-      &timer, base::TimeDelta::FromMilliseconds(1000)));
+  EXPECT_TRUE(CheckStartTimerAndExpiration(&timer, base::Milliseconds(1000)));
 }
 
 }  // namespace chromeos

@@ -122,7 +122,7 @@ void CastBrowserMetrics::CollectFinalMetricsForLog(
   // process termination will not be uploaded.
   content::FetchHistogramsAsynchronously(
       base::ThreadTaskRunnerHandle::Get(), std::move(done_callback),
-      base::TimeDelta::FromSeconds(kMetricsFetchTimeoutSeconds));
+      base::Seconds(kMetricsFetchTimeoutSeconds));
 }
 
 void CastBrowserMetrics::ProcessExternalEvents(base::OnceClosure cb) {

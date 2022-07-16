@@ -8,8 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-
 class Profile;
 
 namespace base {
@@ -19,6 +17,7 @@ struct DefaultSingletonTraits;
 
 namespace send_tab_to_self {
 
+class AndroidNotificationHandler;
 class ReceivingUiHandler;
 class SendTabToSelfToolbarIconController;
 
@@ -30,6 +29,11 @@ class ReceivingUiHandlerRegistry {
  public:
   // Returns the singleton instance of this class.
   static ReceivingUiHandlerRegistry* GetInstance();
+
+  ReceivingUiHandlerRegistry(const ReceivingUiHandlerRegistry&) = delete;
+  ReceivingUiHandlerRegistry& operator=(const ReceivingUiHandlerRegistry&) =
+      delete;
+
   void InstantiatePlatformSpecificHandlers(Profile* profile_);
 
   // Returns all the handlers to perform UI updates for the platform.
@@ -41,13 +45,17 @@ class ReceivingUiHandlerRegistry {
   SendTabToSelfToolbarIconController* GetToolbarButtonControllerForProfile(
       Profile* profile);
 
+  AndroidNotificationHandler* GetAndroidNotificationHandlerForProfile(
+      Profile* profile);
+
+  void OnProfileShutdown(Profile* profile);
+
  private:
   friend struct base::DefaultSingletonTraits<ReceivingUiHandlerRegistry>;
 
   ReceivingUiHandlerRegistry();
   ~ReceivingUiHandlerRegistry();
   std::vector<std::unique_ptr<ReceivingUiHandler>> applicable_handlers_;
-  DISALLOW_COPY_AND_ASSIGN(ReceivingUiHandlerRegistry);
 };
 
 }  // namespace send_tab_to_self

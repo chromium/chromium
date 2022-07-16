@@ -19,6 +19,10 @@ class FrameSinkResourceManager {
   using ReleaseCallback = base::OnceCallback<void(viz::ReturnedResource)>;
 
   FrameSinkResourceManager();
+
+  FrameSinkResourceManager(const FrameSinkResourceManager&) = delete;
+  FrameSinkResourceManager& operator=(const FrameSinkResourceManager&) = delete;
+
   ~FrameSinkResourceManager();
 
   bool HasReleaseCallbackForResource(viz::ResourceId id);
@@ -37,8 +41,6 @@ class FrameSinkResourceManager {
 
   // The id generator for the buffer.
   viz::ResourceIdGenerator id_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSinkResourceManager);
 };
 
 }  // namespace exo

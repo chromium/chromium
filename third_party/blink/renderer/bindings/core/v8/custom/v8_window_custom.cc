@@ -137,14 +137,21 @@ void V8Window::FrameElementAttributeGetterCustom(
   V8SetReturnValue(info, wrapper);
 }
 
-template <typename CallbackInfo>
-static void OpenerAttributeSet(v8::Local<v8::Value> value,
-                               const CallbackInfo& info) {
-  DOMWindow* impl = V8Window::ToImpl(info.Holder());
+void V8Window::OpenerAttributeSetterCustom(
+    v8::Local<v8::Value> value,
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  DOMWindow* impl = V8Window::ToWrappableUnsafe(info.This());
   impl->ReportCoopAccess("opener");
   if (!impl->GetFrame())
     return;
 
+  // https://html.spec.whatwg.org/C/#dom-opener
+  // 7.1.2.1. Navigating related browsing contexts in the DOM
+  // The opener attribute's setter must run these steps:
+  // step 1. If the given value is null and this Window object's browsing
+  //     context is non-null, then set this Window object's browsing context's
+  //     disowned to true.
+  //
   // Opener can be shadowed if it is in the same domain.
   // Have a special handling of null value to behave
   // like Firefox. See bug http://b/1224887 & http://b/791706.
@@ -155,35 +162,27 @@ static void OpenerAttributeSet(v8::Local<v8::Value> value,
     To<LocalFrame>(impl->GetFrame())->Loader().SetOpener(nullptr);
   }
 
+  // step 2. If the given value is non-null, then return
+  //     ? OrdinaryDefineOwnProperty(this Window object, "opener",
+  //     { [[Value]]: the given value, [[Writable]]: true,
+  //       [[Enumerable]]: true, [[Configurable]]: true }).
   v8::Isolate* isolate = info.GetIsolate();
-  // Delete the accessor from the inner object.
-  if (info.Holder()
-          ->Delete(isolate->GetCurrentContext(),
-                   V8AtomicString(isolate, "opener"))
-          .IsNothing()) {
+  v8::PropertyDescriptor desc(value, /*writable=*/true);
+  desc.set_enumerable(true);
+  desc.set_configurable(true);
+  bool result = false;
+  if (!info.This()
+           ->DefineProperty(isolate->GetCurrentContext(),
+                            V8AtomicString(isolate, "opener"), desc)
+           .To(&result)) {
     return;
   }
-
-  // Put property on the inner object.
-  if (info.Holder()->IsObject()) {
-    v8::Maybe<bool> unused =
-        v8::Local<v8::Object>::Cast(info.Holder())
-            ->Set(isolate->GetCurrentContext(),
-                  V8AtomicString(isolate, "opener"), value);
-    ALLOW_UNUSED_LOCAL(unused);
+  if (!result) {
+    ExceptionState exception_state(
+        isolate, ExceptionContext::Context::kAttributeSet, "Window", "opener");
+    exception_state.ThrowTypeError("Cannot redefine the property.");
+    return;
   }
-}
-
-void V8Window::OpenerAttributeSetterCustom(
-    v8::Local<v8::Value> value,
-    const v8::FunctionCallbackInfo<v8::Value>& info) {
-  OpenerAttributeSet(value, info);
-}
-
-void V8Window::OpenerAttributeSetterCustom(
-    v8::Local<v8::Value> value,
-    const v8::PropertyCallbackInfo<void>& info) {
-  OpenerAttributeSet(value, info);
 }
 
 void V8Window::NamedPropertyGetterCustom(
@@ -227,18 +226,6 @@ void V8Window::NamedPropertyGetterCustom(
         CurrentExecutionContext(info.GetIsolate()),
         WebFeature::
             kNamedAccessOnWindow_ChildBrowsingContext_CrossOriginNameMismatch);
-    if (!RuntimeEnabledFeatures::
-            IgnoreCrossOriginWindowWhenNamedAccessOnWindowEnabled()) {
-      // In addition to the above spec'ed case, we return the child window
-      // regardless of step 3 due to crbug.com/701489 for the time being.
-      // TODO(yukishiino): Makes iframe.name update the browsing context name
-      // appropriately and makes the new name available in the named access on
-      // window.  Then, removes the following two lines.
-      bindings::V8SetReturnValue(
-          info, child->DomWindow(), window,
-          bindings::V8ReturnValue::kMaybeCrossOriginWindow);
-      return;
-    }
   }
 
   // This is a cross-origin interceptor. Check that the caller has access to the

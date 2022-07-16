@@ -21,6 +21,9 @@ class WebpDecoderDelegate : public webp_transcode::WebpDecoder::Delegate {
  public:
   WebpDecoderDelegate() = default;
 
+  WebpDecoderDelegate(const WebpDecoderDelegate&) = delete;
+  WebpDecoderDelegate& operator=(const WebpDecoderDelegate&) = delete;
+
   NSData* data() const { return decoded_image_; }
 
   // WebpDecoder::Delegate methods
@@ -43,8 +46,6 @@ class WebpDecoderDelegate : public webp_transcode::WebpDecoder::Delegate {
  private:
   ~WebpDecoderDelegate() override {}
   NSMutableData* decoded_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebpDecoderDelegate);
 };
 
 // Content-type header for WebP images.

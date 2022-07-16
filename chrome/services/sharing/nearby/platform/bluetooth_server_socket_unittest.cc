@@ -189,7 +189,7 @@ TEST_F(BluetoothServerSocketTest, TestCloseInterruptsBlockingAccept) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
         bluetooth_server_socket_->Close();
       }),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 
   base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
   EXPECT_FALSE(bluetooth_server_socket_->Accept());

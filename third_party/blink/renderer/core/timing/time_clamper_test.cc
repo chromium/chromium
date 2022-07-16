@@ -21,9 +21,9 @@ TEST(TimeClamperTest, TimeStampsAreNonNegative) {
       0.f);
   EXPECT_GE(
       clamper
-          .ClampTimeResolution(base::TimeDelta::FromMicroseconds(
-                                   TimeClamper::kFineResolutionMicroseconds),
-                               true)
+          .ClampTimeResolution(
+              base::Microseconds(TimeClamper::kFineResolutionMicroseconds),
+              true)
           .InMicroseconds(),
       0.f);
 }
@@ -36,9 +36,7 @@ TEST(TimeClamperTest, TimeStampsIncreaseByFixedAmount) {
        time_microseconds < kIntervalInMicroseconds * 100;
        time_microseconds += 1) {
     int64_t clamped_time =
-        clamper
-            .ClampTimeResolution(
-                base::TimeDelta::FromMicroseconds(time_microseconds), true)
+        clamper.ClampTimeResolution(base::Microseconds(time_microseconds), true)
             .InMicroseconds();
     int64_t delta = clamped_time - prev;
     ASSERT_GE(delta, 0);
@@ -55,14 +53,10 @@ TEST(TimeClamperTest, ClampingIsDeterministic) {
        time_microseconds < kIntervalInMicroseconds * 100;
        time_microseconds += 1) {
     int64_t t1 =
-        clamper
-            .ClampTimeResolution(
-                base::TimeDelta::FromMicroseconds(time_microseconds), true)
+        clamper.ClampTimeResolution(base::Microseconds(time_microseconds), true)
             .InMicroseconds();
     int64_t t2 =
-        clamper
-            .ClampTimeResolution(
-                base::TimeDelta::FromMicroseconds(time_microseconds), true)
+        clamper.ClampTimeResolution(base::Microseconds(time_microseconds), true)
             .InMicroseconds();
     EXPECT_EQ(t1, t2);
   }
@@ -74,14 +68,10 @@ TEST(TimeClamperTest, ClampingNegativeNumbersIsConsistent) {
        time_microseconds < kIntervalInMicroseconds * 100;
        time_microseconds += 1) {
     int64_t t1 =
-        clamper
-            .ClampTimeResolution(
-                base::TimeDelta::FromMicroseconds(time_microseconds), true)
+        clamper.ClampTimeResolution(base::Microseconds(time_microseconds), true)
             .InMicroseconds();
     int64_t t2 =
-        clamper
-            .ClampTimeResolution(
-                base::TimeDelta::FromMicroseconds(time_microseconds), true)
+        clamper.ClampTimeResolution(base::Microseconds(time_microseconds), true)
             .InMicroseconds();
     EXPECT_EQ(t1, t2);
   }
@@ -92,15 +82,14 @@ TEST(TimeClamperTest, ClampingIsPerInstance) {
   TimeClamper clamper2;
   int64_t time_microseconds = 0;
   while (true) {
-    if (std::abs(
-            clamper1
-                .ClampTimeResolution(
-                    base::TimeDelta::FromMicroseconds(time_microseconds), true)
-                .InMicroseconds() -
-            clamper2
-                .ClampTimeResolution(
-                    base::TimeDelta::FromMicroseconds(time_microseconds), true)
-                .InMicroseconds()) >= 1) {
+    if (std::abs(clamper1
+                     .ClampTimeResolution(base::Microseconds(time_microseconds),
+                                          true)
+                     .InMicroseconds() -
+                 clamper2
+                     .ClampTimeResolution(base::Microseconds(time_microseconds),
+                                          true)
+                     .InMicroseconds()) >= 1) {
       break;
     }
     time_microseconds += kIntervalInMicroseconds;
@@ -123,18 +112,17 @@ void UniformityTest(int64_t time_microseconds,
   for (int i = 0; i < kSampleCount; i++) {
     int64_t start =
         clamper
-            .ClampTimeResolution(
-                base::TimeDelta::FromMicroseconds(time_microseconds),
-                cross_origin_isolated_capability)
+            .ClampTimeResolution(base::Microseconds(time_microseconds),
+                                 cross_origin_isolated_capability)
             .InMicroseconds();
     for (int step = 0; step < kBuckets; step++) {
       time_microseconds += kTimeStep;
-      if (std::abs(clamper
-                       .ClampTimeResolution(
-                           base::TimeDelta::FromMicroseconds(time_microseconds),
-                           cross_origin_isolated_capability)
-                       .InMicroseconds() -
-                   start) >= 1) {
+      if (std::abs(
+              clamper
+                  .ClampTimeResolution(base::Microseconds(time_microseconds),
+                                       cross_origin_isolated_capability)
+                  .InMicroseconds() -
+              start) >= 1) {
         histogram[step]++;
         // Skip to the next interval to make sure each measurement is
         // independent.

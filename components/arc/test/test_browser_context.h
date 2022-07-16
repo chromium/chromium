@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_TEST_TEST_BROWSER_CONTEXT_H_
 #define COMPONENTS_ARC_TEST_TEST_BROWSER_CONTEXT_H_
 
-#include "base/macros.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/test_browser_context.h"
 
@@ -18,6 +17,10 @@ namespace arc {
 class TestBrowserContext : public content::TestBrowserContext {
  public:
   TestBrowserContext();
+
+  TestBrowserContext(const TestBrowserContext&) = delete;
+  TestBrowserContext& operator=(const TestBrowserContext&) = delete;
+
   ~TestBrowserContext() override;
 
   inline PrefRegistrySimple* pref_registry() { return prefs_.registry(); }
@@ -25,8 +28,6 @@ class TestBrowserContext : public content::TestBrowserContext {
  private:
   BrowserContextDependencyManager* const browser_context_dependency_manager_;
   TestingPrefServiceSimple prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserContext);
 };
 
 }  // namespace arc

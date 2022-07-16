@@ -134,7 +134,7 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
   service.OverrideStoragePartitionForTesting(&partition);
 
   base::Time begin = base::Time::Now();
-  base::Time end = begin + base::TimeDelta::FromDays(1);
+  base::Time end = begin + base::Days(1);
   history::DeletionInfo deletion_info(
       history::DeletionTimeRange(begin, end), false /* is_from_expiration */,
       {} /* deleted_rows */, {} /* favicon_urls */,
@@ -163,7 +163,7 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
   std::set<GURL> restrict_urls = {origin_a};
 
   base::Time begin = base::Time::Now();
-  base::Time end = begin + base::TimeDelta::FromDays(1);
+  base::Time end = begin + base::Days(1);
   history::DeletionInfo deletion_info(
       history::DeletionTimeRange(begin, end), false /* is_from_expiration */,
       {} /* deleted_rows */, {} /* favicon_urls */,
@@ -200,7 +200,7 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
   std::set<GURL> restrict_urls = {origin_a};
 
   base::Time begin = base::Time::Now();
-  base::Time end = begin + base::TimeDelta::FromDays(1);
+  base::Time end = begin + base::Days(1);
   history::DeletionInfo deletion_info(
       history::DeletionTimeRange(begin, end), false /* is_from_expiration */,
       {} /* deleted_rows */, {} /* favicon_urls */,

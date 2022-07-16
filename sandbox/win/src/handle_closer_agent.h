@@ -19,6 +19,10 @@ namespace sandbox {
 class HandleCloserAgent {
  public:
   HandleCloserAgent();
+
+  HandleCloserAgent(const HandleCloserAgent&) = delete;
+  HandleCloserAgent& operator=(const HandleCloserAgent&) = delete;
+
   ~HandleCloserAgent();
 
   // Reads the serialized list from the broker and creates the lookup map.
@@ -37,8 +41,6 @@ class HandleCloserAgent {
 
   HandleMap handles_to_close_;
   base::win::ScopedHandle dummy_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(HandleCloserAgent);
 };
 
 }  // namespace sandbox

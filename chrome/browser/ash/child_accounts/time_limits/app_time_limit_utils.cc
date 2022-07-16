@@ -8,6 +8,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace app_time {
@@ -47,6 +48,11 @@ bool ContributesToWebTimeLimit(const AppId& app_id, AppState state) {
     return false;
 
   return IsWebAppOrExtension(app_id);
+}
+
+bool IsValidExtensionUrl(const GURL& app_url) {
+  return !app_url.is_empty() && !app_url.inner_url() &&
+         app_url.SchemeIs(extensions::kExtensionScheme);
 }
 
 }  // namespace app_time

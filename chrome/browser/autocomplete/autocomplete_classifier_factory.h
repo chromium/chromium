@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -22,6 +21,10 @@ class AutocompleteClassifierFactory : public BrowserContextKeyedServiceFactory {
   static AutocompleteClassifier* GetForProfile(Profile* profile);
 
   static AutocompleteClassifierFactory* GetInstance();
+
+  AutocompleteClassifierFactory(const AutocompleteClassifierFactory&) = delete;
+  AutocompleteClassifierFactory& operator=(
+      const AutocompleteClassifierFactory&) = delete;
 
   static std::unique_ptr<KeyedService> BuildInstanceFor(
       content::BrowserContext* context);
@@ -38,8 +41,6 @@ class AutocompleteClassifierFactory : public BrowserContextKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteClassifierFactory);
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_AUTOCOMPLETE_CLASSIFIER_FACTORY_H_

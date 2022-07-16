@@ -41,6 +41,9 @@ class StubTabHelper : public TabHelper {
                            base::WrapUnique(new StubTabHelper(web_state)));
   }
 
+  StubTabHelper(const StubTabHelper&) = delete;
+  StubTabHelper& operator=(const StubTabHelper&) = delete;
+
   // Adds the given task to tasks() lists.
   void Download(std::unique_ptr<web::DownloadTask> task) override {
     tasks_.push_back(std::move(task));
@@ -55,8 +58,6 @@ class StubTabHelper : public TabHelper {
       : TabHelper(web_state, /*delegate=*/nil) {}
 
   DownloadTasks tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(StubTabHelper);
 };
 
 // Substitutes ARQuickLookTabHelper for testing.
@@ -67,6 +68,9 @@ class TestARQuickLookTabHelper : public ARQuickLookTabHelper {
         ARQuickLookTabHelper::UserDataKey(),
         base::WrapUnique(new TestARQuickLookTabHelper(web_state)));
   }
+
+  TestARQuickLookTabHelper(const TestARQuickLookTabHelper&) = delete;
+  TestARQuickLookTabHelper& operator=(const TestARQuickLookTabHelper&) = delete;
 
   // Adds the given task to tasks() lists.
   void Download(std::unique_ptr<web::DownloadTask> task) override {
@@ -82,8 +86,6 @@ class TestARQuickLookTabHelper : public ARQuickLookTabHelper {
       : ARQuickLookTabHelper(web_state) {}
 
   DownloadTasks tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestARQuickLookTabHelper);
 };
 
 }  // namespace
@@ -266,25 +268,6 @@ TEST_F(BrowserDownloadServiceTest, PdfMimeType) {
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadMimeType",
       static_cast<base::HistogramBase::Sample>(DownloadMimeTypeResult::Other),
-      1);
-}
-
-// Tests that BrowserDownloadService uses DownloadManagerTabHelper for Mobile
-// Config Mime Type.
-TEST_F(BrowserDownloadServiceTest, iOSMobileConfigMimeType) {
-  ASSERT_TRUE(download_controller()->GetDelegate());
-  auto task = std::make_unique<web::FakeDownloadTask>(
-      GURL(kUrl), "application/x-apple-aspen-config");
-  web::DownloadTask* task_ptr = task.get();
-  download_controller()->GetDelegate()->OnDownloadCreated(
-      download_controller(), &web_state_, std::move(task));
-  ASSERT_TRUE(pass_kit_tab_helper()->tasks().empty());
-  ASSERT_EQ(1U, download_manager_tab_helper()->tasks().size());
-  EXPECT_EQ(task_ptr, download_manager_tab_helper()->tasks()[0].get());
-  histogram_tester_.ExpectUniqueSample(
-      "Download.IOSDownloadMimeType",
-      static_cast<base::HistogramBase::Sample>(
-          DownloadMimeTypeResult::iOSMobileConfig),
       1);
 }
 

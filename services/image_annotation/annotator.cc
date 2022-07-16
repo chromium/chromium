@@ -230,6 +230,38 @@ std::tuple<bool, std::vector<mojom::AnnotationPtr>> ParseJsonDescAnnotations(
   return {adult, std::move(results)};
 }
 
+// Extracts annotations from the given icon engine result.
+mojom::AnnotationPtr ParseJsonIconAnnotations(const base::Value& icon_engine) {
+  mojom::AnnotationPtr result;
+  if (!icon_engine.is_dict())
+    return {};
+
+  const base::Value* const icon_list = icon_engine.FindKey("icon");
+  if (!icon_list || !icon_list->is_list())
+    return {};
+
+  for (const base::Value& icon : icon_list->GetList()) {
+    if (!icon.is_dict())
+      continue;
+
+    const base::Value* const icon_type = icon.FindKey("iconType");
+    if (!icon_type || !icon_type->is_string())
+      continue;
+
+    std::string icon_type_value = icon_type->GetString();
+
+    const base::Value* const score = icon.FindKey("score");
+    if (!score || (!score->is_double() && !score->is_int()))
+      continue;
+
+    // Only return the first matching icon.
+    auto type = mojom::AnnotationType::kIcon;
+    return mojom::Annotation::New(type, score->GetDouble(), icon_type_value);
+  }
+
+  return {};
+}
+
 // Returns the integer status code for this engine, or -1 if no status can be
 // extracted.
 int ExtractStatusCode(const base::Value* const status_dict) {
@@ -289,6 +321,7 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
     bool adult = false;
     std::vector<mojom::AnnotationPtr> annotations;
     mojom::AnnotationPtr ocr_annotation;
+    mojom::AnnotationPtr icon_annotation;
     for (const base::Value& engine_result : engine_results->GetList()) {
       if (!engine_result.is_dict())
         continue;
@@ -306,6 +339,8 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
       const base::Value* const desc_engine =
           engine_result.FindKey("descriptionEngine");
       const base::Value* const ocr_engine = engine_result.FindKey("ocrEngine");
+      const base::Value* const icon_engine =
+          engine_result.FindKey("iconEngine");
 
       if (desc_engine) {
         // Add description annotations and update the adult image flag.
@@ -322,6 +357,10 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
           ocr_annotation =
               ParseJsonOcrAnnotation(*ocr_engine, min_ocr_confidence);
         }
+      } else if (icon_engine) {
+        if (status_code <= 0) {
+          icon_annotation = ParseJsonIconAnnotations(*icon_engine);
+        }
       }
 
       ReportEngineKnown(ocr_engine || desc_engine);
@@ -334,6 +373,19 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
         return a->type == mojom::AnnotationType::kOcr;
       });
       annotations.push_back(std::move(ocr_annotation));
+    }
+
+    // Remove labels and captions if the image is detected
+    // as an icon. Don't remove OCR as any text in the icon might
+    // be useful.
+    // TODO(accessibility): consider filtering some icon types here e.g.
+    // information.
+    if (!icon_annotation.is_null()) {
+      base::EraseIf(annotations, [](const mojom::AnnotationPtr& a) {
+        return a->type == mojom::AnnotationType::kLabel ||
+               a->type == mojom::AnnotationType::kCaption;
+      });
+      annotations.push_back(std::move(icon_annotation));
     }
 
     if (adult) {
@@ -356,6 +408,8 @@ static_assert(Annotator::kDescMinDimension > 0,
               "Description engine must accept images of some sizes.");
 static_assert(Annotator::kDescMaxAspectRatio > 0.0,
               "Description engine must accept images of some aspect ratios.");
+static_assert(Annotator::kIconMinDimension > 0,
+              "Icon engine must accept images of some sizes.");
 
 Annotator::ClientRequestInfo::ClientRequestInfo(
     mojo::PendingRemote<mojom::ImageProcessor> in_image_processor,
@@ -368,10 +422,12 @@ Annotator::ClientRequestInfo::~ClientRequestInfo() = default;
 Annotator::ServerRequestInfo::ServerRequestInfo(
     const std::string& in_source_id,
     const bool in_desc_requested,
+    const bool in_icon_requested,
     const std::string& in_desc_lang_tag,
     const std::vector<uint8_t>& in_image_bytes)
     : source_id(in_source_id),
       desc_requested(in_desc_requested),
+      icon_requested(in_icon_requested),
       desc_lang_tag(in_desc_lang_tag),
       image_bytes(in_image_bytes) {}
 
@@ -485,6 +541,23 @@ bool Annotator::IsWithinDescPolicy(const int32_t width, const int32_t height) {
 }
 
 // static
+bool Annotator::IsWithinIconPolicy(const int32_t width, const int32_t height) {
+  if (width < kIconMinDimension || height < kIconMinDimension ||
+      width > kIconMaxDimension || height > kIconMaxDimension) {
+    return false;
+  }
+
+  // Can't be 0 or inf because |kIconMinDimension| is guaranteed positive (via a
+  // static_assert).
+  const double aspect_ratio = static_cast<double>(width) / height;
+  if (aspect_ratio < 1.0 / kIconMaxAspectRatio ||
+      aspect_ratio > kIconMaxAspectRatio)
+    return false;
+
+  return true;
+}
+
+// static
 std::string Annotator::FormatJsonRequest(
     const std::deque<ServerRequestInfo>::iterator begin,
     const std::deque<ServerRequestInfo>::iterator end) {
@@ -525,6 +598,17 @@ std::string Annotator::FormatJsonRequest(
       engine_params_list.Append(std::move(engine_params));
     }
     ReportImageRequestIncludesDesc(it->desc_requested);
+
+    // Request icon classification.
+    // TODO(accessibility): Maybe only do this for certain
+    // file sizes?
+    if (it->icon_requested) {
+      base::Value icon_params(base::Value::Type::DICTIONARY);
+      base::Value engine_params(base::Value::Type::DICTIONARY);
+      engine_params.SetKey("iconParameters", std::move(icon_params));
+      engine_params_list.Append(std::move(engine_params));
+    }
+    ReportImageRequestIncludesIcon(it->icon_requested);
 
     base::Value image_request(base::Value::Type::DICTIONARY);
     image_request.SetKey(
@@ -626,9 +710,9 @@ void Annotator::OnJpgImageDataReceived(
   local_processors_.erase(request_key);
 
   // Schedule a server request for this image.
-  server_request_queue_.emplace_front(source_id,
-                                      IsWithinDescPolicy(width, height),
-                                      request_language, image_bytes);
+  server_request_queue_.emplace_front(
+      source_id, IsWithinDescPolicy(width, height),
+      IsWithinIconPolicy(width, height), request_language, image_bytes);
   pending_requests_.insert(request_key);
 
   // Start sending batches to the server.

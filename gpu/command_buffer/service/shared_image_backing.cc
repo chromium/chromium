@@ -47,6 +47,10 @@ void SharedImageBacking::OnContextLost() {
   have_context_ = false;
 }
 
+bool SharedImageBacking::CopyToGpuMemoryBuffer() {
+  return false;
+}
+
 bool SharedImageBacking::PresentSwapChain() {
   return false;
 }
@@ -99,6 +103,12 @@ SharedImageBacking::ProduceVASurface(SharedImageManager* manager,
 
 std::unique_ptr<SharedImageRepresentationMemory>
 SharedImageBacking::ProduceMemory(SharedImageManager* manager,
+                                  MemoryTypeTracker* tracker) {
+  return nullptr;
+}
+
+std::unique_ptr<SharedImageRepresentationRaster>
+SharedImageBacking::ProduceRaster(SharedImageManager* manager,
                                   MemoryTypeTracker* tracker) {
   return nullptr;
 }

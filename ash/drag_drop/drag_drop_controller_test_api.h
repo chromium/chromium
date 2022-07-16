@@ -7,22 +7,24 @@
 
 #include "ash/ash_export.h"
 #include "ash/drag_drop/drag_drop_controller.h"
-#include "base/macros.h"
 
 namespace ash {
 
 class DragDropControllerTestApi {
  public:
-  DragDropControllerTestApi(DragDropController* controller)
+  explicit DragDropControllerTestApi(DragDropController* controller)
       : controller_(controller) {}
+
+  DragDropControllerTestApi(const DragDropControllerTestApi&) = delete;
+  DragDropControllerTestApi& operator=(const DragDropControllerTestApi&) =
+      delete;
+
   ~DragDropControllerTestApi() = default;
 
   bool enabled() const { return controller_->enabled_; }
 
  private:
   DragDropController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(DragDropControllerTestApi);
 };
 
 }  // namespace ash

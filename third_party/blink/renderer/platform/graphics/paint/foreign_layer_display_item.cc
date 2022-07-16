@@ -16,14 +16,16 @@
 namespace blink {
 
 ForeignLayerDisplayItem::ForeignLayerDisplayItem(
-    const DisplayItemClient& client,
+    DisplayItemClientId client_id,
     Type type,
     scoped_refptr<cc::Layer> layer,
-    const IntPoint& offset,
+    const gfx::Point& origin,
+    RasterEffectOutset outset,
     PaintInvalidationReason paint_invalidation_reason)
-    : DisplayItem(client,
+    : DisplayItem(client_id,
                   type,
-                  IntRect(offset, IntSize(layer->bounds())),
+                  gfx::Rect(origin, layer->bounds()),
+                  outset,
                   paint_invalidation_reason),
       layer_(std::move(layer)) {
   DCHECK(IsForeignLayerType(type));
@@ -45,7 +47,7 @@ void RecordForeignLayer(GraphicsContext& context,
                         const DisplayItemClient& client,
                         DisplayItem::Type type,
                         scoped_refptr<cc::Layer> layer,
-                        const IntPoint& offset,
+                        const gfx::Point& origin,
                         const PropertyTreeStateOrAlias* properties) {
   PaintController& paint_controller = context.GetPaintController();
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
@@ -61,14 +63,15 @@ void RecordForeignLayer(GraphicsContext& context,
   absl::optional<PropertyTreeStateOrAlias> previous_properties;
   if (properties) {
     previous_properties.emplace(paint_controller.CurrentPaintChunkProperties());
-    paint_controller.UpdateCurrentPaintChunkProperties(nullptr, *properties);
+    paint_controller.UpdateCurrentPaintChunkProperties(*properties);
   }
   paint_controller.CreateAndAppend<ForeignLayerDisplayItem>(
-      client, type, std::move(layer), offset,
+      client, type, std::move(layer), origin,
+      client.VisualRectOutsetForRasterEffects(),
       client.GetPaintInvalidationReason());
+  paint_controller.RecordDebugInfo(client);
   if (properties) {
-    paint_controller.UpdateCurrentPaintChunkProperties(nullptr,
-                                                       *previous_properties);
+    paint_controller.UpdateCurrentPaintChunkProperties(*previous_properties);
   }
 }
 

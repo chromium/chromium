@@ -39,8 +39,10 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   // filenames).
   explicit BreadcrumbPersistentStorageManager(
       const base::FilePath& directory,
-      const absl::optional<base::FilePath>& old_breadcrumbs_file_path,
-      const absl::optional<base::FilePath>& old_breadcrumbs_temp_file_path);
+      const absl::optional<base::FilePath>& old_breadcrumbs_file_path =
+          absl::nullopt,
+      const absl::optional<base::FilePath>& old_breadcrumbs_temp_file_path =
+          absl::nullopt);
   ~BreadcrumbPersistentStorageManager() override;
   BreadcrumbPersistentStorageManager(
       const BreadcrumbPersistentStorageManager&) = delete;

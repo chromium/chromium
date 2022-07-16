@@ -98,7 +98,7 @@ TEST(MultipartResponseTest, NoStartBoundary) {
       "This is a sample response\n"
       "--bound--"
       "ignore junk after end token --bound\n\nTest2\n";
-  parser->AppendData(kData, strlen(kData));
+  parser->AppendData(kData, static_cast<wtf_size_t>(strlen(kData)));
   ASSERT_EQ(1u, client->responses_.size());
   ASSERT_EQ(1u, client->data_.size());
   EXPECT_EQ("This is a sample response", ToString(client->data_[0]));
@@ -124,7 +124,7 @@ TEST(MultipartResponseTest, NoEndBoundary) {
   const char kData[] =
       "bound\nContent-type: text/plain\n\n"
       "This is a sample response\n";
-  parser->AppendData(kData, strlen(kData));
+  parser->AppendData(kData, static_cast<wtf_size_t>(strlen(kData)));
   ASSERT_EQ(1u, client->responses_.size());
   ASSERT_EQ(1u, client->data_.size());
   EXPECT_EQ("This is a sample ", ToString(client->data_[0]));
@@ -150,7 +150,7 @@ TEST(MultipartResponseTest, NoStartAndEndBoundary) {
   const char kData[] =
       "Content-type: text/plain\n\n"
       "This is a sample response\n";
-  parser->AppendData(kData, strlen(kData));
+  parser->AppendData(kData, static_cast<wtf_size_t>(strlen(kData)));
   ASSERT_EQ(1u, client->responses_.size());
   ASSERT_EQ(1u, client->data_.size());
   EXPECT_EQ("This is a sample ", ToString(client->data_[0]));
@@ -180,7 +180,7 @@ TEST(MultipartResponseTest, MalformedBoundary) {
       "This is a sample response\n"
       "--bound--"
       "ignore junk after end token --bound\n\nTest2\n";
-  parser->AppendData(kData, strlen(kData));
+  parser->AppendData(kData, static_cast<wtf_size_t>(strlen(kData)));
   ASSERT_EQ(1u, client->responses_.size());
   ASSERT_EQ(1u, client->data_.size());
   EXPECT_EQ("This is a sample response", ToString(client->data_[0]));
@@ -335,7 +335,7 @@ TEST(MultipartResponseTest, SmallChunk) {
       "\n\n--boundContent-type: text/plain\n\n"
       "--boundContent-type: text/plain\n\n"
       "end--bound--";
-  parser->AppendData(kData, strlen(kData));
+  parser->AppendData(kData, static_cast<wtf_size_t>(strlen(kData)));
   ASSERT_EQ(4u, client->responses_.size());
   ASSERT_EQ(4u, client->data_.size());
   EXPECT_EQ("", ToString(client->data_[0]));
@@ -365,7 +365,7 @@ TEST(MultipartResponseTest, MultipleBoundaries) {
                                                          client);
 
   const char kData[] = "--bound\r\n\r\n--bound\r\n\r\nfoofoo--bound--";
-  parser->AppendData(kData, strlen(kData));
+  parser->AppendData(kData, static_cast<wtf_size_t>(strlen(kData)));
   ASSERT_EQ(2u, client->responses_.size());
   ASSERT_EQ(2u, client->data_.size());
   EXPECT_EQ("", ToString(client->data_[0]));

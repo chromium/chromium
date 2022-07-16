@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_METRICS_HISTOGRAMS_INTERNALS_UI_H_
 #define CONTENT_BROWSER_METRICS_HISTOGRAMS_INTERNALS_UI_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
 namespace content {
@@ -16,8 +15,8 @@ class HistogramsInternalsUI : public WebUIController {
  public:
   explicit HistogramsInternalsUI(WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(HistogramsInternalsUI);
+  HistogramsInternalsUI(const HistogramsInternalsUI&) = delete;
+  HistogramsInternalsUI& operator=(const HistogramsInternalsUI&) = delete;
 };
 
 }  // namespace content

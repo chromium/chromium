@@ -18,6 +18,12 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP)
     : public mojom::BackgroundTracingAgentProvider {
  public:
   BackgroundTracingAgentProviderImpl();
+
+  BackgroundTracingAgentProviderImpl(
+      const BackgroundTracingAgentProviderImpl&) = delete;
+  BackgroundTracingAgentProviderImpl& operator=(
+      const BackgroundTracingAgentProviderImpl&) = delete;
+
   ~BackgroundTracingAgentProviderImpl() override;
 
   void AddBinding(
@@ -32,8 +38,6 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP)
  private:
   mojo::ReceiverSet<mojom::BackgroundTracingAgentProvider> self_receiver_set_;
   mojo::UniqueReceiverSet<mojom::BackgroundTracingAgent> agent_receiver_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTracingAgentProviderImpl);
 };
 
 }  // namespace tracing

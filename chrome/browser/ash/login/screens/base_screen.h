@@ -10,7 +10,6 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -30,6 +29,10 @@ class BaseScreen {
   constexpr static const char kNotApplicable[] = "NotApplicable";
 
   BaseScreen(OobeScreenId screen_id, OobeScreenPriority screen_priority);
+
+  BaseScreen(const BaseScreen&) = delete;
+  BaseScreen& operator=(const BaseScreen&) = delete;
+
   virtual ~BaseScreen();
 
   // Makes wizard screen visible.
@@ -65,7 +68,7 @@ class BaseScreen {
   // counterpart. Not called if the screen is hidden
   virtual void OnUserAction(const std::string& action_id);
 
-  WizardContext* context() { return wizard_context_; }
+  WizardContext* context() const { return wizard_context_; }
 
  private:
   bool is_hidden_ = true;
@@ -77,8 +80,6 @@ class BaseScreen {
   const OobeScreenId screen_id_;
 
   const OobeScreenPriority screen_priority_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseScreen);
 };
 
 }  // namespace ash

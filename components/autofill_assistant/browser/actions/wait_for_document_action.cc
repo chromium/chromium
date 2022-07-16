@@ -86,8 +86,8 @@ void WaitForDocumentAction::OnGetStartState(const ClientStatus& status,
     return;
   }
 
-  base::TimeDelta timeout = base::TimeDelta::FromMilliseconds(
-      proto_.wait_for_document().timeout_ms());
+  base::TimeDelta timeout =
+      base::Milliseconds(proto_.wait_for_document().timeout_ms());
   if (timeout.is_zero()) {
     SendResult(ClientStatus(TIMED_OUT), start_state);
     return;

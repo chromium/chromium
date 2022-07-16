@@ -10,9 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/arc/mojom/timer.mojom.h"
 #include "components/arc/session/connection_observer.h"
@@ -49,6 +48,10 @@ class ArcTimerBridge : public KeyedService,
 
   ArcTimerBridge(content::BrowserContext* context,
                  ArcBridgeService* bridge_service);
+
+  ArcTimerBridge(const ArcTimerBridge&) = delete;
+  ArcTimerBridge& operator=(const ArcTimerBridge&) = delete;
+
   ~ArcTimerBridge() override;
 
   // ConnectionObserver<mojom::TimerInstance>::Observer overrides.
@@ -88,8 +91,6 @@ class ArcTimerBridge : public KeyedService,
   mojo::Receiver<mojom::TimerHost> receiver_{this};
 
   base::WeakPtrFactory<ArcTimerBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTimerBridge);
 };
 
 }  // namespace arc

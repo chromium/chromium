@@ -23,8 +23,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_RARE_DATA_H_
 
 #include <memory>
+#include "base/token.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
+#include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/css/inline_css_style_declaration.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
@@ -41,11 +43,12 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
-class ContainerQueryEvaluator;
+class ContainerQueryData;
 class Element;
 class HTMLElement;
 class ResizeObservation;
@@ -146,6 +149,20 @@ class ElementRareData final : public NodeRareData {
     return element_internals_;
   }
 
+  // Returns the crop-ID if one was set, or nullptr otherwise.
+  const RegionCaptureCropId* GetRegionCaptureCropId() const {
+    return region_capture_crop_id_.get();
+  }
+
+  // Sets a crop-ID on the item. Must be called at most once. Cannot be used
+  // to unset a previously set crop-ID.
+  void SetRegionCaptureCropId(std::unique_ptr<RegionCaptureCropId> crop_id) {
+    DCHECK(!GetRegionCaptureCropId());
+    DCHECK(crop_id);
+    DCHECK(!crop_id->value().is_zero());
+    region_capture_crop_id_ = std::move(crop_id);
+  }
+
   void SetStyleShouldForceLegacyLayout(bool force) {
     style_should_force_legacy_layout_ = force;
   }
@@ -204,11 +221,27 @@ class ElementRareData final : public NodeRareData {
   DisplayLockContext* GetDisplayLockContext() const {
     return display_lock_context_;
   }
+
+  ContainerQueryData& EnsureContainerQueryData() {
+    DCHECK(RuntimeEnabledFeatures::CSSContainerQueriesEnabled());
+    if (!container_query_data_)
+      container_query_data_ = MakeGarbageCollected<ContainerQueryData>();
+    return *container_query_data_;
+  }
+  ContainerQueryData* GetContainerQueryData() const {
+    return container_query_data_;
+  }
+
   ContainerQueryEvaluator* GetContainerQueryEvaluator() const {
-    return container_query_evaluator_;
+    if (!container_query_data_)
+      return nullptr;
+    return container_query_data_->GetContainerQueryEvaluator();
   }
   void SetContainerQueryEvaluator(ContainerQueryEvaluator* evaluator) {
-    container_query_evaluator_ = evaluator;
+    if (container_query_data_)
+      container_query_data_->SetContainerQueryEvaluator(evaluator);
+    else if (evaluator)
+      EnsureContainerQueryData().SetContainerQueryEvaluator(evaluator);
   }
 
   const AtomicString& GetNonce() const { return nonce_; }
@@ -244,7 +277,11 @@ class ElementRareData final : public NodeRareData {
   Member<AccessibleNode> accessible_node_;
 
   Member<DisplayLockContext> display_lock_context_;
-  Member<ContainerQueryEvaluator> container_query_evaluator_;
+  Member<ContainerQueryData> container_query_data_;
+  std::unique_ptr<RegionCaptureCropId> region_capture_crop_id_;
+
+  // NOTE: Booleans should be contiguous since the compiler will optimize them
+  // into a single memory address.
   bool did_attach_internals_ = false;
   bool should_force_legacy_layout_for_child_ = false;
   bool style_should_force_legacy_layout_ = false;

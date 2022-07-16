@@ -5,7 +5,6 @@
 #include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"

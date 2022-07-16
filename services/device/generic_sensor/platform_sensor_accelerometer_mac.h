@@ -7,10 +7,11 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "services/device/generic_sensor/platform_sensor.h"
-
-class SuddenMotionSensor;
+#include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 
 namespace device {
 
@@ -26,6 +27,11 @@ class PlatformSensorAccelerometerMac : public PlatformSensor {
   PlatformSensorAccelerometerMac(SensorReadingSharedBuffer* reading_buffer,
                                  PlatformSensorProvider* provider);
 
+  PlatformSensorAccelerometerMac(const PlatformSensorAccelerometerMac&) =
+      delete;
+  PlatformSensorAccelerometerMac& operator=(
+      const PlatformSensorAccelerometerMac&) = delete;
+
   mojom::ReportingMode GetReportingMode() override;
   // Can only be called once, the first time or after a StopSensor call.
   bool StartSensor(const PlatformSensorConfiguration& configuration) override;
@@ -38,16 +44,19 @@ class PlatformSensorAccelerometerMac : public PlatformSensor {
   PlatformSensorConfiguration GetDefaultConfiguration() override;
 
  private:
-  void PollForData();
+  class BlockingTaskRunnerHelper;
 
-  std::unique_ptr<SuddenMotionSensor> sudden_motion_sensor_;
+  void OnReadingAvailable(SensorReading reading);
+
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
+  std::unique_ptr<BlockingTaskRunnerHelper, base::OnTaskRunnerDeleter>
+      blocking_task_helper_;
 
   SensorReading reading_;
 
-  // Repeating timer for data polling.
-  base::RepeatingTimer timer_;
+  bool is_reading_active_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorAccelerometerMac);
+  base::WeakPtrFactory<PlatformSensorAccelerometerMac> weak_factory_{this};
 };
 
 }  // namespace device

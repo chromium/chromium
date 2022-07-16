@@ -7,7 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 js_library("cast_feedback_ui_test") {
   deps = [
     "..:chai_assert",
-    "..:test_browser_proxy.m",
+    "..:test_browser_proxy",
     "//chrome/browser/resources/media_router:cast_feedback_ui",
     "//ui/webui/resources/js:cr.m",
   ]

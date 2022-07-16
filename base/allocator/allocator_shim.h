@@ -2,15 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
+// 资料：https://www.cnblogs.com/haomiao/p/4790298.html
+
 #ifndef BASE_ALLOCATOR_ALLOCATOR_SHIM_H_
 #define BASE_ALLOCATOR_ALLOCATOR_SHIM_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/base_export.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
+#endif
 
 namespace base {
 namespace allocator {
@@ -164,14 +173,20 @@ BASE_EXPORT void ConfigurePartitionAlloc();
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
 
-  BASE_EXPORT void ReconfigurePartitionAllocLazyCommit();
+BASE_EXPORT void ReconfigurePartitionAllocLazyCommit(bool enabled);
 
-  BASE_EXPORT void ConfigurePartitionRefCountSupport(bool enable_ref_count);
-#endif
+using EnableBrp = base::StrongAlias<class EnableBrpTag, bool>;
+using ForceSplitPartitions =
+    base::StrongAlias<class ForceSplitPartitionsTag, bool>;
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
-BASE_EXPORT void EnablePCScan(bool dcscan);
+BASE_EXPORT void ConfigurePartitions(
+    EnableBrp enable_brp,
+    ForceSplitPartitions force_split_partitions);
+
+#if defined(PA_ALLOW_PCSCAN)
+BASE_EXPORT void EnablePCScan(base::internal::PCScan::InitConfig);
 #endif
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace allocator
 }  // namespace base

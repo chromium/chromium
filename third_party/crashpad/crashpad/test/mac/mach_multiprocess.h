@@ -18,7 +18,6 @@
 #include <mach/mach.h>
 #include <unistd.h>
 
-#include "base/macros.h"
 #include "test/multiprocess.h"
 
 namespace crashpad {
@@ -42,6 +41,9 @@ struct MachMultiprocessInfo;
 class MachMultiprocess : public Multiprocess {
  public:
   MachMultiprocess();
+
+  MachMultiprocess(const MachMultiprocess&) = delete;
+  MachMultiprocess& operator=(const MachMultiprocess&) = delete;
 
   void Run();
 
@@ -110,8 +112,6 @@ class MachMultiprocess : public Multiprocess {
   virtual void MachMultiprocessChild() = 0;
 
   internal::MachMultiprocessInfo* info_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachMultiprocess);
 };
 
 }  // namespace test

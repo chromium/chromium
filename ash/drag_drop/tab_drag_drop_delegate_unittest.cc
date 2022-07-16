@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -22,6 +23,7 @@
 #include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,6 +35,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/vector2d.h"
 
+using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -47,10 +50,18 @@ class MockShellDelegate : public TestShellDelegate {
   ~MockShellDelegate() override = default;
 
   MOCK_METHOD(bool, IsTabDrag, (const ui::OSExchangeData&), (override));
+};
 
-  MOCK_METHOD(aura::Window*,
-              CreateBrowserForTabDrop,
-              (aura::Window*, const ui::OSExchangeData&),
+class MockNewWindowDelegate : public TestNewWindowDelegate {
+ public:
+  MockNewWindowDelegate() = default;
+  ~MockNewWindowDelegate() override = default;
+
+  MOCK_METHOD(void,
+              NewWindowForDetachingTab,
+              (aura::Window*,
+               const ui::OSExchangeData&,
+               NewWindowForDetachingTabCallback),
               (override));
 };
 
@@ -66,6 +77,13 @@ class TabDragDropDelegateTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    auto mock_new_window_delegate =
+        std::make_unique<NiceMock<MockNewWindowDelegate>>();
+    mock_new_window_delegate_ptr_ = mock_new_window_delegate.get();
+    test_new_window_delegate_provider_ =
+        std::make_unique<TestNewWindowDelegateProvider>(
+            std::move(mock_new_window_delegate));
+
     auto mock_shell_delegate = std::make_unique<NiceMock<MockShellDelegate>>();
     mock_shell_delegate_ = mock_shell_delegate.get();
     AshTestBase::SetUp(std::move(mock_shell_delegate));
@@ -83,14 +101,24 @@ class TabDragDropDelegateTest : public AshTestBase {
 
     // Clear our pointer before the object is destroyed.
     mock_shell_delegate_ = nullptr;
+    test_new_window_delegate_provider_.reset();
     AshTestBase::TearDown();
   }
 
   MockShellDelegate* mock_shell_delegate() { return mock_shell_delegate_; }
 
+  MockNewWindowDelegate* mock_new_window_delegate() {
+    return static_cast<MockNewWindowDelegate*>(
+        NewWindowDelegate::GetInstance());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   NiceMock<MockShellDelegate>* mock_shell_delegate_ = nullptr;
+
+  std::unique_ptr<TestNewWindowDelegateProvider>
+      test_new_window_delegate_provider_;
+  NiceMock<MockNewWindowDelegate>* mock_new_window_delegate_ptr_ = nullptr;
 
   std::unique_ptr<aura::Window> dummy_window_;
 };
@@ -108,7 +136,8 @@ TEST_F(TabDragDropDelegateTest, DragToExistingTabStrip) {
   std::unique_ptr<aura::Window> source_window = CreateToplevelTestWindow();
 
   // A new window shouldn't be created in this case.
-  EXPECT_CALL(*mock_shell_delegate(), CreateBrowserForTabDrop(_, _)).Times(0);
+  EXPECT_CALL(*mock_new_window_delegate(), NewWindowForDetachingTab(_, _, _))
+      .Times(0);
 
   // Emulate a drag session whose drop target accepts the drop. In this
   // case, TabDragDropDelegate::Drop() is not called.
@@ -130,22 +159,22 @@ TEST_F(TabDragDropDelegateTest, DragToNewWindow) {
 
   const gfx::Point drag_start_location = source_window->bounds().CenterPoint();
   // Emulate a drag session ending in a drop to a new window.
-  TabDragDropDelegate delegate(Shell::GetPrimaryRootWindow(),
-                               source_window.get(), drag_start_location);
-  delegate.DragUpdate(drag_start_location);
-  delegate.DragUpdate(drag_start_location + gfx::Vector2d(1, 0));
-  delegate.DragUpdate(drag_start_location + gfx::Vector2d(2, 0));
+  auto delegate = std::make_unique<TabDragDropDelegate>(
+      Shell::GetPrimaryRootWindow(), source_window.get(), drag_start_location);
+  delegate->DragUpdate(drag_start_location);
+  delegate->DragUpdate(drag_start_location + gfx::Vector2d(1, 0));
+  delegate->DragUpdate(drag_start_location + gfx::Vector2d(2, 0));
 
   // Check that a new window is requested. Assume the correct drop data
   // is passed. Return the new window.
   std::unique_ptr<aura::Window> new_window = CreateToplevelTestWindow();
-  EXPECT_CALL(*mock_shell_delegate(),
-              CreateBrowserForTabDrop(source_window.get(), _))
+  EXPECT_CALL(*mock_new_window_delegate(),
+              NewWindowForDetachingTab(source_window.get(), _, _))
       .Times(1)
-      .WillOnce(Return(new_window.get()));
+      .WillOnce(RunOnceCallback<2>(new_window.get()));
 
-  delegate.Drop(drag_start_location + gfx::Vector2d(2, 0),
-                ui::OSExchangeData());
+  delegate.release()->DropAndDeleteSelf(
+      drag_start_location + gfx::Vector2d(2, 0), ui::OSExchangeData());
 
   EXPECT_FALSE(
       SplitViewController::Get(source_window.get())->InTabletSplitViewMode());
@@ -168,18 +197,19 @@ TEST_F(TabDragDropDelegateTest, DropOnEdgeEntersSplitView) {
           source_window.get())
           .right_center();
 
-  TabDragDropDelegate delegate(Shell::GetPrimaryRootWindow(),
-                               source_window.get(), drag_start_location);
-  delegate.DragUpdate(drag_start_location);
-  delegate.DragUpdate(drag_end_location);
+  auto delegate = std::make_unique<TabDragDropDelegate>(
+      Shell::GetPrimaryRootWindow(), source_window.get(), drag_start_location);
+  delegate->DragUpdate(drag_start_location);
+  delegate->DragUpdate(drag_end_location);
 
   new_window = CreateToplevelTestWindow();
-  EXPECT_CALL(*mock_shell_delegate(),
-              CreateBrowserForTabDrop(source_window.get(), _))
+  EXPECT_CALL(*mock_new_window_delegate(),
+              NewWindowForDetachingTab(source_window.get(), _, _))
       .Times(1)
-      .WillOnce(Return(new_window.get()));
+      .WillOnce(RunOnceCallback<2>(new_window.get()));
 
-  delegate.Drop(drag_end_location, ui::OSExchangeData());
+  delegate.release()->DropAndDeleteSelf(drag_end_location,
+                                        ui::OSExchangeData());
 
   SplitViewController* const split_view_controller =
       SplitViewController::Get(source_window.get());
@@ -207,16 +237,17 @@ TEST_F(TabDragDropDelegateTest, DropTabInSplitViewMode) {
   // Emulate a drag to the right side of the screen.
   // |new_window1| should snap to the right split view.
   gfx::Point drag_end_location_right(area.width() * 0.8, area.height() * 0.5);
-  TabDragDropDelegate delegate1(Shell::GetPrimaryRootWindow(),
-                                source_window.get(), drag_start_location);
-  delegate1.DragUpdate(drag_start_location);
-  delegate1.DragUpdate(drag_end_location_right);
+  auto delegate1 = std::make_unique<TabDragDropDelegate>(
+      Shell::GetPrimaryRootWindow(), source_window.get(), drag_start_location);
+  delegate1->DragUpdate(drag_start_location);
+  delegate1->DragUpdate(drag_end_location_right);
   std::unique_ptr<aura::Window> new_window1 = CreateToplevelTestWindow();
-  EXPECT_CALL(*mock_shell_delegate(),
-              CreateBrowserForTabDrop(source_window.get(), _))
+  EXPECT_CALL(*mock_new_window_delegate(),
+              NewWindowForDetachingTab(source_window.get(), _, _))
       .Times(1)
-      .WillOnce(Return(new_window1.get()));
-  delegate1.Drop(drag_end_location_right, ui::OSExchangeData());
+      .WillOnce(RunOnceCallback<2>(new_window1.get()));
+  delegate1.release()->DropAndDeleteSelf(drag_end_location_right,
+                                         ui::OSExchangeData());
 
   EXPECT_TRUE(split_view_controller->InTabletSplitViewMode());
   EXPECT_EQ(new_window1.get(), split_view_controller->GetSnappedWindow(
@@ -229,16 +260,17 @@ TEST_F(TabDragDropDelegateTest, DropTabInSplitViewMode) {
   // |new_window2| should snap to the left split view.
   // |source_window| should go into overview mode.
   gfx::Point drag_end_location_left(area.width() * 0.2, area.height() * 0.5);
-  TabDragDropDelegate delegate2(Shell::GetPrimaryRootWindow(),
-                                source_window.get(), drag_start_location);
-  delegate2.DragUpdate(drag_start_location);
-  delegate2.DragUpdate(drag_end_location_left);
+  auto delegate2 = std::make_unique<TabDragDropDelegate>(
+      Shell::GetPrimaryRootWindow(), source_window.get(), drag_start_location);
+  delegate2->DragUpdate(drag_start_location);
+  delegate2->DragUpdate(drag_end_location_left);
   std::unique_ptr<aura::Window> new_window2 = CreateToplevelTestWindow();
-  EXPECT_CALL(*mock_shell_delegate(),
-              CreateBrowserForTabDrop(source_window.get(), _))
+  EXPECT_CALL(*mock_new_window_delegate(),
+              NewWindowForDetachingTab(source_window.get(), _, _))
       .Times(1)
-      .WillOnce(Return(new_window2.get()));
-  delegate2.Drop(drag_end_location_left, ui::OSExchangeData());
+      .WillOnce(RunOnceCallback<2>(new_window2.get()));
+  delegate2.release()->DropAndDeleteSelf(drag_end_location_left,
+                                         ui::OSExchangeData());
 
   EXPECT_TRUE(split_view_controller->InTabletSplitViewMode());
   EXPECT_EQ(nullptr, split_view_controller->GetSnappedWindow(
@@ -346,21 +378,21 @@ TEST_F(TabDragDropDelegateTest, TabDraggingHistogram) {
 
   // Emulate a drag session ending in a drop to a new window. This should
   // generate a histogram.
-  TabDragDropDelegate delegate(Shell::GetPrimaryRootWindow(),
-                               source_window.get(), drag_start_location);
-  delegate.DragUpdate(drag_start_location + gfx::Vector2d(1, 0));
+  auto delegate = std::make_unique<TabDragDropDelegate>(
+      Shell::GetPrimaryRootWindow(), source_window.get(), drag_start_location);
+  delegate->DragUpdate(drag_start_location + gfx::Vector2d(1, 0));
   EXPECT_TRUE(ui::WaitForNextFrameToBePresented(
       source_window->layer()->GetCompositor()));
 
   // Check that a new window is requested. Assume the correct drop data
   // is passed. Return the new window.
   std::unique_ptr<aura::Window> new_window = CreateToplevelTestWindow();
-  EXPECT_CALL(*mock_shell_delegate(),
-              CreateBrowserForTabDrop(source_window.get(), _))
+  EXPECT_CALL(*mock_new_window_delegate(),
+              NewWindowForDetachingTab(source_window.get(), _, _))
       .Times(1)
-      .WillOnce(Return(new_window.get()));
-  delegate.Drop(drag_start_location + gfx::Vector2d(1, 0),
-                ui::OSExchangeData());
+      .WillOnce(RunOnceCallback<2>(new_window.get()));
+  delegate.release()->DropAndDeleteSelf(
+      drag_start_location + gfx::Vector2d(1, 0), ui::OSExchangeData());
   EXPECT_TRUE(ui::WaitForNextFrameToBePresented(
       source_window->layer()->GetCompositor()));
 

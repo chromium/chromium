@@ -16,12 +16,10 @@ DomainEnrollmentStatusProvider::DomainEnrollmentStatusProvider() = default;
 
 DomainEnrollmentStatusProvider::~DomainEnrollmentStatusProvider() = default;
 
-bool DomainEnrollmentStatusProvider::IsManaged() {
-  return DomainEnrollmentStatusProvider::IsEnrolledToDomain();
-}
-
 EnterpriseManagementAuthority DomainEnrollmentStatusProvider::GetAuthority() {
-  return EnterpriseManagementAuthority::DOMAIN_LOCAL;
+  return DomainEnrollmentStatusProvider::IsEnrolledToDomain()
+             ? EnterpriseManagementAuthority::DOMAIN_LOCAL
+             : EnterpriseManagementAuthority::NONE;
 }
 
 bool DomainEnrollmentStatusProvider::IsEnrolledToDomain() {
@@ -35,19 +33,17 @@ EnterpriseMDMManagementStatusProvider::EnterpriseMDMManagementStatusProvider() =
 EnterpriseMDMManagementStatusProvider::
     ~EnterpriseMDMManagementStatusProvider() = default;
 
-bool EnterpriseMDMManagementStatusProvider::IsManaged() {
-#if defined(OS_WIN)
-  return base::win::OSInfo::GetInstance()->version_type() !=
-             base::win::SUITE_HOME &&
-         base::win::IsDeviceRegisteredWithManagement();
-#else
-  return false;
-#endif
-}
-
 EnterpriseManagementAuthority
 EnterpriseMDMManagementStatusProvider::GetAuthority() {
-  return EnterpriseManagementAuthority::CLOUD;
+#if defined(OS_WIN)
+  return base::win::OSInfo::GetInstance()->version_type() !=
+                     base::win::SUITE_HOME &&
+                 base::win::IsDeviceRegisteredWithManagement()
+             ? EnterpriseManagementAuthority::CLOUD
+             : EnterpriseManagementAuthority::NONE;
+#else
+  return EnterpriseManagementAuthority::NONE;
+#endif
 }
 
 }  // namespace policy

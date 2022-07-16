@@ -13,6 +13,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -23,7 +25,6 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
@@ -31,11 +32,11 @@
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/optional_trace_event.h"
@@ -49,12 +50,12 @@
 #include "components/url_formatter/url_formatter.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
+#include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/browser_plugin/browser_plugin_embedder.h"
 #include "content/browser/browser_plugin/browser_plugin_guest.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/conversions/conversion_host.h"
 #include "content/browser/devtools/protocol/page_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/display_cutout/display_cutout_host_impl.h"
@@ -62,8 +63,10 @@
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "content/browser/download/mhtml_generation_manager.h"
 #include "content/browser/download/save_package.h"
+#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/find_request_manager.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
+#include "content/browser/host_zoom_map_impl.h"
 #include "content/browser/media/audio_stream_broker.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/media_web_contents_observer.h"
@@ -87,9 +90,11 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/text_input_manager.h"
+#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/screen_enumeration/screen_change_monitor.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/starscan_load_observer.h"
 #include "content/browser/wake_lock/wake_lock_context_host.h"
 #include "content/browser/web_contents/java_script_dialog_commit_deferring_condition.h"
 #include "content/browser/web_contents/web_contents_view_child_frame.h"
@@ -98,6 +103,7 @@
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/browser/xr/service/xr_runtime_manager_impl.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/partition_alloc_support.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
@@ -106,6 +112,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/focused_node_details.h"
@@ -124,7 +131,6 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -156,6 +162,7 @@
 #include "ui/accessibility/ax_tree_combiner.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/animation.h"
@@ -174,8 +181,6 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/android/view_android.h"
 #include "ui/base/device_form_factor.h"
-#else  // !OS_ANDROID
-#include "content/browser/host_zoom_map_impl.h"
 #endif  // OS_ANDROID
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -191,10 +196,7 @@ namespace content {
 namespace {
 
 // The window which we dobounce load info updates in.
-constexpr auto kUpdateLoadStatesInterval =
-    base::TimeDelta::FromMilliseconds(250);
-
-const int kMinimumDelayBetweenLoadingUpdatesMS = 100;
+constexpr auto kUpdateLoadStatesInterval = base::Milliseconds(250);
 
 using LifecycleState = RenderFrameHost::LifecycleState;
 using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
@@ -202,14 +204,6 @@ using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 base::LazyInstance<std::vector<
     WebContentsImpl::FriendWrapper::CreatedCallback>>::DestructorAtExit
     g_created_callbacks = LAZY_INSTANCE_INITIALIZER;
-
-bool HasMatchingProcess(FrameTree* tree, int render_process_id) {
-  for (FrameTreeNode* node : tree->Nodes()) {
-    if (node->current_frame_host()->GetProcess()->GetID() == render_process_id)
-      return true;
-  }
-  return false;
-}
 
 bool HasMatchingWidgetHost(FrameTree* tree, RenderWidgetHost* host) {
   // This method scans the frame tree rather than checking whether
@@ -276,6 +270,12 @@ class CloseDialogCallbackWrapper
 class JavaScriptDialogDismissNotifier {
  public:
   JavaScriptDialogDismissNotifier() = default;
+
+  JavaScriptDialogDismissNotifier(const JavaScriptDialogDismissNotifier&) =
+      delete;
+  JavaScriptDialogDismissNotifier& operator=(
+      const JavaScriptDialogDismissNotifier&) = delete;
+
   ~JavaScriptDialogDismissNotifier() {
     for (auto& callback : callbacks_) {
       std::move(callback).Run();
@@ -288,12 +288,10 @@ class JavaScriptDialogDismissNotifier {
 
  private:
   std::vector<base::OnceClosure> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaScriptDialogDismissNotifier);
 };
 
 bool FrameCompareDepth(RenderFrameHostImpl* a, RenderFrameHostImpl* b) {
-  return a->frame_tree_node()->depth() < b->frame_tree_node()->depth();
+  return a->GetFrameDepth() < b->GetFrameDepth();
 }
 
 bool AreValidRegisterProtocolHandlerArguments(
@@ -493,6 +491,43 @@ int64_t AdjustRequestedWindowBounds(gfx::Rect* bounds, RenderFrameHost* host) {
   return display.id();
 }
 
+// A ColorProviderSource used when one has not been explicitly set. This source
+// only reflects theme information present in the web NativeTheme singleton.
+// Keep this an implementation detail of WebContentsImpl as we should not be
+// exposing a default ColorProviderSource generally.
+class DefaultColorProviderSource : public ui::ColorProviderSource,
+                                   public ui::NativeThemeObserver {
+ public:
+  DefaultColorProviderSource() {
+    native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForWeb());
+  }
+  DefaultColorProviderSource(const DefaultColorProviderSource&) = delete;
+  DefaultColorProviderSource& operator=(const DefaultColorProviderSource&) =
+      delete;
+  ~DefaultColorProviderSource() override = default;
+
+  static DefaultColorProviderSource* GetInstance() {
+    static base::NoDestructor<DefaultColorProviderSource> instance;
+    return instance.get();
+  }
+
+  // ui::ColorProviderSource:
+  const ui::ColorProvider* GetColorProvider() const override {
+    return ui::ColorProviderManager::Get().GetColorProviderFor(
+        ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr));
+  }
+
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override {
+    DCHECK(native_theme_observation_.IsObservingSource(observed_theme));
+    NotifyColorProviderChanged();
+  }
+
+ private:
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      native_theme_observation_{this};
+};
+
 }  // namespace
 
 CreatedWindow::CreatedWindow() = default;
@@ -567,16 +602,26 @@ WebContents* WebContents::FromRenderViewHost(RenderViewHost* rvh) {
                         rvh);
   if (!rvh)
     return nullptr;
-  return rvh->GetDelegate()->GetAsWebContents();
+  return static_cast<WebContentsImpl*>(
+      static_cast<RenderViewHostImpl*>(rvh)->GetDelegate());
 }
 
 WebContents* WebContents::FromRenderFrameHost(RenderFrameHost* rfh) {
   OPTIONAL_TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContents::FromRenderFrameHost", "render_frame_host",
                         rfh);
+  return WebContentsImpl::FromRenderFrameHostImpl(
+      static_cast<RenderFrameHostImpl*>(rfh));
+}
+
+WebContentsImpl* WebContentsImpl::FromRenderFrameHostImpl(
+    RenderFrameHostImpl* rfh) {
+  OPTIONAL_TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
+                        "WebContentsImpl::FromRenderFrameHostImpl",
+                        "render_frame_host", rfh);
   if (!rfh)
     return nullptr;
-  return static_cast<RenderFrameHostImpl*>(rfh)->delegate()->GetAsWebContents();
+  return static_cast<WebContentsImpl*>(rfh->delegate());
 }
 
 WebContents* WebContents::FromFrameTreeNodeId(int frame_tree_node_id) {
@@ -588,6 +633,13 @@ WebContents* WebContents::FromFrameTreeNodeId(int frame_tree_node_id) {
   if (!frame_tree_node)
     return nullptr;
   return WebContentsImpl::FromFrameTreeNode(frame_tree_node);
+}
+
+WebContentsImpl* WebContentsImpl::FromRenderWidgetHostImpl(
+    RenderWidgetHostImpl* rwh) {
+  if (!rwh)
+    return nullptr;
+  return static_cast<WebContentsImpl*>(rwh->delegate());
 }
 
 void WebContents::SetScreenOrientationDelegate(
@@ -606,6 +658,11 @@ class WebContentsImpl::RenderWidgetHostDestructionObserver
     watched_host_->AddObserver(this);
   }
 
+  RenderWidgetHostDestructionObserver(
+      const RenderWidgetHostDestructionObserver&) = delete;
+  RenderWidgetHostDestructionObserver& operator=(
+      const RenderWidgetHostDestructionObserver&) = delete;
+
   ~RenderWidgetHostDestructionObserver() override {
     watched_host_->RemoveObserver(this);
   }
@@ -618,8 +675,6 @@ class WebContentsImpl::RenderWidgetHostDestructionObserver
  private:
   WebContentsImpl* owner_;
   RenderWidgetHost* watched_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostDestructionObserver);
 };
 
 // WebContentsImpl::WebContentsDestructionObserver ----------------------------
@@ -631,6 +686,11 @@ class WebContentsImpl::WebContentsDestructionObserver
                                  WebContents* watched_contents)
       : WebContentsObserver(watched_contents), owner_(owner) {}
 
+  WebContentsDestructionObserver(const WebContentsDestructionObserver&) =
+      delete;
+  WebContentsDestructionObserver& operator=(
+      const WebContentsDestructionObserver&) = delete;
+
   // WebContentsObserver:
   void WebContentsDestroyed() override {
     owner_->OnWebContentsDestroyed(
@@ -639,8 +699,6 @@ class WebContentsImpl::WebContentsDestructionObserver
 
  private:
   WebContentsImpl* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsDestructionObserver);
 };
 
 #if defined(OS_ANDROID)
@@ -701,7 +759,8 @@ WebContentsImpl::WebContentsTreeNode::WebContentsTreeNode(
       outer_web_contents_(nullptr),
       outer_contents_frame_tree_node_id_(
           FrameTreeNode::kFrameTreeNodeInvalidId),
-      focused_web_contents_(current_web_contents) {}
+      focused_frame_tree_(
+          current_web_contents->GetPrimaryFrameTree().GetSafeRef()) {}
 
 WebContentsImpl::WebContentsTreeNode::~WebContentsTreeNode() = default;
 
@@ -726,7 +785,6 @@ void WebContentsImpl::WebContentsTreeNode::AttachInnerWebContents(
       static_cast<WebContentsImpl*>(inner_web_contents.get());
   WebContentsTreeNode& inner_web_contents_node = inner_web_contents_impl->node_;
 
-  inner_web_contents_node.focused_web_contents_ = nullptr;
   inner_web_contents_node.outer_web_contents_ = current_web_contents_;
   inner_web_contents_node.outer_contents_frame_tree_node_id_ =
       render_frame_host->frame_tree_node()->frame_tree_node_id();
@@ -775,13 +833,12 @@ void WebContentsImpl::WebContentsTreeNode::OnFrameTreeNodeDestroyed(
   outer_web_contents_->node_.DetachInnerWebContents(current_web_contents_);
 }
 
-void WebContentsImpl::WebContentsTreeNode::SetFocusedWebContents(
-    WebContentsImpl* web_contents) {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsTreeNode::SetFocusedWebContents");
+void WebContentsImpl::WebContentsTreeNode::SetFocusedFrameTree(
+    FrameTree* frame_tree) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsTreeNode::SetFocusedFrameTree");
   DCHECK(!outer_web_contents())
       << "Only the outermost WebContents tracks focus.";
-  focused_web_contents_ = web_contents;
+  focused_frame_tree_ = frame_tree->GetSafeRef();
 }
 
 WebContentsImpl*
@@ -825,8 +882,7 @@ void WebContentsImpl::WebContentsObserverList::RemoveObserver(
 WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
     : delegate_(nullptr),
       render_view_host_delegate_view_(nullptr),
-      created_with_opener_(false),
-      node_(this),
+      opened_by_another_window_(false),
       frame_tree_(browser_context,
                   this,
                   this,
@@ -837,6 +893,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
                   this,
                   this,
                   FrameTree::Type::kPrimary),
+      node_(this),
       is_load_to_different_document_(false),
       primary_main_frame_process_status_(
           base::TERMINATION_STATUS_STILL_RUNNING),
@@ -866,7 +923,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
           std::make_unique<MediaWebContentsObserver>(this)),
       is_overlay_content_(false),
       showing_context_menu_(false),
-      text_autosizer_page_info_({0, 0, 1.f}),
       prerender_host_registry_(blink::features::IsPrerender2Enabled()
                                    ? std::make_unique<PrerenderHostRegistry>()
                                    : nullptr),
@@ -882,6 +938,13 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   display_cutout_host_impl_ = std::make_unique<DisplayCutoutHostImpl>(this);
 #endif
 
+  // WebContents can exist independently of a ColorProviderSource and is still
+  // expected to be able to render its content and be inserted into a
+  // gfx::NativeView hierarchy. Whilst most WebContents clients should be
+  // setting a ColorProviderSource we must accommodate for cases where this is
+  // not currently being done. For these cases fallback to the default source.
+  SetColorProviderSource(DefaultColorProviderSource::GetInstance());
+
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
   native_theme_observation_.Observe(native_theme);
   using_dark_colors_ = native_theme->ShouldUseDarkColors();
@@ -892,11 +955,19 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       std::make_unique<ScreenChangeMonitor>(base::BindRepeating(
           &WebContentsImpl::OnScreensChange, base::Unretained(this)));
 
-  // ConversionHost takes a weak ref on |this|, so it must be created outside of
-  // the initializer list.
+  // AttributionHost takes a weak ref on |this|, so it must be created outside
+  // of the initializer list.
   if (base::FeatureList::IsEnabled(blink::features::kConversionMeasurement)) {
-    ConversionHost::CreateForWebContents(this);
+    AttributionHost::CreateForWebContents(this);
   }
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+  // TODO(1231679): Remove or move to another place after finishing the PCScan
+  // experiment.
+  if (base::internal::PCScan::IsInitialized()) {
+    star_scan_load_observer_ = std::make_unique<StarScanLoadObserver>(this);
+  }
+#endif
 }
 
 WebContentsImpl::~WebContentsImpl() {
@@ -927,9 +998,6 @@ WebContentsImpl::~WebContentsImpl() {
   FullscreenContentsSet(GetBrowserContext())->erase(this);
 
   rwh_input_event_router_.reset();
-
-  for (auto& entry : receiver_sets_)
-    entry.second->CloseAllReceivers();
 
   WebContentsImpl* outermost = GetOutermostWebContents();
   if (this != outermost && ContainsOrIsFocusedWebContents()) {
@@ -968,8 +1036,7 @@ WebContentsImpl::~WebContentsImpl() {
   //
   // Currently the only instances of the non-primary FrameTrees are for
   // prerendering. Shutdown them by destructing PrerenderHostRegistry.
-  if (blink::features::IsPrerender2Enabled())
-    prerender_host_registry_.reset();
+  prerender_host_registry_.reset();
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Call this before WebContentsDestroyed() is broadcasted since
@@ -999,9 +1066,6 @@ WebContentsImpl::~WebContentsImpl() {
     save_package_->ClearPage();
 
   observers_.NotifyObservers(&WebContentsObserver::WebContentsDestroyed);
-  if (display_cutout_host_impl_)
-    display_cutout_host_impl_->WebContentsDestroyed();
-
   observers_.NotifyObservers(&WebContentsObserver::ResetWebContents);
   SetDelegate(nullptr);
 }
@@ -1023,7 +1087,7 @@ std::unique_ptr<WebContentsImpl> WebContentsImpl::CreateWithOpener(
   // opener's sandbox flags lack the PropagatesToAuxiliaryBrowsingContexts
   // bit (which is controlled by the "allow-popups-to-escape-sandbox" token).
   // See https://html.spec.whatwg.org/#attr-iframe-sandbox.
-  FrameTreeNode* new_root = new_contents->GetFrameTree()->root();
+  FrameTreeNode* new_root = new_contents->GetPrimaryFrameTree().root();
   if (opener) {
     network::mojom::WebSandboxFlags opener_flags =
         opener_rfh->active_sandbox_flags();
@@ -1045,8 +1109,8 @@ std::unique_ptr<WebContentsImpl> WebContentsImpl::CreateWithOpener(
 
   // This may be true even when opener is null, such as when opening blocked
   // popups.
-  if (params.created_with_opener)
-    new_contents->created_with_opener_ = true;
+  if (params.opened_by_another_window)
+    new_contents->opened_by_another_window_ = true;
 
   WebContentsImpl* outer_web_contents = nullptr;
   if (params.guest_delegate) {
@@ -1149,6 +1213,14 @@ bool WebContentsImpl::OnMessageReceived(RenderFrameHostImpl* render_frame_host,
   return false;
 }
 
+std::string WebContentsImpl::GetTitleForMediaControls() {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::GetTitleForMediaControls");
+
+  if (!delegate_)
+    return std::string();
+  return delegate_->GetTitleForMediaControls(this);
+}
+
 // Returns the NavigationController for the primary FrameTree, i.e. the one
 // whose URL is shown in the omnibox. With MPArch we can have multiple
 // FrameTrees in one WebContents and each has its own NavigationController.
@@ -1159,6 +1231,10 @@ NavigationControllerImpl& WebContentsImpl::GetController() {
 
 BrowserContext* WebContentsImpl::GetBrowserContext() {
   return GetController().GetBrowserContext();
+}
+
+base::WeakPtr<WebContents> WebContentsImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 const GURL& WebContentsImpl::GetURL() {
@@ -1223,6 +1299,20 @@ RenderFrameHostImpl* WebContentsImpl::GetFocusedFrame() {
   return focused_node->current_frame_host();
 }
 
+bool WebContentsImpl::IsPrerenderedFrame(int frame_tree_node_id) {
+  if (frame_tree_node_id == RenderFrameHost::kNoFrameTreeNodeId)
+    return false;
+
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (!frame_tree_node)
+    return false;
+
+  // TODO(1196715, 1232528): We should also consider inner frame trees in a
+  // prerender.
+  return frame_tree_node->frame_tree()->type() == FrameTree::Type::kPrerender;
+}
+
 RenderFrameHostImpl* WebContentsImpl::UnsafeFindFrameByFrameTreeNodeId(
     int frame_tree_node_id) {
   OPTIONAL_TRACE_EVENT1("content",
@@ -1230,8 +1320,12 @@ RenderFrameHostImpl* WebContentsImpl::UnsafeFindFrameByFrameTreeNodeId(
                         "frame_tree_node_id", frame_tree_node_id);
   // Beware using this! The RenderFrameHost may have changed since the caller
   // obtained frame_tree_node_id.
-  FrameTreeNode* frame = frame_tree_.FindByID(frame_tree_node_id);
-  return frame ? frame->current_frame_host() : nullptr;
+  FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (!ftn)
+    return nullptr;
+  if (this != WebContents::FromRenderFrameHost(ftn->current_frame_host()))
+    return nullptr;
+  return ftn->current_frame_host();
 }
 
 void WebContentsImpl::ForEachFrame(
@@ -1241,14 +1335,6 @@ void WebContentsImpl::ForEachFrame(
   for (FrameTreeNode* node : frame_tree_.Nodes()) {
     on_frame.Run(node->current_frame_host());
   }
-}
-
-std::vector<RenderFrameHost*> WebContentsImpl::GetAllFrames() {
-  return GetAllFramesImpl(frame_tree_, /*include_pending=*/false);
-}
-
-std::vector<RenderFrameHost*> WebContentsImpl::GetAllFramesIncludingPending() {
-  return GetAllFramesImpl(frame_tree_, /*include_pending=*/true);
 }
 
 int WebContentsImpl::SendToAllFrames(IPC::Message* message) {
@@ -1332,30 +1418,51 @@ void WebContentsImpl::ForEachRenderFrameHostImpl(
 
 void WebContentsImpl::ForEachFrameTree(
     FrameTreeIterationCallback on_frame_tree) {
-  std::set<FrameTree*> frame_trees;
-  ForEachRenderFrameHost(base::BindRepeating(
-      [](std::set<FrameTree*>& frame_trees, RenderFrameHostImpl* rfh) {
-        frame_trees.insert(rfh->frame_tree());
-      },
-      std::ref(frame_trees)));
+  // Consider all outermost frame trees, and for each, iterate through their
+  // FrameTreeNodes to find any inner frame trees.
+  for (FrameTree* outermost_frame_tree : GetOutermostFrameTrees()) {
+    FrameTree::NodeRange node_range =
+        outermost_frame_tree->NodesIncludingInnerTreeNodes();
+    FrameTree::NodeIterator node_iter = node_range.begin();
+    while (node_iter != node_range.end()) {
+      FrameTreeNode* node = *node_iter;
+      if (FromFrameTreeNode(node) != this) {
+        // Exclude any inner frame trees based on multi-WebContents
+        // architecture.
+        node_iter.AdvanceSkippingChildren();
+      } else {
+        if (node->IsMainFrame()) {
+          on_frame_tree.Run(node->frame_tree());
+        }
+        ++node_iter;
+      }
+    }
+  }
+}
 
-  for (auto* frame_tree : frame_trees)
-    on_frame_tree.Run(frame_tree);
+std::vector<FrameTree*> WebContentsImpl::GetOutermostFrameTrees() {
+  std::vector<FrameTree*> result;
+  result.push_back(&GetPrimaryFrameTree());
+
+  if (blink::features::IsPrerender2Enabled()) {
+    const std::vector<FrameTree*> prerender_frame_trees =
+        GetPrerenderHostRegistry()->GetPrerenderFrameTrees();
+    result.insert(result.end(), prerender_frame_trees.begin(),
+                  prerender_frame_trees.end());
+  }
+
+  return result;
 }
 
 std::vector<RenderFrameHostImpl*> WebContentsImpl::GetOutermostMainFrames() {
   std::vector<RenderFrameHostImpl*> result;
-  result.push_back(GetMainFrame());
 
-  for (const auto& entry : GetController().GetBackForwardCache().GetEntries()) {
-    result.push_back(entry->render_frame_host.get());
+  for (FrameTree* outermost_frame_tree : GetOutermostFrameTrees()) {
+    result.push_back(outermost_frame_tree->GetMainFrame());
   }
 
-  if (blink::features::IsPrerender2Enabled()) {
-    const std::vector<RenderFrameHostImpl*> prerendered_main_frames =
-        GetPrerenderHostRegistry()->GetPrerenderedMainFrames();
-    result.insert(result.end(), prerendered_main_frames.begin(),
-                  prerendered_main_frames.end());
+  for (const auto& entry : GetController().GetBackForwardCache().GetEntries()) {
+    result.push_back(entry->render_frame_host());
   }
 
   // In the case of inner WebContents, we still allow this method to be called,
@@ -1420,28 +1527,16 @@ void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
   // this local process display::Screen signal should not trigger updates.
   // TODO(crbug.com/1169291): Unify screen info plumbing, caching, etc.
 #if !defined(OS_MAC)
-  // Send |is_multi_screen_changed| events to all visible frames, but limit
-  // other events to frames with the Window Placement permission. This obviates
-  // the most pressing need for sites to poll window.screen.isExtended which is
-  // exposed without explicit permission, while also protecting privacy.
-  // TODO(crbug.com/1109989): Postpone events; refine utility/privacy balance.
-  // TODO(crbug.com/1205676): Remove this deprecated window.screenschange code.
-  for (FrameTreeNode* node : frame_tree_.Nodes()) {
-    RenderFrameHostImpl* rfh = node->current_frame_host();
-    if ((is_multi_screen_changed &&
-         rfh->GetVisibilityState() == PageVisibilityState::kVisible) ||
-        IsWindowPlacementGranted(rfh)) {
-      rfh->GetAssociatedLocalFrame()->OnScreensChange();
-    }
-  }
-
   // This updates Screen attributes and fires Screen.change events as needed,
   // propagating to all widgets through the VisualProperties update waterfall.
   // This is triggered by system changes, not renderer IPC, so explicitly check
   // that the RenderWidgetHostView is valid before sending an update.
   if (RenderWidgetHostViewBase* view =
           GetRenderViewHost()->GetWidget()->GetView()) {
-    view->UpdateScreenInfo(view->GetNativeView());
+    // Only update top-level views, as child frames will have their ScreenInfos
+    // updated by the visual property flow.
+    if (!view->IsRenderWidgetHostViewChildFrame())
+      view->UpdateScreenInfo();
   }
 #endif  // !OS_MAC
 }
@@ -1477,6 +1572,10 @@ void WebContentsImpl::SetPageBaseBackgroundColor(
       page_base_background_color_));
 }
 
+void WebContentsImpl::SetColorProviderSource(ui::ColorProviderSource* source) {
+  ColorProviderSourceObserver::Observe(source);
+}
+
 void WebContentsImpl::SetAccessibilityMode(ui::AXMode mode) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SetAccessibilityMode",
                         "mode", mode.ToString(), "previous_mode",
@@ -1508,13 +1607,13 @@ void WebContentsImpl::AddAccessibilityMode(ui::AXMode mode) {
 // Handles the callbacks from parallel snapshot requests to each frame,
 // and feeds the results to an AXTreeCombiner, which converts them into a
 // single combined accessibility tree.
-class WebContentsImpl::AXTreeSnapshotCombiner
-    : public base::RefCounted<AXTreeSnapshotCombiner> {
+class AXTreeSnapshotCombiner : public base::RefCounted<AXTreeSnapshotCombiner> {
  public:
-  explicit AXTreeSnapshotCombiner(AXTreeSnapshotCallback callback)
-      : callback_(std::move(callback)) {}
+  AXTreeSnapshotCombiner(WebContents::AXTreeSnapshotCallback callback,
+                         mojom::SnapshotAccessibilityTreeParamsPtr params)
+      : callback_(std::move(callback)), params_(std::move(params)) {}
 
-  AXTreeSnapshotCallback AddFrame(bool is_root) {
+  WebContents::AXTreeSnapshotCallback AddFrame(bool is_root) {
     // Adds a reference to |this|.
     return base::BindOnce(&AXTreeSnapshotCombiner::ReceiveSnapshot, this,
                           is_root);
@@ -1522,6 +1621,13 @@ class WebContentsImpl::AXTreeSnapshotCombiner
 
   void ReceiveSnapshot(bool is_root, const ui::AXTreeUpdate& snapshot) {
     combiner_.AddTree(snapshot, is_root);
+  }
+
+  void AXTreeSnapshotOnFrame(RenderFrameHostImpl* rfhi) {
+    OPTIONAL_TRACE_EVENT0("content",
+                          "AXTreeSnapshotCombiner::AXTreeSnapshotOnFrame");
+    bool is_root = !rfhi->GetParentOrOuterDocumentOrEmbedder();
+    rfhi->RequestAXTreeSnapshot(AddFrame(is_root), params_.Clone());
   }
 
  private:
@@ -1535,7 +1641,8 @@ class WebContentsImpl::AXTreeSnapshotCombiner
   }
 
   ui::AXTreeCombiner combiner_;
-  AXTreeSnapshotCallback callback_;
+  WebContents::AXTreeSnapshotCallback callback_;
+  mojom::SnapshotAccessibilityTreeParamsPtr params_;
 };
 
 void WebContentsImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
@@ -1549,37 +1656,16 @@ void WebContentsImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
   // an accessibility tree snapshot, and AXTreeSnapshotCombiner will combine
   // them into a single tree and call |callback| with that result, then
   // delete |combiner|.
-  FrameTreeNode* root_node = frame_tree_.root();
-  auto combiner =
-      base::MakeRefCounted<AXTreeSnapshotCombiner>(std::move(callback));
-
   auto params = mojom::SnapshotAccessibilityTreeParams::New();
   params->ax_mode = ax_mode.mode();
   params->exclude_offscreen = exclude_offscreen;
   params->max_nodes = max_nodes;
   params->timeout = timeout;
-  RecursiveRequestAXTreeSnapshotOnFrame(root_node, combiner.get(),
-                                        std::move(params));
-}
 
-void WebContentsImpl::RecursiveRequestAXTreeSnapshotOnFrame(
-    FrameTreeNode* root_node,
-    AXTreeSnapshotCombiner* combiner,
-    mojom::SnapshotAccessibilityTreeParamsPtr params) {
-  OPTIONAL_TRACE_EVENT0(
-      "content", "WebContentsImpl::RecursiveRequestAXTreeSnapshotOnFrame");
-  for (FrameTreeNode* frame_tree_node : frame_tree_.Nodes()) {
-    WebContentsImpl* inner_contents =
-        node_.GetInnerWebContentsInFrame(frame_tree_node);
-    if (inner_contents) {
-      inner_contents->RecursiveRequestAXTreeSnapshotOnFrame(root_node, combiner,
-                                                            params.Clone());
-    } else {
-      bool is_root = frame_tree_node == root_node;
-      frame_tree_node->current_frame_host()->RequestAXTreeSnapshot(
-          combiner->AddFrame(is_root), params.Clone());
-    }
-  }
+  auto combiner = base::MakeRefCounted<AXTreeSnapshotCombiner>(
+      std::move(callback), std::move(params));
+  GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+      &AXTreeSnapshotCombiner::AXTreeSnapshotOnFrame, combiner));
 }
 
 void WebContentsImpl::NotifyViewportFitChanged(
@@ -1590,10 +1676,9 @@ void WebContentsImpl::NotifyViewportFitChanged(
 }
 
 FindRequestManager* WebContentsImpl::GetFindRequestManagerForTesting() {
-  return GetFindRequestManager();
+  return GetOrCreateFindRequestManager();
 }
 
-#if !defined(OS_ANDROID)
 void WebContentsImpl::UpdateZoom() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::UpdateZoom");
   RenderWidgetHostImpl* rwh = GetRenderViewHost()->GetWidget();
@@ -1616,35 +1701,6 @@ void WebContentsImpl::UpdateZoomIfNecessary(const std::string& scheme,
   }
 
   UpdateZoom();
-}
-#endif  // !defined(OS_ANDROID)
-
-base::OnceClosure WebContentsImpl::AddReceiverSet(
-    const std::string& interface_name,
-    WebContentsReceiverSet* receiver_set) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::AddReceiverSet",
-                        "interface_name", interface_name);
-  auto result =
-      receiver_sets_.insert(std::make_pair(interface_name, receiver_set));
-  DCHECK(result.second);
-  return base::BindOnce(&WebContentsImpl::RemoveReceiverSet,
-                        weak_factory_.GetWeakPtr(), interface_name);
-}
-
-WebContentsReceiverSet* WebContentsImpl::GetReceiverSet(
-    const std::string& interface_name) {
-  auto it = receiver_sets_.find(interface_name);
-  if (it == receiver_sets_.end())
-    return nullptr;
-  return it->second;
-}
-
-void WebContentsImpl::RemoveReceiverSetForTesting(
-    const std::string& interface_name) {
-  OPTIONAL_TRACE_EVENT1("content",
-                        "WebContentsImpl::RemoveReceiverSetForTesting",
-                        "interface_name", interface_name);
-  RemoveReceiverSet(interface_name);
 }
 
 std::vector<WebContentsImpl*> WebContentsImpl::GetWebContentsAndAllInner() {
@@ -1699,6 +1755,7 @@ void WebContentsImpl::SetUserAgentOverride(
   renderer_preferences_.user_agent_override = ua_override;
 
   // Send the new override string to all renderers in the current page.
+  // TODO(https://crbug.com/1235984): Sync for all FrameTree instance.
   SyncRendererPrefs();
 
   // Reload the page if a load is currently in progress to avoid having
@@ -1706,12 +1763,31 @@ void WebContentsImpl::SetUserAgentOverride(
   // No need to reload if the current entry matches that of the
   // NavigationRequest supplied to DidStartNavigation() as NavigationRequest
   // handles it.
-  NavigationEntry* entry = GetController().GetVisibleEntry();
-  if (IsLoading() && entry != nullptr && entry->GetIsOverridingUserAgent() &&
-      (!frame_tree_.root()->navigation_request() ||
-       frame_tree_.root()->navigation_request()->ua_change_requires_reload())) {
-    GetController().Reload(ReloadType::BYPASSING_CACHE, true);
-  }
+  ForEachFrameTree(base::BindRepeating([](FrameTree* frame_tree) {
+    // For prerendering, we don't want to activate a prerendered page loaded
+    // with a stale UA and will handle it even if it finishes loading.
+    if (!frame_tree->IsLoading() && !frame_tree->is_prerendering())
+      return;
+
+    NavigationEntry* entry = frame_tree->controller().GetVisibleEntry();
+    if (!entry || !entry->GetIsOverridingUserAgent())
+      return;
+    if (frame_tree->root()->navigation_request() &&
+        !frame_tree->root()
+             ->navigation_request()
+             ->ua_change_requires_reload()) {
+      return;
+    }
+    if (frame_tree->is_prerendering()) {
+      // Just cancel if the FrameTree is for prerendering, as prerendered
+      // page may not allow another navigation including a reload, depending
+      // on conditions.
+      frame_tree->GetMainFrame()->CancelPrerendering(
+          PrerenderHost::FinalStatus::kUaChangeRequiresReload);
+    } else {
+      frame_tree->controller().Reload(ReloadType::BYPASSING_CACHE, true);
+    }
+  }));
 
   observers_.NotifyObservers(&WebContentsObserver::UserAgentOverrideSet,
                              ua_override);
@@ -1805,27 +1881,7 @@ const std::u16string& WebContentsImpl::GetTitle() {
     }
   }
 
-  // We use the title for the last committed entry rather than a pending
-  // navigation entry. For example, when the user types in a URL, we want to
-  // keep the old page's title until the new load has committed and we get a new
-  // title.
-  NavigationEntry* entry = GetController().GetLastCommittedEntry();
-
-  // We make an exception for initial navigations. We only want to use the title
-  // from the visible entry if:
-  // 1. The pending entry has been explicitly assigned a title to display.
-  // 2. The user is doing a history navigation in a new tab (e.g., Ctrl+Back),
-  //    which case there is a pending entry index other than -1.
-  //
-  // Otherwise, we want to stick with the last committed entry's title during
-  // new navigations, which have pending entries at index -1 with no title.
-  if (GetController().IsInitialNavigation() &&
-      ((GetController().GetVisibleEntry() &&
-        !GetController().GetVisibleEntry()->GetTitle().empty()) ||
-       GetController().GetPendingEntryIndex() != -1)) {
-    entry = GetController().GetVisibleEntry();
-  }
-
+  NavigationEntry* entry = GetNavigationEntryForTitle();
   if (entry) {
     return entry->GetTitleForDisplay();
   }
@@ -1844,7 +1900,9 @@ bool WebContentsImpl::IsLoading() {
 }
 
 double WebContentsImpl::GetLoadProgress() {
-  return frame_tree_.load_progress();
+  // TODO(crbug.com/1199682): Make this MPArch friendly considering primary
+  // frame tree and its descendants.
+  return frame_tree_.GetLoadProgress();
 }
 
 bool WebContentsImpl::IsLoadingToDifferentDocument() {
@@ -1886,17 +1944,22 @@ const std::string& WebContentsImpl::GetEncoding() {
 }
 
 bool WebContentsImpl::WasDiscarded() {
-  return GetFrameTree()->root()->was_discarded();
+  return GetPrimaryFrameTree().root()->was_discarded();
 }
 
 void WebContentsImpl::SetWasDiscarded(bool was_discarded) {
-  GetFrameTree()->root()->set_was_discarded();
+  // TODO(https://crbug.com/1264031): With MPArch a WebContents might have
+  // multiple FrameTrees. Should we propagate the was_discarded to all other
+  // FrameTrees? It seems that was_discarded could be a WebContentsImpl
+  // property.
+  GetPrimaryFrameTree().root()->set_was_discarded();
 }
 
 base::ScopedClosureRunner WebContentsImpl::IncrementCapturerCount(
     const gfx::Size& capture_size,
     bool stay_hidden,
-    bool stay_awake) {
+    bool stay_awake,
+    bool is_activity) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::IncrementCapturerCount");
   DCHECK(!IsBeingDestroyed());
   if (stay_hidden) {
@@ -1910,6 +1973,8 @@ base::ScopedClosureRunner WebContentsImpl::IncrementCapturerCount(
 
   if (stay_awake)
     ++stay_awake_capturer_count_;
+
+  view_->OnCapturerCountChanged();
 
   // Note: This provides a hint to upstream code to size the views optimally
   // for quality (e.g., to avoid scaling).
@@ -1931,11 +1996,11 @@ base::ScopedClosureRunner WebContentsImpl::IncrementCapturerCount(
   if (capture_wake_lock_)
     capture_wake_lock_->RequestWakeLock();
 
-  UpdateVisibilityAndNotifyPageAndView(GetVisibility());
+  UpdateVisibilityAndNotifyPageAndView(GetVisibility(), is_activity);
 
-  return base::ScopedClosureRunner(
-      base::BindOnce(&WebContentsImpl::DecrementCapturerCount,
-                     weak_factory_.GetWeakPtr(), stay_hidden, stay_awake));
+  return base::ScopedClosureRunner(base::BindOnce(
+      &WebContentsImpl::DecrementCapturerCount, weak_factory_.GetWeakPtr(),
+      stay_hidden, stay_awake, is_activity));
 }
 
 const blink::mojom::CaptureHandleConfig&
@@ -2013,6 +2078,11 @@ void WebContentsImpl::SetHasPictureInPictureVideo(
   NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
   observers_.NotifyObservers(&WebContentsObserver::MediaPictureInPictureChanged,
                              has_picture_in_picture_video_);
+
+  // Picture-in-picture state can affect how we notify visibility for non-
+  // visible pages.
+  if (visibility_ != Visibility::VISIBLE)
+    UpdateVisibilityAndNotifyPageAndView(visibility_);
 }
 
 bool WebContentsImpl::IsCrashed() {
@@ -2022,7 +2092,7 @@ bool WebContentsImpl::IsCrashed() {
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
     case base::TERMINATION_STATUS_OOM:
     case base::TERMINATION_STATUS_LAUNCH_FAILED:
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
 #endif
 #if defined(OS_ANDROID)
@@ -2159,8 +2229,7 @@ void WebContentsImpl::WasHidden() {
 }
 
 bool WebContentsImpl::HasRecentInteractiveInputEvent() {
-  static constexpr base::TimeDelta kMaxInterval =
-      base::TimeDelta::FromSeconds(5);
+  static constexpr base::TimeDelta kMaxInterval = base::Seconds(5);
   base::TimeDelta delta =
       ui::EventTimeForNow() - last_interactive_input_event_time_;
   // Note: the expectation is that the caller is typically expecting an input
@@ -2183,6 +2252,23 @@ bool WebContentsImpl::HasActiveEffectivelyFullscreenVideo() {
 void WebContentsImpl::WriteIntoTrace(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("root_frame_tree_node_id", frame_tree_.root()->frame_tree_node_id());
+}
+
+void WebContentsImpl::DisallowActivationNavigationsForBug1234857() {
+  disallow_activation_navigations_ = true;
+
+  // Flush any inactive frames since they will never be activated.
+  ForEachRenderFrameHost(base::BindRepeating([](RenderFrameHostImpl* rfh) {
+    // Just look at main frames since we only need to call
+    // IsInactiveAndDisallowActivation() on the main frame.
+    if (!rfh->GetParent())
+      rfh->IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kBug1234857);
+  }));
+}
+
+const base::Location& WebContentsImpl::GetCreatorLocation() {
+  return creator_location_;
 }
 
 #if defined(OS_ANDROID)
@@ -2275,11 +2361,8 @@ void WebContentsImpl::AttachInnerWebContents(
   DCHECK(!inner_web_contents_impl->node_.outer_web_contents());
   auto* render_frame_host_impl =
       static_cast<RenderFrameHostImpl*>(render_frame_host);
-  DCHECK_EQ(this, render_frame_host_impl->delegate()->GetAsWebContents());
+  DCHECK_EQ(this, WebContents::FromRenderFrameHost(render_frame_host_impl));
   DCHECK(render_frame_host_impl->GetParent());
-
-  // Mark |render_frame_host_impl| as outer delegate frame.
-  render_frame_host_impl->SetIsOuterDelegateFrame(true);
 
   RenderFrameHostManager* inner_render_manager =
       inner_web_contents_impl->GetRenderManager();
@@ -2289,6 +2372,10 @@ void WebContentsImpl::AttachInnerWebContents(
       inner_main_frame->render_view_host();
   auto* outer_render_manager =
       render_frame_host_impl->frame_tree_node()->render_manager();
+
+  // Make |render_frame_host_impl| an outer delegate frame.
+  render_frame_host_impl->set_inner_tree_main_frame_tree_node_id(
+      inner_main_frame->frame_tree_node()->frame_tree_node_id());
 
   // When attaching a WebContents as an inner WebContents, we need to replace
   // the Webcontents' view with a WebContentsViewChildFrame.
@@ -2372,7 +2459,10 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
                         "WebContentsImpl::DetachFromOuterWebContents");
   auto* outer_web_contents = GetOuterWebContents();
   DCHECK(outer_web_contents);
-  GetMainFrame()->ParentOrOuterDelegateFrame()->SetIsOuterDelegateFrame(false);
+  GetMainFrame()
+      ->GetParentOrOuterDocumentOrEmbedder()
+      ->set_inner_tree_main_frame_tree_node_id(
+          FrameTreeNode::kFrameTreeNodeInvalidId);
 
   RecursivelyUnregisterFrameSinkIds();
 
@@ -2382,7 +2472,11 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
   // current one, since the view can be swapped due to a cross-origin
   // navigation.
   std::set<RenderViewHostImpl*> render_view_hosts;
-  for (auto& render_view_host : GetFrameTree()->render_view_hosts()) {
+  // TODO(https://crbug.com/1264031): With MPArch a WebContents might have
+  // multiple FrameTrees. This code probably needs to be rewritten: e.g. we will
+  // need to iterate over all RenderViewHosts when detaching fenced frames
+  // nested within a GuestView.
+  for (auto& render_view_host : GetPrimaryFrameTree().render_view_hosts()) {
     if (render_view_host.second->GetWidget() &&
         render_view_host.second->GetWidget()->GetView()) {
       DCHECK(render_view_host.second->GetWidget()
@@ -2406,15 +2500,12 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
   std::unique_ptr<WebContents> web_contents =
       node_.DisconnectFromOuterWebContents();
   DCHECK_EQ(web_contents.get(), this);
-  node_.SetFocusedWebContents(this);
+  node_.SetFocusedFrameTree(&GetPrimaryFrameTree());
 
   for (auto* render_view_host : render_view_hosts)
     CreateRenderWidgetHostViewForRenderManager(render_view_host);
 
   RecursivelyRegisterFrameSinkIds();
-  // TODO(adithyas): |browser_plugin_embedder_ax_tree_id| should either not be
-  // used for portals, or it should get a different name.
-  GetMainFrame()->set_browser_plugin_embedder_ax_tree_id(ui::AXTreeIDUnknown());
   GetMainFrame()->UpdateAXTreeData();
 
   // Invoke on the *outer* web contents observers for symmetry.
@@ -2449,19 +2540,13 @@ void WebContentsImpl::ReattachToOuterWebContentsFrame() {
                         "WebContentsImpl::ReattachToOuterWebContentsFrame");
   DCHECK(node_.outer_web_contents());
   auto* render_manager = GetRenderManager();
-  auto* parent_frame =
-      node_.OuterContentsFrameTreeNode()->current_frame_host()->GetParent();
   auto* child_rwhv = render_manager->GetRenderWidgetHostView();
   DCHECK(child_rwhv);
   DCHECK(child_rwhv->IsRenderWidgetHostViewChildFrame());
-  render_manager->SetRWHViewForInnerContents(
+  render_manager->SetRWHViewForInnerFrameTree(
       static_cast<RenderWidgetHostViewChildFrame*>(child_rwhv));
 
   RecursivelyRegisterFrameSinkIds();
-
-  // Set up the the guest's AX tree to point back at the embedder's AX tree.
-  GetMainFrame()->set_browser_plugin_embedder_ax_tree_id(
-      parent_frame->GetAXTreeID());
   GetMainFrame()->UpdateAXTreeData();
 }
 
@@ -2545,6 +2630,10 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   prefs.canvas_2d_layers_enabled =
       command_line.HasSwitch(switches::kEnableCanvas2DLayers) ||
       base::FeatureList::IsEnabled(features::kEnableCanvas2DLayers);
+  prefs.canvas_context_lost_in_background_enabled =
+      command_line.HasSwitch(switches::kEnableCanvasContextLostInBackground) ||
+      base::FeatureList::IsEnabled(
+          features::kEnableCanvasContextLostInBackground);
   prefs.new_canvas_2d_api_enabled =
       command_line.HasSwitch(switches::kEnableNewCanvas2DAPI) ||
       base::FeatureList::IsEnabled(features::kEnableNewCanvas2DAPI);
@@ -2849,11 +2938,15 @@ WebContents* WebContentsImpl::DeprecatedGetWebContents() {
 void WebContentsImpl::Init(const WebContents::CreateParams& params) {
   TRACE_EVENT0("content", "WebContentsImpl::Init");
 
+  creator_location_ = params.creator_location;
+
   // This is set before initializing the render manager since
   // RenderFrameHostManager::Init calls back into us via its delegate to ask if
   // it should be hidden.
   visibility_ =
       params.initially_hidden ? Visibility::HIDDEN : Visibility::VISIBLE;
+
+  enable_wake_locks_ = params.enable_wake_locks;
 
   if (!params.last_active_time.is_null())
     last_active_time_ = params.last_active_time;
@@ -2912,8 +3005,8 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
   // main RenderFrameHost. It must be done here for main frames, since the
   // NotifySwappedFromRenderManager expects view_ to already be created and that
   // happens after RenderFrameHostManager::Init.
-  NotifySwappedFromRenderManager(
-      nullptr, GetRenderManager()->current_frame_host(), true);
+  NotifySwappedFromRenderManager(nullptr,
+                                 GetRenderManager()->current_frame_host());
 }
 
 void WebContentsImpl::OnWebContentsDestroyed(WebContentsImpl* web_contents) {
@@ -3083,7 +3176,7 @@ void WebContentsImpl::RenderWidgetWasResized(
   if (!rfh || render_widget_host != rfh->GetRenderWidgetHost())
     return;
 
-  observers_.NotifyObservers(&WebContentsObserver::MainFrameWasResized,
+  observers_.NotifyObservers(&WebContentsObserver::PrimaryMainFrameWasResized,
                              width_changed);
 }
 
@@ -3185,18 +3278,6 @@ RenderWidgetHostInputEventRouter* WebContentsImpl::GetInputEventRouter() {
   return rwh_input_event_router_.get();
 }
 
-void WebContentsImpl::ReplicatePageFocus(bool is_focused) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ReplicatePageFocus",
-                        "is_focused", is_focused);
-  // Focus loss may occur while this WebContents is being destroyed.  Don't
-  // send the message in this case, as the main frame's RenderFrameHost and
-  // other state has already been cleared.
-  if (IsBeingDestroyed())
-    return;
-
-  frame_tree_.ReplicatePageFocus(is_focused);
-}
-
 RenderWidgetHostImpl* WebContentsImpl::GetFocusedRenderWidgetHost(
     RenderWidgetHostImpl* receiving_widget) {
   // Events for widgets other than the main frame (e.g., popup menus) should be
@@ -3206,8 +3287,7 @@ RenderWidgetHostImpl* WebContentsImpl::GetFocusedRenderWidgetHost(
 
   // If the focused WebContents is a guest WebContents, then get the focused
   // frame in the embedder WebContents instead.
-  FrameTreeNode* focused_frame =
-      GetFocusedWebContents()->frame_tree_.GetFocusedFrame();
+  FrameTreeNode* focused_frame = GetFocusedFrameTree()->GetFocusedFrame();
 
   if (!focused_frame)
     return receiving_widget;
@@ -3224,9 +3304,10 @@ RenderWidgetHostImpl* WebContentsImpl::GetFocusedRenderWidgetHost(
 }
 
 RenderWidgetHostImpl* WebContentsImpl::GetRenderWidgetHostWithPageFocus() {
-  WebContentsImpl* focused_web_contents = GetFocusedWebContents();
-
-  return focused_web_contents->GetMainFrame()->GetRenderWidgetHost();
+  FrameTree* focused_frame_tree = GetFocusedFrameTree();
+  return focused_frame_tree->root()
+      ->current_frame_host()
+      ->GetRenderWidgetHost();
 }
 
 bool WebContentsImpl::CanEnterFullscreenMode() {
@@ -3240,15 +3321,12 @@ bool WebContentsImpl::CanEnterFullscreenMode() {
   });
 }
 
-bool WebContentsImpl::HasEnteredFullscreenMode() {
-  return IsFullscreen();
-}
-
 void WebContentsImpl::EnterFullscreenMode(
     RenderFrameHostImpl* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::EnterFullscreenMode");
   DCHECK(CanEnterFullscreenMode());
+  DCHECK(requesting_frame->IsActive());
 
   if (delegate_) {
     delegate_->EnterFullscreenModeForTab(requesting_frame, options);
@@ -3329,7 +3407,14 @@ void WebContentsImpl::FullscreenStateChanged(
   // See https://fullscreen.spec.whatwg.org.
   size_t size_before_deletion = fullscreen_frames_.size();
   base::EraseIf(fullscreen_frames_, [&](RenderFrameHostImpl* current) {
-    return (current == rfh || current->IsDescendantOf(rfh));
+    while (current) {
+      if (current == rfh)
+        return true;
+      // We only look for direct parents. fencedframes and portals will not
+      // enter fullscreen.
+      current = current->GetParent();
+    }
+    return false;
   });
 
   if (size_before_deletion != fullscreen_frames_.size())
@@ -3373,10 +3458,14 @@ PageVisibilityState WebContentsImpl::CalculatePageVisibilityState(
       XRRuntimeManagerImpl::GetImmersiveSessionWebContents() == this;
 #endif
 
+  // If there are entities in Picture-in-Picture mode, don't activate the
+  // "disable rendering" optimization, since it still needs to drive the video,
+  // and possibly other elements on the page like canvas, to keep the picture in
+  // picture window up to date.
   if (visibility == Visibility::VISIBLE || visible_capturer_count_ > 0 ||
       web_contents_visible_in_vr) {
     return PageVisibilityState::kVisible;
-  } else if (hidden_capturer_count_ > 0) {
+  } else if (hidden_capturer_count_ > 0 || has_picture_in_picture_video_) {
     return PageVisibilityState::kHiddenButPainting;
   }
   return PageVisibilityState::kHidden;
@@ -3387,18 +3476,32 @@ PageVisibilityState WebContentsImpl::GetPageVisibilityState() const {
 }
 
 void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
-    Visibility new_visibility) {
+    Visibility new_visibility,
+    bool is_activity) {
   PageVisibilityState page_visibility =
       CalculatePageVisibilityState(new_visibility);
 
-  // If there are entities in Picture-in-Picture mode, don't activate the
-  // "disable rendering" optimization. A crashed frame might be covered by a sad
-  // tab. See docs on SadTabHelper exactly when it is or isn't. Either way,
-  // don't make it visible.
+  // A crashed frame might be covered by a sad tab. See docs on SadTabHelper
+  // exactly when it is or isn't. Either way, don't make it visible.
   bool view_is_visible =
-      !IsCrashed() && (page_visibility != PageVisibilityState::kHidden ||
-                       HasPictureInPictureVideo());
+      !IsCrashed() && page_visibility != PageVisibilityState::kHidden;
 
+  // Prerendering relies on overriding FrameTree::Delegate::IsHidden,
+  // while for other frame trees FrameTree::Delegate::IsHidden
+  // resolves to WebContents' visibility, so we avoid Prerender RennderViewHosts
+  // here.
+  ForEachRenderViewHostTypes view_mask =
+      static_cast<ForEachRenderViewHostTypes>(
+          ForEachRenderViewHostTypes::kBackForwardCacheViews |
+          ForEachRenderViewHostTypes::kActiveViews);
+
+  RenderViewHostIterationCallback update_frame_tree_visibility =
+      base::BindRepeating(
+          [](PageVisibilityState page_visibility,
+             RenderViewHostImpl* render_view_host) {
+            render_view_host->SetFrameTreeVisibility(page_visibility);
+          },
+          page_visibility);
   if (page_visibility != PageVisibilityState::kHidden) {
     // We cannot show a page or capture video unless there is a valid renderer
     // associated with this web contents. The navigation controller for this
@@ -3419,9 +3522,7 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
     // as soon as they are shown. But the Page and other classes do not expect
     // to be producing frames when the Page is hidden. So we make sure the Page
     // is shown first.
-    for (auto* rvh : GetRenderViewHostsIncludingBackForwardCached()) {
-      rvh->SetFrameTreeVisibility(page_visibility);
-    }
+    ForEachRenderViewHost(view_mask, update_frame_tree_visibility);
   }
 
   // |GetRenderWidgetHostView()| can be null if the user middle clicks a link to
@@ -3433,7 +3534,7 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
   if (auto* view = GetRenderWidgetHostView()) {
     if (view_is_visible) {
       static_cast<RenderWidgetHostViewBase*>(view)->ShowWithVisibility(
-          new_visibility);
+          page_visibility);
     } else if (new_visibility == Visibility::HIDDEN) {
       view->Hide();
     } else {
@@ -3446,24 +3547,28 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
   // Make sure to call SetVisibilityAndNotifyObservers(VISIBLE) before notifying
   // the CrossProcessFrameConnector.
   if (new_visibility == Visibility::VISIBLE) {
-    last_active_time_ = base::TimeTicks::Now();
+    if (is_activity) {
+      last_active_time_ = base::TimeTicks::Now();
+    }
     SetVisibilityAndNotifyObservers(new_visibility);
   }
 
   if (page_visibility == PageVisibilityState::kHidden) {
     // Similar to when showing the page, we only hide the page after
     // hiding the individual RenderWidgets.
-    for (auto* rvh : GetRenderViewHostsIncludingBackForwardCached()) {
-      rvh->SetFrameTreeVisibility(page_visibility);
-    }
-
+    ForEachRenderViewHost(view_mask, update_frame_tree_visibility);
   } else {
-    for (FrameTreeNode* node : frame_tree_.Nodes()) {
-      RenderFrameProxyHost* parent = node->render_manager()->GetProxyToParent();
-      if (!parent)
+    for (FrameTreeNode* node :
+         FrameTree::SubtreeAndInnerTreeNodes(GetMainFrame())) {
+      RenderFrameProxyHost* proxy_to_parent_or_outer_delegate =
+          node->render_manager()->GetProxyToParentOrOuterDelegate();
+      if (!proxy_to_parent_or_outer_delegate)
         continue;
 
-      parent->cross_process_frame_connector()->DelegateWasShown();
+      // DelegateWasShown keeps track of crash metrics. This is safe to
+      // call for GuestViews, and inner frame trees.
+      proxy_to_parent_or_outer_delegate->cross_process_frame_connector()
+          ->DelegateWasShown();
     }
   }
 
@@ -3545,7 +3650,7 @@ void WebContentsImpl::LostMouseLock(RenderWidgetHostImpl* render_widget_host) {
                         "render_widget_host", render_widget_host);
   CHECK(mouse_lock_widget_);
 
-  if (mouse_lock_widget_->delegate()->GetAsWebContents() != this)
+  if (WebContentsImpl::FromRenderWidgetHostImpl(mouse_lock_widget_) != this)
     return mouse_lock_widget_->delegate()->LostMouseLock(render_widget_host);
 
   mouse_lock_widget_->SendMouseLockLost();
@@ -3583,7 +3688,7 @@ bool WebContentsImpl::RequestKeyboardLock(
                         "render_widget_host", render_widget_host,
                         "esc_key_locked", esc_key_locked);
   DCHECK(render_widget_host);
-  if (render_widget_host->delegate()->GetAsWebContents() != this) {
+  if (WebContentsImpl::FromRenderWidgetHostImpl(render_widget_host) != this) {
     NOTREACHED();
     return false;
   }
@@ -3621,11 +3726,21 @@ RenderWidgetHostImpl* WebContentsImpl::GetKeyboardLockWidget() {
   return keyboard_lock_widget_;
 }
 
-void WebContentsImpl::OnRenderFrameProxyVisibilityChanged(
+bool WebContentsImpl::OnRenderFrameProxyVisibilityChanged(
+    RenderFrameProxyHost* render_frame_proxy_host,
     blink::mojom::FrameVisibility visibility) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::OnRenderFrameProxyVisibilityChanged",
                         "visibility", static_cast<int>(visibility));
+
+  // Check that we are responsible for the RenderFrameProxyHost by checking that
+  // its FrameTreeNode matches our `frame_tree_` root. Otherwise this is not a
+  // visibility change that affects all frames in an inner WebContents.
+  if (render_frame_proxy_host->frame_tree_node() != frame_tree_.root())
+    return false;
+
+  DCHECK(GetOuterWebContents());
+
   switch (visibility) {
     case blink::mojom::FrameVisibility::kRenderedInViewport:
       WasShown();
@@ -3637,6 +3752,7 @@ void WebContentsImpl::OnRenderFrameProxyVisibilityChanged(
       WasOccluded();
       break;
   }
+  return true;
 }
 
 FrameTree* WebContentsImpl::CreateNewWindow(
@@ -3680,7 +3796,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
             partition_id, session_storage_namespace));
     if (!web_contents_impl)
       return nullptr;
-    return web_contents_impl->GetFrameTree();
+    return &web_contents_impl->GetPrimaryFrameTree();
   }
 
   bool renderer_started_hidden =
@@ -3817,6 +3933,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
           new_contents_impl->should_override_user_agent_in_new_tabs_
               ? NavigationController::UA_OVERRIDE_TRUE
               : NavigationController::UA_OVERRIDE_FALSE;
+      load_params->download_policy = params.download_policy;
 
       if (delegate_ && !is_guest &&
           !delegate_->ShouldResumeRequestsForCreatedWindow()) {
@@ -3831,7 +3948,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
       }
     }
   }
-  return new_contents_impl->GetFrameTree();
+  return &new_contents_impl->GetPrimaryFrameTree();
 }
 
 RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
@@ -3844,14 +3961,6 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::CreateNewPopupWidget",
                         "route_id", route_id);
   RenderProcessHost* process = agent_scheduling_group.GetProcess();
-  // A message to create a new widget can only come from an active process for
-  // this WebContentsImpl instance. If any other process sends the request,
-  // it is invalid and the process must be terminated.
-  if (!HasMatchingProcess(&frame_tree_, process->GetID())) {
-    ReceivedBadMessage(process, bad_message::WCI_NEW_WIDGET_PROCESS_MISMATCH);
-    return nullptr;
-  }
-
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::CreateSelfOwned(
       &frame_tree_, this, agent_scheduling_group, route_id, IsHidden(),
       std::make_unique<FrameTokenMessageQueue>());
@@ -3936,7 +4045,8 @@ void WebContentsImpl::ShowCreatedWindow(RenderFrameHostImpl* opener,
 
 void WebContentsImpl::ShowCreatedWidget(int process_id,
                                         int widget_route_id,
-                                        const gfx::Rect& initial_rect) {
+                                        const gfx::Rect& initial_rect,
+                                        const gfx::Rect& initial_anchor_rect) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::ShowCreatedWidget",
                         "process_id", process_id, "widget_route_id",
                         widget_route_id);
@@ -3961,6 +4071,7 @@ void WebContentsImpl::ShowCreatedWidget(int process_id,
                          outermost_web_contents != outer_web_contents;
 
   gfx::Rect transformed_rect(initial_rect);
+  gfx::Rect transformed_anchor_rect(initial_anchor_rect);
   RenderWidgetHostView* this_view = GetRenderWidgetHostView();
   if (needs_transform) {
     // We need to transform the coordinates of initial_rect.
@@ -3971,9 +4082,18 @@ void WebContentsImpl::ShowCreatedWidget(int process_id,
     transformed_rect =
         gfx::Rect(origin.x(), origin.y(), bottom_right.x() - origin.x(),
                   bottom_right.y() - origin.y());
+
+    origin =
+        this_view->TransformPointToRootCoordSpace(initial_anchor_rect.origin());
+    bottom_right = this_view->TransformPointToRootCoordSpace(
+        initial_anchor_rect.bottom_right());
+    transformed_anchor_rect =
+        gfx::Rect(origin.x(), origin.y(), bottom_right.x() - origin.x(),
+                  bottom_right.y() - origin.y());
   }
 
-  widget_host_view->InitAsPopup(view, transformed_rect);
+  widget_host_view->InitAsPopup(view, transformed_rect,
+                                transformed_anchor_rect);
 
   RenderWidgetHostImpl* render_widget_host_impl = widget_host_view->host();
   // Renderer-owned popup widgets wait for the renderer to request for them
@@ -4103,14 +4223,6 @@ void WebContentsImpl::SetCaptureHandleConfig(
                              capture_handle_config_);
 }
 
-SessionStorageNamespaceMap WebContentsImpl::GetSessionStorageNamespaceMap() {
-  return GetController().GetSessionStorageNamespaceMap();
-}
-
-FrameTree* WebContentsImpl::GetFrameTree() {
-  return &frame_tree_;
-}
-
 bool WebContentsImpl::IsJavaScriptDialogShowing() const {
   return is_showing_javascript_dialog_;
 }
@@ -4230,6 +4342,8 @@ device::mojom::GeolocationContext* WebContentsImpl::GetGeolocationContext() {
 }
 
 device::mojom::WakeLockContext* WebContentsImpl::GetWakeLockContext() {
+  if (!enable_wake_locks_)
+    return nullptr;
   if (!wake_lock_context_host_)
     wake_lock_context_host_ = std::make_unique<WakeLockContextHost>(this);
   return wake_lock_context_host_->GetWakeLockContext();
@@ -4252,7 +4366,6 @@ void WebContentsImpl::SetNotWaitingForResponse() {
     return;
 
   waiting_for_response_ = false;
-  observers_.NotifyObservers(&WebContentsObserver::DidReceiveResponse);
 
   // LoadingStateChanged must be called last in case it triggers deletion of
   // |this| due to recursive message pumps.
@@ -4281,7 +4394,7 @@ TextInputManager* WebContentsImpl::GetTextInputManager() {
   return text_input_manager_.get();
 }
 
-bool WebContentsImpl::IsWidgetForMainFrame(
+bool WebContentsImpl::IsWidgetForPrimaryMainFrame(
     RenderWidgetHostImpl* render_widget_host) {
   return render_widget_host == GetMainFrame()->GetRenderWidgetHost();
 }
@@ -4355,13 +4468,6 @@ void WebContentsImpl::AdjustSelectionByCharacterOffset(
                           : SelectionMenuBehavior::kHide);
 }
 
-void WebContentsImpl::UpdatePreferredSize(const gfx::Size& pref_size) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::UpdatePreferredSize");
-  const gfx::Size old_size = GetPreferredSize();
-  preferred_size_ = pref_size;
-  OnPreferredSizeChanged(old_size);
-}
-
 void WebContentsImpl::ResizeDueToAutoResize(
     RenderWidgetHostImpl* render_widget_host,
     const gfx::Size& new_size) {
@@ -4410,21 +4516,21 @@ WebContents* WebContentsImpl::OpenURL(const OpenURLParams& params) {
       // If a frame tree node ID is specified and it exists, ensure it is for a
       // node within this WebContents. Note: this WebContents could be hosting
       // multiple frame trees (e.g. prerendering) so it's not enough to check
-      // against this->frame_tree_.
+      // against this->frame_tree_. Check against page_delegate(), which is
+      // always a WebContentsImpl, while delegate() may be implemented by
+      // something else such as for prerendered frame trees.
       FrameTree* frame_tree = frame_tree_node->frame_tree();
-      CHECK_EQ(frame_tree->controller().DeprecatedGetWebContents(), this);
+      CHECK_EQ(frame_tree->page_delegate(), this);
 
-      if (blink::features::IsPrerender2Enabled()) {
-        // Prerendering is generally hidden from embedders. If the navigation is
-        // targeting a frame in a prerendering frame tree, we shouldn't run that
-        // navigation through the embedder delegate. Instead, we just navigate
-        // directly on the prerendering frame tree.
-        if (frame_tree->type() == FrameTree::Type::kPrerender) {
-          DCHECK_EQ(params.disposition, WindowOpenDisposition::CURRENT_TAB);
-          frame_tree->controller().LoadURLWithParams(
-              NavigationController::LoadURLParams(params));
-          return this;
-        }
+      // Prerendering is generally hidden from embedders. If the navigation is
+      // targeting a frame in a prerendering frame tree, we shouldn't run that
+      // navigation through the embedder delegate. Instead, we just navigate
+      // directly on the prerendering frame tree.
+      if (frame_tree->type() == FrameTree::Type::kPrerender) {
+        DCHECK_EQ(params.disposition, WindowOpenDisposition::CURRENT_TAB);
+        frame_tree->controller().LoadURLWithParams(
+            NavigationController::LoadURLParams(params));
+        return this;
       }
     } else {
       // If the node doesn't exist it was probably removed from its frame tree.
@@ -4979,11 +5085,10 @@ bool WebContentsImpl::GotResponseToLockMouseRequest(
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::GotResponseToLockMouseRequest");
   if (mouse_lock_widget_) {
-    if (mouse_lock_widget_->delegate()->GetAsWebContents() != this) {
-      return mouse_lock_widget_->delegate()
-          ->GetAsWebContents()
-          ->GotResponseToLockMouseRequest(result);
-    }
+    auto* web_contents =
+        WebContentsImpl::FromRenderWidgetHostImpl(mouse_lock_widget_);
+    if (web_contents != this)
+      return web_contents->GotResponseToLockMouseRequest(result);
 
     if (mouse_lock_widget_->GotResponseToLockMouseRequest(result))
       return true;
@@ -5022,7 +5127,8 @@ bool WebContentsImpl::GotResponseToKeyboardLockRequest(bool allowed) {
   if (!keyboard_lock_widget_)
     return false;
 
-  if (keyboard_lock_widget_->delegate()->GetAsWebContents() != this) {
+  if (WebContentsImpl::FromRenderWidgetHostImpl(keyboard_lock_widget_) !=
+      this) {
     NOTREACHED();
     return false;
   }
@@ -5072,7 +5178,7 @@ void WebContentsImpl::DidEndColorChooser() {
 int WebContentsImpl::DownloadImage(
     const GURL& url,
     bool is_favicon,
-    uint32_t preferred_size,
+    const gfx::Size& preferred_size,
     uint32_t max_bitmap_size,
     bool bypass_cache,
     WebContents::ImageDownloadCallback callback) {
@@ -5087,7 +5193,7 @@ int WebContentsImpl::DownloadImageInFrame(
     const GlobalRenderFrameHostId& initiator_frame_routing_id,
     const GURL& url,
     bool is_favicon,
-    uint32_t preferred_size,
+    const gfx::Size& preferred_size,
     uint32_t max_bitmap_size,
     bool bypass_cache,
     WebContents::ImageDownloadCallback callback) {
@@ -5312,10 +5418,8 @@ void WebContentsImpl::ReadyToCommitNavigation(
                "navigation_handle", navigation_handle);
 
   // Cross-document navigation of the top-level frame resets the capture
-  // handle config.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main
-  // frame to preserve its semantics. Follow up to confirm correctness.
+  // handle config. Using IsInPrimaryMainFrame is valid here since the browser
+  // caches this state for the active main frame only.
   if (!navigation_handle->IsSameDocument() &&
       navigation_handle->IsInPrimaryMainFrame()) {
     SetCaptureHandleConfig(blink::mojom::CaptureHandleConfig::New());
@@ -5465,11 +5569,20 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
     // We defer favicon and manifest URL updates while prerendering. Upon
     // activation, we must inform interested parties about our candidate favicon
     // URLs and the manifest URL.
+    DCHECK(navigation_handle->IsInPrimaryMainFrame());
     auto* rfhi = static_cast<RenderFrameHostImpl*>(
         navigation_handle->GetRenderFrameHost());
-    if (!rfhi->GetParent()) {
-      UpdateFaviconURL(rfhi, rfhi->FaviconURLs());
-      OnManifestUrlChanged(rfhi->GetPage());
+    UpdateFaviconURL(rfhi, rfhi->FaviconURLs());
+    OnManifestUrlChanged(rfhi->GetPage());
+
+    // The page might have set its title while prerendering, and if it was, we
+    // skipped notifying observers then, and we need to notify them now after
+    // the page is activated.
+    DCHECK(navigation_handle->IsInPrimaryMainFrame());
+    NavigationEntryImpl* entry = GetController().GetLastCommittedEntry();
+    DCHECK(entry);
+    if (!entry->GetTitle().empty()) {
+      NotifyTitleUpdateForEntry(entry);
     }
   }
 }
@@ -5512,15 +5625,15 @@ bool WebContentsImpl::ShouldPreserveAbortedURLs() {
 void WebContentsImpl::DidNavigateMainFramePreCommit(
     FrameTreeNode* frame_tree_node,
     bool navigation_is_within_page) {
-  // The render_frame_host is always a main frame.
+  // The `frame_tree_node` is always a main frame.
   DCHECK(frame_tree_node->IsMainFrame());
   TRACE_EVENT1("content,navigation",
                "WebContentsImpl::DidNavigateMainFramePreCommit",
                "navigation_is_within_page", navigation_is_within_page);
-  bool is_primary_main_frame =
-      GetMainFrame() == frame_tree_node->render_manager()->current_frame_host();
+  const bool is_primary =
+      frame_tree_node->frame_tree()->type() == FrameTree::Type::kPrimary;
   // If running for a non-primary main frame, early out.
-  if (!is_primary_main_frame)
+  if (!is_primary)
     return;
 
   // Ensure fullscreen mode is exited before committing the navigation to a
@@ -5541,14 +5654,13 @@ void WebContentsImpl::DidNavigateMainFramePreCommit(
 
 void WebContentsImpl::DidNavigateMainFramePostCommit(
     RenderFrameHostImpl* render_frame_host,
-    const LoadCommittedDetails& details,
-    const mojom::DidCommitProvisionalLoadParams& params) {
+    const LoadCommittedDetails& details) {
   // The render_frame_host is always a main frame.
   DCHECK(render_frame_host->is_main_frame());
   OPTIONAL_TRACE_EVENT1("content,navigation",
                         "WebContentsImpl::DidNavigateMainFramePostCommit",
                         "render_frame_host", render_frame_host);
-  bool is_primary_main_frame = render_frame_host->IsInPrimaryMainFrame();
+  const bool is_primary_main_frame = render_frame_host->IsInPrimaryMainFrame();
 
   if (details.is_navigation_to_different_page()) {
     if (is_primary_main_frame) {
@@ -5580,13 +5692,13 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
     }
     OnThemeColorChanged(page);
     OnBackgroundColorChanged(page);
+    AXTreeIDForMainFrameHasChanged();
   }
 }
 
 void WebContentsImpl::DidNavigateAnyFramePostCommit(
     RenderFrameHostImpl* render_frame_host,
-    const LoadCommittedDetails& details,
-    const mojom::DidCommitProvisionalLoadParams& params) {
+    const LoadCommittedDetails& details) {
   OPTIONAL_TRACE_EVENT1("content,navigation",
                         "WebContentsImpl::DidNavigateAnyFramePostCommit",
                         "render_frame_host", render_frame_host);
@@ -5597,7 +5709,8 @@ void WebContentsImpl::DidNavigateAnyFramePostCommit(
 
   // If this is a user-initiated navigation, start allowing JavaScript dialogs
   // again.
-  if (params.gesture == NavigationGestureUser && dialog_manager_) {
+  if (render_frame_host->last_navigation_started_with_transient_activation() &&
+      dialog_manager_) {
     dialog_manager_->CancelDialogs(this, /*reset_state=*/true);
   }
 }
@@ -5647,7 +5760,8 @@ void WebContentsImpl::DidLoadResourceFromMemoryCache(
     const GURL& url,
     const std::string& http_method,
     const std::string& mime_type,
-    network::mojom::RequestDestination request_destination) {
+    network::mojom::RequestDestination request_destination,
+    bool include_credentials) {
   OPTIONAL_TRACE_EVENT2("content",
                         "WebContentsImpl::DidLoadResourceFromMemoryCache",
                         "render_frame_host", source, "url", url);
@@ -5655,14 +5769,16 @@ void WebContentsImpl::DidLoadResourceFromMemoryCache(
       &WebContentsObserver::DidLoadResourceFromMemoryCache, source, url,
       mime_type, request_destination);
 
-  if (url.is_valid() && url.SchemeIsHTTPOrHTTPS()) {
-    StoragePartition* partition = source->GetProcess()->GetStoragePartition();
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())
+    return;
 
-    DCHECK(!blink::IsRequestDestinationFrame(request_destination));
-    partition->GetNetworkContext()->NotifyExternalCacheHit(
-        url, http_method, source->GetNetworkIsolationKey(),
-        false /* is_subframe_document_resource */);
-  }
+  StoragePartition* partition = source->GetProcess()->GetStoragePartition();
+
+  DCHECK(!blink::IsRequestDestinationFrame(request_destination));
+  partition->GetNetworkContext()->NotifyExternalCacheHit(
+      url, http_method, source->GetNetworkIsolationKey(),
+      /*is_subframe_document_resource=*/false,
+      /*include_credentials=*/include_credentials);
 }
 
 void WebContentsImpl::DocumentAvailableInMainFrame(
@@ -5922,58 +6038,14 @@ bool WebContentsImpl::IsAllowedToGoToEntryAtOffset(int32_t offset) {
   return !delegate_ || delegate_->OnGoToEntryOffset(offset);
 }
 
-void WebContentsImpl::OnPageScaleFactorChanged(RenderFrameHostImpl* source,
-                                               float page_scale_factor) {
-  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::OnPageScaleFactorChanged",
-                        "render_frame_host", source, "page_scale_factor",
-                        page_scale_factor);
-#if !defined(OS_ANDROID)
-  // While page scale factor is used on mobile, this PageScaleFactorIsOne logic
-  // is only needed on desktop.
-  bool was_one = page_scale_factor_ == 1.f;
-  bool is_one = page_scale_factor == 1.f;
-  if (is_one != was_one) {
-    HostZoomMapImpl* host_zoom_map =
-        static_cast<HostZoomMapImpl*>(HostZoomMap::GetForWebContents(this));
+void WebContentsImpl::OnPageScaleFactorChanged(PageImpl& source) {
+  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnPageScaleFactorChanged",
+                        "source", source);
 
-    if (host_zoom_map) {
-      host_zoom_map->SetPageScaleFactorIsOneForView(
-          source->GetProcess()->GetID(),
-          source->GetRenderViewHost()->GetRoutingID(), is_one);
-    }
+  if (source.IsPrimary()) {
+    observers_.NotifyObservers(&WebContentsObserver::OnPageScaleFactorChanged,
+                               source.page_scale_factor());
   }
-#endif  // !defined(OS_ANDROID)
-
-  page_scale_factor_ = page_scale_factor;
-  observers_.NotifyObservers(&WebContentsObserver::OnPageScaleFactorChanged,
-                             page_scale_factor);
-}
-
-void WebContentsImpl::OnTextAutosizerPageInfoChanged(
-    RenderFrameHostImpl* source,
-    blink::mojom::TextAutosizerPageInfoPtr page_info) {
-  OPTIONAL_TRACE_EVENT1("content",
-                        "WebContentsImpl::OnTextAutosizerPageInfoChanged",
-                        "render_frame_host", source);
-  // Keep a copy of |page_info| in case we create a new RenderView before
-  // the next update.
-  text_autosizer_page_info_.main_frame_width = page_info->main_frame_width;
-  text_autosizer_page_info_.main_frame_layout_width =
-      page_info->main_frame_layout_width;
-  text_autosizer_page_info_.device_scale_adjustment =
-      page_info->device_scale_adjustment;
-
-  auto remote_frames_broadcast_callback = base::BindRepeating(
-      [](const blink::mojom::TextAutosizerPageInfo& page_info,
-         RenderFrameProxyHost* proxy_host) {
-        DCHECK(proxy_host);
-        proxy_host->GetAssociatedRemoteMainFrame()->UpdateTextAutosizerPageInfo(
-            page_info.Clone());
-      },
-      text_autosizer_page_info_);
-
-  frame_tree_.root()->render_manager()->ExecuteRemoteFramesBroadcastMethod(
-      std::move(remote_frames_broadcast_callback), source->GetSiteInstance());
 }
 
 void WebContentsImpl::EnumerateDirectory(
@@ -6073,14 +6145,18 @@ void WebContentsImpl::SavableResourceLinksResponse(
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::SavableResourceLinksResponse",
                         "render_frame_host", source);
-  save_package_->SavableResourceLinksResponse(source, resources_list,
-                                              std::move(referrer), subframes);
+  if (save_package_) {
+    save_package_->SavableResourceLinksResponse(source, resources_list,
+                                                std::move(referrer), subframes);
+  }
 }
 
 void WebContentsImpl::SavableResourceLinksError(RenderFrameHostImpl* source) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SavableResourceLinksError",
                         "render_frame_host", source);
-  save_package_->SavableResourceLinksError(source);
+  if (save_package_) {
+    save_package_->SavableResourceLinksError(source);
+  }
 }
 
 void WebContentsImpl::OnServiceWorkerAccessed(
@@ -6206,17 +6282,11 @@ void WebContentsImpl::UpdateFaviconURL(
     const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::UpdateFaviconURL",
                         "render_frame_host", source);
-  // Ignore favicons for non-main frame.
-  if (source->GetParent()) {
-    NOTREACHED();
-    return;
-  }
-
   // We get updated favicon URLs after the page stops loading. If a cross-site
   // navigation occurs while a page is still loading, the initial page
   // may stop loading and send us updated favicon URLs after the navigation
   // for the new page has committed.
-  if (!source->IsActive())
+  if (!source->IsInPrimaryMainFrame())
     return;
 
   observers_.NotifyObservers(&WebContentsObserver::DidUpdateFaviconURL, source,
@@ -6281,22 +6351,33 @@ void WebContentsImpl::ActivateAndShowRepostFormWarningDialog() {
 }
 
 bool WebContentsImpl::HasAccessedInitialDocument() {
-  return GetFrameTree()->has_accessed_initial_main_document();
+  return GetPrimaryFrameTree().has_accessed_initial_main_document();
 }
 
 void WebContentsImpl::UpdateTitleForEntry(NavigationEntry* entry,
                                           const std::u16string& title) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::UpdateTitleForEntry",
                         "title", title);
+  NavigationEntryImpl* entry_impl =
+      NavigationEntryImpl::FromNavigationEntry(entry);
+  bool title_changed = UpdateTitleForEntryImpl(entry_impl, title);
+  if (title_changed)
+    NotifyTitleUpdateForEntry(entry_impl);
+}
+
+bool WebContentsImpl::UpdateTitleForEntryImpl(NavigationEntryImpl* entry,
+                                              const std::u16string& title) {
   std::u16string final_title;
   base::TrimWhitespace(title, base::TRIM_ALL, &final_title);
 
   // If a page is created via window.open and never navigated,
   // there will be no navigation entry. In this situation,
   // |page_title_when_no_navigation_entry_| will be used for page title.
+  // For a title update from a non-primary frame tree, |entry| will always be
+  // non-null.
   if (entry) {
     if (final_title == entry->GetTitle())
-      return;  // Nothing changed, don't bother.
+      return false;  // Nothing changed, don't bother.
 
     entry->SetTitle(final_title);
 
@@ -6304,35 +6385,71 @@ void WebContentsImpl::UpdateTitleForEntry(NavigationEntry* entry,
     final_title = entry->GetTitleForDisplay();
   } else {
     if (page_title_when_no_navigation_entry_ == final_title)
-      return;  // Nothing changed, don't bother.
+      return false;  // Nothing changed, don't bother.
 
     page_title_when_no_navigation_entry_ = final_title;
   }
+  return true;
+}
 
-  // Lastly, set the title for the view.
-  view_->SetPageTitle(final_title);
+void WebContentsImpl::NotifyTitleUpdateForEntry(NavigationEntryImpl* entry) {
+  // |entry|, if non-null, must belong to the primary frame tree's
+  // NavigationController.
+  DCHECK(!entry || GetController().GetEntryWithUniqueIDIncludingPending(
+                       entry->GetUniqueID()));
+  std::u16string final_title = entry ? entry->GetTitleForDisplay()
+                                     : page_title_when_no_navigation_entry_;
+  bool did_web_contents_title_change = entry == GetNavigationEntryForTitle();
+  if (did_web_contents_title_change)
+    view_->SetPageTitle(final_title);
 
   {
     SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.TitleWasSet");
     observers_.NotifyObservers(&WebContentsObserver::TitleWasSet, entry);
   }
-  if (entry == GetController().GetEntryAtOffset(0))
+
+  if (did_web_contents_title_change)
     NotifyNavigationStateChanged(INVALIDATE_TYPE_TITLE);
+}
+
+NavigationEntry* WebContentsImpl::GetNavigationEntryForTitle() {
+  // We use the title for the last committed entry rather than a pending
+  // navigation entry. For example, when the user types in a URL, we want to
+  // keep the old page's title until the new load has committed and we get a new
+  // title.
+  NavigationEntry* entry = GetController().GetLastCommittedEntry();
+
+  // We make an exception for initial navigations. We only want to use the title
+  // from the visible entry if:
+  // 1. The pending entry has been explicitly assigned a title to display.
+  // 2. The user is doing a history navigation in a new tab (e.g., Ctrl+Back),
+  //    which case there is a pending entry index other than -1.
+  //
+  // Otherwise, we want to stick with the last committed entry's title during
+  // new navigations, which have pending entries at index -1 with no title.
+  if (GetController().IsInitialNavigation() &&
+      ((GetController().GetVisibleEntry() &&
+        !GetController().GetVisibleEntry()->GetTitle().empty()) ||
+       GetController().GetPendingEntryIndex() != -1)) {
+    entry = GetController().GetVisibleEntry();
+  }
+
+  return entry;
 }
 
 void WebContentsImpl::SendChangeLoadProgress() {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SendChangeLoadProgress",
-                        "load_progress", frame_tree_.load_progress());
+                        "load_progress", GetLoadProgress());
   loading_last_progress_update_ = base::TimeTicks::Now();
 
   SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.LoadProgressChanged");
   observers_.NotifyObservers(&WebContentsObserver::LoadProgressChanged,
-                             frame_tree_.load_progress());
+                             GetLoadProgress());
 }
 
 void WebContentsImpl::ResetLoadProgressState() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::ResetLoadProgressState");
-  frame_tree_.ResetLoadProgress();
+  GetPrimaryPage().set_load_progress(0.0);
   loading_weak_factory_.InvalidateWeakPtrs();
   loading_last_progress_update_ = base::TimeTicks();
 }
@@ -6368,7 +6485,8 @@ void WebContentsImpl::LoadingStateChanged(bool to_different_document,
   if (is_loading) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
         "browser,navigation", "WebContentsImpl Loading", this, "URL", url,
-        "Main FrameTreeNode id", GetFrameTree()->root()->frame_tree_node_id());
+        "Primary Main FrameTreeNode id",
+        GetPrimaryFrameTree().root()->frame_tree_node_id());
     SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStartLoading");
     observers_.NotifyObservers(&WebContentsObserver::DidStartLoading);
   } else {
@@ -6412,8 +6530,7 @@ void WebContentsImpl::NotifyViewSwapped(RenderViewHost* old_view,
 }
 
 void WebContentsImpl::NotifyFrameSwapped(RenderFrameHostImpl* old_frame,
-                                         RenderFrameHostImpl* new_frame,
-                                         bool is_main_frame) {
+                                         RenderFrameHostImpl* new_frame) {
   TRACE_EVENT2("content", "WebContentsImpl::NotifyFrameSwapped", "old_frame",
                old_frame, "new_frame", new_frame);
 #if defined(OS_ANDROID)
@@ -6461,33 +6578,6 @@ void WebContentsImpl::NotifyNavigationEntriesDeleted() {
   observers_.NotifyObservers(&WebContentsObserver::NavigationEntriesDeleted);
 }
 
-void WebContentsImpl::OnAssociatedInterfaceRequest(
-    RenderFrameHostImpl* render_frame_host,
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle handle) {
-  OPTIONAL_TRACE_EVENT2(
-      "content", "WebContentsImpl::OnAssociatedInterfaceRequest",
-      "render_frame_host", render_frame_host, "interface_name", interface_name);
-  auto it = receiver_sets_.find(interface_name);
-  if (it != receiver_sets_.end())
-    it->second->OnReceiverForFrame(render_frame_host, std::move(handle));
-}
-
-void WebContentsImpl::OnInterfaceRequest(
-    RenderFrameHostImpl* render_frame_host,
-    const std::string& interface_name,
-    mojo::ScopedMessagePipeHandle* interface_pipe) {
-  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::OnInterfaceRequest",
-                        "render_frame_host", render_frame_host,
-                        "interface_name", interface_name);
-  for (auto& observer : observers_.observer_list()) {
-    observer.OnInterfaceRequestFromFrame(render_frame_host, interface_name,
-                                         interface_pipe);
-    if (!interface_pipe->is_valid())
-      break;
-  }
-}
-
 void WebContentsImpl::OnDidBlockNavigation(
     const GURL& blocked_url,
     const GURL& initiator_url,
@@ -6506,16 +6596,12 @@ void WebContentsImpl::OnDidBlockNavigation(
     delegate_->OnDidBlockNavigation(this, blocked_url, initiator_url, reason);
 }
 
-const GURL& WebContentsImpl::GetMainFrameLastCommittedURL() {
-  return GetLastCommittedURL();
-}
-
 void WebContentsImpl::RenderFrameCreated(
     RenderFrameHostImpl* render_frame_host) {
   TRACE_EVENT1("content", "WebContentsImpl::RenderFrameCreated",
                "render_frame_host", render_frame_host);
 
-  if (IsInPrimaryMainFrame(render_frame_host)) {
+  if (render_frame_host->IsInPrimaryMainFrame()) {
     NotifyPrimaryMainFrameProcessIsAlive();
   }
 
@@ -6552,7 +6638,7 @@ void WebContentsImpl::RenderFrameDeleted(
 }
 
 void WebContentsImpl::ShowContextMenu(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
         context_menu_client,
     const ContextMenuParams& params) {
@@ -6609,6 +6695,8 @@ void WebContentsImpl::RunJavaScriptDialog(
     JavaScriptDialogCallback response_callback) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RunJavaScriptDialog",
                         "render_frame_host", render_frame_host);
+  DCHECK(render_frame_host->GetPage().IsPrimary());
+
   // Ensure that if showing a dialog is the first thing that a page does, that
   // the contents of the previous page aren't shown behind it. This is required
   // because showing a dialog freezes the renderer, so no frames will be coming
@@ -6657,7 +6745,7 @@ void WebContentsImpl::RunJavaScriptDialog(
           render_frame_host->GetLastCommittedOrigin() !=
           url::Origin::Create(render_frame_host->GetMainFrame()
                                   ->GetLastCommittedURL()
-                                  .GetOrigin());
+                                  .DeprecatedGetOriginAsURL());
       suppress_this_message |= is_different_origin_subframe;
       if (is_different_origin_subframe) {
         GetMainFrame()->AddMessageToConsole(
@@ -6718,6 +6806,8 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::RunBeforeUnloadConfirm",
                         "render_frame_host", render_frame_host, "is_reload",
                         is_reload);
+  DCHECK(render_frame_host->GetPage().IsPrimary());
+
   // Ensure that if showing a dialog is the first thing that a page does, that
   // the contents of the previous page aren't shown behind it. This is required
   // because showing a dialog freezes the renderer, so no frames will be coming
@@ -6729,9 +6819,6 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
   // Running a dialog causes an exit to webpage-initiated fullscreen.
   // http://crbug.com/728276
   base::ScopedClosureRunner fullscreen_block = ForSecurityDropFullscreen();
-
-  if (delegate_)
-    delegate_->WillRunBeforeUnloadConfirm();
 
   auto callback =
       base::BindOnce(&WebContentsImpl::OnDialogClosed, base::Unretained(this),
@@ -6750,8 +6837,7 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
   javascript_dialog_dismiss_notifier_ =
       std::make_unique<JavaScriptDialogDismissNotifier>();
 
-  bool should_suppress = !render_frame_host->IsActive() ||
-                         (delegate_ && delegate_->ShouldSuppressDialogs(this));
+  bool should_suppress = delegate_ && delegate_->ShouldSuppressDialogs(this);
   bool has_non_devtools_handlers = delegate_ && dialog_manager_;
   bool has_handlers = page_handlers.size() || has_non_devtools_handlers;
   if (should_suppress || !has_handlers) {
@@ -6795,12 +6881,14 @@ void WebContentsImpl::RunFileChooser(
     listener->FileSelectionCanceled();
 }
 
-WebContents* WebContentsImpl::GetAsWebContents() {
-  return this;
-}
-
-#if !defined(OS_ANDROID)
 double WebContentsImpl::GetPendingPageZoomLevel() {
+#if defined(OS_ANDROID)
+  // On Android, use the default page zoom level when the AccessibilityPageZoom
+  // feature is not enabled.
+  if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom)) {
+    return 0.0;
+  }
+#endif
   NavigationEntry* pending_entry = GetController().GetPendingEntry();
   if (!pending_entry)
     return HostZoomMap::GetZoomLevel(this);
@@ -6809,7 +6897,6 @@ double WebContentsImpl::GetPendingPageZoomLevel() {
   return HostZoomMap::GetForWebContents(this)->GetZoomLevelForHostAndScheme(
       url.scheme(), net::GetHostOrSpecFromURL(url));
 }
-#endif  // !defined(OS_ANDROID)
 
 bool WebContentsImpl::IsPictureInPictureAllowedForFullscreenVideo() const {
   return media_web_contents_observer_
@@ -6868,7 +6955,8 @@ RenderFrameHostImpl* WebContentsImpl::GetOuterWebContentsFrame() {
   FrameTreeNode* outer_node =
       FrameTreeNode::GloballyFindByID(GetOuterDelegateFrameTreeNodeId());
   // The outer node should be in the outer WebContents.
-  DCHECK_EQ(outer_node->frame_tree(), GetOuterWebContents()->GetFrameTree());
+  DCHECK_EQ(outer_node->frame_tree(),
+            &GetOuterWebContents()->GetPrimaryFrameTree());
   return outer_node->parent();
 }
 
@@ -6899,7 +6987,11 @@ WebContentsImpl* WebContentsImpl::GetResponsibleWebContents() {
 }
 
 WebContentsImpl* WebContentsImpl::GetFocusedWebContents() {
-  return GetOutermostWebContents()->node_.focused_web_contents();
+  return WebContentsImpl::FromFrameTreeNode(GetFocusedFrameTree()->root());
+}
+
+FrameTree* WebContentsImpl::GetFocusedFrameTree() {
+  return GetOutermostWebContents()->node_.focused_frame_tree();
 }
 
 void WebContentsImpl::SetFocusToLocationBar() {
@@ -6930,28 +7022,6 @@ WebContentsImpl* WebContentsImpl::GetOutermostWebContents() {
   while (root->GetOuterWebContents())
     root = root->GetOuterWebContents();
   return root;
-}
-
-void WebContentsImpl::FocusOuterAttachmentFrameChain() {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::FocusOuterAttachmentFrameChain");
-  WebContentsImpl* outer_contents = GetOuterWebContents();
-  if (!outer_contents)
-    return;
-
-  FrameTreeNode* outer_node =
-      FrameTreeNode::GloballyFindByID(GetOuterDelegateFrameTreeNodeId());
-  outer_node->frame_tree()->SetFocusedFrame(outer_node, nullptr);
-
-  // For a browser initiated focus change, let embedding renderer know of the
-  // change. Otherwise, if the currently focused element is just across a
-  // process boundary in focus order, it will not be possible to move across
-  // that boundary. This is because the target element will already be focused
-  // (that renderer was not notified) and drop the event.
-  if (GetRenderManager()->GetProxyToOuterDelegate())
-    GetRenderManager()->GetProxyToOuterDelegate()->SetFocusedFrame();
-
-  outer_contents->FocusOuterAttachmentFrameChain();
 }
 
 void WebContentsImpl::InnerWebContentsCreated(WebContents* inner_web_contents) {
@@ -7019,7 +7089,9 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
     // The pending page's RenderViewHost is gone.
     return;
   }
-  DCHECK(IsInPrimaryMainFrame(rvh->GetMainFrame()))
+
+  auto* rvh_impl = static_cast<RenderViewHostImpl*>(rvh);
+  DCHECK(rvh_impl->GetMainRenderFrameHost()->IsInPrimaryMainFrame())
       << "GetRenderViewHost() must belong to the primary frame tree";
 
   // Ensure fullscreen mode is exited in the |delegate_| since a crashed
@@ -7035,7 +7107,7 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
   // Cancel any visible dialogs so they are not left dangling over the sad tab.
   CancelActiveAndPendingDialogs();
 
-  audio_stream_monitor_.RenderProcessGone(rvh->GetProcess()->GetID());
+  audio_stream_monitor_.RenderProcessGone(rvh_impl->GetProcess()->GetID());
 
   // Reset the loading progress. TODO(avi): What does it mean to have a
   // "renderer crash" when there is more than one renderer process serving a
@@ -7045,12 +7117,14 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
 
   SetPrimaryMainFrameProcessStatus(status, error_code);
 
-  TRACE_EVENT0("content",
-               "Dispatching WebContentsObserver::RenderViewTerminated");
-  // Some observers might destroy WebContents in RenderViewTerminated.
+  TRACE_EVENT0(
+      "content",
+      "Dispatching WebContentsObserver::PrimaryMainFrameRenderProcessGone");
+  // Some observers might destroy WebContents in
+  // PrimaryMainFrameRenderProcessGone.
   base::WeakPtr<WebContentsImpl> weak_ptr = weak_factory_.GetWeakPtr();
   for (auto& observer : observers_.observer_list()) {
-    observer.RenderProcessGone(status);
+    observer.PrimaryMainFrameRenderProcessGone(status);
     if (!weak_ptr)
       return;
   }
@@ -7113,6 +7187,13 @@ void WebContentsImpl::SetWindowRect(const gfx::Rect& new_bounds) {
   ForSecurityDropFullscreen(display_id).RunAndReset();
 
   delegate_->SetContentsBounds(this, bounds);
+}
+
+void WebContentsImpl::UpdateWindowPreferredSize(const gfx::Size& pref_size) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::UpdatePreferredSize");
+  const gfx::Size old_size = GetPreferredSize();
+  preferred_size_ = pref_size;
+  OnPreferredSizeChanged(old_size);
 }
 
 std::vector<RenderFrameHostImpl*>
@@ -7183,20 +7264,26 @@ void WebContentsImpl::DidStopLoading() {
   }
 
   LoadingStateChanged(true, details.get());
+
+#if defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kSpareRenderer)) {
+    RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
+        GetBrowserContext());
+  }
+#endif
 }
 
 void WebContentsImpl::DidChangeLoadProgress() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DidChangeLoadProgress");
   if (IsBeingDestroyed())
     return;
-  double load_progress = frame_tree_.load_progress();
+  double load_progress = GetLoadProgress();
 
   // The delegate is notified immediately for the first and last updates. Also,
   // since the message loop may be pretty busy when a page is loaded, it might
   // not execute a posted task in a timely manner so the progress report is sent
   // immediately if enough time has passed.
-  base::TimeDelta min_delay =
-      base::TimeDelta::FromMilliseconds(kMinimumDelayBetweenLoadingUpdatesMS);
+  base::TimeDelta min_delay = minimum_delay_between_loading_updates_ms_;
   bool delay_elapsed =
       loading_last_progress_update_.is_null() ||
       base::TimeTicks::Now() - loading_last_progress_update_ > min_delay;
@@ -7217,11 +7304,15 @@ void WebContentsImpl::DidChangeLoadProgress() {
   if (loading_weak_factory_.HasWeakPtrs())
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&WebContentsImpl::SendChangeLoadProgress,
-                     loading_weak_factory_.GetWeakPtr()),
-      min_delay);
+  if (min_delay == base::Milliseconds(0)) {
+    SendChangeLoadProgress();
+  } else {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&WebContentsImpl::SendChangeLoadProgress,
+                       loading_weak_factory_.GetWeakPtr()),
+        min_delay);
+  }
 }
 
 bool WebContentsImpl::IsHidden() {
@@ -7272,15 +7363,24 @@ void WebContentsImpl::RegisterExistingOriginToPreventOptInIsolation(
     if (web_contents->GetBrowserContext() != GetBrowserContext())
       continue;
 
-    // TODO(https://crbug.com/1170273): Handle multiple controllers (MPArch)
-    web_contents->GetController().RegisterExistingOriginToPreventOptInIsolation(
-        origin);
-    // Walk the frame tree to pick up any frames without FrameNavigationEntries.
+    // Walk the frame trees to notify each one's NavigationController about the
+    // opting-in origin, and also pick up any frames without
+    // FrameNavigationEntries.
     // * Some frames won't have FrameNavigationEntries (Issues 524208, 608402).
     // * Some pending navigations won't have NavigationEntries.
-    web_contents->GetFrameTree()->RegisterExistingOriginToPreventOptInIsolation(
-        origin, navigation_request_to_exclude);
+    web_contents->ForEachFrameTree(base::BindRepeating(
+        [](const url::Origin& origin,
+           NavigationRequest* navigation_request_to_exclude,
+           FrameTree* frame_tree) {
+          frame_tree->RegisterExistingOriginToPreventOptInIsolation(
+              origin, navigation_request_to_exclude);
+        },
+        origin, navigation_request_to_exclude));
   }
+}
+
+bool WebContentsImpl::IsActivationNavigationDisallowedForBug1234857() {
+  return disallow_activation_navigations_;
 }
 
 void WebContentsImpl::DidChangeName(RenderFrameHostImpl* render_frame_host,
@@ -7349,23 +7449,23 @@ void WebContentsImpl::UpdateTitle(RenderFrameHostImpl* render_frame_host,
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::UpdateTitle",
                         "render_frame_host", render_frame_host, "title", title);
   // Try to find the navigation entry, which might not be the current one.
-  // For example, it might be from a recently swapped out RFH.
+  // For example, it might be from a pending deletion RFH, or it might be from a
+  // non-primary frame tree.
   NavigationEntryImpl* entry =
       render_frame_host->frame_tree()->controller().GetEntryWithUniqueID(
           render_frame_host->nav_entry_id());
 
   // We can handle title updates when we don't have an entry in
   // UpdateTitleForEntry, but only if the update is from the current RFH.
-  // This check also makes sure that we only update the title for the primary
-  // main frame in case of multiple FrameTrees (MPArch) as GetMainFrame returns
-  // the main frame for the FrameTree owned by this WebContents (i.e. primary
-  // FrameTree)
   if (!entry && render_frame_host != GetMainFrame())
     return;
 
   // TODO(evan): make use of title_direction.
   // http://code.google.com/p/chromium/issues/detail?id=27094
-  UpdateTitleForEntry(entry, title);
+  bool title_changed = UpdateTitleForEntryImpl(entry, title);
+  if (title_changed && render_frame_host == GetMainFrame()) {
+    NotifyTitleUpdateForEntry(entry);
+  }
 }
 
 void WebContentsImpl::UpdateTargetURL(RenderFrameHostImpl* render_frame_host,
@@ -7428,27 +7528,39 @@ void WebContentsImpl::EnsureOpenerProxiesExist(
 }
 
 void WebContentsImpl::SetAsFocusedWebContentsIfNecessary() {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::SetAsFocusedWebContentsIfNecessary");
+  SetFocusedFrameTree(&GetPrimaryFrameTree());
+}
+
+void WebContentsImpl::SetFocusedFrameTree(FrameTree* frame_tree_to_focus) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetFocusedFrameTree");
   DCHECK(!GetOuterWebContents() || !IsPortal());
+  DCHECK(frame_tree_to_focus);
+
   // Only change focus if we are not currently focused.
-  WebContentsImpl* old_contents = GetFocusedWebContents();
-  if (old_contents == this)
+  FrameTree* old_focused_frame_tree = GetFocusedFrameTree();
+  if (old_focused_frame_tree == frame_tree_to_focus)
     return;
 
-  GetOutermostWebContents()->node_.SetFocusedWebContents(this);
+  GetOutermostWebContents()->node_.SetFocusedFrameTree(frame_tree_to_focus);
 
-  // Send a page level blur to the old contents so that it displays inactive UI
-  // and focus this contents to activate it.
-  if (old_contents)
-    old_contents->GetMainFrame()->GetRenderWidgetHost()->SetPageFocus(false);
+  // Send a page level blur to the `old_focused_frame_tree` so that it displays
+  // inactive UI and focus `frame_tree_to_focus` to activate it.
+  if (old_focused_frame_tree) {
+    old_focused_frame_tree->root()
+        ->current_frame_host()
+        ->GetRenderWidgetHost()
+        ->SetPageFocus(false);
+  }
 
-  // Make sure the outer web contents knows our frame is focused. Otherwise, the
+  // Make sure the outer frame trees knows our frame is focused. Otherwise, the
   // outer renderer could have the element before or after the frame element
   // focused which would return early without actually advancing focus.
-  FocusOuterAttachmentFrameChain();
+  frame_tree_to_focus->FocusOuterFrameTrees();
 
-  GetMainFrame()->GetRenderWidgetHost()->SetPageFocus(true);
+  frame_tree_to_focus->root()
+      ->current_frame_host()
+      ->GetRenderWidgetHost()
+      ->SetPageFocus(true);
 }
 
 void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
@@ -7456,9 +7568,25 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SetFocusedFrame",
                         "frame_tree_node", node, "source_site_instance",
                         source);
-  frame_tree_.SetFocusedFrame(node, source);
+  node->frame_tree()->SetFocusedFrame(node, source);
 
-  if (auto* inner_contents = node_.GetInnerWebContentsInFrame(node)) {
+  auto* inner_contents = node_.GetInnerWebContentsInFrame(node);
+
+  // We currently do not need to descend into inner frame trees that
+  // are not an inner WebContents for focus. If `inner_contents` is null,
+  // then the only supported inner frame tree type would be fenced frames.
+  // An embedding frame focusing a fenced frame is not allowed since that would
+  // be an information leak.  If a renderer attempts to do that, that should be
+  // blocked by `RenderFrameProxyHost::DidFocusFrame()`.
+  DCHECK(inner_contents ||
+         node->current_frame_host()->inner_tree_main_frame_tree_node_id() ==
+             FrameTreeNode::kFrameTreeNodeInvalidId);
+
+  if (inner_contents) {
+    // An inner WebContents is not created from Fenced Frames so we
+    // shouldn't end up in this branch.
+    DCHECK_NE(FrameTree::Type::kFencedFrame, node->frame_tree()->type());
+
     // |this| is an outer WebContents and |node| represents an inner
     // WebContents. Transfer the focus to the inner contents if |this| is
     // focused.
@@ -7469,6 +7597,11 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
              node_.OuterContentsFrameTreeNode()
                      ->current_frame_host()
                      ->GetSiteInstance() == source) {
+    // A GuestView embedding a fenced frame will have an
+    // OuterContentsFrameTreeNode. However, it will not have the same site
+    // instance because a FencedFrame creates a new BrowsingInstance.
+    DCHECK_NE(FrameTree::Type::kFencedFrame, node->frame_tree()->type());
+
     // |this| is an inner WebContents, |node| is its main FrameTreeNode and
     // the outer WebContents FrameTreeNode is at |source|'s SiteInstance.
     // Transfer the focus to the inner WebContents if the outer WebContents is
@@ -7476,10 +7609,14 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
     // its RenderFrameProxyHost (via FrameFocused mojo call, used to
     // implement the window.focus() API).
     if (GetFocusedWebContents() == GetOuterWebContents())
-      SetAsFocusedWebContentsIfNecessary();
-  } else if (!GetOuterWebContents()) {
-    // This is an outermost WebContents.
-    SetAsFocusedWebContentsIfNecessary();
+      SetFocusedFrameTree(node->frame_tree());
+  } else if (!GetOuterWebContents() || GetFocusedWebContents() == this) {
+    // This is an outermost WebContents or we are currently focused so allow
+    // the requested node's frame tree to be focused. The
+    // (GetFocusedWebContents() == this) is needed when there are multiple
+    // frame trees within an inner WebContents (ie. a GuestView with fenced
+    // frames).
+    SetFocusedFrameTree(node->frame_tree());
   }
 }
 
@@ -7528,7 +7665,7 @@ void WebContentsImpl::OnAdvanceFocus(RenderFrameHostImpl* source_rfh) {
   // RenderFrameProxyHost represents an inner WebContents, the outer WebContents
   // needs to focus the inner WebContents.
   if (GetOuterWebContents() &&
-      GetOuterWebContents() == source_rfh->delegate()->GetAsWebContents() &&
+      GetOuterWebContents() == WebContents::FromRenderFrameHost(source_rfh) &&
       GetFocusedWebContents() == GetOuterWebContents()) {
     SetAsFocusedWebContentsIfNecessary();
   }
@@ -7670,32 +7807,6 @@ void WebContentsImpl::RendererResponsive(
     delegate_->RendererResponsive(this, render_widget_host);
 }
 
-void WebContentsImpl::SubframeCrashed(
-    blink::mojom::FrameVisibility visibility) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SubframeCrashed",
-                        "visibility", visibility);
-  // If a subframe crashed on a hidden tab, mark the tab for reload to avoid
-  // showing a sad frame to the user if they ever switch back to that tab. Do
-  // this for subframes that are either visible in viewport or visible but
-  // scrolled out of view, but skip subframes that are not rendered (e.g., via
-  // "display:none"), since in that case the user wouldn't see a sad frame
-  // anyway.
-  bool did_mark_for_reload = false;
-  if (IsHidden() && visibility != blink::mojom::FrameVisibility::kNotRendered &&
-      base::FeatureList::IsEnabled(
-          features::kReloadHiddenTabsWithCrashedSubframes)) {
-    // TODO(https://crbug.com/1170273): Handle multiple controllers (MPArch)
-    GetController().SetNeedsReload(
-        NavigationControllerImpl::NeedsReloadType::kCrashedSubframe);
-    did_mark_for_reload = true;
-    UMA_HISTOGRAM_ENUMERATION(
-        "Stability.ChildFrameCrash.TabMarkedForReload.Visibility", visibility);
-  }
-
-  UMA_HISTOGRAM_BOOLEAN("Stability.ChildFrameCrash.TabMarkedForReload",
-                        did_mark_for_reload);
-}
-
 void WebContentsImpl::BeforeUnloadFiredFromRenderManager(
     bool proceed,
     const base::TimeTicks& proceed_time,
@@ -7727,8 +7838,7 @@ void WebContentsImpl::CancelModalDialogsForRenderManager() {
 
 void WebContentsImpl::NotifySwappedFromRenderManager(
     RenderFrameHostImpl* old_frame,
-    RenderFrameHostImpl* new_frame,
-    bool is_main_frame) {
+    RenderFrameHostImpl* new_frame) {
   TRACE_EVENT2("content", "WebContentsImpl::NotifySwappedFromRenderManager",
                "old_render_frame_host", old_frame, "new_render_frame_host",
                new_frame);
@@ -7739,7 +7849,7 @@ void WebContentsImpl::NotifySwappedFromRenderManager(
   // observers can not deal with events coming from non-primary FrameTree.
   // TODO(https://crbug.com/1168562): Update observers to deal with the events,
   // and fire events for all frame trees.
-  if (IsInPrimaryMainFrame(new_frame)) {
+  if (new_frame->IsInPrimaryMainFrame()) {
     // The |new_frame| and its various compadres are already swapped into place
     // for the WebContentsImpl when this method is called.
     DCHECK_EQ(frame_tree_.root()->render_manager()->GetRenderWidgetHostView(),
@@ -7770,7 +7880,7 @@ void WebContentsImpl::NotifySwappedFromRenderManager(
     NotifyPrimaryMainFrameProcessIsAlive();
   }
 
-  NotifyFrameSwapped(old_frame, new_frame, is_main_frame);
+  NotifyFrameSwapped(old_frame, new_frame);
 }
 
 void WebContentsImpl::NotifyMainFrameSwappedFromRenderManager(
@@ -7781,7 +7891,7 @@ void WebContentsImpl::NotifyMainFrameSwappedFromRenderManager(
   // from non-primary FrameTree.
   // TODO(https://crbug.com/1168562): Update observers to deal with the events,
   // and fire events for all frame trees.
-  if (!IsInPrimaryMainFrame(new_frame)) {
+  if (!new_frame->IsInPrimaryMainFrame()) {
     return;
   }
   NotifyViewSwapped(old_frame ? old_frame->GetRenderViewHost() : nullptr,
@@ -7799,10 +7909,19 @@ void WebContentsImpl::CreateRenderWidgetHostViewForRenderManager(
   OPTIONAL_TRACE_EVENT1(
       "content", "WebContentsImpl::CreateRenderWidgetHostViewForRenderManager",
       "render_view_host", render_view_host);
-  RenderWidgetHostViewBase* rwh_view =
-      view_->CreateViewForWidget(render_view_host->GetWidget());
-  view_->SetOverscrollControllerEnabled(CanOverscrollContent());
-  rwh_view->SetSize(GetSizeForMainFrame());
+  // TODO(crbug.com/1254770): Fix this for portals.
+  bool is_inner_frame_tree = static_cast<RenderViewHostImpl*>(render_view_host)
+                                 ->frame_tree()
+                                 ->type() == FrameTree::Type::kFencedFrame;
+  if (is_inner_frame_tree) {
+    WebContentsViewChildFrame::CreateRenderWidgetHostViewForInnerFrameTree(
+        this, render_view_host->GetWidget());
+  } else {
+    RenderWidgetHostViewBase* rwh_view =
+        view_->CreateViewForWidget(render_view_host->GetWidget());
+    view_->SetOverscrollControllerEnabled(CanOverscrollContent());
+    rwh_view->SetSize(GetSizeForMainFrame());
+  }
 }
 
 void WebContentsImpl::ReattachOuterDelegateIfNeeded() {
@@ -7828,20 +7947,23 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
   const auto proxy_routing_id =
       proxy_host ? proxy_host->GetRoutingID() : MSG_ROUTING_NONE;
   // TODO(https://crbug.com/1171646): Given MPArch, should we pass
-  // created_with_opener_ for non primary FrameTrees?
+  // opened_by_another_window_ for non primary FrameTrees?
   if (!rvh_impl->CreateRenderView(opener_frame_token, proxy_routing_id,
-                                  created_with_opener_)) {
+                                  opened_by_another_window_)) {
     return false;
   }
+
   // Set the TextAutosizer state from the main frame's renderer on the new view,
   // but only if it's not for the main frame. Main frame renderers should create
   // this state themselves from up-to-date values, so we shouldn't override it
   // with the cached values.
-  // We share the autosize info with all pages in the WebContents so there is no
-  // need to check whether the RVH belongs to the primary FrameTree.
-  if (!render_view_host->GetMainFrame() && proxy_host) {
+  if (!rvh_impl->GetMainRenderFrameHost() && proxy_host) {
     proxy_host->GetAssociatedRemoteMainFrame()->UpdateTextAutosizerPageInfo(
-        text_autosizer_page_info_.Clone());
+        proxy_host->frame_tree_node()
+            ->current_frame_host()
+            ->GetPage()
+            .text_autosizer_page_info()
+            .Clone());
   }
 
   if (!proxy_host)
@@ -8087,6 +8209,16 @@ gfx::Size WebContentsImpl::GetSizeForMainFrame() {
 void WebContentsImpl::OnFrameTreeNodeDestroyed(FrameTreeNode* node) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnFrameTreeNodeDestroyed",
                         "node", node);
+  // If we are the focused frame tree and are destroying the root node
+  // reassign the focused frame tree node.
+  if (!node->parent() && GetFocusedFrameTree() == node->frame_tree() &&
+      node->frame_tree() != &frame_tree_) {
+    FrameTreeNode* frame_in_embedder =
+        node->render_manager()->GetOuterDelegateNode();
+    SetFocusedFrameTree(frame_in_embedder ? frame_in_embedder->frame_tree()
+                                          : &frame_tree_);
+  }
+
   observers_.NotifyObservers(&WebContentsObserver::FrameDeleted,
                              node->frame_tree_node_id());
 }
@@ -8560,32 +8692,28 @@ void WebContentsImpl::OnFrameAudioStateChanged(RenderFrameHostImpl* host,
 }
 
 media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-WebContentsImpl::GetRecordAggregateWatchTimeCallback() {
+WebContentsImpl::GetRecordAggregateWatchTimeCallback(
+    const GURL& page_main_frame_last_committed_url) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::RecordAggregateWatchTimeCallback");
   if (!delegate_ || !delegate_->GetDelegateWeakPtr())
     return base::DoNothing();
 
   return base::BindRepeating(
-      [](base::WeakPtr<WebContentsDelegate> delegate, GURL last_committed_url,
+      [](base::WeakPtr<WebContentsDelegate> delegate,
+         GURL page_main_frame_last_committed_url,
          base::TimeDelta total_watch_time, base::TimeDelta time_stamp,
          bool has_video, bool has_audio) {
         content::MediaPlayerWatchTime watch_time(
-            last_committed_url, last_committed_url.GetOrigin(),
+            page_main_frame_last_committed_url,
+            page_main_frame_last_committed_url.DeprecatedGetOriginAsURL(),
             total_watch_time, time_stamp, has_video, has_audio);
 
         // Save the watch time if the delegate is still alive.
         if (delegate)
           delegate->MediaWatchTimeChanged(watch_time);
       },
-      delegate_->GetDelegateWeakPtr(), GetMainFrameLastCommittedURL());
-}
-
-RenderFrameHostImpl* WebContentsImpl::GetMainFrameForInnerDelegate(
-    FrameTreeNode* frame_tree_node) {
-  if (auto* web_contents = node_.GetInnerWebContentsInFrame(frame_tree_node))
-    return web_contents->GetMainFrame();
-  return nullptr;
+      delegate_->GetDelegateWeakPtr(), page_main_frame_last_committed_url);
 }
 
 std::vector<FrameTreeNode*> WebContentsImpl::GetUnattachedOwnedNodes(
@@ -8629,9 +8757,15 @@ void WebContentsImpl::IsClipboardPasteContentAllowedWrapperCallback(
   --suppress_unresponsive_renderer_count_;
 }
 
+void WebContentsImpl::BindScreenOrientation(
+    RenderFrameHost* rfh,
+    mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>
+        receiver) {
+  screen_orientation_provider_->BindScreenOrientation(rfh, std::move(receiver));
+}
+
 bool WebContentsImpl::HasSeenRecentScreenOrientationChange() {
-  static constexpr base::TimeDelta kMaxInterval =
-      base::TimeDelta::FromSeconds(1);
+  static constexpr base::TimeDelta kMaxInterval = base::Seconds(1);
   base::TimeDelta delta =
       ui::EventTimeForNow() - last_screen_orientation_change_time_;
   // Return whether a screen orientation change happened in the last 1 second.
@@ -8664,6 +8798,7 @@ bool WebContentsImpl::ShowPopupMenu(
     bool allow_multiple_selection) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ShowPopupMenu",
                         "render_frame_host", render_frame_host);
+  DCHECK(render_frame_host->IsActive());
   if (show_poup_menu_callback_) {
     std::move(show_poup_menu_callback_).Run(bounds);
     return true;
@@ -8730,14 +8865,6 @@ void WebContentsImpl::SetJavaScriptDialogManagerForTesting(
   dialog_manager_ = dialog_manager;
 }
 
-void WebContentsImpl::RemoveReceiverSet(const std::string& interface_name) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RemoveReceiverSet",
-                        "interface_name", interface_name);
-  auto it = receiver_sets_.find(interface_name);
-  if (it != receiver_sets_.end())
-    receiver_sets_.erase(it);
-}
-
 void WebContentsImpl::ShowInsecureLocalhostWarningIfNeeded(PageImpl& page) {
   OPTIONAL_TRACE_EVENT0(
       "content", "WebContentsImpl::ShowInsecureLocalhostWarningIfNeeded");
@@ -8788,7 +8915,7 @@ void WebContentsImpl::SetOpenerForNewContents(FrameTreeNode* opener,
                                               bool opener_suppressed) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetOpenerForNewContents");
   if (opener) {
-    FrameTreeNode* new_root = GetFrameTree()->root();
+    FrameTreeNode* new_root = GetPrimaryFrameTree().root();
 
     // For the "original opener", track the opener's main frame instead, because
     // if the opener is a subframe, the opener tracking could be easily bypassed
@@ -8796,10 +8923,10 @@ void WebContentsImpl::SetOpenerForNewContents(FrameTreeNode* opener,
     // https://crbug.com/705316
     new_root->SetOriginalOpener(opener->frame_tree()->root());
     new_root->SetOpenerDevtoolsFrameToken(opener->devtools_frame_token());
+    opened_by_another_window_ = true;
 
     if (!opener_suppressed) {
       new_root->SetOpener(opener);
-      created_with_opener_ = true;
     }
   }
 }
@@ -8851,6 +8978,28 @@ void WebContentsImpl::OnCaptionStyleUpdated() {
   NotifyPreferencesChanged();
 }
 
+void WebContentsImpl::OnColorProviderChanged() {
+  // TODO(tluk): Currently changes to theme related web prefs are being
+  // propagated in OnNativeThemeUpdated(). This logic should be moved here since
+  // there are instances where the system theme may not change but clients
+  // manually change the ColorProviderSource currently being observed by this
+  // WebContents.
+
+  // OnColorProviderChanged() might have been triggered as the result of the
+  // observed source being reset. If this is the case fallback to the default
+  // source.
+  if (!GetColorProviderSource()) {
+    SetColorProviderSource(DefaultColorProviderSource::GetInstance());
+    return;
+  }
+}
+
+const ui::ColorProvider* WebContentsImpl::GetColorProvider() const {
+  auto* source = GetColorProviderSource();
+  DCHECK(source);
+  return source->GetColorProvider();
+}
+
 blink::mojom::FrameWidgetInputHandler*
 WebContentsImpl::GetFocusedFrameWidgetInputHandler() {
   auto* focused_render_widget_host =
@@ -8864,23 +9013,45 @@ ukm::SourceId WebContentsImpl::GetCurrentPageUkmSourceId() {
   return GetMainFrame()->GetPageUkmSourceId();
 }
 
-std::set<RenderViewHostImpl*>
-WebContentsImpl::GetRenderViewHostsIncludingBackForwardCached() {
+void WebContentsImpl::ForEachRenderViewHost(
+    ForEachRenderViewHostTypes view_mask,
+    RenderViewHostIterationCallback on_render_view_host) {
   std::set<RenderViewHostImpl*> render_view_hosts;
 
-  // Add RenderViewHostImpls outside of BackForwardCache.
-  for (auto& render_view_host : frame_tree_.render_view_hosts()) {
-    render_view_hosts.insert(render_view_host.second);
+  if ((view_mask & (ForEachRenderViewHostTypes::kPrerenderViews |
+                    ForEachRenderViewHostTypes::kActiveViews)) != 0) {
+    ForEachFrameTree(base::BindRepeating(
+        [](ForEachRenderViewHostTypes view_mask,
+           std::set<RenderViewHostImpl*>& render_view_hosts,
+           FrameTree* frame_tree) {
+          // Check the view masks.
+          if (frame_tree->is_prerendering()) {
+            // We are in a prerendering page.
+            if ((view_mask & ForEachRenderViewHostTypes::kPrerenderViews) == 0)
+              return;
+          } else {
+            // We are in an active page.
+            if ((view_mask & ForEachRenderViewHostTypes::kActiveViews) == 0)
+              return;
+          }
+          for (auto& render_view_host : frame_tree->render_view_hosts()) {
+            render_view_hosts.insert(render_view_host.second);
+          }
+        },
+        view_mask, std::ref(render_view_hosts)));
   }
 
-  // Add RenderViewHostImpls in BackForwardCache.
-  const auto& entries = GetController().GetBackForwardCache().GetEntries();
-  for (const auto& entry : entries) {
-    std::set<RenderViewHostImpl*> bfcached_hosts = entry->render_view_hosts;
-    render_view_hosts.insert(bfcached_hosts.begin(), bfcached_hosts.end());
+  if ((view_mask & ForEachRenderViewHostTypes::kBackForwardCacheViews) != 0) {
+    // Add RenderViewHostImpls in BackForwardCache.
+    const auto& entries = GetController().GetBackForwardCache().GetEntries();
+    for (const auto& entry : entries) {
+      std::set<RenderViewHostImpl*> bfcached_hosts = entry->render_view_hosts();
+      render_view_hosts.insert(bfcached_hosts.begin(), bfcached_hosts.end());
+    }
   }
 
-  return render_view_hosts;
+  for (auto* render_view_host : render_view_hosts)
+    on_render_view_host.Run(render_view_host);
 }
 
 void WebContentsImpl::NotifyPageChanged(PageImpl& page) {
@@ -8931,16 +9102,9 @@ void WebContentsImpl::RenderFrameHostStateChanged(
                              render_frame_host, old_state, new_state);
 }
 
-bool WebContentsImpl::IsInPrimaryMainFrame(
-    RenderFrameHost* render_frame_host) const {
-  const bool is_primary = static_cast<RenderFrameHostImpl*>(render_frame_host)
-                              ->IsInPrimaryMainFrame();
-  DCHECK_EQ(is_primary, frame_tree_.GetMainFrame() == render_frame_host);
-  return is_primary;
-}
-
 void WebContentsImpl::DecrementCapturerCount(bool stay_hidden,
-                                             bool stay_awake) {
+                                             bool stay_awake,
+                                             bool is_activity) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DecrementCapturerCount");
   if (stay_hidden)
     --hidden_capturer_count_;
@@ -8955,6 +9119,8 @@ void WebContentsImpl::DecrementCapturerCount(bool stay_hidden,
   if (IsBeingDestroyed())
     return;
 
+  view_->OnCapturerCountChanged();
+
   const bool is_being_captured = IsBeingCaptured();
   if (!is_being_captured) {
     const gfx::Size old_size = preferred_size_for_capture_;
@@ -8965,21 +9131,75 @@ void WebContentsImpl::DecrementCapturerCount(bool stay_hidden,
   if (capture_wake_lock_ && (!is_being_captured || !stay_awake_capturer_count_))
     capture_wake_lock_->CancelWakeLock();
 
-  UpdateVisibilityAndNotifyPageAndView(GetVisibility());
+  UpdateVisibilityAndNotifyPageAndView(GetVisibility(), is_activity);
 }
 
 void WebContentsImpl::NotifyPrimaryMainFrameProcessIsAlive() {
   // The WebContents tracks the process state for the primary main frame's
   // renderer.
-  bool was_crashed = IsCrashed();
+  // Consider renderer as terminated when exited with any termination status.
+  bool was_renderer_terminated = primary_main_frame_process_status_ !=
+                                 base::TERMINATION_STATUS_STILL_RUNNING;
   SetPrimaryMainFrameProcessStatus(base::TERMINATION_STATUS_STILL_RUNNING, 0);
   // Restore the focus to the tab (otherwise the focus will be on the top
   // window).
-  if (was_crashed && !FocusLocationBarByDefault()) {
+  if (was_renderer_terminated && !FocusLocationBarByDefault()) {
     if (!delegate_ || delegate_->ShouldFocusPageAfterCrash()) {
       view_->Focus();
     }
   }
+}
+
+void WebContentsImpl::UpdateBrowserControlsState(
+    cc::BrowserControlsState constraints,
+    cc::BrowserControlsState current,
+    bool animate) {
+  // Browser controls should be synchronised with the scroll state. Therefore,
+  // they are controlled from the renderer by the main RenderFrame(Host).
+  GetPrimaryPage().UpdateBrowserControlsState(constraints, current, animate);
+}
+
+void WebContentsImpl::SetTabSwitchStartTime(base::TimeTicks start_time,
+                                            bool destination_is_loaded) {
+  auto* trigger = GetVisibleTimeRequestTrigger();
+  if (!trigger)
+    return;
+  trigger->UpdateRequest(start_time, destination_is_loaded,
+                         /*show_reason_tab_switching=*/true,
+                         /*show_reason_unoccluded=*/false,
+                         /*show_reason_bfcache_restore=*/false);
+}
+
+VisibleTimeRequestTrigger* WebContentsImpl::GetVisibleTimeRequestTrigger() {
+  if (visible_time_request_trigger_.is_tab_switch_metrics2_feature_enabled())
+    return &visible_time_request_trigger_;
+  // TODO(crbug.com/1164477): Remove this obsolete implementation and return a
+  // reference instead of a pointer once kTabSwitchMetrics2 is validated and
+  // becomes the default.
+  if (auto* view =
+          static_cast<RenderWidgetHostViewBase*>(GetRenderWidgetHostView())) {
+    return view->GetVisibleTimeRequestTrigger();
+  }
+  return nullptr;
+}
+
+std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
+    const GURL& prerendering_url) {
+  // TODO(https://crbug.com/1166085): Use proper PrerenderTriggerType after the
+  // specification of Prerender2 metrics is finalized.
+  PrerenderAttributes attributes(
+      prerendering_url, PrerenderTriggerType::kSpeculationRule,
+      content::Referrer(), /*initiator_origin=*/absl::nullopt, prerendering_url,
+      content::ChildProcessHost::kInvalidUniqueID,
+      /*initiator_frame_token=*/absl::nullopt, ukm::kInvalidSourceId);
+  int frame_tree_node_id =
+      GetPrerenderHostRegistry()->CreateAndStartHost(attributes, *this);
+
+  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    return std::make_unique<PrerenderHandleImpl>(
+        GetPrerenderHostRegistry()->GetWeakPtr(), frame_tree_node_id);
+  }
+  return nullptr;
 }
 
 }  // namespace content

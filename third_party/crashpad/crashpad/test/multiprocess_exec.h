@@ -19,7 +19,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "test/multiprocess.h"
 #include "test/process_type.h"
@@ -89,6 +88,9 @@ class MultiprocessExec : public Multiprocess {
  public:
   MultiprocessExec();
 
+  MultiprocessExec(const MultiprocessExec&) = delete;
+  MultiprocessExec& operator=(const MultiprocessExec&) = delete;
+
   //! \brief Sets the command to `exec()` in the child.
   //!
   //! This method must be called before the test can be Run().
@@ -144,8 +146,6 @@ class MultiprocessExec : public Multiprocess {
 #elif defined(OS_WIN)
   std::wstring command_line_;
 #endif  // OS_POSIX
-
-  DISALLOW_COPY_AND_ASSIGN(MultiprocessExec);
 };
 
 }  // namespace test

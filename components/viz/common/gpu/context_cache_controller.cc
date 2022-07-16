@@ -154,7 +154,7 @@ void ContextCacheController::PostIdleCallback(
       FROM_HERE,
       base::BindOnce(&ContextCacheController::OnIdle, weak_ptr_,
                      current_idle_generation),
-      base::TimeDelta::FromSeconds(kIdleCleanupDelaySeconds));
+      base::Seconds(kIdleCleanupDelaySeconds));
 }
 
 void ContextCacheController::InvalidatePendingIdleCallbacks() {

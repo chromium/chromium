@@ -64,6 +64,9 @@ class TestStream final : public internal::MinidumpStreamWriter {
              uint8_t stream_value)
       : stream_data_(stream_size, stream_value), stream_type_(stream_type) {}
 
+  TestStream(const TestStream&) = delete;
+  TestStream& operator=(const TestStream&) = delete;
+
   ~TestStream() override {}
 
   // MinidumpStreamWriter:
@@ -86,13 +89,15 @@ class TestStream final : public internal::MinidumpStreamWriter {
  private:
   std::string stream_data_;
   MinidumpStreamType stream_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestStream);
 };
 
 class StringFileOutputStream : public OutputStreamInterface {
  public:
   StringFileOutputStream() = default;
+
+  StringFileOutputStream(const StringFileOutputStream&) = delete;
+  StringFileOutputStream& operator=(const StringFileOutputStream&) = delete;
+
   ~StringFileOutputStream() override = default;
   bool Write(const uint8_t* data, size_t size) override {
     return string_file_.Write(data, size);
@@ -102,8 +107,6 @@ class StringFileOutputStream : public OutputStreamInterface {
 
  private:
   StringFile string_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringFileOutputStream);
 };
 
 TEST(MinidumpFileWriter, OneStream) {

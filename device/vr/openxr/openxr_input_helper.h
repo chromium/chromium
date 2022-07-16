@@ -29,6 +29,9 @@ class OpenXRInputHelper {
 
   OpenXRInputHelper(XrSession session, XrSpace local_space);
 
+  OpenXRInputHelper(const OpenXRInputHelper&) = delete;
+  OpenXRInputHelper& operator=(const OpenXRInputHelper&) = delete;
+
   ~OpenXRInputHelper();
 
   std::vector<mojom::XRInputSourceStatePtr> GetInputState(
@@ -63,8 +66,6 @@ class OpenXRInputHelper {
       controller_states_;
 
   std::unique_ptr<OpenXRPathHelper> path_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenXRInputHelper);
 };
 
 }  // namespace device

@@ -51,12 +51,18 @@ LayoutMultiColumnFlowThread::LayoutMultiColumnFlowThread(bool needs_paint_layer)
 
 LayoutMultiColumnFlowThread::~LayoutMultiColumnFlowThread() = default;
 
+void LayoutMultiColumnFlowThread::Trace(Visitor* visitor) const {
+  visitor->Trace(last_set_worked_on_);
+  LayoutFlowThread::Trace(visitor);
+  FragmentationContext::Trace(visitor);
+}
+
 LayoutMultiColumnFlowThread* LayoutMultiColumnFlowThread::CreateAnonymous(
     Document& document,
     const ComputedStyle& parent_style,
     bool needs_paint_layer) {
   LayoutMultiColumnFlowThread* layout_object =
-      new LayoutMultiColumnFlowThread(needs_paint_layer);
+      MakeGarbageCollected<LayoutMultiColumnFlowThread>(needs_paint_layer);
   layout_object->SetDocumentForAnonymous(&document);
   layout_object->SetStyle(
       document.GetStyleResolver().CreateAnonymousStyleWithDisplay(
@@ -767,7 +773,6 @@ void LayoutMultiColumnFlowThread::FinishLayoutFromNG(
   for (LayoutBox* column_box = FirstMultiColumnBox(); column_box;
        column_box = column_box->NextSiblingMultiColumnBox()) {
     column_box->ClearNeedsLayout();
-    column_box->UpdateAfterLayout();
   }
 
   // If we have a trailing column set, finish it.
@@ -779,7 +784,6 @@ void LayoutMultiColumnFlowThread::FinishLayoutFromNG(
 
   ValidateColumnSets();
   SetLogicalHeight(flow_thread_offset);
-  UpdateAfterLayout();
   ClearNeedsLayout();
   last_set_worked_on_ = nullptr;
 }
@@ -1083,7 +1087,7 @@ void LayoutMultiColumnFlowThread::SkipColumnSpanner(
   // and where such out-of-flow objects might be, just go through the whole
   // subtree.
   for (LayoutObject* descendant = layout_object->SlowFirstChild(); descendant;
-       descendant = descendant->NextInPreOrder()) {
+       descendant = descendant->NextInPreOrder(layout_object)) {
     if (descendant->IsBox() && descendant->IsOutOfFlowPositioned()) {
       descendant->ContainingBlock()->InsertPositionedObject(
           To<LayoutBox>(descendant));

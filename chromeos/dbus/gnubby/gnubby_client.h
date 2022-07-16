@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -30,6 +29,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_GNUBBY) GnubbyClient : public DBusClient {
 
   // Create should be called instead of constructor.
   GnubbyClient();
+
+  GnubbyClient(const GnubbyClient&) = delete;
+  GnubbyClient& operator=(const GnubbyClient&) = delete;
+
   ~GnubbyClient() override;
 
   // Factory function, creates a new instance and returns ownership.
@@ -41,9 +44,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_GNUBBY) GnubbyClient : public DBusClient {
 
   // Removes an observer if added.
   virtual void RemoveObserver(Observer* observer) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GnubbyClient);
 };
 }  // namespace chromeos
 

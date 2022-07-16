@@ -36,13 +36,12 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "net/ssl/ssl_info.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/load_timing_info.mojom.h"
 #include "third_party/blink/public/platform/web_http_header_visitor.h"
-#include "third_party/blink/public/platform/web_http_load_info.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_load_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -125,10 +124,6 @@ void WebURLResponse::SetLoadTiming(
   resource_response_->SetResourceLoadTiming(std::move(timing));
 }
 
-void WebURLResponse::SetHTTPLoadInfo(const WebHTTPLoadInfo& value) {
-  resource_response_->SetResourceLoadInfo(value);
-}
-
 base::Time WebURLResponse::ResponseTime() const {
   return resource_response_->ResponseTime();
 }
@@ -190,6 +185,10 @@ void WebURLResponse::SetHttpStatusText(const WebString& http_status_text) {
   resource_response_->SetHttpStatusText(http_status_text);
 }
 
+void WebURLResponse::SetEmittedExtraInfo(bool emitted_extra_info) {
+  resource_response_->SetEmittedExtraInfo(emitted_extra_info);
+}
+
 WebString WebURLResponse::HttpHeaderField(const WebString& name) const {
   return resource_response_->HttpHeaderField(name);
 }
@@ -216,22 +215,6 @@ void WebURLResponse::VisitHttpHeaderFields(
   const HTTPHeaderMap& map = resource_response_->HttpHeaderFields();
   for (HTTPHeaderMap::const_iterator it = map.begin(); it != map.end(); ++it)
     visitor->VisitHeader(it->key, it->value);
-}
-
-int64_t WebURLResponse::AppCacheID() const {
-  return resource_response_->AppCacheID();
-}
-
-void WebURLResponse::SetAppCacheID(int64_t app_cache_id) {
-  resource_response_->SetAppCacheID(app_cache_id);
-}
-
-WebURL WebURLResponse::AppCacheManifestURL() const {
-  return resource_response_->AppCacheManifestURL();
-}
-
-void WebURLResponse::SetAppCacheManifestURL(const WebURL& url) {
-  resource_response_->SetAppCacheManifestURL(url);
 }
 
 void WebURLResponse::SetHasMajorCertificateErrors(bool value) {
@@ -280,51 +263,8 @@ void WebURLResponse::SetSecurityStyle(SecurityStyle security_style) {
   resource_response_->SetSecurityStyle(security_style);
 }
 
-void WebURLResponse::SetSecurityDetails(
-    const WebSecurityDetails& web_security_details) {
-  ResourceResponse::SignedCertificateTimestampList sct_list;
-  for (const auto& iter : web_security_details.sct_list) {
-    sct_list.push_back(
-        static_cast<ResourceResponse::SignedCertificateTimestamp>(iter));
-  }
-  Vector<String> san_list;
-  san_list.Append(web_security_details.san_list.Data(),
-                  web_security_details.san_list.size());
-  Vector<AtomicString> certificate;
-  for (const auto& iter : web_security_details.certificate) {
-    AtomicString cert = iter;
-    certificate.push_back(cert);
-  }
-  resource_response_->SetSecurityDetails(
-      web_security_details.protocol, web_security_details.key_exchange,
-      web_security_details.key_exchange_group, web_security_details.cipher,
-      web_security_details.mac, web_security_details.subject_name, san_list,
-      web_security_details.issuer,
-      static_cast<time_t>(web_security_details.valid_from),
-      static_cast<time_t>(web_security_details.valid_to), certificate,
-      sct_list);
-}
-
-absl::optional<WebURLResponse::WebSecurityDetails>
-WebURLResponse::SecurityDetailsForTesting() {
-  const absl::optional<ResourceResponse::SecurityDetails>& security_details =
-      resource_response_->GetSecurityDetails();
-  if (!security_details.has_value())
-    return absl::nullopt;
-  SignedCertificateTimestampList sct_list;
-  for (const auto& iter : security_details->sct_list) {
-    sct_list.emplace_back(SignedCertificateTimestamp(
-        iter.status_, iter.origin_, iter.log_description_, iter.log_id_,
-        iter.timestamp_, iter.hash_algorithm_, iter.signature_algorithm_,
-        iter.signature_data_));
-  }
-  return WebSecurityDetails(
-      security_details->protocol, security_details->key_exchange,
-      security_details->key_exchange_group, security_details->cipher,
-      security_details->mac, security_details->subject_name,
-      security_details->san_list, security_details->issuer,
-      security_details->valid_from, security_details->valid_to,
-      security_details->certificate, sct_list);
+void WebURLResponse::SetSSLInfo(const net::SSLInfo& ssl_info) {
+  resource_response_->SetSSLInfo(ssl_info);
 }
 
 const ResourceResponse& WebURLResponse::ToResourceResponse() const {
@@ -379,7 +319,8 @@ int64_t WebURLResponse::GetPadding() const {
 
 void WebURLResponse::SetUrlListViaServiceWorker(
     const WebVector<WebURL>& url_list_via_service_worker) {
-  Vector<KURL> url_list(url_list_via_service_worker.size());
+  Vector<KURL> url_list(
+      base::checked_cast<wtf_size_t>(url_list_via_service_worker.size()));
   std::transform(url_list_via_service_worker.begin(),
                  url_list_via_service_worker.end(), url_list.begin(),
                  [](const WebURL& url) { return url; });
@@ -408,7 +349,8 @@ WebVector<WebString> WebURLResponse::CorsExposedHeaderNames() const {
 void WebURLResponse::SetCorsExposedHeaderNames(
     const WebVector<WebString>& header_names) {
   Vector<String> exposed_header_names;
-  exposed_header_names.Append(header_names.Data(), header_names.size());
+  exposed_header_names.Append(
+      header_names.Data(), base::checked_cast<wtf_size_t>(header_names.size()));
   resource_response_->SetCorsExposedHeaderNames(exposed_header_names);
 }
 
@@ -526,7 +468,7 @@ bool WebURLResponse::FromArchive() const {
 }
 
 void WebURLResponse::SetDnsAliases(const WebVector<WebString>& aliases) {
-  Vector<String> dns_aliases(aliases.size());
+  Vector<String> dns_aliases(base::checked_cast<wtf_size_t>(aliases.size()));
   std::transform(aliases.begin(), aliases.end(), dns_aliases.begin(),
                  [](const WebString& h) { return WTF::String(h); });
   resource_response_->SetDnsAliases(std::move(dns_aliases));

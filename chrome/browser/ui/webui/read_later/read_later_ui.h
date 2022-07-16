@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/read_later/read_later.mojom.h"
 #include "chrome/browser/ui/webui/read_later/side_panel/bookmarks.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
@@ -36,6 +35,8 @@ class ReadLaterUI : public ui::MojoBubbleWebUIController,
   void BindInterface(
       mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandlerFactory>
           receiver);
+
+  void SetActiveTabURL(const GURL& url);
 
  private:
   // read_later::mojom::PageHandlerFactory:

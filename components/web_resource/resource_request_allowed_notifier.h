@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "components/web_resource/eula_accepted_notifier.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
@@ -68,6 +67,12 @@ class ResourceRequestAllowedNotifier
       PrefService* local_state,
       const char* disable_network_switch,
       NetworkConnectionTrackerGetter network_connection_tracker_getter);
+
+  ResourceRequestAllowedNotifier(const ResourceRequestAllowedNotifier&) =
+      delete;
+  ResourceRequestAllowedNotifier& operator=(
+      const ResourceRequestAllowedNotifier&) = delete;
+
   ~ResourceRequestAllowedNotifier() override;
 
   // Sets |observer| as the service to be notified by this instance, and
@@ -139,8 +144,6 @@ class ResourceRequestAllowedNotifier
   bool connection_initialized_ = false;
 
   base::WeakPtrFactory<ResourceRequestAllowedNotifier> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceRequestAllowedNotifier);
 };
 
 extern const base::Feature kResourceRequestAllowedMigration;

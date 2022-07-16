@@ -2,12 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './app_item.js';
+import './shared_style.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, Router} from '../../../router.js';
+import {routes} from '../../os_route.m.js';
+import {RouteObserverBehavior} from '../../route_observer_behavior.js';
+
+import {AppManagementStore} from './store.js';
+import {AppManagementStoreClient} from './store_client.js';
+import {alphabeticalSort} from './util.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-main-view',
 
   behaviors: [
-    app_management.AppManagementStoreClient,
-    settings.RouteObserverBehavior,
+    AppManagementStoreClient,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -42,20 +60,19 @@ Polymer({
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
-    if (route === settings.routes.APP_MANAGEMENT) {
-      const appId =
-          app_management.AppManagementStore.getInstance().data.selectedAppId;
+    if (route === routes.APP_MANAGEMENT) {
+      const appId = AppManagementStore.getInstance().data.selectedAppId;
 
       // Expect this to be false the first time the "Manage your apps" page
       // is requested as no app has been selected yet.
       if (appId) {
         const button = this.$$(`#app-subpage-button-${appId}`);
         if (button) {
-          cr.ui.focusWithoutInk(button);
+          focusWithoutInk(button);
         }
       }
     }
@@ -97,7 +114,7 @@ Polymer({
     }
 
     filteredApps.sort(
-        (a, b) => app_management.util.alphabeticalSort(
+        (a, b) => alphabeticalSort(
             /** @type {string} */ (a.title), /** @type {string} */ (b.title)));
 
     return filteredApps;

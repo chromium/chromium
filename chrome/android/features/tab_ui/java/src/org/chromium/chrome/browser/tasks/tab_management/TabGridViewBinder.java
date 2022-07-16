@@ -9,6 +9,8 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.os.Build;
@@ -27,7 +29,6 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
-import org.chromium.base.MathUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -113,6 +114,7 @@ class TabGridViewBinder {
                 updateColor(view, model.get(TabProperties.IS_INCOGNITO),
                         model.get(TabProperties.IS_SELECTED));
                 updateThumbnail(view, model);
+                updateFavicon(view, model);
             } else {
                 int selectedTabBackground =
                         model.get(TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID);
@@ -145,13 +147,8 @@ class TabGridViewBinder {
                 pageInfoButton.setSelected(false);
             }
         } else if (TabProperties.FAVICON == propertyKey) {
-            Drawable favicon = model.get(TabProperties.FAVICON);
-            ImageView faviconView = (ImageView) view.fastFindViewById(R.id.tab_favicon);
-            faviconView.setImageDrawable(favicon);
-            int padding = favicon == null
-                    ? 0
-                    : (int) TabUiThemeProvider.getTabCardTopFaviconPadding(view.getContext());
-            faviconView.setPadding(padding, padding, padding, padding);
+            TabListFaviconProvider.TabFavicon favicon = model.get(TabProperties.FAVICON);
+            updateFavicon(view, model);
         } else if (TabProperties.THUMBNAIL_FETCHER == propertyKey) {
             updateThumbnail(view, model);
         } else if (TabProperties.CONTENT_DESCRIPTION_STRING == propertyKey) {
@@ -242,6 +239,10 @@ class TabGridViewBinder {
                                         shoppingPersistedTabData.getPriceDrop().price,
                                         shoppingPersistedTabData.getPriceDrop().previousPrice);
                                 priceCardView.setVisibility(View.VISIBLE);
+                                priceCardView.setContentDescription(view.getResources().getString(
+                                        R.string.accessibility_tab_price_card,
+                                        shoppingPersistedTabData.getPriceDrop().previousPrice,
+                                        shoppingPersistedTabData.getPriceDrop().price));
                             }
                             if (shoppingPersistedTabData != null) {
                                 shoppingPersistedTabData.logPriceDropMetrics(
@@ -339,15 +340,19 @@ class TabGridViewBinder {
 
     private static void updateThumbnail(ViewLookupCachingFrameLayout view, PropertyModel model) {
         TabListMediator.ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
-        ImageView thumbnail = (ImageView) view.fastFindViewById(R.id.tab_thumbnail);
+        TabGridThumbnailView thumbnail =
+                (TabGridThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
+        thumbnail.maybeAdjustThumbnailHeight();
         if (fetcher == null) {
-            releaseThumbnail(thumbnail);
+            thumbnail.setImageDrawable(null);
             return;
         }
+
+        // Use placeholder drawable before the real thumbnail is available.
+        thumbnail.setColorThumbnailPlaceHolder(
+                model.get(TabProperties.IS_INCOGNITO), model.get(TabProperties.IS_SELECTED));
         Callback<Bitmap> callback = result -> {
-            if (result == null) {
-                releaseThumbnail(thumbnail);
-            } else {
+            if (result != null) {
                 thumbnail.setImageBitmap(result);
             }
         };
@@ -358,24 +363,27 @@ class TabGridViewBinder {
         }
     }
 
-    private static void releaseThumbnail(ImageView thumbnail) {
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
-            thumbnail.setImageDrawable(null);
+
+    /**
+     * Update the favicon drawable to use from {@link TabListFaviconProvider.TabFavicon}, and the
+     * padding around it. The color work is already handled when favicon is bind in {@link
+     * #bindCommonProperties}.
+     */
+    private static void updateFavicon(ViewLookupCachingFrameLayout rootView, PropertyModel model) {
+        TabListFaviconProvider.TabFavicon favicon = model.get(TabProperties.FAVICON);
+        ImageView faviconView = (ImageView) rootView.fastFindViewById(R.id.tab_favicon);
+        if (favicon == null) {
+            faviconView.setImageDrawable(null);
+            faviconView.setPadding(0, 0, 0, 0);
             return;
         }
 
-        if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
-            float expectedThumbnailAspectRatio =
-                    (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
-            expectedThumbnailAspectRatio =
-                    MathUtils.clamp(expectedThumbnailAspectRatio, 0.5f, 2.0f);
-            int height = (int) (thumbnail.getWidth() * 1.0 / expectedThumbnailAspectRatio);
-            thumbnail.setMinimumHeight(Math.min(thumbnail.getHeight(), height));
-            thumbnail.setImageDrawable(null);
-        } else {
-            thumbnail.setImageDrawable(null);
-            thumbnail.setMinimumHeight(thumbnail.getWidth());
-        }
+        boolean isSelected = model.get(TabProperties.IS_SELECTED);
+        faviconView.setImageDrawable(
+                isSelected ? favicon.getSelectedDrawable() : favicon.getDefaultDrawable());
+        int padding =
+                (int) TabUiThemeProvider.getTabCardTopFaviconPadding(faviconView.getContext());
+        faviconView.setPadding(padding, padding, padding, padding);
     }
 
     private static void updateColor(
@@ -383,14 +391,22 @@ class TabGridViewBinder {
         View cardView = rootView.fastFindViewById(R.id.card_view);
         View dividerView = rootView.fastFindViewById(R.id.divider_view);
         TextView titleView = (TextView) rootView.fastFindViewById(R.id.tab_title);
-        ImageView thumbnail = (ImageView) rootView.fastFindViewById(R.id.tab_thumbnail);
+        TabGridThumbnailView thumbnail =
+                (TabGridThumbnailView) rootView.fastFindViewById(R.id.tab_thumbnail);
         ChromeImageView backgroundView =
                 (ChromeImageView) rootView.fastFindViewById(R.id.background_view);
 
         cardView.getBackground().mutate();
-        ViewCompat.setBackgroundTintList(cardView,
-                TabUiThemeProvider.getCardViewTintList(
-                        cardView.getContext(), isIncognito, isSelected));
+        int backgroundColor = TabUiThemeProvider.getCardViewBackgroundColor(
+                cardView.getContext(), isIncognito, isSelected);
+        if (TabUiThemeProvider.themeRefactorEnabled()) {
+            // ViewCompat#setBackgroundTintList does not work for the drawable background when
+            // themeRefactorEnabled. See https://crbug.com/1232590.
+            cardView.getBackground().setColorFilter(
+                    new PorterDuffColorFilter(backgroundColor, PorterDuff.Mode.SRC_IN));
+        } else {
+            ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
+        }
 
         dividerView.setBackgroundColor(
                 TabUiThemeProvider.getDividerColor(dividerView.getContext(), isIncognito));
@@ -398,14 +414,8 @@ class TabGridViewBinder {
         titleView.setTextColor(TabUiThemeProvider.getTitleTextColor(
                 titleView.getContext(), isIncognito, isSelected));
 
-        if (thumbnail.getDrawable() == null) {
-            thumbnail.setImageResource(
-                    TabUiThemeProvider.getThumbnailPlaceHolderColorResource(isIncognito));
-            if (TabUiThemeProvider.themeRefactorEnabled()) {
-                thumbnail.setImageTintList(
-                        ColorStateList.valueOf(TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(
-                                backgroundView.getContext(), isIncognito, isSelected)));
-            }
+        if (thumbnail.isPlaceHolder()) {
+            thumbnail.setColorThumbnailPlaceHolder(isIncognito, isSelected);
         }
 
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(rootView.getContext())) {

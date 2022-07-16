@@ -11,12 +11,12 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/unguessable_token.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "media/base/media_export.h"
 #include "media/base/overlay_info.h"
 #include "media/base/supported_video_decoder_config.h"
@@ -33,12 +33,12 @@ class SequencedTaskRunner;
 namespace gfx {
 class ColorSpace;
 class Size;
-}
+}  // namespace gfx
 
 namespace gpu {
 class GpuMemoryBufferManager;
 class SharedImageInterface;
-}
+}  // namespace gpu
 
 namespace viz {
 class RasterContextProvider;
@@ -80,7 +80,9 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   virtual bool IsGpuVideoAcceleratorEnabled() = 0;
 
   // Return the channel token, or an empty token if the channel is unusable.
-  virtual base::UnguessableToken GetChannelToken() = 0;
+  // |cb| could be called re-entrantly. This function is not thread safe.
+  virtual void GetChannelToken(
+      gpu::mojom::GpuChannel::GetChannelTokenCallback cb) = 0;
 
   // Returns the |route_id| of the command buffer, or 0 if there is none.
   virtual int32_t GetCommandBufferRouteId() = 0;

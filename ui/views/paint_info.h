@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_PAINT_INFO_H_
 #define UI_VIEWS_PAINT_INFO_H_
 
+#include "base/gtest_prod_util.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/views_export.h"

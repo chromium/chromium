@@ -7,7 +7,6 @@
 #include "ash/system/palette/palette_tool.h"
 #include "ash/system/palette/palette_tool_manager.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,6 +20,9 @@ class TestTool : public PaletteTool {
  public:
   TestTool(Delegate* delegate, PaletteGroup group, PaletteToolId tool_id)
       : PaletteTool(delegate), group_(group), tool_id_(tool_id) {}
+
+  TestTool(const TestTool&) = delete;
+  TestTool& operator=(const TestTool&) = delete;
 
   // PaletteTool:
   PaletteGroup GetGroup() const override { return group_; }
@@ -39,8 +41,6 @@ class TestTool : public PaletteTool {
 
   PaletteGroup group_;
   PaletteToolId tool_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTool);
 };
 
 // Base class for tool manager unittests.
@@ -50,6 +50,10 @@ class PaletteToolManagerTest : public ::testing::Test,
  public:
   PaletteToolManagerTest()
       : palette_tool_manager_(new PaletteToolManager(this)) {}
+
+  PaletteToolManagerTest(const PaletteToolManagerTest&) = delete;
+  PaletteToolManagerTest& operator=(const PaletteToolManagerTest&) = delete;
+
   ~PaletteToolManagerTest() override = default;
 
  protected:
@@ -79,9 +83,6 @@ class PaletteToolManagerTest : public ::testing::Test,
 
   int tool_changed_count_ = 0;
   std::unique_ptr<PaletteToolManager> palette_tool_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaletteToolManagerTest);
 };
 
 }  // namespace

@@ -184,7 +184,7 @@ void AppendScheduledTask(const ScheduledTask& scheduled_task,
   MessageBuilder::ScopedIndent scoped_indent_2(builder);
   builder->AddHeaderLine(L"Actions");
   for (auto action : scheduled_task.actions()) {
-    MessageBuilder::ScopedIndent scoped_indent(builder);
+    MessageBuilder::ScopedIndent scoped_indent_3(builder);
     builder->Add(L"File information: ");
     AppendFileInformation(action.file_information(), builder);
     builder->NewLine();

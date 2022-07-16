@@ -13,6 +13,11 @@ namespace test {
 class DefaultEventGeneratorDelegate : public EventGeneratorDelegateAura {
  public:
   explicit DefaultEventGeneratorDelegate(gfx::NativeWindow root_window);
+
+  DefaultEventGeneratorDelegate(const DefaultEventGeneratorDelegate&) = delete;
+  DefaultEventGeneratorDelegate& operator=(
+      const DefaultEventGeneratorDelegate&) = delete;
+
   ~DefaultEventGeneratorDelegate() override = default;
 
   // EventGeneratorDelegateAura:
@@ -23,8 +28,6 @@ class DefaultEventGeneratorDelegate : public EventGeneratorDelegateAura {
 
  private:
   Window* root_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultEventGeneratorDelegate);
 };
 
 }  // namespace test

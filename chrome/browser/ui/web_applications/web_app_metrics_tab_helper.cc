@@ -6,7 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 
 namespace content {
 class WebContents;
@@ -58,6 +58,6 @@ void WebAppMetricsTabHelper::OnInstallableWebAppStatusUpdated() {
   metrics->NotifyInstallableWebAppStatusUpdated(contents);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppMetricsTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppMetricsTabHelper);
 
 }  // namespace web_app

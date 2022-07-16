@@ -43,6 +43,10 @@ media::AudioParameters TestParams() {
 class MockSource : public AudioStreamBroker::LoopbackSource {
  public:
   MockSource() : group_id_(base::UnguessableToken::Create()) {}
+
+  MockSource(const MockSource&) = delete;
+  MockSource& operator=(const MockSource&) = delete;
+
   ~MockSource() override {}
 
   // AudioStreamBrokerFactory::LoopbackSource mocking.
@@ -52,7 +56,6 @@ class MockSource : public AudioStreamBroker::LoopbackSource {
 
  private:
   base::UnguessableToken group_id_;
-  DISALLOW_COPY_AND_ASSIGN(MockSource);
 };
 
 using MockDeleterCallback = StrictMock<
@@ -94,10 +97,14 @@ class MockRendererAudioInputStreamFactoryClient
   mojo::PendingReceiver<media::mojom::AudioInputStreamClient> client_receiver_;
 };
 
-class MockStreamFactory : public audio::FakeStreamFactory {
+class MockStreamFactory final : public audio::FakeStreamFactory {
  public:
-  MockStreamFactory() {}
-  ~MockStreamFactory() final {}
+  MockStreamFactory() = default;
+
+  MockStreamFactory(const MockStreamFactory&) = delete;
+  MockStreamFactory& operator=(const MockStreamFactory&) = delete;
+
+  ~MockStreamFactory() override = default;
 
   // State of an expected stream creation. |device_id| and |params| are set
   // ahead of time and verified during request. The other fields are filled in
@@ -133,7 +140,7 @@ class MockStreamFactory : public audio::FakeStreamFactory {
       const media::AudioParameters& params,
       uint32_t shared_memory_count,
       const base::UnguessableToken& group_id,
-      CreateLoopbackStreamCallback created_callback) final {
+      CreateLoopbackStreamCallback created_callback) override {
     // No way to cleanly exit the test here in case of failure, so use CHECK.
     CHECK(stream_request_data_);
     EXPECT_EQ(stream_request_data_->group_id, group_id);
@@ -148,14 +155,12 @@ class MockStreamFactory : public audio::FakeStreamFactory {
 
   void BindMuter(
       mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver,
-      const base::UnguessableToken& group_id) final {
+      const base::UnguessableToken& group_id) override {
     stream_request_data_->muter_receiver = std::move(receiver);
     IsMuting(group_id);
   }
 
   StreamRequestData* stream_request_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockStreamFactory);
 };
 
 const bool kMuteSource = true;

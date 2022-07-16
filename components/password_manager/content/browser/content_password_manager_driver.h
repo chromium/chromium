@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
@@ -30,7 +29,6 @@ class RenderFrameHost;
 }
 
 namespace password_manager {
-enum class BadMessageReason;
 
 // There is one ContentPasswordManagerDriver per RenderFrameHost.
 // The lifetime is managed by the ContentPasswordManagerDriverFactory.
@@ -41,6 +39,11 @@ class ContentPasswordManagerDriver
   ContentPasswordManagerDriver(content::RenderFrameHost* render_frame_host,
                                PasswordManagerClient* client,
                                autofill::AutofillClient* autofill_client);
+
+  ContentPasswordManagerDriver(const ContentPasswordManagerDriver&) = delete;
+  ContentPasswordManagerDriver& operator=(const ContentPasswordManagerDriver&) =
+      delete;
+
   ~ContentPasswordManagerDriver() override;
 
   // Gets the driver for |render_frame_host|.
@@ -76,7 +79,7 @@ class ContentPasswordManagerDriver
   PasswordManager* GetPasswordManager() override;
   PasswordAutofillManager* GetPasswordAutofillManager() override;
   void SendLoggingAvailability() override;
-  bool IsMainFrame() const override;
+  bool IsInPrimaryMainFrame() const override;
   bool CanShowAutofillUi() const override;
   ::ui::AXTreeID GetAxTreeId() const override;
   const GURL& GetLastCommittedURL() const override;
@@ -98,11 +101,21 @@ class ContentPasswordManagerDriver
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
   void UnsetKeyPressHandler();
 
+#if defined(UNIT_TEST)
+  // Exposed to allow browser tests to hook the driver.
+  mojo::AssociatedReceiver<autofill::mojom::PasswordManagerDriver>&
+  ReceiverForTesting() {
+    return password_manager_receiver_;
+  }
+#endif
+
  protected:
   // autofill::mojom::PasswordManagerDriver:
   // Note that these messages received from a potentially compromised renderer.
   // For that reason, any access to form data should be validated via
-  // bad_message::CheckChildProcessSecurityPolicy.
+  // bad_message::CheckChildProcessSecurityPolicy. Further, messages should not
+  // be sent from a prerendered page, so we will similarly validate calls to
+  // ensure that this is not the case.
   void PasswordFormsParsed(
       const std::vector<autofill::FormData>& forms_data) override;
   void PasswordFormsRendered(
@@ -146,11 +159,6 @@ class ContentPasswordManagerDriver
   PasswordGenerationFrameHelper password_generation_helper_;
   PasswordAutofillManager password_autofill_manager_;
 
-  // It should be filled in the constructor, since later the frame might be
-  // detached and it would be impossible to check whether the frame is a main
-  // frame.
-  const bool is_main_frame_;
-
   int id_;
 
   mojo::AssociatedRemote<autofill::mojom::PasswordAutofillAgent>
@@ -165,8 +173,6 @@ class ContentPasswordManagerDriver
   content::RenderWidgetHost::KeyPressEventCallback key_press_handler_;
 
   base::WeakPtrFactory<ContentPasswordManagerDriver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContentPasswordManagerDriver);
 };
 
 }  // namespace password_manager

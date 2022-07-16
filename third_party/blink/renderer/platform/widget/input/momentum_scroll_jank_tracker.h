@@ -29,8 +29,7 @@ class MomentumScrollJankTracker {
   // The amount of time elapsed between coalescing an event and dispatching the
   // event for which we consider the coalescing to be "recent" for the purposes
   // of https://crbug.com/952930.
-  static constexpr base::TimeDelta kRecentEventCutoff =
-      base::TimeDelta::FromMilliseconds(2);
+  static constexpr base::TimeDelta kRecentEventCutoff = base::Milliseconds(2);
 
   // |jank_count_| is the number of coalesced momentum input events above
   // kExptectedMomentumEventsPerFrame.

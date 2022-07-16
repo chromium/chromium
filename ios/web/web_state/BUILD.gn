@@ -125,3 +125,16 @@ source_set("policy_decision_state_tracker") {
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
+
+source_set("test_util") {
+  testonly = true
+
+  sources = [
+    "web_state_policy_decider_test_util.h",
+    "web_state_policy_decider_test_util.mm",
+  ]
+
+  deps = [ "//ios/web/public/navigation" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

@@ -43,22 +43,43 @@ const wchar_t kIeSiteListValue[] = L"SiteList";
 
 const int kCurrentFileVersion = 1;
 
+// Rule sets after merging from the 3 sources (XML sitelist, EMIE sitelist, and
+// policies). This stores the rules as raw-pointers rather than unique-pointers,
+// to avoid copying/moving them from their original source.
+struct MergedRuleSet {
+  std::vector<Rule*> sitelist;
+  std::vector<Rule*> greylist;
+};
+
 // Creates a RuleSet that is the concatenation of all 3 sources.
-RuleSet GetRules(const BrowserSwitcherPrefs& prefs,
-                 const BrowserSwitcherSitelist* sitelist) {
+MergedRuleSet GetRules(const BrowserSwitcherPrefs& prefs,
+                       const BrowserSwitcherSitelist* sitelist) {
   const RuleSet* source_rulesets[] = {
       &prefs.GetRules(),
       sitelist->GetIeemSitelist(),
       sitelist->GetExternalSitelist(),
   };
-  RuleSet rules;
+  MergedRuleSet rules;
   for (const RuleSet* source : source_rulesets) {
-    rules.sitelist.insert(rules.sitelist.end(), source->sitelist.begin(),
-                          source->sitelist.end());
-    rules.greylist.insert(rules.greylist.end(), source->greylist.begin(),
-                          source->greylist.end());
+    for (const auto& rule : source->sitelist)
+      rules.sitelist.push_back(rule.get());
+    for (const auto& rule : source->greylist)
+      rules.greylist.push_back(rule.get());
   }
   return rules;
+}
+
+// Convert a ParsingMode enum value to a string, for writing to cache.dat.
+std::string ParsingModeToString(ParsingMode parsing_mode) {
+  switch (parsing_mode) {
+    case ParsingMode::kDefault:
+      return "default";
+    case ParsingMode::kIESiteListMode:
+      return "ie_sitelist";
+    default:
+      // BrowserSwitcherPrefs should've sanitized the value for us.
+      NOTREACHED();
+  }
 }
 
 // Serialize prefs to a string for writing to cache.dat.
@@ -75,15 +96,17 @@ std::string SerializeCacheFile(const BrowserSwitcherPrefs& prefs,
   buffer << prefs.GetChromePath() << std::endl;
   buffer << base::JoinString(prefs.GetChromeParameters(), " ") << std::endl;
 
-  const RuleSet rules = GetRules(prefs, sitelist);
+  const auto rules = GetRules(prefs, sitelist);
 
   buffer << rules.sitelist.size() << std::endl;
-  if (!rules.sitelist.empty())
-    buffer << base::JoinString(rules.sitelist, "\n") << std::endl;
+  for (const Rule* rule : rules.sitelist)
+    buffer << rule->ToString() << std::endl;
 
   buffer << rules.greylist.size() << std::endl;
-  if (!rules.greylist.empty())
-    buffer << base::JoinString(rules.greylist, "\n") << std::endl;
+  for (const Rule* rule : rules.greylist)
+    buffer << rule->ToString() << std::endl;
+
+  buffer << ParsingModeToString(prefs.GetParsingMode()) << std::endl;
 
   return buffer.str();
 }

@@ -29,6 +29,10 @@ class ChromeDevToolsSession : public protocol::FrontendChannel {
  public:
   explicit ChromeDevToolsSession(
       content::DevToolsAgentHostClientChannel* channel);
+
+  ChromeDevToolsSession(const ChromeDevToolsSession&) = delete;
+  ChromeDevToolsSession& operator=(const ChromeDevToolsSession&) = delete;
+
   ~ChromeDevToolsSession() override;
 
   void HandleCommand(
@@ -62,8 +66,6 @@ class ChromeDevToolsSession : public protocol::FrontendChannel {
   std::unique_ptr<WindowManagerHandler> window_manager_handler_;
 #endif
   content::DevToolsAgentHostClientChannel* client_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeDevToolsSession);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_CHROME_DEVTOOLS_SESSION_H_

@@ -11,7 +11,7 @@
 class FederatedIdentityRequestPermissionContext;
 
 // Factory to get or create an instance of
-// FederatedIdentitySharingPermissionContext from a Profile.
+// FederatedIdentityRequestPermissionContext from a Profile.
 class FederatedIdentityRequestPermissionContextFactory
     : public BrowserContextKeyedServiceFactory {
  public:

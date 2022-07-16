@@ -17,11 +17,9 @@
 namespace {
 
 // Delay of the reconnection to Sensor Hal Dispatcher.
-constexpr base::TimeDelta kDelayReconnect =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kDelayReconnect = base::Milliseconds(1000);
 
-constexpr base::TimeDelta kNewDevicesTimeout =
-    base::TimeDelta::FromMilliseconds(10000);
+constexpr base::TimeDelta kNewDevicesTimeout = base::Milliseconds(10000);
 
 constexpr char kCrosECLightName[] = "cros-ec-light";
 constexpr char kAcpiAlsName[] = "acpi-als";
@@ -88,10 +86,7 @@ void LightProviderMojo::SetUpChannel(
                      weak_ptr_factory_.GetWeakPtr()),
       kNewDevicesTimeout);
 
-  sensor_service_remote_->GetDeviceIds(
-      chromeos::sensors::mojom::DeviceType::LIGHT,
-      base::BindOnce(&LightProviderMojo::GetLightIdsCallback,
-                     weak_ptr_factory_.GetWeakPtr()));
+  QueryDevices();
 }
 
 void LightProviderMojo::OnNewDeviceAdded(
@@ -127,9 +122,10 @@ void LightProviderMojo::OnNewDevicesTimeout() {
 
   new_devices_observer_.reset();
 
-  if (light_device_id_.has_value())
+  if (als_init_status_set_)
     return;
 
+  als_init_status_set_ = true;
   LOG(ERROR) << "Target light sensor isn't available after timeout. "
                 "Initialization failed.";
 
@@ -185,6 +181,27 @@ void LightProviderMojo::ResetSensorService() {
 
   new_devices_observer_.reset();
   sensor_service_remote_.reset();
+}
+
+void LightProviderMojo::ResetStates() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  observer_.reset();
+  light_device_id_.reset();
+  lights_.clear();
+
+  if (sensor_service_remote_.is_bound())
+    QueryDevices();
+}
+
+void LightProviderMojo::QueryDevices() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(sensor_service_remote_.is_bound());
+
+  sensor_service_remote_->GetDeviceIds(
+      chromeos::sensors::mojom::DeviceType::LIGHT,
+      base::BindOnce(&LightProviderMojo::GetLightIdsCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void LightProviderMojo::GetLightIdsCallback(
@@ -350,29 +367,51 @@ LightProviderMojo::GetSensorDeviceRemote(int32_t id) {
   mojo::Remote<chromeos::sensors::mojom::SensorDevice> sensor_device_remote;
   sensor_service_remote_->GetDevice(
       id, sensor_device_remote.BindNewPipeAndPassReceiver());
-  sensor_device_remote.set_disconnect_handler(
+  sensor_device_remote.set_disconnect_with_reason_handler(
       base::BindOnce(&LightProviderMojo::OnLightRemoteDisconnect,
                      weak_ptr_factory_.GetWeakPtr(), id));
 
   return sensor_device_remote;
 }
 
-void LightProviderMojo::OnLightRemoteDisconnect(int32_t id) {
+void LightProviderMojo::OnLightRemoteDisconnect(
+    int32_t id,
+    uint32_t custom_reason_code,
+    const std::string& description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  LOG(ERROR) << "OnLightRemoteDisconnect: " << id
-             << ". Mojo connection to IIO Service is lost. Resetting the "
-                "SensorService Mojo channel as well";
+  const auto reason =
+      static_cast<chromeos::sensors::mojom::SensorDeviceDisconnectReason>(
+          custom_reason_code);
+  LOG(WARNING) << "OnLightRemoteDisconnect: " << id << ", reason: " << reason
+               << ", description: " << description;
 
   // Assumes IIO Service has crashed and waits for its relaunch.
-  ResetSensorService();
+  switch (reason) {
+    case chromeos::sensors::mojom::SensorDeviceDisconnectReason::
+        IIOSERVICE_CRASHED:
+      ResetSensorService();
+      break;
+
+    case chromeos::sensors::mojom::SensorDeviceDisconnectReason::DEVICE_REMOVED:
+      if (light_device_id_ != id) {
+        // This light sensor is not in use.
+        lights_.erase(id);
+      } else {
+        // Reset usages & states, and restart the mojo devices initialization.
+        ResetStates();
+      }
+      break;
+  }
 }
 
 void LightProviderMojo::DetermineLightSensor(int32_t id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!light_device_id_.has_value())
+  if (!als_init_status_set_) {
+    als_init_status_set_ = true;
     als_reader_->SetAlsInitStatus(AlsReader::AlsInitStatus::kSuccess);
+  }
 
   light_device_id_ = id;
   SetupLightSamplesObserver();

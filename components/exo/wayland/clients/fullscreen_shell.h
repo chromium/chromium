@@ -18,6 +18,10 @@ namespace clients {
 class FullscreenClient : public ClientBase {
  public:
   FullscreenClient();
+
+  FullscreenClient(const FullscreenClient&) = delete;
+  FullscreenClient& operator=(const FullscreenClient&) = delete;
+
   ~FullscreenClient() override;
   bool Run(const InitParams& params);
 
@@ -56,8 +60,6 @@ class FullscreenClient : public ClientBase {
 
   std::unique_ptr<wl_callback> frame_callback_;
   bool frame_callback_pending_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenClient);
 };
 
 }  // namespace clients

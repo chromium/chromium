@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/guid.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
 namespace chromeos {
 
@@ -33,6 +34,22 @@ bool ClientChannel::SendMessage(const std::string& payload,
 
   PerformSendMessage(payload, std::move(on_sent_callback));
   return true;
+}
+
+void ClientChannel::RegisterPayloadFile(
+    int64_t payload_id,
+    mojom::PayloadFilesPtr payload_files,
+    base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
+        file_transfer_update_callback,
+    base::OnceCallback<void(bool)> registration_result_callback) {
+  if (is_disconnected_) {
+    std::move(registration_result_callback).Run(/*succces=*/false);
+    return;
+  }
+
+  PerformRegisterPayloadFile(payload_id, std::move(payload_files),
+                             std::move(file_transfer_update_callback),
+                             std::move(registration_result_callback));
 }
 
 void ClientChannel::AddObserver(Observer* observer) {

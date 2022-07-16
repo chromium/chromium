@@ -35,8 +35,14 @@ import os
 import pprint
 import re
 import shutil
+import sys
 import tempfile
 import types
+
+BLINK_TOOLS_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..'))
+if BLINK_TOOLS_PATH not in sys.path:
+  sys.path.append(BLINK_TOOLS_PATH)
 
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.system.log_utils import configure_logging
@@ -161,8 +167,8 @@ class JSONMerger(Merger):
         Merger.__init__(self)
 
         self.add_helper(
-            TypeMatch(types.ListType, types.TupleType), self.merge_listlike)
-        self.add_helper(TypeMatch(types.DictType), self.merge_dictlike)
+            TypeMatch(list, tuple), self.merge_listlike)
+        self.add_helper(TypeMatch(dict), self.merge_dictlike)
 
     def fallback_matcher(self, objs, name=None):
         raise MergeFailure("No merge helper found!", name, objs)
@@ -389,15 +395,15 @@ class MergeFilesJSONP(MergeFiles):
         """
         in_data = fd.read()
 
-        begin = in_data.find('{')
-        end = in_data.rfind('}') + 1
+        begin = in_data.find(b'{')
+        end = in_data.rfind(b'}') + 1
 
         before = in_data[:begin]
         data = in_data[begin:end]
         after = in_data[end:]
 
         # If just a JSON file, use json.load to get better error message output.
-        if before == '' and after == '':
+        if before == b'' and after == b'':
             fd.seek(0)
             json_data = json.load(fd)
         else:
@@ -413,7 +419,9 @@ class MergeFilesJSONP(MergeFiles):
         other non-JSON data.
         """
         fd.write(before)
-        fd.write(json.dumps(json_data, separators=(",", ":"), sort_keys=True))
+        fd.write(json.dumps(json_data,
+                            separators=(",", ":"),
+                            sort_keys=True).encode('utf-8'))
         fd.write(after)
 
 
@@ -779,7 +787,7 @@ def mark_missing_shards(summary_json,
         json_contents_merged['missing_shards'] = missing_shards
 
         with filesystem.open_binary_file_for_writing(merged_output_json) as f:
-            MergeFilesJSONP.dump_jsonp(f, '', json_contents_merged, '')
+            MergeFilesJSONP.dump_jsonp(f, b'', json_contents_merged, b'')
 
 
 def find_shard_output_path(index, task_id, input_directories):
@@ -1006,3 +1014,6 @@ directory. The script will be given the arguments plus
 
         logging.info('Running post merge script %r', post_script)
         os.execlp(post_script)
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

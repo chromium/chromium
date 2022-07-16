@@ -14,6 +14,9 @@ class ProductIconManifestTest : public ManifestTest {
  public:
   ProductIconManifestTest() = default;
 
+  ProductIconManifestTest(const ProductIconManifestTest&) = delete;
+  ProductIconManifestTest& operator=(const ProductIconManifestTest&) = delete;
+
  protected:
   base::Value CreateManifest(const std::string& extra_icons) {
     constexpr const char kManifest[] = R"({
@@ -31,9 +34,6 @@ class ProductIconManifestTest : public ManifestTest {
     EXPECT_TRUE(manifest.is_dict());
     return manifest;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProductIconManifestTest);
 };
 
 TEST_F(ProductIconManifestTest, Sizes) {

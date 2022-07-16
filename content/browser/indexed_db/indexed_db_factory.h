@@ -16,7 +16,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
@@ -33,6 +32,9 @@ struct IndexedDBPendingConnection;
 // TODO(dmurph): Remove this interface.
 class CONTENT_EXPORT IndexedDBFactory {
  public:
+  IndexedDBFactory(const IndexedDBFactory&) = delete;
+  IndexedDBFactory& operator=(const IndexedDBFactory&) = delete;
+
   virtual ~IndexedDBFactory() = default;
 
   virtual void GetDatabaseInfo(scoped_refptr<IndexedDBCallbacks> callbacks,
@@ -102,9 +104,6 @@ class CONTENT_EXPORT IndexedDBFactory {
 
  protected:
   IndexedDBFactory() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBFactory);
 };
 
 }  // namespace content

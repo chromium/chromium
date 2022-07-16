@@ -45,7 +45,7 @@ base::HistogramBase* GetTimeHistogram(const std::string& histogram_name,
                                       const std::string client_name) {
   return base::LinearHistogram::FactoryTimeGet(
       histogram_name + std::string(".") + client_name, base::TimeDelta(),
-      base::TimeDelta::FromMilliseconds(kMaxReportTimeMs),
+      base::Milliseconds(kMaxReportTimeMs),
       /* one bucket every 20ms. */ kMaxReportTimeMs / 20,
       base::Histogram::kUmaTargetedHistogramFlag);
 }

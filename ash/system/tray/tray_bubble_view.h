@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/system/status_area_widget.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -42,6 +42,10 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   class ASH_EXPORT Delegate {
    public:
     Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate();
 
     // Called when the view is destroyed. Any pointers to the view should be
@@ -67,8 +71,9 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     // child view was closed).
     virtual void HideBubble(const TrayBubbleView* bubble_view);
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
+    // Returns the accelerator action associated with the delegate's bubble
+    // view.
+    virtual absl::optional<AcceleratorAction> GetAcceleratorAction() const;
   };
 
   // Anchor mode being set at creation.
@@ -129,6 +134,9 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // Returns the border insets. Called by TrayEventFilter.
   gfx::Insets GetBorderInsets() const;
 
+  // Returns the accelerator action associated with this bubble view.
+  absl::optional<AcceleratorAction> GetAcceleratorAction() const;
+
   // Called when the delegate is destroyed. This must be called before the
   // delegate is actually destroyed. TrayBubbleView will do clean up in
   // ResetDelegate.
@@ -185,9 +193,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   void MouseMovedOutOfHost() override;
 
  protected:
-  // views::BubbleDialogDelegateView:
-  ax::mojom::Role GetAccessibleWindowRole() override;
-
   // views::View:
   void ChildPreferredSizeChanged(View* child) override;
 
@@ -204,7 +209,11 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // process accelerator as menu is currently open.
   class RerouteEventHandler : public ui::EventHandler {
    public:
-    RerouteEventHandler(TrayBubbleView* tray_bubble_view);
+    explicit RerouteEventHandler(TrayBubbleView* tray_bubble_view);
+
+    RerouteEventHandler(const RerouteEventHandler&) = delete;
+    RerouteEventHandler& operator=(const RerouteEventHandler&) = delete;
+
     ~RerouteEventHandler() override;
 
     // Overridden from ui::EventHandler
@@ -213,8 +222,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
    private:
     // TrayBubbleView to which key events are going to be rerouted. Not owned.
     TrayBubbleView* tray_bubble_view_;
-
-    DISALLOW_COPY_AND_ASSIGN(RerouteEventHandler);
   };
 
   void CloseBubbleView();

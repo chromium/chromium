@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_MODULATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_MODULATOR_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/core/script/module_import_meta.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -37,7 +38,6 @@ class ResourceFetcher;
 class ModuleRecordResolver;
 class ScriptPromiseResolver;
 class ScriptState;
-class ScriptValue;
 enum class ModuleType;
 
 // A SingleModuleClient is notified when single module script node (node as in a
@@ -108,7 +108,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   static void SetModulator(ScriptState*, Modulator*);
   static void ClearModulator(ScriptState*);
 
-  void Trace(Visitor* visitor) const override {}
+  void Trace(Visitor* visitor) const override;
   const char* NameInHeapSnapshot() const override { return "Modulator"; }
 
   virtual ModuleRecordResolver* GetModuleRecordResolver() = 0;
@@ -174,19 +174,18 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
 
   // https://tc39.github.io/proposal-dynamic-import/#sec-hostimportmoduledynamically
   virtual void ResolveDynamically(const ModuleRequest& module_request,
-                                  const KURL&,
                                   const ReferrerScriptInfo&,
                                   ScriptPromiseResolver*) = 0;
 
-  virtual ScriptValue CreateTypeError(const String& message) const = 0;
-  virtual ScriptValue CreateSyntaxError(const String& message) const = 0;
-
   // Import maps. https://github.com/WICG/import-maps
 
-  // https://wicg.github.io/import-maps/#register-an-import-map
-  virtual void RegisterImportMap(const ImportMap*,
-                                 ScriptValue error_to_rethrow) = 0;
-  virtual const ImportMap* GetImportMapForTest() const = 0;
+  void SetImportMap(const ImportMap* import_map) {
+    // Because the second and subsequent import maps are already rejected in
+    // ScriptLoader::PrepareScript(), this is called only once.
+    DCHECK(!import_map_);
+    import_map_ = import_map;
+  }
+  const ImportMap* GetImportMapForTest() const { return import_map_; }
 
   // https://wicg.github.io/import-maps/#document-acquiring-import-maps
   enum class AcquiringImportMapsState {
@@ -199,8 +198,12 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
     // The flag is false, because module script loading is already started.
     kAfterModuleScriptLoad
   };
-  virtual AcquiringImportMapsState GetAcquiringImportMapsState() const = 0;
-  virtual void SetAcquiringImportMapsState(AcquiringImportMapsState) = 0;
+  AcquiringImportMapsState GetAcquiringImportMapsState() const {
+    return acquiring_import_maps_;
+  }
+  void SetAcquiringImportMapsState(AcquiringImportMapsState value) {
+    acquiring_import_maps_ = value;
+  }
 
   // https://html.spec.whatwg.org/C/#hostgetimportmetaproperties
   virtual ModuleImportMeta HostGetImportMetaProperties(
@@ -217,6 +220,18 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
 
   // Produce V8 code cache for the given ModuleScript and its submodules.
   virtual void ProduceCacheModuleTreeTopLevel(ModuleScript*) = 0;
+
+ protected:
+  const ImportMap* GetImportMap() const { return import_map_.Get(); }
+
+ private:
+  Member<const ImportMap> import_map_;
+
+  // https://wicg.github.io/import-maps/#document-acquiring-import-maps
+  // Each Document has an acquiring import maps boolean. It is initially true.
+  // [spec text]
+  AcquiringImportMapsState acquiring_import_maps_ =
+      AcquiringImportMapsState::kAcquiring;
 };
 
 }  // namespace blink

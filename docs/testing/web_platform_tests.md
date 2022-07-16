@@ -129,12 +129,12 @@ later adding an OWNERS file upstream also works.
 It is sometimes desirable to write WPT tests that either test Chromium-specific
 behaviors, or that cannot yet be upstreamed to WPT (e.g. because the spec is
 very nascent). For these cases, we maintain a separate directory,
-[wpt_internal](../third_party/blink/web_tests/wpt_internal) that runs under the
+[wpt_internal](../../third_party/blink/web_tests/wpt_internal) that runs under the
 WPT testing infrastructure (e.g. uses wptserve, etc), but which is not
 upstreamed to WPT.
 
 Please see the `wpt_internal`
-[README](../third_party/blink/web_tests/wpt_internal/README) for more details.
+[README](../../third_party/blink/web_tests/wpt_internal/README.md) for more details.
 
 **Note**: A significant downside of `wpt_internal` is that your tests may be
 broken by upstream changes to the resources scripts (e.g. `testharness.js`), as

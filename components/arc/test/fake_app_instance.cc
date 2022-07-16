@@ -446,39 +446,6 @@ void FakeAppInstance::GetRecentAndSuggestedAppsFromPlayStore(
   std::move(callback).Run(state_code, std::move(fake_apps));
 }
 
-void FakeAppInstance::GetIcingGlobalQueryResults(
-    const std::string& query,
-    int32_t max_results,
-    GetIcingGlobalQueryResultsCallback callback) {
-  // Fake successful app data search results.
-  std::vector<arc::mojom::AppDataResultPtr> fake_app_data_results;
-
-  auto icon0 = GetFakeIcon(mojom::ScaleFactor::SCALE_FACTOR_100P);
-  const auto& fake_icon_png_data0 = (!icon0 || !icon0->icon_png_data)
-                                        ? std::vector<uint8_t>()
-                                        : icon0->icon_png_data.value();
-  int i = 0;
-  fake_app_data_results.push_back(mojom::AppDataResult::New(
-      base::StringPrintf("LauncherIntentUri %d", i),
-      base::StringPrintf("Label %s %d", query.c_str(), i),
-      base::StringPrintf("Text %s %d", query.c_str(), i), fake_icon_png_data0,
-      mojom::AppDataResultType::PERSON, std::move(icon0)));
-
-  auto icon1 = GetFakeIcon(mojom::ScaleFactor::SCALE_FACTOR_100P);
-  const auto& fake_icon_png_data1 = (!icon1 || !icon1->icon_png_data)
-                                        ? std::vector<uint8_t>()
-                                        : icon1->icon_png_data.value();
-  ++i;
-  fake_app_data_results.push_back(mojom::AppDataResult::New(
-      base::StringPrintf("LauncherIntentUri %d", i),
-      base::StringPrintf("Label %s %d", query.c_str(), i),
-      base::StringPrintf("Text %s %d", query.c_str(), i), fake_icon_png_data1,
-      mojom::AppDataResultType::NOTE_DOCUMENT, std::move(icon1)));
-
-  std::move(callback).Run(arc::mojom::AppDataRequestState::REQUEST_SUCCESS,
-                          std::move(fake_app_data_results));
-}
-
 void FakeAppInstance::GetAppShortcutGlobalQueryItems(
     const std::string& query,
     int32_t max_results,

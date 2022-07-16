@@ -25,8 +25,8 @@ import androidx.preference.Preference;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.subresource_filter.SubresourceFilterFeatureList;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -42,7 +42,7 @@ public class SiteSettingsCategory {
             Type.CLIPBOARD, Type.COOKIES, Type.IDLE_DETECTION, Type.DEVICE_LOCATION,
             Type.JAVASCRIPT, Type.MICROPHONE, Type.NFC, Type.NOTIFICATIONS, Type.POPUPS,
             Type.PROTECTED_MEDIA, Type.SENSORS, Type.SOUND, Type.USB, Type.VIRTUAL_REALITY,
-            Type.USE_STORAGE})
+            Type.USE_STORAGE, Type.AUTO_DARK_WEB_CONTENT, Type.REQUEST_DESKTOP_SITE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         // All updates here must also be reflected in {@link #preferenceKey(int)
@@ -70,10 +70,12 @@ public class SiteSettingsCategory {
         int BLUETOOTH = 20;
         int VIRTUAL_REALITY = 21;
         int USE_STORAGE = 22;
+        int AUTO_DARK_WEB_CONTENT = 23;
+        int REQUEST_DESKTOP_SITE = 24;
         /**
          * Number of handled categories used for calculating array sizes.
          */
-        int NUM_ENTRIES = 23;
+        int NUM_ENTRIES = 25;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -145,14 +147,17 @@ public class SiteSettingsCategory {
     }
 
     /**
-     * Convert Type into {@link ContentSettingsType}
+     * Convert Type into {@link ContentSettingsType}.
      */
-    public static int contentSettingsType(@Type int type) {
+    public static @ContentSettingsType int contentSettingsType(@Type int type) {
+        // This switch statement is ordered by types alphabetically.
         switch (type) {
             case Type.ADS:
                 return ContentSettingsType.ADS;
             case Type.AUGMENTED_REALITY:
                 return ContentSettingsType.AR;
+            case Type.AUTO_DARK_WEB_CONTENT:
+                return ContentSettingsType.AUTO_DARK_WEB_CONTENT;
             case Type.AUTOMATIC_DOWNLOADS:
                 return ContentSettingsType.AUTOMATIC_DOWNLOADS;
             case Type.BACKGROUND_SYNC:
@@ -167,6 +172,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.CLIPBOARD_READ_WRITE;
             case Type.COOKIES:
                 return ContentSettingsType.COOKIES;
+            case Type.REQUEST_DESKTOP_SITE:
+                return ContentSettingsType.REQUEST_DESKTOP_SITE;
             case Type.DEVICE_LOCATION:
                 return ContentSettingsType.GEOLOCATION;
             case Type.IDLE_DETECTION:
@@ -194,7 +201,7 @@ public class SiteSettingsCategory {
             // case Type.ALL_SITES
             // case Type.USE_STORAGE
             default:
-                return -1; // Conversion unavailable.
+                return ContentSettingsType.DEFAULT; // Conversion unavailable.
         }
     }
 
@@ -217,11 +224,14 @@ public class SiteSettingsCategory {
      * Convert Type into preference String
      */
     public static String preferenceKey(@Type int type) {
+        // This switch statement is ordered by types alphabetically.
         switch (type) {
             case Type.ADS:
                 return "ads";
             case Type.AUGMENTED_REALITY:
                 return "augmented_reality";
+            case Type.AUTO_DARK_WEB_CONTENT:
+                return "auto_dark_web_content";
             case Type.ALL_SITES:
                 return "all_sites";
             case Type.AUTOMATIC_DOWNLOADS:
@@ -238,6 +248,8 @@ public class SiteSettingsCategory {
                 return "clipboard";
             case Type.COOKIES:
                 return "cookies";
+            case Type.REQUEST_DESKTOP_SITE:
+                return "request_desktop_site";
             case Type.DEVICE_LOCATION:
                 return "device_location";
             case Type.IDLE_DETECTION:

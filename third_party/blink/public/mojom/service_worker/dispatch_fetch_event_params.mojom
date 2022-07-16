@@ -9,13 +9,6 @@ import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "third_party/blink/public/mojom/timing/worker_timing_container.mojom";
 
-// Used for service worker navigation preload, to create
-// FetchEvent#preloadResponse.
-struct FetchEventPreloadHandle {
-  pending_remote<network.mojom.URLLoader> url_loader;
-  pending_receiver<network.mojom.URLLoaderClient> url_loader_client_receiver;
-};
-
 // Parameters used for dispatching a FetchEvent.
 struct DispatchFetchEventParams {
   // FetchEvent#request.
@@ -23,8 +16,9 @@ struct DispatchFetchEventParams {
 
   // FetchEvent#clientId.
   string client_id;
+
   // FetchEvent#preloadResponse.
-  FetchEventPreloadHandle? preload_handle;
+  pending_receiver<network.mojom.URLLoaderClient>? preload_url_loader_client_receiver;
 
   // This is currently null for navigation because it's still being implemented.
   // TODO(https://crbug.com/900700): Make this non-nullable when implementation

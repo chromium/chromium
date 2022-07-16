@@ -704,6 +704,14 @@ KeyMap.BINDINGS_ = [
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.I]}}
   },
   {
+    command: 'previousInvalidItem',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.P, KeyCode.I]}}
+  },
+  {
+    command: 'nextInvalidItem',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.N, KeyCode.I]}}
+  },
+  {
     command: 'jumpToDetails',
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.J]}}
   },

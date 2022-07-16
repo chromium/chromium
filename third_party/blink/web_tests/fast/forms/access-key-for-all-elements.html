@@ -29,7 +29,7 @@ function pressKey(key) {
 
 const focusableTagNames = [
   "a", "abbr", "acronym", "address", "area", "article", "aside", "audio",
-  "b", "base", "basefont", "bdo", "bgsound", "big", "blockquote", "br",
+  "b", "bdo", "bgsound", "big", "blockquote", "br",
   "canvas", "caption", "center", "cite", "code", "col", "colgroup",
   "dd", "del", "details", "dfn", "dir", "div", "dl", "dt",
   "em", "fieldset", "figcaption", "figure", "font", "footer", "form",
@@ -44,7 +44,7 @@ const focusableTagNames = [
   "table", "tbody", "td", "tfoot", "th", "thead", "tr", "track", "tt",
   "u", "ul", "var", "video", "wbr", "xmp"];
 
-const nonFocusableTagNames = ["embed", "head", "link", "meta", "noembed", "noscript", "param", "script", "style", "title"];
+const nonFocusableTagNames = ["base", "basefont", "embed", "head", "link", "meta", "noembed", "noscript", "param", "script", "style", "title"];
 
 function testPressAccessKeyOnElement(element) {
   var clicked = false;

@@ -47,6 +47,10 @@ class TestNoStatePrefetchContents : public NoStatePrefetchContents,
       FinalStatus expected_final_status,
       bool ignore_final_status);
 
+  TestNoStatePrefetchContents(const TestNoStatePrefetchContents&) = delete;
+  TestNoStatePrefetchContents& operator=(const TestNoStatePrefetchContents&) =
+      delete;
+
   ~TestNoStatePrefetchContents() override;
 
   bool CheckURL(const GURL& url) override;
@@ -79,8 +83,6 @@ class TestNoStatePrefetchContents : public NoStatePrefetchContents,
 
   // If true, |expected_final_status_| and other shutdown checks are skipped.
   bool skip_final_checks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNoStatePrefetchContents);
 };
 
 // A handle to a TestNoStatePrefetchContents whose lifetime is under the
@@ -90,6 +92,10 @@ class TestPrerender : public NoStatePrefetchContents::Observer,
                       public base::SupportsWeakPtr<TestPrerender> {
  public:
   TestPrerender();
+
+  TestPrerender(const TestPrerender&) = delete;
+  TestPrerender& operator=(const TestPrerender&) = delete;
+
   ~TestPrerender() override;
 
   TestNoStatePrefetchContents* contents() const { return contents_; }
@@ -129,8 +135,6 @@ class TestPrerender : public NoStatePrefetchContents::Observer,
   base::RunLoop create_loop_;
   base::RunLoop start_loop_;
   base::RunLoop stop_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPrerender);
 };
 
 // Blocks until a TestNoStatePrefetchContents has been destroyed with the given
@@ -142,6 +146,9 @@ class DestructionWaiter {
   // WaitForDestroy().
   DestructionWaiter(TestNoStatePrefetchContents* no_state_prefetch_contents,
                     FinalStatus expected_final_status);
+
+  DestructionWaiter(const DestructionWaiter&) = delete;
+  DestructionWaiter& operator=(const DestructionWaiter&) = delete;
 
   ~DestructionWaiter();
 
@@ -158,14 +165,15 @@ class DestructionWaiter {
     // TestNoStatePrefetchContents.
     explicit DestructionMarker(DestructionWaiter* waiter);
 
+    DestructionMarker(const DestructionMarker&) = delete;
+    DestructionMarker& operator=(const DestructionMarker&) = delete;
+
     ~DestructionMarker() override;
 
     void OnPrefetchStop(NoStatePrefetchContents* contents) override;
 
    private:
     DestructionWaiter* waiter_;
-
-    DISALLOW_COPY_AND_ASSIGN(DestructionMarker);
   };
 
   // To be called by a DestructionMarker.
@@ -175,8 +183,6 @@ class DestructionWaiter {
   FinalStatus expected_final_status_;
   bool saw_correct_status_;
   std::unique_ptr<DestructionMarker> marker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DestructionWaiter);
 };
 
 // Wait until a NoStatePrefetchManager has seen a first contentful paint.
@@ -187,6 +193,11 @@ class FirstContentfulPaintManagerWaiter
   // instance is owned by the |NoStatePrefetchManager|.
   static FirstContentfulPaintManagerWaiter* Create(
       NoStatePrefetchManager* manager);
+
+  FirstContentfulPaintManagerWaiter(const FirstContentfulPaintManagerWaiter&) =
+      delete;
+  FirstContentfulPaintManagerWaiter& operator=(
+      const FirstContentfulPaintManagerWaiter&) = delete;
 
   ~FirstContentfulPaintManagerWaiter() override;
 
@@ -200,8 +211,6 @@ class FirstContentfulPaintManagerWaiter
 
   std::unique_ptr<base::RunLoop> waiter_;
   bool saw_fcp_;
-
-  DISALLOW_COPY_AND_ASSIGN(FirstContentfulPaintManagerWaiter);
 };
 
 // NoStatePrefetchContentsFactory that uses TestNoStatePrefetchContents.
@@ -209,6 +218,11 @@ class TestNoStatePrefetchContentsFactory
     : public NoStatePrefetchContents::Factory {
  public:
   TestNoStatePrefetchContentsFactory();
+
+  TestNoStatePrefetchContentsFactory(
+      const TestNoStatePrefetchContentsFactory&) = delete;
+  TestNoStatePrefetchContentsFactory& operator=(
+      const TestNoStatePrefetchContentsFactory&) = delete;
 
   ~TestNoStatePrefetchContentsFactory() override;
 
@@ -241,13 +255,15 @@ class TestNoStatePrefetchContentsFactory
   };
 
   base::circular_deque<ExpectedContents> expected_contents_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNoStatePrefetchContentsFactory);
 };
 
 class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
  public:
   PrerenderInProcessBrowserTest();
+
+  PrerenderInProcessBrowserTest(const PrerenderInProcessBrowserTest&) = delete;
+  PrerenderInProcessBrowserTest& operator=(
+      const PrerenderInProcessBrowserTest&) = delete;
 
   ~PrerenderInProcessBrowserTest() override;
 
@@ -360,8 +376,6 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
   uint32_t waiting_count_ = 0;
   base::OnceClosure waiting_closure_;
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrerenderInProcessBrowserTest);
 };
 
 }  // namespace test_utils

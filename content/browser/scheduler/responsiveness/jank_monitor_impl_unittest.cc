@@ -139,7 +139,7 @@ TEST_F(JankMonitorTest, JankUIThread) {
     VALIDATE_TEST_OBSERVER_CALLS();
     // This is a janky task that runs for 1.5 seconds.
     expected_jank_started_++;
-    task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1500));
+    task_environment_.FastForwardBy(base::Milliseconds(1500));
 
     // Monitor should observe that the jank has started.
     VALIDATE_TEST_OBSERVER_CALLS();
@@ -173,7 +173,7 @@ TEST_F(JankMonitorTest, JankIOThread) {
 
     // This is a janky task that runs for 1.5 seconds.
     expected_jank_started_++;
-    task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1500));
+    task_environment_.FastForwardBy(base::Milliseconds(1500));
 
     // Monitor should observe that the jank has started.
     VALIDATE_TEST_OBSERVER_CALLS();
@@ -197,14 +197,14 @@ TEST_F(JankMonitorTest, JankUIThreadReentrant) {
 
     // This is a janky task that runs for 1.5 seconds.
     expected_jank_started_++;
-    task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1500));
+    task_environment_.FastForwardBy(base::Milliseconds(1500));
 
     // Monitor should observe that the jank has started.
     VALIDATE_TEST_OBSERVER_CALLS();
 
     auto nested_janky_task = [&]() {
       // This also janks the current thread.
-      task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1500));
+      task_environment_.FastForwardBy(base::Milliseconds(1500));
 
       // The callback shouldn't be called.
       VALIDATE_TEST_OBSERVER_CALLS();
@@ -231,7 +231,7 @@ TEST_F(JankMonitorTest, ReentrantResponsive) {
     // Run 5 responsive tasks in the inner runloop.
     for (int i = 0; i < 5; i++) {
       auto nested_responsive_task = [&]() {
-        task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(999));
+        task_environment_.FastForwardBy(base::Milliseconds(999));
 
         // The callback shouldn't be called. |expected_jank_started_| and
         // |expected_jank_stopped_| should be 0.
@@ -259,7 +259,7 @@ TEST_F(JankMonitorTest, JankNestedRunLoop) {
   auto enclosing_task = [&]() {
     // Run 1 responsive tasks in the inner runloop.
     auto nested_responsive_task = [&]() {
-      task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(999));
+      task_environment_.FastForwardBy(base::Milliseconds(999));
 
       // The callback shouldn't be called. |expected_jank_started_| should be 0.
       VALIDATE_TEST_OBSERVER_CALLS();
@@ -271,7 +271,7 @@ TEST_F(JankMonitorTest, JankNestedRunLoop) {
 
     // Then run 1 responsive tasks in the inner runloop.
     auto nested_janky_task = [&]() {
-      task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1500));
+      task_environment_.FastForwardBy(base::Milliseconds(1500));
 
       // We should detect one jank.
       expected_jank_started_++;
@@ -304,14 +304,14 @@ TEST_F(JankMonitorTest, JankUIAndIOThread) {
 
     // This should trigger the monitor. TestJankMonitor::OnJankStarted() should
     // be called once.
-    task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1500));
+    task_environment_.FastForwardBy(base::Milliseconds(1500));
     VALIDATE_TEST_OBSERVER_CALLS();
 
     // The IO thread is also janky.
     auto janky_task_io = [&]() {
       // This is a janky task that runs for 1.5 seconds, but shouldn't trigger
       // the monitor.
-      task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1500));
+      task_environment_.FastForwardBy(base::Milliseconds(1500));
       VALIDATE_TEST_OBSERVER_CALLS();
 
       // Monitor should observe that the jank has started.
@@ -322,7 +322,7 @@ TEST_F(JankMonitorTest, JankUIAndIOThread) {
     // TestJankMonitor::OnJankStopped() shouldn't be called.
     VALIDATE_TEST_OBSERVER_CALLS();
 
-    task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+    task_environment_.FastForwardBy(base::Milliseconds(500));
     expected_jank_stopped_++;
   };
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -336,23 +336,21 @@ TEST_F(JankMonitorTest, JankUIAndIOThread) {
 // timer on new activity.
 TEST_F(JankMonitorTest, StartStopTimer) {
   // Activity on the UI thread - timer should be running.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(base::DoNothing::Once()));
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(monitor_->timer_running());
 
   // 11 seconds passed with no activity - timer should be stopped.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(11 * 1000));
+  task_environment_.FastForwardBy(base::Milliseconds(11 * 1000));
   EXPECT_FALSE(monitor_->timer_running());
 
   // Activity on IO thread - timer should be restarted.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(base::DoNothing::Once()));
+  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(monitor_->timer_running());
 
   // 11 seconds passed with no activity - timer should be stopped.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(11 * 1000));
+  task_environment_.FastForwardBy(base::Milliseconds(11 * 1000));
   EXPECT_FALSE(monitor_->timer_running());
 }
 
@@ -379,8 +377,7 @@ class TestJankMonitorShutdownRace : public JankMonitorImpl {
     // destruction of MetricSource. Even if MetricSource is still active and
     // attempts to start the timer, the attempt should be a no-op since the
     // the timer is already destroyed. We should still expect timer not running.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(base::DoNothing::Once()));
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
 
     shutdown_on_monitor_thread_->Signal();
   }
@@ -446,7 +443,7 @@ class TestJankMonitorShutdownRaceTimerFired : public JankMonitorImpl {
   void FinishDestroyMetricSource() override {
     // Forward by 1 ms to trigger the monitor timer. This shouldn't crash even
     // after MetricSource is destroyed.
-    task_environment_->FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+    task_environment_->FastForwardBy(base::Milliseconds(1));
 
     JankMonitorImpl::FinishDestroyMetricSource();
   }
@@ -474,10 +471,8 @@ TEST(JankMonitorShutdownTest, ShutdownRace_TimerFired) {
   task_environment.RunUntilIdle();
 
   // Fast-forward by 499 ms. This shouldn't trigger the monitor timer.
-  static constexpr base::TimeDelta kCheckInterval =
-      base::TimeDelta::FromMilliseconds(500);
-  task_environment.FastForwardBy(kCheckInterval -
-                                 base::TimeDelta::FromMilliseconds(1));
+  static constexpr base::TimeDelta kCheckInterval = base::Milliseconds(500);
+  task_environment.FastForwardBy(kCheckInterval - base::Milliseconds(1));
 
   EXPECT_FALSE(jank_monitor->monitor_timer_fired());
 

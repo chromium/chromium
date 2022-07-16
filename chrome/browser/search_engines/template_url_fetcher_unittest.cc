@@ -51,6 +51,10 @@ class TestTemplateUrlFetcher : public TemplateURLFetcher {
       const base::RepeatingClosure& request_completed_callback)
       : TemplateURLFetcher(template_url_service),
         callback_(request_completed_callback) {}
+
+  TestTemplateUrlFetcher(const TestTemplateUrlFetcher&) = delete;
+  TestTemplateUrlFetcher& operator=(const TestTemplateUrlFetcher&) = delete;
+
   ~TestTemplateUrlFetcher() override {}
 
  protected:
@@ -62,14 +66,15 @@ class TestTemplateUrlFetcher : public TemplateURLFetcher {
  private:
   // Callback to be run when a request completes.
   base::RepeatingClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTemplateUrlFetcher);
 };
 
 // Basic set-up for TemplateURLFetcher tests.
 class TemplateURLFetcherTest : public testing::Test {
  public:
   TemplateURLFetcherTest();
+
+  TemplateURLFetcherTest(const TemplateURLFetcherTest&) = delete;
+  TemplateURLFetcherTest& operator=(const TemplateURLFetcherTest&) = delete;
 
   void SetUp() override {
     template_url_fetcher_ = std::make_unique<TestTemplateUrlFetcher>(
@@ -117,9 +122,6 @@ class TemplateURLFetcherTest : public testing::Test {
   // Is the code in WaitForDownloadToFinish in a message loop waiting for a
   // callback to finish?
   bool waiting_for_download_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLFetcherTest);
 };
 
 TemplateURLFetcherTest::TemplateURLFetcherTest()

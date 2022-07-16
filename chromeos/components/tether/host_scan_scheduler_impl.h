@@ -45,6 +45,10 @@ class HostScanSchedulerImpl : public HostScanScheduler,
   HostScanSchedulerImpl(NetworkStateHandler* network_state_handler,
                         HostScanner* host_scanner,
                         session_manager::SessionManager* session_manager);
+
+  HostScanSchedulerImpl(const HostScanSchedulerImpl&) = delete;
+  HostScanSchedulerImpl& operator=(const HostScanSchedulerImpl&) = delete;
+
   ~HostScanSchedulerImpl() override;
 
   // HostScanScheduler:
@@ -87,8 +91,6 @@ class HostScanSchedulerImpl : public HostScanScheduler,
   bool is_screen_locked_;
 
   base::WeakPtrFactory<HostScanSchedulerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostScanSchedulerImpl);
 };
 
 }  // namespace tether

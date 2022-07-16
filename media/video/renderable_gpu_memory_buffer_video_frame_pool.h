@@ -74,7 +74,8 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
   // may return nullptr on an unsupported parameter, or may return nullptr
   // forever in response to a context lost.
   virtual scoped_refptr<VideoFrame> MaybeCreateVideoFrame(
-      const gfx::Size& coded_size) = 0;
+      const gfx::Size& coded_size,
+      const gfx::ColorSpace& color_space) = 0;
 
   virtual ~RenderableGpuMemoryBufferVideoFramePool() = default;
 };

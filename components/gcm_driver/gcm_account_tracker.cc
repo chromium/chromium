@@ -11,7 +11,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -212,8 +212,7 @@ void GCMAccountTracker::SanitizeTokens() {
        ++iter) {
     if (iter->second.state == TOKEN_PRESENT &&
         iter->second.expiration_time <
-            base::Time::Now() +
-                base::TimeDelta::FromMilliseconds(kMinimumTokenValidityMs)) {
+            base::Time::Now() + base::Milliseconds(kMinimumTokenValidityMs)) {
       iter->second.access_token.clear();
       iter->second.state = TOKEN_NEEDED;
       iter->second.expiration_time = base::Time();
@@ -249,19 +248,18 @@ bool GCMAccountTracker::IsTokenFetchingRequired() const {
 base::TimeDelta GCMAccountTracker::GetTimeToNextTokenReporting() const {
   base::TimeDelta time_till_next_reporting =
       driver_->GetLastTokenFetchTime() +
-      base::TimeDelta::FromMilliseconds(kTokenReportingIntervalMs) -
-      base::Time::Now();
+      base::Milliseconds(kTokenReportingIntervalMs) - base::Time::Now();
 
   // Case when token fetching is overdue.
-  if (time_till_next_reporting < base::TimeDelta())
+  if (time_till_next_reporting.is_negative())
     return base::TimeDelta();
 
   // Case when calculated period is larger than expected, including the
   // situation when the method is called before GCM driver is completely
   // initialized.
   if (time_till_next_reporting >
-          base::TimeDelta::FromMilliseconds(kTokenReportingIntervalMs)) {
-    return base::TimeDelta::FromMilliseconds(kTokenReportingIntervalMs);
+      base::Milliseconds(kTokenReportingIntervalMs)) {
+    return base::Milliseconds(kTokenReportingIntervalMs);
   }
 
   return time_till_next_reporting;
@@ -274,6 +272,10 @@ void GCMAccountTracker::GetAllNeededTokens() {
   // not have network. In that case the next network change will trigger token
   // fetching.
   if (!driver_->IsConnected())
+    return;
+
+  // Only start fetching access tokens if the user consented for sync.
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync))
     return;
 
   for (auto iter = account_infos_.begin(); iter != account_infos_.end();

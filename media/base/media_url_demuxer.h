@@ -8,14 +8,17 @@
 #include <stddef.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/demuxer.h"
 #include "url/gurl.h"
 
 namespace base {
 class SingleThreadTaskRunner;
-}
+}  // namespace base
+
+namespace net {
+class SiteForCookies;
+}  // namespace net
 
 namespace media {
 
@@ -35,10 +38,14 @@ class MEDIA_EXPORT MediaUrlDemuxer : public Demuxer {
   MediaUrlDemuxer(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
       const GURL& media_url,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const url::Origin& top_frame_origin,
       bool allow_credentials,
       bool is_hls);
+
+  MediaUrlDemuxer(const MediaUrlDemuxer&) = delete;
+  MediaUrlDemuxer& operator=(const MediaUrlDemuxer&) = delete;
+
   ~MediaUrlDemuxer() override;
 
   // MediaResource interface.
@@ -72,8 +79,6 @@ class MEDIA_EXPORT MediaUrlDemuxer : public Demuxer {
   DemuxerHost* host_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaUrlDemuxer);
 };
 
 }  // namespace media

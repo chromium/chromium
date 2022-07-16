@@ -21,6 +21,11 @@ class MediaRouterBase::InternalMediaRoutesObserver
  public:
   explicit InternalMediaRoutesObserver(MediaRouter* router)
       : MediaRoutesObserver(router), has_route(false) {}
+
+  InternalMediaRoutesObserver(const InternalMediaRoutesObserver&) = delete;
+  InternalMediaRoutesObserver& operator=(const InternalMediaRoutesObserver&) =
+      delete;
+
   ~InternalMediaRoutesObserver() override {}
 
   // MediaRoutesObserver
@@ -41,9 +46,6 @@ class MediaRouterBase::InternalMediaRoutesObserver
   bool has_route;
   std::vector<MediaRoute> current_routes;
   std::vector<MediaRoute::Id> off_the_record_route_ids;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InternalMediaRoutesObserver);
 };
 
 MediaRouterBase::~MediaRouterBase() {

@@ -30,6 +30,10 @@ class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
  public:
   DevToolsListenerBrowserTest() = default;
 
+  DevToolsListenerBrowserTest(const DevToolsListenerBrowserTest&) = delete;
+  DevToolsListenerBrowserTest& operator=(const DevToolsListenerBrowserTest&) =
+      delete;
+
   void SetUpOnMainThread() override {
     process_id_ = base::GetUniqueIdForProcess().GetUnsafeValue();
     content::DevToolsAgentHost::AddObserver(this);
@@ -99,8 +103,6 @@ class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
 
   DevToolsAgentMap devtools_agent_;
   uint32_t process_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsListenerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DevToolsListenerBrowserTest, CanCollectCodeCoverage) {

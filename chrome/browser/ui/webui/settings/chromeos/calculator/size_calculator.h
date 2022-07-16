@@ -35,28 +35,27 @@ class SizeCalculator {
  public:
   // Enumeration listing the items displayed on the storage page.
   enum class CalculationType {
-    kInUse = 0,
+    kTotal = 0,
+    kAvailable,
     kMyFiles,
     kBrowsingData,
     kAppsExtensions,
     kCrostini,
     kOtherUsers,
-    kLast = kOtherUsers,
+    kLastCalculationItem = kOtherUsers,
     kSystem,
   };
 
   // Implement this interface to be notified about item size callbacks.
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnSizeCalculated(
-        const CalculationType& item_id,
-        int64_t total_bytes,
-        const absl::optional<int64_t>& available_bytes) = 0;
+    virtual void OnSizeCalculated(const CalculationType& item_id,
+                                  int64_t total_bytes) = 0;
   };
 
   // Total number of storage items.
   static constexpr int kCalculationTypeCount =
-      static_cast<int>(CalculationType::kLast) + 1;
+      static_cast<int>(CalculationType::kLastCalculationItem) + 1;
 
   explicit SizeCalculator(const CalculationType& calculation_type);
   virtual ~SizeCalculator();
@@ -75,9 +74,7 @@ class SizeCalculator {
   virtual void PerformCalculation() = 0;
 
   // Notify the StorageHandler about the calculated storage item size
-  void NotifySizeCalculated(
-      int64_t total_bytes,
-      const absl::optional<int64_t>& available_bytes = absl::nullopt);
+  void NotifySizeCalculated(int64_t total_bytes);
 
   // Item id.
   const CalculationType calculation_type_;
@@ -88,26 +85,54 @@ class SizeCalculator {
   base::ObserverList<SizeCalculator::Observer> observers_;
 };
 
-// Class handling the interactions with the filesystem to get storage
-// statistics, using OnSizeStatCalculated to notify observers.
-class SizeStatCalculator : public SizeCalculator {
+// Class handling the calculation of the total disk space on the system.
+class TotalDiskSpaceCalculator : public SizeCalculator {
  public:
-  explicit SizeStatCalculator(Profile* profile);
-  ~SizeStatCalculator() override;
+  explicit TotalDiskSpaceCalculator(Profile* profile);
 
-  SizeStatCalculator(const SizeStatCalculator&) = delete;
-  SizeStatCalculator& operator=(const SizeStatCalculator&) = delete;
+  TotalDiskSpaceCalculator(const TotalDiskSpaceCalculator&) = delete;
+  TotalDiskSpaceCalculator& operator=(const TotalDiskSpaceCalculator&) = delete;
+
+  ~TotalDiskSpaceCalculator() override;
 
  private:
-  friend class SizeStatTestAPI;
+  friend class TotalDiskSpaceTestAPI;
 
+  // SizeCalculator:
   void PerformCalculation() override;
 
-  // Updates disk space information.
-  void OnGetSizeStat(int64_t* total_bytes, int64_t* available_bytes);
+  void GetRootDeviceSize();
+
+  void OnGetRootDeviceSize(absl::optional<uint64_t> reply);
+
+  void GetTotalDiskSpace();
+
+  void OnGetTotalDiskSpace(int64_t* total_bytes);
 
   Profile* profile_;
-  base::WeakPtrFactory<SizeStatCalculator> weak_ptr_factory_{this};
+  base::WeakPtrFactory<TotalDiskSpaceCalculator> weak_ptr_factory_{this};
+};
+
+// Class handling the calculation of the amount free usable disk space.
+class FreeDiskSpaceCalculator : public SizeCalculator {
+ public:
+  explicit FreeDiskSpaceCalculator(Profile* profile);
+
+  FreeDiskSpaceCalculator(const FreeDiskSpaceCalculator&) = delete;
+  FreeDiskSpaceCalculator& operator=(const FreeDiskSpaceCalculator&) = delete;
+
+  ~FreeDiskSpaceCalculator() override;
+
+ private:
+  friend class FreeDiskSpaceTestAPI;
+
+  // SizeCalculator:
+  void PerformCalculation() override;
+
+  void OnGetFreeDiskSpace(int64_t* available_bytes);
+
+  Profile* profile_;
+  base::WeakPtrFactory<FreeDiskSpaceCalculator> weak_ptr_factory_{this};
 };
 
 // Class handling the calculation of the size of the user's personal files: My
@@ -115,14 +140,16 @@ class SizeStatCalculator : public SizeCalculator {
 class MyFilesSizeCalculator : public SizeCalculator {
  public:
   explicit MyFilesSizeCalculator(Profile* profile);
-  ~MyFilesSizeCalculator() override;
 
   MyFilesSizeCalculator(const MyFilesSizeCalculator&) = delete;
   MyFilesSizeCalculator& operator=(const MyFilesSizeCalculator&) = delete;
 
+  ~MyFilesSizeCalculator() override;
+
  private:
   friend class MyFilesSizeTestAPI;
 
+  // SizeCalculator:
   void PerformCalculation() override;
 
   // Computes the size of My Files and Play files.
@@ -140,15 +167,17 @@ class MyFilesSizeCalculator : public SizeCalculator {
 class BrowsingDataSizeCalculator : public SizeCalculator {
  public:
   explicit BrowsingDataSizeCalculator(Profile* profile);
-  ~BrowsingDataSizeCalculator() override;
 
   BrowsingDataSizeCalculator(const BrowsingDataSizeCalculator&) = delete;
   BrowsingDataSizeCalculator& operator=(const BrowsingDataSizeCalculator&) =
       delete;
 
+  ~BrowsingDataSizeCalculator() override;
+
  private:
   friend class BrowsingDataSizeTestAPI;
 
+  // SizeCalculator:
   void PerformCalculation() override;
 
   // Callback to receive the cache size.
@@ -182,10 +211,11 @@ class AppsSizeCalculator
       public arc::ConnectionObserver<arc::mojom::StorageManagerInstance> {
  public:
   explicit AppsSizeCalculator(Profile* profile);
-  ~AppsSizeCalculator() override;
 
   AppsSizeCalculator(const AppsSizeCalculator&) = delete;
   AppsSizeCalculator& operator=(const AppsSizeCalculator&) = delete;
+
+  ~AppsSizeCalculator() override;
 
   // arc::ConnectionObserver<arc::mojom::StorageManagerInstance>:
   void OnConnectionReady() override;
@@ -202,6 +232,7 @@ class AppsSizeCalculator
  private:
   friend class AppsSizeTestAPI;
 
+  // SizeCalculator:
   void PerformCalculation() override;
 
   // Requests updating the size of web store apps and extensions.
@@ -244,14 +275,16 @@ class AppsSizeCalculator
 class CrostiniSizeCalculator : public SizeCalculator {
  public:
   explicit CrostiniSizeCalculator(Profile* profile);
-  ~CrostiniSizeCalculator() override;
 
   CrostiniSizeCalculator(const CrostiniSizeCalculator&) = delete;
   CrostiniSizeCalculator& operator=(const CrostiniSizeCalculator&) = delete;
 
+  ~CrostiniSizeCalculator() override;
+
  private:
   friend class CrostiniSizeTestAPI;
 
+  // SizeCalculator:
   void PerformCalculation() override;
 
   // Callback to update the size of Crostini VMs.
@@ -265,14 +298,16 @@ class CrostiniSizeCalculator : public SizeCalculator {
 class OtherUsersSizeCalculator : public SizeCalculator {
  public:
   OtherUsersSizeCalculator();
-  ~OtherUsersSizeCalculator() override;
 
   OtherUsersSizeCalculator(const OtherUsersSizeCalculator&) = delete;
   OtherUsersSizeCalculator& operator=(const OtherUsersSizeCalculator&) = delete;
 
+  ~OtherUsersSizeCalculator() override;
+
  private:
   friend class OtherUsersSizeTestAPI;
 
+  // SizeCalculator:
   void PerformCalculation() override;
 
   // Callback to update the sizes of the other users.

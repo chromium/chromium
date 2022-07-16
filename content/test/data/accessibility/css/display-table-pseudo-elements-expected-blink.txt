@@ -50,7 +50,7 @@ rootWebArea
 ++++++++staticText name='\nParagraph'
 ++++++++++inlineTextBox name='\nParagraph'
 ++++++genericContainer ignored
-++++++++heading name='Heading'
+++++++++heading name='4 Heading 4'
 ++++++++++genericContainer
 ++++++++++++staticText name='4'
 ++++++++++++++inlineTextBox name='4'

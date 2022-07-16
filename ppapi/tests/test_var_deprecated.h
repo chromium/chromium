@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_TEST_TEST_VAR_DEPRECATED_H_
-#define PPAPI_TEST_TEST_VAR_DEPRECATED_H_
+#ifndef PPAPI_TESTS_TEST_VAR_DEPRECATED_H_
+#define PPAPI_TESTS_TEST_VAR_DEPRECATED_H_
 
 #include <string>
 
@@ -43,4 +43,4 @@ class TestVarDeprecated : public TestCase {
   pp::VarPrivate var_from_page_;
 };
 
-#endif  // PPAPI_TEST_TEST_VAR_DEPRECATED_H_
+#endif  // PPAPI_TESTS_TEST_VAR_DEPRECATED_H_

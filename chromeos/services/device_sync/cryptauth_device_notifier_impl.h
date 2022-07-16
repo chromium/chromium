@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_notifier.h"
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
@@ -55,6 +54,10 @@ class CryptAuthDeviceNotifierImpl : public CryptAuthDeviceNotifier {
    private:
     static Factory* test_factory_;
   };
+
+  CryptAuthDeviceNotifierImpl(const CryptAuthDeviceNotifierImpl&) = delete;
+  CryptAuthDeviceNotifierImpl& operator=(const CryptAuthDeviceNotifierImpl&) =
+      delete;
 
   ~CryptAuthDeviceNotifierImpl() override;
 
@@ -115,8 +118,6 @@ class CryptAuthDeviceNotifierImpl : public CryptAuthDeviceNotifier {
   std::unique_ptr<CryptAuthClient> cryptauth_client_;
   std::unique_ptr<base::OneShotTimer> timer_;
   base::WeakPtrFactory<CryptAuthDeviceNotifierImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceNotifierImpl);
 };
 
 }  // namespace device_sync

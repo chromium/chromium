@@ -43,6 +43,9 @@ class CustomEventHandler : public ui::test::TestEventHandler {
   CustomEventHandler()
       : key_result_(ui::ER_UNHANDLED), mouse_result_(ui::ER_UNHANDLED) {}
 
+  CustomEventHandler(const CustomEventHandler&) = delete;
+  CustomEventHandler& operator=(const CustomEventHandler&) = delete;
+
   ~CustomEventHandler() override = default;
 
   void set_key_event_handling_result(ui::EventResult result) {
@@ -73,8 +76,6 @@ class CustomEventHandler : public ui::test::TestEventHandler {
  private:
   ui::EventResult key_result_;
   ui::EventResult mouse_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomEventHandler);
 };
 
 }  // namespace
@@ -84,6 +85,10 @@ namespace ash {
 class WindowManagerTest : public AshTestBase {
  public:
   WindowManagerTest() = default;
+
+  WindowManagerTest(const WindowManagerTest&) = delete;
+  WindowManagerTest& operator=(const WindowManagerTest&) = delete;
+
   ~WindowManagerTest() override = default;
 
   void SetUp() override {
@@ -92,23 +97,26 @@ class WindowManagerTest : public AshTestBase {
     // Shell hides the cursor by default; show it for these tests.
     Shell::Get()->cursor_manager()->ShowCursor();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(WindowManagerTest);
 };
 
 class NonFocusableDelegate : public aura::test::TestWindowDelegate {
  public:
   NonFocusableDelegate() = default;
 
+  NonFocusableDelegate(const NonFocusableDelegate&) = delete;
+  NonFocusableDelegate& operator=(const NonFocusableDelegate&) = delete;
+
  private:
   bool CanFocus() override { return false; }
-
-  DISALLOW_COPY_AND_ASSIGN(NonFocusableDelegate);
 };
 
 class HitTestWindowDelegate : public aura::test::TestWindowDelegate {
  public:
   HitTestWindowDelegate() : hittest_code_(HTNOWHERE) {}
+
+  HitTestWindowDelegate(const HitTestWindowDelegate&) = delete;
+  HitTestWindowDelegate& operator=(const HitTestWindowDelegate&) = delete;
+
   ~HitTestWindowDelegate() override = default;
   void set_hittest_code(int hittest_code) { hittest_code_ = hittest_code; }
 
@@ -119,8 +127,6 @@ class HitTestWindowDelegate : public aura::test::TestWindowDelegate {
   }
 
   int hittest_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(HitTestWindowDelegate);
 };
 
 TEST_F(WindowManagerTest, Focus) {

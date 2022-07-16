@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -88,6 +87,12 @@ class TestExtensionMessageBubbleController :
         action_button_callback_count_(0),
         dismiss_button_callback_count_(0),
         link_click_callback_count_(0) {}
+
+  TestExtensionMessageBubbleController(
+      const TestExtensionMessageBubbleController&) = delete;
+  TestExtensionMessageBubbleController& operator=(
+      const TestExtensionMessageBubbleController&) = delete;
+
   ~TestExtensionMessageBubbleController() override {}
 
   // ExtensionMessageBubbleController:
@@ -113,8 +118,6 @@ class TestExtensionMessageBubbleController :
   size_t action_button_callback_count_;
   size_t dismiss_button_callback_count_;
   size_t link_click_callback_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionMessageBubbleController);
 };
 
 // A fake bubble used for testing the controller. Takes an action that specifies
@@ -134,6 +137,10 @@ class FakeExtensionMessageBubble {
       : is_closed_(true),
         action_(BUBBLE_ACTION_CLICK_ACTION_BUTTON),
         controller_(nullptr) {}
+
+  FakeExtensionMessageBubble(const FakeExtensionMessageBubble&) = delete;
+  FakeExtensionMessageBubble& operator=(const FakeExtensionMessageBubble&) =
+      delete;
 
   void set_action_on_show(ExtensionBubbleAction action) {
     action_ = action;
@@ -181,8 +188,6 @@ class FakeExtensionMessageBubble {
   bool is_closed_;
   ExtensionBubbleAction action_;
   ExtensionMessageBubbleController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeExtensionMessageBubble);
 };
 
 class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
@@ -356,6 +361,10 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
         profile(), base::BindRepeating(&BuildToolbarModel));
   }
 
+  ExtensionMessageBubbleTest(const ExtensionMessageBubbleTest&) = delete;
+  ExtensionMessageBubbleTest& operator=(const ExtensionMessageBubbleTest&) =
+      delete;
+
   ~ExtensionMessageBubbleTest() override {}
 
   void SetUp() override {
@@ -431,8 +440,6 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
  private:
   std::unique_ptr<base::CommandLine> command_line_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleTest);
 };
 
 // Test that the bubble correctly treats dismissal due to deactivation.
@@ -1026,7 +1033,7 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_ProxyOverriddenControllerTest) {
   // The bubble will not show if the extension was installed in the last 7 days
   // so we artificially set the install time to simulate an old install during
   // testing.
-  base::Time old_enough = base::Time::Now() - base::TimeDelta::FromDays(8);
+  base::Time old_enough = base::Time::Now() - base::Days(8);
   SetInstallTime(kId1, old_enough, prefs);
   SetInstallTime(kId2, base::Time::Now(), prefs);
   SetInstallTime(kId3, old_enough, prefs);

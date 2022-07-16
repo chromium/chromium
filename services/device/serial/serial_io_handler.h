@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -33,6 +33,9 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
   static scoped_refptr<SerialIoHandler> Create(
       const base::FilePath& port,
       scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner);
+
+  SerialIoHandler(const SerialIoHandler&) = delete;
+  SerialIoHandler& operator=(const SerialIoHandler&) = delete;
 
   using OpenCompleteCallback = base::OnceCallback<void(bool success)>;
   using ReadCompleteCallback =
@@ -62,13 +65,15 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Performs an async read operation. Behavior is undefined if this is called
-  // while a read is already pending. Otherwise, |callback| will eventually be
-  // called with a result. |buffer| must remain valid until |callback| is run.
+  // while a read is already pending. Otherwise, |callback| will be called
+  // (potentially synchronously) with a result. |buffer| must remain valid until
+  // |callback| is run.
   void Read(base::span<uint8_t> buffer, ReadCompleteCallback callback);
 
   // Performs an async write operation. Behavior is undefined if this is called
-  // while a write is already pending. Otherwise, |callback| will eventually be
-  // called with a result. |buffer| must remain valid until |callback| is run.
+  // while a write is already pending. Otherwise, |callback| will be called
+  // (potentially synchronously) with a result. |buffer| must remain valid until
+  // |callback| is run.
   void Write(base::span<const uint8_t> buffer, WriteCompleteCallback callback);
 
   // Indicates whether or not a read is currently pending.
@@ -120,15 +125,13 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
   // Performs a platform-specific read operation. This must guarantee that
   // ReadCompleted is called when the underlying async operation is completed
   // or the SerialIoHandler instance will leak.
-  // NOTE: Implementations of ReadImpl should never call ReadCompleted directly.
-  // Use QueueReadCompleted instead to avoid reentrancy.
+  // NOTE: Implementations of ReadImpl may call ReadCompleted directly.
   virtual void ReadImpl() = 0;
 
   // Performs a platform-specific write operation. This must guarantee that
   // WriteCompleted is called when the underlying async operation is completed
   // or the SerialIoHandler instance will leak.
-  // NOTE: Implementations of WriteImpl should never call WriteCompleted
-  // directly. Use QueueWriteCompleted instead to avoid reentrancy.
+  // NOTE: Implementations of WriteImpl may call WriteCompleted directly.
   virtual void WriteImpl() = 0;
 
   // Platform-specific read cancelation.
@@ -155,16 +158,6 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
   // WARNING: Calling this method may destroy the SerialIoHandler instance
   // if the associated I/O operation was the only thing keeping it alive.
   void WriteCompleted(int bytes_written, mojom::SerialSendError error);
-
-  // Queues a ReadCompleted call on the current thread. This is used to allow
-  // ReadImpl to immediately signal completion with 0 bytes and an error,
-  // without being reentrant.
-  void QueueReadCompleted(int bytes_read, mojom::SerialReceiveError error);
-
-  // Queues a WriteCompleted call on the current thread. This is used to allow
-  // WriteImpl to immediately signal completion with 0 bytes and an error,
-  // without being reentrant.
-  void QueueWriteCompleted(int bytes_written, mojom::SerialSendError error);
 
   const base::File& file() const { return file_; }
 
@@ -236,8 +229,6 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
 
   // On Chrome OS, PermissionBrokerClient should be called on the UI thread.
   scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerialIoHandler);
 };
 
 }  // namespace device

@@ -25,8 +25,8 @@ class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
 
 // TODO(crbug.com/824858): Many of these functions can return a synchronous
-// value instead of using a callback once the core thread moves to the UI
-// thread.
+// value instead of using a callback since ServiceWorkerContext now lives on the
+// UI thread.
 
 namespace service_worker_client_utils {
 

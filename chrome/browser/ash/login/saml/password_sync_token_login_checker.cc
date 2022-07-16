@@ -15,8 +15,7 @@
 namespace ash {
 namespace {
 
-const base::TimeDelta kPollingInterval = base::TimeDelta::FromMinutes(5);
-
+const base::TimeDelta kPollingInterval = base::Minutes(5);
 }
 
 PasswordSyncTokenLoginChecker::PasswordSyncTokenLoginChecker(

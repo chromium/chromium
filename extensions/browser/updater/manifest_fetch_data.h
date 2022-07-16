@@ -94,6 +94,10 @@ class ManifestFetchData {
                     const std::string& base_query_params,
                     PingMode ping_mode,
                     FetchPriority fetch_priority);
+
+  ManifestFetchData(const ManifestFetchData&) = delete;
+  ManifestFetchData& operator=(const ManifestFetchData&) = delete;
+
   ~ManifestFetchData();
 
   // Returns true if this extension information was successfully added. If the
@@ -198,8 +202,6 @@ class ManifestFetchData {
   // The flag is set to true if all the extensions are force installed
   // extensions.
   bool is_all_external_policy_download_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestFetchData);
 };
 
 }  // namespace extensions

@@ -5,6 +5,7 @@
 #include "chromecast/media/common/media_pipeline_backend_wrapper.h"
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "chromecast/media/common/audio_decoder_wrapper.h"
@@ -16,6 +17,18 @@
 
 namespace chromecast {
 namespace media {
+namespace {
+
+std::unique_ptr<MediaPipelineBackend> CreateMediaPipelineBackend(
+    const media::MediaPipelineDeviceParams& params) {
+  LOG(INFO) << "Beginning creation of MediaPipelineBackend...";
+  auto backend = base::WrapUnique(
+      media::CastMediaShlib::CreateMediaPipelineBackend(params));
+  LOG(INFO) << "Completed creation of MediaPipelineBackend!";
+  return backend;
+}
+
+}  // namespace
 
 using DecoderType = MediaPipelineBackendManager::DecoderType;
 
@@ -33,6 +46,11 @@ class RevokedMediaPipelineBackendWrapper : public DecoderCreatorCmaBackend {
   RevokedMediaPipelineBackendWrapper(const AudioContentType& content_type,
                                      int64_t current_pts)
       : content_type_(content_type), current_pts_(current_pts) {}
+
+  RevokedMediaPipelineBackendWrapper(
+      const RevokedMediaPipelineBackendWrapper&) = delete;
+  RevokedMediaPipelineBackendWrapper& operator=(
+      const RevokedMediaPipelineBackendWrapper&) = delete;
 
   ~RevokedMediaPipelineBackendWrapper() override = default;
 
@@ -68,8 +86,6 @@ class RevokedMediaPipelineBackendWrapper : public DecoderCreatorCmaBackend {
  private:
   const AudioContentType content_type_;
   const int64_t current_pts_;
-
-  DISALLOW_COPY_AND_ASSIGN(RevokedMediaPipelineBackendWrapper);
 };
 
 }  // namespace
@@ -81,6 +97,12 @@ class ActiveMediaPipelineBackendWrapper : public DecoderCreatorCmaBackend {
       MediaPipelineBackendWrapper* wrapping_backend,
       MediaPipelineBackendManager* backend_manager,
       MediaResourceTracker* media_resource_tracker);
+
+  ActiveMediaPipelineBackendWrapper(const ActiveMediaPipelineBackendWrapper&) =
+      delete;
+  ActiveMediaPipelineBackendWrapper& operator=(
+      const ActiveMediaPipelineBackendWrapper&) = delete;
+
   ~ActiveMediaPipelineBackendWrapper() override;
 
   // DecoderCreatorCmaBackend implementation:
@@ -122,8 +144,6 @@ class ActiveMediaPipelineBackendWrapper : public DecoderCreatorCmaBackend {
   MediaResourceTracker::ScopedUsage media_resource_usage_;
 
   bool playing_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveMediaPipelineBackendWrapper);
 };
 
 ActiveMediaPipelineBackendWrapper::ActiveMediaPipelineBackendWrapper(
@@ -133,8 +153,7 @@ ActiveMediaPipelineBackendWrapper::ActiveMediaPipelineBackendWrapper(
     MediaResourceTracker* media_resource_tracker)
     : audio_decoder_ptr_(nullptr),
       video_decoder_created_(false),
-      backend_(base::WrapUnique(
-          media::CastMediaShlib::CreateMediaPipelineBackend(params))),
+      backend_(CreateMediaPipelineBackend(params)),
       wrapping_backend_(wrapping_backend),
       backend_manager_(backend_manager),
       audio_stream_type_(params.audio_type),
@@ -228,10 +247,13 @@ ActiveMediaPipelineBackendWrapper::CreateVideoDecoderWrapper() {
 }
 
 bool ActiveMediaPipelineBackendWrapper::Initialize() {
+  LOG(INFO) << "Beginning initialization of MediaPipelineBackend...";
   bool success = backend_->Initialize();
   if (success && audio_decoder_ptr_) {
     audio_decoder_ptr_->OnInitialized();
   }
+  LOG(INFO) << "Initialization of MediaPipelineBackend "
+            << (success ? "succeeded!" : "failed!");
   return success;
 }
 
@@ -312,14 +334,18 @@ void MediaPipelineBackendWrapper::Revoke() {
 }
 
 CmaBackend::AudioDecoder* MediaPipelineBackendWrapper::CreateAudioDecoder() {
+  LOG(INFO) << "Beginning creation of AudioDecoder...";
   DCHECK(!audio_decoder_);
   audio_decoder_ = backend_->CreateAudioDecoderWrapper();
+  LOG(INFO) << "Completed creation of AudioDecoder!";
   return audio_decoder_.get();
 }
 
 CmaBackend::VideoDecoder* MediaPipelineBackendWrapper::CreateVideoDecoder() {
+  LOG(INFO) << "Beginning creation of VideoDecoder...";
   DCHECK(!video_decoder_);
   video_decoder_ = backend_->CreateVideoDecoderWrapper();
+  LOG(INFO) << "VideoDecoder creation of AudioDecoder!";
   return video_decoder_.get();
 }
 

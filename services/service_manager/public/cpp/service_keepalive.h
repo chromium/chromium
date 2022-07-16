@@ -60,6 +60,10 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) ServiceKeepalive {
   // maintain an internal ref-count which the consumer can query.
   ServiceKeepalive(ServiceReceiver* receiver,
                    absl::optional<base::TimeDelta> idle_timeout);
+
+  ServiceKeepalive(const ServiceKeepalive&) = delete;
+  ServiceKeepalive& operator=(const ServiceKeepalive&) = delete;
+
   ~ServiceKeepalive();
 
   // Constructs a new ServiceKeepaliveRef associated with this ServiceKeepalive.
@@ -88,8 +92,6 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) ServiceKeepalive {
   base::ObserverList<Observer> observers_;
   int ref_count_ = 0;
   base::WeakPtrFactory<ServiceKeepalive> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceKeepalive);
 };
 
 // Objects which can be created by a |ServiceKeepalive| and cloned from each

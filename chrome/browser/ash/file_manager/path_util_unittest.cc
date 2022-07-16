@@ -33,9 +33,9 @@
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/disks/disk.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_file_system_instance.h"
 #include "components/drive/drive_pref_names.h"
@@ -44,7 +44,6 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "url/origin.h"
 
 using base::FilePath;
 using storage::FileSystemURL;
@@ -56,6 +55,10 @@ namespace {
 class FileManagerPathUtilTest : public testing::Test {
  public:
   FileManagerPathUtilTest() = default;
+
+  FileManagerPathUtilTest(const FileManagerPathUtilTest&) = delete;
+  FileManagerPathUtilTest& operator=(const FileManagerPathUtilTest&) = delete;
+
   ~FileManagerPathUtilTest() override = default;
 
   void SetUp() override {
@@ -71,9 +74,6 @@ class FileManagerPathUtilTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileManagerPathUtilTest);
 };
 
 TEST_F(FileManagerPathUtilTest, GetDownloadsFolderForProfile) {
@@ -175,6 +175,17 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
                 &profile2,
                 "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
                 "Computers/My Other Computer/bar"));
+  EXPECT_EQ("Google Drive \u203a Shared with me \u203a 1234 \u203a shared",
+            GetPathDisplayTextForSettings(
+                &profile2,
+                "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
+                ".files-by-id/1234/shared"));
+  EXPECT_EQ(
+      "Google Drive \u203a Shared with me \u203a 1-abc-xyz \u203a shortcut",
+      GetPathDisplayTextForSettings(
+          &profile2,
+          "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
+          ".shortcut-targets-by-id/1-abc-xyz/shortcut"));
 
   EXPECT_EQ("Google Drive \u203a My Drive \u203a foo",
             GetPathDisplayTextForSettings(&profile2, "${google_drive}/foo"));
@@ -192,36 +203,6 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
   EXPECT_EQ("foo", GetPathDisplayTextForSettings(&guest_profile, "foo"));
 
   chromeos::disks::DiskMountManager::Shutdown();
-}
-
-TEST_F(FileManagerPathUtilTest, MigrateFromDownlaodsToMyFiles) {
-  base::FilePath home("/home/chronos/u-0123456789abcdef");
-  base::FilePath result;
-  base::FilePath downloads = home.Append("Downloads");
-  base::FilePath file = home.Append("Downloads/file.txt");
-  base::FilePath inhome = home.Append("NotDownloads");
-  base::FilePath myfiles = home.Append("MyFiles");
-  base::FilePath myfilesFile = home.Append("MyFiles/file.txt");
-  base::FilePath myfilesDownloads = home.Append("MyFiles/Downloads");
-  base::FilePath myfilesDownloadsFile =
-      home.Append("MyFiles/Downloads/file.txt");
-  base::FilePath other("/some/other/path");
-  base::test::ScopedRunningOnChromeOS running_on_chromeos;
-  // MyFilesVolume enabled, migrate paths under Downloads.
-  EXPECT_TRUE(
-      MigrateFromDownloadsToMyFiles(profile_.get(), downloads, &result));
-  EXPECT_EQ(result, myfilesDownloads);
-  EXPECT_TRUE(MigrateFromDownloadsToMyFiles(profile_.get(), file, &result));
-  EXPECT_EQ(result, myfilesDownloadsFile);
-  EXPECT_FALSE(MigrateFromDownloadsToMyFiles(profile_.get(), inhome, &result));
-  EXPECT_FALSE(MigrateFromDownloadsToMyFiles(profile_.get(), myfiles, &result));
-  EXPECT_FALSE(
-      MigrateFromDownloadsToMyFiles(profile_.get(), myfilesFile, &result));
-  EXPECT_FALSE(
-      MigrateFromDownloadsToMyFiles(profile_.get(), myfilesDownloads, &result));
-  EXPECT_FALSE(MigrateFromDownloadsToMyFiles(profile_.get(),
-                                             myfilesDownloadsFile, &result));
-  EXPECT_FALSE(MigrateFromDownloadsToMyFiles(profile_.get(), other, &result));
 }
 
 TEST_F(FileManagerPathUtilTest, MultiProfileDownloadsFolderMigration) {
@@ -411,6 +392,11 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
           "/mnt/chromeos/GoogleDrive/Computers/path/in/computers",
       },
       {
+          "drivefs-84675c855b63e12f384d45f033826980",
+          ".files-by-id/1234/shared",
+          "/mnt/chromeos/GoogleDrive/SharedWithMe/1234/shared",
+      },
+      {
           "removable",
           "MyUSB/path/in/removable",
           "/mnt/chromeos/removable/MyUSB/path/in/removable",
@@ -432,7 +418,8 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
     EXPECT_TRUE(ConvertFileSystemURLToPathInsideVM(
         profile_.get(),
         mount_points->CreateExternalFileSystemURL(
-            url::Origin(), test.mount_name, base::FilePath(test.relative_path)),
+            blink::StorageKey(), test.mount_name,
+            base::FilePath(test.relative_path)),
         vm_mount, /*map_crostini_home=*/false, &inside));
     EXPECT_EQ(test.inside, inside.value());
 
@@ -452,14 +439,14 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   EXPECT_TRUE(ConvertFileSystemURLToPathInsideVM(
       profile_.get(),
       mount_points->CreateExternalFileSystemURL(
-          url::Origin(), "crostini_0123456789abcdef_termina_penguin",
+          blink::StorageKey(), "crostini_0123456789abcdef_termina_penguin",
           base::FilePath("path/in/crostini")),
       vm_mount, /*map_crostini_home=*/true, &inside));
   EXPECT_EQ("/home/testuser/path/in/crostini", inside.value());
   EXPECT_TRUE(ConvertFileSystemURLToPathInsideCrostini(
       profile_.get(),
       mount_points->CreateExternalFileSystemURL(
-          url::Origin(), "crostini_0123456789abcdef_termina_penguin",
+          blink::StorageKey(), "crostini_0123456789abcdef_termina_penguin",
           base::FilePath("path/in/crostini")),
       &inside));
   EXPECT_EQ("/home/testuser/path/in/crostini", inside.value());
@@ -467,7 +454,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   EXPECT_FALSE(ConvertFileSystemURLToPathInsideVM(
       profile_.get(),
       mount_points->CreateExternalFileSystemURL(
-          url::Origin(), "unknown", base::FilePath("path/in/unknown")),
+          blink::StorageKey(), "unknown", base::FilePath("path/in/unknown")),
       vm_mount, /*map_crostini_home=*/false, &inside));
 
   // Special case for Crostini $HOME ConvertPathInsideVMToFileSystemURL.
@@ -588,6 +575,12 @@ std::unique_ptr<KeyedService> CreateFileSystemOperationRunnerForTesting(
 class FileManagerPathUtilConvertUrlTest : public testing::Test {
  public:
   FileManagerPathUtilConvertUrlTest() = default;
+
+  FileManagerPathUtilConvertUrlTest(const FileManagerPathUtilConvertUrlTest&) =
+      delete;
+  FileManagerPathUtilConvertUrlTest& operator=(
+      const FileManagerPathUtilConvertUrlTest&) = delete;
+
   ~FileManagerPathUtilConvertUrlTest() override = default;
 
   void SetUp() override {
@@ -686,9 +679,6 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   base::FilePath drive_mount_point_;
   base::FilePath crostini_mount_point_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileManagerPathUtilConvertUrlTest);
 };
 
 FileSystemURL CreateExternalURL(const base::FilePath& path) {

@@ -28,13 +28,11 @@ base::TimeDelta GetDelayImpl(base::TimeDelta last_delay, int jitter_sign) {
     return kMaxBackoffTime;
 
   const base::TimeDelta backoff =
-      std::max(base::TimeDelta::FromSeconds(1),
-               last_delay * kBackoffMultiplyFactor) +
+      std::max(base::Seconds(1), last_delay * kBackoffMultiplyFactor) +
       jitter_sign * kBackoffJitterFactor * last_delay;
 
   // Clamp backoff between 1 second and |kMaxBackoffTime|.
-  return std::max(base::TimeDelta::FromSeconds(1),
-                  std::min(backoff, kMaxBackoffTime));
+  return std::max(base::Seconds(1), std::min(backoff, kMaxBackoffTime));
 }
 
 }  // namespace
@@ -60,7 +58,7 @@ BackoffDelayProvider::BackoffDelayProvider(
     : default_initial_backoff_(default_initial_backoff),
       short_initial_backoff_(short_initial_backoff) {}
 
-BackoffDelayProvider::~BackoffDelayProvider() {}
+BackoffDelayProvider::~BackoffDelayProvider() = default;
 
 base::TimeDelta BackoffDelayProvider::GetDelay(
     const base::TimeDelta& last_delay) {

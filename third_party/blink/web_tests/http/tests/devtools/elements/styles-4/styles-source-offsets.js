@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that proper data and start/end offset positions are reported for CSS style declarations and properties.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
 <head>

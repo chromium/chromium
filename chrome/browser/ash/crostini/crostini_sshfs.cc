@@ -186,7 +186,6 @@ void CrostiniSshfs::OnMountEvent(
         Finish(CrostiniSshfsResult::kMountErrorOther);
         return;
     }
-    return;
   }
 
   base::FilePath mount_path = base::FilePath(mount_info.mount_path);

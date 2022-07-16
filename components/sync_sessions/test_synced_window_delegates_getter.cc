@@ -45,7 +45,7 @@ void TestSyncedTabDelegate::Navigate(const std::string& url,
                                                                    entry.get());
 
   entries_.push_back(std::move(entry));
-  page_language_per_index_.push_back(std::string());
+  page_language_per_index_.emplace_back();
   set_current_entry_index(GetCurrentEntryIndex() + 1);
   notify_cb_.Run(this);
 }

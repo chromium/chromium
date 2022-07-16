@@ -32,8 +32,9 @@ class LenientMockPageDiscarder
   MOCK_METHOD1(DiscardPageNodeImpl, bool(const PageNode* page_node));
 
  private:
-  void DiscardPageNode(const PageNode* page_node,
-                       base::OnceCallback<void(bool)> post_discard_cb) override;
+  void DiscardPageNodes(
+      const std::vector<const PageNode*>& page_nodes,
+      base::OnceCallback<void(bool)> post_discard_cb) override;
 };
 using MockPageDiscarder = ::testing::StrictMock<LenientMockPageDiscarder>;
 

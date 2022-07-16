@@ -8,11 +8,11 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AddSiteDialogElement, ContentSetting, ContentSettingsTypes, kControlledByLookup, SettingsEditExceptionDialogElement, SITE_EXCEPTION_WILDCARD, SiteException, SiteListElement, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {AddSiteDialogElement, ContentSetting, ContentSettingsTypes, SettingsEditExceptionDialogElement, SITE_EXCEPTION_WILDCARD, SiteListElement, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs,Router} from 'chrome://settings/settings.js';
 
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
-import {eventToPromise, waitBeforeNextRender} from '../test_util.m.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 import {createContentSettingTypeToValuePair, createRawSiteException, createSiteSettingsPrefs, SiteSettingsPref} from './test_util.js';
@@ -304,7 +304,7 @@ suite('SiteListEmbargoedOrigin', function() {
     populateTestExceptions();
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     testElement =
         /** @type {!SiteListElement} */ (document.createElement('site-list'));
@@ -384,7 +384,7 @@ suite('SiteList', function() {
     populateTestExceptions();
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     testElement =
         /** @type {!SiteListElement} */ (document.createElement('site-list'));
@@ -550,26 +550,28 @@ suite('SiteList', function() {
         });
   });
 
-  test('exceptions are not reordered in non-ALL_SITES', function() {
+  test('exceptions are not reordered in non-ALL_SITES', async function() {
     setUpCategory(
         ContentSettingsTypes.GEOLOCATION, ContentSetting.BLOCK,
         prefsMixedProvider);
-    return browserProxy.whenCalled('getExceptionList')
-        .then(function(contentType) {
-          assertEquals(ContentSettingsTypes.GEOLOCATION, contentType);
-          assertEquals(3, testElement.sites.length);
-          for (let i = 0; i < testElement.sites.length; ++i) {
-            assertEquals(
-                prefsMixedProvider.exceptions[contentType][i].origin,
-                testElement.sites[i].origin);
-            assertEquals(
-                kControlledByLookup[prefsMixedProvider
-                                        .exceptions[contentType][i]
-                                        .source] ||
-                    chrome.settingsPrivate.ControlledBy.PRIMARY_USER,
-                testElement.sites[i].controlledBy);
-          }
-        });
+    const contentType = await browserProxy.whenCalled('getExceptionList');
+    assertEquals(ContentSettingsTypes.GEOLOCATION, contentType);
+    assertEquals(3, testElement.sites.length);
+    for (let i = 0; i < testElement.sites.length; ++i) {
+      const exception = prefsMixedProvider.exceptions[contentType][i];
+      assertEquals(exception.origin, testElement.sites[i].origin);
+
+      let expectedControlledBy =
+          chrome.settingsPrivate.ControlledBy.PRIMARY_USER;
+      if (exception.source === SiteSettingSource.EXTENSION ||
+          exception.source === SiteSettingSource.HOSTED_APP) {
+        expectedControlledBy = chrome.settingsPrivate.ControlledBy.EXTENSION;
+      } else if (exception.source === SiteSettingSource.POLICY) {
+        expectedControlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;
+      }
+
+      assertEquals(expectedControlledBy, testElement.sites[i].controlledBy);
+    }
   });
 
   test('initial BLOCK state is correct', function() {
@@ -1048,7 +1050,7 @@ suite('EditExceptionDialog', function() {
     };
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     dialog = /** @type {!SettingsEditExceptionDialogElement} */ (
         document.createElement('settings-edit-exception-dialog'));
@@ -1136,7 +1138,7 @@ suite('AddExceptionDialog', function() {
     populateTestExceptions();
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     dialog = /** @type {!AddSiteDialogElement} */ (
         document.createElement('add-site-dialog'));

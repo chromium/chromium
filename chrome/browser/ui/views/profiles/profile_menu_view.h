@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/avatar_menu.h"
@@ -48,6 +47,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
  private:
   friend class ProfileMenuViewExtensionsTest;
   friend class ProfileMenuViewSignoutTest;
+  friend class ProfileMenuViewSyncErrorButtonTest;
   friend class ProfileMenuInteractiveUiTest;
 
   // views::BubbleDialogDelegateView:

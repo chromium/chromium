@@ -12,7 +12,7 @@ declare_args() {
 }
 
 if (current_toolchain == default_toolchain) {
-  if (action_pool_depth == -1 || (use_goma || use_rbe)) {
+  if (action_pool_depth == -1 || (use_goma || use_remoteexec)) {
     action_pool_depth = exec_script("get_cpu_count.py", [], "value")
   }
 

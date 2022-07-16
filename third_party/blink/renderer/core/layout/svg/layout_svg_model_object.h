@@ -50,7 +50,7 @@ class LayoutSVGModelObject : public LayoutObject {
   PhysicalRect VisualRectInDocument(
       VisualRectFlags = kDefaultVisualRectFlags) const override;
 
-  FloatRect VisualRectInLocalSVGCoordinates() const override {
+  gfx::RectF VisualRectInLocalSVGCoordinates() const override {
     NOT_DESTROYED();
     return StrokeBoundingBox();
   }

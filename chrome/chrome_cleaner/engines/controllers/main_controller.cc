@@ -43,9 +43,8 @@
 namespace chrome_cleaner {
 
 namespace {
-const base::TimeDelta kUserResponseWatchdogTimeout =
-    base::TimeDelta::FromHours(2);
-const base::TimeDelta kCleanerWatchdogTimeout = base::TimeDelta::FromHours(2);
+const base::TimeDelta kUserResponseWatchdogTimeout = base::Hours(2);
+const base::TimeDelta kCleanerWatchdogTimeout = base::Hours(2);
 
 // Log memory usage, CPU usage and various IO counters.
 void LogSystemResourceUsage() {
@@ -583,7 +582,6 @@ void MainController::UploadLogs(const std::wstring& tag, bool quit_when_done) {
   logging_service->MaybeSaveLogsToFile(tag);
 
   if (Settings::GetInstance()->logs_upload_allowed()) {
-    LoggingServiceAPI* logging_service = LoggingServiceAPI::GetInstance();
     logging_service->SendLogsToSafeBrowsing(
         base::BindRepeating(&MainController::LogsUploadComplete,
                             base::Unretained(this), tag),

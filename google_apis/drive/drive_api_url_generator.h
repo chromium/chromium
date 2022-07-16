@@ -35,9 +35,6 @@ class DriveApiUrlGenerator {
   DriveApiUrlGenerator(const DriveApiUrlGenerator& src);
   ~DriveApiUrlGenerator();
 
-  // The base URL for communicating with the production drive api server.
-  static const char kBaseUrlForProduction[];
-
   // The base URL for the thumbnail download server for production.
   static const char kBaseThumbnailUrlForProduction[];
 

@@ -24,6 +24,11 @@ class CAPTURE_EXPORT CameraAppDeviceProviderImpl
   CameraAppDeviceProviderImpl(
       mojo::PendingRemote<cros::mojom::CameraAppDeviceBridge> bridge,
       DeviceIdMappingCallback mapping_callback);
+
+  CameraAppDeviceProviderImpl(const CameraAppDeviceProviderImpl&) = delete;
+  CameraAppDeviceProviderImpl& operator=(const CameraAppDeviceProviderImpl&) =
+      delete;
+
   ~CameraAppDeviceProviderImpl() override;
   void Bind(
       mojo::PendingReceiver<cros::mojom::CameraAppDeviceProvider> receiver);
@@ -54,8 +59,6 @@ class CAPTURE_EXPORT CameraAppDeviceProviderImpl
   mojo::Receiver<cros::mojom::CameraAppDeviceProvider> receiver_{this};
 
   base::WeakPtrFactory<CameraAppDeviceProviderImpl> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CameraAppDeviceProviderImpl);
 };
 
 }  // namespace media

@@ -11,7 +11,14 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "base/memory/weak_ptr.h"
+#include "ui/aura/client/focus_change_observer.h"
+#include "ui/display/display_observer.h"
 #include "ui/views/widget/widget_observer.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace ash {
 
@@ -20,9 +27,12 @@ class AppListBubbleView;
 class AppListControllerImpl;
 
 // Manages the UI for the bubble launcher used in clamshell mode. Handles
-// showing and hiding the UI. Only one bubble can be visible at a time, across
-// all displays.
-class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver {
+// showing and hiding the UI, as well as bounds computations. Only one bubble
+// can be visible at a time, across all displays.
+class ASH_EXPORT AppListBubblePresenter
+    : public views::WidgetObserver,
+      public aura::client::FocusChangeObserver,
+      public display::DisplayObserver {
  public:
   explicit AppListBubblePresenter(AppListControllerImpl* controller);
   AppListBubblePresenter(const AppListBubblePresenter&) = delete;
@@ -39,6 +49,9 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver {
   // Closes and destroys the bubble.
   void Dismiss();
 
+  // Returns the bubble window or nullptr if it is not open.
+  aura::Window* GetWindow() const;
+
   // Returns true if the bubble is showing on any display.
   bool IsShowing() const;
 
@@ -50,6 +63,14 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver {
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
+
+  // aura::client::FocusChangeObserver:
+  void OnWindowFocused(aura::Window* gained_focus,
+                       aura::Window* lost_focus) override;
+
+  // DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
   views::Widget* bubble_widget_for_test() { return bubble_widget_; }
   AppListBubbleView* bubble_view_for_test() { return bubble_view_; }
@@ -63,6 +84,9 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver {
   // kInvalidDisplayId if not shown.
   int64_t GetDisplayId() const;
 
+  // Callback for the hide animation.
+  void OnHideAnimationEnded();
+
   AppListControllerImpl* const controller_;
 
   // Owned by native widget.
@@ -71,8 +95,16 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver {
   // Owned by views.
   AppListBubbleView* bubble_view_ = nullptr;
 
+  // Whether the bubble hide animation is playing.
+  bool in_hide_animation_ = false;
+
   // Closes the widget when the user clicks outside of it.
   std::unique_ptr<AppListBubbleEventFilter> bubble_event_filter_;
+
+  // Observes display configuration changes.
+  display::ScopedDisplayObserver display_observer_{this};
+
+  base::WeakPtrFactory<AppListBubblePresenter> weak_factory_{this};
 };
 
 }  // namespace ash

@@ -82,6 +82,10 @@ class OAuthTokenGetter {
   };
 
   OAuthTokenGetter() {}
+
+  OAuthTokenGetter(const OAuthTokenGetter&) = delete;
+  OAuthTokenGetter& operator=(const OAuthTokenGetter&) = delete;
+
   virtual ~OAuthTokenGetter() {}
 
   // Call |on_access_token| with an access token, or the failure status.
@@ -91,8 +95,6 @@ class OAuthTokenGetter {
   // Invalidates the cache, so the next CallWithToken() will get a fresh access
   // token.
   virtual void InvalidateCache() = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuthTokenGetter);
 };
 
 }  // namespace remoting

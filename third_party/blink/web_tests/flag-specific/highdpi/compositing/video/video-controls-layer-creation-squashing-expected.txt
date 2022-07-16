@@ -19,19 +19,10 @@
       "drawsContent": false
     },
     {
-      "name": "LayoutNGFlexibleBox (relative positioned) DIV class='use-default-poster sizing-small test-mode phase-pre-ready state-no-source'",
+      "name": "LayoutNGFlexibleBox DIV class='use-default-poster sizing-small test-mode phase-pre-ready state-no-source'",
       "bounds": [408, 230],
       "contentsOpaque": true,
       "backgroundColor": "#333333"
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV",
-      "bounds": [408, 230],
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutNGFlexibleBox DIV",
-      "bounds": [408, 230]
     }
   ],
   "transforms": [

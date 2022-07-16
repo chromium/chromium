@@ -19,6 +19,9 @@ class LocalInputMonitor;
 
 class HostWindow {
  public:
+  HostWindow(const HostWindow&) = delete;
+  HostWindow& operator=(const HostWindow&) = delete;
+
   virtual ~HostWindow();
 
   // Creates a platform-specific instance of the continue window.
@@ -46,9 +49,6 @@ class HostWindow {
   HostWindow() {}
 
   SEQUENCE_CHECKER(sequence_checker_);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostWindow);
 };
 
 }  // namespace remoting

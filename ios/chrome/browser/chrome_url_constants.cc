@@ -32,6 +32,7 @@ const char kChromeUIChromeURLsHost[] = "chrome-urls";
 const char kChromeUICrashesHost[] = "crashes";
 const char kChromeUICreditsHost[] = "credits";
 const char kChromeUIDinoHost[] = "dino";
+const char kChromeUIDownloadInternalsHost[] = "download-internals";
 const char kChromeUIExternalFileHost[] = "external-file";
 const char kChromeUIFlagsHost[] = "flags";
 const char kChromeUIGCMInternalsHost[] = "gcm-internals";
@@ -120,6 +121,9 @@ const char kGoogleHistoryURL[] = "https://history.google.com";
 
 const char kGoogleMyAccountURL[] =
     "https://myaccount.google.com/privacy#activitycontrols";
+
+const char kGoogleMyAccountDeviceActivityURL[] =
+    "https://myaccount.google.com/device-activity?utm_source=chrome";
 
 const char kReadingListReferrerURL[] =
     "chrome://do_not_consider_for_most_visited/reading_list";

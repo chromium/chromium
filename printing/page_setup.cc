@@ -36,6 +36,19 @@ bool IsValidPrintableArea(const gfx::Size& page_size,
 PageMargins::PageMargins()
     : header(0), footer(0), left(0), right(0), top(0), bottom(0) {}
 
+PageMargins::PageMargins(int header,
+                         int footer,
+                         int left,
+                         int right,
+                         int top,
+                         int bottom)
+    : header(header),
+      footer(footer),
+      left(left),
+      right(right),
+      top(top),
+      bottom(bottom) {}
+
 void PageMargins::Clear() {
   header = 0;
   footer = 0;
@@ -52,6 +65,15 @@ bool PageMargins::Equals(const PageMargins& rhs) const {
 
 PageSetup::PageSetup() {
   Clear();
+}
+
+PageSetup::PageSetup(const gfx::Size& physical_size,
+                     const gfx::Rect& printable_area,
+                     const PageMargins& requested_margins,
+                     bool forced_margins,
+                     int text_height)
+    : requested_margins_(requested_margins), forced_margins_(forced_margins) {
+  Init(physical_size, printable_area, text_height);
 }
 
 PageSetup::PageSetup(const PageSetup& other) = default;

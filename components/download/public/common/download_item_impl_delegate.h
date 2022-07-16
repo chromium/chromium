@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_item_rename_handler.h"
@@ -37,6 +36,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImplDelegate {
   using ShouldOpenDownloadCallback = base::OnceCallback<void(bool)>;
 
   DownloadItemImplDelegate();
+
+  DownloadItemImplDelegate(const DownloadItemImplDelegate&) = delete;
+  DownloadItemImplDelegate& operator=(const DownloadItemImplDelegate&) = delete;
+
   virtual ~DownloadItemImplDelegate();
 
   // Used for catching use-after-free errors.
@@ -136,8 +139,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImplDelegate {
  private:
   // For "Outlives attached DownloadItemImpl" invariant assertion.
   int count_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadItemImplDelegate);
 };
 
 }  // namespace download

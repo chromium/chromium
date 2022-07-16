@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.components.browser_ui.styles.R;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
 import org.chromium.weblayer_private.interfaces.BrowserFragmentArgs;
 import org.chromium.weblayer_private.interfaces.IBrowser;
@@ -186,7 +185,9 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
     protected FragmentHostingRemoteFragmentImpl.RemoteFragmentContext createRemoteFragmentContext(
             Context embedderContext) {
         Context wrappedContext = ClassLoaderContextWrapperFactory.get(embedderContext);
-        Context themedContext = new ContextThemeWrapper(wrappedContext, R.style.Theme_BrowserUI);
+        Context themedContext =
+                new ContextThemeWrapper(wrappedContext, R.style.Theme_WebLayer_Settings);
+        themedContext.getTheme().applyStyle(R.style.ColorOverlay_WebLayer, /*force=*/true);
         return new FragmentHostingRemoteFragmentImpl.RemoteFragmentContext(themedContext);
     }
 }

@@ -42,6 +42,10 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
                  spdy::SpdyStreamId pushed_stream_id,
                  NetLogSource source_dependency,
                  std::vector<std::string> dns_aliases);
+
+  SpdyHttpStream(const SpdyHttpStream&) = delete;
+  SpdyHttpStream& operator=(const SpdyHttpStream&) = delete;
+
   ~SpdyHttpStream() override;
 
   SpdyStream* stream() { return stream_; }
@@ -225,8 +229,6 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   std::vector<std::string> dns_aliases_;
 
   base::WeakPtrFactory<SpdyHttpStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpdyHttpStream);
 };
 
 }  // namespace net

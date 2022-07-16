@@ -87,6 +87,9 @@ class TabLoader::ReentrancyHelper {
     tab_loader_->reentry_depth_++;
   }
 
+  ReentrancyHelper(const ReentrancyHelper&) = delete;
+  ReentrancyHelper& operator=(const ReentrancyHelper&) = delete;
+
   ~ReentrancyHelper() {
     if (--tab_loader_->reentry_depth_ != 0)
       return;
@@ -108,8 +111,6 @@ class TabLoader::ReentrancyHelper {
   void DestroyTabLoader() { tab_loader_->this_retainer_ = nullptr; }
 
   TabLoader* tab_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReentrancyHelper);
 };
 
 // static
@@ -521,7 +522,9 @@ void TabLoader::MarkTabAsLoading(WebContents* contents) {
     auto it = tabs_load_initiated_.find(contents);
     if (it != tabs_load_initiated_.end()) {
       tabs_load_initiated_.erase(it);
-      tabs_loading_.insert(LoadingTab{clock_->NowTicks(), contents});
+      auto result =
+          tabs_loading_.insert(LoadingTab{clock_->NowTicks(), contents});
+      DCHECK(result.second);
       return;
     }
   }

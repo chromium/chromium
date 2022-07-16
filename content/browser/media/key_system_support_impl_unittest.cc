@@ -14,6 +14,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/token.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/media/cdm_registry_impl.h"
 #include "content/public/browser/cdm_registry.h"
@@ -114,8 +115,7 @@ class KeySystemSupportImplTest : public testing::Test {
 
   media::CdmCapability TestCdmCapability() {
     return media::CdmCapability(
-        {AudioCodec::kCodecVorbis},
-        {{VideoCodec::kCodecVP8, {}}, {VideoCodec::kCodecVP9, {}}},
+        {AudioCodec::kVorbis}, {{VideoCodec::kVP8, {}}, {VideoCodec::kVP9, {}}},
         {EncryptionScheme::kCenc, EncryptionScheme::kCbcs},
         {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense});
   }
@@ -154,6 +154,26 @@ class KeySystemSupportImplTest : public testing::Test {
     return gpu_feature_info;
   }
 
+  void SelectHardwareSecureDecryption(bool enabled) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (enabled) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitch(
+          switches::kLacrosUseChromeosProtectedMedia);
+    } else {
+      base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+          switches::kLacrosUseChromeosProtectedMedia);
+    }
+#else
+    if (enabled) {
+      scoped_feature_list_.InitAndEnableFeature(
+          media::kHardwareSecureDecryption);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          media::kHardwareSecureDecryption);
+    }
+#endif
+  }
+
   mojo::Remote<media::mojom::KeySystemSupport> key_system_support_;
   base::MockCallback<KeySystemSupportImpl::HardwareSecureCapabilityCB>
       hw_secure_capability_cb_;
@@ -175,8 +195,8 @@ TEST_F(KeySystemSupportImplTest, SoftwareSecureCapability) {
   EXPECT_TRUE(IsSupported("KeySystem"));
   EXPECT_TRUE(capability_->sw_secure_capability);
   EXPECT_FALSE(capability_->hw_secure_capability);
-  EXPECT_AUDIO_CODECS(AudioCodec::kCodecVorbis);
-  EXPECT_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
+  EXPECT_AUDIO_CODECS(AudioCodec::kVorbis);
+  EXPECT_VIDEO_CODECS(VideoCodec::kVP8, VideoCodec::kVP9);
   EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc, EncryptionScheme::kCbcs);
   EXPECT_SESSION_TYPES(CdmSessionType::kTemporary,
                        CdmSessionType::kPersistentLicense);
@@ -184,14 +204,14 @@ TEST_F(KeySystemSupportImplTest, SoftwareSecureCapability) {
 
 TEST_F(KeySystemSupportImplTest,
        HardwareSecureCapability_HardwareSecureDecryptionDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(media::kHardwareSecureDecryption);
+  SelectHardwareSecureDecryption(false);
   Register("KeySystem", TestCdmCapability(), Robustness::kHardwareSecure);
 
   EXPECT_FALSE(IsSupported("KeySystem"));
 }
 
 TEST_F(KeySystemSupportImplTest, HardwareSecureCapability) {
-  scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
+  SelectHardwareSecureDecryption(true);
   Register("KeySystem", TestCdmCapability(), Robustness::kHardwareSecure);
 
   // Simulate GPU process initialization completing with GL unavailable.
@@ -203,8 +223,8 @@ TEST_F(KeySystemSupportImplTest, HardwareSecureCapability) {
   EXPECT_TRUE(IsSupported("KeySystem"));
   EXPECT_FALSE(capability_->sw_secure_capability);
   EXPECT_TRUE(capability_->hw_secure_capability);
-  EXPECT_HW_SECURE_AUDIO_CODECS(AudioCodec::kCodecVorbis);
-  EXPECT_HW_SECURE_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
+  EXPECT_HW_SECURE_AUDIO_CODECS(AudioCodec::kVorbis);
+  EXPECT_HW_SECURE_VIDEO_CODECS(VideoCodec::kVP8, VideoCodec::kVP9);
   EXPECT_HW_SECURE_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc,
                                       EncryptionScheme::kCbcs);
   EXPECT_HW_SECURE_SESSION_TYPES(CdmSessionType::kTemporary,
@@ -214,19 +234,19 @@ TEST_F(KeySystemSupportImplTest, HardwareSecureCapability) {
 TEST_F(KeySystemSupportImplTest, Profiles) {
   Register("KeySystem",
            media::CdmCapability(
-               {AudioCodec::kCodecVorbis},
-               {{VideoCodec::kCodecVP9,
+               {AudioCodec::kVorbis},
+               {{VideoCodec::kVP9,
                  {media::VP9PROFILE_PROFILE0, media::VP9PROFILE_PROFILE2}}},
                {EncryptionScheme::kCenc}, {CdmSessionType::kTemporary}));
 
   EXPECT_TRUE(IsSupported("KeySystem"));
   EXPECT_TRUE(capability_->sw_secure_capability);
-  EXPECT_VIDEO_CODECS(VideoCodec::kCodecVP9);
+  EXPECT_VIDEO_CODECS(VideoCodec::kVP9);
   EXPECT_TRUE(base::Contains(
-      capability_->sw_secure_capability->video_codecs[VideoCodec::kCodecVP9],
+      capability_->sw_secure_capability->video_codecs[VideoCodec::kVP9],
       media::VP9PROFILE_PROFILE0));
   EXPECT_TRUE(base::Contains(
-      capability_->sw_secure_capability->video_codecs[VideoCodec::kCodecVP9],
+      capability_->sw_secure_capability->video_codecs[VideoCodec::kVP9],
       media::VP9PROFILE_PROFILE2));
 }
 
@@ -246,7 +266,7 @@ TEST_F(KeySystemSupportImplTest, MissingKeySystem) {
 }
 
 TEST_F(KeySystemSupportImplTest, LazyInitialize_Supported) {
-  scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
+  SelectHardwareSecureDecryption(true);
   Register("KeySystem", absl::nullopt, Robustness::kHardwareSecure);
 
   // Simulate GPU process initialization completing with GL unavailable.
@@ -266,7 +286,7 @@ TEST_F(KeySystemSupportImplTest, LazyInitialize_Supported) {
 }
 
 TEST_F(KeySystemSupportImplTest, LazyInitialize_NotSupported) {
-  scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
+  SelectHardwareSecureDecryption(true);
   Register("KeySystem", absl::nullopt, Robustness::kHardwareSecure);
 
   // Simulate GPU process initialization completing with GL unavailable.
@@ -287,7 +307,7 @@ TEST_F(KeySystemSupportImplTest, LazyInitialize_NotSupported) {
 
 TEST_F(KeySystemSupportImplTest,
        LazyInitialize_HardwareSecureDecryptionDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(media::kHardwareSecureDecryption);
+  SelectHardwareSecureDecryption(false);
   Register("KeySystem", absl::nullopt, Robustness::kHardwareSecure);
 
   EXPECT_FALSE(IsSupported("KeySystem"));

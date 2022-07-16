@@ -30,7 +30,7 @@ base::UnwindResult UnwinderArm64::TryUnwind(
     uintptr_t pc = reinterpret_cast<uintptr_t>(out_trace[i]);
     stack->push_back(base::Frame(pc, module_cache()->GetModuleForAddress(pc)));
   }
-  return base::UnwindResult::COMPLETED;
+  return base::UnwindResult::kCompleted;
 }
 
 }  // namespace tracing

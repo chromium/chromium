@@ -12,6 +12,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -26,7 +27,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -49,8 +49,7 @@ constexpr char kDeskLifetimeHistogramNamePrefix[] = "Ash.Desks.DeskLifetime_";
 
 // The amount of time a user has to stay on a recently activated desk for it to
 // be considered interacted with. Used for tracking weekly active desks metric.
-constexpr base::TimeDelta kDeskInteractedWithTime =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kDeskInteractedWithTime = base::Seconds(3);
 
 // A counter for tracking the number of desks interacted with this week. A
 // desk is considered interacted with if a window is moved to it, it is
@@ -129,17 +128,6 @@ void FixWindowStackingAccordingToGlobalMru(aura::Window* window_to_fix) {
   }
 }
 
-// Returns Jan 1, 2010 00:00:00 as a base::Time object in the local timezone.
-base::Time GetLocalEpoch() {
-  static const base::Time local_epoch = [] {
-    base::Time local_epoch;
-    ignore_result(base::Time::FromLocalExploded({2010, 1, 5, 1, 0, 0, 0, 0},
-                                                &local_epoch));
-    return local_epoch;
-  }();
-  return local_epoch;
-}
-
 // Used to temporarily turn off the automatic window positioning while windows
 // are being moved between desks.
 class ScopedWindowPositionerDisabler {
@@ -148,12 +136,14 @@ class ScopedWindowPositionerDisabler {
     WindowPositioner::DisableAutoPositioning(true);
   }
 
+  ScopedWindowPositionerDisabler(const ScopedWindowPositionerDisabler&) =
+      delete;
+  ScopedWindowPositionerDisabler& operator=(
+      const ScopedWindowPositionerDisabler&) = delete;
+
   ~ScopedWindowPositionerDisabler() {
     WindowPositioner::DisableAutoPositioning(false);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedWindowPositionerDisabler);
 };
 
 }  // namespace
@@ -166,6 +156,9 @@ class DeskContainerObserver : public aura::WindowObserver {
     container->AddObserver(this);
   }
 
+  DeskContainerObserver(const DeskContainerObserver&) = delete;
+  DeskContainerObserver& operator=(const DeskContainerObserver&) = delete;
+
   ~DeskContainerObserver() override { container_->RemoveObserver(this); }
 
   // aura::WindowObserver:
@@ -175,7 +168,15 @@ class DeskContainerObserver : public aura::WindowObserver {
     // this window addition here. Consider ignoring these windows if they cause
     // problems.
     owner_->AddWindowToDesk(new_window);
-    MaybeNotifyAllDesksOfContentChange(new_window);
+
+    if (Shell::Get()->overview_controller()->InOverviewSession() &&
+        !new_window->GetProperty(kHideInDeskMiniViewKey) &&
+        desks_util::IsWindowVisibleOnAllWorkspaces(new_window)) {
+      // If we're in overview and an all desks window has been added to a new
+      // container, that means the user has moved the window to another display
+      // so we need to refresh all the desk previews.
+      Shell::Get()->desks_controller()->NotifyAllDesksForContentChanged();
+    }
   }
 
   void OnWindowRemoved(aura::Window* removed_window) override {
@@ -183,7 +184,6 @@ class DeskContainerObserver : public aura::WindowObserver {
     // since we want to refresh the mini_views only after the window has been
     // removed from the window tree hierarchy.
     owner_->RemoveWindowFromDesk(removed_window);
-    MaybeNotifyAllDesksOfContentChange(removed_window);
   }
 
   void OnWindowDestroyed(aura::Window* window) override {
@@ -194,20 +194,8 @@ class DeskContainerObserver : public aura::WindowObserver {
   }
 
  private:
-  void MaybeNotifyAllDesksOfContentChange(aura::Window* window) {
-    // If a visible on all desks window is added/removed from a desk, only the
-    // desks directly involved will know about their contents changing since it
-    // only resides on the active desk. Since visible on all desks windows
-    // appear in each desks' preview view, we need to notify each desk.
-    auto* desks_controller = DesksController::Get();
-    if (desks_controller->visible_on_all_desks_windows().contains(window))
-      desks_controller->NotifyAllDesksForContentChanged();
-  }
-
   Desk* const owner_;
   aura::Window* const container_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeskContainerObserver);
 };
 
 // -----------------------------------------------------------------------------
@@ -297,13 +285,14 @@ void Desk::AddWindowToDesk(aura::Window* window) {
   // there in the first place. Also don't refresh for visible on all desks
   // windows since they're already refreshed in OnWindowAdded().
   if (!window->GetProperty(kHideInDeskMiniViewKey) &&
-      !window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)) {
+      !desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
     NotifyContentChanged();
   }
 
   // Update the window's workspace to this parent desk.
-  if (!is_desk_being_removed_) {
-    auto* desks_controller = DesksController::Get();
+  auto* desks_controller = DesksController::Get();
+  if (!is_desk_being_removed_ &&
+      !desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
     window->SetProperty(aura::client::kWindowWorkspaceKey,
                         desks_controller->GetDeskIndex(this));
   }
@@ -318,7 +307,7 @@ void Desk::RemoveWindowFromDesk(aura::Window* window) {
   // there in the first place. Also don't refresh for visible on all desks
   // windows since they're already refreshed in OnWindowRemoved().
   if (!window->GetProperty(kHideInDeskMiniViewKey) &&
-      !window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)) {
+      !desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
     NotifyContentChanged();
   }
 }
@@ -344,6 +333,8 @@ void Desk::SetName(std::u16string new_name, bool set_by_user) {
 
   for (auto& observer : observers_)
     observer.OnDeskNameChanged(name_);
+
+  DesksController::Get()->NotifyDeskNameChanged(this, name_);
 }
 
 void Desk::PrepareForActivationAnimation() {
@@ -370,7 +361,7 @@ void Desk::Activate(bool update_window_activation) {
   if (!IsConsecutiveDailyVisit())
     RecordAndResetConsecutiveDailyVisits(/*being_removed=*/false);
 
-  int current_date = GetDaysFromLocalEpoch();
+  int current_date = desks_restore_util::GetDaysFromLocalEpoch();
   if (current_date < last_day_visited_ || first_day_visited_ == -1) {
     // If |current_date| < |last_day_visited_| then the user has moved timezones
     // or the stored data has been corrupted so reset |first_day_visited_|.
@@ -412,7 +403,7 @@ void Desk::Deactivate(bool update_window_activation) {
     root->GetChildById(container_id_)->Hide();
 
   is_active_ = false;
-  last_day_visited_ = GetDaysFromLocalEpoch();
+  last_day_visited_ = desks_restore_util::GetDaysFromLocalEpoch();
 
   active_desk_timer_.Stop();
 
@@ -480,7 +471,8 @@ void Desk::MoveWindowsToDesk(Desk* target_desk) {
 
 void Desk::MoveWindowToDesk(aura::Window* window,
                             Desk* target_desk,
-                            aura::Window* target_root) {
+                            aura::Window* target_root,
+                            bool unminimize) {
   DCHECK(window);
   DCHECK(target_desk);
   DCHECK(target_root);
@@ -514,8 +506,8 @@ void Desk::MoveWindowToDesk(aura::Window* window,
     // been dragged and moved to another desk. Don't unminimize if the window is
     // visible on all desks since it's being moved during desk activation.
     auto* window_state = WindowState::Get(transient_root);
-    if (window_state->IsMinimized() &&
-        !window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)) {
+    if (unminimize && window_state->IsMinimized() &&
+        !desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
       window_state->Unminimize();
     }
   }
@@ -573,7 +565,8 @@ bool Desk::IsConsecutiveDailyVisit() const {
   if (last_day_visited_ == -1)
     return true;
 
-  const int days_since_last_visit = GetDaysFromLocalEpoch() - last_day_visited_;
+  const int days_since_last_visit =
+      desks_restore_util::GetDaysFromLocalEpoch() - last_day_visited_;
   return days_since_last_visit <= 1;
 }
 
@@ -581,7 +574,7 @@ void Desk::RecordAndResetConsecutiveDailyVisits(bool being_removed) {
   if (being_removed && is_active_) {
     // When the user removes the active desk, update |last_day_visited_| to the
     // current day to account for the time they spent on this desk.
-    last_day_visited_ = GetDaysFromLocalEpoch();
+    last_day_visited_ = desks_restore_util::GetDaysFromLocalEpoch();
   }
 
   const int consecutive_daily_visits =
@@ -592,11 +585,6 @@ void Desk::RecordAndResetConsecutiveDailyVisits(bool being_removed) {
 
   last_day_visited_ = -1;
   first_day_visited_ = -1;
-}
-
-int Desk::GetDaysFromLocalEpoch() const {
-  base::Time now = override_clock_ ? override_clock_->Now() : base::Time::Now();
-  return (now - GetLocalEpoch()).InDays();
 }
 
 void Desk::MoveWindowToDeskInternal(aura::Window* window,

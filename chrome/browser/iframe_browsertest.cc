@@ -25,7 +25,7 @@ class IFrameTest : public InProcessBrowserTest {
     GURL url = ui_test_utils::GetTestUrl(
         base::FilePath(), base::FilePath().AppendASCII(file));
 
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_EQ(base::ASCIIToUTF16(page_title),
               browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
   }
@@ -54,8 +54,8 @@ IN_PROC_BROWSER_TEST_F(IFrameTest, DISABLED_FileChooserInDestroyedSubframe) {
   // Note: For the bug to occur, the parent and child frame need to be in
   // the same site, otherwise they would each get a RenderWidgetHost and
   // existing code will properly clear the internal state.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe.html")));
   NavigateIframeToURL(tab, "test", file_input_url);
 
   // Invoke the file chooser and remove the iframe from the main document.

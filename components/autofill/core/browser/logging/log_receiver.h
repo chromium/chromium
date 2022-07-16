@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_LOGGING_LOG_RECEIVER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_LOGGING_LOG_RECEIVER_H_
 
-#include "base/macros.h"
 #include "base/values.h"
 
 namespace autofill {
@@ -15,12 +14,13 @@ namespace autofill {
 class LogReceiver {
  public:
   LogReceiver() {}
+
+  LogReceiver(const LogReceiver&) = delete;
+  LogReceiver& operator=(const LogReceiver&) = delete;
+
   virtual ~LogReceiver() {}
 
   virtual void LogEntry(const base::Value& entry) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LogReceiver);
 };
 
 }  // namespace autofill

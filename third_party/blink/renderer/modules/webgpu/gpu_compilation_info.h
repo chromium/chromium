@@ -17,6 +17,9 @@ class GPUCompilationInfo : public ScriptWrappable {
  public:
   GPUCompilationInfo() = default;
 
+  GPUCompilationInfo(const GPUCompilationInfo&) = delete;
+  GPUCompilationInfo& operator=(const GPUCompilationInfo&) = delete;
+
   void AppendMessage(GPUCompilationMessage* message);
 
   const HeapVector<Member<GPUCompilationMessage>>& messages() const {
@@ -27,8 +30,6 @@ class GPUCompilationInfo : public ScriptWrappable {
 
  private:
   HeapVector<Member<GPUCompilationMessage>> messages_;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUCompilationInfo);
 };
 
 }  // namespace blink

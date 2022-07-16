@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
 
@@ -59,6 +60,11 @@ void InstanceRegistry::OnInstances(const Instances& deltas) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
   for (auto& delta : deltas) {
+    if (delta->Id()) {
+      // TODO(crbug.com/1251501): Implement updating the instance registry using
+      // instance ID as a key.
+      continue;
+    }
     // If the instance state is not kDestroyed, adds to
     // |app_id_to_app_instance_key_|, otherwise removes the instance key from
     // |app_id_to_app_instance_key_|.
@@ -90,16 +96,24 @@ void InstanceRegistry::OnInstances(const Instances& deltas) {
   }
 }
 
-std::set<aura::Window*> InstanceRegistry::GetWindows(
+std::set<aura::Window*> InstanceRegistry::GetEnclosingAppWindows(
     const std::string& app_id) {
   auto it = app_id_to_app_instance_key_.find(app_id);
   auto windows = std::set<aura::Window*>{};
   if (it != app_id_to_app_instance_key_.end()) {
     for (auto instance_key : it->second) {
-      windows.insert(instance_key.Window());
+      windows.insert(instance_key.GetEnclosingAppWindow());
     }
   }
   return windows;
+}
+
+std::set<const Instance::InstanceKey> InstanceRegistry::GetInstanceKeys(
+    const std::string& app_id) {
+  auto it = app_id_to_app_instance_key_.find(app_id);
+  if (it == app_id_to_app_instance_key_.end())
+    return std::set<const Instance::InstanceKey>();
+  return it->second;
 }
 
 InstanceState InstanceRegistry::GetState(
@@ -122,6 +136,10 @@ bool InstanceRegistry::Exists(const Instance::InstanceKey& instance_key) const {
   return states_.find(instance_key) != states_.end();
 }
 
+bool InstanceRegistry::ContainsAppId(const std::string& app_id) const {
+  return base::Contains(app_id_to_app_instance_key_, app_id);
+}
+
 void InstanceRegistry::DoOnInstances(const Instances& deltas) {
   in_progress_ = true;
 
@@ -129,6 +147,11 @@ void InstanceRegistry::DoOnInstances(const Instances& deltas) {
   // OninstanceUpdate is called for each updates, and notify the observers for
   // every de-duplicated delta. Also update the states for every delta.
   for (const auto& d_iter : deltas) {
+    if (d_iter->Id()) {
+      // TODO(crbug.com/1251501): Implement updating the instance registry using
+      // instance ID as a key.
+      continue;
+    }
     auto s_iter = states_.find(d_iter->GetInstanceKey());
     Instance* state =
         (s_iter != states_.end()) ? s_iter->second.get() : nullptr;

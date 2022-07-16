@@ -21,26 +21,16 @@ namespace scheduler {
   MAIN_THREAD_LOAD_METRIC_NAME ".Extension"
 #define DURATION_PER_TASK_TYPE_METRIC_NAME \
   "RendererScheduler.TaskDurationPerTaskType2"
-#define COUNT_PER_FRAME_METRIC_NAME_WITH_SAFEPOINT \
-  "RendererScheduler.TaskCountPerFrameType.HasSafePoint"
 #define QUEUEING_TIME_PER_QUEUE_TYPE_METRIC_NAME \
   "RendererScheduler.QueueingDurationPerQueueType"
-
-// Same as UMA_HISTOGRAM_TIMES but for a broader view of this metric we end
-// at 1 minute instead of 10 seconds.
-#define QUEUEING_TIME_HISTOGRAM(name, sample)                               \
-  UMA_HISTOGRAM_CUSTOM_TIMES(QUEUEING_TIME_PER_QUEUE_TYPE_METRIC_NAME name, \
-                             sample, base::TimeDelta::FromMilliseconds(1),  \
-                             base::TimeDelta::FromMinutes(1), 50)
 
 enum class MainThreadTaskLoadState { kLow, kHigh, kUnknown };
 
 namespace {
 
 constexpr base::TimeDelta kThreadLoadTrackerReportingInterval =
-    base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kLongIdlePeriodDiscardingThreshold =
-    base::TimeDelta::FromMinutes(3);
+    base::Seconds(1);
+constexpr base::TimeDelta kLongIdlePeriodDiscardingThreshold = base::Minutes(3);
 
 // Main thread load percentage that is considered low.
 constexpr int kMainThreadTaskLoadLowPercentage = 25;
@@ -91,11 +81,8 @@ MainThreadMetricsHelper::MainThreadMetricsHelper(
       total_task_time_reporter_(
           "Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread.Positive",
           "Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread.Negative"),
-      main_thread_task_load_state_(MainThreadTaskLoadState::kUnknown),
-      current_task_slice_start_time_(now),
-      safepoints_in_current_toplevel_task_count_(0) {
+      main_thread_task_load_state_(MainThreadTaskLoadState::kUnknown) {
   main_thread_load_tracker_.Resume(now);
-  random_generator_.Seed();
   if (renderer_backgrounded) {
     background_main_thread_load_tracker_.Resume(now);
   } else {
@@ -144,37 +131,6 @@ void MainThreadMetricsHelper::ResetForTest(base::TimeTicks now) {
       kThreadLoadTrackerReportingInterval);
 }
 
-void MainThreadMetricsHelper::OnSafepointEntered(base::TimeTicks now) {
-  current_task_slice_start_time_ = now;
-}
-
-void MainThreadMetricsHelper::OnSafepointExited(base::TimeTicks now) {
-  safepoints_in_current_toplevel_task_count_++;
-  RecordTaskSliceMetrics(now);
-}
-
-void MainThreadMetricsHelper::RecordTaskSliceMetrics(base::TimeTicks now) {
-  UMA_HISTOGRAM_TIMES("RendererScheduler.TasksWithSafepoints.TaskSliceTime",
-                      now - current_task_slice_start_time_);
-}
-
-void MainThreadMetricsHelper::RecordMetricsForTasksWithSafepoints(
-    const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
-  if (safepoints_in_current_toplevel_task_count_ == 0)
-    return;
-
-  RecordTaskSliceMetrics(task_timing.end_time());
-
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "RendererScheduler.TasksWithSafepoints.TaskTime",
-      task_timing.wall_duration(), base::TimeDelta::FromMicroseconds(1),
-      base::TimeDelta::FromSeconds(1), 50);
-  UMA_HISTOGRAM_COUNTS_100(
-      "RendererScheduler.TasksWithSafepoints.SafepointCount",
-      safepoints_in_current_toplevel_task_count_);
-  safepoints_in_current_toplevel_task_count_ = 0;
-}
-
 void MainThreadMetricsHelper::RecordTaskMetrics(
     MainThreadTaskQueue* queue,
     const base::sequence_manager::Task& task,
@@ -220,44 +176,6 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
                                   duration.InMicroseconds()),
                               1, 1000 * 1000, 50);
 
-  if (safepoints_in_current_toplevel_task_count_ > 0) {
-    FrameStatus frame_status =
-        GetFrameStatus(queue ? queue->GetFrameScheduler() : nullptr);
-
-    UMA_HISTOGRAM_ENUMERATION(COUNT_PER_FRAME_METRIC_NAME_WITH_SAFEPOINT,
-                              frame_status, FrameStatus::kCount);
-    if (duration >= base::TimeDelta::FromMilliseconds(16)) {
-      UMA_HISTOGRAM_ENUMERATION(COUNT_PER_FRAME_METRIC_NAME_WITH_SAFEPOINT
-                                ".LongerThan16ms",
-                                frame_status, FrameStatus::kCount);
-    }
-
-    if (duration >= base::TimeDelta::FromMilliseconds(50)) {
-      UMA_HISTOGRAM_ENUMERATION(COUNT_PER_FRAME_METRIC_NAME_WITH_SAFEPOINT
-                                ".LongerThan50ms",
-                                frame_status, FrameStatus::kCount);
-    }
-
-    if (duration >= base::TimeDelta::FromMilliseconds(100)) {
-      UMA_HISTOGRAM_ENUMERATION(COUNT_PER_FRAME_METRIC_NAME_WITH_SAFEPOINT
-                                ".LongerThan100ms",
-                                frame_status, FrameStatus::kCount);
-    }
-
-    if (duration >= base::TimeDelta::FromMilliseconds(150)) {
-      UMA_HISTOGRAM_ENUMERATION(COUNT_PER_FRAME_METRIC_NAME_WITH_SAFEPOINT
-                                ".LongerThan150ms",
-                                frame_status, FrameStatus::kCount);
-    }
-
-    if (duration >= base::TimeDelta::FromSeconds(1)) {
-      UMA_HISTOGRAM_ENUMERATION(COUNT_PER_FRAME_METRIC_NAME_WITH_SAFEPOINT
-                                ".LongerThan1s",
-                                frame_status, FrameStatus::kCount);
-    }
-    RecordMetricsForTasksWithSafepoints(task_timing);
-  }
-
   TaskType task_type = static_cast<TaskType>(task.task_type);
   UseCase use_case =
       main_thread_scheduler_->main_thread_only().current_use_case;
@@ -281,7 +199,7 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
 
     UMA_HISTOGRAM_ENUMERATION(
         "RendererScheduler.ResourceLoadingTaskCountPerPriority",
-        queue->GetTaskQueue()->GetQueuePriority(),
+        queue->GetQueuePriority(),
         base::sequence_manager::TaskQueue::QueuePriority::kQueuePriorityCount);
   }
 }
@@ -324,7 +242,7 @@ void MainThreadMetricsHelper::RecordForegroundMainThreadTaskLoad(
       base::TimeDelta time_since_foregrounded =
           time - main_thread_scheduler_->main_thread_only()
                      .background_status_changed_at;
-      if (time_since_foregrounded > base::TimeDelta::FromMinutes(1)) {
+      if (time_since_foregrounded > base::Minutes(1)) {
         UMA_HISTOGRAM_PERCENTAGE(MAIN_THREAD_LOAD_METRIC_NAME
                                  ".Foreground.AfterFirstMinute",
                                  load_percentage);
@@ -356,17 +274,17 @@ void MainThreadMetricsHelper::RecordBackgroundMainThreadTaskLoad(
       base::TimeDelta time_since_backgrounded =
           time - main_thread_scheduler_->main_thread_only()
                      .background_status_changed_at;
-      if (time_since_backgrounded > base::TimeDelta::FromMinutes(1)) {
+      if (time_since_backgrounded > base::Minutes(1)) {
         UMA_HISTOGRAM_PERCENTAGE(MAIN_THREAD_LOAD_METRIC_NAME
                                  ".Background.AfterFirstMinute",
                                  load_percentage);
       }
-      if (time_since_backgrounded > base::TimeDelta::FromMinutes(5)) {
+      if (time_since_backgrounded > base::Minutes(5)) {
         UMA_HISTOGRAM_PERCENTAGE(MAIN_THREAD_LOAD_METRIC_NAME
                                  ".Background.AfterFifthMinute",
                                  load_percentage);
       }
-      if (time_since_backgrounded > base::TimeDelta::FromMinutes(10)) {
+      if (time_since_backgrounded > base::Minutes(10)) {
         UMA_HISTOGRAM_PERCENTAGE(MAIN_THREAD_LOAD_METRIC_NAME
                                  ".Background.AfterTenthMinute",
                                  load_percentage);

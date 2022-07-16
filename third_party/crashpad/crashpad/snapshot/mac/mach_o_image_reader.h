@@ -24,7 +24,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "snapshot/mac/process_types.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/misc/uuid.h"
@@ -45,6 +44,10 @@ class ProcessReaderMac;
 class MachOImageReader {
  public:
   MachOImageReader();
+
+  MachOImageReader(const MachOImageReader&) = delete;
+  MachOImageReader& operator=(const MachOImageReader&) = delete;
+
   ~MachOImageReader();
 
   //! \brief Reads the Mach-O image file’s load commands from another process.
@@ -347,8 +350,6 @@ class MachOImageReader {
   // set. symbol_table_initialized_ will be valid without symbol_table_ being
   // set in modules that have no symbol table.
   mutable InitializationState symbol_table_initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachOImageReader);
 };
 
 }  // namespace crashpad

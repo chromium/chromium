@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_INSTALLER_CROSTINI_INSTALLER_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_INSTALLER_CROSTINI_INSTALLER_UI_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,6 +21,10 @@ class CrostiniInstallerUI
       public chromeos::crostini_installer::mojom::PageHandlerFactory {
  public:
   explicit CrostiniInstallerUI(content::WebUI* web_ui);
+
+  CrostiniInstallerUI(const CrostiniInstallerUI&) = delete;
+  CrostiniInstallerUI& operator=(const CrostiniInstallerUI&) = delete;
+
   ~CrostiniInstallerUI() override;
 
   // Send a close request to the web page. Return true if the page is already
@@ -52,8 +55,6 @@ class CrostiniInstallerUI
   bool page_closed_ = false;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniInstallerUI);
 };
 
 }  // namespace chromeos

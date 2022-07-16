@@ -22,6 +22,10 @@ namespace base {
 class ServiceDirectoryTestBase : public testing::Test {
  public:
   ServiceDirectoryTestBase();
+
+  ServiceDirectoryTestBase(const ServiceDirectoryTestBase&) = delete;
+  ServiceDirectoryTestBase& operator=(const ServiceDirectoryTestBase&) = delete;
+
   ~ServiceDirectoryTestBase() override;
 
   void VerifyTestInterface(fidl::InterfacePtr<testfidl::TestInterface>* stub,
@@ -41,8 +45,6 @@ class ServiceDirectoryTestBase : public testing::Test {
   std::unique_ptr<sys::ServiceDirectory> public_service_directory_;
   std::unique_ptr<sys::ServiceDirectory> debug_service_directory_;
   std::unique_ptr<sys::ServiceDirectory> root_service_directory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceDirectoryTestBase);
 };
 
 }  // namespace base

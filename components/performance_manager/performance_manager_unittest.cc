@@ -42,9 +42,10 @@ class PerformanceManagerTest : public PerformanceManagerTestHarness {
     EXPECT_FALSE(PerformanceManager::IsAvailable());
   }
 
-  ~PerformanceManagerTest() override {}
+  PerformanceManagerTest(const PerformanceManagerTest&) = delete;
+  PerformanceManagerTest& operator=(const PerformanceManagerTest&) = delete;
 
-  DISALLOW_COPY_AND_ASSIGN(PerformanceManagerTest);
+  ~PerformanceManagerTest() override {}
 };
 
 TEST_F(PerformanceManagerTest, NodeAccessors) {

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "mojo/public/c/system/core.h"
@@ -14,15 +13,15 @@ class MojoTest : public ContentBrowserTest {
  public:
   MojoTest() {}
 
+  MojoTest(const MojoTest&) = delete;
+  MojoTest& operator=(const MojoTest&) = delete;
+
  protected:
   bool IsMojoInitialized() {
     // Check |MojoGetTimeTicksNow()| is accessible.
     MojoGetTimeTicksNow();
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoTest);
 };
 
 // Placeholder test to confirm we are initializing Mojo.

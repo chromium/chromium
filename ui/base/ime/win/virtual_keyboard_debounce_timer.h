@@ -6,7 +6,6 @@
 #define UI_BASE_IME_WIN_VIRTUAL_KEYBOARD_DEBOUNCE_TIMER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 

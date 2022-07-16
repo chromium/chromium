@@ -80,6 +80,10 @@ class ExtensionDownloader {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       crx_file::VerifierFormat crx_format_requirement,
       const base::FilePath& profile_path = base::FilePath());
+
+  ExtensionDownloader(const ExtensionDownloader&) = delete;
+  ExtensionDownloader& operator=(const ExtensionDownloader&) = delete;
+
   ~ExtensionDownloader();
 
   // Check AddPendingExtensionWithVersion with the version set as "0.0.0.0".
@@ -496,8 +500,6 @@ class ExtensionDownloader {
 
   // Used to create WeakPtrs to |this|.
   base::WeakPtrFactory<ExtensionDownloader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDownloader);
 };
 
 }  // namespace extensions

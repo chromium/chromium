@@ -22,6 +22,11 @@ class BluetoothLowEnergyConnection : public ApiResource {
       bool persistent,
       const std::string& owner_extension_id,
       std::unique_ptr<device::BluetoothGattConnection> connection);
+
+  BluetoothLowEnergyConnection(const BluetoothLowEnergyConnection&) = delete;
+  BluetoothLowEnergyConnection& operator=(const BluetoothLowEnergyConnection&) =
+      delete;
+
   ~BluetoothLowEnergyConnection() override;
 
   // Returns a pointer to the underlying connection object.
@@ -46,8 +51,6 @@ class BluetoothLowEnergyConnection : public ApiResource {
   // The connection is owned by this instance and will automatically disconnect
   // when deleted.
   std::unique_ptr<device::BluetoothGattConnection> connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyConnection);
 };
 
 }  // namespace extensions

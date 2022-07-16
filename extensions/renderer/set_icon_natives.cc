@@ -18,6 +18,12 @@
 #include "skia/public/mojom/bitmap.mojom.h"
 #include "third_party/blink/public/web/web_array_buffer_converter.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 // TODO(devlin): Looks like there are lots of opportunities to use gin helpers
 // like gin::Dictionary and gin::DataObjectBuilder here.

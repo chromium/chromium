@@ -44,7 +44,7 @@ WEAK_CUPS_FN(httpConnect2);
 
 // Timeout for establishing a CUPS connection.  It is expected that cupsd is
 // able to start and respond on all systems within this duration.
-constexpr base::TimeDelta kCupsTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kCupsTimeout = base::Seconds(5);
 
 // CUPS default max copies value (parsed from kCupsMaxCopies PPD attribute).
 constexpr int32_t kDefaultMaxCopies = 9999;

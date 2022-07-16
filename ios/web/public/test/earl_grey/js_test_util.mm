@@ -53,8 +53,7 @@ bool WaitUntilWindowIdInjected(WebState* web_state) {
   bool is_unrecoverable_error = false;
 
   base::ElapsedTimer timer;
-  base::TimeDelta timeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
+  base::TimeDelta timeout = base::Seconds(kWaitForJSCompletionTimeout);
 
   // Keep polling until either the JavaScript execution returns with expected
   // value (indicating that Window ID is set), the timeout occurs, or an

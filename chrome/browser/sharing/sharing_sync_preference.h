@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync_device_info/device_info.h"
@@ -53,6 +52,10 @@ class SharingSyncPreference {
   SharingSyncPreference(
       PrefService* prefs,
       syncer::DeviceInfoSyncService* device_info_sync_service);
+
+  SharingSyncPreference(const SharingSyncPreference&) = delete;
+  SharingSyncPreference& operator=(const SharingSyncPreference&) = delete;
+
   ~SharingSyncPreference();
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -93,8 +96,6 @@ class SharingSyncPreference {
   syncer::DeviceInfoSyncService* device_info_sync_service_;
   syncer::LocalDeviceInfoProvider* local_device_info_provider_;
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharingSyncPreference);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_SYNC_PREFERENCE_H_

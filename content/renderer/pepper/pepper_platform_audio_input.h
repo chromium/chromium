@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "ipc/ipc_message.h"
@@ -50,6 +49,9 @@ class PepperPlatformAudioInput
       int sample_rate,
       int frames_per_buffer,
       PepperAudioInputHost* client);
+
+  PepperPlatformAudioInput(const PepperPlatformAudioInput&) = delete;
+  PepperPlatformAudioInput& operator=(const PepperPlatformAudioInput&) = delete;
 
   // Called on main thread.
   void StartCapture();
@@ -129,8 +131,6 @@ class PepperPlatformAudioInput
   // Used to handle cases where (Start|Stop)CaptureOnIOThread runs before the
   // InitializeOnIOThread. THIS MUST ONLY BE ACCESSED ON THE IO THREAD.
   enum { kIdle, kStarted, kStopped } ipc_startup_state_ = kIdle;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPlatformAudioInput);
 };
 
 }  // namespace content

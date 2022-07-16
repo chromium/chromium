@@ -68,7 +68,7 @@ TEST_F(TraceWrapperV8ReferenceTest, CtorWithValue) {
   RunV8FullGC();
   CHECK(!holder1->ref()->IsEmpty());
   CHECK(!observer.IsEmpty());
-  holder1->ref()->Clear();
+  holder1->ref()->Reset();
   RunV8FullGC();
   CHECK(holder1->ref()->IsEmpty());
   CHECK(observer.IsEmpty());

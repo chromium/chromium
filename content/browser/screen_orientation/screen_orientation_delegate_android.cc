@@ -36,7 +36,8 @@ void ScreenOrientationDelegateAndroid::Lock(
       static_cast<jbyte>(lock_orientation));
 }
 
-bool ScreenOrientationDelegateAndroid::ScreenOrientationProviderSupported() {
+bool ScreenOrientationDelegateAndroid::ScreenOrientationProviderSupported(
+    WebContents* web_contentss) {
   // TODO(MLamouri): Consider moving isOrientationLockEnabled to a separate
   // function, so reported error messages can differentiate between the device
   // never supporting orientation or currently not support orientation.

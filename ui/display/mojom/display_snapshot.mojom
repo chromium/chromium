@@ -14,6 +14,9 @@ import "ui/gfx/mojom/hdr_static_metadata.mojom";
 // Corresponds to display::DisplaySnapshot.
 struct DisplaySnapshot {
   int64 display_id;
+  int64 port_display_id;
+  int64 edid_display_id;
+  uint16 connector_index;
   gfx.mojom.Point origin;
   gfx.mojom.Size physical_size;
   display.mojom.DisplayConnectionType type;

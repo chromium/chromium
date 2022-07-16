@@ -19,7 +19,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "base/strings/string_piece.h"
@@ -355,6 +355,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // A helper class used to manage a request to create a stream.
   class NET_EXPORT_PRIVATE StreamRequest {
    public:
+    StreamRequest(const StreamRequest&) = delete;
+    StreamRequest& operator=(const StreamRequest&) = delete;
+
     // Cancels any pending stream creation request and resets |stream_| if
     // it has not yet been released.
     ~StreamRequest();
@@ -418,8 +421,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     const NetworkTrafficAnnotationTag traffic_annotation_;
 
     base::WeakPtrFactory<StreamRequest> weak_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(StreamRequest);
   };
 
   // This class contains all the context needed for path validation and
@@ -496,6 +497,12 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     QuicChromiumPathValidationWriterDelegate(
         QuicChromiumClientSession* session,
         base::SequencedTaskRunner* task_runner);
+
+    QuicChromiumPathValidationWriterDelegate(
+        const QuicChromiumPathValidationWriterDelegate&) = delete;
+    QuicChromiumPathValidationWriterDelegate& operator=(
+        const QuicChromiumPathValidationWriterDelegate&) = delete;
+
     ~QuicChromiumPathValidationWriterDelegate();
 
     // QuicChromiumPacketWriter::Delegate interface.
@@ -521,7 +528,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     quic::QuicSocketAddress peer_address_;
     base::WeakPtrFactory<QuicChromiumPathValidationWriterDelegate>
         weak_factory_{this};
-    DISALLOW_COPY_AND_ASSIGN(QuicChromiumPathValidationWriterDelegate);
   };
 
   // Constructs a new session which will own |connection|, but not
@@ -570,6 +576,11 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       base::SequencedTaskRunner* task_runner,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
       NetLog* net_log);
+
+  QuicChromiumClientSession(const QuicChromiumClientSession&) = delete;
+  QuicChromiumClientSession& operator=(const QuicChromiumClientSession&) =
+      delete;
+
   ~QuicChromiumClientSession() override;
 
   void Initialize() override;
@@ -850,11 +861,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   quic::ParsedQuicVersion GetQuicVersion() const;
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  // See base/trace_event/memory_usage_estimator.h.
-  // TODO(xunjieli): It only tracks |packet_readers_|. Write a better estimate.
-  size_t EstimateMemoryUsage() const;
-
   // Looks for a push that matches the provided parameters.
   quic::QuicClientPromisedInfo* GetPromised(const GURL& url,
                                             const QuicSessionKey& session_key);
@@ -1082,8 +1088,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   base::flat_map<url::Origin, std::string> accept_ch_entries_received_via_alps_;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicChromiumClientSession);
 };
 
 }  // namespace net

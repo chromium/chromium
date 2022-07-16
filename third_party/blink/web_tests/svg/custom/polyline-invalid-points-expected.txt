@@ -1,1 +1,1 @@
-CONSOLE ERROR: line 4: Error: <polyline> attribute points: Expected number, "…100, 100 0, 100 INF INF".
+CONSOLE ERROR: Error: <polyline> attribute points: Expected number, "…100, 100 0, 100 INF INF".

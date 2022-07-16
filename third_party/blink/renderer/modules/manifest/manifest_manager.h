@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom-blink.h"
 #include "third_party/blink/public/web/web_manifest_manager.h"
@@ -41,6 +40,10 @@ class MODULES_EXPORT ManifestManager
   static ManifestManager* From(LocalDOMWindow&);
 
   explicit ManifestManager(LocalDOMWindow&);
+
+  ManifestManager(const ManifestManager&) = delete;
+  ManifestManager& operator=(const ManifestManager&) = delete;
+
   ~ManifestManager() override;
 
   void DidChangeManifest();
@@ -111,8 +114,6 @@ class MODULES_EXPORT ManifestManager
 
   HeapMojoReceiverSet<mojom::blink::ManifestManager, ManifestManager>
       receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestManager);
 };
 
 }  // namespace blink

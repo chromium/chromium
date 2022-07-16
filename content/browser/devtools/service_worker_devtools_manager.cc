@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_listener.h"
+#include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -107,7 +108,7 @@ void ServiceWorkerDevToolsManager::WorkerMainScriptFetchingStarting(
   // opportunity to attach to it before we do the actual fetch. We pass it a
   // callback that will be called once we have all the handlers ready.
   if (host_ptr->should_pause_on_start()) {
-    devtools_instrumentation::ThrottleMainScriptFetch(
+    devtools_instrumentation::ThrottleServiceWorkerMainScriptFetch(
         context_wrapper_ptr, version_id, requesting_frame_id, throttle_handle);
   }
 }
@@ -315,15 +316,12 @@ void ServiceWorkerDevToolsManager::NavigationPreloadRequestSent(
   if (it == live_hosts_.end())
     return;
   auto timestamp = base::TimeTicks::Now();
-  network::mojom::URLRequestDevToolsInfo request_info(
-      request.method, request.url, request.priority, request.referrer_policy,
-      request.trust_token_params ? request.trust_token_params->Clone()
-                                 : nullptr,
-      request.has_user_gesture);
+  network::mojom::URLRequestDevToolsInfoPtr request_info =
+      network::ExtractDevToolsInfo(request);
   for (auto* network :
        protocol::NetworkHandler::ForAgentHost(it->second.get())) {
     network->RequestSent(request_id, std::string(), request.headers,
-                         request_info,
+                         *request_info,
                          protocol::Network::Initiator::TypeEnum::Preload,
                          /*initiator_url=*/absl::nullopt,
                          /*initiator_devtools_request_id=*/"", timestamp);
@@ -340,10 +338,13 @@ void ServiceWorkerDevToolsManager::NavigationPreloadResponseReceived(
   auto it = live_hosts_.find(worker_id);
   if (it == live_hosts_.end())
     return;
+
+  network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
+      network::ExtractDevToolsInfo(head);
   for (auto* network : protocol::NetworkHandler::ForAgentHost(it->second.get()))
     network->ResponseReceived(request_id, std::string(), url,
-                              protocol::Network::ResourceTypeEnum::Other, head,
-                              protocol::Maybe<std::string>());
+                              protocol::Network::ResourceTypeEnum::Other,
+                              *head_info, protocol::Maybe<std::string>());
 }
 
 void ServiceWorkerDevToolsManager::NavigationPreloadCompleted(

@@ -62,8 +62,14 @@ CompositorFrame MakeCompositorFrame(
 class SurfaceSynchronizationTest : public testing::Test {
  public:
   SurfaceSynchronizationTest()
-      : frame_sink_manager_(&shared_bitmap_manager_),
+      : frame_sink_manager_(
+            FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
         surface_observer_(false) {}
+
+  SurfaceSynchronizationTest(const SurfaceSynchronizationTest&) = delete;
+  SurfaceSynchronizationTest& operator=(const SurfaceSynchronizationTest&) =
+      delete;
+
   ~SurfaceSynchronizationTest() override {}
 
   CompositorFrameSinkSupport& display_support() {
@@ -261,8 +267,6 @@ class SurfaceSynchronizationTest : public testing::Test {
                      FrameSinkIdHash>
       supports_;
   SurfaceIdAllocatorSet allocator_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceSynchronizationTest);
 };
 
 // The display root surface should have a surface reference from the top-level
@@ -2519,12 +2523,9 @@ TEST_F(SurfaceSynchronizationTest,
 // its nonce is different.
 TEST_F(SurfaceSynchronizationTest, LatestInFlightSurfaceSkipDifferentNonce) {
   const SurfaceId parent_id = MakeSurfaceId(kParentFrameSink, 1);
-  const base::UnguessableToken nonce1(
-      base::UnguessableToken::Deserialize(0, 1));
-  const base::UnguessableToken nonce2(
-      base::UnguessableToken::Deserialize(1, 1));
-  const base::UnguessableToken nonce3(
-      base::UnguessableToken::Deserialize(2, 1));
+  const base::UnguessableToken nonce1 = base::UnguessableToken::Create();
+  const base::UnguessableToken nonce2 = base::UnguessableToken::Create();
+  const base::UnguessableToken nonce3 = base::UnguessableToken::Create();
   const SurfaceId child_id1 =
       SurfaceId(kChildFrameSink1, LocalSurfaceId(1, nonce1));
   const SurfaceId child_id2 =

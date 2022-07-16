@@ -24,8 +24,4 @@ component("platform") {
     "//base",
     "//ui/events:platform_event",
   ]
-
-  if (use_x11) {
-    sources -= [ "platform_event_source_stub.cc" ]
-  }
 }

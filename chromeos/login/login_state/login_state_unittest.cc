@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -20,6 +19,10 @@ class LoginStateTest : public testing::Test, public LoginState::Observer {
   LoginStateTest()
       : logged_in_user_type_(LoginState::LOGGED_IN_USER_NONE),
         login_state_changes_count_(0) {}
+
+  LoginStateTest(const LoginStateTest&) = delete;
+  LoginStateTest& operator=(const LoginStateTest&) = delete;
+
   ~LoginStateTest() override = default;
 
   // testing::Test
@@ -53,8 +56,6 @@ class LoginStateTest : public testing::Test, public LoginState::Observer {
 
  private:
   unsigned int login_state_changes_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginStateTest);
 };
 
 TEST_F(LoginStateTest, TestLoginState) {

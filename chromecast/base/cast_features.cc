@@ -160,6 +160,11 @@ const base::Feature kEnableSideGesturePassThrough{
 const base::Feature kEnableChromeAudioManagerAndroid{
     "enable_chrome_audio_manager_android", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables CastAudioOutputDevice for audio output on Android. When disabled,
+// CastAudioManagerAndroid will be used.
+const base::Feature kEnableCastAudioOutputDevice{
+    "enable_cast_audio_output_device", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // End Chromecast Feature definitions.
 const base::Feature* kFeatures[] = {
     &kAllowUserMediaAccess,
@@ -170,6 +175,7 @@ const base::Feature* kFeatures[] = {
     &kEnableGeneralAudienceBrowsing,
     &kEnableSideGesturePassThrough,
     &kEnableChromeAudioManagerAndroid,
+    &kEnableCastAudioOutputDevice,
 };
 
 std::vector<const base::Feature*> GetInternalFeatures();
@@ -177,8 +183,8 @@ std::vector<const base::Feature*> GetInternalFeatures();
 const std::vector<const base::Feature*>& GetFeatures() {
   static const base::NoDestructor<std::vector<const base::Feature*>> features(
       [] {
-        auto features = std::vector<const base::Feature*>(
-            kFeatures, kFeatures + sizeof(kFeatures) / sizeof(base::Feature*));
+        std::vector<const base::Feature*> features(std::begin(kFeatures),
+                                                   std::end(kFeatures));
         auto internal_features = GetInternalFeatures();
         features.insert(features.end(), internal_features.begin(),
                         internal_features.end());
@@ -225,8 +231,6 @@ void InitializeFeatureList(const base::Value& dcs_features,
     //   - The probability is hard-coded to 100% so that the FeatureList always
     //     respects the value from DCS.
     //   - The default group is unused; it will be the same for every feature.
-    //   - Expiration year, month, and day use a special value such that the
-    //     feature will never expire.
     //   - SESSION_RANDOMIZED is used to prevent the need for an
     //     entropy_provider. However, this value doesn't matter.
     //   - We don't care about the group_id.

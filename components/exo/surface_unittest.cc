@@ -45,9 +45,46 @@ std::unique_ptr<std::vector<gfx::Rect>> GetHitTestShapeRects(Surface* surface) {
   return rects;
 }
 
+std::string TransformToString(Transform transform) {
+  std::string prefix = "Transform::";
+  std::string name;
+  switch (transform) {
+    case Transform::NORMAL:
+      name = "NORMAL";
+      break;
+    case Transform::ROTATE_90:
+      name = "ROTATE_90";
+      break;
+    case Transform::ROTATE_180:
+      name = "ROTATE_180";
+      break;
+    case Transform::ROTATE_270:
+      name = "ROTATE_270";
+      break;
+    case Transform::FLIPPED:
+      name = "FLIPPED";
+      break;
+    case Transform::FLIPPED_ROTATE_90:
+      name = "FLIPPED_ROTATE_90";
+      break;
+    case Transform::FLIPPED_ROTATE_180:
+      name = "FLIPPED_ROTATE_180";
+      break;
+    case Transform::FLIPPED_ROTATE_270:
+      name = "FLIPPED_ROTATE_270";
+      break;
+    default:
+      return "[UNKNOWN_TRANSFORM]";
+  }
+  return prefix + name;
+}
+
 class SurfaceObserverForTest : public SurfaceObserver {
  public:
   SurfaceObserverForTest() = default;
+
+  SurfaceObserverForTest(const SurfaceObserverForTest&) = delete;
+  SurfaceObserverForTest& operator=(const SurfaceObserverForTest&) = delete;
 
   void OnSurfaceDestroying(Surface* surface) override {}
 
@@ -59,14 +96,16 @@ class SurfaceObserverForTest : public SurfaceObserver {
 
  private:
   int num_occlusion_changes_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceObserverForTest);
 };
 
 class SurfaceTest : public test::ExoTestBase,
                     public ::testing::WithParamInterface<float> {
  public:
   SurfaceTest() = default;
+
+  SurfaceTest(const SurfaceTest&) = delete;
+  SurfaceTest& operator=(const SurfaceTest&) = delete;
+
   ~SurfaceTest() override = default;
   void SetUp() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -117,8 +156,17 @@ class SurfaceTest : public test::ExoTestBase,
     return frame;
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SurfaceTest);
+  void SetBufferTransformHelperTransformAndTest(Surface* surface,
+                                                ShellSurface* shell_surface,
+                                                Transform transform,
+                                                const gfx::Size& expected_size);
+
+  void SetCropAndBufferTransformHelperTransformAndTest(
+      Surface* surface,
+      ShellSurface* shell_surface,
+      Transform transform,
+      const gfx::RectF& expected_rect,
+      bool has_viewport);
 };
 
 void ReleaseBuffer(int* release_buffer_call_count) {
@@ -614,6 +662,41 @@ TEST_P(SurfaceTest, SetBufferScale) {
   EXPECT_EQ(ToPixel(gfx::Rect(0, 0, 256, 256)), GetCompleteDamage(frame));
 }
 
+void SurfaceTest::SetBufferTransformHelperTransformAndTest(
+    Surface* surface,
+    ShellSurface* shell_surface,
+    Transform transform,
+    const gfx::Size& expected_size) {
+  std::stringstream scoped_trace_message;
+  scoped_trace_message << "SetBufferTransformHelperTransformAndTest("
+                       << "transform=" << TransformToString(transform) << ")";
+  SCOPED_TRACE(scoped_trace_message.str());
+
+  surface->SetBufferTransform(transform);
+  surface->Commit();
+  EXPECT_EQ(gfx::Size(expected_size.width(), expected_size.height()),
+            surface->window()->bounds().size());
+  EXPECT_EQ(gfx::Size(expected_size.width(), expected_size.height()),
+            surface->content_size());
+
+  base::RunLoop().RunUntilIdle();
+
+  {
+    const viz::CompositorFrame& frame = GetFrameFromSurface(shell_surface);
+    ASSERT_EQ(1u, frame.render_pass_list.size());
+    EXPECT_EQ(
+        ToPixel(gfx::Rect(0, 0, expected_size.width(), expected_size.height())),
+        GetCompleteDamage(frame));
+    const auto& quad_list = frame.render_pass_list[0]->quad_list;
+    ASSERT_EQ(1u, quad_list.size());
+    EXPECT_EQ(
+        ToPixel(gfx::Rect(0, 0, 512, 256)),
+        cc::MathUtil::MapEnclosingClippedRect(
+            quad_list.front()->shared_quad_state->quad_to_target_transform,
+            quad_list.front()->rect));
+  }
+}
+
 // Disabled due to flakiness: crbug.com/856145
 #if defined(LEAK_SANITIZER)
 #define MAYBE_SetBufferTransform DISABLED_SetBufferTransform
@@ -630,30 +713,15 @@ TEST_P(SurfaceTest, MAYBE_SetBufferTransform) {
   // This will update the bounds of the surface and take the buffer transform
   // into account.
   surface->Attach(buffer.get());
-  surface->SetBufferTransform(Transform::ROTATE_90);
-  surface->Commit();
-  EXPECT_EQ(gfx::Size(buffer_size.height(), buffer_size.width()),
-            surface->window()->bounds().size());
-  EXPECT_EQ(gfx::Size(buffer_size.height(), buffer_size.width()),
-            surface->content_size());
 
-  base::RunLoop().RunUntilIdle();
+  gfx::Size inverted_size(buffer_size.height(), buffer_size.width());
 
-  {
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    ASSERT_EQ(1u, frame.render_pass_list.size());
-    EXPECT_EQ(
-        ToPixel(gfx::Rect(0, 0, buffer_size.height(), buffer_size.width())),
-        GetCompleteDamage(frame));
-    const auto& quad_list = frame.render_pass_list[0]->quad_list;
-    ASSERT_EQ(1u, quad_list.size());
-    EXPECT_EQ(
-        ToPixel(gfx::Rect(0, 0, 512, 256)),
-        cc::MathUtil::MapEnclosingClippedRect(
-            quad_list.front()->shared_quad_state->quad_to_target_transform,
-            quad_list.front()->rect));
-  }
+  SetBufferTransformHelperTransformAndTest(surface.get(), shell_surface.get(),
+                                           Transform::ROTATE_90, inverted_size);
+
+  SetBufferTransformHelperTransformAndTest(surface.get(), shell_surface.get(),
+                                           Transform::FLIPPED_ROTATE_90,
+                                           inverted_size);
 
   gfx::Size child_buffer_size(64, 128);
   auto child_buffer = std::make_unique<Buffer>(
@@ -773,6 +841,43 @@ TEST_P(SurfaceTest, SetCrop) {
   EXPECT_EQ(ToPixel(gfx::Rect(0, 0, 12, 12)), GetCompleteDamage(frame));
 }
 
+void SurfaceTest::SetCropAndBufferTransformHelperTransformAndTest(
+    Surface* surface,
+    ShellSurface* shell_surface,
+    Transform transform,
+    const gfx::RectF& expected_rect,
+    bool has_viewport) {
+  const gfx::Rect target_with_no_viewport(ToPixel(gfx::Rect(gfx::Size(52, 4))));
+  const gfx::Rect target_with_viewport(ToPixel(gfx::Rect(gfx::Size(128, 64))));
+
+  std::stringstream scoped_trace_message;
+  scoped_trace_message << "SetCropAndBufferTransformHelperTransformAndTest("
+                       << "transform=" << TransformToString(transform)
+                       << ", has_viewport="
+                       << ((has_viewport) ? "true" : "false") << ")";
+  SCOPED_TRACE(scoped_trace_message.str());
+
+  surface->SetBufferTransform(transform);
+  surface->Commit();
+
+  base::RunLoop().RunUntilIdle();
+
+  {
+    const viz::CompositorFrame& frame = GetFrameFromSurface(shell_surface);
+    ASSERT_EQ(1u, frame.render_pass_list.size());
+    const viz::QuadList& quad_list = frame.render_pass_list[0]->quad_list;
+    ASSERT_EQ(1u, quad_list.size());
+    const viz::TextureDrawQuad* quad =
+        viz::TextureDrawQuad::MaterialCast(quad_list.front());
+    EXPECT_EQ(expected_rect.origin(), quad->uv_top_left);
+    EXPECT_EQ(expected_rect.bottom_right(), quad->uv_bottom_right);
+    EXPECT_EQ(
+        (has_viewport) ? target_with_viewport : target_with_no_viewport,
+        cc::MathUtil::MapEnclosingClippedRect(
+            quad->shared_quad_state->quad_to_target_transform, quad->rect));
+  }
+}
+
 // Disabled due to flakiness: crbug.com/856145
 #if defined(LEAK_SANITIZER)
 #define MAYBE_SetCropAndBufferTransform DISABLED_SetCropAndBufferTransform
@@ -786,187 +891,64 @@ TEST_P(SurfaceTest, MAYBE_SetCropAndBufferTransform) {
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
 
-  const gfx::RectF crop_0(
-      gfx::SkRectToRectF(SkRect::MakeLTRB(0.03125f, 0.1875f, 0.4375f, 0.25f)));
-  const gfx::RectF crop_90(
-      gfx::SkRectToRectF(SkRect::MakeLTRB(0.875f, 0.0625f, 0.90625f, 0.875f)));
-  const gfx::RectF crop_180(
-      gfx::SkRectToRectF(SkRect::MakeLTRB(0.5625f, 0.75f, 0.96875f, 0.8125f)));
-  const gfx::RectF crop_270(
-      gfx::SkRectToRectF(SkRect::MakeLTRB(0.09375f, 0.125f, 0.125f, 0.9375f)));
-  const gfx::Rect target_with_no_viewport(ToPixel(gfx::Rect(gfx::Size(52, 4))));
-  const gfx::Rect target_with_viewport(ToPixel(gfx::Rect(gfx::Size(128, 64))));
-
   surface->Attach(buffer.get());
   gfx::Size crop_size(52, 4);
-  surface->SetCrop(gfx::RectF(gfx::PointF(4, 12), gfx::SizeF(crop_size)));
-  surface->SetBufferTransform(Transform::NORMAL);
-  surface->Commit();
+  gfx::Point crop_origin(4, 12);
 
-  base::RunLoop().RunUntilIdle();
+  gfx::Rect crop_rect(crop_origin, crop_size);
 
-  {
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    ASSERT_EQ(1u, frame.render_pass_list.size());
-    const viz::QuadList& quad_list = frame.render_pass_list[0]->quad_list;
-    ASSERT_EQ(1u, quad_list.size());
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(quad_list.front());
-    EXPECT_EQ(crop_0.origin(), quad->uv_top_left);
-    EXPECT_EQ(crop_0.bottom_right(), quad->uv_bottom_right);
-    EXPECT_EQ(
-        ToPixel(gfx::Rect(0, 0, 52, 4)),
-        cc::MathUtil::MapEnclosingClippedRect(
-            quad->shared_quad_state->quad_to_target_transform, quad->rect));
-  }
+  // These rects represent the left, right, top, bottom values of the crop rect
+  // normalized from the buffer size for each transformation.
+  static constexpr SkRect crop_0 =
+      SkRect::MakeLTRB(0.03125f, 0.1875f, 0.4375f, 0.25f);
+  static constexpr SkRect crop_90 =
+      SkRect::MakeLTRB(0.875f, 0.0625f, 0.90625f, 0.875f);
+  static constexpr SkRect crop_180 =
+      SkRect::MakeLTRB(0.5625f, 0.75f, 0.96875f, 0.8125f);
+  static constexpr SkRect crop_270 =
+      SkRect::MakeLTRB(0.09375f, 0.125f, 0.125f, 0.9375f);
+  static constexpr SkRect flipped_crop_0 =
+      SkRect::MakeLTRB(0.5625f, 0.1875f, 0.96875f, 0.25f);
+  static constexpr SkRect flipped_crop_90 =
+      SkRect::MakeLTRB(0.09375f, 0.0625f, 0.125f, 0.875f);
+  static constexpr SkRect flipped_crop_180 =
+      SkRect::MakeLTRB(0.03125f, 0.75f, 0.4375f, 0.8125f);
+  static constexpr SkRect flipped_crop_270 =
+      SkRect::MakeLTRB(0.875f, 0.125f, 0.90625f, 0.9375f);
 
-  surface->SetBufferTransform(Transform::ROTATE_90);
-  surface->Commit();
+  surface->SetCrop(gfx::RectF(gfx::PointF(crop_origin), gfx::SizeF(crop_size)));
 
-  base::RunLoop().RunUntilIdle();
+  struct TransformTestcase {
+    Transform transform;
+    const SkRect& expected_rect;
 
-  {
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    ASSERT_EQ(1u, frame.render_pass_list.size());
-    const viz::QuadList& quad_list = frame.render_pass_list[0]->quad_list;
-    ASSERT_EQ(1u, quad_list.size());
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(quad_list.front());
-    EXPECT_EQ(crop_90.origin(), quad->uv_top_left);
-    EXPECT_EQ(crop_90.bottom_right(), quad->uv_bottom_right);
-    EXPECT_EQ(
-        ToPixel(gfx::Rect(0, 0, 52, 4)),
-        cc::MathUtil::MapEnclosingClippedRect(
-            quad->shared_quad_state->quad_to_target_transform, quad->rect));
-  }
+    constexpr TransformTestcase(Transform transform_in,
+                                const SkRect& expected_rect_in)
+        : transform(transform_in), expected_rect(expected_rect_in) {}
+  };
 
-  surface->SetBufferTransform(Transform::ROTATE_180);
-  surface->Commit();
+  constexpr std::array<TransformTestcase, 8> testcases{
+      TransformTestcase(Transform::NORMAL, crop_0),
+      TransformTestcase(Transform::ROTATE_90, crop_90),
+      TransformTestcase(Transform::ROTATE_180, crop_180),
+      TransformTestcase(Transform::ROTATE_270, crop_270),
+      TransformTestcase(Transform::FLIPPED, flipped_crop_0),
+      TransformTestcase(Transform::FLIPPED_ROTATE_90, flipped_crop_90),
+      TransformTestcase(Transform::FLIPPED_ROTATE_180, flipped_crop_180),
+      TransformTestcase(Transform::FLIPPED_ROTATE_270, flipped_crop_270)};
 
-  base::RunLoop().RunUntilIdle();
-
-  {
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    ASSERT_EQ(1u, frame.render_pass_list.size());
-    const viz::QuadList& quad_list = frame.render_pass_list[0]->quad_list;
-    ASSERT_EQ(1u, quad_list.size());
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(quad_list.front());
-    EXPECT_EQ(crop_180.origin(), quad->uv_top_left);
-    EXPECT_EQ(crop_180.bottom_right(), quad->uv_bottom_right);
-    EXPECT_EQ(
-        ToPixel(gfx::Rect(0, 0, 52, 4)),
-        cc::MathUtil::MapEnclosingClippedRect(
-            quad->shared_quad_state->quad_to_target_transform, quad->rect));
-  }
-
-  surface->SetBufferTransform(Transform::ROTATE_270);
-  surface->Commit();
-
-  base::RunLoop().RunUntilIdle();
-
-  {
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    ASSERT_EQ(1u, frame.render_pass_list.size());
-    const viz::QuadList& quad_list = frame.render_pass_list[0]->quad_list;
-    ASSERT_EQ(1u, quad_list.size());
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(quad_list.front());
-    EXPECT_EQ(crop_270.origin(), quad->uv_top_left);
-    EXPECT_EQ(crop_270.bottom_right(), quad->uv_bottom_right);
-    EXPECT_EQ(
-        target_with_no_viewport,
-        cc::MathUtil::MapEnclosingClippedRect(
-            quad->shared_quad_state->quad_to_target_transform, quad->rect));
+  for (const auto& tc : testcases) {
+    SetCropAndBufferTransformHelperTransformAndTest(
+        surface.get(), shell_surface.get(), tc.transform,
+        gfx::SkRectToRectF(tc.expected_rect), false);
   }
 
   surface->SetViewport(gfx::Size(128, 64));
-  surface->SetBufferTransform(Transform::NORMAL);
-  surface->Commit();
 
-  base::RunLoop().RunUntilIdle();
-
-  {
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    ASSERT_EQ(1u, frame.render_pass_list.size());
-    const viz::QuadList& quad_list = frame.render_pass_list[0]->quad_list;
-    ASSERT_EQ(1u, quad_list.size());
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(quad_list.front());
-    EXPECT_EQ(crop_0.origin(), quad->uv_top_left);
-    EXPECT_EQ(crop_0.bottom_right(), quad->uv_bottom_right);
-    EXPECT_EQ(
-        target_with_viewport,
-        cc::MathUtil::MapEnclosingClippedRect(
-            quad->shared_quad_state->quad_to_target_transform, quad->rect));
-  }
-
-  surface->SetBufferTransform(Transform::ROTATE_90);
-  surface->Commit();
-
-  base::RunLoop().RunUntilIdle();
-
-  {
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    ASSERT_EQ(1u, frame.render_pass_list.size());
-    const viz::QuadList& quad_list = frame.render_pass_list[0]->quad_list;
-    ASSERT_EQ(1u, quad_list.size());
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(quad_list.front());
-    EXPECT_EQ(crop_90.origin(), quad->uv_top_left);
-    EXPECT_EQ(crop_90.bottom_right(), quad->uv_bottom_right);
-    EXPECT_EQ(
-        target_with_viewport,
-        cc::MathUtil::MapEnclosingClippedRect(
-            quad->shared_quad_state->quad_to_target_transform, quad->rect));
-  }
-
-  surface->SetBufferTransform(Transform::ROTATE_180);
-  surface->Commit();
-
-  base::RunLoop().RunUntilIdle();
-
-  {
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    ASSERT_EQ(1u, frame.render_pass_list.size());
-    const viz::QuadList& quad_list = frame.render_pass_list[0]->quad_list;
-    ASSERT_EQ(1u, quad_list.size());
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(quad_list.front());
-    EXPECT_EQ(crop_180.origin(), quad->uv_top_left);
-    EXPECT_EQ(crop_180.bottom_right(), quad->uv_bottom_right);
-    EXPECT_EQ(
-        target_with_viewport,
-        cc::MathUtil::MapEnclosingClippedRect(
-            quad->shared_quad_state->quad_to_target_transform, quad->rect));
-  }
-
-  surface->SetBufferTransform(Transform::ROTATE_270);
-  surface->Commit();
-
-  base::RunLoop().RunUntilIdle();
-
-  {
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    ASSERT_EQ(1u, frame.render_pass_list.size());
-    const viz::QuadList& quad_list = frame.render_pass_list[0]->quad_list;
-    ASSERT_EQ(1u, quad_list.size());
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(quad_list.front());
-    EXPECT_EQ(crop_270.origin(), quad->uv_top_left);
-    EXPECT_EQ(crop_270.bottom_right(), quad->uv_bottom_right);
-    EXPECT_EQ(
-        target_with_viewport,
-        cc::MathUtil::MapEnclosingClippedRect(
-            quad->shared_quad_state->quad_to_target_transform, quad->rect));
+  for (const auto& tc : testcases) {
+    SetCropAndBufferTransformHelperTransformAndTest(
+        surface.get(), shell_surface.get(), tc.transform,
+        gfx::SkRectToRectF(tc.expected_rect), true);
   }
 }
 

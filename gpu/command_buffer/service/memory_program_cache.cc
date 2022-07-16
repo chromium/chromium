@@ -271,7 +271,7 @@ MemoryProgramCache::MemoryProgramCache(
           disable_program_caching_for_transform_feedback),
       compress_program_binaries_(CompressProgramBinaries()),
       curr_size_bytes_(0),
-      store_(ProgramMRUCache::NO_AUTO_EVICT),
+      store_(ProgramLRUCache::NO_AUTO_EVICT),
       activity_flags_(activity_flags) {}
 
 MemoryProgramCache::~MemoryProgramCache() = default;
@@ -312,7 +312,7 @@ ProgramCache::ProgramLoadResult MemoryProgramCache::LoadLinkedProgram(
                      sha);
   const std::string sha_string(sha, kHashLength);
 
-  ProgramMRUCache::iterator found = store_.Get(sha_string);
+  ProgramLRUCache::iterator found = store_.Get(sha_string);
   if (found == store_.end()) {
     return PROGRAM_LOAD_FAILURE;
   }
@@ -426,7 +426,7 @@ void MemoryProgramCache::SaveLinkedProgram(
 
   // Evict any cached program with the same key in favor of the least recently
   // accessed.
-  ProgramMRUCache::iterator existing = store_.Peek(sha_string);
+  ProgramLRUCache::iterator existing = store_.Peek(sha_string);
   if(existing != store_.end())
     store_.Erase(existing);
 

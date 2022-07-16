@@ -163,7 +163,7 @@ public final class ScreenshotTask implements ScreenshotSource {
         // If the start surface or the grid tab switcher are in use, do not use the compositor, it
         // will snapshot the last active tab instead of the current screen if we try to use it.
         if (chromeActivity.isInOverviewMode()
-                && (ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()
+                && (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(chromeActivity)
                         || TabUiFeatureUtilities.isGridTabSwitcherEnabled(chromeActivity))) {
             return false;
         }

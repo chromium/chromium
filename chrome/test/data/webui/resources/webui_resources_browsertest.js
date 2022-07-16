@@ -9,7 +9,8 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
-// eslint-disable-next-line no-var
+/* eslint-disable no-var */
+
 var WebUIResourcesBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
@@ -22,7 +23,6 @@ var WebUIResourcesBrowserTest = class extends PolymerTest {
   }
 };
 
-// eslint-disable-next-line no-var
 var WebUIResourcesListPropertyUpdateBehaviorTest =
     class extends WebUIResourcesBrowserTest {
   /** @override */
@@ -32,5 +32,17 @@ var WebUIResourcesListPropertyUpdateBehaviorTest =
 };
 
 TEST_F('WebUIResourcesListPropertyUpdateBehaviorTest', 'All', function() {
+  mocha.run();
+});
+
+var WebUIResourcesListPropertyUpdateMixinTest =
+    class extends WebUIResourcesBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=resources/list_property_update_mixin_tests.js';
+  }
+};
+
+TEST_F('WebUIResourcesListPropertyUpdateMixinTest', 'All', function() {
   mocha.run();
 });

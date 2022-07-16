@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './accessibility_features.mojom-lite.js';
 import './action_toolbar.js';
 import './scanning_fonts_css.js';
 import './scanning_shared_css.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -12,7 +14,8 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AppState} from './scanning_app_types.js';
+import {getAccessibilityFeaturesInterface} from './mojo_interface_provider.js';
+import {AppState, ForceHiddenElementsVisibleObserverInterface} from './scanning_app_types.js';
 import {ScanningBrowserProxy, ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
 
 /** @type {number} */
@@ -23,6 +26,13 @@ const PROGRESS_TIMER_MS = 3000;
  * @type {number}
  */
 const SCANNED_IMG_MARGIN_BOTTOM_PX = 12;
+
+/**
+ * The bottom margin for the action toolbar from the bottom edge of the
+ * viewport.
+ * @type {number}
+ */
+const ACTION_TOOLBAR_BOTTOM_MARGIN_PX = 40;
 
 /**
  * @fileoverview
@@ -38,6 +48,28 @@ Polymer({
   /** @private {?ScanningBrowserProxy}*/
   browserProxy_: null,
 
+  /** @private {?Function} */
+  onWindowResized_: null,
+
+  /** @private {?ResizeObserver} */
+  previewAreaResizeObserver_: null,
+
+  /** @private {?Function} */
+  onDialogActionClick_: null,
+
+  /** @private {number} */
+  actionToolbarHeight_: 0,
+
+  /** @private {number} */
+  actionToolbarWidth_: 0,
+
+  /**
+   * Receives the status of the enabled accesbility features that should force
+   * the hidden elements visible.
+   * @private {?ash.common.mojom.ForceHiddenElementsVisibleObserverReceiver}
+   */
+  forceHiddenElementsVisibleObserverReceiver_: null,
+
   properties: {
     /** @type {!AppState} */
     appState: {
@@ -49,7 +81,11 @@ Polymer({
      * The object URLs of the scanned images.
      * @type {!Array<string>}
      */
-    objectUrls: Array,
+    objectUrls: {
+      type: Array,
+      observer: 'onObjectUrlsChange_',
+    },
+
 
     /** @type {number} */
     pageNumber: {
@@ -59,6 +95,12 @@ Polymer({
 
     /** @type {number} */
     progressPercent: Number,
+
+    /** @private {boolean} */
+    showHelpOrProgress_: {
+      type: Boolean,
+      value: true,
+    },
 
     /** @private {boolean} */
     showScannedImages_: {
@@ -97,18 +139,18 @@ Polymer({
     },
 
     /** @type {boolean} */
-    multiPageScanChecked: Boolean,
-
-    /** @private {number} */
-    currentPageInView_: {
-      type: Number,
-      value: 1,
+    isMultiPageScan: {
+      type: Boolean,
+      observer: 'onIsMultiPageScanChange_',
     },
 
-    /** @private {number} */
-    previousPageInView_: {
+    /**
+     * The index of the page currently focused on.
+     * @private {number}
+     */
+    currentPageIndexInView_: {
       type: Number,
-      value: -1,
+      value: 0,
     },
 
     /**
@@ -123,51 +165,132 @@ Polymer({
     },
 
     /** @private {boolean} */
-    scanAppMultiPageScanEnabled_: {
+    showActionToolbar_: Boolean,
+
+    /** @private {string} */
+    dialogTitleText_: String,
+
+    /** @private {string} */
+    dialogConfirmationText_: String,
+
+    /** @private {string} */
+    dialogButtonText_: String,
+
+    /**
+     * True when |appState| is MULTI_PAGE_SCANNING.
+     * @private {boolean}
+     */
+    multiPageScanning_: {
       type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('scanAppMultiPageScanEnabled');
-      }
+      value: false,
+      reflectToAttribute: true,
+    },
+
+    /** @private {boolean} */
+    showSingleImageFocus_: {
+      type: Boolean,
+      reflectToAttribute: true,
+    },
+
+    /**
+     * True when the ChromeVox, Switch, or Screen Magnifier accessibility
+     * features are turned on that require the action toolbar to always be
+     * visible during multi-page scan sessions. Only used for CSS selector
+     * logic.
+     * @private {boolean}
+     */
+    forceActionToolbarVisible_: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
     },
   },
 
   observers: [
     'setPreviewAriaLabel_(showScannedImages_, showCancelingProgress_,' +
-        ' showHelperText_)',
+        ' showHelperText_, objectUrls.length)',
     'setScanProgressTimer_(showScanProgress_, progressPercent)',
-    'setFocusedScannedImage_(objectUrls.length, currentPageInView_)',
   ],
 
   /** @override */
   created() {
     // ScanningBrowserProxy is initialized when scanning_app.js is created.
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
+    this.onWindowResized_ = () => this.setActionToolbarPosition_();
+    this.previewAreaResizeObserver_ =
+        new ResizeObserver(() => this.updatePreviewElements_());
   },
 
   /** @override */
   ready() {
     this.style.setProperty(
         '--scanned-image-margin-bottom', SCANNED_IMG_MARGIN_BOTTOM_PX + 'px');
-    if (this.scanAppMultiPageScanEnabled_) {
-      window.addEventListener('resize', () => this.setActionToolbarPosition_());
-    }
+
+    // parseFloat() is used to convert the string returned by
+    // getComputedStyleValue() into a number ("642px" --> 642).
+    this.actionToolbarHeight_ =
+        parseFloat(this.getComputedStyleValue('--action-toolbar-height'));
+    this.actionToolbarWidth_ =
+        parseFloat(this.getComputedStyleValue('--action-toolbar-width'));
+
+    this.forceHiddenElementsVisibleObserverReceiver_ =
+        new ash.common.mojom.ForceHiddenElementsVisibleObserverReceiver(
+            /**
+               @type {!ForceHiddenElementsVisibleObserverInterface}
+             */
+            (this));
+    getAccessibilityFeaturesInterface()
+        .observeForceHiddenElementsVisible(
+            this.forceHiddenElementsVisibleObserverReceiver_.$
+                .bindNewPipeAndPassRemote())
+        .then(
+            response => this.forceActionToolbarVisible_ =
+                response.forceVisible);
   },
 
   /** @override */
   detached() {
-    if (this.scanAppMultiPageScanEnabled_) {
-      window.removeEventListener('resize', this.setActionToolbarPosition_);
+    if (this.isMultiPageScan) {
+      window.removeEventListener('resize', this.onWindowResized_);
+      this.previewAreaResizeObserver_.disconnect();
     }
+
+    if (this.forceHiddenElementsVisibleObserverReceiver_) {
+      this.forceHiddenElementsVisibleObserverReceiver_.$.close();
+    }
+  },
+
+  /**
+   * Overrides ash.common.mojom.ForceHiddenElementsVisibleObserverReceiver.
+   * @param {boolean} forceVisible
+   */
+  onForceHiddenElementsVisibleChange(forceVisible) {
+    this.forceActionToolbarVisible_ = forceVisible;
   },
 
   /** @private */
   onAppStateChange_() {
     this.showScannedImages_ = this.appState === AppState.DONE ||
-        this.appState === AppState.MULTI_PAGE_NEXT_ACTION;
-    this.showScanProgress_ = this.appState === AppState.SCANNING;
-    this.showCancelingProgress_ = this.appState === AppState.CANCELING;
+        this.appState === AppState.MULTI_PAGE_NEXT_ACTION ||
+        this.appState === AppState.MULTI_PAGE_SCANNING;
+    this.showScanProgress_ = this.appState === AppState.SCANNING ||
+        this.appState === AppState.MULTI_PAGE_SCANNING;
+    this.showCancelingProgress_ = this.appState === AppState.CANCELING ||
+        this.appState === AppState.MULTI_PAGE_CANCELING;
     this.showHelperText_ = !this.showScanProgress_ &&
         !this.showCancelingProgress_ && !this.showScannedImages_;
+    this.showHelpOrProgress_ = !this.showScannedImages_ ||
+        this.appState === AppState.MULTI_PAGE_SCANNING;
+    this.multiPageScanning_ = this.appState === AppState.MULTI_PAGE_SCANNING;
+    this.showSingleImageFocus_ =
+        this.appState === AppState.MULTI_PAGE_NEXT_ACTION;
+    this.showActionToolbar_ = this.appState === AppState.MULTI_PAGE_NEXT_ACTION;
+
+    // If no longer showing the scanned images, reset |scannedImagesLoaded_| so
+    // it can be used again for the next scan job.
+    if (this.showHelpOrProgress_) {
+      this.scannedImagesLoaded_ = false;
+    }
   },
 
   /** @private */
@@ -246,70 +369,184 @@ Polymer({
   },
 
   /**
-   * Increments the current page number when the previous page is scrolled up
-   * halfway outside the viewport. Assumes each scanned image is the same
-   * height.
+   * While scrolling, if the current page in view would change, update it and
+   * set the focus CSS variable accordingly.
    * @private
    */
   onScannedImagesScroll_() {
-    const imageHeight = this.$$('.scanned-image').height;
-    const scrollTop = this.$$('#previewDiv').scrollTop - (imageHeight * .5);
-    assert(this.currentPageInView_ > 0);
-    this.previousPageInView_ = this.currentPageInView_;
-
-    // This is a special case for the first page since there is no margin or
-    // previous page above it.
-    if (scrollTop < 0) {
-      this.currentPageInView_ = 1;
+    if (!this.isMultiPageScan ||
+        this.appState != AppState.MULTI_PAGE_NEXT_ACTION) {
       return;
     }
 
-    this.currentPageInView_ = 2 +
-        Math.floor(scrollTop / (imageHeight + SCANNED_IMG_MARGIN_BOTTOM_PX));
-    assert(this.currentPageInView_ > 0);
+    const scannedImages =
+        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    if (scannedImages.length === 0) {
+      return;
+    }
+
+    // If the current page in view stays the same, do nothing.
+    const pageIndexInView = this.getCurrentPageInView_(scannedImages);
+    if (pageIndexInView === this.currentPageIndexInView_) {
+      return;
+    }
+
+    this.setFocusedScannedImage_(scannedImages, pageIndexInView);
+  },
+
+  /**
+   * Calculates the index of the current page in view based on the scroll
+   * position. This algorithm allows for every scanned image to be focusable
+   * via scrolling. It starts by waiting until the previous image is scrolled
+   * halfway outside the viewport before the page index changes, but then
+   * changes behavior once the end of the scroll area is reached and no more
+   * images can be scrolled up. In that case, the remaining scroll area is
+   * divided evenly between the final images in the viewport.
+   * @param {!HTMLCollection} scannedImages
+   * @return {number}
+   * @private
+   */
+  getCurrentPageInView_(scannedImages) {
+    assert(this.isMultiPageScan);
+
+    if (scannedImages.length === 1) {
+      return 0;
+    }
+
+    // Assumes the scanned images share the same dimensions.
+    const imageHeight = scannedImages[0].getBoundingClientRect().height +
+        SCANNED_IMG_MARGIN_BOTTOM_PX;
+
+    // The first step is to calculate the number of images that will be visible
+    // in the viewport when scrolled to the bottom. That is how to calculate the
+    // "crossover" point where the algorithm needs to change.
+    const numImagesVisibleAtEnd =
+        Math.ceil(this.$$('#previewDiv').offsetHeight / imageHeight);
+    const numImagesBeforeCrossover =
+        scannedImages.length - numImagesVisibleAtEnd;
+
+    // Calculate the point where the last images in the scroll area are visible
+    // and the scrolling algorithm needs to change.
+    const crossoverBreakpoint = numImagesBeforeCrossover == 0 ?
+        Number.MIN_VALUE :
+        scannedImages[numImagesBeforeCrossover].offsetTop - (imageHeight / 2);
+
+    // Before the "crossover", update the page index based on when the previous
+    // image is scrolled halfway outside the viewport.
+    if (this.$$('#previewDiv').scrollTop < crossoverBreakpoint) {
+      // Subtract half the image height so |scrollTop| = 0 when the first page
+      // is scrolled halfway outside the viewport. That way each page index will
+      // be the current scroll divided by the image height.
+      const scrollTop = this.$$('#previewDiv').scrollTop - (imageHeight / 2) -
+          /*imageFocusBorder=*/ 2;
+      if (scrollTop < 0) {
+        return 0;
+      }
+
+      return 1 + Math.floor(scrollTop / imageHeight);
+    }
+
+    // After the "crossover", the remaining amount of scroll left in the
+    // scrollbar is divided evenly to the remaining images. This allows every
+    // image to be scrolled to.
+    const maxScrollTop = this.$$('#previewDiv').scrollHeight -
+        this.$$('#previewDiv').offsetHeight;
+    const scrollRemainingAfterCrossover =
+        Math.max(maxScrollTop - crossoverBreakpoint, 0);
+    const imageScrollProportion =
+        scrollRemainingAfterCrossover / numImagesVisibleAtEnd;
+
+    // Calculate the new page index.
+    const scrollTop = this.$$('#previewDiv').scrollTop - crossoverBreakpoint;
+    const index = Math.floor(scrollTop / imageScrollProportion);
+
+    return Math.min(numImagesBeforeCrossover + index, scannedImages.length - 1);
   },
 
   /**
    * Sets the CSS class for the current scanned image in view so the blue border
    * will show on the correct page when hovered.
+   * @param {!HTMLCollection} scannedImages
+   * @param {number} pageIndexInView
    * @private
    */
-  setFocusedScannedImage_() {
-    // Need to wait for the scanned images to render.
-    afterNextRender(this, () => {
-      const scannedImages =
-          this.$$('#scannedImages').getElementsByClassName('scanned-image');
-      if (scannedImages.length === 0) {
-        return;
-      }
+  setFocusedScannedImage_(scannedImages, pageIndexInView) {
+    assert(this.isMultiPageScan);
 
-      if (this.previousPageInView_ > 0) {
-        scannedImages[this.previousPageInView_ - 1].classList.remove(
-            'focused-scanned-image');
-      }
-      assert(this.currentPageInView_ > 0);
-      scannedImages[this.currentPageInView_ - 1].classList.add(
-          'focused-scanned-image');
-    });
+    this.removeFocusFromScannedImage_(scannedImages);
+
+    assert(pageIndexInView >= 0 && pageIndexInView < scannedImages.length);
+    scannedImages[pageIndexInView].classList.add('focused-scanned-image');
+    this.currentPageIndexInView_ = pageIndexInView;
   },
 
   /**
-   * Once the scanned images load, set the action toolbar position.
+   * Removes the focus CSS class from the scanned image which already has it
+   * then resets |currentPageInView_|.
+   * @param {!HTMLCollection} scannedImages
    * @private
    */
-  onScannedImagesLoaded_() {
-    if (!this.scanAppMultiPageScanEnabled_) {
+  removeFocusFromScannedImage_(scannedImages) {
+    // This condition is only true when the user chooses to remove a page from
+    // the multi-page scan session. When a page gets removed, the focus is
+    // cleared and not immediately set again.
+    if (this.currentPageIndexInView_ < 0) {
       return;
     }
 
-    // If the position was already set after the first scanned image loaded,
-    // there's no need to position it again.
+    assert(
+        this.currentPageIndexInView_ >= 0 &&
+        this.currentPageIndexInView_ < scannedImages.length);
+    scannedImages[this.currentPageIndexInView_].classList.remove(
+        'focused-scanned-image');
+
+    // Set to -1 because the focus has been removed from the current page and no
+    // other page has it.
+    this.currentPageIndexInView_ = -1;
+  },
+
+  /**
+   * Runs when a new scanned image is loaded.
+   * @param {!Event} e
+   * @private
+   */
+  onScannedImageLoaded_(e) {
+    if (!this.isMultiPageScan) {
+      return;
+    }
+
+    const scannedImages =
+        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    this.setFocusedScannedImage_(
+        scannedImages, this.getCurrentPageInView_(scannedImages));
+
+    this.updatePreviewElements_();
+
+    // Scrolling to a page is only needed for the first scanned image load.
     if (this.scannedImagesLoaded_) {
       return;
     }
 
     this.scannedImagesLoaded_ = true;
-    this.setActionToolbarPosition_();
+
+    // |e.model| is populated by the dom-repeat element.
+    this.scrollToPage_(e.model.index);
+  },
+
+  /**
+   * Set the focus to the clicked scanned image.
+   * @param {!Event} e
+   * @private
+   */
+  onScannedImageClick_(e) {
+    if (!this.isMultiPageScan) {
+      return;
+    }
+
+    // |e.model| is populated by the dom-repeat element.
+    const scannedImages =
+        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    this.setFocusedScannedImage_(scannedImages, e.model.index);
   },
 
   /**
@@ -318,7 +555,7 @@ Polymer({
    * @private
    */
   setActionToolbarPosition_() {
-    assert(this.scanAppMultiPageScanEnabled_);
+    assert(this.isMultiPageScan);
 
     const scannedImage = this.$$('.scanned-image');
     if (!scannedImage) {
@@ -326,11 +563,205 @@ Polymer({
     }
 
     const scannedImageRect = scannedImage.getBoundingClientRect();
-    const topPosition = scannedImageRect.height * .85;
+
+    // Set the toolbar position from the bottom edge of the viewport.
+    const topPosition = this.$$('#previewDiv').offsetHeight -
+        ACTION_TOOLBAR_BOTTOM_MARGIN_PX - (this.actionToolbarHeight_ / 2);
     this.style.setProperty('--action-toolbar-top', topPosition + 'px');
 
+    // Position the toolbar in the middle of the viewport.
     const leftPosition = scannedImageRect.x + (scannedImageRect.width / 2) -
-        (this.$$('action-toolbar').offsetWidth / 2);
+        (this.actionToolbarWidth_ / 2);
     this.style.setProperty('--action-toolbar-left', leftPosition + 'px');
+  },
+
+  /**
+   * Called when the "show-remove-page-dialog" event fires from the action
+   * toolbar button click.
+   * @param {Event} e
+   * @private
+   */
+  onShowRemovePageDialog_(e) {
+    this.showRemoveOrRescanDialog_(/* isRemovePageDialog */ true, e.detail);
+  },
+
+  /**
+   * Called when the "show-rescan-page-dialog" event fires from the action
+   * toolbar button click.
+   * @param {Event} e
+   * @private
+   */
+  onShowRescanPageDialog_(e) {
+    this.showRemoveOrRescanDialog_(/* isRemovePageDialog */ false, e.detail);
+  },
+
+  /**
+   * @param {boolean} isRemovePageDialog Determines whether to show the
+   *     'Remove Page' or 'Rescan Page' dialog.
+   * @param {number} pageIndex
+   * @private
+   */
+  showRemoveOrRescanDialog_(isRemovePageDialog, pageIndex) {
+    // Configure the on-click action.
+    this.onDialogActionClick_ = () => {
+      this.fireDialogAction_(
+          isRemovePageDialog ? 'remove-page' : 'rescan-page', pageIndex);
+    };
+    this.$$('#actionButton')
+        .addEventListener('click', this.onDialogActionClick_, {once: true});
+
+    // Configure the dialog strings for the requested mode (Remove or Rescan).
+    this.dialogButtonText_ = this.i18n(
+        isRemovePageDialog ? 'removePageButtonLabel' : 'rescanPageButtonLabel');
+
+    this.dialogConfirmationText_ = this.i18n(
+        isRemovePageDialog ? 'removePageConfirmationText' :
+                             'rescanPageConfirmationText');
+    this.browserProxy_
+        .getPluralString(
+            isRemovePageDialog ? 'removePageDialogTitle' :
+                                 'rescanPageDialogTitle',
+            this.objectUrls.length === 1 ? 0 : pageIndex + 1)
+        .then(
+            /* @type {string} */ (pluralString) => {
+              // When removing a page while more than one page exists, leave the
+              // title empty and move the title text into the body.
+              const isRemoveFromMultiplePages =
+                  isRemovePageDialog && this.objectUrls.length > 1;
+              this.dialogTitleText_ =
+                  isRemoveFromMultiplePages ? '' : pluralString;
+              if (isRemoveFromMultiplePages) {
+                this.dialogConfirmationText_ = pluralString;
+              }
+
+              // Once strings are loaded, open the dialog.
+              this.$$('#scanPreviewDialog').showModal();
+            });
+  },
+
+  /**
+   * @param {string} event Either the 'remove-page' or 'rescan-page' event.
+   * @param {number} pageIndex
+   * @private
+   */
+  fireDialogAction_(event, pageIndex) {
+    const scannedImages =
+        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    this.removeFocusFromScannedImage_(scannedImages);
+
+    assert(pageIndex >= 0);
+    this.fire(event, pageIndex);
+    this.closeDialog_();
+  },
+
+  /**  @private */
+  closeDialog_() {
+    this.$$('#scanPreviewDialog').close();
+    this.$$('#actionButton')
+        .removeEventListener('click', this.onDialogActionClick_);
+  },
+
+  /**
+   * Scrolls the image specified by |pageIndex| into view.
+   * @param {number} pageIndex
+   * @private
+   */
+  scrollToPage_(pageIndex) {
+    assert(this.isMultiPageScan);
+
+    const scannedImages =
+        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    if (scannedImages.length === 0) {
+      return;
+    }
+
+    assert(pageIndex >= 0 && pageIndex < scannedImages.length);
+    this.$$('#previewDiv').scrollTop =
+        scannedImages[pageIndex].offsetTop - /*imageFocusBorder=*/ 2;
+  },
+
+  /** @private */
+  onIsMultiPageScanChange_() {
+    // Listen for window size changes during multi-page scan sessions so the
+    // position of the action toolbar can be updated.
+    if (this.isMultiPageScan) {
+      window.addEventListener('resize', this.onWindowResized_);
+
+      // Observe changes to the preview area during multi-page scan sessions so
+      // the scan progress div height can be updated when images are
+      // added/removed.
+      this.previewAreaResizeObserver_.observe(
+          /** @type {!HTMLElement} */ (this.$$('#previewDiv')));
+    } else {
+      window.removeEventListener('resize', this.onWindowResized_);
+      this.previewAreaResizeObserver_.disconnect();
+    }
+  },
+
+  /**
+   * Make the scan progress height match the preview area height.
+   * @private
+   */
+  setMultiPageScanProgressHeight_() {
+    this.style.setProperty(
+        '--multi-page-scan-progress-height',
+        this.$$('#previewDiv').offsetHeight + 'px');
+  },
+
+  /** @private */
+  onObjectUrlsChange_() {
+    if (!this.isMultiPageScan) {
+      return;
+    }
+
+    // Set to -1 when no pages exist after a scan is saved.
+    if (this.objectUrls.length === 0) {
+      this.currentPageIndexInView_ = -1;
+    }
+  },
+
+  /**
+   * Sets the size and positioning of elements that depend on the size of the
+   * scan preview area.
+   * @private
+   */
+  updatePreviewElements_() {
+    this.setMultiPageScanProgressHeight_();
+    this.setActionToolbarPosition_();
+  },
+
+  /**
+   * Hide the action toolbar if it's page is not currently in view.
+   * @return {boolean}
+   * @private
+   */
+  showActionToolbarByIndex_(index) {
+    return index === this.currentPageIndexInView_ && this.showActionToolbar_;
+  },
+
+  /**
+   * Set |currentPageIndexInView_| to the page focused on (via ChromeVox).
+   * @param {!Event} e
+   * @private
+   */
+  onScannedImageInFocus_(e) {
+    if (!this.isMultiPageScan) {
+      return;
+    }
+
+    // |e.model| is populated by the dom-repeat element.
+    const scannedImages =
+        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    this.setFocusedScannedImage_(scannedImages, e.model.index);
+  },
+
+  /**
+   * @param {number} index
+   * @return {string}
+   * @private
+   */
+  getScannedImageAriaLabel_(index) {
+    return this.i18n(
+        'multiPageImageAriaLabel', index + 1, this.objectUrls.length);
   },
 });

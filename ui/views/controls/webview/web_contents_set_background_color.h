@@ -24,7 +24,13 @@ class WebContentsSetBackgroundColor
       content::WebContents* web_contents,
       SkColor color);
 
+  WebContentsSetBackgroundColor(const WebContentsSetBackgroundColor&) = delete;
+  WebContentsSetBackgroundColor& operator=(
+      const WebContentsSetBackgroundColor&) = delete;
+
   ~WebContentsSetBackgroundColor() override;
+
+  SkColor color() const { return color_; }
 
  private:
   friend class content::WebContentsUserData<WebContentsSetBackgroundColor>;
@@ -37,8 +43,6 @@ class WebContentsSetBackgroundColor
   SkColor color_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsSetBackgroundColor);
 };
 
 }  // namespace views

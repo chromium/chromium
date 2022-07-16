@@ -195,6 +195,9 @@ class DataReductionProxyCompressionStats::DailyContentLengthUpdate {
         compression_stats_(compression_stats),
         pref_path_(pref_path) {}
 
+  DailyContentLengthUpdate(const DailyContentLengthUpdate&) = delete;
+  DailyContentLengthUpdate& operator=(const DailyContentLengthUpdate&) = delete;
+
   void UpdateForDateChange(int days_since_last_update) {
     if (days_since_last_update) {
       MaybeInitialize();
@@ -253,7 +256,7 @@ class DataReductionProxyCompressionStats::DailyContentLengthUpdate {
     for (int i = 0;
          i < days_since_last_update && i < static_cast<int>(kNumDaysInHistory);
          ++i) {
-      update_->AppendString(base::NumberToString(0));
+      update_->Append(base::NumberToString(0));
     }
 
     // Entries for new days may have been appended. Maintain the invariant that
@@ -267,8 +270,6 @@ class DataReductionProxyCompressionStats::DailyContentLengthUpdate {
   DataReductionProxyCompressionStats* compression_stats_;
   // The path of the content length pref for |this|.
   const char* pref_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DailyContentLengthUpdate);
 };
 
 // DailyDataSavingUpdate maintains a pair of data saving prefs, original_update_
@@ -283,6 +284,9 @@ class DataReductionProxyCompressionStats::DailyDataSavingUpdate {
                         const char* received_pref_path)
       : original_(compression_stats, original_pref_path),
         received_(compression_stats, received_pref_path) {}
+
+  DailyDataSavingUpdate(const DailyDataSavingUpdate&) = delete;
+  DailyDataSavingUpdate& operator=(const DailyDataSavingUpdate&) = delete;
 
   void UpdateForDateChange(int days_since_last_update) {
     original_.UpdateForDateChange(days_since_last_update);
@@ -305,8 +309,6 @@ class DataReductionProxyCompressionStats::DailyDataSavingUpdate {
  private:
   DailyContentLengthUpdate original_;
   DailyContentLengthUpdate received_;
-
-  DISALLOW_COPY_AND_ASSIGN(DailyDataSavingUpdate);
 };
 
 DataReductionProxyCompressionStats::DataReductionProxyCompressionStats(
@@ -467,8 +469,8 @@ void DataReductionProxyCompressionStats::ResetStatistics() {
   original_update->ClearList();
   received_update->ClearList();
   for (size_t i = 0; i < kNumDaysInHistory; ++i) {
-    original_update->AppendString(base::NumberToString(0));
-    received_update->AppendString(base::NumberToString(0));
+    original_update->Append(base::NumberToString(0));
+    received_update->Append(base::NumberToString(0));
   }
 }
 
@@ -484,7 +486,7 @@ ContentLengthList DataReductionProxyCompressionStats::GetDailyContentLengths(
     const char* pref_name) {
   ContentLengthList content_lengths;
   const base::ListValue* list_value = GetList(pref_name);
-  if (list_value->GetSize() == kNumDaysInHistory) {
+  if (list_value->GetList().size() == kNumDaysInHistory) {
     for (size_t i = 0; i < kNumDaysInHistory; ++i)
       content_lengths.push_back(GetInt64PrefValue(*list_value, i));
   }
@@ -503,8 +505,8 @@ void DataReductionProxyCompressionStats::GetContentLengths(
   const base::ListValue* received_list =
       GetList(prefs::kDailyHttpReceivedContentLength);
 
-  if (original_list->GetSize() != kNumDaysInHistory ||
-      received_list->GetSize() != kNumDaysInHistory) {
+  if (original_list->GetList().size() != kNumDaysInHistory ||
+      received_list->GetList().size() != kNumDaysInHistory) {
     *original_content_length = 0L;
     *received_content_length = 0L;
     *last_update_time = 0L;

@@ -61,6 +61,10 @@ class ArcPowerBridgeTest : public testing::Test {
   static constexpr double kInitialBrightness = 100.0;
 
   ArcPowerBridgeTest() = default;
+
+  ArcPowerBridgeTest(const ArcPowerBridgeTest&) = delete;
+  ArcPowerBridgeTest& operator=(const ArcPowerBridgeTest&) = delete;
+
   ~ArcPowerBridgeTest() override = default;
 
   void SetUp() override {
@@ -146,8 +150,6 @@ class ArcPowerBridgeTest : public testing::Test {
   std::unique_ptr<ArcPowerBridge> power_bridge_;
 
   std::unique_ptr<device::TestWakeLockProvider> wake_lock_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPowerBridgeTest);
 };
 
 TEST_F(ArcPowerBridgeTest, SuspendAndResume) {

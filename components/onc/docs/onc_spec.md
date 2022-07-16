@@ -158,6 +158,12 @@ fetching new policy or logging in.
 A [Help Center article](https://support.google.com/chrome/a/answer/6326250)
 warns admins of the implications of mis-using this policy for Chrome OS.
 
+* **AllowOnlyPolicyCellularNetworks**
+    * (optional, defaults to false) - **boolean**
+    * When this field is present and set to true, only cellular networks present
+      in policy may be connected to. No new cellular networks may be added or
+      configured. This allows admins to ensure that only policy configured
+      cellular networks are accessible.
 
 * **AllowOnlyPolicyNetworksToAutoconnect**
     * (optional, defaults to false) - **boolean**
@@ -182,7 +188,7 @@ warns admins of the implications of mis-using this policy for Chrome OS.
       enabled and a network scan shows a new policy managed network, the device
       will automatically switch to the managed network.
 
-* **BlacklistedHexSSIDs**
+* **BlacklistedHexSSIDs** <!--- nocheck -->
     * DEPRECATED, use **BlockedHexSSIDs** instead.<br/>
     * (optional) - **array of string**
     * List of strings containing blocked hex SSIDs. Networks included in
@@ -204,7 +210,9 @@ warns admins of the implications of mis-using this policy for Chrome OS.
         * *Tether*
         * *VPN*
     * List of strings containing disabled network interfaces.
-    * Adding *VPN* to the list will only disable Chrome OS built-in VPN.
+    * Adding *VPN* to the list will disable all VPN types. Android VPN
+      connections may still be established successfully but will be
+      closed shortly after that by the Chrome OS connection manager.
 
 ## Network Configuration
 
@@ -812,7 +820,7 @@ L2TP over IPsec with pre-shared key:
 
 * **CompLZO**
     * (optional, defaults to *adaptive*) - **string**
-    * DEPRECATED, use **Compress** with *lzo* option instead.
+    * DEPRECATED, use **CompressionAlgorithm** with *lzo* option instead.
     * Decides to fast LZO compression with *true*
       and *false* as other values.
 
@@ -821,7 +829,7 @@ L2TP over IPsec with pre-shared key:
     * DEPRECATED, do not use.
     * Disables adaptive compression.
 
-* **Compress**
+* **CompressionAlgorithm**
     * (optional, defaults to *None*) - **string**
     * Specifies the compression algorithm to be used.
     * Allowed values are:
@@ -1337,6 +1345,14 @@ type exists to configure the authentication.
 	* WiFi only. A list of alternative subject names to be matched against the
     alternative subject name of an authentication server certificate.
 
+* **DomainSuffixMatch**
+    * (optional) - **array of string**
+    * WiFi only. A list of constraints for the server domain name. If set, the
+      entries will be used as suffix match requirements against the DNS name
+      element(s) of the alternative subject name of an authentication server
+      certificate. When multiple match strings are specified, a match with any one
+      of the values is considered a sufficient match for the server certificate.
+
 * **TLSVersionMax**
     * (optional) - **string**
     * Sets the maximum TLS protocol version used by the OS for EAP.
@@ -1552,6 +1568,11 @@ ONC configuration of of **Cellular** networks is not yet supported.
         or **NetworkTechnology**
         is *LTE*) - **boolean**
     * For GSM or LTE modems, indicates whether a SIM card is present or not.
+
+* **SMDPAddress**
+    * (optional, read-only) - **string**
+    * When set with the address of an SMDP+ server, indicates that eSIM profile
+      for this network should be downloaded and installed using this address.
 
 * **SupportNetworkScan**
     * (optional, read-only) - **boolean**

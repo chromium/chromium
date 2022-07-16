@@ -6,20 +6,24 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
+#include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.h"
 #include "components/prefs/pref_service.h"
 
@@ -28,6 +32,8 @@ using file_manager::file_tasks::FileTasksObserver;
 namespace app_list {
 namespace {
 
+// TODO(crbug.com/1258415): kFileChipSchema can be removed once the new
+// launcher is launched.
 constexpr char kFileChipSchema[] = "file_chip://";
 constexpr char kZeroStateFileSchema[] = "zero_state_file://";
 
@@ -58,10 +64,18 @@ bool IsSuggestedContentEnabled(Profile* profile) {
       chromeos::prefs::kSuggestedContentEnabled);
 }
 
+// TODO(crbug.com/1258415): This exists to reroute results depending on which
+// launcher is enabled, and should be removed after the new launcher launch.
+ash::SearchResultDisplayType GetDisplayType() {
+  return ash::features::IsProductivityLauncherEnabled()
+             ? ash::SearchResultDisplayType::kContinue
+             : ash::SearchResultDisplayType::kList;
+}
+
 }  // namespace
 
 ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
-    : profile_(profile) {
+    : profile_(profile), thumbnail_loader_(profile) {
   DCHECK(profile_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
@@ -93,7 +107,9 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
   if (base::FeatureList::IsEnabled(
           app_list_features::kEnableLauncherSearchNormalization) &&
       !app_list_features::IsCategoricalSearchEnabled()) {
-    normalizer_.emplace("zero_state_file_provider", profile, 25);
+    auto path =
+        RankerStateDirectory(profile).AppendASCII("score_norm_local.pb");
+    normalizer_.emplace(path, ScoreNormalizer::Params());
   }
 }
 
@@ -125,13 +141,27 @@ void ZeroStateFileProvider::SetSearchResults(
   // Use valid results for search results.
   SearchProvider::Results new_results;
   for (const auto& filepath_score : results.first) {
-    new_results.emplace_back(std::make_unique<FileResult>(
+    double score = filepath_score.second;
+    if (normalizer_.has_value()) {
+      score = normalizer_->UpdateAndNormalize("results", score);
+    }
+
+    auto result = std::make_unique<FileResult>(
         kZeroStateFileSchema, filepath_score.first,
-        ash::AppListSearchResultType::kZeroStateFile,
-        ash::SearchResultDisplayType::kList, filepath_score.second, profile_));
+        ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(), score,
+        profile_);
+    // TODO(crbug.com/1258415): Only generate thumbnails if the old launcher is
+    // enabled. We should implement new thumbnail logic for Continue results if
+    // necessary.
+    if (result->display_type() == ash::SearchResultDisplayType::kList) {
+      result->RequestThumbnail(&thumbnail_loader_);
+    }
+    new_results.push_back(std::move(result));
 
     // Add suggestion chip file results
-    if (app_list_features::IsSuggestedFilesEnabled() &&
+    // TODO(crbug.com/1258415): This can be removed once the new launcher is
+    // launched.
+    if (app_list_features::IsSuggestedLocalFilesEnabled() &&
         IsSuggestedContentEnabled(profile_)) {
       new_results.emplace_back(
           std::make_unique<FileResult>(kFileChipSchema, filepath_score.first,
@@ -141,10 +171,8 @@ void ZeroStateFileProvider::SetSearchResults(
     }
   }
 
-  if (normalizer_.has_value()) {
-    normalizer_->RecordResults(new_results);
-    normalizer_->NormalizeResults(&new_results);
-  }
+  if (app_list_features::IsForceShowContinueSectionEnabled())
+    AppendFakeSearchResults(&new_results);
 
   UMA_HISTOGRAM_TIMES("Apps.AppList.ZeroStateFileProvider.Latency",
                       base::TimeTicks::Now() - query_start_time_);
@@ -163,6 +191,18 @@ void ZeroStateFileProvider::OnFilesOpened(
   for (const auto& file_open : file_opens) {
     if (profile_path.AppendRelativePath(file_open.path, nullptr))
       files_ranker_->Record(file_open.path.value());
+  }
+}
+
+void ZeroStateFileProvider::AppendFakeSearchResults(Results* results) {
+  constexpr int kTotalFakeFiles = 3;
+  for (int i = 0; i < kTotalFakeFiles; ++i) {
+    results->emplace_back(std::make_unique<FileResult>(
+        kFileChipSchema,
+        base::FilePath(FILE_PATH_LITERAL(
+            base::StrCat({"Fake-file-", base::NumberToString(i), ".png"}))),
+        ash::AppListSearchResultType::kFileChip,
+        ash::SearchResultDisplayType::kContinue, 0.1f, profile_));
   }
 }
 

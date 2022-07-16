@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "components/storage_monitor/image_capture_device.h"
 #include "components/storage_monitor/image_capture_device_manager.h"
@@ -44,6 +43,10 @@ class MTPDeviceDelegateImplMac::DeviceListener
  public:
   DeviceListener(MTPDeviceDelegateImplMac* delegate)
       : delegate_(delegate) {}
+
+  DeviceListener(const DeviceListener&) = delete;
+  DeviceListener& operator=(const DeviceListener&) = delete;
+
   ~DeviceListener() override {}
 
   void OpenCameraSession(const std::string& device_id);
@@ -68,8 +71,6 @@ class MTPDeviceDelegateImplMac::DeviceListener
 
   // Weak pointer
   MTPDeviceDelegateImplMac* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceListener);
 };
 
 void MTPDeviceDelegateImplMac::DeviceListener::OpenCameraSession(
@@ -325,7 +326,7 @@ void MTPDeviceDelegateImplMac::ReadDirectoryImpl(
       FROM_HERE,
       base::BindOnce(&MTPDeviceDelegateImplMac::ReadDirectoryTimeout,
                      weak_factory_.GetWeakPtr(), root),
-      base::TimeDelta::FromSeconds(kReadDirectoryTimeLimitSeconds));
+      base::Seconds(kReadDirectoryTimeLimitSeconds));
 }
 
 void MTPDeviceDelegateImplMac::ReadDirectoryTimeout(

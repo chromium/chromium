@@ -9,9 +9,8 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/component_updater/component_updater_service.h"
 
 // This class takes care of updating the module list component. A successful
@@ -23,6 +22,10 @@ class ModuleListComponentUpdater
  public:
   using UniquePtr =
       std::unique_ptr<ModuleListComponentUpdater, base::OnTaskRunnerDeleter>;
+
+  ModuleListComponentUpdater(const ModuleListComponentUpdater&) = delete;
+  ModuleListComponentUpdater& operator=(const ModuleListComponentUpdater&) =
+      delete;
 
   ~ModuleListComponentUpdater() override;
 
@@ -51,8 +54,6 @@ class ModuleListComponentUpdater
   base::ScopedObservation<component_updater::ComponentUpdateService,
                           component_updater::ComponentUpdateService::Observer>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleListComponentUpdater);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_MODULE_LIST_COMPONENT_UPDATER_H_

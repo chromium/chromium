@@ -16,6 +16,10 @@ namespace extensions {
 class ShellAppDelegate : public AppDelegate {
  public:
   ShellAppDelegate();
+
+  ShellAppDelegate(const ShellAppDelegate&) = delete;
+  ShellAppDelegate& operator=(const ShellAppDelegate&) = delete;
+
   ~ShellAppDelegate() override;
 
   // AppDelegate overrides:
@@ -57,9 +61,6 @@ class ShellAppDelegate : public AppDelegate {
       const viz::SurfaceId& surface_id,
       const gfx::Size& natural_size) override;
   void ExitPictureInPicture() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellAppDelegate);
 };
 
 }  // namespace extensions

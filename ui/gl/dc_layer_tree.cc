@@ -31,9 +31,11 @@ VideoProcessorWrapper& VideoProcessorWrapper::operator=(
     VideoProcessorWrapper&& other) = default;
 
 DCLayerTree::DCLayerTree(bool disable_nv12_dynamic_textures,
-                         bool disable_vp_scaling)
+                         bool disable_vp_scaling,
+                         bool no_downscaled_overlay_promotion)
     : disable_nv12_dynamic_textures_(disable_nv12_dynamic_textures),
       disable_vp_scaling_(disable_vp_scaling),
+      no_downscaled_overlay_promotion_(no_downscaled_overlay_promotion),
       ink_renderer_(std::make_unique<DelegatedInkRenderer>()) {}
 
 DCLayerTree::~DCLayerTree() = default;
@@ -330,6 +332,10 @@ void DCLayerTree::AddDelegatedInkVisualToTree() {
 
   root_surface_visual_->AddVisual(ink_renderer_->GetInkVisual(), FALSE,
                                   nullptr);
+
+  // Adding the ink visual to a new visual tree invalidates all previously set
+  // properties. Therefore, force update.
+  ink_renderer_->SetNeedsDcompPropertiesUpdate();
 }
 
 void DCLayerTree::SetDelegatedInkTrailStartPoint(

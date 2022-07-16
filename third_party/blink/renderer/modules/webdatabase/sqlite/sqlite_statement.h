@@ -41,6 +41,10 @@ class SQLiteStatement {
 
  public:
   SQLiteStatement(SQLiteDatabase&, const String&);
+
+  SQLiteStatement(const SQLiteStatement&) = delete;
+  SQLiteStatement& operator=(const SQLiteStatement&) = delete;
+
   ~SQLiteStatement();
 
   int Prepare();
@@ -81,8 +85,6 @@ class SQLiteStatement {
 #if DCHECK_IS_ON()
   bool is_prepared_ = false;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(SQLiteStatement);
 };
 
 }  // namespace blink

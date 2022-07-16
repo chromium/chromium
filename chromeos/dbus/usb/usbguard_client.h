@@ -6,7 +6,6 @@
 #define CHROMEOS_DBUS_USB_USBGUARD_CLIENT_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/usb/usbguard_observer.h"
 
 namespace dbus {
@@ -17,6 +16,9 @@ namespace chromeos {
 
 class COMPONENT_EXPORT(CHROMEOS_DBUS) UsbguardClient {
  public:
+  UsbguardClient(const UsbguardClient&) = delete;
+  UsbguardClient& operator=(const UsbguardClient&) = delete;
+
   virtual ~UsbguardClient();
 
   // Creates and initializes the global instance. |bus| must not be null.
@@ -41,9 +43,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) UsbguardClient {
  protected:
   // Initialize/Shutdown should be used instead.
   UsbguardClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsbguardClient);
 };
 
 }  // namespace chromeos

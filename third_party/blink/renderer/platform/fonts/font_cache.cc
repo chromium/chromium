@@ -35,6 +35,7 @@
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -47,13 +48,13 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_map.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
+#include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_smoothing_mode.h"
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/text_rendering_mode.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_memory_allocator_dump.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
@@ -74,6 +75,9 @@ namespace {
 const base::Feature kFontCacheNoSizeInKey{"FontCacheNoSizeInKey",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 }
+
+const base::Feature kAsyncFontAccess{"AsyncFontAccess",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
 const char kColorEmojiLocale[] = "und-Zsye";
 
@@ -355,8 +359,11 @@ scoped_refptr<SimpleFontData> FontCache::FallbackFontForCharacter(
   if (Character::IsPrivateUse(lookup_char) ||
       Character::IsNonCharacter(lookup_char))
     return nullptr;
-  return PlatformFallbackFontForCharacter(
+  base::ElapsedTimer timer;
+  scoped_refptr<SimpleFontData> result = PlatformFallbackFontForCharacter(
       description, lookup_char, font_data_to_substitute, fallback_priority);
+  FontPerformance::AddSystemFallbackFontTime(timer.Elapsed());
+  return result;
 }
 
 void FontCache::ReleaseFontData(const SimpleFontData* font_data) {
@@ -384,16 +391,7 @@ void FontCache::PurgePlatformFontDataCache() {
 
 void FontCache::PurgeFallbackListShaperCache() {
   TRACE_EVENT0("fonts,ui", "FontCache::PurgeFallbackListShaperCache");
-  unsigned items = 0;
-  FallbackListShaperCache::iterator iter;
-  for (iter = fallback_list_shaper_cache_.begin();
-       iter != fallback_list_shaper_cache_.end(); ++iter) {
-    items += iter->value->size();
-  }
   fallback_list_shaper_cache_.clear();
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram, shape_cache_histogram,
-                                  ("Blink.Fonts.ShapeCache", 1, 1000000, 50));
-  shape_cache_histogram.Count(items);
 }
 
 void FontCache::InvalidateShapeCache() {

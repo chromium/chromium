@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.dom.annotateTest');
 goog.setTestOnly();
@@ -38,6 +30,7 @@ testSuite({
 
     terms = [['pig', false]];
     html = annotate.annotateText(TEXT, terms, doAnnotation);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     html = SafeHtml.unwrap(html);
     assertEquals(
         'This little <span class="c0">pig</span>gy cried ' +
@@ -50,6 +43,7 @@ testSuite({
 
     terms = [[' piggy ', false]];
     html = annotate.annotateText(TEXT, terms, doAnnotation);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     html = SafeHtml.unwrap(html);
     assertEquals(
         'This little<span class="c0"> piggy </span>cried ' +
@@ -58,6 +52,7 @@ testSuite({
 
     terms = [['goose', true], ['piggy', true]];
     html = annotate.annotateText(TEXT, terms, doAnnotation);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     html = SafeHtml.unwrap(html);
     assertEquals(
         'This little <span class="c1">piggy</span> cried ' +
@@ -68,16 +63,19 @@ testSuite({
   testAnnotateTextHtmlEscaping() {
     let terms = [['a', false]];
     let html = annotate.annotateText('&a', terms, doAnnotation);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     html = SafeHtml.unwrap(html);
     assertEquals('&amp;<span class="c0">a</span>', html);
 
     terms = [['a', false]];
     html = annotate.annotateText('a&', terms, doAnnotation);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     html = SafeHtml.unwrap(html);
     assertEquals('<span class="c0">a</span>&amp;', html);
 
     terms = [['&', false]];
     html = annotate.annotateText('&', terms, doAnnotation);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     html = SafeHtml.unwrap(html);
     assertEquals('<span class="c0">&amp;</span>', html);
   },
@@ -85,6 +83,7 @@ testSuite({
   testAnnotateTextIgnoreCase() {
     let terms = [['wEe', true]];
     let html = annotate.annotateText(TEXT, terms, doAnnotation, true);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     html = SafeHtml.unwrap(html);
     assertEquals(
         'This little piggy cried &quot;<span class="c0">Wee</span>! ' +
@@ -94,6 +93,7 @@ testSuite({
 
     terms = [['WEE!', true], ['HE', false]];
     html = annotate.annotateText(TEXT, terms, doAnnotation, true);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     html = SafeHtml.unwrap(html);
     assertEquals(
         'This little piggy cried &quot;<span class="c0">Wee!</span> ' +
@@ -105,6 +105,7 @@ testSuite({
   testAnnotateTextOverlappingTerms() {
     const terms = [['tt', false], ['little', false]];
     let html = annotate.annotateText(TEXT, terms, doAnnotation);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     html = SafeHtml.unwrap(html);
     assertEquals(
         'This <span class="c1">little</span> piggy cried &quot;Wee! ' +
@@ -126,6 +127,10 @@ testSuite({
     assertEquals(' & Jerry', spans[0].nextSibling.nodeValue);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testAnnotateTermsInTable() {
     const terms = [['pig', false]];
     assertTrue(annotate.annotateTerms($('q'), terms, doAnnotation));

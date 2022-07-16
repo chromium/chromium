@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/extensions/webstore_data_fetcher_delegate.h"
@@ -54,6 +53,8 @@ class KioskAppData : public KioskAppDataBase,
                const AccountId& account_id,
                const GURL& update_url,
                const base::FilePath& cached_crx);
+  KioskAppData(const KioskAppData&) = delete;
+  KioskAppData& operator=(const KioskAppData&) = delete;
   ~KioskAppData() override;
 
   // Loads app data from cache. If there is no cached data, fetches it
@@ -157,8 +158,6 @@ class KioskAppData : public KioskAppDataBase,
   base::FilePath crx_file_;
 
   base::WeakPtrFactory<KioskAppData> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppData);
 };
 
 }  // namespace ash

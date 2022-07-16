@@ -19,9 +19,9 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget.h"
@@ -176,6 +176,7 @@ SkColor BrowserFrameHeaderChromeOS::GetCurrentFrameColor() const {
 }
 
 void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
+  SetPaintAsActive(target_widget()->ShouldPaintAsActive());
   UpdateCaptionButtonColors();
   view()->SchedulePaint();
 }

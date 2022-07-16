@@ -16,6 +16,10 @@ namespace arc {
 class FakePolicyInstance : public mojom::PolicyInstance {
  public:
   FakePolicyInstance();
+
+  FakePolicyInstance(const FakePolicyInstance&) = delete;
+  FakePolicyInstance& operator=(const FakePolicyInstance&) = delete;
+
   ~FakePolicyInstance() override;
 
   // mojom::PolicyInstance
@@ -35,8 +39,6 @@ class FakePolicyInstance : public mojom::PolicyInstance {
   mojo::Remote<mojom::PolicyHost> host_remote_;
 
   std::string command_payload_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePolicyInstance);
 };
 
 }  // namespace arc

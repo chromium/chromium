@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
@@ -35,6 +36,10 @@ namespace {
 // with and without the experimental WindowPlacement blink feature.
 class PopupBrowserTest : public InProcessBrowserTest,
                          public ::testing::WithParamInterface<bool> {
+ public:
+  PopupBrowserTest(const PopupBrowserTest&) = delete;
+  PopupBrowserTest& operator=(const PopupBrowserTest&) = delete;
+
  protected:
   PopupBrowserTest() = default;
   ~PopupBrowserTest() override = default;
@@ -63,9 +68,6 @@ class PopupBrowserTest : public InProcessBrowserTest,
     EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetMainFrame()));
     return popup;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PopupBrowserTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, PopupBrowserTest, ::testing::Bool());
@@ -277,7 +279,11 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MAYBE_AboutBlankCrossScreenPlacement) {
         permissions::PermissionRequestManager::ACCEPT_ALL);
     constexpr char kGetScreensLength[] = R"(
       (async () => {
-        try { return (await getScreens()).screens.length; } catch { return 0; }
+        try {
+          return (await getScreenDetails()).screens.length;
+        } catch {
+          return 0;
+        }
       })();
     )";
     EXPECT_EQ(2, EvalJs(opener, kGetScreensLength));

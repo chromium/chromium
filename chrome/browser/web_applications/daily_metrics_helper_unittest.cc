@@ -19,7 +19,6 @@ namespace web_app {
 namespace {
 
 using base::Time;
-using base::TimeDelta;
 using testing::Contains;
 using testing::Key;
 using testing::Not;
@@ -50,7 +49,7 @@ class DailyMetricsHelperTest : public WebAppTest {
   }
 
   void RecordSomethingTheNextDaySoItEmits() {
-    task_environment()->FastForwardBy(TimeDelta::FromDays(1));
+    task_environment()->FastForwardBy(base::Days(1));
     DailyInteraction record(GURL("http://this.should.not.be.emitted.com/"));
     FlushOldRecordsAndUpdate(record, profile());
   }
@@ -166,13 +165,13 @@ TEST_F(DailyMetricsHelperTest, EmitsSumsForDurationsAndSessions) {
   DailyInteraction record(GURL("http://some.url/1"));
   FlushOldRecordsAndUpdate(record, profile());
 
-  record.foreground_duration = TimeDelta::FromHours(1);
-  record.background_duration = TimeDelta::FromHours(2);
+  record.foreground_duration = base::Hours(1);
+  record.background_duration = base::Hours(2);
   record.num_sessions = 3;
   FlushOldRecordsAndUpdate(record, profile());
 
-  record.foreground_duration = TimeDelta::FromHours(4);
-  record.background_duration = TimeDelta::FromHours(5);
+  record.foreground_duration = base::Hours(4);
+  record.background_duration = base::Hours(5);
   record.num_sessions = 6;
   FlushOldRecordsAndUpdate(record, profile());
 
@@ -194,12 +193,12 @@ TEST_F(DailyMetricsHelperTest, EmitsSumsForDurationsAndSessions) {
 
 TEST_F(DailyMetricsHelperTest, EmitsClampedSumsForExtremeDurations) {
   DailyInteraction record(GURL("http://some.url/1"));
-  record.foreground_duration = TimeDelta::FromSeconds(1);
-  record.background_duration = TimeDelta::FromHours(20);
+  record.foreground_duration = base::Seconds(1);
+  record.background_duration = base::Hours(20);
   FlushOldRecordsAndUpdate(record, profile());
 
-  record.foreground_duration = TimeDelta::FromSeconds(3);
-  record.background_duration = TimeDelta::FromHours(15);
+  record.foreground_duration = base::Seconds(3);
+  record.background_duration = base::Hours(15);
   FlushOldRecordsAndUpdate(record, profile());
 
   RecordSomethingTheNextDaySoItEmits();

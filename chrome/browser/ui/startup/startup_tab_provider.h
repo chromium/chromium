@@ -7,12 +7,19 @@
 
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/startup/startup_browser_creator.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "url/gurl.h"
+
+class Profile;
+class StartupBrowserCreator;
+struct SessionStartupPref;
+
+namespace base {
+class CommandLine;
+class FilePath;
+}  // namespace base
 
 // Provides the sets of tabs to be shown at startup for given sets of policy.
 // For instance, this class answers the question, "which tabs, if any, need to
@@ -62,10 +69,21 @@ class StartupTabProvider {
   virtual StartupTabs GetPostCrashTabs(
       bool has_incompatible_applications) const = 0;
 
+  // Returns the URLs given via the command line arguments to be opened at
+  // launching.
+  virtual StartupTabs GetCommandLineTabs(const base::CommandLine& command_line,
+                                         const base::FilePath& cur_dir,
+                                         Profile* profile) const = 0;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns the URLs given via the crosapi BrowserInitParams with
+  // kOpenWindowWithUrls action.
+  virtual StartupTabs GetCrosapiTabs() const = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if !defined(OS_ANDROID)
   // Returns tabs related to the What's New UI (if applicable).
   virtual StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const = 0;
-#endif
+#endif  // !defined(OS_ANDROID)
 };
 
 class StartupTabProviderImpl : public StartupTabProvider {
@@ -177,9 +195,17 @@ class StartupTabProviderImpl : public StartupTabProvider {
                                 Profile* profile) const override;
   StartupTabs GetPostCrashTabs(
       bool has_incompatible_applications) const override;
+  StartupTabs GetCommandLineTabs(const base::CommandLine& command_line,
+                                 const base::FilePath& cur_dir,
+                                 Profile* profile) const override;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  StartupTabs GetCrosapiTabs() const override;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if !defined(OS_ANDROID)
   StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const override;
-#endif
+#endif  // !defined(OS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_STARTUP_TAB_PROVIDER_H_

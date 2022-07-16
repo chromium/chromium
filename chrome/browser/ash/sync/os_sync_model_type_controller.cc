@@ -29,7 +29,7 @@ OsSyncModelTypeController::OsSyncModelTypeController(
                                   std::move(delegate_for_transport_mode)),
       pref_service_(pref_service),
       sync_service_(sync_service) {
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled());
+  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   DCHECK(pref_service_);
   DCHECK(sync_service_);
   pref_registrar_.Init(pref_service_);

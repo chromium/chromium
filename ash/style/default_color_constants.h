@@ -40,5 +40,7 @@ constexpr SkColor kSplitviewBlackScrimLayerColor = SK_ColorBLACK;
 constexpr SkColor kSplitviewHighlightViewBackgroundColor = SK_ColorWHITE;
 constexpr SkColor kSplitviewHighlightViewBackgroundCannotSnapColor =
     SK_ColorBLACK;
+constexpr SkColor kSplitviewPhantomWindowColor =
+    SkColorSetA(SK_ColorWHITE, 0.4 * 255);
 
 #endif  // ASH_STYLE_DEFAULT_COLOR_CONSTANTS_H_

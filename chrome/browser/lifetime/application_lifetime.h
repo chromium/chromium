@@ -41,6 +41,8 @@ void AttemptRelaunch();
 // that all user prompts (e.g., beforeunload handlers and confirmation to abort
 // in-progress downloads) are bypassed.
 void RelaunchIgnoreUnloadHandlers();
+// TODO(https://crbug.com/1227426): for debugging.
+bool DidCallRelaunchIgnoreUnloadHandlers();
 #endif
 
 // Attempt to exit by closing all browsers.  This is equivalent to

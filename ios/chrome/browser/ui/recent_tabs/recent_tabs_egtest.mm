@@ -6,15 +6,19 @@
 #import <string>
 
 #include "base/ios/ios_util.h"
+#include "base/strings/sys_string_conversions.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
+#include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/policy/policy_app_interface.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
-#import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -31,14 +35,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-// TODO(crbug.com/1015113): The EG2 macro is breaking indexing for some reason
-// without the trailing semicolon.  For now, disable the extra semi warning
-// so Xcode indexing works for the egtest.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(RecentTabsAppInterface);
-#pragma clang diagnostic pop
 
 using chrome_test_util::RecentTabsMenuButton;
 
@@ -89,6 +85,19 @@ GURL TestPageURL() {
 
 @implementation RecentTabsTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector(testSyncTypesListDisabled)]) {
+    // Configure the policy.
+    config.additional_args.push_back(
+        "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
+    config.additional_args.push_back(
+        "<dict><key>SyncTypesListDisabled</key><array><string>tabs</"
+        "string></array></dict>");
+  }
+  return config;
+}
+
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey clearBrowsingHistory];
@@ -97,6 +106,12 @@ GURL TestPageURL() {
       std::string(kHTMLOfTestPage),
   }});
   [RecentTabsAppInterface clearCollapsedListViewSectionStates];
+}
+
+// Tear down called once per test.
+- (void)tearDown {
+  [super tearDown];
+  [PolicyAppInterface clearPolicies];
 }
 
 // Tests that a closed tab appears in the Recent Tabs panel, and that tapping
@@ -235,11 +250,8 @@ GURL TestPageURL() {
 // Tests that the VC can be dismissed by swiping down.
 - (void)testSwipeDownDismiss {
   // TODO(crbug.com/1129589): Test disabled on iOS14 iPhones.
-  if (base::ios::IsRunningOnIOS14OrLater() && ![ChromeEarlGrey isIPadIdiom]) {
+  if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iOS14 iPhones.");
-  }
-  if (!IsCollectionsCardPresentationStyleEnabled()) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
   }
   OpenRecentTabsPanel();
 
@@ -395,6 +407,47 @@ GURL TestPageURL() {
   [[EarlGrey selectElementWithMatcher:exitMatcher] performAction:grey_tap()];
   // Wait until the recent tabs panel is dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
+}
+
+// Tests that the sign-in promo isn't shown and the 'Other Devices' section is
+// managed when the SyncDisabled policy is enabled.
+- (void)testSyncDisabled {
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+
+  // Dismiss the popup.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE)),
+                            grey_userInteractionEnabled(), nil)]
+      performAction:grey_tap()];
+
+  OpenRecentTabsPanel();
+
+  // Check that the sign-in promo is not visible.
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+
+  // Check that the 'Other Devices' section is managed.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION)),
+                            grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the sign-in promo isn't shown and the 'Other Devices' section is
+// managed when the SyncTypesListDisabled tabs item policy is selected.
+- (void)testSyncTypesListDisabled {
+  OpenRecentTabsPanel();
+
+  // Check that the sign-in promo is not visible.
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+
+  // Check that the 'Other Devices' section is managed.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION)),
+                            grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

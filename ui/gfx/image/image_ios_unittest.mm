@@ -47,6 +47,10 @@ UIImage* UIImageWithSizeAndScale(CGFloat width, CGFloat height, CGFloat scale) {
 class ImageIOSTest : public testing::Test {
  public:
   ImageIOSTest() {}
+
+  ImageIOSTest(const ImageIOSTest&) = delete;
+  ImageIOSTest& operator=(const ImageIOSTest&) = delete;
+
   ~ImageIOSTest() override {}
 
   void SetUp() override {
@@ -60,8 +64,6 @@ class ImageIOSTest : public testing::Test {
  private:
   // Used to save and restore the scale factors in effect before this test.
   std::vector<float> original_scale_factors_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageIOSTest);
 };
 
 // Tests image conversion when the scale factor of the source image is not in

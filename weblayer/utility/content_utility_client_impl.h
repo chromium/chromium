@@ -19,14 +19,15 @@ class ContentUtilityClientImpl : public content::ContentUtilityClient {
       NetworkBinderCreationCallback callback);
 
   ContentUtilityClientImpl();
+
+  ContentUtilityClientImpl(const ContentUtilityClientImpl&) = delete;
+  ContentUtilityClientImpl& operator=(const ContentUtilityClientImpl&) = delete;
+
   ~ContentUtilityClientImpl() override;
 
   // content::ContentUtilityClient:
   void RegisterNetworkBinders(
       service_manager::BinderRegistry* registry) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentUtilityClientImpl);
 };
 
 }  // namespace weblayer

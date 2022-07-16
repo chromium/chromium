@@ -25,6 +25,10 @@ namespace chromecast {
 class SocketBuffer {
  public:
   SocketBuffer() : pending_read_data_(nullptr), pending_read_len_(0) {}
+
+  SocketBuffer(const SocketBuffer&) = delete;
+  SocketBuffer& operator=(const SocketBuffer&) = delete;
+
   ~SocketBuffer() {}
 
   // Reads |len| bytes from the buffer and writes it to |data|. Returns the
@@ -99,8 +103,6 @@ class SocketBuffer {
   net::CompletionOnceCallback pending_read_callback_;
   bool eos_ = false;
   base::WeakPtrFactory<SocketBuffer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SocketBuffer);
 };
 
 FakeStreamSocket::FakeStreamSocket() : FakeStreamSocket(net::IPEndPoint()) {}

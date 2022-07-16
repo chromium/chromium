@@ -18,8 +18,7 @@ namespace {
 
 // Maps TaskTraits extension IDs to registered TaskExecutors. Index |n|
 // corresponds to id |n - 1|.
-using TaskExecutorMap =
-    std::array<TaskExecutor*, TaskTraitsExtensionStorage::kMaxExtensionId>;
+using TaskExecutorMap = std::array<TaskExecutor*, TaskTraitsExtensionStorage::kMaxExtensionId>;
 TaskExecutorMap* GetTaskExecutorMap() {
   static_assert(std::is_trivially_destructible<TaskExecutorMap>::value,
                 "TaskExecutorMap not trivially destructible");

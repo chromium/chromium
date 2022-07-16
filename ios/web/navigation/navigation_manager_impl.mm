@@ -22,9 +22,9 @@
 #include "base/timer/elapsed_timer.h"
 #include "ios/web/common/features.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
-#include "ios/web/navigation/navigation_item_impl_list.h"
 #import "ios/web/navigation/navigation_manager_delegate.h"
 #import "ios/web/navigation/wk_navigation_util.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
@@ -354,13 +354,6 @@ void NavigationManagerImpl::CommitPendingItem(
   // If |currentItem| is not nil, it is the last committed item in the
   // WKWebView.
   if (proxy.backForwardList && !proxy.backForwardList.currentItem) {
-    if (!base::ios::IsRunningOnIOS13OrLater()) {
-      // Prior to iOS 13 WKWebView's URL should be about:blank for empty window
-      // open item. TODO(crbug.com/885249): Use GURL::IsAboutBlank() instead.
-      DCHECK(base::StartsWith(net::GURLWithNSURL(proxy.URL).spec(),
-                              url::kAboutBlankURL,
-                              base::CompareCase::SENSITIVE));
-    }
     // There should be no back-forward history for empty window open item.
     DCHECK_EQ(0UL, proxy.backForwardList.backList.count);
     DCHECK_EQ(0UL, proxy.backForwardList.forwardList.count);
@@ -448,7 +441,7 @@ void NavigationManagerImpl::ApplyWKWebViewForwardHistoryClobberWorkaround() {
   for (size_t i = 0; i < forward_items.size(); i++) {
     const NavigationItemImpl* item =
         GetNavigationItemImplAtIndex(i + current_item_index);
-    forward_items[i] = std::make_unique<web::NavigationItemImpl>(*item);
+    forward_items[i] = std::make_unique<NavigationItemImpl>(*item);
   }
 
   DiscardNonCommittedItems();
@@ -487,8 +480,10 @@ bool NavigationManagerImpl::RestoreSessionFromCache(const GURL& url) {
       restored_visible_item_->GetUserAgentType() != UserAgentType::NONE) {
     NavigationItem* last_committed_item =
         GetLastCommittedItemInCurrentOrRestoredSession();
-    last_committed_item->SetUserAgentType(
-        restored_visible_item_->GetUserAgentType());
+    if (last_committed_item) {
+      last_committed_item->SetUserAgentType(
+          restored_visible_item_->GetUserAgentType());
+    }
   }
   restored_visible_item_.reset();
   FinalizeSessionRestore();
@@ -918,8 +913,8 @@ void NavigationManagerImpl::ReloadWithUserAgentType(
   LoadURLWithParams(params);
 }
 
-NavigationItemList NavigationManagerImpl::GetBackwardItems() const {
-  NavigationItemList items;
+std::vector<NavigationItem*> NavigationManagerImpl::GetBackwardItems() const {
+  std::vector<NavigationItem*> items;
 
   if (is_restore_session_in_progress_)
     return items;
@@ -932,8 +927,8 @@ NavigationItemList NavigationManagerImpl::GetBackwardItems() const {
   return items;
 }
 
-NavigationItemList NavigationManagerImpl::GetForwardItems() const {
-  NavigationItemList items;
+std::vector<NavigationItem*> NavigationManagerImpl::GetForwardItems() const {
+  std::vector<NavigationItem*> items;
 
   if (is_restore_session_in_progress_)
     return items;
@@ -1280,7 +1275,8 @@ bool NavigationManagerImpl::CanTrustLastCommittedItem(
   // visible.
   GURL web_view_url = web_view_cache_.GetVisibleWebViewURL();
   GURL last_committed_url = last_committed_item->GetURL();
-  if (web_view_url.GetOrigin() == last_committed_url.GetOrigin())
+  if (web_view_url.DeprecatedGetOriginAsURL() ==
+      last_committed_url.DeprecatedGetOriginAsURL())
     return true;
 
   // Fast back-forward navigations can be performed synchronously, with the

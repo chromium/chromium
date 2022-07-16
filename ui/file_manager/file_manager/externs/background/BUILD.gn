@@ -30,6 +30,7 @@ js_library("file_browser_background_full") {
     ":media_import_handler",
     ":media_scanner",
     ":progress_center",
+    "//ui/file_manager/file_manager/common/js:files_app_state",
   ]
 }
 

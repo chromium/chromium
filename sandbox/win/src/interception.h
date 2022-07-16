@@ -71,6 +71,10 @@ class InterceptionManager {
   // else, relaxed should be set to true.
   // |child_process| should outlive the manager.
   InterceptionManager(TargetProcess& child_process, bool relaxed);
+
+  InterceptionManager(const InterceptionManager&) = delete;
+  InterceptionManager& operator=(const InterceptionManager&) = delete;
+
   ~InterceptionManager();
 
   // Patches function_name inside dll_name to point to replacement_code_address.
@@ -218,8 +222,6 @@ class InterceptionManager {
 
   // true if we are allowed to patch already-patched functions.
   bool relaxed_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterceptionManager);
 };
 
 // This macro simply calls interception_manager.AddToPatchedFunctions with

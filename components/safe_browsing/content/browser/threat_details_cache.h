@@ -10,7 +10,6 @@
 
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"

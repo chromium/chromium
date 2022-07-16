@@ -39,11 +39,13 @@ bool UrlMatchesGlobs(const std::vector<std::string>* globs,
 namespace extensions {
 
 // The bitmask for valid user script injectable schemes used by URLPattern.
+// TODO(https://crbug.com/1257045): Remove urn: scheme support.
 enum {
   kValidUserScriptSchemes = URLPattern::SCHEME_CHROMEUI |
                             URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS |
                             URLPattern::SCHEME_FILE | URLPattern::SCHEME_FTP |
-                            URLPattern::SCHEME_URN
+                            URLPattern::SCHEME_URN |
+                            URLPattern::SCHEME_UUID_IN_PACKAGE
 };
 
 // static
@@ -76,6 +78,11 @@ int UserScript::ValidUserScriptSchemes(bool can_execute_script_everywhere) {
     valid_schemes &= ~URLPattern::SCHEME_CHROMEUI;
   }
   return valid_schemes;
+}
+
+// static
+bool UserScript::IsIDGenerated(const std::string& id) {
+  return !id.empty() && id[0] == kGeneratedIDPrefix;
 }
 
 UserScript::File::File(const base::FilePath& extension_root,
@@ -272,7 +279,7 @@ void UserScript::Unpickle(const base::Pickle& pickle,
 
 bool UserScript::IsIDGenerated() const {
   CHECK(!user_script_id_.empty());
-  return user_script_id_[0] == kGeneratedIDPrefix;
+  return IsIDGenerated(user_script_id_);
 }
 
 void UserScript::UnpickleGlobs(const base::Pickle& pickle,

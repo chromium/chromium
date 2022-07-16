@@ -20,10 +20,16 @@ class GL_EXPORT DCOMPSurfaceRegistry {
  public:
   static DCOMPSurfaceRegistry* GetInstance();
 
-  // `GpuServiceImpl` calls this when it receives the corresponding call from
-  // Browser process.
+  // Registers a surface handle and return the associated token, which will be
+  // sent to `MediaFoundationRendererClient` and then to `DCOMPTexture` to take
+  // the handle for direct composition rendering.
   base::UnguessableToken RegisterDCOMPSurfaceHandle(
       base::win::ScopedHandle surface);
+
+  // Unregisters the surface handle associated with `token`. Called when the
+  // `MediaFoundationRendererWrapper` with a registered handle is destructed.
+  // No-op if the handle has already been taken by `DCOMPTexture`.
+  void UnregisterDCOMPSurfaceHandle(const base::UnguessableToken& token);
 
   // `DCOMPTexture` calls this to take the ownership of the DCOMP surface handle
   // when it receives a token from the `MediaFoundationRendererClient` in the

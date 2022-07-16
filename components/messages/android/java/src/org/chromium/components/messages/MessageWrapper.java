@@ -4,6 +4,9 @@
 
 package org.chromium.components.messages;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+
 import androidx.annotation.DrawableRes;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -107,6 +110,16 @@ public final class MessageWrapper {
     @CalledByNative
     void setIconResourceId(@DrawableRes int resourceId) {
         mMessageProperties.set(MessageBannerProperties.ICON_RESOURCE_ID, resourceId);
+    }
+
+    @CalledByNative
+    boolean isValidIcon() {
+        return mMessageProperties.get(MessageBannerProperties.ICON) != null;
+    }
+
+    @CalledByNative
+    void setIcon(Bitmap iconBitmap) {
+        mMessageProperties.set(MessageBannerProperties.ICON, new BitmapDrawable(iconBitmap));
     }
 
     @CalledByNative

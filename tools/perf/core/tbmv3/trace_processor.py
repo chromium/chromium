@@ -75,6 +75,8 @@ def _RunTraceProcessor(*args):
   """Run trace processor shell with given command line arguments."""
   p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   stdout, stderr = p.communicate()
+  stdout = stdout.decode('utf-8')
+  stderr = stderr.decode('utf-8')
   if p.returncode == 0:
     return stdout
   else:

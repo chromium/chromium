@@ -19,11 +19,12 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/system/system_monitor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -1114,6 +1115,10 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  // Sets Floss enabled based on feature flag.
+  CrasAudioClient::Get()->SetFlossEnabled(
+      base::FeatureList::IsEnabled(floss::features::kFlossEnabled));
+
   input_muted_by_microphone_mute_switch_ = IsMicrophoneMuteSwitchOn();
   if (input_muted_by_microphone_mute_switch_)
     SetInputMute(true);
@@ -1817,9 +1822,8 @@ void CrasAudioHandler::StartHDMIRediscoverGracePeriod() {
   hdmi_rediscover_timer_.Stop();
   hdmi_rediscover_timer_.Start(
       FROM_HERE,
-      base::TimeDelta::FromMilliseconds(
-          hdmi_rediscover_grace_period_duration_in_ms_),
-      this, &CrasAudioHandler::UpdateAudioAfterHDMIRediscoverGracePeriod);
+      base::Milliseconds(hdmi_rediscover_grace_period_duration_in_ms_), this,
+      &CrasAudioHandler::UpdateAudioAfterHDMIRediscoverGracePeriod);
 }
 
 void CrasAudioHandler::SetHDMIRediscoverGracePeriodForTesting(
@@ -1925,6 +1929,8 @@ CrasAudioHandler::ClientType CrasAudioHandler::ConvertClientTypeStringToEnum(
     return ClientType::CHROME;
   } else if (client_type_str == "CRAS_CLIENT_TYPE_ARC") {
     return ClientType::ARC;
+  } else if (client_type_str == "CRAS_CLIENT_TYPE_BOREALIS") {
+    return ClientType::VM_BOREALIS;
   } else {
     return ClientType::UNKNOWN;
   }

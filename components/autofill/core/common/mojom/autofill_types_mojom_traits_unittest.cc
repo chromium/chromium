@@ -85,7 +85,6 @@ void CreatePasswordGenerationUIData(
 void CheckEqualPasswordFormFillData(const PasswordFormFillData& expected,
                                     const PasswordFormFillData& actual) {
   EXPECT_EQ(expected.form_renderer_id, actual.form_renderer_id);
-  EXPECT_EQ(expected.url, actual.url);
   EXPECT_EQ(expected.action, actual.action);
   EXPECT_TRUE(
       EquivalentData(test::WithoutUnserializedData(expected.username_field),

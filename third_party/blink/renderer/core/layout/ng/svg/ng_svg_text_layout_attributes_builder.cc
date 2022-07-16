@@ -18,7 +18,10 @@ namespace blink {
 struct SVGTextLengthContext {
   DISALLOW_NEW();
 
-  const LayoutObject* layout_object;
+ public:
+  void Trace(Visitor* visitor) const { visitor->Trace(layout_object); }
+
+  Member<const LayoutObject> layout_object;
   unsigned start_index;
 };
 
@@ -231,9 +234,9 @@ NGSvgTextLayoutAttributesBuilder::NGSvgTextLayoutAttributesBuilder(
 // [1]: https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
 void NGSvgTextLayoutAttributesBuilder::Build(
     const String& ifc_text_content,
-    const Vector<NGInlineItem>& items) {
+    const HeapVector<NGInlineItem>& items) {
   LayoutAttributesStack attr_stack;
-  Vector<SVGTextLengthContext> text_length_stack;
+  HeapVector<SVGTextLengthContext> text_length_stack;
   unsigned addressable_index = 0;
   bool is_first_char = true;
   bool in_text_path = false;
@@ -282,9 +285,11 @@ void NGSvgTextLayoutAttributesBuilder::Build(
       }
       if (text_length_stack.size() > 0u &&
           text_length_stack.back().layout_object == object) {
-        text_length_range_list_.push_back(
-            SvgTextContentRange{object, text_length_stack.back().start_index,
-                                addressable_index - 1});
+        if (text_length_stack.back().start_index != addressable_index) {
+          text_length_range_list_.push_back(
+              SvgTextContentRange{object, text_length_stack.back().start_index,
+                                  addressable_index - 1});
+        }
         text_length_stack.pop_back();
       }
 
@@ -379,19 +384,12 @@ void NGSvgTextLayoutAttributesBuilder::Build(
   attr_stack.Pop();
 }
 
-Vector<std::pair<unsigned, NGSvgCharacterData>>
-NGSvgTextLayoutAttributesBuilder::CharacterDataList() {
-  return std::move(resolved_);
-}
-
-Vector<SvgTextContentRange>
-NGSvgTextLayoutAttributesBuilder::TextLengthRangeList() {
-  return std::move(text_length_range_list_);
-}
-
-Vector<SvgTextContentRange>
-NGSvgTextLayoutAttributesBuilder::TextPathRangeList() {
-  return std::move(text_path_range_list_);
+SvgInlineNodeData* NGSvgTextLayoutAttributesBuilder::CreateSvgInlineNodeData() {
+  auto* svg_node_data = MakeGarbageCollected<SvgInlineNodeData>();
+  svg_node_data->character_data_list = std::move(resolved_);
+  svg_node_data->text_length_range_list = std::move(text_length_range_list_);
+  svg_node_data->text_path_range_list = std::move(text_path_range_list_);
+  return svg_node_data;
 }
 
 }  // namespace blink

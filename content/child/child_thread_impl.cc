@@ -33,11 +33,11 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
@@ -52,6 +52,7 @@
 #include "content/common/field_trial_recorder.mojom.h"
 #include "content/common/in_process_child_thread_params.h"
 #include "content/common/mojo_core_library_support.h"
+#include "content/common/pseudonymization_salt.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -95,6 +96,7 @@
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 #include <stdio.h>
 #include "base/test/clang_profiling.h"
+#include "build/config/compiler/compiler_buildflags.h"
 #if defined(OS_WIN)
 #include <io.h>
 #endif
@@ -127,6 +129,9 @@ class WaitAndExitDelegate : public base::PlatformThread::Delegate {
   explicit WaitAndExitDelegate(base::TimeDelta duration)
       : duration_(duration) {}
 
+  WaitAndExitDelegate(const WaitAndExitDelegate&) = delete;
+  WaitAndExitDelegate& operator=(const WaitAndExitDelegate&) = delete;
+
   void ThreadMain() override {
     base::PlatformThread::Sleep(duration_);
     base::Process::TerminateCurrentProcessImmediately(0);
@@ -134,7 +139,6 @@ class WaitAndExitDelegate : public base::PlatformThread::Delegate {
 
  private:
   const base::TimeDelta duration_;
-  DISALLOW_COPY_AND_ASSIGN(WaitAndExitDelegate);
 };
 
 bool CreateWaitAndExitThread(base::TimeDelta duration) {
@@ -179,7 +183,7 @@ void TerminateSelfOnDisconnect() {
   // Some sanitizer tools rely on exit handlers (e.g. to run leak detection,
   // or dump code coverage data to disk). Instead of exiting the process
   // immediately, we give it 60 seconds to run exit handlers.
-  CHECK(CreateWaitAndExitThread(base::TimeDelta::FromSeconds(60)));
+  CHECK(CreateWaitAndExitThread(base::Seconds(60)));
 #if defined(LEAK_SANITIZER)
   // Invoke LeakSanitizer early to avoid detecting shutdown-only leaks. If
   // leaks are found, the process will exit here.
@@ -223,13 +227,11 @@ mojo::IncomingInvitation InitializeMojoIPCChannel() {
   if (!client) {
     LOG(ERROR) << "Mach rendezvous failed, terminating process (parent died?)";
     base::Process::TerminateCurrentProcessImmediately(0);
-    return {};
   }
   auto receive = client->TakeReceiveRight('mojo');
   if (!receive.is_valid()) {
     LOG(ERROR) << "Invalid PlatformChannel receive right";
     base::Process::TerminateCurrentProcessImmediately(0);
-    return {};
   }
   endpoint =
       mojo::PlatformChannelEndpoint(mojo::PlatformHandle(std::move(receive)));
@@ -266,6 +268,9 @@ class ChildThreadImpl::IOThreadState
         weak_main_thread_(std::move(weak_main_thread)),
         quit_closure_(std::move(quit_closure)),
         service_binder_(std::move(service_binder)) {}
+
+  IOThreadState(const IOThreadState&) = delete;
+  IOThreadState& operator=(const IOThreadState&) = delete;
 
   // Used only in the deprecated Service Manager IPC mode.
   void BindChildProcessReceiver(
@@ -378,7 +383,7 @@ class ChildThreadImpl::IOThreadState
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   void SetProfilingFile(base::File file) override {
     // TODO(crbug.com/985574) Remove Android check when possible.
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if defined(OS_POSIX) && (!defined(OS_ANDROID) || defined(CLANG_PGO))
     // Take the file descriptor so that |file| does not close it.
     int fd = file.TakePlatformFile();
     FILE* f = fdopen(fd, "r+b");
@@ -398,6 +403,10 @@ class ChildThreadImpl::IOThreadState
   }
 #endif
 
+  void SetPseudonymizationSalt(uint32_t salt) override {
+    content::SetPseudonymizationSalt(salt);
+  }
+
   const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
   const base::WeakPtr<ChildThreadImpl> weak_main_thread_;
   const base::RepeatingClosure quit_closure_;
@@ -410,8 +419,6 @@ class ChildThreadImpl::IOThreadState
   // Binding requests which should be handled by |interface_binders|, but which
   // have been queued because |allow_interface_binders_| is still |false|.
   std::vector<mojo::GenericPendingReceiver> pending_binding_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOThreadState);
 };
 
 ChildThread* ChildThread::Get() {
@@ -585,7 +592,6 @@ void ChildThreadImpl::Init(const Options& options) {
     if (!invitation.is_valid()) {
       LOG(ERROR) << "Child process could not find its Mojo invitation";
       base::Process::TerminateCurrentProcessImmediately(0);
-      return;
     }
     child_process_pipe_for_receiver =
         invitation.ExtractMessagePipe(kChildProcessReceiverAttachmentName);
@@ -709,7 +715,7 @@ void ChildThreadImpl::Init(const Options& options) {
       FROM_HERE,
       base::BindOnce(&ChildThreadImpl::EnsureConnected,
                      channel_connected_factory_->GetWeakPtr()),
-      base::TimeDelta::FromSeconds(connection_timeout));
+      base::Seconds(connection_timeout));
 
   // In single-process mode, there is no need to synchronize trials to the
   // browser process (because it's the same process).

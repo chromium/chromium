@@ -5,10 +5,10 @@
 #include "chromecast/media/common/media_resource_tracker.h"
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/volume_control.h"
 

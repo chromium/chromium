@@ -3,17 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {assertEquals, assertNotEquals} from '../chai_assert.js';
-import {FakeChromeEvent} from '../fake_chrome_event.m.js';
+import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {FakeChromeEvent} from '../fake_chrome_event.js';
 // clang-format on
 
 /** @fileoverview Fake implementation of chrome.settingsPrivate for testing. */
-  /**
-   * @typedef {Array<{key: string,
-   *               type: chrome.settingsPrivate.PrefType,
-   *               values: !Array<*>}>}
-   */
-export let FakeSettingsPrivatePref;
 
 /**
  * Creates a deep copy of the object.
@@ -31,7 +25,7 @@ function deepCopy(obj) {
    * @implements {SettingsPrivate}
    */
 export class FakeSettingsPrivate {
-  /** @param {Array<!FakeSettingsPrivatePref>=} opt_initialPrefs */
+  /** @param {Array<!chrome.settingsPrivate.PrefObject>=} opt_initialPrefs */
   constructor(opt_initialPrefs) {
     this.disallowSetPref_ = false;
     this.failNextSetPref_ = false;

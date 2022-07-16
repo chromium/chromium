@@ -14,6 +14,10 @@ namespace arc {
 class ArcBluetoothTaskQueue {
  public:
   ArcBluetoothTaskQueue();
+
+  ArcBluetoothTaskQueue(const ArcBluetoothTaskQueue&) = delete;
+  ArcBluetoothTaskQueue& operator=(const ArcBluetoothTaskQueue&) = delete;
+
   ~ArcBluetoothTaskQueue();
 
   // Pushes |task| into this queue.
@@ -24,7 +28,6 @@ class ArcBluetoothTaskQueue {
 
  private:
   base::queue<base::OnceClosure> queue_;
-  DISALLOW_COPY_AND_ASSIGN(ArcBluetoothTaskQueue);
 };
 
 }  // namespace arc

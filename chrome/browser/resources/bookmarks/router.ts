@@ -5,19 +5,13 @@
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 
-import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
 import {Debouncer, html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {selectFolder, setSearchTerm} from './actions.js';
 import {BOOKMARKS_BAR_ID} from './constants.js';
-import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
-import {BookmarksPageState} from './types.js';
+import {StoreClientMixin} from './store_client_mixin.js';
 
-const BookmarksRouterElementBase =
-    mixinBehaviors(StoreClient, PolymerElement) as {
-  new (): PolymerElement & BookmarksStoreClientInterface &
-      StoreObserver<BookmarksPageState>
-}
+const BookmarksRouterElementBase = StoreClientMixin(PolymerElement);
 
 /**
  * This element is a one way bound interface that routes the page URL to
@@ -72,12 +66,8 @@ export class BookmarksRouterElement extends BookmarksRouterElementBase {
 
   connectedCallback() {
     super.connectedCallback();
-    this.watch('selectedId_', function(state: BookmarksPageState) {
-      return state.selectedFolder;
-    });
-    this.watch('searchTerm_', function(state: BookmarksPageState) {
-      return state.search.term;
-    });
+    this.watch('selectedId_', state => state.selectedFolder);
+    this.watch('searchTerm_', state => state.search.term);
     this.updateFromStore();
   }
 

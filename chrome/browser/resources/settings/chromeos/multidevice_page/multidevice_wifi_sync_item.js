@@ -35,7 +35,7 @@ Polymer({
 
   /** @override */
   attached() {
-    if (loadTimeData.getBoolean('splitSettingsSyncEnabled')) {
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
       this.addWebUIListener(
           'os-sync-prefs-changed', this.handleOsSyncPrefsChanged_.bind(this));
       this.osSyncBrowserProxy_.sendOsSyncPrefsChanged();
@@ -48,7 +48,7 @@ Polymer({
 
   /** @override */
   created() {
-    if (loadTimeData.getBoolean('splitSettingsSyncEnabled')) {
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
       this.osSyncBrowserProxy_ = settings.OsSyncBrowserProxyImpl.getInstance();
     } else {
       this.syncBrowserProxy_ = settings.SyncBrowserProxyImpl.getInstance();

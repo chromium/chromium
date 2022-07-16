@@ -77,9 +77,8 @@ int main(int argc, char* argv[]) {
       run_loop.QuitClosure());
 
   base::ThreadPool::PostTask(
-      FROM_HERE,
-      base::BindOnce(&PrintStatusUpdateRepeatedly, base::TimeTicks::Now(),
-                     base::TimeDelta::FromSeconds(1)));
+      FROM_HERE, base::BindOnce(&PrintStatusUpdateRepeatedly,
+                                base::TimeTicks::Now(), base::Seconds(1)));
 
   run_loop.Run();
 

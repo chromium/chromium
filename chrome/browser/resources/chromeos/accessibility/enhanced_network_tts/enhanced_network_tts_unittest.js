@@ -23,7 +23,8 @@ SYNC_TEST_F(
       // 0.2135s playback containing "Hello world".
       const mockTtsApi = MockTtsApi;
       mockTtsApi.enqueueAudioData(
-          generateTestBufferData(), generateTestTimeInfoData());
+          generateTestBufferData(), generateTestTimeInfoData(),
+          true /* lastData */);
       chrome.mojoPrivate.registerMockedModuleForTesting(
           'ash.enhanced_network_tts', mockTtsApi);
 
@@ -86,9 +87,47 @@ SYNC_TEST_F(
         assertEqualsJSON(expectedBuffer, receivedBuffer);
       };
 
-      await EnhancedNetworkTts.onSpeakWithAudioStreamEvent(
+      await enhancedNetworkTts.onSpeakWithAudioStreamEvent(
           utterance, options, audioStreamOptions, sendTtsAudio);
     });
+
+SYNC_TEST_F('EnhancedNetworkTtsUnitTest', 'GenerateRequest', async function() {
+  let utterance = 'name and lang should be specified together';
+  let options = {voiceName: 'test name', lang: 'en'};
+  let request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(
+      request, {utterance, rate: 1.0, voice: 'test name', lang: 'en'});
+
+  utterance = 'name without lang will be ignored';
+  options = {voiceName: 'test name'};
+  request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(
+      request, {utterance, rate: 1.0, voice: undefined, lang: undefined});
+
+  utterance = 'lang without name will be ignored';
+  options = {lang: 'en'};
+  request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(
+      request, {utterance, rate: 1.0, voice: undefined, lang: undefined});
+
+  utterance = 'only lang code (e.g., en) will be used';
+  options = {voiceName: 'test name', lang: 'en_US'};
+  request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(
+      request, {utterance, rate: 1.0, voice: 'test name', lang: 'en'});
+
+  utterance = 'utterance without options can proceed';
+  options = {};
+  request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(
+      request, {utterance, rate: 1.0, voice: undefined, lang: undefined});
+
+  utterance = 'Rate will be sent along with the request';
+  options = {rate: 3.0};
+  request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(
+      request, {utterance, rate: 3.0, voice: undefined, lang: undefined});
+});
 
 SYNC_TEST_F(
     'EnhancedNetworkTtsUnitTest', 'DecodeAudioDataAtSampleRate',
@@ -198,13 +237,27 @@ SYNC_TEST_F(
           isLastBuffer: true
         },
       ];
-      const mockSendTtsAudio = (receivedBuffer) => {
+      // Copy the expectedBuffers but modify |isLastBuffer|.
+      const expectedBuffersWithoutLastBuffer =
+          expectedBuffers.map(buffer => Object.assign({}, buffer));
+      expectedBuffersWithoutLastBuffer[5].isLastBuffer = false;
+
+      let mockSendTtsAudio = (receivedBuffer) => {
         const expectedBuffer = expectedBuffers.shift();
         assertEqualsJSON(expectedBuffer, receivedBuffer);
       };
-
       EnhancedNetworkTts.sendAudioDataInBuffers(
-          decodedAudioData, sampleRate, bufferSize, timeInfo, mockSendTtsAudio);
+          decodedAudioData, sampleRate, bufferSize, timeInfo, mockSendTtsAudio,
+          /* lastData= */ true);
+
+      mockSendTtsAudio = (receivedBuffer) => {
+        const expectedBuffer = expectedBuffersWithoutLastBuffer.shift();
+        assertEqualsJSON(expectedBuffer, receivedBuffer);
+      };
+      // Will not signal the last buffer if |lastData| is false.
+      EnhancedNetworkTts.sendAudioDataInBuffers(
+          decodedAudioData, sampleRate, bufferSize, timeInfo, mockSendTtsAudio,
+          /* lastData= */ false);
     });
 
 /**

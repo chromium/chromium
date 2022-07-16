@@ -29,6 +29,7 @@ void SessionRestoreTestHelper::Wait() {
 }
 
 void SessionRestoreTestHelper::OnSessionRestoreDone(
+    Profile* profile,
     int /* num_tabs_restored */) {
   restore_notification_seen_ = true;
   if (!loop_is_running_)

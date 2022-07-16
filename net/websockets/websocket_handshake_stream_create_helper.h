@@ -36,6 +36,11 @@ class NET_EXPORT_PRIVATE WebSocketHandshakeStreamCreateHelper
       const std::vector<std::string>& requested_subprotocols,
       WebSocketStreamRequestAPI* request);
 
+  WebSocketHandshakeStreamCreateHelper(
+      const WebSocketHandshakeStreamCreateHelper&) = delete;
+  WebSocketHandshakeStreamCreateHelper& operator=(
+      const WebSocketHandshakeStreamCreateHelper&) = delete;
+
   ~WebSocketHandshakeStreamCreateHelper() override;
 
   // WebSocketHandshakeStreamBase::CreateHelper methods
@@ -55,8 +60,6 @@ class NET_EXPORT_PRIVATE WebSocketHandshakeStreamCreateHelper
   WebSocketStream::ConnectDelegate* const connect_delegate_;
   const std::vector<std::string> requested_subprotocols_;
   WebSocketStreamRequestAPI* const request_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketHandshakeStreamCreateHelper);
 };
 
 }  // namespace net

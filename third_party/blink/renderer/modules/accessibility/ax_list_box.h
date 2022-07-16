@@ -39,6 +39,10 @@ class AXObjectCacheImpl;
 class AXListBox final : public AXLayoutObject {
  public:
   AXListBox(LayoutObject*, AXObjectCacheImpl&);
+
+  AXListBox(const AXListBox&) = delete;
+  AXListBox& operator=(const AXListBox&) = delete;
+
   ~AXListBox() override;
 
   ax::mojom::blink::Role NativeRoleIgnoringAria() const final;
@@ -49,8 +53,6 @@ class AXListBox final : public AXLayoutObject {
 
  private:
   int active_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXListBox);
 };
 
 template <>

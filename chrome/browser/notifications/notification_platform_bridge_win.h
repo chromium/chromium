@@ -5,13 +5,15 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_WIN_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_WIN_H_
 
-#include <string>
-
 #include <windows.ui.notifications.h>
 #include <wrl/client.h>
 
+#include <string>
+
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
+#include "chrome/common/notifications/notification_operation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -83,7 +85,7 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
   // Simulates a click/dismiss event. Only for use in testing.
   // Note: Ownership of |notification| and |args| is retained by the caller.
   void ForwardHandleEventForTesting(
-      NotificationCommon::Operation operation,
+      NotificationOperation operation,
       ABI::Windows::UI::Notifications::IToastNotification* notification,
       ABI::Windows::UI::Notifications::IToastActivatedEventArgs* args,
       const absl::optional<bool>& by_user);

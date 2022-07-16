@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
@@ -34,6 +33,11 @@ class ContentPasswordManagerDriverFactory
     : public content::WebContentsObserver,
       public content::WebContentsUserData<ContentPasswordManagerDriverFactory> {
  public:
+  ContentPasswordManagerDriverFactory(
+      const ContentPasswordManagerDriverFactory&) = delete;
+  ContentPasswordManagerDriverFactory& operator=(
+      const ContentPasswordManagerDriverFactory&) = delete;
+
   ~ContentPasswordManagerDriverFactory() override;
 
   static void BindPasswordManagerDriver(
@@ -69,8 +73,6 @@ class ContentPasswordManagerDriverFactory
   autofill::AutofillClient* autofill_client_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ContentPasswordManagerDriverFactory);
 };
 
 }  // namespace password_manager

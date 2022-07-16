@@ -59,6 +59,9 @@ class DataObserverTest : public testing::Test {
  public:
   DataObserverTest() {}
 
+  DataObserverTest(const DataObserverTest&) = delete;
+  DataObserverTest& operator=(const DataObserverTest&) = delete;
+
   void SetUp() override {
     // Make unique temp directory.
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -96,8 +99,6 @@ class DataObserverTest : public testing::Test {
   std::unique_ptr<BookmarkModel> bookmark_model_;
   std::unique_ptr<HistoryService> history_service_;
   std::unique_ptr<DataObserver> data_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataObserverTest);
 };
 
 TEST_F(DataObserverTest, VisitLinkShouldBeLogged) {

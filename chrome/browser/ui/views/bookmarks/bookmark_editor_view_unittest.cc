@@ -207,7 +207,7 @@ TEST_F(BookmarkEditorViewTest, EditTitleKeepsPosition) {
 
 // Changes the url and makes sure parent/visual order doesn't change.
 TEST_F(BookmarkEditorViewTest, EditURLKeepsPosition) {
-  base::Time node_time = base::Time::Now() + base::TimeDelta::FromDays(2);
+  base::Time node_time = base::Time::Now() + base::Days(2);
   GetMutableNode("a")->set_date_added(node_time);
   CreateEditor(profile_.get(), nullptr,
                BookmarkEditor::EditDetails::EditNode(GetNode("a")),
@@ -240,7 +240,7 @@ TEST_F(BookmarkEditorViewTest, ChangeParent) {
 
 // Moves 'a' to be a child of the other node and changes its url to new_a.
 TEST_F(BookmarkEditorViewTest, ChangeParentAndURL) {
-  base::Time node_time = base::Time::Now() + base::TimeDelta::FromDays(2);
+  base::Time node_time = base::Time::Now() + base::Days(2);
   GetMutableNode("a")->set_date_added(node_time);
   CreateEditor(profile_.get(), nullptr,
                BookmarkEditor::EditDetails::EditNode(GetNode("a")),

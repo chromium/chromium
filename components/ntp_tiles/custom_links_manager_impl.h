@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
@@ -35,6 +34,9 @@ class CustomLinksManagerImpl : public CustomLinksManager,
   CustomLinksManagerImpl(PrefService* prefs,
                          // Can be nullptr in unittests.
                          history::HistoryService* history_service);
+
+  CustomLinksManagerImpl(const CustomLinksManagerImpl&) = delete;
+  CustomLinksManagerImpl& operator=(const CustomLinksManagerImpl&) = delete;
 
   ~CustomLinksManagerImpl() override;
 
@@ -107,8 +109,6 @@ class CustomLinksManagerImpl : public CustomLinksManager,
   bool updating_preferences_ = false;
 
   base::WeakPtrFactory<CustomLinksManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CustomLinksManagerImpl);
 };
 
 }  // namespace ntp_tiles

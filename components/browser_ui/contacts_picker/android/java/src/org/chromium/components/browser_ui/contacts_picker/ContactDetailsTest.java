@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.payments.mojom.PaymentAddress;
 
 import java.util.Arrays;
@@ -29,6 +30,7 @@ import java.util.List;
  * Tests for the ContactDetails class.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class ContactDetailsTest {
     Context mContext;
 

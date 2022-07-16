@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
@@ -125,6 +125,15 @@ bool SupportsSearchByImage(TemplateURLService* service) {
   const TemplateURL* default_url = service->GetDefaultSearchProvider();
   return default_url && !default_url->image_url().empty() &&
          default_url->image_url_ref().IsValid(service->search_terms_data());
+}
+
+bool SupportsSearchImageWithLens(TemplateURLService* service) {
+  if (!service) {
+    return false;
+  }
+  const TemplateURL* default_url = service->GetDefaultSearchProvider();
+  return default_url &&
+         default_url->url_ref().HasGoogleBaseURLs(service->search_terms_data());
 }
 
 }  // namespace search_engines

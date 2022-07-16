@@ -98,11 +98,7 @@ class IdentifiableSurface {
     // [1]: //blink/public/mojom/web_feature/web_feature.mojom
     kWebFeature = 1,
 
-    // Represents a readback of a canvas. Input is the
-    // CanvasRenderingContextType.
-    //
-    // Was 2 before change to paint op serialization.
-    kCanvasReadback = 33,
+    // Reserved 2.
 
     // Represents loading a font locally based on a name lookup that is allowed
     // to match either a unique name or a family name. This occurs when a
@@ -229,6 +225,8 @@ class IdentifiableSurface {
     // (audio or video).
     kRtcRtpReceiverGetCapabilities = 32,
 
+    // Reserved 33.
+
     // Metadata that is not reported by the client. Different from
     // kReservedInternal in that the inputs are not required to be defined in
     // `ukm.xml`.
@@ -237,6 +235,13 @@ class IdentifiableSurface {
     // to be a reservation for additional surfaces that are determined during
     // analysis.
     kReservedMetadata = 34,
+
+    // Represents a readback of a canvas. Input is the
+    // CanvasRenderingContextType.
+    //
+    // Was 2 before change to paint op serialization, then 33 before removing
+    // paint op serialization and using only direct canvas2d instrumentation.
+    kCanvasReadback = 35,
 
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1

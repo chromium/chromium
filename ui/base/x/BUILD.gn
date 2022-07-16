@@ -6,7 +6,7 @@ import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 
-assert(use_x11 || ozone_platform_x11)
+assert(ozone_platform_x11)
 
 component("x") {
   output_name = "ui_base_x"
@@ -38,10 +38,6 @@ component("x") {
     "x11_idle_query.h",
     "x11_keyboard_hook.cc",
     "x11_keyboard_hook.h",
-    "x11_menu_list.cc",
-    "x11_menu_list.h",
-    "x11_menu_registrar.cc",
-    "x11_menu_registrar.h",
     "x11_move_loop.h",
     "x11_move_loop_delegate.h",
     "x11_pointer_grab.cc",
@@ -92,6 +88,7 @@ component("x") {
     "//ui/events/platform/x11",
     "//ui/events/x:x",
     "//ui/gfx",
+    "//ui/gfx:gfx_switches",
     "//ui/gfx/geometry",
     "//ui/gfx/x",
     "//ui/platform_window/common",
@@ -110,6 +107,7 @@ component("x") {
     ]
     public_deps += [ "//ui/base/dragdrop/mojom:mojom_shared" ]
     deps += [
+      "//ui/base",
       "//ui/base/dragdrop:types",
       "//ui/base/dragdrop/mojom",
     ]
@@ -165,6 +163,7 @@ source_set("unittests") {
     "//base/test:test_support",
     "//skia",
     "//testing/gtest",
+    "//ui/base/cursor",
     "//ui/gfx/geometry",
     "//ui/gfx/x",
   ]

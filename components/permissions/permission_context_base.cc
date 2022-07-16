@@ -29,6 +29,7 @@
 #include "components/permissions/request_type.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -48,27 +49,27 @@ const char kPermissionBlockedKillSwitchMessage[] =
 const char kPermissionBlockedRepeatedDismissalsMessage[] =
     "%s permission has been blocked as the user has dismissed the permission "
     "prompt several times. This can be reset in Site Settings. See "
-    "https://www.chromestatus.com/features/6443143280984064 for more "
+    "https://www.chromestatus.com/feature/6443143280984064 for more "
     "information.";
 
 const char kPermissionBlockedRepeatedIgnoresMessage[] =
     "%s permission has been blocked as the user has ignored the permission "
     "prompt several times. This can be reset in Site Settings. See "
-    "https://www.chromestatus.com/features/6443143280984064 for more "
+    "https://www.chromestatus.com/feature/6443143280984064 for more "
     "information.";
 #else
 const char kPermissionBlockedRepeatedDismissalsMessage[] =
     "%s permission has been blocked as the user has dismissed the permission "
     "prompt several times. This can be reset in Page Info which can be "
     "accessed by clicking the lock icon next to the URL. See "
-    "https://www.chromestatus.com/features/6443143280984064 for more "
+    "https://www.chromestatus.com/feature/6443143280984064 for more "
     "information.";
 
 const char kPermissionBlockedRepeatedIgnoresMessage[] =
     "%s permission has been blocked as the user has ignored the permission "
     "prompt several times. This can be reset in Page Info which can be "
     "accessed by clicking the lock icon next to the URL. See "
-    "https://www.chromestatus.com/features/6443143280984064 for more "
+    "https://www.chromestatus.com/feature/6443143280984064 for more "
     "information.";
 #endif
 
@@ -121,7 +122,7 @@ void PermissionContextBase::RequestPermission(
     BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  GURL requesting_origin = requesting_frame.GetOrigin();
+  GURL requesting_origin = requesting_frame.DeprecatedGetOriginAsURL();
   GURL embedding_origin =
       PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
 
@@ -199,7 +200,8 @@ void PermissionContextBase::RequestPermission(
   // document from the cache.
   // - If this is called when RenderFrameHost is in prerendering, cancel
   // prerendering.
-  if (rfh->IsInactiveAndDisallowActivation()) {
+  if (rfh->IsInactiveAndDisallowActivation(
+          content::DisallowActivationReasonId::kRequestPermission)) {
     std::move(callback).Run(result.content_setting);
     return;
   }
@@ -441,12 +443,14 @@ content::BrowserContext* PermissionContextBase::browser_context() const {
 void PermissionContextBase::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  if (content_type != content_settings_type_)
+    ContentSettingsTypeSet content_type_set) {
+  if (!content_type_set.Contains(content_settings_type_))
     return;
 
-  for (permissions::Observer& obs : permission_observers_)
-    obs.OnPermissionChanged(primary_pattern, secondary_pattern, content_type);
+  for (permissions::Observer& obs : permission_observers_) {
+    obs.OnPermissionChanged(primary_pattern, secondary_pattern,
+                            content_type_set);
+  }
 }
 
 void PermissionContextBase::AddObserver(
@@ -504,8 +508,8 @@ void PermissionContextBase::UpdateContentSetting(const GURL& requesting_origin,
                                                  const GURL& embedding_origin,
                                                  ContentSetting content_setting,
                                                  bool is_one_time) {
-  DCHECK_EQ(requesting_origin, requesting_origin.GetOrigin());
-  DCHECK_EQ(embedding_origin, embedding_origin.GetOrigin());
+  DCHECK_EQ(requesting_origin, requesting_origin.DeprecatedGetOriginAsURL());
+  DCHECK_EQ(embedding_origin, embedding_origin.DeprecatedGetOriginAsURL());
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
          content_setting == CONTENT_SETTING_BLOCK);
 

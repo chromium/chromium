@@ -98,17 +98,19 @@ struct PasswordForm {
   };
 
   // Enum to differentiate between manually filled forms, forms with auto-
-  // generated passwords, and forms generated from the DOM API.
+  // generated passwords, forms generated from the Credential Management
+  // API and credentials manually added from setting.
   //
   // Always append new types at the end. This enum is converted to int and
   // stored in password store backends, so it is important to keep each
   // value assigned to the same integer.
   enum class Type {
-    kManual,
-    kGenerated,
-    kApi,
-    kMinValue = kManual,
-    kMaxValue = kApi,
+    kFormSubmission = 0,
+    kGenerated = 1,
+    kApi = 2,
+    kManuallyAdded = 3,
+    kMinValue = kFormSubmission,
+    kMaxValue = kManuallyAdded,
   };
 
   // Enum to keep track of what information has been sent to the server about
@@ -139,9 +141,9 @@ struct PasswordForm {
   // This should not be empty except for Android based credentials.
   GURL url;
 
-  // The action target of the form; like |origin| URL consists of the scheme,
-  // host, port and path; the rest is stripped. This is the primary data used by
-  // the PasswordManager for form autofill; that is, the action of the saved
+  // The action target of the form; like |url|, consists of the scheme, host,
+  // port and path; the rest is stripped. This is the primary data used by the
+  // PasswordManager for form autofill; that is, the action of the saved
   // credentials must match the action of the form on the page to be autofilled.
   // If this is empty / not available, it will result in a "restricted" IE-like
   // autofill policy, where we wait for the user to type in their username
@@ -272,12 +274,6 @@ struct PasswordForm {
   // When parsing an HTML form, this is not used.
   base::Time date_created;
 
-  // When the login was downloaded from the sync server. For local passwords is
-  // not used.
-  //
-  // When parsing an HTML form, this is not used.
-  base::Time date_synced;
-
   // Tracks if the user opted to never remember passwords for this form. Default
   // to false.
   //
@@ -285,7 +281,7 @@ struct PasswordForm {
   bool blocked_by_user = false;
 
   // The form type.
-  Type type = Type::kManual;
+  Type type = Type::kFormSubmission;
 
   // The number of times that this username/password has been used to
   // authenticate the user.
@@ -349,6 +345,10 @@ struct PasswordForm {
   // password generation eligibility.
   bool is_new_password_reliable = false;
 
+  // True iff the form may be filled with webauthn credentials from an active
+  // webauthn request.
+  bool accepts_webauthn_credentials = false;
+
   // Serialized to prefs, so don't change numeric values!
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -375,10 +375,7 @@ struct PasswordForm {
 
   // A mapping from the credential insecurity type (e.g. leaked, phished),
   // to its metadata (e.g. time it was discovered, whether alerts are muted).
-  // Forms retrieved for the store always have a `password_issues` value.
-  // NOTE: If it is known that there are no issues, this should be an empty map.
-  absl::optional<base::flat_map<InsecureType, InsecurityMetadata>>
-      password_issues;
+  base::flat_map<InsecureType, InsecurityMetadata> password_issues;
 
   // Return true if we consider this form to be a change password form and not
   // a signup form. It's based on local heuristics and may be inaccurate.
@@ -411,7 +408,7 @@ struct PasswordForm {
 
   // Utility method to check whether the form represents an insecure credential
   // of insecure type `type`.
-  bool IsInsecureCredential(InsecureType type);
+  bool IsInsecureCredential(InsecureType insecure_type) const;
 
   PasswordForm();
   PasswordForm(const PasswordForm& other);
@@ -423,7 +420,11 @@ struct PasswordForm {
 };
 
 // True if the unique keys for the forms are the same. The unique key is
-// (origin, username_element, username_value, password_element, signon_realm).
+// (url, username_element, username_value, password_element, signon_realm).
+inline auto PasswordFormUniqueKey(const PasswordForm& f) {
+  return std::tie(f.signon_realm, f.url, f.username_element, f.username_value,
+                  f.password_element);
+}
 bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,
                                     const PasswordForm& right);
 

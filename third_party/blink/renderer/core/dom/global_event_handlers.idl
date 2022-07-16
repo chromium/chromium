@@ -84,9 +84,11 @@
     attribute EventHandler onresize;
     attribute EventHandler onscroll;
     [RuntimeEnabled=OverscrollCustomization] attribute EventHandler onscrollend;
+    attribute EventHandler onsecuritypolicyviolation;
     attribute EventHandler onseeked;
     attribute EventHandler onseeking;
     attribute EventHandler onselect;
+    attribute EventHandler onslotchange;
     //attribute EventHandler onsort;
     attribute EventHandler onstalled;
     attribute EventHandler onsubmit;

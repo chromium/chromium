@@ -4,9 +4,9 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {fakeChromeVersion, fakeComponents, fakeDeviceRegions, fakeDeviceSkus, fakeStates} from './fake_data.js';
-import {FakeShimlessRmaService} from './fake_shimless_rma_service.js'
-import {Component, ComponentRepairStatus, ComponentType, NetworkConfigServiceInterface, RmadErrorCode, RmaState, ShimlessRmaService, ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {fakeCalibrationComponents, fakeChromeVersion, fakeComponents, fakeDeviceRegions, fakeDeviceSkus, fakeLog, fakeRsuChallengeCode, fakeRsuChallengeQrCode, fakeStates} from './fake_data.js';
+import {FakeShimlessRmaService} from './fake_shimless_rma_service.js';
+import {CalibrationSetupInstruction, NetworkConfigServiceInterface, RmadErrorCode, ShimlessRmaService, ShimlessRmaServiceInterface, WriteProtectDisableCompleteState} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -18,7 +18,7 @@ import {Component, ComponentRepairStatus, ComponentType, NetworkConfigServiceInt
  * If true this will replace ShimlessRmaService with a fake.
  * @type {boolean}
  */
-let useFakeService = true;
+const useFakeService = false;
 
 /**
  * @type {?ShimlessRmaServiceInterface}
@@ -36,24 +36,51 @@ let networkConfigService = null;
  */
 function setupFakeShimlessRmaService_() {
   // Create provider.
-  let service = new FakeShimlessRmaService();
+  const service = new FakeShimlessRmaService();
 
   service.setStates(fakeStates);
 
+  service.setAsyncOperationDelayMs(500);
+
+  service.setAbortRmaResult(RmadErrorCode.kOk);
+
+  service.automaticallyTriggerHardwareVerificationStatusObservation();
+
   service.setGetCurrentOsVersionResult(fakeChromeVersion[0]);
-  service.setCheckForOsUpdatesResult(false);
+  service.setCheckForOsUpdatesResult(true, 'fake version 1.2.3.4');
+  service.setUpdateOsResult(false);
+  service.automaticallyTriggerOsUpdateObservation();
 
   service.setGetComponentListResult(fakeComponents);
   service.setReimageRequiredResult(false);
   service.automaticallyTriggerDisableWriteProtectionObservation();
-  service.automaticallyTriggerProvisioningObservation();
   service.automaticallyTriggerCalibrationObservation();
 
-  service.setGetOriginalSerialNumberResult('serial# 0001')
+  service.setGetRsuDisableWriteProtectChallengeResult(fakeRsuChallengeCode);
+  service.setGetRsuDisableWriteProtectHwidResult('### hwid ###');
+  service.setGetRsuDisableWriteProtectChallengeQrCodeResponse(
+      fakeRsuChallengeQrCode);
+
+  service.setGetWriteProtectDisableCompleteState(
+      WriteProtectDisableCompleteState.kCompleteAssembleDevice);
+
+  service.setGetWriteProtectManuallyDisabledInstructionsResult(
+      'g.co/help', fakeRsuChallengeQrCode);
+
+  service.setGetOriginalSerialNumberResult('serial# 0001');
   service.setGetRegionListResult(fakeDeviceRegions);
   service.setGetOriginalRegionResult(1);
   service.setGetSkuListResult(fakeDeviceSkus);
   service.setGetOriginalSkuResult(1);
+
+  service.setGetCalibrationSetupInstructionsResult(
+      CalibrationSetupInstruction.kCalibrationInstructionPlaceLidOnFlatSurface);
+  service.setGetCalibrationComponentListResult(fakeCalibrationComponents);
+
+  service.automaticallyTriggerProvisioningObservation();
+  service.automaticallyTriggerFinalizationObservation();
+
+  service.setGetLogResult(fakeLog);
 
   // Set the fake service.
   setShimlessRmaServiceForTesting(service);

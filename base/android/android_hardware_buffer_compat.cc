@@ -76,6 +76,11 @@ void AndroidHardwareBufferCompat::Allocate(const AHardwareBuffer_Desc* desc,
 
 void AndroidHardwareBufferCompat::Acquire(AHardwareBuffer* buffer) {
   DCHECK(IsSupportAvailable());
+
+  // Null |buffer| is not allowed by |acquire_| and it fails somewhere in
+  // android framework code. Hence adding a DCHECK here for documenting this
+  // info and fail before.
+  DCHECK(buffer);
   acquire_(buffer);
 }
 

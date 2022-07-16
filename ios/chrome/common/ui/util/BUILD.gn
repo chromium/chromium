@@ -13,6 +13,8 @@ source_set("util") {
     "button_util.mm",
     "constraints_ui_util.h",
     "constraints_ui_util.mm",
+    "device_util.h",
+    "device_util.mm",
     "image_util.h",
     "image_util.mm",
     "pointer_interaction_util.h",
@@ -20,6 +22,7 @@ source_set("util") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/common:constants",
     "//ios/chrome/common/ui/colors",
     "//ui/gfx:resize_image_dimensions",
   ]

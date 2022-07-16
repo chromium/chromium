@@ -24,6 +24,12 @@ class WallpaperImageExternalDataHandler
   WallpaperImageExternalDataHandler(
       ash::CrosSettings* cros_settings,
       DeviceLocalAccountPolicyService* policy_service);
+
+  WallpaperImageExternalDataHandler(const WallpaperImageExternalDataHandler&) =
+      delete;
+  WallpaperImageExternalDataHandler& operator=(
+      const WallpaperImageExternalDataHandler&) = delete;
+
   ~WallpaperImageExternalDataHandler() override;
 
   // CloudExternalDataPolicyHandler:
@@ -37,8 +43,6 @@ class WallpaperImageExternalDataHandler
 
  private:
   CloudExternalDataPolicyObserver wallpaper_image_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperImageExternalDataHandler);
 };
 
 }  // namespace policy

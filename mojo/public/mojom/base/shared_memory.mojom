@@ -6,6 +6,7 @@ module mojo_base.mojom;
 
 // Wraps a shared memory handle with additional type information to convey that
 // the handle is only mappable to read-only memory.
+[Stable]
 struct ReadOnlySharedMemoryRegion {
   handle<shared_buffer> buffer;
 };

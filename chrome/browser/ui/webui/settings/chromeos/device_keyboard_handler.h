@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_DEVICE_KEYBOARD_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_DEVICE_KEYBOARD_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -32,15 +31,21 @@ class KeyboardHandler
    public:
     explicit TestAPI(KeyboardHandler* handler) { handler_ = handler; }
 
+    TestAPI(const TestAPI&) = delete;
+    TestAPI& operator=(const TestAPI&) = delete;
+
     // Simulates a request from WebUI to initialize the page.
     void Initialize();
 
    private:
     KeyboardHandler* handler_;  // Not owned.
-    DISALLOW_COPY_AND_ASSIGN(TestAPI);
   };
 
   KeyboardHandler();
+
+  KeyboardHandler(const KeyboardHandler&) = delete;
+  KeyboardHandler& operator=(const KeyboardHandler&) = delete;
+
   ~KeyboardHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -70,8 +75,6 @@ class KeyboardHandler
 
   base::ScopedObservation<ui::DeviceDataManager, ui::InputDeviceEventObserver>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardHandler);
 };
 
 }  // namespace settings

@@ -148,7 +148,7 @@ TEST_F(RequirementsCheckerTest, RequirementsFailWebGL) {
   // waiting for the GPU check to succeed: crbug.com/706204.
   if (runner_.errors().size()) {
     EXPECT_THAT(runner_.errors(), testing::UnorderedElementsAre(
-                                      PreloadCheck::WEBGL_NOT_SUPPORTED));
+                                      PreloadCheck::Error::kWebglNotSupported));
     EXPECT_FALSE(checker_->GetErrorMessage().empty());
   }
 }

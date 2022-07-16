@@ -6,8 +6,8 @@
   }
 
   #centerContent {
-    background: linear-gradient(to top, var(--google-blue-50) 5%,
-                                rgba(255, 255, 255, 0) 50%);
+    background: linear-gradient(to top,
+        var(--nearby-page-linear-gradient-color-start) 5%, transparent 50%);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -32,18 +32,18 @@
   }
 
   #errorTitle {
-    color: var(--google-red-600);
+    color: var(--cros-text-color-alert);
     font-weight: bold;
     margin: 3px 0;
   }
 
   #errorDescription {
-    color: var(--google-grey-refresh-700);
+    color: var(--cros-text-color-secondary);
     line-height: 13px;
   }
 
   #errorIcon {
-    fill: var(--google-red-600);
+    fill: var(--cros-icon-color-alert);
     flex-shrink: 0;
     height: 20px;
     margin-inline-end: 12px;
@@ -52,7 +52,7 @@
 
   #help {
     align-items: flex-start;
-    color: var(--google-grey-refresh-700);
+    color: var(--cros-text-color-secondary);
     display: flex;
     flex-direction: row;
     font-size: 9px;
@@ -65,7 +65,7 @@
   }
 
   #helpText a {
-    color: var(--google-blue-700);
+    color: var(--cros-text-color-prominent);
     text-decoration: none;
   }
 
@@ -105,7 +105,7 @@
 
   #placeholder {
     align-self: center;
-    color: var(--google-grey-refresh-700);
+    color: var(--cros-text-color-secondary);
     font-size: 13px;
     line-height: 20px;
     margin-inline-end: var(--nearby-page-space-large-inline);
@@ -136,7 +136,10 @@
         cancel-button-event-name="close"
         close-only="[[errorTitle_]]">
   <div id="centerContent" slot="content">
-    <cr-lottie animation-url="nearby_share_pulse_animation.json"
+    <iron-media-query query="(prefers-color-scheme: dark)"
+        query-matches="{{isDarkModeActive_}}">
+    </iron-media-query>
+    <cr-lottie animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
         autoplay="true">
     </cr-lottie>
     <div id="process-row">
@@ -149,7 +152,7 @@
           $i18n{nearbyShareDiscoveryPagePlaceholder}
         </div>
         <template is="dom-if" if="[[!isShareTargetsEmpty_(shareTargets_.*)]]">
-          <div class="device-list-container">
+          <div class="device-list-container" aria-live="polite">
             <array-selector id="selector" items="{{shareTargets_}}"
                 selected-item="{{selectedShareTarget}}">
             </array-selector>

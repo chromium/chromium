@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2011 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -18,7 +18,9 @@ import sys
 # Assume this script is under tools/symsrc/
 _SCRIPT_DIR = os.path.dirname(__file__)
 _ROOT_DIR = os.path.join(_SCRIPT_DIR, os.pardir, os.pardir)
-_PEFILE_DIR = os.path.join(_ROOT_DIR, 'third_party', 'pefile')
+_PEFILE_DIR = os.path.join(
+    _ROOT_DIR, 'third_party', 'pefile_py3' if sys.version_info >=
+    (3, 0) else 'pefile')
 
 sys.path.insert(1, _PEFILE_DIR)
 

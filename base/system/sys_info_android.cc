@@ -64,7 +64,7 @@ namespace {
 // cannot be acquired. Use the latest Android release with a higher bug fix
 // version to avoid unnecessarily comparison errors with the latest release.
 // This should be manually kept up to date on each Android release.
-const int kDefaultAndroidMajorVersion = 10;
+const int kDefaultAndroidMajorVersion = 12;
 const int kDefaultAndroidMinorVersion = 0;
 const int kDefaultAndroidBugfixVersion = 99;
 

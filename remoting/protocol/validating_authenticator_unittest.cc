@@ -46,6 +46,11 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
 class ValidatingAuthenticatorTest : public testing::Test {
  public:
   ValidatingAuthenticatorTest();
+
+  ValidatingAuthenticatorTest(const ValidatingAuthenticatorTest&) = delete;
+  ValidatingAuthenticatorTest& operator=(const ValidatingAuthenticatorTest&) =
+      delete;
+
   ~ValidatingAuthenticatorTest() override;
 
   void ValidateCallback(const std::string& remote_jid,
@@ -77,8 +82,6 @@ class ValidatingAuthenticatorTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValidatingAuthenticatorTest);
 };
 
 ValidatingAuthenticatorTest::ValidatingAuthenticatorTest() = default;
@@ -299,13 +302,13 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidAccount) {
       .WillByDefault(Return(Authenticator::REJECTED));
 
   ON_CALL(*mock_authenticator_, rejection_reason())
-      .WillByDefault(Return(Authenticator::INVALID_ACCOUNT));
+      .WillByDefault(Return(Authenticator::INVALID_ACCOUNT_ID));
 
   // Verify validation callback is not called for invalid connections.
   SendMessageAndWaitForCallback();
   ASSERT_FALSE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::INVALID_ACCOUNT,
+  ASSERT_EQ(Authenticator::INVALID_ACCOUNT_ID,
             validating_authenticator_->rejection_reason());
 }
 

@@ -1,0 +1,30 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+CANVAS_DIMENSIONS, 24,
+MOVE_TO, 12, 7.5f,
+R_H_LINE_TO, 8.9f,
+CUBIC_TO, 19.3f, 4.2f, 15.9f, 2, 12, 2,
+CUBIC_TO, 8.9f, 2, 6.1f, 3.4f, 4.3f, 5.6f,
+R_LINE_TO, 3.3f, 5.7f,
+R_CUBIC_TO, 0.3f, -2.1f, 2.2f, -3.8f, 4.4f, -3.8f,
+CLOSE,
+R_MOVE_TO, 0, 9,
+R_CUBIC_TO, -1.7f, 0, -3.1f, -0.9f, -3.9f, -2.3f,
+LINE_TO, 3.6f, 6.5f,
+CUBIC_TO, 2.6f, 8.1f, 2, 10, 2, 12,
+R_CUBIC_TO, 0, 5, 3.6f, 9.1f, 8.4f, 9.9f,
+R_LINE_TO, 3.3f, -5.7f,
+R_CUBIC_TO, -0.6f, 0.2f, -1.1f, 0.3f, -1.7f, 0.3f,
+CLOSE,
+R_MOVE_TO, 4.5f, -4.5f,
+R_CUBIC_TO, 0, 0.8f, -0.2f, 1.6f, -0.6f, 2.2f,
+LINE_TO, 11.4f, 22,
+R_H_LINE_TO, 0.6f,
+R_CUBIC_TO, 5.5f, 0, 10, -4.5f, 10, -10,
+R_CUBIC_TO, 0, -1.2f, -0.2f, -2.4f, -0.6f, -3.5f,
+R_H_LINE_TO, -6.6f,
+R_CUBIC_TO, 1, 0.8f, 1.7f, 2.1f, 1.7f, 3.5f,
+CLOSE,
+CIRCLE, 12, 12, 3.5

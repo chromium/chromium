@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
@@ -29,6 +28,10 @@ class AssistantAudioDecoder : public mojom::AssistantAudioDecoder {
   AssistantAudioDecoder(
       mojo::PendingRemote<mojom::AssistantAudioDecoderClient> client,
       mojo::PendingRemote<mojom::AssistantMediaDataSource> data_source);
+
+  AssistantAudioDecoder(const AssistantAudioDecoder&) = delete;
+  AssistantAudioDecoder& operator=(const AssistantAudioDecoder&) = delete;
+
   ~AssistantAudioDecoder() override;
 
   // Called by |client_| on main thread.
@@ -74,8 +77,6 @@ class AssistantAudioDecoder : public mojom::AssistantAudioDecoder {
   std::unique_ptr<base::Thread> media_thread_;
 
   base::WeakPtrFactory<AssistantAudioDecoder> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantAudioDecoder);
 };
 
 }  // namespace assistant

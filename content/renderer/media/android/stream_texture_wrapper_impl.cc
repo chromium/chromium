@@ -5,10 +5,10 @@
 #include "content/renderer/media/android/stream_texture_wrapper_impl.h"
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/task/bind_post_task.h"
 #include "cc/layers/video_frame_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -38,6 +38,12 @@ StreamTextureWrapperImpl::StreamTextureWrapperImpl(
 
 StreamTextureWrapperImpl::~StreamTextureWrapperImpl() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  // Clears create video frame callback so it couldn't be called from compositor
+  // thread after |this| is being destroyed.
+  if (stream_texture_proxy_)
+    stream_texture_proxy_->ClearCreateVideoFrameCB();
+
   SetCurrentFrameInternal(nullptr);
 }
 

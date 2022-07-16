@@ -51,8 +51,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/policy/core/common/management/management_service.h"
-#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -126,11 +124,12 @@ class BlockedHttpResponse : public net::test_server::BasicHttpResponse {
       base::OnceCallback<void(base::OnceClosure)> callback)
       : callback_(std::move(callback)) {}
 
-  void SendResponse(const net::test_server::SendBytesCallback& send,
-                    net::test_server::SendCompleteCallback done) override {
+  void SendResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
     // Called on the IO thread to unblock the response.
     base::OnceClosure unblock_io_thread =
-        base::BindOnce(send, ToResponseString(), std::move(done));
+        base::BindOnce(&BlockedHttpResponse::SendResponseInternal,
+                       weak_factory_.GetWeakPtr(), delegate);
     // Unblock the response from any thread by posting a task to the IO thread.
     base::OnceClosure unblock_any_thread =
         base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
@@ -143,7 +142,14 @@ class BlockedHttpResponse : public net::test_server::BasicHttpResponse {
   }
 
  private:
+  void SendResponseInternal(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) {
+    if (delegate)
+      BasicHttpResponse::SendResponse(delegate);
+  }
   base::OnceCallback<void(base::OnceClosure)> callback_;
+
+  base::WeakPtrFactory<BlockedHttpResponse> weak_factory_{this};
 };
 
 }  // namespace
@@ -333,6 +339,10 @@ std::unique_ptr<HttpResponse> HandleChromeSigninEmbeddedURL(
 class DiceBrowserTest : public InProcessBrowserTest,
                         public AccountReconcilor::Observer,
                         public signin::IdentityManager::Observer {
+ public:
+  DiceBrowserTest(const DiceBrowserTest&) = delete;
+  DiceBrowserTest& operator=(const DiceBrowserTest&) = delete;
+
  protected:
   ~DiceBrowserTest() override {}
 
@@ -376,7 +386,8 @@ class DiceBrowserTest : public InProcessBrowserTest,
 
   // Navigates to the given path on the test server.
   void NavigateToURL(const std::string& path) {
-    ui_test_utils::NavigateToURL(browser(), https_server_.GetURL(path));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), https_server_.GetURL(path)));
   }
 
   // Returns the identity manager.
@@ -403,17 +414,18 @@ class DiceBrowserTest : public InProcessBrowserTest,
   }
 
   // Signin with a main account and add token for a secondary account.
-  void SetupSignedInAccounts() {
+  void SetupSignedInAccounts(
+      signin::ConsentLevel primary_account_consent_level) {
     // Signin main account.
     AccountInfo primary_account_info = signin::MakePrimaryAccountAvailable(
-        GetIdentityManager(), main_email_, signin::ConsentLevel::kSync);
+        GetIdentityManager(), main_email_, primary_account_consent_level);
     ASSERT_TRUE(
         GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
     ASSERT_FALSE(
         GetIdentityManager()->HasAccountWithRefreshTokenInPersistentErrorState(
             GetMainAccountID()));
     ASSERT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
-                                      signin::ConsentLevel::kSync));
+                                      primary_account_consent_level));
 
     // Add a token for a secondary account.
     AccountInfo secondary_account_info =
@@ -656,24 +668,6 @@ class DiceBrowserTest : public InProcessBrowserTest,
   base::OnceClosure tokens_loaded_quit_closure_;
   base::OnceClosure on_primary_account_set_quit_closure_;
   base::OnceClosure signin_requested_quit_closure_;
-
-  // The sync service and waits for policies to load before starting for
-  // enterprise users, managed devices and browsers. This means that services
-  // depending on it might have to wait too. By setting the management
-  // authorities to none by default, we assume that the default test is on an
-  // unmanaged device and browser thus we avoid unnecessarily waiting for
-  // policies to load. Tests expecting either an enterprise user, a managed
-  // device or browser should add the appropriate management authorities.
-  policy::ScopedManagementServiceOverrideForTesting browser_management_ =
-      policy::ScopedManagementServiceOverrideForTesting(
-          policy::ManagementTarget::BROWSER,
-          base::flat_set<policy::EnterpriseManagementAuthority>());
-  policy::ScopedManagementServiceOverrideForTesting platform_management_ =
-      policy::ScopedManagementServiceOverrideForTesting(
-          policy::ManagementTarget::PLATFORM,
-          base::flat_set<policy::EnterpriseManagementAuthority>());
-
-  DISALLOW_COPY_AND_ASSIGN(DiceBrowserTest);
 };
 
 // Checks that signin on Gaia triggers the fetch for a refresh token.
@@ -726,10 +720,10 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SupportOAuthOutageInDice) {
   EXPECT_EQ(1, reconcilor_blocked_count_);
   EXPECT_EQ(0, reconcilor_unblocked_count_);
   task_runner->FastForwardBy(
-      base::TimeDelta::FromHours(kLockAccountReconcilorTimeoutHours / 2));
+      base::Hours(kLockAccountReconcilorTimeoutHours / 2));
   EXPECT_EQ(0, reconcilor_unblocked_count_);
   task_runner->FastForwardBy(
-      base::TimeDelta::FromHours((kLockAccountReconcilorTimeoutHours + 1) / 2));
+      base::Hours((kLockAccountReconcilorTimeoutHours + 1) / 2));
   // Wait until reconcilor is unblocked.
   WaitForReconcilorUnblockedCount(1);
 }
@@ -739,7 +733,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Reauth) {
   EXPECT_EQ(0, reconcilor_started_count_);
 
   // Start from a signed-in state.
-  SetupSignedInAccounts();
+  SetupSignedInAccounts(signin::ConsentLevel::kSync);
   EXPECT_EQ(1, reconcilor_started_count_);
 
   // Navigate to Gaia and sign in again with the main account.
@@ -770,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Reauth) {
 // Checks that the Dice signout flow works and deletes all tokens.
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutMainAccount) {
   // Start from a signed-in state.
-  SetupSignedInAccounts();
+  SetupSignedInAccounts(signin::ConsentLevel::kSync);
 
   // Signout from main account.
   SignOutWithDice(kMainAccount);
@@ -798,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutMainAccount) {
 // token.
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutSecondaryAccount) {
   // Start from a signed-in state.
-  SetupSignedInAccounts();
+  SetupSignedInAccounts(signin::ConsentLevel::kSync);
 
   // Signout from secondary account.
   SignOutWithDice(kSecondaryAccount);
@@ -820,7 +814,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutSecondaryAccount) {
 // Checks that the Dice signout flow works and deletes all tokens.
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutAllAccounts) {
   // Start from a signed-in state.
-  SetupSignedInAccounts();
+  SetupSignedInAccounts(signin::ConsentLevel::kSync);
 
   // Signout from all accounts.
   SignOutWithDice(kAllAccounts);
@@ -853,8 +847,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutAllAccounts) {
 #endif
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_NoDiceFromWebUI) {
   // Navigate to Gaia and from the native tab, which uses an extension.
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("chrome:chrome-signin?reason=5"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome:chrome-signin?reason=5")));
 
   // Check that the request had no Dice request header.
   if (dice_request_header_.empty())
@@ -1044,28 +1038,19 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_EnableSyncBeforeToken) {
   EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(browser()));
 }
 
-// Tests that turning off Dice via preferences works.
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest, PRE_TurnOffDice) {
-  // Sign the profile in.
-  SetupSignedInAccounts();
-  syncer::SyncPrefs(browser()->profile()->GetPrefs()).SetFirstSetupComplete();
-
-  EXPECT_TRUE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
+// Tests that turning off Dice via preferences works when singed out.
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, PRE_TurnOffDice_SignedOut) {
+  ASSERT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
       browser()->profile()));
-
-  EXPECT_FALSE(GetIdentityManager()
-                   ->GetPrimaryAccountId(signin::ConsentLevel::kSync)
-                   .empty());
-  EXPECT_TRUE(
-      GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
-  EXPECT_FALSE(GetIdentityManager()->GetAccountsWithRefreshTokens().empty());
 
   // Turn off Dice for this profile.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSigninAllowedOnNextStartup, false);
 }
 
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest, TurnOffDice) {
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, TurnOffDice_SignedOut) {
   // Check that Dice is disabled.
   EXPECT_FALSE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
@@ -1074,9 +1059,88 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, TurnOffDice) {
   EXPECT_FALSE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
       browser()->profile()));
 
-  EXPECT_TRUE(GetIdentityManager()
-                  ->GetPrimaryAccountId(signin::ConsentLevel::kSync)
-                  .empty());
+  EXPECT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // Navigate to Gaia and sign in.
+  NavigateToURL(kSigninURL);
+  // Check that the Dice request header was not sent.
+  EXPECT_EQ(kNoDiceRequestHeader, dice_request_header_);
+  EXPECT_EQ(0, reconcilor_blocked_count_);
+  WaitForReconcilorUnblockedCount(0);
+}
+
+// Tests that turning off Dice via preferences works when signed in without sync
+// consent.
+//
+// Regression test for crbug/1254325
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, PRE_TurnOffDice_NotOptedIntoSync) {
+  SetupSignedInAccounts(signin::ConsentLevel::kSignin);
+
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
+      browser()->profile()));
+
+  // Turn off Dice for this profile.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kSigninAllowedOnNextStartup, false);
+}
+
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, TurnOffDice_NotOptedIntoSync) {
+  // Check that Dice is disabled.
+  EXPECT_FALSE(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kSigninAllowedOnNextStartup));
+  EXPECT_FALSE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
+      browser()->profile()));
+
+  EXPECT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(
+      GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
+  EXPECT_TRUE(GetIdentityManager()->GetAccountsWithRefreshTokens().empty());
+
+  // Navigate to Gaia and sign in.
+  NavigateToURL(kSigninURL);
+  // Check that the Dice request header was not sent.
+  EXPECT_EQ(kNoDiceRequestHeader, dice_request_header_);
+  EXPECT_EQ(0, reconcilor_blocked_count_);
+  WaitForReconcilorUnblockedCount(0);
+}
+
+// Tests that turning off Dice via preferences works when signed in with sync
+// consent
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, PRE_TurnOffDice_OptedIntoSync) {
+  // Sign the profile in and turn sync on.
+  SetupSignedInAccounts(signin::ConsentLevel::kSync);
+  syncer::SyncPrefs(browser()->profile()->GetPrefs()).SetFirstSetupComplete();
+
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
+      browser()->profile()));
+
+  // Turn off Dice for this profile.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kSigninAllowedOnNextStartup, false);
+}
+
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, TurnOffDice_OptedIntoSync) {
+  EXPECT_FALSE(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kSigninAllowedOnNextStartup));
+  EXPECT_FALSE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
+      browser()->profile()));
+
+  EXPECT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   EXPECT_FALSE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   EXPECT_TRUE(GetIdentityManager()->GetAccountsWithRefreshTokens().empty());
@@ -1144,7 +1208,7 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
   ASSERT_TRUE(deleted_profiles->GetList().empty());
 
   // Sign the profile in.
-  SetupSignedInAccounts();
+  SetupSignedInAccounts(signin::ConsentLevel::kSync);
 
   // Prohibit sign-in on next start-up.
   browser()->profile()->GetPrefs()->SetBoolean(

@@ -18,11 +18,18 @@
 #include "ash/webui/diagnostics_ui/backend/session_log_handler.h"
 #include "ash/webui/diagnostics_ui/backend/system_data_provider.h"
 #include "ash/webui/diagnostics_ui/backend/system_routine_controller.h"
+#include "ash/webui/diagnostics_ui/diagnostics_metrics.h"
+#include "ash/webui/diagnostics_ui/diagnostics_metrics_message_handler.h"
 #include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom.h"
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -33,12 +40,48 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_resources.h"
 
 namespace ash {
 
 namespace {
+
+void EmitInitialScreen(diagnostics::metrics::NavigationView initial_view) {
+  base::UmaHistogramEnumeration("ChromeOS.DiagnosticsUi.InitialScreen",
+                                initial_view);
+}
+
+diagnostics::metrics::NavigationView GetInitialView(const GURL url) {
+  if (!url.has_query()) {
+    return diagnostics::metrics::NavigationView::kSystem;
+  }
+
+  // Note: Valid query strings map to strings in the GetUrlForPage located in
+  // chrome/browser/ui/webui/chromeos/diagnostics_dialog.cc.
+  const base::StringPiece query =
+      base::TrimString(url.query(), " \t", base::TRIM_ALL);
+
+  if (base::EqualsCaseInsensitiveASCII(query, "system")) {
+    return diagnostics::metrics::NavigationView::kSystem;
+  }
+
+  if (base::EqualsCaseInsensitiveASCII(query, "connectivity")) {
+    return diagnostics::metrics::NavigationView::kConnectivity;
+  }
+
+  if (base::EqualsCaseInsensitiveASCII(query, "input")) {
+    return diagnostics::metrics::NavigationView::kInput;
+  }
+
+  // In production builds this is not expected to occur however it was observed
+  // when running unit tests.
+  LOG(WARNING) << "Unexpected screen requested with query: '" << query
+               << "'. Defaulting value to system." << std::endl;
+
+  return diagnostics::metrics::NavigationView::kSystem;
+}
 
 std::u16string GetSettingsLinkLabel() {
   int string_id = IDS_DIAGNOSTICS_SETTINGS_LINK_TEXT;
@@ -57,6 +100,14 @@ std::unique_ptr<base::DictionaryValue> GetDataSourceUpdate() {
 
 void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"arcDnsResolutionFailedText",
+       IDS_DIAGNOSTICS_ARC_DNS_RESOLUTION_FAILED_TEXT},
+      {"arcDnsResolutionRoutineText",
+       IDS_NETWORK_DIAGNOSTICS_ARC_DNS_RESOLUTION},
+      {"arcHttpFailedText", IDS_DIAGNOSTICS_ARC_HTTP_FAILED_TEXT},
+      {"arcHttpRoutineText", IDS_NETWORK_DIAGNOSTICS_ARC_HTTP},
+      {"arcPingFailedText", IDS_DIAGNOSTICS_ARC_PING_FAILED_TEXT},
+      {"arcPingRoutineText", IDS_NETWORK_DIAGNOSTICS_ARC_PING},
       {"batteryCalculatingText", IDS_DIAGNOSTICS_BATTERY_CALCULATING_TEXT},
       {"batteryChargeRoutineText", IDS_DIAGNOSTICS_BATTERY_CHARGE_ROUTINE_TEXT},
       {"batteryDischargeRoutineText",
@@ -71,7 +122,9 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"batteryHealthTooltipText", IDS_DIAGNOSTICS_BATTERY_HEALTH_TOOLTIP_TEXT},
       {"batteryTitle", IDS_DIAGNOSTICS_BATTERY_TITLE},
       {"boardAndVersionInfo", IDS_DIAGNOSTICS_DEVICE_INFO_TEXT},
+      {"captivePortalFailedText", IDS_DIAGNOSTICS_CAPTIVE_PORTAL_FAILED_TEXT},
       {"captivePortalRoutineText", IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL},
+      {"cellularLabel", IDS_DIAGNOSTICS_NETWORK_TYPE_CELLULAR},
       {"chargeTestResultText", IDS_CHARGE_TEST_RESULT},
       {"connectivityText", IDS_DIAGNOSTICS_CONNECTIVITY},
       {"cpuBannerMessage", IDS_DIAGNOSTICS_CPU_BANNER_MESSAGE},
@@ -98,41 +151,129 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"cycleCount", IDS_DIAGNOSTICS_CYCLE_COUNT_LABEL},
       {"cycleCountTooltipText", IDS_DIAGNOSTICS_CYCLE_COUNT_TOOLTIP_TEXT},
       {"diagnosticsTitle", IDS_DIAGNOSTICS_TITLE},
+      {"disabledText", IDS_DIAGNOSTICS_DISABLED_TEXT},
       {"dischargeTestResultText", IDS_DISCHARGE_TEST_RESULT},
+      {"dnsGroupText", IDS_NETWORK_DIAGNOSTICS_DNS_GROUP},
+      {"dnsLatencyFailedText", IDS_DIAGNOSTICS_DNS_LATENCY_FAILED_TEXT},
       {"dnsLatencyRoutineText", IDS_NETWORK_DIAGNOSTICS_DNS_LATENCY},
+      {"dnsResolutionFailedText", IDS_DIAGNOSTICS_DNS_RESOLUTION_FAILED_TEXT},
       {"dnsResolutionRoutineText", IDS_NETWORK_DIAGNOSTICS_DNS_RESOLUTION},
+      {"dnsResolverPresentFailedText",
+       IDS_DIAGNOSTICS_DNS_RESOLVER_PRESENT_FAILED_TEXT},
       {"dnsResolverPresentRoutineText",
        IDS_NETWORK_DIAGNOSTICS_DNS_RESOLVER_PRESENT},
+      {"ethernetLabel", IDS_NETWORK_TYPE_ETHERNET},
+      {"firewallGroupText", IDS_NETWORK_DIAGNOSTICS_FIREWALL_GROUP},
+      {"gatewayCanBePingedFailedText",
+       IDS_DIAGNOSTICS_GATEWAY_CAN_BE_PINGED_FAILED_TEXT},
       {"gatewayCanBePingedRoutineText",
        IDS_NETWORK_DIAGNOSTICS_GATEWAY_CAN_BE_PINGED},
+      {"gatewayRoutineText", IDS_NETWORK_DIAGNOSTICS_GATEWAY_GROUP},
+      {"hasSecureWiFiConnectionFailedText",
+       IDS_DIAGNOSTICS_HAS_SECURE_WIFI_CONNECTION_FAILED_TEXT},
       {"hasSecureWiFiConnectionRoutineText",
        IDS_NETWORK_DIAGNOSTICS_HAS_SECURE_WIFI_CONNECTION},
       {"hideReportText", IDS_DIAGNOSTICS_HIDE_REPORT_TEXT},
+      {"httpFirewallFailedText", IDS_DIAGNOSTICS_HTTP_FIREWALL_FAILED_TEXT},
       {"httpFirewallRoutineText", IDS_NETWORK_DIAGNOSTICS_HTTP_FIREWALL},
+      {"httpsFirewallFailedText", IDS_DIAGNOSTICS_HTTPS_FIREWALL_FAILED_TEXT},
       {"httpsFirewallRoutineText", IDS_NETWORK_DIAGNOSTICS_HTTPS_FIREWALL},
+      {"httpsLatencyFailedText", IDS_DIAGNOSTICS_HTTPS_LATENCY_FAILED_TEXT},
       {"httpsLatencyRoutineText", IDS_NETWORK_DIAGNOSTICS_HTTPS_LATENCY},
+      {"inputCategoryKeyboard", IDS_INPUT_DIAGNOSTICS_CATEGORY_KEYBOARD},
+      {"inputCategoryTouchpad", IDS_INPUT_DIAGNOSTICS_CATEGORY_TOUCHPAD},
+      {"inputCategoryTouchscreen", IDS_INPUT_DIAGNOSTICS_CATEGORY_TOUCHSCREEN},
+      {"inputDescriptionBluetoothKeyboard",
+       IDS_INPUT_DIAGNOSTICS_BLUETOOTH_KEYBOARD},
+      {"inputDescriptionBluetoothTouchpad",
+       IDS_INPUT_DIAGNOSTICS_BLUETOOTH_TOUCHPAD},
+      {"inputDescriptionBluetoothTouchscreen",
+       IDS_INPUT_DIAGNOSTICS_BLUETOOTH_TOUCHSCREEN},
+      {"inputDescriptionInternalKeyboard",
+       IDS_INPUT_DIAGNOSTICS_INTERNAL_KEYBOARD},
+      {"inputDescriptionInternalTouchpad",
+       IDS_INPUT_DIAGNOSTICS_INTERNAL_TOUCHPAD},
+      {"inputDescriptionInternalTouchscreen",
+       IDS_INPUT_DIAGNOSTICS_INTERNAL_TOUCHSCREEN},
+      {"inputDescriptionUsbKeyboard", IDS_INPUT_DIAGNOSTICS_USB_KEYBOARD},
+      {"inputDescriptionUsbTouchpad", IDS_INPUT_DIAGNOSTICS_USB_TOUCHPAD},
+      {"inputDescriptionUsbTouchscreen", IDS_INPUT_DIAGNOSTICS_USB_TOUCHSCREEN},
+      {"inputDeviceTest", IDS_INPUT_DIAGNOSTICS_RUN_TEST},
+      {"internetConnectivityGroupLabel",
+       IDS_DIAGNOSTICS_INTERNET_CONNECTIVITY_GROUP_LABEL},
       {"ipConfigInfoDrawerGateway",
        IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_GATEWAY},
-      {"ipConfigInfoDrawerMacAddress",
-       IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_MAC_ADDRESS},
       {"ipConfigInfoDrawerSubnetMask",
        IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_SUBNET_MASK},
       {"ipConfigInfoDrawerTitle",
        IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_TITLE},
+      {"joinNetworkLinkText", IDS_DIAGNOSTICS_JOIN_NETWORK_LINK_TEXT},
+      {"lanConnectivityFailedText",
+       IDS_DIAGNOSTICS_LAN_CONNECTIVITY_FAILED_TEXT},
+      {"lanConnectivityGroupText", IDS_NETWORK_DIAGNOSTICS_CONNECTION_GROUP},
       {"lanConnectivityRoutineText", IDS_NETWORK_DIAGNOSTICS_LAN_CONNECTIVITY},
       {"learnMore", IDS_DIANOSTICS_LEARN_MORE_LABEL},
       {"learnMoreShort", IDS_DIAGNOSTICS_LEARN_MORE_LABEL_SHORT},
+      {"localNetworkGroupLabel", IDS_DIAGNOSTICS_LOCAL_NETWORK_GROUP_LABEL},
+      {"macAddressLabel", IDS_NETWORK_DIAGNOSTICS_MAC_ADDRESS_LABEL},
       {"memoryAvailable", IDS_DIAGNOSTICS_MEMORY_AVAILABLE_TEXT},
       {"memoryBannerMessage", IDS_DIAGNOSTICS_MEMORY_BANNER_MESSAGE},
       {"memoryRoutineText", IDS_DIAGNOSTICS_MEMORY_ROUTINE_TEXT},
       {"memoryTitle", IDS_DIAGNOSTICS_MEMORY_TITLE},
+      {"missingNameServersText",
+       IDS_NETWORK_DIAGNOSTICS_MISSING_NAME_SERVERS_TEXT},
+      {"nameResolutionGroupLabel", IDS_DIAGNOSTICS_NAME_RESOLUTION_GROUP_LABEL},
       {"networkAuthenticationLabel", IDS_NETWORK_DIAGNOSTICS_AUTHENTICATION},
+      {"networkBssidLabel", IDS_ONC_WIFI_BSSID},
+      {"networkChannelLabel", IDS_NETWORK_DIAGNOSTICS_CHANNEL},
+      {"networkDnsNotConfigured", IDS_NETWORK_DIAGNOSTICS_DNS_NOT_CONFIGURED},
+      {"networkEidLabel", IDS_DIAGNOSTICS_EID_LABEL},
+      {"networkEthernetAuthentication8021xLabel", IDS_ONC_WIFI_SECURITY_EAP},
+      {"networkEthernetAuthenticationNoneLabel", IDS_ONC_WIFI_SECURITY_NONE},
+      {"networkIccidLabel", IDS_ONC_CELLULAR_ICCID},
       {"networkIpAddressLabel", IDS_NETWORK_DIAGNOSTICS_IP_ADDRESS},
-      {"noEthernet", IDS_DIAGNOSTICS_NO_ETHERNET},
+      {"networkRoamingOff", IDS_DIAGNOSTICS_ROAMING_OFF},
+      {"networkRoamingStateHome", IDS_ONC_CELLULAR_ROAMING_STATE_HOME},
+      {"networkRoamingStateLabel", IDS_ONC_CELLULAR_ROAMING_STATE},
+      {"networkRoamingStateRoaming", IDS_ONC_CELLULAR_ROAMING_STATE_ROAMING},
+      {"networkSignalStrengthLabel", IDS_ONC_WIFI_SIGNAL_STRENGTH},
+      {"networkSimLockStatusLabel",
+       IDS_DIAGNOSTICS_NETWORK_SIM_LOCK_STATUS_LABEL},
+      {"networkSimLockedText", IDS_DIAGNOSTICS_NETWORK_SIM_LOCKED},
+      {"networkSimUnlockedText", IDS_DIAGNOSTICS_NETWORK_SIM_UNLOCKED},
+      {"networkSsidLabel", IDS_ONC_WIFI_SSID},
+      {"networkStateConnectedText", IDS_NETWORK_HEALTH_STATE_CONNECTED},
+      {"networkStateConnectingText", IDS_NETWORK_HEALTH_STATE_CONNECTING},
+      {"networkStateDisabledText", IDS_NETWORK_HEALTH_STATE_DISABLED},
+      {"networkStateNotConnectedText", IDS_NETWORK_HEALTH_STATE_NOT_CONNECTED},
+      {"networkStateOnlineText", IDS_NETWORK_HEALTH_STATE_ONLINE},
+      {"networkStatePortalText", IDS_NETWORK_HEALTH_STATE_PORTAL},
+      {"networkSecurityLabel", IDS_NETWORK_DIAGNOSTICS_SECURITY},
+      {"networkSecurityNoneLabel", IDS_ONC_WIFI_SECURITY_NONE},
+      // 8021x uses EAP label in network element localization function.
+      {"networkSecurityWep8021xLabel", IDS_ONC_WIFI_SECURITY_EAP},
+      {"networkSecurityWepPskLabel", IDS_ONC_WIFI_SECURITY_WEP},
+      {"networkSecurityWpaEapLabel", IDS_ONC_WIFI_SECURITY_EAP},
+      {"networkSecurityWpaPskLabel", IDS_ONC_WIFI_SECURITY_PSK},
+      {"networkTechnologyCdma1xrttLabel",
+       IDS_NETWORK_DIAGNOSTICS_CELLULAR_CDMA1XRTT},
+      {"networkTechnologyEdgeLabel", IDS_NETWORK_DIAGNOSTICS_CELLULAR_EDGE},
+      {"networkTechnologyEvdoLabel", IDS_NETWORK_DIAGNOSTICS_CELLULAR_EVDO},
+      {"networkTechnologyGprsLabel", IDS_NETWORK_DIAGNOSTICS_CELLULAR_GPRS},
+      {"networkTechnologyGsmLabel", IDS_NETWORK_DIAGNOSTICS_CELLULAR_GSM},
+      {"networkTechnologyHspaLabel", IDS_NETWORK_DIAGNOSTICS_CELLULAR_HSPA},
+      {"networkTechnologyHspaPlusLabel",
+       IDS_NETWORK_DIAGNOSTICS_CELLULAR_HSPA_PLUS},
+      {"networkTechnologyLabel", IDS_ONC_CELLULAR_NETWORK_TECHNOLOGY},
+      {"networkTechnologyLteLabel", IDS_NETWORK_DIAGNOSTICS_CELLULAR_LTE},
+      {"networkTechnologyLteAdvancedLabel",
+       IDS_NETWORK_DIAGNOSTICS_CELLULAR_LTE_ADVANCED},
+      {"networkTechnologyUmtsLabel", IDS_NETWORK_DIAGNOSTICS_CELLULAR_UMTS},
+      {"noIpAddressText", IDS_NETWORK_DIAGNOSTICS_NO_IP_ADDRESS_TEXT},
       {"notEnoughAvailableMemoryMessage",
        IDS_DIAGNOSTICS_NOT_ENOUGH_AVAILABLE_MEMORY},
-      {"overviewText", IDS_DIAGNOSTICS_OVERVIEW},
       {"percentageLabel", IDS_DIAGNOSTICS_PERCENTAGE_LABEL},
+      {"reconnectLinkText", IDS_DIAGNOSTICS_RECONNECT_LINK_TEXT},
       {"remainingCharge", IDS_DIAGNOSTICS_REMAINING_CHARGE_LABEL},
       {"routineEntryText", IDS_DIANOSTICS_ROUTINE_ENTRY_TEXT},
       {"routineNameText", IDS_DIANOSTICS_ROUTINE_NAME_TEXT},
@@ -153,19 +294,35 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
        IDS_DIAGNOSTICS_SESSION_LOG_TOAST_TEXT_FAILURE},
       {"sessionLogToastTextSuccess",
        IDS_DIAGNOSTICS_SESSION_LOG_TOAST_TEXT_SUCCESS},
+      {"signalStrengthFailedText", IDS_DIAGNOSTICS_SIGNAL_STRENGTH_FAILED_TEXT},
       {"signalStrengthRoutineText", IDS_NETWORK_DIAGNOSTICS_SIGNAL_STRENGTH},
+      {"signalStrength_Average",
+       IDS_DIAGNOSTICS_NETWORK_SIGNAL_STRENGTH_AVERAGE},
+      {"signalStrength_Excellent",
+       IDS_DIAGNOSTICS_NETWORK_SIGNAL_STRENGTH_EXCELLENT},
+      {"signalStrength_Good", IDS_DIAGNOSTICS_NETWORK_SIGNAL_STRENGTH_GOOD},
+      {"signalStrength_Weak", IDS_DIAGNOSTICS_NETWORK_SIGNAL_STRENGTH_WEAK},
       {"stopTestButtonText", IDS_DIAGNOSTICS_STOP_TEST_BUTTON_TEXT},
+      {"systemText", IDS_DIAGNOSTICS_SYSTEM},
       {"testCancelledText", IDS_DIAGNOSTICS_CANCELLED_TEST_TEXT},
       {"testFailure", IDS_DIAGNOSTICS_TEST_FAILURE_TEXT},
       {"testFailedBadgeText", IDS_DIAGNOSTICS_TEST_FAILURE_BADGE_TEXT},
+      {"testOnRoutinesCompletedText", IDS_DIAGNOSTICS_TEST_ON_COMPLETED_TEXT},
       {"testQueuedBadgeText", IDS_DIAGNOSTICS_TEST_QUEUED_BADGE_TEXT},
       {"testRunning", IDS_DIAGNOSTICS_TEST_RUNNING_TEXT},
       {"testRunningBadgeText", IDS_DIAGNOSTICS_TEST_RUNNING_BADGE_TEXT},
+      {"testSkippedBadgeText", IDS_DIAGNOSTICS_TEST_SKIPPED_BADGE_TEXT},
       {"testStoppedBadgeText", IDS_DIAGNOSTICS_TEST_STOPPED_BADGE_TEXT},
+      {"testWarningBadgeText", IDS_DIAGNOSTICS_TEST_WARNING_BADGE_TEXT},
       {"testSuccess", IDS_DIAGNOSTICS_TEST_SUCCESS_TEXT},
       {"testSucceededBadgeText", IDS_DIAGNOSTICS_TEST_SUCCESS_BADGE_TEXT},
       {"troubleConnecting", IDS_DIAGNOSTICS_TROUBLE_CONNECTING},
+      {"troubleshootingText", IDS_DIAGNOSTICS_TROUBLESHOOTING_TEXT},
       {"versionInfo", IDS_DIAGNOSTICS_VERSION_INFO_TEXT},
+      {"visitSettingsToConfigureLinkText",
+       IDS_NETWORK_DIAGNOSTICS_VISIT_SETTINGS_TO_CONFIGURE_LINK_TEXT},
+      {"wifiGroupLabel", IDS_NETWORK_DIAGNOSTICS_WIFI_GROUP},
+      {"wifiLabel", IDS_NETWORK_TYPE_WIFI},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedStrings(*GetDataSourceUpdate());
@@ -197,6 +354,8 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
                      features::IsInputInDiagnosticsAppEnabled());
   source->AddBoolean("isNetworkingEnabled",
                      features::IsNetworkingInDiagnosticsAppEnabled());
+  source->AddBoolean("enableArcNetworkDiagnostics",
+                     features::IsArcNetworkDiagnosticsButtonEnabled());
 }
 
 void SetUpPluralStringHandler(content::WebUI* web_ui) {
@@ -211,14 +370,9 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
     content::WebUI* web_ui,
     const diagnostics::SessionLogHandler::SelectFilePolicyCreator&
         select_file_policy_creator,
-    HoldingSpaceClient* holding_space_client)
-    : ui::MojoWebDialogUI(web_ui),
-      session_log_handler_(std::make_unique<diagnostics::SessionLogHandler>(
-          select_file_policy_creator,
-          holding_space_client)) {
-  diagnostics_manager_ = std::make_unique<diagnostics::DiagnosticsManager>(
-      session_log_handler_.get());
-
+    HoldingSpaceClient* holding_space_client,
+    const base::FilePath& log_directory_path)
+    : ui::MojoWebDialogUI(web_ui) {
   auto html_source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIDiagnosticsAppHost));
   html_source->OverrideContentSecurityPolicy(
@@ -234,20 +388,38 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
   SetUpPluralStringHandler(web_ui);
 
   auto session_log_handler = std::make_unique<diagnostics::SessionLogHandler>(
-      select_file_policy_creator, holding_space_client);
+      select_file_policy_creator, holding_space_client, log_directory_path);
   diagnostics_manager_ = std::make_unique<diagnostics::DiagnosticsManager>(
       session_log_handler.get());
   web_ui->AddMessageHandler(std::move(session_log_handler));
 
   AddDiagnosticsStrings(html_source.get());
+  // Add localized strings required for network-icon.
+  ui::network_element::AddLocalizedStrings(html_source.get());
+  ui::network_element::AddOncLocalizedStrings(html_source.get());
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());
 
+  // Configure SFUL metrics.
+  diagnostics_metrics_ =
+      std::make_unique<diagnostics::metrics::DiagnosticsMetrics>();
+  diagnostics_metrics_->RecordUsage(true);
+
+  // Setup application navigation metrics.
+  diagnostics::metrics::NavigationView initial_view =
+      GetInitialView(web_ui->GetWebContents()->GetURL());
+  EmitInitialScreen(initial_view);
+  web_ui->AddMessageHandler(
+      std::make_unique<diagnostics::metrics::DiagnosticsMetricsMessageHandler>(
+          initial_view));
+  // TODO(ashleydp): Clean up timestamp when EmitAppOpenDuration is deprecated
   open_timestamp_ = base::Time::Now();
 }
 
 DiagnosticsDialogUI::~DiagnosticsDialogUI() {
   const base::TimeDelta time_open = base::Time::Now() - open_timestamp_;
+  diagnostics_metrics_->StopSuccessfulUsage();
+  // TODO(ashleydp): Clean up when EmitAppOpenDuration is deprecated.
   diagnostics::metrics::EmitAppOpenDuration(time_open);
 }
 

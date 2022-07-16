@@ -8,7 +8,7 @@
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/notreached.h"
+#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 
 namespace base {
 
@@ -29,7 +29,7 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
     case PageReadWriteExecute:
       return PAGE_EXECUTE_READWRITE;
     default:
-      NOTREACHED();
+      PA_NOTREACHED();
       FALLTHROUGH;
     case PageInaccessible:
       return PAGE_NOACCESS;
@@ -112,6 +112,18 @@ void DecommitSystemPagesInternal(
   // Ignore accessibility_disposition, because decommitting is equivalent to
   // making pages inaccessible.
   SetSystemPagesAccess(address, length, PageInaccessible);
+}
+
+void DecommitAndZeroSystemPagesInternal(void* address, size_t length) {
+  // https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualfree:
+  // "If a page is decommitted but not released, its state changes to reserved.
+  // Subsequently, you can call VirtualAlloc to commit it, or VirtualFree to
+  // release it. Attempts to read from or write to a reserved page results in an
+  // access violation exception."
+  // https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualalloc
+  // for MEM_COMMIT: "The function also guarantees that when the caller later
+  // initially accesses the memory, the contents will be zero."
+  PA_CHECK(VirtualFree(address, length, MEM_DECOMMIT));
 }
 
 void RecommitSystemPagesInternal(

@@ -30,6 +30,11 @@ class BalancedMediaTaskRunnerFactory
  public:
   explicit BalancedMediaTaskRunnerFactory(base::TimeDelta max_delta);
 
+  BalancedMediaTaskRunnerFactory(const BalancedMediaTaskRunnerFactory&) =
+      delete;
+  BalancedMediaTaskRunnerFactory& operator=(
+      const BalancedMediaTaskRunnerFactory&) = delete;
+
   // Creates a media task runner using |task_runner| as the underlying
   // regular task runner.
   // Restriction on the returned media task runner:
@@ -58,8 +63,6 @@ class BalancedMediaTaskRunnerFactory
   // Task runners created by the factory that have not been unregistered yet.
   base::Lock lock_;
   MediaTaskRunnerSet task_runners_;
-
-  DISALLOW_COPY_AND_ASSIGN(BalancedMediaTaskRunnerFactory);
 };
 
 }  // namespace media

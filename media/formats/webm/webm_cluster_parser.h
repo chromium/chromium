@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
@@ -47,6 +46,10 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
   // to the duration of each frame of the packet in microseconds. See
   // https://tools.ietf.org/html/rfc6716#page-14
   static const uint16_t kOpusFrameDurationsMu[];
+
+  WebMClusterParser() = delete;
+  WebMClusterParser(const WebMClusterParser&) = delete;
+  WebMClusterParser& operator=(const WebMClusterParser&) = delete;
 
  private:
   typedef StreamParserBuffer::Type TrackType;
@@ -322,8 +325,6 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
   DecodeTimestamp ready_buffer_upper_bound_;
 
   MediaLog* media_log_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebMClusterParser);
 };
 
 }  // namespace media

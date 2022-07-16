@@ -16,6 +16,10 @@ namespace extensions {
 class NullExtensionCache : public ExtensionCache {
  public:
   NullExtensionCache();
+
+  NullExtensionCache(const NullExtensionCache&) = delete;
+  NullExtensionCache& operator=(const NullExtensionCache&) = delete;
+
   ~NullExtensionCache() override;
 
   // ExtensionCache implementation.
@@ -31,9 +35,6 @@ class NullExtensionCache : public ExtensionCache {
                     const base::FilePath& file_path,
                     const std::string& version,
                     PutExtensionCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NullExtensionCache);
 };
 
 }  // namespace extensions

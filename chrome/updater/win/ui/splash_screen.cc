@@ -9,9 +9,9 @@
 
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "chrome/updater/win/ui/constants.h"
 #include "chrome/updater/win/ui/ui.h"
-#include "chrome/updater/win/ui/util.h"
+#include "chrome/updater/win/ui/ui_constants.h"
+#include "chrome/updater/win/ui/ui_util.h"
 
 namespace updater {
 namespace ui {

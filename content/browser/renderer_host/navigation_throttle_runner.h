@@ -37,6 +37,10 @@ class CONTENT_EXPORT NavigationThrottleRunner {
   };
 
   NavigationThrottleRunner(Delegate* delegate, int64_t navigation_id);
+
+  NavigationThrottleRunner(const NavigationThrottleRunner&) = delete;
+  NavigationThrottleRunner& operator=(const NavigationThrottleRunner&) = delete;
+
   ~NavigationThrottleRunner();
 
   // Will call the appropriate NavigationThrottle function based on |event| on
@@ -88,8 +92,6 @@ class CONTENT_EXPORT NavigationThrottleRunner {
   // The event currently being processed.
   Event current_event_ = Event::NoEvent;
   base::WeakPtrFactory<NavigationThrottleRunner> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationThrottleRunner);
 };
 
 }  // namespace content

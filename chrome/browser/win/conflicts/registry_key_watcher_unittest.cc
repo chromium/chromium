@@ -10,6 +10,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 class RegistryKeyWatcherTest : public testing::Test {
+ public:
+  RegistryKeyWatcherTest(const RegistryKeyWatcherTest&) = delete;
+  RegistryKeyWatcherTest& operator=(const RegistryKeyWatcherTest&) = delete;
+
  protected:
   RegistryKeyWatcherTest() = default;
   ~RegistryKeyWatcherTest() override = default;
@@ -34,8 +38,6 @@ class RegistryKeyWatcherTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   registry_util::RegistryOverrideManager registry_override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryKeyWatcherTest);
 };
 
 TEST_F(RegistryKeyWatcherTest, InvalidKey) {

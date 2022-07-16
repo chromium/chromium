@@ -20,8 +20,8 @@ namespace policies {
 
 namespace {
 
-constexpr base::TimeDelta kUnfreezeInterval = base::TimeDelta::FromMinutes(5);
-constexpr base::TimeDelta kUnfreezeDuration = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kUnfreezeInterval = base::Minutes(5);
+constexpr base::TimeDelta kUnfreezeDuration = base::Seconds(10);
 
 bool IsPageNodeFrozen(const PageNode* page_node) {
   return page_node->GetLifecycleState() ==

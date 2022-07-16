@@ -70,12 +70,11 @@ std::ostream& operator<<(std::ostream& out,
                          const CreditCardResponseProto& value);
 
 // Convenience constructors.
-ValueProto SimpleValue(bool value, bool is_client_side_only = false);
+ValueProto SimpleValue(bool value, bool is_client_side_only = true);
 ValueProto SimpleValue(const std::string& value,
-                       bool is_client_side_only = false);
-ValueProto SimpleValue(int value, bool is_client_side_only = false);
-ValueProto SimpleValue(const DateProto& value,
-                       bool is_client_side_only = false);
+                       bool is_client_side_only = true);
+ValueProto SimpleValue(int value, bool is_client_side_only = true);
+ValueProto SimpleValue(const DateProto& value, bool is_client_side_only = true);
 ModelProto::ModelValue SimpleModelValue(const std::string& identifier,
                                         const ValueProto& value);
 

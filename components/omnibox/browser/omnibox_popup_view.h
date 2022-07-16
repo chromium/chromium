@@ -14,6 +14,7 @@
 #include <stddef.h>
 
 #include "build/build_config.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 
 class OmniboxPopupView {
  public:
@@ -26,9 +27,10 @@ class OmniboxPopupView {
   virtual void InvalidateLine(size_t line) = 0;
 
   // Invoked when the selection changes. The |line| field in either selection
-  // may be OmniboxPopupModel::kNoMatch. This method is invoked by the model.
-  virtual void OnSelectionChanged(OmniboxPopupModel::Selection old_selection,
-                                  OmniboxPopupModel::Selection new_selection) {}
+  // may be OmniboxPopupSelection::kNoMatch. This method is invoked by the
+  // model.
+  virtual void OnSelectionChanged(OmniboxPopupSelection old_selection,
+                                  OmniboxPopupSelection new_selection) {}
 
   // Redraws the popup window to match any changes in the result set; this may
   // mean opening or closing the window.

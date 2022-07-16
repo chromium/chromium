@@ -60,9 +60,9 @@
 #include "chrome/browser/web_applications/chrome_pwa_launcher/last_browser_file_util.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/launcher_log_reporter.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/launcher_update.h"
-#include "chrome/browser/web_applications/components/web_app_handler_registration_utils_win.h"
-#include "chrome/browser/web_applications/components/web_app_shortcut.h"
+#include "chrome/browser/web_applications/web_app_handler_registration_utils_win.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_shortcut.h"
 #include "chrome/browser/win/browser_util.h"
 #include "chrome/browser/win/chrome_elf_init.h"
 #include "chrome/browser/win/conflicts/enumerate_input_method_editors.h"
@@ -470,7 +470,7 @@ void UpdatePwaLaunchersForProfile(const base::FilePath& profile_dir) {
     // The profile was unloaded.
     return;
   }
-  auto* provider = web_app::WebAppProvider::Get(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   if (!provider)
     return;
   web_app::WebAppRegistrar& registrar = provider->registrar();
@@ -560,9 +560,9 @@ int DoUninstallTasks(bool chrome_still_running) {
 // ChromeBrowserMainPartsWin ---------------------------------------------------
 
 ChromeBrowserMainPartsWin::ChromeBrowserMainPartsWin(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     StartupData* startup_data)
-    : ChromeBrowserMainParts(parameters, startup_data) {}
+    : ChromeBrowserMainParts(std::move(parameters), startup_data) {}
 
 ChromeBrowserMainPartsWin::~ChromeBrowserMainPartsWin() = default;
 
@@ -687,8 +687,7 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
   // Record UMA data about whether the fault-tolerant heap is enabled.
   // Use a delayed task to minimize the impact on startup time.
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&DetectFaultTolerantHeap),
-      base::TimeDelta::FromMinutes(1));
+      FROM_HERE, base::BindOnce(&DetectFaultTolerantHeap), base::Minutes(1));
 
   // Record Processor Metrics. This is very low priority, hence posting as
   // BEST_EFFORT to start after Chrome startup has completed. This metric is

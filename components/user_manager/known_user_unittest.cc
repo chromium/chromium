@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/json/values_util.h"
 #include "base/test/task_environment.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -55,10 +55,6 @@ class KnownUserTest : public testing::Test {
   const AccountId kDefaultAccountId =
       AccountId::FromUserEmailGaiaId("default_account@gmail.com",
                                      "fake-gaia-id");
-  const AccountId kDefaultAccountId2 =
-      AccountId::FromUserEmailGaiaId("default_account_2@gmail.com",
-                                     "fake-gaia-id-2");
-
   FakeUserManager* fake_user_manager() { return fake_user_manager_; }
 
   PrefService* local_state() { return &local_state_; }
@@ -529,7 +525,7 @@ TEST_F(KnownUserTest, OfflineSigninLimit) {
   KnownUser known_user(local_state());
   EXPECT_FALSE(known_user.GetOfflineSigninLimit(kDefaultAccountId).has_value());
 
-  base::TimeDelta offline_signin_limit = base::TimeDelta::FromMinutes(80);
+  base::TimeDelta offline_signin_limit = base::Minutes(80);
   known_user.SetOfflineSigninLimit(kDefaultAccountId, offline_signin_limit);
 
   EXPECT_EQ(known_user.GetOfflineSigninLimit(kDefaultAccountId).value(),
@@ -562,20 +558,20 @@ TEST_F(KnownUserTest, AccountManager) {
   }
 }
 
-TEST_F(KnownUserTest, UserLastLoginInputMethod) {
+TEST_F(KnownUserTest, UserLastLoginInputMethodId) {
   KnownUser known_user(local_state());
   {
-    std::string user_last_input_method;
-    EXPECT_FALSE(known_user.GetUserLastInputMethod(kDefaultAccountId,
-                                                   &user_last_input_method));
+    std::string user_last_input_method_id;
+    EXPECT_FALSE(known_user.GetUserLastInputMethodId(
+        kDefaultAccountId, &user_last_input_method_id));
   }
 
-  known_user.SetUserLastLoginInputMethod(kDefaultAccountId, "test");
+  known_user.SetUserLastLoginInputMethodId(kDefaultAccountId, "test");
 
   {
-    std::string user_last_input_method;
-    EXPECT_TRUE(known_user.GetUserLastInputMethod(kDefaultAccountId,
-                                                  &user_last_input_method));
+    std::string user_last_input_method_id;
+    EXPECT_TRUE(known_user.GetUserLastInputMethodId(
+        kDefaultAccountId, &user_last_input_method_id));
   }
 }
 
@@ -667,49 +663,6 @@ TEST_F(KnownUserTest, CleanObsoletePrefs) {
   EXPECT_TRUE(custom_pref_value);
 
   EXPECT_TRUE(known_user.GetIsEnterpriseManaged(kDefaultAccountId));
-}
-
-TEST_F(KnownUserTest, MigrateOfflineSigninLimit) {
-  KnownUser known_user(local_state());
-  const std::string kDeprecatedPrefName = "offline_signin_limit";
-  const std::string kNewPrefName = "offline_signin_limit2";
-
-  // Set a deprecated pref. base::TimeDelta() meant that value is not set.
-  known_user.SetPref(kDefaultAccountId, kDeprecatedPrefName,
-                     util::TimeDeltaToValue(base::TimeDelta()));
-
-  // Imitate that user is forced to online signin.
-  const char kUserForceOnlineSignin[] = "UserForceOnlineSignin";
-  {
-    DictionaryPrefUpdate force_online_update(local_state(),
-                                             kUserForceOnlineSignin);
-    force_online_update->SetKey(kDefaultAccountId.GetUserEmail(),
-                                base::Value(true));
-  }
-
-  const base::TimeDelta kLegitValue = base::TimeDelta::FromDays(14);
-  known_user.SetPref(kDefaultAccountId2, kDeprecatedPrefName,
-                     util::TimeDeltaToValue(kLegitValue));
-
-  known_user.CleanObsoletePrefs();
-
-  const base::Value* out_value = nullptr;
-  // Verify that the deprecated pref has been removed.
-  EXPECT_FALSE(
-      known_user.GetPref(kDefaultAccountId, kDeprecatedPrefName, &out_value));
-  EXPECT_FALSE(
-      known_user.GetPref(kDefaultAccountId2, kDeprecatedPrefName, &out_value));
-
-  EXPECT_FALSE(known_user.GetPref(kDefaultAccountId, kNewPrefName, &out_value));
-
-  EXPECT_TRUE(known_user.GetPref(kDefaultAccountId2, kNewPrefName, &out_value));
-  EXPECT_EQ(kLegitValue, util::ValueToTimeDelta(*out_value));
-
-  // Verify that user is not forced to online signin anymore.
-  const base::DictionaryValue* prefs_force_online =
-      local_state()->GetDictionary(kUserForceOnlineSignin);
-  EXPECT_FALSE(prefs_force_online->FindBoolKey(kDefaultAccountId.GetUserEmail())
-                   .value());
 }
 
 //

@@ -26,6 +26,9 @@ class FaviconUrlObserver : public WebStateObserver {
  public:
   FaviconUrlObserver() = default;
 
+  FaviconUrlObserver(const FaviconUrlObserver&) = delete;
+  FaviconUrlObserver& operator=(const FaviconUrlObserver&) = delete;
+
   // Returns vavicon url candidates received in FaviconUrlUpdated.
   const std::vector<FaviconURL>& favicon_url_candidates() const {
     return favicon_url_candidates_;
@@ -43,8 +46,6 @@ class FaviconUrlObserver : public WebStateObserver {
  private:
   bool favicon_url_updated_ = false;
   std::vector<FaviconURL> favicon_url_candidates_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconUrlObserver);
 };
 
 }  // namespace
@@ -53,6 +54,9 @@ class FaviconUrlObserver : public WebStateObserver {
 class FaviconCallbackTest : public web::WebTestWithWebState {
  public:
   FaviconCallbackTest() = default;
+
+  FaviconCallbackTest(const FaviconCallbackTest&) = delete;
+  FaviconCallbackTest& operator=(const FaviconCallbackTest&) = delete;
 
  protected:
   void SetUp() override {
@@ -68,8 +72,6 @@ class FaviconCallbackTest : public web::WebTestWithWebState {
 
  private:
   FaviconUrlObserver observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconCallbackTest);
 };
 
 // Tests page with shortcut icon link.

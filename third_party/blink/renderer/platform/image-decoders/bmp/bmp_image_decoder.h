@@ -42,7 +42,9 @@ class FastSharedBufferReader;
 // This class decodes the BMP image format.
 class PLATFORM_EXPORT BMPImageDecoder final : public ImageDecoder {
  public:
-  BMPImageDecoder(AlphaOption, const ColorBehavior&, size_t max_decoded_bytes);
+  BMPImageDecoder(AlphaOption,
+                  const ColorBehavior&,
+                  wtf_size_t max_decoded_bytes);
 
   ~BMPImageDecoder() override;
 
@@ -57,7 +59,7 @@ class PLATFORM_EXPORT BMPImageDecoder final : public ImageDecoder {
  private:
   // ImageDecoder:
   void DecodeSize() override { Decode(true); }
-  void Decode(size_t) override { Decode(false); }
+  void Decode(wtf_size_t) override { Decode(false); }
 
   // Decodes the image.  If |only_size| is true, stops decoding after
   // calculating the image size. If decoding fails but there is no more
@@ -71,7 +73,7 @@ class PLATFORM_EXPORT BMPImageDecoder final : public ImageDecoder {
   // Processes the file header at the beginning of the data.  Sets
   // |img_data_offset| based on the header contents. Returns true if the
   // file header could be decoded.
-  bool ProcessFileHeader(size_t& img_data_offset);
+  bool ProcessFileHeader(wtf_size_t& img_data_offset);
 
   // Uses |fast_reader| and |buffer| to read the file header into |file_header|.
   // Computes |file_type| from the file header.  Returns whether there was
@@ -84,7 +86,7 @@ class PLATFORM_EXPORT BMPImageDecoder final : public ImageDecoder {
   // An index into |data_| representing how much we've already decoded.
   // Note that this only tracks data _this_ class decodes; once the
   // BMPImageReader takes over this will not be updated further.
-  size_t decoded_offset_;
+  wtf_size_t decoded_offset_;
 
   // The reader used to do most of the BMP decoding.
   std::unique_ptr<BMPImageReader> reader_;

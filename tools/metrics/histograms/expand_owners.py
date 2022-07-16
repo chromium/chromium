@@ -253,10 +253,11 @@ def _ExtractComponentViaDirmd(path):
     dirmd_exe = 'dirmd.bat'
   dirmd_path = os.path.join(*(DIR_ABOVE_TOOLS +
                               ['third_party', 'depot_tools', dirmd_exe]))
-  dirmd_command = [dirmd_path, 'compute', '--root', root_path, path]
-  dirmd = subprocess.Popen(dirmd_command, stdout=subprocess.PIPE)
+  dirmd_command = [dirmd_path, 'read', '-form', 'sparse', root_path, path]
+  dirmd = subprocess.Popen(
+      dirmd_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   if dirmd.wait() != 0:
-    raise Error('dirmd failed.')
+    raise Error('dirmd failed: ' + dirmd.stderr.read())
   json_out = json.load(dirmd.stdout)
   # On Windows, dirmd output still uses Unix path separators.
   if sys.platform == 'win32':

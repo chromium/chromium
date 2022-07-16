@@ -92,6 +92,7 @@
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "url/gurl.h"
 
 namespace net {

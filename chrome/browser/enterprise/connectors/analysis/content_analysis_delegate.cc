@@ -5,13 +5,11 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 
 #include <algorithm>
-#include <atomic>
 #include <numeric>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -20,10 +18,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_job.h"
-#include "base/task/post_task.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -142,26 +136,6 @@ safe_browsing::EventResult CalculateEventResult(
                             : safe_browsing::EventResult::BLOCKED);
 }
 
-constexpr char kMaxFileOpeningThreads[] = "wp-max-file-opening-threads";
-constexpr size_t kDefaultMaxFileOpeningThreads = 5;
-
-size_t GetMaxFileOpeningThreads() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kMaxFileOpeningThreads)) {
-    int parsed_max;
-    if (base::StringToInt(
-            command_line->GetSwitchValueASCII(kMaxFileOpeningThreads),
-            &parsed_max) &&
-        parsed_max > 0) {
-      return parsed_max;
-    } else {
-      LOG(ERROR) << kMaxFileOpeningThreads << " had invalid value";
-    }
-  }
-
-  return kDefaultMaxFileOpeningThreads;
-}
-
 }  // namespace
 
 ContentAnalysisDelegate::Data::Data() = default;
@@ -187,54 +161,7 @@ ContentAnalysisDelegate::FileContents&
 ContentAnalysisDelegate::FileContents::operator=(
     ContentAnalysisDelegate::FileContents&& other) = default;
 
-ContentAnalysisDelegate::FileOpeningTask::FileOpeningTask() = default;
-ContentAnalysisDelegate::FileOpeningTask::~FileOpeningTask() = default;
-
-ContentAnalysisDelegate::FileOpeningJob::FileOpeningJob(
-    std::vector<FileOpeningTask> tasks)
-    : tasks_(std::move(tasks)), max_threads_flag_(GetMaxFileOpeningThreads()) {
-  num_unopened_files_ = tasks_.size();
-}
-
-ContentAnalysisDelegate::FileOpeningJob::~FileOpeningJob() = default;
-
-void ContentAnalysisDelegate::FileOpeningJob::ProcessNextTask(
-    base::JobDelegate* job_delegate) {
-  // Loop over |tasks_| until one can safely be taken by this thread.
-  for (size_t i = 0; i < tasks_.size() && num_unopened_files() != 0 &&
-                     !job_delegate->ShouldYield();
-       ++i) {
-    // The task's |taken| value is atomic, so exchanging it to find it used to
-    // be true indicates we were the not the thread that took it.
-    // std::memory_order_relaxed is safe here since |taken| is not synchronized
-    // with other state.
-    if (tasks_[i].taken.exchange(true, std::memory_order_relaxed))
-      continue;
-
-    // Since we know we now have taken |tasks_[i]|, we can do the file opening
-    // work safely.
-    tasks_[i].request->OpenFile();
-
-    // Now that the file opening work is done, |num_unopened_files_| is
-    // decremented atomically and we return to free the thread.
-    num_unopened_files_.fetch_sub(1, std::memory_order_relaxed);
-    return;
-  }
-}
-
-size_t ContentAnalysisDelegate::FileOpeningJob::num_unopened_files() {
-  return num_unopened_files_.load(std::memory_order_relaxed);
-}
-
-size_t ContentAnalysisDelegate::FileOpeningJob::MaxConcurrentThreads(
-    size_t /*worker_count*/) {
-  return std::min(num_unopened_files(), max_threads_flag_);
-}
-
-ContentAnalysisDelegate::~ContentAnalysisDelegate() {
-  if (file_opening_job_handle_)
-    file_opening_job_handle_.Cancel();
-}
+ContentAnalysisDelegate::~ContentAnalysisDelegate() = default;
 
 void ContentAnalysisDelegate::BypassWarnings() {
   if (callback_.is_null())
@@ -563,19 +490,13 @@ bool ContentAnalysisDelegate::UploadData() {
         safe_browsing::ScanningCrashKey::TOTAL_FILE_UPLOADS,
         data_.paths.size());
 
-    std::vector<FileOpeningTask> tasks(data_.paths.size());
+    std::vector<safe_browsing::FileOpeningJob::FileOpeningTask> tasks(
+        data_.paths.size());
     for (size_t i = 0; i < data_.paths.size(); ++i)
       tasks[i].request = PrepareFileRequest(data_.paths[i]);
 
-    file_opening_job_ = std::make_unique<FileOpeningJob>(std::move(tasks));
-    file_opening_job_handle_ = base::PostJob(
-        FROM_HERE,
-        {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
-         base::ThreadPolicy::PREFER_BACKGROUND},
-        base::BindRepeating(&FileOpeningJob::ProcessNextTask,
-                            base::Unretained(file_opening_job_.get())),
-        base::BindRepeating(&FileOpeningJob::MaxConcurrentThreads,
-                            base::Unretained(file_opening_job_.get())));
+    file_opening_job_ =
+        std::make_unique<safe_browsing::FileOpeningJob>(std::move(tasks));
   }
 
   data_uploaded_ = true;

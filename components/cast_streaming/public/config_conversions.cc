@@ -39,36 +39,36 @@ media::AudioCodec ToAudioDecoderConfigCodec(
     openscreen::cast::AudioCodec codec) {
   switch (codec) {
     case openscreen::cast::AudioCodec::kAac:
-      return media::AudioCodec::kCodecAAC;
+      return media::AudioCodec::kAAC;
     case openscreen::cast::AudioCodec::kOpus:
-      return media::AudioCodec::kCodecOpus;
+      return media::AudioCodec::kOpus;
     case openscreen::cast::AudioCodec::kNotSpecified:
       break;
   }
 
   NOTREACHED();
-  return media::AudioCodec::kUnknownAudioCodec;
+  return media::AudioCodec::kUnknown;
 }
 
 media::VideoCodec ToVideoDecoderConfigCodec(
     openscreen::cast::VideoCodec codec) {
   switch (codec) {
     case openscreen::cast::VideoCodec::kH264:
-      return media::VideoCodec::kCodecH264;
+      return media::VideoCodec::kH264;
     case openscreen::cast::VideoCodec::kVp8:
-      return media::VideoCodec::kCodecVP8;
+      return media::VideoCodec::kVP8;
     case openscreen::cast::VideoCodec::kHevc:
-      return media::VideoCodec::kCodecHEVC;
+      return media::VideoCodec::kHEVC;
     case openscreen::cast::VideoCodec::kVp9:
-      return media::VideoCodec::kCodecVP9;
+      return media::VideoCodec::kVP9;
     case openscreen::cast::VideoCodec::kAv1:
-      return media::VideoCodec::kCodecAV1;
+      return media::VideoCodec::kAV1;
     case openscreen::cast::VideoCodec::kNotSpecified:
       break;
   }
 
   NOTREACHED();
-  return media::VideoCodec::kUnknownVideoCodec;
+  return media::VideoCodec::kUnknown;
 }
 
 }  // namespace
@@ -76,9 +76,9 @@ media::VideoCodec ToVideoDecoderConfigCodec(
 openscreen::cast::AudioCodec ToAudioCaptureConfigCodec(
     media::AudioCodec codec) {
   switch (codec) {
-    case media::AudioCodec::kCodecAAC:
+    case media::AudioCodec::kAAC:
       return openscreen::cast::AudioCodec::kAac;
-    case media::AudioCodec::kCodecOpus:
+    case media::AudioCodec::kOpus:
       return openscreen::cast::AudioCodec::kOpus;
     default:
       break;
@@ -91,13 +91,13 @@ openscreen::cast::AudioCodec ToAudioCaptureConfigCodec(
 openscreen::cast::VideoCodec ToVideoCaptureConfigCodec(
     media::VideoCodec codec) {
   switch (codec) {
-    case media::VideoCodec::kCodecH264:
+    case media::VideoCodec::kH264:
       return openscreen::cast::VideoCodec::kH264;
-    case media::VideoCodec::kCodecVP8:
+    case media::VideoCodec::kVP8:
       return openscreen::cast::VideoCodec::kVp8;
-    case media::VideoCodec::kCodecHEVC:
+    case media::VideoCodec::kHEVC:
       return openscreen::cast::VideoCodec::kHevc;
-    case media::VideoCodec::kCodecVP9:
+    case media::VideoCodec::kVP9:
       return openscreen::cast::VideoCodec::kVp9;
     default:
       break;

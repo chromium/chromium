@@ -57,6 +57,11 @@ class ASH_EXPORT DeskAnimationBase
   void OnEndingDeskScreenshotTaken() override;
   void OnDeskSwitchAnimationFinished() override;
 
+  void set_finished_callback(base::OnceClosure finished_callback) {
+    DCHECK(finished_callback_.is_null());
+    finished_callback_ = std::move(finished_callback);
+  }
+
   void set_skip_notify_controller_on_animation_finished_for_testing(bool val) {
     skip_notify_controller_on_animation_finished_for_testing_ = val;
   }
@@ -94,6 +99,16 @@ class ASH_EXPORT DeskAnimationBase
   // OnEndingDeskScreenshotTaken is called.
   const bool is_continuous_gesture_animation_;
 
+  // Used when the animation is a continuous gesture animation. True when
+  // `EndSwipeAnimation()` has been called and a fast swipe was detected, and
+  // reset to false if `Replace()` has been called. A fast swipe is one where
+  // the user starts and ends the swipe gesture within half a second. If this is
+  // false, we do not start the animation when `OnEndingDeskScreenshotTaken` is
+  // called.
+  // TODO(sammiequon): If the trial feature is removed, this can be combined
+  // with `is_continuous_gesture_animation_` as an optional or enum.
+  bool did_continuous_gesture_end_fast_ = false;
+
   // Used for metrics collection to track how many desks changes a user has seen
   // during the animation. This is different from the number of desk activations
   // as the user may switch desks but not activate it if the desk already has a
@@ -109,6 +124,9 @@ class ASH_EXPORT DeskAnimationBase
   // DeskController are tied together in production code, but may not be in a
   // test scenario.
   bool skip_notify_controller_on_animation_finished_for_testing_ = false;
+
+  // Callback for when the animation is finished.
+  base::OnceClosure finished_callback_;
 };
 
 }  // namespace ash

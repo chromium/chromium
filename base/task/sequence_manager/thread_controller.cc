@@ -126,10 +126,13 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(State new_state) {
     return;
 
   // Change of state.
-  if (is_active)
+  if (is_active) {
     TRACE_EVENT_BEGIN0("base", "ThreadController active");
-  else
+  } else {
     TRACE_EVENT_END0("base", "ThreadController active");
+    // TODO(crbug.com/1021571): Remove this once fixed.
+    PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
+  }
 
   if (trace_observer_for_testing_) {
     if (is_active)

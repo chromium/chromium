@@ -74,7 +74,7 @@ js_library("tab_search_app_focus_test") {
 
 js_library("test_tab_search_api_proxy") {
   deps = [
-    "..:test_browser_proxy.m",
+    "..:test_browser_proxy",
     "//chrome/browser/resources/tab_search:tab_search",
     "//chrome/browser/ui/webui/tab_search:mojo_bindings_js_library_for_compile",
   ]

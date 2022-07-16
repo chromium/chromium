@@ -23,6 +23,11 @@ const std::string kHistogramName = "Dummy.Histogram";
 class TaskSwitchTimeTrackerTest : public testing::Test {
  public:
   TaskSwitchTimeTrackerTest();
+
+  TaskSwitchTimeTrackerTest(const TaskSwitchTimeTrackerTest&) = delete;
+  TaskSwitchTimeTrackerTest& operator=(const TaskSwitchTimeTrackerTest&) =
+      delete;
+
   ~TaskSwitchTimeTrackerTest() override;
 
   // testing::Test:
@@ -42,9 +47,6 @@ class TaskSwitchTimeTrackerTest : public testing::Test {
 
   // A Test API that wraps the test target.
   std::unique_ptr<TaskSwitchTimeTrackerTestAPI> time_tracker_test_api_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskSwitchTimeTrackerTest);
 };
 
 TaskSwitchTimeTrackerTest::TaskSwitchTimeTrackerTest() = default;
@@ -59,7 +61,7 @@ void TaskSwitchTimeTrackerTest::SetUp() {
       std::make_unique<TaskSwitchTimeTrackerTestAPI>(kHistogramName);
   // The TaskSwitchTimeTracker interprets a value of base::TimeTicks() as if the
   // |last_action_time_| has not been set.
-  time_tracker_test_api_->Advance(base::TimeDelta::FromMilliseconds(1));
+  time_tracker_test_api_->Advance(base::Milliseconds(1));
 }
 
 void TaskSwitchTimeTrackerTest::TearDown() {
@@ -92,12 +94,12 @@ TEST_F(TaskSwitchTimeTrackerTest,
 TEST_F(TaskSwitchTimeTrackerTest, RecordAfterTwoTaskSwitches) {
   OnTaskSwitch();
 
-  time_tracker_test_api_->Advance(base::TimeDelta::FromMilliseconds(2));
+  time_tracker_test_api_->Advance(base::Milliseconds(2));
   OnTaskSwitch();
   histogram_tester_->ExpectTotalCount(kHistogramName, 1);
   histogram_tester_->ExpectBucketCount(kHistogramName, 0, 1);
 
-  time_tracker_test_api_->Advance(base::TimeDelta::FromSeconds(1));
+  time_tracker_test_api_->Advance(base::Seconds(1));
   OnTaskSwitch();
   histogram_tester_->ExpectTotalCount(kHistogramName, 2);
   histogram_tester_->ExpectBucketCount(kHistogramName, 1, 1);

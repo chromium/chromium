@@ -26,6 +26,9 @@ class MixerControl {
   // mixer is not present on this system.
   static MixerControl* Get();
 
+  MixerControl(const MixerControl&) = delete;
+  MixerControl& operator=(const MixerControl&) = delete;
+
   // Sends arbitrary config data to a specific postprocessor.
   void ConfigurePostprocessor(std::string postprocessor_name,
                               std::string config);
@@ -48,8 +51,6 @@ class MixerControl {
   ~MixerControl();
 
   base::SequenceBound<ControlConnection> control_;
-
-  DISALLOW_COPY_AND_ASSIGN(MixerControl);
 };
 
 }  // namespace mixer_service

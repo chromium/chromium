@@ -47,6 +47,9 @@ namespace {
 
 class DnsReloader : public NetworkChangeNotifier::DNSObserver {
  public:
+  DnsReloader(const DnsReloader&) = delete;
+  DnsReloader& operator=(const DnsReloader&) = delete;
+
   // NetworkChangeNotifier::DNSObserver:
   void OnDNSChanged() override {
     base::AutoLock lock(lock_);
@@ -90,8 +93,6 @@ class DnsReloader : public NetworkChangeNotifier::DNSObserver {
 
   // We use thread local storage to identify which ReloadState to interact with.
   base::ThreadLocalOwnedPointer<ReloadState> tls_reload_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsReloader);
 };
 
 base::LazyInstance<DnsReloader>::Leaky

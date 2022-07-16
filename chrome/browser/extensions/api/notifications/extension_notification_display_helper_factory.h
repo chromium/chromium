@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_NOTIFICATIONS_EXTENSION_NOTIFICATION_DISPLAY_HELPER_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_API_NOTIFICATIONS_EXTENSION_NOTIFICATION_DISPLAY_HELPER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -18,6 +17,11 @@ class ExtensionNotificationDisplayHelper;
 class ExtensionNotificationDisplayHelperFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  ExtensionNotificationDisplayHelperFactory(
+      const ExtensionNotificationDisplayHelperFactory&) = delete;
+  ExtensionNotificationDisplayHelperFactory& operator=(
+      const ExtensionNotificationDisplayHelperFactory&) = delete;
+
   // Get the singleton instance of the factory.
   static ExtensionNotificationDisplayHelperFactory* GetInstance();
 
@@ -37,8 +41,6 @@ class ExtensionNotificationDisplayHelperFactory
 
   ExtensionNotificationDisplayHelperFactory();
   ~ExtensionNotificationDisplayHelperFactory() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionNotificationDisplayHelperFactory);
 };
 
 }  // namespace extensions

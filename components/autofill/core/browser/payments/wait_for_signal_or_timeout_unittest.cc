@@ -36,7 +36,7 @@ class WaitForSignalOrTimeoutTest : public testing::Test {
 // happens.
 TEST_F(WaitForSignalOrTimeoutTest, InitThenSignal) {
   WaitForSignalOrTimeout wait;
-  wait.OnEventOrTimeOut(GetCallback(), base::TimeDelta::FromSeconds(30));
+  wait.OnEventOrTimeOut(GetCallback(), base::Seconds(30));
   EXPECT_EQ(0, callbacks_);
   EXPECT_FALSE(wait.IsSignaled());
   wait.Signal();
@@ -50,7 +50,7 @@ TEST_F(WaitForSignalOrTimeoutTest, InitThenSignal) {
   EXPECT_TRUE(wait.IsSignaled());
 
   // Also the pending timeout should not trigger further callbacks.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(35));
+  task_env_.FastForwardBy(base::Seconds(35));
   EXPECT_TRUE(wait.IsSignaled());
   EXPECT_EQ(1, callbacks_);
 }
@@ -66,7 +66,7 @@ TEST_F(WaitForSignalOrTimeoutTest, SignalThenInit) {
   EXPECT_EQ(0, callbacks_);
 
   // Once the callback handler is registered, it should be called immediately.
-  wait.OnEventOrTimeOut(GetCallback(), base::TimeDelta::FromSeconds(30));
+  wait.OnEventOrTimeOut(GetCallback(), base::Seconds(30));
   EXPECT_TRUE(wait.IsSignaled());
   EXPECT_EQ(1, callbacks_);
   EXPECT_TRUE(last_callback_triggered_by_signal_);
@@ -77,7 +77,7 @@ TEST_F(WaitForSignalOrTimeoutTest, SignalThenInit) {
   EXPECT_EQ(1, callbacks_);
 
   // Also the pending timeout should not trigger further callbacks.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(35));
+  task_env_.FastForwardBy(base::Seconds(35));
   EXPECT_TRUE(wait.IsSignaled());
   EXPECT_EQ(1, callbacks_);
 }
@@ -85,11 +85,11 @@ TEST_F(WaitForSignalOrTimeoutTest, SignalThenInit) {
 // A timeout occurs before Signal() is called.
 TEST_F(WaitForSignalOrTimeoutTest, InitThenTimeout) {
   WaitForSignalOrTimeout wait;
-  wait.OnEventOrTimeOut(GetCallback(), base::TimeDelta::FromSeconds(30));
+  wait.OnEventOrTimeOut(GetCallback(), base::Seconds(30));
   EXPECT_FALSE(wait.IsSignaled());
   EXPECT_EQ(0, callbacks_);
 
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(35));
+  task_env_.FastForwardBy(base::Seconds(35));
   EXPECT_TRUE(wait.IsSignaled());
   EXPECT_EQ(1, callbacks_);
   EXPECT_FALSE(last_callback_triggered_by_signal_);
@@ -105,17 +105,17 @@ TEST_F(WaitForSignalOrTimeoutTest, InitThenTimeout) {
 TEST_F(WaitForSignalOrTimeoutTest, DestroyedBeforeSignal) {
   {
     WaitForSignalOrTimeout wait;
-    wait.OnEventOrTimeOut(GetCallback(), base::TimeDelta::FromSeconds(30));
+    wait.OnEventOrTimeOut(GetCallback(), base::Seconds(30));
   }
   EXPECT_EQ(0, callbacks_);
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(35));
+  task_env_.FastForwardBy(base::Seconds(35));
   EXPECT_EQ(0, callbacks_);
 }
 
 // The WaitForSignalOrTimeout gets signaled, reset, and signaled again.
 TEST_F(WaitForSignalOrTimeoutTest, Reset) {
   WaitForSignalOrTimeout wait;
-  wait.OnEventOrTimeOut(GetCallback(), base::TimeDelta::FromSeconds(30));
+  wait.OnEventOrTimeOut(GetCallback(), base::Seconds(30));
   EXPECT_EQ(0, callbacks_);
   wait.Signal();
   EXPECT_EQ(1, callbacks_);
@@ -130,7 +130,7 @@ TEST_F(WaitForSignalOrTimeoutTest, Reset) {
   wait.Signal();
   EXPECT_EQ(1, callbacks_);
   // Now the callback happens immediately.
-  wait.OnEventOrTimeOut(GetCallback(), base::TimeDelta::FromSeconds(30));
+  wait.OnEventOrTimeOut(GetCallback(), base::Seconds(30));
   EXPECT_EQ(2, callbacks_);
   EXPECT_TRUE(last_callback_triggered_by_signal_);
 
@@ -138,50 +138,50 @@ TEST_F(WaitForSignalOrTimeoutTest, Reset) {
 
   // Finally, we simulate a timeout after the reset.
   EXPECT_FALSE(wait.IsSignaled());
-  wait.OnEventOrTimeOut(GetCallback(), base::TimeDelta::FromSeconds(30));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(35));
+  wait.OnEventOrTimeOut(GetCallback(), base::Seconds(30));
+  task_env_.FastForwardBy(base::Seconds(35));
   EXPECT_EQ(3, callbacks_);
   EXPECT_FALSE(last_callback_triggered_by_signal_);
 }
 
 TEST_F(WaitForSignalOrTimeoutTest, OnEventOrTimeOutCalledTwice) {
   WaitForSignalOrTimeout wait;
-  wait.OnEventOrTimeOut(GetCallback(), base::TimeDelta::FromSeconds(30));
+  wait.OnEventOrTimeOut(GetCallback(), base::Seconds(30));
   EXPECT_EQ(0, callbacks_);
 
   // Wait some time but not long enough for the timeout to trigger.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(25));
+  task_env_.FastForwardBy(base::Seconds(25));
   EXPECT_EQ(0, callbacks_);
   EXPECT_FALSE(wait.IsSignaled());
 
   // This resets the state machine (currently waiting for a signal or timeout)
   // and starts a new wait.
-  wait.OnEventOrTimeOut(GetCallback(), base::TimeDelta::FromSeconds(30));
+  wait.OnEventOrTimeOut(GetCallback(), base::Seconds(30));
 
   // Wait some time but not long enough for the timeout to trigger.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(25));
+  task_env_.FastForwardBy(base::Seconds(25));
   // The first timeout should not have triggered anything.
   EXPECT_EQ(0, callbacks_);
   EXPECT_FALSE(wait.IsSignaled());
 
   // Wait some more time for the second timeout to kick in.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_env_.FastForwardBy(base::Seconds(10));
   EXPECT_EQ(1, callbacks_);
   EXPECT_TRUE(wait.IsSignaled());
   EXPECT_FALSE(last_callback_triggered_by_signal_);
 
   // This resets the state machine (currently in done state) once more and
   // starts a new wait.
-  wait.OnEventOrTimeOut(GetCallback(), base::TimeDelta::FromSeconds(30));
+  wait.OnEventOrTimeOut(GetCallback(), base::Seconds(30));
 
   // Wait some time but not long enough for the timeout to trigger.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(25));
+  task_env_.FastForwardBy(base::Seconds(25));
   // The first timeout should not have triggered anything.
   EXPECT_EQ(1, callbacks_);
   EXPECT_FALSE(wait.IsSignaled());
 
   // Wait some more time for the second timeout to kick in.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_env_.FastForwardBy(base::Seconds(10));
   EXPECT_EQ(2, callbacks_);
   EXPECT_TRUE(wait.IsSignaled());
   EXPECT_FALSE(last_callback_triggered_by_signal_);

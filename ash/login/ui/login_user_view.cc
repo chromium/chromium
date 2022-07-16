@@ -90,6 +90,11 @@ class PassthroughAnimationDecoder
  public:
   explicit PassthroughAnimationDecoder(const AnimationFrames& frames)
       : frames_(frames) {}
+
+  PassthroughAnimationDecoder(const PassthroughAnimationDecoder&) = delete;
+  PassthroughAnimationDecoder& operator=(const PassthroughAnimationDecoder&) =
+      delete;
+
   ~PassthroughAnimationDecoder() override = default;
 
   // AnimatedRoundedImageView::AnimationDecoder:
@@ -97,7 +102,6 @@ class PassthroughAnimationDecoder
 
  private:
   AnimationFrames frames_;
-  DISALLOW_COPY_AND_ASSIGN(PassthroughAnimationDecoder);
 };
 
 class IconRoundedView : public views::View {
@@ -181,6 +185,9 @@ class LoginUserView::UserImage : public NonAccessibleView {
     AddChildView(enterprise_icon_);
   }
 
+  UserImage(const UserImage&) = delete;
+  UserImage& operator=(const UserImage&) = delete;
+
   ~UserImage() override = default;
 
   void UpdateForUser(const LoginUserInfo& user) {
@@ -254,8 +261,6 @@ class LoginUserView::UserImage : public NonAccessibleView {
   bool animation_enabled_ = false;
 
   base::WeakPtrFactory<UserImage> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserImage);
 };
 
 // Shows the user's name.
@@ -292,6 +297,10 @@ class LoginUserView::UserLabel : public NonAccessibleView {
 
     AddChildView(user_name_);
   }
+
+  UserLabel(const UserLabel&) = delete;
+  UserLabel& operator=(const UserLabel&) = delete;
+
   ~UserLabel() override = default;
 
   void UpdateForUser(const LoginUserInfo& user) {
@@ -317,8 +326,6 @@ class LoginUserView::UserLabel : public NonAccessibleView {
  private:
   views::Label* user_name_ = nullptr;
   const int label_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserLabel);
 };
 
 // A button embedded inside of LoginUserView, which is activated whenever the
@@ -329,6 +336,10 @@ class LoginUserView::TapButton : public views::Button {
  public:
   TapButton(PressedCallback callback, LoginUserView* parent)
       : views::Button(std::move(callback)), parent_(parent) {}
+
+  TapButton(const TapButton&) = delete;
+  TapButton& operator=(const TapButton&) = delete;
+
   ~TapButton() override = default;
 
   // views::Button:
@@ -348,8 +359,6 @@ class LoginUserView::TapButton : public views::Button {
 
  private:
   LoginUserView* const parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(TapButton);
 };
 
 // LoginUserView is defined after LoginUserView::UserLabel so it can access the
@@ -476,15 +485,14 @@ LoginUserView::LoginUserView(
     display_observation_.Observe(ash::Shell::Get()->display_configurator());
 }
 
-LoginUserView::~LoginUserView() = default;
+LoginUserView::~LoginUserView() {
+  DeleteDialog();
+}
 
 void LoginUserView::UpdateForUser(const LoginUserInfo& user, bool animate) {
   current_user_ = user;
 
-  if (remove_account_dialog_ && remove_account_dialog_->parent()) {
-    remove_account_dialog_->parent()->RemoveChildView(remove_account_dialog_);
-    delete remove_account_dialog_;
-  }
+  DeleteDialog();
 
   remove_account_dialog_ = new LoginRemoveAccountDialog(
       current_user_, dropdown_ /*anchor_view*/, dropdown_ /*bubble_opener*/,
@@ -499,8 +507,7 @@ void LoginUserView::UpdateForUser(const LoginUserInfo& user, bool animate) {
     auto image_transition = std::make_unique<UserSwitchFlipAnimation>(
         user_image_->width(), 0 /*start_degrees*/, 90 /*midpoint_degrees*/,
         180 /*end_degrees*/,
-        base::TimeDelta::FromMilliseconds(
-            login::kChangeUserAnimationDurationMs),
+        base::Milliseconds(login::kChangeUserAnimationDurationMs),
         gfx::Tween::Type::EASE_OUT,
         base::BindOnce(&LoginUserView::UpdateCurrentUserState,
                        base::Unretained(this)));
@@ -513,8 +520,8 @@ void LoginUserView::UpdateForUser(const LoginUserInfo& user, bool animate) {
     auto make_opacity_sequence = [is_opaque]() {
       auto make_opacity_element = [](float target_opacity) {
         auto element = ui::LayerAnimationElement::CreateOpacityElement(
-            target_opacity, base::TimeDelta::FromMilliseconds(
-                                login::kChangeUserAnimationDurationMs / 2.0f));
+            target_opacity,
+            base::Milliseconds(login::kChangeUserAnimationDurationMs / 2.0f));
         element->set_tween_type(gfx::Tween::Type::EASE_OUT);
         return element;
       };
@@ -668,7 +675,7 @@ void LoginUserView::UpdateOpacity() {
     auto settings = std::make_unique<ui::ScopedLayerAnimationSettings>(
         view->layer()->GetAnimator());
     settings->SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kUserFadeAnimationDurationMs));
+        base::Milliseconds(kUserFadeAnimationDurationMs));
     settings->SetTweenType(gfx::Tween::Type::EASE_IN_OUT);
     return settings;
   };
@@ -773,6 +780,15 @@ void LoginUserView::SetSmallishLayout() {
   AddChildView(user_image_);
   AddChildView(user_label_);
   AddChildView(tap_button_);
+}
+
+void LoginUserView::DeleteDialog() {
+  if (remove_account_dialog_) {
+    if (remove_account_dialog_->parent())
+      remove_account_dialog_->parent()->RemoveChildView(remove_account_dialog_);
+    delete remove_account_dialog_;
+    remove_account_dialog_ = nullptr;
+  }
 }
 
 }  // namespace ash

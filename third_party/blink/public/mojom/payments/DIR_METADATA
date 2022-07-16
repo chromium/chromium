@@ -1,5 +1,2 @@
-monorail {
-  component: "Blink>Payments"
-}
+mixins: "//components/payments/COMMON_METADATA"
 
-team_email: "payments-dev@chromium.org"

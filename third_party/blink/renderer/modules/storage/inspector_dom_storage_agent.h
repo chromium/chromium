@@ -30,7 +30,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_INSPECTOR_DOM_STORAGE_AGENT_H_
 
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/DOMStorage.h"
+#include "third_party/blink/renderer/core/inspector/protocol/dom_storage.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/storage/storage_area.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -38,6 +38,7 @@
 
 namespace blink {
 
+class BlinkStorageKey;
 class InspectedFrames;
 
 class MODULES_EXPORT InspectorDOMStorageAgent final
@@ -50,8 +51,8 @@ class MODULES_EXPORT InspectorDOMStorageAgent final
   void DidDispatchDOMStorageEvent(const String& key,
                                   const String& old_value,
                                   const String& new_value,
-                                  StorageArea::StorageType,
-                                  const SecurityOrigin*);
+                                  StorageArea::StorageType storage_type,
+                                  const BlinkStorageKey& storage_key);
 
  private:
   void InnerEnable();
@@ -81,7 +82,7 @@ class MODULES_EXPORT InspectorDOMStorageAgent final
       std::unique_ptr<protocol::DOMStorage::StorageId>,
       StorageArea*&);
   std::unique_ptr<protocol::DOMStorage::StorageId> GetStorageId(
-      const SecurityOrigin*,
+      const BlinkStorageKey& storage_key,
       bool is_local_storage);
 
   Member<InspectedFrames> inspected_frames_;

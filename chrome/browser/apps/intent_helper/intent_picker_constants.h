@@ -7,8 +7,6 @@
 
 namespace apps {
 
-extern const char kUseBrowserForLink[];
-
 // Restricts the amount of apps displayed to the user without the need of a
 // ScrollView.
 enum { kMaxAppResults = 3 };

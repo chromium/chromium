@@ -13,7 +13,7 @@ include_rules = [
   "+chrome/services/keymaster/public",
   "+chrome/services/wilco_dtc_supportd/public",
   "+components/account_manager_core",
-  "+components/full_restore",
+  "+components/app_restore",
   "+components/guest_os",
   "+components/reporting",
   "+components/services/app_service/public",
@@ -23,7 +23,6 @@ include_rules = [
   "+media/audio/sounds",  # For system sounds
   "+media/base/media_switches.h",  # For media command line switches.
   "+media/mojo/mojom",  # For platform verification mojom interface.
-  "+remoting/host/it2me",  # For CRD host in remote command
   "+services/device/public",
   "+services/metrics/public",
   "+services/network",
@@ -43,6 +42,9 @@ specific_include_rules = {
     "+mojo/core/embedder/embedder.h",
   ],
   "device_status_collector_browsertest.cc": [
+    "+mojo/core/embedder/embedder.h",
+  ],
+  "legacy_device_status_collector_browsertest.cc": [
     "+mojo/core/embedder/embedder.h",
   ],
   "event_rewriter_unittest\.cc": [

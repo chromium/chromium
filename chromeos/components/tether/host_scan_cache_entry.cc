@@ -24,38 +24,38 @@ std::unique_ptr<HostScanCacheEntry> HostScanCacheEntry::Builder::Build() {
 }
 
 HostScanCacheEntry::Builder& HostScanCacheEntry::Builder::SetTetherNetworkGuid(
-    const std::string& tether_network_guid) {
-  tether_network_guid_ = tether_network_guid;
+    const std::string& guid) {
+  tether_network_guid_ = guid;
   return *this;
 }
 
 HostScanCacheEntry::Builder& HostScanCacheEntry::Builder::SetDeviceName(
-    const std::string& device_name) {
-  device_name_ = device_name;
+    const std::string& name) {
+  device_name_ = name;
   return *this;
 }
 
 HostScanCacheEntry::Builder& HostScanCacheEntry::Builder::SetCarrier(
-    const std::string& carrier) {
-  carrier_ = carrier;
+    const std::string& c) {
+  carrier_ = c;
   return *this;
 }
 
 HostScanCacheEntry::Builder& HostScanCacheEntry::Builder::SetBatteryPercentage(
-    int battery_percentage) {
-  battery_percentage_ = battery_percentage;
+    int percentage) {
+  battery_percentage_ = percentage;
   return *this;
 }
 
 HostScanCacheEntry::Builder& HostScanCacheEntry::Builder::SetSignalStrength(
-    int signal_strength) {
-  signal_strength_ = signal_strength;
+    int strength) {
+  signal_strength_ = strength;
   return *this;
 }
 
 HostScanCacheEntry::Builder& HostScanCacheEntry::Builder::SetSetupRequired(
-    bool setup_required) {
-  setup_required_ = setup_required;
+    bool required) {
+  setup_required_ = required;
   return *this;
 }
 

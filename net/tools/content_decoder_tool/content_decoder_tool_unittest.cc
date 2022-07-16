@@ -27,8 +27,13 @@ const int kBufferSize = 4096;
 }  // namespace
 
 class ContentDecoderToolTest : public PlatformTest {
+ public:
+  ContentDecoderToolTest(const ContentDecoderToolTest&) = delete;
+  ContentDecoderToolTest& operator=(const ContentDecoderToolTest&) = delete;
+
  protected:
   ContentDecoderToolTest() : gzip_encoded_len_(kBufferSize) {}
+
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -68,8 +73,6 @@ class ContentDecoderToolTest : public PlatformTest {
   // Original source encoded with gzip.
   char gzip_encoded_[kBufferSize];
   size_t gzip_encoded_len_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentDecoderToolTest);
 };
 
 TEST_F(ContentDecoderToolTest, TestGzip) {

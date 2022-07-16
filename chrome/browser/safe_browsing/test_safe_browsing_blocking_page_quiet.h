@@ -20,6 +20,11 @@ class TestSafeBrowsingBlockingPageQuiet
  public:
   typedef security_interstitials::UnsafeResource UnsafeResource;
 
+  TestSafeBrowsingBlockingPageQuiet(const TestSafeBrowsingBlockingPageQuiet&) =
+      delete;
+  TestSafeBrowsingBlockingPageQuiet& operator=(
+      const TestSafeBrowsingBlockingPageQuiet&) = delete;
+
   ~TestSafeBrowsingBlockingPageQuiet() override;
 
   static TestSafeBrowsingBlockingPageQuiet* CreateBlockingPage(
@@ -44,8 +49,6 @@ class TestSafeBrowsingBlockingPageQuiet
 
  private:
   security_interstitials::SafeBrowsingQuietErrorUI sb_error_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSafeBrowsingBlockingPageQuiet);
 };
 
 }  // namespace security_interstitials

@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -40,6 +39,10 @@ class ExtensionEventObserverTest : public ChromeRenderViewHostTestHarness {
   ExtensionEventObserverTest()
       : fake_user_manager_(new FakeChromeUserManager()),
         scoped_user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
+
+  ExtensionEventObserverTest(const ExtensionEventObserverTest&) = delete;
+  ExtensionEventObserverTest& operator=(const ExtensionEventObserverTest&) =
+      delete;
 
   ~ExtensionEventObserverTest() override = default;
 
@@ -131,8 +134,6 @@ class ExtensionEventObserverTest : public ChromeRenderViewHostTestHarness {
   user_manager::ScopedUserManager scoped_user_manager_enabler_;
 
   std::vector<scoped_refptr<const extensions::Extension>> created_apps_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionEventObserverTest);
 };
 
 // Tests that the ExtensionEventObserver reports readiness for suspend when

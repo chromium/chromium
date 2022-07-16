@@ -112,7 +112,7 @@ void MultiBuffer::GlobalLRU::SchedulePrune() {
   if (Pruneable() && !background_pruning_pending_) {
     task_runner_->PostDelayedTask(
         FROM_HERE, base::BindOnce(&MultiBuffer::GlobalLRU::PruneTask, this),
-        base::TimeDelta::FromSeconds(kBlockPruneInterval));
+        base::Seconds(kBlockPruneInterval));
     background_pruning_pending_ = true;
   }
 }

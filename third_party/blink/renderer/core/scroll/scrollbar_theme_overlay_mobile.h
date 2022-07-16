@@ -26,7 +26,7 @@ class CORE_EXPORT ScrollbarThemeOverlayMobile : public ScrollbarThemeOverlay {
                               int scrollbar_margin_thin,
                               Color);
 
-  ScrollbarPart HitTest(const Scrollbar&, const IntPoint&) override {
+  ScrollbarPart HitTest(const Scrollbar&, const gfx::Point&) override {
     NOTREACHED();
     return kNoPart;
   }

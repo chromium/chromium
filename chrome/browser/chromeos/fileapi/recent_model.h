@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -42,6 +41,9 @@ class RecentModel : public KeyedService {
   using GetRecentFilesCallback =
       base::OnceCallback<void(const std::vector<RecentFile>& files)>;
   using FileType = RecentSource::FileType;
+
+  RecentModel(const RecentModel&) = delete;
+  RecentModel& operator=(const RecentModel&) = delete;
 
   ~RecentModel() override;
 
@@ -117,8 +119,6 @@ class RecentModel : public KeyedService {
       intermediate_files_;
 
   base::WeakPtrFactory<RecentModel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RecentModel);
 };
 
 }  // namespace chromeos

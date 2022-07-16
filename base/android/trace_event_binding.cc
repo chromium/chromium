@@ -10,6 +10,7 @@
 #include "base/android/trace_event_binding.h"
 #include "base/base_jni_headers/TraceEvent_jni.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
 
@@ -23,6 +24,10 @@ namespace android {
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 
 namespace {
+
+constexpr const char kAndroidViewHierarchyTraceCategory[] =
+    TRACE_DISABLED_BY_DEFAULT("android_view_hierarchy");
+constexpr const char kAndroidViewHierarchyEventName[] = "AndroidView";
 
 class TraceEnabledObserver
     : public trace_event::TraceLog::EnabledStateObserver {
@@ -70,6 +75,54 @@ static void JNI_TraceEvent_SetupATraceStartupTrace(
       category_filter_utf8);
 }
 
+static jboolean JNI_TraceEvent_ViewHierarchyDumpEnabled(JNIEnv* env) {
+  static const unsigned char* enabled =
+      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
+          kAndroidViewHierarchyTraceCategory);
+  return *enabled;
+}
+
+static void JNI_TraceEvent_InitViewHierarchyDump(JNIEnv* env) {
+  SCOPED_UMA_HISTOGRAM_TIMER("Tracing.ViewHierarchyDump.DumpDuration");
+  TRACE_EVENT_INSTANT(
+      kAndroidViewHierarchyTraceCategory, kAndroidViewHierarchyEventName,
+      perfetto::Track::Global(0), [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* dump = event->set_android_view_dump();
+        Java_TraceEvent_dumpViewHierarchy(env, reinterpret_cast<jlong>(dump));
+      });
+}
+
+static jlong JNI_TraceEvent_StartActivityDump(JNIEnv* env,
+                                              const JavaParamRef<jstring>& name,
+                                              jlong dump_proto_ptr) {
+  auto* dump = reinterpret_cast<perfetto::protos::pbzero::AndroidViewDump*>(
+      dump_proto_ptr);
+  auto* activity = dump->add_activity();
+  activity->set_name(ConvertJavaStringToUTF8(env, name));
+  return reinterpret_cast<jlong>(activity);
+}
+
+static void JNI_TraceEvent_AddViewDump(
+    JNIEnv* env,
+    jint id,
+    jint parent_id,
+    jboolean is_shown,
+    jboolean is_dirty,
+    const JavaParamRef<jstring>& class_name,
+    const JavaParamRef<jstring>& resource_name,
+    jlong activity_proto_ptr) {
+  auto* activity = reinterpret_cast<perfetto::protos::pbzero::AndroidActivity*>(
+      activity_proto_ptr);
+  auto* view = activity->add_view();
+  view->set_id(id);
+  view->set_parent_id(parent_id);
+  view->set_is_shown(is_shown);
+  view->set_is_dirty(is_dirty);
+  view->set_class_name(ConvertJavaStringToUTF8(env, class_name));
+  view->set_resource_name(ConvertJavaStringToUTF8(env, resource_name));
+}
+
 #else  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 // Empty implementations when TraceLog isn't available.
@@ -82,6 +135,29 @@ static void JNI_TraceEvent_StopATrace(JNIEnv* env) {}
 static void JNI_TraceEvent_SetupATraceStartupTrace(
     JNIEnv* env,
     const JavaParamRef<jstring>&) {}
+static jboolean JNI_TraceEvent_ViewHierarchyDumpEnabled(JNIEnv* env) {
+  return false;
+}
+static void JNI_TraceEvent_InitViewHierarchyDump(JNIEnv* env) {
+  DCHECK(false);
+  // This code should not be reached when base tracing is disabled. Calling
+  // dumpViewHierarchy to avoid "unused function" warning.
+  Java_TraceEvent_dumpViewHierarchy(env, 0);
+}
+static jlong JNI_TraceEvent_StartActivityDump(JNIEnv* env,
+                                              const JavaParamRef<jstring>& name,
+                                              jlong dump_proto_ptr) {
+  return 0;
+}
+static void JNI_TraceEvent_AddViewDump(
+    JNIEnv* env,
+    jint id,
+    jint parent_id,
+    jboolean is_shown,
+    jboolean is_dirty,
+    const JavaParamRef<jstring>& class_name,
+    const JavaParamRef<jstring>& resource_name,
+    jlong activity_proto_ptr) {}
 
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
@@ -94,6 +170,10 @@ class TraceEventDataConverter {
       : name_(ConvertJavaStringToUTF8(env, jname)),
         has_arg_(jarg != nullptr),
         arg_(jarg ? ConvertJavaStringToUTF8(env, jarg) : "") {}
+
+  TraceEventDataConverter(const TraceEventDataConverter&) = delete;
+  TraceEventDataConverter& operator=(const TraceEventDataConverter&) = delete;
+
   ~TraceEventDataConverter() = default;
 
   // Return saved values to pass to TRACE_EVENT macros.
@@ -105,8 +185,6 @@ class TraceEventDataConverter {
   std::string name_;
   bool has_arg_;
   std::string arg_;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceEventDataConverter);
 };
 
 }  // namespace

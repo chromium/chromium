@@ -16,6 +16,10 @@ class SharedResourcesDataSourceIOS : public URLDataSourceIOS {
  public:
   SharedResourcesDataSourceIOS();
 
+  SharedResourcesDataSourceIOS(const SharedResourcesDataSourceIOS&) = delete;
+  SharedResourcesDataSourceIOS& operator=(const SharedResourcesDataSourceIOS&) =
+      delete;
+
   // web::URLDataSourceIOS implementation.
   std::string GetSource() const override;
   void StartDataRequest(const std::string& path,
@@ -24,8 +28,6 @@ class SharedResourcesDataSourceIOS : public URLDataSourceIOS {
 
  private:
   ~SharedResourcesDataSourceIOS() override;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedResourcesDataSourceIOS);
 };
 
 }  // namespace web

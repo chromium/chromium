@@ -7,7 +7,7 @@
 #include "base/big_endian.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
-#include "web_bundle_builder.h"
+#include "components/web_package/web_bundle_builder.h"
 
 namespace data_decoder {
 
@@ -93,7 +93,6 @@ void WebBundler::WriteWebBundleIndex() {
   GURL::Replacements replacements;
   replacements.ClearRef();
   url = url.ReplaceComponents(replacements);
-  WebBundleBuilder builder(url.spec());
   std::set<GURL> url_set;
   CHECK_EQ(resources_.size(), bodies_.size());
   std::vector<mojom::SerializedResourceInfoPtr> resources;
@@ -113,8 +112,28 @@ void WebBundler::WriteWebBundleIndex() {
       }
     }
   }
-  std::vector<uint8_t> bundle =
-      builder.CreateBundle(std::move(resources), std::move(bodies));
+
+  CHECK_EQ(resources.size(), bodies.size());
+  web_package::WebBundleBuilder builder(url.spec(), "",
+                                        web_package::BundleVersion::kB2);
+  for (size_t i = 0; i < resources.size(); ++i) {
+    const auto& info = resources[i];
+    const auto& body = bodies[i];
+    web_package::WebBundleBuilder::Headers headers = {
+        {":status", "200"}, {"content-type", info->mime_type}};
+    web_package::WebBundleBuilder::ResponseLocation response_location =
+        builder.AddResponse(
+            headers, body ? base::StringPiece(
+                                reinterpret_cast<const char*>(body->data()),
+                                body->size())
+                          : "");
+    GURL url = info->url;
+    GURL::Replacements replacements;
+    replacements.ClearRef();
+    url = url.ReplaceComponents(replacements);
+    builder.AddIndexEntry(url.spec(), "", {response_location});
+  }
+  std::vector<uint8_t> bundle = builder.CreateBundle();
   int written_size = file_.WriteAtCurrentPos(
       reinterpret_cast<const char*>(bundle.data()), bundle.size());
   DCHECK_EQ(static_cast<int>(bundle.size()), written_size);

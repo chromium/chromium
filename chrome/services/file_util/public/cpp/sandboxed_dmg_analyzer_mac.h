@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
@@ -33,6 +32,9 @@ class SandboxedDMGAnalyzer
       const uint64_t max_size,
       ResultCallback callback,
       mojo::PendingRemote<chrome::mojom::FileUtilService> service);
+
+  SandboxedDMGAnalyzer(const SandboxedDMGAnalyzer&) = delete;
+  SandboxedDMGAnalyzer& operator=(const SandboxedDMGAnalyzer&) = delete;
 
   // Starts the analysis. Must be called on the UI thread.
   void Start();
@@ -66,8 +68,6 @@ class SandboxedDMGAnalyzer
   // Remote interfaces to the file util service. Only used from the UI thread.
   mojo::Remote<chrome::mojom::FileUtilService> service_;
   mojo::Remote<chrome::mojom::SafeArchiveAnalyzer> remote_analyzer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxedDMGAnalyzer);
 };
 
 #endif  // CHROME_SERVICES_FILE_UTIL_PUBLIC_CPP_SANDBOXED_DMG_ANALYZER_MAC_H_

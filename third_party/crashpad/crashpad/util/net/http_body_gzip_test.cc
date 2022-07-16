@@ -21,7 +21,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "gtest/gtest.h"
@@ -36,6 +35,10 @@ namespace {
 class ScopedZlibInflateStream {
  public:
   explicit ScopedZlibInflateStream(z_stream* zlib) : zlib_(zlib) {}
+
+  ScopedZlibInflateStream(const ScopedZlibInflateStream&) = delete;
+  ScopedZlibInflateStream& operator=(const ScopedZlibInflateStream&) = delete;
+
   ~ScopedZlibInflateStream() {
     int zr = inflateEnd(zlib_);
     EXPECT_EQ(zr, Z_OK) << "inflateEnd: " << ZlibErrorString(zr);
@@ -43,7 +46,6 @@ class ScopedZlibInflateStream {
 
  private:
   z_stream* zlib_;  // weak
-  DISALLOW_COPY_AND_ASSIGN(ScopedZlibInflateStream);
 };
 
 void GzipInflate(const std::string& compressed,

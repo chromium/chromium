@@ -12,17 +12,22 @@ source_set("send_tab_to_self") {
     ":send_tab_to_self_ui",
     "//base",
     "//components/send_tab_to_self",
+    "//components/signin/public/identity_manager",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/send_tab_to_self",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/infobars/presentation",
     "//ios/chrome/browser/ui/util",
+    "//ios/public/provider/chrome/browser/signin",
     "//ios/third_party/material_components_ios",
     "//ui/base",
+    "//url",
   ]
 }
 source_set("send_tab_to_self_ui") {
@@ -30,6 +35,8 @@ source_set("send_tab_to_self_ui") {
   sources = [
     "send_tab_to_self_image_detail_text_item.h",
     "send_tab_to_self_image_detail_text_item.mm",
+    "send_tab_to_self_manage_devices_item.h",
+    "send_tab_to_self_manage_devices_item.mm",
     "send_tab_to_self_modal_delegate.h",
     "send_tab_to_self_modal_positioner.h",
     "send_tab_to_self_modal_presentation_controller.h",
@@ -50,6 +57,7 @@ source_set("send_tab_to_self_ui") {
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",
+    "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]

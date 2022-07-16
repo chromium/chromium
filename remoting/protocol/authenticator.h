@@ -68,7 +68,7 @@ class Authenticator {
     INVALID_CREDENTIALS,
 
     // The client JID was not valid (i.e. violated a policy or was malformed).
-    INVALID_ACCOUNT,
+    INVALID_ACCOUNT_ID,
 
     // Generic error used when something goes wrong establishing a session.
     PROTOCOL_ERROR,
@@ -81,7 +81,7 @@ class Authenticator {
 
     // The client is not authorized to connect to this device due to a policy
     // defined by the third party auth service.
-    AUTHZ_POLICY_CHECK_FAILED,
+    AUTHORIZATION_POLICY_CHECK_FAILED,
   };
 
   // Callback used for layered Authenticator implementations, particularly

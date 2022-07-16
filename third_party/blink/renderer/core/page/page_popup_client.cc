@@ -151,10 +151,10 @@ void PagePopupClient::AddProperty(const char* name,
                                   SharedBuffer* data) {
   data->Append(name, strlen(name));
   addLiteral(": {", data);
-  AddProperty("x", rect.X(), data);
-  AddProperty("y", rect.Y(), data);
-  AddProperty("width", rect.Width(), data);
-  AddProperty("height", rect.Height(), data);
+  AddProperty("x", rect.x(), data);
+  AddProperty("y", rect.y(), data);
+  AddProperty("width", rect.width(), data);
+  AddProperty("height", rect.height(), data);
   addLiteral("},\n", data);
 }
 

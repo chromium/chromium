@@ -9,9 +9,15 @@ export function loadTestModule() {
   if (!module) {
     return false;
   }
+
+  const host = params.get('host') || 'test';
+  if (host !== 'test' && host !== 'webui-test') {
+    return false;
+  }
+
   const script = document.createElement('script');
   script.type = 'module';
-  script.src = `chrome://test/${module}`;
+  script.src = `chrome://${host}/${module}`;
   document.body.appendChild(script);
   return true;
 }

@@ -5,8 +5,11 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_SERVICE_LAUNCHED_VIDEO_CAPTURE_DEVICE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_SERVICE_LAUNCHED_VIDEO_CAPTURE_DEVICE_H_
 
+#include "base/callback_forward.h"
+#include "base/token.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/public/browser/video_capture_device_launcher.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_source.mojom.h"
 
@@ -33,6 +36,9 @@ class ServiceLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
       media::VideoCaptureDevice::TakePhotoCallback callback) override;
   void MaybeSuspendDevice() override;
   void ResumeDevice() override;
+  void Crop(const base::Token& crop_id,
+            base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
+      override;
   void RequestRefreshFrame() override;
 
   void SetDesktopCaptureWindowIdAsync(gfx::NativeViewId window_id,

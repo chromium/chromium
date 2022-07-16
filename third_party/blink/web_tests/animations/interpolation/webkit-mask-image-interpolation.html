@@ -124,7 +124,7 @@ assertInterpolation({
   to: to,
 }, [
   {at: -0.3, is: from + ', ' + from},
-  {at: 0, is: from},
+  {at: 0, is: from + ', ' + from},
   {at: 0.3, is: '-webkit-cross-fade(' + from + ', ' + toA + ', 0.3), -webkit-cross-fade(' + from + ', ' + toB + ', 0.3)'},
   {at: 0.6, is: '-webkit-cross-fade(' + from + ', ' + toA + ', 0.6), -webkit-cross-fade(' + from + ', ' + toB + ', 0.6)'},
   {at: 1, is: to},

@@ -24,6 +24,7 @@ include_rules = [
   "+components/bookmarks/common/android",
   "+components/browser_ui/notifications/android",
   "+components/browser_ui/settings/android",
+  "+components/browser_ui/test/android",
   "+components/browser_ui/widget/android",
   "+components/dom_distiller/core",
   "+components/feature_engagement/public/android",
@@ -37,5 +38,4 @@ include_rules = [
 
   "-content/public/android/java",
   "+content/public/android/java/src/org/chromium/content_public",
-  "+content/public/android/java/src/org/chromium/content/browser/ContentFeatureListImpl.java",
 ]

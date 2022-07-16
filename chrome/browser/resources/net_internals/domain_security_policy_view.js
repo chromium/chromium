@@ -13,10 +13,10 @@ import {DivView} from './view.js';
  * This UI allows a user to query and update the browser's list of per-domain
  * security policies. These policies include:
  * - HSTS: HTTPS Strict Transport Security. A way for sites to elect to always
- *   use HTTPS. See http://dev.chromium.org/sts
+ *   use HTTPS. See https://www.chromium.org/hsts
  * - Expect-CT. A way for sites to elect to always require valid Certificate
  *   Transparency information to be present. See
- *   https://tools.ietf.org/html/draft-ietf-httpbis-expect-ct-01
+ *   https://tools.ietf.org/html/draft-ietf-httpbis-expect-ct
  */
 
 export class DomainSecurityPolicyView extends DivView {
@@ -180,7 +180,7 @@ export class DomainSecurityPolicyView extends DivView {
       }
     }
 
-    yellowFade(this.queryStsOutputDiv_);
+    highlightFade(this.queryStsOutputDiv_);
     for (const observer of this.hstsObservers_) {
       observer.onHSTSQueryResult(result);
     }
@@ -246,7 +246,7 @@ export class DomainSecurityPolicyView extends DivView {
       }
     }
 
-    yellowFade(this.queryExpectCTOutputDiv_);
+    highlightFade(this.queryExpectCTOutputDiv_);
     for (const observer of this.expectCTObservers_) {
       observer.onExpectCTQueryResult(result);
     }
@@ -268,7 +268,7 @@ export class DomainSecurityPolicyView extends DivView {
     addTextNode(
         this.testExpectCTOutputDiv_,
         result === 'success' ? 'Test report succeeded' : 'Test report failed');
-    yellowFade(this.testExpectCTOutputDiv_);
+    highlightFade(this.testExpectCTOutputDiv_);
     for (const observer of this.expectCTObservers_) {
       observer.onExpectCTTestReportResult(result);
     }
@@ -287,13 +287,13 @@ function modeToString(m) {
   }
 }
 
-function yellowFade(element) {
+function highlightFade(element) {
   element.style.transitionProperty = 'background-color';
-  element.style.transitionDuration = '0';
-  element.style.backgroundColor = '#fffccf';
+  element.style.transitionDuration = '0ms';
+  element.style.backgroundColor = "var(--color-highlight)";
   setTimeout(function() {
-    element.style.transitionDuration = '1000ms';
-    element.style.backgroundColor = '#fff';
+    element.style.transitionDuration = '1s';
+    element.style.backgroundColor = "var(--color-background)";
   }, 0);
 }
 

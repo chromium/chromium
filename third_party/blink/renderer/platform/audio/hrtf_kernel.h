@@ -56,7 +56,7 @@ class PLATFORM_EXPORT HRTFKernel {
  public:
   // Note: this is destructive on the passed in AudioChannel.
   // The length of channel must be a power of two.
-  HRTFKernel(AudioChannel*, size_t fft_size, float sample_rate);
+  HRTFKernel(AudioChannel*, unsigned fft_size, float sample_rate);
   HRTFKernel(std::unique_ptr<FFTFrame> fft_frame,
              float frame_delay,
              float sample_rate)

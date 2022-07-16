@@ -55,6 +55,9 @@ v8::Local<v8::Function> InstallBinding(v8::Isolate* isolate,
 // destroyed.
 class CastBinding : public content::RenderFrameObserver {
  public:
+  CastBinding(const CastBinding&) = delete;
+  CastBinding& operator=(const CastBinding&) = delete;
+
   void TryInstall();
 
  protected:
@@ -70,9 +73,6 @@ class CastBinding : public content::RenderFrameObserver {
   // the binding is updated in every call.
   virtual void Install(v8::Local<v8::Object> cast_platform,
                        v8::Isolate* isolate) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastBinding);
 };
 
 }  // namespace chromecast

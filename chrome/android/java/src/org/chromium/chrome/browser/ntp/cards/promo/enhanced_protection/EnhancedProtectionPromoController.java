@@ -133,8 +133,8 @@ public class EnhancedProtectionPromoController {
         Resources r = mContext.getResources();
         Drawable securityIcon =
                 AppCompatResources.getDrawable(mContext, R.drawable.ic_security_grey);
-        ColorStateList tint =
-                AppCompatResources.getColorStateList(mContext, R.color.default_icon_color_blue);
+        ColorStateList tint = AppCompatResources.getColorStateList(
+                mContext, R.color.default_icon_color_accent1_tint_list);
 
         PropertyModel.Builder builder = new PropertyModel.Builder(PromoCardProperties.ALL_KEYS);
         builder.with(PromoCardProperties.PRIMARY_BUTTON_CALLBACK, (v) -> onPrimaryButtonClicked())

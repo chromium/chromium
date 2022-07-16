@@ -249,9 +249,6 @@ TEST_F(WiredDisplayMediaRouteProviderTest, NotifyOnDisplayChange) {
   // Add an external display. MediaRouter should be notified of the sink and the
   // sink availability change.
   provider_->set_all_displays({primary_display_, secondary_display1_});
-  EXPECT_CALL(router_, OnSinkAvailabilityUpdated(
-                           mojom::MediaRouteProviderId::WIRED_DISPLAY,
-                           mojom::MediaRouter::SinkAvailability::PER_SOURCE));
   EXPECT_CALL(router_, OnSinksReceived(
                            mojom::MediaRouteProviderId::WIRED_DISPLAY, _, _, _))
       .WillOnce(
@@ -267,9 +264,6 @@ TEST_F(WiredDisplayMediaRouteProviderTest, NotifyOnDisplayChange) {
   // Remove the external display. MediaRouter should be notified of the lack of
   // sinks.
   provider_->set_all_displays({primary_display_});
-  EXPECT_CALL(router_, OnSinkAvailabilityUpdated(
-                           mojom::MediaRouteProviderId::WIRED_DISPLAY,
-                           mojom::MediaRouter::SinkAvailability::UNAVAILABLE));
   EXPECT_CALL(router_,
               OnSinksReceived(mojom::MediaRouteProviderId::WIRED_DISPLAY, _,
                               IsEmpty(), _));
@@ -279,9 +273,6 @@ TEST_F(WiredDisplayMediaRouteProviderTest, NotifyOnDisplayChange) {
   // Add a display that mirrors the primary display. The sink list should still
   // be empty.
   provider_->set_all_displays({primary_display_, mirror_display_});
-  EXPECT_CALL(router_, OnSinkAvailabilityUpdated(
-                           mojom::MediaRouteProviderId::WIRED_DISPLAY,
-                           mojom::MediaRouter::SinkAvailability::UNAVAILABLE));
   EXPECT_CALL(router_,
               OnSinksReceived(mojom::MediaRouteProviderId::WIRED_DISPLAY, _,
                               IsEmpty(), _));
@@ -340,8 +331,8 @@ TEST_F(WiredDisplayMediaRouteProviderTest, CreateAndTerminateRoute) {
               Start(presentation_id, GURL(kPresentationSource)));
   provider_remote_->CreateRoute(
       kPresentationSource, GetSinkId(secondary_display1_), presentation_id,
-      url::Origin::Create(GURL(kPresentationSource)), 0,
-      base::TimeDelta::FromSeconds(100), false,
+      url::Origin::Create(GURL(kPresentationSource)), 0, base::Seconds(100),
+      false,
       base::BindOnce(&MockCallback::CreateRoute, base::Unretained(&callback)));
   base::RunLoop().RunUntilIdle();
 
@@ -377,8 +368,8 @@ TEST_F(WiredDisplayMediaRouteProviderTest, SendMediaStatusUpdate) {
   // Create a route for |presentation_id|.
   provider_remote_->CreateRoute(
       kPresentationSource, GetSinkId(secondary_display1_), presentation_id,
-      url::Origin::Create(GURL(kPresentationSource)), 0,
-      base::TimeDelta::FromSeconds(100), false,
+      url::Origin::Create(GURL(kPresentationSource)), 0, base::Seconds(100),
+      false,
       base::BindOnce(&MockCallback::CreateRoute, base::Unretained(&callback)));
   base::RunLoop().RunUntilIdle();
 
@@ -406,8 +397,8 @@ TEST_F(WiredDisplayMediaRouteProviderTest, ExitFullscreenOnDisplayRemoved) {
 
   provider_remote_->CreateRoute(
       kPresentationSource, GetSinkId(secondary_display1_), "presentationId",
-      url::Origin::Create(GURL(kPresentationSource)), 0,
-      base::TimeDelta::FromSeconds(100), false,
+      url::Origin::Create(GURL(kPresentationSource)), 0, base::Seconds(100),
+      false,
       base::BindOnce(&MockCallback::CreateRoute, base::Unretained(&callback)));
   base::RunLoop().RunUntilIdle();
 

@@ -18,7 +18,7 @@ namespace chromecast {
 
 namespace {
 
-constexpr base::TimeDelta kTimeoutWindow = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kTimeoutWindow = base::Seconds(3);
 const size_t kMaxSwipesWithinTimeout = 3;
 
 }  // namespace
@@ -172,8 +172,7 @@ TEST_F(CastSystemGestureDispatcherTest, MultipleBackSwipesToRootUi) {
     EXPECT_CALL(handler_2, HandleSideSwipe(event, origin, point));
     gesture_dispatcher_->HandleSideSwipe(event, origin, point);
     base::TimeDelta time_between_events =
-        (kTimeoutWindow - base::TimeDelta::FromSeconds(1)) /
-        (kMaxSwipesWithinTimeout - 1);
+        (kTimeoutWindow - base::Seconds(1)) / (kMaxSwipesWithinTimeout - 1);
     test_clock_->Advance(time_between_events);
   }
 

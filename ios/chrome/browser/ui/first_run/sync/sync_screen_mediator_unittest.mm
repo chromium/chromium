@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/consent_auditor_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -90,23 +91,35 @@ class SyncScreenMediatorTest : public PlatformTest {
         ConsentAuditorFactory::GetForBrowserState(browser_state_.get());
     SyncSetupService* sync_setup_service =
         SyncSetupServiceFactory::GetForBrowserState(browser_state_.get());
+    syncer::SyncService* sync_service =
+        SyncServiceFactory::GetForBrowserState(browser_state_.get());
+
+    ChromeAccountManagerService* account_manager_service =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            browser_state_.get());
 
     mediator_ = [[SyncScreenMediator alloc]
         initWithAuthenticationService:authentication_service
                       identityManager:identity_manager
+                accountManagerService:account_manager_service
                        consentAuditor:consent_auditor
                      syncSetupService:sync_setup_service
                 unifiedConsentService:UnifiedConsentServiceFactory::
                                           GetForBrowserState(
-                                              browser_state_.get())];
+                                              browser_state_.get())
+                          syncService:sync_service];
 
     consumer_ = [[FakeSyncScreenConsumer alloc] init];
 
     sync_setup_service_mock_ =
         static_cast<SyncSetupServiceMock*>(sync_setup_service);
+    sync_service_mock_ = static_cast<syncer::MockSyncService*>(sync_service);
   }
 
-  void TearDown() override { PlatformTest::TearDown(); }
+  void TearDown() override {
+    PlatformTest::TearDown();
+    [mediator_ disconnect];
+  }
 
   web::WebTaskEnvironment task_environment_;
   SyncScreenMediator* mediator_;
@@ -115,6 +128,7 @@ class SyncScreenMediatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   SyncSetupServiceMock* sync_setup_service_mock_;
+  syncer::MockSyncService* sync_service_mock_;
 };
 
 // Tests that the FirstSetupComplete flag is turned on after the mediator has
@@ -173,8 +187,8 @@ TEST_F(SyncScreenMediatorTest, TestAuthenticationFlow) {
   EXPECT_FALSE(consumer_.UIEnabled);
   ASSERT_NE(nil, completion);
 
-  OCMExpect([mock_delegate syncScreenMediator:mediator_
-                    didFinishSigninWithResult:SigninCoordinatorResultSuccess]);
+  OCMExpect(
+      [mock_delegate syncScreenMediatorDidSuccessfulyFinishSignin:mediator_]);
 
   EXPECT_FALSE(browser_state_->GetPrefs()->GetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));

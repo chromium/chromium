@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -145,6 +146,24 @@ public class SnackbarCollectionUnitTest {
             assertFalse(mMockController == removed.getController()
                     && dataToRemove.equals(removed.getActionData()));
         }
+    }
+
+    // This test is added as a result of crbug.com/1258303.
+    // Test that the action/dismiss callbacks are not invoked when the controller is null.
+    @Test
+    @Feature({"Browser", "Snackbar"})
+    public void testRemoveCurrent_ControllerNotSpecified() {
+        SnackbarCollection collection = new SnackbarCollection();
+        assertTrue(collection.isEmpty());
+
+        Snackbar snackbar = Snackbar.make(
+                NOTIFICATION_TITLE, null, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_TEST_SNACKBAR);
+        collection.add(snackbar);
+        assertFalse("Snackbar collection should contain a snackbar.", collection.isEmpty());
+        assertEquals("The currently displayed snackbar is incorrect.", snackbar,
+                collection.getCurrent());
+        collection.removeCurrentDueToTimeout();
+        verifyZeroInteractions(mMockController);
     }
 
     private Snackbar makeActionSnackbar(SnackbarController controller) {

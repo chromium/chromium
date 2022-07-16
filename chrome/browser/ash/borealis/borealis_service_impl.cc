@@ -14,6 +14,7 @@ BorealisServiceImpl::BorealisServiceImpl(Profile* profile)
       disk_manager_dispatcher_(),
       features_(profile_),
       installer_(profile_),
+      launch_options_(profile_),
       shutdown_monitor_(profile_),
       window_manager_(profile_) {}
 
@@ -41,6 +42,10 @@ BorealisFeatures& BorealisServiceImpl::Features() {
 
 BorealisInstaller& BorealisServiceImpl::Installer() {
   return installer_;
+}
+
+BorealisLaunchOptions& BorealisServiceImpl::LaunchOptions() {
+  return launch_options_;
 }
 
 BorealisShutdownMonitor& BorealisServiceImpl::ShutdownMonitor() {

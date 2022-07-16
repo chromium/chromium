@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/child_consistency_sheet_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/common/ui/util/background_util.h"
 
@@ -18,9 +19,6 @@
 
 namespace {
 
-// Maximum height for ConsistencySheetNavigationController. This is a ratio
-// related the window height.
-constexpr CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
 // Corner radius for centered style dialog.
 constexpr CGFloat kCornerRadius = 12.;
 
@@ -30,6 +28,8 @@ constexpr CGFloat kCornerRadius = 12.;
 
 // View to get transparent blurred background.
 @property(nonatomic, strong, readwrite) UIView* backgroundView;
+@property(nonatomic, strong, readwrite)
+    UIPercentDrivenInteractiveTransition* interactionTransition;
 
 @end
 
@@ -69,7 +69,7 @@ constexpr CGFloat kCornerRadius = 12.;
           preferredContentSizeDidChangeForChildConsistencySheetViewController];
 }
 
-#pragma mark - Properties
+#pragma mark - ConsistencyLayoutDelegate
 
 - (ConsistencySheetDisplayStyle)displayStyle {
   return [self displayStyleWithTraitCollection:self.traitCollection];
@@ -85,6 +85,12 @@ constexpr CGFloat kCornerRadius = 12.;
   self.view.layer.masksToBounds = YES;
   self.view.clipsToBounds = YES;
   self.view.accessibilityIdentifier = kWebSigninAccessibilityIdentifier;
+  UIScreenEdgePanGestureRecognizer* edgeSwipeGesture =
+      [[UIScreenEdgePanGestureRecognizer alloc]
+          initWithTarget:self
+                  action:@selector(swipeAction:)];
+  edgeSwipeGesture.edges = UIRectEdgeLeft;
+  [self.view addGestureRecognizer:edgeSwipeGesture];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -114,6 +120,44 @@ constexpr CGFloat kCornerRadius = 12.;
               withTransitionCoordinator:
                   (id<UIViewControllerTransitionCoordinator>)coordinator {
   [self updateViewWithTraitCollection:newCollection];
+}
+
+#pragma mark - SwipeGesture
+
+// Called when the swipe gesture is active. This method controls the sliding
+// between two view controls in |self|.
+- (void)swipeAction:(UIScreenEdgePanGestureRecognizer*)gestureRecognizer {
+  if (!gestureRecognizer.view) {
+    self.interactionTransition = nil;
+    return;
+  }
+  UIView* view = gestureRecognizer.view;
+  CGFloat percentage =
+      [gestureRecognizer translationInView:view].x / view.bounds.size.width;
+  switch (gestureRecognizer.state) {
+    case UIGestureRecognizerStateBegan:
+      self.interactionTransition =
+          [[UIPercentDrivenInteractiveTransition alloc] init];
+      [self popViewControllerAnimated:YES];
+      [self.interactionTransition updateInteractiveTransition:percentage];
+      break;
+    case UIGestureRecognizerStateChanged:
+      [self.interactionTransition updateInteractiveTransition:percentage];
+      break;
+    case UIGestureRecognizerStateEnded:
+      if (percentage > .5 &&
+          gestureRecognizer.state != UIGestureRecognizerStateCancelled) {
+        [self.interactionTransition finishInteractiveTransition];
+      } else {
+        [self.interactionTransition cancelInteractiveTransition];
+      }
+      self.interactionTransition = nil;
+      break;
+    case UIGestureRecognizerStatePossible:
+    case UIGestureRecognizerStateCancelled:
+    case UIGestureRecognizerStateFailed:
+      break;
+  }
 }
 
 #pragma mark - Private

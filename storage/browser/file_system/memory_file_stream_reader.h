@@ -35,6 +35,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MemoryFileStreamReader
       const base::FilePath& file_path,
       int64_t initial_offset,
       const base::Time& expected_modification_time);
+
+  MemoryFileStreamReader(const MemoryFileStreamReader&) = delete;
+  MemoryFileStreamReader& operator=(const MemoryFileStreamReader&) = delete;
+
   ~MemoryFileStreamReader() override;
 
   // FileStreamReader overrides.
@@ -56,8 +60,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MemoryFileStreamReader
   int64_t offset_;
 
   base::WeakPtrFactory<MemoryFileStreamReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryFileStreamReader);
 };
 
 }  // namespace storage

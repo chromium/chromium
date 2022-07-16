@@ -44,10 +44,8 @@ bool SearchPrefetchServicePrefetchingIsEnabled() {
 }
 
 base::TimeDelta SearchPrefetchCachingLimit() {
-  return base::TimeDelta::FromMilliseconds(
-      base::GetFieldTrialParamByFeatureAsInt(kSearchPrefetchServicePrefetching,
-                                             "prefetch_caching_limit_ms",
-                                             60000));
+  return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
+      kSearchPrefetchServicePrefetching, "prefetch_caching_limit_ms", 60000));
 }
 
 size_t SearchPrefetchMaxAttemptsPerCachingDuration() {
@@ -57,18 +55,16 @@ size_t SearchPrefetchMaxAttemptsPerCachingDuration() {
   }
   return base::GetFieldTrialParamByFeatureAsInt(
       kSearchPrefetchServicePrefetching, "max_attempts_per_caching_duration",
-      3);
+      7);
 }
 
 base::TimeDelta SearchPrefetchErrorBackoffDuration() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kSearchPrefetchServiceCommandLineFlag)) {
-    return base::TimeDelta::FromSeconds(1);
+    return base::Seconds(1);
   }
-  return base::TimeDelta::FromMilliseconds(
-      base::GetFieldTrialParamByFeatureAsInt(kSearchPrefetchServicePrefetching,
-                                             "error_backoff_duration_ms",
-                                             60000));
+  return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
+      kSearchPrefetchServicePrefetching, "error_backoff_duration_ms", 60000));
 }
 
 bool SearchPrefetchOnlyFetchDefaultMatch() {

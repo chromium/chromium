@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
 #include "chrome/browser/sync_file_system/remote_file_sync_service.h"
@@ -33,6 +32,10 @@ class UninstallAppTask : public ExclusiveTask {
   UninstallAppTask(SyncEngineContext* sync_context,
                    const std::string& app_id,
                    UninstallFlag uninstall_flag);
+
+  UninstallAppTask(const UninstallAppTask&) = delete;
+  UninstallAppTask& operator=(const UninstallAppTask&) = delete;
+
   ~UninstallAppTask() override;
 
   void RunExclusive(SyncStatusCallback callback) override;
@@ -53,8 +56,6 @@ class UninstallAppTask : public ExclusiveTask {
   int64_t app_root_tracker_id_;
 
   base::WeakPtrFactory<UninstallAppTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UninstallAppTask);
 };
 
 }  // namespace drive_backend

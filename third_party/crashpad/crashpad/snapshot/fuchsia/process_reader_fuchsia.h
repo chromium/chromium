@@ -21,7 +21,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "snapshot/elf/elf_image_reader.h"
 #include "snapshot/fuchsia/memory_map_fuchsia.h"
@@ -88,6 +87,10 @@ class ProcessReaderFuchsia {
   };
 
   ProcessReaderFuchsia();
+
+  ProcessReaderFuchsia(const ProcessReaderFuchsia&) = delete;
+  ProcessReaderFuchsia& operator=(const ProcessReaderFuchsia&) = delete;
+
   ~ProcessReaderFuchsia();
 
   //! \brief Initializes this object. This method must be called before any
@@ -138,8 +141,6 @@ class ProcessReaderFuchsia {
   bool initialized_threads_ = false;
   bool initialized_memory_map_ = false;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessReaderFuchsia);
 };
 
 }  // namespace crashpad

@@ -27,4 +27,10 @@ interface IChildProcessService {
 
   // Dumps the stack for the child process without crashing it.
   oneway void dumpProcessStack();
+
+  // Takes the |bundle| potentially containing the shared memory region and
+  // uses it to replace the memory behind read only relocations in the child
+  // process. On error the bundle is silently ignored, disabling the memory
+  // optimization.
+  oneway void consumeRelroBundle(in Bundle bundle);
 }

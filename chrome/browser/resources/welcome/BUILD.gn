@@ -145,6 +145,7 @@ html_to_js("web_components_local") {
 ts_library("build") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/$preprocess_folder"
+  composite = true
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "google_apps/google_app_proxy.ts",

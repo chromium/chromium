@@ -23,6 +23,7 @@ class OverlayPresenter;
 class PrefService;
 class ReadingListModel;
 class TemplateURLService;
+class UrlLoadingBrowserAgent;
 class WebStateList;
 class BrowserPolicyConnectorIOS;
 
@@ -65,6 +66,8 @@ class BrowserPolicyConnectorIOS;
 // The template url service to use for checking whether search by image is
 // available.
 @property(nonatomic, assign) TemplateURLService* templateURLService;
+// The URL loading service, used to load the reverse image search.
+@property(nonatomic, assign) UrlLoadingBrowserAgent* URLLoadingBrowserAgent;
 
 // Disconnect the mediator.
 - (void)disconnect;

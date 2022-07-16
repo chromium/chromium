@@ -56,7 +56,7 @@ CascadeFilter AmendFilter(CascadeFilter filter,
 CascadeExpansion::CascadeExpansion(const MatchedProperties& matched_properties,
                                    const Document& document,
                                    CascadeFilter filter,
-                                   size_t matched_properties_index)
+                                   wtf_size_t matched_properties_index)
     : document_(document),
       matched_properties_(matched_properties),
       size_(matched_properties.properties->PropertyCount()),
@@ -137,6 +137,8 @@ void CascadeExpansion::AdvanceNormal() {
   priority_ = CascadePriority(
       matched_properties_.types_.origin, metadata.important_,
       matched_properties_.types_.tree_order,
+      matched_properties_.types_.is_inline_style,
+      matched_properties_.types_.layer_order,
       EncodeMatchResultPosition(matched_properties_index_, index_));
 
   switch (id_) {
@@ -192,7 +194,7 @@ void CascadeExpansion::AdvanceAll() {
 }
 
 CSSPropertyValueSet::PropertyReference CascadeExpansion::PropertyAt(
-    size_t index) const {
+    wtf_size_t index) const {
   DCHECK(!AtEnd());
   return matched_properties_.properties->PropertyAt(index_);
 }

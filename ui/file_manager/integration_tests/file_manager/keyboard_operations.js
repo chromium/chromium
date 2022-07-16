@@ -482,10 +482,8 @@ testcase.keyboardOpenNewWindow = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Grab the current open windows.
-  const initialWindows =
-      await remoteCall.callRemoteTestUtil('getWindows', null, []);
+  const initialWindows = await remoteCall.getWindows();
   const initialWindowsCount = Object.keys(initialWindows).length;
-  console.log(JSON.stringify(initialWindows));
 
   // Send Ctrl+N to open a new window.
   const key = ['#file-list', 'n', true, false, false];
@@ -495,8 +493,7 @@ testcase.keyboardOpenNewWindow = async () => {
   // Wait for the new window to appear.
   return repeatUntil(async () => {
     const caller = getCaller();
-    const currentWindows =
-        await remoteCall.callRemoteTestUtil('getWindows', null, []);
+    const currentWindows = await remoteCall.getWindows();
     const currentWindowsIds = Object.keys(currentWindows);
     if (initialWindowsCount < currentWindowsIds.length) {
       return true;

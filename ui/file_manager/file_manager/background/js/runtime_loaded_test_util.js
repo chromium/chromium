@@ -965,6 +965,40 @@ test.util.async.fakeDragLeaveOrDrop =
     };
 
 /**
+ * Sends a drop event to simulate dropping a file originating in the browser to
+ * a target.
+ *
+ * @param {Window} contentWindow Window to be tested.
+ * @param {string} fileName File name.
+ * @param {string} fileContent File content.
+ * @param {string} fileMimeType File mime type.
+ * @param {string} targetQuery Query to specify the target element.
+ * @param {function(boolean)} callback Function called with result
+ *    true on success, or false on failure.
+ */
+test.util.async.fakeDropBrowserFile =
+    (contentWindow, fileName, fileContent, fileMimeType, targetQuery,
+     callback) => {
+      const target = contentWindow.document.querySelector(targetQuery);
+
+      if (!target) {
+        setTimeout(() => callback(false));
+        return;
+      }
+
+      const file = new File([fileContent], fileName, {type: fileMimeType});
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      // The value for the callback is true if the event has been handled, i.e.
+      // event has been received and preventDefault() called.
+      callback(target.dispatchEvent(new DragEvent('drop', {
+        bubbles: true,
+        composed: true,
+        dataTransfer: dataTransfer,
+      })));
+    };
+
+/**
  * Sends a resize event to the content window.
  *
  * @param {Window} contentWindow Window to be tested.
@@ -1016,8 +1050,19 @@ test.util.async.getNotificationIDs = callback => {
  */
 test.util.async.getFilesUnderVolume = async (volumeType, names, callback) => {
   const volumeManager = await window.background.getVolumeManager();
-  const volumeInfo = volumeManager.getCurrentProfileVolumeInfo(volumeType);
-  const displayRoot = await volumeInfo.resolveDisplayRoot();
+  let volumeInfo = null;
+  let displayRoot = null;
+
+  // Wait for the volume to initialize.
+  while (!(volumeInfo && displayRoot)) {
+    volumeInfo = volumeManager.getCurrentProfileVolumeInfo(volumeType);
+    if (volumeInfo) {
+      displayRoot = await volumeInfo.resolveDisplayRoot();
+    }
+    if (!displayRoot) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
 
   const filesPromise = names.map(name => {
     // TODO(crbug.com/880130): Remove this conditional.
@@ -1230,12 +1275,13 @@ test.util.sync.recordEnumMetric = (name, value, validValues) => {
  * appId/windowId won't be usable after the reload.
  */
 test.util.sync.reload = () => {
+  // TODO(b/198106171): Remove chrome.runtime.reload.
   if (chrome && chrome.runtime && chrome.runtime.reload) {
     chrome.runtime.reload();
-    return true;
+  } else {
+    window.location.reload();
   }
-  console.error('Unable to run chrome.runtime.reload');
-  return false;
+  return true;
 };
 
 /**
@@ -1257,4 +1303,49 @@ test.util.sync.progressCenterNeverNotifyCompleted = () => {
  */
 test.util.async.waitForBackgroundReady = callback => {
   window.background.ready(callback);
+};
+
+/**
+ * Isolates a specific banner to be shown. Useful when testing functionality of
+ * a banner in isolation.
+ *
+ * @param {Window} contentWindow Window to be tested.
+ * @param {string} bannerTagName Tag name of the banner to isolate.
+ * @param {function(boolean)} callback Callback function to be called with a
+ *    boolean indicating success or failure.
+ * @suppress {missingProperties} banners is only defined for foreground
+ *    Window so it isn't visible in the background.
+ */
+test.util.async.isolateBannerForTesting =
+    async (contentWindow, bannerTagName, callback) => {
+  try {
+    await contentWindow.fileManager.ui_.banners.isolateBannerForTesting(
+        bannerTagName);
+    callback(true);
+    return;
+  } catch (e) {
+    console.error(`Error isolating banner with tagName ${
+        bannerTagName} for testing: ${e}`);
+  }
+  callback(false);
+};
+
+/**
+ * Disable banners from attaching themselves to the DOM.
+ *
+ * @param {Window} contentWindow Window the banner controller exists.
+ * @param {function(boolean)} callback Callback function to be called with a
+ *    boolean indicating success or failure.
+ * @suppress {missingProperties} banners is only defined for foreground
+ *    Window so it isn't visible in the background.
+ */
+test.util.async.disableBannersForTesting = async (contentWindow, callback) => {
+  try {
+    await contentWindow.fileManager.ui_.banners.disableBannersForTesting();
+    callback(true);
+    return;
+  } catch (e) {
+    console.error(`Error disabling banners for testing: ${e}`);
+  }
+  callback(false);
 };

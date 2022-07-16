@@ -44,6 +44,9 @@ class ScriptPromiseProperty final
   ScriptPromiseProperty(ExecutionContext* execution_context)
       : ExecutionContextClient(execution_context) {}
 
+  ScriptPromiseProperty(const ScriptPromiseProperty&) = delete;
+  ScriptPromiseProperty& operator=(const ScriptPromiseProperty&) = delete;
+
   ScriptPromise Promise(DOMWrapperWorld& world) {
     if (!GetExecutionContext()) {
       return ScriptPromise();
@@ -176,8 +179,6 @@ class ScriptPromiseProperty final
   HeapVector<ScriptPromise> promises_;
   bool resolved_with_undefined_ = false;
   bool mark_as_handled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptPromiseProperty);
 };
 
 }  // namespace blink

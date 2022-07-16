@@ -46,10 +46,12 @@ void RevalidateCreateOptions(
 class SharedBufferDispatcherTest : public testing::Test {
  public:
   SharedBufferDispatcherTest() = default;
-  ~SharedBufferDispatcherTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SharedBufferDispatcherTest);
+  SharedBufferDispatcherTest(const SharedBufferDispatcherTest&) = delete;
+  SharedBufferDispatcherTest& operator=(const SharedBufferDispatcherTest&) =
+      delete;
+
+  ~SharedBufferDispatcherTest() override = default;
 };
 
 // Tests valid inputs to |ValidateCreateOptions()|.

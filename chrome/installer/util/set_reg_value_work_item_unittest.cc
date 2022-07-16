@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
@@ -30,6 +29,10 @@ const DWORD kDword1 = 12345;
 const DWORD kDword2 = 6789;
 
 class SetRegValueWorkItemTest : public testing::Test {
+ public:
+  SetRegValueWorkItemTest(const SetRegValueWorkItemTest&) = delete;
+  SetRegValueWorkItemTest& operator=(const SetRegValueWorkItemTest&) = delete;
+
  protected:
   SetRegValueWorkItemTest() {}
 
@@ -48,8 +51,6 @@ class SetRegValueWorkItemTest : public testing::Test {
 
  private:
   registry_util::RegistryOverrideManager registry_override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetRegValueWorkItemTest);
 };
 
 }  // namespace

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "components/download/internal/background_service/scheduler/battery_status_listener.h"
 #include "components/download/internal/background_service/scheduler/device_status.h"
@@ -30,6 +29,10 @@ class DeviceStatusListener : public NetworkStatusListener::Observer,
       const base::TimeDelta& online_delay,
       std::unique_ptr<BatteryStatusListener> battery_listener,
       std::unique_ptr<NetworkStatusListener> network_listener);
+
+  DeviceStatusListener(const DeviceStatusListener&) = delete;
+  DeviceStatusListener& operator=(const DeviceStatusListener&) = delete;
+
   ~DeviceStatusListener() override;
 
   bool is_valid_state() { return is_valid_state_; }
@@ -89,8 +92,6 @@ class DeviceStatusListener : public NetworkStatusListener::Observer,
 
   // Used to listen to battery status.
   std::unique_ptr<BatteryStatusListener> battery_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceStatusListener);
 };
 
 }  // namespace download

@@ -112,14 +112,14 @@ void WorkspaceController::DoInitialAnimation() {
 
     settings.SetPreemptionStrategy(ui::LayerAnimator::ENQUEUE_NEW_ANIMATION);
     layer->GetAnimator()->SchedulePauseForProperties(
-        base::TimeDelta::FromMilliseconds(kInitialPauseTimeMS),
+        base::Milliseconds(kInitialPauseTimeMS),
         ui::LayerAnimationElement::TRANSFORM |
             ui::LayerAnimationElement::OPACITY |
             ui::LayerAnimationElement::BRIGHTNESS |
             ui::LayerAnimationElement::VISIBILITY);
     settings.SetTweenType(gfx::Tween::EASE_OUT);
     settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kInitialAnimationDurationMS));
+        base::Milliseconds(kInitialAnimationDurationMS));
     layer->SetTransform(gfx::Transform());
     layer->SetOpacity(1.0f);
   }

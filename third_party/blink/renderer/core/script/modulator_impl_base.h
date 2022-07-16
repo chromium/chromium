@@ -5,9 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_MODULATOR_IMPL_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_MODULATOR_IMPL_BASE_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
+#include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -76,20 +78,9 @@ class ModulatorImplBase : public Modulator {
                               const KURL& base_url,
                               String* failure_reason) final;
   void ResolveDynamically(const ModuleRequest& module_request,
-                          const KURL&,
                           const ReferrerScriptInfo&,
                           ScriptPromiseResolver*) override;
-  const ImportMap* GetImportMapForTest() const final { return import_map_; }
 
-  ScriptValue CreateTypeError(const String& message) const override;
-  ScriptValue CreateSyntaxError(const String& message) const override;
-  void RegisterImportMap(const ImportMap*, ScriptValue error_to_rethrow) final;
-  AcquiringImportMapsState GetAcquiringImportMapsState() const final {
-    return acquiring_import_maps_;
-  }
-  void SetAcquiringImportMapsState(AcquiringImportMapsState value) final {
-    acquiring_import_maps_ = value;
-  }
   ModuleImportMeta HostGetImportMetaProperties(
       v8::Local<v8::Module>) const override;
   ModuleType ModuleTypeFromRequest(
@@ -112,14 +103,6 @@ class ModulatorImplBase : public Modulator {
   Member<ModuleTreeLinkerRegistry> tree_linker_registry_;
   Member<ModuleRecordResolver> module_record_resolver_;
   Member<DynamicModuleResolver> dynamic_module_resolver_;
-
-  Member<const ImportMap> import_map_;
-
-  // https://wicg.github.io/import-maps/#document-acquiring-import-maps
-  // Each Document has an acquiring import maps boolean. It is initially true.
-  // [spec text]
-  AcquiringImportMapsState acquiring_import_maps_ =
-      AcquiringImportMapsState::kAcquiring;
 };
 
 }  // namespace blink

@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_ACCESSIBILITY_LABELS_BUBBLE_MODEL_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_ACCESSIBILITY_LABELS_BUBBLE_MODEL_H_
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
-#include "content/public/browser/web_contents_observer.h"
 
 class Profile;
 
@@ -17,8 +16,7 @@ class WebContents;
 
 // A class that implements a bubble menu shown when we confirm a user allows
 // integrating the accessibility labels service of Google to Chrome.
-class AccessibilityLabelsBubbleModel : public ConfirmBubbleModel,
-                                       public content::WebContentsObserver {
+class AccessibilityLabelsBubbleModel : public ConfirmBubbleModel {
  public:
   AccessibilityLabelsBubbleModel(Profile* profile,
                                  content::WebContents* web_contents,
@@ -45,6 +43,8 @@ class AccessibilityLabelsBubbleModel : public ConfirmBubbleModel,
 
   // Unowned.
   Profile* profile_;
+
+  base::WeakPtr<content::WebContents> web_contents_;
 
   // Whether to always enable or just enable once.
   bool enable_always_;

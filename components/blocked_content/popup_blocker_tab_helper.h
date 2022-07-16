@@ -11,7 +11,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "components/blocked_content/popup_blocker.h"
 #include "components/blocked_content/url_list_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -51,6 +50,9 @@ class PopupBlockerTabHelper
     // Add new elements before this value.
     kMaxValue = kClickedThroughAbusive
   };
+
+  PopupBlockerTabHelper(const PopupBlockerTabHelper&) = delete;
+  PopupBlockerTabHelper& operator=(const PopupBlockerTabHelper&) = delete;
 
   ~PopupBlockerTabHelper() override;
 
@@ -100,8 +102,6 @@ class PopupBlockerTabHelper
   int32_t next_id_ = 0;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PopupBlockerTabHelper);
 };
 
 }  // namespace blocked_content

@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/payments/core/payment_manifest_downloader.h"
 
@@ -27,6 +26,12 @@ class PaymentManifestDownloaderAndroid {
   PaymentManifestDownloaderAndroid(
       std::unique_ptr<ErrorLogger> log,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  PaymentManifestDownloaderAndroid(const PaymentManifestDownloaderAndroid&) =
+      delete;
+  PaymentManifestDownloaderAndroid& operator=(
+      const PaymentManifestDownloaderAndroid&) = delete;
+
   ~PaymentManifestDownloaderAndroid();
 
   void DownloadPaymentMethodManifest(
@@ -50,8 +55,6 @@ class PaymentManifestDownloaderAndroid {
 
  private:
   PaymentManifestDownloader downloader_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentManifestDownloaderAndroid);
 };
 
 }  // namespace payments

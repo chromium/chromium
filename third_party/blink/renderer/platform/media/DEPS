@@ -7,12 +7,12 @@ include_rules = [
   "+third_party/blink/renderer/platform/media",
 
   # Dependencies.
-  "+base/bind_post_task.h",
+  "+base/task/bind_post_task.h",
   "+base/containers/circular_deque.h",
   "+base/strings/string_number_conversions.h",
   "+base/strings/utf_string_conversions.h",
-  "+base/task_runner.h",
-  "+base/task_runner_util.h",
+  "+base/task/task_runner.h",
+  "+base/task/task_runner_util.h",
   "+cc/layers",
   "+components/viz/common",
   "+media/audio/null_audio_sink.h",

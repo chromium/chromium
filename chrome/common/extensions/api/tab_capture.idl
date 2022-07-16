@@ -102,36 +102,6 @@ namespace tabCapture {
     // |callback| : Callback invoked with CaptureInfo[] for captured tabs.
     static void getCapturedTabs(GetCapturedTabsCallback callback);
 
-    // Creates an off-screen tab and navigates it to the given |startUrl|.
-    // Then, capture is started and a MediaStream is returned via |callback|.
-    //
-    // Off-screen tabs are isolated from the user's normal browser experience.
-    // They do not show up in the browser window or tab strip, nor are they
-    // visible to extensions (e.g., via the chrome.tabs.* APIs).
-    //
-    // An off-screen tab remains alive until one of three events occurs: 1. All
-    // MediaStreams providing its captured content are closed; 2. the page
-    // self-closes (e.g., via window.close()); 3. the extension that called
-    // captureOffscreenTab() is unloaded.
-    //
-    // Sandboxing: The off-screen tab does not have any access whatsoever to the
-    // local user profile (including cookies, HTTP auth, etc.).  Instead, it is
-    // provided its own sandboxed profile.  Also, it cannot access any
-    // interactive resources such as keyboard/mouse input, media recording
-    // devices (e.g., web cams), copy/paste to/from the system clipboard, etc.
-    //
-    // Note: This is a new API, currently only available in Canary/Dev channel,
-    // and may change without notice.
-    //
-    // |options| : Constraints for the capture and returned MediaStream.
-    // |callback| : Callback with either the tab capture MediaStream or
-    //   <code>null</code>.  <code>null</code> indicates an error has occurred
-    //   and the client may query $(ref:runtime.lastError) to access the error
-    //   details.
-    static void captureOffscreenTab(DOMString startUrl,
-                                    CaptureOptions options,
-                                    GetTabMediaCallback callback);
-
     // Creates a stream ID to capture the target tab.
     // Similar to chrome.tabCapture.capture() method, but returns a media
     // stream ID, instead of a media stream, to the consumer tab.

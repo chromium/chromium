@@ -15,7 +15,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -53,9 +52,9 @@ const auto kIgnoreLogMessageCB = base::DoNothing();
 // Wraps FakeVideoCaptureDeviceFactory to allow mocking of the
 // VideoCaptureDevice MaybeSuspend() and Resume() methods. This is used to check
 // that devices are asked to suspend or resume at the correct times.
-class WrappedDeviceFactory : public media::FakeVideoCaptureDeviceFactory {
+class WrappedDeviceFactory final : public media::FakeVideoCaptureDeviceFactory {
  public:
-  class WrappedDevice : public media::VideoCaptureDevice {
+  class WrappedDevice final : public media::VideoCaptureDevice {
    public:
     WrappedDevice(std::unique_ptr<media::VideoCaptureDevice> device,
                   WrappedDeviceFactory* factory)
@@ -63,56 +62,55 @@ class WrappedDeviceFactory : public media::FakeVideoCaptureDeviceFactory {
       factory_->OnDeviceCreated(this);
     }
 
-    ~WrappedDevice() final {
-      factory_->OnDeviceDestroyed(this);
-    }
+    WrappedDevice(const WrappedDevice&) = delete;
+    WrappedDevice& operator=(const WrappedDevice&) = delete;
+
+    ~WrappedDevice() override { factory_->OnDeviceDestroyed(this); }
 
     void AllocateAndStart(const media::VideoCaptureParams& params,
-                          std::unique_ptr<Client> client) final {
+                          std::unique_ptr<Client> client) override {
       device_->AllocateAndStart(params, std::move(client));
     }
 
-    void RequestRefreshFrame() final {
-      device_->RequestRefreshFrame();
-    }
+    void RequestRefreshFrame() override { device_->RequestRefreshFrame(); }
 
-    void MaybeSuspend() final {
+    void MaybeSuspend() override {
       factory_->WillSuspendDevice();
       device_->MaybeSuspend();
     }
 
-    void Resume() final {
+    void Resume() override {
       factory_->WillResumeDevice();
       device_->Resume();
     }
 
-    void StopAndDeAllocate() final {
-      device_->StopAndDeAllocate();
-    }
+    void StopAndDeAllocate() override { device_->StopAndDeAllocate(); }
 
-    void GetPhotoState(GetPhotoStateCallback callback) final {
+    void GetPhotoState(GetPhotoStateCallback callback) override {
       device_->GetPhotoState(std::move(callback));
     }
 
-    void TakePhoto(TakePhotoCallback callback) final {
+    void TakePhoto(TakePhotoCallback callback) override {
       device_->TakePhoto(std::move(callback));
     }
 
    private:
     const std::unique_ptr<media::VideoCaptureDevice> device_;
     WrappedDeviceFactory* const factory_;
-
-    DISALLOW_COPY_AND_ASSIGN(WrappedDevice);
   };
 
   static const media::VideoFacingMode DEFAULT_FACING =
       media::VideoFacingMode::MEDIA_VIDEO_FACING_USER;
 
-  WrappedDeviceFactory() : FakeVideoCaptureDeviceFactory() {}
-  ~WrappedDeviceFactory() final {}
+  WrappedDeviceFactory() = default;
+
+  WrappedDeviceFactory(const WrappedDeviceFactory&) = delete;
+  WrappedDeviceFactory& operator=(const WrappedDeviceFactory&) = delete;
+
+  ~WrappedDeviceFactory() override = default;
 
   std::unique_ptr<media::VideoCaptureDevice> CreateDevice(
-      const media::VideoCaptureDeviceDescriptor& device_descriptor) final {
+      const media::VideoCaptureDeviceDescriptor& device_descriptor) override {
     return std::make_unique<WrappedDevice>(
         FakeVideoCaptureDeviceFactory::CreateDevice(device_descriptor), this);
   }
@@ -150,8 +148,6 @@ class WrappedDeviceFactory : public media::FakeVideoCaptureDeviceFactory {
   }
 
   std::vector<WrappedDevice*> devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrappedDeviceFactory);
 };
 
 // Listener class used to track progress of VideoCaptureManager test.
@@ -224,6 +220,10 @@ class ScreenlockMonitorTestSource : public ScreenlockMonitorSource {
 class VideoCaptureManagerTest : public testing::Test {
  public:
   VideoCaptureManagerTest() {}
+
+  VideoCaptureManagerTest(const VideoCaptureManagerTest&) = delete;
+  VideoCaptureManagerTest& operator=(const VideoCaptureManagerTest&) = delete;
+
   ~VideoCaptureManagerTest() override {}
 
   void HandleEnumerationResult(
@@ -362,9 +362,6 @@ class VideoCaptureManagerTest : public testing::Test {
   std::unique_ptr<MockFrameObserver> frame_observer_;
   WrappedDeviceFactory* video_capture_device_factory_;
   blink::MediaStreamDevices devices_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureManagerTest);
 };
 
 // Test cases

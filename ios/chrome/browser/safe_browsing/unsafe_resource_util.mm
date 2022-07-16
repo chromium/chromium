@@ -50,7 +50,6 @@ std::string GetUnsafeResourceMetricPrefix(
     case BaseSafeBrowsingErrorUI::SB_REASON_HARMFUL:
       prefix = "harmful";
       break;
-      return "harmful";
     case BaseSafeBrowsingErrorUI::SB_REASON_BILLING:
       prefix = "billing";
       break;

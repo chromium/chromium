@@ -22,4 +22,4 @@ void ExternalProtocolObserver::DidGetUserInteraction(
     ExternalProtocolHandler::PermitLaunchUrl();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ExternalProtocolObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ExternalProtocolObserver);

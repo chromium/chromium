@@ -566,6 +566,7 @@ public class ImeAdapterImpl
 
     @Override
     public void onShowKeyboardReceiveResult(int resultCode) {
+        if (!isValid()) return;
         View containerView = getContainerView();
         if (resultCode == InputMethodManager.RESULT_SHOWN) {
             // If OSK is newly shown, delay the form focus until
@@ -725,10 +726,6 @@ public class ImeAdapterImpl
         mRestartInputOnNextStateUpdate = false;
         // This will trigger unblocking if necessary.
         hideKeyboard();
-    }
-
-    public void reset() {
-        resetAndHideKeyboard();
     }
 
     @CalledByNative

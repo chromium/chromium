@@ -29,6 +29,7 @@ chrome.automation.EventType = {
   AUTOCORRECTION_OCCURED: 'autocorrectionOccured',
   BLUR: 'blur',
   BUSY_CHANGED: 'busyChanged',
+  CARET_BOUNDS_CHANGED: 'caretBoundsChanged',
   CHECKED_STATE_CHANGED: 'checkedStateChanged',
   CHECKED_STATE_DESCRIPTION_CHANGED: 'checkedStateDescriptionChanged',
   CHILDREN_CHANGED: 'childrenChanged',
@@ -265,6 +266,28 @@ chrome.automation.RoleType = {
   MARK: 'mark',
   MARQUEE: 'marquee',
   MATH: 'math',
+  MATH_MLFRACTION: 'mathMLFraction',
+  MATH_MLIDENTIFIER: 'mathMLIdentifier',
+  MATH_MLMATH: 'mathMLMath',
+  MATH_MLMULTISCRIPTS: 'mathMLMultiscripts',
+  MATH_MLNONE_SCRIPT: 'mathMLNoneScript',
+  MATH_MLNUMBER: 'mathMLNumber',
+  MATH_MLOPERATOR: 'mathMLOperator',
+  MATH_MLOVER: 'mathMLOver',
+  MATH_MLPRESCRIPT_DELIMITER: 'mathMLPrescriptDelimiter',
+  MATH_MLROOT: 'mathMLRoot',
+  MATH_MLROW: 'mathMLRow',
+  MATH_MLSQUARE_ROOT: 'mathMLSquareRoot',
+  MATH_MLSTRING_LITERAL: 'mathMLStringLiteral',
+  MATH_MLSUB: 'mathMLSub',
+  MATH_MLSUB_SUP: 'mathMLSubSup',
+  MATH_MLSUP: 'mathMLSup',
+  MATH_MLTABLE: 'mathMLTable',
+  MATH_MLTABLE_CELL: 'mathMLTableCell',
+  MATH_MLTABLE_ROW: 'mathMLTableRow',
+  MATH_MLTEXT: 'mathMLText',
+  MATH_MLUNDER: 'mathMLUnder',
+  MATH_MLUNDER_OVER: 'mathMLUnderOver',
   MENU: 'menu',
   MENU_BAR: 'menuBar',
   MENU_ITEM: 'menuItem',
@@ -304,7 +327,9 @@ chrome.automation.RoleType = {
   STATIC_TEXT: 'staticText',
   STATUS: 'status',
   STRONG: 'strong',
+  SUBSCRIPT: 'subscript',
   SUGGESTION: 'suggestion',
+  SUPERSCRIPT: 'superscript',
   SVG_ROOT: 'svgRoot',
   SWITCH: 'switch',
   TAB: 'tab',
@@ -440,6 +465,7 @@ chrome.automation.DescriptionFromType = {
   RELATED_ELEMENT: 'relatedElement',
   RUBY_ANNOTATION: 'rubyAnnotation',
   SUMMARY: 'summary',
+  SVG_DESC_ELEMENT: 'svgDescElement',
   TABLE_CAPTION: 'tableCaption',
   TITLE: 'title',
 };
@@ -483,6 +509,15 @@ chrome.automation.AriaCurrentState = {
 
 /**
  * @enum {string}
+ * @see https://developer.chrome.com/extensions/automation#type-InvalidState
+ */
+chrome.automation.InvalidState = {
+  FALSE: 'false',
+  TRUE: 'true',
+};
+
+/**
+ * @enum {string}
  * @see https://developer.chrome.com/extensions/automation#type-DefaultActionVerb
  */
 chrome.automation.DefaultActionVerb = {
@@ -507,6 +542,7 @@ chrome.automation.MarkerType = {
   TEXT_MATCH: 'textMatch',
   ACTIVE_SUGGESTION: 'activeSuggestion',
   SUGGESTION: 'suggestion',
+  HIGHLIGHT: 'highlight',
 };
 
 /**
@@ -577,7 +613,9 @@ chrome.automation.IntentInputEventType = {
  */
 chrome.automation.IntentTextBoundaryType = {
   CHARACTER: 'character',
-  FORMAT: 'format',
+  FORMAT_END: 'formatEnd',
+  FORMAT_START: 'formatStart',
+  FORMAT_START_OR_END: 'formatStartOrEnd',
   LINE_END: 'lineEnd',
   LINE_START: 'lineStart',
   LINE_START_OR_END: 'lineStartOrEnd',
@@ -587,6 +625,7 @@ chrome.automation.IntentTextBoundaryType = {
   PAGE_START_OR_END: 'pageStartOrEnd',
   PARAGRAPH_END: 'paragraphEnd',
   PARAGRAPH_START: 'paragraphStart',
+  PARAGRAPH_START_SKIPPING_EMPTY_PARAGRAPHS: 'paragraphStartSkippingEmptyParagraphs',
   PARAGRAPH_START_OR_END: 'paragraphStartOrEnd',
   SENTENCE_END: 'sentenceEnd',
   SENTENCE_START: 'sentenceStart',
@@ -1015,6 +1054,11 @@ chrome.automation.AutomationPosition.prototype.moveToNextLineEndPosition = funct
 chrome.automation.AutomationPosition.prototype.moveToPreviousLineEndPosition = function() {};
 
 /**
+ * @see https://developer.chrome.com/extensions/automation#method-moveToNextFormatStartPosition
+ */
+chrome.automation.AutomationPosition.prototype.moveToNextFormatStartPosition = function() {};
+
+/**
  * @see https://developer.chrome.com/extensions/automation#method-moveToPreviousFormatStartPosition
  */
 chrome.automation.AutomationPosition.prototype.moveToPreviousFormatStartPosition = function() {};
@@ -1023,6 +1067,11 @@ chrome.automation.AutomationPosition.prototype.moveToPreviousFormatStartPosition
  * @see https://developer.chrome.com/extensions/automation#method-moveToNextFormatEndPosition
  */
 chrome.automation.AutomationPosition.prototype.moveToNextFormatEndPosition = function() {};
+
+/**
+ * @see https://developer.chrome.com/extensions/automation#method-moveToPreviousFormatEndPosition
+ */
+chrome.automation.AutomationPosition.prototype.moveToPreviousFormatEndPosition = function() {};
 
 /**
  * @see https://developer.chrome.com/extensions/automation#method-moveToNextParagraphStartPosition
@@ -1260,6 +1309,13 @@ chrome.automation.AutomationNode.prototype.htmlTag;
  * @see https://developer.chrome.com/extensions/automation#type-hierarchicalLevel
  */
 chrome.automation.AutomationNode.prototype.hierarchicalLevel;
+
+/**
+ * The current caret bounds in screen coordinates.
+ * @type {(!chrome.automation.Rect|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-caretBounds
+ */
+chrome.automation.AutomationNode.prototype.caretBounds;
 
 /**
  * The start and end index of each word in an inline text box.
@@ -1830,6 +1886,34 @@ chrome.automation.AutomationNode.prototype.containerLiveAtomic;
 chrome.automation.AutomationNode.prototype.containerLiveBusy;
 
 /**
+ * Whether or not this node is a button.
+ * @type {boolean}
+ * @see https://developer.chrome.com/extensions/automation#type-isButton
+ */
+chrome.automation.AutomationNode.prototype.isButton;
+
+/**
+ * Whether or not this node is a checkbox.
+ * @type {boolean}
+ * @see https://developer.chrome.com/extensions/automation#type-isCheckBox
+ */
+chrome.automation.AutomationNode.prototype.isCheckBox;
+
+/**
+ * Whether or not this node is a combobox.
+ * @type {boolean}
+ * @see https://developer.chrome.com/extensions/automation#type-isComboBox
+ */
+chrome.automation.AutomationNode.prototype.isComboBox;
+
+/**
+ * Whether or not this node is an image.
+ * @type {boolean}
+ * @see https://developer.chrome.com/extensions/automation#type-isImage
+ */
+chrome.automation.AutomationNode.prototype.isImage;
+
+/**
  * Aria auto complete.
  * @type {(string|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-autoComplete
@@ -2031,6 +2115,13 @@ chrome.automation.AutomationNode.prototype.nonAtomicTextFieldRoot;
  * @see https://developer.chrome.com/extensions/automation#type-ariaCurrentState
  */
 chrome.automation.AutomationNode.prototype.ariaCurrentState;
+
+/**
+ * Indicates invalid-state.
+ * @type {(!chrome.automation.InvalidState|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-invalidState
+ */
+chrome.automation.AutomationNode.prototype.invalidState;
 
 /**
  * The application id for a tree rooted at this node.

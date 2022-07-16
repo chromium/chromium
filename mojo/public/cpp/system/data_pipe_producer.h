@@ -59,6 +59,10 @@ class MOJO_CPP_SYSTEM_EXPORT DataPipeProducer {
 
   // Constructs a new DataPipeProducer which will write data to |producer|.
   explicit DataPipeProducer(ScopedDataPipeProducerHandle producer);
+
+  DataPipeProducer(const DataPipeProducer&) = delete;
+  DataPipeProducer& operator=(const DataPipeProducer&) = delete;
+
   ~DataPipeProducer();
 
   // Attempts to eventually write all of |data_source|'s contents to the pipe.
@@ -97,8 +101,6 @@ class MOJO_CPP_SYSTEM_EXPORT DataPipeProducer {
   ScopedDataPipeProducerHandle producer_;
   scoped_refptr<SequenceState> sequence_state_;
   base::WeakPtrFactory<DataPipeProducer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeProducer);
 };
 
 }  // namespace mojo

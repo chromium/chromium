@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ui/passwords/settings/password_manager_presenter.h"
 #include "chrome/browser/ui/passwords/settings/password_ui_view.h"
@@ -30,7 +29,7 @@ class WebContents;
 namespace extensions {
 
 // Delegate used by the chrome.passwordsPrivate API to facilitate working with
-// saved passwords and password exceptions (reading, changing, removing,
+// saved passwords and password exceptions (reading, adding, changing, removing,
 // import/export) and to notify listeners when these values have changed.
 class PasswordsPrivateDelegate : public KeyedService {
  public:
@@ -55,6 +54,33 @@ class PasswordsPrivateDelegate : public KeyedService {
   using ExceptionEntriesCallback =
       base::OnceCallback<void(const ExceptionEntries&)>;
   virtual void GetPasswordExceptionsList(ExceptionEntriesCallback callback) = 0;
+
+  // Checks whether the given |url| meets the requirements to save a password
+  // for it (e.g. valid, has proper scheme etc.) and returns the corresponding
+  // UrlCollection on success and absl::nullopt otherwise.
+  virtual absl::optional<api::passwords_private::UrlCollection>
+  GetUrlCollection(const std::string& url) = 0;
+
+  // Returns whether the account store is a default location for saving
+  // passwords. False means the device store is a default one. Must be called
+  // when the current user has already opted-in for account storage.
+  virtual bool IsAccountStoreDefault(content::WebContents* web_contents) = 0;
+
+  // Adds the |username| and |password| corresponding to the |url| to the
+  // specified store and returns true if the operation succeeded. Fails and
+  // returns false if the data is invalid or an entry with such origin and
+  // username already exists. Updates the default store to the used one on
+  // success if the user has opted-in for account storage.
+  // |url|: The url of the password entry, must be a valid http(s) ip/web
+  //        address as is or after adding http(s) scheme.
+  // |username|: The username to save, can be empty.
+  // |password|: The password to save, must not be empty.
+  // |use_account_store|: True for account store, false for device store.
+  virtual bool AddPassword(const std::string& url,
+                           const std::u16string& username,
+                           const std::u16string& password,
+                           bool use_account_store,
+                           content::WebContents* web_contents) = 0;
 
   // Changes the username and password corresponding to |ids|.
   // |ids|: The ids for the password entries being updated.

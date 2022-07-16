@@ -15,7 +15,6 @@
 #include "net/disk_cache/cache_util.h"
 
 using base::Time;
-using base::TimeDelta;
 
 std::string GenerateKey(bool same_length) {
   char key[200];
@@ -127,7 +126,7 @@ bool MessageLoopHelper::WaitUntilCacheIoFinished(int num_callbacks) {
   ExpectCallbacks(num_callbacks);
   // Create a recurrent timer of 50 ms.
   base::RepeatingTimer timer;
-  timer.Start(FROM_HERE, TimeDelta::FromMilliseconds(50), this,
+  timer.Start(FROM_HERE, base::Milliseconds(50), this,
               &MessageLoopHelper::TimerExpired);
   run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();

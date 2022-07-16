@@ -18,9 +18,8 @@ enum SmsStatus {
   kBackendNotAvailable // request cancelled since OTP backend was not available
 };
 
-// This interface is created per storage partition but its execution is context
-// associated: there is an origin associated with a request that is multiplexed
-// through one instance on a storage partition.
+// This interface is created per-document. The renderer process sends messages
+// to the browser process over this interface.
 interface WebOTPService {
   // Retrieves the next SMS message that arrives on the phone that is addressed
   // to the caller's origin.

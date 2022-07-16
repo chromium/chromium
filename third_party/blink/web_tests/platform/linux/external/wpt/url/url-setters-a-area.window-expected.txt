@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 435 tests; 263 PASS, 172 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 435 tests; 265 PASS, 170 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS <area>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
@@ -293,8 +293,8 @@ FAIL <a>: Setting <non-spec:/.//p>.hostname = 'h' Drop /. from path assert_equal
 FAIL <area>: Setting <non-spec:/.//p>.hostname = 'h' Drop /. from path assert_equals: expected "non-spec://h//p" but got "non-spec:/.//p"
 FAIL <a>: Setting <non-spec:/.//p>.hostname = '' assert_equals: expected "non-spec:////p" but got "non-spec:/.//p"
 FAIL <area>: Setting <non-spec:/.//p>.hostname = '' assert_equals: expected "non-spec:////p" but got "non-spec:/.//p"
-FAIL <a>: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "http://example.com/" but got "http://bad.com/"
-FAIL <area>: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "http://example.com/" but got "http://bad.com/"
+PASS <a>: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped
+PASS <area>: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped
 FAIL <a>: Setting <sc://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "sc:///" but got "sc://example.com/"
 FAIL <area>: Setting <sc://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "sc:///" but got "sc://example.com/"
 PASS <a>: Setting <http://example.net>.port = '8080'
@@ -410,9 +410,9 @@ PASS <area>: Setting <https://example.net?lang=en-US>.search = ''
 PASS <a>: Setting <https://example.net>.search = ''
 PASS <area>: Setting <https://example.net>.search = ''
 FAIL <a>: Setting <a:/>.search = '\0	
-\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the query encode set. Tabs and newlines are removed. assert_equals: expected "a:/?%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "a:/?%00%01%1F !\"#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
+\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the query encode set. Tabs and newlines are removed. assert_equals: expected "a:/?%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "a:/?%00%01%1F%20!%22%23$%&%27()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
 FAIL <area>: Setting <a:/>.search = '\0	
-\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the query encode set. Tabs and newlines are removed. assert_equals: expected "a:/?%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "a:/?%00%01%1F !\"#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
+\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the query encode set. Tabs and newlines are removed. assert_equals: expected "a:/?%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "a:/?%00%01%1F%20!%22%23$%&%27()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
 PASS <a>: Setting <http://example.net>.search = '%c3%89té' Bytes already percent-encoded are left as-is
 PASS <area>: Setting <http://example.net>.search = '%c3%89té' Bytes already percent-encoded are left as-is
 PASS <a>: Setting <https://example.net>.hash = 'main'

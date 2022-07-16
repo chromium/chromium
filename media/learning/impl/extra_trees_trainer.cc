@@ -57,15 +57,15 @@ void ExtraTreesTrainer::OnRandomTreeModel(TrainedModelCB model_cb,
 
   // If this is the last tree, then return the finished model.
   if (trees_.size() == task_.rf_number_of_trees) {
-    std::unique_ptr<Model> model =
+    std::unique_ptr<Model> finished_model =
         std::make_unique<VotingEnsemble>(std::move(trees_));
     // If we have a converter, then wrap everything in a ConvertingModel.
     if (converter_) {
-      model = std::make_unique<ConvertingModel>(std::move(converter_),
-                                                std::move(model));
+      finished_model = std::make_unique<ConvertingModel>(
+          std::move(converter_), std::move(finished_model));
     }
 
-    std::move(model_cb).Run(std::move(model));
+    std::move(model_cb).Run(std::move(finished_model));
     return;
   }
 

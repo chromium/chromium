@@ -282,7 +282,7 @@ function dumpNode(msg)
         return;
     }
     delete msg.result.nodes[0]['selected'];
-    testRunner.log(msg.result.nodes[0], null, ["id", "backendDOMNodeId", "nodeId", "parentId"]);
+    testRunner.log(msg.result.nodes[0], null, ["id", "backendDOMNodeId", "nodeId", "parentId", "childIds"]);
 }
 
 function dumpTreeStructure(msg)

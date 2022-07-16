@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -77,6 +76,10 @@ class PaymentManifestDownloader {
   PaymentManifestDownloader(
       std::unique_ptr<ErrorLogger> log,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  PaymentManifestDownloader(const PaymentManifestDownloader&) = delete;
+  PaymentManifestDownloader& operator=(const PaymentManifestDownloader&) =
+      delete;
 
   virtual ~PaymentManifestDownloader();
 
@@ -188,8 +191,6 @@ class PaymentManifestDownloader {
       downloads_;
 
   base::WeakPtrFactory<PaymentManifestDownloader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentManifestDownloader);
 };
 
 }  // namespace payments

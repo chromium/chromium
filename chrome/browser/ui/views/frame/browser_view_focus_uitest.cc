@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -28,14 +27,15 @@ const char kSimplePage[] = "/focus/page_with_focus.html";
 class BrowserViewFocusTest : public InProcessBrowserTest {
  public:
   BrowserViewFocusTest() = default;
+
+  BrowserViewFocusTest(const BrowserViewFocusTest&) = delete;
+  BrowserViewFocusTest& operator=(const BrowserViewFocusTest&) = delete;
+
   ~BrowserViewFocusTest() override = default;
 
   bool IsViewFocused(ViewID vid) {
     return ui_test_utils::IsViewFocused(browser(), vid);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewFocusTest);
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, BrowsersRememberFocus) {
@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, BrowsersRememberFocus) {
 
   // First we navigate to our test page.
   GURL url = embedded_test_server()->GetURL(kSimplePage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   gfx::NativeWindow window = browser()->window()->GetNativeWindow();
 
@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, BrowsersRememberFocus) {
   ASSERT_TRUE(browser2);
   chrome::AddTabAt(browser2, GURL(), -1, true);
   browser2->window()->Show();
-  ui_test_utils::NavigateToURL(browser2, url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, url));
 
   gfx::NativeWindow window2 = browser2->window()->GetNativeWindow();
   BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, TabChangesAvoidSpuriousFocus) {
 
   // First we navigate to our test page.
   GURL url = embedded_test_server()->GetURL(kSimplePage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Create another tab.
   AddTabAtIndex(1, url, ui::PAGE_TRANSITION_TYPED);

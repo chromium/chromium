@@ -53,6 +53,10 @@ class DialMediaSinkServiceImplTest : public ::testing::Test {
             mock_sink_discovered_cb_.Get(),
             base::SequencedTaskRunnerHandle::Get())) {}
 
+  DialMediaSinkServiceImplTest(const DialMediaSinkServiceImplTest&) = delete;
+  DialMediaSinkServiceImplTest& operator=(const DialMediaSinkServiceImplTest&) =
+      delete;
+
   void SetUp() override {
     media_sink_service_->SetDialRegistryForTest(&test_dial_registry_);
 
@@ -118,8 +122,6 @@ class DialMediaSinkServiceImplTest : public ::testing::Test {
 
   MediaSinkInternal dial_sink_1_ = CreateDialSink(1);
   MediaSinkInternal dial_sink_2_ = CreateDialSink(2);
-
-  DISALLOW_COPY_AND_ASSIGN(DialMediaSinkServiceImplTest);
 };
 
 TEST_F(DialMediaSinkServiceImplTest, OnDeviceDescriptionAvailable) {

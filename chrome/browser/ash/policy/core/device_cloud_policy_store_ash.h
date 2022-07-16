@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_validator.h"
@@ -39,6 +38,11 @@ class DeviceCloudPolicyStoreAsh : public CloudPolicyStore,
       ash::DeviceSettingsService* device_settings_service,
       chromeos::InstallAttributes* install_attributes,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
+
+  DeviceCloudPolicyStoreAsh(const DeviceCloudPolicyStoreAsh&) = delete;
+  DeviceCloudPolicyStoreAsh& operator=(const DeviceCloudPolicyStoreAsh&) =
+      delete;
+
   ~DeviceCloudPolicyStoreAsh() override;
 
   // CloudPolicyStore:
@@ -95,8 +99,6 @@ class DeviceCloudPolicyStoreAsh : public CloudPolicyStore,
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   base::WeakPtrFactory<DeviceCloudPolicyStoreAsh> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyStoreAsh);
 };
 
 }  // namespace policy

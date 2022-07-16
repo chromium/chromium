@@ -17,6 +17,10 @@ namespace ash {
 class AshTestHelperTest : public testing::Test {
  public:
   AshTestHelperTest() = default;
+
+  AshTestHelperTest(const AshTestHelperTest&) = delete;
+  AshTestHelperTest& operator=(const AshTestHelperTest&) = delete;
+
   ~AshTestHelperTest() override = default;
 
   void SetUp() override {
@@ -31,8 +35,6 @@ class AshTestHelperTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI};
 
   AshTestHelper ash_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshTestHelperTest);
 };
 
 // Ensure that we have initialized enough of Ash to create and show a window.

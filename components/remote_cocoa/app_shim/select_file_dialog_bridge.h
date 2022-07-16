@@ -32,6 +32,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT SelectFileDialogBridge
                               int index)>;
 
   SelectFileDialogBridge(NSWindow* owning_window);
+
+  SelectFileDialogBridge(const SelectFileDialogBridge&) = delete;
+  SelectFileDialogBridge& operator=(const SelectFileDialogBridge&) = delete;
+
   ~SelectFileDialogBridge() override;
 
   // mojom::SelectFileDialog:
@@ -79,7 +83,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT SelectFileDialogBridge
   base::scoped_nsobject<ExtensionDropdownHandler> extension_dropdown_handler_;
 
   base::WeakPtrFactory<SelectFileDialogBridge> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialogBridge);
 };
 
 }  // namespace remote_cocoa

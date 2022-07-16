@@ -27,6 +27,10 @@ class Buffer : public thunk::PPB_Buffer_API, public Resource {
  public:
   Buffer(const HostResource& resource,
          base::UnsafeSharedMemoryRegion shm_handle);
+
+  Buffer(const Buffer&) = delete;
+  Buffer& operator=(const Buffer&) = delete;
+
   ~Buffer() override;
 
   // Resource overrides.
@@ -45,8 +49,6 @@ class Buffer : public thunk::PPB_Buffer_API, public Resource {
   base::UnsafeSharedMemoryRegion shm_;
   base::WritableSharedMemoryMapping mapping_;
   int map_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(Buffer);
 };
 
 class PPB_Buffer_Proxy : public InterfaceProxy {

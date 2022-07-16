@@ -29,19 +29,6 @@ enum NotificationType {
 
   // NavigationController ----------------------------------------------------
 
-  // A new pending navigation has been created. Pending entries are created
-  // when the user requests the navigation. We don't know if it will actually
-  // happen until it does (at this point, it will be "committed." Note that
-  // renderer- initiated navigations such as link clicks will never be
-  // pending.
-  //
-  // This notification is called after the pending entry is created, but
-  // before we actually try to navigate. The source will be the
-  // NavigationController that owns the pending entry, and the details
-  // will be a NavigationEntry.
-  // TODO(https://crbug.com/1174759): Remove.
-  NOTIFICATION_NAV_ENTRY_PENDING,
-
   // A new non-pending navigation entry has been created. This will
   // correspond to one NavigationController entry being created (in the case
   // of new navigations) or renavigated to (for back/forward navigations).

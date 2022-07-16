@@ -11,13 +11,12 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequence_manager/sequence_manager.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_observer.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -27,6 +26,7 @@
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
@@ -76,6 +76,10 @@ void DeferredQuitRunLoop(base::OnceClosure quit_task, int num_quit_deferrals) {
 class TaskObserver : public base::TaskObserver {
  public:
   TaskObserver() = default;
+
+  TaskObserver(const TaskObserver&) = delete;
+  TaskObserver& operator=(const TaskObserver&) = delete;
+
   ~TaskObserver() override = default;
 
   // TaskObserver overrides.
@@ -96,7 +100,6 @@ class TaskObserver : public base::TaskObserver {
 
  private:
   bool processed_ = false;
-  DISALLOW_COPY_AND_ASSIGN(TaskObserver);
 };
 
 // Adapter that makes a WindowedNotificationObserver::ConditionTestCallback from
@@ -249,8 +252,8 @@ void DisableProactiveBrowsingInstanceSwapFor(RenderFrameHost* rfh) {
   if (!CanSameSiteMainFrameNavigationsChangeSiteInstances())
     return;
   // If the RFH is not a main frame, navigations on it will never result in a
-  // proactive BrowsingInstance swap, so we shouldn't really call it on main
-  // frames.
+  // proactive BrowsingInstance swap, so we shouldn't call this function on
+  // subframes.
   DCHECK(!rfh->GetParent());
   static_cast<RenderFrameHostImpl*>(rfh)
       ->DisableProactiveBrowsingInstanceSwapForTesting();
@@ -266,8 +269,7 @@ std::string GetWebUIURLString(const std::string& host) {
 }
 
 WebContents* CreateAndAttachInnerContents(RenderFrameHost* rfh) {
-  WebContents* outer_contents =
-      static_cast<RenderFrameHostImpl*>(rfh)->delegate()->GetAsWebContents();
+  auto* outer_contents = WebContents::FromRenderFrameHost(rfh);
   if (!outer_contents)
     return nullptr;
 
@@ -316,10 +318,6 @@ void AwaitDocumentOnLoadCompleted(WebContents* web_contents) {
   };
 
   Awaiter(web_contents).Await();
-}
-
-void ResetFontEnumerationCache() {
-  FontEnumerationCache::GetInstance()->ResetStateForTesting();
 }
 
 MessageLoopRunner::MessageLoopRunner(QuitMode quit_mode)
@@ -443,12 +441,9 @@ void InProcessUtilityThreadHelper::CheckHasRunningChildProcess() {
           std::move(quit_closure).Run();
       };
 
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? GetUIThreadTaskRunner({})
-                         : GetIOThreadTaskRunner({});
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(check_has_running_child_process_on_io,
-                                       run_loop_->QuitClosure()));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(check_has_running_child_process_on_io,
+                                run_loop_->QuitClosure()));
 }
 
 void InProcessUtilityThreadHelper::BrowserChildProcessHostDisconnected(
@@ -458,7 +453,7 @@ void InProcessUtilityThreadHelper::BrowserChildProcessHostDisconnected(
 
 RenderFrameDeletedObserver::RenderFrameDeletedObserver(RenderFrameHost* rfh)
     : WebContentsObserver(WebContents::FromRenderFrameHost(rfh)),
-      routing_id_(rfh->GetGlobalId()) {
+      rfh_id_(rfh->GetGlobalId()) {
   DCHECK(rfh);
 }
 
@@ -466,8 +461,8 @@ RenderFrameDeletedObserver::~RenderFrameDeletedObserver() = default;
 
 void RenderFrameDeletedObserver::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
-  if (render_frame_host->GetGlobalId() == routing_id_) {
-    routing_id_ = GlobalRenderFrameHostId();
+  if (render_frame_host->GetGlobalId() == rfh_id_) {
+    rfh_id_ = GlobalRenderFrameHostId();
 
     if (runner_.get())
       runner_->Quit();
@@ -475,20 +470,21 @@ void RenderFrameDeletedObserver::RenderFrameDeleted(
 }
 
 bool RenderFrameDeletedObserver::deleted() const {
-  return routing_id_ == GlobalRenderFrameHostId();
+  return rfh_id_ == GlobalRenderFrameHostId();
 }
 
-void RenderFrameDeletedObserver::WaitUntilDeleted() {
+bool RenderFrameDeletedObserver::WaitUntilDeleted() {
   if (deleted())
-    return;
+    return true;
 
   runner_ = std::make_unique<base::RunLoop>();
   runner_->Run();
   runner_.reset();
+  return deleted();
 }
 
 RenderFrameHostWrapper::RenderFrameHostWrapper(RenderFrameHost* rfh)
-    : routing_id_(rfh->GetGlobalId()),
+    : rfh_id_(rfh->GetGlobalId()),
       deleted_observer_(std::make_unique<RenderFrameDeletedObserver>(rfh)) {}
 
 RenderFrameHostWrapper::RenderFrameHostWrapper(RenderFrameHostWrapper&& rfhft) =
@@ -496,7 +492,7 @@ RenderFrameHostWrapper::RenderFrameHostWrapper(RenderFrameHostWrapper&& rfhft) =
 RenderFrameHostWrapper::~RenderFrameHostWrapper() = default;
 
 RenderFrameHost* RenderFrameHostWrapper::get() const {
-  return RenderFrameHost::FromID(routing_id_);
+  return RenderFrameHost::FromID(rfh_id_);
 }
 
 bool RenderFrameHostWrapper::IsDestroyed() const {
@@ -505,9 +501,10 @@ bool RenderFrameHostWrapper::IsDestroyed() const {
 
 // See RenderFrameDeletedObserver for notes on the difference between
 // RenderFrame being deleted and RenderFrameHost being destroyed.
-void RenderFrameHostWrapper::WaitUntilRenderFrameDeleted() {
-  deleted_observer_->WaitUntilDeleted();
+bool RenderFrameHostWrapper::WaitUntilRenderFrameDeleted() {
+  return deleted_observer_->WaitUntilDeleted();
 }
+
 bool RenderFrameHostWrapper::IsRenderFrameDeleted() const {
   return deleted_observer_->deleted();
 }

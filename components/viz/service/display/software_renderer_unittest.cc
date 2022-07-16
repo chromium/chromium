@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "cc/test/animation_test_common.h"
 #include "cc/test/fake_output_surface_client.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/pixel_test_utils.h"
 #include "cc/test/render_pass_test_utils.h"
 #include "cc/test/resource_provider_test_utils.h"
@@ -38,7 +37,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/utils/SkNWayCanvas.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace viz {
 namespace {
@@ -104,7 +103,8 @@ class SoftwareRendererTest : public testing::Test {
     base::RunLoop loop;
 
     list->back()->copy_requests.push_back(std::make_unique<CopyOutputRequest>(
-        CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+        CopyOutputRequest::ResultFormat::RGBA,
+        CopyOutputRequest::ResultDestination::kSystemMemory,
         base::BindOnce(&SoftwareRendererTest::SaveBitmapResult,
                        base::Unretained(&bitmap_result), loop.QuitClosure())));
 
@@ -120,7 +120,9 @@ class SoftwareRendererTest : public testing::Test {
                                base::OnceClosure quit_closure,
                                std::unique_ptr<CopyOutputResult> result) {
     DCHECK(!result->IsEmpty());
-    DCHECK_EQ(result->format(), CopyOutputResult::Format::RGBA_BITMAP);
+    DCHECK_EQ(result->format(), CopyOutputResult::Format::RGBA);
+    DCHECK_EQ(result->destination(),
+              CopyOutputResult::Destination::kSystemMemory);
     auto scoped_bitmap = result->ScopedAccessSkBitmap();
     (*bitmap_result) =
         std::make_unique<SkBitmap>(scoped_bitmap.GetOutScopedBitmap());

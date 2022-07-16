@@ -59,14 +59,14 @@ WebGPUImageUploadSizeInfo ComputeImageBitmapWebGPUUploadSizeInfo(
   DCHECK_NE(bytes_per_pixel, 0u);
 
   uint64_t bytes_per_row =
-      AlignWebGPUBytesPerRow(rect.Width() * bytes_per_pixel);
+      AlignWebGPUBytesPerRow(rect.width() * bytes_per_pixel);
 
   // Currently, bytes per row for buffer copy view in WebGPU is an uint32_t type
   // value and the maximum value is std::numeric_limits<uint32_t>::max().
   DCHECK(bytes_per_row <= std::numeric_limits<uint32_t>::max());
 
   info.wgpu_bytes_per_row = static_cast<uint32_t>(bytes_per_row);
-  info.size_in_bytes = bytes_per_row * rect.Height();
+  info.size_in_bytes = bytes_per_row * rect.height();
 
   return info;
 }
@@ -80,10 +80,10 @@ bool CopyBytesFromImageBitmapForWebGPU(
     bool flipY) {
   DCHECK(image);
   DCHECK_GT(dst.size(), static_cast<size_t>(0));
-  DCHECK(image->width() - rect.X() >= rect.Width());
-  DCHECK(image->height() - rect.Y() >= rect.Height());
-  DCHECK(rect.Width());
-  DCHECK(rect.Height());
+  DCHECK(image->width() - rect.x() >= rect.width());
+  DCHECK(image->height() - rect.y() >= rect.height());
+  DCHECK(rect.width());
+  DCHECK(rect.height());
 
   WebGPUImageUploadSizeInfo wgpu_info =
       ComputeImageBitmapWebGPUUploadSizeInfo(rect, destination_format);
@@ -99,25 +99,25 @@ bool CopyBytesFromImageBitmapForWebGPU(
   // Read pixel request dst info.
   // TODO(crbug.com/1217153): Convert to user-provided color space.
   SkImageInfo info = SkImageInfo::Make(
-      rect.Width(), rect.Height(), sk_color_type,
+      rect.width(), rect.height(), sk_color_type,
       premultipliedAlpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
       paint_image.GetSkImageInfo().refColorSpace());
 
   if (!flipY) {
     return paint_image.readPixels(
-        info, dst.data(), wgpu_info.wgpu_bytes_per_row, rect.X(), rect.Y());
+        info, dst.data(), wgpu_info.wgpu_bytes_per_row, rect.x(), rect.y());
   } else {
     // Do flipY for the bottom left image.
     std::vector<uint8_t> flipped;
-    flipped.resize(wgpu_info.wgpu_bytes_per_row * rect.Height());
+    flipped.resize(wgpu_info.wgpu_bytes_per_row * rect.height());
     if (!paint_image.readPixels(info, flipped.data(),
-                                wgpu_info.wgpu_bytes_per_row, rect.X(),
-                                rect.Y())) {
+                                wgpu_info.wgpu_bytes_per_row, rect.x(),
+                                rect.y())) {
       return false;
     }
-    for (int i = 0; i < rect.Height(); ++i) {
+    for (int i = 0; i < rect.height(); ++i) {
       memcpy(
-          dst.data() + (rect.Height() - 1 - i) * wgpu_info.wgpu_bytes_per_row,
+          dst.data() + (rect.height() - 1 - i) * wgpu_info.wgpu_bytes_per_row,
           flipped.data() + i * wgpu_info.wgpu_bytes_per_row,
           wgpu_info.wgpu_bytes_per_row);
     }

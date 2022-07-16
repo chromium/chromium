@@ -36,6 +36,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
     virtual void OnSourceMoved(size_t old_index, size_t new_index) = 0;
     virtual void OnSourceNameChanged(size_t index) = 0;
     virtual void OnSourceThumbnailChanged(size_t index) = 0;
+    virtual void OnSourcePreviewChanged(size_t index) = 0;
   };
 
   // The abstract interface implemented by any view controlled by this
@@ -96,6 +97,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   size_t GetSourceCount() const;
   const DesktopMediaList::Source& GetSource(size_t index) const;
   void SetThumbnailSize(const gfx::Size& size);
+  void SetPreviewedSource(const absl::optional<content::DesktopMediaID>& id);
 
  private:
   friend class DesktopMediaPickerViewsTestApi;
@@ -111,13 +113,12 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   void Reject();
 
   // DesktopMediaListObserver:
-  void OnSourceAdded(DesktopMediaList* list, int index) override;
-  void OnSourceRemoved(DesktopMediaList* list, int index) override;
-  void OnSourceMoved(DesktopMediaList* list,
-                     int old_index,
-                     int new_index) override;
-  void OnSourceNameChanged(DesktopMediaList* list, int index) override;
-  void OnSourceThumbnailChanged(DesktopMediaList* list, int index) override;
+  void OnSourceAdded(int index) override;
+  void OnSourceRemoved(int index) override;
+  void OnSourceMoved(int old_index, int new_index) override;
+  void OnSourceNameChanged(int index) override;
+  void OnSourceThumbnailChanged(int index) override;
+  void OnSourcePreviewChanged(size_t index) override;
 
   // ViewObserver:
   void OnViewIsDeleting(views::View* view) override;

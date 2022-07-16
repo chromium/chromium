@@ -30,9 +30,9 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/move_to_desks_menu_delegate.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "chromeos/ui/frame/move_to_desks_menu_model.h"
+#include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
+#include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 #include "ui/views/widget/widget.h"
 #endif
 
@@ -56,7 +56,8 @@ bool WebAppMenuModel::IsCommandIdEnabled(int command_id) const {
              browser()->window()->GetExtensionsContainer()->HasAnyExtensions();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case chromeos::MoveToDesksMenuModel::kMenuCommandId:
-      return ash::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
+      return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
+          browser()->window()->GetNativeWindow());
 #endif
     default:
       return AppMenuModel::IsCommandIdEnabled(command_id);
@@ -65,8 +66,10 @@ bool WebAppMenuModel::IsCommandIdEnabled(int command_id) const {
 
 bool WebAppMenuModel::IsCommandIdVisible(int command_id) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId)
-    return ash::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
+  if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId) {
+    return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
+        browser()->window()->GetNativeWindow());
+  }
 #endif
   return AppMenuModel::IsCommandIdVisible(command_id);
 }
@@ -109,10 +112,11 @@ void WebAppMenuModel::Build() {
   AddItemWithStringId(IDC_OPEN_IN_CHROME, IDS_OPEN_IN_CHROME);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu()) {
+  if (chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
+          browser()->window()->GetNativeWindow())) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     move_to_desks_submenu_ = std::make_unique<chromeos::MoveToDesksMenuModel>(
-        std::make_unique<ash::MoveToDesksMenuDelegate>(
+        std::make_unique<chromeos::MoveToDesksMenuDelegate>(
             views::Widget::GetWidgetForNativeWindow(
                 browser()->window()->GetNativeWindow())));
     AddSubMenuWithStringId(chromeos::MoveToDesksMenuModel::kMenuCommandId,

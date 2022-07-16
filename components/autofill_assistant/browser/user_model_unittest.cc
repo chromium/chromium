@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/user_model.h"
+
+#include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill_assistant/browser/mock_user_model_observer.h"
@@ -17,7 +19,6 @@ using ::testing::InSequence;
 using ::testing::IsNull;
 using ::testing::Pair;
 using ::testing::Property;
-using ::testing::SizeIs;
 using ::testing::StrEq;
 using ::testing::UnorderedElementsAre;
 
@@ -31,7 +32,7 @@ class UserModelTest : public testing::Test {
   void TearDown() override { model_.RemoveObserver(&mock_observer_); }
 
   // Provides direct access to the values in the model for testing.
-  const std::map<std::string, ValueProto>& GetValues() const {
+  const base::flat_map<std::string, ValueProto>& GetValues() const {
     return model_.values_;
   }
 
@@ -434,6 +435,35 @@ TEST_F(UserModelTest, SetSelectedCreditCard) {
   model_.SetSelectedCreditCard(nullptr, &user_data);
   EXPECT_THAT(model_.GetSelectedCreditCard(), IsNull());
   EXPECT_THAT(user_data.selected_card(), IsNull());
+}
+
+TEST_F(UserModelTest, SetSelectedLoginChoiceObject) {
+  LoginChoice login_choice;
+  login_choice.identifier = "guest";
+
+  UserData user_data;
+  model_.SetSelectedLoginChoice(std::make_unique<LoginChoice>(login_choice),
+                                &user_data);
+  EXPECT_THAT(user_data.selected_login_choice()->identifier, "guest");
+
+  model_.SetSelectedLoginChoice(nullptr, &user_data);
+  EXPECT_THAT(user_data.selected_login_choice(), IsNull());
+}
+
+TEST_F(UserModelTest, SetSelectedLoginChoiceIdentifier) {
+  LoginChoice login_choice;
+  login_choice.identifier = "guest";
+  CollectUserDataOptions collect_user_data_options;
+  collect_user_data_options.login_choices.push_back(login_choice);
+
+  UserData user_data;
+  model_.SetSelectedLoginChoiceByIdentifier("guest", collect_user_data_options,
+                                            &user_data);
+  EXPECT_THAT(user_data.selected_login_choice()->identifier, "guest");
+
+  model_.SetSelectedLoginChoiceByIdentifier(
+      "not found", collect_user_data_options, &user_data);
+  EXPECT_THAT(user_data.selected_login_choice(), IsNull());
 }
 
 }  // namespace autofill_assistant

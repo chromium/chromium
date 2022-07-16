@@ -58,7 +58,7 @@ WebString WebFormElement::Method() const {
   return ConstUnwrap<HTMLFormElement>()->method();
 }
 
-unsigned WebFormElement::UniqueRendererFormId() const {
+uint64_t WebFormElement::UniqueRendererFormId() const {
   return ConstUnwrap<HTMLFormElement>()->UniqueRendererFormId();
 }
 

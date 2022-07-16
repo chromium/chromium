@@ -7,8 +7,6 @@
   // OpenVPN.Compress is omitted.
   "OpenVPN.KeyDirection":"1",
   "OpenVPN.Token":"some OTP",
-  "OpenVPN.Pkcs11.ID": "",
-  "OpenVPN.Pkcs11.PIN": "",
   "OpenVPN.Port":"443",
   "OpenVPN.Proto":"udp",
   "OpenVPN.PushPeerInfo":"true",

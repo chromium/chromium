@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_CROSTINI_ENGAGEMENT_METRICS_SERVICE_H_
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_ENGAGEMENT_METRICS_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/guest_os/guest_os_engagement_metrics.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -38,6 +37,12 @@ class CrostiniEngagementMetricsService : public KeyedService {
   };
 
   explicit CrostiniEngagementMetricsService(Profile* profile);
+
+  CrostiniEngagementMetricsService(const CrostiniEngagementMetricsService&) =
+      delete;
+  CrostiniEngagementMetricsService& operator=(
+      const CrostiniEngagementMetricsService&) = delete;
+
   ~CrostiniEngagementMetricsService() override;
 
   // This needs to be called when Crostini starts and stops being active so we
@@ -47,8 +52,6 @@ class CrostiniEngagementMetricsService : public KeyedService {
  private:
   std::unique_ptr<guest_os::GuestOsEngagementMetrics>
       guest_os_engagement_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniEngagementMetricsService);
 };
 
 }  // namespace crostini

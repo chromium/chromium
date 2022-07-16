@@ -23,7 +23,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/mac/scoped_mach_port.h"
-#include "base/macros.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"
 #include "test/mac/mach_multiprocess.h"
@@ -180,6 +179,9 @@ class TestMachMessageServer : public MachMessageServer::Interface,
         child_complex_message_port_(),
         parent_complex_message_port_(MACH_PORT_NULL) {
   }
+
+  TestMachMessageServer(const TestMachMessageServer&) = delete;
+  TestMachMessageServer& operator=(const TestMachMessageServer&) = delete;
 
   // Runs the test.
   void Test() {
@@ -592,8 +594,6 @@ class TestMachMessageServer : public MachMessageServer::Interface,
 
   static constexpr mach_msg_id_t kRequestMessageID = 16237;
   static constexpr mach_msg_id_t kReplyMessageID = kRequestMessageID + 100;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMachMessageServer);
 };
 
 uint32_t TestMachMessageServer::requests_;

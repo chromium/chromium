@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/android/promotion_hint_aggregator.h"

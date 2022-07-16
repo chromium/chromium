@@ -37,13 +37,24 @@ TEST(HostPortPairTest, Parsing) {
   EXPECT_TRUE(foo.Equals(bar));
 }
 
+TEST(HostPortPairTest, ParsingIpv6) {
+  HostPortPair foo("2001:db8::42", 100);
+  string foo_str = foo.ToString();
+  EXPECT_EQ("[2001:db8::42]:100", foo_str);
+  HostPortPair bar = HostPortPair::FromString(foo_str);
+  EXPECT_TRUE(foo.Equals(bar));
+}
+
 TEST(HostPortPairTest, BadString) {
-  const char* kBadStrings[] = {
-      "foo.com:2:3",       "bar.com:two",     "www.google.com:-1",
-      "www.google.com:+1", "127.0.0.1:65536", "[2001:db8::42]:65536",
-  };
+  const char* kBadStrings[] = {"foo.com",           "foo.com:",
+                               "foo.com:2:3",       "bar.com:two",
+                               "www.google.com:-1", "www.google.com:+1",
+                               "127.0.0.1:65536",   "[2001:db8::42]:65536",
+                               "[2001:db8::42",     "2001:db8::42",
+                               "2001:db8::42:100",  "[2001:db8::42]"};
 
   for (const auto* const test : kBadStrings) {
+    SCOPED_TRACE(test);
     HostPortPair foo = HostPortPair::FromString(test);
     EXPECT_TRUE(foo.host().empty());
     EXPECT_EQ(0, foo.port());

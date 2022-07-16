@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
@@ -20,11 +21,11 @@
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -39,7 +40,10 @@
 #include "components/sync/driver/sync_auth_util.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_token_status.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/test/fake_server/fake_server.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "content/public/test/browser_test.h"
@@ -100,6 +104,11 @@ class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
  public:
   AutofillWebDataServiceConsumer() {}
 
+  AutofillWebDataServiceConsumer(const AutofillWebDataServiceConsumer&) =
+      delete;
+  AutofillWebDataServiceConsumer& operator=(
+      const AutofillWebDataServiceConsumer&) = delete;
+
   virtual ~AutofillWebDataServiceConsumer() {}
 
   void OnWebDataServiceRequestDone(
@@ -116,7 +125,6 @@ class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
  private:
   base::RunLoop run_loop_;
   T result_;
-  DISALLOW_COPY_AND_ASSIGN(AutofillWebDataServiceConsumer);
 };
 
 std::vector<std::unique_ptr<CreditCard>> GetServerCards(
@@ -188,6 +196,10 @@ class SingleClientWalletSyncTest : public SyncTest {
     test_clock_.SetNow(kArbitraryDefaultTime);
   }
 
+  SingleClientWalletSyncTest(const SingleClientWalletSyncTest&) = delete;
+  SingleClientWalletSyncTest& operator=(const SingleClientWalletSyncTest&) =
+      delete;
+
   ~SingleClientWalletSyncTest() override {}
 
  protected:
@@ -242,16 +254,11 @@ class SingleClientWalletSyncTest : public SyncTest {
         .Wait();
   }
 
-  void AdvanceAutofillClockByOneDay() {
-    test_clock_.Advance(base::TimeDelta::FromDays(1));
-  }
+  void AdvanceAutofillClockByOneDay() { test_clock_.Advance(base::Days(1)); }
 
   testing::NiceMock<PersonalDataLoadedObserverMock> personal_data_observer_;
   base::HistogramTester histogram_tester_;
   autofill::TestAutofillClock test_clock_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientWalletSyncTest);
 };
 
 class SingleClientWalletSyncTestWithoutAccountStorage
@@ -344,6 +351,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
 
   ExpectDefaultCreditCardValues(*cards[0]);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, signout is not supported with Mirror account consistency.
+  // TODO(https://crbug.com/1260291): Enable this test once signout is
+  // supported.
+  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+    return;
+#endif
+
   // Now sign back out.
   GetClient(0)->SignOutPrimaryAccount();
 
@@ -365,6 +380,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
 // different account.
 IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
                        ClearOnSignOutAndDownstreamOnSignIn) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, signout is not supported with Mirror account consistency.
+  // TODO(https://crbug.com/1260291): Enable this test once signout is
+  // supported.
+  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+    GTEST_SKIP();
+#endif
+
   ASSERT_TRUE(SetupClients());
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
@@ -527,6 +550,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnStopSync) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Wallet data should get cleared from the database when the user signs out.
 IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnSignOut) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, signout is not supported with Mirror account consistency.
+  // TODO(https://crbug.com/1260291): Enable this test once signout is
+  // supported.
+  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+    GTEST_SKIP();
+#endif
+
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletAddress(),
                                   CreateDefaultSyncWalletCard(),
                                   CreateDefaultSyncPaymentsCustomerData(),
@@ -1322,6 +1353,12 @@ class SingleClientWalletSecondaryAccountSyncTest
     features_.InitAndEnableFeature(
         autofill::features::kAutofillEnableAccountWalletStorage);
   }
+
+  SingleClientWalletSecondaryAccountSyncTest(
+      const SingleClientWalletSecondaryAccountSyncTest&) = delete;
+  SingleClientWalletSecondaryAccountSyncTest& operator=(
+      const SingleClientWalletSecondaryAccountSyncTest&) = delete;
+
   ~SingleClientWalletSecondaryAccountSyncTest() override {}
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -1342,12 +1379,10 @@ class SingleClientWalletSecondaryAccountSyncTest
   base::test::ScopedFeatureList features_;
 
   base::CallbackListSubscription test_signin_client_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleClientWalletSecondaryAccountSyncTest);
 };
 
 // ChromeOS doesn't support changes to the primary account after startup, so
-// these secondary-account-related tests don't apply.
+// these tests don't apply.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
                        SwitchesFromAccountToProfileStorageOnSyncOptIn) {
@@ -1357,8 +1392,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
                                   CreateDefaultSyncPaymentsCustomerData(),
                                   CreateDefaultSyncCreditCardCloudTokenData()});
 
-  // Set up Sync in transport mode for a non-primary account.
-  secondary_account_helper::SignInSecondaryAccount(
+  // Set up Sync in transport mode for an unconsented account.
+  secondary_account_helper::SignInUnconsentedAccount(
       profile(), &test_url_loader_factory_, "user@email.com");
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
@@ -1387,9 +1422,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
   EXPECT_EQ(1U, GetCreditCardCloudTokenData(account_data).size());
   EXPECT_EQ(0U, GetCreditCardCloudTokenData(profile_data).size());
 
-  // Simulate the user opting in to full Sync: Make the account primary, and
-  // set first-time setup to complete.
-  secondary_account_helper::MakeAccountPrimary(profile(), "user@email.com");
+  // Simulate the user opting in to full Sync, and set first-time setup to
+  // complete.
+  secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
   GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
       kSetSourceFromTest);
@@ -1425,8 +1460,8 @@ IN_PROC_BROWSER_TEST_F(
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
                                   CreateDefaultSyncCreditCardCloudTokenData()});
 
-  // Set up Sync in transport mode for a non-primary account.
-  secondary_account_helper::SignInSecondaryAccount(
+  // Set up Sync in transport mode for an unconsented account.
+  secondary_account_helper::SignInUnconsentedAccount(
       profile(), &test_url_loader_factory_, "user@email.com");
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
@@ -1453,8 +1488,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1U, GetCreditCardCloudTokenData(account_data).size());
   EXPECT_EQ(0U, GetCreditCardCloudTokenData(profile_data).size());
 
-  // Simulate the user opting in to full Sync: First, make the account primary.
-  secondary_account_helper::MakeAccountPrimary(profile(), "user@email.com");
+  // Simulate the user opting in to full Sync.
+  secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
 
   // Now start actually configuring Sync.
   GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);

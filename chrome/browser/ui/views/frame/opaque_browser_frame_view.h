@@ -198,6 +198,15 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
 
   void UpdateCaptionButtonPlaceholderContainerBackground();
 
+#if defined(OS_WIN)
+  // Sets caption button's accessible name as its tooltip when it's in a PWA
+  // with window-controls-overlay display override and resets it otherwise. In
+  // this mode, the web contents covers the frame view and so does it's legacy
+  // hwnd which prevent tooltips being shown for the caption buttons. This hwnd
+  // only exists in windows.
+  void UpdateCaptionButtonToolTipsForWindowControlsOverlay();
+#endif
+
   // Our layout manager also calculates various bounds.
   OpaqueBrowserFrameViewLayout* layout_;
 

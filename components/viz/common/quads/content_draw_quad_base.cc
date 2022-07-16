@@ -19,18 +19,18 @@ void ContentDrawQuadBase::SetNew(const SharedQuadState* shared_quad_state,
                                  const gfx::Rect& rect,
                                  const gfx::Rect& visible_rect,
                                  bool needs_blending,
-                                 const gfx::RectF& tex_coord_rect,
-                                 const gfx::Size& texture_size,
-                                 bool is_premultiplied,
-                                 bool nearest_neighbor,
-                                 bool force_anti_aliasing_off) {
+                                 const gfx::RectF& coord_rect,
+                                 const gfx::Size& size,
+                                 bool premultiplied,
+                                 bool nearest,
+                                 bool anti_aliasing_off) {
   DrawQuad::SetAll(shared_quad_state, material, rect, visible_rect,
                    needs_blending);
-  this->tex_coord_rect = tex_coord_rect;
-  this->texture_size = texture_size;
-  this->is_premultiplied = is_premultiplied;
-  this->nearest_neighbor = nearest_neighbor;
-  this->force_anti_aliasing_off = force_anti_aliasing_off;
+  tex_coord_rect = coord_rect;
+  texture_size = size;
+  is_premultiplied = premultiplied;
+  nearest_neighbor = nearest;
+  force_anti_aliasing_off = anti_aliasing_off;
 }
 
 void ContentDrawQuadBase::SetAll(const SharedQuadState* shared_quad_state,
@@ -38,18 +38,18 @@ void ContentDrawQuadBase::SetAll(const SharedQuadState* shared_quad_state,
                                  const gfx::Rect& rect,
                                  const gfx::Rect& visible_rect,
                                  bool needs_blending,
-                                 const gfx::RectF& tex_coord_rect,
-                                 const gfx::Size& texture_size,
-                                 bool is_premultiplied,
-                                 bool nearest_neighbor,
-                                 bool force_anti_aliasing_off) {
+                                 const gfx::RectF& coord_rect,
+                                 const gfx::Size& size,
+                                 bool premultiplied,
+                                 bool nearest,
+                                 bool anti_aliasing_off) {
   DrawQuad::SetAll(shared_quad_state, material, rect, visible_rect,
                    needs_blending);
-  this->tex_coord_rect = tex_coord_rect;
-  this->texture_size = texture_size;
-  this->is_premultiplied = is_premultiplied;
-  this->nearest_neighbor = nearest_neighbor;
-  this->force_anti_aliasing_off = force_anti_aliasing_off;
+  tex_coord_rect = coord_rect;
+  texture_size = size;
+  is_premultiplied = premultiplied;
+  nearest_neighbor = nearest;
+  force_anti_aliasing_off = anti_aliasing_off;
 }
 
 void ContentDrawQuadBase::ExtendValue(

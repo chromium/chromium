@@ -10,7 +10,7 @@ import static org.chromium.components.messages.MessageBannerProperties.DESCRIPTI
 import static org.chromium.components.messages.MessageBannerProperties.ICON;
 import static org.chromium.components.messages.MessageBannerProperties.ICON_RESOURCE_ID;
 import static org.chromium.components.messages.MessageBannerProperties.ICON_TINT_COLOR;
-import static org.chromium.components.messages.MessageBannerProperties.ON_SECONDARY_ACTION;
+import static org.chromium.components.messages.MessageBannerProperties.ON_SECONDARY_BUTTON_CLICK;
 import static org.chromium.components.messages.MessageBannerProperties.ON_TOUCH_RUNNABLE;
 import static org.chromium.components.messages.MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER;
 import static org.chromium.components.messages.MessageBannerProperties.PRIMARY_BUTTON_TEXT;
@@ -61,8 +61,8 @@ public class MessageBannerViewBinder {
             view.setSecondaryButtonMenuText(model.get(SECONDARY_BUTTON_MENU_TEXT));
         } else if (propertyKey == SECONDARY_ICON_CONTENT_DESCRIPTION) {
             view.setSecondaryIconContentDescription(model.get(SECONDARY_ICON_CONTENT_DESCRIPTION));
-        } else if (propertyKey == ON_SECONDARY_ACTION) {
-            view.setSecondaryActionCallback(model.get(ON_SECONDARY_ACTION));
+        } else if (propertyKey == ON_SECONDARY_BUTTON_CLICK) {
+            view.setSecondaryActionCallback(model.get(ON_SECONDARY_BUTTON_CLICK));
         } else if (propertyKey == ON_TOUCH_RUNNABLE) {
             Runnable runnable = model.get(ON_TOUCH_RUNNABLE);
             if (runnable == null) {

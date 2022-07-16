@@ -7,6 +7,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/titled_url_match.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -16,10 +18,14 @@
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_cell.h"
+#import "ios/chrome/browser/ui/commands/show_signin_command.h"
+#import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
+#import "net/base/mac/url_conversions.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -90,12 +96,6 @@
               ->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
-+ (id<GREYMatcher>)identityCellMatcherForEmail:(NSString*)email {
-  return grey_allOf(grey_accessibilityID(email),
-                    grey_kindOfClass([TableViewIdentityCell class]),
-                    grey_sufficientlyVisible(), nil);
-}
-
 + (BOOL)hasPrimaryIdentity {
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
@@ -112,6 +112,34 @@
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   authentication_service->SignOut(signin_metrics::SIGNOUT_TEST,
                                   /*force_clear_browsing_data=*/false, nil);
+}
+
++ (void)triggerReauthDialogWithFakeIdentity:(FakeChromeIdentity*)identity {
+  FakeChromeIdentityInteractionManager.identity = identity;
+  std::string emailAddress = base::SysNSStringToUTF8(identity.userEmail);
+  PrefService* prefService =
+      chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  prefService->SetString(prefs::kGoogleServicesLastUsername, emailAddress);
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AUTHENTICATION_OPERATION_REAUTHENTICATE
+            accessPoint:signin_metrics::AccessPoint::
+                            ACCESS_POINT_RESIGNIN_INFOBAR];
+  UIViewController* baseViewController =
+      chrome_test_util::GetActiveViewController();
+  SceneController* sceneController =
+      chrome_test_util::GetForegroundActiveSceneController();
+  [sceneController showSignin:command baseViewController:baseViewController];
+}
+
++ (void)triggerConsistencyPromoSigninDialog {
+  NSURL* url = [NSURL URLWithString:@"http://www.example.com"];
+  const GURL gURL = net::GURLWithNSURL(url);
+  UIViewController* baseViewController =
+      chrome_test_util::GetActiveViewController();
+  SceneController* sceneController =
+      chrome_test_util::GetForegroundActiveSceneController();
+  [sceneController showConsistencyPromoFromViewController:baseViewController
+                                                      URL:gURL];
 }
 
 @end

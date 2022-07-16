@@ -14,10 +14,11 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_export.h"
+#include "media/base/svc_scalability_mode.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
@@ -30,6 +31,16 @@ namespace media {
 class BitstreamBuffer;
 class VideoFrame;
 
+//  Metadata for a H264 bitstream buffer.
+//  |temporal_idx|  indicates the temporal index for this frame.
+//  |layer_sync|    is true iff this frame has |temporal_idx| > 0 and does NOT
+//                  reference any reference buffer containing a frame with
+//                  temporal_idx > 0.
+struct MEDIA_EXPORT H264Metadata final {
+  uint8_t temporal_idx = 0;
+  bool layer_sync = false;
+};
+
 //  Metadata for a VP8 bitstream buffer.
 //  |non_reference| is true iff this frame does not update any reference buffer,
 //                  meaning dropping this frame still results in a decodable
@@ -39,10 +50,9 @@ class VideoFrame;
 //                  reference any reference buffer containing a frame with
 //                  temporal_idx > 0.
 struct MEDIA_EXPORT Vp8Metadata final {
-  Vp8Metadata();
-  bool non_reference;
-  uint8_t temporal_idx;
-  bool layer_sync;
+  bool non_reference = false;
+  uint8_t temporal_idx = 0;
+  bool layer_sync = false;
 };
 
 // Metadata for a VP9 bitstream buffer, this struct resembles
@@ -54,8 +64,7 @@ struct MEDIA_EXPORT Vp9Metadata final {
   Vp9Metadata(const Vp9Metadata&);
 
   // True iff this layer frame is dependent on previously coded frame(s).
-  // TODO: rename |has_reference| to |inter_pic_predicted| follow webrtc.
-  bool has_reference = false;
+  bool inter_pic_predicted = false;
   // True iff this frame only references TL0 frames.
   bool temporal_up_switch = false;
   // True iff frame is referenced by upper spatial layer frame.
@@ -97,8 +106,9 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   bool key_frame;
   base::TimeDelta timestamp;
 
-  // Either |vp8| or |vp9| may be set, but not both of them. Presumably, it's
-  // also possible for none of them to be set.
+  // |h264|, |vp8| or |vp9| may be set, but not multiple of them. Presumably,
+  // it's also possible for none of them to be set.
+  absl::optional<H264Metadata> h264;
   absl::optional<Vp8Metadata> vp8;
   absl::optional<Vp9Metadata> vp9;
 };
@@ -109,18 +119,21 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   // Specification of an encoding profile supported by an encoder.
   struct MEDIA_EXPORT SupportedProfile {
     SupportedProfile();
-    SupportedProfile(VideoCodecProfile profile,
-                     const gfx::Size& max_resolution,
-                     uint32_t max_framerate_numerator = 0u,
-                     uint32_t max_framerate_denominator = 1u);
-    SupportedProfile(const SupportedProfile& other) = default;
+    SupportedProfile(
+        VideoCodecProfile profile,
+        const gfx::Size& max_resolution,
+        uint32_t max_framerate_numerator = 0u,
+        uint32_t max_framerate_denominator = 1u,
+        const std::vector<SVCScalabilityMode>& scalability_modes = {});
+    SupportedProfile(const SupportedProfile& other);
     SupportedProfile& operator=(const SupportedProfile& other) = default;
     ~SupportedProfile();
     VideoCodecProfile profile;
     gfx::Size min_resolution;
     gfx::Size max_resolution;
-    uint32_t max_framerate_numerator;
-    uint32_t max_framerate_denominator;
+    uint32_t max_framerate_numerator{0};
+    uint32_t max_framerate_denominator{0};
+    std::vector<SVCScalabilityMode> scalability_modes;
   };
   using SupportedProfiles = std::vector<SupportedProfile>;
   using FlushCallback = base::OnceCallback<void(bool)>;
@@ -251,10 +264,8 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // Indicates the inter layer prediction mode for SVC encoding.
     InterLayerPredMode inter_layer_pred;
 
-    // Currently it's Mac only! This flag forces Mac encoder to enforce low
-    // latency mode. Initialize() will fail if the system can't do it for some
-    // reason. See VTVideoEncodeAccelerator::require_low_delay_ for more
-    // details.
+    // This flag forces the encoder to use low latency mode, suitable for
+    // RTC use cases.
     bool require_low_delay = true;
   };
 
@@ -309,6 +320,14 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   // Returns a list of the supported codec profiles of the video encoder. This
   // can be called before Initialize().
   virtual SupportedProfiles GetSupportedProfiles() = 0;
+
+  // Returns a list of the supported codec profiles of the video encoder,
+  // similar to GetSupportedProfiles(), but this function only populates:
+  // codec, framerate range and resolution range.
+  //
+  // Populating things like SVC modes can take a lot of time and they are
+  // not always used. See https://crbug.com/1263196
+  virtual SupportedProfiles GetSupportedProfilesLight();
 
   // Initializes the video encoder with specific configuration.  Called once per
   // encoder construction.  This call is synchronous and returns true iff
@@ -387,6 +406,8 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   virtual ~VideoEncodeAccelerator();
 };
 
+MEDIA_EXPORT bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,
+                             const VideoEncodeAccelerator::SupportedProfile& r);
 MEDIA_EXPORT bool operator==(const Vp8Metadata& l, const Vp8Metadata& r);
 MEDIA_EXPORT bool operator==(const Vp9Metadata& l, const Vp9Metadata& r);
 MEDIA_EXPORT bool operator==(const BitstreamBufferMetadata& l,

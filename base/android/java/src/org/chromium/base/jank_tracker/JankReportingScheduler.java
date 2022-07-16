@@ -9,6 +9,8 @@ import android.os.HandlerThread;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.TraceEvent;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -17,6 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 class JankReportingScheduler {
     private static final long PERIODIC_METRIC_DELAY_MS = 30_000;
+    private static final long TRACE_EVENT_TRACK_ID = 84186319646187624L;
     private final FrameMetricsStore mFrameMetricsStore;
 
     JankReportingScheduler(FrameMetricsStore frameMetricsStore) {
@@ -41,12 +44,21 @@ class JankReportingScheduler {
     private Handler mHandler;
     private final AtomicBoolean mIsPeriodicReporterLooping = new AtomicBoolean(false);
 
+    // The string added is a static string.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     void startTrackingScenario(@JankScenario int scenario) {
+        // Make a unique ID for each scenario for tracing.
+        TraceEvent.startAsync("JankCUJ:" + JankMetricUMARecorder.scenarioToString(scenario),
+                TRACE_EVENT_TRACK_ID + scenario);
         getOrCreateHandler().post(new JankReportingRunnable(
                 mFrameMetricsStore, scenario, /* isStartingTracking= */ true));
     }
 
+    // The string added is a static string.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     void finishTrackingScenario(@JankScenario int scenario) {
+        TraceEvent.finishAsync("JankCUJ:" + JankMetricUMARecorder.scenarioToString(scenario),
+                TRACE_EVENT_TRACK_ID + scenario);
         getOrCreateHandler().post(new JankReportingRunnable(
                 mFrameMetricsStore, scenario, /* isStartingTracking= */ false));
     }

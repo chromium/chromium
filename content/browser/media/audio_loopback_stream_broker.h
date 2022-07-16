@@ -7,7 +7,6 @@
 
 #include <cstdint>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/media/audio_muting_session.h"
 #include "content/browser/media/audio_stream_broker.h"
@@ -47,6 +46,10 @@ class CONTENT_EXPORT AudioLoopbackStreamBroker final
       mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
           renderer_factory_client);
 
+  AudioLoopbackStreamBroker(const AudioLoopbackStreamBroker&) = delete;
+  AudioLoopbackStreamBroker& operator=(const AudioLoopbackStreamBroker&) =
+      delete;
+
   ~AudioLoopbackStreamBroker() final;
 
   // Creates the stream.
@@ -81,8 +84,6 @@ class CONTENT_EXPORT AudioLoopbackStreamBroker final
   mojo::PendingReceiver<media::mojom::AudioInputStreamClient> client_receiver_;
 
   base::WeakPtrFactory<AudioLoopbackStreamBroker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioLoopbackStreamBroker);
 };
 
 }  // namespace content

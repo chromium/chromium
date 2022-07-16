@@ -7,10 +7,10 @@
 
 #include <memory>
 
+#include "ash/components/settings/timezone_settings.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scoped_wake_lock.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "services/device/public/mojom/wake_lock.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -21,7 +21,7 @@ namespace policy {
 // manages recurring reboots based on the policy. Reboots are only applied if
 // the device is in the kiosk mode.
 class DeviceScheduledRebootHandler
-    : public chromeos::system::TimezoneSettings::Observer {
+    : public ash::system::TimezoneSettings::Observer {
  public:
   explicit DeviceScheduledRebootHandler(
       ash::CrosSettings* cros_settings,
@@ -32,7 +32,7 @@ class DeviceScheduledRebootHandler
   ~DeviceScheduledRebootHandler() override;
 
   // TODO(https://crbug.com/1228718): Move Timezone observation to
-  // ScheduledTaskExecutor. chromeos::system::TimezoneSettings::Observer
+  // ScheduledTaskExecutor. ash::system::TimezoneSettings::Observer
   // implementation.
   void TimezoneChanged(const icu::TimeZone& time_zone) override;
 

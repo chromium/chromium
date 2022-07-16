@@ -34,6 +34,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "cc/input/overscroll_behavior.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
@@ -66,6 +67,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void ChromeDestroyed() override;
   void SetWindowRect(const IntRect&, LocalFrame&) override;
   IntRect RootWindowRect(LocalFrame&) override;
+  void DidAccessInitialMainDocument() override;
   void FocusPage() override;
   void DidFocusPage() override;
   bool CanTakeFocus(mojom::blink::FocusType) override;
@@ -159,6 +161,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                                  const String&,
                                  TextDirection,
                                  const gfx::Rect&) override;
+  void ClearKeyboardTriggeredTooltip(LocalFrame&) override;
   void DispatchViewportPropertiesDidChange(
       const ViewportDescription&) const override;
   void PrintDelegate(LocalFrame*) override;
@@ -177,9 +180,6 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void SetEventListenerProperties(LocalFrame*,
                                   cc::EventListenerClass,
                                   cc::EventListenerProperties) override;
-  cc::EventListenerProperties EventListenerProperties(
-      LocalFrame*,
-      cc::EventListenerClass) const override;
   // Informs client about the existence of handlers for scroll events so
   // appropriate scroll optimizations can be chosen.
   void SetHasScrollEventHandlers(LocalFrame*, bool has_event_handlers) override;

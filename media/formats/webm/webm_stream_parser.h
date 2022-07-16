@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/byte_queue.h"
@@ -24,6 +23,10 @@ class WebMClusterParser;
 class MEDIA_EXPORT WebMStreamParser : public StreamParser {
  public:
   WebMStreamParser();
+
+  WebMStreamParser(const WebMStreamParser&) = delete;
+  WebMStreamParser& operator=(const WebMStreamParser&) = delete;
+
   ~WebMStreamParser() override;
 
   // StreamParser implementation.
@@ -86,8 +89,6 @@ class MEDIA_EXPORT WebMStreamParser : public StreamParser {
 
   std::unique_ptr<WebMClusterParser> cluster_parser_;
   ByteQueue byte_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMStreamParser);
 };
 
 }  // namespace media

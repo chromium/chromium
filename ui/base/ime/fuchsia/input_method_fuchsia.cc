@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/fuchsia/process_context.h"
+#include "base/logging.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -54,6 +55,8 @@ ui::EventDispatchDetails InputMethodFuchsia::DispatchKeyEvent(
 }
 
 void InputMethodFuchsia::CancelComposition(const TextInputClient* client) {
+  DVLOG(1) << __func__;
+
   if (virtual_keyboard_controller_) {
     // FIDL asynchronicity makes it impossible to know whether a recent
     // visibility update might be in flight, so always call Dismiss.
@@ -62,12 +65,18 @@ void InputMethodFuchsia::CancelComposition(const TextInputClient* client) {
 }
 
 void InputMethodFuchsia::OnTextInputTypeChanged(const TextInputClient* client) {
+  DVLOG(1) << __func__;
+
   InputMethodBase::OnTextInputTypeChanged(client);
 
   if (!virtual_keyboard_controller_)
     return;
 
-  if (IsTextInputTypeNone()) {
+  if (!IsTextInputClientFocused(client))
+    return;
+
+  if (client->GetTextInputType() == TEXT_INPUT_TYPE_NONE ||
+      client->GetTextInputMode() == TEXT_INPUT_MODE_NONE) {
     virtual_keyboard_controller_->DismissVirtualKeyboard();
   } else {
     virtual_keyboard_controller_->UpdateTextType();

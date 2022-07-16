@@ -36,6 +36,44 @@ TEST_F(StyleVariablesTest, Copy) {
   EXPECT_EQ(vars1, vars2);
 }
 
+TEST_F(StyleVariablesTest, Assignment) {
+  auto foo_data = css_test_helpers::CreateVariableData("foo");
+  const CSSValue* foo_value = css_test_helpers::CreateCustomIdent("foo");
+
+  StyleVariables vars1;
+  vars1.SetData("--x", foo_data);
+  vars1.SetValue("--x", foo_value);
+  EXPECT_EQ(foo_data, vars1.GetData("--x").value_or(nullptr));
+  EXPECT_EQ(foo_value, vars1.GetValue("--x").value_or(nullptr));
+
+  StyleVariables vars2;
+  EXPECT_FALSE(vars2.GetData("--x").has_value());
+  EXPECT_FALSE(vars2.GetValue("--x").has_value());
+
+  vars2.SetData("--y", foo_data);
+  vars2.SetValue("--y", foo_value);
+  EXPECT_EQ(foo_data, vars2.GetData("--y").value_or(nullptr));
+  EXPECT_EQ(foo_value, vars2.GetValue("--y").value_or(nullptr));
+
+  vars2 = vars1;
+  EXPECT_TRUE(vars2.GetData("--x").has_value());
+  EXPECT_TRUE(vars2.GetValue("--x").has_value());
+  EXPECT_FALSE(vars2.GetData("--y").has_value());
+  EXPECT_FALSE(vars2.GetValue("--y").has_value());
+  EXPECT_EQ(vars1, vars2);
+
+  vars2.SetData("--z", foo_data);
+  vars2.SetValue("--z", foo_value);
+  EXPECT_EQ(foo_data, vars2.GetData("--z").value_or(nullptr));
+  EXPECT_EQ(foo_value, vars2.GetValue("--z").value_or(nullptr));
+
+  // Should not affect vars1:
+  EXPECT_FALSE(vars1.GetData("--y").has_value());
+  EXPECT_FALSE(vars1.GetValue("--y").has_value());
+  EXPECT_FALSE(vars1.GetData("--z").has_value());
+  EXPECT_FALSE(vars1.GetValue("--z").has_value());
+}
+
 TEST_F(StyleVariablesTest, GetNames) {
   StyleVariables vars;
   vars.SetData("--x", css_test_helpers::CreateVariableData("foo"));

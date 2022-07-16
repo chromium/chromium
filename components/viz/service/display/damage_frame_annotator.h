@@ -10,7 +10,7 @@
 #include "components/viz/service/display/surface_aggregator.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace viz {
 
@@ -21,6 +21,10 @@ class AggregatedRenderPass;
 class DamageFrameAnnotator : public SurfaceAggregator::FrameAnnotator {
  public:
   DamageFrameAnnotator();
+
+  DamageFrameAnnotator(const DamageFrameAnnotator&) = delete;
+  DamageFrameAnnotator& operator=(const DamageFrameAnnotator&) = delete;
+
   ~DamageFrameAnnotator() override;
 
   // SurfaceAggregator::FrameAnnotator implementation.
@@ -41,8 +45,6 @@ class DamageFrameAnnotator : public SurfaceAggregator::FrameAnnotator {
   void AnnotateRootRenderPass(AggregatedRenderPass* render_pass);
 
   std::vector<AnnotationData> annotations_;
-
-  DISALLOW_COPY_AND_ASSIGN(DamageFrameAnnotator);
 };
 
 }  // namespace viz

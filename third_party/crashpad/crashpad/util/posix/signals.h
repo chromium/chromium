@@ -19,7 +19,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 
 namespace crashpad {
 
@@ -56,6 +55,9 @@ class Signals {
     // when an object of this class is given static storage duration.
     OldActions() = default;
 
+    OldActions(const OldActions&) = delete;
+    OldActions& operator=(const OldActions&) = delete;
+
     //! \brief Returns a `struct sigaction` structure corresponding to the
     //!     given signal.
     //!
@@ -66,9 +68,11 @@ class Signals {
     // As a small storage optimization, don’t waste any space on a slot for
     // signal 0, because there is no signal 0.
     struct sigaction actions_[NSIG - 1];
-
-    DISALLOW_COPY_AND_ASSIGN(OldActions);
   };
+
+  Signals() = delete;
+  Signals(const Signals&) = delete;
+  Signals& operator=(const Signals&) = delete;
 
   //! \brief Installs a new signal handler.
   //!
@@ -235,9 +239,6 @@ class Signals {
   //!
   //! \note This function is safe to call from a signal handler.
   static bool IsTerminateSignal(int sig);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Signals);
 };
 
 }  // namespace crashpad

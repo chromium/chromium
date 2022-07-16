@@ -37,6 +37,10 @@ class WebSocket;
 class WebSocketFactory final {
  public:
   explicit WebSocketFactory(NetworkContext* context);
+
+  WebSocketFactory(const WebSocketFactory&) = delete;
+  WebSocketFactory& operator=(const WebSocketFactory&) = delete;
+
   ~WebSocketFactory();
 
   void CreateWebSocket(
@@ -79,8 +83,6 @@ class WebSocketFactory final {
 
   // |context_| outlives this object.
   NetworkContext* const context_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketFactory);
 };
 
 }  // namespace network

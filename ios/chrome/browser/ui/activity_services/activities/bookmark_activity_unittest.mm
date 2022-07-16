@@ -121,7 +121,7 @@ TEST_F(BookmarkActivityTest, PerformActivity_BookmarkAddCommand) {
   BookmarkActivity* activity = CreateActivity(testUrl);
 
   [[mocked_handler_ expect]
-      bookmarkPage:[OCMArg checkWithBlock:^BOOL(BookmarkAddCommand* value) {
+      bookmark:[OCMArg checkWithBlock:^BOOL(BookmarkAddCommand* value) {
         EXPECT_EQ(testUrl, value.URLs.firstObject.URL);
         EXPECT_EQ(kTestTitle, value.URLs.firstObject.title);
         return YES;

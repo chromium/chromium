@@ -98,8 +98,9 @@
                                        options:0
                                          error:&error];
   DCHECK(!error) << base::SysNSStringToUTF8(error.description);
-  NSSet* classes = [NSSet setWithObjects:[ArchivableCredential class],
-                                         [NSMutableDictionary class], nil];
+  NSSet* classes =
+      [NSSet setWithObjects:[ArchivableCredential class],
+                            [NSMutableDictionary class], [NSString class], nil];
   NSMutableDictionary<NSString*, ArchivableCredential*>* dictionary =
       [NSKeyedUnarchiver unarchivedObjectOfClasses:classes
                                           fromData:data

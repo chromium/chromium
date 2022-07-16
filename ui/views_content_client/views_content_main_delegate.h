@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/app/content_main_delegate.h"
 #include "content/shell/common/shell_content_client.h"
 
@@ -19,6 +18,10 @@ class ViewsContentClient;
 class ViewsContentMainDelegate : public content::ContentMainDelegate {
  public:
   explicit ViewsContentMainDelegate(ViewsContentClient* views_content_client);
+
+  ViewsContentMainDelegate(const ViewsContentMainDelegate&) = delete;
+  ViewsContentMainDelegate& operator=(const ViewsContentMainDelegate&) = delete;
+
   ~ViewsContentMainDelegate() override;
 
   // content::ContentMainDelegate implementation
@@ -32,8 +35,6 @@ class ViewsContentMainDelegate : public content::ContentMainDelegate {
   std::unique_ptr<ViewsContentBrowserClient> browser_client_;
   content::ShellContentClient content_client_;
   ViewsContentClient* views_content_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsContentMainDelegate);
 };
 
 }  // namespace ui

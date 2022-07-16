@@ -22,6 +22,10 @@
 class IPCChannelMojoTestBase : public testing::Test {
  public:
   IPCChannelMojoTestBase();
+
+  IPCChannelMojoTestBase(const IPCChannelMojoTestBase&) = delete;
+  IPCChannelMojoTestBase& operator=(const IPCChannelMojoTestBase&) = delete;
+
   ~IPCChannelMojoTestBase() override;
 
   void Init(const std::string& test_client_name);
@@ -50,8 +54,6 @@ class IPCChannelMojoTestBase : public testing::Test {
   mojo::core::test::MultiprocessTestHelper helper_;
 
   std::unique_ptr<IPC::Channel> channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(IPCChannelMojoTestBase);
 };
 
 class IpcChannelMojoTestClient {

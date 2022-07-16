@@ -10,8 +10,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
-#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -27,11 +27,12 @@ class PrefRegistrySyncable;
 
 namespace web_app {
 
-// Forward declarations of generalized interfaces.
-class AppRegistryController;
-class AppIconManager;
+class WebAppDatabaseFactory;
+class WebAppMover;
+class WebAppSyncBridge;
+class WebAppIconManager;
 class PreinstalledWebAppManager;
-class InstallFinalizer;
+class WebAppInstallFinalizer;
 class ManifestUpdateManager;
 class SystemWebAppManager;
 class WebAppAudioFocusIdMap;
@@ -39,10 +40,6 @@ class WebAppInstallManager;
 class WebAppPolicyManager;
 class WebAppUiManager;
 class OsIntegrationManager;
-
-// Forward declarations for new extension-independent subsystems.
-class WebAppDatabaseFactory;
-class WebAppMover;
 
 // Connects Web App features, such as the installation of default and
 // policy-managed web apps, with Profiles (as WebAppProvider is a
@@ -57,7 +54,7 @@ class WebAppMover;
 class WebAppProvider : public KeyedService {
  public:
   // Deprecated: Use GetForWebApps or GetForSystemWebApps instead.
-  static WebAppProvider* Get(Profile* profile);
+  static WebAppProvider* GetDeprecated(Profile* profile);
 
   // On Chrome OS: if Lacros Web App (WebAppsCrosapi) is enabled, returns
   // WebAppProvider in Lacros and nullptr in Ash. Otherwise does the reverse
@@ -70,12 +67,21 @@ class WebAppProvider : public KeyedService {
   // On other platforms, always returns a WebAppProvider.
   static WebAppProvider* GetForSystemWebApps(Profile* profile);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Enables System Web Apps WebAppProvider so we can test SWA features in
-  // Lacros, even we don't have actual SWAs in Lacros. After calling this,
-  // GetForSystemWebApps will return a valid WebAppProvider in Lacros.
-  static void EnableSystemWebAppsInLacrosForTesting();
-#endif
+  // Return the WebAppProvider for the current process. In particular:
+  // In Ash: Returns the WebAppProvider that hosts System Web Apps.
+  // In Lacros and other platforms: Returns the WebAppProvider that hosts
+  // non-system Web Apps.
+  //
+  // Avoid using this function where possible and prefer GetForWebApps or
+  // GetForSystemWebApps which provide a guarantee they are being called from
+  // the correct process. Only use this if the calling code is shared between
+  // Ash and Lacros and expects the PWA WebAppProvider in Lacros and the SWA
+  // WebAppProvider in Ash.
+  static WebAppProvider* GetForLocalAppsUnchecked(Profile* profile);
+
+  // Return the WebAppProvider for tests, regardless of whether this is running
+  // in Lacros/Ash. Blocks if the web app registry is not yet ready.
+  static WebAppProvider* GetForTest(Profile* profile);
 
   static WebAppProvider* GetForWebContents(content::WebContents* web_contents);
 
@@ -94,12 +100,13 @@ class WebAppProvider : public KeyedService {
 
   // The app registry model.
   WebAppRegistrar& registrar();
+  const WebAppRegistrar& registrar() const;
   // The app registry controller.
-  AppRegistryController& registry_controller();
-  // UIs can use InstallManager for user-initiated Web Apps install.
-  InstallManager& install_manager();
+  WebAppSyncBridge& sync_bridge();
+  // UIs can use WebAppInstallManager for user-initiated Web Apps install.
+  WebAppInstallManager& install_manager();
   // Implements persistence for Web Apps install.
-  InstallFinalizer& install_finalizer();
+  WebAppInstallFinalizer& install_finalizer();
   // Keeps app metadata up to date with site manifests.
   ManifestUpdateManager& manifest_update_manager();
   // Clients can use ExternallyManagedAppManager to install, uninstall, and
@@ -114,7 +121,7 @@ class WebAppProvider : public KeyedService {
   WebAppAudioFocusIdMap& audio_focus_id_map();
 
   // Implements fetching of app icons.
-  AppIconManager& icon_manager();
+  WebAppIconManager& icon_manager();
 
   SystemWebAppManager& system_web_app_manager();
 
@@ -140,30 +147,24 @@ class WebAppProvider : public KeyedService {
   void WaitForExtensionSystemReady();
   void OnExtensionSystemReady();
 
-  // Create subsystems that work with either BMO and Extension backends.
-  void CreateCommonSubsystems(Profile* profile);
-  // Create extension-independent subsystems.
-  void CreateWebAppsSubsystems(Profile* profile);
+  void CreateSubsystems(Profile* profile);
 
   // Wire together subsystems but do not start them (yet).
   void ConnectSubsystems();
 
-  // Start registry controller. All other subsystems depend on it.
-  void StartRegistryController();
-  void OnRegistryControllerReady();
+  // Start sync bridge. All other subsystems depend on it.
+  void StartSyncBridge();
+  void OnSyncBridgeReady();
 
   void CheckIsConnected() const;
 
-  // New extension-independent subsystems:
   std::unique_ptr<WebAppDatabaseFactory> database_factory_;
   std::unique_ptr<WebAppMover> web_app_mover_;
-
-  // Generalized subsystems:
   std::unique_ptr<WebAppRegistrar> registrar_;
-  std::unique_ptr<AppRegistryController> registry_controller_;
+  std::unique_ptr<WebAppSyncBridge> sync_bridge_;
   std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager_;
-  std::unique_ptr<AppIconManager> icon_manager_;
-  std::unique_ptr<InstallFinalizer> install_finalizer_;
+  std::unique_ptr<WebAppIconManager> icon_manager_;
+  std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
   std::unique_ptr<ManifestUpdateManager> manifest_update_manager_;
   std::unique_ptr<ExternallyManagedAppManager> externally_managed_app_manager_;
   std::unique_ptr<SystemWebAppManager> system_web_app_manager_;

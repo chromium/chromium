@@ -413,7 +413,7 @@ TEST_F(TraceEventAnalyzerTest, StringPattern) {
 TEST_F(TraceEventAnalyzerTest, BeginEndDuration) {
   ManualSetUp();
 
-  const base::TimeDelta kSleepTime = base::TimeDelta::FromMilliseconds(200);
+  const base::TimeDelta kSleepTime = base::Milliseconds(200);
   // We will search for events that have a duration of greater than 90% of the
   // sleep time, so that there is no flakiness.
   int64_t duration_cutoff_us = (kSleepTime.InMicroseconds() * 9) / 10;
@@ -460,7 +460,7 @@ TEST_F(TraceEventAnalyzerTest, BeginEndDuration) {
 TEST_F(TraceEventAnalyzerTest, CompleteDuration) {
   ManualSetUp();
 
-  const base::TimeDelta kSleepTime = base::TimeDelta::FromMilliseconds(200);
+  const base::TimeDelta kSleepTime = base::Milliseconds(200);
   // We will search for events that have a duration of greater than 90% of the
   // sleep time, so that there is no flakiness.
   int64_t duration_cutoff_us = (kSleepTime.InMicroseconds() * 9) / 10;

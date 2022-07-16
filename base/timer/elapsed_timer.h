@@ -15,6 +15,10 @@ namespace base {
 class BASE_EXPORT ElapsedTimer {
  public:
   ElapsedTimer();
+
+  ElapsedTimer(const ElapsedTimer&) = delete;
+  ElapsedTimer& operator=(const ElapsedTimer&) = delete;
+
   ElapsedTimer(ElapsedTimer&& other);
 
   void operator=(ElapsedTimer&& other);
@@ -27,14 +31,15 @@ class BASE_EXPORT ElapsedTimer {
 
  private:
   TimeTicks begin_;
-
-  DISALLOW_COPY_AND_ASSIGN(ElapsedTimer);
 };
 
 // A simple wrapper around ThreadTicks::Now().
 class BASE_EXPORT ElapsedThreadTimer {
  public:
   ElapsedThreadTimer();
+
+  ElapsedThreadTimer(const ElapsedThreadTimer&) = delete;
+  ElapsedThreadTimer& operator=(const ElapsedThreadTimer&) = delete;
 
   // Returns the ThreadTicks time elapsed since object construction.
   // Only valid if |is_supported()| returns true, otherwise returns TimeDelta().
@@ -45,8 +50,6 @@ class BASE_EXPORT ElapsedThreadTimer {
  private:
   const bool is_supported_;
   const ThreadTicks begin_;
-
-  DISALLOW_COPY_AND_ASSIGN(ElapsedThreadTimer);
 };
 
 // Whenever there's a ScopedMockElapsedTimersForTest in scope,
@@ -55,17 +58,19 @@ class BASE_EXPORT ElapsedThreadTimer {
 // records timing histograms. It enables such tests to observe reliable timings.
 class BASE_EXPORT ScopedMockElapsedTimersForTest {
  public:
-  static constexpr TimeDelta kMockElapsedTime =
-      TimeDelta::FromMilliseconds(1337);
+  static constexpr TimeDelta kMockElapsedTime = Milliseconds(1337);
 
   // ScopedMockElapsedTimersForTest is not thread-safe (it must be instantiated
   // in a test before other threads begin using ElapsedTimers; and it must
   // conversely outlive any usage of ElapsedTimer in that test).
   ScopedMockElapsedTimersForTest();
-  ~ScopedMockElapsedTimersForTest();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedMockElapsedTimersForTest);
+  ScopedMockElapsedTimersForTest(const ScopedMockElapsedTimersForTest&) =
+      delete;
+  ScopedMockElapsedTimersForTest& operator=(
+      const ScopedMockElapsedTimersForTest&) = delete;
+
+  ~ScopedMockElapsedTimersForTest();
 };
 
 }  // namespace base

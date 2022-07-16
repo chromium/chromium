@@ -23,9 +23,9 @@ struct BLINK_COMMON_EXPORT
     return data.brand;
   }
 
-  static const std::string& major_version(
+  static const std::string& version(
       const ::blink::UserAgentBrandVersion& data) {
-    return data.major_version;
+    return data.version;
   }
 
   static bool Read(blink::mojom::UserAgentBrandVersionDataView data,
@@ -38,6 +38,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::UserAgentMetadataDataView,
   static const blink::UserAgentBrandList& brand_version_list(
       const ::blink::UserAgentMetadata& data) {
     return data.brand_version_list;
+  }
+
+  static const blink::UserAgentBrandList& brand_full_version_list(
+      const ::blink::UserAgentMetadata& data) {
+    return data.brand_full_version_list;
   }
 
   static const std::string& full_version(

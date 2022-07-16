@@ -87,6 +87,6 @@ void DistillabilityDriver::OnDistillability(
     observer.OnResult(result);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(DistillabilityDriver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(DistillabilityDriver);
 
 }  // namespace dom_distiller

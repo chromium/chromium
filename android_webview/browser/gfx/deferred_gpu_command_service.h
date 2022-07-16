@@ -22,6 +22,10 @@ class DeferredGpuCommandService : public gpu::CommandBufferTaskExecutor {
  public:
   static DeferredGpuCommandService* GetInstance();
 
+  DeferredGpuCommandService(const DeferredGpuCommandService&) = delete;
+  DeferredGpuCommandService& operator=(const DeferredGpuCommandService&) =
+      delete;
+
   // gpu::CommandBufferTaskExecutor implementation.
   bool ForceVirtualizedGLContexts() const override;
   bool ShouldCreateMemoryTracker() const override;
@@ -46,8 +50,6 @@ class DeferredGpuCommandService : public gpu::CommandBufferTaskExecutor {
   TaskQueueWebView* task_queue_;
   GpuServiceWebView* gpu_service_;
   scoped_refptr<gl::GLShareGroup> share_group_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeferredGpuCommandService);
 };
 
 }  // namespace android_webview

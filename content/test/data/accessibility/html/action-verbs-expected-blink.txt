@@ -11,7 +11,7 @@ rootWebArea name='Action verbs'
 ++++++++staticText name='Button'
 ++++++++++inlineTextBox name='Button'
 ++++++link name='Link' defaultActionVerb=jump
-++++++++staticText name='Link' defaultActionVerb=clickAncestor
+++++++++staticText name='Link'
 ++++++++++inlineTextBox name='Link'
 ++++++textField defaultActionVerb=activate
 ++++++++genericContainer
@@ -33,17 +33,17 @@ rootWebArea name='Action verbs'
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='Summary'
 ++++++++++++++inlineTextBox name='Summary'
-++++++++genericContainer ignored invisible
-++++++++++staticText ignored name='Details'
+++++++++genericContainer ignored
+++++++++++staticText ignored invisible name='Details'
 ++++++popUpButton collapsed value='Pop-up button' defaultActionVerb=open haspopup=menu
 ++++++++menuListPopup invisible
 ++++++++++menuListOption name='Pop-up button' defaultActionVerb=select selected=true
 ++++++genericContainer defaultActionVerb=click
-++++++++staticText name='Div with click handler' defaultActionVerb=clickAncestor
+++++++++staticText name='Div with click handler'
 ++++++++++inlineTextBox name='Div with click handler'
 ++++++group defaultActionVerb=click
 ++++++++paragraph defaultActionVerb=clickAncestor
-++++++++++staticText name='Paragraph with click handler on parent' defaultActionVerb=clickAncestor
+++++++++++staticText name='Paragraph with click handler on parent'
 ++++++++++++inlineTextBox name='Paragraph with click handler on parent'
 ++++++menu
 ++++++++menuItem name='Menu item 1' defaultActionVerb=select
@@ -64,7 +64,14 @@ rootWebArea name='Action verbs'
 ++++++button name='ARIA button with negative tab index' defaultActionVerb=press
 ++++++++staticText name='ARIA button with negative tab index'
 ++++++++++inlineTextBox name='ARIA button with negative tab index'
-++++++genericContainer activedescendantId=button
+++++++genericContainer defaultActionVerb=click activedescendantId=button
 ++++++++button name='ARIA button that is an active descendant' defaultActionVerb=press
 ++++++++++staticText name='ARIA button that is an active descendant'
 ++++++++++++inlineTextBox name='ARIA button that is an active descendant'
+++++++genericContainer defaultActionVerb=click
+++++++++switch name='ARIA switch in clickable container' defaultActionVerb=check checkedState=false
+++++++++++staticText name='ARIA switch in clickable container'
+++++++++++++inlineTextBox name='ARIA switch in clickable container'
+++++++++genericContainer defaultActionVerb=clickAncestor
+++++++++++staticText name='Generic in clickable container'
+++++++++++++inlineTextBox name='Generic in clickable container'

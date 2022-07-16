@@ -47,7 +47,8 @@ class BrowserControlsNavigationStateHandler
                    const GURL& validated_url,
                    int error_code) override;
   void DidChangeVisibleSecurityState() override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void OnRendererUnresponsive(
       content::RenderProcessHost* render_process_host) override;
   void OnRendererResponsive(

@@ -13,8 +13,12 @@ def _CommonChecks(input_api, output_api):
   results.extend(input_api.RunTests(pylint_checks))
 
   # Run the MB unittests.
-  results.extend(input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api, output_api, '.', [ r'^.+_unittest\.py$']))
+  results.extend(
+      input_api.canned_checks.RunUnitTestsInDirectory(input_api,
+                                                      output_api,
+                                                      '.',
+                                                      [r'^.+_unittest\.py$'],
+                                                      skip_shebang_check=True))
 
   # Validate the format of the mb_config.pyl file.
   cmd = [input_api.python_executable, 'mb.py', 'validate']

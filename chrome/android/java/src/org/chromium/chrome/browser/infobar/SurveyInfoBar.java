@@ -16,11 +16,9 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.survey.SurveyController;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarCompactLayout;
@@ -33,15 +31,6 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
  * An {@link InfoBar} that prompts the user to take an optional survey.
  */
 public class SurveyInfoBar extends InfoBar {
-    // The site to pull a survey from.
-    private final String mSiteId;
-
-    // Whether to display the survey as a bottom sheet.
-    private final boolean mShowAsBottomSheet;
-
-    // The display logo to be shown on the survey and this infobar.
-    private final int mDisplayLogoResId;
-
     // The delegate to handle what happens when info bar events are triggered.
     private final SurveyInfoBarDelegate mDelegate;
 
@@ -58,32 +47,23 @@ public class SurveyInfoBar extends InfoBar {
     /**
      * Create and show the {@link SurveyInfoBar}.
      * @param webContents The webcontents to create the {@link InfoBar} around.
-     * @param siteId The id of the site from where the survey will be downloaded.
      * @param surveyInfoBarDelegate The delegate to customize what the infobar will do.
      */
-    public static void showSurveyInfoBar(WebContents webContents, String siteId,
-            boolean showAsBottomSheet, int displayLogoResId,
+    public static void showSurveyInfoBar(WebContents webContents, int displayLogoResId,
             SurveyInfoBarDelegate surveyInfoBarDelegate) {
-        SurveyInfoBarJni.get().create(
-                webContents, siteId, showAsBottomSheet, displayLogoResId, surveyInfoBarDelegate);
+        SurveyInfoBarJni.get().create(webContents, displayLogoResId, surveyInfoBarDelegate);
     }
 
     /**
      * Default constructor.
-     * @param siteId The id of the site from where the survey will be downloaded.
-     * @param showAsBottomSheet Whether the survey should be presented as a bottom sheet or not.
      * @param displayLogoResId Optional resource id of the logo to be displayed on the survey.
      *                         Pass 0 for no logo.
      * @param surveyInfoBarDelegate The delegate to customize what happens when different events in
      *                              SurveyInfoBar are triggered.
      */
-    private SurveyInfoBar(String siteId, boolean showAsBottomSheet, int displayLogoResId,
-            SurveyInfoBarDelegate surveyInfoBarDelegate) {
+    private SurveyInfoBar(int displayLogoResId, SurveyInfoBarDelegate surveyInfoBarDelegate) {
         super(displayLogoResId, 0, null, null);
 
-        mSiteId = siteId;
-        mShowAsBottomSheet = showAsBottomSheet;
-        mDisplayLogoResId = displayLogoResId;
         mDelegate = surveyInfoBarDelegate;
     }
 
@@ -116,7 +96,7 @@ public class SurveyInfoBar extends InfoBar {
         mClickableSpan = new NoUnderlineClickableSpan(layout.getResources(), (widget) -> {
             // Prevent double clicking on the text span.
             if (mClicked) return;
-            showSurvey(tab);
+            showSurvey();
             mClosedByInteraction = true;
         });
 
@@ -128,7 +108,7 @@ public class SurveyInfoBar extends InfoBar {
         prompt.setMovementMethod(LinkMovementMethod.getInstance());
         prompt.setGravity(Gravity.CENTER_VERTICAL);
         ApiCompatibilityUtils.setTextAppearance(prompt, R.style.TextAppearance_TextLarge_Primary);
-        addAccessibilityClickListener(prompt, tab);
+        addAccessibilityClickListener(prompt);
         layout.addContent(prompt, 1f);
     }
 
@@ -140,23 +120,21 @@ public class SurveyInfoBar extends InfoBar {
     }
 
     @CalledByNative
-    private static SurveyInfoBar create(String siteId, boolean showAsBottomSheet,
+    private static SurveyInfoBar create(
             int displayLogoResId, SurveyInfoBarDelegate surveyInfoBarDelegate) {
-        return new SurveyInfoBar(
-                siteId, showAsBottomSheet, displayLogoResId, surveyInfoBarDelegate);
+        return new SurveyInfoBar(displayLogoResId, surveyInfoBarDelegate);
     }
 
     /**
      * Allows the survey infobar to be triggered when talkback is enabled.
      * @param view The view to attach the listener.
-     * @param tab The tab to attach the infobar.
      */
-    private void addAccessibilityClickListener(TextView view, Tab tab) {
+    private void addAccessibilityClickListener(TextView view) {
         view.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mClicked || !ChromeAccessibilityUtil.get().isAccessibilityEnabled()) return;
-                showSurvey(tab);
+                showSurvey();
                 mClosedByInteraction = true;
             }
         });
@@ -175,15 +153,10 @@ public class SurveyInfoBar extends InfoBar {
 
     /**
      * Shows the survey and closes the infobar.
-     * @param tab The tab on which to show the survey.
      */
-    private void showSurvey(Tab tab) {
+    private void showSurvey() {
         mClicked = true;
         mDelegate.onSurveyTriggered();
-
-        // TODO(https://crbug.com/1212754): Move to ChromeSurveyController.
-        SurveyController.getInstance().showSurveyIfAvailable(TabUtils.getActivity(tab), mSiteId,
-                mShowAsBottomSheet, mDisplayLogoResId, mDelegate.getLifecycleDispatcher());
         super.onCloseButtonClicked();
     }
 
@@ -194,8 +167,8 @@ public class SurveyInfoBar extends InfoBar {
 
     @NativeMethods
     interface Natives {
-        void create(WebContents webContents, String siteId, boolean showAsBottomSheet,
-                int displayLogoResId, SurveyInfoBarDelegate surveyInfoBarDelegate);
+        void create(WebContents webContents, int displayLogoResId,
+                SurveyInfoBarDelegate surveyInfoBarDelegate);
         Tab getTab(long nativeSurveyInfoBar, SurveyInfoBar caller);
     }
 }

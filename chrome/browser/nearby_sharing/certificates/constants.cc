@@ -4,13 +4,12 @@
 
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 
-const base::TimeDelta kNearbyShareCertificateValidityPeriod =
-    base::TimeDelta::FromDays(3);
+const base::TimeDelta kNearbyShareCertificateValidityPeriod = base::Days(3);
 const base::TimeDelta kNearbyShareMaxPrivateCertificateValidityBoundOffset =
-    base::TimeDelta::FromHours(2);
+    base::Hours(2);
 const base::TimeDelta
     kNearbySharePublicCertificateValidityBoundOffsetTolerance =
-        base::TimeDelta::FromMinutes(30);
+        base::Minutes(30);
 const size_t kNearbyShareNumPrivateCertificates = 3;
 const size_t kNearbyShareNumBytesAuthenticationTokenHash = 6;
 const size_t kNearbyShareNumBytesAesGcmKey = 32;
@@ -27,4 +26,4 @@ const char kNearbyShareSenderVerificationPrefix = 0x01;
 const char kNearbyShareReceiverVerificationPrefix = 0x02;
 const size_t kNearbyShareCertificateStorageMaxNumInitializeAttempts = 3;
 const base::TimeDelta kNearbySharePublicCertificateDownloadPeriod =
-    base::TimeDelta::FromHours(12);
+    base::Hours(12);

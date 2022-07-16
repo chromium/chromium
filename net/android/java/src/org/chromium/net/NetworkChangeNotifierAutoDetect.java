@@ -1008,7 +1008,11 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         if (onThread()) {
             r.run();
         } else {
-            mHandler.post(r);
+            // Once execution begins on the correct thread, make sure unregister() hasn't
+            // been called in the mean time.
+            mHandler.post(() -> {
+                if (mRegistered) r.run();
+            });
         }
     }
 
@@ -1269,11 +1273,6 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         runOnThread(new Runnable() {
             @Override
             public void run() {
-                // Once execution begins on the correct thread, make sure unregister() hasn't
-                // been called in the mean time. Ignore the broadcast if unregister() was called.
-                if (!mRegistered) {
-                    return;
-                }
                 if (mIgnoreNextBroadcast) {
                     mIgnoreNextBroadcast = false;
                     return;

@@ -8,6 +8,7 @@
 
 #if defined(USE_CUPS)
 #include "printing/metafile.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/printing_context_chromeos.h"
 #endif
 
@@ -17,7 +18,7 @@ bool PrintedDocument::RenderPrintedDocument(PrintingContext* context) {
 #if defined(USE_CUPS)
   DCHECK(context);
 
-  if (context->NewPage() != PrintingContext::OK)
+  if (context->NewPage() != mojom::ResultCode::kSuccess)
     return false;
   {
     base::AutoLock lock(lock_);
@@ -30,7 +31,7 @@ bool PrintedDocument::RenderPrintedDocument(PrintingContext* context) {
       LOG(WARNING) << "Failed to read data from metafile";
     }
   }
-  return context->PageDone() == PrintingContext::OK;
+  return context->PageDone() == mojom::ResultCode::kSuccess;
 #else
   NOTREACHED();
   return false;

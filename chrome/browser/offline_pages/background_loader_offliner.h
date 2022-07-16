@@ -54,6 +54,10 @@ class BackgroundLoaderOffliner
       const OfflinerPolicy* policy,
       OfflinePageModel* offline_page_model,
       std::unique_ptr<LoadTerminationListener> load_termination_listener);
+
+  BackgroundLoaderOffliner(const BackgroundLoaderOffliner&) = delete;
+  BackgroundLoaderOffliner& operator=(const BackgroundLoaderOffliner&) = delete;
+
   ~BackgroundLoaderOffliner() override;
 
   static BackgroundLoaderOffliner* FromWebContents(
@@ -78,7 +82,8 @@ class BackgroundLoaderOffliner
       content::RenderFrameHost* render_frame_host) override;
   void DocumentOnLoadCompletedInMainFrame(
       content::RenderFrameHost* render_frame_host) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void WebContentsDestroyed() override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -195,7 +200,6 @@ class BackgroundLoaderOffliner
   RequestStats stats_[ResourceDataType::RESOURCE_DATA_TYPE_COUNT];
 
   base::WeakPtrFactory<BackgroundLoaderOffliner> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(BackgroundLoaderOffliner);
 };
 
 }  // namespace offline_pages

@@ -20,7 +20,8 @@ namespace csp = chromeos::settings::prefs;
 class OsSyncUtilTest : public testing::Test {
  public:
   OsSyncUtilTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kSyncSettingsCategorization);
     syncer::SyncPrefs::RegisterProfilePrefs(prefs_.registry());
     chromeos::settings::OSSettingsUI::RegisterProfilePrefs(prefs_.registry());
   }
@@ -122,7 +123,8 @@ TEST_F(OsSyncUtilTest, Rollback) {
   {
     // Simulate disabling the feature (e.g. disabling via Finch).
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(chromeos::features::kSplitSettingsSync);
+    feature_list.InitAndDisableFeature(
+        chromeos::features::kSyncSettingsCategorization);
     os_sync_util::MigrateOsSyncPreferences(&prefs_);
 
     // OS sync is marked as not migrated.
@@ -133,7 +135,8 @@ TEST_F(OsSyncUtilTest, Rollback) {
   // Simulate re-enabling the feature.
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+    feature_list.InitAndEnableFeature(
+        chromeos::features::kSyncSettingsCategorization);
     os_sync_util::MigrateOsSyncPreferences(&prefs_);
 
     // OS sync is marked as migrated.

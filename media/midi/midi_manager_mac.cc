@@ -13,9 +13,9 @@
 #include <CoreAudio/HostTime.h>
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/midi/midi_service.h"
 #include "media/midi/task_service.h"
 
@@ -102,7 +102,7 @@ mojom::PortInfo GetPortInfoFromEndpoint(MIDIEndpointRef endpoint) {
 
 base::TimeTicks MIDITimeStampToTimeTicks(MIDITimeStamp timestamp) {
   UInt64 nanoseconds = AudioConvertHostTimeToNanos(timestamp);
-  return base::TimeTicks() + base::TimeDelta::FromNanoseconds(nanoseconds);
+  return base::TimeTicks() + base::Nanoseconds(nanoseconds);
 }
 
 MIDITimeStamp TimeTicksToMIDITimeStamp(base::TimeTicks ticks) {

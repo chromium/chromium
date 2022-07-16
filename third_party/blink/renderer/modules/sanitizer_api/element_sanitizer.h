@@ -11,8 +11,8 @@
 namespace blink {
 
 class Element;
+class ElementSetHTMLOptions;
 class ExceptionState;
-class Sanitizer;
 class ScriptState;
 
 class MODULES_EXPORT ElementSanitizer final {
@@ -20,7 +20,7 @@ class MODULES_EXPORT ElementSanitizer final {
   static void setHTML(ScriptState*,
                       Element&,
                       const String&,
-                      Sanitizer*,
+                      ElementSetHTMLOptions*,
                       ExceptionState&);
 };
 

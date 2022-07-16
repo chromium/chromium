@@ -21,20 +21,31 @@ namespace content {
 
 namespace {
 
+template <BrowserThread::ID thread>
 class JavaInterfaceProviderHolder {
  public:
   JavaInterfaceProviderHolder() {
     mojo::PendingRemote<service_manager::mojom::InterfaceProvider> provider;
     JNIEnv* env = base::android::AttachCurrentThread();
-    Java_InterfaceRegistrarImpl_createInterfaceRegistry(
-        env,
-        provider.InitWithNewPipeAndPassReceiver().PassPipe().release().value());
+    if (thread == BrowserThread::IO) {
+      Java_InterfaceRegistrarImpl_createInterfaceRegistryOnIOThread(
+          env, provider.InitWithNewPipeAndPassReceiver()
+                   .PassPipe()
+                   .release()
+                   .value());
+    } else {
+      Java_InterfaceRegistrarImpl_createInterfaceRegistry(
+          env, provider.InitWithNewPipeAndPassReceiver()
+                   .PassPipe()
+                   .release()
+                   .value());
+    }
     interface_provider_.Bind(std::move(provider));
   }
 
   static JavaInterfaceProviderHolder* GetInstance() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    return base::Singleton<JavaInterfaceProviderHolder>::get();
+    DCHECK_CURRENTLY_ON(thread);
+    return base::Singleton<JavaInterfaceProviderHolder<thread>>::get();
   }
 
   service_manager::InterfaceProvider* GetJavaInterfaces() {
@@ -49,7 +60,13 @@ class JavaInterfaceProviderHolder {
 }  // namespace
 
 service_manager::InterfaceProvider* GetGlobalJavaInterfaces() {
-  return JavaInterfaceProviderHolder::GetInstance()->GetJavaInterfaces();
+  return JavaInterfaceProviderHolder<BrowserThread::UI>::GetInstance()
+      ->GetJavaInterfaces();
+}
+
+service_manager::InterfaceProvider* GetGlobalJavaInterfacesOnIOThread() {
+  return JavaInterfaceProviderHolder<BrowserThread::IO>::GetInstance()
+      ->GetJavaInterfaces();
 }
 
 void BindInterfaceRegistryForWebContents(

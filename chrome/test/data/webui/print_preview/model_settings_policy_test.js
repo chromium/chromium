@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ColorModeRestriction, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexModeRestriction, Margins, MarginsType, PinModeRestriction, Size} from 'chrome://print/print_preview.js';
+import {ColorModeRestriction, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexModeRestriction, Margins, MarginsType, PinModeRestriction, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {assertEquals} from '../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
 
@@ -14,8 +14,7 @@ suite('ModelSettingsPolicyTest', function() {
   /** @type {!PrintPreviewModelElement} */
   let model;
 
-  /** @override */
-  setup(function() {
+  function setupModel() {
     document.body.innerHTML = '';
     model = /** @type {!PrintPreviewModelElement} */ (
         document.createElement('print-preview-model'));
@@ -43,13 +42,9 @@ suite('ModelSettingsPolicyTest', function() {
     model.set(
         'destination.capabilities',
         getCddTemplate(model.destination.id).capabilities);
-  });
+  }
 
   test('color managed', function() {
-    // Remove color capability.
-    let capabilities = getCddTemplate(model.destination.id).capabilities;
-    delete capabilities.printer.color;
-
     [{
       // Policy has no effect, setting unavailable
       colorCap: {option: [{type: 'STANDARD_COLOR', is_default: true}]},
@@ -99,18 +94,37 @@ suite('ModelSettingsPolicyTest', function() {
        expectedAvailable: true,
        expectedManaged: false,
        expectedEnforced: false,
+     },
+     {
+       // Default defined by policy but setting is modifiable (same as the case
+       // above but with swapped defaults).
+       colorCap: {
+         option: [
+           {type: 'STANDARD_MONOCHROME'},
+           {type: 'STANDARD_COLOR', is_default: true}
+         ]
+       },
+       colorDefault: ColorModeRestriction.MONOCHROME,
+       expectedValue: false,
+       expectedAvailable: true,
+       expectedManaged: false,
+       expectedEnforced: false,
      }].forEach(subtestParams => {
-      capabilities = getCddTemplate(model.destination.id).capabilities;
+      setupModel();
+      // Remove color capability.
+      const capabilities = getCddTemplate(model.destination.id).capabilities;
       capabilities.printer.color = subtestParams.colorCap;
       const policies = {
-        allowedColorModes: subtestParams.colorPolicy,
-        defaultColorMode: subtestParams.colorDefault,
+        color: {
+          allowedMode: subtestParams.colorPolicy,
+          defaultMode: subtestParams.colorDefault,
+        }
       };
-      // In practice |capabilities| are always set after |policies| and
-      // observers only check for |capabilities|, so the order is important.
-      model.set('destination.policies', policies);
+
       model.set('destination.capabilities', capabilities);
-      model.applyDestinationSpecificPolicies();
+      model.setPolicySettings(policies);
+      model.applyStickySettings();
+
       assertEquals(subtestParams.expectedValue, model.getSettingValue('color'));
       assertEquals(
           subtestParams.expectedAvailable, model.settings.color.available);
@@ -121,10 +135,6 @@ suite('ModelSettingsPolicyTest', function() {
   });
 
   test('duplex managed', function() {
-    // Remove duplex capability.
-    let capabilities = getCddTemplate(model.destination.id).capabilities;
-    delete capabilities.printer.duplex;
-
     [{
       // Policy has no effect.
       duplexCap: {option: [{type: 'NO_DUPLEX', is_default: true}]},
@@ -206,17 +216,21 @@ suite('ModelSettingsPolicyTest', function() {
        expectedShortEdgeAvailable: true,
        expectedShortEdgeEnforced: false,
      }].forEach(subtestParams => {
-      capabilities = getCddTemplate('FooPrinter').capabilities;
+      setupModel();
+      // Remove duplex capability.
+      const capabilities = getCddTemplate(model.destination.id).capabilities;
       capabilities.printer.duplex = subtestParams.duplexCap;
       const policies = {
-        allowedDuplexModes: subtestParams.duplexPolicy,
-        defaultDuplexMode: subtestParams.duplexDefault,
+        duplex: {
+          allowedMode: subtestParams.duplexPolicy,
+          defaultMode: subtestParams.duplexDefault,
+        }
       };
-      // In practice |capabilities| are always set after |policies| and
-      // observers only check for |capabilities|, so the order is important.
-      model.set('destination.policies', policies);
+
       model.set('destination.capabilities', capabilities);
-      model.applyDestinationSpecificPolicies();
+      model.setPolicySettings(policies);
+      model.applyStickySettings();
+
       assertEquals(
           subtestParams.expectedValue, model.getSettingValue('duplex'));
       assertEquals(
@@ -237,14 +251,6 @@ suite('ModelSettingsPolicyTest', function() {
   });
 
   test('pin managed', function() {
-    // Remove pin capability.
-    let capabilities = getCddTemplate(model.destination.id).capabilities;
-    delete capabilities.printer.pin;
-
-    // Make device enterprise managed since pin setting is available only on
-    // managed devices.
-    loadTimeData.overrideValues({isEnterpriseManaged: true});
-
     [{
       // No policies, settings is modifiable.
       pinCap: {supported: true},
@@ -312,17 +318,24 @@ suite('ModelSettingsPolicyTest', function() {
        expectedManaged: false,
        expectedEnforced: false,
      }].forEach(subtestParams => {
-      capabilities = getCddTemplate(model.destination.id).capabilities;
+      setupModel();
+      // Make device enterprise managed since pin setting is available only on
+      // managed devices.
+      loadTimeData.overrideValues({isEnterpriseManaged: true});
+      // Remove pin capability.
+      const capabilities = getCddTemplate(model.destination.id).capabilities;
       capabilities.printer.pin = subtestParams.pinCap;
       const policies = {
-        allowedPinModes: subtestParams.pinPolicy,
-        defaultPinMode: subtestParams.pinDefault,
+        pin: {
+          allowedMode: subtestParams.pinPolicy,
+          defaultMode: subtestParams.pinDefault,
+        }
       };
-      // In practice |capabilities| are always set after |policies| and
-      // observers only check for |capabilities|, so the order is important.
-      model.set('destination.policies', policies);
+
       model.set('destination.capabilities', capabilities);
-      model.applyDestinationSpecificPolicies();
+      model.setPolicySettings(policies);
+      model.applyStickySettings();
+
       assertEquals(subtestParams.expectedValue, model.getSettingValue('pin'));
       assertEquals(
           subtestParams.expectedAvailable, model.settings.pin.available);

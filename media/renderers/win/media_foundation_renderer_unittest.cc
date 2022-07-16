@@ -9,12 +9,13 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_com_initializer.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/demuxer_stream.h"
+#include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
 #include "media/base/win/test_utils.h"
@@ -103,7 +104,8 @@ class MediaFoundationRendererTest : public testing::Test {
         &pmp_server_);
 
     mf_renderer_ = std::make_unique<MediaFoundationRenderer>(
-        task_environment_.GetMainThreadTaskRunner());
+        task_environment_.GetMainThreadTaskRunner(),
+        std::make_unique<NullMediaLog>());
 
     // Some default actions.
     ON_CALL(cdm_context_, GetMediaFoundationCdmProxy(_))
@@ -221,26 +223,22 @@ TEST_F(MediaFoundationRendererTest, DirectCompositionHandle) {
   if (!MediaFoundationRenderer::IsSupported())
     return;
 
-  base::MockCallback<MediaFoundationRendererExtension::SetDCompModeCB>
-      set_dcomp_mode_cb;
   base::MockCallback<MediaFoundationRendererExtension::GetDCompSurfaceCB>
-      get_dcomp_cb;
+      get_dcomp_surface_cb;
 
   AddStream(DemuxerStream::AUDIO, /*encrypted=*/true);
   AddStream(DemuxerStream::VIDEO, /*encrypted=*/true);
 
   EXPECT_CALL(set_cdm_cb_, Run(true));
   EXPECT_CALL(renderer_init_cb_, Run(PIPELINE_OK));
-  EXPECT_CALL(set_dcomp_mode_cb, Run(true));
   // Ignore the DirectComposition handle value returned as our |pmp_server_|
   // has no real implementation.
-  EXPECT_CALL(get_dcomp_cb, Run(_));
+  EXPECT_CALL(get_dcomp_surface_cb, Run(_));
 
   mf_renderer_->Initialize(&media_resource_, &renderer_client_,
                            renderer_init_cb_.Get());
   mf_renderer_->SetCdm(&cdm_context_, set_cdm_cb_.Get());
-  mf_renderer_->SetDCompMode(true, set_dcomp_mode_cb.Get());
-  mf_renderer_->GetDCompSurface(get_dcomp_cb.Get());
+  mf_renderer_->GetDCompSurface(get_dcomp_surface_cb.Get());
 
   task_environment_.RunUntilIdle();
 }

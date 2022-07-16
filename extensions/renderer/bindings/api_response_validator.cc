@@ -57,10 +57,11 @@ void APIResponseValidator::ValidateResponse(
     return;
   }
 
-  const APISignature* signature = type_refs_->GetCallbackSignature(method_name);
+  const APISignature* signature =
+      type_refs_->GetAsyncResponseSignature(method_name);
   // If there's no corresponding signature, don't validate. This can
   // legitimately happen with APIs that create custom requests.
-  if (!signature)
+  if (!signature || !signature->has_async_return_signature())
     return;
 
   std::string error;

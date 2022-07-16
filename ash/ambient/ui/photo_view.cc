@@ -33,8 +33,7 @@ constexpr char kPhotoTransitionSmoothness[] =
     "Ash.AmbientMode.AnimationSmoothness.PhotoTransition";
 
 void ReportSmoothness(int value) {
-  base::UmaHistogramPercentageObsoleteDoNotUse(kPhotoTransitionSmoothness,
-                                               value);
+  base::UmaHistogramPercentage(kPhotoTransitionSmoothness, value);
 }
 
 }  // namespace

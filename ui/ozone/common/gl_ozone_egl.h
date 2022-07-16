@@ -6,7 +6,6 @@
 #define UI_OZONE_COMMON_GL_OZONE_EGL_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "third_party/khronos/EGL/eglplatform.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -18,6 +17,10 @@ namespace ui {
 class GLOzoneEGL : public GLOzone {
  public:
   GLOzoneEGL() {}
+
+  GLOzoneEGL(const GLOzoneEGL&) = delete;
+  GLOzoneEGL& operator=(const GLOzoneEGL&) = delete;
+
   ~GLOzoneEGL() override {}
 
   // GLOzone:
@@ -51,9 +54,6 @@ class GLOzoneEGL : public GLOzone {
   // Sets up GL bindings for the native surface.
   virtual bool LoadGLES2Bindings(
       const gl::GLImplementationParts& implementation) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneEGL);
 };
 
 }  // namespace ui

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_TOP_SITES_OBSERVER_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_TOP_SITES_OBSERVER_H_
 
-#include "base/macros.h"
-
 namespace history {
 
 class TopSites;
@@ -25,6 +23,10 @@ class TopSitesObserver {
   };
 
   TopSitesObserver() {}
+
+  TopSitesObserver(const TopSitesObserver&) = delete;
+  TopSitesObserver& operator=(const TopSitesObserver&) = delete;
+
   virtual ~TopSitesObserver() {}
 
   // Is called when TopSites finishes loading.
@@ -34,9 +36,6 @@ class TopSitesObserver {
   // changed, or one of the images changes.
   virtual void TopSitesChanged(TopSites* top_sites,
                                ChangeReason change_reason) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TopSitesObserver);
 };
 
 }  // namespace history

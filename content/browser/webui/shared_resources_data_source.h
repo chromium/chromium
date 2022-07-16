@@ -12,6 +12,9 @@ namespace content {
 // Creates a data source for for chrome://resources/ URLs.
 WebUIDataSource* CreateSharedResourcesDataSource();
 
+// Creates a data source for for chrome-untrusted://resources/ URLs.
+WebUIDataSource* CreateUntrustedSharedResourcesDataSource();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBUI_SHARED_RESOURCES_DATA_SOURCE_H_

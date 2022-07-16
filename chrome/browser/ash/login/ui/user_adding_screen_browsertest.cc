@@ -42,6 +42,9 @@ class UserAddingScreenTest : public LoginManagerTest,
     login_mixin_.AppendRegularUsers(3);
   }
 
+  UserAddingScreenTest(const UserAddingScreenTest&) = delete;
+  UserAddingScreenTest& operator=(const UserAddingScreenTest&) = delete;
+
   void SetUpInProcessBrowserTestFixture() override {
     LoginManagerTest::SetUpInProcessBrowserTestFixture();
     UserAddingScreen::Get()->AddObserver(this);
@@ -86,8 +89,6 @@ class UserAddingScreenTest : public LoginManagerTest,
   std::unique_ptr<base::RunLoop> run_loop_;
   bool finished_ = false;  // True if OnUserAddingFinished() has been called
                            // before WaitUntilUserAddingFinishedOrCancelled().
-
-  DISALLOW_COPY_AND_ASSIGN(UserAddingScreenTest);
 };
 
 IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, CancelAdding) {
@@ -102,7 +103,6 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, CancelAdding) {
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::ACTIVE);
 
-  base::HistogramTester histogram_tester;
   test::ShowUserAddingScreen();
 
   EXPECT_EQ(user_adding_started(), 1);
@@ -112,9 +112,6 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, CancelAdding) {
   EXPECT_TRUE(LoginScreenTestApi::IsCancelButtonShown());
   EXPECT_TRUE(LoginScreenTestApi::ClickCancelButton());
   WaitUntilUserAddingFinishedOrCancelled();
-
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.UserAddingScreen.LoadTimeViewsBased", 1);
 
   EXPECT_EQ(user_adding_finished(), 1);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
@@ -137,7 +134,6 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, UILogin) {
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
 
-  base::HistogramTester histogram_tester;
   test::ShowUserAddingScreen();
 
   EXPECT_EQ(user_adding_started(), 1);
@@ -158,9 +154,6 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, UILogin) {
             session_manager::SessionState::ACTIVE);
   EXPECT_TRUE(LoginDisplayHost::default_host() == nullptr);
   ASSERT_EQ(user_manager->GetLoggedInUsers().size(), 2u);
-
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.UserAddingScreen.LoadTimeViewsBased", 1);
 
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::ACTIVE);

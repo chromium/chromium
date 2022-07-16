@@ -233,7 +233,7 @@ BluetoothPrivateSetAdapterStateFunction::
     ~BluetoothPrivateSetAdapterStateFunction() {}
 
 bool BluetoothPrivateSetAdapterStateFunction::CreateParams() {
-  params_ = bt_private::SetAdapterState::Params::Create(*args_);
+  params_ = bt_private::SetAdapterState::Params::Create(args());
   return params_ != nullptr;
 }
 
@@ -344,7 +344,7 @@ BluetoothPrivateSetPairingResponseFunction::
     ~BluetoothPrivateSetPairingResponseFunction() {}
 
 bool BluetoothPrivateSetPairingResponseFunction::CreateParams() {
-  params_ = bt_private::SetPairingResponse::Params::Create(*args_);
+  params_ = bt_private::SetPairingResponse::Params::Create(args());
   return params_ != nullptr;
 }
 
@@ -403,7 +403,7 @@ BluetoothPrivateDisconnectAllFunction::
     ~BluetoothPrivateDisconnectAllFunction() {}
 
 bool BluetoothPrivateDisconnectAllFunction::CreateParams() {
-  params_ = bt_private::DisconnectAll::Params::Create(*args_);
+  params_ = bt_private::DisconnectAll::Params::Create(args());
   return params_ != nullptr;
 }
 
@@ -451,7 +451,7 @@ BluetoothPrivateForgetDeviceFunction::BluetoothPrivateForgetDeviceFunction() {}
 BluetoothPrivateForgetDeviceFunction::~BluetoothPrivateForgetDeviceFunction() {}
 
 bool BluetoothPrivateForgetDeviceFunction::CreateParams() {
-  params_ = bt_private::ForgetDevice::Params::Create(*args_);
+  params_ = bt_private::ForgetDevice::Params::Create(args());
   return params_ != nullptr;
 }
 
@@ -488,7 +488,7 @@ BluetoothPrivateSetDiscoveryFilterFunction::
     ~BluetoothPrivateSetDiscoveryFilterFunction() = default;
 
 bool BluetoothPrivateSetDiscoveryFilterFunction::CreateParams() {
-  params_ = SetDiscoveryFilter::Params::Create(*args_);
+  params_ = SetDiscoveryFilter::Params::Create(args());
   return params_ != nullptr;
 }
 
@@ -568,7 +568,7 @@ BluetoothPrivateConnectFunction::BluetoothPrivateConnectFunction() {}
 BluetoothPrivateConnectFunction::~BluetoothPrivateConnectFunction() {}
 
 bool BluetoothPrivateConnectFunction::CreateParams() {
-  params_ = bt_private::Connect::Params::Create(*args_);
+  params_ = bt_private::Connect::Params::Create(args());
   return params_ != nullptr;
 }
 
@@ -614,7 +614,7 @@ BluetoothPrivatePairFunction::BluetoothPrivatePairFunction() {}
 
 BluetoothPrivatePairFunction::~BluetoothPrivatePairFunction() {}
 bool BluetoothPrivatePairFunction::CreateParams() {
-  params_ = bt_private::Pair::Params::Create(*args_);
+  params_ = bt_private::Pair::Params::Create(args());
   return params_ != nullptr;
 }
 
@@ -660,7 +660,7 @@ BluetoothPrivateRecordPairingFunction::
     ~BluetoothPrivateRecordPairingFunction() = default;
 
 bool BluetoothPrivateRecordPairingFunction::CreateParams() {
-  params_ = bt_private::RecordPairing::Params::Create(*args_);
+  params_ = bt_private::RecordPairing::Params::Create(args());
   return params_ != nullptr;
 }
 
@@ -675,7 +675,7 @@ void BluetoothPrivateRecordPairingFunction::DoWork(
     device::RecordPairingResult(
         success ? absl::nullopt : GetConnectionFailureReason(result),
         GetBluetoothTransport(params_->transport),
-        base::TimeDelta::FromMilliseconds(params_->pairing_duration_ms));
+        base::Milliseconds(params_->pairing_duration_ms));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -691,7 +691,7 @@ BluetoothPrivateRecordReconnectionFunction::
     ~BluetoothPrivateRecordReconnectionFunction() = default;
 
 bool BluetoothPrivateRecordReconnectionFunction::CreateParams() {
-  params_ = bt_private::RecordReconnection::Params::Create(*args_);
+  params_ = bt_private::RecordReconnection::Params::Create(args());
   return params_ != nullptr;
 }
 
@@ -721,7 +721,7 @@ BluetoothPrivateRecordDeviceSelectionFunction::
     ~BluetoothPrivateRecordDeviceSelectionFunction() = default;
 
 bool BluetoothPrivateRecordDeviceSelectionFunction::CreateParams() {
-  params_ = bt_private::RecordDeviceSelection::Params::Create(*args_);
+  params_ = bt_private::RecordDeviceSelection::Params::Create(args());
   return params_ != nullptr;
 }
 
@@ -729,7 +729,7 @@ void BluetoothPrivateRecordDeviceSelectionFunction::DoWork(
     scoped_refptr<device::BluetoothAdapter> adapter) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   device::RecordDeviceSelectionDuration(
-      base::TimeDelta::FromMilliseconds(params_->selection_duration_ms),
+      base::Milliseconds(params_->selection_duration_ms),
       device::DeviceSelectionUISurfaces::kSettings, params_->was_paired,
       GetBluetoothTransport(params_->transport));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

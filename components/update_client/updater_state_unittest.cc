@@ -4,7 +4,6 @@
 
 #include "components/update_client/updater_state.h"
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
@@ -16,10 +15,11 @@ namespace update_client {
 class UpdaterStateTest : public testing::Test {
  public:
   UpdaterStateTest() = default;
-  ~UpdaterStateTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpdaterStateTest);
+  UpdaterStateTest(const UpdaterStateTest&) = delete;
+  UpdaterStateTest& operator=(const UpdaterStateTest&) = delete;
+
+  ~UpdaterStateTest() override = default;
 };
 
 TEST_F(UpdaterStateTest, Serialize) {
@@ -73,17 +73,17 @@ TEST_F(UpdaterStateTest, Serialize) {
   EXPECT_STREQ("0.0.0.0", attributes.at("version").c_str());
 
   updater_state.last_autoupdate_started_ =
-      base::Time::NowFromSystemTime() - base::TimeDelta::FromDays(15);
+      base::Time::NowFromSystemTime() - base::Days(15);
   attributes = updater_state.BuildAttributes();
   EXPECT_STREQ("336", attributes.at("laststarted").c_str());
 
   updater_state.last_autoupdate_started_ =
-      base::Time::NowFromSystemTime() - base::TimeDelta::FromDays(58);
+      base::Time::NowFromSystemTime() - base::Days(58);
   attributes = updater_state.BuildAttributes();
   EXPECT_STREQ("1344", attributes.at("laststarted").c_str());
 
   updater_state.last_autoupdate_started_ =
-      base::Time::NowFromSystemTime() - base::TimeDelta::FromDays(90);
+      base::Time::NowFromSystemTime() - base::Days(90);
   attributes = updater_state.BuildAttributes();
   EXPECT_STREQ("1344", attributes.at("laststarted").c_str());
 
@@ -93,12 +93,12 @@ TEST_F(UpdaterStateTest, Serialize) {
   EXPECT_EQ(0u, attributes.count("laststarted"));
 
   updater_state.last_checked_ =
-      base::Time::NowFromSystemTime() - base::TimeDelta::FromDays(15);
+      base::Time::NowFromSystemTime() - base::Days(15);
   attributes = updater_state.BuildAttributes();
   EXPECT_STREQ("336", attributes.at("lastchecked").c_str());
 
   updater_state.last_checked_ =
-      base::Time::NowFromSystemTime() - base::TimeDelta::FromDays(90);
+      base::Time::NowFromSystemTime() - base::Days(90);
   attributes = updater_state.BuildAttributes();
   EXPECT_STREQ("1344", attributes.at("lastchecked").c_str());
 

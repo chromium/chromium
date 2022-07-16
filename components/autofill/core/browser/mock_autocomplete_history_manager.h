@@ -18,7 +18,7 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
 
   MOCK_METHOD(
       void,
-      OnGetAutocompleteSuggestions,
+      OnGetSingleFieldSuggestions,
       (int query_id,
        bool is_autocomplete_enabled,
        bool autoselect_first_suggestion,
@@ -40,11 +40,11 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
               (const AutocompleteHistoryManager::SuggestionsHandler*),
               (override));
   MOCK_METHOD(void,
-              OnRemoveAutocompleteEntry,
+              OnRemoveCurrentSingleFieldSuggestion,
               (const std::u16string&, const std::u16string&),
               (override));
   MOCK_METHOD(void,
-              OnAutocompleteEntrySelected,
+              OnSingleFieldSuggestionSelected,
               (const std::u16string&),
               (override));
 };

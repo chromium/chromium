@@ -15,21 +15,21 @@
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
+#import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/voice/fake_voice_search_availability.h"
-#import "ios/public/provider/chrome/browser/ui/logo_vendor.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -80,6 +80,9 @@ class NTPHomeMediatorTest : public PlatformTest {
             chrome_browser_state_.get()));
     identity_manager_ =
         IdentityManagerFactory::GetForBrowserState(chrome_browser_state_.get());
+    ChromeAccountManagerService* accountManagerService =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            chrome_browser_state_.get());
     mediator_ = [[NTPHomeMediator alloc]
                initWithWebState:fake_web_state_.get()
              templateURLService:ios::TemplateURLServiceFactory::
@@ -88,11 +91,9 @@ class NTPHomeMediatorTest : public PlatformTest {
                       URLLoader:url_loader_
                     authService:auth_service_
                 identityManager:identity_manager_
+          accountManagerService:accountManagerService
                      logoVendor:logo_vendor_
         voiceSearchAvailability:&voice_availability_];
-    mediator_.suggestionsService =
-        IOSChromeContentSuggestionsServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
     mediator_.dispatcher = dispatcher_;
     mediator_.suggestionsViewController = suggestions_view_controller_;
     consumer_ = OCMProtocolMock(@protocol(NTPHomeConsumer));
@@ -174,30 +175,6 @@ TEST_F(NTPHomeMediatorTest, TestOpenReadingList) {
 
   // Test.
   EXPECT_OCMOCK_VERIFY(dispatcher_);
-}
-
-// Tests that the command is sent to the loader when opening a suggestion.
-TEST_F(NTPHomeMediatorTest, TestOpenPage) {
-  // Setup.
-  [mediator_ setUp];
-  GURL url = GURL("http://chromium.org");
-  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
-  ContentSuggestionsItem* item =
-      [[ContentSuggestionsItem alloc] initWithType:0
-                                             title:@"test item"
-                                               url:url];
-  id model = OCMClassMock([CollectionViewModel class]);
-  OCMStub([suggestions_view_controller_ collectionViewModel]).andReturn(model);
-  OCMStub([model itemAtIndexPath:indexPath]).andReturn(item);
-
-  // Action.
-  [mediator_ openPageForItemAtIndexPath:indexPath];
-
-  // Test.
-  EXPECT_EQ(url, url_loader_->last_params.web_params.url);
-  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
-      ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-      url_loader_->last_params.web_params.transition_type));
 }
 
 // Tests that the command is sent to the loader when opening a most visited.

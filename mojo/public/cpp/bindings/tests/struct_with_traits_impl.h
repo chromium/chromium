@@ -118,6 +118,11 @@ class MoveOnlyStructWithTraitsImpl {
  public:
   MoveOnlyStructWithTraitsImpl();
   MoveOnlyStructWithTraitsImpl(MoveOnlyStructWithTraitsImpl&& other);
+
+  MoveOnlyStructWithTraitsImpl(const MoveOnlyStructWithTraitsImpl&) = delete;
+  MoveOnlyStructWithTraitsImpl& operator=(const MoveOnlyStructWithTraitsImpl&) =
+      delete;
+
   ~MoveOnlyStructWithTraitsImpl();
 
   ScopedHandle& get_mutable_handle() { return handle_; }
@@ -126,7 +131,6 @@ class MoveOnlyStructWithTraitsImpl {
 
  private:
   ScopedHandle handle_;
-  DISALLOW_COPY_AND_ASSIGN(MoveOnlyStructWithTraitsImpl);
 };
 
 class UnionWithTraitsBase {

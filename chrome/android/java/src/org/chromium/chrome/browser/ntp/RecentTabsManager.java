@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ntp;
 
 import android.content.Context;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -21,12 +20,13 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
-import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
-import org.chromium.chrome.browser.signin.ui.SigninPromoController;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
+import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
+import org.chromium.chrome.browser.ui.signin.SigninPromoController;
+import org.chromium.chrome.browser.ui.signin.SigninPromoController.SyncPromoState;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -34,8 +34,6 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.url.GURL;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,15 +51,6 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
          */
         void onUpdated();
     }
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({PromoState.PROMO_NONE, PromoState.PROMO_SIGNIN_PERSONALIZED,
-            PromoState.PROMO_SYNC_PERSONALIZED, PromoState.PROMO_SYNC})
-    @interface PromoState {
-        int PROMO_NONE = 0;
-        int PROMO_SIGNIN_PERSONALIZED = 1;
-        int PROMO_SYNC_PERSONALIZED = 2;
-        int PROMO_SYNC = 3;
-    }
 
     private static final int RECENTLY_CLOSED_MAX_TAB_COUNT = 5;
 
@@ -71,6 +60,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
     private final Tab mTab;
     private final Runnable mShowHistoryManager;
 
+    private @SyncPromoState int mPromoState = SyncPromoState.NO_PROMO;
     private FaviconHelper mFaviconHelper;
     private ForeignSessionHelper mForeignSessionHelper;
     private List<ForeignSession> mForeignSessions;
@@ -122,6 +112,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         updateForeignSessions();
         mForeignSessionHelper.triggerSessionSync();
         registerObservers();
+        updatePromoState();
 
         SessionsInvalidationManager.get(mProfile).onRecentTabsPageOpened();
     }
@@ -362,32 +353,48 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         return mPrefs.getSyncPromoCollapsed();
     }
 
-    /**
-     * @return The promo type that will be displayed on the screen.
-     */
-    @PromoState
-    int getPromoType() {
-        if (!mSignInManager.getIdentityManager().hasPrimaryAccount()) {
+    /** Returns the current promo state. */
+    @SyncPromoState
+    int getPromoState() {
+        return mPromoState;
+    }
+
+    private @SyncPromoState int calculatePromoState() {
+        if (!mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC)) {
             if (!mSignInManager.isSignInAllowed()) {
-                return PromoState.PROMO_NONE;
+                return SyncPromoState.NO_PROMO;
             }
-            if (mSignInManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN)
-                    != null) {
-                return PromoState.PROMO_SYNC_PERSONALIZED;
+            if (mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                return SyncPromoState.PROMO_FOR_SIGNED_IN_STATE;
             }
-            return PromoState.PROMO_SIGNIN_PERSONALIZED;
+            return SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE;
         }
 
         if (mSyncService == null) {
             // |mSyncService| will remain null until the next browser startup, so no sense in
             // offering any promo.
-            return PromoState.PROMO_NONE;
+            return SyncPromoState.NO_PROMO;
         }
 
         if (mSyncService.isSyncRequested() && !mForeignSessions.isEmpty()) {
-            return PromoState.PROMO_NONE;
+            return SyncPromoState.NO_PROMO;
         }
-        return PromoState.PROMO_SYNC;
+        return SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE;
+    }
+
+    private void updatePromoState() {
+        final @SyncPromoState int newState = calculatePromoState();
+        if (newState == mPromoState) return;
+
+        final boolean hasSyncPromoStateChangedtoShown =
+                (mPromoState == SyncPromoState.NO_PROMO
+                        || mPromoState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE)
+                && (newState == SyncPromoState.PROMO_FOR_SIGNED_IN_STATE
+                        || newState == SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
+        if (hasSyncPromoStateChangedtoShown) {
+            mSigninPromoController.increasePromoShowCount();
+        }
+        mPromoState = newState;
     }
 
     /**
@@ -433,6 +440,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
     }
 
     private void update() {
+        updatePromoState();
         // TODO(crbug.com/1129853): Re-evaluate whether it's necessary to post
         // a task.
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {

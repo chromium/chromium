@@ -7,9 +7,8 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "libassistant/shared/public/platform_audio_output.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -26,6 +25,10 @@ class AudioMediaDataSource
   explicit AudioMediaDataSource(
       mojo::PendingReceiver<
           chromeos::assistant::mojom::AssistantMediaDataSource> receiver);
+
+  AudioMediaDataSource(const AudioMediaDataSource&) = delete;
+  AudioMediaDataSource& operator=(const AudioMediaDataSource&) = delete;
+
   ~AudioMediaDataSource() override;
 
   // chromeos::assistant::mojom::MediaDataSource implementation.
@@ -55,8 +58,6 @@ class AudioMediaDataSource
   ReadCallback read_callback_;
 
   base::WeakPtrFactory<AudioMediaDataSource> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioMediaDataSource);
 };
 
 }  // namespace libassistant

@@ -5,7 +5,6 @@
 #ifndef CHROME_RENDERER_SUBRESOURCE_REDIRECT_SRC_VIDEO_REDIRECT_URL_LOADER_THROTTLE_H_
 #define CHROME_RENDERER_SUBRESOURCE_REDIRECT_SRC_VIDEO_REDIRECT_URL_LOADER_THROTTLE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/renderer/subresource_redirect/public_resource_decider_agent.h"
 #include "content/public/renderer/render_frame.h"

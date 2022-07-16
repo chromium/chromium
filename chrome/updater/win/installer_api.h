@@ -13,6 +13,8 @@
 
 namespace updater {
 
+enum class UpdaterScope;
+
 // The installer API consists of a set of registry values which are written by
 // the application installer at various times during its execution.
 // These values are under the corresponding app id subkey under ClientState key.
@@ -99,20 +101,26 @@ struct InstallerOutcome {
 };
 
 // Deletes the `app_id` registry sub key under the `ClientState`.
-bool ClientStateAppKeyDelete(const std::string& app_id);
+bool ClientStateAppKeyDelete(UpdaterScope updater_scope,
+                             const std::string& app_id);
 
 // Reads installer progress for `app_id` from registry. The installer progress
 // is written by the application installer. Returns a value in the [0, 100]
 // range or -1 if the install progress is not available.
-int GetInstallerProgress(const std::string& app_id);
-bool SetInstallerProgressForTesting(const std::string& app_id, int value);
+int GetInstallerProgress(UpdaterScope updater_scope, const std::string& app_id);
+bool SetInstallerProgressForTesting(UpdaterScope updater_scope,
+                                    const std::string& app_id,
+                                    int value);
 
 // Clear the Installer API values.
-bool DeleteInstallerOutput(const std::string& app_id);
+bool DeleteInstallerOutput(UpdaterScope updater_scope,
+                           const std::string& app_id);
 
 // Returns the Instaler API outcome, best-effort.
-absl::optional<InstallerOutcome> GetInstallerOutcome(const std::string& app_id);
-bool SetInstallerOutcomeForTesting(const std::string& app_id,
+absl::optional<InstallerOutcome> GetInstallerOutcome(UpdaterScope updater_scope,
+                                                     const std::string& app_id);
+bool SetInstallerOutcomeForTesting(UpdaterScope updater_scope,
+                                   const std::string& app_id,
                                    const InstallerOutcome& installer_outcome);
 
 // Translates the Installer API outcome into an `Installer::Result` value.

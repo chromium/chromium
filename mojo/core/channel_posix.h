@@ -14,7 +14,7 @@
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "build/build_config.h"
 #include "mojo/core/core.h"
 
@@ -31,6 +31,9 @@ class ChannelPosix : public Channel,
                ConnectionParams connection_params,
                HandlePolicy handle_policy,
                scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+  ChannelPosix(const ChannelPosix&) = delete;
+  ChannelPosix& operator=(const ChannelPosix&) = delete;
 
   void Start() override;
   void ShutDownImpl() override;
@@ -121,8 +124,6 @@ class ChannelPosix : public Channel,
   base::Lock fds_to_close_lock_;
   std::vector<base::ScopedFD> fds_to_close_;
 #endif  // defined(OS_IOS)
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelPosix);
 };
 
 }  // namespace core

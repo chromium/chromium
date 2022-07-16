@@ -12,51 +12,18 @@
 #include "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#include "ui/base/device_form_factor.h"
 #include "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// The em-width value used to differentiate small and large devices.
-// With Larger Text Off, Bold Text Off and the device orientation in portrait:
-// iPhone 5s is considered as a small device, unlike iPhone 8 or iPhone 12 mini.
-const CGFloat kSmallDeviceThreshold = 22.0;
-
-}  // namespace
-
-bool IsIPadIdiom() {
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-}
-
-CGFloat CurrentScreenHeight() {
-  return [UIScreen mainScreen].bounds.size.height;
-}
-
-CGFloat CurrentScreenWidth() {
-  return [UIScreen mainScreen].bounds.size.width;
-}
-
-bool IsIPhoneX() {
-  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-  CGFloat height = CGRectGetHeight([[UIScreen mainScreen] nativeBounds]);
-  return (idiom == UIUserInterfaceIdiomPhone &&
-          (height == 2436 || height == 2688 || height == 1792));
-}
-
-bool IsSmallDevice() {
-  CGSize mSize = [@"m" sizeWithAttributes:@{
-    NSFontAttributeName : [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-  }];
-  CGFloat emWidth = CurrentScreenWidth() / mSize.width;
-  return emWidth < kSmallDeviceThreshold;
-}
-
 CGFloat DeviceCornerRadius() {
-  return IsIPhoneX() ? 40.0 : 0.0;
+  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
+  UIWindow* window = UIApplication.sharedApplication.windows.firstObject;
+  const BOOL isRoundedDevice =
+      (idiom == UIUserInterfaceIdiomPhone && window.safeAreaInsets.bottom);
+  return isRoundedDevice ? 40.0 : 0.0;
 }
 
 CGFloat AlignValueToPixel(CGFloat value) {

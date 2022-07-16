@@ -10,14 +10,19 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/skia_util.h"
 
 namespace {
 
 // The minimum height (in dp) of the charged region of the battery icon when the
 // battery is present and has a charge greater than 0.
 const int kMinVisualChargeLevel = 1;
+
+// These dimensions specify the largest possible rectangle that is fully
+// encompassed by the battery icon |kBatteryIcon|. This rectangle is the area
+// that is "filled" to show battery charge percentage.
+constexpr gfx::RectF kDefaultFillRect = gfx::RectF(7, 6, 6, 10);
 
 }  // namespace
 
@@ -36,31 +41,31 @@ BatteryImageSource::BatteryImageSource(
 BatteryImageSource::~BatteryImageSource() = default;
 
 void BatteryImageSource::Draw(gfx::Canvas* canvas) {
-  gfx::ImageSkia icon = CreateVectorIcon(kBatteryIcon, fg_color_);
-
   // Draw the solid outline of the battery icon.
-  canvas->DrawImageInt(icon, 0, 0);
+  PaintVectorIcon(canvas, kBatteryIcon, size().height(), fg_color_);
 
   canvas->Save();
 
   const float dsf = canvas->UndoDeviceScaleFactor();
+
   // All constants below are expressed relative to a canvas size of 20. The
   // actual canvas size (i.e. |size()|) may not be 20.
   const float kAssumedCanvasSize = 20;
   const float const_scale = dsf * size().height() / kAssumedCanvasSize;
 
-  // |charge_level| is a value between 0 and the visual height of the icon
-  // representing the number of device pixels the battery image should be
-  // shown charged. The exception is when |charge_level| is very low; in this
-  // case, still draw 1dip of charge.
-
   SkPath path;
-  gfx::RectF fill_rect = gfx::RectF(8, 6, 6, 11);
+
+  gfx::RectF fill_rect = kDefaultFillRect;
   fill_rect.Scale(const_scale);
   path.addRect(gfx::RectToSkRect(gfx::ToEnclosingRect(fill_rect)));
   cc::PaintFlags flags;
 
   SkRect icon_bounds = path.getBounds();
+
+  // |charge_level| is a value between 0 and the visual height of the icon
+  // representing the number of device pixels the battery image should be
+  // shown charged. The exception is when |charge_level| is very low; in this
+  // case, still draw 1dip of charge.
   float charge_level =
       std::floor(info_.charge_percent / 100.0 * icon_bounds.height());
   const float min_charge_level = dsf * kMinVisualChargeLevel;
@@ -85,7 +90,8 @@ void BatteryImageSource::Draw(gfx::Canvas* canvas) {
   if (info_.badge_outline) {
     const SkColor outline_color =
         info_.charge_percent > 50 ? fg_color_ : bg_color_;
-    PaintVectorIcon(canvas, *info_.badge_outline, outline_color);
+    PaintVectorIcon(canvas, *info_.badge_outline, size().height(),
+                    outline_color);
   }
 
   // Paint the badge over top of the battery, if applicable.
@@ -98,7 +104,7 @@ void BatteryImageSource::Draw(gfx::Canvas* canvas) {
                         AshColorProvider::ContentLayerType::kBatteryBadgeColor)
                   : fg_color_;
 
-    PaintVectorIcon(canvas, *info_.icon_badge, badge_color);
+    PaintVectorIcon(canvas, *info_.icon_badge, size().height(), badge_color);
   }
 }
 

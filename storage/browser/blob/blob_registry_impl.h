@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
   BlobRegistryImpl(base::WeakPtr<BlobStorageContext> context,
                    base::WeakPtr<BlobUrlRegistry> url_registry,
                    scoped_refptr<FileSystemContext> file_system_context);
+
+  BlobRegistryImpl(const BlobRegistryImpl&) = delete;
+  BlobRegistryImpl& operator=(const BlobRegistryImpl&) = delete;
+
   ~BlobRegistryImpl() override;
 
   void Bind(mojo::PendingReceiver<blink::mojom::BlobRegistry> receiver,
@@ -103,7 +107,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
       blobs_being_streamed_;
 
   base::WeakPtrFactory<BlobRegistryImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(BlobRegistryImpl);
 };
 
 }  // namespace storage

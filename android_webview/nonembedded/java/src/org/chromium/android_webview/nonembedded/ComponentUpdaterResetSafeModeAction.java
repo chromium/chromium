@@ -24,8 +24,9 @@ public class ComponentUpdaterResetSafeModeAction implements SafeModeAction {
     }
 
     @Override
-    public void execute() {
+    public boolean execute() {
         // Each Component Updater Service will take requisite steps on startup.
         // Do nothing here.
+        return true;
     }
 }

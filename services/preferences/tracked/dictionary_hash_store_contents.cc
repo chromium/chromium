@@ -69,12 +69,12 @@ bool DictionaryHashStoreContents::GetSplitMacs(
     return false;
   for (base::DictionaryValue::Iterator it(*split_macs_dict); !it.IsAtEnd();
        it.Advance()) {
-    std::string mac_string;
-    if (!it.value().GetAsString(&mac_string)) {
+    const std::string* mac_string = it.value().GetIfString();
+    if (!mac_string) {
       NOTREACHED();
       continue;
     }
-    split_macs->insert(make_pair(it.key(), mac_string));
+    split_macs->insert(make_pair(it.key(), *mac_string));
   }
   return true;
 }

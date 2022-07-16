@@ -102,8 +102,10 @@ void NotesServerSaver::SendSaveNoteRequest() {
 void NotesServerSaver::OnSaveNoteComplete(
     std::unique_ptr<std::string> response_body) {
   SaveNoteResponse response;
-  if (!response_body || !HasValidNonEmptyResponse(*response_body.get())) {
-    DVLOG(1) << "Has empty or invalid response";
+  if (response_body == nullptr) {
+    DVLOG(1) << "Has no response";
+  } else if (!HasValidNonEmptyResponse(*response_body.get())) {
+    DVLOG(1) << "Has empty invalid response";
   } else {
     // Parse the response.
     web_notes::PutWebnoteResponse save_note_response;
@@ -115,7 +117,7 @@ void NotesServerSaver::OnSaveNoteComplete(
       web_notes::WebnoteContentId note_content_id =
           save_note_response.webnote_content_id();
       response.account_id = note_content_id.account_id();
-      response.note_id = note_content_id.account_id();
+      response.note_id = note_content_id.webnote_id();
     }
   }
 

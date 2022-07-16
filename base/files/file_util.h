@@ -15,7 +15,6 @@
 #include <limits>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/base_export.h"
 #include "base/callback_forward.h"
@@ -109,9 +108,7 @@ BASE_EXPORT bool Move(const FilePath& from_path, const FilePath& to_path);
 // temporary files. On Windows it preserves attributes of the target file.
 // Returns true on success, leaving *error unchanged.
 // Returns false on failure and sets *error appropriately, if it is non-NULL.
-BASE_EXPORT bool ReplaceFile(const FilePath& from_path,
-                             const FilePath& to_path,
-                             File::Error* error);
+BASE_EXPORT bool ReplaceFile(const FilePath& from_path, const FilePath& to_path, File::Error* error);
 
 // Copies a single file. Use CopyDirectory() to copy directories.
 // This function fails if either path contains traversal components ('..').

@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/service/debugger/viz_debugger.h"
@@ -22,16 +21,11 @@
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
-#include "media/gpu/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 #include "components/viz/common/quads/texture_draw_quad.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_VAAPI)
-#include "media/gpu/vaapi/vaapi_wrapper.h"
-#endif
 
 namespace viz {
 namespace {
@@ -283,12 +277,6 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
       is_underlay = true;
       exclude_overlay_index = overlay.overlay_damage_index;
     }
-
-    if (overlay.plane_z_order) {
-      RecordOverlayDamageRectHistograms((overlay.plane_z_order > 0),
-                                        overlay.damage_area_estimate != 0,
-                                        damage_rect->IsEmpty());
-    }
   }
 
   // Removes all damage from this overlay and occluded surface damages.
@@ -309,9 +297,19 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
     // black transparent hole is made for the underlay to show through
     // but its possible that the damage for this quad is less than the
     // complete size of the underlay.  https://crbug.com/1130733
-    if (is_underlay) {
+    // Also a non-opaque overlay must damage the primary plane as we might be
+    // able see through the overlay to the primary plane.
+    // https://buganizer.corp.google.com/issues/192294199
+    if (is_underlay || !is_opaque_overlay) {
       damage_rect->Union(this_frame_overlay_rect);
     }
+  }
+
+  // Record the first candidate.
+  if (candidates->size() > 0 && (*candidates)[0].plane_z_order != 0) {
+    RecordOverlayDamageRectHistograms(
+        (*candidates)[0].plane_z_order > 0,
+        (*candidates)[0].damage_area_estimate != 0, damage_rect->IsEmpty());
   }
 
   previous_frame_overlay_rect_ = this_frame_overlay_rect;
@@ -482,19 +480,6 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
             ? candidate.quad_iter->material
             : DrawQuad::Material::kInvalid;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_VAAPI)
-    // For protected surfaces, which require overlays, we may need to check if
-    // that surface can still be displayed. There are cases where HW context
-    // loss can occur where it would not be properly displayable.
-    // TODO(jkardatzke): This will not handle the case where those buffers are
-    // already in flight. That will be fixed by a kernel driver update later.
-    if (candidate.candidate.requires_overlay &&
-        candidate.candidate.hw_protected_validation_id &&
-        media::VaapiWrapper::GetProtectedInstanceID() !=
-            candidate.candidate.hw_protected_validation_id) {
-      continue;
-    }
-#endif
     bool used_overlay = candidate.strategy->AttemptPrioritized(
         output_color_matrix, render_pass_backdrop_filters, resource_provider,
         render_pass_list, surface_damage_rect_list, primary_plane, candidates,

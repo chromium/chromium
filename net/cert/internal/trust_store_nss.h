@@ -58,6 +58,9 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
   TrustStoreNSS(SECTrustType trust_type,
                 IgnoreSystemTrustSettings ignore_system_trust_settings);
 
+  TrustStoreNSS(const TrustStoreNSS&) = delete;
+  TrustStoreNSS& operator=(const TrustStoreNSS&) = delete;
+
   ~TrustStoreNSS() override;
 
   // CertIssuerSource implementation:
@@ -65,9 +68,8 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
                         ParsedCertificateList* issuers) override;
 
   // TrustStore implementation:
-  void GetTrust(const scoped_refptr<ParsedCertificate>& cert,
-                CertificateTrust* trust,
-                base::SupportsUserData* debug_data) const override;
+  CertificateTrust GetTrust(const ParsedCertificate* cert,
+                            base::SupportsUserData* debug_data) const override;
 
  private:
   bool IsCertAllowedForTrust(CERTCertificate* cert) const;
@@ -100,8 +102,6 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
   // (*) are stored on |user_slot_|.
   const bool filter_trusted_certs_by_slot_;
   crypto::ScopedPK11Slot user_slot_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrustStoreNSS);
 };
 
 }  // namespace net

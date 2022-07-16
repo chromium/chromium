@@ -331,7 +331,7 @@ int ShelfConfig::control_button_edge_spacing(bool is_primary_axis_edge) const {
 
 base::TimeDelta ShelfConfig::hotseat_background_animation_duration() const {
   // This matches the duration of the maximize/minimize animation.
-  return base::TimeDelta::FromMilliseconds(300);
+  return base::Milliseconds(300);
 }
 
 base::TimeDelta ShelfConfig::shelf_animation_duration() const {
@@ -471,7 +471,7 @@ int ShelfConfig::GetAppIconGroupMargin() const {
 }
 
 base::TimeDelta ShelfConfig::DimAnimationDuration() const {
-  return base::TimeDelta::FromMilliseconds(1000);
+  return base::Milliseconds(1000);
 }
 
 gfx::Tween::Type ShelfConfig::DimAnimationTween() const {

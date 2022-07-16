@@ -77,6 +77,9 @@ const char DefaultSearchManager::kCreatedByPolicy[] = "created_by_policy";
 const char DefaultSearchManager::kDisabledByPolicy[] = "disabled_by_policy";
 const char DefaultSearchManager::kCreatedFromPlayAPI[] =
     "created_from_play_api";
+const char DefaultSearchManager::kPreconnectToSearchUrl[] =
+    "preconnect_to_search_url";
+const char DefaultSearchManager::kIsActive[] = "is_active";
 
 DefaultSearchManager::DefaultSearchManager(
     PrefService* pref_service,
@@ -293,9 +296,7 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
     return;
 
   if (default_search_controlled_by_policy_) {
-    bool disabled_by_policy = false;
-    if (url_dict->GetBoolean(kDisabledByPolicy, &disabled_by_policy) &&
-        disabled_by_policy)
+    if (url_dict->FindBoolKey(kDisabledByPolicy).value_or(false))
       return;
   }
 

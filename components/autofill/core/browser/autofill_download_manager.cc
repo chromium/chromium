@@ -27,9 +27,9 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_driver.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_protobufs.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -164,8 +164,7 @@ GURL GetAutofillServerURL() {
 }
 
 base::TimeDelta GetThrottleResetPeriod() {
-  return base::TimeDelta::FromDays(
-      std::max(1, kAutofillUploadThrottlingPeriodInDays.Get()));
+  return base::Days(std::max(1, kAutofillUploadThrottlingPeriodInDays.Get()));
 }
 
 // Returns true if |id| is within |kAutofillExperimentRanges|.
@@ -392,7 +391,7 @@ std::ostream& operator<<(std::ostream& out,
 std::string FieldTypeToString(int type) {
   return base::StrCat(
       {base::NumberToString(type), std::string("/"),
-       AutofillType(static_cast<ServerFieldType>(type)).ToString()});
+       AutofillType(ToSafeServerFieldType(type, UNKNOWN_TYPE)).ToString()});
 }
 
 LogBuffer& operator<<(LogBuffer& out,
@@ -419,6 +418,24 @@ LogBuffer& operator<<(LogBuffer& out,
     out << Tr{} << "passwords_revealed:" << upload.passwords_revealed();
   if (upload.has_has_form_tag())
     out << Tr{} << "has_form_tag:" << upload.has_form_tag();
+
+  if (upload.has_single_username_data()) {
+    LogBuffer single_username_data;
+    single_username_data << Tag{"span"} << "[";
+    single_username_data
+        << Tr{} << "username_form_signature:"
+        << upload.single_username_data().username_form_signature();
+    single_username_data
+        << Tr{} << "username_field_signature:"
+        << upload.single_username_data().username_field_signature();
+    single_username_data << Tr{} << "value_type:"
+                         << static_cast<int>(
+                                upload.single_username_data().value_type());
+    single_username_data << Tr{} << "prompt_edit:"
+                         << static_cast<int>(
+                                upload.single_username_data().prompt_edit());
+    out << Tr{} << "single_username_data" << std::move(single_username_data);
+  }
 
   out << Tr{} << "form_signature:" << upload.form_signature();
   for (const auto& field : upload.field()) {

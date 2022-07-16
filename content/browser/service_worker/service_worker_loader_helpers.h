@@ -9,6 +9,7 @@
 #include <string>
 
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -72,6 +73,23 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
     blink::mojom::ScriptType worker_script_type,
     const blink::mojom::FetchClientSettingsObject& fetch_client_settings_object,
     BrowserContext& browser_context);
+
+// Returns true if the script at |script_url| is allowed to control |scope|
+// according to Service Worker's path restriction policy. If
+// |service_worker_allowed| is not null, it points to the
+// Service-Worker-Allowed header value.
+CONTENT_EXPORT bool IsPathRestrictionSatisfied(
+    const GURL& scope,
+    const GURL& script_url,
+    const std::string* service_worker_allowed_header_value,
+    std::string* error_message);
+
+// Same as above IsPathRestrictionSatisfied, but without considering
+// 'Service-Worker-Allowed' header.
+CONTENT_EXPORT bool IsPathRestrictionSatisfiedWithoutHeader(
+    const GURL& scope,
+    const GURL& script_url,
+    std::string* error_message);
 
 }  // namespace service_worker_loader_helpers
 

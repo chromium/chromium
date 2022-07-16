@@ -134,8 +134,7 @@ void ImageDataFetcher::FetchImageData(const GURL& image_url,
   // body will get thrown out anyway, though.
   loader->SetAllowHttpErrorResults(true);
 
-  loader->SetTimeoutDuration(
-      base::TimeDelta::FromSeconds(kDownloadTimeoutSeconds));
+  loader->SetTimeoutDuration(base::Seconds(kDownloadTimeoutSeconds));
 
   if (max_download_bytes_.has_value()) {
     loader->DownloadToString(

@@ -13,7 +13,6 @@
   "file_handlers": {
     "textAction": {
       "extensions": ["txt"],
-      "verb": "add_to",
       "include_directories": true
     }
   },

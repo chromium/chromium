@@ -37,14 +37,6 @@ bool SearchIPCRouterPolicyImpl::ShouldProcessUndoAllMostVisitedDeletions() {
   return !is_incognito_ && search::IsInstantNTP(web_contents_);
 }
 
-bool SearchIPCRouterPolicyImpl::ShouldProcessLogEvent() {
-  return !is_incognito_ && search::IsInstantNTP(web_contents_);
-}
-
-bool SearchIPCRouterPolicyImpl::ShouldProcessLogSuggestionEventWithValue() {
-  return !is_incognito_ && search::IsInstantNTP(web_contents_);
-}
-
 bool SearchIPCRouterPolicyImpl::ShouldSendSetInputInProgress(
     bool is_active_tab) {
   return is_active_tab && !is_incognito_;
@@ -62,39 +54,6 @@ bool SearchIPCRouterPolicyImpl::ShouldSendNtpTheme() {
   return !is_incognito_ && search::IsInstantNTP(web_contents_);
 }
 
-bool SearchIPCRouterPolicyImpl::ShouldSendLocalBackgroundSelected() {
-  return !is_incognito_ && search::IsInstantNTP(web_contents_);
-}
-
-bool SearchIPCRouterPolicyImpl::ShouldProcessSelectLocalBackgroundImage() {
-  return !is_incognito_ && search::IsInstantNTP(web_contents_);
-}
-
-bool SearchIPCRouterPolicyImpl::ShouldProcessSetCustomBackgroundInfo() {
-  return !is_incognito_ && search::IsInstantNTP(web_contents_);
-}
-
-bool SearchIPCRouterPolicyImpl::ShouldProcessBlocklistSearchSuggestion() {
-  return !is_incognito_ && search::IsInstantNTP(web_contents_);
-}
-
-bool SearchIPCRouterPolicyImpl::
-    ShouldProcessBlocklistSearchSuggestionWithHash() {
-  return !is_incognito_ && search::IsInstantNTP(web_contents_);
-}
-
-bool SearchIPCRouterPolicyImpl::ShouldProcessSearchSuggestionSelected() {
-  return !is_incognito_ && search::IsInstantNTP(web_contents_);
-}
-
-bool SearchIPCRouterPolicyImpl::ShouldProcessOptOutOfSearchSuggestions() {
-  return !is_incognito_ && search::IsInstantNTP(web_contents_);
-}
-
 bool SearchIPCRouterPolicyImpl::ShouldProcessThemeChangeMessages() {
-  return !is_incognito_ && search::IsInstantNTP(web_contents_);
-}
-
-bool SearchIPCRouterPolicyImpl::ShouldProcessBlocklistPromo() {
   return !is_incognito_ && search::IsInstantNTP(web_contents_);
 }

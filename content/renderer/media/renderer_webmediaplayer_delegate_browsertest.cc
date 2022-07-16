@@ -9,7 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -30,7 +30,7 @@ using testing::StrictMock;
 namespace media {
 
 namespace {
-constexpr base::TimeDelta kIdleTimeout = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kIdleTimeout = base::Seconds(1);
 }
 
 class MockWebMediaPlayerDelegateObserver
@@ -48,12 +48,18 @@ class MockWebMediaPlayerDelegateObserver
 class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
  public:
   RendererWebMediaPlayerDelegateTest() {}
+
+  RendererWebMediaPlayerDelegateTest(
+      const RendererWebMediaPlayerDelegateTest&) = delete;
+  RendererWebMediaPlayerDelegateTest& operator=(
+      const RendererWebMediaPlayerDelegateTest&) = delete;
+
   ~RendererWebMediaPlayerDelegateTest() override {}
 
   void SetUp() override {
     RenderViewTest::SetUp();
     // Start the tick clock off at a non-null value.
-    tick_clock_.Advance(base::TimeDelta::FromSeconds(1234));
+    tick_clock_.Advance(base::Seconds(1234));
     delegate_manager_ =
         std::make_unique<RendererWebMediaPlayerDelegate>(GetMainRenderFrame());
     delegate_manager_->SetIdleCleanupParamsForTesting(
@@ -75,7 +81,7 @@ class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
 
   void SetNonZeroIdleTimeout() {
     delegate_manager_->SetIdleCleanupParamsForTesting(
-        kIdleTimeout, base::TimeDelta::FromSeconds(1), &tick_clock_, true);
+        kIdleTimeout, base::Seconds(1), &tick_clock_, true);
   }
 
   void RunLoopOnce() {
@@ -89,9 +95,6 @@ class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
   StrictMock<MockWebMediaPlayerDelegateObserver> observer_1_, observer_2_,
       observer_3_;
   base::SimpleTestTickClock tick_clock_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RendererWebMediaPlayerDelegateTest);
 };
 
 TEST_F(RendererWebMediaPlayerDelegateTest, TheTimerIsInitiallyStopped) {
@@ -129,7 +132,7 @@ TEST_F(RendererWebMediaPlayerDelegateTest, PlaySuspendsLowEndIdleDelegates) {
       delegate_id_1, true, true, media::MediaContentType::Persistent);
   delegate_manager_->DidPlay(delegate_id_1);
   delegate_manager_->SetIdle(delegate_id_1, false);
-  tick_clock_.Advance(base::TimeDelta::FromMicroseconds(1));
+  tick_clock_.Advance(base::Microseconds(1));
   RunLoopOnce();
 }
 
@@ -148,7 +151,7 @@ TEST_F(RendererWebMediaPlayerDelegateTest, MaxLowEndIdleDelegates) {
   int delegate_id_3 = delegate_manager_->AddObserver(&observer_3_);
   delegate_manager_->SetIdle(delegate_id_3, true);
   EXPECT_CALL(observer_3_, OnIdleTimeout());
-  tick_clock_.Advance(base::TimeDelta::FromMicroseconds(1));
+  tick_clock_.Advance(base::Microseconds(1));
   RunLoopOnce();
 }
 
@@ -157,7 +160,7 @@ TEST_F(RendererWebMediaPlayerDelegateTest,
   int delegate_id_1 = delegate_manager_->AddObserver(&observer_1_);
   delegate_manager_->SetIdle(delegate_id_1, true);
   EXPECT_CALL(observer_1_, OnIdleTimeout());
-  tick_clock_.Advance(kIdleTimeout + base::TimeDelta::FromMicroseconds(1));
+  tick_clock_.Advance(kIdleTimeout + base::Microseconds(1));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -167,7 +170,7 @@ TEST_F(RendererWebMediaPlayerDelegateTest,
   int delegate_id_1 = delegate_manager_->AddObserver(&observer_1_);
   delegate_manager_->SetIdle(delegate_id_1, true);
   EXPECT_CALL(observer_1_, OnIdleTimeout());
-  tick_clock_.Advance(kIdleTimeout + base::TimeDelta::FromMicroseconds(1));
+  tick_clock_.Advance(kIdleTimeout + base::Microseconds(1));
   base::RunLoop().RunUntilIdle();
   delegate_manager_->ClearStaleFlag(delegate_id_1);
   ASSERT_TRUE(delegate_manager_->IsIdleCleanupTimerRunningForTesting());
@@ -185,7 +188,7 @@ TEST_F(RendererWebMediaPlayerDelegateTest, IdleDelegatesAreSuspended) {
   // kept alive.
   {
     EXPECT_CALL(observer_2_, OnIdleTimeout());
-    tick_clock_.Advance(kIdleTimeout + base::TimeDelta::FromMicroseconds(1));
+    tick_clock_.Advance(kIdleTimeout + base::Microseconds(1));
     RunLoopOnce();
   }
 
@@ -193,7 +196,7 @@ TEST_F(RendererWebMediaPlayerDelegateTest, IdleDelegatesAreSuspended) {
   delegate_manager_->SetIdle(delegate_id_1, true);
   {
     EXPECT_CALL(observer_1_, OnIdleTimeout());
-    tick_clock_.Advance(kIdleTimeout + base::TimeDelta::FromMicroseconds(1));
+    tick_clock_.Advance(kIdleTimeout + base::Microseconds(1));
     RunLoopOnce();
   }
 }

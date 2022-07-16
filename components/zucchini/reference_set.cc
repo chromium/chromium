@@ -8,7 +8,6 @@
 #include <iterator>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "components/zucchini/target_pool.h"
 
 namespace zucchini {

@@ -16,6 +16,9 @@ class GLSurfaceMock : public gl::GLSurface {
  public:
   GLSurfaceMock();
 
+  GLSurfaceMock(const GLSurfaceMock&) = delete;
+  GLSurfaceMock& operator=(const GLSurfaceMock&) = delete;
+
   MOCK_METHOD1(Initialize, bool(gl::GLSurfaceFormat format));
   MOCK_METHOD0(Destroy, void());
   MOCK_METHOD4(Resize,
@@ -45,9 +48,6 @@ class GLSurfaceMock : public gl::GLSurface {
 
  protected:
   ~GLSurfaceMock() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GLSurfaceMock);
 };
 
 }  // namespace gpu

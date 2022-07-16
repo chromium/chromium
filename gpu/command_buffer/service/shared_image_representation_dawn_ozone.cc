@@ -62,7 +62,6 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
 
   gfx::Size pixmap_size = pixmap_->GetBufferSize();
   WGPUTextureDescriptor texture_descriptor = {};
-  texture_descriptor.nextInChain = nullptr;
   texture_descriptor.format = format_;
   texture_descriptor.usage = usage;
   texture_descriptor.dimension = WGPUTextureDimension_2D;
@@ -70,6 +69,14 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
                              static_cast<uint32_t>(pixmap_size.height()), 1};
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
+
+  // We need to have an internal usage of CopySrc in order to use
+  // CopyTextureToTextureInternal.
+  WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
+  internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
+  internalDesc.internalUsage = WGPUTextureUsage_CopySrc;
+  texture_descriptor.nextInChain =
+      reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
 
   dawn_native::vulkan::ExternalImageDescriptorDmaBuf descriptor = {};
   descriptor.cTextureDescriptor = &texture_descriptor;

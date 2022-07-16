@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "sql/test/scoped_error_expecter.h"
@@ -85,6 +84,9 @@ class AffiliationDatabaseTest : public testing::Test {
  public:
   AffiliationDatabaseTest() = default;
 
+  AffiliationDatabaseTest(const AffiliationDatabaseTest&) = delete;
+  AffiliationDatabaseTest& operator=(const AffiliationDatabaseTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
     OpenDatabase();
@@ -113,8 +115,6 @@ class AffiliationDatabaseTest : public testing::Test {
  private:
   base::ScopedTempDir temp_directory_;
   std::unique_ptr<AffiliationDatabase> db_;
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliationDatabaseTest);
 };
 
 TEST_F(AffiliationDatabaseTest, Store) {

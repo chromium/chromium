@@ -16,7 +16,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -91,6 +90,10 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   static void InitializeForProfile(Profile* profile);
 
   explicit PushMessagingServiceImpl(Profile* profile);
+
+  PushMessagingServiceImpl(const PushMessagingServiceImpl&) = delete;
+  PushMessagingServiceImpl& operator=(const PushMessagingServiceImpl&) = delete;
+
   ~PushMessagingServiceImpl() override;
 
   // Check and remove subscriptions that are expired when |this| is initialized
@@ -145,9 +148,10 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   void DidDeleteServiceWorkerDatabase() override;
 
   // content_settings::Observer implementation.
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   // Fires the `pushsubscriptionchange` event to the associated service worker
   // of |app_identifier|, which is the app identifier for |old_subscription|
@@ -192,7 +196,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       base::OnceClosure closure);
 
  private:
-  friend class PushMessagingBrowserTest;
+  friend class PushMessagingBrowserTestBase;
   friend class PushMessagingServiceTest;
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest, NormalizeSenderInfo);
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest, PayloadEncryptionTest);
@@ -466,8 +470,6 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   bool shutdown_started_ = false;
 
   base::WeakPtrFactory<PushMessagingServiceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingServiceImpl);
 };
 
 #endif  // CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_SERVICE_IMPL_H_

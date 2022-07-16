@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_CONNECTION_CALLBACKS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_CONNECTION_CALLBACKS_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -33,6 +32,12 @@ class MODULES_EXPORT PresentationConnectionCallbacks final {
   PresentationConnectionCallbacks(ScriptPromiseResolver*, PresentationRequest*);
   PresentationConnectionCallbacks(ScriptPromiseResolver*,
                                   ControllerPresentationConnection*);
+
+  PresentationConnectionCallbacks(const PresentationConnectionCallbacks&) =
+      delete;
+  PresentationConnectionCallbacks& operator=(
+      const PresentationConnectionCallbacks&) = delete;
+
   ~PresentationConnectionCallbacks() = default;
 
   void HandlePresentationResponse(mojom::blink::PresentationConnectionResultPtr,
@@ -54,8 +59,6 @@ class MODULES_EXPORT PresentationConnectionCallbacks final {
   Persistent<ScriptPromiseResolver> resolver_;
   Persistent<PresentationRequest> request_;
   WeakPersistent<ControllerPresentationConnection> connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationConnectionCallbacks);
 };
 
 }  // namespace blink

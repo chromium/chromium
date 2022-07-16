@@ -19,14 +19,16 @@ namespace net {
 class TestQuicCryptoClientConfigHandle : public QuicCryptoClientConfigHandle {
  public:
   TestQuicCryptoClientConfigHandle(quic::QuicCryptoClientConfig* crypto_config);
+
+  TestQuicCryptoClientConfigHandle& operator=(
+      const TestQuicCryptoClientConfigHandle&) = delete;
+
   ~TestQuicCryptoClientConfigHandle() override;
 
   quic::QuicCryptoClientConfig* GetConfig() const override;
 
  private:
   quic::QuicCryptoClientConfig* const crypto_config_;
-
-  DISALLOW_ASSIGN(TestQuicCryptoClientConfigHandle);
 };
 
 }  // namespace net

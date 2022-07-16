@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler_user_service.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -46,8 +46,8 @@ GetCertProvisioningSchedulerForUser(Profile* user_profile) {
 // affiliation check is done here.
 ash::cert_provisioning::CertProvisioningScheduler*
 GetCertProvisioningSchedulerForDevice() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetDeviceCertProvisioningScheduler();
 }
 
@@ -183,15 +183,16 @@ CertificateProvisioningUiHandler::CertificateProvisioningUiHandler(
 CertificateProvisioningUiHandler::~CertificateProvisioningUiHandler() = default;
 
 void CertificateProvisioningUiHandler::RegisterMessages() {
-  // Passing base::Unretained(this) to web_ui()->RegisterMessageCallback is fine
-  // because in chrome Web UI, web_ui() has acquired ownership of |this| and
-  // maintains the life time of |this| accordingly.
-  web_ui()->RegisterMessageCallback(
+  // Passing base::Unretained(this) to
+  // web_ui()->RegisterDeprecatedMessageCallback is fine because in chrome Web
+  // UI, web_ui() has acquired ownership of |this| and maintains the life time
+  // of |this| accordingly.
+  web_ui()->RegisterDeprecatedMessageCallback(
       "refreshCertificateProvisioningProcessses",
       base::BindRepeating(&CertificateProvisioningUiHandler::
                               HandleRefreshCertificateProvisioningProcesses,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "triggerCertificateProvisioningProcessUpdate",
       base::BindRepeating(&CertificateProvisioningUiHandler::
                               HandleTriggerCertificateProvisioningProcessUpdate,
@@ -208,8 +209,7 @@ void CertificateProvisioningUiHandler::OnVisibleStateChanged() {
     update_after_hold_back_ = true;
     return;
   }
-  constexpr base::TimeDelta kTimeToHoldBackUpdates =
-      base::TimeDelta::FromMilliseconds(300);
+  constexpr base::TimeDelta kTimeToHoldBackUpdates = base::Milliseconds(300);
   hold_back_updates_timer_.Start(
       FROM_HERE, kTimeToHoldBackUpdates,
       base::BindOnce(
@@ -228,7 +228,7 @@ CertificateProvisioningUiHandler::ReadAndResetUiRefreshCountForTesting() {
 
 void CertificateProvisioningUiHandler::
     HandleRefreshCertificateProvisioningProcesses(const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetSize());
+  CHECK_EQ(0U, args->GetList().size());
   AllowJavascript();
   RefreshCertificateProvisioningProcesses();
 }
@@ -236,7 +236,7 @@ void CertificateProvisioningUiHandler::
 void CertificateProvisioningUiHandler::
     HandleTriggerCertificateProvisioningProcessUpdate(
         const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   if (!args->is_list())
     return;
   const base::Value& cert_profile_id = args->GetList()[0];

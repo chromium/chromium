@@ -99,6 +99,10 @@ DWORD CreateLowBoxObjectDirectory(PSID lowbox_sid,
                                   bool open_directory,
                                   base::win::ScopedHandle* directory);
 
+// Returns true if a low IL token can access the current desktop, false
+// otherwise.
+bool CanLowIntegrityAccessDesktop();
+
 }  // namespace sandbox
 
 #endif  // SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_

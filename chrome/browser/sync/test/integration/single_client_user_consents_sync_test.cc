@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -44,6 +43,10 @@ class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {
     }
   }
 
+  UserConsentEqualityChecker(const UserConsentEqualityChecker&) = delete;
+  UserConsentEqualityChecker& operator=(const UserConsentEqualityChecker&) =
+      delete;
+
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting server side USER_CONSENTS to match expected.";
     std::vector<SyncEntity> entities =
@@ -80,8 +83,6 @@ class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {
   // int. The requires creating better expectations with a proper creation
   // time.
   std::multimap<int64_t, UserConsentSpecifics> expected_specifics_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserConsentEqualityChecker);
 };
 
 class SingleClientUserConsentsSyncTest : public SyncTest {

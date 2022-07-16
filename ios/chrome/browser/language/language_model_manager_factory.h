@@ -18,10 +18,6 @@ namespace language {
 class LanguageModelManager;
 }
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
-
 // Manages the language model for each profile. The particular language model
 // provided depends on feature flags.
 class LanguageModelManagerFactory : public BrowserStateKeyedServiceFactory {
@@ -29,6 +25,10 @@ class LanguageModelManagerFactory : public BrowserStateKeyedServiceFactory {
   static LanguageModelManagerFactory* GetInstance();
   static language::LanguageModelManager* GetForBrowserState(
       ChromeBrowserState* browser_state);
+
+  LanguageModelManagerFactory(const LanguageModelManagerFactory&) = delete;
+  LanguageModelManagerFactory& operator=(const LanguageModelManagerFactory&) =
+      delete;
 
  private:
   friend class base::NoDestructor<LanguageModelManagerFactory>;
@@ -41,10 +41,6 @@ class LanguageModelManagerFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* state) const override;
-  void RegisterBrowserStatePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguageModelManagerFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_LANGUAGE_LANGUAGE_MODEL_MANAGER_FACTORY_H_

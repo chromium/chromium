@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './browser_tabs_model_form.js';
+import './camera_roll_manager_form.js';
 import './i18n_setup.js';
 import './phone_name_form.js';
 import './phone_status_model_form.js';

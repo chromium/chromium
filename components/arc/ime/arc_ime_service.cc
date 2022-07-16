@@ -9,6 +9,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -23,8 +24,8 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/constants.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_delegate.h"
@@ -68,6 +69,9 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
  public:
   explicit ArcWindowDelegateImpl(ArcImeService* ime_service)
       : ime_service_(ime_service) {}
+
+  ArcWindowDelegateImpl(const ArcWindowDelegateImpl&) = delete;
+  ArcWindowDelegateImpl& operator=(const ArcWindowDelegateImpl&) = delete;
 
   ~ArcWindowDelegateImpl() override = default;
 
@@ -121,17 +125,8 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
     return window->GetHost()->GetInputMethod();
   }
 
-  bool IsImeBlocked(aura::Window* window) const override {
-    // WMHelper is not craeted in browser_tests.
-    if (!exo::WMHelper::HasInstance())
-      return false;
-    return exo::WMHelper::GetInstance()->IsImeBlocked(window);
-  }
-
  private:
   ArcImeService* const ime_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcWindowDelegateImpl);
 };
 
 // Singleton factory for ArcImeService.
@@ -259,30 +254,6 @@ void ArcImeService::OnWindowRemovingFromRootWindow(aura::Window* window,
   // IMEs are associated with root windows, hence we may need to detach/attach.
   if (window == focused_arc_window_)
     ReattachInputMethod(focused_arc_window_, new_root);
-}
-
-void ArcImeService::OnWindowPropertyChanged(aura::Window* window,
-                                            const void* key,
-                                            intptr_t old) {
-  if (window == focused_arc_window_)
-    return;
-
-  bool ime_blocked = arc_window_delegate_->IsImeBlocked(focused_arc_window_);
-  if (last_ime_blocked_ == ime_blocked)
-    return;
-  last_ime_blocked_ = ime_blocked;
-
-  // IME blocking has changed.
-  ui::InputMethod* const input_method = GetInputMethod();
-  if (input_method) {
-    if (has_composition_text_) {
-      // If it has composition text, clear both ARC's current composition text
-      // and Chrome IME's one.
-      ClearCompositionText();
-      input_method->CancelComposition(this);
-    }
-    input_method->OnTextInputTypeChanged(this);
-  }
 }
 
 void ArcImeService::OnWindowRemoved(aura::Window* removed_window) {
@@ -419,7 +390,7 @@ void ArcImeService::OnCursorRectChangedWithSurroundingText(
 void ArcImeService::SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
                                  KeyEventDoneCallback callback) {
   ui::InputMethod* const input_method = GetInputMethod();
-  receiver_->SetCallback(std::move(callback));
+  receiver_->SetCallback(std::move(callback), key_event.get());
   if (input_method)
     ignore_result(input_method->DispatchKeyEvent(key_event.get()));
 }
@@ -474,10 +445,6 @@ void ArcImeService::InsertText(const std::u16string& text,
 }
 
 void ArcImeService::InsertChar(const ui::KeyEvent& event) {
-  // When IME is blocked for the window, let Exo handle the event.
-  if (arc_window_delegate_->IsImeBlocked(focused_arc_window_))
-    return;
-
   // According to the document in text_input_client.h, InsertChar() is called
   // even when the text editing is not available. We ignore such events, since
   // for ARC we are only interested in the event as a method of text input.
@@ -494,8 +461,6 @@ void ArcImeService::InsertChar(const ui::KeyEvent& event) {
 }
 
 ui::TextInputType ArcImeService::GetTextInputType() const {
-  if (arc_window_delegate_->IsImeBlocked(focused_arc_window_))
-    return ui::TEXT_INPUT_TYPE_NONE;
   return ime_type_;
 }
 
@@ -648,10 +613,9 @@ bool ArcImeService::SetAutocorrectRange(const gfx::Range& range) {
     base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Count",
                                   TextInputClient::SubClass::kArcImeService);
 
-    auto* input_method_manager =
-        chromeos::input_method::InputMethodManager::Get();
+    auto* input_method_manager = ash::input_method::InputMethodManager::Get();
     if (input_method_manager &&
-        chromeos::extension_ime_util::IsExperimentalMultilingual(
+        ash::extension_ime_util::IsExperimentalMultilingual(
             input_method_manager->GetActiveIMEState()
                 ->GetCurrentInputMethod()
                 .id())) {
@@ -686,15 +650,14 @@ bool ArcImeService::AddGrammarFragments(
 }
 
 void ArcImeService::OnDispatchingKeyEventPostIME(ui::KeyEvent* event) {
-  if (receiver_->HasCallback()) {
-    receiver_->DispatchKeyEventPostIME(event);
+  if (receiver_->HasCallback() && receiver_->DispatchKeyEventPostIME(event)) {
     event->SetHandled();
     return;
   }
 
   // Do not forward the key event from virtual keyboard if it's sent via
   // InsertChar(). By the special logic in
-  // ui::InputMethodChromeOS::DispatchKeyEvent, both of InsertChar() and
+  // `ui::InputMethodAsh::DispatchKeyEvent`, both of InsertChar() and
   // DispatchKeyEventPostIME() are called for a key event injected by the
   // virtual keyboard. The below logic stops key event propagation through
   // DispatchKeyEventPostIME() to prevent from inputting two characters.

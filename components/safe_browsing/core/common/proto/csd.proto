@@ -85,6 +85,30 @@ message ChromeUserPopulation {
   // were open the last time Chrome was running. Profiles that fail to
   // initialize are skipped.
   optional int32 number_of_open_profiles = 12;
+
+  // Server-side only field.
+  reserved 13;
+
+  // Tokens to connect different requests on the same page, used for measuring
+  // the performance of Safe Browsing protections. If two requests have the
+  // same token, it means they are from the same user visiting the same page.
+  // See go/chrome-sb-pageload-tokens.
+  message PageLoadToken {
+    // The source that generates the token.
+    enum TokenSource {
+      SOURCE_UNSPECIFIED = 0;
+      // The token is randomly generated on the client-side. It is 32 bytes long.
+      CLIENT_GENERATION = 1;
+    }
+    optional TokenSource token_source = 1;
+    // The timestamp when the token is generated or received.
+    optional int64 token_time_msec = 2;
+    // The value of the token.
+    optional bytes token_value = 3;
+  }
+  // Note: This field is set as repeated to support tokens from multiple
+  // sources.
+  repeated PageLoadToken page_load_tokens = 14;
 }
 
 message ClientPhishingRequest {
@@ -129,6 +153,7 @@ message ClientPhishingRequest {
   optional int32 model_version = 6;
 
   // Field 7 is only used on the server.
+  reserved 7;
 
   // List of features that are extracted in the client but are not used in the
   // machine learning model.
@@ -140,6 +165,7 @@ message ClientPhishingRequest {
   optional string OBSOLETE_referrer_url = 9;
 
   // Field 11 is only used on the server.
+  reserved 11;
 
   // List of shingle hashes we extracted.
   repeated uint32 shingle_hashes = 12 [packed = true];
@@ -619,6 +645,7 @@ message ClientDownloadRequest {
       // DER-encoded X.509 representation of the certificate.
       optional bytes certificate = 1;
       // Fields 2 - 7 are only used on the server.
+      reserved 2 to 7;
     }
     repeated Element element = 1;
   }
@@ -664,6 +691,7 @@ message ClientDownloadRequest {
   optional bool user_initiated = 6;
 
   // Fields 7 and 8 are only used on the server.
+  reserved 7, 8;
 
   // Name of the file where the download would be stored if the
   // download completes.  E.g., "bla.exe".
@@ -755,11 +783,13 @@ message ClientDownloadRequest {
 
   // Fields 12-17 are reserved for server-side use and are never sent by the
   // client.
+  reserved 12 to 17;
 
   optional ImageHeaders image_headers = 18;
 
   // Fields 19-21 are reserved for server-side use and are never sent by the
   // client.
+  reserved 19 to 21;
 
   // A binary or archive contained in an archive (e.g., a .exe in a .zip
   // archive, or a .zip inside a .zip).
@@ -842,7 +872,79 @@ message ClientDownloadRequest {
   // "Authorization: Bearer" header
   optional string access_token = 78;
 
-  // next available tag number: 79;
+  // next available tag number: 85;
+  message DocumentInfo { optional bool contains_macros = 1; }
+
+  message DocumentProcessingInfo {
+    optional bool processing_successful = 1;
+    // The high-level error type returned from MalDocA when it cannot
+    // successfully process a document.
+    enum MaldocaErrorType {
+      // error codes for gRPC APIs
+      OK = 0;
+      CANCELLED = 1;
+      UNKNOWN = 2;
+      INVALID_ARGUMENT = 3;
+      DEADLINE_EXCEEDED = 4;
+      NOT_FOUND = 5;
+      ALREADY_EXISTS = 6;
+      PERMISSION_DENIED = 7;
+      RESOURCE_EXHAUSTED = 8;
+      FAILED_PRECONDITION = 9;
+      ABORTED = 10;
+      OUT_OF_RANGE = 11;
+      UNIMPLEMENTED = 12;
+      INTERNAL = 13;
+      UNAVAILABLE = 14;
+      DATA_LOSS = 15;
+      UNAUTHENTICATED = 16;
+
+      // MalDocA Error Codes
+      // third_party/maldoca/src/maldoca/base/status_proto.proto
+      DOC_TYPE_INFERENCE_FAILED = 1000;
+      UNSUPPORTED_DOC_TYPE = 1001;
+      SANDBOX_ERROR = 1002;
+      ARCHIVE_CORRUPTED = 1003;
+      OLE_DIR_PARSING_FAILED = 1004;
+      OLE_FAT_HEADER_PARSING_FAILED = 1005;
+      PREFIXED_ANSI_STRING_HEADER_TOO_SHORT = 1006;
+      PREFIXED_ANSI_STRING_CONTENT_TOO_SHORT = 1007;
+      CLIPBOARD_FORMAT_OR_ANSI_STRING_TOO_SHORT = 1008;
+      BOF_HEADER_TOO_SHORT = 1009;
+      NOT_BIFF_FORMAT = 1010;
+      FAIL_PARSE_BIFF_VERSION = 1011;
+      INVALID_DDE_OLE_LINK = 1012;
+      OLE_NATIVE_EMBEDDED_PARSE_SIZE_FAIL = 1013;
+      OLE_NATIVE_EMBEDDED_SIZE_MISMATCH = 1014;
+      OLE_NATIVE_EMBEDDED_PARSE_TYPE_FAIL = 1015;
+      OLE_NATIVE_EMBEDDED_PARSE_FILENAME_FAIL = 1016;
+      OLE_NATIVE_EMBEDDED_PARSE_FILEPATH_FAIL = 1017;
+      OLE_NATIVE_EMBEDDED_PARSE_RESERVED_FAIL = 1018;
+      OLE_NATIVE_EMBEDDED_PARSE_TEMPPATH_FAIL = 1019;
+      OLE_NATIVE_EMBEDDED_PARSE_FILESIZE_FAIL = 1020;
+      OLE_NATIVE_EMBEDDED_FILESIZE_MISMATCH = 1021;
+      OLE_NATIVE_EMBEDDED_PARSE_CONTENT_FAIL = 1022;
+      INVALID_OLE2_HEADER = 1023;
+      INVALID_FAT_HEADER = 1024;
+      EMPTY_FAT_HEADER = 1025;
+      INVALID_ROOT_DIR = 1026;
+      MISSING_FILE_IN_ARCHIVE = 1027;
+      INVALID_XML_DOC = 1028;
+      MISSING_PROPERTIES = 1029;
+      NOT_IMPLEMENTED_FOR_CHROME = 1030;
+      NOT_IMPLEMENTED = 1031;
+      MISSING_ENCODING = 1032;
+    }
+    optional MaldocaErrorType maldoca_error_type = 2;
+    optional string maldoca_error_message = 3;
+  }
+
+  message DocumentSummary {
+    optional DocumentInfo metadata = 1;
+    optional DocumentProcessingInfo processing_info = 2;
+  }
+
+  optional DocumentSummary document_summary = 84;
 }
 
 message ReferrerChainOptions {

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -34,7 +33,10 @@ class RemoteModuleWatcher {
 
   // The amount of time this class waits before sending all the received module
   // events in one batch to the browser process.
-  static constexpr base::TimeDelta kIdleDelay = base::TimeDelta::FromSeconds(5);
+  static constexpr base::TimeDelta kIdleDelay = base::Seconds(5);
+
+  RemoteModuleWatcher(const RemoteModuleWatcher&) = delete;
+  RemoteModuleWatcher& operator=(const RemoteModuleWatcher&) = delete;
 
   ~RemoteModuleWatcher();
 
@@ -80,8 +82,6 @@ class RemoteModuleWatcher {
   base::DelayTimer delay_timer_;
 
   base::WeakPtrFactory<RemoteModuleWatcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteModuleWatcher);
 };
 
 #endif  // CHROME_COMMON_CONFLICTS_REMOTE_MODULE_WATCHER_WIN_H_

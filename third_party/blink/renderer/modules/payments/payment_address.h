@@ -21,6 +21,10 @@ class MODULES_EXPORT PaymentAddress : public ScriptWrappable {
 
  public:
   explicit PaymentAddress(payments::mojom::blink::PaymentAddressPtr);
+
+  PaymentAddress(const PaymentAddress&) = delete;
+  PaymentAddress& operator=(const PaymentAddress&) = delete;
+
   ~PaymentAddress() override;
 
   ScriptValue toJSONForBinding(ScriptState*) const;
@@ -47,8 +51,6 @@ class MODULES_EXPORT PaymentAddress : public ScriptWrappable {
   String organization_;
   String recipient_;
   String phone_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAddress);
 };
 
 }  // namespace blink

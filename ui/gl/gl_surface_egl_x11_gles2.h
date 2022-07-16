@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-
-#include "base/macros.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl_x11.h"
@@ -20,6 +18,11 @@ class GL_EXPORT NativeViewGLSurfaceEGLX11GLES2
     : public NativeViewGLSurfaceEGLX11 {
  public:
   explicit NativeViewGLSurfaceEGLX11GLES2(x11::Window window);
+
+  NativeViewGLSurfaceEGLX11GLES2(const NativeViewGLSurfaceEGLX11GLES2&) =
+      delete;
+  NativeViewGLSurfaceEGLX11GLES2& operator=(
+      const NativeViewGLSurfaceEGLX11GLES2&) = delete;
 
   // NativeViewGLSurfaceEGL overrides.
   EGLConfig GetConfig() override;
@@ -43,8 +46,6 @@ class GL_EXPORT NativeViewGLSurfaceEGLX11GLES2
   void OnEvent(const x11::Event& xev) override;
 
   x11::Window parent_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewGLSurfaceEGLX11GLES2);
 };
 
 }  // namespace gl

@@ -17,9 +17,6 @@
 #include "ui/events/blink/web_input_event_builders_win.h"
 #endif
 
-#if defined(USE_X11)
-#endif
-
 namespace ui {
 
 namespace {

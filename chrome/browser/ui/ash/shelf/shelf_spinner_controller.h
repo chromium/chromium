@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "ash/public/cpp/shelf_model_observer.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
@@ -37,6 +36,10 @@ class ShelfSpinnerController : public ash::ShelfModelObserver {
   class ShelfSpinnerData;
 
   explicit ShelfSpinnerController(ChromeShelfController* owner);
+
+  ShelfSpinnerController(const ShelfSpinnerController&) = delete;
+  ShelfSpinnerController& operator=(const ShelfSpinnerController&) = delete;
+
   ~ShelfSpinnerController() override;
 
   bool HasApp(const std::string& app_id) const;
@@ -108,8 +111,6 @@ class ShelfSpinnerController : public ash::ShelfModelObserver {
 
   // Always keep this the last member of this class.
   base::WeakPtrFactory<ShelfSpinnerController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfSpinnerController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_SHELF_SPINNER_CONTROLLER_H_

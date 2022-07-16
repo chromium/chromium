@@ -2,10 +2,10 @@ Tests that nested import scripts in worker show correct stack on syntax error.
 
 Message count: 1
 invalidScript.js:1 Uncaught SyntaxError: Unexpected identifier
-    at importScripts-3.js:1
-    at foo (importScripts-2.js:3)
-    at importScripts-2.js:5
-    at importScripts-1.js:1
+    at importScripts-3.js:1:1
+    at foo (importScripts-2.js:3:5)
+    at importScripts-2.js:5:1
+    at importScripts-1.js:1:1
 (anonymous) @ importScripts-3.js:1
 foo @ importScripts-2.js:3
 (anonymous) @ importScripts-2.js:5

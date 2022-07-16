@@ -27,6 +27,10 @@ class HandwritingDrawing final : public ScriptWrappable {
   explicit HandwritingDrawing(ExecutionContext* context,
                               HandwritingRecognizer* recognizer,
                               const HandwritingHints* hints);
+
+  HandwritingDrawing(const HandwritingDrawing&) = delete;
+  HandwritingDrawing& operator=(const HandwritingDrawing&) = delete;
+
   ~HandwritingDrawing() override;
 
   // IDL Interface:
@@ -46,8 +50,6 @@ class HandwritingDrawing final : public ScriptWrappable {
   HeapVector<Member<HandwritingStroke>> strokes_;
 
   WeakMember<HandwritingRecognizer> recognizer_;
-
-  DISALLOW_COPY_AND_ASSIGN(HandwritingDrawing);
 };
 
 }  // namespace blink

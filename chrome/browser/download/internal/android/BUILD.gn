@@ -28,7 +28,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/home/filter/OfflineItemFilterSource.java",
     "java/src/org/chromium/chrome/browser/download/home/filter/SearchOfflineItemFilter.java",
     "java/src/org/chromium/chrome/browser/download/home/filter/TypeOfflineItemFilter.java",
-    "java/src/org/chromium/chrome/browser/download/home/glue/OfflineContentProviderGlue.java",
     "java/src/org/chromium/chrome/browser/download/home/glue/ThumbnailRequestGlue.java",
     "java/src/org/chromium/chrome/browser/download/home/list/BatchListModel.java",
     "java/src/org/chromium/chrome/browser/download/home/list/DateOrderedListCoordinator.java",

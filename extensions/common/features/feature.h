@@ -49,7 +49,8 @@ class Feature {
     LACROS_PLATFORM,
     LINUX_PLATFORM,
     MACOSX_PLATFORM,
-    WIN_PLATFORM
+    WIN_PLATFORM,
+    FUCHSIA_PLATFORM,
   };
 
   // Whether a feature is available in a given situation or not, and if not,

@@ -19,6 +19,12 @@ class HEADLESS_EXPORT HeadlessDevToolsAgentHostClient
  public:
   explicit HeadlessDevToolsAgentHostClient(
       scoped_refptr<content::DevToolsAgentHost> agent_host);
+
+  HeadlessDevToolsAgentHostClient(const HeadlessDevToolsAgentHostClient&) =
+      delete;
+  HeadlessDevToolsAgentHostClient& operator=(
+      const HeadlessDevToolsAgentHostClient&) = delete;
+
   ~HeadlessDevToolsAgentHostClient() override;
 
   // content::DevToolsAgentHostClient implementation.
@@ -33,8 +39,6 @@ class HEADLESS_EXPORT HeadlessDevToolsAgentHostClient
  private:
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   HeadlessDevToolsChannel::Client* client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessDevToolsAgentHostClient);
 };
 
 }  // namespace headless

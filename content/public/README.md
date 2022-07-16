@@ -73,3 +73,42 @@ e.g. `//content/browser`, `//content/renderer` etc...
   The only exception is `OnMessageReceived()`, which is fine since only one
   observer class handles each particular IPC, so ordering doesn't make a
   difference.
+
+## Dependencies on content
+
+Large parts of the Chromium codebase depend on `//content/public`. Some notable
+directories that depend on it are (parts of) `//extensions`, `//chrome`,
+and `//weblayer`. Some directories in `//components` also depend on it, while
+conversely `//content` depends on some components.
+
+Directories that do not depend on content include `//third_party/blink` and
+`//services`.
+
+When adding and reviewing DEPS changes that take a dependency on
+content, some things to consider are:
+
+- Directories outside content can only depend on code inside
+  `//content/public` and not `//content` itself or other subdirectories.
+- Try to consider whether it makes architectural sense for the directory to
+  depend on content.
+- Circular dependencies are not allowed. One reasonable way to check this is
+  `git gs <directory>` inside `//content`. There is no complete automated check
+  at this time.
+- Figure out if code really needs `//content`. For example, if it just needs
+  `BrowserThread`, you could instead inject the main task runner (or they can
+  grab it from the static getter on creation of their object).
+- Use `//content/public/test` if only test code is needed.
+- `//components` subdirectories *can* depend on `//content/public`, but be
+  careful of circular dependencies because content depends on some components.
+  Full guidelines for components are in the [README](/components/README.md).
+- Confirm the code is running in the correct process: e.g.,
+  `//component/foo/browser` can only use `//content/public/browser`. Some
+  modules/components run only in one process and don't have the explicit
+  directory name.
+- General DEPS tip: If an ancestor DEPS file already adds a dependency, the
+  descendent DEPS file does not need to add the dependency also, unless
+  something explicitly overrode the dependency. When reviewing a CL that adds a
+  dependency in a descendent directory, confirm that it is required for the
+  build to succeed, and if so determine what overrode the dependency and why. An
+  example of this is `content/public/browser/tts_controller.h` in
+  [/chrome/browser/DEPS](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/DEPS;l=485;drc=a2b0d55a9ccd93c898835c2462a86698603ad40d).

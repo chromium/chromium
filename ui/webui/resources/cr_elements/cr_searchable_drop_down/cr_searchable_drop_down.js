@@ -14,8 +14,21 @@
  * dropdown matches the previously saved dropdown value. This property can be
  * used to disable certain user actions when the dropdown is invalid.
  */
+import '../cr_input/cr_input.m.js';
+import '../hidden_style_css.m.js';
+import '../icons.m.js';
+import '../shared_style_css.m.js';
+import '../shared_vars_css.m.js';
+import '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
   is: 'cr-searchable-drop-down',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     autofocus: {
@@ -479,4 +492,3 @@ Polymer({
         !this.updateValueOnInput && (this.value !== this.$.search.value);
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

@@ -5,7 +5,9 @@
 #ifndef CC_LAYERS_TEXTURE_LAYER_H_
 #define CC_LAYERS_TEXTURE_LAYER_H_
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -149,12 +151,11 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   void SetTransferableResource(const viz::TransferableResource& resource,
                                viz::ReleaseCallback release_callback);
 
-  void SetNeedsDisplayRect(const gfx::Rect& dirty_rect) override;
-
   void SetLayerTreeHost(LayerTreeHost* layer_tree_host) override;
   bool Update() override;
   bool IsSnappedToPixelGridInTarget() override;
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void PushPropertiesTo(LayerImpl* layer,
+                        const CommitState& commit_state) override;
 
   // Request a mapping from SharedBitmapId to SharedMemory be registered via the
   // LayerTreeFrameSink with the display compositor. Once this mapping is

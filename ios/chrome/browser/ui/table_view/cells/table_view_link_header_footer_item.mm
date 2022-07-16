@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "net/base/mac/url_conversions.h"
 
@@ -57,11 +56,8 @@ const CGFloat kVerticalPadding = 8;
                        withStyler:(ChromeTableViewStyler*)styler {
   [super configureHeaderFooterView:headerFooter withStyler:styler];
 
-  if (self.urls.empty()) {
-    headerFooter.accessibilityTraits &= ~UIAccessibilityTraitLink;
-  } else {
+  if (!self.urls.empty()) {
     headerFooter.urls = self.urls;
-    headerFooter.accessibilityTraits |= UIAccessibilityTraitLink;
   }
   [headerFooter setText:self.text];
 }
@@ -84,8 +80,6 @@ const CGFloat kVerticalPadding = 8;
 - (instancetype)initWithReuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithReuseIdentifier:reuseIdentifier];
   if (self) {
-    self.isAccessibilityElement = YES;
-
     _textView = [[UITextView alloc] init];
     _textView.scrollEnabled = NO;
     _textView.editable = NO;
@@ -132,7 +126,7 @@ const CGFloat kVerticalPadding = 8;
   NSDictionary* textAttributes = @{
     NSFontAttributeName :
         [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle],
-    NSForegroundColorAttributeName : UIColor.cr_secondaryLabelColor
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
   };
 
   NSMutableAttributedString* attributedText =
@@ -177,10 +171,11 @@ const CGFloat kVerticalPadding = 8;
   return NO;
 }
 
-#pragma mark - NSObject(Accessibility)
-
-- (NSString*)accessibilityLabel {
-  return [self.textView.attributedText string];
+- (void)textViewDidChangeSelection:(UITextView*)textView {
+  // Always force the |selectedTextRange| to |nil| to prevent users from
+  // selecting text. Setting the |selectable| property to |NO| doesn't help
+  // since it makes links inside the text view untappable.
+  textView.selectedTextRange = nil;
 }
 
 @end

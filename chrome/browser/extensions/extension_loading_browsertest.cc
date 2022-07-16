@@ -5,6 +5,7 @@
 // This file contains tests for extension loading, reloading, and
 // unloading behavior.
 
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/version.h"
@@ -16,13 +17,16 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/extensions/api/tabs.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -35,6 +39,10 @@
 
 namespace extensions {
 namespace {
+
+constexpr char kChangeBackgroundScriptTypeExtensionId[] =
+    "ldnnhddmnhbkjipkidpdiheffobcpfmf";
+using ContextType = ExtensionBrowserTest::ContextType;
 
 class ExtensionLoadingTest : public ExtensionBrowserTest {
 };
@@ -69,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
   ASSERT_TRUE(new_tab_extension);
 
   // Visit the New Tab Page to get a renderer using the extension into history.
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab")));
 
   // Navigate that tab to a non-extension URL to swap out the extension's
   // renderer.
@@ -303,6 +311,56 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest, RuntimeValidWhileDevToolsOpen) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(
       DevToolsWindow::FindDevToolsWindow(
           content::DevToolsAgentHost::GetOrCreateFor(bg_contents).get()));
+}
+
+// Tests that changing a Service Worker based extension to an event page doesn't
+// crash. Regression test for https://crbug.com/1239752.
+//
+// This test loads a SW based extension that has an event listener for
+// chrome.tabs.onCreated. The event would be registered in ExtensionPrefs. The
+// test then changes the extension to event page and ensures that restarting the
+// browser wouldn't route the event incorrectly to ServiceWorkerTaskQueue (which
+// used to cause a crash).
+IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest, PRE_ChangeBackgroundScriptType) {
+  ExtensionTestMessageListener listener("ready", false);
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("manifest_changed_before_restart"),
+      {.context_type = ContextType::kServiceWorker});
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+
+  ExtensionId extension_id = extension->id();
+  EXPECT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension));
+
+  // Change |extension| to become an event page extension.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath event_page_manifest_file =
+        extension->path().Append(FILE_PATH_LITERAL("manifest.json"));
+    ASSERT_TRUE(base::PathExists(event_page_manifest_file));
+    EXPECT_TRUE(base::CopyFile(
+        test_data_dir_.AppendASCII("manifest_changed_before_restart")
+            .Append(FILE_PATH_LITERAL("manifest.json")),
+        event_page_manifest_file));
+  }
+
+  // Ensure that tabs.onCreated SW event was registered.
+  // It is sufficient that a "lazy" event is present because we already know
+  // that |extension| is SW based.
+  EXPECT_TRUE(EventRouter::Get(profile())->HasLazyEventListenerForTesting(
+      api::tabs::OnCreated::kEventName));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest, ChangeBackgroundScriptType) {
+  // The goal of this test step is to not crash.
+  const extensions::Extension* extension =
+      extension_registry()->enabled_extensions().GetByID(
+          kChangeBackgroundScriptTypeExtensionId);
+  ASSERT_TRUE(extension);
+
+  // |extension| should not run as SW based after browser restart as it became
+  // an event page extension.
+  EXPECT_FALSE(BackgroundInfo::IsServiceWorkerBased(extension));
 }
 
 }  // namespace

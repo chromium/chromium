@@ -37,37 +37,37 @@ GUID AudioCodecToMediaFoundationSubtype(AudioCodec codec) {
   DVLOG(1) << __func__ << ": codec=" << codec;
 
   switch (codec) {
-    case kCodecAAC:
+    case AudioCodec::kAAC:
       return MFAudioFormat_AAC;
-    case kCodecMP3:
+    case AudioCodec::kMP3:
       return MFAudioFormat_MP3;
-    case kCodecPCM:
+    case AudioCodec::kPCM:
       return MFAudioFormat_PCM;
-    case kCodecVorbis:
+    case AudioCodec::kVorbis:
       return MFAudioFormat_Vorbis;
-    case kCodecFLAC:
+    case AudioCodec::kFLAC:
       return MFAudioFormat_FLAC;
-    case kCodecAMR_NB:
+    case AudioCodec::kAMR_NB:
       return MFAudioFormat_AMR_NB;
-    case kCodecAMR_WB:
+    case AudioCodec::kAMR_WB:
       return MFAudioFormat_AMR_WB;
-    case kCodecPCM_MULAW:
+    case AudioCodec::kPCM_MULAW:
       return MediaFoundationSubTypeFromWaveFormat(WAVE_FORMAT_MULAW);
-    case kCodecGSM_MS:
+    case AudioCodec::kGSM_MS:
       return MediaFoundationSubTypeFromWaveFormat(WAVE_FORMAT_GSM610);
-    case kCodecPCM_S16BE:
+    case AudioCodec::kPCM_S16BE:
       return MFAudioFormat_PCM;
-    case kCodecPCM_S24BE:
+    case AudioCodec::kPCM_S24BE:
       return MFAudioFormat_PCM;
-    case kCodecOpus:
+    case AudioCodec::kOpus:
       return MFAudioFormat_Opus;
-    case kCodecEAC3:
+    case AudioCodec::kEAC3:
       return MFAudioFormat_Dolby_DDPlus;
-    case kCodecPCM_ALAW:
+    case AudioCodec::kPCM_ALAW:
       return MediaFoundationSubTypeFromWaveFormat(WAVE_FORMAT_ALAW);
-    case kCodecALAC:
+    case AudioCodec::kALAC:
       return MFAudioFormat_ALAC;
-    case kCodecAC3:
+    case AudioCodec::kAC3:
       return MFAudioFormat_Dolby_AC3;
     default:
       return GUID_NULL;
@@ -76,9 +76,9 @@ GUID AudioCodecToMediaFoundationSubtype(AudioCodec codec) {
 
 bool IsUncompressedAudio(AudioCodec codec) {
   switch (codec) {
-    case kCodecPCM:
-    case kCodecPCM_S16BE:
-    case kCodecPCM_S24BE:
+    case AudioCodec::kPCM:
+    case AudioCodec::kPCM_S16BE:
+    case AudioCodec::kPCM_S24BE:
       return true;
     default:
       return false;
@@ -155,8 +155,11 @@ HRESULT GetAacAudioType(const AudioDecoderConfig decoder_config,
   ComPtr<IMFMediaType> media_type;
   RETURN_IF_FAILED(GetDefaultAudioType(decoder_config, &media_type));
 
-  size_t wave_format_size =
-      sizeof(HEAACWAVEINFO) + decoder_config.extra_data().size();
+  // On Windows `extra_data` is not populated for AAC in `decoder_config`. Use
+  // `aac_extra_data` instead. See crbug.com/1245123.
+  const auto& extra_data = decoder_config.aac_extra_data();
+
+  size_t wave_format_size = sizeof(HEAACWAVEINFO) + extra_data.size();
   std::vector<uint8_t> wave_format_buffer(wave_format_size);
   HEAACWAVEINFO* aac_wave_format =
       reinterpret_cast<HEAACWAVEINFO*>(wave_format_buffer.data());
@@ -178,10 +181,9 @@ HRESULT GetAacAudioType(const AudioDecoderConfig decoder_config,
   aac_wave_format->wReserved1 = 0;
   aac_wave_format->dwReserved2 = 0;
 
-  if (decoder_config.extra_data().size() > 0) {
+  if (!extra_data.empty()) {
     memcpy(reinterpret_cast<uint8_t*>(aac_wave_format) + sizeof(HEAACWAVEINFO),
-           decoder_config.extra_data().data(),
-           decoder_config.extra_data().size());
+           extra_data.data(), extra_data.size());
   }
 
   RETURN_IF_FAILED(MFInitMediaTypeFromWaveFormatEx(
@@ -199,6 +201,7 @@ HRESULT MediaFoundationAudioStream::Create(
     int stream_id,
     IMFMediaSource* parent_source,
     DemuxerStream* demuxer_stream,
+    std::unique_ptr<MediaLog> media_log,
     MediaFoundationStreamWrapper** stream_out) {
   DVLOG(1) << __func__ << ": stream_id=" << stream_id;
 
@@ -206,14 +209,16 @@ HRESULT MediaFoundationAudioStream::Create(
   AudioCodec codec = demuxer_stream->audio_decoder_config().codec();
   switch (codec) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    case kCodecAAC:
+    case AudioCodec::kAAC:
       RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationAACAudioStream>(
-          &audio_stream, stream_id, parent_source, demuxer_stream));
+          &audio_stream, stream_id, parent_source, demuxer_stream,
+          std::move(media_log)));
       break;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
     default:
       RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationAudioStream>(
-          &audio_stream, stream_id, parent_source, demuxer_stream));
+          &audio_stream, stream_id, parent_source, demuxer_stream,
+          std::move(media_log)));
       break;
   }
   *stream_out =

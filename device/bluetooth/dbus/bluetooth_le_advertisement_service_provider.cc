@@ -81,6 +81,11 @@ class BluetoothAdvertisementServiceProviderImpl
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  BluetoothAdvertisementServiceProviderImpl(
+      const BluetoothAdvertisementServiceProviderImpl&) = delete;
+  BluetoothAdvertisementServiceProviderImpl& operator=(
+      const BluetoothAdvertisementServiceProviderImpl&) = delete;
+
   ~BluetoothAdvertisementServiceProviderImpl() override {
     DVLOG(1) << "Cleaning up Bluetooth Advertisement: " << object_path_.value();
 
@@ -443,8 +448,6 @@ class BluetoothAdvertisementServiceProviderImpl
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdvertisementServiceProviderImpl>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdvertisementServiceProviderImpl);
 };
 
 BluetoothLEAdvertisementServiceProvider::

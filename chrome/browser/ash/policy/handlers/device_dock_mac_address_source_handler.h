@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_DOCK_MAC_ADDRESS_SOURCE_HANDLER_H_
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_DOCK_MAC_ADDRESS_SOURCE_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 
@@ -22,6 +21,11 @@ class DeviceDockMacAddressHandler {
   DeviceDockMacAddressHandler(
       ash::CrosSettings* cros_settings,
       chromeos::NetworkDeviceHandler* network_device_handler);
+
+  DeviceDockMacAddressHandler(const DeviceDockMacAddressHandler&) = delete;
+  DeviceDockMacAddressHandler& operator=(const DeviceDockMacAddressHandler&) =
+      delete;
+
   ~DeviceDockMacAddressHandler();
 
  private:
@@ -31,8 +35,6 @@ class DeviceDockMacAddressHandler {
   chromeos::NetworkDeviceHandler* network_device_handler_;
   base::CallbackListSubscription dock_mac_address_source_policy_subscription_;
   base::WeakPtrFactory<DeviceDockMacAddressHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDockMacAddressHandler);
 };
 
 }  // namespace policy

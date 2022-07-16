@@ -35,6 +35,10 @@ class AudioInputResource : public PluginResource,
                            public base::DelegateSimpleThread::Delegate {
  public:
   AudioInputResource(Connection connection, PP_Instance instance);
+
+  AudioInputResource(const AudioInputResource&) = delete;
+  AudioInputResource& operator=(const AudioInputResource&) = delete;
+
   ~AudioInputResource() override;
 
   // Resource overrides.
@@ -145,8 +149,6 @@ class AudioInputResource : public PluginResource,
   // Internal buffer for client's integer audio data.
   int client_buffer_size_bytes_;
   std::unique_ptr<uint8_t[]> client_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioInputResource);
 };
 
 }  // namespace proxy

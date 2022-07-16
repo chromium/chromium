@@ -40,7 +40,7 @@ def GetObsoleteXmlErrors(input_api, output_api, cwd, results):
 
   if exit_code != 0:
     error_msg = (
-        'histograms_xml/obsolete_histograms.xml contains non-obsolete '
+        'metadata/obsolete_histograms.xml contains non-obsolete '
         'histograms, please run validate_obsolete_histograms.py to fix.')
     results.append(output_api.PresubmitError(error_msg))
 

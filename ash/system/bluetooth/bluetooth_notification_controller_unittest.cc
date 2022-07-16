@@ -41,6 +41,10 @@ const char16_t kTestAdapterAddress16[] = u"01:23:45:67:89:AB";
 class TestMessageCenter : public message_center::FakeMessageCenter {
  public:
   TestMessageCenter() = default;
+
+  TestMessageCenter(const TestMessageCenter&) = delete;
+  TestMessageCenter& operator=(const TestMessageCenter&) = delete;
+
   ~TestMessageCenter() override = default;
 
   void ClickOnNotification(const std::string& id) override {
@@ -49,9 +53,6 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
     DCHECK(notification);
     notification->delegate()->Click(absl::nullopt, absl::nullopt);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestMessageCenter);
 };
 
 }  // namespace
@@ -59,6 +60,11 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
 class BluetoothNotificationControllerTest : public AshTestBase {
  public:
   BluetoothNotificationControllerTest() = default;
+
+  BluetoothNotificationControllerTest(
+      const BluetoothNotificationControllerTest&) = delete;
+  BluetoothNotificationControllerTest& operator=(
+      const BluetoothNotificationControllerTest&) = delete;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -155,8 +161,6 @@ class BluetoothNotificationControllerTest : public AshTestBase {
   TestSystemTrayClient* system_tray_client_;
   std::unique_ptr<device::MockBluetoothDevice> bluetooth_device_1_;
   std::unique_ptr<device::MockBluetoothDevice> bluetooth_device_2_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothNotificationControllerTest);
 };
 
 TEST_F(BluetoothNotificationControllerTest, DiscoverableNotification) {

@@ -22,6 +22,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
       public base::SupportsWeakPtr<NetworkConnectionHandlerImpl> {
  public:
   NetworkConnectionHandlerImpl();
+
+  NetworkConnectionHandlerImpl(const NetworkConnectionHandlerImpl&) = delete;
+  NetworkConnectionHandlerImpl& operator=(const NetworkConnectionHandlerImpl&) =
+      delete;
+
   ~NetworkConnectionHandlerImpl() override;
 
   // NetworkConnectionHandler:
@@ -164,8 +169,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
 
   // Track certificate loading state.
   bool certificates_loaded_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectionHandlerImpl);
 };
 
 }  // namespace chromeos

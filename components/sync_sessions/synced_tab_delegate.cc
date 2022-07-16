@@ -6,7 +6,7 @@
 
 namespace sync_sessions {
 
-SyncedTabDelegate::SyncedTabDelegate() {}
-SyncedTabDelegate::~SyncedTabDelegate() {}
+SyncedTabDelegate::SyncedTabDelegate() = default;
+SyncedTabDelegate::~SyncedTabDelegate() = default;
 
 }  // namespace sync_sessions

@@ -19,20 +19,19 @@ class FontCustomPlatformData;
 
 class RemoteFontFaceSource final : public CSSFontFaceSource,
                                    public FontResourceClient {
-  USING_PRE_FINALIZER(RemoteFontFaceSource, Dispose);
-
  public:
   enum Phase { kNoLimitExceeded, kShortLimitExceeded, kLongLimitExceeded };
 
   RemoteFontFaceSource(CSSFontFace*, FontSelector*, FontDisplay);
   ~RemoteFontFaceSource() override;
-  void Dispose();
 
   bool IsLoading() const override;
   bool IsLoaded() const override;
   bool IsValid() const override;
 
   String GetURL() const override { return url_; }
+
+  bool IsPendingDataUrl() const override;
 
   const FontCustomPlatformData* GetCustomPlaftormData() const override {
     return custom_font_data_.get();
@@ -49,9 +48,11 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
   bool IsInBlockPeriod() const override { return period_ == kBlockPeriod; }
   bool IsInFailurePeriod() const override { return period_ == kFailurePeriod; }
 
+  // For UMA reporting and 'font-display: optional' period control.
+  void PaintRequested() override;
+
   // For UMA reporting
   bool HadBlankText() override { return histograms_.HadBlankText(); }
-  void PaintRequested() override { histograms_.FallbackFontPainted(period_); }
 
   void Trace(Visitor*) const override;
 
@@ -158,12 +159,12 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
   bool is_intervention_triggered_;
   bool finished_before_document_rendering_begin_;
 
-  // Indicates whether FontData has been requested while the font is still being
-  // loaded, in which case a fallback FontData is returned and used. If true, we
-  // will render contents with fallback font, and later if we would switch to
-  // the web font after it loads, there will be a layout shifting. Therefore, we
-  // don't need to worry about layout shifting when it's false.
-  bool has_been_requested_while_pending_;
+  // Indicates whether FontData has been requested for painting while the font
+  // is still being loaded, in which case we will paint with a fallback font. If
+  // true, and later if we would switch to the web font after it loads, there
+  // will be a layout shifting. Therefore, we don't need to worry about layout
+  // shifting when it's false.
+  bool paint_requested_while_pending_;
 
   bool finished_before_lcp_limit_;
 };

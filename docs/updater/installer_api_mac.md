@@ -1,47 +1,46 @@
 # Mac Installer API
-This document briefly goes over the installer API for the updater on macOS.
+This document describes how macOS software integrates with Chromium Updater for
+software updates.
 
 ## Design
-The Installer API is the integration between the app installer and the updater,
-and is platform specific. The main functionality for doing the updates in the
-new updater will be an update executable (.install). The update executable will
-be invoked by the updater when there is an update available.
+macOS software updates are delivered as archives (often DMG or ZIP) that contain
+an `.install` executable at the root of the archive. (Typically the archives
+also contain an app bundle, i.e. the new version of the app.)
 
-The Installer API will be called through `Installer::RunApplicationInstaller()`,
-which takes `const base::FilePath&` for the path to the installer and
-`const std::string& arguments` for any arguments. This will then call
-`InstallFromDMG()`, which takes the same parameters. `InstallFromDMG()` then
-executes `.install` with the correct arguments.
+The updater will execute `.install`, passing data as positional command-line
+arguments and environment variables.
 
-## .install
+The archive may also contain `.preinstall` and `.postinstall`, which are
+executed before and after `.install` respectively. If any fail (exit with a
+non-zero status), the remaining executables are not run. Collectively, these
+three executables are called the "install executables".
 
-### Usage
-The installer DMG will have the .install executable in the root of the volume
-and the new application embedded within.
+## .install Execution Environment
 
-Currently the install executable takes just three arguments - an absolute path
-to the DMG, an absolute path to the currently installed app, and the version of
-the currently installed app. `Installer::RunApplicationInstaller()`, will append
-the existence checker path (path to the installed app) and the version from the
-registration into the args.
+### Command-Line Arguments
+The install executables are passed the following arguments, in this order:
 
-For example, `Google Chrome.dmg`, will contain `Google Chrome.app` and
-`.install` executable. Here is an example of what `InstallFromDMG()` will run:
+1. The absolute path to the unpacked update archive (i.e. the parent directory
+of the install executable.)
 
-i.e.
-```
-./.install "/Volumes/Google Chrome.dmg" "/Applications/Google Chrome.app" \
-"81.0.416.0"
-```
+2. The absolute path to the installation of the app, based on its
+existence-checker value.
 
-### Exit Codes
-The current constraint for exit codes for the `.install` executable is that 0 is
-a successful update, and every other value is an error of some kind. For
-documentation on the existing exit codes for the implemented .install
-executable, please refer to `//chrome/updater/mac/setup/.install.sh`.
+### Environment Variables
+The install executables are executed in an environment with the following
+environment variables defined:
 
-### Non-executable Error Codes
-When executing `InstallFromDMG()`, there can also be cases in which the
-Installer API fails before the install executable is executed. These are
-translated from the enum `updater::InstallErrors`. Please refer to
-`//chrome/updater/mac/install.h` for documentation on these error codes.
+ - `PATH`: '/bin:/usr/bin:/Path/To/ksadmin'.
+ - `KS_TICKET_XC_PATH`: The absolute path to the installation of the app, based
+ on its existence-checker value.
+ - `KS_TICKET_AP`: The ap value of the currently-installed version of the app.
+ (Note: "ap" was called "tag" in Keystone.)
+
+## Updating Product Metadata
+If the install executables succeed, the updater will automatically record the
+new version of the application without any special action from the installers.
+
+If the installers must also change other elements of the installation, such as
+the brand, path, ap, or similar, they may do so by executing ksadmin, for
+example by running
+`ksadmin --register --product-id com.google.MyProductId --tag MyNewAp`.

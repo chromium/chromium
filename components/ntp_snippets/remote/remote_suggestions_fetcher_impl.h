@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
@@ -54,6 +53,9 @@ class RemoteSuggestionsFetcherImpl : public RemoteSuggestionsFetcher {
       const GURL& api_endpoint,
       const std::string& api_key,
       const UserClassifier* user_classifier);
+  RemoteSuggestionsFetcherImpl(const RemoteSuggestionsFetcherImpl&) = delete;
+  RemoteSuggestionsFetcherImpl& operator=(const RemoteSuggestionsFetcherImpl&) =
+      delete;
   ~RemoteSuggestionsFetcherImpl() override;
 
   void FetchSnippets(const RequestParams& params,
@@ -142,8 +144,6 @@ class RemoteSuggestionsFetcherImpl : public RemoteSuggestionsFetcher {
   bool last_fetch_authenticated_;
 
   static bool skip_api_key_check_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsFetcherImpl);
 };
 
 }  // namespace ntp_snippets

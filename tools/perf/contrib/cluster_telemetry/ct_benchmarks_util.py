@@ -6,7 +6,9 @@
 def AddBenchmarkCommandLineArgs(parser):
   parser.add_option('--user-agent',  action='store', type='string',
                     default=None, help='Options are mobile and desktop.')
-  parser.add_option('--archive-data-file',  action='store', type='string',
+  parser.add_option('--archive-data-file',
+                    action='store',
+                    type='string',
                     default=None,
                     help='The location of the WPR JSON archive file.')
   parser.add_option('--urls-list',  action='store', type='string',

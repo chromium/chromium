@@ -117,19 +117,21 @@ RemoteSuggestion::CreateFromContentSuggestionsDictionary(
     snippet->image_dominant_color_ = image_dominant_color;
   }
 
-  double score;
-  if (dict.GetDouble("score", &score)) {
-    snippet->score_ = score;
-  }
+  absl::optional<double> score = dict.FindDoubleKey("score");
+  if (score)
+    snippet->score_ = *score;
 
   const base::DictionaryValue* notification_info = nullptr;
   if (dict.GetDictionary("notificationInfo", &notification_info)) {
-    if (notification_info->GetBoolean("shouldNotify",
-                                      &snippet->should_notify_) &&
-        snippet->should_notify_) {
-      if (!GetTimeValue(*notification_info, "deadline",
-                        &snippet->notification_deadline_)) {
-        snippet->notification_deadline_ = base::Time::Max();
+    absl::optional<bool> should_notify =
+        notification_info->FindBoolKey("shouldNotify");
+    if (should_notify) {
+      snippet->should_notify_ = should_notify.value();
+      if (snippet->should_notify_) {
+        if (!GetTimeValue(*notification_info, "deadline",
+                          &snippet->notification_deadline_)) {
+          snippet->notification_deadline_ = base::Time::Max();
+        }
       }
     }
   }

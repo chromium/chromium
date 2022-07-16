@@ -8,7 +8,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -78,6 +77,9 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   TabRestoreServiceHelper(TabRestoreService* tab_restore_service,
                           TabRestoreServiceClient* client,
                           TimeFactory* time_factory);
+
+  TabRestoreServiceHelper(const TabRestoreServiceHelper&) = delete;
+  TabRestoreServiceHelper& operator=(const TabRestoreServiceHelper&) = delete;
 
   ~TabRestoreServiceHelper() override;
 
@@ -224,8 +226,6 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   std::set<tab_groups::TabGroupId> closing_groups_;
 
   TimeFactory* const time_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabRestoreServiceHelper);
 };
 
 }  // namespace sessions

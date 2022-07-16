@@ -4,6 +4,7 @@
 
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_proxy_configurator.h"
 
+#include "base/barrier_closure.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/time/default_clock.h"
@@ -11,19 +12,27 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/http/http_status_code.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "url/gurl.h"
 
 PrefetchProxyProxyConfigurator::PrefetchProxyProxyConfigurator()
     : prefetch_proxy_server_(net::ProxyServer(
-          net::ProxyServer::GetSchemeFromURI(PrefetchProxyProxyHost().scheme()),
+          net::GetSchemeFromUriScheme(PrefetchProxyProxyHost().scheme()),
           net::HostPortPair::FromURL(PrefetchProxyProxyHost()))),
       clock_(base::DefaultClock::GetInstance()) {
   DCHECK(PrefetchProxyProxyHost().is_valid());
 
+  std::string header_value = "key=" + google_apis::GetAPIKey();
+  std::string server_experiment_group = PrefetchProxyServerExperimentGroup();
+  if (server_experiment_group != "") {
+    header_value += ",exp=" + server_experiment_group;
+  }
+
   connect_tunnel_headers_.SetHeader(PrefetchProxyProxyHeaderKey(),
-                                    "key=" + google_apis::GetAPIKey());
+                                    header_value);
 }
 
 PrefetchProxyProxyConfigurator::~PrefetchProxyProxyConfigurator() = default;
@@ -34,21 +43,27 @@ void PrefetchProxyProxyConfigurator::SetClockForTesting(
 }
 
 void PrefetchProxyProxyConfigurator::AddCustomProxyConfigClient(
-    mojo::Remote<network::mojom::CustomProxyConfigClient> config_client) {
+    mojo::Remote<network::mojom::CustomProxyConfigClient> config_client,
+    base::OnceCallback<void()> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   proxy_config_clients_.Add(std::move(config_client));
-  UpdateCustomProxyConfig();
+  UpdateCustomProxyConfig(std::move(callback));
 }
 
-void PrefetchProxyProxyConfigurator::UpdateCustomProxyConfig() {
+void PrefetchProxyProxyConfigurator::UpdateCustomProxyConfig(
+    base::OnceCallback<void()> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!PrefetchProxyIsEnabled())
+  if (!PrefetchProxyIsEnabled()) {
+    std::move(callback).Run();
     return;
+  }
 
+  base::RepeatingClosure repeating_closure =
+      base::BarrierClosure(proxy_config_clients_.size(), std::move(callback));
   network::mojom::CustomProxyConfigPtr config = CreateCustomProxyConfig();
   for (auto& client : proxy_config_clients_) {
-    client->OnCustomProxyConfigUpdated(config->Clone());
+    client->OnCustomProxyConfigUpdated(config->Clone(), repeating_closure);
   }
 }
 
@@ -143,7 +158,7 @@ void PrefetchProxyProxyConfigurator::OnTunnelProxyConnectionError(
     // Pick a random value between 1-5 mins if the proxy didn't give us a
     // Retry-After value. The randomness will help ensure there is no sudden
     // wave of requests following a proxy error.
-    retry_proxy_at = clock_->Now() + base::TimeDelta::FromSeconds(base::RandInt(
+    retry_proxy_at = clock_->Now() + base::Seconds(base::RandInt(
                                          base::Time::kSecondsPerMinute,
                                          5 * base::Time::kSecondsPerMinute));
   }

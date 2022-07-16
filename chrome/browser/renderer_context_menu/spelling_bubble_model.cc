@@ -26,7 +26,7 @@ using content::WebContents;
 
 SpellingBubbleModel::SpellingBubbleModel(Profile* profile,
                                          WebContents* web_contents)
-    : WebContentsObserver(web_contents), profile_(profile) {}
+    : profile_(profile), web_contents_(web_contents->GetWeakPtr()) {}
 
 SpellingBubbleModel::~SpellingBubbleModel() = default;
 
@@ -66,8 +66,8 @@ void SpellingBubbleModel::OpenHelpPage() {
   OpenURLParams params(GetHelpPageURL(), Referrer(),
                        WindowOpenDisposition::NEW_FOREGROUND_TAB,
                        ui::PAGE_TRANSITION_LINK, false);
-  if (web_contents()) {
-    web_contents()->OpenURL(params);
+  if (web_contents_) {
+    web_contents_->OpenURL(params);
     return;
   }
   // The web contents used to open this dialog have been destroyed.

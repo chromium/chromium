@@ -27,6 +27,10 @@ class PageSwitchWaiter : public ash::PaginationModelObserver {
   explicit PageSwitchWaiter(ash::PaginationModel* model) : model_(model) {
     model_->AddObserver(this);
   }
+
+  PageSwitchWaiter(const PageSwitchWaiter&) = delete;
+  PageSwitchWaiter& operator=(const PageSwitchWaiter&) = delete;
+
   ~PageSwitchWaiter() override { model_->RemoveObserver(this); }
 
   void Wait() { run_loop_.Run(); }
@@ -41,8 +45,6 @@ class PageSwitchWaiter : public ash::PaginationModelObserver {
 
   ash::PaginationModel* model_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageSwitchWaiter);
 };
 
 }  // namespace
@@ -51,6 +53,10 @@ class LauncherPageSwitchesTest : public UIPerformanceTest,
                                  public ::testing::WithParamInterface<bool> {
  public:
   LauncherPageSwitchesTest() = default;
+
+  LauncherPageSwitchesTest(const LauncherPageSwitchesTest&) = delete;
+  LauncherPageSwitchesTest& operator=(const LauncherPageSwitchesTest&) = delete;
+
   ~LauncherPageSwitchesTest() override = default;
 
   // UIPerformanceTest:
@@ -62,7 +68,7 @@ class LauncherPageSwitchesTest : public UIPerformanceTest,
     if (base::SysInfo::IsRunningOnChromeOS()) {
       base::RunLoop run_loop;
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(5));
+          FROM_HERE, run_loop.QuitClosure(), base::Seconds(5));
       run_loop.Run();
     }
 
@@ -103,8 +109,6 @@ class LauncherPageSwitchesTest : public UIPerformanceTest,
 
  private:
   bool is_tablet_mode_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LauncherPageSwitchesTest);
 };
 
 IN_PROC_BROWSER_TEST_P(LauncherPageSwitchesTest, SwitchToNextPage) {
@@ -139,6 +143,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 class LauncherPageDragTest : public UIPerformanceTest {
  public:
   LauncherPageDragTest() = default;
+
+  LauncherPageDragTest(const LauncherPageDragTest&) = delete;
+  LauncherPageDragTest& operator=(const LauncherPageDragTest&) = delete;
+
   ~LauncherPageDragTest() override = default;
 
   // UIPerformanceTest:
@@ -164,7 +172,7 @@ class LauncherPageDragTest : public UIPerformanceTest {
     if (base::SysInfo::IsRunningOnChromeOS()) {
       base::RunLoop run_loop;
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(5));
+          FROM_HERE, run_loop.QuitClosure(), base::Seconds(5));
       run_loop.Run();
     }
   }
@@ -177,9 +185,6 @@ class LauncherPageDragTest : public UIPerformanceTest {
         "ClamshellMode",
     };
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LauncherPageDragTest);
 };
 
 IN_PROC_BROWSER_TEST_F(LauncherPageDragTest, Run) {
@@ -194,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPageDragTest, Run) {
   end_point.set_y(10);
   auto generator = ui_test_utils::DragEventGenerator::CreateForTouch(
       std::make_unique<ui_test_utils::InterpolatedProducer>(
-          start_point, end_point, base::TimeDelta::FromMilliseconds(1000)));
+          start_point, end_point, base::Milliseconds(1000)));
 
   ash::PaginationModel* model = ash::ShellTestApi().GetAppListPaginationModel();
   ASSERT_TRUE(model);

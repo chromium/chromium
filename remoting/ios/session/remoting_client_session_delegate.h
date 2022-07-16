@@ -19,6 +19,11 @@ class ChromotingClientRuntime;
 class RemotingClientSessonDelegate : public ChromotingSession::Delegate {
  public:
   RemotingClientSessonDelegate(RemotingClient* client);
+
+  RemotingClientSessonDelegate(const RemotingClientSessonDelegate&) = delete;
+  RemotingClientSessonDelegate& operator=(const RemotingClientSessonDelegate&) =
+      delete;
+
   ~RemotingClientSessonDelegate() override;
 
   // ChromotingSession::Delegate implementation
@@ -46,8 +51,6 @@ class RemotingClientSessonDelegate : public ChromotingSession::Delegate {
   __weak id client_;
 
   base::WeakPtrFactory<RemotingClientSessonDelegate> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemotingClientSessonDelegate);
 };
 
 }  // namespace remoting

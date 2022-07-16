@@ -18,7 +18,7 @@ TestContentPaymentRequestDelegate::TestContentPaymentRequestDelegate(
 
 TestContentPaymentRequestDelegate::~TestContentPaymentRequestDelegate() {}
 
-std::unique_ptr<autofill::InternalAuthenticator>
+std::unique_ptr<webauthn::InternalAuthenticator>
 TestContentPaymentRequestDelegate::CreateInternalAuthenticator() const {
   return nullptr;
 }
@@ -30,7 +30,7 @@ TestContentPaymentRequestDelegate::GetPaymentManifestWebDataService() const {
 
 PaymentRequestDisplayManager*
 TestContentPaymentRequestDelegate::GetDisplayManager() {
-  return nullptr;
+  return &payment_request_display_manager_;
 }
 
 void TestContentPaymentRequestDelegate::ShowDialog(
@@ -67,6 +67,11 @@ std::string TestContentPaymentRequestDelegate::GetTwaPackageName() const {
 }
 
 PaymentRequestDialog* TestContentPaymentRequestDelegate::GetDialogForTesting() {
+  return nullptr;
+}
+
+SecurePaymentConfirmationNoCreds*
+TestContentPaymentRequestDelegate::GetNoMatchingCredentialsDialogForTesting() {
   return nullptr;
 }
 
@@ -143,9 +148,13 @@ void TestContentPaymentRequestDelegate::CompleteFullCardRequest() {
   core_delegate_.CompleteFullCardRequest();
 }
 
-const PaymentUIObserver*
+const base::WeakPtr<PaymentUIObserver>
 TestContentPaymentRequestDelegate::GetPaymentUIObserver() const {
   return nullptr;
 }
+
+void TestContentPaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
+    const std::u16string& merchant_name,
+    base::OnceClosure response_callback) {}
 
 }  // namespace payments

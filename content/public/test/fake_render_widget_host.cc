@@ -4,9 +4,9 @@
 
 #include "content/public/test/fake_render_widget_host.h"
 
+#include "third_party/blink/public/mojom/drag/drag.mojom.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
-#include "third_party/blink/public/mojom/page/drag.mojom.h"
 
 namespace content {
 
@@ -57,6 +57,8 @@ void FakeRenderWidgetHost::UpdateTooltipFromKeyboard(
     base::i18n::TextDirection text_direction_hint,
     const gfx::Rect& bounds) {}
 
+void FakeRenderWidgetHost::ClearKeyboardTriggeredTooltip() {}
+
 void FakeRenderWidgetHost::TextInputStateChanged(
     ui::mojom::TextInputStatePtr state) {}
 
@@ -86,6 +88,7 @@ void FakeRenderWidgetHost::SetPopupBounds(const gfx::Rect& bounds,
                                           SetPopupBoundsCallback callback) {}
 
 void FakeRenderWidgetHost::ShowPopup(const gfx::Rect& initial_rect,
+                                     const gfx::Rect& initial_anchor_rect,
                                      ShowPopupCallback callback) {}
 
 void FakeRenderWidgetHost::SetTouchActionFromMain(

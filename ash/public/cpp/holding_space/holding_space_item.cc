@@ -5,10 +5,12 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/unguessable_token.h"
-#include "base/util/values/values_util.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -82,6 +84,7 @@ bool HoldingSpaceItem::IsDownload(HoldingSpaceItem::Type type) {
     case Type::kScan:
     case Type::kScreenRecording:
     case Type::kScreenshot:
+    case Type::kPhoneHubCameraRoll:
       return false;
   }
 }
@@ -128,7 +131,7 @@ base::FilePath HoldingSpaceItem::DeserializeFilePath(
   DCHECK(version.has_value() && version.value() == kVersion);
 
   const absl::optional<base::FilePath> file_path =
-      util::ValueToFilePath(dict.FindPath(kFilePathPath));
+      base::ValueToFilePath(dict.FindPath(kFilePathPath));
   DCHECK(file_path.has_value());
 
   return file_path.value();
@@ -142,7 +145,7 @@ base::DictionaryValue HoldingSpaceItem::Serialize() const {
   dict.SetIntPath(kVersionPath, kVersion);
   dict.SetIntPath(kTypePath, static_cast<int>(type_));
   dict.SetStringPath(kIdPath, id_);
-  dict.SetPath(kFilePathPath, util::FilePathToValue(file_path_));
+  dict.SetPath(kFilePathPath, base::FilePathToValue(file_path_));
   return dict;
 }
 
@@ -194,6 +197,29 @@ bool HoldingSpaceItem::SetSecondaryText(
   return true;
 }
 
+std::u16string HoldingSpaceItem::GetAccessibleName() const {
+  if (accessible_name_)
+    return accessible_name_.value();
+
+  const std::u16string text = GetText();
+
+  if (!secondary_text_)
+    return text;
+
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_HOLDING_SPACE_ITEM_A11Y_NAME_AND_TOOLTIP, text,
+      secondary_text_.value());
+}
+
+bool HoldingSpaceItem::SetAccessibleName(
+    const absl::optional<std::u16string>& accessible_name) {
+  if (accessible_name_ == accessible_name)
+    return false;
+
+  accessible_name_ = accessible_name;
+  return true;
+}
+
 bool HoldingSpaceItem::SetProgress(const HoldingSpaceProgress& progress) {
   // NOTE: Progress can only be updated for in progress items.
   if (progress_ == progress || progress_.IsComplete())
@@ -225,6 +251,7 @@ bool HoldingSpaceItem::IsScreenCapture() const {
     case Type::kPinnedFile:
     case Type::kPrintedPdf:
     case Type::kScan:
+    case Type::kPhoneHubCameraRoll:
       return false;
   }
 }

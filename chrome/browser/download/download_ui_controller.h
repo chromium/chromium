@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 
 // This class handles the task of observing a single DownloadManager for
@@ -38,6 +37,9 @@ class DownloadUIController
   DownloadUIController(content::DownloadManager* manager,
                        std::unique_ptr<Delegate> delegate);
 
+  DownloadUIController(const DownloadUIController&) = delete;
+  DownloadUIController& operator=(const DownloadUIController&) = delete;
+
   ~DownloadUIController() override;
 
  private:
@@ -49,8 +51,6 @@ class DownloadUIController
   download::AllDownloadItemNotifier download_notifier_;
 
   std::unique_ptr<Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadUIController);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_UI_CONTROLLER_H_

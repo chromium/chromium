@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/base/completion_event.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/benchmarks/benchmark_instrumentation.h"
 #include "cc/input/browser_controls_offset_manager.h"
@@ -192,7 +193,19 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
   TRACE_EVENT0("cc", "SingleThreadProxy::DoCommit");
   DCHECK(task_runner_provider_->IsMainThread());
 
-  layer_tree_host_->WillCommit();
+  if (host_impl_->EvictedUIResourcesExist())
+    layer_tree_host_->GetUIResourceManager()->RecreateUIResources();
+
+  // Strictly speaking, it's not necessary to pass a CompletionEvent to
+  // WillCommit, since we can't have thread contention issues. The benefit to
+  // creating one here is that it simplifies LayerTreeHost::in_commit(), which
+  // useful in DCHECKs sprinkled throughout the code.
+  auto completion_event_ptr = std::make_unique<CompletionEvent>(
+      base::WaitableEvent::ResetPolicy::MANUAL);
+  auto* completion_event = completion_event_ptr.get();
+  auto* commit_state =
+      layer_tree_host_->WillCommit(std::move(completion_event_ptr),
+                                   /*has_updates=*/true);
   devtools_instrumentation::ScopedCommitTrace commit_task(
       layer_tree_host_->GetId(), commit_args.frame_id.sequence_number);
 
@@ -201,13 +214,10 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
     DebugScopedSetImplThread impl(task_runner_provider_);
 
-    host_impl_->ReadyToCommit(commit_args, nullptr);
-    host_impl_->BeginCommit();
-
-    if (host_impl_->EvictedUIResourcesExist())
-      layer_tree_host_->GetUIResourceManager()->RecreateUIResources();
+    host_impl_->BeginCommit(commit_state->source_frame_number);
 
     layer_tree_host_->FinishCommitOnImplThread(host_impl_.get());
+    completion_event->Signal();
 
     if (scheduler_on_impl_thread_) {
       scheduler_on_impl_thread_->DidCommit();
@@ -242,8 +252,8 @@ void SingleThreadProxy::CommitComplete() {
       << "Activation is expected to have synchronously occurred by now.";
 
   DebugScopedSetMainThread main(task_runner_provider_);
-  layer_tree_host_->CommitComplete();
   layer_tree_host_->DidBeginMainFrame();
+  layer_tree_host_->CommitComplete();
 
   next_frame_is_newly_committed_frame_ = true;
 }
@@ -264,11 +274,6 @@ void SingleThreadProxy::SetNeedsRedraw(const gfx::Rect& damage_rect) {
   DebugScopedSetImplThread impl(task_runner_provider_);
   host_impl_->SetViewportDamage(damage_rect);
   SetNeedsRedrawOnImplThread();
-}
-
-void SingleThreadProxy::SetNextCommitWaitsForActivation() {
-  // Activation always forced in commit, so nothing to do.
-  DCHECK(task_runner_provider_->IsMainThread());
 }
 
 void SingleThreadProxy::SetTargetLocalSurfaceId(
@@ -446,7 +451,7 @@ void SingleThreadProxy::SetVideoNeedsBeginFrames(bool needs_begin_frames) {
     scheduler_on_impl_thread_->SetVideoNeedsBeginFrames(needs_begin_frames);
 }
 
-bool SingleThreadProxy::HasCustomPropertyAnimations() const {
+bool SingleThreadProxy::HasInvalidationAnimation() const {
   return false;
 }
 
@@ -645,7 +650,7 @@ void SingleThreadProxy::CompositeImmediatelyForTest(
     StopDeferringCommits(PaintHoldingCommitTrigger::kFeatureDisabled);
     DoBeginMainFrame(begin_frame_args);
     commit_requested_ = false;
-    DoPainting();
+    DoPainting(begin_frame_args);
     DoCommit(begin_frame_args);
 
     DCHECK_EQ(
@@ -771,6 +776,11 @@ void SingleThreadProxy::SetRenderFrameObserver(
   host_impl_->SetRenderFrameObserver(std::move(observer));
 }
 
+uint32_t SingleThreadProxy::GetAverageThroughput() const {
+  DebugScopedSetImplThread impl(task_runner_provider_);
+  return host_impl_->dropped_frame_counter()->GetAverageThroughput();
+}
+
 void SingleThreadProxy::UpdateBrowserControlsState(
     BrowserControlsState constraints,
     BrowserControlsState current,
@@ -885,7 +895,7 @@ void SingleThreadProxy::BeginMainFrame(
     return;
   }
 
-  DoPainting();
+  DoPainting(begin_frame_args);
 }
 
 void SingleThreadProxy::DoBeginMainFrame(
@@ -899,24 +909,39 @@ void SingleThreadProxy::DoBeginMainFrame(
     std::unique_ptr<CompositorCommitData> commit_data =
         host_impl_->ProcessCompositorDeltas();
     layer_tree_host_->ApplyCompositorChanges(commit_data.get());
+    did_apply_compositor_deltas_ = true;
   }
   layer_tree_host_->ApplyMutatorEvents(host_impl_->TakeMutatorEvents());
   layer_tree_host_->WillBeginMainFrame();
   layer_tree_host_->BeginMainFrame(begin_frame_args);
   layer_tree_host_->AnimateLayers(begin_frame_args.frame_time);
-  layer_tree_host_->RequestMainFrameUpdate(false /* record_cc_metrics */);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const bool record_metrics =
+      layer_tree_host_->GetSettings().is_layer_tree_for_ui;
+#else
+  constexpr bool record_metrics = false;
+#endif
+  layer_tree_host_->RequestMainFrameUpdate(record_metrics);
+
+  // Reset the flag for the next time around. It has been used for this frame.
+  did_apply_compositor_deltas_ = false;
 }
 
-void SingleThreadProxy::DoPainting() {
+void SingleThreadProxy::DoPainting(const viz::BeginFrameArgs& commit_args) {
   layer_tree_host_->UpdateLayers();
   update_layers_requested_ = false;
+
+  auto& begin_main_frame_metrics =
+      layer_tree_host_->pending_commit_state()->begin_main_frame_metrics;
+  host_impl_->ReadyToCommit(commit_args, begin_main_frame_metrics.get());
 
   // TODO(enne): SingleThreadProxy does not support cancelling commits yet,
   // search for CommitEarlyOutReason::FINISHED_NO_UPDATES inside
   // thread_proxy.cc
   if (scheduler_on_impl_thread_) {
     scheduler_on_impl_thread_->NotifyReadyToCommit(
-        layer_tree_host_->begin_main_frame_metrics());
+        std::move(begin_main_frame_metrics));
   }
 }
 
@@ -929,7 +954,8 @@ void SingleThreadProxy::BeginMainFrameAbortedOnImplThread(
   std::vector<std::unique_ptr<SwapPromise>> empty_swap_promises;
   host_impl_->BeginMainFrameAborted(
       reason, std::move(empty_swap_promises),
-      scheduler_on_impl_thread_->last_dispatched_begin_main_frame_args());
+      scheduler_on_impl_thread_->last_dispatched_begin_main_frame_args(),
+      did_apply_compositor_deltas_);
   scheduler_on_impl_thread_->BeginMainFrameAborted(reason);
 }
 

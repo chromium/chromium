@@ -10,7 +10,6 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -50,7 +49,7 @@ constexpr char kUserGaiaId[] = "0123456789";
 std::unique_ptr<KeyedService> CreateTestPolicyCertService(
     content::BrowserContext* context) {
   return policy::PolicyCertService::CreateForTesting(
-      kUser, user_manager::UserManager::Get());
+      Profile::FromBrowserContext(context));
 }
 
 // A user manager that does not set profiles as loaded and notifies observers
@@ -58,6 +57,10 @@ std::unique_ptr<KeyedService> CreateTestPolicyCertService(
 class TestChromeUserManager : public ash::FakeChromeUserManager {
  public:
   TestChromeUserManager() = default;
+
+  TestChromeUserManager(const TestChromeUserManager&) = delete;
+  TestChromeUserManager& operator=(const TestChromeUserManager&) = delete;
+
   ~TestChromeUserManager() override = default;
 
   // user_manager::UserManager:
@@ -90,14 +93,17 @@ class TestChromeUserManager : public ash::FakeChromeUserManager {
 
     return unlock_users;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestChromeUserManager);
 };
 
 }  // namespace
 
 class SessionControllerClientImplTest : public testing::Test {
+ public:
+  SessionControllerClientImplTest(const SessionControllerClientImplTest&) =
+      delete;
+  SessionControllerClientImplTest& operator=(
+      const SessionControllerClientImplTest&) = delete;
+
  protected:
   SessionControllerClientImplTest()
       : browser_manager_(std::make_unique<crosapi::FakeBrowserManager>()) {}
@@ -207,8 +213,6 @@ class SessionControllerClientImplTest : public testing::Test {
 
   std::unique_ptr<chromeos::ScopedCrosSettingsTestHelper>
       cros_settings_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionControllerClientImplTest);
 };
 
 // Make sure that cycling one user does not cause any harm.
@@ -312,7 +316,7 @@ TEST_F(SessionControllerClientImplTest,
 // policy-provided trust anchors.
 TEST_F(SessionControllerClientImplTest,
        MultiProfileAllowedWithPolicyCertificates) {
-  InitForMultiProfile();
+  TestingProfile* user_profile = InitForMultiProfile();
   user_manager()->AddUser(
       AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
 
@@ -321,8 +325,13 @@ TEST_F(SessionControllerClientImplTest,
   user_manager()->LoginUser(account_id);
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
-  policy::PolicyCertServiceFactory::SetUsedPolicyCertificates(
-      account_id.GetUserEmail());
+
+  ASSERT_TRUE(
+      policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          user_profile, base::BindRepeating(&CreateTestPolicyCertService)));
+  policy::PolicyCertServiceFactory::GetForProfile(user_profile)
+      ->SetUsedPolicyCertificates();
+
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 
@@ -544,7 +553,7 @@ TEST_F(SessionControllerClientImplTest, SessionLengthLimit) {
   EXPECT_TRUE(session_controller.last_session_start_time().is_null());
 
   // Setting a session length limit in local state sends it to ash.
-  const base::TimeDelta length_limit = base::TimeDelta::FromHours(1);
+  const base::TimeDelta length_limit = base::Hours(1);
   const base::Time start_time = base::Time::Now();
   PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetInteger(prefs::kSessionLengthLimit,

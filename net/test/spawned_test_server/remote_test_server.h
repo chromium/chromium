@@ -74,6 +74,9 @@ class RemoteTestServer : public BaseTestServer {
                    const SSLOptions& ssl_options,
                    const base::FilePath& document_root);
 
+  RemoteTestServer(const RemoteTestServer&) = delete;
+  RemoteTestServer& operator=(const RemoteTestServer&) = delete;
+
   ~RemoteTestServer() override;
 
   // BaseTestServer overrides.
@@ -107,8 +110,6 @@ class RemoteTestServer : public BaseTestServer {
 
   // Server port. Non-zero when the server is running.
   int remote_port_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteTestServer);
 };
 
 }  // namespace net

@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -40,6 +39,9 @@ class FaviconSource : public content::URLDataSource {
  public:
   // |type| is the type of icon this FaviconSource will provide.
   explicit FaviconSource(Profile* profile, chrome::FaviconUrlFormat format);
+
+  FaviconSource(const FaviconSource&) = delete;
+  FaviconSource& operator=(const FaviconSource&) = delete;
 
   ~FaviconSource() override;
 
@@ -103,8 +105,6 @@ class FaviconSource : public content::URLDataSource {
   base::CancelableTaskTracker cancelable_task_tracker_;
 
   base::WeakPtrFactory<FaviconSource> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconSource);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_FAVICON_SOURCE_H_

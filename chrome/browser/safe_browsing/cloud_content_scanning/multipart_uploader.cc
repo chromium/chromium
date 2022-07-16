@@ -67,7 +67,7 @@ MultipartUploadRequest::MultipartUploadRequest(
       data_(data),
       boundary_(net::GenerateMimeMultipartBoundary()),
       callback_(std::move(callback)),
-      current_backoff_(base::TimeDelta::FromSeconds(kInitialBackoffSeconds)),
+      current_backoff_(base::Seconds(kInitialBackoffSeconds)),
       retry_count_(0),
       url_loader_factory_(url_loader_factory),
       traffic_annotation_(traffic_annotation) {
@@ -86,7 +86,7 @@ MultipartUploadRequest::MultipartUploadRequest(
       path_(path),
       boundary_(net::GenerateMimeMultipartBoundary()),
       callback_(std::move(callback)),
-      current_backoff_(base::TimeDelta::FromSeconds(kInitialBackoffSeconds)),
+      current_backoff_(base::Seconds(kInitialBackoffSeconds)),
       retry_count_(0),
       url_loader_factory_(url_loader_factory),
       traffic_annotation_(traffic_annotation) {
@@ -124,10 +124,7 @@ void MultipartUploadRequest::SendRequest() {
   resource_request->url = base_url_;
   resource_request->method = "POST";
   resource_request->headers.SetHeader("X-Goog-Upload-Protocol", "multipart");
-
-  if (base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookies)) {
-    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  }
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   if (path_.empty()) {
     SendStringRequest(std::move(resource_request));
@@ -156,7 +153,11 @@ std::unique_ptr<MultipartDataPipeGetter> CreateFileDataPipeGetterBlocking(
     const std::string& boundary,
     const std::string& metadata,
     const base::FilePath& path) {
-  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  // FLAG_SHARE_DELETE is necessary to allow the file to be renamed by the user
+  // clicking "Open Now" without causing download errors.
+  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                            base::File::FLAG_SHARE_DELETE);
+
   return MultipartDataPipeGetter::Create(boundary, metadata, std::move(file));
 }
 

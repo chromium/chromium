@@ -50,7 +50,7 @@ public class UiThreadSchedulerTest {
         mUiThread.start();
         ThreadUtils.setUiThread(mUiThread.getLooper());
         BrowserTaskExecutor.register();
-        BrowserTaskExecutor.setShouldPrioritizeBootstrapTasks(true);
+        BrowserTaskExecutor.setShouldPrioritizePreNativeBootstrapTasks(true);
         mHandler = new Handler(mUiThread.getLooper());
         UiThreadSchedulerTestUtils.postBrowserMainLoopStartupTasks(false);
     }

@@ -1,0 +1,125 @@
+[document web]
+++[list]
+++++[list item]
+++++++[static] name='%E2%80%A2 '
+++++++[static] name='disc'
+++[list]
+++++[list item]
+++++++[static] name='%E2%97%A6 '
+++++++[static] name='circle'
+++[list]
+++++[list item]
+++++++[static] name='%E2%96%A0 '
+++++++[static] name='square'
+++[list]
+++++[list item]
+++++++[static] name='%E2%96%BE '
+++++++[static] name='disclosure-open'
+++[list]
+++++[list item]
+++++++[static] name='%E2%96%B8 '
+++++++[static] name='disclosure-closed'
+++[list]
+++++[list item]
+++++++[static] name='%E2%80%A2 '
+++++++[static] name='explicit-bullets'
+++++[list item]
+++++++[static] name='%E2%80%A2 '
+++++[list item]
+++++++[static] name='%E2%80%A2 '
+++[list]
+++++[list item]
+++++++[static] name='1. '
+++++++[static] name='explicit-numbers'
+++++[list item]
+++++++[static] name='2. '
+++++[list item]
+++++++[static] name='3. '
+++[list]
+++++[list item]
+++++++[static] name='One. '
+++++++[static] name='explicit-words'
+++++[list item]
+++++++[static] name='Two. '
+++++[list item]
+++++++[static] name='Three. '
+++[list]
+++++[list item]
+++++++[static] name='One. '
+++++++[static] name='auto-alphabetic'
+++++[list item]
+++++++[static] name='Two. '
+++++[list item]
+++++++[static] name='Three. '
+++[list]
+++++[list item]
+++++++[static] name='%E2%80%A2 '
+++++++[static] name='auto-cyclic'
+++++[list item]
+++++++[static] name='%E2%80%A2 '
+++++[list item]
+++++++[static] name='%E2%80%A2 '
+++[list]
+++++[list item]
+++++++[static] name='%E2%80%A2 '
+++++++[static] name='auto-extends'
+++++[list item]
+++++++[static] name='%E2%80%A2 '
+++++[list item]
+++++++[static] name='%E2%80%A2 '
+++[list]
+++++[list item]
+++++++[static] name='1. '
+++++++[static] name='auto-fixed'
+++++[list item]
+++++++[static] name='2. '
+++++[list item]
+++++++[static] name='3. '
+++[list]
+++++[list item]
+++++++[static] name='1. '
+++++++[static] name='auto-symbolic'
+++++[list item]
+++++++[static] name='2. '
+++++[list item]
+++++++[static] name='3. '
+++[list]
+++++[list item]
+++++++[static] name='1. '
+++++++[static] name='auto-numeric'
+++++[list item]
+++++++[static] name='2. '
+++++[list item]
+++++++[static] name='3. '
+++[list]
+++++[list item]
+++++++[static] name='1. '
+++++++[static] name='auto-additive'
+++++[list item]
+++++++[static] name='2. '
+++++[list item]
+++++++[static] name='3. '
+++[list]
+++++[list item]
+++++++[static] name='%E2%80%A2 '
+++++++[static] name='reference-bullets'
+++++[list item]
+++++++[static] name='%E2%80%A2 '
+++++[list item]
+++++++[static] name='%E2%80%A2 '
+++[list]
+++++[list item]
+++++++[static] name='1> '
+++++++[static] name='reference-numbers'
+++++[list item]
+++++++[static] name='2> '
+++++[list item]
+++++++[static] name='3> '
+++[list]
+++++[list item]
+++++++[static] name='One> '
+++++++[static] name='reference-words'
+++++[list item]
+++++++[static] name='Two> '
+++++[list item]
+++++++[static] name='Three> '

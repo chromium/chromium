@@ -6,6 +6,7 @@
 #define BASE_I18N_ICU_UTIL_H_
 
 #include <stdint.h>
+#include <string>
 
 #include "base/files/memory_mapped_file.h"
 #include "base/i18n/base_i18n_export.h"

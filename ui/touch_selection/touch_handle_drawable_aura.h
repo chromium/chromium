@@ -5,7 +5,6 @@
 #ifndef UI_TOUCH_SELECTION_TOUCH_HANDLE_DRAWABLE_AURA_H_
 #define UI_TOUCH_SELECTION_TOUCH_HANDLE_DRAWABLE_AURA_H_
 
-#include "base/macros.h"
 #include "ui/touch_selection/touch_handle.h"
 #include "ui/touch_selection/touch_handle_orientation.h"
 #include "ui/touch_selection/ui_touch_selection_export.h"
@@ -24,6 +23,10 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
     : public TouchHandleDrawable {
  public:
   explicit TouchHandleDrawableAura(aura::Window* parent);
+
+  TouchHandleDrawableAura(const TouchHandleDrawableAura&) = delete;
+  TouchHandleDrawableAura& operator=(const TouchHandleDrawableAura&) = delete;
+
   ~TouchHandleDrawableAura() override;
 
  private:
@@ -53,8 +56,6 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
 
   // Window bounds relative to the focal position.
   gfx::RectF relative_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchHandleDrawableAura);
 };
 
 }  // namespace ui

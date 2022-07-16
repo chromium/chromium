@@ -106,4 +106,32 @@ gfx::Rect ShrinkBoundsByHotseatInset(const gfx::Rect& rect) {
   return new_rect;
 }
 
+void DragItemToPoint(OverviewItem* item,
+                     const gfx::Point& screen_location,
+                     ui::test::EventGenerator* event_generator,
+                     bool by_touch_gestures,
+                     bool drop) {
+  DCHECK(item);
+
+  const gfx::Point item_center =
+      gfx::ToRoundedPoint(item->target_bounds().CenterPoint());
+  event_generator->set_current_screen_location(item_center);
+  if (by_touch_gestures) {
+    event_generator->PressTouch();
+    // Move the touch by an enough amount in X to engage in the normal drag mode
+    // rather than the drag to close mode.
+    event_generator->MoveTouchBy(50, 0);
+    event_generator->MoveTouch(screen_location);
+    if (drop)
+      event_generator->ReleaseTouch();
+  } else {
+    event_generator->PressLeftButton();
+    Shell::Get()->cursor_manager()->SetDisplay(
+        display::Screen::GetScreen()->GetDisplayNearestPoint(screen_location));
+    event_generator->MoveMouseTo(screen_location);
+    if (drop)
+      event_generator->ReleaseLeftButton();
+  }
+}
+
 }  // namespace ash

@@ -9,15 +9,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "components/update_client/task.h"
 #include "components/update_client/update_client.h"
-
-namespace base {
-class Version;
-}
 
 namespace update_client {
 
@@ -30,15 +25,18 @@ class TaskSendUninstallPing : public Task {
   using Callback =
       base::OnceCallback<void(scoped_refptr<Task> task, Error error)>;
 
-  // |update_engine| is injected here to handle the task.
-  // |id| represents the CRX to send the ping for.
-  // |callback| is called to return the execution flow back to creator of
+  // `update_engine` is injected here to handle the task.
+  // `crx_component` represents the CRX to send the ping for.
+  // `reason` is the reason for the uninstall ping
+  // `callback` is called to return the execution flow back to creator of
   //    this task when the task is done.
   TaskSendUninstallPing(scoped_refptr<UpdateEngine> update_engine,
-                        const std::string& id,
-                        const base::Version& version,
+                        const CrxComponent& crx_component,
                         int reason,
                         Callback callback);
+
+  TaskSendUninstallPing(const TaskSendUninstallPing&) = delete;
+  TaskSendUninstallPing& operator=(const TaskSendUninstallPing&) = delete;
 
   void Run() override;
 
@@ -55,12 +53,9 @@ class TaskSendUninstallPing : public Task {
 
   base::ThreadChecker thread_checker_;
   scoped_refptr<UpdateEngine> update_engine_;
-  const std::string id_;
-  const base::Version version_;
-  int reason_;
+  const CrxComponent crx_component_;
+  const int reason_;
   Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskSendUninstallPing);
 };
 
 }  // namespace update_client

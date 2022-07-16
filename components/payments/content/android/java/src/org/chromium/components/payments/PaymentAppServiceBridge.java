@@ -77,11 +77,13 @@ public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
         /**
          * Called when an error has occurred.
          * @param errorMessage Developer facing error message.
+         * @param errorReason Internal reason for the error.
          */
         @CalledByNative("PaymentAppServiceCallback")
-        private void onPaymentAppCreationError(String errorMessage) {
+        private void onPaymentAppCreationError(
+                String errorMessage, @AppCreationFailureReason int errorReason) {
             ThreadUtils.assertOnUiThread();
-            mDelegate.onPaymentAppCreationError(errorMessage);
+            mDelegate.onPaymentAppCreationError(errorMessage, errorReason);
         }
 
         /**

@@ -482,8 +482,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     } else if (signal_proto.state() == lorgnette::SCAN_STATE_PAGE_COMPLETED) {
       VLOG(1) << "Scan job " << signal_proto.scan_uuid() << " page "
               << signal_proto.page() << " completed successfully";
-      ScanDataReader* reader = state.scan_data_reader.get();
-      reader->Wait(base::BindOnce(
+      ScanDataReader* scan_data_reader = state.scan_data_reader.get();
+      scan_data_reader->Wait(base::BindOnce(
           &LorgnetteManagerClientImpl::OnScanDataCompleted,
           weak_ptr_factory_.GetWeakPtr(), signal_proto.scan_uuid(),
           signal_proto.page(), signal_proto.more_pages()));

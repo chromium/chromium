@@ -2,9 +2,21 @@
 <head>
   <title>Site Engagement</title>
   <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <script src="site_engagement.js" type="module"></script>
   <style>
+    :root {
+      --color-row-hover: rgb(255, 255, 187);
+      --color-engagement-bar: black;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-row-hover: rgb(3, 220, 176);
+        --color-engagement-bar: white;
+      }
+    }
     body {
       font-family: 'Roboto', 'Noto', sans-serif;
       font-size: 14px;
@@ -23,6 +35,7 @@
 
     table th {
       background: rgb(224, 236, 255);
+      color: black;
       cursor: pointer;
       padding-bottom: 4px;
       padding-right: 16px;
@@ -31,7 +44,7 @@
     }
 
     .engagement-bar {
-      background-color: black;
+      background-color: var(--color-engagement-bar);
       height: 2px;
     }
 
@@ -65,7 +78,7 @@
     }
 
     table tr:hover {
-      background: rgb(255, 255, 187);
+      background: var(--color-row-hover);
     }
 
     th.sort-column::after {

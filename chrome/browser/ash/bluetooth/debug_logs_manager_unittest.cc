@@ -29,6 +29,9 @@ class DebugLogsManagerTest : public testing::Test {
  public:
   DebugLogsManagerTest() = default;
 
+  DebugLogsManagerTest(const DebugLogsManagerTest&) = delete;
+  DebugLogsManagerTest& operator=(const DebugLogsManagerTest&) = delete;
+
   void SetUp() override {
     DebugLogsManager::RegisterPrefs(prefs_.registry());
 
@@ -85,8 +88,6 @@ class DebugLogsManagerTest : public testing::Test {
   bluez::FakeBluetoothDebugManagerClient* fake_bluetooth_debug_manager_client_;
   std::unique_ptr<DebugLogsManager> debug_logs_manager_;
   TestingPrefServiceSimple prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(DebugLogsManagerTest);
 };
 
 TEST_F(DebugLogsManagerTest, FlagNotEnabled) {

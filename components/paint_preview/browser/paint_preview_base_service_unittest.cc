@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -257,7 +256,6 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
                 base::FilePath name(base::StrCat({token.ToString(), ".skp"}));
 #endif
                 EXPECT_EQ(path.DirName(), expected_path);
-                LOG(ERROR) << expected_path;
                 EXPECT_EQ(path.BaseName(), name);
               } break;
 

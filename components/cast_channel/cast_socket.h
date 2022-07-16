@@ -11,7 +11,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -193,6 +192,9 @@ class CastSocketImpl : public CastSocket {
                  const scoped_refptr<Logger>& logger,
                  const AuthContext& auth_context);
 
+  CastSocketImpl(const CastSocketImpl&) = delete;
+  CastSocketImpl& operator=(const CastSocketImpl&) = delete;
+
   // Ensures that the socket is closed.
   ~CastSocketImpl() override;
 
@@ -240,6 +242,11 @@ class CastSocketImpl : public CastSocket {
   class CastSocketMessageDelegate : public CastTransport::Delegate {
    public:
     CastSocketMessageDelegate(CastSocketImpl* socket);
+
+    CastSocketMessageDelegate(const CastSocketMessageDelegate&) = delete;
+    CastSocketMessageDelegate& operator=(const CastSocketMessageDelegate&) =
+        delete;
+
     ~CastSocketMessageDelegate() override;
 
     // CastTransport::Delegate implementation.
@@ -249,7 +256,6 @@ class CastSocketImpl : public CastSocket {
 
    private:
     CastSocketImpl* const socket_;
-    DISALLOW_COPY_AND_ASSIGN(CastSocketMessageDelegate);
   };
 
   // Replaces the internally-constructed transport object with one provided
@@ -422,8 +428,6 @@ class CastSocketImpl : public CastSocket {
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<CastSocketImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastSocketImpl);
 };
 }  // namespace cast_channel
 

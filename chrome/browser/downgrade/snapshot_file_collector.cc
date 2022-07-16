@@ -58,7 +58,7 @@ std::vector<SnapshotItemDetails> CollectProfileItems() {
   // deleted. When cookies are deleted, the kZeroSuggestCachedResults pref has
   // to be reset. When history and isolated origins are deleted, the
   // kPrefLastLaunchTime and kUserTriggeredIsolatedOrigins prefs have to be
-  // reset. When data type content is deleted, blacklisted sites are deleted
+  // reset. When data type content is deleted, blocklisted sites are deleted
   // from the translation prefs.
   int pref_data_type =
       content::BrowsingDataRemover::DATA_TYPE_COOKIES |

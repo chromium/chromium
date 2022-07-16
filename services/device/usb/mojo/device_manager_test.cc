@@ -23,13 +23,14 @@ class TestUsbDevice : public UsbDevice {
                 const std::string& serial_number,
                 const GURL& landing_page);
 
+  TestUsbDevice(const TestUsbDevice&) = delete;
+  TestUsbDevice& operator=(const TestUsbDevice&) = delete;
+
   // device::UsbDevice overrides:
   void Open(OpenCallback callback) override;
 
  private:
   ~TestUsbDevice() override;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUsbDevice);
 };
 
 TestUsbDevice::TestUsbDevice(const std::string& name,

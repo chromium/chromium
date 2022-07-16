@@ -5,22 +5,19 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_mediator.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_consumer.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface IdentityChooserMediator ()<ChromeIdentityServiceObserver,
-                                      ChromeBrowserProviderObserver> {
-  std::unique_ptr<ChromeIdentityServiceObserverBridge> _identityServiceObserver;
-  std::unique_ptr<ChromeBrowserProviderObserverBridge> _browserProviderObserver;
+@interface IdentityChooserMediator () <ChromeAccountManagerServiceObserver> {
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
 }
 
 // Gets the Chrome identity service.
@@ -51,14 +48,14 @@
 }
 
 - (void)start {
-  _identityServiceObserver =
-      std::make_unique<ChromeIdentityServiceObserverBridge>(self);
-  _browserProviderObserver =
-      std::make_unique<ChromeBrowserProviderObserverBridge>(self);
+  _accountManagerServiceObserver =
+      std::make_unique<ChromeAccountManagerServiceObserverBridge>(
+          self, _accountManagerService);
   [self loadIdentitySection];
 }
 
 - (void)disconnect {
+  _accountManagerServiceObserver.reset();
   self.accountManagerService = nullptr;
 }
 
@@ -119,12 +116,9 @@
   item.email = identity.userEmail;
   item.selected =
       [self.selectedIdentity.gaiaID isEqualToString:identity.gaiaID];
-  __weak __typeof(self) weakSelf = self;
-  ios::GetAvatarCallback callback = ^(UIImage* identityAvatar) {
-    item.avatar = identityAvatar;
-    [weakSelf.consumer itemHasChanged:item];
-  };
-  self.chromeIdentityService->GetAvatarForIdentity(identity, callback);
+  item.avatar = self.accountManagerService->GetIdentityAvatarWithIdentity(
+      identity, IdentityAvatarSize::DefaultLarge);
+  [self.consumer itemHasChanged:item];
 }
 
 // Getter for the Chrome identity service.
@@ -132,7 +126,7 @@
   return ios::GetChromeBrowserProvider().GetChromeIdentityService();
 }
 
-#pragma mark - ChromeIdentityServiceObserver
+#pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
   if (!self.accountManagerService) {
@@ -147,14 +141,10 @@
   }
 }
 
-- (void)profileUpdate:(ChromeIdentity*)identity {
+- (void)identityChanged:(ChromeIdentity*)identity {
   TableViewIdentityItem* item =
       [self.consumer tableViewIdentityItemWithGaiaID:identity.gaiaID];
   [self updateTableViewIdentityItem:item withChromeIdentity:identity];
-}
-
-- (void)chromeIdentityServiceWillBeDestroyed {
-  _identityServiceObserver.reset();
 }
 
 @end

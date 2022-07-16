@@ -31,6 +31,10 @@ class SerializedHandle;
 class PPB_Audio_Proxy : public InterfaceProxy {
  public:
   explicit PPB_Audio_Proxy(Dispatcher* dispatcher);
+
+  PPB_Audio_Proxy(const PPB_Audio_Proxy&) = delete;
+  PPB_Audio_Proxy& operator=(const PPB_Audio_Proxy&) = delete;
+
   ~PPB_Audio_Proxy() override;
 
   // Creates an Audio object in the plugin process.
@@ -77,8 +81,6 @@ class PPB_Audio_Proxy : public InterfaceProxy {
       base::UnsafeSharedMemoryRegion* foreign_shared_memory_region);
 
   ProxyCompletionCallbackFactory<PPB_Audio_Proxy> callback_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_Audio_Proxy);
 };
 
 }  // namespace proxy

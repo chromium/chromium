@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
@@ -57,6 +58,8 @@ class NativeIOFileHost : public blink::mojom::NativeIOFileHost {
   // Called when the receiver is disconnected.
   void OnReceiverDisconnect();
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // Raw pointer use is safe because NativeIOHost owns this NativeIOFileHost,
   // and therefore is guaranteed to outlive it.
   NativeIOHost* const origin_host_;
@@ -70,9 +73,8 @@ class NativeIOFileHost : public blink::mojom::NativeIOFileHost {
 
   // As long as the receiver is connected, the renderer has an exclusive lock on
   // the file represented by this host.
-  mojo::Receiver<blink::mojom::NativeIOFileHost> receiver_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
+  mojo::Receiver<blink::mojom::NativeIOFileHost> receiver_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content

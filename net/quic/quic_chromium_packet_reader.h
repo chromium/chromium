@@ -46,14 +46,15 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
                            int yield_after_packets,
                            quic::QuicTime::Delta yield_after_duration,
                            const NetLogWithSource& net_log);
+
+  QuicChromiumPacketReader(const QuicChromiumPacketReader&) = delete;
+  QuicChromiumPacketReader& operator=(const QuicChromiumPacketReader&) = delete;
+
   virtual ~QuicChromiumPacketReader();
 
   // Causes the QuicConnectionHelper to start reading from the socket
   // and passing the data along to the quic::QuicConnection.
   void StartReading();
-
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
 
  private:
   // A completion callback invoked when a read completes.
@@ -74,8 +75,6 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
   NetLogWithSource net_log_;
 
   base::WeakPtrFactory<QuicChromiumPacketReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicChromiumPacketReader);
 };
 
 }  // namespace net

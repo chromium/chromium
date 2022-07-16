@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process_handle.h"
 #include "chrome/browser/ash/power/renderer_freezer.h"
@@ -23,6 +22,11 @@ namespace ash {
 class FreezerCgroupProcessManager : public RendererFreezer::Delegate {
  public:
   FreezerCgroupProcessManager();
+
+  FreezerCgroupProcessManager(const FreezerCgroupProcessManager&) = delete;
+  FreezerCgroupProcessManager& operator=(const FreezerCgroupProcessManager&) =
+      delete;
+
   ~FreezerCgroupProcessManager() override;
 
   // RendererFreezer::Delegate overrides.
@@ -37,8 +41,6 @@ class FreezerCgroupProcessManager : public RendererFreezer::Delegate {
 
   class FileWorker;
   std::unique_ptr<FileWorker> file_worker_;
-
-  DISALLOW_COPY_AND_ASSIGN(FreezerCgroupProcessManager);
 };
 
 }  // namespace ash

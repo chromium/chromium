@@ -71,6 +71,9 @@ class {{interface_name}}Stub : public {{interface_name}} {
 {%- if not loop.last %}, {% endif %}
 {%-   endfor %} {}
 
+  {{interface_name}}Stub(const {{interface_name}}Stub&) = delete;
+  {{interface_name}}Stub& operator=(const {{interface_name}}Stub&) = delete;
+
   ~{{interface_name}}Stub() override {}
 
  protected:
@@ -89,8 +92,6 @@ class {{interface_name}}Stub : public {{interface_name}} {
 {%- for method in interface.methods -%}
   const {{interface_name}}_{{method.name}}Func {{method.name}}Func_;
 {%-   endfor %}
-
-  DISALLOW_COPY_AND_ASSIGN({{interface_name}}Stub);
 };
 
 {{interface_name}}Ptr {{interface_name}}_CreateWith(

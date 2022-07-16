@@ -20,6 +20,11 @@ class PhotosHandler : public photos::mojom::PhotosHandler {
 
   // photos::mojom::PhotosHandler:
   void GetMemories(GetMemoriesCallback callback) override;
+  void DismissModule() override;
+  void RestoreModule() override;
+  void ShouldShowOptInScreen(ShouldShowOptInScreenCallback callback) override;
+  void OnUserOptIn(bool accept) override;
+  void OnMemoryOpen() override;
 
  private:
   mojo::Receiver<photos::mojom::PhotosHandler> handler_;

@@ -34,11 +34,13 @@ class PrefService;
 // |qrGenerationHandler| to execute QR generation actions, a |prefService| to
 // read settings and policies, and a |bookmarkModel| to retrieve bookmark
 // states.
+// |baseViewController| can be passed to activities which need to present VCs.
 - (instancetype)initWithHandler:(id<BrowserCommands, FindInPageCommands>)handler
                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
                     prefService:(PrefService*)prefService
                   bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+             baseViewController:(UIViewController*)baseViewController
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

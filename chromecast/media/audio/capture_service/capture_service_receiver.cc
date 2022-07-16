@@ -16,7 +16,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/media/audio/capture_service/message_parsing_utils.h"
-#include "chromecast/media/audio/mixer_service/audio_socket_service.h"
+#include "chromecast/media/audio/net/audio_socket_service.h"
 #include "chromecast/net/small_message_socket.h"
 #include "net/base/io_buffer.h"
 #include "net/socket/stream_socket.h"

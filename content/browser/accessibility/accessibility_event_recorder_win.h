@@ -18,6 +18,11 @@ class CONTENT_EXPORT AccessibilityEventRecorderWin
   AccessibilityEventRecorderWin(BrowserAccessibilityManager* manager,
                                 base::ProcessId pid,
                                 const ui::AXTreeSelector& selector);
+
+  AccessibilityEventRecorderWin(const AccessibilityEventRecorderWin&) = delete;
+  AccessibilityEventRecorderWin& operator=(
+      const AccessibilityEventRecorderWin&) = delete;
+
   ~AccessibilityEventRecorderWin() override;
 
   // Callback registered by SetWinEventHook. Just calls OnWinEventHook.
@@ -50,8 +55,6 @@ class CONTENT_EXPORT AccessibilityEventRecorderWin
 
   HWINEVENTHOOK win_event_hook_handle_;
   static AccessibilityEventRecorderWin* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorderWin);
 };
 
 }  // namespace content

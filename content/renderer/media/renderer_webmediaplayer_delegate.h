@@ -11,11 +11,10 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/single_sample_metrics.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
@@ -38,6 +37,12 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
       public base::SupportsWeakPtr<RendererWebMediaPlayerDelegate> {
  public:
   explicit RendererWebMediaPlayerDelegate(content::RenderFrame* render_frame);
+
+  RendererWebMediaPlayerDelegate(const RendererWebMediaPlayerDelegate&) =
+      delete;
+  RendererWebMediaPlayerDelegate& operator=(
+      const RendererWebMediaPlayerDelegate&) = delete;
+
   ~RendererWebMediaPlayerDelegate() override;
 
   // Returns true if this RenderFrame has ever seen media playback before.
@@ -143,8 +148,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   // Records the peak player count for this render frame.
   size_t peak_player_count_ = 0u;
   std::unique_ptr<base::SingleSampleMetric> peak_player_count_uma_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererWebMediaPlayerDelegate);
 };
 
 }  // namespace media

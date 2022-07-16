@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -57,6 +56,11 @@ class ASH_EXPORT ToplevelWindowEventHandler
   using EndClosure = base::OnceCallback<void(DragResult)>;
 
   ToplevelWindowEventHandler();
+
+  ToplevelWindowEventHandler(const ToplevelWindowEventHandler&) = delete;
+  ToplevelWindowEventHandler& operator=(const ToplevelWindowEventHandler&) =
+      delete;
+
   ~ToplevelWindowEventHandler() override;
 
   // display::DisplayObserver:
@@ -184,8 +188,6 @@ class ASH_EXPORT ToplevelWindowEventHandler
   bool in_move_loop_ = false;
 
   base::WeakPtrFactory<ToplevelWindowEventHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ToplevelWindowEventHandler);
 };
 
 }  // namespace ash

@@ -92,6 +92,11 @@ class TestExtensionsAPIClient : public ShellExtensionsAPIClient {
 class MediaPerceptionPrivateApiTest : public ShellApiTest {
  public:
   MediaPerceptionPrivateApiTest() {}
+
+  MediaPerceptionPrivateApiTest(const MediaPerceptionPrivateApiTest&) = delete;
+  MediaPerceptionPrivateApiTest& operator=(
+      const MediaPerceptionPrivateApiTest&) = delete;
+
   ~MediaPerceptionPrivateApiTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -123,8 +128,6 @@ class MediaPerceptionPrivateApiTest : public ShellApiTest {
  private:
   std::unique_ptr<base::AutoReset<extensions::mojom::FeatureSessionType>>
       session_feature_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPerceptionPrivateApiTest);
 };
 
 // Verify that we can execute the setAnalyticsComponent API and deal with

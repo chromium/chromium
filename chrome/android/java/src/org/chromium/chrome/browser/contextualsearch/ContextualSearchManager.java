@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -70,8 +69,6 @@ import org.chromium.components.external_intents.ExternalNavigationHandler.Overri
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.components.external_intents.RedirectHandler;
 import org.chromium.components.navigation_interception.NavigationParams;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -127,10 +124,6 @@ public class ContextualSearchManager
     // How long to wait for a Tap to be converted to a Long-press gesture when the user taps on
     // an existing tap-selection.
     private static final int TAP_ON_TAP_SELECTION_DELAY_MS = 100;
-
-    // Constants related to the Contextual Search preference.
-    private static final String CONTEXTUAL_SEARCH_DISABLED = "false";
-    private static final String CONTEXTUAL_SEARCH_ENABLED = "true";
 
     private final ObserverList<ContextualSearchObserver> mObservers =
             new ObserverList<ContextualSearchObserver>();
@@ -857,11 +850,12 @@ public class ContextualSearchManager
                 spToPx(defaultQueryWidthSpInBar), inPanelRelatedSearches, showDefaultSearchInPanel,
                 spToPx(defaultQueryWidthSpInPanel));
         if (!TextUtils.isEmpty(resolvedSearchTerm.caption())) {
-            // Call #onSetCaption() to set the caption. For entities, the caption should not be
-            // regarded as an answer. In the future, when quick actions are added, doesAnswer will
-            // need to be determined rather than always set to false.
+            // For entities the caption should not be regarded as an answer.
+            // TODO(donnd): For Translations and definitions doesAnswer should be set to true
+            // to generate a metrics signal indicating that the caption might be supplying an
+            // an answer that would make opening the panel unnecessary.
             boolean doesAnswer = false;
-            onSetCaption(resolvedSearchTerm.caption(), doesAnswer);
+            setCaption(resolvedSearchTerm.caption(), doesAnswer);
         }
         ensureCaption();
 
@@ -927,6 +921,10 @@ public class ContextualSearchManager
         ContextualSearchManagerJni.get().allowlistContextualSearchJsApiUrl(
                 mNativeContextualSearchManagerPtr, this, searchUrl);
         mSearchPanel.loadUrlInPanel(searchUrl);
+        // Prevent losing focus when clicking a suggestion. See https://crbug.com/1250825.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES)) {
+            mSearchPanel.getContainerView().setFocusableInTouchMode(false);
+        }
         mDidStartLoadingResolvedSearchRequest = true;
 
         // TODO(donnd): If the user taps on a word and quickly after that taps on the
@@ -940,18 +938,34 @@ public class ContextualSearchManager
     }
 
     /**
-     * Called to set a caption. The caption may either be included with the search term resolution
-     * response or set by the page through the CS JavaScript API used to notify CS that there is
-     * a caption available on the current overlay.
+     * Called to set a caption by the Search Result page in the overlay through the CS JavaScript
+     * API. This notifies CS that there is a caption to show for the current overlay.
      * @param caption The caption to display.
      * @param doesAnswer Whether the caption should be regarded as an answer such
      *        that the user may not need to open the panel, or whether the caption
      *        is simply informative or descriptive of the answer in the full results.
      */
     @CalledByNative
-    private void onSetCaption(String caption, boolean doesAnswer) {
-        if (TextUtils.isEmpty(caption) || mSearchPanel == null) return;
+    @VisibleForTesting
+    void onSetCaption(String caption, boolean doesAnswer) {
+        // If the Partial Translations Feature is enabled we don't want to show these SERP
+        // Translations until we can associate the right icon to match what's shown for that
+        // Feature (for consistency). See https://crbug.com/1249656 for details.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS)
+                || TextUtils.isEmpty(caption) || mSearchPanel == null) {
+            return;
+        }
+        setCaption(caption, doesAnswer);
+    }
 
+    /**
+     * Called to set a caption to show in a second line in the Bar.
+     * @param caption The caption to display.
+     * @param doesAnswer Whether the caption should be regarded as an answer such
+     *        that the user may not need to open the panel, or whether the caption
+     *        is simply informative or descriptive of the answer in the full results.
+     */
+    private void setCaption(String caption, boolean doesAnswer) {
         // Notify the UI of the caption.
         mSearchPanel.setCaption(caption);
         if (mQuickAnswersHeuristic != null) {
@@ -1013,12 +1027,15 @@ public class ContextualSearchManager
 
     /**
      * Notifies that the preference state has changed.
-     * @param isEnabled Whether the feature is enabled.
      */
-    public void onContextualSearchPrefChanged(boolean isEnabled) {
+    public void onContextualSearchPrefChanged() {
         // The pref may be automatically changed during application startup due to enterprise
         // configuration settings, so we may not have a panel yet.
-        if (mSearchPanel != null) mSearchPanel.onContextualSearchPrefChanged(isEnabled);
+        if (mSearchPanel != null) {
+            // Nitifies panel that if the user opted in or not.
+            boolean userOptedIn = ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn();
+            mSearchPanel.onContextualSearchPrefChanged(userOptedIn);
+        }
     }
 
     @Override
@@ -1408,7 +1425,9 @@ public class ContextualSearchManager
         assert (suggestionIndex - defaultSearchAdjustment)
                 < mRelatedSearches.getQueries(isInBarSuggestion).size();
 
-        if (isInBarSuggestion) mSearchPanel.expandPanel(StateChangeReason.CLICK);
+        if (isInBarSuggestion && mSearchPanel.isPeeking()) {
+            mSearchPanel.expandPanel(StateChangeReason.CLICK);
+        }
         if (showDefaultSearch && suggestionIndex == 0) {
             // Click on the default query
             mSearchRequest = new ContextualSearchRequest(mResolvedSearchTerm.searchTerm(),
@@ -1680,6 +1699,11 @@ public class ContextualSearchManager
         if (isSearchPanelShowing()) {
             if (selectionValid) {
                 mSearchPanel.setSearchTerm(selection);
+                // If we have a literal search request we should update that too.
+                if (mSearchRequest != null) {
+                    mSearchRequest = new ContextualSearchRequest(
+                            selection, mPolicy.shouldPrefetchSearchResult());
+                }
                 mIsRelatedSearchesSerp = false;
                 ensureCaption();
             } else {
@@ -1697,7 +1721,7 @@ public class ContextualSearchManager
 
     @Override
     public void logNonHeuristicFeatures(ContextualSearchInteractionRecorder rankerLogger) {
-        boolean didOptIn = !mPolicy.isUserUndecided();
+        boolean didOptIn = mPolicy.isContextualSearchFullyEnabled();
         rankerLogger.logFeature(ContextualSearchInteractionRecorder.Feature.DID_OPT_IN, didOptIn);
         boolean isHttp = mPolicy.isBasePageHTTP(getBasePageURL());
         rankerLogger.logFeature(ContextualSearchInteractionRecorder.Feature.IS_HTTP, isHttp);
@@ -1970,33 +1994,19 @@ public class ContextualSearchManager
      * @return Whether the Contextual Search feature was disabled by the user explicitly.
      */
     public static boolean isContextualSearchDisabled() {
-        return getPrefService()
-                .getString(Pref.CONTEXTUAL_SEARCH_ENABLED)
-                .equals(CONTEXTUAL_SEARCH_DISABLED);
+        return ContextualSearchPolicy.isContextualSearchDisabled();
     }
 
     /**
-     * @return Whether the Contextual Search feature is disabled by policy.
+     * @param enabled Whether The user to choose fully Contextual Search privacy opt-in.
      */
-    public static boolean isContextualSearchDisabledByPolicy() {
-        return getPrefService().isManagedPreference(Pref.CONTEXTUAL_SEARCH_ENABLED)
-                && isContextualSearchDisabled();
+    public static void setContextualSearchPromoCardSelection(boolean enabled) {
+        ContextualSearchPolicy.setContextualSearchPromoCardSelection(enabled);
     }
 
-    /**
-     * @return Whether the Contextual Search feature is uninitialized (preference unset by the
-     *         user).
-     */
-    public static boolean isContextualSearchUninitialized() {
-        return getPrefService().getString(Pref.CONTEXTUAL_SEARCH_ENABLED).isEmpty();
-    }
-
-    /**
-     * @param enabled Whether Contextual Search should be enabled.
-     */
-    public static void setContextualSearchState(boolean enabled) {
-        getPrefService().setString(Pref.CONTEXTUAL_SEARCH_ENABLED,
-                enabled ? CONTEXTUAL_SEARCH_ENABLED : CONTEXTUAL_SEARCH_DISABLED);
+    /** Notifies that a promo card has been shown. */
+    public static void onPromoShown() {
+        ContextualSearchPolicy.onPromoShown();
     }
 
     // Private helper functions
@@ -2004,10 +2014,6 @@ public class ContextualSearchManager
     /** @return The language of the base page being viewed by the user. */
     private String getBasePageLanguage() {
         return mContext.getDetectedLanguage();
-    }
-
-    private static PrefService getPrefService() {
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }
 
     private int getBasePageHeight() {

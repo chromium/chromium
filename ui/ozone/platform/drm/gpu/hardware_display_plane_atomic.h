@@ -21,6 +21,11 @@ namespace ui {
 class HardwareDisplayPlaneAtomic : public HardwareDisplayPlane {
  public:
   explicit HardwareDisplayPlaneAtomic(uint32_t id);
+
+  HardwareDisplayPlaneAtomic(const HardwareDisplayPlaneAtomic&) = delete;
+  HardwareDisplayPlaneAtomic& operator=(const HardwareDisplayPlaneAtomic&) =
+      delete;
+
   ~HardwareDisplayPlaneAtomic() override;
 
   bool Initialize(DrmDevice* drm) override;
@@ -43,8 +48,6 @@ class HardwareDisplayPlaneAtomic : public HardwareDisplayPlane {
  private:
   // Intermediate variable between Assign()ment and Set()ting.
   HardwareDisplayPlane::Properties assigned_props_;
-
-  DISALLOW_COPY_AND_ASSIGN(HardwareDisplayPlaneAtomic);
 };
 
 }  // namespace ui

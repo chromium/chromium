@@ -24,6 +24,9 @@ class MEDIA_EXPORT AudioSystemImpl : public AudioSystem {
 
   explicit AudioSystemImpl(AudioManager* audio_manager);
 
+  AudioSystemImpl(const AudioSystemImpl&) = delete;
+  AudioSystemImpl& operator=(const AudioSystemImpl&) = delete;
+
   // AudioSystem implementation.
   void GetInputStreamParameters(const std::string& device_id,
                                 OnAudioParamsCallback on_params_cb) override;
@@ -55,8 +58,6 @@ class MEDIA_EXPORT AudioSystemImpl : public AudioSystem {
 
   THREAD_CHECKER(thread_checker_);
   AudioManager* const audio_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioSystemImpl);
 };
 
 }  // namespace media

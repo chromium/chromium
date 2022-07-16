@@ -241,3 +241,13 @@ button.blue-button {
   color: #fff;
   text-shadow: 1px sharp drop shadow rgb(45, 106, 218);
 }
+
+/* Used for elements that are hidden but not ignored by screen reader. */
+.off-screen {
+  height: 1px;
+  left: -10000px;
+  overflow: hidden;
+  position: absolute;
+  top: auto;
+  width: 1px;
+}

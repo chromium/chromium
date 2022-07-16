@@ -139,6 +139,9 @@ class NET_EXPORT HostResolverManager
                       SystemDnsConfigChangeNotifier* system_dns_config_notifier,
                       NetLog* net_log);
 
+  HostResolverManager(const HostResolverManager&) = delete;
+  HostResolverManager& operator=(const HostResolverManager&) = delete;
+
   // If any completion callbacks are pending when the resolver is destroyed,
   // the host resolutions are cancelled, and the completion callbacks will not
   // be called.
@@ -497,8 +500,6 @@ class NET_EXPORT HostResolverManager
   base::WeakPtrFactory<HostResolverManager> weak_ptr_factory_{this};
 
   base::WeakPtrFactory<HostResolverManager> probe_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostResolverManager);
 };
 
 // Resolves a local hostname (such as "localhost" or "vhost.localhost") into

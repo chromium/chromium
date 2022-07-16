@@ -16,6 +16,9 @@ class CastContentGpuClient : public content::ContentGpuClient {
  public:
   static std::unique_ptr<CastContentGpuClient> Create();
 
+  CastContentGpuClient(const CastContentGpuClient&) = delete;
+  CastContentGpuClient& operator=(const CastContentGpuClient&) = delete;
+
   ~CastContentGpuClient() override;
 
   // content::ContentGpuClient:
@@ -24,9 +27,6 @@ class CastContentGpuClient : public content::ContentGpuClient {
 
  protected:
   CastContentGpuClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastContentGpuClient);
 };
 
 }  // namespace shell

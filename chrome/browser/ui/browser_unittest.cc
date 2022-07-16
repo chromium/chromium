@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/browser.h"
 
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -24,6 +23,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
+#include "printing/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 using content::SiteInstance;
@@ -34,6 +34,10 @@ using session_manager::SessionState;
 class BrowserUnitTest : public BrowserWithTestWindowTest {
  public:
   BrowserUnitTest() {}
+
+  BrowserUnitTest(const BrowserUnitTest&) = delete;
+  BrowserUnitTest& operator=(const BrowserUnitTest&) = delete;
+
   ~BrowserUnitTest() override {}
 
   // Caller owns the memory.
@@ -41,9 +45,6 @@ class BrowserUnitTest : public BrowserWithTestWindowTest {
     return WebContentsTester::CreateTestWebContents(
         profile(), SiteInstance::Create(profile()));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserUnitTest);
 };
 
 // Ensure crashed tabs are not reloaded when selected. crbug.com/232323
@@ -112,6 +113,7 @@ TEST_F(BrowserUnitTest, MAYBE_SetBackgroundColorForNewTab) {
             *raw_contents2->GetMainFrame()->GetView()->GetBackgroundColor());
 }
 
+#if BUILDFLAG(ENABLE_PRINTING)
 // Ensure the print command gets disabled when a tab crashes.
 TEST_F(BrowserUnitTest, DisablePrintOnCrashedTab) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
@@ -134,6 +136,7 @@ TEST_F(BrowserUnitTest, DisablePrintOnCrashedTab) {
   EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_PRINT));
   EXPECT_FALSE(chrome::CanPrint(browser()));
 }
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 // Ensure the zoom-in and zoom-out commands get disabled when a tab crashes.
 TEST_F(BrowserUnitTest, DisableZoomOnCrashedTab) {
@@ -186,8 +189,8 @@ TEST_F(BrowserUnitTest, CreateBrowserFailsIfProfileDisallowsBrowserWindows) {
 
 // Tests BrowserCreate() when Incognito mode is disabled.
 TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeDisabled) {
-  IncognitoModePrefs::SetAvailability(profile()->GetPrefs(),
-                                      IncognitoModePrefs::DISABLED);
+  IncognitoModePrefs::SetAvailability(
+      profile()->GetPrefs(), IncognitoModePrefs::Availability::kDisabled);
 
   // Creating a browser window in OTR profile should fail if incognito is
   // disabled.
@@ -205,8 +208,8 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeDisabled) {
 
 // Tests BrowserCreate() when Incognito mode is forced.
 TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeForced) {
-  IncognitoModePrefs::SetAvailability(profile()->GetPrefs(),
-                                      IncognitoModePrefs::FORCED);
+  IncognitoModePrefs::SetAvailability(
+      profile()->GetPrefs(), IncognitoModePrefs::Availability::kForced);
 
   // Creating a browser window in the original profile should fail if incognito
   // is forced.
@@ -225,7 +228,7 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeForced) {
 
 // Tests BrowserCreate() with not restrictions on incognito mode.
 TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeEnabled) {
-  ASSERT_EQ(IncognitoModePrefs::ENABLED,
+  ASSERT_EQ(IncognitoModePrefs::Availability::kEnabled,
             IncognitoModePrefs::GetAvailability(profile()->GetPrefs()));
 
   // Creating a browser in the original test profile should succeed.
@@ -278,6 +281,10 @@ TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
 class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
  public:
   BrowserBookmarkBarTest() {}
+
+  BrowserBookmarkBarTest(const BrowserBookmarkBarTest&) = delete;
+  BrowserBookmarkBarTest& operator=(const BrowserBookmarkBarTest&) = delete;
+
   ~BrowserBookmarkBarTest() override {}
 
  protected:
@@ -302,6 +309,12 @@ class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
    public:
     BookmarkBarStateTestBrowserWindow()
         : browser_(nullptr), bookmark_bar_state_(BookmarkBar::HIDDEN) {}
+
+    BookmarkBarStateTestBrowserWindow(
+        const BookmarkBarStateTestBrowserWindow&) = delete;
+    BookmarkBarStateTestBrowserWindow& operator=(
+        const BookmarkBarStateTestBrowserWindow&) = delete;
+
     ~BookmarkBarStateTestBrowserWindow() override {}
 
     void set_browser(Browser* browser) { browser_ = browser; }
@@ -329,11 +342,7 @@ class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
 
     Browser* browser_;  // Weak ptr.
     BookmarkBar::State bookmark_bar_state_;
-
-    DISALLOW_COPY_AND_ASSIGN(BookmarkBarStateTestBrowserWindow);
   };
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserBookmarkBarTest);
 };
 
 // Ensure bookmark bar states in Browser and BrowserWindow are in sync after

@@ -15,6 +15,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
@@ -39,6 +40,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/account_id/account_id.h"
@@ -99,7 +102,7 @@ AppServiceAppWindowShelfController::~AppServiceAppWindowShelfController() {
 
   // We need to remove all Registry observers for added users.
   for (auto* profile : profile_list_) {
-    apps::AppServiceProxyChromeOs* proxy =
+    apps::AppServiceProxy* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile);
     proxy->InstanceRegistry().RemoveObserver(this);
   }
@@ -129,7 +132,7 @@ void AppServiceAppWindowShelfController::ActiveUserChanged(
   // user, and activates the app windows for the active user.
   for (auto* window : window_list_) {
     ash::ShelfID shelf_id = proxy_->InstanceRegistry().GetShelfId(
-        apps::Instance::InstanceKey(window));
+        apps::Instance::InstanceKey::ForWindowBasedApp(window));
     if (!shelf_id.IsNull()) {
       RegisterWindow(window, shelf_id);
     } else {
@@ -167,6 +170,12 @@ void AppServiceAppWindowShelfController::OnWindowInitialized(
   if (!widget || !widget->is_top_level())
     return;
 
+  if (web_app::IsWebAppsCrosapiEnabled() &&
+      crosapi::browser_util::IsLacrosWindow(window)) {
+    // Ignore all Lacros windows, handled by BrowserAppShelfController.
+    return;
+  }
+
   observed_windows_.AddObservation(window);
   if (arc_tracker_)
     arc_tracker_->AddCandidateWindow(window);
@@ -184,11 +193,12 @@ void AppServiceAppWindowShelfController::OnWindowInitialized(
       widget->IsMinimized()) {
     // Update |state|. The app must be started, and running state. If visible,
     // set it as |kVisible|, otherwise, clear the visible bit.
+    auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(window);
     apps::InstanceState state =
         app_service_instance_helper_->CalculateVisibilityState(
-            window, /*visible=*/false);
-    app_service_instance_helper_->OnInstances(GetAppId(shelf_id.app_id), window,
-                                              shelf_id.launch_id, state);
+            instance_key, /*visible=*/false);
+    app_service_instance_helper_->OnInstances(
+        instance_key, GetAppId(shelf_id.app_id), shelf_id.launch_id, state);
 
     RegisterWindow(window, shelf_id);
   }
@@ -209,9 +219,9 @@ void AppServiceAppWindowShelfController::OnWindowPropertyChanged(
   if (GetAppType(shelf_id.app_id) != apps::mojom::AppType::kBuiltIn)
     return;
 
-  app_service_instance_helper_->OnInstances(shelf_id.app_id, window,
-                                            shelf_id.launch_id,
-                                            apps::InstanceState::kUnknown);
+  app_service_instance_helper_->OnInstances(
+      apps::Instance::InstanceKey::ForWindowBasedApp(window), shelf_id.app_id,
+      shelf_id.launch_id, apps::InstanceState::kUnknown);
 
   RegisterWindow(window, shelf_id);
 }
@@ -240,14 +250,17 @@ void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
 
   // Update |state|. The app must be started, and running state. If visible,
   // set it as |kVisible|, otherwise, clear the visible bit.
+  auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(window);
   apps::InstanceState state =
-      app_service_instance_helper_->CalculateVisibilityState(window, visible);
-  app_service_instance_helper_->OnInstances(GetAppId(shelf_id.app_id), window,
-                                            shelf_id.launch_id, state);
+      app_service_instance_helper_->CalculateVisibilityState(instance_key,
+                                                             visible);
+  app_service_instance_helper_->OnInstances(
+      instance_key, GetAppId(shelf_id.app_id), shelf_id.launch_id, state);
 
   // Only register the visible non-browser |window| for the active user.
   if (!visible || shelf_id.app_id == extension_misc::kChromeAppId ||
-      !proxy_->InstanceRegistry().Exists(apps::Instance::InstanceKey(window))) {
+      !proxy_->InstanceRegistry().Exists(
+          apps::Instance::InstanceKey::ForWindowBasedApp(window))) {
     return;
   }
 
@@ -274,6 +287,7 @@ void AppServiceAppWindowShelfController::OnWindowDestroying(
   if (crostini_tracker_)
     crostini_tracker_->OnWindowDestroying(window);
 
+  auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(window);
   // When the window is destroyed, we should search all proxies, because the
   // window could be teleported from the inactive user, and isn't saved in the
   // proxy of the active user's profile, but it should still be removed from
@@ -286,7 +300,7 @@ void AppServiceAppWindowShelfController::OnWindowDestroying(
     // app window from the shelf. So if we can get the window from
     // InstanceRegistry, we should still destroy it from InstanceRegistry and
     // remove the app window from the shelf
-    app_id = app_service_instance_helper_->GetAppId(window);
+    app_id = app_service_instance_helper_->GetAppId(instance_key);
   }
 
   if (!app_id.empty() &&
@@ -294,7 +308,7 @@ void AppServiceAppWindowShelfController::OnWindowDestroying(
                                                        window) &&
       app_id != extension_misc::kChromeAppId) {
     // Delete the instance from InstanceRegistry.
-    app_service_instance_helper_->OnInstances(GetAppId(app_id), window,
+    app_service_instance_helper_->OnInstances(instance_key, GetAppId(app_id),
                                               std::string(),
                                               apps::InstanceState::kDestroyed);
   }
@@ -332,21 +346,29 @@ void AppServiceAppWindowShelfController::OnWindowActivated(
 
 void AppServiceAppWindowShelfController::OnInstanceUpdate(
     const apps::InstanceUpdate& update) {
+  const apps::Instance::InstanceKey& instance_key = update.InstanceKey();
+  if (instance_key.IsForWebBasedApp()) {
+    // Only deal with window based app instances past here.
+    return;
+  }
+
   if (update.IsDestruction()) {
     // For Chrome apps edge case, it could be added for the inactive users, and
     // then removed. Since it is not registered we don't need to do anything
     // anyways. As such, all which is left to do here is to get rid of our own
     // reference.
     WindowList::iterator it =
-        std::find(window_list_.begin(), window_list_.end(), update.Window());
+        std::find(window_list_.begin(), window_list_.end(),
+                  instance_key.GetEnclosingAppWindow());
     if (it != window_list_.end())
       window_list_.erase(it);
     return;
   }
 
-  aura::Window* window = update.Window();
-  if (!observed_windows_.IsObservingSource(window))
+  aura::Window* window = instance_key.GetEnclosingAppWindow();
+  if (!observed_windows_.IsObservingSource(window)) {
     return;
+  }
 
   ash::ShelfID shelf_id(update.AppId(), update.LaunchId());
 
@@ -394,7 +416,7 @@ void AppServiceAppWindowShelfController::OnInstanceUpdate(
     auto app_window_it = aura_window_to_app_window_.find(window);
     if (app_window_it != aura_window_to_app_window_.end() &&
         proxy_->InstanceRegistry().Exists(
-            apps::Instance::InstanceKey(window))) {
+            apps::Instance::InstanceKey::ForWindowBasedApp(window))) {
       RemoveAppWindowFromShelf(app_window_it->second.get());
       aura_window_to_app_window_.erase(app_window_it);
     }
@@ -495,10 +517,12 @@ void AppServiceAppWindowShelfController::SetWindowActivated(
     return;
   }
 
+  auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(window);
   apps::InstanceState state =
-      app_service_instance_helper_->CalculateActivatedState(window, active);
-  app_service_instance_helper_->OnInstances(GetAppId(shelf_id.app_id), window,
-                                            std::string(), state);
+      app_service_instance_helper_->CalculateActivatedState(instance_key,
+                                                            active);
+  app_service_instance_helper_->OnInstances(
+      instance_key, GetAppId(shelf_id.app_id), std::string(), state);
 }
 
 void AppServiceAppWindowShelfController::RegisterWindow(
@@ -535,10 +559,8 @@ void AppServiceAppWindowShelfController::RegisterWindow(
         ->SetIcon(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             IDR_LOGO_PLUGIN_VM_DEFAULT_192));
     // Set fullscreen properties.
-    if (base::FeatureList::IsEnabled(ash::features::kPluginVmFullscreen)) {
-      exo::SetShellUseImmersiveForFullscreen(window, false);
-      window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
-    }
+    exo::SetShellUseImmersiveForFullscreen(window, false);
+    window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
   } else if (borealis::BorealisWindowManager::IsBorealisWindow(window)) {
     // Set fullscreen properties for Borealis.
     window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
@@ -581,8 +603,8 @@ void AppServiceAppWindowShelfController::AddAppWindowToShelf(
   if (!owner()->GetItem(shelf_id)) {
     owner()->CreateAppItem(std::move(controller), ash::STATUS_RUNNING);
   } else {
-    owner()->shelf_model()->SetShelfItemDelegate(shelf_id,
-                                                 std::move(controller));
+    owner()->shelf_model()->ReplaceShelfItemDelegate(shelf_id,
+                                                     std::move(controller));
     owner()->SetItemStatus(shelf_id, ash::STATUS_RUNNING);
   }
 }
@@ -600,7 +622,7 @@ void AppServiceAppWindowShelfController::RemoveAppWindowFromShelf(
           app_window->shelf_id());
 
   if (item_controller && item_controller->window_count() == 0)
-    owner()->CloseItem(item_controller->shelf_id());
+    owner()->ReplaceWithAppShortcutOrRemove(item_controller->shelf_id());
 }
 
 void AppServiceAppWindowShelfController::OnItemDelegateDiscarded(
@@ -661,7 +683,7 @@ ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
   for (auto* profile : profile_list_) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     shelf_id = proxy->InstanceRegistry().GetShelfId(
-        apps::Instance::InstanceKey(window));
+        apps::Instance::InstanceKey::ForWindowBasedApp(window));
     if (!shelf_id.IsNull())
       break;
   }
@@ -691,9 +713,11 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
     aura::Window* window,
     const ash::ShelfID& shelf_id,
     content::BrowserContext* browser_context) {
+  DCHECK(browser_context);
   // If the window was created for the active user, register it to show an item
   // on the shelf.
-  if (proxy_->InstanceRegistry().Exists(apps::Instance::InstanceKey(window))) {
+  if (proxy_->InstanceRegistry().Exists(
+          apps::Instance::InstanceKey::ForWindowBasedApp(window))) {
     RegisterWindow(window, shelf_id);
     return;
   }
@@ -705,19 +729,22 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
       MultiUserWindowManagerHelper::GetInstance();
   aura::Window* other_window = nullptr;
   for (auto* it : profile_list_) {
-    apps::AppServiceProxyChromeOs* proxy =
+    apps::AppServiceProxy* proxy =
         apps::AppServiceProxyFactory::GetForProfile(it);
     if (proxy == proxy_)
       continue;
     proxy->InstanceRegistry().ForEachInstance(
         [&other_window, &window, &shelf_id, &browser_context, &helper,
          &current_account_id](const apps::InstanceUpdate& update) {
-          if (helper->IsWindowOnDesktopOfUser(update.Window(),
-                                              current_account_id) &&
+          const apps::Instance::InstanceKey& instance_key =
+              update.InstanceKey();
+          if (helper->IsWindowOnDesktopOfUser(
+                  instance_key.GetEnclosingAppWindow(), current_account_id) &&
               (update.AppId() == shelf_id.app_id) &&
               (update.BrowserContext() == browser_context) &&
-              update.Window() != window) {
-            other_window = update.Window();
+              instance_key.GetEnclosingAppWindow() != window) {
+            DCHECK(!instance_key.IsForWebBasedApp());
+            other_window = instance_key.GetEnclosingAppWindow();
           }
         });
     if (other_window)

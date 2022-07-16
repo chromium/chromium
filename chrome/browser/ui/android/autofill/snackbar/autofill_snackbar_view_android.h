@@ -10,7 +10,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_view.h"
 

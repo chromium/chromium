@@ -11,7 +11,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "media/cast/net/rtp/rtp_defines.h"
@@ -28,6 +27,10 @@ class Framer {
          uint32_t ssrc,
          bool decoder_faster_than_max_frame_rate,
          int max_unacked_frames);
+
+  Framer(const Framer&) = delete;
+  Framer& operator=(const Framer&) = delete;
+
   ~Framer();
 
   // Return true when receiving the last packet in a frame, creating a
@@ -88,8 +91,6 @@ class Framer {
   bool waiting_for_key_;
   FrameId last_released_frame_;
   FrameId newest_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(Framer);
 };
 
 }  //  namespace cast

@@ -26,6 +26,10 @@ class UI_DEVTOOLS_EXPORT UiDevToolsClient : public protocol::FrontendChannel {
   static const int kNotConnected = -1;
 
   UiDevToolsClient(const std::string& name, UiDevToolsServer* server);
+
+  UiDevToolsClient(const UiDevToolsClient&) = delete;
+  UiDevToolsClient& operator=(const UiDevToolsClient&) = delete;
+
   ~UiDevToolsClient() override;
 
   void AddAgent(std::unique_ptr<UiDevToolsAgent> agent);
@@ -58,8 +62,6 @@ class UI_DEVTOOLS_EXPORT UiDevToolsClient : public protocol::FrontendChannel {
   std::vector<std::unique_ptr<UiDevToolsAgent>> agents_;
   protocol::UberDispatcher dispatcher_;
   UiDevToolsServer* server_;
-
-  DISALLOW_COPY_AND_ASSIGN(UiDevToolsClient);
 };
 
 }  // namespace ui_devtools

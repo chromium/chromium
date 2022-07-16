@@ -41,7 +41,7 @@ class BackForwardCacheMetricsTest : public RenderViewHostImplTestHarness,
     web_contents->SetDelegate(&web_contents_delegate_);
 
     // Ensure that the time is non-null.
-    clock_.Advance(base::TimeDelta::FromMilliseconds(5));
+    clock_.Advance(base::Milliseconds(5));
     BackForwardCacheMetrics::OverrideTimeForTesting(&clock_);
   }
 
@@ -80,15 +80,15 @@ TEST_F(BackForwardCacheMetricsTest, HistoryNavigationUKM) {
   // to ensure that each pair is easily distinguished.
 
   NavigationSimulator::NavigateAndCommitFromDocument(url1, main_test_rfh());
-  clock_.Advance(base::TimeDelta::FromMilliseconds(0b1));
+  clock_.Advance(base::Milliseconds(0b1));
   NavigationSimulator::NavigateAndCommitFromDocument(url2, main_test_rfh());
-  clock_.Advance(base::TimeDelta::FromMilliseconds(0b10));
+  clock_.Advance(base::Milliseconds(0b10));
   NavigationSimulator::NavigateAndCommitFromDocument(url3, main_test_rfh());
-  clock_.Advance(base::TimeDelta::FromMilliseconds(0b100));
+  clock_.Advance(base::Milliseconds(0b100));
   NavigationSimulator::GoBack(contents());
-  clock_.Advance(base::TimeDelta::FromMilliseconds(0b1000));
+  clock_.Advance(base::Milliseconds(0b1000));
   NavigationSimulator::GoBack(contents());
-  clock_.Advance(base::TimeDelta::FromMilliseconds(0b10000));
+  clock_.Advance(base::Milliseconds(0b10000));
   NavigationSimulator::GoForward(contents());
 
   ASSERT_EQ(navigation_ids_.size(), static_cast<size_t>(6));
@@ -120,8 +120,7 @@ TEST_F(BackForwardCacheMetricsTest, LongDurationsAreClamped) {
 
   NavigationSimulator::NavigateAndCommitFromDocument(url1, main_test_rfh());
   NavigationSimulator::NavigateAndCommitFromDocument(url2, main_test_rfh());
-  clock_.Advance(base::TimeDelta::FromHours(5) +
-                 base::TimeDelta::FromMilliseconds(50));
+  clock_.Advance(base::Hours(5) + base::Milliseconds(50));
   NavigationSimulator::GoBack(contents());
 
   ASSERT_EQ(navigation_ids_.size(), static_cast<size_t>(3));
@@ -130,10 +129,9 @@ TEST_F(BackForwardCacheMetricsTest, LongDurationsAreClamped) {
   std::string time_away = "TimeSinceNavigatedAwayFromDocument";
 
   // The original interval of 5h + 50ms is clamped to just 5h.
-  EXPECT_THAT(
-      recorder_.GetEntries("HistoryNavigation", {time_away}),
-      testing::ElementsAre(UkmEntry{
-          id3, {{time_away, base::TimeDelta::FromHours(5).InMilliseconds()}}}));
+  EXPECT_THAT(recorder_.GetEntries("HistoryNavigation", {time_away}),
+              testing::ElementsAre(UkmEntry{
+                  id3, {{time_away, base::Hours(5).InMilliseconds()}}}));
 }
 
 TEST_F(BackForwardCacheMetricsTest, TimeRecordedAtStart) {
@@ -147,27 +145,27 @@ TEST_F(BackForwardCacheMetricsTest, TimeRecordedAtStart) {
     auto simulator =
         NavigationSimulator::CreateRendererInitiated(url1, main_test_rfh());
     simulator->Start();
-    clock_.Advance(base::TimeDelta::FromMilliseconds(0b1));
+    clock_.Advance(base::Milliseconds(0b1));
     simulator->Commit();
   }
 
-  clock_.Advance(base::TimeDelta::FromMilliseconds(0b10));
+  clock_.Advance(base::Milliseconds(0b10));
 
   {
     auto simulator =
         NavigationSimulator::CreateRendererInitiated(url2, main_test_rfh());
     simulator->Start();
-    clock_.Advance(base::TimeDelta::FromMilliseconds(0b100));
+    clock_.Advance(base::Milliseconds(0b100));
     simulator->Commit();
   }
 
-  clock_.Advance(base::TimeDelta::FromMilliseconds(0b1000));
+  clock_.Advance(base::Milliseconds(0b1000));
 
   {
-    auto simulator =
-        NavigationSimulator::CreateHistoryNavigation(-1, contents());
+    auto simulator = NavigationSimulator::CreateHistoryNavigation(
+        -1, contents(), false /* is_renderer_initiated */);
     simulator->Start();
-    clock_.Advance(base::TimeDelta::FromMilliseconds(0b10000));
+    clock_.Advance(base::Milliseconds(0b10000));
     simulator->Commit();
   }
 
@@ -180,7 +178,8 @@ TEST_F(BackForwardCacheMetricsTest, TimeRecordedAtStart) {
               testing::ElementsAre(UkmEntry{id3, {{time_away, 0b1000}}}));
 }
 
-TEST_F(BackForwardCacheMetricsTest, TimeRecordedWhenRendererIsKilled) {
+// TODO(crbug.com/1255492): Flaky under TSan.
+TEST_F(BackForwardCacheMetricsTest, DISABLED_TimeRecordedWhenRendererIsKilled) {
   // Need to enable back-forward cache to make sure a page is put into the
   // cache.
   base::test::ScopedFeatureList scoped_feature_list;
@@ -195,20 +194,20 @@ TEST_F(BackForwardCacheMetricsTest, TimeRecordedWhenRendererIsKilled) {
 
   // Go to foo1.
   NavigationSimulator::NavigateAndCommitFromDocument(url1, main_test_rfh());
-  clock_.Advance(base::TimeDelta::FromMilliseconds(0b1));
+  clock_.Advance(base::Milliseconds(0b1));
   TestRenderFrameHost* old_main_frame_host = main_test_rfh();
 
   // Go to foo2. Foo1 will be in the back-forward cache.
   NavigationSimulator::NavigateAndCommitFromDocument(url2, main_test_rfh());
-  clock_.Advance(base::TimeDelta::FromMilliseconds(0b10));
+  clock_.Advance(base::Milliseconds(0b10));
 
   // Kill the renderer.
   old_main_frame_host->GetProcess()->SimulateRenderProcessExit(
       base::TERMINATION_STATUS_PROCESS_WAS_KILLED, 1);
-  clock_.Advance(base::TimeDelta::FromMilliseconds(0b100));
+  clock_.Advance(base::Milliseconds(0b100));
 
   NavigationSimulator::GoBack(contents());
-  clock_.Advance(base::TimeDelta::FromMilliseconds(0b1000));
+  clock_.Advance(base::Milliseconds(0b1000));
 
   const char kTimeUntilProcessKilled[] =
       "BackForwardCache.Eviction.TimeUntilProcessKilled";

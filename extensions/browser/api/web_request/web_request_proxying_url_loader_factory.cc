@@ -62,6 +62,9 @@ constexpr char kWebRequestProxyingURLLoaderFactoryScope[] =
 class ShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
+  ShutdownNotifierFactory(const ShutdownNotifierFactory&) = delete;
+  ShutdownNotifierFactory& operator=(const ShutdownNotifierFactory&) = delete;
+
   static ShutdownNotifierFactory* GetInstance() {
     static base::NoDestructor<ShutdownNotifierFactory> factory;
     return factory.get();
@@ -76,8 +79,6 @@ class ShutdownNotifierFactory
     DependsOn(PermissionHelper::GetFactoryInstance());
   }
   ~ShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownNotifierFactory);
 };
 
 // Creates simulated net::RedirectInfo when an extension redirects a request,
@@ -248,11 +249,13 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   // `current_request_uses_header_client_` is true but the request is not made
   // with the kURLLoadOptionUseHeaderClient option, also check
   // `has_any_extra_headers_listeners_` here. See http://crbug.com/1074282.
+  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
   current_request_uses_header_client_ =
       has_any_extra_headers_listeners_ &&
       factory_->url_loader_header_client_receiver_.is_bound() &&
       (request_.url.SchemeIsHTTPOrHTTPS() ||
-       request_.url.SchemeIs(url::kUrnScheme)) &&
+       request_.url.SchemeIs(url::kUrnScheme) ||
+       request_.url.SchemeIs(url::kUuidInPackageScheme)) &&
       (for_cors_preflight_ || network_service_request_id_ != 0) &&
       ExtensionWebRequestEventRouter::GetInstance()
           ->HasExtraHeadersListenerForRequest(factory_->browser_context_,
@@ -706,13 +709,15 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   if (proxied_client_receiver_.is_bound())
     proxied_client_receiver_.Resume();
 
+  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
   if (request_.url.SchemeIsHTTPOrHTTPS() ||
-      request_.url.SchemeIs(url::kUrnScheme)) {
+      request_.url.SchemeIs(url::kUrnScheme) ||
+      request_.url.SchemeIs(url::kUuidInPackageScheme)) {
     // NOTE: While it does not appear to be documented (and in fact it may be
     // intuitive), |onBeforeSendHeaders| is only dispatched for HTTP and HTTPS
     // and urn: requests.
 
-    const auto state_on_error = State::kRejectedByOnBeforeSendHeaders;
+    state_on_error = State::kRejectedByOnBeforeSendHeaders;
     auto continuation =
         base::BindRepeating(&InProgressRequest::ContinueToSendHeaders,
                             weak_factory_.GetWeakPtr(), state_on_error);
@@ -875,8 +880,10 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   if (proxied_client_receiver_.is_bound())
     proxied_client_receiver_.Resume();
 
+  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
   if (request_.url.SchemeIsHTTPOrHTTPS() ||
-      request_.url.SchemeIs(url::kUrnScheme)) {
+      request_.url.SchemeIs(url::kUrnScheme) ||
+      request_.url.SchemeIs(url::kUuidInPackageScheme)) {
     // NOTE: While it does not appear to be documented (and in fact it may be
     // intuitive), |onSendHeaders| is only dispatched for HTTP and HTTPS
     // and urn: requests.
@@ -1241,8 +1248,10 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   redirect_url_ = GURL();
 
   auto callback_pair = base::SplitOnceCallback(std::move(continuation));
+  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
   if (request_.url.SchemeIsHTTPOrHTTPS() ||
-      request_.url.SchemeIs(url::kUrnScheme)) {
+      request_.url.SchemeIs(url::kUrnScheme) ||
+      request_.url.SchemeIs(url::kUuidInPackageScheme)) {
     DCHECK(info_.has_value());
     int result =
         ExtensionWebRequestEventRouter::GetInstance()->OnHeadersReceived(

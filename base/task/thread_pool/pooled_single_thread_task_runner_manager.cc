@@ -13,9 +13,9 @@
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/delayed_task_manager.h"
 #include "base/task/thread_pool/priority_queue.h"
@@ -107,7 +107,7 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
     return thread_label_;
   }
 
-  void OnMainEntry(const WorkerThread* /* worker */) override {
+  void OnMainEntry(WorkerThread* /* worker */) override {
     thread_ref_checker_.Set();
     PlatformThread::SetName(thread_name_);
   }
@@ -256,7 +256,7 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
   ~WorkerThreadCOMDelegate() override { DCHECK(!scoped_com_initializer_); }
 
   // WorkerThread::Delegate:
-  void OnMainEntry(const WorkerThread* worker) override {
+  void OnMainEntry(WorkerThread* worker) override {
     WorkerThreadDelegate::OnMainEntry(worker);
 
     scoped_com_initializer_ = std::make_unique<win::ScopedCOMInitializer>();

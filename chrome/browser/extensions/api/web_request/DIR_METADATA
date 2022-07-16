@@ -1,3 +1,1 @@
-monorail {
-  component: "Platform>Extensions>API"
-}
+mixins: "//extensions/browser/api/web_request/COMMON_METADATA"

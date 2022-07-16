@@ -7,10 +7,13 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"
+#include "ui/accessibility/ax_tree_source_observer.h"
 
 namespace ui {
 
@@ -25,7 +28,7 @@ namespace ui {
 template <typename AXNodeSource>
 class AXTreeSource {
  public:
-  virtual ~AXTreeSource() {}
+  virtual ~AXTreeSource() = default;
 
   // Get the tree data and returns true if there is any data to copy.
   virtual bool GetTreeData(AXTreeData* data) const = 0;
@@ -37,7 +40,9 @@ class AXTreeSource {
   // null node, i.e. one that will return false if you call IsValid on it.
   virtual AXNodeSource GetFromId(AXNodeID id) const = 0;
 
-  // Return the id of a node. All ids must be positive integers.
+  // Return the id of a node. All ids must be positive integers; 0 is not a
+  // valid ID. IDs are unique only across the current tree source, not across
+  // tree sources.
   virtual AXNodeID GetId(AXNodeSource node) const = 0;
 
   // Append all children of |node| to |out_children|.
@@ -76,6 +81,19 @@ class AXTreeSource {
   // the tree. It can be used to allow an AXTreeSource to keep a cache
   // indexed by node ID and delete nodes when they're no longer needed.
   virtual void SerializerClearedNode(AXNodeID node_id) {}
+
+  // The following methods should be overridden in order to add or remove an
+  // `AXTreeSourceObserver`, which is notified when nodes are added, removed or
+  // updated in this tree source.
+
+  virtual void AddObserver(ui::AXTreeSourceObserver<AXNodeSource>* observer) {
+    NOTIMPLEMENTED();
+  }
+
+  virtual void RemoveObserver(
+      ui::AXTreeSourceObserver<AXNodeSource>* observer) {
+    NOTIMPLEMENTED();
+  }
 
  protected:
   AXTreeSource() {}

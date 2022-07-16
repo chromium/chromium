@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1286 tests; 1282 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1286 tests; 1283 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Window: original interface defined
@@ -559,7 +559,7 @@ PASS ShadowRoot interface: attribute mode
 PASS ShadowRoot interface: attribute delegatesFocus
 PASS ShadowRoot interface: attribute slotAssignment
 PASS ShadowRoot interface: attribute host
-FAIL ShadowRoot interface: attribute onslotchange assert_true: The prototype object must have a property "onslotchange" expected true got false
+PASS ShadowRoot interface: attribute onslotchange
 PASS Element interface: existence and properties of interface object
 PASS Element interface object length
 PASS Element interface object name

@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 // RandomSelector can be used to pick vectors of strings according to certain
 // probabilities. The probabilities are set using SetOdds(). A randomly picked
 // vector can be obtained by calling Select().
@@ -48,6 +46,10 @@ class RandomSelector {
   };
 
   RandomSelector();
+
+  RandomSelector(const RandomSelector&) = delete;
+  RandomSelector& operator=(const RandomSelector&) = delete;
+
   virtual ~RandomSelector();
 
   // Set the probabilities for various strings. Returns false and doesn't
@@ -83,8 +85,6 @@ class RandomSelector {
 
   // Sum of the probability weights.
   double sum_of_weights_;
-
-  DISALLOW_COPY_AND_ASSIGN(RandomSelector);
 };
 
 ::std::ostream& operator<<(

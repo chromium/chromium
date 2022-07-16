@@ -61,9 +61,11 @@ Browser* BrowserExtensionWindowController::GetBrowser() const {
 bool BrowserExtensionWindowController::IsVisibleToTabsAPIForExtension(
     const Extension* extension,
     bool allow_dev_tools_windows) const {
-  DCHECK(extension);
+  // TODO(joelhockey): We are assuming that the caller is webui when |extension|
+  // is null and allowing access to all windows. It would be better if we could
+  // pass in Feature::Context or some way to detect caller type.
   // Platform apps can only see their own windows.
-  if (extension->is_platform_app())
+  if (extension && extension->is_platform_app())
     return false;
 
   return !browser_->is_type_devtools() || allow_dev_tools_windows;

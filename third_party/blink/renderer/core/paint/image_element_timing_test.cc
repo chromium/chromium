@@ -28,7 +28,7 @@ class ImageElementTimingTest : public testing::Test,
     web_view_helper_.Initialize();
     frame_test_helpers::LoadFrame(
         web_view_helper_.GetWebView()->MainFrameImpl(), "about:blank");
-    WebURL base_url_ = url_test_helpers::ToKURL("http://www.test.com/");
+    base_url_ = url_test_helpers::ToKURL("http://www.test.com/");
     // Enable compositing on the page.
     web_view_helper_.GetWebView()
         ->GetPage()

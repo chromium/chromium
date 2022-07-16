@@ -22,10 +22,9 @@ namespace {
 constexpr int kTriggerThresholdCount = 2;
 // Time between last time the mouse leaves a screen edge and the counter
 // resetting.
-constexpr base::TimeDelta kCounterResetTime = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kCounterResetTime = base::Seconds(1);
 // How long the indicators are visible for.
-constexpr base::TimeDelta kIndicatorVisibilityDuration =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kIndicatorVisibilityDuration = base::Seconds(2);
 
 // Returns true if |screen_location| is on the edge of |display|. |display| must
 // be valid.

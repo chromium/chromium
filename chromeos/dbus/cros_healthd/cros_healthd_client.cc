@@ -26,6 +26,10 @@ CrosHealthdClient* g_instance = nullptr;
 class CrosHealthdClientImpl : public CrosHealthdClient {
  public:
   CrosHealthdClientImpl() = default;
+
+  CrosHealthdClientImpl(const CrosHealthdClientImpl&) = delete;
+  CrosHealthdClientImpl& operator=(const CrosHealthdClientImpl&) = delete;
+
   ~CrosHealthdClientImpl() override = default;
 
   // CrosHealthdClient overrides:
@@ -107,8 +111,6 @@ class CrosHealthdClientImpl : public CrosHealthdClient {
   // Must be last class member. This WeakPtrFactory is specifically for the
   // bootstrapping callbacks.
   base::WeakPtrFactory<CrosHealthdClientImpl> bootstrap_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrosHealthdClientImpl);
 };
 
 }  // namespace

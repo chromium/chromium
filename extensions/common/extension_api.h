@@ -80,6 +80,10 @@ class ExtensionAPI {
   // Creates a completely clean instance. Configure using
   // RegisterDependencyProvider before use.
   ExtensionAPI();
+
+  ExtensionAPI(const ExtensionAPI&) = delete;
+  ExtensionAPI& operator=(const ExtensionAPI&) = delete;
+
   virtual ~ExtensionAPI();
 
   // Add a FeatureProvider for APIs. The features are used to specify
@@ -186,8 +190,6 @@ class ExtensionAPI {
   // FeatureProviders used for resolving dependencies.
   typedef std::map<std::string, const FeatureProvider*> FeatureProviderMap;
   FeatureProviderMap dependency_providers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionAPI);
 };
 
 }  // namespace extensions

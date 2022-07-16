@@ -5,9 +5,10 @@
 #include "chrome/browser/ui/managed_ui.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -15,14 +16,14 @@
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
-#include "components/policy/core/common/management/platform_management_service.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -47,7 +48,7 @@ std::string GetManagedBy(const policy::CloudPolicyManager* manager) {
 
 const policy::CloudPolicyManager* GetUserCloudPolicyManager(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return profile->GetUserCloudPolicyManagerChromeOS();
+  return profile->GetUserCloudPolicyManagerAsh();
 #else
   return profile->GetUserCloudPolicyManager();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -75,9 +76,10 @@ bool ShouldDisplayManagedUi(Profile* profile) {
     return false;
 #endif
 
-  return enterprise_util::HasBrowserPoliciesApplied(profile);
+  return enterprise_util::IsBrowserManaged(profile);
 }
 
+#if !defined(OS_ANDROID)
 std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
   absl::optional<std::string> account_manager =
       GetAccountManagerIdentity(profile);
@@ -106,6 +108,7 @@ std::u16string GetManagedUiWebUILabel(Profile* profile) {
 
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
 }
+#endif  // !defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::u16string GetDeviceManagedUiWebUILabel() {
@@ -125,12 +128,12 @@ std::u16string GetDeviceManagedUiWebUILabel() {
 #endif
 
 absl::optional<std::string> GetDeviceManagerIdentity() {
-  if (!policy::PlatformManagementService::GetInstance().IsManaged())
+  if (!policy::ManagementServiceFactory::GetForPlatform()->IsManaged())
     return absl::nullopt;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->IsActiveDirectoryManaged()
              ? connector->GetRealm()
              : connector->GetEnterpriseDomainManager();
@@ -141,10 +144,7 @@ absl::optional<std::string> GetDeviceManagerIdentity() {
 }
 
 absl::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
-  // TODO(crbug.com/1188594): Replace the check with
-  // !policy::BrowserManagementService(profile).IsManaged() once this bug is
-  // fixed (it still needs a lot of test fixture changes).
-  if (!profile->GetProfilePolicyConnector()->IsManaged())
+  if (!policy::ManagementServiceFactory::GetForProfile(profile)->IsManaged())
     return absl::nullopt;
 
   const std::string managed_by =

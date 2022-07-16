@@ -19,7 +19,6 @@ source_set("views") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
-    "//ios/third_party/material_components_ios",
   ]
 }
 

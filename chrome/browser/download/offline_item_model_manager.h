@@ -22,6 +22,10 @@ class OfflineItemModelManager : public KeyedService {
  public:
   // Constructs a OfflineItemModelManager.
   explicit OfflineItemModelManager(content::BrowserContext* browser_context);
+
+  OfflineItemModelManager(const OfflineItemModelManager&) = delete;
+  OfflineItemModelManager& operator=(const OfflineItemModelManager&) = delete;
+
   ~OfflineItemModelManager() override;
 
   // Returns the OfflineItemModel for the ContentId, if not found, an empty
@@ -36,8 +40,6 @@ class OfflineItemModelManager : public KeyedService {
   content::BrowserContext* browser_context_;
   std::map<ContentId, std::unique_ptr<OfflineItemModelData>>
       offline_item_model_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineItemModelManager);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_OFFLINE_ITEM_MODEL_MANAGER_H_

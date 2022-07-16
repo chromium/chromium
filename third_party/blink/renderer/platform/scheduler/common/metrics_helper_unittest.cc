@@ -31,11 +31,11 @@ class MetricsHelperForTest : public MetricsHelper {
 };
 
 base::TimeTicks Seconds(int seconds) {
-  return base::TimeTicks() + base::TimeDelta::FromSeconds(seconds);
+  return base::TimeTicks() + base::Seconds(seconds);
 }
 
 base::ThreadTicks ThreadSeconds(int seconds) {
-  return base::ThreadTicks() + base::TimeDelta::FromSeconds(seconds);
+  return base::ThreadTicks() + base::Seconds(seconds);
 }
 
 }  // namespace

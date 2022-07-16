@@ -295,6 +295,8 @@ source_set("base") {
     "supported_types.h",
     "supported_video_decoder_config.cc",
     "supported_video_decoder_config.h",
+    "svc_scalability_mode.cc",
+    "svc_scalability_mode.h",
     "text_cue.cc",
     "text_cue.h",
     "text_ranges.cc",
@@ -360,18 +362,20 @@ source_set("base") {
     ":video_facing",
     "//media:media_buildflags",
     "//media:shared_memory_support",
+    "//media/gpu:buildflags",
     "//ui/gfx:color_space",
     "//ui/gl",
   ]
   deps = [
+    "//base",
     "//base/allocator:buildflags",
-    "//base/util/values:values_util",
     "//build:chromeos_buildflags",
     "//components/system_media_controls/linux/buildflags",
     "//gpu/command_buffer/client:interface_base",
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/common",
     "//gpu/ipc/common:common",
+    "//net",
     "//skia",
     "//third_party/libyuv",
     "//third_party/widevine/cdm:headers",
@@ -385,9 +389,6 @@ source_set("base") {
   libs = []
   configs += [
     "//build/config:precompiled_headers",
-
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
 
     "//media:subcomponent_config",
   ]
@@ -407,14 +408,8 @@ source_set("base") {
     deps += [ "//third_party/libvpx" ]
   }
 
-  if (use_x11 || ozone_platform_x11) {
+  if (is_linux && !is_chromecast) {
     sources += [ "user_input_monitor_linux.cc" ]
-    deps += [
-      "//ui/base:features",
-      "//ui/events:events_base",
-      "//ui/events/devices/x11",
-      "//ui/gfx/x",
-    ]
   } else if (is_mac) {
     sources += [ "user_input_monitor_mac.cc" ]
     frameworks = [
@@ -427,9 +422,6 @@ source_set("base") {
     sources += [ "user_input_monitor_win.cc" ]
   } else {
     defines += [ "DISABLE_USER_INPUT_MONITOR" ]
-  }
-  if (use_x11) {
-    deps += [ "//ui/base/x" ]
   }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
@@ -447,6 +439,10 @@ source_set("base") {
     public_deps += [
       "//media/base/win:dcomp_texture_wrapper",
       "//media/base/win:mf_cdm_proxy",
+    ]
+    sources += [
+      "win/mf_feature_checks.cc",
+      "win/mf_feature_checks.h",
     ]
   }
 
@@ -541,6 +537,7 @@ static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//testing/gmock",
     "//ui/gfx:test_support",
     "//url",
@@ -632,17 +629,14 @@ source_set("unit_tests") {
     "video_util_unittest.cc",
     "wall_clock_time_source_unittest.cc",
   ]
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//media:media_config",
-  ]
+  configs += [ "//media:media_config" ]
   deps = [
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/viz/common",
     "//gpu/command_buffer/common",
     "//media:test_support",
+    "//net",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libyuv",
@@ -680,11 +674,7 @@ source_set("perftests") {
     "sinc_resampler_perftest.cc",
     "vector_math_perftest.cc",
   ]
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//media:media_config",
-  ]
+  configs += [ "//media:media_config" ]
   deps = [
     "//base",
     "//base/test:test_support",

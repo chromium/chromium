@@ -91,7 +91,8 @@ void NewTabUI::RegisterProfilePrefs(
 
 // static
 bool NewTabUI::IsNewTab(const GURL& url) {
-  return url.GetOrigin() == GURL(chrome::kChromeUINewTabURL).GetOrigin();
+  return url.DeprecatedGetOriginAsURL() ==
+         GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL();
 }
 
 // static

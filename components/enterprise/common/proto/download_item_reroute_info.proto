@@ -17,10 +17,12 @@ enum FileSystemServiceProvider {
 // Metadata from the service provider to recover its state / open the
 // corresponding file.
 //
-// Next ID: 2.
+// Next ID: 3.
 message BoxInfo {
   optional string file_id = 1;
+  optional string folder_id = 2;
 
+  // The following fields are info/messages for UX/UI.
   // Replace DownloadInterruptReason message string if not empty.
   optional string error_message = 100;
   // Additional message that will only be shown on the Download History page.

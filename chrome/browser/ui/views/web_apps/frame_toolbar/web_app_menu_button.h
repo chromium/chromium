@@ -34,7 +34,7 @@ class WebAppMenuButton : public AppMenuButton {
   // Fades the menu button highlight on and off.
   void StartHighlightAnimation();
 
-  void ButtonPressed(const ui::Event& event);
+  virtual void ButtonPressed(const ui::Event& event);
 
  protected:
   BrowserView* browser_view() { return browser_view_; }

@@ -146,8 +146,7 @@ void ResizingHostObserver::SetScreenResolution(
   // Resizing the desktop too often is probably not a good idea, so apply a
   // simple rate-limiting scheme.
   base::TimeTicks next_allowed_resize =
-      previous_resize_time_ +
-      base::TimeDelta::FromMilliseconds(kMinimumResizeIntervalMs);
+      previous_resize_time_ + base::Milliseconds(kMinimumResizeIntervalMs);
 
   if (now < next_allowed_resize) {
     deferred_resize_timer_.Start(
@@ -166,9 +165,9 @@ void ResizingHostObserver::SetScreenResolution(
     return;
   } else {
     LOG(INFO) << "Found host resolutions:";
-    for (const auto& resolution : resolutions) {
-      LOG(INFO) << "  " << resolution.dimensions().width() << "x"
-                << resolution.dimensions().height();
+    for (const auto& host_resolution : resolutions) {
+      LOG(INFO) << "  " << host_resolution.dimensions().width() << "x"
+                << host_resolution.dimensions().height();
     }
   }
   CandidateResolution best_candidate(resolutions.front(), resolution);

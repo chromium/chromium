@@ -18,8 +18,11 @@ namespace content {
 class CONTENT_EXPORT MojoBinderPolicyMapImpl : public MojoBinderPolicyMap {
  public:
   MojoBinderPolicyMapImpl();
+
+  // This constructor is for testing.
   explicit MojoBinderPolicyMapImpl(
-      const base::flat_map<std::string, MojoBinderPolicy>& init_map);
+      const base::flat_map<std::string, MojoBinderNonAssociatedPolicy>&
+          init_map);
   ~MojoBinderPolicyMapImpl() override;
 
   // Disallows copy and move operations.
@@ -35,22 +38,48 @@ class CONTENT_EXPORT MojoBinderPolicyMapImpl : public MojoBinderPolicyMap {
   // prerendering are same origin. Currently this is the only use of this class.
   static const MojoBinderPolicyMapImpl* GetInstanceForSameOriginPrerendering();
 
-  // Gets the corresponding policy of a given Mojo interface name. If the
-  // interface name is not in `policy_map_`, the given `default_policy` will be
-  // returned.
-  MojoBinderPolicy GetMojoBinderPolicy(
+  // Gets the corresponding policy of a given Mojo interface name.
+  // If the interface name is not in `non_associated_policy_map_`, the given
+  // `default_policy` will be returned.
+  // Callers should ensure that the corresponding interface is used as a
+  // non-associated interface in the context. If the interface is used as a
+  // channel-associated interface, they should call
+  // `GetAssociatedMojoBinderPolicy`.
+  MojoBinderNonAssociatedPolicy GetNonAssociatedMojoBinderPolicy(
       const std::string& interface_name,
-      const MojoBinderPolicy default_policy) const;
-  // Fails with DCHECK if the interface is not in the map.
-  MojoBinderPolicy GetMojoBinderPolicyOrDieForTesting(
+      const MojoBinderNonAssociatedPolicy default_policy) const;
+
+  // Gets the corresponding policy of a given Mojo interface name.
+  // If the interface name is not in `associated_policy_map_`, the given
+  // `default_policy` will be returned.
+  // Callers should ensure that the corresponding interface is used as a
+  // channel-associated interface in the context. If the interface is used as a
+  // non-associated interface, they should call
+  // `GetNonAssociatedMojoBinderPolicy`.
+  MojoBinderAssociatedPolicy GetAssociatedMojoBinderPolicy(
+      const std::string& interface_name,
+      const MojoBinderAssociatedPolicy default_policy) const;
+
+  // Fails with DCHECK if the interface is not in `non_associated_policy_map_`.
+  MojoBinderNonAssociatedPolicy GetNonAssociatedMojoBinderPolicyOrDieForTesting(
+      const std::string& interface_name) const;
+
+  // Fails with DCHECK if the interface is not in `associated_policy_map_`.
+  MojoBinderAssociatedPolicy GetAssociatedMojoBinderPolicyOrDieForTesting(
       const std::string& interface_name) const;
 
  private:
   // MojoBinderPolicyMap implementation:
   void SetPolicyByName(const base::StringPiece& name,
-                       MojoBinderPolicy policy) override;
+                       MojoBinderAssociatedPolicy policy) override;
 
-  base::flat_map<std::string, MojoBinderPolicy> policy_map_;
+  void SetPolicyByName(const base::StringPiece& name,
+                       MojoBinderNonAssociatedPolicy policy) override;
+
+  base::flat_map<std::string, MojoBinderNonAssociatedPolicy>
+      non_associated_policy_map_;
+  base::flat_map<std::string, MojoBinderAssociatedPolicy>
+      associated_policy_map_;
 };
 
 }  // namespace content

@@ -94,7 +94,7 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                transitionQualifiers: ['client_redirect'],
+                transitionQualifiers: [],
                 transitionType: 'link',
                 url: URL_REGULAR
               }
@@ -204,7 +204,7 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                transitionQualifiers: ['client_redirect', 'server_redirect'],
+                transitionQualifiers: ['server_redirect'],
                 transitionType: 'link',
                 url: URL_REGULAR
               }
@@ -334,7 +334,7 @@ loadScript.then(async function() {
                      processId: 0,
                      tabId: 0,
                      timeStamp: 0,
-                     transitionQualifiers: ["client_redirect"],
+                     transitionQualifiers: [],
                      transitionType: "link",
                      url: getURL('empty.html') }},
         { label: "c-onDOMContentLoaded",
@@ -440,7 +440,7 @@ loadScript.then(async function() {
                      processId: 0,
                      tabId: 0,
                      timeStamp: 0,
-                     transitionQualifiers: ["client_redirect"],
+                     transitionQualifiers: [],
                      transitionType: "link",
                      url: getURL('empty.html') }},
         { label: "c-onDOMContentLoaded",

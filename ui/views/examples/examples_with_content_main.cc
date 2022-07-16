@@ -32,7 +32,7 @@ void OnResourcesLoaded() {
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       views_examples_resources_pak_path.AppendASCII(
           "views_examples_resources.pak"),
-      ui::SCALE_FACTOR_100P);
+      ui::k100Percent);
 }
 
 void ShowContentExampleWindow(ui::ViewsContentClient* views_content_client,

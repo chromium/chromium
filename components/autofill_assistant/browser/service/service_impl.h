@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_SERVICE_IMPL_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_SERVICE_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

@@ -88,8 +88,12 @@ const DrawQuad::Material kNonSplittableMaterials[] = {
     DrawQuad::Material::kYuvVideoContent,
 };
 
-constexpr base::TimeDelta kAllowedDeltaFromFuture =
-    base::TimeDelta::FromMilliseconds(16);
+constexpr base::TimeDelta kAllowedDeltaFromFuture = base::Milliseconds(16);
+
+// A lower bounds for GetEstimatedDisplayDrawTime, influenced by
+// Compositing.Display.DrawToSwapUs.
+constexpr base::TimeDelta kMinEstimatedDisplayDrawTime =
+    base::Microseconds(250);
 
 // Assign each Display instance a starting value for the the display-trace id,
 // so that multiple Displays all don't start at 0, because that makes it
@@ -142,7 +146,7 @@ gfx::PresentationFeedback SanitizePresentationFeedback(
   if (difference.InMinutes() > 3) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         "Graphics.PresentationTimestamp.LargePresentationDelta", difference,
-        base::TimeDelta::FromMinutes(3), base::TimeDelta::FromHours(1), 50);
+        base::Minutes(3), base::Hours(1), 50);
   }
   return feedback;
 }
@@ -303,9 +307,9 @@ void Display::PresentationGroupTiming::OnPresent(
   auto gpu_latency = feedback.ready_timestamp - swap_timings_.swap_start;
   // TODO(crbug.com/1157620): Move this check to SanitizePresentationFeedback
   // to handle all incorrect feedback cases.
-  if (gpu_latency < base::TimeDelta::FromSeconds(0)) {
-    DLOG(ERROR) << "Gpu latency is negative : "
-                << gpu_latency.InMillisecondsF();
+  if (gpu_latency < base::Seconds(0)) {
+    DVLOG(1) << "GPU latency is negative: " << gpu_latency.InMillisecondsF()
+             << " ms";
     return;
   }
   scheduler->SetGpuLatency(gpu_latency);
@@ -477,6 +481,13 @@ void Display::Resize(const gfx::Size& size) {
   damage_tracker_->DisplayResized();
 }
 
+void Display::InvalidateCurrentSurfaceId() {
+  current_surface_id_ = SurfaceId();
+  // Force a gc as the display may not be visible (gc occurs after drawing,
+  // which won't happen when display is hidden).
+  surface_manager_->GarbageCollectSurfaces();
+}
+
 void Display::DisableSwapUntilResize(
     base::OnceClosure no_pending_swaps_callback) {
   TRACE_EVENT0("viz", "Display::DisableSwapUntilResize");
@@ -623,6 +634,8 @@ void DebugDrawFrame(const AggregatedFrame& frame) {
     DBG_DRAW_TEXT_OPT("frame.root.material", DBG_OPT_GREEN,
                       display_rect.origin(),
                       base::NumberToString(static_cast<int>(quad->material)));
+    DBG_DRAW_TEXT_OPT("frame.root.display_rect", DBG_OPT_GREEN,
+                      display_rect.origin(), display_rect.ToString());
     DBG_DRAW_RECT("frame.root.quad", display_rect);
   }
 }
@@ -877,7 +890,7 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
     presentation_group_timing.OnDraw(draw_timer->Begin());
 
     for (const auto& id_entry : aggregator_->previous_contained_surfaces()) {
-      Surface* surface = surface_manager_->GetSurfaceForId(id_entry.first);
+      surface = surface_manager_->GetSurfaceForId(id_entry.first);
       if (surface) {
         std::unique_ptr<Surface::PresentationHelper> helper =
             surface->TakePresentationHelperForPresentNotification();
@@ -1003,22 +1016,28 @@ void Display::DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings,
   // Check that the swap timings correspond with the timestamp from when
   // the swap was triggered. Note that not all output surfaces provide timing
   // information, hence the check for a valid swap_start.
+
+  base::TimeDelta draw_start_to_swap_end;
   if (!timings.swap_start.is_null()) {
     DCHECK_LE(draw_start_timestamp, timings.swap_start);
-    base::TimeDelta delta = timings.swap_start - draw_start_timestamp;
+    base::TimeDelta draw_start_to_swap_start =
+        timings.swap_start - draw_start_timestamp;
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Compositing.Display.DrawToSwapUs", delta, kDrawToSwapMin,
-        kDrawToSwapMax, kDrawToSwapUsBuckets);
+        "Compositing.Display.DrawToSwapUs", draw_start_to_swap_start,
+        kDrawToSwapMin, kDrawToSwapMax, kDrawToSwapUsBuckets);
+    draw_start_to_swap_end = timings.swap_end - draw_start_timestamp;
   }
 
+  base::TimeDelta schedule_draw_to_gpu_start;
   if (!timings.viz_scheduled_draw.is_null()) {
     DCHECK(!timings.gpu_started_draw.is_null());
     DCHECK_LE(timings.viz_scheduled_draw, timings.gpu_started_draw);
-    base::TimeDelta delta =
+    schedule_draw_to_gpu_start =
         timings.gpu_started_draw - timings.viz_scheduled_draw;
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Compositing.Display.VizScheduledDrawToGpuStartedDrawUs", delta,
-        kDrawToSwapMin, kDrawToSwapMax, kDrawToSwapUsBuckets);
+        "Compositing.Display.VizScheduledDrawToGpuStartedDrawUs",
+        schedule_draw_to_gpu_start, kDrawToSwapMin, kDrawToSwapMax,
+        kDrawToSwapUsBuckets);
   }
 
   if (!timings.gpu_task_ready.is_null()) {
@@ -1036,6 +1055,13 @@ void Display::DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings,
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Compositing.Display.VizDependencyResolvedToGpuStartedDrawUs",
         scheduling_delta, kDrawToSwapMin, kDrawToSwapMax, kDrawToSwapUsBuckets);
+  }
+
+  if (!timings.swap_start.is_null()) {
+    draw_time_without_scheduling_waits_.InsertSample(
+        draw_start_to_swap_end - schedule_draw_to_gpu_start);
+    // These two values can be equal in unit tests.
+    DCHECK_GE(draw_start_to_swap_end, schedule_draw_to_gpu_start);
   }
 }
 
@@ -1113,7 +1139,26 @@ void Display::DidFinishFrame(const BeginFrameAck& ack) {
   frame_sequence_number_ = ack.frame_id.sequence_number;
 }
 
-const SurfaceId& Display::CurrentSurfaceId() {
+base::TimeDelta Display::GetEstimatedDisplayDrawTime(base::TimeDelta interval,
+                                                     double percentile) const {
+  if (draw_time_without_scheduling_waits_.sample_count() >= 60) {
+    // We do not want the deadline adjustmens to exceed a default of 1/3 VSync,
+    // as we would not give other processes enough time to produce content. So
+    // this would make high latency situations worse.
+    return base::clamp(
+        draw_time_without_scheduling_waits_.Percentile(percentile),
+        kMinEstimatedDisplayDrawTime,
+        BeginFrameArgs::DefaultEstimatedDisplayDrawTime(interval));
+  }
+  return BeginFrameArgs::DefaultEstimatedDisplayDrawTime(interval);
+}
+
+void Display::OnObservingBeginFrameSourceChanged(bool observing) {
+  if (skia_output_surface_)
+    skia_output_surface_->OnObservingBeginFrameSourceChanged(observing);
+}
+
+const SurfaceId& Display::CurrentSurfaceId() const {
   return current_surface_id_;
 }
 
@@ -1210,7 +1255,8 @@ void Display::RemoveOverdrawQuads(AggregatedFrame* frame) {
         if (last_sqs->opacity == 1 && last_sqs->are_contents_opaque &&
             (last_sqs->blend_mode == SkBlendMode::kSrcOver ||
              last_sqs->blend_mode == SkBlendMode::kSrc) &&
-            last_sqs->quad_to_target_transform.Preserves2dAxisAlignment()) {
+            last_sqs->quad_to_target_transform
+                .NonDegeneratePreserves2dAxisAlignment()) {
           gfx::Rect sqs_rect_in_target =
               cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
                   last_sqs->quad_to_target_transform,

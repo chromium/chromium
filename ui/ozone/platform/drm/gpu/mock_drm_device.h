@@ -16,7 +16,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -57,6 +56,9 @@ class MockDrmDevice : public DrmDevice {
   };
 
   explicit MockDrmDevice(std::unique_ptr<GbmDevice> gbm_device);
+
+  MockDrmDevice(const MockDrmDevice&) = delete;
+  MockDrmDevice& operator=(const MockDrmDevice&) = delete;
 
   static ScopedDrmPropertyBlobPtr AllocateInFormatsBlob(
       uint32_t id,
@@ -268,8 +270,6 @@ class MockDrmDevice : public DrmDevice {
 
   uint64_t system_watermark_limitations_ = std::numeric_limits<uint64_t>::max();
   base::flat_map<uint64_t /*modifier*/, int /*overhead*/> modifiers_overhead_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDrmDevice);
 };
 
 }  // namespace ui

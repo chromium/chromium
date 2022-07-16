@@ -18,6 +18,10 @@ class PlatformSensorFusion;
 // Base class for platform sensor fusion algorithm.
 class PlatformSensorFusionAlgorithm {
  public:
+  PlatformSensorFusionAlgorithm(const PlatformSensorFusionAlgorithm&) = delete;
+  PlatformSensorFusionAlgorithm& operator=(
+      const PlatformSensorFusionAlgorithm&) = delete;
+
   virtual ~PlatformSensorFusionAlgorithm();
 
   void set_threshold(double threshold) { threshold_ = threshold; }
@@ -66,8 +70,6 @@ class PlatformSensorFusionAlgorithm {
 
   mojom::SensorType fused_type_;
   std::vector<mojom::SensorType> source_types_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorFusionAlgorithm);
 };
 
 }  // namespace device

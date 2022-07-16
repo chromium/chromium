@@ -36,6 +36,7 @@ const char kEnrollmentTokenAuthHeaderPrefix[] = "GoogleEnrollmentToken token=";
 
 // String constants for the device and app type we report to the server.
 const char kValueAppType[] = "Chrome";
+const char kValueBrowserUploadPublicKey[] = "browser_public_key_upload";
 const char kValueDeviceType[] = "2";
 const char kValueRequestAutoEnrollment[] = "enterprise_check";
 const char kValueRequestPsmHasDeviceState[] = "enterprise_psm_check";
@@ -45,6 +46,7 @@ const char kValueRequestRegister[] = "register";
 const char kValueRequestApiAuthorization[] = "api_authorization";
 const char kValueRequestUnregister[] = "unregister";
 const char kValueRequestUploadCertificate[] = "cert_upload";
+const char kValueRequestUploadEuiccInfo[] = "upload_euicc_info";
 const char kValueRequestDeviceStateRetrieval[] = "device_state_retrieval";
 const char kValueRequestUploadStatus[] = "status_upload";
 const char kValueRequestRemoteCommands[] = "remote_commands";
@@ -133,6 +135,11 @@ std::string GetPolicyVerificationKey() {
   return std::string(reinterpret_cast<const char*>(kPolicyVerificationKey),
                      sizeof(kPolicyVerificationKey));
 }
+// Notes from the past: When the key is rotated in the future, the old one may
+// still worth being kept to verified any existing policy cache so that browser
+// can load it one last time. However, it really depends on the reason of the
+// rotation. From a different angle, if a key is no longer trusted, so should
+// anything bound to it.
 
 const char kPolicyFCMInvalidationSenderID[] = "1013309121859";
 

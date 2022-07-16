@@ -2,32 +2,32 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++link name='Empty anchor' defaultActionVerb=jump inPageLinkTargetId=genericContainer
-++++++++staticText name='Empty anchor' defaultActionVerb=clickAncestor
+++++++++staticText name='Empty anchor'
 ++++++++++inlineTextBox name='Empty anchor'
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
 ++++++link name='Anchor with content' defaultActionVerb=jump inPageLinkTargetId=genericContainer
-++++++++staticText name='Anchor with content' defaultActionVerb=clickAncestor
+++++++++staticText name='Anchor with content'
 ++++++++++inlineTextBox name='Anchor with content'
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
 ++++++link name='Anchor with ID' defaultActionVerb=jump inPageLinkTargetId=genericContainer
-++++++++staticText name='Anchor with ID' defaultActionVerb=clickAncestor
+++++++++staticText name='Anchor with ID'
 ++++++++++inlineTextBox name='Anchor with ID'
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
 ++++++link name='Empty span' defaultActionVerb=jump inPageLinkTargetId=genericContainer
-++++++++staticText name='Empty span' defaultActionVerb=clickAncestor
+++++++++staticText name='Empty span'
 ++++++++++inlineTextBox name='Empty span'
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
 ++++++link name='Span with content' defaultActionVerb=jump inPageLinkTargetId=genericContainer
-++++++++staticText name='Span with content' defaultActionVerb=clickAncestor
+++++++++staticText name='Span with content'
 ++++++++++inlineTextBox name='Span with content'
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
 ++++++link name='Paragraph with content' defaultActionVerb=jump inPageLinkTargetId=paragraph
-++++++++staticText name='Paragraph with content' defaultActionVerb=clickAncestor
+++++++++staticText name='Paragraph with content'
 ++++++++++inlineTextBox name='Paragraph with content'
 ++++++paragraph
 ++++++++genericContainer

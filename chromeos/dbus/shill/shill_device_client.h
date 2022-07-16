@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/shill/shill_client_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -84,6 +83,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
 
   // Returns the global instance if initialized. May return null.
   static ShillDeviceClient* Get();
+
+  ShillDeviceClient(const ShillDeviceClient&) = delete;
+  ShillDeviceClient& operator=(const ShillDeviceClient&) = delete;
 
   // Adds a property changed |observer| for the device at |device_path|.
   virtual void AddPropertyChangedObserver(
@@ -177,9 +179,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
   // Initialize/Shutdown should be used instead.
   ShillDeviceClient();
   virtual ~ShillDeviceClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShillDeviceClient);
 };
 
 }  // namespace chromeos

@@ -13,7 +13,6 @@
 #include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/unified/custom_shape_button.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,9 +40,10 @@ constexpr int kScrollPadButtonHypotenuseDips = 192;
 constexpr int kScrollPadIconPadding = 30;
 
 SkColor HoveredButtonColor() {
-  const AshColorProvider::RippleAttributes attributes =
-      AshColorProvider::Get()->GetRippleAttributes();
-  return SkColorSetA(attributes.base_color, 255 * attributes.highlight_opacity);
+  const std::pair<SkColor, float> base_color_and_opacity =
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity();
+  return SkColorSetA(base_color_and_opacity.first,
+                     255 * base_color_and_opacity.second);
 }
 
 }  // namespace
@@ -135,7 +135,7 @@ class AutoclickScrollButton : public CustomShapeButton,
     SetFlipCanvasOnPaintForRTLUI(false);
     scroll_hover_timer_ = std::make_unique<base::RetainingOneShotTimer>(
         FROM_HERE,
-        base::TimeDelta::FromMilliseconds(
+        base::Milliseconds(
             int64_t{AutoclickScrollView::kAutoclickScrollDelayMs}),
         base::BindRepeating(&AutoclickScrollButton::DoScrollAction,
                             base::Unretained(this)));
@@ -350,8 +350,8 @@ void AutoclickScrollBubbleView::UpdateAnchorRect(
       GetWidget()->GetLayer()->GetAnimator());
   settings.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(
-      AutoclickMenuBubbleController::kAnimationDurationMs));
+  settings.SetTransitionDuration(
+      base::Milliseconds(AutoclickMenuBubbleController::kAnimationDurationMs));
   settings.SetTweenType(gfx::Tween::EASE_OUT);
   // SetAnchorRect will resize, so set the arrow without reizing to avoid a
   // double animation.

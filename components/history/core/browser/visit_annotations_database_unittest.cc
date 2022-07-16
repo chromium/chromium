@@ -65,6 +65,8 @@ class VisitAnnotationsDatabaseTest : public testing::Test,
     EXPECT_EQ(actual.duration_since_last_visit,
               expected.duration_since_last_visit);
     EXPECT_EQ(actual.page_end_reason, expected.page_end_reason);
+    EXPECT_EQ(actual.total_foreground_duration,
+              expected.total_foreground_duration);
   }
 
  private:
@@ -88,11 +90,16 @@ TEST_F(VisitAnnotationsDatabaseTest, AddContentAnnotationsForVisit) {
   // Add content annotations for 1 visit.
   VisitID visit_id = 1;
   VisitContentModelAnnotations model_annotations = {
-      0.5f, {{/*id=*/1, /*weight=*/1}, {/*id=*/2, /*weight=*/1}}, 123};
+      0.5f,
+      {{/*id=*/"1", /*weight=*/1}, {/*id=*/"2", /*weight=*/1}},
+      123,
+      {{/*id=*/"entity1", /*weight=*/1}, {/*id=*/"entity2", /*weight=*/1}}};
   VisitContentAnnotationFlags annotation_flags =
       VisitContentAnnotationFlag::kFlocEligibleRelaxed;
-  VisitContentAnnotations content_annotations{annotation_flags,
-                                              model_annotations};
+  std::vector<std::string> related_searches{"related searches",
+                                            "búsquedas relacionadas"};
+  VisitContentAnnotations content_annotations{
+      annotation_flags, model_annotations, related_searches};
   AddContentAnnotationsForVisit(visit_id, content_annotations);
 
   // Query for it.
@@ -102,15 +109,21 @@ TEST_F(VisitAnnotationsDatabaseTest, AddContentAnnotationsForVisit) {
 
   EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
             got_content_annotations.annotation_flags);
-  EXPECT_EQ(0.5f,
-            got_content_annotations.model_annotations.floc_protected_score);
+  EXPECT_EQ(0.5f, got_content_annotations.model_annotations.visibility_score);
   EXPECT_THAT(
       got_content_annotations.model_annotations.categories,
       ElementsAre(
-          VisitContentModelAnnotations::Category(/*id=*/1, /*weight=*/1),
-          VisitContentModelAnnotations::Category(/*id=*/2, /*weight=*/1)));
+          VisitContentModelAnnotations::Category(/*id=*/"1", /*weight=*/1),
+          VisitContentModelAnnotations::Category(/*id=*/"2", /*weight=*/1)));
   EXPECT_EQ(
       123, got_content_annotations.model_annotations.page_topics_model_version);
+  EXPECT_THAT(got_content_annotations.model_annotations.entities,
+              ElementsAre(VisitContentModelAnnotations::Category(
+                              /*id=*/"entity1", /*weight=*/1),
+                          VisitContentModelAnnotations::Category(
+                              /*id=*/"entity2", /*weight=*/1)));
+  EXPECT_THAT(got_content_annotations.related_searches,
+              ElementsAre("related searches", "búsquedas relacionadas"));
 }
 
 TEST_F(VisitAnnotationsDatabaseTest,
@@ -156,15 +169,21 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
   // Add content annotations for 1 visit.
   VisitID visit_id = 1;
   VisitContentModelAnnotations model_annotations = {
-      0.5f, {{/*id=*/1, /*weight=*/1}, {/*id=*/2, /*weight=*/1}}, 123};
+      0.5f,
+      {{/*id=*/"1", /*weight=*/1}, {/*id=*/"2", /*weight=*/1}},
+      123,
+      {{/*id=*/"entity1", /*weight=*/1}, {/*id=*/"entity2", /*weight=*/1}}};
+  std::vector<std::string> related_searches{"related searches"};
   VisitContentAnnotationFlags annotation_flags =
       VisitContentAnnotationFlag::kFlocEligibleRelaxed;
-  VisitContentAnnotations original{annotation_flags, model_annotations};
+  VisitContentAnnotations original{annotation_flags, model_annotations,
+                                   related_searches};
   AddContentAnnotationsForVisit(visit_id, original);
 
   // Mutate that row.
   VisitContentAnnotations modification(original);
-  modification.model_annotations.floc_protected_score = 0.3f;
+  modification.model_annotations.visibility_score = 0.3f;
+  modification.related_searches.emplace_back("búsquedas relacionadas");
   UpdateContentAnnotationsForVisit(visit_id, modification);
 
   // Check that the mutated version was written.
@@ -173,13 +192,20 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
 
   EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
             final.annotation_flags);
-  EXPECT_EQ(0.3f, final.model_annotations.floc_protected_score);
+  EXPECT_EQ(0.3f, final.model_annotations.visibility_score);
   EXPECT_THAT(
       final.model_annotations.categories,
       ElementsAre(
-          VisitContentModelAnnotations::Category(/*id=*/1, /*weight=*/1),
-          VisitContentModelAnnotations::Category(/*id=*/2, /*weight=*/1)));
+          VisitContentModelAnnotations::Category(/*id=*/"1", /*weight=*/1),
+          VisitContentModelAnnotations::Category(/*id=*/"2", /*weight=*/1)));
   EXPECT_EQ(123, final.model_annotations.page_topics_model_version);
+  EXPECT_THAT(final.model_annotations.entities,
+              ElementsAre(VisitContentModelAnnotations::Category(
+                              /*id=*/"entity1", /*weight=*/1),
+                          VisitContentModelAnnotations::Category(
+                              /*id=*/"entity2", /*weight=*/1)));
+  EXPECT_THAT(final.related_searches,
+              ElementsAre("related searches", "búsquedas relacionadas"));
 }
 
 TEST_F(VisitAnnotationsDatabaseTest,
@@ -236,11 +262,16 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
   // Add content annotations for 1 visit.
   VisitID visit_id = 1;
   VisitContentModelAnnotations model_annotations = {
-      0.5f, {{/*id=*/1, /*weight=*/1}, {/*id=*/2, /*weight=*/1}}, 123};
+      0.5f,
+      {{/*id=*/"1", /*weight=*/1}, {/*id=*/"2", /*weight=*/1}},
+      123,
+      {{/*id=*/"entity1", /*weight=*/1}, {/*id=*/"entity2", /*weight=*/1}}};
+  std::vector<std::string> related_searches{"related searches",
+                                            "búsquedas relacionadas"};
   VisitContentAnnotationFlags annotation_flags =
       VisitContentAnnotationFlag::kNone;
-  VisitContentAnnotations content_annotations{annotation_flags,
-                                              model_annotations};
+  VisitContentAnnotations content_annotations{
+      annotation_flags, model_annotations, related_searches};
   AddContentAnnotationsForVisit(visit_id, content_annotations);
 
   VisitContentAnnotations got_content_annotations;

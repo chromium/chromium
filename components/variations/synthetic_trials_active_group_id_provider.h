@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/synthetic_trials.h"
@@ -27,6 +26,11 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialsActiveGroupIdProvider
     : public SyntheticTrialObserver {
  public:
   static SyntheticTrialsActiveGroupIdProvider* GetInstance();
+
+  SyntheticTrialsActiveGroupIdProvider(
+      const SyntheticTrialsActiveGroupIdProvider&) = delete;
+  SyntheticTrialsActiveGroupIdProvider& operator=(
+      const SyntheticTrialsActiveGroupIdProvider&) = delete;
 
   // Populates |output| with currently active synthetic trial groups. |output|
   // cannot be nullptr.
@@ -49,8 +53,6 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialsActiveGroupIdProvider
   std::vector<ActiveGroupId> synthetic_trials_;
 
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticTrialsActiveGroupIdProvider);
 };
 
 }  // namespace variations

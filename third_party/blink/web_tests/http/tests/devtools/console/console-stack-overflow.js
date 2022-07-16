@@ -7,7 +7,7 @@
     `Tests that when stack overflow exception happens when inspector is open the stack trace is correctly shown in console.\n`
   );
 
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     // Both the call and the function entry may trigger stack overflow.
@@ -23,7 +23,7 @@
   TestRunner.evaluateInPage('doOverflow()', step2.bind(this));
 
   function step2() {
-    if (Console.ConsoleView.instance()._visibleViewMessages.length < 1) ConsoleTestRunner.addConsoleSniffer(step2);
+    if (Console.ConsoleView.instance().visibleViewMessages.length < 1) ConsoleTestRunner.addConsoleSniffer(step2);
     else step3();
   }
 

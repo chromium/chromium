@@ -8,6 +8,8 @@
 #include <mutex>
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
@@ -76,6 +78,8 @@ class FakeServiceController
   // True if ResetAllDataAndStop() was called.
   bool has_data_been_reset() const { return has_data_been_reset_; }
 
+  absl::optional<bool> dark_mode_enabled() const { return dark_mode_enabled_; }
+
  private:
   // mojom::ServiceController implementation:
   void Initialize(chromeos::libassistant::mojom::BootupConfigPtr config,
@@ -95,6 +99,7 @@ class FakeServiceController
   void SetListeningEnabled(bool value) override {}
   void SetLocale(const std::string& value) override {}
   void SetSpokenFeedbackEnabled(bool value) override {}
+  void SetDarkModeEnabled(bool value) override;
   void UpdateSettings(const std::string& settings,
                       UpdateSettingsCallback callback) override;
   void GetSettings(const std::string& selector,
@@ -115,6 +120,8 @@ class FakeServiceController
   // Authentication tokens passed to SetAuthenticationTokens().
   std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr>
       authentication_tokens_;
+
+  absl::optional<bool> dark_mode_enabled_;
 
   State state_ = State::kStopped;
   mojo::Receiver<chromeos::libassistant::mojom::ServiceController>

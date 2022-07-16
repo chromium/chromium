@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -89,6 +90,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
 
         mPositiveButton.setOnClickListener(this);
         mNegativeButton.setOnClickListener(this);
+        mMessageView.setMovementMethod(LinkMovementMethod.getInstance());
         updateContentVisibility();
         updateButtonVisibility();
 
@@ -110,6 +112,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
             mOnButtonClickedCallback.onResult(ModalDialogProperties.ButtonType.POSITIVE);
         } else if (view == mNegativeButton) {
             mOnButtonClickedCallback.onResult(ModalDialogProperties.ButtonType.NEGATIVE);
+        } else if (view == mTitleIcon) {
+            mOnButtonClickedCallback.onResult(ModalDialogProperties.ButtonType.TITLE_ICON);
         }
     }
 
@@ -148,6 +152,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     public void setTitleIcon(Drawable drawable) {
         mTitleIcon.setImageDrawable(drawable);
         updateContentVisibility();
+        if (drawable != null) mTitleIcon.setOnClickListener(this);
     }
 
     /** @param titleScrollable Whether the title is scrollable with the message. */
@@ -247,7 +252,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     }
 
     /** @param message The message in the dialog content. */
-    void setMessage(String message) {
+    void setMessage(CharSequence message) {
         mMessageView.setText(message);
         updateContentVisibility();
     }

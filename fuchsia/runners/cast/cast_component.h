@@ -10,15 +10,17 @@
 #include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
+
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/fuchsia/startup_context.h"
+#include "base/gtest_prod_util.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_fuchsia.h"
-#include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 #include "fuchsia/runners/cast/api_bindings_client.h"
 #include "fuchsia/runners/cast/application_controller_impl.h"
 #include "fuchsia/runners/cast/named_message_port_connector_fuchsia.h"
@@ -32,8 +34,8 @@ class AgentManager;
 FORWARD_DECLARE_TEST(HeadlessCastRunnerIntegrationTest, Headless);
 
 // A specialization of WebComponent which adds Cast-specific services.
-class CastComponent : public WebComponent,
-                      public base::MessagePumpFuchsia::ZxHandleWatcher {
+class CastComponent final : public WebComponent,
+                            public base::MessagePumpFuchsia::ZxHandleWatcher {
  public:
   struct Params {
     Params();
@@ -73,7 +75,11 @@ class CastComponent : public WebComponent,
                 WebContentRunner* runner,
                 Params params,
                 bool is_headless);
-  ~CastComponent() final;
+
+  CastComponent(const CastComponent&) = delete;
+  CastComponent& operator=(const CastComponent&) = delete;
+
+  ~CastComponent() override;
 
   void SetOnDestroyedCallback(base::OnceClosure on_destroyed);
 
@@ -90,9 +96,9 @@ class CastComponent : public WebComponent,
   }
 
   // WebComponent overrides.
-  void StartComponent() final;
+  void StartComponent() override;
   void DestroyComponent(int64_t termination_exit_code,
-                        fuchsia::sys::TerminationReason reason) final;
+                        fuchsia::sys::TerminationReason reason) override;
 
  private:
   void OnRewriteRulesReceived(
@@ -102,21 +108,22 @@ class CastComponent : public WebComponent,
   // Triggers the injection of API channels into the page content.
   void OnNavigationStateChanged(
       fuchsia::web::NavigationState change,
-      OnNavigationStateChangedCallback callback) final;
+      OnNavigationStateChangedCallback callback) override;
 
   // fuchsia::ui::app::ViewProvider implementation.
   void CreateView(
       zx::eventpair view_token,
       fidl::InterfaceRequest<fuchsia::sys::ServiceProvider> incoming_services,
       fidl::InterfaceHandle<fuchsia::sys::ServiceProvider> outgoing_services)
-      final;
+      override;
   void CreateViewWithViewRef(zx::eventpair view_token,
                              fuchsia::ui::views::ViewRefControl control_ref,
-                             fuchsia::ui::views::ViewRef view_ref) final;
+                             fuchsia::ui::views::ViewRef view_ref) override;
+  void CreateView2(fuchsia::ui::app::CreateView2Args view_args) override;
 
   // base::MessagePumpFuchsia::ZxHandleWatcher implementation.
   // Called when the headless "view" token is disconnected.
-  void OnZxHandleSignalled(zx_handle_t handle, zx_signals_t signals) final;
+  void OnZxHandleSignalled(zx_handle_t handle, zx_signals_t signals) override;
 
   const bool is_headless_;
   base::OnceClosure on_destroyed_;
@@ -134,8 +141,6 @@ class CastComponent : public WebComponent,
   uint64_t media_session_id_ = 0;
   zx::eventpair headless_view_token_;
   base::MessagePumpForIO::ZxHandleWatchController headless_disconnect_watch_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastComponent);
 };
 
 #endif  // FUCHSIA_RUNNERS_CAST_CAST_COMPONENT_H_

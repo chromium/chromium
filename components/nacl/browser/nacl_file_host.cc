@@ -23,7 +23,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
-#include "content/public/common/content_features.h"
 #include "ipc/ipc_platform_file.h"
 
 using content::BrowserThread;
@@ -55,10 +54,7 @@ void DoRegisterOpenedNaClExecutableFile(
     base::FilePath file_path,
     IPC::Message* reply_msg,
     WriteFileInfoReply write_reply_message) {
-  // IO thread owns the NaClBrowser singleton.
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   nacl::NaClBrowser* nacl_browser = nacl::NaClBrowser::GetInstance();
   uint64_t file_token_lo = 0;
@@ -101,14 +97,11 @@ void DoOpenPnaclFile(
   }
 
   // This function is running on the blocking pool, but the path needs to be
-  // registered in a structure owned by the IO thread.
+  // registered in a structure owned by the UI thread.
   // Not all PNaCl files are executable. Only register those that are
   // executable in the NaCl file_path cache.
   if (is_executable) {
-    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                           ? content::GetUIThreadTaskRunner({})
-                           : content::GetIOThreadTaskRunner({});
-    task_runner->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&DoRegisterOpenedNaClExecutableFile,
                        nacl_host_message_filter, std::move(file_to_open),
@@ -151,12 +144,8 @@ void DoOpenNaClExecutableOnThreadPool(
     // reason to do that unnecessary registration.
     if (enable_validation_caching) {
       // This function is running on the blocking pool, but the path needs to be
-      // registered in a structure owned by the IO thread.
-      auto task_runner =
-          base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-              ? content::GetUIThreadTaskRunner({})
-              : content::GetIOThreadTaskRunner({});
-      task_runner->PostTask(
+      // registered in a structure owned by the UI thread.
+      content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
           base::BindOnce(
               &DoRegisterOpenedNaClExecutableFile, nacl_host_message_filter,

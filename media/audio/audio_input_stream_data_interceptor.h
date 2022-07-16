@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "media/audio/audio_io.h"
 #include "media/base/media_export.h"
@@ -32,6 +31,11 @@ class MEDIA_EXPORT AudioInputStreamDataInterceptor
   AudioInputStreamDataInterceptor(
       CreateDebugRecorderCB create_debug_recorder_cb,
       AudioInputStream* stream);
+
+  AudioInputStreamDataInterceptor(const AudioInputStreamDataInterceptor&) =
+      delete;
+  AudioInputStreamDataInterceptor& operator=(
+      const AudioInputStreamDataInterceptor&) = delete;
 
   ~AudioInputStreamDataInterceptor() override;
 
@@ -61,8 +65,6 @@ class MEDIA_EXPORT AudioInputStreamDataInterceptor
   AudioInputStream* const stream_;
   AudioInputStream::AudioInputCallback* callback_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioInputStreamDataInterceptor);
 };
 
 }  // namespace media

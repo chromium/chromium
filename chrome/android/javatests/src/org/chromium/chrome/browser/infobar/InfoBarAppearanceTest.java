@@ -65,16 +65,18 @@ public class InfoBarAppearanceTest {
     public void setUp() throws InterruptedException {
         mListener = new InfoBarTestAnimationListener();
 
-        mTab = sActivityTestRule.getActivity().getActivityTab();
-        sActivityTestRule.getInfoBarContainer().addAnimationListener(mListener);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTab = sActivityTestRule.getActivity().getActivityTab();
+            sActivityTestRule.getInfoBarContainer().addAnimationListener(mListener);
+        });
     }
 
     @After
     public void tearDown() {
         InfoBarContainer container = sActivityTestRule.getInfoBarContainer();
         if (container != null) {
-            container.removeAnimationListener(mListener);
             TestThreadUtils.runOnUiThreadBlocking(() -> {
+                container.removeAnimationListener(mListener);
                 InfoBarContainer.removeInfoBarContainerForTesting(
                         sActivityTestRule.getActivity().getActivityTab());
             });
@@ -127,7 +129,7 @@ public class InfoBarAppearanceTest {
                 callbackHelper.notifyCalled();
             }
         };
-        mTab.addObserver(navigationWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(navigationWaiter));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { TabTestUtils.showFramebustBlockInfobarForTesting(mTab, url); });

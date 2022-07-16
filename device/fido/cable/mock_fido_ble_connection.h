@@ -20,6 +20,10 @@ class BluetoothAdapter;
 class MockFidoBleConnection : public FidoBleConnection {
  public:
   MockFidoBleConnection(BluetoothAdapter* adapter, std::string device_address);
+
+  MockFidoBleConnection(const MockFidoBleConnection&) = delete;
+  MockFidoBleConnection& operator=(const MockFidoBleConnection&) = delete;
+
   ~MockFidoBleConnection() override;
 
   // GMock cannot mock a method taking a move-only type.
@@ -36,9 +40,6 @@ class MockFidoBleConnection : public FidoBleConnection {
                          WriteCallback cb) override;
 
   ReadCallback& read_callback() { return read_callback_; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockFidoBleConnection);
 };
 
 }  // namespace device

@@ -94,8 +94,7 @@ public class NfcSystemLevelPrompt implements ModalDialogProperties.Controller {
             try {
                 mWindowAndroid.showIntent(intent, new WindowAndroid.IntentCallback() {
                     @Override
-                    public void onIntentCompleted(
-                            WindowAndroid window, int resultCode, Intent data) {
+                    public void onIntentCompleted(int resultCode, Intent data) {
                         mModalDialogManager.dismissDialog(
                                 model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                     }

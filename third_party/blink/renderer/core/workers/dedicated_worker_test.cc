@@ -7,11 +7,10 @@
 #include <bitset>
 #include <memory>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -19,7 +18,6 @@
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/inspector/console_message_storage.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -44,7 +42,9 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
       : DedicatedWorkerThread(
             parent_execution_context,
             worker_object_proxy,
-            mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>()) {
+            mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>(),
+            mojo::PendingRemote<
+                mojom::blink::BackForwardCacheControllerHost>()) {
     worker_backing_thread_ = std::make_unique<WorkerBackingThread>(
         ThreadCreationParams(ThreadType::kTestThread));
   }
@@ -58,11 +58,10 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
     }
     auto* global_scope = DedicatedWorkerGlobalScope::Create(
         std::move(creation_params), this, time_origin_,
-        mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>());
+        mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>(),
+        mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>());
     // Initializing a global scope with a dummy creation params may emit warning
-    // messages (e.g., invalid CSP directives). Clear them here for tests that
-    // check console messages (i.e., UseCounter tests).
-    GetConsoleMessageStorage()->Clear();
+    // messages (e.g., invalid CSP directives).
     return global_scope;
   }
 
@@ -78,12 +77,6 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
   void CountDeprecation(WebFeature feature) {
     EXPECT_TRUE(IsCurrentThread());
     Deprecation::CountDeprecation(GlobalScope(), feature);
-
-    // CountDeprecation() should add a warning message.
-    EXPECT_EQ(1u, GetConsoleMessageStorage()->size());
-    String console_message = GetConsoleMessageStorage()->at(0)->Message();
-    EXPECT_TRUE(console_message.Contains("deprecated"));
-
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
                         CrossThreadBindOnce(&test::ExitRunLoop));
   }
@@ -103,8 +96,7 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
         ->Initialize(script_url, network::mojom::ReferrerPolicy::kDefault,
                      network::mojom::IPAddressSpace::kLocal,
                      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-                     nullptr /* response_origin_trial_tokens */,
-                     mojom::blink::kAppCacheNoCacheId);
+                     nullptr /* response_origin_trial_tokens */);
   }
 };
 
@@ -155,6 +147,7 @@ class DedicatedWorkerMessagingProxyForTest
         script_url_, mojom::blink::ScriptType::kClassic,
         "fake global scope name", "fake user agent", UserAgentMetadata(),
         nullptr /* web_worker_fetch_context */,
+        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
         Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
         network::mojom::ReferrerPolicy::kDefault, security_origin.get(),
         false /* starter_secure_context */,

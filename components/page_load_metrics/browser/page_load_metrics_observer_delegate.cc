@@ -7,8 +7,10 @@
 namespace page_load_metrics {
 
 PageLoadMetricsObserverDelegate::BackForwardCacheRestore::
-    BackForwardCacheRestore(bool was_in_foreground)
-    : was_in_foreground(was_in_foreground) {}
+    BackForwardCacheRestore(bool was_in_foreground,
+                            base::TimeTicks navigation_start_time)
+    : navigation_start_time(navigation_start_time),
+      was_in_foreground(was_in_foreground) {}
 
 PageLoadMetricsObserverDelegate::BackForwardCacheRestore::
     BackForwardCacheRestore(const BackForwardCacheRestore&) = default;

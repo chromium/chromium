@@ -5,6 +5,7 @@
 #include "chrome/installer/setup/downgrade_cleanup.h"
 
 #include "base/command_line.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_reg_util_win.h"

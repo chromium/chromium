@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/animation/ink_drop_animation_ended_reason.h"
 
@@ -23,6 +22,11 @@ class TestInkDropAnimationObserverHelper {
       : last_animation_started_context_(),
 
         last_animation_ended_context_() {}
+
+  TestInkDropAnimationObserverHelper(
+      const TestInkDropAnimationObserverHelper&) = delete;
+  TestInkDropAnimationObserverHelper& operator=(
+      const TestInkDropAnimationObserverHelper&) = delete;
 
   virtual ~TestInkDropAnimationObserverHelper() = default;
 
@@ -184,8 +188,6 @@ class TestInkDropAnimationObserverHelper {
 
   InkDropAnimationEndedReason last_animation_ended_reason_ =
       InkDropAnimationEndedReason::SUCCESS;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInkDropAnimationObserverHelper);
 };
 
 }  // namespace test

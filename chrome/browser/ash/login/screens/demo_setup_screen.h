@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -28,6 +27,10 @@ class DemoSetupScreen : public BaseScreen {
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   DemoSetupScreen(DemoSetupScreenView* view,
                   const ScreenExitCallback& exit_callback);
+
+  DemoSetupScreen(const DemoSetupScreen&) = delete;
+  DemoSetupScreen& operator=(const DemoSetupScreen&) = delete;
+
   ~DemoSetupScreen() override;
 
   // Called when view is being destroyed. If Screen is destroyed earlier
@@ -63,8 +66,6 @@ class DemoSetupScreen : public BaseScreen {
   ScreenExitCallback exit_callback_;
 
   base::WeakPtrFactory<DemoSetupScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSetupScreen);
 };
 
 }  // namespace ash

@@ -68,7 +68,12 @@ public interface RenderCoordinates {
     int getPageScaleFactorInt();
 
     /**
-     * @return Current page scale factor
+     * @return Current page scale factor.
      */
     float getPageScaleFactor();
+
+    /**
+     * @return Minimum page scale factor.
+     */
+    float getMinPageScaleFactor();
 }

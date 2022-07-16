@@ -31,6 +31,9 @@ class RemoteCharacteristic
       base::OnceCallback<void(bool, const std::vector<uint8_t>&)>;
   using StatusCallback = base::OnceCallback<void(bool)>;
 
+  RemoteCharacteristic(const RemoteCharacteristic&) = delete;
+  RemoteCharacteristic& operator=(const RemoteCharacteristic&) = delete;
+
   // Return a list of all descriptors.
   virtual std::vector<scoped_refptr<RemoteDescriptor>> GetDescriptors() = 0;
 
@@ -89,9 +92,6 @@ class RemoteCharacteristic
 
   RemoteCharacteristic() = default;
   virtual ~RemoteCharacteristic() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteCharacteristic);
 };
 
 }  // namespace bluetooth

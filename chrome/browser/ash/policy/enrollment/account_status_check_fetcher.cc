@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
@@ -500,7 +500,7 @@ AccountStatusCheckFetcher::AccountStatusCheckFetcher(
     : AccountStatusCheckFetcher(
           canonicalized_email,
           g_browser_process->platform_part()
-              ->browser_policy_connector_chromeos()
+              ->browser_policy_connector_ash()
               ->device_management_service(),
           g_browser_process->system_network_context_manager()
               ->GetSharedURLLoaderFactory()) {}

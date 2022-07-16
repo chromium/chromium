@@ -10,5 +10,6 @@ mojom("mojom") {
   public_deps = [
     "//components/services/filesystem/public/mojom",
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
   ]
 }

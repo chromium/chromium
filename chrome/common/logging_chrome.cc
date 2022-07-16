@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "build/os_buildflags.h"
 
 // Need to include this before most other files because it defines
 // IPC_MESSAGE_LOG_ENABLED. We need to use it to define
@@ -128,15 +129,22 @@ void SuppressDialogs() {
 
 LoggingDestination DetermineLoggingDestination(
     const base::CommandLine& command_line) {
-// only use OutputDebugString in debug mode
-#ifdef NDEBUG
-  bool enable_logging = false;
-  const char *kInvertLoggingSwitch = switches::kEnableLogging;
+#if BUILDFLAG(IS_FUCHSIA)
+  // On Fuchsia, the default logging mode is the system log in both debug and
+  // release mode.
+  const LoggingDestination kDefaultLoggingMode = LOG_TO_SYSTEM_DEBUG_LOG;
+#elif NDEBUG
   const LoggingDestination kDefaultLoggingMode = LOG_TO_FILE;
 #else
-  bool enable_logging = true;
-  const char *kInvertLoggingSwitch = switches::kDisableLogging;
   const LoggingDestination kDefaultLoggingMode = LOG_TO_ALL;
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
+#ifdef NDEBUG
+  bool enable_logging = false;
+  const char* kInvertLoggingSwitch = switches::kEnableLogging;
+#else
+  bool enable_logging = true;
+  const char* kInvertLoggingSwitch = switches::kDisableLogging;
 #endif
 
   if (command_line.HasSwitch(kInvertLoggingSwitch))

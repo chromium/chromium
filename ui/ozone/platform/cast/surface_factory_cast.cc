@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chromecast/public/cast_egl_platform.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -23,6 +22,10 @@ namespace {
 class DummySurface : public SurfaceOzoneCanvas {
  public:
   DummySurface() {}
+
+  DummySurface(const DummySurface&) = delete;
+  DummySurface& operator=(const DummySurface&) = delete;
+
   ~DummySurface() override {}
 
   // SurfaceOzoneCanvas implementation:
@@ -41,13 +44,14 @@ class DummySurface : public SurfaceOzoneCanvas {
 
  private:
   sk_sp<SkSurface> surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummySurface);
 };
 
 class CastPixmap : public gfx::NativePixmap {
  public:
   CastPixmap() {}
+
+  CastPixmap(const CastPixmap&) = delete;
+  CastPixmap& operator=(const CastPixmap&) = delete;
 
   bool AreDmaBufFdsValid() const override { return false; }
   int GetDmaBufFd(size_t plane) const override { return -1; }
@@ -64,11 +68,7 @@ class CastPixmap : public gfx::NativePixmap {
 
   bool ScheduleOverlayPlane(
       gfx::AcceleratedWidget widget,
-      int plane_z_order,
-      gfx::OverlayTransform plane_transform,
-      const gfx::Rect& display_bounds,
-      const gfx::RectF& crop_rect,
-      bool enable_blend,
+      const gfx::OverlayPlaneData& overlay_plane_data,
       std::vector<gfx::GpuFence> acquire_fences,
       std::vector<gfx::GpuFence> release_fences) override {
     return false;
@@ -79,8 +79,6 @@ class CastPixmap : public gfx::NativePixmap {
 
  private:
   ~CastPixmap() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(CastPixmap);
 };
 
 }  // namespace

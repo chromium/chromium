@@ -26,6 +26,10 @@ TestFormActivityInfo* TestFormActivityObserver::form_activity_info() {
   return form_activity_info_.get();
 }
 
+TestFormRemovalInfo* TestFormActivityObserver::form_removal_info() {
+  return form_removal_info_.get();
+}
+
 void TestFormActivityObserver::DocumentSubmitted(web::WebState* web_state,
                                                  web::WebFrame* sender_frame,
                                                  const std::string& form_name,
@@ -51,6 +55,16 @@ void TestFormActivityObserver::FormActivityRegistered(
   form_activity_info_->web_state = web_state;
   form_activity_info_->sender_frame = sender_frame;
   form_activity_info_->form_activity = params;
+}
+
+void TestFormActivityObserver::FormRemoved(web::WebState* web_state,
+                                           web::WebFrame* sender_frame,
+                                           const FormRemovalParams& params) {
+  ASSERT_EQ(web_state_, web_state);
+  form_removal_info_ = std::make_unique<TestFormRemovalInfo>();
+  form_removal_info_->web_state = web_state;
+  form_removal_info_->sender_frame = sender_frame;
+  form_removal_info_->form_removal_params = params;
 }
 
 }  // namespace autofill

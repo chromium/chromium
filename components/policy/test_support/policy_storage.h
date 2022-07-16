@@ -13,6 +13,7 @@
 #include <string>
 #include <utility>
 
+#include "base/time/time.h"
 #include "components/policy/test_support/signature_provider.h"
 
 namespace policy {
@@ -76,6 +77,9 @@ class PolicyStorage {
     policy_invalidation_topic_ = policy_invalidation_topic;
   }
 
+  base::Time timestamp() const { return timestamp_; }
+  void set_timestamp(const base::Time& timestamp) { timestamp_ = timestamp; }
+
  private:
   // Maps policy types to a serialized proto representing the policies to be
   // applied for the type (e.g. CloudPolicySettings,
@@ -93,6 +97,8 @@ class PolicyStorage {
   std::string policy_user_;
 
   std::string policy_invalidation_topic_;
+
+  base::Time timestamp_;
 };
 
 }  // namespace policy

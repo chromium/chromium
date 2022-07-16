@@ -66,6 +66,10 @@ class GaiaOAuthClient {
 
   GaiaOAuthClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  GaiaOAuthClient(const GaiaOAuthClient&) = delete;
+  GaiaOAuthClient& operator=(const GaiaOAuthClient&) = delete;
+
   ~GaiaOAuthClient();
 
   // In the below methods, |max_retries| specifies the maximum number of times
@@ -152,7 +156,6 @@ class GaiaOAuthClient {
   // The guts of the implementation live in this class.
   class Core;
   scoped_refptr<Core> core_;
-  DISALLOW_COPY_AND_ASSIGN(GaiaOAuthClient);
 };
 }
 

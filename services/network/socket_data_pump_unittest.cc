@@ -32,6 +32,11 @@ namespace network {
 class TestSocketDataPumpDelegate : public SocketDataPump::Delegate {
  public:
   TestSocketDataPumpDelegate() {}
+
+  TestSocketDataPumpDelegate(const TestSocketDataPumpDelegate&) = delete;
+  TestSocketDataPumpDelegate& operator=(const TestSocketDataPumpDelegate&) =
+      delete;
+
   ~TestSocketDataPumpDelegate() {}
 
   // Waits for read error. Returns the error observed.
@@ -69,8 +74,6 @@ class TestSocketDataPumpDelegate : public SocketDataPump::Delegate {
   base::RunLoop read_loop_;
   base::RunLoop write_loop_;
   base::RunLoop shutdown_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketDataPumpDelegate);
 };
 
 class SocketDataPumpTest : public testing::Test,
@@ -78,6 +81,10 @@ class SocketDataPumpTest : public testing::Test,
  public:
   SocketDataPumpTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+
+  SocketDataPumpTest(const SocketDataPumpTest&) = delete;
+  SocketDataPumpTest& operator=(const SocketDataPumpTest&) = delete;
+
   ~SocketDataPumpTest() override {}
 
   // Initializes the test case with a socket data provider, which will be used
@@ -140,8 +147,6 @@ class SocketDataPumpTest : public testing::Test,
   TestSocketDataPumpDelegate test_delegate_;
   std::unique_ptr<net::StreamSocket> socket_;
   std::unique_ptr<SocketDataPump> data_pump_;
-
-  DISALLOW_COPY_AND_ASSIGN(SocketDataPumpTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

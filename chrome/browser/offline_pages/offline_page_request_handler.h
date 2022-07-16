@@ -206,6 +206,10 @@ class OfflinePageRequestHandler {
       const net::HttpRequestHeaders& extra_request_headers,
       Delegate* delegate);
 
+  OfflinePageRequestHandler(const OfflinePageRequestHandler&) = delete;
+  OfflinePageRequestHandler& operator=(const OfflinePageRequestHandler&) =
+      delete;
+
   ~OfflinePageRequestHandler();
 
   void Start();
@@ -298,8 +302,6 @@ class OfflinePageRequestHandler {
   std::unique_ptr<net::FileStream> stream_;
 
   base::WeakPtrFactory<OfflinePageRequestHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageRequestHandler);
 };
 
 }  // namespace offline_pages

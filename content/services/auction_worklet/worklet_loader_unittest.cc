@@ -15,13 +15,13 @@
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
+#include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "v8/include/v8.h"
 
 using testing::HasSubstr;
 using testing::StartsWith;
@@ -71,6 +71,7 @@ TEST_F(WorkletLoaderTest, NetworkError) {
               kValidScript, kAllowFledgeHeader, net::HTTP_NOT_FOUND);
   WorkletLoader worklet_loader(
       &url_loader_factory_, url_, v8_helper_,
+      AuctionV8Helper::kNoDebugContextGroupId,
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
@@ -83,6 +84,7 @@ TEST_F(WorkletLoaderTest, CompileError) {
   AddJavascriptResponse(&url_loader_factory_, url_, kInvalidScript);
   WorkletLoader worklet_loader(
       &url_loader_factory_, url_, v8_helper_,
+      AuctionV8Helper::kNoDebugContextGroupId,
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
@@ -91,10 +93,32 @@ TEST_F(WorkletLoaderTest, CompileError) {
   EXPECT_THAT(last_error_msg(), HasSubstr("SyntaxError"));
 }
 
+TEST_F(WorkletLoaderTest, CompileErrorWithDebugger) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  int id = AllocContextGroupIdAndWait(v8_helper_);
+  TestChannel* channel = inspector_support.ConnectDebuggerSession(id);
+  channel->RunCommandAndWaitForResult(
+      1, "Runtime.enable", R"({"id":1,"method":"Runtime.enable","params":{}})");
+  channel->RunCommandAndWaitForResult(
+      2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  AddJavascriptResponse(&url_loader_factory_, url_, kInvalidScript);
+  WorkletLoader worklet_loader(
+      &url_loader_factory_, url_, v8_helper_, id,
+      base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
+                     base::Unretained(this)));
+  run_loop_.Run();
+  EXPECT_FALSE(load_succeeded_);
+  channel->WaitForMethodNotification("Debugger.scriptFailedToParse");
+  FreeContextGroupIdAndWait(v8_helper_, id);
+}
+
 TEST_F(WorkletLoaderTest, Success) {
   AddJavascriptResponse(&url_loader_factory_, url_, kValidScript);
   WorkletLoader worklet_loader(
       &url_loader_factory_, url_, v8_helper_,
+      AuctionV8Helper::kNoDebugContextGroupId,
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
@@ -111,6 +135,7 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackSuccess) {
   std::unique_ptr<WorkletLoader> worklet_loader =
       std::make_unique<WorkletLoader>(
           &url_loader_factory_, url_, v8_helper.get(),
+          AuctionV8Helper::kNoDebugContextGroupId,
           base::BindLambdaForTesting(
               [&](WorkletLoader::Result worklet_script,
                   absl::optional<std::string> error_msg) {
@@ -134,6 +159,7 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackCompileError) {
   std::unique_ptr<WorkletLoader> worklet_loader =
       std::make_unique<WorkletLoader>(
           &url_loader_factory_, url_, v8_helper.get(),
+          AuctionV8Helper::kNoDebugContextGroupId,
           base::BindLambdaForTesting(
               [&](WorkletLoader::Result worklet_script,
                   absl::optional<std::string> error_msg) {
@@ -158,6 +184,7 @@ TEST_F(WorkletLoaderTest, DeleteBeforeCallback) {
   AddJavascriptResponse(&url_loader_factory_, url_, kValidScript);
   auto worklet_loader = std::make_unique<WorkletLoader>(
       &url_loader_factory_, url_, v8_helper_,
+      AuctionV8Helper::kNoDebugContextGroupId,
       base::BindOnce([](WorkletLoader::Result worklet_script,
                         absl::optional<std::string> error_msg) {
         ADD_FAILURE() << "Callback should not be invoked since loader deleted";

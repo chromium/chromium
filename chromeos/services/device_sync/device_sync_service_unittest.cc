@@ -13,7 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -57,7 +57,7 @@
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -705,6 +705,10 @@ class DeviceSyncServiceTest
         test_device_infos_(GenerateTestExternalDeviceInfos(test_devices_)),
         test_ineligible_devices_(
             GenerateTestIneligibleDevices(test_device_infos_)) {}
+
+  DeviceSyncServiceTest(const DeviceSyncServiceTest&) = delete;
+  DeviceSyncServiceTest& operator=(const DeviceSyncServiceTest&) = delete;
+
   ~DeviceSyncServiceTest() override = default;
 
   void SetUp() override {
@@ -1634,8 +1638,6 @@ class DeviceSyncServiceTest
   base::HistogramTester histogram_tester_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncServiceTest);
 };
 
 TEST_P(DeviceSyncServiceTest, PrimaryAccountAvailableLater) {
@@ -2404,14 +2406,12 @@ TEST_P(DeviceSyncServiceTest, NotifyDevices_Error) {
 
 TEST_P(DeviceSyncServiceTest, GetDebugInfo) {
   static const base::TimeDelta kTimeBetweenEpochAndLastEnrollment =
-      base::TimeDelta::FromDays(365 * 50);  // 50 years
-  static const base::TimeDelta kTimeUntilNextEnrollment =
-      base::TimeDelta::FromDays(10);
+      base::Days(365 * 50);  // 50 years
+  static const base::TimeDelta kTimeUntilNextEnrollment = base::Days(10);
 
   static const base::TimeDelta kTimeBetweenEpochAndLastSync =
-      base::TimeDelta::FromDays(366 * 50);  // 50 years and 1 day
-  static const base::TimeDelta kTimeUntilNextSync =
-      base::TimeDelta::FromDays(11);
+      base::Days(366 * 50);  // 50 years and 1 day
+  static const base::TimeDelta kTimeUntilNextSync = base::Days(11);
 
   InitializeServiceSuccessfully();
 

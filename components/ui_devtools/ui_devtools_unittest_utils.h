@@ -14,6 +14,10 @@ namespace ui_devtools {
 class FakeFrontendChannel : public protocol::FrontendChannel {
  public:
   FakeFrontendChannel();
+
+  FakeFrontendChannel(const FakeFrontendChannel&) = delete;
+  FakeFrontendChannel& operator=(const FakeFrontendChannel&) = delete;
+
   ~FakeFrontendChannel() override;
 
   int CountProtocolNotificationMessageStartsWith(const std::string& message);
@@ -38,8 +42,6 @@ class FakeFrontendChannel : public protocol::FrontendChannel {
  private:
   std::vector<std::string> protocol_notification_messages_;
   bool allow_notifications_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFrontendChannel);
 };
 
 class MockUIElementDelegate : public UIElementDelegate {

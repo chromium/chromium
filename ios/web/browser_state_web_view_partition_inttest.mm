@@ -52,6 +52,12 @@ namespace web {
 class BrowserStateWebViewPartitionTest : public WebIntTest {
  protected:
   BrowserStateWebViewPartitionTest() = default;
+
+  BrowserStateWebViewPartitionTest(const BrowserStateWebViewPartitionTest&) =
+      delete;
+  BrowserStateWebViewPartitionTest& operator=(
+      const BrowserStateWebViewPartitionTest&) = delete;
+
   void SetUp() override {
     WebIntTest::SetUp();
 
@@ -118,8 +124,6 @@ class BrowserStateWebViewPartitionTest : public WebIntTest {
  protected:
   net::EmbeddedTestServer server_;
   FakeBrowserState otr_browser_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserStateWebViewPartitionTest);
 };
 
 // Tests that cookies are partitioned between web views created with a

@@ -159,9 +159,6 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
       return params_.input_field_type ==
              blink::mojom::ContextMenuDataInputFieldType::kPassword;
 
-    case ITEM_GROUP_LENS_REGION_SEARCH:
-      return true;
-
     default:
       NOTREACHED();
       return false;

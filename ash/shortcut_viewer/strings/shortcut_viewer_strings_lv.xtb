@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">Atvērt jaunu logu inkognito režīmā</translation>
 <translation id="152892567002884378">Palielināt skaļumu</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, pēc tam <ph name="ESC" /></translation>
-<translation id="1633761758045565086">Pāriet uz palīdzības dialoglodziņu</translation>
 <translation id="1652741121070700329">Pāriet uz iepriekšējā vārda sākumu</translation>
 <translation id="1679841710523778799">Palielināt spilgtumu</translation>
 <translation id="168356808214100546">Nospiediet un turiet taustiņu <ph name="ALT" />, pieskarieties taustiņam <ph name="TAB" />, kamēr ieraugāt atveramo logu, pēc tam atlaidiet.</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">Ritināt tīmekļa lapu uz leju</translation>
 <translation id="2530896289327917474">Taustiņpārlūkošanas ieslēgšana vai izslēgšana</translation>
 <translation id="2574014812750545982">Atiestatīt lapas tālummaiņas līmeni</translation>
-<translation id="2596078834055697711">Uzņemt loga ekrānuzņēmumu</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, pēc tam <ph name="TAB" /> vai <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Atkārtoti ielādēt pašreizējo lapu</translation>
 <translation id="2764005613199379871">Pārvietot kursoru meklēšanas adreses joslā</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">Īsinājumtaustiņi</translation>
 <translation id="3084301071537457911">Izcelt nākamo plauktā esošo vienumu</translation>
 <translation id="309173601632226815">Izcelt palaišanas programmas pogu plauktā</translation>
-<translation id="3105917916468784889">Uzņemt ekrānuzņēmumu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Iezīmēt adreses joslu</translation>
 <translation id="3256109297135787951">Noņemt plauktā izceltā vienuma izcelšanu</translation>
 <translation id="3288816184963444640">Aizvērt pašreizējo logu</translation>
+<translation id="3350805006883559974">Pārvietot aktīvo logu augšdaļā</translation>
 <translation id="3407560819924487926">Parādīt uzdevumu pārvaldnieku</translation>
 <translation id="3417835166382867856">Meklēt cilnēs</translation>
 <translation id="3422679037938588196">Pāriet uz iepriekšējo vaicājuma rezultātu</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">Skatīt īsinājumtaustiņu palīgu</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> vai <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Atvērt statusa apgabalu (kur ir redzams jūsu konta attēls)</translation>
-<translation id="4642092649622328492">Iegūt daļēju ekrānuzņēmumu</translation>
 <translation id="4698850295812410683">Rādīt skārienekrāna pildspalvas rīkus</translation>
 <translation id="4801989101741319327">Pāriet uz nākamā vārda beigām</translation>
 <translation id="4866066940972151697">Aktivizēt darbvietu labajā pusē</translation>
@@ -211,6 +208,7 @@
 <translation id="8881584919399569791">Pārvietot aktīvo logu uz darbvietu kreisajā pusē</translation>
 <translation id="88986195241502842">Lejup</translation>
 <translation id="8924883688469390268">Pārslēgt iepriekšējo lietotāju</translation>
+<translation id="8941626538514548667">Pārlūkā izcelt tīmekļa saturu</translation>
 <translation id="8977648847395357314">Atlasīt adreses joslas saturu</translation>
 <translation id="8982190978301344584">Rādīt izvēlni ar pieejamo IME sarakstu</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> no 1 līdz 8</translation>

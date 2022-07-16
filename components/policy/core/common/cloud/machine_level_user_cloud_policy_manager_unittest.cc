@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
@@ -28,7 +28,6 @@ class MockMachineLevelUserCloudPolicyStore
             base::FilePath(),
             base::FilePath(),
             base::FilePath(),
-            /* cloud_policy_has_priority= */ false,
             scoped_refptr<base::SequencedTaskRunner>()) {}
 
   MOCK_METHOD0(LoadImmediately, void(void));

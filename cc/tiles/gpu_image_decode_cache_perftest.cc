@@ -43,13 +43,13 @@ class GpuImageDecodeCachePerfTest
  public:
   GpuImageDecodeCachePerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval),
         context_provider_(
             base::MakeRefCounted<viz::TestInProcessContextProvider>(
-                /*gpu_rasterization=*/GetParam() != TestMode::kSw,
-                /*oop_rasterization=*/UseTransferCache(),
-                /*support_locking=*/false)) {}
+                /*enable_gles2_interface=*/false,
+                /*support_locking=*/false,
+                ParamToRasterInterfaceType(GetParam()))) {}
 
   void SetUp() override {
     gpu::ContextResult result = context_provider_->BindToCurrentThread();
@@ -83,6 +83,20 @@ class GpuImageDecodeCachePerfTest
         return "TransferCache";
       case TestMode::kSw:
         return "SW";
+    }
+  }
+
+  viz::RasterInterfaceType ParamToRasterInterfaceType(TestMode mode) {
+    switch (mode) {
+      case TestMode::kGpu:
+        return viz::RasterInterfaceType::GPU;
+      case TestMode::kTransferCache:
+        return viz::RasterInterfaceType::OOPR;
+      case TestMode::kSw:
+        return viz::RasterInterfaceType::Software;
+      default:
+        NOTREACHED();
+        return viz::RasterInterfaceType::None;
     }
   }
 

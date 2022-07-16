@@ -4,11 +4,11 @@
 
 (async function() {
   TestRunner.addResult(`Tests Application Panel WebSQL support.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('resources');
   await TestRunner.evaluateInPagePromise(`
       function parse(val) {
@@ -26,12 +26,12 @@
 
   function dumpCurrentState(label) {
     TestRunner.addResult(label);
-    dump(UI.panels.resources._sidebar._sidebarTree.rootElement(), '');
+    dump(UI.panels.resources.sidebar.sidebarTree.rootElement(), '');
   }
 
   async function createTable(queryView) {
-    queryView._prompt.setText('CREATE TABLE table1 (id INTEGER PRIMARY KEY ASC, text_field TEXT)');
-    queryView._enterKeyPressed(new KeyboardEvent('keydown'));
+    queryView.prompt.setText('CREATE TABLE table1 (id INTEGER PRIMARY KEY ASC, text_field TEXT)');
+    queryView.enterKeyPressed(new KeyboardEvent('keydown'));
     await queryView.once(Resources.DatabaseQueryView.Events.SchemaUpdated);
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -41,7 +41,7 @@
   await TestRunner.evaluateInPagePromise(
       'openDatabase("inspector-test-db", "1.0", "Database for inspector test", 1024*1024)');
 
-  var parent = UI.panels.resources._sidebar._sidebarTree.rootElement();
+  var parent = UI.panels.resources.sidebar.sidebarTree.rootElement();
   var databaseElement = ApplicationTestRunner.findTreeElement(parent, ['Storage', 'Web SQL', 'inspector-test-db']);
 
   TestRunner.addResult('Found: ' + !!databaseElement);

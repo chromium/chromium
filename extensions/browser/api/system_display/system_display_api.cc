@@ -50,6 +50,10 @@ class OverscanTracker {
   static void RemoveObserver(content::WebContents* web_contents);
 
   OverscanTracker() {}
+
+  OverscanTracker(const OverscanTracker&) = delete;
+  OverscanTracker& operator=(const OverscanTracker&) = delete;
+
   ~OverscanTracker() {}
 
  private:
@@ -62,8 +66,6 @@ class OverscanTracker {
   using ObserverMap =
       std::map<content::WebContents*, std::unique_ptr<OverscanWebObserver>>;
   ObserverMap observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscanTracker);
 };
 
 class OverscanTracker::OverscanWebObserver
@@ -71,6 +73,10 @@ class OverscanTracker::OverscanWebObserver
  public:
   explicit OverscanWebObserver(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
+
+  OverscanWebObserver(const OverscanWebObserver&) = delete;
+  OverscanWebObserver& operator=(const OverscanWebObserver&) = delete;
+
   ~OverscanWebObserver() override {}
 
   // WebContentsObserver
@@ -95,8 +101,6 @@ class OverscanTracker::OverscanWebObserver
 
  private:
   std::set<std::string> display_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscanWebObserver);
 };
 
 static OverscanTracker* g_overscan_tracker = nullptr;
@@ -195,7 +199,7 @@ bool SystemDisplayCrOSRestrictedFunction::ShouldRestrictToKioskAndWebUI() {
 
 ExtensionFunction::ResponseAction SystemDisplayGetInfoFunction::Run() {
   std::unique_ptr<display::GetInfo::Params> params(
-      display::GetInfo::Params::Create(*args_));
+      display::GetInfo::Params::Create(args()));
   bool single_unified = params->flags && params->flags->single_unified &&
                         *params->flags->single_unified;
   DisplayInfoProvider::Get()->GetAllDisplaysInfo(
@@ -239,7 +243,7 @@ bool SystemDisplayGetDisplayLayoutFunction::ShouldRestrictToKioskAndWebUI() {
 ExtensionFunction::ResponseAction
 SystemDisplaySetDisplayPropertiesFunction::Run() {
   std::unique_ptr<display::SetDisplayProperties::Params> params(
-      display::SetDisplayProperties::Params::Create(*args_));
+      display::SetDisplayProperties::Params::Create(args()));
   DisplayInfoProvider::Get()->SetDisplayProperties(
       params->id, params->info,
       base::BindOnce(&SystemDisplaySetDisplayPropertiesFunction::Response,
@@ -254,7 +258,7 @@ void SystemDisplaySetDisplayPropertiesFunction::Response(
 
 ExtensionFunction::ResponseAction SystemDisplaySetDisplayLayoutFunction::Run() {
   std::unique_ptr<display::SetDisplayLayout::Params> params(
-      display::SetDisplayLayout::Params::Create(*args_));
+      display::SetDisplayLayout::Params::Create(args()));
   DisplayInfoProvider::Get()->SetDisplayLayout(
       params->layouts,
       base::BindOnce(&SystemDisplaySetDisplayLayoutFunction::Response, this));
@@ -269,7 +273,7 @@ void SystemDisplaySetDisplayLayoutFunction::Response(
 ExtensionFunction::ResponseAction
 SystemDisplayEnableUnifiedDesktopFunction::Run() {
   std::unique_ptr<display::EnableUnifiedDesktop::Params> params(
-      display::EnableUnifiedDesktop::Params::Create(*args_));
+      display::EnableUnifiedDesktop::Params::Create(args()));
   DisplayInfoProvider::Get()->EnableUnifiedDesktop(params->enabled);
   return RespondNow(NoArguments());
 }
@@ -277,7 +281,7 @@ SystemDisplayEnableUnifiedDesktopFunction::Run() {
 ExtensionFunction::ResponseAction
 SystemDisplayOverscanCalibrationStartFunction::Run() {
   std::unique_ptr<display::OverscanCalibrationStart::Params> params(
-      display::OverscanCalibrationStart::Params::Create(*args_));
+      display::OverscanCalibrationStart::Params::Create(args()));
   if (!DisplayInfoProvider::Get()->OverscanCalibrationStart(params->id))
     return RespondNow(Error("Invalid display ID: " + params->id));
   OverscanTracker::AddDisplay(GetSenderWebContents(), params->id);
@@ -287,7 +291,7 @@ SystemDisplayOverscanCalibrationStartFunction::Run() {
 ExtensionFunction::ResponseAction
 SystemDisplayOverscanCalibrationAdjustFunction::Run() {
   std::unique_ptr<display::OverscanCalibrationAdjust::Params> params(
-      display::OverscanCalibrationAdjust::Params::Create(*args_));
+      display::OverscanCalibrationAdjust::Params::Create(args()));
   if (!params)
     return RespondNow(Error("Invalid parameters"));
   if (!DisplayInfoProvider::Get()->OverscanCalibrationAdjust(params->id,
@@ -301,7 +305,7 @@ SystemDisplayOverscanCalibrationAdjustFunction::Run() {
 ExtensionFunction::ResponseAction
 SystemDisplayOverscanCalibrationResetFunction::Run() {
   std::unique_ptr<display::OverscanCalibrationReset::Params> params(
-      display::OverscanCalibrationReset::Params::Create(*args_));
+      display::OverscanCalibrationReset::Params::Create(args()));
   if (!DisplayInfoProvider::Get()->OverscanCalibrationReset(params->id))
     return RespondNow(
         Error("Calibration not started for display ID: " + params->id));
@@ -311,7 +315,7 @@ SystemDisplayOverscanCalibrationResetFunction::Run() {
 ExtensionFunction::ResponseAction
 SystemDisplayOverscanCalibrationCompleteFunction::Run() {
   std::unique_ptr<display::OverscanCalibrationComplete::Params> params(
-      display::OverscanCalibrationComplete::Params::Create(*args_));
+      display::OverscanCalibrationComplete::Params::Create(args()));
   if (!DisplayInfoProvider::Get()->OverscanCalibrationComplete(params->id)) {
     return RespondNow(
         Error("Calibration not started for display ID: " + params->id));
@@ -323,7 +327,7 @@ SystemDisplayOverscanCalibrationCompleteFunction::Run() {
 ExtensionFunction::ResponseAction
 SystemDisplayShowNativeTouchCalibrationFunction::Run() {
   std::unique_ptr<display::ShowNativeTouchCalibration::Params> params(
-      display::ShowNativeTouchCalibration::Params::Create(*args_));
+      display::ShowNativeTouchCalibration::Params::Create(args()));
   DisplayInfoProvider::Get()->ShowNativeTouchCalibration(
       params->id,
       base::BindOnce(&SystemDisplayShowNativeTouchCalibrationFunction::
@@ -340,7 +344,7 @@ void SystemDisplayShowNativeTouchCalibrationFunction::OnCalibrationComplete(
 ExtensionFunction::ResponseAction
 SystemDisplayStartCustomTouchCalibrationFunction::Run() {
   std::unique_ptr<display::StartCustomTouchCalibration::Params> params(
-      display::StartCustomTouchCalibration::Params::Create(*args_));
+      display::StartCustomTouchCalibration::Params::Create(args()));
   if (!DisplayInfoProvider::Get()->StartCustomTouchCalibration(params->id)) {
     return RespondNow(
         Error("Custom touch calibration not available for display."));
@@ -351,7 +355,7 @@ SystemDisplayStartCustomTouchCalibrationFunction::Run() {
 ExtensionFunction::ResponseAction
 SystemDisplayCompleteCustomTouchCalibrationFunction::Run() {
   std::unique_ptr<display::CompleteCustomTouchCalibration::Params> params(
-      display::CompleteCustomTouchCalibration::Params::Create(*args_));
+      display::CompleteCustomTouchCalibration::Params::Create(args()));
   if (!DisplayInfoProvider::Get()->CompleteCustomTouchCalibration(
           params->pairs, params->bounds)) {
     return RespondNow(Error("Custom touch calibration completion failed."));
@@ -362,7 +366,7 @@ SystemDisplayCompleteCustomTouchCalibrationFunction::Run() {
 ExtensionFunction::ResponseAction
 SystemDisplayClearTouchCalibrationFunction::Run() {
   std::unique_ptr<display::ClearTouchCalibration::Params> params(
-      display::ClearTouchCalibration::Params::Create(*args_));
+      display::ClearTouchCalibration::Params::Create(args()));
   if (!DisplayInfoProvider::Get()->ClearTouchCalibration(params->id))
     return RespondNow(Error("Failed to clear custom touch calibration data."));
   return RespondNow(NoArguments());
@@ -370,7 +374,7 @@ SystemDisplayClearTouchCalibrationFunction::Run() {
 
 ExtensionFunction::ResponseAction SystemDisplaySetMirrorModeFunction::Run() {
   std::unique_ptr<display::SetMirrorMode::Params> params(
-      display::SetMirrorMode::Params::Create(*args_));
+      display::SetMirrorMode::Params::Create(args()));
 
   DisplayInfoProvider::Get()->SetMirrorMode(
       params->info,

@@ -400,7 +400,7 @@ bool OAuth2MintTokenFlow::ParseRemoteConsentResponse(
 
     base::Time expiration_time = base::Time();
     if (max_age > 0)
-      expiration_time = time_now + base::TimeDelta::FromSeconds(max_age);
+      expiration_time = time_now + base::Seconds(max_age);
 
     std::unique_ptr<net::CanonicalCookie> cookie =
         net::CanonicalCookie::CreateSanitizedCookie(

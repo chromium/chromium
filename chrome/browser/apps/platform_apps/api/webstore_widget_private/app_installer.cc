@@ -4,7 +4,6 @@
 
 #include "chrome/browser/apps/platform_apps/api/webstore_widget_private/app_installer.h"
 
-#include "base/macros.h"
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -17,8 +16,13 @@ namespace webstore_widget {
 
 class AppInstaller::WebContentsObserver : public content::WebContentsObserver {
  public:
+  WebContentsObserver() = delete;
+
   WebContentsObserver(content::WebContents* web_contents, AppInstaller* parent)
       : content::WebContentsObserver(web_contents), parent_(parent) {}
+
+  WebContentsObserver(const WebContentsObserver&) = delete;
+  WebContentsObserver& operator=(const WebContentsObserver&) = delete;
 
  protected:
   // content::WebContentsObserver implementation.
@@ -28,8 +32,6 @@ class AppInstaller::WebContentsObserver : public content::WebContentsObserver {
 
  private:
   AppInstaller* parent_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebContentsObserver);
 };
 
 AppInstaller::AppInstaller(content::WebContents* web_contents,

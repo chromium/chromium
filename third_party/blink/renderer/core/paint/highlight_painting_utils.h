@@ -55,6 +55,8 @@ class CORE_EXPORT HighlightPaintingUtils {
       const TextPaintStyle& text_style,
       const PaintInfo&,
       const AtomicString& pseudo_argument = g_null_atom);
+  static absl::optional<Color>
+  HighlightTextDecorationColor(const ComputedStyle&, Node*, PseudoId);
 };
 
 }  // namespace blink

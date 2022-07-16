@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "chromeos/services/libassistant/grpc/async_service_driver.h"
 #include "third_party/grpc/src/include/grpcpp/completion_queue.h"
@@ -21,7 +20,9 @@ namespace libassistant {
 // Initializes all services exposed by libassistant.
 class ServicesInitializerBase {
  public:
-  explicit ServicesInitializerBase(const std::string& cq_thread_name);
+  ServicesInitializerBase(
+      const std::string& cq_thread_name,
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner);
   ServicesInitializerBase(const ServicesInitializerBase&) = delete;
   ServicesInitializerBase& operator=(const ServicesInitializerBase&) = delete;
   virtual ~ServicesInitializerBase();
@@ -44,11 +45,18 @@ class ServicesInitializerBase {
   void ScanCQInternal();
 
   std::unique_ptr<grpc::ServerCompletionQueue> cq_;
-  std::vector<AsyncServiceDriver> service_drivers_;
+
+  // Drivers are owned by the subclass that creates them, e.g.
+  // `GrpcServicesInitializer`.
+  std::vector<AsyncServiceDriver*> service_drivers_;
+
   // Use a dedicated thread to poll completion queue. Will also responsible
   // for cleaning up the tags returned by calling cq_->Next() after they are
   // executed.
   base::Thread cq_thread_;
+
+  // The task runner for the main thread.
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 };
 
 }  // namespace libassistant

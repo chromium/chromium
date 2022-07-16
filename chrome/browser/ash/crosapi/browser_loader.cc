@@ -13,13 +13,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "components/component_updater/component_updater_service.h"
 
@@ -27,30 +26,8 @@ namespace crosapi {
 
 namespace {
 
-// Emergency kill switch in case the notification code doesn't work properly.
-const base::Feature kLacrosShowUpdateNotifications{
-    "LacrosShowUpdateNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
-
-struct ComponentInfo {
-  // The client-side component name.
-  const char* const name;
-  // The CRX "extension" ID for component updater.
-  // Must match the Omaha console.
-  const char* const crx_id;
-};
-
-// NOTE: If you change the lacros component names, you must also update
-// chrome/browser/component_updater/cros_component_installer_chromeos.cc
-constexpr ComponentInfo kLacrosDogfoodCanaryInfo = {
-    "lacros-dogfood-canary", "hkifppleldbgkdlijbdfkdpedggaopda"};
-constexpr ComponentInfo kLacrosDogfoodDevInfo = {
-    "lacros-dogfood-dev", "ldobopbhiamakmncndpkeelenhdmgfhk"};
-constexpr ComponentInfo kLacrosDogfoodStableInfo = {
-    "lacros-dogfood-stable", "hnfmbeciphpghlfgpjfbcdifbknombnk"};
-
 // The rootfs lacros-chrome binary related files.
 constexpr char kLacrosChromeBinary[] = "chrome";
-constexpr char kLacrosImage[] = "lacros.squash";
 constexpr char kLacrosMetadata[] = "metadata.json";
 
 // The rootfs lacros-chrome binary related paths.
@@ -64,35 +41,27 @@ constexpr char kRootfsLacrosPath[] = "/opt/google/lacros";
 constexpr char kLacrosMounterUpstartJob[] = "lacros_2dmounter";
 constexpr char kLacrosUnmounterUpstartJob[] = "lacros_2dunmounter";
 
-ComponentInfo GetLacrosComponentInfo() {
-  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->HasSwitch(browser_util::kLacrosStabilitySwitch)) {
-    std::string value =
-        cmdline->GetSwitchValueASCII(browser_util::kLacrosStabilitySwitch);
-    if (value == browser_util::kLacrosStabilityLeastStable)
-      return kLacrosDogfoodCanaryInfo;
-    if (value == browser_util::kLacrosStabilityLessStable)
-      return kLacrosDogfoodDevInfo;
-    if (value == browser_util::kLacrosStabilityMoreStable)
-      return kLacrosDogfoodStableInfo;
-  }
-  // Use once a week / Dev style updates by default.
-  return kLacrosDogfoodDevInfo;
-}
-
 std::string GetLacrosComponentName() {
-  return GetLacrosComponentInfo().name;
+  return browser_util::GetLacrosComponentInfo().name;
 }
 
-// Returns the CRX "extension" ID for a lacros component.
-std::string GetLacrosComponentCrxId() {
-  return GetLacrosComponentInfo().crx_id;
-}
-
-// Returns whether lacros-chrome component is already installed.
-bool CheckInstalledMayBlock(
+// Returns whether lacros-chrome component is registered.
+bool CheckRegisteredMayBlock(
     scoped_refptr<component_updater::CrOSComponentManager> manager) {
   return manager->IsRegisteredMayBlock(GetLacrosComponentName());
+}
+
+// Returns whether any lacros-chrome component is registered.
+bool CheckAnyRegisteredMayBlock(
+    scoped_refptr<component_updater::CrOSComponentManager> manager) {
+  for (const auto& component_info : {browser_util::kLacrosDogfoodCanaryInfo,
+                                     browser_util::kLacrosDogfoodDevInfo,
+                                     browser_util::kLacrosDogfoodBetaInfo,
+                                     browser_util::kLacrosDogfoodStableInfo}) {
+    if (manager->IsRegisteredMayBlock(component_info.name))
+      return true;
+  }
+  return false;
 }
 
 // Returns whether lacros-fishfood component is already installed.
@@ -100,7 +69,7 @@ bool CheckInstalledMayBlock(
 // uninstalled.
 bool CheckInstalledAndMaybeRemoveUserDirectory(
     scoped_refptr<component_updater::CrOSComponentManager> manager) {
-  if (!CheckInstalledMayBlock(manager))
+  if (!CheckRegisteredMayBlock(manager))
     return false;
 
   // Since we're already on a background thread, delete the user-data-dir
@@ -113,52 +82,25 @@ bool CheckInstalledAndMaybeRemoveUserDirectory(
   return true;
 }
 
-// Production delegate implementation.
-class DelegateImpl : public BrowserLoader::Delegate {
- public:
-  DelegateImpl() = default;
-  DelegateImpl(const DelegateImpl&) = delete;
-  DelegateImpl& operator=(const DelegateImpl&) = delete;
-  ~DelegateImpl() override = default;
-
-  // BrowserLoader::Delegate:
-  void SetLacrosUpdateAvailable() override {
-    if (base::FeatureList::IsEnabled(kLacrosShowUpdateNotifications)) {
-      // Show the update notification in ash.
-      SystemTrayClientImpl::Get()->SetLacrosUpdateAvailable();
-    }
-  }
-};
-
 }  // namespace
 
 BrowserLoader::BrowserLoader(
     scoped_refptr<component_updater::CrOSComponentManager> manager)
-    : BrowserLoader(std::make_unique<DelegateImpl>(),
-                    manager,
+    : BrowserLoader(manager,
                     g_browser_process->component_updater(),
                     chromeos::UpstartClient::Get()) {}
 
 BrowserLoader::BrowserLoader(
-    std::unique_ptr<Delegate> delegate,
     scoped_refptr<component_updater::CrOSComponentManager> manager,
     component_updater::ComponentUpdateService* updater,
     chromeos::UpstartClient* upstart_client)
-    : delegate_(std::move(delegate)),
-      component_manager_(manager),
+    : component_manager_(manager),
       component_update_service_(updater),
       upstart_client_(upstart_client) {
-  DCHECK(delegate_);
   DCHECK(component_manager_);
 }
 
-BrowserLoader::~BrowserLoader() {
-  // May be null in tests.
-  if (component_update_service_) {
-    // Removing an observer is a no-op if the observer wasn't added.
-    component_update_service_->RemoveObserver(this);
-  }
-}
+BrowserLoader::~BrowserLoader() = default;
 
 void BrowserLoader::Load(LoadCompletionCallback callback) {
   DCHECK(browser_util::IsLacrosEnabled());
@@ -194,32 +136,49 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
     }
   }
 
-  // TODO(b/188473251): Remove this check once rootfs lacros-chrome is in.
-  if (!base::PathExists(
-          base::FilePath(kRootfsLacrosPath).Append(kLacrosImage))) {
-    LOG(ERROR) << "Rootfs lacros image is missing. Going to load lacros "
-                  "component instead.";
-    LoadStatefulLacros(std::move(callback));
-    return;
-  }
-
-  OnLoadSelection(
-      std::move(callback),
-      !component_manager_->GetCompatiblePath(GetLacrosComponentName()).empty());
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&CheckAnyRegisteredMayBlock, component_manager_),
+      base::BindOnce(&BrowserLoader::OnLoadSelection,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void BrowserLoader::OnLoadSelection(LoadCompletionCallback callback,
-                                    bool was_installed) {
+                                    bool any_lacros_component_registered) {
   // If there currently isn't a stateful lacros-chrome binary, proceed to use
   // the rootfs lacros-chrome binary and start the installation of the
   // stateful lacros-chrome binary in the background.
-  if (!was_installed) {
+  if (!any_lacros_component_registered) {
     LoadRootfsLacros(std::move(callback));
     LoadStatefulLacros({});
     return;
   }
 
-  // Otherwise proceed to compare the lacros-chrome binary versions.
+  // Otherwise proceed to load/mount the stateful lacros-chrome binary.
+  // In the case that the stateful lacros-chrome binary wasn't installed, this
+  // might take some time.
+  component_manager_->Load(
+      GetLacrosComponentName(),
+      component_updater::CrOSComponentManager::MountPolicy::kMount,
+      component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
+      base::BindOnce(&BrowserLoader::OnLoadSelectionMountStateful,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BrowserLoader::OnLoadSelectionMountStateful(
+    LoadCompletionCallback callback,
+    component_updater::CrOSComponentManager::Error error,
+    const base::FilePath& path) {
+  if (error != component_updater::CrOSComponentManager::Error::NONE ||
+      path.empty()) {
+    LOG(WARNING) << "Error loading lacros component image: "
+                 << static_cast<int>(error);
+    std::move(callback).Run(base::FilePath(), LacrosSelection::kStateful);
+    return;
+  }
+
+  // Proceed to compare the lacros-chrome binary versions in case rootfs
+  // lacros-chrome binary is newer than stateful lacros-chrome binary.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&browser_util::GetRootfsLacrosVersionMayBlock,
@@ -236,17 +195,20 @@ void BrowserLoader::OnLoadVersionSelection(
   // lacros-chrome version, prioritize using the rootfs lacros-chrome and let
   // stateful lacros-chrome update in the background.
   if (rootfs_lacros_version.IsValid()) {
-    auto lacros_component_name = GetLacrosComponentName();
+    const auto lacros_component_name =
+        base::UTF8ToUTF16(base::StringPiece(GetLacrosComponentName()));
     for (const auto& component_info :
          component_update_service_->GetComponents()) {
-      if (component_info.id != lacros_component_name)
+      if (component_info.name != lacros_component_name)
         continue;
+      LOG(WARNING) << "Comparing lacros versions: "
+                   << "rootfs (" << rootfs_lacros_version.GetString() << "), "
+                   << "stateful " << lacros_component_name << " ("
+                   << component_info.version.GetString() << ")";
       if (component_info.version <= rootfs_lacros_version) {
-        LOG(WARNING) << "Stateful lacros version ("
-                     << component_info.version.GetString()
-                     << ") is older or same as the rootfs lacros version ("
-                     << rootfs_lacros_version.GetString()
-                     << ", proceeding to use rootfs lacros.";
+        LOG(WARNING)
+            << "Stateful lacros version is older or same as the one in rootfs, "
+            << "proceeding to use rootfs lacros.";
         LoadRootfsLacros(std::move(callback));
         LoadStatefulLacros({});
         return;
@@ -266,8 +228,7 @@ void BrowserLoader::LoadStatefulLacros(LoadCompletionCallback callback) {
   // Unmount the rootfs lacros-chrome if we want to use stateful lacros-chrome.
   // This will keep stateful lacros-chrome only mounted and not hold the rootfs
   // lacros-chrome mount until a `Unload`.
-  if (callback && base::PathExists(base::FilePath(kRootfsLacrosMountPoint)
-                                       .Append(kLacrosChromeBinary))) {
+  if (callback) {
     // Ignore the unmount result.
     upstart_client_->StartJob(kLacrosUnmounterUpstartJob, {},
                               base::BindOnce([](bool) {}));
@@ -336,36 +297,27 @@ void BrowserLoader::Unload() {
                             base::BindOnce([](bool) {}));
 }
 
-void BrowserLoader::OnEvent(Events event, const std::string& id) {
-  // Check for the Lacros component being updated.
-  if (event == Events::COMPONENT_UPDATED && id == GetLacrosComponentCrxId()) {
-    delegate_->SetLacrosUpdateAvailable();
-  }
-}
-
 void BrowserLoader::OnLoadComplete(
     LoadCompletionCallback callback,
     component_updater::CrOSComponentManager::Error error,
     const base::FilePath& path) {
+  LacrosSelection selection = LacrosSelection::kStateful;
+  if (path == base::FilePath(kRootfsLacrosPath) ||
+      path == base::FilePath(kRootfsLacrosMountPoint)) {
+    selection = LacrosSelection::kRootfs;
+  }
+
   // Bail out on error or empty `path`.
   if (error != component_updater::CrOSComponentManager::Error::NONE ||
       path.empty()) {
     LOG(WARNING) << "Error loading lacros component image: "
                  << static_cast<int>(error);
-    std::move(callback).Run(base::FilePath());
+    std::move(callback).Run(base::FilePath(), selection);
     return;
   }
   // Log the path on success.
   LOG(WARNING) << "Loaded lacros image at " << path.MaybeAsASCII();
-  std::move(callback).Run(path);
-
-  // May be null in tests.
-  if (component_update_service_) {
-    // Now that we have the initial component download, start observing for
-    // future updates. We don't do this in the constructor because we don't want
-    // to show the "update available" notification for the initial load.
-    component_update_service_->AddObserver(this);
-  }
+  std::move(callback).Run(path, selection);
 }
 
 void BrowserLoader::OnCheckInstalled(bool was_installed) {

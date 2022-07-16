@@ -75,6 +75,9 @@ public class BasicCardUtils {
 
     /** @return True if the merchant methodDataMap supports basic card payment method. */
     public static boolean merchantSupportsBasicCard(Map<String, PaymentMethodData> methodDataMap) {
+        if (!PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD)) {
+            return false;
+        }
         assert methodDataMap != null;
         PaymentMethodData basicCardData = methodDataMap.get(MethodStrings.BASIC_CARD);
         if (basicCardData != null) {

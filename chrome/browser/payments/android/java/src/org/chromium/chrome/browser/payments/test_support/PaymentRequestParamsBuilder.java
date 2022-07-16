@@ -55,7 +55,6 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     private final WebContents mWebContents;
     private final PaymentRequestSpec mSpec;
     private final PaymentUiService mPaymentUiService;
-    private final boolean mGoogleBridgeEligible;
     private final PaymentOptions mOptions;
     private JourneyLogger mJourneyLogger;
     private String mSupportedMethod = "https://www.chromium.org";
@@ -88,7 +87,6 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
         mDetails.total = new PaymentItem();
         mOptions = new PaymentOptions();
         mSpec = Mockito.mock(PaymentRequestSpec.class);
-        mGoogleBridgeEligible = false;
     }
 
     public PaymentRequest buildAndInit() {
@@ -110,7 +108,7 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
                 (client, onClosed)
                         -> new PaymentRequestService(
                                 mRenderFrameHost, client, onClosed, this, () -> null));
-        request.init(mClient, mMethodData, mDetails, mOptions, mGoogleBridgeEligible);
+        request.init(mClient, mMethodData, mDetails, mOptions);
         return request;
     }
 

@@ -143,3 +143,30 @@ promise_test(async (test) => {
   const text = await resp.text();
   assert_equals(text, "ok. Request was sent 1 times. 1 connections were created.");
 }, "Fetch with POST with ReadableStream on 421 response should return the response and not retry.");
+
+promise_test(async (test) => {
+  const request = new Request('', {
+    body: new ReadableStream(),
+    method: 'POST',
+  });
+
+  assert_equals(request.headers.get('Content-Type'), null, `Request should not have a content-type set`);
+
+  const response = await fetch('data:a/a;charset=utf-8,test', {
+    method: 'POST',
+    body: new ReadableStream(),
+  });
+
+  assert_equals(await response.text(), 'test', `Response has correct body`);
+}, "Feature detect for POST with ReadableStream");
+
+promise_test(async (test) => {
+  const request = new Request('data:a/a;charset=utf-8,test', {
+    body: new ReadableStream(),
+    method: 'POST',
+  });
+
+  assert_equals(request.headers.get('Content-Type'), null, `Request should not have a content-type set`);
+  const response = await fetch(request);
+  assert_equals(await response.text(), 'test', `Response has correct body`);
+}, "Feature detect for POST with ReadableStream, using request object");

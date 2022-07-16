@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -37,21 +38,44 @@ TEST(FormDataTest, append) {
 }
 
 TEST(FormDataTest, AppendFromElement) {
+  UChar lone_surrogate_chars[] = {u'a', 0xD800, u'b', 0};
+  String lone_surrogate_string(lone_surrogate_chars);
+
   auto* fd = MakeGarbageCollected<FormData>(UTF8Encoding());
   fd->AppendFromElement("Atomic\nNumber", 1);
   fd->AppendFromElement("Periodic\nTable", nullptr);
   fd->AppendFromElement("Noble\nGas", "He\rNe\nAr\r\nKr");
+  fd->AppendFromElement(lone_surrogate_string, lone_surrogate_string);
 
   const FormData::Entry& entry1 = *fd->Entries()[0];
-  EXPECT_EQ("Atomic\r\nNumber", entry1.name());
+  if (RuntimeEnabledFeatures::LateFormNewlineNormalizationEnabled()) {
+    EXPECT_EQ("Atomic\nNumber", entry1.name());
+  } else {
+    EXPECT_EQ("Atomic\r\nNumber", entry1.name());
+  }
   EXPECT_EQ("1", entry1.Value());
 
   const FormData::Entry& entry2 = *fd->Entries()[1];
-  EXPECT_EQ("Periodic\r\nTable", entry2.name());
+  if (RuntimeEnabledFeatures::LateFormNewlineNormalizationEnabled()) {
+    EXPECT_EQ("Periodic\nTable", entry2.name());
+  } else {
+    EXPECT_EQ("Periodic\r\nTable", entry2.name());
+  }
 
   const FormData::Entry& entry3 = *fd->Entries()[2];
-  EXPECT_EQ("Noble\r\nGas", entry3.name());
-  EXPECT_EQ("He\r\nNe\r\nAr\r\nKr", entry3.Value());
+  if (RuntimeEnabledFeatures::LateFormNewlineNormalizationEnabled()) {
+    EXPECT_EQ("Noble\nGas", entry3.name());
+    EXPECT_EQ("He\rNe\nAr\r\nKr", entry3.Value());
+  } else {
+    EXPECT_EQ("Noble\r\nGas", entry3.name());
+    EXPECT_EQ("He\r\nNe\r\nAr\r\nKr", entry3.Value());
+  }
+
+  // Names and values which come from an element should have any lone surrogates
+  // in them substituted with the replacement character.
+  const FormData::Entry& entry4 = *fd->Entries()[3];
+  EXPECT_EQ(String(u"a\uFFFDb"), entry4.name());
+  EXPECT_EQ(String(u"a\uFFFDb"), entry4.Value());
 }
 
 TEST(FormDataTest, get) {
@@ -157,6 +181,28 @@ TEST(FormDataTest, CreateFromControlState) {
   const FormData::Entry* entry1 = fd->Entries()[1];
   EXPECT_TRUE(entry1->isFile());
   EXPECT_EQ("/etc/password", entry1->GetFile()->GetPath());
+}
+
+TEST(FormDataTest, FilenameWithLoneSurrogates) {
+  UChar filename[] = {'a', 0xD800, 'b', 0};
+  auto* file = MakeGarbageCollected<File>(filename, absl::nullopt,
+                                          BlobDataHandle::Create());
+
+  auto* fd = MakeGarbageCollected<FormData>(UTF8Encoding());
+  fd->AppendFromElement("test", file);
+
+  // The multipart/form-data format with UTF-8 encoding exposes the lone
+  // surrogate as EF BF BD (the Unicode replacement character).
+  auto encoded_multipart = fd->EncodeMultiPartFormData();
+  const char* boundary = encoded_multipart->Boundary().data();
+  FormDataElement fde = encoded_multipart->Elements()[0];
+  EXPECT_EQ(String(fde.data_.data(), fde.data_.size()),
+            String(String("--") + boundary +
+                   "\r\n"
+                   "Content-Disposition: form-data; name=\"test\"; "
+                   "filename=\"a\xEF\xBF\xBD"
+                   "b\"\r\n"
+                   "Content-Type: application/octet-stream\r\n\r\n"));
 }
 
 }  // namespace blink

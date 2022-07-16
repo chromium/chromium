@@ -11,7 +11,7 @@
 
 namespace autofill_assistant {
 namespace {
-constexpr base::TimeDelta kDefaultTimeout = base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kDefaultTimeout = base::Seconds(20);
 }  // namespace
 
 WaitForNavigationAction::WaitForNavigationAction(ActionDelegate* delegate,
@@ -25,8 +25,8 @@ WaitForNavigationAction::~WaitForNavigationAction() {}
 void WaitForNavigationAction::InternalProcessAction(
     ProcessActionCallback callback) {
   callback_ = std::move(callback);
-  base::TimeDelta timeout = base::TimeDelta::FromMilliseconds(
-      proto_.wait_for_navigation().timeout_ms());
+  base::TimeDelta timeout =
+      base::Milliseconds(proto_.wait_for_navigation().timeout_ms());
   if (timeout.is_zero())
     timeout = kDefaultTimeout;
 

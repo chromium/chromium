@@ -6,7 +6,6 @@
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_AFFILIATION_H_
 
 #include <string>
-#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "components/policy/policy_export.h"

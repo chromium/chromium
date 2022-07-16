@@ -106,6 +106,8 @@ void DateTimeFormatValidator::VisitField(DateTimeFormat::FieldType field_type,
       has_day_ = true;
       break;
     case DateTimeFormat::kFieldTypePeriod:
+    case DateTimeFormat::kFieldTypePeriodAmPmNoonMidnight:
+    case DateTimeFormat::kFieldTypePeriodFlexible:
       has_ampm_ = true;
       break;
     case DateTimeFormat::kFieldTypeHour11:  // Fallthrough.
@@ -486,8 +488,7 @@ void MultipleFieldsTemporalInputTypeView::HandleKeydownEvent(
   if (picker_indicator_is_visible_ &&
       ((event.key() == "ArrowDown" && event.getModifierState("Alt")) ||
        event.key() == "F4" || event.key() == " ")) {
-    if (PickerIndicatorElement* element = GetPickerIndicatorElement())
-      element->OpenPopup();
+    OpenPopupView();
     event.SetDefaultHandled();
   } else {
     ForwardEvent(event);
@@ -595,6 +596,11 @@ void MultipleFieldsTemporalInputTypeView::UpdateView() {
   else
     edit->SetEmptyValue(layout_parameters, date);
   UpdateClearButtonVisibility();
+}
+
+void MultipleFieldsTemporalInputTypeView::OpenPopupView() {
+  if (PickerIndicatorElement* picker = GetPickerIndicatorElement())
+    picker->OpenPopup();
 }
 
 void MultipleFieldsTemporalInputTypeView::ClosePopupView() {

@@ -34,6 +34,15 @@
         }
       },
       {
+        "id": "ScreenPoint",
+        "type": "object",
+        "description": "Point in global screen coordinates.",
+        "properties": {
+          "x": {"type": "integer", "description": "X coordinate in global screen coordinates."},
+          "y": {"type": "integer", "description": "Y coordinate in global screen coordinates."}
+        }
+      },
+      {
         "id": "Gesture",
         "type": "string",
         "enum": [ "click", "swipeLeft1", "swipeUp1", "swipeRight1", "swipeDown1", "swipeLeft2", "swipeUp2", "swipeRight2", "swipeDown2", "swipeLeft3", "swipeUp3", "swipeRight3", "swipeDown3", "swipeLeft4", "swipeUp4", "swipeRight4", "swipeDown4", "tap2", "tap3", "tap4", "touchExplore" ],
@@ -80,7 +89,7 @@
       {
         "id": "SwitchAccessMenuAction",
         "type": "string",
-        "enum": [ "copy", "cut", "decrement", "dictation", "endTextSelection", "increment", "itemScan", "jumpToBeginningOfText", "jumpToEndOfText", "keyboard", "leftClick", "moveBackwardOneCharOfText", "moveBackwardOneWordOfText", "moveCursor", "moveDownOneLineOfText", "moveForwardOneCharOfText", "moveForwardOneWordOfText", "moveUpOneLineOfText", "paste", "pointScan", "rightClick", "scrollDown", "scrollLeft", "scrollRight", "scrollUp", "select", "settings", "startTextSelection" ],
+        "enum": [ "copy", "cut", "decrement", "dictation", "endTextSelection", "increment", "itemScan", "jumpToBeginningOfText", "jumpToEndOfText", "keyboard", "leftClick", "moveBackwardOneCharOfText", "moveBackwardOneWordOfText", "moveCursor", "moveDownOneLineOfText", "moveForwardOneCharOfText", "moveForwardOneWordOfText", "moveUpOneLineOfText", "paste", "pointScan", "rightClick", "scrollDown", "scrollLeft", "scrollRight", "scrollUp", "select", "settings", "startTextSelection", "shortcuts", "leaveGroup", "webMenu", "webBookmark", "webBottomOfPage", "webTopOfPage", "webFindInPage", "webDownloads", "webClearHistory", "systemMenu", "systemStatusBar", "systemLauncher", "systemTaskManager", "systemDiagnostics", "systemScreenshot", "systemHelp", "mediaMenu", "mediaMute", "mediaVolumeDown", "mediaVolumeUp", "mediaRewind", "mediaPlayPause", "mediaFastforward", "displayMenu", "displayMirror", "displayBrightnessDown", "displayBrightnessUp", "displayRotate", "displayZoomOut", "displayZoomIn", "userMenu", "userLock", "userPreviousUser", "userNextUser", "userSignOut", "actionRecorder", "startRecording", "stopRecording", "executeMacro"],
         "description": "Available actions to be shown in the Switch Access menu. Must be kept in sync with the strings in ash/system/accessibility/switch_access/switch_access_menu_view.cc"
       },
       {
@@ -225,7 +234,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": [ "selectToSpeakNavigationControl", "enhancedNetworkVoices" ],
+        "enum": [ "enhancedNetworkVoices", "dictationCommands" ],
         "description": "Subset of accessibility features."
       },
       {
@@ -267,19 +276,17 @@
         "name": "getBatteryDescription",
         "type": "function",
         "description": "Called to request battery status from Chrome OS system.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Returns battery description as a string.",
-            "parameters": [
-              {
-                "name": "batteryDescription",
-                "type": "string"
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Returns battery description as a string.",
+          "parameters": [
+            {
+              "name": "batteryDescription",
+              "type": "string"
+            }
+          ]
+        }
       },
       {
         "name": "setNativeAccessibilityEnabled",
@@ -336,7 +343,6 @@
           },
           {
             "type": "boolean",
-
             "name": "capture",
             "description": "True if key events should be swallowed natively and not propagated if preventDefault() gets called by the extension's background page."
           }
@@ -490,6 +496,17 @@
         ]
       },
       {
+        "name": "magnifierCenterOnPoint",
+        "type": "function",
+        "description": "Called by the Accessibility Common extension to center magnifier at |point|.",
+        "parameters": [
+          {
+            "name": "point",
+            "$ref": "ScreenPoint"
+          }
+        ]
+      },
+      {
         "name": "toggleDictation",
         "type": "function",
         "description": "Toggles dictation between active and inactive states.",
@@ -536,19 +553,18 @@
           {
             "name": "feature",
             "$ref": "AccessibilityFeature"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Returns whether feature is enabled.",
-            "parameters": [
-              {
-                "name": "featureEnabled",
-                "type": "boolean"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Returns whether feature is enabled.",
+          "parameters": [
+            {
+              "name": "featureEnabled",
+              "type": "boolean"
+            }
+          ]
+        }
       },
       {
         "name": "updateSelectToSpeakPanel",
@@ -594,20 +610,19 @@
             "name": "description",
             "type": "string",
             "description": "The description to show within the confirmation dialog."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when the dialog is confirmed or cancelled.",
-            "parameters": [
-              {
-                "type": "boolean",
-                "name": "confirmed",
-                "description": "True if the dialog was confirmed, false if it was canceled or closed."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when the dialog is confirmed or cancelled.",
+          "parameters": [
+            {
+              "type": "boolean",
+              "name": "confirmed",
+              "description": "True if the dialog was confirmed, false if it was canceled or closed."
+            }
+          ]
+        }
       },
       {
         "name": "getLocalizedDomKeyStringForKeyCode",
@@ -617,20 +632,19 @@
           {
             "name": "keyCode",
             "type": "integer"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called with the resulting Dom key string.",
-            "parameters": [
-              {
-                "type": "string",
-                "name": "domKeyString",
-                "description": "The dom key string localized for the current input method."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called with the resulting Dom key string.",
+          "parameters": [
+            {
+              "type": "string",
+              "name": "domKeyString",
+              "description": "The dom key string localized for the current input method."
+            }
+          ]
+        }
       }
     ],
     "events": [

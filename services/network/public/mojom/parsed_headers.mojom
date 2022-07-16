@@ -13,6 +13,12 @@ import "services/network/public/mojom/timing_allow_origin.mojom";
 import "services/network/public/mojom/web_client_hints_types.mojom";
 import "services/network/public/mojom/x_frame_options.mojom";
 
+enum OriginAgentClusterValue {
+  kAbsent,  // No Origin-Agent-Cluster header specified.
+  kTrue,  // Origin-Agent-Cluster: ?1.
+  kFalse  // Origin-Agent-Cluster: ?0.
+};
+
 // Holds the parsed representation of several security related HTTP headers.
 // This struct should only be populated by network::PopulateParsedHeaders().
 // ParsedHeaders are used only for navigational requests and for worker and
@@ -33,7 +39,7 @@ struct ParsedHeaders {
   CrossOriginOpenerPolicy cross_origin_opener_policy;
 
   // The parsed value of the Origin-Agent-Cluster header.
-  bool origin_agent_cluster = false;
+  OriginAgentClusterValue origin_agent_cluster;
 
   // The parsed Accept-CH from response headers.
   //

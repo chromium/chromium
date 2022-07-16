@@ -280,7 +280,6 @@ TEST_F(QuicEndToEndTest, LargePostWithPacketLoss) {
   // FLAGS_fake_packet_loss_percentage = 30;
   InitializePostRequest(1024 * 1024);
 
-  const char kResponseBody[] = "some really big response body";
   AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
 
   TestTransactionConsumer consumer(DEFAULT_PRIORITY,
@@ -301,7 +300,6 @@ TEST_F(QuicEndToEndTest, UberTest) {
 #endif
   // FLAGS_fake_packet_loss_percentage = 30;
 
-  const char kResponseBody[] = "some really big response body";
   AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
 
   std::vector<std::unique_ptr<TestTransactionConsumer>> consumers;

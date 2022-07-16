@@ -1,0 +1,5 @@
+monorail {
+  component: "Fuchsia"
+}
+
+team_email: "cr-fuchsia@chromium.org"

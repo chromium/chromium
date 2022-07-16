@@ -5,6 +5,7 @@
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 
 #import "base/test/ios/wait_util.h"
+#import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/form_activity_observer.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
@@ -22,10 +23,10 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 using web::WebFrame;
 
 // Tests fixture for autofill::FormActivityTabHelper class.
-class FormActivityTabHelperTest : public web::WebTestWithWebState {
+class FormActivityTabHelperTest : public AutofillTestWithWebState {
  public:
   FormActivityTabHelperTest()
-      : web::WebTestWithWebState(std::make_unique<web::FakeWebClient>()) {
+      : AutofillTestWithWebState(std::make_unique<web::FakeWebClient>()) {
     web::FakeWebClient* web_client =
         static_cast<web::FakeWebClient*>(GetWebClient());
     web_client->SetJavaScriptFeatures(
@@ -71,16 +72,7 @@ TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
 
   WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
-
-  uint32_t next_available_id = 1;
-  autofill::FormUtilJavaScriptFeature::GetInstance()
-      ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
-
-  // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
-           static_cast<int>(next_available_id);
-  }));
+  SetUpForUniqueIds(main_frame);
 
   ASSERT_FALSE(observer_->submit_document_info());
   const std::string kTestFormName("form-name");
@@ -112,16 +104,7 @@ TEST_F(FormActivityTabHelperTest, TestFormSubmittedHook) {
 
   WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
-
-  uint32_t next_available_id = 1;
-  autofill::FormUtilJavaScriptFeature::GetInstance()
-      ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
-
-  // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
-           static_cast<int>(next_available_id);
-  }));
+  SetUpForUniqueIds(main_frame);
 
   ASSERT_FALSE(observer_->submit_document_info());
   const std::string kTestFormName("form-name");
@@ -152,16 +135,7 @@ TEST_F(FormActivityTabHelperTest, TestObserverFormActivityFrameMessaging) {
 
   WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
-
-  uint32_t next_available_id = 1;
-  autofill::FormUtilJavaScriptFeature::GetInstance()
-      ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
-
-  // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
-           static_cast<int>(next_available_id);
-  }));
+  SetUpForUniqueIds(main_frame);
 
   ASSERT_FALSE(observer_->form_activity_info());
   // First call will set document.activeElement (which is usually set by user
@@ -183,4 +157,35 @@ TEST_F(FormActivityTabHelperTest, TestObserverFormActivityFrameMessaging) {
   EXPECT_FALSE(observer_->form_activity_info()->form_activity.input_missing);
   EXPECT_TRUE(observer_->form_activity_info()->form_activity.is_main_frame);
   EXPECT_TRUE(observer_->form_activity_info()->form_activity.has_user_gesture);
+}
+
+// Tests that observer is called on form removal.
+TEST_F(FormActivityTabHelperTest, FormRemovalRegistered) {
+  LoadHtml(@"<form name=\"form1\" id=\"form1\">"
+            "<input type=\"text\" name=\"username\" id=\"id1\">"
+            "<input type=\"password\" name=\"password\" id=\"id2\">"
+            "<input type=\"submit\" id=\"submit_input\"/>"
+            "</form>");
+
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+  SetUpForUniqueIds(main_frame);
+
+  ASSERT_FALSE(observer_->form_removal_info());
+
+  TrackFormMutations(main_frame);
+  ExecuteJavaScript(@"var form1 = document.getElementById('form1');"
+                    @"__gCrWeb.fill.setUniqueIDIfNeeded(form1);"
+                    @"form1.parentNode.removeChild(form1);");
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForJSCompletionTimeout, ^bool {
+        return observer_->form_removal_info() != nullptr;
+      }));
+
+  EXPECT_EQ(web_state(), observer_->form_removal_info()->web_state);
+  EXPECT_EQ(main_frame, observer_->form_removal_info()->sender_frame);
+  EXPECT_EQ(autofill::FormRendererId(1),
+            observer_->form_removal_info()->form_removal_params.unique_form_id);
+  EXPECT_FALSE(
+      observer_->form_removal_info()->form_removal_params.input_missing);
 }

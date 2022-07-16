@@ -116,11 +116,9 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 - (UIWindow*)window {
   if (base::ios::IsSceneStartupSupported()) {
     UIWindow* mainWindow = nil;
-    if (@available(ios 13, *)) {
-      for (UIWindow* window in self.scene.windows) {
-        if ([window isKindOfClass:[ChromeOverlayWindow class]]) {
-          mainWindow = window;
-        }
+    for (UIWindow* window in self.scene.windows) {
+      if ([window isKindOfClass:[ChromeOverlayWindow class]]) {
+        mainWindow = window;
       }
     }
     return mainWindow;
@@ -129,11 +127,7 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 }
 
 - (NSString*)sceneSessionID {
-  id maybe_scene = nil;
-  if (@available(ios 13, *))
-    maybe_scene = _scene;
-
-  return SessionIdentifierForScene(maybe_scene);
+  return SessionIdentifierForScene(_scene);
 }
 
 - (void)setActivationLevel:(SceneActivationLevel)newLevel {
@@ -232,6 +226,17 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   [self.observers sceneState:self receivedUserActivity:pendingUserActivity];
 }
 
+- (void)setSigninInProgress:(BOOL)signinInProgress {
+  DCHECK(_signinInProgress != signinInProgress);
+
+  _signinInProgress = signinInProgress;
+  if (signinInProgress) {
+    [self.observers signinDidStart:self];
+  } else {
+    [self.observers signinDidEnd:self];
+  }
+}
+
 #pragma mark - UIBlockerTarget
 
 - (id<UIBlockerManager>)uiBlockerManager {
@@ -242,21 +247,19 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   if (!base::ios::IsMultipleScenesSupported()) {
     return;
   }
-  if (@available(iOS 13, *)) {
-    UISceneActivationRequestOptions* options =
-        [[UISceneActivationRequestOptions alloc] init];
-    options.requestingScene = requestingScene;
+  UISceneActivationRequestOptions* options =
+      [[UISceneActivationRequestOptions alloc] init];
+  options.requestingScene = requestingScene;
 
-    [[UIApplication sharedApplication]
-        requestSceneSessionActivation:self.scene.session
-                         userActivity:nil
-                              options:options
-                         errorHandler:^(NSError* error) {
-                           LOG(ERROR) << base::SysNSStringToUTF8(
-                               error.localizedDescription);
-                           NOTREACHED();
-                         }];
-  }
+  [[UIApplication sharedApplication]
+      requestSceneSessionActivation:self.scene.session
+                       userActivity:nil
+                            options:options
+                       errorHandler:^(NSError* error) {
+                         LOG(ERROR) << base::SysNSStringToUTF8(
+                             error.localizedDescription);
+                         NOTREACHED();
+                       }];
 }
 
 #pragma mark - debug
@@ -316,17 +319,15 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 //    if not present, the value is looked in NSUserDefaults.
 
 - (NSObject*)sessionObjectForKey:(NSString*)key {
-  if (@available(ios 13, *)) {
-    if (base::ios::IsMultipleScenesSupported()) {
-      NSObject* value = [_scene.session.userInfo objectForKey:key];
-      if (value) {
-        NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-        if ([userDefaults objectForKey:key]) {
-          [userDefaults removeObjectForKey:key];
-          [userDefaults synchronize];
-        }
-        return value;
+  if (base::ios::IsMultipleScenesSupported()) {
+    NSObject* value = [_scene.session.userInfo objectForKey:key];
+    if (value) {
+      NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+      if ([userDefaults objectForKey:key]) {
+        [userDefaults removeObjectForKey:key];
+        [userDefaults synchronize];
       }
+      return value;
     }
   }
 
@@ -335,14 +336,12 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 }
 
 - (void)setSessionObject:(NSObject*)object forKey:(NSString*)key {
-  if (@available(ios 13, *)) {
-    if (base::ios::IsMultipleScenesSupported()) {
-      NSMutableDictionary<NSString*, id>* userInfo = [NSMutableDictionary
-          dictionaryWithDictionary:_scene.session.userInfo];
-      [userInfo setObject:object forKey:key];
-      _scene.session.userInfo = userInfo;
-      return;
-    }
+  if (base::ios::IsMultipleScenesSupported()) {
+    NSMutableDictionary<NSString*, id>* userInfo =
+        [NSMutableDictionary dictionaryWithDictionary:_scene.session.userInfo];
+    [userInfo setObject:object forKey:key];
+    _scene.session.userInfo = userInfo;
+    return;
   }
 
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];

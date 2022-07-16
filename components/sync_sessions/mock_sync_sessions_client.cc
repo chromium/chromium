@@ -12,6 +12,6 @@ MockSyncSessionsClient::MockSyncSessionsClient() {
       .WillByDefault(testing::Return(true));
 }
 
-MockSyncSessionsClient::~MockSyncSessionsClient() {}
+MockSyncSessionsClient::~MockSyncSessionsClient() = default;
 
 }  // namespace sync_sessions

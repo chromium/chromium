@@ -26,6 +26,10 @@ namespace external_service_support {
 class ExternalService : public external_mojo::mojom::ExternalService {
  public:
   ExternalService();
+
+  ExternalService(const ExternalService&) = delete;
+  ExternalService& operator=(const ExternalService&) = delete;
+
   ~ExternalService() override;
 
   // Returns the Mojo receiver for this service.
@@ -71,8 +75,6 @@ class ExternalService : public external_mojo::mojom::ExternalService {
   mojo::Receiver<external_mojo::mojom::ExternalService> service_receiver_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalService);
 };
 
 }  // namespace external_service_support

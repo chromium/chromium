@@ -12,7 +12,6 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/views/view.h"
@@ -40,6 +39,11 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
     virtual void OnSearchResultContainerResultsChanged() = 0;
   };
   explicit SearchResultContainerView(AppListViewDelegate* view_delegate);
+
+  SearchResultContainerView(const SearchResultContainerView&) = delete;
+  SearchResultContainerView& operator=(const SearchResultContainerView&) =
+      delete;
+
   ~SearchResultContainerView() override;
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
@@ -116,8 +120,6 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
 
   // The factory that consolidates multiple Update calls into one.
   base::WeakPtrFactory<SearchResultContainerView> update_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultContainerView);
 };
 
 }  // namespace ash

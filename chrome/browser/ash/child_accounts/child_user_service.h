@@ -11,6 +11,7 @@
 
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_report_interface.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
+#include "chrome/browser/ash/child_accounts/website_approval_notifier.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -125,12 +126,15 @@ class ChildUserService : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
+  Profile* const profile_;
+
   std::unique_ptr<app_time::AppTimeController> app_time_controller_;
 
   // Preference changes observer.
   PrefChangeRegistrar pref_change_registrar_;
 
-  Profile* const profile_;
+  // Used to display notifications when new websites are approved.
+  WebsiteApprovalNotifier website_approval_notifier_;
 };
 
 }  // namespace ash

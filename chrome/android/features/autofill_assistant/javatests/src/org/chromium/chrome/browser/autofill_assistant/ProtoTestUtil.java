@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientIdProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.RequiredDataPiece;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto.Filter;
+import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression;
 
 class ProtoTestUtil {
     public static SelectorProto toCssSelector(String cssSelector) {
@@ -36,5 +38,19 @@ class ProtoTestUtil {
 
     public static ClientIdProto toClientId(String id) {
         return ClientIdProto.newBuilder().setIdentifier(id).build();
+    }
+
+    public static RequiredDataPiece.Builder buildRequiredDataPiece(String message, int key) {
+        return RequiredDataPiece.newBuilder().setErrorMessage(message).setCondition(
+                RequiredDataPiece.Condition.newBuilder().setKey(key).setNotEmpty(
+                        RequiredDataPiece.NotEmptyCondition.newBuilder()));
+    }
+
+    public static ValueExpression.Builder buildValueExpression(int... keys) {
+        ValueExpression.Builder valueExpression = ValueExpression.newBuilder();
+        for (int key : keys) {
+            valueExpression.addChunk(ValueExpression.Chunk.newBuilder().setKey(key));
+        }
+        return valueExpression;
     }
 }

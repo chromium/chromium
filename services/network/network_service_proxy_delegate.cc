@@ -163,9 +163,11 @@ net::Error NetworkServiceProxyDelegate::OnTunnelHeadersReceived(
 }
 
 void NetworkServiceProxyDelegate::OnCustomProxyConfigUpdated(
-    mojom::CustomProxyConfigPtr proxy_config) {
+    mojom::CustomProxyConfigPtr proxy_config,
+    OnCustomProxyConfigUpdatedCallback callback) {
   DCHECK(IsValidCustomProxyConfig(*proxy_config));
   proxy_config_ = std::move(proxy_config);
+  std::move(callback).Run();
 }
 
 void NetworkServiceProxyDelegate::MarkProxiesAsBad(

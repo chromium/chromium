@@ -20,6 +20,10 @@ class Config;
 class Surface : public base::RefCountedThreadSafe<Surface> {
  public:
   explicit Surface(gl::GLSurface* gl_surface, const Config* config);
+
+  Surface(const Surface&) = delete;
+  Surface& operator=(const Surface&) = delete;
+
   void set_is_current_in_some_thread(bool flag) {
     is_current_in_some_thread_ = flag;
   }
@@ -35,7 +39,6 @@ class Surface : public base::RefCountedThreadSafe<Surface> {
   bool is_current_in_some_thread_;
   scoped_refptr<gl::GLSurface> gl_surface_;
   const Config* config_;
-  DISALLOW_COPY_AND_ASSIGN(Surface);
 };
 
 }  // namespace egl

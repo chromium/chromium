@@ -36,6 +36,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceMac
  public:
   BluetoothLowEnergyDeviceMac(BluetoothAdapterMac* adapter,
                               CBPeripheral* peripheral);
+
+  BluetoothLowEnergyDeviceMac(const BluetoothLowEnergyDeviceMac&) = delete;
+  BluetoothLowEnergyDeviceMac& operator=(const BluetoothLowEnergyDeviceMac&) =
+      delete;
+
   ~BluetoothLowEnergyDeviceMac() override;
 
   // BluetoothDevice overrides.
@@ -168,8 +173,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceMac
   // decreases each time DidDiscoverPrimaryServices() is called. Once the
   // value is set to 0, characteristics and properties are discovered.
   int discovery_pending_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyDeviceMac);
 };
 
 // Stream operator for logging.

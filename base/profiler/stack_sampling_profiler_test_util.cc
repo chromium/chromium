@@ -298,7 +298,7 @@ std::vector<Frame> SampleScenario(UnwindScenario* scenario,
                                   ModuleCache* module_cache,
                                   UnwinderFactory aux_unwinder_factory) {
   StackSamplingProfiler::SamplingParams params;
-  params.sampling_interval = TimeDelta::FromMilliseconds(0);
+  params.sampling_interval = Milliseconds(0);
   params.samples_per_profile = 1;
 
   std::vector<Frame> sample;
@@ -394,6 +394,7 @@ NativeLibrary LoadOtherLibrary() {
   // macros in a function returning non-null.
   const auto load = [](NativeLibrary* library) {
     FilePath other_library_path;
+    // The module is next to the test module rather than with test data.
     ASSERT_TRUE(PathService::Get(DIR_MODULE, &other_library_path));
     other_library_path = other_library_path.AppendASCII(
         GetLoadableModuleName("base_profiler_test_support_library"));

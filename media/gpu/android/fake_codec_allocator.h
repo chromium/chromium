@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/android/mock_media_codec_bridge.h"
 #include "media/gpu/android/codec_allocator.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,6 +22,10 @@ class FakeCodecAllocator : public testing::NiceMock<CodecAllocator> {
  public:
   explicit FakeCodecAllocator(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  FakeCodecAllocator(const FakeCodecAllocator&) = delete;
+  FakeCodecAllocator& operator=(const FakeCodecAllocator&) = delete;
+
   ~FakeCodecAllocator() override;
 
   // These are called with some parameters of the codec config by our
@@ -59,8 +63,6 @@ class FakeCodecAllocator : public testing::NiceMock<CodecAllocator> {
 
  private:
   CodecCreatedCB pending_codec_created_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCodecAllocator);
 };
 
 }  // namespace media

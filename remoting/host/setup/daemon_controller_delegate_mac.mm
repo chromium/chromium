@@ -29,6 +29,7 @@
 #include "remoting/host/mac/permission_checker.h"
 #include "remoting/host/mac/permission_wizard.h"
 #include "remoting/host/resources.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -234,17 +235,21 @@ DaemonController::State DaemonControllerDelegateMac::GetState() {
 std::unique_ptr<base::DictionaryValue>
 DaemonControllerDelegateMac::GetConfig() {
   base::FilePath config_path(kHostConfigFilePath);
-  std::unique_ptr<base::DictionaryValue> host_config(
-      HostConfigFromJsonFile(config_path));
-  if (!host_config)
+  absl::optional<base::Value> host_config(HostConfigFromJsonFile(config_path));
+  if (!host_config.has_value())
     return nullptr;
 
   std::unique_ptr<base::DictionaryValue> config(new base::DictionaryValue);
-  std::string value;
-  if (host_config->GetString(kHostIdConfigPath, &value))
-    config->SetString(kHostIdConfigPath, value);
-  if (host_config->GetString(kXmppLoginConfigPath, &value))
-    config->SetString(kXmppLoginConfigPath, value);
+  std::string* value = host_config->FindStringKey(kHostIdConfigPath);
+  if (value) {
+    config->SetString(kHostIdConfigPath, *value);
+  }
+
+  value = host_config->FindStringKey(kXmppLoginConfigPath);
+  if (value) {
+    config->SetString(kXmppLoginConfigPath, *value);
+  }
+
   return config;
 }
 
@@ -271,15 +276,16 @@ void DaemonControllerDelegateMac::UpdateConfig(
     std::unique_ptr<base::DictionaryValue> config,
     DaemonController::CompletionCallback done) {
   base::FilePath config_file_path(kHostConfigFilePath);
-  std::unique_ptr<base::DictionaryValue> host_config(
+  absl::optional<base::Value> host_config(
       HostConfigFromJsonFile(config_file_path));
-  if (!host_config) {
+  if (!host_config.has_value()) {
     std::move(done).Run(DaemonController::RESULT_FAILED);
     return;
   }
 
   host_config->MergeDictionary(config.get());
-  ElevateAndSetConfig(*host_config, std::move(done));
+  ElevateAndSetConfig(base::Value::AsDictionaryValue(host_config.value()),
+                      std::move(done));
 }
 
 void DaemonControllerDelegateMac::Stop(
@@ -296,10 +302,14 @@ DaemonControllerDelegateMac::GetUsageStatsConsent() {
   consent.set_by_policy = false;
 
   base::FilePath config_file_path(kHostConfigFilePath);
-  std::unique_ptr<base::DictionaryValue> host_config(
+  absl::optional<base::Value> host_config(
       HostConfigFromJsonFile(config_file_path));
-  if (host_config) {
-    host_config->GetBoolean(kUsageStatsConsentConfigPath, &consent.allowed);
+  if (host_config.has_value()) {
+    absl::optional<bool> host_config_value =
+        host_config->FindBoolKey(kUsageStatsConsentConfigPath);
+    if (host_config_value.has_value()) {
+      consent.allowed = host_config_value.value();
+    }
   }
 
   return consent;

@@ -21,11 +21,12 @@ namespace blink {
 
 namespace {
 
-constexpr base::TimeDelta kIconFetchTimeout = base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kIconFetchTimeout = base::Seconds(30);
 
 void FetchIcon(ExecutionContext* execution_context,
                const KURL& icon_url,
                const gfx::Size& icon_size,
+               ThreadedIconLoader* threaded_icon_loader,
                ThreadedIconLoader::IconCallback callback) {
   ResourceRequest resource_request(icon_url);
   resource_request.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
@@ -34,7 +35,6 @@ void FetchIcon(ExecutionContext* execution_context,
   resource_request.SetPriority(ResourceLoadPriority::kMedium);
   resource_request.SetTimeoutInterval(kIconFetchTimeout);
 
-  auto* threaded_icon_loader = MakeGarbageCollected<ThreadedIconLoader>();
   threaded_icon_loader->Start(execution_context, resource_request, icon_size,
                               std::move(callback));
 }
@@ -100,16 +100,21 @@ void ContentIndexIconLoader::Start(
     if (icon_url.IsEmpty())
       icon_url = KURL(image_resources[0].src);
 
+    auto* threaded_icon_loader = MakeGarbageCollected<ThreadedIconLoader>();
     // |icons_ptr| is safe to use since it is owned by |barrier_closure|.
     FetchIcon(
-        execution_context, icon_url, icon_size,
+        execution_context, icon_url, icon_size, threaded_icon_loader,
         WTF::Bind(
             [](base::OnceClosure done_closure, Vector<SkBitmap>* icons_ptr,
-               SkBitmap icon, double resize_scale) {
+               ThreadedIconLoader* icon_loader, SkBitmap icon,
+               double resize_scale) {
               icons_ptr->push_back(std::move(icon));
               std::move(done_closure).Run();
             },
-            barrier_closure, WTF::Unretained(icons_ptr)));
+            barrier_closure, WTF::Unretained(icons_ptr),
+            // Pass |threaded_icon_loader| to the callback to make sure it
+            // doesn't get destroyed.
+            WrapPersistent(threaded_icon_loader)));
   }
 }
 

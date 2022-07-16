@@ -24,7 +24,7 @@ bool StructTraits<gfx::mojom::GpuExtraInfoDataView, gfx::GpuExtraInfo>::Read(
     gfx::GpuExtraInfo* out) {
   if (!data.ReadAngleFeatures(&out->angle_features))
     return false;
-#if defined(USE_OZONE_PLATFORM_X11) || defined(USE_X11)
+#if defined(USE_OZONE_PLATFORM_X11)
   if (!data.ReadGpuMemoryBufferSupportX11(&out->gpu_memory_buffer_support_x11))
     return false;
 #endif

@@ -10,7 +10,6 @@
 #include "base/test/task_environment.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -87,9 +86,9 @@ class PasswordReuseManagerImplTest : public testing::Test {
                                         PrefRegistry::NO_REGISTRATION_FLAGS);
 
     profile_store_ = base::MakeRefCounted<TestPasswordStore>();
-    profile_store_->Init(&prefs_);
+    profile_store_->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
     account_store_ = base::MakeRefCounted<TestPasswordStore>();
-    account_store_->Init(&prefs_);
+    account_store_->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
     reuse_manager_.Init(&prefs(), profile_store(), account_store());
     RunUntilIdle();
   }

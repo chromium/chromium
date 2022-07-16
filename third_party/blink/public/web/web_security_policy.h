@@ -136,6 +136,12 @@ class WebSecurityPolicy {
   // Registers an URL scheme as trusted browser UI.
   BLINK_EXPORT static void RegisterURLSchemeAsWebUI(const WebString&);
 
+  // Registers an URL scheme which can use code caching but must check in the
+  // renderer whether the script content has changed rather than relying on a
+  // response time match from the network cache.
+  BLINK_EXPORT static void RegisterURLSchemeAsCodeCacheWithHashing(
+      const WebString&);
+
  private:
   WebSecurityPolicy() = delete;
 };

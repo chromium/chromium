@@ -569,9 +569,10 @@ bool GoogleUpdateSettings::ReenableAutoupdates() {
     // policy set). Simply return whether or not we think updates are enabled.
     return AreAutoupdatesEnabled();
   }
-#endif
+#else
   // Non Google Chrome isn't going to autoupdate.
   return true;
+#endif
 }
 
 // Reads and sanitizes the value of

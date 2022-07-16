@@ -84,7 +84,7 @@ class StateChangeTestEngine {
   static constexpr vec_size_t kDone = kNotStarted - 1;
 
   // Implementation of the callback created by Watch().
-  void GotState(UpdateService::UpdateState state);
+  void GotState(const UpdateService::UpdateState& state);
 
   // Push the next event (if any).
   void Next();
@@ -214,7 +214,7 @@ void StateChangeTestEngine::Finish() {
                                                    std::move(done_cb_));
 }
 
-void StateChangeTestEngine::GotState(UpdateService::UpdateState state) {
+void StateChangeTestEngine::GotState(const UpdateService::UpdateState& state) {
   if (next_observation_ == kDone) {
     ADD_FAILURE() << "StateChangeTestEngine received StateChangeCallback "
                      "event after it became done.";
@@ -444,8 +444,8 @@ StateChangeTestEngine::StatePair UpdatedStates(const std::string& app_id,
 }
 
 #pragma mark Test cases
-
-TEST_F(MacUpdateServiceProxyTest, NoProductsUpdateAll) {
+// TODO(crbug.com/1247504): Flaky on macOS 10.12.6.
+TEST_F(MacUpdateServiceProxyTest, DISABLED_NoProductsUpdateAll) {
   ScopedXPCServiceMock::ConnectionMockRecord* conn_rec =
       mock_driver_.PrepareNewMockConnection();
   ScopedXPCServiceMock::RemoteObjectMockRecord* mock_rec =
@@ -467,8 +467,9 @@ TEST_F(MacUpdateServiceProxyTest, NoProductsUpdateAll) {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this]() {
         service_->UpdateAll(
-            base::BindRepeating(&ExpectNoCalls<UpdateService::UpdateState>,
-                                "no state updates expected"),
+            base::BindRepeating(
+                &ExpectNoCalls<const UpdateService::UpdateState&>,
+                "no state updates expected"),
             base::BindLambdaForTesting(
                 [this](UpdateService::Result actual_result) {
                   EXPECT_EQ(UpdateService::Result::kAppNotFound, actual_result);

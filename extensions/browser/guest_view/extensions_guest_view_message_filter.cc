@@ -27,10 +27,9 @@
 #include "extensions/browser/guest_view/web_view/web_view_content_script_manager.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
-#include "extensions/common/guest_view/extensions_guest_view_messages.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
-#include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 #include "url/gurl.h"
 
 using content::BrowserContext;
@@ -44,7 +43,7 @@ using guest_view::GuestViewMessageFilter;
 namespace extensions {
 
 const uint32_t ExtensionsGuestViewMessageFilter::kFilteredMessageClasses[] = {
-    GuestViewMsgStart, ExtensionsGuestViewMsgStart};
+    GuestViewMsgStart};
 
 ExtensionsGuestViewMessageFilter::ExtensionsGuestViewMessageFilter(
     int render_process_id,
@@ -54,18 +53,6 @@ ExtensionsGuestViewMessageFilter::ExtensionsGuestViewMessageFilter(
                              render_process_id,
                              context),
       content::BrowserAssociatedInterface<mojom::GuestView>(this) {}
-
-bool ExtensionsGuestViewMessageFilter::OnMessageReceived(
-    const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(ExtensionsGuestViewMessageFilter, message)
-    IPC_MESSAGE_HANDLER(ExtensionsGuestViewHostMsg_CanExecuteContentScriptSync,
-                        OnCanExecuteContentScript)
-    IPC_MESSAGE_UNHANDLED(
-        handled = GuestViewMessageFilter::OnMessageReceived(message))
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
 
 GuestViewManager* ExtensionsGuestViewMessageFilter::
     GetOrCreateGuestViewManager() {
@@ -78,18 +65,6 @@ GuestViewManager* ExtensionsGuestViewMessageFilter::
             browser_context_));
   }
   return manager;
-}
-
-void ExtensionsGuestViewMessageFilter::OnCanExecuteContentScript(
-    int render_view_id,
-    const std::string& script_id,
-    bool* allowed) {
-  WebViewRendererState::WebViewInfo info;
-  WebViewRendererState::GetInstance()->GetInfo(render_process_id_,
-                                               render_view_id, &info);
-
-  *allowed =
-      info.content_script_ids.find(script_id) != info.content_script_ids.end();
 }
 
 void ExtensionsGuestViewMessageFilter::ReadyToCreateMimeHandlerView(
@@ -109,6 +84,23 @@ void ExtensionsGuestViewMessageFilter::ReadyToCreateMimeHandlerView(
     return;
   if (auto* mhve = MimeHandlerViewEmbedder::Get(rfh->GetFrameTreeNodeId()))
     mhve->ReadyToCreateMimeHandlerView(success);
+}
+
+void ExtensionsGuestViewMessageFilter::CanExecuteContentScript(
+    int routing_id,
+    const std::string& script_id,
+    CanExecuteContentScriptCallback callback) {
+  WebViewRendererState::WebViewInfo info;
+  bool success = WebViewRendererState::GetInstance()->GetInfo(
+      render_process_id_, routing_id, &info);
+  // GetInfo can fail if the process id does not correspond to a WebView. Those
+  // cases are just defaulted to false.
+  if (!success) {
+    std::move(callback).Run(false);
+    return;
+  }
+  bool can_execute = base::Contains(info.content_script_ids, script_id);
+  std::move(callback).Run(can_execute);
 }
 
 }  // namespace extensions

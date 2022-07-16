@@ -36,6 +36,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaBackendImpl
                    ObfuscatedFileUtil* obfuscated_file_util,
                    FileSystemUsageCache* file_system_usage_cache,
                    scoped_refptr<QuotaManagerProxy> quota_manager_proxy);
+
+  QuotaBackendImpl(const QuotaBackendImpl&) = delete;
+  QuotaBackendImpl& operator=(const QuotaBackendImpl&) = delete;
+
   ~QuotaBackendImpl() override;
 
   // QuotaReservationManager::QuotaBackend overrides.
@@ -88,8 +92,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaBackendImpl
   const scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
 
   base::WeakPtrFactory<QuotaBackendImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaBackendImpl);
 };
 
 }  // namespace storage

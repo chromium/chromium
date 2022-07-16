@@ -735,7 +735,7 @@ static void WriteSVGResourceReferencePrefix(
 void WriteResources(WTF::TextStream& ts,
                     const LayoutObject& object,
                     int indent) {
-  const FloatRect reference_box = object.ObjectBoundingBox();
+  const gfx::RectF reference_box = object.ObjectBoundingBox();
   const ComputedStyle& style = object.StyleRef();
   TreeScope& tree_scope = object.GetDocument();
   SVGResourceClient* client = SVGResources::GetClient(object);

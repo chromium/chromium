@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -24,6 +23,9 @@ class GeolocationHandlerTest : public testing::Test {
   GeolocationHandlerTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
+
+  GeolocationHandlerTest(const GeolocationHandlerTest&) = delete;
+  GeolocationHandlerTest& operator=(const GeolocationHandlerTest&) = delete;
 
   ~GeolocationHandlerTest() override = default;
 
@@ -94,9 +96,6 @@ class GeolocationHandlerTest : public testing::Test {
   ShillManagerClient::TestInterface* manager_test_ = nullptr;
   WifiAccessPointVector wifi_access_points_;
   CellTowerVector cell_towers_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GeolocationHandlerTest);
 };
 
 TEST_F(GeolocationHandlerTest, NoAccessPoints) {

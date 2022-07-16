@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/file_system_provider/operations/operation.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/request_value.h"
@@ -36,6 +35,10 @@ class CreateDirectory : public Operation {
                   const base::FilePath& directory_path,
                   bool recursive,
                   storage::AsyncFileUtil::StatusCallback callback);
+
+  CreateDirectory(const CreateDirectory&) = delete;
+  CreateDirectory& operator=(const CreateDirectory&) = delete;
+
   ~CreateDirectory() override;
 
   // Operation overrides.
@@ -51,8 +54,6 @@ class CreateDirectory : public Operation {
   base::FilePath directory_path_;
   bool recursive_;
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CreateDirectory);
 };
 
 }  // namespace operations

@@ -10,8 +10,9 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view_observer.h"
-#include "chrome/browser/ui/views/page_info/permission_selector_row_observer.h"
+#include "chrome/browser/ui/views/page_info/permission_toggle_row_view_observer.h"
 #include "components/page_info/page_info_ui.h"
+#include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "ui/views/view.h"
 
@@ -32,11 +33,10 @@ class PageInfoBubbleViewTestApi;
 }  // namespace test
 
 // The main view of the page info, contains security information, permissions
-// and  site-related settings. This is used in the experimental
-// PageInfoNewBubbleView (under a flag PageInfoV2Desktop).
+// and  site-related settings.
 class PageInfoMainView : public views::View,
                          public PageInfoUI,
-                         public PermissionSelectorRowObserver,
+                         public PermissionToggleRowViewObserver,
                          public ChosenObjectViewObserver {
  public:
   // The width of the column size for permissions and chosen object icons.
@@ -44,10 +44,12 @@ class PageInfoMainView : public views::View,
 
   PageInfoMainView(PageInfo* presenter,
                    ChromePageInfoUiDelegate* ui_delegate,
-                   PageInfoNavigationHandler* navigation_handler);
+                   PageInfoNavigationHandler* navigation_handler,
+                   base::OnceClosure initialized_callback);
   ~PageInfoMainView() override;
 
   // PageInfoUI implementations.
+  void EnsureCookieInfo() override;
   void SetCookieInfo(const CookieInfoList& cookie_info_list) override;
   void SetPermissionInfo(const PermissionInfoList& permission_info_list,
                          ChosenObjectInfoList chosen_object_info_list) override;
@@ -56,7 +58,7 @@ class PageInfoMainView : public views::View,
 
   gfx::Size CalculatePreferredSize() const override;
 
-  // PermissionSelectorRowObserver:
+  // PermissionToggleRowViewObserver:
   void OnPermissionChanged(const PageInfo::PermissionInfo& permission) override;
 
   // ChosenObjectViewObserver:
@@ -92,6 +94,11 @@ class PageInfoMainView : public views::View,
   // the label depending on the number of visible permissions.
   void UpdateResetButton(const PermissionInfoList& permission_info_list);
 
+  // Creates 'About this site' section which contains a button that opens a
+  // subpage and two separators.
+  std::unique_ptr<views::View> CreateAboutThisSiteSection(
+      const page_info::proto::SiteInfo& info) WARN_UNUSED_RESULT;
+
   PageInfo* presenter_;
 
   ChromePageInfoUiDelegate* ui_delegate_;
@@ -117,6 +124,10 @@ class PageInfoMainView : public views::View,
   // button, surrounded by separators.
   views::View* permissions_view_ = nullptr;
 
+  // The section that contains "About this site" button that opens a
+  // subpage and two separators.
+  views::View* about_this_site_section_ = nullptr;
+
   // The view that contains `SecurityInformationView` and a certificate button.
   PageInfoSecurityContentView* security_content_view_ = nullptr;
 
@@ -129,7 +140,7 @@ class PageInfoMainView : public views::View,
   // These rows bundle together all the |View|s involved in a single row of the
   // permissions section, and keep those views updated when the underlying
   // |Permission| changes.
-  std::vector<PermissionToggleRowView*> selector_rows_;
+  std::vector<PermissionToggleRowView*> toggle_rows_;
 
   std::vector<ChosenObjectView*> chosen_object_rows_;
 

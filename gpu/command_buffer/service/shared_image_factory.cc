@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image_factory.h"
 
 #include <inttypes.h>
+#include <memory>
 
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
@@ -22,15 +23,17 @@
 #include "gpu/command_buffer/service/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_gl_image.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_gl_texture.h"
+#include "gpu/command_buffer/service/shared_image_backing_factory_raw_draw.h"
+#include "gpu/command_buffer/service/shared_image_backing_factory_shared_memory.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/wrapped_sk_image.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/trace_util.h"
 
 #if defined(OS_LINUX) && defined(USE_OZONE) && BUILDFLAG(ENABLE_VULKAN)
-#include "ui/base/ui_base_features.h"  // nogncheck
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -48,8 +51,10 @@
 #endif
 
 #if defined(OS_WIN)
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_d3d.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gl/gl_angle_util_win.h"
 #endif  // OS_WIN
 
 #if defined(OS_FUCHSIA)
@@ -76,16 +81,12 @@ namespace {
 
 bool ShouldUseExternalVulkanImageFactory() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    return ui::OzonePlatform::GetInstance()
-        ->GetPlatformProperties()
-        .uses_external_vulkan_image_factory;
-  }
-#endif
-#if defined(USE_X11)
-  return true;
-#endif
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .uses_external_vulkan_image_factory;
+#else
   return false;
+#endif
 }
 
 }  // namespace
@@ -134,10 +135,19 @@ SharedImageFactory::SharedImageFactory(
          gr_context_type_ == GrContextType::kMetal);
 #endif
 
+  auto shared_memory_backing_factory =
+      std::make_unique<SharedImageBackingFactorySharedMemory>();
+  factories_.push_back(std::move(shared_memory_backing_factory));
+
   if (enable_wrapped_sk_image && context_state) {
     auto wrapped_sk_image_factory =
         std::make_unique<raster::WrappedSkImageFactory>(context_state);
     factories_.push_back(std::move(wrapped_sk_image_factory));
+  }
+
+  if (features::IsUsingRawDraw() && context_state) {
+    auto factory = std::make_unique<raster::SharedImageBackingFactoryRawDraw>();
+    factories_.push_back(std::move(factory));
   }
 
   bool use_gl = gl::GetGLImplementation() != gl::kGLImplementationNone;
@@ -192,7 +202,7 @@ SharedImageFactory::SharedImageFactory(
         std::make_unique<ExternalVkImageFactory>(context_state);
     factories_.push_back(std::move(external_vk_image_factory));
 #endif  // defined(OS_ANDROID)
-#else  // BUILDFLAG(ENABLE_VULKAN)
+#else   // BUILDFLAG(ENABLE_VULKAN)
     // Others (ChromeOS is handled below for compat with WebGPU)
     LOG(ERROR) << "ERROR: gr_context_type_ is GrContextType::kVulkan and "
                   "interop_backing_factory_ is not set";
@@ -209,12 +219,17 @@ SharedImageFactory::SharedImageFactory(
   }
 
 #if defined(OS_WIN)
-  // For Windows
-  bool use_passthrough = gpu_preferences.use_passthrough_cmd_decoder &&
-                         gles2::PassthroughCommandDecoderSupported();
-  if (use_passthrough && gr_context_type_ == GrContextType::kGL) {
-    // Only supported for passthrough command decoder.
-    auto d3d_factory = std::make_unique<SharedImageBackingFactoryD3D>();
+  // Only supported for passthrough command decoder and Skia-GL.
+  const bool use_passthrough = gpu_preferences.use_passthrough_cmd_decoder &&
+                               gles2::PassthroughCommandDecoderSupported();
+  const bool is_skia_gl = gr_context_type_ == GrContextType::kGL;
+  // D3D11 device will be null if ANGLE is using the D3D9 backend.
+  // TODO(sunnyps): Should we get the device from SharedContextState instead?
+  auto d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
+  if (use_passthrough && is_skia_gl && d3d11_device) {
+    auto d3d_factory = std::make_unique<SharedImageBackingFactoryD3D>(
+        std::move(d3d11_device),
+        shared_image_manager_->dxgi_shared_handle_manager());
     d3d_backing_factory_ = d3d_factory.get();
     factories_.push_back(std::move(d3d_factory));
   }
@@ -477,6 +492,15 @@ bool SharedImageFactory::CreateSharedImageVideoPlanes(
   }
   return true;
 }
+
+bool SharedImageFactory::CopyToGpuMemoryBuffer(const Mailbox& mailbox) {
+  auto it = shared_images_.find(mailbox);
+  if (it == shared_images_.end()) {
+    DLOG(ERROR) << "UpdateSharedImage: Could not find shared image mailbox";
+    return false;
+  }
+  return (*it)->CopyToGpuMemoryBuffer();
+}
 #endif
 
 #if defined(OS_ANDROID)
@@ -629,6 +653,11 @@ SharedImageRepresentationFactory::ProduceOverlay(const gpu::Mailbox& mailbox) {
 std::unique_ptr<SharedImageRepresentationMemory>
 SharedImageRepresentationFactory::ProduceMemory(const gpu::Mailbox& mailbox) {
   return manager_->ProduceMemory(mailbox, tracker_.get());
+}
+
+std::unique_ptr<SharedImageRepresentationRaster>
+SharedImageRepresentationFactory::ProduceRaster(const Mailbox& mailbox) {
+  return manager_->ProduceRaster(mailbox, tracker_.get());
 }
 
 }  // namespace gpu

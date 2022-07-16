@@ -5,7 +5,7 @@
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UIApplicationShortcutWidget</key>
-	<string>${IOS_BUNDLE_ID_PREFIX}.${CONTENT_WIDGET_EXTENSION_BUNDLE_ID}</string>
+	<string>${CONTENT_WIDGET_EXTENSION_BUNDLE_ID}</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
@@ -46,7 +46,7 @@
 		</dict>
 	</dict>
 	<key>CFBundleIdentifier</key>
-	<string>${IOS_BUNDLE_ID_PREFIX}.${CHROMIUM_BUNDLE_ID:rfc1034identifier}</string>
+	<string>${BUNDLE_IDENTIFIER}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -68,7 +68,7 @@
 		</dict>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>${IOS_BUNDLE_ID_PREFIX}.${CHROMIUM_BUNDLE_ID:rfc1034identifier}</string>
+			<string>${BUNDLE_IDENTIFIER}</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>${CHROMIUM_URL_SCHEME_1}</string>
@@ -93,8 +93,8 @@
 		<string>${CHROMIUM_HANDOFF_ID}</string>
 		<string>${IOS_MOVE_TAB_ACTIVITY_TYPE}</string>
 		<string>NSUserActivityTypeBrowsingWeb</string>
-		<string>OpenInChromeIntent</string>
 		<string>OpenInChromeIncognitoIntent</string>
+		<string>OpenInChromeIntent</string>
 		<string>SearchInChromeIntent</string>
 	</array>
 	<key>UIBackgroundModes</key>

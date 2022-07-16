@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "content/browser/background_sync/background_sync_context_impl.h"

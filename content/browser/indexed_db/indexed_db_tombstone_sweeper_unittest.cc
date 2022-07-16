@@ -51,10 +51,8 @@ using Slice = ::leveldb::Slice;
 
 constexpr int kRoundIterations = 11;
 constexpr int kMaxIterations = 100;
-const base::TimeTicks kTaskStartTime =
-    base::TimeTicks() + base::TimeDelta::FromSeconds(1);
-const base::TimeTicks kTaskEndTime =
-    base::TimeTicks() + base::TimeDelta::FromSeconds(2);
+const base::TimeTicks kTaskStartTime = base::TimeTicks() + base::Seconds(1);
+const base::TimeTicks kTaskEndTime = base::TimeTicks() + base::Seconds(2);
 
 constexpr int64_t kDb1 = 1;
 constexpr int64_t kDb2 = 1;
@@ -184,7 +182,7 @@ class IndexedDBTombstoneSweeperTest : public testing::Test {
   void ExpectTaskTimeRecorded() {
     histogram_tester_.ExpectTimeBucketCount(
         "WebCore.IndexedDB.TombstoneSweeper.DeletionTotalTime.Complete",
-        base::TimeDelta::FromSeconds(1), 1);
+        base::Seconds(1), 1);
   }
 
   void ExpectIndexEntry(leveldb::MockIterator& iterator,

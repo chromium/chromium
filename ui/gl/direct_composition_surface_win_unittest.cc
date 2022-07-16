@@ -23,7 +23,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gdi_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gl/dc_renderer_layer_params.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/gl_angle_util_win.h"
@@ -394,8 +394,7 @@ TEST_F(DirectCompositionSurfaceTest, NoPresentTwice) {
 }
 
 // Ensure the swapchain size is set to the correct size if HW overlay scaling
-// is support - swapchain should be the minimum of the decoded
-// video buffer size and the onscreen video size
+// is support - swapchain should be set to the onscreen video size.
 TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
   if (!surface_)
     return;
@@ -411,10 +410,11 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
   image_dxgi->SetTexture(texture, 0);
   image_dxgi->SetColorSpace(gfx::ColorSpace::CreateREC709());
 
-  // HW supports scaled overlays
+  // HW supports scaled overlays.
   // The input texture size is maller than the window size.
   DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
 
+  // Onscreen quad.
   gfx::Rect quad_rect = gfx::Rect(100, 100);
 
   {
@@ -432,10 +432,11 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
       surface_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);
 
-  DXGI_SWAP_CHAIN_DESC Desc;
-  EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc(&Desc)));
-  EXPECT_EQ((int)Desc.BufferDesc.Width, texture_size.width());
-  EXPECT_EQ((int)Desc.BufferDesc.Height, texture_size.height());
+  DXGI_SWAP_CHAIN_DESC desc;
+  EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc(&desc)));
+  // Onscreen quad_rect.size is (100, 100).
+  EXPECT_EQ(100u, desc.BufferDesc.Width);
+  EXPECT_EQ(100u, desc.BufferDesc.Height);
 
   // Clear SwapChainPresenters
   // Must do Clear first because the swap chain won't resize immediately if
@@ -462,13 +463,14 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
       surface_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain2);
 
-  EXPECT_TRUE(SUCCEEDED(swap_chain2->GetDesc(&Desc)));
-  EXPECT_EQ((int)Desc.BufferDesc.Width, quad_rect.width());
-  EXPECT_EQ((int)Desc.BufferDesc.Height, quad_rect.height());
+  EXPECT_TRUE(SUCCEEDED(swap_chain2->GetDesc(&desc)));
+  // Onscreen quad_rect.size is (32, 48).
+  EXPECT_EQ(32u, desc.BufferDesc.Width);
+  EXPECT_EQ(48u, desc.BufferDesc.Height);
 }
 
 // Ensure the swapchain size is set to the correct size if HW overlay scaling
-// is not support - swapchain should be the onscreen video size
+// is not support - swapchain should be the onscreen video size.
 TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithoutScaledOverlays) {
   if (!surface_)
     return;
@@ -503,8 +505,9 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithoutScaledOverlays) {
 
   DXGI_SWAP_CHAIN_DESC desc;
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc(&desc)));
-  EXPECT_EQ((int)desc.BufferDesc.Width, quad_rect.width());
-  EXPECT_EQ((int)desc.BufferDesc.Height, quad_rect.height());
+  // Onscreen quad_rect.size is (42, 42).
+  EXPECT_EQ(42u, desc.BufferDesc.Width);
+  EXPECT_EQ(42u, desc.BufferDesc.Height);
 
   // The input texture size is smaller than the window size.
   quad_rect = gfx::Rect(124, 136);
@@ -526,8 +529,9 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithoutScaledOverlays) {
   ASSERT_TRUE(swap_chain2);
 
   EXPECT_TRUE(SUCCEEDED(swap_chain2->GetDesc(&desc)));
-  EXPECT_EQ((int)desc.BufferDesc.Width, quad_rect.width());
-  EXPECT_EQ((int)desc.BufferDesc.Height, quad_rect.height());
+  // Onscreen quad_rect.size is (124, 136).
+  EXPECT_EQ(124u, desc.BufferDesc.Width);
+  EXPECT_EQ(136u, desc.BufferDesc.Height);
 }
 
 // Test protected video flags
@@ -564,12 +568,12 @@ TEST_F(DirectCompositionSurfaceTest, ProtectedVideos) {
         surface_->GetLayerSwapChainForTesting(0);
     ASSERT_TRUE(swap_chain);
 
-    DXGI_SWAP_CHAIN_DESC Desc;
-    EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc(&Desc)));
-    unsigned display_only_flag = Desc.Flags & DXGI_SWAP_CHAIN_FLAG_DISPLAY_ONLY;
-    unsigned hw_protected_flag = Desc.Flags & DXGI_SWAP_CHAIN_FLAG_HW_PROTECTED;
-    EXPECT_EQ(display_only_flag, (unsigned)0);
-    EXPECT_EQ(hw_protected_flag, (unsigned)0);
+    DXGI_SWAP_CHAIN_DESC desc;
+    EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc(&desc)));
+    auto display_only_flag = desc.Flags & DXGI_SWAP_CHAIN_FLAG_DISPLAY_ONLY;
+    auto hw_protected_flag = desc.Flags & DXGI_SWAP_CHAIN_FLAG_HW_PROTECTED;
+    EXPECT_EQ(0u, display_only_flag);
+    EXPECT_EQ(0u, hw_protected_flag);
   }
 
   // Software protected video
@@ -591,10 +595,10 @@ TEST_F(DirectCompositionSurfaceTest, ProtectedVideos) {
 
     DXGI_SWAP_CHAIN_DESC Desc;
     EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc(&Desc)));
-    unsigned display_only_flag = Desc.Flags & DXGI_SWAP_CHAIN_FLAG_DISPLAY_ONLY;
-    unsigned hw_protected_flag = Desc.Flags & DXGI_SWAP_CHAIN_FLAG_HW_PROTECTED;
-    EXPECT_EQ(display_only_flag, (unsigned)DXGI_SWAP_CHAIN_FLAG_DISPLAY_ONLY);
-    EXPECT_EQ(hw_protected_flag, (unsigned)0);
+    auto display_only_flag = Desc.Flags & DXGI_SWAP_CHAIN_FLAG_DISPLAY_ONLY;
+    auto hw_protected_flag = Desc.Flags & DXGI_SWAP_CHAIN_FLAG_HW_PROTECTED;
+    EXPECT_EQ(DXGI_SWAP_CHAIN_FLAG_DISPLAY_ONLY, display_only_flag);
+    EXPECT_EQ(0u, hw_protected_flag);
   }
 
   // TODO(magchen): Add a hardware protected video test when hardware procted
@@ -924,7 +928,7 @@ TEST_F(DirectCompositionPixelTest, SkipVideoLayerEmptyBoundsRect) {
 TEST_F(DirectCompositionPixelTest, SkipVideoLayerEmptyContentsRect) {
   if (!surface_)
     return;
-  // Swap chain size is overridden to content rect size only if scaled overlays
+  // Swap chain size is overridden to onscreen size only if scaled overlays
   // are supported.
   DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
 
@@ -976,7 +980,7 @@ TEST_F(DirectCompositionPixelTest, SkipVideoLayerEmptyContentsRect) {
 TEST_F(DirectCompositionPixelTest, NV12SwapChain) {
   if (!surface_)
     return;
-  // Swap chain size is overridden to content rect size only if scaled overlays
+  // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
 
@@ -994,9 +998,10 @@ TEST_F(DirectCompositionPixelTest, NV12SwapChain) {
 
   DXGI_SWAP_CHAIN_DESC1 desc;
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
-  EXPECT_EQ(desc.Format, DXGI_FORMAT_NV12);
-  EXPECT_EQ(desc.Width, 50u);
-  EXPECT_EQ(desc.Height, 50u);
+  // Onscreen window_size is (100, 100).
+  EXPECT_EQ(DXGI_FORMAT_NV12, desc.Format);
+  EXPECT_EQ(100u, desc.Width);
+  EXPECT_EQ(100u, desc.Height);
 
   SkColor expected_color = SkColorSetRGB(0xe1, 0x90, 0xeb);
   SkColor actual_color =
@@ -1016,7 +1021,7 @@ TEST_F(DirectCompositionPixelTest, YUY2SwapChain) {
           std::string::npos)
     return;
 
-  // Swap chain size is overridden to content rect size only if scaled overlays
+  // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
   // By default NV12 is used, so set it to YUY2 explicitly.
@@ -1036,9 +1041,10 @@ TEST_F(DirectCompositionPixelTest, YUY2SwapChain) {
 
   DXGI_SWAP_CHAIN_DESC1 desc;
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
-  EXPECT_EQ(desc.Format, DXGI_FORMAT_YUY2);
-  EXPECT_EQ(desc.Width, 50u);
-  EXPECT_EQ(desc.Height, 50u);
+  // Onscreen window_size is (100, 100).
+  EXPECT_EQ(DXGI_FORMAT_YUY2, desc.Format);
+  EXPECT_EQ(100u, desc.Width);
+  EXPECT_EQ(100u, desc.Height);
 
   SkColor expected_color = SkColorSetRGB(0xe1, 0x90, 0xeb);
   SkColor actual_color =
@@ -1051,7 +1057,7 @@ TEST_F(DirectCompositionPixelTest, YUY2SwapChain) {
 TEST_F(DirectCompositionPixelTest, NonZeroBoundsOffset) {
   if (!surface_)
     return;
-  // Swap chain size is overridden to content rect size only if scaled overlays
+  // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
 
@@ -1089,7 +1095,7 @@ TEST_F(DirectCompositionPixelTest, NonZeroBoundsOffset) {
 TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
   if (!surface_)
     return;
-  // Swap chain size is overridden to content rect size only if scaled overlays
+  // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
 
@@ -1116,7 +1122,7 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
   ASSERT_TRUE(image_dxgi->InitializeHandle(base::win::ScopedHandle(handle), 0,
                                            gfx::BufferFormat::RGBA_8888));
 
-  // (1) Test if swap chain is overridden to content rect size (50, 50).
+  // (1) Test if swap chain is overridden to window size (100, 100).
   {
     std::unique_ptr<ui::DCRendererLayerParams> params =
         std::make_unique<ui::DCRendererLayerParams>();
@@ -1136,10 +1142,11 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
 
   DXGI_SWAP_CHAIN_DESC1 desc;
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
-  EXPECT_EQ(desc.Width, 50u);
-  EXPECT_EQ(desc.Height, 50u);
+  // Onscreen window_size is (100, 100).
+  EXPECT_EQ(100u, desc.Width);
+  EXPECT_EQ(100u, desc.Height);
 
-  // (2) Test if swap chain is overridden to content rect size (30, 30).
+  // (2) Test if swap chain is overridden to window size (100, 100).
   {
     std::unique_ptr<ui::DCRendererLayerParams> params =
         std::make_unique<ui::DCRendererLayerParams>();
@@ -1154,8 +1161,9 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
   }
   swap_chain = surface_->GetLayerSwapChainForTesting(0);
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
-  EXPECT_EQ(desc.Width, 30u);
-  EXPECT_EQ(desc.Height, 30u);
+  // Onscreen window_size is (100, 100).
+  EXPECT_EQ(100u, desc.Width);
+  EXPECT_EQ(100u, desc.Height);
 
   // (3) Test if swap chain is adjusted to fit the monitor when overlay scaling
   // is not supported and video on-screen size is slightly smaller than the
@@ -1179,11 +1187,11 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
               surface_->SwapBuffers(base::DoNothing()));
   }
 
-  // Swap chain is set to monitor size.
+  // Swap chain is set to monitor/onscreen size.
   swap_chain = surface_->GetLayerSwapChainForTesting(0);
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
-  EXPECT_EQ(static_cast<unsigned int>(monitor_size.width()), desc.Width);
-  EXPECT_EQ(static_cast<unsigned int>(monitor_size.height()), desc.Height);
+  EXPECT_EQ(static_cast<UINT>(monitor_size.width()), desc.Width);
+  EXPECT_EQ(static_cast<UINT>(monitor_size.height()), desc.Height);
 
   gfx::Transform transform;
   gfx::Point offset;
@@ -1212,17 +1220,17 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
               surface_->SwapBuffers(base::DoNothing()));
   }
 
-  // Swap chain is set to content rect size.
+  // Swap chain is set to monitor size (100, 100).
   swap_chain = surface_->GetLayerSwapChainForTesting(0);
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
-  EXPECT_EQ(50u, desc.Width);
-  EXPECT_EQ(50u, desc.Height);
+  EXPECT_EQ(100u, desc.Width);
+  EXPECT_EQ(100u, desc.Height);
 
   // Make sure the new transform matrix is adjusted, so it transforms the swap
   // chain to |new_on_screen_rect| which fits the monitor.
   surface_->GetSwapChainVisualInfoForTesting(0, &transform, &offset,
                                              &clip_rect);
-  gfx::RectF new_on_screen_rect = gfx::RectF(50, 50);
+  gfx::RectF new_on_screen_rect = gfx::RectF(100, 100);
   transform.TransformRect(&new_on_screen_rect);
   EXPECT_EQ(gfx::Rect(monitor_size), gfx::ToEnclosingRect(new_on_screen_rect));
 }
@@ -1537,16 +1545,16 @@ void RunBufferCountTest(scoped_refptr<DirectCompositionSurfaceWin> surface,
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, surface->SwapBuffers(base::DoNothing()));
 
-  const gfx::Size expected_size = for_video ? texture_size : window_size;
   auto swap_chain = for_video ? surface->GetLayerSwapChainForTesting(0)
                               : surface->GetBackbufferSwapChainForTesting();
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC1 desc;
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
-  EXPECT_EQ(desc.Width, static_cast<UINT>(expected_size.width()));
-  EXPECT_EQ(desc.Height, static_cast<UINT>(expected_size.height()));
-  EXPECT_EQ(desc.BufferCount, buffer_count);
+  // The expected size is window_size(100, 100).
+  EXPECT_EQ(100u, desc.Width);
+  EXPECT_EQ(100u, desc.Height);
+  EXPECT_EQ(buffer_count, desc.BufferCount);
 }
 
 TEST_F(DirectCompositionSurfaceTest, RootSwapChainBufferCount) {

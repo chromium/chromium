@@ -137,6 +137,10 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
 
   WebCodecsDecoderSelectorTest() { CreateDecoderSelector(); }
 
+  WebCodecsDecoderSelectorTest(const WebCodecsDecoderSelectorTest&) = delete;
+  WebCodecsDecoderSelectorTest& operator=(const WebCodecsDecoderSelectorTest&) =
+      delete;
+
   void OnOutput(scoped_refptr<Output> output) { NOTREACHED(); }
 
   MOCK_METHOD1_T(OnDecoderSelected, void(int));
@@ -199,9 +203,6 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
   std::vector<std::pair<int, DecoderCapability>> mock_decoders_to_create_;
 
   bool low_delay_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebCodecsDecoderSelectorTest);
 };
 
 using WebCodecsDecoderSelectorTestParams =

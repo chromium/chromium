@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feedback.ScreenshotMode;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -133,11 +135,11 @@ public class AutofillAssistantUiController {
             long nativeUiController, @Nullable AssistantOverlayCoordinator overlayCoordinator) {
         mNativeUiController = nativeUiController;
         mActivity = activity;
+        Supplier<CompositorViewHolder> cvh = activity.getCompositorViewHolderSupplier();
         mCoordinator = new AssistantCoordinator(activity, controller, tabObscuringHandler,
                 overlayCoordinator, this::safeNativeOnKeyboardVisibilityChanged,
-                activity.getWindowAndroid().getKeyboardDelegate(),
-                activity.getCompositorViewHolder(), activity.getActivityTabProvider(),
-                activity.getBrowserControlsManager(),
+                activity.getWindowAndroid().getKeyboardDelegate(), cvh.get(),
+                activity.getActivityTabProvider(), activity.getBrowserControlsManager(),
                 activity.getWindowAndroid().getApplicationBottomInsetProvider());
         mActivityTabObserver =
                 new ActivityTabProvider.ActivityTabTabObserver(
@@ -322,9 +324,9 @@ public class AutofillAssistantUiController {
     }
 
     @CalledByNative
-    private void showSnackbar(int delayMs, String message) {
+    private void showSnackbar(int delayMs, String message, String undoString) {
         mSnackbarController = AssistantSnackbar.show(mActivity, mActivity.getSnackbarManager(),
-                delayMs, message, this::safeSnackbarResult);
+                delayMs, message, undoString, this::safeSnackbarResult);
     }
 
     private void dismissSnackbar() {

@@ -6,6 +6,7 @@
 
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "net/http/http_request_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,8 +17,6 @@ namespace cors {
 namespace {
 
 using PreflightResultTest = ::testing::Test;
-using WithNonWildcardRequestHeadersSupport =
-    PreflightResult::WithNonWildcardRequestHeadersSupport;
 
 constexpr absl::optional<mojom::CorsError> kNoError;
 
@@ -176,7 +175,7 @@ TEST_F(PreflightResultTest, MaxAge) {
   std::unique_ptr<PreflightResult> result1 =
       PreflightResult::Create(mojom::CredentialsMode::kOmit, absl::nullopt,
                               absl::nullopt, std::string("573"), nullptr);
-  EXPECT_EQ(base::TimeTicks() + base::TimeDelta::FromSeconds(573),
+  EXPECT_EQ(base::TimeTicks() + base::Seconds(573),
             result1->absolute_expiry_time());
 
   std::unique_ptr<PreflightResult> result2 =
@@ -208,7 +207,7 @@ TEST_F(PreflightResultTest, EnsureHeaders) {
     headers.AddHeadersFromString(test.request_headers);
     EXPECT_EQ(test.expected_result,
               result->EnsureAllowedCrossOriginHeaders(
-                  headers, false, WithNonWildcardRequestHeadersSupport(false)));
+                  headers, false, NonWildcardRequestHeadersSupport(false)));
   }
 }
 
@@ -224,7 +223,7 @@ TEST_F(PreflightResultTest, EnsureRequest) {
     EXPECT_EQ(test.expected_result == absl::nullopt,
               result->EnsureAllowedRequest(
                   test.request_credentials_mode, test.request_method, headers,
-                  false, WithNonWildcardRequestHeadersSupport(false)));
+                  false, NonWildcardRequestHeadersSupport(false)));
   }
 
   for (const auto& test : kHeaderCases) {
@@ -238,7 +237,7 @@ TEST_F(PreflightResultTest, EnsureRequest) {
     EXPECT_EQ(test.expected_result == absl::nullopt,
               result->EnsureAllowedRequest(
                   test.request_credentials_mode, test.request_method, headers,
-                  false, WithNonWildcardRequestHeadersSupport(false)));
+                  false, NonWildcardRequestHeadersSupport(false)));
   }
 
   struct {
@@ -265,7 +264,7 @@ TEST_F(PreflightResultTest, EnsureRequest) {
     EXPECT_EQ(test.expected_result,
               result->EnsureAllowedRequest(
                   test.request_credentials_mode, "GET", headers, false,
-                  WithNonWildcardRequestHeadersSupport(false)));
+                  NonWildcardRequestHeadersSupport(false)));
   }
 }
 
@@ -301,10 +300,9 @@ TEST_F(PreflightResultTest, ParseAllowControlAllowHeaders) {
       for (const auto& request_header : test.values_to_be_accepted) {
         net::HttpRequestHeaders headers;
         headers.AddHeadersFromString(request_header);
-        EXPECT_EQ(
-            absl::nullopt,
-            result->EnsureAllowedCrossOriginHeaders(
-                headers, false, WithNonWildcardRequestHeadersSupport(false)));
+        EXPECT_EQ(absl::nullopt,
+                  result->EnsureAllowedCrossOriginHeaders(
+                      headers, false, NonWildcardRequestHeadersSupport(false)));
       }
     }
   }
@@ -348,7 +346,7 @@ TEST_F(PreflightResultTest,
   ASSERT_EQ(error, absl::nullopt);
   net::HttpRequestHeaders headers = CreateHeaders({{"auThorization", "x"}});
   const auto status = result->EnsureAllowedCrossOriginHeaders(
-      headers, false, WithNonWildcardRequestHeadersSupport(false));
+      headers, false, NonWildcardRequestHeadersSupport(false));
   EXPECT_EQ(status, absl::nullopt);
 }
 
@@ -363,7 +361,7 @@ TEST_F(PreflightResultTest,
   ASSERT_EQ(error, absl::nullopt);
   net::HttpRequestHeaders headers = CreateHeaders({{"auThorization", "x"}});
   const auto status = result->EnsureAllowedCrossOriginHeaders(
-      headers, false, WithNonWildcardRequestHeadersSupport(true));
+      headers, false, NonWildcardRequestHeadersSupport(true));
   ASSERT_NE(status, absl::nullopt);
   EXPECT_EQ(status->cors_error,
             mojom::CorsError::kHeaderDisallowedByPreflightResponse);
@@ -383,7 +381,7 @@ TEST_F(
   ASSERT_EQ(error, absl::nullopt);
   net::HttpRequestHeaders headers = CreateHeaders({{"auThorization", "x"}});
   const auto status = result->EnsureAllowedCrossOriginHeaders(
-      headers, false, WithNonWildcardRequestHeadersSupport(true));
+      headers, false, NonWildcardRequestHeadersSupport(true));
   EXPECT_EQ(status, absl::nullopt);
 }
 
@@ -423,6 +421,42 @@ TEST_F(PreflightResultTest, NoAuthorization) {
   ASSERT_EQ(error, absl::nullopt);
   EXPECT_FALSE(result->HasAuthorizationCoveredByWildcard(
       CreateHeaders({{"foo", "bar"}})));
+}
+
+struct TestCaseForNetLogParams {
+  const std::string allow_methods;
+  const std::string allow_headers;
+
+  const std::string expected_methods;
+  const std::string expected_headers;
+};
+
+TEST_F(PreflightResultTest, NetLogParams) {
+  const struct {
+    const char* allow_methods;
+    const char* allow_headers;
+
+    const char* expected_methods;
+    const char* expected_headers;
+  } kNetLogParamsCases[] = {
+      {"", "X-MY-HEADER", "", "x-my-header"},
+      {"GET", "X-MY-HEADER", "GET", "x-my-header"},
+      {"GET, POST", "X-MY-HEADER", "GET,POST", "x-my-header"},
+      {"GET", "", "GET", ""},
+      {"GET", "X-MY-HEADER", "GET", "x-my-header"},
+      {"GET", "X-MY-HEADER, Y-MY-HEADER", "GET", "x-my-header,y-my-header"}};
+
+  for (const auto& test : kNetLogParamsCases) {
+    std::unique_ptr<PreflightResult> result = PreflightResult::Create(
+        mojom::CredentialsMode::kOmit, test.allow_methods, test.allow_headers,
+        absl::nullopt, nullptr);
+    ASSERT_TRUE(result);
+    base::Value dict = result->NetLogParams();
+    EXPECT_EQ(dict.FindKey("access-control-allow-methods")->GetString(),
+              test.expected_methods);
+    EXPECT_EQ(dict.FindKey("access-control-allow-headers")->GetString(),
+              test.expected_headers);
+  }
 }
 
 }  // namespace

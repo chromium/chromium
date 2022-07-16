@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
@@ -29,6 +28,11 @@ class LocalPrinterHandlerDefault : public PrinterHandler {
  public:
   explicit LocalPrinterHandlerDefault(
       content::WebContents* preview_web_contents);
+
+  LocalPrinterHandlerDefault(const LocalPrinterHandlerDefault&) = delete;
+  LocalPrinterHandlerDefault& operator=(const LocalPrinterHandlerDefault&) =
+      delete;
+
   ~LocalPrinterHandlerDefault() override;
 
   // PrinterHandler implementation.
@@ -53,8 +57,6 @@ class LocalPrinterHandlerDefault : public PrinterHandler {
 
   // TaskRunner for blocking tasks. Threading behavior is platform-specific.
   scoped_refptr<base::TaskRunner> const task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalPrinterHandlerDefault);
 };
 
 }  // namespace printing

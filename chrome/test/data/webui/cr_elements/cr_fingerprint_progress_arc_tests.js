@@ -9,7 +9,7 @@ import {FINGEPRINT_TICK_DARK_URL, FINGEPRINT_TICK_LIGHT_URL} from 'chrome://reso
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals} from '../chai_assert.js';
-import {MockController, MockMethod} from '../mock_controller.m.js';
+import {MockController, MockMethod} from '../mock_controller.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr-fingerprint-progress-arc. */

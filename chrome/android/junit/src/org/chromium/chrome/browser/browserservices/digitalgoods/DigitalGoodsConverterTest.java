@@ -30,9 +30,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.payments.mojom.BillingResponseCode;
-import org.chromium.payments.mojom.DigitalGoods.AcknowledgeResponse;
-import org.chromium.payments.mojom.DigitalGoods.GetDetailsResponse;
-import org.chromium.payments.mojom.DigitalGoods.ListPurchasesResponse;
+import org.chromium.payments.mojom.DigitalGoods.Acknowledge_Response;
+import org.chromium.payments.mojom.DigitalGoods.GetDetails_Response;
+import org.chromium.payments.mojom.DigitalGoods.ListPurchases_Response;
 import org.chromium.payments.mojom.ItemDetails;
 import org.chromium.payments.mojom.PurchaseDetails;
 
@@ -100,7 +100,7 @@ public class DigitalGoodsConverterTest {
     @Test
     public void convertGetDetailsCallback() {
         TestState<ItemDetails> state = new TestState<>();
-        GetDetailsResponse callback = (responseCode, itemDetails) -> {
+        GetDetails_Response callback = (responseCode, itemDetails) -> {
             state.responseCode = responseCode;
             state.results = itemDetails;
         };
@@ -167,7 +167,7 @@ public class DigitalGoodsConverterTest {
         // instead of creating a new class.
         AtomicInteger state = new AtomicInteger();
 
-        AcknowledgeResponse callback = (responseCode) -> state.set(responseCode);
+        Acknowledge_Response callback = (responseCode) -> state.set(responseCode);
 
         TrustedWebActivityCallback convertedCallback =
                 AcknowledgeConverter.convertCallback(callback);
@@ -255,7 +255,7 @@ public class DigitalGoodsConverterTest {
     @Test
     public void convertListPurchasesCallback() {
         TestState<PurchaseDetails> state = new TestState<>();
-        ListPurchasesResponse callback = (responseCode, purchaseDetails) -> {
+        ListPurchases_Response callback = (responseCode, purchaseDetails) -> {
             state.responseCode = responseCode;
             state.results = purchaseDetails;
         };

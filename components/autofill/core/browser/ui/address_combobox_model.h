@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/base/models/combobox_model.h"
 
@@ -30,6 +29,10 @@ class AddressComboboxModel : public ui::ComboboxModel {
   AddressComboboxModel(const PersonalDataManager& personal_data_manager,
                        const std::string& app_locale,
                        const std::string& default_selected_guid);
+
+  AddressComboboxModel(const AddressComboboxModel&) = delete;
+  AddressComboboxModel& operator=(const AddressComboboxModel&) = delete;
+
   ~AddressComboboxModel() override;
 
   // ui::ComboboxModel implementation:
@@ -72,8 +75,6 @@ class AddressComboboxModel : public ui::ComboboxModel {
 
   // To be called when the data for the given country code was loaded.
   base::ObserverList<ui::ComboboxModelObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddressComboboxModel);
 };
 
 }  // namespace autofill

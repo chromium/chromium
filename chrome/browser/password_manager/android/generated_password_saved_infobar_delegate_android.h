@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "ui/gfx/range/range.h"
 
@@ -22,6 +21,11 @@ class GeneratedPasswordSavedInfoBarDelegateAndroid
   // Creates and shows the infobar. Implemented with
   // GeneratedPasswordSavedInfoBar.
   static void Create(content::WebContents* web_contents);
+
+  GeneratedPasswordSavedInfoBarDelegateAndroid(
+      const GeneratedPasswordSavedInfoBarDelegateAndroid&) = delete;
+  GeneratedPasswordSavedInfoBarDelegateAndroid& operator=(
+      const GeneratedPasswordSavedInfoBarDelegateAndroid&) = delete;
 
   ~GeneratedPasswordSavedInfoBarDelegateAndroid() override;
 
@@ -61,8 +65,6 @@ class GeneratedPasswordSavedInfoBarDelegateAndroid
 
   // The translated label of the button.
   std::u16string button_label_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeneratedPasswordSavedInfoBarDelegateAndroid);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_GENERATED_PASSWORD_SAVED_INFOBAR_DELEGATE_ANDROID_H_

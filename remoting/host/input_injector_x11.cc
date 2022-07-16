@@ -14,8 +14,8 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversion_utils.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -79,14 +79,17 @@ bool IsDomModifierKey(ui::DomCode dom_code) {
 const float kWheelTicksPerPixel = 3.0f / 160.0f;
 
 // When the user is scrolling, generate at least one tick per time period.
-const base::TimeDelta kContinuousScrollTimeout =
-    base::TimeDelta::FromMilliseconds(500);
+const base::TimeDelta kContinuousScrollTimeout = base::Milliseconds(500);
 
 // A class to generate events on X11.
 class InputInjectorX11 : public InputInjector {
  public:
   explicit InputInjectorX11(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  InputInjectorX11(const InputInjectorX11&) = delete;
+  InputInjectorX11& operator=(const InputInjectorX11&) = delete;
+
   ~InputInjectorX11() override;
 
   void Init();
@@ -109,6 +112,9 @@ class InputInjectorX11 : public InputInjector {
   class Core : public base::RefCountedThreadSafe<Core> {
    public:
     explicit Core(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
 
     void Init();
 
@@ -185,13 +191,9 @@ class InputInjectorX11 : public InputInjector {
     std::unique_ptr<X11CharacterInjector> character_injector_;
 
     bool saved_auto_repeat_enabled_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputInjectorX11);
 };
 
 InputInjectorX11::InputInjectorX11(

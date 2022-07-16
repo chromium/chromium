@@ -40,7 +40,7 @@ const uint32_t kMatchOriginalProfile = 1 << 0;
 const uint32_t kMatchCanSupportWindowFeature = 1 << 1;
 const uint32_t kMatchNormal = 1 << 2;
 const uint32_t kMatchDisplayId = 1 << 3;
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
 const uint32_t kMatchCurrentWorkspace = 1 << 4;
 #endif
 
@@ -101,7 +101,7 @@ bool BrowserMatches(Browser* browser,
   if ((match_types & kMatchNormal) && !browser->is_type_normal())
     return false;
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
   // Note that |browser->window()| might be nullptr in tests.
   if ((match_types & kMatchCurrentWorkspace) &&
       (!browser->window() || !browser->window()->IsOnCurrentWorkspace())) {
@@ -151,7 +151,7 @@ Browser* FindBrowserWithTabbedOrAnyType(
     match_types |= kMatchOriginalProfile;
   if (display_id != display::kInvalidDisplayId)
     match_types |= kMatchDisplayId;
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
   if (match_current_workspace)
     match_types |= kMatchCurrentWorkspace;
 #endif

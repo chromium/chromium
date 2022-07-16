@@ -25,6 +25,9 @@ class PaddedImageSource : public CanvasImageSource {
         image_(image),
         insets_(insets) {}
 
+  PaddedImageSource(const PaddedImageSource&) = delete;
+  PaddedImageSource& operator=(const PaddedImageSource&) = delete;
+
   // CanvasImageSource:
   void Draw(Canvas* canvas) override {
     canvas->DrawImageInt(image_, insets_.left(), insets_.top());
@@ -33,8 +36,6 @@ class PaddedImageSource : public CanvasImageSource {
  private:
   const ImageSkia image_;
   const Insets insets_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaddedImageSource);
 };
 
 }  // namespace

@@ -36,17 +36,22 @@ namespace {
 constexpr int32_t kDefaultFps = 30;
 constexpr char kVirtualPrefix[] = "VIRTUAL_";
 
-constexpr base::TimeDelta kEventWaitTimeoutSecs =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kEventWaitTimeoutSecs = base::Seconds(1);
 
 class LocalCameraClientObserver : public CameraClientObserver {
  public:
+  LocalCameraClientObserver() = delete;
+
   explicit LocalCameraClientObserver(
       scoped_refptr<CameraHalDelegate> camera_hal_delegate,
       cros::mojom::CameraClientType type,
       base::UnguessableToken auth_token)
       : CameraClientObserver(type, std::move(auth_token)),
         camera_hal_delegate_(std::move(camera_hal_delegate)) {}
+
+  LocalCameraClientObserver(const LocalCameraClientObserver&) = delete;
+  LocalCameraClientObserver& operator=(const LocalCameraClientObserver&) =
+      delete;
 
   void OnChannelCreated(
       mojo::PendingRemote<cros::mojom::CameraModule> camera_module) override {
@@ -55,7 +60,6 @@ class LocalCameraClientObserver : public CameraClientObserver {
 
  private:
   scoped_refptr<CameraHalDelegate> camera_hal_delegate_;
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LocalCameraClientObserver);
 };
 
 // chromeos::system::StatisticsProvider::IsRunningOnVM() is not available in
@@ -646,6 +650,7 @@ void CameraHalDelegate::OnGotCameraInfoOnIpcThread(
   DVLOG(1) << "Got camera info of camera " << camera_id;
   if (result) {
     LOG(ERROR) << "Failed to get camera info. Camera id: " << camera_id;
+    return;
   }
   SortCameraMetadata(&camera_info->static_camera_characteristics);
 

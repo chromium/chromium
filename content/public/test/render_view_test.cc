@@ -11,8 +11,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "content/app/mojo/mojo_init.h"
@@ -40,6 +41,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/escape.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -52,7 +54,7 @@
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
-#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
@@ -101,6 +103,12 @@ namespace {
 class CloseMessageSendingRenderViewVisitor : public RenderViewVisitor {
  public:
   CloseMessageSendingRenderViewVisitor() = default;
+
+  CloseMessageSendingRenderViewVisitor(
+      const CloseMessageSendingRenderViewVisitor&) = delete;
+  CloseMessageSendingRenderViewVisitor& operator=(
+      const CloseMessageSendingRenderViewVisitor&) = delete;
+
   ~CloseMessageSendingRenderViewVisitor() override = default;
 
   void CloseRenderViews() {
@@ -118,7 +126,6 @@ class CloseMessageSendingRenderViewVisitor : public RenderViewVisitor {
 
  private:
   std::vector<RenderView*> live_render_views;
-  DISALLOW_COPY_AND_ASSIGN(CloseMessageSendingRenderViewVisitor);
 };
 
 class FakeWebURLLoader : public blink::WebURLLoader {
@@ -467,7 +474,7 @@ void RenderViewTest::SetUp() {
 #endif
   command_line_ =
       std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
-  params_ = std::make_unique<MainFunctionParams>(*command_line_);
+  params_ = std::make_unique<MainFunctionParams>(command_line_.get());
   platform_ = std::make_unique<RendererMainPlatformDelegate>(*params_);
   platform_->PlatformInitialize();
 
@@ -496,7 +503,7 @@ void RenderViewTest::SetUp() {
 
   mojom::CreateViewParamsPtr view_params = mojom::CreateViewParams::New();
   view_params->opener_frame_token = absl::nullopt;
-  view_params->window_was_created_with_opener = false;
+  view_params->window_was_opened_by_another_window = false;
   view_params->renderer_preferences = blink::RendererPreferences();
   view_params->web_preferences = blink::web_pref::WebPreferences();
   view_params->view_id = render_thread_->GetNextRoutingID();
@@ -679,7 +686,6 @@ gfx::Rect RenderViewTest::GetElementBounds(const std::string& element_id) {
   std::vector<int> coords;
   for (int i = 0; i < 4; ++i) {
     v8::Local<v8::Number> index = v8::Number::New(isolate, i);
-    v8::Local<v8::Value> value;
     if (!array->Get(isolate->GetCurrentContext(), index).ToLocal(&value) ||
         !value->IsInt32()) {
       return gfx::Rect();
@@ -764,14 +770,15 @@ void RenderViewTest::Reload(const GURL& url) {
   auto common_params = blink::mojom::CommonNavigationParams::New(
       url, absl::nullopt, blink::mojom::Referrer::New(),
       ui::PAGE_TRANSITION_LINK, blink::mojom::NavigationType::RELOAD,
-      blink::NavigationDownloadPolicy(), false, GURL(), GURL(),
+      blink::NavigationDownloadPolicy(), false, GURL(),
       blink::PreviewsTypes::PREVIEWS_UNSPECIFIED, base::TimeTicks::Now(), "GET",
       nullptr, network::mojom::SourceLocation::New(),
       false /* started_from_context_menu */, false /* has_user_gesture */,
       false /* has_text_fragment_token */,
       network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
       false /* is_history_navigation_in_new_child_frame */,
-      base::TimeTicks() /* input_start */);
+      base::TimeTicks() /* input_start */,
+      network::mojom::RequestDestination::kDocument);
   auto commit_params = blink::CreateCommitNavigationParams();
   commit_params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   TestRenderFrame* frame = static_cast<TestRenderFrame*>(GetMainRenderFrame());
@@ -846,12 +853,12 @@ void RenderViewTest::SimulateUserInputChangeForElement(
 void RenderViewTest::OnSameDocumentNavigation(blink::WebLocalFrame* frame,
                                               bool is_new_navigation) {
   static_cast<RenderFrameImpl*>(GetMainRenderFrame())
-      ->DidFinishSameDocumentNavigation(is_new_navigation
-                                            ? blink::kWebStandardCommit
-                                            : blink::kWebHistoryInertCommit,
-                                        false /* is_synchronously_committed */,
-                                        false /* is_history_api_navigation */,
-                                        false /* is_client_redirect */);
+      ->DidFinishSameDocumentNavigation(
+          is_new_navigation ? blink::kWebStandardCommit
+                            : blink::kWebHistoryInertCommit,
+          false /* is_synchronously_committed */,
+          blink::mojom::SameDocumentNavigationType::kFragment,
+          false /* is_client_redirect */);
 }
 
 void RenderViewTest::SetUseZoomForDSFEnabled(bool enabled) {
@@ -900,14 +907,15 @@ void RenderViewTest::GoToOffset(int offset,
       url, absl::nullopt, blink::mojom::Referrer::New(),
       ui::PAGE_TRANSITION_FORWARD_BACK,
       blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT,
-      blink::NavigationDownloadPolicy(), false, GURL(), GURL(),
+      blink::NavigationDownloadPolicy(), false, GURL(),
       blink::PreviewsTypes::PREVIEWS_UNSPECIFIED, base::TimeTicks::Now(), "GET",
       nullptr, network::mojom::SourceLocation::New(),
       false /* started_from_context_menu */, false /* has_user_gesture */,
       false /* has_text_fragment_token */,
       network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
       false /* is_history_navigation_in_new_child_frame */,
-      base::TimeTicks() /* input_start */);
+      base::TimeTicks() /* input_start */,
+      network::mojom::RequestDestination::kDocument);
   auto commit_params = blink::CreateCommitNavigationParams();
   commit_params->page_state = state.ToEncodedData();
   commit_params->nav_entry_id = pending_offset + 1;

@@ -27,6 +27,10 @@ class ActionMessageHandler : public protocol::NamedMessagePipeHandler {
       const std::vector<protocol::ActionRequest::Action>& actions,
       std::unique_ptr<protocol::MessagePipe> pipe,
       std::unique_ptr<ActionExecutor> action_executor);
+
+  ActionMessageHandler(const ActionMessageHandler&) = delete;
+  ActionMessageHandler& operator=(const ActionMessageHandler&) = delete;
+
   ~ActionMessageHandler() override;
 
   // protocol::NamedMessagePipeHandler implementation.
@@ -37,8 +41,6 @@ class ActionMessageHandler : public protocol::NamedMessagePipeHandler {
 
   // Populated via the negotiated capabilities between host and client.
   base::flat_set<protocol::ActionRequest::Action> supported_actions_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActionMessageHandler);
 };
 
 }  // namespace remoting

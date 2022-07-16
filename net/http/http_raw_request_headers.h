@@ -32,6 +32,10 @@ class NET_EXPORT HttpRawRequestHeaders {
   HttpRawRequestHeaders();
   HttpRawRequestHeaders(HttpRawRequestHeaders&&);
   HttpRawRequestHeaders& operator=(HttpRawRequestHeaders&&);
+
+  HttpRawRequestHeaders(const HttpRawRequestHeaders&) = delete;
+  HttpRawRequestHeaders& operator=(const HttpRawRequestHeaders&) = delete;
+
   ~HttpRawRequestHeaders();
 
   void Assign(HttpRawRequestHeaders other) { *this = std::move(other); }
@@ -48,8 +52,6 @@ class NET_EXPORT HttpRawRequestHeaders {
  private:
   HeaderVector headers_;
   std::string request_line_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpRawRequestHeaders);
 };
 
 // A callback of this type can be passed to

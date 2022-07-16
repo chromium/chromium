@@ -218,7 +218,7 @@ void NfcPermissionContextTests::DenyPrompt() {
 }
 
 void NfcPermissionContextTests::ClosePrompt() {
-  PermissionRequestManager::FromWebContents(web_contents())->Closing();
+  PermissionRequestManager::FromWebContents(web_contents())->Dismiss();
   base::RunLoop().RunUntilIdle();
 }
 

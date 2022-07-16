@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_THUMBNAIL_CC_THUMBNAIL_H_
 #define CHROME_BROWSER_THUMBNAIL_CC_THUMBNAIL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/resources/ui_resource_bitmap.h"
@@ -43,6 +42,10 @@ class Thumbnail : public cc::UIResourceClient {
       float scale,
       ui::UIResourceProvider* ui_resource_provider,
       ThumbnailDelegate* thumbnail_delegate);
+
+  Thumbnail(const Thumbnail&) = delete;
+  Thumbnail& operator=(const Thumbnail&) = delete;
+
   ~Thumbnail() override;
 
   TabId tab_id() const { return tab_id_; }
@@ -87,7 +90,6 @@ class Thumbnail : public cc::UIResourceClient {
   ThumbnailDelegate* thumbnail_delegate_;
 
   base::WeakPtrFactory<Thumbnail> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(Thumbnail);
 };
 
 #endif  // CHROME_BROWSER_THUMBNAIL_CC_THUMBNAIL_H_

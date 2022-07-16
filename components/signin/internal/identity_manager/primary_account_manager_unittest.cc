@@ -235,6 +235,10 @@ TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
   signin_client()->set_is_signout_allowed(false);
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
+  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
+  signin_client()->set_is_signout_allowed(true);
+  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+                                signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
 }
 

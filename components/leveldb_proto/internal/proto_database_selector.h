@@ -11,7 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/leveldb_proto/internal/proto_leveldb_wrapper.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 
@@ -120,6 +120,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoDatabaseSelector
   void LoadKeysAndEntriesInRange(
       const std::string& start,
       const std::string& end,
+      typename Callbacks::LoadKeysAndEntriesCallback callback);
+  void LoadKeysAndEntriesWhile(
+      const std::string& start,
+      const KeyIteratorController& controller,
       typename Callbacks::LoadKeysAndEntriesCallback callback);
 
   void LoadKeys(Callbacks::LoadKeysCallback callback);

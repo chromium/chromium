@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
@@ -42,6 +41,10 @@ class ThrottledFileSystem : public ProvidedFileSystemInterface {
  public:
   explicit ThrottledFileSystem(
       std::unique_ptr<ProvidedFileSystemInterface> file_system);
+
+  ThrottledFileSystem(const ThrottledFileSystem&) = delete;
+  ThrottledFileSystem& operator=(const ThrottledFileSystem&) = delete;
+
   ~ThrottledFileSystem() override;
 
   // ProvidedFileSystemInterface overrides.
@@ -147,7 +150,6 @@ class ThrottledFileSystem : public ProvidedFileSystemInterface {
   std::map<int, int> opened_files_;
 
   base::WeakPtrFactory<ThrottledFileSystem> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ThrottledFileSystem);
 };
 
 }  // namespace file_system_provider

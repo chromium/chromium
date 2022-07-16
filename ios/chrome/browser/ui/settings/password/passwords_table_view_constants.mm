@@ -16,8 +16,17 @@ NSString* const kPasswordsScrimViewId = @"PasswordsScrimViewId";
 NSString* const kPasswordDetailsTableViewId = @"PasswordDetailsTableViewId";
 NSString* const kPasswordDetailsDeletionAlertViewId =
     @"PasswordDetailsDeletionAlertViewId";
+NSString* const kPasswordsAddPasswordSaveButtonId =
+    @"PasswordsAddPasswordSaveButtonId";
+NSString* const kPasswordsAddPasswordCancelButtonId =
+    @"PasswordsAddPasswordCancelButtonId";
 
 NSString* const kSavePasswordSwitchTableViewId =
     @"kSavePasswordSwitchTableViewId";
 NSString* const kSavePasswordManagedTableViewId =
     @"kSavePasswordSwitchTableViewId";
+
+NSString* const kSettingsPasswordsInOtherAppsCellId =
+    @"kSettingsPasswordsInOtherAppsCellId";
+
+NSString* const kPasswordIssuesTableViewId = @"kPasswordIssuesTableViewId";

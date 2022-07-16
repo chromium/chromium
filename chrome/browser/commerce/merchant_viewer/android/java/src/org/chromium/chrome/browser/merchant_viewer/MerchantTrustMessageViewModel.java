@@ -13,10 +13,10 @@ import android.text.style.StyleSpan;
 
 import androidx.core.content.res.ResourcesCompat;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.browser.merchant_viewer.RatingStarSpan.RatingStarType;
-import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
+import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignalsV2;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -29,13 +29,31 @@ import java.text.NumberFormat;
 class MerchantTrustMessageViewModel {
     private static final int BASELINE_RATING = 5;
 
-    public static PropertyModel create(Context context, MerchantTrustSignals trustSignals,
-            Callback<Integer> onDismissed, Callback<MerchantTrustSignals> onPrimaryAction) {
+    /** Handles message actions. */
+    interface MessageActionsHandler {
+        /**
+         * Called when message is dismissed.
+         * @param dismissReason The reason why the message is dismissed.
+         * @param messageAssociatedUrl The url associated with this message context.
+         */
+        void onMessageDismissed(@DismissReason int dismissReason, String messageAssociatedUrl);
+
+        /**
+         * Called when message primary action is tapped.
+         * @param trustSignals The signal associated with this message.
+         * @param messageAssociatedUrl The url associated with this message context.
+         */
+        void onMessagePrimaryAction(
+                MerchantTrustSignalsV2 trustSignals, String messageAssociatedUrl);
+    }
+
+    public static PropertyModel create(Context context, MerchantTrustSignalsV2 trustSignals,
+            String messageAssociatedUrl, MessageActionsHandler actionsHandler) {
         return new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                 .with(MessageBannerProperties.MESSAGE_IDENTIFIER, MessageIdentifier.MERCHANT_TRUST)
                 .with(MessageBannerProperties.ICON,
                         ResourcesCompat.getDrawable(context.getResources(),
-                                R.drawable.ic_logo_googleg_24dp, context.getTheme()))
+                                R.drawable.ic_storefront_blue, context.getTheme()))
                 .with(MessageBannerProperties.ICON_TINT_COLOR, MessageBannerProperties.TINT_NONE)
                 .with(MessageBannerProperties.TITLE,
                         context.getResources().getString(R.string.merchant_viewer_message_title))
@@ -43,34 +61,49 @@ class MerchantTrustMessageViewModel {
                         getMessageDescription(context, trustSignals))
                 .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                         context.getResources().getString(R.string.merchant_viewer_message_action))
-                .with(MessageBannerProperties.ON_DISMISSED, onDismissed)
+                .with(MessageBannerProperties.ON_DISMISSED,
+                        (reason) -> actionsHandler.onMessageDismissed(reason, messageAssociatedUrl))
                 .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                        () -> { onPrimaryAction.onResult(trustSignals); })
+                        ()
+                                -> actionsHandler.onMessagePrimaryAction(
+                                        trustSignals, messageAssociatedUrl))
                 .build();
     }
 
-    private static Spannable getMessageDescription(
-            Context context, MerchantTrustSignals trustSignals) {
+    public static Spannable getMessageDescription(
+            Context context, MerchantTrustSignalsV2 trustSignals) {
+        // The zero rating value means we have no rating data for the merchant, under which
+        // condition we shouldn't call this method to generate the description.
+        assert trustSignals.getMerchantStarRating() > 0;
+        // Only keep one decimal to avoid inaccurate double value.
+        double ratingValue = Math.round(trustSignals.getMerchantStarRating() * 10) / 10.0;
         SpannableStringBuilder builder = new SpannableStringBuilder();
         NumberFormat numberFormatter = NumberFormat.getIntegerInstance();
         numberFormatter.setMaximumFractionDigits(1);
+        NumberFormat ratingValueFormatter = NumberFormat.getIntegerInstance();
+        ratingValueFormatter.setMaximumFractionDigits(1);
+        ratingValueFormatter.setMinimumFractionDigits(1);
         if (MerchantViewerConfig.doesTrustSignalsMessageUseRatingBar()) {
-            builder.append(numberFormatter.format(trustSignals.getMerchantStarRating()));
+            builder.append(ratingValueFormatter.format(ratingValue));
             builder.append(" ");
-            builder.append(getRatingBarSpan(context, trustSignals.getMerchantStarRating()));
+            builder.append(getRatingBarSpan(context, ratingValue));
         } else {
             builder.append(context.getResources().getString(
                     R.string.merchant_viewer_message_description_rating,
-                    numberFormatter.format(trustSignals.getMerchantStarRating()),
-                    numberFormatter.format(BASELINE_RATING)));
+                    numberFormatter.format(ratingValue), numberFormatter.format(BASELINE_RATING)));
             builder.setSpan(new StyleSpan(Typeface.BOLD), 0, builder.length(),
                     Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         }
         builder.append(" ");
-        builder.append(context.getResources().getQuantityString(
-                R.plurals.merchant_viewer_message_description_reviews,
-                trustSignals.getMerchantCountRating(),
-                numberFormatter.format(trustSignals.getMerchantCountRating())));
+        if (trustSignals.getMerchantCountRating() > 0) {
+            builder.append(context.getResources().getQuantityString(
+                    R.plurals.merchant_viewer_message_description_reviews,
+                    trustSignals.getMerchantCountRating(),
+                    numberFormatter.format(trustSignals.getMerchantCountRating())));
+        } else {
+            builder.append(context.getResources().getString(
+                    R.string.page_info_store_info_description_with_no_review));
+        }
         return builder;
     }
 

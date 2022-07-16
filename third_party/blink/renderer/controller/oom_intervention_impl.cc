@@ -87,12 +87,9 @@ OomInterventionImpl& GetOomIntervention() {
 }  // namespace
 
 // static
-void OomInterventionImpl::Bind(
+void OomInterventionImpl::BindReceiver(
     mojo::PendingReceiver<mojom::blink::OomIntervention> receiver) {
-  // This interface can be bound multiple time, however, there should never be
-  // multiple callers bound at a time.
-  GetOomIntervention().Reset();
-  GetOomIntervention().receiver_.Bind(std::move(receiver));
+  GetOomIntervention().Bind(std::move(receiver));
 }
 
 OomInterventionImpl::OomInterventionImpl()
@@ -107,9 +104,23 @@ OomInterventionImpl::~OomInterventionImpl() {
   MemoryUsageMonitorInstance().RemoveObserver(this);
 }
 
+void OomInterventionImpl::Bind(
+    mojo::PendingReceiver<mojom::blink::OomIntervention> receiver) {
+  // This interface can be bound multiple time, however, there should never be
+  // multiple callers bound at a time.
+  Reset();
+  receiver_.Bind(std::move(receiver));
+
+  // Disconnection means the user closed the dialog without activating the OOM
+  // intervention.
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&OomInterventionImpl::Reset, base::Unretained(this)));
+}
+
 void OomInterventionImpl::Reset() {
   receiver_.reset();
   host_.reset();
+  pauser_.reset();
   MemoryUsageMonitorInstance().RemoveObserver(this);
 }
 
@@ -205,8 +216,7 @@ void OomInterventionImpl::Check(MemoryUsage usage) {
     // Report the memory impact of intervention after 10, 20, 30 seconds.
     metrics_at_intervention_ = current_memory;
     number_of_report_needed_ = 3;
-    delayed_report_timer_.StartRepeating(base::TimeDelta::FromSeconds(10),
-                                         FROM_HERE);
+    delayed_report_timer_.StartRepeating(base::Seconds(10), FROM_HERE);
   }
 }
 

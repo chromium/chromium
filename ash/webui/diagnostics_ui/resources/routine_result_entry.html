@@ -20,16 +20,17 @@
   }
 
   .badge-container {
-    align-items: center;
+    align-items: flex-start;
     display: flex;
     flex-direction: column;
+    width: auto;
   }
 
   .entryRow {
     align-items: center;
     column-gap: 16px;
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: minmax(56px, auto) 1fr;
     height: 40px;
   }
 
@@ -39,7 +40,7 @@
 
   .line {
     height: 5px;
-    margin: 2px 0;
+    margin: 2px 16px;
   }
 
   .line-container {
@@ -50,7 +51,6 @@
   .red {
     border-left: 1px dashed var(--google-red-600);
     position: relative;
-    right: 4px;
   }
 
   #routine {
@@ -59,7 +59,7 @@
     display: inline-flex;
   }
 
-  .routineLinkContainer {
+  .failedTestTextContainer {
     margin-left: 8px;
   }
 
@@ -71,6 +71,15 @@
 
   #status {
     z-index: 1;
+  }
+
+  .yellow {
+    border-left: 1px dashed #F9AB00;
+  }
+
+  #failedTestText {
+    color: #5F6368;
+    margin-left: 12px;
   }
 
   @keyframes fadeInLine1 {
@@ -106,11 +115,10 @@
     }
   }
 </style>
-
 <div class="entryRow">
   <div class="badge-container">
     <text-badge id="status" badge-type="[[badgeType_]]" value="[[badgeText_]]"
-      aria-labelledby="routine">
+        aria-labelledby="routine">
     </text-badge>
   <template is="dom-if" if="[[!shouldHideLines_(testCompleted_)]]">
     <div class="line-container" id="lineContainer"
@@ -122,11 +130,11 @@
   </template>
  </div>
   <div id="routine" aria-hidden="true">
-    <span>[[routineType_]]</span>
-    <span class="routineLinkContainer" hidden$="[[!routineLink_]]">
-      <a href="[[routineLink_]]" class="routineLink" aria-labelledby="routine">
-        <iron-icon icon="cr:open-in-new"></iron-icon>
-      </a>
+    <span tabindex="0">[[routineType_]]</span>
+    <span id="failedTestText" class="failedTestTextContainer"
+        hidden$="[[!item.failedTest]]"
+        tabindex="0">
+      [[computeFailedTestText_(item.failedTest)]]
     </span>
   </div>
 </div>

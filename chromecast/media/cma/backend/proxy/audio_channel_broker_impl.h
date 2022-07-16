@@ -11,9 +11,9 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_broker.h"
+#include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.grpc.pb.h"
+#include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.pb.h"
 #include "third_party/grpc/src/include/grpcpp/impl/codegen/status.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_channel_service.grpc.pb.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_channel_service.pb.h"
 #include "third_party/protobuf/src/google/protobuf/duration.pb.h"
 
 namespace chromecast {

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test that focusing steps do not run when dialog is inert</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<input id="outer-input">
+<dialog>
+  <input autofocus>
+</dialog>
+<script>
+function test_focusing_steps_with_inert_dialog(isModal) {
+  const outerInput = document.querySelector("#outer-input");
+  outerInput.focus();
+  assert_equals(document.activeElement, outerInput,
+    "Focus should be on element we just focused");
+
+  const dialog = document.querySelector("dialog");
+  assert_false(dialog.open, "Dialog should initially be closed");
+
+  dialog.inert = true;
+
+  if (isModal) {
+    dialog.showModal();
+  } else {
+    dialog.show();
+  }
+
+  assert_equals(document.activeElement, outerInput,
+    "Dialog focusing steps should not run when dialog is inert");
+
+  // Clean up
+  dialog.close();
+  dialog.inert = false;
+}
+
+test(() => {
+  test_focusing_steps_with_inert_dialog(false);
+  test_focusing_steps_with_inert_dialog(true);
+}, "Dialog focusing steps should not run when dialog is inert");
+</script>
+</body>
+</html>

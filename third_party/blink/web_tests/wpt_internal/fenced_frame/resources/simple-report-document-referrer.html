@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="utils.js"></script>
+<title>Helper that immediately reports `document.referrer` to the server</title>
+<!-- This helper page is used by `document-referrer-inner.html` -->
+
+<body>
+<script>
+  const referrer_key = KEYS["document.referrer"];
+
+  // Send the value of `document.referrer` to the server for checking.
+  writeValueToServer(referrer_key, document.referrer);
+</script>
+
+</script>
+</body>

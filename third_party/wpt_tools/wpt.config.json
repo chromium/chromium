@@ -13,7 +13,8 @@
     "https-public": [8447],
     "h2": [9000],
     "ws": [9001],
-    "wss": [9444]
+    "wss": [9444],
+    "webtransport-h3": [11000]
   },
   "ssl": {
     "type": "pregenerated",

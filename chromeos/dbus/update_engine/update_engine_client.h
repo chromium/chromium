@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_client_implementation_type.h"
@@ -56,6 +55,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) UpdateEngineClient
     virtual void OnUpdateOverCellularOneTimePermissionGranted() {}
   };
 
+  UpdateEngineClient(const UpdateEngineClient&) = delete;
+  UpdateEngineClient& operator=(const UpdateEngineClient&) = delete;
+
   ~UpdateEngineClient() override;
 
   // Adds and removes the observer.
@@ -70,6 +72,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) UpdateEngineClient
 
   // Requests an update check and calls |callback| when completed.
   virtual void RequestUpdateCheck(UpdateCheckCallback callback) = 0;
+
+  // Requests an update check and calls |callback| when completed.
+  // Will skip applying the update if there is one and the version in
+  // |update_engine::StatusResult| will be updated.
+  virtual void RequestUpdateCheckWithoutApplying(
+      UpdateCheckCallback callback) = 0;
 
   // Reboots if update has been performed.
   virtual void RebootAfterUpdate() = 0;
@@ -165,9 +173,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) UpdateEngineClient
  protected:
   // Create() should be used instead.
   UpdateEngineClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpdateEngineClient);
 };
 
 }  // namespace chromeos

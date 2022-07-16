@@ -153,7 +153,6 @@ public class TabCallbackTest {
         file.delete();
     }
 
-    @MinWebLayerVersion(88)
     @Test
     @SmallTest
     @DisableIf.
@@ -173,7 +172,6 @@ public class TabCallbackTest {
         waitForFileExist(tempDownloadDirectory, "lorem_ipsum.txt");
     }
 
-    @MinWebLayerVersion(88)
     @Test
     @SmallTest
     @DisableIf.

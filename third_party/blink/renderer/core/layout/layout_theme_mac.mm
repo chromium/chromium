@@ -72,11 +72,15 @@ Color LayoutThemeMac::PlatformActiveSelectionForegroundColor(
 }
 
 Color LayoutThemeMac::PlatformSpellingMarkerUnderlineColor() const {
-  return Color(251, 45, 29);
+  // Using the same color than WebKit (see
+  // https://github.com/WebKit/WebKit/blob/main/Source/WebCore/platform/graphics/cocoa/GraphicsContextCocoa.mm#L167).
+  return Color(255, 59, 48, 191);
 }
 
 Color LayoutThemeMac::PlatformGrammarMarkerUnderlineColor() const {
-  return Color(107, 107, 107);
+  // Using the same color than WebKit (see
+  // https://github.com/WebKit/WebKit/blob/main/Source/WebCore/platform/graphics/cocoa/GraphicsContextCocoa.mm#L175).
+  return Color(25, 175, 50, 191);
 }
 
 bool LayoutThemeMac::IsAccentColorCustomized(
@@ -89,7 +93,7 @@ bool LayoutThemeMac::IsAccentColorCustomized(
       return false;
     }
   } else {
-    int user_custom_color = [[NSUserDefaults standardUserDefaults]
+    NSInteger user_custom_color = [[NSUserDefaults standardUserDefaults]
         integerForKey:@"AppleAquaColorVariant"];
     if (user_custom_color == NSBlueControlTint ||
         user_custom_color == NSDefaultControlTint) {
@@ -104,8 +108,8 @@ Color LayoutThemeMac::GetAccentColor(
   if (@available(macOS 10.14, *)) {
     return GetSystemColor(MacSystemColorID::kControlAccentColor, color_scheme);
   } else {
-    return [[NSUserDefaults standardUserDefaults]
-        integerForKey:@"AppleAquaColorVariant"];
+    return static_cast<RGBA32>([[NSUserDefaults standardUserDefaults]
+        integerForKey:@"AppleAquaColorVariant"]);
   }
 }
 

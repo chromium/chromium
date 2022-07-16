@@ -10,8 +10,8 @@
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/single_thread_task_runner.h"
-#include "base/util/values/values_util.h"
+#include "base/json/values_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -24,6 +24,7 @@
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -32,8 +33,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -183,7 +184,13 @@ class ThumbnailLoader::ThumbnailDecoder : public BitmapFetcherDelegate {
 
 ThumbnailLoader::ThumbnailLoader(Profile* profile) : profile_(profile) {}
 
-ThumbnailLoader::~ThumbnailLoader() = default;
+ThumbnailLoader::~ThumbnailLoader() {
+  // Run any pending callbacks to clean them up.
+  for (auto it = requests_.begin(); it != requests_.end();) {
+    std::move(it->second).Run(nullptr, base::File::Error::FILE_ERROR_ABORT);
+    it = requests_.erase(it);
+  }
+}
 
 ThumbnailLoader::ThumbnailRequest::ThumbnailRequest(
     const base::FilePath& item_path,
@@ -210,11 +217,6 @@ void ThumbnailLoader::Load(const ThumbnailRequest& request,
           storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
       base::BindOnce(&ThumbnailLoader::LoadForFileWithMetadata,
                      weak_factory_.GetWeakPtr(), request, std::move(callback)));
-}
-
-void ThumbnailLoader::SetRequestFinishedCallbackForTesting(
-    base::RepeatingClosure callback) {
-  request_finished_callback_for_testing_ = std::move(callback);
 }
 
 void ThumbnailLoader::LoadForFileWithMetadata(
@@ -267,7 +269,7 @@ void ThumbnailLoader::LoadForFileWithMetadata(
   base::Value request_value(base::Value::Type::DICTIONARY);
   request_value.SetKey("taskId", base::Value(request_id.ToString()));
   request_value.SetKey("url", base::Value(thumbnail_url.spec()));
-  request_value.SetKey("timestamp", util::TimeToValue(file_info.last_modified));
+  request_value.SetKey("timestamp", base::TimeToValue(file_info.last_modified));
   // TODO(crbug.com/2650014) : Add an arg to set this to false for sharesheet.
   request_value.SetBoolKey("cache", true);
   request_value.SetBoolKey("crop", true);
@@ -285,7 +287,8 @@ void ThumbnailLoader::LoadForFileWithMetadata(
       base::BindOnce(&ThumbnailLoader::OnThumbnailLoaded,
                      weak_factory_.GetWeakPtr(), request_id, request.size));
   const extensions::PortId port_id(base::UnguessableToken::Create(),
-                                   1 /* port_number */, true /* is_opener */);
+                                   1 /* port_number */, true /* is_opener */,
+                                   extensions::SerializationFormat::kJson);
   auto native_message_port = std::make_unique<extensions::NativeMessagePort>(
       message_service->GetChannelDelegate(), port_id,
       std::move(native_message_host));
@@ -344,9 +347,6 @@ void ThumbnailLoader::RespondToRequest(const base::UnguessableToken& request_id,
   requests_.erase(request_it);
   std::move(callback).Run(cropped_bitmap.isNull() ? bitmap : &cropped_bitmap,
                           error);
-
-  if (!request_finished_callback_for_testing_.is_null())
-    request_finished_callback_for_testing_.Run();
 }
 
 }  // namespace ash

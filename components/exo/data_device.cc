@@ -4,6 +4,7 @@
 
 #include "components/exo/data_device.h"
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "components/exo/data_device_delegate.h"
@@ -31,7 +32,7 @@ static_assert(Seat::IsValidObserverPriority(kDataDeviceSeatObserverPriority),
               "kDataDeviceSeatObserverPriority is not in the valid range.");
 
 constexpr base::TimeDelta kDataOfferDestructionTimeout =
-    base::TimeDelta::FromMilliseconds(1000);
+    base::Milliseconds(1000);
 
 DragOperation DndActionToDragOperation(DndAction dnd_action) {
   switch (dnd_action) {
@@ -170,11 +171,12 @@ DragOperation DataDevice::OnPerformDrop(const ui::DropTargetEvent& event) {
   return DndActionToDragOperation(dnd_action);
 }
 
-WMHelper::DropCallback DataDevice::GetDropCallback(
+WMHelper::DragDropObserver::DropCallback DataDevice::GetDropCallback(
     const ui::DropTargetEvent& event) {
-  // TODO(crbug.com/1197501): Return async drop callback.
-  NOTIMPLEMENTED();
-  return base::NullCallback();
+  base::ScopedClosureRunner drag_exit(
+      base::BindOnce(&DataDevice::OnDragExited, weak_factory_.GetWeakPtr()));
+  return base::BindOnce(&DataDevice::PerformDropOrExitDrag,
+                        drop_weak_factory_.GetWeakPtr(), std::move(drag_exit));
 }
 
 void DataDevice::OnClipboardDataChanged() {
@@ -209,6 +211,7 @@ void DataDevice::OnDataOfferDestroying(DataOffer* data_offer) {
       std::move(quit_closure_).Run();
     data_offer_.reset();
   }
+  drop_weak_factory_.InvalidateWeakPtrs();
 }
 
 void DataDevice::OnSurfaceDestroying(Surface* surface) {
@@ -236,6 +239,14 @@ void DataDevice::SetSelectionToCurrentClipboardData() {
       seat_->data_exchange_delegate()->GetDataTransferEndpointType(
           focused_surface_->get()->window()));
   delegate_->OnSelection(*data_offer);
+}
+
+void DataDevice::PerformDropOrExitDrag(
+    base::ScopedClosureRunner exit_drag,
+    const ui::DropTargetEvent& event,
+    ui::mojom::DragOperation& output_drag_op) {
+  output_drag_op = OnPerformDrop(event);
+  exit_drag.ReplaceClosure(base::DoNothing());
 }
 
 }  // namespace exo

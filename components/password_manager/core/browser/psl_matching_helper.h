@@ -8,7 +8,7 @@
 #include <iosfwd>
 #include <string>
 
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 class GURL;
 

@@ -38,9 +38,9 @@ class P2PAsyncAddressResolver
 
  private:
   enum State {
-    STATE_CREATED,
-    STATE_SENT,
-    STATE_FINISHED,
+    kStateCreated,
+    kStateSent,
+    kStateFinished,
   };
 
   friend class P2PSocketDispatcher;

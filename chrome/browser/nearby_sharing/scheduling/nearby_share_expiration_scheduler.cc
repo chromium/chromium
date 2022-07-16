@@ -32,7 +32,7 @@ NearbyShareExpirationScheduler::TimeUntilRecurringRequest(
     return absl::nullopt;
 
   if (*expiration_time <= now)
-    return base::TimeDelta::FromSeconds(0);
+    return base::Seconds(0);
 
   return *expiration_time - now;
 }

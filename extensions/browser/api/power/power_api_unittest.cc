@@ -11,7 +11,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
 #include "extensions/browser/unloaded_extension_reason.h"
@@ -54,6 +54,9 @@ class FakeWakeLockManager {
             base::BindRepeating(&FakeWakeLockManager::CancelWakeLock,
                                 base::Unretained(this)));
   }
+
+  FakeWakeLockManager(const FakeWakeLockManager&) = delete;
+  FakeWakeLockManager& operator=(const FakeWakeLockManager&) = delete;
 
   ~FakeWakeLockManager() {
     PowerAPI::Get(browser_context_)
@@ -141,8 +144,6 @@ class FakeWakeLockManager {
 
   // Requests in chronological order.
   base::circular_deque<Request> requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWakeLockManager);
 };
 
 }  // namespace

@@ -26,7 +26,6 @@ enum class OmniboxPart {
   RESULTS_TEXT_DEFAULT,
   RESULTS_TEXT_DIMMED,
   RESULTS_TEXT_URL,
-  RESULTS_SELECTION_INDICATOR,  // Vertical bar indicating focus
   RESULTS_BUTTON_BORDER,
 };
 

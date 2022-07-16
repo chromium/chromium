@@ -9,8 +9,8 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "services/device/geolocation/wifi_data_provider_manager.h"
@@ -63,6 +63,11 @@ class WifiDataProviderCommonWithMock : public WifiDataProviderCommon {
  public:
   WifiDataProviderCommonWithMock() : wlan_api_(new MockWlanApi) {}
 
+  WifiDataProviderCommonWithMock(const WifiDataProviderCommonWithMock&) =
+      delete;
+  WifiDataProviderCommonWithMock& operator=(
+      const WifiDataProviderCommonWithMock&) = delete;
+
   // WifiDataProviderCommon
   std::unique_ptr<WlanApiInterface> CreateWlanApi() override {
     return std::move(wlan_api_);
@@ -79,8 +84,6 @@ class WifiDataProviderCommonWithMock : public WifiDataProviderCommon {
 
  private:
   ~WifiDataProviderCommonWithMock() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(WifiDataProviderCommonWithMock);
 };
 
 // Main test fixture

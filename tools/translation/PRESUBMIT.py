@@ -9,14 +9,27 @@ def _CommonChecks(input_api, output_api):
   results = []
 
   # Run Pylint over the files in the directory.
-  pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api)
+  pylint_checks = input_api.canned_checks.GetPylint(input_api,
+                                                    output_api,
+                                                    version='2.6')
   results.extend(input_api.RunTests(pylint_checks))
 
   # Run unittests.
   tests = input_api.canned_checks.GetUnitTestsInDirectory(
-    input_api, output_api, '.', [ r'^.+_unittest\.py$'])
-  tests.extend(input_api.canned_checks.GetUnitTestsInDirectory(
-    input_api, output_api, 'helper', [ r'^.+_unittest\.py$']))
+      input_api,
+      output_api,
+      '.', [r'^.+_unittest\.py$'],
+      run_on_python2=False,
+      run_on_python3=True,
+      skip_shebang_check=True)
+  tests.extend(
+      input_api.canned_checks.GetUnitTestsInDirectory(input_api,
+                                                      output_api,
+                                                      'helper',
+                                                      [r'^.+_unittest\.py$'],
+                                                      run_on_python2=False,
+                                                      run_on_python3=True,
+                                                      skip_shebang_check=True))
 
   results.extend(input_api.RunTests(tests))
   return results

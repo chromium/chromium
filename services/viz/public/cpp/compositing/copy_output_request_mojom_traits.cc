@@ -26,9 +26,11 @@ class CopyOutputResultSenderImpl : public viz::mojom::CopyOutputResultSender {
  public:
   CopyOutputResultSenderImpl(
       viz::CopyOutputRequest::ResultFormat result_format,
+      viz::CopyOutputRequest::ResultDestination result_destination,
       viz::CopyOutputRequest::CopyOutputRequestCallback result_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner)
       : result_format_(result_format),
+        result_destination_(result_destination),
         result_callback_(std::move(result_callback)),
         result_callback_task_runner_(std::move(callback_task_runner)) {
     DCHECK(result_callback_);
@@ -40,7 +42,8 @@ class CopyOutputResultSenderImpl : public viz::mojom::CopyOutputResultSender {
       result_callback_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(std::move(result_callback_),
                                     std::make_unique<viz::CopyOutputResult>(
-                                        result_format_, gfx::Rect(), false)));
+                                        result_format_, result_destination_,
+                                        gfx::Rect(), false)));
     }
   }
 
@@ -56,6 +59,7 @@ class CopyOutputResultSenderImpl : public viz::mojom::CopyOutputResultSender {
 
  private:
   const viz::CopyOutputRequest::ResultFormat result_format_;
+  const viz::CopyOutputRequest::ResultDestination result_destination_;
   viz::CopyOutputRequest::CopyOutputRequestCallback result_callback_;
   scoped_refptr<base::SequencedTaskRunner> result_callback_task_runner_;
 };
@@ -84,7 +88,8 @@ StructTraits<viz::mojom::CopyOutputRequestDataView,
   // default we want the pipe to operate on the ThreadPool, and then it will
   // PostTask back to the current sequence.
   auto impl = std::make_unique<CopyOutputResultSenderImpl>(
-      request->result_format(), std::move(request->result_callback_),
+      request->result_format(), request->result_destination(),
+      std::move(request->result_callback_),
       base::SequencedTaskRunnerHandle::Get());
   auto runner = base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   runner->PostTask(
@@ -108,11 +113,16 @@ bool StructTraits<viz::mojom::CopyOutputRequestDataView,
   if (!data.ReadResultFormat(&result_format))
     return false;
 
+  viz::CopyOutputRequest::ResultDestination result_destination;
+  if (!data.ReadResultDestination(&result_destination))
+    return false;
+
   auto result_sender = data.TakeResultSender<
       mojo::PendingRemote<viz::mojom::CopyOutputResultSender>>();
 
   auto request = std::make_unique<viz::CopyOutputRequest>(
-      result_format, base::BindOnce(SendResult, std::move(result_sender)));
+      result_format, result_destination,
+      base::BindOnce(SendResult, std::move(result_sender)));
 
   gfx::Vector2d scale_from;
   if (!data.ReadScaleFrom(&scale_from))

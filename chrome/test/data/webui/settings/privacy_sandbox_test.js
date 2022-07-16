@@ -2,55 +2,75 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://settings/privacy_sandbox/app.js';
+
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PrivacySandboxAppElement} from 'chrome://settings/privacy_sandbox/app.js';
-import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
-import {flushTasks, isChildVisible} from '../test_util.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestOpenWindowProxy} from './test_open_window_proxy.js';
 
-suite('PrivacySandbox_PrivacySandboxSettings2Disabled', function() {
+class TestPrivacySandboxBrowserProxy extends TestBrowserProxy {
+  constructor() {
+    super(['getFlocId', 'resetFlocId']);
+  }
+
+  getFlocId() {
+    this.methodCalled('getFlocId');
+    return Promise.resolve({
+      trialStatus: 'test-trial-status',
+      cohort: 'test-id',
+      nextUpdate: 'test-time',
+      canReset: true,
+    });
+  }
+
+  resetFlocId() {
+    this.methodCalled('resetFlocId');
+  }
+}
+
+suite('PrivacySandbox', function() {
   /** @type {!PrivacySandboxAppElement} */
   let page;
 
-  /** @type {?TestMetricsBrowserProxy} */
+  /** @type {?TestBrowserProxy} */
   let metricsBrowserProxy = null;
 
-  /** @type {?TestOpenWindowProxy} */
-  let openWindowProxy = null;
-
-  /** @type {!TestHatsBrowserProxy} */
+  /** @type {!TestBrowserProxy} */
   let testHatsBrowserProxy;
 
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      privacySandboxSettings2Enabled: false,
-    });
-  });
+  /**
+   * @implements {PrivacySandboxBrowserProxy}
+   * @extends {TestBrowserProxy}
+   */
+  let testPrivacySandboxBrowserProxy;
 
   setup(function() {
     testHatsBrowserProxy = new TestHatsBrowserProxy();
-    HatsBrowserProxyImpl.instance_ = testHatsBrowserProxy;
+    HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
 
     metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.instance_ = metricsBrowserProxy;
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+
+    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
 
     CrSettingsPrefs.deferInitialization = true;
-
-    openWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.instance_ = openWindowProxy;
 
     document.body.innerHTML = '';
     page = /** @type {!PrivacySandboxAppElement} */
         (document.createElement('privacy-sandbox-app'));
     document.body.appendChild(page);
+
+    page.prefs = {generated: {floc_enabled: {value: true}}};
 
     return flushTasks();
   });
@@ -67,6 +87,7 @@ suite('PrivacySandbox_PrivacySandboxSettings2Disabled', function() {
           apis_enabled: {value: apisEnabledPrior},
           manually_controlled: {value: false},
         },
+        generated: {floc_enabled: {value: true}}
       };
       await flushTasks();
       metricsBrowserProxy.resetResolver('recordAction');
@@ -81,19 +102,6 @@ suite('PrivacySandbox_PrivacySandboxSettings2Disabled', function() {
     }
   });
 
-  test('learnMoreTest', async function() {
-    // User clicks the "Learn more" button.
-    page.shadowRoot.querySelector('#learnMoreButton').click();
-    // Ensure UMA is logged.
-    assertEquals(
-        'Settings.PrivacySandbox.OpenExplainer',
-        await metricsBrowserProxy.whenCalled('recordAction'));
-    // Ensure the browser proxy call is done.
-    assertEquals(
-        loadTimeData.getString('privacySandboxURL'),
-        await openWindowProxy.whenCalled('openURL'));
-  });
-
   test('viewedPref', async function() {
     page.shadowRoot.querySelector('#prefs').initialize();
     await CrSettingsPrefs.initialized;
@@ -105,73 +113,6 @@ suite('PrivacySandbox_PrivacySandboxSettings2Disabled', function() {
     const interaction =
         await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
     assertEquals(TrustSafetyInteraction.OPENED_PRIVACY_SANDBOX, interaction);
-  });
-
-  test('phase2Visibility', function() {
-    assertTrue(isChildVisible(page, '#learnMoreButton'));
-    assertTrue(isChildVisible(page, '#pageHeader'));
-    assertTrue(isChildVisible(page, '#phase1SettingExplanation'));
-    assertFalse(isChildVisible(page, '#flocCard'));
-    assertFalse(isChildVisible(page, '#phase2SettingExplanation'));
-  });
-
-  test('toggleClass', function() {
-    assertEquals(
-        '', page.shadowRoot.querySelector('#apiToggleButton').className);
-  });
-});
-
-suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
-  /** @type {!PrivacySandboxAppElement} */
-  let page;
-
-  /** @type {?TestMetricsBrowserProxy} */
-  let testMetricsBrowserProxy = null;
-
-  /**
-   * @implements {PrivacySandboxBrowserProxy}
-   * @extends {TestBrowserProxy}
-   */
-  let testPrivacySandboxBrowserProxy;
-
-  function setDefaultFlocID() {
-    testPrivacySandboxBrowserProxy.setResultFor('getFlocId', Promise.resolve({
-      trialStatus: 'test-trial-status',
-      cohort: 'test-id',
-      nextUpdate: 'test-time',
-      canReset: true,
-    }));
-  }
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      privacySandboxSettings2Enabled: true,
-    });
-  });
-
-  setup(function() {
-    document.body.innerHTML = '';
-
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.instance_ = testMetricsBrowserProxy;
-
-    testPrivacySandboxBrowserProxy =
-        TestBrowserProxy.fromClass(PrivacySandboxBrowserProxy);
-    PrivacySandboxBrowserProxyImpl.instance_ = testPrivacySandboxBrowserProxy;
-
-    setDefaultFlocID();
-
-    page = /** @type {!PrivacySandboxAppElement} */
-        (document.createElement('privacy-sandbox-app'));
-    document.body.appendChild(page);
-
-    page.prefs = {generated: {floc_enabled: {value: true}}};
-
-    return flushTasks();
-  });
-
-  test('flocCardVisibility', function() {
-    assertTrue(isChildVisible(page, '#flocCard'));
   });
 
   test('flocId', async function() {
@@ -220,42 +161,28 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
 
     // When the FLoC generated preference is changed, the page should re-query
     // for the FLoC id.
-    setDefaultFlocID();
+    testPrivacySandboxBrowserProxy.resetResolver('getFlocId');
     page.set('prefs.generated.floc_enabled.value', false);
     await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
-  });
-
-  test('phase2Visibility', function() {
-    assertFalse(isChildVisible(page, '#learnMoreButton'));
-    assertFalse(isChildVisible(page, '#pageHeader'));
-    assertFalse(isChildVisible(page, '#phase1SettingExplanation'));
-    assertTrue(isChildVisible(page, '#flocCard'));
-    assertTrue(isChildVisible(page, '#phase2SettingExplanation'));
-  });
-
-  test('toggleClass', function() {
-    assertEquals(
-        'updated-toggle-button',
-        page.shadowRoot.querySelector('#apiToggleButton').className);
   });
 
   test('userActions', async function() {
     page.shadowRoot.querySelector('#flocToggleButton').click();
     assertEquals(
         'Settings.PrivacySandbox.FlocDisabled',
-        await testMetricsBrowserProxy.whenCalled('recordAction'));
-    testMetricsBrowserProxy.resetResolver('recordAction');
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
 
     page.shadowRoot.querySelector('#flocToggleButton').click();
     assertEquals(
         'Settings.PrivacySandbox.FlocEnabled',
-        await testMetricsBrowserProxy.whenCalled('recordAction'));
-    testMetricsBrowserProxy.resetResolver('recordAction');
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
 
     // Ensure that an action is only recorded in response to interaction with
     // the toggle, and not for the generated preference changing.
     page.set('prefs.generated.floc_enabled.value', false);
     await flushTasks();
-    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(0, metricsBrowserProxy.getCallCount('recordAction'));
   });
 });

@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/types/pass_key.h"
-#include "components/services/storage/public/cpp/filesystem/file_error_or.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 
 namespace storage {
@@ -76,7 +76,8 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemImpl
 
   // Helper used by LockFile() and FilesystemProxy::LockFile() for in
   // unrestricted mode.
-  static FileErrorOr<base::File> LockFileLocal(const base::FilePath& path);
+  static base::FileErrorOr<base::File> LockFileLocal(
+      const base::FilePath& path);
   static void UnlockFileLocal(const base::FilePath& path);
 
   // Helper used by GetPathAccess() and FilesystemProxy::GetPathAccess.
@@ -84,7 +85,7 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemImpl
       const base::FilePath& path);
 
   // Helper used by GetEntries() and FilesystemProxy::GetDirectoryEntries.
-  static FileErrorOr<std::vector<base::FilePath>> GetDirectoryEntries(
+  static base::FileErrorOr<std::vector<base::FilePath>> GetDirectoryEntries(
       const base::FilePath& path,
       mojom::GetEntriesMode mode);
 

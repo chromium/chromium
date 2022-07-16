@@ -35,7 +35,8 @@ MockDownloadManager::CreateDownloadItemAdapter::CreateDownloadItemAdapter(
     bool opened,
     base::Time last_access_time,
     bool transient,
-    const std::vector<download::DownloadItem::ReceivedSlice>& received_slices)
+    const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
+    const download::DownloadItemRerouteInfo& reroute_info)
     : guid(guid),
       id(id),
       current_path(current_path),
@@ -59,7 +60,8 @@ MockDownloadManager::CreateDownloadItemAdapter::CreateDownloadItemAdapter(
       opened(opened),
       last_access_time(last_access_time),
       transient(transient),
-      received_slices(received_slices) {}
+      received_slices(received_slices),
+      reroute_info(reroute_info) {}
 
 MockDownloadManager::CreateDownloadItemAdapter::CreateDownloadItemAdapter(
     const CreateDownloadItemAdapter& rhs)
@@ -138,13 +140,14 @@ download::DownloadItem* MockDownloadManager::CreateDownloadItem(
     bool opened,
     base::Time last_access_time,
     bool transient,
-    const std::vector<download::DownloadItem::ReceivedSlice>& received_slices) {
+    const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
+    const download::DownloadItemRerouteInfo& reroute_info) {
   CreateDownloadItemAdapter adapter(
       guid, id, current_path, target_path, url_chain, referrer_url, site_url,
       tab_url, tab_referrer_url, request_initiator, mime_type,
       original_mime_type, start_time, end_time, etag, last_modified,
       received_bytes, total_bytes, hash, state, danger_type, interrupt_reason,
-      opened, last_access_time, transient, received_slices);
+      opened, last_access_time, transient, received_slices, reroute_info);
   return MockCreateDownloadItem(adapter);
 }
 

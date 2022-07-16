@@ -59,7 +59,7 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
   count = 0;
   handle = PostDelayedCancellableTask(
       *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)),
-      base::TimeDelta::FromMilliseconds(1));
+      base::Milliseconds(1));
   EXPECT_EQ(0, count);
   EXPECT_TRUE(handle.IsActive());
   task_runner->RunUntilIdle();
@@ -78,7 +78,7 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
   count = 0;
   handle = PostNonNestableDelayedCancellableTask(
       *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)),
-      base::TimeDelta::FromMilliseconds(1));
+      base::Milliseconds(1));
   EXPECT_EQ(0, count);
   EXPECT_TRUE(handle.IsActive());
   task_runner->RunUntilIdle();
@@ -98,7 +98,7 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
   count = 0;
   handle = PostDelayedCancellableTask(
       *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)),
-      base::TimeDelta::FromMilliseconds(1));
+      base::Milliseconds(1));
   handle.Cancel();
   EXPECT_EQ(0, count);
   EXPECT_FALSE(handle.IsActive());
@@ -117,7 +117,7 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
   count = 0;
   handle = PostNonNestableDelayedCancellableTask(
       *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)),
-      base::TimeDelta::FromMilliseconds(1));
+      base::Milliseconds(1));
   handle.Cancel();
   EXPECT_EQ(0, count);
   EXPECT_FALSE(handle.IsActive());

@@ -12,7 +12,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace history {
 
@@ -23,11 +22,10 @@ bool IsURLRowEqual(const URLRow& a,
   // TODO(brettw) when the database stores an actual Time value rather than
   // a time_t, do a reaul comparison. Instead, we have to do a more rough
   // comparison since the conversion reduces the precision.
-  return a.title() == b.title() &&
-      a.visit_count() == b.visit_count() &&
-      a.typed_count() == b.typed_count() &&
-      a.last_visit() - b.last_visit() <= TimeDelta::FromSeconds(1) &&
-      a.hidden() == b.hidden();
+  return a.title() == b.title() && a.visit_count() == b.visit_count() &&
+         a.typed_count() == b.typed_count() &&
+         a.last_visit() - b.last_visit() <= base::Seconds(1) &&
+         a.hidden() == b.hidden();
 }
 
 }  // namespace
@@ -88,7 +86,7 @@ TEST_F(URLDatabaseTest, AddAndUpdateURL) {
   url_info1.set_title(u"Google");
   url_info1.set_visit_count(4);
   url_info1.set_typed_count(2);
-  url_info1.set_last_visit(Time::Now() - TimeDelta::FromDays(1));
+  url_info1.set_last_visit(Time::Now() - base::Days(1));
   url_info1.set_hidden(false);
   URLID id1_initially = AddURL(url_info1);
   EXPECT_TRUE(id1_initially);
@@ -98,7 +96,7 @@ TEST_F(URLDatabaseTest, AddAndUpdateURL) {
   url_info2.set_title(u"Google Mail");
   url_info2.set_visit_count(3);
   url_info2.set_typed_count(0);
-  url_info2.set_last_visit(Time::Now() - TimeDelta::FromDays(2));
+  url_info2.set_last_visit(Time::Now() - base::Days(2));
   url_info2.set_hidden(true);
   EXPECT_TRUE(AddURL(url_info2));
 
@@ -145,7 +143,7 @@ TEST_F(URLDatabaseTest, AddAndUpdateURL) {
   url_info4.set_title(u"Google Maps");
   url_info4.set_visit_count(7);
   url_info4.set_typed_count(6);
-  url_info4.set_last_visit(Time::Now() - TimeDelta::FromDays(3));
+  url_info4.set_last_visit(Time::Now() - base::Days(3));
   url_info4.set_hidden(false);
   EXPECT_TRUE(InsertOrUpdateURLRowByID(url_info4));
 
@@ -176,7 +174,7 @@ TEST_F(URLDatabaseTest, KeywordSearchTermVisit) {
   url_info1.set_title(u"Google");
   url_info1.set_visit_count(4);
   url_info1.set_typed_count(2);
-  url_info1.set_last_visit(Time::Now() - TimeDelta::FromDays(1));
+  url_info1.set_last_visit(Time::Now() - base::Days(1));
   url_info1.set_hidden(false);
   URLID url_id = AddURL(url_info1);
   ASSERT_NE(0, url_id);
@@ -226,7 +224,7 @@ TEST_F(URLDatabaseTest, DeleteURLDeletesKeywordSearchTermVisit) {
   url_info1.set_title(u"Google");
   url_info1.set_visit_count(4);
   url_info1.set_typed_count(2);
-  url_info1.set_last_visit(Time::Now() - TimeDelta::FromDays(1));
+  url_info1.set_last_visit(Time::Now() - base::Days(1));
   url_info1.set_hidden(false);
   URLID url_id = AddURL(url_info1);
   ASSERT_NE(0, url_id);
@@ -257,7 +255,7 @@ TEST_F(URLDatabaseTest, EnumeratorForSignificant) {
   EXPECT_TRUE(AddURL(url_match_typed_count2));
 
   URLRow url_match_last_visit2(GURL("http://www.url_match_last_visit2.com/"));
-  url_match_last_visit2.set_last_visit(Time::Now() - TimeDelta::FromDays(2));
+  url_match_last_visit2.set_last_visit(Time::Now() - base::Days(2));
   EXPECT_TRUE(AddURL(url_match_last_visit2));
 
   URLRow url_match_typed_count1(
@@ -271,13 +269,13 @@ TEST_F(URLDatabaseTest, EnumeratorForSignificant) {
   EXPECT_TRUE(AddURL(url_match_visit_count1));
 
   URLRow url_match_last_visit1(GURL("http://www.url_match_last_visit.com/"));
-  url_match_last_visit1.set_last_visit(Time::Now() - TimeDelta::FromDays(1));
+  url_match_last_visit1.set_last_visit(Time::Now() - base::Days(1));
   EXPECT_TRUE(AddURL(url_match_last_visit1));
 
   URLRow url_no_match_last_visit(GURL(
       "http://www.url_no_match_last_visit.com/"));
-  url_no_match_last_visit.set_last_visit(Time::Now() -
-      TimeDelta::FromDays(kLowQualityMatchAgeLimitInDays + 1));
+  url_no_match_last_visit.set_last_visit(
+      Time::Now() - base::Days(kLowQualityMatchAgeLimitInDays + 1));
   EXPECT_TRUE(AddURL(url_no_match_last_visit));
 
   URLRow url_hidden(GURL("http://www.url_match_higher_typed_count.com/hidden"));
@@ -309,7 +307,7 @@ TEST_F(URLDatabaseTest, GetAndDeleteKeywordSearchTermByTerm) {
   url_info1.set_title(u"Google");
   url_info1.set_visit_count(4);
   url_info1.set_typed_count(2);
-  url_info1.set_last_visit(Time::Now() - TimeDelta::FromDays(1));
+  url_info1.set_last_visit(Time::Now() - base::Days(1));
   url_info1.set_hidden(false);
   URLID url_id1 = AddURL(url_info1);
   ASSERT_NE(0, url_id1);
@@ -323,7 +321,7 @@ TEST_F(URLDatabaseTest, GetAndDeleteKeywordSearchTermByTerm) {
   url_info2.set_title(u"Google");
   url_info2.set_visit_count(4);
   url_info2.set_typed_count(2);
-  url_info2.set_last_visit(Time::Now() - TimeDelta::FromDays(1));
+  url_info2.set_last_visit(Time::Now() - base::Days(1));
   url_info2.set_hidden(false);
   URLID url_id2 = AddURL(url_info2);
   ASSERT_NE(0, url_id2);
@@ -335,7 +333,7 @@ TEST_F(URLDatabaseTest, GetAndDeleteKeywordSearchTermByTerm) {
   url_info3.set_title(u"Google");
   url_info3.set_visit_count(4);
   url_info3.set_typed_count(2);
-  url_info3.set_last_visit(Time::Now() - TimeDelta::FromDays(1));
+  url_info3.set_last_visit(Time::Now() - base::Days(1));
   url_info3.set_hidden(false);
   URLID url_id3 = AddURL(url_info3);
   ASSERT_NE(0, url_id3);
@@ -390,7 +388,7 @@ TEST_F(URLDatabaseTest, MigrationURLTableForAddingAUTOINCREMENT) {
   url_info1.set_title(u"Google");
   url_info1.set_visit_count(4);
   url_info1.set_typed_count(2);
-  url_info1.set_last_visit(Time::Now() - TimeDelta::FromDays(1));
+  url_info1.set_last_visit(Time::Now() - base::Days(1));
   url_info1.set_hidden(false);
   URLID id1_initially = AddURL(url_info1);
   EXPECT_TRUE(id1_initially);
@@ -400,7 +398,7 @@ TEST_F(URLDatabaseTest, MigrationURLTableForAddingAUTOINCREMENT) {
   url_info2.set_title(u"Google Mail");
   url_info2.set_visit_count(3);
   url_info2.set_typed_count(0);
-  url_info2.set_last_visit(Time::Now() - TimeDelta::FromDays(2));
+  url_info2.set_last_visit(Time::Now() - base::Days(2));
   url_info2.set_hidden(true);
   EXPECT_TRUE(AddURL(url_info2));
 
@@ -420,7 +418,7 @@ TEST_F(URLDatabaseTest, MigrationURLTableForAddingAUTOINCREMENT) {
   url_info3.set_title(u"Google Maps");
   url_info3.set_visit_count(7);
   url_info3.set_typed_count(6);
-  url_info3.set_last_visit(Time::Now() - TimeDelta::FromDays(3));
+  url_info3.set_last_visit(Time::Now() - base::Days(3));
   url_info3.set_hidden(false);
   EXPECT_TRUE(AddURL(url_info3));
 
@@ -446,7 +444,7 @@ TEST_F(URLDatabaseTest, MigrationURLTableForAddingAUTOINCREMENT) {
   url_info4.set_title(u"Google Plus");
   url_info4.set_visit_count(4);
   url_info4.set_typed_count(3);
-  url_info4.set_last_visit(Time::Now() - TimeDelta::FromDays(4));
+  url_info4.set_last_visit(Time::Now() - base::Days(4));
   url_info4.set_hidden(false);
   EXPECT_TRUE(AddURL(url_info4));
 
@@ -463,7 +461,7 @@ TEST_F(URLDatabaseTest, MigrationURLTableForAddingAUTOINCREMENT) {
   url_info5.set_title(u"Google Docs");
   url_info5.set_visit_count(9);
   url_info5.set_typed_count(2);
-  url_info5.set_last_visit(Time::Now() - TimeDelta::FromDays(5));
+  url_info5.set_last_visit(Time::Now() - base::Days(5));
   url_info5.set_hidden(false);
   EXPECT_TRUE(AddURL(url_info5));
 

@@ -5,6 +5,7 @@
 import argparse
 import importlib
 import logging
+import multiprocessing
 import os
 import sys
 
@@ -28,7 +29,7 @@ def _AddTargetSpecificationArgs(arg_parser):
   device_args.add_argument('--device',
                            default=None,
                            choices=BUILTIN_TARGET_NAMES + ['custom'],
-                           help='Choose to run on aemu|qemu|device. '
+                           help='Choose to run on fvdl|aemu|qemu|device. '
                            'By default, Fuchsia will run on AEMU on x64 '
                            'hosts and QEMU on arm64 hosts. Alternatively, '
                            'setting to custom will require specifying the '
@@ -63,6 +64,19 @@ def _LoadTargetClass(target_path):
   return loaded_target.GetTargetType()
 
 
+def _GetDefaultEmulatedCpuCoreCount():
+  # Revise the processor count on arm64, the trybots on arm64 are in
+  # dockers and cannot use all processors.
+  # For x64, fvdl always assumes hyperthreading is supported by intel
+  # processors, but the cpu_count returns the number regarding if the core
+  # is a physical one or a hyperthreading one, so the number should be
+  # divided by 2 to avoid creating more threads than the processor
+  # supports.
+  if GetHostArchFromPlatform() == 'x64':
+    return max(int(multiprocessing.cpu_count() / 2) - 1, 4)
+  return 4
+
+
 def AddCommonArgs(arg_parser):
   """Adds command line arguments to |arg_parser| for options which are shared
   across test and executable target types.
@@ -71,12 +85,7 @@ def AddCommonArgs(arg_parser):
     arg_parser: an ArgumentParser object."""
 
   common_args = arg_parser.add_argument_group('common', 'Common arguments')
-  common_args.add_argument('--runner-logs-dir',
-                           help='Directory to write test runner logs to.')
-  common_args.add_argument('--exclude-system-logs',
-                           action='store_false',
-                           dest='include_system_logs',
-                           help='Do not show system log data.')
+  common_args.add_argument('--logs-dir', help='Directory to write logs to.')
   common_args.add_argument('--verbose',
                            '-v',
                            default=False,
@@ -87,10 +96,8 @@ def AddCommonArgs(arg_parser):
       type=os.path.realpath,
       help=('Path to the directory in which build files are located. '
             'Defaults to current directory.'))
-  common_args.add_argument('--system-log-file',
-                           help='File to write system logs to. Specify '
-                           '\'-\' to log to stdout.')
   common_args.add_argument('--fuchsia-out-dir',
+                           default=None,
                            help='Path to a Fuchsia build output directory. '
                            'Setting the GN arg '
                            '"default_fuchsia_build_dir_for_installation" '
@@ -109,11 +116,11 @@ def AddCommonArgs(arg_parser):
   emu_args = arg_parser.add_argument_group('emu', 'General emulator arguments')
   emu_args.add_argument('--cpu-cores',
                         type=int,
-                        default=4,
+                        default=_GetDefaultEmulatedCpuCoreCount(),
                         help='Sets the number of CPU cores to provide.')
   emu_args.add_argument('--ram-size-mb',
                         type=int,
-                        default=2048,
+                        default=8192,
                         help='Sets the emulated RAM size (MB).'),
   emu_args.add_argument('--allow-no-kvm',
                         action='store_false',
@@ -168,6 +175,6 @@ def GetDeploymentTargetForArgs(args):
   if args.device:
     device = args.device
   else:
-    device = 'aemu' if args.target_cpu == 'x64' else 'qemu'
+    device = 'fvdl' if args.target_cpu == 'x64' else 'qemu'
 
   return _LoadTargetClass(_GetPathToBuiltinTarget(device)).CreateFromArgs(args)

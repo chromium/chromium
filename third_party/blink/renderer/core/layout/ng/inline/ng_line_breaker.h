@@ -22,6 +22,7 @@ class NGBlockBreakToken;
 class NGInlineBreakToken;
 class NGInlineItem;
 class NGLineInfo;
+class ResolvedTextLayoutAttributesIterator;
 
 // The line breaker needs to know which mode its in to properly handle floats.
 enum class NGLineBreakerMode { kContent, kMinContent, kMaxContent };
@@ -57,10 +58,10 @@ class CORE_EXPORT NGLineBreaker {
   bool IsFinished() const { return item_index_ >= Items().size(); }
 
   // Create an NGInlineBreakToken for the last line returned by NextLine().
-  scoped_refptr<NGInlineBreakToken> CreateBreakToken(const NGLineInfo&) const;
+  const NGInlineBreakToken* CreateBreakToken(const NGLineInfo&) const;
 
-  void PropagateBreakToken(scoped_refptr<const NGBlockBreakToken>);
-  Vector<scoped_refptr<const NGBlockBreakToken>>& PropagatedBreakTokens() {
+  void PropagateBreakToken(const NGBlockBreakToken*);
+  HeapVector<Member<const NGBlockBreakToken>>& PropagatedBreakTokens() {
     return propagated_break_tokens_;
   }
 
@@ -75,6 +76,7 @@ class CORE_EXPORT NGLineBreaker {
   // Returns true if this item has edge and may have non-zero inline size.
   static bool ComputeOpenTagResult(const NGInlineItem&,
                                    const NGConstraintSpace&,
+                                   bool is_in_svg_text,
                                    NGInlineItemResult*);
 
   // This enum is private, except for |WhitespaceStateForTesting()|. See
@@ -93,7 +95,7 @@ class CORE_EXPORT NGLineBreaker {
 
  private:
   const String& Text() const { return text_content_; }
-  const Vector<NGInlineItem>& Items() const { return items_data_.items; }
+  const HeapVector<NGInlineItem>& Items() const { return items_data_.items; }
 
   String TextContentForLineBreak() const;
 
@@ -131,9 +133,12 @@ class CORE_EXPORT NGLineBreaker {
   };
 
   void HandleText(const NGInlineItem& item, const ShapeResult&, NGLineInfo*);
-  // Split |item| by glyphs, and add them to |line_info|.
+  // Split |item| into segments, and add them to |line_info|.
   // This is for SVG <text>.
-  void SplitTextByGlyphs(const NGInlineItem& item, NGLineInfo* line_info);
+  void SplitTextIntoSegments(const NGInlineItem& item, NGLineInfo* line_info);
+  // Returns true if we should split NGInlineItem before
+  // svg_addressable_offset_.
+  bool ShouldCreateNewSvgSegment() const;
   enum BreakResult { kSuccess, kOverflow };
   BreakResult BreakText(NGInlineItemResult*,
                         const NGInlineItem&,
@@ -171,6 +176,8 @@ class CORE_EXPORT NGLineBreaker {
   void HandleBidiControlItem(const NGInlineItem&, NGLineInfo*);
   void HandleAtomicInline(const NGInlineItem&, NGLineInfo*);
   void HandleBlockInInline(const NGInlineItem&, NGLineInfo*);
+  void ComputeMinMaxContentSizeForBlockChild(const NGInlineItem&,
+                                             NGInlineItemResult*);
 
   bool CanBreakAfterAtomicInline(const NGInlineItem& item) const;
   bool CanBreakAfter(const NGInlineItem& item) const;
@@ -236,6 +243,7 @@ class CORE_EXPORT NGLineBreaker {
   LineBreakState state_;
   unsigned item_index_ = 0;
   unsigned offset_ = 0;
+  unsigned svg_addressable_offset_ = 0;
 
   // |WhitespaceState| of the current end. When a line is broken, this indicates
   // the state of trailing whitespaces.
@@ -277,8 +285,8 @@ class CORE_EXPORT NGLineBreaker {
   // True when breaking at soft hyphens (U+00AD) is allowed.
   bool enable_soft_hyphen_ = true;
 
-  // True when the line we are breaking has a list marker.
-  bool has_list_marker_ = false;
+  // True when the line should be non-empty if |IsLastLine|..
+  bool force_non_empty_if_last_line_ = false;
 
   // Set when the line ended with a forced break. Used to setup the states for
   // the next line.
@@ -291,6 +299,9 @@ class CORE_EXPORT NGLineBreaker {
   // True if the resultant line contains a RubyRun with inline-end overhang.
   bool maybe_have_end_overhang_ = false;
 
+  // True if ShouldCreateNewSvgSegment() should be called.
+  bool needs_svg_segmentation_ = false;
+
   const NGInlineItemsData& items_data_;
 
   // The text content of this node. This is same as |items_data_.text_content|
@@ -300,7 +311,7 @@ class CORE_EXPORT NGLineBreaker {
 
   const NGConstraintSpace& constraint_space_;
   NGExclusionSpace* exclusion_space_;
-  scoped_refptr<const NGInlineBreakToken> break_token_;
+  const NGInlineBreakToken* break_token_;
   scoped_refptr<const ComputedStyle> current_style_;
 
   LazyLineBreakIterator break_iterator_;
@@ -339,7 +350,7 @@ class CORE_EXPORT NGLineBreaker {
   // if 'unicode-bidi: plaintext'.
   TextDirection base_direction_;
 
-  Vector<scoped_refptr<const NGBlockBreakToken>> propagated_break_tokens_;
+  HeapVector<Member<const NGBlockBreakToken>> propagated_break_tokens_;
 
   // Fields for `box-decoration-break: clone`.
   unsigned cloned_box_decorations_count_ = 0;
@@ -353,6 +364,9 @@ class CORE_EXPORT NGLineBreaker {
     wtf_size_t to_index;
   };
   absl::optional<RewindIndex> last_rewind_;
+
+  // This has a valid object if is_svg_text_.
+  std::unique_ptr<ResolvedTextLayoutAttributesIterator> svg_resolved_iterator_;
 };
 
 }  // namespace blink

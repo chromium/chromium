@@ -31,6 +31,10 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
       gfx::SurfaceOrigin origin,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+
+  SkiaOutputDeviceDawn(const SkiaOutputDeviceDawn&) = delete;
+  SkiaOutputDeviceDawn& operator=(const SkiaOutputDeviceDawn&) = delete;
+
   ~SkiaOutputDeviceDawn() override;
 
   gpu::SurfaceHandle GetChildSurfaceHandle() const;
@@ -69,8 +73,6 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
   // the rendering. gl::ChildWindowWin creates and owns a window which is
   // reparented by the browser to be a child of its window.
   gl::ChildWindowWin child_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaOutputDeviceDawn);
 };
 
 }  // namespace viz

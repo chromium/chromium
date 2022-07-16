@@ -902,7 +902,7 @@ TEST_F(CastAudioOutputStreamTest, AudioDelay) {
   audio_decoder->set_rendering_delay(
       CmaBackend::AudioDecoder::RenderingDelay(kDelayUs, MonotonicClockNow()));
   ::media::MockAudioSourceCallback source_callback;
-  const base::TimeDelta delay(base::TimeDelta::FromMicroseconds(kDelayUs));
+  const base::TimeDelta delay(base::Microseconds(kDelayUs));
   // OnMoreData can be called with a shorter delay than the rendering delay in
   // order to prefetch audio data faster.
   EXPECT_CALL(source_callback, OnMoreData(testing::Le(delay), _, _, _))
@@ -917,7 +917,7 @@ TEST_F(CastAudioOutputStreamTest, AudioDelay) {
 
 TEST_F(CastAudioOutputStreamTest, MultiroomInfo) {
   chromecast::mojom::MultiroomInfo info(true, AudioChannel::kAll,
-                                        base::TimeDelta::FromSeconds(3), "");
+                                        base::Seconds(3), "");
   multiroom_manager_.SetMultiroomInfo(info);
 
   ::media::AudioOutputStream* stream = CreateStream();
@@ -938,8 +938,7 @@ TEST_F(CastAudioOutputStreamTest, MultiroomInfo) {
   MediaPipelineDeviceParams params = cma_backend_->params();
   EXPECT_EQ(params.multiroom, true);
   EXPECT_EQ(params.audio_channel, AudioChannel::kAll);
-  EXPECT_EQ(params.output_delay_us,
-            base::TimeDelta::FromSeconds(3).InMicroseconds());
+  EXPECT_EQ(params.output_delay_us, base::Seconds(3).InMicroseconds());
 
   stream->Stop();
   stream->Close();

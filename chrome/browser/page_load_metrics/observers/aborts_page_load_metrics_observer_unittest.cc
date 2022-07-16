@@ -273,7 +273,7 @@ TEST_F(AbortsPageLoadMetricsObserverTest, NoAbortNewNavigationAfterPaint) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
-  timing.paint_timing->first_paint = base::TimeDelta::FromMicroseconds(1);
+  timing.paint_timing->first_paint = base::Microseconds(1);
   PopulateRequiredTimingFields(&timing);
   NavigateAndCommit(GURL("https://www.google.com"));
   tester()->SimulateTimingUpdate(timing);

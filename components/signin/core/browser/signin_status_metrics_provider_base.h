@@ -5,24 +5,29 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_STATUS_METRICS_PROVIDER_BASE_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_STATUS_METRICS_PROVIDER_BASE_H_
 
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 
-// The base class for collecting login status of all opened profiles during one
-// UMA session and recording the value into a histogram before UMA log is
-// uploaded. Overriding class SigninStatusMetricsProvider supports platform
-// Window, Linux, Macintosh and Android, and overriding class
-// SigninStatusMetricsProviderChromeOS supports ChromeOS. It is currently not
-// supported on iOS.
+// The base class for collecting the sign-in status of all opened profiles
+// during one UMA session and recording the status in a histogram before the UMA
+// log is uploaded.
 class SigninStatusMetricsProviderBase : public metrics::MetricsProvider {
  public:
   SigninStatusMetricsProviderBase();
+
+  SigninStatusMetricsProviderBase(const SigninStatusMetricsProviderBase&) =
+      delete;
+  SigninStatusMetricsProviderBase& operator=(
+      const SigninStatusMetricsProviderBase&) = delete;
+
   ~SigninStatusMetricsProviderBase() override;
 
   // Possible sign-in status of all opened profiles during one UMA session. For
   // MIXED_SIGNIN_STATUS, at least one signed-in profile and at least one
-  // unsigned-in profile were opened between two UMA log uploads. Not every
-  // possibilities can be applied to each platform.
+  // unsigned-in profile were opened between two UMA log uploads. Some statuses
+  // are not applicable to all platforms.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum SigninStatus {
     ALL_PROFILES_SIGNED_IN,
     ALL_PROFILES_NOT_SIGNED_IN,
@@ -50,8 +55,6 @@ class SigninStatusMetricsProviderBase : public metrics::MetricsProvider {
  private:
   // Sign-in status of all profiles seen so far.
   SigninStatus signin_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninStatusMetricsProviderBase);
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_STATUS_METRICS_PROVIDER_BASE_H_

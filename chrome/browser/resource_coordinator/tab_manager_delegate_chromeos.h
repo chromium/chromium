@@ -14,7 +14,6 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/timer/timer.h"
@@ -65,6 +64,9 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
 
   TabManagerDelegate(const base::WeakPtr<TabManager>& tab_manager,
                      TabManagerDelegate::MemoryStat* mem_stat);
+
+  TabManagerDelegate(const TabManagerDelegate&) = delete;
+  TabManagerDelegate& operator=(const TabManagerDelegate&) = delete;
 
   ~TabManagerDelegate() override;
 
@@ -186,7 +188,7 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
   // being killed. In that case, killing them every time is just a waste of
   // resources.
   static constexpr base::TimeDelta GetArcRespawnKillDelay() {
-    return base::TimeDelta::FromSeconds(60);
+    return base::Seconds(60);
   }
 
   // The OOM adjustment score for persistent ARC processes.
@@ -219,8 +221,6 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
 
   // Weak pointer factory used for posting tasks to other threads.
   base::WeakPtrFactory<TabManagerDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabManagerDelegate);
 };
 
 // On ARC enabled machines, either a tab or an app could be a possible
@@ -241,6 +241,9 @@ class TabManagerDelegate::Candidate {
   // But if TabRanker is on, kMaxScore guarantees all apps are sorted before
   // tabs.
   explicit Candidate(const arc::ArcProcess* app) : app_(app) { DCHECK(app_); }
+
+  Candidate(const Candidate&) = delete;
+  Candidate& operator=(const Candidate&) = delete;
 
   // Move-only class.
   Candidate(Candidate&&) = default;
@@ -265,7 +268,6 @@ class TabManagerDelegate::Candidate {
   LifecycleUnit* lifecycle_unit_ = nullptr;
   const arc::ArcProcess* app_ = nullptr;
   ProcessType process_type_ = GetProcessTypeInternal();
-  DISALLOW_COPY_AND_ASSIGN(Candidate);
 };
 
 // A thin wrapper over library process_metric.h to get memory status so unit

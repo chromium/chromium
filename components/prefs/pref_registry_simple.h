@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/prefs_export.h"
@@ -24,6 +23,9 @@ class FilePath;
 class COMPONENTS_PREFS_EXPORT PrefRegistrySimple : public PrefRegistry {
  public:
   PrefRegistrySimple();
+
+  PrefRegistrySimple(const PrefRegistrySimple&) = delete;
+  PrefRegistrySimple& operator=(const PrefRegistrySimple&) = delete;
 
   // For each of these registration methods, |flags| is an optional bitmask of
   // PrefRegistrationFlags.
@@ -79,9 +81,6 @@ class COMPONENTS_PREFS_EXPORT PrefRegistrySimple : public PrefRegistry {
 
  protected:
   ~PrefRegistrySimple() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrefRegistrySimple);
 };
 
 #endif  // COMPONENTS_PREFS_PREF_REGISTRY_SIMPLE_H_

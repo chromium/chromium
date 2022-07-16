@@ -403,6 +403,14 @@ Polymer({
 
   /** @private */
   openManageGoogleAccountLanguage_() {
+    this.languagesMetricsProxy_.recordInteraction(
+        settings.LanguagesPageInteraction.OPEN_MANAGE_GOOGLE_ACCOUNT_LANGUAGE);
     window.open(loadTimeData.getString('googleAccountLanguagesURL'));
-  }
+  },
+
+  /** @private */
+  onLanguagePreferenceDescriptionLinkClick_() {
+    this.languagesMetricsProxy_.recordInteraction(
+        settings.LanguagesPageInteraction.OPEN_WEB_LANGUAGES_LEARN_MORE);
+  },
 });

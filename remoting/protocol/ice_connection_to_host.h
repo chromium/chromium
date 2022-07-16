@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/proto/internal.pb.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/clipboard_filter.h"
@@ -40,6 +40,10 @@ class IceConnectionToHost : public ConnectionToHost,
                             public ChannelDispatcherBase::EventHandler {
  public:
   IceConnectionToHost();
+
+  IceConnectionToHost(const IceConnectionToHost&) = delete;
+  IceConnectionToHost& operator=(const IceConnectionToHost&) = delete;
+
   ~IceConnectionToHost() override;
 
   // ConnectionToHost interface.
@@ -108,8 +112,6 @@ class IceConnectionToHost : public ConnectionToHost,
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IceConnectionToHost);
 };
 
 }  // namespace protocol

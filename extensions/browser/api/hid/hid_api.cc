@@ -63,7 +63,7 @@ HidGetDevicesFunction::~HidGetDevicesFunction() {}
 
 ExtensionFunction::ResponseAction HidGetDevicesFunction::Run() {
   std::unique_ptr<api::hid::GetDevices::Params> parameters =
-      hid::GetDevices::Params::Create(*args_);
+      hid::GetDevices::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   HidDeviceManager* device_manager = HidDeviceManager::Get(browser_context());
@@ -104,7 +104,7 @@ HidGetUserSelectedDevicesFunction::~HidGetUserSelectedDevicesFunction() {
 
 ExtensionFunction::ResponseAction HidGetUserSelectedDevicesFunction::Run() {
   std::unique_ptr<api::hid::GetUserSelectedDevices::Params> parameters =
-      hid::GetUserSelectedDevices::Params::Create(*args_);
+      hid::GetUserSelectedDevices::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   content::WebContents* web_contents = GetSenderWebContents();
@@ -150,7 +150,7 @@ HidConnectFunction::~HidConnectFunction() {}
 
 ExtensionFunction::ResponseAction HidConnectFunction::Run() {
   std::unique_ptr<api::hid::Connect::Params> parameters =
-      hid::Connect::Params::Create(*args_);
+      hid::Connect::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   HidDeviceManager* device_manager = HidDeviceManager::Get(browser_context());
@@ -196,7 +196,7 @@ HidDisconnectFunction::~HidDisconnectFunction() {}
 
 ExtensionFunction::ResponseAction HidDisconnectFunction::Run() {
   std::unique_ptr<api::hid::Disconnect::Params> parameters =
-      hid::Disconnect::Params::Create(*args_);
+      hid::Disconnect::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   ApiResourceManager<HidConnectionResource>* connection_manager =
@@ -242,7 +242,7 @@ HidReceiveFunction::HidReceiveFunction() {}
 HidReceiveFunction::~HidReceiveFunction() {}
 
 bool HidReceiveFunction::ReadParameters() {
-  parameters_ = hid::Receive::Params::Create(*args_);
+  parameters_ = hid::Receive::Params::Create(args());
   if (!parameters_)
     return false;
   set_connection_id(parameters_->connection_id);
@@ -272,7 +272,7 @@ HidSendFunction::HidSendFunction() {}
 HidSendFunction::~HidSendFunction() {}
 
 bool HidSendFunction::ReadParameters() {
-  parameters_ = hid::Send::Params::Create(*args_);
+  parameters_ = hid::Send::Params::Create(args());
   if (!parameters_)
     return false;
   set_connection_id(parameters_->connection_id);
@@ -302,7 +302,7 @@ HidReceiveFeatureReportFunction::HidReceiveFeatureReportFunction() {}
 HidReceiveFeatureReportFunction::~HidReceiveFeatureReportFunction() {}
 
 bool HidReceiveFeatureReportFunction::ReadParameters() {
-  parameters_ = hid::ReceiveFeatureReport::Params::Create(*args_);
+  parameters_ = hid::ReceiveFeatureReport::Params::Create(args());
   if (!parameters_)
     return false;
   set_connection_id(parameters_->connection_id);
@@ -334,7 +334,7 @@ HidSendFeatureReportFunction::HidSendFeatureReportFunction() {}
 HidSendFeatureReportFunction::~HidSendFeatureReportFunction() {}
 
 bool HidSendFeatureReportFunction::ReadParameters() {
-  parameters_ = hid::SendFeatureReport::Params::Create(*args_);
+  parameters_ = hid::SendFeatureReport::Params::Create(args());
   if (!parameters_)
     return false;
   set_connection_id(parameters_->connection_id);

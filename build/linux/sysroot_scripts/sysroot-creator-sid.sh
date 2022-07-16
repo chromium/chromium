@@ -417,6 +417,7 @@ DEBIAN_PACKAGES_X86="
   libmpx2
   libquadmath0
   libubsan1
+  valgrind
 "
 
 DEBIAN_PACKAGES_ARM="
@@ -429,6 +430,7 @@ DEBIAN_PACKAGES_ARM="
   libgtk-4-1
   libgtk-4-dev
   libubsan1
+  valgrind
 "
 
 DEBIAN_PACKAGES_ARM64="
@@ -444,6 +446,7 @@ DEBIAN_PACKAGES_ARM64="
   libthai0
   libtsan0
   libubsan1
+  valgrind
 "
 
 DEBIAN_PACKAGES_ARMEL="
@@ -458,6 +461,7 @@ DEBIAN_PACKAGES_ARMEL="
 "
 
 DEBIAN_PACKAGES_MIPS64EL="
+  valgrind
 "
 
 . "${SCRIPT_DIR}/sysroot-creator.sh"

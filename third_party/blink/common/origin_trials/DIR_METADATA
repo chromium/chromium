@@ -1,5 +1,2 @@
-monorail {
-  component: "Internals>OriginTrials"
-}
+mixins: "//third_party/blink/common/origin_trials/COMMON_METADATA"
 
-team_email: "experimentation-dev@chromium.org"

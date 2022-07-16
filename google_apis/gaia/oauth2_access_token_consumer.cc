@@ -38,29 +38,29 @@ OAuth2AccessTokenConsumer::TokenResponse::Builder::~Builder() = default;
 
 OAuth2AccessTokenConsumer::TokenResponse::Builder&
 OAuth2AccessTokenConsumer::TokenResponse::Builder::WithAccessToken(
-    const std::string& access_token) {
-  access_token_ = access_token;
+    const std::string& token) {
+  access_token_ = token;
   return *this;
 }
 
 OAuth2AccessTokenConsumer::TokenResponse::Builder&
 OAuth2AccessTokenConsumer::TokenResponse::Builder::WithRefreshToken(
-    const std::string& refresh_token) {
-  refresh_token_ = refresh_token;
+    const std::string& token) {
+  refresh_token_ = token;
   return *this;
 }
 
 OAuth2AccessTokenConsumer::TokenResponse::Builder&
 OAuth2AccessTokenConsumer::TokenResponse::Builder::WithExpirationTime(
-    const base::Time& expiration_time) {
-  expiration_time_ = expiration_time;
+    const base::Time& time) {
+  expiration_time_ = time;
   return *this;
 }
 
 OAuth2AccessTokenConsumer::TokenResponse::Builder&
 OAuth2AccessTokenConsumer::TokenResponse::Builder::WithIdToken(
-    const std::string& id_token) {
-  id_token_ = id_token;
+    const std::string& token) {
+  id_token_ = token;
   return *this;
 }
 

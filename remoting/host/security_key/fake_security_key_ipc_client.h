@@ -32,6 +32,10 @@ class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
  public:
   explicit FakeSecurityKeyIpcClient(
       const base::RepeatingClosure& channel_event_callback);
+
+  FakeSecurityKeyIpcClient(const FakeSecurityKeyIpcClient&) = delete;
+  FakeSecurityKeyIpcClient& operator=(const FakeSecurityKeyIpcClient&) = delete;
+
   ~FakeSecurityKeyIpcClient() override;
 
   // SecurityKeyIpcClient interface.
@@ -132,8 +136,6 @@ class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
   std::string security_key_response_payload_;
 
   base::WeakPtrFactory<FakeSecurityKeyIpcClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecurityKeyIpcClient);
 };
 
 }  // namespace remoting

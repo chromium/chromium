@@ -31,7 +31,7 @@ class _ColorFormatter(logging.Formatter):
 
   def __init__(self, wrapped_formatter=None):
     """Wraps a |logging.Formatter| and adds color."""
-    super(_ColorFormatter, self).__init__(self)
+    super(_ColorFormatter, self).__init__()
     self._wrapped_formatter = wrapped_formatter or logging.Formatter()
 
   #override

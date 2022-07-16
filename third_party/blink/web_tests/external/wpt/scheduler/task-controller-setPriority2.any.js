@@ -8,7 +8,7 @@ promise_test(async t => {
   const taskControllers = [];
 
   for (let i = 0; i < 5; i++) {
-    taskControllers.push(new TaskController('background'));
+    taskControllers.push(new TaskController({priority: 'background'}));
     const signal = taskControllers[i].signal;
     tasks.push(scheduler.postTask(() => { runOrder.push(i); }, {signal}));
   }

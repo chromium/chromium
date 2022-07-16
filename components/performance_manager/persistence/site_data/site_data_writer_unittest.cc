@@ -4,7 +4,6 @@
 
 #include "components/performance_manager/persistence/site_data/site_data_writer.h"
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
@@ -24,11 +23,14 @@ class SiteDataWriterTest : public ::testing::Test {
   SiteDataWriterTest()
       : test_impl_(base::WrapRefCounted(
             new internal::SiteDataImpl(url::Origin::Create(GURL("foo.com")),
-                                       &delegate_,
+                                       delegate_.GetWeakPtr(),
                                        &data_store_))) {
     SiteDataWriter* writer = new SiteDataWriter(test_impl_.get());
     writer_ = base::WrapUnique(writer);
   }
+
+  SiteDataWriterTest(const SiteDataWriterTest&) = delete;
+  SiteDataWriterTest& operator=(const SiteDataWriterTest&) = delete;
 
   ~SiteDataWriterTest() override = default;
 
@@ -51,8 +53,6 @@ class SiteDataWriterTest : public ::testing::Test {
   // A SiteDataWriter object associated with the origin used
   // to create this object.
   std::unique_ptr<SiteDataWriter> writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataWriterTest);
 };
 
 TEST_F(SiteDataWriterTest, TestModifiers) {
@@ -96,9 +96,8 @@ TEST_F(SiteDataWriterTest, TestModifiers) {
   EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
             test_impl_->UsesAudioInBackground());
 
-  writer_->NotifyLoadTimePerformanceMeasurement(
-      base::TimeDelta::FromMicroseconds(202),
-      base::TimeDelta::FromMicroseconds(101), 1005);
+  writer_->NotifyLoadTimePerformanceMeasurement(base::Microseconds(202),
+                                                base::Microseconds(101), 1005);
   EXPECT_EQ(1u, test_impl_->load_duration().num_datums());
   EXPECT_EQ(202.0, test_impl_->load_duration().value());
   EXPECT_EQ(1u, test_impl_->cpu_usage_estimate().num_datums());

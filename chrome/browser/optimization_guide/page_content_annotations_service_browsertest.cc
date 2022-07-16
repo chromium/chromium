@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback.h"
 #include "base/path_service.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
@@ -18,52 +19,57 @@
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
-
-namespace {
-
-// Fetch and calculate the total number of samples from all the bins for
-// |histogram_name|. Note: from some browertests run, there might be two
-// profiles created, and this will return the total sample count across
-// profiles.
-int GetTotalHistogramSamples(const base::HistogramTester& histogram_tester,
-                             const std::string& histogram_name) {
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples(histogram_name);
-  int total = 0;
-  for (const auto& bucket : buckets)
-    total += bucket.count;
-
-  return total;
-}
-
-// Retries fetching |histogram_name| until it contains at least |count| samples.
-int RetryForHistogramUntilCountReached(
-    const base::HistogramTester& histogram_tester,
-    const std::string& histogram_name,
-    int count) {
-  int total = 0;
-  while (true) {
-    base::ThreadPoolInstance::Get()->FlushForTesting();
-    base::RunLoop().RunUntilIdle();
-
-    total = GetTotalHistogramSamples(histogram_tester, histogram_name);
-    if (total >= count)
-      return total;
-  }
-}
-
-}  // namespace
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace optimization_guide {
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+class FakePageTextService : public mojom::PageTextService {
+ public:
+  FakePageTextService() = default;
+  ~FakePageTextService() override = default;
+
+  void BindPendingReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
+    // Reset first in case the pipe is being re-used, as for a second navigation
+    // in a test.
+    receiver_.reset();
+
+    receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::PageTextService>(
+        std::move(handle)));
+  }
+
+  // mojom::PageTextService:
+  void RequestPageTextDump(
+      mojom::PageTextDumpRequestPtr request,
+      mojo::PendingRemote<mojom::PageTextConsumer> consumer) override {
+    mojo::Remote<mojom::PageTextConsumer> consumer_remote;
+    consumer_remote.Bind(std::move(consumer));
+
+    consumer_remote->OnTextDumpChunk(u"hello world");
+    consumer_remote->OnChunksEnd();
+  }
+
+ private:
+  mojo::AssociatedReceiver<mojom::PageTextService> receiver_{this};
+};
+
 // A HistoryDBTask that retrieves content annotations.
 class GetContentAnnotationsTask : public history::HistoryDBTask {
  public:
@@ -120,7 +126,6 @@ class PageContentAnnotationsServiceDisabledBrowserTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceDisabledBrowserTest,
                        KeyedServiceEnabledButFeaturesDisabled) {
@@ -137,13 +142,9 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
           {
               {"write_to_history_service", "true"},
           }}},
-        /*disabled_features=*/{features::kLoadModelFileForEachExecution});
+        /*disabled_features=*/{});
   }
   ~PageContentAnnotationsServiceBrowserTest() override = default;
-
-  void set_model_is_lazily_loaded(bool model_is_lazily_loaded) {
-    model_is_lazily_loaded_ = model_is_lazily_loaded;
-  }
 
   void set_load_model_on_startup(bool load_model_on_startup) {
     load_model_on_startup_ = load_model_on_startup;
@@ -157,14 +158,30 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
         "chrome/test/data/optimization_guide");
     ASSERT_TRUE(embedded_test_server()->Start());
 
+    InstallFakePageTextAgent();
+
     if (load_model_on_startup_) {
       LoadAndWaitForModel();
     }
   }
 
-  void LoadAndWaitForModel() {
-    base::HistogramTester histogram_tester;
+  // TODO(crbug/1256940): Fix the root cause and remove this gross workaround.
+  void InstallFakePageTextAgent() {
+    fake_renderer_service_ = std::make_unique<FakePageTextService>();
 
+    blink::AssociatedInterfaceProvider* remote_interfaces =
+        browser()
+            ->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetMainFrame()
+            ->GetRemoteAssociatedInterfaces();
+    remote_interfaces->OverrideBinderForTesting(
+        mojom::PageTextService::Name_,
+        base::BindRepeating(&FakePageTextService::BindPendingReceiver,
+                            base::Unretained(fake_renderer_service_.get())));
+  }
+
+  void LoadAndWaitForModel() {
     proto::Any any_metadata;
     any_metadata.set_type_url(
         "type.googleapis.com/com.foo.PageTopicsModelMetadata");
@@ -179,7 +196,9 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     category_params->set_min_none_weight(0.8);
     category_params->set_min_category_weight(0.0);
     category_params->set_min_normalized_weight_within_top_n(0.1);
-    output_params->mutable_floc_protected_params()->set_category_name(
+    // TODO(crbug.com/1200677): migrate the category name on the test model
+    // itself provided by model owners.
+    output_params->mutable_visibility_params()->set_category_name(
         "FLOC_PROTECTED");
     page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
     base::FilePath source_root_dir;
@@ -190,6 +209,9 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
             .AppendASCII("data")
             .AppendASCII("optimization_guide")
             .AppendASCII("bert_page_topics_model.tflite");
+
+    base::HistogramTester histogram_tester;
+
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
         ->OverrideTargetModelForTesting(
             proto::OPTIMIZATION_TARGET_PAGE_TOPICS,
@@ -199,23 +221,12 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
                 .Build());
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    bool expect_model_loaded = !model_is_lazily_loaded_;
+    RetryForHistogramUntilCountReached(
+        &histogram_tester,
+        "OptimizationGuide.ModelExecutor.ModelFileUpdated.PageTopics", 1);
 #else
-    bool expect_model_loaded = false;
+    base::RunLoop().RunUntilIdle();
 #endif
-
-    if (expect_model_loaded) {
-      RetryForHistogramUntilCountReached(
-          histogram_tester,
-          "OptimizationGuide.ModelExecutor.ModelLoadingResult.PageTopics", 1);
-      histogram_tester.ExpectUniqueSample(
-          "OptimizationGuide.ModelExecutor.ModelLoadingResult.PageTopics",
-          ModelExecutorLoadingState::kModelFileValidAndMemoryMapped, 1);
-      histogram_tester.ExpectTotalCount(
-          "OptimizationGuide.ModelExecutor.ModelLoadingDuration.PageTopics", 1);
-    } else {
-      base::RunLoop().RunUntilIdle();
-    }
   }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -251,18 +262,26 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
   }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
+  void Annotate(const HistoryVisit& visit, const std::string& text) {
+    PageContentAnnotationsService* service =
+        PageContentAnnotationsServiceFactory::GetForProfile(
+            browser()->profile());
+    service->Annotate(visit, text);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  bool model_is_lazily_loaded_ = false;
+  std::unique_ptr<FakePageTextService> fake_renderer_service_;
   bool load_model_on_startup_ = true;
 };
 
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
                        ModelExecutes) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   int expected_count = 1;
@@ -270,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   int expected_count = 0;
 #endif
   RetryForHistogramUntilCountReached(
-      histogram_tester,
+      &histogram_tester,
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
       expected_count);
 
@@ -295,8 +314,9 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
   RetryForHistogramUntilCountReached(
-      histogram_tester,
+      &histogram_tester,
       "OptimizationGuide.PageContentAnnotationsService."
       "ContentAnnotationsStorageStatus",
       1);
@@ -309,47 +329,63 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
-  EXPECT_NE(-1.0,
-            got_content_annotations->model_annotations.floc_protected_score);
+  EXPECT_NE(-1.0, got_content_annotations->model_annotations.visibility_score);
   EXPECT_FALSE(got_content_annotations->model_annotations.categories.empty());
   EXPECT_EQ(
       123,
       got_content_annotations->model_annotations.page_topics_model_version);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageContentAnnotations::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
                        NoVisitsForUrlInHistory) {
-  base::HistogramTester histogram_tester;
-
-  PageContentAnnotationsService* service =
-      PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
-
   HistoryVisit history_visit;
   history_visit.url = GURL("https://probablynotarealurl.com/");
-  service->Annotate(history_visit, "sometext");
 
-  RetryForHistogramUntilCountReached(
-      histogram_tester,
-      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
+  {
+    base::HistogramTester histogram_tester;
 
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", true,
-      1);
+    Annotate(history_visit, "sometext");
 
-  RetryForHistogramUntilCountReached(
-      histogram_tester,
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      1);
+    RetryForHistogramUntilCountReached(
+        &histogram_tester,
+        "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
 
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      PageContentAnnotationsStorageStatus::kNoVisitsForUrl, 1);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
+        true, 1);
 
-  EXPECT_FALSE(GetContentAnnotationsForURL(history_visit.url).has_value());
+    RetryForHistogramUntilCountReached(
+        &histogram_tester,
+        "OptimizationGuide.PageContentAnnotationsService."
+        "ContentAnnotationsStorageStatus",
+        1);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PageContentAnnotationsService."
+        "ContentAnnotationsStorageStatus",
+        PageContentAnnotationsStorageStatus::kNoVisitsForUrl, 1);
+
+    EXPECT_FALSE(GetContentAnnotationsForURL(history_visit.url).has_value());
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+
+    // Make sure a repeat visit is not annotated again.
+    Annotate(history_visit, "sometext");
+
+    base::RunLoop().RunUntilIdle();
+
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 0);
+  }
 }
 
 class PageContentAnnotationsServiceNoHistoryTest
@@ -362,7 +398,7 @@ class PageContentAnnotationsServiceNoHistoryTest
           {
               {"write_to_history_service", "false"},
           }}},
-        /*disabled_features=*/{features::kLoadModelFileForEachExecution});
+        /*disabled_features=*/{});
   }
   ~PageContentAnnotationsServiceNoHistoryTest() override = default;
 
@@ -376,10 +412,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello-no-history.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
-      histogram_tester,
+      &histogram_tester,
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -396,92 +432,17 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
   EXPECT_FALSE(GetContentAnnotationsForURL(url).has_value());
 }
 
-class PageContentAnnotationsServiceLoadEachExecutionTest
+class PageContentAnnotationsServiceModelNotLoadedOnStartupTest
     : public PageContentAnnotationsServiceBrowserTest {
  public:
-  PageContentAnnotationsServiceLoadEachExecutionTest() {
+  PageContentAnnotationsServiceModelNotLoadedOnStartupTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kOptimizationHints,
-                              features::kPageContentAnnotations,
-                              features::kLoadModelFileForEachExecution},
+                              features::kPageContentAnnotations},
         /*disabled_features=*/{});
-    set_model_is_lazily_loaded(true);
-  }
-  ~PageContentAnnotationsServiceLoadEachExecutionTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Regression test for crbug/1204162.
-IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceLoadEachExecutionTest,
-                       ModelLoadsAndExecutes) {
-  base::HistogramTester histogram_tester;
-
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
-
-  RetryForHistogramUntilCountReached(
-      histogram_tester,
-      "OptimizationGuide.ModelExecutor.ModelLoadingResult.PageTopics", 1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecutor.ModelLoadingResult.PageTopics",
-      ModelExecutorLoadingState::kModelFileValidAndMemoryMapped, 1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.ModelExecutor.ModelLoadingDuration.PageTopics", 1);
-
-  RetryForHistogramUntilCountReached(
-      histogram_tester,
-      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", true,
-      1);
-
-  PageContentAnnotationsService* service =
-      PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
-
-  absl::optional<int64_t> model_version = service->GetPageTopicsModelVersion();
-  EXPECT_TRUE(model_version.has_value());
-  EXPECT_EQ(123, *model_version);
-
-  RetryForHistogramUntilCountReached(
-      histogram_tester,
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      1);
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      PageContentAnnotationsStorageStatus::kSuccess, 1);
-
-  absl::optional<history::VisitContentAnnotations> got_content_annotations =
-      GetContentAnnotationsForURL(url);
-  ASSERT_TRUE(got_content_annotations.has_value());
-  EXPECT_NE(-1.0,
-            got_content_annotations->model_annotations.floc_protected_score);
-  EXPECT_FALSE(got_content_annotations->model_annotations.categories.empty());
-  EXPECT_EQ(
-      123,
-      got_content_annotations->model_annotations.page_topics_model_version);
-}
-
-class PageContentAnnotationsServiceLoadEachExecutionNotStartupTest
-    : public PageContentAnnotationsServiceBrowserTest {
- public:
-  PageContentAnnotationsServiceLoadEachExecutionNotStartupTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kOptimizationHints,
-                              features::kPageContentAnnotations,
-                              features::kLoadModelFileForEachExecution},
-        /*disabled_features=*/{});
-    set_model_is_lazily_loaded(true);
     set_load_model_on_startup(false);
   }
-  ~PageContentAnnotationsServiceLoadEachExecutionNotStartupTest() override =
+  ~PageContentAnnotationsServiceModelNotLoadedOnStartupTest() override =
       default;
 
  private:
@@ -496,16 +457,15 @@ class PageContentAnnotationsServiceLoadEachExecutionNotStartupTest
 #define MAYBE_ModelNotAvailableForFirstNavigation \
   ModelNotAvailableForFirstNavigation
 #endif
-IN_PROC_BROWSER_TEST_F(
-    PageContentAnnotationsServiceLoadEachExecutionNotStartupTest,
-    MAYBE_ModelNotAvailableForFirstNavigation) {
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceModelNotLoadedOnStartupTest,
+                       MAYBE_ModelNotAvailableForFirstNavigation) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
-      histogram_tester,
+      &histogram_tester,
       "OptimizationGuide.PageContentAnnotationsService.ModelAvailable", 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -516,10 +476,10 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL url2(
       embedded_test_server()->GetURL("a.com", "/hello.html?totally=different"));
-  ui_test_utils::NavigateToURL(browser(), url2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
 
   RetryForHistogramUntilCountReached(
-      histogram_tester,
+      &histogram_tester,
       "OptimizationGuide.PageContentAnnotationsService.ModelAvailable", 2);
 
   histogram_tester.ExpectBucketCount(

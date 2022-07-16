@@ -26,6 +26,10 @@ class Browser;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
+// Stores the most recently updated credential.
+- (void)setMostRecentlyUpdatedPasswordDetails:
+    (const password_manager::PasswordForm&)password;
+
 @property(nonatomic, weak) id<PasswordsSettingsCommands> handler;
 
 // Delegate.

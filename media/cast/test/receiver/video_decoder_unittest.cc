@@ -11,13 +11,12 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/sender/sender_encoded_frame.h"
-#include "media/cast/sender/vp8_encoder.h"
+#include "media/cast/sender/vpx_encoder.h"
 #include "media/cast/test/receiver/video_decoder.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/standalone_cast_environment.h"
@@ -49,6 +48,9 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
         cond_(&lock_) {
     vp8_encoder_.Initialize();
   }
+
+  VideoDecoderTest(const VideoDecoderTest&) = delete;
+  VideoDecoderTest& operator=(const VideoDecoderTest&) = delete;
 
   virtual ~VideoDecoderTest() {
     // Make sure all threads have stopped before the environment goes away.
@@ -83,7 +85,7 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
         next_frame_size_, next_frame_timestamp_);
     const base::TimeTicks reference_time =
         base::TimeTicks::UnixEpoch() + next_frame_timestamp_;
-    next_frame_timestamp_ += base::TimeDelta::FromSeconds(1) / kFrameRate;
+    next_frame_timestamp_ += base::Seconds(1) / kFrameRate;
     PopulateVideoFrame(video_frame.get(), 0);
 
     // Encode |frame| into |encoded_frame->data|.
@@ -157,7 +159,7 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
   FrameId last_frame_id_;
   bool seen_a_decoded_frame_;
 
-  Vp8Encoder vp8_encoder_;
+  VpxEncoder vp8_encoder_;
 
   // Unlike |total_video_frames_decoded_|, this is only read/written on a single
   // thread.
@@ -166,8 +168,6 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
   base::Lock lock_;
   base::ConditionVariable cond_;
   int total_video_frames_decoded_;  // Protected by |lock_|.
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderTest);
 };
 
 TEST_P(VideoDecoderTest, DecodesFrames) {

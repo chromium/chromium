@@ -9,9 +9,9 @@
 
 namespace syncer {
 
-FakeSyncChangeProcessor::FakeSyncChangeProcessor() {}
+FakeSyncChangeProcessor::FakeSyncChangeProcessor() = default;
 
-FakeSyncChangeProcessor::~FakeSyncChangeProcessor() {}
+FakeSyncChangeProcessor::~FakeSyncChangeProcessor() = default;
 
 absl::optional<ModelError> FakeSyncChangeProcessor::ProcessSyncChanges(
     const base::Location& from_here,

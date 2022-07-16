@@ -56,8 +56,7 @@ class ThumbnailCaptureDriver : public ThumbnailScheduler::TabCapturer {
 
   // Determines how long to wait for final capture, and how many times
   // to retry if one is not received. Exposed for testing.
-  static constexpr base::TimeDelta kCooldownDelay =
-      base::TimeDelta::FromMilliseconds(500);
+  static constexpr base::TimeDelta kCooldownDelay = base::Milliseconds(500);
   static constexpr size_t kMaxCooldownRetries = 3;
 
  private:

@@ -7,16 +7,16 @@
   Exposed=Window,
   RuntimeEnabled=AppHistory
 ] interface AppHistoryNavigateEvent : Event {
-  [CallWith=ExecutionContext] constructor(DOMString type, optional AppHistoryNavigateEventInit eventInit = {});
+  [CallWith=ExecutionContext] constructor(DOMString type, AppHistoryNavigateEventInit eventInit);
 
   readonly attribute AppHistoryNavigationType navigationType;
   readonly attribute AppHistoryDestination destination;
-  readonly attribute boolean canRespond;
+  readonly attribute boolean canTransition;
   readonly attribute boolean userInitiated;
   readonly attribute boolean hashChange;
   readonly attribute AbortSignal signal;
   readonly attribute FormData? formData;
   readonly attribute any info;
 
-  [CallWith=ScriptState, RaisesException] void respondWith(Promise<any> newNavigationAction);
+  [CallWith=ScriptState, RaisesException] void transitionWhile(Promise<any> newNavigationAction);
 };

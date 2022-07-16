@@ -93,6 +93,9 @@ class BASE_EXPORT SamplingHeapProfiler
   static void Init();
   static SamplingHeapProfiler* Get();
 
+  SamplingHeapProfiler(const SamplingHeapProfiler&) = delete;
+  SamplingHeapProfiler& operator=(const SamplingHeapProfiler&) = delete;
+
   // ThreadIdNameManager::Observer implementation:
   void OnThreadNameChanged(const char* name) override;
 
@@ -135,8 +138,6 @@ class BASE_EXPORT SamplingHeapProfiler
 
   friend class NoDestructor<SamplingHeapProfiler>;
   friend class SamplingHeapProfilerTest;
-
-  DISALLOW_COPY_AND_ASSIGN(SamplingHeapProfiler);
 };
 
 }  // namespace base

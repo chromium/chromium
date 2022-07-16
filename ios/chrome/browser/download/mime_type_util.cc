@@ -9,6 +9,7 @@
 
 char kMobileConfigurationType[] = "application/x-apple-aspen-config";
 char kPkPassMimeType[] = "application/vnd.apple.pkpass";
+char kVcardMimeType[] = "text/vcard";
 char kUsdzFileExtension[] = ".usdz";
 char kUsdzMimeType[] = "model/vnd.usdz+zip";
 char kLegacyUsdzMimeType[] = "model/usd";

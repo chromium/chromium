@@ -8,15 +8,13 @@
 
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/base64.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -37,6 +35,10 @@ namespace {
 class TestClient : public SafeBrowsingDatabaseManager::Client {
  public:
   TestClient() : callback_invoked_(false) {}
+
+  TestClient(const TestClient&) = delete;
+  TestClient& operator=(const TestClient&) = delete;
+
   ~TestClient() override {}
 
   void OnCheckApiBlocklistUrlResult(const GURL& url,
@@ -58,7 +60,6 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
   std::set<std::string> blocked_permissions_;
   bool callback_invoked_;
   base::RunLoop run_loop_;
-  DISALLOW_COPY_AND_ASSIGN(TestClient);
 };
 
 }  // namespace

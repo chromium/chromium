@@ -7,7 +7,6 @@
 
 #include <fuchsia/ui/input/cpp/fidl.h>
 
-#include "base/macros.h"
 #include "ui/events/events_export.h"
 
 namespace ui {
@@ -20,6 +19,10 @@ class EVENTS_EXPORT InputEventDispatcher {
   // |event_sink|: The recipient of any Chrome events that are processed from
   // Fuchsia events.
   explicit InputEventDispatcher(InputEventSink* event_sink);
+
+  InputEventDispatcher(const InputEventDispatcher&) = delete;
+  InputEventDispatcher& operator=(const InputEventDispatcher&) = delete;
+
   ~InputEventDispatcher();
 
   // Processes a Fuchsia |event| and dispatches Chrome ui::Events from it.
@@ -33,8 +36,6 @@ class EVENTS_EXPORT InputEventDispatcher {
   bool ProcessTouchEvent(const fuchsia::ui::input::PointerEvent& event) const;
 
   InputEventSink* event_sink_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputEventDispatcher);
 };
 
 }  // namespace ui

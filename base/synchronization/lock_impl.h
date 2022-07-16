@@ -7,7 +7,6 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
@@ -36,6 +35,11 @@ namespace internal {
 // This class implements the underlying platform-specific spin-lock mechanism
 // used for the Lock class. Do not use, use Lock instead.
 class BASE_EXPORT LockImpl {
+ public:
+  LockImpl(const LockImpl&) = delete;
+  LockImpl& operator=(const LockImpl&) = delete;
+
+ private:
   friend class base::Lock;
   friend class base::ConditionVariable;
   friend class base::win::internal::AutoNativeLock;
@@ -73,8 +77,6 @@ class BASE_EXPORT LockImpl {
 
   void LockInternalWithTracking();
   NativeHandle native_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockImpl);
 };
 
 void LockImpl::Lock() {
@@ -106,9 +108,12 @@ void LockImpl::Unlock() {
 
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 
+BASE_EXPORT std::string SystemErrorCodeToString(int error_code);
+
 bool LockImpl::Try() {
   int rv = pthread_mutex_trylock(&native_handle_);
-  DCHECK(rv == 0 || rv == EBUSY) << ". " << strerror(rv);
+  DCHECK(rv == 0 || rv == EBUSY)
+      << ". " << base::internal::SystemErrorCodeToString(rv);
   return rv == 0;
 }
 
@@ -135,6 +140,9 @@ class SCOPED_LOCKABLE BasicAutoLock {
     lock_.AssertAcquired();
   }
 
+  BasicAutoLock(const BasicAutoLock&) = delete;
+  BasicAutoLock& operator=(const BasicAutoLock&) = delete;
+
   ~BasicAutoLock() UNLOCK_FUNCTION() {
     lock_.AssertAcquired();
     lock_.Release();
@@ -142,7 +150,30 @@ class SCOPED_LOCKABLE BasicAutoLock {
 
  private:
   LockType& lock_;
-  DISALLOW_COPY_AND_ASSIGN(BasicAutoLock);
+};
+
+// This is an implementation used for AutoTryLock templated on the lock type.
+template <class LockType>
+class SCOPED_LOCKABLE BasicAutoTryLock {
+ public:
+  explicit BasicAutoTryLock(LockType& lock) EXCLUSIVE_LOCK_FUNCTION(lock)
+      : lock_(lock), is_acquired_(lock_.Try()) {}
+
+  BasicAutoTryLock(const BasicAutoTryLock&) = delete;
+  BasicAutoTryLock& operator=(const BasicAutoTryLock&) = delete;
+
+  ~BasicAutoTryLock() UNLOCK_FUNCTION() {
+    if (is_acquired_) {
+      lock_.AssertAcquired();
+      lock_.Release();
+    }
+  }
+
+  bool is_acquired() const { return is_acquired_; }
+
+ private:
+  LockType& lock_;
+  const bool is_acquired_;
 };
 
 // This is an implementation used for AutoUnlock templated on the lock type.
@@ -155,11 +186,13 @@ class BasicAutoUnlock {
     lock_.Release();
   }
 
+  BasicAutoUnlock(const BasicAutoUnlock&) = delete;
+  BasicAutoUnlock& operator=(const BasicAutoUnlock&) = delete;
+
   ~BasicAutoUnlock() { lock_.Acquire(); }
 
  private:
   LockType& lock_;
-  DISALLOW_COPY_AND_ASSIGN(BasicAutoUnlock);
 };
 
 // This is an implementation used for AutoLockMaybe templated on the lock type.
@@ -172,6 +205,9 @@ class SCOPED_LOCKABLE BasicAutoLockMaybe {
       lock_->Acquire();
   }
 
+  BasicAutoLockMaybe(const BasicAutoLockMaybe&) = delete;
+  BasicAutoLockMaybe& operator=(const BasicAutoLockMaybe&) = delete;
+
   ~BasicAutoLockMaybe() UNLOCK_FUNCTION() {
     if (lock_) {
       lock_->AssertAcquired();
@@ -181,7 +217,6 @@ class SCOPED_LOCKABLE BasicAutoLockMaybe {
 
  private:
   LockType* const lock_;
-  DISALLOW_COPY_AND_ASSIGN(BasicAutoLockMaybe);
 };
 
 // This is an implementation used for ReleasableAutoLock templated on the lock
@@ -194,6 +229,9 @@ class SCOPED_LOCKABLE BasicReleasableAutoLock {
     DCHECK(lock_);
     lock_->Acquire();
   }
+
+  BasicReleasableAutoLock(const BasicReleasableAutoLock&) = delete;
+  BasicReleasableAutoLock& operator=(const BasicReleasableAutoLock&) = delete;
 
   ~BasicReleasableAutoLock() UNLOCK_FUNCTION() {
     if (lock_) {
@@ -211,7 +249,6 @@ class SCOPED_LOCKABLE BasicReleasableAutoLock {
 
  private:
   LockType* lock_;
-  DISALLOW_COPY_AND_ASSIGN(BasicReleasableAutoLock);
 };
 
 }  // namespace internal

@@ -64,10 +64,11 @@ class UserData : public base::SupportsUserData::Data {
 
   explicit UserData(AwContentsClientBridge* ptr) : contents_(ptr) {}
 
+  UserData(const UserData&) = delete;
+  UserData& operator=(const UserData&) = delete;
+
  private:
   AwContentsClientBridge* contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserData);
 };
 
 }  // namespace

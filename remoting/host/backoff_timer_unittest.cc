@@ -36,9 +36,8 @@ TEST_F(BackoffTimerTest, Basic) {
   BackoffTimer backoff_timer;
   ASSERT_FALSE(backoff_timer.IsRunning());
 
-  constexpr base::TimeDelta initial_delay =
-      base::TimeDelta::FromMilliseconds(10);
-  constexpr base::TimeDelta max_delay = base::TimeDelta::FromMilliseconds(50);
+  constexpr base::TimeDelta initial_delay = base::Milliseconds(10);
+  constexpr base::TimeDelta max_delay = base::Milliseconds(50);
 
   backoff_timer.Start(FROM_HERE, initial_delay, max_delay,
                       base::BindRepeating(&BackoffTimerTest::IncrementCounter,

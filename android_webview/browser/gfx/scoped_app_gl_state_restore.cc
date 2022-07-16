@@ -56,6 +56,10 @@ int ScopedAppGLStateRestore::framebuffer_binding_ext() const {
   return impl_->framebuffer_binding_ext();
 }
 
+bool ScopedAppGLStateRestore::skip_draw() const {
+  return impl_->skip_draw();
+}
+
 ScopedAppGLStateRestore::Impl::Impl() = default;
 ScopedAppGLStateRestore::Impl::~Impl() = default;
 

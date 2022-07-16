@@ -18,13 +18,18 @@ class ScopedAppGLStateRestoreImplAngle : public ScopedAppGLStateRestore::Impl {
  public:
   ScopedAppGLStateRestoreImplAngle(ScopedAppGLStateRestore::CallMode mode,
                                    bool save_restore);
+
+  ScopedAppGLStateRestoreImplAngle(const ScopedAppGLStateRestoreImplAngle&) =
+      delete;
+  ScopedAppGLStateRestoreImplAngle& operator=(
+      const ScopedAppGLStateRestoreImplAngle&) = delete;
+
   ~ScopedAppGLStateRestoreImplAngle() override;
 
  protected:
 #if DCHECK_IS_ON()
   EGLContext egl_context_ = EGL_NO_CONTEXT;
 #endif
-  DISALLOW_COPY_AND_ASSIGN(ScopedAppGLStateRestoreImplAngle);
 };
 
 }  // namespace internal

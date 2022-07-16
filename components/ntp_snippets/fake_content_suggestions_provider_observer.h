@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/ntp_snippets/category.h"
 #include "components/ntp_snippets/content_suggestion.h"
 #include "components/ntp_snippets/content_suggestions_provider.h"
@@ -19,6 +18,10 @@ class FakeContentSuggestionsProviderObserver final
     : public ContentSuggestionsProvider::Observer {
  public:
   FakeContentSuggestionsProviderObserver();
+  FakeContentSuggestionsProviderObserver(
+      const FakeContentSuggestionsProviderObserver&) = delete;
+  FakeContentSuggestionsProviderObserver& operator=(
+      const FakeContentSuggestionsProviderObserver&) = delete;
   ~FakeContentSuggestionsProviderObserver();
 
   void OnNewSuggestions(ContentSuggestionsProvider* provider,
@@ -45,8 +48,6 @@ class FakeContentSuggestionsProviderObserver final
   std::map<Category, CategoryStatus, Category::CompareByID> statuses_;
   std::map<Category, std::vector<ContentSuggestion>, Category::CompareByID>
       suggestions_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeContentSuggestionsProviderObserver);
 };
 
 }  // namespace ntp_snippets

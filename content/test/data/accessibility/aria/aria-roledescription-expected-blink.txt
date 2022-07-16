@@ -10,3 +10,12 @@ rootWebArea
 ++++++button name='Clicky button' roleDescription='Clicky'
 ++++++++staticText name='Clicky button'
 ++++++++++inlineTextBox name='Clicky button'
+++++++genericContainer
+++++++++staticText name='foo'
+++++++++++inlineTextBox name='foo'
+++++++genericContainer name='bar'
+++++++++staticText name='bar'
+++++++++++inlineTextBox name='bar'
+++++++paragraph roleDescription='Texty'
+++++++++staticText name='baz'
+++++++++++inlineTextBox name='baz'

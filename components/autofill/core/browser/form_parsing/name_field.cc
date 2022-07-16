@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -25,13 +24,14 @@ class FullNameField : public NameField {
                                               LogManager* log_manager);
   explicit FullNameField(AutofillField* field);
 
+  FullNameField(const FullNameField&) = delete;
+  FullNameField& operator=(const FullNameField&) = delete;
+
  protected:
   void AddClassifications(FieldCandidatesMap* field_candidates) const override;
 
  private:
   AutofillField* field_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullNameField);
 };
 
 // A form field that parses a first name field and two last name fields as they
@@ -47,6 +47,9 @@ class FirstTwoLastNamesField : public NameField {
       const LanguageCode& page_language,
       LogManager* log_manager);
 
+  FirstTwoLastNamesField(const FirstTwoLastNamesField&) = delete;
+  FirstTwoLastNamesField& operator=(const FirstTwoLastNamesField&) = delete;
+
  protected:
   void AddClassifications(FieldCandidatesMap* field_candidates) const override;
 
@@ -59,8 +62,6 @@ class FirstTwoLastNamesField : public NameField {
   AutofillField* first_last_name_{nullptr};
   AutofillField* second_last_name_{nullptr};
   bool middle_initial_{false};  // True if middle_name_ is a middle initial.
-
-  DISALLOW_COPY_AND_ASSIGN(FirstTwoLastNamesField);
 };
 
 // A form field that can parse a first and last name field.
@@ -79,6 +80,9 @@ class FirstLastNameField : public NameField {
       const LanguageCode& page_language,
       LogManager* log_manager);
 
+  FirstLastNameField(const FirstLastNameField&) = delete;
+  FirstLastNameField& operator=(const FirstLastNameField&) = delete;
+
  protected:
   void AddClassifications(FieldCandidatesMap* field_candidates) const override;
 
@@ -90,8 +94,6 @@ class FirstLastNameField : public NameField {
   AutofillField* middle_name_{nullptr};  // Optional.
   AutofillField* last_name_{nullptr};
   bool middle_initial_{false};  // True if middle_name_ is a middle initial.
-
-  DISALLOW_COPY_AND_ASSIGN(FirstLastNameField);
 };
 
 }  // namespace

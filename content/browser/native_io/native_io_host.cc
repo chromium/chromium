@@ -15,11 +15,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/sequence_checker.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "content/browser/native_io/native_io_file_host.h"
 #include "content/browser/native_io/native_io_manager.h"
@@ -193,14 +195,6 @@ GetAllFileNamesResult DoGetAllFileNames(const base::FilePath& root_path) {
   return {enumeration_error, std::move(result)};
 }
 
-// Reports the result of the file I/O work in GetAllFileNames().
-void DidGetAllFileNames(
-    blink::mojom::NativeIOHost::GetAllFileNamesCallback callback,
-    GetAllFileNamesResult result) {
-  std::move(callback).Run(result.first == base::File::FILE_OK,
-                          std::move(result.second));
-}
-
 // Performs the file I/O work in RenameFile().
 NativeIOErrorPtr DoRenameFile(const base::FilePath& root_path,
                               const std::string& old_name,
@@ -261,8 +255,8 @@ NativeIOHost::NativeIOHost(const blink::StorageKey& storage_key,
       file_task_runner_(CreateFileTaskRunner()) {
   DCHECK(manager != nullptr);
 
-  // base::Unretained is safe here because this NativeIOHost owns |receivers_|.
-  // So, the unretained NativeIOHost is guaranteed to outlive |receivers_| and
+  // base::Unretained is safe here because this NativeIOHost owns `receivers_`.
+  // So, the unretained NativeIOHost is guaranteed to outlive `receivers_` and
   // the closure that it uses.
   receivers_.set_disconnect_handler(base::BindRepeating(
       &NativeIOHost::OnReceiverDisconnect, base::Unretained(this)));
@@ -284,6 +278,7 @@ void NativeIOHost::OpenFile(
     mojo::PendingReceiver<blink::mojom::NativeIOFileHost> file_host_receiver,
     OpenFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
 
   if (is_incognito_mode()) {
     std::move(callback).Run(
@@ -336,6 +331,7 @@ void NativeIOHost::OpenFile(
 void NativeIOHost::DeleteFile(const std::string& name,
                               DeleteFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
 
   if (is_incognito_mode()) {
     std::move(callback).Run(
@@ -392,6 +388,7 @@ void NativeIOHost::DeleteFile(const std::string& name,
 
 void NativeIOHost::GetAllFileNames(GetAllFileNamesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
 
   if (is_incognito_mode()) {
     std::move(callback).Run(false, {});
@@ -408,13 +405,20 @@ void NativeIOHost::GetAllFileNames(GetAllFileNamesCallback callback) {
 
   file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&DoGetAllFileNames, root_path_),
-      base::BindOnce(&DidGetAllFileNames, std::move(callback)));
+      base::BindOnce(
+          [](blink::mojom::NativeIOHost::GetAllFileNamesCallback callback,
+             GetAllFileNamesResult result) {
+            std::move(callback).Run(result.first == base::File::FILE_OK,
+                                    std::move(result.second));
+          },
+          std::move(callback)));
 }
 
 void NativeIOHost::RenameFile(const std::string& old_name,
                               const std::string& new_name,
                               RenameFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
 
   if (is_incognito_mode()) {
     std::move(callback).Run(
@@ -475,6 +479,9 @@ void NativeIOHost::RenameFile(const std::string& old_name,
 void NativeIOHost::RequestCapacityChange(
     int64_t capacity_delta,
     RequestCapacityChangeCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
+
   if (is_incognito_mode()) {
     std::move(callback).Run(0);
     return;
@@ -489,7 +496,9 @@ void NativeIOHost::RequestCapacityChange(
   std::move(callback).Run(capacity_delta);
 }
 
-void NativeIOHost::OnFileClose(NativeIOFileHost* file_host) {
+void NativeIOHost::OnFileClose(NativeIOFileHost* file_host,
+                               base::PassKey<NativeIOFileHost>) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(open_file_hosts_.count(file_host->file_name()) > 0);
   DCHECK_EQ(open_file_hosts_[file_host->file_name()].get(), file_host);
 
@@ -497,6 +506,9 @@ void NativeIOHost::OnFileClose(NativeIOFileHost* file_host) {
 }
 
 void NativeIOHost::DeleteAllData(DeleteAllDataCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
+
   delete_all_data_callbacks_.push_back(std::move(callback));
   if (delete_all_data_callbacks_.size() > 1) {
     return;
@@ -515,7 +527,8 @@ void NativeIOHost::DeleteAllData(DeleteAllDataCallback callback) {
 void NativeIOHost::OnReceiverDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  manager_->OnHostReceiverDisconnect(this);
+  // May delete `this`.
+  manager_->OnHostReceiverDisconnect(this, base::PassKey<NativeIOHost>());
 }
 
 void NativeIOHost::DidOpenFile(
@@ -523,8 +536,10 @@ void NativeIOHost::DidOpenFile(
     mojo::PendingReceiver<blink::mojom::NativeIOFileHost> file_host_receiver,
     OpenFileCallback callback,
     std::pair<base::File, int64_t> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(io_pending_files_.count(name));
   DCHECK(!open_file_hosts_.count(name));
+
   base::File file = std::move(result.first);
   int64_t length = result.second;
   io_pending_files_.erase(name);
@@ -566,8 +581,10 @@ void NativeIOHost::DidDeleteFile(
     const std::string& name,
     DeleteFileCallback callback,
     std::pair<blink::mojom::NativeIOErrorPtr, int64_t> delete_result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(io_pending_files_.count(name));
   DCHECK(!open_file_hosts_.count(name));
+
   io_pending_files_.erase(name);
 
   manager_->quota_manager_proxy()->NotifyStorageModified(
@@ -582,10 +599,12 @@ void NativeIOHost::DidRenameFile(const std::string& old_name,
                                  const std::string& new_name,
                                  RenameFileCallback callback,
                                  NativeIOErrorPtr rename_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(io_pending_files_.count(old_name));
   DCHECK(!open_file_hosts_.count(old_name));
   DCHECK(io_pending_files_.count(new_name));
   DCHECK(!open_file_hosts_.count(new_name));
+
   io_pending_files_.erase(old_name);
   io_pending_files_.erase(new_name);
 
@@ -598,14 +617,19 @@ void NativeIOHost::DidRenameFile(const std::string& old_name,
 }
 
 void NativeIOHost::DidDeleteAllData(base::File::Error error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Moving callbacks to a local variable to avoid race conditions if the vector
-  // is accessed concurrently.
+  // is accessed during callback execution.
   std::vector<DeleteAllDataCallback> callbacks =
       std::move(delete_all_data_callbacks_);
   delete_all_data_callbacks_.clear();
   for (DeleteAllDataCallback& callback : callbacks) {
-    std::move(callback).Run(error, this);
+    std::move(callback).Run(error);
   }
+
+  // May delete `this`.
+  manager_->DidDeleteHostData(this, base::PassKey<NativeIOHost>());
 }
 
 }  // namespace content

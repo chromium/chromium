@@ -53,31 +53,30 @@
                   "description": "List of file extensions that the selected file can have. The list is also used to specify what files to be shown in the select file dialog. Files with the listed extensions are only shown in the dialog. Extensions should not include the leading '.'. Example: ['jpg', 'png']"
               }
             }
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Function called upon completion.",
-            "parameters": [
-              {
-                "name": "result",
-                "description": "Result of the method.",
-                "type": "object",
-                "properties": {
-                  "success": {
-                    "type": "boolean",
-                    "description": "Has the file been selected."
-                  },
-                  "entry": {
-                    "$ref": "FileEntryInfo",
-                    "optional": true,
-                    "description": "Selected file entry."
-                  }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Function called upon completion.",
+          "parameters": [
+            {
+              "name": "result",
+              "description": "Result of the method.",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "description": "Has the file been selected."
+                },
+                "entry": {
+                  "$ref": "FileEntryInfo",
+                  "optional": true,
+                  "description": "Selected file entry."
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }
     ]
   }

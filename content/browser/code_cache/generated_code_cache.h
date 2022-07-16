@@ -10,11 +10,11 @@
 
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/io_buffer.h"
+#include "net/base/network_isolation_key.h"
 #include "net/disk_cache/disk_cache.h"
 #include "url/origin.h"
 
@@ -49,7 +49,21 @@ class CONTENT_EXPORT GeneratedCodeCache {
 
   // Cache type. Used for collecting statistics for JS and Wasm in separate
   // buckets.
-  enum CodeCacheType { kJavaScript, kWebAssembly };
+  enum CodeCacheType {
+    // JavaScript from http(s) pages.
+    kJavaScript,
+
+    // WebAssembly from http(s) pages. This cache allows more total size and
+    // more size per item than the JavaScript cache, since some
+    // WebAssembly programs are very large.
+    kWebAssembly,
+
+    // JavaScript from chrome and chrome-untrusted pages. The resource URLs are
+    // limited to only those fetched via chrome and chrome-untrusted schemes.
+    // The cache size is limited to disk_cache::kMaxWebUICodeCacheSize.
+    // Deduplication of very large items is disabled in this cache.
+    kWebUIJavaScript,
+  };
 
   // Used for collecting statistics about cache behaviour.
   enum CacheEntryStatus {
@@ -76,6 +90,9 @@ class CONTENT_EXPORT GeneratedCodeCache {
                      int max_size_bytes,
                      CodeCacheType cache_type);
 
+  GeneratedCodeCache(const GeneratedCodeCache&) = delete;
+  GeneratedCodeCache& operator=(const GeneratedCodeCache&) = delete;
+
   ~GeneratedCodeCache();
 
   // Runs the callback with a raw pointer to the backend. If we could not create
@@ -89,6 +106,7 @@ class CONTENT_EXPORT GeneratedCodeCache {
   // there is no entry it creates a new one.
   void WriteEntry(const GURL& resource_url,
                   const GURL& origin_lock,
+                  const net::NetworkIsolationKey& nik,
                   const base::Time& response_time,
                   mojo_base::BigBuffer data);
 
@@ -96,15 +114,19 @@ class CONTENT_EXPORT GeneratedCodeCache {
   // and return it using the ReadDataCallback.
   void FetchEntry(const GURL& resource_url,
                   const GURL& origin_lock,
+                  const net::NetworkIsolationKey& nik,
                   ReadDataCallback);
 
   // Delete the entry corresponding to <resource_url, origin_lock>
-  void DeleteEntry(const GURL& resource_url, const GURL& origin_lock);
+  void DeleteEntry(const GURL& resource_url,
+                   const GURL& origin_lock,
+                   const net::NetworkIsolationKey& nik);
 
   // Should be only used for tests. Sets the last accessed timestamp of an
   // entry.
   void SetLastUsedTimeForTest(const GURL& resource_url,
                               const GURL& origin_lock,
+                              const net::NetworkIsolationKey& nik,
                               base::Time time,
                               base::OnceClosure callback);
 
@@ -183,6 +205,20 @@ class CONTENT_EXPORT GeneratedCodeCache {
 
   void CollectStatistics(GeneratedCodeCache::CacheEntryStatus status);
 
+  // Whether very large cache entries are deduplicated in this cache.
+  // Deduplication is disabled in the WebUI code cache, as an additional defense
+  // against privilege escalation in case there is a bug in the deduplication
+  // logic.
+  bool IsDeduplicationEnabled() const;
+
+  bool ShouldDeduplicateEntry(uint32_t data_size) const;
+
+  // Checks that the header data in the small buffer is valid. We may read cache
+  // entries that were written by a previous version of Chrome which uses
+  // obsolete formats. These reads should fail and be doomed as soon as
+  // possible.
+  bool IsValidHeader(scoped_refptr<net::IOBufferWithSize> small_buffer) const;
+
   std::unique_ptr<disk_cache::Backend> backend_;
   BackendState backend_state_;
 
@@ -198,8 +234,6 @@ class CONTENT_EXPORT GeneratedCodeCache {
   CodeCacheType cache_type_;
 
   base::WeakPtrFactory<GeneratedCodeCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GeneratedCodeCache);
 };
 
 }  // namespace content

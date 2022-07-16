@@ -12,6 +12,7 @@
 #include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
+#include "chrome/browser/share/share_features.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 
@@ -33,9 +34,12 @@ SendTabToSelfClientService::SendTabToSelfClientService(
   SetupHandlerRegistry(profile);
 }
 
-SendTabToSelfClientService::~SendTabToSelfClientService() {
+SendTabToSelfClientService::~SendTabToSelfClientService() = default;
+
+void SendTabToSelfClientService::Shutdown() {
   model_->RemoveObserver(this);
   model_ = nullptr;
+  registry_->OnProfileShutdown(profile_);
 }
 
 void SendTabToSelfClientService::SendTabToSelfModelLoaded() {
@@ -57,7 +61,8 @@ void SendTabToSelfClientService::EntriesAddedRemotely(
     // TODO(skare): ReceivingUiHandler should be able to filter at its level,
     // or the registry should not be a singleton so we don't need to filter at
     // all. This narrow patch is less risky, but we should make a larger change.
-    if (base::FeatureList::IsEnabled(kSendTabToSelfV2)) {
+    if (base::FeatureList::IsEnabled(kSendTabToSelfV2) ||
+        share::AreUpcomingSharingFeaturesEnabled()) {
       auto* button_controller =
           static_cast<SendTabToSelfToolbarIconController*>(handler.get());
       if (button_controller && button_controller->profile() == profile_) {
@@ -66,7 +71,7 @@ void SendTabToSelfClientService::EntriesAddedRemotely(
     } else {
       auto* desktop_handler =
           static_cast<DesktopNotificationHandler*>(handler.get());
-      if (desktop_handler && desktop_handler->GetProfile() == profile_) {
+      if (desktop_handler && desktop_handler->profile() == profile_) {
         handler->DisplayNewEntries(new_entries);
       }
     }

@@ -9,12 +9,14 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/crash/core/app/breakpad_linux.h"
 #include "components/crash/core/app/crashpad.h"
@@ -28,6 +30,10 @@
 #include "chrome/installer/util/google_update_settings.h"
 #endif
 
+#if defined(USE_DBUS) && !defined(OS_CHROMEOS)
+#include "chrome/browser/dbus_memory_pressure_evaluator_linux.h"
+#endif
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
 #include "base/linux_util.h"
@@ -39,9 +45,9 @@
 #endif
 
 ChromeBrowserMainPartsLinux::ChromeBrowserMainPartsLinux(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     StartupData* startup_data)
-    : ChromeBrowserMainPartsPosix(parameters, startup_data) {}
+    : ChromeBrowserMainPartsPosix(std::move(parameters), startup_data) {}
 
 ChromeBrowserMainPartsLinux::~ChromeBrowserMainPartsLinux() {
 }
@@ -54,9 +60,7 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(base::IgnoreResult(&base::GetLinuxDistro)));
-#endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Set up crypt config. This should be kept in sync with the OSCrypt parts of
   // SystemNetworkContextManager::OnNetworkServiceCreated.
   std::unique_ptr<os_crypt::Config> config(new os_crypt::Config());
@@ -84,6 +88,24 @@ void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
 
   ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop();
 }
+
+#if defined(USE_DBUS) && !defined(OS_CHROMEOS)
+void ChromeBrowserMainPartsLinux::PostBrowserStart() {
+  // static_cast is safe because this is the only implementation of
+  // MemoryPressureMonitor.
+  auto* monitor =
+      static_cast<memory_pressure::MultiSourceMemoryPressureMonitor*>(
+          base::MemoryPressureMonitor::Get());
+  if (monitor &&
+      base::FeatureList::IsEnabled(features::kLinuxLowMemoryMonitor)) {
+    monitor->SetSystemEvaluator(
+        std::make_unique<DbusMemoryPressureEvaluatorLinux>(
+            monitor->CreateVoter()));
+  }
+
+  ChromeBrowserMainPartsPosix::PostBrowserStart();
+}
+#endif
 
 void ChromeBrowserMainPartsLinux::PostDestroyThreads() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

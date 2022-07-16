@@ -20,7 +20,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
-namespace chromeos {
+namespace ash {
 
 class MarketingBackendConnector
     : public base::RefCountedThreadSafe<MarketingBackendConnector> {
@@ -103,13 +103,6 @@ class ScopedRequestCallbackSetter {
   std::unique_ptr<base::RepeatingCallback<void(std::string)>> callback_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::MarketingBackendConnector;
-using ::chromeos::ScopedRequestCallbackSetter;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_MARKETING_BACKEND_CONNECTOR_H_

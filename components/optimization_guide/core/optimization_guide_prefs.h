@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_PREFS_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_PREFS_H_
 
-#include "base/macros.h"
-
 class PrefRegistrySimple;
 
 namespace optimization_guide {

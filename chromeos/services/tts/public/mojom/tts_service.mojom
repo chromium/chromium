@@ -5,6 +5,7 @@
 module chromeos.tts.mojom;
 
 import "media/mojo/mojom/audio_stream_factory.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // Audio parameters used for PlaybackTtsStream.
 struct AudioParameters {
@@ -16,6 +17,7 @@ struct AudioParameters {
 // tts-sandboxed process.  TtsEngineExtensionObserver, the other end of this
 // interface, in the browser process, brokers a connection between TtsService
 // and two possible engine types, [Google|Playback]TtsStream.
+[ServiceSandbox=sandbox.mojom.Sandbox.kTts]
 interface TtsService {
   // Binds a GoogleTtsStream received by this service.
   // The remote lives in the Google tts component extension.

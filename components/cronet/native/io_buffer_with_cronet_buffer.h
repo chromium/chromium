@@ -20,6 +20,10 @@ class IOBufferWithCronet_Buffer : public net::WrappedIOBuffer {
   // Creates a buffer that takes ownership of the Cronet_Buffer.
   explicit IOBufferWithCronet_Buffer(Cronet_BufferPtr cronet_buffer);
 
+  IOBufferWithCronet_Buffer(const IOBufferWithCronet_Buffer&) = delete;
+  IOBufferWithCronet_Buffer& operator=(const IOBufferWithCronet_Buffer&) =
+      delete;
+
   // Releases ownership of |cronet_buffer_| and returns it to caller.
   Cronet_BufferPtr Release();
 
@@ -28,8 +32,6 @@ class IOBufferWithCronet_Buffer : public net::WrappedIOBuffer {
 
   // Cronet buffer owned by |this|.
   std::unique_ptr<Cronet_Buffer> cronet_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOBufferWithCronet_Buffer);
 };
 
 // Represents a Cronet_Buffer backed by a net::IOBuffer. Keeps both the
@@ -38,6 +40,11 @@ class Cronet_BufferWithIOBuffer {
  public:
   Cronet_BufferWithIOBuffer(scoped_refptr<net::IOBuffer> io_buffer,
                             size_t io_buffer_len);
+
+  Cronet_BufferWithIOBuffer(const Cronet_BufferWithIOBuffer&) = delete;
+  Cronet_BufferWithIOBuffer& operator=(const Cronet_BufferWithIOBuffer&) =
+      delete;
+
   ~Cronet_BufferWithIOBuffer();
 
   const net::IOBuffer* io_buffer() const { return io_buffer_.get(); }
@@ -55,8 +62,6 @@ class Cronet_BufferWithIOBuffer {
 
   // Cronet buffer owned by |this|.
   std::unique_ptr<Cronet_Buffer> cronet_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_BufferWithIOBuffer);
 };
 
 }  // namespace cronet

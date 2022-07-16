@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -41,6 +40,10 @@ class TestExtensionPrefs {
  public:
   explicit TestExtensionPrefs(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  TestExtensionPrefs(const TestExtensionPrefs&) = delete;
+  TestExtensionPrefs& operator=(const TestExtensionPrefs&) = delete;
+
   virtual ~TestExtensionPrefs();
 
   ExtensionPrefs* prefs();
@@ -119,7 +122,6 @@ class TestExtensionPrefs {
   std::unique_ptr<IncrementalClock> clock_;
   TestingProfile profile_;
   bool extensions_disabled_;
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionPrefs);
 };
 
 }  // namespace extensions

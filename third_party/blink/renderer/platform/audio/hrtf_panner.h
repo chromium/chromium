@@ -56,8 +56,8 @@ class PLATFORM_EXPORT HRTFPanner final : public Panner {
 
   void Reset() override;
 
-  size_t FftSize() const { return FftSizeForSampleRate(sample_rate_); }
-  static size_t FftSizeForSampleRate(float sample_rate);
+  unsigned FftSize() const { return FftSizeForSampleRate(sample_rate_); }
+  static unsigned FftSizeForSampleRate(float sample_rate);
 
   float SampleRate() const { return sample_rate_; }
 

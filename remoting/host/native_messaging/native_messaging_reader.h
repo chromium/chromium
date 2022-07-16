@@ -28,6 +28,10 @@ class NativeMessagingReader {
       MessageCallback;
 
   explicit NativeMessagingReader(base::File file);
+
+  NativeMessagingReader(const NativeMessagingReader&) = delete;
+  NativeMessagingReader& operator=(const NativeMessagingReader&) = delete;
+
   ~NativeMessagingReader();
 
   // Begin reading messages from the Native Messaging client webapp, calling
@@ -66,8 +70,6 @@ class NativeMessagingReader {
   // Allows the reader to be deleted safely even when tasks may be pending on
   // it.
   base::WeakPtrFactory<NativeMessagingReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeMessagingReader);
 };
 
 }  // namespace remoting

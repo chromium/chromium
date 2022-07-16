@@ -64,6 +64,10 @@ class ArcCertInstaller : public policy::RemoteCommandsQueue::Observer {
   // This constructor should be used only for testing.
   ArcCertInstaller(Profile* profile,
                    std::unique_ptr<policy::RemoteCommandsQueue> queue);
+
+  ArcCertInstaller(const ArcCertInstaller&) = delete;
+  ArcCertInstaller& operator=(const ArcCertInstaller&) = delete;
+
   ~ArcCertInstaller() override;
 
   using InstallArcCertsCallback = base::OnceCallback<void(bool result)>;
@@ -117,8 +121,6 @@ class ArcCertInstaller : public policy::RemoteCommandsQueue::Observer {
   int next_id_ = 1;
 
   base::WeakPtrFactory<ArcCertInstaller> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcCertInstaller);
 };
 
 }  // namespace arc

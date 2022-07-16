@@ -14,7 +14,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/toolbar_height_no_shadow"
     android:layout_marginTop="@dimen/tab_strip_height"
-    android:background="@color/toolbar_background_primary"
+    android:background="?attr/default_bg_color_dynamic"
     android:paddingStart="@dimen/tablet_toolbar_start_padding" >
 
     <LinearLayout

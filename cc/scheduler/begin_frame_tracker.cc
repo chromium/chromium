@@ -12,8 +12,7 @@ namespace cc {
 BeginFrameTracker::BeginFrameTracker(const base::Location& location)
     : location_(location),
       location_string_(location.ToString()),
-      current_finished_at_(base::TimeTicks() +
-                           base::TimeDelta::FromMicroseconds(-1)) {}
+      current_finished_at_(base::TimeTicks() + base::Microseconds(-1)) {}
 
 BeginFrameTracker::~BeginFrameTracker() = default;
 
@@ -79,13 +78,14 @@ base::TimeDelta BeginFrameTracker::Interval() const {
   base::TimeDelta interval = current_args_.interval;
   // Normal interval will be ~16ms, 200Hz (5ms) screens are the fastest
   // easily available so anything less than that is likely an error.
-  if (interval < base::TimeDelta::FromMilliseconds(1)) {
+  if (interval < base::Milliseconds(1)) {
     interval = viz::BeginFrameArgs::DefaultInterval();
   }
   return interval;
 }
 
 void BeginFrameTracker::AsProtozeroInto(
+    perfetto::EventContext& ctx,
     base::TimeTicks now,
     perfetto::protos::pbzero::BeginImplFrameArgs* state) const {
   state->set_updated_at_us(current_updated_at_.since_origin().InMicroseconds());
@@ -94,11 +94,11 @@ void BeginFrameTracker::AsProtozeroInto(
   if (HasFinished()) {
     state->set_state(
         perfetto::protos::pbzero::BeginImplFrameArgs::BEGIN_FRAME_FINISHED);
-    current_args_.AsProtozeroInto(state->set_current_args());
+    current_args_.AsProtozeroInto(ctx, state->set_current_args());
   } else {
     state->set_state(
         perfetto::protos::pbzero::BeginImplFrameArgs::BEGIN_FRAME_USING);
-    current_args_.AsProtozeroInto(state->set_last_args());
+    current_args_.AsProtozeroInto(ctx, state->set_last_args());
   }
 
   base::TimeTicks frame_time = current_args_.frame_time;

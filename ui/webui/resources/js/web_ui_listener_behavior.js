@@ -5,6 +5,8 @@
 /**
  * @fileoverview Behavior to be used by Polymer elements that want to
  * automatically remove WebUI listeners when detached.
+ * NOTE: This file is deprecated in favor of web_ui_listener_mixin.ts. Don't use
+ * it in new code.
  */
 
 // #import {WebUIListener, addWebUIListener, removeWebUIListener} from './cr.m.js';

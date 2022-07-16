@@ -48,9 +48,9 @@ void SetIfValid(base::TimeDelta* out, const base::Value* value) {
   if (!value)
     return;
   if (value->is_double()) {
-    *out = base::TimeDelta::FromSecondsD(value->GetDouble());
+    *out = base::Seconds(value->GetDouble());
   } else if (value->is_int()) {
-    *out = base::TimeDelta::FromSeconds(value->GetInt());
+    *out = base::Seconds(value->GetInt());
   }
 }
 

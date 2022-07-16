@@ -64,6 +64,9 @@ class PosixSpawnFileActions {
     DPSXCHECK(posix_spawn_file_actions_init(&file_actions_));
   }
 
+  PosixSpawnFileActions(const PosixSpawnFileActions&) = delete;
+  PosixSpawnFileActions& operator=(const PosixSpawnFileActions&) = delete;
+
   ~PosixSpawnFileActions() {
     DPSXCHECK(posix_spawn_file_actions_destroy(&file_actions_));
   }
@@ -90,8 +93,6 @@ class PosixSpawnFileActions {
 
  private:
   posix_spawn_file_actions_t file_actions_;
-
-  DISALLOW_COPY_AND_ASSIGN(PosixSpawnFileActions);
 };
 
 int ChangeCurrentThreadDirectory(const char* path) {

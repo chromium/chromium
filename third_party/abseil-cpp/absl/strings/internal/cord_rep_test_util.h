@@ -115,6 +115,41 @@ inline cord_internal::CordRepBtree* CordRepBtreeFromFlats(
   return node;
 }
 
+template <typename Fn>
+inline void CordVisitReps(cord_internal::CordRep* rep, Fn&& fn) {
+  fn(rep);
+  while (rep->tag == cord_internal::SUBSTRING) {
+    rep = rep->substring()->child;
+    fn(rep);
+  }
+  if (rep->tag == cord_internal::BTREE) {
+    for (cord_internal::CordRep* edge : rep->btree()->Edges()) {
+      CordVisitReps(edge, fn);
+    }
+  } else if (rep->tag == cord_internal::CONCAT) {
+    CordVisitReps(rep->concat()->left, fn);
+    CordVisitReps(rep->concat()->right, fn);
+  }
+}
+
+template <typename Predicate>
+inline std::vector<cord_internal::CordRep*> CordCollectRepsIf(
+    Predicate&& predicate, cord_internal::CordRep* rep) {
+  std::vector<cord_internal::CordRep*> reps;
+  CordVisitReps(rep, [&reps, &predicate](cord_internal::CordRep* rep) {
+    if (predicate(rep)) reps.push_back(rep);
+  });
+  return reps;
+}
+
+inline std::vector<cord_internal::CordRep*> CordCollectReps(
+    cord_internal::CordRep* rep) {
+  std::vector<cord_internal::CordRep*> reps;
+  auto fn = [&reps](cord_internal::CordRep* rep) { reps.push_back(rep); };
+  CordVisitReps(rep, fn);
+  return reps;
+}
+
 inline void CordToString(cord_internal::CordRep* rep, std::string& s) {
   size_t offset = 0;
   size_t length = rep->length;

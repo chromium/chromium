@@ -19,10 +19,10 @@ FAIL KeyframeEffect.getKeyframes() returns expected values for animations with f
 PASS KeyframeEffect.getKeyframes() returns expected values for animation with drop-shadow of filter property
 PASS KeyframeEffect.getKeyframes() returns expected values for animations with text-shadow properties and missing keyframes
 PASS KeyframeEffect.getKeyframes() returns expected values for animations with background-size properties and missing keyframes
-FAIL KeyframeEffect.getKeyframes() returns expected values for animations with CSS variables as keyframe values assert_equals: value for 'transform' on Keyframe #1 should match expected "translate(100px)" but got "translate(100px, 0px)"
+PASS KeyframeEffect.getKeyframes() returns expected values for animations with CSS variables as keyframe values
 PASS KeyframeEffect.getKeyframes() returns expected values for animations with CSS variables as keyframe values in a shorthand property
 PASS KeyframeEffect.getKeyframes() returns expected values for animations with a CSS variable which is overriden by the value in keyframe
-FAIL KeyframeEffect.getKeyframes() returns expected values for animations with only custom property in a keyframe assert_equals: value for 'transform' on Keyframe #0 should match expected "translate(100px)" but got "translate(100px, 0px)"
+PASS KeyframeEffect.getKeyframes() returns expected values for animations with only custom property in a keyframe
 PASS KeyframeEffect.getKeyframes() reflects changes to @keyframes rules
 Harness: the test ran to completion.
 

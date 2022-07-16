@@ -119,11 +119,10 @@ void KioskModeIdleAppNameNotification::ResetTimer() {
   } else {
     // OneShotTimer destroys the posted task after running it, so Reset()
     // isn't safe to call on a timer that's already fired.
-    timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(kIdleAppNameNotificationTimeoutMs),
-        base::BindOnce(&KioskModeIdleAppNameNotification::OnTimeout,
-                       base::Unretained(this)));
+    timer_.Start(FROM_HERE,
+                 base::Milliseconds(kIdleAppNameNotificationTimeoutMs),
+                 base::BindOnce(&KioskModeIdleAppNameNotification::OnTimeout,
+                                base::Unretained(this)));
   }
 }
 

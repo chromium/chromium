@@ -8,7 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_service.h"
 
@@ -22,6 +22,11 @@ class ModelTypeStoreServiceImpl : public ModelTypeStoreService {
  public:
   // |base_path| represents the profile's path.
   explicit ModelTypeStoreServiceImpl(const base::FilePath& base_path);
+
+  ModelTypeStoreServiceImpl(const ModelTypeStoreServiceImpl&) = delete;
+  ModelTypeStoreServiceImpl& operator=(const ModelTypeStoreServiceImpl&) =
+      delete;
+
   ~ModelTypeStoreServiceImpl() override;
 
   // ModelTypeStoreService:
@@ -45,8 +50,6 @@ class ModelTypeStoreServiceImpl : public ModelTypeStoreService {
   const scoped_refptr<ModelTypeStoreBackend> store_backend_;
 
   SEQUENCE_CHECKER(ui_sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ModelTypeStoreServiceImpl);
 };
 
 }  // namespace syncer

@@ -46,6 +46,10 @@ class Node;
 class MODULES_EXPORT AXNodeObject : public AXObject {
  public:
   AXNodeObject(Node*, AXObjectCacheImpl&);
+
+  AXNodeObject(const AXNodeObject&) = delete;
+  AXNodeObject& operator=(const AXNodeObject&) = delete;
+
   ~AXNodeObject() override;
 
   static absl::optional<String> GetCSSAltText(const Node*);
@@ -80,7 +84,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
                                             AXObject::AXObjectVector&) const;
 
   Element* MenuItemElementForMenu() const;
-  Element* MouseButtonListener() const;
   HTMLElement* CorrespondingControlForLabelElement() const;
 
   //
@@ -163,8 +166,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Properties of interactive elements.
   ax::mojom::blink::AriaCurrentState GetAriaCurrentState() const final;
   ax::mojom::blink::InvalidState GetInvalidState() const final;
-  // Only used when invalidState() returns InvalidStateOther.
-  String AriaInvalidValue() const final;
   bool ValueForRange(float* out_value) const override;
   bool MaxValueForRange(float* out_value) const override;
   bool MinValueForRange(float* out_value) const override;
@@ -207,6 +208,10 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
                      ax::mojom::blink::DescriptionFrom&,
                      DescriptionSources*,
                      AXRelatedObjectVector*) const override;
+  String SVGDescription(ax::mojom::blink::NameFrom,
+                        ax::mojom::blink::DescriptionFrom&,
+                        DescriptionSources*,
+                        AXRelatedObjectVector*) const;
   String Placeholder(ax::mojom::blink::NameFrom) const override;
   String Title(ax::mojom::blink::NameFrom) const override;
 
@@ -269,7 +274,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
       HeapVector<Member<AXObject>>& owned_children) const;
 
   // Inline text boxes.
-  void LoadInlineTextBoxesRecursive() override;
+  void LoadInlineTextBoxes() override;
+  void ForceAddInlineTextBoxChildren() override;
 
   //
   // Layout object specific methods.
@@ -314,14 +320,13 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void CheckValidChild(AXObject* child);
 #endif
 
+  ax::mojom::blink::TextPosition GetTextPositionFromRole() const;
   ax::mojom::blink::Dropeffect ParseDropeffect(String& dropeffect) const;
 
   static bool IsNameFromLabelElement(HTMLElement* control);
   static bool IsRedundantLabel(HTMLLabelElement* label);
 
   Member<Node> node_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXNodeObject);
 };
 
 }  // namespace blink

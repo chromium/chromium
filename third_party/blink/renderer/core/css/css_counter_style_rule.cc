@@ -100,7 +100,7 @@ String CSSCounterStyleRule::cssText() const {
   }
 
   result.Append(" }");
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 void CSSCounterStyleRule::Reattach(StyleRuleBase* rule) {

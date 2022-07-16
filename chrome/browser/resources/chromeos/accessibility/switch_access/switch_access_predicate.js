@@ -169,9 +169,11 @@ export const SwitchAccessPredicate = {
    * @param {!SACache} cache
    * @return {boolean}
    */
-  isInteresting: (node, scope, cache) =>
-      SwitchAccessPredicate.isActionable(node, cache) ||
-      SwitchAccessPredicate.isGroup(node, scope, cache),
+  isInteresting: (node, scope, cache) => {
+    cache = cache || new SACache();
+    return SwitchAccessPredicate.isActionable(node, cache) ||
+        SwitchAccessPredicate.isGroup(node, scope, cache);
+  },
 
   /**
    * Returns true if the element is visible to the user for any reason.
@@ -196,6 +198,7 @@ export const SwitchAccessPredicate = {
    * @return {boolean}
    */
   isInterestingSubtree: (node, cache) => {
+    cache = cache || new SACache();
     if (cache.isInterestingSubtree.has(node)) {
       return cache.isInterestingSubtree.get(node);
     }

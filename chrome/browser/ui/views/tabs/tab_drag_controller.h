@@ -54,16 +54,6 @@ class WindowFinder;
 // is the default on aura.
 class TabDragController : public views::WidgetObserver {
  public:
-  // What should happen as the mouse is dragged within the tabstrip.
-  enum MoveBehavior {
-    // Only the set of visible tabs should change. This is only applicable when
-    // using touch layout.
-    MOVE_VISIBLE_TABS,
-
-    // Typical behavior where tabs are dragged around.
-    REORDER
-  };
-
   // Indicates the event source that initiated the drag.
   enum EventSource {
     EVENT_SOURCE_MOUSE,
@@ -95,7 +85,6 @@ class TabDragController : public views::WidgetObserver {
             const gfx::Point& mouse_offset,
             int source_view_offset,
             ui::ListSelectionModel initial_selection_model,
-            MoveBehavior move_behavior,
             EventSource event_source);
 
   // Returns true if there is a drag underway and the drag is attached to
@@ -109,9 +98,6 @@ class TabDragController : public views::WidgetObserver {
 
   // Returns the pointer of |source_context_|.
   static TabDragContext* GetSourceContext();
-
-  // Sets the move behavior. Has no effect if started_drag() is true.
-  void SetMoveBehavior(MoveBehavior behavior);
 
   EventSource event_source() const { return event_source_; }
 
@@ -323,23 +309,9 @@ class TabDragController : public views::WidgetObserver {
       TabDragContext* target_context,
       const gfx::Point& point_in_screen);
 
-  // Handles dragging for a touch context when the tabs are stacked. Doesn't
-  // actually reorder the tabs in anyway, just changes what's visible.
-  void DragActiveTabStacked(const gfx::Point& point_in_screen);
-
-  // Moves the active tab to the next/previous tab. Used when the next/previous
-  // tab is stacked.
-  void MoveAttachedToNextStackedIndex(const gfx::Point& point_in_screen);
-  void MoveAttachedToPreviousStackedIndex(const gfx::Point& point_in_screen);
-
   // Handles dragging tabs while the tabs are attached. |just_attached| should
   // be true iff this is the first call to MoveAttached after attaching.
   void MoveAttached(const gfx::Point& point_in_screen, bool just_attached);
-
-  // If necessary starts the |move_stacked_timer_|. The timer is started if
-  // close enough to an edge with stacked tabs.
-  void StartMoveStackedTimerIfNecessary(const gfx::Point& point_in_screen,
-                                        base::TimeDelta delay);
 
   // Returns the compatible TabDragContext to drag to at the
   // specified point (screen coordinates), or nullptr if there is none.
@@ -510,11 +482,6 @@ class TabDragController : public views::WidgetObserver {
   // |point_in_screen|.
   gfx::Vector2d GetWindowOffset(const gfx::Point& point_in_screen);
 
-  // Returns true if moving the mouse only changes the visible tabs.
-  bool move_only() const {
-    return (move_behavior_ == MOVE_VISIBLE_TABS) != 0;
-  }
-
   // Returns the NativeWindow in |window| at the specified point. If
   // |exclude_dragged_view| is true, then the dragged view is not considered.
   Liveness GetLocalProcessWindow(const gfx::Point& screen_point,
@@ -622,10 +589,6 @@ class TabDragController : public views::WidgetObserver {
   // brought to front.
   base::OneShotTimer bring_to_front_timer_;
 
-  // Timer used to move the stacked tabs. See comment aboue
-  // StartMoveStackedTimerIfNecessary().
-  base::OneShotTimer move_stacked_timer_;
-
   DragData drag_data_;
 
   // Index of the source view in |drag_data_|.
@@ -658,18 +621,6 @@ class TabDragController : public views::WidgetObserver {
   // What should occur during ConinueDragging when a tab is attempted to be
   // detached.
   DetachBehavior detach_behavior_;
-
-  MoveBehavior move_behavior_;
-
-  // Updated as the mouse is moved when attached. Indicates whether the mouse
-  // has ever moved to the left. If the tabs are ever detached this is set to
-  // true.
-  bool mouse_has_ever_moved_left_;
-
-  // Updated as the mouse is moved when attached. Indicates whether the mouse
-  // has ever moved to the right. If the tabs are ever detached this is set
-  // to true.
-  bool mouse_has_ever_moved_right_;
 
   // Last location used in screen coordinates.
   gfx::Point last_point_in_screen_;

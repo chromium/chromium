@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_SNAPSHOT_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/allocator/partition_allocator/starscan/pcscan_internal.h"
 #include "base/allocator/partition_allocator/starscan/raceful_worklist.h"

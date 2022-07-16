@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
@@ -26,6 +26,11 @@ class GPU_GLES2_EXPORT GpuCommandBufferMemoryTracker : public MemoryTracker {
       uint64_t client_tracing_id,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       Observer* observer);
+
+  GpuCommandBufferMemoryTracker(const GpuCommandBufferMemoryTracker&) = delete;
+  GpuCommandBufferMemoryTracker& operator=(
+      const GpuCommandBufferMemoryTracker&) = delete;
+
   ~GpuCommandBufferMemoryTracker() override;
 
   // MemoryTracker implementation.
@@ -41,8 +46,6 @@ class GPU_GLES2_EXPORT GpuCommandBufferMemoryTracker : public MemoryTracker {
   const uint64_t client_tracing_id_;
 
   MemoryTracker::Observer* const observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuCommandBufferMemoryTracker);
 };
 
 }  // namespace gpu

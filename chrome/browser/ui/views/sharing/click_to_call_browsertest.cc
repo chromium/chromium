@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,7 +37,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/test/button_test_api.h"
 #include "url/gurl.h"
 
@@ -368,7 +366,6 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, ContextMenu_UKM) {
   EXPECT_EQ(true, *has_devices);
   EXPECT_EQ(static_cast<int64_t>(SharingClickToCallSelection::kDevice),
             *selection);
-  // TODO(knollr): mock apps and verify |has_apps| here too.
 }
 
 IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, CloseTabWithBubble) {
@@ -465,12 +462,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, OpenNewTabAndShowBubble) {
       GetPageActionIconView(PageActionIconType::kClickToCall)->GetBubble();
   ASSERT_NE(nullptr, bubble);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Ensure that the dialog shows the origin in column id 1.
-  EXPECT_NE(nullptr, static_cast<views::GridLayout*>(
-                         bubble->GetContentsView()->GetLayoutManager())
-                         ->GetColumnSet(1));
-#else
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Ensure that the dialog shows the origin in the footnote.
   EXPECT_NE(nullptr, bubble->GetFootnoteViewForTesting());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

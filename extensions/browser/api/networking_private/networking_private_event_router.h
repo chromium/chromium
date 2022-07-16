@@ -21,14 +21,15 @@ namespace extensions {
 class NetworkingPrivateEventRouter : public KeyedService,
                                      public EventRouter::Observer {
  public:
+  NetworkingPrivateEventRouter(const NetworkingPrivateEventRouter&) = delete;
+  NetworkingPrivateEventRouter& operator=(const NetworkingPrivateEventRouter&) =
+      delete;
+
   static NetworkingPrivateEventRouter* Create(
       content::BrowserContext* browser_context);
 
  protected:
   NetworkingPrivateEventRouter() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateEventRouter);
 };
 
 }  // namespace extensions

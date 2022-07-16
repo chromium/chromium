@@ -70,7 +70,9 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     platform_suffix = "_mac";
 #elif defined(OS_WIN)
     platform_suffix = "_win";
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif defined(OS_LINUX)
+    platform_suffix = "_linux";
+#elif defined(OS_CHROMEOS)
     platform_suffix = "_chromeos";
 #elif defined(OS_ANDROID)
     int sdk_int = base::android::BuildInfo::GetInstance()->sdk_int();
@@ -79,6 +81,8 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     } else {
       platform_suffix = "_android";
     }
+#elif defined(OS_FUCHSIA)
+    platform_suffix = "_fuchsia";
 #endif
 
     base::FilePath dir_test_data;
@@ -109,7 +113,8 @@ class FormControlsBrowserTest : public ContentBrowserTest {
         /* avg_abs_error_limit */ 20.f,
         /* max_abs_error_limit */ 120.f,
         /* small_error_threshold */ 0);
-#elif defined(OS_ANDROID) || defined(OS_WIN)
+#elif defined(OS_ANDROID) || defined(OS_WIN) || (OS_LINUX) || \
+    defined(OS_FUCHSIA)
     // Different versions of android may have slight differences in rendering.
     // Some versions have more significant differences than others, which are
     // tracked separately in separate baseline image files. The less significant
@@ -155,7 +160,14 @@ class FormControlsBrowserTest : public ContentBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Checkbox) {
+// Checkbox renders differently on Android x86. crbug.com/1238283
+#if defined(OS_ANDROID) && defined(ARCH_CPU_X86)
+#define MAYBE_Checkbox DISABLED_Checkbox
+#else
+#define MAYBE_Checkbox Checkbox
+#endif
+
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Checkbox) {
   if (SkipTestForOldAndroidVersions())
     return;
 

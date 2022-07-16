@@ -4,11 +4,16 @@
 
 #import "base/mac/scoped_nsobject.h"
 #import "chrome/browser/app_controller_mac.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/mac/url_conversions.h"
 #include "net/http/http_status_code.h"
@@ -173,6 +178,92 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserCancellation) {
               session_request.get().cancellationError.domain);
     EXPECT_EQ(ASWebAuthenticationSessionErrorCodeCanceledLogin,
               session_request.get().cancellationError.code);
+  } else {
+    GTEST_SKIP() << "ASWebAuthenticationSessionRequest is only available on "
+                    "macOS 10.15 and higher.";
+  }
+}
+
+// Tests that the session works even if the profile is not already loaded.
+IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, ProfileNotLoaded) {
+  if (@available(macOS 10.15, *)) {
+    auto* browser_list = BrowserList::GetInstance();
+    size_t start_browser_count = browser_list->size();
+
+    // Use a profile that is not loaded yet.
+    const std::string kProfileName = "Profile 2";
+    g_browser_process->local_state()->SetString(prefs::kProfileLastUsed,
+                                                kProfileName);
+    const base::FilePath kProfilePath =
+        browser()->profile()->GetPath().DirName().Append(kProfileName);
+    ASSERT_FALSE(
+        g_browser_process->profile_manager()->GetProfileByPath(kProfilePath));
+
+    // Ask the app controller to start handling our session request.
+    base::scoped_nsobject<MockASWebAuthenticationSessionRequest>
+        session_request([[MockASWebAuthenticationSessionRequest alloc]
+            initWithInitialURL:[NSURL URLWithString:@"about:blank"]]);
+    id<ASWebAuthenticationSessionWebBrowserSessionHandling> session_handler =
+        ASWebAuthenticationSessionWebBrowserSessionManager.sharedManager
+            .sessionHandler;
+    ASSERT_NE(nil, session_handler);
+    id request = session_request.get();
+    [session_handler beginHandlingWebAuthenticationSessionRequest:request];
+
+    // Expect the profile to be loaded and browser window to be opened.
+    Browser* browser = ui_test_utils::WaitForBrowserToOpen();
+    EXPECT_TRUE(
+        g_browser_process->profile_manager()->GetProfileByPath(kProfilePath));
+    EXPECT_EQ(start_browser_count + 1, browser_list->size());
+    EXPECT_EQ(browser->profile()->GetPath(), kProfilePath);
+  } else {
+    GTEST_SKIP() << "ASWebAuthenticationSessionRequest is only available on "
+                    "macOS 10.15 and higher.";
+  }
+}
+
+// Tests that the profile picker is shown instead if the profile is unavailable.
+IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, ProfileNotAvailable) {
+  if (@available(macOS 10.15, *)) {
+    auto* browser_list = BrowserList::GetInstance();
+    size_t start_browser_count = browser_list->size();
+
+    // Use the guest profile, but mark it as disallowed.
+    base::FilePath guest_profile_path = ProfileManager::GetGuestProfilePath();
+    PrefService* local_state = g_browser_process->local_state();
+    local_state->SetString(prefs::kProfileLastUsed,
+                           guest_profile_path.BaseName().value());
+    local_state->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
+
+    // The profile picker is initially closed.
+    base::RunLoop run_loop;
+    ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
+        run_loop.QuitClosure());
+    ASSERT_FALSE(ProfilePicker::IsOpen());
+
+    // Ask the app controller to start handling our session request.
+    base::scoped_nsobject<MockASWebAuthenticationSessionRequest>
+        session_request([[MockASWebAuthenticationSessionRequest alloc]
+            initWithInitialURL:[NSURL URLWithString:@"about:blank"]]);
+    id<ASWebAuthenticationSessionWebBrowserSessionHandling> session_handler =
+        ASWebAuthenticationSessionWebBrowserSessionManager.sharedManager
+            .sessionHandler;
+    ASSERT_NE(nil, session_handler);
+    id request = session_request.get();
+    [session_handler beginHandlingWebAuthenticationSessionRequest:request];
+
+    // Expect the profile picker to be opened, no browser was created, and the
+    // session was cancelled.
+    run_loop.Run();
+    EXPECT_TRUE(ProfilePicker::IsOpen());
+    EXPECT_EQ(start_browser_count, browser_list->size());
+    EXPECT_EQ(nil, session_request.get().callbackURL);
+    ASSERT_NE(nil, session_request.get().cancellationError);
+    EXPECT_EQ(ASWebAuthenticationSessionErrorDomain,
+              session_request.get().cancellationError.domain);
+    EXPECT_EQ(ASWebAuthenticationSessionErrorCodePresentationContextInvalid,
+              session_request.get().cancellationError.code);
+
   } else {
     GTEST_SKIP() << "ASWebAuthenticationSessionRequest is only available on "
                     "macOS 10.15 and higher.";

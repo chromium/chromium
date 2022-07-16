@@ -20,6 +20,12 @@ class TestBluetoothLocalGattServiceDelegate
     : public BluetoothLocalGattService::Delegate {
  public:
   TestBluetoothLocalGattServiceDelegate();
+
+  TestBluetoothLocalGattServiceDelegate(
+      const TestBluetoothLocalGattServiceDelegate&) = delete;
+  TestBluetoothLocalGattServiceDelegate& operator=(
+      const TestBluetoothLocalGattServiceDelegate&) = delete;
+
   virtual ~TestBluetoothLocalGattServiceDelegate();
 
   // BluetoothLocalGattService::Delegate overrides:
@@ -89,8 +95,6 @@ class TestBluetoothLocalGattServiceDelegate
   BluetoothLocalGattDescriptor* expected_descriptor_;
 
   std::map<std::string, bool> notifications_started_for_characteristic_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBluetoothLocalGattServiceDelegate);
 };
 
 }  // namespace device

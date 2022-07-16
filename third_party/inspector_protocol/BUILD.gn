@@ -6,6 +6,8 @@ component("crdtp") {
   sources = [
     "crdtp/cbor.cc",
     "crdtp/cbor.h",
+    "crdtp/chromium/protocol_traits.cc",
+    "crdtp/chromium/protocol_traits.h",
     "crdtp/dispatch.cc",
     "crdtp/dispatch.h",
     "crdtp/error_support.cc",
@@ -20,7 +22,6 @@ component("crdtp") {
     "crdtp/protocol_core.h",
     "crdtp/serializable.cc",
     "crdtp/serializable.h",
-    "crdtp/serializer_traits.h",
     "crdtp/span.cc",
     "crdtp/span.h",
     "crdtp/status.cc",
@@ -29,11 +30,16 @@ component("crdtp") {
 
   defines = [ "CRDTP_IMPLEMENTATION" ]
 
-  if (!is_debug) {
+  # Disable max speed optimizations for size-sensitive platforms.
+  if (!is_debug && !is_fuchsia) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
-  deps = [ ":crdtp_platform" ]
+
+  deps = [
+    ":crdtp_platform",
+    "//base",
+  ]
 }
 
 # A small adapter library which only :crdtp may depend on.
@@ -58,7 +64,6 @@ source_set("crdtp_test") {
     "crdtp/maybe_test.cc",
     "crdtp/protocol_core_test.cc",
     "crdtp/serializable_test.cc",
-    "crdtp/serializer_traits_test.cc",
     "crdtp/span_test.cc",
     "crdtp/status_test.cc",
     "crdtp/status_test_support.cc",

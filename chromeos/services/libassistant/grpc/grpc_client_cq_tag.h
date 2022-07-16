@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_GRPC_GRPC_CLIENT_CQ_TAG_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_GRPC_GRPC_CLIENT_CQ_TAG_H_
 
-#include "base/macros.h"
 #include "third_party/grpc/src/include/grpcpp/grpcpp.h"
 
 namespace chromeos {

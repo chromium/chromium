@@ -11,13 +11,16 @@
 #include <wrl/client.h>
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_image_d3d.h"
 
@@ -33,7 +36,6 @@ class ColorSpace;
 }  // namespace gfx
 
 namespace gpu {
-class SharedImageBacking;
 struct Mailbox;
 
 // Implementation of SharedImageBacking that holds buffer (front buffer/back
@@ -52,9 +54,9 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
       uint32_t usage,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-      size_t buffer_index);
+      bool is_back_buffer);
 
-  static std::unique_ptr<SharedImageBackingD3D> CreateFromSharedHandle(
+  static std::unique_ptr<SharedImageBackingD3D> CreateFromDXGISharedHandle(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
       const gfx::Size& size,
@@ -63,7 +65,7 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
       SkAlphaType alpha_type,
       uint32_t usage,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-      base::win::ScopedHandle shared_handle);
+      scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state);
 
   // TODO(sunnyps): Remove this after migrating DXVA decoder to EGLImage.
   static std::unique_ptr<SharedImageBackingD3D> CreateFromGLTexture(
@@ -85,13 +87,31 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
       uint32_t usage,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       unsigned array_slice,
-      base::win::ScopedHandle shared_handle = base::win::ScopedHandle());
+      scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state = nullptr);
+
+  static std::unique_ptr<SharedImageBackingD3D> CreateFromSharedMemoryHandle(
+      const Mailbox& mailbox,
+      viz::ResourceFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+      gfx::GpuMemoryBufferHandle shared_memory_handle);
+
+  SharedImageBackingD3D(const SharedImageBackingD3D&) = delete;
+  SharedImageBackingD3D& operator=(const SharedImageBackingD3D&) = delete;
 
   ~SharedImageBackingD3D() override;
 
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
 
+  bool CopyToGpuMemoryBuffer() override;
+
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
+
+  bool PresentSwapChain() override;
 
   std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
       SharedImageManager* manager,
@@ -110,10 +130,14 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
   bool BeginAccessD3D11();
   void EndAccessD3D11();
 
-  HANDLE GetSharedHandle() const;
-  gl::GLImage* GetGLImage() const;
+  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state_for_testing()
+      const {
+    return dxgi_shared_handle_state_;
+  }
 
-  bool PresentSwapChain() override;
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_for_testing() const {
+    return d3d11_texture_;
+  }
 
  protected:
   std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
@@ -130,36 +154,6 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
       scoped_refptr<SharedContextState> context_state) override;
 
  private:
-  class SharedState : public base::RefCountedThreadSafe<SharedState> {
-   public:
-    explicit SharedState(
-        base::win::ScopedHandle shared_handle = base::win::ScopedHandle(),
-        Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex = nullptr);
-
-    bool BeginAccessD3D11();
-    void EndAccessD3D11();
-
-    bool BeginAccessD3D12();
-    void EndAccessD3D12();
-
-    HANDLE GetSharedHandle() const;
-
-   private:
-    friend class base::RefCountedThreadSafe<SharedState>;
-    ~SharedState();
-
-    // If |d3d11_texture_| has a keyed mutex, it will be stored in
-    // |dxgi_keyed_mutex_|. The keyed mutex is used to synchronize D3D11 and
-    // D3D12 Chromium components. |dxgi_keyed_mutex_| is the D3D11 side of the
-    // keyed mutex. To create the corresponding D3D12 interface, pass the handle
-    // stored in |shared_handle_| to ID3D12Device::OpenSharedHandle. Only one
-    // component is allowed to read/write to the texture at a time.
-    base::win::ScopedHandle shared_handle_;
-    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex_;
-    bool acquired_for_d3d12_ = false;
-    int acquired_for_d3d11_count_ = 0;
-  };
-
   SharedImageBackingD3D(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
@@ -170,22 +164,38 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
       uint32_t usage,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       scoped_refptr<gles2::TexturePassthrough> gl_texture,
+      scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state = {},
+      gfx::GpuMemoryBufferHandle shared_memory_handle = {},
       Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
-      size_t buffer_index = 0,
-      scoped_refptr<SharedState> shared_state =
-          base::MakeRefCounted<SharedState>());
+      bool is_back_buffer = false);
 
   uint32_t GetAllowedDawnUsages() const;
 
+  gl::GLImage* GetGLImage() const;
+
+  ID3D11Texture2D* GetOrCreateStagingTexture();
+
+  bool UploadToGpuIfNeeded();
+
   // Texture could be nullptr if an empty backing is needed for testing.
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
+
+  // Can be null for backings owned by non-GL producers e.g. WebGPU.
   scoped_refptr<gles2::TexturePassthrough> gl_texture_;
 
+  // Holds DXGI shared handle and the keyed mutex if present.  Can be shared
+  // between plane shared image backings of a multi-plane texture, or between
+  // backings created from duplicated handles that refer to the same texture.
+  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state_;
+
+  // Shared memory handle from CreateFromSharedMemoryHandle.
+  gfx::GpuMemoryBufferHandle shared_memory_handle_;
+
+  // Swap chain corresponding to this backing.
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
 
-  const size_t buffer_index_;
-
-  scoped_refptr<SharedState> shared_state_;
+  // Set if this backing corresponds to the back buffer of |swap_chain_|.
+  const bool is_back_buffer_;
 
   // If external_image_ exists, it means Dawn produced the D3D12 side of the
   // D3D11 texture created by ID3D12Device::OpenSharedHandle.
@@ -193,7 +203,12 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
   std::unique_ptr<dawn_native::d3d12::ExternalImageDXGI> external_image_;
 #endif  // BUILDFLAG(USE_DAWN)
 
-  DISALLOW_COPY_AND_ASSIGN(SharedImageBackingD3D);
+  // Staging texture used for copy to/from shared memory GMB.
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_;
+
+  // Tracks if we should upload from shared memory GMB to the GPU texture on the
+  // next BeginAccess.
+  bool needs_upload_to_gpu_ = false;
 };
 
 }  // namespace gpu

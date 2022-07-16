@@ -11,10 +11,10 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "media/base/media_log.h"
-#include "media/base/status_codes.h"
 #include "media/base/win/hresult_status_helper.h"
 #include "media/base/win/mf_helpers.h"
 #include "third_party/angle/include/EGL/egl.h"
@@ -41,7 +41,7 @@ D3D11PictureBuffer::D3D11PictureBuffer(
 D3D11PictureBuffer::~D3D11PictureBuffer() {
 }
 
-Status D3D11PictureBuffer::Init(
+D3D11Status D3D11PictureBuffer::Init(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferHelperCB get_helper_cb,
     ComD3D11VideoDevice video_device,
@@ -52,11 +52,12 @@ Status D3D11PictureBuffer::Init(
   view_desc.ViewDimension = D3D11_VDOV_DIMENSION_TEXTURE2D;
   view_desc.Texture2D.ArraySlice = array_slice_;
 
-  Status result =
+  media_log_ = std::move(media_log);
+  D3D11Status result =
       texture_wrapper_->Init(std::move(gpu_task_runner),
                              std::move(get_helper_cb), texture_, array_slice_);
   if (!result.is_ok()) {
-    MEDIA_LOG(ERROR, media_log) << "Failed to Initialize the wrapper";
+    MEDIA_LOG(ERROR, media_log_) << "Failed to Initialize the wrapper";
     return result;
   }
 
@@ -64,15 +65,15 @@ Status D3D11PictureBuffer::Init(
       Texture().Get(), &view_desc, &output_view_);
 
   if (!SUCCEEDED(hr)) {
-    MEDIA_LOG(ERROR, media_log) << "Failed to CreateVideoDecoderOutputView";
-    return Status(StatusCode::kCreateDecoderOutputViewFailed)
+    MEDIA_LOG(ERROR, media_log_) << "Failed to CreateVideoDecoderOutputView";
+    return D3D11Status(D3D11Status::Codes::kCreateDecoderOutputViewFailed)
         .AddCause(HresultToStatus(hr));
   }
 
-  return OkStatus();
+  return D3D11Status::Codes::kOk;
 }
 
-Status D3D11PictureBuffer::ProcessTexture(
+D3D11Status D3D11PictureBuffer::ProcessTexture(
     const gfx::ColorSpace& input_color_space,
     MailboxHolderArray* mailbox_dest,
     gfx::ColorSpace* output_color_space) {
@@ -82,6 +83,20 @@ Status D3D11PictureBuffer::ProcessTexture(
 
 ComD3D11Texture2D D3D11PictureBuffer::Texture() const {
   return texture_;
+}
+
+D3D11Status::Or<ID3D11VideoDecoderOutputView*>
+D3D11PictureBuffer::AcquireOutputView() const {
+  D3D11Status result = texture_wrapper_->AcquireKeyedMutexIfNeeded();
+  if (!result.is_ok()) {
+    MEDIA_LOG(ERROR, media_log_)
+        << "Failed to acquired key mutex for native texture resource";
+    base::UmaHistogramSparse("Media.D3D11.PictureBuffer",
+                             static_cast<int>(result.code()));
+    return result;
+  }
+
+  return output_view_.Get();
 }
 
 }  // namespace media

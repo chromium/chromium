@@ -35,7 +35,7 @@ def _AddCommonArguments(parser):
                       help='Verbose level (multiple times for more)')
 
 
-class _DiffAction(object):
+class _DiffAction:
   @staticmethod
   def AddArguments(parser):
     parser.add_argument('before', help='Before-patch .size file.')
@@ -62,7 +62,7 @@ class _DiffAction(object):
     console.Run(args, on_config_error)
 
 
-class _SaveDiffAction(object):
+class _SaveDiffAction:
 
   @staticmethod
   def AddArguments(parser):

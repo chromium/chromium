@@ -36,14 +36,18 @@ constexpr char kNetworkRequestStatusCodes[] = "ImageFetcher.RequestStatusCode";
 class ImageFetcherMetricsReporterTest : public testing::Test {
  public:
   ImageFetcherMetricsReporterTest() {}
+
+  ImageFetcherMetricsReporterTest(const ImageFetcherMetricsReporterTest&) =
+      delete;
+  ImageFetcherMetricsReporterTest& operator=(
+      const ImageFetcherMetricsReporterTest&) = delete;
+
   ~ImageFetcherMetricsReporterTest() override = default;
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcherMetricsReporterTest);
 };
 
 TEST_F(ImageFetcherMetricsReporterTest, TestReportEvent) {

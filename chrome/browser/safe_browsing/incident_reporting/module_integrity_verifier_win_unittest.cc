@@ -47,6 +47,9 @@ class ScopedModuleModifier {
     EXPECT_EQ(ModificationLength, bytes_written);
   }
 
+  ScopedModuleModifier(const ScopedModuleModifier&) = delete;
+  ScopedModuleModifier& operator=(const ScopedModuleModifier&) = delete;
+
   ~ScopedModuleModifier() {
     uint8_t modification[ModificationLength];
     std::transform(address_, address_ + ModificationLength, &modification[0],
@@ -62,8 +65,6 @@ class ScopedModuleModifier {
 
  private:
   uint8_t* address_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedModuleModifier);
 };
 
 }  // namespace

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceEventType, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, NativeInitialSettings, NativeLayer, NativeLayerImpl, PluginProxy, PrinterType} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceEventType, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationStore, DestinationStoreEventType, DestinationType, GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl, PrinterType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
 // <if expr="chromeos or lacros">
@@ -80,7 +80,7 @@ suite(destination_store_test.suiteName, function() {
     setupTestListenerElement();
 
     nativeLayer = new NativeLayerStub();
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="chromeos or lacros">
     setNativeLayerCrosInstance();
     // </if>
@@ -119,7 +119,7 @@ suite(destination_store_test.suiteName, function() {
     }
 
     destinationStore.addEventListener(
-        DestinationStore.EventType.DESTINATION_SELECT, function() {
+        DestinationStoreEventType.DESTINATION_SELECT, function() {
           numPrintersSelected++;
         });
 
@@ -128,7 +128,7 @@ suite(destination_store_test.suiteName, function() {
         JSON.parse(initialSettings.serializedAppStateStr).recentDestinations :
         [];
     const whenCapabilitiesReady = eventToPromise(
-        DestinationStore.EventType.SELECTED_DESTINATION_CAPABILITIES_READY,
+        DestinationStoreEventType.SELECTED_DESTINATION_CAPABILITIES_READY,
         destinationStore);
     destinationStore.init(
         initialSettings.pdfPrinterDisabled, !!initialSettings.isDriveMounted,
@@ -276,7 +276,7 @@ suite(destination_store_test.suiteName, function() {
         // interface object.
         return setInitialSettings(false, false).then(function(args) {
           assertEquals(
-              Destination.GooglePromotedId.SAVE_AS_PDF,
+              GooglePromotedDestinationId.SAVE_AS_PDF,
               destinationStore.selectedDestination.id);
         });
       });
@@ -362,7 +362,7 @@ suite(destination_store_test.suiteName, function() {
             .all([
               setInitialSettings(false),
               eventToPromise(
-                  DestinationStore.EventType
+                  DestinationStoreEventType
                       .SELECTED_DESTINATION_CAPABILITIES_READY,
                   destinationStore),
             ])
@@ -418,8 +418,7 @@ suite(destination_store_test.suiteName, function() {
         return Promise
             .all([
               setInitialSettings(true),
-              eventToPromise(
-                  DestinationStore.EventType.ERROR, destinationStore),
+              eventToPromise(DestinationStoreEventType.ERROR, destinationStore),
             ])
             .then(function(argsArray) {
               const errorEvent = argsArray[1];
@@ -468,14 +467,14 @@ suite(destination_store_test.suiteName, function() {
     return setInitialSettings(false)
         .then(function() {
           assertEquals(
-              Destination.GooglePromotedId.SAVE_AS_PDF,
+              GooglePromotedDestinationId.SAVE_AS_PDF,
               destinationStore.selectedDestination.id);
           return new Promise(resolve => setTimeout(resolve));
         })
         .then(function() {
           // Should still have Save as PDF.
           assertEquals(
-              Destination.GooglePromotedId.SAVE_AS_PDF,
+              GooglePromotedDestinationId.SAVE_AS_PDF,
               destinationStore.selectedDestination.id);
         });
   });
@@ -524,7 +523,7 @@ suite(destination_store_test.suiteName, function() {
               // Should have loaded Google Drive as the selected printer, since
               // it was most recent.
               assertEquals(
-                  Destination.GooglePromotedId.DOCS,
+                  GooglePromotedDestinationId.DOCS,
                   destinationStore.selectedDestination.id);
 
               // Since the system default is local, local destinations will also
@@ -549,7 +548,7 @@ suite(destination_store_test.suiteName, function() {
                   destinationStore.destinations(account2);
               assertEquals(6, loadedPrintersAccount2.length);
               assertEquals(
-                  Destination.GooglePromotedId.SAVE_AS_PDF,
+                  GooglePromotedDestinationId.SAVE_AS_PDF,
                   loadedPrintersAccount2[0].id);
               loadedPrintersAccount2.forEach(printer => {
                 assertFalse(printer.origin === DestinationOrigin.COOKIES);
@@ -573,26 +572,15 @@ suite(destination_store_test.suiteName, function() {
         return setInitialSettings(false)
             .then(function(args) {
               assertEquals(
-                  Destination.GooglePromotedId.SAVE_AS_PDF, args.destinationId);
+                  GooglePromotedDestinationId.SAVE_AS_PDF, args.destinationId);
               assertEquals(PrinterType.PDF_PRINTER, args.printerType);
               assertEquals(
-                  Destination.GooglePromotedId.SAVE_AS_PDF,
+                  GooglePromotedDestinationId.SAVE_AS_PDF,
                   destinationStore.selectedDestination.id);
-              // Update destination with ID 1 so that it has policies.
               const localDestinationInfo = {
                 deviceName: id1,
                 printerName: name1
               };
-              if (isChromeOS || isLacros) {
-                localDestinationInfo.policies = {
-                  allowedColorModes: 0x1,  // ColorModeRestriction.MONOCHROME
-                  defaultColorMode: 0x1,   // ColorModeRestriction.MONOCHROME
-                  allowedPinMode: null,
-                  defaultPinMode: null,
-                  allowedDuplexModes: null,
-                  defaultDuplexMode: null,
-                };
-              }
               // Typecast localDestinationInfo to work around the fact that
               // policy types are only defined on Chrome OS.
               nativeLayer.setLocalDestinationCapabilities({
@@ -608,9 +596,6 @@ suite(destination_store_test.suiteName, function() {
                   destinationStore.destinations().find(d => d.id === id1);
               // No capabilities or policies yet.
               assertFalse(!!destination.capabilities);
-              if (isChromeOS || isLacros) {
-                assertEquals(null, destination.policies);
-              }
               destinationStore.selectDestination(destination);
               return nativeLayer.whenCalled('getPrinterCapabilities');
             })
@@ -618,10 +603,6 @@ suite(destination_store_test.suiteName, function() {
               assertEquals(destination, destinationStore.selectedDestination);
               // Capabilities are updated.
               assertTrue(!!destination.capabilities);
-              if (isChromeOS || isLacros) {
-                // Policies are updated.
-                assertTrue(!!destination.policies);
-              }
             });
       });
 
@@ -697,7 +678,7 @@ suite(destination_store_test.suiteName, function() {
                   destinationStore.destinations(account2);
               assertEquals(7, loadedPrintersAccount2.length);
               assertEquals(
-                  Destination.GooglePromotedId.SAVE_AS_PDF,
+                  GooglePromotedDestinationId.SAVE_AS_PDF,
                   loadedPrintersAccount2[0].id);
             });
       });
@@ -708,7 +689,7 @@ suite(destination_store_test.suiteName, function() {
         return setInitialSettings(false).then(function(args) {
           assertTrue(!!destinationStore.destinations().find(
               destination => destination.id ===
-                  Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS));
+                  GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS));
         });
       });
 
@@ -719,7 +700,7 @@ suite(destination_store_test.suiteName, function() {
     return setInitialSettings(false).then(function(args) {
       assertFalse(!!destinationStore.destinations().find(
           destination => destination.id ===
-              Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS));
+              GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS));
     });
   });
 });

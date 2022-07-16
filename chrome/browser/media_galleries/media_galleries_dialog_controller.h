@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
 
@@ -60,6 +59,11 @@ class MediaGalleriesDialogController {
 
   typedef std::vector<Entry> Entries;
 
+  MediaGalleriesDialogController(const MediaGalleriesDialogController&) =
+      delete;
+  MediaGalleriesDialogController& operator=(
+      const MediaGalleriesDialogController&) = delete;
+
   // The title of the dialog view. Note that this is only guaranteed to be
   // called once, and once called there is no way to update the title text.
   virtual std::u16string GetHeader() const = 0;
@@ -102,8 +106,6 @@ class MediaGalleriesDialogController {
  protected:
   MediaGalleriesDialogController();
   virtual ~MediaGalleriesDialogController();
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesDialogController);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_MEDIA_GALLERIES_DIALOG_CONTROLLER_H_

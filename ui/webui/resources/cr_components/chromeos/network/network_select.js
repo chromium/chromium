@@ -86,6 +86,9 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @private {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+    globalPolicy_: Object,
   },
 
   /** @type {!OncMojo.NetworkStateProperties|undefined} */
@@ -158,6 +161,9 @@ Polymer({
   refreshNetworks() {
     this.networkConfig_.getDeviceStateList().then(response => {
       this.onGetDeviceStates_(response.result);
+    });
+    this.networkConfig_.getGlobalPolicy().then(response => {
+      this.globalPolicy_ = response.result;
     });
   },
 

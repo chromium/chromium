@@ -2,15 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PostMessageAPIServer} from './post_message_api.js';
-
-/**
- * The methods to expose to the client.
- */
-const METHOD_LIST = [
-  'logOut', 'getInstalledArcApps', 'requestClose', 'notifySupervisionEnabled',
-  'setCloseOnEscape'
-];
+import {PostMessageAPIServer} from 'chrome://resources/js/post_message_api_server.m.js';
 
 /**
  * Class that implements the server side of the AddSupervision postMessage
@@ -29,7 +21,7 @@ export class AddSupervisionAPIServer extends PostMessageAPIServer {
    *     messages via the postMessage API.
    */
   constructor(webviewElement, targetURL, originURLPrefix) {
-    super(webviewElement, METHOD_LIST, targetURL, originURLPrefix);
+    super(webviewElement, targetURL, originURLPrefix);
 
     this.addSupervisionHandler_ =
         addSupervision.mojom.AddSupervisionHandler.getRemote();

@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/js_calls_container.h"
 #include "components/login/base_screen_handler_utils.h"
@@ -39,6 +38,10 @@ class OobeUI;
 class BaseWebUIHandler : public content::WebUIMessageHandler {
  public:
   explicit BaseWebUIHandler(JSCallsContainer* js_calls_container);
+
+  BaseWebUIHandler(const BaseWebUIHandler&) = delete;
+  BaseWebUIHandler& operator=(const BaseWebUIHandler&) = delete;
+
   ~BaseWebUIHandler() override;
 
   // Gets localized strings to be used on the page.
@@ -102,9 +105,9 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   template <typename T>
   void AddRawCallback(const std::string& function_name,
                       void (T::*method)(const base::ListValue* args)) {
-    content::WebUI::MessageCallback callback =
+    content::WebUI::DeprecatedMessageCallback callback =
         base::BindRepeating(method, base::Unretained(static_cast<T*>(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         function_name,
         base::BindRepeating(&BaseWebUIHandler::OnRawCallback,
                             base::Unretained(this), function_name, callback));
@@ -114,7 +117,7 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
                    void (T::*method)(Args...)) {
     base::RepeatingCallback<void(Args...)> callback =
         base::BindRepeating(method, base::Unretained(static_cast<T*>(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         function_name,
         base::BindRepeating(&BaseWebUIHandler::OnCallback<Args...>,
                             base::Unretained(this), function_name, callback));
@@ -172,7 +175,7 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   // These two functions wrap Add(Raw)Callback so that the incoming JavaScript
   // event can be recorded.
   void OnRawCallback(const std::string& function_name,
-                     const content::WebUI::MessageCallback callback,
+                     const content::WebUI::DeprecatedMessageCallback& callback,
                      const base::ListValue* args);
   template <typename... Args>
   void OnCallback(const std::string& function_name,
@@ -192,8 +195,6 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   bool javascript_disallowed_ = false;
 
   JSCallsContainer* js_calls_container_ = nullptr;  // non-owning pointers.
-
-  DISALLOW_COPY_AND_ASSIGN(BaseWebUIHandler);
 };
 
 }  // namespace chromeos

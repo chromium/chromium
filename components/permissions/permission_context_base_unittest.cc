@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
@@ -61,6 +60,9 @@ class TestPermissionContext : public PermissionContextBase {
             blink::mojom::PermissionsPolicyFeature::kNotFound),
         tab_context_updated_(false) {}
 
+  TestPermissionContext(const TestPermissionContext&) = delete;
+  TestPermissionContext& operator=(const TestPermissionContext&) = delete;
+
   ~TestPermissionContext() override {}
 
   const std::vector<ContentSetting>& decisions() const { return decisions_; }
@@ -81,7 +83,8 @@ class TestPermissionContext : public PermissionContextBase {
   ContentSetting GetContentSettingFromMap(const GURL& url_a,
                                           const GURL& url_b) {
     auto* map = PermissionsClient::Get()->GetSettingsMap(browser_context());
-    return map->GetContentSetting(url_a.GetOrigin(), url_b.GetOrigin(),
+    return map->GetContentSetting(url_a.DeprecatedGetOriginAsURL(),
+                                  url_b.DeprecatedGetOriginAsURL(),
                                   content_settings_type());
   }
 
@@ -139,7 +142,6 @@ class TestPermissionContext : public PermissionContextBase {
   // Callback for responding to a permission once the request has been completed
   // (valid URL, kill switch disabled)
   base::OnceClosure respond_permission_;
-  DISALLOW_COPY_AND_ASSIGN(TestPermissionContext);
 };
 
 class TestKillSwitchPermissionContext : public TestPermissionContext {
@@ -151,6 +153,11 @@ class TestKillSwitchPermissionContext : public TestPermissionContext {
     ResetFieldTrialList();
   }
 
+  TestKillSwitchPermissionContext(const TestKillSwitchPermissionContext&) =
+      delete;
+  TestKillSwitchPermissionContext& operator=(
+      const TestKillSwitchPermissionContext&) = delete;
+
   void ResetFieldTrialList() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.Init();
@@ -158,8 +165,6 @@ class TestKillSwitchPermissionContext : public TestPermissionContext {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestKillSwitchPermissionContext);
 };
 
 class TestSecureOriginRestrictedPermissionContext
@@ -170,11 +175,13 @@ class TestSecureOriginRestrictedPermissionContext
       const ContentSettingsType content_settings_type)
       : TestPermissionContext(browser_context, content_settings_type) {}
 
+  TestSecureOriginRestrictedPermissionContext(
+      const TestSecureOriginRestrictedPermissionContext&) = delete;
+  TestSecureOriginRestrictedPermissionContext& operator=(
+      const TestSecureOriginRestrictedPermissionContext&) = delete;
+
  protected:
   bool IsRestrictedToSecureOrigins() const override { return true; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestSecureOriginRestrictedPermissionContext);
 };
 
 class TestPermissionsClientBypassExtensionOriginCheck
@@ -187,6 +194,11 @@ class TestPermissionsClientBypassExtensionOriginCheck
 };
 
 class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
+ public:
+  PermissionContextBaseTests(const PermissionContextBaseTests&) = delete;
+  PermissionContextBaseTests& operator=(const PermissionContextBaseTests&) =
+      delete;
+
  protected:
   PermissionContextBaseTests() {}
   ~PermissionContextBaseTests() override {}
@@ -478,12 +490,9 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         features::kBlockPromptsIfDismissedOften, &actual_params));
     EXPECT_EQ(params, actual_params);
 
-    {
-      std::map<std::string, std::string> actual_params;
-      EXPECT_TRUE(base::GetFieldTrialParamsByFeature(
-          features::kBlockPromptsIfDismissedOften, &actual_params));
-      EXPECT_EQ(params, actual_params);
-    }
+    EXPECT_TRUE(base::GetFieldTrialParamsByFeature(
+        features::kBlockPromptsIfDismissedOften, &actual_params));
+    EXPECT_EQ(params, actual_params);
 
     for (uint32_t i = 0; i < 5; ++i) {
       TestPermissionContext permission_context(browser_context(),
@@ -597,7 +606,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
               permission_context.GetContentSettingFromMap(url, url));
 
     // Try to reset permission.
-    permission_context.ResetPermission(url.GetOrigin(), url.GetOrigin());
+    permission_context.ResetPermission(url.DeprecatedGetOriginAsURL(),
+                                       url.DeprecatedGetOriginAsURL());
     ContentSetting setting_after_reset =
         permission_context.GetContentSettingFromMap(url, url);
     ContentSetting default_setting =
@@ -731,8 +741,6 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
 
   std::unique_ptr<MockPermissionPromptFactory> prompt_factory_;
   TestPermissionsClientBypassExtensionOriginCheck client_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionContextBaseTests);
 };
 
 // Simulates clicking Accept. The permission should be granted and

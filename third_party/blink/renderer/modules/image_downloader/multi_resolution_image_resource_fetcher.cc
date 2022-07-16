@@ -34,6 +34,9 @@ class MultiResolutionImageResourceFetcher::ClientImpl
   explicit ClientImpl(StartCallback callback)
       : completed_(false), status_(LOADING), callback_(std::move(callback)) {}
 
+  ClientImpl(const ClientImpl&) = delete;
+  ClientImpl& operator=(const ClientImpl&) = delete;
+
   ~ClientImpl() override {}
 
   virtual void Cancel() { OnLoadCompleteInternal(LOAD_FAILED); }
@@ -100,8 +103,6 @@ class MultiResolutionImageResourceFetcher::ClientImpl
 
   // Callback when we're done.
   StartCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientImpl);
 };
 
 MultiResolutionImageResourceFetcher::MultiResolutionImageResourceFetcher(

@@ -8,6 +8,7 @@ import "media/mojo/mojom/demuxer_stream.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/site_for_cookies.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
@@ -15,7 +16,7 @@ import "url/mojom/origin.mojom";
 // See media/base/media_url_params.h for descriptions.
 struct MediaUrlParams {
   url.mojom.Url media_url;
-  url.mojom.Url site_for_cookies;
+  network.mojom.SiteForCookies site_for_cookies;
   url.mojom.Origin top_frame_origin;
   bool allow_credentials;
   bool is_hls;
@@ -25,8 +26,8 @@ struct MediaUrlParams {
 // happens outside of the sandboxed render process.
 // See media/mojo/README.md
 interface Renderer {
-  // Initializes the Renderer with one or more audio / video |streams|, or a URL
-  // via |media_url_params|. Exactly one of |streams| and |media_urls_params|
+  // Initializes the Renderer with one or more audio / video `streams`, or a URL
+  // via `media_url_params`. Exactly one of `streams` and `media_urls_params`
   // should be set.
   // TODO(sandersd): These should be separate methods or a union type.
   Initialize(pending_associated_remote<RendererClient> client,
@@ -38,7 +39,7 @@ interface Renderer {
   // before the callback is executed.
   Flush() => ();
 
-  // Starts rendering from |time|.
+  // Starts rendering from `time`.
   StartPlayingFrom(mojo_base.mojom.TimeDelta time);
 
   // Updates the current playback rate. The default playback rate should be 1.
@@ -47,19 +48,20 @@ interface Renderer {
   // Sets the output volume. The default volume should be 1.
   SetVolume(float volume);
 
-  // Attaches the CDM associated with |cdm_id| to the renderer service,
+  // Attaches the CDM associated with `cdm_id` to the renderer service,
   // executing the callback with whether the CDM was successfully attached.
   SetCdm(mojo_base.mojom.UnguessableToken? cdm_id) => (bool success);
 };
 
+// A Mojo equivalent of media::RendererClient. See media/mojo/README.md
 interface RendererClient {
-  // Called to report media time advancement by |time|.
-  // |time| and |max_time| can be used to interpolate time between
+  // Called to report media time advancement by `time`.
+  // `time` and `max_time` can be used to interpolate time between
   // calls to OnTimeUpdate().
-  // |max_time| is typically the media timestamp of the last audio frame
+  // `max_time` is typically the media timestamp of the last audio frame
   //     buffered by the audio hardware.
-  // |capture_time| is monotonic clock time at which the times were captured.
-  // |max_time| must be greater or equal to |time|.
+  // `capture_time` is monotonic clock time at which the times were captured.
+  // `max_time` must be greater or equal to `time`.
   OnTimeUpdate(mojo_base.mojom.TimeDelta time,
                mojo_base.mojom.TimeDelta max_time,
                mojo_base.mojom.TimeTicks capture_time);
@@ -91,7 +93,7 @@ interface RendererClient {
   // media_types.mojom.
   OnStatisticsUpdate(PipelineStatistics stats);
 
-  // Called when the remote renderering service is waiting for |reason|,
+  // Called when the remote rendering service is waiting for `reason`,
   // e.g. waiting for decryption key.
   OnWaiting(WaitingReason reason);
 };

@@ -11,8 +11,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"
@@ -44,6 +43,10 @@ class UIControlsDesktopOzone : public UIControlsAura {
     DCHECK(ozone_ui_controls_test_helper_)
         << "The test suite cannot be run without OzoneUIControlsTestHelper.";
   }
+
+  UIControlsDesktopOzone(const UIControlsDesktopOzone&) = delete;
+  UIControlsDesktopOzone& operator=(const UIControlsDesktopOzone&) = delete;
+
   ~UIControlsDesktopOzone() override = default;
 
   bool SendKeyPress(gfx::NativeWindow window,
@@ -165,8 +168,6 @@ class UIControlsDesktopOzone : public UIControlsAura {
   }
 
   std::unique_ptr<ui::OzoneUIControlsTestHelper> ozone_ui_controls_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(UIControlsDesktopOzone);
 };
 
 }  // namespace

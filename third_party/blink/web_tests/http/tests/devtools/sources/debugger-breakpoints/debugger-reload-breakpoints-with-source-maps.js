@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests "reload" from within inspector window while on pause.`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise(
       'resources/debugger-reload-breakpoints-with-source-maps.html');

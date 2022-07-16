@@ -4,19 +4,24 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.VisibilitySettings;
@@ -37,25 +42,21 @@ public class ContinuousSearchListCoordinator {
     private final SimpleRecyclerViewAdapter mRecyclerViewAdapter;
     private final ObservableSupplier<Tab> mTabSupplier;
     private final PropertyModel mRootViewModel;
-    private final Resources mResources;
+    private final Context mContext;
 
     public ContinuousSearchListCoordinator(
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<Tab> tabSupplier, Callback<VisibilitySettings> setLayoutVisibility,
-            ThemeColorProvider themeColorProvider, Resources resources) {
+            ThemeColorProvider themeColorProvider, Context context) {
         ContinuousSearchConfiguration.initialize();
         mRootViewModel = new PropertyModel(ContinuousSearchListProperties.ALL_KEYS);
         ModelList listItems = new ModelList();
         mRecyclerViewAdapter = new SimpleRecyclerViewAdapter(listItems);
-        mResources = resources;
+        mContext = context;
         mListMediator = new ContinuousSearchListMediator(browserControlsStateProvider, listItems,
-                mRootViewModel, setLayoutVisibility, themeColorProvider, resources);
+                mRootViewModel, setLayoutVisibility, themeColorProvider, context);
 
         boolean twoLineChip = mListMediator.shouldShowResultTitle();
-        mRecyclerViewAdapter.registerType(ListItemType.PROVIDER,
-                (parent)
-                        -> inflateListItemView(parent, ListItemType.PROVIDER, false),
-                ContinuousSearchListViewBinder::bindProvider);
         mRecyclerViewAdapter.registerType(ListItemType.SEARCH_RESULT,
                 (parent)
                         -> inflateListItemView(parent, ListItemType.SEARCH_RESULT, twoLineChip),
@@ -71,7 +72,7 @@ public class ContinuousSearchListCoordinator {
 
     private View inflateListItemView(
             ViewGroup parentView, @ListItemType int listItemType, boolean twoLineChip) {
-        int layoutId = R.layout.continuous_search_list_provider;
+        int layoutId = 0;
         switch (listItemType) {
             case ListItemType.SEARCH_RESULT:
                 layoutId = R.layout.continuous_search_list_item;
@@ -79,6 +80,8 @@ public class ContinuousSearchListCoordinator {
             case ListItemType.AD:
                 layoutId = R.layout.continuous_search_list_ad;
                 break;
+            case ListItemType.DEPRECATED_PROVIDER:
+                assert false : "CSN provider should not be a ListItem";
         }
 
         View view =
@@ -98,18 +101,58 @@ public class ContinuousSearchListCoordinator {
         container.addView(rootView, /*index=*/0, lp);
 
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(
-                container.getContext(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new SpaceItemDecoration(mResources));
-        recyclerView.setAdapter(mRecyclerViewAdapter);
-        recyclerView.addOnScrollListener(new OnScrollListener() {
+
+        OnScrollListener userInputScrollListener = new OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 // onScrolled is also called after a layout calculation. dx will be 0 in that case.
                 if (dx != 0) mListMediator.onScrolled();
             }
-        });
+        };
+        // TODO(crbug.com/1231562): Add tests.
+        LinearLayoutManager layoutManager = new LinearLayoutManager(
+                container.getContext(), LinearLayoutManager.HORIZONTAL, false) {
+            @Override
+            public void smoothScrollToPosition(
+                    RecyclerView recyclerView, State state, int position) {
+                TraceEvent.startAsync("ContinuousSearchListCoordinator#smoothScrollToPosition",
+                        userInputScrollListener.hashCode());
+                LinearSmoothScroller scroller =
+                        new LinearSmoothScroller(recyclerView.getContext()) {
+                            @Override
+                            public int calculateDtToFit(int viewStart, int viewEnd, int boxStart,
+                                    int boxEnd, int snapPreference) {
+                                // Return distance between visible view's center and selected item's
+                                // center
+                                return (boxStart + (boxEnd - boxStart) / 2)
+                                        - (viewStart + (viewEnd - viewStart) / 2);
+                            }
+                        };
+                // Remove the user input OnScrollListener to avoid calling onScrolled() when the
+                // scroll is done programmatically.
+                recyclerView.removeOnScrollListener(userInputScrollListener);
+                recyclerView.addOnScrollListener(new OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(
+                            @NonNull RecyclerView recyclerView, int newState) {
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            recyclerView.removeOnScrollListener(this);
+                            recyclerView.addOnScrollListener(userInputScrollListener);
+                            TraceEvent.finishAsync(
+                                    "ContinuousSearchListCoordinator#smoothScrollToPosition",
+                                    userInputScrollListener.hashCode());
+                        }
+                    }
+                });
+
+                scroller.setTargetPosition(position);
+                startSmoothScroll(scroller);
+            }
+        };
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new SpaceItemDecoration(mContext.getResources()));
+        recyclerView.setAdapter(mRecyclerViewAdapter);
+        recyclerView.addOnScrollListener(userInputScrollListener);
     }
 
     void destroy() {
@@ -117,15 +160,17 @@ public class ContinuousSearchListCoordinator {
         mListMediator.destroy();
     }
 
+    @VisibleForTesting
+    ContinuousSearchListMediator getMediatorForTesting() {
+        return mListMediator;
+    }
+
     private static class SpaceItemDecoration extends ItemDecoration {
         private final int mChipSpacingPx;
-        private final int mSidePaddingPx;
 
         public SpaceItemDecoration(Resources resources) {
             mChipSpacingPx =
                     (int) resources.getDimensionPixelSize(R.dimen.csn_chip_list_chip_spacing);
-            mSidePaddingPx =
-                    (int) resources.getDimensionPixelSize(R.dimen.csn_chip_list_side_padding);
         }
 
         @Override
@@ -134,8 +179,10 @@ public class ContinuousSearchListCoordinator {
             boolean isFirst = position == 0;
             boolean isLast = position == parent.getAdapter().getItemCount() - 1;
 
-            outRect.left = isFirst ? mSidePaddingPx : mChipSpacingPx;
-            outRect.right = isLast ? mSidePaddingPx : mChipSpacingPx;
+            // Border chip paddings are provided by the provider icon and the dismiss button so no
+            // need to add any paddings here.
+            outRect.left = isFirst ? 0 : mChipSpacingPx;
+            outRect.right = isLast ? 0 : mChipSpacingPx;
         }
     }
 }

@@ -7,6 +7,7 @@ assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 source_set("utils") {
   deps = [
     "//base",
+    "//printing:printing_base",
     "//skia",
     "//ui/gfx",
   ]
@@ -23,6 +24,7 @@ source_set("unit_tests") {
     ":utils",
     "//base",
     "//skia",
+    "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx",
     "//ui/gfx:test_support",

@@ -12,10 +12,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -26,7 +24,8 @@
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_manager_core/account_manager_facade.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/user_manager/user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -69,13 +68,13 @@ constexpr char kAccountRemovedToastId[] =
 
 bool IsSameAccount(const ::account_manager::AccountKey& account_key,
                    const AccountId& account_id) {
-  switch (account_key.account_type) {
+  switch (account_key.account_type()) {
     case account_manager::AccountType::kGaia:
       return (account_id.GetAccountType() == AccountType::GOOGLE) &&
-             (account_id.GetGaiaId() == account_key.id);
+             (account_id.GetGaiaId() == account_key.id());
     case account_manager::AccountType::kActiveDirectory:
       return (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY) &&
-             (account_id.GetObjGuid() == account_key.id);
+             (account_id.GetObjGuid() == account_key.id());
   }
 }
 
@@ -87,6 +86,10 @@ void ShowToast(const std::string& id, const std::u16string& message) {
 class AccountBuilder {
  public:
   AccountBuilder() = default;
+
+  AccountBuilder(const AccountBuilder&) = delete;
+  AccountBuilder& operator=(const AccountBuilder&) = delete;
+
   ~AccountBuilder() = default;
 
   void PopulateFrom(base::DictionaryValue account) {
@@ -158,7 +161,6 @@ class AccountBuilder {
 
  private:
   base::DictionaryValue account_;
-  DISALLOW_COPY_AND_ASSIGN(AccountBuilder);
 };
 
 }  // namespace
@@ -181,27 +183,27 @@ void AccountManagerUIHandler::RegisterMessages() {
   if (!profile_)
     profile_ = Profile::FromWebUI(web_ui());
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAccounts",
       base::BindRepeating(&AccountManagerUIHandler::HandleGetAccounts,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "addAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleAddAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "reauthenticateAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleReauthenticateAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "migrateAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleMigrateAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "removeAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleRemoveAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showWelcomeDialogIfRequired",
       base::BindRepeating(
           &AccountManagerUIHandler::HandleShowWelcomeDialogIfRequired,
@@ -294,12 +296,12 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
     const ::account_manager::Account& stored_account = account_token_pair.first;
     const ::account_manager::AccountKey& account_key = stored_account.key;
     // We are only interested in listing GAIA accounts.
-    if (account_key.account_type != account_manager::AccountType::kGaia) {
+    if (account_key.account_type() != account_manager::AccountType::kGaia) {
       continue;
     }
 
     AccountInfo maybe_account_info =
-        identity_manager_->FindExtendedAccountInfoByGaiaId(account_key.id);
+        identity_manager_->FindExtendedAccountInfoByGaiaId(account_key.id());
     if (maybe_account_info.IsEmpty()) {
       // This account hasn't propagated to IdentityManager yet. When this
       // happens, `IdentityManager` will call `OnRefreshTokenUpdatedForAccount`
@@ -308,8 +310,8 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
     }
 
     AccountBuilder account;
-    account.SetId(account_key.id)
-        .SetAccountType(static_cast<int>(account_key.account_type))
+    account.SetId(account_key.id())
+        .SetAccountType(static_cast<int>(account_key.account_type()))
         .SetIsDeviceAccount(false)
         .SetFullName(maybe_account_info.full_name)
         .SetEmail(stored_account.raw_email)

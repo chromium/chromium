@@ -54,7 +54,7 @@ bool WaitForOpenInButton() {
   return base::test::ios::WaitUntilConditionOrTimeout(kLongDownloadTimeout, ^{
     NSError* error = nil;
     [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
-        assertWithMatcher:grey_notNil()
+        assertWithMatcher:grey_interactable()
                     error:&error];
     return (error == nil);
   });
@@ -67,7 +67,7 @@ bool WaitForDownloadButton() {
       base::test::ios::kWaitForPageLoadTimeout, ^{
         NSError* error = nil;
         [[EarlGrey selectElementWithMatcher:DownloadButton()]
-            assertWithMatcher:grey_notNil()
+            assertWithMatcher:grey_interactable()
                         error:&error];
         return (error == nil);
       });
@@ -81,7 +81,7 @@ bool WaitForOpenInDownloadsButton() {
         NSError* error = nil;
         [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                                 IDS_IOS_OPEN_IN_DOWNLOADS))]
-            assertWithMatcher:grey_notNil()
+            assertWithMatcher:grey_interactable()
                         error:&error];
         return (error == nil);
       });
@@ -253,14 +253,6 @@ bool WaitForOpenInDownloadsButton() {
 
 // Tests that filename label and "Open in Downloads" button are showing.
 - (void)testVisibleFileNameAndOpenInDownloads {
-  // Apple is hiding UIActivityViewController's contents from the host app on
-  // iOS 12. However, at least on iOS 13, the actions provided by the host app
-  // itself are not obfuscated.
-  if (@available(iOS 13, *)) {
-  } else {
-    EARL_GREY_TEST_SKIPPED(@"Test skipped on iOS12.");
-  }
-
   // Apple is hiding UIActivityViewController's contents from the host app on
   // iPad.
   if ([ChromeEarlGrey isIPadIdiom])

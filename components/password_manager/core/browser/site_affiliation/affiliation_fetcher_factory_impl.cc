@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory_impl.h"
 
-#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
 #include "components/password_manager/core/browser/site_affiliation/hash_affiliation_fetcher.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

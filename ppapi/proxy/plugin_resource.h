@@ -38,6 +38,10 @@ class PPAPI_PROXY_EXPORT PluginResource : public Resource {
   };
 
   PluginResource(Connection connection, PP_Instance instance);
+
+  PluginResource(const PluginResource&) = delete;
+  PluginResource& operator=(const PluginResource&) = delete;
+
   ~PluginResource() override;
 
   // Returns true if we've previously sent a create message to the browser
@@ -183,8 +187,6 @@ class PPAPI_PROXY_EXPORT PluginResource : public Resource {
   CallbackMap callbacks_;
 
   scoped_refptr<ResourceReplyThreadRegistrar> resource_reply_thread_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginResource);
 };
 
 template <typename ReplyMsgClass, typename CallbackType>

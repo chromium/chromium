@@ -8,7 +8,12 @@ import shutil
 import tempfile
 import unittest
 
-import mock
+import six
+
+if six.PY2:
+  import mock
+else:
+  import unittest.mock as mock  # pylint: disable=no-name-in-module,import-error,wrong-import-order
 
 from cli_tools.flakiness_cli import frames
 from core.external_modules import pandas
@@ -57,19 +62,19 @@ class TestDataFrames(unittest.TestCase):
     df = frames.BuildersDataFrame(sample_data)
     # Poke and check a few simple facts about our sample data.
     # There are two masters: chromium.perf, chromium.perf.fyi.
-    self.assertItemsEqual(
-        df['master'].unique(), ['chromium.perf', 'chromium.perf.fyi'])
+    six.assertCountEqual(self, df['master'].unique(),
+                         ['chromium.perf', 'chromium.perf.fyi'])
     # The 'desktop_test' runs on desktop builders only.
-    self.assertItemsEqual(
-        df[df['test_type'] == 'desktop_test']['builder'].unique(),
+    six.assertCountEqual(
+        self, df[df['test_type'] == 'desktop_test']['builder'].unique(),
         ['my-mac-bot', 'my-linux-bot'])
     # The 'mobile_test' runs on mobile builders only.
-    self.assertItemsEqual(
-        df[df['test_type'] == 'mobile_test']['builder'].unique(),
+    six.assertCountEqual(
+        self, df[df['test_type'] == 'mobile_test']['builder'].unique(),
         ['my-android-bot', 'my-new-android-bot'])
     # The new android bot is on the chromium.perf.fyi waterfall.
-    self.assertItemsEqual(
-        df[df['builder'] == 'my-new-android-bot']['master'].unique(),
+    six.assertCountEqual(
+        self, df[df['builder'] == 'my-new-android-bot']['master'].unique(),
         ['chromium.perf.fyi'])
 
   def testRunLengthDecode(self):
@@ -106,8 +111,8 @@ class TestDataFrames(unittest.TestCase):
     ]
 
     # pylint: disable=protected-access
-    self.assertItemsEqual(
-        list(frames._IterTestResults(tests_dict)), expected)
+    six.assertCountEqual(self, list(frames._IterTestResults(tests_dict)),
+                         expected)
 
   def testTestResultsDataFrame(self):
     data = {
@@ -167,7 +172,7 @@ class TestDataFrames(unittest.TestCase):
     # The data frame is empty.
     self.assertTrue(df.empty)
     # Column names are still defined (although of course empty).
-    self.assertItemsEqual(df['test_case'].unique(), [])
+    six.assertCountEqual(self, df['test_case'].unique(), [])
 
   def testTestResultsDataFrame_wrongVersionRejected(self):
     data = {

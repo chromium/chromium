@@ -16,7 +16,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         app:srcCompat="@drawable/new_tab_icon"
-        android:tint="@color/default_icon_color_secondary"
+        android:tint="?attr/default_icon_color_secondary"
         android:contentDescription="@string/accessibility_toolbar_btn_new_tab"/>
 
 </org.chromium.chrome.browser.tasks.tab_management.NewTabTileView>

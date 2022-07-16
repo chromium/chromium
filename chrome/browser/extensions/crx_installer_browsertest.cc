@@ -90,6 +90,10 @@ class MockPromptProxy {
  public:
   MockPromptProxy(content::WebContents* web_contents,
                   ScopedTestDialogAutoConfirm::AutoConfirm confirm_mode);
+
+  MockPromptProxy(const MockPromptProxy&) = delete;
+  MockPromptProxy& operator=(const MockPromptProxy&) = delete;
+
   ~MockPromptProxy();
 
   bool did_succeed() const { return !extension_id_.empty(); }
@@ -115,8 +119,6 @@ class MockPromptProxy {
   std::u16string error_;
 
   std::unique_ptr<ScopedTestDialogAutoConfirm> auto_confirm;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPromptProxy);
 };
 
 class MockInstallPrompt : public ExtensionInstallPrompt {
@@ -125,6 +127,9 @@ class MockInstallPrompt : public ExtensionInstallPrompt {
                     MockPromptProxy* proxy) :
       ExtensionInstallPrompt(web_contents),
       proxy_(proxy) {}
+
+  MockInstallPrompt(const MockInstallPrompt&) = delete;
+  MockInstallPrompt& operator=(const MockInstallPrompt&) = delete;
 
   // Overriding some of the ExtensionInstallUI API.
   void OnInstallSuccess(scoped_refptr<const Extension> extension,
@@ -139,8 +144,6 @@ class MockInstallPrompt : public ExtensionInstallPrompt {
 
  private:
   MockPromptProxy* proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockInstallPrompt);
 };
 
 MockPromptProxy::MockPromptProxy(
@@ -618,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
 
   // Make the extension idle again by navigating away from the options page.
   // This should not trigger the delayed install.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   WaitForExtensionIdle(extension_id);
   ASSERT_EQ(1u, service->delayed_installs()->size());
   extension = registry->enabled_extensions().GetByID(extension_id);

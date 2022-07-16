@@ -25,6 +25,10 @@ class VmPluginDispatcherClientImpl : public VmPluginDispatcherClient {
  public:
   VmPluginDispatcherClientImpl() {}
 
+  VmPluginDispatcherClientImpl(const VmPluginDispatcherClientImpl&) = delete;
+  VmPluginDispatcherClientImpl& operator=(const VmPluginDispatcherClientImpl&) =
+      delete;
+
   ~VmPluginDispatcherClientImpl() override = default;
 
   void AddObserver(Observer* observer) override {
@@ -186,8 +190,6 @@ class VmPluginDispatcherClientImpl : public VmPluginDispatcherClient {
   base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<VmPluginDispatcherClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VmPluginDispatcherClientImpl);
 };
 
 VmPluginDispatcherClient::VmPluginDispatcherClient() = default;

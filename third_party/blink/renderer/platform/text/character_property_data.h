@@ -106,8 +106,14 @@ static const UChar32 kIsCJKIdeographOrSymbolRanges[] = {
     // Modifiers
     0x1F3FB, 0x1F3FF,
 
+    // Transport
+    0x1F6DD, 0x1F6DF,
+
     // Colored circles and squares for use with emoji.
     0x1F7E0, 0x1F7EB,
+
+    // Math
+    0x1F7F0, 0x1F7F0,
 
     0x1F900, 0x1F90F,
     // ZIPPER-MOUTH FACE...SIGN OF THE HORNS
@@ -115,18 +121,23 @@ static const UChar32 kIsCJKIdeographOrSymbolRanges[] = {
     // Clothing
     0x1FA70, 0x1FA74,
     // Medical symbols
-    0x1FA78, 0x1FA7A,
+    0x1FA78, 0x1FA7C,
     // Toys and sport symbols
     0x1FA80, 0x1FA86,
     // Miscellaneous objects
-    0x1FA90, 0x1FAA8,
+    0x1FA90, 0x1FAAC,
     // Animals and nature
-    0x1FAB0, 0x1FAB6,
+    0x1FAB0, 0x1FABA,
     // Body parts
     // People
-    0x1FAC0, 0x1FAC2,
+    0x1FAC0, 0x1FAC5,
     // Food and drink
-    0x1FAD0, 0x1FAD6};
+    0x1FAD0, 0x1FAD9,
+    // Face
+    0x1FAE0, 0x1FAE7,
+    // Hand
+    0x1FAF0, 0x1FAF6,
+    };
 
 // https://html.spec.whatwg.org/C/#prod-potentialcustomelementname
 static const UChar32 kIsPotentialCustomElementNameCharArray[] = {

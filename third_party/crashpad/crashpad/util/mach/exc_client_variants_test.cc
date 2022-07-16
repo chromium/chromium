@@ -20,7 +20,6 @@
 #include <sys/types.h>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"
@@ -49,6 +48,9 @@ class TestExcClientVariants : public MachMultiprocess,
     ++exception_code_;
     ++exception_subcode_;
   }
+
+  TestExcClientVariants(const TestExcClientVariants&) = delete;
+  TestExcClientVariants& operator=(const TestExcClientVariants&) = delete;
 
   // UniversalMachExcServer::Interface:
 
@@ -251,8 +253,6 @@ class TestExcClientVariants : public MachMultiprocess,
   static exception_type_t exception_;
   static mach_exception_code_t exception_code_;
   static mach_exception_subcode_t exception_subcode_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExcClientVariants);
 };
 
 exception_type_t TestExcClientVariants::exception_ = 0;

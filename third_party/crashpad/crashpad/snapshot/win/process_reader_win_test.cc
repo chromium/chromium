@@ -55,6 +55,10 @@ constexpr char kTestMemory[] = "Read me from another process";
 class ProcessReaderChild final : public WinMultiprocess {
  public:
   ProcessReaderChild() : WinMultiprocess() {}
+
+  ProcessReaderChild(const ProcessReaderChild&) = delete;
+  ProcessReaderChild& operator=(const ProcessReaderChild&) = delete;
+
   ~ProcessReaderChild() {}
 
  private:
@@ -86,8 +90,6 @@ class ProcessReaderChild final : public WinMultiprocess {
     // the pipe.
     CheckedReadFileAtEOF(ReadPipeHandle());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessReaderChild);
 };
 
 TEST(ProcessReaderWin, ChildBasic) {
@@ -115,6 +117,12 @@ TEST(ProcessReaderWin, SelfOneThread) {
 class ProcessReaderChildThreadSuspendCount final : public WinMultiprocess {
  public:
   ProcessReaderChildThreadSuspendCount() : WinMultiprocess() {}
+
+  ProcessReaderChildThreadSuspendCount(
+      const ProcessReaderChildThreadSuspendCount&) = delete;
+  ProcessReaderChildThreadSuspendCount& operator=(
+      const ProcessReaderChildThreadSuspendCount&) = delete;
+
   ~ProcessReaderChildThreadSuspendCount() {}
 
  private:
@@ -190,8 +198,6 @@ class ProcessReaderChildThreadSuspendCount final : public WinMultiprocess {
     for (auto& thread : threads)
       thread.Join();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessReaderChildThreadSuspendCount);
 };
 
 TEST(ProcessReaderWin, ChildThreadSuspendCounts) {

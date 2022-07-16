@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_libevent.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/stylus_state.h"
@@ -38,6 +37,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
                           const EventDeviceInfo& info,
                           CursorDelegateEvdev* cursor,
                           DeviceEventDispatcherEvdev* dispatcher);
+
+  EventConverterEvdevImpl(const EventConverterEvdevImpl&) = delete;
+  EventConverterEvdevImpl& operator=(const EventConverterEvdevImpl&) = delete;
+
   ~EventConverterEvdevImpl() override;
 
   // EventConverterEvdev:
@@ -65,6 +68,9 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   void DispatchMouseButton(const input_event& input);
   void OnButtonChange(int code, bool down, base::TimeTicks timestamp);
 
+  // Opportunity to generate metrics for each key change
+  void GenerateKeyMetrics(unsigned key, bool down);
+
   // Flush events delimited by EV_SYN. This is useful for handling
   // non-axis-aligned movement properly.
   void FlushEvents(const input_event& input);
@@ -75,6 +81,7 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   // Input modalities for this device.
   bool has_keyboard_;
   bool has_touchpad_;
+  bool has_numberpad_;
   bool has_stylus_switch_;
 
   // LEDs for this device.
@@ -109,8 +116,6 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
 
   // Callbacks for dispatching events.
   DeviceEventDispatcherEvdev* const dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventConverterEvdevImpl);
 };
 
 }  // namespace ui

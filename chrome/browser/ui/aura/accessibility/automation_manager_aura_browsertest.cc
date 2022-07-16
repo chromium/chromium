@@ -79,6 +79,9 @@ class AutomationEventWaiter
         this);
   }
 
+  AutomationEventWaiter(const AutomationEventWaiter&) = delete;
+  AutomationEventWaiter& operator=(const AutomationEventWaiter&) = delete;
+
   virtual ~AutomationEventWaiter() {
     // Don't bother to reconnect to AutomationEventRouter because it's not
     // relevant to the tests.
@@ -173,8 +176,6 @@ class AutomationEventWaiter
   std::unique_ptr<ui::AXEvent> matched_wait_for_event_;
   ax::mojom::Event event_type_to_wait_for_ = ax::mojom::Event::kNone;
   ui::AXNodeID event_target_node_id_to_wait_for_ = ui::kInvalidAXNodeID;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationEventWaiter);
 };
 
 ui::TableColumn TestTableColumn(int id, const std::string& title) {
@@ -200,9 +201,10 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, WebAppearsOnce) {
   manager->Enable();
   auto* tree = manager->tree_.get();
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GURL("data:text/html;charset=utf-8,<button autofocus>Click me</button>"));
+      GURL(
+          "data:text/html;charset=utf-8,<button autofocus>Click me</button>")));
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -396,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, MAYBE_ScrollView) {
 #else
 #define MAYBE_TableView TableView
 #endif
-IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, TableView) {
+IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, MAYBE_TableView) {
   // Make our own AXAuraObjCache.
   auto cache = std::make_unique<views::AXAuraObjCache>();
   auto* cache_ptr = cache.get();
@@ -475,12 +477,12 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, TableView) {
     ui::AXNode* cell =
         waiter.ax_tree()->GetFromId(ax_cell_0_0_wrapper->GetUniqueId());
     ASSERT_TRUE(cell);
-    EXPECT_EQ(ax::mojom::Role::kCell, cell->data().role);
+    EXPECT_EQ(ax::mojom::Role::kCell, cell->GetRole());
     gfx::RectF cell_bounds = waiter.ax_tree()->GetTreeBounds(cell);
     SCOPED_TRACE("Cell: " + cell_bounds.ToString());
 
     ui::AXNode* window = cell->parent();
-    while (window && window->data().role != ax::mojom::Role::kWindow)
+    while (window && window->GetRole() != ax::mojom::Role::kWindow)
       window = window->parent();
     ASSERT_TRUE(window);
 

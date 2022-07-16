@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -98,7 +98,7 @@ def _PrintSymbolized(asan_input, arch):
   # Maps library -> { address -> [(symbol, location, obj_sym_with_offset)...] }
   all_symbols = collections.defaultdict(dict)
 
-  for library, items in libraries.iteritems():
+  for library, items in libraries.items():
     libname = _TranslateLibPath(library, asan_libs)
     lib_relative_addrs = set([i.rel_address for i in items])
     # pylint: disable=no-member
@@ -140,7 +140,7 @@ def main():
   constants.CheckOutputDirectory()
 
   if options.logcat:
-    asan_input = file(options.logcat, 'r')
+    asan_input = open(options.logcat, 'r')
   else:
     asan_input = sys.stdin
 

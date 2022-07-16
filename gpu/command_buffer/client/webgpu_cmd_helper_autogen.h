@@ -25,13 +25,15 @@ void AssociateMailboxImmediate(GLuint device_id,
                                GLuint id,
                                GLuint generation,
                                GLuint usage,
+                               MailboxFlags flags,
                                const GLbyte* mailbox) {
   const uint32_t size = webgpu::cmds::AssociateMailboxImmediate::ComputeSize();
   webgpu::cmds::AssociateMailboxImmediate* c =
       GetImmediateCmdSpaceTotalSize<webgpu::cmds::AssociateMailboxImmediate>(
           size);
   if (c) {
-    c->Init(device_id, device_generation, id, generation, usage, mailbox);
+    c->Init(device_id, device_generation, id, generation, usage, flags,
+            mailbox);
   }
 }
 
@@ -40,6 +42,17 @@ void DissociateMailbox(GLuint texture_id, GLuint texture_generation) {
       GetCmdSpace<webgpu::cmds::DissociateMailbox>();
   if (c) {
     c->Init(texture_id, texture_generation);
+  }
+}
+
+void DissociateMailboxForPresent(GLuint device_id,
+                                 GLuint device_generation,
+                                 GLuint texture_id,
+                                 GLuint texture_generation) {
+  webgpu::cmds::DissociateMailboxForPresent* c =
+      GetCmdSpace<webgpu::cmds::DissociateMailboxForPresent>();
+  if (c) {
+    c->Init(device_id, device_generation, texture_id, texture_generation);
   }
 }
 
@@ -64,13 +77,6 @@ void RequestDevice(uint64_t request_device_serial,
             device_generation, request_device_properties_shm_id,
             request_device_properties_shm_offset,
             request_device_properties_size);
-  }
-}
-
-void DestroyServer() {
-  webgpu::cmds::DestroyServer* c = GetCmdSpace<webgpu::cmds::DestroyServer>();
-  if (c) {
-    c->Init();
   }
 }
 

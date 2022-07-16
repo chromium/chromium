@@ -15,13 +15,13 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/referrer.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request_job.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace customtabs {
@@ -60,14 +60,14 @@ void RecordParallelRequestHistograms(const std::string& suffix,
 void DetachedResourceRequest::CreateAndStart(
     content::BrowserContext* browser_context,
     const GURL& url,
-    const GURL& site_for_cookies,
+    const GURL& site_for_referrer,
     const net::ReferrerPolicy referrer_policy,
     Motivation motivation,
     const std::string& package_name,
     DetachedResourceRequest::OnResultCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::unique_ptr<DetachedResourceRequest> detached_request(
-      new DetachedResourceRequest(url, site_for_cookies, referrer_policy,
+      new DetachedResourceRequest(url, site_for_referrer, referrer_policy,
                                   motivation, package_name, std::move(cb)));
   Start(std::move(detached_request), browser_context);
 }
@@ -76,13 +76,13 @@ DetachedResourceRequest::~DetachedResourceRequest() = default;
 
 DetachedResourceRequest::DetachedResourceRequest(
     const GURL& url,
-    const GURL& site_for_cookies,
+    const GURL& site_for_referrer,
     net::ReferrerPolicy referrer_policy,
     Motivation motivation,
     const std::string& package_name,
     DetachedResourceRequest::OnResultCallback cb)
     : url_(url),
-      site_for_cookies_(site_for_cookies),
+      site_for_referrer_(site_for_referrer),
       motivation_(motivation),
       cb_(std::move(cb)),
       redirects_(0) {
@@ -104,7 +104,7 @@ DetachedResourceRequest::DetachedResourceRequest(
             }
             policy {
               cookies_allowed: YES
-              cookie_store: "user"
+              cookies_store: "user"
               policy_exception_justification: "Identical to a resource fetch."
             })");
 
@@ -113,28 +113,28 @@ DetachedResourceRequest::DetachedResourceRequest(
   resource_request->url = url_;
   // The referrer is stripped if it's not set properly initially.
   resource_request->referrer = net::URLRequestJob::ComputeReferrerForPolicy(
-      referrer_policy, site_for_cookies_, url_);
+      referrer_policy, site_for_referrer_, url_);
   resource_request->referrer_policy = referrer_policy;
   resource_request->site_for_cookies =
-      net::SiteForCookies::FromUrl(site_for_cookies_);
+      net::SiteForCookies::FromUrl(site_for_referrer_);
 
-  url::Origin site_for_cookies_origin = url::Origin::Create(site_for_cookies_);
-  resource_request->request_initiator = site_for_cookies_origin;
+  url::Origin site_for_referrer_origin =
+      url::Origin::Create(site_for_referrer_);
+  resource_request->request_initiator = site_for_referrer_origin;
 
-  // Since |site_for_cookies_| has gone through digital asset links
+  // Since `site_for_referrer_` has gone through digital asset links
   // verification, it should be ok to use it to compute the network isolation
   // key.
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kOther, site_for_cookies_origin,
-      site_for_cookies_origin,
-      net::SiteForCookies::FromOrigin(site_for_cookies_origin));
+      net::IsolationInfo::RequestType::kOther, site_for_referrer_origin,
+      site_for_referrer_origin,
+      net::SiteForCookies::FromOrigin(site_for_referrer_origin));
 
   resource_request->resource_type =
       static_cast<int>(blink::mojom::ResourceType::kSubResource);
   resource_request->do_not_prompt_for_login = true;
   resource_request->enable_load_timing = false;
-  resource_request->report_raw_headers = false;
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);

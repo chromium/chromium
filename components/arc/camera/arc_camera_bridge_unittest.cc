@@ -4,7 +4,7 @@
 
 #include "components/arc/camera/arc_camera_bridge.h"
 
-#include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/test_browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -101,7 +101,7 @@ base::Value ConvertDiscoveredSinksToValues(
 // Helper function to convert |available_sinks| to a dictionary of availability
 // strings in JSON format represented by base::Value.
 base::Value ConvertAvailableSinksToValues(
-    const base::MRUCache<std::string, std::vector<MediaSinkInternal>>&
+    const base::LRUCache<std::string, std::vector<MediaSinkInternal>>&
         available_sinks) {
   base::Value dict(base::Value::Type::DICTIONARY);
   for (const auto& sinks_it : available_sinks) {

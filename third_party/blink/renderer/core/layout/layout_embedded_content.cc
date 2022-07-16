@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/embedded_content_painter.h"
@@ -44,19 +43,9 @@
 namespace blink {
 
 LayoutEmbeddedContent::LayoutEmbeddedContent(HTMLFrameOwnerElement* element)
-    : LayoutReplaced(element),
-      // Reference counting is used to prevent the part from being destroyed
-      // while inside the EmbeddedContentView code, which might not be able to
-      // handle that.
-      ref_count_(1) {
+    : LayoutReplaced(element) {
   DCHECK(element);
   SetInline(false);
-}
-
-void LayoutEmbeddedContent::Release() {
-  NOT_DESTROYED();
-  if (--ref_count_ <= 0)
-    delete this;
 }
 
 void LayoutEmbeddedContent::WillBeDestroyed() {
@@ -68,26 +57,8 @@ void LayoutEmbeddedContent::WillBeDestroyed() {
     frame_owner->SetEmbeddedContentView(nullptr);
 
   LayoutReplaced::WillBeDestroyed();
-}
 
-void LayoutEmbeddedContent::DeleteThis() {
-  NOT_DESTROYED();
-  // We call clearNode here because LayoutEmbeddedContent is ref counted. This
-  // call to destroy may not actually destroy the layout object. We can keep it
-  // around because of references from the LocalFrameView class. (The actual
-  // destruction of the class happens in PostDestroy() which is called from
-  // Release()).
-  //
-  // But, we've told the system we've destroyed the layoutObject, which happens
-  // when the DOM node is destroyed. So there is a good chance the DOM node this
-  // object points too is invalid, so we have to clear the node so we make sure
-  // we don't access it in the future.
   ClearNode();
-  Release();
-}
-
-LayoutEmbeddedContent::~LayoutEmbeddedContent() {
-  DCHECK_LE(ref_count_, 0);
 }
 
 FrameView* LayoutEmbeddedContent::ChildFrameView() const {
@@ -283,26 +254,25 @@ void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
     }
   }
 
+  auto* frame_owner = GetFrameOwnerElement();
+  if (!frame_owner)
+    return;
+
+  if (old_style && StyleRef().UsedColorScheme() != old_style->UsedColorScheme())
+    frame_owner->SetColorScheme(StyleRef().UsedColorScheme());
+
   if (old_style &&
       StyleRef().VisibleToHitTesting() == old_style->VisibleToHitTesting()) {
     return;
   }
 
-  auto* frame_owner = GetFrameOwnerElement();
-  if (!frame_owner)
-    return;
-
-  auto* frame = frame_owner->ContentFrame();
-  if (!frame)
-    return;
-
-  frame->UpdateVisibleToHitTesting();
+  if (auto* frame = frame_owner->ContentFrame())
+    frame->UpdateVisibleToHitTesting();
 }
 
 void LayoutEmbeddedContent::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
-  LayoutAnalyzer::Scope analyzer(*this);
   UpdateAfterLayout();
   ClearNeedsLayout();
 }
@@ -391,8 +361,8 @@ void LayoutEmbeddedContent::UpdateGeometry(
   absolute_replaced_rect.Move(absolute_location);
   FloatRect absolute_bounding_box =
       transform_state.LastPlanarQuad().BoundingBox();
-  IntRect frame_rect(IntPoint(),
-                     PixelSnappedIntRect(absolute_replaced_rect).Size());
+  IntRect frame_rect(gfx::Point(),
+                     PixelSnappedIntRect(absolute_replaced_rect).size());
   // Normally the location of the frame rect is ignored by the painter, but
   // currently it is still used by a family of coordinate conversion function in
   // LocalFrameView. This is incorrect because coordinate conversion
@@ -402,7 +372,7 @@ void LayoutEmbeddedContent::UpdateGeometry(
   // RemoteFrameView::frameRectsChanged().
   // WebPluginContainerImpl::reportGeometry()
   // TODO(trchen): Remove this hack once we fixed all callers.
-  frame_rect.SetLocation(RoundedIntPoint(absolute_bounding_box.Location()));
+  frame_rect.set_origin(RoundedIntPoint(absolute_bounding_box.origin()));
 
   // As an optimization, we don't include the root layer's scroll offset in the
   // frame rect.  As a result, we don't need to recalculate the frame rect every
@@ -417,7 +387,7 @@ void LayoutEmbeddedContent::UpdateGeometry(
     // which is a float-type but frame_rect in a content view is an IntRect. We
     // may want to reevaluate the use of pixel snapping that since scroll
     // offsets/layout can be fractional.
-    frame_rect.MoveBy(layout_view->PixelSnappedScrolledContentOffset());
+    frame_rect.Offset(layout_view->PixelSnappedScrolledContentOffset());
   }
 
   embedded_content_view.SetFrameRect(frame_rect);

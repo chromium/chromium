@@ -9,18 +9,30 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
+namespace {
+
+// Padding between chip's icon and label.
+constexpr int kChipImagePadding = 4;
+// An extra space between chip's label and right edge.
+constexpr int kExtraRightPadding = 4;
+
+}  // namespace
+
 OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
-                                     const gfx::VectorIcon& icon,
+                                     const gfx::VectorIcon& icon_on,
+                                     const gfx::VectorIcon& icon_off,
                                      std::u16string message,
                                      bool is_prominent)
     : MdTextButton(std::move(callback),
                    std::u16string(),
                    views::style::CONTEXT_BUTTON_MD),
-      icon_(icon) {
+      icon_on_(icon_on),
+      icon_off_(icon_off) {
   views::InstallPillHighlightPathGenerator(this);
   SetProminent(is_prominent);
   SetText(message);
@@ -29,13 +41,12 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
   SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   // Equalizing padding on the left, right and between icon and label.
-  SetImageLabelSpacing(
-      GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left());
+  SetImageLabelSpacing(kChipImagePadding);
   SetCustomPadding(
       gfx::Insets(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
                   GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left()));
 
-  constexpr auto kAnimationDuration = base::TimeDelta::FromMilliseconds(350);
+  constexpr auto kAnimationDuration = base::Milliseconds(350);
   animation_ = std::make_unique<gfx::SlideAnimation>(this);
   animation_->SetSlideDuration(kAnimationDuration);
 
@@ -45,13 +56,13 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
 OmniboxChipButton::~OmniboxChipButton() = default;
 
 void OmniboxChipButton::AnimateCollapse() {
-  constexpr auto kAnimationDuration = base::TimeDelta::FromMilliseconds(250);
+  constexpr auto kAnimationDuration = base::Milliseconds(250);
   animation_->SetSlideDuration(kAnimationDuration);
   animation_->Hide();
 }
 
 void OmniboxChipButton::AnimateExpand() {
-  constexpr auto kAnimationDuration = base::TimeDelta::FromMilliseconds(350);
+  constexpr auto kAnimationDuration = base::Milliseconds(350);
   animation_->SetSlideDuration(kAnimationDuration);
   animation_->Show();
 }
@@ -67,8 +78,8 @@ void OmniboxChipButton::SetExpandAnimationEndedCallback(
 
 gfx::Size OmniboxChipButton::CalculatePreferredSize() const {
   const int fixed_width = GetIconSize() + GetInsets().width();
-  const int collapsable_width =
-      label()->GetPreferredSize().width() + GetInsets().right();
+  const int collapsable_width = label()->GetPreferredSize().width() +
+                                kChipImagePadding + kExtraRightPadding;
   const double animation_value =
       force_expanded_for_testing_ ? 1.0 : animation_->GetCurrentValue();
   const int width =
@@ -108,22 +119,19 @@ void OmniboxChipButton::UpdateIconAndColors() {
   if (!GetWidget())
     return;
   SetEnabledTextColors(GetForegroundColor());
-  SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          icon_, GetForegroundColor(), GetIconSize(),
-          show_blocked_badge_ ? &vector_icons::kBlockedBadgeIcon : nullptr));
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(
+                    show_blocked_icon_ ? icon_off_ : icon_on_,
+                    GetForegroundColor(), GetIconSize(), nullptr));
   SetBgColorOverride(GetBackgroundColor());
 }
 
 SkColor OmniboxChipButton::GetMainColor() {
   switch (theme_) {
     case Theme::kBlue:
-      // TODO(crbug.com/1003612): ui::NativeTheme::kColorId_ProminentButtonColor
-      // does not always represent the blue color we need, but it is OK to use
-      // for now.
-      return GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_ProminentButtonColor);
+      // TODO(crbug.com/1003612): ui::kColorButtonBackgroundProminent does not
+      // always represent the blue color we need, but it is OK to use for now.
+      return GetColorProvider()->GetColor(ui::kColorButtonBackgroundProminent);
     case Theme::kGray:
       return GetThemeProvider()->GetColor(
           ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED);
@@ -148,9 +156,10 @@ void OmniboxChipButton::SetForceExpandedForTesting(
   force_expanded_for_testing_ = force_expanded_for_testing;
 }
 
-void OmniboxChipButton::SetShowBlockedBadge(bool show_blocked_badge) {
-  if (show_blocked_badge_ != show_blocked_badge) {
-    show_blocked_badge_ = show_blocked_badge;
+void OmniboxChipButton::SetShowBlockedIcon(bool show_blocked_icon) {
+  if (show_blocked_icon_ != show_blocked_icon) {
+    show_blocked_icon_ = show_blocked_icon;
+    theme_ = show_blocked_icon ? Theme::kGray : Theme::kBlue;
     UpdateIconAndColors();
   }
 }

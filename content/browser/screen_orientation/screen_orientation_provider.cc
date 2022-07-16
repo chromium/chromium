@@ -22,11 +22,16 @@ ScreenOrientationDelegate* ScreenOrientationProvider::delegate_ = nullptr;
 ScreenOrientationProvider::ScreenOrientationProvider(WebContents* web_contents)
     : WebContentsObserver(web_contents),
       lock_applied_(false),
-      receivers_(web_contents,
-                 this,
-                 content::WebContentsFrameReceiverSetPassKey()) {}
+      receivers_(web_contents, this) {}
 
 ScreenOrientationProvider::~ScreenOrientationProvider() = default;
+
+void ScreenOrientationProvider::BindScreenOrientation(
+    RenderFrameHost* rfh,
+    mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>
+        receiver) {
+  receivers_.Bind(rfh, std::move(receiver));
+}
 
 void ScreenOrientationProvider::LockOrientation(
     device::mojom::ScreenOrientationLockType orientation,
@@ -37,7 +42,8 @@ void ScreenOrientationProvider::LockOrientation(
   // Record new pending lock request.
   pending_callback_ = std::move(callback);
 
-  if (!delegate_ || !delegate_->ScreenOrientationProviderSupported()) {
+  if (!delegate_ ||
+      !delegate_->ScreenOrientationProviderSupported(web_contents())) {
     NotifyLockResult(ScreenOrientationLockResult::
                          SCREEN_ORIENTATION_LOCK_RESULT_ERROR_NOT_AVAILABLE);
     return;
@@ -156,8 +162,7 @@ ScreenOrientationProvider::GetNaturalLockType() const {
   if (!rwh)
     return device::mojom::ScreenOrientationLockType::DEFAULT;
 
-  display::ScreenInfo screen_info;
-  rwh->GetScreenInfo(&screen_info);
+  display::ScreenInfo screen_info = rwh->GetScreenInfo();
 
   switch (screen_info.orientation_type) {
     case display::mojom::ScreenOrientation::kPortraitPrimary:
@@ -189,8 +194,7 @@ bool ScreenOrientationProvider::LockMatchesCurrentOrientation(
   if (!rwh)
     return false;
 
-  display::ScreenInfo screen_info;
-  rwh->GetScreenInfo(&screen_info);
+  display::ScreenInfo screen_info = rwh->GetScreenInfo();
 
   switch (lock) {
     case device::mojom::ScreenOrientationLockType::PORTRAIT_PRIMARY:

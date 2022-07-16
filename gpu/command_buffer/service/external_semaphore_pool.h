@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_EXTERNAL_SEMAPHORE_POOL_H_
 #define GPU_COMMAND_BUFFER_SERVICE_EXTERNAL_SEMAPHORE_POOL_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include <vector>
 

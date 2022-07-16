@@ -27,6 +27,8 @@ namespace ui {
 
 WaylandDragDropTest::WaylandDragDropTest() = default;
 
+WaylandDragDropTest::~WaylandDragDropTest() = default;
+
 void WaylandDragDropTest::SendDndEnter(WaylandWindow* window,
                                        const gfx::Point& location) {
   auto* surface = server_.GetObject<wl::MockSurface>(
@@ -80,9 +82,10 @@ void WaylandDragDropTest::SendPointerButton(
     MockPlatformWindowDelegate* delegate,
     int button,
     bool pressed) {
+  const uint32_t serial = NextSerial();
   uint32_t state = pressed ? WL_POINTER_BUTTON_STATE_PRESSED
                            : WL_POINTER_BUTTON_STATE_RELEASED;
-  wl_pointer_send_button(pointer_->resource(), NextSerial(), NextTime(), button,
+  wl_pointer_send_button(pointer_->resource(), serial, NextTime(), button,
                          state);
 }
 
@@ -109,9 +112,10 @@ void WaylandDragDropTest::SendTouchMotion(WaylandWindow* window,
 void WaylandDragDropTest::SetUp() {
   WaylandTest::SetUp();
 
-  wl_seat_send_capabilities(
-      server_.seat()->resource(),
-      WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_TOUCH);
+  wl_seat_send_capabilities(server_.seat()->resource(),
+                            WL_SEAT_CAPABILITY_POINTER |
+                                WL_SEAT_CAPABILITY_TOUCH |
+                                WL_SEAT_CAPABILITY_KEYBOARD);
 
   Sync();
   pointer_ = server_.seat()->pointer();
@@ -139,11 +143,13 @@ void WaylandDragDropTest::StartDrag(wl::TestDataSource* source,
   EXPECT_FALSE(data_source_);
   data_source_ = source;
   OfferAndEnter(origin, {});
+  MockStartDrag(source, origin, serial);
 }
 
-uint32_t WaylandDragDropTest::NextSerial() const {
+uint32_t WaylandDragDropTest::NextSerial() {
   static uint32_t serial = 0;
-  return ++serial;
+  current_serial_ = ++serial;
+  return current_serial_;
 }
 
 uint32_t WaylandDragDropTest::NextTime() const {

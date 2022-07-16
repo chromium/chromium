@@ -36,7 +36,9 @@
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/fdlibm/ieee754.h"
 
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -133,7 +135,12 @@ float AudioParamTimeline::ExponentialRampAtTime(double t,
                                                 double time1,
                                                 float value2,
                                                 double time2) {
-  return value1 * fdlibm::pow(value2 / value1, (t - time1) / (time2 - time1));
+  DCHECK(!std::isnan(value1) && std::isfinite(value1));
+  DCHECK(!std::isnan(value2) && std::isfinite(value2));
+
+  return (value1 == 0.0f || std::signbit(value1) != std::signbit(value2))
+      ? value1
+      : value1 * fdlibm::pow(value2 / value1, (t - time1) / (time2 - time1));
 }
 
 // Compute the value of a set target event at time t with the given event
@@ -513,6 +520,9 @@ void AudioParamTimeline::SetValueCurveAtTime(const Vector<float>& curve,
 
 void AudioParamTimeline::InsertEvent(std::unique_ptr<ParamEvent> event,
                                      ExceptionState& exception_state) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+               "AudioParamTimeline::InsertEvent");
+
   DCHECK(IsMainThread());
 
   // Sanity check the event. Be super careful we're not getting infected with
@@ -546,45 +556,37 @@ void AudioParamTimeline::InsertEvent(std::unique_ptr<ParamEvent> event,
       // the end of some other duration.
       double end_time = event->Time() + event->Duration();
       ParamEvent::Type test_type = events_[i]->GetType();
-      // Events of type |kSetValueCurveEnd| or |kCancelValues| never
-      // conflict.
-      if (!(test_type == ParamEvent::kSetValueCurveEnd ||
-            test_type == ParamEvent::kCancelValues)) {
-        if (test_type == ParamEvent::kSetValueCurve) {
-          // A SetValueCurve overlapping an existing SetValueCurve requires
-          // special care.
-          double test_end_time = events_[i]->Time() + events_[i]->Duration();
-          // Test if old event starts somewhere in the middle of the new event.
-          bool overlap = (events_[i]->Time() >= event->Time() &&
-                          events_[i]->Time() < end_time);
-          // Test if old event ends somewhere in the middle of the new event.
-          overlap = overlap ||
-                    (test_end_time > event->Time() && test_end_time < end_time);
-          // Test if new event starts somewhere in the middle of the old event.
-          overlap = overlap || (event->Time() >= events_[i]->Time() &&
-                                event->Time() < test_end_time);
-          // Test if new event ends somewhere in the middle of the old event.
-          overlap = overlap || (end_time >= events_[i]->Time() &&
-                                end_time < test_end_time);
-          if (overlap) {
-            // If the start time of the event overlaps the start/end of an
-            // existing event or if the existing event end overlaps the
-            // start/end of the event, it's an error.
-            exception_state.ThrowDOMException(
-                DOMExceptionCode::kNotSupportedError,
-                EventToString(*event) + " overlaps " +
-                    EventToString(*events_[i]));
-            return;
-          }
-        } else {
-          if (events_[i]->Time() > event->Time() &&
-              events_[i]->Time() < end_time) {
-            exception_state.ThrowDOMException(
-                DOMExceptionCode::kNotSupportedError,
-                EventToString(*event) + " overlaps " +
-                    EventToString(*events_[i]));
-            return;
-          }
+      if (test_type == ParamEvent::kSetValueCurve) {
+        // A SetValueCurve overlapping an existing SetValueCurve requires
+        // special care.
+        double test_end_time = events_[i]->Time() + events_[i]->Duration();
+        // Events are overlapped if the new event starts before the old event
+        // ends and the old event starts before the new event ends.
+        bool overlap =
+            event->Time() < test_end_time && events_[i]->Time() < end_time;
+        if (overlap) {
+          // If the start time of the event overlaps the start/end of an
+          // existing event or if the existing event end overlaps the
+          // start/end of the event, it's an error.
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kNotSupportedError,
+              EventToString(*event) + " overlaps " +
+                  EventToString(*events_[i]));
+          return;
+        }
+      } else if (test_type != ParamEvent::kSetValueCurveEnd &&
+                 test_type != ParamEvent::kCancelValues) {
+        // Events of type |kSetValueCurveEnd| or |kCancelValues| never
+        // conflict, so we handle only the other event types.
+        // Throw an error if an existing event starts in the middle of this
+        // SetValueCurve event.
+        if (events_[i]->Time() > event->Time() &&
+            events_[i]->Time() < end_time) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kNotSupportedError,
+              EventToString(*event) + " overlaps " +
+                  EventToString(*events_[i]));
+          return;
         }
       }
     } else {
@@ -1001,6 +1003,8 @@ float AudioParamTimeline::ValuesForFrameRangeImpl(
     std::tie(value2, time2, next_event_type) =
         HandleCancelValues(event, next_event, value2, time2);
 
+    DCHECK(!std::isnan(value1));
+    DCHECK(!std::isnan(value2));
     DCHECK_GE(time2, time1);
 
     // |fillToEndFrame| is the exclusive upper bound of the last frame to be
@@ -1060,7 +1064,6 @@ float AudioParamTimeline::ValuesForFrameRangeImpl(
           value = event->Value();
           write_index =
               FillWithDefault(values, value, fill_to_frame, write_index);
-
           break;
         }
 
@@ -1403,6 +1406,7 @@ AudioParamTimeline::HandleCancelValues(const ParamEvent* current_event,
               value2 = ExponentialRampAtTime(next_event->Time(), value1, time1,
                                              saved_event->Value(),
                                              saved_event->Time());
+              DCHECK(!std::isnan(value1));
               break;
             case ParamEvent::kSetValueCurve:
             case ParamEvent::kSetValueCurveEnd:

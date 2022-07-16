@@ -125,7 +125,7 @@ class PrintExpectations(Command):
             port_names = [default_port.name()]
 
         if options.paths:
-            files = default_port.expectations_files()
+            files = default_port.default_expectations_files()
             web_tests_dir = default_port.web_tests_dir()
             for file in files:
                 if file.startswith(web_tests_dir):

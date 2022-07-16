@@ -39,7 +39,7 @@
             android:includeFontPadding="false"
             android:singleLine="true"
             android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary.Baseline" />
 
         <TextView
             android:id="@+id/dropdown_sublabel"
@@ -51,7 +51,7 @@
             android:includeFontPadding="false"
             android:singleLine="true"
             android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline" />
 
         <TextView
             android:id="@+id/dropdown_item_tag"
@@ -63,7 +63,7 @@
             android:includeFontPadding="false"
             android:singleLine="true"
             android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline" />
     </LinearLayout>
 
     <ImageView

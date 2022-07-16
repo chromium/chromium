@@ -51,6 +51,10 @@
 #import "ios/web_view/public/cwv_autofill_controller_delegate.h"
 #import "net/base/mac/url_conversions.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using autofill::FormRendererId;
 using autofill::FieldRendererId;
 

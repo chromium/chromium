@@ -44,9 +44,6 @@ source_set("tracked") {
     sources += [ "device_id_stub.cc" ]
   }
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   public_deps = [
     "//services/preferences/public/cpp/tracked",
     "//services/preferences/public/mojom",

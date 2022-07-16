@@ -42,6 +42,10 @@ class NET_EXPORT Http2PushPromiseIndex {
   class NET_EXPORT Delegate {
    public:
     Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate() {}
 
     // Return true if a pushed stream with |url| can be used for a request with
@@ -54,12 +58,13 @@ class NET_EXPORT Http2PushPromiseIndex {
     // Generate weak pointer.  Guaranateed to be called synchronously after
     // ValidatePushedStream() is called and returns true.
     virtual base::WeakPtr<SpdySession> GetWeakPtrToSession() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   Http2PushPromiseIndex();
+
+  Http2PushPromiseIndex(const Http2PushPromiseIndex&) = delete;
+  Http2PushPromiseIndex& operator=(const Http2PushPromiseIndex&) = delete;
+
   ~Http2PushPromiseIndex();
 
   // Tries to register a Delegate with an unclaimed pushed stream for |url|.
@@ -98,9 +103,6 @@ class NET_EXPORT Http2PushPromiseIndex {
                          base::WeakPtr<SpdySession>* session,
                          spdy::SpdyStreamId* stream_id);
 
-  // Return the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
  private:
   friend test::Http2PushPromiseIndexPeer;
 
@@ -109,7 +111,6 @@ class NET_EXPORT Http2PushPromiseIndex {
     GURL url;
     Delegate* delegate;
     spdy::SpdyStreamId stream_id;
-    size_t EstimateMemoryUsage() const;
   };
 
   // Function object satisfying the requirements of "Compare", see
@@ -128,8 +129,6 @@ class NET_EXPORT Http2PushPromiseIndex {
   // Delegate can have pushed streams for different URLs, and different
   // Delegates can have pushed streams for the same GURL).
   std::set<UnclaimedPushedStream, CompareByUrl> unclaimed_pushed_streams_;
-
-  DISALLOW_COPY_AND_ASSIGN(Http2PushPromiseIndex);
 };
 
 }  // namespace net

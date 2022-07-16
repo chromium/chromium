@@ -104,8 +104,7 @@ public class AutofillAssistantBottomsheetTest {
         return new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("bottomsheet_behaviour_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Bottomsheet behaviour")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 actionsList);
     }
@@ -265,6 +264,7 @@ public class AutofillAssistantBottomsheetTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1236142")
     public void testHandleHeader() throws Exception {
         AutofillAssistantTestService testService = new AutofillAssistantTestService(
                 Collections.singletonList(makeScript(RESIZE_LAYOUT_VIEWPORT, HANDLE_HEADER, true)));
@@ -289,6 +289,7 @@ public class AutofillAssistantBottomsheetTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1236142")
     public void testHandleHeaderCarousels() {
         AutofillAssistantTestService testService =
                 new AutofillAssistantTestService(Collections.singletonList(
@@ -338,8 +339,7 @@ public class AutofillAssistantBottomsheetTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("bottomsheet_behaviour_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Autostart")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 
@@ -385,8 +385,7 @@ public class AutofillAssistantBottomsheetTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("bottomsheet_behaviour_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Autostart")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 
@@ -398,6 +397,45 @@ public class AutofillAssistantBottomsheetTest {
         waitUntilViewMatchesCondition(withText(R.string.undo), isDisplayingAtLeast(90));
         onView(withText("Cancel")).check(doesNotExist());
         onView(withText(R.string.undo)).perform(click());
+        waitUntilViewMatchesCondition(withText("Cancel"), isDisplayed());
+    }
+
+    @Test
+    @MediumTest
+    public void testCancelSnackbarWithStringUndo() {
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().addChoices(Choice.newBuilder().setChip(
+                                 ChipProto.newBuilder()
+                                         .setType(ChipType.CANCEL_ACTION)
+                                         .setIcon(ChipIcon.ICON_CLEAR)
+                                         .setText("Cancel"))))
+                         .build());
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("bottomsheet_behaviour_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService = new AutofillAssistantTestService(
+                Collections.singletonList(script),
+                ClientSettingsProto.newBuilder()
+                        .setIntegrationTestSettings(
+                                ClientSettingsProto.IntegrationTestSettings.newBuilder()
+                                        .setDisableHeaderAnimations(true)
+                                        .setDisableCarouselChangeAnimations(true))
+                        .setDisplayStringsLocale("fr-FR")
+                        .addDisplayStrings(ClientSettingsProto.DisplayString.newBuilder()
+                                                   .setId(ClientSettingsProto.DisplayStringId.UNDO)
+                                                   .setValue("fr_undo"))
+                        .build());
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+        waitUntilViewMatchesCondition(withText("Cancel"), isDisplayingAtLeast(90));
+        onView(withText("Cancel")).perform(click());
+        waitUntilViewMatchesCondition(withText("fr_undo"), isDisplayingAtLeast(90));
+        onView(withText("Cancel")).check(doesNotExist());
+        onView(withText("fr_undo")).perform(click());
         waitUntilViewMatchesCondition(withText("Cancel"), isDisplayed());
     }
 
@@ -417,8 +455,7 @@ public class AutofillAssistantBottomsheetTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("bottomsheet_behaviour_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Autostart")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 

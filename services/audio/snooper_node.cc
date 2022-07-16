@@ -24,8 +24,7 @@ namespace {
 // indefinitely. In most normal cases, reads will cause the delay buffer to
 // automatically prune its recording down to well under this maximum (e.g.,
 // around 100 milliseconds of audio).
-constexpr base::TimeDelta kDelayBufferSize =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kDelayBufferSize = base::Milliseconds(1000);
 
 // A frequency at which people cannot discern tones that differ by 1 Hz. This is
 // based on research that shows people can discern tones only when they are more

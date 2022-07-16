@@ -82,6 +82,11 @@ class GenericCallbackBinderWithContext {
       scoped_refptr<base::SequencedTaskRunner> task_runner)
       : callback_(std::move(callback)), task_runner_(std::move(task_runner)) {}
 
+  GenericCallbackBinderWithContext(const GenericCallbackBinderWithContext&) =
+      delete;
+  GenericCallbackBinderWithContext& operator=(
+      const GenericCallbackBinderWithContext&) = delete;
+
   ~GenericCallbackBinderWithContext() = default;
 
   void BindInterface(ContextValueType context,
@@ -123,7 +128,6 @@ class GenericCallbackBinderWithContext {
 
   const GenericBinderType callback_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(GenericCallbackBinderWithContext);
 };
 
 }  // namespace internal

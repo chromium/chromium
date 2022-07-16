@@ -4,17 +4,13 @@
 
 #include "chromecast/cast_core/cast_runtime_content_renderer_client.h"
 
+#include "components/cast_streaming/public/cast_streaming_url.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_media_playback_options.h"
 #include "media/base/demuxer.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
 namespace chromecast {
-
-// static
-std::unique_ptr<shell::CastContentRendererClient>
-shell::CastContentRendererClient::Create() {
-  return std::make_unique<CastRuntimeContentRendererClient>();
-}
 
 CastRuntimeContentRendererClient::CastRuntimeContentRendererClient() = default;
 
@@ -24,6 +20,9 @@ void CastRuntimeContentRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame) {
   CastContentRendererClient::RenderFrameCreated(render_frame);
   cast_streaming_demuxer_provider_.RenderFrameCreated(render_frame);
+
+  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
+      cast_streaming_renderer_controller_proxy_.GetBinder(render_frame));
 }
 
 std::unique_ptr<::media::Demuxer>
@@ -31,11 +30,11 @@ CastRuntimeContentRendererClient::OverrideDemuxerForUrl(
     content::RenderFrame* render_frame,
     const GURL& url,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner) {
-  if (!render_frame->GetRenderFrameMediaPlaybackOptions()
-           .is_remoting_renderer_enabled()) {
+  if (!cast_streaming::IsCastStreamingMediaSourceUrl(url)) {
     return nullptr;
   }
 
+  LOG(INFO) << "Overriding demuxer for URL: " << url;
   return cast_streaming_demuxer_provider_.OverrideDemuxerForUrl(
       render_frame, url, std::move(media_task_runner));
 }

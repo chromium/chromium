@@ -1,46 +1,54 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutBlockFlow DIV id='first'",
-      "bounds": [784, 52],
-      "contentsOpaque": true,
+      "bounds": [784, 53],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#FFFF00",
       "transform": 1
     },
     {
       "name": "LayoutBlockFlow DIV",
-      "bounds": [784, 52],
+      "bounds": [784, 53],
+      "contentsOpaqueForText": true,
       "transform": 2
     },
     {
       "name": "LayoutBlockFlow DIV",
+      "position": [0, -1],
       "bounds": [784, 53],
+      "contentsOpaqueForText": true,
       "transform": 3
     },
     {
       "name": "LayoutBlockFlow DIV",
-      "bounds": [784, 52],
+      "position": [0, -1],
+      "bounds": [784, 54],
+      "contentsOpaqueForText": true,
       "transform": 4
     },
     {
       "name": "LayoutBlockFlow DIV",
-      "bounds": [784, 52],
+      "bounds": [784, 53],
+      "contentsOpaqueForText": true,
       "transform": 5
     },
     {
       "name": "LayoutBlockFlow DIV",
-      "bounds": [784, 52],
+      "bounds": [784, 53],
+      "contentsOpaqueForText": true,
       "transform": 6
     },
     {
       "name": "LayoutBlockFlow DIV",
-      "bounds": [784, 52],
+      "bounds": [784, 53],
+      "contentsOpaqueForText": true,
       "transform": 7
     }
   ],

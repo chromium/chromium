@@ -9,12 +9,11 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/net/http_post_provider_interface.h"
 
@@ -27,6 +26,10 @@ class FakeServerHttpPostProvider : public syncer::HttpPostProviderInterface {
   FakeServerHttpPostProvider(
       const base::WeakPtr<FakeServer>& fake_server,
       scoped_refptr<base::SequencedTaskRunner> fake_server_task_runner);
+
+  FakeServerHttpPostProvider(const FakeServerHttpPostProvider&) = delete;
+  FakeServerHttpPostProvider& operator=(const FakeServerHttpPostProvider&) =
+      delete;
 
   // HttpPostProviderInterface implementation.
   void SetExtraRequestHeaders(const char* headers) override;
@@ -74,8 +77,6 @@ class FakeServerHttpPostProvider : public syncer::HttpPostProviderInterface {
   std::string extra_request_headers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FakeServerHttpPostProvider);
 };
 
 class FakeServerHttpPostProviderFactory
@@ -84,6 +85,12 @@ class FakeServerHttpPostProviderFactory
   FakeServerHttpPostProviderFactory(
       const base::WeakPtr<FakeServer>& fake_server,
       scoped_refptr<base::SequencedTaskRunner> fake_server_task_runner);
+
+  FakeServerHttpPostProviderFactory(const FakeServerHttpPostProviderFactory&) =
+      delete;
+  FakeServerHttpPostProviderFactory& operator=(
+      const FakeServerHttpPostProviderFactory&) = delete;
+
   ~FakeServerHttpPostProviderFactory() override;
 
   // HttpPostProviderFactory:
@@ -94,8 +101,6 @@ class FakeServerHttpPostProviderFactory
   // |fake_server_task_runner_| runs on.
   base::WeakPtr<FakeServer> fake_server_;
   scoped_refptr<base::SequencedTaskRunner> fake_server_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeServerHttpPostProviderFactory);
 };
 
 }  // namespace fake_server

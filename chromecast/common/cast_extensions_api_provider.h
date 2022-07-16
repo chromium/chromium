@@ -13,6 +13,11 @@ namespace extensions {
 class CastExtensionsAPIProvider : public ExtensionsAPIProvider {
  public:
   CastExtensionsAPIProvider();
+
+  CastExtensionsAPIProvider(const CastExtensionsAPIProvider&) = delete;
+  CastExtensionsAPIProvider& operator=(const CastExtensionsAPIProvider&) =
+      delete;
+
   ~CastExtensionsAPIProvider() override;
 
   // ExtensionsAPIProvider:
@@ -25,9 +30,6 @@ class CastExtensionsAPIProvider : public ExtensionsAPIProvider {
   base::StringPiece GetAPISchema(const std::string& name) override;
   void RegisterPermissions(PermissionsInfo* permissions_info) override;
   void RegisterManifestHandlers() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionsAPIProvider);
 };
 
 }  // namespace extensions

@@ -21,6 +21,10 @@ namespace test {
 class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
  public:
   VirtualFidoDeviceFactory();
+
+  VirtualFidoDeviceFactory(const VirtualFidoDeviceFactory&) = delete;
+  VirtualFidoDeviceFactory& operator=(const VirtualFidoDeviceFactory&) = delete;
+
   ~VirtualFidoDeviceFactory() override;
 
   // Sets the FidoTransportProtocol of the FidoDiscovery to be instantiated by
@@ -49,7 +53,6 @@ class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
       FidoTransportProtocol::kUsbHumanInterfaceDevice;
   VirtualCtap2Device::Config ctap2_config_;
   scoped_refptr<VirtualFidoDevice::State> state_ = new VirtualFidoDevice::State;
-  DISALLOW_COPY_AND_ASSIGN(VirtualFidoDeviceFactory);
 };
 
 }  // namespace test

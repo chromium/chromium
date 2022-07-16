@@ -10,7 +10,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/shell_dialogs/base_shell_dialog.h"
 #include "ui/shell_dialogs/shell_dialogs_export.h"
@@ -27,6 +26,10 @@ namespace ui {
 class SHELL_DIALOGS_EXPORT BaseShellDialogImpl {
  public:
   BaseShellDialogImpl();
+
+  BaseShellDialogImpl(const BaseShellDialogImpl&) = delete;
+  BaseShellDialogImpl& operator=(const BaseShellDialogImpl&) = delete;
+
   virtual ~BaseShellDialogImpl();
 
   // Disables the window |owner|. Can be run from either the ui or the dialog
@@ -43,6 +46,10 @@ class SHELL_DIALOGS_EXPORT BaseShellDialogImpl {
   class SHELL_DIALOGS_EXPORT RunState {
    public:
     RunState();
+
+    RunState(const RunState&) = delete;
+    RunState& operator=(const RunState&) = delete;
+
     ~RunState();
 
     // Owning HWND, may be null.
@@ -50,9 +57,6 @@ class SHELL_DIALOGS_EXPORT BaseShellDialogImpl {
 
     // Dedicated sequence on which the dialog runs.
     scoped_refptr<base::SingleThreadTaskRunner> dialog_task_runner;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(RunState);
   };
 
   // Called at the beginning of a modal dialog run. Disables the owner window
@@ -87,11 +91,8 @@ class SHELL_DIALOGS_EXPORT BaseShellDialogImpl {
   // list.
   static Owners& GetOwners();
   static int instance_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseShellDialogImpl);
 };
 
 }  // namespace ui
 
 #endif  // UI_SHELL_DIALOGS_BASE_SHELL_DIALOG_WIN_H_
-

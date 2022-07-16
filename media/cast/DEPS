@@ -1,8 +1,10 @@
 include_rules = [
   "+crypto",
   "+media",
+  "+mojo/public/cpp/bindings",
   "+net",
   "+third_party/libyuv",
+  "+third_party/libaom",
   "+third_party/zlib",
   "+ui/base",
   "+ui/gfx",

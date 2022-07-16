@@ -33,6 +33,10 @@ class ATL_NO_VTABLE TSFEventRouter::Delegate
   END_COM_MAP()
 
   Delegate();
+
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+
   ~Delegate();
 
   // ITfTextEditSink:
@@ -85,8 +89,6 @@ class ATL_NO_VTABLE TSFEventRouter::Delegate
 
   TSFEventRouter* router_ = nullptr;
   gfx::Range previous_composition_range_;
-
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 TSFEventRouter::Delegate::Delegate()

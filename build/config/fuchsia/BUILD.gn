@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
+import("//build/config/fuchsia/generate_runner_scripts.gni")
 
 assert(is_fuchsia)
 assert(!is_posix)
@@ -27,4 +28,41 @@ config("compiler") {
 # Settings for executables.
 config("executable_config") {
   ldflags = [ "-pie" ]
+}
+
+# Files required to run on Fuchsia on isolated swarming clients.
+group("deployment_resources") {
+  data = [
+    "//.vpython",
+    "//build/fuchsia/",
+    "//build/util/lib/",
+    "//third_party/fuchsia-sdk/sdk/.build-id/",
+    "//third_party/fuchsia-sdk/sdk/bin/fpave.sh",
+    "//third_party/fuchsia-sdk/sdk/bin/fuchsia-common.sh",
+    "//third_party/fuchsia-sdk/sdk/meta/manifest.json",
+    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/device-finder",
+    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx",
+    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvm",
+    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/merkleroot",
+    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/pm",
+    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/symbolizer",
+    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/zbi",
+  ]
+  if (test_isolate_uses_emulator) {
+    data += [
+      "${boot_image_root}/qemu/qemu-kernel.kernel",
+      "${boot_image_root}/qemu/storage-full.blk",
+      "${boot_image_root}/qemu/zircon-a.zbi",
+      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvdl",
+      "//third_party/qemu-${host_os}-${test_host_cpu}/",
+      "${aemu_root}/",
+    ]
+  }
+  foreach(fuchsia_additional_boot_image, fuchsia_additional_boot_images) {
+    data += [ "${fuchsia_additional_boot_image}/" ]
+  }
+
+  if (test_host_cpu == "x64") {
+    data_deps = [ "//build/config/clang:llvm-symbolizer_data($host_toolchain)" ]
+  }
 }

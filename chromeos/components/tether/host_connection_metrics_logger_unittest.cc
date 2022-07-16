@@ -18,12 +18,18 @@ namespace chromeos {
 namespace tether {
 
 namespace {
-constexpr base::TimeDelta kConnectToHostTime = base::TimeDelta::FromSeconds(13);
+constexpr base::TimeDelta kConnectToHostTime = base::Seconds(13);
 const char kTetherNetworkGuid[] = "tetherNetworkGuid";
 const char kWifiNetworkGuid[] = "wifiNetworkGuid";
 }  // namespace
 
 class HostConnectionMetricsLoggerTest : public testing::Test {
+ public:
+  HostConnectionMetricsLoggerTest(const HostConnectionMetricsLoggerTest&) =
+      delete;
+  HostConnectionMetricsLoggerTest& operator=(
+      const HostConnectionMetricsLoggerTest&) = delete;
+
  protected:
   HostConnectionMetricsLoggerTest()
       : test_devices_(multidevice::CreateRemoteDeviceRefListForTest(2u)) {}
@@ -102,9 +108,6 @@ class HostConnectionMetricsLoggerTest : public testing::Test {
 
   base::HistogramTester histogram_tester_;
   base::SimpleTestClock test_clock_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostConnectionMetricsLoggerTest);
 };
 
 TEST_F(HostConnectionMetricsLoggerTest,

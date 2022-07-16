@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Functions for dealing with date/time formatting.
@@ -28,6 +20,7 @@ goog.require('goog.date');
 goog.require('goog.i18n.DateTimeSymbols');
 goog.require('goog.i18n.TimeZone');
 goog.require('goog.string');
+goog.requireType('goog.i18n.DateTimeSymbolsType');
 
 
 /**
@@ -115,6 +108,7 @@ goog.require('goog.string');
  * @final
  */
 goog.i18n.DateTimeFormat = function(pattern, opt_dateTimeSymbols) {
+  'use strict';
   goog.asserts.assert(pattern !== undefined, 'Pattern must be defined');
   goog.asserts.assert(
       opt_dateTimeSymbols !== undefined ||
@@ -139,7 +133,8 @@ goog.i18n.DateTimeFormat = function(pattern, opt_dateTimeSymbols) {
 
 
 /**
- * Enum to identify predefined Date/Time format pattern.
+ * Enum to identify predefined Date/Time format pattern. The format pattern to
+ * output mapping can be found at go/closure-localization#fconst.
  * @enum {number}
  */
 goog.i18n.DateTimeFormat.Format = {
@@ -191,6 +186,7 @@ goog.i18n.DateTimeFormat.PartTypes_ = {
  * @private
  */
 goog.i18n.DateTimeFormat.getHours_ = function(date) {
+  'use strict';
   return date.getHours ? date.getHours() : 0;
 };
 
@@ -201,6 +197,7 @@ goog.i18n.DateTimeFormat.getHours_ = function(date) {
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.applyPattern_ = function(pattern) {
+  'use strict';
   if (goog.i18n.DateTimeFormat.removeRlmInPatterns_) {
     // Remove RLM unicode control character from pattern.
     pattern = pattern.replace(/\u200f/g, '');
@@ -247,6 +244,7 @@ goog.i18n.DateTimeFormat.prototype.applyPattern_ = function(pattern) {
  *    object (for instance goog.date.Date) using a pattern with time fields.
  */
 goog.i18n.DateTimeFormat.prototype.format = function(date, opt_timeZone) {
+  'use strict';
   if (!date) throw new Error('The date to format must be non-null.');
 
   // We don't want to write code to calculate each date field because we
@@ -313,6 +311,7 @@ goog.i18n.DateTimeFormat.prototype.format = function(date, opt_timeZone) {
  */
 goog.i18n.DateTimeFormat.prototype.applyStandardPattern_ = function(
     formatType) {
+  'use strict';
   var pattern;
   if (formatType < 4) {
     pattern = this.dateTimeSymbols_.DATEFORMATS[formatType];
@@ -340,6 +339,7 @@ goog.i18n.DateTimeFormat.prototype.applyStandardPattern_ = function(
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.localizeNumbers_ = function(input) {
+  'use strict';
   return goog.i18n.DateTimeFormat.localizeNumbers(input, this.dateTimeSymbols_);
 };
 
@@ -376,6 +376,7 @@ goog.i18n.DateTimeFormat.removeRlmInPatterns_ = false;
  * @param {boolean} enforceAsciiDigits Whether Ascii digits should be enforced.
  */
 goog.i18n.DateTimeFormat.setEnforceAsciiDigits = function(enforceAsciiDigits) {
+  'use strict';
   goog.i18n.DateTimeFormat.enforceAsciiDigits_ = enforceAsciiDigits;
 
   // Also setting removal of RLM chracters when forcing ASCII digits since it's
@@ -391,6 +392,7 @@ goog.i18n.DateTimeFormat.setEnforceAsciiDigits = function(enforceAsciiDigits) {
  *     `#setEnforceAsciiDigits` for more details.
  */
 goog.i18n.DateTimeFormat.isEnforceAsciiDigits = function() {
+  'use strict';
   return goog.i18n.DateTimeFormat.enforceAsciiDigits_;
 };
 
@@ -406,6 +408,7 @@ goog.i18n.DateTimeFormat.isEnforceAsciiDigits = function() {
  */
 goog.i18n.DateTimeFormat.localizeNumbers = function(
     input, opt_dateTimeSymbols) {
+  'use strict';
   input = String(input);
   var dateTimeSymbols = opt_dateTimeSymbols || goog.i18n.DateTimeSymbols;
   if (dateTimeSymbols.ZERODIGIT === undefined ||
@@ -435,6 +438,7 @@ goog.i18n.DateTimeFormat.localizeNumbers = function(
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.formatEra_ = function(count, date) {
+  'use strict';
   var value = date.getFullYear() > 0 ? 1 : 0;
   return count >= 4 ? this.dateTimeSymbols_.ERANAMES[value] :
                       this.dateTimeSymbols_.ERAS[value];
@@ -455,6 +459,7 @@ goog.i18n.DateTimeFormat.prototype.formatEra_ = function(count, date) {
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.formatYear_ = function(count, date) {
+  'use strict';
   var value = date.getFullYear();
   if (value < 0) {
     value = -value;
@@ -484,6 +489,7 @@ goog.i18n.DateTimeFormat.prototype.formatYear_ = function(count, date) {
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.formatYearOfWeek_ = function(count, date) {
+  'use strict';
   var value = goog.date.getYearOfWeek(
       date.getFullYear(), date.getMonth(), date.getDate(),
       this.dateTimeSymbols_.FIRSTWEEKCUTOFFDAY,
@@ -513,6 +519,7 @@ goog.i18n.DateTimeFormat.prototype.formatYearOfWeek_ = function(count, date) {
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.formatMonth_ = function(count, date) {
+  'use strict';
   var value = date.getMonth();
   switch (count) {
     case 5:
@@ -538,6 +545,7 @@ goog.i18n.DateTimeFormat.prototype.formatMonth_ = function(count, date) {
  * @private
  */
 goog.i18n.DateTimeFormat.validateDateHasTime_ = function(date) {
+  'use strict';
   if (date.getHours && date.getSeconds && date.getMinutes) return;
   // if (date instanceof Date || date instanceof goog.date.DateTime)
   throw new Error(
@@ -556,6 +564,7 @@ goog.i18n.DateTimeFormat.validateDateHasTime_ = function(date) {
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.format24Hours_ = function(count, date) {
+  'use strict';
   goog.i18n.DateTimeFormat.validateDateHasTime_(date);
   var hours = goog.i18n.DateTimeFormat.getHours_(date) || 24;
   return this.localizeNumbers_(goog.string.padNumber(hours, count));
@@ -575,6 +584,7 @@ goog.i18n.DateTimeFormat.prototype.format24Hours_ = function(count, date) {
  */
 goog.i18n.DateTimeFormat.prototype.formatFractionalSeconds_ = function(
     count, date) {
+  'use strict';
   // Fractional seconds left-justify, append 0 for precision beyond 3
   var value = date.getMilliseconds() / 1000;
   return this.localizeNumbers_(
@@ -593,6 +603,7 @@ goog.i18n.DateTimeFormat.prototype.formatFractionalSeconds_ = function(
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.formatDayOfWeek_ = function(count, date) {
+  'use strict';
   var value = date.getDay();
   return count >= 4 ? this.dateTimeSymbols_.WEEKDAYS[value] :
                       this.dateTimeSymbols_.SHORTWEEKDAYS[value];
@@ -609,6 +620,7 @@ goog.i18n.DateTimeFormat.prototype.formatDayOfWeek_ = function(count, date) {
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.formatAmPm_ = function(count, date) {
+  'use strict';
   goog.i18n.DateTimeFormat.validateDateHasTime_(date);
   var hours = goog.i18n.DateTimeFormat.getHours_(date);
   return this.dateTimeSymbols_.AMPMS[hours >= 12 && hours < 24 ? 1 : 0];
@@ -625,6 +637,7 @@ goog.i18n.DateTimeFormat.prototype.formatAmPm_ = function(count, date) {
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.format1To12Hours_ = function(count, date) {
+  'use strict';
   goog.i18n.DateTimeFormat.validateDateHasTime_(date);
   var hours = goog.i18n.DateTimeFormat.getHours_(date) % 12 || 12;
   return this.localizeNumbers_(goog.string.padNumber(hours, count));
@@ -641,6 +654,7 @@ goog.i18n.DateTimeFormat.prototype.format1To12Hours_ = function(count, date) {
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.format0To11Hours_ = function(count, date) {
+  'use strict';
   goog.i18n.DateTimeFormat.validateDateHasTime_(date);
   var hours = goog.i18n.DateTimeFormat.getHours_(date) % 12;
   return this.localizeNumbers_(goog.string.padNumber(hours, count));
@@ -657,6 +671,7 @@ goog.i18n.DateTimeFormat.prototype.format0To11Hours_ = function(count, date) {
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.format0To23Hours_ = function(count, date) {
+  'use strict';
   goog.i18n.DateTimeFormat.validateDateHasTime_(date);
   var hours = goog.i18n.DateTimeFormat.getHours_(date);
   return this.localizeNumbers_(goog.string.padNumber(hours, count));
@@ -674,6 +689,7 @@ goog.i18n.DateTimeFormat.prototype.format0To23Hours_ = function(count, date) {
  */
 goog.i18n.DateTimeFormat.prototype.formatStandaloneDay_ = function(
     count, date) {
+  'use strict';
   var value = date.getDay();
   switch (count) {
     case 5:
@@ -699,6 +715,7 @@ goog.i18n.DateTimeFormat.prototype.formatStandaloneDay_ = function(
  */
 goog.i18n.DateTimeFormat.prototype.formatStandaloneMonth_ = function(
     count, date) {
+  'use strict';
   var value = date.getMonth();
   switch (count) {
     case 5:
@@ -723,6 +740,7 @@ goog.i18n.DateTimeFormat.prototype.formatStandaloneMonth_ = function(
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.formatQuarter_ = function(count, date) {
+  'use strict';
   var value = Math.floor(date.getMonth() / 3);
   return count < 4 ? this.dateTimeSymbols_.SHORTQUARTERS[value] :
                      this.dateTimeSymbols_.QUARTERS[value];
@@ -739,6 +757,7 @@ goog.i18n.DateTimeFormat.prototype.formatQuarter_ = function(count, date) {
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.formatDate_ = function(count, date) {
+  'use strict';
   return this.localizeNumbers_(goog.string.padNumber(date.getDate(), count));
 };
 
@@ -753,6 +772,7 @@ goog.i18n.DateTimeFormat.prototype.formatDate_ = function(count, date) {
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.formatMinutes_ = function(count, date) {
+  'use strict';
   goog.i18n.DateTimeFormat.validateDateHasTime_(date);
   return this.localizeNumbers_(goog.string.padNumber(
       /** @type {!goog.date.DateTime} */ (date).getMinutes(), count));
@@ -769,6 +789,7 @@ goog.i18n.DateTimeFormat.prototype.formatMinutes_ = function(count, date) {
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.formatSeconds_ = function(count, date) {
+  'use strict';
   goog.i18n.DateTimeFormat.validateDateHasTime_(date);
   return this.localizeNumbers_(goog.string.padNumber(
       /** @type {!goog.date.DateTime} */ (date).getSeconds(), count));
@@ -785,6 +806,7 @@ goog.i18n.DateTimeFormat.prototype.formatSeconds_ = function(count, date) {
  * @private
  */
 goog.i18n.DateTimeFormat.prototype.formatWeekOfYear_ = function(count, date) {
+  'use strict';
   var weekNum = goog.date.getWeekNumber(
       date.getFullYear(), date.getMonth(), date.getDate(),
       this.dateTimeSymbols_.FIRSTWEEKCUTOFFDAY,
@@ -806,6 +828,7 @@ goog.i18n.DateTimeFormat.prototype.formatWeekOfYear_ = function(count, date) {
  */
 goog.i18n.DateTimeFormat.prototype.formatTimeZoneRFC_ = function(
     count, date, opt_timeZone) {
+  'use strict';
   opt_timeZone = opt_timeZone ||
       goog.i18n.TimeZone.createTimeZone(date.getTimezoneOffset());
 
@@ -827,6 +850,7 @@ goog.i18n.DateTimeFormat.prototype.formatTimeZoneRFC_ = function(
  */
 goog.i18n.DateTimeFormat.prototype.formatTimeZone_ = function(
     count, date, opt_timeZone) {
+  'use strict';
   opt_timeZone = opt_timeZone ||
       goog.i18n.TimeZone.createTimeZone(date.getTimezoneOffset());
   return count < 4 ? opt_timeZone.getShortName(date) :
@@ -843,6 +867,7 @@ goog.i18n.DateTimeFormat.prototype.formatTimeZone_ = function(
  */
 goog.i18n.DateTimeFormat.prototype.formatTimeZoneId_ = function(
     date, opt_timeZone) {
+  'use strict';
   opt_timeZone = opt_timeZone ||
       goog.i18n.TimeZone.createTimeZone(date.getTimezoneOffset());
   return opt_timeZone.getTimeZoneId();
@@ -860,6 +885,7 @@ goog.i18n.DateTimeFormat.prototype.formatTimeZoneId_ = function(
  */
 goog.i18n.DateTimeFormat.prototype.formatTimeZoneLocationId_ = function(
     count, date, opt_timeZone) {
+  'use strict';
   opt_timeZone = opt_timeZone ||
       goog.i18n.TimeZone.createTimeZone(date.getTimezoneOffset());
   return count <= 2 ? opt_timeZone.getTimeZoneId() :
@@ -881,6 +907,7 @@ goog.i18n.DateTimeFormat.prototype.formatTimeZoneLocationId_ = function(
  */
 goog.i18n.DateTimeFormat.prototype.formatField_ = function(
     patternStr, date, dateForDate, dateForTime, opt_timeZone) {
+  'use strict';
   var count = patternStr.length;
   switch (patternStr.charAt(0)) {
     case 'G':

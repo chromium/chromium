@@ -48,7 +48,9 @@ TEST_F(PartitionsTest, MemoryIsInitiallyCommitted) {
 
   // Decommit is not triggered by deallocation.
   size_t committed_after_free = Partitions::TotalSizeOfCommittedPages();
-  EXPECT_EQ(committed_after_free, committed_after);
+  // >0 rather than equal to |committed_after|, since total waste in empty slot
+  // spans is capped.
+  EXPECT_GT(committed_after_free, 0u);
 }
 
 TEST_F(PartitionsTest, Decommit) {

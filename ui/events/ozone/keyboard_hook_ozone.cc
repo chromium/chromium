@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
@@ -34,7 +33,6 @@ bool KeyboardHookOzone::IsKeyLocked(DomCode dom_code) const {
   return platform_keyboard_hook_->IsKeyLocked(dom_code);
 }
 
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
 // static
 std::unique_ptr<KeyboardHook> KeyboardHook::CreateModifierKeyboardHook(
     absl::optional<base::flat_set<DomCode>> dom_codes,
@@ -50,6 +48,5 @@ std::unique_ptr<KeyboardHook> KeyboardHook::CreateMediaKeyboardHook(
     KeyEventCallback callback) {
   return nullptr;
 }
-#endif
 
 }  // namespace ui

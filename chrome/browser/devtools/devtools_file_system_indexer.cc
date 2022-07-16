@@ -15,7 +15,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -28,7 +27,6 @@
 using base::FileEnumerator;
 using base::FilePath;
 using base::Time;
-using base::TimeDelta;
 using base::TimeTicks;
 using content::BrowserThread;
 using std::map;
@@ -65,6 +63,10 @@ const Trigram kUndefinedTrigram = -1;
 class Index {
  public:
   Index();
+
+  Index(const Index&) = delete;
+  Index& operator=(const Index&) = delete;
+
   // Index is only instantiated as a leak LazyInstance, so the destructor is
   // never called.
   ~Index() = delete;
@@ -90,8 +92,6 @@ class Index {
   IndexedFilesMap index_times_;
   vector<bool> is_normalized_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(Index);
 };
 
 base::LazyInstance<Index>::Leaky g_trigram_index = LAZY_INSTANCE_INITIALIZER;
@@ -342,7 +342,7 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::CollectFilesToIndex() {
       g_trigram_index.Get().LastModifiedTimeForFile(file_path);
   FileEnumerator::FileInfo file_info = file_enumerator_->GetInfo();
   Time current_last_modified_time = file_info.GetLastModifiedTime();
-  if (current_last_modified_time > saved_last_modified_time) {
+  if (current_last_modified_time >= saved_last_modified_time) {
     file_path_times_[file_path] = current_last_modified_time;
   }
   impl_task_runner()->PostTask(
@@ -440,7 +440,7 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::ReportWorked() {
   TimeTicks current_time = TimeTicks::Now();
   bool should_send_worked_nitification = true;
   if (!last_worked_notification_time_.is_null()) {
-    TimeDelta delta = current_time - last_worked_notification_time_;
+    base::TimeDelta delta = current_time - last_worked_notification_time_;
     if (delta.InMilliseconds() < kMinTimeoutBetweenWorkedNitification)
       should_send_worked_nitification = false;
   }

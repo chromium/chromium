@@ -10,7 +10,6 @@
 #include <xdg-shell-server-protocol.h>
 #include <xdg-shell-unstable-v6-server-protocol.h>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
@@ -35,6 +34,10 @@ class TestPositioner : public ServerObject {
   };
 
   explicit TestPositioner(wl_resource* resource);
+
+  TestPositioner(const TestPositioner&) = delete;
+  TestPositioner& operator=(const TestPositioner&) = delete;
+
   ~TestPositioner() override;
 
   PopupPosition position() { return std::move(position_); }
@@ -50,8 +53,6 @@ class TestPositioner : public ServerObject {
 
  private:
   PopupPosition position_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPositioner);
 };
 
 }  // namespace wl

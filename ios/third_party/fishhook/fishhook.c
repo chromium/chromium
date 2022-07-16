@@ -135,7 +135,12 @@ static void perform_rebinding_with_section(struct rebindings_entry *rebindings,
                                   0,
                                   VM_PROT_READ | VM_PROT_WRITE | VM_PROT_COPY);
     if (err != KERN_SUCCESS) {
-      fprintf(stderr, "perform_rebinding_with_section vm_protect failed.\n");
+      fprintf(
+          stderr,
+          "perform_rebinding_with_section vm_protect failed. error code: %d, "
+          "trunc address: 0x%lx, trunc size: 0x%lx, section size: 0x%llx\n",
+          err, trunc_address, trunc_size, section->size);
+      pthread_mutex_unlock(&mutex);
       return;
     }
   }

@@ -4,9 +4,13 @@
 
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "components/policy/policy_constants.h"
+#import "ios/chrome/browser/policy/policy_app_interface.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -23,7 +27,8 @@
 #endif
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
-using chrome_test_util::SyncSettingsConfirmButton;
+using chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher;
+using chrome_test_util::SettingsLink;
 using chrome_test_util::MatchInWindowWithNumber;
 using chrome_test_util::MatchInBlockerWindowWithNumber;
 using chrome_test_util::FakeOmnibox;
@@ -57,14 +62,14 @@ id<GREYMatcher> SkipSigninButton() {
 }
 
 - (void)tearDown {
-  [super tearDown];
+  [PolicyAppInterface clearPolicies];
   [FirstRunAppInterface setUMACollectionEnabled:NO];
   [FirstRunAppInterface resetUMACollectionEnabledByDefault];
+  [super tearDown];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(kLocationPermissionsPrompt);
   config.features_disabled.push_back(kEnableFREUIModuleIOS);
 
   // Show the First Run UI at startup.
@@ -153,20 +158,43 @@ id<GREYMatcher> SkipSigninButton() {
       performAction:grey_tap()];
 
   // Tap Settings link.
-  [SigninEarlGreyUI tapSettingsLink];
+  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
 
-  // Check Sync hasn't started yet, allowing the user to change some settings.
+  // Check Sync hasn't started yet, allowing the user to change some
+  //  settings.
   GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
                   @"Sync shouldn't have finished its original setup yet");
 
-  // Close Settings, user is still signed in and sync is now starting.
-  [[EarlGrey selectElementWithMatcher:SyncSettingsConfirmButton()]
+  // Close Settings, user is still signed in and sync shouldn't start.
+  [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
+
+  // Check sync did not start.
+  GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
+                  @"Sync shouldn't start when discarding advanced settings.");
+
+  // Tap "Yes, I'm in." button
+  [SigninEarlGreyUI tapSigninConfirmationDialog];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
+  // Check sync started.
   GREYAssertTrue([FirstRunAppInterface isSyncFirstSetupComplete],
                  @"Sync should have finished its original setup");
+}
+
+// Checks that the sync screen doesn't appear when the SyncDisabled policy is
+// enabled.
+- (void)testSyncDisabled {
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+
+  // Launch First Run and accept tems of services.
+  [[EarlGrey selectElementWithMatcher:FirstRunOptInAcceptButton()]
+      performAction:grey_tap()];
+
+  // The SignIn screen should not be displayed, so the NTP should be visible.
+  [[EarlGrey selectElementWithMatcher:FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Checks FRE shows in only one window.
@@ -175,6 +203,7 @@ id<GREYMatcher> SkipSigninButton() {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
   [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
   [[EarlGrey selectElementWithMatcher:MatchInWindowWithNumber(

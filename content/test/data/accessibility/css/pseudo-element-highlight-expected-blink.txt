@@ -1,0 +1,5 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++staticText name='This is some highlighted text.' markerTypes=64 markerStarts=0 markerEnds=30
+++++++++inlineTextBox name='This is some highlighted text.' markerTypes=64 markerStarts=0 markerEnds=30

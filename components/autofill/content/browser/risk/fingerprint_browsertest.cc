@@ -79,8 +79,8 @@ class AutofillRiskFingerprintTest : public content::ContentBrowserTest {
     position->longitude = kLongitude;
     position->altitude = kAltitude;
     position->accuracy = kAccuracy;
-    position->timestamp = base::Time::UnixEpoch() +
-                          base::TimeDelta::FromMilliseconds(kGeolocationTime);
+    position->timestamp =
+        base::Time::UnixEpoch() + base::Milliseconds(kGeolocationTime);
 
     geolocation_overrider_ =
         std::make_unique<device::ScopedGeolocationOverrider>(
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(AutofillRiskFingerprintTest, GetFingerprint) {
       kObfuscatedGaiaId, window_bounds_, content_bounds_, screen_info,
       "25.0.0.123", kCharset, kAcceptLanguages, AutofillClock::Now(), kLocale,
       kUserAgent,
-      base::TimeDelta::FromDays(1),  // Ought to be longer than any test run.
+      base::Days(1),  // Ought to be longer than any test run.
       base::BindOnce(&AutofillRiskFingerprintTest::GetFingerprintTestCallback,
                      base::Unretained(this), run_loop.QuitWhenIdleClosure()));
 

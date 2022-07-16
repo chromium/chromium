@@ -110,6 +110,10 @@ void SetupFeatures() {
 class CastFeaturesBrowserTest : public CastBrowserTest {
  public:
   CastFeaturesBrowserTest() { SetupFeatures(); }
+
+  CastFeaturesBrowserTest(const CastFeaturesBrowserTest&) = delete;
+  CastFeaturesBrowserTest& operator=(const CastFeaturesBrowserTest&) = delete;
+
   ~CastFeaturesBrowserTest() override { chromecast::ResetCastFeaturesForTesting(); }
 
   static PrefService* pref_service() {
@@ -133,7 +137,7 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
     ScopedUserPrefUpdate<base::DictionaryValue, base::Value::Type::DICTIONARY>
         dict(pref_service(), prefs::kLatestDCSFeatures);
     for (auto f : features)
-      dict->Remove(f.name, nullptr);
+      dict->RemoveKey(f.name);
     pref_service()->CommitPendingWrite();
   }
 
@@ -144,7 +148,7 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
       const std::unordered_set<int32_t>& experiment_ids) {
     base::ListValue list;
     for (auto id : experiment_ids)
-      list.AppendInteger(id);
+      list.Append(id);
     pref_service()->Set(prefs::kActiveDCSExperiments, list);
     pref_service()->CommitPendingWrite();
   }
@@ -154,9 +158,6 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
     pref_service()->Set(prefs::kActiveDCSExperiments, base::ListValue());
     pref_service()->CommitPendingWrite();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastFeaturesBrowserTest);
 };
 
 // Test that set features activate on the next boot. Part 1 of 3.

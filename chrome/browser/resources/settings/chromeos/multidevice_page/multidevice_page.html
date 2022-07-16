@@ -12,19 +12,22 @@
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
+<link rel="import" href="../route_observer_behavior.html">
 <link rel="import" href="../../controls/password_prompt_dialog.html">
 <link rel="import" href="../../settings_page/settings_animated_pages.html">
 <link rel="import" href="../../settings_page/settings_subpage.html">
-<link rel="import" href="../../prefs/prefs_behavior.html">
+<link rel="import" href="../prefs_behavior.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="../nearby_share_page/nearby_share_subpage.html">
-<link rel="import" href="../localized_link/localized_link.html">
+<link rel="import" href="../../shared/nearby_share_settings_behavior.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/localized_link/localized_link.html">
 <link rel="import" href="../metrics_recorder.html">
 <link rel="import" href="multidevice_browser_proxy.html">
 <link rel="import" href="multidevice_constants.html">
 <link rel="import" href="multidevice_feature_behavior.html">
 <link rel="import" href="multidevice_feature_toggle.html">
 <link rel="import" href="multidevice_notification_access_setup_dialog.html">
+<link rel="import" href="multidevice_permissions_setup_dialog.html">
 <link rel="import" href="multidevice_smartlock_subpage.html">
 <link rel="import" href="multidevice_subpage.html">
 
@@ -52,10 +55,10 @@
               <div id="multidevice-label">
                 [[getLabelText_(pageContentData)]]
               </div>
-              <settings-localized-link id="multideviceSubLabel"
+              <localized-link id="multideviceSubLabel"
                   class="secondary"
                   localized-string="[[getSubLabelInnerHtml_(pageContentData)]]">
-              </settings-localized-link>
+              </localized-link>
             </div>
             <template is="dom-if"
                       if="[[doesClickOpenSubpage_(pageContentData)]]"
@@ -132,16 +135,19 @@
                           prefs.nearby_sharing.onboarding_complete.value,
                           pageContentData)]]" restamp>
                   <div class="secondary" id="nearbyShareSecondary">
-                    <settings-localized-link
+                    <localized-link
                         localized-string="$i18n{nearbyShareDescription}"
                         link-url="$i18n{nearbyShareLearnMoreLink}">
-                    </settings-localized-link>
+                    </localized-link>
                   </div>
                 </template>
               </div>
-              <template is="dom-if" if="[[prefs.nearby_sharing.enabled.value]]"
-                  restamp>
-                <cr-icon-button class="subpage-arrow"
+              <template is="dom-if" if="[[shouldShowNearbyShareSubpageArrow_(
+                  prefs.nearby_sharing.enabled.value,
+                  shouldEnableNearbyShareBackgroundScanningRevamp_,
+                  pageContentData)]]" restamp>
+                <cr-icon-button id="nearbyShareSubpageArrow"
+                    class="subpage-arrow"
                     aria-labelledby="nearbyShareLabel"
                     aria-describedby="nearbyShareSecondary"
                     aria-roledescription="$i18n{subpageArrowRoleDescription}">
@@ -187,8 +193,7 @@
         </template>
       </div>
       <template is="dom-if" route-path="/multidevice/features" restamp>
-        <settings-subpage associated-control="[[$$('#multidevice-item')]]"
-            page-title="[[getLabelText_(pageContentData)]]">
+        <settings-subpage page-title="[[getLabelText_(pageContentData)]]">
           <settings-multidevice-subpage
               page-content-data="[[pageContentData]]">
           </settings-multidevice-subpage>
@@ -196,9 +201,7 @@
       </template>
       <template is="dom-if" route-path="/multidevice/features/smartLock"
           restamp>
-        <settings-subpage
-            associated-control="[[$$('#multidevice-item')]]"
-            page-title="$i18n{easyUnlockSectionTitle}">
+        <settings-subpage page-title="$i18n{easyUnlockSectionTitle}">
           <settings-multidevice-smartlock-subpage
               prefs="{{prefs}}"
               page-content-data="[[pageContentData]]">
@@ -207,9 +210,10 @@
       </template>
       <template is="dom-if" if="[[isNearbyShareSupported_]]" restamp>
         <template is="dom-if" route-path="/multidevice/nearbyshare" restamp>
-          <settings-subpage associated-control="[[$$('#nearbyshare-item')]]"
-              page-title="$i18n{nearbyShareTitle}">
-            <settings-nearby-share-subpage prefs="{{prefs}}">
+          <settings-subpage page-title="$i18n{nearbyShareTitle}">
+            <settings-nearby-share-subpage settings="{{settings}}"
+                prefs="{{prefs}}"
+                is-settings-retreived="[[isSettingsRetreived]]">
             </settings-nearby-share-subpage>
           </settings-subpage>
         </template>
@@ -220,10 +224,22 @@
           on-token-obtained="onTokenObtained_">
       </settings-password-prompt-dialog>
     </template>
-    <template is="dom-if" if="[[showNotificationAccessSetupDialog_]]" restamp>
+    <template is="dom-if" if="[[showPermissionsSetupDialog_(
+        showPhonePermissionSetupDialog_)]]"
+        restamp>
       <settings-multidevice-notification-access-setup-dialog
-          on-close="onHideNotificationSetupAccessDialog_">
+          is-password-dialog-showing="{{isPasswordDialogShowing_}}"
+          on-close="onHidePhonePermissionsSetupDialog_">
       </settings-multidevice-notification-access-setup-dialog>
+    </template>
+    <template is="dom-if"
+        if="[[showNewPermissionsSetupDialog_(
+        showPhonePermissionSetupDialog_)]]"
+        restamp>
+      <settings-multidevice-permissions-setup-dialog
+          is-password-dialog-showing="{{isPasswordDialogShowing_}}"
+          on-close="onHidePhonePermissionsSetupDialog_">
+      </settings-multidevice-permissions-setup-dialog>
     </template>
   </template>
   <script src="multidevice_page.js"></script>

@@ -24,6 +24,7 @@
 #include "components/cbor/writer.h"
 #include "net/base/request_priority.h"
 #include "net/http/structured_headers.h"
+#include "net/log/net_log.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -693,11 +694,11 @@ TEST_F(TrustTokenRequestSigningHelperTest, CatchesSignatureFailure) {
 
   // FailingSigner will fail to sign the request, so we should see the operation
   // fail.
-  net::RecordingTestNetLog net_log;
+  net::RecordingNetLogObserver net_log_observer;
   TrustTokenRequestSigningHelper helper(
       store.get(), std::move(params), std::make_unique<FailingSigner>(),
       std::make_unique<TrustTokenRequestCanonicalizer>(),
-      net::NetLogWithSource::Make(&net_log,
+      net::NetLogWithSource::Make(net::NetLog::Get(),
                                   net::NetLogSourceType::URL_REQUEST));
 
   auto my_request = MakeURLRequest("https://destination.com/");
@@ -712,7 +713,7 @@ TEST_F(TrustTokenRequestSigningHelperTest, CatchesSignatureFailure) {
   EXPECT_THAT(*my_request, Not(Header("Sec-Signature")));
   EXPECT_THAT(*my_request, Header("Sec-Redemption-Record", IsEmpty()));
   EXPECT_TRUE(base::ranges::any_of(
-      net_log.GetEntriesWithType(
+      net_log_observer.GetEntriesWithType(
           net::NetLogEventType::TRUST_TOKEN_OPERATION_BEGIN_SIGNING),
       [](const net::NetLogEntry& entry) {
         absl::optional<std::string> key = net::GetOptionalStringValueFromParams(

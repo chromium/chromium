@@ -13,7 +13,7 @@
 #include "components/thin_webview/internal/jni_headers/CompositorViewImpl_jni.h"
 #include "content/public/browser/android/compositor.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/android/color_helpers.h"
+#include "ui/android/color_utils_android.h"
 #include "ui/android/window_android.h"
 
 using base::android::JavaParamRef;

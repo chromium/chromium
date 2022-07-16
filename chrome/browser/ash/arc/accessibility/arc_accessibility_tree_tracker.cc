@@ -28,6 +28,7 @@
 #include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
+#include "components/exo/window_properties.h"
 #include "extensions/browser/event_router.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -143,42 +144,23 @@ class ArcAccessibilityTreeTracker::WindowsObserver
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
-    // We are interested in changes to |kClientAccessibilityIdKey| and
-    // |kApplicationIdKey|, but that they're not accessible outside
-    // shell_surface_util.cc. So we react to all property changes.
+    if (key != exo::kApplicationIdKey &&
+        key != ash::kClientAccessibilityIdKey) {
+      return;
+    }
     owner_->UpdateWindowIdMapping(window);
   }
 
   void OnWindowDestroying(aura::Window* window) override {
     if (window_observations_.IsObservingSource(window))
       window_observations_.RemoveObservation(window);
+    owner_->OnWindowDestroying(window);
   }
 
  private:
   ArcAccessibilityTreeTracker* owner_;
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
-};
-
-class ArcAccessibilityTreeTracker::AppListPrefsObserver
-    : public ArcAppListPrefs::Observer {
- public:
-  AppListPrefsObserver(ArcAccessibilityTreeTracker* owner,
-                       Profile* const profile)
-      : owner_(owner) {
-    auto* app_list_prefs = ArcAppListPrefs::Get(profile);
-    if (app_list_prefs)
-      app_list_observation_.Observe(app_list_prefs);
-  }
-
-  void OnTaskDestroyed(int32_t task_id) override {
-    owner_->OnTaskDestroyed(task_id);
-  }
-
- private:
-  ArcAccessibilityTreeTracker* owner_;
-  base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
-      app_list_observation_{this};
 };
 
 class ArcAccessibilityTreeTracker::ArcInputMethodManagerServiceObserver
@@ -249,7 +231,9 @@ class ArcAccessibilityTreeTracker::ArcNotificationSurfaceManagerObserver
   }
 
   void OnNotificationSurfaceRemoved(
-      ash::ArcNotificationSurface* surface) override {}
+      ash::ArcNotificationSurface* surface) override {
+    owner_->OnNotificationSurfaceRemoved(surface);
+  }
 
  private:
   base::ScopedObservation<ash::ArcNotificationSurfaceManager,
@@ -267,8 +251,6 @@ ArcAccessibilityTreeTracker::ArcAccessibilityTreeTracker(
       tree_source_delegate_(tree_source_delegate),
       accessibility_helper_instance_(accessibility_helper_instance),
       windows_observer_(std::make_unique<WindowsObserver>(this)),
-      app_list_prefs_observer_(
-          std::make_unique<AppListPrefsObserver>(this, profile)),
       input_manager_service_observer_(
           std::make_unique<ArcInputMethodManagerServiceObserver>(this,
                                                                  profile)),
@@ -297,7 +279,12 @@ void ArcAccessibilityTreeTracker::OnWindowFocused(aura::Window* gained_focus,
     DispatchCustomSpokenFeedbackToggled(gained_arc);
 }
 
-void ArcAccessibilityTreeTracker::OnTaskDestroyed(int32_t task_id) {
+void ArcAccessibilityTreeTracker::OnWindowDestroying(aura::Window* window) {
+  const auto& task_id_opt = arc::GetWindowTaskId(window);
+  if (!task_id_opt.has_value())
+    return;
+
+  int32_t task_id = task_id_opt.value();
   task_id_to_window_.erase(task_id);
   trees_.erase(KeyForTaskId(task_id));
   base::EraseIf(window_id_to_task_id_,
@@ -306,7 +293,6 @@ void ArcAccessibilityTreeTracker::OnTaskDestroyed(int32_t task_id) {
 
 void ArcAccessibilityTreeTracker::Shutdown() {
   input_manager_service_observer_.reset();
-  app_list_prefs_observer_.reset();
 }
 
 void ArcAccessibilityTreeTracker::OnEnabledFeatureChanged(
@@ -397,12 +383,6 @@ AXTreeSourceArc* ArcAccessibilityTreeTracker::OnAccessibilityEvent(
     if (!tree_source) {
       tree_source = CreateFromKey(key, window);
       SetChildAxTreeIDForWindow(window, tree_source->ax_tree_id());
-      if (ash::AccessibilityManager::Get() &&
-          ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
-        // Record metrics only when SpokenFeedback is enabled in order to
-        // compare this with TalkBack usage.
-        base::UmaHistogramBoolean("Arc.AccessibilityWithTalkBack", false);
-      }
     }
 
     UpdateWindowProperties(window);
@@ -432,6 +412,17 @@ void ArcAccessibilityTreeTracker::OnNotificationSurfaceAdded(
     surface->GetAttachedHost()->NotifyAccessibilityEvent(
         ax::mojom::Event::kChildrenChanged, false);
   }
+}
+
+void ArcAccessibilityTreeTracker::OnNotificationSurfaceRemoved(
+    ash::ArcNotificationSurface* surface) {
+  const std::string& notification_key = surface->GetNotificationKey();
+
+  auto* const tree = GetFromKey(KeyForNotification(notification_key));
+  if (!tree)
+    return;
+
+  tree->set_window(nullptr);
 }
 
 void ArcAccessibilityTreeTracker::OnNotificationStateChanged(
@@ -520,7 +511,6 @@ void ArcAccessibilityTreeTracker::OnSetNativeChromeVoxArcSupportProcessed(
   }
 
   UpdateWindowProperties(window);
-  base::UmaHistogramBoolean("Arc.AccessibilityWithTalkBack", !enabled);
 }
 
 AXTreeSourceArc* ArcAccessibilityTreeTracker::GetFromTreeId(
@@ -546,6 +536,13 @@ AXTreeSourceArc* ArcAccessibilityTreeTracker::CreateFromKey(
   auto tree = std::make_unique<AXTreeSourceArc>(tree_source_delegate_, window);
   AXTreeSourceArc* tree_ptr = tree.get();
   trees_.insert(std::make_pair(std::move(key), std::move(tree)));
+
+  if (ash::AccessibilityManager::Get() &&
+      ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
+    // Record metrics only when SpokenFeedback is enabled in order to
+    // compare this with TalkBack usage.
+    base::UmaHistogramBoolean("Arc.AccessibilityWithTalkBack", false);
+  }
   return tree_ptr;
 }
 
@@ -644,6 +641,12 @@ void ArcAccessibilityTreeTracker::DispatchCustomSpokenFeedbackToggled(
           kEventName,
       std::move(event_args)));
   extensions::EventRouter::Get(profile_)->BroadcastEvent(std::move(event));
+
+  if (!enabled) {
+    // Only record when TalkBack is enabled because ChromeVox usage is trakced
+    // when AXTreeSourceArc instance is created on CreateFromKey().
+    base::UmaHistogramBoolean("Arc.AccessibilityWithTalkBack", !enabled);
+  }
 }
 
 aura::Window* ArcAccessibilityTreeTracker::GetFocusedArcWindow() const {

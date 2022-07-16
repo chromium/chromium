@@ -224,6 +224,9 @@ class GuestOsSharePathTest : public testing::Test {
     fake_seneschal_client_ = chromeos::FakeSeneschalClient::Get();
   }
 
+  GuestOsSharePathTest(const GuestOsSharePathTest&) = delete;
+  GuestOsSharePathTest& operator=(const GuestOsSharePathTest&) = delete;
+
   ~GuestOsSharePathTest() override {
     chromeos::SeneschalClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
@@ -341,8 +344,6 @@ class GuestOsSharePathTest : public testing::Test {
   std::unique_ptr<ScopedTestingLocalState> local_state_;
   scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestOsSharePathTest);
 };
 
 TEST_F(GuestOsSharePathTest, SuccessMyFilesRoot) {
@@ -528,10 +529,36 @@ TEST_F(GuestOsSharePathTest, SuccessDriveFsComputersLevel3) {
   run_loop()->Run();
 }
 
+TEST_F(GuestOsSharePathTest, SuccessDriveFsFilesById) {
+  SetUpVolume();
+  guest_os_share_path_->SharePath(
+      "vm-running", drivefs_.Append(".files-by-id/1234/shared"), PERSIST_NO,
+      base::BindOnce(
+          &GuestOsSharePathTest::SharePathCallback, base::Unretained(this),
+          "vm-running", Persist::NO, SeneschalClientCalled::YES,
+          &vm_tools::seneschal::SharePathRequest::DRIVEFS_FILES_BY_ID,
+          "1234/shared", Success::YES, ""));
+  run_loop()->Run();
+}
+
+TEST_F(GuestOsSharePathTest, SuccessDriveFsShortcutTargetsById) {
+  SetUpVolume();
+  guest_os_share_path_->SharePath(
+      "vm-running",
+      drivefs_.Append(".shortcut-targets-by-id/1-abc-xyz/shortcut"), PERSIST_NO,
+      base::BindOnce(&GuestOsSharePathTest::SharePathCallback,
+                     base::Unretained(this), "vm-running", Persist::NO,
+                     SeneschalClientCalled::YES,
+                     &vm_tools::seneschal::SharePathRequest::
+                         DRIVEFS_SHORTCUT_TARGETS_BY_ID,
+                     "1-abc-xyz/shortcut", Success::YES, ""));
+  run_loop()->Run();
+}
+
 TEST_F(GuestOsSharePathTest, FailDriveFsTrash) {
   SetUpVolume();
   guest_os_share_path_->SharePath(
-      "vm-running", drivefs_.Append(".Trash").Append("in-the-trash"),
+      "vm-running", drivefs_.Append(".Trash-1000").Append("in-the-trash"),
       PERSIST_NO,
       base::BindOnce(&GuestOsSharePathTest::SharePathCallback,
                      base::Unretained(this), "vm-running", Persist::NO,

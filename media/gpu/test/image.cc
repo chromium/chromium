@@ -51,6 +51,10 @@ VideoPixelFormat ConvertStringtoPixelFormat(const std::string& pixel_format) {
     return PIXEL_FORMAT_YV12;
   } else if (pixel_format == "RGBA") {
     return PIXEL_FORMAT_ABGR;
+  } else if (pixel_format == "I422") {
+    return PIXEL_FORMAT_I422;
+  } else if (pixel_format == "YUYV") {
+    return PIXEL_FORMAT_YUY2;
   } else {
     VLOG(2) << pixel_format << " is not supported.";
     return PIXEL_FORMAT_UNKNOWN;

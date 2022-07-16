@@ -5,7 +5,6 @@
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/check.h"
@@ -271,6 +270,12 @@ void SubresourceFilterAgent::DidCreateNewDocument() {
   // TODO(csharrison): Use WebURL and WebSecurityOrigin for efficiency here,
   // which requires changes to the unit tests.
   const GURL& url = GetDocumentURL();
+
+  // A new browser-side host is created for each new page (i.e. new main frame
+  // document) so we have to reset the remote so we re-bind on the next
+  // message.
+  if (IsMainFrame())
+    subresource_filter_host_.reset();
 
   const mojom::ActivationState activation_state =
       ShouldInheritActivation(url) ? GetInheritedActivationStateForNewDocument()

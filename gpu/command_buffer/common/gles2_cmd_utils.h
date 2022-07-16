@@ -250,6 +250,9 @@ class GLES2_UTILS_EXPORT GLSLArrayName {
  public:
   explicit GLSLArrayName(const std::string& name);
 
+  GLSLArrayName(const GLSLArrayName&) = delete;
+  GLSLArrayName& operator=(const GLSLArrayName&) = delete;
+
   // Returns true if the string is an array reference.
   bool IsArrayName() const { return element_index_ >= 0; }
   // Returns the name with the possible last array index specifier removed.
@@ -266,7 +269,6 @@ class GLES2_UTILS_EXPORT GLSLArrayName {
  private:
   std::string base_name_;
   int element_index_;
-  DISALLOW_COPY_AND_ASSIGN(GLSLArrayName);
 };
 
 }  // namespace gles2

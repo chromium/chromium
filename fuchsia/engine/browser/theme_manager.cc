@@ -4,9 +4,11 @@
 
 #include "fuchsia/engine/browser/theme_manager.h"
 
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 
@@ -24,8 +26,7 @@ PreferredColorScheme ThemeTypeToBlinkScheme(ThemeType type) {
       return PreferredColorScheme::kLight;
     case ThemeType::DARK:
       return PreferredColorScheme::kDark;
-    case ThemeType::DEFAULT:
-    case ThemeType::AUTO:
+    default:
       NOTREACHED();
       return kFallbackColorScheme;
   }
@@ -33,38 +34,27 @@ PreferredColorScheme ThemeTypeToBlinkScheme(ThemeType type) {
 
 }  // namespace
 
-ThemeManager::ThemeManager(content::WebContents* web_contents)
-    : web_contents_(web_contents) {
+ThemeManager::ThemeManager(content::WebContents* web_contents,
+                           base::OnceClosure on_display_error)
+    : web_contents_(web_contents),
+      on_display_error_(std::move(on_display_error)) {
   DCHECK(web_contents_);
 
   // Per the FIDL API, the default theme is LIGHT.
-  SetTheme(ThemeType::LIGHT, base::DoNothing());
+  SetTheme(ThemeType::LIGHT);
 }
 
 ThemeManager::~ThemeManager() = default;
 
-void ThemeManager::SetTheme(
-    ThemeType theme,
-    ThemeManager::OnSetThemeCompleteCallback on_set_complete) {
+void ThemeManager::SetTheme(ThemeType theme) {
   requested_theme_ = theme;
 
-  on_set_complete_ = std::move(on_set_complete);
-  switch (*requested_theme_) {
-    case ThemeType::AUTO:
-      if (!EnsureDisplayService()) {
-        OnDisplayServiceMissing();
-        return;
-      }
-      break;
-    case ThemeType::DEFAULT:
-      std::move(on_set_complete_).Run(false);
+  if (theme == ThemeType::DEFAULT) {
+    if (!EnsureDisplayService()) {
+      OnDisplayServiceMissing();
       return;
-    case ThemeType::LIGHT:
-    case ThemeType::DARK:
-      break;
+    }
   }
-
-  ApplyTheme();
 }
 
 bool ThemeManager::EnsureDisplayService() {
@@ -91,7 +81,7 @@ bool ThemeManager::EnsureDisplayService() {
     // Otherwise, if a failure was detected for a Display that was previously
     // functioning, it should be treated as a transient issue and the last known
     // system theme should be used.
-    if (requested_theme_ && (*requested_theme_ == ThemeType::AUTO) &&
+    if (requested_theme_ && (*requested_theme_ == ThemeType::DEFAULT) &&
         !did_receive_first_watch_result_) {
       OnDisplayServiceMissing();
     }
@@ -102,39 +92,31 @@ bool ThemeManager::EnsureDisplayService() {
 }
 
 void ThemeManager::OnDisplayServiceMissing() {
-  LOG(ERROR) << "AUTO theme requires access to the "
+  LOG(ERROR) << "DEFAULT theme requires access to the "
                 "`fuchsia.settings.Display` service to work.";
 
-  if (on_set_complete_)
-    std::move(on_set_complete_).Run(false);
+  if (on_display_error_)
+    std::move(on_display_error_).Run();
 }
 
-void ThemeManager::ApplyTheme() {
+void ThemeManager::ApplyThemeToWebPreferences(
+    blink::web_pref::WebPreferences* web_prefs) {
   DCHECK(requested_theme_);
 
-  blink::web_pref::WebPreferences web_preferences =
-      web_contents_->GetOrCreateWebPreferences();
-
-  if (requested_theme_ == ThemeType::AUTO) {
+  if (requested_theme_ == ThemeType::DEFAULT) {
     if (!system_theme_) {
       // Defer theme application until we receive a system theme.
       return;
     }
 
-    web_preferences.preferred_color_scheme =
-        ThemeTypeToBlinkScheme(*system_theme_);
+    web_prefs->preferred_color_scheme = ThemeTypeToBlinkScheme(*system_theme_);
   } else {
     DCHECK(requested_theme_ == ThemeType::LIGHT ||
            requested_theme_ == ThemeType::DARK);
 
-    web_preferences.preferred_color_scheme =
+    web_prefs->preferred_color_scheme =
         ThemeTypeToBlinkScheme(*requested_theme_);
   }
-
-  web_contents_->SetWebPreferences(web_preferences);
-
-  if (on_set_complete_)
-    std::move(on_set_complete_).Run(true);
 }
 
 void ThemeManager::WatchForDisplayChanges() {
@@ -158,6 +140,6 @@ void ThemeManager::OnWatchResultReceived(
     system_theme_ = absl::nullopt;
   }
 
-  ApplyTheme();
+  web_contents_->OnWebPreferencesChanged();
   WatchForDisplayChanges();
 }

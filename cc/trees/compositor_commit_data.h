@@ -14,9 +14,8 @@
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gfx/geometry/scroll_offset.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/transform.h"
 
 namespace cc {
 
@@ -32,12 +31,12 @@ struct CC_EXPORT CompositorCommitData {
   struct CC_EXPORT ScrollUpdateInfo {
     ScrollUpdateInfo();
     ScrollUpdateInfo(ElementId id,
-                     gfx::ScrollOffset delta,
+                     gfx::Vector2dF delta,
                      absl::optional<TargetSnapAreaElementIds> snap_target_ids);
     ScrollUpdateInfo(const ScrollUpdateInfo& other);
     ScrollUpdateInfo& operator=(const ScrollUpdateInfo&);
     ElementId element_id;
-    gfx::ScrollOffset scroll_delta;
+    gfx::Vector2dF scroll_delta;
 
     // The target snap area element ids of the scrolling element.
     // This will have a value if the scrolled element's scroll node has snap

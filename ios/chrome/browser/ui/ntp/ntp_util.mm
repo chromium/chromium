@@ -16,7 +16,7 @@
 #endif
 
 bool IsURLNewTabPage(const GURL& url) {
-  return url.GetOrigin() == kChromeUINewTabURL;
+  return url.DeprecatedGetOriginAsURL() == kChromeUINewTabURL;
 }
 
 bool IsVisibleURLNewTabPage(web::WebState* web_state) {

@@ -8,7 +8,6 @@
 #include <lib/ui/scenic/cpp/resources.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -34,6 +33,10 @@ class ScenicWindowCanvas : public SurfaceOzoneCanvas {
   // |scenic_surface| must outlive the canvas. ScenicSurface owns the
   // scenic::Session used in this class for all drawing operations.
   explicit ScenicWindowCanvas(ScenicSurface* scenic_surface);
+
+  ScenicWindowCanvas(const ScenicWindowCanvas&) = delete;
+  ScenicWindowCanvas& operator=(const ScenicWindowCanvas&) = delete;
+
   ~ScenicWindowCanvas() override;
 
   // SurfaceOzoneCanvas implementation.
@@ -85,8 +88,6 @@ class ScenicWindowCanvas : public SurfaceOzoneCanvas {
   gfx::Size viewport_size_;
 
   ScenicSurface* const scenic_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScenicWindowCanvas);
 };
 
 }  // namespace ui

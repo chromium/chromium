@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -28,6 +27,10 @@ namespace keyboard_shortcut_viewer {
 class BubbleView : public views::View {
  public:
   BubbleView();
+
+  BubbleView(const BubbleView&) = delete;
+  BubbleView& operator=(const BubbleView&) = delete;
+
   ~BubbleView() override;
 
   void SetIcon(const gfx::VectorIcon& icon);
@@ -44,8 +47,6 @@ class BubbleView : public views::View {
   views::Label* text_ = nullptr;
 
   std::vector<gfx::ShadowValue> shadows_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleView);
 };
 
 }  // namespace keyboard_shortcut_viewer

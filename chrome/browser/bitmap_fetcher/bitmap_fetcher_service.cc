@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
@@ -43,7 +42,7 @@ const int kMaxCacheEntries = 0;
 const int kMaxCacheEntries = 16;
 #endif
 
-constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
+constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("omnibox_result_change", R"(
         semantics {
           sender: "Omnibox"
@@ -85,6 +84,10 @@ class BitmapFetcherRequest {
  public:
   BitmapFetcherRequest(BitmapFetcherService::RequestId request_id,
                        BitmapFetcherService::BitmapFetchedCallback callback);
+
+  BitmapFetcherRequest(const BitmapFetcherRequest&) = delete;
+  BitmapFetcherRequest& operator=(const BitmapFetcherRequest&) = delete;
+
   ~BitmapFetcherRequest();
 
   void NotifyImageChanged(const SkBitmap* bitmap);
@@ -98,8 +101,6 @@ class BitmapFetcherRequest {
   const BitmapFetcherService::RequestId request_id_;
   BitmapFetcherService::BitmapFetchedCallback callback_;
   const BitmapFetcher* fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(BitmapFetcherRequest);
 };
 
 BitmapFetcherRequest::BitmapFetcherRequest(
@@ -122,8 +123,8 @@ BitmapFetcherService::CacheEntry::~CacheEntry() {
 }
 
 BitmapFetcherService::BitmapFetcherService(content::BrowserContext* context)
-    : shared_data_decoder_(std::make_unique<data_decoder::DataDecoder>(
-          base::TimeDelta::FromSeconds(405))),
+    : shared_data_decoder_(
+          std::make_unique<data_decoder::DataDecoder>(base::Seconds(405))),
       cache_(kMaxCacheEntries),
       current_request_id_(1),
       context_(context) {}
@@ -196,7 +197,7 @@ BitmapFetcherService::RequestId BitmapFetcherService::RequestImageImpl(
 
 void BitmapFetcherService::Prefetch(const GURL& url) {
   if (url.is_valid() && !IsCached(url))
-    EnsureFetcherForUrl(url, traffic_annotation);
+    EnsureFetcherForUrl(url, kTrafficAnnotation);
 }
 
 bool BitmapFetcherService::IsCached(const GURL& url) {
@@ -222,7 +223,7 @@ std::unique_ptr<BitmapFetcher> BitmapFetcherService::CreateFetcher(
 BitmapFetcherService::RequestId BitmapFetcherService::RequestImage(
     const GURL& url,
     BitmapFetchedCallback callback) {
-  return RequestImageImpl(url, std::move(callback), traffic_annotation);
+  return RequestImageImpl(url, std::move(callback), kTrafficAnnotation);
 }
 
 const BitmapFetcher* BitmapFetcherService::EnsureFetcherForUrl(

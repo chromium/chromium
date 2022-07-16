@@ -29,9 +29,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -74,8 +74,7 @@ namespace android_webview {
 
 namespace {
 
-void MaybeRunCookieCallback(base::OnceCallback<void(bool)> callback,
-                            const bool& result) {
+void MaybeRunCookieCallback(base::OnceCallback<void(bool)> callback, const bool& result) {
   if (callback)
     std::move(callback).Run(result);
 }
@@ -106,23 +105,19 @@ GURL MaybeFixUpSchemeForSecureCookie(const GURL& host,
   // TODO(ntfschr): try to remove this, based on UMA stats
   // (https://crbug.com/933981)
   if (!host.is_valid()) {
-    base::UmaHistogramEnumeration(kSecureCookieHistogramName,
-                                  SecureCookieAction::kInvalidUrl);
+    base::UmaHistogramEnumeration(kSecureCookieHistogramName, SecureCookieAction::kInvalidUrl);
     return host;
   }
   if (host.has_scheme() && !host.SchemeIs(url::kHttpScheme)) {
-    base::UmaHistogramEnumeration(kSecureCookieHistogramName,
-                                  SecureCookieAction::kAlreadySecureScheme);
+    base::UmaHistogramEnumeration(kSecureCookieHistogramName, SecureCookieAction::kAlreadySecureScheme);
     return host;
   }
   if (!parsed_cookie.IsValid()) {
-    base::UmaHistogramEnumeration(kSecureCookieHistogramName,
-                                  SecureCookieAction::kInvalidCookie);
+    base::UmaHistogramEnumeration(kSecureCookieHistogramName, SecureCookieAction::kInvalidCookie);
     return host;
   }
   if (!parsed_cookie.IsSecure()) {
-    base::UmaHistogramEnumeration(kSecureCookieHistogramName,
-                                  SecureCookieAction::kNotASecureCookie);
+    base::UmaHistogramEnumeration(kSecureCookieHistogramName, SecureCookieAction::kNotASecureCookie);
     return host;
   }
 
@@ -140,8 +135,7 @@ GURL MaybeFixUpSchemeForSecureCookie(const GURL& host,
     return host;
   }
 
-  base::UmaHistogramEnumeration(kSecureCookieHistogramName,
-                                SecureCookieAction::kFixedUp);
+  base::UmaHistogramEnumeration(kSecureCookieHistogramName, SecureCookieAction::kFixedUp);
   GURL::Replacements replace_host;
   replace_host.SetSchemeStr(url::kHttpsScheme);
   return host.ReplaceComponents(replace_host);
@@ -465,7 +459,8 @@ void CookieManager::SetCookieHelper(const GURL& host,
       host, value, workaround_http_secure_cookies_, &should_allow_cookie);
 
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
-      new_host, value, base::Time::Now(), absl::nullopt /* server_time */));
+      new_host, value, base::Time::Now(), absl::nullopt /* server_time */,
+      net::CookiePartitionKey::Todo()));
 
   if (!cc || !should_allow_cookie) {
     MaybeRunCookieCallback(std::move(callback), false);
@@ -511,12 +506,12 @@ void CookieManager::GetCookieListAsyncHelper(const GURL& host,
 
   if (GetMojoCookieManager()) {
     GetMojoCookieManager()->GetCookieList(
-        host, options,
+        host, options, net::CookiePartitionKeychain::Todo(),
         base::BindOnce(&CookieManager::GetCookieListCompleted,
                        base::Unretained(this), std::move(complete), result));
   } else {
     GetCookieStore()->GetCookieListWithOptionsAsync(
-        host, options,
+        host, options, net::CookiePartitionKeychain::Todo(),
         base::BindOnce(&CookieManager::GetCookieListCompleted,
                        base::Unretained(this), std::move(complete), result));
   }
@@ -674,8 +669,7 @@ void CookieManager::SetAllowFileSchemeCookies(JNIEnv* env,
                                               const JavaParamRef<jobject>& obj,
                                               jboolean allow) {
   ExecCookieTaskSync(
-      base::BindOnce(&CookieManager::SetAllowFileSchemeCookiesAsyncHelper,
-                     base::Unretained(this), allow));
+      base::BindOnce(&CookieManager::SetAllowFileSchemeCookiesAsyncHelper, base::Unretained(this), allow));
 }
 
 void CookieManager::SetAllowFileSchemeCookiesAsyncHelper(
@@ -691,8 +685,7 @@ void CookieManager::SetAllowFileSchemeCookiesAsyncHelper(
     // If we have neither a Network Service CookieManager nor have created the
     // CookieStore, we may modify |allow_file_scheme_cookies_|.
     bool can_change_schemes = !cookie_store_created_;
-    SetAllowFileSchemeCookiesCompleted(std::move(complete), allow,
-                                       can_change_schemes);
+    SetAllowFileSchemeCookiesCompleted(std::move(complete), allow, can_change_schemes);
   }
 }
 

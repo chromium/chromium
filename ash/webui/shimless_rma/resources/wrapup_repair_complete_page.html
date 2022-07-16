@@ -2,18 +2,98 @@
   cr-dialog::part(dialog) {
     width: 700px;
   }
+
+  .button-card {
+    align-items: center;
+    border-radius: 4px;
+    box-shadow: var(--cr-card-shadow);
+    height: 90px;
+    margin-bottom: 20px;
+    width: 350px;
+  }
+
+  .button-text {
+    flex-basis: 250px;
+  }
+
+  .button-label {
+    color: black;
+    margin-bottom: 5px;
+  }
+
+  .button-description {
+    color: grey;
+  }
+
+  .button-icon {
+    flex-grow: 1;
+  }
+
+  #diagnosticsIconDiv {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+  #diagnosticsIcon {
+    height: 40px;
+    width: 40px;
+  }
+
+  .log {
+    white-space: pre;
+  }
 </style>
 
 <base-page orientation="column">
   <!-- TODO(joonbug): Update text for i18n -->
   <div slot="header">
-    <h1>Repair completed</h1>
+    <h1>[[i18n('repairCompletedTitleText')]]</h1>
     <p>Your repair was successful. You can exit or take some additional actions.</h2>
   </div>
   <div slot="body">
-    <cr-button id="diagnosticsButton" on-click="onDiagnosticsButtonClick_">Run Diagnostics</cr-button>
-    <cr-button id="rmaLogButton" on-click="onRmaLogButtonClick_">See RMA Logs</cr-button>
-    <cr-button id="batteryCutButton" on-click="onBatteryCutButtonClick_">Battery Cutoff</cr-button>
+    <cr-button id="diagnosticsButton" class="button-card"
+      on-click="onDiagnosticsButtonClick_">
+      <div id="diagnosticsIconDiv">
+        <img id="diagnosticsIcon" src="png/diagnostics_app_icon_192.png">
+      </div>
+      <div class="button-text">
+        <div class="button-label">
+          <span>Run Diagnostics</span>
+        </div>
+        <div class="button-description">
+          Confirm everything's in the right place and view the diagnostic report
+        </div>
+      </div>
+    </cr-button>
+    <cr-button id="rmaLogButton" class="button-card"
+      on-click="onRmaLogButtonClick_">
+      <iron-icon icon="shimless-icon24:check-circle" class="button-icon"
+          hidden="[[!checked]]">
+      </iron-icon>
+      <div class="button-text">
+        <div class="button-label">
+          <span>See RMA Logs</span>
+        </div>
+        <div class="button-description">
+          See what's been fixed
+        </div>
+      </div>
+    </cr-button>
+    <cr-button id="batteryCutButton" class="button-card"
+      on-click="onBatteryCutButtonClick_">
+      <iron-icon icon="shimless-icon24:check-circle" class="button-icon"
+          hidden="[[!checked]]">
+      </iron-icon>
+      <div class="button-text">
+        <div class="button-label">
+          <span>Battery Cutoff</span>
+        </div>
+        <div class="button-description">
+          Perform battery cutoff for devices being shipped or stored
+        </div>
+      </div>
+    </cr-button>
   </div>
 </base-page>
 
@@ -23,8 +103,9 @@
     RMA Logs
   </div>
   <div slot="body">
-    Logs..
-    <hr>
+    <div class="log">[[log_]]</div>
+  </div>
+  <div slot="footer">
     <cr-button id="closeLogDialogButton" on-click="onCancelClick_">Cancel</cr-button>
     <cr-button id="rmaLogButton" on-click="onRmaLogButtonClick_">Save to ...</cr-button>
   </div>
@@ -37,7 +118,8 @@
   </div>
   <div slot="body">
     Shut down your device to complete battery cut off
-    <hr>
+  </div>
+  <div slot="footer">
     <cr-button id="closeBatteryDialogButton" on-click="onCancelClick_">Cancel</cr-button>
     <cr-button id="shutdownButton" on-click="onShutdownClick_">Shut down</cr-button>
   </div>

@@ -8,12 +8,11 @@
 #include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 namespace {
 
-const base::TimeDelta kPredicateCheckFrequency =
-    base::TimeDelta::FromMilliseconds(200);
+const base::TimeDelta kPredicateCheckFrequency = base::Milliseconds(200);
 
 }  // anonymous namespace
 
@@ -47,4 +46,4 @@ void TestPredicateWaiter::CheckPredicate() {
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

@@ -21,7 +21,6 @@
 #include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
@@ -758,6 +757,12 @@ void OmniboxViewIOS::RemoveQueryRefinementChip() {
 }
 
 bool OmniboxViewIOS::ShouldIgnoreUserInputDueToPendingVoiceSearch() {
+  // TODO(crbug.com/1254467): iOS 15 Cleanup: Remove the method
+  // ShouldIgnoreUserInputDueToPendingVoiceSearch and references to method in
+  // codebase
+  if (base::FeatureList::IsEnabled(kIOSOmniboxAllowEditsDuringDictation))
+    return NO;
+
   // When the response of the iOS voice entry is pending a spinning wheel is
   // visible.  The spinner's location is marked in [self text] as a Unicode
   // "Object Replacement Character".

@@ -210,7 +210,7 @@ LogBuffer& operator<<(LogBuffer& buf, const GURL& url) {
     return buf;
   if (!url.is_valid())
     return buf << "Invalid URL";
-  return buf << url.GetOrigin().spec();
+  return buf << url.DeprecatedGetOriginAsURL().spec();
 }
 
 LogTableRowBuffer::LogTableRowBuffer(LogBuffer* parent) : parent_(parent) {

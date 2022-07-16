@@ -11,10 +11,10 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -69,6 +69,8 @@ class KioskProfileLoader::CryptohomedChecker
  public:
   explicit CryptohomedChecker(KioskProfileLoader* loader)
       : loader_(loader), retry_count_(0) {}
+  CryptohomedChecker(const CryptohomedChecker&) = delete;
+  CryptohomedChecker& operator=(const CryptohomedChecker&) = delete;
   ~CryptohomedChecker() {}
 
   void StartCheck() {
@@ -89,7 +91,7 @@ class KioskProfileLoader::CryptohomedChecker
     const int retry_delay_in_milliseconds = 500 * (1 << retry_count_);
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, base::BindOnce(&CryptohomedChecker::StartCheck, AsWeakPtr()),
-        base::TimeDelta::FromMilliseconds(retry_delay_in_milliseconds));
+        base::Milliseconds(retry_delay_in_milliseconds));
   }
 
   void OnServiceAvailibityChecked(bool service_is_ready) {
@@ -129,8 +131,6 @@ class KioskProfileLoader::CryptohomedChecker
 
   KioskProfileLoader* loader_;
   int retry_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptohomedChecker);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -183,16 +183,8 @@ void KioskProfileLoader::OnAuthSuccess(const UserContext& user_context) {
 
   failed_mount_attempts_ = 0;
 
-  // If we are launching a demo session, we need to start MountGuest with the
-  // guest username; this is because there are several places in the cros code
-  // which rely on the username sent to cryptohome to be $guest. Back in Chrome
-  // we switch this back to the demo user name to correctly identify this
-  // user as a demo user.
-  UserContext context = user_context;
-  if (context.GetAccountId() == user_manager::GuestAccountId())
-    context.SetAccountId(user_manager::DemoAccountId());
   UserSessionManager::GetInstance()->StartSession(
-      context, UserSessionManager::StartSessionType::kPrimary,
+      user_context, UserSessionManager::StartSessionType::kPrimary,
       false,  // has_auth_cookies
       false,  // Start session for user.
       this);

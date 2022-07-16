@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.base;
 import static org.chromium.chrome.browser.base.SplitCompatUtils.CHROME_SPLIT_NAME;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -15,8 +14,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
 
-import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.JNIUtils;
 import org.chromium.base.TraceEvent;
@@ -65,7 +62,6 @@ public class SplitChromeApplication extends SplitCompatApplication {
                 return (Impl) SplitCompatUtils.newInstance(
                         chromeContext, mChromeApplicationClassName);
             });
-            applyActivityClassLoaderWorkaround();
         } else {
             setImplSupplier(() -> createNonBrowserApplication());
         }
@@ -148,42 +144,5 @@ public class SplitChromeApplication extends SplitCompatApplication {
 
     protected Impl createNonBrowserApplication() {
         return new Impl();
-    }
-
-    /**
-     * Fixes Activity ClassLoader if necessary. Isolated splits can cause a ClassLoader mismatch
-     * between the Application and Activity ClassLoaders. We have a workaround in
-     * SplitCompatAppComponentFactory which overrides the Activity ClassLoader, but this does not
-     * change the ClassLoader for the Activity's base context. We override that ClassLoader here, so
-     * it matches the ClassLoader that was used to load the Activity class. Note that
-     * ContextUtils.getApplicationContext().getClassLoader() may not give the right ClassLoader here
-     * because the Activity may be in a DFM which is a child of the chrome DFM. See
-     * crbug.com/1146745 for more info.
-     */
-    private static void applyActivityClassLoaderWorkaround() {
-        ApplicationStatus.registerStateListenerForAllActivities(
-                new ApplicationStatus.ActivityStateListener() {
-                    @Override
-                    public void onActivityStateChange(
-                            Activity activity, @ActivityState int newState) {
-                        // Some tests pass an activity without a base context.
-                        if (activity.getBaseContext() == null) {
-                            return;
-                        }
-
-                        if (newState != ActivityState.CREATED) {
-                            return;
-                        }
-
-                        // ClassLoaders are already the same, no workaround needed.
-                        if (activity.getClassLoader().equals(
-                                    activity.getClass().getClassLoader())) {
-                            return;
-                        }
-
-                        BundleUtils.replaceClassLoader(
-                                activity.getBaseContext(), activity.getClass().getClassLoader());
-                    }
-                });
     }
 }

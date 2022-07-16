@@ -36,7 +36,7 @@ updated system.
 `SkColorSet[A]RGB(...)`, `SK_ColorBLACK`, `gfx::kGoogleGrey900`, and the like.
 Instead, obtain colors by requesting them (by identifier) from an appropriate
 theming object. `View`s in `ui/` should call
-`GetNativeTheme()->GetSystemColor(id)`; `View`s in `chrome/` should call
+`GetColorProvider()->GetColor(id)`; `View`s in `chrome/` should call that or
 `GetThemeProvider()->GetColor(id)`.
 
 |||---|||
@@ -82,12 +82,10 @@ void TooltipIcon::SetDrawAsHovered(bool hovered) {
   SetImage(gfx::CreateVectorIcon(
       vector_icons::kInfoOutlineIcon,
       tooltip_icon_size_,
-      GetNativeTheme()->GetSystemColor(
+      GetColorProvider()->GetColor(
           hovered
-              ? ui::NativeTheme::
-                    kColorId_TooltipIconHovered
-              : ui::NativeTheme::
-                    kColorId_TooltipIcon)));
+              ? ui::kColorHelpIconActive
+              : ui::kColorHelpIconInactive)));
 }
 ```
 
@@ -172,9 +170,8 @@ explicit CollapsibleListView(ui::TableModel* model) {
 
 void CollapsibleListView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  const SkColor icon_color = GetNativeTheme()->
-      GetSystemColor(
-          ui::NativeTheme::kColorId_DefaultIconColor);
+  const SkColor icon_color =
+      GetColorProvider()->GetColor(ui::kColorIcon);
 
 
   views::SetImageFromVectorIconWithColor(
@@ -301,8 +298,7 @@ ui::ImageModel
 RecoveryInstallGlobalError::MenuItemIcon() {
   return ui::ImageModel::FromVectorIcon(
       kBrowserToolsUpdateIcon,
-      ui::NativeTheme::
-          kColorId_AlertSeverityHigh);
+      ui::kColorAlertHighSeverity);
 }
 
 

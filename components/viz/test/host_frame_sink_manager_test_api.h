@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_TEST_HOST_FRAME_SINK_MANAGER_TEST_API_H_
 #define COMPONENTS_VIZ_TEST_HOST_FRAME_SINK_MANAGER_TEST_API_H_
 
-#include "base/macros.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 
 namespace viz {
@@ -21,6 +20,11 @@ class HostFrameSinkManagerTestApi {
  public:
   explicit HostFrameSinkManagerTestApi(
       HostFrameSinkManager* host_frame_sink_manager);
+
+  HostFrameSinkManagerTestApi(const HostFrameSinkManagerTestApi&) = delete;
+  HostFrameSinkManagerTestApi& operator=(const HostFrameSinkManagerTestApi&) =
+      delete;
+
   ~HostFrameSinkManagerTestApi() = default;
 
   // Clears out the currently set hit test queries, and overrides it with |map|.
@@ -31,8 +35,6 @@ class HostFrameSinkManagerTestApi {
  private:
   // Not owned.
   HostFrameSinkManager* host_frame_sink_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostFrameSinkManagerTestApi);
 };
 
 }  // namespace viz

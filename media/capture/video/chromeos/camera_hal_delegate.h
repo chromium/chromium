@@ -10,11 +10,10 @@
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
@@ -47,6 +46,9 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // All the Mojo IPC operations happen on |ipc_task_runner|.
   explicit CameraHalDelegate(
       scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner);
+
+  CameraHalDelegate(const CameraHalDelegate&) = delete;
+  CameraHalDelegate& operator=(const CameraHalDelegate&) = delete;
 
   // Registers the camera client observer to the CameraHalDispatcher instance.
   // Returns true if successful, false if failed (e.g., authentication failure).
@@ -222,8 +224,6 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // A map from camera id to corresponding delegate instance.
   base::flat_map<int, std::unique_ptr<VideoCaptureDeviceChromeOSDelegate>>
       vcd_delegate_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(CameraHalDelegate);
 };
 
 }  // namespace media

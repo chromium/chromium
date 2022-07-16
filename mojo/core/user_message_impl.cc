@@ -284,6 +284,10 @@ class MessageMemoryDumpProvider : public base::trace_event::MemoryDumpProvider {
         this, "MojoMessages", nullptr);
   }
 
+  MessageMemoryDumpProvider(const MessageMemoryDumpProvider&) = delete;
+  MessageMemoryDumpProvider& operator=(const MessageMemoryDumpProvider&) =
+      delete;
+
   ~MessageMemoryDumpProvider() override {
     base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
         this);
@@ -299,8 +303,6 @@ class MessageMemoryDumpProvider : public base::trace_event::MemoryDumpProvider {
                     base::subtle::NoBarrier_Load(&g_message_count));
     return true;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MessageMemoryDumpProvider);
 };
 
 void EnsureMemoryDumpProviderExists() {

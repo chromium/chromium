@@ -651,7 +651,7 @@ public class MonitoringInstrumentation extends ExposedInstrumentationApi {
             Method install = jsBridge.getDeclaredMethod("installBridge");
             install.invoke(null);
         } catch (ClassNotFoundException ignored) {
-            Log.i(LOG_TAG, "No JSBridge.", ignored);
+            Log.i(LOG_TAG, "Espresso Web not found.");
         } catch (NoSuchMethodException nsme) {
             Log.i(LOG_TAG, "No JSBridge.", nsme);
         } catch (InvocationTargetException ite) {

@@ -41,6 +41,9 @@ class ApplicationContext {
  public:
   static ApplicationContext* GetInstance();
 
+  ApplicationContext(const ApplicationContext&) = delete;
+  ApplicationContext& operator=(const ApplicationContext&) = delete;
+
   // Gets the preferences associated with this application.
   PrefService* GetLocalState();
 
@@ -99,8 +102,6 @@ class ApplicationContext {
   std::unique_ptr<network::NetworkChangeManager> network_change_manager_;
   std::unique_ptr<network::NetworkConnectionTracker>
       network_connection_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApplicationContext);
 };
 
 }  // namespace ios_web_view

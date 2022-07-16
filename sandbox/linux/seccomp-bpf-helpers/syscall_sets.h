@@ -18,6 +18,10 @@ namespace sandbox {
 
 class SANDBOX_EXPORT SyscallSets {
  public:
+  SyscallSets() = delete;
+  SyscallSets(const SyscallSets&) = delete;
+  SyscallSets& operator=(const SyscallSets&) = delete;
+
   static bool IsKill(int sysno);
   static bool IsAllowedGettime(int sysno);
   static bool IsCurrentDirectory(int sysno);
@@ -69,6 +73,9 @@ class SANDBOX_EXPORT SyscallSets {
   static bool IsDebug(int sysno);
   static bool IsGlobalSystemStatus(int sysno);
   static bool IsEventFd(int sysno);
+  // System calls used for dlopen(), which loads shared libraries. May overlap
+  // with other syscall sets.
+  static bool IsDlopen(int sysno);
   // Asynchronous I/O API.
   static bool IsAsyncIo(int sysno);
   static bool IsKeyManagement(int sysno);
@@ -111,8 +118,6 @@ class SANDBOX_EXPORT SyscallSets {
   static bool IsMipsPrivate(int sysno);
   static bool IsMipsMisc(int sysno);
 #endif  // defined(__mips__)
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SyscallSets);
 };
 
 }  // namespace sandbox.

@@ -91,13 +91,9 @@ const CGFloat kInProgressScale = 0.65f;
 
 // Updates CoreAnimation layers (icon and badge).
 - (void)updateUIAnimated:(BOOL)animated {
-  if (@available(iOS 13, *)) {
-    [self.traitCollection performAsCurrentTraitCollection:^{
-      [self updateUIWithCurrentTraitCollectionAnimated:animated];
-    }];
-    return;
-  }
-  [self updateUIWithCurrentTraitCollectionAnimated:animated];
+  [self.traitCollection performAsCurrentTraitCollection:^{
+    [self updateUIWithCurrentTraitCollectionAnimated:animated];
+  }];
 }
 
 // Updates the CoreAnimation layers assuming currentTraitCollection is set

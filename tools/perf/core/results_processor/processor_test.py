@@ -73,14 +73,16 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
 
   def CreateDiagnosticsArtifact(self, **diagnostics):
     """Create an artifact with diagnostics."""
-    with tempfile.NamedTemporaryFile(
-        dir=self.intermediate_dir, delete=False) as artifact_file:
+    with tempfile.NamedTemporaryFile(dir=self.intermediate_dir,
+                                     delete=False,
+                                     mode='w') as artifact_file:
       json.dump({'diagnostics': diagnostics}, artifact_file)
     return processor.DIAGNOSTICS_NAME, testing.Artifact(artifact_file.name)
 
   def CreateMeasurementsArtifact(self, measurements):
-    with tempfile.NamedTemporaryFile(
-        dir=self.intermediate_dir, delete=False) as artifact_file:
+    with tempfile.NamedTemporaryFile(dir=self.intermediate_dir,
+                                     delete=False,
+                                     mode='w') as artifact_file:
       json.dump({'measurements': measurements}, artifact_file)
     return processor.MEASUREMENTS_NAME, testing.Artifact(artifact_file.name)
 

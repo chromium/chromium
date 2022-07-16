@@ -410,7 +410,7 @@ def get_reload_id():
 
 def get_buffer_source():
     """Returns a new BufferSource.
-    https://heycam.github.io/webidl/#BufferSource
+    https://webidl.spec.whatwg.org/#BufferSource
     """
 
     choice = random.choice(['ArrayBuffer', 'DataView', 'TypedArray'])

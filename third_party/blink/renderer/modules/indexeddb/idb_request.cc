@@ -33,7 +33,7 @@
 #include <utility>
 
 #include "third_party/blink/public/platform/web_blob_info.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbcursor_idbindex_idbobjectstore.h"
@@ -206,6 +206,11 @@ const IDBRequest::Source* IDBRequest::source(ScriptState* script_state) const {
 }
 
 const String& IDBRequest::readyState() const {
+  if (!GetExecutionContext()) {
+    DCHECK(ready_state_ == DONE || ready_state_ == kEarlyDeath);
+    return indexed_db_names::kDone;
+  }
+
   DCHECK(ready_state_ == PENDING || ready_state_ == DONE);
 
   if (ready_state_ == PENDING)

@@ -17,6 +17,10 @@ namespace apps {
 class StubIconLoader : public IconLoader {
  public:
   StubIconLoader();
+
+  StubIconLoader(const StubIconLoader&) = delete;
+  StubIconLoader& operator=(const StubIconLoader&) = delete;
+
   ~StubIconLoader() override;
 
   // IconLoader overrides.
@@ -36,8 +40,6 @@ class StubIconLoader : public IconLoader {
 
  private:
   int num_load_calls_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(StubIconLoader);
 };
 
 }  // namespace apps

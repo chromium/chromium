@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -28,73 +27,104 @@ namespace web_launch {
 
 // A helper for sending launch paths to the renderer process.
 // Launch files cannot be sent immediately because the data is stored on a
-// document for |launch_url_|, which is not created until |launch_url_| is
+// document for `launch_url_`, which is not created until `launch_url_` is
 // committed.
+//
+// If `await_navigation` is set it waits for the first DidFinishNavigation
+// before enqueuing launch params otherwise enqueues them immediately.
+// DidFinishNavigation takes into account server redirects. Will re-enqueue if
+// the page reloads without navigating away.
 //
 // Note: The lifetime of this class is tied to the WebContents it is attached
 // to. However, in general it will be destroyed before the WebContents, when the
 // helper sends the FileSystemAccessEntries to the renderer.
+//
+// TODO(crbug.com/1250225): Rename this to WebLaunchParamsHelper.
 class WebLaunchFilesHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<WebLaunchFilesHelper> {
  public:
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
+  WebLaunchFilesHelper(const WebLaunchFilesHelper&) = delete;
+  WebLaunchFilesHelper& operator=(const WebLaunchFilesHelper&) = delete;
+
   ~WebLaunchFilesHelper() override;
 
   static WebLaunchFilesHelper* GetForWebContents(
       content::WebContents* web_contents);
 
-  // For use with standard web apps, or system web apps that don't receive the
-  // launch directory in their launch params.
-  static void SetLaunchPaths(content::WebContents* web_contents,
-                             const GURL& launch_url,
-                             std::vector<base::FilePath> launch_paths);
-
-  // For use by System Web Apps Only. |launch_dir| is prepended to
-  // |launch_entries_| and sent to the JavaScript side.
+  // `launch_dir` is only for system web apps, it gets prepended to
+  // `launch_entries_` and sent to the JavaScript side.
   static void SetLaunchDirectoryAndLaunchPaths(
       content::WebContents* web_contents,
-      const GURL& launch_url,
+      const GURL& app_scope,
+      bool await_navigation,
+      GURL launch_url,
       base::FilePath launch_dir,
       std::vector<base::FilePath> launch_paths);
 
-  // content::WebContentsObserver:
-  void DidFinishNavigation(content::NavigationHandle* handle) override;
+  // Enqueues a LaunchParams into the `web_contents` with the provided launch_*
+  // params. Only enqueues into pages inside `app_scope`. Will enqueue
+  // immediately unless `await_navigation` is set in which case it waits for the
+  // next DidFinishNavigation event.
+  static void EnqueueLaunchParams(content::WebContents* web_contents,
+                                  const GURL& app_scope,
+                                  bool await_navigation,
+                                  GURL launch_url,
+                                  base::FilePath launch_dir,
+                                  std::vector<base::FilePath> launch_paths);
 
   const std::vector<base::FilePath>& launch_paths() { return launch_paths_; }
 
  private:
   WebLaunchFilesHelper(content::WebContents* web_contents,
-                       const GURL& launch_url,
+                       const GURL& app_scope,
+                       GURL launch_url,
                        base::FilePath launch_dir,
                        std::vector<base::FilePath> launch_paths);
 
-  static void SetLaunchPathsIfPermitted(
-      content::WebContents* web_contents,
-      const GURL& launch_url,
-      base::FilePath launch_dir,
-      std::vector<base::FilePath> launch_paths);
+  void Start(bool await_navigation);
+
+  // Whether `url` is within `app_scope_`.
+  bool InAppScope(const GURL& url) const;
+
+  // content::WebContentsObserver:
+  void DidFinishNavigation(content::NavigationHandle* handle) override;
 
   // Sends the launch entries to the renderer if they have been created and the
   // renderer is ready to receive them.
   void MaybeSendLaunchEntries();
 
-  // After a permission check, tries to send the launch entries to the renderer.
-  void MaybeSendLaunchEntriesWithPermission(ContentSetting content_setting);
-
-  // Send the launch entries to the renderer.
-  void SendLaunchEntries();
+  void OnPermissionRequestResponse(ContentSetting content_setting);
 
   // Called after the user has made a decision in the permission UI.
   void OnGotPermissionDialogResult(ContentSetting content_setting);
 
-  // The files causing the launch (may be empty).
-  std::vector<base::FilePath> launch_paths_;
+  // Send the launch entries to the renderer.
+  void SendLaunchEntries();
+
+  // Closes the app window/tab. `this` will be deleted, return immediately after
+  // calling.
+  void CloseApp();
+
+  // Removes self from the parent WebContents. `this` will be deleted, return
+  // immediately after calling.
+  void DestroySelf();
+
+  // The scope in which launch params may be enqueued.
+  std::string app_scope_;
+
+  // The URL the launch entries are for. Note that redirects may cause us to
+  // enqueue in a different URL, we still report the original launch target URL
+  // in the launch params.
+  GURL launch_url_;
+
+  // The directory to launch with (may be empty).
   base::FilePath launch_dir_;
 
-  // The url the launch entries are for.
-  GURL launch_url_;
+  // The files to launch with (may be empty).
+  std::vector<base::FilePath> launch_paths_;
 
   // Whether the permission has yet been checked.
   bool permission_was_checked_ = false;
@@ -102,8 +132,10 @@ class WebLaunchFilesHelper
   // Whether the permission check has already been passed for this launch.
   bool passed_permission_check_ = false;
 
+  // Which URL we first enqueued launch params in.
+  GURL url_params_enqueued_in_;
+
   base::WeakPtrFactory<WebLaunchFilesHelper> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(WebLaunchFilesHelper);
 };
 
 }  // namespace web_launch

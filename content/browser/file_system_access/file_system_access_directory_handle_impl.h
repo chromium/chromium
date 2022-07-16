@@ -50,6 +50,12 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
   void GetEntries(mojo::PendingRemote<
                   blink::mojom::FileSystemAccessDirectoryEntriesListener>
                       pending_listener) override;
+  void Move(mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+                destination_directory,
+            const std::string& new_entry_name,
+            MoveCallback callback) override;
+  void Rename(const std::string& new_entry_name,
+              RenameCallback callback) override;
   void Remove(bool recurse, RemoveCallback callback) override;
   void RemoveEntry(const std::string& basename,
                    bool recurse,
@@ -60,6 +66,13 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
   void Transfer(
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token)
       override;
+
+  // Calculates a FileSystemURL for a (direct) child of this directory with the
+  // given basename.  Returns an error when `basename` includes invalid input
+  // like "/".
+  blink::mojom::FileSystemAccessErrorPtr GetChildURL(
+      const std::string& basename,
+      storage::FileSystemURL* result) WARN_UNUSED_RESULT;
 
   // The File System Access API should not give access to files that might
   // trigger special handling from the operating system. This method is used to
@@ -93,13 +106,6 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
 
   void ResolveImpl(ResolveCallback callback,
                    FileSystemAccessTransferTokenImpl* possible_child);
-
-  // Calculates a FileSystemURL for a (direct) child of this directory with the
-  // given basename.  Returns an error when |basename| includes invalid input
-  // like "/".
-  blink::mojom::FileSystemAccessErrorPtr GetChildURL(
-      const std::string& basename,
-      storage::FileSystemURL* result) WARN_UNUSED_RESULT;
 
   // Helper to create a blink::mojom::FileSystemAccessEntry struct.
   blink::mojom::FileSystemAccessEntryPtr CreateEntry(

@@ -12,11 +12,17 @@
 // Use IsDiscoverFeedEnabled() instead of this constant directly.
 extern const base::Feature kDiscoverFeedInNtp;
 
+// Feature to use one NTP for all tabs in a Browser.
+extern const base::Feature kSingleNtp;
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 extern const char kDiscoverFeedIsNativeUIEnabled[];
 
 // Whether the Discover feed is enabled instead of the Zine feed.
 bool IsDiscoverFeedEnabled();
+
+// Whether the single ntp feature is enabled.
+bool IsSingleNtpEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_FEATURE_H_

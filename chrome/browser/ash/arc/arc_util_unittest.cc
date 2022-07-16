@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/system/sys_info.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_command_line.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,6 +43,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -79,6 +80,10 @@ class FakeUserManagerWithLocalState : public ash::FakeChromeUserManager {
     RegisterPrefs(test_local_state_->registry());
   }
 
+  FakeUserManagerWithLocalState(const FakeUserManagerWithLocalState&) = delete;
+  FakeUserManagerWithLocalState& operator=(
+      const FakeUserManagerWithLocalState&) = delete;
+
   PrefService* GetLocalState() const override {
     return test_local_state_.get();
   }
@@ -92,8 +97,6 @@ class FakeUserManagerWithLocalState : public ash::FakeChromeUserManager {
   TestingProfileManager* const testing_profile_manager_;
 
   std::unique_ptr<TestingPrefServiceSimple> test_local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUserManagerWithLocalState);
 };
 
 class ScopedLogIn {
@@ -125,6 +128,9 @@ class ScopedLogIn {
     }
   }
 
+  ScopedLogIn(const ScopedLogIn&) = delete;
+  ScopedLogIn& operator=(const ScopedLogIn&) = delete;
+
   ~ScopedLogIn() { fake_user_manager_->RemoveUserFromList(account_id_); }
 
  private:
@@ -145,8 +151,6 @@ class ScopedLogIn {
 
   FakeUserManagerWithLocalState* fake_user_manager_;
   const AccountId account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLogIn);
 };
 
 bool IsArcAllowedForProfileOnFirstCall(const Profile* profile) {
@@ -159,6 +163,10 @@ bool IsArcAllowedForProfileOnFirstCall(const Profile* profile) {
 class ChromeArcUtilTest : public testing::Test {
  public:
   ChromeArcUtilTest() = default;
+
+  ChromeArcUtilTest(const ChromeArcUtilTest&) = delete;
+  ChromeArcUtilTest& operator=(const ChromeArcUtilTest&) = delete;
+
   ~ChromeArcUtilTest() override = default;
 
   void SetUp() override {
@@ -210,8 +218,6 @@ class ChromeArcUtilTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   // Owned by |profile_manager_|
   TestingProfile* profile_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeArcUtilTest);
 };
 
 TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile) {
@@ -758,8 +764,11 @@ class ArcOobeTest : public ChromeArcUtilTest {
  public:
   ArcOobeTest() {
     chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-    oobe_configuration_ = std::make_unique<chromeos::OobeConfiguration>();
+    oobe_configuration_ = std::make_unique<ash::OobeConfiguration>();
   }
+
+  ArcOobeTest(const ArcOobeTest&) = delete;
+  ArcOobeTest& operator=(const ArcOobeTest&) = delete;
 
   ~ArcOobeTest() override {
     // Fake display host have to be shut down first, as it may access
@@ -781,10 +790,8 @@ class ArcOobeTest : public ChromeArcUtilTest {
   void CloseLoginDisplayHost() { fake_login_display_host_.reset(); }
 
  private:
-  std::unique_ptr<chromeos::OobeConfiguration> oobe_configuration_;
+  std::unique_ptr<ash::OobeConfiguration> oobe_configuration_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcOobeTest);
 };
 
 TEST_F(ArcOobeTest, TermsOfServiceOobeNegotiationNeededForManagedUser) {
@@ -795,7 +802,6 @@ TEST_F(ArcOobeTest, TermsOfServiceOobeNegotiationNeededForManagedUser) {
                     AccountId::FromUserEmailGaiaId(
                         profile()->GetProfileUserName(), kTestGaiaId));
 
-  GetFakeUserManager()->set_current_user_new(true);
   CreateLoginDisplayHost();
   EXPECT_TRUE(IsArcOobeOptInActive());
 
@@ -845,7 +851,6 @@ TEST_F(ArcOobeTest, ShouldStartArcSilentlyForManagedProfile) {
                     AccountId::FromUserEmailGaiaId(
                         profile()->GetProfileUserName(), kTestGaiaId));
 
-  GetFakeUserManager()->set_current_user_new(true);
   CreateLoginDisplayHost();
   EXPECT_TRUE(IsArcOobeOptInActive());
 
@@ -881,20 +886,27 @@ TEST_F(ArcOobeTest, ShouldStartArcSilentlyForManagedProfile) {
   EXPECT_TRUE(ShouldStartArcSilentlyForManagedProfile(profile()));
 }
 
-using ArcOobeOpaOptInActiveInTest = ArcOobeTest;
+using ArcOobeOptInActiveInTest = ArcOobeTest;
 
-TEST_F(ArcOobeOpaOptInActiveInTest, OobeOptInActive) {
+TEST_F(ArcOobeOptInActiveInTest, OobeOptInActive) {
   // OOBE OptIn is active in case of OOBE controller is alive and the ARC ToS
   // screen is currently showing.
+  LogIn();
   EXPECT_FALSE(IsArcOobeOptInActive());
   CreateLoginDisplayHost();
-  EXPECT_FALSE(IsArcOobeOptInActive());
-  GetFakeUserManager()->set_current_user_new(true);
+
+  const AccountId account_id = AccountId::FromUserEmailGaiaId(
+      profile()->GetProfileUserName(), kTestGaiaId);
+
+  // OOBE OptIn can only start if Onobarding is not completed yet.
   EXPECT_TRUE(IsArcOobeOptInActive());
-  // OOBE OptIn can be started only for new user flow.
-  GetFakeUserManager()->set_current_user_new(false);
+
+  // Set a version for the Onboarding to indicate that the user completed the
+  // onboarding flow.
+  user_manager::KnownUser(g_browser_process->local_state())
+      .SetOnboardingCompletedVersion(account_id, version_info::GetVersion());
   EXPECT_FALSE(IsArcOobeOptInActive());
-  // ARC ToS wizard but not for new user.
+  // ARC ToS wizard but Onboarding flow completed.
   login_display_host()->StartWizard(
       chromeos::ArcTermsOfServiceScreenView::kScreenId);
   EXPECT_FALSE(IsArcOobeOptInActive());

@@ -89,7 +89,7 @@ BOOL SimulateTabsBackgrounding();
 void SaveSessionImmediately();
 
 // Evicts the tabs associated with the non-current browser mode.
-void EvictOtherTabModelTabs();
+void EvictOtherBrowserTabs();
 
 // Closes all normal (non-incognito) tabs. Return YES on success.
 BOOL CloseAllNormalTabs() WARN_UNUSED_RESULT;

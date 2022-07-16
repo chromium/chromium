@@ -495,4 +495,4 @@ void PrefsTabHelper::NotifyWebkitPreferencesChanged(
   web_contents_->OnWebPreferencesChanged();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PrefsTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PrefsTabHelper);

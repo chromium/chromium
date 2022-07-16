@@ -52,6 +52,14 @@ export class Manager {
   }
 
   /**
+   * Updates the registered CDM list.
+   * @param cdms A list of registered Content Decryption Modules.
+   */
+  updateRegisteredCdms(cdms) {
+    this.clientRenderer_.updateRegisteredCdms(cdms);
+  }
+
+  /**
    * Updates the general audio information.
    * @param audioInfo The map of information.
    */

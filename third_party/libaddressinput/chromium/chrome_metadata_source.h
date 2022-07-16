@@ -27,6 +27,10 @@ class ChromeMetadataSource : public ::i18n::addressinput::Source {
   ChromeMetadataSource(
       const std::string& validation_data_url,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  ChromeMetadataSource(const ChromeMetadataSource&) = delete;
+  ChromeMetadataSource& operator=(const ChromeMetadataSource&) = delete;
+
   virtual ~ChromeMetadataSource();
 
   // ::i18n::addressinput::Source:
@@ -60,8 +64,6 @@ class ChromeMetadataSource : public ::i18n::addressinput::Source {
 
   // Holds all pending requests and their URL loaders.
   RequestList requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeMetadataSource);
 };
 
 }  // namespace autofill

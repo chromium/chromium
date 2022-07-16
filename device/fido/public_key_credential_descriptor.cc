@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/public_key_credential_descriptor.h"
 
 namespace device {
@@ -13,6 +14,7 @@ namespace {
 // Keys for storing credential descriptor information in CBOR map.
 constexpr char kCredentialIdKey[] = "id";
 constexpr char kCredentialTypeKey[] = "type";
+constexpr char kTransportsKey[] = "transports";
 
 }  // namespace
 
@@ -33,8 +35,29 @@ PublicKeyCredentialDescriptor::CreateFromCBORValue(const cbor::Value& cbor) {
   if (id == map.end() || !id->second.is_bytestring())
     return absl::nullopt;
 
+  auto transports_it = map.find(cbor::Value(kTransportsKey));
+  if (transports_it == map.end())
+    return PublicKeyCredentialDescriptor(CredentialType::kPublicKey,
+                                         id->second.GetBytestring());
+
+  if (!transports_it->second.is_array())
+    return absl::nullopt;
+
+  base::flat_set<FidoTransportProtocol> transports;
+  for (const cbor::Value& transport_name : transports_it->second.GetArray()) {
+    if (!transport_name.is_string()) {
+      return absl::nullopt;
+    }
+    absl::optional<FidoTransportProtocol> transport =
+        ConvertToFidoTransportProtocol(transport_name.GetString());
+    if (!transport) {
+      continue;
+    }
+    transports.insert(*transport);
+  }
   return PublicKeyCredentialDescriptor(CredentialType::kPublicKey,
-                                       id->second.GetBytestring());
+                                       id->second.GetBytestring(),
+                                       std::move(transports));
 }
 
 PublicKeyCredentialDescriptor::PublicKeyCredentialDescriptor() = default;
@@ -42,14 +65,7 @@ PublicKeyCredentialDescriptor::PublicKeyCredentialDescriptor() = default;
 PublicKeyCredentialDescriptor::PublicKeyCredentialDescriptor(
     CredentialType credential_type,
     std::vector<uint8_t> id)
-    : PublicKeyCredentialDescriptor(
-          credential_type,
-          std::move(id),
-          {FidoTransportProtocol::kUsbHumanInterfaceDevice,
-           FidoTransportProtocol::kBluetoothLowEnergy,
-           FidoTransportProtocol::kNearFieldCommunication,
-           FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy,
-           FidoTransportProtocol::kInternal}) {}
+    : PublicKeyCredentialDescriptor(credential_type, std::move(id), {}) {}
 
 PublicKeyCredentialDescriptor::PublicKeyCredentialDescriptor(
     CredentialType credential_type,
@@ -84,6 +100,14 @@ cbor::Value AsCBOR(const PublicKeyCredentialDescriptor& desc) {
   cbor_descriptor_map[cbor::Value(kCredentialIdKey)] = cbor::Value(desc.id());
   cbor_descriptor_map[cbor::Value(kCredentialTypeKey)] =
       cbor::Value(CredentialTypeToString(desc.credential_type()));
+  std::vector<cbor::Value> transports;
+  for (FidoTransportProtocol transport : desc.transports()) {
+    transports.emplace_back(cbor::Value(ToString(transport)));
+  }
+  if (!transports.empty()) {
+    cbor_descriptor_map[cbor::Value(kTransportsKey)] =
+        cbor::Value(std::move(transports));
+  }
   return cbor::Value(std::move(cbor_descriptor_map));
 }
 

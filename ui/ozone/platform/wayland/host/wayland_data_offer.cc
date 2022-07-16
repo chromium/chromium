@@ -15,9 +15,8 @@ WaylandDataOffer::WaylandDataOffer(wl_data_offer* data_offer)
     : data_offer_(data_offer),
       source_actions_(WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE),
       dnd_action_(WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE) {
-  static const struct wl_data_offer_listener kDataOfferListener = {
-      WaylandDataOffer::OnOffer, WaylandDataOffer::OnSourceAction,
-      WaylandDataOffer::OnAction};
+  static constexpr wl_data_offer_listener kDataOfferListener = {
+      &OnOffer, &OnSourceAction, &OnAction};
   wl_data_offer_add_listener(data_offer, &kDataOfferListener, this);
 }
 
@@ -61,7 +60,7 @@ void WaylandDataOffer::FinishOffer() {
   }
 }
 
-void WaylandDataOffer::SetActions(uint32_t dnd_actions) {
+void WaylandDataOffer::SetDndActions(uint32_t dnd_actions) {
   if (wl::get_version_of_object(data_offer_.get()) <
       WL_DATA_OFFER_SET_ACTIONS_SINCE_VERSION) {
     return;

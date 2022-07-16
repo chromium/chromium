@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_USER_EVENT_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SYNC_USER_EVENT_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -22,6 +21,9 @@ class UserEventServiceFactory : public BrowserContextKeyedServiceFactory {
   static syncer::UserEventService* GetForProfile(Profile* profile);
   static UserEventServiceFactory* GetInstance();
 
+  UserEventServiceFactory(const UserEventServiceFactory&) = delete;
+  UserEventServiceFactory& operator=(const UserEventServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<UserEventServiceFactory>;
 
@@ -33,8 +35,6 @@ class UserEventServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(UserEventServiceFactory);
 };
 
 }  // namespace browser_sync

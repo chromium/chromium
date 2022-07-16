@@ -53,6 +53,19 @@ content::WebContents* AddRestoredTab(
     const sessions::SerializedUserAgentOverride& user_agent_override,
     bool from_session_restore);
 
+// Same functionality as AddRestoreTab, except that the |web_contents| is
+// passed as it was never deleted. Used when restoring entry from
+// ClosedTabCache. Note that ClosedTabCache is an experimental desktop feature
+// to instantly restore recently closed tabs.
+content::WebContents* AddRestoredTabFromCache(
+    std::unique_ptr<content::WebContents> web_contents,
+    Browser* browser,
+    int tab_index,
+    absl::optional<tab_groups::TabGroupId> group,
+    bool select,
+    bool pin,
+    const sessions::SerializedUserAgentOverride& user_agent_override);
+
 // Replaces the state of the currently selected tab with the session
 // history restored from the SessionRestore and TabRestoreService systems.
 // Returns the WebContents of the restored tab.

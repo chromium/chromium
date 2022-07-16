@@ -13,9 +13,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -79,7 +79,9 @@ class RequestContext : public URLRequestContext {
  public:
   RequestContext() : storage_(this) {
     ProxyConfig no_proxy;
-    storage_.set_host_resolver(std::make_unique<MockCachingHostResolver>());
+    storage_.set_host_resolver(std::make_unique<MockCachingHostResolver>(
+        /*cache_invalidation_num=*/0, /*default_result=*/
+        MockHostResolverBase::RuleResolver::GetLocalhostResult()));
     storage_.set_cert_verifier(std::make_unique<MockCertVerifier>());
     storage_.set_transport_security_state(
         std::make_unique<TransportSecurityState>());
@@ -135,6 +137,10 @@ GURL GetTestFileUrl(const std::string& relpath) {
 class BasicNetworkDelegate : public NetworkDelegateImpl {
  public:
   BasicNetworkDelegate() = default;
+
+  BasicNetworkDelegate(const BasicNetworkDelegate&) = delete;
+  BasicNetworkDelegate& operator=(const BasicNetworkDelegate&) = delete;
+
   ~BasicNetworkDelegate() override = default;
 
  private:
@@ -144,8 +150,6 @@ class BasicNetworkDelegate : public NetworkDelegateImpl {
     EXPECT_TRUE(request->load_flags() & LOAD_DISABLE_CERT_NETWORK_FETCHES);
     return OK;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(BasicNetworkDelegate);
 };
 
 class PacFileFetcherImplTest : public PlatformTest, public WithTaskEnvironment {
@@ -301,14 +305,12 @@ TEST_F(PacFileFetcherImplTest, IsolationInfo) {
 
   // Check that the URL in kDestination is in the HostCache, with
   // the fetcher's IsolationInfo / NetworkIsolationKey, and no others.
-  const net::HostPortPair kHostPortPair =
-      net::HostPortPair(kHost, 0 /* port */);
   net::HostResolver::ResolveHostParameters params;
   params.source = net::HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<net::HostResolver::ResolveHostRequest> host_request =
       context_.host_resolver()->CreateRequest(
-          kHostPortPair,
-          pac_fetcher->isolation_info_for_testing().network_isolation_key(),
+          url::SchemeHostPort(url),
+          pac_fetcher->isolation_info().network_isolation_key(),
           net::NetLogWithSource(), params);
   net::TestCompletionCallback callback2;
   result = host_request->Start(callback2.callback());
@@ -321,7 +323,8 @@ TEST_F(PacFileFetcherImplTest, IsolationInfo) {
   // Make sure the cache is actually returning different results based on
   // NetworkIsolationKey.
   host_request = context_.host_resolver()->CreateRequest(
-      kHostPortPair, NetworkIsolationKey(), net::NetLogWithSource(), params);
+      url::SchemeHostPort(url), NetworkIsolationKey(), net::NetLogWithSource(),
+      params);
   net::TestCompletionCallback callback3;
   result = host_request->Start(callback3.callback());
   EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, callback3.GetResult(result));
@@ -368,24 +371,27 @@ TEST_F(PacFileFetcherImplTest, TooLarge) {
 
   auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
 
-  // Set the maximum response size to 50 bytes.
-  int prev_size = pac_fetcher->SetSizeConstraint(50);
+  {
+    // Set the maximum response size to 50 bytes.
+    int prev_size = pac_fetcher->SetSizeConstraint(50);
 
-  // Try fetching URL that is 101 bytes large. We should abort the request
-  // after 50 bytes have been read, and fail with a too large error.
-  GURL url = test_server_.GetURL("/large-pac.nsproxy");
-  std::u16string text;
-  TestCompletionCallback callback;
-  int result = pac_fetcher->Fetch(url, &text, callback.callback(),
-                                  TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_THAT(result, IsError(ERR_IO_PENDING));
-  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_FILE_TOO_BIG));
-  EXPECT_TRUE(text.empty());
+    // Try fetching URL that is 101 bytes large. We should abort the request
+    // after 50 bytes have been read, and fail with a too large error.
+    GURL url = test_server_.GetURL("/large-pac.nsproxy");
+    std::u16string text;
+    TestCompletionCallback callback;
+    int result = pac_fetcher->Fetch(url, &text, callback.callback(),
+                                    TRAFFIC_ANNOTATION_FOR_TESTS);
+    EXPECT_THAT(result, IsError(ERR_IO_PENDING));
+    EXPECT_THAT(callback.WaitForResult(), IsError(ERR_FILE_TOO_BIG));
+    EXPECT_TRUE(text.empty());
 
-  // Restore the original size bound.
-  pac_fetcher->SetSizeConstraint(prev_size);
+    // Restore the original size bound.
+    pac_fetcher->SetSizeConstraint(prev_size);
+  }
 
-  {  // Make sure we can still fetch regular URLs.
+  {
+    // Make sure we can still fetch regular URLs.
     GURL url(test_server_.GetURL("/pac.nsproxy"));
     std::u16string text;
     TestCompletionCallback callback;
@@ -420,7 +426,7 @@ TEST_F(PacFileFetcherImplTest, Hang) {
 
   // Set the timeout period to 0.5 seconds.
   base::TimeDelta prev_timeout =
-      pac_fetcher->SetTimeoutConstraint(base::TimeDelta::FromMilliseconds(500));
+      pac_fetcher->SetTimeoutConstraint(base::Milliseconds(500));
 
   // Try fetching a URL which takes 1.2 seconds. We should abort the request
   // after 500 ms, and fail with a timeout error.

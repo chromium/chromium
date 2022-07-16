@@ -27,6 +27,10 @@ class AutocompleteClassifierFactory : public BrowserStateKeyedServiceFactory {
   // registered with SetTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
+  AutocompleteClassifierFactory(const AutocompleteClassifierFactory&) = delete;
+  AutocompleteClassifierFactory& operator=(
+      const AutocompleteClassifierFactory&) = delete;
+
  private:
   friend class base::NoDestructor<AutocompleteClassifierFactory>;
 
@@ -39,8 +43,6 @@ class AutocompleteClassifierFactory : public BrowserStateKeyedServiceFactory {
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteClassifierFactory);
 };
 
 }  // namespace ios

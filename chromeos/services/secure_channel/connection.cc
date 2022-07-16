@@ -11,6 +11,8 @@
 #include "base/logging.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/connection_observer.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/wire_message.h"
 
 namespace chromeos {
@@ -43,6 +45,24 @@ void Connection::SendMessage(std::unique_ptr<WireMessage> message) {
 
   is_sending_message_ = true;
   SendMessageImpl(std::move(message));
+}
+
+void Connection::RegisterPayloadFile(
+    int64_t payload_id,
+    mojom::PayloadFilesPtr payload_files,
+    FileTransferUpdateCallback file_transfer_update_callback,
+    base::OnceCallback<void(bool)> registration_result_callback) {
+  if (!IsConnected()) {
+    PA_LOG(ERROR)
+        << "Not yet connected; cannot register file payloads for device "
+        << GetDeviceInfoLogString();
+    std::move(registration_result_callback).Run(/*success=*/false);
+    return;
+  }
+
+  RegisterPayloadFileImpl(payload_id, std::move(payload_files),
+                          std::move(file_transfer_update_callback),
+                          std::move(registration_result_callback));
 }
 
 void Connection::AddObserver(ConnectionObserver* observer) {

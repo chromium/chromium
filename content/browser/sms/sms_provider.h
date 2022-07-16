@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -47,6 +46,10 @@ class CONTENT_EXPORT SmsProvider {
   };
 
   SmsProvider();
+
+  SmsProvider(const SmsProvider&) = delete;
+  SmsProvider& operator=(const SmsProvider&) = delete;
+
   virtual ~SmsProvider();
 
   // Listen to the next incoming SMS and notify observers (exactly once) when
@@ -75,7 +78,6 @@ class CONTENT_EXPORT SmsProvider {
 
  private:
   base::ObserverList<Observer> observers_;
-  DISALLOW_COPY_AND_ASSIGN(SmsProvider);
 };
 
 }  // namespace content

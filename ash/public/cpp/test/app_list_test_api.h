@@ -9,8 +9,15 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
+
+namespace views {
+class View;
+}
 
 namespace ash {
+class AppsGridView;
+class PaginationModel;
 
 // Accesses ash data for app list view testing.
 class ASH_EXPORT AppListTestApi {
@@ -41,6 +48,25 @@ class ASH_EXPORT AppListTestApi {
   // Moves an item to position |to_index| within the item's item list. The item
   // can be a folder.
   void MoveItemToPosition(const std::string& item_id, const size_t to_index);
+
+  // Adds one page break item after the item specified by `item_id`.
+  void AddPageBreakItemAfterId(const std::string& item_id);
+
+  // Returns the item count of the top list.
+  int GetTopListItemCount();
+
+  // Returns the pagination model.
+  PaginationModel* GetPaginationModel();
+
+  // Updates the paged view structure.
+  void UpdatePagedViewStructure();
+
+  // Returns the view able to trigger app list sort with `order`.
+  views::View* GetViewForAppListSort(AppListSortOrder order);
+
+  // Returns the top level apps grid view. Could be ScrollableAppsGridView if
+  // bubble launcher is enabled or PagedAppsGridView otherwise.
+  AppsGridView* GetTopLevelAppsGridView();
 };
 
 }  // namespace ash

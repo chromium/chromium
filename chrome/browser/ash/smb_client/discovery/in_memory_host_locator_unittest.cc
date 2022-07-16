@@ -36,6 +36,10 @@ void ExpectMapEntriesEqual(const HostMap& expected_hosts,
 class InMemoryHostLocatorTest : public testing::Test {
  public:
   InMemoryHostLocatorTest() = default;
+
+  InMemoryHostLocatorTest(const InMemoryHostLocatorTest&) = delete;
+  InMemoryHostLocatorTest& operator=(const InMemoryHostLocatorTest&) = delete;
+
   ~InMemoryHostLocatorTest() override = default;
 
  protected:
@@ -48,9 +52,6 @@ class InMemoryHostLocatorTest : public testing::Test {
   }
 
   InMemoryHostLocator locator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InMemoryHostLocatorTest);
 };
 
 TEST_F(InMemoryHostLocatorTest, AddHostShouldNotBeEqual) {

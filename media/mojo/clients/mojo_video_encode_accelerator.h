@@ -34,6 +34,10 @@ class MojoVideoEncodeAccelerator : public VideoEncodeAccelerator {
       mojo::PendingRemote<mojom::VideoEncodeAccelerator> vea,
       const SupportedProfiles& supported_profiles);
 
+  MojoVideoEncodeAccelerator(const MojoVideoEncodeAccelerator&) = delete;
+  MojoVideoEncodeAccelerator& operator=(const MojoVideoEncodeAccelerator&) =
+      delete;
+
   // VideoEncodeAccelerator implementation.
   SupportedProfiles GetSupportedProfiles() override;
   bool Initialize(const Config& config, Client* client) override;
@@ -59,8 +63,6 @@ class MojoVideoEncodeAccelerator : public VideoEncodeAccelerator {
   const SupportedProfiles supported_profiles_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoEncodeAccelerator);
 };
 
 }  // namespace media

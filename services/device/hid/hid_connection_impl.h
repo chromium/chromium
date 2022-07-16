@@ -29,6 +29,9 @@ class HidConnectionImpl final : public mojom::HidConnection,
       mojo::PendingRemote<mojom::HidConnectionClient> connection_client,
       mojo::PendingRemote<mojom::HidConnectionWatcher> watcher);
 
+  HidConnectionImpl(const HidConnectionImpl&) = delete;
+  HidConnectionImpl& operator=(const HidConnectionImpl&) = delete;
+
   // HidConnection::Client implementation:
   void OnInputReport(scoped_refptr<base::RefCountedBytes> buffer,
                      size_t size) override;
@@ -73,8 +76,6 @@ class HidConnectionImpl final : public mojom::HidConnection,
   mojo::Remote<mojom::HidConnectionWatcher> watcher_;
 
   base::WeakPtrFactory<HidConnectionImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HidConnectionImpl);
 };
 
 }  // namespace device

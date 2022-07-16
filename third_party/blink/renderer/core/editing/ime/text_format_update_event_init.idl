@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// The initial parameters for the textformatupdate event.
+
+// Spec draft:
+// https://w3c.github.io/editing/docs/EditContext/index.html#textformatupdateevent
+
 dictionary TextFormatUpdateEventInit {
-    unsigned long formatRangeStart;
-    unsigned long formatRangeEnd;
-    DOMString underlineColor;
-    DOMString backgroundColor;
-    DOMString suggestionHighlightColor;
-    DOMString textColor;
-    DOMString underlineThickness;
-    DOMString underlineStyle;
+    sequence<TextFormat> textFormats;
 };

@@ -181,8 +181,10 @@ ScriptPromise FontFaceSet::load(ScriptState* script_state,
   FontFaceArray* faces = MakeGarbageCollected<FontFaceArray>();
   for (const FontFamily* f = &font.GetFontDescription().Family(); f;
        f = f->Next()) {
+    if (f->FamilyIsGeneric())
+      continue;
     CSSSegmentedFontFace* segmented_font_face =
-        font_face_cache->Get(font.GetFontDescription(), f->Family());
+        font_face_cache->Get(font.GetFontDescription(), f->FamilyName());
     if (segmented_font_face)
       segmented_font_face->Match(text, faces);
   }
@@ -215,8 +217,10 @@ bool FontFaceSet::check(const String& font_string,
   bool has_loaded_faces = false;
   for (const FontFamily* f = &font.GetFontDescription().Family(); f;
        f = f->Next()) {
+    if (f->FamilyIsGeneric())
+      continue;
     CSSSegmentedFontFace* face =
-        font_face_cache->Get(font.GetFontDescription(), f->Family());
+        font_face_cache->Get(font.GetFontDescription(), f->FamilyName());
     if (face) {
       if (!face->CheckFont(text))
         return false;
@@ -228,7 +232,7 @@ bool FontFaceSet::check(const String& font_string,
   for (const FontFamily* f = &font.GetFontDescription().Family(); f;
        f = f->Next()) {
     if (font_selector->IsPlatformFamilyMatchAvailable(font.GetFontDescription(),
-                                                      f->Family()))
+                                                      *f))
       return true;
   }
   return false;

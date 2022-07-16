@@ -21,8 +21,7 @@ class CastDialogNoSinksView : public views::View {
  public:
   METADATA_HEADER(CastDialogNoSinksView);
 
-  static constexpr base::TimeDelta kSearchWaitTime =
-      base::TimeDelta::FromSeconds(3);
+  static constexpr base::TimeDelta kSearchWaitTime = base::Seconds(3);
 
   explicit CastDialogNoSinksView(Profile* profile);
   CastDialogNoSinksView(const CastDialogNoSinksView&) = delete;

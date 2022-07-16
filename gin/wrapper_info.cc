@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "gin/public/wrapper_info.h"
+#include "v8/include/v8-object.h"
 
 namespace gin {
 

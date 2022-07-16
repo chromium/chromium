@@ -88,6 +88,10 @@ bool TabGroup::IsCustomized() const {
   return is_customized_;
 }
 
+bool TabGroup::IsSaved() const {
+  return is_saved_;
+}
+
 absl::optional<int> TabGroup::GetFirstTab() const {
   for (int i = 0; i < controller_->GetTabCount(); ++i) {
     if (controller_->GetTabGroupForTab(i) == id_)
@@ -123,4 +127,12 @@ gfx::Range TabGroup::ListTabs() const {
   }
 
   return gfx::Range(first_tab, last_tab + 1);
+}
+
+void TabGroup::SaveGroup() {
+  is_saved_ = true;
+}
+
+void TabGroup::UnsaveGroup() {
+  is_saved_ = false;
 }

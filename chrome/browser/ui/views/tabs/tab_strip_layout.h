@@ -63,8 +63,4 @@ std::vector<gfx::Rect> CalculateTabBounds(
     absl::optional<int> width,
     absl::optional<TabWidthOverride> tab_width_override);
 
-std::vector<gfx::Rect> CalculatePinnedTabBounds(
-    const TabLayoutConstants& layout_constants,
-    const std::vector<TabWidthConstraints>& pinned_tabs);
-
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_LAYOUT_H_

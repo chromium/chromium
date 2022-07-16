@@ -8,6 +8,7 @@ import './diagnostics_shared_css.js';
 
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
@@ -46,15 +47,6 @@ Polymer({
     gateway_: {
       type: String,
       computed: 'computeGateway_(network.ipConfig.gateway)',
-    },
-
-    /**
-     * @protected
-     * @type {string}
-     */
-    macAddress_: {
-      type: String,
-      computed: 'computeMacAddress_(network.macAddress)',
     },
 
     /**
@@ -109,20 +101,18 @@ Polymer({
    * @protected
    * @return {string}
    */
-  computeMacAddress_() {
-    return this.network.macAddress || '';
-  },
-
-  /**
-   * @protected
-   * @return {string}
-   */
   computeNameServers_() {
-    // Both ipConfig and nameServers could be null.
-    if (this.network.ipConfig && this.network.ipConfig.nameServers) {
-      return this.network.ipConfig.nameServers.join(', ');
+    if (!this.network.ipConfig) {
+      return '';
     }
-    return '';
+
+    // Handle name servers null or zero length state.
+    if (!this.network.ipConfig.nameServers ||
+        this.network.ipConfig.nameServers.length === 0) {
+      return loadTimeData.getStringF('networkDnsNotConfigured');
+    }
+
+    return this.network.ipConfig.nameServers.join(', ');
   },
 
   /**

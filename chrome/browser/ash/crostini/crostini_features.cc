@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
@@ -27,7 +27,7 @@ namespace {
 bool IsUnaffiliatedCrostiniAllowedByPolicy() {
   bool unaffiliated_crostini_allowed;
   if (ash::CrosSettings::Get()->GetBoolean(
-          chromeos::kDeviceUnaffiliatedCrostiniAllowed,
+          ash::kDeviceUnaffiliatedCrostiniAllowed,
           &unaffiliated_crostini_allowed)) {
     return unaffiliated_crostini_allowed;
   }
@@ -68,14 +68,14 @@ void CanChangeAdbSideloadingOnManagedDevice(
       &CanChangeAdbSideloadingOnManagedDevice, std::move(split_callback.first),
       is_profile_enterprise_managed, is_affiliated_user, user_policy));
 
-  if (status != chromeos::CrosSettingsProvider::TRUSTED) {
+  if (status != ash::CrosSettingsProvider::TRUSTED) {
     return;
   }
 
   // Get the updated policy.
   int crostini_arc_abd_sideloading_device_allowance_mode = -1;
   if (!cros_settings->GetInteger(
-          chromeos::kDeviceCrostiniArcAdbSideloadingAllowed,
+          ash::kDeviceCrostiniArcAdbSideloadingAllowed,
           &crostini_arc_abd_sideloading_device_allowance_mode)) {
     // If the device policy is not set, adb sideloading is not allowed
     DVLOG(1) << "adb sideloading device policy is not set, therefore "
@@ -306,7 +306,7 @@ void CrostiniFeatures::CanChangeAdbSideloading(
 
   // Check the managed device and/or user case
   auto* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   bool is_device_enterprise_managed = connector->IsDeviceEnterpriseManaged();
   bool is_profile_enterprise_managed =
       profile->GetProfilePolicyConnector()->IsManaged();
@@ -348,6 +348,11 @@ bool CrostiniFeatures::IsPortForwardingAllowed(Profile* profile) {
   // the user is either unmanaged, the policy is not set or the policy is set
   // as true. In either of those 3 cases, port forwarding is allowed.
   return true;
+}
+
+bool CrostiniFeatures::IsMultiContainerAllowed(Profile* profile) {
+  return g_crostini_features->IsAllowedNow(profile) &&
+         base::FeatureList::IsEnabled(ash::features::kCrostiniMultiContainer);
 }
 
 }  // namespace crostini

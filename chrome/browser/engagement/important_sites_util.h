@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -58,6 +57,10 @@ class ImportantSitesUtil {
     REASON_BOUNDARY
   };
 
+  ImportantSitesUtil() = delete;
+  ImportantSitesUtil(const ImportantSitesUtil&) = delete;
+  ImportantSitesUtil& operator=(const ImportantSitesUtil&) = delete;
+
   static std::string GetRegisterableDomainOrIP(const GURL& url);
 
   static std::string GetRegisterableDomainOrIPFromHost(base::StringPiece host);
@@ -105,9 +108,6 @@ class ImportantSitesUtil {
   // testing.
   static void MarkOriginAsImportantForTesting(Profile* profile,
                                               const GURL& origin);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ImportantSitesUtil);
 };
 
 }  // namespace site_engagement

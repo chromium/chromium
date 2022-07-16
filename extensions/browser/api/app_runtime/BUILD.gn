@@ -19,4 +19,6 @@ source_set("app_runtime") {
   ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
+
+  allow_circular_includes_from = [ "//extensions/browser:browser_sources" ]
 }

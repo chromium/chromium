@@ -11,7 +11,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections.mojom-forward.h"
 #include "chromeos/services/nearby/public/mojom/sharing.mojom.h"
 #include "chromeos/services/nearby/public/mojom/webrtc.mojom-forward.h"

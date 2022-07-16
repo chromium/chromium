@@ -12,6 +12,7 @@
 #include "device/fido/credential_management.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/test_callback_receiver.h"
@@ -63,11 +64,13 @@ class CredentialManagementHandlerTest : public ::testing::Test {
       absl::optional<size_t>>
       get_credentials_callback_;
   test::ValueCallbackReceiver<CtapDeviceResponseCode> delete_callback_;
+  test::ValueCallbackReceiver<CtapDeviceResponseCode>
+      update_user_info_callback_;
   test::ValueCallbackReceiver<CredentialManagementStatus> finished_callback_;
   test::VirtualFidoDeviceFactory virtual_device_factory_;
 };
 
-TEST_F(CredentialManagementHandlerTest, Test) {
+TEST_F(CredentialManagementHandlerTest, TestDeleteCredential) {
   VirtualCtap2Device::Config ctap_config;
   ctap_config.pin_support = true;
   ctap_config.resident_key_support = true;
@@ -113,6 +116,52 @@ TEST_F(CredentialManagementHandlerTest, Test) {
   delete_callback_.WaitForCallback();
   ASSERT_EQ(CtapDeviceResponseCode::kSuccess, delete_callback_.value());
   EXPECT_EQ(virtual_device_factory_.mutable_state()->registrations.size(), 0u);
+  EXPECT_FALSE(finished_callback_.was_called());
+}
+
+TEST_F(CredentialManagementHandlerTest, TestUpdateUserInformation) {
+  VirtualCtap2Device::Config ctap_config;
+  ctap_config.pin_support = true;
+  ctap_config.resident_key_support = true;
+  ctap_config.credential_management_support = true;
+  ctap_config.resident_credential_storage = 100;
+  ctap_config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
+  virtual_device_factory_.SetCtap2Config(ctap_config);
+  virtual_device_factory_.SetSupportedProtocol(device::ProtocolVersion::kCtap2);
+  virtual_device_factory_.mutable_state()->pin = kPIN;
+  virtual_device_factory_.mutable_state()->pin_retries = device::kMaxPinRetries;
+  std::vector<uint8_t> credential_id =
+      fido_parsing_utils::Materialize(kCredentialID);
+
+  PublicKeyCredentialRpEntity rp(kRPID, kRPName,
+                                 /*icon_url=*/absl::nullopt);
+  PublicKeyCredentialUserEntity user(fido_parsing_utils::Materialize(kUserID),
+                                     kUserName, kUserDisplayName,
+                                     /*icon_url=*/absl::nullopt);
+
+  ASSERT_TRUE(virtual_device_factory_.mutable_state()->InjectResidentKey(
+      kCredentialID, rp, user));
+
+  auto handler = MakeHandler();
+  ready_callback_.WaitForCallback();
+
+  PublicKeyCredentialUserEntity updated_user(
+      fido_parsing_utils::Materialize(kUserID), "bobbyr@example.com",
+      "Bobby R. Smith",
+      /*icon_url=*/absl::nullopt);
+
+  handler->UpdateUserInformation(
+      device::PublicKeyCredentialDescriptor(device::CredentialType::kPublicKey,
+                                            credential_id),
+      updated_user, update_user_info_callback_.callback());
+  update_user_info_callback_.WaitForCallback();
+  ASSERT_EQ(CtapDeviceResponseCode::kSuccess,
+            update_user_info_callback_.value());
+
+  EXPECT_EQ(virtual_device_factory_.mutable_state()
+                ->registrations[credential_id]
+                .user,
+            updated_user);
   EXPECT_FALSE(finished_callback_.was_called());
 }
 

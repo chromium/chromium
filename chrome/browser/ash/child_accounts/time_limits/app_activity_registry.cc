@@ -30,9 +30,9 @@ namespace app_time {
 
 namespace {
 
-constexpr base::TimeDelta kFiveMinutes = base::TimeDelta::FromMinutes(5);
-constexpr base::TimeDelta kOneMinute = base::TimeDelta::FromMinutes(1);
-constexpr base::TimeDelta kZeroMinutes = base::TimeDelta::FromMinutes(0);
+constexpr base::TimeDelta kFiveMinutes = base::Minutes(5);
+constexpr base::TimeDelta kOneMinute = base::Minutes(1);
+constexpr base::TimeDelta kZeroMinutes = base::Minutes(0);
 
 enterprise_management::AppActivity::AppState AppStateForReporting(
     AppState state) {
@@ -150,12 +150,12 @@ AppActivityRegistry::AppActivityRegistry(
   DCHECK(pref_service_);
 
   if (ShouldCleanUpStoredPref())
-    CleanRegistry(base::Time::Now() - base::TimeDelta::FromDays(30));
+    CleanRegistry(base::Time::Now() - base::Days(30));
 
   InitializeRegistryFromPref();
 
-  save_data_to_pref_service_.Start(FROM_HERE, base::TimeDelta::FromMinutes(5),
-                                   this, &AppActivityRegistry::SaveAppActivity);
+  save_data_to_pref_service_.Start(FROM_HERE, base::Minutes(5), this,
+                                   &AppActivityRegistry::SaveAppActivity);
 
   app_service_wrapper_->AddObserver(this);
 }
@@ -225,9 +225,10 @@ void AppActivityRegistry::OnAppBlocked(const AppId& app_id) {
   SetAppState(app_id, AppState::kBlocked);
 }
 
-void AppActivityRegistry::OnAppActive(const AppId& app_id,
-                                      aura::Window* window,
-                                      base::Time timestamp) {
+void AppActivityRegistry::OnAppActive(
+    const AppId& app_id,
+    const apps::Instance::InstanceKey& instance_key,
+    base::Time timestamp) {
   if (!base::Contains(activity_registry_, app_id))
     return;
 
@@ -238,12 +239,13 @@ void AppActivityRegistry::OnAppActive(const AppId& app_id,
 
   // We are notified that a paused app is active. Notify observers to pause it.
   if (GetAppState(app_id) == AppState::kLimitReached) {
-    // If the window is in |app_details.paused_windows| then AppActivityRegistry
-    // has already notified its observers to pause it. Return.
-    if (base::Contains(app_details.paused_windows, window))
+    // If the instance is in |app_details.paused_instances| then
+    // AppActivityRegistry has already notified its observers to pause it.
+    // Return.
+    if (base::Contains(app_details.paused_instances, instance_key))
       return;
 
-    app_details.paused_windows.insert(window);
+    app_details.paused_instances.insert(instance_key);
     NotifyLimitReached(app_id, /* was_active */ true);
     return;
   }
@@ -251,46 +253,49 @@ void AppActivityRegistry::OnAppActive(const AppId& app_id,
   if (!IsAppAvailable(app_id))
     return;
 
-  std::set<aura::Window*>& active_windows = app_details.active_windows;
+  std::set<apps::Instance::InstanceKey>& active_instances =
+      app_details.active_instances;
 
-  if (base::Contains(active_windows, window))
+  if (base::Contains(active_instances, instance_key))
     return;
 
-  active_windows.insert(window);
+  active_instances.insert(instance_key);
 
-  // No need to set app as active if there were already active windows for the
+  // No need to set app as active if there were already active instances for the
   // app
-  if (active_windows.size() > 1)
+  if (active_instances.size() > 1)
     return;
 
   SetAppActive(app_id, timestamp);
 }
 
-void AppActivityRegistry::OnAppInactive(const AppId& app_id,
-                                        aura::Window* window,
-                                        base::Time timestamp) {
+void AppActivityRegistry::OnAppInactive(
+    const AppId& app_id,
+    const apps::Instance::InstanceKey& instance_key,
+    base::Time timestamp) {
   if (!base::Contains(activity_registry_, app_id))
     return;
 
   if (app_id == GetChromeAppId())
     return;
 
-  std::set<aura::Window*>& active_windows =
-      activity_registry_[app_id].active_windows;
+  std::set<apps::Instance::InstanceKey>& active_instances =
+      activity_registry_[app_id].active_instances;
 
-  if (!base::Contains(active_windows, window))
+  if (!base::Contains(active_instances, instance_key))
     return;
 
-  active_windows.erase(window);
-  if (active_windows.size() > 0)
+  active_instances.erase(instance_key);
+  if (active_instances.size() > 0)
     return;
 
   SetAppInactive(app_id, timestamp);
 }
 
-void AppActivityRegistry::OnAppDestroyed(const AppId& app_id,
-                                         aura::Window* window,
-                                         base::Time timestamp) {
+void AppActivityRegistry::OnAppDestroyed(
+    const AppId& app_id,
+    const apps::Instance::InstanceKey& instance_key,
+    base::Time timestamp) {
   if (!base::Contains(activity_registry_, app_id))
     return;
 
@@ -298,8 +303,8 @@ void AppActivityRegistry::OnAppDestroyed(const AppId& app_id,
     return;
 
   AppDetails& app_details = activity_registry_.at(app_id);
-  if (base::Contains(app_details.paused_windows, window))
-    app_details.paused_windows.erase(window);
+  if (base::Contains(app_details.paused_instances, instance_key))
+    app_details.paused_instances.erase(instance_key);
 }
 
 bool AppActivityRegistry::IsAppInstalled(const AppId& app_id) const {
@@ -774,7 +779,7 @@ void AppActivityRegistry::SetAppState(const AppId& app_id, AppState app_state) {
     bool was_active = false;
     if (app_activity.is_active()) {
       was_active = true;
-      app_details.paused_windows = std::move(app_details.active_windows);
+      app_details.paused_instances = std::move(app_details.active_instances);
       SetAppInactive(app_id, base::Time::Now());
     }
 
@@ -1024,7 +1029,7 @@ bool AppActivityRegistry::ShowLimitUpdatedNotificationIfNeeded(
 }
 
 base::TimeDelta AppActivityRegistry::GetWebActiveRunningTime() const {
-  base::TimeDelta active_running_time = base::TimeDelta::FromSeconds(0);
+  base::TimeDelta active_running_time = base::Seconds(0);
   for (const auto& app_info : activity_registry_) {
     const AppId& app_id = app_info.first;
     const AppDetails& details = app_info.second;
@@ -1060,7 +1065,7 @@ void AppActivityRegistry::InitializeRegistryFromPref() {
       pref_service_->GetInt64(prefs::kPerAppTimeLimitsLatestLimitUpdateTime);
 
   latest_app_limit_update_ = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(last_limits_updates));
+      base::Microseconds(last_limits_updates));
 
   InitializeAppActivities();
 }
@@ -1121,10 +1126,10 @@ bool AppActivityRegistry::ShouldCleanUpStoredPref() {
   if (last_time == 0)
     return false;
 
-  base::Time time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(last_time));
+  base::Time time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(last_time));
 
-  return time < base::Time::Now() - base::TimeDelta::FromDays(30);
+  return time < base::Time::Now() - base::Days(30);
 }
 
 void AppActivityRegistry::SendSystemNotificationsForApp(const AppId& app_id) {

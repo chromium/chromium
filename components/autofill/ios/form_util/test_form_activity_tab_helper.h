@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace web {
 class WebFrame;
 class WebState;
@@ -17,14 +15,22 @@ class WebState;
 namespace autofill {
 
 struct FormActivityParams;
+struct FormRemovalParams;
 
 class TestFormActivityTabHelper {
  public:
   explicit TestFormActivityTabHelper(web::WebState* web_state);
+
+  TestFormActivityTabHelper(const TestFormActivityTabHelper&) = delete;
+  TestFormActivityTabHelper& operator=(const TestFormActivityTabHelper&) =
+      delete;
+
   ~TestFormActivityTabHelper();
 
   void FormActivityRegistered(web::WebFrame* sender_frame,
                               const FormActivityParams& params);
+  void FormRemovalRegistered(web::WebFrame* sender_frame,
+                             const FormRemovalParams& params);
   void DocumentSubmitted(web::WebFrame* sender_frame,
                          const std::string& form_name,
                          const std::string& form_data,
@@ -33,8 +39,6 @@ class TestFormActivityTabHelper {
 
  private:
   web::WebState* web_state_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFormActivityTabHelper);
 };
 
 }  // namespace autofill

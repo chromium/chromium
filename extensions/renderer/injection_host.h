@@ -18,6 +18,10 @@ class RenderFrame;
 class InjectionHost {
  public:
   InjectionHost(const extensions::mojom::HostID& host_id);
+
+  InjectionHost(const InjectionHost&) = delete;
+  InjectionHost& operator=(const InjectionHost&) = delete;
+
   virtual ~InjectionHost();
 
   // Returns the CSP to be used for the isolated world. Currently this only
@@ -43,8 +47,6 @@ class InjectionHost {
  private:
   // The ID of the host.
   extensions::mojom::HostID id_;
-
-  DISALLOW_COPY_AND_ASSIGN(InjectionHost);
 };
 
 #endif  // EXTENSIONS_RENDERER_INJECTION_HOST_H_

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "content/public/common/page_type.h"
 #include "ui/gfx/native_widget_types.h"
@@ -151,6 +150,10 @@ void LookupAndLogNameAndIdOfFirstCamera();
 class ShellAddedObserver {
  public:
   ShellAddedObserver();
+
+  ShellAddedObserver(const ShellAddedObserver&) = delete;
+  ShellAddedObserver& operator=(const ShellAddedObserver&) = delete;
+
   ~ShellAddedObserver();
 
   // Will run a message loop to wait for the new window if it hasn't been
@@ -162,8 +165,6 @@ class ShellAddedObserver {
 
   Shell* shell_ = nullptr;
   std::unique_ptr<base::RunLoop> runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellAddedObserver);
 };
 
 #if defined(OS_MAC)
@@ -188,6 +189,12 @@ class RenderWidgetHostViewCocoaObserver {
       WebContents* web_contents);
 
   explicit RenderWidgetHostViewCocoaObserver(WebContents* web_contents);
+
+  RenderWidgetHostViewCocoaObserver(const RenderWidgetHostViewCocoaObserver&) =
+      delete;
+  RenderWidgetHostViewCocoaObserver& operator=(
+      const RenderWidgetHostViewCocoaObserver&) = delete;
+
   virtual ~RenderWidgetHostViewCocoaObserver();
 
   // Called when a new NSView is added as a subview of RWHVCocoa.
@@ -211,8 +218,6 @@ class RenderWidgetHostViewCocoaObserver {
   static std::map<WebContents*, RenderWidgetHostViewCocoaObserver*> observers_;
 
   WebContents* const web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewCocoaObserver);
 };
 
 void SetWindowBounds(gfx::NativeWindow window, const gfx::Rect& bounds);

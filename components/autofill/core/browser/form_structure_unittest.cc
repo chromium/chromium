@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -103,17 +104,12 @@ class FormStructureTestImpl : public test::FormStructureTest {
     return FormStructure(form).ShouldRunHeuristics();
   }
 
-  bool FormShouldBeQueried(const FormData& form) {
-    return FormStructure(form).ShouldBeQueried();
+  bool FormShouldRunPromoCodeHeuristics(const FormData& form) {
+    return FormStructure(form).ShouldRunPromoCodeHeuristics();
   }
 
-  void SetUpForEncoder() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        // Enabled.
-        {features::kAutofillMetadataUploads},
-        // Disabled.
-        {});
+  bool FormShouldBeQueried(const FormData& form) {
+    return FormStructure(form).ShouldBeQueried();
   }
 
   FieldRendererId MakeFieldRendererId() {
@@ -1080,6 +1076,36 @@ TEST_F(FormStructureTestImpl,
     EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(0)->heuristic_type());
     EXPECT_EQ(NO_SERVER_DATA, form_structure.field(0)->server_type());
     EXPECT_EQ(NAME_FIRST, form_structure.field(0)->Type().GetStorableType());
+    EXPECT_TRUE(form_structure.IsAutofillable());
+  }
+}
+
+// Tests that promo code heuristics are run for forms with fewer than 3 fields.
+TEST_F(FormStructureTestImpl, PromoCodeHeuristics_SmallForm) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      features::kAutofillParseMerchantPromoCodeFields);
+  FormData form;
+  form.url = GURL("http://www.foo.com/");
+
+  FormFieldData field;
+  field.form_control_type = "text";
+
+  field.label = u"Promo Code";
+  field.name = u"promocode";
+  field.unique_renderer_id = MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  EXPECT_TRUE(FormShouldRunPromoCodeHeuristics(form));
+
+  // Default configuration.
+  {
+    FormStructure form_structure(form);
+    form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+    ASSERT_EQ(1U, form_structure.field_count());
+    ASSERT_EQ(1U, form_structure.autofill_count());
+    EXPECT_EQ(MERCHANT_PROMO_CODE, form_structure.field(0)->heuristic_type());
+    EXPECT_EQ(NO_SERVER_DATA, form_structure.field(0)->server_type());
     EXPECT_TRUE(form_structure.IsAutofillable());
   }
 }
@@ -2308,14 +2334,13 @@ TEST_P(ParameterizedFormStructureTest, EncodeQueryRequest) {
     query_form->add_fields()->set_signature(747221617U);
     query_form->add_fields()->set_signature(4108155786U);
     if (autofill_across_iframes) {
-      AutofillPageQueryRequest::Form* query_form = query.add_forms();
+      query_form = query.add_forms();
       query_form->set_signature(12345UL);
       query_form->add_fields()->set_signature(1917667676U);
       query_form->add_fields()->set_signature(747221617U);
       query_form->add_fields()->set_signature(4108155786U);
-    }
-    if (autofill_across_iframes) {
-      AutofillPageQueryRequest::Form* query_form = query.add_forms();
+
+      query_form = query.add_forms();
       query_form->set_signature(67890UL);
       query_form->add_fields()->set_signature(2226358947U);
     }
@@ -4619,7 +4644,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_IsFormTag) {
 }
 
 TEST_F(FormStructureTestImpl, EncodeUploadRequest_RichMetadata) {
-  SetUpForEncoder();
   struct FieldMetadata {
     const char *id, *name, *label, *placeholder, *aria_label, *aria_description,
         *css_classes;
@@ -4784,7 +4808,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_RichMetadata) {
 TEST_F(FormStructureTestImpl, Metadata_OnlySendFullUrlWithUserConsent) {
   for (bool has_consent : {true, false}) {
     SCOPED_TRACE(testing::Message() << " has_consent=" << has_consent);
-    SetUpForEncoder();
     FormData form;
     form.id_attribute = u"form-id";
     form.url = GURL("http://www.foo.com/");
@@ -5154,7 +5177,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameVoteType) {
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
-  form_structure.set_passwords_were_revealed(true);
   form_structure.field(0)->set_single_username_vote_type(
       AutofillUploadContents::Field::STRONG);
 
@@ -5166,6 +5188,39 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameVoteType) {
       false /* is_raw_metadata_uploading_enabled */, &upload, &signatures));
   EXPECT_EQ(form_structure.field(0)->single_username_vote_type(),
             upload.field(0).single_username_vote_type());
+}
+
+TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameData) {
+  FormData form;
+  form.url = GURL("http://www.foo.com/");
+  FormFieldData field;
+  field.name = u"text field";
+  field.unique_renderer_id = MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  FormStructure form_structure(form);
+
+  AutofillUploadContents::SingleUsernameData single_username_data;
+  single_username_data.set_username_form_signature(12345);
+  single_username_data.set_username_field_signature(678910);
+  single_username_data.set_value_type(AutofillUploadContents::EMAIL);
+  single_username_data.set_prompt_edit(AutofillUploadContents::EDITED_POSITIVE);
+  form_structure.set_single_username_data(single_username_data);
+
+  AutofillUploadContents upload;
+  std::vector<FormSignature> signatures;
+  EXPECT_TRUE(form_structure.EncodeUploadRequest(
+      {{}} /* available_field_types */, false /* form_was_autofilled */,
+      std::string() /* login_form_signature */, true /* observed_submission */,
+      false /* is_raw_metadata_uploading_enabled */, &upload, &signatures));
+  EXPECT_EQ(form_structure.single_username_data()->username_form_signature(),
+            upload.single_username_data().username_form_signature());
+  EXPECT_EQ(form_structure.single_username_data()->username_field_signature(),
+            upload.single_username_data().username_field_signature());
+  EXPECT_EQ(form_structure.single_username_data()->value_type(),
+            upload.single_username_data().value_type());
+  EXPECT_EQ(form_structure.single_username_data()->prompt_edit(),
+            upload.single_username_data().prompt_edit());
 }
 
 // Test that server predictions get precedence over htmll types if they are
@@ -6212,12 +6267,9 @@ TEST_P(ParameterizedFormStructureTest,
                                        nullptr, nullptr);
 
   if (section_with_renderer_ids) {
-    EXPECT_FALSE(form_structure.phone_rationalized_
-                     ["fullName_00000000000000000000000000000000_11-default"]);
-    form_structure.RationalizePhoneNumbersInSection(
-        "fullName_00000000000000000000000000000000_11-default");
-    EXPECT_TRUE(form_structure.phone_rationalized_
-                    ["fullName_00000000000000000000000000000000_11-default"]);
+    EXPECT_FALSE(form_structure.phone_rationalized_["fullName_0_11-default"]);
+    form_structure.RationalizePhoneNumbersInSection("fullName_0_11-default");
+    EXPECT_TRUE(form_structure.phone_rationalized_["fullName_0_11-default"]);
   } else {
     EXPECT_FALSE(form_structure.phone_rationalized_["fullName_1-default"]);
     form_structure.RationalizePhoneNumbersInSection("fullName_1-default");
@@ -8093,18 +8145,12 @@ TEST_P(ParameterizedFormStructureTest, NoAutocompleteSectionNames) {
   ASSERT_EQ(6U, form_structure.field_count());
 
   if (section_with_renderer_ids) {
-    EXPECT_EQ("fullName_00000000000000000000000000000000_11-default",
-              form_structure.field(0)->section);
-    EXPECT_EQ("fullName_00000000000000000000000000000000_11-default",
-              form_structure.field(1)->section);
-    EXPECT_EQ("fullName_00000000000000000000000000000000_11-default",
-              form_structure.field(2)->section);
-    EXPECT_EQ("fullName_00000000000000000000000000000000_14-default",
-              form_structure.field(3)->section);
-    EXPECT_EQ("fullName_00000000000000000000000000000000_14-default",
-              form_structure.field(4)->section);
-    EXPECT_EQ("fullName_00000000000000000000000000000000_14-default",
-              form_structure.field(5)->section);
+    EXPECT_EQ("fullName_0_11-default", form_structure.field(0)->section);
+    EXPECT_EQ("fullName_0_11-default", form_structure.field(1)->section);
+    EXPECT_EQ("fullName_0_11-default", form_structure.field(2)->section);
+    EXPECT_EQ("fullName_0_14-default", form_structure.field(3)->section);
+    EXPECT_EQ("fullName_0_14-default", form_structure.field(4)->section);
+    EXPECT_EQ("fullName_0_14-default", form_structure.field(5)->section);
   } else {
     EXPECT_EQ("fullName_1-default", form_structure.field(0)->section);
     EXPECT_EQ("fullName_1-default", form_structure.field(1)->section);
@@ -8251,8 +8297,7 @@ TEST_P(ParameterizedFormStructureTest, SplitByRecurringFieldType) {
   EXPECT_EQ("blue-shipping-default", form_structure.field(1)->section);
   EXPECT_EQ("blue-shipping-default", form_structure.field(2)->section);
   if (section_with_renderer_ids) {
-    EXPECT_EQ("country_00000000000000000000000000000000_14-default",
-              form_structure.field(3)->section);
+    EXPECT_EQ("country_0_14-default", form_structure.field(3)->section);
   } else {
     EXPECT_EQ("country_2-default", form_structure.field(3)->section);
   }
@@ -8321,8 +8366,7 @@ TEST_P(ParameterizedFormStructureTest,
   EXPECT_EQ("blue-billing-default", form_structure.field(1)->section);
   EXPECT_EQ("blue-billing-default", form_structure.field(2)->section);
   if (section_with_renderer_ids) {
-    EXPECT_EQ("country_00000000000000000000000000000000_14-default",
-              form_structure.field(3)->section);
+    EXPECT_EQ("country_0_14-default", form_structure.field(3)->section);
   } else {
     EXPECT_EQ("country_2-default", form_structure.field(3)->section);
   }

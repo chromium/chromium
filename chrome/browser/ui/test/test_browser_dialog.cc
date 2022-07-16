@@ -43,6 +43,9 @@ class WidgetCloser {
                                   weak_ptr_factory_.GetWeakPtr(), async));
   }
 
+  WidgetCloser(const WidgetCloser&) = delete;
+  WidgetCloser& operator=(const WidgetCloser&) = delete;
+
  private:
   void CloseWidget(bool async) {
     if (async)
@@ -54,8 +57,6 @@ class WidgetCloser {
   views::Widget* widget_;
 
   base::WeakPtrFactory<WidgetCloser> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetCloser);
 };
 
 #endif  // defined(TOOLKIT_VIEWS)

@@ -43,7 +43,7 @@ class SVGPathTraversalState final : public SVGPathConsumer {
   }
 
   float TotalLength() const { return traversal_state_.total_length_; }
-  FloatPoint ComputedPoint() const { return traversal_state_.current_; }
+  gfx::PointF ComputedPoint() const { return traversal_state_.current_; }
 
   bool IsDone() const { return traversal_state_.success_; }
 
@@ -110,7 +110,7 @@ float SVGPathQuery::GetTotalLength() const {
   return traversal_state.TotalLength();
 }
 
-FloatPoint SVGPathQuery::GetPointAtLength(float length) const {
+gfx::PointF SVGPathQuery::GetPointAtLength(float length) const {
   SVGPathTraversalState traversal_state(
       PathTraversalState::kTraversalPointAtLength, length);
   ExecuteQuery(path_byte_stream_, traversal_state);

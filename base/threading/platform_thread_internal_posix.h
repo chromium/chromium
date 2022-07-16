@@ -32,10 +32,9 @@ int ThreadPriorityToNiceValue(ThreadPriority priority);
 // specific implementation of kThreadPriorityToNiceValueMap.
 BASE_EXPORT ThreadPriority NiceValueToThreadPriority(int nice_value);
 
-// If non-nullopt, this return value will be used as the platform-specific
-// result of CanIncreaseThreadPriority().
-absl::optional<bool> CanIncreaseCurrentThreadPriorityForPlatform(
-    ThreadPriority priority);
+// Returns whether SetCurrentThreadPriorityForPlatform can set a thread as
+// REALTIME_AUDIO.
+bool CanSetThreadPriorityToRealtimeAudio();
 
 // Allows platform specific tweaks to the generic POSIX solution for
 // SetCurrentThreadPriority(). Returns true if the platform-specific

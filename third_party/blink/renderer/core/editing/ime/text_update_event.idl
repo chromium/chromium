@@ -7,7 +7,10 @@
 // signals the fact that the software keyboard or IME updated the text (and as
 // such that state is reflected in the shared buffer at the time the event is
 // fired).
-// Explainer: https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/EditContext/explainer.md
+
+// Spec draft:
+// https://w3c.github.io/editing/docs/EditContext/index.html#textupdateevent
+
 [
     Exposed=Window,
     RuntimeEnabled=EditContext

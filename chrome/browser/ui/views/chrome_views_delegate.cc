@@ -118,17 +118,16 @@ bool ChromeViewsDelegate::GetSavedWindowPlacement(
 
   DCHECK(prefs->FindPreference(window_name));
   const base::DictionaryValue* dictionary = prefs->GetDictionary(window_name);
-  int left = 0;
-  int top = 0;
-  int right = 0;
-  int bottom = 0;
-  if (!dictionary || !dictionary->GetInteger("left", &left) ||
-      !dictionary->GetInteger("top", &top) ||
-      !dictionary->GetInteger("right", &right) ||
-      !dictionary->GetInteger("bottom", &bottom))
+  if (!dictionary)
+    return false;
+  absl::optional<int> left = dictionary->FindIntKey("left");
+  absl::optional<int> top = dictionary->FindIntKey("top");
+  absl::optional<int> right = dictionary->FindIntKey("right");
+  absl::optional<int> bottom = dictionary->FindIntKey("bottom");
+  if (!left || !top || !right || !bottom)
     return false;
 
-  bounds->SetRect(left, top, right - left, bottom - top);
+  bounds->SetRect(*left, *top, *right - *left, *bottom - *top);
 
   bool maximized = false;
   if (dictionary)

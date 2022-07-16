@@ -24,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "build/build_config.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_destination_observer.h"
 #include "components/download/public/common/download_features.h"
@@ -37,6 +38,10 @@
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if defined(OS_ANDROID)
+#include "components/download/internal/common/android/download_collection_bridge.h"
+#endif  // defined(OS_ANDROID)
 
 using ::testing::_;
 using ::testing::ByMove;
@@ -277,9 +282,10 @@ class DownloadItemTest : public testing::Test {
     return download;
   }
 
-  std::unique_ptr<DownloadItemImpl> CreateDownloadItem(
+  std::unique_ptr<DownloadItemImpl> CreateReroutedDownloadItem(
       DownloadItem::DownloadState state,
-      download::DownloadInterruptReason reason) {
+      download::DownloadInterruptReason reason,
+      const download::DownloadItemRerouteInfo& reroute_info) {
     auto item = std::make_unique<download::DownloadItemImpl>(
         mock_delegate(), kGuid, 10, base::FilePath(), base::FilePath(),
         std::vector<GURL>(), GURL("http://example.com/a"),
@@ -291,9 +297,16 @@ class DownloadItemTest : public testing::Test {
         10, 0, std::string(), state,
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS, reason, false, false,
         false, base::Time::Now(), true,
-        std::vector<download::DownloadItem::ReceivedSlice>(),
+        std::vector<download::DownloadItem::ReceivedSlice>(), reroute_info,
         absl::nullopt /*download_schedule*/, nullptr /* download_entry */);
     return item;
+  }
+
+  std::unique_ptr<DownloadItemImpl> CreateDownloadItem(
+      DownloadItem::DownloadState state,
+      download::DownloadInterruptReason reason) {
+    download::DownloadItemRerouteInfo empty_reroute_info;
+    return CreateReroutedDownloadItem(state, reason, empty_reroute_info);
   }
 
   // Add DownloadFile to DownloadItem.
@@ -355,20 +368,43 @@ class DownloadItemTest : public testing::Test {
     base::FilePath target_path(kDummyTargetPath);
     base::FilePath intermediate_path(kDummyIntermediatePath);
     auto task_runner = base::ThreadTaskRunnerHandle::Get();
-    EXPECT_CALL(*download_file, RenameAndUniquify(intermediate_path, _))
-        .WillOnce(WithArg<1>([&task_runner, &intermediate_path](
-                                 DownloadFile::RenameCompletionCallback cb) {
-          task_runner->PostTask(
-              FROM_HERE,
-              base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
-                             intermediate_path));
-        }));
+    SetRenameExpectation(download_file, task_runner, intermediate_path,
+                         DOWNLOAD_INTERRUPT_REASON_NONE);
 
     std::move(callback).Run(
         target_path, DownloadItem::TARGET_DISPOSITION_OVERWRITE, danger_type,
         DownloadItem::MixedContentStatus::UNKNOWN, intermediate_path,
         download_schedule, DOWNLOAD_INTERRUPT_REASON_NONE);
     task_environment_.RunUntilIdle();
+  }
+
+  void SetRenameExpectation(
+      MockDownloadFile* download_file,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const base::FilePath& new_file_path,
+      DownloadInterruptReason reason) {
+    bool use_download_collection = false;
+#if defined(OS_ANDROID)
+    if (DownloadCollectionBridge::ShouldPublishDownload(new_file_path)) {
+      use_download_collection = true;
+      EXPECT_CALL(*download_file, RenameToIntermediateUri(_, _, _, _, _, _))
+          .WillOnce(WithArg<5>([task_runner, new_file_path, reason](
+                                   DownloadFile::RenameCompletionCallback cb) {
+            task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(cb), reason, new_file_path));
+          }));
+    }
+#endif
+    if (!use_download_collection) {
+      EXPECT_CALL(*download_file, RenameAndUniquify(_, _))
+          .WillOnce(WithArg<1>([task_runner, new_file_path, reason](
+                                   DownloadFile::RenameCompletionCallback cb) {
+            task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(cb), reason, new_file_path));
+          }));
+    }
   }
 
   void DoDestinationComplete(DownloadItemImpl* item,
@@ -606,14 +642,8 @@ TEST_F(DownloadItemTest, NotificationAfterOnDownloadTargetDetermined) {
   base::FilePath new_intermediate_path(
       target_path.InsertBeforeExtensionASCII("y"));
   auto task_runner = base::ThreadTaskRunnerHandle::Get();
-  EXPECT_CALL(*download_file, RenameAndUniquify(intermediate_path, _))
-      .WillOnce(WithArg<1>([&task_runner, &new_intermediate_path](
-                               DownloadFile::RenameCompletionCallback cb) {
-        task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
-                           new_intermediate_path));
-      }));
+  SetRenameExpectation(download_file, task_runner, new_intermediate_path,
+                       DOWNLOAD_INTERRUPT_REASON_NONE);
 
   // Currently, a notification would be generated if the danger type is anything
   // other than NOT_DANGEROUS.
@@ -897,24 +927,14 @@ TEST_F(DownloadItemTest, AutomaticResumption_AttemptLimit) {
 
     base::FilePath target_path(kDummyTargetPath);
     base::FilePath intermediate_path(kDummyIntermediatePath);
-
-    // Target of RenameAndUniquify is always the intermediate path.
     auto task_runner = base::ThreadTaskRunnerHandle::Get();
-    ON_CALL(*mock_download_file_ref, RenameAndUniquify(_, _))
-        .WillByDefault(
-            WithArg<1>([&task_runner, &intermediate_path](
-                           DownloadFile::RenameCompletionCallback cb) {
-              task_runner->PostTask(
-                  FROM_HERE,
-                  base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
-                                 intermediate_path));
-            }));
-
     // RenameAndUniquify is only called the first time. In all the subsequent
-    // iterations, the intermediate file already has the correct name, hence no
-    // rename is necessary.
-    EXPECT_CALL(*mock_download_file_ref, RenameAndUniquify(_, _)).Times(i == 0);
-
+    // iterations, the intermediate file already has the correct name, hence
+    // no rename is necessary.
+    if (i == 0) {
+      SetRenameExpectation(mock_download_file_ref, task_runner,
+                           intermediate_path, DOWNLOAD_INTERRUPT_REASON_NONE);
+    }
     ASSERT_TRUE(callback);
     std::move(callback).Run(
         target_path, DownloadItem::TARGET_DISPOSITION_OVERWRITE,
@@ -1210,15 +1230,8 @@ TEST_F(DownloadItemTest, DisplayName) {
   base::FilePath intermediate_path(target_path.InsertBeforeExtensionASCII("x"));
   EXPECT_EQ(FILE_PATH_LITERAL(""), item->GetFileNameToReportUser().value());
   auto task_runner = base::ThreadTaskRunnerHandle::Get();
-  EXPECT_CALL(*download_file, RenameAndUniquify(_, _))
-      .WillOnce(WithArg<1>([&task_runner, &intermediate_path](
-                               DownloadFile::RenameCompletionCallback cb) {
-        task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
-                           intermediate_path));
-      }));
-
+  SetRenameExpectation(download_file, task_runner, intermediate_path,
+                       DOWNLOAD_INTERRUPT_REASON_NONE);
   std::move(callback).Run(
       target_path, DownloadItem::TARGET_DISPOSITION_OVERWRITE,
       DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
@@ -1344,14 +1357,8 @@ TEST_F(DownloadItemTest, CallbackAfterRename) {
   base::FilePath new_intermediate_path(
       final_path.InsertBeforeExtensionASCII("y"));
   auto task_runner = base::ThreadTaskRunnerHandle::Get();
-  EXPECT_CALL(*download_file, RenameAndUniquify(intermediate_path, _))
-      .WillOnce(WithArg<1>([&task_runner, &new_intermediate_path](
-                               DownloadFile::RenameCompletionCallback cb) {
-        task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
-                           new_intermediate_path));
-      }));
+  SetRenameExpectation(download_file, task_runner, new_intermediate_path,
+                       DOWNLOAD_INTERRUPT_REASON_NONE);
 
   std::move(callback).Run(
       final_path, DownloadItem::TARGET_DISPOSITION_OVERWRITE,
@@ -1399,14 +1406,8 @@ TEST_F(DownloadItemTest, CallbackAfterInterruptedRename) {
   base::FilePath new_intermediate_path(
       final_path.InsertBeforeExtensionASCII("y"));
   auto task_runner = base::ThreadTaskRunnerHandle::Get();
-  EXPECT_CALL(*download_file, RenameAndUniquify(intermediate_path, _))
-      .WillOnce(WithArg<1>([&task_runner, &new_intermediate_path](
-                               DownloadFile::RenameCompletionCallback cb) {
-        task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
-                           new_intermediate_path));
-      }));
+  SetRenameExpectation(download_file, task_runner, new_intermediate_path,
+                       DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
   EXPECT_CALL(*download_file, Cancel()).Times(1);
 
   std::move(callback).Run(
@@ -1469,14 +1470,9 @@ TEST_F(DownloadItemTest, InterruptedBeforeIntermediateRename_Restart) {
   base::FilePath new_intermediate_path(
       final_path.InsertBeforeExtensionASCII("y"));
   auto task_runner = base::ThreadTaskRunnerHandle::Get();
-  EXPECT_CALL(*download_file, RenameAndUniquify(intermediate_path, _))
-      .WillOnce(WithArg<1>([&task_runner, &new_intermediate_path](
-                               DownloadFile::RenameCompletionCallback cb) {
-        task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
-                           new_intermediate_path));
-      }));
+  SetRenameExpectation(download_file, task_runner, new_intermediate_path,
+                       DOWNLOAD_INTERRUPT_REASON_NONE);
+
   EXPECT_CALL(*download_file, Cancel()).Times(1);
 
   std::move(callback).Run(
@@ -1519,14 +1515,8 @@ TEST_F(DownloadItemTest, InterruptedBeforeIntermediateRename_Continue) {
   base::FilePath new_intermediate_path(
       final_path.InsertBeforeExtensionASCII("y"));
   auto task_runner = base::ThreadTaskRunnerHandle::Get();
-  EXPECT_CALL(*download_file, RenameAndUniquify(intermediate_path, _))
-      .WillOnce(WithArg<1>([&task_runner, &new_intermediate_path](
-                               DownloadFile::RenameCompletionCallback cb) {
-        task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
-                           new_intermediate_path));
-      }));
+  SetRenameExpectation(download_file, task_runner, new_intermediate_path,
+                       DOWNLOAD_INTERRUPT_REASON_NONE);
   EXPECT_CALL(*download_file, FullPath())
       .WillOnce(ReturnRefOfCopy(base::FilePath(new_intermediate_path)));
   EXPECT_CALL(*download_file, Detach());
@@ -1568,14 +1558,8 @@ TEST_F(DownloadItemTest, InterruptedBeforeIntermediateRename_Failed) {
   base::FilePath new_intermediate_path(
       final_path.InsertBeforeExtensionASCII("y"));
   auto task_runner = base::ThreadTaskRunnerHandle::Get();
-  EXPECT_CALL(*download_file, RenameAndUniquify(intermediate_path, _))
-      .WillOnce(WithArg<1>([&task_runner, &new_intermediate_path](
-                               DownloadFile::RenameCompletionCallback cb) {
-        task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
-                           new_intermediate_path));
-      }));
+  SetRenameExpectation(download_file, task_runner, new_intermediate_path,
+                       DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
   EXPECT_CALL(*download_file, Cancel()).Times(1);
 
   std::move(callback).Run(
@@ -2432,6 +2416,25 @@ std::vector<EventList> GenerateFailingEventLists() {
                                           all_observations.end(), kEventCount);
 }
 
+DownloadFile::RenameCompletionCallback GetRenameCompletionCallback(
+    MockDownloadFile* download_file) {
+  DownloadFile::RenameCompletionCallback intermediate_rename_callback;
+  bool use_download_collection = false;
+#if defined(OS_ANDROID)
+  if (DownloadCollectionBridge::ShouldPublishDownload(
+          base::FilePath(kDummyIntermediatePath))) {
+    use_download_collection = true;
+    EXPECT_CALL(*download_file, RenameToIntermediateUri(_, _, _, _, _, _))
+        .WillOnce(MoveArg<5>(&intermediate_rename_callback));
+  }
+#endif
+  if (!use_download_collection) {
+    EXPECT_CALL(*download_file, RenameAndUniquify(_, _))
+        .WillOnce(MoveArg<1>(&intermediate_rename_callback));
+  }
+  return intermediate_rename_callback;
+}
+
 class DownloadItemDestinationUpdateRaceTest
     : public DownloadItemTest,
       public ::testing::WithParamInterface<EventList> {
@@ -2531,13 +2534,8 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, IntermediateRenameFails) {
   // Intermediate rename loop is not used immediately, but let's set up the
   // DownloadFile expectations since we are about to transfer its ownership to
   // the DownloadItem.
-  DownloadFile::RenameCompletionCallback intermediate_rename_callback;
-  EXPECT_CALL(*file_, RenameAndUniquify(_, _))
-      .WillOnce(WithArg<1>([&intermediate_rename_callback](
-                               DownloadFile::RenameCompletionCallback cb) {
-        intermediate_rename_callback = std::move(cb);
-      }));
-
+  DownloadFile::RenameCompletionCallback intermediate_rename_callback =
+      GetRenameCompletionCallback(file_.get());
   DownloadFile::InitializeCallback initialize_callback;
   EXPECT_CALL(*file_, Initialize(_, _, _))
       .WillOnce(SaveArg<0>(&initialize_callback));
@@ -2602,12 +2600,8 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, IntermediateRenameSucceeds) {
   // Intermediate rename loop is not used immediately, but let's set up the
   // DownloadFile expectations since we are about to transfer its ownership to
   // the DownloadItem.
-  DownloadFile::RenameCompletionCallback intermediate_rename_callback;
-  EXPECT_CALL(*file_, RenameAndUniquify(_, _))
-      .WillOnce(WithArg<1>([&intermediate_rename_callback](
-                               DownloadFile::RenameCompletionCallback cb) {
-        intermediate_rename_callback = std::move(cb);
-      }));
+  DownloadFile::RenameCompletionCallback intermediate_rename_callback =
+      GetRenameCompletionCallback(file_.get());
 
   DownloadFile::InitializeCallback initialize_callback;
   EXPECT_CALL(*file_, Initialize(_, _, _))
@@ -2693,7 +2687,7 @@ std::vector<DownloadLaterTestParam> DownloadLaterTestParams() {
   params.push_back(
       {false, absl::nullopt, true, DownloadItem::IN_PROGRESS, true});
   // Download later, will be interrupted.
-  auto future_time = base::Time::Now() + base::TimeDelta::FromDays(10);
+  auto future_time = base::Time::Now() + base::Days(10);
   params.push_back({false, future_time, true, DownloadItem::INTERRUPTED, true});
   return params;
 }
@@ -2795,7 +2789,7 @@ TEST_F(DownloadItemTest, CancelWithDownloadSchedule) {
   auto item = CreateDownloadItem(DownloadItem::DownloadState::INTERRUPTED,
                                  DOWNLOAD_INTERRUPT_REASON_CRASH);
   auto download_schedule = absl::make_optional<DownloadSchedule>(
-      false, base::Time::Now() + base::TimeDelta::FromDays(10));
+      false, base::Time::Now() + base::Days(10));
   item->OnDownloadScheduleChanged(std::move(download_schedule));
 
   EXPECT_EQ(item->GetState(), DownloadItem::DownloadState::INTERRUPTED);
@@ -2851,11 +2845,10 @@ TEST_F(DownloadItemTest, ExternalRenameHandler) {
   TestDownloadItemObserver observer(item);
 
   // Invoke the update callback. This should update the target name and stored
-  // reroute info, regardless of |update_observers|.
+  // reroute info.
   base::FilePath file_name(FILE_PATH_LITERAL("foo.txt"));
   DownloadItemRerouteInfo reroute_info;
   reroute_info.set_service_provider(RerouteProvider::GOOGLE_DRIVE);
-  reroute_info.mutable_box()->set_file_id("12345");
 
   update_callback.Run(ProgressUpdate{file_name, reroute_info});
   EXPECT_EQ(item->GetFileNameToReportUser(), file_name);
@@ -2880,6 +2873,31 @@ TEST_F(DownloadItemTest, ExternalRenameHandler) {
   ASSERT_TRUE(observer.CheckAndResetDownloadUpdated());
 
   ASSERT_NE(nullptr, item->GetRenameHandler());
+  rename_handler_ptr->VerifyAndClearExpectations();
+}
+
+TEST_F(DownloadItemTest, RerouteInfoLoadedFromDB) {
+  using RerouteProvider = enterprise_connectors::FileSystemServiceProvider;
+  DownloadItemRerouteInfo reroute_info;
+  reroute_info.set_service_provider(RerouteProvider::BOX);
+  reroute_info.mutable_box()->set_file_id("12345");
+  // reroute_info.mutable_box()->set_folder_id("67890");
+  ASSERT_TRUE(reroute_info.IsInitialized());
+
+  std::unique_ptr<DownloadItemImpl> item = CreateReroutedDownloadItem(
+      DownloadItem::COMPLETE, DOWNLOAD_INTERRUPT_REASON_NONE, reroute_info);
+  ASSERT_EQ(reroute_info.SerializeAsString(),
+            item->GetRerouteInfo().SerializeAsString());
+
+  auto rename_handler =
+      std::make_unique<MockDownloadItemRenameHandler>(item.get());
+  MockDownloadItemRenameHandler* rename_handler_ptr = rename_handler.get();
+
+  ASSERT_EQ(item.get(), rename_handler->download_item());
+  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item.get()))
+      .WillOnce(Return(ByMove(std::move(rename_handler))));
+
+  ASSERT_TRUE(item->GetRenameHandler());
   rename_handler_ptr->VerifyAndClearExpectations();
 }
 

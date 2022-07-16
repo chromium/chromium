@@ -94,6 +94,12 @@ class TestNetworkConnectionHandler : public NetworkConnectionHandler {
 class WifiHotspotDisconnectorImplTest : public testing::Test {
  public:
   WifiHotspotDisconnectorImplTest() = default;
+
+  WifiHotspotDisconnectorImplTest(const WifiHotspotDisconnectorImplTest&) =
+      delete;
+  WifiHotspotDisconnectorImplTest& operator=(
+      const WifiHotspotDisconnectorImplTest&) = delete;
+
   ~WifiHotspotDisconnectorImplTest() override = default;
 
   void SetUp() override {
@@ -215,9 +221,6 @@ class WifiHotspotDisconnectorImplTest : public testing::Test {
   bool should_disconnect_successfully_;
 
   std::unique_ptr<WifiHotspotDisconnectorImpl> wifi_hotspot_disconnector_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WifiHotspotDisconnectorImplTest);
 };
 
 TEST_F(WifiHotspotDisconnectorImplTest, NetworkDoesNotExist) {

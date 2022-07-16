@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/time/default_clock.h"
+#include "components/sync/protocol/security_event_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

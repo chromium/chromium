@@ -30,6 +30,10 @@ class PerfettoService : public mojom::PerfettoService {
  public:
   explicit PerfettoService(scoped_refptr<base::SequencedTaskRunner>
                                task_runner_for_testing = nullptr);
+
+  PerfettoService(const PerfettoService&) = delete;
+  PerfettoService& operator=(const PerfettoService&) = delete;
+
   ~PerfettoService() override;
 
   static PerfettoService* GetInstance();
@@ -94,8 +98,6 @@ class PerfettoService : public mojom::PerfettoService {
   std::set<base::ProcessId> active_service_pids_;
   std::map<base::ProcessId, int> num_active_connections_;
   bool active_service_pids_initialized_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PerfettoService);
 };
 
 }  // namespace tracing

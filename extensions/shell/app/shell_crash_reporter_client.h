@@ -13,6 +13,10 @@ namespace extensions {
 class ShellCrashReporterClient : public crash_reporter::CrashReporterClient {
  public:
   ShellCrashReporterClient();
+
+  ShellCrashReporterClient(const ShellCrashReporterClient&) = delete;
+  ShellCrashReporterClient& operator=(const ShellCrashReporterClient&) = delete;
+
   ~ShellCrashReporterClient() override;
 
   // crash_reporter::CrashReporterClient:
@@ -25,9 +29,6 @@ class ShellCrashReporterClient : public crash_reporter::CrashReporterClient {
   bool IsRunningUnattended() override;
   bool GetCollectStatsConsent() override;
   bool EnableBreakpadForProcess(const std::string& process_type) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellCrashReporterClient);
 };
 
 }  // namespace extensions

@@ -4,12 +4,12 @@
 
 #include "cc/benchmarks/micro_benchmark.h"
 
-#include <memory>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "cc/benchmarks/micro_benchmark_impl.h"
 
@@ -29,14 +29,14 @@ bool MicroBenchmark::IsDone() const {
 
 void MicroBenchmark::DidUpdateLayers(LayerTreeHost* layer_tree_host) {}
 
-void MicroBenchmark::NotifyDone(std::unique_ptr<base::Value> result) {
+void MicroBenchmark::NotifyDone(base::Value result) {
   std::move(callback_).Run(std::move(result));
   is_done_ = true;
 }
 
 void MicroBenchmark::RunOnLayer(PictureLayer* layer) {}
 
-bool MicroBenchmark::ProcessMessage(std::unique_ptr<base::Value> value) {
+bool MicroBenchmark::ProcessMessage(base::Value message) {
   return false;
 }
 

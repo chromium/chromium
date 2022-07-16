@@ -20,52 +20,6 @@ const base::Feature kBestEffortPriorityForFindInPage{
     "BlinkSchedulerBestEffortPriorityForFindInPage",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// COMPOSITING PRIORITY EXPERIMENT CONTROLS
-
-// If enabled, the compositor will always be set to kVeryHighPriority if it
-// is not already set to kHighestPriority.
-const base::Feature kVeryHighPriorityForCompositingAlways{
-    "BlinkSchedulerVeryHighPriorityForCompositingAlways",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, compositor priority will be set to kVeryHighPriority if it will
-// be fast and is not already set to kHighestPriority.
-const base::Feature kVeryHighPriorityForCompositingWhenFast{
-    "BlinkSchedulerVeryHighPriorityForCompositingWhenFast",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, compositor priority will be set to kVeryHighPriority if the last
-// task completed was not a compositor task, and kNormalPriority if the last
-// task completed was a compositor task.
-const base::Feature kVeryHighPriorityForCompositingAlternating{
-    "BlinkSchedulerVeryHighPriorityForCompositingAlternating",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, compositor priority will be set to kVeryHighPriority if no
-// compositor task has run for some time determined by the finch parameter
-// kCompositingDelayLength. Once a compositor task runs, it will be reset
-// to kNormalPriority.
-const base::Feature kVeryHighPriorityForCompositingAfterDelay{
-    "BlinkSchedulerVeryHighPriorityForCompositingAfterDelay",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Param for kVeryHighPriorityForCompositingAfterDelay experiment. How long
-// in ms the compositor will wait to be prioritized if no compositor tasks run.
-constexpr base::FeatureParam<int> kCompositingDelayLength{
-    &kVeryHighPriorityForCompositingAfterDelay, "CompositingDelayLength", 100};
-
-// This feature functions as an experiment parameter for the
-// VeryHighPriorityForCompositing alternating, delay, and budget experiments.
-// When enabled, it does nothing unless one of these experiments is also
-// enabled. If one of these experiments is enabled it will change the behavior
-// of that experiment such that the stop signal for prioritzation of the
-// compositor is a BeginMainFrame task instead of any compositor task.
-const base::Feature kPrioritizeCompositingUntilBeginMainFrame{
-    "BlinkSchedulerPrioritizeCompositingUntilBeginMainFrame",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-// LOAD PRIORITY EXPERIMENT CONTROLS
-
 // Enables setting the priority of background (with no audio) pages'
 // task queues to low priority.
 const base::Feature kLowPriorityForBackgroundPages{

@@ -36,6 +36,9 @@ class TestMockTimeTaskRunner::NonOwningProxyTaskRunner
     DCHECK(target_);
   }
 
+  NonOwningProxyTaskRunner(const NonOwningProxyTaskRunner&) = delete;
+  NonOwningProxyTaskRunner& operator=(const NonOwningProxyTaskRunner&) = delete;
+
   // Detaches this NonOwningProxyTaskRunner instance from its |target_|. It is
   // invalid to post tasks after this point but RunsTasksInCurrentSequence()
   // will still pass on the original thread for convenience with legacy code.
@@ -85,8 +88,6 @@ class TestMockTimeTaskRunner::NonOwningProxyTaskRunner
 
   // Used to implement RunsTasksInCurrentSequence, without relying on |target_|.
   ThreadCheckerImpl thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(NonOwningProxyTaskRunner);
 };
 
 // TestMockTimeTaskRunner::TestOrderedPendingTask -----------------------------
@@ -103,15 +104,17 @@ struct TestMockTimeTaskRunner::TestOrderedPendingTask
                          TimeDelta delay,
                          size_t ordinal,
                          TestNestability nestability);
+
+  TestOrderedPendingTask(const TestOrderedPendingTask&) = delete;
+  TestOrderedPendingTask& operator=(const TestOrderedPendingTask&) = delete;
+
   TestOrderedPendingTask(TestOrderedPendingTask&&);
+
   ~TestOrderedPendingTask();
 
   TestOrderedPendingTask& operator=(TestOrderedPendingTask&&);
 
   size_t ordinal;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestOrderedPendingTask);
 };
 
 TestMockTimeTaskRunner::TestOrderedPendingTask::TestOrderedPendingTask()

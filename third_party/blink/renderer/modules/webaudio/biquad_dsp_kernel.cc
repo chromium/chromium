@@ -160,7 +160,7 @@ void BiquadDSPKernel::UpdateTailTime(int coef_index) {
   double tail =
       biquad_.TailFrame(coef_index, kMaxTailTime * sample_rate) / sample_rate;
 
-  tail_time_ = clampTo(tail, 0.0, kMaxTailTime);
+  tail_time_ = ClampTo(tail, 0.0, kMaxTailTime);
 }
 
 void BiquadDSPKernel::Process(const float* source,

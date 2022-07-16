@@ -25,6 +25,10 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   // This constructor performs a firewall check on Windows and is not suitable
   // for use in unit tests; instead use the constructor below.
   explicit MediaRouterDesktop(content::BrowserContext* context);
+
+  MediaRouterDesktop(const MediaRouterDesktop&) = delete;
+  MediaRouterDesktop& operator=(const MediaRouterDesktop&) = delete;
+
   ~MediaRouterDesktop() override;
 
   // MediaRouter implementation.
@@ -100,8 +104,6 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   MediaSinkServiceStatus media_sink_service_status_;
 
   base::WeakPtrFactory<MediaRouterDesktop> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterDesktop);
 };
 
 }  // namespace media_router

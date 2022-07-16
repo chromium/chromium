@@ -106,7 +106,7 @@ constexpr net::NetworkTrafficAnnotationTag kSendMessageTrafficAnnotation =
         "Not implemented."
     })");
 
-constexpr base::TimeDelta kInboxMessageTtl = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kInboxMessageTtl = base::Minutes(1);
 
 }  // namespace
 

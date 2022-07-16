@@ -4,6 +4,8 @@
 
 #include "chrome/updater/win/installer_api.h"
 
+#include "base/test/test_reg_util_win.h"
+#include "chrome/updater/updater_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -11,29 +13,46 @@ namespace {
 constexpr char kAppId[] = "{55d6c27c-8b97-4b76-a691-2df8810004ed}";
 }  // namespace
 
-TEST(Installer, InstallerProgress) {
-  ClientStateAppKeyDelete(kAppId);
-  EXPECT_EQ(GetInstallerProgress(kAppId), -1);
-  SetInstallerProgressForTesting(kAppId, 0);
-  EXPECT_EQ(GetInstallerProgress(kAppId), 0);
-  SetInstallerProgressForTesting(kAppId, 50);
-  EXPECT_EQ(GetInstallerProgress(kAppId), 50);
-  SetInstallerProgressForTesting(kAppId, 100);
-  EXPECT_EQ(GetInstallerProgress(kAppId), 100);
-  SetInstallerProgressForTesting(kAppId, 200);
-  EXPECT_EQ(GetInstallerProgress(kAppId), 100);
-  EXPECT_TRUE(ClientStateAppKeyDelete(kAppId));
+class InstallerAPITest : public ::testing::TestWithParam<UpdaterScope> {
+ protected:
+  const UpdaterScope updater_scope_ = GetParam();
+  registry_util::RegistryOverrideManager registry_override_;
+};
+
+INSTANTIATE_TEST_SUITE_P(UpdaterScope,
+                         InstallerAPITest,
+                         testing::Values(UpdaterScope::kUser,
+                                         UpdaterScope::kSystem));
+
+TEST_P(InstallerAPITest, InstallerProgress) {
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
+
+  ClientStateAppKeyDelete(updater_scope_, kAppId);
+  EXPECT_EQ(GetInstallerProgress(updater_scope_, kAppId), -1);
+  SetInstallerProgressForTesting(updater_scope_, kAppId, 0);
+  EXPECT_EQ(GetInstallerProgress(updater_scope_, kAppId), 0);
+  SetInstallerProgressForTesting(updater_scope_, kAppId, 50);
+  EXPECT_EQ(GetInstallerProgress(updater_scope_, kAppId), 50);
+  SetInstallerProgressForTesting(updater_scope_, kAppId, 100);
+  EXPECT_EQ(GetInstallerProgress(updater_scope_, kAppId), 100);
+  SetInstallerProgressForTesting(updater_scope_, kAppId, 200);
+  EXPECT_EQ(GetInstallerProgress(updater_scope_, kAppId), 100);
+  EXPECT_TRUE(ClientStateAppKeyDelete(updater_scope_, kAppId));
 }
 
-TEST(Installer, GetTextForSystemError) {
+TEST_P(InstallerAPITest, GetTextForSystemError) {
   EXPECT_FALSE(GetTextForSystemError(2).empty());
 }
 
-TEST(Installer, GetInstallerOutcome) {
-  ClientStateAppKeyDelete(kAppId);
+TEST_P(InstallerAPITest, GetInstallerOutcome) {
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
+
+  ClientStateAppKeyDelete(updater_scope_, kAppId);
 
   // No installer outcome if the ClientState for the app it does not exist.
-  EXPECT_FALSE(GetInstallerOutcome(kAppId));
+  EXPECT_FALSE(GetInstallerOutcome(updater_scope_, kAppId));
 
   {
     InstallerOutcome installer_outcome;
@@ -42,11 +61,12 @@ TEST(Installer, GetInstallerOutcome) {
     installer_outcome.installer_extracode1 = -2;
     installer_outcome.installer_text = "some text";
     installer_outcome.installer_cmd_line = "some cmd line";
-    EXPECT_TRUE(SetInstallerOutcomeForTesting(kAppId, installer_outcome));
+    EXPECT_TRUE(SetInstallerOutcomeForTesting(updater_scope_, kAppId,
+                                              installer_outcome));
   }
 
   absl::optional<InstallerOutcome> installer_outcome =
-      GetInstallerOutcome(kAppId);
+      GetInstallerOutcome(updater_scope_, kAppId);
   ASSERT_TRUE(installer_outcome);
   EXPECT_EQ(installer_outcome->installer_result, InstallerResult::kSystemError);
   EXPECT_EQ(installer_outcome->installer_error, 1);
@@ -55,8 +75,8 @@ TEST(Installer, GetInstallerOutcome) {
   EXPECT_STREQ(installer_outcome->installer_cmd_line->c_str(), "some cmd line");
 
   // No installer outcome values after clearing the installer outcome.
-  EXPECT_TRUE(DeleteInstallerOutput(kAppId));
-  installer_outcome = GetInstallerOutcome(kAppId);
+  EXPECT_TRUE(DeleteInstallerOutput(updater_scope_, kAppId));
+  installer_outcome = GetInstallerOutcome(updater_scope_, kAppId);
   ASSERT_TRUE(installer_outcome);
   EXPECT_FALSE(installer_outcome->installer_result);
   EXPECT_FALSE(installer_outcome->installer_error);
@@ -64,10 +84,10 @@ TEST(Installer, GetInstallerOutcome) {
   EXPECT_FALSE(installer_outcome->installer_text);
   EXPECT_FALSE(installer_outcome->installer_cmd_line);
 
-  EXPECT_TRUE(ClientStateAppKeyDelete(kAppId));
+  EXPECT_TRUE(ClientStateAppKeyDelete(updater_scope_, kAppId));
 }
 
-TEST(Installer, MakeInstallerResult) {
+TEST_P(InstallerAPITest, MakeInstallerResult) {
   {
     InstallerOutcome installer_outcome;
     installer_outcome.installer_result = InstallerResult::kSuccess;

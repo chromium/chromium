@@ -25,23 +25,23 @@ MetricsHandler::MetricsHandler() {}
 MetricsHandler::~MetricsHandler() {}
 
 void MetricsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "metricsHandler:recordAction",
       base::BindRepeating(&MetricsHandler::HandleRecordAction,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "metricsHandler:recordInHistogram",
       base::BindRepeating(&MetricsHandler::HandleRecordInHistogram,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "metricsHandler:recordBooleanHistogram",
       base::BindRepeating(&MetricsHandler::HandleRecordBooleanHistogram,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "metricsHandler:recordTime",
       base::BindRepeating(&MetricsHandler::HandleRecordTime,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "metricsHandler:recordMediumTime",
       base::BindRepeating(&MetricsHandler::HandleRecordMediumTime,
                           base::Unretained(this)));
@@ -53,24 +53,14 @@ void MetricsHandler::HandleRecordAction(const base::ListValue* args) {
 }
 
 void MetricsHandler::HandleRecordInHistogram(const base::ListValue* args) {
-  std::string histogram_name;
-  double value;
-  double boundary_value;
-  if (!args->GetString(0, &histogram_name) ||
-      !args->GetDouble(1, &value) ||
-      !args->GetDouble(2, &boundary_value)) {
-    NOTREACHED();
-    return;
-  }
+  base::Value::ConstListView list = args->GetList();
+  const std::string& histogram_name = list[0].GetString();
+  int int_value = static_cast<int>(list[1].GetDouble());
+  int int_boundary_value = static_cast<int>(list[2].GetDouble());
 
-  int int_value = static_cast<int>(value);
-  int int_boundary_value = static_cast<int>(boundary_value);
-  if (int_boundary_value >= 4000 ||
-      int_value > int_boundary_value ||
-      int_value < 0) {
-    NOTREACHED();
-    return;
-  }
+  DCHECK_GE(int_value, 0);
+  DCHECK_LE(int_value, int_boundary_value);
+  DCHECK_LT(int_boundary_value, 4000);
 
   int bucket_count = int_boundary_value;
   while (bucket_count >= 100) {
@@ -87,12 +77,13 @@ void MetricsHandler::HandleRecordInHistogram(const base::ListValue* args) {
 }
 
 void MetricsHandler::HandleRecordBooleanHistogram(const base::ListValue* args) {
-  std::string histogram_name;
-  bool value;
-  if (!args->GetString(0, &histogram_name) || !args->GetBoolean(1, &value)) {
+  const auto& list = args->GetList();
+  if (list.size() < 2 || !list[0].is_string() || !list[1].is_bool()) {
     NOTREACHED();
     return;
   }
+  const std::string histogram_name = list[0].GetString();
+  const bool value = list[1].GetBool();
 
   base::HistogramBase* counter = base::BooleanHistogram::FactoryGet(
       histogram_name, base::HistogramBase::kUmaTargetedHistogramFlag);
@@ -100,35 +91,24 @@ void MetricsHandler::HandleRecordBooleanHistogram(const base::ListValue* args) {
 }
 
 void MetricsHandler::HandleRecordTime(const base::ListValue* args) {
-  std::string histogram_name;
-  double value;
+  const std::string& histogram_name = args->GetList()[0].GetString();
+  double value = args->GetList()[1].GetDouble();
 
-  if (!args->GetString(0, &histogram_name) ||
-      !args->GetDouble(1, &value) ||
-      value < 0) {
-    NOTREACHED();
-    return;
-  }
+  DCHECK_GE(value, 0);
 
-  base::TimeDelta time_value = base::TimeDelta::FromMilliseconds(value);
+  base::TimeDelta time_value = base::Milliseconds(value);
 
   base::HistogramBase* counter = base::Histogram::FactoryTimeGet(
-      histogram_name, base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromSeconds(10), 50,
+      histogram_name, base::Milliseconds(1), base::Seconds(10), 50,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   counter->AddTime(time_value);
 }
 
 void MetricsHandler::HandleRecordMediumTime(const base::ListValue* args) {
-  std::string histogram_name;
-  double value;
+  const std::string& histogram_name = args->GetList()[0].GetString();
+  double value = args->GetList()[1].GetDouble();
 
-  if (!args->GetString(0, &histogram_name) || !args->GetDouble(1, &value) ||
-      value < 0) {
-    NOTREACHED();
-    return;
-  }
+  DCHECK_GE(value, 0);
 
-  base::UmaHistogramMediumTimes(histogram_name,
-                                base::TimeDelta::FromMilliseconds(value));
+  base::UmaHistogramMediumTimes(histogram_name, base::Milliseconds(value));
 }

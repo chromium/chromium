@@ -11,10 +11,12 @@ namespace {
 class SharingHubSubMenuModelTest : public BrowserWithTestWindowTest {
  public:
   SharingHubSubMenuModelTest() = default;
-  ~SharingHubSubMenuModelTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SharingHubSubMenuModelTest);
+  SharingHubSubMenuModelTest(const SharingHubSubMenuModelTest&) = delete;
+  SharingHubSubMenuModelTest& operator=(const SharingHubSubMenuModelTest&) =
+      delete;
+
+  ~SharingHubSubMenuModelTest() override = default;
 };
 
 TEST_F(SharingHubSubMenuModelTest, DISABLED_EnableItemsBySharable) {

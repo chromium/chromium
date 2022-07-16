@@ -114,7 +114,7 @@ void CrostiniTestHelper::ReInitializeAppServiceIntegration() {
   // We therefore manually have the App Service re-examine whether Crostini
   // is enabled for this profile.
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  proxy->ReInitializeCrostiniForTesting(profile_);
+  proxy->ReInitializeCrostiniForTesting();
   proxy->FlushMojoCallsForTesting();
 }
 

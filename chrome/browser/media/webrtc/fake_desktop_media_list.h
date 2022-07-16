@@ -12,6 +12,10 @@
 class FakeDesktopMediaList : public DesktopMediaList {
  public:
   explicit FakeDesktopMediaList(DesktopMediaList::Type type);
+
+  FakeDesktopMediaList(const FakeDesktopMediaList&) = delete;
+  FakeDesktopMediaList& operator=(const FakeDesktopMediaList&) = delete;
+
   ~FakeDesktopMediaList() override;
 
   void AddSource(int id);
@@ -20,6 +24,7 @@ class FakeDesktopMediaList : public DesktopMediaList {
   void MoveSource(int old_index, int new_index);
   void SetSourceThumbnail(int index);
   void SetSourceName(int index, std::u16string name);
+  void SetSourcePreview(int index, gfx::ImageSkia);
 
   // DesktopMediaList implementation:
   void SetUpdatePeriod(base::TimeDelta period) override;
@@ -30,14 +35,14 @@ class FakeDesktopMediaList : public DesktopMediaList {
   int GetSourceCount() const override;
   const Source& GetSource(int index) const override;
   DesktopMediaList::Type GetMediaListType() const override;
+  void SetPreviewedSource(
+      const absl::optional<content::DesktopMediaID>& id) override;
 
  private:
   std::vector<Source> sources_;
   DesktopMediaListObserver* observer_;
   gfx::ImageSkia thumbnail_;
   const DesktopMediaList::Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDesktopMediaList);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_FAKE_DESKTOP_MEDIA_LIST_H_

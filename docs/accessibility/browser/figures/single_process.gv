@@ -1,0 +1,33 @@
+digraph graphname {
+    graph [fontname = "helvetica", fontsize=11];
+    node [shape="box", fontname = "helvetica", fontsize=11];
+
+    subgraph cluster_ax_tree {
+        label = "Accessibility Tree";
+		
+        a [label="Document"];
+        a -> b;
+        b [label="Heading"];
+	b -> c;
+	c [label="StaticText 'Sign In'"];
+	a -> d;
+	d [label="TextBox 'Username'"];
+	a -> e;
+	e [label="Button 'Submit'"];
+    }
+
+    subgraph cluster_ui_tree {
+        label = "DOM Tree";
+
+        A [label="<body>"];
+        A -> B;
+        B [label="<h1>"];
+	B -> C;
+        C [label="Sign In"];
+	A -> D;
+        D [label="<input type='text'\nplaceholder='Username'>"];
+	A -> E;
+        E [label="<input type='submit'>"];
+	
+    }
+}

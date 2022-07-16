@@ -120,7 +120,7 @@ class AssistantNotificationBuilder {
   }
 
   AssistantNotificationBuilder& WithTimeoutMs(int timeout_ms) {
-    return WithTimeout(base::TimeDelta::FromMilliseconds(timeout_ms));
+    return WithTimeout(base::Milliseconds(timeout_ms));
   }
 
  private:
@@ -166,6 +166,12 @@ class AssistantNotificationModelObserverMock
     : public AssistantNotificationModelObserver {
  public:
   AssistantNotificationModelObserverMock() = default;
+
+  AssistantNotificationModelObserverMock(
+      const AssistantNotificationModelObserverMock&) = delete;
+  AssistantNotificationModelObserverMock& operator=(
+      const AssistantNotificationModelObserverMock&) = delete;
+
   ~AssistantNotificationModelObserverMock() override = default;
 
   MOCK_METHOD(void,
@@ -181,9 +187,6 @@ class AssistantNotificationModelObserverMock
               (const AssistantNotification& notification, bool from_server),
               (override));
   MOCK_METHOD(void, OnAllNotificationsRemoved, (bool from_server), (override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantNotificationModelObserverMock);
 };
 
 class AssistantServiceMock : public TestAssistantService {
@@ -197,6 +200,12 @@ class AssistantServiceMock : public TestAssistantService {
 // AssistantNotificationControllerTest -----------------------------------------
 
 class AssistantNotificationControllerTest : public AshTestBase {
+ public:
+  AssistantNotificationControllerTest(
+      const AssistantNotificationControllerTest&) = delete;
+  AssistantNotificationControllerTest& operator=(
+      const AssistantNotificationControllerTest&) = delete;
+
  protected:
   AssistantNotificationControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
@@ -228,15 +237,12 @@ class AssistantNotificationControllerTest : public AshTestBase {
   }
 
   void ForwardTimeInMs(int time_in_ms) {
-    task_environment()->FastForwardBy(
-        base::TimeDelta::FromMilliseconds(time_in_ms));
+    task_environment()->FastForwardBy(base::Milliseconds(time_in_ms));
   }
 
  private:
   AssistantNotificationControllerImpl* controller_;
   std::unique_ptr<AssistantNotificationModelObserverMock> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantNotificationControllerTest);
 };
 
 }  // namespace

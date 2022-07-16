@@ -119,6 +119,10 @@ class GCM_EXPORT UnregistrationRequest {
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       GCMStatsRecorder* recorder,
       const std::string& source_to_record);
+
+  UnregistrationRequest(const UnregistrationRequest&) = delete;
+  UnregistrationRequest& operator=(const UnregistrationRequest&) = delete;
+
   ~UnregistrationRequest();
 
   // Starts an unregistration request.
@@ -154,8 +158,6 @@ class GCM_EXPORT UnregistrationRequest {
   std::string source_to_record_;
 
   base::WeakPtrFactory<UnregistrationRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UnregistrationRequest);
 };
 
 }  // namespace gcm

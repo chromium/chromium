@@ -84,6 +84,11 @@ class MockDB : public LevelDB {
                     std::map<std::string, std::string>*,
                     const leveldb::ReadOptions&,
                     const std::string&));
+  MOCK_METHOD4(LoadKeysAndEntriesWhile,
+               bool(std::map<std::string, std::string>*,
+                    const leveldb::ReadOptions&,
+                    const std::string&,
+                    const KeyIteratorController&));
   MOCK_METHOD5(LoadKeysAndEntriesWhile,
                bool(const KeyFilter&,
                     std::map<std::string, std::string>*,
@@ -126,6 +131,9 @@ class OptionsEqMatcher : public MatcherInterface<const Options&> {
  public:
   explicit OptionsEqMatcher(const Options& expected) : expected_(expected) {}
 
+  OptionsEqMatcher(const OptionsEqMatcher&) = delete;
+  OptionsEqMatcher& operator=(const OptionsEqMatcher&) = delete;
+
   bool MatchAndExplain(const Options& actual,
                        MatchResultListener* listener) const override {
     return actual.comparator == expected_.comparator &&
@@ -155,8 +163,6 @@ class OptionsEqMatcher : public MatcherInterface<const Options&> {
 
  private:
   Options expected_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptionsEqMatcher);
 };
 
 Matcher<const Options&> OptionsEq(const Options& expected) {
@@ -332,7 +338,7 @@ ACTION_P(AppendLoadEntries, model) {
 }
 
 ACTION_P(AppendLoadKeysAndEntries, model) {
-  std::map<std::string, std::string>* output = arg1;
+  std::map<std::string, std::string>* output = arg0;
   for (const auto& pair : model)
     output->insert(std::make_pair(pair.first, pair.second.SerializeAsString()));
 
@@ -369,7 +375,7 @@ TEST_F(UniqueProtoDatabaseTest, TestDBLoadSuccess) {
                         base::BindOnce(&MockDatabaseCaller::InitStatusCallback,
                                        base::Unretained(&caller)));
 
-  EXPECT_CALL(*mock_db, LoadKeysAndEntriesWhile(_, _, _, _, _))
+  EXPECT_CALL(*mock_db, LoadKeysAndEntriesWhile(_, _, _, _))
       .WillOnce(AppendLoadKeysAndEntries(model));
   EXPECT_CALL(caller, LoadKeysAndEntriesCallback1(true, _))
       .WillOnce(VerifyLoadKeysAndEntries(testing::ByRef(model)));

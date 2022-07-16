@@ -9,10 +9,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -38,6 +37,9 @@ class ApkWebAppInstaller {
   // Do nothing class purely for the purpose of allowing us to specify
   // a WeakPtr<Owner> member as a proxy for a profile lifetime observer.
   class Owner {};
+
+  ApkWebAppInstaller(const ApkWebAppInstaller&) = delete;
+  ApkWebAppInstaller& operator=(const ApkWebAppInstaller&) = delete;
 
   // Installs a web app represented by |web_app_info| with icon bytes
   // |icon_png_data| into |profile|. |owner| must stay alive for this class to
@@ -90,8 +92,6 @@ class ApkWebAppInstaller {
   base::WeakPtr<Owner> weak_owner_;
 
   std::unique_ptr<WebApplicationInfo> web_app_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApkWebAppInstaller);
 };
 
 }  // namespace ash

@@ -53,12 +53,12 @@ const float kMinPower = 0.000125f;
 
 static float CalculateNormalizationScale(AudioBus* response) {
   // Normalize by RMS power
-  size_t number_of_channels = response->NumberOfChannels();
-  size_t length = response->length();
+  unsigned number_of_channels = response->NumberOfChannels();
+  uint32_t length = response->length();
 
   float power = 0;
 
-  for (size_t i = 0; i < number_of_channels; ++i) {
+  for (unsigned i = 0; i < number_of_channels; ++i) {
     float channel_power = 0;
     vector_math::Vsvesq(response->Channel(i)->Data(), 1, &channel_power,
                         length);
@@ -89,8 +89,8 @@ static float CalculateNormalizationScale(AudioBus* response) {
 }
 
 Reverb::Reverb(AudioBus* impulse_response,
-               size_t render_slice_size,
-               size_t max_fft_size,
+               unsigned render_slice_size,
+               unsigned max_fft_size,
                bool use_background_threads,
                bool normalize) {
   float scale = 1;
@@ -104,8 +104,8 @@ Reverb::Reverb(AudioBus* impulse_response,
 }
 
 void Reverb::Initialize(AudioBus* impulse_response_buffer,
-                        size_t render_slice_size,
-                        size_t max_fft_size,
+                        unsigned render_slice_size,
+                        unsigned max_fft_size,
                         bool use_background_threads,
                         float scale) {
   impulse_response_length_ = impulse_response_buffer->length();
@@ -269,7 +269,7 @@ void Reverb::Process(const AudioBus* source_bus,
 }
 
 void Reverb::Reset() {
-  for (size_t i = 0; i < convolvers_.size(); ++i)
+  for (wtf_size_t i = 0; i < convolvers_.size(); ++i)
     convolvers_[i]->Reset();
 }
 

@@ -7,6 +7,9 @@
 
 class GURL;
 
+// Rewrites Flash embed URLs to their modern HTML5 equivalents.
+// NOTE that this is not dead code and still has uses. See
+// https://crrev.com/c/3199455 for discussion.
 class FlashEmbedRewrite {
  public:
   // Entry point that will then call a private website-specific method.

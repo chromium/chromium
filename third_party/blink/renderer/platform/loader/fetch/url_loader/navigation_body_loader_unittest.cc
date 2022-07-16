@@ -7,13 +7,14 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/x509_util.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/test/cert_test_util.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
 namespace blink {
 
@@ -55,6 +57,8 @@ class NavigationBodyLoaderTest : public ::testing::Test,
     WebNavigationParams navigation_params;
     navigation_params.sandbox_flags = network::mojom::WebSandboxFlags::kNone;
     auto common_params = CreateCommonNavigationParams();
+    common_params->request_destination =
+        network::mojom::RequestDestination::kDocument;
     auto commit_params = CreateCommitNavigationParams();
     WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
         std::move(common_params), std::move(commit_params), /*request_id=*/1,
@@ -72,7 +76,7 @@ class NavigationBodyLoaderTest : public ::testing::Test,
   }
 
   void Write(const std::string& buffer) {
-    uint32_t size = buffer.size();
+    uint32_t size = static_cast<uint32_t>(buffer.size());
     MojoResult result = writer_->WriteData(buffer.c_str(), &size, kNone);
     ASSERT_EQ(MOJO_RESULT_OK, result);
     ASSERT_EQ(buffer.size(), size);
@@ -329,6 +333,8 @@ TEST_F(NavigationBodyLoaderTest, FillResponseWithSecurityDetails) {
 
   auto common_params = CreateCommonNavigationParams();
   common_params->url = GURL("https://example.test");
+  common_params->request_destination =
+      network::mojom::RequestDestination::kDocument;
   auto commit_params = CreateCommitNavigationParams();
 
   WebNavigationParams navigation_params;
@@ -347,7 +353,7 @@ TEST_F(NavigationBodyLoaderTest, FillResponseWithSecurityDetails) {
           /*resource_load_info_notifier=*/nullptr),
       /*is_main_frame=*/true, &navigation_params);
   EXPECT_TRUE(
-      navigation_params.response.SecurityDetailsForTesting().has_value());
+      navigation_params.response.ToResourceResponse().GetSSLInfo().has_value());
 }
 
 }  // namespace

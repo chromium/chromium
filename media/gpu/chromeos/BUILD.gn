@@ -16,9 +16,8 @@ source_set("chromeos") {
   # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
-    "chromeos_video_decoder_factory.cc",
-    "chromeos_video_decoder_factory.h",
     "image_processor_factory.cc",
+    "video_decoder_pipeline.cc",
   ]
 
   public_deps = [ ":common" ]
@@ -32,7 +31,10 @@ source_set("chromeos") {
   ]
 
   if (use_vaapi) {
-    deps += [ "//media/gpu/vaapi" ]
+    deps += [
+      "//media/gpu/vaapi",
+      "//media/gpu/vaapi:common",
+    ]
   }
 
   if (use_v4l2_codec) {
@@ -44,6 +46,7 @@ source_set("chromeos") {
 source_set("common") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
+    "chromeos_status.h",
     "dmabuf_video_frame_pool.cc",
     "dmabuf_video_frame_pool.h",
     "gpu_buffer_layout.cc",
@@ -67,7 +70,6 @@ source_set("common") {
     "vd_video_decode_accelerator.h",
     "vda_video_frame_pool.cc",
     "vda_video_frame_pool.h",
-    "video_decoder_pipeline.cc",
     "video_decoder_pipeline.h",
     "video_frame_converter.cc",
     "video_frame_converter.h",
@@ -79,6 +81,7 @@ source_set("common") {
   deps = [
     ":fourcc",
     "//base",
+    "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//gpu/ipc/common:common",
     "//media",

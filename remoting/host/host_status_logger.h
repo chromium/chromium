@@ -25,6 +25,10 @@ class HostStatusLogger : public HostStatusObserver {
  public:
   HostStatusLogger(scoped_refptr<HostStatusMonitor> monitor,
                    LogToServer* log_to_server);
+
+  HostStatusLogger(const HostStatusLogger&) = delete;
+  HostStatusLogger& operator=(const HostStatusLogger&) = delete;
+
   ~HostStatusLogger() override;
 
   // Logs a session state change. Currently, this is either
@@ -49,8 +53,6 @@ class HostStatusLogger : public HostStatusObserver {
       connection_route_type_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(HostStatusLogger);
 };
 
 }  // namespace remoting

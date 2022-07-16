@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -20,6 +21,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,6 +34,7 @@ namespace {
 
 using ::testing::HasSubstr;
 using ::testing::NiceMock;
+using ::testing::Not;
 
 class BodyDrainer {
  public:
@@ -83,10 +86,27 @@ class PluginResponseWriterTest : public testing::Test {
   }
 
   std::unique_ptr<PluginResponseWriter> NewPluginResponseWriter(
-      const GURL& source_url,
-      const GURL& original_url) {
+      const PdfStreamDelegate::StreamInfo& stream_info) {
     return std::make_unique<PluginResponseWriter>(
-        source_url, original_url, client_receiver_.BindNewPipeAndPassRemote());
+        stream_info, client_receiver_.BindNewPipeAndPassRemote());
+  }
+
+  // Returns the generated response after sending it.
+  std::string GenerateResponse(const PdfStreamDelegate::StreamInfo& stream) {
+    auto response_writer = NewPluginResponseWriter(stream);
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_client_, OnComplete).WillOnce([&run_loop]() {
+      run_loop.Quit();
+    });
+    response_writer->Start(base::DoNothing());
+    run_loop.Run();
+
+    // Waiting for `URLLoaderClient::OnComplete()` ensures `body_drainer_` is
+    // set, but the data pipe may still have unread data.
+    body_drainer_->WaitComplete();
+
+    return body_drainer_->content();
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -100,9 +120,16 @@ class PluginResponseWriterTest : public testing::Test {
 }  // namespace
 
 TEST_F(PluginResponseWriterTest, Start) {
-  auto response_writer =
-      NewPluginResponseWriter(GURL("chrome-extension://id/stream-url"),
-                              GURL("https://example.test/fake.pdf"));
+  const std::string kFakeScript = "fake-script";
+
+  PdfStreamDelegate::StreamInfo stream;
+  stream.stream_url = GURL("chrome-extension://id/stream-url");
+  stream.original_url = GURL("https://example.test/fake.pdf");
+  stream.injected_script = &kFakeScript;
+  stream.background_color = SK_ColorGREEN;
+  stream.full_frame = true;
+  stream.allow_javascript = true;
+  auto response_writer = NewPluginResponseWriter(stream);
 
   base::RunLoop run_loop;
 
@@ -113,6 +140,7 @@ TEST_F(PluginResponseWriterTest, Start) {
 
     EXPECT_CALL(mock_client_, OnReceiveResponse)
         .WillOnce([](network::mojom::URLResponseHeadPtr head) {
+          EXPECT_EQ(200, head->headers->response_code());
           EXPECT_EQ("text/html", head->mime_type);
         });
 
@@ -143,55 +171,68 @@ TEST_F(PluginResponseWriterTest, Start) {
               HasSubstr("src=\"chrome-extension://id/stream-url\""));
   EXPECT_THAT(body_drainer_->content(),
               HasSubstr("original-url=\"https://example.test/fake.pdf\""));
-  EXPECT_THAT(body_drainer_->content(), HasSubstr("'chrome-extension://id/'"));
+  EXPECT_THAT(body_drainer_->content(), HasSubstr(kFakeScript));
+  EXPECT_THAT(body_drainer_->content(),
+              HasSubstr("background-color=\"4278255360\""));
+  EXPECT_THAT(body_drainer_->content(), HasSubstr("javascript=\"allow\""));
+  EXPECT_THAT(body_drainer_->content(), HasSubstr("full-frame"));
 }
 
 TEST_F(PluginResponseWriterTest, StartWithUnescapedUrls) {
-  auto response_writer =
-      NewPluginResponseWriter(GURL("chrome-extension://id/stream-url\""),
-                              GURL("https://example.test/\"fake.pdf"));
+  PdfStreamDelegate::StreamInfo stream;
+  stream.stream_url = GURL("chrome-extension://id/stream-url\"");
+  stream.original_url = GURL("https://example.test/\"fake.pdf");
+  std::string response = GenerateResponse(stream);
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_client_, OnComplete).WillOnce([&run_loop]() {
-    run_loop.Quit();
-  });
-  response_writer->Start(base::DoNothing());
-  run_loop.Run();
-
-  // Waiting for `URLLoaderClient::OnComplete()` ensures `body_drainer_` is set,
-  // but the data pipe may still have unread data.
-  ASSERT_TRUE(body_drainer_);
-  body_drainer_->WaitComplete();
-
-  EXPECT_THAT(body_drainer_->content(),
+  EXPECT_THAT(response,
               HasSubstr("src=\"chrome-extension://id/stream-url%22\""));
-  EXPECT_THAT(body_drainer_->content(),
+  EXPECT_THAT(response,
               HasSubstr("original-url=\"https://example.test/%22fake.pdf\""));
-  EXPECT_THAT(body_drainer_->content(), HasSubstr("'chrome-extension://id/'"));
 }
 
 TEST_F(PluginResponseWriterTest, StartForPrintPreview) {
-  auto response_writer =
-      NewPluginResponseWriter(GURL("chrome://print/1/0/print.pdf"),
-                              GURL("chrome://print/1/0/print.pdf"));
+  PdfStreamDelegate::StreamInfo stream;
+  stream.stream_url = GURL("chrome-untrusted://print/1/0/print.pdf");
+  stream.original_url = GURL("chrome-untrusted://print/1/0/print.pdf");
+  std::string response = GenerateResponse(stream);
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_client_, OnComplete).WillOnce([&run_loop]() {
-    run_loop.Quit();
-  });
-  response_writer->Start(base::DoNothing());
-  run_loop.Run();
+  EXPECT_THAT(response,
+              HasSubstr("src=\"chrome-untrusted://print/1/0/print.pdf\""));
+  EXPECT_THAT(
+      response,
+      HasSubstr("original-url=\"chrome-untrusted://print/1/0/print.pdf\""));
+}
 
-  // Waiting for `URLLoaderClient::OnComplete()` ensures `body_drainer_` is set,
-  // but the data pipe may still have unread data.
-  ASSERT_TRUE(body_drainer_);
-  body_drainer_->WaitComplete();
+TEST_F(PluginResponseWriterTest, StartWithoutInjectedScript) {
+  PdfStreamDelegate::StreamInfo stream;
+  stream.injected_script = nullptr;
+  std::string response = GenerateResponse(stream);
 
-  EXPECT_THAT(body_drainer_->content(),
-              HasSubstr("src=\"chrome://print/1/0/print.pdf\""));
-  EXPECT_THAT(body_drainer_->content(),
-              HasSubstr("original-url=\"chrome://print/1/0/print.pdf\""));
-  EXPECT_THAT(body_drainer_->content(), HasSubstr("'chrome://print/'"));
+  EXPECT_THAT(response, Not(HasSubstr("fake-script")));
+}
+
+TEST_F(PluginResponseWriterTest, StartWithBackgroundColor) {
+  PdfStreamDelegate::StreamInfo stream;
+  stream.background_color = SK_ColorBLUE;
+  std::string response = GenerateResponse(stream);
+
+  EXPECT_THAT(response, HasSubstr("background-color=\"4278190335\""));
+}
+
+TEST_F(PluginResponseWriterTest, StartWithNonFullFrame) {
+  PdfStreamDelegate::StreamInfo stream;
+  stream.full_frame = false;
+  std::string response = GenerateResponse(stream);
+
+  EXPECT_THAT(response, Not(HasSubstr("full-frame")));
+}
+
+TEST_F(PluginResponseWriterTest, StartWithJavaScriptDisabled) {
+  PdfStreamDelegate::StreamInfo stream;
+  stream.allow_javascript = false;
+  std::string response = GenerateResponse(stream);
+
+  EXPECT_THAT(response, HasSubstr("javascript=\"block\""));
 }
 
 }  // namespace pdf

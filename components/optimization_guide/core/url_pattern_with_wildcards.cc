@@ -5,7 +5,6 @@
 #include "components/optimization_guide/core/url_pattern_with_wildcards.h"
 
 #include "base/check_op.h"
-#include "base/macros.h"
 
 namespace {
 

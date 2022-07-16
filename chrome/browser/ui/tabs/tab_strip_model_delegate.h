@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -103,9 +104,6 @@ class TabStripModelDelegate {
   virtual void MoveToExistingWindow(const std::vector<int>& indices,
                                     int browser_index) = 0;
 
-  // Get the list of existing windows that tabs can be moved to.
-  virtual std::vector<std::u16string> GetExistingWindowsForMoveMenu() = 0;
-
   // Returns whether the contents at |indices| can be moved from the current
   // tabstrip to a different window.
   virtual bool CanMoveTabsToWindow(const std::vector<int>& indices) = 0;
@@ -154,6 +152,18 @@ class TabStripModelDelegate {
 
   // Adds the specified WebContents to read later.
   virtual void AddToReadLater(content::WebContents* web_contents) = 0;
+
+  // Gives the delegate an opportunity to cache (take ownership) of
+  // WebContents before they are destroyed. The delegate takes ownership by way
+  // of using std::move() on the `owned_contents` and resetting `remove_reason`
+  // to kCached. It is expected that any WebContents the delegate takes
+  // ownership of remain valid until the next message is pumped. In other
+  // words, the delegate must not immediately destroy any of the supplied
+  // WebContents.
+  // TODO(https://crbug.com/1234332): Provide active web contents.
+  virtual void CacheWebContents(
+      const std::vector<std::unique_ptr<TabStripModel::DetachedWebContents>>&
+          web_contents) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_DELEGATE_H_

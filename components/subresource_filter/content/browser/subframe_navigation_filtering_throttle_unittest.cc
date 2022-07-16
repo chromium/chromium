@@ -51,6 +51,12 @@ class SubframeNavigationFilteringThrottleTest
       public content::WebContentsObserver {
  public:
   SubframeNavigationFilteringThrottleTest() {}
+
+  SubframeNavigationFilteringThrottleTest(
+      const SubframeNavigationFilteringThrottleTest&) = delete;
+  SubframeNavigationFilteringThrottleTest& operator=(
+      const SubframeNavigationFilteringThrottleTest&) = delete;
+
   ~SubframeNavigationFilteringThrottleTest() override {}
 
   void SetUp() override {
@@ -171,8 +177,6 @@ class SubframeNavigationFilteringThrottleTest
   std::unique_ptr<AsyncDocumentSubresourceFilter> parent_filter_;
 
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubframeNavigationFilteringThrottleTest);
 };
 
 TEST_F(SubframeNavigationFilteringThrottleTest, FilterOnStart) {

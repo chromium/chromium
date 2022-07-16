@@ -204,10 +204,9 @@ bool LocalTestServer::AddCommandLineArguments(
 
     // Add arguments from a list.
     if (value.is_list()) {
-      const base::ListValue* list = nullptr;
-      if (!value.GetAsList(&list) || !list || list->GetList().empty())
+      if (value.GetList().empty())
         return false;
-      for (const auto& entry : list->GetList()) {
+      for (const auto& entry : value.GetList()) {
         if (!AppendArgumentFromJSONValue(key, entry, command_line))
           return false;
       }
@@ -226,9 +225,6 @@ bool LocalTestServer::AddCommandLineArguments(
     case TYPE_WS:
     case TYPE_WSS:
       command_line->AppendArg("--websocket");
-      break;
-    case TYPE_FTP:
-      command_line->AppendArg("--ftp");
       break;
     case TYPE_BASIC_AUTH_PROXY:
       command_line->AppendArg("--basic-auth-proxy");

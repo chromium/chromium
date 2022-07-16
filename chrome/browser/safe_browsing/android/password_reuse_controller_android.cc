@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/ui/android/safe_browsing/password_reuse_dialog_view_android.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -51,11 +50,6 @@ void PasswordReuseControllerAndroid::ShowDialog() {
 }
 
 void PasswordReuseControllerAndroid::ShowCheckPasswords() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-
-  PasswordCheckupLauncherHelper::LaunchLocalCheckupFromPhishGuardWarningDialog(
-      env, window_android_->GetJavaObject());
-
   if (done_callback_)
     std::move(done_callback_).Run(WarningAction::CHANGE_PASSWORD);
 
@@ -77,35 +71,55 @@ void PasswordReuseControllerAndroid::CloseDialog() {
 }
 
 std::u16string PasswordReuseControllerAndroid::GetPrimaryButtonText() const {
-  return base::FeatureList::IsEnabled(
-             safe_browsing::
-                 kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)
-             ? l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON)
-             : l10n_util::GetStringUTF16(IDS_CLOSE);
+  if (password_type_.account_type() == ReusedPasswordAccountType::GMAIL &&
+      password_type_.is_account_syncing() &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::kPasswordProtectionForSignedInUsers)) {
+    return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON);
+  } else if (
+      password_type_.account_type() ==
+          ReusedPasswordAccountType::SAVED_PASSWORD &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::
+              kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)) {
+    return l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON);
+  }
+
+  return l10n_util::GetStringUTF16(IDS_CLOSE);
 }
 
 std::u16string PasswordReuseControllerAndroid::GetSecondaryButtonText() const {
-  return base::FeatureList::IsEnabled(
-             safe_browsing::
-                 kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)
-             ? l10n_util::GetStringUTF16(
-                   IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON)
-             : std::u16string();
+  if ((password_type_.account_type() == ReusedPasswordAccountType::GMAIL &&
+       password_type_.is_account_syncing() &&
+       base::FeatureList::IsEnabled(
+           safe_browsing::kPasswordProtectionForSignedInUsers)) ||
+      (password_type_.account_type() ==
+           ReusedPasswordAccountType::SAVED_PASSWORD &&
+       base::FeatureList::IsEnabled(
+           safe_browsing::
+               kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid))) {
+    return l10n_util::GetStringUTF16(
+        IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON);
+  }
+
+  return std::u16string();
 }
 
-std::u16string PasswordReuseControllerAndroid::GetWarningDetailText(
-    std::vector<size_t>* placeholder_offsets) const {
-  return service_->GetWarningDetailText(password_type_, placeholder_offsets);
+std::u16string PasswordReuseControllerAndroid::GetWarningDetailText() const {
+  return service_->GetWarningDetailText(password_type_);
 }
 
 std::u16string PasswordReuseControllerAndroid::GetTitle() const {
-  return l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY);
-}
+  if (password_type_.account_type() ==
+          ReusedPasswordAccountType::SAVED_PASSWORD &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::
+              kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)) {
+    return l10n_util::GetStringUTF16(
+        IDS_PAGE_INFO_CHANGE_PASSWORD_SAVED_PASSWORD_SUMMARY);
+  }
 
-const std::vector<std::u16string>
-PasswordReuseControllerAndroid::GetPlaceholdersForSavedPasswordWarningText()
-    const {
-  return service_->GetPlaceholdersForSavedPasswordWarningText();
+  return l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY);
 }
 
 void PasswordReuseControllerAndroid::OnGaiaPasswordChanged() {
@@ -134,6 +148,11 @@ WarningUIType PasswordReuseControllerAndroid::GetObserverType() {
 
 void PasswordReuseControllerAndroid::WebContentsDestroyed() {
   delete this;
+}
+
+void PasswordReuseControllerAndroid::SetReusedPasswordAccountTypeForTesting(
+    ReusedPasswordAccountType password_type) {
+  password_type_ = password_type;
 }
 
 }  // namespace safe_browsing

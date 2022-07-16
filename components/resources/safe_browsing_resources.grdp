@@ -3,8 +3,7 @@
     <include name="IDR_SAFE_BROWSING_HTML" file="..\..\components\safe_browsing\content\browser\web_ui\resources\safe_browsing.html" type="BINDATA" />
     <include name="IDR_SAFE_BROWSING_CSS" file="..\..\components\safe_browsing\content\browser\web_ui\resources\safe_browsing.css" type="BINDATA" />
     <include name="IDR_SAFE_BROWSING_JS" file="..\..\components\safe_browsing\content\browser\web_ui\resources\safe_browsing.js" type="BINDATA" />
-  <!-- TODO(crbug/1056278): Enable this on Fuchsia -->
-  <if expr="safe_browsing_mode != 0 and not is_fuchsia">
+  <if expr="safe_browsing_mode != 0">
     <include name="IDR_DOWNLOAD_FILE_TYPES_PB" file="${root_gen_dir}\components\safe_browsing\content\resources\download_file_types.pb" use_base_dir="false" type="BINDATA" compress="gzip" />
   </if>
 </grit-part>

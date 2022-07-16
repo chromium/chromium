@@ -17,6 +17,11 @@ namespace arc {
 class FakeNotificationsInstance : public mojom::NotificationsInstance {
  public:
   FakeNotificationsInstance();
+
+  FakeNotificationsInstance(const FakeNotificationsInstance&) = delete;
+  FakeNotificationsInstance& operator=(const FakeNotificationsInstance&) =
+      delete;
+
   ~FakeNotificationsInstance() override;
 
   // mojom::NotificationsInstance overrides:
@@ -51,8 +56,6 @@ class FakeNotificationsInstance : public mojom::NotificationsInstance {
  private:
   std::vector<std::pair<std::string, mojom::ArcNotificationEvent>> events_;
   mojom::ArcDoNotDisturbStatusPtr latest_do_not_disturb_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNotificationsInstance);
 };
 
 }  // namespace arc

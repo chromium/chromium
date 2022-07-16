@@ -12,9 +12,9 @@
 #include "base/files/file_path.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
@@ -108,10 +108,8 @@ void ActivityLogPolicy::Util::StripPrivacySensitiveFields(
     base::DictionaryValue* details = NULL;
     if (action->mutable_other()->GetDictionary(constants::kActionWebRequest,
                                                &details)) {
-      base::DictionaryValue::Iterator details_iterator(*details);
-      while (!details_iterator.IsAtEnd()) {
-        details->SetBoolean(details_iterator.key(), true);
-        details_iterator.Advance();
+      for (auto detail : details->DictItems()) {
+        details->SetBoolean(detail.first, true);
       }
     }
   }
@@ -131,8 +129,7 @@ base::Time ActivityLogPolicy::Util::AddDays(const base::Time& base_date,
                                             int days) {
   // To allow for time zone changes, add an additional partial day then round
   // down to midnight.
-  return (base_date + base::TimeDelta::FromDays(days) +
-          base::TimeDelta::FromHours(4)).LocalMidnight();
+  return (base_date + base::Days(days) + base::Hours(4)).LocalMidnight();
 }
 
 // static

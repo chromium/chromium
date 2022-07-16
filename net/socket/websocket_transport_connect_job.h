@@ -59,6 +59,11 @@ class NET_EXPORT_PRIVATE WebSocketTransportConnectJob : public ConnectJob {
       const scoped_refptr<TransportSocketParams>& params,
       Delegate* delegate,
       const NetLogWithSource* net_log);
+
+  WebSocketTransportConnectJob(const WebSocketTransportConnectJob&) = delete;
+  WebSocketTransportConnectJob& operator=(const WebSocketTransportConnectJob&) =
+      delete;
+
   ~WebSocketTransportConnectJob() override;
 
   // ConnectJob methods.
@@ -123,8 +128,6 @@ class NET_EXPORT_PRIVATE WebSocketTransportConnectJob : public ConnectJob {
   ResolveErrorInfo resolve_error_info_;
 
   base::WeakPtrFactory<WebSocketTransportConnectJob> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketTransportConnectJob);
 };
 
 }  // namespace net

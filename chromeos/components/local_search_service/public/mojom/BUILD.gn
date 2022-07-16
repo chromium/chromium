@@ -11,7 +11,10 @@ mojom("mojom") {
     "types.mojom",
   ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
+  ]
 
   cpp_typemaps = [
     {

@@ -149,6 +149,8 @@ WebGLTexture* XRWebGLBinding::getReflectionCubeMap(
 
 WebGLTexture* XRWebGLBinding::getCameraImage(XRCamera* camera,
                                              ExceptionState& exception_state) {
+  DVLOG(3) << __func__;
+
   XRFrame* frame = camera->Frame();
   DCHECK(frame);
 
@@ -188,20 +190,8 @@ WebGLTexture* XRWebGLBinding::getCameraImage(XRCamera* camera,
   XRWebGLLayer* base_layer = session->renderState()->baseLayer();
   DCHECK(base_layer);
 
-  absl::optional<gpu::MailboxHolder> camera_image_mailbox_holder =
-      base_layer->CameraImageMailboxHolder();
-
-  if (!camera_image_mailbox_holder) {
-    DVLOG(3) << __func__ << ": camera image mailbox holder is not set";
-    return nullptr;
-  }
-
-  GLuint texture_id = base_layer->CameraImageTextureId();
-
   // This resource is owned by the XRWebGLLayer, and is freed in OnFrameEnd();
-  WebGLUnownedTexture* texture = MakeGarbageCollected<WebGLUnownedTexture>(
-      webgl_context_, texture_id, GL_TEXTURE_2D);
-  return texture;
+  return base_layer->GetCameraTexture();
 }
 
 XRWebGLDepthInformation* XRWebGLBinding::getDepthInformation(

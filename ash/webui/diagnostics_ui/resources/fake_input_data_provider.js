@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ConnectedDevicesObserverRemote, ConnectionType, GetConnectedDevicesResponse, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js';
+import {ConnectedDevicesObserverRemote, ConnectionType, GetConnectedDevicesResponse, GetKeyboardVisualLayoutResponse, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js';
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
 /**
@@ -39,6 +39,7 @@ export class FakeInputDataProvider {
    */
   registerMethods() {
     this.methods_.register('getConnectedDevices');
+    this.methods_.register('getKeyboardVisualLayout');
   }
 
   /**
@@ -81,7 +82,7 @@ export class FakeInputDataProvider {
                             {keyboards: [...this.keyboards_],
                              touchDevices: [...this.touchDevices_]});
 
-    for (let observer of this.observers_) {
+    for (const observer of this.observers_) {
       observer.onKeyboardConnected(keyboard);
     }
   }
@@ -94,7 +95,7 @@ export class FakeInputDataProvider {
   removeFakeConnectedKeyboardById(id) {
     this.keyboards_ = this.keyboards_.filter((device) => device.id !== id);
 
-    for (let observer of this.observers_) {
+    for (const observer of this.observers_) {
       observer.onKeyboardDisconnected(id);
     }
   }
@@ -110,7 +111,7 @@ export class FakeInputDataProvider {
                             {keyboards: this.keyboards_,
                              touchDevices: this.touchDevices_});
 
-    for (let observer of this.observers_) {
+    for (const observer of this.observers_) {
       observer.onTouchDeviceConnected(touchDevice);
     }
   }
@@ -124,8 +125,15 @@ export class FakeInputDataProvider {
     this.touchDevices_ =
       this.touchDevices_.filter((device) => device.id !== id);
 
-    for (let observer of this.observers_) {
+    for (const observer of this.observers_) {
       observer.onTouchDeviceDisconnected(id);
     }
+  }
+
+  /**
+   * @return {!Promise<!GetKeyboardVisualLayoutResponse>}
+   */
+  getKeyboardVisualLayout(id) {
+    return this.methods_.resolveMethod('getKeyboardVisualLayout');
   }
 }

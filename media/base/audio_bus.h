@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/aligned_memory.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/media_shmem_export.h"
@@ -182,6 +181,9 @@ class MEDIA_SHMEM_EXPORT AudioBus {
   // the channels are valid.
   void SwapChannels(int a, int b);
 
+  AudioBus(const AudioBus&) = delete;
+  AudioBus& operator=(const AudioBus&) = delete;
+
   virtual ~AudioBus();
 
  protected:
@@ -235,8 +237,6 @@ class MEDIA_SHMEM_EXPORT AudioBus {
   // Run on destruction. Frees memory to the data set via SetChannelData().
   // Only used with CreateWrapper().
   base::OnceClosure wrapped_data_deleter_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioBus);
 };
 
 // Delegates to FromInterleavedPartial()

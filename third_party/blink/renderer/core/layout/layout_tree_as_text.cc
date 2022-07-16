@@ -111,6 +111,40 @@ WTF::TextStream& operator<<(WTF::TextStream& ts, const Color& c) {
   return ts << c.NameForLayoutTreeAsText();
 }
 
+WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Point& p) {
+  return ts << "(" << p.x() << "," << p.y() << ")";
+}
+
+WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Size& s) {
+  return ts << "width=" << s.width() << " height=" << s.height();
+}
+
+WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Rect& r) {
+  return ts << "at " << r.origin() << " size " << r.width() << "x"
+            << r.height();
+}
+
+WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::SizeF& s) {
+  ts << "width=" << WTF::TextStream::FormatNumberRespectingIntegers(s.width());
+  ts << " height="
+     << WTF::TextStream::FormatNumberRespectingIntegers(s.height());
+  return ts;
+}
+
+WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::PointF& p) {
+  ts << "(" << WTF::TextStream::FormatNumberRespectingIntegers(p.x());
+  ts << "," << WTF::TextStream::FormatNumberRespectingIntegers(p.y());
+  ts << ")";
+  return ts;
+}
+
+WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::RectF& r) {
+  ts << "at " << r.origin();
+  ts << " size " << WTF::TextStream::FormatNumberRespectingIntegers(r.width());
+  ts << "x" << WTF::TextStream::FormatNumberRespectingIntegers(r.height());
+  return ts;
+}
+
 void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
                                          const LayoutObject& o,
                                          LayoutAsTextBehavior behavior) {
@@ -459,7 +493,7 @@ static void WritePaintProperties(WTF::TextStream& ts,
       ts << " state=(" << fragment->LocalBorderBoxProperties().ToString()
          << ")";
     }
-    if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+    if (RuntimeEnabledFeatures::CullRectUpdateEnabled() && o.HasLayer()) {
       ts << " cull_rect=(" << fragment->GetCullRect().ToString()
          << ") contents_cull_rect=("
          << fragment->GetContentsCullRect().ToString() << ")";
@@ -609,10 +643,10 @@ static void Write(WTF::TextStream& ts,
     ScrollOffset adjusted_scroll_offset =
         scrollable_area->GetScrollOffset() +
         ToFloatSize(FloatPoint(scrollable_area->ScrollOrigin()));
-    if (adjusted_scroll_offset.Width())
-      ts << " scrollX " << adjusted_scroll_offset.Width();
-    if (adjusted_scroll_offset.Height())
-      ts << " scrollY " << adjusted_scroll_offset.Height();
+    if (adjusted_scroll_offset.width())
+      ts << " scrollX " << adjusted_scroll_offset.width();
+    if (adjusted_scroll_offset.height())
+      ts << " scrollY " << adjusted_scroll_offset.height();
     if (layer.GetLayoutBox() &&
         layer.GetLayoutBox()->PixelSnappedClientWidth() !=
             layer.GetLayoutBox()->PixelSnappedScrollWidth())
@@ -660,10 +694,11 @@ static void Write(WTF::TextStream& ts,
     Write(ts, layer.GetLayoutObject(), indent + 1, behavior);
 }
 
-static Vector<PaintLayer*> ChildLayers(const PaintLayer* layer,
-                                       PaintLayerIteration which_children) {
-  Vector<PaintLayer*> vector;
-  PaintLayerPaintOrderIterator it(*layer, which_children);
+static HeapVector<Member<PaintLayer>> ChildLayers(
+    const PaintLayer* layer,
+    PaintLayerIteration which_children) {
+  HeapVector<Member<PaintLayer>> vector;
+  PaintLayerPaintOrderIterator it(layer, which_children);
   while (PaintLayer* child = it.Next())
     vector.push_back(child);
   return vector;
@@ -728,7 +763,7 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
       ts << " negative z-order list(" << neg_list.size() << ")\n";
       ++curr_indent;
     }
-    for (auto* child_layer : neg_list) {
+    for (auto& child_layer : neg_list) {
       WriteLayers(ts, root_layer, child_layer, curr_indent, behavior,
                   marked_layer);
     }
@@ -750,7 +785,7 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
       ts << " normal flow list(" << normal_flow_list.size() << ")\n";
       ++curr_indent;
     }
-    for (auto* child_layer : normal_flow_list) {
+    for (auto& child_layer : normal_flow_list) {
       WriteLayers(ts, root_layer, child_layer, curr_indent, behavior,
                   marked_layer);
     }
@@ -764,7 +799,7 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
       ts << " positive z-order list(" << pos_list.size() << ")\n";
       ++curr_indent;
     }
-    for (auto* child_layer : pos_list) {
+    for (auto& child_layer : pos_list) {
       WriteLayers(ts, root_layer, child_layer, curr_indent, behavior,
                   marked_layer);
     }

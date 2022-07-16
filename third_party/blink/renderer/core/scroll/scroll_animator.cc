@@ -42,6 +42,12 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
+// This should be after all other #includes.
+#if defined(_WINDOWS_)  // Detect whether windows.h was included.
+// See base/win/windows_h_disallowed.h for details.
+#error Windows.h was included unexpectedly.
+#endif  // defined(_WINDOWS_)
+
 namespace blink {
 
 ScrollAnimatorBase* ScrollAnimatorBase::Create(
@@ -151,7 +157,7 @@ ScrollResult ScrollAnimator::UserScroll(
   // animation rather than animating multiple scrollers at the same time.
   if (on_finish_)
     std::move(on_finish_).Run();
-  return ScrollResult(false, false, delta.Width(), delta.Height());
+  return ScrollResult(false, false, delta.width(), delta.height());
 }
 
 bool ScrollAnimator::WillAnimateToOffset(const ScrollOffset& target_offset) {
@@ -214,13 +220,7 @@ bool ScrollAnimator::WillAnimateToOffset(const ScrollOffset& target_offset) {
   return true;
 }
 
-void ScrollAnimator::AdjustAnimationAndSetScrollOffset(
-    const ScrollOffset& offset,
-    mojom::blink::ScrollType scroll_type) {
-  IntSize adjustment = RoundedIntSize(offset) -
-                       RoundedIntSize(scrollable_area_->GetScrollOffset());
-  ScrollOffsetChanged(offset, scroll_type);
-
+void ScrollAnimator::AdjustAnimation(const IntSize& adjustment) {
   if (run_state_ == RunState::kIdle) {
     AdjustImplOnlyScrollOffsetAnimation(adjustment);
   } else if (HasRunningAnimation()) {
@@ -242,18 +242,17 @@ void ScrollAnimator::ScrollToOffsetWithoutAnimation(
   NotifyOffsetChanged();
 }
 
-void ScrollAnimator::TickAnimation(double monotonic_time) {
+void ScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {
   if (run_state_ != RunState::kRunningOnMainThread)
     return;
 
   TRACE_EVENT0("blink", "ScrollAnimator::tickAnimation");
-  double elapsed_time =
-      monotonic_time - start_time_.since_origin().InSecondsF();
+  base::TimeDelta elapsed_time = monotonic_time - start_time_;
 
   bool is_finished = (elapsed_time > animation_curve_->Duration());
   ScrollOffset offset = BlinkOffsetFromCompositorOffset(
       is_finished ? animation_curve_->TargetValue()
-                  : animation_curve_->GetValue(elapsed_time));
+                  : animation_curve_->GetValue(elapsed_time.InSecondsF()));
 
   offset = scrollable_area_->ClampScrollOffset(offset);
 
@@ -276,7 +275,9 @@ bool ScrollAnimator::SendAnimationToCompositor() {
     return false;
 
   auto animation = std::make_unique<CompositorKeyframeModel>(
-      *animation_curve_, compositor_target_property::SCROLL_OFFSET, 0, 0);
+      *animation_curve_, 0, 0,
+      CompositorKeyframeModel::TargetPropertyId(
+          compositor_target_property::SCROLL_OFFSET));
   // Being here means that either there is an animation that needs
   // to be sent to the compositor, or an animation that needs to
   // be updated (a new scroll event before the previous animation

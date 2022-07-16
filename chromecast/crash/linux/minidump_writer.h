@@ -47,6 +47,9 @@ class MinidumpWriter : public SynchronizedMinidumpManager {
                  const MinidumpParams& params,
                  const std::vector<Attachment>* attachments = nullptr);
 
+  MinidumpWriter(const MinidumpWriter&) = delete;
+  MinidumpWriter& operator=(const MinidumpWriter&) = delete;
+
   ~MinidumpWriter() override;
 
   // Acquires exclusive access to the minidumps directory and generates a
@@ -69,8 +72,6 @@ class MinidumpWriter : public SynchronizedMinidumpManager {
   // integer otherwise. If a callback is not passed in the constructor, the
   // default implemementaion is used.
   DumpStateCallback dump_state_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpWriter);
 };
 
 }  // namespace chromecast

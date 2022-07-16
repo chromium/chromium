@@ -95,7 +95,7 @@ void UrlIconSource::OnSimpleLoaderComplete(
 
   // Call start to begin decoding.  The ImageDecoder will call OnImageDecoded
   // with the data when it is done.
-  ImageDecoder::Start(this, *response_body);
+  ImageDecoder::Start(this, std::move(*response_body));
 }
 
 void UrlIconSource::OnImageDecoded(const SkBitmap& decoded_image) {

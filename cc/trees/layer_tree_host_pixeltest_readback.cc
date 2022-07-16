@@ -66,14 +66,16 @@ class LayerTreeHostReadbackPixelTest
 
     if (readback_type() == TestReadBackType::kBitmap) {
       request = std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(
               &LayerTreeHostReadbackPixelTest::ReadbackResultAsBitmap,
               base::Unretained(this)));
     } else {
       DCHECK_NE(renderer_type_, viz::RendererType::kSoftware);
       request = std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kNativeTextures,
           base::BindOnce(
               &LayerTreeHostReadbackPixelTest::ReadbackResultAsTexture,
               base::Unretained(this)));
@@ -114,17 +116,24 @@ class LayerTreeHostReadbackPixelTest
 
   void ReadbackResultAsTexture(std::unique_ptr<viz::CopyOutputResult> result) {
     EXPECT_TRUE(task_runner_provider()->IsMainThread());
-    ASSERT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA_TEXTURE);
+    ASSERT_FALSE(result->IsEmpty());
+    ASSERT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
+    ASSERT_EQ(result->destination(),
+              viz::CopyOutputResult::Destination::kNativeTextures);
 
-    gpu::Mailbox mailbox = result->GetTextureResult()->mailbox;
-    gpu::SyncToken sync_token = result->GetTextureResult()->sync_token;
+    gpu::Mailbox mailbox = result->GetTextureResult()->planes[0].mailbox;
+    gpu::SyncToken sync_token =
+        result->GetTextureResult()->planes[0].sync_token;
     gfx::ColorSpace color_space = result->GetTextureResult()->color_space;
     EXPECT_EQ(result->GetTextureResult()->color_space, output_color_space_);
-    viz::ReleaseCallback release_callback = result->TakeTextureOwnership();
+
+    viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
+        result->TakeTextureOwnership();
+    EXPECT_EQ(1u, release_callbacks.size());
 
     SkBitmap bitmap =
         CopyMailboxToBitmap(result->size(), mailbox, sync_token, color_space);
-    std::move(release_callback).Run(gpu::SyncToken(), false);
+    std::move(release_callbacks[0]).Run(gpu::SyncToken(), false);
 
     ReadbackResultAsBitmap(std::make_unique<viz::CopyOutputSkBitmapResult>(
         result->rect(), std::move(bitmap)));

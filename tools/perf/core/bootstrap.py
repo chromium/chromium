@@ -27,7 +27,7 @@ def ListAllDepsPaths(deps_file):
   while os.path.basename(chrome_root) != 'src':
     chrome_root = os.path.abspath(os.path.join(chrome_root, '..'))
 
-  exec open(deps_file).read()  # pylint: disable=exec-used
+  exec (open(deps_file).read())  # pylint: disable=exec-used
 
   deps_paths = list(deps.keys())
 

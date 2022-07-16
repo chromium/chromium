@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/app_list/model/search/search_result.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -17,12 +16,13 @@ namespace ash {
 class TestSearchResult : public SearchResult {
  public:
   TestSearchResult();
+
+  TestSearchResult(const TestSearchResult&) = delete;
+  TestSearchResult& operator=(const TestSearchResult&) = delete;
+
   ~TestSearchResult() override;
 
   void set_result_id(const std::string& id);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestSearchResult);
 };
 
 }  // namespace ash

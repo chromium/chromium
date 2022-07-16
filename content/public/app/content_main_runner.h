@@ -22,10 +22,10 @@ class CONTENT_EXPORT ContentMainRunner {
   static std::unique_ptr<ContentMainRunner> Create();
 
   // Initialize all necessary content state.
-  virtual int Initialize(const ContentMainParams& params) = 0;
+  virtual int Initialize(ContentMainParams params) = 0;
 
   // Perform the default run logic.
-  virtual int Run(bool start_minimal_browser) = 0;
+  virtual int Run() = 0;
 
   // Shut down the content state.
   virtual void Shutdown() = 0;

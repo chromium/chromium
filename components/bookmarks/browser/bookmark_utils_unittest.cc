@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
@@ -35,6 +36,9 @@ class BookmarkUtilsTest : public testing::Test,
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         grouped_changes_beginning_count_(0),
         grouped_changes_ended_count_(0) {}
+
+  BookmarkUtilsTest(const BookmarkUtilsTest&) = delete;
+  BookmarkUtilsTest& operator=(const BookmarkUtilsTest&) = delete;
 
   ~BookmarkUtilsTest() override {}
 
@@ -77,8 +81,6 @@ class BookmarkUtilsTest : public testing::Test,
 
   int grouped_changes_beginning_count_;
   int grouped_changes_ended_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkUtilsTest);
 };
 
 TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesWordPhraseQuery) {
@@ -403,7 +405,13 @@ TEST_F(BookmarkUtilsTest, MAYBE_CutToClipboard) {
   EXPECT_TRUE(CanPasteFromClipboard(model.get(), model->other_node()));
 }
 
-TEST_F(BookmarkUtilsTest, PasteNonEditableNodes) {
+// Test is flaky on Mac and LaCros: crbug.com/1236362
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PasteNonEditableNodes DISABLED_PasteNonEditableNodes
+#else
+#define MAYBE_PasteNonEditableNodes PasteNonEditableNodes
+#endif
+TEST_F(BookmarkUtilsTest, MAYBE_PasteNonEditableNodes) {
   // Load a model with an managed node that is not editable.
   auto client = std::make_unique<TestBookmarkClient>();
   BookmarkNode* managed_node = client->EnableManagedNode();

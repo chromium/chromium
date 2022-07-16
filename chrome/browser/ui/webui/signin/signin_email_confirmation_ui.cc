@@ -9,9 +9,9 @@
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/signin_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/resource_path.h"
@@ -27,13 +27,14 @@ SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
   source->DisableTrustedTypesCSP();
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
-  source->SetDefaultResource(IDR_SIGNIN_EMAIL_CONFIRMATION_HTML);
+  source->SetDefaultResource(
+      IDR_SIGNIN_SIGNIN_EMAIL_CONFIRMATION_SIGNIN_EMAIL_CONFIRMATION_HTML);
 
   static constexpr webui::ResourcePath kResources[] = {
       {"signin_email_confirmation_app.js",
-       IDR_SIGNIN_EMAIL_CONFIRMATION_APP_JS},
-      {"signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS},
-      {"signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS},
+       IDR_SIGNIN_SIGNIN_EMAIL_CONFIRMATION_SIGNIN_EMAIL_CONFIRMATION_APP_JS},
+      {"signin_shared_css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
+      {"signin_vars_css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
   };
   source->AddResourcePaths(kResources);
 

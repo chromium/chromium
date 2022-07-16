@@ -86,8 +86,10 @@ const MultiDeviceFeatureBehaviorImpl = {
    */
   isPhoneHubSubFeature(feature) {
     return [
+      settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL,
       settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
-      settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION
+      settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION,
+      settings.MultiDeviceFeature.ECHE
     ].includes(feature);
   },
 
@@ -151,12 +153,16 @@ const MultiDeviceFeatureBehaviorImpl = {
         return this.i18n('multideviceSmartLockItemTitle');
       case settings.MultiDeviceFeature.PHONE_HUB:
         return this.i18n('multidevicePhoneHubItemTitle');
+      case settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL:
+        return this.i18n('multidevicePhoneHubCameraRollItemTitle');
       case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
         return this.i18n('multidevicePhoneHubNotificationsItemTitle');
       case settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
         return this.i18n('multidevicePhoneHubTaskContinuationItemTitle');
       case settings.MultiDeviceFeature.WIFI_SYNC:
         return this.i18n('multideviceWifiSyncItemTitle');
+      case settings.MultiDeviceFeature.ECHE:
+        return this.i18n('multidevicePhoneHubAppsItemTitle');
       default:
         return '';
     }
@@ -176,10 +182,11 @@ const MultiDeviceFeatureBehaviorImpl = {
         return 'os-settings:multidevice-messages';
       case settings.MultiDeviceFeature.SMART_LOCK:
         return 'os-settings:multidevice-smart-lock';
-      // TODO(https://crbug.com/1106937): Use real Phone Hub asset.
       case settings.MultiDeviceFeature.PHONE_HUB:
+      case settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL:
       case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
       case settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
+      case settings.MultiDeviceFeature.ECHE:
         return 'os-settings:multidevice-better-together-suite';
       case settings.MultiDeviceFeature.WIFI_SYNC:
         return 'os-settings:multidevice-wifi-sync';
@@ -204,6 +211,8 @@ const MultiDeviceFeatureBehaviorImpl = {
         return this.i18nAdvanced('multideviceAndroidMessagesItemSummary');
       case settings.MultiDeviceFeature.PHONE_HUB:
         return this.i18nAdvanced('multidevicePhoneHubItemSummary');
+      case settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL:
+        return this.i18nAdvanced('multidevicePhoneHubCameraRollItemSummary');
       case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
         return this.i18nAdvanced('multidevicePhoneHubNotificationsItemSummary');
       case settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
@@ -211,6 +220,8 @@ const MultiDeviceFeatureBehaviorImpl = {
             'multidevicePhoneHubTaskContinuationItemSummary');
       case settings.MultiDeviceFeature.WIFI_SYNC:
         return this.i18nAdvanced('multideviceWifiSyncItemSummary');
+      case settings.MultiDeviceFeature.ECHE:
+        return this.i18nAdvanced('multidevicePhoneHubAppsItemSummary');
       default:
         return '';
     }
@@ -239,12 +250,16 @@ const MultiDeviceFeatureBehaviorImpl = {
         return this.pageContentData.smartLockState;
       case settings.MultiDeviceFeature.PHONE_HUB:
         return this.pageContentData.phoneHubState;
+      case settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL:
+        return this.pageContentData.phoneHubCameraRollState;
       case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
         return this.pageContentData.phoneHubNotificationsState;
       case settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
         return this.pageContentData.phoneHubTaskContinuationState;
       case settings.MultiDeviceFeature.WIFI_SYNC:
         return this.pageContentData.wifiSyncState;
+      case settings.MultiDeviceFeature.ECHE:
+        return this.pageContentData.phoneHubAppsState;
       default:
         return null;
     }

@@ -23,6 +23,10 @@ class HardwareRendererViz : public HardwareRenderer {
   HardwareRendererViz(RenderThreadManager* state,
                       RootFrameSinkGetter root_frame_sink_getter,
                       AwVulkanContextProvider* context_provider);
+
+  HardwareRendererViz(const HardwareRendererViz&) = delete;
+  HardwareRendererViz& operator=(const HardwareRendererViz&) = delete;
+
   ~HardwareRendererViz() override;
 
   // HardwareRenderer overrides.
@@ -52,8 +56,6 @@ class HardwareRendererViz : public HardwareRenderer {
   std::unique_ptr<OnViz> on_viz_;
 
   THREAD_CHECKER(render_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(HardwareRendererViz);
 };
 
 }  // namespace android_webview

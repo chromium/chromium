@@ -10,11 +10,11 @@
 #include <algorithm>
 #include <iterator>
 #include <limits>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/gtest_prod_util.h"
 #include "base/notreached.h"
 #include "base/observer_list_internal.h"
 #include "base/ranges/algorithm.h"

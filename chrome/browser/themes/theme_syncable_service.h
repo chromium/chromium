@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
@@ -54,6 +53,10 @@ class ThemeSyncableService : public syncer::SyncableService,
   // `profile` may be nullptr in tests (and is the one used by theme_service,
   // otherwise).
   ThemeSyncableService(Profile* profile, ThemeService* theme_service);
+
+  ThemeSyncableService(const ThemeSyncableService&) = delete;
+  ThemeSyncableService& operator=(const ThemeSyncableService&) = delete;
+
   ~ThemeSyncableService() override;
 
   static syncer::ModelType model_type() { return syncer::THEMES; }
@@ -135,8 +138,6 @@ class ThemeSyncableService : public syncer::SyncableService,
   base::ThreadChecker thread_checker_;
 
   FRIEND_TEST_ALL_PREFIXES(ThemeSyncableServiceTest, AreThemeSpecificsEqual);
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeSyncableService);
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_SYNCABLE_SERVICE_H_

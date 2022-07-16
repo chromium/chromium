@@ -32,22 +32,25 @@ using testing::AtLeast;
 class BrowserShutdownBrowserTest : public InProcessBrowserTest {
  public:
   BrowserShutdownBrowserTest() {}
+
+  BrowserShutdownBrowserTest(const BrowserShutdownBrowserTest&) = delete;
+  BrowserShutdownBrowserTest& operator=(const BrowserShutdownBrowserTest&) =
+      delete;
+
   ~BrowserShutdownBrowserTest() override {}
 
  protected:
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserShutdownBrowserTest);
 };
 
 class BrowserClosingObserver : public BrowserListObserver {
  public:
   BrowserClosingObserver() {}
-  MOCK_METHOD1(OnBrowserClosing, void(Browser* browser));
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserClosingObserver);
+  BrowserClosingObserver(const BrowserClosingObserver&) = delete;
+  BrowserClosingObserver& operator=(const BrowserClosingObserver&) = delete;
+
+  MOCK_METHOD1(OnBrowserClosing, void(Browser* browser));
 };
 
 // ChromeOS has the different shutdown flow on user initiated exit process.
@@ -55,9 +58,10 @@ class BrowserClosingObserver : public BrowserListObserver {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
                        PRE_TwoBrowsersClosingShutdownHistograms) {
-  ui_test_utils::NavigateToURL(browser(), GURL("browser://version"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("browser://version")));
   Browser* browser2 = CreateBrowser(browser()->profile());
-  ui_test_utils::NavigateToURL(browser2, GURL("browser://help"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL("browser://help")));
 
   BrowserClosingObserver closing_observer;
   BrowserList::AddObserver(&closing_observer);
@@ -76,8 +80,16 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
   BrowserList::RemoveObserver(&closing_observer);
 }
 
+// Flakes on Mac11.0: https://crbug.com/1259913
+#if defined(OS_MAC)
+#define MAYBE_TwoBrowsersClosingShutdownHistograms \
+  DISABLED_TwoBrowsersClosingShutdownHistograms
+#else
+#define MAYBE_TwoBrowsersClosingShutdownHistograms \
+  TwoBrowsersClosingShutdownHistograms
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
-                       TwoBrowsersClosingShutdownHistograms) {
+                       MAYBE_TwoBrowsersClosingShutdownHistograms) {
   histogram_tester_.ExpectUniqueSample(
       "Shutdown.ShutdownType",
       static_cast<int>(browser_shutdown::ShutdownType::kWindowClose), 1);

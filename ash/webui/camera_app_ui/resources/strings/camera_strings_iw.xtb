@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="iw">
+<translation id="1113173431709655881">מצב מצלמה</translation>
+<translation id="1175958423215084756">זוהה קישור. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">סיבוב ב-90 מעלות בכיוון השעון</translation>
+<translation id="1276998909102132017">תמונות מהגלריה</translation>
+<translation id="1300209025925956156">סריקת המסמך</translation>
+<translation id="1303487788671416818">הפעלת תמונת מצב של סרטון בגודל מלא</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. ניתן לגשת אליהם באמצעות חיפוש + חץ שמאלה.</translation>
+<translation id="1430915738399379752">הדפסה</translation>
+<translation id="1467231725790366244"><ph name="CAMERA" /> מנותקת.</translation>
+<translation id="1473110567575736769">טיימר ל-3 שניות</translation>
+<translation id="1545749641540134597">‏סריקת קוד QR</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">רגיל</translation>
+<translation id="1620510694547887537">מצלמה</translation>
+<translation id="1627744224761163218">‎4 x 4</translation>
+<translation id="1664224225747386870">לא צולם סרטון</translation>
+<translation id="1838104802459806957">הטייה מעלה</translation>
+<translation id="1851169887664797861">יש פקדים נוספים למצלמה</translation>
+<translation id="1851616744363735765">מושהית</translation>
+<translation id="1862930711583847113">לא ניתן לייצא את <ph name="FILE" /></translation>
+<translation id="1899697626337024495">רזולוציית תמונה</translation>
+<translation id="2022953316617983419">‏קוד QR</translation>
+<translation id="2036868001356139588">משך זמן בטיימר</translation>
+<translation id="2050339315714019657">לאורך</translation>
+<translation id="2064538373111010176"><ph name="CAMERA" /> פעילה</translation>
+<translation id="2144806332417375165">התאמה אישית של פרמטרים לסרטונים</translation>
+<translation id="2175927920773552910">‏קוד QR</translation>
+<translation id="229579744168541441">ייצוא לדיסק</translation>
+<translation id="2320741269052147773">הזזה שמאלה</translation>
+<translation id="2501278716633472235">חזרה</translation>
+<translation id="2501853267655415902">צילום הסרטון הופסק</translation>
+<translation id="2501953888035679275">צילום תמונות וסרטונים באמצעות המצלמה.</translation>
+<translation id="2517472476991765520">סריקה</translation>
+<translation id="2549985041256363841">צילום סרטון</translation>
+<translation id="2599796128805996109">מצלמה אחורית</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> שנ'</translation>
+<translation id="2761536921376153655">סוג סריקה</translation>
+<translation id="2879583609344924966"><ph name="CAMERA" /> מחוברת.</translation>
+<translation id="2968794441791257519">תמונות וסרטונים שצולמו בעזרת המצלמה יועברו אל התיקייה 'הורדות'. אפשר לגשת אליהם דרך 'קבצים'.
+
+        אפליקציות עם הרשאות אחסון יוכלו לגשת אל התמונות והסרטונים שלך.</translation>
+<translation id="3067436040345934772">הזזה ימינה</translation>
+<translation id="3081586908890909590">מעבר לצילום וידאו</translation>
+<translation id="313467653172006084">30FPS</translation>
+<translation id="3183731565330012717">סוג רשת</translation>
+<translation id="3227137524299004712">מיקרופון</translation>
+<translation id="3240426699337459095">הקישור הועתק</translation>
+<translation id="3259149966178251584">רזולוציית המצלמה</translation>
+<translation id="3260401663013584785">לא זוהה מסמך</translation>
+<translation id="3305962767867348165">תיקון</translation>
+<translation id="3448774564454087943">הסרטון לא נשמר כי הוא קצר מדי</translation>
+<translation id="346539236881580388">צילום חוזר</translation>
+<translation id="3517926952904427380">לא ניתן לצלם לאורך</translation>
+<translation id="3569311554794739032">להסיר את <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">מעבר למצב סריקה</translation>
+<translation id="3789724198583203151">סיבוב ב-90 מעלות נגד כיוון השעון</translation>
+<translation id="3810838688059735925">סרטון</translation>
+<translation id="3838931309141338733">סריקת ברקוד</translation>
+<translation id="3892148308691398805">העתקת הטקסט</translation>
+<translation id="4118525110028899586">השהיית ההקלטה</translation>
+<translation id="4121305183798804752">זוהה מסמך</translation>
+<translation id="4269820728363426813">העתקת כתובת של קישור</translation>
+<translation id="4279490309300973883">שיקוף</translation>
+<translation id="4329152592498422850">מעבר לצילום תמונה מרובעת</translation>
+<translation id="4383571725254449280">הדפסת יומני ביצועים</translation>
+<translation id="4445542136948522167">הפסקת הצילום</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:‏<ph name="ASPECT_RATIO_HEIGHT" />)‏ <ph name="MEGAPIXEL" /> מגה-פיקסל</translation>
+<translation id="4570032796877367747">מצלמה קדמית</translation>
+<translation id="4628948037717959914">תמונה</translation>
+<translation id="4649291346448517080">לא ניתן לשמור את הקובץ</translation>
+<translation id="4890010094662541459">‎3 x 3</translation>
+<translation id="491895758387112773">הקלטת סרטון במולטי-סטרימינג</translation>
+<translation id="5057360777601936059">המצלמה אינה זמינה כרגע.
+        יש לבדוק אם המצלמה מחוברת כראוי.</translation>
+<translation id="5152121255775685072">למעבר אל הגלריה</translation>
+<translation id="520537883758714667">התכונה 'סריקת מסמכים' זמינה עכשיו</translation>
+<translation id="5317780077021120954">שמירה</translation>
+<translation id="5444515100983837161">יש למקם את כל קצות המסמך בתוך המסגרת. הסריקה תתבצע בצורה הטובה ביותר אם המסמך והרקע יהיו בצבעים שונים.</translation>
+<translation id="5671277269877808209">ריבוע</translation>
+<translation id="5746169159649715125">‏שמירה כקובץ PDF</translation>
+<translation id="5753488212459587150">הפעלת מצב מתקדם</translation>
+<translation id="5759254179196327752">סריקת מסמך</translation>
+<translation id="5775960006311140197">מצב מתקדם</translation>
+<translation id="5869546221129391014">רשת</translation>
+<translation id="5975083100439434680">התרחקות</translation>
+<translation id="6073451960410192870">הפסקת צילום הסרטון</translation>
+<translation id="6197807149213783179">שמירת מטא-נתונים</translation>
+<translation id="6233780560267770709">3 על 3</translation>
+<translation id="6243827288366940320">יחס הזהב</translation>
+<translation id="6248749904681914629">מצלמה חיצונית</translation>
+<translation id="6353688143752491039">תודה על המשוב ששלחת לגבי אפליקציית המצלמה.
+
+אם המשוב מתייחס לאיכות התמונה או הסרטון, יש לצרף תמונה או סרטון לדוגמה ולתאר מה השתבש (לדוגמה, התמונה כהה מדי או שנושא התמונה לא בפוקוס).</translation>
+<translation id="6420689864531458495">‏(<ph name="ASPECT_RATIO_WIDTH" />:‏<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />)‏ <ph name="MEGAPIXEL" /> מגה-פיקסל</translation>
+<translation id="6527303717912515753">שיתוף</translation>
+<translation id="667999046851023355">מסמך</translation>
+<translation id="6681668084120808868">צילום תמונה</translation>
+<translation id="6778482348691154169">לא ניתן לצלם תמונה</translation>
+<translation id="695140971690006676">איפוס של הכול</translation>
+<translation id="6965382102122355670">אישור</translation>
+<translation id="698156982839284926">3 שניות</translation>
+<translation id="712848772518857951">להסיר <ph name="COUNT" /> פריטים?</translation>
+<translation id="7134221860976209830">טיימר ל-10 שניות</translation>
+<translation id="7191890674911603392">סוג רשומה</translation>
+<translation id="7243947652761655814">רזולוציית הווידאו</translation>
+<translation id="7337660886763914220">שגיאות במערכת הקבצים.</translation>
+<translation id="7450541714075000668">הטקסט הועתק</translation>
+<translation id="7476762461674917065">‏הצגת האפשרות להקלטת GIF</translation>
+<translation id="7488619942230388918">‏צילום סרטון בפורמט GIF</translation>
+<translation id="7557677699350329807">מעבר למצלמה הבאה</translation>
+<translation id="7607002721634913082">ההורדה בהשהיה</translation>
+<translation id="7608223098072244877">4 על 4</translation>
+<translation id="7649070708921625228">עזרה</translation>
+<translation id="7658239707568436148">ביטול</translation>
+<translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">צילום סרטון רגיל</translation>
+<translation id="7983668134180549431">זוהה טקסט.</translation>
+<translation id="8067883171444229417">הפעלת הסרטון</translation>
+<translation id="8120146556401698679">הזזה הטיה זום</translation>
+<translation id="8131740175452115882">אישור</translation>
+<translation id="8145038249676204903">מעבר לצילום תמונות</translation>
+<translation id="8167081290930651932">שמירה כתמונה</translation>
+<translation id="8239780215768881278">צילום תמונה מהסרטון</translation>
+<translation id="8261506727792406068">מחיקה</translation>
+<translation id="8425673304802773841">הטייה מטה</translation>
+<translation id="8428213095426709021">הגדרות</translation>
+<translation id="8687491812650032292">‏איכות HD ‏– ‎<ph name="HEIGHT" />p ‏(<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">הבנתי</translation>
+<translation id="8730621377337864115">בוצע</translation>
+<translation id="8732462232047530626">תצוגה מקדימה של מטא-נתונים</translation>
+<translation id="8815966864175525708">מעבר לצילום תמונות לאורך</translation>
+<translation id="8828441885228359828">המשך הצילום</translation>
+<translation id="8870695351537079478">לא ניתן להתחיל בצילום סרטון</translation>
+<translation id="8903921497873541725">התקרבות לתצוגה</translation>
+<translation id="9045010116236796332">צריך למקם את כל קצות המסמך בתוך המסגרת</translation>
+<translation id="9045155556724273246">10 שניות</translation>
+<translation id="906331135292332864">התמונה עוברת עיבוד…</translation>
+<translation id="945522503751344254"> שליחת משוב</translation>
+</translationbundle>

@@ -89,6 +89,10 @@ class DummyFrameScheduler : public FrameScheduler {
                              const SchedulingPolicy& policy) override {}
   void OnStoppedUsingFeature(SchedulingPolicy::Feature feature,
                              const SchedulingPolicy& policy) override {}
+  base::WeakPtr<FrameOrWorkerScheduler> GetSchedulingAffectingFeatureWeakPtr()
+      override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
   WTF::HashSet<SchedulingPolicy::Feature>
   GetActiveFeaturesTrackedForBackForwardCacheMetrics() override {
     return WTF::HashSet<SchedulingPolicy::Feature>();
@@ -123,7 +127,6 @@ class DummyPageScheduler : public PageScheduler {
   void SetPageVisible(bool) override {}
   void SetPageFrozen(bool) override {}
   void SetPageBackForwardCached(bool) override {}
-  void SetKeepActive(bool) override {}
   bool IsMainFrameLocal() const override { return true; }
   void SetIsMainFrameLocal(bool) override {}
   void OnLocalMainFrameNetworkAlmostIdle() override {}

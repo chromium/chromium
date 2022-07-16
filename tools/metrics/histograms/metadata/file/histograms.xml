@@ -1,0 +1,1006 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of File histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="FileBrowser.ChangeDirectory.RootType"
+    enum="FileManagerRootType" expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Counts the number of directory-changed events,
+    bucketed by the RootType of the directory newly displayed.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.ComputersCount" units="Computers"
+    expires_after="2022-05-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: number of Computers a user has available in the
+    Files app. Computed every time the File Browser is opened (including file
+    picker dialogs). NOTE: This data is biased towards users that use the Files
+    App more often.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Create" enum="FileDialogType"
+    expires_after="2022-04-03">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: The mode in which the File Browser was opened.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.DirectoryScan" units="ms"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: time to scan a directory. Measured on every File
+    Browser directory change.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.DownloadDestination.IsGoogleDrive.Changed"
+    enum="BooleanEnabled" expires_after="M98">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Tracks whether download destination is set to a Google Drive folder when the
+    download destination is changed by the user in the settings page.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.DownloadDestination.IsGoogleDrive.Started"
+    enum="BooleanEnabled" expires_after="2022-04-03">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Tracks whether download destination is set to a Google Drive folder on
+    startup.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Downloads.DirectoryPercentageOfDiskUsage"
+    units="%" expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The size of the space consumed by a users files in &quot;My Files&quot;
+    folder and it's children, calculated as a percentage of the total disk
+    space. Caluclated on user login and recorded by VolumeManager.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Downloads.DirectorySizeMiB" units="MiB"
+    expires_after="2022-04-17">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The total size of all of the users files stored in the &quot;My Files&quot;
+    folder and it's children. Caluclated on user login and recorded by
+    VolumeManager.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.DownloadsCount" units="units"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: number of files and directories in the Downloads
+    directory (not including the contents of nested directories). Computed every
+    time the File Browser current directory changes to Downloads.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.DriveDuplicateFinder.LongComputeHash" units="ms"
+    expires_after="2022-04-24">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The time taken to calculate the hash of a file, only recorded if the time
+    exceeds a local threshold that is currenty 5 seconds.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.DriveDuplicateFinder.LongSearchByHash" units="ms"
+    expires_after="2022-05-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The time taken to search for a file using it's hash value, only recorded if
+    the time exceeds a local threshold that is currently 1 second.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.DriveHostedFilePinSuccess" enum="BooleanSuccess"
+    expires_after="2022-04-24">
+  <owner>austinct@chromium.org</owner>
+  <owner>dats@chromium.org</owner>
+  <summary>Tracks success rate of pinning hosted files in Drive.</summary>
+</histogram>
+
+<histogram name="FileBrowser.DrivePinSuccess" enum="BooleanSuccess"
+    expires_after="2022-04-24">
+  <owner>austinct@chromium.org</owner>
+  <owner>dats@chromium.org</owner>
+  <summary>Tracks success rate of pinning files in Drive.</summary>
+</histogram>
+
+<histogram name="FileBrowser.FileSystemProviderMounted"
+    enum="FileSystemProviderMountType" expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The type of file system provider that has been mounted. This metric is
+    emmitted on mounting of the filesystem.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.FolderShortcut.Add" units="Shortcuts"
+    expires_after="M108">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: this is recorded when the user adds a folder
+    shortcut.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.FolderShortcut.Count" units="Shortcuts"
+    expires_after="2022-05-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: number of saved folder shorcuts. This is recorded
+    when the Files app is launched.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.FolderShortcut.Navigate" units="Navigations"
+    expires_after="M108">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: this is recorded when the user clicks or selects a
+    folder shortcut and is navigated to the target folder.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.FolderShortcut.Remove" units="Shortcuts"
+    expires_after="M108">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: this is recorded when the user removes a folder
+    shortcut.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.FormatFileSystemType"
+    enum="FileManagerFormatFileSystemType" expires_after="2022-04-10">
+  <owner>austinct@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: this records the filesystem selected when formatting
+    an external drive.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Glitch" enum="FileManagerGlitch"
+    expires_after="M108">
+  <owner>majewski@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: this records errors and rejected promises that
+    occurred during regular use of File Manager. The purpose of this metric is
+    to report unexpected errors caught by the global window.onerror handler or
+    global unhandledrejection listener. In normal conditions this should never
+    happen. However, if it occurs, it is a sign of significant and unexpected
+    errors which must not go undetected.
+  </summary>
+</histogram>
+
+<histogram
+    name="FileBrowser.HoldingSpace.TimeFromFirstWelcomeBannerShowToFirstPin"
+    units="ms" expires_after="2022-04-10">
+  <owner>dmblack@google.com</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Chrome OS Files App: Records the time from when the holding space welcome
+    banner was first shown to when the user first pinned an item to holding
+    space from the Files app. If the holding space welcome banner was not shown
+    prior to the first pin, zero is recorded.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.ImportController.DeviceYanked" enum="Boolean"
+    expires_after="M102">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files App: Whether an external media device was removed during the
+    upload process.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.ImportController.ImportCancelled"
+    enum="BooleanCanceled" expires_after="M102">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files App: Whether the media import process was cancelled.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.LauncherSearch.Drive" units="ms"
+    expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The time taken to execute launcher search for drive files. Recorded when the
+    complete result set is returned from drive.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.LauncherSearch.Local" units="ms"
+    expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The time taken to execute launcher search for local files. Recorded when the
+    complete result set has been calculated for files on the local disk.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Load{FileBrowserLoad}" units="ms"
+    expires_after="M108">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser is an built-in extension without a background page.
+    Its main.html file is loaded every time the user opens a File Browser tab or
+    a file chooser dialog. The file is fairly large and the initialization is
+    pretty expensive. {FileBrowserLoad}
+  </summary>
+  <token key="FileBrowserLoad">
+    <variant name=""/>
+    <variant name=".BackgroundLaunch"
+        summary="Time from onLaunched event is called to the window is
+                 created."/>
+    <variant name=".BackgroundRestart"
+        summary="Time to create a window on restart."/>
+    <variant name=".BackgroundScript"
+        summary="Time to initialize backend script to wait for events."/>
+    <variant name=".Construct"
+        summary="Time spent constructing the main Javascript object.">
+      <obsolete>
+        Deprecated as of 12/2016.
+      </obsolete>
+    </variant>
+    <variant name=".DOM" summary="Time to initialize DOM.">
+      <obsolete>
+        Deprecated as of 12/2016.
+      </obsolete>
+    </variant>
+    <variant name=".FileSystem"
+        summary="Time to get access to the local file system.">
+      <obsolete>
+        Deprecated as of 9/2013.
+      </obsolete>
+    </variant>
+    <variant name=".ImportElements"
+        summary="Time to initialize the polymer elements."/>
+    <variant name=".InitBackgroundPage"
+        summary="Time to initialize the background page."/>
+    <variant name=".InitDocuments"
+        summary="Time to initialize the background page and the elements."/>
+    <variant name=".InitSettings" summary="Time to restore user settings."/>
+    <variant name=".InitUI"
+        summary="Time to initialize all UI after all elements are
+                 initialized."/>
+    <variant name=".Parse"
+        summary="Time to parse Javascript and CSS (Deprecated).">
+      <obsolete>
+        Deprecated as of 12/2016.
+      </obsolete>
+    </variant>
+    <variant name=".ProcessInitialSearchQuery"
+        summary="Time to process LaunchParam.searchQuery (time to find a
+                 query-matched directory)."/>
+    <variant name=".Roots" summary="Time to enumerate file system roots.">
+      <obsolete>
+        Deprecated as of 12/2016.
+      </obsolete>
+    </variant>
+    <variant name=".Script" summary="Time to parse Javascript and CSS."/>
+    <variant name=".Total"
+        summary="Total load time from the moment the Javascript started
+                 parsing till the moment the empty file list is displayed."/>
+  </token>
+</histogram>
+
+<histogram name="FileBrowser.Location.OnEntryExpandedOrCollapsed.NonTopLevel"
+    enum="FileManagerRootType" expires_after="M108">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files App: The locations (root types) of non-top-level entries
+    when they are expanded or collapsed (expand icon clicked) in the directory
+    tree.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Location.OnEntryExpandedOrCollapsed.TopLevel"
+    enum="FileManagerRootType" expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files App: The locations (root types) of top-level entries (root
+    entries) when they are expanded or collapsed (expand icon clicked) in the
+    directory tree.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Location.OnEntrySelected.NonTopLevel"
+    enum="FileManagerRootType" expires_after="M108">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files App: The locations (root types) of non-top-level entries
+    when they are clicked in the directory tree. Contains incomplete data from
+    M80 to M87 inclusively.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Location.OnEntrySelected.TopLevel"
+    enum="FileManagerRootType" expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files App: The locations (root types) of top-level entries (root
+    entries) when they are clicked in the directory tree. Contains incomplete
+    data from M80 to M87 inclusively.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.MediaImport.Cancelled" enum="BooleanCanceled"
+    expires_after="2022-04-24">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files App: Whether the media import (Photos/Video) from external
+    media was cancelled.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.MediaImport.Duplicates" units="count"
+    expires_after="M108">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files App: Count of duplicate media (Photos/Videos) files that
+    were skipped during a single upload session.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.MediaImport.ErrorCount" units="count"
+    expires_after="2022-04-24">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files App: Number of errors that occured during an upload session.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.MediaImport.ImportCount" units="count"
+    expires_after="2022-04-24">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files App: Count of individual media (Photos/Videos) uploaded from
+    a single upload session.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.MediaImport.ImportMB" units="MBytes"
+    expires_after="2022-04-24">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files App: Size of the media (Photos/Videos) uploaded from a
+    single upload session.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.MediaImport.Started" enum="BooleanAttempted"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files App: Whether the media import (Photos/Video) from external
+    media was started.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.MenuItemSelected" enum="FileManagerMenuCommands"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files App: The commands selected in the menu by the files app.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Notification.Show"
+    enum="FileManagerNotificationType" expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Notification types what were shown to the user.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Notification.UserAction"
+    enum="FileManagerNotificationUserAction" expires_after="M108">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: The action a user takes when shown a notification.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.OpenFiles.RootType" enum="FileManagerRootType"
+    expires_after="2022-04-03">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: The locations (root types) of files which are opened
+    by the file picker.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.PhotoEditor.DisplayTime" units="ms"
+    expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Photo Editor: time to display an image. Measured from the moment
+    the user selected the image till the moment it is displayed (not counting
+    the low resolution preview).
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.PhotoEditor.FileType" enum="PhotoEditorFileType"
+    expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>Chrome OS Photo Editor: the type of the file opened.</summary>
+</histogram>
+
+<histogram name="FileBrowser.PhotoEditor.LoadMode" enum="PhotoEditorLoadMode"
+    expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>Chrome OS Photo Editor: the way the image has been loaded.</summary>
+</histogram>
+
+<histogram name="FileBrowser.PhotoEditor.LoadTime" units="ms"
+    expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>Chrome OS Photo Editor: time to load an image from a file.</summary>
+</histogram>
+
+<histogram name="FileBrowser.PhotoEditor.SaveResult"
+    enum="PhotoEditorSaveResult" expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Photo Editor: the result of a file save operation.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.PhotoEditor.SaveTime" units="ms"
+    expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>Chrome OS Photo Editor: time to save an image to a file.</summary>
+</histogram>
+
+<histogram name="FileBrowser.PhotoEditor.Size.MB" units="MBytes"
+    expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Photo Editor: size of an image file in megabytes. Measured on
+    every image load.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.PhotoEditor.Size.MPix" units="MPixels"
+    expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Photo Editor: size of an image in megapixels. Measured on every
+    image load.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.PhotoEditor.Tool" enum="PhotoEditorToolType"
+    expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>Chrome OS Photo Editor: the button which the user clicked.</summary>
+</histogram>
+
+<histogram name="FileBrowser.QuickView.DialogType" enum="FileDialogType"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    File dialog type (e.g. Full page, Save as file) when quick view is launched.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.QuickView.FileType" enum="ViewFileType"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>File types that were tried to be opened with quick view.</summary>
+</histogram>
+
+<histogram name="FileBrowser.QuickView.FileTypeOnLaunch" enum="ViewFileType"
+    expires_after="2022-05-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>File types that were selected when quick view is launched.</summary>
+</histogram>
+
+<histogram name="FileBrowser.QuickView.VolumeType" enum="FileManagerVolumeType"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>The volume type where quick view is opened.</summary>
+</histogram>
+
+<histogram name="FileBrowser.QuickView.WayToOpen"
+    enum="FileManagerQuickViewWayToOpen" expires_after="M108">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>How quick view was opened.</summary>
+</histogram>
+
+<histogram name="FileBrowser.Recent.LoadArcMedia" units="ms"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time to load a recently modified file list from Media Views. It is triggered
+    when the user opens or reloads Recent view in the Files app.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Recent.LoadCrostini" units="ms"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time to load a recently modified file list from Crostini. It is triggered
+    when the user opens or reloads Recent view in the Files app.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Recent.LoadDownloads" units="ms"
+    expires_after="M108">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time to load a recently modified file list from Downloads. It is triggered
+    when the user opens or reloads Recent view in the Files app.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Recent.LoadDrive" units="ms"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time to load a recently modified file list from Drive. It is triggered when
+    the user opens or reloads Recent view in the Files app.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Recent.LoadTotal" units="ms"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time to load a recently modified file list from all sources. It is triggered
+    when the user opens or reloads Recent view in the Files app.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Share.ActionSource" enum="SharingActionSource"
+    expires_after="2022-04-24">
+  <obsolete>
+    Removed in M97. File sharing is now done by Sharesheet, not Files.app.
+    Replaced with ChromeOS.Sharesheet.LaunchSource.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>Chrome OS File Browser: the source of file sharing action.</summary>
+</histogram>
+
+<histogram name="FileBrowser.Share.FileCount" units="files"
+    expires_after="2022-04-17">
+  <obsolete>
+    Removed in M97. File sharing is now done by Sharesheet, not Files.app.
+    Replaced with ChromeOS.Sharesheet.FileCount.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: The number of files shared via a single Share
+    action.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Share.FileType" enum="ViewFileType"
+    expires_after="2022-04-24">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: The type of the file shared via Share action.
+    Recorded for each file being shared by a share action
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.SuggestApps.CloseDialog"
+    enum="SuggestAppsDialogCloseReason" expires_after="M92">
+  <obsolete>
+    Removed in M90. Files.app no longer displays CWS dialog.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: the reason why the suggest apps dialog was closed.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.SuggestApps.Install"
+    enum="SuggestAppsDialogInstall" expires_after="2021-08-09">
+  <obsolete>
+    Removed in M90. Files.app no longer displays CWS dialog.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: whether the Webstore item user selected was
+    successfully installed or not.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.SuggestApps.Load" enum="SuggestAppsDialogLoad"
+    expires_after="2021-08-09">
+  <obsolete>
+    Removed in M90. Files.app no longer displays CWS dialog.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: whether the initialization of the dialog succeeded
+    or not.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.SuggestApps.LoadTime" units="ms"
+    expires_after="M92">
+  <obsolete>
+    Removed in M90. Files.app no longer displays CWS dialog.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: time to load the suggest apps dialog. Measured
+    between the moment window appears and the moment all the contents in the
+    dialog including the Chrome Webstore widget are ready.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.SWA.Create" enum="FileDialogType"
+    expires_after="2022-04-17">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: When running as SWA, the mode in which the SWA was
+    opened. For the non-SWA, see `FileBrowser.Create`.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.TeamDrivesCount" units="Team Drives"
+    expires_after="M98">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: number of Team Drives a user has available in the
+    Files app. Computed every time the File Browser is opened (including file
+    picker dialogs). NOTE: This data is biased towards users that use the Files
+    App more often.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.ToggleFileListType" enum="FileManagerListType"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS Files App: Recorded when the Grid View/List View toggle menu icon
+    is selected.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.ViewingFileType" enum="ViewFileType"
+    expires_after="M98">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    File types that were tried to be viewed through browser. This is recorded
+    when the user tries to view a file from the Files app.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.ViewingFileType.Offline" enum="ViewFileType"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    File types that were tried to be viewed through browser while the user is
+    offline. This is recorded when the user tries to view a file from the Files
+    app.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.ViewingFileType.Online" enum="ViewFileType"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    File types that were tried to be viewed through browser while the user is
+    online. This is recorded when the user tries to view a file from the Files
+    app.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.ViewingRootType" enum="FileManagerRootType"
+    expires_after="2022-04-03">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: The locations (root types) of files which are opened
+    in stand-alone mode. This does not include files opened in file picker mode.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.ViewingRootType.Offline"
+    enum="FileManagerRootType" expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: The locations (root types) of files which are opened
+    in stand-alone mode while the user is offline. This does not include files
+    opened in file picker mode.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.ViewingRootType.Online" enum="FileManagerRootType"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: The locations (root types) of files which are opened
+    in stand-alone mode while the user is online. This does not include files
+    opened in file picker mode.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.ViewingTaskType" enum="FileManagerTaskType"
+    expires_after="2022-04-03">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: The type of the handler to be used to open files.
+    This is recorded when the user tries to view a file from the Files app.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.ViewingTaskType.Offline"
+    enum="FileManagerTaskType" expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: The type of the handler to be used to open files
+    when the user is offline. This is recorded when the user tries to view a
+    file from the Files app.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.ViewingTaskType.Online" enum="FileManagerTaskType"
+    expires_after="2022-04-10">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: The type of the handler to be used to open files
+    when the user is online. This is recorded when the user tries to view a file
+    from the Files app.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.VolumeType" enum="FileManagerVolumeType"
+    expires_after="2022-04-03">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: counts the number of times volumes are mounted for
+    each volume type.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.ZipFileTask" enum="FileManagerZipHandlerType"
+    expires_after="M98">
+  <obsolete>
+    Related to NaCl-based ZipArchiver extension, removed in M96
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: counts the number of times ZIP file was opened or
+    created, categorized by component extensions and its operation types.
+  </summary>
+</histogram>
+
+<histogram name="FileReaderSync.WorkerType" enum="FileReaderSyncWorkerType"
+    expires_after="M85">
+  <owner>mek@chromium.org</owner>
+  <summary>
+    For each FileReaderSync instance records the type of the web worker that
+    created the instance.
+  </summary>
+</histogram>
+
+<histogram name="FileSystem.DirectoryDatabaseInit"
+    enum="FileSystemDatabaseInitResult" expires_after="never">
+<!-- expires-never: core storage metric; consumed in separate dashboard (go/chrome-storage-dashboard) -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwnall@chromium.org</owner>
+  <summary>The result of FileSystemDirectoryDatabase initialization.</summary>
+</histogram>
+
+<histogram name="FileSystem.DirectoryDatabaseRepair"
+    enum="DirectoryDatabaseRepairResult" expires_after="M77">
+  <owner>tzik@chromium.org</owner>
+  <summary>The result of FileSystemDirectoryDatabase repair.</summary>
+</histogram>
+
+<histogram name="FileSystem.OpenFileSystem" enum="OpenFileSystemResult"
+    expires_after="M77">
+  <owner>tzik@chromium.org</owner>
+  <summary>
+    The success or the cause of failure for each call to OpenFileSystem().
+  </summary>
+</histogram>
+
+<histogram name="FileSystem.OpenFileSystemDetail" enum="FileSystemErrors"
+    expires_after="M77">
+  <owner>tzik@chromium.org</owner>
+  <summary>The result of opening a filesystem.</summary>
+</histogram>
+
+<histogram name="FileSystem.OpenFileSystemDetailNonthrottled"
+    enum="FileSystemErrors" expires_after="M77">
+  <owner>tzik@chromium.org</owner>
+  <summary>The result of opening a non-throttled filesystem.</summary>
+</histogram>
+
+<histogram name="FileSystem.OriginDatabaseInit"
+    enum="FileSystemDatabaseInitResult" expires_after="never">
+<!-- expires-never: core storage metric; consumed in separate dashboard (go/chrome-storage-dashboard) -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwnall@chromium.org</owner>
+  <summary>The result of FileSystemOriginDatabase initialization.</summary>
+</histogram>
+
+<histogram name="FileSystem.PersistentOriginsCount" units="units"
+    expires_after="2018-08-30">
+  <owner>tzik@chromium.org</owner>
+  <summary>
+    Number of origins that have persistent filesystem. Measured when the Quota
+    system queries the filesystem subsystem about its entire usage, which
+    usually happens when one of the storage subsystem methods is called for the
+    first time.
+  </summary>
+</histogram>
+
+<histogram name="FileSystem.TemporaryOriginsCount" units="units"
+    expires_after="2018-08-30">
+  <owner>tzik@chromium.org</owner>
+  <summary>
+    Number of origins that have temporary filesystem. Measured when the Quota
+    system queries the filesystem subsystem about its entire usage, which
+    usually happens when one of the storage subsystem methods is called for the
+    first time.
+  </summary>
+</histogram>
+
+<histogram name="ZipFileCreator.Result" enum="ZipFileCreator.Result"
+    expires_after="2022-04-17">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    ZipFileCreator service: Result of a ZIP file creation (success, error or
+    cancelled).
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

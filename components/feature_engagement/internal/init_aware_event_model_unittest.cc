@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 #include "components/feature_engagement/internal/test/event_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,6 +26,10 @@ namespace {
 class MockEventModel : public EventModel {
  public:
   MockEventModel() = default;
+
+  MockEventModel(const MockEventModel&) = delete;
+  MockEventModel& operator=(const MockEventModel&) = delete;
+
   ~MockEventModel() override = default;
 
   // EventModel implementation.
@@ -36,9 +39,12 @@ class MockEventModel : public EventModel {
   MOCK_CONST_METHOD3(GetEventCount,
                      uint32_t(const std::string&, uint32_t, uint32_t));
   MOCK_METHOD2(IncrementEvent, void(const std::string&, uint32_t));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockEventModel);
+  MOCK_METHOD3(IncrementSnooze, void(const std::string&, uint32_t, base::Time));
+  MOCK_METHOD1(DismissSnooze, void(const std::string&));
+  MOCK_CONST_METHOD1(GetLastSnoozeTimestamp, base::Time(const std::string&));
+  MOCK_CONST_METHOD3(GetSnoozeCount,
+                     uint32_t(const std::string&, uint32_t, uint32_t));
+  MOCK_CONST_METHOD1(IsSnoozeDismissed, bool(const std::string&));
 };
 
 class InitAwareEventModelTest : public testing::Test {
@@ -47,6 +53,9 @@ class InitAwareEventModelTest : public testing::Test {
     load_callback_ = base::BindOnce(
         &InitAwareEventModelTest::OnModelInitialized, base::Unretained(this));
   }
+
+  InitAwareEventModelTest(const InitAwareEventModelTest&) = delete;
+  InitAwareEventModelTest& operator=(const InitAwareEventModelTest&) = delete;
 
   ~InitAwareEventModelTest() override = default;
 
@@ -65,9 +74,6 @@ class InitAwareEventModelTest : public testing::Test {
   // Load callback tracking.
   absl::optional<bool> load_success_;
   EventModel::OnModelInitializationFinished load_callback_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InitAwareEventModelTest);
 };
 
 }  // namespace

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/win/registry.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
@@ -51,6 +50,9 @@ class CachedFontRenderParams {
   static CachedFontRenderParams* GetInstance() {
     return base::Singleton<CachedFontRenderParams>::get();
   }
+
+  CachedFontRenderParams(const CachedFontRenderParams&) = delete;
+  CachedFontRenderParams& operator=(const CachedFontRenderParams&) = delete;
 
   const FontRenderParams& GetParams() {
     if (params_)
@@ -98,8 +100,6 @@ class CachedFontRenderParams {
 
   std::unique_ptr<FontRenderParams> params_;
   std::unique_ptr<SingletonHwndObserver> singleton_hwnd_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedFontRenderParams);
 };
 
 }  // namespace

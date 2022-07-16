@@ -38,7 +38,7 @@ class ExtensionInstallFrictionDialogTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     chrome::ShowExtensionInstallFrictionDialog(
         browser()->tab_strip_model()->GetActiveWebContents(),
-        base::DoNothing::Once<bool>());
+        base::DoNothing());
   }
 };
 

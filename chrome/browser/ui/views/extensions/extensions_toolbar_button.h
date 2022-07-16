@@ -22,8 +22,19 @@ class ExtensionsToolbarButton : public ToolbarButton,
                                 public views::WidgetObserver {
  public:
   METADATA_HEADER(ExtensionsToolbarButton);
+
+  enum class ButtonType {
+    // Indicates that at least one extension is enabled, and opens the installed
+    // extensions tab in the menu.
+    kExtensions,
+    // Indicates that at least one extension has access to the current page, and
+    // opens the permissions tab in the menu.
+    kSiteAccess
+  };
+
   ExtensionsToolbarButton(Browser* browser,
-                          ExtensionsToolbarContainer* extensions_container);
+                          ExtensionsToolbarContainer* extensions_container,
+                          ButtonType button_type);
   ExtensionsToolbarButton(const ExtensionsToolbarButton&) = delete;
   ExtensionsToolbarButton& operator=(const ExtensionsToolbarButton&) = delete;
   ~ExtensionsToolbarButton() override;
@@ -50,6 +61,7 @@ class ExtensionsToolbarButton : public ToolbarButton,
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;
 
   Browser* const browser_;
+  const ButtonType button_type_;
   views::MenuButtonController* menu_button_controller_;
   ExtensionsToolbarContainer* const extensions_container_;
 };

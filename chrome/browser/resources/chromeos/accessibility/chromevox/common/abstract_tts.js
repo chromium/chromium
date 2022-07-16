@@ -188,7 +188,7 @@ AbstractTts = class {
    * @protected
    */
   preprocess(text, properties) {
-    if (text.length === 1 && text >= 'A' && text <= 'Z') {
+    if (text.length === 1 && text.toLowerCase() !== text) {
       // Describe capital letters according to user's setting.
       if (localStorage['capitalStrategy'] === 'increasePitch') {
         for (const prop in AbstractTts.PERSONALITY_CAPITAL) {
@@ -204,6 +204,17 @@ AbstractTts = class {
     if (localStorage['usePitchChanges'] === 'false') {
       delete properties.relativePitch;
     }
+
+    // Since dollar and sterling pound signs will be replaced with text, move
+    // them to after the number if they stay between a negative sign and a
+    // number.
+    text = text.replace(AbstractTts.negativeCurrencyAmountRegexp_, (match) => {
+      const minus = match[0];
+      const number = match.substring(2);
+      const currency = match[1];
+
+      return minus + number + currency;
+    });
 
     // Substitute all symbols in the substitution dictionary. This is pretty
     // efficient because we use a single regexp that matches all symbols
@@ -561,3 +572,11 @@ AbstractTts.repetitionRegexp_ =
 
 /** TTS phonetic-characters property. @type {string} */
 AbstractTts.PHONETIC_CHARACTERS = 'phoneticCharacters';
+
+/**
+ * Regexp filter for negative dollar and pound amounts.
+ * @type {RegExp}
+ * @private
+ */
+AbstractTts.negativeCurrencyAmountRegexp_ =
+    /-[£\$](\d{1,3})(\d+|(,\d{3})*)(\.\d{1,})?/g;

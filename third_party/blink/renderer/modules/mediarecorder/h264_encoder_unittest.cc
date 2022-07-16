@@ -64,6 +64,9 @@ class H264EncoderFixture : public ::testing::Test {
             bitrate_,
             testing_render_thread_->task_runner())) {}
 
+  H264EncoderFixture(const H264EncoderFixture&) = delete;
+  H264EncoderFixture& operator=(const H264EncoderFixture&) = delete;
+
  protected:
   void EncodeFrame() {
     frame_encoded_.Reset();
@@ -138,8 +141,6 @@ class H264EncoderFixture : public ::testing::Test {
   std::unique_ptr<base::Thread> testing_render_thread_;
   const scoped_refptr<H264Encoder> encoder_;
   base::WaitableEvent frame_encoded_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264EncoderFixture);
 };
 
 class H264EncoderParameterTest
@@ -151,8 +152,8 @@ class H264EncoderParameterTest
                            GetParam().level,
                            GetParam().bitrate) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(H264EncoderParameterTest);
+  H264EncoderParameterTest(const H264EncoderParameterTest&) = delete;
+  H264EncoderParameterTest& operator=(const H264EncoderParameterTest&) = delete;
 };
 
 TEST_P(H264EncoderParameterTest, CheckProfileLevel) {

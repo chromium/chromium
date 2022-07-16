@@ -49,6 +49,10 @@ class QuotaService {
   class TimedLimit;
 
   QuotaService();
+
+  QuotaService(const QuotaService&) = delete;
+  QuotaService& operator=(const QuotaService&) = delete;
+
   virtual ~QuotaService();
 
   // Decide whether the invocation of |function| with argument |args| by the
@@ -66,10 +70,12 @@ class QuotaService {
   class ScopedDisablePurgeForTesting {
    public:
     ScopedDisablePurgeForTesting();
-    ~ScopedDisablePurgeForTesting();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ScopedDisablePurgeForTesting);
+    ScopedDisablePurgeForTesting(const ScopedDisablePurgeForTesting&) = delete;
+    ScopedDisablePurgeForTesting& operator=(
+        const ScopedDisablePurgeForTesting&) = delete;
+
+    ~ScopedDisablePurgeForTesting();
   };
 
  private:
@@ -91,8 +97,6 @@ class QuotaService {
   std::map<ExtensionId, FunctionHeuristicsMap> function_heuristics_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaService);
 };
 
 // A QuotaLimitHeuristic is two things: 1, A heuristic to map extension
@@ -122,6 +126,10 @@ class QuotaLimitHeuristic {
   class Bucket {
    public:
     Bucket() : num_tokens_(0) {}
+
+    Bucket(const Bucket&) = delete;
+    Bucket& operator=(const Bucket&) = delete;
+
     // Removes a token from this bucket, and returns true if the bucket had
     // any tokens in the first place.
     bool DeductToken() { return num_tokens_-- > 0; }
@@ -141,7 +149,6 @@ class QuotaLimitHeuristic {
    private:
     base::TimeTicks expiration_;
     int64_t num_tokens_;
-    DISALLOW_COPY_AND_ASSIGN(Bucket);
   };
   using BucketList = std::list<Bucket*>;
 
@@ -166,18 +173,25 @@ class QuotaLimitHeuristic {
   class SingletonBucketMapper : public BucketMapper {
    public:
     SingletonBucketMapper() {}
+
+    SingletonBucketMapper(const SingletonBucketMapper&) = delete;
+    SingletonBucketMapper& operator=(const SingletonBucketMapper&) = delete;
+
     ~SingletonBucketMapper() override {}
     void GetBucketsForArgs(const base::Value* args,
                            BucketList* buckets) override;
 
    private:
     Bucket bucket_;
-    DISALLOW_COPY_AND_ASSIGN(SingletonBucketMapper);
   };
 
   QuotaLimitHeuristic(const Config& config,
                       std::unique_ptr<BucketMapper> map,
                       const std::string& name);
+
+  QuotaLimitHeuristic(const QuotaLimitHeuristic&) = delete;
+  QuotaLimitHeuristic& operator=(const QuotaLimitHeuristic&) = delete;
+
   virtual ~QuotaLimitHeuristic();
 
   // Determines if sufficient quota exists (according to the Apply
@@ -207,8 +221,6 @@ class QuotaLimitHeuristic {
 
   // The name of the heuristic for formatting error messages.
   std::string name_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaLimitHeuristic);
 };
 
 // A simple per-item heuristic to limit the number of events that can occur in

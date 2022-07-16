@@ -4,26 +4,45 @@
 
 package org.chromium.chrome.browser.subscriptions;
 
+import android.text.TextUtils;
+
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.FeatureList;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
 
 import java.util.concurrent.TimeUnit;
-
 /** Flag configuration for Commerce Subscriptions Service. */
 public class CommerceSubscriptionsServiceConfig {
-    private static final String BASE_URL_PARAM = "subscriptions_service_base_url";
-    private static final String DEFAULT_BASE_URL =
+    private static final String sServiceBaseUrl =
             "https://memex-pa.googleapis.com/v1/shopping/subscriptions";
 
+    @VisibleForTesting
+    private static final String sBaseUrlParam = "subscriptions_service_base_url";
+
+    @VisibleForTesting
     private static final String STALE_TAB_LOWER_BOUND_SECONDS_PARAM =
             "price_tracking_stale_tab_lower_bound_seconds";
 
-    public static final StringCachedFieldTrialParameter SUBSCRIPTIONS_SERVICE_BASE_URL =
-            new StringCachedFieldTrialParameter(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, BASE_URL_PARAM, DEFAULT_BASE_URL);
+    private static final int DEFAULT_STALE_TAB_LOWER_BOUND_DAYS = 1;
 
-    public static final IntCachedFieldTrialParameter STALE_TAB_LOWER_BOUND_SECONDS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                    STALE_TAB_LOWER_BOUND_SECONDS_PARAM, (int) TimeUnit.DAYS.toSeconds(1));
+    public static String getDefaultServiceUrl() {
+        String defaultValue = sServiceBaseUrl;
+        if (FeatureList.isInitialized()) {
+            defaultValue = ChromeFeatureList.getFieldTrialParamByFeature(
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, sBaseUrlParam);
+        }
+
+        return TextUtils.isEmpty(defaultValue) ? sServiceBaseUrl : defaultValue;
+    }
+
+    public static int getStaleTabLowerBoundSeconds() {
+        int defaultValue = (int) TimeUnit.DAYS.toSeconds(DEFAULT_STALE_TAB_LOWER_BOUND_DAYS);
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, STALE_TAB_LOWER_BOUND_SECONDS_PARAM,
+                    defaultValue);
+        }
+        return defaultValue;
+    }
 }

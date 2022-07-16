@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -39,13 +38,14 @@ class WebContentsModalDialogHost;
 // The layout manager used in chrome browser.
 class BrowserViewLayout : public views::LayoutManager {
  public:
-  // The minimum width for the normal (tabbed) browser window's contents area.
-  // This should be wide enough that WebUI pages (e.g. chrome://settings) and
-  // the various associated WebUI dialogs (e.g. Import Bookmarks) can still be
-  // functional. This value provides a trade-off between browser usability and
-  // privacy - specifically, the ability to browse in a very small window, even
-  // on large monitors (which is why a minimum height is not specified). This
-  // value is used for the main browser window only, not for popups.
+  // The minimum width for the normal (tabbed or web app) browser window's
+  // contents area. This should be wide enough that WebUI pages (e.g.
+  // chrome://settings) and the various associated WebUI dialogs (e.g. Import
+  // Bookmarks) can still be functional. This value provides a trade-off between
+  // browser usability and privacy - specifically, the ability to browse in a
+  // very small window, even on large monitors (which is why a minimum height is
+  // not specified). This value is used for the main browser window only, not
+  // for popups.
   static constexpr int kMainBrowserContentsMinimumWidth = 500;
 
   // |browser_view| may be null in tests.
@@ -62,8 +62,13 @@ class BrowserViewLayout : public views::LayoutManager {
                     views::View* left_aligned_side_panel_separator,
                     views::View* right_aligned_side_panel,
                     views::View* right_aligned_side_panel_separator,
+                    views::View* lens_side_panel,
                     ImmersiveModeController* immersive_mode_controller,
                     views::View* contents_separator);
+
+  BrowserViewLayout(const BrowserViewLayout&) = delete;
+  BrowserViewLayout& operator=(const BrowserViewLayout&) = delete;
+
   ~BrowserViewLayout() override;
 
   // Sets or updates views that are not available when |this| is initialized.
@@ -159,6 +164,7 @@ class BrowserViewLayout : public views::LayoutManager {
   views::View* const left_aligned_side_panel_separator_;
   views::View* const right_aligned_side_panel_;
   views::View* const right_aligned_side_panel_separator_;
+  views::View* const lens_side_panel_;
   ImmersiveModeController* const immersive_mode_controller_;
   views::View* const contents_separator_;
 
@@ -191,8 +197,6 @@ class BrowserViewLayout : public views::LayoutManager {
   // The distance the web contents modal dialog is from the top of the window,
   // in pixels.
   int web_contents_modal_dialog_top_y_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewLayout);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_LAYOUT_H_

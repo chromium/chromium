@@ -369,13 +369,13 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
 
   IntRect window_rect = page->GetChromeClient().RootWindowRect(frame);
   if (features.x_set)
-    window_rect.SetX(features.x);
+    window_rect.set_x(features.x);
   if (features.y_set)
-    window_rect.SetY(features.y);
+    window_rect.set_y(features.y);
   if (features.width_set)
-    window_rect.SetWidth(features.width);
+    window_rect.set_width(features.width);
   if (features.height_set)
-    window_rect.SetHeight(features.height);
+    window_rect.set_height(features.height);
 
   IntRect rect = page->GetChromeClient().CalculateWindowRectWithAdjustment(
       window_rect, frame, opener_frame);

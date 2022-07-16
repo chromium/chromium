@@ -57,6 +57,9 @@ class DownloadDriverImplTest : public testing::Test {
         task_runner_(new base::TestSimpleTaskRunner),
         handle_(task_runner_) {}
 
+  DownloadDriverImplTest(const DownloadDriverImplTest&) = delete;
+  DownloadDriverImplTest& operator=(const DownloadDriverImplTest&) = delete;
+
   ~DownloadDriverImplTest() override = default;
 
   void SetUp() override {
@@ -75,9 +78,6 @@ class DownloadDriverImplTest : public testing::Test {
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle handle_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadDriverImplTest);
 };
 
 // Ensure the download manager can be initialized after the download driver.

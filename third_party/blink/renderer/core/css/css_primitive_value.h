@@ -25,6 +25,7 @@
 #include <bitset>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -34,7 +35,6 @@
 namespace blink {
 
 class CSSToLengthConversionData;
-class Length;
 
 // Dimension calculations are imprecise, often resulting in values of e.g.
 // 44.99998. We need to go ahead and round if we're really close to the next
@@ -171,6 +171,11 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static UnitCategory UnitTypeToUnitCategory(UnitType);
   static float ClampToCSSLengthRange(double);
 
+  enum class ValueRange { kAll, kNonNegative, kInteger, kPositiveInteger };
+
+  static Length::ValueRange ConversionToLengthValueRange(ValueRange);
+  static ValueRange ValueRangeForLengthValueRange(Length::ValueRange);
+
   static bool IsAngle(UnitType unit) {
     return unit == UnitType::kDegrees || unit == UnitType::kRadians ||
            unit == UnitType::kGradians || unit == UnitType::kTurns;
@@ -253,7 +258,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   int GetIntValue() const { return GetValue<int>(); }
   template <typename T>
   inline T GetValue() const {
-    return clampTo<T>(GetDoubleValue());
+    return ClampTo<T>(GetDoubleValue());
   }
 
   template <typename T>

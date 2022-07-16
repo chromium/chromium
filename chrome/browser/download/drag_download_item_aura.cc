@@ -22,7 +22,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/button_drag_utils.h"
-#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 void DragDownloadItem(const download::DownloadItem* download,
@@ -40,8 +39,7 @@ void DragDownloadItem(const download::DownloadItem* download,
 
   button_drag_utils::SetDragImage(
       GURL(), download->GetFileNameToReportUser().BaseName().LossyDisplayName(),
-      icon ? icon->AsImageSkia() : gfx::ImageSkia(), nullptr,
-      *views::Widget::GetTopLevelWidgetForNativeView(view), data.get());
+      icon ? icon->AsImageSkia() : gfx::ImageSkia(), nullptr, data.get());
 
   base::FilePath full_path = download->GetTargetFilePath();
   std::vector<ui::FileInfo> file_infos;

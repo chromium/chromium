@@ -6,7 +6,6 @@
 #define CHROMEOS_LOGIN_AUTH_LOGIN_EVENT_RECORDER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace chromeos {
 
@@ -30,6 +29,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginEventRecorder {
     virtual void RecordAuthenticationFailure() = 0;
   };
   LoginEventRecorder();
+
+  LoginEventRecorder(const LoginEventRecorder&) = delete;
+  LoginEventRecorder& operator=(const LoginEventRecorder&) = delete;
+
   virtual ~LoginEventRecorder();
 
   static LoginEventRecorder* Get();
@@ -50,8 +53,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginEventRecorder {
 
  private:
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginEventRecorder);
 };
 
 }  // namespace chromeos

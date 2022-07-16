@@ -21,6 +21,11 @@ class IOSProfileSessionDurationsServiceFactory
 
   static IOSProfileSessionDurationsServiceFactory* GetInstance();
 
+  IOSProfileSessionDurationsServiceFactory(
+      const IOSProfileSessionDurationsServiceFactory&) = delete;
+  IOSProfileSessionDurationsServiceFactory& operator=(
+      const IOSProfileSessionDurationsServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<IOSProfileSessionDurationsServiceFactory>;
 
@@ -34,8 +39,6 @@ class IOSProfileSessionDurationsServiceFactory
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSProfileSessionDurationsServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_IOS_PROFILE_SESSION_DURATIONS_SERVICE_FACTORY_H_

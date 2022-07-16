@@ -49,13 +49,26 @@ extern const base::FeatureParam<bool> kPersistClustersInHistoryDb;
 // builds, so it won't work in unofficial builds.
 extern const base::FeatureParam<bool> kUseOnDeviceClusteringBackend;
 
+// If enabled, changes the History Clusters omnibox action text to be:
+// "Resume your research" instead of "Resume your journey".
+extern const base::FeatureParam<bool> kAlternateOmniboxActionText;
+
 // Features
 
-// Enables the Chrome Memories history clustering feature.
-extern const base::Feature kMemories;
+// Enables Journeys in the Chrome History WebUI.
+extern const base::Feature kJourneys;
 
-// Enables debug info; e.g. shows visit metadata on chrome://history entries.
-extern const base::Feature kDebug;
+// Enables the Journeys Omnibox Action chip. `kJourneys` must also be enabled
+// for this to take effect.
+extern const base::Feature kOmniboxAction;
+
+// Enables debug info in non-user-visible surfaces, like Chrome Inspector.
+// Does nothing if `kJourneys` is disabled.
+extern const base::Feature kNonUserVisibleDebug;
+
+// Enables debug info in user-visible surfaces, like the actual WebUI page.
+// Does nothing if `kJourneys` is disabled.
+extern const base::Feature kUserVisibleDebug;
 
 // Enables using a remote model endpoint for Memories clustering for debugging
 // purposes. This should not be ever enabled in production.

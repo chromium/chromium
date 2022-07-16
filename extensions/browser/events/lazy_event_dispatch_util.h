@@ -40,6 +40,10 @@ class LazyEventDispatchUtil : public ExtensionRegistryObserver {
   };
 
   explicit LazyEventDispatchUtil(content::BrowserContext* browser_context);
+
+  LazyEventDispatchUtil(const LazyEventDispatchUtil&) = delete;
+  LazyEventDispatchUtil& operator=(const LazyEventDispatchUtil&) = delete;
+
   ~LazyEventDispatchUtil() override;
 
   void AddObserver(Observer* observer);
@@ -66,8 +70,6 @@ class LazyEventDispatchUtil : public ExtensionRegistryObserver {
   base::ObserverList<Observer>::Unchecked observers_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LazyEventDispatchUtil);
 };
 
 }  // namespace extensions

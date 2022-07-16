@@ -27,4 +27,9 @@ bool StartupStatus::Ok() const {
   return driver_ok.value() && model_ok.value() && file_monitor_ok.value();
 }
 
+bool StartupStatus::Failed() const {
+  return (driver_ok && !driver_ok.value()) || (model_ok && !model_ok.value()) ||
+         (file_monitor_ok && !file_monitor_ok.value());
+}
+
 }  // namespace download

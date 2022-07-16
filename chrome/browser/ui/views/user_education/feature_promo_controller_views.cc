@@ -4,30 +4,112 @@
 
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "base/token.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/feature_promo_snooze_service.h"
-#include "chrome/browser/ui/user_education/feature_promo_text_replacements.h"
+#include "chrome/browser/ui/user_education/feature_promo_specification.h"
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_owner.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_registry.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
+
+namespace {
+
+views::BubbleBorder::Arrow MapToBubbleBorderArrow(
+    FeaturePromoSpecification::BubbleArrow arrow) {
+  switch (arrow) {
+    case FeaturePromoSpecification::BubbleArrow::kNone:
+      return views::BubbleBorder::Arrow::NONE;
+    case FeaturePromoSpecification::BubbleArrow::kTopLeft:
+      return views::BubbleBorder::Arrow::TOP_LEFT;
+    case FeaturePromoSpecification::BubbleArrow::kTopRight:
+      return views::BubbleBorder::Arrow::TOP_RIGHT;
+    case FeaturePromoSpecification::BubbleArrow::kBottomLeft:
+      return views::BubbleBorder::Arrow::BOTTOM_LEFT;
+    case FeaturePromoSpecification::BubbleArrow::kBottomRight:
+      return views::BubbleBorder::Arrow::BOTTOM_RIGHT;
+    case FeaturePromoSpecification::BubbleArrow::kLeftTop:
+      return views::BubbleBorder::Arrow::LEFT_TOP;
+    case FeaturePromoSpecification::BubbleArrow::kRightTop:
+      return views::BubbleBorder::Arrow::RIGHT_TOP;
+    case FeaturePromoSpecification::BubbleArrow::kLeftBottom:
+      return views::BubbleBorder::Arrow::LEFT_BOTTOM;
+    case FeaturePromoSpecification::BubbleArrow::kRightBottom:
+      return views::BubbleBorder::Arrow::RIGHT_BOTTOM;
+    case FeaturePromoSpecification::BubbleArrow::kTopCenter:
+      return views::BubbleBorder::Arrow::TOP_CENTER;
+    case FeaturePromoSpecification::BubbleArrow::kBottomCenter:
+      return views::BubbleBorder::Arrow::BOTTOM_CENTER;
+    case FeaturePromoSpecification::BubbleArrow::kLeftCenter:
+      return views::BubbleBorder::Arrow::LEFT_CENTER;
+    case FeaturePromoSpecification::BubbleArrow::kRightCenter:
+      return views::BubbleBorder::Arrow::RIGHT_CENTER;
+  }
+}
+
+std::u16string GetScreenReaderAcceleratorPrompt(
+    BrowserView* browser_view,
+    FeaturePromoSpecification::PromoType promo_type,
+    const views::View* anchor_view,
+    bool is_critical_promo) {
+  // No message is required as this is a background bubble with a
+  // screen reader-specific prompt and will dismiss itself.
+  if (promo_type == FeaturePromoSpecification::PromoType::kToast)
+    return std::u16string();
+
+  ui::Accelerator accelerator;
+  std::u16string accelerator_text;
+  if (browser_view->GetAccelerator(IDC_FOCUS_NEXT_PANE, &accelerator)) {
+    accelerator_text = accelerator.GetShortcutText();
+  } else {
+    NOTREACHED();
+  }
+
+  // Present the user with the full help bubble navigation shortcut.
+  if (anchor_view->IsAccessibilityFocusable()) {
+    return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_TOGGLE_DESCRIPTION,
+                                      accelerator_text);
+  }
+
+  // If the bubble starts focused and focus cannot traverse to the anchor view,
+  // do not use a promo.
+  if (is_critical_promo)
+    return std::u16string();
+
+  // Present the user with an abridged help bubble navigation shortcut.
+  return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_DESCRIPTION,
+                                    accelerator_text);
+}
+
+}  // namespace
+
+// static
+bool FeaturePromoControllerViews::active_window_check_blocked_for_testing =
+    false;
 
 FeaturePromoControllerViews::FeaturePromoControllerViews(
     BrowserView* browser_view,
@@ -66,15 +148,19 @@ FeaturePromoControllerViews* FeaturePromoControllerViews::GetForView(
   return browser_view->feature_promo_controller();
 }
 
-bool FeaturePromoControllerViews::MaybeShowPromoWithParams(
-    const base::Feature& iph_feature,
-    const FeaturePromoBubbleParams& params,
+bool FeaturePromoControllerViews::MaybeShowPromoFromSpecification(
+    const FeaturePromoSpecification& spec,
+    views::View* anchor_view,
+    FeaturePromoSpecification::StringReplacements text_replacements,
     BubbleCloseCallback close_callback) {
-  return MaybeShowPromoImpl(iph_feature, params, std::move(close_callback));
+  return MaybeShowPromoImpl(spec, anchor_view, std::move(text_replacements),
+                            std::move(close_callback));
 }
 
 absl::optional<base::Token> FeaturePromoControllerViews::ShowCriticalPromo(
-    const FeaturePromoBubbleParams& params) {
+    const FeaturePromoSpecification& spec,
+    views::View* anchor_view,
+    FeaturePromoSpecification::StringReplacements body_text_replacements) {
   if (promos_blocked_for_testing_)
     return absl::nullopt;
 
@@ -89,12 +175,15 @@ absl::optional<base::Token> FeaturePromoControllerViews::ShowCriticalPromo(
     CloseBubble(*current_iph_feature_);
 
   // Snooze is not supported for critical promos.
-  DCHECK(!params.allow_snooze);
+  DCHECK_NE(FeaturePromoSpecification::PromoType::kSnooze, spec.promo_type());
 
   DCHECK(!bubble_id_);
 
+  const bool screen_reader_available = CheckScreenReaderPromptAvailable();
+
   current_critical_promo_ = base::Token::CreateRandom();
-  ShowPromoBubbleImpl(params);
+  ShowPromoBubbleImpl(spec, anchor_view, std::move(body_text_replacements),
+                      screen_reader_available, /* is_critical_promo =*/true);
 
   return current_critical_promo_;
 }
@@ -113,29 +202,49 @@ bool FeaturePromoControllerViews::CriticalPromoIsShowing(
   return bubble_id_ && (current_critical_promo_ == critical_promo_id);
 }
 
-bool FeaturePromoControllerViews::MaybeShowPromo(
-    const base::Feature& iph_feature,
-    BubbleCloseCallback close_callback) {
-  return MaybeShowPromoWithTextReplacements(
-      iph_feature, FeaturePromoTextReplacements(), std::move(close_callback));
+bool FeaturePromoControllerViews::DismissNonCriticalBubbleInRegion(
+    const gfx::Rect& screen_bounds) {
+  if (!bubble_id_ || current_critical_promo_ ||
+      !bubble_owner_->BubbleIsShowing(bubble_id_.value())) {
+    return false;
+  }
+
+  if (!screen_bounds.Intersects(
+          bubble_owner_->GetBubbleBoundsInScreen(bubble_id_.value()))) {
+    return false;
+  }
+
+  bubble_owner_->CloseBubble(bubble_id_.value());
+  return true;
 }
 
-bool FeaturePromoControllerViews::MaybeShowPromoWithTextReplacements(
+bool FeaturePromoControllerViews::MaybeShowPromo(
     const base::Feature& iph_feature,
-    FeaturePromoTextReplacements text_replacements,
+    FeaturePromoSpecification::StringReplacements text_replacements,
     BubbleCloseCallback close_callback) {
-  absl::optional<FeaturePromoBubbleParams> params =
-      FeaturePromoRegistry::GetInstance()->GetParamsForFeature(iph_feature,
-                                                               browser_view_);
-  if (!params)
+  const FeaturePromoSpecification* spec =
+      FeaturePromoRegistry::GetInstance()->GetParamsForFeature(iph_feature);
+  if (!spec)
     return false;
 
-  DCHECK_GT(params->body_string_specifier, -1);
-  params->body_text_raw =
-      text_replacements.ApplyTo(params->body_string_specifier);
-  params->body_string_specifier = -1;
+  DCHECK_EQ(&iph_feature, spec->feature());
+  DCHECK(spec->anchor_element_id());
 
-  return MaybeShowPromoImpl(iph_feature, *params, std::move(close_callback));
+  // Fetch the anchor element. For now, assume all elements are Views.
+  auto* const anchor_element = spec->GetAnchorElement(
+      views::ElementTrackerViews::GetContextForView(browser_view_));
+
+  if (!anchor_element)
+    return false;
+
+  if (!anchor_element->IsA<views::TrackedElementViews>()) {
+    NOTREACHED();
+    return false;
+  }
+
+  return MaybeShowPromoImpl(
+      *spec, anchor_element->AsA<views::TrackedElementViews>()->view(),
+      std::move(text_replacements), std::move(close_callback));
 }
 
 void FeaturePromoControllerViews::OnUserSnooze(
@@ -190,6 +299,16 @@ FeaturePromoControllerViews::CloseBubbleAndContinuePromo(
   return PromoHandle(weak_ptr_factory_.GetWeakPtr());
 }
 
+// static
+void FeaturePromoControllerViews::BlockActiveWindowCheckForTesting() {
+  active_window_check_blocked_for_testing = true;
+}
+
+// static
+bool FeaturePromoControllerViews::IsActiveWindowCheckBlockedForTesting() {
+  return active_window_check_blocked_for_testing;
+}
+
 void FeaturePromoControllerViews::BlockPromosForTesting() {
   promos_blocked_for_testing_ = true;
 
@@ -199,8 +318,9 @@ void FeaturePromoControllerViews::BlockPromosForTesting() {
 }
 
 bool FeaturePromoControllerViews::MaybeShowPromoImpl(
-    const base::Feature& iph_feature,
-    const FeaturePromoBubbleParams& params,
+    const FeaturePromoSpecification& spec,
+    views::View* anchor_view,
+    FeaturePromoSpecification::StringReplacements body_text_replacements,
     BubbleCloseCallback close_callback) {
   if (promos_blocked_for_testing_)
     return false;
@@ -216,11 +336,17 @@ bool FeaturePromoControllerViews::MaybeShowPromoImpl(
   if (browser_view_->GetProfile()->IsIncognitoProfile())
     return false;
 
+  // Don't show IPH if the anchor view is in an inactive window
+  if (!active_window_check_blocked_for_testing &&
+      !anchor_view->GetWidget()->ShouldPaintAsActive())
+    return false;
+
   // Some checks should not be done in demo mode, because we absolutely want to
   // trigger the bubble if possible. Put any checks that should be bypassed in
   // demo mode in this block.
+  const base::Feature& feature = *spec.feature();
   if (!base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode)) {
-    if (snooze_service_->IsBlocked(iph_feature))
+    if (snooze_service_->IsBlocked(feature))
       return false;
   }
 
@@ -229,31 +355,36 @@ bool FeaturePromoControllerViews::MaybeShowPromoImpl(
   if (bubble_owner_->AnyBubbleIsShowing())
     return false;
 
-  if (!tracker_->ShouldTriggerHelpUI(iph_feature))
+  // TODO(crbug.com/1258216): Currently this must be called before
+  // ShouldTriggerHelpUI() below. See bug for details.
+  const bool screen_reader_available = CheckScreenReaderPromptAvailable();
+
+  if (!tracker_->ShouldTriggerHelpUI(feature))
     return false;
 
   // If the tracker says we should trigger, but we have a promo
   // currently showing, there is a bug somewhere in here.
   DCHECK(!current_iph_feature_);
-  current_iph_feature_ = &iph_feature;
+  current_iph_feature_ = &feature;
 
-  if (!ShowPromoBubbleImpl(params)) {
+  if (!ShowPromoBubbleImpl(spec, anchor_view, std::move(body_text_replacements),
+                           screen_reader_available,
+                           /* is_critical_promo =*/false)) {
     // `current_iph_feature_` is needed in the call. If it fails, we must reset
     // it and also notify the backend.
     current_iph_feature_ = nullptr;
-    tracker_->Dismissed(iph_feature);
+    tracker_->Dismissed(feature);
     return false;
   }
   close_callback_ = std::move(close_callback);
 
   // Record count of previous snoozes when an IPH triggers.
-  int snooze_count = snooze_service_->GetSnoozeCount(iph_feature);
-  base::UmaHistogramExactLinear("InProductHelp.Promos.SnoozeCountAtTrigger." +
-                                    std::string(iph_feature.name),
-                                snooze_count,
-                                snooze_service_->kUmaMaxSnoozeCount);
+  int snooze_count = snooze_service_->GetSnoozeCount(feature);
+  base::UmaHistogramExactLinear(
+      "InProductHelp.Promos.SnoozeCountAtTrigger." + std::string(feature.name),
+      snooze_count, snooze_service_->kUmaMaxSnoozeCount);
 
-  snooze_service_->OnPromoShown(iph_feature);
+  snooze_service_->OnPromoShown(feature);
   return true;
 }
 
@@ -264,57 +395,75 @@ void FeaturePromoControllerViews::FinishContinuedPromo() {
   current_iph_feature_ = nullptr;
 }
 
-bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
-    const FeaturePromoBubbleParams& params) {
-  // Map |params| to the bubble's create params, fetching needed strings.
+FeaturePromoBubbleView::CreateParams
+FeaturePromoControllerViews::GetBaseCreateParams(
+    const FeaturePromoSpecification& spec,
+    views::View* anchor_view,
+    FeaturePromoSpecification::StringReplacements body_text_replacements,
+    bool is_critical_promo) {
   FeaturePromoBubbleView::CreateParams create_params;
-  create_params.anchor_view = params.anchor_view;
-  create_params.body_text =
-      params.body_string_specifier != -1
-          ? l10n_util::GetStringUTF16(params.body_string_specifier)
-          : params.body_text_raw;
-  if (params.title_string_specifier)
-    create_params.title_text =
-        l10n_util::GetStringUTF16(*params.title_string_specifier);
-
-  if (params.screenreader_string_specifier && params.feature_accelerator) {
-    create_params.screenreader_text = l10n_util::GetStringFUTF16(
-        *params.screenreader_string_specifier,
-        params.feature_accelerator->GetShortcutText());
-  } else if (params.screenreader_string_specifier) {
+  create_params.anchor_view = anchor_view;
+  create_params.body_text = l10n_util::GetStringFUTF16(
+      spec.bubble_body_string_id(), std::move(body_text_replacements), nullptr);
+  create_params.title_text = spec.bubble_title_text();
+  if (spec.screen_reader_string_id()) {
     create_params.screenreader_text =
-        l10n_util::GetStringUTF16(*params.screenreader_string_specifier);
+        spec.screen_reader_accelerator()
+            ? l10n_util::GetStringFUTF16(spec.screen_reader_string_id(),
+                                         spec.screen_reader_accelerator()
+                                             .GetAccelerator(browser_view_)
+                                             .GetShortcutText())
+            : l10n_util::GetStringUTF16(spec.screen_reader_string_id());
+  }
+  create_params.body_icon = spec.bubble_icon();
+  create_params.arrow = MapToBubbleBorderArrow(spec.bubble_arrow());
+  create_params.focus_on_create = is_critical_promo;
+  create_params.persist_on_blur = !is_critical_promo;
+
+  // Critical promos don't time out.
+  if (is_critical_promo)
+    create_params.timeout = base::Seconds(0);
+
+  return create_params;
+}
+
+bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
+    const FeaturePromoSpecification& spec,
+    views::View* anchor_view,
+    FeaturePromoSpecification::StringReplacements body_text_replacements,
+    bool screen_reader_promo,
+    bool is_critical_promo) {
+  // For critical promos, there should be no current feature.
+  // For non-critical promos, we should already have installed the promo's
+  // feature ID.
+  DCHECK_EQ(is_critical_promo, !current_iph_feature_);
+  DCHECK(is_critical_promo || current_iph_feature_ == spec.feature());
+
+  FeaturePromoBubbleView::CreateParams create_params = GetBaseCreateParams(
+      spec, anchor_view, std::move(body_text_replacements), is_critical_promo);
+
+  if (spec.promo_type() == FeaturePromoSpecification::PromoType::kSnooze &&
+      base::FeatureList::IsEnabled(
+          feature_engagement::kIPHDesktopSnoozeFeature)) {
+    CHECK(spec.feature());
+    create_params.buttons = CreateSnoozeButtons(*spec.feature());
+  } else {
+    create_params.has_close_button = true;
   }
 
-  create_params.focus_on_create = params.focus_on_create;
-  create_params.persist_on_blur = params.persist_on_blur;
-
-  create_params.arrow = params.arrow;
-  create_params.preferred_width = params.preferred_width;
-
-  create_params.timeout_default = params.timeout_default;
-  create_params.timeout_short = params.timeout_short;
-
-  if (params.allow_snooze) {
-    FeaturePromoBubbleView::ButtonParams snooze_button;
-    snooze_button.text = l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
-    snooze_button.has_border = false;
-    snooze_button.callback = base::BindRepeating(
-        &FeaturePromoControllerViews::OnUserSnooze,
-        weak_ptr_factory_.GetWeakPtr(), *current_iph_feature_);
-    create_params.buttons.push_back(std::move(snooze_button));
-
-    FeaturePromoBubbleView::ButtonParams dismiss_button;
-    dismiss_button.text = l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
-    dismiss_button.has_border = true;
-    dismiss_button.callback = base::BindRepeating(
-        &FeaturePromoControllerViews::OnUserDismiss,
-        weak_ptr_factory_.GetWeakPtr(), *current_iph_feature_);
-    create_params.buttons.push_back(std::move(dismiss_button));
-
-    if (views::PlatformStyle::kIsOkButtonLeading)
-      std::swap(create_params.buttons[0], create_params.buttons[1]);
+  // Feature isn't present for some critical promos.
+  if (spec.feature()) {
+    create_params.dismiss_callback =
+        base::BindRepeating(&FeaturePromoControllerViews::OnUserDismiss,
+                            weak_ptr_factory_.GetWeakPtr(), *spec.feature());
   }
+
+  if (CheckScreenReaderPromptAvailable()) {
+    create_params.keyboard_navigation_hint = GetScreenReaderAcceleratorPrompt(
+        browser_view_, spec.promo_type(), anchor_view, is_critical_promo);
+  }
+  const bool had_screen_reader_promo =
+      !create_params.keyboard_navigation_hint.empty();
 
   bubble_id_ = bubble_owner_->ShowBubble(
       std::move(create_params),
@@ -323,8 +472,17 @@ bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
   if (!bubble_id_)
     return false;
 
-  params.anchor_view->SetProperty(kHasInProductHelpPromoKey, true);
-  anchor_view_tracker_.SetView(params.anchor_view);
+  // Record that the focus help message was actually read to the user. See the
+  // note in MaybeShowPromoImpl().
+  // TODO(crbug.com/1258216): Rewrite this when we have the ability for FE
+  // promos to ignore other active promos.
+  if (had_screen_reader_promo) {
+    tracker_->NotifyEvent(
+        feature_engagement::events::kFocusHelpBubbleAcceleratorPromoRead);
+  }
+
+  anchor_view->SetProperty(kHasInProductHelpPromoKey, true);
+  anchor_view_tracker_.SetView(anchor_view);
   return true;
 }
 
@@ -354,4 +512,57 @@ void FeaturePromoControllerViews::HandleBubbleClosed() {
   } else {
     current_critical_promo_.reset();
   }
+}
+
+bool FeaturePromoControllerViews::CheckScreenReaderPromptAvailable() const {
+  if (!ui::AXPlatformNode::GetAccessibilityMode().has_mode(
+          ui::AXMode::kScreenReader)) {
+    return false;
+  }
+
+  // If we're in demo mode and screen reader is on, always play the demo
+  // without querying the FE backend, since the backend will return false for
+  // all promos other than the one that's being demoed. If we didn't have this
+  // code the screen reader prompt would never play.
+  if (base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode))
+    return true;
+
+  if (!tracker_->ShouldTriggerHelpUI(
+          feature_engagement::kIPHFocusHelpBubbleScreenReaderPromoFeature)) {
+    return false;
+  }
+
+  // TODO(crbug.com/1258216): Once we have our answer, immediately dismiss
+  // so that this doesn't interfere with actually showing the bubble. This
+  // dismiss can be moved elsewhere once we support concurrency.
+  tracker_->Dismissed(
+      feature_engagement::kIPHFocusHelpBubbleScreenReaderPromoFeature);
+
+  return true;
+}
+
+std::vector<FeaturePromoBubbleView::ButtonParams>
+FeaturePromoControllerViews::CreateSnoozeButtons(const base::Feature& feature) {
+  std::vector<FeaturePromoBubbleView::ButtonParams> buttons;
+
+  FeaturePromoBubbleView::ButtonParams snooze_button;
+  snooze_button.text = l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
+  snooze_button.has_border = false;
+  snooze_button.callback =
+      base::BindRepeating(&FeaturePromoControllerViews::OnUserSnooze,
+                          weak_ptr_factory_.GetWeakPtr(), feature);
+  buttons.push_back(std::move(snooze_button));
+
+  FeaturePromoBubbleView::ButtonParams dismiss_button;
+  dismiss_button.text = l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
+  dismiss_button.has_border = true;
+  dismiss_button.callback =
+      base::BindRepeating(&FeaturePromoControllerViews::OnUserDismiss,
+                          weak_ptr_factory_.GetWeakPtr(), feature);
+  buttons.push_back(std::move(dismiss_button));
+
+  if (views::PlatformStyle::kIsOkButtonLeading)
+    std::swap(buttons[0], buttons[1]);
+
+  return buttons;
 }

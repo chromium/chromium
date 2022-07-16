@@ -20,8 +20,8 @@
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_recorder.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "printing/metafile_agent.h"
 #include "printing/mojom/print.mojom.h"
-#include "printing/print_settings.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
@@ -29,7 +29,7 @@
 // Note that headers in third_party/skia/src are fragile.  This is
 // an experimental, fragile, and diagnostic-only document type.
 #include "third_party/skia/src/utils/SkMultiPictureDocument.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 #if defined(OS_MAC)
 #include "printing/pdf_metafile_cg_mac.h"
@@ -263,6 +263,10 @@ bool MetafileSkia::GetData(void* dst_buffer, uint32_t dst_buffer_size) const {
     return false;
   return WriteAssetToBuffer(data_->data_stream.get(), dst_buffer,
                             base::checked_cast<size_t>(dst_buffer_size));
+}
+
+mojom::MetafileDataType MetafileSkia::GetDataType() const {
+  return mojom::MetafileDataType::kPDF;
 }
 
 gfx::Rect MetafileSkia::GetPageBounds(unsigned int page_number) const {

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "components/zucchini/address_translator.h"
+#include "components/zucchini/arm_utils.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
 
@@ -192,6 +193,86 @@ class Rel32FinderX64 : public Rel32FinderIntel {
 
   Rel32FinderX64(const Rel32FinderX64&) = delete;
   const Rel32FinderX64& operator=(const Rel32FinderX64&) = delete;
+
+ private:
+  // Rel32Finder:
+  NextIterators Scan(ConstBufferView region) override;
+};
+
+// Base class for ARM (AArch32 and AArch64) instructions.
+template <typename ADDR_TYPE>
+class Rel32FinderArm : public Rel32Finder {
+ public:
+  struct Result {
+    offset_t location;
+    rva_t target_rva;
+    ADDR_TYPE type;
+
+    // For testing.
+    bool operator==(const Result& other) const {
+      return location == other.location && target_rva == other.target_rva &&
+             type == other.type;
+    }
+  };
+
+  Rel32FinderArm(ConstBufferView image, const AddressTranslator& translator);
+  Rel32FinderArm(const Rel32FinderArm&) = delete;
+  const Rel32FinderArm& operator=(const Rel32FinderArm&) = delete;
+  ~Rel32FinderArm() override;
+
+  // Helper for Scan*() that also assigns |rel32_|.
+  NextIterators SetResult(Result&& result,
+                          ConstBufferView::const_iterator cursor,
+                          int instr_size);
+
+  // SetResult() for end of scan.
+  NextIterators SetEmptyResult();
+
+ protected:
+  // Cached results.
+  Result rel32_;
+};
+
+// AArch32 instructions.
+class Rel32FinderAArch32
+    : public Rel32FinderArm<AArch32Rel32Translator::AddrType> {
+ public:
+  Rel32FinderAArch32(ConstBufferView image,
+                     const AddressTranslator& translator,
+                     bool is_thumb2);
+  Rel32FinderAArch32(const Rel32FinderAArch32&) = delete;
+  const Rel32FinderAArch32& operator=(const Rel32FinderAArch32&) = delete;
+  ~Rel32FinderAArch32() override;
+
+  const Result& GetRel32() const { return rel32_; }
+
+ private:
+  // Rel32 extraction, assuming segment is in ARM mode.
+  NextIterators ScanA32(ConstBufferView region);
+
+  // Rel32 extraction, assuming segment is in THUMB2 mode.
+  NextIterators ScanT32(ConstBufferView region);
+
+  // Rel32Finder:
+  NextIterators Scan(ConstBufferView region) override;
+
+  // Indicates whether segment is in THUMB2 or ARM mod. In general this can
+  // change throughout a section. However, currently we assume that this is
+  // constant for an entire section.
+  const bool is_thumb2_;
+};
+
+// AArch64 instructions.
+class Rel32FinderAArch64
+    : public Rel32FinderArm<AArch64Rel32Translator::AddrType> {
+ public:
+  Rel32FinderAArch64(ConstBufferView image,
+                     const AddressTranslator& translator);
+  Rel32FinderAArch64(const Rel32FinderAArch64&) = delete;
+  const Rel32FinderAArch64& operator=(const Rel32FinderAArch64&) = delete;
+  ~Rel32FinderAArch64() override;
+
+  const Result& GetRel32() const { return rel32_; }
 
  private:
   // Rel32Finder:

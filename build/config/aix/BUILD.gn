@@ -28,6 +28,7 @@ config("compiler") {
     "-maix64",
     "-fdata-sections",
     "-ffunction-sections",
+    "-fno-extern-tls-init",
     "-O3",
 
     # "-Werror"
@@ -46,4 +47,15 @@ config("compiler") {
     "-maix64",
     "-Wl,-bbigtoc",
   ]
+
+  if (is_component_build) {
+    cflags += [ "-fpic" ]
+    ldflags += [
+      "-Wl,-brtl",
+
+      # -bnoipath so that only names of .so objects are stored in loader
+      # section, excluding leading "./"
+      "-Wl,-bnoipath",
+    ]
+  }
 }

@@ -34,8 +34,12 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
 
   static void CreateInstance(
       mojo::PendingRemote<memory_instrumentation::mojom::Coordinator>
-          coordinator);
+          coordinator,
+      bool is_browser_process);
   static MemoryInstrumentation* GetInstance();
+
+  MemoryInstrumentation(const MemoryInstrumentation&) = delete;
+  MemoryInstrumentation& operator=(const MemoryInstrumentation&) = delete;
 
   // Retrieves a Coordinator interface to communicate with the service. This is
   // safe to call from any thread.
@@ -100,13 +104,15 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
  private:
   explicit MemoryInstrumentation(
       mojo::PendingRemote<memory_instrumentation::mojom::Coordinator>
-          coordinator);
+          coordinator,
+      bool is_browser_process);
   ~MemoryInstrumentation();
 
   const mojo::SharedRemote<memory_instrumentation::mojom::Coordinator>
       coordinator_;
 
-  DISALLOW_COPY_AND_ASSIGN(MemoryInstrumentation);
+  // Only browser process is allowed to request memory dumps.
+  const bool is_browser_process_;
 };
 
 }  // namespace memory_instrumentation

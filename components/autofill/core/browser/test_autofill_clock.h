@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_CLOCK_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_CLOCK_H_
 
-#include "base/macros.h"
 #include "base/test/simple_test_clock.h"
 
 namespace base {
@@ -21,6 +20,10 @@ namespace autofill {
 class TestAutofillClock {
  public:
   TestAutofillClock();
+
+  TestAutofillClock(const TestAutofillClock&) = delete;
+  TestAutofillClock& operator=(const TestAutofillClock&) = delete;
+
   ~TestAutofillClock();
 
   // Set the time to be returned from AutofillClock::Now() calls.
@@ -31,8 +34,6 @@ class TestAutofillClock {
 
  private:
   base::SimpleTestClock test_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillClock);
 };
 
 }  // namespace autofill

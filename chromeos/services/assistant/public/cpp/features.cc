@@ -17,23 +17,14 @@ const base::Feature kAssistantAudioEraser{"AssistantAudioEraser",
 const base::Feature kAssistantAppSupport{"AssistantAppSupport",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kAssistantConversationStartersV2{
-    "AssistantConversationStartersV2", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kAssistantDebugging{"AssistantDebugging",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kAssistantLauncherChipIntegration{
-    "AssistantLauncherChipIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kAssistantRoutines{"AssistantRoutines",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kAssistantWaitScheduling{"AssistantWaitScheduling",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kEnableBetterAssistant{"EnableBetterAssistant",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnableDspHotword{"EnableDspHotword",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
@@ -66,24 +57,12 @@ bool IsAudioEraserEnabled() {
   return base::FeatureList::IsEnabled(kAssistantAudioEraser);
 }
 
-bool IsBetterAssistantEnabled() {
-  return base::FeatureList::IsEnabled(kEnableBetterAssistant);
-}
-
-bool IsConversationStartersV2Enabled() {
-  return base::FeatureList::IsEnabled(kAssistantConversationStartersV2);
-}
-
 bool IsAssistantDebuggingEnabled() {
   return base::FeatureList::IsEnabled(kAssistantDebugging);
 }
 
 bool IsDspHotwordEnabled() {
   return base::FeatureList::IsEnabled(kEnableDspHotword);
-}
-
-bool IsLauncherChipIntegrationEnabled() {
-  return base::FeatureList::IsEnabled(kAssistantLauncherChipIntegration);
 }
 
 bool IsPowerManagerEnabled() {

@@ -19,6 +19,7 @@
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_error_factory.h"
 #include "components/sync/model/syncable_service.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/persisted_entity_data.pb.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 
@@ -117,7 +118,10 @@ class LocalChangeProcessor : public SyncChangeProcessor {
     DCHECK(other);
   }
 
-  ~LocalChangeProcessor() override {}
+  LocalChangeProcessor(const LocalChangeProcessor&) = delete;
+  LocalChangeProcessor& operator=(const LocalChangeProcessor&) = delete;
+
+  ~LocalChangeProcessor() override = default;
 
   absl::optional<ModelError> ProcessSyncChanges(
       const base::Location& from_here,
@@ -201,13 +205,15 @@ class LocalChangeProcessor : public SyncChangeProcessor {
   SyncableServiceBasedBridge::InMemoryStore* const in_memory_store_;
   ModelTypeChangeProcessor* const other_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalChangeProcessor);
 };
 
 class SyncErrorFactoryImpl : public SyncErrorFactory {
  public:
   explicit SyncErrorFactoryImpl(ModelType type) : type_(type) {}
+
+  SyncErrorFactoryImpl(const SyncErrorFactoryImpl&) = delete;
+  SyncErrorFactoryImpl& operator=(const SyncErrorFactoryImpl&) = delete;
+
   ~SyncErrorFactoryImpl() override = default;
 
   SyncError CreateAndUploadError(const base::Location& location,
@@ -218,8 +224,6 @@ class SyncErrorFactoryImpl : public SyncErrorFactory {
 
  private:
   const ModelType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncErrorFactoryImpl);
 };
 
 }  // namespace

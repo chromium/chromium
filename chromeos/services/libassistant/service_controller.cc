@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/check.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -15,7 +16,6 @@
 #include "chromeos/services/libassistant/settings_controller.h"
 #include "chromeos/services/libassistant/util.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
-#include "libassistant/shared/public/device_state_listener.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 
@@ -88,33 +88,6 @@ void SetServerExperiments(AssistantClient* assistant_client) {
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
-//  DeviceStateListener
-////////////////////////////////////////////////////////////////////////////////
-
-class ServiceController::DeviceStateListener
-    : public assistant_client::DeviceStateListener {
- public:
-  explicit DeviceStateListener(ServiceController* parent)
-      : parent_(parent),
-        mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
-  DeviceStateListener(const DeviceStateListener&) = delete;
-  DeviceStateListener& operator=(const DeviceStateListener&) = delete;
-  ~DeviceStateListener() override = default;
-
-  // assistant_client::DeviceStateListener overrides:
-  // Called on Libassistant thread.
-  void OnStartFinished() override {
-    ENSURE_MOJOM_THREAD(&DeviceStateListener::OnStartFinished);
-    parent_->OnStartFinished();
-  }
-
- private:
-  ServiceController* const parent_;
-  scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
-  base::WeakPtrFactory<DeviceStateListener> weak_factory_{this};
-};
-
-////////////////////////////////////////////////////////////////////////////////
 //  ServiceController
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -161,8 +134,8 @@ void ServiceController::Initialize(
   settings_controller_->SetHotwordEnabled(config->hotword_enabled);
   settings_controller_->SetSpokenFeedbackEnabled(
       config->spoken_feedback_enabled);
+  settings_controller_->SetDarkModeEnabled(config->dark_mode_enabled);
 
-  CreateAndRegisterDeviceStateListener();
   CreateAndRegisterChromiumApiDelegate(std::move(url_loader_factory));
 
   SetServerExperiments(assistant_client_.get());
@@ -179,15 +152,8 @@ void ServiceController::Start() {
   DCHECK(IsInitialized()) << "Initialize() must be called before Start()";
   DVLOG(1) << "Starting Libassistant service";
 
-  assistant_manager()->Start();
-
-  SetStateAndInformObservers(ServiceState::kStarted);
-
-  for (auto& observer : assistant_client_observers_) {
-    observer.OnAssistantClientStarted(assistant_client_.get());
-  }
-
-  DVLOG(1) << "Started Libassistant service";
+  // |this| will outlive |assistant_client_|.
+  assistant_client_->StartServices(/*services_status_observer=*/this);
 }
 
 void ServiceController::Stop() {
@@ -203,18 +169,17 @@ void ServiceController::Stop() {
 
   assistant_client_ = nullptr;
   chromium_api_delegate_ = nullptr;
-  device_state_listener_ = nullptr;
 
   for (auto& observer : assistant_client_observers_)
-    observer.OnAssistantManagerDestroyed();
+    observer.OnAssistantClientDestroyed();
 
   DVLOG(1) << "Stopped Libassistant service";
 }
 
 void ServiceController::ResetAllDataAndStop() {
-  if (assistant_manager()) {
+  if (assistant_client_) {
     DVLOG(1) << "Resetting all Libassistant data";
-    assistant_manager()->ResetAllDataAndShutdown();
+    assistant_client_->ResetAllDataAndShutdown();
   }
   Stop();
 }
@@ -226,6 +191,22 @@ void ServiceController::AddAndFireStateObserver(
   observer->OnStateChanged(state_);
 
   state_observers_.Add(std::move(observer));
+}
+
+void ServiceController::OnServicesStatusChanged(ServicesStatus status) {
+  switch (status) {
+    case ServicesStatus::ONLINE_ALL_SERVICES_AVAILABLE:
+      OnAllServicesReady();
+      break;
+    case ServicesStatus::ONLINE_BOOTING_UP:
+      // Configing internal options or other essential services that are
+      // supported during bootup stage should happen here.
+      OnServicesBootingUp();
+      break;
+    case ServicesStatus::OFFLINE:
+      // No action needed.
+      break;
+  }
 }
 
 void ServiceController::AddAndFireAssistantClientObserver(
@@ -296,13 +277,24 @@ ServiceController::assistant_manager_internal() {
                            : nullptr;
 }
 
-void ServiceController::OnStartFinished() {
-  DVLOG(1) << "Libassistant start is finished";
+void ServiceController::OnAllServicesReady() {
+  DVLOG(1) << "Libassistant services are ready.";
+
+  // Notify observers on Libassistant services ready.
   SetStateAndInformObservers(mojom::ServiceState::kRunning);
 
-  for (auto& observer : assistant_client_observers_) {
+  for (auto& observer : assistant_client_observers_)
     observer.OnAssistantClientRunning(assistant_client_.get());
-  }
+}
+
+void ServiceController::OnServicesBootingUp() {
+  DVLOG(1) << "Started Libassistant service";
+
+  // Notify observer on Libassistant services started.
+  SetStateAndInformObservers(ServiceState::kStarted);
+
+  for (auto& observer : assistant_client_observers_)
+    observer.OnAssistantClientStarted(assistant_client_.get());
 }
 
 void ServiceController::SetStateAndInformObservers(
@@ -315,19 +307,11 @@ void ServiceController::SetStateAndInformObservers(
     observer->OnStateChanged(state_);
 }
 
-void ServiceController::CreateAndRegisterDeviceStateListener() {
-  device_state_listener_ = std::make_unique<DeviceStateListener>(this);
-  assistant_manager()->AddDeviceStateListener(device_state_listener_.get());
-}
-
 void ServiceController::CreateAndRegisterChromiumApiDelegate(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         url_loader_factory_remote) {
   CreateChromiumApiDelegate(std::move(url_loader_factory_remote));
-
-  assistant_manager_internal()
-      ->GetFuchsiaApiHelperOrDie()
-      ->SetChromeOSApiDelegate(chromium_api_delegate_.get());
+  assistant_client_->SetChromeOSApiDelegate(chromium_api_delegate_.get());
 }
 
 void ServiceController::CreateChromiumApiDelegate(

@@ -95,11 +95,11 @@ bool GroupPolicyManager::GetLastCheckPeriodMinutes(int* minutes) const {
 bool GroupPolicyManager::GetUpdatesSuppressedTimes(
     UpdatesSuppressedTimes* suppressed_times) const {
   return GetIntPolicy(kRegValueUpdatesSuppressedStartHour,
-                      &suppressed_times->start_hour) &&
+                      &suppressed_times->start_hour_) &&
          GetIntPolicy(kRegValueUpdatesSuppressedStartMin,
-                      &suppressed_times->start_minute) &&
+                      &suppressed_times->start_minute_) &&
          GetIntPolicy(kRegValueUpdatesSuppressedDurationMin,
-                      &suppressed_times->duration_minute);
+                      &suppressed_times->duration_minute_);
 }
 
 bool GroupPolicyManager::GetDownloadPreferenceGroupPolicy(

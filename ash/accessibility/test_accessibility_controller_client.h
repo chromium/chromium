@@ -8,7 +8,6 @@
 #include "ash/components/audio/sounds.h"
 #include "ash/public/cpp/accessibility_controller_client.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
@@ -20,10 +19,16 @@ namespace ash {
 class TestAccessibilityControllerClient : public AccessibilityControllerClient {
  public:
   TestAccessibilityControllerClient();
+
+  TestAccessibilityControllerClient(const TestAccessibilityControllerClient&) =
+      delete;
+  TestAccessibilityControllerClient& operator=(
+      const TestAccessibilityControllerClient&) = delete;
+
   ~TestAccessibilityControllerClient();
 
   static constexpr base::TimeDelta kShutdownSoundDuration =
-      base::TimeDelta::FromMilliseconds(1000);
+      base::Milliseconds(1000);
 
   // AccessibilityControllerClient:
   void TriggerAccessibilityAlert(AccessibilityAlert alert) override;
@@ -75,8 +80,6 @@ class TestAccessibilityControllerClient : public AccessibilityControllerClient {
   ax::mojom::Gesture last_a11y_gesture_ = ax::mojom::Gesture::kNone;
 
   int select_to_speak_state_change_requests_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAccessibilityControllerClient);
 };
 
 }  // namespace ash

@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_constants.h"
@@ -119,6 +118,11 @@ class FakeCryptAuthKeyProofComputerFactory
  public:
   FakeCryptAuthKeyProofComputerFactory() = default;
 
+  FakeCryptAuthKeyProofComputerFactory(
+      const FakeCryptAuthKeyProofComputerFactory&) = delete;
+  FakeCryptAuthKeyProofComputerFactory& operator=(
+      const FakeCryptAuthKeyProofComputerFactory&) = delete;
+
   ~FakeCryptAuthKeyProofComputerFactory() override = default;
 
   void set_should_return_null_key_proof(bool should_return_null_key_proof) {
@@ -134,8 +138,6 @@ class FakeCryptAuthKeyProofComputerFactory
   }
 
   bool should_return_null_key_proof_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthKeyProofComputerFactory);
 };
 
 class SyncSingleKeyResponseData {
@@ -283,6 +285,12 @@ SyncKeysResponse BuildSyncKeysResponse(
 class DeviceSyncCryptAuthV2EnrollerImplTest
     : public testing::Test,
       public MockCryptAuthClientFactory::Observer {
+ public:
+  DeviceSyncCryptAuthV2EnrollerImplTest(
+      const DeviceSyncCryptAuthV2EnrollerImplTest&) = delete;
+  DeviceSyncCryptAuthV2EnrollerImplTest& operator=(
+      const DeviceSyncCryptAuthV2EnrollerImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthV2EnrollerImplTest()
       : client_factory_(std::make_unique<MockCryptAuthClientFactory>(
@@ -525,8 +533,6 @@ class DeviceSyncCryptAuthV2EnrollerImplTest
   absl::optional<CryptAuthEnrollmentResult> enrollment_result_;
 
   std::unique_ptr<CryptAuthV2Enroller> enroller_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthV2EnrollerImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, SuccessfulEnrollment) {

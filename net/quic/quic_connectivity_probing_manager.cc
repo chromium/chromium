@@ -275,7 +275,7 @@ void QuicConnectivityProbingManager::MaybeResendConnectivityProbingPacket() {
     NotifyDelegateProbeFailed();
     return;
   }
-  SendConnectivityProbingPacket(base::TimeDelta::FromMilliseconds(timeout_ms));
+  SendConnectivityProbingPacket(base::Milliseconds(timeout_ms));
 }
 
 }  // namespace net

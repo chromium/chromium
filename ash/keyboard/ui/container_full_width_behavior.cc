@@ -8,14 +8,14 @@
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace keyboard {
 
 // The virtual keyboard show/hide animation durations.
-constexpr auto kShowAnimationDuration = base::TimeDelta::FromMilliseconds(200);
-constexpr auto kHideAnimationDuration = base::TimeDelta::FromMilliseconds(100);
+constexpr auto kShowAnimationDuration = base::Milliseconds(200);
+constexpr auto kHideAnimationDuration = base::Milliseconds(100);
 
 // The height of the area from the bottom of the keyboard where the user can
 // swipe up to access the shelf. Manually calculated to be slightly below

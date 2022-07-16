@@ -39,13 +39,16 @@ class CrostiniSection : public OsSettingsSection {
   bool LogMetric(mojom::Setting setting, base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
-  bool IsExportImportAllowed();
-  bool IsContainerUpgradeAllowed();
-  bool IsPortForwardingAllowed();
+  bool IsExportImportAllowed() const;
+  bool IsContainerUpgradeAllowed() const;
+  bool IsPortForwardingAllowed() const;
+  bool IsMultiContainerAllowed() const;
+
   void UpdateSearchTags();
 
   PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
+  Profile* const profile_;
 };
 
 }  // namespace settings

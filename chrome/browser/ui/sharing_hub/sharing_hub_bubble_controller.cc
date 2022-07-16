@@ -5,8 +5,11 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/share/share_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
@@ -18,6 +21,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -52,6 +57,7 @@ SharingHubSharesheetResult GetSharesheetResultHistogram(
       return SharingHubSharesheetResult::SUCCESS;
     case sharesheet::SharesheetResult::kCancel:
     case sharesheet::SharesheetResult::kErrorAlreadyOpen:
+    case sharesheet::SharesheetResult::kErrorWindowClosed:
       return SharingHubSharesheetResult::CANCELED;
   }
 }
@@ -68,6 +74,21 @@ SharingHubBubbleController::~SharingHubBubbleController() {
   if (sharing_hub_bubble_view_) {
     sharing_hub_bubble_view_->Hide();
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(features::kChromeOSSharingHub) &&
+      bubble_showing_) {
+    bubble_showing_ = false;
+    // Close any remnant Sharesheet dialog.
+    if (web_contents_containing_window_) {
+      CloseSharesheet();
+    }
+
+    // We must deselect the icon manually since the Sharesheet will not be able
+    // to invoke OnSharesheetClosed() at this point.
+    DeselectIcon();
+  }
+#endif
 }
 
 // static
@@ -91,10 +112,17 @@ void SharingHubBubbleController::ShowBubble() {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Ignore subsequent calls to open the Sharesheet if it already is open. This
+  // is especially for the Nearby Share dialog, where clicking outside of it
+  // will not dismiss the dialog.
+  if (bubble_showing_)
+    return;
+  bubble_showing_ = true;
   ShowSharesheet(browser->window()->GetSharingHubIconButton());
 #else
   sharing_hub_bubble_view_ =
       browser->window()->ShowSharingHubBubble(web_contents_, this, true);
+  share::LogShareSourceDesktop(share::ShareSourceDesktop::kOmniboxSharingHub);
 #endif
 }
 
@@ -115,9 +143,11 @@ bool SharingHubBubbleController::ShouldOfferOmniboxIcon() {
   if (!web_contents_)
     return false;
 
+  if (GetProfile()->IsIncognitoProfile() || GetProfile()->IsGuestSession())
+    return false;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return base::FeatureList::IsEnabled(features::kSharesheet) &&
-         base::FeatureList::IsEnabled(features::kChromeOSSharingHub);
+  return base::FeatureList::IsEnabled(features::kChromeOSSharingHub);
 #else
   return SharingHubOmniboxEnabled(web_contents_->GetBrowserContext());
 #endif
@@ -140,26 +170,41 @@ SharingHubBubbleController::GetThirdPartyActions() {
 
   SharingHubModel* model = GetSharingHubModel();
   if (model)
-    model->GetThirdPartyActionList(web_contents_, &actions);
+    model->GetThirdPartyActionList(&actions);
 
   return actions;
 }
 
-void SharingHubBubbleController::OnActionSelected(int command_id,
-                                                  bool is_first_party) {
+void SharingHubBubbleController::OnActionSelected(
+    int command_id,
+    bool is_first_party,
+    std::string feature_name_for_metrics) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   // Can be null in tests.
   if (!browser)
     return;
 
   if (is_first_party) {
-    chrome::ExecuteCommand(browser, command_id);
+    base::RecordComputedAction(feature_name_for_metrics);
+
+    // Show a back button for 1P dialogs anchored to the sharing hub icon.
+    if (command_id == IDC_QRCODE_GENERATOR) {
+      qrcode_generator::QRCodeGeneratorBubbleController* qrcode_controller =
+          qrcode_generator::QRCodeGeneratorBubbleController::Get(web_contents_);
+      qrcode_controller->ShowBubble(web_contents_->GetURL(), true);
+    } else if (command_id == IDC_SEND_TAB_TO_SELF) {
+      send_tab_to_self::SendTabToSelfBubbleController*
+          send_tab_to_self_controller =
+              send_tab_to_self::SendTabToSelfBubbleController::
+                  CreateOrGetFromWebContents(web_contents_);
+      send_tab_to_self_controller->ShowBubble(true);
+    } else {
+      chrome::ExecuteCommand(browser, command_id);
+    }
   } else {
     SharingHubModel* model = GetSharingHubModel();
     DCHECK(model);
-    model->ExecuteThirdPartyAction(GetProfile(), command_id,
-                                   web_contents_->GetLastCommittedURL().spec(),
-                                   web_contents_->GetTitle());
+    model->ExecuteThirdPartyAction(web_contents_, command_id);
   }
 }
 
@@ -179,22 +224,35 @@ SharingHubModel* SharingHubBubbleController::GetSharingHubModel() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+sharesheet::SharesheetService*
+SharingHubBubbleController::GetSharesheetService() {
+  if (!web_contents_)
+    return nullptr;
+
+  if (!sharesheet_service_) {
+    Profile* const profile =
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+    DCHECK(profile);
+
+    sharesheet_service_ =
+        sharesheet::SharesheetServiceFactory::GetForProfile(profile);
+  }
+
+  return sharesheet_service_;
+}
+
 void SharingHubBubbleController::ShowSharesheet(
     views::Button* highlighted_button) {
-  if (!base::FeatureList::IsEnabled(features::kSharesheet) ||
-      !base::FeatureList::IsEnabled(features::kChromeOSSharingHub)) {
+  if (!base::FeatureList::IsEnabled(features::kChromeOSSharingHub)) {
     return;
   }
 
   DCHECK(highlighted_button);
   highlighted_button_tracker_.SetView(highlighted_button);
 
-  Profile* const profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  DCHECK(profile);
-
-  sharesheet::SharesheetService* const sharesheet_service =
-      sharesheet::SharesheetServiceFactory::GetForProfile(profile);
+  sharesheet::SharesheetService* sharesheet_service = GetSharesheetService();
+  if (!sharesheet_service)
+    return;
 
   apps::mojom::IntentPtr intent = apps_util::CreateShareIntentFromText(
       web_contents_->GetURL().spec(),
@@ -203,9 +261,32 @@ void SharingHubBubbleController::ShowSharesheet(
       web_contents_, std::move(intent),
       sharesheet::SharesheetMetrics::LaunchSource::kOmniboxShare,
       base::BindOnce(&SharingHubBubbleController::OnShareDelivered,
-                     base::Unretained(this)),
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&SharingHubBubbleController::OnSharesheetClosed,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // Save the window in order to close the sharesheet if the tab is closed. This
+  // will return the incorrect window if called later.
+  web_contents_containing_window_ = web_contents_->GetTopLevelNativeWindow();
+}
+
+void SharingHubBubbleController::CloseSharesheet() {
+  sharesheet::SharesheetService* sharesheet_service = GetSharesheetService();
+  if (!sharesheet_service)
+    return;
+
+  sharesheet::SharesheetController* sharesheet_controller =
+      sharesheet_service->GetSharesheetController(
+          web_contents_containing_window_);
+  if (!sharesheet_controller)
+    return;
+
+  sharesheet_controller->CloseBubble(sharesheet::SharesheetResult::kCancel);
+
+  // OnSharesheetClosed() is not guaranteed to be called by the
+  // SharesheetController (specifically for the case where this is invoked by
+  // our destructor). Hence, we must explicitly set this null here.
+  web_contents_containing_window_ = nullptr;
 }
 
 void SharingHubBubbleController::OnShareDelivered(
@@ -215,11 +296,31 @@ void SharingHubBubbleController::OnShareDelivered(
 
 void SharingHubBubbleController::OnSharesheetClosed(
     views::Widget::ClosedReason reason) {
+  bubble_showing_ = false;
+  web_contents_containing_window_ = nullptr;
   // Deselect the omnibox icon now that the sharesheet is closed.
+  DeselectIcon();
+}
+
+void SharingHubBubbleController::DeselectIcon() {
+  if (!highlighted_button_tracker_.view())
+    return;
+
   views::Button* button =
       views::Button::AsButton(highlighted_button_tracker_.view());
   if (button)
     button->SetHighlighted(false);
+}
+
+void SharingHubBubbleController::OnVisibilityChanged(
+    content::Visibility visibility) {
+  // Cancel the current share attempt if the user switches to a different tab in
+  // the window. Switching windows is permitted since a sharesheet is tied to
+  // the native window.
+  if (bubble_showing_ && web_contents_ &&
+      visibility == content::Visibility::HIDDEN) {
+    CloseSharesheet();
+  }
 }
 #endif
 
@@ -227,10 +328,10 @@ SharingHubBubbleController::SharingHubBubbleController() = default;
 
 SharingHubBubbleController::SharingHubBubbleController(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {
+    : content::WebContentsObserver(web_contents), web_contents_(web_contents) {
   DCHECK(web_contents);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SharingHubBubbleController)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SharingHubBubbleController);
 
 }  // namespace sharing_hub

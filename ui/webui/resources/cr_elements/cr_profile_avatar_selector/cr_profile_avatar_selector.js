@@ -16,7 +16,7 @@ import './cr_profile_avatar_selector_grid.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getImage} from '../../js/icon.m.js';
+import {getImage} from '../../js/icon.js';
 
 /**
  * @typedef {{url: string,

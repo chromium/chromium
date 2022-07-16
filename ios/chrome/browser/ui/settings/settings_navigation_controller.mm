@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -312,9 +311,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     self.modalPresentationStyle = UIModalPresentationFormSheet;
     // Set the presentationController delegate. This is used for swipe down to
     // dismiss. This needs to be set after the modalPresentationStyle.
-    if (@available(iOS 13, *)) {
-      self.presentationController.delegate = self;
-    }
+    self.presentationController.delegate = self;
   }
   return self;
 }
@@ -324,16 +321,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
-  if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    self.navigationBar.translucent = NO;
-    self.toolbar.translucent = NO;
-    self.navigationBar.barTintColor =
-        [UIColor colorNamed:kSecondaryBackgroundColor];
-    self.toolbar.barTintColor =
-        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-    self.view.backgroundColor =
-        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-  }
+  self.navigationBar.translucent = NO;
+  self.toolbar.translucent = NO;
+  self.navigationBar.barTintColor =
+      [UIColor colorNamed:kSecondaryBackgroundColor];
+  self.toolbar.barTintColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  self.view.backgroundColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 
   self.navigationBar.prefersLargeTitles = YES;
   self.navigationBar.accessibilityIdentifier = @"SettingNavigationBar";
@@ -418,10 +413,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.googleServicesSettingsCoordinator =
       [[GoogleServicesSettingsCoordinator alloc]
           initWithBaseNavigationController:self
-                                   browser:self.browser
-                                      mode:GoogleServicesSettingsModeSettings];
-  self.googleServicesSettingsCoordinator.handler =
-      _settingsNavigationDelegate.handlerForSettings;
+                                   browser:self.browser];
   self.googleServicesSettingsCoordinator.delegate = self;
   [self.googleServicesSettingsCoordinator start];
 }
@@ -504,50 +496,31 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (BOOL)presentationControllerShouldDismiss:
     (UIPresentationController*)presentationController {
-  if (@available(iOS 13, *)) {
-    if ([self.currentPresentedViewController
-            respondsToSelector:@selector
-            (presentationControllerShouldDismiss:)]) {
-      return [self.currentPresentedViewController
-          presentationControllerShouldDismiss:presentationController];
-    }
+  if ([self.currentPresentedViewController
+          respondsToSelector:@selector(presentationControllerShouldDismiss:)]) {
+    return [self.currentPresentedViewController
+        presentationControllerShouldDismiss:presentationController];
   }
   return NO;
 }
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  if (@available(iOS 13, *)) {
-    if ([self.currentPresentedViewController
-            respondsToSelector:@selector(presentationControllerDidDismiss:)]) {
-      [self.currentPresentedViewController
-          presentationControllerDidDismiss:presentationController];
-    }
+  if ([self.currentPresentedViewController
+          respondsToSelector:@selector(presentationControllerDidDismiss:)]) {
+    [self.currentPresentedViewController
+        presentationControllerDidDismiss:presentationController];
   }
   // Call settingsWasDismissed to make sure any necessary cleanup is performed.
   [self.settingsNavigationDelegate settingsWasDismissed];
 }
 
-- (void)presentationControllerDidAttemptToDismiss:
-    (UIPresentationController*)presentationController {
-  if (@available(iOS 13, *)) {
-    if ([self.currentPresentedViewController
-            respondsToSelector:@selector
-            (presentationControllerDidAttemptToDismiss:)]) {
-      [self.currentPresentedViewController
-          presentationControllerDidAttemptToDismiss:presentationController];
-    }
-  }
-}
-
 - (void)presentationControllerWillDismiss:
     (UIPresentationController*)presentationController {
-  if (@available(iOS 13, *)) {
-    if ([self.currentPresentedViewController
-            respondsToSelector:@selector(presentationControllerWillDismiss:)]) {
-      [self.currentPresentedViewController
-          presentationControllerWillDismiss:presentationController];
-    }
+  if ([self.currentPresentedViewController
+          respondsToSelector:@selector(presentationControllerWillDismiss:)]) {
+    [self.currentPresentedViewController
+        presentationControllerWillDismiss:presentationController];
   }
 }
 

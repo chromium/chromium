@@ -8,17 +8,23 @@
 #include "base/strings/pattern.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_contextual_menu.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/vector_icons/vector_icons.h"
@@ -32,14 +38,21 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/view_class_properties.h"
 
-MediaToolbarButtonView::MediaToolbarButtonView(BrowserView* browser_view)
+MediaToolbarButtonView::MediaToolbarButtonView(
+    BrowserView* browser_view,
+    std::unique_ptr<MediaToolbarButtonContextualMenu> context_menu)
     : ToolbarButton(base::BindRepeating(&MediaToolbarButtonView::ButtonPressed,
-                                        base::Unretained(this))),
+                                        base::Unretained(this)),
+                    context_menu ? context_menu->CreateMenuModel() : nullptr,
+                    /** tab_strip_model*/ nullptr,
+                    /** trigger_menu_on_long_press */ false),
       browser_(browser_view->browser()),
       service_(MediaNotificationServiceFactory::GetForProfile(
           browser_view->browser()->profile())),
-      feature_promo_controller_(browser_view->feature_promo_controller()) {
+      feature_promo_controller_(browser_view->feature_promo_controller()),
+      context_menu_(std::move(context_menu)) {
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   SetFlipCanvasOnPaintForRTLUI(false);
@@ -47,13 +60,15 @@ MediaToolbarButtonView::MediaToolbarButtonView(BrowserView* browser_view)
   SetTooltipText(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_ICON_TOOLTIP_TEXT));
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
+  SetProperty(views::kElementIdentifierKey, kMediaButtonElementId);
 
   // We start hidden and only show once |controller_| tells us to.
   SetVisible(false);
 
   // Wait until we're done with everything else before creating |controller_|
   // since it can call |Show()| synchronously.
-  controller_ = std::make_unique<MediaToolbarButtonController>(this, service_);
+  controller_ = std::make_unique<MediaToolbarButtonController>(
+      this, service_->media_item_manager());
 }
 
 MediaToolbarButtonView::~MediaToolbarButtonView() {
@@ -121,26 +136,40 @@ void MediaToolbarButtonView::Enable() {
 void MediaToolbarButtonView::Disable() {
   SetEnabled(false);
 
-  feature_promo_controller_->CloseBubble(
-      feature_engagement::kIPHLiveCaptionFeature);
+  ClosePromoBubble();
 
   for (auto& observer : observers_)
     observer.OnMediaButtonDisabled();
+}
+
+void MediaToolbarButtonView::MaybeShowStopCastingPromo() {
+  if (media_router::GlobalMediaControlsCastStartStopEnabled() &&
+      media_router::MediaRouterEnabled(browser_->profile()) &&
+      service_->HasLocalCastNotifications()) {
+    feature_promo_controller_->MaybeShowPromo(
+        feature_engagement::kIPHGMCCastStartStopFeature);
+  }
 }
 
 void MediaToolbarButtonView::ButtonPressed() {
   if (MediaDialogView::IsShowing()) {
     MediaDialogView::HideDialog();
   } else {
-    MediaDialogView::ShowDialog(this, service_, browser_->profile(),
-                                GlobalMediaControlsEntryPoint::kToolbarIcon);
-
-    feature_promo_controller_->CloseBubble(
-        feature_engagement::kIPHLiveCaptionFeature);
+    MediaDialogView::ShowDialog(
+        this, service_, browser_->profile(),
+        global_media_controls::GlobalMediaControlsEntryPoint::kToolbarIcon);
+    ClosePromoBubble();
 
     for (auto& observer : observers_)
       observer.OnMediaDialogOpened();
   }
+}
+
+void MediaToolbarButtonView::ClosePromoBubble() {
+  feature_promo_controller_->CloseBubble(
+      feature_engagement::kIPHLiveCaptionFeature);
+  feature_promo_controller_->CloseBubble(
+      feature_engagement::kIPHGMCCastStartStopFeature);
 }
 
 BEGIN_METADATA(MediaToolbarButtonView, ToolbarButton)

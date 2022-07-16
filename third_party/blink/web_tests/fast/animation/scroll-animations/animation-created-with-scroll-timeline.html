@@ -6,7 +6,7 @@
 
 <script>
   test(t => {
-    var scrollTimeline = new ScrollTimeline({ timeRange: 100, orientation: 'block' });
+    var scrollTimeline = new ScrollTimeline({ orientation: 'block' });
     var animationObject = new Animation(null, scrollTimeline);
     assert_equals(animationObject.timeline, scrollTimeline,
       "Animation timeline should be the ScrollTimeline passed in the constructor.");

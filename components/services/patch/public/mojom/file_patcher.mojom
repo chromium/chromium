@@ -6,7 +6,12 @@ module patch.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
+// Interface to the out-of-process file patcher. The file patcher runs
+// bspatch, courgette, or other utilities to apply a differential
+// patch to a file, often for the purposes of software updates.
+[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
 interface FilePatcher {
   // Patch |input_file| with |patch_file| using the bsdiff algorithm
   // (Courgette's version) and place the output in |output_file|.

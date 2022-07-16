@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ENABLE_ADB_SIDELOADING_SCREEN_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace ash {
@@ -43,6 +42,12 @@ class EnableAdbSideloadingScreenHandler : public EnableAdbSideloadingScreenView,
 
   explicit EnableAdbSideloadingScreenHandler(
       JSCallsContainer* js_calls_container);
+
+  EnableAdbSideloadingScreenHandler(const EnableAdbSideloadingScreenHandler&) =
+      delete;
+  EnableAdbSideloadingScreenHandler& operator=(
+      const EnableAdbSideloadingScreenHandler&) = delete;
+
   ~EnableAdbSideloadingScreenHandler() override;
 
   // EnableAdbSideloadingScreenView implementation:
@@ -62,8 +67,6 @@ class EnableAdbSideloadingScreenHandler : public EnableAdbSideloadingScreenView,
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(EnableAdbSideloadingScreenHandler);
 };
 
 }  // namespace chromeos

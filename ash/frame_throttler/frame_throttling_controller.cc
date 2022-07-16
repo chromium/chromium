@@ -189,7 +189,7 @@ FrameThrottlingController::GetFrameSinkIdsToThrottle() const {
 
 void FrameThrottlingController::UpdateThrottlingOnBrowserWindows() {
   context_factory_->GetHostFrameSinkManager()->Throttle(
-      GetFrameSinkIdsToThrottle(), base::TimeDelta::FromHz(throttled_fps_));
+      GetFrameSinkIdsToThrottle(), base::Hertz(throttled_fps_));
 }
 
 void FrameThrottlingController::AddArcObserver(
@@ -200,6 +200,11 @@ void FrameThrottlingController::AddArcObserver(
 void FrameThrottlingController::RemoveArcObserver(
     FrameThrottlingObserver* observer) {
   arc_observers_.RemoveObserver(observer);
+}
+
+bool FrameThrottlingController::HasArcObserver(
+    FrameThrottlingObserver* observer) {
+  return arc_observers_.HasObserver(observer);
 }
 
 }  // namespace ash

@@ -6,9 +6,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/file_util.h"
+#include "extensions/test/test_extension_dir.h"
 
 namespace extensions {
 
@@ -140,5 +142,85 @@ INSTANTIATE_TEST_SUITE_P(,
                          SandboxedPagesTest,
                          ::testing::Values(ManifestVersion::TWO,
                                            ManifestVersion::THREE));
+
+// Verify sandbox behavior.
+IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, WebAccessibleResourcesTest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Install extension.
+  TestExtensionDir extension_dir;
+  constexpr char kManifest[] = R"({
+    "name": "Extension sandbox text",
+    "version": "1.0",
+    "manifest_version": 2,
+    "sandbox": {
+      "pages": ["sandboxed_page.html"]
+    },
+    "web_accessible_resources": [
+      "web_accessible_resource.html"
+    ]
+  })";
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("sandboxed_page.html"), "");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("page.html"), "");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("resource.html"), "resource.html");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("web_accessible_resource.html"),
+                          "web_accessible_resource.html");
+  const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Fetch url from frame to verify histograms match expectations.
+  auto test_frame_with_fetch = [&](const char* frame_url, const char* fetch_url,
+                                   bool is_web_accessible_resource, int count,
+                                   std::string expected_frame_origin) {
+    // Prepare histogram.
+    base::HistogramTester histograms;
+    const char* kHistogramName =
+        "Extensions.SandboxedPageLoad.IsWebAccessibleResource";
+
+    // Fetch and test resource.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), extension->GetResourceURL(frame_url)));
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    std::string result;
+    constexpr char kFetchScriptTemplate[] =
+        R"(
+        fetch($1).then(result => {
+          return result.text();
+        }).then(text => {
+          domAutomationController.send(text);
+        }).catch(err => {
+          domAutomationController.send(String(err));
+        });)";
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents,
+        content::JsReplace(kFetchScriptTemplate,
+                           extension->GetResourceURL(fetch_url)),
+        &result));
+    EXPECT_EQ(result, fetch_url);
+    histograms.ExpectBucketCount(kHistogramName, is_web_accessible_resource,
+                                 count);
+    EXPECT_EQ(
+        expected_frame_origin,
+        web_contents->GetMainFrame()->GetLastCommittedOrigin().Serialize());
+  };
+
+  // Extension page fetching an extension file.
+  test_frame_with_fetch("page.html", "resource.html", false, 0,
+                        extension->origin().Serialize());
+
+  // Extension page fetching a web accessible resource.
+  test_frame_with_fetch("page.html", "web_accessible_resource.html", true, 0,
+                        extension->origin().Serialize());
+
+  // Sandboxed extension page fetching an extension file.
+  test_frame_with_fetch("sandboxed_page.html", "resource.html", false, 1,
+                        "null");
+
+  // Sandboxed extension page fetching a web accessible resource.
+  test_frame_with_fetch("sandboxed_page.html", "web_accessible_resource.html",
+                        true, 1, "null");
+}
 
 }  // namespace extensions

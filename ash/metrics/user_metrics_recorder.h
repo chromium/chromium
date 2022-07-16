@@ -11,7 +11,6 @@
 #include "ash/metrics/login_metrics_recorder.h"
 #include "ash/metrics/task_switch_metrics_recorder.h"
 #include "ash/metrics/user_metrics_action.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 
 namespace ash {
@@ -20,6 +19,7 @@ class DemoSessionMetricsRecorder;
 class DesktopTaskSwitchMetricRecorder;
 enum class DictationToggleSource;
 class PointerMetricsRecorder;
+class StylusMetricsRecorder;
 
 // User Metrics Recorder provides a repeating callback (RecordPeriodicMetrics)
 // on a timer to allow recording of state data over time to the UMA records.
@@ -31,6 +31,9 @@ class ASH_EXPORT UserMetricsRecorder {
   // Creates a UserMetricsRecorder that records metrics periodically. Equivalent
   // to calling UserMetricsRecorder(true).
   UserMetricsRecorder();
+
+  UserMetricsRecorder(const UserMetricsRecorder&) = delete;
+  UserMetricsRecorder& operator=(const UserMetricsRecorder&) = delete;
 
   virtual ~UserMetricsRecorder();
 
@@ -99,13 +102,14 @@ class ASH_EXPORT UserMetricsRecorder {
   // Metric recorder to track pointer down events.
   std::unique_ptr<PointerMetricsRecorder> pointer_metrics_recorder_;
 
+  // Metric recorder to track stylus events.
+  std::unique_ptr<StylusMetricsRecorder> stylus_metrics_recorder_;
+
   // Metric recorder to track login authentication activity.
   std::unique_ptr<LoginMetricsRecorder> login_metrics_recorder_;
 
   // Metric recorder to track app use in demo sessions.
   std::unique_ptr<DemoSessionMetricsRecorder> demo_session_metrics_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserMetricsRecorder);
 };
 
 }  // namespace ash

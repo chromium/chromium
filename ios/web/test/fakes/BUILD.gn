@@ -33,8 +33,6 @@ source_set("fakes") {
     "crw_fake_wk_frame_info.mm",
     "crw_fake_wk_navigation_action.h",
     "crw_fake_wk_navigation_action.mm",
-    "crw_fake_wk_navigation_response.h",
-    "crw_fake_wk_navigation_response.mm",
     "fake_java_script_feature.h",
     "fake_java_script_feature.mm",
     "fake_navigation_manager_delegate.h",

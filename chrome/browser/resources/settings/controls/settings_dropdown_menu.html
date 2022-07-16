@@ -29,7 +29,7 @@
   <template is="dom-repeat" items="[[menuOptions]]">
     <option value="[[item.value]]">[[item.name]]</option>
   </template>
-  <option value="[[notFoundValue_]]"
+  <option value="[[notFoundValue]]"
       disabled="[[!showNotFoundValue_(menuOptions, pref.value)]]">
     $i18n{custom}
   </option>

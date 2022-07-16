@@ -7,7 +7,6 @@
 
 #include <list>
 
-#include "base/macros.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_request_state.h"
@@ -24,6 +23,10 @@ class Extension;
 class CaptureAccessHandlerBase : public MediaAccessHandler {
  public:
   CaptureAccessHandlerBase();
+
+  CaptureAccessHandlerBase(const CaptureAccessHandlerBase&) = delete;
+  CaptureAccessHandlerBase& operator=(const CaptureAccessHandlerBase&) = delete;
+
   ~CaptureAccessHandlerBase() override;
 
   // MediaAccessHandler implementation.
@@ -86,8 +89,6 @@ class CaptureAccessHandlerBase : public MediaAccessHandler {
                              int target_frame_id);
 
   std::list<Session> sessions_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureAccessHandlerBase);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_CAPTURE_ACCESS_HANDLER_BASE_H_

@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
+#include "content/shell/browser/shell_paths.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/views_content_client/views_content_browser_client.h"
@@ -57,6 +58,8 @@ bool ViewsContentMainDelegate::BasicStartupComplete(int* exit_code) {
   logging::LogEventProvider::Initialize(kViewsContentClientProviderName);
 #endif
 
+  content::RegisterShellPathProvider();
+
   return false;
 }
 
@@ -70,13 +73,13 @@ void ViewsContentMainDelegate::PreSandboxStartup() {
   base::PathService::Get(base::DIR_MODULE, &content_resources_pak_path);
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       content_resources_pak_path.AppendASCII("content_resources.pak"),
-      ui::SCALE_FACTOR_100P);
+      ui::k100Percent);
 
-  if (ui::ResourceBundle::IsScaleFactorSupported(ui::SCALE_FACTOR_200P)) {
+  if (ui::ResourceBundle::IsScaleFactorSupported(ui::k200Percent)) {
     base::FilePath ui_test_resources_200 = ui_test_pak_path.DirName().Append(
         FILE_PATH_LITERAL("ui_test_200_percent.pak"));
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        ui_test_resources_200, ui::SCALE_FACTOR_200P);
+        ui_test_resources_200, ui::k200Percent);
   }
 
   views_content_client_->OnResourcesLoaded();

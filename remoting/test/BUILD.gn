@@ -105,6 +105,7 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
         "//remoting/base",
         "//remoting/base:authorization",
         "//remoting/host",
+        "//remoting/host:resources",
         "//remoting/host/it2me:common",
         "//remoting/host/native_messaging",
       ]
@@ -140,7 +141,10 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
 
     sources = [ "it2me_standalone_host_main.cc" ]
 
-    deps = [ ":it2me_standalone_host" ]
+    deps = [
+      ":it2me_standalone_host",
+      "//remoting/host:resources",
+    ]
 
     if (is_linux || is_chromeos_lacros) {
       deps += [

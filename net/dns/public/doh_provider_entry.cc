@@ -34,7 +34,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
   //
   // The provider names in these entries should be kept in sync with the
   // DohProviderId histogram suffix list in
-  // tools/metrics/histograms/histograms_xml/histogram_suffixes_list.xml.
+  // tools/metrics/histograms/metadata/histogram_suffixes_list.xml.
   static const base::NoDestructor<DohProviderEntry::List> providers{{
       new DohProviderEntry("AlekBergNl", DohProviderIdForHistogram::kAlekBergNl,
                            {} /* ip_strs */, {} /* dns_over_tls_hostnames */,
@@ -93,6 +93,13 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           "https://doh.xfinity.com/dns-query{?dns}", "" /* ui_name */,
           "" /* privacy_policy */, false /* display_globally */,
           {} /* display_countries */, LoggingLevel::kExtra),
+      new DohProviderEntry("Cox", /*provider_id_for_histogram=*/absl::nullopt,
+                           {"68.105.28.11", "68.105.28.12", "2001:578:3f::30"},
+                           /*dns_over_tls_hostnames=*/{"dot.cox.net"},
+                           "https://doh.cox.net/dns-query",
+                           /*ui_name=*/"", /*privacy_policy=*/"",
+                           /*display_globally=*/false, /*display_countries=*/{},
+                           LoggingLevel::kNormal),
       new DohProviderEntry(
           "Cznic", DohProviderIdForHistogram::kCznic,
           {"185.43.135.1", "193.17.47.1", "2001:148f:fffe::1",

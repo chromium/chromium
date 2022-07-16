@@ -14,9 +14,14 @@ USE_PYTHON3 = True
 def CommonChecks(input_api, output_api):
   results = []
   results += input_api.canned_checks.RunPylint(
-      input_api, output_api, pylintrc='pylintrc')
+      input_api, output_api, pylintrc='pylintrc', version='2.6')
   tests = input_api.canned_checks.GetUnitTestsInDirectory(
-      input_api, output_api, '.', [r'^.+_test\.py$'], run_on_python3=True)
+      input_api,
+      output_api,
+      '.', [r'^.+_test\.py$'],
+      run_on_python2=False,
+      run_on_python3=True,
+      skip_shebang_check=True)
   results += input_api.RunTests(tests)
   return results
 

@@ -93,10 +93,10 @@ public class GoogleServicesSettingsTest {
         onView(withText(R.string.allow_chrome_signin_title)).perform(click());
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> Assert.assertNull("Account should be signed out!",
+                        -> Assert.assertFalse("Account should be signed out!",
                                 IdentityServicesProvider.get()
                                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
+                                        .hasPrimaryAccount(ConsentLevel.SIGNIN)));
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> Assert.assertFalse("SIGNIN_ALLOWED pref should be unset",

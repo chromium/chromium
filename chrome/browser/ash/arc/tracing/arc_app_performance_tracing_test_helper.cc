@@ -88,10 +88,10 @@ void ArcAppPerformanceTracingTestHelper::PlaySequence(
 }
 
 void ArcAppPerformanceTracingTestHelper::PlayDefaultSequence() {
-  const base::TimeDelta normal_interval = base::TimeDelta::FromSeconds(1) / 60;
-  const base::TimeDelta error1 = base::TimeDelta::FromMicroseconds(100);
-  const base::TimeDelta error2 = base::TimeDelta::FromMicroseconds(200);
-  const base::TimeDelta error3 = base::TimeDelta::FromMicroseconds(300);
+  const base::TimeDelta normal_interval = base::Seconds(1) / 60;
+  const base::TimeDelta error1 = base::Microseconds(100);
+  const base::TimeDelta error2 = base::Microseconds(200);
+  const base::TimeDelta error3 = base::Microseconds(300);
   const std::vector<base::TimeDelta> sequence = {
       normal_interval + error1,
       normal_interval + error2,

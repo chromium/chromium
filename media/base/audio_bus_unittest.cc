@@ -32,6 +32,10 @@ static const int kSampleRate = 48000;
 class AudioBusTest : public testing::Test {
  public:
   AudioBusTest() = default;
+
+  AudioBusTest(const AudioBusTest&) = delete;
+  AudioBusTest& operator=(const AudioBusTest&) = delete;
+
   ~AudioBusTest() override {
     for (size_t i = 0; i < data_.size(); ++i)
       base::AlignedFree(data_[i]);
@@ -125,8 +129,6 @@ class AudioBusTest : public testing::Test {
 
  protected:
   std::vector<float*> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioBusTest);
 };
 
 // Verify basic Create(...) method works as advertised.

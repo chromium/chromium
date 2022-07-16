@@ -6,8 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_RESET_SCREEN_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "chrome/browser/chromeos/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace ash {
@@ -60,6 +59,10 @@ class ResetScreenHandler : public ResetView,
   using TView = ResetView;
 
   explicit ResetScreenHandler(JSCallsContainer* js_calls_container);
+
+  ResetScreenHandler(const ResetScreenHandler&) = delete;
+  ResetScreenHandler& operator=(const ResetScreenHandler&) = delete;
+
   ~ResetScreenHandler() override;
 
   // ResetView implementation:
@@ -102,8 +105,6 @@ class ResetScreenHandler : public ResetView,
   bool is_rollback_requested_ = false;
   bool is_tpm_firmware_update_checked_ = false;
   bool is_showing_confirmation_dialog_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ResetScreenHandler);
 };
 
 }  // namespace chromeos

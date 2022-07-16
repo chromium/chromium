@@ -21,7 +21,6 @@
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -337,6 +336,9 @@ class RectangleString {
         suppressed_(false),
         output_(output) {}
 
+  RectangleString(const RectangleString&) = delete;
+  RectangleString& operator=(const RectangleString&) = delete;
+
   // Perform deferred initializations following creation.  Must be called
   // before any input can be added via AddString().
   void Init() { output_->clear(); }
@@ -395,8 +397,6 @@ class RectangleString {
 
   // String onto which the output is accumulated.
   std::u16string* output_;
-
-  DISALLOW_COPY_AND_ASSIGN(RectangleString);
 };
 
 void RectangleString::AddString(const std::u16string& input) {
@@ -498,6 +498,9 @@ class RectangleText {
         wrap_behavior_(wrap_behavior),
         lines_(lines) {}
 
+  RectangleText(const RectangleText&) = delete;
+  RectangleText& operator=(const RectangleText&) = delete;
+
   // Perform deferred initializations following creation.  Must be called
   // before any input can be added via AddString().
   void Init() { lines_->clear(); }
@@ -578,8 +581,6 @@ class RectangleText {
 
   // Indicates whether the very first word was truncated.
   bool first_word_truncated_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RectangleText);
 };
 
 void RectangleText::AddString(const std::u16string& input) {

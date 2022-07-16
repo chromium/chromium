@@ -53,6 +53,9 @@ class BASE_EXPORT Process {
 
   Process(Process&& other);
 
+  Process(const Process&) = delete;
+  Process& operator=(const Process&) = delete;
+
   // The destructor does not terminate the process.
   ~Process();
 
@@ -221,8 +224,6 @@ class BASE_EXPORT Process {
 #if defined(OS_WIN) || defined(OS_FUCHSIA)
   bool is_current_process_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(Process);
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

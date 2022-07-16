@@ -49,7 +49,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/icon_loader.h"
@@ -58,6 +57,10 @@
 class IconManager {
  public:
   IconManager();
+
+  IconManager(const IconManager&) = delete;
+  IconManager& operator=(const IconManager&) = delete;
+
   ~IconManager();
 
   // Synchronous call to examine the internal caches for the icon. Returns the
@@ -113,8 +116,6 @@ class IconManager {
   std::map<CacheKey, gfx::Image> icon_cache_;
 
   base::WeakPtrFactory<IconManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IconManager);
 };
 
 #endif  // CHROME_BROWSER_ICON_MANAGER_H_

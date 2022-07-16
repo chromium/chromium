@@ -27,9 +27,9 @@ class BitstreamFileWriter : public BitstreamProcessor {
       const gfx::Size& resolution,
       uint32_t frame_rate,
       uint32_t num_frames,
-      absl::optional<size_t> vp9_spatial_layer_index_to_write = absl::nullopt,
-      absl::optional<size_t> num_vp9_temporal_layers_to_write = absl::nullopt,
-      const std::vector<gfx::Size>& vp9_spatial_layer_resolutions = {});
+      absl::optional<size_t> spatial_layer_index_to_write = absl::nullopt,
+      absl::optional<size_t> temporal_layer_index_to_write = absl::nullopt,
+      const std::vector<gfx::Size>& spatial_layer_resolutions = {});
   BitstreamFileWriter(const BitstreamFileWriter&) = delete;
   BitstreamFileWriter operator=(const BitstreamFileWriter&) = delete;
   ~BitstreamFileWriter() override;
@@ -40,11 +40,10 @@ class BitstreamFileWriter : public BitstreamProcessor {
 
  private:
   class FrameFileWriter;
-  BitstreamFileWriter(
-      std::unique_ptr<FrameFileWriter> frame_file_writer,
-      absl::optional<size_t> vp9_spatial_layer_index_to_write,
-      absl::optional<size_t> num_vp9_temporal_layers_to_write,
-      const std::vector<gfx::Size>& vp9_spatial_layer_resolutions);
+  BitstreamFileWriter(std::unique_ptr<FrameFileWriter> frame_file_writer,
+                      absl::optional<size_t> spatial_layer_index_to_write,
+                      absl::optional<size_t> temporal_layer_index_to_write,
+                      const std::vector<gfx::Size>& spatial_layer_resolutions);
   void WriteBitstreamTask(scoped_refptr<BitstreamRef> bitstream,
                           size_t frame_index);
 
@@ -54,9 +53,9 @@ class BitstreamFileWriter : public BitstreamProcessor {
       const std::vector<gfx::Size>& spatial_layer_resolutions);
 
   const std::unique_ptr<FrameFileWriter> frame_file_writer_;
-  const absl::optional<size_t> vp9_spatial_layer_index_to_write_;
-  const absl::optional<size_t> num_vp9_temporal_layers_to_write_;
-  const std::vector<gfx::Size> vp9_spatial_layer_resolutions_;
+  const absl::optional<size_t> spatial_layer_index_to_write_;
+  const absl::optional<size_t> temporal_layer_index_to_write_;
+  const std::vector<gfx::Size> spatial_layer_resolutions_;
 
   // The conversion table from the current spatial index to the spatial index of
   // the initial spatial layers. Constructed in ConstructSpatialIndices().

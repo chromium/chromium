@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_ASH_LOGIN_SCREEN_SHOWN_OBSERVER_H_
 #define CHROME_BROWSER_UI_ASH_LOGIN_SCREEN_SHOWN_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 
 // A class that observes when the login screen is shown.

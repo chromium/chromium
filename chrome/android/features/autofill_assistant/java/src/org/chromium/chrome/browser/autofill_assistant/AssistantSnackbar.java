@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -27,7 +28,7 @@ class AssistantSnackbar {
 
     /** Shows the snackbar and reports the result to {@code callback}. */
     static SnackbarController show(Context context, SnackbarManager snackbarManager, int delayMs,
-            String message, Callback callback) {
+            String message, String undoString, Callback callback) {
         SnackbarController controller = new SnackbarController() {
             @Override
             public void onAction(Object actionData) {
@@ -39,10 +40,12 @@ class AssistantSnackbar {
                 callback.onDismiss(/* undo= */ false);
             }
         };
-        Snackbar snackBar =
-                Snackbar.make(message, controller, Snackbar.TYPE_ACTION,
-                                Snackbar.UMA_AUTOFILL_ASSISTANT_STOP_UNDO)
-                        .setAction(context.getString(R.string.undo), /* actionData= */ null);
+        Snackbar snackBar = Snackbar.make(message, controller, Snackbar.TYPE_ACTION,
+                                            Snackbar.UMA_AUTOFILL_ASSISTANT_STOP_UNDO)
+                                    .setAction(!TextUtils.isEmpty(undoString)
+                                                    ? undoString
+                                                    : context.getString(R.string.undo),
+                                            /* actionData= */ null);
         snackBar.setSingleLine(false);
         snackBar.setDuration(delayMs);
         snackbarManager.showSnackbar(snackBar);

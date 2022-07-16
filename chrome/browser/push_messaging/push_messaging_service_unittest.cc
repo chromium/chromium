@@ -74,6 +74,11 @@ const char kTestEncodedP256Key[] =
 class PushMessagingTestingProfile : public TestingProfile {
  public:
   PushMessagingTestingProfile() = default;
+
+  PushMessagingTestingProfile(const PushMessagingTestingProfile&) = delete;
+  PushMessagingTestingProfile& operator=(const PushMessagingTestingProfile&) =
+      delete;
+
   ~PushMessagingTestingProfile() override = default;
 
   PushMessagingServiceImpl* GetPushMessagingService() override {
@@ -83,9 +88,6 @@ class PushMessagingTestingProfile : public TestingProfile {
   permissions::PermissionManager* GetPermissionControllerDelegate() override {
     return PermissionManagerFactory::GetForProfile(this);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingTestingProfile);
 };
 
 std::unique_ptr<KeyedService> BuildFakeGCMProfileService(
@@ -93,8 +95,7 @@ std::unique_ptr<KeyedService> BuildFakeGCMProfileService(
   return gcm::FakeGCMProfileService::Build(static_cast<Profile*>(context));
 }
 
-constexpr base::TimeDelta kPushEventHandleTime =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kPushEventHandleTime = base::Seconds(10);
 
 }  // namespace
 
@@ -430,10 +431,10 @@ TEST_F(PushMessagingServiceTest, TestMultipleIncomingPushMessages) {
   handle_push_event = PushMessagingServiceImpl::PushEventCallback();
 
   histograms.ExpectUniqueTimeSample("PushMessaging.CheckOriginForAbuseTime",
-                                    base::TimeDelta::FromSeconds(0),
+                                    base::Seconds(0),
                                     /*expected_bucket_count=*/1);
   histograms.ExpectUniqueTimeSample("PushMessaging.DeliverQueuedMessageTime",
-                                    base::TimeDelta::FromSeconds(0),
+                                    base::Seconds(0),
                                     /*expected_bucket_count=*/1);
 
   // Run all tasks until idle so we can verify that we don't dispatch the second
@@ -465,7 +466,7 @@ TEST_F(PushMessagingServiceTest, TestMultipleIncomingPushMessages) {
   // Checking origins for abuse happens immediately on receiving a push message
   // one at a time. Both messages do that instantly in this test.
   histograms.ExpectTimeBucketCount("PushMessaging.CheckOriginForAbuseTime",
-                                   base::TimeDelta::FromSeconds(0),
+                                   base::Seconds(0),
                                    /*count=*/2);
   // Delivering messages should be done in series so the second message should
   // have waited for the first one to be handled.

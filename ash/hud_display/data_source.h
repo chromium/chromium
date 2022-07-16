@@ -18,6 +18,7 @@ class DataSource {
   struct Snapshot {
     Snapshot();
     Snapshot(const Snapshot&);
+    Snapshot& operator=(const Snapshot&);
 
     // All memory sizes are in bytes.
     // Separate non-zero-initialized members from zero-initialized.

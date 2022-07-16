@@ -21,6 +21,9 @@ class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
   explicit GPUComputePassEncoder(GPUDevice* device,
                                  WGPUComputePassEncoder compute_pass_encoder);
 
+  GPUComputePassEncoder(const GPUComputePassEncoder&) = delete;
+  GPUComputePassEncoder& operator=(const GPUComputePassEncoder&) = delete;
+
   // gpu_compute_pass_encoder.idl
   void setBindGroup(uint32_t index,
                     const DawnObject<WGPUBindGroup>* bindGroup) {
@@ -65,9 +68,6 @@ class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
         GetHandle(), querySet->GetHandle(), queryIndex);
   }
   void endPass() { GetProcs().computePassEncoderEndPass(GetHandle()); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUComputePassEncoder);
 };
 
 }  // namespace blink

@@ -380,6 +380,11 @@ void RenderWidgetHostInputEventRouter::OnRenderWidgetHostViewBaseDestroyed(
     bubbling_gesture_scroll_origin_ = nullptr;
   }
 
+  if (view == last_mouse_move_root_view_) {
+    last_mouse_move_target_ = nullptr;
+    last_mouse_move_root_view_ = nullptr;
+  }
+
   if (view == last_mouse_move_target_) {
     // When a child iframe is destroyed, consider its parent to be to be the
     // most recent target, if possible. In some cases the parent might already
@@ -393,7 +398,10 @@ void RenderWidgetHostInputEventRouter::OnRenderWidgetHostViewBaseDestroyed(
       last_mouse_move_target_ = nullptr;
     }
 
-    if (!last_mouse_move_target_ || view == last_mouse_move_root_view_)
+    // If both target and root are the view being destroyed, or the parent
+    // has already been destroyed, then also clear the root view pointer
+    // along with the target pointer.
+    if (!last_mouse_move_target_)
       last_mouse_move_root_view_ = nullptr;
   }
 
@@ -1954,7 +1962,7 @@ void RenderWidgetHostInputEventRouter::SetCursor(const WebCursor& cursor) {
     return;
 
   last_device_scale_factor_ =
-      last_mouse_move_root_view_->GetCurrentDeviceScaleFactor();
+      last_mouse_move_root_view_->GetDeviceScaleFactor();
   if (touch_emulator_)
     touch_emulator_->SetDeviceScaleFactor(last_device_scale_factor_);
   if (auto* cursor_manager = last_mouse_move_root_view_->GetCursorManager()) {

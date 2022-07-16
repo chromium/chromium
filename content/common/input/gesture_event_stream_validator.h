@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 
 namespace blink {
@@ -20,6 +19,11 @@ namespace content {
 class CONTENT_EXPORT GestureEventStreamValidator {
  public:
   GestureEventStreamValidator();
+
+  GestureEventStreamValidator(const GestureEventStreamValidator&) = delete;
+  GestureEventStreamValidator& operator=(const GestureEventStreamValidator&) =
+      delete;
+
   ~GestureEventStreamValidator();
 
   // If |event| is valid for the current stream, returns true.
@@ -30,8 +34,6 @@ class CONTENT_EXPORT GestureEventStreamValidator {
   bool scrolling_;
   bool pinching_;
   bool waiting_for_tap_end_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureEventStreamValidator);
 };
 
 }  // namespace content

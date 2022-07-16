@@ -9,13 +9,12 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 // Tracks changes to 'DeviceLoginScreenExtensions' policy and clears its data
 // stored in the login screen storage whenever a login screen extension is
@@ -44,6 +43,6 @@ class LoginScreenExtensionsStorageCleaner {
   PrefChangeRegistrar pref_change_registrar_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_SCREEN_EXTENSIONS_STORAGE_CLEANER_H_

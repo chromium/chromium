@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -48,6 +47,10 @@ class DnsProbeRunner : public network::ResolveHostClientBase {
   // may be called multiple times.
   DnsProbeRunner(net::DnsConfigOverrides dns_config_overrides,
                  const NetworkContextGetter& network_context_getter);
+
+  DnsProbeRunner(const DnsProbeRunner&) = delete;
+  DnsProbeRunner& operator=(const DnsProbeRunner&) = delete;
+
   ~DnsProbeRunner() override;
 
   // Starts a probe. |callback| will be called asynchronously when the result
@@ -94,8 +97,6 @@ class DnsProbeRunner : public network::ResolveHostClientBase {
   Result result_{UNKNOWN};
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DnsProbeRunner);
 };
 
 }  // namespace chrome_browser_net

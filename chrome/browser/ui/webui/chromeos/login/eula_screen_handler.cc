@@ -10,7 +10,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/helper.h"
@@ -71,12 +70,12 @@ std::string EulaScreenHandler::GetEulaOnlineUrl() {
         switches::kOobeEulaUrlForTests);
   }
 
-  return base::StringPrintf(chrome::kOnlineEulaURLPath,
+  return base::StringPrintf(chrome::kGoogleEulaOnlineURLPath,
                             g_browser_process->GetApplicationLocale().c_str());
 }
 
 std::string EulaScreenHandler::GetAdditionalToSUrl() {
-  return base::StringPrintf(chrome::kAdditionalToSOnlineURLPath,
+  return base::StringPrintf(chrome::kCrosEulaOnlineURLPath,
                             g_browser_process->GetApplicationLocale().c_str());
 }
 

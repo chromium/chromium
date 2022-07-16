@@ -27,11 +27,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ACCESSIBILITY_AX_OBJECT_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ACCESSIBILITY_AX_OBJECT_CACHE_H_
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
 #include "third_party/blink/renderer/core/accessibility/blink_ax_event_intent.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
+
+namespace gfx {
+class Point;
+}
 
 namespace ui {
 class AXMode;
@@ -45,7 +50,6 @@ class HTMLCanvasElement;
 class HTMLOptionElement;
 class HTMLFrameOwnerElement;
 class HTMLSelectElement;
-class IntPoint;
 class LayoutRect;
 class LocalFrameView;
 
@@ -164,7 +168,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual const AtomicString& ComputedRoleForNode(Node*) = 0;
   virtual String ComputedNameForNode(Node*) = 0;
 
-  virtual void OnTouchAccessibilityHover(const IntPoint&) = 0;
+  virtual void OnTouchAccessibilityHover(const gfx::Point&) = 0;
 
   virtual AXID GetAXID(Node*) = 0;
   virtual Element* GetElementFromAXID(AXID) = 0;

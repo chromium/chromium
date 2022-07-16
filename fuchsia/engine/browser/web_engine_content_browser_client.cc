@@ -10,18 +10,18 @@
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_split.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "components/site_isolation/features.h"
 #include "components/site_isolation/preloaded_isolated_origins.h"
 #include "components/strings/grit/components_locale_settings.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/user_agent.h"
 #include "fuchsia/base/fuchsia_dir_scheme.h"
+#include "fuchsia/base/init_logging.h"
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/browser/navigation_policy_throttle.h"
 #include "fuchsia/engine/browser/url_request_rewrite_rules_manager.h"
@@ -29,39 +29,44 @@
 #include "fuchsia/engine/browser/web_engine_browser_interface_binders.h"
 #include "fuchsia/engine/browser/web_engine_browser_main_parts.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
+#include "fuchsia/engine/common/url_request_rewrite_rules.h"
 #include "fuchsia/engine/common/web_engine_content_client.h"
 #include "fuchsia/engine/common/web_engine_url_loader_throttle.h"
 #include "fuchsia/engine/switches.h"
 #include "media/base/media_switches.h"
+#include "net/cert/x509_certificate.h"
+#include "net/ssl/ssl_private_key.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
-class DevToolsManagerDelegate : public content::DevToolsManagerDelegate {
+class DevToolsManagerDelegate final : public content::DevToolsManagerDelegate {
  public:
   explicit DevToolsManagerDelegate(WebEngineBrowserMainParts* main_parts)
       : main_parts_(main_parts) {
     DCHECK(main_parts_);
   }
-  ~DevToolsManagerDelegate() final = default;
+  ~DevToolsManagerDelegate() override = default;
 
   DevToolsManagerDelegate(const DevToolsManagerDelegate&) = delete;
   DevToolsManagerDelegate& operator=(const DevToolsManagerDelegate&) = delete;
 
   // content::DevToolsManagerDelegate implementation.
-  std::vector<content::BrowserContext*> GetBrowserContexts() final {
+  std::vector<content::BrowserContext*> GetBrowserContexts() override {
     return main_parts_->browser_contexts();
   }
-  content::BrowserContext* GetDefaultBrowserContext() final {
+  content::BrowserContext* GetDefaultBrowserContext() override {
     std::vector<content::BrowserContext*> contexts = GetBrowserContexts();
     return contexts.empty() ? nullptr : contexts.front();
   }
-  content::DevToolsAgentHost::List RemoteDebuggingTargets() final {
+  content::DevToolsAgentHost::List RemoteDebuggingTargets() override {
     return main_parts_->devtools_controller()->RemoteDebuggingTargets();
   }
 
@@ -81,15 +86,18 @@ std::vector<std::string> GetCorsExemptHeaders() {
 WebEngineContentBrowserClient::WebEngineContentBrowserClient()
     : cors_exempt_headers_(GetCorsExemptHeaders()),
       allow_insecure_content_(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kAllowRunningInsecureContent)) {}
+          switches::kAllowRunningInsecureContent)) {
+  // Logging in this class ensures this is logged once per web_instance.
+  cr_fuchsia::LogComponentStartWithVersion("WebEngine web_instance");
+}
 
 WebEngineContentBrowserClient::~WebEngineContentBrowserClient() = default;
 
 std::unique_ptr<content::BrowserMainParts>
 WebEngineContentBrowserClient::CreateBrowserMainParts(
-    const content::MainFunctionParams& parameters) {
+    content::MainFunctionParams parameters) {
   auto browser_main_parts =
-      std::make_unique<WebEngineBrowserMainParts>(this, parameters);
+      std::make_unique<WebEngineBrowserMainParts>(this, std::move(parameters));
   main_parts_ = browser_main_parts.get();
   return browser_main_parts;
 }
@@ -101,11 +109,11 @@ WebEngineContentBrowserClient::CreateDevToolsManagerDelegate() {
 }
 
 std::string WebEngineContentBrowserClient::GetProduct() {
-  return version_info::GetProductNameAndVersionForUserAgent();
+  return embedder_support::GetProduct();
 }
 
 std::string WebEngineContentBrowserClient::GetUserAgent() {
-  std::string user_agent = content::BuildUserAgentFromProduct(GetProduct());
+  std::string user_agent = embedder_support::GetUserAgent();
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUserAgentProductAndVersion)) {
     user_agent +=
@@ -113,6 +121,10 @@ std::string WebEngineContentBrowserClient::GetUserAgent() {
                   switches::kUserAgentProductAndVersion);
   }
   return user_agent;
+}
+
+blink::UserAgentMetadata WebEngineContentBrowserClient::GetUserAgentMetadata() {
+  return embedder_support::GetUserAgentMetadata();
 }
 
 void WebEngineContentBrowserClient::OverrideWebkitPrefs(
@@ -123,13 +135,18 @@ void WebEngineContentBrowserClient::OverrideWebkitPrefs(
 
   if (allow_insecure_content_)
     web_prefs->allow_running_insecure_content = true;
+
+  FrameImpl* frame = FrameImpl::FromWebContents(web_contents);
+  // This method may be called when a |web_contents| is instantiated but an
+  // associated frame has not been created.
+  if (frame != nullptr)
+    frame->OverrideWebPreferences(web_prefs);
 }
 
 void WebEngineContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
     content::RenderFrameHost* render_frame_host,
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
-  MediaResourceProviderService* const provider =
-      main_parts_->media_resource_provider_service();
+  CdmProviderService* const provider = main_parts_->cdm_provider_service();
   DCHECK(provider);
   PopulateFuchsiaFrameBinders(map, provider);
 }
@@ -171,6 +188,7 @@ void WebEngineContentBrowserClient::AppendExtraCommandLineSwitches(
     int child_process_id) {
   // TODO(https://crbug.com/1083520): Pass based on process type.
   constexpr char const* kSwitchesToCopy[] = {
+      blink::switches::kSharedArrayBufferAllowedOrigins,
       switches::kCorsExemptHeaders,
       switches::kEnableCastStreamingReceiver,
       switches::kEnableContentDirectories,
@@ -195,9 +213,8 @@ std::string WebEngineContentBrowserClient::GetApplicationLocale() {
 std::string WebEngineContentBrowserClient::GetAcceptLangs(
     content::BrowserContext* context) {
   // Returns a comma-separated list of language codes, in preference order.
-  // This is suitable for direct use setting the "sec-ch-lang" header, or
-  // passed to net::HttpUtil::GenerateAcceptLanguageHeader() to generate a
-  // legacy "accept-language" header value.
+  // This is passed to net::HttpUtil::GenerateAcceptLanguageHeader() to
+  // generate a legacy "accept-language" header value.
   return l10n_util::GetStringUTF8(IDS_ACCEPT_LANGUAGES);
 }
 
@@ -217,6 +234,7 @@ WebEngineContentBrowserClient::CreateThrottlesForNavigation(
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
   auto* frame_impl =
       FrameImpl::FromWebContents(navigation_handle->GetWebContents());
+  DCHECK(frame_impl);
 
   // Only create throttle if FrameImpl has a NavigationPolicyProvider,
   // indicating an interest in navigations.
@@ -251,10 +269,10 @@ WebEngineContentBrowserClient::CreateURLLoaderThrottles(
   }
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
-  scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>& rules =
-      FrameImpl::FromWebContents(wc_getter.Run())
-          ->url_request_rewrite_rules_manager()
-          ->GetCachedRules();
+  auto* frame_impl = FrameImpl::FromWebContents(wc_getter.Run());
+  DCHECK(frame_impl);
+  scoped_refptr<url_rewrite::UrlRequestRewriteRules>& rules =
+      frame_impl->url_request_rewrite_rules_manager()->GetCachedRules();
   if (rules) {
     throttles.emplace_back(std::make_unique<WebEngineURLLoaderThrottle>(rules));
   }

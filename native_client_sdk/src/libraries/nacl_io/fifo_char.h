@@ -19,6 +19,10 @@ namespace nacl_io {
 class FIFOChar : public FIFOInterface {
  public:
   explicit FIFOChar(size_t size);
+
+  FIFOChar(const FIFOChar&) = delete;
+  FIFOChar& operator=(const FIFOChar&) = delete;
+
   virtual ~FIFOChar();
 
   virtual bool IsEmpty();
@@ -45,8 +49,6 @@ class FIFOChar : public FIFOInterface {
   size_t size_;   // Size of the FIFO
   size_t avail_;  // How much data is currently available
   size_t tail_;   // Next read location
-
-  DISALLOW_COPY_AND_ASSIGN(FIFOChar);
 };
 
 }  // namespace nacl_io

@@ -14,7 +14,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/threading/hang_watcher.h"
 #include "build/build_config.h"
 
 // -----------------------------------------------------------------------------
@@ -38,6 +37,11 @@
 //   - base::ConditionVariable::*Wait*
 //   - base::Process::WaitForExit*
 //
+// - Accessing singletons: Accessing global state (Singleton / LazyInstance) is
+//   problematic on threads whom aren't joined on shutdown as they can be using
+//   the state as it becomes invalid during tear down. base::NoDestructor is the
+//   preferred alternative for global state and doesn't have this restriction.
+//
 // - Long CPU work: Refers to any code that takes more than 100 ms to
 //   run when there is no CPU contention and no hard page faults and therefore,
 //   is not suitable to run on a thread required to keep the browser responsive
@@ -47,8 +51,9 @@
 //  - DisallowBlocking(): Disallows blocking calls on the current thread.
 //  - DisallowBaseSyncPrimitives(): Disallows waiting on a //base sync primitive
 //    on the current thread.
+//  - DisallowSingleton(): Disallows using singletons on the current thread.
 //  - DisallowUnresponsiveTasks() Disallows blocking calls, waiting on a //base
-//    sync primitive, and long cpu work on the current thread.
+//    sync primitive, and long CPU work on the current thread.
 //
 // In addition, scoped-allowance mechanisms are offered to make an exception
 // within a scope for a behavior that is normally disallowed.
@@ -103,11 +108,13 @@
 
 class BrowserProcessImpl;
 class ChromeNSSCryptoModuleDelegate;
-class HistogramSynchronizer;
 class KeyStorageLinux;
 class NativeBackendKWallet;
 class NativeDesktopMediaList;
 class Profile;
+class StartupTabProviderImpl;
+class GaiaConfig;
+class WebEngineBrowserMainParts;
 
 Profile* GetLastProfileMac();
 
@@ -136,7 +143,7 @@ class WorkerThread;
 namespace scheduler {
 class WorkerThread;
 }
-}
+}  // namespace blink
 namespace cc {
 class CompletionEvent;
 class TileTaskManagerImpl;
@@ -148,10 +155,9 @@ namespace chromeos {
 class BlockingMethodCaller;
 namespace system {
 class StatisticsProviderImpl;
+bool IsCoreSchedulingAvailable();
+int NumberOfPhysicalCores();
 }
-}
-namespace chrome_browser_net {
-class Predictor;
 }
 namespace chrome_cleaner {
 class ResetShortcutsComponent;
@@ -161,23 +167,22 @@ namespace content {
 class BrowserGpuChannelHostFactory;
 class BrowserMainLoop;
 class BrowserProcessIOThread;
-class BrowserShutdownProfileDumper;
 class BrowserTestBase;
 class CategorizedWorkerPool;
 class DesktopCaptureDevice;
+class DWriteFontCollectionProxy;
 class EmergencyTraceFinalisationCoordinator;
 class InProcessUtilityThread;
 class NestedMessagePumpAndroid;
 class NetworkServiceInstancePrivate;
 class PepperPrintSettingsManagerImpl;
-class RTCVideoDecoder;
 class RenderProcessHostImpl;
 class RenderWidgetHostViewMac;
+class RTCVideoDecoder;
 class SandboxHostLinux;
 class ScopedAllowWaitForDebugURL;
 class ServiceWorkerContextClient;
 class ShellPathProvider;
-class SoftwareOutputDeviceMus;
 class SynchronousCompositor;
 class SynchronousCompositorHost;
 class SynchronousCompositorSyncCallBridge;
@@ -226,6 +231,7 @@ namespace media {
 class AudioInputDevice;
 class AudioOutputDevice;
 class BlockingUrlProtocol;
+class FileVideoCaptureDeviceFactory;
 class PaintCanvasVideoRenderer;
 }
 namespace memory_instrumentation {
@@ -233,6 +239,7 @@ class OSMetrics;
 }
 namespace metrics {
 class AndroidMetricsServiceClient;
+class CleanExitBeacon;
 }
 namespace midi {
 class TaskService;  // https://crbug.com/796830
@@ -247,6 +254,11 @@ namespace core {
 class ScopedIPCSupport;
 }
 }
+namespace nacl {
+namespace nonsfi {
+class PluginMainDelegate;
+}
+}  // namespace nacl
 namespace printing {
 class LocalPrinterHandlerDefault;
 #if defined(OS_MAC)
@@ -264,10 +276,7 @@ class GetLocalChangesRequest;
 class HttpBridge;
 }
 namespace ui {
-class CommandBufferClientImpl;
-class CommandBufferLocal;
 class DrmThreadProxy;
-class GpuState;
 }
 namespace weblayer {
 class BrowserContextImpl;
@@ -297,6 +306,7 @@ namespace remoting {
 class AutoThread;
 class ScopedBypassIOThreadRestrictions;
 namespace protocol {
+class ScopedAllowSyncPrimitivesForWebRtcTransport;
 class ScopedAllowThreadJoinForWebRtcTransport;
 }
 }
@@ -331,6 +341,12 @@ class DesktopConfigurationMonitor;
 }
 
 namespace base {
+class Environment;
+}
+
+bool HasWaylandDisplay(base::Environment* env);
+
+namespace base {
 
 namespace sequence_manager {
 namespace internal {
@@ -352,20 +368,24 @@ class AdjustOOMScoreHelper;
 class FileDescriptorWatcher;
 class FilePath;
 class ScopedAllowThreadRecallForStackSamplingProfiler;
-class SimpleThread;
 class StackSamplingProfiler;
+class TestCustomDisallow;
+class SimpleThread;
 class Thread;
-class WaitableEvent;
 
-struct BooleanWithStack;
+class BooleanWithStack;
 
 bool PathProviderWin(int, FilePath*);
 
 #if DCHECK_IS_ON()
-#define INLINE_IF_DCHECK_IS_OFF BASE_EXPORT
+// NOT_TAIL_CALLED if dcheck-is-on so it's always evident who irrevocably
+// altered the allowance (dcheck-builds will provide the setter's stack on
+// assertion) or who made a failing Assert*() call.
+#define INLINE_OR_NOT_TAIL_CALLED BASE_EXPORT NOT_TAIL_CALLED
 #define EMPTY_BODY_IF_DCHECK_IS_OFF
 #else
-#define INLINE_IF_DCHECK_IS_OFF inline
+// inline if dcheck-is-off so it's no overhead
+#define INLINE_OR_NOT_TAIL_CALLED inline
 
 // The static_assert() eats follow-on semicolons. `= default` would work
 // too, but it makes clang realize that all the Scoped classes are no-ops in
@@ -373,36 +393,44 @@ bool PathProviderWin(int, FilePath*);
 #define EMPTY_BODY_IF_DCHECK_IS_OFF \
   {}                                \
   static_assert(true, "")
-#endif
+#endif  // DCHECK_IS_ON()
 
 namespace internal {
 
 // Asserts that blocking calls are allowed in the current scope. This is an
 // internal call, external code should use ScopedBlockingCall instead, which
 // serves as a precise annotation of the scope that may/will block.
-INLINE_IF_DCHECK_IS_OFF void AssertBlockingAllowed()
+INLINE_OR_NOT_TAIL_CALLED void AssertBlockingAllowed()
+    EMPTY_BODY_IF_DCHECK_IS_OFF;
+INLINE_OR_NOT_TAIL_CALLED void AssertBlockingDisallowedForTesting()
     EMPTY_BODY_IF_DCHECK_IS_OFF;
 
 }  // namespace internal
 
 // Disallows blocking on the current thread.
-INLINE_IF_DCHECK_IS_OFF void DisallowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
+INLINE_OR_NOT_TAIL_CALLED void DisallowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
 // Disallows blocking calls within its scope.
 class BASE_EXPORT ScopedDisallowBlocking {
  public:
   ScopedDisallowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+  ScopedDisallowBlocking(const ScopedDisallowBlocking&) = delete;
+  ScopedDisallowBlocking& operator=(const ScopedDisallowBlocking&) = delete;
+
   ~ScopedDisallowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
  private:
 #if DCHECK_IS_ON()
   std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDisallowBlocking);
 };
 
 class BASE_EXPORT ScopedAllowBlocking {
+ public:
+  ScopedAllowBlocking(const ScopedAllowBlocking&) = delete;
+  ScopedAllowBlocking& operator=(const ScopedAllowBlocking&) = delete;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ThreadRestrictionsTest,
                            NestedAllowRestoresPreviousStack);
@@ -411,11 +439,13 @@ class BASE_EXPORT ScopedAllowBlocking {
 
   // This can only be instantiated by friends. Use ScopedAllowBlockingForTesting
   // in unit tests to avoid the friend requirement.
-  friend class AdjustOOMScoreHelper;
-  friend class StackSamplingProfiler;
+  friend class ::GaiaConfig;
+  friend class ::StartupTabProviderImpl;
   friend class android_webview::ScopedAllowInitGLBindings;
   friend class ash::MojoUtils;  // http://crbug.com/1055467
   friend class ash::BrowserDataMigrator;
+  friend class base::AdjustOOMScoreHelper;
+  friend class base::StackSamplingProfiler;
   friend class blink::DiskDataAllocator;
   friend class chromecast::CrashUtil;
   friend class content::BrowserProcessIOThread;
@@ -429,8 +459,10 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class cronet::CronetURLRequestContext;
   friend class crosapi::LacrosThreadPriorityDelegate;
   friend class ios_web_view::WebViewBrowserState;
+  friend class media::FileVideoCaptureDeviceFactory;
   friend class memory_instrumentation::OSMetrics;
   friend class metrics::AndroidMetricsServiceClient;
+  friend class metrics::CleanExitBeacon;
   friend class module_installer::ScopedAllowModulePakLoad;
   friend class mojo::CoreLibraryInitializer;
   friend class printing::LocalPrinterHandlerDefault;
@@ -443,13 +475,17 @@ class BASE_EXPORT ScopedAllowBlocking {
       DroppedScreenShotCopierMac;  // https://crbug.com/1148078
   friend class remoting::ScopedBypassIOThreadRestrictions;  // crbug.com/1144161
   friend class web::WebSubThread;
+  friend class ::WebEngineBrowserMainParts;
   friend class weblayer::BrowserContextImpl;
   friend class weblayer::ContentBrowserClientImpl;
   friend class weblayer::ProfileImpl;
   friend class weblayer::WebLayerPathProvider;
 
-  friend bool PathProviderWin(int, FilePath*);
   friend Profile* ::GetLastProfileMac();  // crbug.com/1176734
+  friend bool PathProviderWin(int, FilePath*);
+  friend bool chromeos::system::IsCoreSchedulingAvailable();
+  friend int chromeos::system::NumberOfPhysicalCores();
+  friend bool ::HasWaylandDisplay(base::Environment* env);  // crbug.com/1246928
 
   ScopedAllowBlocking(const Location& from_here = Location::Current());
   ~ScopedAllowBlocking();
@@ -457,27 +493,51 @@ class BASE_EXPORT ScopedAllowBlocking {
 #if DCHECK_IS_ON()
   std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowBlocking);
 };
 
 class ScopedAllowBlockingForTesting {
  public:
   ScopedAllowBlockingForTesting() {}
+
+  ScopedAllowBlockingForTesting(const ScopedAllowBlockingForTesting&) = delete;
+  ScopedAllowBlockingForTesting& operator=(
+      const ScopedAllowBlockingForTesting&) = delete;
+
   ~ScopedAllowBlockingForTesting() {}
 
  private:
 #if DCHECK_IS_ON()
   ScopedAllowBlocking scoped_allow_blocking_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowBlockingForTesting);
 };
 
-INLINE_IF_DCHECK_IS_OFF void DisallowBaseSyncPrimitives()
+INLINE_OR_NOT_TAIL_CALLED void DisallowBaseSyncPrimitives()
     EMPTY_BODY_IF_DCHECK_IS_OFF;
 
+// Disallows singletons within its scope.
+class BASE_EXPORT ScopedDisallowBaseSyncPrimitives {
+ public:
+  ScopedDisallowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+  ScopedDisallowBaseSyncPrimitives(const ScopedDisallowBaseSyncPrimitives&) =
+      delete;
+  ScopedDisallowBaseSyncPrimitives& operator=(
+      const ScopedDisallowBaseSyncPrimitives&) = delete;
+
+  ~ScopedDisallowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+ private:
+#if DCHECK_IS_ON()
+  std::unique_ptr<BooleanWithStack> was_disallowed_;
+#endif
+};
+
 class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
+ public:
+  ScopedAllowBaseSyncPrimitives(const ScopedAllowBaseSyncPrimitives&) = delete;
+  ScopedAllowBaseSyncPrimitives& operator=(
+      const ScopedAllowBaseSyncPrimitives&) = delete;
+
  private:
   // This can only be instantiated by friends. Use
   // ScopedAllowBaseSyncPrimitivesForTesting in unit tests to avoid the friend
@@ -490,9 +550,9 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
                            ScopedAllowBaseSyncPrimitivesWithBlockingDisallowed);
 
   // Allowed usage:
-  friend class SimpleThread;
   friend class ::ChromeNSSCryptoModuleDelegate;
   friend class base::internal::GetAppOutputScopedAllowBaseSyncPrimitives;
+  friend class base::SimpleThread;
   friend class blink::SourceStream;
   friend class blink::WorkerThread;
   friend class blink::scheduler::WorkerThread;
@@ -500,6 +560,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class chrome_cleaner::SystemReportComponent;
   friend class content::BrowserMainLoop;
   friend class content::BrowserProcessIOThread;
+  friend class content::DWriteFontCollectionProxy;
   friend class content::ServiceWorkerContextClient;
   friend class device::UsbContext;
   friend class functions::ExecScriptScopedAllowBaseSyncPrimitives;
@@ -530,11 +591,15 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
 #if DCHECK_IS_ON()
   std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowBaseSyncPrimitives);
 };
 
 class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
+ public:
+  ScopedAllowBaseSyncPrimitivesOutsideBlockingScope(
+      const ScopedAllowBaseSyncPrimitivesOutsideBlockingScope&) = delete;
+  ScopedAllowBaseSyncPrimitivesOutsideBlockingScope& operator=(
+      const ScopedAllowBaseSyncPrimitivesOutsideBlockingScope&) = delete;
+
  private:
   // This can only be instantiated by friends. Use
   // ScopedAllowBaseSyncPrimitivesForTesting in unit tests to avoid the friend
@@ -594,8 +659,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
   friend class dbus::Bus;                           // http://crbug.com/125222
   friend class disk_cache::BackendImpl;             // http://crbug.com/74623
   friend class disk_cache::InFlightIO;              // http://crbug.com/74623
-  friend class remoting::protocol::
-      ScopedAllowThreadJoinForWebRtcTransport;      // http://crbug.com/660081
   friend class midi::TaskService;                   // https://crbug.com/796830
   friend class net::internal::AddressTrackerLinux;  // http://crbug.com/125097
   friend class net::
@@ -605,6 +668,10 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
   friend class proxy_resolver::
       ScopedAllowThreadJoinForProxyResolverV8Tracing;  // http://crbug.com/69710
   friend class remoting::AutoThread;  // https://crbug.com/944316
+  friend class remoting::protocol::
+      ScopedAllowSyncPrimitivesForWebRtcTransport;  // http://crbug.com/1198501
+  friend class remoting::protocol::
+      ScopedAllowThreadJoinForWebRtcTransport;  // http://crbug.com/660081
   // Not used in production yet, https://crbug.com/844078.
   friend class service_manager::ServiceProcessLauncher;
   friend class ui::WindowResizeHelperMac;  // http://crbug.com/902829
@@ -618,8 +685,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
 #if DCHECK_IS_ON()
   std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowBaseSyncPrimitivesOutsideBlockingScope);
 };
 
 // Allow base-sync-primitives in tests, doesn't require explicit friend'ing like
@@ -630,14 +695,18 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
 class BASE_EXPORT ScopedAllowBaseSyncPrimitivesForTesting {
  public:
   ScopedAllowBaseSyncPrimitivesForTesting() EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+  ScopedAllowBaseSyncPrimitivesForTesting(
+      const ScopedAllowBaseSyncPrimitivesForTesting&) = delete;
+  ScopedAllowBaseSyncPrimitivesForTesting& operator=(
+      const ScopedAllowBaseSyncPrimitivesForTesting&) = delete;
+
   ~ScopedAllowBaseSyncPrimitivesForTesting() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
  private:
 #if DCHECK_IS_ON()
   std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowBaseSyncPrimitivesForTesting);
 };
 
 // Counterpart to base::DisallowUnresponsiveTasks() for tests to allow them to
@@ -645,6 +714,12 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesForTesting {
 class BASE_EXPORT ScopedAllowUnresponsiveTasksForTesting {
  public:
   ScopedAllowUnresponsiveTasksForTesting() EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+  ScopedAllowUnresponsiveTasksForTesting(
+      const ScopedAllowUnresponsiveTasksForTesting&) = delete;
+  ScopedAllowUnresponsiveTasksForTesting& operator=(
+      const ScopedAllowUnresponsiveTasksForTesting&) = delete;
+
   ~ScopedAllowUnresponsiveTasksForTesting() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
  private:
@@ -653,123 +728,117 @@ class BASE_EXPORT ScopedAllowUnresponsiveTasksForTesting {
   std::unique_ptr<BooleanWithStack> was_disallowed_blocking_;
   std::unique_ptr<BooleanWithStack> was_disallowed_cpu_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowUnresponsiveTasksForTesting);
 };
 
 namespace internal {
 
 // Asserts that waiting on a //base sync primitive is allowed in the current
 // scope.
-INLINE_IF_DCHECK_IS_OFF void AssertBaseSyncPrimitivesAllowed()
+INLINE_OR_NOT_TAIL_CALLED void AssertBaseSyncPrimitivesAllowed()
     EMPTY_BODY_IF_DCHECK_IS_OFF;
 
 // Resets all thread restrictions on the current thread.
-INLINE_IF_DCHECK_IS_OFF void ResetThreadRestrictionsForTesting()
+INLINE_OR_NOT_TAIL_CALLED void ResetThreadRestrictionsForTesting()
+    EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+// Check whether the current thread is allowed to use singletons (Singleton /
+// LazyInstance).  DCHECKs if not.
+INLINE_OR_NOT_TAIL_CALLED void AssertSingletonAllowed()
     EMPTY_BODY_IF_DCHECK_IS_OFF;
 
 }  // namespace internal
 
+// Disallow using singleton on the current thread.
+INLINE_OR_NOT_TAIL_CALLED void DisallowSingleton() EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+// Disallows singletons within its scope.
+class BASE_EXPORT ScopedDisallowSingleton {
+ public:
+  ScopedDisallowSingleton() EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+  ScopedDisallowSingleton(const ScopedDisallowSingleton&) = delete;
+  ScopedDisallowSingleton& operator=(const ScopedDisallowSingleton&) = delete;
+
+  ~ScopedDisallowSingleton() EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+ private:
+#if DCHECK_IS_ON()
+  std::unique_ptr<BooleanWithStack> was_disallowed_;
+#endif
+};
+
 // Asserts that running long CPU work is allowed in the current scope.
-INLINE_IF_DCHECK_IS_OFF void AssertLongCPUWorkAllowed()
+INLINE_OR_NOT_TAIL_CALLED void AssertLongCPUWorkAllowed()
     EMPTY_BODY_IF_DCHECK_IS_OFF;
 
-INLINE_IF_DCHECK_IS_OFF void DisallowUnresponsiveTasks()
+INLINE_OR_NOT_TAIL_CALLED void DisallowUnresponsiveTasks()
     EMPTY_BODY_IF_DCHECK_IS_OFF;
 
 class BASE_EXPORT ThreadRestrictions {
  public:
+  ThreadRestrictions() = delete;
+
   // Constructing a ScopedAllowIO temporarily allows IO for the current
   // thread.  Doing this is almost certainly always incorrect.
   //
   // DEPRECATED. Use ScopedAllowBlocking(ForTesting).
+  // TODO(crbug.com/766678): Migrate remaining users.
   class BASE_EXPORT ScopedAllowIO {
    public:
     ScopedAllowIO(const Location& from_here = Location::Current());
+
+    ScopedAllowIO(const ScopedAllowIO&) = delete;
+    ScopedAllowIO& operator=(const ScopedAllowIO&) = delete;
+
     ~ScopedAllowIO();
 
    private:
 #if DCHECK_IS_ON()
     std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedAllowIO);
   };
-
-#if DCHECK_IS_ON()
-  // Set whether the current thread to make IO calls.
-  // Threads start out in the *allowed* state.
-  // Returns the previous value.
-  //
-  // DEPRECATED. Use ScopedAllowBlocking(ForTesting) or ScopedDisallowBlocking.
-  //
-  // NOT_TAIL_CALLED so it's always evident who irrevocably altered the
-  // allowance.
-  static bool NOT_TAIL_CALLED SetIOAllowed(bool allowed);
-
-  // Set whether the current thread can use singletons.  Returns the previous
-  // value.
-  //
-  // NOT_TAIL_CALLED so it's always evident who irrevocably altered the
-  // allowance.
-  static bool NOT_TAIL_CALLED SetSingletonAllowed(bool allowed);
-
-  // Check whether the current thread is allowed to use singletons (Singleton /
-  // LazyInstance).  DCHECKs if not.
-  static void AssertSingletonAllowed();
-
-  // Disable waiting on the current thread. Threads start out in the *allowed*
-  // state. Returns the previous value.
-  //
-  // DEPRECATED. Use DisallowBaseSyncPrimitives.
-  static void DisallowWaiting();
-#else
-  // Inline the empty definitions of these functions so that they can be
-  // compiled out.
-  static bool SetIOAllowed(bool allowed) { return true; }
-  static bool SetSingletonAllowed(bool allowed) { return true; }
-  static void AssertSingletonAllowed() {}
-  static void DisallowWaiting() {}
-#endif
-
- private:
-  // DO NOT ADD ANY OTHER FRIEND STATEMENTS.
-  // BEGIN ALLOWED USAGE.
-  friend class content::BrowserMainLoop;
-  friend class content::BrowserShutdownProfileDumper;
-  friend class content::BrowserTestBase;
-  friend class content::ScopedAllowWaitForDebugURL;
-  friend class ::HistogramSynchronizer;
-  friend class internal::TaskTracker;
-  friend class web::WebMainLoop;
-  friend class MessagePumpDefault;
-  friend class PlatformThread;
-  friend class ui::CommandBufferClientImpl;
-  friend class ui::CommandBufferLocal;
-  friend class ui::GpuState;
-
-  // END ALLOWED USAGE.
-  // BEGIN USAGE THAT NEEDS TO BE FIXED.
-  friend class chrome_browser_net::Predictor;     // http://crbug.com/78451
-#if !defined(OFFICIAL_BUILD)
-  friend class content::SoftwareOutputDeviceMus;  // Interim non-production code
-#endif
-// END USAGE THAT NEEDS TO BE FIXED.
-
-#if DCHECK_IS_ON()
-  // DEPRECATED. Use ScopedAllowBaseSyncPrimitives.
-  //
-  // NOT_TAIL_CALLED so it's always evident who irrevocably altered the
-  // allowance.
-  static bool NOT_TAIL_CALLED SetWaitAllowed(bool allowed);
-#else
-  static bool SetWaitAllowed(bool allowed) { return true; }
-#endif
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ThreadRestrictions);
 };
 
-#undef INLINE_IF_DCHECK_IS_OFF
+// Friend-only methods to permanently allow the current thread to use
+// blocking/sync-primitives calls. Threads start out in the *allowed* state but
+// are typically *disallowed* via the above base::Disallow*() methods after
+// being initialized.
+//
+// Only use these to permanently set the allowance on a thread, e.g. on
+// shutdown. For temporary allowances, use scopers above.
+class BASE_EXPORT PermanentThreadAllowance {
+ public:
+  // Class is merely a namespace-with-friends.
+  PermanentThreadAllowance() = delete;
+
+ private:
+  friend class base::TestCustomDisallow;
+  friend class content::BrowserMainLoop;
+  friend class content::BrowserTestBase;
+  friend class web::WebMainLoop;
+
+  static void AllowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
+  static void AllowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
+};
+
+// Similar to PermanentThreadAllowance but separate because it's dangerous and
+// should have even fewer friends.
+class BASE_EXPORT PermanentSingletonAllowance {
+ public:
+  // Class is merely a namespace-with-friends.
+  PermanentSingletonAllowance() = delete;
+
+ private:
+  friend class nacl::nonsfi::PluginMainDelegate;
+
+  // Re-allow singletons on this thread. Since //base APIs DisallowSingleton()
+  // when they risk running past shutdown, this should only be called in rare
+  // cases where the caller knows the process will be killed rather than
+  // shutdown.
+  static void AllowSingleton() EMPTY_BODY_IF_DCHECK_IS_OFF;
+};
+
+#undef INLINE_OR_NOT_TAIL_CALLED
 #undef EMPTY_BODY_IF_DCHECK_IS_OFF
 
 }  // namespace base

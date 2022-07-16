@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.BOTTOM_BAR_HEIGHT;
-import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.FEED_SURFACE_COORDINATOR;
+import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.EXPLORE_SURFACE_COORDINATOR;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_BOTTOM_BAR_VISIBLE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_EXPLORE_SURFACE_VISIBLE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_OVERVIEW;
@@ -34,10 +34,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feed.FeedLaunchReliabilityLoggingState;
-import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
+import org.chromium.chrome.browser.feed.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
-import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -51,8 +50,8 @@ import org.chromium.ui.test.util.UiRestriction;
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ExploreSurfaceViewBinderTest {
+    private ExploreSurfaceCoordinatorFactory mExploreSurfaceCoordinatorFactory;
     private ExploreSurfaceCoordinator mExploreSurfaceCoordinator;
-    private FeedSurfaceCoordinator mFeedSurfaceCoordinator;
     private View mFeedSurfaceView;
     private PropertyModel mPropertyModel;
 
@@ -77,21 +76,20 @@ public class ExploreSurfaceViewBinderTest {
         // well in debug build).
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
-            mExploreSurfaceCoordinator = new ExploreSurfaceCoordinator(
+            mExploreSurfaceCoordinatorFactory = new ExploreSurfaceCoordinatorFactory(
                     mActivityTestRule.getActivity(),
-                    mActivityTestRule.getActivity().getCompositorViewHolder(), mPropertyModel, true,
-                    mBottomSheetController, new ObservableSupplierImpl<>(),
+                    mActivityTestRule.getActivity().getCompositorViewHolderForTesting(),
+                    mPropertyModel, mBottomSheetController, new ObservableSupplierImpl<>(),
                     mScrollableContainerDelegate,
                     mActivityTestRule.getActivity().getSnackbarManager(),
                     mActivityTestRule.getActivity().getShareDelegateSupplier(),
                     mActivityTestRule.getActivity().getWindowAndroid(),
-                    mActivityTestRule.getActivity().getTabModelSelector(),
-                    new FeedLaunchReliabilityLoggingState(SurfaceType.START_SURFACE, 0L), null);
-            mFeedSurfaceCoordinator =
-                    mExploreSurfaceCoordinator.getFeedSurfaceController()
-                            .createFeedSurfaceCoordinator(false, /* isPlaceholderShown= */ false,
-                                    NewTabPageLaunchOrigin.UNKNOWN);
-            mFeedSurfaceView = mFeedSurfaceCoordinator.getView();
+                    mActivityTestRule.getActivity().getTabModelSelector(), () -> {
+                        return null;
+                    }, new FeedLaunchReliabilityLoggingState(SurfaceType.START_SURFACE, 0L), null);
+            mExploreSurfaceCoordinator = mExploreSurfaceCoordinatorFactory.create(
+                    false, /* isPlaceholderShown= */ false, NewTabPageLaunchOrigin.UNKNOWN);
+            mFeedSurfaceView = mExploreSurfaceCoordinator.getView();
         });
     }
 
@@ -117,7 +115,7 @@ public class ExploreSurfaceViewBinderTest {
         assertNull(mFeedSurfaceView.getParent());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPropertyModel.set(FEED_SURFACE_COORDINATOR, mFeedSurfaceCoordinator);
+            mPropertyModel.set(EXPLORE_SURFACE_COORDINATOR, mExploreSurfaceCoordinator);
             mPropertyModel.set(IS_SHOWING_OVERVIEW, true);
             mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
         });
@@ -140,7 +138,7 @@ public class ExploreSurfaceViewBinderTest {
         assertNull(mFeedSurfaceView.getParent());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPropertyModel.set(FEED_SURFACE_COORDINATOR, mFeedSurfaceCoordinator);
+            mPropertyModel.set(EXPLORE_SURFACE_COORDINATOR, mExploreSurfaceCoordinator);
             mPropertyModel.set(IS_BOTTOM_BAR_VISIBLE, true);
             mPropertyModel.set(BOTTOM_BAR_HEIGHT, 10);
             mPropertyModel.set(TOP_MARGIN, 20);
@@ -171,7 +169,7 @@ public class ExploreSurfaceViewBinderTest {
         assertNull(mFeedSurfaceView.getParent());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPropertyModel.set(FEED_SURFACE_COORDINATOR, mFeedSurfaceCoordinator);
+            mPropertyModel.set(EXPLORE_SURFACE_COORDINATOR, mExploreSurfaceCoordinator);
             mPropertyModel.set(IS_SHOWING_OVERVIEW, true);
         });
         assertNull(mFeedSurfaceView.getParent());
@@ -197,7 +195,7 @@ public class ExploreSurfaceViewBinderTest {
         assertNull(mFeedSurfaceView.getParent());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPropertyModel.set(FEED_SURFACE_COORDINATOR, mFeedSurfaceCoordinator);
+            mPropertyModel.set(EXPLORE_SURFACE_COORDINATOR, mExploreSurfaceCoordinator);
             mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
         });
         assertNull(mFeedSurfaceView.getParent());
@@ -222,7 +220,7 @@ public class ExploreSurfaceViewBinderTest {
         assertNull(mFeedSurfaceView.getParent());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPropertyModel.set(FEED_SURFACE_COORDINATOR, mFeedSurfaceCoordinator);
+            mPropertyModel.set(EXPLORE_SURFACE_COORDINATOR, mExploreSurfaceCoordinator);
             mPropertyModel.set(IS_BOTTOM_BAR_VISIBLE, true);
             mPropertyModel.set(BOTTOM_BAR_HEIGHT, 10);
             mPropertyModel.set(TOP_MARGIN, 20);
@@ -248,7 +246,7 @@ public class ExploreSurfaceViewBinderTest {
         assertFalse(mPropertyModel.get(IS_BOTTOM_BAR_VISIBLE));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPropertyModel.set(FEED_SURFACE_COORDINATOR, mFeedSurfaceCoordinator);
+            mPropertyModel.set(EXPLORE_SURFACE_COORDINATOR, mExploreSurfaceCoordinator);
             mPropertyModel.set(TOP_MARGIN, 20);
             mPropertyModel.set(IS_SHOWING_OVERVIEW, true);
             mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);

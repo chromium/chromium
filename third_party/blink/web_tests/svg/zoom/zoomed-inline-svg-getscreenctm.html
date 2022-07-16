@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>SVGGraphicsElement.getScreenCTM subject to the 'zoom' property</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+svg { margin: 25px 0 0 50px; }
+</style>
+<svg width="100" height="100" style="zoom: 2">
+  <rect width="100" height="100" fill="blue"/>
+</svg>
+<script>
+function assert_matrix_approx_equals(actual, expected) {
+  for (let prop of [ 'a', 'b', 'c', 'd', 'e', 'f'])
+    assert_approx_equals(actual[prop], expected[prop], 5e-6, prop);
+}
+
+test(t => {
+  const svg = document.querySelector('svg');
+  assert_matrix_approx_equals(svg.getScreenCTM(),
+                              { a: 2, b: 0, c: 0, d: 2, e: 100, f: 50 });
+});
+</script>

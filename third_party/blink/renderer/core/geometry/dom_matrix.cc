@@ -266,7 +266,7 @@ DOMMatrix* DOMMatrix::rotateSelf(double rot_x, double rot_y, double rot_z) {
 }
 
 DOMMatrix* DOMMatrix::rotateFromVectorSelf(double x, double y) {
-  matrix_.Rotate(rad2deg(atan2(y, x)));
+  matrix_.Rotate(Rad2deg(atan2(y, x)));
   return this;
 }
 

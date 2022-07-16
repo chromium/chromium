@@ -14,14 +14,14 @@ FloatSize StyleImage::ApplyZoom(const FloatSize& size, float multiplier) const {
   if (multiplier == 1.0f || !HasIntrinsicSize())
     return size;
 
-  float width = size.Width() * multiplier;
-  float height = size.Height() * multiplier;
+  float width = size.width() * multiplier;
+  float height = size.height() * multiplier;
 
   // Don't let images that have a width/height >= 1 shrink below 1 when zoomed.
-  if (size.Width() > 0)
+  if (size.width() > 0)
     width = std::max(1.0f, width);
 
-  if (size.Height() > 0)
+  if (size.height() > 0)
     height = std::max(1.0f, height);
 
   return FloatSize(width, height);

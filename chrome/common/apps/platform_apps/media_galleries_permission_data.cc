@@ -30,12 +30,12 @@ bool MediaGalleriesPermissionData::FromValue(const base::Value* value) {
   if (!value)
     return false;
 
-  std::string raw_permission;
-  if (!value->GetAsString(&raw_permission))
+  const std::string* raw_permission = value->GetIfString();
+  if (!raw_permission)
     return false;
 
   std::string permission;
-  base::TrimWhitespaceASCII(raw_permission, base::TRIM_ALL, &permission);
+  base::TrimWhitespaceASCII(*raw_permission, base::TRIM_ALL, &permission);
 
   if (permission == MediaGalleriesPermission::kAllAutoDetectedPermission ||
       permission == MediaGalleriesPermission::kReadPermission ||

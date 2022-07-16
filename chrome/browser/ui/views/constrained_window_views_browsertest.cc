@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -35,12 +34,13 @@ class TestDialog : public views::DialogDelegateView {
     SetModalType(ui::MODAL_TYPE_CHILD);
     GetViewAccessibility().OverrideName("Test dialog");
   }
+
+  TestDialog(const TestDialog&) = delete;
+  TestDialog& operator=(const TestDialog&) = delete;
+
   ~TestDialog() override {}
 
   views::View* GetInitiallyFocusedView() override { return this; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestDialog);
 };
 
 // A helper function to create and show a web contents modal dialog.
@@ -54,10 +54,12 @@ TestDialog* ShowModalDialog(content::WebContents* web_contents) {
 class ConstrainedWindowViewTest : public InProcessBrowserTest {
  public:
   ConstrainedWindowViewTest() = default;
-  ~ConstrainedWindowViewTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConstrainedWindowViewTest);
+  ConstrainedWindowViewTest(const ConstrainedWindowViewTest&) = delete;
+  ConstrainedWindowViewTest& operator=(const ConstrainedWindowViewTest&) =
+      delete;
+
+  ~ConstrainedWindowViewTest() override = default;
 };
 
 }  // namespace

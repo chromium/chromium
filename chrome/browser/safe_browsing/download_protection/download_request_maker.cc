@@ -15,12 +15,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#include "chrome/browser/safe_browsing/user_population.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -156,7 +157,7 @@ void DownloadRequestMaker::Start(DownloadRequestMaker::Callback callback) {
       profile && AdvancedProtectionStatusManagerFactory::GetForProfile(profile)
                      ->IsUnderAdvancedProtection();
 
-  *request_->mutable_population() = GetUserPopulation(profile);
+  *request_->mutable_population() = GetUserPopulationForProfile(profile);
   request_->set_request_ap_verdicts(is_under_advanced_protection);
   request_->set_locale(g_browser_process->GetApplicationLocale());
   request_->set_file_basename(target_file_path_.BaseName().AsUTF8Unsafe());
@@ -180,6 +181,7 @@ void DownloadRequestMaker::OnFileFeatureExtractionDone(
   request_->mutable_image_headers()->CopyFrom(results.image_headers);
   request_->set_archive_file_count(results.file_count);
   request_->set_archive_directory_count(results.directory_count);
+  request_->mutable_document_summary()->CopyFrom(results.document_summary);
 
 #if defined(OS_MAC)
   if (!results.disk_image_signature.empty()) {

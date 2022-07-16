@@ -25,6 +25,10 @@ namespace {
 class TestHighlighterObserver : public HighlighterController::Observer {
  public:
   TestHighlighterObserver() = default;
+
+  TestHighlighterObserver(const TestHighlighterObserver&) = delete;
+  TestHighlighterObserver& operator=(const TestHighlighterObserver&) = delete;
+
   ~TestHighlighterObserver() override = default;
 
   // HighlighterController::Observer:
@@ -54,14 +58,16 @@ class TestHighlighterObserver : public HighlighterController::Observer {
   int disabled_by_session_abort_ = 0;
   int disabled_by_session_complete_ = 0;
   gfx::Rect last_recognized_rect_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestHighlighterObserver);
 };
 
 class HighlighterControllerTest : public AssistantAshTestBase {
  public:
   HighlighterControllerTest() = default;
+
+  HighlighterControllerTest(const HighlighterControllerTest&) = delete;
+  HighlighterControllerTest& operator=(const HighlighterControllerTest&) =
+      delete;
+
   ~HighlighterControllerTest() override = default;
 
   void SetUp() override {
@@ -111,9 +117,6 @@ class HighlighterControllerTest : public AssistantAshTestBase {
   std::unique_ptr<PaletteTool> tool_;
 
   HighlighterController* controller_ = nullptr;  // Not owned.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HighlighterControllerTest);
 };
 
 }  // namespace
@@ -431,11 +434,11 @@ TEST_F(HighlighterControllerTest, SelectionInsideScreen) {
   for (size_t i = 0; i < sizeof(display_scales) / sizeof(float); ++i) {
     // 2nd display is for offscreen test.
     std::string display_spec = base::StringPrintf(
-        "1000x1000*%.2f,500x1000*%.2f", display_scales[i], display_scales[i]);
+        "1000x999*%.2f,500x1000*%.2f", display_scales[i], display_scales[i]);
     SCOPED_TRACE(display_spec);
     UpdateDisplayAndWaitForCompositingEnded(display_spec);
 
-    const gfx::Rect screen(0, 0, 1000, 1000);
+    const gfx::Rect screen(0, 0, 1000, 999);
 
     // Rectangle completely offscreen.
     controller_test_api_->ResetSelection();

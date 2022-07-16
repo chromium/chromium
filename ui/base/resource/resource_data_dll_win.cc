@@ -59,7 +59,7 @@ ResourceHandle::TextEncodingType ResourceDataDLL::GetTextEncodingType() const {
 }
 
 ResourceScaleFactor ResourceDataDLL::GetResourceScaleFactor() const {
-  return ui::SCALE_FACTOR_NONE;
+  return ui::kScaleFactorNone;
 }
 
 }  // namespace ui

@@ -26,14 +26,9 @@
 #endif
 
 namespace {
-// The long press detection duration must be shorter than the WKWebView's
-// long click gesture recognizer's minimum duration. That is 0.55s.
-// If our detection duration is shorter, our gesture recognizer will fire
-// first in order to cancel the system context menu gesture recognizer.
-const NSTimeInterval kLongPressDurationSeconds = 0.55 - 0.1;
 // Since iOS 13, our gesture recognizer needs to allow enough time for drag and
 // drop to trigger first.
-const NSTimeInterval kLongPressDurationSecondsIOS13 = 0.75;
+const NSTimeInterval kLongPressDurationSeconds = 0.75;
 
 // If there is a movement bigger than |kLongPressMoveDeltaPixels|, the context
 // menu will not be triggered.
@@ -110,19 +105,13 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
                                 WKWebView* webView) {
   NSMutableArray<UIGestureRecognizer*>* recognizers =
       [[NSMutableArray alloc] init];
-  if (@available(iOS 13, *)) {
-    [recognizers
-        addObjectsFromArray:GestureRecognizersWithDescriptionFragment(
-                                @"com.apple.UIKit.clickPresentationFailure",
-                                webView)];
-    [recognizers addObjectsFromArray:GestureRecognizersWithDescriptionFragment(
-                                         @"Text", webView)];
 
-  } else {
-    [recognizers
-        addObjectsFromArray:GestureRecognizersWithDescriptionFragment(
-                                @"action=_longPressRecognized:", webView)];
-  }
+  [recognizers
+      addObjectsFromArray:GestureRecognizersWithDescriptionFragment(
+                              @"com.apple.UIKit.clickPresentationFailure",
+                              webView)];
+  [recognizers addObjectsFromArray:GestureRecognizersWithDescriptionFragment(
+                                       @"Text", webView)];
 
   for (UIGestureRecognizer* systemRecognizer in recognizers) {
     [systemRecognizer requireGestureRecognizerToFail:contextMenuRecognizer];
@@ -136,12 +125,6 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
     objc_setAssociatedObject(systemRecognizer.view, associatedObjectKey,
                              contextMenuRecognizer,
                              OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-
-    if (!base::ios::IsRunningOnIOS13OrLater()) {
-      // Retain behavior implemented for iOS 12 by only requiring the first
-      // matching gesture recognizer to fail.
-      break;
-    }
   }
 }
 
@@ -228,13 +211,8 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
         initWithTarget:self
                 action:@selector(longPressDetectedByGestureRecognizer:)];
 
-    if (@available(iOS 13, *)) {
-      [_contextMenuRecognizer
-          setMinimumPressDuration:kLongPressDurationSecondsIOS13];
-    } else {
-      [_contextMenuRecognizer
-          setMinimumPressDuration:kLongPressDurationSeconds];
-    }
+    [_contextMenuRecognizer setMinimumPressDuration:kLongPressDurationSeconds];
+
     [_contextMenuRecognizer setAllowableMovement:kLongPressMoveDeltaPixels];
     [_contextMenuRecognizer setDelegate:self];
     [_webView addGestureRecognizer:_contextMenuRecognizer];
@@ -452,10 +430,8 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
 
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigation {
-  if (@available(iOS 13, *)) {
-    if (!navigation->IsSameDocument() && navigation->HasCommitted())
-      OverrideGestureRecognizers(_contextMenuRecognizer, _webView);
-  }
+  if (!navigation->IsSameDocument() && navigation->HasCommitted())
+    OverrideGestureRecognizers(_contextMenuRecognizer, _webView);
 }
 
 @end

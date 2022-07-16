@@ -61,7 +61,7 @@ void OfferNotificationIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& OfferNotificationIconView::GetVectorIcon() const {
-  return kGpayOfferIcon;
+  return kLocalOfferFlippedIcon;
 }
 
 const char* OfferNotificationIconView::GetClassName() const {

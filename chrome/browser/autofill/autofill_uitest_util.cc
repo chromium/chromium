@@ -4,7 +4,6 @@
 
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,6 +26,9 @@ class PdmChangeWaiter : public PersonalDataManagerObserver {
         base_profile_(base_profile) {
     PersonalDataManagerFactory::GetForProfile(base_profile_)->AddObserver(this);
   }
+
+  PdmChangeWaiter(const PdmChangeWaiter&) = delete;
+  PdmChangeWaiter& operator=(const PdmChangeWaiter&) = delete;
 
   ~PdmChangeWaiter() override {}
 
@@ -54,8 +56,6 @@ class PdmChangeWaiter : public PersonalDataManagerObserver {
   bool alerted_;
   bool has_run_message_loop_;
   Profile* base_profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(PdmChangeWaiter);
 };
 
 static PersonalDataManager* GetPersonalDataManager(Profile* profile) {

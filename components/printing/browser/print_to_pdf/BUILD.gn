@@ -1,0 +1,38 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//printing/buildflags/buildflags.gni")
+import("//testing/test.gni")
+
+assert(enable_basic_printing)
+
+static_library("print_to_pdf") {
+  sources = [
+    "pdf_print_manager.cc",
+    "pdf_print_manager.h",
+    "pdf_print_utils.cc",
+    "pdf_print_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/printing/browser",
+    "//printing",
+    "//printing/buildflags",
+    "//printing/mojom",
+  ]
+
+  public_deps = [ "//components/printing/common:mojo_interfaces" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "pdf_print_utils_unittest.cc" ]
+
+  deps = [
+    ":print_to_pdf",
+    "//testing/gtest",
+  ]
+}

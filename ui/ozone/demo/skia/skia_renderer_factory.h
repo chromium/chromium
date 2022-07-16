@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/demo/renderer_factory.h"
@@ -24,14 +23,15 @@ class SkiaRendererFactory : public RendererFactory {
   };
 
   SkiaRendererFactory();
+
+  SkiaRendererFactory(const SkiaRendererFactory&) = delete;
+  SkiaRendererFactory& operator=(const SkiaRendererFactory&) = delete;
+
   ~SkiaRendererFactory() override;
 
   bool Initialize() override;
   std::unique_ptr<Renderer> CreateRenderer(gfx::AcceleratedWidget widget,
                                            const gfx::Size& size) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SkiaRendererFactory);
 };
 
 }  // namespace ui

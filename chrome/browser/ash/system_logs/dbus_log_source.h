@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_LOGS_DBUS_LOG_SOURCE_H_
 #define CHROME_BROWSER_ASH_SYSTEM_LOGS_DBUS_LOG_SOURCE_H_
 
-#include "base/macros.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 
 namespace system_logs {
@@ -14,13 +13,14 @@ namespace system_logs {
 class DBusLogSource : public SystemLogsSource {
  public:
   DBusLogSource();
+
+  DBusLogSource(const DBusLogSource&) = delete;
+  DBusLogSource& operator=(const DBusLogSource&) = delete;
+
   ~DBusLogSource() override;
 
   // SystemLogsSource override.
   void Fetch(SysLogsSourceCallback request) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DBusLogSource);
 };
 
 }  // namespace system_logs

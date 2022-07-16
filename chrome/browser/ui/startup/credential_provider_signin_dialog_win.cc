@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win.h"
 
+#include <windows.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -158,7 +160,7 @@ class CredentialProviderWebUIMessageHandler
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         kLSTFetchResultsMessage,
         base::BindRepeating(
             &CredentialProviderWebUIMessageHandler::OnSigninComplete,
@@ -167,7 +169,7 @@ class CredentialProviderWebUIMessageHandler
     // This message is always sent as part of the SAML flow but we don't really
     // need to process it. We do however have to handle the message or else
     // there will be a DCHECK failure in web_ui about an unhandled message.
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "updatePasswordAttributes",
         base::BindRepeating([](const base::ListValue* args) {}));
   }
@@ -381,7 +383,7 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override {}
 
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override {
     return true;
   }

@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/metrics/field_trial.h"
 #include "components/variations/active_field_trials.h"

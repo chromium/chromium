@@ -2,33 +2,38 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
-a {
-  color: var(--link-color);
-  text-decoration: none;
-}
 
-body {
-  --background-color: #fff;
-  --error-code-color: var(--google-gray-700);
-  --google-blue-100: rgb(210, 227, 252);
+html {
   --google-blue-300: rgb(138, 180, 248);
-  --google-blue-600: rgb(26, 115, 232);
   --google-blue-700: rgb(25, 103, 210);
-  --google-gray-100: rgb(241, 243, 244);
-  --google-gray-300: rgb(218, 220, 224);
+  --google-grey-200: rgb(232, 234, 237);
   --google-gray-500: rgb(154, 160, 166);
-  --google-gray-50: rgb(248, 249, 250);
-  --google-gray-600: rgb(128, 134, 139);
   --google-gray-700: rgb(95, 99, 104);
-  --google-gray-800: rgb(60, 64, 67);
-  --google-gray-900: rgb(32, 33, 36);
+  --google-grey-900: rgb(32, 33, 36);
+
   --heading-color: var(--google-gray-900);
   --link-color: var(--google-blue-700);
   --text-color: var(--google-gray-700);
-  color: var(--text-color);
+
+  -webkit-text-size-adjust: 100%;
+
+  background: white;
   font-family: 'Roboto-Regular', sans-serif;
-  font-size: 75%;
-  word-wrap: break-word;
+  font-size: 125%;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --heading-color: var(--google-grey-200);
+    --text-color: var(--google-gray-500);
+    --link-color: var(--google-blue-300);
+    background: var(--google-grey-900);
+  }
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
 }
 
 .content-wrapper {
@@ -44,17 +49,12 @@ body {
   display: none;
 }
 
-html {
-  -webkit-text-size-adjust: 100%;
-  font-size: 125%;
-}
-
 #icon {
+  background-repeat: no-repeat;
+  background-size: 100%;
   height: 72px;
   margin: 0 0 40px;
   width: 72px;
-  background-repeat: no-repeat;
-  background-size: 100%;
 }
 
 #main-message,
@@ -67,19 +67,9 @@ html {
 }
 
 #secondary-message {
+  color: var(--text-color);
   font-size: 1.2em;
   font-weight: normal;
-}
-
-@media (prefers-color-scheme: dark) {
-  body {
-    --background-color: var(--google-gray-900);
-    --error-code-color: var(--google-gray-500);
-    --heading-color: var(--google-gray-500);
-    --link-color: var(--google-blue-300);
-    --small-link-color: var(--google-blue-300);
-    --text-color: var(--google-gray-500);
-  }
 }
 
 @media (max-width: 700px) {

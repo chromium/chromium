@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/drm/gpu/crtc_commit_request.h"
+#include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
+#include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 
 namespace ui {
 
@@ -35,6 +37,31 @@ CrtcCommitRequest::CrtcCommitRequest(const CrtcCommitRequest& other)
       origin_(other.origin_),
       plane_list_(other.plane_list_),
       overlays_(DrmOverlayPlane::Clone(other.overlays_)) {}
+
+void CrtcCommitRequest::AsValueInto(
+    base::trace_event::TracedValue* value) const {
+  value->SetBoolean("should_enable", should_enable_);
+  value->SetInteger("crtc_id", crtc_id_);
+  value->SetInteger("connector_id", connector_id_);
+  value->SetString("origin", origin_.ToString());
+  {
+    auto scoped_dict = value->BeginDictionaryScoped("mode");
+    DrmAsValueIntoHelper(mode_, value);
+  }
+  {
+    auto scoped_dict =
+        value->BeginDictionaryScoped("hardware_display_plane_list");
+    if (plane_list_)
+      plane_list_->AsValueInto(value);
+  }
+  {
+    auto scoped_array = value->BeginArrayScoped("overlays");
+    for (auto& overlay : overlays_) {
+      auto scoped_dict = value->AppendDictionaryScoped();
+      overlay.AsValueInto(value);
+    }
+  }
+}
 
 // static
 CrtcCommitRequest CrtcCommitRequest::EnableCrtcRequest(

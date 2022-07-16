@@ -22,6 +22,11 @@ class InProcessAudioManagerAccessor final
     : public Service::AudioManagerAccessor {
  public:
   explicit InProcessAudioManagerAccessor(media::AudioManager* audio_manager);
+
+  InProcessAudioManagerAccessor(const InProcessAudioManagerAccessor&) = delete;
+  InProcessAudioManagerAccessor& operator=(
+      const InProcessAudioManagerAccessor&) = delete;
+
   ~InProcessAudioManagerAccessor() final;
 
   void Shutdown() final {}  // AudioManager must be shut down by its owner.
@@ -32,7 +37,6 @@ class InProcessAudioManagerAccessor final
 
  private:
   media::AudioManager* const audio_manager_;
-  DISALLOW_COPY_AND_ASSIGN(InProcessAudioManagerAccessor);
 };
 
 }  // namespace audio

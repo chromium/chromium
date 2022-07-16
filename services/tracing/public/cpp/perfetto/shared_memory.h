@@ -28,6 +28,10 @@ class COMPONENT_EXPORT(TRACING_CPP) MojoSharedMemory
 
   explicit MojoSharedMemory(size_t size);
   explicit MojoSharedMemory(mojo::ScopedSharedBufferHandle shared_memory);
+
+  MojoSharedMemory(const MojoSharedMemory&) = delete;
+  MojoSharedMemory& operator=(const MojoSharedMemory&) = delete;
+
   ~MojoSharedMemory() override;
 
   // Create another wrapping instance of the same SharedMemory buffer,
@@ -46,8 +50,6 @@ class COMPONENT_EXPORT(TRACING_CPP) MojoSharedMemory
  private:
   mojo::ScopedSharedBufferHandle shared_buffer_;
   mojo::ScopedSharedBufferMapping mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoSharedMemory);
 };
 
 }  // namespace tracing

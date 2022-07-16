@@ -18,15 +18,16 @@ namespace gles2 {
 class GPU_GLES2_EXPORT MailboxManagerDummy : public MailboxManager {
  public:
   MailboxManagerDummy();
+
+  MailboxManagerDummy(const MailboxManagerDummy&) = delete;
+  MailboxManagerDummy& operator=(const MailboxManagerDummy&) = delete;
+
   ~MailboxManagerDummy() override;
 
   // MailboxManager implementation:
   TextureBase* ConsumeTexture(const Mailbox& mailbox) override;
   void ProduceTexture(const Mailbox& mailbox, TextureBase* texture) override {}
   void TextureDeleted(TextureBase* texture) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MailboxManagerDummy);
 };
 
 }  // namespace gles2

@@ -81,7 +81,7 @@ void SpinButtonElement::DefaultEventHandler(Event& event) {
     return;
   }
 
-  IntPoint local = RoundedIntPoint(box->AbsoluteToLocalFloatPoint(
+  gfx::Point local = RoundedIntPoint(box->AbsoluteToLocalFloatPoint(
       FloatPoint(mouse_event->AbsoluteLocation())));
   if (mouse_event->type() == event_type_names::kMousedown &&
       mouse_event->button() ==
@@ -115,7 +115,7 @@ void SpinButtonElement::DefaultEventHandler(Event& event) {
     ReleaseCapture();
   } else if (event.type() == event_type_names::kMousemove) {
       UpDownState old_up_down_state = up_down_state_;
-      up_down_state_ = (local.Y() < box->Size().Height() / 2) ? kUp : kDown;
+      up_down_state_ = (local.y() < box->Size().Height() / 2) ? kUp : kDown;
       if (up_down_state_ != old_up_down_state) {
         GetLayoutObject()->SetShouldDoFullPaintInvalidation();
       }

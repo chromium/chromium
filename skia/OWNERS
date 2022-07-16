@@ -3,7 +3,6 @@ borenet@google.com
 brianosman@google.com
 bsalomon@google.com
 bungeman@google.com
-egdaniel@google.com
 fmalita@chromium.org
 michaelludwig@google.com
 reed@google.com
@@ -13,4 +12,4 @@ senorblanco@chromium.org
 thakis@chromium.org
 
 # For Fuchsia-specific changes:
-per-file *_fuchsia*=file://build/fuchsia/OWNERS
+per-file ..._fuchsia*=file://build/fuchsia/OWNERS

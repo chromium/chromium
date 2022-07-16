@@ -30,6 +30,10 @@ class TestSharedURLLoaderFactory : public SharedURLLoaderFactory {
   explicit TestSharedURLLoaderFactory(NetworkService* network_service = nullptr,
                                       bool is_trusted = false);
 
+  TestSharedURLLoaderFactory(const TestSharedURLLoaderFactory&) = delete;
+  TestSharedURLLoaderFactory& operator=(const TestSharedURLLoaderFactory&) =
+      delete;
+
   // URLLoaderFactory implementation:
   void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> loader,
                             int32_t request_id,
@@ -56,8 +60,6 @@ class TestSharedURLLoaderFactory : public SharedURLLoaderFactory {
   std::unique_ptr<net::TestURLRequestContext> url_request_context_;
   std::unique_ptr<NetworkContext> network_context_;
   mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSharedURLLoaderFactory);
 };
 
 }  // namespace network

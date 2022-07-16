@@ -21,6 +21,10 @@ class HeadlessScreen : public display::ScreenBase {
  public:
   // Creates a display::Screen of the specified size (physical pixels).
   static HeadlessScreen* Create(const gfx::Size& size);
+
+  HeadlessScreen(const HeadlessScreen&) = delete;
+  HeadlessScreen& operator=(const HeadlessScreen&) = delete;
+
   ~HeadlessScreen() override;
 
  protected:
@@ -36,8 +40,6 @@ class HeadlessScreen : public display::ScreenBase {
 
  private:
   explicit HeadlessScreen(const gfx::Rect& screen_bounds);
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessScreen);
 };
 
 }  // namespace headless

@@ -32,24 +32,24 @@ class ObservableFileSystemOperationImpl
   // storage::FileSystemOperationImpl:
   void Copy(const storage::FileSystemURL& src,
             const storage::FileSystemURL& dst,
-            CopyOrMoveOption option,
+            CopyOrMoveOptionSet options,
             ErrorBehavior error_behavior,
             const CopyOrMoveProgressCallback& progress_callback,
             StatusCallback callback) override;
   void CopyFileLocal(const storage::FileSystemURL& src,
                      const storage::FileSystemURL& dst,
-                     CopyOrMoveOption option,
+                     CopyOrMoveOptionSet options,
                      const CopyFileProgressCallback& progress_callback,
                      StatusCallback callback) override;
   void Move(const storage::FileSystemURL& src,
             const storage::FileSystemURL& dst,
-            CopyOrMoveOption option,
+            CopyOrMoveOptionSet options,
             ErrorBehavior error_behavior,
             const CopyOrMoveProgressCallback& progress_callback,
             StatusCallback callback) override;
   void MoveFileLocal(const storage::FileSystemURL& src,
                      const storage::FileSystemURL& dst,
-                     CopyOrMoveOption option,
+                     CopyOrMoveOptionSet options,
                      StatusCallback callback) override;
   void WriteBlob(const storage::FileSystemURL& url,
                  std::unique_ptr<storage::FileWriterDelegate> writer_delegate,

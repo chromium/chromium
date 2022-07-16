@@ -62,12 +62,6 @@ class JniPaymentApp : public PaymentApp::Delegate {
   void AbortPaymentApp(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& jcallback);
 
-  bool IsReadyForMinimalUI(JNIEnv* env);
-
-  base::android::ScopedJavaLocalRef<jstring> AccountBalance(JNIEnv* env);
-
-  void DisableShowingOwnUI(JNIEnv* env);
-
   base::android::ScopedJavaLocalRef<jstring> GetApplicationIdentifierToHide(
       JNIEnv* env);
 

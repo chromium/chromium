@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Top-level fenced frames that navigate _parent end up navigating themselves
+PASS Top-level fenced frames that navigate _top end up navigating themselves
+PASS Nested fenced frames that navigate _parent end up navigating themselves
+PASS Nested fenced frames that navigate _top end up navigating themselves
+PASS Iframes nested in fenced frames that navigate _parent end up navigating the fenced frame
+PASS Iframes nested in fenced frames that navigate _top end up navigating the fenced frame
+Harness: the test ran to completion.
+

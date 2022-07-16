@@ -32,8 +32,7 @@ using FailureReason = InstallStageTracker::FailureReason;
 
 namespace {
 // Timeout to report UMA if not all force-installed extension were loaded.
-constexpr base::TimeDelta kInstallationTimeout =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kInstallationTimeout = base::Minutes(5);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Converts user_manager::UserType to InstallStageTracker::UserType for
@@ -452,9 +451,7 @@ void ForceInstalledMetrics::ReportMetrics() {
   if (missing_forced_extensions.empty()) {
     base::UmaHistogramLongTimes("Extensions.ForceInstalledLoadTime",
                                 base::Time::Now() - start_time_);
-    // TODO(burunduk): Remove VLOGs after resolving crbug/917700 and
-    // crbug/904600.
-    VLOG(2) << "All forced extensions seem to be installed";
+    LOG(WARNING) << "All forced extensions seem to be installed";
     return;
   }
   size_t enabled_missing_count = missing_forced_extensions.size();
@@ -480,8 +477,8 @@ void ForceInstalledMetrics::ReportMetrics() {
       installed_missing_count);
   base::UmaHistogramCounts100("Extensions.ForceInstalledAndBlackListed",
                               blocklisted_count);
-  VLOG(2) << "Failed to install " << installed_missing_count
-          << " forced extensions.";
+  LOG(WARNING) << "Failed to install " << installed_missing_count
+               << " forced extensions.";
   for (const auto& extension_id : missing_forced_extensions) {
     InstallStageTracker::InstallationData installation =
         install_stage_tracker->Get(extension_id);
@@ -517,9 +514,10 @@ void ForceInstalledMetrics::ReportMetrics() {
                 NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED;
     ReportUserType(profile_, is_stuck_in_initial_creation_stage);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    VLOG(2) << "Forced extension " << extension_id
-            << " failed to install with data="
-            << InstallStageTracker::GetFormattedInstallationData(installation);
+    LOG(WARNING) << "Forced extension " << extension_id
+                 << " failed to install with data="
+                 << InstallStageTracker::GetFormattedInstallationData(
+                        installation);
     ReportDetailedFailureReasons(profile_, installation, is_from_store);
   }
   bool non_misconfigured_failure_occurred =

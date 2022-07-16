@@ -9,6 +9,16 @@ import {Debouncer, html, microTask, PolymerElement} from 'chrome://resources/pol
 
 import {QueryState} from './externs.js';
 
+// All valid pages.
+export enum Page {
+  HISTORY = 'history',
+  HISTORY_CLUSTERS = 'journeys',
+  SYNCED_TABS = 'syncedTabs',
+}
+
+// The ids of pages with corresponding tabs in the order of their tab indices.
+export const TABBED_PAGES = [Page.HISTORY, Page.HISTORY_CLUSTERS];
+
 export class HistoryRouterElement extends PolymerElement {
   static get is() {
     return 'history-router';
@@ -88,7 +98,7 @@ export class HistoryRouterElement extends PolymerElement {
   serializeUrl() {
     let path = this.selectedPage;
 
-    if (path === 'history') {
+    if (path === Page.HISTORY) {
       path = '';
     }
 
@@ -110,7 +120,7 @@ export class HistoryRouterElement extends PolymerElement {
     this.parsing_ = true;
     const changes: {search: string} = {search: ''};
     const sections = this.path_.substr(1).split('/');
-    const page = sections[0] || 'history';
+    const page = sections[0] || Page.HISTORY;
 
     changes.search = this.queryParams_.q || '';
 

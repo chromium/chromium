@@ -28,7 +28,6 @@
 #define CACHE_UMA_BACKEND_IMPL_OBJ backend_
 
 using base::Time;
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace {
@@ -53,6 +52,10 @@ class SyncCallback: public disk_cache::FileIOCallback {
         end_event_type_(end_event_type) {
     entry_->IncrementIoCount();
   }
+
+  SyncCallback(const SyncCallback&) = delete;
+  SyncCallback& operator=(const SyncCallback&) = delete;
+
   ~SyncCallback() override = default;
 
   void OnFileIOComplete(int bytes_copied) override;
@@ -64,8 +67,6 @@ class SyncCallback: public disk_cache::FileIOCallback {
   scoped_refptr<net::IOBuffer> buf_;
   TimeTicks start_;
   const net::NetLogEventType end_event_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncCallback);
 };
 
 void SyncCallback::OnFileIOComplete(int bytes_copied) {
@@ -106,6 +107,10 @@ class EntryImpl::UserBuffer {
       : backend_(backend->GetWeakPtr()), offset_(0), grow_allowed_(true) {
     buffer_.reserve(kMaxBlockSize);
   }
+
+  UserBuffer(const UserBuffer&) = delete;
+  UserBuffer& operator=(const UserBuffer&) = delete;
+
   ~UserBuffer() {
     if (backend_.get())
       backend_->BufferDeleted(capacity() - kMaxBlockSize);
@@ -145,7 +150,6 @@ class EntryImpl::UserBuffer {
   int offset_;
   std::vector<char> buffer_;
   bool grow_allowed_;
-  DISALLOW_COPY_AND_ASSIGN(UserBuffer);
 };
 
 bool EntryImpl::UserBuffer::PreWrite(int offset, int len) {

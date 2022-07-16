@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">Apri una nuova finestra in modalità di navigazione in incognito</translation>
 <translation id="152892567002884378">Alza il volume</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, quindi <ph name="ESC" /></translation>
-<translation id="1633761758045565086">Sposta lo stato attivo nella finestra di dialogo di una Guida</translation>
 <translation id="1652741121070700329">Passa all'inizio della parola precedente</translation>
 <translation id="1679841710523778799">Aumenta la luminosità</translation>
 <translation id="168356808214100546">Tieni premuto <ph name="ALT" />, tocca <ph name="TAB" /> fin quando arrivi alla finestra che vuoi aprire, quindi rilascia.</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">Scorre la pagina web verso il basso</translation>
 <translation id="2530896289327917474">Attiva o disattiva la navigazione con cursore</translation>
 <translation id="2574014812750545982">Reimposta il livello di zoom nella pagina</translation>
-<translation id="2596078834055697711">Consente di acquisire uno screenshot della finestra</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, quindi <ph name="TAB" /> o <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Carica di nuovo la pagina corrente</translation>
 <translation id="2764005613199379871">Consente di impostare lo stato attivo nella barra degli indirizzi di ricerca</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">Scorciatoie</translation>
 <translation id="3084301071537457911">Mette in evidenza l'elemento successivo sulla barra delle app</translation>
 <translation id="309173601632226815">Mette in evidenza il pulsante Avvio applicazioni nella barra delle app</translation>
-<translation id="3105917916468784889">Acquisisce uno screenshot</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Area attiva nella barra degli indirizzi</translation>
 <translation id="3256109297135787951">Consente di rimuovere l'evidenziazione da un elemento sulla barra delle app</translation>
 <translation id="3288816184963444640">Chiude la finestra corrente</translation>
+<translation id="3350805006883559974">Finestra attiva mobile in alto</translation>
 <translation id="3407560819924487926">Apre il Task Manager</translation>
 <translation id="3417835166382867856">Cerca tra le schede</translation>
 <translation id="3422679037938588196">Passa alla corrispondenza precedente della ricerca</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">Visualizza la guida relativa alle scorciatoie da tastiera</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /> <ph name="SEPARATOR1" /> <ph name="BACK1" /> oppure <ph name="CTRL2" /> <ph name="SEPARATOR2" /> <ph name="SHIFT" /> <ph name="SEPARATOR3" /> <ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Apre l'area di stato (dove è visualizzata l'immagine del tuo account)</translation>
-<translation id="4642092649622328492">Acquisisce lo screenshot parziale</translation>
 <translation id="4698850295812410683">Consente di mostrare gli strumenti stilo</translation>
 <translation id="4801989101741319327">Passa alla fine della parola successiva</translation>
 <translation id="4866066940972151697">Attiva la scrivania a destra</translation>
@@ -211,6 +208,7 @@
 <translation id="8881584919399569791">Sposta la finestra attiva sulla scrivania a sinistra</translation>
 <translation id="88986195241502842">Pagina giù</translation>
 <translation id="8924883688469390268">Passa all'utente precedente</translation>
+<translation id="8941626538514548667">Consente di impostare lo stato attivo sui contenuti web nel browser</translation>
 <translation id="8977648847395357314">Seleziona i contenuti della barra degli indirizzi</translation>
 <translation id="8982190978301344584">Consente di mostrare il menu con un elenco di IME disponibili</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> da 1 a 8</translation>

@@ -10,8 +10,10 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/sequence_bound.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/quota_client.mojom-forward.h"
@@ -32,6 +34,7 @@ class SequencedTaskRunner;
 
 namespace storage {
 class QuotaManagerProxy;
+struct BucketInfo;
 }
 
 namespace content {
@@ -48,14 +51,14 @@ class CacheStorageManager;
 class CONTENT_EXPORT CacheStorageContextImpl
     : public storage::mojom::CacheStorageControl {
  public:
-  CacheStorageContextImpl();
+  explicit CacheStorageContextImpl(
+      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
   ~CacheStorageContextImpl() override;
 
   static scoped_refptr<base::SequencedTaskRunner> CreateSchedulerTaskRunner();
 
   void Init(mojo::PendingReceiver<storage::mojom::CacheStorageControl> control,
             const base::FilePath& user_data_directory,
-            scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
             mojo::PendingReceiver<storage::mojom::QuotaClient>
                 cache_storage_client_remote,
             mojo::PendingReceiver<storage::mojom::QuotaClient>
@@ -90,6 +93,15 @@ class CONTENT_EXPORT CacheStorageContextImpl
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
+  void AddReceiverWithBucketInfo(
+      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+          coep_reporter_remote,
+      const blink::StorageKey& storage_key,
+      storage::mojom::CacheStorageOwner owner,
+      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
+      storage::QuotaErrorOr<storage::BucketInfo> result);
+
   // The set of storage keys whose storage should be cleared on shutdown.
   std::set<blink::StorageKey> storage_keys_to_purge_on_shutdown_;
 
@@ -102,6 +114,10 @@ class CONTENT_EXPORT CacheStorageContextImpl
   mojo::ReceiverSet<storage::mojom::CacheStorageControl> receivers_;
 
   std::unique_ptr<CacheStorageDispatcherHost> dispatcher_host_;
+
+  const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
+
+  base::WeakPtrFactory<CacheStorageContextImpl> weak_factory_{this};
 };
 
 }  // namespace content

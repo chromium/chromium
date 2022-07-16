@@ -6,15 +6,15 @@
 
 #include <stddef.h>
 #include <tuple>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -49,6 +49,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
@@ -65,8 +66,7 @@ namespace {
 void GiveItSomeTime() {
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMillisecondsD(10));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(10));
   run_loop.Run();
 }
 
@@ -93,6 +93,9 @@ class TestWebContentsViewDelegate : public WebContentsViewDelegate {
 class WebContentsViewAuraTest : public ContentBrowserTest {
  public:
   WebContentsViewAuraTest() = default;
+
+  WebContentsViewAuraTest(const WebContentsViewAuraTest&) = delete;
+  WebContentsViewAuraTest& operator=(const WebContentsViewAuraTest&) = delete;
 
   // Starts the test server and navigates to the given url. Sets a large enough
   // size to the root window.  Returns after the navigation to the url is
@@ -169,8 +172,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
       generator.GestureScrollSequence(
           gfx::Point(bounds.x() + 2, bounds.y() + 10),
           gfx::Point(bounds.right() - 10, bounds.y() + 10),
-          base::TimeDelta::FromMilliseconds(kScrollDurationMs),
-          kScrollSteps);
+          base::Milliseconds(kScrollDurationMs), kScrollSteps);
       std::u16string actual_title = title_watcher.WaitAndGetTitle();
       EXPECT_EQ(expected_title, actual_title);
       value = ExecuteScriptAndGetValue(main_frame, "get_current()");
@@ -187,8 +189,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
       generator.GestureScrollSequence(
           gfx::Point(bounds.x() + 2, bounds.y() + 10),
           gfx::Point(bounds.right() - 10, bounds.y() + 10),
-          base::TimeDelta::FromMilliseconds(kScrollDurationMs),
-          kScrollSteps);
+          base::Milliseconds(kScrollDurationMs), kScrollSteps);
       std::u16string actual_title = title_watcher.WaitAndGetTitle();
       EXPECT_EQ(expected_title, actual_title);
       value = ExecuteScriptAndGetValue(main_frame, "get_current()");
@@ -205,8 +206,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
       generator.GestureScrollSequence(
           gfx::Point(bounds.right() - 10, bounds.y() + 10),
           gfx::Point(bounds.x() + 2, bounds.y() + 10),
-          base::TimeDelta::FromMilliseconds(kScrollDurationMs),
-          kScrollSteps);
+          base::Milliseconds(kScrollDurationMs), kScrollSteps);
       std::u16string actual_title = title_watcher.WaitAndGetTitle();
       EXPECT_EQ(expected_title, actual_title);
       value = ExecuteScriptAndGetValue(main_frame, "get_current()");
@@ -300,8 +300,6 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
 
  private:
   std::unique_ptr<RenderFrameSubmissionObserver> frame_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsViewAuraTest);
 };
 
 // Flaky on Windows: http://crbug.com/305722
@@ -341,6 +339,11 @@ class SpuriousMouseMoveEventObserver
     host_->AddInputEventObserver(this);
   }
 
+  SpuriousMouseMoveEventObserver(const SpuriousMouseMoveEventObserver&) =
+      delete;
+  SpuriousMouseMoveEventObserver& operator=(
+      const SpuriousMouseMoveEventObserver&) = delete;
+
   ~SpuriousMouseMoveEventObserver() override {
     host_->RemoveInputEventObserver(this);
   }
@@ -352,8 +355,6 @@ class SpuriousMouseMoveEventObserver
 
  private:
   RenderWidgetHost* host_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpuriousMouseMoveEventObserver);
 };
 }  // namespace
 
@@ -477,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   ASSERT_FALSE(details.dispatcher_destroyed);
   EXPECT_EQ(1, GetCurrentIndex());
 
-  timestamp += base::TimeDelta::FromMilliseconds(10);
+  timestamp += base::Milliseconds(10);
   ui::TouchEvent move1(
       ui::ET_TOUCH_MOVED, gfx::Point(bounds.right() - 10, bounds.y() + 5),
       timestamp, ui::PointerDetails(ui::EventPointerType::kTouch, 0));
@@ -489,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   // edge.
 
   for (int x = bounds.right() - 10; x >= bounds.x() + 10; x-= 10) {
-    timestamp += base::TimeDelta::FromMilliseconds(10);
+    timestamp += base::Milliseconds(10);
     ui::TouchEvent inc(ui::ET_TOUCH_MOVED, gfx::Point(x, bounds.y() + 5),
                        timestamp,
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
@@ -499,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   }
 
   for (int x = bounds.x() + 10; x <= bounds.width() - 10; x+= 10) {
-    timestamp += base::TimeDelta::FromMilliseconds(10);
+    timestamp += base::Milliseconds(10);
     ui::TouchEvent inc(ui::ET_TOUCH_MOVED, gfx::Point(x, bounds.y() + 5),
                        timestamp,
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
@@ -509,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   }
 
   for (int x = bounds.width() - 10; x >= bounds.x() + 10; x-= 10) {
-    timestamp += base::TimeDelta::FromMilliseconds(10);
+    timestamp += base::Milliseconds(10);
     ui::TouchEvent inc(ui::ET_TOUCH_MOVED, gfx::Point(x, bounds.y() + 5),
                        timestamp,
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
@@ -546,8 +547,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   ui::test::EventGenerator generator(content->GetRootWindow(), content);
   generator.GestureScrollSequence(
       gfx::Point(bounds.x() + 2, bounds.y() + 10),
-      gfx::Point(bounds.right() - 10, bounds.y() + 10),
-      base::TimeDelta::FromMilliseconds(20),
+      gfx::Point(bounds.right() - 10, bounds.y() + 10), base::Milliseconds(20),
       1);
 
   window->AddChild(shell()->web_contents()->GetContentNativeView());
@@ -586,8 +586,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, DragDropOnOopif) {
     run_loop.Run();
 
     EXPECT_EQ(drop_target_widget_,
-              RenderWidgetHostImpl::From(contents->GetFrameTree()
-                                             ->root()
+              RenderWidgetHostImpl::From(contents->GetPrimaryFrameTree()
+                                             .root()
                                              ->current_frame_host()
                                              ->GetRenderWidgetHost()));
   }
@@ -619,8 +619,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, DragDropOnOopif) {
     run_loop.Run();
 
     EXPECT_EQ(drop_target_widget_,
-              RenderWidgetHostImpl::From(contents->GetFrameTree()
-                                             ->root()
+              RenderWidgetHostImpl::From(contents->GetPrimaryFrameTree()
+                                             .root()
                                              ->current_frame_host()
                                              ->GetRenderWidgetHost()));
   }
@@ -748,8 +748,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, ContentWindowClose) {
   ui::test::EventGenerator generator(content->GetRootWindow(), content);
   generator.GestureScrollSequence(
       gfx::Point(bounds.x() + 2, bounds.y() + 10),
-      gfx::Point(bounds.right() - 10, bounds.y() + 10),
-      base::TimeDelta::FromMilliseconds(20),
+      gfx::Point(bounds.right() - 10, bounds.y() + 10), base::Milliseconds(20),
       1);
 
   delete web_contents->GetContentNativeView();
@@ -803,16 +802,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 
   generator.GestureScrollSequence(
       gfx::Point(bounds.right() - 10, bounds.y() + 10),
-      gfx::Point(bounds.x() + 2, bounds.y() + 10),
-      base::TimeDelta::FromMilliseconds(2000),
+      gfx::Point(bounds.x() + 2, bounds.y() + 10), base::Milliseconds(2000),
       10);
   nav_watcher.WaitForNavigationFinished();
 
   generator.GestureScrollSequence(
       gfx::Point(bounds.x() + 2, bounds.y() + 10),
       gfx::Point(bounds.right() - 10, bounds.y() + 10),
-      base::TimeDelta::FromMilliseconds(2000),
-      10);
+      base::Milliseconds(2000), 10);
   std::u16string actual_title = title_watcher.WaitAndGetTitle();
   EXPECT_EQ(expected_title, actual_title);
 
@@ -944,6 +941,71 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
     else
       EXPECT_GT(10, ExecuteScriptAndExtractInt("touchmoveCount"));
   }
+}
+
+// Tests that running the drop callback will perform drop.
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Run) {
+  StartTestWithPage("/simple_page.html");
+  WebContentsImpl* contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  WebContentsViewAura* view =
+      static_cast<WebContentsViewAura*>(contents->GetView());
+
+  view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
+
+  std::unique_ptr<ui::OSExchangeData> data =
+      std::make_unique<ui::OSExchangeData>();
+  view->RegisterDropCallbackForTesting(base::BindOnce(
+      &WebContentsViewAuraTest::OnDropComplete, base::Unretained(this)));
+  base::RunLoop run_loop;
+  async_drop_closure_ = run_loop.QuitClosure();
+
+  gfx::PointF point = {10, 10};
+  ui::DropTargetEvent event(*data.get(), point, point,
+                            ui::DragDropTypes::DRAG_COPY);
+  view->OnDragEntered(event);
+  EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
+  auto drop_cb = view->GetDropCallback(event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
+
+  run_loop.Run();
+
+  EXPECT_TRUE(drag_dest_delegate_.GetOnDropCalled());
+  EXPECT_FALSE(drag_dest_delegate_.GetOnDragLeaveCalled());
+  EXPECT_EQ(drop_target_widget_,
+            RenderWidgetHostImpl::From(contents->GetPrimaryFrameTree()
+                                           .root()
+                                           ->current_frame_host()
+                                           ->GetRenderWidgetHost()));
+}
+
+// Tests that resetting the drop callback won't complete the drop and will exit
+// the drag insead.
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Cancelled) {
+  StartTestWithPage("/simple_page.html");
+  WebContentsImpl* contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  WebContentsViewAura* view =
+      static_cast<WebContentsViewAura*>(contents->GetView());
+
+  view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
+
+  std::unique_ptr<ui::OSExchangeData> data =
+      std::make_unique<ui::OSExchangeData>();
+  view->RegisterDropCallbackForTesting(base::BindOnce(
+      &WebContentsViewAuraTest::OnDropComplete, base::Unretained(this)));
+
+  gfx::PointF point = {10, 10};
+  ui::DropTargetEvent event(*data.get(), point, point,
+                            ui::DragDropTypes::DRAG_COPY);
+  view->OnDragEntered(event);
+  EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
+  auto drop_cb = view->GetDropCallback(event);
+  drop_cb.Reset();
+
+  EXPECT_FALSE(drag_dest_delegate_.GetOnDropCalled());
+  EXPECT_TRUE(drag_dest_delegate_.GetOnDragLeaveCalled());
 }
 
 }  // namespace content

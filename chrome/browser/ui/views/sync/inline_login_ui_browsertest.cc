@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -167,14 +166,14 @@ class MockInlineSigninHelper : public InlineSigninHelper {
       const std::string& signin_scoped_device_id,
       bool confirm_untrusted_signin);
 
+  MockInlineSigninHelper(const MockInlineSigninHelper&) = delete;
+  MockInlineSigninHelper& operator=(const MockInlineSigninHelper&) = delete;
+
   MOCK_METHOD1(OnClientOAuthSuccess, void(const ClientOAuthResult& result));
   MOCK_METHOD1(OnClientOAuthFailure, void(const GoogleServiceAuthError& error));
   MOCK_METHOD1(CreateSyncStarter, void(const std::string&));
 
   GaiaAuthFetcher* GetGaiaAuthFetcher() { return GetGaiaAuthFetcherForTest(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInlineSigninHelper);
 };
 
 MockInlineSigninHelper::MockInlineSigninHelper(
@@ -218,10 +217,12 @@ class MockSyncStarterInlineSigninHelper : public InlineSigninHelper {
       bool confirm_untrusted_signin,
       bool is_force_sign_in_with_usermanager);
 
-  MOCK_METHOD1(CreateSyncStarter, void(const std::string&));
+  MockSyncStarterInlineSigninHelper(const MockSyncStarterInlineSigninHelper&) =
+      delete;
+  MockSyncStarterInlineSigninHelper& operator=(
+      const MockSyncStarterInlineSigninHelper&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSyncStarterInlineSigninHelper);
+  MOCK_METHOD1(CreateSyncStarter, void(const std::string&));
 };
 
 MockSyncStarterInlineSigninHelper::MockSyncStarterInlineSigninHelper(
@@ -403,6 +404,10 @@ class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
  public:
   InlineLoginHelperBrowserTest() : forced_signin_setter_(true) {}
 
+  InlineLoginHelperBrowserTest(const InlineLoginHelperBrowserTest&) = delete;
+  InlineLoginHelperBrowserTest& operator=(const InlineLoginHelperBrowserTest&) =
+      delete;
+
   ~InlineLoginHelperBrowserTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -499,8 +504,6 @@ class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
   base::CallbackListSubscription create_services_subscription_;
   Profile* profile_ = nullptr;
   signin_util::ScopedForceSigninSetterForTesting forced_signin_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(InlineLoginHelperBrowserTest);
 };
 
 // Test signin helper calls correct fetcher methods when called with an
@@ -753,7 +756,8 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest, Basic) {
   const GURL kUrl(content::GetWebUIURL("foo/"));
   EXPECT_CALL(foo_provider(), NewWebUI(_, ::testing::Eq(kUrl)))
       .WillOnce(ReturnNewWebUI());
-  ui_test_utils::NavigateToURL(browser(), content::GetWebUIURL("foo/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), content::GetWebUIURL("foo/")));
 }
 
 // Flaky on MacOS - crbug.com/1021209
@@ -769,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest,
   GURL url = GetSigninPromoURL().Resolve(
       "?source=0&access_point=0&reason=5&frameUrl=chrome://foo");
   EXPECT_CALL(foo_provider(), NewWebUI(_, _)).Times(0);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 }
 
 // Make sure that the gaia iframe cannot trigger top-frame navigation.
@@ -779,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest,
   GURL deframe_url(embedded_test_server()->GetURL("/login/deframe.html"));
   GURL url(net::AppendOrReplaceQueryParameter(GetSigninPromoURL(), "frameUrl",
                                               deframe_url.spec()));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitUntilUIReady(browser());
 
   content::WebContents* contents =
@@ -910,7 +914,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
   signin_url = net::AppendQueryParameter(
       signin_url, credential_provider::kShowTosSwitch, "1");
 
-  ui_test_utils::NavigateToURL(browser(), signin_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
 
   WaitUntilUIReady(browser());
 
@@ -941,7 +945,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
   signin_url = net::AppendQueryParameter(
       signin_url, credential_provider::kShowTosSwitch, "1");
 
-  ui_test_utils::NavigateToURL(browser(), signin_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
   WaitUntilUIReady(browser());
 
   // Expected gaia endpoint to load.

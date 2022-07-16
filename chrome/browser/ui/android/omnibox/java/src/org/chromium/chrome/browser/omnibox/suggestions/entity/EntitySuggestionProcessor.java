@@ -95,9 +95,8 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
         models.add(model);
         mPendingImageRequests.put(url, models);
 
-        ImageFetcher.Params params = ImageFetcher.Params.create(url.getSpec(),
-                ImageFetcher.ENTITY_SUGGESTIONS_UMA_CLIENT_NAME, getDecorationImageSize(),
-                getDecorationImageSize());
+        ImageFetcher.Params params = ImageFetcher.Params.create(
+                url.getSpec(), ImageFetcher.ENTITY_SUGGESTIONS_UMA_CLIENT_NAME);
         imageFetcher.fetchImage(
                 params, (Bitmap bitmap) -> {
                     ThreadUtils.assertOnUiThread();

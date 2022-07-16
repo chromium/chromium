@@ -6,6 +6,8 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -36,7 +38,6 @@ const std::vector<LabInfo>& GetData() {
   static const base::NoDestructor<std::vector<LabInfo>> lab_info_([]() {
     std::vector<LabInfo> lab_info;
 
-#if !defined(OS_MAC)
     // Lens Region Search
     lab_info.emplace_back(LabInfo(
         flag_descriptions::kEnableLensRegionSearchFlagId,
@@ -44,7 +45,6 @@ const std::vector<LabInfo>& GetData() {
         l10n_util::GetStringUTF16(
             IDS_LENS_REGION_SEARCH_EXPERIMENT_DESCRIPTION),
         "chrome-labs-lens-region-search", version_info::Channel::BETA));
-#endif  // OS_MAC
 
     // Side Panel.
     lab_info.emplace_back(LabInfo(
@@ -66,6 +66,17 @@ const std::vector<LabInfo>& GetData() {
         l10n_util::GetStringUTF16(IDS_TAB_SCROLLING_EXPERIMENT_DESCRIPTION),
         "chrome-labs-tab-scrolling", version_info::Channel::BETA,
         tab_scrolling_variation_descriptions));
+
+    // Thumbnail Tab Strip for Windows
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && \
+    (defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH))
+    lab_info.emplace_back(LabInfo(
+        flag_descriptions::kWebUITabStripFlagId,
+        l10n_util::GetStringUTF16(IDS_THUMBNAIL_TAB_STRIP_EXPERIMENT_NAME),
+        l10n_util::GetStringUTF16(
+            IDS_THUMBNAIL_TAB_STRIP_EXPERIMENT_DESCRIPTION),
+        "chrome-labs-thumbnail-tab-strip", version_info::Channel::BETA));
+#endif
 
     return lab_info;
   }());

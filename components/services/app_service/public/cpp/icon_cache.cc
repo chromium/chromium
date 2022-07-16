@@ -7,8 +7,14 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace apps {
+
+void RecordAppLaunchMetrics(IconLoadingMethod icon_loading_method) {
+  base::UmaHistogramEnumeration("Apps.IconLoadingMethod", icon_loading_method);
+}
 
 IconCache::Value::Value()
     : image_(), is_placeholder_icon_(false), ref_count_(0) {}
@@ -37,14 +43,21 @@ apps::mojom::IconKeyPtr IconCache::GetIconKey(const std::string& app_id) {
 std::unique_ptr<IconLoader::Releaser> IconCache::LoadIconFromIconKey(
     apps::mojom::AppType app_type,
     const std::string& app_id,
-    apps::mojom::IconKeyPtr icon_key,
+    apps::mojom::IconKeyPtr mojom_icon_key,
     apps::mojom::IconType icon_type,
     int32_t size_hint_in_dip,
     bool allow_placeholder_icon,
     apps::mojom::Publisher::LoadIconCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!mojom_icon_key) {
+    std::move(callback).Run(apps::mojom::IconValue::New());
+    return nullptr;
+  }
+
+  auto icon_key = ConvertMojomIconKeyToIconKey(mojom_icon_key);
   IconLoader::Key key(
-      app_type, app_id, icon_key, icon_type, size_hint_in_dip,
+      ConvertMojomAppTypToAppType(app_type), app_id, *icon_key,
+      ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
       // We pass false instead of allow_placeholder_icon, as the Value
       // already records placeholder-ness. If the allow_placeholder_icon
       // arg to this function is true, we can re-use a cache hit regardless
@@ -72,11 +85,12 @@ std::unique_ptr<IconLoader::Releaser> IconCache::LoadIconFromIconKey(
 
   std::unique_ptr<IconLoader::Releaser> releaser(nullptr);
   if (cache_hit) {
+    RecordAppLaunchMetrics(IconLoadingMethod::kFromCache);
     std::move(callback).Run(cache_hit->AsIconValue(icon_type));
   } else if (wrapped_loader_) {
     releaser = wrapped_loader_->LoadIconFromIconKey(
-        app_type, app_id, std::move(icon_key), icon_type, size_hint_in_dip,
-        allow_placeholder_icon,
+        app_type, app_id, std::move(mojom_icon_key), icon_type,
+        size_hint_in_dip, allow_placeholder_icon,
         base::BindOnce(&IconCache::OnLoadIcon, weak_ptr_factory_.GetWeakPtr(),
                        key, std::move(callback)));
   } else {
@@ -118,7 +132,8 @@ void IconCache::RemoveIcon(apps::mojom::AppType app_type,
 
   auto iter = map_.begin();
   while (iter != map_.end()) {
-    if (iter->first.app_type_ == app_type && iter->first.app_id_ == app_id) {
+    if (iter->first.app_type_ == ConvertMojomAppTypToAppType(app_type) &&
+        iter->first.app_id_ == app_id) {
       iter = map_.erase(iter);
     } else {
       ++iter;

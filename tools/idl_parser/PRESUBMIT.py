@@ -13,7 +13,8 @@ def _RunTests(input_api, output_api):
       output_api,
       '.',
       files_to_check=CHECK_FILES,
-      run_on_python2=False)
+      run_on_python2=False,
+      skip_shebang_check=True)
 
 
 def CheckChangeOnUpload(input_api, output_api):

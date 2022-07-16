@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {ProfileData, Tab, TabGroup, TabGroupColor, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchSearchField, TabUpdateInfo} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {ProfileData, RecentlyClosedTab, Tab, TabGroup, TabGroupColor, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchSearchField, TabsRemovedInfo, TabUpdateInfo} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
+import {flushTasks, waitAfterNextRender} from '../../test_util.js';
 
 import {generateSampleDataFromSiteNames, generateSampleRecentlyClosedTabs, generateSampleTabsFromSiteNames, SAMPLE_RECENTLY_CLOSED_DATA, SAMPLE_WINDOW_DATA, SAMPLE_WINDOW_HEIGHT, sampleData, sampleToken} from './tab_search_test_data.js';
-import {initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
+import {initLoadTimeDataWithDefaults, initProfileDataWithDefaults} from './tab_search_test_helper.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 suite('TabSearchAppTest', () => {
@@ -38,15 +38,17 @@ suite('TabSearchAppTest', () => {
   }
 
   /**
-   * @param {ProfileData} sampleData
+   * @param {!Object} sampleData A mock data object containing relevant profile
+   *     data for the test.
    * @param {Object=} loadTimeOverriddenData
    */
   async function setupTest(sampleData, loadTimeOverriddenData) {
-    testProxy = new TestTabSearchApiProxy();
-    testProxy.setProfileData(sampleData);
-    TabSearchApiProxyImpl.instance_ = testProxy;
-
+    initProfileDataWithDefaults(/** @type {ProfileData} */ (sampleData));
     initLoadTimeDataWithDefaults(loadTimeOverriddenData);
+
+    testProxy = new TestTabSearchApiProxy();
+    testProxy.setProfileData(/** @type {ProfileData} */ (sampleData));
+    TabSearchApiProxyImpl.instance_ = testProxy;
 
     tabSearchApp = /** @type {!TabSearchAppElement} */
         (document.createElement('tab-search-app'));
@@ -73,7 +75,6 @@ suite('TabSearchAppTest', () => {
           }],
           recentlyClosedTabs: generateSampleRecentlyClosedTabs(
               'Sample Tab', sampleTabCount, sampleToken(0, 1)),
-          tabGroups: [],
           recentlyClosedTabGroups: [{
             sessionId: sampleSessionId,
             id: sampleToken(0, 1),
@@ -83,8 +84,11 @@ suite('TabSearchAppTest', () => {
             lastActiveTime: {internalValue: BigInt(sampleTabCount + 1)},
             lastActiveElapsedText: ''
           }],
+          recentlyClosedSectionExpanded: true,
         },
-        {recentlyClosedDefaultItemDisplayCount: 5});
+        {
+          recentlyClosedDefaultItemDisplayCount: 5,
+        });
 
     tabSearchApp.shadowRoot.querySelector('#tabsList')
         .ensureAllDomItemsAvailable();
@@ -99,8 +103,7 @@ suite('TabSearchAppTest', () => {
     await setupTest({
       windows: SAMPLE_WINDOW_DATA,
       recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
-      tabGroups: [],
-      recentlyClosedTabGroups: [],
+      recentlyClosedSectionExpanded: true,
     });
     tabSearchApp.shadowRoot.querySelector('#tabsList')
         .ensureAllDomItemsAvailable();
@@ -118,10 +121,11 @@ suite('TabSearchAppTest', () => {
           }],
           recentlyClosedTabs: generateSampleTabsFromSiteNames(
               ['RecentlyClosedTab1', 'RecentlyClosedTab2'], false),
-          tabGroups: [],
-          recentlyClosedTabGroups: [],
+          recentlyClosedSectionExpanded: true
         },
-        {recentlyClosedDefaultItemDisplayCount: 1});
+        {
+          recentlyClosedDefaultItemDisplayCount: 1,
+        });
 
     assertEquals(2, queryRows().length);
   });
@@ -136,8 +140,7 @@ suite('TabSearchAppTest', () => {
     await setupTest({
       windows: SAMPLE_WINDOW_DATA,
       recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
-      tabGroups: [],
-      recentlyClosedTabGroups: [],
+      recentlyClosedSectionExpanded: true,
     });
     const searchField = /** @type {!TabSearchSearchField} */
         (tabSearchApp.shadowRoot.querySelector('#searchField'));
@@ -164,7 +167,6 @@ suite('TabSearchAppTest', () => {
           }],
           recentlyClosedTabs: generateSampleRecentlyClosedTabs(
               'Sample Tab', sampleTabCount, sampleToken(0, 1)),
-          tabGroups: [],
           recentlyClosedTabGroups: [({
             sessionId: sampleSessionId,
             id: sampleToken(0, 1),
@@ -174,8 +176,11 @@ suite('TabSearchAppTest', () => {
             lastActiveTime: {internalValue: BigInt(sampleTabCount + 1)},
             lastActiveElapsedText: ''
           })],
+          recentlyClosedSectionExpanded: true,
         },
-        {recentlyClosedDefaultItemDisplayCount: 5});
+        {
+          recentlyClosedDefaultItemDisplayCount: 5,
+        });
 
     const searchField = /** @type {!TabSearchSearchField} */
         (tabSearchApp.shadowRoot.querySelector('#searchField'));
@@ -207,9 +212,6 @@ suite('TabSearchAppTest', () => {
     };
     await setupTest({
       windows: [{active: true, tabs: [tabData]}],
-      recentlyClosedTabs: [],
-      tabGroups: [],
-      recentlyClosedTabGroups: [],
     });
 
     const tabSearchItem = /** @type {!HTMLElement} */
@@ -250,19 +252,19 @@ suite('TabSearchAppTest', () => {
         }]
       }],
       recentlyClosedTabs: [tabData],
-      tabGroups: [],
-      recentlyClosedTabGroups: [],
+      recentlyClosedSectionExpanded: true
     });
 
     let tabSearchItem = /** @type {!HTMLElement} */
         (tabSearchApp.shadowRoot.querySelector('#tabsList')
              .querySelector('tab-search-item[id="100"]'));
     tabSearchItem.click();
-    const [tabId, withSearch, isTab] =
+    const [tabId, withSearch, isTab, index] =
         await testProxy.whenCalled('openRecentlyClosedEntry');
     assertEquals(tabData.tabId, tabId);
     assertFalse(withSearch);
     assertTrue(isTab);
+    assertEquals(0, index);
   });
 
   test('Click on recently closed tab group item triggers action', async () => {
@@ -287,28 +289,25 @@ suite('TabSearchAppTest', () => {
           url: {url: 'https://www.google.com'},
         }]
       }],
-      recentlyClosedTabs: [],
-      tabGroups: [],
       recentlyClosedTabGroups: [tabGroupData],
+      recentlyClosedSectionExpanded: true
     });
 
     let tabSearchItem = /** @type {!HTMLElement} */
         (tabSearchApp.shadowRoot.querySelector('#tabsList')
              .querySelector('tab-search-group-item'));
     tabSearchItem.click();
-    const [id, withSearch, isTab] =
+    const [id, withSearch, isTab, index] =
         await testProxy.whenCalled('openRecentlyClosedEntry');
     assertEquals(tabGroupData.sessionId, id);
     assertFalse(withSearch);
     assertFalse(isTab);
+    assertEquals(0, index);
   });
 
   test('Keyboard navigation on an empty list', async () => {
     await setupTest({
       windows: [{active: true, tabs: []}],
-      recentlyClosedTabs: [],
-      tabGroups: [],
-      recentlyClosedTabGroups: [],
     });
 
     const searchField = /** @type {!TabSearchSearchField} */
@@ -395,7 +394,7 @@ suite('TabSearchAppTest', () => {
       windows: [],
       recentlyClosedTabs: [],
       tabGroups: [],
-      recentlyClosedTabGroups: []
+      recentlyClosedTabGroups: [],
     });
     await flushTasks();
     verifyTabIds(queryRows(), []);
@@ -469,9 +468,6 @@ suite('TabSearchAppTest', () => {
         height: SAMPLE_WINDOW_HEIGHT,
         tabs: generateSampleTabsFromSiteNames(['OpenTab1'], true),
       }],
-      recentlyClosedTabs: [],
-      tabGroups: [],
-      recentlyClosedTabGroups: [],
     });
     verifyTabIds(queryRows(), [1]);
 
@@ -492,12 +488,55 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [2, 1]);
   });
 
-  test('refresh on tabs removed', async () => {
+  test('refresh on tabs removed, no restore service', async () => {
+    // Simulates a scenario where there is no tab restore service available for
+    // the current profile and thus, on removing a tab, there are no associated
+    // recently closed tabs created, such as in a OTR case.
     await setupTest(sampleData());
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
-    testProxy.getCallbackRouterRemote().tabsRemoved([1, 2]);
+
+    testProxy.getCallbackRouterRemote().tabsRemoved(
+        /** @type {!TabsRemovedInfo} */ ({
+          tabIds: [1, 2],
+          recentlyClosedTabs: [],
+        }));
     await flushTasks();
     verifyTabIds(queryRows(), [5, 6, 3, 4]);
+
+    // Assert that on removing all items, we display the no-results div.
+    testProxy.getCallbackRouterRemote().tabsRemoved(
+        /** @type {!TabsRemovedInfo} */ (
+            {tabIds: [3, 4, 5, 6], recentlyClosedTabs: []}));
+    await flushTasks();
+    assertNotEquals(null, tabSearchApp.shadowRoot.querySelector('#no-results'));
+  });
+
+  test('Closed tab appears in recently closed section', async () => {
+    await setupTest({
+      windows: [{
+        active: true,
+        height: SAMPLE_WINDOW_HEIGHT,
+        tabs:
+            generateSampleTabsFromSiteNames(['SampleTab', 'SampleTab2'], true),
+      }],
+      recentlyClosedTabs: [],
+      recentlyClosedSectionExpanded: true,
+    });
+    verifyTabIds(queryRows(), [1, 2]);
+
+    testProxy.getCallbackRouterRemote().tabsRemoved(
+        /** @type {!TabsRemovedInfo} */ ({
+          tabIds: [1],
+          recentlyClosedTabs: [/** @type {RecentlyClosedTab} */ ({
+            tabId: 3,
+            title: `SampleTab`,
+            url: {url: 'https://www.sampletab.com'},
+            lastActiveTime: {internalValue: BigInt(3)},
+            lastActiveElapsedText: '',
+          })],
+        }));
+    await flushTasks();
+    verifyTabIds(queryRows(), [2, 3]);
   });
 
   test('Verify visibilitychange triggers data fetch', async () => {
@@ -666,18 +705,12 @@ suite('TabSearchAppTest', () => {
     // Move active tab to the bottom of the list.
     await setupTest({
       windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs}],
-      recentlyClosedTabs: [],
-      tabGroups: [],
-      recentlyClosedTabGroups: [],
     });
     verifyTabIds(queryRows(), [3, 1, 2]);
 
     await setupTest(
         {
           windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs}],
-          recentlyClosedTabs: [],
-          tabGroups: [],
-          recentlyClosedTabGroups: [],
         },
         {'moveActiveTabToBottom': false});
     verifyTabIds(queryRows(), [2, 3, 1]);
@@ -704,9 +737,7 @@ suite('TabSearchAppTest', () => {
 
     await setupTest({
       windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs}],
-      recentlyClosedTabs: [],
       tabGroups: [tabGroup],
-      recentlyClosedTabGroups: [],
     });
 
     let tabSearchItem = /** @type {!HTMLElement} */ (
@@ -714,5 +745,39 @@ suite('TabSearchAppTest', () => {
             .querySelector('tab-search-item[id="1"]'));
     assertEquals('Google', tabSearchItem.data.tab.title);
     assertEquals('Search Engines', tabSearchItem.data.tabGroup.title);
+  });
+
+  test('Recently closed section collapse and expand', async () => {
+    await setupTest({
+      windows: [{
+        active: true,
+        height: SAMPLE_WINDOW_HEIGHT,
+        tabs: generateSampleTabsFromSiteNames(['SampleOpenTab'], true),
+      }],
+      recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
+      recentlyClosedSectionExpanded: true,
+    });
+    assertEquals(3, queryRows().length);
+
+    const recentlyClosedTitleItem = /** @type {!HTMLElement} */
+        (tabSearchApp.shadowRoot.querySelector('#tabsList')
+             .querySelectorAll('.list-section-title')[1]);
+    assertNotEquals(null, recentlyClosedTitleItem);
+
+    const recentlyClosedTitleExpandButton = /** @type {!HTMLElement} */
+        (recentlyClosedTitleItem.querySelector('cr-expand-button'));
+    assertNotEquals(null, recentlyClosedTitleExpandButton);
+
+    // Collapse the `Recently Closed` section and assert item count.
+    recentlyClosedTitleExpandButton.click();
+    const [expanded] =
+        await testProxy.whenCalled('saveRecentlyClosedExpandedPref');
+    assertFalse(expanded);
+    assertEquals(1, queryRows().length);
+
+    // Expand the `Recently Closed` section and assert item count.
+    recentlyClosedTitleExpandButton.click();
+    assertEquals(2, testProxy.getCallCount('saveRecentlyClosedExpandedPref'));
+    assertEquals(3, queryRows().length);
   });
 });

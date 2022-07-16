@@ -11,17 +11,22 @@
 #include <keyboard-configuration-unstable-v1-server-protocol.h>
 #include <keyboard-extension-unstable-v1-server-protocol.h>
 #include <notification-shell-unstable-v1-server-protocol.h>
+#include <overlay-prioritizer-server-protocol.h>
 #include <pointer-constraints-unstable-v1-server-protocol.h>
 #include <pointer-gestures-unstable-v1-server-protocol.h>
 #include <relative-pointer-unstable-v1-server-protocol.h>
 #include <remote-shell-unstable-v1-server-protocol.h>
+#include <remote-shell-unstable-v2-server-protocol.h>
 #include <secure-output-unstable-v1-server-protocol.h>
 #include <stylus-tools-unstable-v1-server-protocol.h>
 #include <stylus-unstable-v2-server-protocol.h>
+#include <surface-augmenter-server-protocol.h>
+#include <text-input-extension-unstable-v1-server-protocol.h>
 #include <text-input-unstable-v1-server-protocol.h>
 #include <viewporter-client-protocol.h>
 #include <wayland-client-core.h>
 #include <wayland-client-protocol.h>
+#include <weston-test-server-protocol.h>
 #include <xdg-decoration-unstable-v1-server-protocol.h>
 #include <xdg-shell-server-protocol.h>
 #include <xdg-shell-unstable-v6-server-protocol.h>
@@ -50,6 +55,8 @@ struct Globals {
   std::string protocol_tested;
   ClientVersionTest::VersionValidityType validity_type =
       ClientVersionTest::VersionValidityType::VALID_ADVERTISED;
+  std::unique_ptr<surface_augmenter> surface_augmenter;
+  std::unique_ptr<overlay_prioritizer> overlay_prioritizer;
   std::unique_ptr<wl_shm> wl_shm;
   std::unique_ptr<wl_shell> wl_shell;
   std::unique_ptr<wl_seat> wl_seat;
@@ -64,7 +71,6 @@ struct Globals {
   std::unique_ptr<zwp_linux_explicit_synchronization_v1>
       zwp_linux_explicit_synchronization_v1;
   std::unique_ptr<zcr_vsync_feedback_v1> zcr_vsync_feedback_v1;
-  std::unique_ptr<zcr_color_space_v1> zcr_color_space_v1;
   std::unique_ptr<wl_data_device_manager> wl_data_device_manager;
   std::unique_ptr<wp_viewporter> wp_viewporter;
   std::unique_ptr<zxdg_shell_v6> zxdg_shell_v6;
@@ -75,10 +81,12 @@ struct Globals {
   std::unique_ptr<zcr_stylus_v2> zcr_stylus_v2;
   std::unique_ptr<zcr_cursor_shapes_v1> zcr_cursor_shapes_v1;
   std::unique_ptr<zcr_gaming_input_v2> zcr_gaming_input_v2;
+  std::unique_ptr<zcr_text_input_extension_v1> zcr_text_input_extension_v1;
   std::unique_ptr<zcr_keyboard_configuration_v1> zcr_keyboard_configuration_v1;
   std::unique_ptr<zcr_keyboard_extension_v1> zcr_keyboard_extension_v1;
   std::unique_ptr<zcr_notification_shell_v1> zcr_notification_shell_v1;
   std::unique_ptr<zcr_remote_shell_v1> zcr_remote_shell_v1;
+  std::unique_ptr<zcr_remote_shell_v2> zcr_remote_shell_v2;
   std::unique_ptr<zcr_stylus_tools_v1> zcr_stylus_tools_v1;
   std::unique_ptr<zwp_pointer_gestures_v1> zwp_pointer_gestures_v1;
   std::unique_ptr<zwp_pointer_constraints_v1> zwp_pointer_constraints_v1;
@@ -86,6 +94,8 @@ struct Globals {
       zwp_relative_pointer_manager_v1;
   std::unique_ptr<zxdg_decoration_manager_v1> zxdg_decoration_manager_v1;
   std::unique_ptr<zcr_extended_drag_v1> zcr_extended_drag_v1;
+  std::unique_ptr<zxdg_output_manager_v1> zxdg_output_manager_v1;
+  std::unique_ptr<weston_test> weston_test;
 };
 
 typedef void (*InterfaceRegistryCallback)(Globals*,
@@ -148,7 +158,6 @@ void RegistryHandler(void* data,
           REGISTRY_CALLBACK(zwp_linux_explicit_synchronization_v1,
                             zwp_linux_explicit_synchronization_v1),
           REGISTRY_CALLBACK(zcr_vsync_feedback_v1, zcr_vsync_feedback_v1),
-          REGISTRY_CALLBACK(zcr_color_space_v1, zcr_color_space_v1),
           REGISTRY_CALLBACK(wl_data_device_manager, wl_data_device_manager),
           REGISTRY_CALLBACK(wp_viewporter, wp_viewporter),
           REGISTRY_CALLBACK(zxdg_shell_v6, zxdg_shell_v6),
@@ -167,7 +176,10 @@ void RegistryHandler(void* data,
           REGISTRY_CALLBACK(zcr_notification_shell_v1,
                             zcr_notification_shell_v1),
           REGISTRY_CALLBACK(zcr_remote_shell_v1, zcr_remote_shell_v1),
+          REGISTRY_CALLBACK(zcr_remote_shell_v2, zcr_remote_shell_v2),
           REGISTRY_CALLBACK(zcr_stylus_tools_v1, zcr_stylus_tools_v1),
+          REGISTRY_CALLBACK(zcr_text_input_extension_v1,
+                            zcr_text_input_extension_v1),
           REGISTRY_CALLBACK(zwp_pointer_gestures_v1, zwp_pointer_gestures_v1),
           REGISTRY_CALLBACK(zwp_pointer_constraints_v1,
                             zwp_pointer_constraints_v1),
@@ -176,6 +188,10 @@ void RegistryHandler(void* data,
           REGISTRY_CALLBACK(zxdg_decoration_manager_v1,
                             zxdg_decoration_manager_v1),
           REGISTRY_CALLBACK(zcr_extended_drag_v1, zcr_extended_drag_v1),
+          REGISTRY_CALLBACK(zxdg_output_manager_v1, zxdg_output_manager_v1),
+          REGISTRY_CALLBACK(surface_augmenter, surface_augmenter),
+          REGISTRY_CALLBACK(overlay_prioritizer, overlay_prioritizer),
+          REGISTRY_CALLBACK(weston_test, weston_test),
       };
   if (interfaces_callbacks.find(interface) != interfaces_callbacks.end()) {
     interfaces_callbacks[interface](globals, registry, id, version);

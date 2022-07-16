@@ -35,6 +35,6 @@ void PrerenderTabHelper::DidFinishNavigation(
     no_state_prefetch_manager->RecordNavigation(navigation_handle->GetURL());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PrerenderTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PrerenderTabHelper);
 
 }  // namespace weblayer

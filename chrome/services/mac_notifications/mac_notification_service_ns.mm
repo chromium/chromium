@@ -12,10 +12,11 @@
 
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "chrome/common/notifications/notification_constants.h"
+#include "chrome/common/notifications/notification_operation.h"
 #include "chrome/grit/generated_resources.h"
 #import "chrome/services/mac_notifications/mac_notification_service_utils.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
+#include "chrome/services/mac_notifications/public/cpp/mac_notification_metrics.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/image/image.h"
@@ -32,11 +33,11 @@ namespace {
 NotificationOperation GetNotificationOperationFromNotification(
     NSUserNotification* notification) {
   if ([notification activationType] == NSUserNotificationActivationTypeNone)
-    return NotificationOperation::NOTIFICATION_CLOSE;
+    return NotificationOperation::kClose;
 
   if ([notification activationType] !=
       NSUserNotificationActivationTypeActionButtonClicked) {
-    return NotificationOperation::NOTIFICATION_CLICK;
+    return NotificationOperation::kClick;
   }
 
   int button_count = 1;
@@ -63,17 +64,17 @@ NotificationOperation GetNotificationOperationFromNotification(
 
   // The settings button is always the last button if present.
   if (clicked_last_button && has_settings_button)
-    return NotificationOperation::NOTIFICATION_SETTINGS;
+    return NotificationOperation::kSettings;
   // Otherwise the user clicked on an action button.
-  return NotificationOperation::NOTIFICATION_CLICK;
+  return NotificationOperation::kClick;
 }
 
 int GetActionButtonIndexFromNotification(NSUserNotification* notification) {
   if ([notification activationType] !=
           NSUserNotificationActivationTypeActionButtonClicked ||
       GetNotificationOperationFromNotification(notification) !=
-          NotificationOperation::NOTIFICATION_CLICK) {
-    return notification_constants::kNotificationInvalidButtonIndex;
+          NotificationOperation::kClick) {
+    return kNotificationInvalidButtonIndex;
   }
 
   // If we couldn't show an overflow menu there's only one button.
@@ -194,10 +195,11 @@ void MacNotificationServiceNS::DisplayNotification(
   if (!notification->icon.isNull())
     [toast setContentImage:gfx::Image(notification->icon).ToNSImage()];
 
-  const mojom::NotificationIdentifierPtr& identifier = notification->meta->id;
-  NSString* notification_id = base::SysUTF8ToNSString(DeriveMacNotificationId(
-      identifier->profile->incognito, identifier->profile->id, identifier->id));
+  NSString* notification_id =
+      base::SysUTF8ToNSString(DeriveMacNotificationId(notification->meta->id));
   [toast setIdentifier:notification_id];
+
+  LogMacNotificationDelivered(IsAppBundleAlertStyle(), /*success=*/true);
 
   [notification_center_ deliverNotification:toast.get()];
 }
@@ -316,8 +318,8 @@ void MacNotificationServiceNS::CloseAllNotifications() {
                didDismissAlert:(NSUserNotification*)notification {
   mac_notifications::mojom::NotificationMetadataPtr meta =
       mac_notifications::GetMacNotificationMetadata([notification userInfo]);
-  auto operation = NotificationOperation::NOTIFICATION_CLOSE;
-  int buttonIndex = notification_constants::kNotificationInvalidButtonIndex;
+  auto operation = NotificationOperation::kClose;
+  int buttonIndex = kNotificationInvalidButtonIndex;
   auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
       std::move(meta), operation, buttonIndex, /*reply=*/absl::nullopt);
   _handler->OnNotificationAction(std::move(actionInfo));
@@ -333,8 +335,8 @@ void MacNotificationServiceNS::CloseAllNotifications() {
     DCHECK(notification);
     mac_notifications::mojom::NotificationMetadataPtr meta =
         mac_notifications::GetMacNotificationMetadata([notification userInfo]);
-    auto operation = NotificationOperation::NOTIFICATION_CLOSE;
-    int buttonIndex = notification_constants::kNotificationInvalidButtonIndex;
+    auto operation = NotificationOperation::kClose;
+    int buttonIndex = kNotificationInvalidButtonIndex;
     auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
         std::move(meta), operation, buttonIndex, /*reply=*/absl::nullopt);
     _handler->OnNotificationAction(std::move(actionInfo));

@@ -9,17 +9,21 @@
 
 namespace media {
 
-std::ostream& operator<<(std::ostream& os, EncryptionScheme scheme) {
-  switch (scheme) {
+std::string GetEncryptionSchemeName(EncryptionScheme encryption_scheme) {
+  switch (encryption_scheme) {
     case EncryptionScheme::kUnencrypted:
-      return os << "Unencrypted";
+      return "Unencrypted";
     case EncryptionScheme::kCenc:
-      return os << "CENC";
+      return "CENC";
     case EncryptionScheme::kCbcs:
-      return os << "CBCS";
+      return "CBCS";
     default:
-      return os << "Unknown";
+      return "Unknown";
   }
+}
+
+std::ostream& operator<<(std::ostream& os, EncryptionScheme encryption_scheme) {
+  return os << GetEncryptionSchemeName(encryption_scheme);
 }
 
 }  // namespace media

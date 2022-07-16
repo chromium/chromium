@@ -9,6 +9,4 @@
 #error "This file requires ARC support."
 #endif
 
-// TODO(crbug.com/1015113): This macro breaks Xcode indexing unless it is placed
-// at the bottom of the file or followed by a semicolon.
 GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(PolicyAppInterface)

@@ -32,9 +32,9 @@ group("features") {
     "//ios/showcase/alert",
     "//ios/showcase/badges",
     "//ios/showcase/bubble",
-    "//ios/showcase/content_suggestions",
     "//ios/showcase/credential_provider",
     "//ios/showcase/default_browser",
+    "//ios/showcase/discover_feed_preview",
     "//ios/showcase/first_run",
     "//ios/showcase/incognito_reauth",
     "//ios/showcase/infobars",
@@ -44,7 +44,6 @@ group("features") {
     "//ios/showcase/tab_grid",
     "//ios/showcase/text_badge_view",
     "//ios/showcase/uikit_table_view_cell",
-    "//ios/showcase/widget",
   ]
 }
 
@@ -82,10 +81,10 @@ ios_eg2_test("ios_showcase_eg2tests_module") {
   deps = [
     "//ios/showcase/badges:eg2_tests",
     "//ios/showcase/bubble:eg2_tests",
-    "//ios/showcase/content_suggestions:eg2_tests",
     "//ios/showcase/core:eg2_tests",
     "//ios/showcase/credential_provider:eg2_tests",
     "//ios/showcase/default_browser:eg2_tests",
+    "//ios/showcase/discover_feed_preview:eg2_tests",
     "//ios/showcase/infobars:eg2_tests",
     "//ios/showcase/text_badge_view:eg2_tests",
   ]

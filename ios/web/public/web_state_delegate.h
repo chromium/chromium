@@ -43,8 +43,8 @@ class WebStateDelegate {
 
   // Returns the WebState the URL is opened in, or nullptr if the URL wasn't
   // opened immediately.
-  virtual WebState* OpenURLFromWebState(WebState*,
-                                        const WebState::OpenURLParams&);
+  virtual WebState* OpenURLFromWebState(WebState* source,
+                                        const WebState::OpenURLParams& params);
 
   // Notifies the delegate that the user triggered the context menu with the
   // given |ContextMenuParams|. If the delegate does not implement this method,
@@ -76,47 +76,21 @@ class WebStateDelegate {
                               NSURLCredential* proposed_credential,
                               AuthCallback callback) = 0;
 
-  // Determines whether the given link with |link_url| should show a preview on
-  // force touch.
-  virtual bool ShouldPreviewLink(WebState* source, const GURL& link_url);
-  // Called when the user performs a peek action on a link with |link_url| with
-  // force touch. Returns a view controller shown as a pop-up. Uses Webkit's
-  // default preview behavior when it returns nil.
-  virtual UIViewController* GetPreviewingViewController(WebState* source,
-                                                        const GURL& link_url);
-  // Called when the user performs a pop action on the preview on force touch.
-  // |previewing_view_controller| is the view controller that is popped.
-  // It should display |previewing_view_controller| inside the app.
-  virtual void CommitPreviewingViewController(
-      WebState* source,
-      UIViewController* previewing_view_controller);
-
   // Returns the UIView used to contain the WebView for sizing purposes. Can be
   // nil.
   virtual UIView* GetWebViewContainer(WebState* source);
 
-  // Called when iOS13+ context menu is triggered and now it is required to
+  // Called when the context menu is triggered and now it is required to
   // provide a UIContextMenuConfiguration to |completion_handler| to generate
-  // the context menu. |previewProvider| is used to show a custom ViewController
-  // to preview the page.
+  // the context menu.
   virtual void ContextMenuConfiguration(
       WebState* source,
       const ContextMenuParams& params,
-      UIContextMenuContentPreviewProvider preview_provider,
-      void (^completion_handler)(UIContextMenuConfiguration*))
-      API_AVAILABLE(ios(13.0));
-  // Called when iOS13+ context menu is ready to be showed.
-  virtual void ContextMenuDidEnd(WebState* source, const GURL& link_url)
-      API_AVAILABLE(ios(13.0));
-  // Called when iOS13+ context menu will commit with animator.
+      void (^completion_handler)(UIContextMenuConfiguration*));
+  // Called when the context menu will commit with animator.
   virtual void ContextMenuWillCommitWithAnimator(
       WebState* source,
-      const GURL& link_url,
-      id<UIContextMenuInteractionCommitAnimating> animator)
-      API_AVAILABLE(ios(13.0));
-  // Called when iOS13+ context menu will present.
-  virtual void ContextMenuWillPresent(WebState* source, const GURL& link_url)
-      API_AVAILABLE(ios(13.0));
+      id<UIContextMenuInteractionCommitAnimating> animator);
 
   // UIResponder Form Input APIs, consult Apple's UIResponder documentation for
   // more info.

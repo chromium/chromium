@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -30,8 +30,7 @@ base::TimeDelta GetNextRequestDelayMs(base::TimeDelta last_delay) {
   base::TimeDelta next_delay = last_delay * 2;
 
   // Cap the delay to prevent an overflow. This threshold is arbitrarily chosen.
-  const base::TimeDelta max_delay =
-      base::TimeDelta::FromMilliseconds(kMaxRequestDelayMs);
+  const base::TimeDelta max_delay = base::Milliseconds(kMaxRequestDelayMs);
   if (next_delay > max_delay)
     next_delay = max_delay;
   return next_delay;
@@ -85,8 +84,7 @@ TPMTokenInfoGetter::TPMTokenInfoGetter(
       type_(type),
       state_(TPMTokenInfoGetter::STATE_INITIAL),
       account_id_(account_id),
-      tpm_request_delay_(
-          base::TimeDelta::FromMilliseconds(kInitialRequestDelayMs)),
+      tpm_request_delay_(base::Milliseconds(kInitialRequestDelayMs)),
       cryptohome_pkcs11_client_(cryptohome_pkcs11_client) {}
 
 void TPMTokenInfoGetter::Continue() {

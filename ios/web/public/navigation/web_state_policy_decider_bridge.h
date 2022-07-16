@@ -18,8 +18,7 @@ typedef void (^PolicyDecisionHandler)(
 
 // Invoked by |WebStatePolicyDeciderBridge::ShouldAllowRequest|.
 - (void)shouldAllowRequest:(NSURLRequest*)request
-               requestInfo:
-                   (const web::WebStatePolicyDecider::RequestInfo&)requestInfo
+               requestInfo:(web::WebStatePolicyDecider::RequestInfo)requestInfo
            decisionHandler:(PolicyDecisionHandler)decisionHandler;
 
 // Invoked by |WebStatePolicyDeciderBridge::ShouldAllowRequest|.
@@ -27,10 +26,11 @@ typedef void (^PolicyDecisionHandler)(
                              forMainFrame:(BOOL)forMainFrame;
 
 // Invoked by |WebStatePolicyDeciderBridge::ShouldAllowResponse|.
-- (void)decidePolicyForNavigationResponse:(NSURLResponse*)response
-                             forMainFrame:(BOOL)forMainFrame
-                          decisionHandler:
-                              (PolicyDecisionHandler)decisionHandler;
+- (void)
+    decidePolicyForNavigationResponse:(NSURLResponse*)response
+                         responseInfo:(web::WebStatePolicyDecider::ResponseInfo)
+                                          responseInfo
+                      decisionHandler:(PolicyDecisionHandler)decisionHandler;
 @end
 
 namespace web {
@@ -41,15 +41,20 @@ class WebStatePolicyDeciderBridge : public web::WebStatePolicyDecider {
  public:
   WebStatePolicyDeciderBridge(web::WebState* web_state,
                               id<CRWWebStatePolicyDecider> decider);
+
+  WebStatePolicyDeciderBridge(const WebStatePolicyDeciderBridge&) = delete;
+  WebStatePolicyDeciderBridge& operator=(const WebStatePolicyDeciderBridge&) =
+      delete;
+
   ~WebStatePolicyDeciderBridge() override;
 
   // web::WebStatePolicyDecider methods.
   void ShouldAllowRequest(NSURLRequest* request,
-                          const RequestInfo& request_info,
+                          RequestInfo request_info,
                           PolicyDecisionCallback callback) override;
 
   void ShouldAllowResponse(NSURLResponse* response,
-                           bool for_main_frame,
+                           ResponseInfo response_info,
                            PolicyDecisionCallback callback) override;
 
   bool ShouldAllowErrorPageToBeDisplayed(NSURLResponse* response,
@@ -58,8 +63,6 @@ class WebStatePolicyDeciderBridge : public web::WebStatePolicyDecider {
  private:
   // CRWWebStatePolicyDecider which receives forwarded calls.
   __weak id<CRWWebStatePolicyDecider> decider_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStatePolicyDeciderBridge);
 };
 
 }  // web

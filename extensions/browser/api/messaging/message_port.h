@@ -41,6 +41,9 @@ class MessagePort {
     virtual void PostMessage(const PortId& port_id, const Message& message) = 0;
   };
 
+  MessagePort(const MessagePort&) = delete;
+  MessagePort& operator=(const MessagePort&) = delete;
+
   virtual ~MessagePort();
 
   // Called right before a channel is created for this MessagePort and |port|.
@@ -92,9 +95,6 @@ class MessagePort {
 
  protected:
   MessagePort();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessagePort);
 };
 
 }  // namespace extensions

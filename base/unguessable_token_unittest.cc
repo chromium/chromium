@@ -43,6 +43,7 @@ TEST(UnguessableTokenTest, VerifyEqualityOperators) {
   UnguessableToken token = UnguessableToken::Deserialize(1, 2);
   UnguessableToken same_token = UnguessableToken::Deserialize(1, 2);
   UnguessableToken diff_token = UnguessableToken::Deserialize(1, 3);
+  UnguessableToken empty_token;
 
   EXPECT_TRUE(token == token);
   EXPECT_FALSE(token != token);
@@ -54,6 +55,13 @@ TEST(UnguessableTokenTest, VerifyEqualityOperators) {
   EXPECT_FALSE(diff_token == token);
   EXPECT_TRUE(token != diff_token);
   EXPECT_TRUE(diff_token != token);
+
+  EXPECT_TRUE(empty_token == empty_token);
+  EXPECT_FALSE(empty_token != empty_token);
+  for (const UnguessableToken& this_token : {token, same_token, diff_token}) {
+    EXPECT_FALSE(this_token == empty_token);
+    EXPECT_TRUE(this_token != empty_token);
+  }
 }
 
 TEST(UnguessableTokenTest, VerifyConstructors) {

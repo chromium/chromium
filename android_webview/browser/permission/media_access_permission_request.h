@@ -21,6 +21,11 @@ class MediaAccessPermissionRequest : public AwPermissionRequestDelegate {
  public:
   MediaAccessPermissionRequest(const content::MediaStreamRequest& request,
                                content::MediaResponseCallback callback);
+
+  MediaAccessPermissionRequest(const MediaAccessPermissionRequest&) = delete;
+  MediaAccessPermissionRequest& operator=(const MediaAccessPermissionRequest&) =
+      delete;
+
   ~MediaAccessPermissionRequest() override;
 
   // AwPermissionRequestDelegate implementation.
@@ -37,8 +42,6 @@ class MediaAccessPermissionRequest : public AwPermissionRequestDelegate {
   // For test only.
   blink::MediaStreamDevices audio_test_devices_;
   blink::MediaStreamDevices video_test_devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaAccessPermissionRequest);
 };
 
 }  // namespace android_webview

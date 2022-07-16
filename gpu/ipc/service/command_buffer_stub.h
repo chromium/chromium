@@ -83,6 +83,9 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
                     int32_t stream_id,
                     int32_t route_id);
 
+  CommandBufferStub(const CommandBufferStub&) = delete;
+  CommandBufferStub& operator=(const CommandBufferStub&) = delete;
+
   ~CommandBufferStub() override;
 
   // Exposes a SequencedTaskRunner which can be used to schedule tasks in
@@ -325,8 +328,6 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   mojo::AssociatedReceiver<mojom::CommandBuffer> receiver_{this};
   mojo::SharedAssociatedRemote<mojom::CommandBufferClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferStub);
 };
 
 }  // namespace gpu

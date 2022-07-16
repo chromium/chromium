@@ -11,10 +11,10 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/contextual_nudge_status_tracker.h"
 #include "ash/shell.h"
+#include "base/json/values_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/util/values/values_util.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace ash {
@@ -72,7 +72,7 @@ base::Time GetLastShownTime(PrefService* prefs, TooltipType type) {
           ->FindPath(GetPath(type, kLastTimeShown));
   if (!last_shown_time)
     return base::Time();
-  return *util::ValueToTime(last_shown_time);
+  return *base::ValueToTime(last_shown_time);
 }
 
 int GetSuccessCount(PrefService* prefs, TooltipType type) {
@@ -230,7 +230,7 @@ void HandleNudgeShown(PrefService* prefs, TooltipType type) {
   const int shown_count = GetShownCount(prefs, type);
   DictionaryPrefUpdate update(prefs, prefs::kContextualTooltips);
   update->SetIntPath(GetPath(type, kShownCount), shown_count + 1);
-  update->SetPath(GetPath(type, kLastTimeShown), util::TimeToValue(GetTime()));
+  update->SetPath(GetPath(type, kLastTimeShown), base::TimeToValue(GetTime()));
   GetStatusTracker(type)->HandleNudgeShown(base::TimeTicks::Now());
 }
 

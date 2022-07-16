@@ -18,6 +18,9 @@ class CastCrashReporterClientAndroid;
 
 class CrashHandler {
  public:
+  CrashHandler(const CrashHandler&) = delete;
+  CrashHandler& operator=(const CrashHandler&) = delete;
+
   // Initializes the crash handler for attempting to upload crash dumps with
   // the current process's log file.
   // Must not be called more than once.
@@ -54,8 +57,6 @@ class CrashHandler {
   std::string process_type_;
 
   std::unique_ptr<CastCrashReporterClientAndroid> crash_reporter_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashHandler);
 };
 
 }  // namespace chromecast

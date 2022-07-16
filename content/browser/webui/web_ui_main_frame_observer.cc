@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -18,8 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"  // nogncheck
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"  // nogncheck
-#include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_features.h"
@@ -36,7 +35,7 @@ namespace {
 // reports. In particular, do not send query or fragments as those can have
 // privacy-sensitive information in them.
 std::string RedactURL(const GURL& url) {
-  std::string redacted_url = url.GetOrigin().spec();
+  std::string redacted_url = url.DeprecatedGetOriginAsURL().spec();
   // Path will start with / and GetOrigin ends with /. Cut one / to avoid
   // chrome://discards//graph.
   if (!redacted_url.empty() && redacted_url.back() == '/') {
@@ -148,17 +147,11 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
                              web_contents()->GetBrowserContext());
 }
 
-void WebUIMainFrameObserver::ReadyToCommitNavigation(
+void WebUIMainFrameObserver::MaybeEnableWebUIJavaScriptErrorReporting(
     NavigationHandle* navigation_handle) {
-  DVLOG(3) << "WebUIMainFrameObserver::ReadyToCommitNavigation()";
   if (!base::FeatureList::IsEnabled(
           features::kSendWebUIJavaScriptErrorReports)) {
     DVLOG(3) << "Experiment is off";
-    return;
-  }
-
-  if (navigation_handle->GetRenderFrameHost() != web_ui_->frame_host()) {
-    DVLOG(3) << "Wrong frame";
     return;
   }
 
@@ -179,5 +172,24 @@ void WebUIMainFrameObserver::ReadyToCommitNavigation(
 }
 
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
+void WebUIMainFrameObserver::ReadyToCommitNavigation(
+    NavigationHandle* navigation_handle) {
+  // Navigation didn't occur in the frame associated with this WebUI.
+  if (navigation_handle->GetRenderFrameHost() != web_ui_->frame_host())
+    return;
+
+  web_ui_->GetController()->WebUIReadyToCommitNavigation(web_ui_->frame_host());
+
+// TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
+// thunking issues. Fix & re-enable.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  MaybeEnableWebUIJavaScriptErrorReporting(navigation_handle);
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+}
+
+void WebUIMainFrameObserver::PrimaryPageChanged(Page& page) {
+  web_ui_->GetController()->WebUIPrimaryPageChanged(page);
+}
 
 }  // namespace content

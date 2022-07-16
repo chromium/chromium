@@ -15,7 +15,6 @@
 
 #include "base/containers/queue.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
@@ -53,6 +52,12 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
       EGLDisplay egl_display,
       const BindGLImageCallback& bind_image_cb,
       const MakeGLContextCurrentCallback& make_context_current_cb);
+
+  V4L2SliceVideoDecodeAccelerator(const V4L2SliceVideoDecodeAccelerator&) =
+      delete;
+  V4L2SliceVideoDecodeAccelerator& operator=(
+      const V4L2SliceVideoDecodeAccelerator&) = delete;
+
   ~V4L2SliceVideoDecodeAccelerator() override;
 
   // VideoDecodeAccelerator implementation.
@@ -399,8 +404,6 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
   scoped_refptr<V4L2Queue> input_queue_;
   // Set to true by CreateInputBuffers() if the codec driver supports requests
   bool supports_requests_ = false;
-  // Stores the media file descriptor if request API is used
-  base::ScopedFD media_fd_;
 
   scoped_refptr<V4L2Queue> output_queue_;
   // Buffers that have been allocated but are awaiting an ImportBuffer
@@ -512,8 +515,6 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
 
   // The WeakPtrFactory for |weak_this_|.
   base::WeakPtrFactory<V4L2SliceVideoDecodeAccelerator> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2SliceVideoDecodeAccelerator);
 };
 
 }  // namespace media

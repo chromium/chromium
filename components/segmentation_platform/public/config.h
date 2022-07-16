@@ -12,6 +12,19 @@
 
 namespace segmentation_platform {
 
+// The key to be used for adaptive toolbar feature.
+const char kAdaptiveToolbarSegmentationKey[] = "adaptive_toolbar";
+
+// The key to be used for any feature that needs to collect and store data on
+// client side while being built.
+const char kDummySegmentationKey[] = "dummy_feature";
+
+// The key is used to decide whether to show Chrome Start or not.
+const char kChromeStartAndroidSegmentationKey[] = "chrome_start_android";
+
+// The key is used to decide whether to show query tiles.
+const char kQueryTilesSegmentationKey[] = "query_tiles";
+
 // Contains various finch configuration params used by the segmentation
 // platform.
 struct Config {
@@ -29,6 +42,13 @@ struct Config {
   // Time to live for a segment selection. Segment selection can't be changed
   // before this duration.
   base::TimeDelta segment_selection_ttl;
+
+  // Time to live for an unknown segment selection. Unknown selection can't be
+  // changed before this duration. Note that when this is set to 0, the unknown
+  // segment selections are IGNORED by the platform when it had valid selection
+  // in the past. ONLY when this value is positive unknown segments are treated
+  // as output option after having served other valid segments.
+  base::TimeDelta unknown_selection_ttl;
 
   // List of segment ids that the current config requires to be available.
   std::vector<optimization_guide::proto::OptimizationTarget> segment_ids;

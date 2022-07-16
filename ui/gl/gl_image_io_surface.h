@@ -10,7 +10,6 @@
 #include <stdint.h>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
@@ -30,6 +29,9 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
  public:
   static GLImageIOSurface* Create(const gfx::Size& size,
                                   unsigned internalformat);
+
+  GLImageIOSurface(const GLImageIOSurface&) = delete;
+  GLImageIOSurface& operator=(const GLImageIOSurface&) = delete;
 
   // Initialize to wrap of |io_surface|. The format of the plane to wrap is
   // specified in |format|. The index of the plane to wrap is
@@ -63,13 +65,6 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   bool CopyTexSubImage(unsigned target,
                        const gfx::Point& offset,
                        const gfx::Rect& rect) override;
-  bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int z_order,
-                            gfx::OverlayTransform transform,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
   void SetColorSpace(const gfx::ColorSpace& color_space) override;
   void Flush() override {}
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
@@ -119,15 +114,17 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   base::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
   base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer_;
   gfx::GenericSharedMemoryId io_surface_id_;
-  uint32_t io_surface_plane_ = 0;
+
+  // The plane that is bound for this image. If the plane is invalid, then
+  // this is a multi-planar IOSurface, which will be copied instead of bound.
+  static constexpr uint32_t kInvalidIOSurfacePlane = -1;
+  uint32_t io_surface_plane_ = kInvalidIOSurfacePlane;
 
   base::ThreadChecker thread_checker_;
   // The default value of Rec. 601 is based on historical shader code.
   gfx::ColorSpace color_space_for_yuv_to_rgb_ = gfx::ColorSpace::CreateREC601();
 
   bool disable_in_use_by_window_server_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GLImageIOSurface);
 };
 
 }  // namespace gl

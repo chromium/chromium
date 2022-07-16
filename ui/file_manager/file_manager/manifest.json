@@ -48,11 +48,12 @@
     "partitions": [{
       "name": "trusted",
       "accessible_resources": [
-        "foreground/elements/files_safe_audio_webview_content.*",
-        "foreground/elements/files_safe_img_webview_content.*",
-        "foreground/elements/files_safe_media_webview_content.js",
-        "foreground/elements/files_safe_text_webview_content.*",
-        "foreground/elements/files_safe_video_webview_content.*"
+        "untrusted_resources/files_audio_content.*",
+        "untrusted_resources/files_img_content.*",
+        "untrusted_resources/files_media_content.js",
+        "untrusted_resources/files_text_content.*",
+        "untrusted_resources/files_video_content.*",
+        "untrusted_resources/url_constants.js"
       ]
     }]
   },
@@ -68,11 +69,8 @@
         "tar",
         "tbz",
         "tbz2",
-        "tgz"
-      ]
-    },
-    "open-zip": {
-      "extensions": [
+        "tgz",
+        "xz",
         "zip"
       ]
     },
@@ -152,11 +150,14 @@
   // enough that anything is passed to web_accessible_resources. If there is
   // at least any file, then all files are allowed. http://crbug.com/179127.
   "web_accessible_resources": [
+    "common/js/api.js",
     "common/js/app_util.js",
     "common/js/async_util.js",
+    "common/js/dialog_type.js",
     "common/js/file_operation_common.js",
     "common/js/file_type.js",
     "common/js/files_app_entry_types.js",
+    "common/js/files_app_state.js",
     "common/js/filtered_volume_manager.js",
     "common/js/lru_cache.js",
     "common/js/metrics.js",
@@ -169,6 +170,7 @@
     "common/js/storage_adapter.js",
     "common/js/test_error_reporting.js",
     "common/js/trash.js",
+    "common/js/url_constants.js",
     "common/js/util.js",
     "common/js/volume_manager_types.js",
     "common/js/xfm.js",

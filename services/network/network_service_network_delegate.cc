@@ -96,7 +96,7 @@ int NetworkServiceNetworkDelegate::OnBeforeURLRequest(
 
   NetworkService* network_service = network_context_->network_service();
   if (network_service) {
-    loader->SetAllowReportingRawHeaders(network_service->HasRawHeadersAccess(
+    loader->SetEnableReportingRawHeaders(network_service->HasRawHeadersAccess(
         loader->GetProcessId(), *effective_url));
   }
   return net::OK;
@@ -104,16 +104,16 @@ int NetworkServiceNetworkDelegate::OnBeforeURLRequest(
 
 int NetworkServiceNetworkDelegate::OnBeforeStartTransaction(
     net::URLRequest* request,
-    net::CompletionOnceCallback callback,
-    net::HttpRequestHeaders* headers) {
+    const net::HttpRequestHeaders& headers,
+    OnBeforeStartTransactionCallback callback) {
   URLLoader* url_loader = URLLoader::ForRequest(*request);
   if (url_loader)
-    return url_loader->OnBeforeStartTransaction(std::move(callback), headers);
+    return url_loader->OnBeforeStartTransaction(headers, std::move(callback));
 
 #if !defined(OS_IOS)
   WebSocket* web_socket = WebSocket::ForRequest(*request);
   if (web_socket)
-    return web_socket->OnBeforeStartTransaction(std::move(callback), headers);
+    return web_socket->OnBeforeStartTransaction(headers, std::move(callback));
 #endif  // !defined(OS_IOS)
 
   return net::OK;
@@ -199,7 +199,7 @@ bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
   if (!network_context_->cookie_manager()
            ->cookie_settings()
            .AnnotateAndMoveUserBlockedCookies(
-               request.url(), request.site_for_cookies().RepresentativeUrl(),
+               request.url(), request.site_for_cookies(),
                request.isolation_info().top_frame_origin().has_value()
                    ? &request.isolation_info().top_frame_origin().value()
                    : nullptr,
@@ -236,7 +236,7 @@ bool NetworkServiceNetworkDelegate::OnCanSetCookie(
   bool allowed =
       allowed_from_caller &&
       network_context_->cookie_manager()->cookie_settings().IsCookieAccessible(
-          cookie, request.url(), request.site_for_cookies().RepresentativeUrl(),
+          cookie, request.url(), request.site_for_cookies(),
           request.isolation_info().top_frame_origin());
   if (!allowed)
     return false;
@@ -258,8 +258,8 @@ bool NetworkServiceNetworkDelegate::OnForcePrivacyMode(
     net::SamePartyContext::Type same_party_context_type) const {
   return network_context_->cookie_manager()
       ->cookie_settings()
-      .IsPrivacyModeEnabled(url, site_for_cookies.RepresentativeUrl(),
-                            top_frame_origin, same_party_context_type);
+      .IsPrivacyModeEnabled(url, site_for_cookies, top_frame_origin,
+                            same_party_context_type);
 }
 
 bool NetworkServiceNetworkDelegate::

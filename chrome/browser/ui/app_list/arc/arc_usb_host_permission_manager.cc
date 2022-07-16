@@ -100,6 +100,10 @@ ArcUsbHostPermissionManager::UsbDeviceEntry::UsbDeviceEntry(
 ArcUsbHostPermissionManager::UsbDeviceEntry::UsbDeviceEntry(
     const ArcUsbHostPermissionManager::UsbDeviceEntry& other) = default;
 
+ArcUsbHostPermissionManager::UsbDeviceEntry&
+ArcUsbHostPermissionManager::UsbDeviceEntry::operator=(
+    const ArcUsbHostPermissionManager::UsbDeviceEntry& other) = default;
+
 bool ArcUsbHostPermissionManager::UsbDeviceEntry::Matches(
     const UsbDeviceEntry& other) const {
   if (IsPersistent() && other.IsPersistent()) {

@@ -9,8 +9,8 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -89,6 +89,9 @@ void RecordMemoryMetricsImpl(
 struct MemoryMetricsLogger::State : public base::RefCountedThreadSafe<State> {
   State() = default;
 
+  State(const State&) = delete;
+  State& operator=(const State&) = delete;
+
   // MemoryInstrumentation requires a SequencedTaskRunner.
   scoped_refptr<base::SequencedTaskRunner> task_runner;
 
@@ -98,8 +101,6 @@ struct MemoryMetricsLogger::State : public base::RefCountedThreadSafe<State> {
   friend class base::RefCountedThreadSafe<State>;
 
   ~State() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(State);
 };
 
 MemoryMetricsLogger::MemoryMetricsLogger()

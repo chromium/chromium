@@ -5,9 +5,13 @@
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "url/gurl.h"
 
 namespace blink {
 
@@ -78,6 +82,111 @@ TEST(BlinkStorageKeyTest, CreateFromNonOpaqueOrigin) {
     BlinkStorageKey storage_key_from_copy(std::move(copied));
     EXPECT_EQ(storage_key, storage_key_from_copy);
   }
+}
+
+// Tests that the conversion BlinkStorageKey -> StorageKey -> BlinkStorageKey is
+// the identity.
+TEST(BlinkStorageKeyTest, BlinkStorageKeyRoundTripConversion) {
+  scoped_refptr<const SecurityOrigin> origin1 =
+      SecurityOrigin::CreateUniqueOpaque();
+  scoped_refptr<const SecurityOrigin> origin2 =
+      SecurityOrigin::CreateFromString("http://example.site");
+  scoped_refptr<const SecurityOrigin> origin3 =
+      SecurityOrigin::CreateFromString("https://example.site");
+  scoped_refptr<const SecurityOrigin> origin4 =
+      SecurityOrigin::CreateFromString("file:///path/to/file");
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  Vector<BlinkStorageKey> keys = {
+      BlinkStorageKey(),
+      BlinkStorageKey(origin1),
+      BlinkStorageKey(origin2),
+      BlinkStorageKey(origin3),
+      BlinkStorageKey(origin4),
+      BlinkStorageKey::CreateWithNonce(origin1, nonce),
+      BlinkStorageKey::CreateWithNonce(origin2, nonce),
+  };
+
+  for (BlinkStorageKey& key : keys) {
+    EXPECT_EQ(key, BlinkStorageKey(StorageKey(key)));
+  }
+}
+
+// Tests that the conversion StorageKey -> BlinkStorageKey -> StorageKey is the
+// identity.
+TEST(BlinkStorageKey, StorageKeyRoundTripConversion) {
+  url::Origin url_origin1;
+  url::Origin url_origin2 = url::Origin::Create(GURL("http://example.site"));
+  url::Origin url_origin3 = url::Origin::Create(GURL("https://example.site"));
+  url::Origin url_origin4 = url::Origin::Create(GURL("file:///path/to/file"));
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  Vector<StorageKey> storage_keys = {
+      StorageKey(url_origin1),
+      StorageKey(url_origin2),
+      StorageKey(url_origin3),
+      StorageKey(url_origin4),
+      StorageKey::CreateWithNonce(url_origin1, nonce),
+      StorageKey::CreateWithNonce(url_origin2, nonce),
+  };
+
+  for (const auto& key : storage_keys) {
+    EXPECT_EQ(key, StorageKey(BlinkStorageKey(key)));
+  }
+}
+
+// Test that string -> StorageKey test function performs as expected.
+TEST(BlinkStorageKey, CreateFromStringForTesting) {
+  WTF::String example = "https://example.com/";
+  WTF::String wrong = "I'm not a valid URL.";
+
+  BlinkStorageKey key1 = BlinkStorageKey::CreateFromStringForTesting(example);
+  BlinkStorageKey key2 = BlinkStorageKey::CreateFromStringForTesting(wrong);
+  BlinkStorageKey key3 =
+      BlinkStorageKey::CreateFromStringForTesting(WTF::String());
+
+  EXPECT_FALSE(key1.GetSecurityOrigin()->IsOpaque());
+  EXPECT_EQ(key1, BlinkStorageKey(SecurityOrigin::CreateFromString(example)));
+  EXPECT_TRUE(key2.GetSecurityOrigin()->IsOpaque());
+  EXPECT_TRUE(key3.GetSecurityOrigin()->IsOpaque());
+}
+
+// Test that BlinkStorageKey's top_level_site getter returns origin's site when
+// storage partitioning is disabled.
+TEST(BlinkStorageKey, TopLevelSiteGetter) {
+  url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
+  url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
+
+  StorageKey key_origin1 = StorageKey(origin1);
+  StorageKey key_origin1_site1 = StorageKey(origin1, origin1);
+  StorageKey key_origin1_site2 = StorageKey(origin1, origin2);
+
+  EXPECT_EQ(net::SchemefulSite(origin1), key_origin1.top_level_site());
+  EXPECT_EQ(net::SchemefulSite(origin1), key_origin1_site1.top_level_site());
+  EXPECT_EQ(net::SchemefulSite(origin1), key_origin1_site2.top_level_site());
+}
+
+// Test that BlinkStorageKey's top_level_site getter returns the top level site
+// when storage partitioning is enabled.
+TEST(BlinkStorageKeyTest, TopLevelSiteGetterWithPartitioningEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kThirdPartyStoragePartitioning);
+
+  scoped_refptr<const SecurityOrigin> origin1 =
+      SecurityOrigin::CreateFromString("https://example.com");
+  scoped_refptr<const SecurityOrigin> origin2 =
+      SecurityOrigin::CreateFromString("https://test.example");
+
+  BlinkStorageKey key_origin1 = BlinkStorageKey(origin1);
+  BlinkStorageKey key_origin1_site1 =
+      BlinkStorageKey(origin1, BlinkSchemefulSite(origin1));
+  BlinkStorageKey key_origin1_site2 =
+      BlinkStorageKey(origin1, BlinkSchemefulSite(origin2));
+
+  EXPECT_EQ(BlinkSchemefulSite(origin1), key_origin1.GetTopLevelSite());
+  EXPECT_EQ(BlinkSchemefulSite(origin1), key_origin1_site1.GetTopLevelSite());
+  EXPECT_EQ(BlinkSchemefulSite(origin2), key_origin1_site2.GetTopLevelSite());
 }
 
 }  // namespace blink

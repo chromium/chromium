@@ -126,7 +126,7 @@ class NET_EXPORT HostCache {
           absl::optional<base::TimeDelta> ttl)
         : error_(error),
           source_(source),
-          ttl_(ttl ? ttl.value() : base::TimeDelta::FromSeconds(-1)) {
+          ttl_(ttl ? ttl.value() : base::Seconds(-1)) {
       DCHECK(!ttl || ttl.value() >= base::TimeDelta());
       SetResult(std::forward<T>(results));
     }
@@ -178,8 +178,8 @@ class NET_EXPORT HostCache {
         absl::optional<std::vector<bool>> experimental_results) {
       experimental_results_ = std::move(experimental_results);
     }
-    bool pinned() const { return pinned_; }
-    void set_pinned(bool pinned) { pinned_ = pinned; }
+    absl::optional<bool> pinning() const { return pinning_; }
+    void set_pinning(absl::optional<bool> pinning) { pinning_ = pinning; }
 
     Source source() const { return source_; }
     bool has_ttl() const { return ttl_ >= base::TimeDelta(); }
@@ -276,11 +276,12 @@ class NET_EXPORT HostCache {
     // Where results were obtained (e.g. DNS lookup, hosts file, etc).
     Source source_ = SOURCE_UNKNOWN;
     // If true, this entry cannot be evicted from the cache until after the next
-    // network change.  When a pinned Entry is replaced, HostCache will copy
-    // this flag to the replacement.
-    bool pinned_ = false;
+    // network change.  When an Entry is replaced by one whose pinning flag
+    // is not set, HostCache will copy this flag to the replacement.
+    // If this flag is null, HostCache will set it to false for simplicity.
+    absl::optional<bool> pinning_;
     // TTL obtained from the nameserver. Negative if unknown.
-    base::TimeDelta ttl_ = base::TimeDelta::FromSeconds(-1);
+    base::TimeDelta ttl_ = base::Seconds(-1);
 
     base::TimeTicks expires_;
     // Copied from the cache's network_changes_ when the entry is set; can
@@ -320,6 +321,9 @@ class NET_EXPORT HostCache {
 
   // Constructs a HostCache that stores up to |max_entries|.
   explicit HostCache(size_t max_entries);
+
+  HostCache(const HostCache&) = delete;
+  HostCache& operator=(const HostCache&) = delete;
 
   ~HostCache();
 
@@ -452,8 +456,6 @@ class NET_EXPORT HostCache {
   const base::TickClock* tick_clock_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(HostCache);
 };
 
 }  // namespace net

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -21,7 +22,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/testing_pref_service.h"
@@ -45,10 +45,8 @@ namespace em = enterprise_management;
 
 namespace {
 
-constexpr base::TimeDelta kDefaultStatusUploadDelay =
-    base::TimeDelta::FromHours(1);
-constexpr base::TimeDelta kMinImmediateUploadInterval =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kDefaultStatusUploadDelay = base::Hours(1);
+constexpr base::TimeDelta kMinImmediateUploadInterval = base::Seconds(10);
 
 // Using a DeviceStatusCollector to have a concrete StatusCollector, but the
 // exact type doesn't really matter, as it is being mocked.
@@ -187,21 +185,19 @@ TEST_F(StatusUploaderTest, BasicTest) {
   auto uploader = CreateStatusUploader();
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
   // On startup, first update should happen in 1 minute.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(1),
-            task_runner_->NextPendingTaskDelay());
+  EXPECT_EQ(base::Minutes(1), task_runner_->NextPendingTaskDelay());
 }
 
 TEST_F(StatusUploaderTest, DifferentFrequencyAtStart) {
   const base::TimeDelta new_delay = kDefaultStatusUploadDelay * 2;
 
   scoped_testing_cros_settings_.device_settings()->SetInteger(
-      chromeos::kReportUploadFrequency, new_delay.InMilliseconds());
+      ash::kReportUploadFrequency, new_delay.InMilliseconds());
   EXPECT_FALSE(task_runner_->HasPendingTask());
   auto uploader = CreateStatusUploader();
   ASSERT_EQ(1U, task_runner_->NumPendingTasks());
   // On startup, first update should happen in 1 minute.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(1),
-            task_runner_->NextPendingTaskDelay());
+  EXPECT_EQ(base::Minutes(1), task_runner_->NextPendingTaskDelay());
 
   // Second update should use the delay specified in settings.
   RunPendingUploadTaskAndCheckNext(*uploader, new_delay,
@@ -291,7 +287,7 @@ TEST_F(StatusUploaderTest, ChangeFrequency) {
   // used for the next callback.
   const base::TimeDelta new_delay = kDefaultStatusUploadDelay * 2;
   scoped_testing_cros_settings_.device_settings()->SetInteger(
-      chromeos::kReportUploadFrequency, new_delay.InMilliseconds());
+      ash::kReportUploadFrequency, new_delay.InMilliseconds());
   RunPendingUploadTaskAndCheckNext(*uploader, new_delay,
                                    true /* upload_success */);
 }
@@ -329,8 +325,7 @@ TEST_F(StatusUploaderTest, ScheduleImmediateStatusUpload) {
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
 
   // On startup, first update should happen in 1 minute.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(1),
-            task_runner_->NextPendingTaskDelay());
+  EXPECT_EQ(base::Minutes(1), task_runner_->NextPendingTaskDelay());
 
   // Schedule an immediate status upload.
   uploader->ScheduleNextStatusUploadImmediately();
@@ -345,8 +340,7 @@ TEST_F(StatusUploaderTest, ScheduleImmediateStatusUploadConsecutively) {
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
 
   // On startup, first update should happen in 1 minute.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(1),
-            task_runner_->NextPendingTaskDelay());
+  EXPECT_EQ(base::Minutes(1), task_runner_->NextPendingTaskDelay());
 
   // Schedule an immediate status upload and run it.
   uploader->ScheduleNextStatusUploadImmediately();

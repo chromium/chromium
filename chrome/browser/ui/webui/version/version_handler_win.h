@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/version/version_handler.h"
 
@@ -15,6 +14,10 @@
 class VersionHandlerWindows : public VersionHandler {
  public:
   VersionHandlerWindows();
+
+  VersionHandlerWindows(const VersionHandlerWindows&) = delete;
+  VersionHandlerWindows& operator=(const VersionHandlerWindows&) = delete;
+
   ~VersionHandlerWindows() override;
 
   // VersionHandler overrides:
@@ -28,8 +31,6 @@ class VersionHandlerWindows : public VersionHandler {
 
  private:
   base::WeakPtrFactory<VersionHandlerWindows> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VersionHandlerWindows);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_HANDLER_WIN_H_

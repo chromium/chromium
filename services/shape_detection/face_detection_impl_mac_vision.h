@@ -26,6 +26,11 @@ class API_AVAILABLE(macos(10.13)) FaceDetectionImplMacVision
     : public mojom::FaceDetection {
  public:
   FaceDetectionImplMacVision();
+
+  FaceDetectionImplMacVision(const FaceDetectionImplMacVision&) = delete;
+  FaceDetectionImplMacVision& operator=(const FaceDetectionImplMacVision&) =
+      delete;
+
   ~FaceDetectionImplMacVision() override;
 
   void Detect(const SkBitmap& bitmap,
@@ -43,8 +48,6 @@ class API_AVAILABLE(macos(10.13)) FaceDetectionImplMacVision
   DetectCallback detected_callback_;
   mojo::SelfOwnedReceiverRef<mojom::FaceDetection> receiver_;
   base::WeakPtrFactory<FaceDetectionImplMacVision> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaceDetectionImplMacVision);
 };
 
 }  // namespace shape_detection

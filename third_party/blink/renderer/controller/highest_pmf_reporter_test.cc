@@ -175,7 +175,7 @@ TEST_F(HighestPmfReporterTest, ReportNoMetricBeforeNavigationStart) {
   Page::OrdinaryPages().insert(&GetPage());
 
   memory_usage_monitor_->SetPrivateFootprintBytes(1000.0);
-  AdvanceClock(base::TimeDelta::FromMinutes(1));
+  AdvanceClock(base::Minutes(1));
   EXPECT_EQ(0, reporter_->GetReportCount());
   EXPECT_EQ(0U, reporter_->GetReportedHighestPmf().size());
   EXPECT_EQ(0U, reporter_->GetReportedPeakRss().size());
@@ -184,7 +184,7 @@ TEST_F(HighestPmfReporterTest, ReportNoMetricBeforeNavigationStart) {
 TEST_F(HighestPmfReporterTest, ReportMetric) {
   EXPECT_TRUE(memory_usage_monitor_->TimerIsActive());
   Page::OrdinaryPages().insert(&GetPage());
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
 
   // PMF, PeakRSS and PageCount at specified TimeSinceNavigation.
   static const struct {
@@ -193,16 +193,16 @@ TEST_F(HighestPmfReporterTest, ReportMetric) {
     double peak_rss;
     unsigned page_count;
   } time_pmf_rss_table[] = {
-      {base::TimeDelta::FromMinutes(0), 1000.0, 1200.0, 1},
-      {base::TimeDelta::FromMinutes(1), 750.0, 900.0, 1},
-      {base::TimeDelta::FromSeconds(80), 750.0, 1000.0, 4},   // t=1min 20sec
-      {base::TimeDelta::FromSeconds(90), 1100.0, 1500.0, 2},  // t=1min 30sec
-      {base::TimeDelta::FromMinutes(2), 900.0, 1000.0, 1},
-      {base::TimeDelta::FromMinutes(4), 900.0, 1000.0, 1},
-      {base::TimeDelta::FromMinutes(5), 1500.0, 2000.0, 3},
-      {base::TimeDelta::FromMinutes(7), 800.0, 900.0, 1},
-      {base::TimeDelta::FromMinutes(8), 900.0, 1000.0, 1},
-      {base::TimeDelta::FromMinutes(16), 900.0, 1000.0, 1},
+      {base::Minutes(0), 1000.0, 1200.0, 1},
+      {base::Minutes(1), 750.0, 900.0, 1},
+      {base::Seconds(80), 750.0, 1000.0, 4},   // t=1min 20sec
+      {base::Seconds(90), 1100.0, 1500.0, 2},  // t=1min 30sec
+      {base::Minutes(2), 900.0, 1000.0, 1},
+      {base::Minutes(4), 900.0, 1000.0, 1},
+      {base::Minutes(5), 1500.0, 2000.0, 3},
+      {base::Minutes(7), 800.0, 900.0, 1},
+      {base::Minutes(8), 900.0, 1000.0, 1},
+      {base::Minutes(16), 900.0, 1000.0, 1},
   };
 
   base::TimeTicks navigation_start_time = NowTicks();
@@ -215,7 +215,7 @@ TEST_F(HighestPmfReporterTest, ReportMetric) {
     memory_usage_monitor_->SetPeakResidentBytes(item.peak_rss);
     memory_usage_monitor_->SetOrdinaryPageCount(item.page_count);
   }
-  AdvanceClockTo(navigation_start_time + base::TimeDelta::FromMinutes(17));
+  AdvanceClockTo(navigation_start_time + base::Minutes(17));
 
   EXPECT_EQ(4, reporter_->GetReportCount());
   EXPECT_EQ(4U, reporter_->GetReportedHighestPmf().size());
@@ -245,33 +245,33 @@ TEST_F(HighestPmfReporterTest, TestReportTiming) {
 
   base::TimeTicks navigation_start_time = NowTicks();
   reporter_->NotifyNavigationStart();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   // Now ReportMetrics task is posted with 2minutes delay.
   // The task will be executed at "navigation_start_time + 2min + 1sec."
 
   EXPECT_EQ(0, reporter_->GetReportCount());
-  AdvanceClockTo(navigation_start_time + base::TimeDelta::FromMinutes(2));
+  AdvanceClockTo(navigation_start_time + base::Minutes(2));
   EXPECT_EQ(0, reporter_->GetReportCount());
   // ReportMetrics task is executed and next ReportMetrics task is posted.
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   EXPECT_EQ(1, reporter_->GetReportCount());
 
-  AdvanceClockTo(navigation_start_time + base::TimeDelta::FromMinutes(4));
+  AdvanceClockTo(navigation_start_time + base::Minutes(4));
   EXPECT_EQ(1, reporter_->GetReportCount());
   // ReportMetrics task is executed and next ReportMetrics task is posted.
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   EXPECT_EQ(2, reporter_->GetReportCount());
 
-  AdvanceClockTo(navigation_start_time + base::TimeDelta::FromMinutes(8));
+  AdvanceClockTo(navigation_start_time + base::Minutes(8));
   EXPECT_EQ(2, reporter_->GetReportCount());
   // ReportMetrics task is executed and next ReportMetrics task is posted.
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   EXPECT_EQ(3, reporter_->GetReportCount());
 
-  AdvanceClockTo(navigation_start_time + base::TimeDelta::FromMinutes(16));
+  AdvanceClockTo(navigation_start_time + base::Minutes(16));
   EXPECT_EQ(3, reporter_->GetReportCount());
   // ReportMetrics task is executed and next ReportMetrics task is posted.
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   EXPECT_EQ(4, reporter_->GetReportCount());
 }
 

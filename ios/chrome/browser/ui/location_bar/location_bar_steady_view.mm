@@ -4,9 +4,10 @@
 
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"
@@ -100,20 +101,6 @@ const CGFloat kLocationLabelVerticalOffset = -1;
   return scheme;
 }
 
-+ (instancetype)incognitoScheme {
-  LocationBarSteadyViewColorScheme* scheme =
-      [[LocationBarSteadyViewColorScheme alloc] init];
-
-  // In iOS 12, the overridePreferredInterfaceStyle API is unavailable, so
-  // incognito colors need to be set specifically.
-  // TODO(crbug.com/981889): Clean up after iOS 12 support is dropped.
-  scheme.fontColor = [UIColor colorNamed:kTextPrimaryDarkColor];
-  scheme.placeholderColor = [UIColor colorNamed:kTextfieldPlaceholderDarkColor];
-  scheme.trailingButtonColor = [UIColor colorNamed:kToolbarButtonDarkColor];
-
-  return scheme;
-}
-
 @end
 
 #pragma mark - LocationBarSteadyButton
@@ -127,9 +114,7 @@ const CGFloat kLocationLabelVerticalOffset = -1;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    if (@available(iOS 13.4, *)) {
-        self.pointerInteractionEnabled = YES;
-    }
+    self.pointerInteractionEnabled = YES;
   }
   return self;
 }
@@ -179,12 +164,10 @@ const CGFloat kLocationLabelVerticalOffset = -1;
     _trailingButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
     _trailingButton.translatesAutoresizingMaskIntoConstraints = NO;
-    if (@available(iOS 13.4, *)) {
-        _trailingButton.pointerInteractionEnabled = YES;
-        // Make the pointer shape fit the location bar's semi-circle end shape.
-        _trailingButton.pointerStyleProvider =
-            CreateLiftEffectCirclePointerStyleProvider();
-    }
+    _trailingButton.pointerInteractionEnabled = YES;
+    // Make the pointer shape fit the location bar's semi-circle end shape.
+    _trailingButton.pointerStyleProvider =
+        CreateLiftEffectCirclePointerStyleProvider();
 
     // Setup label.
     _locationLabel.lineBreakMode = NSLineBreakByTruncatingHead;

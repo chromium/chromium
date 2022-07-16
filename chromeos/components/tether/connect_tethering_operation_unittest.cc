@@ -37,13 +37,17 @@ namespace tether {
 namespace {
 
 constexpr base::TimeDelta kConnectTetheringResponseTimeSeconds =
-    base::TimeDelta::FromSeconds(15);
+    base::Seconds(15);
 
 // Used to verify the ConnectTetheringOperation notifies the observer
 // when appropriate.
 class MockOperationObserver : public ConnectTetheringOperation::Observer {
  public:
   MockOperationObserver() = default;
+
+  MockOperationObserver(const MockOperationObserver&) = delete;
+  MockOperationObserver& operator=(const MockOperationObserver&) = delete;
+
   ~MockOperationObserver() = default;
 
   MOCK_METHOD1(OnConnectTetheringRequestSent,
@@ -55,9 +59,6 @@ class MockOperationObserver : public ConnectTetheringOperation::Observer {
   MOCK_METHOD2(OnConnectTetheringFailure,
                void(multidevice::RemoteDeviceRef,
                     ConnectTetheringOperation::HostResponseErrorCode));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockOperationObserver);
 };
 
 }  // namespace

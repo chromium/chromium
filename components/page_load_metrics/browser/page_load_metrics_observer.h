@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/global_routing_id.h"
@@ -370,6 +368,13 @@ class PageLoadMetricsObserver {
   virtual void OnMobileFriendlinessUpdate(
       const blink::MobileFriendliness& mobile_friendliness) {}
 
+  // OnInputTimingUpdate is triggered when an updated InputTiming is available
+  // at the subframe level. This method may be called multiple times over the
+  // course of the page load.
+  virtual void OnInputTimingUpdate(
+      content::RenderFrameHost* subframe_rfh,
+      const mojom::InputTiming& input_timing_delta) {}
+
   // OnRenderDataUpdate is triggered when an updated PageRenderData is available
   // at the subframe level. This method may be called multiple times over the
   // course of the page load.
@@ -529,7 +534,7 @@ class PageLoadMetricsObserver {
 
   virtual void OnRenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) {}
-  virtual void OnFrameDeleted(int frame_tree_node_id) {}
+  virtual void OnSubFrameDeleted(int frame_tree_node_id) {}
 
   // Called when a cookie is read for a resource request or by document.cookie.
   virtual void OnCookiesRead(const GURL& url,
@@ -551,8 +556,8 @@ class PageLoadMetricsObserver {
                                  bool blocked_by_policy,
                                  StorageType access_type) {}
 
-  // Called when |event| occurs in this page load.
-  virtual void OnEventOccurred(PageLoadMetricsEvent event) {}
+  // Called when prefetch is likely to occur in this page load.
+  virtual void OnPrefetchLikely() {}
 
   // Called when the page tracked was just activated after being loaded inside a
   // portal.

@@ -4,6 +4,7 @@
 
 #include "chrome/updater/installer.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -49,10 +50,16 @@ absl::optional<base::FilePath> GetAppInstallDir(UpdaterScope scope,
 
 Installer::Installer(const std::string& app_id,
                      const std::string& target_channel,
+                     const std::string& target_version_prefix,
+                     bool rollback_allowed,
+                     bool update_disabled,
                      scoped_refptr<PersistedData> persisted_data)
     : updater_scope_(GetUpdaterScope()),
       app_id_(app_id),
+      rollback_allowed_(rollback_allowed),
       target_channel_(target_channel),
+      target_version_prefix_(target_version_prefix),
+      update_disabled_(update_disabled),
       persisted_data_(persisted_data) {}
 
 Installer::~Installer() {
@@ -71,6 +78,7 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
     pv_ = pv;
     checker_path_ = persisted_data_->GetExistenceCheckerPath(app_id_);
     fingerprint_ = persisted_data_->GetFingerprint(app_id_);
+    ap_ = persisted_data_->GetAP(app_id_);
   } else {
     pv_ = base::Version(kNullVersion);
   }
@@ -82,10 +90,14 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
   component.crx_format_requirement =
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
   component.app_id = app_id_;
+  component.ap = ap_;
   component.name = app_id_;
   component.version = pv_;
   component.fingerprint = fingerprint_;
   component.channel = target_channel_;
+  component.rollback_allowed = rollback_allowed_;
+  component.target_version_prefix = target_version_prefix_;
+  component.supports_group_policy_enable_component_updates = update_disabled_;
 
   return component;
 }
@@ -135,9 +147,6 @@ Installer::Result Installer::InstallHelper(
           << ", installing version=" << manifest_version.GetString();
   if (!manifest_version.IsValid())
     return Result(update_client::InstallError::INVALID_VERSION);
-
-  if (pv_.CompareTo(manifest_version) > 0)
-    return Result(update_client::InstallError::VERSION_NOT_UPGRADED);
 
   const absl::optional<base::FilePath> app_install_dir =
       GetAppInstallDir(updater_scope_, app_id_);

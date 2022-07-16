@@ -28,6 +28,10 @@ namespace {
 class WebRunnerSmokeTest : public testing::Test {
  public:
   WebRunnerSmokeTest() = default;
+
+  WebRunnerSmokeTest(const WebRunnerSmokeTest&) = delete;
+  WebRunnerSmokeTest& operator=(const WebRunnerSmokeTest&) = delete;
+
   void SetUp() final {
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &WebRunnerSmokeTest::HandleRequest, base::Unretained(this)));
@@ -85,8 +89,6 @@ class WebRunnerSmokeTest : public testing::Test {
   net::EmbeddedTestServer test_server_;
 
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRunnerSmokeTest);
 };
 
 // Verify that the Component loads and fetches the desired page.
@@ -175,6 +177,10 @@ class MockModuleContext
     : public fuchsia::modular::testing::ModuleContext_TestBase {
  public:
   MockModuleContext() = default;
+
+  MockModuleContext(const MockModuleContext&) = delete;
+  MockModuleContext& operator=(const MockModuleContext&) = delete;
+
   ~MockModuleContext() override = default;
 
   MOCK_METHOD0(RemoveSelfFromStory, void());
@@ -182,8 +188,6 @@ class MockModuleContext
   void NotImplemented_(const std::string& name) override {
     NOTIMPLEMENTED() << name;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MockModuleContext);
 };
 
 // Verify that Modular's RemoveSelfFromStory() is called on teardown.

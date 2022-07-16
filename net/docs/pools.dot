@@ -50,6 +50,7 @@ digraph SocketPools {
     ClientSocketFactory [style=dotted];
     DefaultClientSocketFactory;
     TCPClientSocket;
+    TransportClientSocket [style=dotted]
     StreamSocket [style=dotted]
     Socket;
 
@@ -69,7 +70,8 @@ digraph SocketPools {
     TransportConnectJob -> ConnectJob [arrowhead=empty];
     DefaultClientSocketFactory -> ClientSocketFactory [arrowhead=empty];
     StreamSocket -> Socket [arrowhead=empty]
-    TCPClientSocket -> StreamSocket [arrowhead=empty]
+    TCPClientSocket -> TransportClientSocket [arrowhead=empty]
+    TransportClientSocket -> StreamSocket [arrowhead=empty]
 
     ClientSocketPoolBaseHelper -> ClientSocketPoolBase [arrowhead=diamond];
     ClientSocketPoolBase -> TransportClientSocketPool

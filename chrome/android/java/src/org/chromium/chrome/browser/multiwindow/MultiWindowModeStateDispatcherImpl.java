@@ -62,6 +62,11 @@ public class MultiWindowModeStateDispatcherImpl implements MultiWindowModeStateD
     }
 
     @Override
+    public boolean isChromeRunningInAdjacentWindow() {
+        return MultiWindowUtils.getInstance().isChromeRunningInAdjacentWindow(mActivity);
+    }
+
+    @Override
     public boolean isOpenInOtherWindowSupported() {
         return MultiWindowUtils.getInstance().isOpenInOtherWindowSupported(mActivity);
     }
@@ -90,5 +95,10 @@ public class MultiWindowModeStateDispatcherImpl implements MultiWindowModeStateD
     @Override
     public Bundle getOpenInOtherWindowActivityOptions() {
         return MultiWindowUtils.getOpenInOtherWindowActivityOptions(mActivity);
+    }
+
+    @Override
+    public int getInstanceCount() {
+        return MultiWindowUtils.getInstanceCount();
     }
 }

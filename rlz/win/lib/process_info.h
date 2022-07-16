@@ -13,12 +13,12 @@ namespace rlz_lib {
 
 class ProcessInfo {
  public:
+  ProcessInfo(const ProcessInfo&) = delete;
+  ProcessInfo& operator=(const ProcessInfo&) = delete;
+
   // All these functions cache the result after first run.
   static bool IsRunningAsSystem();
   static bool HasAdminRights();  // System / Admin / High Elevation on Vista
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessInfo);
 };  // class
 }  // namespace rlz_lib
 

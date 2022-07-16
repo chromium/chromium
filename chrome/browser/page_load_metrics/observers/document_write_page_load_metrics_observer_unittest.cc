@@ -33,23 +33,23 @@ TEST_F(DocumentWritePageLoadMetricsObserverTest, NoMetrics) {
 }
 
 TEST_F(DocumentWritePageLoadMetricsObserverTest, PossibleBlock) {
-  base::TimeDelta contentful_paint = base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta contentful_paint = base::Milliseconds(1);
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
   timing.paint_timing->first_contentful_paint = contentful_paint;
-  timing.parse_timing->parse_start = base::TimeDelta::FromMilliseconds(1);
-  timing.parse_timing->parse_stop = base::TimeDelta::FromMilliseconds(100);
+  timing.parse_timing->parse_start = base::Milliseconds(1);
+  timing.parse_timing->parse_stop = base::Milliseconds(100);
   timing.parse_timing->parse_blocked_on_script_load_duration =
-      base::TimeDelta::FromMilliseconds(5);
+      base::Milliseconds(5);
   timing.parse_timing
       ->parse_blocked_on_script_load_from_document_write_duration =
-      base::TimeDelta::FromMilliseconds(5);
+      base::Milliseconds(5);
   timing.parse_timing->parse_blocked_on_script_execution_duration =
-      base::TimeDelta::FromMilliseconds(3);
+      base::Milliseconds(3);
   timing.parse_timing
       ->parse_blocked_on_script_execution_from_document_write_duration =
-      base::TimeDelta::FromMilliseconds(3);
+      base::Milliseconds(3);
   PopulateRequiredTimingFields(&timing);
 
   page_load_metrics::mojom::FrameMetadata metadata;
@@ -93,12 +93,12 @@ TEST_F(DocumentWritePageLoadMetricsObserverTest, PossibleBlock) {
 }
 
 TEST_F(DocumentWritePageLoadMetricsObserverTest, PossibleBlockReload) {
-  base::TimeDelta contentful_paint = base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta contentful_paint = base::Milliseconds(1);
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
   timing.paint_timing->first_contentful_paint = contentful_paint;
-  timing.parse_timing->parse_start = base::TimeDelta::FromMilliseconds(1);
+  timing.parse_timing->parse_start = base::Milliseconds(1);
   PopulateRequiredTimingFields(&timing);
 
   page_load_metrics::mojom::FrameMetadata metadata;
@@ -153,7 +153,7 @@ TEST_F(DocumentWritePageLoadMetricsObserverTest, PossibleBlockReload) {
 }
 
 TEST_F(DocumentWritePageLoadMetricsObserverTest, NoPossibleBlock) {
-  base::TimeDelta contentful_paint = base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta contentful_paint = base::Milliseconds(1);
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);

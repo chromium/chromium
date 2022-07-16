@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "url/gurl.h"
 
@@ -37,6 +36,10 @@ class DataUse : public base::SupportsUserData {
   };
 
   explicit DataUse(TrafficType traffic_type);
+
+  DataUse(const DataUse&) = delete;
+  DataUse& operator=(const DataUse&) = delete;
+
   ~DataUse() override;
 
   // Returns the page URL.
@@ -67,8 +70,6 @@ class DataUse : public base::SupportsUserData {
 
   int64_t total_bytes_sent_;
   int64_t total_bytes_received_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataUse);
 };
 
 }  // namespace data_use_measurement

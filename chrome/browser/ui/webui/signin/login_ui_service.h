@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -62,6 +61,10 @@ class LoginUIService : public KeyedService {
   };
 
   explicit LoginUIService(Profile* profile);
+
+  LoginUIService(const LoginUIService&) = delete;
+  LoginUIService& operator=(const LoginUIService&) = delete;
+
   ~LoginUIService() override;
 
   // |observer| The observer to add or remove; cannot be NULL.
@@ -110,8 +113,6 @@ class LoginUIService : public KeyedService {
 
   // List of observers.
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginUIService);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_LOGIN_UI_SERVICE_H_

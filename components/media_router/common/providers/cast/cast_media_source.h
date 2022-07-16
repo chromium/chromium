@@ -21,9 +21,6 @@ using cast_channel::ReceiverAppType;
 
 namespace media_router {
 
-static constexpr char kCastStreamingAppId[] = "0F5096E8";
-static constexpr char kCastStreamingAudioAppId[] = "85CDB22F";
-
 // Placeholder app ID advertised by the multizone leader in a receiver status
 // message.
 static constexpr char kMultizoneLeaderAppId[] = "MultizoneLeader";
@@ -35,8 +32,7 @@ static const constexpr char* const kMultizoneMemberAppIds[] = {
     "705D30C6"  // MultizoneFollower
 };
 
-static constexpr base::TimeDelta kDefaultLaunchTimeout =
-    base::TimeDelta::FromSeconds(60);
+static constexpr base::TimeDelta kDefaultLaunchTimeout = base::Seconds(60);
 
 // Class for storing a bitwise OR of enum values.
 //
@@ -134,7 +130,7 @@ bool IsAutoJoinAllowed(AutoJoinPolicy policy,
                        const url::Origin& origin2,
                        int tab_id2);
 
-// Returns true if |source_id| is a valid origin for site-initiated mirroring.
+// Returns true if |source_id| is valid for site-initiated mirroring.
 bool IsSiteInitiatedMirroringSource(const MediaSource::Id& source_id);
 
 // Represents a MediaSource parsed into structured, Cast specific data. The
@@ -151,6 +147,8 @@ class CastMediaSource {
       const MediaSource::Id& source);
 
   static std::unique_ptr<CastMediaSource> FromAppId(const std::string& app_id);
+
+  static std::unique_ptr<CastMediaSource> ForSiteInitiatedMirroring();
 
   CastMediaSource(const MediaSource::Id& source_id,
                   const std::vector<CastAppInfo>& app_infos,

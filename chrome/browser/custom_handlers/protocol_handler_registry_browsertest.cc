@@ -83,7 +83,7 @@ class RegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
     params.writing_direction_right_to_left = 0;
 #endif  // OS_MAC
     TestRenderViewContextMenu* menu = new TestRenderViewContextMenu(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+        *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
         params);
     menu->Init();
     return menu;
@@ -159,18 +159,22 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest, CustomHandler) {
   GURL handler_url = embedded_test_server()->GetURL("/custom_handler.html");
   AddProtocolHandler("news", handler_url);
 
-  ui_test_utils::NavigateToURL(browser(), GURL("news:test"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("news:test")));
 
-  ASSERT_EQ(handler_url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_EQ(handler_url, browser()
+                             ->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetLastCommittedURL());
 
   // Also check redirects.
   GURL redirect_url =
       embedded_test_server()->GetURL("/server-redirect?news:test");
-  ui_test_utils::NavigateToURL(browser(), redirect_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), redirect_url));
 
-  ASSERT_EQ(handler_url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_EQ(handler_url, browser()
+                             ->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetLastCommittedURL());
 }
 
 class RegisterProtocolHandlerSubresourceWebBundlesBrowserTest
@@ -199,9 +203,9 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerSubresourceWebBundlesBrowserTest,
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("/web_bundle/urn-handler-test.html"));
+      embedded_test_server()->GetURL("/web_bundle/urn-handler-test.html")));
 
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
@@ -231,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {
         ProtocolHandlerRegistryFactory::GetForBrowserContext(
             browser()->profile());
     ProtocolHandlerChangeWaiter waiter(registry);
-    ui_test_utils::NavigateToURL(browser(), GURL(handler_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(handler_url)));
     ASSERT_TRUE(content::ExecuteScript(
         browser()->tab_strip_model()->GetActiveWebContents(),
         "navigator.registerProtocolHandler('geo', 'test.html?%s', 'test');"));
@@ -239,9 +243,11 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {
   }
 
   // Test the handler.
-  ui_test_utils::NavigateToURL(browser(), GURL("geo:test"));
-  ASSERT_EQ(GURL(handler_url + "?geo%3Atest"),
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("geo:test")));
+  ASSERT_EQ(GURL(handler_url + "?geo%3Atest"), browser()
+                                                   ->tab_strip_model()
+                                                   ->GetActiveWebContents()
+                                                   ->GetLastCommittedURL());
 }
 
 class RegisterProtocolHandlerAndServiceWorkerInterceptor
@@ -251,10 +257,10 @@ class RegisterProtocolHandlerAndServiceWorkerInterceptor
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // Navigate to the test page.
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL(
                        "/protocol_handler/service_workers/"
-                       "test_protocol_handler_and_service_workers.html"));
+                       "test_protocol_handler_and_service_workers.html")));
 
     // Bypass permission dialogs for registering new protocol handlers.
     permissions::PermissionRequestManager::FromWebContents(

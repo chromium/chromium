@@ -57,6 +57,8 @@ using GdkSurface = struct _GdkSurface;
 using GdkToplevel = struct _GdkToplevel;
 
 constexpr GdkMemoryFormat GDK_MEMORY_B8G8R8A8 = static_cast<GdkMemoryFormat>(3);
+
+constexpr GdkModifierType GDK_ALT_MASK = GDK_MOD1_MASK;
 #elif GTK_MAJOR_VERSION == 4
 enum GtkWidgetHelpType : int;
 enum GtkWindowType : int;

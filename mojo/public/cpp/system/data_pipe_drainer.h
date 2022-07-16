@@ -27,6 +27,10 @@ class MOJO_CPP_SYSTEM_EXPORT DataPipeDrainer {
   };
 
   DataPipeDrainer(Client*, mojo::ScopedDataPipeConsumerHandle source);
+
+  DataPipeDrainer(const DataPipeDrainer&) = delete;
+  DataPipeDrainer& operator=(const DataPipeDrainer&) = delete;
+
   ~DataPipeDrainer();
 
  private:
@@ -38,8 +42,6 @@ class MOJO_CPP_SYSTEM_EXPORT DataPipeDrainer {
   mojo::SimpleWatcher handle_watcher_;
 
   base::WeakPtrFactory<DataPipeDrainer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeDrainer);
 };
 
 }  // namespace mojo

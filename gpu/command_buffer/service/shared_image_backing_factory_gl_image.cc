@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/image_factory.h"
@@ -149,8 +150,7 @@ SharedImageBackingFactoryGLImage::CreateSharedImage(
     return nullptr;
   }
 
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format,
-                                                     plane)) {
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
     LOG(ERROR) << "Invalid image size " << size.ToString() << " for "
                << gfx::BufferFormatToString(buffer_format);
     return nullptr;
@@ -159,7 +159,7 @@ SharedImageBackingFactoryGLImage::CreateSharedImage(
   const gfx::GpuMemoryBufferType handle_type = handle.type;
   GLenum target =
       (handle_type == gfx::SHARED_MEMORY_BUFFER ||
-       !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format))
+       !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format, plane))
           ? GL_TEXTURE_2D
           : gpu::GetPlatformSpecificTextureTarget();
   scoped_refptr<gl::GLImage> image = MakeGLImage(
@@ -191,9 +191,12 @@ SharedImageBackingFactoryGLImage::CreateSharedImage(
   if (usage & SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX)
     image->DisableInUseByWindowServer();
 
-  gfx::BufferFormat plane_buffer_format =
-      GetPlaneBufferFormat(plane, buffer_format);
-  viz::ResourceFormat format = viz::GetResourceFormat(plane_buffer_format);
+  const viz::ResourceFormat plane_format =
+      viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format));
+
+  const gfx::Size plane_size = gpu::GetPlaneSize(plane, size);
+  DCHECK_EQ(image->GetSize(), plane_size);
+
   const bool for_framebuffer_attachment =
       (usage & (SHARED_IMAGE_USAGE_RASTER |
                 SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
@@ -210,8 +213,8 @@ SharedImageBackingFactoryGLImage::CreateSharedImage(
   params.framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
   return std::make_unique<SharedImageBackingGLImage>(
-      image, mailbox, format, size, color_space, surface_origin, alpha_type,
-      usage, params, attribs_, use_passthrough_);
+      image, mailbox, plane_format, plane_size, color_space, surface_origin,
+      alpha_type, usage, params, attribs_, use_passthrough_);
 }
 
 scoped_refptr<gl::GLImage> SharedImageBackingFactoryGLImage::MakeGLImage(
@@ -262,9 +265,13 @@ bool SharedImageBackingFactoryGLImage::IsSupported(
   *allow_legacy_mailbox = gr_context_type == GrContextType::kGL;
   return true;
 #else
-  bool needs_interop_factory = (gr_context_type == GrContextType::kVulkan &&
-                                (usage & SHARED_IMAGE_USAGE_DISPLAY)) ||
-                               (usage & SHARED_IMAGE_USAGE_WEBGPU) ||
+  // Doesn't support contexts other than GL for OOPR Canvas
+  if (gr_context_type != GrContextType::kGL &&
+      ((usage & SHARED_IMAGE_USAGE_DISPLAY) ||
+       (usage & SHARED_IMAGE_USAGE_RASTER))) {
+    return false;
+  }
+  bool needs_interop_factory = (usage & SHARED_IMAGE_USAGE_WEBGPU) ||
                                (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE);
 #if defined(OS_ANDROID)
   // Scanout on Android requires explicit fence synchronization which is only

@@ -16,21 +16,17 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
     const SkImageInfo& info,
     const scoped_refptr<StaticBitmapImage>& source_image,
     bool fallback_to_software) {
-  IntSize size(info.width(), info.height());
-
   const cc::PaintFlags::FilterQuality filter_quality =
       cc::PaintFlags::FilterQuality::kLow;
-  const CanvasResourceParams resource_params(info);
-
   if (context_provider) {
     uint32_t usage_flags =
         context_provider->ContextProvider()
             ->SharedImageInterface()
             ->UsageForMailbox(source_image->GetMailboxHolder().mailbox);
     auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-        size, filter_quality, resource_params,
-        CanvasResourceProvider::ShouldInitialize::kNo, context_provider,
-        RasterMode::kGPU, source_image->IsOriginTopLeft(), usage_flags);
+        info, filter_quality, CanvasResourceProvider::ShouldInitialize::kNo,
+        context_provider, RasterMode::kGPU, source_image->IsOriginTopLeft(),
+        usage_flags);
     if (resource_provider)
       return resource_provider;
 
@@ -39,8 +35,7 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
   }
 
   return CanvasResourceProvider::CreateBitmapProvider(
-      size, filter_quality, resource_params,
-      CanvasResourceProvider::ShouldInitialize::kNo);
+      info, filter_quality, CanvasResourceProvider::ShouldInitialize::kNo);
 }
 
 }  // anonymous namespace
@@ -51,27 +46,28 @@ scoped_refptr<StaticBitmapImage> GetImageWithAlphaDisposition(
   if (!image)
     return nullptr;
 
-  SkAlphaType alpha_type = (alpha_disposition == kPremultiplyAlpha)
-                               ? kPremul_SkAlphaType
-                               : kUnpremul_SkAlphaType;
   PaintImage paint_image = image->PaintImageForCurrentFrame();
   if (!paint_image)
     return nullptr;
 
-  // Only if the content alphaType is not important or it will be recorded and
-  // be handled in following step, kDontChangeAlpha could be provided to save
-  // the conversion here.
-  if (paint_image.GetAlphaType() == alpha_type ||
+  if (paint_image.GetAlphaType() == kOpaque_SkAlphaType ||
       alpha_disposition == kDontChangeAlpha)
     return std::move(image);
 
-  SkImageInfo info =
-      image->PaintImageForCurrentFrame().GetSkImageInfo().makeAlphaType(
-          alpha_type);
+  const SkAlphaType alpha_type = (alpha_disposition == kPremultiplyAlpha)
+                                     ? kPremul_SkAlphaType
+                                     : kUnpremul_SkAlphaType;
+
+  if (paint_image.GetAlphaType() == alpha_type) {
+    return std::move(image);
+  }
+
+  SkImageInfo info = paint_image.GetSkImageInfo().makeAlphaType(alpha_type);
 
   // To premul, draw the unpremul image on a surface to avoid GPU read back if
   // image is texture backed.
   if (alpha_type == kPremul_SkAlphaType) {
+    DCHECK_EQ(paint_image.GetAlphaType(), kUnpremul_SkAlphaType);
     auto resource_provider = CreateProvider(
         image->IsTextureBacked() ? image->ContextProviderWrapper() : nullptr,
         info, image, true /* fallback_to_software */);
@@ -80,8 +76,8 @@ scoped_refptr<StaticBitmapImage> GetImageWithAlphaDisposition(
 
     cc::PaintFlags paint;
     paint.setBlendMode(SkBlendMode::kSrc);
-    resource_provider->Canvas()->drawImage(image->PaintImageForCurrentFrame(),
-                                           0, 0, SkSamplingOptions(), &paint);
+    resource_provider->Canvas()->drawImage(paint_image, 0, 0,
+                                           SkSamplingOptions(), &paint);
     return resource_provider->Snapshot(image->CurrentFrameOrientation());
   }
 
@@ -89,6 +85,8 @@ scoped_refptr<StaticBitmapImage> GetImageWithAlphaDisposition(
   // TODO(crbug.com/1197369): we should try to keep the output resource(image)
   // in GPU when premultiply-alpha or unpremultiply-alpha transforms is
   // required.
+  DCHECK_EQ(alpha_type, kUnpremul_SkAlphaType);
+  DCHECK_EQ(paint_image.GetAlphaType(), kPremul_SkAlphaType);
   if (paint_image.GetSkImageInfo().isEmpty())
     return nullptr;
 

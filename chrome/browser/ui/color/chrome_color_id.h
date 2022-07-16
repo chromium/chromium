@@ -11,9 +11,17 @@
 
 // clang-format off
 #define CHROME_COLOR_IDS \
+  /* Bookmark Bar output colors. */ \
+  E(kColorBookmarkText, ThemeProperties::COLOR_BOOKMARK_TEXT, \
+    kChromeColorsStart) \
+  /* Download Shelf output colors. */ \
+  E(kColorDownloadShelf, ThemeProperties::COLOR_DOWNLOAD_SHELF) \
+  E(kColorDownloadShelfButtonBackground, \
+    ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND) \
+  E(kColorDownloadShelfButtonText, \
+    ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_TEXT) \
   /* Omnibox output colors. */ \
-  E(kColorOmniboxBackground, \
-    ThemeProperties::COLOR_OMNIBOX_BACKGROUND, kChromeColorsStart) \
+  E(kColorOmniboxBackground, ThemeProperties::COLOR_OMNIBOX_BACKGROUND) \
   E(kColorOmniboxBackgroundHovered, \
     ThemeProperties::COLOR_OMNIBOX_BACKGROUND_HOVERED) \
   E(kColorOmniboxBubbleOutline, \
@@ -48,8 +56,11 @@
     ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_SECURE) \
   E(kColorOmniboxText, ThemeProperties::COLOR_OMNIBOX_TEXT) \
   E(kColorOmniboxTextDimmed, ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED) \
-  \
-  E(kColorToolbar, ThemeProperties::COLOR_TOOLBAR)
+  /* Toolbar output colors. */ \
+  E(kColorToolbar, ThemeProperties::COLOR_TOOLBAR) \
+  E(kColorToolbarButtonIcon, ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON) \
+  E(kColorToolbarContentAreaSeparator, \
+    ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR)
 
 #include "ui/color/color_id_macros.inc"
 

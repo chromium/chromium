@@ -42,6 +42,9 @@ class StreamTexture : public StreamTextureSharedImageInterface,
       int stream_id,
       mojo::PendingAssociatedReceiver<mojom::StreamTexture> receiver);
 
+  StreamTexture(const StreamTexture&) = delete;
+  StreamTexture& operator=(const StreamTexture&) = delete;
+
   // Cleans up related data and nulls |channel_|. Called when the channel
   // releases its ref on this class.
   void ReleaseChannel();
@@ -70,13 +73,6 @@ class StreamTexture : public StreamTextureSharedImageInterface,
   bool CopyTexSubImage(unsigned target,
                        const gfx::Point& offset,
                        const gfx::Rect& rect) override;
-  bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int z_order,
-                            gfx::OverlayTransform transform,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
   void SetColorSpace(const gfx::ColorSpace& color_space) override {}
   void Flush() override {}
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
@@ -96,17 +92,6 @@ class StreamTexture : public StreamTextureSharedImageInterface,
   bool RenderToOverlay() override;
   bool TextureOwnerBindsTextureOnUpdate() override;
 
-  // Update the TextureOwner to get the latest image. Also bind the latest image
-  // to the provided |service_id| if TextureOwner does not binds texture on
-  // update. If |bindings_mode| is other than kEnsureTexImageBound, then
-  // |service_id| is not required.
-  void UpdateTexImage(BindingsMode bindings_mode, GLuint service_id);
-
-  // Ensure that the latest image is bound to the texture |service_id| if
-  // TextureOwner does not binds texture on update. If TextureOwner binds
-  // texture on update, then it will always be bound to the TextureOwners
-  // texture and |service_id| will be ignored.
-  void EnsureBoundIfNeeded(BindingsMode mode, GLuint service_id);
   gpu::Mailbox CreateSharedImage(const gfx::Size& coded_size);
 
   // Called when a new frame is available for the SurfaceOwner.
@@ -143,7 +128,6 @@ class StreamTexture : public StreamTextureSharedImageInterface,
   THREAD_CHECKER(gpu_main_thread_checker_);
 
   base::WeakPtrFactory<StreamTexture> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(StreamTexture);
 };
 
 }  // namespace gpu

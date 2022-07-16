@@ -38,6 +38,11 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptsSender
   // |owner| must be an installed service worker.
   explicit ServiceWorkerInstalledScriptsSender(ServiceWorkerVersion* owner);
 
+  ServiceWorkerInstalledScriptsSender(
+      const ServiceWorkerInstalledScriptsSender&) = delete;
+  ServiceWorkerInstalledScriptsSender& operator=(
+      const ServiceWorkerInstalledScriptsSender&) = delete;
+
   ~ServiceWorkerInstalledScriptsSender() override;
 
   // Creates a Mojo struct (blink::mojom::ServiceWorkerInstalledScriptsInfo) and
@@ -101,8 +106,6 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptsSender
 
   GURL current_sending_url_;
   base::queue<std::pair<int64_t /* resource_id */, GURL>> pending_scripts_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerInstalledScriptsSender);
 };
 
 }  // namespace content

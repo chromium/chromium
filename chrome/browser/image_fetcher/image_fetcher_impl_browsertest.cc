@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,6 +41,10 @@ class ImageFetcherImplBrowserTest : public InProcessBrowserTest {
         num_data_callback_null_called_(0) {
     test_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   }
+
+  ImageFetcherImplBrowserTest(const ImageFetcherImplBrowserTest&) = delete;
+  ImageFetcherImplBrowserTest& operator=(const ImageFetcherImplBrowserTest&) =
+      delete;
 
   void SetUpInProcessBrowserTestFixture() override {
     ASSERT_TRUE(test_server_.Start());
@@ -100,9 +103,6 @@ class ImageFetcherImplBrowserTest : public InProcessBrowserTest {
   int num_data_callback_null_called_;
 
   net::EmbeddedTestServer test_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcherImplBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ImageFetcherImplBrowserTest, NormalFetch) {

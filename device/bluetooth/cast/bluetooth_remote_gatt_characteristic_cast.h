@@ -34,6 +34,12 @@ class BluetoothRemoteGattCharacteristicCast
       BluetoothRemoteGattServiceCast* service,
       scoped_refptr<chromecast::bluetooth::RemoteCharacteristic>
           characteristic);
+
+  BluetoothRemoteGattCharacteristicCast(
+      const BluetoothRemoteGattCharacteristicCast&) = delete;
+  BluetoothRemoteGattCharacteristicCast& operator=(
+      const BluetoothRemoteGattCharacteristicCast&) = delete;
+
   ~BluetoothRemoteGattCharacteristicCast() override;
 
   // BluetoothGattCharacteristic implementation:
@@ -94,8 +100,6 @@ class BluetoothRemoteGattCharacteristicCast
   std::vector<uint8_t> value_;
 
   base::WeakPtrFactory<BluetoothRemoteGattCharacteristicCast> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattCharacteristicCast);
 };
 
 }  // namespace device

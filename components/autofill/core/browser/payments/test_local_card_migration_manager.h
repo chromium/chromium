@@ -29,6 +29,11 @@ class TestLocalCardMigrationManager : public LocalCardMigrationManager {
                                 AutofillClient* client,
                                 payments::TestPaymentsClient* payments_client,
                                 TestPersonalDataManager* personal_data_manager);
+
+  TestLocalCardMigrationManager(const TestLocalCardMigrationManager&) = delete;
+  TestLocalCardMigrationManager& operator=(
+      const TestLocalCardMigrationManager&) = delete;
+
   ~TestLocalCardMigrationManager() override;
 
   // Override the base function. Checks the existnece of billing customer number
@@ -73,8 +78,6 @@ class TestLocalCardMigrationManager : public LocalCardMigrationManager {
   bool main_prompt_was_shown_ = false;
 
   TestPersonalDataManager* personal_data_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLocalCardMigrationManager);
 };
 
 }  // namespace autofill

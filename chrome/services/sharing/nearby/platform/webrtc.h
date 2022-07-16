@@ -9,8 +9,8 @@
 
 #include <memory>
 
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "chromeos/services/nearby/public/mojom/webrtc.mojom.h"

@@ -7,7 +7,6 @@
 
 #include "content/public/browser/websocket_handshake_request_info.h"
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 
 namespace content {
@@ -16,6 +15,11 @@ class WebSocketHandshakeRequestInfoImpl final
     : public WebSocketHandshakeRequestInfo,
       public base::SupportsUserData::Data {
  public:
+  WebSocketHandshakeRequestInfoImpl(const WebSocketHandshakeRequestInfoImpl&) =
+      delete;
+  WebSocketHandshakeRequestInfoImpl& operator=(
+      const WebSocketHandshakeRequestInfoImpl&) = delete;
+
   ~WebSocketHandshakeRequestInfoImpl() override;
 
   static void CreateInfoAndAssociateWithRequest(int child_id,
@@ -30,8 +34,6 @@ class WebSocketHandshakeRequestInfoImpl final
 
   const int child_id_;
   const int render_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketHandshakeRequestInfoImpl);
 };
 
 }  // namespace content

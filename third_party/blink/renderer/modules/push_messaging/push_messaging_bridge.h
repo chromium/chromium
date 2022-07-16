@@ -33,6 +33,10 @@ class PushMessagingBridge final : public GarbageCollected<PushMessagingBridge>,
   static PushMessagingBridge* From(ServiceWorkerRegistration* registration);
 
   explicit PushMessagingBridge(ServiceWorkerRegistration& registration);
+
+  PushMessagingBridge(const PushMessagingBridge&) = delete;
+  PushMessagingBridge& operator=(const PushMessagingBridge&) = delete;
+
   virtual ~PushMessagingBridge();
 
   // Asynchronously determines the permission state for the current origin.
@@ -48,8 +52,6 @@ class PushMessagingBridge final : public GarbageCollected<PushMessagingBridge>,
                              mojom::blink::PermissionStatus status);
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingBridge);
 };
 
 }  // namespace blink

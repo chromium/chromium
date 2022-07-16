@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -43,6 +42,11 @@ using WebContents = content::WebContents;
 class SessionRestorePageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
  public:
+  SessionRestorePageLoadMetricsObserverTest(
+      const SessionRestorePageLoadMetricsObserverTest&) = delete;
+  SessionRestorePageLoadMetricsObserverTest& operator=(
+      const SessionRestorePageLoadMetricsObserverTest&) = delete;
+
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(
         std::make_unique<SessionRestorePageLoadMetricsObserver>());
@@ -78,12 +82,11 @@ class SessionRestorePageLoadMetricsObserverTest
   void PopulateFirstPaintTimings() {
     page_load_metrics::InitPageLoadTimingForTest(&timing_);
     timing_.navigation_start = base::Time::FromDoubleT(1);
-    timing_.parse_timing->parse_start = base::TimeDelta::FromMilliseconds(10);
+    timing_.parse_timing->parse_start = base::Milliseconds(10);
 
     // Should be large enough (e.g., >20 ms) for some tests to be able to hide
     // foreground tabs before the first pains.
-    timing_.paint_timing->first_meaningful_paint =
-        base::TimeDelta::FromSeconds(1);
+    timing_.paint_timing->first_meaningful_paint = base::Seconds(1);
     PopulateRequiredTimingFields(&timing_);
   }
 
@@ -156,8 +159,6 @@ class SessionRestorePageLoadMetricsObserverTest
       WebContents*,
       std::unique_ptr<page_load_metrics::PageLoadMetricsObserverTester>>
       testers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionRestorePageLoadMetricsObserverTest);
 };
 
 TEST_F(SessionRestorePageLoadMetricsObserverTest, NoMetrics) {

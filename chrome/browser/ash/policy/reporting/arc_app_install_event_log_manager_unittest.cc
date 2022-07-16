@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -50,11 +50,10 @@ namespace {
 
 constexpr base::FilePath::CharType kLogFileName[] =
     FILE_PATH_LITERAL("app_push_install_log");
-constexpr base::TimeDelta kStoreDelay = base::TimeDelta::FromSeconds(5);
-constexpr base::TimeDelta kUploadInterval = base::TimeDelta::FromHours(3);
-constexpr base::TimeDelta kExpeditedUploadDelay =
-    base::TimeDelta::FromMinutes(15);
-constexpr base::TimeDelta kOneMs = base::TimeDelta::FromMilliseconds(1);
+constexpr base::TimeDelta kStoreDelay = base::Seconds(5);
+constexpr base::TimeDelta kUploadInterval = base::Hours(3);
+constexpr base::TimeDelta kExpeditedUploadDelay = base::Minutes(15);
+constexpr base::TimeDelta kOneMs = base::Milliseconds(1);
 
 constexpr int kTotalSizeExpeditedUploadThreshold = 2048;
 constexpr int kMaxSizeExpeditedUploadThreshold = 512;
@@ -138,6 +137,9 @@ class TestLogTaskRunnerWrapper
     test_task_runner_ = new base::TestSimpleTaskRunner;
   }
 
+  TestLogTaskRunnerWrapper(const TestLogTaskRunnerWrapper&) = delete;
+  TestLogTaskRunnerWrapper& operator=(const TestLogTaskRunnerWrapper&) = delete;
+
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunner() override {
     return test_task_runner_;
   }
@@ -148,13 +150,17 @@ class TestLogTaskRunnerWrapper
 
  private:
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLogTaskRunnerWrapper);
 };
 
 }  // namespace
 
 class ArcAppInstallEventLogManagerTest : public testing::Test {
+ public:
+  ArcAppInstallEventLogManagerTest(const ArcAppInstallEventLogManagerTest&) =
+      delete;
+  ArcAppInstallEventLogManagerTest& operator=(
+      const ArcAppInstallEventLogManagerTest&) = delete;
+
  protected:
   ArcAppInstallEventLogManagerTest()
       : uploader_(&cloud_policy_client_, /*profile=*/nullptr),
@@ -318,9 +324,6 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
   Events events_;
 
   std::unique_ptr<ArcAppInstallEventLogManager> manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppInstallEventLogManagerTest);
 };
 
 // Create a manager with an empty log. Verify that no store is scheduled and no
@@ -364,7 +367,7 @@ TEST_F(ArcAppInstallEventLogManagerTest, CreateNonEmpty) {
 TEST_F(ArcAppInstallEventLogManagerTest, AddBeforeInitialUpload) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(2);
+  const base::TimeDelta offset = base::Minutes(2);
   FastForwardTo(offset);
   AddLogEntry(0 /* app_index */);
 
@@ -394,14 +397,14 @@ TEST_F(ArcAppInstallEventLogManagerTest, AddBeforeInitialUpload) {
 TEST_F(ArcAppInstallEventLogManagerTest, Add) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   AddLogEntry(0 /* app_index */);
 
-  FastForwardTo(offset + base::TimeDelta::FromSeconds(2));
+  FastForwardTo(offset + base::Seconds(2));
   AddLogEntry(0 /* app_index */);
 
-  FastForwardTo(offset + base::TimeDelta::FromSeconds(4));
+  FastForwardTo(offset + base::Seconds(4));
   AddLogEntry(0 /* app_index */);
 
   FastForwardTo(offset + kStoreDelay - kOneMs);
@@ -410,14 +413,13 @@ TEST_F(ArcAppInstallEventLogManagerTest, Add) {
   FastForwardTo(offset + kStoreDelay);
   VerifyAndDeleteLogFile();
 
-  FastForwardTo(offset + base::TimeDelta::FromSeconds(6));
+  FastForwardTo(offset + base::Seconds(6));
   AddLogEntry(0 /* app_index */);
 
-  FastForwardTo(offset + base::TimeDelta::FromSeconds(6) + kStoreDelay -
-                kOneMs);
+  FastForwardTo(offset + base::Seconds(6) + kStoreDelay - kOneMs);
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
-  FastForwardTo(offset + base::TimeDelta::FromSeconds(6) + kStoreDelay);
+  FastForwardTo(offset + base::Seconds(6) + kStoreDelay);
   VerifyAndDeleteLogFile();
 
   FastForwardTo(offset + kUploadInterval - kOneMs);
@@ -440,7 +442,7 @@ TEST_F(ArcAppInstallEventLogManagerTest, Add) {
 TEST_F(ArcAppInstallEventLogManagerTest, AddForMultipleApps) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   AddLogEntryForAllApps();
 
@@ -469,7 +471,7 @@ TEST_F(ArcAppInstallEventLogManagerTest, AddForMultipleApps) {
 TEST_F(ArcAppInstallEventLogManagerTest, AddForZeroApps) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   AddLogEntryForsetOfApps({});
 
@@ -483,7 +485,7 @@ TEST_F(ArcAppInstallEventLogManagerTest, AddForZeroApps) {
 TEST_F(ArcAppInstallEventLogManagerTest, AddToTriggerMaxSizeExpedited) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   for (int i = 0; i <= kMaxSizeExpeditedUploadThreshold; ++i) {
     AddLogEntry(0 /* app_index */);
@@ -515,7 +517,7 @@ TEST_F(ArcAppInstallEventLogManagerTest, AddToTriggerMaxSizeExpedited) {
 TEST_F(ArcAppInstallEventLogManagerTest, AddToTriggerTotalSizeExpedited) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   int i = 0;
   while (i <= kTotalSizeExpeditedUploadThreshold) {
@@ -552,7 +554,7 @@ TEST_F(ArcAppInstallEventLogManagerTest,
        AddForMultipleAppsToTriggerTotalSizeExpedited) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   for (int i = 0; i <= kTotalSizeExpeditedUploadThreshold;
        i += base::size(kPackageNames)) {
@@ -674,7 +676,7 @@ TEST_F(ArcAppInstallEventLogManagerTest, RequestUploadAddExpeditedUpload) {
 TEST_F(ArcAppInstallEventLogManagerTest, RequestExpeditedUploadAddUpload) {
   CreateManager();
 
-  const base::TimeDelta offset = base::TimeDelta::FromMinutes(20);
+  const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   for (int i = 0; i <= kMaxSizeExpeditedUploadThreshold; ++i) {
     AddLogEntry(0 /* app_index */);
@@ -739,7 +741,7 @@ TEST_F(ArcAppInstallEventLogManagerTest, Clear) {
   log.Store();
 
   base::ListValue list;
-  list.AppendString("test");
+  list.Append("test");
   profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsRequested, list);
   profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsPending, list);
 
@@ -773,7 +775,7 @@ TEST_F(ArcAppInstallEventLogManagerTest, RunClearRun) {
   VerifyLogFile();
 
   base::ListValue list;
-  list.AppendString("test");
+  list.Append("test");
   profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsRequested, list);
   profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsPending, list);
 

@@ -26,4 +26,11 @@ class NearbyConnector : public mojom::NearbyConnector {
 }  // namespace secure_channel
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace secure_channel {
+using ::chromeos::secure_channel::NearbyConnector;
+}
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_NEARBY_CONNECTOR_H_

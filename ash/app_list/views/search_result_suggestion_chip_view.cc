@@ -24,6 +24,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -58,6 +59,10 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
     AppListViewDelegate* view_delegate)
     : view_delegate_(view_delegate) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+  // able to submit accessibility checks, but this focusable View needs to
+  // add a name so that the screen reader knows what to announce.
+  SetProperty(views::kSkipAccessibilityPaintChecks, true);
   SetCallback(
       base::BindRepeating(&SearchResultSuggestionChipView::OnButtonPressed,
                           base::Unretained(this)));
@@ -83,8 +88,8 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetLocalBounds().InsetsFrom(bounds),
             views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-            color_provider->GetRippleAttributesBaseColor(bg_color),
-            color_provider->GetRippleAttributesInkDropOpacity(bg_color));
+            color_provider->GetInkDropBaseColor(bg_color),
+            color_provider->GetInkDropOpacity(bg_color));
       },
       this));
 
@@ -157,7 +162,7 @@ void SearchResultSuggestionChipView::OnPaintBackground(gfx::Canvas* canvas) {
 
 void SearchResultSuggestionChipView::OnFocus() {
   SchedulePaint();
-  NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+  SearchResultBaseView::OnFocus();
 }
 
 void SearchResultSuggestionChipView::OnBlur() {
@@ -203,7 +208,8 @@ const std::u16string& SearchResultSuggestionChipView::GetText() const {
 void SearchResultSuggestionChipView::UpdateSuggestionChipView() {
   if (!result()) {
     SetIcon(gfx::ImageSkia());
-    SetText(std::u16string());
+    if (!GetText().empty())
+      SetText(std::u16string());
     SetAccessibleName(std::u16string());
     return;
   }
@@ -250,8 +256,8 @@ void SearchResultSuggestionChipView::InitLayout() {
 void SearchResultSuggestionChipView::OnButtonPressed(const ui::Event& event) {
   DCHECK(result());
   LogAppLaunch(index_in_container());
-  RecordSearchResultOpenSource(result(), view_delegate_->GetModel(),
-                               view_delegate_->GetSearchModel());
+  RecordSearchResultOpenSource(result(), view_delegate_->GetAppListViewState(),
+                               view_delegate_->IsInTabletMode());
   view_delegate_->OpenSearchResult(
       result()->id(), result()->result_type(), event.flags(),
       AppListLaunchedFrom::kLaunchedFromSuggestionChip,

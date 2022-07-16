@@ -32,8 +32,7 @@ int Bind(AddressFamily address_family,
 
 }  // namespace
 
-const base::TimeDelta MDnsTransaction::kTransactionTimeout =
-    base::TimeDelta::FromSeconds(3);
+const base::TimeDelta MDnsTransaction::kTransactionTimeout = base::Seconds(3);
 
 // static
 std::unique_ptr<MDnsSocketFactory> MDnsSocketFactory::CreateDefault() {

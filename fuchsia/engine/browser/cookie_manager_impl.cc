@@ -42,8 +42,8 @@ fuchsia::web::Cookie ConvertCanonicalCookie(
   return cookie;
 }
 
-class CookiesIteratorImpl : public fuchsia::web::CookiesIterator,
-                            public network::mojom::CookieChangeListener {
+class CookiesIteratorImpl final : public fuchsia::web::CookiesIterator,
+                                  public network::mojom::CookieChangeListener {
  public:
   // |this| will delete itself when |mojo_request| or |changes| disconnect.
   CookiesIteratorImpl(
@@ -78,10 +78,14 @@ class CookiesIteratorImpl : public fuchsia::web::CookiesIterator,
                                  net::CookieChangeCause::INSERTED);
     }
   }
-  ~CookiesIteratorImpl() final = default;
+
+  CookiesIteratorImpl(const CookiesIteratorImpl&) = delete;
+  CookiesIteratorImpl& operator=(const CookiesIteratorImpl&) = delete;
+
+  ~CookiesIteratorImpl() override = default;
 
   // fuchsia::web::CookiesIterator implementation:
-  void GetNext(GetNextCallback callback) final {
+  void GetNext(GetNextCallback callback) override {
     DCHECK(!get_next_callback_);
     get_next_callback_ = std::move(callback);
     MaybeSendQueuedCookies();
@@ -133,7 +137,7 @@ class CookiesIteratorImpl : public fuchsia::web::CookiesIterator,
   }
 
   // network::mojom::CookieChangeListener implementation:
-  void OnCookieChange(const net::CookieChangeInfo& change) final {
+  void OnCookieChange(const net::CookieChangeInfo& change) override {
     queued_cookies_[change.cookie.UniqueKey()] =
         ConvertCanonicalCookie(change.cookie, change.cause);
     MaybeSendQueuedCookies();
@@ -146,11 +150,8 @@ class CookiesIteratorImpl : public fuchsia::web::CookiesIterator,
 
   // Map from "unique key"s (see net::CanonicalCookie::UniqueKey()) to the
   // corresponding fuchsia::web::Cookie.
-  std::map<std::tuple<std::string, std::string, std::string>,
-           fuchsia::web::Cookie>
+  std::map<net::CanonicalCookie::UniqueCookieKey, fuchsia::web::Cookie>
       queued_cookies_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookiesIteratorImpl);
 };
 
 void OnAllCookiesReceived(
@@ -216,7 +217,7 @@ void CookieManagerImpl::GetCookieList(
           net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
       cookie_manager_->GetCookieList(
-          GURL(*url), options,
+          GURL(*url), options, net::CookiePartitionKeychain::Todo(),
           base::BindOnce(&OnCookiesAndExcludedReceived, std::move(iterator)));
     } else {
       // TODO(858853): Support filtering by name.

@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_stdint.h"  // For int64_t on Windows.
 #include "ppapi/shared_impl/file_growth.h"
@@ -39,6 +38,9 @@ class CONTENT_EXPORT QuotaReservation
       scoped_refptr<storage::FileSystemContext> file_system_context,
       const GURL& origin_url,
       storage::FileSystemType file_system_type);
+
+  QuotaReservation(const QuotaReservation&) = delete;
+  QuotaReservation& operator=(const QuotaReservation&) = delete;
 
   // Opens a file with the given id and path and returns its current size.
   int64_t OpenFile(int32_t id, const storage::FileSystemURL& url);
@@ -85,8 +87,6 @@ class CONTENT_EXPORT QuotaReservation
   scoped_refptr<storage::QuotaReservation> quota_reservation_;
   typedef std::map<int32_t, storage::OpenFileHandle*> FileMap;
   FileMap files_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaReservation);
 };
 
 struct QuotaReservationDeleter {

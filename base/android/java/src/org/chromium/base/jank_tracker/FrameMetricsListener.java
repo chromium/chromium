@@ -48,7 +48,9 @@ class FrameMetricsListener implements OnFrameMetricsAvailableListener {
 
         long frameTotalDurationNs = frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION);
 
-        long timestampNs = frameMetrics.getMetric(FrameMetrics.VSYNC_TIMESTAMP);
+        // The total frame duration is considered from the intended VSYNC time till the actual
+        // presentation time.
+        long timestampNs = frameMetrics.getMetric(FrameMetrics.INTENDED_VSYNC_TIMESTAMP);
 
         mFrameMetricsStore.addFrameMeasurement(
                 timestampNs, frameTotalDurationNs, dropCountSinceLastInvocation);

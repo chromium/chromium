@@ -386,8 +386,8 @@ TEST_F(CachingWordShaperTest, GlyphBoundsWithSpaces) {
 
   // The glyph bounds of periods and spaces should be longer than the glyph
   // bounds of periods alone.
-  ASSERT_GT(periods_and_spaces_glyph_bounds.Width(),
-            periods_glyph_bounds.Width());
+  ASSERT_GT(periods_and_spaces_glyph_bounds.width(),
+            periods_glyph_bounds.width());
 }
 
 }  // namespace blink

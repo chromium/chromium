@@ -58,24 +58,20 @@ class ResponsivenessCalculatorTest : public testing::Test {
                   int execution_start_time_in_ms,
                   int execution_finish_time_in_ms) {
     calculator_->TaskOrEventFinishedOnUIThread(
+        last_calculation_time_ + base::Milliseconds(queue_time_in_ms),
+        last_calculation_time_ + base::Milliseconds(execution_start_time_in_ms),
         last_calculation_time_ +
-            base::TimeDelta::FromMilliseconds(queue_time_in_ms),
-        last_calculation_time_ +
-            base::TimeDelta::FromMilliseconds(execution_start_time_in_ms),
-        last_calculation_time_ +
-            base::TimeDelta::FromMilliseconds(execution_finish_time_in_ms));
+            base::Milliseconds(execution_finish_time_in_ms));
   }
 
   void AddEventIO(int queue_time_in_ms,
                   int execution_start_time_in_ms,
                   int execution_finish_time_in_ms) {
     calculator_->TaskOrEventFinishedOnIOThread(
+        last_calculation_time_ + base::Milliseconds(queue_time_in_ms),
+        last_calculation_time_ + base::Milliseconds(execution_start_time_in_ms),
         last_calculation_time_ +
-            base::TimeDelta::FromMilliseconds(queue_time_in_ms),
-        last_calculation_time_ +
-            base::TimeDelta::FromMilliseconds(execution_start_time_in_ms),
-        last_calculation_time_ +
-            base::TimeDelta::FromMilliseconds(execution_finish_time_in_ms));
+            base::Milliseconds(execution_finish_time_in_ms));
   }
 
   void TriggerCalculation() {
@@ -535,7 +531,7 @@ TEST_F(ResponsivenessCalculatorTest, UnorderedEvents) {
 TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEventsEmpty) {
   constexpr base::TimeTicks kStartTime = base::TimeTicks();
   constexpr base::TimeTicks kFinishTime =
-      kStartTime + base::TimeDelta::FromMilliseconds(kMeasurementIntervalInMs);
+      kStartTime + base::Milliseconds(kMeasurementIntervalInMs);
   const std::set<int> janky_slices;
 
   EXPECT_CALL(*calculator_, EmitJankyIntervalsMeasurementTraceEvent(_, _, _))
@@ -548,7 +544,7 @@ TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEventsEmpty) {
 TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEventsWrongMetric) {
   constexpr base::TimeTicks kStartTime = base::TimeTicks();
   constexpr base::TimeTicks kFinishTime =
-      kStartTime + base::TimeDelta::FromMilliseconds(kMeasurementIntervalInMs);
+      kStartTime + base::Milliseconds(kMeasurementIntervalInMs);
   const std::set<int> janky_slices = {1};
 
   EXPECT_CALL(*calculator_, EmitJankyIntervalsMeasurementTraceEvent(_, _, _))
@@ -560,10 +556,10 @@ TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEventsWrongMetric) {
 
 TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEvents) {
   constexpr base::TimeDelta kSliceInterval =
-      base::TimeDelta::FromMilliseconds(kJankThresholdInMs);
+      base::Milliseconds(kJankThresholdInMs);
   constexpr base::TimeTicks kStartTime = base::TimeTicks();
   constexpr base::TimeTicks kFinishTime =
-      kStartTime + base::TimeDelta::FromMilliseconds(kMeasurementIntervalInMs);
+      kStartTime + base::Milliseconds(kMeasurementIntervalInMs);
 
   const std::set<int> janky_slices = {3, 4, 5, 12, 15};
 

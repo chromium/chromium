@@ -1584,9 +1584,11 @@ bool Schema::ValidateStringRestriction(int index, const char* str) const {
     }
     return false;
   } else {
-    int index = rnode->string_pattern_restriction.pattern_index;
-    DCHECK(index == rnode->string_pattern_restriction.pattern_index_backup);
-    re2::RE2* regex = storage_->CompileRegex(*storage_->string_enums(index));
+    int pattern_index = rnode->string_pattern_restriction.pattern_index;
+    DCHECK(pattern_index ==
+           rnode->string_pattern_restriction.pattern_index_backup);
+    re2::RE2* regex =
+        storage_->CompileRegex(*storage_->string_enums(pattern_index));
     return re2::RE2::PartialMatch(str, *regex);
   }
 }

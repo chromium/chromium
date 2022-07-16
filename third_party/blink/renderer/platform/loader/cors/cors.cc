@@ -42,9 +42,9 @@ class HTTPHeaderNameListParser {
         return;
       }
 
-      size_t token_start = pos_;
+      wtf_size_t token_start = pos_;
       ConsumeTokenChars();
-      size_t token_size = pos_ - token_start;
+      wtf_size_t token_size = pos_ - token_start;
       if (token_size == 0) {
         output.clear();
         return;
@@ -93,7 +93,7 @@ class HTTPHeaderNameListParser {
   }
 
   const String value_;
-  size_t pos_;
+  wtf_size_t pos_;
 };
 
 }  // namespace
@@ -148,22 +148,6 @@ bool ContainsOnlyCorsSafelistedHeaders(const HTTPHeaderMap& header_map) {
   }
 
   return network::cors::CorsUnsafeRequestHeaderNames(in).empty();
-}
-
-bool ContainsOnlyCorsSafelistedOrForbiddenHeaders(
-    const HTTPHeaderMap& headers) {
-  Vector<String> header_names;
-
-  net::HttpRequestHeaders::HeaderVector in;
-  for (const auto& entry : headers) {
-    in.push_back(net::HttpRequestHeaders::HeaderKeyValuePair(
-        entry.key.Latin1(), entry.value.Latin1()));
-  }
-  // |is_revalidating| is not needed for blink-side CORS.
-  constexpr bool is_revalidating = false;
-  return network::cors::CorsUnsafeNotForbiddenRequestHeaderNames(
-             in, is_revalidating)
-      .empty();
 }
 
 bool IsOkStatus(int status) {

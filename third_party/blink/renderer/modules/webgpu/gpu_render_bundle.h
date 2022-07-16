@@ -17,7 +17,8 @@ class GPURenderBundle : public DawnObject<WGPURenderBundle> {
  public:
   explicit GPURenderBundle(GPUDevice* device, WGPURenderBundle render_bundle);
 
-  DISALLOW_COPY_AND_ASSIGN(GPURenderBundle);
+  GPURenderBundle(const GPURenderBundle&) = delete;
+  GPURenderBundle& operator=(const GPURenderBundle&) = delete;
 };
 
 }  // namespace blink

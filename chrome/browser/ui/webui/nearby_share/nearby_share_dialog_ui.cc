@@ -38,6 +38,16 @@
 
 namespace nearby_share {
 
+// Keep in sync with //chrome/browser/resources/nearby_share/shared/types.js
+enum class CloseReason {
+  kUnknown = 0,
+  kTransferStarted = 1,
+  kTransferSucceeded = 2,
+  kCancelled = 3,
+  kRejected = 4,
+  kMax = kRejected
+};
+
 NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
@@ -69,7 +79,7 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   html_source->UseStringsJs();
 
   // Register callback to handle "cancel-button-event" from nearby_*.html files.
-  web_ui->RegisterMessageCallback(
+  web_ui->RegisterDeprecatedMessageCallback(
       "close", base::BindRepeating(&NearbyShareDialogUI::HandleClose,
                                    base::Unretained(this)));
 
@@ -119,13 +129,33 @@ void NearbyShareDialogUI::BindInterface(
 }
 
 void NearbyShareDialogUI::HandleClose(const base::ListValue* args) {
-  if (sharesheet_controller_) {
-    sharesheet_controller_->CloseBubble(sharesheet::SharesheetResult::kCancel);
+  if (!sharesheet_controller_)
+    return;
 
-    // We need to clear out the controller here to protect against calling
-    // CloseBubble() more than once, which will cause a crash.
-    sharesheet_controller_ = nullptr;
+  base::Value::ConstListView args_list = args->GetList();
+  CHECK_EQ(1u, args_list.size());
+  CHECK_GE(args_list[0].GetInt(), 0u);
+  CHECK_LE(args_list[0].GetInt(), static_cast<int>(CloseReason::kMax));
+  CloseReason reason = static_cast<CloseReason>(args_list[0].GetInt());
+
+  sharesheet::SharesheetResult sharesheet_result;
+  switch (reason) {
+    case CloseReason::kTransferStarted:
+    case CloseReason::kTransferSucceeded:
+      sharesheet_result = sharesheet::SharesheetResult::kSuccess;
+      break;
+    case CloseReason::kUnknown:
+    case CloseReason::kCancelled:
+    case CloseReason::kRejected:
+      sharesheet_result = sharesheet::SharesheetResult::kCancel;
+      break;
   }
+
+  sharesheet_controller_->CloseBubble(sharesheet_result);
+
+  // We need to clear out the controller here to protect against calling
+  // CloseBubble() more than once, which will cause a crash.
+  sharesheet_controller_ = nullptr;
 }
 
 void NearbyShareDialogUI::SetAttachmentFromQueryParameter(const GURL& url) {

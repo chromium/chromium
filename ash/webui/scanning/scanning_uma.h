@@ -19,6 +19,12 @@ enum class ScanCompleteAction {
   kMaxValue = kMediaAppOpened,
 };
 
+enum class ScanMultiPageToolbarAction {
+  kRemovePage = 0,
+  kRescanPage = 1,
+  kMaxValue = kRescanPage,
+};
+
 enum class ScanJobFailureReason {
   kUnknownScannerError = 0,
   kScannerNotFound = 1,
@@ -29,7 +35,8 @@ enum class ScanJobFailureReason {
   kAdfEmpty = 6,
   kFlatbedOpen = 7,
   kIoError = 8,
-  kMaxValue = kIoError,
+  kSuccess = 9,
+  kMaxValue = kSuccess,
 };
 
 enum class ScanJobSettingsResolution {

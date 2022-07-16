@@ -13,12 +13,24 @@ buildflag_header("buildflags") {
   ]
 }
 
+source_set("feature_flags") {
+  sources = [
+    "feature_flags.h",
+    "feature_flags.mm",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 if (ios_enable_credential_provider_extension) {
   source_set("credential_provider") {
     configs += [ "//build/config/compiler:enable_arc" ]
     sources = [
       "archivable_credential+password_form.h",
       "archivable_credential+password_form.mm",
+      "credential_provider_migrator.h",
+      "credential_provider_migrator.mm",
       "credential_provider_service.h",
       "credential_provider_service.mm",
       "credential_provider_service_factory.h",
@@ -28,14 +40,18 @@ if (ios_enable_credential_provider_extension) {
       "credential_provider_util.h",
       "credential_provider_util.mm",
     ]
+    public_deps = [ "//base" ]
     deps = [
       ":buildflags",
+      ":feature_flags",
       "//base",
       "//components/autofill/core/common",
       "//components/keyed_service/core",
       "//components/keyed_service/ios",
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser:affiliation",
+      "//components/password_manager/core/common",
+      "//components/prefs:prefs",
       "//components/signin/public/identity_manager",
       "//ios/chrome/browser/browser_state",
       "//ios/chrome/browser/passwords",
@@ -58,6 +74,7 @@ if (ios_enable_credential_provider_extension) {
     testonly = true
     sources = [
       "archivable_credential+password_form_unittest.mm",
+      "credential_provider_migrator_unittest.mm",
       "credential_provider_service_unittest.mm",
     ]
     deps = [
@@ -65,6 +82,9 @@ if (ios_enable_credential_provider_extension) {
       "//base/test:test_support",
       "//components/autofill/core/common",
       "//components/password_manager/core/browser:test_support",
+      "//components/password_manager/core/common",
+      "//components/prefs",
+      "//components/prefs:test_support",
       "//ios/chrome/browser/browser_state:test_support",
       "//ios/chrome/browser/signin",
       "//ios/chrome/browser/signin:test_support",

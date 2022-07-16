@@ -97,6 +97,12 @@ def GetAvailableTcpPort():
   return port
 
 
+def RunGnSdkFunction(script, function):
+  script_path = os.path.join(SDK_ROOT, 'bin', script)
+  function_cmd = ['bash', '-c', '. %s; %s' % (script_path, function)]
+  return SubprocessCallWithTimeout(function_cmd)
+
+
 def SubprocessCallWithTimeout(command, silent=False, timeout_secs=None):
   """Helper function for running a command.
 
@@ -112,11 +118,15 @@ def SubprocessCallWithTimeout(command, silent=False, timeout_secs=None):
 
   if silent:
     devnull = open(os.devnull, 'w')
-    process = subprocess.Popen(command, stdout=devnull, stderr=devnull)
+    process = subprocess.Popen(command,
+                               stdout=devnull,
+                               stderr=devnull,
+                               text=True)
   else:
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+                               stderr=subprocess.PIPE,
+                               text=True)
   timeout_timer = None
   if timeout_secs:
 

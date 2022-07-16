@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/prefs/prefs_export.h"
 
 namespace base {
@@ -26,6 +25,10 @@ class COMPONENTS_PREFS_EXPORT PrefValueMap {
   using const_iterator = Map::const_iterator;
 
   PrefValueMap();
+
+  PrefValueMap(const PrefValueMap&) = delete;
+  PrefValueMap& operator=(const PrefValueMap&) = delete;
+
   virtual ~PrefValueMap();
 
   // Gets the value for |key| and stores it in |value|. Ownership remains with
@@ -91,8 +94,6 @@ class COMPONENTS_PREFS_EXPORT PrefValueMap {
 
  private:
   Map prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefValueMap);
 };
 
 #endif  // COMPONENTS_PREFS_PREF_VALUE_MAP_H_

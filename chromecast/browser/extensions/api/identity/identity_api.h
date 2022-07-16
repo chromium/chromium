@@ -20,14 +20,15 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction {
 
   IdentityGetAuthTokenFunction();
 
+  IdentityGetAuthTokenFunction(const IdentityGetAuthTokenFunction&) = delete;
+  IdentityGetAuthTokenFunction& operator=(const IdentityGetAuthTokenFunction&) =
+      delete;
+
  protected:
   ~IdentityGetAuthTokenFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IdentityGetAuthTokenFunction);
 };
 
 // Stub. See the IDL file for documentation.
@@ -37,14 +38,16 @@ class IdentityRemoveCachedAuthTokenFunction : public ExtensionFunction {
 
   IdentityRemoveCachedAuthTokenFunction();
 
+  IdentityRemoveCachedAuthTokenFunction(
+      const IdentityRemoveCachedAuthTokenFunction&) = delete;
+  IdentityRemoveCachedAuthTokenFunction& operator=(
+      const IdentityRemoveCachedAuthTokenFunction&) = delete;
+
  protected:
   ~IdentityRemoveCachedAuthTokenFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IdentityRemoveCachedAuthTokenFunction);
 };
 
 }  // namespace cast

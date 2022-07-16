@@ -12,8 +12,8 @@ namespace syncer {
 
 class EntityDataTest : public testing::Test {
  protected:
-  EntityDataTest() {}
-  ~EntityDataTest() override {}
+  EntityDataTest() = default;
+  ~EntityDataTest() override = default;
 };
 
 TEST_F(EntityDataTest, IsDeleted) {

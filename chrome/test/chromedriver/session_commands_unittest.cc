@@ -616,9 +616,9 @@ TEST(SessionCommandsTest, ConfigureSession_allSet) {
   ASSERT_TRUE(capabilities_out.logging_prefs["driver"]);
   // Verify session settings are correct
   ASSERT_EQ(kAccept, session.unhandled_prompt_behavior);
-  ASSERT_EQ(base::TimeDelta::FromSeconds(57), session.implicit_wait);
-  ASSERT_EQ(base::TimeDelta::FromSeconds(29), session.page_load_timeout);
-  ASSERT_EQ(base::TimeDelta::FromSeconds(21), session.script_timeout);
+  ASSERT_EQ(base::Seconds(57), session.implicit_wait);
+  ASSERT_EQ(base::Seconds(29), session.page_load_timeout);
+  ASSERT_EQ(base::Seconds(21), session.script_timeout);
   ASSERT_TRUE(session.strict_file_interactability);
   ASSERT_EQ(Log::Level::kDebug, session.driver_log.get()->min_level());
 }
@@ -648,9 +648,9 @@ TEST(SessionCommandsTest, ConfigureSession_defaults) {
   ASSERT_TRUE(desired_caps_out->is_dict());
   ASSERT_TRUE(merged_out.is_dict());
   // Testing specific values could be fragile, but want to verify they are set
-  ASSERT_EQ(base::TimeDelta::FromSeconds(0), session.implicit_wait);
-  ASSERT_EQ(base::TimeDelta::FromSeconds(300), session.page_load_timeout);
-  ASSERT_EQ(base::TimeDelta::FromSeconds(30), session.script_timeout);
+  ASSERT_EQ(base::Seconds(0), session.implicit_wait);
+  ASSERT_EQ(base::Seconds(300), session.page_load_timeout);
+  ASSERT_EQ(base::Seconds(30), session.script_timeout);
   ASSERT_FALSE(session.strict_file_interactability);
   ASSERT_EQ(Log::Level::kWarning, session.driver_log.get()->min_level());
   // w3c values:

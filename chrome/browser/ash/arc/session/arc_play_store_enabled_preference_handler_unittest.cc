@@ -21,6 +21,7 @@
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -31,9 +32,10 @@
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/arc/test/fake_arc_session.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,6 +56,11 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
  public:
   ArcPlayStoreEnabledPreferenceHandlerTest()
       : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
+
+  ArcPlayStoreEnabledPreferenceHandlerTest(
+      const ArcPlayStoreEnabledPreferenceHandlerTest&) = delete;
+  ArcPlayStoreEnabledPreferenceHandlerTest& operator=(
+      const ArcPlayStoreEnabledPreferenceHandlerTest&) = delete;
 
   void SetUp() override {
     // Need to initialize DBusThreadManager before ArcSessionManager's
@@ -93,6 +100,9 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
     identity_test_env_profile_adaptor_->identity_test_env()
         ->MakePrimaryAccountAvailable(kTestEmail,
                                       signin::ConsentLevel::kSignin);
+
+    TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
+    user_manager::KnownUser::RegisterPrefs(pref_service_.registry());
   }
 
   void TearDown() override {
@@ -100,6 +110,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
     arc_session_manager_.reset();
     identity_test_env_profile_adaptor_.reset();
     profile_.reset();
+    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
     chromeos::UpstartClient::Shutdown();
     chromeos::SessionManagerClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
@@ -147,8 +158,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
   std::unique_ptr<ArcPlayStoreEnabledPreferenceHandler> preference_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreEnabledPreferenceHandlerTest);
+  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, PrefChangeTriggersService) {
@@ -239,7 +249,6 @@ TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, MiniStateUnmanaged) {
             arc_session_manager()->state());
 
   // Take new user through OOBE.
-  GetFakeUserManager()->set_current_user_new(true);
   CreateLoginDisplayHost();
   ASSERT_TRUE(IsArcOobeOptInActive());
 
@@ -265,7 +274,6 @@ TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, MiniStateManagedDisabled) {
             arc_session_manager()->state());
 
   // Take new user through OOBE.
-  GetFakeUserManager()->set_current_user_new(true);
   CreateLoginDisplayHost();
   ASSERT_TRUE(IsArcOobeOptInActive());
 
@@ -294,7 +302,6 @@ TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, MiniStateManagedEnabled) {
             arc_session_manager()->state());
 
   // Take new user through OOBE.
-  GetFakeUserManager()->set_current_user_new(true);
   CreateLoginDisplayHost();
   ASSERT_TRUE(IsArcOobeOptInActive());
 

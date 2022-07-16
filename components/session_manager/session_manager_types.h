@@ -23,7 +23,8 @@ enum class SessionState {
 
   // A transient state between LOGIN_PRIMARY/LOGIN_SECONDARY and ACTIVE to
   // prepare user desktop environment (e.g. launching browser windows) while the
-  // login screen is still visible.
+  // login screen is still visible. Should only be set from OOBE,
+  // LOGIN_PRIMARY, or LOGIN_SECONDARY.
   LOGGED_IN_NOT_ACTIVE,
 
   // A user(s) has logged in *and* login UI is hidden i.e. user session is

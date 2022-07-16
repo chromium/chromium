@@ -36,7 +36,7 @@ class CompositorTimingHistoryTest : public testing::Test {
   CompositorTimingHistoryTest()
       : rendering_stats_(RenderingStatsInstrumentation::Create()),
         timing_history_(this, rendering_stats_.get()) {
-    AdvanceNowBy(base::TimeDelta::FromMilliseconds(1));
+    AdvanceNowBy(base::Milliseconds(1));
     timing_history_.SetRecordingEnabled(true);
   }
 
@@ -66,22 +66,20 @@ base::TimeTicks TestCompositorTimingHistory::Now() const {
 }
 
 TEST_F(CompositorTimingHistoryTest, AllSequential_Commit) {
-  base::TimeDelta one_second = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta one_second = base::Seconds(1);
 
   // Critical BeginMainFrames are faster than non critical ones,
   // as expected.
-  base::TimeDelta begin_main_frame_queue_duration =
-      base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta begin_main_frame_queue_duration = base::Milliseconds(1);
   base::TimeDelta begin_main_frame_start_to_ready_to_commit_duration =
-      base::TimeDelta::FromMilliseconds(1);
-  base::TimeDelta prepare_tiles_duration = base::TimeDelta::FromMilliseconds(2);
+      base::Milliseconds(1);
+  base::TimeDelta prepare_tiles_duration = base::Milliseconds(2);
   base::TimeDelta prepare_tiles_end_to_ready_to_activate_duration =
-      base::TimeDelta::FromMilliseconds(1);
-  base::TimeDelta commit_to_ready_to_activate_duration =
-      base::TimeDelta::FromMilliseconds(3);
-  base::TimeDelta commit_duration = base::TimeDelta::FromMilliseconds(1);
-  base::TimeDelta activate_duration = base::TimeDelta::FromMilliseconds(4);
-  base::TimeDelta draw_duration = base::TimeDelta::FromMilliseconds(5);
+      base::Milliseconds(1);
+  base::TimeDelta commit_to_ready_to_activate_duration = base::Milliseconds(3);
+  base::TimeDelta commit_duration = base::Milliseconds(1);
+  base::TimeDelta activate_duration = base::Milliseconds(4);
+  base::TimeDelta draw_duration = base::Milliseconds(5);
 
   timing_history_.WillBeginMainFrame(GetFakeBeginFrameArg());
   AdvanceNowBy(begin_main_frame_queue_duration);
@@ -125,17 +123,16 @@ TEST_F(CompositorTimingHistoryTest, AllSequential_Commit) {
 }
 
 TEST_F(CompositorTimingHistoryTest, AllSequential_BeginMainFrameAborted) {
-  base::TimeDelta one_second = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta one_second = base::Seconds(1);
 
-  base::TimeDelta begin_main_frame_queue_duration =
-      base::TimeDelta::FromMilliseconds(1);
+  base::TimeDelta begin_main_frame_queue_duration = base::Milliseconds(1);
   base::TimeDelta begin_main_frame_start_to_ready_to_commit_duration =
-      base::TimeDelta::FromMilliseconds(1);
-  base::TimeDelta prepare_tiles_duration = base::TimeDelta::FromMilliseconds(2);
+      base::Milliseconds(1);
+  base::TimeDelta prepare_tiles_duration = base::Milliseconds(2);
   base::TimeDelta prepare_tiles_end_to_ready_to_activate_duration =
-      base::TimeDelta::FromMilliseconds(1);
-  base::TimeDelta activate_duration = base::TimeDelta::FromMilliseconds(4);
-  base::TimeDelta draw_duration = base::TimeDelta::FromMilliseconds(5);
+      base::Milliseconds(1);
+  base::TimeDelta activate_duration = base::Milliseconds(4);
+  base::TimeDelta draw_duration = base::Milliseconds(5);
 
   viz::BeginFrameArgs args_ = GetFakeBeginFrameArg(false);
   timing_history_.WillBeginMainFrame(args_);
@@ -173,11 +170,11 @@ TEST_F(CompositorTimingHistoryTest, AllSequential_BeginMainFrameAborted) {
 TEST_F(CompositorTimingHistoryTest, BeginMainFrame_CriticalFaster) {
   // Critical BeginMainFrames are faster than non critical ones.
   base::TimeDelta begin_main_frame_queue_duration_critical =
-      base::TimeDelta::FromMilliseconds(1);
+      base::Milliseconds(1);
   base::TimeDelta begin_main_frame_queue_duration_not_critical =
-      base::TimeDelta::FromMilliseconds(2);
+      base::Milliseconds(2);
   base::TimeDelta begin_main_frame_start_to_ready_to_commit_duration =
-      base::TimeDelta::FromMilliseconds(1);
+      base::Milliseconds(1);
 
   viz::BeginFrameArgs args_ = GetFakeBeginFrameArg();
   timing_history_.WillBeginMainFrame(args_);
@@ -206,11 +203,11 @@ TEST_F(CompositorTimingHistoryTest, BeginMainFrames_OldCriticalSlower) {
   // which is unexpected, but could occur if one type of frame
   // hasn't been sent for a significant amount of time.
   base::TimeDelta begin_main_frame_queue_duration_critical =
-      base::TimeDelta::FromMilliseconds(2);
+      base::Milliseconds(2);
   base::TimeDelta begin_main_frame_queue_duration_not_critical =
-      base::TimeDelta::FromMilliseconds(1);
+      base::Milliseconds(1);
   base::TimeDelta begin_main_frame_start_to_ready_to_commit_duration =
-      base::TimeDelta::FromMilliseconds(1);
+      base::Milliseconds(1);
 
   // A single critical frame that is slow.
   viz::BeginFrameArgs args_ = GetFakeBeginFrameArg();
@@ -245,11 +242,11 @@ TEST_F(CompositorTimingHistoryTest, BeginMainFrames_NewCriticalSlower) {
   // which is unexpected, but could occur if one type of frame
   // hasn't been sent for a significant amount of time.
   base::TimeDelta begin_main_frame_queue_duration_critical =
-      base::TimeDelta::FromMilliseconds(2);
+      base::Milliseconds(2);
   base::TimeDelta begin_main_frame_queue_duration_not_critical =
-      base::TimeDelta::FromMilliseconds(1);
+      base::Milliseconds(1);
   base::TimeDelta begin_main_frame_start_to_ready_to_commit_duration =
-      base::TimeDelta::FromMilliseconds(1);
+      base::Milliseconds(1);
 
   // A single non critical frame that is fast.
   viz::BeginFrameArgs args_ = GetFakeBeginFrameArg(false);

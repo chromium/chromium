@@ -86,7 +86,7 @@ void NavigateParams::FillNavigateParamsFromOpenURLParams(
   //   The following NavigateParams don't have an equivalent in OpenURLParams:
   //     browser
   //     contents_to_insert
-  //     created_with_opener
+  //     opened_by_another_window
   //     extension_app_id
   //     frame_name
   //     group

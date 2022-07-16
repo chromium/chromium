@@ -24,6 +24,10 @@ class Extension;
 class RequirementsChecker : public PreloadCheck {
  public:
   explicit RequirementsChecker(scoped_refptr<const Extension> extension);
+
+  RequirementsChecker(const RequirementsChecker&) = delete;
+  RequirementsChecker& operator=(const RequirementsChecker&) = delete;
+
   ~RequirementsChecker() override;
 
   // PreloadCheck:
@@ -45,8 +49,6 @@ class RequirementsChecker : public PreloadCheck {
   Errors errors_;
 
   base::WeakPtrFactory<RequirementsChecker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RequirementsChecker);
 };
 
 }  // namespace extensions

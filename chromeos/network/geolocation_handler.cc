@@ -144,7 +144,7 @@ void GeolocationHandler::RequestGeolocationObjects() {
 
 void GeolocationHandler::GeolocationCallback(
     absl::optional<base::Value> properties) {
-  if (!properties) {
+  if (!properties || !properties->is_dict()) {
     LOG(ERROR) << "Failed to get Geolocation data";
     return;
   }
@@ -197,8 +197,7 @@ void GeolocationHandler::AddAccessPointFromDict(const base::Value& entry) {
   if (age_str) {
     int64_t age_ms;
     if (base::StringToInt64(*age_str, &age_ms)) {
-      wap.timestamp =
-          base::Time::Now() - base::TimeDelta::FromMilliseconds(age_ms);
+      wap.timestamp = base::Time::Now() - base::Milliseconds(age_ms);
     }
   }
 
@@ -236,8 +235,7 @@ void GeolocationHandler::AddCellTowerFromDict(const base::Value& entry) {
   if (age_str) {
     int64_t age_ms;
     if (base::StringToInt64(*age_str, &age_ms)) {
-      ct.timestamp =
-          base::Time::Now() - base::TimeDelta::FromMilliseconds(age_ms);
+      ct.timestamp = base::Time::Now() - base::Milliseconds(age_ms);
     }
   }
 

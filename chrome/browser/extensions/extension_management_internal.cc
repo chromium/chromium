@@ -158,7 +158,7 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
     // Get the list of URLPatterns.
     if (dict->GetListWithoutPathExpansion(key,
                                           &host_list_value)) {
-      if (host_list_value->GetSize() >
+      if (host_list_value->GetList().size() >
           schema_constants::kMaxItemsURLPatternSet) {
         LOG(WARNING) << "Exceeded maximum number of URL match patterns ("
                      << schema_constants::kMaxItemsURLPatternSet
@@ -168,7 +168,7 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
       out_value->ClearPatterns();
       const int extension_scheme_mask =
           URLPattern::GetValidSchemeMaskForExtensions();
-      auto numItems = std::min(host_list_value->GetSize(),
+      auto numItems = std::min(host_list_value->GetList().size(),
                                schema_constants::kMaxItemsURLPatternSet);
       for (size_t i = 0; i < numItems; ++i) {
         std::string unparsed_str;

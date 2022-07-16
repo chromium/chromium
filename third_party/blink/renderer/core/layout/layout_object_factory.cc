@@ -98,9 +98,9 @@ inline BaseType* CreateObject(Node& node,
     force_legacy = legacy == LegacyLayout::kForce;
 
     if (!force_legacy)
-      return new NGType(element);
+      return MakeGarbageCollected<NGType>(element);
   }
-  BaseType* new_object = new LegacyType(element);
+  BaseType* new_object = MakeGarbageCollected<LegacyType>(element);
   if (force_legacy)
     new_object->SetForceLegacyLayout();
   return new_object;
@@ -260,9 +260,9 @@ LayoutObject* LayoutObjectFactory::CreateCounter(
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     force_legacy = legacy == LegacyLayout::kForce;
     if (!force_legacy)
-      return new LayoutNGCounter(pseduo, counter);
+      return MakeGarbageCollected<LayoutNGCounter>(pseduo, counter);
   }
-  auto* const new_object = new LayoutCounter(pseduo, counter);
+  auto* const new_object = MakeGarbageCollected<LayoutCounter>(pseduo, counter);
   if (force_legacy)
     new_object->SetForceLegacyLayout();
   return new_object;
@@ -321,9 +321,9 @@ LayoutText* LayoutObjectFactory::CreateText(Node* node,
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     force_legacy = legacy == LegacyLayout::kForce;
     if (!force_legacy)
-      return new LayoutNGText(node, str);
+      return MakeGarbageCollected<LayoutNGText>(node, str);
   }
-  LayoutText* layout_text = new LayoutText(node, str);
+  LayoutText* layout_text = MakeGarbageCollected<LayoutText>(node, str);
   if (force_legacy)
     layout_text->SetForceLegacyLayout();
   return layout_text;
@@ -337,9 +337,10 @@ LayoutText* LayoutObjectFactory::CreateTextCombine(
   if (RuntimeEnabledFeatures::LayoutNGTextCombineEnabled()) {
     force_legacy = legacy == LegacyLayout::kForce;
     if (!force_legacy)
-      return new LayoutNGText(node, str);
+      return MakeGarbageCollected<LayoutNGText>(node, str);
   }
-  LayoutText* const layout_text = new LayoutTextCombine(node, str);
+  LayoutText* const layout_text =
+      MakeGarbageCollected<LayoutTextCombine>(node, str);
   if (force_legacy)
     layout_text->SetForceLegacyLayout();
   return layout_text;
@@ -354,11 +355,13 @@ LayoutTextFragment* LayoutObjectFactory::CreateTextFragment(
   bool force_legacy = false;
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     force_legacy = legacy == LegacyLayout::kForce;
-    if (!force_legacy)
-      return new LayoutNGTextFragment(node, str, start_offset, length);
+    if (!force_legacy) {
+      return MakeGarbageCollected<LayoutNGTextFragment>(node, str, start_offset,
+                                                        length);
+    }
   }
   LayoutTextFragment* layout_text_fragment =
-      new LayoutTextFragment(node, str, start_offset, length);
+      MakeGarbageCollected<LayoutTextFragment>(node, str, start_offset, length);
   if (force_legacy)
     layout_text_fragment->SetForceLegacyLayout();
   return layout_text_fragment;

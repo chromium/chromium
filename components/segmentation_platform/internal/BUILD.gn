@@ -44,11 +44,15 @@ static_library("internal") {
     "execution/model_execution_manager_factory.cc",
     "execution/model_execution_manager_factory.h",
     "execution/model_execution_status.h",
+    "platform_options.cc",
+    "platform_options.h",
     "scheduler/model_execution_scheduler.h",
     "scheduler/model_execution_scheduler_impl.cc",
     "scheduler/model_execution_scheduler_impl.h",
     "segmentation_platform_service_impl.cc",
     "segmentation_platform_service_impl.h",
+    "selection/segment_score_provider.cc",
+    "selection/segment_score_provider.h",
     "selection/segment_selector.h",
     "selection/segment_selector_impl.cc",
     "selection/segment_selector_impl.h",
@@ -66,7 +70,6 @@ static_library("internal") {
 
   deps = [
     "//base",
-    "//base/util/values:values_util",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
     "//components/prefs",
@@ -91,7 +94,7 @@ static_library("internal") {
 
     deps += [
       "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite-support",
+      "//third_party/tflite_support",
     ]
   }
 
@@ -132,6 +135,7 @@ source_set("unit_tests") {
     "execution/model_execution_manager_factory_unittest.cc",
     "scheduler/model_execution_scheduler_unittest.cc",
     "segmentation_platform_service_impl_unittest.cc",
+    "selection/segment_score_provider_unittest.cc",
     "selection/segment_selector_unittest.cc",
     "selection/segmentation_result_prefs_unittest.cc",
     "signals/histogram_signal_handler_unittest.cc",

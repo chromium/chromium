@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -34,8 +35,9 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_registry.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -59,17 +61,19 @@ namespace {
 
 // Helper to ensure all extension hosts are destroyed during the test. If a host
 // is still alive, the Profile can not be destroyed in
-// BrowserProcessImpl::StartTearDown(). TODO(tapted): The existence of this
-// helper is probably a bug. Extension hosts do not currently block shutdown the
-// way a browser tab does. Maybe they should. See http://crbug.com/729476.
-class PopupHostWatcher : public content::NotificationObserver {
+// BrowserProcessImpl::StartTearDown().
+// TODO(tapted): The existence of this helper is probably a bug. Extension
+// hosts do not currently block shutdown the way a browser tab does. Maybe they
+// should. See http://crbug.com/729476.
+class PopupHostWatcher : public ExtensionHostRegistry::Observer {
  public:
-  PopupHostWatcher() {
-    registrar_.Add(this, NOTIFICATION_EXTENSION_HOST_CREATED,
-                   content::NotificationService::AllSources());
-    registrar_.Add(this, NOTIFICATION_EXTENSION_HOST_DESTROYED,
-                   content::NotificationService::AllSources());
+  explicit PopupHostWatcher(content::BrowserContext* browser_context) {
+    host_registry_observation_.Observe(
+        ExtensionHostRegistry::Get(browser_context));
   }
+
+  PopupHostWatcher(const PopupHostWatcher&) = delete;
+  PopupHostWatcher& operator=(const PopupHostWatcher&) = delete;
 
   void Wait() {
     if (created_ == destroyed_)
@@ -85,29 +89,40 @@ class PopupHostWatcher : public content::NotificationObserver {
   int created() const { return created_; }
   int destroyed() const { return destroyed_; }
 
-  // NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
+  // ExtensionHostRegistry::Observer:
+  void OnExtensionHostRenderProcessReady(
+      content::BrowserContext* browser_context,
+      ExtensionHost* host) override {
     // Only track lifetimes for popup window ExtensionHost instances.
-    const ExtensionHost* host =
-        content::Details<const ExtensionHost>(details).ptr();
-    DCHECK(host);
     if (host->extension_host_type() != mojom::ViewType::kExtensionPopup)
       return;
 
-    ++(type == NOTIFICATION_EXTENSION_HOST_CREATED ? created_ : destroyed_);
+    ++created_;
+    QuitIfSatisfied();
+  }
+
+  void OnExtensionHostDestroyed(content::BrowserContext* browser_context,
+                                ExtensionHost* host) override {
+    // Only track lifetimes for popup window ExtensionHost instances.
+    if (host->extension_host_type() != mojom::ViewType::kExtensionPopup)
+      return;
+
+    ++destroyed_;
+    QuitIfSatisfied();
+  }
+
+ private:
+  void QuitIfSatisfied() {
     if (!quit_closure_.is_null() && created_ == destroyed_)
       quit_closure_.Run();
   }
 
- private:
-  content::NotificationRegistrar registrar_;
   base::RepeatingClosure quit_closure_;
   int created_ = 0;
   int destroyed_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PopupHostWatcher);
+  base::ScopedObservation<ExtensionHostRegistry,
+                          ExtensionHostRegistry::Observer>
+      host_registry_observation_{this};
 };
 
 // chrome.browserAction API tests that interact with the UI in such a way that
@@ -116,12 +131,17 @@ class PopupHostWatcher : public content::NotificationObserver {
 class BrowserActionInteractiveTest : public ExtensionApiTest {
  public:
   BrowserActionInteractiveTest() {}
+
+  BrowserActionInteractiveTest(const BrowserActionInteractiveTest&) = delete;
+  BrowserActionInteractiveTest& operator=(const BrowserActionInteractiveTest&) =
+      delete;
+
   ~BrowserActionInteractiveTest() override {}
 
   // BrowserTestBase:
   void SetUpOnMainThread() override {
-    host_watcher_ = std::make_unique<PopupHostWatcher>();
     ExtensionApiTest::SetUpOnMainThread();
+    host_watcher_ = std::make_unique<PopupHostWatcher>(profile());
     host_resolver()->AddRule("*", "127.0.0.1");
     EXPECT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   }
@@ -131,9 +151,11 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
     // called after this. But relying on the window close to close the
     // extension host can cause flakes. See http://crbug.com/729476.
     // Waiting here requires individual tests to ensure their popup has closed.
-    ExtensionApiTest::TearDownOnMainThread();
     host_watcher_->Wait();
     EXPECT_EQ(host_watcher_->created(), host_watcher_->destroyed());
+    // Destroy the PopupHostWatcher to ensure it stops watching the profile.
+    host_watcher_.reset();
+    ExtensionApiTest::TearDownOnMainThread();
   }
 
  protected:
@@ -191,9 +213,8 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
   // Trigger a focus loss to close the popup.
   void ClosePopupViaFocusLoss() {
     EXPECT_TRUE(ExtensionActionTestHelper::Create(browser())->HasPopup());
-    content::WindowedNotificationObserver observer(
-        extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-        content::NotificationService::AllSources());
+
+    ExtensionHostTestHelper host_helper(profile());
 
 #if defined(OS_MAC)
     // ClickOnView() in an inactive window is not robust on Mac. The click does
@@ -213,7 +234,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 
     // Wait for the notification to achieve a consistent state and verify that
     // the popup was properly torn down.
-    observer.Wait();
+    host_helper.WaitForHostDestroyed();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -221,14 +242,13 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 
  private:
   std::unique_ptr<PopupHostWatcher> host_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserActionInteractiveTest);
 };
 
 // Tests opening a popup using the chrome.browserAction.openPopup API. This test
 // opens a popup in the starting window, closes the popup, creates a new window
 // and opens a popup in the new window. Both popups should succeed in opening.
-IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopup) {
+// TODO(crbug.com/1233996): Test flaking frequently.
+IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DISABLED_TestOpenPopup) {
   auto browserActionBar = ExtensionActionTestHelper::Create(browser());
   // Setup extension message listener to wait for javascript to finish running.
   ExtensionTestMessageListener listener("ready", true);
@@ -389,13 +409,11 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TabSwitchClosesPopup) {
             browser()->tab_strip_model()->GetActiveWebContents());
   OpenPopupViaAPI(false);
 
-  content::WindowedNotificationObserver observer(
-      extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-      content::NotificationService::AllSources());
+  ExtensionHostTestHelper host_helper(profile());
   // Change active tabs, the extension popup should close.
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});
-  observer.Wait();
+  host_helper.WaitForHostDestroyed();
 
   EXPECT_FALSE(ExtensionActionTestHelper::Create(browser())->HasPopup());
 }
@@ -429,8 +447,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
   ASSERT_TRUE(extension) << message_;
 
   // Navigate to one of the extension's pages in a tab.
-  ui_test_utils::NavigateToURL(browser(),
-                               extension->GetResourceURL("popup.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("popup.html")));
   content::WebContents* tab_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -447,13 +465,10 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
   zoom_change_watcher.Wait();
 
   // Open the extension's popup.
-  content::WindowedNotificationObserver popup_observer(
-      NOTIFICATION_EXTENSION_HOST_CREATED,
-      content::NotificationService::AllSources());
+  ExtensionHostTestHelper host_helper(profile(), extension->id());
   OpenPopupViaToolbar(extension->id());
-  popup_observer.Wait();
-  ExtensionHost* extension_host =
-      content::Details<ExtensionHost>(popup_observer.details()).ptr();
+  ExtensionHost* extension_host = host_helper.WaitForRenderProcessReady();
+  ASSERT_TRUE(extension_host);
   content::WebContents* popup_contents = extension_host->host_contents();
 
   // The popup should not use the per-origin zoom level that was set by zooming
@@ -493,10 +508,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
 class BrowserActionInteractiveViewsTest : public BrowserActionInteractiveTest {
  public:
   BrowserActionInteractiveViewsTest() = default;
-  ~BrowserActionInteractiveViewsTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserActionInteractiveViewsTest);
+  BrowserActionInteractiveViewsTest(const BrowserActionInteractiveViewsTest&) =
+      delete;
+  BrowserActionInteractiveViewsTest& operator=(
+      const BrowserActionInteractiveViewsTest&) = delete;
+
+  ~BrowserActionInteractiveViewsTest() override = default;
 };
 
 // Test closing the browser while inspecting an extension popup with dev tools.
@@ -563,7 +581,7 @@ class MainFrameSizeWaiter : public content::WebContentsObserver {
     return web_contents()->GetContainerBounds().size();
   }
 
-  void MainFrameWasResized(bool width_changed) override {
+  void PrimaryMainFrameWasResized(bool width_changed) override {
     if (current_size() == size_to_wait_for_)
       run_loop_.Quit();
   }
@@ -572,7 +590,16 @@ class MainFrameSizeWaiter : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, BrowserActionPopup) {
+// TODO(crbug.com/1249851): Test crashes on Windows
+#if defined(OS_WIN)
+#define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
+#elif defined(OS_LINUX) && defined(THREAD_SANITIZER)
+// TODO(crbug.com/1269076): Test is flaky for linux tsan builds
+#define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
+#else
+#define MAYBE_BrowserActionPopup BrowserActionPopup
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, MAYBE_BrowserActionPopup) {
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("browser_action/popup")));
   const Extension* extension = GetSingleLoadedExtension();
@@ -591,8 +618,12 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, BrowserActionPopup) {
   ASSERT_GT(minSize.width() + kGrowFactor * 2, maxSize.width());
 
   // Simulate a click on the browser action and verify the size of the resulting
-  // popup.
-  const gfx::Size kExpectedSizes[] = {minSize, middleSize, maxSize};
+  // popup. It is important to do minSize last, because all browser actions
+  // start at minSize and later increase in size. The MainFrameSizeWaiter won't
+  // wait for the popup.js code to run in the minSize case, which can prevent it
+  // from setting and storing the size for the next iteration, resulting in test
+  // flakiness.
+  const gfx::Size kExpectedSizes[] = {maxSize, middleSize, minSize};
   for (size_t i = 0; i < base::size(kExpectedSizes); i++) {
     content::WebContentsAddedObserver popup_observer;
     actions_bar->Press(extension->id());

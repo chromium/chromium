@@ -4,11 +4,15 @@
 
 package org.chromium.base;
 
+import android.app.Activity;
+import android.content.res.Resources.NotFoundException;
 import android.os.Looper;
 import android.os.MessageQueue;
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.Printer;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
@@ -627,6 +631,9 @@ public class TraceEvent implements AutoCloseable {
                         enabled ? LooperMonitorHolder.sInstance : null);
             }
         }
+        if (sUiThreadReady.get()) {
+            ViewHierarchyDumper.updateEnabledState();
+        }
     }
 
     /**
@@ -672,6 +679,9 @@ public class TraceEvent implements AutoCloseable {
         sUiThreadReady.set(true);
         if (sATrace != null) {
             sATrace.onUiThreadReady();
+        }
+        if (sEnabled) {
+            ViewHierarchyDumper.updateEnabledState();
         }
     }
 
@@ -786,5 +796,122 @@ public class TraceEvent implements AutoCloseable {
         void endToplevel(String target);
         void startAsync(String name, long id);
         void finishAsync(String name, long id);
+        boolean viewHierarchyDumpEnabled();
+        void initViewHierarchyDump();
+        long startActivityDump(String name, long dumpProtoPtr);
+        void addViewDump(int id, int parentId, boolean isShown, boolean isDirty, String className,
+                String resourceName, long activityProtoPtr);
+    }
+
+    /**
+     * A method to be called by native code that uses the ViewHierarchyDumper class to emit a trace
+     * event with views of all running activities of the app.
+     */
+    @CalledByNative
+    public static void dumpViewHierarchy(long dumpProtoPtr) {
+        if (!ApplicationStatus.isInitialized()) {
+            return;
+        }
+
+        for (Activity a : ApplicationStatus.getRunningActivities()) {
+            long activityProtoPtr =
+                    TraceEventJni.get().startActivityDump(a.getClass().getName(), dumpProtoPtr);
+            ViewHierarchyDumper.dumpView(
+                    /*parentId=*/0, a.getWindow().getDecorView().getRootView(), activityProtoPtr);
+        }
+    }
+
+    /**
+     * A class that periodically dumps the view hierarchy of all running activities of the app to
+     * the trace. Enabled/disabled via the disabled-by-default-android_view_hierarchy trace
+     * category.
+     *
+     * The class registers itself as an idle handler, so that it can run when there are no other
+     * tasks in the queue (but not more often than once a second). When the queue is idle,
+     * it calls the initViewHierarchyDump() native function which in turn calls the
+     * TraceEvent.dumpViewHierarchy() with a pointer to the proto buffer to fill in. The
+     * TraceEvent.dumpViewHierarchy() traverses all activities and dumps view hierarchy for every
+     * activity. Altogether, the call sequence is as follows:
+     *   ViewHierarchyDumper.queueIdle()
+     *    -> JNI#initViewHierarchyDump()
+     *        -> TraceEvent.dumpViewHierarchy()
+     *            -> JNI#startActivityDump()
+     *            -> ViewHierarchyDumper.dumpView()
+     *                -> JNI#addViewDump()
+     */
+    private static final class ViewHierarchyDumper implements MessageQueue.IdleHandler {
+        private static final String EVENT_NAME = "TraceEvent.ViewHierarchyDumper";
+        private static final long MIN_VIEW_DUMP_INTERVAL_MILLIS = 1000L;
+        private static boolean sEnabled;
+        private static ViewHierarchyDumper sInstance;
+        private long mLastDumpTs;
+
+        @Override
+        public final boolean queueIdle() {
+            final long now = SystemClock.elapsedRealtime();
+            if (mLastDumpTs == 0 || (now - mLastDumpTs) > MIN_VIEW_DUMP_INTERVAL_MILLIS) {
+                mLastDumpTs = now;
+                TraceEventJni.get().initViewHierarchyDump();
+            }
+
+            // Returning true to keep IdleHandler alive.
+            return true;
+        }
+
+        public static void updateEnabledState() {
+            if (!ThreadUtils.runningOnUiThread()) {
+                ThreadUtils.postOnUiThread(() -> { updateEnabledState(); });
+                return;
+            }
+
+            if (TraceEventJni.get().viewHierarchyDumpEnabled()) {
+                if (sInstance == null) {
+                    sInstance = new ViewHierarchyDumper();
+                }
+                enable();
+            } else {
+                if (sInstance != null) {
+                    disable();
+                }
+            }
+        }
+
+        private static void dumpView(int parentId, View v, long activityProtoPtr) {
+            ThreadUtils.assertOnUiThread();
+            int id = v.getId();
+            String resource;
+            try {
+                resource = v.getResources() != null
+                        ? (id != 0 ? v.getResources().getResourceName(id) : "__no_id__")
+                        : "__no_resources__";
+            } catch (NotFoundException e) {
+                resource = "__name_not_found__";
+            }
+            TraceEventJni.get().addViewDump(id, parentId, v.isShown(), v.isDirty(),
+                    v.getClass().getSimpleName(), resource, activityProtoPtr);
+
+            if (v instanceof ViewGroup) {
+                ViewGroup vg = (ViewGroup) v;
+                for (int i = 0; i < vg.getChildCount(); i++) {
+                    dumpView(id, vg.getChildAt(i), activityProtoPtr);
+                }
+            }
+        }
+
+        private static void enable() {
+            ThreadUtils.assertOnUiThread();
+            if (!sEnabled) {
+                Looper.myQueue().addIdleHandler(sInstance);
+                sEnabled = true;
+            }
+        }
+
+        private static void disable() {
+            ThreadUtils.assertOnUiThread();
+            if (sEnabled) {
+                Looper.myQueue().removeIdleHandler(sInstance);
+                sEnabled = false;
+            }
+        }
     }
 }

@@ -7,7 +7,7 @@
 
 #include <map>
 #include "base/synchronization/lock.h"
-#include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
+#include "third_party/blink/public/mojom/widget/platform_widget.mojom-blink.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {

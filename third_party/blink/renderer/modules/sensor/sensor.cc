@@ -133,7 +133,7 @@ absl::optional<DOMHighResTimeStamp> Sensor::timestamp(
 
   return performance->MonotonicTimeToDOMHighResTimeStamp(
       base::TimeTicks() +
-      base::TimeDelta::FromSecondsD(sensor_proxy_->GetReading().timestamp()));
+      base::Seconds(sensor_proxy_->GetReading().timestamp()));
 }
 
 void Sensor::Trace(Visitor* visitor) const {
@@ -226,8 +226,7 @@ void Sensor::OnSensorReadingChanged() {
   } else {
     pending_reading_notification_ = PostDelayedCancellableTask(
         *GetExecutionContext()->GetTaskRunner(TaskType::kSensor), FROM_HERE,
-        std::move(sensor_reading_changed),
-        base::TimeDelta::FromSecondsD(waitingTime));
+        std::move(sensor_reading_changed), base::Seconds(waitingTime));
   }
 }
 

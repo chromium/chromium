@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.events.BrowserEventTest');
 goog.setTestOnly();
@@ -19,6 +11,7 @@ const BrowserEvent = goog.require('goog.events.BrowserEvent');
 const BrowserFeature = goog.require('goog.events.BrowserFeature');
 const Coordinate = goog.require('goog.math.Coordinate');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
+const recordFunction = goog.require('goog.testing.recordFunction');
 const testSuite = goog.require('goog.testing.testSuite');
 const userAgent = goog.require('goog.userAgent');
 
@@ -31,6 +24,7 @@ const PointerType = BrowserEvent.PointerType;
  * @param {number} button
  * @param {boolean=} opt_ctrlKey
  * @return {!BrowserEvent}
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function createMouseEvent(type, button, opt_ctrlKey) {
   return new BrowserEvent({type: type, button: button, ctrlKey: !!opt_ctrlKey});
@@ -42,6 +36,7 @@ function createMouseEvent(type, button, opt_ctrlKey) {
  * @param {!Coordinate} clientCoords
  * @param {!Coordinate} screenCoords
  * @return {!BrowserEvent}
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function createTouchEvent(type, target, clientCoords, screenCoords) {
   return new BrowserEvent({
@@ -61,6 +56,7 @@ function createTouchEvent(type, target, clientCoords, screenCoords) {
  * @param {number} pointerId
  * @param {string} pointerType
  * @return {!BrowserEvent}
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function createPointerEvent(type, pointerId, pointerType) {
   return new BrowserEvent(
@@ -72,6 +68,7 @@ function createPointerEvent(type, pointerId, pointerType) {
  * @param {BrowserEvent.MouseButton} button
  * @param {boolean} isActionButton
  * @return {!BrowserEvent}
+ * @suppress {missingReturn} suppression added to enable type checking
  */
 function assertIsButton(event, button, isActionButton) {
   for (let key in Button) {
@@ -88,7 +85,10 @@ testSuite({
     stubs.reset();
   },
 
-  /** @see https://bugzilla.mozilla.org/show_bug.cgi?id=497780 */
+  /**
+   * @see https://bugzilla.mozilla.org/show_bug.cgi?id=497780
+   * @suppress {visibility} suppression added to enable type checking
+   */
   testInvalidNodeBug() {
     if (!userAgent.GECKO) return;
 
@@ -97,8 +97,13 @@ testSuite({
     event.relatedTarget.__defineGetter__('nodeName', () => {
       throw new Error('https://bugzilla.mozilla.org/show_bug.cgi?id=497780');
     });
-    assertThrows(() => event.relatedTarget.nodeName);
+    assertThrows(/**
+                    @suppress {missingProperties} suppression added to enable
+                    type checking
+                  */
+                 () => event.relatedTarget.nodeName);
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const bEvent = new BrowserEvent(event);
     assertEquals(event, bEvent.event_);
     assertNull(bEvent.relatedTarget);
@@ -107,6 +112,7 @@ testSuite({
   testPreventDefault() {
     const event = {};
     event.defaultPrevented = false;
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const bEvent = new BrowserEvent(event);
     assertFalse(bEvent.defaultPrevented);
     bEvent.preventDefault();
@@ -116,16 +122,11 @@ testSuite({
   testDefaultPrevented() {
     const event = {};
     event.defaultPrevented = true;
+    event.preventDefault = recordFunction();
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const bEvent = new BrowserEvent(event);
     assertTrue(bEvent.defaultPrevented);
-  },
-
-  testIsButtonIe() {
-    stubs.set(BrowserFeature, 'HAS_W3C_BUTTON', false);
-    assertIsButton(createMouseEvent('mousedown', 1), Button.LEFT, true);
-    assertIsButton(createMouseEvent('click', 0), Button.LEFT, true);
-    assertIsButton(createMouseEvent('mousedown', 2), Button.RIGHT, false);
-    assertIsButton(createMouseEvent('mousedown', 4), Button.MIDDLE, false);
+    assertEquals(0, event.preventDefault.getCallCount());
   },
 
   testIsButtonWebkitMac() {
@@ -178,18 +179,21 @@ testSuite({
   },
 
   testGuardAgainstUndefinedTouchCoordinates() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const noChangedTouches = new BrowserEvent({
       type: 'touchstart',
       target: document.body,
       changedTouches: [],
     });
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const emptyTouchObject = new BrowserEvent({
       type: 'touchstart',
       target: document.body,
       changedTouches: [{}],
     });
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const onlyPageCoords = new BrowserEvent({
       type: 'touchstart',
       target: document.body,
@@ -219,6 +223,7 @@ testSuite({
   },
 
   testMSPointerEvent() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const event = createPointerEvent('MSPointerDown', 123, 4 /* mouse */);
     assertEquals(123, event.pointerId);
     assertEquals(PointerType.MOUSE, event.pointerType);

@@ -434,8 +434,8 @@ TEST_F(WinAudioTest, PCMWaveStreamPendingBytes) {
   NiceMock<MockAudioSourceCallback> source;
   EXPECT_TRUE(oas->Open());
 
-  const base::TimeDelta delay_100_ms = base::TimeDelta::FromMilliseconds(100);
-  const base::TimeDelta delay_200_ms = base::TimeDelta::FromMilliseconds(200);
+  const base::TimeDelta delay_100_ms = base::Milliseconds(100);
+  const base::TimeDelta delay_200_ms = base::Milliseconds(200);
 
   // Audio output stream has either a double or triple buffer scheme. We expect
   // the delay to reach up to 200 ms depending on the number of buffers used.
@@ -569,11 +569,10 @@ DWORD __stdcall SyncSocketThread(void* context) {
     // blocking call and will not proceed until we receive the signal.
     if (ctx.socket->Receive(&control_signal, sizeof(control_signal)) == 0)
       break;
-    base::TimeDelta delay =
-        base::TimeDelta::FromMicroseconds(ctx.buffer->params.delay_us);
+    base::TimeDelta delay = base::Microseconds(ctx.buffer->params.delay_us);
     base::TimeTicks delay_timestamp =
-        base::TimeTicks() + base::TimeDelta::FromMicroseconds(
-                                ctx.buffer->params.delay_timestamp_us);
+        base::TimeTicks() +
+        base::Microseconds(ctx.buffer->params.delay_timestamp_us);
     sine.OnMoreData(delay, delay_timestamp, 0, audio_bus.get());
 
     // Send the audio data to the Audio Stream.

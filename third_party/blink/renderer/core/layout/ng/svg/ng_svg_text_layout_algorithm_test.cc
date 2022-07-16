@@ -30,4 +30,24 @@ TEST_F(NGSVGTextLayoutAlgorithmTest, PositionOnPathCrash) {
   // Pass if no crashes.
 }
 
+TEST_F(NGSVGTextLayoutAlgorithmTest, EmptyTextLengthCrash) {
+  SetBodyInnerHTML(R"HTML(
+<svg>
+<text>
+C AxBxC
+<textPath textLength="100"></textPath></text>
+)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no crashes.
+}
+
+TEST_F(NGSVGTextLayoutAlgorithmTest, EmptyTextLengthSpacingAndGlyphsCrash) {
+  SetBodyInnerHTML(R"HTML(
+  <svg xmlns="http://www.w3.org/2000/svg">
+  <text textLength="5" lengthAdjust="spacingAndGlyphs">&zwj;<!---->&zwj;</text>
+  </svg>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no crashes.
+}
+
 }  // namespace blink

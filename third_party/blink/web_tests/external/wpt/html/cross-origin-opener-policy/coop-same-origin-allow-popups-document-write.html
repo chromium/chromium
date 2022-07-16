@@ -3,7 +3,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
-<script src="./resources/dispatcher.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
 <script>
 
 /*
@@ -13,8 +13,7 @@
   meta refresh. The openee/opener relationship must hold.
 */
 
-const directory = '/html/cross-origin-opener-policy';
-const executor_path = directory + '/resources/executor.html?pipe=';
+const executor_path = '/common/dispatcher/executor.html?pipe=';
 const coep_soap =
   "|header(Cross-Origin-Opener-Policy,same-origin-allow-popups)";
 const same_origin = get_host_info().HTTPS_ORIGIN;
@@ -42,20 +41,22 @@ promise_test(async t => {
     openee.document.close();
   `);
 
-  // Check the openee is loaded and has access to its opener.
+  // Check the openee is loaded without access to the opener.
   send(openee_token, `
-    send("${this_window_token}", opener != null)
-    send("${this_window_token}", opener.closed);
+    send("${this_window_token}", opener == null)
   `);
-  assert_equals(await receive(this_window_token), "true", "opener exists");
-  assert_equals(await receive(this_window_token), "false", "opener not closed");
+  assert_equals(await receive(this_window_token), "true", "opener == null");
 
-  // Check the opener has still access to its openee.
+  // To get the state of the openee reflected into the opener's process, waiting
+  // for the openee' document to load and the various fetch() with the
+  // dispatcher should be largely enough. However these aren't causal guarantee.
+  // So wait a bit to be sure:
+  await new Promise(r => t.step_timeout(r, 1000));
+
+  // Check the opener see the openee as 'closed' after the navigation.
   send(opener_token, `
-    send("${this_window_token}", openee != null)
-    send("${this_window_token}", openee.closed);
+    send("${this_window_token}", openee.closed)
   `);
-  assert_equals(await receive(this_window_token), "true", "openee exists");
-  assert_equals(await receive(this_window_token), "false", "openee not closed");
+  assert_equals(await receive(this_window_token), "true", "openee.closed");
 });
 </script>

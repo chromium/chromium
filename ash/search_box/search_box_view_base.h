@@ -10,7 +10,6 @@
 
 #include "ash/search_box/search_box_constants.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
@@ -50,6 +49,10 @@ class SearchBoxViewBase : public views::View,
                           public views::TextfieldController {
  public:
   explicit SearchBoxViewBase(SearchBoxViewDelegate* delegate);
+
+  SearchBoxViewBase(const SearchBoxViewBase&) = delete;
+  SearchBoxViewBase& operator=(const SearchBoxViewBase&) = delete;
+
   ~SearchBoxViewBase() override;
 
   struct InitParams {
@@ -121,8 +124,8 @@ class SearchBoxViewBase : public views::View,
   // Nofifies the active status change.
   void NotifyActiveChanged();
 
-  // Updates the visibility of close button.
-  void UpdateButtonsVisisbility();
+  // Updates the visibility of the close and assistant buttons.
+  void UpdateButtonsVisibility();
 
   // Overridden from views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
@@ -134,6 +137,7 @@ class SearchBoxViewBase : public views::View,
 
   SearchBoxViewDelegate* delegate() { return delegate_; }
   views::BoxLayout* box_layout() { return box_layout_; }
+  views::ImageView* search_icon() { return search_icon_; }
 
   void SetSearchBoxBackgroundCornerRadius(int corner_radius);
 
@@ -147,8 +151,6 @@ class SearchBoxViewBase : public views::View,
 
   // Updates the search box's background color.
   void UpdateBackgroundColor(SkColor color);
-
-  virtual void ModelChanged() {}
 
   // Shows/hides the virtual keyboard if the search box is active.
   virtual void UpdateKeyboardVisibility() {}
@@ -204,8 +206,6 @@ class SearchBoxViewBase : public views::View,
       AddEnabledChangedCallback(
           base::BindRepeating(&SearchBoxViewBase::OnEnabledChanged,
                               base::Unretained(this)));
-
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxViewBase);
 };
 
 }  // namespace ash

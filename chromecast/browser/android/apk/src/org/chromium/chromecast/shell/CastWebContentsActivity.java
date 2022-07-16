@@ -132,16 +132,11 @@ public class CastWebContentsActivity extends Activity {
         mCreatedState.map(x -> getWindow())
                 .and(mGotIntentState)
                 .subscribe(Observers.onEnter(Both.adapt((Window window, Intent intent) -> {
-                    // Set flags to both exit sleep mode when this activity starts and
-                    // avoid entering sleep mode while playing media. If an app that shouldn't turn
-                    // on the screen is launching, we don't add TURN_SCREEN_ON.
+                    // Set flag to exit sleep mode when this activity starts. If an app that
+                    // shouldn't turn on the screen is launching, we don't add TURN_SCREEN_ON.
                     if (CastWebContentsIntentUtils.shouldTurnOnScreen(intent)) {
                         Log.i(TAG, "Setting FLAG_TURN_SCREEN_ON.");
                         turnScreenOn();
-                    }
-                    if (CastWebContentsIntentUtils.shouldKeepScreenOn(intent)) {
-                        Log.i(TAG, "Setting FLAG_KEEP_SCREEN_ON.");
-                        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     }
                 })));
 

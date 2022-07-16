@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest, ZeroSiteEngagementPenalty) {
   // min interval >=0 implies Periodic Background Sync.
   blink::mojom::SyncRegistrationOptions options(
       kTag,
-      /* min_interval= */ base::TimeDelta::FromHours(12).InMilliseconds());
+      /* min_interval= */ base::Hours(12).InMilliseconds());
   *registration.options() = std::move(options);
   // First attempt.
   registration.set_num_attempts(0);

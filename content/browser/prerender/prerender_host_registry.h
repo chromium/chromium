@@ -11,11 +11,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
+#include "content/browser/prerender/prerender_attributes.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -30,7 +30,7 @@ class RenderFrameHostImpl;
 // The APIs of this class are categorized into two: APIs for triggers and APIs
 // for activators.
 //
-// - Triggers (e.g., PrerenderProcessor) start prerendering by
+// - Triggers (e.g., SpeculationHostImpl) start prerendering by
 //   CreateAndStartHost() and notify the registry of destruction of the trigger
 //   by OnTriggerDestroyed().
 // - Activators (i.e., NavigationRequest) can reserve the prerender host on
@@ -51,8 +51,10 @@ class CONTENT_EXPORT PrerenderHostRegistry {
 
   class Observer : public base::CheckedObserver {
    public:
-    // Called once per CreateAndStartHost() call. Does not necessarily
-    // mean a host was created.
+    // Called once per CreateAndStartHost() call. Indicates the registry
+    // received a request to create a prerender but does not necessarily mean a
+    // host was created. If a host was created, it is guaranteed to be in the
+    // registry at the time this is called.
     virtual void OnTrigger(const GURL& url) {}
 
     // Called from the registry's destructor. The observer
@@ -66,10 +68,8 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // For triggers.
   // Creates and starts a host. Returns the root frame tree node id of the
   // prerendered page, which can be used as the id of the host.
-  // TODO(https://crbug.com/1217045): Flatten the params and do not rely on
-  // PrerenderAttributesPtr.
-  int CreateAndStartHost(blink::mojom::PrerenderAttributesPtr attributes,
-                         RenderFrameHostImpl& initiator_render_frame_host);
+  int CreateAndStartHost(const PrerenderAttributes& attributes,
+                         WebContents& web_contents);
 
   // Cancels the host registered for `frame_tree_node_id`. The host is
   // immediately removed from the map of non-reserved or reserved hosts but
@@ -105,9 +105,9 @@ class CONTENT_EXPORT PrerenderHostRegistry {
 
   // For activators.
   // Activates the host reserved by ReserveHostToActivate() and returns the
-  // BackForwardCacheImpl::Entry containing the page that was activated on
-  // success, or nullptr on failure.
-  std::unique_ptr<BackForwardCacheImpl::Entry> ActivateReservedHost(
+  // StoredPage containing the page that was activated on success, or nullptr
+  // on failure.
+  std::unique_ptr<StoredPage> ActivateReservedHost(
       int frame_tree_node_id,
       NavigationRequest& navigation_request);
 
@@ -115,7 +115,7 @@ class CONTENT_EXPORT PrerenderHostRegistry {
       int frame_tree_node_id);
 
   // For triggers.
-  // Called from the triggers (e.g., PrerenderProcessor) when they are
+  // Called from the triggers (e.g., SpeculationHostImpl) when they are
   // destroyed. `frame_tree_node_id` should be the id returned by
   // CreateAndStartHost().
   void OnTriggerDestroyed(int frame_tree_node_id);
@@ -133,9 +133,8 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // does not match any reserved host.
   PrerenderHost* FindReservedHostById(int frame_tree_node_id);
 
-  // Returns the main frames of FrameTrees owned by this registry's prerender
-  // hosts.
-  std::vector<RenderFrameHostImpl*> GetPrerenderedMainFrames();
+  // Returns the FrameTrees owned by this registry's prerender hosts.
+  std::vector<FrameTree*> GetPrerenderFrameTrees();
 
   // Returns the non-reserved host for `prerendering_url`. Returns nullptr if
   // the URL doesn't match any non-reserved host.
@@ -147,6 +146,11 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   void CancelAllHostsForTesting();
 
   base::WeakPtr<PrerenderHostRegistry> GetWeakPtr();
+
+  // Applies the callback function to all prerender hosts owned by
+  // this registry.
+  void ForEachPrerenderHost(
+      base::RepeatingCallback<void(PrerenderHost&)> callback);
 
  private:
   int FindHostToActivateInternal(NavigationRequest& navigation_request);
@@ -169,20 +173,7 @@ class CONTENT_EXPORT PrerenderHostRegistry {
       prerender_host_by_frame_tree_node_id_;
 
   // Hosts that are reserved for activation.
-  // TODO(https://crbug.com/1195751): Remove ReservationInfo by reverting
-  // https://crrev.com/c/2982683. This is no longer necessary as cancellation
-  // during activation never happens in the current implementation.
-  struct ReservationInfo {
-    ReservationInfo(std::unique_ptr<PrerenderHost> prerender_host,
-                    int activator_frame_tree_node_id);
-    ReservationInfo(ReservationInfo&& info);
-    ReservationInfo& operator=(ReservationInfo&& info) = default;
-    ~ReservationInfo();
-
-    std::unique_ptr<PrerenderHost> prerender_host;
-    int activator_frame_tree_node_id;
-  };
-  base::flat_map<int, ReservationInfo>
+  base::flat_map<int, std::unique_ptr<PrerenderHost>>
       reserved_prerender_host_by_frame_tree_node_id_;
 
   // Hosts that are scheduled to be deleted asynchronously.

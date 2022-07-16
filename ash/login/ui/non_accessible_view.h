@@ -16,6 +16,10 @@ class NonAccessibleView : public views::View {
  public:
   NonAccessibleView();
   explicit NonAccessibleView(const std::string& name);
+
+  NonAccessibleView(const NonAccessibleView&) = delete;
+  NonAccessibleView& operator=(const NonAccessibleView&) = delete;
+
   ~NonAccessibleView() override;
 
   // views::View:
@@ -24,8 +28,6 @@ class NonAccessibleView : public views::View {
 
  private:
   const std::string name_;
-
-  DISALLOW_COPY_AND_ASSIGN(NonAccessibleView);
 };
 
 }  // namespace ash

@@ -27,6 +27,8 @@
 #include "third_party/blink/renderer/core/svg/svg_fe_diffuse_lighting_element.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_specular_lighting_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/graphics/filters/fe_lighting.h"
+#include "third_party/blink/renderer/platform/graphics/filters/light_source.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
@@ -111,6 +113,36 @@ FloatPoint3D SVGFELightElement::PointsAt() const {
   return FloatPoint3D(pointsAtX()->CurrentValue()->Value(),
                       pointsAtY()->CurrentValue()->Value(),
                       pointsAtZ()->CurrentValue()->Value());
+}
+
+absl::optional<bool> SVGFELightElement::SetLightSourceAttribute(
+    FELighting* lighting_effect,
+    const QualifiedName& attr_name) const {
+  LightSource* light_source = lighting_effect->GetLightSource();
+  DCHECK(light_source);
+
+  const Filter* filter = lighting_effect->GetFilter();
+  DCHECK(filter);
+  if (attr_name == svg_names::kAzimuthAttr)
+    return light_source->SetAzimuth(azimuth()->CurrentValue()->Value());
+  if (attr_name == svg_names::kElevationAttr)
+    return light_source->SetElevation(elevation()->CurrentValue()->Value());
+  if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
+      attr_name == svg_names::kZAttr)
+    return light_source->SetPosition(filter->Resolve3dPoint(GetPosition()));
+  if (attr_name == svg_names::kPointsAtXAttr ||
+      attr_name == svg_names::kPointsAtYAttr ||
+      attr_name == svg_names::kPointsAtZAttr)
+    return light_source->SetPointsAt(filter->Resolve3dPoint(PointsAt()));
+  if (attr_name == svg_names::kSpecularExponentAttr) {
+    return light_source->SetSpecularExponent(
+        specularExponent()->CurrentValue()->Value());
+  }
+  if (attr_name == svg_names::kLimitingConeAngleAttr) {
+    return light_source->SetLimitingConeAngle(
+        limitingConeAngle()->CurrentValue()->Value());
+  }
+  return absl::nullopt;
 }
 
 void SVGFELightElement::SvgAttributeChanged(

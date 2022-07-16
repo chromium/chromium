@@ -48,18 +48,26 @@
                   android:theme="@android:style/Theme.Holo.Light.NoActionBar">
         </activity>
         <activity android:name="org.chromium.weblayer.test.ExternalNavigationTest$DummyActivityForSpecialScheme"
-          android:exported="true" >
-          <intent-filter>
-              <action android:name="android.intent.action.VIEW" />
-              <category android:name="android.intent.category.DEFAULT" />
-              <category android:name="android.intent.category.BROWSABLE" />
-              <data android:host="weblayertest" android:scheme="weblayer" />
-          </intent-filter>
-      </activity>
+                  android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host="weblayertest" android:scheme="weblayer" />
+            </intent-filter>
+        </activity>
 
-      <!-- Enable BGF, which is still in development. Don't enable this in production apps. -->
-      <meta-data
-          android:name="org.chromium.weblayer.ENABLE_BACKGROUND_FETCH" android:value="true"/>
+        <activity android:name="org.chromium.weblayer.test.ExternalNavigationTest$DummyActivity"
+                  android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:scheme="about" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+        </activity>
 
       <!-- Enable ADB logging of js logs (console.log). This is disabled by default because some
            websites log PII. -->

@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/storage_monitor/storage_monitor.h"
 
@@ -33,6 +32,10 @@ class StorageMonitorWin : public StorageMonitor {
   StorageMonitorWin(
       std::unique_ptr<VolumeMountWatcherWin> volume_mount_watcher,
       std::unique_ptr<PortableDeviceWatcherWin> portable_device_watcher);
+
+  StorageMonitorWin(const StorageMonitorWin&) = delete;
+  StorageMonitorWin& operator=(const StorageMonitorWin&) = delete;
+
   ~StorageMonitorWin() override;
 
   // Must be called after the file thread is created.
@@ -84,8 +87,6 @@ class StorageMonitorWin : public StorageMonitor {
   // The portable device watcher, used to manage media transfer protocol
   // devices.
   const std::unique_ptr<PortableDeviceWatcherWin> portable_device_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageMonitorWin);
 };
 
 }  // namespace storage_monitor

@@ -13,6 +13,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/font_render_params.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -26,6 +27,9 @@ namespace ui {
 namespace {
 
 constexpr gfx::Rect kPrimaryDisplayBounds(0, 0, 800, 600);
+
+constexpr int64_t kFirstDisplay = 5321829;
+constexpr int64_t kSecondDisplay = 928310;
 
 ACTION_P(StoreWidget, widget_ptr) {
   if (widget_ptr)
@@ -43,6 +47,8 @@ struct MockDisplayObserver : public display::DisplayObserver {
 
   MOCK_METHOD1(OnDisplayAdded, void(const display::Display& new_display));
   MOCK_METHOD1(OnDisplayRemoved, void(const display::Display& old_display));
+  MOCK_METHOD2(OnDisplayMetricsChanged,
+               void(const display::Display& display, uint32_t changed_metrics));
 };
 
 }  // namespace
@@ -52,6 +58,10 @@ class X11ScreenOzoneTest : public testing::Test {
   X11ScreenOzoneTest()
       : task_env_(std::make_unique<base::test::TaskEnvironment>(
             base::test::TaskEnvironment::MainThreadType::UI)) {}
+
+  X11ScreenOzoneTest(const X11ScreenOzoneTest&) = delete;
+  X11ScreenOzoneTest& operator=(const X11ScreenOzoneTest&) = delete;
+
   ~X11ScreenOzoneTest() override = default;
 
   void SetUp() override {
@@ -114,8 +124,6 @@ class X11ScreenOzoneTest : public testing::Test {
   std::unique_ptr<X11ScreenOzone> screen_;
   std::unique_ptr<X11EventSource> event_source_;
   std::unique_ptr<base::test::TaskEnvironment> task_env_;
-
-  DISALLOW_COPY_AND_ASSIGN(X11ScreenOzoneTest);
 };
 
 // This test case ensures that PlatformScreen correctly provides the display
@@ -217,6 +225,233 @@ TEST_F(X11ScreenOzoneTest, GetDisplayMatchingMultiple) {
   EXPECT_EQ(primary, screen()->GetDisplayMatching(gfx::Rect(740, 0, 100, 100)));
   EXPECT_EQ(*second,
             screen()->GetDisplayMatching(gfx::Rect(760, 100, 100, 100)));
+}
+
+TEST_F(X11ScreenOzoneTest, BoundsChangeSingleMonitor) {
+  EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(1);
+  EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(0);
+  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(0);
+
+  std::vector<display::Display> displays;
+  displays.emplace_back(primary_display().id(), gfx::Rect(0, 0, 1024, 768));
+  UpdateDisplayListForTest(displays);
+}
+
+TEST_F(X11ScreenOzoneTest, AddMonitorToTheRight) {
+  EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(0);
+  EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(1);
+  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(0);
+
+  std::vector<display::Display> displays;
+  displays.emplace_back(primary_display().id(), kPrimaryDisplayBounds);
+  displays.emplace_back(kSecondDisplay, gfx::Rect(640, 0, 1024, 768));
+  UpdateDisplayListForTest(displays);
+}
+
+TEST_F(X11ScreenOzoneTest, AddMonitorToTheLeft) {
+  EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(1);
+  EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(1);
+  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(0);
+
+  std::vector<display::Display> displays;
+  displays.emplace_back(primary_display().id(), gfx::Rect(0, 0, 1024, 768));
+  displays.emplace_back(kFirstDisplay, gfx::Rect(1024, 0, 640, 480));
+  UpdateDisplayListForTest(displays);
+}
+
+TEST_F(X11ScreenOzoneTest, RemoveMonitorOnRight) {
+  std::vector<display::Display> displays;
+  displays.emplace_back(primary_display().id(), kPrimaryDisplayBounds);
+  displays.emplace_back(kSecondDisplay, gfx::Rect(640, 0, 1024, 768));
+  UpdateDisplayListForTest(displays);
+
+  EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(0);
+  EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(0);
+  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(1);
+
+  displays.clear();
+  displays.emplace_back(primary_display().id(), kPrimaryDisplayBounds);
+  UpdateDisplayListForTest(displays);
+}
+
+TEST_F(X11ScreenOzoneTest, RemoveMonitorOnLeft) {
+  std::vector<display::Display> displays;
+  displays.emplace_back(primary_display().id(), kPrimaryDisplayBounds);
+  displays.emplace_back(kSecondDisplay, gfx::Rect(640, 0, 1024, 768));
+  UpdateDisplayListForTest(displays);
+
+  EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(1);
+  EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(0);
+  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(1);
+
+  displays.clear();
+  displays.emplace_back(kSecondDisplay, gfx::Rect(0, 0, 1024, 768));
+  UpdateDisplayListForTest(displays);
+}
+
+TEST_F(X11ScreenOzoneTest, GetDisplayNearestPoint) {
+  std::vector<display::Display> displays;
+  displays.emplace_back(kFirstDisplay, gfx::Rect(0, 0, 640, 480));
+  displays.emplace_back(kSecondDisplay, gfx::Rect(640, 0, 1024, 768));
+  UpdateDisplayListForTest(displays);
+
+  EXPECT_EQ(kFirstDisplay,
+            screen()->GetDisplayNearestPoint(gfx::Point(630, 10)).id());
+  EXPECT_EQ(kSecondDisplay,
+            screen()->GetDisplayNearestPoint(gfx::Point(650, 10)).id());
+  EXPECT_EQ(kFirstDisplay,
+            screen()->GetDisplayNearestPoint(gfx::Point(10, 10)).id());
+  EXPECT_EQ(kSecondDisplay,
+            screen()->GetDisplayNearestPoint(gfx::Point(10000, 10000)).id());
+  EXPECT_EQ(kFirstDisplay,
+            screen()->GetDisplayNearestPoint(gfx::Point(639, -10)).id());
+  EXPECT_EQ(kSecondDisplay,
+            screen()->GetDisplayNearestPoint(gfx::Point(641, -20)).id());
+  EXPECT_EQ(kSecondDisplay,
+            screen()->GetDisplayNearestPoint(gfx::Point(600, 760)).id());
+  EXPECT_EQ(kFirstDisplay,
+            screen()->GetDisplayNearestPoint(gfx::Point(-1000, 760)).id());
+}
+
+TEST_F(X11ScreenOzoneTest, GetDisplayMatchingBasic) {
+  std::vector<display::Display> displays;
+  displays.emplace_back(kFirstDisplay, gfx::Rect(0, 0, 640, 480));
+  displays.emplace_back(kSecondDisplay, gfx::Rect(640, 0, 1024, 768));
+  UpdateDisplayListForTest(displays);
+
+  EXPECT_EQ(kSecondDisplay,
+            screen()->GetDisplayMatching(gfx::Rect(700, 20, 100, 100)).id());
+}
+
+TEST_F(X11ScreenOzoneTest, GetDisplayMatchingOverlap) {
+  std::vector<display::Display> displays;
+  displays.emplace_back(kFirstDisplay, gfx::Rect(0, 0, 640, 480));
+  displays.emplace_back(kSecondDisplay, gfx::Rect(640, 0, 1024, 768));
+  UpdateDisplayListForTest(displays);
+
+  EXPECT_EQ(kSecondDisplay,
+            screen()->GetDisplayMatching(gfx::Rect(630, 20, 100, 100)).id());
+}
+
+TEST_F(X11ScreenOzoneTest, GetPrimaryDisplay) {
+  std::vector<display::Display> displays;
+  displays.emplace_back(kFirstDisplay, gfx::Rect(640, 0, 1024, 768));
+  displays.emplace_back(kSecondDisplay, gfx::Rect(0, 0, 640, 480));
+  UpdateDisplayListForTest(displays);
+
+  // The first display in the list is always the primary, even if other
+  // displays are to the left in screen layout.
+  EXPECT_EQ(kFirstDisplay, screen()->GetPrimaryDisplay().id());
+}
+
+TEST_F(X11ScreenOzoneTest, GetDisplayNearestWindow) {
+  // Set up a two monitor situation.
+  std::vector<display::Display> displays;
+  displays.emplace_back(kFirstDisplay, gfx::Rect(0, 0, 640, 480));
+  displays.emplace_back(kSecondDisplay, gfx::Rect(640, 0, 1024, 768));
+  UpdateDisplayListForTest(displays);
+
+  MockPlatformWindowDelegate delegate1;
+  auto window_one = CreatePlatformWindow(&delegate1, gfx::Rect(10, 10, 10, 10));
+  MockPlatformWindowDelegate delegate2;
+  auto window_two =
+      CreatePlatformWindow(&delegate2, gfx::Rect(650, 50, 10, 10));
+
+  EXPECT_EQ(
+      kFirstDisplay,
+      screen()->GetDisplayForAcceleratedWidget(window_one->GetWidget()).id());
+  EXPECT_EQ(
+      kSecondDisplay,
+      screen()->GetDisplayForAcceleratedWidget(window_two->GetWidget()).id());
+
+  window_one->Close();
+  window_two->Close();
+}
+
+// Test that rotating the displays notifies the DisplayObservers.
+TEST_F(X11ScreenOzoneTest, RotationChange) {
+  std::vector<display::Display> displays;
+  displays.emplace_back(kFirstDisplay, gfx::Rect(0, 0, 640, 480));
+  displays.emplace_back(kSecondDisplay, gfx::Rect(640, 0, 1024, 768));
+  UpdateDisplayListForTest(displays);
+
+  EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(5);
+  EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(0);
+  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(0);
+
+  displays[0].set_rotation(display::Display::ROTATE_90);
+  UpdateDisplayListForTest(displays);
+
+  displays[1].set_rotation(display::Display::ROTATE_90);
+  UpdateDisplayListForTest(displays);
+
+  displays[0].set_rotation(display::Display::ROTATE_270);
+  UpdateDisplayListForTest(displays);
+
+  displays[0].set_rotation(display::Display::ROTATE_270);
+  UpdateDisplayListForTest(displays);
+
+  displays[0].set_rotation(display::Display::ROTATE_0);
+  displays[1].set_rotation(display::Display::ROTATE_0);
+  UpdateDisplayListForTest(displays);
+}
+
+// Test that changing the displays workarea notifies the DisplayObservers.
+TEST_F(X11ScreenOzoneTest, WorkareaChange) {
+  std::vector<display::Display> displays;
+  displays.emplace_back(kFirstDisplay, gfx::Rect(0, 0, 640, 480));
+  displays.emplace_back(kSecondDisplay, gfx::Rect(640, 0, 1024, 768));
+  UpdateDisplayListForTest(displays);
+
+  EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(4);
+  EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(0);
+  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(0);
+
+  displays[0].set_work_area(gfx::Rect(0, 0, 300, 300));
+  UpdateDisplayListForTest(displays);
+
+  displays[1].set_work_area(gfx::Rect(0, 0, 300, 300));
+  UpdateDisplayListForTest(displays);
+
+  displays[0].set_work_area(gfx::Rect(0, 0, 300, 300));
+  UpdateDisplayListForTest(displays);
+
+  displays[1].set_work_area(gfx::Rect(0, 0, 300, 300));
+  UpdateDisplayListForTest(displays);
+
+  displays[0].set_work_area(gfx::Rect(0, 0, 640, 480));
+  displays[1].set_work_area(gfx::Rect(640, 0, 1024, 768));
+  UpdateDisplayListForTest(displays);
+}
+
+// Test that changing the device scale factor notifies the DisplayObservers.
+TEST_F(X11ScreenOzoneTest, DeviceScaleFactorChange) {
+  std::vector<display::Display> displays;
+  displays.emplace_back(kFirstDisplay, gfx::Rect(0, 0, 640, 480));
+  displays.emplace_back(kSecondDisplay, gfx::Rect(640, 0, 1024, 768));
+  UpdateDisplayListForTest(displays);
+
+  EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(4);
+  EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(0);
+  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(0);
+
+  displays[0].set_device_scale_factor(2.5f);
+  UpdateDisplayListForTest(displays);
+  EXPECT_EQ(2.5f, gfx::GetFontRenderParamsDeviceScaleFactor());
+
+  displays[1].set_device_scale_factor(2.5f);
+  UpdateDisplayListForTest(displays);
+
+  displays[0].set_device_scale_factor(2.5f);
+  UpdateDisplayListForTest(displays);
+
+  displays[1].set_device_scale_factor(2.5f);
+  UpdateDisplayListForTest(displays);
+
+  displays[0].set_device_scale_factor(1.f);
+  displays[1].set_device_scale_factor(1.f);
+  UpdateDisplayListForTest(displays);
+  EXPECT_EQ(1.f, gfx::GetFontRenderParamsDeviceScaleFactor());
 }
 
 }  // namespace ui

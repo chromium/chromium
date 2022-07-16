@@ -102,8 +102,11 @@ class AddressNormalizerImpl::NormalizationRequest {
                        weak_ptr_factory_.GetWeakPtr(),
                        /*success=*/false,
                        /*address_validator=*/nullptr),
-        base::TimeDelta::FromSeconds(timeout_seconds));
+        base::Seconds(timeout_seconds));
   }
+
+  NormalizationRequest(const NormalizationRequest&) = delete;
+  NormalizationRequest& operator=(const NormalizationRequest&) = delete;
 
   ~NormalizationRequest() {}
 
@@ -141,8 +144,6 @@ class AddressNormalizerImpl::NormalizationRequest {
 
   bool has_responded_ = false;
   base::WeakPtrFactory<NormalizationRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NormalizationRequest);
 };
 
 AddressNormalizerImpl::AddressNormalizerImpl(std::unique_ptr<Source> source,

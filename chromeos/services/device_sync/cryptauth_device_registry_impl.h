@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/services/device_sync/cryptauth_device_registry.h"
 
@@ -42,6 +41,10 @@ class CryptAuthDeviceRegistryImpl : public CryptAuthDeviceRegistry {
   // Registers the prefs used by this class to the given |registry|.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  CryptAuthDeviceRegistryImpl(const CryptAuthDeviceRegistryImpl&) = delete;
+  CryptAuthDeviceRegistryImpl& operator=(const CryptAuthDeviceRegistryImpl&) =
+      delete;
+
   ~CryptAuthDeviceRegistryImpl() override;
 
  private:
@@ -58,8 +61,6 @@ class CryptAuthDeviceRegistryImpl : public CryptAuthDeviceRegistry {
   // Contains preferences that outlive the lifetime of this object and across
   // process restarts. Not owned and must outlive this instance.
   PrefService* pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceRegistryImpl);
 };
 
 }  // namespace device_sync

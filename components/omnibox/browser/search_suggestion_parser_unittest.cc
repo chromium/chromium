@@ -486,3 +486,58 @@ TEST(SearchSuggestionParserTest, SubtypesWithEmptyArraysAreValid) {
   ASSERT_TRUE(results.suggest_results[0].subtypes().empty());
   ASSERT_THAT(results.suggest_results[1].subtypes(), testing::ElementsAre(3));
 }
+
+TEST(SearchSuggestionParserTest, FuzzTestCaseFailsGracefully) {
+  // clang-format off
+  std::string json_data = R"(["",[" "],[],[],{"google:suggestdetail":[{"ansa":{"l":[{"il":{"t":[{"t":"w","tt":4}]}},{"il":{"i":"","t":[{"t":"3","tt":1}]}}]},"ansb":"0"}]}])";
+  // clang-format on
+
+  // The original fuzz test case had a NUL (0) character at index 6 but it is
+  // replaced with space (32) above for system interaction reasons (clipboard,
+  // command line, and some editors shun null bytes). Test the fuzz case with
+  // input that is byte-for-byte identical with https://crbug.com/1255312 data.
+  json_data[6] = 0;
+
+  absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  ASSERT_TRUE(root_val);
+  TestSchemeClassifier scheme_classifier;
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
+                          scheme_classifier);
+  SearchSuggestionParser::Results results;
+  ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+      *root_val, input, scheme_classifier, /*default_result_relevance=*/400,
+      /*is_keyword_result=*/false, &results));
+}
+
+TEST(SearchSuggestionParserTest, BadAnswersFailGracefully) {
+  // clang-format off
+  std::vector<std::string> cases = {
+    R"(["",[""],[],[],{"google:suggestdetail":[{"ansa":{"l":[{"il":{"t":[{"t":"w","tt":4}]}},{"il":{"i":"","t":[{"t":"3","tt":1}]}}]},"ansb":"0"}]}])",
+    R"(["",[""],[],[],{"google:suggestdetail":[{"ansa":{"l":[{"il":{"t":[]}},{"il":{"i":"","t":[[]]}}]},"ansb":"0"}]}])",
+    R"(["",[""],[],[],{"google:suggestdetail":[{"ansa":{"l":[{"il":{"t":[]}},{"il":{"i":"","t":[[0]]}}]},"ansb":"0"}]}])",
+    R"(["",[""],[],[],{"google:suggestdetail":[{"ansa":{"l":[{"il":{"t":[]}},{"il":{"i":"","t":[""]}}]},"ansb":"0"}]}])",
+    R"(["",[""],[],[],{"google:suggestdetail":[{"ansa":{"l":[{"il":{"t":[{"t":"w","tt":4}]}},{"il":{"i":"","t":[{"t":"3","tt":1}]}}]},"ansb":"0"}]}])",
+    R"(["",[""],[],[],{"google:suggestdetail":[{"ansa":[],"ansb":"0"}]}])",
+    R"(["",[""],[],[],{"google:suggestdetail":[{"ansa":{},"ansb":"0"}]}])",
+    R"(["",[""],[],[],{"google:suggestdetail":[{"ansa":0,"ansb":"0"}]}])",
+    R"(["",[""],[],[],{"google:suggestdetail":[{"ansa":"","ansb":"0"}]}])",
+    R"(["",[""],[],[],{"google:suggestdetail":[{"ansa":"","ansb":{}}]}])",
+    R"(["",[""],[],[],{"google:suggestdetail":[{"ansa":"","ansb":0}]}])",
+    R"(["",[""],[],[],{"google:suggestdetail":[{"ansa":"","ansb":[]}]}])",
+    R"(["",[""],[],[],{"google:suggestdetail":""}])",
+    R"(["",[""],[],[],{"google:suggestdetail":0}])",
+    R"(["",[""],[],[],{"google:suggestdetail":{}}])",
+  };
+  // clang-format on
+  for (std::string json_data : cases) {
+    absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    ASSERT_TRUE(root_val);
+    TestSchemeClassifier scheme_classifier;
+    AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
+                            scheme_classifier);
+    SearchSuggestionParser::Results results;
+    ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+        *root_val, input, scheme_classifier, /*default_result_relevance=*/400,
+        /*is_keyword_result=*/false, &results));
+  }
+}

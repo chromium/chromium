@@ -19,6 +19,9 @@ class FakeBrowserManager : public BrowserManager {
 
   ~FakeBrowserManager() override;
 
+  void set_new_fullscreen_window_creation_result(mojom::CreationResult result) {
+    new_fullscreen_window_creation_result_ = result;
+  }
   void set_is_running(bool value) { is_running_ = value; }
   void set_wait_for_mojo_disconnect(bool value) {
     wait_for_mojo_disconnect_ = value;
@@ -30,9 +33,15 @@ class FakeBrowserManager : public BrowserManager {
   // Simulates crosapi mojo disconnection event observed.
   void SignalMojoDisconnected();
 
+  // Sets the state of `BrowserManager` to `Running`, and triggers all
+  // registered observers.
+  void StartRunning();
+
   // BrowserManager:
   bool IsRunning() const override;
   bool IsRunningOrWillRun() const override;
+  void NewFullscreenWindow(const GURL& url,
+                           NewFullscreenWindowCallback callback) override;
   void GetFeedbackData(GetFeedbackDataCallback callback) override;
 
  private:
@@ -42,6 +51,10 @@ class FakeBrowserManager : public BrowserManager {
   // If this flag is set to true, simulate the case that mojo disconnect
   // signal is received before the log data is fetched.
   bool wait_for_mojo_disconnect_ = false;
+
+  // The creation result to be returned by `NewFullscreenWindow`.
+  mojom::CreationResult new_fullscreen_window_creation_result_ =
+      mojom::CreationResult::kUnknown;
 
   // Stores the response to be sent back for GetFeedbackData callback.
   base::Value feedback_response_;

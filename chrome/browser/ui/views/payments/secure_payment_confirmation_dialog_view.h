@@ -48,8 +48,8 @@ class SecurePaymentConfirmationDialogView
   };
 
   explicit SecurePaymentConfirmationDialogView(
-      ObserverForTest* observer_for_test,
-      const PaymentUIObserver* ui_observer_for_test);
+      base::WeakPtr<ObserverForTest> observer_for_test,
+      const base::WeakPtr<PaymentUIObserver> ui_observer_for_test);
   ~SecurePaymentConfirmationDialogView() override;
 
   // SecurePaymentConfirmationView:
@@ -86,9 +86,8 @@ class SecurePaymentConfirmationDialogView
 
   void UpdateLabelView(DialogViewID id, const std::u16string& text);
 
-  // May be null.
-  ObserverForTest* observer_for_test_ = nullptr;
-  const PaymentUIObserver* ui_observer_for_test_ = nullptr;
+  base::WeakPtr<ObserverForTest> observer_for_test_;
+  const base::WeakPtr<PaymentUIObserver> ui_observer_for_test_;
 
   VerifyCallback verify_callback_;
   CancelCallback cancel_callback_;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 // Datatypes and interfaces of text suggester API.
 
@@ -14,7 +14,7 @@
 // Example: A backwards-compatible mojom change (and corresponding
 // implementation change) can be made in Chrome OS first, then replicated to the
 // clients (Chromium, other downstream repos) later.
-// Use //chromeos/services/machine_learning/public/mojom/roll_mojom.sh to help
+// Use //chromeos/services/machine_learning/public/mojom/roll_mojoms.sh to help
 // replicate Chrome OS-side changes over to Chromium.
 
 module chromeos.machine_learning.mojom;
@@ -102,11 +102,15 @@ struct TextSuggesterResult {
 };
 
 // Experiment groups for multi word suggestions
-// Next ordinal: 2
+// Next value: 5
 [Stable, Extensible]
 enum MultiWordExperimentGroup {
   [Default] kDefault = 0,
   kGboard = 1,
+  // Experiment groups used for the relaxed gboard settings finch experiment
+  [MinVersion=2] kGboardRelaxedA = 2,
+  [MinVersion=2] kGboardRelaxedB = 3,
+  [MinVersion=2] kGboardRelaxedC = 4
 };
 
 // Encapsulates any settings details for a TextSuggester

@@ -198,6 +198,12 @@ void AddOptionalVerticalPadding(id<EdgeLayoutGuideProvider> outerView,
                                 id<EdgeLayoutGuideProvider> bottomInnerView,
                                 CGFloat padding);
 
+// Returns the vertical constraint of |innerView| and |outerView|. The height of
+// |outerView| equals to the height of |innerView| plus |inset|.
+NSLayoutConstraint* VerticalConstraintsWithInset(UIView* innerView,
+                                                 UIView* outerView,
+                                                 CGFloat inset);
+
 #pragma mark - Safe Area.
 
 #endif  // IOS_CHROME_COMMON_UI_UTIL_CONSTRAINTS_UI_UTIL_H_

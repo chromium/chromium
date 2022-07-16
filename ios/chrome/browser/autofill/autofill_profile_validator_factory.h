@@ -16,6 +16,11 @@ class AutofillProfileValidatorFactory {
  public:
   static AutofillProfileValidator* GetInstance();
 
+  AutofillProfileValidatorFactory(const AutofillProfileValidatorFactory&) =
+      delete;
+  AutofillProfileValidatorFactory& operator=(
+      const AutofillProfileValidatorFactory&) = delete;
+
  private:
   friend class base::NoDestructor<AutofillProfileValidatorFactory>;
 
@@ -24,8 +29,6 @@ class AutofillProfileValidatorFactory {
 
   // The only instance that exists.
   AutofillProfileValidator autofill_profile_validator_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileValidatorFactory);
 };
 
 }  // namespace autofill

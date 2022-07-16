@@ -12,7 +12,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
-// AttestationPermissionRequest is a delegate class that provides information
+// U2fApiPermissionRequest is a delegate class that provides information
 // and callbacks to the PermissionRequestManager.
 //
 // PermissionRequestManager has a reference to this object and so this object
@@ -20,21 +20,21 @@
 // PermissionRequestManager guarantees that `PermissionRequest::RequestFinished`
 // will always, eventually, be called. This object uses that fact to delete
 // itself during `DeleteRequest` and thus owns itself.
-class AttestationPermissionRequest : public permissions::PermissionRequest {
+class U2fApiPermissionRequest : public permissions::PermissionRequest {
  public:
-  AttestationPermissionRequest(const url::Origin& requesting_origin,
-                               base::OnceCallback<void(bool)> callback)
+  U2fApiPermissionRequest(permissions::RequestType type,
+                          const url::Origin& requesting_origin,
+                          base::OnceCallback<void(bool)> callback)
       : PermissionRequest(
             requesting_origin.GetURL(),
-            permissions::RequestType::kSecurityAttestation,
+            type,
             /*has_gesture=*/false,
-            base::BindOnce(&AttestationPermissionRequest::PermissionDecided,
+            base::BindOnce(&U2fApiPermissionRequest::PermissionDecided,
                            base::Unretained(this)),
-            base::BindOnce(&AttestationPermissionRequest::DeleteRequest,
+            base::BindOnce(&U2fApiPermissionRequest::DeleteRequest,
                            base::Unretained(this))),
         callback_(std::move(callback)) {}
-
-  ~AttestationPermissionRequest() override = default;
+  ~U2fApiPermissionRequest() override = default;
 
   void PermissionDecided(ContentSetting result, bool is_one_time) {
     DCHECK(!is_one_time);
@@ -51,12 +51,19 @@ class AttestationPermissionRequest : public permissions::PermissionRequest {
 
  private:
   base::OnceCallback<void(bool)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AttestationPermissionRequest);
 };
 
 permissions::PermissionRequest* NewAttestationPermissionRequest(
     const url::Origin& origin,
     base::OnceCallback<void(bool)> callback) {
-  return new AttestationPermissionRequest(origin, std::move(callback));
+  return new U2fApiPermissionRequest(
+      permissions::RequestType::kSecurityAttestation, origin,
+      std::move(callback));
+}
+
+permissions::PermissionRequest* NewU2fApiPermissionRequest(
+    const url::Origin& origin,
+    base::OnceCallback<void(bool)> callback) {
+  return new U2fApiPermissionRequest(permissions::RequestType::kU2fApiRequest,
+                                     origin, std::move(callback));
 }

@@ -113,7 +113,7 @@ class Exposure(object):
         isolated contexts. The returned value is a boolean: True if the
         construct is restricted to COI contexts, or False if not.
 
-        https://heycam.github.io/webidl/#CrossOriginIsolated
+        https://webidl.spec.whatwg.org/#CrossOriginIsolated
         """
         return self._only_in_coi_contexts
 
@@ -136,7 +136,7 @@ class Exposure(object):
         restricted in secure contexts, or False: never restricted) or a list of
         flag names (restricted only when all flags are enabled).
 
-        https://heycam.github.io/webidl/#dfn-available-only-in-secure-contexts
+        https://webidl.spec.whatwg.org/#dfn-available-only-in-secure-contexts
         """
         if self._only_in_secure_contexts is None:
             return False

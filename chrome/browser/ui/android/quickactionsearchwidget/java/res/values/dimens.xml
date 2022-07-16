@@ -4,7 +4,7 @@
      found in the LICENSE file. -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <dimen name="quick_action_search_widget_width">308dp</dimen>
+    <dimen name="quick_action_search_widget_width">240dp</dimen>
     <dimen name="quick_action_search_widget_background_radius">16dp</dimen>
     <dimen name="quick_action_search_widget_button_container_margin">12dp</dimen>
     <dimen name="quick_action_search_widget_button_margin">4dp</dimen>
@@ -15,11 +15,11 @@
 
     <!-- Medium Widget Dimensions -->
     <dimen name="quick_action_search_widget_medium_margin">16dp</dimen>
-    <dimen name="quick_action_search_widget_medium_height">110dp</dimen>
+    <dimen name="quick_action_search_widget_medium_height">160dp</dimen>
 
     <!-- Small Button Dimensions -->
     <dimen name="quick_action_search_widget_small_button_radius">24dp</dimen>
-    <dimen name="quick_action_search_widget_small_button_icon_padding">16dp</dimen>
+    <dimen name="quick_action_search_widget_small_button_icon_padding">14dp</dimen>
     <dimen name="quick_action_search_widget_small_button_height">48dp</dimen>
     <dimen name="quick_action_search_widget_small_button_width">48dp</dimen>
 
@@ -42,6 +42,7 @@
     <dimen name="quick_action_search_widget_small_search_bar_icon_margin">8dp</dimen>
 
     <!-- Dino Widget Dimensions -->
+    <dimen name="quick_action_search_widget_dino_min_size">110dp</dimen>
     <dimen name="quick_action_search_widget_dino_size">124dp</dimen>
     <dimen name="quick_action_search_widget_dino_corner_radius">24dp</dimen>
 </resources>

@@ -11,7 +11,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/timer/timer.h"
@@ -34,8 +34,7 @@ class MonitoredVideoStubTest : public testing::Test {
   void SetUp() override {
     packet_ = std::make_unique<VideoPacket>();
     monitor_ = std::make_unique<MonitoredVideoStub>(
-        &video_stub_,
-        base::TimeDelta::FromMilliseconds(kTestOverrideDelayMilliseconds),
+        &video_stub_, base::Milliseconds(kTestOverrideDelayMilliseconds),
         base::BindRepeating(&MonitoredVideoStubTest::OnVideoChannelStatus,
                             base::Unretained(this)));
     EXPECT_CALL(video_stub_, ProcessVideoPacketPtr(_, _)).Times(AnyNumber());

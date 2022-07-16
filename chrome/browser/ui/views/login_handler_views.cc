@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/blocked_content/popunder_preventer.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -39,6 +38,9 @@ class LoginHandlerViews : public LoginHandler {
         popunder_preventer_(std::make_unique<PopunderPreventer>(web_contents)) {
     RecordDialogCreation(DialogIdentifier::LOGIN_HANDLER);
   }
+
+  LoginHandlerViews(const LoginHandlerViews&) = delete;
+  LoginHandlerViews& operator=(const LoginHandlerViews&) = delete;
 
   ~LoginHandlerViews() override {
     // LoginHandler cannot call CloseDialog because the subclass will already
@@ -117,6 +119,9 @@ class LoginHandlerViews : public LoginHandler {
       widget_ = constrained_window::ShowWebModalDialogViews(this, web_contents);
     }
 
+    Dialog(const Dialog&) = delete;
+    Dialog& operator=(const Dialog&) = delete;
+
     void CloseDialog() {
       handler_ = nullptr;
       // The hosting widget may have been freed.
@@ -160,14 +165,10 @@ class LoginHandlerViews : public LoginHandler {
     // The LoginView that contains the user's login information.
     LoginView* login_view_;
     views::Widget* widget_;
-
-    DISALLOW_COPY_AND_ASSIGN(Dialog);
   };
 
   Dialog* dialog_ = nullptr;
   std::unique_ptr<PopunderPreventer> popunder_preventer_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginHandlerViews);
 };
 
 }  // namespace

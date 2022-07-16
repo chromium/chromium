@@ -3,8 +3,10 @@
 
 <base-page orientation="column">
   <div slot="header">
-    <!-- TODO(gavindodd): Update strings for i18n -->
-    <h1>Select which components were replaced</h1>
+    <h1>[[i18n('selectComponentsTitleText')]]</h1>
+    <div>
+      <span inner-h-t-m-l="[[reworkFlowLinkText_]]"></span>
+    </div>
   </div>
   <div slot="body">
     <div>
@@ -12,15 +14,10 @@
         <repair-component-chip id="[[component.id]]"
           checked="{{component.checked}}"
           disabled$="[[component.disabled]]"
-          component-name="[[component.name]]">
+          component-name="[[component.name]]"
+          component-id="[[component.uniqueId]]">
         </repair-component-chip>
       </template>
-    </div>
-    <div>If you are reworking a motherboard to use in another device, go to the
-      <a href="#" id="reworkFlow" on-click="onReworkFlowButtonClicked_">
-        rework flow
-      </a>
-      .
     </div>
   </div>
 </base-page>

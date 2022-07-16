@@ -45,6 +45,10 @@ namespace blink {
 class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
  public:
   SourceStream() = default;
+
+  SourceStream(const SourceStream&) = delete;
+  SourceStream& operator=(const SourceStream&) = delete;
+
   ~SourceStream() override = default;
 
   // Called by V8 on a background thread. Should block until we can return
@@ -265,11 +269,7 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
   CrossThreadWeakPersistent<ResponseBodyLoaderClient>
       response_body_loader_client_;
   scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SourceStream);
 };
-
-size_t ScriptStreamer::small_script_threshold_ = 30 * 1024;
 
 std::tuple<ScriptStreamer*, ScriptStreamer::NotStreamingReason>
 ScriptStreamer::TakeFrom(ScriptResource* script_resource,
@@ -517,7 +517,7 @@ bool ScriptStreamer::HasEnoughDataForStreaming(size_t resource_buffer_size) {
     return resource_buffer_size >= kMaximumLengthOfBOM;
   } else {
     // Only stream larger scripts.
-    return resource_buffer_size >= small_script_threshold_;
+    return resource_buffer_size >= kSmallScriptThreshold;
   }
 }
 
@@ -587,7 +587,15 @@ bool ScriptStreamer::TryStartStreamingTask() {
     }
   }
 
-  if (V8CodeCache::HasCodeCache(script_resource_->CacheHandler())) {
+  // Here we can't call Check on the cache handler because it requires the
+  // script source, which would require having already loaded the script. It is
+  // OK at this point to disable streaming even though we might end up rejecting
+  // the cached data later, because we expect that the cached data is usually
+  // acceptable. If we detect a content mismatch once the content is loaded,
+  // then we reset the code cache entry to just a timestamp, so this condition
+  // will allow streaming the next time we load the resource.
+  if (V8CodeCache::HasCodeCache(script_resource_->CacheHandler(),
+                                SingleCachedMetadataHandler::kAllowUnchecked)) {
     // The resource has a code cache entry, so it's unnecessary to stream
     // and parse the code.
     // TODO(leszeks): Can we even reach this code path with data pipes?

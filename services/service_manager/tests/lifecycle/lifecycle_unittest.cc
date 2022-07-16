@@ -123,6 +123,10 @@ class InstanceState : public mojom::ServiceManagerListener {
       : receiver_(this, std::move(receiver)),
         on_init_complete_(std::move(on_init_complete)),
         on_destruction_(destruction_loop_.QuitClosure()) {}
+
+  InstanceState(const InstanceState&) = delete;
+  InstanceState& operator=(const InstanceState&) = delete;
+
   ~InstanceState() override {}
 
   bool HasInstanceForName(const std::string& name) const {
@@ -195,8 +199,6 @@ class InstanceState : public mojom::ServiceManagerListener {
   // of an instance before proceeding.
   base::RunLoop destruction_loop_;
   base::OnceClosure on_destruction_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceState);
 };
 
 }  // namespace
@@ -210,6 +212,9 @@ class LifecycleTest : public testing::Test {
             test_service_manager_.RegisterInstance(
                 Identity{kTestName, kSystemInstanceGroup, base::Token{},
                          base::Token::CreateRandom()})) {}
+
+  LifecycleTest(const LifecycleTest&) = delete;
+  LifecycleTest& operator=(const LifecycleTest&) = delete;
 
   ~LifecycleTest() override {}
 
@@ -263,8 +268,6 @@ class LifecycleTest : public testing::Test {
   Service test_service_;
   ServiceReceiver test_service_receiver_;
   std::unique_ptr<InstanceState> instances_;
-
-  DISALLOW_COPY_AND_ASSIGN(LifecycleTest);
 };
 
 TEST_F(LifecycleTest, Standalone_GracefulQuit) {

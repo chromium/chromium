@@ -11,6 +11,7 @@
 namespace blink {
 
 class ComputedStyle;
+class Document;
 class LayoutNGTextCombine;
 
 // The painter for painting text decorations and emphasis marks for
@@ -36,7 +37,8 @@ class NGTextCombinePainter final : public TextPainterBase {
   void PaintDecorations(const PaintInfo& paint_info,
                         const TextPaintStyle& text_style);
   void PaintEmphasisMark(const TextPaintStyle& text_style,
-                         const Font& emphasis_mark_font);
+                         const Font& emphasis_mark_font,
+                         const Document& document);
 
   const ComputedStyle& style_;
 };

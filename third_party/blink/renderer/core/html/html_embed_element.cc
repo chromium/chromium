@@ -100,9 +100,9 @@ void HTMLEmbedElement::ParseAttribute(
     wtf_size_t pos = service_type_.Find(";");
     if (pos != kNotFound)
       SetServiceType(service_type_.Left(pos));
+    SetDisposeView();
     if (GetLayoutObject()) {
       SetNeedsPluginUpdate(true);
-      SetDisposeView();
       GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
           "Embed type changed");
     }
@@ -119,8 +119,8 @@ void HTMLEmbedElement::ParseAttribute(
     // We don't follow the "potentially active" definition precisely here, but
     // it works.
     SetUrl(StripLeadingAndTrailingHTMLSpaces(params.new_value));
+    SetDisposeView();
     if (GetLayoutObject() && IsImageType()) {
-      SetDisposeView();
       if (!image_loader_)
         image_loader_ = MakeGarbageCollected<HTMLImageLoader>(this);
       image_loader_->UpdateFromElement(ImageLoader::kUpdateIgnorePreviousError);

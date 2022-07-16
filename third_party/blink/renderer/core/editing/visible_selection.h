@@ -155,10 +155,10 @@ PositionInFlatTree ComputeEndRespectingGranularity(
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-void showTree(const blink::VisibleSelection&);
-void showTree(const blink::VisibleSelection*);
-void showTree(const blink::VisibleSelectionInFlatTree&);
-void showTree(const blink::VisibleSelectionInFlatTree*);
+void ShowTree(const blink::VisibleSelection&);
+void ShowTree(const blink::VisibleSelection*);
+void ShowTree(const blink::VisibleSelectionInFlatTree&);
+void ShowTree(const blink::VisibleSelectionInFlatTree*);
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_VISIBLE_SELECTION_H_

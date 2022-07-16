@@ -32,7 +32,7 @@ immediately created to replace it.
 ## Processor State Machines
 
 The processor sits between the model bridge and the sync engine. It has
-knowledge of what state each is in based on the calls it has receieved and
+knowledge of what state each is in based on the calls it has received and
 performed. The states are not stored explicitly, but are implicit based on
 state stored in the processor. Here are the states of each, with notes on their
 transitions and how to determine them.

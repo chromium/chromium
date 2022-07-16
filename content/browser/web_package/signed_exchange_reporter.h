@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/common/content_export.h"
 #include "net/base/ip_address.h"
@@ -30,6 +29,9 @@ class CONTENT_EXPORT SignedExchangeReporter {
       const network::mojom::URLResponseHead& response,
       const net::NetworkIsolationKey& network_isolation_key,
       int frame_tree_node_id);
+
+  SignedExchangeReporter(const SignedExchangeReporter&) = delete;
+  SignedExchangeReporter& operator=(const SignedExchangeReporter&) = delete;
 
   ~SignedExchangeReporter();
 
@@ -55,8 +57,6 @@ class CONTENT_EXPORT SignedExchangeReporter {
   const net::NetworkIsolationKey network_isolation_key_;
   const int frame_tree_node_id_;
   net::IPAddress cert_server_ip_address_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeReporter);
 };
 
 }  // namespace content

@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/strike_database_integrator_test_strike_database.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
@@ -120,9 +119,9 @@ TEST_F(AutofillProfileSaveStrikeDatabaseTest,
 
   base::Time start_time = AutofillClock::Now();
   strike_database_->AddStrike(test_host1);
-  test_autofill_clock.Advance(base::TimeDelta::FromMinutes(1));
+  test_autofill_clock.Advance(base::Minutes(1));
   base::Time end_time = AutofillClock::Now();
-  test_autofill_clock.Advance(base::TimeDelta::FromMinutes(1));
+  test_autofill_clock.Advance(base::Minutes(1));
 
   // Now update the time stamp of this entry by adding another strike.
   // By this, the entry should not be deleted.
@@ -140,10 +139,10 @@ TEST_F(AutofillProfileSaveStrikeDatabaseTest,
   test_autofill_clock.SetNow(AutofillClock::Now());
 
   strike_database_->AddStrike(test_host1);
-  test_autofill_clock.Advance(base::TimeDelta::FromMinutes(1));
+  test_autofill_clock.Advance(base::Minutes(1));
 
   base::Time start_time = AutofillClock::Now();
-  test_autofill_clock.Advance(base::TimeDelta::FromMinutes(1));
+  test_autofill_clock.Advance(base::Minutes(1));
   base::Time end_time = AutofillClock::Now();
 
   strike_database_->ClearStrikesByOriginAndTimeInternal(delete_all_hosts_set,

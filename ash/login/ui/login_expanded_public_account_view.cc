@@ -95,6 +95,12 @@ class LoginExpandedPublicAccountEventHandler : public ui::EventHandler {
       : view_(view) {
     Shell::Get()->AddPreTargetHandler(this);
   }
+
+  LoginExpandedPublicAccountEventHandler(
+      const LoginExpandedPublicAccountEventHandler&) = delete;
+  LoginExpandedPublicAccountEventHandler& operator=(
+      const LoginExpandedPublicAccountEventHandler&) = delete;
+
   ~LoginExpandedPublicAccountEventHandler() override {
     Shell::Get()->RemovePreTargetHandler(this);
   }
@@ -114,8 +120,6 @@ class LoginExpandedPublicAccountEventHandler : public ui::EventHandler {
   void OnKeyEvent(ui::KeyEvent* event) override { view_->OnKeyEvent(event); }
 
   LoginExpandedPublicAccountView* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginExpandedPublicAccountEventHandler);
 };
 
 }  // namespace
@@ -125,6 +129,7 @@ class SelectionButtonView : public LoginButton {
  public:
   SelectionButtonView(PressedCallback callback, const std::u16string& text)
       : LoginButton(std::move(callback)) {
+    SetAccessibleName(text);
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -170,6 +175,9 @@ class SelectionButtonView : public LoginButton {
     right_margin_view_ = add_horizontal_margin(right_margin_, icon_container);
   }
 
+  SelectionButtonView(const SelectionButtonView&) = delete;
+  SelectionButtonView& operator=(const SelectionButtonView&) = delete;
+
   ~SelectionButtonView() override = default;
 
   // Return the preferred height of this view. This overrides the default
@@ -210,8 +218,6 @@ class SelectionButtonView : public LoginButton {
   views::ImageView* icon_ = nullptr;
   views::View* left_margin_view_ = nullptr;
   views::View* right_margin_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectionButtonView);
 };
 
 // Container for the device monitoring warning.
@@ -256,6 +262,9 @@ class MonitoringWarningView : public NonAccessibleView {
     UpdateLabel();
   }
 
+  MonitoringWarningView(const MonitoringWarningView&) = delete;
+  MonitoringWarningView& operator=(const MonitoringWarningView&) = delete;
+
   ~MonitoringWarningView() override = default;
 
  private:
@@ -286,8 +295,6 @@ class MonitoringWarningView : public NonAccessibleView {
   absl::optional<std::string> device_manager_;
   views::ImageView* image_;
   views::Label* label_;
-
-  DISALLOW_COPY_AND_ASSIGN(MonitoringWarningView);
 };
 
 // Implements the right part of the expanded public session view.
@@ -416,6 +423,9 @@ class RightPaneView : public NonAccessibleView {
         IDS_ASH_LOGIN_PUBLIC_ACCOUNT_LOG_IN_BUTTON_ACCESSIBLE_NAME));
     AddChildView(submit_button_);
   }
+
+  RightPaneView(const RightPaneView&) = delete;
+  RightPaneView& operator=(const RightPaneView&) = delete;
 
   ~RightPaneView() override = default;
 
@@ -667,8 +677,6 @@ class RightPaneView : public NonAccessibleView {
   bool language_changed_by_user_ = false;
 
   base::WeakPtrFactory<RightPaneView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RightPaneView);
 };
 
 LoginExpandedPublicAccountView::TestApi::TestApi(

@@ -5,6 +5,7 @@
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
@@ -110,6 +111,9 @@ void PredictionModelDownloadManager::StartDownload(const GURL& download_url) {
                           ui_weak_ptr_factory_.GetWeakPtr());
   download_params.traffic_annotation = net::MutableNetworkTrafficAnnotationTag(
       kOptimizationGuidePredictionModelsTrafficAnnotation);
+  // The downloaded models are all Google-generated, so bypass the safety
+  // checks.
+  download_params.request_params.require_safety_checks = false;
   download_params.request_params.url = download_url;
   download_params.request_params.method = "GET";
   download_params.request_params.request_headers.SetHeader(kGoogApiKey,
@@ -290,16 +294,15 @@ void PredictionModelDownloadManager::OnDownloadUnzipped(
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&PredictionModelDownloadManager::ProcessUnzippedContents,
-                     base::Unretained(this), unzipped_dir_path),
+                     unzipped_dir_path),
       base::BindOnce(&PredictionModelDownloadManager::NotifyModelReady,
                      ui_weak_ptr_factory_.GetWeakPtr()));
 }
 
+// static
 absl::optional<proto::PredictionModel>
 PredictionModelDownloadManager::ProcessUnzippedContents(
     const base::FilePath& unzipped_dir_path) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-
   // Clean up temp dir when this function finishes.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(base::GetDeletePathRecursivelyCallback(),
@@ -325,21 +328,18 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
     return absl::nullopt;
   }
 
-  if (!models_dir_) {
-    models_dir_ = base::FilePath();
-    if (!base::PathService::Get(
-            chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,
-            &(*models_dir_))) {
-      RecordPredictionModelDownloadStatus(
-          PredictionModelDownloadStatus::kOptGuideDirectoryDoesNotExist);
-      models_dir_ = absl::nullopt;
-      return absl::nullopt;
-    }
+  base::FilePath models_dir;
+  if (!base::PathService::Get(chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,
+                              &models_dir)) {
+    RecordPredictionModelDownloadStatus(
+        PredictionModelDownloadStatus::kOptGuideDirectoryDoesNotExist);
+
+    return absl::nullopt;
   }
 
   // Move each packaged file away from temp directory into a new directory.
 
-  base::FilePath store_dir = GetDirectoryForModelInfo(*models_dir_, model_info);
+  base::FilePath store_dir = GetDirectoryForModelInfo(models_dir, model_info);
   if (!base::CreateDirectory(store_dir)) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kCouldNotCreateDirectory);
@@ -360,14 +360,33 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
   std::vector<std::pair<base::FilePath, base::FilePath>> files_to_move;
   files_to_move.emplace_back(std::make_pair(temp_model_path, store_model_path));
 
+  // Ensure that the attached additional files are actually a set. The
+  // conversion to a set also happens later during processing, but at the very
+  // end. Eliminating duplicates here helps eliminate unneeded file operations
+  // in the next step of processing.
+  base::flat_set<std::string> additional_files_set;
   for (const proto::AdditionalModelFile& add_file :
        model_info.additional_files()) {
+    additional_files_set.insert(add_file.file_path());
+  }
+
+  // Clear all the additional files set by the server so they they can be fully
+  // replaced by absolute paths.
+  model.mutable_model_info()->clear_additional_files();
+
+  for (const std::string& additional_file_path : additional_files_set) {
     base::FilePath temp_add_file_path =
-        unzipped_dir_path.AppendASCII(add_file.file_path());
+        unzipped_dir_path.AppendASCII(additional_file_path);
     base::FilePath store_add_file_path =
-        store_dir.AppendASCII(add_file.file_path());
+        store_dir.AppendASCII(additional_file_path);
+
+    // Make sure the additional file gets moved.
     files_to_move.emplace_back(
         std::make_pair(temp_add_file_path, store_add_file_path));
+
+    // And put its new path in the proto.
+    model.mutable_model_info()->add_additional_files()->set_file_path(
+        FilePathToString(store_add_file_path));
   }
 
   PredictionModelDownloadStatus status =
@@ -380,8 +399,10 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
 
     // ReplaceFile failed, log the error code and attempt to utilize base::Move
     // instead as the file could be on a different storage partition.
-    UMA_HISTOGRAM_ENUMERATION(
-        "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError",
+    base::UmaHistogramExactLinear(
+        "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError." +
+            GetStringNameForOptimizationTarget(
+                model_info.optimization_target()),
         -file_error, -base::File::FILE_ERROR_MAX);
     if (base::Move(move_file.first, move_file.second)) {
       continue;

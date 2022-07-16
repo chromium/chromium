@@ -10,6 +10,9 @@ namespace switches {
 // Disable field trial tests configured in fieldtrial_testing_config.json.
 const char kDisableFieldTrialTestingConfig[] = "disable-field-trial-config";
 
+// Disable variations safe mode.
+const char kDisableVariationsSafeMode[] = "disable-variations-safe-mode";
+
 // TODO(asvitkine): Consider removing or renaming this functionality.
 // Enables the benchmarking extensions.
 const char kEnableBenchmarking[] = "enable-benchmarking";

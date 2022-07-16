@@ -29,11 +29,9 @@
 
 namespace {
 
-constexpr base::TimeDelta kContactUploadPeriod = base::TimeDelta::FromHours(24);
-constexpr base::TimeDelta kContactDownloadPeriod =
-    base::TimeDelta::FromHours(12);
-constexpr base::TimeDelta kContactDownloadRpcTimeout =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kContactUploadPeriod = base::Hours(24);
+constexpr base::TimeDelta kContactDownloadPeriod = base::Hours(12);
+constexpr base::TimeDelta kContactDownloadRpcTimeout = base::Seconds(60);
 
 // Removes contact IDs from the allowlist if they are not in |contacts|.
 std::set<std::string> RemoveNonexistentContactsFromAllowlist(

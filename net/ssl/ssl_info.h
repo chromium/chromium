@@ -17,7 +17,6 @@
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/cert/x509_cert_types.h"
-#include "net/ssl/ssl_config.h"
 
 namespace net {
 
@@ -87,6 +86,12 @@ class NET_EXPORT SSLInfo {
   // True if data was received over early data on the server. This field is only
   // set for server sockets.
   bool early_data_received = false;
+
+  // True if the connection negotiated the Encrypted ClientHello extension.
+  //
+  // TODO(crbug.com/1091403): Serialize this field in net_ipc_param_traits.cc
+  // and expose in DevTools Security Panel.
+  bool encrypted_client_hello = false;
 
   HandshakeType handshake_type = HANDSHAKE_UNKNOWN;
 

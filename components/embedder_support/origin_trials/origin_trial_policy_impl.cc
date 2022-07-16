@@ -78,7 +78,7 @@ bool OriginTrialPolicyImpl::IsFeatureDisabledForUser(
     base::StringPiece feature) const {
   struct OriginTrialFeatureToBaseFeatureMap {
     const char* origin_trial_feature_name;
-    const base::Feature field_trial_feature;
+    const base::Feature& field_trial_feature;
   } origin_trial_feature_to_field_trial_feature_map[] = {
       {"FrobulateThirdParty", kOriginTrialsSampleAPIThirdPartyAlternativeUsage},
       {"ConversionMeasurement", kConversionMeasurementAPIAlternativeUsage}};

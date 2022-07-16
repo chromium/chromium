@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "ui/gfx/vsync_provider.h"
 
 namespace gl {
@@ -18,6 +17,10 @@ namespace gl {
 class SyncControlVSyncProvider : public gfx::VSyncProvider {
  public:
   SyncControlVSyncProvider();
+
+  SyncControlVSyncProvider(const SyncControlVSyncProvider&) = delete;
+  SyncControlVSyncProvider& operator=(const SyncControlVSyncProvider&) = delete;
+
   ~SyncControlVSyncProvider() override;
 
   void GetVSyncParameters(UpdateVSyncCallback callback) override;
@@ -53,8 +56,6 @@ class SyncControlVSyncProvider : public gfx::VSyncProvider {
   // between monitors, suspend and resume, etc.).
   base::queue<base::TimeDelta> last_computed_intervals_;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
-
-  DISALLOW_COPY_AND_ASSIGN(SyncControlVSyncProvider);
 };
 
 }  // namespace gl

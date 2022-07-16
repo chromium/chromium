@@ -1,11 +1,11 @@
 # Checking out and building on Fuchsia
 
-***Note that the Fuchsia port is in the early stages, and things are likely to
-frequently be broken. Try #cr-fuchsia on Freenode or Slack if something seems
-awry.***
+***If you have followed the instructions below and things still having trouble,
+try `#cr-fuchsia` on [Chromium Slack](https://www.chromium.org/developers/slack)
+if something seems awry.***
 
 There are instructions for other platforms linked from the
-[get the code](get_the_code.md) page.
+[get the code](../get_the_code.md) page.
 
 [TOC]
 
@@ -27,8 +27,8 @@ Clone the `depot_tools` repository:
 $ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 ```
 
-Add `depot_tools` to the end of your PATH (you will probably want to put this
-in your `~/.bashrc` or `~/.zshrc`). Assuming you cloned `depot_tools` to
+Add `depot_tools` to the end of your PATH (you will probably want to put this in
+your `~/.bashrc` or `~/.zshrc`). Assuming you cloned `depot_tools` to
 `/path/to/depot_tools`:
 
 ```shell
@@ -52,12 +52,12 @@ dependencies.
 $ fetch --nohooks chromium
 ```
 
-Expect the command to take 30 minutes on even a fast connection, and many
-hours on slower ones.
+Expect the command to take 30 minutes on even a fast connection, and many hours
+on slower ones.
 
 If you've already installed the build dependencies on the machine (from another
-checkout, for example), you can omit the `--nohooks` flag and `fetch`
-will automatically execute `gclient runhooks` at the end.
+checkout, for example), you can omit the `--nohooks` flag and `fetch` will
+automatically execute `gclient runhooks` at the end.
 
 When `fetch` completes, it will have created a hidden `.gclient` file and a
 directory called `src` in the working directory.
@@ -88,6 +88,18 @@ solutions = [
 target_os = ['fuchsia']
 ```
 
+The Fuchsia boot images (also called "SDK companion images") to check out are
+specified by the `checkout_fuchsia_boot_images` variable. For instance, adding
+`"checkout_fuchsia_boot_images": "qemu.x64,workstation.qemu-x64-release",` to
+the `custom_vars` section of your `.gclient` file would allow you to check out
+both images. The set of available images is listed in the
+[DEPS file](https://source.chromium.org/chromium/chromium/src/+/main:DEPS).
+
+Note: fxbug.dev/85552 tracks migration away from the legacy image names, like
+`qemu.x64`, which is mapped to `terminal.qemu-x64-release` by the
+[`update_images.py`](https://source.chromium.org/chromium/chromium/src/+/main:build/fuchsia/update_images.py)
+helper script.
+
 You will then need to run:
 
 ```shell
@@ -105,8 +117,8 @@ $ cd src
 
 ### (Linux-only) Install any required host packages
 
-Chromium relies on some platform packages to be present in order to build.
-You can install the current set of required packages with:
+Chromium relies on some platform packages to be present in order to build. You
+can install the current set of required packages with:
 
 ```shell
 $ build/install-build-deps.sh
@@ -124,10 +136,10 @@ $ git rebase-update
 $ gclient sync
 ```
 
-The first command updates the primary Chromium source repository and rebases
-any of your local branches on top of tip-of-tree (aka the Git branch
-`origin/main`). If you don't want to use this script, you can also just use
-`git pull` or other common Git commands to update the repo.
+The first command updates the primary Chromium source repository and rebases any
+of your local branches on top of tip-of-tree (aka the Git branch `origin/main`).
+If you don't want to use this script, you can also just use `git pull` or other
+common Git commands to update the repo.
 
 The second command syncs dependencies to the appropriate versions and re-runs
 hooks as needed. `gclient sync` updates dependencies to the versions specified
@@ -136,9 +148,10 @@ in `DEPS`, so any time that file is modified (pulling, changing branches, etc.)
 
 ## (Mac-only) Download additional required Clang binaries
 
-Go to [this page](https://chrome-infra-packages.appspot.com/p/fuchsia/clang/mac-amd64/+/)
-and download the most recent build. Extract `bin/llvm-ar` to the clang folder
-in Chromium:
+Go to
+[this page](https://chrome-infra-packages.appspot.com/p/fuchsia/clang/mac-amd64/+/)
+and download the most recent build. Extract `bin/llvm-ar` to the clang folder in
+Chromium:
 
 ```shell
 $ unzip /path/to/clang.zip bin/llvm-ar -d ${CHROMIUM_SRC}/third_party/llvm-build/Release+Asserts
@@ -147,9 +160,9 @@ $ unzip /path/to/clang.zip bin/llvm-ar -d ${CHROMIUM_SRC}/third_party/llvm-build
 ## Setting up the build
 
 Chromium uses [Ninja](https://ninja-build.org) as its main build tool along with
-a tool called [GN](https://gn.googlesource.com/gn/+/main/docs/quick_start.md)
-to generate `.ninja` files. You can create any number of *build directories*
-with different configurations. To create a build directory, run:
+a tool called [GN](https://gn.googlesource.com/gn/+/main/docs/quick_start.md) to
+generate `.ninja` files. You can create any number of *build directories* with
+different configurations. To create a build directory, run:
 
 ```shell
 $ gn gen out/fuchsia --args="is_debug=false dcheck_always_on=true is_component_build=false target_os=\"fuchsia\""
@@ -185,26 +198,19 @@ Under Linux, if your host and target CPU architectures are the same (e.g. you're
 building for Fuchsia/x64 on a Linux/x64 host) then you can benefit from QEMU's
 support for the KVM hypervisor:
 
-1. Install the KVM module for your kernel, to get a /dev/kvm device.
-2. Ensure that your system has a "kvm" group, and it owns /dev/kvm.
-You can do that by installing the QEMU system common package:
-```shell
-$ sudo apt-get install qemu-system-common
-```
-3. Add users to the "kvm" group, and have them login again, to pick-up the new
-group.
-```shell
-$ sudo adduser <user> kvm
-$ exit
-[log in again]
-```
+1.  Install the KVM module for your kernel, to get a /dev/kvm device.
+2.  Ensure that your system has a "kvm" group, and it owns /dev/kvm. You can do
+    that by installing the QEMU system common package: `shell $ sudo apt-get
+    install qemu-system-common`
+3.  Add users to the "kvm" group, and have them login again, to pick-up the new
+    group. `shell $ sudo adduser <user> kvm $ exit [log in again]`
 
 ### Running test suites
 
 There are three types of tests available to run on Fuchsia:
 
-1. [Gtests](gtests.md)
-2. [GPU integration tests](gpu_testing.md)
-3. [Blink tests](web_tests.md)
+1.  [Gtests](gtests.md)
+2.  [GPU integration tests](gpu_testing.md)
+3.  [Blink tests](web_tests.md)
 
 Check the documentations to learn more about how to run these tests.

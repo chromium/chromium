@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feature_engagement/internal/availability_model.h"
 #include "components/feature_engagement/internal/persistent_availability_store.h"
@@ -31,6 +30,10 @@ class AvailabilityModelImpl : public AvailabilityModel {
                               uint32_t current_day)>;
 
   explicit AvailabilityModelImpl(StoreLoadCallback load_callback);
+
+  AvailabilityModelImpl(const AvailabilityModelImpl&) = delete;
+  AvailabilityModelImpl& operator=(const AvailabilityModelImpl&) = delete;
+
   ~AvailabilityModelImpl() override;
 
   // AvailabilityModel implementation.
@@ -60,8 +63,6 @@ class AvailabilityModelImpl : public AvailabilityModel {
   StoreLoadCallback store_load_callback_;
 
   base::WeakPtrFactory<AvailabilityModelImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AvailabilityModelImpl);
 };
 
 }  // namespace feature_engagement

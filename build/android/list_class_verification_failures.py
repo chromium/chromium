@@ -12,6 +12,7 @@ and accommodating API-level-specific details, such as file paths.
 
 
 import argparse
+import dataclasses
 import logging
 import os
 import re
@@ -76,63 +77,61 @@ def _GetFormattedArch(device):
   return {abis.ARM_64: 'arm64', abis.ARM: 'arm'}.get(abi, abi)
 
 
-def PathToDexForPlatformVersion(device, package_name):
-  """Gets the full path to the dex file on the device."""
+def FindOdexFiles(device, package_name):
+  """Gets the full paths to the dex files on the device."""
   sdk_level = device.build_version_sdk
   paths_to_apk = device.GetApplicationPaths(package_name)
   if not paths_to_apk:
     raise DeviceOSError(
         'Could not find data directory for {}. Is it installed?'.format(
             package_name))
-  if len(paths_to_apk) != 1:
-    raise DeviceOSError(
-        'Expected exactly one path for {} but found {}'.format(
-            package_name,
-            paths_to_apk))
-  path_to_apk = paths_to_apk[0]
 
-  if version_codes.LOLLIPOP <= sdk_level <= version_codes.LOLLIPOP_MR1:
-    # Of the form "com.example.foo-\d", where \d is some digit (usually 1 or 2)
-    package_with_suffix = os.path.basename(os.path.dirname(path_to_apk))
-    arch = _GetFormattedArch(device)
-    dalvik_prefix = '/data/dalvik-cache/{arch}'.format(arch=arch)
-    odex_file = '{prefix}/data@app@{package}@base.apk@classes.dex'.format(
-        prefix=dalvik_prefix,
-        package=package_with_suffix)
-  elif sdk_level >= version_codes.MARSHMALLOW:
-    arch = _GetFormattedArch(device)
-    odex_file = '{data_dir}/oat/{arch}/base.odex'.format(
-        data_dir=os.path.dirname(path_to_apk), arch=arch)
-  else:
-    raise UnsupportedDeviceError('Unsupported API level: {}'.format(sdk_level))
+  ret = []
+  for path_to_apk in paths_to_apk:
+    if version_codes.LOLLIPOP <= sdk_level <= version_codes.LOLLIPOP_MR1:
+      # Of the form "com.example.foo-\d", where \d is a digit (usually 1 or 2).
+      package_with_suffix = os.path.basename(os.path.dirname(path_to_apk))
+      arch = _GetFormattedArch(device)
+      dalvik_prefix = '/data/dalvik-cache/{arch}'.format(arch=arch)
+      odex_file = '{prefix}/data@app@{package}@base.apk@classes.dex'.format(
+          prefix=dalvik_prefix, package=package_with_suffix)
+    elif sdk_level >= version_codes.MARSHMALLOW:
+      arch = _GetFormattedArch(device)
+      odex_file = '{data_dir}/oat/{arch}/base.odex'.format(
+          data_dir=os.path.dirname(path_to_apk), arch=arch)
+    else:
+      raise UnsupportedDeviceError(
+          'Unsupported API level: {}'.format(sdk_level))
 
-  odex_file_exists = device.FileExists(odex_file)
-  if odex_file_exists:
-    return odex_file
-  elif sdk_level >= version_codes.PIE:
-    raise DeviceOSError(
-        'Unable to find odex file: you must run dex2oat on debuggable apps '
-        'on >= P after installation.')
-  raise DeviceOSError('Unable to find odex file ' + odex_file)
+    odex_file_exists = device.FileExists(odex_file)
+    if odex_file_exists:
+      ret.append(odex_file)
+    elif sdk_level >= version_codes.PIE:
+      raise DeviceOSError(
+          'Unable to find odex file: you must run dex2oat on debuggable apps '
+          'on >= P after installation.')
+    else:
+      raise DeviceOSError('Unable to find odex file ' + odex_file)
+  return ret
 
 
-def _AdbOatDumpForPackage(device, package_name, out_file):
+def _AdbOatDump(device, odex_file, out_file):
   """Runs oatdump on the device."""
   # Get the path to the odex file.
-  odex_file = PathToDexForPlatformVersion(device, package_name)
-  device.RunShellCommand(
-      ['oatdump', '--oat-file=' + odex_file, '--output=' + out_file],
-      timeout=420,
-      shell=True,
-      check_return=True)
+  with device_temp_file.DeviceTempFile(device.adb) as device_file:
+    device.RunShellCommand(
+        ['oatdump', '--oat-file=' + odex_file, '--output=' + device_file.name],
+        timeout=420,
+        shell=True,
+        check_return=True)
+    device.PullFile(device_file.name, out_file, timeout=220)
 
 
-class JavaClass(object):
+@dataclasses.dataclass(order=True, frozen=True)
+class JavaClass:
   """This represents a Java Class and its ART Class Verification status."""
-
-  def __init__(self, name, verification_status):
-    self.name = name
-    self.verification_status = verification_status
+  name: str
+  verification_status: str
 
 
 def _ParseMappingFile(proguard_map_file):
@@ -161,7 +160,7 @@ def FormatJavaClassName(dex_code_name, proguard_mappings):
     return obfuscated_name
 
 
-def ListClassesAndVerificationStatus(oatdump_output, proguard_mappings):
+def ParseOatdump(oatdump_output, proguard_mappings):
   """Lists all Java classes in the dex along with verification status."""
   java_classes = []
   pattern = re.compile(r'\d+: L([^;]+).*\(type_idx=[^(]+\((\w+)\).*')
@@ -204,18 +203,20 @@ def _PrintVerificationResults(target_status, java_classes, show_summary):
 
 def RealMain(mapping, device_arg, package, status, hide_summary, workdir):
   if mapping is None:
-    logging.warn('Skipping deobfuscation because no map file was provided.')
+    logging.warning('Skipping deobfuscation because no map file was provided.')
+    proguard_mappings = None
+  else:
+    proguard_mappings = _ParseMappingFile(mapping)
   device = DetermineDeviceToUse(device_arg)
+  host_tempfile = os.path.join(workdir, 'out.dump')
   device.EnableRoot()
-  with device_temp_file.DeviceTempFile(
-      device.adb) as file_on_device:
-    _AdbOatDumpForPackage(device, package, file_on_device.name)
-    file_on_host = os.path.join(workdir, 'out.dump')
-    device.PullFile(file_on_device.name, file_on_host, timeout=220)
-  proguard_mappings = (_ParseMappingFile(mapping) if mapping else None)
-  with open(file_on_host, 'r') as f:
-    java_classes = ListClassesAndVerificationStatus(f, proguard_mappings)
-    _PrintVerificationResults(status, java_classes, not hide_summary)
+  odex_files = FindOdexFiles(device, package)
+  java_classes = set()
+  for odex_file in odex_files:
+    _AdbOatDump(device, odex_file, host_tempfile)
+    with open(host_tempfile, 'r') as f:
+      java_classes.update(ParseOatdump(f, proguard_mappings))
+  _PrintVerificationResults(status, sorted(java_classes), not hide_summary)
 
 
 def main():
@@ -270,8 +271,8 @@ List Java classes in an APK which fail ART class verification.
     RealMain(args.mapping, args.devices, args.package, args.status,
              args.hide_summary, args.workdir)
     # Assume the user wants the workdir to persist (useful for debugging).
-    logging.warn('Not cleaning up explicitly-specified workdir: %s',
-                 args.workdir)
+    logging.warning('Not cleaning up explicitly-specified workdir: %s',
+                    args.workdir)
   else:
     with tempfile_ext.NamedTemporaryDirectory() as workdir:
       RealMain(args.mapping, args.devices, args.package, args.status,

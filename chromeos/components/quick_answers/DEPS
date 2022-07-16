@@ -1,8 +1,0 @@
-include_rules = [
-  "+ash/public",
-  "+services/data_decoder/public",
-  "+third_party/cld_3/src/src/nnet_language_identifier.h",
-  "+ui/base/l10n",
-  "+ui/base/resource/resource_bundle.h",
-  "+ui/gfx",
-]

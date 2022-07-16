@@ -24,6 +24,10 @@ namespace chromecast {
 class WeightedMovingAverage {
  public:
   explicit WeightedMovingAverage(int64_t max_x_range);
+
+  WeightedMovingAverage(const WeightedMovingAverage&) = delete;
+  WeightedMovingAverage& operator=(const WeightedMovingAverage&) = delete;
+
   ~WeightedMovingAverage();
 
   int64_t max_x_range() const { return max_x_range_; }
@@ -52,8 +56,6 @@ class WeightedMovingAverage {
   const int64_t max_x_range_;
   std::deque<Sample> samples_;
   WeightedMean mean_;
-
-  DISALLOW_COPY_AND_ASSIGN(WeightedMovingAverage);
 };
 
 }  // namespace chromecast

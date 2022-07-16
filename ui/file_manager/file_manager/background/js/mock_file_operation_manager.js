@@ -102,4 +102,5 @@ export class MockFileOperationManager extends EventTarget {
   emptyTrash() {}
   zipSelection() {}
   cancelZip() {}
+  async writeFile() {}
 }

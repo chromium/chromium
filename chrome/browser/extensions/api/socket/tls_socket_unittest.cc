@@ -5,7 +5,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/testing_profile.h"

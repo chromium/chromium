@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -28,6 +27,10 @@ class ASH_EXPORT WindowRotation : public ui::LayerAnimationElement {
   // |degrees| are clockwise. |layer| is the target of the animation. Does not
   // take ownership of |layer|.
   WindowRotation(int degrees, ui::Layer* layer);
+
+  WindowRotation(const WindowRotation&) = delete;
+  WindowRotation& operator=(const WindowRotation&) = delete;
+
   ~WindowRotation() override;
 
  private:
@@ -48,8 +51,6 @@ class ASH_EXPORT WindowRotation : public ui::LayerAnimationElement {
 
   // The target origin.
   gfx::Point new_origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowRotation);
 };
 
 }  // namespace ash

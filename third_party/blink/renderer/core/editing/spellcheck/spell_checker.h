@@ -34,6 +34,7 @@
 
 namespace blink {
 
+class DocumentMarkerGroup;
 class Element;
 class IdleSpellCheckController;
 class LocalDOMWindow;
@@ -67,7 +68,7 @@ class CORE_EXPORT SpellChecker final : public GarbageCollected<SpellChecker> {
   void RespondToChangedContents();
   void RespondToChangedSelection();
   void RespondToChangedEnablement(const HTMLElement&, bool enabled);
-  std::pair<Node*, SpellCheckMarker*> GetSpellCheckMarkerUnderSelection() const;
+  DocumentMarkerGroup* GetSpellCheckMarkerGroupUnderSelection() const;
   // The first String returned in the pair is the selected text.
   // The second String is the marker's description.
   std::pair<String, String> SelectMisspellingAsync();

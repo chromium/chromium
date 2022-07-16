@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #include "ios/web/navigation/time_smoother.h"
-#import "ios/web/public/deprecated/navigation_item_list.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/navigation/reload_type.h"
 #include "ui/base/page_transition_types.h"
@@ -249,8 +248,8 @@ class NavigationManagerImpl : public NavigationManager {
   void GoToIndex(int index) final;
   void Reload(ReloadType reload_type, bool check_for_reposts) final;
   void ReloadWithUserAgentType(UserAgentType user_agent_type) final;
-  NavigationItemList GetBackwardItems() const final;
-  NavigationItemList GetForwardItems() const final;
+  std::vector<NavigationItem*> GetBackwardItems() const final;
+  std::vector<NavigationItem*> GetForwardItems() const final;
   void Restore(int last_committed_item_index,
                std::vector<std::unique_ptr<NavigationItem>> items) final;
   bool IsRestoreSessionInProgress() const final;
@@ -280,6 +279,10 @@ class NavigationManagerImpl : public NavigationManager {
   class WKWebViewCache {
    public:
     explicit WKWebViewCache(NavigationManagerImpl* navigation_manager);
+
+    WKWebViewCache(const WKWebViewCache&) = delete;
+    WKWebViewCache& operator=(const WKWebViewCache&) = delete;
+
     ~WKWebViewCache();
 
     // Returns true if the navigation manager is attached to a WKWebView.
@@ -329,8 +332,6 @@ class NavigationManagerImpl : public NavigationManager {
 
     std::vector<std::unique_ptr<NavigationItemImpl>> cached_items_;
     int cached_current_item_index_;
-
-    DISALLOW_COPY_AND_ASSIGN(WKWebViewCache);
   };
 
   // Type of the list passed to restore items.

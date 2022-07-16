@@ -32,6 +32,11 @@ bool AccessibilityControllerTestApiImpl::IsLargeCursorEnabled() const {
   return GetController()->large_cursor().enabled();
 }
 
+int AccessibilityControllerTestApiImpl::GetDictationSodaDownloadProgress()
+    const {
+  return GetController()->dictation_soda_download_progress();
+}
+
 // static
 std::unique_ptr<AccessibilityControllerTestApi>
 AccessibilityControllerTestApi::Create() {

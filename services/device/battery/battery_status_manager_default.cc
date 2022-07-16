@@ -17,6 +17,11 @@ class BatteryStatusManagerDefault : public BatteryStatusManager {
  public:
   explicit BatteryStatusManagerDefault(
       const BatteryStatusService::BatteryUpdateCallback& callback) {}
+
+  BatteryStatusManagerDefault(const BatteryStatusManagerDefault&) = delete;
+  BatteryStatusManagerDefault& operator=(const BatteryStatusManagerDefault&) =
+      delete;
+
   ~BatteryStatusManagerDefault() override {}
 
  private:
@@ -27,8 +32,6 @@ class BatteryStatusManagerDefault : public BatteryStatusManager {
   }
 
   void StopListeningBatteryChange() override { NOTIMPLEMENTED(); }
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusManagerDefault);
 };
 
 }  // namespace

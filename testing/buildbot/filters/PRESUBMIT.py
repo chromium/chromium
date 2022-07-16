@@ -34,7 +34,8 @@ def _CheckFilterFileFormat(input_api, output_api):
     exclusions = 0
     for line_num, line in enumerate(f.NewContents()):
       # Implicitly allow for trailing (but not leading) whitespace.
-      line = line.rstrip()
+      # Allow nocheck comments
+      line = line.rstrip().replace('# nocheck', '')
       if not line:
         # Empty line. Ignore these.
         continue

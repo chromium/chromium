@@ -12,7 +12,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -61,6 +60,10 @@ class ErrorConsole : public KeyedService,
   };
 
   explicit ErrorConsole(Profile* profile);
+
+  ErrorConsole(const ErrorConsole&) = delete;
+  ErrorConsole& operator=(const ErrorConsole&) = delete;
+
   ~ErrorConsole() override;
 
   // Convenience method to return the ErrorConsole for a given |context|.
@@ -198,8 +201,6 @@ class ErrorConsole : public KeyedService,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorConsole);
 };
 
 }  // namespace extensions

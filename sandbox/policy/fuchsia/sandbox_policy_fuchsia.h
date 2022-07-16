@@ -11,7 +11,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "sandbox/policy/export.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 
 namespace base {
 class FilteredServiceDirectory;
@@ -25,7 +25,7 @@ namespace policy {
 class SANDBOX_POLICY_EXPORT SandboxPolicyFuchsia {
  public:
   // Must be called on the IO thread.
-  explicit SandboxPolicyFuchsia(SandboxType type);
+  explicit SandboxPolicyFuchsia(sandbox::mojom::Sandbox type);
   ~SandboxPolicyFuchsia();
 
   SandboxPolicyFuchsia(const SandboxPolicyFuchsia&) = delete;
@@ -38,7 +38,7 @@ class SANDBOX_POLICY_EXPORT SandboxPolicyFuchsia {
   void UpdateLaunchOptionsForSandbox(base::LaunchOptions* options);
 
  private:
-  SandboxType type_;
+  sandbox::mojom::Sandbox type_;
 
   // Services directory used for the /svc namespace of the child process.
   std::unique_ptr<base::FilteredServiceDirectory> service_directory_;

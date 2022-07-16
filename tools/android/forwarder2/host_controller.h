@@ -47,6 +47,9 @@ class HostController {
       int exit_notifier_fd,
       ErrorCallback error_callback);
 
+  HostController(const HostController&) = delete;
+  HostController& operator=(const HostController&) = delete;
+
   ~HostController();
 
   // Starts the internal controller thread.
@@ -89,8 +92,6 @@ class HostController {
   const scoped_refptr<base::SingleThreadTaskRunner> deletion_task_runner_;
   base::Thread thread_;
   ForwardersManager forwarders_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostController);
 };
 
 }  // namespace forwarder2

@@ -13,6 +13,9 @@ class SerialIoHandlerPosixTest : public testing::Test {
  public:
   SerialIoHandlerPosixTest() = default;
 
+  SerialIoHandlerPosixTest(const SerialIoHandlerPosixTest&) = delete;
+  SerialIoHandlerPosixTest& operator=(const SerialIoHandlerPosixTest&) = delete;
+
   void SetUp() override {
     serial_io_handler_posix_ =
         new SerialIoHandlerPosix(base::FilePath("dummy-port"), nullptr);
@@ -63,9 +66,6 @@ class SerialIoHandlerPosixTest : public testing::Test {
 
  protected:
   scoped_refptr<SerialIoHandlerPosix> serial_io_handler_posix_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SerialIoHandlerPosixTest);
 };
 
 // 'a' 'b' 'c'

@@ -81,6 +81,7 @@ crosapi::mojom::NotificationPtr ToMojo(
   for (const auto& button : notification.buttons()) {
     auto mojo_button = crosapi::mojom::ButtonInfo::New();
     mojo_button->title = button.title;
+    mojo_button->placeholder = button.placeholder;
     mojo_note->buttons.push_back(std::move(mojo_button));
   }
   mojo_note->pinned = notification.pinned();
@@ -131,11 +132,11 @@ class NotificationPlatformBridgeLacros::RemoteNotificationDelegate
     bridge_delegate_->HandleNotificationClicked(notification_id_);
   }
 
-  void OnNotificationButtonClicked(uint32_t button_index) override {
-    // Chrome OS does not support inline reply.
+  void OnNotificationButtonClicked(
+      uint32_t button_index,
+      const absl::optional<::std::u16string>& reply) override {
     bridge_delegate_->HandleNotificationButtonClicked(
-        notification_id_, base::checked_cast<int>(button_index),
-        /*reply=*/absl::nullopt);
+        notification_id_, base::checked_cast<int>(button_index), reply);
   }
 
   void OnNotificationSettingsButtonClicked() override {

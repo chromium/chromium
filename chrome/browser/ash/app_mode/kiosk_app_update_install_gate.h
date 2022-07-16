@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_UPDATE_INSTALL_GATE_H_
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_UPDATE_INSTALL_GATE_H_
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/install_gate.h"
 
 namespace extensions {
@@ -20,6 +19,9 @@ namespace ash {
 class KioskAppUpdateInstallGate : public extensions::InstallGate {
  public:
   explicit KioskAppUpdateInstallGate(Profile* profile);
+  KioskAppUpdateInstallGate(const KioskAppUpdateInstallGate&) = delete;
+  KioskAppUpdateInstallGate& operator=(const KioskAppUpdateInstallGate&) =
+      delete;
   ~KioskAppUpdateInstallGate() override;
 
   // InstallGate:
@@ -29,8 +31,6 @@ class KioskAppUpdateInstallGate : public extensions::InstallGate {
  private:
   Profile* const profile_;
   extensions::ExtensionRegistry* const registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppUpdateInstallGate);
 };
 
 }  // namespace ash

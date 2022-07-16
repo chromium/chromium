@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/stl_util.h"
+#include "build/build_config.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/simple_feature.h"
@@ -115,6 +116,9 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
 
   // A permission only available to whitelisted extensions returns availability
   // NOT_FOUND_IN_WHITELIST.
+  // TODO(https://crbug.com/1251347): Port //device/bluetooth to Fuchsia to
+  // enable bluetooth extensions.
+#if !defined(OS_FUCHSIA)
   feature = provider->GetFeature("bluetoothPrivate");
   ASSERT_TRUE(feature);
   EXPECT_EQ(Feature::NOT_FOUND_IN_WHITELIST,
@@ -122,6 +126,7 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
                 ->IsAvailableToContext(app.get(), Feature::UNSPECIFIED_CONTEXT,
                                        GURL())
                 .result());
+#endif  // !defined(OS_FUCHSIA)
 
   // A permission that isn't part of the manifest returns NOT_PRESENT.
   feature = provider->GetFeature("serial");

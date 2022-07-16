@@ -55,7 +55,11 @@ const int kDefaultDownloadExpiredTimeInDays = 90;
 const int kDefaultOverwrittenDownloadExpiredTimeInDays = 90;
 
 // Default buffer size in bytes to write to the download file.
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+const int kDefaultDownloadFileBufferSize = 524288;  // Desktop uses 512 KB.
+#else
 const int kDefaultDownloadFileBufferSize = 4096;
+#endif
 
 #if defined(OS_ANDROID)
 // Default maximum length of a downloaded file name on Android.
@@ -272,6 +276,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   request->url = params->url();
   request->request_initiator = params->initiator();
   request->trusted_params = network::ResourceRequest::TrustedParams();
+  request->has_user_gesture = params->has_user_gesture();
 
   if (params->isolation_info().has_value()) {
     request->trusted_params->isolation_info = params->isolation_info().value();
@@ -427,6 +432,7 @@ DownloadDBEntry CreateDownloadDBEntryFromItem(const DownloadItemImpl& item) {
   in_progress_info.total_bytes = item.GetTotalBytes();
   in_progress_info.current_path = item.GetFullPath();
   in_progress_info.target_path = item.GetTargetFilePath();
+  in_progress_info.reroute_info = item.GetRerouteInfo();
   in_progress_info.received_bytes = item.GetReceivedBytes();
   in_progress_info.start_time = item.GetStartTime();
   in_progress_info.end_time = item.GetEndTime();
@@ -441,6 +447,7 @@ DownloadDBEntry CreateDownloadDBEntryFromItem(const DownloadItemImpl& item) {
   in_progress_info.bytes_wasted = item.GetBytesWasted();
   in_progress_info.auto_resume_count = item.GetAutoResumeCount();
   in_progress_info.download_schedule = item.GetDownloadSchedule();
+  in_progress_info.credentials_mode = item.GetCredentialsMode();
 
   download_info.in_progress_info = in_progress_info;
 
@@ -647,7 +654,7 @@ base::TimeDelta GetExpiredDownloadDeleteTime() {
   int expired_days = base::GetFieldTrialParamByFeatureAsInt(
       features::kDeleteExpiredDownloads, kExpiredDownloadDeleteTimeFinchKey,
       kDefaultDownloadExpiredTimeInDays);
-  return base::TimeDelta::FromDays(expired_days);
+  return base::Days(expired_days);
 }
 
 base::TimeDelta GetOverwrittenDownloadDeleteTime() {
@@ -655,7 +662,7 @@ base::TimeDelta GetOverwrittenDownloadDeleteTime() {
       features::kDeleteOverwrittenDownloads,
       kOverwrittenDownloadDeleteTimeFinchKey,
       kDefaultOverwrittenDownloadExpiredTimeInDays);
-  return base::TimeDelta::FromDays(expired_days);
+  return base::Days(expired_days);
 }
 
 int GetDownloadFileBufferSize() {

@@ -204,7 +204,7 @@ SysInternalsMessageHandler::SysInternalsMessageHandler() {}
 SysInternalsMessageHandler::~SysInternalsMessageHandler() {}
 
 void SysInternalsMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getSysInfo",
       base::BindRepeating(&SysInternalsMessageHandler::HandleGetSysInfo,
                           base::Unretained(this)));

@@ -42,8 +42,6 @@ class PLATFORM_EXPORT ActiveScriptWrappableBase : public GarbageCollectedMixin {
 
 }  // namespace blink
 
-#if BUILDFLAG(USE_V8_OILPAN)
-
 namespace cppgc {
 template <typename T, typename Unused>
 struct PostConstructionCallbackTrait;
@@ -61,25 +59,5 @@ struct PostConstructionCallbackTrait<
   }
 };
 }  // namespace cppgc
-
-#else  // !USE_V8_OILPAN
-
-namespace blink {
-template <typename T>
-struct PostConstructionHookTrait<
-    T,
-    base::void_t<decltype(
-        std::declval<T>().ActiveScriptWrappableBaseConstructed())>> {
-  static void Call(T* object) {
-    static_assert(std::is_base_of<ActiveScriptWrappableBase, T>::value,
-                  "Only ActiveScriptWrappableBase should use the "
-                  "post-construction hook.");
-    object->ActiveScriptWrappableBaseConstructed();
-  }
-};
-
-}  // namespace blink
-
-#endif  // !USE_V8_OILPAN
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_ACTIVE_SCRIPT_WRAPPABLE_BASE_H_

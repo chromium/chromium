@@ -18,8 +18,8 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
-#include "chrome/browser/apps/app_service/dip_px_util.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -38,8 +38,11 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 using vm_tools::apps::App;
 
@@ -58,6 +61,9 @@ constexpr char kCrostiniAppsInstalledHistogram[] =
 constexpr char kPluginVmAppsInstalledHistogram[] =
     "PluginVm.AppsInstalledAtLogin";
 
+constexpr char kBorealisAppsInstalledHistogram[] =
+    "Borealis.AppsInstalledAtLogin";
+
 base::Value ProtoToDictionary(const App::LocaleString& locale_string) {
   base::Value result(base::Value::Type::DICTIONARY);
   for (const App::LocaleString::Entry& entry : locale_string.values()) {
@@ -74,12 +80,14 @@ base::Value ProtoToDictionary(const App::LocaleString& locale_string) {
   return result;
 }
 
-std::set<std::string> ListToStringSet(const base::Value* list) {
+std::set<std::string> ListToStringSet(const base::Value* list,
+                                      bool to_lower_ascii = false) {
   std::set<std::string> result;
   if (!list)
     return result;
   for (const base::Value& value : list->GetList())
-    result.insert(value.GetString());
+    result.insert(to_lower_ascii ? base::ToLowerASCII(value.GetString())
+                                 : value.GetString());
   return result;
 }
 
@@ -155,8 +163,7 @@ base::Time GetTime(const base::Value& pref, const char* key) {
   int64_t time;
   if (!value || !base::StringToInt64(value->GetString(), &time))
     return base::Time();
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(time));
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(time));
 }
 
 bool EqualsExcludingTimestamps(const base::Value& left,
@@ -354,14 +361,10 @@ std::string GuestOsRegistryService::Registration::DesktopFileId() const {
 
 GuestOsRegistryService::VmType GuestOsRegistryService::Registration::VmType()
     const {
-  absl::optional<int> vm_type =
-      pref_.FindIntKey(guest_os::prefs::kAppVmTypeKey);
   // The VmType field is new, existing Apps that do not include it must be
-  // TERMINA Apps, as Plugin VM apps are not yet in production.
-  if (!vm_type) {
-    return GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA;
-  }
-  return static_cast<GuestOsRegistryService::VmType>(*vm_type);
+  // TERMINA (0) Apps, as Plugin VM apps are not yet in production.
+  return static_cast<GuestOsRegistryService::VmType>(
+      pref_.FindIntKey(guest_os::prefs::kAppVmTypeKey).value_or(0));
 }
 
 std::string GuestOsRegistryService::Registration::VmName() const {
@@ -378,8 +381,7 @@ std::string GuestOsRegistryService::Registration::ContainerName() const {
 }
 
 std::string GuestOsRegistryService::Registration::Name() const {
-  if (VmType() ==
-      GuestOsRegistryService::VmType::ApplicationList_VmType_PLUGIN_VM) {
+  if (VmType() == VmType::ApplicationList_VmType_PLUGIN_VM) {
     return l10n_util::GetStringFUTF8(
         IDS_PLUGIN_VM_APP_NAME_WINDOWS_SUFFIX,
         base::UTF8ToUTF16(LocalizedString(guest_os::prefs::kAppNameKey)));
@@ -410,15 +412,19 @@ std::string GuestOsRegistryService::Registration::ExecutableFileName() const {
 std::set<std::string> GuestOsRegistryService::Registration::Extensions() const {
   if (pref_.is_none())
     return {};
+  // Convert to lowercase ASCII to allow case-insensitive match.
   return ListToStringSet(pref_.FindKeyOfType(guest_os::prefs::kAppExtensionsKey,
-                                             base::Value::Type::LIST));
+                                             base::Value::Type::LIST),
+                         /*to_lower_ascii=*/true);
 }
 
 std::set<std::string> GuestOsRegistryService::Registration::MimeTypes() const {
   if (pref_.is_none())
     return {};
+  // Convert to lowercase ASCII to allow case-insensitive match.
   return ListToStringSet(pref_.FindKeyOfType(guest_os::prefs::kAppMimeTypesKey,
-                                             base::Value::Type::LIST));
+                                             base::Value::Type::LIST),
+                         /*to_lower_ascii=*/true);
 }
 
 std::set<std::string> GuestOsRegistryService::Registration::Keywords() const {
@@ -643,18 +649,7 @@ void GuestOsRegistryService::RecordStartupMetrics() {
   const base::DictionaryValue* apps =
       prefs_->GetDictionary(guest_os::prefs::kGuestOsRegistry);
 
-  bool crostini_enabled =
-      crostini::CrostiniFeatures::Get()->IsEnabled(profile_);
-  bool plugin_vm_enabled =
-      plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_);
-  bool borealis_enabled = borealis::BorealisService::GetForProfile(profile_)
-                              ->Features()
-                              .IsEnabled();
-  if (!crostini_enabled && !plugin_vm_enabled && !borealis_enabled)
-    return;
-
-  int num_crostini_apps = 0;
-  int num_plugin_vm_apps = 0;
+  base::flat_map<int, int> num_apps;
 
   for (const auto item : apps->DictItems()) {
     if (item.first == crostini::kCrostiniTerminalSystemAppId)
@@ -665,28 +660,27 @@ void GuestOsRegistryService::RecordStartupMetrics() {
     if (no_display && no_display.value())
       continue;
 
-    absl::optional<int> vm_type =
-        item.second.FindIntKey(guest_os::prefs::kAppVmTypeKey);
-    if (!vm_type ||
-        vm_type ==
-            GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA) {
-      num_crostini_apps++;
-    } else if (vm_type == GuestOsRegistryService::VmType::
-                              ApplicationList_VmType_PLUGIN_VM) {
-      num_plugin_vm_apps++;
-    } else {
-      NOTREACHED();
-    }
+    int vm_type =
+        item.second.FindIntKey(guest_os::prefs::kAppVmTypeKey).value_or(0);
+    num_apps[vm_type]++;
   }
 
-  if (crostini_enabled)
+  if (crostini::CrostiniFeatures::Get()->IsEnabled(profile_)) {
     UMA_HISTOGRAM_COUNTS_1000(kCrostiniAppsInstalledHistogram,
-                              num_crostini_apps);
-  if (plugin_vm_enabled)
-    UMA_HISTOGRAM_COUNTS_1000(kPluginVmAppsInstalledHistogram,
-                              num_plugin_vm_apps);
-
-  // TODO(b/166691285): borealis launch metrics.
+                              num_apps[VmType::ApplicationList_VmType_TERMINA]);
+  }
+  if (plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_)) {
+    UMA_HISTOGRAM_COUNTS_1000(
+        kPluginVmAppsInstalledHistogram,
+        num_apps[VmType::ApplicationList_VmType_PLUGIN_VM]);
+  }
+  if (borealis::BorealisService::GetForProfile(profile_)
+          ->Features()
+          .IsEnabled()) {
+    UMA_HISTOGRAM_COUNTS_1000(
+        kBorealisAppsInstalledHistogram,
+        num_apps[VmType::ApplicationList_VmType_BOREALIS]);
+  }
 }
 
 base::FilePath GuestOsRegistryService::GetAppPath(
@@ -699,11 +693,11 @@ base::FilePath GuestOsRegistryService::GetIconPath(
     ui::ResourceScaleFactor scale_factor) const {
   const base::FilePath app_path = GetAppPath(app_id);
   switch (scale_factor) {
-    case ui::SCALE_FACTOR_100P:
+    case ui::k100Percent:
       return app_path.AppendASCII("icon_100p.png");
-    case ui::SCALE_FACTOR_200P:
+    case ui::k200Percent:
       return app_path.AppendASCII("icon_200p.png");
-    case ui::SCALE_FACTOR_300P:
+    case ui::k300Percent:
       return app_path.AppendASCII("icon_300p.png");
     default:
       NOTREACHED();
@@ -711,58 +705,87 @@ base::FilePath GuestOsRegistryService::GetIconPath(
   }
 }
 
-void GuestOsRegistryService::LoadIcon(
-    const std::string& app_id,
-    apps::mojom::IconKeyPtr icon_key,
-    apps::mojom::IconType icon_type,
-    int32_t size_hint_in_dip,
-    bool allow_placeholder_icon,
-    int fallback_icon_resource_id,
-    apps::mojom::Publisher::LoadIconCallback callback) {
-  if (icon_key) {
-    if (icon_key->resource_id != apps::mojom::IconKey::kInvalidResourceId) {
-      // The icon is a resource built into the Chrome OS binary.
-      constexpr bool is_placeholder_icon = false;
-      apps::LoadIconFromResource(
-          icon_type, size_hint_in_dip, icon_key->resource_id,
-          is_placeholder_icon,
-          static_cast<apps::IconEffects>(icon_key->icon_effects),
+void GuestOsRegistryService::LoadIcon(const std::string& app_id,
+                                      const apps::IconKey& icon_key,
+                                      apps::IconType icon_type,
+                                      int32_t size_hint_in_dip,
+                                      bool allow_placeholder_icon,
+                                      int fallback_icon_resource_id,
+                                      apps::LoadIconCallback callback) {
+  // Add container-badging to all crostini apps except the terminal, which is
+  // shared between containers. This is part of the multi-container UI, so is
+  // guarded by a flag.
+  if (app_id != crostini::kCrostiniTerminalSystemAppId &&
+      crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
+    auto reg = GetRegistration(app_id);
+    if (reg && reg->VmType() == VmType::ApplicationList_VmType_TERMINA) {
+      callback = base::BindOnce(
+          &GuestOsRegistryService::ApplyContainerBadge,
+          weak_ptr_factory_.GetWeakPtr(),
+          crostini::GetContainerBadgeColor(
+              profile_,
+              crostini::ContainerId(reg->VmName(), reg->ContainerName())),
           std::move(callback));
-      return;
-    } else {
-      // There are paths where nothing higher up the call stack will resize so
-      // we need to ensure that returned icons are always resized to be
-      // size_hint_in_dip big. crbug/1170455 is an example.
-      icon_key->icon_effects |= apps::IconEffects::kResizeAndPad;
-      auto scale_factor = apps_util::GetPrimaryDisplayUIScaleFactor();
-
-      // Try loading the icon from an on-disk cache. If that fails, fall back
-      // to LoadIconFromVM.
-      apps::LoadIconFromFileWithFallback(
-          icon_type, size_hint_in_dip, GetIconPath(app_id, scale_factor),
-          static_cast<apps::IconEffects>(icon_key->icon_effects),
-          std::move(callback),
-          base::BindOnce(&GuestOsRegistryService::LoadIconFromVM,
-                         weak_ptr_factory_.GetWeakPtr(), app_id, icon_type,
-                         size_hint_in_dip, scale_factor,
-                         static_cast<apps::IconEffects>(icon_key->icon_effects),
-                         fallback_icon_resource_id));
-      return;
     }
   }
 
-  // On failure, we still run the callback, with the zero IconValue.
-  std::move(callback).Run(apps::mojom::IconValue::New());
+  if (icon_key.resource_id != apps::mojom::IconKey::kInvalidResourceId) {
+    // The icon is a resource built into the Chrome OS binary.
+    constexpr bool is_placeholder_icon = false;
+    apps::LoadIconFromResource(
+        icon_type, size_hint_in_dip, icon_key.resource_id, is_placeholder_icon,
+        static_cast<apps::IconEffects>(icon_key.icon_effects),
+        std::move(callback));
+    return;
+  }
+
+  // There are paths where nothing higher up the call stack will resize so
+  // we need to ensure that returned icons are always resized to be
+  // size_hint_in_dip big. crbug/1170455 is an example.
+  apps::IconEffects icon_effects = static_cast<apps::IconEffects>(
+      icon_key.icon_effects | apps::IconEffects::kResizeAndPad);
+  auto scale_factor = apps_util::GetPrimaryDisplayUIScaleFactor();
+
+  // Try loading the icon from an on-disk cache. If that fails, fall back
+  // to LoadIconFromVM.
+  apps::LoadIconFromFileWithFallback(
+      icon_type, size_hint_in_dip, GetIconPath(app_id, scale_factor),
+      icon_effects, std::move(callback),
+      base::BindOnce(&GuestOsRegistryService::LoadIconFromVM,
+                     weak_ptr_factory_.GetWeakPtr(), app_id, icon_type,
+                     size_hint_in_dip, scale_factor, icon_effects,
+                     fallback_icon_resource_id));
+}
+
+void GuestOsRegistryService::ApplyContainerBadge(
+    SkColor badge_color,
+    apps::LoadIconCallback callback,
+    apps::IconValuePtr icon) {
+  gfx::ImageSkia badge_mask =
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_ICON_BADGE_MASK);
+
+  if (badge_mask.size() != icon->uncompressed.size()) {
+    badge_mask = gfx::ImageSkiaOperations::CreateResizedImage(
+        badge_mask, skia::ImageOperations::RESIZE_BEST,
+        icon->uncompressed.size());
+  }
+  badge_mask =
+      gfx::ImageSkiaOperations::CreateColorMask(badge_mask, badge_color);
+  icon->uncompressed = gfx::ImageSkiaOperations::CreateSuperimposedImage(
+      icon->uncompressed, badge_mask);
+
+  std::move(callback).Run(std::move(icon));
 }
 
 void GuestOsRegistryService::LoadIconFromVM(
     const std::string& app_id,
-    apps::mojom::IconType icon_type,
+    apps::IconType icon_type,
     int32_t size_hint_in_dip,
     ui::ResourceScaleFactor scale_factor,
     apps::IconEffects icon_effects,
     int fallback_icon_resource_id,
-    apps::mojom::Publisher::LoadIconCallback callback) {
+    apps::LoadIconCallback callback) {
   RequestIcon(app_id, scale_factor,
               base::BindOnce(&GuestOsRegistryService::OnLoadIconFromVM,
                              weak_ptr_factory_.GetWeakPtr(), app_id, icon_type,
@@ -772,11 +795,11 @@ void GuestOsRegistryService::LoadIconFromVM(
 
 void GuestOsRegistryService::OnLoadIconFromVM(
     const std::string& app_id,
-    apps::mojom::IconType icon_type,
+    apps::IconType icon_type,
     int32_t size_hint_in_dip,
     apps::IconEffects icon_effects,
     int fallback_icon_resource_id,
-    apps::mojom::Publisher::LoadIconCallback callback,
+    apps::LoadIconCallback callback,
     std::string compressed_icon_data) {
   if (compressed_icon_data.empty()) {
     if (fallback_icon_resource_id != apps::mojom::IconKey::kInvalidResourceId) {
@@ -787,7 +810,7 @@ void GuestOsRegistryService::OnLoadIconFromVM(
           icon_type, size_hint_in_dip, fallback_icon_resource_id,
           /*is_placeholder_icon=*/false, icon_effects, std::move(callback));
     } else {
-      std::move(callback).Run(apps::mojom::IconValue::New());
+      std::move(callback).Run(std::make_unique<apps::IconValue>());
     }
   } else {
     apps::LoadIconFromCompressedData(icon_type, size_hint_in_dip, icon_effects,
@@ -975,6 +998,25 @@ void GuestOsRegistryService::UpdateApplicationList(
   }
 }
 
+void GuestOsRegistryService::ContainerBadgeColorChanged(
+    const crostini::ContainerId& container_id) {
+  std::vector<std::string> updated_apps;
+
+  for (const auto& it : GetAllRegisteredApps()) {
+    if (it.second.VmName() == container_id.vm_name &&
+        it.second.ContainerName() == container_id.container_name) {
+      updated_apps.push_back(it.first);
+    }
+  }
+
+  std::vector<std::string> removed_apps;
+  std::vector<std::string> inserted_apps;
+  for (Observer& obs : observers_) {
+    obs.OnRegistryUpdated(this, VmType::ApplicationList_VmType_TERMINA,
+                          updated_apps, removed_apps, inserted_apps);
+  }
+}
+
 void GuestOsRegistryService::RemoveAppData(const std::string& app_id) {
   // Remove any pending requests we have for this icon.
   retry_icon_requests_.erase(app_id);
@@ -1067,10 +1109,10 @@ void GuestOsRegistryService::RequestContainerAppIcon(
   // needs.
   uint32_t icon_scale = 1;
   switch (scale_factor) {
-    case ui::SCALE_FACTOR_200P:
+    case ui::k200Percent:
       icon_scale = 2;
       break;
-    case ui::SCALE_FACTOR_300P:
+    case ui::k300Percent:
       icon_scale = 3;
       break;
     default:

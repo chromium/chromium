@@ -1,0 +1,5 @@
+declare_args() {
+  # Migration away from AppHooks, will be turned on by default when the
+  # we no longer need AppHooks.
+  enable_new_feed_hooks = true
+}

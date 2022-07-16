@@ -43,11 +43,15 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
   void OnEnabledChanged(bool enabled) override;
   void OnContentHintChanged(
       WebMediaStreamTrack::ContentHintType content_hint) override;
+  MOCK_METHOD(void,
+              OnVideoConstraintsChanged,
+              (absl::optional<double>, absl::optional<double>),
+              (override));
 
   // Triggered when OnVideoFrame(scoped_refptr<media::VideoFrame> frame)
   // is called.
-  MOCK_METHOD1(OnVideoFrame, void(base::TimeTicks));
-  MOCK_METHOD1(OnEncodedVideoFrame, void(base::TimeTicks));
+  MOCK_METHOD(void, OnVideoFrame, (base::TimeTicks));
+  MOCK_METHOD(void, OnEncodedVideoFrame, (base::TimeTicks));
 
   VideoCaptureDeliverFrameCB GetDeliverFrameCB();
   EncodedVideoFrameCB GetDeliverEncodedVideoFrameCB();

@@ -17,8 +17,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -83,9 +84,8 @@ std::u16string MigratableCardView::GetCardIdentifierString() const {
 
 void MigratableCardView::OnThemeChanged() {
   View::OnThemeChanged();
-  checkbox_uncheck_text_container_->SetBackground(
-      views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_BubbleFooterBackground)));
+  checkbox_uncheck_text_container_->SetBackground(views::CreateSolidBackground(
+      GetColorProvider()->GetColor(ui::kColorBubbleFooterBackground)));
 }
 
 std::unique_ptr<views::View>
@@ -133,8 +133,7 @@ MigratableCardView::GetMigratableCardDescriptionView(
           migratable_card_description_view->AddChildView(
               std::make_unique<views::ImageView>());
       migration_succeeded_image->SetImage(ui::ImageModel::FromVectorIcon(
-          vector_icons::kCheckCircleIcon,
-          ui::NativeTheme::kColorId_AlertSeverityLow,
+          vector_icons::kCheckCircleIcon, ui::kColorAlertLowSeverity,
           kMigrationResultImageSize));
       break;
     }
@@ -143,7 +142,7 @@ MigratableCardView::GetMigratableCardDescriptionView(
           migratable_card_description_view->AddChildView(
               std::make_unique<views::ImageView>());
       migration_failed_image->SetImage(ui::ImageModel::FromVectorIcon(
-          vector_icons::kErrorIcon, ui::NativeTheme::kColorId_AlertSeverityHigh,
+          vector_icons::kErrorIcon, ui::kColorAlertHighSeverity,
           kMigrationResultImageSize));
       break;
     }

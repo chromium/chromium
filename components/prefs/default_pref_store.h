@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/prefs/pref_store.h"
@@ -21,6 +20,9 @@ class COMPONENTS_PREFS_EXPORT DefaultPrefStore : public PrefStore {
   typedef PrefValueMap::const_iterator const_iterator;
 
   DefaultPrefStore();
+
+  DefaultPrefStore(const DefaultPrefStore&) = delete;
+  DefaultPrefStore& operator=(const DefaultPrefStore&) = delete;
 
   // PrefStore implementation:
   bool GetValue(const std::string& key,
@@ -47,8 +49,6 @@ class COMPONENTS_PREFS_EXPORT DefaultPrefStore : public PrefStore {
   PrefValueMap prefs_;
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultPrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_DEFAULT_PREF_STORE_H_

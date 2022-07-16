@@ -6,10 +6,12 @@
 #define CHROMEOS_SERVICES_LIBASSISTANT_SERVICE_CONTROLLER_H_
 
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "chromeos/services/libassistant/assistant_client_observer.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
+#include "chromeos/services/libassistant/grpc/assistant_client_observer.h"
+#include "chromeos/services/libassistant/grpc/services_status_observer.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom-forward.h"
@@ -31,7 +33,8 @@ class LibassistantFactory;
 // Component managing the lifecycle of Libassistant,
 // exposing methods to start/stop and configure Libassistant.
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
-    : public mojom::ServiceController {
+    : public mojom::ServiceController,
+      public ServicesStatusObserver {
  public:
   explicit ServiceController(LibassistantFactory* factory);
   ServiceController(ServiceController&) = delete;
@@ -51,6 +54,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   void AddAndFireStateObserver(
       mojo::PendingRemote<mojom::StateObserver> observer) override;
 
+  // ServicesStatusObserver implementation:
+  void OnServicesStatusChanged(ServicesStatus status) override;
+
   void AddAndFireAssistantClientObserver(AssistantClientObserver* observer);
   void RemoveAssistantClientObserver(AssistantClientObserver* observer);
   void RemoveAllAssistantClientObservers();
@@ -69,13 +75,13 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   assistant_client::AssistantManagerInternal* assistant_manager_internal();
 
  private:
-  class DeviceStateListener;
-
-  void OnStartFinished();
+  // Will be invoked when all Libassistant services are ready to query.
+  void OnAllServicesReady();
+  // Will be invoked when Libassistant services are started.
+  void OnServicesBootingUp();
 
   void SetStateAndInformObservers(mojom::ServiceState new_state);
 
-  void CreateAndRegisterDeviceStateListener();
   void CreateAndRegisterChromiumApiDelegate(
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory);
   void CreateChromiumApiDelegate(
@@ -90,11 +96,12 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
 
   std::unique_ptr<AssistantClient> assistant_client_;
   std::unique_ptr<ChromiumApiDelegate> chromium_api_delegate_;
-  std::unique_ptr<DeviceStateListener> device_state_listener_;
 
   mojo::Receiver<mojom::ServiceController> receiver_{this};
   mojo::RemoteSet<mojom::StateObserver> state_observers_;
   base::ObserverList<AssistantClientObserver> assistant_client_observers_;
+
+  base::WeakPtrFactory<ServiceController> weak_factory_{this};
 };
 
 using ScopedAssistantClientObserver = base::ScopedObservation<

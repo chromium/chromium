@@ -15,6 +15,7 @@
 #endif
 #include <openssl/arm_arch.h>
 
+#if __ARM_MAX_ARCH__>=7
 .text
 .arch	armv8-a+crypto
 .globl	gcm_init_v8
@@ -65,8 +66,48 @@ gcm_init_v8:
 	ext	v17.16b,v22.16b,v22.16b,#8		//Karatsuba pre-processing
 	eor	v17.16b,v17.16b,v22.16b
 	ext	v21.16b,v16.16b,v17.16b,#8		//pack Karatsuba pre-processed
-	st1	{v21.2d,v22.2d},[x0]		//store Htable[1..2]
+	st1	{v21.2d,v22.2d},[x0],#32	//store Htable[1..2]
+	//calculate H^3 and H^4
+	pmull	v0.1q,v20.1d, v22.1d
+	pmull	v5.1q,v22.1d,v22.1d
+	pmull2	v2.1q,v20.2d, v22.2d
+	pmull2	v7.1q,v22.2d,v22.2d
+	pmull	v1.1q,v16.1d,v17.1d
+	pmull	v6.1q,v17.1d,v17.1d
 
+	ext	v16.16b,v0.16b,v2.16b,#8		//Karatsuba post-processing
+	ext	v17.16b,v5.16b,v7.16b,#8
+	eor	v18.16b,v0.16b,v2.16b
+	eor	v1.16b,v1.16b,v16.16b
+	eor	v4.16b,v5.16b,v7.16b
+	eor	v6.16b,v6.16b,v17.16b
+	eor	v1.16b,v1.16b,v18.16b
+	pmull	v18.1q,v0.1d,v19.1d		//1st phase
+	eor	v6.16b,v6.16b,v4.16b
+	pmull	v4.1q,v5.1d,v19.1d
+
+	ins	v2.d[0],v1.d[1]
+	ins	v7.d[0],v6.d[1]
+	ins	v1.d[1],v0.d[0]
+	ins	v6.d[1],v5.d[0]
+	eor	v0.16b,v1.16b,v18.16b
+	eor	v5.16b,v6.16b,v4.16b
+
+	ext	v18.16b,v0.16b,v0.16b,#8		//2nd phase
+	ext	v4.16b,v5.16b,v5.16b,#8
+	pmull	v0.1q,v0.1d,v19.1d
+	pmull	v5.1q,v5.1d,v19.1d
+	eor	v18.16b,v18.16b,v2.16b
+	eor	v4.16b,v4.16b,v7.16b
+	eor	v20.16b, v0.16b,v18.16b		//H^3
+	eor	v22.16b,v5.16b,v4.16b		//H^4
+
+	ext	v16.16b,v20.16b, v20.16b,#8		//Karatsuba pre-processing
+	ext	v17.16b,v22.16b,v22.16b,#8
+	eor	v16.16b,v16.16b,v20.16b
+	eor	v17.16b,v17.16b,v22.16b
+	ext	v21.16b,v16.16b,v17.16b,#8		//pack Karatsuba pre-processed
+	st1	{v20.2d,v21.2d,v22.2d},[x0]		//store Htable[3..5]
 	ret
 .size	gcm_init_v8,.-gcm_init_v8
 .globl	gcm_gmult_v8
@@ -118,6 +159,8 @@ gcm_gmult_v8:
 .align	4
 gcm_ghash_v8:
 	AARCH64_VALID_CALL_TARGET
+	cmp	x3,#64
+	b.hs	.Lgcm_ghash_v8_4x
 	ld1	{v0.2d},[x0]		//load [rotated] Xi
 						//"[rotated]" means that
 						//loaded value would have
@@ -244,9 +287,290 @@ gcm_ghash_v8:
 
 	ret
 .size	gcm_ghash_v8,.-gcm_ghash_v8
+.type	gcm_ghash_v8_4x,%function
+.align	4
+gcm_ghash_v8_4x:
+.Lgcm_ghash_v8_4x:
+	ld1	{v0.2d},[x0]		//load [rotated] Xi
+	ld1	{v20.2d,v21.2d,v22.2d},[x1],#48	//load twisted H, ..., H^2
+	movi	v19.16b,#0xe1
+	ld1	{v26.2d,v27.2d,v28.2d},[x1]	//load twisted H^3, ..., H^4
+	shl	v19.2d,v19.2d,#57		//compose 0xc2.0 constant
+
+	ld1	{v4.2d,v5.2d,v6.2d,v7.2d},[x2],#64
+#ifndef __ARMEB__
+	rev64	v0.16b,v0.16b
+	rev64	v5.16b,v5.16b
+	rev64	v6.16b,v6.16b
+	rev64	v7.16b,v7.16b
+	rev64	v4.16b,v4.16b
+#endif
+	ext	v25.16b,v7.16b,v7.16b,#8
+	ext	v24.16b,v6.16b,v6.16b,#8
+	ext	v23.16b,v5.16b,v5.16b,#8
+
+	pmull	v29.1q,v20.1d,v25.1d		//H·Ii+3
+	eor	v7.16b,v7.16b,v25.16b
+	pmull2	v31.1q,v20.2d,v25.2d
+	pmull	v30.1q,v21.1d,v7.1d
+
+	pmull	v16.1q,v22.1d,v24.1d		//H^2·Ii+2
+	eor	v6.16b,v6.16b,v24.16b
+	pmull2	v24.1q,v22.2d,v24.2d
+	pmull2	v6.1q,v21.2d,v6.2d
+
+	eor	v29.16b,v29.16b,v16.16b
+	eor	v31.16b,v31.16b,v24.16b
+	eor	v30.16b,v30.16b,v6.16b
+
+	pmull	v7.1q,v26.1d,v23.1d		//H^3·Ii+1
+	eor	v5.16b,v5.16b,v23.16b
+	pmull2	v23.1q,v26.2d,v23.2d
+	pmull	v5.1q,v27.1d,v5.1d
+
+	eor	v29.16b,v29.16b,v7.16b
+	eor	v31.16b,v31.16b,v23.16b
+	eor	v30.16b,v30.16b,v5.16b
+
+	subs	x3,x3,#128
+	b.lo	.Ltail4x
+
+	b	.Loop4x
+
+.align	4
+.Loop4x:
+	eor	v16.16b,v4.16b,v0.16b
+	ld1	{v4.2d,v5.2d,v6.2d,v7.2d},[x2],#64
+	ext	v3.16b,v16.16b,v16.16b,#8
+#ifndef __ARMEB__
+	rev64	v5.16b,v5.16b
+	rev64	v6.16b,v6.16b
+	rev64	v7.16b,v7.16b
+	rev64	v4.16b,v4.16b
+#endif
+
+	pmull	v0.1q,v28.1d,v3.1d		//H^4·(Xi+Ii)
+	eor	v16.16b,v16.16b,v3.16b
+	pmull2	v2.1q,v28.2d,v3.2d
+	ext	v25.16b,v7.16b,v7.16b,#8
+	pmull2	v1.1q,v27.2d,v16.2d
+
+	eor	v0.16b,v0.16b,v29.16b
+	eor	v2.16b,v2.16b,v31.16b
+	ext	v24.16b,v6.16b,v6.16b,#8
+	eor	v1.16b,v1.16b,v30.16b
+	ext	v23.16b,v5.16b,v5.16b,#8
+
+	ext	v17.16b,v0.16b,v2.16b,#8		//Karatsuba post-processing
+	eor	v18.16b,v0.16b,v2.16b
+	pmull	v29.1q,v20.1d,v25.1d		//H·Ii+3
+	eor	v7.16b,v7.16b,v25.16b
+	eor	v1.16b,v1.16b,v17.16b
+	pmull2	v31.1q,v20.2d,v25.2d
+	eor	v1.16b,v1.16b,v18.16b
+	pmull	v30.1q,v21.1d,v7.1d
+
+	pmull	v18.1q,v0.1d,v19.1d		//1st phase of reduction
+	ins	v2.d[0],v1.d[1]
+	ins	v1.d[1],v0.d[0]
+	pmull	v16.1q,v22.1d,v24.1d		//H^2·Ii+2
+	eor	v6.16b,v6.16b,v24.16b
+	pmull2	v24.1q,v22.2d,v24.2d
+	eor	v0.16b,v1.16b,v18.16b
+	pmull2	v6.1q,v21.2d,v6.2d
+
+	eor	v29.16b,v29.16b,v16.16b
+	eor	v31.16b,v31.16b,v24.16b
+	eor	v30.16b,v30.16b,v6.16b
+
+	ext	v18.16b,v0.16b,v0.16b,#8		//2nd phase of reduction
+	pmull	v0.1q,v0.1d,v19.1d
+	pmull	v7.1q,v26.1d,v23.1d		//H^3·Ii+1
+	eor	v5.16b,v5.16b,v23.16b
+	eor	v18.16b,v18.16b,v2.16b
+	pmull2	v23.1q,v26.2d,v23.2d
+	pmull	v5.1q,v27.1d,v5.1d
+
+	eor	v0.16b,v0.16b,v18.16b
+	eor	v29.16b,v29.16b,v7.16b
+	eor	v31.16b,v31.16b,v23.16b
+	ext	v0.16b,v0.16b,v0.16b,#8
+	eor	v30.16b,v30.16b,v5.16b
+
+	subs	x3,x3,#64
+	b.hs	.Loop4x
+
+.Ltail4x:
+	eor	v16.16b,v4.16b,v0.16b
+	ext	v3.16b,v16.16b,v16.16b,#8
+
+	pmull	v0.1q,v28.1d,v3.1d		//H^4·(Xi+Ii)
+	eor	v16.16b,v16.16b,v3.16b
+	pmull2	v2.1q,v28.2d,v3.2d
+	pmull2	v1.1q,v27.2d,v16.2d
+
+	eor	v0.16b,v0.16b,v29.16b
+	eor	v2.16b,v2.16b,v31.16b
+	eor	v1.16b,v1.16b,v30.16b
+
+	adds	x3,x3,#64
+	b.eq	.Ldone4x
+
+	cmp	x3,#32
+	b.lo	.Lone
+	b.eq	.Ltwo
+.Lthree:
+	ext	v17.16b,v0.16b,v2.16b,#8		//Karatsuba post-processing
+	eor	v18.16b,v0.16b,v2.16b
+	eor	v1.16b,v1.16b,v17.16b
+	ld1	{v4.2d,v5.2d,v6.2d},[x2]
+	eor	v1.16b,v1.16b,v18.16b
+#ifndef	__ARMEB__
+	rev64	v5.16b,v5.16b
+	rev64	v6.16b,v6.16b
+	rev64	v4.16b,v4.16b
+#endif
+
+	pmull	v18.1q,v0.1d,v19.1d		//1st phase of reduction
+	ins	v2.d[0],v1.d[1]
+	ins	v1.d[1],v0.d[0]
+	ext	v24.16b,v6.16b,v6.16b,#8
+	ext	v23.16b,v5.16b,v5.16b,#8
+	eor	v0.16b,v1.16b,v18.16b
+
+	pmull	v29.1q,v20.1d,v24.1d		//H·Ii+2
+	eor	v6.16b,v6.16b,v24.16b
+
+	ext	v18.16b,v0.16b,v0.16b,#8		//2nd phase of reduction
+	pmull	v0.1q,v0.1d,v19.1d
+	eor	v18.16b,v18.16b,v2.16b
+	pmull2	v31.1q,v20.2d,v24.2d
+	pmull	v30.1q,v21.1d,v6.1d
+	eor	v0.16b,v0.16b,v18.16b
+	pmull	v7.1q,v22.1d,v23.1d		//H^2·Ii+1
+	eor	v5.16b,v5.16b,v23.16b
+	ext	v0.16b,v0.16b,v0.16b,#8
+
+	pmull2	v23.1q,v22.2d,v23.2d
+	eor	v16.16b,v4.16b,v0.16b
+	pmull2	v5.1q,v21.2d,v5.2d
+	ext	v3.16b,v16.16b,v16.16b,#8
+
+	eor	v29.16b,v29.16b,v7.16b
+	eor	v31.16b,v31.16b,v23.16b
+	eor	v30.16b,v30.16b,v5.16b
+
+	pmull	v0.1q,v26.1d,v3.1d		//H^3·(Xi+Ii)
+	eor	v16.16b,v16.16b,v3.16b
+	pmull2	v2.1q,v26.2d,v3.2d
+	pmull	v1.1q,v27.1d,v16.1d
+
+	eor	v0.16b,v0.16b,v29.16b
+	eor	v2.16b,v2.16b,v31.16b
+	eor	v1.16b,v1.16b,v30.16b
+	b	.Ldone4x
+
+.align	4
+.Ltwo:
+	ext	v17.16b,v0.16b,v2.16b,#8		//Karatsuba post-processing
+	eor	v18.16b,v0.16b,v2.16b
+	eor	v1.16b,v1.16b,v17.16b
+	ld1	{v4.2d,v5.2d},[x2]
+	eor	v1.16b,v1.16b,v18.16b
+#ifndef	__ARMEB__
+	rev64	v5.16b,v5.16b
+	rev64	v4.16b,v4.16b
+#endif
+
+	pmull	v18.1q,v0.1d,v19.1d		//1st phase of reduction
+	ins	v2.d[0],v1.d[1]
+	ins	v1.d[1],v0.d[0]
+	ext	v23.16b,v5.16b,v5.16b,#8
+	eor	v0.16b,v1.16b,v18.16b
+
+	ext	v18.16b,v0.16b,v0.16b,#8		//2nd phase of reduction
+	pmull	v0.1q,v0.1d,v19.1d
+	eor	v18.16b,v18.16b,v2.16b
+	eor	v0.16b,v0.16b,v18.16b
+	ext	v0.16b,v0.16b,v0.16b,#8
+
+	pmull	v29.1q,v20.1d,v23.1d		//H·Ii+1
+	eor	v5.16b,v5.16b,v23.16b
+
+	eor	v16.16b,v4.16b,v0.16b
+	ext	v3.16b,v16.16b,v16.16b,#8
+
+	pmull2	v31.1q,v20.2d,v23.2d
+	pmull	v30.1q,v21.1d,v5.1d
+
+	pmull	v0.1q,v22.1d,v3.1d		//H^2·(Xi+Ii)
+	eor	v16.16b,v16.16b,v3.16b
+	pmull2	v2.1q,v22.2d,v3.2d
+	pmull2	v1.1q,v21.2d,v16.2d
+
+	eor	v0.16b,v0.16b,v29.16b
+	eor	v2.16b,v2.16b,v31.16b
+	eor	v1.16b,v1.16b,v30.16b
+	b	.Ldone4x
+
+.align	4
+.Lone:
+	ext	v17.16b,v0.16b,v2.16b,#8		//Karatsuba post-processing
+	eor	v18.16b,v0.16b,v2.16b
+	eor	v1.16b,v1.16b,v17.16b
+	ld1	{v4.2d},[x2]
+	eor	v1.16b,v1.16b,v18.16b
+#ifndef	__ARMEB__
+	rev64	v4.16b,v4.16b
+#endif
+
+	pmull	v18.1q,v0.1d,v19.1d		//1st phase of reduction
+	ins	v2.d[0],v1.d[1]
+	ins	v1.d[1],v0.d[0]
+	eor	v0.16b,v1.16b,v18.16b
+
+	ext	v18.16b,v0.16b,v0.16b,#8		//2nd phase of reduction
+	pmull	v0.1q,v0.1d,v19.1d
+	eor	v18.16b,v18.16b,v2.16b
+	eor	v0.16b,v0.16b,v18.16b
+	ext	v0.16b,v0.16b,v0.16b,#8
+
+	eor	v16.16b,v4.16b,v0.16b
+	ext	v3.16b,v16.16b,v16.16b,#8
+
+	pmull	v0.1q,v20.1d,v3.1d
+	eor	v16.16b,v16.16b,v3.16b
+	pmull2	v2.1q,v20.2d,v3.2d
+	pmull	v1.1q,v21.1d,v16.1d
+
+.Ldone4x:
+	ext	v17.16b,v0.16b,v2.16b,#8		//Karatsuba post-processing
+	eor	v18.16b,v0.16b,v2.16b
+	eor	v1.16b,v1.16b,v17.16b
+	eor	v1.16b,v1.16b,v18.16b
+
+	pmull	v18.1q,v0.1d,v19.1d		//1st phase of reduction
+	ins	v2.d[0],v1.d[1]
+	ins	v1.d[1],v0.d[0]
+	eor	v0.16b,v1.16b,v18.16b
+
+	ext	v18.16b,v0.16b,v0.16b,#8		//2nd phase of reduction
+	pmull	v0.1q,v0.1d,v19.1d
+	eor	v18.16b,v18.16b,v2.16b
+	eor	v0.16b,v0.16b,v18.16b
+	ext	v0.16b,v0.16b,v0.16b,#8
+
+#ifndef __ARMEB__
+	rev64	v0.16b,v0.16b
+#endif
+	st1	{v0.2d},[x0]		//write out Xi
+
+	ret
+.size	gcm_ghash_v8_4x,.-gcm_ghash_v8_4x
 .byte	71,72,65,83,72,32,102,111,114,32,65,82,77,118,56,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	2
 .align	2
+#endif
 #endif
 #endif  // !OPENSSL_NO_ASM
 .section	.note.GNU-stack,"",%progbits

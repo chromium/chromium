@@ -11,7 +11,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -85,6 +84,10 @@ class MIDI_EXPORT MidiManager {
   static const size_t kMaxPendingClientCount = 128;
 
   explicit MidiManager(MidiService* service);
+
+  MidiManager(const MidiManager&) = delete;
+  MidiManager& operator=(const MidiManager&) = delete;
+
   virtual ~MidiManager();
 
   static MidiManager* Create(MidiService* service);
@@ -207,8 +210,6 @@ class MIDI_EXPORT MidiManager {
 
   // MidiService outlives MidiManager.
   MidiService* const service_;
-
-  DISALLOW_COPY_AND_ASSIGN(MidiManager);
 };
 
 }  // namespace midi

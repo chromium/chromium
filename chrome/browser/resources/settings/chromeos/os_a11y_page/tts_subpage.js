@@ -7,13 +7,35 @@
  * text-to-speech settings.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/cr_elements/md_select_css.m.js';
+import '../../controls/settings_slider.js';
+import '../../settings_shared_css.js';
+
+import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
+import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {TtsSubpageBrowserProxy, TtsSubpageBrowserProxyImpl} from './tts_subpage_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-tts-subpage',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -100,13 +122,13 @@ Polymer({
   /** @private {?TtsSubpageBrowserProxy} */
   ttsBrowserProxy_: null,
 
-  /** @private {?settings.LanguagesBrowserProxy} */
+  /** @private {?LanguagesBrowserProxy} */
   langBrowserProxy_: null,
 
   /** @override */
   created() {
     this.ttsBrowserProxy_ = TtsSubpageBrowserProxyImpl.getInstance();
-    this.langBrowserProxy_ = settings.LanguagesBrowserProxyImpl.getInstance();
+    this.langBrowserProxy_ = LanguagesBrowserProxyImpl.getInstance();
   },
 
   /** @override */
@@ -115,22 +137,24 @@ Polymer({
     // this to their own value later.
     this.previewText_ = this.i18n('textToSpeechPreviewInput');
     this.addWebUIListener(
-        'all-voice-data-updated', this.populateVoiceList_.bind(this));
+        'all-voice-data-updated', voices => this.populateVoiceList_(voices));
     this.ttsBrowserProxy_.getAllTtsVoiceData();
     this.addWebUIListener(
-        'tts-extensions-updated', this.populateExtensionList_.bind(this));
+        'tts-extensions-updated',
+        extensions => this.populateExtensionList_(extensions));
     this.addWebUIListener(
-        'tts-preview-state-changed', this.onTtsPreviewStateChanged_.bind(this));
+        'tts-preview-state-changed',
+        isSpeaking => this.onTtsPreviewStateChanged_(isSpeaking));
     this.ttsBrowserProxy_.getTtsExtensions();
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.MANAGE_TTS_SETTINGS) {
+    if (route !== routes.MANAGE_TTS_SETTINGS) {
       return;
     }
 
@@ -139,7 +163,7 @@ Polymer({
 
   /*
    * Ticks for the Speech Rate slider. Valid rates are between 0.1 and 5.
-   * @return {!Array<!cr_slider.SliderTick>}
+   * @return {!Array<!SliderTick>}
    * @private
    */
   speechRateTicks_() {
@@ -148,7 +172,7 @@ Polymer({
 
   /**
    * Ticks for the Speech Pitch slider. Valid pitches are between 0.2 and 2.
-   * @return {!Array<!cr_slider.SliderTick>}
+   * @return {!Array<!SliderTick>}
    * @private
    */
   speechPitchTicks_() {
@@ -158,7 +182,7 @@ Polymer({
   /**
    * Ticks for the Speech Volume slider. Valid volumes are between 0.2 and
    * 1 (100%), but volumes lower than .2 are excluded as being too quiet.
-   * @return {!Array<!cr_slider.SliderTick>}
+   * @return {!Array<!SliderTick>}
    * @private
    */
   speechVolumeTicks_() {
@@ -170,7 +194,7 @@ Polymer({
    * evenly by 0.1.
    * @param {number} min
    * @param {number} max
-   * @return {!Array<!cr_slider.SliderTick>}
+   * @return {!Array<!SliderTick>}
    * @private
    */
   buildLinearTicks_(min, max) {
@@ -189,7 +213,7 @@ Polymer({
   /**
    * Initializes i18n labels for ticks arrays.
    * @param {number} tick The value to make a tick for.
-   * @return {!cr_slider.SliderTick}
+   * @return {!SliderTick}
    * @private
    */
   initTick_(tick) {
@@ -235,7 +259,7 @@ Polymer({
     // Build a map of language code to human-readable language and voice.
     const result = {};
     const languageCodeMap = {};
-    const pref = this.prefs.settings['language']['preferred_languages'];
+    const pref = this.prefs['intl']['accept_languages'];
     const preferredLangs = pref.value.split(',');
     voices.forEach(voice => {
       if (!result[voice.languageCode]) {

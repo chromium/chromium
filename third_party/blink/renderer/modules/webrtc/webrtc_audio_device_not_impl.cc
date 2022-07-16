@@ -101,6 +101,24 @@ int32_t WebRtcAudioDeviceNotImpl::MicrophoneVolumeIsAvailable(bool* available) {
   return 0;
 }
 
+int32_t WebRtcAudioDeviceNotImpl::SetMicrophoneVolume(uint32_t volume) {
+  return 0;
+}
+
+int32_t WebRtcAudioDeviceNotImpl::MicrophoneVolume(uint32_t* volume) const {
+  return 0;
+}
+
+int32_t WebRtcAudioDeviceNotImpl::MaxMicrophoneVolume(
+    uint32_t* max_volume) const {
+  return 0;
+}
+
+int32_t WebRtcAudioDeviceNotImpl::MinMicrophoneVolume(
+    uint32_t* min_volume) const {
+  return 0;
+}
+
 int32_t WebRtcAudioDeviceNotImpl::SpeakerMuteIsAvailable(bool* available) {
   return 0;
 }

@@ -15,14 +15,16 @@ class ImportLockDialogViewBrowserTest : public DialogBrowserTest {
  public:
   ImportLockDialogViewBrowserTest() {}
 
+  ImportLockDialogViewBrowserTest(const ImportLockDialogViewBrowserTest&) =
+      delete;
+  ImportLockDialogViewBrowserTest& operator=(
+      const ImportLockDialogViewBrowserTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
     ImportLockDialogView::Show(native_window, base::OnceCallback<void(bool)>());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImportLockDialogViewBrowserTest);
 };
 
 // Invokes a dialog that implores the user to close Firefox before trying to

@@ -10,7 +10,7 @@
 // #import {assertTrue} from '../../../chai_assert.js';
 // #import {FakeMediaDevices} from './fake_media_devices.m.js';
 // #import {FakeBarcodeDetector, FakeImageCapture} from './fake_barcode_detector.m.js';
-// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
+// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
 // clang-format on
 
 suite('CrComponentsActivationCodePageTest', function() {

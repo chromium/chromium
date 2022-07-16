@@ -221,19 +221,19 @@ sync_sessions::OpenTabsUIDelegate* ForeignSessionHandler::GetOpenTabsUIDelegate(
 }
 
 void ForeignSessionHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "deleteForeignSession",
       base::BindRepeating(&ForeignSessionHandler::HandleDeleteForeignSession,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getForeignSessions",
       base::BindRepeating(&ForeignSessionHandler::HandleGetForeignSessions,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "openForeignSession",
       base::BindRepeating(&ForeignSessionHandler::HandleOpenForeignSession,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setForeignSessionCollapsed",
       base::BindRepeating(
           &ForeignSessionHandler::HandleSetForeignSessionCollapsed,
@@ -358,39 +358,39 @@ base::Value ForeignSessionHandler::GetForeignSessions() {
 
 void ForeignSessionHandler::HandleOpenForeignSession(
     const base::ListValue* args) {
-  size_t num_args = args->GetSize();
+  size_t num_args = args->GetList().size();
   // Expect either 1 or 8 args. For restoring an entire session, only
   // one argument is required -- the session tag. To restore a tab,
   // the additional args required are the window id, the tab id,
   // and 4 properties of the event object (button, altKey, ctrlKey,
   // metaKey, shiftKey) for determining how to open the tab.
   if (num_args != 8U && num_args != 1U) {
-    LOG(ERROR) << "openForeignSession called with " << args->GetSize()
+    LOG(ERROR) << "openForeignSession called with " << args->GetList().size()
                << " arguments.";
     return;
   }
 
   // Extract the session tag (always provided).
-  std::string session_string_value;
-  if (!args->GetString(0, &session_string_value)) {
+  if (!args->GetList()[0].is_string()) {
     LOG(ERROR) << "Failed to extract session tag.";
     return;
   }
+  const std::string& session_string_value = args->GetList()[0].GetString();
 
   // Extract window number.
-  std::string window_num_str;
   int window_num = -1;
-  if (num_args >= 2 && (!args->GetString(1, &window_num_str) ||
-                        !base::StringToInt(window_num_str, &window_num))) {
+  if (num_args >= 2 &&
+      (!args->GetList()[1].is_string() ||
+       !base::StringToInt(args->GetList()[1].GetString(), &window_num))) {
     LOG(ERROR) << "Failed to extract window number.";
     return;
   }
 
   // Extract tab id.
-  std::string tab_id_str;
   SessionID::id_type tab_id_value = 0;
-  if (num_args >= 3 && (!args->GetString(2, &tab_id_str) ||
-                        !base::StringToInt(tab_id_str, &tab_id_value))) {
+  if (num_args >= 3 &&
+      (!args->GetList()[2].is_string() ||
+       !base::StringToInt(args->GetList()[2].GetString(), &tab_id_value))) {
     LOG(ERROR) << "Failed to extract tab SessionID.";
     return;
   }
@@ -407,17 +407,17 @@ void ForeignSessionHandler::HandleOpenForeignSession(
 
 void ForeignSessionHandler::HandleDeleteForeignSession(
     const base::ListValue* args) {
-  if (args->GetSize() != 1U) {
+  if (args->GetList().size() != 1U) {
     LOG(ERROR) << "Wrong number of args to deleteForeignSession";
     return;
   }
 
   // Get the session tag argument (required).
-  std::string session_tag;
-  if (!args->GetString(0, &session_tag)) {
+  if (!args->GetList()[0].is_string()) {
     LOG(ERROR) << "Unable to extract session tag";
     return;
   }
+  const std::string& session_tag = args->GetList()[0].GetString();
 
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       GetOpenTabsUIDelegate(web_ui());
@@ -427,23 +427,24 @@ void ForeignSessionHandler::HandleDeleteForeignSession(
 
 void ForeignSessionHandler::HandleSetForeignSessionCollapsed(
     const base::ListValue* args) {
-  if (args->GetSize() != 2U) {
+  const auto& list = args->GetList();
+  if (list.size() != 2U) {
     LOG(ERROR) << "Wrong number of args to setForeignSessionCollapsed";
     return;
   }
 
   // Get the session tag argument (required).
-  std::string session_tag;
-  if (!args->GetString(0, &session_tag)) {
+  if (!args->GetList()[0].is_string()) {
     LOG(ERROR) << "Unable to extract session tag";
     return;
   }
+  const std::string& session_tag = args->GetList()[0].GetString();
 
-  bool is_collapsed;
-  if (!args->GetBoolean(1, &is_collapsed)) {
+  if (!list[1].is_bool()) {
     LOG(ERROR) << "Unable to extract boolean argument";
     return;
   }
+  const bool is_collapsed = list[1].GetBool();
 
   // Store session tags for collapsed sessions in a preference so that the
   // collapsed state persists.

@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_TETHER_COMPONENT_H_
 #define CHROMEOS_COMPONENTS_TETHER_TETHER_COMPONENT_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace chromeos {
@@ -38,6 +37,10 @@ class TetherComponent {
   };
 
   TetherComponent();
+
+  TetherComponent(const TetherComponent&) = delete;
+  TetherComponent& operator=(const TetherComponent&) = delete;
+
   virtual ~TetherComponent();
 
   // Requests that the Tether component shuts down. If the component can be shut
@@ -57,8 +60,6 @@ class TetherComponent {
  private:
   Status status_ = Status::ACTIVE;
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TetherComponent);
 };
 
 }  // namespace tether

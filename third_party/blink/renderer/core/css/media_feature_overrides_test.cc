@@ -32,14 +32,14 @@ TEST(MediaFeatureOverrides, SetOverrideValid) {
   overrides.SetOverride("prefers-color-scheme", "light");
   auto light_override = overrides.GetOverride("prefers-color-scheme");
   EXPECT_TRUE(light_override.IsValid());
-  EXPECT_TRUE(light_override.is_id);
-  EXPECT_EQ(CSSValueID::kLight, light_override.id);
+  ASSERT_TRUE(light_override.IsId());
+  EXPECT_EQ(CSSValueID::kLight, light_override.Id());
 
   overrides.SetOverride("prefers-color-scheme", "dark");
   auto dark_override = overrides.GetOverride("prefers-color-scheme");
-  EXPECT_TRUE(dark_override.IsValid());
-  EXPECT_TRUE(dark_override.is_id);
-  EXPECT_EQ(CSSValueID::kDark, dark_override.id);
+  ASSERT_TRUE(dark_override.IsValid());
+  EXPECT_TRUE(dark_override.IsId());
+  EXPECT_EQ(CSSValueID::kDark, dark_override.Id());
 }
 
 TEST(MediaFeatureOverrides, ResetOverride) {

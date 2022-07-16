@@ -14,6 +14,10 @@ namespace content {
 class MockMediaSessionClient : public blink::mojom::MediaSessionClient {
  public:
   MockMediaSessionClient();
+
+  MockMediaSessionClient(const MockMediaSessionClient&) = delete;
+  MockMediaSessionClient& operator=(const MockMediaSessionClient&) = delete;
+
   ~MockMediaSessionClient() override;
 
   mojo::PendingRemote<blink::mojom::MediaSessionClient>
@@ -25,8 +29,6 @@ class MockMediaSessionClient : public blink::mojom::MediaSessionClient {
 
  private:
   mojo::Receiver<blink::mojom::MediaSessionClient> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaSessionClient);
 };
 
 class MockMediaSessionServiceImpl : public content::MediaSessionServiceImpl {

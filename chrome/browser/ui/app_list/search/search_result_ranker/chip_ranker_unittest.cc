@@ -54,6 +54,10 @@ class TestSearchResult : public ChromeSearchResult {
         break;
     }
   }
+
+  TestSearchResult(const TestSearchResult&) = delete;
+  TestSearchResult& operator=(const TestSearchResult&) = delete;
+
   ~TestSearchResult() override {}
 
   // ChromeSearchResult overrides:
@@ -63,8 +67,6 @@ class TestSearchResult : public ChromeSearchResult {
   static int instantiation_count;
 
   int instance_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSearchResult);
 };
 
 int TestSearchResult::instantiation_count = 0;

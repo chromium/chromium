@@ -9,10 +9,10 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_target_determiner_delegate.h"
 #include "chrome/browser/download/download_target_info.h"
@@ -53,6 +53,9 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
  public:
   using CompletionCallback =
       base::OnceCallback<void(std::unique_ptr<DownloadTargetInfo>)>;
+
+  DownloadTargetDeterminer(const DownloadTargetDeterminer&) = delete;
+  DownloadTargetDeterminer& operator=(const DownloadTargetDeterminer&) = delete;
 
   // Start the process of determing the target of |download|.
   //
@@ -326,6 +329,9 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   safe_browsing::DownloadFileType::DangerLevel GetDangerLevel(
       PriorVisitsToReferrer visits) const;
 
+  // Returns the timestamp of the last download bypass.
+  absl::optional<base::Time> GetLastDownloadBypassTimestamp() const;
+
   // Generates the download file name based on information from URL, response
   // headers and sniffed mime type.
   base::FilePath GenerateFileName() const;
@@ -361,8 +367,6 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   absl::optional<download::DownloadSchedule> download_schedule_;
 
   base::WeakPtrFactory<DownloadTargetDeterminer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTargetDeterminer);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_TARGET_DETERMINER_H_

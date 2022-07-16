@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_FILE_PICKER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/download/download_confirmation_result.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -30,6 +29,9 @@ class DownloadFilePicker : public ui::SelectFileDialog::Listener {
   using ConfirmationCallback =
       base::OnceCallback<void(DownloadConfirmationResult,
                               const base::FilePath& virtual_path)>;
+
+  DownloadFilePicker(const DownloadFilePicker&) = delete;
+  DownloadFilePicker& operator=(const DownloadFilePicker&) = delete;
 
   // Display a file picker dialog for |item|. The |suggested_path| will be used
   // as the initial path displayed to the user. |callback| will always be
@@ -62,8 +64,6 @@ class DownloadFilePicker : public ui::SelectFileDialog::Listener {
 
   // For managing select file dialogs.
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadFilePicker);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_FILE_PICKER_H_

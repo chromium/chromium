@@ -86,10 +86,11 @@ def _ConvertAggregatedResultsToStringMap(aggregated_results):
   string_map = {}
   for suite, test_map in aggregated_results.items():
     for test, tag_map in test_map.items():
-      for _, unique_result in tag_map.items():
-        str_typ_tags = ' '.join(unique_result['typ_tags'])
-        string_map.setdefault(suite, {}).setdefault(
-            test, {})[str_typ_tags] = unique_result['build_url_list']
+      for typ_tags, build_url_list in tag_map.items():
+        str_typ_tags = ' '.join(typ_tags)
+        string_map.setdefault(suite,
+                              {}).setdefault(test,
+                                             {})[str_typ_tags] = build_url_list
   return string_map
 
 

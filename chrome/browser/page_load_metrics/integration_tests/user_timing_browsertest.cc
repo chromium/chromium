@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, UserTiming) {
   const double interactive = eval_result.GetList()[2].GetDouble();
   EXPECT_GT(interactive, 0.0);
 
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Check UKM. We compare the webexposed value to the UKM value. The webexposed
   // value will be rounded whereas the UKM value will not, so it may be off by 1

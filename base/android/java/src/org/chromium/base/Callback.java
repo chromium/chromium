@@ -53,6 +53,12 @@ public interface Callback<T> {
             callback.onResult(Integer.valueOf(result));
         }
 
+        @SuppressWarnings("unchecked")
+        @CalledByNative("Helper")
+        static void onTimeResultFromNative(Callback callback, long result) {
+            callback.onResult(Long.valueOf(result));
+        }
+
         @CalledByNative("Helper")
         static void runRunnable(Runnable runnable) {
             runnable.run();

@@ -13,10 +13,12 @@ PaintRenderingContext2D::PaintRenderingContext2D(
     const IntSize& container_size,
     const PaintRenderingContext2DSettings* context_settings,
     float zoom,
-    float device_scale_factor)
+    float device_scale_factor,
+    PaintWorkletGlobalScope* global_scope)
     : container_size_(container_size),
       context_settings_(context_settings),
-      effective_zoom_(zoom) {
+      effective_zoom_(zoom),
+      global_scope_(global_scope) {
   InitializePaintRecorder();
 
   clip_antialiasing_ = kAntiAliased;
@@ -30,7 +32,7 @@ PaintRenderingContext2D::PaintRenderingContext2D(
 void PaintRenderingContext2D::InitializePaintRecorder() {
   paint_recorder_ = std::make_unique<PaintRecorder>();
   cc::PaintCanvas* canvas = paint_recorder_->beginRecording(
-      container_size_.Width(), container_size_.Height());
+      container_size_.width(), container_size_.height());
 
   // Always save an initial frame, to support resetting the top level matrix
   // and clip.
@@ -41,17 +43,12 @@ void PaintRenderingContext2D::InitializePaintRecorder() {
   did_record_draw_commands_in_paint_recorder_ = false;
 }
 
-void PaintRenderingContext2D::DidDraw2D(const SkIRect&,
-                                        CanvasPerformanceMonitor::DrawType) {
-  did_record_draw_commands_in_paint_recorder_ = true;
-}
-
 int PaintRenderingContext2D::Width() const {
-  return container_size_.Width();
+  return container_size_.width();
 }
 
 int PaintRenderingContext2D::Height() const {
-  return container_size_.Height();
+  return container_size_.height();
 }
 
 bool PaintRenderingContext2D::ParseColorOrCurrentColor(
@@ -99,6 +96,19 @@ cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvas() const {
   return paint_recorder_->getRecordingCanvas();
 }
 
+cc::PaintCanvas* PaintRenderingContext2D::GetDrawingPaintCanvas() {
+  DCHECK(paint_recorder_);
+  DCHECK(paint_recorder_->getRecordingCanvas());
+  did_record_draw_commands_in_paint_recorder_ = true;
+  return paint_recorder_->getRecordingCanvas();
+}
+
+cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvasForDraw(
+    const SkIRect&,
+    CanvasPerformanceMonitor::DrawType) {
+  return GetDrawingPaintCanvas();
+}
+
 void PaintRenderingContext2D::ValidateStateStackWithCanvas(
     const cc::PaintCanvas* canvas) const {
 #if DCHECK_IS_ON()
@@ -107,11 +117,6 @@ void PaintRenderingContext2D::ValidateStateStackWithCanvas(
               state_stack_.size() + 1);
   }
 #endif
-}
-
-bool PaintRenderingContext2D::StateHasFilter() {
-  return GetState().HasFilterForOffscreenCanvas(IntSize(Width(), Height()),
-                                                this);
 }
 
 sk_sp<PaintFilter> PaintRenderingContext2D::StateGetFilter() {

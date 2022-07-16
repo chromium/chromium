@@ -44,6 +44,18 @@ class RealboxIconElement extends PolymerElement {
       },
 
       /**
+       * Whether icon is in searchbox or not. Used to prevent
+       * the match icon of rich suggestions from showing in the context of the
+       * realbox input.
+       * @type {boolean}
+       */
+      inSearchbox: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /**
        * Used as a mask image on #icon if |backgroundImage| is empty.
        * @type {string}
        */
@@ -71,15 +83,6 @@ class RealboxIconElement extends PolymerElement {
       iconStyle_: {
         type: String,
         computed: `computeIconStyle_(backgroundImage, maskImage)`,
-      },
-
-      /**
-       * @type {string}
-       * @private
-       */
-      imageContainerStyle_: {
-        type: String,
-        computed: `computeImageContainerStyle_(imageSrc_, match)`,
       },
 
       /**
@@ -129,8 +132,7 @@ class RealboxIconElement extends PolymerElement {
    * @private
    */
   computeMaskImage_() {
-    // Use the match icon if available. Otherwise use the default icon.
-    if (this.match) {
+    if (this.match && (!this.match.isRichSuggestion || !this.inSearchbox)) {
       return this.match.iconUrl;
     } else {
       return this.defaultIcon;
@@ -154,18 +156,6 @@ class RealboxIconElement extends PolymerElement {
   /**
    * @returns {string}
    * @private
-   */
-  computeImageContainerStyle_() {
-    // Show a background color until the image loads.
-    return (this.match && this.match.imageDominantColor && !this.imageSrc_) ?
-        // .25 opacity matching c/b/u/views/omnibox/omnibox_match_cell_view.cc.
-        `background-color: ${this.match.imageDominantColor}40;` :
-        'background-color: transparent;';
-  }
-
-  /**
-   * @returns {string}
-   * @private
    * @suppress {checkTypes}
    */
   computeImageSrc_() {
@@ -182,6 +172,21 @@ class RealboxIconElement extends PolymerElement {
     } else {
       return '';
     }
+  }
+
+  /**
+   * @param {string} imageSrc
+   * @param {string} imageDominantColor
+   * @returns {string}
+   * @private
+   */
+  containerBgColor_(imageSrc, imageDominantColor) {
+    // If the match has an image dominant color, show that color in place of the
+    // image until it loads. This helps the image appear to load more smoothly.
+    return (!imageSrc && imageDominantColor) ?
+        // .25 opacity matching c/b/u/views/omnibox/omnibox_match_cell_view.cc.
+        `${imageDominantColor}40` :
+        '';
   }
 }
 

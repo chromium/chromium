@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/mojom/cros_display_config.mojom.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 class Profile;
@@ -31,6 +30,10 @@ class ArcServiceLauncher {
   // |scheduler_configuration_manager| must outlive |this| object.
   explicit ArcServiceLauncher(chromeos::SchedulerConfigurationManagerBase*
                                   scheduler_configuration_manager);
+
+  ArcServiceLauncher(const ArcServiceLauncher&) = delete;
+  ArcServiceLauncher& operator=(const ArcServiceLauncher&) = delete;
+
   ~ArcServiceLauncher();
 
   // Returns a global instance.
@@ -67,8 +70,6 @@ class ArcServiceLauncher {
   // |scheduler_configuration_manager_| outlives |this|.
   chromeos::SchedulerConfigurationManagerBase* const
       scheduler_configuration_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcServiceLauncher);
 };
 
 }  // namespace arc

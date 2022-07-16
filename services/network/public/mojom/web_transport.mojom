@@ -6,6 +6,7 @@ module network.mojom;
 
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/network_param.mojom";
 import "url/mojom/url.mojom";
 
 // Represents a WebTransport error.
@@ -36,7 +37,39 @@ struct WebTransportCertificateFingerprint {
   string fingerprint;
 };
 
+// Data (possibly) attached when WebTransport is closed gracefully.
+// https://datatracker.ietf.org/doc/html/draft-ietf-webtrans-http3/#section-5
+// https://w3c.github.io/webtransport/#web-transport-close-info
+struct WebTransportCloseInfo {
+  uint32 code;
+  string reason;
+};
+
 // A mojo interface for https://w3c.github.io/web-transport/#web-transport.
+// This is typically implemented in the network service, and used by renderer.
+// WebTransport represents a WebTransport over HTTP/3 session, which has
+// multiple unidirectional and bidirectional streams and one bidirectional
+// channel for datagrams.
+//
+// A stream can be created either by client or server.
+// A stream is active until any of the following event happens:
+//  [incoming] Closed by the server (OnIncomingStreamClosed with fin)
+//  [incoming] Aborted by the server (OnIncomingStreamClosed without fin, or
+//                                    OnReceivedResetStream)
+//  [incoming] Cancelled by the client (StopSending)
+//  [outgoing] Closed by the client (SendFin)
+//  [outgoing] Aborted by the client (AbortStream)
+//  [outgoing] Cancelled by the server (OnReceivedStopSending)
+// Once a stream is aborted or cancelled, the data pipe is closed immediately.
+// When a stream is closed, the writable side closes the data pipe immediately,
+// and the readable side tries to read data already written to the pipe.
+//
+// When an outgoing stream is closed (by the client), the client waits for the
+// FIN signal to be acknowledged by the server, as the ACK signal is useful
+// for web applications. OnOutgoingStreamClosed is the ACK signal.
+//
+// Any stream is aborted or cancelled when the associated WebTransport session
+// is terminated.
 interface WebTransport {
   // A datagram message is sent from the client. The response message represents
   // whether the peer has sent or discarded the datagram.
@@ -65,16 +98,29 @@ interface WebTransport {
   // functions such as reading data from the stream.
   SendFin(uint32 stream_id);
 
-  // Aborts the stream for |stream_id|.
-  AbortStream(uint32 stream_id, uint64 code);
+  // Aborts the stream for `stream_id`.
+  // `code` is an error code as described at
+  // https://ietf-wg-webtrans.github.io/draft-ietf-webtrans-http3/draft-ietf-webtrans-http3.html#name-resetting-data-streams.
+  AbortStream(uint32 stream_id, uint8 code);
+
+  // Sends a STOP_SENDING message on an incoming or bidirectional stream.
+  // `code` is an error code as described at
+  // https://ietf-wg-webtrans.github.io/draft-ietf-webtrans-http3/draft-ietf-webtrans-http3.html#name-resetting-data-streams.
+  StopSending(uint32 stream_id, uint8 code);
 
   // Sets the duration which determines whether an outgoing datagram should be
   // discarded due to being in the queue for too long. A duration of 0 means to
   // use an implementation-defined default.
   SetOutgoingDatagramExpirationDuration(mojo_base.mojom.TimeDelta duration);
+
+  // https://w3c.github.io/webtransport/#session-terminate
+  // This is the last message and it is not allowed to call methods after
+  // calling this.
+  Close(WebTransportCloseInfo? close_info);
 };
 
 // A mojo interface for the client of WebTransport.
+// This is typically implemented in renderer, and used by the network service.
 interface WebTransportClient {
   // A datagram message is sent from the server.
   OnDatagramReceived(mojo_base.mojom.ReadOnlyBuffer data);
@@ -84,6 +130,28 @@ interface WebTransportClient {
   // Note that OnIncomingStreamClosed and OnOutgoingStreamClosed can both be
   // dispatched to the same stream, if it is a bidirectional stream.
   OnIncomingStreamClosed(uint32 stream_id, bool fin_received);
+
+  // Notifies that all outstanding data has been received by the server on the
+  // Stream for |stream_id| and it is now closed.
+  OnOutgoingStreamClosed(uint32 stream_id);
+
+  // Called when an outgoing or bidirectional stream gets a STOP_SENDING signal.
+  // https://w3c.github.io/webtransport/#stream-signal-stop_sending
+  // `code` is an error code as described at
+  // https://ietf-wg-webtrans.github.io/draft-ietf-webtrans-http3/draft-ietf-webtrans-http3.html#name-resetting-data-streams.
+  OnReceivedStopSending(uint32 stream_id, uint8 code);
+
+  // Called when an incoming or bidirectional stream gets a RESET_STREAM signal.
+  // https://w3c.github.io/webtransport/#stream-signal-reset
+  // `code` is an error code as described at
+  // https://ietf-wg-webtrans.github.io/draft-ietf-webtrans-http3/draft-ietf-webtrans-http3.html#name-resetting-data-streams.
+  OnReceivedResetStream(uint32 stream_id, uint8 code);
+
+  // Called when the session is terminated cleanly.
+  // https://w3c.github.io/webtransport/#session-terminated
+  // This is the last message and it is not allowed to call methods after
+  // calling this.
+  OnClosed(WebTransportCloseInfo? close_info);
 };
 
 // Used to create a WebTransport session. This is split from WebTransport
@@ -97,7 +165,8 @@ interface WebTransportClient {
 interface WebTransportHandshakeClient {
   // Called when the handshake succeeds.
   OnConnectionEstablished(pending_remote<WebTransport> transport,
-                          pending_receiver<WebTransportClient> client);
+                          pending_receiver<WebTransportClient> client,
+                          HttpResponseHeaders response_headers);
 
   // Called when the handshake fails.
   // |error| contains the error details. The actual error information issued

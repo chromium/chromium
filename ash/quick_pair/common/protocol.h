@@ -13,7 +13,9 @@ namespace quick_pair {
 
 enum class Protocol {
   // Google Fast Pair
-  kFastPair = 0
+  kFastPairInitial = 0,
+  kFastPairRetroactive = 1,
+  kFastPairSubsequent = 2,
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

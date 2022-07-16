@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,6 +42,10 @@ class LoginAttemptObserver : public AuthStatusConsumer {
   LoginAttemptObserver() : AuthStatusConsumer() {
     ScreenLocker::default_screen_locker()->SetLoginStatusConsumer(this);
   }
+
+  LoginAttemptObserver(const LoginAttemptObserver&) = delete;
+  LoginAttemptObserver& operator=(const LoginAttemptObserver&) = delete;
+
   ~LoginAttemptObserver() override {
     if (ScreenLocker::default_screen_locker())
       ScreenLocker::default_screen_locker()->SetLoginStatusConsumer(nullptr);
@@ -72,8 +75,6 @@ class LoginAttemptObserver : public AuthStatusConsumer {
 
   bool login_attempted_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginAttemptObserver);
 };
 
 }  // namespace

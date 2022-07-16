@@ -20,9 +20,9 @@
 #include "chrome/browser/ui/app_list/arc/arc_package_syncable_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_features.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -38,8 +38,7 @@ namespace arc {
 namespace {
 
 // Tracing delay for jankinees.
-constexpr base::TimeDelta kJankinessTracingTime =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kJankinessTracingTime = base::Minutes(5);
 
 // Minimum number of frames for a jankiness tracing result to be valid.
 constexpr int kMinTotalFramesJankiness = 1000;
@@ -84,6 +83,9 @@ class AppToCategoryMapper {
     return *instance.get();
   }
 
+  AppToCategoryMapper(const AppToCategoryMapper&) = delete;
+  AppToCategoryMapper& operator=(const AppToCategoryMapper&) = delete;
+
   // Returns empty string if category is not set for app |app_id|.
   const std::string& GetCategory(const std::string& app_id) const {
     const auto& it = app_id_to_category_.find(app_id);
@@ -100,8 +102,6 @@ class AppToCategoryMapper {
   ~AppToCategoryMapper() = default;
 
   std::map<std::string, std::string> app_id_to_category_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppToCategoryMapper);
 };
 
 }  // namespace
@@ -348,8 +348,7 @@ void ArcAppPerformanceTracing::OnGfxMetrics(const std::string& package_name,
   // We can only calculate real numbers for initial data. Only report if first
   // time.
   if (first_time) {
-    const base::TimeDelta frameTime =
-        base::TimeDelta::FromMilliseconds(frameTime95);
+    const base::TimeDelta frameTime = base::Milliseconds(frameTime95);
     base::UmaHistogramTimes("Arc.Runtime.Performance.Generic.FrameTime",
                             frameTime);
     VLOG(1) << "Total Frames: " << framesTotal << " | "

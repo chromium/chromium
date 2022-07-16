@@ -113,7 +113,7 @@ void UserModel::MergeWithProto(const ModelProto& another,
                                bool force_notifications) {
   for (const auto& another_value : another.values()) {
     if (another_value.value() == ValueProto()) {
-      // std::map::emplace does not overwrite existing values.
+      // base::flat_map::emplace does not overwrite existing values.
       if (values_.emplace(another_value.identifier(), another_value.value())
               .second ||
           force_notifications) {
@@ -154,6 +154,7 @@ void UserModel::SetAutofillCreditCards(
     credit_cards_[credit_card->guid()] = std::move(credit_card);
   }
 }
+
 void UserModel::SetSelectedCreditCard(
     std::unique_ptr<autofill::CreditCard> card,
     UserData* user_data) {
@@ -164,6 +165,35 @@ void UserModel::SetSelectedCreditCard(
   }
   selected_card_ = std::make_unique<autofill::CreditCard>(*card);
   user_data->selected_card_ = std::move(card);
+}
+
+void UserModel::SetSelectedLoginChoice(
+    std::unique_ptr<LoginChoice> login_choice,
+    UserData* user_data) {
+  if (login_choice == nullptr) {
+    user_data->selected_login_choice_.reset();
+    return;
+  }
+
+  user_data->selected_login_choice_ = std::move(login_choice);
+}
+
+void UserModel::SetSelectedLoginChoiceByIdentifier(
+    const std::string& identifier,
+    const CollectUserDataOptions& collect_user_data_options,
+    UserData* user_data) {
+  const auto login_choice =
+      base::ranges::find_if(collect_user_data_options.login_choices,
+                            [&identifier](const LoginChoice& login_choice) {
+                              return login_choice.identifier == identifier;
+                            });
+  if (login_choice == collect_user_data_options.login_choices.end()) {
+    user_data->selected_login_choice_.reset();
+    return;
+  }
+
+  SetSelectedLoginChoice(std::make_unique<LoginChoice>(*login_choice),
+                         user_data);
 }
 
 void UserModel::SetAutofillProfiles(

@@ -202,7 +202,7 @@ class TLSConnection(TLSRecordLayer):
 
     def handshakeClientAnonymous(self, session=None, settings=None, 
                                 checker=None, serverName="",
-                                async=False):
+                                is_async=False):
         """Perform an anonymous handshake in the role of client.
 
         This function performs an SSL or TLS handshake using an
@@ -236,8 +236,8 @@ class TLSConnection(TLSRecordLayer):
         @type serverName: string
         @param serverName: The ServerNameIndication TLS Extension.
 
-        @type async: bool
-        @param async: If False, this function will block until the
+        @type is_async: bool
+        @param is_async: If False, this function will block until the
         handshake is completed.  If True, this function will return a
         generator.  Successive invocations of the generator will
         return 0 if it is waiting to read from the socket, 1 if it is
@@ -245,7 +245,7 @@ class TLSConnection(TLSRecordLayer):
         the handshake operation is completed.
 
         @rtype: None or an iterable
-        @return: If 'async' is True, a generator object will be
+        @return: If 'is_async' is True, a generator object will be
         returned.
 
         @raise socket.error: If a socket error occurs.
@@ -260,7 +260,7 @@ class TLSConnection(TLSRecordLayer):
                                                 settings=settings,
                                                 checker=checker,
                                                 serverName=serverName)
-        if async:
+        if is_async:
             return handshaker
         for result in handshaker:
             pass
@@ -268,7 +268,7 @@ class TLSConnection(TLSRecordLayer):
     def handshakeClientSRP(self, username, password, session=None,
                            settings=None, checker=None, 
                            reqTack=True, serverName="",
-                           async=False):
+                           is_async=False):
         """Perform an SRP handshake in the role of client.
 
         This function performs a TLS/SRP handshake.  SRP mutually
@@ -313,8 +313,8 @@ class TLSConnection(TLSRecordLayer):
         @type serverName: string
         @param serverName: The ServerNameIndication TLS Extension.
 
-        @type async: bool
-        @param async: If False, this function will block until the
+        @type is_async: bool
+        @param is_async: If False, this function will block until the
         handshake is completed.  If True, this function will return a
         generator.  Successive invocations of the generator will
         return 0 if it is waiting to read from the socket, 1 if it is
@@ -322,7 +322,7 @@ class TLSConnection(TLSRecordLayer):
         the handshake operation is completed.
 
         @rtype: None or an iterable
-        @return: If 'async' is True, a generator object will be
+        @return: If 'is_async' is True, a generator object will be
         returned.
 
         @raise socket.error: If a socket error occurs.
@@ -340,9 +340,9 @@ class TLSConnection(TLSRecordLayer):
         # fashion, returning 1 when it is waiting to able to write, 0 when
         # it is waiting to read.
         #
-        # If 'async' is True, the generator is returned to the caller, 
-        # otherwise it is executed to completion here.  
-        if async:
+        # If 'is_async' is True, the generator is returned to the caller,
+        # otherwise it is executed to completion here.
+        if is_async:
             return handshaker
         for result in handshaker:
             pass
@@ -350,7 +350,7 @@ class TLSConnection(TLSRecordLayer):
     def handshakeClientCert(self, certChain=None, privateKey=None,
                             session=None, settings=None, checker=None,
                             nextProtos=None, reqTack=True, serverName="",
-                            async=False):
+                            is_async=False):
         """Perform a certificate-based handshake in the role of client.
 
         This function performs an SSL or TLS handshake.  The server
@@ -407,8 +407,8 @@ class TLSConnection(TLSRecordLayer):
         @type serverName: string
         @param serverName: The ServerNameIndication TLS Extension.
 
-        @type async: bool
-        @param async: If False, this function will block until the
+        @type is_async: bool
+        @param is_async: If False, this function will block until the
         handshake is completed.  If True, this function will return a
         generator.  Successive invocations of the generator will
         return 0 if it is waiting to read from the socket, 1 if it is
@@ -416,7 +416,7 @@ class TLSConnection(TLSRecordLayer):
         the handshake operation is completed.
 
         @rtype: None or an iterable
-        @return: If 'async' is True, a generator object will be
+        @return: If 'is_async' is True, a generator object will be
         returned.
 
         @raise socket.error: If a socket error occurs.
@@ -435,9 +435,9 @@ class TLSConnection(TLSRecordLayer):
         # fashion, returning 1 when it is waiting to able to write, 0 when
         # it is waiting to read.
         #
-        # If 'async' is True, the generator is returned to the caller, 
-        # otherwise it is executed to completion here.                        
-        if async:
+        # If 'is_async' is True, the generator is returned to the caller,
+        # otherwise it is executed to completion here.
+        if is_async:
             return handshaker
         for result in handshaker:
             pass
@@ -1368,10 +1368,10 @@ class TLSConnection(TLSRecordLayer):
         # See https://tools.ietf.org/html/rfc8446#section-4.1.3
         if settings.simulateTLS13Downgrade:
             serverRandom = serverRandom[:24] + \
-                bytearray("\x44\x4f\x57\x4e\x47\x52\x44\x01")
+                bytearray(b"\x44\x4f\x57\x4e\x47\x52\x44\x01")
         elif settings.simulateTLS12Downgrade:
             serverRandom = serverRandom[:24] + \
-                bytearray("\x44\x4f\x57\x4e\x47\x52\x44\x00")
+                bytearray(b"\x44\x4f\x57\x4e\x47\x52\x44\x00")
         serverHello = ServerHello()
         serverHello.create(self.version, serverRandom, sessionID, \
                             cipherSuite, CertificateType.x509, tackExt,

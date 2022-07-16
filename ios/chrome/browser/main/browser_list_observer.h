@@ -14,6 +14,10 @@ class BrowserList;
 class BrowserListObserver {
  public:
   BrowserListObserver() = default;
+
+  BrowserListObserver(const BrowserListObserver&) = delete;
+  BrowserListObserver& operator=(const BrowserListObserver&) = delete;
+
   virtual ~BrowserListObserver() = default;
 
   // Called after |browser| is added to |browser_list|.
@@ -35,9 +39,6 @@ class BrowserListObserver {
   // do any cleanup. After this method is called, all observers will be removed
   // from |browser_list|, and no firther obeserver methods will be called.
   virtual void OnBrowserListShutdown(BrowserList* browser_list) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserListObserver);
 };
 
 #endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_OBSERVER_H_

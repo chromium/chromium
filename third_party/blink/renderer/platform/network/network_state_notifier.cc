@@ -50,12 +50,9 @@ namespace {
 // https://cs.chromium.org/chromium/src/net/nqe/network_quality_estimator_params.cc.
 const base::TimeDelta kTypicalHttpRttEffectiveConnectionType
     [static_cast<size_t>(WebEffectiveConnectionType::kMaxValue) + 1] = {
-        base::TimeDelta::FromMilliseconds(0),
-        base::TimeDelta::FromMilliseconds(0),
-        base::TimeDelta::FromMilliseconds(3600),
-        base::TimeDelta::FromMilliseconds(1800),
-        base::TimeDelta::FromMilliseconds(450),
-        base::TimeDelta::FromMilliseconds(175)};
+        base::Milliseconds(0),    base::Milliseconds(0),
+        base::Milliseconds(3600), base::Milliseconds(1800),
+        base::Milliseconds(450),  base::Milliseconds(175)};
 
 // Typical downlink throughput (in Mbps) value corresponding to a given
 // WebEffectiveConnectionType value. Taken from
@@ -222,8 +219,7 @@ void NetworkStateNotifier::SetNetworkConnectionInfoOverride(
     override_.max_bandwidth_mbps = max_bandwidth_mbps;
 
     if (!effective_type && http_rtt_msec > 0) {
-      base::TimeDelta http_rtt(
-          base::TimeDelta::FromMilliseconds(http_rtt_msec));
+      base::TimeDelta http_rtt(base::Milliseconds(http_rtt_msec));
       // Threshold values taken from
       // net/nqe/network_quality_estimator_params.cc.
       if (http_rtt >=
@@ -247,7 +243,7 @@ void NetworkStateNotifier::SetNetworkConnectionInfoOverride(
     override_.effective_type = effective_type
                                    ? effective_type.value()
                                    : WebEffectiveConnectionType::kTypeUnknown;
-    override_.http_rtt = base::TimeDelta::FromMilliseconds(http_rtt_msec);
+    override_.http_rtt = base::Milliseconds(http_rtt_msec);
     override_.downlink_throughput_mbps = max_bandwidth_mbps;
   }
 }
@@ -451,8 +447,8 @@ uint32_t NetworkStateNotifier::RoundRtt(
 
   // Limit the maximum reported value and the granularity to reduce
   // fingerprinting.
-  constexpr auto kMaxRtt = base::TimeDelta::FromSeconds(3);
-  constexpr auto kGranularity = base::TimeDelta::FromMilliseconds(50);
+  constexpr auto kMaxRtt = base::Seconds(3);
+  constexpr auto kGranularity = base::Milliseconds(50);
 
   const base::TimeDelta modified_rtt =
       std::min(rtt.value() * GetRandomMultiplier(host), kMaxRtt);

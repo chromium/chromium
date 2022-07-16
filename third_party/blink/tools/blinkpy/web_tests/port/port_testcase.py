@@ -241,9 +241,9 @@ class PortTestCase(LoggingTestCase):
             None, None, None, None, newer_than=None)
         self.assertIsNone(stderr)
         self.assertEqual(
-            details, 'crash log for <unknown process name> (pid <unknown>):\n'
-            'STDOUT: <empty>\n'
-            'STDERR: <empty>\n')
+            details, b'crash log for <unknown process name> (pid <unknown>):\n'
+            b'STDOUT: <empty>\n'
+            b'STDERR: <empty>\n')
         self.assertIsNone(crash_site)
 
     def test_get_crash_log_simple(self):
@@ -251,23 +251,26 @@ class PortTestCase(LoggingTestCase):
         stderr, details, crash_site = port._get_crash_log(
             'foo',
             1234,
-            'out bar\nout baz',
-            'err bar\nerr baz\n',
+            b'out bar\nout baz',
+            b'err bar\nerr baz\n',
             newer_than=None)
-        self.assertEqual(stderr, 'err bar\nerr baz\n')
+        self.assertEqual(stderr, b'err bar\nerr baz\n')
         self.assertEqual(
-            details, 'crash log for foo (pid 1234):\n'
-            'STDOUT: out bar\n'
-            'STDOUT: out baz\n'
-            'STDERR: err bar\n'
-            'STDERR: err baz\n')
+            details, b'crash log for foo (pid 1234):\n'
+            b'STDOUT: out bar\n'
+            b'STDOUT: out baz\n'
+            b'STDERR: err bar\n'
+            b'STDERR: err baz\n')
         self.assertIsNone(crash_site)
 
     def test_get_crash_log_non_ascii(self):
         port = self.make_port()
-        stderr, details, crash_site = port._get_crash_log(
-            'foo', 1234, 'foo\xa6bar', 'foo\xa6bar', newer_than=None)
-        self.assertEqual(stderr, 'foo\xa6bar')
+        stderr, details, crash_site = port._get_crash_log('foo',
+                                                          1234,
+                                                          b'foo\xa6bar',
+                                                          b'foo\xa6bar',
+                                                          newer_than=None)
+        self.assertEqual(stderr, b'foo\xa6bar')
         self.assertEqual(
             details.decode('utf8', 'replace'),
             u'crash log for foo (pid 1234):\n'
@@ -277,9 +280,12 @@ class PortTestCase(LoggingTestCase):
 
     def test_get_crash_log_newer_than(self):
         port = self.make_port()
-        stderr, details, crash_site = port._get_crash_log(
-            'foo', 1234, 'foo\xa6bar', 'foo\xa6bar', newer_than=1.0)
-        self.assertEqual(stderr, 'foo\xa6bar')
+        stderr, details, crash_site = port._get_crash_log('foo',
+                                                          1234,
+                                                          b'foo\xa6bar',
+                                                          b'foo\xa6bar',
+                                                          newer_than=1.0)
+        self.assertEqual(stderr, b'foo\xa6bar')
         self.assertEqual(
             details.decode('utf8', 'replace'),
             u'crash log for foo (pid 1234):\n'
@@ -292,20 +298,20 @@ class PortTestCase(LoggingTestCase):
         stderr, details, crash_site = port._get_crash_log(
             'foo',
             1234,
-            'out bar',
-            '[1:2:3:4:FATAL:example.cc(567)] Check failed.',
+            b'out bar',
+            b'[1:2:3:4:FATAL:example.cc(567)] Check failed.',
             newer_than=None)
         self.assertEqual(stderr,
-                         '[1:2:3:4:FATAL:example.cc(567)] Check failed.')
+                         b'[1:2:3:4:FATAL:example.cc(567)] Check failed.')
         self.assertEqual(
-            details, 'crash log for foo (pid 1234):\n'
-            'STDOUT: out bar\n'
-            'STDERR: [1:2:3:4:FATAL:example.cc(567)] Check failed.\n')
+            details, b'crash log for foo (pid 1234):\n'
+            b'STDOUT: out bar\n'
+            b'STDERR: [1:2:3:4:FATAL:example.cc(567)] Check failed.\n')
         self.assertEqual(crash_site, 'example.cc(567)')
 
-    def test_expectations_files(self):
+    def test_default_expectations_files(self):
         port = self.make_port()
-        self.assertEqual(port.expectations_files(), [
+        self.assertEqual(list(port.default_expectations_files()), [
             port.path_to_generic_test_expectations_file(),
             port.path_to_webdriver_expectations_file(),
             port.host.filesystem.join(port.web_tests_dir(), 'NeverFixTests'),
@@ -314,25 +320,43 @@ class PortTestCase(LoggingTestCase):
             port.host.filesystem.join(port.web_tests_dir(), 'SlowTests'),
         ])
 
-    def test_expectations_ordering(self):
+    def test_default_expectations_ordering(self):
         port = self.make_port()
-        for path in port.expectations_files():
+        for path in port.default_expectations_files():
             port.host.filesystem.write_text_file(path, '')
         ordered_dict = port.expectations_dict()
         self.assertEqual(port.path_to_generic_test_expectations_file(),
-                         ordered_dict.keys()[0])
+                         list(ordered_dict)[0])
 
         options = optparse.Values(
             dict(additional_expectations=['/tmp/foo', '/tmp/bar']))
         port = self.make_port(options=options)
-        for path in port.expectations_files():
+        for path in port.default_expectations_files():
             port.host.filesystem.write_text_file(path, '')
         port.host.filesystem.write_text_file('/tmp/foo', 'foo')
         port.host.filesystem.write_text_file('/tmp/bar', 'bar')
         ordered_dict = port.expectations_dict()
-        self.assertEqual(ordered_dict.keys()[-2:],
-                         options.additional_expectations)
-        self.assertEqual(ordered_dict.values()[-2:], ['foo', 'bar'])
+        self.assertEqual(
+            list(ordered_dict)[-2:], options.additional_expectations)
+        self.assertEqual(list(ordered_dict.values())[-2:], ['foo', 'bar'])
+
+    def test_used_expectations_files(self):
+        options = optparse.Values({
+            'additional_expectations': ['/tmp/foo'],
+            'additional_driver_flag': ['flag-specific']
+        })
+        port = self.make_port(options=options)
+        self.assertEqual(list(port.used_expectations_files()), [
+            port.path_to_generic_test_expectations_file(),
+            port.path_to_webdriver_expectations_file(),
+            port.host.filesystem.join(port.web_tests_dir(), 'NeverFixTests'),
+            port.host.filesystem.join(port.web_tests_dir(),
+                                      'StaleTestExpectations'),
+            port.host.filesystem.join(port.web_tests_dir(), 'SlowTests'),
+            port.host.filesystem.join(port.web_tests_dir(), 'FlagExpectations',
+                                      'flag-specific'),
+            '/tmp/foo',
+        ])
 
     def test_path_to_apache_config_file(self):
         # Specific behavior may vary by port, so unit test sub-classes may override this.

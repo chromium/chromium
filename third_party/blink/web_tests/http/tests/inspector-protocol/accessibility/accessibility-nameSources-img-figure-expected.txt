@@ -1,5 +1,6 @@
 Tests name sources in images and figures.
 {
+    childIds : <object>
     domNode : figure#figure1
     ignored : false
     name : {
@@ -25,6 +26,7 @@ Tests name sources in images and figures.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -33,6 +35,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     domNode : figure#figure2
     ignored : false
     name : {
@@ -62,6 +65,7 @@ Tests name sources in images and figures.
         value : figure2-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -70,6 +74,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : figure3-title
@@ -117,6 +122,7 @@ Tests name sources in images and figures.
         value : figcaption3
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : labelledby
@@ -137,6 +143,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : figure4-title
@@ -193,6 +200,7 @@ Tests name sources in images and figures.
         value : figure4-aria-label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -201,6 +209,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : figure5-title
@@ -273,6 +282,7 @@ Tests name sources in images and figures.
         value : figure5-aria-labelledby
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : labelledby
@@ -294,6 +304,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     domNode : img#img1
     ignored : false
     name : {
@@ -319,6 +330,7 @@ Tests name sources in images and figures.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -327,6 +339,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     domNode : img#img2
     ignored : false
     name : {
@@ -356,6 +369,7 @@ Tests name sources in images and figures.
         value : img2-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -364,6 +378,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : img3-title
@@ -406,6 +421,7 @@ Tests name sources in images and figures.
         value : img3-alt
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -414,6 +430,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : img4-title
@@ -465,6 +482,7 @@ Tests name sources in images and figures.
         value : img4-aria-label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -473,6 +491,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : img5-title
@@ -540,6 +559,7 @@ Tests name sources in images and figures.
         value : img5-aria-labelledby
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : labelledby
@@ -561,6 +581,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     domNode : div#link1
     ignored : false
     name : {
@@ -590,6 +611,7 @@ Tests name sources in images and figures.
         value : I like ice cream.
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable
@@ -605,6 +627,7 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
     domNode : svg#svg1
     ignored : false
     name : {
@@ -619,15 +642,6 @@ Tests name sources in images and figures.
             }
             [2] : {
                 nativeSource : title
-                nativeSourceValue : {
-                    relatedNodes : [
-                        [0] : {
-                            backendDOMNodeId : <number>
-                            text : svg1-title
-                        }
-                    ]
-                    type : nodeList
-                }
                 type : relatedElement
                 value : {
                     type : computedString
@@ -644,23 +658,12 @@ Tests name sources in images and figures.
         value : svg1-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
-        [0] : {
-            name : labelledby
-            value : {
-                relatedNodes : [
-                    [0] : {
-                        nodeResult : title
-                        text : svg1-title
-                    }
-                ]
-                type : nodeList
-            }
-        }
     ]
     role : {
-        type : internalRole
-        value : SvgRoot
+        type : role
+        value : img
     }
 }
 

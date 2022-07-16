@@ -4,14 +4,19 @@
 
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_page_handler_impl.h"
 
+#include <algorithm>
 #include <sstream>
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/template_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/intent_constants.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
 
 AppServiceInternalsPageHandlerImpl::AppServiceInternalsPageHandlerImpl(
     Profile* profile)
@@ -40,5 +45,47 @@ void AppServiceInternalsPageHandlerImpl::GetApps(GetAppsCallback callback) {
                             debug_info.str());
       });
 
+  std::sort(result.begin(), result.end(),
+            [](const auto& a, const auto& b) { return a->name < b->name; });
+  std::move(callback).Run(std::move(result));
+}
+
+void AppServiceInternalsPageHandlerImpl::GetPreferredApps(
+    GetPreferredAppsCallback callback) {
+  DCHECK(profile_);
+
+  std::vector<mojom::app_service_internals::PreferredAppInfoPtr> result;
+
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  if (!proxy) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  base::flat_map<std::string, std::stringstream> debug_info_map;
+
+  for (const auto& preferred_app : proxy->PreferredApps().GetReference()) {
+    const auto& filter = preferred_app->intent_filter;
+    apps::operator<<(debug_info_map[preferred_app->app_id], filter);
+    debug_info_map[preferred_app->app_id] << std::endl;
+  }
+
+  for (const auto& kv : debug_info_map) {
+    auto ptr = mojom::app_service_internals::PreferredAppInfo::New();
+    ptr->id = kv.first;
+
+    if (ptr->id == apps::kUseBrowserForLink) {
+      ptr->name = ptr->id;
+    } else {
+      proxy->AppRegistryCache().ForOneApp(
+          kv.first,
+          [&ptr](const apps::AppUpdate& update) { ptr->name = update.Name(); });
+    }
+    ptr->preferred_filters = kv.second.str();
+    result.push_back(std::move(ptr));
+  }
+
+  std::sort(result.begin(), result.end(),
+            [](const auto& a, const auto& b) { return a->name < b->name; });
   std::move(callback).Run(std::move(result));
 }

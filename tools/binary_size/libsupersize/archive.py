@@ -31,6 +31,8 @@ import ar
 import data_quality
 import demangle
 import describe
+import dir_metadata
+import dwarfdump
 import file_format
 import function_signature
 import linker_map_parser
@@ -47,14 +49,6 @@ import zip_util
 
 sys.path.insert(1, os.path.join(path_util.TOOLS_SRC_ROOT, 'tools', 'grit'))
 from grit.format import data_pack
-
-_METADATA_FILENAME = 'DIR_METADATA'
-_METADATA_COMPONENT_REGEX = re.compile(r'^\s*component:\s*"(.*?)"',
-                                       re.MULTILINE)
-_OWNERS_FILENAME = 'OWNERS'
-_OWNERS_COMPONENT_REGEX = re.compile(r'^\s*#\s*COMPONENT:\s*(\S+)',
-                                     re.MULTILINE)
-_OWNERS_FILE_PATH_REGEX = re.compile(r'^\s*file://(\S+)', re.MULTILINE)
 
 _UNCOMPRESSED_COMPRESSION_RATIO_THRESHOLD = 0.9
 
@@ -76,7 +70,7 @@ _SECTION_SIZE_BLOCKLIST = ['.symtab', '.shstrtab', '.strtab']
 
 
 # Tunable constant "knobs" for CreateContainerAndSymbols().
-class SectionSizeKnobs(object):
+class SectionSizeKnobs:
   def __init__(self):
     # A limit on the number of symbols an address can have, before these symbols
     # are compacted into shared symbols. Increasing this value causes more data
@@ -283,38 +277,51 @@ def _NormalizeSourcePath(path):
   return True, path
 
 
-def _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols, source_mapper):
+def _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols,
+                                               object_source_mapper,
+                                               address_source_mapper):
   """Fills in the |source_path| attribute and normalizes |object_path|."""
-  logging.info('Normalizing dex symbol paths')
-  dex_and_other = models.DEX_SECTIONS + (models.SECTION_OTHER, )
-  for symbol in raw_symbols:
-    if symbol.source_path and symbol.section_name in dex_and_other:
-      symbol.generated_source, symbol.source_path = _NormalizeSourcePath(
-          symbol.source_path)
-
-  if source_mapper:
+  if object_source_mapper:
     logging.info('Looking up source paths from ninja files')
     for symbol in raw_symbols:
       if symbol.IsDex() or symbol.IsOther():
         continue
       # Native symbols and pak symbols use object paths.
       object_path = symbol.object_path
-      if object_path:
-        # We don't have source info for prebuilt .a files.
-        if not os.path.isabs(object_path) and not object_path.startswith('..'):
-          source_path = source_mapper.FindSourceForPath(object_path)
-          if source_path:
-            symbol.generated_source, symbol.source_path = (
-                _NormalizeSourcePath(source_path))
-        symbol.object_path = _NormalizeObjectPath(object_path)
-    assert source_mapper.unmatched_paths_count == 0, (
+      if not object_path:
+        continue
+
+      # We don't have source info for prebuilt .a files.
+      if not os.path.isabs(object_path) and not object_path.startswith('..'):
+        symbol.source_path = object_source_mapper.FindSourceForPath(object_path)
+    assert object_source_mapper.unmatched_paths_count == 0, (
         'One or more source file paths could not be found. Likely caused by '
         '.ninja files being generated at a different time than the .map file.')
-  else:
-    logging.info('Normalizing object paths')
+  if address_source_mapper:
+    logging.info('Looking up source paths from dwarfdump')
     for symbol in raw_symbols:
-      if symbol.object_path:
-        symbol.object_path = _NormalizeObjectPath(symbol.object_path)
+
+      if symbol.section_name != models.SECTION_TEXT:
+        continue
+      source_path = address_source_mapper.FindSourceForTextAddress(
+          symbol.address)
+      if source_path and not os.path.isabs(source_path):
+        symbol.source_path = source_path
+    # Majority of unmatched queries are for assembly source files (ex libav1d)
+    # and v8 builtins.
+    assert address_source_mapper.unmatched_queries_ratio < 0.03, (
+        'Percentage of failing |address_source_mapper| queries ' +
+        '({}%) >= 3% '.format(
+            address_source_mapper.unmatched_queries_ratio * 100) +
+        'FindSourceForTextAddress() likely has a bug.')
+
+  logging.info('Normalizing source and object paths')
+  for symbol in raw_symbols:
+    if symbol.object_path:
+      symbol.object_path = _NormalizeObjectPath(symbol.object_path)
+    if symbol.source_path:
+      symbol.generated_source, symbol.source_path = _NormalizeSourcePath(
+          symbol.source_path)
 
 
 def _ComputeAncestorPath(path_list, symbol_count):
@@ -552,107 +559,6 @@ def _CreateMergeStringsReplacements(merge_string_syms,
       'Removed %d overlapping string literals (%d bytes) & created %d aliases',
                 num_removed, size_removed, num_aliases)
   return ret
-
-
-def _ParseComponentFromMetadata(path):
-  """Extracts Component from DIR_METADATA."""
-  try:
-    with open(path) as f:
-      data = f.read()
-
-    m = _METADATA_COMPONENT_REGEX.search(data)
-    if m:
-      return m.group(1)
-  except IOError:
-    # Need to catch both FileNotFoundError and NotADirectoryError since
-    # source_paths for .aar files look like: /path/to/lib.aar/path/within/zip
-    pass
-  return ''
-
-
-def _ParseComponentFromOwners(path):
-  """Extracts COMPONENT and file:// from an OWNERS file.
-
-  Args:
-    path: Path to the file to parse.
-
-  Returns:
-    (component, None) if COMPONENT: line was found.
-    ('', path) if a single file:// was found.
-    ('', None) if neither was found.
-  """
-  try:
-    with open(path) as f:
-      data = f.read()
-
-    m = _OWNERS_COMPONENT_REGEX.search(data)
-    if m:
-      return m.group(1), None
-    aliases = _OWNERS_FILE_PATH_REGEX.findall(data)
-    if len(aliases) == 1:
-      return '', aliases[0]
-  except IOError:
-    # Need to catch both FileNotFoundError and NotADirectoryError since
-    # source_paths for .aar files look like: /path/to/lib.aar/path/within/zip
-    pass
-  return '', None
-
-
-def _FindComponentRoot(path, cache, source_directory):
-  """Searches all parent directories for COMPONENT in OWNERS files.
-
-  Args:
-    path: Path of directory to start searching from. Must be relative to
-      |source_directory|.
-    cache: Dict of OWNERS paths. Used instead of filesystem if paths are present
-      in the dict.
-    source_directory: Directory to use as the root.
-
-  Returns:
-    COMPONENT belonging to |path|, or empty string if not found.
-  """
-  assert not os.path.isabs(path)
-  component = cache.get(path)
-  if component is not None:
-    return component
-
-  metadata_path = os.path.join(source_directory, path, _METADATA_FILENAME)
-  component = _ParseComponentFromMetadata(metadata_path)
-  if not component:
-    owners_path = os.path.join(source_directory, path, _OWNERS_FILENAME)
-    component, path_alias = _ParseComponentFromOwners(owners_path)
-
-  if not component:
-    # Store in cache before recursing to prevent cycles.
-    cache[path] = ''
-    if path_alias:
-      alias_dir = os.path.dirname(path_alias)
-      component = _FindComponentRoot(alias_dir, cache, source_directory)
-
-  if not component:
-    parent_path = os.path.dirname(path)
-    if parent_path:
-      component = _FindComponentRoot(parent_path, cache, source_directory)
-
-  cache[path] = component
-  return component
-
-
-def _PopulateComponents(raw_symbols, source_directory):
-  """Populates the |component| field based on |source_path|.
-
-  Symbols without a |source_path| are skipped.
-
-  Args:
-    raw_symbols: list of Symbol objects.
-    source_directory: Directory to use as the root.
-  """
-  seen_paths = {}
-  for symbol in raw_symbols:
-    if symbol.source_path:
-      folder_path = os.path.dirname(symbol.source_path)
-      symbol.component = _FindComponentRoot(folder_path, seen_paths,
-                                            source_directory)
 
 
 def _UpdateSymbolNamesFromNm(raw_symbols, names_by_address):
@@ -961,7 +867,7 @@ def _ParseElfInfo(map_path, elf_path, tool_prefix, track_string_literals,
     # single path for these symbols.
     # Rather than record all paths for each symbol, set the paths to be the
     # common ancestor of all paths.
-    if outdir_context:
+    if outdir_context and map_path:
       bulk_analyzer = obj_analyzer.BulkObjectFileAnalyzer(
           tool_prefix, outdir_context.output_directory,
           track_string_literals=track_string_literals)
@@ -980,7 +886,7 @@ def _ParseElfInfo(map_path, elf_path, tool_prefix, track_string_literals,
     raw_symbols = nm.CreateUniqueSymbols(elf_path, tool_prefix,
                                          elf_section_ranges)
 
-  if map_path and elf_path:
+  if elf_path and map_path:
     logging.debug('Validating section sizes')
     differing_elf_section_sizes = {}
     differing_map_section_sizes = {}
@@ -997,14 +903,14 @@ def _ParseElfInfo(map_path, elf_path, tool_prefix, track_string_literals,
       logging.error('.map file: %r', differing_map_section_sizes)
       sys.exit(1)
 
-  if elf_path and outdir_context:
+  if elf_path and map_path and outdir_context:
     missed_object_paths = _DiscoverMissedObjectPaths(
         raw_symbols, outdir_context.known_inputs)
     missed_object_paths = ar.ExpandThinArchives(
         missed_object_paths, outdir_context.output_directory)[0]
     bulk_analyzer.AnalyzePaths(missed_object_paths)
     bulk_analyzer.SortPaths()
-    if track_string_literals and map_path:
+    if track_string_literals:
       merge_string_syms = [s for s in raw_symbols if
                            s.full_name == '** merge strings' or
                            s.full_name == '** lld merge strings']
@@ -1028,7 +934,7 @@ def _ParseElfInfo(map_path, elf_path, tool_prefix, track_string_literals,
 
     raw_symbols = _AddNmAliases(raw_symbols, names_by_address)
 
-    if outdir_context:
+    if map_path and outdir_context:
       object_paths_by_name = bulk_analyzer.GetSymbolNames()
       logging.debug(
           'Fetched path information for %d symbols from %d files',
@@ -1128,7 +1034,7 @@ def _IsPakContentUncompressed(content):
   return compression_ratio < _UNCOMPRESSED_COMPRESSION_RATIO_THRESHOLD
 
 
-class _ResourceSourceMapper(object):
+class _ResourceSourceMapper:
   def __init__(self, size_info_prefix, knobs):
     self._knobs = knobs
     self._res_info = self._LoadResInfo(size_info_prefix)
@@ -1245,7 +1151,7 @@ def _ParseApkElfSectionRanges(section_ranges, metadata, apk_elf_result):
   return apk_section_ranges, elf_overhead_size
 
 
-class _ResourcePathDeobfuscator(object):
+class _ResourcePathDeobfuscator:
 
   def __init__(self, pathmap_path):
     self._pathmap = self._LoadResourcesPathmap(pathmap_path)
@@ -1588,13 +1494,20 @@ def CreateContainerAndSymbols(knobs=None,
     apk_elf_result = None
 
   outdir_context = None
-  source_mapper = None
+  object_source_mapper = None
+  address_source_mapper = None
   section_ranges = {}
   raw_symbols = []
   if opts.analyze_native and output_directory:
-    # Finds all objects passed to the linker and creates a map of .o -> .cc.
-    source_mapper, ninja_elf_object_paths = _ParseNinjaFiles(
-        output_directory, elf_path)
+    if map_path:
+      # Finds all objects passed to the linker and creates a map of .o -> .cc.
+      object_source_mapper, ninja_elf_object_paths = _ParseNinjaFiles(
+          output_directory, elf_path)
+    else:
+      ninja_elf_object_paths = None
+      logging.info('Parsing source path info via dwarfdump')
+      address_source_mapper = dwarfdump.CreateAddressSourceMapper(
+          elf_path, tool_prefix)
 
     # Start by finding elf_object_paths so that nm can run on them while the
     # linker .map is being parsed.
@@ -1604,12 +1517,12 @@ def CreateContainerAndSymbols(knobs=None,
       known_inputs = set(elf_object_paths)
       known_inputs.update(ninja_elf_object_paths)
     else:
-      elf_object_paths = None
+      elf_object_paths = []
       known_inputs = None
       # When we don't know which elf file is used, just search all paths.
-      if opts.analyze_native:
+      if opts.analyze_native and object_source_mapper:
         thin_archives = set(
-            p for p in source_mapper.IterAllPaths() if p.endswith('.a')
+            p for p in object_source_mapper.IterAllPaths() if p.endswith('.a')
             and ar.IsThinArchive(os.path.join(output_directory, p)))
       else:
         thin_archives = None
@@ -1715,8 +1628,9 @@ def CreateContainerAndSymbols(knobs=None,
       '**'), s.address, s.full_name))
   raw_symbols.extend(other_symbols)
 
-  _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols, source_mapper)
-  _PopulateComponents(raw_symbols, source_directory)
+  _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols, object_source_mapper,
+                                             address_source_mapper)
+  dir_metadata.PopulateComponents(raw_symbols, source_directory)
   logging.info('Converting excessive aliases into shared-path symbols')
   _CompactLargeAliasesIntoSharedSymbols(raw_symbols, knobs)
   logging.debug('Connecting nm aliases')
@@ -1999,7 +1913,7 @@ def ParseSsargs(lines):
 
 
 def _DeduceNativeInfo(tentative_output_dir, apk_path, elf_path, map_path,
-                      ignore_linker_map, on_config_error):
+                      ignore_linker_map, tool_prefix, on_config_error):
   apk_so_path = None
   if apk_path:
     with zipfile.ZipFile(apk_path) as z:
@@ -2030,7 +1944,7 @@ def _DeduceNativeInfo(tentative_output_dir, apk_path, elf_path, map_path,
       on_config_error('Found unexpected _partition.so: ' + elf_path)
 
     if not ignore_linker_map:
-      if _ElfIsMainPartition(elf_path, ''):
+      if _ElfIsMainPartition(elf_path, tool_prefix):
         map_path = elf_path.replace('.so', '__combined.so') + '.map'
       else:
         map_path = elf_path + '.map'
@@ -2114,12 +2028,17 @@ def _ProcessContainerArgs(top_args, sub_args, container_name, on_config_error):
     if not is_base_module:
       opts.analyze_native = False
     else:
+      tool_prefix_finder = path_util.ToolPrefixFinder(
+          value=sub_args.tool_prefix,
+          output_directory=top_args.output_directory,
+          linker_name='lld')
       sub_args.elf_file, sub_args.map_file, apk_so_path = _DeduceNativeInfo(
           tentative_output_dir=top_args.output_directory,
           apk_path=sub_args.apk_file,
           elf_path=sub_args.elf_file or sub_args.aux_elf_file,
           map_path=sub_args.map_file,
           ignore_linker_map=sub_args.ignore_linker_map,
+          tool_prefix=tool_prefix_finder.Finalized(),
           on_config_error=on_config_error)
 
     if sub_args.ignore_linker_map:
@@ -2155,7 +2074,7 @@ def _ProcessContainerArgs(top_args, sub_args, container_name, on_config_error):
   if not sub_args.elf_file and not sub_args.map_file:
     opts.analyze_native = False
 
-  container_args = {k: v for k, v in sub_args.__dict__.items()}
+  container_args = sub_args.__dict__.copy()
   container_args.update(opts.__dict__)
   logging.info('Container Params: %r', container_args)
   return (sub_args, opts, container_name, apk_so_path, resources_pathmap_path,

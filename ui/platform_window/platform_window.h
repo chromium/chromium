@@ -167,17 +167,20 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
 
   // Lets the WM know which portion of the window is the frame decoration.  The
   // WM may use this to eg. snap windows to each other starting where the window
-  // begins rather than starting where the shadow begins.
-  virtual void SetDecorationInsets(gfx::Insets insets_px);
+  // begins rather than starting where the shadow begins.  If |insets_px| is
+  // nullptr, then any existing insets will be reset.
+  virtual void SetDecorationInsets(const gfx::Insets* insets_px);
 
   // Sets a hint for the compositor so it can avoid unnecessarily redrawing
-  // occluded portions of windows.
-  virtual void SetOpaqueRegion(std::vector<gfx::Rect> region_px);
+  // occluded portions of windows.  If |region_px| is nullptr, then any existing
+  // region will be reset.
+  virtual void SetOpaqueRegion(const std::vector<gfx::Rect>* region_px);
 
   // Sets the clickable region of a window.  This is useful for trimming down a
   // potentially large (24px) hit area for window resizing on the window shadow
-  // to a more reasonable (10px) area.
-  virtual void SetInputRegion(gfx::Rect region_px);
+  // to a more reasonable (10px) area.  If |region_px| is nullptr, then any
+  // existing region will be reset.
+  virtual void SetInputRegion(const gfx::Rect* region_px);
 };
 
 }  // namespace ui

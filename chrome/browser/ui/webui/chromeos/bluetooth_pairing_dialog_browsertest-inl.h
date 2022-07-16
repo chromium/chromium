@@ -64,10 +64,7 @@ void BluetoothPairingDialogTest::ShowDialog() {
       .WillRepeatedly(testing::Return(mock_device_.get()));
 
   chromeos::SystemWebDialogDelegate* dialog =
-      chromeos::BluetoothPairingDialog::ShowDialog(
-          mock_device_->GetAddress(), mock_device_->GetNameForDisplay(),
-          mock_device_->IsPaired(), mock_device_->IsConnected());
-
+      chromeos::BluetoothPairingDialog::ShowDialog(mock_device_->GetAddress());
   content::WebUI* webui = dialog->GetWebUIForTest();
   content::WebContents* webui_webcontents = webui->GetWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(webui_webcontents));

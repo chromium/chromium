@@ -1,0 +1,8 @@
+Tests emulation of User-Agent header string when the request is redirected.
+Navigate to redirect.php
+User-Agent: ua-set-by-devtools
+Fetch redirect.php
+User-Agent: ua-set-by-devtools
+XHR redirect.php
+User-Agent: ua-set-by-devtools
+

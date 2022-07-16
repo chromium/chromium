@@ -122,8 +122,14 @@ void BinaryFCMService::UnregisterInstanceID(
     if (instance_id_caller_counts_[instance_id] == 0) {
       UnregisterInstanceIDImpl(instance_id, std::move(callback));
       instance_id_caller_counts_.erase(instance_id);
+      return;
     }
   }
+
+  // `callback` should always run so that the final steps of a request always
+  // run. This is especially important if this is called for an auth request
+  // that shared `instance_id` with another request.
+  std::move(callback).Run(false);
 }
 
 void BinaryFCMService::SetQueuedOperationDelayForTesting(
@@ -175,23 +181,17 @@ void BinaryFCMService::OnMessage(const std::string& app_id,
                                  const gcm::IncomingMessage& message) {
   auto serialized_proto_iterator =
       message.data.find(kBinaryFCMServiceMessageKey);
-  base::UmaHistogramBoolean("SafeBrowsingFCMService.IncomingMessageHasKey",
-                            serialized_proto_iterator != message.data.end());
   if (serialized_proto_iterator == message.data.end())
     return;
 
   std::string serialized_proto;
   bool parsed =
       base::Base64Decode(serialized_proto_iterator->second, &serialized_proto);
-  base::UmaHistogramBoolean(
-      "SafeBrowsingFCMService.IncomingMessageParsedBase64", parsed);
   if (!parsed)
     return;
 
   enterprise_connectors::ContentAnalysisResponse response;
   parsed = response.ParseFromString(serialized_proto);
-  base::UmaHistogramBoolean("SafeBrowsingFCMService.IncomingMessageParsedProto",
-                            parsed);
 
   if (!parsed)
     return;
@@ -217,6 +217,19 @@ void BinaryFCMService::OnSendAcknowledged(const std::string& app_id,
 
 bool BinaryFCMService::CanHandle(const std::string& app_id) const {
   return app_id == kBinaryFCMServiceAppId;
+}
+
+bool BinaryFCMService::Connected() {
+  if (!gcm_driver_)
+    return false;
+
+  // It's possible for the service to not be started yet if this is the first
+  // FCM feature of the profile, so in that case assume it will be available
+  // soon.
+  if (!gcm_driver_->IsStarted())
+    return true;
+
+  return gcm_driver_->IsConnected();
 }
 
 void BinaryFCMService::UnregisterInstanceIDImpl(

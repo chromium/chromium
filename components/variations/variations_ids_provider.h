@@ -13,7 +13,6 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
@@ -72,6 +71,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   static VariationsIdsProvider* Create(Mode mode);
 
   static VariationsIdsProvider* GetInstance();
+
+  VariationsIdsProvider(const VariationsIdsProvider&) = delete;
+  VariationsIdsProvider& operator=(const VariationsIdsProvider&) = delete;
 
   Mode mode() const { return mode_; }
 
@@ -283,8 +285,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   const VariationsClient* variations_client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsIdsProvider);
 };
 
 }  // namespace variations

@@ -14,19 +14,11 @@ source_set("confirmation_alert") {
     "confirmation_alert_view_controller.mm",
   ]
   deps = [
-    ":confirmation_alert_ic_help",
     "//base",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/resources:help_icon",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
   ]
   frameworks = [ "UIKit.framework" ]
-}
-
-imageset("confirmation_alert_ic_help") {
-  sources = [
-    "resources/confirmation_alert_ic_help.imageset/Contents.json",
-    "resources/confirmation_alert_ic_help.imageset/confirmation_alert_ic_help@2x.png",
-    "resources/confirmation_alert_ic_help.imageset/confirmation_alert_ic_help@3x.png",
-  ]
 }

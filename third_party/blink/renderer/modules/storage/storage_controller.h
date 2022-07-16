@@ -26,19 +26,19 @@ namespace blink {
 
 class CachedStorageArea;
 class InspectorDOMStorageAgent;
+class LocalDOMWindow;
 class LocalFrame;
-class SecurityOrigin;
 class StorageNamespace;
 
 // Singleton that manages the creation & accounting for DOMStorage objects. It
 // does this by holding weak references to all session storage namespaces, and
 // owning the local storage namespace internally. The total cache size is
-// exposed with |TotalCacheSize()|, and |ClearAreasIfNeeded()| will - if our
-// total cache size is larger than |total_cache_limit| - clear away any cache
+// exposed with `TotalCacheSize()`, and `ClearAreasIfNeeded()` will - if our
+// total cache size is larger than `total_cache_limit` - clear away any cache
 // areas in live namespaces that no longer have references from Blink objects.
 //
 // SessionStorage StorageNamespace objects are created with
-// |CreateSessionStorageNamespace| and live as a supplement on the Page.
+// `CreateSessionStorageNamespace` and live as a supplement on the Page.
 //
 // The LocalStorage StorageNamespace object is owned internally, and
 // StorageController delegates the following methods to that namespace:
@@ -78,7 +78,9 @@ class MODULES_EXPORT StorageController : public mojom::blink::DomStorageClient {
   // Methods that delegate to the internal StorageNamespace used for
   // LocalStorage:
 
-  scoped_refptr<CachedStorageArea> GetLocalStorageArea(const SecurityOrigin*);
+  scoped_refptr<CachedStorageArea> GetLocalStorageArea(
+      const LocalDOMWindow* local_dom_window,
+      mojo::PendingRemote<mojom::blink::StorageArea> local_storage_area = {});
   void AddLocalStorageInspectorStorageAgent(InspectorDOMStorageAgent* agent);
   void RemoveLocalStorageInspectorStorageAgent(InspectorDOMStorageAgent* agent);
 

@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import './icons.js';
 import './shared-css.js';
 
-import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

@@ -37,13 +37,20 @@ by a child template that "extends" this file.
         <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
     {% endif %}
 
-    <!--
-      TODO(b/183501112): Remove this condition when always building against the S SDK.
-    -->
-    {% if target_sdk_version == 'S' or target_sdk_version|int >= 31 %}
-    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30"/>
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30"/>
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <!--
+      Bluetooth advertising is used by Phone as a Security Key to allow
+      a desktop device to prove proximity by receiving a BLE advert from the
+      phone.
+    -->
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADVERTISE"/>
+    <!--
+      The BLUETOOTH permission is needed for
+      BluetoothAdapter.ACTION_REQUEST_ENABLE which at least Phone as a Security
+      Key uses.
+    -->
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH"/>
     <!--
       Bluetooth scanning is used to implement the Web Bluetooth API, which is
       not intended to allow sites to derive location and so can accept a
@@ -51,10 +58,6 @@ by a child template that "extends" this file.
     -->
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_SCAN"
                             android:usesPermissionFlags="neverForLocation"/>
-    {% else %}
-    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH"/>
-    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADMIN"/>
-    {% endif %}
 
     <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS"/>
     <uses-permission-sdk-23 android:name="android.permission.REORDER_TASKS"/>
@@ -174,7 +177,7 @@ by a child template that "extends" this file.
         android:largeHeap="false"
         android:manageSpaceActivity="@string/manage_space_activity"
         android:supportsRtl="true"
-        android:zygotePreloadName="org.chromium.content.app.ZygotePreload"
+        android:zygotePreloadName="{{ zygote_preload_class }}"
         {% if backup_key is defined %}
         android:allowBackup="true"
         android:backupAgent="org.chromium.chrome.browser.ChromeBackupAgent"
@@ -344,7 +347,7 @@ by a child template that "extends" this file.
         </activity-alias>
 
         <activity android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:excludeFromRecents="true"
             android:exported="true"
             android:enabled="false"><!-- This will be selectively enabled at runtime. -->
@@ -375,7 +378,7 @@ by a child template that "extends" this file.
              images in that case. -->
         <activity-alias android:name="org.chromium.chrome.browser.media.AudioLauncherActivity"
             android:targetActivity="org.chromium.chrome.browser.media.MediaLauncherActivity"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:excludeFromRecents="true"
             android:exported="true"
             android:enabled="false"><!-- This will be selectively enabled at runtime. -->
@@ -390,13 +393,13 @@ by a child template that "extends" this file.
         </activity-alias>
 
         <activity android:name="org.chromium.chrome.browser.LauncherShortcutActivity"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:taskAffinity=""
             android:excludeFromRecents="true"
             android:exported="false" />
 
         <activity android:name="org.chromium.chrome.browser.incognito.IncognitoTabLauncher"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:taskAffinity=""
             android:enabled="false"
             android:excludeFromRecents="true"
@@ -408,7 +411,7 @@ by a child template that "extends" this file.
         </activity>
 
         <activity android:name="org.chromium.chrome.browser.app.reengagement.ReengagementActivity"
-            android:theme="@android:style/Theme.Translucent"
+            android:theme="@style/Theme.BrowserUI.Translucent"
             android:taskAffinity=""
             android:excludeFromRecents="true"
             android:exported="false" />
@@ -471,11 +474,9 @@ by a child template that "extends" this file.
             android:hardwareAccelerated="false"
             {% endblock %}
         >
-            <!-- TODO: Uncomment this once the feature is ready to work.
             <meta-data
                 android:name="android.activity.launch_mode"
                 android:value="singleInstancePerTask"/>
-            -->
 
             <!--
               Daydream api categorizes an activity to three categories: Cardboard only, hybrid
@@ -598,7 +599,7 @@ by a child template that "extends" this file.
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
         </activity>
         <activity android:name="org.chromium.chrome.browser.bookmarks.BookmarkAddActivity"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:excludeFromRecents="true"
             android:windowSoftInputMode="stateHidden"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
@@ -644,19 +645,19 @@ by a child template that "extends" this file.
         </activity>
 
         <!-- Activities for feed. -->
-        <activity android:name="org.chromium.chrome.browser.app.feedmanagement.FeedManagementActivity"
-            android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        <activity android:name="org.chromium.chrome.browser.app.feed.feedmanagement.FeedManagementActivity"
+            android:theme="@style/Theme.Chromium.Settings"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             android:exported="false"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
         </activity>
-        <activity android:name="org.chromium.chrome.browser.app.followmanagement.FollowManagementActivity"
-            android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        <activity android:name="org.chromium.chrome.browser.app.feed.followmanagement.FollowManagementActivity"
+            android:theme="@style/Theme.Chromium.Settings"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             android:exported="false"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
             <intent-filter>
-                <action android:name="org.chromium.chrome.browser.app.followmanagement.FollowManagementActivity.ACTIVATE" />
+                <action android:name="org.chromium.chrome.browser.app.feed.followmanagement.FollowManagementActivity.ACTIVATE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -694,7 +695,7 @@ by a child template that "extends" this file.
                                running.
         -->
         <activity android:name="org.chromium.chrome.browser.webapps.WebappLauncherActivity"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:taskAffinity=""
             android:excludeFromRecents="true"
             android:exported="true">
@@ -752,7 +753,7 @@ by a child template that "extends" this file.
         </activity>
 
         <activity android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:exported="true">
             <intent-filter>
                 <action android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity.ACTIVATE" />
@@ -774,7 +775,7 @@ by a child template that "extends" this file.
         <activity android:name="org.chromium.chrome.browser.BrowserRestartActivity"
             android:launchMode="singleInstance"
             android:exported="false"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:theme="@style/Theme.BrowserUI.Translucent.NoTitleBar"
             android:excludeFromRecents="true"
             android:process=":browser_restart_process">
         </activity>
@@ -782,13 +783,13 @@ by a child template that "extends" this file.
         <!-- This activity is to expose the print option via the generic Android share action. -->
         <activity
             android:name="org.chromium.chrome.browser.printing.PrintShareActivity"
-            android:icon="@drawable/sharing_print"
+            android:icon="@drawable/sharing_print_baseline"
             android:label="@string/print_share_activity_title"
             android:enabled="false"
             android:excludeFromRecents="true"
             android:exported="true"
             android:noHistory="true"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -807,7 +808,7 @@ by a child template that "extends" this file.
             android:excludeFromRecents="true"
             android:exported="true"
             android:noHistory="true"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -837,7 +838,7 @@ by a child template that "extends" this file.
         <activity
             android:name="org.chromium.chrome.browser.instantapps.AuthenticatedProxyActivity"
             android:exported="false"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:noHistory="true"
             android:excludeFromRecents="true">
         </activity>
@@ -845,7 +846,7 @@ by a child template that "extends" this file.
         <activity
             android:name="org.chromium.chrome.browser.vr.VrCancelAnimationActivity"
             android:exported="false"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:noHistory="true"
             android:excludeFromRecents="true"
             {% if enable_vr == "true" %}
@@ -929,7 +930,6 @@ by a child template that "extends" this file.
             android:exported="false">
         </service>
 
-        {% if channel in ['canary', 'default'] %}
         <!-- Quick Action Search widget -->
         <receiver
             android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSmall"
@@ -966,21 +966,6 @@ by a child template that "extends" this file.
                 android:name="android.appwidget.provider"
                 android:resource="@xml/quick_action_search_widget_dino_info" />
         </receiver>
-        {% endif %}
-
-        <receiver
-            android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="org.chromium.chrome.browser.ui.quickactionsearchwidget.START_TEXT_QUERY" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="org.chromium.chrome.browser.ui.quickactionsearchwidget.START_VOICE_QUERY" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="org.chromium.chrome.browser.ui.quickactionsearchwidget.START_DINO_GAME" />
-            </intent-filter>
-        </receiver>
 
         <!-- Bookmarks widget -->
         <receiver android:name="com.google.android.apps.chrome.appwidget.bookmarks.BookmarkThumbnailWidgetProvider"
@@ -1007,15 +992,6 @@ by a child template that "extends" this file.
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="org.chromium.chrome.browser.searchwidget.START_TEXT_QUERY" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="org.chromium.chrome.browser.searchwidget.START_VOICE_QUERY" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="org.chromium.chrome.browser.searchwidget.UPDATE_ALL_WIDGETS" />
             </intent-filter>
             <meta-data
                     android:name="android.appwidget.provider"
@@ -1151,7 +1127,16 @@ by a child template that "extends" this file.
 
         <activity
             android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$TrampolineActivity"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
+            android:exported="false"
+            android:autoRemoveFromRecents="true"
+            android:excludeFromRecents="true"
+            android:documentLaunchMode="always"
+            android:noHistory="true"/>
+
+        <activity
+            android:name="org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager$TrampolineActivity"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:exported="false"
             android:autoRemoveFromRecents="true"
             android:excludeFromRecents="true"
@@ -1331,6 +1316,16 @@ by a child template that "extends" this file.
           android:exported="false"
           tools:node="remove">
       </provider>
+
+      <!-- The Play Core library added support for Play Asset Delivery (PAD), which is primarily
+           used by game apps to allow dynamic delivery of resource bundles. Since chrome does not
+           currently use this feature, remove these services to reclaim 70kb+ of binary size. -->
+      <service
+          android:name="com.google.android.play.core.assetpacks.AssetPackExtractionService"
+          tools:node="remove"/>
+      <service
+          android:name="com.google.android.play.core.assetpacks.ExtractionForegroundService"
+          tools:node="remove"/>
 
       <!-- Provider for chrome data. -->
       <provider android:name="org.chromium.chrome.browser.provider.ChromeBrowserProvider"

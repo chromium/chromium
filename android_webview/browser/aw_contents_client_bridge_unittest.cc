@@ -64,6 +64,10 @@ class TestClientCertificateDelegate
   explicit TestClientCertificateDelegate(AwContentsClientBridgeTest* test)
       : test_(test) {}
 
+  TestClientCertificateDelegate(const TestClientCertificateDelegate&) = delete;
+  TestClientCertificateDelegate& operator=(
+      const TestClientCertificateDelegate&) = delete;
+
   // content::ClientCertificateDelegate.
   void ContinueWithCertificate(scoped_refptr<net::X509Certificate> cert,
                                scoped_refptr<net::SSLPrivateKey> key) override {
@@ -73,8 +77,6 @@ class TestClientCertificateDelegate
 
  private:
   AwContentsClientBridgeTest* test_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestClientCertificateDelegate);
 };
 
 }  // namespace

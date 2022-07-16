@@ -9,6 +9,7 @@
 
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/shell.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/notreached.h"
 #include "components/exo/mock_vsync_timing_observer.h"
@@ -46,10 +47,12 @@ class MockDragDropObserver : public WMHelper::DragDropObserver {
   DragOperation OnPerformDrop(const ui::DropTargetEvent& event) override {
     return drop_result_;
   }
-  WMHelper::DropCallback GetDropCallback(
+  WMHelper::DragDropObserver::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override {
-    NOTIMPLEMENTED();
-    return base::NullCallback();
+    return base::BindOnce(
+        [](DragOperation drop_result, const ui::DropTargetEvent& event,
+           DragOperation& output_drag_op) { output_drag_op = drop_result; },
+        drop_result_);
   }
 
  private:
@@ -88,8 +91,7 @@ TEST_F(WMHelperChromeOSTest, FrameThrottling) {
   EXPECT_EQ(vsync_timing_manager.throttled_interval(), base::TimeDelta());
 
   // Both windows are to be throttled, vsync timing will be adjusted.
-  base::TimeDelta throttled_interval =
-      base::TimeDelta::FromHz(ftc->throttled_fps());
+  base::TimeDelta throttled_interval = base::Hertz(ftc->throttled_fps());
   EXPECT_CALL(observer,
               OnUpdateVSyncParameters(testing::_, throttled_interval));
   ftc->StartThrottling({arc_window_1.get(), arc_window_2.get()});

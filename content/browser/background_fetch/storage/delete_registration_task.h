@@ -25,6 +25,9 @@ class DeleteRegistrationTask : public background_fetch::DatabaseTask {
                          const std::string& unique_id,
                          HandleBackgroundFetchErrorCallback callback);
 
+  DeleteRegistrationTask(const DeleteRegistrationTask&) = delete;
+  DeleteRegistrationTask& operator=(const DeleteRegistrationTask&) = delete;
+
   ~DeleteRegistrationTask() override;
 
   void Start() override;
@@ -52,8 +55,6 @@ class DeleteRegistrationTask : public background_fetch::DatabaseTask {
 
   base::WeakPtrFactory<DeleteRegistrationTask> weak_factory_{
       this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteRegistrationTask);
 };
 
 }  // namespace background_fetch

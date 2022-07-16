@@ -49,7 +49,7 @@ bool ViewportScrollCallback::ShouldScrollBrowserControls(
   // the direction to show the browser controls. If it's in the
   // direction to hide the browser controls, only give the delta to the
   // browser controls when the frame can scroll.
-  return delta.Height() < 0 || scroll_offset.Height() < max_scroll.Height();
+  return delta.height() < 0 || scroll_offset.height() < max_scroll.height();
 }
 
 bool ViewportScrollCallback::ScrollBrowserControls(ScrollState& state) {
@@ -63,7 +63,7 @@ bool ViewportScrollCallback::ScrollBrowserControls(ScrollState& state) {
     if (ShouldScrollBrowserControls(delta, granularity)) {
       FloatSize remaining_delta = browser_controls_->ScrollBy(delta);
       FloatSize consumed = delta - remaining_delta;
-      state.ConsumeDeltaNative(consumed.Width(), consumed.Height());
+      state.ConsumeDeltaNative(consumed.width(), consumed.height());
       return !consumed.IsZero();
     }
   }
@@ -108,8 +108,8 @@ ScrollResult ViewportScrollCallback::PerformNativeScroll(ScrollState& state) {
   // The viewport consumes everything.
   // TODO(bokan): This isn't actually consuming everything but doing so breaks
   // the main thread pull-to-refresh action. crbug.com/607210.
-  state.ConsumeDeltaNative(delta.Width() - result.unused_scroll_delta_x,
-                           delta.Height() - result.unused_scroll_delta_y);
+  state.ConsumeDeltaNative(delta.width() - result.unused_scroll_delta_x,
+                           delta.height() - result.unused_scroll_delta_y);
 
   return result;
 }

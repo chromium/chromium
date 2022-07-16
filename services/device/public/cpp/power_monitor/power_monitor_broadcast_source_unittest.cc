@@ -14,6 +14,12 @@
 namespace device {
 
 class PowerMonitorBroadcastSourceTest : public testing::Test {
+ public:
+  PowerMonitorBroadcastSourceTest(const PowerMonitorBroadcastSourceTest&) =
+      delete;
+  PowerMonitorBroadcastSourceTest& operator=(
+      const PowerMonitorBroadcastSourceTest&) = delete;
+
  protected:
   PowerMonitorBroadcastSourceTest() {}
   ~PowerMonitorBroadcastSourceTest() override {}
@@ -39,8 +45,6 @@ class PowerMonitorBroadcastSourceTest : public testing::Test {
 
  private:
   PowerMonitorBroadcastSource* power_monitor_source_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorBroadcastSourceTest);
 };
 
 TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {

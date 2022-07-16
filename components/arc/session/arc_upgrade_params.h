@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/arc/session/arc_management_transition.h"
 
 namespace arc {
@@ -88,6 +87,9 @@ struct UpgradeParams {
   // pre-installed.
   // Should be empty if |is_demo_session| is not set.
   base::FilePath demo_session_apps_path;
+
+  // Flag to enable ARC Nearby Share support.
+  bool enable_arc_nearby_share = false;
 };
 
 }  // namespace arc

@@ -38,7 +38,6 @@
 <translation id="174539241580958092">Google Chrome non puido sincronizar os teus datos debido a un erro ao iniciar sesión.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Asegúrate de ter a sesión iniciada en Chrome no <ph name="TARGET_DEVICE_NAME" /> e proba a enviar o número de novo.</translation>
-<translation id="1810203443153428607">Ao instalar Chrome OS sobrescribiranse todos os datos que teñas no dispositivo.</translation>
 <translation id="1812689907177901597">Ao desactivar esta opción, podes iniciar sesión nos sitios de Google, como Gmail, sen iniciar sesión en Chrome</translation>
 <translation id="1860536484129686729">Chrome necesita permiso para acceder á cámara neste sitio</translation>
 <translation id="1873233029667955273">Google Chrome non é o teu navegador predeterminado</translation>
@@ -52,23 +51,14 @@
 <translation id="2121284319307530122">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa da <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para axudar a mellorar Chrome</translation>
 <translation id="2151406531797534936">Reinicia Chrome agora</translation>
-<translation id="2246246234298806438">Google Chrome non pode mostrar a vista previa de impresión se falta o visor de PDF integrado.</translation>
+<translation id="2189289170880510015">Personaliza algunhas das opcións de privacidade máis importantes de Chrome</translation>
 <translation id="2290014774651636340">Non se atopan as claves da API de Google. Desactivaranse algunhas funcións de Google Chrome.</translation>
-<translation id="2290095356545025170">Estás seguro de que queres desinstalar Google Chrome?</translation>
+<translation id="2290095356545025170">Seguro que queres desinstalar Google Chrome?</translation>
 <translation id="2309047409763057870">Esta é unha instalación secundaria de Google Chrome e non se pode converter no teu navegador predeterminado.</translation>
+<translation id="2345992953227471816">Chrome detectou que estas extensións conteñen software malicioso:</translation>
 <translation id="2348335408836342058">Chrome necesita permiso para acceder á cámara e ao micrófono neste sitio</translation>
 <translation id="234869673307233423">Chrome non puido comprobar os teus contrasinais. Téntao de novo máis tarde.</translation>
 <translation id="235650106824528204">O administrador do perfil de traballo pode quitar os datos de Chrome que se xeren durante o uso deste perfil (por exemplo, os marcadores, o historial, os contrasinais e outras opcións de configuración). <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Borrar unidade de disco duro e instalar Chrome OS</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Está todo listo para instalar Chrome OS! Ao continuar:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />Borraranse os ficheiros, os datos e o teu sistema operativo actual.
-          <ph name="LIST_ITEM" />Instalarase Chrome OS.
-          <ph name="LIST_ITEM" />O dispositivo apagarase en canto remate a instalación.
-          <ph name="END_LIST" />
-<ph name="END_PARAGRAPH1" />
-<ph name="BEGIN_PARAGRAPH2" />Non esquezas que coa instalación borrarase toda a unidade de disco duro. Asegúrate de ter unha copia de seguranza dos datos que sexan importantes.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />En canto se inicia a instalación non se pode cancelar.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome non puido sincronizar os teus datos porque a sincronización non está dispoñible para o teu dominio.</translation>
 <translation id="2467438592969358367">Google Chrome quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -94,11 +84,13 @@
 <translation id="2885378588091291677">Xestor de tarefas</translation>
 <translation id="2888126860611144412">Acerca de Chrome</translation>
 <translation id="2926676257163822632">Os contrasinais pouco seguros son fáciles de adiviñar. Permite que Chrome <ph name="BEGIN_LINK" />cree e lembre contrasinais seguros por ti<ph name="END_LINK" />.</translation>
+<translation id="2926952073016206995">Chrome necesita permiso de acceso á cámara para este sitio</translation>
 <translation id="2929907241665500097">Chrome non se actualizou, xa que se produciu un erro. <ph name="BEGIN_LINK" />Soluciona os problemas de actualización de Chrome e as actualizacións que non se puidesen realizar<ph name="END_LINK" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> (inicio de sesión de rede, Chrome)</translation>
 <translation id="3037838751736561277">Google Chrome está no modo de segundo plano.</translation>
 <translation id="3059710691562604940">A opción Navegación segura está desactivada. Chrome recomenda activala.</translation>
 <translation id="3065168410429928842">Pestana de Chrome</translation>
+<translation id="3069821012350118710">Os sitios que visites lembran a túa información ata que pechas Chrome</translation>
 <translation id="3080151273017101988">Continuar executando aplicacións en segundo plano cando se peche Google Chrome</translation>
 <translation id="3089968997497233615">Está dispoñible unha versión nova e máis segura de Google Chrome.</translation>
 <translation id="3100998948628680988">Asígnalle un nome ao teu perfil de Chrome</translation>
@@ -109,6 +101,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome reiniciarase agora}=1{Chrome reiniciarase en 1 segundo}other{Chrome reiniciarase en # segundos}}</translation>
 <translation id="3395323229510056640">Obter axuda sobre Chrome OS</translation>
 <translation id="3396977131400919238">Produciuse un erro no sistema operativo durante a instalación. Volve descargar Google Chrome.</translation>
+<translation id="3428747202529429621">Protéxete en Chrome e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas iniciada a sesión</translation>
 <translation id="3434246496373299699">Chrome pode comprobar os teus contrasinais cando inicies sesión coa túa Conta de Google</translation>
 <translation id="3451115285585441894">Engadindo a Chrome...</translation>
 <translation id="345171907106878721">Engádete a Chrome</translation>
@@ -120,6 +113,8 @@
 <translation id="3582972582564653026">Sincroniza e personaliza Chrome nos teus dispositivos</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{O teu administrador require que reinicies Chrome para aplicar unha actualización}=1{O teu administrador require que reinicies Chrome para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}other{O teu administrador require que reinicies Chrome para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="3622797965165704966">Agora é máis fácil utilizar Chrome coa túa conta de Google e en ordenadores compartidos.</translation>
+<translation id="3673813398384385993">Chrome detectou que "<ph name="EXTENSION_NAME" />" contén software malicioso</translation>
+<translation id="3678552270983184277">A configuración predeterminada vaille ben a case todo o mundo, pero podes personalizala para que se adapte ao uso que queiras darlle a Chrome</translation>
 <translation id="3718181793972440140">Esta acción eliminará 1 elemento deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">A extensión "<ph name="EXTENSION_NAME" />" cambiou a páxina que se mostra ao iniciar Chrome.</translation>
 <translation id="3779473566290487688">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar o sistema operativo OS X 10.11 ou unha versión posterior. Este ordenador ten instalada a versión OS X 10.10.</translation>
@@ -136,11 +131,11 @@
 <translation id="4149882025268051530">O instalador non puido descomprimir o arquivo. Descarga Google Chrome de novo.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Reinicia Chrome en 1 día}other{Reinicia Chrome en # días}}</translation>
 <translation id="4205939740494406371">Chrome non puido comprobar os teus contrasinais. Téntao de novo dentro de 24 horas ou <ph name="BEGIN_LINK" />comproba os contrasinais na túa Conta de Google<ph name="END_LINK" />.</translation>
+<translation id="4242034826641750751">Chrome necesita permiso de acceso á cámara e ao micrófono para este sitio</translation>
 <translation id="424864128008805179">Queres pechar sesión en Chrome?</translation>
 <translation id="4251615635259297716">Queres ligar os teus datos de Chrome con esta conta?</translation>
 <translation id="4281844954008187215">Condicións de servizo</translation>
 <translation id="4293420128516039005">Inicia sesión para sincronizar e personalizar Chrome nos teus dispositivos</translation>
-<translation id="429583012151745428">A instalación está en curso. Non apagues o dispositivo, xa que o proceso non debería tardar máis de vinte minutos. En canto remate a instalación, o equipo apagarase automaticamente.</translation>
 <translation id="4325083532956419387">Versión de Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -180,16 +175,12 @@
 <translation id="521447420733633466">Se compartes un dispositivo, as túas amizades e os membros da túa familia poden navegar cun perfil independente e configurar Chrome como prefiran</translation>
 <translation id="5251420635869119124">Os invitados poden utilizar Chrome sen perder información.</translation>
 <translation id="5251679006894510177">A actualización está a piques de rematar. Para que finalice, reinicia Chrome. As ventás do modo de incógnito non se volverán abrir.</translation>
+<translation id="5334487786912937552">Chrome necesita permiso de acceso ao almacenamento para descargar ficheiros</translation>
 <translation id="5386244825306882791">Tamén controla a páxina que se mostra ao iniciar Chrome ou ao realizar unha busca desde Omnibox.</translation>
 <translation id="5394833366792865639">Compartir unha pestana de Chrome</translation>
 <translation id="5430073640787465221">O teu ficheiro de preferencias está danado ou non é válido.
 
 Google Chrome non pode recuperar a túa configuración.</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Antes de comezar, asegúrate de ter unha copia de seguranza actualizada dos teus datos. Ao instalar Chrome OS sobrescribiranse todos os datos que teñas na unidade de disco duro.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google non é responsable das perdas de datos nin tampouco garante que Chrome OS funcione en modelos que non estean aprobados. Visita [TBD] para obter máis información sobre os modelos aprobados.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Máis información sobre como instalar Chrome OS e o borrado de datos: [TBD URL]<ph name="END_PARAGRAPH3" />
-<ph name="BEGIN_PARAGRAPH4" />Se tes todo listo para continuar, fai clic en Instalar Chrome OS e recibirás instrucións para realizar a instalación en tan só un par de pasos sinxelos. Terás outra oportunidade de confirmar a acción antes de que fagamos cambios no ordenador.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5486618155264784386">Instalar Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome está intentando mostrar contrasinais.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Se non se mostra algunha opción de configuración nesta páxina, accede á <ph name="LINK_BEGIN" />
@@ -199,12 +190,14 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5686916850681061684">Personaliza e controla Google Chrome. Algo precisa a túa atención. Fai clic para obter información.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome reiniciarase en 1 segundo}other{Google Chrome reiniciarase en # segundos}}</translation>
+<translation id="5736850870166430177">Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, así como fragmentos de contido das páxinas, a través da función Navegación segura</translation>
 <translation id="573759479754913123">Acerca de Chrome OS</translation>
 <translation id="5756509061973259733">Neste dispositivo xa existe un perfil de Chrome con esta conta</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> (versión experimental de Google Chrome)</translation>
 <translation id="5804318322022881572">Non se puido iniciar Chrome. Téntao de novo.</translation>
 <translation id="5867197326698922595">Google Chrome está tentando editar os contrasinais.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="5901850848447342934"><ph name="BEGIN_BOLD" />Pecharase a túa sesión na maioría dos sitios<ph name="END_BOLD" /> cando cerres Chrome. Se a sincronización está desactivada, tamén se <ph name="BEGIN_BOLD" />pechará a túa sesión nos servizos de Google e en Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> (inicio de sesión de rede)</translation>
 <translation id="5940385492829620908">Aquí podes atopar as túas páxinas web, marcadores e outros contidos de Chrome.</translation>
 <translation id="5941830788786076944">Converter Google Chrome no navegador predeterminado</translation>
@@ -214,17 +207,18 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6145313976051292476">Abrir PDF en Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> (versión beta de Google Chrome)</translation>
-<translation id="61852838583753520">Actualizar &amp;Chrome OS</translation>
 <translation id="6235018212288296708">Norma de entrada de Google Chrome para permitir tráfico mDNS.</translation>
 <translation id="6291089322031436445">Aplicacións de Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome xa está instalado para todos os usuarios no teu ordenador.</translation>
 <translation id="6368958679917195344">Chrome OS está creado con <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
+<translation id="6412673304250309937">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
 <translation id="6418662306461808273">Queres cambiar ao perfil existente de Chrome?</translation>
+<translation id="6506909944137591434">Chrome necesita permiso de acceso á cámara para crear un mapa 3D do que te rodea</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> (Google Chrome para programadores)</translation>
 <translation id="6568793831116033768">Sistema Chrome OS</translation>
-<translation id="664235759707825982">Todo listo para instalar Chrome OS</translation>
 <translation id="6676384891291319759">Accede a Internet</translation>
 <translation id="6679975945624592337">Permitir que Google Chrome se execute en segundo plano</translation>
+<translation id="6696915334902295848">Chrome necesita permiso de acceso ao micrófono para este sitio</translation>
 <translation id="6739177684496155661">Queres continuar nun perfil de Chrome novo?</translation>
 <translation id="6750954913813541382">Para corrixir erros ortográficos, Chrome enviaralle a Google o texto que escribas no navegador</translation>
 <translation id="677276454032249905">Queres saír de Chrome de todas formas?</translation>
@@ -243,7 +237,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7155997830309522122">Se o fixeches, substitúe o contrasinal gardado en Chrome polo novo.</translation>
 <translation id="7161904924553537242">Dámosche a benvida a Google Chrome</translation>
 <translation id="7242029209006116544">Vas iniciar sesión cunha conta administrada, o que significa que concederás ao seu administrador control sobre o teu perfil de Google Chrome. Os teus datos de Chrome como, por exemplo, as aplicacións, os marcadores, o historial, os contrasinais e outras opcións ligaranse de forma permanente a <ph name="USER_NAME" />. Poderás eliminar estes datos a través do Panel de control de contas de Google, pero non poderás asocialos a outra conta. De maneira opcional, podes crear un novo perfil para manter separados os teus datos de Chrome. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">A instalación de Chrome OS está en curso</translation>
 <translation id="7295052994004373688">Este é o idioma no que se mostra a IU de Google Chrome</translation>
 <translation id="7296210096911315575">Información importante sobre o uso e a seguranza</translation>
 <translation id="7308322188646931570">Chrome necesita acceder ao almacenamento para descargar ficheiros</translation>
@@ -264,24 +257,28 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7761834446675418963">Fai clic no teu nome para abrir Chrome e comezar a navegar.</translation>
 <translation id="7777080907402804672">Se unha imaxe non ten unha descrición útil, Chrome tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google. Podes desactivar esta función na configuración cando queiras.</translation>
 <translation id="7781002470561365167">Hai unha nova versión de Google Chrome dispoñible.</translation>
+<translation id="778331955594035129">Chrome necesita permiso de acceso á localización para este sitio</translation>
 <translation id="7787950393032327779">Parece que outro proceso de Google Chrome (<ph name="PROCESS_ID" />) está utilizando o perfil noutro ordenador (<ph name="HOST_NAME" />). Chrome bloqueou o perfil para que non se dane. Se estás seguro de que ningún outro proceso está utilizando este perfil, podes desbloquealo e volver iniciar Chrome.</translation>
 <translation id="7801699035218095297">Google Chrome está tentando copiar os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="7808348361785373670">Eliminar de Chrome...</translation>
 <translation id="7825851276765848807">Non se puido efectuar a instalación debido a un erro non especificado. Volve descargar Google Chrome.</translation>
 <translation id="7890208801193284374">Se compartes un ordenador, os teus amigos e familiares poderán navegar por separado e configurar Chrome como prefiran.</translation>
 <translation id="7896673875602241923">Anteriormente, alguén iniciou sesión como <ph name="ACCOUNT_EMAIL_LAST" /> en Chrome neste ordenador. Crea un novo usuario de Chrome para manter a túa información por separado.</translation>
+<translation id="7917876797003313048">Podes xestionar as Contas de Google nas que teñas a sesión iniciada. As túas Contas de Google úsanse para o navegador Chrome, Play Store, Gmail e moito máis. Se queres engadir unha conta para outra persoa, como un familiar, engade unha persoa nova ao teu dispositivo (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">Google Chrome está tentando copiar os contrasinais.</translation>
 <translation id="7962410387636238736">Este ordenador deixará de recibir actualizacións de Google Chrome porque xa non se admiten Windows XP nin Windows Vista.</translation>
 <translation id="79947657522496226">Chrome OS é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, igual que o <ph name="BEGIN_LINK_LINUX_OSS" />contorno de programación de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Reinstalar Chrome</translation>
 <translation id="8013993649590906847">Se unha imaxe non ten unha descrición útil, Chrome tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google.</translation>
 <translation id="8129812357326543296">Acerca de &amp;Google Chrome</translation>
+<translation id="822971176939352383">As seguintes contas non teñen a sesión iniciada en ningún perfil de Chrome. Se queres usar unha conta noutro perfil, primeiro elimina ese perfil.</translation>
 <translation id="8255190535488645436">Google Chrome está utilizando a túa cámara e micrófono.</translation>
 <translation id="8286862437124483331">Google Chrome está tentando mostrar contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="828798499196665338">O teu pai ou nai desactivou esta opción en Chrome: Permisos para sitios, aplicacións e extensións. Non está permitido activar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Google Chrome deixou de funcionar. Queres reinicialo agora?</translation>
 <translation id="8342675569599923794">Este ficheiro é perigoso, así que Chrome bloqueouno.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>
+<translation id="8394720698884623075">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome</translation>
 <translation id="840084489713044809">Google Chrome quere exportar os teus contrasinais.</translation>
 <translation id="8433638294851456451">Para enviar un número desde aquí ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>
 <translation id="8498858610309223613">Acábase de aplicar unha actualización especial de seguranza para Google Chrome. Reinicia agora o navegador para restaurar as pestanas.</translation>
@@ -292,11 +289,11 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8614913330719544658">Google Chrome non responde. Queres volver inicialo agora?</translation>
 <translation id="861702415419836452">Chrome necesita permiso para acceder á cámara co fin de crear un mapa 3D do que te rodea</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome reiniciarase en 1 minuto}other{Chrome reiniciarase en # minutos}}</translation>
+<translation id="8629311577791198377">Cando pechas todas as ventás de Chrome, as cookies e os datos dos sitios bórranse automaticamente</translation>
 <translation id="8641606876632989680">Chrome enviarache unha notificación cando inicies sesión cun contrasinal vulnerado</translation>
 <translation id="8669527147644353129">Axudante de Google Chrome</translation>
 <translation id="8679801911857917785">Tamén controla a páxina que se mostra ao iniciar Chrome.</translation>
 <translation id="8686817260976772516">Cos perfís de Chromium podes separar todo o contido que teñas neste navegador. Crea perfís para os amigos e a familia ou ben crea un para o traballo e outro para o lecer.</translation>
-<translation id="870251953148363156">Actualizar &amp;Google Chrome</translation>
 <translation id="873133009373065397">Google Chrome non pode determinar nin establecer o navegador predeterminado</translation>
 <translation id="8823341990149967727">Chrome está desactualizado</translation>
 <translation id="8834965163890861871">Google Chrome está tentando editar os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>

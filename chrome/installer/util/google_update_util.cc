@@ -60,7 +60,7 @@ bool UninstallGoogleUpdate(bool system_install) {
     success = true;  // Nothing to; vacuous success.
   } else {
     success = LaunchProcessAndWaitWithTimeout(
-        cmd_string, base::TimeDelta::FromMilliseconds(kGoogleUpdateTimeoutMs));
+        cmd_string, base::Milliseconds(kGoogleUpdateTimeoutMs));
   }
   return success;
 }

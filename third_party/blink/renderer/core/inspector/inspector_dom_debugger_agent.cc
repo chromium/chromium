@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy_violation_type.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
 #include "third_party/blink/renderer/core/inspector/resolve_node.h"
@@ -287,7 +288,7 @@ void InspectorDOMDebuggerAgent::DidInvalidateStyleAttr(Node* node) {
 void InspectorDOMDebuggerAgent::DidInsertDOMNode(Node* node) {
   if (dom_breakpoints_.size()) {
     uint32_t mask =
-        dom_breakpoints_.at(InspectorDOMAgent::InnerParentNode(node));
+        FindBreakpointMask(InspectorDOMAgent::InnerParentNode(node));
     uint32_t inheritable_types_mask =
         (mask | (mask >> domBreakpointDerivedTypeShift)) &
         inheritableDOMBreakpointTypesMask;
@@ -390,7 +391,7 @@ Response InspectorDOMDebuggerAgent::setDOMBreakpoint(
     return response;
 
   uint32_t root_bit = 1 << type;
-  dom_breakpoints_.Set(node, dom_breakpoints_.at(node) | root_bit);
+  dom_breakpoints_.Set(node, FindBreakpointMask(node) | root_bit);
   if (root_bit & inheritableDOMBreakpointTypesMask) {
     for (Node* child = InspectorDOMAgent::InnerFirstChild(node); child;
          child = InspectorDOMAgent::InnerNextSibling(child))
@@ -414,7 +415,7 @@ Response InspectorDOMDebuggerAgent::removeDOMBreakpoint(
     return response;
 
   uint32_t root_bit = 1 << type;
-  uint32_t mask = dom_breakpoints_.at(node) & ~root_bit;
+  uint32_t mask = FindBreakpointMask(node) & ~root_bit;
   if (mask)
     dom_breakpoints_.Set(node, mask);
   else
@@ -526,6 +527,11 @@ void InspectorDOMDebuggerAgent::WillInsertDOMNode(Node* parent) {
     BreakProgramOnDOMEvent(parent, SubtreeModified, true);
 }
 
+void InspectorDOMDebuggerAgent::CharacterDataModified(CharacterData* node) {
+  if (HasBreakpoint(node, SubtreeModified))
+    BreakProgramOnDOMEvent(node, SubtreeModified, false);
+}
+
 void InspectorDOMDebuggerAgent::WillRemoveDOMNode(Node* node) {
   Node* parent_node = InspectorDOMAgent::InnerParentNode(node);
   if (HasBreakpoint(node, NodeRemoved))
@@ -561,7 +567,7 @@ void InspectorDOMDebuggerAgent::BreakProgramOnDOMEvent(Node* target,
     if (!insertion)
       breakpoint_owner = InspectorDOMAgent::InnerParentNode(target);
     DCHECK(breakpoint_owner);
-    while (!(dom_breakpoints_.at(breakpoint_owner) & (1 << breakpoint_type))) {
+    while (!(FindBreakpointMask(breakpoint_owner) & (1 << breakpoint_type))) {
       Node* parent_node = InspectorDOMAgent::InnerParentNode(breakpoint_owner);
       if (!parent_node)
         break;
@@ -584,18 +590,23 @@ void InspectorDOMDebuggerAgent::BreakProgramOnDOMEvent(Node* target,
       v8_inspector::StringView(json.data(), json.size()));
 }
 
-bool InspectorDOMDebuggerAgent::HasBreakpoint(Node* node, int type) {
+bool InspectorDOMDebuggerAgent::HasBreakpoint(Node* node, int type) const {
   if (!dom_agent_->Enabled())
     return false;
   uint32_t root_bit = 1 << type;
   uint32_t derived_bit = root_bit << domBreakpointDerivedTypeShift;
-  return dom_breakpoints_.at(node) & (root_bit | derived_bit);
+  return FindBreakpointMask(node) & (root_bit | derived_bit);
+}
+
+uint32_t InspectorDOMDebuggerAgent::FindBreakpointMask(Node* node) const {
+  auto it = dom_breakpoints_.find(node);
+  return it != dom_breakpoints_.end() ? it->value : 0;
 }
 
 void InspectorDOMDebuggerAgent::UpdateSubtreeBreakpoints(Node* node,
                                                          uint32_t root_mask,
                                                          bool set) {
-  uint32_t old_mask = dom_breakpoints_.at(node);
+  uint32_t old_mask = FindBreakpointMask(node);
   uint32_t derived_mask = root_mask << domBreakpointDerivedTypeShift;
   uint32_t new_mask = set ? old_mask | derived_mask : old_mask & ~derived_mask;
   if (new_mask)
@@ -793,12 +804,20 @@ void InspectorDOMDebuggerAgent::DidRemoveBreakpoint() {
 }
 
 void InspectorDOMDebuggerAgent::SetEnabled(bool enabled) {
-  enabled_.Set(enabled);
-  if (enabled)
+  if (enabled && !enabled_.Get()) {
     instrumenting_agents_->AddInspectorDOMDebuggerAgent(this);
-  else
+    dom_agent_->AddDOMListener(this);
+    enabled_.Set(true);
+  } else if (!enabled && enabled_.Get()) {
     instrumenting_agents_->RemoveInspectorDOMDebuggerAgent(this);
+    dom_agent_->RemoveDOMListener(this);
+    enabled_.Set(false);
+  }
 }
+
+void InspectorDOMDebuggerAgent::DidAddDocument(Document* document) {}
+
+void InspectorDOMDebuggerAgent::DidModifyDOMAttr(Element* element) {}
 
 void InspectorDOMDebuggerAgent::DidCommitLoadForLocalFrame(LocalFrame*) {
   dom_breakpoints_.clear();
@@ -828,15 +847,12 @@ void InspectorDOMDebuggerAgent::DidSuspendAudioContext() {
       true);
 }
 
-String ViolationTypeToString(
-    const ContentSecurityPolicy::ContentSecurityPolicyViolationType type) {
+String ViolationTypeToString(const ContentSecurityPolicyViolationType type) {
   switch (type) {
-    case ContentSecurityPolicy::ContentSecurityPolicyViolationType::
-        kTrustedTypesSinkViolation:
+    case ContentSecurityPolicyViolationType::kTrustedTypesSinkViolation:
       return protocol::DOMDebugger::CSPViolationTypeEnum::
           TrustedtypeSinkViolation;
-    case ContentSecurityPolicy::ContentSecurityPolicyViolationType::
-        kTrustedTypesPolicyViolation:
+    case ContentSecurityPolicyViolationType::kTrustedTypesPolicyViolation:
       return protocol::DOMDebugger::CSPViolationTypeEnum::
           TrustedtypePolicyViolation;
     default:
@@ -845,8 +861,7 @@ String ViolationTypeToString(
 }
 
 void InspectorDOMDebuggerAgent::OnContentSecurityPolicyViolation(
-    const ContentSecurityPolicy::ContentSecurityPolicyViolationType
-        violationType) {
+    const ContentSecurityPolicyViolationType violationType) {
   auto violationString = ViolationTypeToString(violationType);
   if (!csp_violation_breakpoints_.Get(violationString))
     return;

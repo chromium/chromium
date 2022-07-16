@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -28,16 +27,20 @@ using testing::_;
 class MockObserver : public PartnerBookmarksShim::Observer {
  public:
   MockObserver() {}
+
+  MockObserver(const MockObserver&) = delete;
+  MockObserver& operator=(const MockObserver&) = delete;
+
   MOCK_METHOD1(PartnerShimChanged, void(PartnerBookmarksShim*));
   MOCK_METHOD1(PartnerShimLoaded, void(PartnerBookmarksShim*));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockObserver);
 };
 
 class PartnerBookmarksShimTest : public testing::Test {
  public:
   PartnerBookmarksShimTest() = default;
+
+  PartnerBookmarksShimTest(const PartnerBookmarksShimTest&) = delete;
+  PartnerBookmarksShimTest& operator=(const PartnerBookmarksShimTest&) = delete;
 
   PartnerBookmarksShim* partner_bookmarks_shim() const {
     return PartnerBookmarksShim::BuildForBrowserContext(profile_.get());
@@ -65,9 +68,6 @@ class PartnerBookmarksShimTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   MockObserver observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PartnerBookmarksShimTest);
 };
 
 TEST_F(PartnerBookmarksShimTest, GetNodeByID) {

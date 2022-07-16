@@ -31,6 +31,10 @@ class Blending : public SurfaceObserver {
     surface_->AddSurfaceObserver(this);
     surface_->SetProperty(kSurfaceHasBlendingKey, true);
   }
+
+  Blending(const Blending&) = delete;
+  Blending& operator=(const Blending&) = delete;
+
   ~Blending() override {
     if (surface_) {
       surface_->RemoveSurfaceObserver(this);
@@ -58,8 +62,6 @@ class Blending : public SurfaceObserver {
 
  private:
   Surface* surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(Blending);
 };
 
 void blending_destroy(wl_client* client, wl_resource* resource) {

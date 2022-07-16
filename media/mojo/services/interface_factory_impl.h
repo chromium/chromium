@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -19,6 +18,7 @@
 #include "media/mojo/mojom/decryptor.mojom.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
+#include "media/mojo/mojom/media_log.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/mojo/services/deferred_destroy_unique_receiver_set.h"
@@ -41,6 +41,10 @@ class InterfaceFactoryImpl final
   InterfaceFactoryImpl(
       mojo::PendingRemote<mojom::FrameInterfaceFactory> frame_interfaces,
       MojoMediaClient* mojo_media_client);
+
+  InterfaceFactoryImpl(const InterfaceFactoryImpl&) = delete;
+  InterfaceFactoryImpl& operator=(const InterfaceFactoryImpl&) = delete;
+
   ~InterfaceFactoryImpl() final;
 
   // mojom::InterfaceFactory implementation.
@@ -71,6 +75,7 @@ class InterfaceFactoryImpl final
 #endif  // defined(OS_ANDROID)
 #if defined(OS_WIN)
   void CreateMediaFoundationRenderer(
+      mojo::PendingRemote<mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<mojom::Renderer> receiver,
       mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
           renderer_extension_receiver) final;
@@ -145,8 +150,6 @@ class InterfaceFactoryImpl final
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<InterfaceFactoryImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceFactoryImpl);
 };
 
 }  // namespace media

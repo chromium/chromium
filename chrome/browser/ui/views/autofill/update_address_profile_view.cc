@@ -16,6 +16,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -53,7 +54,7 @@ const gfx::VectorIcon& GetVectorIconForType(ServerFieldType type) {
 std::unique_ptr<views::View> CreateValuesView(
     const std::vector<ProfileValueDifference>& diff,
     bool are_new_values,
-    ui::NativeTheme::ColorId icon_color) {
+    ui::ColorId icon_color) {
   auto view = std::make_unique<views::View>();
   view->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -123,9 +124,8 @@ void AddValuesRow(views::GridLayout* layout,
                     /*h_align=*/views::GridLayout::LEADING,
                     /*v_align=*/views::GridLayout::LEADING);
   }
-  ui::NativeTheme::ColorId icon_color =
-      are_new_values ? ui::NativeTheme::kColorId_ProminentButtonColor
-                     : ui::NativeTheme::kColorId_SecondaryIconColor;
+  ui::ColorId icon_color = are_new_values ? ui::kColorButtonBackgroundProminent
+                                          : ui::kColorIconSecondary;
   layout->AddView(CreateValuesView(diff, are_new_values, icon_color),
                   /*col_span=*/1,
                   /*row_span=*/1,

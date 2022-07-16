@@ -46,13 +46,17 @@ class CORE_EXPORT InertEffect final : public AnimationEffect {
               const Timing&,
               bool paused,
               absl::optional<AnimationTimeDelta> inherited_time,
-              absl::optional<TimelinePhase> inherited_phase);
+              absl::optional<TimelinePhase> inherited_phase,
+              absl::optional<AnimationTimeDelta> timeline_duration,
+              double playback_rate);
 
   void Sample(HeapVector<Member<Interpolation>>&) const;
   KeyframeEffectModelBase* Model() const { return model_.Get(); }
   bool Paused() const { return paused_; }
 
   bool IsInertEffect() const final { return true; }
+
+  bool Affects(const PropertyHandle&) const override;
 
   void Trace(Visitor*) const override;
 
@@ -62,12 +66,15 @@ class CORE_EXPORT InertEffect final : public AnimationEffect {
       bool forwards,
       absl::optional<AnimationTimeDelta> inherited_time,
       AnimationTimeDelta time_to_next_iteration) const override;
+  absl::optional<AnimationTimeDelta> TimelineDuration() const override;
 
  private:
   Member<KeyframeEffectModelBase> model_;
   bool paused_;
   absl::optional<AnimationTimeDelta> inherited_time_;
   absl::optional<TimelinePhase> inherited_phase_;
+  absl::optional<AnimationTimeDelta> timeline_duration_;
+  double playback_rate_;
 };
 
 template <>

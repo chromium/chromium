@@ -36,6 +36,7 @@ enum MediaSessionAction {
   [MinVersion=11] kToggleCamera,
   [MinVersion=11] kHangUp,
   [MinVersion=12] kRaise,
+  [MinVersion=13] kSetMute,
 };
 
 [Stable, Extensible]
@@ -189,6 +190,9 @@ struct MediaSessionInfo {
 
   // Tracks whether the camera is turned on in WebRTC sessions.
   [MinVersion=11] CameraState camera_state;
+
+  // Tracks whether the media player is muted.
+  [MinVersion=12] bool muted;
 };
 
 // Contains debugging information about a MediaSession. This will be displayed
@@ -331,4 +335,7 @@ interface MediaSession {
   // Display the source of the MediaSession (e.g. show the tab or the
   // application).
   [MinVersion=12] Raise@21();
+
+  // Mute or unmute the media player.
+  [MinVersion=13] SetMute@22(bool mute);
 };

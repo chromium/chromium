@@ -31,6 +31,9 @@ class OAuthTokenGetterProxy : public OAuthTokenGetter {
   // sequence where this constructor is called.
   explicit OAuthTokenGetterProxy(base::WeakPtr<OAuthTokenGetter> token_getter);
 
+  OAuthTokenGetterProxy(const OAuthTokenGetterProxy&) = delete;
+  OAuthTokenGetterProxy& operator=(const OAuthTokenGetterProxy&) = delete;
+
   ~OAuthTokenGetterProxy() override;
 
   // OAuthTokenGetter overrides.
@@ -40,8 +43,6 @@ class OAuthTokenGetterProxy : public OAuthTokenGetter {
  private:
   base::WeakPtr<OAuthTokenGetter> token_getter_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuthTokenGetterProxy);
 };
 
 }  // namespace remoting

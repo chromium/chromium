@@ -37,6 +37,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ScopedInterfaceEndpointHandle {
 
   ScopedInterfaceEndpointHandle(ScopedInterfaceEndpointHandle&& other);
 
+  ScopedInterfaceEndpointHandle(const ScopedInterfaceEndpointHandle&) = delete;
+  ScopedInterfaceEndpointHandle& operator=(
+      const ScopedInterfaceEndpointHandle&) = delete;
+
   ~ScopedInterfaceEndpointHandle();
 
   ScopedInterfaceEndpointHandle& operator=(
@@ -113,8 +117,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ScopedInterfaceEndpointHandle {
   CreateGroupControllerGetter() const;
 
   scoped_refptr<State> state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedInterfaceEndpointHandle);
 };
 
 }  // namespace mojo

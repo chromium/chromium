@@ -11,7 +11,7 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -43,11 +43,11 @@ class ItemsBubbleControllerTest : public ::testing::Test {
         .WillByDefault(Return(nullptr));
 
     PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<
-                content::BrowserContext,
-                testing::StrictMock<password_manager::MockPasswordStore>>));
+        profile(), base::BindRepeating(
+                       &password_manager::BuildPasswordStoreInterface<
+                           content::BrowserContext,
+                           testing::StrictMock<
+                               password_manager::MockPasswordStoreInterface>>));
   }
 
   ~ItemsBubbleControllerTest() override = default;
@@ -59,8 +59,8 @@ class ItemsBubbleControllerTest : public ::testing::Test {
   ItemsBubbleController* controller() { return controller_.get(); }
   TestingProfile* profile() { return &profile_; }
 
-  password_manager::MockPasswordStore* GetStore() {
-    return static_cast<password_manager::MockPasswordStore*>(
+  password_manager::MockPasswordStoreInterface* GetStore() {
+    return static_cast<password_manager::MockPasswordStoreInterface*>(
         PasswordStoreFactory::GetInstance()
             ->GetForProfile(profile(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());

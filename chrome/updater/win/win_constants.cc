@@ -6,6 +6,8 @@
 
 namespace updater {
 
+const wchar_t kUpdaterProcessName[] = L"updater.exe";
+
 const wchar_t kGlobalPrefix[] = L"Global\\G";
 
 // TODO(crbug.com/1097297): need to add branding support.
@@ -29,6 +31,7 @@ const wchar_t kRegValueEnrollmentToken[] = L"EnrollmentToken\\";
 const wchar_t kRegKeyCompanyEnrollment[] = COMPANY_KEY L"Enrollment\\";
 const wchar_t kRegValueDmToken[] = L"dmtoken";
 
-const wchar_t kWindowsServiceName[] = L"UpdaterService";
+const wchar_t kWindowsServiceName[] = L"Service";
+const wchar_t kWindowsInternalServiceName[] = L"InternalService";
 
 }  // namespace updater

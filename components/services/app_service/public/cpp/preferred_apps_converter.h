@@ -46,8 +46,7 @@ extern const char kVersionKey[];
 // } ],
 // "version": 0}
 base::Value ConvertPreferredAppsToValue(
-    const PreferredAppsList::PreferredApps& preferred_apps,
-    bool upgraded_for_sharing = false);
+    const PreferredAppsList::PreferredApps& preferred_apps);
 
 // Parse the base::Value read from JSON file back to preferred apps struct.
 PreferredAppsList::PreferredApps ParseValueToPreferredApps(

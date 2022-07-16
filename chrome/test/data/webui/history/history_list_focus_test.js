@@ -8,7 +8,7 @@ import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-he
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
 import {createHistoryEntry, createHistoryInfo, polymerSelectAll} from 'chrome://test/history/test_util.js';
-import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
+import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 suite('<history-list>', function() {
   let app;

@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 
 #include "base/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -33,6 +35,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_class_properties.h"
 
 using content::WebContents;
 using security_state::SecurityLevel;
@@ -50,6 +53,7 @@ LocationIconView::LocationIconView(
 
   SetID(VIEW_ID_LOCATION_ICON);
   SetUpForAnimation();
+  SetProperty(views::kElementIdentifierKey, kLocationIconElementId);
 
   // Readability is guaranteed by the omnibox theme.
   label()->SetAutoColorReadabilityEnabled(false);
@@ -276,8 +280,8 @@ void LocationIconView::Update(bool suppress_animations) {
 
     // Show in-product help for the updated connection security icon.
     if (last_update_security_level_ == security_state::SECURE &&
-        base::FeatureList::IsEnabled(
-            omnibox::kUpdatedConnectionSecurityIndicators)) {
+        delegate_->GetLocationBarModel()
+            ->ShouldUseUpdatedConnectionSecurityIndicators()) {
       feature_engagement_tracker_->NotifyEvent(
           feature_engagement::events::
               kUpdatedConnectionSecurityIndicatorDisplayed);

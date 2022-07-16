@@ -48,7 +48,7 @@ class TaskSession final : public GarbageCollected<TaskSession> {
   class DocumentSession final : public GarbageCollected<DocumentSession> {
    public:
     // The callback for total_sent_nodes_ metrics.
-    using SentNodeCountCallback = base::RepeatingCallback<void(size_t)>;
+    using SentNodeCountCallback = base::RepeatingCallback<void(int)>;
 
     DocumentSession(const Document& document,
                     SentNodeCountCallback& call_back);
@@ -111,7 +111,7 @@ class TaskSession final : public GarbageCollected<TaskSession> {
 
     bool first_data_has_sent_ = false;
     // This is for the metrics to record the total node that has been sent.
-    size_t total_sent_nodes_ = 0;
+    int total_sent_nodes_ = 0;
     // Histogram could be disabed in low time resolution OS, see
     // base::TimeTicks::IsHighResolution and ContentCaptureTask.
     absl::optional<SentNodeCountCallback> callback_;

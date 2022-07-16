@@ -36,6 +36,10 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
+namespace display {
+struct ScreenInfo;
+}
+
 namespace blink {
 
 class LocalDOMWindow;
@@ -47,6 +51,10 @@ class CORE_EXPORT Screen : public EventTargetWithInlineData,
 
  public:
   explicit Screen(LocalDOMWindow*);
+
+  static bool AreWebExposedScreenPropertiesEqual(
+      const display::ScreenInfo& prev,
+      const display::ScreenInfo& current);
 
   virtual int height() const;
   virtual int width() const;

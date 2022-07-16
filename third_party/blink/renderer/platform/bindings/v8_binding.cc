@@ -30,7 +30,8 @@
 
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 
-#include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
@@ -75,5 +76,84 @@ String GetCurrentScriptUrl(int max_stack_depth) {
   }
   return String();
 }
+
+namespace bindings {
+
+void V8ObjectToPropertyDescriptor(v8::Isolate* isolate,
+                                  v8::Local<v8::Value> descriptor_object,
+                                  V8PropertyDescriptorBag& descriptor_bag,
+                                  ExceptionState& exception_state) {
+  // TODO(crbug.com/1261485): This function is the same as
+  // v8::internal::PropertyDescriptor::ToPropertyDescriptor.  Make the
+  // function exposed public and re-use it rather than re-implementing
+  // the same logic in Blink.
+
+  auto& desc = descriptor_bag;
+  desc = V8PropertyDescriptorBag();
+
+  if (!descriptor_object->IsObject()) {
+    exception_state.ThrowTypeError("Property description must be an object.");
+    return;
+  }
+
+  v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+  v8::Local<v8::Object> v8_desc = descriptor_object.As<v8::Object>();
+  v8::TryCatch try_catch(isolate);
+
+  auto get_value = [&](const char* property, bool& has,
+                       v8::Local<v8::Value>& value) -> bool {
+    const auto& v8_property = V8AtomicString(isolate, property);
+    if (!v8_desc->Has(current_context, v8_property).To(&has)) {
+      exception_state.RethrowV8Exception(try_catch.Exception());
+      return false;
+    }
+    if (has) {
+      if (!v8_desc->Get(current_context, v8_property).ToLocal(&value)) {
+        exception_state.RethrowV8Exception(try_catch.Exception());
+        return false;
+      }
+    } else {
+      value = v8::Undefined(isolate);
+    }
+    return true;
+  };
+
+  auto get_bool = [&](const char* property, bool& has, bool& value) -> bool {
+    v8::Local<v8::Value> v8_value;
+    if (!get_value(property, has, v8_value))
+      return false;
+    if (has) {
+      value = v8_value->ToBoolean(isolate)->Value();
+    }
+    return true;
+  };
+
+  if (!get_bool("enumerable", desc.has_enumerable, desc.enumerable))
+    return;
+
+  if (!get_bool("configurable", desc.has_configurable, desc.configurable))
+    return;
+
+  if (!get_value("value", desc.has_value, desc.value))
+    return;
+
+  if (!get_bool("writable", desc.has_writable, desc.writable))
+    return;
+
+  if (!get_value("get", desc.has_get, desc.get))
+    return;
+
+  if (!get_value("set", desc.has_set, desc.set))
+    return;
+
+  if ((desc.has_get || desc.has_set) && (desc.has_value || desc.has_writable)) {
+    exception_state.ThrowTypeError(
+        "Invalid property descriptor. Cannot both specify accessors and "
+        "a value or writable attribute");
+    return;
+  }
+}
+
+}  // namespace bindings
 
 }  // namespace blink

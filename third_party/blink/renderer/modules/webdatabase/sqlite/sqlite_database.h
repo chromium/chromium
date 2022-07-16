@@ -55,6 +55,10 @@ class SQLiteDatabase {
 
  public:
   SQLiteDatabase();
+
+  SQLiteDatabase(const SQLiteDatabase&) = delete;
+  SQLiteDatabase& operator=(const SQLiteDatabase&) = delete;
+
   ~SQLiteDatabase();
 
   bool Open(const String& filename);
@@ -150,8 +154,6 @@ class SQLiteDatabase {
   std::string open_error_message_;
 
   int last_changes_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(SQLiteDatabase);
 };
 
 }  // namespace blink

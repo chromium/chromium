@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_PREFERENCES_PREF_CHANGE_REGISTRAR_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 
 using base::android::JavaParamRef;
@@ -20,6 +19,11 @@ class PrefChangeRegistrarAndroid {
  public:
   PrefChangeRegistrarAndroid(JNIEnv* env, const JavaParamRef<jobject>& obj);
   void Destroy(JNIEnv*, const JavaParamRef<jobject>&);
+
+  PrefChangeRegistrarAndroid(const PrefChangeRegistrarAndroid&) = delete;
+  PrefChangeRegistrarAndroid& operator=(const PrefChangeRegistrarAndroid&) =
+      delete;
+
   void Add(JNIEnv* env,
            const JavaParamRef<jobject>& obj,
            const JavaParamRef<jstring>& j_preference);
@@ -34,8 +38,6 @@ class PrefChangeRegistrarAndroid {
   PrefChangeRegistrar pref_change_registrar_;
   ScopedJavaGlobalRef<jobject> pref_change_registrar_jobject_;
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefChangeRegistrarAndroid);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_PREFERENCES_PREF_CHANGE_REGISTRAR_ANDROID_H_

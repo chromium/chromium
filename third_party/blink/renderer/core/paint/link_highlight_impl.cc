@@ -185,8 +185,8 @@ void LinkHighlightImpl::StartHighlightAnimationIfNeeded() {
 
   is_animating_ = true;
   // FIXME: Should duration be configurable?
-  constexpr auto kFadeDuration = base::TimeDelta::FromMilliseconds(100);
-  constexpr auto kMinPreFadeDuration = base::TimeDelta::FromMilliseconds(100);
+  constexpr auto kFadeDuration = base::Milliseconds(100);
+  constexpr auto kMinPreFadeDuration = base::Milliseconds(100);
 
   auto curve = std::make_unique<CompositorFloatAnimationCurve>();
 
@@ -217,12 +217,14 @@ void LinkHighlightImpl::StartHighlightAnimationIfNeeded() {
       timing_function));
 
   auto keyframe_model = std::make_unique<CompositorKeyframeModel>(
-      *curve, compositor_target_property::OPACITY, 0, 0);
+      *curve, 0, 0,
+      CompositorKeyframeModel::TargetPropertyId(
+          compositor_target_property::OPACITY));
 
   compositor_animation_->AddKeyframeModel(std::move(keyframe_model));
 }
 
-void LinkHighlightImpl::NotifyAnimationFinished(double, int) {
+void LinkHighlightImpl::NotifyAnimationFinished(base::TimeDelta, int) {
   // Since WebViewImpl may hang on to us for a while, make sure we
   // release resources as soon as possible.
   ReleaseResources();
@@ -244,7 +246,7 @@ void LinkHighlightImpl::UpdateAfterPrePaint() {
     return;
   DCHECK(!object->GetFrameView()->ShouldThrottleRendering());
 
-  size_t fragment_count = 0;
+  wtf_size_t fragment_count = 0;
   for (const auto* fragment = &object->FirstFragment(); fragment;
        fragment = fragment->NextFragment())
     ++fragment_count;
@@ -267,7 +269,6 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
   DCHECK(object->GetFrameView());
   DCHECK(!object->GetFrameView()->ShouldThrottleRendering());
 
-  static const FloatSize rect_rounding_radii(3, 3);
   auto color = object->StyleRef().VisitedDependentColor(
       GetCSSPropertyWebkitTapHighlightColor());
 
@@ -306,35 +307,38 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
     Path new_path;
     for (auto& rect : rects) {
       FloatRect snapped_rect(PixelSnappedIntRect(rect));
-      if (use_rounded_rects)
-        new_path.AddRoundedRect(snapped_rect, rect_rounding_radii);
-      else
+      if (use_rounded_rects) {
+        constexpr float kRadius = 3;
+        new_path.AddRoundedRect(FloatRoundedRect(snapped_rect, kRadius));
+      } else {
         new_path.AddRect(snapped_rect);
+      }
     }
 
     DCHECK_LT(index, fragments_.size());
     auto& link_highlight_fragment = fragments_[index];
     link_highlight_fragment.SetColor(color);
 
-    auto bounding_rect = EnclosingIntRect(new_path.BoundingRect());
-    new_path.Translate(-FloatSize(ToIntSize(bounding_rect.Location())));
+    auto bounding_rect = gfx::ToEnclosingRect(new_path.BoundingRect());
+    new_path.Translate(-gfx::Vector2dF(bounding_rect.OffsetFromOrigin()));
 
     cc::Layer* layer = link_highlight_fragment.Layer();
     DCHECK(layer);
     if (link_highlight_fragment.GetPath() != new_path) {
       link_highlight_fragment.SetPath(new_path);
-      layer->SetBounds(gfx::Size(bounding_rect.Size()));
+      layer->SetBounds(bounding_rect.size());
       layer->SetNeedsDisplay();
     }
 
-    DEFINE_STATIC_LOCAL(LiteralDebugNameClient, debug_name_client,
-                        ("LinkHighlight"));
+    DEFINE_STATIC_LOCAL(
+        Persistent<LiteralDebugNameClient>, debug_name_client,
+        (MakeGarbageCollected<LiteralDebugNameClient>("LinkHighlight")));
 
     auto property_tree_state = fragment->LocalBorderBoxProperties().Unalias();
     property_tree_state.SetEffect(Effect());
-    RecordForeignLayer(context, debug_name_client,
+    RecordForeignLayer(context, *debug_name_client,
                        DisplayItem::kForeignLayerLinkHighlight, layer,
-                       bounding_rect.Location(), &property_tree_state);
+                       bounding_rect.origin(), &property_tree_state);
   }
 
   DCHECK_EQ(index, fragments_.size());

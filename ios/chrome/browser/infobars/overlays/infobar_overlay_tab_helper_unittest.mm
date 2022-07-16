@@ -38,7 +38,7 @@ class InfobarOverlayTabHelperTest : public PlatformTest {
         std::make_unique<web::FakeNavigationManager>());
     InfoBarManagerImpl::CreateForWebState(&web_state_);
     InfobarOverlayRequestInserter::CreateForWebState(
-        &web_state_, std::make_unique<FakeInfobarOverlayRequestFactory>());
+        &web_state_, &FakeInfobarOverlayRequestFactory);
     InfobarOverlayTabHelper::CreateForWebState(&web_state_);
   }
 

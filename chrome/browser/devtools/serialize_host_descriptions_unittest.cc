@@ -16,8 +16,9 @@ using ::testing::UnorderedElementsAre;
 namespace {
 
 HostDescriptionNode GetNodeWithLabel(const char* name, int label) {
-  HostDescriptionNode node = {name, std::string(), base::DictionaryValue()};
-  node.representation.SetInteger("label", label);
+  HostDescriptionNode node = {name, std::string(),
+                              base::Value(base::Value::Type::DICTIONARY)};
+  node.representation.SetIntKey("label", label);
   return node;
 }
 
@@ -54,9 +55,9 @@ MATCHER_P(EmptyNode, label, "") {
 }  // namespace
 
 TEST(SerializeHostDescriptionTest, Empty) {
-  base::ListValue result =
+  std::vector<base::Value> result =
       SerializeHostDescriptions(std::vector<HostDescriptionNode>(), "123");
-  EXPECT_THAT(result.base::Value::GetList(), ::testing::IsEmpty());
+  EXPECT_THAT(result, ::testing::IsEmpty());
 }
 
 // Test serializing a forest of stubs (no edges).
@@ -65,9 +66,9 @@ TEST(SerializeHostDescriptionTest, Stubs) {
   nodes.emplace_back(GetNodeWithLabel("1", 1));
   nodes.emplace_back(GetNodeWithLabel("2", 2));
   nodes.emplace_back(GetNodeWithLabel("3", 3));
-  base::ListValue result =
+  std::vector<base::Value> result =
       SerializeHostDescriptions(std::move(nodes), "children");
-  EXPECT_THAT(result.GetList(),
+  EXPECT_THAT(result,
               UnorderedElementsAre(EmptyNode(1), EmptyNode(2), EmptyNode(3)));
 }
 
@@ -80,12 +81,12 @@ TEST(SerializeHostDescriptionTest, SameNames) {
   nodes.emplace_back(GetNodeWithLabel("B", 4));
   nodes.emplace_back(GetNodeWithLabel("C", 5));
 
-  base::ListValue result =
+  std::vector<base::Value> result =
       SerializeHostDescriptions(std::move(nodes), "children");
 
   // Only the first node called "A", and both nodes "B" and "C" should be
   // returned.
-  EXPECT_THAT(result.GetList(),
+  EXPECT_THAT(result,
               UnorderedElementsAre(EmptyNode(1), EmptyNode(4), EmptyNode(5)));
 }
 
@@ -134,9 +135,8 @@ TEST(SerializeHostDescriptionTest, Forest) {
   nodes[1].parent_name = "0";
   nodes[3].parent_name = "0";
 
-  base::ListValue result =
+  std::vector<base::Value> result =
       SerializeHostDescriptions(std::move(nodes), "children");
 
-  EXPECT_THAT(result.base::Value::GetList(),
-              UnorderedElementsAre(Node0(), Node5()));
+  EXPECT_THAT(result, UnorderedElementsAre(Node0(), Node5()));
 }

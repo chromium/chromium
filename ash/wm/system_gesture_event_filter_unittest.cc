@@ -57,6 +57,9 @@ class MaxSizeNCFV : public views::NonClientFrameView {
  public:
   MaxSizeNCFV() = default;
 
+  MaxSizeNCFV(const MaxSizeNCFV&) = delete;
+  MaxSizeNCFV& operator=(const MaxSizeNCFV&) = delete;
+
  private:
   gfx::Size GetMaximumSize() const override { return gfx::Size(200, 200); }
   gfx::Rect GetBoundsForClientView() const override { return gfx::Rect(); }
@@ -76,8 +79,6 @@ class MaxSizeNCFV : public views::NonClientFrameView {
   void UpdateWindowIcon() override {}
   void UpdateWindowTitle() override {}
   void SizeConstraintsChanged() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(MaxSizeNCFV);
 };
 
 class MaxSizeWidgetDelegate : public views::WidgetDelegateView {
@@ -104,6 +105,11 @@ class MaxSizeWidgetDelegate : public views::WidgetDelegateView {
 class SystemGestureEventFilterTest : public AshTestBase {
  public:
   SystemGestureEventFilterTest() : AshTestBase() {}
+
+  SystemGestureEventFilterTest(const SystemGestureEventFilterTest&) = delete;
+  SystemGestureEventFilterTest& operator=(const SystemGestureEventFilterTest&) =
+      delete;
+
   ~SystemGestureEventFilterTest() override = default;
 
   // Overridden from AshTestBase:
@@ -127,9 +133,6 @@ class SystemGestureEventFilterTest : public AshTestBase {
     display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
         .SetFirstDisplayAsInternalDisplay();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemGestureEventFilterTest);
 };
 
 ui::GestureEvent* CreateGesture(ui::EventType type,
@@ -411,10 +414,9 @@ TEST_F(SystemGestureEventFilterTest, DragLeftNearEdgeSnaps) {
   int drag_x = work_area.x() + 20 - points[0].x();
   generator.GestureMultiFingerScroll(kTouchPoints, points, 120, kSteps, drag_x,
                                      0);
-
-  EXPECT_EQ(
-      GetDefaultLeftSnappedWindowBoundsInParent(toplevel_window).ToString(),
-      toplevel_window->bounds().ToString());
+  EXPECT_EQ(GetDefaultSnappedWindowBoundsInParent(toplevel_window,
+                                                  SnapViewType::kPrimary),
+            toplevel_window->bounds());
 }
 
 TEST_F(SystemGestureEventFilterTest, DragRightNearEdgeSnaps) {
@@ -440,9 +442,9 @@ TEST_F(SystemGestureEventFilterTest, DragRightNearEdgeSnaps) {
   int drag_x = work_area.right() - 20 - points[0].x();
   generator.GestureMultiFingerScroll(kTouchPoints, points, 120, kSteps, drag_x,
                                      0);
-  EXPECT_EQ(
-      GetDefaultRightSnappedWindowBoundsInParent(toplevel_window).ToString(),
-      toplevel_window->bounds().ToString());
+  EXPECT_EQ(GetDefaultSnappedWindowBoundsInParent(toplevel_window,
+                                                  SnapViewType::kSecondary),
+            toplevel_window->bounds());
 }
 
 // Tests that the window manager does not consume gesture events targeted to

@@ -243,4 +243,4 @@ void SearchEngineTabHelper::GenerateKeywordIfNecessary(
   url_service->Add(std::make_unique<TemplateURL>(data));
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchEngineTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchEngineTabHelper);

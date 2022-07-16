@@ -93,6 +93,11 @@ class MockServiceWorkerInstalledScriptsManager
           receiver)
       : receiver_(this, std::move(receiver)) {}
 
+  MockServiceWorkerInstalledScriptsManager(
+      const MockServiceWorkerInstalledScriptsManager&) = delete;
+  MockServiceWorkerInstalledScriptsManager& operator=(
+      const MockServiceWorkerInstalledScriptsManager&) = delete;
+
   blink::mojom::ServiceWorkerScriptInfoPtr WaitUntilTransferInstalledScript() {
     EXPECT_TRUE(incoming_script_info_.is_null());
     EXPECT_FALSE(transfer_installed_script_waiter_);
@@ -116,8 +121,6 @@ class MockServiceWorkerInstalledScriptsManager
   mojo::Receiver<blink::mojom::ServiceWorkerInstalledScriptsManager> receiver_;
   base::OnceClosure transfer_installed_script_waiter_;
   blink::mojom::ServiceWorkerScriptInfoPtr incoming_script_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockServiceWorkerInstalledScriptsManager);
 };
 
 class ServiceWorkerInstalledScriptsSenderTest : public testing::Test {

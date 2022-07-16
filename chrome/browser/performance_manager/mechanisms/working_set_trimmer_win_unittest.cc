@@ -73,6 +73,10 @@ MULTIPROCESS_TEST_MAIN(ProcessWithLargeWorkingSet) {
 }
 
 class WorkingSetTrimmerTest : public GraphTestHarness {
+ public:
+  WorkingSetTrimmerTest(const WorkingSetTrimmerTest&) = delete;
+  WorkingSetTrimmerTest& operator=(const WorkingSetTrimmerTest&) = delete;
+
  protected:
   WorkingSetTrimmerTest() = default;
 
@@ -110,9 +114,6 @@ class WorkingSetTrimmerTest : public GraphTestHarness {
   base::Process child_process_;
   TestNodeWrapper<ProcessNodeImpl> process_node_ =
       CreateNode<ProcessNodeImpl>();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WorkingSetTrimmerTest);
 };
 
 }  // namespace

@@ -9,6 +9,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/components/drivefs/drivefs_util.h"
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
 #include "base/bind.h"
@@ -45,19 +46,18 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chromeos/components/drivefs/drivefs_util.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/drive/chromeos/search_metadata.h"
 #include "components/drive/event_logger.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extension_registry.h"
-#include "google_apis/drive/auth_service.h"
+#include "google_apis/common/auth_service.h"
 #include "google_apis/drive/drive_api_url_generator.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -88,10 +88,8 @@ namespace {
 constexpr char kAvailableOfflinePropertyName[] = "availableOffline";
 
 // Thresholds for logging slow operations.
-constexpr base::TimeDelta kDriveSlowOperationThreshold =
-    base::TimeDelta::FromSeconds(5);
-constexpr base::TimeDelta kDriveVerySlowOperationThreshold =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kDriveSlowOperationThreshold = base::Seconds(5);
+constexpr base::TimeDelta kDriveVerySlowOperationThreshold = base::Minutes(1);
 
 class SingleEntryPropertiesGetterForFileSystemProvider {
  public:
@@ -437,7 +435,7 @@ FileManagerPrivateInternalGetEntryPropertiesFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   using api::file_manager_private_internal::GetEntryProperties::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -451,7 +449,7 @@ FileManagerPrivateInternalGetEntryPropertiesFunction::Run() {
   for (size_t i = 0; i < params->urls.size(); i++) {
     const GURL url = GURL(params->urls[i]);
     const storage::FileSystemURL file_system_url =
-        file_system_context->CrackURL(url);
+        file_system_context->CrackURLInFirstPartyContext(url);
     switch (file_system_url.type()) {
       case storage::kFileSystemTypeProvided:
         SingleEntryPropertiesGetterForFileSystemProvider::Start(
@@ -524,7 +522,7 @@ FileManagerPrivateInternalPinDriveFileFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   using extensions::api::file_manager_private_internal::PinDriveFile::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
@@ -532,7 +530,7 @@ FileManagerPrivateInternalPinDriveFileFunction::Run() {
           Profile::FromBrowserContext(browser_context()), render_frame_host());
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
-      file_system_context->CrackURL(url);
+      file_system_context->CrackURLInFirstPartyContext(url);
 
   switch (file_system_url.type()) {
     case storage::kFileSystemTypeDriveFs:
@@ -588,7 +586,7 @@ FileManagerPrivateSearchDriveFunction::FileManagerPrivateSearchDriveFunction() {
 
 ExtensionFunction::ResponseAction FileManagerPrivateSearchDriveFunction::Run() {
   using extensions::api::file_manager_private::SearchDrive::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!drive::util::GetIntegrationServiceByProfile(
@@ -643,7 +641,7 @@ FileManagerPrivateSearchDriveMetadataFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateSearchDriveMetadataFunction::Run() {
   using api::file_manager_private::SearchDriveMetadata::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -827,7 +825,7 @@ FileManagerPrivateInternalGetDownloadUrlFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetDownloadUrlFunction::Run() {
   using extensions::api::file_manager_private_internal::GetDownloadUrl::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
@@ -835,7 +833,7 @@ FileManagerPrivateInternalGetDownloadUrlFunction::Run() {
           Profile::FromBrowserContext(browser_context()), render_frame_host());
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
-      file_system_context->CrackURL(url);
+      file_system_context->CrackURLInFirstPartyContext(url);
 
   switch (file_system_url.type()) {
     case storage::kFileSystemTypeDriveFs:
@@ -921,7 +919,7 @@ void FileManagerPrivateInternalGetDownloadUrlFunction::OnGotMetadata(
 ExtensionFunction::ResponseAction
 FileManagerPrivateNotifyDriveDialogResultFunction::Run() {
   using api::file_manager_private::NotifyDriveDialogResult::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   file_manager::EventRouter* const event_router =

@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/modules/quota/deprecated_storage_info.h"
 
 #include "base/location.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -100,6 +101,10 @@ DeprecatedStorageQuota* DeprecatedStorageInfo::GetStorageQuota(
       }
       return temporary_storage_.Get();
     case kPersistent:
+      if (base::FeatureList::IsEnabled(
+              blink::features::kPersistentQuotaIsTemporaryQuota)) {
+        return GetStorageQuota(kTemporary, execution_context);
+      }
       if (!persistent_storage_) {
         persistent_storage_ = MakeGarbageCollected<DeprecatedStorageQuota>(
             DeprecatedStorageQuota::kPersistent, execution_context);

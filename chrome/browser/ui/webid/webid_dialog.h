@@ -26,7 +26,8 @@ using CloseCallback =
 // The interface for creating and controlling a platform-dependent WebIdDialog.
 class WebIdDialog {
  public:
-  static WebIdDialog* Create(content::WebContents* rp_web_contents);
+  static WebIdDialog* Create(content::WebContents* rp_web_contents,
+                             CloseCallback);
 
   // Creates and shows a confirmation dialog for initial permission. The
   // provided callback is called with appropriate status depending on whether
@@ -44,12 +45,9 @@ class WebIdDialog {
                                            PermissionCallback) = 0;
 
   // Creates and shows a window that loads the identity provider sign in page at
-  // the given URL. The provided callback is called when IDP has provided an
-  // id_token with the id_token a its argument, or when window is closed by user
-  // with an empty string as its argument.
+  // the given URL.
   virtual void ShowSigninPage(content::WebContents* idp_web_contents,
-                              const GURL& idp_signin_url,
-                              CloseCallback) = 0;
+                              const GURL& idp_signin_url) = 0;
 
   // Closes the sign in page. Calling the close callback that was provided
   // previously.

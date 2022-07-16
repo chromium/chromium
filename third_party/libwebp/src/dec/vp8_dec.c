@@ -335,7 +335,7 @@ int VP8GetHeaders(VP8Decoder* const dec, VP8Io* const io) {
     io->scaled_width = io->width;
     io->scaled_height = io->height;
 
-    io->mb_w = io->width;   // sanity check
+    io->mb_w = io->width;   // for soundness
     io->mb_h = io->height;  // ditto
 
     VP8ResetProba(&dec->proba_);

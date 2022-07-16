@@ -10,33 +10,44 @@ import("//third_party/protobuf/proto_library.gni")
 # events with several attached metrics.
 static_library("structured") {
   sources = [
-    "event_base.cc",
-    "event_base.h",
     "external_metrics.cc",
     "external_metrics.h",
-    "histogram_util.cc",
-    "histogram_util.h",
     "key_data.cc",
     "key_data.h",
     "persistent_proto.cc",
     "persistent_proto.h",
-    "recorder.cc",
-    "recorder.h",
-    "structured_metrics_features.cc",
-    "structured_metrics_features.h",
     "structured_metrics_provider.cc",
     "structured_metrics_provider.h",
   ]
 
-  public_deps = [ "//third_party/metrics_proto" ]
+  public_deps = [
+    ":common",
+    ":events",
+    "//third_party/metrics_proto",
+  ]
 
   deps = [
     ":storage",
     ":structured_events",
     "//base",
     "//components/metrics",
+    "//components/metrics/structured/mojom",
     "//components/prefs",
     "//crypto",
+  ]
+}
+
+static_library("events") {
+  sources = [
+    "enums.h",
+    "event.cc",
+    "event.h",
+    "structured_metrics_client.cc",
+    "structured_metrics_client.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/metrics_proto",
   ]
 }
 
@@ -54,6 +65,32 @@ proto_library("storage") {
   import_dirs = [ "//third_party/metrics_proto" ]
   proto_deps = [ "//third_party/metrics_proto" ]
   link_deps = [ "//third_party/metrics_proto" ]
+}
+
+# Sources used by all static libraries in this BUILD file.
+source_set("common") {
+  sources = [
+    "event_base.cc",
+    "event_base.h",
+    "histogram_util.cc",
+    "histogram_util.h",
+    "recorder.cc",
+    "recorder.h",
+    "structured_metrics_features.cc",
+    "structured_metrics_features.h",
+  ]
+
+  public_deps = [
+    ":events",
+    "//base",
+  ]
+
+  deps = [
+    ":storage",
+    ":structured_metrics_validator",
+    "//components/prefs",
+    "//third_party/metrics_proto",
+  ]
 }
 
 action("gen_structured_events") {
@@ -84,28 +121,136 @@ action("gen_structured_events") {
   ]
 }
 
+# TODO(crbug.com/1249222): Rename this to gen_structured_events and
+# delete old target once migration is complete.
+action("gen_structured_mojo_events") {
+  script = "//tools/metrics/structured/gen_mojo_events.py"
+
+  # Re-generate the outputs if the codegen code changes:
+  inputs = [
+    "//tools/metrics/structured/codegen.py",
+    "//tools/metrics/structured/gen_mojo_events.py",
+    "//tools/metrics/structured/model.py",
+    "//tools/metrics/structured/model_util.py",
+    "//tools/metrics/structured/templates_mojo_events.py",
+  ]
+  sources = [ "//tools/metrics/structured/structured.xml" ]
+
+  outdir = "$target_gen_dir"
+
+  outputs = [
+    outdir + "/structured_mojo_events.cc",
+    outdir + "/structured_mojo_events.h",
+  ]
+
+  args = [
+    "--input",
+    rebase_path(sources[0], root_build_dir),
+    "--output",
+    rebase_path(outdir, root_build_dir),
+  ]
+}
+
 static_library("structured_events") {
-  sources = get_target_outputs(":gen_structured_events")
+  sources = get_target_outputs(":gen_structured_events") +
+            get_target_outputs(":gen_structured_mojo_events")
 
   deps = [
+    ":common",
     ":gen_structured_events",
+    ":gen_structured_mojo_events",
     "//base",
+  ]
+}
+
+action("gen_structured_metrics_validator") {
+  script = "//tools/metrics/structured/gen_validator.py"
+
+  # Re-generate the outputs if the codegen code changes:
+  inputs = [
+    "//tools/metrics/structured/codegen.py",
+    "//tools/metrics/structured/gen_validator.py",
+    "//tools/metrics/structured/model.py",
+    "//tools/metrics/structured/model_util.py",
+    "//tools/metrics/structured/templates_validator.py",
+  ]
+  sources = [ "//tools/metrics/structured/structured.xml" ]
+
+  outdir = "$target_gen_dir"
+
+  outputs = [
+    outdir + "/structured_metrics_validator.cc",
+    outdir + "/structured_metrics_validator.h",
+  ]
+
+  args = [
+    "--input",
+    rebase_path(sources[0], root_build_dir),
+    "--output",
+    rebase_path(outdir, root_build_dir),
+  ]
+}
+
+static_library("structured_metrics_validator") {
+  sources = get_target_outputs(":gen_structured_metrics_validator") + [
+              "event_validator.h",
+              "event_validator.cc",
+              "project_validator.h",
+              "project_validator.cc",
+            ]
+
+  deps = [
+    ":events",
+    ":gen_structured_metrics_validator",
+    "//base",
+  ]
+}
+
+static_library("neutrino_logging") {
+  sources = [
+    "neutrino_logging.cc",
+    "neutrino_logging.h",
+  ]
+
+  deps = [
+    ":common",
+    ":structured_events",
+    "//base",
+  ]
+}
+
+static_library("neutrino_logging_util") {
+  sources = [
+    "neutrino_logging_util.cc",
+    "neutrino_logging_util.h",
+  ]
+
+  deps = [
+    ":neutrino_logging",
+    ":structured_events",
+    "//base",
+    "//components/metrics",
+    "//components/prefs",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "event_base_unittest.cc",
     "external_metrics_unittest.cc",
     "key_data_unittest.cc",
     "persistent_proto_unittest.cc",
     "structured_metrics_provider_unittest.cc",
+    "structured_mojo_events_unittest.cc",
   ]
 
   deps = [
+    ":events",
     ":storage",
     ":structured",
     ":structured_events",
+    ":structured_metrics_validator",
     "//base",
     "//base/test:test_support",
     "//components/prefs",
@@ -119,6 +264,7 @@ test("structured_metrics_unittests") {
     ":unit_tests",
     "//base",
     "//base/test:test_support",
+    "//components/metrics/structured/mojom:unit_tests",
     "//components/test:run_all_unittests",
   ]
 }

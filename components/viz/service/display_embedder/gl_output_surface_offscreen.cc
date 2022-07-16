@@ -129,8 +129,8 @@ void GLOutputSurfaceOffscreen::OnSwapBuffersComplete(
   auto now = base::TimeTicks::Now();
   client()->DidReceiveSwapBuffersAck({.swap_start = now},
                                      /*release_fence=*/gfx::GpuFenceHandle());
-  client()->DidReceivePresentationFeedback(gfx::PresentationFeedback(
-      now, base::TimeDelta::FromMilliseconds(16), /*flags=*/0));
+  client()->DidReceivePresentationFeedback(
+      gfx::PresentationFeedback(now, base::Milliseconds(16), /*flags=*/0));
 
   if (needs_swap_size_notifications())
     client()->DidSwapWithSize(size_);

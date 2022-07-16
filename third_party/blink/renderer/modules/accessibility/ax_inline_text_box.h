@@ -45,6 +45,9 @@ class AXInlineTextBox final : public AXObject {
  public:
   AXInlineTextBox(scoped_refptr<AbstractInlineTextBox>, AXObjectCacheImpl&);
 
+  AXInlineTextBox(const AXInlineTextBox&) = delete;
+  AXInlineTextBox& operator=(const AXInlineTextBox&) = delete;
+
   // AXObject overrides.
   RGBA32 GetColor() const override { return Color::kTransparent; }
   String GetName(ax::mojom::blink::NameFrom&,
@@ -86,8 +89,6 @@ class AXInlineTextBox final : public AXObject {
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
 
   scoped_refptr<AbstractInlineTextBox> inline_text_box_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXInlineTextBox);
 };
 
 }  // namespace blink

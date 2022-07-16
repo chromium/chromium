@@ -13,7 +13,6 @@
 #include <windows.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/win/registry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -50,6 +49,9 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
     SPIN,
     LAST
   };
+
+  NativeThemeWin(const NativeThemeWin&) = delete;
+  NativeThemeWin& operator=(const NativeThemeWin&) = delete;
 
   // Closes cached theme handles so we can unload the DLL or update our UI
   // for a theme change.
@@ -216,8 +218,6 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   // contrast, preferred color scheme, and preferred contrast.
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
       color_scheme_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeThemeWin);
 };
 
 }  // namespace ui

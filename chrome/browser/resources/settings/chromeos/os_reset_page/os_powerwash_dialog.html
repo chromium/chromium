@@ -6,11 +6,11 @@
   :host cr-checkbox {
     --cr-checkbox-label-color: var(--cr-secondary-text-color);
     --cr-checkbox-label-padding-start: 12px;
-    --cr-checkbox-unchecked-box-color: #888888;
+    --cr-checkbox-unchecked-box-color: var(--cros-icon-color-primary);
   }
 
   iron-list {
-    background-color: #E8EAED61;
+    background-color: var(--cros-textfield-background-color);
     border-radius: 4px;
     margin-top: 8px;
     padding-bottom: 8px;
@@ -40,10 +40,10 @@
   <template is="dom-if" if="[[shouldShowESimWarning_]]" restamp>
     <div slot="title">$i18n{powerwashDialogESimWarningTitle}</div>
     <div slot="body">
-      <settings-localized-link
+      <localized-link
           localized-string="$i18n{powerwashDialogESimWarning}"
           on-link-clicked="onMobileSettingsLinkClicked_">
-      </settings-localized-link>
+      </localized-link>
       <div id="profilesListContainer">
         <div id="profilesListTitle">
           $i18n{powerwashDialogESimListTitle}
@@ -71,10 +71,10 @@
     <div slot="title">$i18n{powerwashDialogTitle}</div>
     <div slot="body">
       <div id="powerwashContainer">
-        <settings-localized-link
+        <localized-link
           localized-string="$i18n{powerwashDialogExplanation}"
           link-url="$i18nRaw{powerwashLearnMoreUrl}">
-        </settings-localized-link>
+        </localized-link>
       </div>
     </div>
   </template>

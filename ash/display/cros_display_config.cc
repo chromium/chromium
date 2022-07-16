@@ -347,11 +347,9 @@ mojom::DisplayUnitInfoPtr GetDisplayUnitInfo(const display::Display& display,
   info->display_zoom_factor = display_info.zoom_factor();
   if (has_active_mode) {
     auto zoom_levels = display::GetDisplayZoomFactors(active_mode);
-    // Ensure that the current zoom factor is in the list.
-    display::InsertDsfIntoList(&zoom_levels, display_info.zoom_factor());
+    info->available_display_zoom_factors.reserve(zoom_levels.size());
     info->available_display_zoom_factors.assign(zoom_levels.begin(),
                                                 zoom_levels.end());
-
   } else {
     info->available_display_zoom_factors.push_back(display_info.zoom_factor());
   }
@@ -519,6 +517,9 @@ class CrosDisplayConfig::ObserverImpl
     Shell::Get()->screen_orientation_controller()->AddObserver(this);
   }
 
+  ObserverImpl(const ObserverImpl&) = delete;
+  ObserverImpl& operator=(const ObserverImpl&) = delete;
+
   ~ObserverImpl() override {
     Shell::Get()->screen_orientation_controller()->RemoveObserver(this);
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
@@ -563,8 +564,6 @@ class CrosDisplayConfig::ObserverImpl
 
   mojo::AssociatedRemoteSet<mojom::CrosDisplayConfigObserver> observers_;
   display::ScopedDisplayObserver display_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ObserverImpl);
 };
 
 // -----------------------------------------------------------------------------
@@ -870,7 +869,6 @@ void CrosDisplayConfig::OverscanCalibration(
       std::move(callback).Run(
           mojom::DisplayConfigResult::kInvalidOperationError);
       return;
-      return;
   }
   std::move(callback).Run(mojom::DisplayConfigResult::kSuccess);
 }
@@ -1005,8 +1003,6 @@ OverscanCalibrator* CrosDisplayConfig::GetOverscanCalibrator(
 }
 
 void CrosDisplayConfig::HighlightDisplay(int64_t display_id) {
-  DCHECK(base::FeatureList::IsEnabled(features::kDisplayIdentification));
-
   Shell::Get()->display_highlight_controller()->SetHighlightedDisplay(
       display_id);
 }

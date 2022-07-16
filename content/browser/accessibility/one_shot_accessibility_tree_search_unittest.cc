@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
@@ -40,6 +39,12 @@ class TestBrowserAccessibilityManager : public BrowserAccessibilityManager {
 class OneShotAccessibilityTreeSearchTest : public testing::Test {
  public:
   OneShotAccessibilityTreeSearchTest() = default;
+
+  OneShotAccessibilityTreeSearchTest(
+      const OneShotAccessibilityTreeSearchTest&) = delete;
+  OneShotAccessibilityTreeSearchTest& operator=(
+      const OneShotAccessibilityTreeSearchTest&) = delete;
+
   ~OneShotAccessibilityTreeSearchTest() override = default;
 
  protected:
@@ -48,9 +53,6 @@ class OneShotAccessibilityTreeSearchTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<BrowserAccessibilityManager> tree_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OneShotAccessibilityTreeSearchTest);
 };
 
 void OneShotAccessibilityTreeSearchTest::SetUp() {

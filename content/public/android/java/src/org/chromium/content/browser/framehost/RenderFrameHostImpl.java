@@ -23,6 +23,10 @@ import org.chromium.mojo.system.impl.CoreImpl;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * The RenderFrameHostImpl Java wrapper to allow communicating with the native RenderFrameHost
  * object.
@@ -104,6 +108,14 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
+    public List<RenderFrameHost> getAllRenderFrameHosts() {
+        if (mNativeRenderFrameHostAndroid == 0) return null;
+        RenderFrameHost[] frames = RenderFrameHostImplJni.get().getAllRenderFrameHosts(
+                mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this);
+        return Collections.unmodifiableList(Arrays.asList(frames));
+    }
+
+    @Override
     public boolean isFeatureEnabled(@PermissionsPolicyFeature int feature) {
         return mNativeRenderFrameHostAndroid != 0
                 && RenderFrameHostImplJni.get().isFeatureEnabled(
@@ -128,8 +140,8 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
-    public boolean signalModalCloseWatcherIfActive() {
-        return RenderFrameHostImplJni.get().signalModalCloseWatcherIfActive(
+    public boolean signalCloseWatcherIfActive() {
+        return RenderFrameHostImplJni.get().signalCloseWatcherIfActive(
                 mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this);
     }
 
@@ -177,14 +189,15 @@ public class RenderFrameHostImpl implements RenderFrameHost {
 
     @Override
     public WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
-            String relyingPartyId, Origin effectiveOrigin) {
+            String relyingPartyId, Origin effectiveOrigin,
+            boolean isPaymentCredentialGetAssertion) {
         if (mNativeRenderFrameHostAndroid == 0) {
             return new WebAuthSecurityChecksResults(
                     AuthenticatorStatus.UNKNOWN_ERROR, false /*unused*/);
         }
         return RenderFrameHostImplJni.get().performGetAssertionWebAuthSecurityChecks(
                 mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this, relyingPartyId,
-                effectiveOrigin);
+                effectiveOrigin, isPaymentCredentialGetAssertion);
     }
 
     @CalledByNative
@@ -222,12 +235,14 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         void getCanonicalUrlForSharing(long nativeRenderFrameHostAndroid,
                 RenderFrameHostImpl caller, Callback<GURL> callback);
+        RenderFrameHost[] getAllRenderFrameHosts(
+                long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         boolean isFeatureEnabled(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller,
                 @PermissionsPolicyFeature int feature);
         UnguessableToken getAndroidOverlayRoutingToken(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         void notifyUserActivation(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
-        boolean signalModalCloseWatcherIfActive(
+        boolean signalCloseWatcherIfActive(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         boolean isRenderFrameCreated(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         void getInterfaceToRendererFrame(long nativeRenderFrameHostAndroid,
@@ -237,7 +252,8 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         boolean isProcessBlocked(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         RenderFrameHost.WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller,
-                String relyingPartyId, Origin effectiveOrigin);
+                String relyingPartyId, Origin effectiveOrigin,
+                boolean isPaymentCredentialGetAssertion);
         int performMakeCredentialWebAuthSecurityChecks(long nativeRenderFrameHostAndroid,
                 RenderFrameHostImpl caller, String relyingPartyId, Origin effectiveOrigin,
                 boolean isPaymentCredentialCreation);

@@ -179,11 +179,6 @@ if (use_v4l2_codec || use_vaapi) {
       deps += [ "//media/gpu/vaapi:common" ]
     }
 
-    # TODO(crbug.com/1029942): consider removing use_x11 support here. This is
-    # no longer needed.
-    if (use_x11) {
-      deps += [ "//ui/gfx/x" ]
-    }
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }
@@ -219,11 +214,6 @@ test("jpeg_decode_accelerator_unittest") {
     deps += [ "//media/gpu/vaapi:common" ]
   }
 
-  # TODO(crbug.com/1029942): consider removing use_x11 support here. This is no
-  # longer needed.
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
-  }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }

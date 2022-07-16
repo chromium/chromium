@@ -23,26 +23,25 @@ class DCOMPTextureWrapper {
  public:
   virtual ~DCOMPTextureWrapper() = default;
 
-  // Initializes the DCOMPTexture and returns success/failure in `init_cb`.
-  // TODO(xhwang): Pass `DCOMPSurfaceHandleBoundCB` in `SetDCOMPSurface()`.
-  using DCOMPSurfaceHandleBoundCB = base::OnceCallback<void(bool)>;
-  using CompositionParamsReceivedCB = base::RepeatingCallback<void(gfx::Rect)>;
-  using InitCB = base::OnceCallback<void(bool)>;
-  virtual void Initialize(const gfx::Size& natural_size,
-                          DCOMPSurfaceHandleBoundCB dcomp_handle_bound_cb,
-                          CompositionParamsReceivedCB comp_params_received_cb,
-                          InitCB init_cb) = 0;
+  // Initializes the DCOMPTexture and returns success/failure.
+  using OutputRectChangeCB = base::RepeatingCallback<void(gfx::Rect)>;
+  virtual bool Initialize(const gfx::Size& output_size,
+                          OutputRectChangeCB output_rect_change_cb) = 0;
 
-  // Called whenever the video's natural size changes.
-  virtual void UpdateTextureSize(const gfx::Size& natural_size) = 0;
+  // Called whenever the video's output size changes.
+  virtual void UpdateTextureSize(const gfx::Size& output_size) = 0;
 
-  // Sets the DirectComposition surface identified by `surface_token`.
-  virtual void SetDCOMPSurface(const base::UnguessableToken& surface_token) = 0;
+  // Sets the DirectComposition surface identified by `token`.
+  using SetDCOMPSurfaceHandleCB = base::OnceCallback<void(bool)>;
+  virtual void SetDCOMPSurfaceHandle(
+      const base::UnguessableToken& token,
+      SetDCOMPSurfaceHandleCB set_dcomp_surface_handle_cb) = 0;
 
   // Creates VideoFrame which will be returned in `create_video_frame_cb`.
   using CreateVideoFrameCB =
       base::OnceCallback<void(scoped_refptr<VideoFrame>)>;
-  virtual void CreateVideoFrame(CreateVideoFrameCB create_video_frame_cb) = 0;
+  virtual void CreateVideoFrame(const gfx::Size& natural_size,
+                                CreateVideoFrameCB create_video_frame_cb) = 0;
 };
 
 }  // namespace media

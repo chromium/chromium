@@ -6,6 +6,7 @@
 #define IPC_PARAM_TRAITS_MACROS_H_
 
 #include <string>
+#include <type_traits>
 
 // Traits generation for structs.
 #define IPC_STRUCT_TRAITS_BEGIN(struct_name)                 \
@@ -41,11 +42,12 @@
 // Convenience macro for defining enumerated type traits for types which are
 // range-checked by the IPC system to be in the range of minvalue..maxvalue
 // inclusive. This macro should not need to be subsequently redefined.
-// TODO(tsepez): Cast to std::underlying_type<>::type once that is permitted.
-#define IPC_ENUM_TRAITS_MIN_MAX_VALUE(type, minvalue, maxvalue)  \
-  IPC_ENUM_TRAITS_VALIDATE( \
-      type, (static_cast<int>(value) >= static_cast<int>(minvalue) && \
-             static_cast<int>(value) <= static_cast<int>(maxvalue)))
+#define IPC_ENUM_TRAITS_MIN_MAX_VALUE(typ, minvalue, maxvalue)            \
+  IPC_ENUM_TRAITS_VALIDATE(                                               \
+      typ, (static_cast<std::underlying_type<typ>::type>(value) >=        \
+                static_cast<std::underlying_type<typ>::type>(minvalue) && \
+            static_cast<std::underlying_type<typ>::type>(value) <=        \
+                static_cast<std::underlying_type<typ>::type>(maxvalue)))
 
 // Traits generation for enums. This macro may be redefined later.
 #define IPC_ENUM_TRAITS_VALIDATE(enum_name, validation_expression) \

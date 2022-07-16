@@ -33,6 +33,10 @@ class WebViewBrowserState final : public web::BrowserState {
   explicit WebViewBrowserState(
       bool off_the_record,
       WebViewBrowserState* recording_browser_state = nullptr);
+
+  WebViewBrowserState(const WebViewBrowserState&) = delete;
+  WebViewBrowserState& operator=(const WebViewBrowserState&) = delete;
+
   ~WebViewBrowserState() override;
 
   // web::BrowserState implementation.
@@ -74,8 +78,6 @@ class WebViewBrowserState final : public web::BrowserState {
 
   // Handles browser downloads.
   std::unique_ptr<WebViewDownloadManager> download_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewBrowserState);
 };
 
 }  // namespace ios_web_view

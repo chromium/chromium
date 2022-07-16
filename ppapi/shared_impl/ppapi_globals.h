@@ -46,6 +46,9 @@ class PPAPI_SHARED_EXPORT PpapiGlobals {
   struct PerThreadForTest {};
   explicit PpapiGlobals(PerThreadForTest);
 
+  PpapiGlobals(const PpapiGlobals&) = delete;
+  PpapiGlobals& operator=(const PpapiGlobals&) = delete;
+
   virtual ~PpapiGlobals();
 
   // Getter for the global singleton.
@@ -127,8 +130,6 @@ class PPAPI_SHARED_EXPORT PpapiGlobals {
   static PpapiGlobals* GetThreadLocalPointer();
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PpapiGlobals);
 };
 
 }  // namespace ppapi

@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -70,7 +69,7 @@ std::string DesktopStreamsRegistryImpl::RegisterStream(
       FROM_HERE,
       base::BindOnce(&DesktopStreamsRegistryImpl::CleanupStream,
                      base::Unretained(this), id),
-      base::TimeDelta::FromSeconds(kApprovedStreamTimeToLiveSeconds));
+      base::Seconds(kApprovedStreamTimeToLiveSeconds));
 
   return id;
 }

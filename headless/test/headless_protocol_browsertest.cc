@@ -233,7 +233,14 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeHistoryNavigation,
                        "emulation/virtual-time-history-navigation.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeHistoryNavigationSameDoc,
                        "emulation/virtual-time-history-navigation-same-doc.js")
-HEADLESS_PROTOCOL_TEST(VirtualTimeFetchKeepalive,
+
+// Flaky on Mac. TODO(crbug.com/1164173): Re-enable.
+#if defined(OS_MAC)
+#define MAYBE_VirtualTimeFetchKeepalive DISABLED_VirtualTimeFetchKeepalive
+#else
+#define MAYBE_VirtualTimeFetchKeepalive VirtualTimeFetchKeepalive
+#endif
+HEADLESS_PROTOCOL_TEST(MAYBE_VirtualTimeFetchKeepalive,
                        "emulation/virtual-time-fetch-keepalive.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeDisposeWhileRunning,
                        "emulation/virtual-time-dispose-while-running.js")

@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_CELLULAR_SETUP_CELLULAR_SETUP_BASE_H_
 #define CHROMEOS_SERVICES_CELLULAR_SETUP_CELLULAR_SETUP_BASE_H_
 
-#include "base/macros.h"
 #include "chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -19,6 +18,9 @@ namespace cellular_setup {
 // derived classes should override them.
 class CellularSetupBase : public mojom::CellularSetup {
  public:
+  CellularSetupBase(const CellularSetupBase&) = delete;
+  CellularSetupBase& operator=(const CellularSetupBase&) = delete;
+
   ~CellularSetupBase() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::CellularSetup> receiver);
@@ -28,8 +30,6 @@ class CellularSetupBase : public mojom::CellularSetup {
 
  private:
   mojo::ReceiverSet<mojom::CellularSetup> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CellularSetupBase);
 };
 
 }  // namespace cellular_setup

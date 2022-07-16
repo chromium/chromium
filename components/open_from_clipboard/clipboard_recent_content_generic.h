@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_GENERIC_H_
 #define COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_GENERIC_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "ui/gfx/image/image.h"
@@ -21,6 +20,11 @@
 class ClipboardRecentContentGeneric : public ClipboardRecentContent {
  public:
   ClipboardRecentContentGeneric();
+
+  ClipboardRecentContentGeneric(const ClipboardRecentContentGeneric&) = delete;
+  ClipboardRecentContentGeneric& operator=(
+      const ClipboardRecentContentGeneric&) = delete;
+
   ~ClipboardRecentContentGeneric() override;
 
   // ClipboardRecentContent implementation.
@@ -39,8 +43,6 @@ class ClipboardRecentContentGeneric : public ClipboardRecentContent {
  private:
   // Returns true if the URL is appropriate to be suggested.
   static bool IsAppropriateSuggestion(const GURL& url);
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardRecentContentGeneric);
 };
 
 #endif  // COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_GENERIC_H_

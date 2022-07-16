@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/hash/sha1.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace base {
@@ -35,6 +34,10 @@ class SupervisedUserDenylist {
   };
 
   SupervisedUserDenylist();
+
+  SupervisedUserDenylist(const SupervisedUserDenylist&) = delete;
+  SupervisedUserDenylist& operator=(const SupervisedUserDenylist&) = delete;
+
   ~SupervisedUserDenylist();
 
   // Asynchronously read a denylist from the given file, replacing any previous
@@ -54,8 +57,6 @@ class SupervisedUserDenylist {
   std::vector<Hash> host_hashes_;
 
   base::WeakPtrFactory<SupervisedUserDenylist> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserDenylist);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_DENYLIST_H_

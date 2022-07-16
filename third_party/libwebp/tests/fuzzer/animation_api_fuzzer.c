@@ -15,9 +15,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "./fuzz_utils.h"
-#include "webp/decode.h"
-#include "webp/demux.h"
-#include "webp/mux_types.h"
+#include "src/webp/decode.h"
+#include "src/webp/demux.h"
+#include "src/webp/mux_types.h"
 
 int LLVMFuzzerTestOneInput(const uint8_t* const data, size_t size) {
   WebPData webp_data;

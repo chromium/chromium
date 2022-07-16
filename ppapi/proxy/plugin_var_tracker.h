@@ -35,6 +35,10 @@ class PluginDispatcher;
 class PPAPI_PROXY_EXPORT PluginVarTracker : public VarTracker {
  public:
   PluginVarTracker();
+
+  PluginVarTracker(const PluginVarTracker&) = delete;
+  PluginVarTracker& operator=(const PluginVarTracker&) = delete;
+
   ~PluginVarTracker() override;
 
   // Manages tracking for receiving a VARTYPE_OBJECT from the remote side
@@ -203,8 +207,6 @@ class PPAPI_PROXY_EXPORT PluginVarTracker : public VarTracker {
   typedef std::map<void*, PluginImplementedVar>
       UserDataToPluginImplementedVarMap;
   UserDataToPluginImplementedVarMap user_data_to_plugin_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVarTracker);
 };
 
 }  // namespace proxy

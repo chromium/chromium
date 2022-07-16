@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/browser_process.h"
@@ -33,6 +32,9 @@ class UserScriptListener::Throttle
  public:
   explicit Throttle(content::NavigationHandle* navigation_handle)
       : NavigationThrottle(navigation_handle) {}
+
+  Throttle(const Throttle&) = delete;
+  Throttle& operator=(const Throttle&) = delete;
 
   void ResumeIfDeferred() {
     DCHECK(should_defer_);
@@ -64,8 +66,6 @@ class UserScriptListener::Throttle
   bool should_defer_ = true;
   bool did_defer_ = false;
   std::unique_ptr<base::ElapsedTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Throttle);
 };
 
 struct UserScriptListener::ProfileData {
@@ -193,6 +193,9 @@ void UserScriptListener::ReplaceURLPatterns(content::BrowserContext* context,
 
 void UserScriptListener::CollectURLPatterns(const Extension* extension,
                                             URLPatterns* patterns) {
+  // TODO(crbug.com/1239040): Retrieve the appropriate URL patterns to withhold
+  // requests which match an extension's set of persistent dynamic scripts on
+  // startup.
   for (const std::unique_ptr<UserScript>& script :
        ContentScriptsInfo::GetContentScripts(extension)) {
     patterns->insert(patterns->end(), script->url_patterns().begin(),

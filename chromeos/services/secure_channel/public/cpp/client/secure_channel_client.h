@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_medium.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
@@ -53,6 +52,9 @@ class NearbyConnector;
 // devices over BLE. In the future, more connection mediums will be offered.
 class SecureChannelClient {
  public:
+  SecureChannelClient(const SecureChannelClient&) = delete;
+  SecureChannelClient& operator=(const SecureChannelClient&) = delete;
+
   virtual ~SecureChannelClient() = default;
 
   virtual std::unique_ptr<ConnectionAttempt> InitiateConnectionToDevice(
@@ -71,9 +73,6 @@ class SecureChannelClient {
 
  protected:
   SecureChannelClient() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelClient);
 };
 
 }  // namespace secure_channel

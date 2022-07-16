@@ -40,6 +40,11 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
  public:
   static VizCompositorThreadRunnerWebView* GetInstance();
 
+  VizCompositorThreadRunnerWebView(const VizCompositorThreadRunnerWebView&) =
+      delete;
+  VizCompositorThreadRunnerWebView& operator=(
+      const VizCompositorThreadRunnerWebView&) = delete;
+
   viz::FrameSinkManagerImpl* GetFrameSinkManager();
 
   // Must be called from the TaskQueueWebView thread. |task| is allowed to call
@@ -80,8 +85,6 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   std::unique_ptr<viz::ServerSharedBitmapManager> server_shared_bitmap_manager_;
   std::unique_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
   viz::GpuServiceImpl* gpu_service_impl_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(VizCompositorThreadRunnerWebView);
 };
 
 }  // namespace android_webview

@@ -13,7 +13,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_util.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/timer/mock_timer.h"
 #include "extensions/common/constants.h"
@@ -35,6 +34,12 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
  public:
   DemoSessionMetricsRecorderTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  DemoSessionMetricsRecorderTest(const DemoSessionMetricsRecorderTest&) =
+      delete;
+  DemoSessionMetricsRecorderTest& operator=(
+      const DemoSessionMetricsRecorderTest&) = delete;
+
   ~DemoSessionMetricsRecorderTest() override = default;
 
   // AshTestBase:
@@ -153,9 +158,6 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
 
   // Owned by metics_recorder_.
   base::MockRepeatingTimer* mock_timer_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DemoSessionMetricsRecorderTest);
 };
 
 // Verify samples are correct when one app window is active.
@@ -197,7 +199,7 @@ TEST_F(DemoSessionMetricsRecorderTest, BrowserWindows) {
 TEST_F(DemoSessionMetricsRecorderTest, AppTypes) {
   std::unique_ptr<aura::Window> browser_window = CreateBrowserWindow();
   std::unique_ptr<aura::Window> chrome_app_window =
-      CreateChromeAppWindow(extension_misc::kCameraAppId);
+      CreateChromeAppWindow(extension_misc::kCalculatorAppId);
   std::unique_ptr<aura::Window> hosted_app_browser_window =
       CreateHostedAppBrowserWindow(extension_misc::kYoutubeAppId);
   std::unique_ptr<aura::Window> arc_window =
@@ -215,8 +217,8 @@ TEST_F(DemoSessionMetricsRecorderTest, AppTypes) {
   FireTimer();
   SendUserActivity();
   histogram_tester_->ExpectBucketCount(
-      "DemoMode.ActiveApp", DemoSessionMetricsRecorder::DemoModeApp::kCamera,
-      2);
+      "DemoMode.ActiveApp",
+      DemoSessionMetricsRecorder::DemoModeApp::kCalculator, 2);
 
   wm::ActivateWindow(hosted_app_browser_window.get());
   FireTimer();
@@ -291,7 +293,7 @@ TEST_F(DemoSessionMetricsRecorderTest, ActiveAppAfterDelayedArcPackageName) {
 // Verify popup windows are categorized as kOtherWindow.
 TEST_F(DemoSessionMetricsRecorderTest, PopupWindows) {
   std::unique_ptr<aura::Window> chrome_app_window =
-      CreateChromeAppWindow(extension_misc::kCameraAppId);
+      CreateChromeAppWindow(extension_misc::kCalculatorAppId);
   std::unique_ptr<aura::Window> popup_window = CreatePopupWindow();
 
   wm::ActivateWindow(chrome_app_window.get());
@@ -305,8 +307,8 @@ TEST_F(DemoSessionMetricsRecorderTest, PopupWindows) {
   SendUserActivity();
 
   histogram_tester_->ExpectBucketCount(
-      "DemoMode.ActiveApp", DemoSessionMetricsRecorder::DemoModeApp::kCamera,
-      5);
+      "DemoMode.ActiveApp",
+      DemoSessionMetricsRecorder::DemoModeApp::kCalculator, 5);
   histogram_tester_->ExpectBucketCount(
       "DemoMode.ActiveApp",
       DemoSessionMetricsRecorder::DemoModeApp::kOtherWindow, 3);
@@ -340,7 +342,7 @@ TEST_F(DemoSessionMetricsRecorderTest, OtherApps) {
 // Verify samples are discarded after no user activity.
 TEST_F(DemoSessionMetricsRecorderTest, DiscardAfterInactivity) {
   std::unique_ptr<aura::Window> chrome_app_window =
-      CreateChromeAppWindow(extension_misc::kCameraAppId);
+      CreateChromeAppWindow(extension_misc::kCalculatorAppId);
   std::unique_ptr<aura::Window> arc_window =
       CreateChromeAppWindow("com.google.Photos");
 
@@ -351,8 +353,8 @@ TEST_F(DemoSessionMetricsRecorderTest, DiscardAfterInactivity) {
   SendUserActivity();
 
   histogram_tester_->ExpectUniqueSample(
-      "DemoMode.ActiveApp", DemoSessionMetricsRecorder::DemoModeApp::kCamera,
-      5);
+      "DemoMode.ActiveApp",
+      DemoSessionMetricsRecorder::DemoModeApp::kCalculator, 5);
   ClearHistograms();
 
   // Have no user activity for 20 seconds.
@@ -367,7 +369,7 @@ TEST_F(DemoSessionMetricsRecorderTest, DiscardAfterInactivity) {
 // Verify sample collection resumes after user activity.
 TEST_F(DemoSessionMetricsRecorderTest, ResumeAfterActivity) {
   std::unique_ptr<aura::Window> chrome_app_window =
-      CreateChromeAppWindow(extension_misc::kCameraAppId);
+      CreateChromeAppWindow(extension_misc::kCalculatorAppId);
 
   wm::ActivateWindow(chrome_app_window.get());
 
@@ -384,14 +386,14 @@ TEST_F(DemoSessionMetricsRecorderTest, ResumeAfterActivity) {
     FireTimer();
   SendUserActivity();
   histogram_tester_->ExpectUniqueSample(
-      "DemoMode.ActiveApp", DemoSessionMetricsRecorder::DemoModeApp::kCamera,
-      5);
+      "DemoMode.ActiveApp",
+      DemoSessionMetricsRecorder::DemoModeApp::kCalculator, 5);
 }
 
 // Verify window activation during idle time doesn't trigger reporting.
 TEST_F(DemoSessionMetricsRecorderTest, ActivateWindowWhenIdle) {
   std::unique_ptr<aura::Window> chrome_app_window =
-      CreateChromeAppWindow(extension_misc::kCameraAppId);
+      CreateChromeAppWindow(extension_misc::kCalculatorAppId);
   std::unique_ptr<aura::Window> chrome_app_window2 =
       CreateChromeAppWindow(extension_misc::kGoogleKeepAppId);
 
@@ -411,7 +413,7 @@ TEST_F(DemoSessionMetricsRecorderTest, ActivateWindowWhenIdle) {
 
 TEST_F(DemoSessionMetricsRecorderTest, RepeatedUserActivity) {
   std::unique_ptr<aura::Window> chrome_app_window =
-      CreateChromeAppWindow(extension_misc::kCameraAppId);
+      CreateChromeAppWindow(extension_misc::kCalculatorAppId);
   std::unique_ptr<aura::Window> arc_window =
       CreateArcWindow("com.google.Photos");
 
@@ -437,8 +439,8 @@ TEST_F(DemoSessionMetricsRecorderTest, RepeatedUserActivity) {
   SendUserActivity();
 
   histogram_tester_->ExpectUniqueSample(
-      "DemoMode.ActiveApp", DemoSessionMetricsRecorder::DemoModeApp::kCamera,
-      3);
+      "DemoMode.ActiveApp",
+      DemoSessionMetricsRecorder::DemoModeApp::kCalculator, 3);
 }
 
 // Verify remaining samples are recorded on exit.
@@ -509,7 +511,7 @@ TEST_F(DemoSessionMetricsRecorderTest, UniqueAppsLaunchedOnDeletion) {
   // Activate each window twice.  Despite activating each twice,
   // the count should only be incremented once per unique app.
   std::unique_ptr<aura::Window> chrome_app_window =
-      CreateChromeAppWindow(extension_misc::kCameraAppId);
+      CreateChromeAppWindow(extension_misc::kCalculatorAppId);
   wm::ActivateWindow(chrome_app_window.get());
   wm::DeactivateWindow(chrome_app_window.get());
   wm::ActivateWindow(chrome_app_window.get());
@@ -606,7 +608,7 @@ TEST_F(DemoSessionMetricsRecorderTest, AppLaunched) {
 
   // Chrome apps
   std::unique_ptr<aura::Window> chrome_app_window_1 =
-      CreateChromeAppWindow(extension_misc::kCameraAppId);
+      CreateChromeAppWindow(extension_misc::kCalculatorAppId);
   wm::ActivateWindow(chrome_app_window_1.get());
   wm::DeactivateWindow(chrome_app_window_1.get());
   wm::ActivateWindow(chrome_app_window_1.get());
@@ -654,8 +656,8 @@ TEST_F(DemoSessionMetricsRecorderTest, AppLaunched) {
       "DemoMode.AppLaunched", DemoSessionMetricsRecorder::DemoModeApp::kBrowser,
       1);
   histogram_tester_->ExpectBucketCount(
-      "DemoMode.AppLaunched", DemoSessionMetricsRecorder::DemoModeApp::kCamera,
-      1);
+      "DemoMode.AppLaunched",
+      DemoSessionMetricsRecorder::DemoModeApp::kCalculator, 1);
   // We should see 2 "other chrome apps"
   histogram_tester_->ExpectBucketCount(
       "DemoMode.AppLaunched",
@@ -677,14 +679,14 @@ TEST_F(DemoSessionMetricsRecorderTest, DwellTime) {
   // Simulate user activity for 10 seconds.
   SendUserActivity();
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   SendUserActivity();
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   SendUserActivity();
 
   // Simulate a session "timing out" after 60 seconds.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(60));
+  task_environment()->FastForwardBy(base::Seconds(60));
   DeleteMetricsRecorder();
 
   // The recorded dwell time should be 10 seconds.

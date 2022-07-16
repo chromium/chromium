@@ -25,6 +25,9 @@ class TimeZoneMonitorMac : public TimeZoneMonitor {
                     }];
   }
 
+  TimeZoneMonitorMac(const TimeZoneMonitorMac&) = delete;
+  TimeZoneMonitorMac& operator=(const TimeZoneMonitorMac&) = delete;
+
   ~TimeZoneMonitorMac() override {
     NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
     [nc removeObserver:notification_observer_];
@@ -32,8 +35,6 @@ class TimeZoneMonitorMac : public TimeZoneMonitor {
 
  private:
   id notification_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeZoneMonitorMac);
 };
 
 // static

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -95,6 +94,10 @@ class CertificateReportingService : public KeyedService {
   class BoundedReportList {
    public:
     explicit BoundedReportList(size_t max_size);
+
+    BoundedReportList(const BoundedReportList&) = delete;
+    BoundedReportList& operator=(const BoundedReportList&) = delete;
+
     ~BoundedReportList();
 
     void Add(const Report& report);
@@ -111,8 +114,6 @@ class CertificateReportingService : public KeyedService {
 
     std::vector<Report> items_;
     base::ThreadChecker thread_checker_;
-
-    DISALLOW_COPY_AND_ASSIGN(BoundedReportList);
   };
 
   // Class that handles report uploads and implements the upload retry logic.
@@ -123,6 +124,10 @@ class CertificateReportingService : public KeyedService {
              base::Clock* const clock,
              base::TimeDelta report_ttl,
              bool retries_enabled);
+
+    Reporter(const Reporter&) = delete;
+    Reporter& operator=(const Reporter&) = delete;
+
     ~Reporter();
 
     // Sends a report. If the send fails, the report will be added to the retry
@@ -166,8 +171,6 @@ class CertificateReportingService : public KeyedService {
     base::OnceClosure no_in_flight_reports_;
 
     base::WeakPtrFactory<Reporter> weak_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(Reporter);
   };
 
   // Public for testing.
@@ -183,6 +186,10 @@ class CertificateReportingService : public KeyedService {
       base::TimeDelta max_report_age,
       base::Clock* clock,
       const base::RepeatingClosure& reset_callback);
+
+  CertificateReportingService(const CertificateReportingService&) = delete;
+  CertificateReportingService& operator=(const CertificateReportingService&) =
+      delete;
 
   ~CertificateReportingService() override;
 
@@ -239,8 +246,6 @@ class CertificateReportingService : public KeyedService {
   // Encryption parameters.
   uint8_t* server_public_key_;
   uint32_t server_public_key_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateReportingService);
 };
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_CERTIFICATE_REPORTING_SERVICE_H_

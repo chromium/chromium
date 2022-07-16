@@ -47,6 +47,10 @@ class CrowdDenyPreloadDataTest : public testing::Test {
   using SiteReputation = chrome_browser_crowd_deny::SiteReputation;
 
   CrowdDenyPreloadDataTest() {}
+
+  CrowdDenyPreloadDataTest(const CrowdDenyPreloadDataTest&) = delete;
+  CrowdDenyPreloadDataTest& operator=(const CrowdDenyPreloadDataTest&) = delete;
+
   ~CrowdDenyPreloadDataTest() override = default;
 
  protected:
@@ -139,8 +143,6 @@ class CrowdDenyPreloadDataTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_dir_;
   CrowdDenyPreloadData preload_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrowdDenyPreloadDataTest);
 };
 
 TEST_F(CrowdDenyPreloadDataTest, NoData) {

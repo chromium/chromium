@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/ui/find_bar/find_bar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -228,9 +227,7 @@ const CGFloat kButtonLength = 44;
     SetA11yLabelAndUiAutomationName(_previousButton,
                                     IDS_FIND_IN_PAGE_PREVIOUS_TOOLTIP,
                                     kFindInPagePreviousButtonId);
-    if (@available(iOS 13.4, *)) {
-        _previousButton.pointerInteractionEnabled = YES;
-    }
+    _previousButton.pointerInteractionEnabled = YES;
   }
 
   return _previousButton;
@@ -247,9 +244,7 @@ const CGFloat kButtonLength = 44;
     _nextButton.translatesAutoresizingMaskIntoConstraints = NO;
     SetA11yLabelAndUiAutomationName(_nextButton, IDS_FIND_IN_PAGE_NEXT_TOOLTIP,
                                     kFindInPageNextButtonId);
-    if (@available(iOS 13.4, *)) {
-        _nextButton.pointerInteractionEnabled = YES;
-    }
+    _nextButton.pointerInteractionEnabled = YES;
   }
 
   return _nextButton;
@@ -264,9 +259,7 @@ const CGFloat kButtonLength = 44;
     _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
     _closeButton.accessibilityIdentifier = kFindInPageCloseButtonId;
     _closeButton.titleLabel.font = [UIFont systemFontOfSize:kButtonFontSize];
-    if (@available(iOS 13.4, *)) {
-        _closeButton.pointerInteractionEnabled = YES;
-    }
+    _closeButton.pointerInteractionEnabled = YES;
   }
 
   return _closeButton;

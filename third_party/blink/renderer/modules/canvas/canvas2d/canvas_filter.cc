@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilterdictionary_canvasfilterdictionaryarray.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_operation_resolver.h"
 
@@ -13,19 +12,16 @@ namespace blink {
 CanvasFilter::CanvasFilter(FilterOperations filter_operations)
     : filter_operations_(filter_operations) {}
 
-CanvasFilter* CanvasFilter::Create(
-    const V8UnionCanvasFilterDictionaryOrCanvasFilterDictionaryArray* init,
-    ExceptionState& exception_state) {
-  HeapVector<Member<CanvasFilterDictionary>> filter_array;
+CanvasFilter* CanvasFilter::Create(const V8CanvasFilterInput* init,
+                                   ExceptionState& exception_state) {
+  HeapVector<ScriptValue> filter_array;
 
   switch (init->GetContentType()) {
-    case V8UnionCanvasFilterDictionaryOrCanvasFilterDictionaryArray::
-        ContentType::kCanvasFilterDictionary:
-      filter_array.push_back(init->GetAsCanvasFilterDictionary());
+    case V8CanvasFilterInput::ContentType::kObject:
+      filter_array.push_back(init->GetAsObject());
       break;
-    case V8UnionCanvasFilterDictionaryOrCanvasFilterDictionaryArray::
-        ContentType::kCanvasFilterDictionaryArray:
-      filter_array = init->GetAsCanvasFilterDictionaryArray();
+    case V8CanvasFilterInput::ContentType::kObjectArray:
+      filter_array = init->GetAsObjectArray();
       break;
   }
 

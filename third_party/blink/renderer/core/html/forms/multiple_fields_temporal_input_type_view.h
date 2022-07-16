@@ -94,6 +94,7 @@ class MultipleFieldsTemporalInputTypeView final
 
   // InputTypeView functions
   void Blur() final;
+  void OpenPopupView() override;
   void ClosePopupView() override;
   bool HasOpenedPopup() const override;
   void CustomStyleForLayoutObject(ComputedStyle& style) override;

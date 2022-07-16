@@ -20,6 +20,10 @@ class DelayedResponseProvider : public ResponseProvider {
   DelayedResponseProvider(
       std::unique_ptr<web::ResponseProvider> delayed_provider,
       double delay);
+
+  DelayedResponseProvider(const DelayedResponseProvider&) = delete;
+  DelayedResponseProvider& operator=(const DelayedResponseProvider&) = delete;
+
   ~DelayedResponseProvider() override;
 
   // Forwards to |delayed_provider_|.
@@ -33,8 +37,6 @@ class DelayedResponseProvider : public ResponseProvider {
  private:
   std::unique_ptr<web::ResponseProvider> delayed_provider_;
   double delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayedResponseProvider);
 };
 
 }  // namespace web

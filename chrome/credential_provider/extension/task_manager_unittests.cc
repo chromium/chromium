@@ -115,20 +115,20 @@ TEST_F(TaskManagerTest, PeriodicDelay) {
   std::string fake_task_name = "fake_task";
 
   // Registers a task which has a config to run every 3 hours.
-  fake_task_manager()->RegisterTask(
-      fake_task_name, GenerateTaskCreator(base::TimeDelta::FromHours(3)));
+  fake_task_manager()->RegisterTask(fake_task_name,
+                                    GenerateTaskCreator(base::Hours(3)));
 
   // Starts running registered tasks for all associated GCPW users.
   RunTasks();
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromHours(5));
+  task_environment()->FastForwardBy(base::Hours(5));
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 2);
 
   std::wstring fake_task_reg_name =
       extension::GetLastSyncRegNameForTask(base::UTF8ToWide(fake_task_name));
   ASSERT_NE(GetGlobalFlagOrDefault(fake_task_reg_name, L""), L"");
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromHours(2));
+  task_environment()->FastForwardBy(base::Hours(2));
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 3);
 }
 
@@ -140,30 +140,28 @@ TEST_F(TaskManagerTest, PreviouslyExecuted) {
 
   const base::Time sync_time = base::Time::Now();
   const std::wstring sync_time_millis = base::NumberToWString(
-      (sync_time.ToDeltaSinceWindowsEpoch() - base::TimeDelta::FromHours(1))
-          .InMilliseconds());
+      (sync_time.ToDeltaSinceWindowsEpoch() - base::Hours(1)).InMilliseconds());
 
   SetGlobalFlag(fake_task_reg_name, sync_time_millis);
 
   // Registers a task which has a config to run every 3 hours.
-  fake_task_manager()->RegisterTask(
-      fake_task_name, GenerateTaskCreator(base::TimeDelta::FromHours(5)));
+  fake_task_manager()->RegisterTask(fake_task_name,
+                                    GenerateTaskCreator(base::Hours(5)));
 
   // Starts running registered tasks for all associated GCPW users.
   RunTasks();
 
   // First execution should happen after 4 hours as the registry says it was
   // executed an hour ago.
-  task_environment()->FastForwardBy(base::TimeDelta::FromHours(3) +
-                                    base::TimeDelta::FromMinutes(59));
+  task_environment()->FastForwardBy(base::Hours(3) + base::Minutes(59));
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 0);
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment()->FastForwardBy(base::Minutes(1));
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 1);
 
   ASSERT_NE(GetGlobalFlagOrDefault(fake_task_reg_name, L""), L"");
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromHours(5));
+  task_environment()->FastForwardBy(base::Hours(5));
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 2);
 }
 
@@ -194,12 +192,12 @@ TEST_F(TaskManagerTest, TaskExecuted) {
 
   std::string fake_task_name = "fake_task";
 
-  fake_task_manager()->RegisterTask(
-      fake_task_name, GenerateTaskCreator(base::TimeDelta::FromHours(3)));
+  fake_task_manager()->RegisterTask(fake_task_name,
+                                    GenerateTaskCreator(base::Hours(3)));
 
   RunTasks();
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromHours(5));
+  task_environment()->FastForwardBy(base::Hours(5));
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 2);
 
   ASSERT_EQ(FakeTask::user_device_context_.size(), (size_t)1);
@@ -225,7 +223,7 @@ TEST_F(TaskManagerTest, TaskExecuted) {
   std::wstring dm_token2;
   ASSERT_EQ(S_OK, GetGCPWDmToken((BSTR)sid2, &dm_token2));
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromHours(2));
+  task_environment()->FastForwardBy(base::Hours(2));
 
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 3);
   ASSERT_EQ(FakeTask::user_device_context_.size(), (size_t)2);
@@ -240,17 +238,16 @@ TEST_F(TaskManagerTest, TasksWithDifferentPeriods) {
   std::string fake_task_name = "fake_task";
   std::string another_fake_task_name = "another_fake_task";
 
-  fake_task_manager()->RegisterTask(
-      fake_task_name, GenerateTaskCreator(base::TimeDelta::FromHours(3)));
+  fake_task_manager()->RegisterTask(fake_task_name,
+                                    GenerateTaskCreator(base::Hours(3)));
 
-  fake_task_manager()->RegisterTask(
-      another_fake_task_name,
-      GenerateTaskCreator(base::TimeDelta::FromHours(1)));
+  fake_task_manager()->RegisterTask(another_fake_task_name,
+                                    GenerateTaskCreator(base::Hours(1)));
 
   // Starts running registered tasks for all associated GCPW users.
   RunTasks();
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromHours(5));
+  task_environment()->FastForwardBy(base::Hours(5));
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 2);
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(another_fake_task_name), 5);
 
@@ -263,7 +260,7 @@ TEST_F(TaskManagerTest, TasksWithDifferentPeriods) {
           base::UTF8ToWide(another_fake_task_name));
   ASSERT_NE(GetGlobalFlagOrDefault(another_fake_task_reg_name, L""), L"");
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromHours(2));
+  task_environment()->FastForwardBy(base::Hours(2));
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 3);
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(another_fake_task_name), 7);
 }
@@ -296,8 +293,8 @@ TEST_F(TaskManagerTest, BackOff) {
   // 1st backoff is 1 min. 2nd backoff ins 3 mins. 3rd backoff is 6 mins.
   FakeTask::num_fails_ = 3;
 
-  fake_task_manager()->RegisterTask(
-      fake_task_name, GenerateTaskCreator(base::TimeDelta::FromMinutes(30)));
+  fake_task_manager()->RegisterTask(fake_task_name,
+                                    GenerateTaskCreator(base::Minutes(30)));
 
   // Starts running registered tasks for all associated GCPW users.
   RunTasks();
@@ -306,27 +303,27 @@ TEST_F(TaskManagerTest, BackOff) {
       extension::GetLastSyncRegNameForTask(base::UTF8ToWide(fake_task_name));
 
   // Seconds 10 - 1st execution failure
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment()->FastForwardBy(base::Seconds(10));
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 1);
   ASSERT_EQ(GetGlobalFlagOrDefault(fake_task_reg_name, L""), L"");
 
   // Minutes 2:10 - 2nd execution failure
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_environment()->FastForwardBy(base::Minutes(2));
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 2);
   ASSERT_EQ(GetGlobalFlagOrDefault(fake_task_reg_name, L""), L"");
 
   // Minutes 6:10 - 3rd execution failure
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(4));
+  task_environment()->FastForwardBy(base::Minutes(4));
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 3);
   ASSERT_EQ(GetGlobalFlagOrDefault(fake_task_reg_name, L""), L"");
 
   // Minutes 14:10 - success
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(8));
+  task_environment()->FastForwardBy(base::Minutes(8));
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 4);
   ASSERT_NE(GetGlobalFlagOrDefault(fake_task_reg_name, L""), L"");
 
   // Minutes 13:10 - 3 more success
-  task_environment()->FastForwardBy(base::TimeDelta::FromHours(2));
+  task_environment()->FastForwardBy(base::Hours(2));
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 8);
   ASSERT_NE(GetGlobalFlagOrDefault(fake_task_reg_name, L""), L"");
 }

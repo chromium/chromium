@@ -16,7 +16,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -169,6 +168,10 @@ class MenuItem {
            bool enabled,
            Type type,
            const ContextList& contexts);
+
+  MenuItem(const MenuItem&) = delete;
+  MenuItem& operator=(const MenuItem&) = delete;
+
   virtual ~MenuItem();
 
   // Simple accessor methods.
@@ -214,12 +217,12 @@ class MenuItem {
   bool SetChecked(bool checked);
 
   // Converts to Value for serialization to preferences.
-  std::unique_ptr<base::DictionaryValue> ToValue() const;
+  base::Value ToValue() const;
 
   // Returns a new MenuItem created from |value|, or NULL if there is
   // an error.
   static std::unique_ptr<MenuItem> Populate(const std::string& extension_id,
-                                            const base::DictionaryValue& value,
+                                            const base::Value& value,
                                             std::string* error);
 
   // Sets any document and target URL patterns from |properties|.
@@ -279,8 +282,6 @@ class MenuItem {
 
   // Any children this item may have.
   OwnedList children_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuItem);
 };
 
 // This class keeps track of menu items added by extensions.
@@ -300,6 +301,10 @@ class MenuManager : public ProfileObserver,
   };
 
   MenuManager(content::BrowserContext* context, StateStore* store_);
+
+  MenuManager(const MenuManager&) = delete;
+  MenuManager& operator=(const MenuManager&) = delete;
+
   ~MenuManager() override;
 
   // Convenience function to get the MenuManager for a browser context.
@@ -430,8 +435,6 @@ class MenuManager : public ProfileObserver,
   StateStore* store_;
 
   base::ObserverList<TestObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuManager);
 };
 
 }  // namespace extensions

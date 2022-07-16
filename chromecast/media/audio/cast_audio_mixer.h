@@ -26,6 +26,10 @@ class CastAudioManager;
 class CastAudioMixer : public ::media::AudioOutputStream::AudioSourceCallback {
  public:
   explicit CastAudioMixer(CastAudioManager* audio_manager);
+
+  CastAudioMixer(const CastAudioMixer&) = delete;
+  CastAudioMixer& operator=(const CastAudioMixer&) = delete;
+
   ~CastAudioMixer() override;
 
   virtual ::media::AudioOutputStream* MakeStream(
@@ -57,7 +61,6 @@ class CastAudioMixer : public ::media::AudioOutputStream::AudioSourceCallback {
   ::media::AudioOutputStream* output_stream_;
 
   THREAD_CHECKER(audio_thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(CastAudioMixer);
 };
 
 }  // namespace media

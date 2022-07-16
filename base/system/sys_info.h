@@ -33,6 +33,8 @@ class BASE_EXPORT SysInfo {
   static int NumberOfProcessors();
 
   // Return the number of bytes of physical memory on the current machine.
+  // If low-end device mode is manually enabled via command line flag, this
+  // will return the lesser of the actual physical memory, or 512MB.
   static int64_t AmountOfPhysicalMemory();
 
   // Return the number of bytes of current available physical memory on the
@@ -207,7 +209,7 @@ class BASE_EXPORT SysInfo {
   //   true when memory <= 512MB on Android N and earlier.
   // This is not the same as "low-memory" and will be false on a large number of
   // <=1GB pre-O Android devices. See: |detectLowEndDevice| in SysUtils.java.
-  // On Desktop this returns true when memory <= 512MB.
+  // On Desktop this returns true when memory <= 2GB.
   static bool IsLowEndDevice();
 
  private:

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "content/common/content_export.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
@@ -28,6 +28,11 @@ class CONTENT_EXPORT ConditionalCacheDeletionHelper {
   ConditionalCacheDeletionHelper(
       disk_cache::Backend* cache,
       base::RepeatingCallback<bool(const disk_cache::Entry*)> condition);
+
+  ConditionalCacheDeletionHelper(const ConditionalCacheDeletionHelper&) =
+      delete;
+  ConditionalCacheDeletionHelper& operator=(
+      const ConditionalCacheDeletionHelper&) = delete;
 
   // A convenience method to create a condition matching cache entries whose
   // last modified time is between |begin_time| (inclusively), |end_time|
@@ -66,8 +71,6 @@ class CONTENT_EXPORT ConditionalCacheDeletionHelper {
 
   std::unique_ptr<disk_cache::Backend::Iterator> iterator_;
   disk_cache::Entry* previous_entry_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConditionalCacheDeletionHelper);
 };
 
 }  // namespace content

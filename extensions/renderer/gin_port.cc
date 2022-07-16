@@ -16,6 +16,9 @@
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/object_template_builder.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 
@@ -154,8 +157,8 @@ void GinPort::PostMessageHandler(gin::Arguments* arguments,
   }
 
   std::string error;
-  std::unique_ptr<Message> message =
-      messaging_util::MessageFromV8(context, v8_message, &error);
+  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+      context, v8_message, port_id_.serialization_format, &error);
   // NOTE(devlin): JS-based bindings just log to the console here and return,
   // rather than throwing an error. But it really seems like it should be an
   // error. Let's see how this goes.

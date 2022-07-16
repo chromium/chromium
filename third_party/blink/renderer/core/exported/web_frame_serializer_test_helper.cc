@@ -52,18 +52,20 @@ String GenerateMHTMLHelper(WebLocalFrameImpl* frame,
   if (!only_body_parts) {
     WebThreadSafeData header_result = WebFrameSerializer::GenerateMHTMLHeader(
         boundary, frame, &mhtml_delegate);
-    mhtml.Append(header_result.Data(), header_result.size());
+    mhtml.Append(header_result.Data(),
+                 static_cast<unsigned>(header_result.size()));
   }
 
   WebThreadSafeData body_result =
       WebFrameSerializer::GenerateMHTMLParts(boundary, frame, &mhtml_delegate);
-  mhtml.Append(body_result.Data(), body_result.size());
+  mhtml.Append(body_result.Data(), static_cast<unsigned>(body_result.size()));
 
   if (!only_body_parts) {
     scoped_refptr<RawData> footer_data = RawData::Create();
     MHTMLArchive::GenerateMHTMLFooterForTesting(boundary,
                                                 *footer_data->MutableData());
-    mhtml.Append(footer_data->data(), footer_data->length());
+    mhtml.Append(footer_data->data(),
+                 static_cast<unsigned>(footer_data->length()));
   }
 
   String mhtml_string = mhtml.ToString();

@@ -43,6 +43,10 @@ class COMPONENT_EXPORT(UI_BASE_X) XDisplayManager
   class Delegate;
 
   explicit XDisplayManager(Delegate* delegate);
+
+  XDisplayManager(const XDisplayManager&) = delete;
+  XDisplayManager& operator=(const XDisplayManager&) = delete;
+
   ~XDisplayManager() override;
 
   void Init();
@@ -90,8 +94,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XDisplayManager
   base::CancelableOnceClosure update_task_;
 
   X11WorkspaceHandler workspace_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(XDisplayManager);
 };
 
 class COMPONENT_EXPORT(UI_BASE_X) XDisplayManager::Delegate {

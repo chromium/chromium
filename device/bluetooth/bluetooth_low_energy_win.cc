@@ -60,6 +60,10 @@ class DeviceInfoSetTraits {
  public:
   typedef HDEVINFO Handle;
 
+  DeviceInfoSetTraits() = delete;
+  DeviceInfoSetTraits(const DeviceInfoSetTraits&) = delete;
+  DeviceInfoSetTraits& operator=(const DeviceInfoSetTraits&) = delete;
+
   static bool CloseHandle(HDEVINFO handle) {
     return ::SetupDiDestroyDeviceInfoList(handle) != FALSE;
   }
@@ -69,9 +73,6 @@ class DeviceInfoSetTraits {
   }
 
   static HDEVINFO NullHandle() { return INVALID_HANDLE_VALUE; }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DeviceInfoSetTraits);
 };
 
 typedef base::win::GenericScopedHandle<DeviceInfoSetTraits,

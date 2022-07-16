@@ -9,7 +9,7 @@
     SecureContext,
     Exposed=Window
 ] interface NDEFRecord {
-    [CallWith=ExecutionContext, RaisesException] constructor(NDEFRecordInit recordInit);
+    [CallWith=ScriptState, ImplementedAs=CreateForBindings, RaisesException] constructor(NDEFRecordInit recordInit);
     readonly attribute USVString recordType;
     readonly attribute USVString? mediaType;
     readonly attribute USVString? id;

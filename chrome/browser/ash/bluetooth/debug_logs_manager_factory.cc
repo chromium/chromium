@@ -27,13 +27,15 @@ class DebugLogsManagerService : public KeyedService {
             ProfileHelper::Get()->GetUserByProfile(profile)->GetDisplayEmail(),
             profile->GetPrefs()) {}
 
+  DebugLogsManagerService(const DebugLogsManagerService&) = delete;
+  DebugLogsManagerService& operator=(const DebugLogsManagerService&) = delete;
+
   ~DebugLogsManagerService() override = default;
 
   DebugLogsManager* debug_logs_manager() { return &debug_logs_manager_; }
 
  private:
   DebugLogsManager debug_logs_manager_;
-  DISALLOW_COPY_AND_ASSIGN(DebugLogsManagerService);
 };
 
 }  // namespace

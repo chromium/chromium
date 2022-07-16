@@ -27,8 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_H_
 
-#include <random>
-
 #include "base/macros.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_formatted_text.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_rendering_context_2d_settings.h"
@@ -62,10 +60,6 @@ class CanvasImageSource;
 class Element;
 class ExceptionState;
 class Font;
-class HitRegion;
-class HitRegionOptions;
-class HitRegionManager;
-class HitTestCanvasResult;
 class Path2D;
 class TextMetrics;
 
@@ -79,18 +73,20 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   class Factory : public CanvasRenderingContextFactory {
    public:
     Factory() = default;
+
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
     ~Factory() override = default;
 
     CanvasRenderingContext* Create(
         CanvasRenderingContextHost* host,
         const CanvasContextCreationAttributesCore& attrs) override;
 
-    CanvasRenderingContext::ContextType GetContextType() const override {
-      return CanvasRenderingContext::kContext2D;
+    CanvasRenderingContext::CanvasRenderingAPI GetRenderingAPI()
+        const override {
+      return CanvasRenderingContext::CanvasRenderingAPI::k2D;
     }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
   CanvasRenderingContext2D(HTMLCanvasElement*,
@@ -124,8 +120,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   String direction() const;
   void setDirection(const String&);
 
-  void setTextLetterSpacing(const double letter_spacing);
-  void setTextWordSpacing(const double word_spacing);
+  void setLetterSpacing(const double letter_spacing);
+  void setWordSpacing(const double word_spacing);
   void setTextRendering(const String&);
 
   void setFontKerning(const String&);
@@ -148,12 +144,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void drawFocusIfNeeded(Element*);
   void drawFocusIfNeeded(Path2D*, Element*);
 
-  void addHitRegion(const HitRegionOptions*, ExceptionState&);
-  void removeHitRegion(const String& id);
-  void clearHitRegions();
-  HitRegion* HitRegionAtPoint(const FloatPoint&);
-  unsigned HitRegionsCount() const override;
-
   void LoseContext(LostContextMode) override;
   void DidSetSurfaceSize() override;
 
@@ -164,9 +154,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void StyleDidChange(const ComputedStyle* old_style,
                       const ComputedStyle& new_style) override;
-  HitTestCanvasResult* GetControlAndIdIfHitRegionExists(
-      const PhysicalOffset& location) override;
-  String GetIdFromControl(const Element*) override;
 
   // SVGResourceClient implementation
   void ResourceContentChanged(SVGResource*) override;
@@ -175,8 +162,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void ClearFilterReferences();
 
   // BaseRenderingContext2D implementation
-  void DidDraw2D(const SkIRect& dirty_rect,
-                 CanvasPerformanceMonitor::DrawType) final;
   bool OriginClean() const final;
   void SetOriginTainted() final;
   bool WouldTaintOrigin(CanvasImageSource* source) final {
@@ -195,10 +180,12 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final;
   cc::PaintCanvas* GetPaintCanvas() const final;
+  cc::PaintCanvas* GetPaintCanvasForDraw(
+      const SkIRect& dirty_rect,
+      CanvasPerformanceMonitor::DrawType) final;
 
   scoped_refptr<StaticBitmapImage> GetImage() final;
 
-  bool StateHasFilter() final;
   sk_sp<PaintFilter> StateGetFilter() final;
   void SnapshotStateForFilter() final;
 
@@ -207,12 +194,15 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void FinalizeFrame() override;
 
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() override;
+  ExecutionContext* GetTopExecutionContext() const override;
 
   bool IsPaintable() const final {
     return canvas() && canvas()->GetCanvas2DLayerBridge();
   }
 
   void WillDrawImage(CanvasImageSource*) const final;
+
+  void FlushCanvas() override;
 
   void Trace(Visitor*) const override;
 
@@ -240,6 +230,10 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   }
 
   void SendContextLostEventIfNeeded() override;
+
+  bool IdentifiabilityEncounteredPartiallyDigestedImage() const override {
+    return identifiability_study_helper_.encountered_partially_digested_image();
+  }
 
  protected:
   // This reports CanvasColorParams to the CanvasRenderingContext interface.
@@ -273,14 +267,13 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   const Font& AccessFont();
 
-  void DrawFocusIfNeededInternal(const Path&, Element*);
+  void DrawFocusIfNeededInternal(
+      const Path&,
+      Element*,
+      IdentifiableToken path_hash = IdentifiableToken());
   bool FocusRingCallIsValid(const Path&, Element*);
   void DrawFocusRing(const Path&, Element*);
   void UpdateElementAccessibility(const Path&, Element*);
-
-  CanvasRenderingContext::ContextType GetContextType() const override {
-    return CanvasRenderingContext::kContext2D;
-  }
 
   bool IsComposited() const override;
   bool IsAccelerated() const override;
@@ -293,22 +286,14 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void SetIsBeingDisplayed(bool) override;
   void Stop() final;
 
-  bool IsTransformInvertible() const override;
-  TransformationMatrix GetTransform() const override;
-
   cc::Layer* CcLayer() const override;
   bool IsCanvas2DBufferValid() const override;
-
-  Member<HitRegionManager> hit_region_manager_;
 
   FilterOperations filter_operations_;
   HashMap<String, FontDescription> fonts_resolved_using_current_style_;
   bool should_prune_local_font_cache_;
   LinkedHashSet<String> font_lru_list_;
 
-  static constexpr float kRasterMetricProbability = 0.01;
-  std::mt19937 random_generator_;
-  std::bernoulli_distribution bernoulli_distribution_;
   CanvasColorParams color_params_;
 
   // For privacy reasons we need to delay contextLost events until the page is

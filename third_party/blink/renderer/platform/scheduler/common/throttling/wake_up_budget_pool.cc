@@ -16,7 +16,7 @@ namespace scheduler {
 using base::sequence_manager::TaskQueue;
 
 WakeUpBudgetPool::WakeUpBudgetPool(const char* name)
-    : BudgetPool(name), wake_up_interval_(base::TimeDelta::FromSeconds(1)) {}
+    : BudgetPool(name), wake_up_interval_(base::Seconds(1)) {}
 
 WakeUpBudgetPool::~WakeUpBudgetPool() = default;
 

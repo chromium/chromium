@@ -159,11 +159,17 @@ void surface_set_buffer_transform(wl_client* client,
       buffer_transform = Transform::ROTATE_270;
       break;
     case WL_OUTPUT_TRANSFORM_FLIPPED:
+      buffer_transform = Transform::FLIPPED;
+      break;
     case WL_OUTPUT_TRANSFORM_FLIPPED_90:
+      buffer_transform = Transform::FLIPPED_ROTATE_90;
+      break;
     case WL_OUTPUT_TRANSFORM_FLIPPED_180:
+      buffer_transform = Transform::FLIPPED_ROTATE_180;
+      break;
     case WL_OUTPUT_TRANSFORM_FLIPPED_270:
-      NOTIMPLEMENTED();
-      return;
+      buffer_transform = Transform::FLIPPED_ROTATE_270;
+      break;
     default:
       wl_resource_post_error(resource, WL_SURFACE_ERROR_INVALID_TRANSFORM,
                              "buffer transform must be one of the values from "
@@ -203,22 +209,26 @@ const struct wl_surface_interface surface_implementation = {
 ////////////////////////////////////////////////////////////////////////////////
 // wl_compositor_interface:
 
-void HandleSurfaceLeaveEnterCallback(Server* server,
+bool HandleSurfaceLeaveEnterCallback(Server* server,
                                      wl_resource* resource,
                                      int64_t old_display_id,
                                      int64_t new_display_id) {
   auto* client = wl_resource_get_client(resource);
   if (old_display_id != display::kInvalidDisplayId) {
     auto* old_output = server->GetOutputResource(client, old_display_id);
-    if (old_output)
+    if (old_output) {
       wl_surface_send_leave(resource, old_output);
+      wl_client_flush(client);
+    }
   }
   if (new_display_id != display::kInvalidDisplayId) {
     auto* new_output = server->GetOutputResource(client, new_display_id);
-    DCHECK(new_output);
-    if (new_output)
-      wl_surface_send_enter(resource, new_output);
+    if (!new_output)
+      return false;
+    wl_surface_send_enter(resource, new_output);
+    wl_client_flush(client);
   }
+  return true;
 }
 
 void compositor_create_surface(wl_client* client,
@@ -232,7 +242,7 @@ void compositor_create_surface(wl_client* client,
       client, &wl_surface_interface, wl_resource_get_version(resource), id);
 
   surface->set_leave_enter_callback(
-      base::RepeatingCallback<void(int64_t, int64_t)>(base::BindRepeating(
+      base::RepeatingCallback<bool(int64_t, int64_t)>(base::BindRepeating(
           &HandleSurfaceLeaveEnterCallback, base::Unretained(server),
           base::Unretained(surface_resource))));
 

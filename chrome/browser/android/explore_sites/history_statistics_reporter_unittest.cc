@@ -33,6 +33,11 @@ class HistoryStatisticsReporterTest : public testing::Test {
   HistoryStatisticsReporterTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  HistoryStatisticsReporterTest(const HistoryStatisticsReporterTest&) = delete;
+  HistoryStatisticsReporterTest& operator=(
+      const HistoryStatisticsReporterTest&) = delete;
+
   ~HistoryStatisticsReporterTest() override {}
 
   void SetUp() override {
@@ -81,8 +86,6 @@ class HistoryStatisticsReporterTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   std::unique_ptr<history::HistoryService> history_service_;
   std::unique_ptr<HistoryStatisticsReporter> reporter_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryStatisticsReporterTest);
 };
 
 TEST_F(HistoryStatisticsReporterTest, HistoryNotLoaded) {
@@ -157,8 +160,8 @@ TEST_F(HistoryStatisticsReporterTest, HostAddedLongAgo) {
   ASSERT_TRUE(LoadHistory());
 
   base::Time time_now = offline_pages::OfflineTimeNow();
-  base::Time time_29_days_ago = time_now - base::TimeDelta::FromDays(29);
-  base::Time time_31_days_ago = time_now - base::TimeDelta::FromDays(31);
+  base::Time time_29_days_ago = time_now - base::Days(29);
+  base::Time time_31_days_ago = time_now - base::Days(31);
 
   history_service()->AddPage(GURL("http://www.google.com"), time_now,
                              history::VisitSource::SOURCE_BROWSED);
@@ -224,7 +227,7 @@ TEST_F(HistoryStatisticsReporterTest, OneRunPerWeekReadTimestampAfterWeek) {
   ASSERT_TRUE(LoadHistory());
 
   prefs()->SetTime(kWeeklyStatsReportingTimestamp,
-                   base::Time::Now() - base::TimeDelta::FromDays(8));
+                   base::Time::Now() - base::Days(8));
   ScheduleReportAndRunUntilIdle();
 
   // More than a week since last query, should have gone through.

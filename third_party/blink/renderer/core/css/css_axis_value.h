@@ -25,6 +25,8 @@ class CSSAxisValue : public CSSValueList {
 
   double Z() const;
 
+  CSSValueID AxisName() const { return axis_name_; }
+
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValueList::TraceAfterDispatch(visitor);
   }

@@ -37,6 +37,9 @@ class TestWebThread {
   // Constructs a TestWebThread based on |message_loop| (no |real_thread_|).
   TestWebThread(WebThread::ID identifier, base::MessageLoop* message_loop);
 
+  TestWebThread(const TestWebThread&) = delete;
+  TestWebThread& operator=(const TestWebThread&) = delete;
+
   ~TestWebThread();
 
   // Provides a subset of the capabilities of the Thread interface to enable
@@ -68,8 +71,6 @@ class TestWebThread {
   // Binds |identifier_| to |message_loop| when constructor #2 is used (null
   // otherwise).
   std::unique_ptr<WebThreadImpl> fake_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebThread);
 };
 
 }  // namespace web

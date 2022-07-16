@@ -18,7 +18,7 @@ namespace base {
 
 namespace {
 
-constexpr TimeDelta kUsageSampleInterval = TimeDelta::FromMinutes(10);
+constexpr TimeDelta kUsageSampleInterval = Minutes(10);
 
 void ReportHighResolutionTimerUsage() {
   UMA_HISTOGRAM_PERCENTAGE("Windows.HighResolutionTimerUsage",

@@ -10,7 +10,6 @@
 
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/networking/network_configuration_updater.h"
 #include "components/onc/onc_constants.h"
@@ -38,6 +37,11 @@ class PolicyService;
 // listening for notifications from CrosSettings.
 class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
  public:
+  DeviceNetworkConfigurationUpdater(const DeviceNetworkConfigurationUpdater&) =
+      delete;
+  DeviceNetworkConfigurationUpdater& operator=(
+      const DeviceNetworkConfigurationUpdater&) = delete;
+
   ~DeviceNetworkConfigurationUpdater() override;
 
   // Fetches the device's administrator-annotated asset ID.
@@ -82,8 +86,6 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
   DeviceAssetIDFetcher device_asset_id_fetcher_;
 
   base::WeakPtrFactory<DeviceNetworkConfigurationUpdater> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceNetworkConfigurationUpdater);
 };
 
 }  // namespace policy

@@ -147,11 +147,11 @@ std::unique_ptr<InputBufferFragmentSplitter>
 InputBufferFragmentSplitter::CreateFromProfile(
     media::VideoCodecProfile profile) {
   switch (VideoCodecProfileToVideoCodec(profile)) {
-    case kCodecH264:
+    case VideoCodec::kH264:
       return std::make_unique<
           v4l2_vda_helpers::H264InputBufferFragmentSplitter>();
-    case kCodecVP8:
-    case kCodecVP9:
+    case VideoCodec::kVP8:
+    case VideoCodec::kVP9:
       // VP8/VP9 don't need any frame splitting, use the default implementation.
       return std::make_unique<v4l2_vda_helpers::InputBufferFragmentSplitter>();
     default:

@@ -33,11 +33,18 @@ PublicKeyCredential::PublicKeyCredential(
     const String& id,
     DOMArrayBuffer* raw_id,
     AuthenticatorResponse* response,
+    bool has_transport,
+    mojom::AuthenticatorTransport transport,
     const AuthenticationExtensionsClientOutputs* extension_outputs,
     const String& type)
     : Credential(id, type.IsEmpty() ? kPublicKeyCredentialType : type),
       raw_id_(raw_id),
       response_(response),
+      authenticator_attachment_(
+          has_transport ? (transport == mojom::AuthenticatorTransport::INTERNAL
+                               ? absl::make_optional("platform")
+                               : absl::make_optional("cross-platform"))
+                        : absl::nullopt),
       extension_outputs_(extension_outputs) {}
 
 ScriptPromise

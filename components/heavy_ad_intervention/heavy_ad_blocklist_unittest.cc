@@ -46,6 +46,10 @@ class TestHeavyAdBlocklist : public HeavyAdBlocklist {
 class HeavyAdBlocklistTest : public testing::Test {
  public:
   HeavyAdBlocklistTest() = default;
+
+  HeavyAdBlocklistTest(const HeavyAdBlocklistTest&) = delete;
+  HeavyAdBlocklistTest& operator=(const HeavyAdBlocklistTest&) = delete;
+
   ~HeavyAdBlocklistTest() override = default;
 
   void SetUp() override { ConfigBlocklistWithParams({}); }
@@ -75,8 +79,6 @@ class HeavyAdBlocklistTest : public testing::Test {
   EmptyOptOutBlocklistDelegate blocklist_delegate_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeavyAdBlocklistTest);
 };
 
 TEST_F(HeavyAdBlocklistTest, DefaultParams) {
@@ -87,8 +89,8 @@ TEST_F(HeavyAdBlocklistTest, DefaultParams) {
 
   EXPECT_TRUE(blocklist_->ShouldUseHostPolicy(&duration, &history, &threshold,
                                               &max_hosts));
-  EXPECT_EQ(base::TimeDelta::FromDays(1), duration);
-  EXPECT_EQ(base::TimeDelta::FromHours(24), duration);
+  EXPECT_EQ(base::Days(1), duration);
+  EXPECT_EQ(base::Hours(24), duration);
   EXPECT_EQ(5u, history);
   EXPECT_EQ(5, threshold);
   EXPECT_EQ(50u, max_hosts);
@@ -119,7 +121,7 @@ TEST_F(HeavyAdBlocklistTest, HostParams) {
 
   EXPECT_TRUE(blocklist_->ShouldUseHostPolicy(&duration, &history, &threshold,
                                               &max_hosts));
-  EXPECT_EQ(base::TimeDelta::FromHours(host_duration_hours), duration);
+  EXPECT_EQ(base::Hours(host_duration_hours), duration);
   EXPECT_EQ(host_threshold, static_cast<int>(history));
   EXPECT_EQ(host_threshold, threshold);
   EXPECT_EQ(host_max_hosts, static_cast<int>(max_hosts));

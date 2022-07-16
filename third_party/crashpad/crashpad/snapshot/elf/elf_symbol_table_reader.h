@@ -19,7 +19,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "util/misc/address_types.h"
 #include "util/process/process_memory_range.h"
 
@@ -63,6 +62,10 @@ class ElfSymbolTableReader {
                        ElfImageReader* elf_reader,
                        VMAddress address,
                        VMSize num_entries);
+
+  ElfSymbolTableReader(const ElfSymbolTableReader&) = delete;
+  ElfSymbolTableReader& operator=(const ElfSymbolTableReader&) = delete;
+
   ~ElfSymbolTableReader();
 
   //! \brief Lookup information about a symbol.
@@ -80,8 +83,6 @@ class ElfSymbolTableReader {
   ElfImageReader* const elf_reader_;  // weak
   const VMAddress base_address_;
   const VMSize num_entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(ElfSymbolTableReader);
 };
 
 }  // namespace crashpad

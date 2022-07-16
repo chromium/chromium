@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -129,7 +128,7 @@ class BookmarkBarNavigationTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(BookmarkBarNavigationTest, SecFetchFromEmptyTab) {
   // Navigate to an empty tab
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   {
     // Sec-Fetch-Dest: document
@@ -170,7 +169,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarNavigationTest, SecFetchFromEmptyTab) {
 IN_PROC_BROWSER_TEST_F(BookmarkBarNavigationTest,
                        MAYBE_SecFetchSiteNoneFromNonEmptyTab) {
   // Navigate to an non-empty tab
-  ui_test_utils::NavigateToURL(browser(), GURL("http://example.com/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("http://example.com/")));
 
   {
     // Sec-Fetch-Dest: document

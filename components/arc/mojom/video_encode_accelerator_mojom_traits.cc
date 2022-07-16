@@ -67,6 +67,84 @@ bool EnumTraits<arc::mojom::VideoEncodeAccelerator_Error,
 }
 
 // static
+uint32_t
+StructTraits<arc::mojom::ConstantBitrateDataView, arc::mojom::ConstantBitrate>::
+    target(const arc::mojom::ConstantBitrate& input) {
+  return input.target;
+}
+
+// static
+uint32_t
+StructTraits<arc::mojom::VariableBitrateDataView, arc::mojom::VariableBitrate>::
+    target(const arc::mojom::VariableBitrate& input) {
+  return input.target;
+}
+
+// static
+uint32_t
+StructTraits<arc::mojom::VariableBitrateDataView, arc::mojom::VariableBitrate>::
+    peak(const arc::mojom::VariableBitrate& input) {
+  return input.peak;
+}
+
+// static
+arc::mojom::BitrateDataView::Tag
+UnionTraits<arc::mojom::BitrateDataView, media::Bitrate>::GetTag(
+    const media::Bitrate& input) {
+  switch (input.mode()) {
+    case media::Bitrate::Mode::kConstant:
+      return arc::mojom::BitrateDataView::Tag::kConstant;
+    case media::Bitrate::Mode::kVariable:
+      return arc::mojom::BitrateDataView::Tag::kVariable;
+  }
+  NOTREACHED();
+  return arc::mojom::BitrateDataView::Tag::kConstant;
+}
+
+// static
+arc::mojom::ConstantBitrate
+UnionTraits<arc::mojom::BitrateDataView, media::Bitrate>::constant(
+    const media::Bitrate& input) {
+  arc::mojom::ConstantBitrate constant_bitrate;
+  constant_bitrate.target = input.target();
+  return constant_bitrate;
+}
+
+// static
+arc::mojom::VariableBitrate
+UnionTraits<arc::mojom::BitrateDataView, media::Bitrate>::variable(
+    const media::Bitrate& input) {
+  arc::mojom::VariableBitrate variable_bitrate;
+  variable_bitrate.target = input.target();
+  variable_bitrate.peak = input.peak();
+  return variable_bitrate;
+}
+
+// static
+bool UnionTraits<arc::mojom::BitrateDataView, media::Bitrate>::Read(
+    arc::mojom::BitrateDataView input,
+    media::Bitrate* output) {
+  switch (input.tag()) {
+    case arc::mojom::BitrateDataView::Tag::kConstant: {
+      arc::mojom::ConstantBitrateDataView constant_bitrate;
+      input.GetConstantDataView(&constant_bitrate);
+      *output = media::Bitrate::ConstantBitrate(constant_bitrate.target());
+      return true;
+    }
+    case arc::mojom::BitrateDataView::Tag::kVariable: {
+      arc::mojom::VariableBitrateDataView variable_bitrate;
+      input.GetVariableDataView(&variable_bitrate);
+      *output = media::Bitrate::VariableBitrate(variable_bitrate.target(),
+                                                variable_bitrate.peak());
+      return true;
+    }
+    default:
+      NOTREACHED();
+      return false;
+  }
+}
+
+// static
 bool StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
                   media::VideoEncodeAccelerator::Config>::
     Read(arc::mojom::VideoEncodeAcceleratorConfigDataView input,
@@ -97,9 +175,21 @@ bool StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
   if (!input.ReadStorageType(&storage_type))
     return false;
 
+  absl::optional<media::Bitrate> bitrate;
+  if (!input.ReadBitrate(&bitrate))
+    return false;
+  if (bitrate.has_value()) {
+    DCHECK((bitrate->mode() == media::Bitrate::Mode::kVariable) ||
+           (bitrate->peak() == 0u));
+    DCHECK((bitrate->mode() == media::Bitrate::Mode::kConstant) ||
+           (bitrate->peak() >= bitrate->target()));
+  } else {
+    bitrate =
+        media::Bitrate::ConstantBitrate(input.initial_bitrate_deprecated());
+  }
+
   *output = media::VideoEncodeAccelerator::Config(
-      input_format, input_visible_size, output_profile,
-      media::Bitrate::ConstantBitrate(input.initial_bitrate()),
+      input_format, input_visible_size, output_profile, *bitrate,
       initial_framerate, absl::nullopt, h264_output_level, false, storage_type);
   return true;
 }

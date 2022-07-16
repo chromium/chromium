@@ -5,8 +5,11 @@
 #include "content/browser/prerender/prerender_host.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "content/browser/prerender/prerender_attributes.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/mock_commit_deferring_condition.h"
@@ -14,10 +17,15 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/loader_constants.h"
 
 namespace content {
 namespace {
+
+using ::testing::_;
 
 // TODO(nhiroki): Merge this into TestNavigationObserver for code
 // simplification.
@@ -59,9 +67,20 @@ void CommitPrerenderNavigation(PrerenderHost& host) {
   FrameTreeNode* ftn = FrameTreeNode::From(host.GetPrerenderedMainFrameHost());
   std::unique_ptr<NavigationSimulator> sim =
       NavigationSimulatorImpl::CreateFromPendingInFrame(ftn);
-  sim->ReadyToCommit();
   sim->Commit();
   EXPECT_TRUE(host.is_ready_for_activation());
+}
+
+std::unique_ptr<NavigationSimulatorImpl> CreateActivation(
+    const GURL& prerendering_url,
+    WebContentsImpl& web_contents) {
+  std::unique_ptr<NavigationSimulatorImpl> navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(
+          prerendering_url, web_contents.GetMainFrame());
+  navigation->SetReferrer(blink::mojom::Referrer::New(
+      web_contents.GetMainFrame()->GetLastCommittedURL(),
+      network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
+  return navigation;
 }
 
 void ActivatePrerenderedPage(const GURL& prerendering_url,
@@ -78,8 +97,7 @@ void ActivatePrerenderedPage(const GURL& prerendering_url,
 
   // Activate the prerendered page.
   std::unique_ptr<NavigationSimulatorImpl> navigation =
-      NavigationSimulatorImpl::CreateRendererInitiated(
-          prerendering_url, web_contents.GetMainFrame());
+      CreateActivation(prerendering_url, web_contents);
   navigation->Commit();
   activation_observer.WaitUntilHostDestroyed();
 
@@ -90,16 +108,30 @@ void ActivatePrerenderedPage(const GURL& prerendering_url,
   EXPECT_EQ(registry->FindReservedHostById(prerender_host_id), nullptr);
 }
 
+PrerenderAttributes GeneratePrerenderAttributes(const GURL& url,
+                                                RenderFrameHostImpl* rfh) {
+  return PrerenderAttributes(url, PrerenderTriggerType::kSpeculationRule,
+                             Referrer(), rfh->GetLastCommittedOrigin(),
+                             rfh->GetLastCommittedURL(),
+                             rfh->GetProcess()->GetID(), rfh->GetFrameToken(),
+                             rfh->GetPageUkmSourceId());
+}
+
 class TestWebContentsDelegate : public WebContentsDelegate {
  public:
   TestWebContentsDelegate() = default;
   ~TestWebContentsDelegate() override = default;
+  bool IsPrerender2Supported() override { return true; }
 };
 
 class PrerenderHostTest : public RenderViewHostImplTestHarness {
  public:
   PrerenderHostTest() {
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2},
+        // Disable the memory requirement of Prerender2 so the test can run on
+        // any bot.
+        {blink::features::kPrerender2MemoryControls});
   }
 
   ~PrerenderHostTest() override = default;
@@ -175,7 +207,6 @@ TEST_F(PrerenderHostTest, DontActivate) {
 TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
   const GURL kOriginUrl("https://example.com/");
   std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kOriginUrl);
-  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
   // Start prerendering a page.
@@ -200,8 +231,7 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
     MockCommitDeferringConditionInstaller installer(condition.PassToDelegate());
 
     // Start trying to activate the prerendered page.
-    navigation = NavigationSimulatorImpl::CreateRendererInitiated(
-        kPrerenderingUrl, initiator_rfh);
+    navigation = CreateActivation(kPrerenderingUrl, *web_contents);
     navigation->Start();
 
     // Wait for the condition to pause the activation.
@@ -215,7 +245,7 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
       navigation_request->IsCommitDeferringConditionDeferredForTesting());
 
   // The primary page should still be the original page.
-  EXPECT_EQ(web_contents->GetURL(), kOriginUrl);
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), kOriginUrl);
 
   const GURL kBadUrl("https://example2.test/");
   TestNavigationManager tno(web_contents.get(), kBadUrl);
@@ -238,7 +268,6 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
   ExpectFinalStatus(PrerenderHost::FinalStatus::kMainFrameNavigation);
 
   // The activation falls back to regular navigation.
-  navigation->ReadyToCommit();
   navigation->Commit();
   EXPECT_EQ(web_contents->GetMainFrame()->GetLastCommittedURL(),
             kPrerenderingUrl);
@@ -254,10 +283,9 @@ TEST_F(PrerenderHostTest, ActivationAfterPageStateUpdate) {
 
   // Start prerendering a page.
   const GURL kPrerenderingUrl("https://example.com/next");
-  auto attributes = blink::mojom::PrerenderAttributes::New();
-  attributes->url = kPrerenderingUrl;
-  const int prerender_frame_tree_node_id =
-      registry->CreateAndStartHost(std::move(attributes), *initiator_rfh);
+  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
+      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
+      *web_contents);
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);
   CommitPrerenderNavigation(*prerender_host);
@@ -289,11 +317,136 @@ TEST_F(PrerenderHostTest, ActivationAfterPageStateUpdate) {
   EXPECT_EQ(web_contents->GetMainFrame(), prerender_rfh);
   NavigationEntryImpl* activated_nav_entry =
       web_contents->GetController().GetLastCommittedEntry();
-  EXPECT_EQ(
-      page_state,
-      activated_nav_entry->GetFrameEntry(web_contents->GetFrameTree()->root())
-          ->page_state());
+  EXPECT_EQ(page_state,
+            activated_nav_entry
+                ->GetFrameEntry(web_contents->GetPrimaryFrameTree().root())
+                ->page_state());
 }
+
+// Test that WebContentsObserver::LoadProgressChanged is not invoked when the
+// page gets loaded while prerendering but is invoked on prerender activation.
+// Check that in case the load is incomplete with load progress
+// `kPartialLoadProgress`, we would see
+// LoadProgressChanged(kPartialLoadProgress) called on activation.
+TEST_F(PrerenderHostTest, LoadProgressChangedInvokedOnActivation) {
+  const GURL kOriginUrl("https://example.com/");
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kOriginUrl);
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents.get());
+
+  web_contents_impl->set_minimum_delay_between_loading_updates_for_testing(
+      base::Milliseconds(0));
+
+  // Initialize a MockWebContentsObserver and ensure that LoadProgressChanged is
+  // not invoked while prerendering.
+  testing::NiceMock<MockWebContentsObserver> observer(web_contents_impl);
+  testing::InSequence s;
+  EXPECT_CALL(observer, LoadProgressChanged(testing::_)).Times(0);
+
+  // Start prerendering a page and commit prerender navigation.
+  const GURL kPrerenderingUrl("https://example.com/next");
+  constexpr double kPartialLoadProgress = 0.7;
+  RenderFrameHostImpl* prerender_rfh =
+      web_contents->AddPrerenderAndCommitNavigation(kPrerenderingUrl);
+  FrameTreeNode* ftn = prerender_rfh->frame_tree_node();
+  EXPECT_FALSE(ftn->HasNavigation());
+
+  // Verify and clear all expectations on the mock observer before setting new
+  // ones.
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Activate the prerendered page. This should result in invoking
+  // LoadProgressChanged for the following cases:
+  {
+    // 1) During DidStartLoading LoadProgressChanged is invoked with
+    // kInitialLoadProgress value.
+    EXPECT_CALL(observer, LoadProgressChanged(blink::kInitialLoadProgress));
+
+    // Verify that DidFinishNavigation is invoked before final load progress
+    // notification.
+    EXPECT_CALL(observer, DidFinishNavigation(testing::_));
+
+    // 2) After DidCommitNavigationInternal on activation with
+    // LoadProgressChanged is invoked with kPartialLoadProgress value.
+    EXPECT_CALL(observer, LoadProgressChanged(kPartialLoadProgress));
+
+    // 3) During DidStopLoading LoadProgressChanged is invoked with
+    // kFinalLoadProgress.
+    EXPECT_CALL(observer, LoadProgressChanged(blink::kFinalLoadProgress));
+  }
+
+  // Set load_progress value to kPartialLoadProgress in prerendering state,
+  // this should result in invoking LoadProgressChanged(kPartialLoadProgress) on
+  // activation.
+  prerender_rfh->GetPage().set_load_progress(kPartialLoadProgress);
+
+  // Perform a navigation in the primary frame tree which activates the
+  // prerendered page.
+  ActivatePrerenderedPage(kPrerenderingUrl, *web_contents);
+  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
+}
+
+TEST_F(PrerenderHostTest, CancelPrerenderWhenTriggerGetsHidden) {
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(GURL("https://example.com/"));
+  const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
+  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
+      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
+      *web_contents);
+  PrerenderHost* prerender_host =
+      registry->FindNonReservedHostById(prerender_frame_tree_node_id);
+  ASSERT_NE(prerender_host, nullptr);
+  CommitPrerenderNavigation(*prerender_host);
+
+  // Changing the visibility state to HIDDEN will cause prerendering cancelled.
+  web_contents->WasHidden();
+  ExpectFinalStatus(PrerenderHost::FinalStatus::kTriggerBackgrounded);
+}
+
+TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsVisible) {
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(GURL("https://example.com/"));
+  const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
+  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
+      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
+      *web_contents);
+  PrerenderHost* prerender_host =
+      registry->FindNonReservedHostById(prerender_frame_tree_node_id);
+  ASSERT_NE(prerender_host, nullptr);
+  CommitPrerenderNavigation(*prerender_host);
+
+  // Changing the visibility state to VISIBLE will not affect prerendering.
+  web_contents->WasShown();
+  ActivatePrerenderedPage(kPrerenderingUrl, *web_contents);
+  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
+}
+
+// Skip this test on Android as it doesn't support the OCCLUDED state.
+#if !defined(OS_ANDROID)
+TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsOcculded) {
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(GURL("https://example.com/"));
+  const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
+  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
+      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
+      *web_contents);
+  PrerenderHost* prerender_host =
+      registry->FindNonReservedHostById(prerender_frame_tree_node_id);
+  ASSERT_NE(prerender_host, nullptr);
+  CommitPrerenderNavigation(*prerender_host);
+
+  // Changing the visibility state to OCCLUDED will not affect prerendering.
+  web_contents->WasOccluded();
+  ActivatePrerenderedPage(kPrerenderingUrl, *web_contents);
+  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
+}
+#endif
 
 }  // namespace
 }  // namespace content

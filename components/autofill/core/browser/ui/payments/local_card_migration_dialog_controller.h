@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "url/gurl.h"
 
@@ -23,6 +22,12 @@ class MigratableCreditCard;
 class LocalCardMigrationDialogController {
  public:
   LocalCardMigrationDialogController() {}
+
+  LocalCardMigrationDialogController(
+      const LocalCardMigrationDialogController&) = delete;
+  LocalCardMigrationDialogController& operator=(
+      const LocalCardMigrationDialogController&) = delete;
+
   virtual ~LocalCardMigrationDialogController() {}
 
   virtual LocalCardMigrationDialogState GetViewState() const = 0;
@@ -39,9 +44,6 @@ class LocalCardMigrationDialogController {
   virtual void DeleteCard(const std::string& deleted_card_guid) = 0;
   virtual void OnDialogClosed() = 0;
   virtual bool AllCardsInvalid() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationDialogController);
 };
 
 }  // namespace autofill

@@ -112,11 +112,6 @@ void ExtensionsBrowserClient::SetLastSaveFilePath(
     content::BrowserContext* context,
     const base::FilePath& path) {}
 
-const MediaRouterExtensionAccessLogger*
-ExtensionsBrowserClient::GetMediaRouterAccessLogger() const {
-  return nullptr;
-}
-
 bool ExtensionsBrowserClient::HasIsolatedStorage(
     const std::string& extension_id,
     content::BrowserContext* context) {

@@ -32,8 +32,8 @@
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_error_factory.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/search_engine_specifics.pb.h"
-#include "components/sync/protocol/sync.pb.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/variations/variations_associated_data.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -246,6 +246,9 @@ class TemplateURLService::Scoper {
     ++service_->outstanding_scoper_handles_;
   }
 
+  Scoper(const Scoper&) = delete;
+  Scoper& operator=(const Scoper&) = delete;
+
   // When a Scoper is destroyed, the handle count is updated. If the handle
   // count is at zero, notify the observers that the model has changed if
   // service is loaded and model was mutated.
@@ -268,8 +271,6 @@ class TemplateURLService::Scoper {
  private:
   std::unique_ptr<KeywordWebDataService::BatchModeScoper> batch_mode_scoper_;
   TemplateURLService* service_;
-
-  DISALLOW_COPY_AND_ASSIGN(Scoper);
 };
 
 // TemplateURLService ---------------------------------------------------------
@@ -646,6 +647,19 @@ void TemplateURLService::ResetTemplateURL(TemplateURL* url,
   }
   data.safe_for_autoreplace = false;
   data.last_modified = clock_->Now();
+  data.is_active = TemplateURLData::ActiveStatus::kTrue;
+
+  Update(url, TemplateURL(data));
+}
+
+void TemplateURLService::SetIsActiveTemplateURL(TemplateURL* url,
+                                                bool is_active) {
+  DCHECK(url);
+
+  TemplateURLData data(url->data());
+  data.is_active = is_active ? TemplateURLData::ActiveStatus::kTrue
+                             : TemplateURLData::ActiveStatus::kFalse;
+
   Update(url, TemplateURL(data));
 }
 
@@ -674,6 +688,7 @@ TemplateURL* TemplateURLService::CreatePlayAPISearchEngine(
   // Play API engines are created by explicit user gesture, and should not be
   // auto-replaceable by an auto-generated engine as the user browses.
   data.safe_for_autoreplace = false;
+  data.is_active = TemplateURLData::ActiveStatus::kTrue;
 
   // The Play API search engine is not guaranteed to be the best engine for
   // |keyword|, if there are user-defined, extension, or policy engines.
@@ -724,6 +739,9 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
   // engines can be made default only by the extension itself because they
   // aren't persisted.
   DCHECK(!url || !IsCreatedByExtension(url));
+  if (url) {
+    url->data_.is_active = TemplateURLData::ActiveStatus::kTrue;
+  }
   if (load_failed_) {
     // Skip the DefaultSearchManager, which will persist to user preferences.
     if ((default_search_provider_source_ == DefaultSearchManager::FROM_USER) ||
@@ -735,10 +753,11 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
   } else {
     // We rely on the DefaultSearchManager to call ApplyDefaultSearchChange if,
     // in fact, the effective DSE changes.
-    if (url)
+    if (url) {
       default_search_manager_.SetUserSelectedDefaultSearchEngine(url->data());
-    else
+    } else {
       default_search_manager_.ClearUserSelectedDefaultSearchEngine();
+    }
   }
 }
 
@@ -908,6 +927,7 @@ void TemplateURLService::OnWebDataServiceRequestDone(
 
   {
     PatchMissingSyncGUIDs(template_urls.get());
+    MaybeSetIsActiveSearchEngines(template_urls.get());
     SetTemplateURLs(std::move(template_urls));
 
     // This initializes provider_map_ which should be done before
@@ -1016,8 +1036,8 @@ absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
   // We've started syncing, so set our origin member to the base Sync value.
   // As we move through Sync Code, we may set this to increasingly specific
   // origins so we can tell what exactly caused a DSP change.
-  base::AutoReset<DefaultSearchChangeOrigin> change_origin(&dsp_change_origin_,
-      DSP_CHANGE_SYNC_UNINTENTIONAL);
+  base::AutoReset<DefaultSearchChangeOrigin> change_origin_unintentional(
+      &dsp_change_origin_, DSP_CHANGE_SYNC_UNINTENTIONAL);
 
   syncer::SyncChangeList new_changes;
   syncer::SyncError error;
@@ -1078,7 +1098,7 @@ absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
         LogSearchTemplateURLEvent(SYNC_UPDATE_CONVERTED_TO_ADD);
       }
 
-      base::AutoReset<DefaultSearchChangeOrigin> change_origin(
+      base::AutoReset<DefaultSearchChangeOrigin> change_origin_add(
           &dsp_change_origin_, DSP_CHANGE_SYNC_ADD);
       // Force the local ID to kInvalidTemplateURLID so we can add it.
       TemplateURLData data(turl->data());
@@ -1290,12 +1310,45 @@ std::string TemplateURLService::GetSessionToken() {
   }
 
   // Extend expiration time another 60 seconds.
-  token_expiration_time_ = current_time + base::TimeDelta::FromSeconds(60);
+  token_expiration_time_ = current_time + base::Seconds(60);
   return current_token_;
 }
 
 void TemplateURLService::ClearSessionToken() {
   token_expiration_time_ = base::TimeTicks();
+}
+
+// static
+TemplateURLData::ActiveStatus TemplateURLService::ActiveStatusFromSync(
+    sync_pb::SearchEngineSpecifics_ActiveStatus is_active) {
+  switch (is_active) {
+    case sync_pb::SearchEngineSpecifics_ActiveStatus::
+        SearchEngineSpecifics_ActiveStatus_ACTIVE_STATUS_UNSPECIFIED:
+      return TemplateURLData::ActiveStatus::kUnspecified;
+    case sync_pb::SearchEngineSpecifics_ActiveStatus::
+        SearchEngineSpecifics_ActiveStatus_ACTIVE_STATUS_TRUE:
+      return TemplateURLData::ActiveStatus::kTrue;
+    case sync_pb::SearchEngineSpecifics_ActiveStatus::
+        SearchEngineSpecifics_ActiveStatus_ACTIVE_STATUS_FALSE:
+      return TemplateURLData::ActiveStatus::kFalse;
+  }
+}
+
+// static
+sync_pb::SearchEngineSpecifics_ActiveStatus
+TemplateURLService::ActiveStatusToSync(
+    TemplateURLData::ActiveStatus is_active) {
+  switch (is_active) {
+    case TemplateURLData::ActiveStatus::kUnspecified:
+      return sync_pb::SearchEngineSpecifics_ActiveStatus::
+          SearchEngineSpecifics_ActiveStatus_ACTIVE_STATUS_UNSPECIFIED;
+    case TemplateURLData::ActiveStatus::kTrue:
+      return sync_pb::SearchEngineSpecifics_ActiveStatus::
+          SearchEngineSpecifics_ActiveStatus_ACTIVE_STATUS_TRUE;
+    case TemplateURLData::ActiveStatus::kFalse:
+      return sync_pb::SearchEngineSpecifics_ActiveStatus::
+          SearchEngineSpecifics_ActiveStatus_ACTIVE_STATUS_FALSE;
+  }
 }
 
 // static
@@ -1330,6 +1383,7 @@ syncer::SyncData TemplateURLService::CreateSyncDataFromTemplateURL(
   se_specifics->set_sync_guid(turl.sync_guid());
   for (size_t i = 0; i < turl.alternate_urls().size(); ++i)
     se_specifics->add_alternate_urls(turl.alternate_urls()[i]);
+  se_specifics->set_is_active(ActiveStatusToSync(turl.is_active()));
 
   return syncer::SyncData::CreateLocalData(se_specifics->sync_guid(),
                                            se_specifics->keyword(),
@@ -1401,6 +1455,7 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
   data.alternate_urls.clear();
   for (int i = 0; i < specifics.alternate_urls_size(); ++i)
     data.alternate_urls.push_back(specifics.alternate_urls(i));
+  data.is_active = ActiveStatusFromSync(specifics.is_active());
 
   std::unique_ptr<TemplateURL> turl(new TemplateURL(data));
   // If this TemplateURL matches a built-in prepopulated template URL, it's
@@ -1412,10 +1467,9 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
   if (reset_keyword || deduped) {
     if (reset_keyword)
       turl->ResetKeywordIfNecessary(search_terms_data, true);
-    syncer::SyncData sync_data = CreateSyncDataFromTemplateURL(*turl);
-    change_list->push_back(syncer::SyncChange(FROM_HERE,
-                                              syncer::SyncChange::ACTION_UPDATE,
-                                              sync_data));
+    syncer::SyncData updated_sync_data = CreateSyncDataFromTemplateURL(*turl);
+    change_list->push_back(syncer::SyncChange(
+        FROM_HERE, syncer::SyncChange::ACTION_UPDATE, updated_sync_data));
   } else if (turl->IsGoogleSearchURLWithReplaceableKeyword(search_terms_data)) {
     if (!existing_turl) {
       // We're adding a new TemplateURL that uses the Google base URL, so set
@@ -2000,10 +2054,10 @@ void TemplateURLService::MergeInSyncTemplateURL(
     if (conflicting_turl == GetDefaultSearchProvider() ||
         conflicting_turl->IsBetterThanEngineWithConflictingKeyword(sync_turl)) {
       ResetTemplateURLGUID(conflicting_turl, sync_turl->sync_guid());
-      syncer::SyncData sync_data =
+      syncer::SyncData updated_sync_data =
           CreateSyncDataFromTemplateURL(*conflicting_turl);
       change_list->push_back(syncer::SyncChange(
-          FROM_HERE, syncer::SyncChange::ACTION_UPDATE, sync_data));
+          FROM_HERE, syncer::SyncChange::ACTION_UPDATE, updated_sync_data));
       // Note that in this case we do not add the Sync TemplateURL to the
       // local model, since we've effectively "merged" it in by updating the
       // local conflicting entry with its sync_guid.
@@ -2112,6 +2166,22 @@ void TemplateURLService::OnSyncedDefaultSearchProviderGUIDChanged() {
   const TemplateURL* turl = GetTemplateURLForGUID(new_guid);
   if (turl)
     default_search_manager_.SetUserSelectedDefaultSearchEngine(turl->data());
+}
+
+void TemplateURLService::MaybeSetIsActiveSearchEngines(
+    OwnedTemplateURLVector* template_urls) {
+  DCHECK(template_urls);
+  for (auto& turl : *template_urls) {
+    DCHECK(turl);
+    // An turl is "active" if it has ever been used or manually added/modified.
+    // |safe_for_autoreplace| is false if the entry has been modified.
+    if (turl->is_active() == TemplateURLData::ActiveStatus::kUnspecified &&
+        (!turl->safe_for_autoreplace() || turl->usage_count() > 0)) {
+      turl->data_.is_active = TemplateURLData::ActiveStatus::kTrue;
+      if (web_data_service_)
+        web_data_service_->UpdateKeyword(turl->data());
+    }
+  }
 }
 
 template <typename Container>

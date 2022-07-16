@@ -23,6 +23,7 @@
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -157,7 +158,7 @@ class TestSafeBrowsingUIManagerDelegate
   ~TestSafeBrowsingUIManagerDelegate() override = default;
 
   // SafeBrowsingUIManager::Delegate:
-  const std::string& GetApplicationLocale() override { return app_locale_; }
+  std::string GetApplicationLocale() override { return "en-us"; }
   void TriggerSecurityInterstitialShownExtensionEventIfDesired(
       content::WebContents* web_contents,
       const GURL& page_url,
@@ -189,12 +190,13 @@ class TestSafeBrowsingUIManagerDelegate
   }
   bool IsMetricsAndCrashReportingEnabled() override { return false; }
 
+  bool IsSendingOfHitReportsEnabled() override { return false; }
+
   void set_is_hosting_extension(bool is_hosting_extension) {
     is_hosting_extension_ = is_hosting_extension;
   }
 
  private:
-  std::string app_locale_ = "en-us";
   bool is_hosting_extension_ = false;
   TestingPrefServiceSimple pref_service_;
 };
@@ -232,12 +234,13 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
   security_interstitials::UnsafeResource MakeUnsafeResource(
       const char* url,
       bool is_subresource) {
+    const content::GlobalRenderFrameHostId primary_main_frame_id =
+        web_contents()->GetMainFrame()->GetGlobalId();
     security_interstitials::UnsafeResource resource;
     resource.url = GURL(url);
     resource.is_subresource = is_subresource;
-    resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
-        web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID());
+    resource.render_process_id = primary_main_frame_id.child_id;
+    resource.render_frame_id = primary_main_frame_id.frame_routing_id;
     resource.threat_type = SB_THREAT_TYPE_URL_MALWARE;
     return resource;
   }
@@ -304,7 +307,8 @@ TEST_F(SafeBrowsingUIManagerTest, AllowlistRemembersThreatType) {
   ASSERT_TRUE(entry);
   EXPECT_TRUE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
       resource.url, resource.is_subresource, entry,
-      resource.web_contents_getter.Run(), true, &threat_type));
+      security_interstitials::GetWebContentsForResource(resource), true,
+      &threat_type));
   EXPECT_EQ(resource.threat_type, threat_type);
 }
 
@@ -454,6 +458,12 @@ namespace {
 class SecurityStateWebContentsDelegate : public content::WebContentsDelegate {
  public:
   SecurityStateWebContentsDelegate() {}
+
+  SecurityStateWebContentsDelegate(const SecurityStateWebContentsDelegate&) =
+      delete;
+  SecurityStateWebContentsDelegate& operator=(
+      const SecurityStateWebContentsDelegate&) = delete;
+
   ~SecurityStateWebContentsDelegate() override {}
 
   bool visible_security_state_changed() const {
@@ -471,7 +481,6 @@ class SecurityStateWebContentsDelegate : public content::WebContentsDelegate {
 
  private:
   bool visible_security_state_changed_ = false;
-  DISALLOW_COPY_AND_ASSIGN(SecurityStateWebContentsDelegate);
 };
 
 }  // namespace
@@ -537,9 +546,6 @@ TEST_F(SafeBrowsingUIManagerTest, NoInterstitialInExtensions) {
 
   security_interstitials::UnsafeResource resource =
       MakeUnsafeResource(kBadURL, false /* is_subresource */);
-  resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID());
 
   SafeBrowsingCallbackWaiter waiter;
   resource.callback =
@@ -555,8 +561,15 @@ TEST_F(SafeBrowsingUIManagerTest, NoInterstitialInExtensions) {
 TEST_F(SafeBrowsingUIManagerTest, InvalidRenderFrameHostId) {
   security_interstitials::UnsafeResource resource =
       MakeUnsafeResourceAndStartNavigation(kBadURL);
-  resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(), -1);
+
+  // Clobber the resource's RenderFrameHost id so that subsequent WebContents
+  // lookups return null. This simulates the destruction of a RenderFrameHost
+  // (for the purposes of a WebContents lookup) which SafeBrowsing needs to
+  // handle.
+  content::GlobalRenderFrameHostId invalid_rfh_id;
+  resource.render_process_id = invalid_rfh_id.child_id;
+  resource.render_frame_id = invalid_rfh_id.frame_routing_id;
+  ASSERT_FALSE(security_interstitials::GetWebContentsForResource(resource));
 
   EXPECT_FALSE(IsAllowlisted(resource));
 }

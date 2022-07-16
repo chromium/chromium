@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 
@@ -25,6 +24,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
       public ShillManagerClient::TestInterface {
  public:
   FakeShillManagerClient();
+
+  FakeShillManagerClient(const FakeShillManagerClient&) = delete;
+  FakeShillManagerClient& operator=(const FakeShillManagerClient&) = delete;
+
   ~FakeShillManagerClient() override;
 
   // ShillManagerClient overrides
@@ -63,6 +66,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void SetNetworkThrottlingStatus(const NetworkThrottlingStatus& status,
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) override;
+  void AddPasspointCredentials(const dbus::ObjectPath& profile_path,
+                               const base::Value& properties,
+                               ObjectPathCallback callback,
+                               ErrorCallback error_callback) override;
 
   ShillManagerClient::TestInterface* GetTestInterface() override;
 
@@ -168,8 +175,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<FakeShillManagerClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeShillManagerClient);
 };
 
 }  // namespace chromeos

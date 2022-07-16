@@ -13,6 +13,10 @@ namespace browser_defaults {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
 const bool kBrowserAliveWithNoWindows = true;
 const bool kShowExitMenuItem = false;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+// Note: Lacros can get kicked out of memory when the last window closes.
+const bool kBrowserAliveWithNoWindows = false;
+const bool kShowExitMenuItem = false;
 #else
 const bool kBrowserAliveWithNoWindows = false;
 const bool kShowExitMenuItem = true;

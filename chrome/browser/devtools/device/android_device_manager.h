@@ -10,12 +10,11 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
@@ -44,6 +43,7 @@ class AndroidDeviceManager {
   struct BrowserInfo {
     BrowserInfo();
     BrowserInfo(const BrowserInfo& other);
+    BrowserInfo& operator=(const BrowserInfo& other);
 
     enum Type {
       kTypeChrome,
@@ -83,6 +83,9 @@ class AndroidDeviceManager {
       virtual ~Delegate() {}
     };
 
+    AndroidWebSocket(const AndroidWebSocket&) = delete;
+    AndroidWebSocket& operator=(const AndroidWebSocket&) = delete;
+
     ~AndroidWebSocket();
 
     void SendFrame(const std::string& message);
@@ -107,13 +110,15 @@ class AndroidDeviceManager {
     std::unique_ptr<WebSocketImpl, base::OnTaskRunnerDeleter> socket_impl_;
     Delegate* delegate_;
     base::WeakPtrFactory<AndroidWebSocket> weak_factory_{this};
-    DISALLOW_COPY_AND_ASSIGN(AndroidWebSocket);
   };
 
   class DeviceProvider;
 
   class Device final : public base::RefCountedDeleteOnSequence<Device> {
    public:
+    Device(const Device&) = delete;
+    Device& operator=(const Device&) = delete;
+
     void QueryDeviceInfo(DeviceInfoCallback callback);
 
     void OpenSocket(const std::string& socket_name, SocketCallback callback);
@@ -149,8 +154,6 @@ class AndroidDeviceManager {
     const std::string serial_;
 
     base::WeakPtrFactory<Device> weak_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(Device);
   };
 
   using Devices = std::vector<scoped_refptr<Device>>;

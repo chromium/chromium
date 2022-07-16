@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>energy_constants</key>
+	<dict>
+		<key>kcpu_time</key>
+		<real>1.23</real>
+		<key>kcpu_wakeups</key>
+		<real>3.45</real>
+		<key>kqos_default</key>
+		<real>6.78</real>
+		<key>kqos_background</key>
+		<real>8.90</real>
+		<key>kqos_utility</key>
+		<real>1.234</real>
+		<key>kqos_legacy</key>
+		<real>5.678</real>
+		<key>kqos_user_initiated</key>
+		<real>9.012</real>
+		<key>kqos_user_interactive</key>
+		<real>3.456</real>
+		<key>kdiskio_bytesread</key>
+		<real>7.890</real>
+		<key>kdiskio_byteswritten</key>
+		<real>1.2345</real>
+		<key>kgpu_time</key>
+		<real>6.7890</real>
+		<key>knetwork_recv_bytes</key>
+		<real>12.3</real>
+		<key>knetwork_recv_packets</key>
+		<real>45.6</real>
+		<key>knetwork_sent_bytes</key>
+		<real>67.8</real>
+		<key>knetwork_sent_packets</key>
+		<real>89.0</real>
+	</dict>
+</dict>
+</plist>

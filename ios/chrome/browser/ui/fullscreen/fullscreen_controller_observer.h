@@ -16,6 +16,11 @@ class FullscreenController;
 class FullscreenControllerObserver {
  public:
   FullscreenControllerObserver() = default;
+
+  FullscreenControllerObserver(const FullscreenControllerObserver&) = delete;
+  FullscreenControllerObserver& operator=(const FullscreenControllerObserver&) =
+      delete;
+
   virtual ~FullscreenControllerObserver() = default;
 
   // Invoked when the maximum or minimum viewport insets for |controller| have
@@ -50,9 +55,6 @@ class FullscreenControllerObserver {
   // Invoked when |controller| needs to resize its horizontal insets.
   // TODO(crbug.com/1114054) remove after fixing multiwindow resizing issue.
   virtual void ResizeHorizontalInsets(FullscreenController* controller) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FullscreenControllerObserver);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_CONTROLLER_OBSERVER_H_

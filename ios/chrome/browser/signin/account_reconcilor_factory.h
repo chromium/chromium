@@ -28,6 +28,9 @@ class AccountReconcilorFactory : public BrowserStateKeyedServiceFactory {
   // Returns an instance of the factory singleton.
   static AccountReconcilorFactory* GetInstance();
 
+  AccountReconcilorFactory(const AccountReconcilorFactory&) = delete;
+  AccountReconcilorFactory& operator=(const AccountReconcilorFactory&) = delete;
+
  private:
   friend class base::NoDestructor<AccountReconcilorFactory>;
 
@@ -37,8 +40,6 @@ class AccountReconcilorFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorFactory);
 };
 
 }  // namespace ios

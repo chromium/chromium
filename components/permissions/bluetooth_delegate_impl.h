@@ -63,6 +63,16 @@ class BluetoothDelegateImpl : public content::BluetoothDelegate {
         content::RenderFrameHost* frame,
         const content::BluetoothScanningPrompt::EventHandler&
             event_handler) = 0;
+
+    // Prompt the user for Bluetooth credentials (AKA Passkey).
+    //
+    // The |device_identifier| is a localized string (device name, address,
+    // etc.) displayed to the user for identification purposes. When the
+    // prompt is complete |callback| is called with the result.
+    virtual void ShowBluetoothDeviceCredentialsDialog(
+        content::RenderFrameHost* frame,
+        const std::u16string& device_identifier,
+        content::BluetoothDelegate::CredentialsCallback callback) = 0;
   };
 
   explicit BluetoothDelegateImpl(std::unique_ptr<Client> client);
@@ -79,6 +89,9 @@ class BluetoothDelegateImpl : public content::BluetoothDelegate {
       content::RenderFrameHost* frame,
       const content::BluetoothScanningPrompt::EventHandler& event_handler)
       override;
+  void ShowDeviceCredentialsPrompt(content::RenderFrameHost* frame,
+                                   const std::u16string& device_identifier,
+                                   CredentialsCallback callback) override;
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
       content::RenderFrameHost* frame,
       const std::string& device_address) override;

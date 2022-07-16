@@ -21,13 +21,14 @@ class NET_EXPORT_PRIVATE ProxyResolverFactoryWinHttp
  public:
   ProxyResolverFactoryWinHttp();
 
+  ProxyResolverFactoryWinHttp(const ProxyResolverFactoryWinHttp&) = delete;
+  ProxyResolverFactoryWinHttp& operator=(const ProxyResolverFactoryWinHttp&) =
+      delete;
+
   int CreateProxyResolver(const scoped_refptr<PacFileData>& pac_script,
                           std::unique_ptr<ProxyResolver>* resolver,
                           CompletionOnceCallback callback,
                           std::unique_ptr<Request>* request) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverFactoryWinHttp);
 };
 
 }  // namespace net

@@ -24,6 +24,10 @@ class ExtensionIconPlaceholder : public gfx::CanvasImageSource {
  public:
   ExtensionIconPlaceholder(extension_misc::ExtensionIcons size,
                            const std::string& name);
+
+  ExtensionIconPlaceholder(const ExtensionIconPlaceholder&) = delete;
+  ExtensionIconPlaceholder& operator=(const ExtensionIconPlaceholder&) = delete;
+
   ~ExtensionIconPlaceholder() override;
 
   // Creates an image backed by an ImageSkia with the ExtensionIconPlaceholder
@@ -43,8 +47,6 @@ class ExtensionIconPlaceholder : public gfx::CanvasImageSource {
 
   // The gray background image, on top of which the letter is drawn.
   gfx::Image base_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionIconPlaceholder);
 };
 
 }  // namespace extensions

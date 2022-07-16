@@ -63,9 +63,6 @@ NetLog* NetLog::Get() {
 
 NetLog::NetLog(base::PassKey<NetLog>) {}
 NetLog::NetLog(base::PassKey<NetLogWithSource>) {}
-NetLog::NetLog(base::PassKey<TestNetLog>) {}
-
-NetLog::~NetLog() = default;
 
 void NetLog::AddEntry(NetLogEventType type,
                       const NetLogSource& source,

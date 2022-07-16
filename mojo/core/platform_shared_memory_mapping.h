@@ -36,6 +36,11 @@ class MOJO_SYSTEM_IMPL_EXPORT PlatformSharedMemoryMapping {
   PlatformSharedMemoryMapping(base::subtle::PlatformSharedMemoryRegion* region,
                               size_t offset,
                               size_t length);
+
+  PlatformSharedMemoryMapping(const PlatformSharedMemoryMapping&) = delete;
+  PlatformSharedMemoryMapping& operator=(const PlatformSharedMemoryMapping&) =
+      delete;
+
   ~PlatformSharedMemoryMapping();
 
   bool IsValid() const;
@@ -49,8 +54,6 @@ class MOJO_SYSTEM_IMPL_EXPORT PlatformSharedMemoryMapping {
   const size_t length_;
   void* base_ = nullptr;
   std::unique_ptr<base::SharedMemoryMapping> mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSharedMemoryMapping);
 };
 
 }  // namespace core

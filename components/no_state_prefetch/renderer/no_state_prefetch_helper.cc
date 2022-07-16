@@ -55,7 +55,7 @@ bool NoStatePrefetchHelper::IsPrefetching(
   return NoStatePrefetchHelper::Get(render_frame) != nullptr;
 }
 
-void NoStatePrefetchHelper::DidFinishDocumentLoad() {
+void NoStatePrefetchHelper::DidDispatchDOMContentLoadedEvent() {
   parsed_time_ = base::TimeTicks::Now();
   prefetch_finished_ = true;
   if (prefetch_count_ == 0)

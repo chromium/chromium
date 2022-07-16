@@ -37,6 +37,20 @@ ProfileProtoDBFactory<cart_db::ChromeCartContentProto>::GetInstance() {
   return GetChromeCartProfileProtoDBFactory();
 }
 
+ProfileProtoDBFactory<coupon_db::CouponContentProto>*
+GetCouponProfileProtoDBFactory() {
+  static base::NoDestructor<
+      ProfileProtoDBFactory<coupon_db::CouponContentProto>>
+      instance;
+  return instance.get();
+}
+
+template <>
+ProfileProtoDBFactory<coupon_db::CouponContentProto>*
+ProfileProtoDBFactory<coupon_db::CouponContentProto>::GetInstance() {
+  return GetCouponProfileProtoDBFactory();
+}
+
 #else
 ProfileProtoDBFactory<
     commerce_subscription_db::CommerceSubscriptionContentProto>*

@@ -39,10 +39,6 @@ constexpr const char* kStartupMetrics[] = {
 
 // Verify that startup histograms are logged on browser startup.
 IN_PROC_BROWSER_TEST_F(StartupMetricsTest, ReportsValues) {
-  // This is usually done from ChromeBrowserMainParts::MainMessageLoopRun().
-  startup_metric_utils::RecordBrowserMainMessageLoopStart(
-      base::TimeTicks::Now(), false /* is_first_run */);
-
   // Wait for all histograms to be recorded. The test will hit a RunLoop timeout
   // if a histogram is not recorded.
   for (auto* const histogram : kStartupMetrics) {

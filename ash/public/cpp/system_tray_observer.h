@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_SYSTEM_TRAY_OBSERVER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 
 namespace ash {
 

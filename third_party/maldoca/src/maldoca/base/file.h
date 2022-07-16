@@ -19,6 +19,7 @@
 #ifndef MALDOCA_BASE_FILE_H_
 #define MALDOCA_BASE_FILE_H_
 
+#include <algorithm>
 #include <cstdio>
 #include <memory>
 #include <string>
@@ -29,7 +30,9 @@
 #include "absl/strings/str_join.h"
 #include "absl/strings/string_view.h"
 #include "base/files/file_path.h"
-#include "google/protobuf/message.h"
+#ifndef MALDOCA_IN_CHROMIUM
+#include "google/protobuf/message.h"  // nogncheck
+#endif
 #include "maldoca/base/statusor.h"
 #if defined(_WIN32)
 #include "maldoca/base/utf8/unicodetext.h"
@@ -43,8 +46,10 @@ absl::Status Match(absl::string_view pattern,
                    std::vector<std::string>* filenames);
 #endif  // MALDOCA_CHROME
 
-absl::Status GetContents(const std::string& path, std::string* content);
-StatusOr<std::string> GetContents(absl::string_view path);
+absl::Status GetContents(const std::string& path, std::string* content,
+                         bool xor_decode_file = false);
+StatusOr<std::string> GetContents(absl::string_view path,
+                                  bool xor_decode_file = false);
 
 #ifndef MALDOCA_CHROME
 absl::Status SetContents(const std::string& path, absl::string_view contents);
@@ -77,11 +82,9 @@ inline absl::Status CreateDir(absl::string_view path) {
 
 std::string CreateTempFileAndCloseOrDie(absl::string_view directory,
                                         const std::string& contents);
-#endif  // MALDOCA_CHROME
 absl::Status GetTextProto(absl::string_view filename,
                           ::google::protobuf::Message* proto);
 
-#ifndef MALDOCA_CHROME
 // Get a temp dir for testing
 inline std::string TestTempDir() {
   auto var = getenv("TEST_TMPDIR");

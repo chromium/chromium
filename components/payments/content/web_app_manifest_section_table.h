@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/payments/content/web_app_manifest.h"
 #include "components/webdata/common/web_database_table.h"
 
@@ -33,6 +32,11 @@ namespace payments {
 class WebAppManifestSectionTable : public WebDatabaseTable {
  public:
   WebAppManifestSectionTable();
+
+  WebAppManifestSectionTable(const WebAppManifestSectionTable&) = delete;
+  WebAppManifestSectionTable& operator=(const WebAppManifestSectionTable&) =
+      delete;
+
   ~WebAppManifestSectionTable() override;
 
   // Retrieves the WebAppManifestSectionTable* owned by |db|.
@@ -55,9 +59,6 @@ class WebAppManifestSectionTable : public WebDatabaseTable {
   // for the |web_app|.
   std::vector<WebAppManifestSection> GetWebAppManifest(
       const std::string& web_app);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAppManifestSectionTable);
 };
 
 }  // namespace payments

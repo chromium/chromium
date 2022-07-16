@@ -18,4 +18,4 @@ rootWebArea
 ++++++splitter horizontal name='All the above in one'
 ++++++genericContainer
 ++++++++none ignored
-++++++++++slider horizontal value='50' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++slider horizontal valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00

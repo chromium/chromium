@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace metrics {
@@ -69,6 +68,10 @@ class SystemSessionAnalyzer {
   // events pertaining to as many as |max_session_cnt| of the most recent system
   // sessions.
   explicit SystemSessionAnalyzer(uint32_t max_session_cnt);
+
+  SystemSessionAnalyzer(const SystemSessionAnalyzer&) = delete;
+  SystemSessionAnalyzer& operator=(const SystemSessionAnalyzer&) = delete;
+
   virtual ~SystemSessionAnalyzer();
 
   // Returns an analysis status for the system session that contains
@@ -128,8 +131,6 @@ class SystemSessionAnalyzer {
 
   // Track details of what failures occurred.
   ExtendedStatus extended_status_ = ExtendedStatus::NO_FAILURE;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemSessionAnalyzer);
 };
 
 }  // namespace metrics

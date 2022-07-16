@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "components/variations/variations_switches.h"
 #include "ui/base/device_form_factor.h"

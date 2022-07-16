@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/services/device_sync/cryptauth_feature_status_setter.h"
@@ -50,6 +49,12 @@ class FakeCryptAuthFeatureStatusSetter : public CryptAuthFeatureStatusSetter {
   };
 
   FakeCryptAuthFeatureStatusSetter();
+
+  FakeCryptAuthFeatureStatusSetter(const FakeCryptAuthFeatureStatusSetter&) =
+      delete;
+  FakeCryptAuthFeatureStatusSetter& operator=(
+      const FakeCryptAuthFeatureStatusSetter&) = delete;
+
   ~FakeCryptAuthFeatureStatusSetter() override;
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
@@ -67,14 +72,18 @@ class FakeCryptAuthFeatureStatusSetter : public CryptAuthFeatureStatusSetter {
 
   Delegate* delegate_ = nullptr;
   std::vector<Request> requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthFeatureStatusSetter);
 };
 
 class FakeCryptAuthFeatureStatusSetterFactory
     : public CryptAuthFeatureStatusSetterImpl::Factory {
  public:
   FakeCryptAuthFeatureStatusSetterFactory();
+
+  FakeCryptAuthFeatureStatusSetterFactory(
+      const FakeCryptAuthFeatureStatusSetterFactory&) = delete;
+  FakeCryptAuthFeatureStatusSetterFactory& operator=(
+      const FakeCryptAuthFeatureStatusSetterFactory&) = delete;
+
   ~FakeCryptAuthFeatureStatusSetterFactory() override;
 
   const std::vector<FakeCryptAuthFeatureStatusSetter*>& instances() const {
@@ -103,8 +112,6 @@ class FakeCryptAuthFeatureStatusSetterFactory
   std::string last_instance_id_;
   std::string last_instance_id_token_;
   CryptAuthClientFactory* last_client_factory_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthFeatureStatusSetterFactory);
 };
 
 }  // namespace device_sync

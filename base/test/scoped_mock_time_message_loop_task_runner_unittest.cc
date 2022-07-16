@@ -45,6 +45,11 @@ class ScopedMockTimeMessageLoopTaskRunnerTest : public testing::Test {
     CurrentThread::Get()->SetTaskRunner(original_task_runner_);
   }
 
+  ScopedMockTimeMessageLoopTaskRunnerTest(
+      const ScopedMockTimeMessageLoopTaskRunnerTest&) = delete;
+  ScopedMockTimeMessageLoopTaskRunnerTest& operator=(
+      const ScopedMockTimeMessageLoopTaskRunnerTest&) = delete;
+
  protected:
   TestMockTimeTaskRunner* original_task_runner() {
     return original_task_runner_.get();
@@ -54,8 +59,6 @@ class ScopedMockTimeMessageLoopTaskRunnerTest : public testing::Test {
   scoped_refptr<TestMockTimeTaskRunner> original_task_runner_;
 
   test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMockTimeMessageLoopTaskRunnerTest);
 };
 
 // Verifies a new TaskRunner is installed while a
@@ -82,12 +85,12 @@ TEST_F(ScopedMockTimeMessageLoopTaskRunnerTest,
   OnceClosure task_10 = BindOnce(&AssignTrue, &task_10_has_run);
   OnceClosure task_11 = BindOnce(&AssignTrue, &task_11_has_run);
 
-  constexpr TimeDelta task_1_delay = TimeDelta::FromSeconds(1);
-  constexpr TimeDelta task_2_delay = TimeDelta::FromSeconds(2);
-  constexpr TimeDelta task_10_delay = TimeDelta::FromSeconds(10);
-  constexpr TimeDelta task_11_delay = TimeDelta::FromSeconds(11);
+  constexpr TimeDelta task_1_delay = Seconds(1);
+  constexpr TimeDelta task_2_delay = Seconds(2);
+  constexpr TimeDelta task_10_delay = Seconds(10);
+  constexpr TimeDelta task_11_delay = Seconds(11);
 
-  constexpr TimeDelta step_time_by = TimeDelta::FromSeconds(5);
+  constexpr TimeDelta step_time_by = Seconds(5);
 
   GetCurrentTaskRunner()->PostDelayedTask(FROM_HERE, std::move(task_1),
                                           task_1_delay);

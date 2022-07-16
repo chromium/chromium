@@ -11,8 +11,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "remoting/base/constants.h"
 #include "remoting/proto/control.pb.h"
@@ -50,7 +50,7 @@ VideoFramePump::VideoFramePump(
       video_stub_(video_stub),
       keep_alive_timer_(
           FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kKeepAlivePacketIntervalMs),
+          base::Milliseconds(kKeepAlivePacketIntervalMs),
           base::BindRepeating(&VideoFramePump::SendKeepAlivePacket,
                               base::Unretained(this))),
       capture_scheduler_(base::BindRepeating(&VideoFramePump::CaptureNextFrame,

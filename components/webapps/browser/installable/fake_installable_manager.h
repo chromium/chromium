@@ -10,11 +10,8 @@
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
-
-namespace blink {
-struct Manifest;
-}
 
 namespace content {
 class WebContents;
@@ -44,11 +41,11 @@ class FakeInstallableManager : public InstallableManager {
       content::WebContents* web_contents,
       InstallableStatusCode installable_code,
       const GURL& manifest_url,
-      std::unique_ptr<blink::Manifest> manifest);
+      blink::mojom::ManifestPtr manifest);
 
  private:
   GURL manifest_url_;
-  std::unique_ptr<blink::Manifest> manifest_;
+  blink::mojom::ManifestPtr manifest_;
   std::unique_ptr<InstallableData> data_;
 
   base::WeakPtrFactory<FakeInstallableManager> weak_factory_{this};

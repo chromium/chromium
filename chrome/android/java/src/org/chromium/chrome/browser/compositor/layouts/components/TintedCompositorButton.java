@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.appcompat.content.res.AppCompatResources;
 
 /**
  * Class for a CompositorButton that uses tint instead of multiple drawable resources.
@@ -85,6 +86,6 @@ public class TintedCompositorButton extends CompositorButton {
             tint = isIncognito() ? mIncognitoPressedTintResource : mPressedTintResource;
         }
 
-        return mContext.getResources().getColor(tint);
+        return AppCompatResources.getColorStateList(mContext, tint).getDefaultColor();
     }
 }

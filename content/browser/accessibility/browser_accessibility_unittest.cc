@@ -16,6 +16,10 @@ namespace content {
 class BrowserAccessibilityTest : public testing::Test {
  public:
   BrowserAccessibilityTest();
+
+  BrowserAccessibilityTest(const BrowserAccessibilityTest&) = delete;
+  BrowserAccessibilityTest& operator=(const BrowserAccessibilityTest&) = delete;
+
   ~BrowserAccessibilityTest() override;
 
  protected:
@@ -27,8 +31,6 @@ class BrowserAccessibilityTest : public testing::Test {
 
   BrowserTaskEnvironment task_environment_;
   ui::testing::ScopedAxModeSetter ax_mode_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityTest);
 };
 
 BrowserAccessibilityTest::BrowserAccessibilityTest()
@@ -63,19 +65,19 @@ TEST_F(BrowserAccessibilityTest, TestCanFireEvents) {
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_obj = manager->GetRoot();
-  EXPECT_FALSE(root_obj->PlatformIsLeaf());
+  EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
 
   BrowserAccessibility* para_obj = root_obj->PlatformGetChild(0);
   EXPECT_TRUE(para_obj->CanFireEvents());
 #if defined(OS_ANDROID)
-  EXPECT_TRUE(para_obj->PlatformIsLeaf());
+  EXPECT_TRUE(para_obj->IsLeaf());
 #else
-  EXPECT_FALSE(para_obj->PlatformIsLeaf());
+  EXPECT_FALSE(para_obj->IsLeaf());
 #endif
 
   BrowserAccessibility* text_obj = manager->GetFromID(111);
-  EXPECT_TRUE(text_obj->PlatformIsLeaf());
+  EXPECT_TRUE(text_obj->IsLeaf());
 #if !defined(OS_ANDROID)
   EXPECT_TRUE(text_obj->CanFireEvents());
 #endif

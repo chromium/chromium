@@ -7,10 +7,11 @@ import {isChromeOS, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
-import {getFakeLanguagePrefs} from 'chrome://test/settings/fake_language_settings_private.js';
-import {FakeSettingsPrivate} from 'chrome://test/settings/fake_settings_private.js';
-import {TestLanguagesBrowserProxy} from 'chrome://test/settings/test_languages_browser_proxy.js';
-import {fakeDataBind, isChildVisible} from 'chrome://test/test_util.m.js';
+import {fakeDataBind, isChildVisible} from 'chrome://webui-test/test_util.js';
+
+import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
+import {FakeSettingsPrivate} from './fake_settings_private.js';
+import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 
 // clang-format on
 
@@ -37,10 +38,6 @@ suite('languages page', function() {
   /** @type {?LanguagesBrowserProxy} */
   let browserProxy = null;
 
-  // Enabled language pref name for the platform.
-  const languagesPref = isChromeOS ? 'settings.language.preferred_languages' :
-                                     'intl.accept_languages';
-
   suiteSetup(function() {
     testing.Test.disableAnimationsAndTransitions();
     PolymerTest.clearBody();
@@ -55,7 +52,7 @@ suite('languages page', function() {
     return CrSettingsPrefs.initialized.then(function() {
       // Set up test browser proxy.
       browserProxy = new TestLanguagesBrowserProxy();
-      LanguagesBrowserProxyImpl.instance_ = browserProxy;
+      LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
       // Set up fake languageSettingsPrivate API.
       const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
@@ -224,7 +221,11 @@ suite('languages page', function() {
           ['en-US'], languageHelper.getPref('spellcheck.dictionaries').value);
 
       // Update supported languages to just 1 language should hide list.
-      languageHelper.setPrefValue(languagesPref, 'en-US');
+      languageHelper.setPrefValue('intl.accept_languages', 'en-US');
+      if (isChromeOS) {
+        languageHelper.setPrefValue(
+            'settings.language.preferred_languages', 'en-US');
+      }
       flush();
       assertTrue(list.hidden);
 
@@ -374,7 +375,7 @@ suite(languages_page_tests.TestNames.RestructuredLanguageSettings, function() {
     return CrSettingsPrefs.initialized.then(function() {
       // Set up test browser proxy.
       browserProxy = new TestLanguagesBrowserProxy();
-      LanguagesBrowserProxyImpl.instance_ = browserProxy;
+      LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
       // Set up fake languageSettingsPrivate API.
       const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,6 +33,12 @@ constexpr int kLaunchAppShortcutLast = 199;
 class ArcAppShortcutsMenuBuilderTest : public testing::Test {
  public:
   ArcAppShortcutsMenuBuilderTest() = default;
+
+  ArcAppShortcutsMenuBuilderTest(const ArcAppShortcutsMenuBuilderTest&) =
+      delete;
+  ArcAppShortcutsMenuBuilderTest& operator=(
+      const ArcAppShortcutsMenuBuilderTest&) = delete;
+
   ~ArcAppShortcutsMenuBuilderTest() override = default;
 
   void SetUp() override {
@@ -54,8 +59,6 @@ class ArcAppShortcutsMenuBuilderTest : public testing::Test {
   ArcAppTest arc_app_test_;
 
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppShortcutsMenuBuilderTest);
 };
 
 TEST_F(ArcAppShortcutsMenuBuilderTest, Basic) {

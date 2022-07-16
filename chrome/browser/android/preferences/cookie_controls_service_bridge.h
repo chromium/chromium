@@ -16,6 +16,10 @@ class CookieControlsServiceBridge : public CookieControlsService::Observer {
   CookieControlsServiceBridge(JNIEnv* env,
                               const base::android::JavaParamRef<jobject>& obj);
 
+  CookieControlsServiceBridge(const CookieControlsServiceBridge&) = delete;
+  CookieControlsServiceBridge& operator=(const CookieControlsServiceBridge&) =
+      delete;
+
   ~CookieControlsServiceBridge() override;
 
   // Called by the Java counterpart when it is getting garbage collected.
@@ -38,8 +42,6 @@ class CookieControlsServiceBridge : public CookieControlsService::Observer {
 
   CookieControlsService* service_;
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieControlsServiceBridge);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_PREFERENCES_COOKIE_CONTROLS_SERVICE_BRIDGE_H_

@@ -7,7 +7,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "content/browser/android/render_widget_host_connector.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
@@ -31,6 +30,10 @@ class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
   GestureListenerManager(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj,
                          WebContentsImpl* web_contents);
+
+  GestureListenerManager(const GestureListenerManager&) = delete;
+  GestureListenerManager& operator=(const GestureListenerManager&) = delete;
+
   ~GestureListenerManager() override;
 
   void ResetGestureDetection(JNIEnv* env,
@@ -88,8 +91,6 @@ class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
 
   // True if there is at least one listener attached.
   bool has_listeners_attached_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureListenerManager);
 };
 
 }  // namespace content

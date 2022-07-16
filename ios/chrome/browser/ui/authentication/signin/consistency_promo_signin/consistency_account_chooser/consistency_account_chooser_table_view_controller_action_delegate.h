@@ -20,6 +20,9 @@
 - (void)consistencyAccountChooserTableViewControllerDidTapOnAddAccount:
     (ConsistencyAccountChooserTableViewController*)viewController;
 
+// Show management help page.
+- (void)showManagementHelpPage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_CONSISTENCY_PROMO_SIGNIN_CONSISTENCY_ACCOUNT_CHOOSER_CONSISTENCY_ACCOUNT_CHOOSER_TABLE_VIEW_CONTROLLER_ACTION_DELEGATE_H_

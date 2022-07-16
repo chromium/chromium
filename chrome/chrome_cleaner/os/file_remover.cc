@@ -14,15 +14,15 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/synchronization/waitable_event.h"
-#include "chrome/chrome_cleaner/mojom/zip_archiver.mojom.h"
 #include "chrome/chrome_cleaner/logging/proto/removal_status.pb.h"
+#include "chrome/chrome_cleaner/mojom/zip_archiver.mojom.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"
 #include "chrome/chrome_cleaner/os/file_path_sanitization.h"
 #include "chrome/chrome_cleaner/os/file_removal_status_updater.h"
+#include "chrome/chrome_cleaner/os/file_remover_allowlist.h"
 #include "chrome/chrome_cleaner/os/pre_fetched_paths.h"
 #include "chrome/chrome_cleaner/os/registry_util.h"
 #include "chrome/chrome_cleaner/os/scoped_disable_wow64_redirection.h"
-#include "chrome/chrome_cleaner/os/whitelisted_directory.h"
 
 namespace chrome_cleaner {
 
@@ -42,9 +42,9 @@ bool RegisterFileForPostRebootRemoval(const base::FilePath path) {
 }
 
 void DeleteEmptyDirectories(base::FilePath directory) {
-  while (
-      base::DirectoryExists(directory) && base::IsDirectoryEmpty(directory) &&
-      !WhitelistedDirectory::GetInstance()->IsWhitelistedDirectory(directory)) {
+  while (base::DirectoryExists(directory) &&
+         base::IsDirectoryEmpty(directory) &&
+         !FileRemoverAllowlist::GetInstance()->IsAllowlisted(directory)) {
     // Empty directories deleted in this cleanup are not logged in the matched
     // folders list for the corresponding UwS, because they are not necessarily
     // matched by any rule by the scanner.
@@ -149,7 +149,7 @@ FileRemoverAPI::DeletionValidationStatus FileRemover::CanRemove(
     LOG(ERROR) << "Cannot remove known file " << SanitizePath(file);
     return DeletionValidationStatus::FORBIDDEN;
   }
-  if (WhitelistedDirectory::GetInstance()->IsWhitelistedDirectory(file)) {
+  if (FileRemoverAllowlist::GetInstance()->IsAllowlisted(file)) {
     // We are logging the path in both sanitized and non-sanitized form since
     // this should never happen unless we are breaking something, in which
     // case we will need precise information.
@@ -270,7 +270,7 @@ void FileRemover::ValidateAndQuarantineFile(
       break;
     case DeletionValidationStatus::FORBIDDEN:
       removal_status_updater->UpdateRemovalStatus(
-          normalized_path, REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL);
+          normalized_path, REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL);
       std::move(done_callback).Run(false);
       return;
     case DeletionValidationStatus::ALLOWED:

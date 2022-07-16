@@ -5,7 +5,6 @@
 #ifndef UI_TOUCH_SELECTION_TOUCH_SELECTION_MENU_RUNNER_H_
 #define UI_TOUCH_SELECTION_TOUCH_SELECTION_MENU_RUNNER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "ui/touch_selection/ui_touch_selection_export.h"
@@ -26,14 +25,6 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMenuClient {
  public:
   TouchSelectionMenuClient();
   virtual ~TouchSelectionMenuClient();
-
-  // Returns true if `client` is valid (e.g. not deleted).
-  // TODO(jamescook): Remove after investigation of https://crbug.com/1146270
-  static bool IsValid(TouchSelectionMenuClient* client);
-
-  // Must return a static string that outlives `this`.
-  // TODO(jamescook): Remove after investigation of https://crbug.com/1146270
-  virtual const char* GetType() = 0;
 
   virtual bool IsCommandIdEnabled(int command_id) const = 0;
   virtual void ExecuteCommand(int command_id, int event_flags) = 0;
@@ -63,6 +54,9 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMenuClient {
 // quick menu.
 class UI_TOUCH_SELECTION_EXPORT TouchSelectionMenuRunner {
  public:
+  TouchSelectionMenuRunner(const TouchSelectionMenuRunner&) = delete;
+  TouchSelectionMenuRunner& operator=(const TouchSelectionMenuRunner&) = delete;
+
   virtual ~TouchSelectionMenuRunner();
 
   static TouchSelectionMenuRunner* GetInstance();
@@ -84,9 +78,6 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMenuRunner {
 
  protected:
   TouchSelectionMenuRunner();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuRunner);
 };
 
 }  // namespace ui

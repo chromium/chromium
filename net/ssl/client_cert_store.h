@@ -21,6 +21,9 @@ class SSLCertRequestInfo;
 // gets its own uniquely owned handle.
 class NET_EXPORT ClientCertStore {
  public:
+  ClientCertStore(const ClientCertStore&) = delete;
+  ClientCertStore& operator=(const ClientCertStore&) = delete;
+
   virtual ~ClientCertStore() {}
 
   using ClientCertListCallback =
@@ -35,9 +38,6 @@ class NET_EXPORT ClientCertStore {
 
  protected:
   ClientCertStore() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientCertStore);
 };
 
 }  // namespace net

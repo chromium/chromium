@@ -30,7 +30,7 @@
 
 #include "third_party/blink/renderer/modules/crypto/subtle_crypto.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_crypto.h"

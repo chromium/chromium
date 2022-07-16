@@ -62,10 +62,6 @@ struct EnrollmentConfig {
     // Forced enrollment triggered as a fallback to attestation initial
     // enrollment, user can't skip.
     MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK,
-
-    // Attestation-based enrollment with enrollment token, used in configuration
-    // based OOBE.
-    MODE_ATTESTATION_ENROLLMENT_TOKEN,
   };
 
   // An enumeration of authentication mechanisms that can be used for
@@ -129,7 +125,6 @@ struct EnrollmentConfig {
   // Whether this configuration is in attestation mode.
   bool is_mode_attestation() const {
     return mode == MODE_ATTESTATION || mode == MODE_ATTESTATION_LOCAL_FORCED ||
-           mode == MODE_ATTESTATION_ENROLLMENT_TOKEN ||
            is_mode_attestation_server();
   }
 
@@ -158,9 +153,6 @@ struct EnrollmentConfig {
 
   // The realm the device is joined to (if managed by AD).
   std::string management_realm;
-
-  // Enrollment token to use for authentication (for USB-enrollment).
-  std::string enrollment_token;
 
   // Is a license packaged with device or not.
   bool is_license_packaged_with_device = false;

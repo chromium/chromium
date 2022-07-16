@@ -108,7 +108,7 @@ GraphicsLayerUpdater::GraphicsLayerUpdater() : needs_rebuild_tree_(false) {}
 
 void GraphicsLayerUpdater::Update(
     PaintLayer& layer,
-    Vector<PaintLayer*>& layers_needing_paint_invalidation) {
+    HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation) {
   TRACE_EVENT0("blink", "GraphicsLayerUpdater::update");
   UpdateContext update_context;
   UpdateRecursive(layer, kDoNotForceUpdate, update_context,
@@ -119,7 +119,7 @@ void GraphicsLayerUpdater::UpdateRecursive(
     PaintLayer& layer,
     UpdateType update_type,
     UpdateContext& context,
-    Vector<PaintLayer*>& layers_needing_paint_invalidation) {
+    HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation) {
   if (layer.HasCompositedLayerMapping()) {
     CompositedLayerMapping* mapping = layer.GetCompositedLayerMapping();
 

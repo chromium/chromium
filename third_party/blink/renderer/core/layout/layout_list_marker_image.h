@@ -21,7 +21,7 @@ class CORE_EXPORT LayoutListMarkerImage final : public LayoutImage {
     NOT_DESTROYED();
     return IsLayoutNGObjectForListMarkerImage();
   }
-  LayoutSize DefaultSize() const;
+  FloatSize DefaultSize() const;
 
  private:
   bool IsOfType(LayoutObjectType) const override;

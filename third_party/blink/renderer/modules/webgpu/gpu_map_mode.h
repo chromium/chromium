@@ -17,8 +17,8 @@ class GPUMapMode : public ScriptWrappable {
   static constexpr uint32_t kRead = 1;
   static constexpr uint32_t kWrite = 2;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUMapMode);
+  GPUMapMode(const GPUMapMode&) = delete;
+  GPUMapMode& operator=(const GPUMapMode&) = delete;
 };
 
 }  // namespace blink

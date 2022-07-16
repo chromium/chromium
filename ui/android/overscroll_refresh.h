@@ -5,7 +5,6 @@
 #ifndef UI_ANDROID_OVERSCROLL_REFRESH_H_
 #define UI_ANDROID_OVERSCROLL_REFRESH_H_
 
-#include "base/macros.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -41,6 +40,9 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   enum { kDefaultNavigationEdgeWidth = 24 };
 
   OverscrollRefresh(OverscrollRefreshHandler* handler, float edge_width);
+
+  OverscrollRefresh(const OverscrollRefresh&) = delete;
+  OverscrollRefresh& operator=(const OverscrollRefresh&) = delete;
 
   virtual ~OverscrollRefresh();
 
@@ -107,8 +109,6 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   const float edge_width_;  // in px
   gfx::Vector2dF cumulative_scroll_;
   OverscrollRefreshHandler* const handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscrollRefresh);
 };
 
 }  // namespace ui

@@ -15,6 +15,9 @@ namespace device {
 // Allows sharing and mocking of the update polling policy function.
 class WifiPollingPolicy {
  public:
+  WifiPollingPolicy(const WifiPollingPolicy&) = delete;
+  WifiPollingPolicy& operator=(const WifiPollingPolicy&) = delete;
+
   virtual ~WifiPollingPolicy() = default;
 
   // Methods for managing the single instance of WifiPollingPolicy. The WiFi
@@ -51,9 +54,6 @@ class WifiPollingPolicy {
 
  protected:
   WifiPollingPolicy() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WifiPollingPolicy);
 };
 
 // Generic polling policy, constants are compile-time parameterized to allow
@@ -102,8 +102,7 @@ class GenericWifiPollingPolicy : public WifiPollingPolicy {
       // Compute the remaining duration of the current interval. If the interval
       // is not yet complete, we will schedule a scan to occur once it is.
       base::TimeDelta remaining =
-          interval_start_ +
-          base::TimeDelta::FromMilliseconds(interval_duration_) - now;
+          interval_start_ + base::Milliseconds(interval_duration_) - now;
       remaining_millis = remaining.InMilliseconds();
     }
 

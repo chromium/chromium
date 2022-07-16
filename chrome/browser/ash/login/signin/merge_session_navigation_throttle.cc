@@ -15,7 +15,7 @@ namespace ash {
 namespace {
 
 // Maximum wait time for merge session process.
-constexpr base::TimeDelta kTotalWaitTime = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kTotalWaitTime = base::Seconds(10);
 
 OAuth2LoginManager* GetOAuth2LoginManager(content::WebContents* web_contents) {
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();

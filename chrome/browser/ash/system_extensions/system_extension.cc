@@ -5,16 +5,23 @@
 #include "chrome/browser/ash/system_extensions/system_extension.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 
 SystemExtension::SystemExtension() = default;
+
+SystemExtension::SystemExtension(SystemExtension&&) = default;
 
 SystemExtension::~SystemExtension() = default;
 
 // static
 std::string SystemExtension::IdToString(const SystemExtensionId& id) {
-  std::string id_str;
-  for (uint8_t i : id) {
-    id_str += base::NumberToString(i);
-  }
-  return id_str;
+  return base::HexEncode(id);
+}
+
+absl::optional<SystemExtensionId> SystemExtension::StringToId(
+    base::StringPiece id_str) {
+  SystemExtensionId id;
+  if (base::HexStringToSpan(id_str, id))
+    return id;
+  return absl::nullopt;
 }

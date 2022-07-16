@@ -25,6 +25,11 @@ class VirtualCardSelectionDialogBrowserTest : public DialogBrowserTest {
  public:
   VirtualCardSelectionDialogBrowserTest() = default;
 
+  VirtualCardSelectionDialogBrowserTest(
+      const VirtualCardSelectionDialogBrowserTest&) = delete;
+  VirtualCardSelectionDialogBrowserTest& operator=(
+      const VirtualCardSelectionDialogBrowserTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     content::WebContents* web_contents =
@@ -62,9 +67,6 @@ class VirtualCardSelectionDialogBrowserTest : public DialogBrowserTest {
     return VirtualCardSelectionDialogControllerImpl::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VirtualCardSelectionDialogBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(VirtualCardSelectionDialogBrowserTest,

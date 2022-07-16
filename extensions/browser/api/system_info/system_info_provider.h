@@ -62,6 +62,9 @@ class SystemInfoProvider
 
   SystemInfoProvider();
 
+  SystemInfoProvider(const SystemInfoProvider&) = delete;
+  SystemInfoProvider& operator=(const SystemInfoProvider&) = delete;
+
   // Override to do any prepare work on UI thread before |QueryInfo()| gets
   // called.
   virtual void PrepareQueryOnUIThread();
@@ -110,8 +113,6 @@ class SystemInfoProvider
 
   // Sequenced task runner to safely query system information.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemInfoProvider);
 };
 
 }  // namespace extensions

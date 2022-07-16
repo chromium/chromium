@@ -28,7 +28,6 @@ NSString* TitleForCollectionShortcutType(NTPCollectionShortcutType type) {
     case NTPCollectionShortcutTypeCount:
       NOTREACHED();
       return @"";
-      break;
   }
 }
 

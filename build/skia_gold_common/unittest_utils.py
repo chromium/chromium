@@ -15,6 +15,7 @@ _SkiaGoldArgs = collections.namedtuple('_SkiaGoldArgs', [
     'gerrit_patchset',
     'buildbucket_id',
     'bypass_skia_gold_functionality',
+    'skia_gold_local_png_write_directory',
 ])
 
 
@@ -26,8 +27,10 @@ def createSkiaGoldArgs(local_pixel_tests=None,
                        gerrit_issue=None,
                        gerrit_patchset=None,
                        buildbucket_id=None,
-                       bypass_skia_gold_functionality=None):
+                       bypass_skia_gold_functionality=None,
+                       skia_gold_local_png_write_directory=None):
   return _SkiaGoldArgs(local_pixel_tests, no_luci_auth, code_review_system,
                        continuous_integration_system, git_revision,
                        gerrit_issue, gerrit_patchset, buildbucket_id,
-                       bypass_skia_gold_functionality)
+                       bypass_skia_gold_functionality,
+                       skia_gold_local_png_write_directory)

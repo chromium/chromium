@@ -12,6 +12,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -21,6 +22,7 @@
 #include "components/ukm/ios/ukm_reporting_ios_util.h"
 #import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
+#include "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/crash_report/crash_helper.h"
@@ -38,8 +40,8 @@
 #include "ios/chrome/browser/widget_kit/features.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
 #include "ios/chrome/common/app_group/app_group_metrics_mainapp.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
+#import "ios/chrome/common/credential_provider/constants.h"
+#include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
@@ -54,8 +56,26 @@
 #endif
 
 namespace {
+// The key to a NSUserDefaults entry logging the number of times classes are
+// loaded before a scene is attached.
+NSString* const kLoadTimePreferenceKey = @"LoadTimePreferenceKey";
+
+// The time when Objective C objects are loaded.
+base::TimeTicks g_load_time;
+
 // The amount of time (in seconds) to wait for the user to start a new task.
 const NSTimeInterval kFirstUserActionTimeout = 30.0;
+
+// Histograms fired in extensions that need to be re-fired from the main app.
+const metrics_mediator::HistogramNameCountPair kHistogramsFromExtension[] = {
+    {
+        @"IOS.CredentialExtension.PasswordCreated",
+        static_cast<int>(CPEPasswordCreated::kMaxValue) + 1,
+    },
+    {
+        @"IOS.CredentialExtension.NewCredentialUsername",
+        static_cast<int>(CPENewCredentialUsername::kMaxValue) + 1,
+    }};
 
 // Returns time delta since app launch as retrieved from kernel info about
 // the current process.
@@ -70,11 +90,94 @@ base::TimeDelta TimeDeltaSinceAppLaunchFromProcess() {
   const NSTimeInterval time_since_1970 =
       time.tv_sec + (time.tv_usec / (double)USEC_PER_SEC);
   NSDate* date = [NSDate dateWithTimeIntervalSince1970:time_since_1970];
-  return base::TimeDelta::FromSecondsD(-date.timeIntervalSinceNow);
+  return base::Seconds(-date.timeIntervalSinceNow);
 }
 
-// Send histograms reporting the usage of notification center metrics.
-void RecordWidgetUsage() {
+#if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
+void DumpEnvironment(id<StartupInformation> startup_information) {
+  if (![[NSUserDefaults standardUserDefaults]
+          boolForKey:@"EnableDumpEnvironment"]) {
+    return;
+  }
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                       NSUserDomainMask, YES);
+  NSError* error = nil;
+  NSString* document_directory = [paths objectAtIndex:0];
+  NSString* environment_directory =
+      [document_directory stringByAppendingPathComponent:@"environment"];
+  if (![[NSFileManager defaultManager]
+          fileExistsAtPath:environment_directory]) {
+    [[NSFileManager defaultManager] createDirectoryAtPath:environment_directory
+                              withIntermediateDirectories:NO
+                                               attributes:nil
+                                                    error:&error];
+    if (error) {
+      return;
+    }
+  }
+  NSDate* now_date = [NSDate date];
+  NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+  formatter.dateFormat = @"yyyyMMdd-HHmmss";
+  formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+
+  NSString* file_name = [formatter stringFromDate:now_date];
+
+  NSDictionary* environment = [[NSProcessInfo processInfo] environment];
+  base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeDelta processStartToNowTime =
+      TimeDeltaSinceAppLaunchFromProcess();
+  const base::TimeDelta loadToNowTime = now - g_load_time;
+  const base::TimeDelta mainToNowTime =
+      now - [startup_information appLaunchTime];
+  const base::TimeDelta didFinishLaunchingToNowTime =
+      now - [startup_information didFinishLaunchingTime];
+  const base::TimeDelta sceneConnectionToNowTime =
+      now - [startup_information firstSceneConnectionTime];
+
+  NSDictionary* dict = @{
+    @"environment" : environment,
+    @"now" : file_name,
+    @"processStartToNowTime" : @(processStartToNowTime.InMilliseconds()),
+    @"loadToNowTime" : @(loadToNowTime.InMilliseconds()),
+    @"mainToNowTime" : @(mainToNowTime.InMilliseconds()),
+    @"didFinishLaunchingToNowTime" :
+        @(didFinishLaunchingToNowTime.InMilliseconds()),
+    @"sceneConnectionToNowTime" : @(sceneConnectionToNowTime.InMilliseconds()),
+  };
+
+  NSData* data =
+      [NSJSONSerialization dataWithJSONObject:dict
+                                      options:NSJSONWritingPrettyPrinted
+
+                                        error:&error];
+  if (error) {
+    return;
+  }
+
+  NSString* file_path =
+      [environment_directory stringByAppendingPathComponent:file_name];
+  [data writeToFile:file_path atomically:YES];
+}
+#endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
+}  // namespace
+
+// A class to log the "load" time in uma.
+@interface ObjectLoadTimeLogger : NSObject
+@end
+
+@implementation ObjectLoadTimeLogger
++ (void)load {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setInteger:[defaults integerForKey:kLoadTimePreferenceKey] + 1
+                forKey:kLoadTimePreferenceKey];
+  g_load_time = base::TimeTicks::Now();
+}
+@end
+
+namespace metrics_mediator {
+NSString* const kAppEnteredBackgroundDateKey = @"kAppEnteredBackgroundDate";
+
+void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
   using base::SysNSStringToUTF8;
 
   // Dictionary containing the respective metric for each NSUserDefault's key.
@@ -105,6 +208,10 @@ void RecordWidgetUsage() {
         @"IOS.CredentialExtension.FetchPasswordFailure",
     app_group::kCredentialExtensionFetchPasswordNilArgumentCount :
         @"IOS.CredentialExtension.FetchPasswordNilArgument",
+    app_group::kCredentialExtensionKeychainSavePasswordFailureCount :
+        @"IOS.CredentialExtension.KeychainSavePasswordFailureCount",
+    app_group::kCredentialExtensionSaveCredentialFailureCount :
+        @"IOS.CredentialExtension.SaveCredentialFailureCount",
   };
 
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
@@ -120,12 +227,24 @@ void RecordWidgetUsage() {
       }
     }
   }
-}
-}  // namespace
 
-namespace metrics_mediator {
-NSString* const kAppEnteredBackgroundDateKey = @"kAppEnteredBackgroundDate";
-}  // namespace metrics_mediator_constants
+  for (const HistogramNameCountPair& pair : histograms) {
+    int maxSamples = pair.buckets;
+    // Check each possible bucket to see if it has any events to emit.
+    for (int bucket = 0; bucket < maxSamples; ++bucket) {
+      NSString* key = app_group::HistogramCountKey(pair.name, bucket);
+      int count = [shared_defaults integerForKey:key];
+      if (count != 0) {
+        [shared_defaults setInteger:0 forKey:key];
+        std::string histogramName = SysNSStringToUTF8(pair.name);
+        for (int emitCount = 0; emitCount < count; ++emitCount) {
+          base::UmaHistogramExactLinear(histogramName, bucket, maxSamples + 1);
+        }
+      }
+    }
+  }
+}
+}  // namespace metrics_mediator
 
 using metrics_mediator::kAppEnteredBackgroundDateKey;
 
@@ -183,22 +302,45 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   if (![startupInformation isColdStart])
     return;
 
-  const base::TimeDelta startDuration =
-      base::TimeTicks::Now() - [startupInformation appLaunchTime];
-
-  const base::TimeDelta startDurationFromProcess =
+  base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeDelta processStartToNowTime =
       TimeDeltaSinceAppLaunchFromProcess();
+  const base::TimeDelta loadToNowTime = now - g_load_time;
+  const base::TimeDelta mainToNowTime =
+      now - [startupInformation appLaunchTime];
+  const base::TimeDelta didFinishLaunchingToNowTime =
+      now - [startupInformation didFinishLaunchingTime];
+  const base::TimeDelta sceneConnectionToNowTime =
+      now - [startupInformation firstSceneConnectionTime];
+
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  int consecutiveLoads = [defaults integerForKey:kLoadTimePreferenceKey];
+  [defaults removeObjectForKey:kLoadTimePreferenceKey];
 
   base::UmaHistogramTimes("Startup.ColdStartFromProcessCreationTimeV2",
-                          startDurationFromProcess);
+                          processStartToNowTime);
+  base::UmaHistogramTimes("Startup.TimeFromProcessCreationToLoad",
+                          processStartToNowTime - loadToNowTime);
+  base::UmaHistogramTimes("Startup.TimeFromProcessCreationToMainCall",
+                          processStartToNowTime - mainToNowTime);
+  base::UmaHistogramTimes(
+      "Startup.TimeFromProcessCreationToDidFinishLaunchingCall",
+      processStartToNowTime - didFinishLaunchingToNowTime);
+  base::UmaHistogramTimes("Startup.TimeFromProcessCreationToSceneConnection",
+                          processStartToNowTime - sceneConnectionToNowTime);
+  base::UmaHistogramCounts100("Startup.ConsecutiveLoadsWithoutLaunch",
+                              consecutiveLoads);
 
   if ([connectionInformation startupParameters]) {
     base::UmaHistogramTimes("Startup.ColdStartWithExternalURLTime",
-                            startDuration);
+                            mainToNowTime);
   } else {
     base::UmaHistogramTimes("Startup.ColdStartWithoutExternalURLTime",
-                            startDuration);
+                            mainToNowTime);
   }
+#if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
+  DumpEnvironment(startupInformation);
+#endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 }
 
 + (void)logDateInUserDefaults {
@@ -246,9 +388,8 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   }
 
 #if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
-  if (@available(iOS 14, *)) {
-    [WidgetMetricsUtil logInstalledWidgets];
-  }
+  [WidgetMetricsUtil logInstalledWidgets];
+
 #endif
 
   // Create the first user action recorder and schedule a task to expire it
@@ -299,9 +440,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   [self setBreakpadEnabled:optIn withUploading:allowUploading];
   [self setWatchWWANEnabled:optIn];
   [self setAppGroupMetricsEnabled:optIn];
-  if (@available(iOS 13, *)) {
-    [[MetricKitSubscriber sharedInstance] setEnabled:optIn];
-  }
+  [[MetricKitSubscriber sharedInstance] setEnabled:optIn];
 }
 
 - (BOOL)areMetricsEnabled {
@@ -348,9 +487,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   if (enabled) {
     PrefService* prefs = GetApplicationContext()->GetLocalState();
     NSString* brandCode =
-        base::SysUTF8ToNSString(ios::GetChromeBrowserProvider()
-                                    .GetAppDistributionProvider()
-                                    ->GetDistributionBrandCode());
+        base::SysUTF8ToNSString(ios::provider::GetBrandCode());
 
     app_group::main_app::EnableMetrics(
         base::SysUTF8ToNSString(
@@ -363,7 +500,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   } else {
     app_group::main_app::DisableMetrics();
   }
-  RecordWidgetUsage();
+  metrics_mediator::RecordWidgetUsage(kHistogramsFromExtension);
 }
 
 - (void)processCrashReportsPresentAtStartup {

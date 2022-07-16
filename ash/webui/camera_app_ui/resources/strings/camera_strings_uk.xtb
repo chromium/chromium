@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="uk">
+<translation id="1113173431709655881">Режим камери</translation>
+<translation id="1175958423215084756">Виявлене посилання. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Повернути на 90 градусів за годинниковою стрілкою</translation>
+<translation id="1276998909102132017">Зображення з галереї</translation>
+<translation id="1300209025925956156">Зіскануйте документ</translation>
+<translation id="1303487788671416818">Увімкнути повноекранний знімок відео</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Щоб перейти, натисніть клавішу пошуку + стрілку вліво.</translation>
+<translation id="1430915738399379752">Друк</translation>
+<translation id="1467231725790366244">Камеру <ph name="CAMERA" /> відключено.</translation>
+<translation id="1473110567575736769">Таймер на 3 секунди</translation>
+<translation id="1545749641540134597">Сканувати QR-код</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">Звичайний</translation>
+<translation id="1620510694547887537">Камера</translation>
+<translation id="1627744224761163218">4 x 4</translation>
+<translation id="1664224225747386870">Нічого не записано</translation>
+<translation id="1838104802459806957">Нахилити вгору</translation>
+<translation id="1851169887664797861">Доступні додаткові елементи керування камерою</translation>
+<translation id="1851616744363735765">ПРИЗУПИНЕНО</translation>
+<translation id="1862930711583847113">Не вдається експортувати файл "<ph name="FILE" />"</translation>
+<translation id="1899697626337024495">Роздільна здатність фото</translation>
+<translation id="2022953316617983419">QR-код</translation>
+<translation id="2036868001356139588">Тривалість таймера</translation>
+<translation id="2050339315714019657">Портретна</translation>
+<translation id="2064538373111010176">Опція "<ph name="CAMERA" />" активна</translation>
+<translation id="2144806332417375165">Спеціальні параметри відео</translation>
+<translation id="2175927920773552910">QR-код</translation>
+<translation id="229579744168541441">Експортувати на диск</translation>
+<translation id="2320741269052147773">Перемістити вліво</translation>
+<translation id="2501278716633472235">Назад</translation>
+<translation id="2501853267655415902">Запис припинено</translation>
+<translation id="2501953888035679275">Фотографуйте й записуйте відео камерою.</translation>
+<translation id="2517472476991765520">Сканувати</translation>
+<translation id="2549985041256363841">Почати запис</translation>
+<translation id="2599796128805996109">Камера на задній панелі</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> с</translation>
+<translation id="2761536921376153655">Тип сканування</translation>
+<translation id="2879583609344924966">Камеру <ph name="CAMERA" /> підключено.</translation>
+<translation id="2968794441791257519">Фото й відео з камери перенесуться в папку "Завантаження", і ви зможете відкрити їх у Файлах.
+
+        Також до них матимуть доступ додатки, яким дозволено використовувати пам’ять пристрою.</translation>
+<translation id="3067436040345934772">Перемістити вправо</translation>
+<translation id="3081586908890909590">Перейти в режим запису відео</translation>
+<translation id="313467653172006084">30 кадрів/с</translation>
+<translation id="3183731565330012717">Тип сітки</translation>
+<translation id="3227137524299004712">Мікрофон</translation>
+<translation id="3240426699337459095">Посилання скопійовано</translation>
+<translation id="3259149966178251584">Роздільна здатність камери</translation>
+<translation id="3260401663013584785">Не вдалося виявити документ</translation>
+<translation id="3305962767867348165">Виправити</translation>
+<translation id="3448774564454087943">Відео не збережено, оскільки воно закоротке</translation>
+<translation id="346539236881580388">Зробити інше фото</translation>
+<translation id="3517926952904427380">Не вдалося зробити портретне фото</translation>
+<translation id="3569311554794739032">Видалити файл "<ph name="FILE" />"?</translation>
+<translation id="3573890771273113519">Перейти в режим сканування</translation>
+<translation id="3789724198583203151">Повернути на 90 градусів проти годинникової стрілки</translation>
+<translation id="3810838688059735925">Відео</translation>
+<translation id="3838931309141338733">Сканувати штрих-код</translation>
+<translation id="3892148308691398805">Копіювати текст</translation>
+<translation id="4118525110028899586">Призупинити запис</translation>
+<translation id="4121305183798804752">Виявлено документ</translation>
+<translation id="4269820728363426813">Копіювати адресу посилання</translation>
+<translation id="4279490309300973883">Дзеркальне відображення</translation>
+<translation id="4329152592498422850">Перейти в режим квадратного фото</translation>
+<translation id="4383571725254449280">Друкувати журнали продуктивності</translation>
+<translation id="4445542136948522167">Припинити фотографувати</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> мегапікс.</translation>
+<translation id="4570032796877367747">Камера на передній панелі</translation>
+<translation id="4628948037717959914">Фотографія</translation>
+<translation id="4649291346448517080">Не вдається зберегти файл</translation>
+<translation id="4890010094662541459">3 x 3</translation>
+<translation id="491895758387112773">Багатопотоковий відеозапис</translation>
+<translation id="5057360777601936059">Камера зараз недоступна.
+        Перевірте, чи правильно її під’єднано.</translation>
+<translation id="5152121255775685072">Перейти в галерею</translation>
+<translation id="520537883758714667">Тепер доступне сканування документів</translation>
+<translation id="5317780077021120954">Зберегти</translation>
+<translation id="5444515100983837161">Розмістіть усі краї документа всередині рамки. Сканування працює найкраще, коли кольори документа й фону відрізняються.</translation>
+<translation id="5671277269877808209">Квадрат</translation>
+<translation id="5746169159649715125">Зберегти у форматі PDF</translation>
+<translation id="5753488212459587150">Увімкнути режим експерта</translation>
+<translation id="5759254179196327752">Сканувати документ</translation>
+<translation id="5775960006311140197">Режим експерта</translation>
+<translation id="5869546221129391014">Сітка</translation>
+<translation id="5975083100439434680">Зменшити масштаб</translation>
+<translation id="6073451960410192870">Припинити запис</translation>
+<translation id="6197807149213783179">Зберегти метадані</translation>
+<translation id="6233780560267770709">3 на 3</translation>
+<translation id="6243827288366940320">Золотий перетин</translation>
+<translation id="6248749904681914629">Зовнішня камера</translation>
+<translation id="6353688143752491039">Дякуємо за ваш відгук про додаток Камера.
+
+Якщо ви хочете поділитися враженнями про якість зображення чи відео, долучіть зразок і опишіть проблему (наприклад, "фотографія надто темна" або "об'єкт на зображенні розмитий").</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мегапікс.</translation>
+<translation id="6527303717912515753">Надіслати</translation>
+<translation id="667999046851023355">Документ</translation>
+<translation id="6681668084120808868">Зробити фото</translation>
+<translation id="6778482348691154169">Не вдається сфотографувати</translation>
+<translation id="695140971690006676">Скинути все</translation>
+<translation id="6965382102122355670">OK</translation>
+<translation id="698156982839284926">3 секунди</translation>
+<translation id="712848772518857951">Видалити елементи (<ph name="COUNT" />)?</translation>
+<translation id="7134221860976209830">Таймер на 10 секунд</translation>
+<translation id="7191890674911603392">Тип запису</translation>
+<translation id="7243947652761655814">Роздільна здатність відео</translation>
+<translation id="7337660886763914220">Помилки файлової системи.</translation>
+<translation id="7450541714075000668">Текст скопійовано</translation>
+<translation id="7476762461674917065">Показувати опцію запису GIF</translation>
+<translation id="7488619942230388918">Записати відео у форматі GIF</translation>
+<translation id="7557677699350329807">Перемкнутися на наступну камеру</translation>
+<translation id="7607002721634913082">Призупинено</translation>
+<translation id="7608223098072244877">4 на 4</translation>
+<translation id="7649070708921625228">Довідка</translation>
+<translation id="7658239707568436148">Скасувати</translation>
+<translation id="7670511624014457267">60 кадрів/с</translation>
+<translation id="7726641833034062494">Записати звичайне відео</translation>
+<translation id="7983668134180549431">Виявлений текст.</translation>
+<translation id="8067883171444229417">Дивитися відео</translation>
+<translation id="8120146556401698679">Панорамування нахил масштаб</translation>
+<translation id="8131740175452115882">Підтвердити</translation>
+<translation id="8145038249676204903">Перейти в режим фотозйомки</translation>
+<translation id="8167081290930651932">Зберегти як фото</translation>
+<translation id="8239780215768881278">Зробити знімок відео</translation>
+<translation id="8261506727792406068">Видалити</translation>
+<translation id="8425673304802773841">Нахилити донизу</translation>
+<translation id="8428213095426709021">Налаштування</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Виконано</translation>
+<translation id="8730621377337864115">Готово</translation>
+<translation id="8732462232047530626">Переглянути метадані</translation>
+<translation id="8815966864175525708">Перейти в режим портретного фото</translation>
+<translation id="8828441885228359828">Відновити запис</translation>
+<translation id="8870695351537079478">Не вдалося почати запис</translation>
+<translation id="8903921497873541725">Збільшити масштаб</translation>
+<translation id="9045010116236796332">Розмістіть усі краї документа всередині рамки</translation>
+<translation id="9045155556724273246">10 секунд</translation>
+<translation id="906331135292332864">Обробка зображення…</translation>
+<translation id="945522503751344254">Надіслати відгук</translation>
+</translationbundle>

@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
@@ -31,6 +30,9 @@ class SandboxedRarAnalyzer
       const base::FilePath& rar_file_path,
       ResultCallback callback,
       mojo::PendingRemote<chrome::mojom::FileUtilService> service);
+
+  SandboxedRarAnalyzer(const SandboxedRarAnalyzer&) = delete;
+  SandboxedRarAnalyzer& operator=(const SandboxedRarAnalyzer&) = delete;
 
   // Starts the analysis. Must be called on the UI thread.
   void Start();
@@ -66,8 +68,6 @@ class SandboxedRarAnalyzer
   // Remote interfaces to the file util service. Only used from the UI thread.
   mojo::Remote<chrome::mojom::FileUtilService> service_;
   mojo::Remote<chrome::mojom::SafeArchiveAnalyzer> remote_analyzer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxedRarAnalyzer);
 };
 
 std::ostream& operator<<(std::ostream& os,

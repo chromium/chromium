@@ -4,6 +4,12 @@
 
 #include "gin/debug_impl.h"
 
+#include "build/build_config.h"
+
+#if defined(OS_WIN)
+#include "v8/include/v8-initialization.h"
+#endif
+
 namespace gin {
 
 namespace {

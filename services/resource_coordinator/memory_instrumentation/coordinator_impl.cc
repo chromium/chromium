@@ -44,7 +44,7 @@ namespace {
 
 memory_instrumentation::CoordinatorImpl* g_coordinator_impl;
 
-constexpr base::TimeDelta kHeapDumpTimeout = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kHeapDumpTimeout = base::Seconds(60);
 
 // A wrapper classes that allows a string to be exported as JSON in a trace
 // event.
@@ -63,7 +63,7 @@ class StringWrapper : public base::trace_event::ConvertableToTraceFormat {
 
 CoordinatorImpl::CoordinatorImpl()
     : next_dump_id_(0),
-      client_process_timeout_(base::TimeDelta::FromSeconds(15)),
+      client_process_timeout_(base::Seconds(15)),
       use_proto_writer_(!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseMemoryTrackingJsonWriter)),
       write_proto_heap_profile_(
@@ -108,7 +108,8 @@ void CoordinatorImpl::RegisterClientProcess(
     const absl::optional<std::string>& service_name) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   mojo::Remote<mojom::ClientProcess> process(std::move(client_process));
-  coordinator_receivers_.Add(this, std::move(receiver), process_id);
+  if (receiver.is_valid())
+    coordinator_receivers_.Add(this, std::move(receiver), process_id);
   process.set_disconnect_handler(
       base::BindOnce(&CoordinatorImpl::UnregisterClientProcess,
                      base::Unretained(this), process_id));
@@ -260,12 +261,12 @@ void CoordinatorImpl::UnregisterClientProcess(base::ProcessId process_id) {
   }
 
   for (auto& pair : in_progress_vm_region_requests_) {
-    QueuedVmRegionRequest* request = pair.second.get();
-    auto it = request->pending_responses.begin();
-    while (it != request->pending_responses.end()) {
+    QueuedVmRegionRequest* in_progress_request = pair.second.get();
+    auto it = in_progress_request->pending_responses.begin();
+    while (it != in_progress_request->pending_responses.end()) {
       auto current = it++;
       if (*current == process_id) {
-        request->pending_responses.erase(current);
+        in_progress_request->pending_responses.erase(current);
       }
     }
   }

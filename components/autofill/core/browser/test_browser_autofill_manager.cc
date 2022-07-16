@@ -7,7 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
+#include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/test_form_structure.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -18,12 +18,8 @@ namespace autofill {
 TestBrowserAutofillManager::TestBrowserAutofillManager(
     AutofillDriver* driver,
     AutofillClient* client,
-    TestPersonalDataManager* personal_data,
-    MockAutocompleteHistoryManager* autocomplete_history_manager)
-    : BrowserAutofillManager(driver,
-                             client,
-                             personal_data,
-                             autocomplete_history_manager),
+    TestPersonalDataManager* personal_data)
+    : BrowserAutofillManager(driver, client, personal_data),
       personal_data_(personal_data) {}
 
 TestBrowserAutofillManager::~TestBrowserAutofillManager() {}

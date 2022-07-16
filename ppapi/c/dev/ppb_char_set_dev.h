@@ -82,4 +82,4 @@ struct PPB_CharSet_Dev_0_4 {
 
 typedef struct PPB_CharSet_Dev_0_4 PPB_CharSet_Dev;
 
-#endif  /* PPAPI_C_DEV_PPB_CHAR_SET_DEV_H_ */
+#endif  // PPAPI_C_DEV_PPB_CHAR_SET_DEV_H_

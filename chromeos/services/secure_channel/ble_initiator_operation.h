@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/services/secure_channel/ble_initiator_failure_type.h"
@@ -55,6 +54,9 @@ class BleInitiatorOperation
     static Factory* test_factory_;
   };
 
+  BleInitiatorOperation(const BleInitiatorOperation&) = delete;
+  BleInitiatorOperation& operator=(const BleInitiatorOperation&) = delete;
+
   ~BleInitiatorOperation() override;
 
  private:
@@ -83,8 +85,6 @@ class BleInitiatorOperation
   bool is_attempt_active_ = false;
 
   base::WeakPtrFactory<BleInitiatorOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BleInitiatorOperation);
 };
 
 }  // namespace secure_channel

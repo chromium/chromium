@@ -44,9 +44,6 @@ class GURL;
 // contains a favicon composited on top of an off-white background.
 @property(nonatomic, readonly, strong) FaviconView* faviconView;
 
-// Container View for the faviconView.
-@property(nonatomic, readonly, strong) UIView* faviconContainerView;
-
 // The image view used to display the favicon badge.
 @property(nonatomic, readonly, strong)
     TableViewURLCellFaviconBadgeView* faviconBadgeView;

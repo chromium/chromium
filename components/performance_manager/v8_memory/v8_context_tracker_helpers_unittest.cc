@@ -65,7 +65,7 @@ TEST_F(V8ContextTrackerHelpersTest, HasCrossProcessParent) {
   // Fails for a same-process child frame.
   TestNodeWrapper<FrameNodeImpl> child_frame(graph()->CreateFrameNodeAutoId(
       mock_graph->process.get(), mock_graph->page.get(),
-      mock_graph->frame.get(), 4));
+      mock_graph->frame.get()));
   EXPECT_FALSE(HasCrossProcessParent(child_frame.get()));
 }
 
@@ -107,7 +107,7 @@ TEST_F(V8ContextTrackerHelpersTest, GetExecutionContext) {
 TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionMainWorld) {
   TestNodeWrapper<FrameNodeImpl> child_frame(graph()->CreateFrameNodeAutoId(
       mock_graph->process.get(), mock_graph->page.get(),
-      mock_graph->frame.get(), 4));
+      mock_graph->frame.get()));
 
   // A valid description of a main frame.
   auto desc = mojom::V8ContextDescription(

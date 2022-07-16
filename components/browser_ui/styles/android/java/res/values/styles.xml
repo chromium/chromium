@@ -5,34 +5,22 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Theme shared between Chrome and embedders. -->
-    <style name="Theme.BrowserUI" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Text colors -->
-        <item name="android:textColorLink">@color/default_text_color_link</item>
-        <item name="android:textColorHighlight">@color/text_highlight_color</item>
-        <item name="android:textColorHint">@color/default_text_color_hint_list</item>
-
-        <!-- Color of checkboxes, switches, buttons, etc. -->
-        <item name="colorAccent">@color/default_control_color_active</item>
-        <item name="colorControlNormal">@color/control_normal_color</item>
-        <item name="colorControlActivated">@color/default_control_color_active</item>
-        <item name="colorControlHighlight">@color/control_highlight_color</item>
-
+    <!-- TODO(https://crbug.com/1227450): This should be dissolved into the base theme or moved to
+         themes.xml. -->
+    <style name="Theme.BrowserUI" parent="Base.Theme.BrowserUI">
         <!-- Control styles -->
         <item name="switchStyle">@style/SwitchMaterialStyle</item>
 
         <!-- Window Properties -->
         <item name="android:windowBackground">@color/default_bg_color</item>
 
-        <!-- Action bar color -->
-        <item name="colorSurface">@color/default_bg_color</item>
-
         <!-- Status bar color -->
         <item name="android:statusBarColor" tools:targetApi="21">@android:color/black</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
-        <item name="colorPrimaryDark">@android:color/black</item>
 
         <!-- Spinner styles -->
         <item name="spinnerStyle">@style/SpinnerStyle</item>
+        <item name="android:progressBarStyle">@style/ProgressBarStyle</item>
 
         <!-- Popup styles -->
         <!-- Set android popup menu attributes for context menu styles because the context menus are
@@ -56,19 +44,46 @@
         <item name="checkboxStyle">@style/Widget.AppCompat.CompoundButton.CheckBox</item>
     </style>
 
+    <style name="Theme.BrowserUI.DayNight" />
+
+    <!-- This theme is used instead of android:style/Theme.NoDisplay so that it has the required
+         attributes in case the context ends up being used to inflate views. -->
+    <style name="Theme.BrowserUI.NoDisplay" parent="Theme.BrowserUI.DayNight">
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowNoDisplay">true</item>
+    </style>
+
+    <!-- These themes are used instead of android:style/Theme.Translucent* so that they have the
+         required attributes in case the context ends up being used to inflate views. -->
+    <style name="Theme.BrowserUI.Translucent" parent="Theme.BrowserUI.DayNight">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+    <style name="Theme.BrowserUI.Translucent.NoTitleBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
     <style name="TextInputStyle" parent="Widget.Design.TextInputLayout">
         <item name="errorTextAppearance">@style/TextAppearance.ErrorCaption</item>
     </style>
 
     <!-- Popup and long-press context popup menu style -->
     <style name="PopupMenuStyle" parent="Widget.AppCompat.Light.PopupMenu">
-        <item name="android:popupBackground">@drawable/popup_bg_tinted</item>
+        <item name="android:popupBackground">@drawable/menu_bg_tinted</item>
         <item name="android:overlapAnchor" tools:targetApi="21">true</item>
         <item name="android:popupElevation" tools:targetApi="21">0dp</item>
     </style>
 
     <!-- Basic theme for an overflow menu displayed in Chrome. -->
     <style name="Base.OverflowMenuThemeOverlay" parent="">
+        <item name="android:popupMenuStyle">@android:style/Widget.Material.PopupMenu</item>
         <item name="android:popupBackground">@null</item>
         <item name="android:listDivider">@null</item>
         <item name="android:listPreferredItemHeightSmall">48dp</item>
@@ -77,11 +92,12 @@
     </style>
     <style name="OverflowMenuThemeOverlay" parent="Base.OverflowMenuThemeOverlay" />
 
+    <!-- TODO(https://crbug.com/1242702): Rename to ThemeOverlay.Chromium.AlertDialog. -->
     <!-- AlertDialog styles -->
     <style name="Base.Theme.Chromium.AlertDialog"
-        parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
-        <item name="android:textColorPrimary">@color/default_text_color</item>
-        <item name="android:windowBackground">@drawable/popup_bg_tinted</item>
+        parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:textColorPrimary">@macro/default_text_color</item>
+        <item name="android:windowBackground">@drawable/dialog_bg_tinted</item>
         <item name="android:windowTitleStyle">@style/TextAppearance.AlertDialogTitleStyle</item>
         <item name="android:textColorHighlight">@color/text_highlight_color</item>
 
@@ -91,8 +107,15 @@
         <item name="colorControlNormal">@color/control_normal_color</item>
         <item name="colorControlHighlight">@color/control_highlight_color</item>
         <item name="colorPrimary">@color/default_control_color_active</item>
-        <item name="buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
         <item name="spinnerStyle">@style/SpinnerStyle</item>
+
+        <!-- Depending on if the support library or framework is inflating the
+             dialog, a different layout is used, that names this style slightly
+             differently. WebView will use the framework version for the
+             foreseeable future, so both of these need to be specified. See
+             https://crbug.com/1234129. -->
+        <item name="android:buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
+        <item name="buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
     </style>
 
     <style name="Theme.Chromium.AlertDialog" parent="Base.Theme.Chromium.AlertDialog" />
@@ -132,9 +155,13 @@
         <item name="android:paddingTop">10dp</item>
     </style>
 
+    <style name="ProgressBarStyle" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint">@macro/default_icon_color_accent1</item>
+    </style>
+
     <!-- Spinner styles -->
     <style name="SpinnerStyle" parent="Widget.AppCompat.Spinner">
-        <item name="android:popupBackground">@drawable/popup_bg_tinted</item>
+        <item name="android:popupBackground">@drawable/dialog_bg_tinted</item>
         <item name="android:popupElevation" tools:targetApi="21">0dp</item>
     </style>
 
@@ -149,9 +176,10 @@
     <!-- TODO(sinansahin): See if we can pass the baseline dark theme to the incognito NTP instead.
          -->
     <style name="SwitchMaterialDark">
-        <item name="colorPrimary">@color/default_control_color_active_dark</item>
-        <item name="colorSwitchThumbNormal">@color/modern_grey_100</item>
-        <item name="colorSwitchTrackNormal">@color/baseline_neutral_variant_400</item>
+        <item name="colorPrimaryNonDynamic">@color/baseline_primary_200</item>
+        <item name="colorPrimaryContainerNonDynamic">@color/baseline_primary_100</item>
+        <item name="colorSwitchThumbNormalNonDynamic">@color/baseline_neutral_100</item>
+        <item name="colorSwitchTrackNormalNonDynamic">@color/baseline_neutral_variant_400</item>
         <item name="colorControlHighlight">@color/default_control_color_highlight_dark</item>
         <item name="switchStyle">@style/SwitchMaterialStyle</item>
     </style>
@@ -160,7 +188,7 @@
     <style name="AppMenuItem">
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingEnd">16dp</item>
-        <item name="android:background">@color/menu_item_bg_color</item>
+        <item name="android:background">?attr/listChoiceBackgroundIndicator</item>
     </style>
 
     <!-- Checkbox styles. -->
@@ -169,68 +197,79 @@
         <item name="android:paddingStart">16dp</item>
     </style>
 
-    <!-- Fullscreen -->
-    <style name="Base.Theme.Chromium.Fullscreen" parent="Theme.BrowserUI">
-        <!-- With ActionBar but not window title -->
-        <!-- TODO(huayinz): Check if windowActionBar is actually needed. -->
-        <item name="windowActionBar">true</item>
-        <item name="colorPrimary">@color/default_control_color_active</item>
-        <item name="colorAccent">@color/default_control_color_active</item>
-    </style>
-    <style name="Theme.Chromium.Fullscreen" parent="Base.Theme.Chromium.Fullscreen" />
-
     <style name="ModernToolbar" parent="Widget.MaterialComponents.Toolbar">
         <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
-        <item name="titleTextColor">@color/default_text_color</item>
+        <item name="titleTextColor">@macro/default_text_color</item>
         <item name="windowActionBarOverlay">true</item>
         <item name="android:background">@color/default_bg_color</item>
     </style>
 
-    <!-- Indirection to allow downstream to add attributes. -->
-    <style name="ColorOverlay" parent="Base.ColorOverlay"/>
-    <!-- TODO(https://crbug.com/1216642): Inconsistent naming style. Remove
-         after downstream stops using. -->
-    <style name="Base.ColorOverlay" parent="ColorOverlay.BrowserUi"/>
-    <style name="ColorOverlay.BrowserUi" parent="ColorOverlay.BrowserUi.DayNight">
-        <item name="android:colorBackground">@color/baseline_neutral_0</item>
-        <item name="colorError">@color/baseline_error_600</item>
-        <item name="colorOnBackground">@color/baseline_neutral_900</item>
-        <item name="colorOnPrimary">@color/baseline_primary_0</item>
-        <item name="colorOnSurface">@color/baseline_neutral_900</item>
-        <item name="colorOnSurfaceInverse">@color/baseline_neutral_50</item>
-        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_700</item>
-        <item name="colorOutline">@color/baseline_neutral_variant_500</item>
-        <item name="colorPrimary">@color/baseline_primary_600</item>
-        <item name="colorSurface">@color/baseline_neutral_0</item>
-        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_100</item>
-
-        <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
-        <item name="elevationOverlayColor">@color/baseline_neutral_600</item>
-        <item name="elevationOverlayEnabled">true</item>
-
-        <item name="colorSwitchThumbNormal">?attr/colorSurface</item>
-        <item name="colorSwitchThumbDisabled">?attr/colorSurface</item>
-        <item name="colorSwitchTrackNormal">?attr/colorSurfaceVariant</item>
-
-        <!-- Semantic names -->
-        <item name="divider_line_bg_color">?attr/colorSurfaceVariant</item>
-    </style>
-    <style name="ColorOverlay.BrowserUi.DayNight" parent="ColorOverlay.Ui">
-        <item name="android:textColorPrimary">@color/default_text_color_list</item>
-        <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
-        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
-        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
-        <item name="default_bg_color">?attr/colorSurface</item>
+    <!-- Text styles -->
+    <!-- Primary text styles -->
+    <style name="TextAppearance.Headline.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
     </style>
 
-    <!-- It's logically backward, but this is applied to SettingsActivity when
-         THEME_REFACTOR_ANDROID is disabled. -->
-    <style name="ThemeRefactorOverlay.Disabled.Settings" parent="">
-        <item name="elevationOverlayEnabled">false</item>
+    <style name="TextAppearance.TextLarge.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
     </style>
-    <!-- This is applied to view of MaterialCardViewNoShadow
-        in SettingsActivity. -->
-    <style name="ThemeRefactorOverlay.Enabled.SettingsPromo" parent="">
-        <item name="elevationOverlayEnabled">true</item>
+
+    <style name="TextAppearance.TextMediumThick.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
     </style>
+
+    <style name="TextAppearance.TextMedium.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
+    <style name="TextAppearance.TextSmall.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
+    <!-- Secondary text styles -->
+    <style name="TextAppearance.TextLarge.Secondary">
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+    </style>
+
+    <style name="TextAppearance.TextMediumThick.Secondary">
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+    </style>
+
+    <style name="TextAppearance.TextAccentMediumThick.Secondary">
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+    </style>
+
+    <style name="TextAppearance.TextMedium.Secondary">
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+    </style>
+
+    <style name="TextAppearance.TextSmall.Secondary">
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+    </style>
+
+    <!-- Other text styles -->
+    <style name="TextAppearance.BlackLink" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextAppearance.BlackToolbarTitle" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Disabled text styles -->
+    <style name="TextAppearance.TextLarge.Disabled" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_disabled_list</item>
+    </style>
+
+    <style name="TextAppearance.TextMedium.Disabled">
+        <item name="android:textColor">@color/default_text_color_disabled_list</item>
+    </style>
+
+    <style name="TextAppearance.TextSmall.Disabled" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_disabled_list</item>
+    </style>
+
 </resources>

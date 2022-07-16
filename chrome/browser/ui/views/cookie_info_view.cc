@@ -20,12 +20,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace {
@@ -85,22 +86,17 @@ CookieInfoView::CookieInfoView() {
                                      dialog_insets.right()));
 
   View* const contents = SetContents(std::make_unique<views::View>());
-  views::GridLayout* layout =
-      contents->SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  int three_column_layout_id = 0;
-  views::ColumnSet* column_set = layout->AddColumnSet(three_column_layout_id);
-  column_set->AddColumn(provider->GetControlLabelGridAlignment(),
-                        views::GridLayout::CENTER,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                               kLabelValuePadding);
-  column_set->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER, 1.0,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  views::TableLayout* layout =
+      contents->SetLayoutManager(std::make_unique<views::TableLayout>());
+  layout
+      ->AddColumn(views::LayoutAlignment::kStart,
+                  views::LayoutAlignment::kCenter,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, kLabelValuePadding)
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kCenter, 1.0,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
 
   for (const auto& cookie_property_and_label : {
            std::make_pair(CookieProperty::kName, IDS_COOKIES_COOKIE_NAME_LABEL),
@@ -116,8 +112,8 @@ CookieInfoView::CookieInfoView() {
            std::make_pair(CookieProperty::kExpires,
                           IDS_COOKIES_COOKIE_EXPIRES_LABEL),
        }) {
-    property_textfields_[cookie_property_and_label.first] = AddTextfieldRow(
-        three_column_layout_id, layout, cookie_property_and_label.second);
+    property_textfields_[cookie_property_and_label.first] =
+        AddTextfieldRow(layout, cookie_property_and_label.second);
   }
 }
 
@@ -166,33 +162,27 @@ void CookieInfoView::OnThemeChanged() {
 }
 
 void CookieInfoView::SetTextfieldColors() {
-  auto* theme = GetNativeTheme();
+  const auto* color_provider = GetColorProvider();
   for (const auto textfield_pair : property_textfields_) {
     textfield_pair.second->SetBackgroundColor(
-        theme->GetSystemColor(ui::NativeTheme::kColorId_DialogBackground));
+        color_provider->GetColor(ui::kColorDialogBackground));
     textfield_pair.second->SetTextColor(
-        theme->GetSystemColor(ui::NativeTheme::kColorId_DialogForeground));
+        color_provider->GetColor(ui::kColorDialogForeground));
   }
 }
 
-views::Textfield* CookieInfoView::AddTextfieldRow(int layout_id,
-                                                  views::GridLayout* layout,
+views::Textfield* CookieInfoView::AddTextfieldRow(views::TableLayout* layout,
                                                   int label_message_id) {
-  auto textfield = std::make_unique<GestureScrollableTextfield>(this);
-  auto label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(label_message_id));
-  textfield->SetAssociatedLabel(label.get());
-  layout->StartRow(views::GridLayout::kFixedSize, layout_id);
-  layout->AddView(std::move(label));
-  auto* textfield_ptr =
-      layout->AddView(std::move(textfield), 2, 1, views::GridLayout::FILL,
-                      views::GridLayout::CENTER);
+  layout->AddRows(1, views::GridLayout::kFixedSize);
+  auto* label = contents()->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(label_message_id)));
+  auto* textfield = contents()->AddChildView(
+      std::make_unique<GestureScrollableTextfield>(this));
+  textfield->SetAssociatedLabel(label);
+  textfield->SetReadOnly(true);
+  textfield->SetBorder(views::NullBorder());
 
-  // Now that the Textfield is in the view hierarchy, it can be initialized.
-  textfield_ptr->SetReadOnly(true);
-  textfield_ptr->SetBorder(views::NullBorder());
-
-  return textfield_ptr;
+  return textfield;
 }
 
 BEGIN_METADATA(CookieInfoView, views::ScrollView)

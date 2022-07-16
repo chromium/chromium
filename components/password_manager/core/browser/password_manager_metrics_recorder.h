@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
@@ -98,6 +97,12 @@ class PasswordManagerMetricsRecorder {
 
   PasswordManagerMetricsRecorder(
       PasswordManagerMetricsRecorder&& that) noexcept;
+
+  PasswordManagerMetricsRecorder(const PasswordManagerMetricsRecorder&) =
+      delete;
+  PasswordManagerMetricsRecorder& operator=(
+      const PasswordManagerMetricsRecorder&) = delete;
+
   ~PasswordManagerMetricsRecorder();
 
   PasswordManagerMetricsRecorder& operator=(
@@ -135,8 +140,6 @@ class PasswordManagerMetricsRecorder {
       FormManagerAvailable::kNotSet;
 
   std::unique_ptr<NavigationMetricRecorderDelegate> navigation_metric_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerMetricsRecorder);
 };
 
 }  // namespace password_manager

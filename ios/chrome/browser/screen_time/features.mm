@@ -12,8 +12,5 @@ const base::Feature kScreenTimeIntegration{"ScreenTimeIntegration",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsScreenTimeIntegrationEnabled() {
-  if (@available(iOS 14, *)) {
-    return base::FeatureList::IsEnabled(kScreenTimeIntegration);
-  }
-  return false;
+  return base::FeatureList::IsEnabled(kScreenTimeIntegration);
 }

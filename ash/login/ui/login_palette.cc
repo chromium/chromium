@@ -10,11 +10,10 @@ namespace ash {
 
 LoginPalette CreateDefaultLoginPalette() {
   auto* color_provider = AshColorProvider::Get();
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      color_provider->GetRippleAttributes();
+  const std::pair<SkColor, float> base_color_and_opacity =
+      color_provider->GetInkDropBaseColorAndOpacity();
   // Convert transparency level from [0 ; 1] to [0 ; 255].
-  U8CPU inkdrop_opacity = 255 * ripple_attributes.inkdrop_opacity;
-  U8CPU highlight_opacity = 255 * ripple_attributes.highlight_opacity;
+  U8CPU inkdrop_opacity = 255 * base_color_and_opacity.second;
   return LoginPalette(
       {.password_text_color = color_provider->GetContentLayerColor(
            AshColorProvider::ContentLayerType::kTextColorPrimary),
@@ -26,9 +25,9 @@ LoginPalette CreateDefaultLoginPalette() {
        .button_annotation_color = color_provider->GetContentLayerColor(
            AshColorProvider::ContentLayerType::kTextColorSecondary),
        .pin_ink_drop_highlight_color =
-           SkColorSetA(ripple_attributes.base_color, highlight_opacity),
+           SkColorSetA(base_color_and_opacity.first, inkdrop_opacity),
        .pin_ink_drop_ripple_color =
-           SkColorSetA(ripple_attributes.base_color, inkdrop_opacity),
+           SkColorSetA(base_color_and_opacity.first, inkdrop_opacity),
        .pin_input_text_color = AshColorProvider::Get()->GetContentLayerColor(
            AshColorProvider::ContentLayerType::kTextColorPrimary)});
 }

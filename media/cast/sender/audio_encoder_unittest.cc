@@ -35,6 +35,11 @@ namespace {
 class TestEncodedAudioFrameReceiver {
  public:
   TestEncodedAudioFrameReceiver() : frames_received_(0) {}
+
+  TestEncodedAudioFrameReceiver(const TestEncodedAudioFrameReceiver&) = delete;
+  TestEncodedAudioFrameReceiver& operator=(
+      const TestEncodedAudioFrameReceiver&) = delete;
+
   virtual ~TestEncodedAudioFrameReceiver() = default;
 
   int frames_received() const { return frames_received_; }
@@ -78,8 +83,6 @@ class TestEncodedAudioFrameReceiver {
   int samples_per_frame_;
   base::TimeTicks lower_bound_;
   base::TimeTicks upper_bound_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEncodedAudioFrameReceiver);
 };
 
 struct TestScenario {
@@ -115,6 +118,9 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
                                             task_runner_, task_runner_);
   }
 
+  AudioEncoderTest(const AudioEncoderTest&) = delete;
+  AudioEncoderTest& operator=(const AudioEncoderTest&) = delete;
+
   virtual ~AudioEncoderTest() = default;
 
   void RunTestForCodec(Codec codec) {
@@ -127,8 +133,8 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
 
     for (size_t i = 0; i < scenario.num_durations; ++i) {
       const bool simulate_missing_data = scenario.durations_in_ms[i] < 0;
-      const base::TimeDelta duration = base::TimeDelta::FromMilliseconds(
-          std::abs(scenario.durations_in_ms[i]));
+      const base::TimeDelta duration =
+          base::Milliseconds(std::abs(scenario.durations_in_ms[i]));
       receiver_->SetCaptureTimeBounds(
           testing_clock_.NowTicks() - frame_duration,
           testing_clock_.NowTicks() + duration);
@@ -172,8 +178,6 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
   std::unique_ptr<TestEncodedAudioFrameReceiver> receiver_;
   std::unique_ptr<AudioEncoder> audio_encoder_;
   scoped_refptr<CastEnvironment> cast_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioEncoderTest);
 };
 
 TEST_P(AudioEncoderTest, EncodeOpus) {

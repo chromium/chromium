@@ -41,6 +41,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
+import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -68,6 +70,7 @@ public final class WebFeedSnackbarControllerTest {
     public JniMocker mJniMocker = new JniMocker();
 
     private static final GURL sTestUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+    private static final GURL sFaviconUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
     private static final String sTitle = "Example Title";
     private static final byte[] sFollowId = new byte[] {1, 2, 3};
 
@@ -206,11 +209,11 @@ public final class WebFeedSnackbarControllerTest {
     public void showPromoDialogForFollow_successful_notActive() {
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE))
                 .thenReturn(true);
-        WebFeedBridge.FollowResults followResults =
-                new WebFeedBridge.FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS,
-                        new WebFeedBridge.WebFeedMetadata(sFollowId, sTitle, sTestUrl,
-                                WebFeedSubscriptionRequestStatus.SUCCESS, /*isActive=*/
-                                false, /*isRecommended=*/false));
+        WebFeedBridge.FollowResults followResults = new WebFeedBridge.FollowResults(
+                WebFeedSubscriptionRequestStatus.SUCCESS,
+                new WebFeedBridge.WebFeedMetadata(sFollowId, sTitle, sTestUrl,
+                        WebFeedSubscriptionRequestStatus.SUCCESS,
+                        WebFeedAvailabilityStatus.INACTIVE, /*isRecommended=*/false, sFaviconUrl));
 
         mWebFeedSnackbarController.showPostFollowHelp(
                 mTab, followResults, sFollowId, sTestUrl, sTitle);
@@ -354,8 +357,8 @@ public final class WebFeedSnackbarControllerTest {
 
     @Test
     public void showSnackbarForUnfollow_successful() {
-        mWebFeedSnackbarController.showSnackbarForUnfollow(/*successfulUnfollow=*/
-                true, sFollowId, sTestUrl, sTitle);
+        mWebFeedSnackbarController.showSnackbarForUnfollow(
+                WebFeedSubscriptionRequestStatus.SUCCESS, sFollowId, sTestUrl, sTitle);
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
@@ -373,8 +376,8 @@ public final class WebFeedSnackbarControllerTest {
 
     @Test
     public void showSnackbarForUnfollow_unsuccessful() {
-        mWebFeedSnackbarController.showSnackbarForUnfollow(/*successfulUnfollow=*/
-                false, sFollowId, sTestUrl, sTitle);
+        mWebFeedSnackbarController.showSnackbarForUnfollow(
+                WebFeedSubscriptionRequestStatus.FAILED_OFFLINE, sFollowId, sTestUrl, sTitle);
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
@@ -392,8 +395,8 @@ public final class WebFeedSnackbarControllerTest {
 
     @Test
     public void showSnackbarForUnfollow_correctDuration() {
-        mWebFeedSnackbarController.showSnackbarForUnfollow(/*successfulUnfollow=*/
-                true, sFollowId, sTestUrl, sTitle);
+        mWebFeedSnackbarController.showSnackbarForUnfollow(
+                WebFeedSubscriptionRequestStatus.SUCCESS, sFollowId, sTestUrl, sTitle);
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
@@ -401,11 +404,22 @@ public final class WebFeedSnackbarControllerTest {
                 WebFeedSnackbarController.SNACKBAR_DURATION_MS, snackbar.getDuration());
     }
 
+    @Test
+    public void postFollowSnackbarIsDismissedUponFeedSurfaceOpened() {
+        mWebFeedSnackbarController.showPostFollowHelp(
+                mTab, getSuccessfulFollowResult(), sFollowId, sTestUrl, sTitle);
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar snackbar = mSnackbarCaptor.getValue();
+
+        FeedSurfaceTracker.getInstance().surfaceOpened();
+        verify(mSnackbarManager).dismissSnackbars(eq(mSnackbarCaptor.getValue().getController()));
+    }
+
     private WebFeedBridge.FollowResults getSuccessfulFollowResult() {
         return new WebFeedBridge.FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS,
                 new WebFeedBridge.WebFeedMetadata(sFollowId, sTitle, sTestUrl,
-                        WebFeedSubscriptionStatus.SUBSCRIBED, /*isActive=*/true,
-                        /*isRecommended=*/true));
+                        WebFeedSubscriptionStatus.SUBSCRIBED, WebFeedAvailabilityStatus.ACTIVE,
+                        /*isRecommended=*/true, sFaviconUrl));
     }
 
     private WebFeedBridge.FollowResults failureFollowResults() {

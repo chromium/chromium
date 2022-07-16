@@ -14,6 +14,8 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/UsbChooserDialog_jni.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
@@ -52,11 +54,19 @@ std::unique_ptr<UsbChooserDialogAndroid> UsbChooserDialogAndroid::Create(
       SecurityStateTabHelper::FromWebContents(web_contents);
   DCHECK(helper);
 
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
+  DCHECK(profile);
+
+  base::android::ScopedJavaLocalRef<jobject> j_profile_android =
+      ProfileAndroid::FromProfile(profile)->GetJavaObject();
+  DCHECK(!j_profile_android.is_null());
+
   auto dialog = std::make_unique<UsbChooserDialogAndroid>(std::move(controller),
                                                           std::move(on_close));
   dialog->java_dialog_.Reset(Java_UsbChooserDialog_create(
       env, window_android, origin_string, helper->GetSecurityLevel(),
-      reinterpret_cast<intptr_t>(dialog.get())));
+      j_profile_android, reinterpret_cast<intptr_t>(dialog.get())));
   if (dialog->java_dialog_.is_null())
     return nullptr;
 

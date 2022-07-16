@@ -56,6 +56,9 @@ class CastSystemTracingSession {
     DETACH_FROM_SEQUENCE(worker_sequence_checker_);
   }
 
+  CastSystemTracingSession(const CastSystemTracingSession&) = delete;
+  CastSystemTracingSession& operator=(const CastSystemTracingSession&) = delete;
+
   ~CastSystemTracingSession() {
     worker_task_runner_->PostTask(FROM_HERE,
                                   base::BindOnce(&DestroySystemTracerOnWorker,
@@ -147,8 +150,6 @@ class CastSystemTracingSession {
 
   bool is_tracing_ = false;
   std::unique_ptr<chromecast::SystemTracer> system_tracer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastSystemTracingSession);
 };
 
 namespace {
@@ -159,6 +160,9 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
     static base::NoDestructor<CastDataSource> instance;
     return instance.get();
   }
+
+  CastDataSource(const CastDataSource&) = delete;
+  CastDataSource& operator=(const CastDataSource&) = delete;
 
   // Called from the tracing::PerfettoProducer on its sequence.
   void StartTracingImpl(
@@ -258,8 +262,6 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   std::unique_ptr<tracing::SystemTraceWriter<std::string>> trace_writer_;
   base::OnceClosure stop_complete_callback_;
   uint32_t target_buffer_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CastDataSource);
 };
 
 }  // namespace

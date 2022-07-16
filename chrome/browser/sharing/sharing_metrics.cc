@@ -71,9 +71,9 @@ std::string DevicePlatformToString(SharingDevicePlatform device_platform) {
 // Maps pulse intervals to strings used as histogram suffixes. Keep in sync with
 // "SharingPulseInterval" in histograms.xml.
 std::string PulseIntervalToString(base::TimeDelta pulse_interval) {
-  if (pulse_interval < base::TimeDelta::FromHours(4))
+  if (pulse_interval < base::Hours(4))
     return "PulseIntervalShort";
-  if (pulse_interval > base::TimeDelta::FromHours(12))
+  if (pulse_interval > base::Hours(12))
     return "PulseIntervalLong";
   return "PulseIntervalMedium";
 }
@@ -140,6 +140,9 @@ chrome_browser_sharing::MessageType SharingPayloadCaseToMessageType(
       return chrome_browser_sharing::DISCOVERY_REQUEST;
     case chrome_browser_sharing::SharingMessage::kWebRtcSignalingFrame:
       return chrome_browser_sharing::WEB_RTC_SIGNALING_FRAME;
+    case chrome_browser_sharing::SharingMessage::
+        kOptimizationGuidePushNotification:
+      return chrome_browser_sharing::OPTIMIZATION_GUIDE_PUSH_NOTIFICATION;
   }
   // For proto3 enums unrecognized enum values are kept when parsing, and a new
   // payload case received over the network would not default to
@@ -260,18 +263,15 @@ void LogSharingMessageAckTime(chrome_browser_sharing::MessageType message_type,
     case chrome_browser_sharing::MessageType::SMS_FETCH_REQUEST:
     case chrome_browser_sharing::MessageType::DISCOVERY_REQUEST:
     case chrome_browser_sharing::MessageType::WEB_RTC_SIGNALING_FRAME:
-      base::UmaHistogramCustomTimes(
-          type_suffixed_name, time,
-          /*min=*/base::TimeDelta::FromMilliseconds(1),
-          /*max=*/base::TimeDelta::FromMinutes(10), /*buckets=*/50);
-      base::UmaHistogramCustomTimes(
-          platform_suffixed_name, time,
-          /*min=*/base::TimeDelta::FromMilliseconds(1),
-          /*max=*/base::TimeDelta::FromMinutes(10), /*buckets=*/50);
-      base::UmaHistogramCustomTimes(
-          channel_suffixed_name, time,
-          /*min=*/base::TimeDelta::FromMilliseconds(1),
-          /*max=*/base::TimeDelta::FromMinutes(10), /*buckets=*/50);
+      base::UmaHistogramCustomTimes(type_suffixed_name, time,
+                                    /*min=*/base::Milliseconds(1),
+                                    /*max=*/base::Minutes(10), /*buckets=*/50);
+      base::UmaHistogramCustomTimes(platform_suffixed_name, time,
+                                    /*min=*/base::Milliseconds(1),
+                                    /*max=*/base::Minutes(10), /*buckets=*/50);
+      base::UmaHistogramCustomTimes(channel_suffixed_name, time,
+                                    /*min=*/base::Milliseconds(1),
+                                    /*max=*/base::Minutes(10), /*buckets=*/50);
       break;
     case chrome_browser_sharing::MessageType::ACK_MESSAGE:
     default:

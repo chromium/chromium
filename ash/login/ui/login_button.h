@@ -15,13 +15,14 @@ namespace ash {
 class ASH_EXPORT LoginButton : public views::ImageButton {
  public:
   explicit LoginButton(PressedCallback callback);
+
+  LoginButton(const LoginButton&) = delete;
+  LoginButton& operator=(const LoginButton&) = delete;
+
   ~LoginButton() override;
 
  protected:
   virtual int GetInkDropRadius() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginButton);
 };
 
 }  // namespace ash

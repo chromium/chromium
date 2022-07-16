@@ -70,8 +70,9 @@ std::unique_ptr<RenderingStageScheduler> RenderingStageScheduler::CreateAdpf(
 #if defined(OS_ANDROID)
   return std::make_unique<RenderingStageSchedulerAdpf>(
       pipeline_type, std::move(threads), desired_duration);
-#endif
+#else
   return nullptr;
+#endif
 }
 
 }  // namespace gfx

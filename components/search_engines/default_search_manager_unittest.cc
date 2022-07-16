@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -44,7 +43,7 @@ void SetOverrides(sync_preferences::TestingPrefServiceSyncable* prefs,
   entry->SetInteger("id", 1001);
   entry->SetString("suggest_url", "http://foo.com/suggest?q={searchTerms}");
   base::ListValue alternate_urls;
-  alternate_urls.AppendString("http://foo.com/alternate?q={searchTerms}");
+  alternate_urls.Append("http://foo.com/alternate?q={searchTerms}");
   entry->SetKey("alternate_urls", std::move(alternate_urls));
   overrides->Append(std::move(entry));
 
@@ -83,6 +82,9 @@ class DefaultSearchManagerTest : public testing::Test {
  public:
   DefaultSearchManagerTest() {}
 
+  DefaultSearchManagerTest(const DefaultSearchManagerTest&) = delete;
+  DefaultSearchManagerTest& operator=(const DefaultSearchManagerTest&) = delete;
+
   void SetUp() override {
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -98,8 +100,6 @@ class DefaultSearchManagerTest : public testing::Test {
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultSearchManagerTest);
 };
 
 // Test that a TemplateURLData object is properly written and read from Prefs.

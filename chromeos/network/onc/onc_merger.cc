@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "chromeos/network/onc/onc_signature.h"
@@ -21,16 +20,16 @@ namespace chromeos {
 namespace onc {
 namespace {
 
-typedef std::unique_ptr<base::DictionaryValue> DictionaryPtr;
-
 // Returns true if the field is the identifier of a configuration, i.e. the GUID
-// of a network or a certificate.
+// of a network or a certificate, the ICCID of a cellular.
 bool IsIdentifierField(const OncValueSignature& value_signature,
                        const std::string& field_name) {
   if (&value_signature == &kNetworkConfigurationSignature)
     return field_name == ::onc::network_config::kGUID;
   if (&value_signature == &kCertificateSignature)
     return field_name == ::onc::certificate::kGUID;
+  if (&value_signature == &kCellularSignature)
+    return field_name == ::onc::cellular::kICCID;
   return false;
 }
 
@@ -48,96 +47,79 @@ bool IsReadOnlyField(const OncValueSignature& value_signature,
 
 // Inserts |true| at every field name in |result| that is recommended in
 // |policy|.
-void MarkRecommendedFieldnames(const base::DictionaryValue& policy,
-                               base::DictionaryValue* result) {
-  const base::ListValue* recommended_value = NULL;
-  if (!policy.GetListWithoutPathExpansion(::onc::kRecommended,
-                                          &recommended_value))
+void MarkRecommendedFieldnames(const base::Value& policy, base::Value* result) {
+  const base::Value* recommended_value =
+      policy.FindListKey(::onc::kRecommended);
+  if (!recommended_value)
     return;
   for (const auto& value : recommended_value->GetList()) {
     if (value.is_string())
-      result->SetKey(value.GetString(), base::Value(true));
+      result->SetBoolKey(value.GetString(), true);
   }
 }
 
 // Returns a dictionary which contains |true| at each path that is editable by
 // the user. No other fields are set.
-DictionaryPtr GetEditableFlags(const base::DictionaryValue& policy) {
-  DictionaryPtr result_editable(new base::DictionaryValue);
-  MarkRecommendedFieldnames(policy, result_editable.get());
+base::Value GetEditableFlags(const base::Value& policy) {
+  base::Value result(base::Value::Type::DICTIONARY);
+  MarkRecommendedFieldnames(policy, &result);
 
   // Recurse into nested dictionaries.
-  for (base::DictionaryValue::Iterator it(policy); !it.IsAtEnd();
-       it.Advance()) {
-    const base::DictionaryValue* child_policy = NULL;
-    if (it.key() == ::onc::kRecommended ||
-        !it.value().GetAsDictionary(&child_policy)) {
+  for (auto iter : policy.DictItems()) {
+    if (iter.first == ::onc::kRecommended || !iter.second.is_dict())
       continue;
-    }
-
-    result_editable->SetKey(it.key(), base::Value::FromUniquePtrValue(
-                                          GetEditableFlags(*child_policy)));
+    result.SetKey(iter.first, GetEditableFlags(iter.second));
   }
-  return result_editable;
+  return result;
 }
 
-// This is the base class for merging a list of DictionaryValues in
-// parallel. See MergeDictionaries function.
+// This is the base class for merging a list of Values in parallel. See
+// MergeDictionaries function.
 class MergeListOfDictionaries {
  public:
-  typedef std::vector<const base::DictionaryValue*> DictPtrs;
+  using ValuePtrs = std::vector<const base::Value*>;
 
   MergeListOfDictionaries() = default;
 
+  MergeListOfDictionaries(const MergeListOfDictionaries&) = delete;
+  MergeListOfDictionaries& operator=(const MergeListOfDictionaries&) = delete;
+
   virtual ~MergeListOfDictionaries() = default;
 
-  // For each path in any of the dictionaries |dicts|, the function
-  // MergeListOfValues is called with the list of values that are located at
-  // that path in each of the dictionaries. This function returns a new
-  // dictionary containing all results of MergeListOfValues at the respective
+  // For each path in any of the dictionaries |dicts|, either MergeListOfValues
+  // or MergeNestedDictionaries is called with the list of values that are
+  // located at that path in each of the dictionaries. This function returns a
+  // new dictionary containing all results of those calls at the respective
   // paths. The resulting dictionary doesn't contain empty dictionaries.
-  DictionaryPtr MergeDictionaries(const DictPtrs &dicts) {
-    DictionaryPtr result(new base::DictionaryValue);
+  base::Value MergeDictionaries(const ValuePtrs& dicts) {
+    base::Value result(base::Value::Type::DICTIONARY);
     std::set<std::string> visited;
-    for (DictPtrs::const_iterator it_outer = dicts.begin();
-         it_outer != dicts.end(); ++it_outer) {
-      if (!*it_outer)
+    for (const base::Value* dict_outer : dicts) {
+      if (!dict_outer || !dict_outer->is_dict())
         continue;
 
-      for (base::DictionaryValue::Iterator field(**it_outer); !field.IsAtEnd();
-           field.Advance()) {
-        const std::string& key = field.key();
+      for (auto field : dict_outer->DictItems()) {
+        const std::string& key = field.first;
         if (key == ::onc::kRecommended || !visited.insert(key).second)
           continue;
 
-        std::unique_ptr<base::Value> merged_value;
-        if (field.value().is_dict()) {
-          DictPtrs nested_dicts;
-          for (DictPtrs::const_iterator it_inner = dicts.begin();
-               it_inner != dicts.end(); ++it_inner) {
-            const base::DictionaryValue* nested_dict = NULL;
-            if (*it_inner)
-              (*it_inner)->GetDictionaryWithoutPathExpansion(key, &nested_dict);
-            nested_dicts.push_back(nested_dict);
-          }
-          DictionaryPtr merged_dict(MergeNestedDictionaries(key, nested_dicts));
-          if (!merged_dict->DictEmpty())
-            merged_value = std::move(merged_dict);
-        } else {
-          std::vector<const base::Value*> values;
-          for (DictPtrs::const_iterator it_inner = dicts.begin();
-               it_inner != dicts.end(); ++it_inner) {
-            const base::Value* value = NULL;
-            if (*it_inner)
-              value = (*it_inner)->FindKey(key);
-            values.push_back(value);
-          }
-          merged_value = MergeListOfValues(key, values);
+        ValuePtrs values_for_key;
+        for (const base::Value* dict_inner : dicts) {
+          const base::Value* value = nullptr;
+          if (dict_inner && dict_inner->is_dict())
+            value = dict_inner->FindKey(key);
+          values_for_key.push_back(value);
         }
-
-        if (merged_value)
-          result->SetKey(
-              key, base::Value::FromUniquePtrValue(std::move(merged_value)));
+        if (field.second.is_dict()) {
+          base::Value merged_dict =
+              MergeNestedDictionaries(key, values_for_key);
+          if (!merged_dict.DictEmpty())
+            result.SetKey(key, std::move(merged_dict));
+        } else {
+          base::Value merged_value = MergeListOfValues(key, values_for_key);
+          if (!merged_value.is_none())
+            result.SetKey(key, std::move(merged_value));
+        }
       }
     }
     return result;
@@ -147,18 +129,14 @@ class MergeListOfDictionaries {
   // This function is called by MergeDictionaries for each list of values that
   // are located at the same path in each of the dictionaries. The order of the
   // values is the same as of the given dictionaries |dicts|. If a dictionary
-  // doesn't contain a path then it's value is NULL.
-  virtual std::unique_ptr<base::Value> MergeListOfValues(
-      const std::string& key,
-      const std::vector<const base::Value*>& values) = 0;
+  // doesn't contain a path then it's value is nullptr.
+  virtual base::Value MergeListOfValues(const std::string& key,
+                                        const ValuePtrs& values) = 0;
 
-  virtual DictionaryPtr MergeNestedDictionaries(const std::string& key,
-                                                const DictPtrs &dicts) {
+  virtual base::Value MergeNestedDictionaries(const std::string& key,
+                                              const ValuePtrs& dicts) {
     return MergeDictionaries(dicts);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MergeListOfDictionaries);
 };
 
 // This is the base class for merging policies and user settings.
@@ -176,35 +154,39 @@ class MergeSettingsAndPolicies : public MergeListOfDictionaries {
 
   MergeSettingsAndPolicies() = default;
 
+  MergeSettingsAndPolicies(const MergeSettingsAndPolicies&) = delete;
+  MergeSettingsAndPolicies& operator=(const MergeSettingsAndPolicies&) = delete;
+
   // Merge the provided dictionaries. For each path in any of the dictionaries,
   // MergeValues is called. Its results are collected in a new dictionary which
   // is then returned. The resulting dictionary never contains empty
   // dictionaries.
-  DictionaryPtr MergeDictionaries(
-      const base::DictionaryValue* user_policy,
-      const base::DictionaryValue* device_policy,
-      const base::DictionaryValue* user_settings,
-      const base::DictionaryValue* shared_settings,
-      const base::DictionaryValue* active_settings) {
-    hasUserPolicy_ = (user_policy != NULL);
-    hasDevicePolicy_ = (device_policy != NULL);
+  base::Value MergeDictionaries(const base::Value* user_policy,
+                                const base::Value* device_policy,
+                                const base::Value* user_settings,
+                                const base::Value* shared_settings,
+                                const base::Value* active_settings) {
+    hasUserPolicy_ = (user_policy != nullptr);
+    hasDevicePolicy_ = (device_policy != nullptr);
 
-    DictionaryPtr user_editable;
-    if (user_policy != NULL)
+    // Note: The call to MergeListOfDictionaries::MergeDictionaries below will
+    // ignore Value entries that are not Type::DICTIONARY.
+    base::Value user_editable;
+    if (user_policy)
       user_editable = GetEditableFlags(*user_policy);
 
-    DictionaryPtr device_editable;
-    if (device_policy != NULL)
+    base::Value device_editable;
+    if (device_policy)
       device_editable = GetEditableFlags(*device_policy);
 
-    std::vector<const base::DictionaryValue*> dicts(kLastIndex, NULL);
+    ValuePtrs dicts(kLastIndex, nullptr);
     dicts[kUserPolicyIndex] = user_policy;
     dicts[kDevicePolicyIndex] = device_policy;
     dicts[kUserSettingsIndex] = user_settings;
     dicts[kSharedSettingsIndex] = shared_settings;
     dicts[kActiveSettingsIndex] = active_settings;
-    dicts[kUserEditableIndex] = user_editable.get();
-    dicts[kDeviceEditableIndex] = device_editable.get();
+    dicts[kUserEditableIndex] = &user_editable;
+    dicts[kDeviceEditableIndex] = &device_editable;
     return MergeListOfDictionaries::MergeDictionaries(dicts);
   }
 
@@ -212,24 +194,18 @@ class MergeSettingsAndPolicies : public MergeListOfDictionaries {
   // This function is called by MergeDictionaries for each list of values that
   // are located at the same path in each of the dictionaries. Implementations
   // can use the Has*Policy functions.
-  virtual std::unique_ptr<base::Value> MergeValues(
-      const std::string& key,
-      const ValueParams& values) = 0;
+  virtual base::Value MergeValues(const std::string& key,
+                                  const ValueParams& values) = 0;
 
   // Whether a user policy was provided.
-  bool HasUserPolicy() {
-    return hasUserPolicy_;
-  }
+  bool HasUserPolicy() { return hasUserPolicy_; }
 
   // Whether a device policy was provided.
-  bool HasDevicePolicy() {
-    return hasDevicePolicy_;
-  }
+  bool HasDevicePolicy() { return hasDevicePolicy_; }
 
   // MergeListOfDictionaries override.
-  std::unique_ptr<base::Value> MergeListOfValues(
-      const std::string& key,
-      const std::vector<const base::Value*>& values) override {
+  base::Value MergeListOfValues(const std::string& key,
+                                const ValuePtrs& values) override {
     bool user_editable = !HasUserPolicy();
     if (values[kUserEditableIndex] && values[kUserEditableIndex]->is_bool())
       user_editable = values[kUserEditableIndex]->GetBool();
@@ -262,8 +238,6 @@ class MergeSettingsAndPolicies : public MergeListOfDictionaries {
   };
 
   bool hasUserPolicy_, hasDevicePolicy_;
-
-  DISALLOW_COPY_AND_ASSIGN(MergeSettingsAndPolicies);
 };
 
 // Call MergeDictionaries to merge policies and settings to the effective
@@ -273,19 +247,21 @@ class MergeToEffective : public MergeSettingsAndPolicies {
  public:
   MergeToEffective() = default;
 
+  MergeToEffective(const MergeToEffective&) = delete;
+  MergeToEffective& operator=(const MergeToEffective&) = delete;
+
  protected:
   // Merges |values| to the effective value (Mandatory policy overwrites user
   // settings overwrites shared settings overwrites recommended policy). |which|
   // is set to the respective onc::kAugmentation* constant that indicates which
-  // source of settings is effective. Note that this function may return a NULL
-  // pointer and set |which| to ::onc::kAugmentationUserPolicy, which means that
-  // the
+  // source of settings is effective. Note that this function may return nullptr
+  // and set |which| to ::onc::kAugmentationUserPolicy, which means that the
   // user policy didn't set a value but also didn't recommend it, thus enforcing
   // the empty value.
-  std::unique_ptr<base::Value> MergeValues(const std::string& key,
-                                           const ValueParams& values,
-                                           std::string* which) {
-    const base::Value* result = NULL;
+  base::Value MergeValues(const std::string& key,
+                          const ValueParams& values,
+                          std::string* which) {
+    const base::Value* result = nullptr;
     which->clear();
     if (!values.user_editable) {
       result = values.user_policy;
@@ -309,20 +285,15 @@ class MergeToEffective : public MergeSettingsAndPolicies {
       // Can be reached if the current field is recommended, but none of the
       // dictionaries contained a value for it.
     }
-    if (result)
-      return base::Value::ToUniquePtrValue(result->Clone());
-    return nullptr;
+    return result ? result->Clone() : base::Value();
   }
 
   // MergeSettingsAndPolicies override.
-  std::unique_ptr<base::Value> MergeValues(const std::string& key,
-                                           const ValueParams& values) override {
+  base::Value MergeValues(const std::string& key,
+                          const ValueParams& values) override {
     std::string which;
     return MergeValues(key, values, &which);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MergeToEffective);
 };
 
 namespace {
@@ -352,26 +323,26 @@ class MergeToAugmented : public MergeToEffective {
  public:
   MergeToAugmented() = default;
 
-  DictionaryPtr MergeDictionaries(
-      const OncValueSignature& signature,
-      const base::DictionaryValue* user_policy,
-      const base::DictionaryValue* device_policy,
-      const base::DictionaryValue* user_settings,
-      const base::DictionaryValue* shared_settings,
-      const base::DictionaryValue* active_settings) {
+  MergeToAugmented(const MergeToAugmented&) = delete;
+  MergeToAugmented& operator=(const MergeToAugmented&) = delete;
+
+  base::Value MergeDictionaries(const OncValueSignature& signature,
+                                const base::Value* user_policy,
+                                const base::Value* device_policy,
+                                const base::Value* user_settings,
+                                const base::Value* shared_settings,
+                                const base::Value* active_settings) {
     signature_ = &signature;
-    return MergeToEffective::MergeDictionaries(user_policy,
-                                               device_policy,
-                                               user_settings,
-                                               shared_settings,
+    return MergeToEffective::MergeDictionaries(user_policy, device_policy,
+                                               user_settings, shared_settings,
                                                active_settings);
   }
 
  protected:
   // MergeSettingsAndPolicies override.
-  std::unique_ptr<base::Value> MergeValues(const std::string& key,
-                                           const ValueParams& values) override {
-    const OncFieldSignature* field = NULL;
+  base::Value MergeValues(const std::string& key,
+                          const ValueParams& values) override {
+    const OncFieldSignature* field = nullptr;
     if (signature_)
       field = GetFieldSignature(*signature_, key);
 
@@ -380,45 +351,44 @@ class MergeToAugmented : public MergeToEffective {
       // controlled by policy. Return the plain active value instead of an
       // augmented dictionary.
       if (values.active_setting)
-        return base::Value::ToUniquePtrValue(values.active_setting->Clone());
-      return nullptr;
+        return values.active_setting->Clone();
+      return base::Value();
     }
 
     // This field is part of the provided ONCSignature, thus it can be
     // controlled by policy.
     std::string which_effective;
-    std::unique_ptr<base::Value> effective_value =
+    base::Value effective_value =
         MergeToEffective::MergeValues(key, values, &which_effective);
 
     if (IsReadOnlyField(*signature_, key)) {
       // Don't augment read-only fields (GUID and Type).
-      if (effective_value) {
+      if (!effective_value.is_none()) {
         // DCHECK that all provided fields are identical.
-        DCHECK(AllPresentValuesEqual(values, *effective_value))
+        DCHECK(AllPresentValuesEqual(values, effective_value))
             << "Values do not match: " << key
-            << " Effective: " << *effective_value;
+            << " Effective: " << effective_value;
         // Return the un-augmented field.
         return effective_value;
       }
       if (values.active_setting) {
         // Unmanaged networks have assigned (active) values.
-        return base::Value::ToUniquePtrValue(values.active_setting->Clone());
+        return values.active_setting->Clone();
       }
       LOG(ERROR) << "Field has no effective value: " << key;
-      return nullptr;
+      return base::Value();
     }
 
-    std::unique_ptr<base::DictionaryValue> augmented_value(
-        new base::DictionaryValue);
+    base::Value augmented_value(base::Value::Type::DICTIONARY);
 
     if (values.active_setting) {
-      augmented_value->SetKey(::onc::kAugmentationActiveSetting,
-                              values.active_setting->Clone());
+      augmented_value.SetKey(::onc::kAugmentationActiveSetting,
+                             values.active_setting->Clone());
     }
 
     if (!which_effective.empty()) {
-      augmented_value->SetKey(::onc::kAugmentationEffectiveSetting,
-                              base::Value(which_effective));
+      augmented_value.SetKey(::onc::kAugmentationEffectiveSetting,
+                             base::Value(which_effective));
     }
 
     // Prevent credentials from being forwarded in cleartext to UI.
@@ -429,100 +399,98 @@ class MergeToAugmented : public MergeToEffective {
     if (is_credential) {
       // Set |kFakeCredential| to notify UI that credential is saved.
       if (values.user_policy) {
-        augmented_value->SetKey(
+        augmented_value.SetKey(
             ::onc::kAugmentationUserPolicy,
             base::Value(chromeos::policy_util::kFakeCredential));
       }
       if (values.device_policy) {
-        augmented_value->SetKey(
+        augmented_value.SetKey(
             ::onc::kAugmentationDevicePolicy,
             base::Value(chromeos::policy_util::kFakeCredential));
       }
       if (values.active_setting) {
-        augmented_value->SetKey(
+        augmented_value.SetKey(
             ::onc::kAugmentationActiveSetting,
             base::Value(chromeos::policy_util::kFakeCredential));
       }
     } else {
       if (values.user_policy) {
-        augmented_value->SetKey(::onc::kAugmentationUserPolicy,
-                                values.user_policy->Clone());
+        augmented_value.SetKey(::onc::kAugmentationUserPolicy,
+                               values.user_policy->Clone());
       }
       if (values.device_policy) {
-        augmented_value->SetKey(::onc::kAugmentationDevicePolicy,
-                                values.device_policy->Clone());
+        augmented_value.SetKey(::onc::kAugmentationDevicePolicy,
+                               values.device_policy->Clone());
       }
     }
     if (values.user_setting) {
-      augmented_value->SetKey(::onc::kAugmentationUserSetting,
-                              values.user_setting->Clone());
+      augmented_value.SetKey(::onc::kAugmentationUserSetting,
+                             values.user_setting->Clone());
     }
     if (values.shared_setting) {
-      augmented_value->SetKey(::onc::kAugmentationSharedSetting,
-                              values.shared_setting->Clone());
+      augmented_value.SetKey(::onc::kAugmentationSharedSetting,
+                             values.shared_setting->Clone());
     }
     if (HasUserPolicy() && values.user_editable) {
-      augmented_value->SetKey(::onc::kAugmentationUserEditable,
-                              base::Value(true));
+      augmented_value.SetKey(::onc::kAugmentationUserEditable,
+                             base::Value(true));
     }
     if (HasDevicePolicy() && values.device_editable) {
-      augmented_value->SetKey(::onc::kAugmentationDeviceEditable,
-                              base::Value(true));
+      augmented_value.SetKey(::onc::kAugmentationDeviceEditable,
+                             base::Value(true));
     }
-    if (augmented_value->DictEmpty())
-      augmented_value.reset();
-    return std::move(augmented_value);
+    if (!augmented_value.DictEmpty())
+      return augmented_value;
+
+    return base::Value();
   }
 
   // MergeListOfDictionaries override.
-  DictionaryPtr MergeNestedDictionaries(const std::string& key,
-                                        const DictPtrs& dicts) override {
-    DictionaryPtr result;
+  base::Value MergeNestedDictionaries(const std::string& key,
+                                      const ValuePtrs& dicts) override {
     if (signature_) {
       const OncValueSignature* enclosing_signature = signature_;
-      signature_ = NULL;
+      signature_ = nullptr;
 
       const OncFieldSignature* field =
           GetFieldSignature(*enclosing_signature, key);
       if (field)
         signature_ = field->value_signature;
-      result = MergeToEffective::MergeNestedDictionaries(key, dicts);
-
+      base::Value result =
+          MergeToEffective::MergeNestedDictionaries(key, dicts);
       signature_ = enclosing_signature;
-    } else {
-      result = MergeToEffective::MergeNestedDictionaries(key, dicts);
+      return result;
     }
-    return result;
+    return MergeToEffective::MergeNestedDictionaries(key, dicts);
   }
 
  private:
   const OncValueSignature* signature_;
-  DISALLOW_COPY_AND_ASSIGN(MergeToAugmented);
 };
 
 }  // namespace
 
-DictionaryPtr MergeSettingsAndPoliciesToEffective(
-    const base::DictionaryValue* user_policy,
-    const base::DictionaryValue* device_policy,
-    const base::DictionaryValue* user_settings,
-    const base::DictionaryValue* shared_settings) {
+base::Value MergeSettingsAndPoliciesToEffective(
+    const base::Value* user_policy,
+    const base::Value* device_policy,
+    const base::Value* user_settings,
+    const base::Value* shared_settings) {
   MergeToEffective merger;
-  return merger.MergeDictionaries(
-      user_policy, device_policy, user_settings, shared_settings, NULL);
+  return merger.MergeDictionaries(user_policy, device_policy, user_settings,
+                                  shared_settings, nullptr);
 }
 
-DictionaryPtr MergeSettingsAndPoliciesToAugmented(
+base::Value MergeSettingsAndPoliciesToAugmented(
     const OncValueSignature& signature,
-    const base::DictionaryValue* user_policy,
-    const base::DictionaryValue* device_policy,
-    const base::DictionaryValue* user_settings,
-    const base::DictionaryValue* shared_settings,
-    const base::DictionaryValue* active_settings) {
+    const base::Value* user_policy,
+    const base::Value* device_policy,
+    const base::Value* user_settings,
+    const base::Value* shared_settings,
+    const base::Value* active_settings) {
   MergeToAugmented merger;
-  return merger.MergeDictionaries(
-      signature, user_policy, device_policy, user_settings, shared_settings,
-      active_settings);
+  return merger.MergeDictionaries(signature, user_policy, device_policy,
+                                  user_settings, shared_settings,
+                                  active_settings);
 }
 
 }  // namespace onc

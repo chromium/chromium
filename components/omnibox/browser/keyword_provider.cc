@@ -191,20 +191,32 @@ std::u16string KeywordProvider::GetKeywordForText(
   }
 
   if (keyword.empty())
-    return keyword;
+    return u"";
 
   // Don't provide a keyword if it doesn't support replacement.
   const TemplateURL* const template_url =
       url_service->GetTemplateURLForKeyword(keyword);
   if (!template_url ||
-      !template_url->SupportsReplacement(url_service->search_terms_data()))
+      !template_url->SupportsReplacement(url_service->search_terms_data())) {
     return std::u16string();
+  }
 
   // Don't provide a keyword for inactive/disabled extension keywords.
   if ((template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) &&
       extensions_delegate_ &&
-      !extensions_delegate_->IsEnabledExtension(template_url->GetExtensionId()))
+      !extensions_delegate_->IsEnabledExtension(
+          template_url->GetExtensionId())) {
     return std::u16string();
+  }
+
+  // Don't provide a keyword for inactive search engines (if the active search
+  // engine flag is enabled). Prepopulated engines should always work regardless
+  // of is_active.
+  if (OmniboxFieldTrial::IsActiveSearchEnginesEnabled() &&
+      template_url->prepopulate_id() == 0 &&
+      template_url->is_active() != TemplateURLData::ActiveStatus::kTrue) {
+    return std::u16string();
+  }
 
   return keyword;
 }

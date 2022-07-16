@@ -17,21 +17,15 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/sync/driver/sync_service.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif
-
 namespace {
 
-constexpr base::TimeDelta kIdentityAnimationDuration =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kIdentityAnimationDuration = base::Seconds(3);
 
-constexpr base::TimeDelta kAvatarHighlightAnimationDuration =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kAvatarHighlightAnimationDuration = base::Seconds(2);
 
 ProfileAttributesStorage& GetProfileAttributesStorage() {
   return g_browser_process->profile_manager()->GetProfileAttributesStorage();
@@ -40,42 +34,6 @@ ProfileAttributesStorage& GetProfileAttributesStorage() {
 ProfileAttributesEntry* GetProfileAttributesEntry(Profile* profile) {
   return GetProfileAttributesStorage().GetProfileAttributesWithPath(
       profile->GetPath());
-}
-
-// Returns the avatar image for the current profile. May be called only in
-// "normal" states where the user is guaranteed to have an avatar image (i.e.
-// not kGuestSession and not kIncognitoProfile).
-gfx::Image GetAvatarImage(Profile* profile,
-                          const gfx::Image& user_identity_image,
-                          int preferred_size) {
-  ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile);
-  if (!entry) {  // This can happen if the user deletes the current profile.
-    return ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-        profiles::GetPlaceholderAvatarIconResourceID());
-  }
-
-  // TODO(crbug.com/1012179): it should suffice to call entry->GetAvatarIcon().
-  // For this to work well, this class needs to observe ProfileAttributesStorage
-  // instead of (or on top of) IdentityManager. Only then we can rely on |entry|
-  // being up to date (as the storage also observes IdentityManager so there's
-  // no guarantee on the order of notifications).
-  if (entry->IsUsingGAIAPicture() && entry->GetGAIAPicture())
-    return *entry->GetGAIAPicture();
-
-  // Show |user_identity_image| when the following conditions are satisfied:
-  //  - the user is migrated to Dice
-  //  - the user isn't syncing
-  //  - the profile icon wasn't explicitly changed
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!user_identity_image.IsEmpty() &&
-      AccountConsistencyModeManager::IsDiceEnabledForProfile(profile) &&
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-      entry->IsUsingDefaultAvatar()) {
-    return user_identity_image;
-  }
-
-  return entry->GetAvatarIcon(preferred_size);
 }
 
 }  // namespace
@@ -104,13 +62,11 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(chromeos::features::kAvatarToolbarButton)) {
-    // On CrOS this button should only show as badging for Incognito and Guest
-    // sessions. It's only enabled for Incognito where a menu is available for
-    // closing all Incognito windows.
-    avatar_toolbar_button_->SetEnabled(
-        state == AvatarToolbarButton::State::kIncognitoProfile);
-  }
+  // On CrOS this button should only show as badging for Incognito and Guest
+  // sessions. It's only enabled for Incognito where a menu is available for
+  // closing all Incognito windows.
+  avatar_toolbar_button_->SetEnabled(
+      state == AvatarToolbarButton::State::kIncognitoProfile);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -124,8 +80,12 @@ std::u16string AvatarToolbarButtonDelegate::GetProfileName() const {
 }
 
 std::u16string AvatarToolbarButtonDelegate::GetShortProfileName() const {
-  return signin_ui_util::GetShortProfileIdentityToDisplay(
-      *GetProfileAttributesEntry(profile_), profile_);
+  ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile_);
+  // If the profile is being deleted, it doesn't matter what name is shown.
+  if (!entry)
+    return std::u16string();
+
+  return signin_ui_util::GetShortProfileIdentityToDisplay(*entry, profile_);
 }
 
 gfx::Image AvatarToolbarButtonDelegate::GetGaiaAccountImage() const {
@@ -145,7 +105,34 @@ gfx::Image AvatarToolbarButtonDelegate::GetGaiaAccountImage() const {
 gfx::Image AvatarToolbarButtonDelegate::GetProfileAvatarImage(
     gfx::Image gaia_account_image,
     int preferred_size) const {
-  return GetAvatarImage(profile_, gaia_account_image, preferred_size);
+  ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile_);
+  if (!entry) {  // This can happen if the user deletes the current profile.
+    return ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+        profiles::GetPlaceholderAvatarIconResourceID());
+  }
+
+  // TODO(crbug.com/1012179): it should suffice to call entry->GetAvatarIcon().
+  // For this to work well, this class needs to observe ProfileAttributesStorage
+  // instead of (or on top of) IdentityManager. Only then we can rely on |entry|
+  // being up to date (as the storage also observes IdentityManager so there's
+  // no guarantee on the order of notifications).
+  if (entry->IsUsingGAIAPicture() && entry->GetGAIAPicture())
+    return *entry->GetGAIAPicture();
+
+  // Show |user_identity_image| when the following conditions are satisfied:
+  //  - the user is migrated to Dice
+  //  - the user isn't syncing
+  //  - the profile icon wasn't explicitly changed
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  if (!gaia_account_image.IsEmpty() &&
+      AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_) &&
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+      entry->IsUsingDefaultAvatar()) {
+    return gaia_account_image;
+  }
+
+  return entry->GetAvatarIcon(preferred_size);
 }
 
 int AvatarToolbarButtonDelegate::GetWindowCount() const {

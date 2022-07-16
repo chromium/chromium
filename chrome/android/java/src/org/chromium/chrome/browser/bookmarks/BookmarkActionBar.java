@@ -21,10 +21,12 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.util.ToolbarUtils;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableListAdapter;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -35,6 +37,7 @@ import java.util.List;
 public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
         implements BookmarkUIObserver, OnMenuItemClickListener, OnClickListener,
                    DragReorderableListAdapter.DragListener {
+
     private BookmarkItem mCurrentFolder;
     private BookmarkDelegate mDelegate;
 
@@ -245,8 +248,13 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
     private static void openBookmarksInNewTabs(
             List<BookmarkId> bookmarks, TabDelegate tabDelegate, BookmarkModel model) {
         for (BookmarkId id : bookmarks) {
-            tabDelegate.createNewTab(new LoadUrlParams(model.getBookmarkById(id).getUrl()),
-                    TabLaunchType.FROM_LONGPRESS_BACKGROUND, null);
+            if (id == null) continue;
+            GURL url = model.getBookmarkById(id).getUrl();
+            tabDelegate.createNewTab(
+                    new LoadUrlParams(url), TabLaunchType.FROM_LONGPRESS_BACKGROUND, null);
+            if (id.getType() == BookmarkType.READING_LIST) {
+                model.setReadStatusForReadingList(url, true);
+            }
         }
     }
 
@@ -259,7 +267,11 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
      */
     @Override
     public void onDragStateChange(boolean drag) {
+        // Disable menu items while dragging.
         getMenu().setGroupEnabled(R.id.selection_mode_menu_group, !drag);
+        ToolbarUtils.setOverFlowMenuEnabled(this, !drag);
+
+        // Disable listeners while dragging.
         setNavigationOnClickListener(drag ? null : this);
         setOnMenuItemClickListener(drag ? null : this);
     }

@@ -189,7 +189,7 @@ void ConnectionPreserverImpl::SetPreservedConnection(
   connection_attempt_->SetDelegate(this);
 
   preserved_connection_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kTimeoutSeconds),
+      FROM_HERE, base::Seconds(kTimeoutSeconds),
       base::BindOnce(
           &ConnectionPreserverImpl::RemovePreservedConnectionIfPresent,
           weak_ptr_factory_.GetWeakPtr()));

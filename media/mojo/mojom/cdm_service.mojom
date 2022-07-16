@@ -7,6 +7,7 @@ module media.mojom;
 import "media/mojo/mojom/content_decryption_module.mojom";
 import "media/mojo/mojom/frame_interface_factory.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "services/service_manager/public/mojom/interface_provider.mojom";
 
 [EnableIf=is_mac]
@@ -45,6 +46,7 @@ interface SeatbeltExtensionTokenProvider {
 // - On Mac, the process is fully sandboxed when launched, and `token_provider`
 // is needed to help load the CDM in the process.
 // - On Linux/ChromeOS, the CDM is preloaded in the zygote sandbox.
+[ServiceSandbox=sandbox.mojom.Sandbox.kCdm]
 interface CdmServiceBroker {
   // Loads the CDM at `cdm_path` into the process and returns the `CdmService`.
   GetService(mojo_base.mojom.FilePath cdm_path,

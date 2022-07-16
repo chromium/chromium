@@ -31,7 +31,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StreamUtil;
@@ -63,6 +62,12 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
     private static final float CONFIDENCE_THRESHOLD_FOR_URL_DETECTION = 0.99f;
 
     private static final long MAX_ALLOWED_PNG_SIZE_BYTES = (long) 100e6; // 100 MB.
+
+    // This mime type annotates that clipboard contains a URL.
+    private static final String URL_MIME_TYPE = "text/x-moz-url";
+
+    // This mime type annotates that clipboard contains a text.
+    private static final String TEXT_MIME_TYPE = "text/*";
 
     @SuppressLint("StaticFieldLeak")
     private static Clipboard sInstance;
@@ -260,8 +265,19 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
     boolean hasUrl() {
         // ClipDescription#getConfidenceScore is only available on Android S+, so before Android S,
         // we will access the clipboard content and valid by URLUtil#isValidUrl.
-        if (BuildInfo.isAtLeastS()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             ClipDescription description = mClipboardManager.getPrimaryClipDescription();
+            if (description == null) return false;
+            if (description.hasMimeType(URL_MIME_TYPE)) return true;
+
+            // Only use TextClassifier on text mime type.
+            // If getClassificationStatus() is not CLASSIFICATION_COMPLETE,
+            // ClipDescription#getConfidenceScore will trows exception.
+            if (!description.hasMimeType(TEXT_MIME_TYPE)
+                    || !ApiHelperForS.isGetClassificationStatusIsComplete(description)) {
+                return false;
+            }
+
             float score = ApiHelperForS.getConfidenceScore(description, TextClassifier.TYPE_URL);
             return score > CONFIDENCE_THRESHOLD_FOR_URL_DETECTION;
         } else {
@@ -281,17 +297,24 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
     String getUrl() {
         if (!hasUrl()) return null;
 
-        if (!BuildInfo.isAtLeastS()) return getCoercedText();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return getCoercedText();
 
         try {
-            ClipData.Item item = mClipboardManager.getPrimaryClip().getItemAt(0);
-            TextLinks textLinks = ApiHelperForS.getTextLinks(item);
-            if (textLinks == null || textLinks.getLinks().isEmpty()) return null;
+            ClipData clipData = mClipboardManager.getPrimaryClip();
+            ClipDescription description = clipData.getDescription();
+            CharSequence firstLinkText = null;
+            if (description.hasMimeType(URL_MIME_TYPE)) {
+                firstLinkText = getCoercedText();
+            } else {
+                ClipData.Item item = clipData.getItemAt(0);
+                TextLinks textLinks = ApiHelperForS.getTextLinks(item);
+                if (textLinks == null || textLinks.getLinks().isEmpty()) return null;
 
-            CharSequence fullText = item.getText();
-            TextLinks.TextLink firstLink = textLinks.getLinks().iterator().next();
-            CharSequence firstLinkText =
-                    fullText.subSequence(firstLink.getStart(), firstLink.getEnd());
+                CharSequence fullText = item.getText();
+                TextLinks.TextLink firstLink = textLinks.getLinks().iterator().next();
+                firstLinkText = fullText.subSequence(firstLink.getStart(), firstLink.getEnd());
+            }
+            if (firstLinkText == null) return null;
 
             // Fixing the URL here since Android thought the string is a URL, but GURL may not
             // recognize the string as a URL. Ex. www.foo.com. Android thinks this is a URL, but
@@ -401,31 +424,6 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
             return null;
         } finally {
             StreamUtil.closeQuietly(fileStream);
-        }
-    }
-
-    /**
-     * Reads the Uri of top item on the primary clip on the Android clipboard, and try to get the
-     * {@link Bitmap}. for that Uri.
-     * Fetching images can result in I/O, so should not be called on UI thread.
-     *
-     * @return an {@link Bitmap} if available, otherwise null.
-     */
-    @CalledByNative
-    public Bitmap getImage() {
-        ThreadUtils.assertOnBackgroundThread();
-        try {
-            Uri uri = getImageUri();
-            if (uri == null) return null;
-
-            Bitmap bitmap = ApiCompatibilityUtils.getBitmapByUri(
-                    ContextUtils.getApplicationContext().getContentResolver(), uri);
-            if (!bitmapSupportByGfx(bitmap)) {
-                return bitmap.copy(Bitmap.Config.ARGB_8888, /*mutable=*/false);
-            }
-            return bitmap;
-        } catch (IOException | SecurityException e) {
-            return null;
         }
     }
 
@@ -624,7 +622,8 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
      * @param url The URL to copy to the clipboard.
      */
     public void copyUrlToClipboard(GURL url) {
-        ClipData clip = ClipData.newPlainText("url", url.getSpec());
+        ClipData clip =
+                new ClipData("url", new String[] {URL_MIME_TYPE}, new ClipData.Item(url.getSpec()));
         if (setPrimaryClipNoException(clip)) {
             Toast.makeText(mContext, R.string.link_copied, Toast.LENGTH_SHORT).show();
         }
@@ -758,7 +757,7 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
      * @return True if the system clipboard contain a styled text, otherwise, false.
      */
     private boolean hasStyledText(ClipDescription description) {
-        if (BuildInfo.isAtLeastS()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             return ApiHelperForS.isStyleText(description);
         } else {
             return hasStyledTextOnPreS();

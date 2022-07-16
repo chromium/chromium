@@ -8,8 +8,14 @@
 #include "base/logging.h"
 #include "components/messages/android/jni_headers/MessageWrapper_jni.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/android/java_bitmap.h"
 
 namespace messages {
+
+MessageWrapper::MessageWrapper(MessageIdentifier message_identifier)
+    : MessageWrapper(message_identifier,
+                     base::NullCallback(),
+                     base::NullCallback()) {}
 
 MessageWrapper::MessageWrapper(MessageIdentifier message_identifier,
                                base::OnceClosure action_callback,
@@ -118,6 +124,18 @@ void MessageWrapper::SetIconResourceId(int resource_id) {
                                         resource_id);
 }
 
+bool MessageWrapper::IsValidIcon() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_MessageWrapper_isValidIcon(env, java_message_wrapper_);
+}
+
+void MessageWrapper::SetIcon(const SkBitmap& icon) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> java_bitmap =
+      gfx::ConvertToJavaBitmap(icon);
+  Java_MessageWrapper_setIcon(env, java_message_wrapper_, java_bitmap);
+}
+
 void MessageWrapper::DisableIconTint() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MessageWrapper_disableIconTint(env, java_message_wrapper_);
@@ -142,6 +160,14 @@ void MessageWrapper::SetSecondaryActionCallback(base::OnceClosure callback) {
 void MessageWrapper::SetDuration(long customDuration) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MessageWrapper_setDuration(env, java_message_wrapper_, customDuration);
+}
+
+void MessageWrapper::SetActionClick(base::OnceClosure callback) {
+  action_callback_ = std::move(callback);
+}
+
+void MessageWrapper::SetDismissCallback(DismissCallback callback) {
+  dismiss_callback_ = std::move(callback);
 }
 
 void MessageWrapper::HandleActionClick(JNIEnv* env) {
@@ -171,8 +197,10 @@ const base::android::JavaRef<jobject>& MessageWrapper::GetJavaMessageWrapper()
   return java_message_wrapper_;
 }
 
-void MessageWrapper::SetMessageEnqueued() {
+void MessageWrapper::SetMessageEnqueued(
+    const base::android::JavaRef<jobject>& java_window_android) {
   message_enqueued_ = true;
+  java_window_android_ = java_window_android;
 }
 
 }  // namespace messages

@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "extensions/renderer/object_backed_native_handler.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 class Dispatcher;
@@ -17,6 +17,9 @@ class ScriptContext;
 class ApiDefinitionsNatives : public ObjectBackedNativeHandler {
  public:
   ApiDefinitionsNatives(Dispatcher* dispatcher, ScriptContext* context);
+
+  ApiDefinitionsNatives(const ApiDefinitionsNatives&) = delete;
+  ApiDefinitionsNatives& operator=(const ApiDefinitionsNatives&) = delete;
 
   // ObjectBackedNativeHandler:
   void AddRoutes() override;
@@ -28,8 +31,6 @@ class ApiDefinitionsNatives : public ObjectBackedNativeHandler {
 
   // Not owned.
   Dispatcher* dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApiDefinitionsNatives);
 };
 
 }  // namespace extensions

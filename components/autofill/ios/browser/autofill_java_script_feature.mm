@@ -81,10 +81,9 @@ void AutofillJavaScriptFeature::FetchForms(
   parameters.push_back(base::Value(static_cast<int>(required_fields_count)));
   parameters.push_back(
       base::Value(restrict_unowned_fields_to_formless_checkout));
-  CallJavaScriptFunction(
-      frame, "autofill.extractForms", parameters,
-      autofill::CreateStringCallback(std::move(callback)),
-      base::TimeDelta::FromSeconds(kJavaScriptExecutionTimeoutInSeconds));
+  CallJavaScriptFunction(frame, "autofill.extractForms", parameters,
+                         autofill::CreateStringCallback(std::move(callback)),
+                         base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
 void AutofillJavaScriptFeature::FillActiveFormField(
@@ -104,10 +103,9 @@ void AutofillJavaScriptFeature::FillActiveFormField(
 
   std::vector<base::Value> parameters;
   parameters.push_back(std::move(*data));
-  CallJavaScriptFunction(
-      frame, filling_function, parameters,
-      autofill::CreateBoolCallback(std::move(callback)),
-      base::TimeDelta::FromSeconds(kJavaScriptExecutionTimeoutInSeconds));
+  CallJavaScriptFunction(frame, filling_function, parameters,
+                         autofill::CreateBoolCallback(std::move(callback)),
+                         base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
 void AutofillJavaScriptFeature::FillForm(
@@ -134,10 +132,9 @@ void AutofillJavaScriptFeature::FillForm(
   parameters.push_back(base::Value(field_string_id));
   parameters.push_back(base::Value(field_numeric_id));
   parameters.push_back(base::Value(use_renderer_ids));
-  CallJavaScriptFunction(
-      frame, "autofill.fillForm", parameters,
-      autofill::CreateStringCallback(std::move(callback)),
-      base::TimeDelta::FromSeconds(kJavaScriptExecutionTimeoutInSeconds));
+  CallJavaScriptFunction(frame, "autofill.fillForm", parameters,
+                         autofill::CreateStringCallback(std::move(callback)),
+                         base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
 void AutofillJavaScriptFeature::ClearAutofilledFieldsForFormName(
@@ -162,10 +159,9 @@ void AutofillJavaScriptFeature::ClearAutofilledFieldsForFormName(
   parameters.push_back(base::Value(base::SysNSStringToUTF8(field_identifier)));
   parameters.push_back(base::Value(field_numeric_id));
   parameters.push_back(base::Value(use_renderer_ids));
-  CallJavaScriptFunction(
-      frame, "autofill.clearAutofilledFields", parameters,
-      autofill::CreateStringCallback(std::move(callback)),
-      base::TimeDelta::FromSeconds(kJavaScriptExecutionTimeoutInSeconds));
+  CallJavaScriptFunction(frame, "autofill.clearAutofilledFields", parameters,
+                         autofill::CreateStringCallback(std::move(callback)),
+                         base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
 void AutofillJavaScriptFeature::FillPredictionData(

@@ -29,6 +29,10 @@ class BindingAccessChecker {
 
   BindingAccessChecker(APIAvailabilityCallback api_available,
                        PromiseAvailabilityCallback promises_available);
+
+  BindingAccessChecker(const BindingAccessChecker&) = delete;
+  BindingAccessChecker& operator=(const BindingAccessChecker&) = delete;
+
   ~BindingAccessChecker();
 
   // Returns true if the feature specified by |full_name| is available to the
@@ -47,8 +51,6 @@ class BindingAccessChecker {
  private:
   APIAvailabilityCallback api_available_;
   PromiseAvailabilityCallback promises_available_;
-
-  DISALLOW_COPY_AND_ASSIGN(BindingAccessChecker);
 };
 
 }  // namespace extensions

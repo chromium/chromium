@@ -12,9 +12,9 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -23,7 +23,7 @@
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/drive/service/drive_api_service.h"
 #include "components/drive/service/drive_service_interface.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -32,6 +32,7 @@
 #include "crypto/secure_hash.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/drive/drive_common_callbacks.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -132,7 +133,7 @@ PluginVmDriveImageDownloadService::PluginVmDriveImageDownloadService(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
-  GURL base_url(google_apis::DriveApiUrlGenerator::kBaseUrlForProduction);
+  GURL base_url(GaiaUrls::GetInstance()->google_apis_origin_url());
   GURL base_thumbnail_url(
       google_apis::DriveApiUrlGenerator::kBaseThumbnailUrlForProduction);
   drive_service_ = std::make_unique<drive::DriveAPIService>(

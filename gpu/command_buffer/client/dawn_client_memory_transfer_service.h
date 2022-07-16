@@ -17,7 +17,7 @@ namespace webgpu {
 
 struct MemoryTransferHandle;
 
-class DawnClientMemoryTransferService final
+class DawnClientMemoryTransferService
     : public dawn_wire::client::MemoryTransferService {
  public:
   DawnClientMemoryTransferService(MappedMemoryManager* mapped_memory);
@@ -35,6 +35,8 @@ class DawnClientMemoryTransferService final
   // process.
   void FreeHandles(CommandBufferHelper* helper);
 
+  void Disconnect();
+
  private:
   class ReadHandleImpl;
   class WriteHandleImpl;
@@ -50,6 +52,9 @@ class DawnClientMemoryTransferService final
   // Pointers to memory allocated by the MappedMemoryManager to free after
   // the next Flush.
   std::vector<void*> free_blocks_;
+
+  // If disconnected, new handle creation always returns null.
+  bool disconnected_ = false;
 };
 
 }  // namespace webgpu

@@ -19,7 +19,7 @@ ModelTypeSyncBridge::ModelTypeSyncBridge(
   change_processor_->OnModelStarting(this);
 }
 
-ModelTypeSyncBridge::~ModelTypeSyncBridge() {}
+ModelTypeSyncBridge::~ModelTypeSyncBridge() = default;
 
 void ModelTypeSyncBridge::OnSyncStarting(
     const DataTypeActivationRequest& request) {}

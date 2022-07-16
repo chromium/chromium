@@ -372,10 +372,14 @@ TEST_F(RulesetMatcherTest, UrlTransform) {
   cases.push_back(
       {"http://user@7.com/xyz", "http://new_user:new_pass@7.com/xyz"});
 
-  auto make_query = [](const std::string& key, const std::string& value) {
+  auto make_query = [](const std::string& key, const std::string& value,
+                       const absl::optional<bool>& replace_only =
+                           absl::nullopt) {
     TestRuleQueryKeyValue query;
     query.key = key;
     query.value = value;
+    query.replace_only = replace_only;
+
     return query;
   };
 
@@ -412,6 +416,25 @@ TEST_F(RulesetMatcherTest, UrlTransform) {
   rules.push_back(rule);
   cases.push_back(
       {"https://10.com/path?q1=1&q1=2&q1=3", "https://10.com/path?q1=new"});
+
+  rule = create_transform_rule(11, "||11.com");
+  rule.action->redirect->transform->query_transform.emplace();
+  rule.action->redirect->transform->query_transform->add_or_replace_params =
+      std::vector<TestRuleQueryKeyValue>(
+          {make_query("foo", "bar"), make_query("hello", "world", false),
+           make_query("abc", "123", true), make_query("abc", "456", true)});
+  rules.push_back(rule);
+  cases.push_back(
+      {"https://11.com/path", "https://11.com/path?foo=bar&hello=world"});
+  cases.push_back({"https://11.com/path?abc=def",
+                   "https://11.com/path?abc=123&foo=bar&hello=world"});
+  cases.push_back({"https://11.com/path?hello=goodbye&abc=def",
+                   "https://11.com/path?hello=world&abc=123&foo=bar"});
+  cases.push_back({"https://11.com/path?foo=1&foo=2",
+                   "https://11.com/path?foo=bar&foo=2&hello=world"});
+  cases.push_back(
+      {"https://11.com/path?abc=1&abc=2&abc=3",
+       "https://11.com/path?abc=123&abc=456&abc=3&foo=bar&hello=world"});
 
   std::unique_ptr<RulesetMatcher> matcher;
   ASSERT_TRUE(CreateVerifiedMatcher(rules, CreateTemporarySource(), &matcher));

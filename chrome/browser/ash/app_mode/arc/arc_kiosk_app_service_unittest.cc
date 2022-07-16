@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_service.h"
 
+#include "ash/test/ash_test_helper.h"
+#include "ash/test/test_window_builder.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
@@ -17,14 +19,15 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/arc_stop_reason.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/arc/test/fake_arc_session.h"
 #include "components/exo/shell_surface_util.h"
+#include "components/exo/wm_helper.h"
+#include "components/exo/wm_helper_chromeos.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/display/test/test_screen.h"
 
 namespace ash {
 
@@ -98,7 +101,8 @@ class ArcKioskAppServiceTest : public testing::Test {
       : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
-    display::Screen::SetScreenInstance(&test_screen_);
+    ash_test_helper_.SetUp();
+    wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
 
     profile_ = std::make_unique<TestingProfile>();
     profile_->set_profile_name(kAppEmail);
@@ -119,8 +123,8 @@ class ArcKioskAppServiceTest : public testing::Test {
 
   void TearDown() override {
     arc_app_test_.TearDown();
+    ash_test_helper_.TearDown();
     profile_.reset();
-    display::Screen::SetScreenInstance(nullptr);
   }
 
   TestingProfile* profile() { return profile_.get(); }
@@ -168,9 +172,15 @@ class ArcKioskAppServiceTest : public testing::Test {
 
   arc::FakeAppInstance* app_instance() { return arc_app_test_.app_instance(); }
 
+  void NotifyWindowCreated(aura::Window* window) {
+    wm_helper_->NotifyExoWindowCreated(window);
+  }
+
  private:
   // Number of times app tried to be launched.
   size_t launch_requests_ = 0;
+
+  ash::AshTestHelper ash_test_helper_;
 
   content::BrowserTaskEnvironment task_environment;
   ArcAppTest arc_app_test_;
@@ -179,10 +189,9 @@ class ArcKioskAppServiceTest : public testing::Test {
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcKioskAppManager> app_manager_;
+  std::unique_ptr<exo::WMHelper> wm_helper_;
 
   arc::ArcPolicyBridge* arc_policy_bridge_;
-
-  display::test::TestScreen test_screen_;
 };
 
 TEST_F(ArcKioskAppServiceTest, LaunchConditions) {
@@ -252,9 +261,10 @@ TEST_F(ArcKioskAppServiceTest, AppLaunches) {
   other_window->Init(ui::LAYER_SOLID_COLOR);
   other_window.reset();
 
-  auto app_window = std::make_unique<aura::Window>(nullptr);
-  app_window->Init(ui::LAYER_SOLID_COLOR);
+  ash::TestWindowBuilder window_builder;
+  std::unique_ptr<aura::Window> app_window = window_builder.Build();
   exo::SetShellApplicationId(app_window.get(), kAppWindowAppId);
+  NotifyWindowCreated(app_window.get());
 
   controller.WaitUntilWindowCreated();
 }

@@ -34,14 +34,11 @@ JniDirectoryService::RequestError MapError(
   switch (status_code) {
     case ProtobufHttpStatus::Code::UNAVAILABLE:
       return JniDirectoryService::RequestError::SERVICE_UNAVAILABLE;
-      break;
     case ProtobufHttpStatus::Code::PERMISSION_DENIED:
     case ProtobufHttpStatus::Code::UNAUTHENTICATED:
       return JniDirectoryService::RequestError::AUTH_FAILED;
-      break;
     default:
       return JniDirectoryService::RequestError::UNKNOWN;
-      break;
   }
 }
 

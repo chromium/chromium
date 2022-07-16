@@ -86,7 +86,6 @@ source_set("trust_tokens") {
   deps = [
     ":storage_proto",
     "//base",
-    "//base/util/values:values_util",
     "//components/cbor",
     "//components/sqlite_proto",
     "//services/network/public/cpp",

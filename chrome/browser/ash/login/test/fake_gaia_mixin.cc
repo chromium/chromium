@@ -12,10 +12,11 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
 constexpr char kGAIAHost[] = "accounts.google.com";
+
 }  // namespace
 
 // static
@@ -44,10 +45,8 @@ const char FakeGaiaMixin::kTestRefreshToken2[] = "fake-refresh-token-2";
 const test::UIPath FakeGaiaMixin::kEmailPath = {"identifier"};
 const test::UIPath FakeGaiaMixin::kPasswordPath = {"password"};
 
-FakeGaiaMixin::FakeGaiaMixin(InProcessBrowserTestMixinHost* host,
-                             net::EmbeddedTestServer* embedded_test_server)
+FakeGaiaMixin::FakeGaiaMixin(InProcessBrowserTestMixinHost* host)
     : InProcessBrowserTestMixin(host),
-      embedded_test_server_(embedded_test_server),
       fake_gaia_(std::make_unique<FakeGaia>()) {}
 
 FakeGaiaMixin::~FakeGaiaMixin() = default;
@@ -123,19 +122,24 @@ void FakeGaiaMixin::SetupFakeGaiaForLoginManager() {
   fake_gaia_->IssueOAuthToken(kTestRefreshToken2, token_info);
 }
 
+GURL FakeGaiaMixin::GetFakeGaiaURL(const std::string& relative_url) {
+  return gaia_server_.GetURL(kGAIAHost, relative_url);
+}
+
 void FakeGaiaMixin::SetUp() {
-  embedded_test_server_->RegisterDefaultHandler(base::BindRepeating(
+  net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.dns_names = {kGAIAHost};
+  gaia_server_.SetSSLConfig(cert_config);
+  gaia_server_.RegisterDefaultHandler(base::BindRepeating(
       &FakeGaia::HandleRequest, base::Unretained(fake_gaia_.get())));
+  // Initialize the server so `SetUpCommandLine()` can query the URL, but don't
+  // start the IO thread until `SetUpOnMainThread()`, after the sandbox is
+  // initialized.
+  ASSERT_TRUE(gaia_server_.InitializeAndListen());
 }
 
 void FakeGaiaMixin::SetUpCommandLine(base::CommandLine* command_line) {
-  // This needs to happen after the embedded test server is initialized, which
-  // happens after FakeGaiaMixin::SetUp() but before
-  // FakeGaiaMixin::SetUpCommandLine().
-  CHECK(gaia_https_forwarder_.Initialize(kGAIAHost,
-                                         embedded_test_server_->base_url()));
-
-  GURL gaia_url = gaia_https_forwarder_.GetURLForSSLHost(std::string());
+  GURL gaia_url = GetFakeGaiaURL("/");
   command_line->AppendSwitchASCII(::switches::kGaiaUrl, gaia_url.spec());
   command_line->AppendSwitchASCII(::switches::kLsoUrl, gaia_url.spec());
   command_line->AppendSwitchASCII(::switches::kGoogleApisUrl, gaia_url.spec());
@@ -147,14 +151,12 @@ void FakeGaiaMixin::SetUpOnMainThread() {
   fake_gaia_->Initialize();
   fake_gaia_->set_issue_oauth_code_cookie(true);
 
+  gaia_server_.StartAcceptingConnections();
+
   if (initialize_fake_merge_session()) {
     fake_gaia_->SetFakeMergeSessionParams(kFakeUserEmail, kFakeSIDCookie,
                                           kFakeLSIDCookie);
   }
 }
 
-void FakeGaiaMixin::TearDownOnMainThread() {
-  EXPECT_TRUE(gaia_https_forwarder_.Stop());
-}
-
-}  // namespace chromeos
+}  // namespace ash

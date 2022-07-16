@@ -11,6 +11,7 @@ include_rules = [
   "+components/about_ui",
   "+components/content_capture",
   "+components/embedder_support/android/java",
+  "+components/feature_engagement",
   "+components/heap_profiling",
   "+components/keyed_service/content",
   "+components/google/core",

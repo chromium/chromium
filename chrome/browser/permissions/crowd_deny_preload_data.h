@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
 #include "chrome/browser/permissions/crowd_deny.pb.h"
@@ -56,6 +55,10 @@ class CrowdDenyPreloadData {
       base::OnceCallback<void(const SiteReputation*)>;
 
   CrowdDenyPreloadData();
+
+  CrowdDenyPreloadData(const CrowdDenyPreloadData&) = delete;
+  CrowdDenyPreloadData& operator=(const CrowdDenyPreloadData&) = delete;
+
   ~CrowdDenyPreloadData();
 
   static CrowdDenyPreloadData* GetInstance();
@@ -103,8 +106,6 @@ class CrowdDenyPreloadData {
   scoped_refptr<base::SequencedTaskRunner> loading_task_runner_;
   absl::optional<base::Version> version_on_disk_;
   std::queue<PendingOrigin> origins_pending_verification_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrowdDenyPreloadData);
 };
 
 namespace testing {

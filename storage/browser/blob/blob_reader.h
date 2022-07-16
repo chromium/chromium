@@ -72,6 +72,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
   };
   enum class Status { NET_ERROR, IO_PENDING, DONE };
   using StatusCallback = base::OnceCallback<void(Status)>;
+
+  BlobReader(const BlobReader&) = delete;
+  BlobReader& operator=(const BlobReader&) = delete;
+
   virtual ~BlobReader();
 
   // This calculates the total size of the blob, and initializes the reading
@@ -271,7 +275,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<BlobReader> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(BlobReader);
 };
 
 }  // namespace storage

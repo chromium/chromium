@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_ANDROID_SERVICES_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_SAFE_BROWSING_ANDROID_SERVICES_DELEGATE_ANDROID_H_
 
-#include "base/macros.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
@@ -18,6 +17,10 @@ class AndroidTelemetryService;
 class ServicesDelegateAndroid : public ServicesDelegate {
  public:
   explicit ServicesDelegateAndroid(SafeBrowsingService* safe_browsing_service);
+
+  ServicesDelegateAndroid(const ServicesDelegateAndroid&) = delete;
+  ServicesDelegateAndroid& operator=(const ServicesDelegateAndroid&) = delete;
+
   ~ServicesDelegateAndroid() override;
 
  private:
@@ -36,7 +39,6 @@ class ServicesDelegateAndroid : public ServicesDelegate {
   void AddDownloadManager(content::DownloadManager* download_manager) override;
 
   void StartOnIOThread(
-      scoped_refptr<network::SharedURLLoaderFactory> sb_url_loader_factory,
       scoped_refptr<network::SharedURLLoaderFactory> browser_url_loader_factory,
       const V4ProtocolConfig& v4_config) override;
   void StopOnIOThread(bool shutdown) override;
@@ -50,8 +52,6 @@ class ServicesDelegateAndroid : public ServicesDelegate {
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   // Has the database_manager been set for tests?
   bool database_manager_set_for_tests_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ServicesDelegateAndroid);
 };
 
 }  // namespace safe_browsing

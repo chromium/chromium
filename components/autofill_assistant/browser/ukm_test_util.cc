@@ -37,6 +37,13 @@ GetUkmInChromeTriggering(ukm::TestAutoSetUkmRecorder& ukm_recorder) {
                                  {kInChromeTriggerAction});
 }
 
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmTriggerConditionEvaluationTime(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(kAutofillAssistantTimingEntry,
+                                 {kTriggerConditionTimingMs});
+}
+
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ToHumanReadableMetrics(
     const std::vector<std::pair<ukm::SourceId, std::vector<UkmEnumVariant>>>&
         input) {

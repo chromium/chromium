@@ -21,25 +21,25 @@ namespace {
 // unsupported codec will be converted to chromecast::media::kCodecUnknown.
 AudioCodec ToAudioCodec(const ::media::AudioCodec audio_codec) {
   switch (audio_codec) {
-    case ::media::kCodecAAC:
+    case ::media::AudioCodec::kAAC:
       return kCodecAAC;
-    case ::media::kCodecMP3:
+    case ::media::AudioCodec::kMP3:
       return kCodecMP3;
-    case ::media::kCodecPCM:
+    case ::media::AudioCodec::kPCM:
       return kCodecPCM;
-    case ::media::kCodecPCM_S16BE:
+    case ::media::AudioCodec::kPCM_S16BE:
       return kCodecPCM_S16BE;
-    case ::media::kCodecVorbis:
+    case ::media::AudioCodec::kVorbis:
       return kCodecVorbis;
-    case ::media::kCodecOpus:
+    case ::media::AudioCodec::kOpus:
       return kCodecOpus;
-    case ::media::kCodecFLAC:
+    case ::media::AudioCodec::kFLAC:
       return kCodecFLAC;
-    case ::media::kCodecEAC3:
+    case ::media::AudioCodec::kEAC3:
       return kCodecEAC3;
-    case ::media::kCodecAC3:
+    case ::media::AudioCodec::kAC3:
       return kCodecAC3;
-    case ::media::kCodecMpegHAudio:
+    case ::media::AudioCodec::kMpegHAudio:
       return kCodecMpegHAudio;
     default:
       LOG(ERROR) << "Unsupported audio codec " << audio_codec;
@@ -109,29 +109,29 @@ SampleFormat ToSampleFormat(const ::media::SampleFormat sample_format) {
     const chromecast::media::AudioCodec codec) {
   switch (codec) {
     case kAudioCodecUnknown:
-      return ::media::kUnknownAudioCodec;
+      return ::media::AudioCodec::kUnknown;
     case kCodecAAC:
-      return ::media::kCodecAAC;
+      return ::media::AudioCodec::kAAC;
     case kCodecMP3:
-      return ::media::kCodecMP3;
+      return ::media::AudioCodec::kMP3;
     case kCodecPCM:
-      return ::media::kCodecPCM;
+      return ::media::AudioCodec::kPCM;
     case kCodecPCM_S16BE:
-      return ::media::kCodecPCM_S16BE;
+      return ::media::AudioCodec::kPCM_S16BE;
     case kCodecVorbis:
-      return ::media::kCodecVorbis;
+      return ::media::AudioCodec::kVorbis;
     case kCodecOpus:
-      return ::media::kCodecOpus;
+      return ::media::AudioCodec::kOpus;
     case kCodecFLAC:
-      return ::media::kCodecFLAC;
+      return ::media::AudioCodec::kFLAC;
     case kCodecEAC3:
-      return ::media::kCodecEAC3;
+      return ::media::AudioCodec::kEAC3;
     case kCodecAC3:
-      return ::media::kCodecAC3;
+      return ::media::AudioCodec::kAC3;
     case kCodecMpegHAudio:
-      return ::media::kCodecMpegHAudio;
+      return ::media::AudioCodec::kMpegHAudio;
     default:
-      return ::media::kUnknownAudioCodec;
+      return ::media::AudioCodec::kUnknown;
   }
 }
 

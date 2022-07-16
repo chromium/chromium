@@ -11,12 +11,11 @@
 #include <vector>
 
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -77,7 +76,12 @@ class SyncServiceImpl : public SyncService,
   // explicitly defined.
   struct InitParams {
     InitParams();
+
+    InitParams(const InitParams&) = delete;
+    InitParams& operator=(const InitParams&) = delete;
+
     InitParams(InitParams&& other);
+
     ~InitParams();
 
     std::unique_ptr<SyncClient> sync_client;
@@ -90,12 +94,12 @@ class SyncServiceImpl : public SyncService,
     version_info::Channel channel = version_info::Channel::UNKNOWN;
     std::string debug_identifier;
     policy::PolicyService* policy_service = nullptr;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(InitParams);
   };
 
   explicit SyncServiceImpl(InitParams init_params);
+
+  SyncServiceImpl(const SyncServiceImpl&) = delete;
+  SyncServiceImpl& operator=(const SyncServiceImpl&) = delete;
 
   ~SyncServiceImpl() override;
 
@@ -110,8 +114,8 @@ class SyncServiceImpl : public SyncService,
   DisableReasonSet GetDisableReasons() const override;
   TransportState GetTransportState() const override;
   bool IsLocalSyncEnabled() const override;
-  CoreAccountInfo GetAuthenticatedAccountInfo() const override;
-  bool IsAuthenticatedAccountPrimary() const override;
+  CoreAccountInfo GetAccountInfo() const override;
+  bool HasSyncConsent() const override;
   GoogleServiceAuthError GetAuthError() const override;
   base::Time GetAuthErrorTime() const override;
   bool RequiresClientUpgrade() const override;
@@ -321,9 +325,6 @@ class SyncServiceImpl : public SyncService,
   // Kicks off asynchronous initialization of the SyncEngine.
   void StartUpSlowEngineComponents();
 
-  // Update UMA for syncing engine.
-  void UpdateEngineInitUMA(bool success) const;
-
   // Whether sync has been authenticated with an account ID.
   bool IsSignedIn() const;
 
@@ -466,8 +467,6 @@ class SyncServiceImpl : public SyncService,
   base::WeakPtrFactory<SyncServiceImpl> sync_enabled_weak_factory_{this};
 
   base::WeakPtrFactory<SyncServiceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncServiceImpl);
 };
 
 }  // namespace syncer

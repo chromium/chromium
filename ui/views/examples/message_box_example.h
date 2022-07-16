@@ -5,8 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_MESSAGE_BOX_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_MESSAGE_BOX_EXAMPLE_H_
 
-
-#include "base/macros.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -18,6 +16,10 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT MessageBoxExample : public ExampleBase {
  public:
   MessageBoxExample();
+
+  MessageBoxExample(const MessageBoxExample&) = delete;
+  MessageBoxExample& operator=(const MessageBoxExample&) = delete;
+
   ~MessageBoxExample() override;
 
   // ExampleBase:
@@ -28,8 +30,6 @@ class VIEWS_EXAMPLES_EXPORT MessageBoxExample : public ExampleBase {
 
   // The MessageBoxView to be tested.
   MessageBoxView* message_box_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageBoxExample);
 };
 
 }  // namespace examples

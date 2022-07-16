@@ -11,8 +11,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/local_card_migration_strike_database.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
@@ -85,6 +86,11 @@ class LocalCardMigrationManager {
                             payments::PaymentsClient* payments_client,
                             const std::string& app_locale,
                             PersonalDataManager* personal_data_manager);
+
+  LocalCardMigrationManager(const LocalCardMigrationManager&) = delete;
+  LocalCardMigrationManager& operator=(const LocalCardMigrationManager&) =
+      delete;
+
   virtual ~LocalCardMigrationManager();
 
   // Returns true if all of the conditions for allowing local credit card
@@ -251,8 +257,6 @@ class LocalCardMigrationManager {
       local_card_migration_strike_database_;
 
   base::WeakPtrFactory<LocalCardMigrationManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationManager);
 };
 
 }  // namespace autofill

@@ -35,7 +35,7 @@ class CORE_EXPORT DeclaredStylePropertyMap final : public StylePropertyMap {
 
  protected:
   const CSSValue* GetProperty(CSSPropertyID) const override;
-  const CSSValue* GetCustomProperty(AtomicString) const override;
+  const CSSValue* GetCustomProperty(const AtomicString&) const override;
   void ForEachProperty(const IterationCallback&) override;
   void SetProperty(CSSPropertyID, const CSSValue&) override;
   bool SetShorthandProperty(CSSPropertyID,

@@ -37,9 +37,8 @@ VisitInfoVector CreateVisitInfoVector(int num_visits,
                                       base::Time now) {
   VisitInfoVector visits;
   for (int i = 0; i < num_visits; ++i) {
-    visits.push_back(
-        std::make_pair(now - base::TimeDelta::FromDays(i * frequency),
-                       ui::PAGE_TRANSITION_LINK));
+    visits.push_back(std::make_pair(now - base::Days(i * frequency),
+                                    ui::PAGE_TRANSITION_LINK));
   }
   return visits;
 }
@@ -90,7 +89,7 @@ history::URLRow ScoredHistoryMatchTest::MakeURLRow(const char* url,
   row.set_visit_count(visit_count);
   row.set_typed_count(typed_count);
   row.set_last_visit(base::Time::NowFromSystemTime() -
-                     base::TimeDelta::FromDays(days_since_last_visit));
+                     base::Days(days_since_last_visit));
   return row;
 }
 
@@ -594,13 +593,12 @@ TEST_F(ScoredHistoryMatchTest, GetFrequency) {
   // A two-visit score should have a higher score than the single typed visit
   // score.
   visits = {{now, ui::PAGE_TRANSITION_TYPED},
-            {now - base::TimeDelta::FromDays(1), ui::PAGE_TRANSITION_LINK}};
+            {now - base::Days(1), ui::PAGE_TRANSITION_LINK}};
   const float two_visits_score = match.GetFrequency(now, false, visits);
   EXPECT_GT(two_visits_score, one_typed_score);
 
   // Add an third untyped visit.
-  visits.push_back(
-      {now - base::TimeDelta::FromDays(2), ui::PAGE_TRANSITION_LINK});
+  visits.push_back({now - base::Days(2), ui::PAGE_TRANSITION_LINK});
 
   // The score should be higher than the two-visit score.
   const float three_visits_score = match.GetFrequency(now, false, visits);

@@ -247,6 +247,10 @@ class GPU_GLES2_EXPORT BufferManager
     : public base::trace_event::MemoryDumpProvider {
  public:
   BufferManager(MemoryTracker* memory_tracker, FeatureInfo* feature_info);
+
+  BufferManager(const BufferManager&) = delete;
+  BufferManager& operator=(const BufferManager&) = delete;
+
   ~BufferManager() override;
 
   void MarkContextLost();
@@ -467,8 +471,6 @@ class GPU_GLES2_EXPORT BufferManager
 
   bool lost_context_;
   bool use_client_side_arrays_for_stream_buffers_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferManager);
 };
 
 }  // namespace gles2

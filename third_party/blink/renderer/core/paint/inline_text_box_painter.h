@@ -91,7 +91,8 @@ class InlineTextBoxPainter {
                                 const PhysicalRect& box_rect,
                                 const ComputedStyle&,
                                 const Font&,
-                                LayoutTextCombine* = nullptr);
+                                LayoutTextCombine* = nullptr,
+                                bool allow_empty_selection = false);
 
   void PaintStyleableMarkerUnderline(GraphicsContext&,
                                      const PhysicalOffset& box_origin,

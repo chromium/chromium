@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "components/data_reduction_proxy/core/browser/data_store.h"
@@ -25,6 +24,10 @@ namespace data_reduction_proxy {
 class DataStoreImpl : public DataStore {
  public:
   explicit DataStoreImpl(const base::FilePath& profile_path);
+
+  DataStoreImpl(const DataStoreImpl&) = delete;
+  DataStoreImpl& operator=(const DataStoreImpl&) = delete;
+
   ~DataStoreImpl() override;
 
   // Overrides of DataStore.
@@ -51,8 +54,6 @@ class DataStoreImpl : public DataStore {
   const base::FilePath profile_path_;
 
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataStoreImpl);
 };
 
 }  // namespace data_reduction_proxy

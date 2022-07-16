@@ -9,7 +9,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/cache_storage/cache_storage_scheduler_types.h"
 #include "content/common/content_export.h"
@@ -27,6 +27,9 @@ class CONTENT_EXPORT CacheStorageOperation {
                         CacheStorageSchedulerOp op_type,
                         CacheStorageSchedulerPriority priority,
                         scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  CacheStorageOperation(const CacheStorageOperation&) = delete;
+  CacheStorageOperation& operator=(const CacheStorageOperation&) = delete;
 
   ~CacheStorageOperation();
 
@@ -59,8 +62,6 @@ class CONTENT_EXPORT CacheStorageOperation {
   const CacheStorageSchedulerPriority priority_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<CacheStorageOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageOperation);
 };
 
 }  // namespace content

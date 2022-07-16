@@ -13,7 +13,7 @@
 #include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_resolver.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
-#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h"
 
 namespace {
 

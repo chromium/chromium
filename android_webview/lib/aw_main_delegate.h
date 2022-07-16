@@ -34,15 +34,19 @@ class AwContentRendererClient;
 class AwMainDelegate : public content::ContentMainDelegate {
  public:
   AwMainDelegate();
+
+  AwMainDelegate(const AwMainDelegate&) = delete;
+  AwMainDelegate& operator=(const AwMainDelegate&) = delete;
+
   ~AwMainDelegate() override;
 
  private:
   // content::ContentMainDelegate implementation:
   bool BasicStartupComplete(int* exit_code) override;
   void PreSandboxStartup() override;
-  int RunProcess(
+  absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
-      const content::MainFunctionParams& main_function_params) override;
+      content::MainFunctionParams main_function_params) override;
   void ProcessExiting(const std::string& process_type) override;
   bool ShouldCreateFeatureList() override;
   void PostEarlyInitialization(bool is_running_tests) override;
@@ -63,8 +67,6 @@ class AwMainDelegate : public content::ContentMainDelegate {
   std::unique_ptr<AwContentRendererClient> content_renderer_client_;
   std::unique_ptr<safe_browsing::SafeBrowsingApiHandler>
       safe_browsing_api_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwMainDelegate);
 };
 
 }  // namespace android_webview

@@ -20,6 +20,10 @@ namespace audio {
 class FakeStreamFactory : public media::mojom::AudioStreamFactory {
  public:
   FakeStreamFactory();
+
+  FakeStreamFactory(const FakeStreamFactory&) = delete;
+  FakeStreamFactory& operator=(const FakeStreamFactory&) = delete;
+
   ~FakeStreamFactory() override;
 
   mojo::PendingRemote<media::mojom::AudioStreamFactory> MakeRemote() {
@@ -81,8 +85,6 @@ class FakeStreamFactory : public media::mojom::AudioStreamFactory {
 
  private:
   absl::optional<base::RunLoop> disconnect_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeStreamFactory);
 };
 
 static_assert(

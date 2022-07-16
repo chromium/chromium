@@ -48,7 +48,8 @@ void OpenAllIfAllowed(
     Browser* browser,
     base::OnceCallback<content::PageNavigator*()> get_navigator,
     const std::vector<const bookmarks::BookmarkNode*>& nodes,
-    WindowOpenDisposition initial_disposition);
+    WindowOpenDisposition initial_disposition,
+    bool add_to_group);
 
 // Opens all the bookmarks in |nodes| that are of type url and all the child
 // bookmarks that are of type url for folders in |nodes|. |initial_disposition|

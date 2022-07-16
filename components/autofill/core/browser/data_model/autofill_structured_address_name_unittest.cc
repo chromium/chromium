@@ -168,6 +168,10 @@ TEST(AutofillStructuredName, ParseFullName) {
       // Name with multiple middle names.
       {"George Walker Junior Bush", "", "George", "Walker Junior", "Bush", "",
        "", "Bush"},
+      // Name with a middle name initial.
+      {"George W Bush", "", "George", "W", "Bush", "", "", "Bush"},
+      // Name with a middle name initial.
+      {"George W. Bush", "", "George", "W.", "Bush", "", "", "Bush"},
       // Name with a single middle name.
       {"George Walker Bush", "", "George", "Walker", "Bush", "", "", "Bush"},
       // Name without names.

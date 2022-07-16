@@ -7,7 +7,6 @@
 
 #include <string>
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 
 // This class serves as the single repository for cloud print auth tokens. This
@@ -22,6 +21,10 @@ class CloudPrintTokenStore {
   static CloudPrintTokenStore* current();
 
   CloudPrintTokenStore();
+
+  CloudPrintTokenStore(const CloudPrintTokenStore&) = delete;
+  CloudPrintTokenStore& operator=(const CloudPrintTokenStore&) = delete;
+
   ~CloudPrintTokenStore();
 
   void SetToken(const std::string& token);
@@ -35,8 +38,6 @@ class CloudPrintTokenStore {
 
   // Thread-affine per use of TLS in impl.
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintTokenStore);
 };
 
 }  // namespace cloud_print

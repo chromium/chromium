@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_DOWNLOADS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_DOWNLOADS_HANDLER_H_
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -20,6 +20,10 @@ class DownloadsHandler : public SettingsPageUIHandler,
                          public ui::SelectFileDialog::Listener {
  public:
   explicit DownloadsHandler(Profile* profile);
+
+  DownloadsHandler(const DownloadsHandler&) = delete;
+  DownloadsHandler& operator=(const DownloadsHandler&) = delete;
+
   ~DownloadsHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -60,11 +64,16 @@ class DownloadsHandler : public SettingsPageUIHandler,
   bool IsDownloadsConnectionPolicyEnabled() const;
   void SendDownloadsConnectionPolicyToJavascript();
 
-  // Callback for the "SetDownloadsConnectionAccountLink" message. If there was
-  // no account linked, this prompts the user to sign in; otherwise, this
-  // removes the linked account info and stored authentication tokens.
-  void SetDownloadsConnectionAccountLink(const base::ListValue* args);
+  // Callback for the "setDownloadsConnectionAccountLink" message. If there is
+  // no account linked and arg is true, this prompts the user to sign in; if
+  // there is an existing linked account and arg is false, this removes the
+  // linked account info and stored authentication tokens; otherwise, this
+  // merely sends the latest stored account info.
+  void HandleSetDownloadsConnectionAccountLink(const base::ListValue* args);
+  // Callback for file system connector code, since prompting the user to sign
+  // in is async.
   void OnDownloadsConnectionAccountLinkSet(bool success);
+  // Sends the latest stored account info to the settings page.
   void SendDownloadsConnectionInfoToJavascript();
 
   Profile* profile_;
@@ -73,10 +82,7 @@ class DownloadsHandler : public SettingsPageUIHandler,
 
   scoped_refptr<ui::SelectFileDialog> select_folder_dialog_;
 
-  bool has_linked_account_ = false;
   base::WeakPtrFactory<DownloadsHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadsHandler);
 };
 
 }  // namespace settings

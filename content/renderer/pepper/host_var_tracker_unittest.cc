@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/mock_resource.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
@@ -31,6 +30,9 @@ class MyObject : public gin::Wrappable<MyObject> {
  public:
   static gin::WrapperInfo kWrapperInfo;
 
+  MyObject(const MyObject&) = delete;
+  MyObject& operator=(const MyObject&) = delete;
+
   static v8::Local<v8::Value> Create(v8::Isolate* isolate) {
     return gin::CreateHandle(isolate, new MyObject()).ToV8();
   }
@@ -38,8 +40,6 @@ class MyObject : public gin::Wrappable<MyObject> {
  private:
   MyObject() { ++g_v8objects_alive; }
   ~MyObject() override { --g_v8objects_alive; }
-
-  DISALLOW_COPY_AND_ASSIGN(MyObject);
 };
 
 gin::WrapperInfo MyObject::kWrapperInfo = {gin::kEmbedderNativeGin};
@@ -52,6 +52,9 @@ class PepperTryCatchForTest : public PepperTryCatch {
         handle_scope_(instance->GetIsolate()),
         context_scope_(v8::Context::New(instance->GetIsolate())) {}
 
+  PepperTryCatchForTest(const PepperTryCatchForTest&) = delete;
+  PepperTryCatchForTest& operator=(const PepperTryCatchForTest&) = delete;
+
   void SetException(const char* message) override { NOTREACHED(); }
   bool HasException() override { return false; }
   v8::Local<v8::Context> GetContext() override {
@@ -61,8 +64,6 @@ class PepperTryCatchForTest : public PepperTryCatch {
  private:
   v8::HandleScope handle_scope_;
   v8::Context::Scope context_scope_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperTryCatchForTest);
 };
 
 }  // namespace

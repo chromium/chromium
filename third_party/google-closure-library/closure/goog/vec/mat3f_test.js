@@ -1,5 +1,8 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-// Use of this source code is governed by the Apache License, Version 2.0.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 ////////////////////////// NOTE ABOUT EDITING THIS FILE ///////////////////////
 //                                                                           //
@@ -13,6 +16,7 @@ goog.setTestOnly();
 
 const mat3f = goog.require('goog.vec.mat3f');
 const testSuite = goog.require('goog.testing.testSuite');
+const vec = goog.require('goog.vec');
 
 const randommat3f = mat3f.setFromValues(
     mat3f.create(), 0.8025078773498535, 0.7559120655059814, 0.15274643898010254,
@@ -30,6 +34,7 @@ testSuite({
     assertElementsEquals([1, 0, 0, 0, 1, 0, 0, 0, 1], m);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSet() {
     const m0 = mat3f.create();
     const m1 = mat3f.setFromArray(mat3f.create(), [1, 2, 3, 4, 5, 6, 7, 8, 9]);
@@ -40,6 +45,7 @@ testSuite({
     assertElementsEquals([2, 3, 4, 5, 6, 7, 8, 9, 10], m0);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSetDiagonal() {
     const m0 = mat3f.create();
     mat3f.setDiagonalValues(m0, 1, 2, 3);
@@ -49,6 +55,7 @@ testSuite({
     assertElementsEquals([4, 0, 0, 0, 5, 0, 0, 0, 6], m0);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSetGetColumn() {
     const m0 = mat3f.create();
     mat3f.setColumn(m0, 0, [1, 2, 3]);
@@ -65,6 +72,7 @@ testSuite({
     assertElementsEquals([7, 8, 9], v0);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSetGetColumns() {
     const m0 = mat3f.create();
     mat3f.setColumns(m0, [1, 2, 3], [4, 5, 6], [7, 8, 9]);
@@ -80,6 +88,7 @@ testSuite({
     assertElementsEquals([7, 8, 9], v2);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSetGetRow() {
     const m0 = mat3f.create();
     mat3f.setRow(m0, 0, [1, 2, 3]);
@@ -96,6 +105,7 @@ testSuite({
     assertElementsEquals([7, 8, 9], v0);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSetGetRows() {
     const m0 = mat3f.create();
     mat3f.setRows(m0, [1, 2, 3], [4, 5, 6], [7, 8, 9]);
@@ -217,6 +227,7 @@ testSuite({
 
   testEquals() {
     const m0 = mat3f.setFromValues(mat3f.create(), 1, 2, 3, 4, 5, 6, 7, 8, 9);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const m1 = mat3f.setFromArray(mat3f.create(), m0);
     assertTrue(mat3f.equals(m0, m1));
     assertTrue(mat3f.equals(m1, m0));
@@ -228,6 +239,7 @@ testSuite({
     }
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testMultVec3() {
     const m0 = mat3f.setFromValues(mat3f.create(), 1, 2, 3, 4, 5, 6, 7, 8, 9);
     const v0 = [1, 2, 3];
@@ -276,13 +288,13 @@ testSuite({
     const m0 = mat3f.create();
     mat3f.makeRotate(m0, Math.PI / 2, 0, 0, 1);
     const v0 = [0, 1, 0, -1, 0, 0, 0, 0, 1];
-    assertElementsRoughlyEqual(m0, v0, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, v0, vec.EPSILON);
 
     const m1 = mat3f.create();
     mat3f.makeRotate(m1, -Math.PI / 4, 0, 0, 1);
     mat3f.multMat(m0, m1, m1);
     const v1 = [0.7071068, 0.7071068, 0, -0.7071068, 0.7071068, 0, 0, 0, 1];
-    assertElementsRoughlyEqual(m1, v1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m1, v1, vec.EPSILON);
   },
 
   testMakeRotateX() {
@@ -291,7 +303,7 @@ testSuite({
 
     mat3f.makeRotateX(m0, Math.PI / 7);
     mat3f.makeRotate(m1, Math.PI / 7, 1, 0, 0);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testMakeRotateY() {
@@ -300,7 +312,7 @@ testSuite({
 
     mat3f.makeRotateY(m0, Math.PI / 7);
     mat3f.makeRotate(m1, Math.PI / 7, 0, 1, 0);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testMakeRotateZ() {
@@ -309,51 +321,54 @@ testSuite({
 
     mat3f.makeRotateZ(m0, Math.PI / 7);
     mat3f.makeRotate(m1, Math.PI / 7, 0, 0, 1);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testRotate() {
     const m0 = mat3f.makeIdentity(mat3f.create());
     mat3f.rotate(m0, Math.PI / 2, 0, 0, 1);
-    assertElementsRoughlyEqual(
-        [0, 1, 0, -1, 0, 0, 0, 0, 1], m0, goog.vec.EPSILON);
+    assertElementsRoughlyEqual([0, 1, 0, -1, 0, 0, 0, 0, 1], m0, vec.EPSILON);
 
     mat3f.rotate(m0, -Math.PI / 4, 0, 0, 1);
     assertElementsRoughlyEqual(
         [0.7071068, 0.7071068, 0, -0.7071068, 0.7071068, 0, 0, 0, 1], m0,
-        goog.vec.EPSILON);
+        vec.EPSILON);
   },
 
   testRotateX() {
     const m0 = mat3f.create();
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const m1 = mat3f.setFromArray(mat3f.create(), randommat3f);
 
     mat3f.makeRotateX(m0, Math.PI / 7);
     mat3f.multMat(m1, m0, m0);
     mat3f.rotateX(m1, Math.PI / 7);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testRotateY() {
     const m0 = mat3f.create();
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const m1 = mat3f.setFromArray(mat3f.create(), randommat3f);
 
     mat3f.makeRotateY(m0, Math.PI / 7);
     mat3f.multMat(m1, m0, m0);
     mat3f.rotateY(m1, Math.PI / 7);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testRotateZ() {
     const m0 = mat3f.create();
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const m1 = mat3f.setFromArray(mat3f.create(), randommat3f);
 
     mat3f.makeRotateZ(m0, Math.PI / 7);
     mat3f.multMat(m1, m0, m0);
     mat3f.rotateZ(m1, Math.PI / 7);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testMakeEulerZXZ() {
     const m0 = mat3f.create();
     const roll = 0.200982 * 2 * Math.PI;
@@ -366,14 +381,14 @@ testSuite({
 
     const m1 = mat3f.create();
     mat3f.makeEulerZXZ(m1, roll, tilt, yaw);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
 
     let euler = [0, 0, 0];
     mat3f.toEulerZXZ(m0, euler);
 
-    assertRoughlyEquals(roll, euler[0], goog.vec.EPSILON);
-    assertRoughlyEquals(tilt, euler[1], goog.vec.EPSILON);
-    assertRoughlyEquals(yaw, euler[2], goog.vec.EPSILON);
+    assertRoughlyEquals(roll, euler[0], vec.EPSILON);
+    assertRoughlyEquals(tilt, euler[1], vec.EPSILON);
+    assertRoughlyEquals(yaw, euler[2], vec.EPSILON);
 
     // Test negative tilt now.
     mat3f.makeRotate(m0, roll, 0, 0, 1);
@@ -381,16 +396,17 @@ testSuite({
     mat3f.rotate(m0, yaw, 0, 0, 1);
 
     mat3f.makeEulerZXZ(m1, roll, -tilt, yaw);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
 
     euler = [0, 0, 0];
     mat3f.toEulerZXZ(m0, euler, true);
 
-    assertRoughlyEquals(roll, euler[0], goog.vec.EPSILON);
-    assertRoughlyEquals(-tilt, euler[1], goog.vec.EPSILON);
-    assertRoughlyEquals(yaw, euler[2], goog.vec.EPSILON);
+    assertRoughlyEquals(roll, euler[0], vec.EPSILON);
+    assertRoughlyEquals(-tilt, euler[1], vec.EPSILON);
+    assertRoughlyEquals(yaw, euler[2], vec.EPSILON);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testEulerZXZExtrema() {
     const m0 = mat3f.setFromArray(mat3f.create(), [1, 0, 0, 0, 0, -1, 0, 1, 0]);
     const m1 = mat3f.setFromArray(mat3f.create(), [0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -398,8 +414,8 @@ testSuite({
     const euler = [0, 0, 0];
     mat3f.toEulerZXZ(m0, euler);
     assertElementsRoughlyEqual(
-        [Math.PI, Math.PI / 2, Math.PI], euler, goog.vec.EPSILON);
+        [Math.PI, Math.PI / 2, Math.PI], euler, vec.EPSILON);
     mat3f.makeEulerZXZ(m1, euler[0], euler[1], euler[2]);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 });

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
@@ -27,6 +26,10 @@ class FakeSupervisedUserManager;
 class FakeChromeUserManager : public ChromeUserManager {
  public:
   FakeChromeUserManager();
+
+  FakeChromeUserManager(const FakeChromeUserManager&) = delete;
+  FakeChromeUserManager& operator=(const FakeChromeUserManager&) = delete;
+
   ~FakeChromeUserManager() override;
 
   // Create and add various types of users.
@@ -73,6 +76,7 @@ class FakeChromeUserManager : public ChromeUserManager {
   const user_manager::UserList& GetLoggedInUsers() const override;
   const user_manager::UserList& GetLRULoggedInUsers() const override;
   user_manager::UserList GetUnlockUsers() const override;
+  const AccountId& GetLastSessionActiveAccountId() const override;
   void UserLoggedIn(const AccountId& account_id,
                     const std::string& user_id_hash,
                     bool browser_restart,
@@ -81,6 +85,7 @@ class FakeChromeUserManager : public ChromeUserManager {
   void SwitchToLastActiveUser() override;
   void OnSessionStarted() override;
   void RemoveUser(const AccountId& account_id,
+                  user_manager::UserRemovalReason reason,
                   user_manager::RemoveUserDelegate* delegate) override;
   void RemoveUserFromList(const AccountId& account_id) override;
   bool IsKnownUser(const AccountId& account_id) const override;
@@ -173,6 +178,11 @@ class FakeChromeUserManager : public ChromeUserManager {
       const user_manager::User& active_user) const override;
   bool IsFullManagementDisclosureNeeded(
       policy::DeviceLocalAccountPolicyBroker* broker) const override;
+  void CacheRemovedUser(const std::string& user_email,
+                        user_manager::UserRemovalReason) override;
+  std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
+  GetRemovedUserCache() const override;
+  void MarkReporterInitialized() override;
 
   void set_ephemeral_users_enabled(bool ephemeral_users_enabled) {
     fake_ephemeral_users_enabled_ = ephemeral_users_enabled;
@@ -204,6 +214,11 @@ class FakeChromeUserManager : public ChromeUserManager {
     current_user_can_lock_ = current_user_can_lock;
   }
 
+  void set_last_session_active_account_id(
+      const AccountId& last_session_active_account_id) {
+    last_session_active_account_id_ = last_session_active_account_id;
+  }
+
  private:
   using UserImageManagerMap =
       std::map<AccountId, std::unique_ptr<UserImageManager>>;
@@ -226,6 +241,8 @@ class FakeChromeUserManager : public ChromeUserManager {
   // active user.
   AccountId active_account_id_ = EmptyAccountId();
 
+  AccountId last_session_active_account_id_ = EmptyAccountId();
+
   // Lazy-initialized default flow.
   mutable std::unique_ptr<UserFlow> default_flow_;
 
@@ -246,7 +263,9 @@ class FakeChromeUserManager : public ChromeUserManager {
   // User avatar managers.
   UserImageManagerMap user_image_managers_;
 
-  DISALLOW_COPY_AND_ASSIGN(FakeChromeUserManager);
+  // Fake cache of removed users. Used for reporting testing.
+  std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
+      removed_user_cache_;
 };
 
 }  // namespace ash

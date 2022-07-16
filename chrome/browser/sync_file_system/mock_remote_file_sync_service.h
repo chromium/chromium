@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/sync_file_system/file_status_observer.h"
 #include "chrome/browser/sync_file_system/mock_local_change_processor.h"
@@ -28,6 +27,11 @@ namespace sync_file_system {
 class MockRemoteFileSyncService : public RemoteFileSyncService {
  public:
   MockRemoteFileSyncService();
+
+  MockRemoteFileSyncService(const MockRemoteFileSyncService&) = delete;
+  MockRemoteFileSyncService& operator=(const MockRemoteFileSyncService&) =
+      delete;
+
   ~MockRemoteFileSyncService() override;
 
   // RemoteFileSyncService overrides.
@@ -89,8 +93,6 @@ class MockRemoteFileSyncService : public RemoteFileSyncService {
   base::ObserverList<FileStatusObserver>::Unchecked file_status_observers_;
 
   RemoteServiceState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRemoteFileSyncService);
 };
 
 }  // namespace sync_file_system

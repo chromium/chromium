@@ -57,6 +57,8 @@ class GEOMETRY_EXPORT Size {
   // Returns a checked numeric representation of the area.
   base::CheckedNumeric<int> GetCheckedArea() const;
 
+  uint64_t Area64() const { return static_cast<uint64_t>(width_) * height_; }
+
   void SetSize(int width, int height) {
     set_width(width);
     set_height(height);
@@ -68,6 +70,7 @@ class GEOMETRY_EXPORT Size {
   void SetToMax(const Size& other);
 
   bool IsEmpty() const { return !width() || !height(); }
+  bool IsZero() const { return !width() && !height(); }
 
   std::string ToString() const;
 

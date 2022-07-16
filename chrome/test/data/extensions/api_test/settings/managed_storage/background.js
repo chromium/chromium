@@ -2,15 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const stringPolicyName = 'string-policy';
+const expectedStringPolicy = { 'string-policy': 'value' };
 chrome.test.runTests([
   function getPolicy() {
+
+    function onChangedListener(changes, areaName) {
+      chrome.storage.onChanged.removeListener(onChangedListener);
+      chrome.test.assertEq(areaName, 'managed');
+      chrome.test.assertEq(changes[stringPolicyName]['newValue'],
+                           expectedStringPolicy[stringPolicyName]);
+      chrome.test.succeed();
+    }
+    chrome.storage.onChanged.addListener(onChangedListener);
+
     chrome.storage.managed.get(
-        'string-policy',
-        chrome.test.callbackPass(function(results) {
-          chrome.test.assertEq({
-            'string-policy': 'value'
-          }, results);
-        }));
+        stringPolicyName, function(results) {
+          // There can be a race between policy propagation and the start
+          // of the tests. If we get an empty value for the results, the
+          // installed onChange listener will catch the change and verify
+          // it. Otherwise, remove the listener and verify the results.
+          if (Object.keys(results).length != 0) {
+            chrome.storage.onChanged.removeListener(onChangedListener);
+            chrome.test.assertEq(expectedStringPolicy, results);
+            chrome.test.succeed();
+          }
+        });
   },
 
   // another-string-policy and no-such-thing should not be exposed to the

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_STORAGE_KEY_STATE_HANDLE_H_
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_STORAGE_KEY_STATE_HANDLE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 
@@ -24,6 +23,12 @@ class CONTENT_EXPORT IndexedDBStorageKeyStateHandle {
       base::WeakPtr<IndexedDBStorageKeyState> storage_key_state);
   IndexedDBStorageKeyStateHandle(IndexedDBStorageKeyStateHandle&&);
   IndexedDBStorageKeyStateHandle& operator=(IndexedDBStorageKeyStateHandle&&);
+
+  IndexedDBStorageKeyStateHandle(const IndexedDBStorageKeyStateHandle&) =
+      delete;
+  IndexedDBStorageKeyStateHandle& operator=(
+      const IndexedDBStorageKeyStateHandle&) = delete;
+
   ~IndexedDBStorageKeyStateHandle();
 
   bool IsHeld() const;
@@ -38,8 +43,6 @@ class CONTENT_EXPORT IndexedDBStorageKeyStateHandle {
 
  private:
   base::WeakPtr<IndexedDBStorageKeyState> storage_key_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBStorageKeyStateHandle);
 };
 
 }  // namespace content

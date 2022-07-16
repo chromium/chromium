@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ADDRESS_ACCESSORY_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_AUTOFILL_ADDRESS_ACCESSORY_CONTROLLER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/address_accessory_controller.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -27,13 +26,18 @@ class AddressAccessoryControllerImpl
       public PersonalDataManagerObserver,
       public content::WebContentsUserData<AddressAccessoryControllerImpl> {
  public:
+  AddressAccessoryControllerImpl(const AddressAccessoryControllerImpl&) =
+      delete;
+  AddressAccessoryControllerImpl& operator=(
+      const AddressAccessoryControllerImpl&) = delete;
+
   ~AddressAccessoryControllerImpl() override;
 
   // AccessoryController:
   void RegisterFillingSourceObserver(FillingSourceObserver observer) override;
   absl::optional<AccessorySheetData> GetSheetData() const override;
   void OnFillingTriggered(FieldGlobalId focused_field_id,
-                          const UserInfo::Field& selection) override;
+                          const AccessorySheetField& selection) override;
   void OnOptionSelected(AccessoryAction selected_action) override;
   void OnToggleChanged(AccessoryAction toggled_action, bool enabled) override;
 
@@ -78,8 +82,6 @@ class AddressAccessoryControllerImpl
   PersonalDataManager* personal_data_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AddressAccessoryControllerImpl);
 };
 
 }  // namespace autofill

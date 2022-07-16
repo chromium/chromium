@@ -206,9 +206,7 @@
         "java.util.concurrent.atomic.AtomicReference#getAndUpdate": "java.util.concurrent.atomic.DesugarAtomicReference",
         "java.util.concurrent.atomic.AtomicReference#updateAndGet": "java.util.concurrent.atomic.DesugarAtomicReference",
         "java.util.concurrent.atomic.AtomicReference#getAndAccumulate": "java.util.concurrent.atomic.DesugarAtomicReference",
-        "java.util.concurrent.atomic.AtomicReference#accumulateAndGet": "java.util.concurrent.atomic.DesugarAtomicReference",
-        "java.util.Collections#synchronizedMap": "java.util.DesugarCollections",
-        "java.util.Collections#synchronizedSortedMap": "java.util.DesugarCollections"
+        "java.util.concurrent.atomic.AtomicReference#accumulateAndGet": "java.util.concurrent.atomic.DesugarAtomicReference"
       },
       "dont_rewrite": [
         "java.util.Iterator#remove"

@@ -95,9 +95,7 @@ BrandcodeConfigFetcher::BrandcodeConfigFetcher(
       base::BindOnce(&BrandcodeConfigFetcher::OnSimpleLoaderComplete,
                      weak_ptr_factory_.GetWeakPtr()));
   // Abort the download attempt if it takes too long.
-  download_timer_.Start(FROM_HERE,
-                        base::TimeDelta::FromSeconds(kDownloadTimeoutSec),
-                        this,
+  download_timer_.Start(FROM_HERE, base::Seconds(kDownloadTimeoutSec), this,
                         &BrandcodeConfigFetcher::OnDownloadTimeout);
 }
 

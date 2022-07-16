@@ -24,12 +24,24 @@ namespace base {
 
 // MessagePumpKqueue is used on macOS to drive an IO MessageLoop that is
 // capable of watching both POSIX file descriptors and Mach ports.
+// MessagePumpKqueue 在 macOS 上用于驱动一个 IO MessageLoop，并同时监听POSIX
+// 文件描述符和 Mach端口。
+// 本质上是通过kqueue这个IO多路复用内核态机制，来监听Mach端口事件、fd事件，在一个死
+// 循环中，如果kqueue中有事件变更，则根据kqueue的变更事件列表中，遍历读取每一个事件，
+// 根据事件类型来确定是Match端口 或 fd IO事件，分别回调 MachPortWatchController
+// 或 FdWatchController 中的回调函数，
+// kqueue是Kernel Queues，参见：https://www.manpagez.com/man/2/kevent64/
+//
 class BASE_EXPORT MessagePumpKqueue : public MessagePump,
                                       public WatchableIOMessagePumpPosix {
  public:
   class FdWatchController : public FdWatchControllerInterface {
    public:
     explicit FdWatchController(const Location& from_here);
+
+    FdWatchController(const FdWatchController&) = delete;
+    FdWatchController& operator=(const FdWatchController&) = delete;
+
     ~FdWatchController() override;
 
     // FdWatchControllerInterface:
@@ -42,6 +54,7 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
               int fd,
               int mode,
               FdWatcher* watcher);
+
     void Reset();
 
     int fd() { return fd_; }
@@ -53,25 +66,33 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
     int mode_ = 0;
     FdWatcher* watcher_ = nullptr;
     WeakPtr<MessagePumpKqueue> pump_;
-
-    DISALLOW_COPY_AND_ASSIGN(FdWatchController);
   };
 
-  // Delegate interface that provides notifications of Mach message receive
-  // events.
+  // Delegate interface that provides notifications of Mach
+  // message receive events.
+  // 提供 Mach 消息接收事件通知的代理接口。
+  // Mach内核提供的进程间消息通讯（IPC）的能力。
   class MachPortWatcher {
    public:
     virtual ~MachPortWatcher() {}
+    /**
+     * @brief 从 mach_port_t 中接收消息
+     */
     virtual void OnMachMessageReceived(mach_port_t port) = 0;
   };
 
   // Controller interface that is used to stop receiving events for an
   // installed MachPortWatcher.
+  // 用于停止接收已安装 MachPortWatcher 事件的控制器接口。
   class MachPortWatchController {
    public:
     explicit MachPortWatchController(const Location& from_here);
-    ~MachPortWatchController();
 
+    MachPortWatchController(const MachPortWatchController&) = delete;
+    MachPortWatchController& operator=(const MachPortWatchController&) = delete;
+
+    ~MachPortWatchController();
+    // 停止监听 Mach Port
     bool StopWatchingMachPort();
 
    protected:
@@ -80,21 +101,32 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
     void Init(WeakPtr<MessagePumpKqueue> pump,
               mach_port_t port,
               MachPortWatcher* watcher);
+
     void Reset();
 
-    mach_port_t port() { return port_; }
-    MachPortWatcher* watcher() { return watcher_; }
+    mach_port_t port() {
+      return port_;
+    }
+
+    MachPortWatcher* watcher() {
+      return watcher_;
+    }
 
    private:
+    // MACH_PORT_NULL 是可以在消息中携带的合法值。
+    // 它表示没有任何端口或端口权限。 （端口参数使消息保持“简单”，
+    // 即使值为 MACH_PORT_NULL。）值
     mach_port_t port_ = MACH_PORT_NULL;
     MachPortWatcher* watcher_ = nullptr;
     WeakPtr<MessagePumpKqueue> pump_;
     const Location from_here_;
-
-    DISALLOW_COPY_AND_ASSIGN(MachPortWatchController);
   };
 
   MessagePumpKqueue();
+
+  MessagePumpKqueue(const MessagePumpKqueue&) = delete;
+  MessagePumpKqueue& operator=(const MessagePumpKqueue&) = delete;
+
   ~MessagePumpKqueue() override;
 
   // MessagePump:
@@ -107,6 +139,8 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   // can be used to stop watching for incoming messages, and new message
   // notifications are delivered to the |delegate|. Returns true if the watch
   // was successfully set-up and false on error.
+  // 开始观察 Mach 接收由 |port| 命名的权限。 |controller| 可用于停止监视传入消息，
+  // 并将新消息通知传递给 |delegate|。如果手表设置成功，则返回真，错误时返回假。
   bool WatchMachReceivePort(mach_port_t port,
                             MachPortWatchController* controller,
                             MachPortWatcher* delegate);
@@ -138,6 +172,9 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   // amount of time specified by the NextWorkInfo or until an event is
   // triggered. Returns whether any events were dispatched, with the events
   // stored in |events_|.
+  // 为事件检查 |kqueue_| 。如果 |next_work_info| 为空，则 kqueue 将被轮询事件。
+  // 如果它不为空，它将等待 NextWorkInfo 指定的时间量或直到触发事件。 返回是否发送
+  // 了任何事件，事件存储在 |events_| 中。
   bool DoInternalWork(Delegate* delegate,
                       Delegate::NextWorkInfo* next_work_info);
 
@@ -157,13 +194,17 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
 
   // Receive right to which an empty Mach message is sent to wake up the pump
   // in response to ScheduleWork().
+  // 接收权，向其发送空Mach消息以唤醒泵以响应 ScheduleWork()。
   mac::ScopedMachReceiveRight wakeup_;
   // Scratch buffer that is used to receive the message sent to |wakeup_|.
-  mach_msg_empty_rcv_t wakeup_buffer_;
+  // 用于接收发送到 |wakeup_| 的消息的暂存缓冲区
+  mach_msg_empty_rcv_t wakeup_buffer_; // 双向队列
 
   // A Mach port set used to watch ports from WatchMachReceivePort(). This is
   // only used on macOS <10.12, where kqueues cannot watch ports directly.
-  mac::ScopedMachPortSet port_set_;
+  // 用于监视来自 WatchMachReceivePort() 的端口的 Mach 端口集。
+  // 这仅在 macOS <10.12 上使用，其中 kqueue 无法直接观察端口。
+  mac::ScopedMachPortSet port_set_; // Mach Port 集合
 
   // Watch controllers for FDs. IDs are generated by the map and are stored in
   // the kevent64_s::udata field.
@@ -173,7 +214,7 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   IDMap<MachPortWatchController*> port_controllers_;
 
   // The kqueue that drives the pump.
-  ScopedFD kqueue_;
+  ScopedFD kqueue_; // kqueue消息泵的核心字段，kqueue文件描述符
 
   // Whether the pump has been Quit() or not.
   bool keep_running_ = true;
@@ -194,11 +235,10 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   size_t event_count_ = 1;
   // Buffer used by DoInternalWork() to be notified of triggered events. This
   // is always at least |event_count_|-sized.
+  // DoInternalWork() 用于通知触发事件的缓冲区。 这总是至少为 |event_count_| 大小。
   std::vector<kevent64_s> events_{event_count_};
 
   WeakPtrFactory<MessagePumpKqueue> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpKqueue);
 };
 
 }  // namespace base

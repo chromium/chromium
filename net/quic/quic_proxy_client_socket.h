@@ -40,6 +40,9 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
       HttpAuthController* auth_controller,
       ProxyDelegate* proxy_delegate);
 
+  QuicProxyClientSocket(const QuicProxyClientSocket&) = delete;
+  QuicProxyClientSocket& operator=(const QuicProxyClientSocket&) = delete;
+
   // On destruction Disconnect() is called.
   ~QuicProxyClientSocket() override;
 
@@ -149,8 +152,6 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
 
   // The default weak pointer factory.
   base::WeakPtrFactory<QuicProxyClientSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicProxyClientSocket);
 };
 
 }  // namespace net

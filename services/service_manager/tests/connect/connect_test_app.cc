@@ -53,6 +53,9 @@ class ConnectTestApp : public Service,
   explicit ConnectTestApp(mojo::PendingReceiver<mojom::Service> receiver)
       : service_receiver_(this, std::move(receiver)) {}
 
+  ConnectTestApp(const ConnectTestApp&) = delete;
+  ConnectTestApp& operator=(const ConnectTestApp&) = delete;
+
   ~ConnectTestApp() override = default;
 
  private:
@@ -207,8 +210,6 @@ class ConnectTestApp : public Service,
   mojo::ReceiverSet<test::mojom::BlockedInterface> blocked_receivers_;
   mojo::ReceiverSet<test::mojom::IdentityTest> identity_test_receivers_;
   mojo::Remote<test::mojom::ExposedInterface> caller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectTestApp);
 };
 
 }  // namespace service_manager

@@ -4,6 +4,7 @@
 
 #import "ios/web/public/test/fakes/fake_download_task.h"
 
+#include "base/strings/sys_string_conversions.h"
 #include "ios/web/public/download/download_task_observer.h"
 #include "net/url_request/url_fetcher_response_writer.h"
 
@@ -33,9 +34,10 @@ DownloadTask::State FakeDownloadTask::GetState() const {
   return state_;
 }
 
-void FakeDownloadTask::Start(
-    std::unique_ptr<net::URLFetcherResponseWriter> writer) {
-  writer_ = std::move(writer);
+void FakeDownloadTask::Start(const base::FilePath& path,
+                             Destination destination_hint) {
+  response_data_ = nil;
+  response_path_ = path;
   state_ = State::kInProgress;
   OnDownloadUpdated();
 }
@@ -45,8 +47,12 @@ void FakeDownloadTask::Cancel() {
   OnDownloadUpdated();
 }
 
-net::URLFetcherResponseWriter* FakeDownloadTask::GetResponseWriter() const {
-  return writer_.get();
+NSData* FakeDownloadTask::GetResponseData() const {
+  return response_data_;
+}
+
+const base::FilePath& FakeDownloadTask::GetResponsePath() const {
+  return response_path_;
 }
 
 NSString* FakeDownloadTask::GetIndentifier() const {
@@ -120,6 +126,9 @@ void FakeDownloadTask::SetWebState(WebState* web_state) {
 }
 
 void FakeDownloadTask::SetDone(bool done) {
+  if (!response_data_) {
+    response_data_ = [NSData data];
+  }
   state_ = State::kComplete;
   OnDownloadUpdated();
 }
@@ -141,6 +150,11 @@ void FakeDownloadTask::SetTotalBytes(int64_t total_bytes) {
 
 void FakeDownloadTask::SetReceivedBytes(int64_t received_bytes) {
   received_bytes_ = received_bytes;
+  OnDownloadUpdated();
+}
+
+void FakeDownloadTask::SetResponseData(NSData* received_data) {
+  response_data_ = received_data;
   OnDownloadUpdated();
 }
 

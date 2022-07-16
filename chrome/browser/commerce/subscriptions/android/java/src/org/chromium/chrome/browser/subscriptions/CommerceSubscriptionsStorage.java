@@ -11,7 +11,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.util.List;
 
@@ -125,7 +125,6 @@ public class CommerceSubscriptionsStorage {
      * Generate the key for a {@link CommerceSubscription} used to store it in database.
      * @param subscription The {@link CommerceSubscription} whose key we want to generate.
      */
-    @VisibleForTesting
     public static String getKey(CommerceSubscription subscription) {
         return String.format("%s_%s_%s", subscription.getType(), subscription.getTrackingIdType(),
                 subscription.getTrackingId());

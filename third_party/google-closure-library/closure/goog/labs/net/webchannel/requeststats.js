@@ -1,20 +1,13 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Static utilities for collecting stats associated with
  * ChannelRequest.
+ *
  */
 
 
@@ -31,7 +24,8 @@ goog.require('goog.events.EventTarget');
 
 
 goog.scope(function() {
-var requestStats = goog.labs.net.webChannel.requestStats;
+'use strict';
+const requestStats = goog.labs.net.webChannel.requestStats;
 
 
 /**
@@ -54,6 +48,7 @@ requestStats.eventTarget_ = null;
  * @private
  */
 requestStats.getStatEventTarget_ = function() {
+  'use strict';
   requestStats.eventTarget_ =
       requestStats.eventTarget_ || new goog.events.EventTarget();
   return requestStats.eventTarget_;
@@ -91,6 +86,7 @@ requestStats.ServerReachability = {
  * @extends {goog.events.Event}
  */
 requestStats.ServerReachabilityEvent = function(target, reachabilityType) {
+  'use strict';
   goog.events.Event.call(
       this, requestStats.Event.SERVER_REACHABILITY_EVENT, target);
 
@@ -109,7 +105,8 @@ goog.inherits(requestStats.ServerReachabilityEvent, goog.events.Event);
  *     The reachability event type.
  */
 requestStats.notifyServerReachabilityEvent = function(reachabilityType) {
-  var target = requestStats.getStatEventTarget_();
+  'use strict';
+  const target = requestStats.getStatEventTarget_();
   target.dispatchEvent(
       new requestStats.ServerReachabilityEvent(target, reachabilityType));
 };
@@ -224,6 +221,7 @@ requestStats.Stat = {
  * @extends {goog.events.Event}
  */
 requestStats.StatEvent = function(eventTarget, stat) {
+  'use strict';
   goog.events.Event.call(this, requestStats.Event.STAT_EVENT, eventTarget);
 
   /**
@@ -231,16 +229,16 @@ requestStats.StatEvent = function(eventTarget, stat) {
    * @type {requestStats.Stat}
    */
   this.stat = stat;
-
 };
 goog.inherits(requestStats.StatEvent, goog.events.Event);
 
 
 /**
  * Returns the singleton event target for stat events.
- * @return {goog.events.EventTarget} The event target for stat events.
+ * @return {!goog.events.EventTarget} The event target for stat events.
  */
 requestStats.getStatEventTarget = function() {
+  'use strict';
   return requestStats.getStatEventTarget_();
 };
 
@@ -250,7 +248,8 @@ requestStats.getStatEventTarget = function() {
  * @param {requestStats.Stat} stat The stat.
  */
 requestStats.notifyStatEvent = function(stat) {
-  var target = requestStats.getStatEventTarget_();
+  'use strict';
+  const target = requestStats.getStatEventTarget_();
   target.dispatchEvent(new requestStats.StatEvent(target, stat));
 };
 
@@ -275,6 +274,7 @@ requestStats.Event.TIMING_EVENT = 'timingevent';
  * @extends {goog.events.Event}
  */
 requestStats.TimingEvent = function(target, size, rtt, retries) {
+  'use strict';
   goog.events.Event.call(this, requestStats.Event.TIMING_EVENT, target);
 
   /**
@@ -291,7 +291,6 @@ requestStats.TimingEvent = function(target, size, rtt, retries) {
    * @type {number}
    */
   this.retries = retries;
-
 };
 goog.inherits(requestStats.TimingEvent, goog.events.Event);
 
@@ -304,7 +303,8 @@ goog.inherits(requestStats.TimingEvent, goog.events.Event);
  * @param {number} retries The number of times the POST had to be retried.
  */
 requestStats.notifyTimingEvent = function(size, rtt, retries) {
-  var target = requestStats.getStatEventTarget_();
+  'use strict';
+  const target = requestStats.getStatEventTarget_();
   target.dispatchEvent(
       new requestStats.TimingEvent(target, size, rtt, retries));
 };
@@ -317,6 +317,7 @@ requestStats.notifyTimingEvent = function(size, rtt, retries) {
  * @param {Function} startHook  The function for the start hook.
  */
 requestStats.setStartThreadExecutionHook = function(startHook) {
+  'use strict';
   requestStats.startExecutionHook_ = startHook;
 };
 
@@ -328,6 +329,7 @@ requestStats.setStartThreadExecutionHook = function(startHook) {
  * @param {Function} endHook  The function for the end hook.
  */
 requestStats.setEndThreadExecutionHook = function(endHook) {
+  'use strict';
   requestStats.endExecutionHook_ = endHook;
 };
 
@@ -354,6 +356,7 @@ requestStats.endExecutionHook_ = function() {};
  * Helper function to call the start hook
  */
 requestStats.onStartExecution = function() {
+  'use strict';
   requestStats.startExecutionHook_();
 };
 
@@ -362,6 +365,7 @@ requestStats.onStartExecution = function() {
  * Helper function to call the end hook
  */
 requestStats.onEndExecution = function() {
+  'use strict';
   requestStats.endExecutionHook_();
 };
 
@@ -374,10 +378,12 @@ requestStats.onEndExecution = function() {
  * @return {number} The ID of the timer.
  */
 requestStats.setTimeout = function(fn, ms) {
-  if (!goog.isFunction(fn)) {
+  'use strict';
+  if (typeof fn !== 'function') {
     throw new Error('Fn must not be null and must be a function');
   }
   return goog.global.setTimeout(function() {
+    'use strict';
     requestStats.onStartExecution();
     try {
       fn();

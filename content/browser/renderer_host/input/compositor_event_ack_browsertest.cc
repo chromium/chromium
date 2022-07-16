@@ -110,6 +110,11 @@ namespace content {
 class CompositorEventAckBrowserTest : public ContentBrowserTest {
  public:
   CompositorEventAckBrowserTest() {}
+
+  CompositorEventAckBrowserTest(const CompositorEventAckBrowserTest&) = delete;
+  CompositorEventAckBrowserTest& operator=(
+      const CompositorEventAckBrowserTest&) = delete;
+
   ~CompositorEventAckBrowserTest() override {}
 
   RenderWidgetHostImpl* GetWidgetHost() {
@@ -231,9 +236,6 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
       observer.WaitForMetadataChange();
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CompositorEventAckBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest, MouseWheel) {

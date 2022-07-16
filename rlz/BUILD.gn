@@ -124,9 +124,6 @@ if (enable_rlz_support) {
       "lib/rlz_lib.h",
     ]
 
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
     public_deps = [
       ":rlz_lib_no_network",
       "//base",
@@ -187,9 +184,6 @@ if (enable_rlz_support) {
     if (is_win) {
       sources += [ "win/lib/machine_deal_test.cc" ]
     }
-
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
     deps = [
       ":rlz_lib",

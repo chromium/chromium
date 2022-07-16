@@ -4,12 +4,15 @@
 
 #include "media/capture/video/video_capture_device.h"
 
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/timezone.h"
 #include "base/strings/string_util.h"
+#include "base/token.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 
 namespace media {
 
@@ -58,6 +61,13 @@ VideoCaptureDevice::Client::Buffer& VideoCaptureDevice::Client::Buffer::
 operator=(VideoCaptureDevice::Client::Buffer&& other) = default;
 
 VideoCaptureDevice::~VideoCaptureDevice() = default;
+
+void VideoCaptureDevice::Crop(
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  std::move(callback).Run(
+      media::mojom::CropRequestResult::kUnsupportedCaptureDevice);
+}
 
 void VideoCaptureDevice::GetPhotoState(GetPhotoStateCallback callback) {}
 

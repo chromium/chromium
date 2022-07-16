@@ -10,9 +10,8 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -31,6 +30,10 @@ class AccountChooserDialogAndroid : public content::WebContentsObserver {
           local_credentials,
       const url::Origin& origin,
       ManagePasswordsState::CredentialsCallback callback);
+
+  AccountChooserDialogAndroid(const AccountChooserDialogAndroid&) = delete;
+  AccountChooserDialogAndroid& operator=(const AccountChooserDialogAndroid&) =
+      delete;
 
   ~AccountChooserDialogAndroid() override;
   // Returns true if the dialog is shown. Otherwise, the instance is deleted.
@@ -86,13 +89,11 @@ class AccountChooserDialogAndroid : public content::WebContentsObserver {
 
   // Authenticator used to trigger a biometric re-auth before passing the
   // credential to the site.
-  scoped_refptr<password_manager::BiometricAuthenticator> authenticator_;
+  scoped_refptr<device_reauth::BiometricAuthenticator> authenticator_;
 
   ManagePasswordsState passwords_data_;
   url::Origin origin_;
   base::android::ScopedJavaGlobalRef<jobject> dialog_jobject_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountChooserDialogAndroid);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ACCOUNT_CHOOSER_DIALOG_ANDROID_H_

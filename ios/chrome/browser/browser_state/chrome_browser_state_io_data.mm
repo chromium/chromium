@@ -19,10 +19,10 @@
 #include "base/debug/alias.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/content_settings/core/browser/content_settings_provider.h"
@@ -305,12 +305,15 @@ void ChromeBrowserStateIOData::Init(
       true /* quick_check_enabled */);
   transport_security_state_.reset(new net::TransportSecurityState());
   if (!IsOffTheRecord()) {
+    base::FilePath transport_security_state_file_path =
+        profile_params_->path.Append(FILE_PATH_LITERAL("TransportSecurity"));
     transport_security_persister_ =
         std::make_unique<net::TransportSecurityPersister>(
-            transport_security_state_.get(), profile_params_->path,
+            transport_security_state_.get(),
             base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                 base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+                 base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+            transport_security_state_file_path);
   }
 
   net::NetworkTrafficAnnotationTag traffic_annotation =

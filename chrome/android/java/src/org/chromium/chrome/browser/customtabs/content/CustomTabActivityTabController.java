@@ -181,7 +181,11 @@ public class CustomTabActivityTabController implements InflationObserver {
             assert false;
             return;
         }
-        mTabProvider.removeTab();
+
+        if (getTabModelSelector().getCurrentModel().getCount() <= 1) {
+            mTabProvider.removeTab();
+        }
+
         mReparentingTaskProvider.get(tab).begin(
                 mActivity, intent, startActivityOptions, finishCallback);
     }

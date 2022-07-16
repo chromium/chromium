@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_TAB_STRIP_TRACKER_H_
 #define CHROME_BROWSER_UI_BROWSER_TAB_STRIP_TRACKER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 
 class BrowserTabStripTrackerDelegate;
@@ -21,6 +20,10 @@ class BrowserTabStripTracker : public BrowserListObserver {
   // tracked. If nullptr, all Browsers are tracked.
   BrowserTabStripTracker(TabStripModelObserver* tab_strip_model_observer,
                          BrowserTabStripTrackerDelegate* delegate);
+
+  BrowserTabStripTracker(const BrowserTabStripTracker&) = delete;
+  BrowserTabStripTracker& operator=(const BrowserTabStripTracker&) = delete;
+
   ~BrowserTabStripTracker() override;
 
   // Registers the TabStripModelObserver on existing tracked Browsers and starts
@@ -52,8 +55,6 @@ class BrowserTabStripTracker : public BrowserListObserver {
   TabStripModelObserver* const tab_strip_model_observer_;
   BrowserTabStripTrackerDelegate* const delegate_;
   bool is_processing_initial_browsers_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserTabStripTracker);
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_TAB_STRIP_TRACKER_H_

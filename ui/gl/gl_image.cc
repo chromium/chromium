@@ -87,17 +87,6 @@ bool GLImage::CopyTexSubImage(unsigned target,
   return false;
 }
 
-bool GLImage::ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                                   int z_order,
-                                   gfx::OverlayTransform transform,
-                                   const gfx::Rect& bounds_rect,
-                                   const gfx::RectF& crop_rect,
-                                   bool enable_blend,
-                                   std::unique_ptr<gfx::GpuFence> gpu_fence) {
-  NOTREACHED();
-  return false;
-}
-
 void GLImage::SetColorSpace(const gfx::ColorSpace& color_space) {
   color_space_ = color_space;
 }

@@ -97,7 +97,8 @@ void PossiblyUpdateIsolationInfoAndSiteForCookies(
     const GURL& new_url) {
   DCHECK(request);
   DCHECK(new_url.is_valid());
-  if (new_url.GetOrigin() == request->url.GetOrigin() ||
+  if (new_url.DeprecatedGetOriginAsURL() ==
+          request->url.DeprecatedGetOriginAsURL() ||
       !request->trusted_params.has_value()) {
     return;
   }

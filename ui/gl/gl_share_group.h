@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_export.h"
@@ -20,6 +19,9 @@ class GLContext;
 class GL_EXPORT GLShareGroup : public base::RefCounted<GLShareGroup> {
  public:
   GLShareGroup();
+
+  GLShareGroup(const GLShareGroup&) = delete;
+  GLShareGroup& operator=(const GLShareGroup&) = delete;
 
   // These two should only be called from the constructor and destructor of
   // GLContext.
@@ -60,8 +62,6 @@ class GL_EXPORT GLShareGroup : public base::RefCounted<GLShareGroup> {
 #if defined(OS_APPLE)
   int renderer_id_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(GLShareGroup);
 };
 
 }  // namespace gl

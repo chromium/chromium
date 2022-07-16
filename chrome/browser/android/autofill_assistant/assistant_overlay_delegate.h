@@ -18,10 +18,6 @@ class AssistantOverlayDelegate {
   void OnUnexpectedTaps(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& jcaller);
 
-  void OnUserInteractionInsideTouchableArea(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller);
-
   base::android::ScopedJavaGlobalRef<jobject> GetJavaObject();
 
  private:

@@ -142,4 +142,11 @@ class MockNearbyConnections : public NearbyConnectionsMojom {
 }  // namespace nearby
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace nearby {
+using ::chromeos::nearby::MockNearbyConnections;
+}
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_CONNECTIONS_H_

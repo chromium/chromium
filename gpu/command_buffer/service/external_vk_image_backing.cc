@@ -181,7 +181,8 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
                                VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                                VK_IMAGE_USAGE_TRANSFER_DST_BIT;
   if (usage & kUsageNeedsColorAttachment) {
-    vk_usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    vk_usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
     if (format == viz::ETC1) {
       DLOG(ERROR) << "ETC1 format cannot be used as color attachment.";
       return nullptr;
@@ -242,8 +243,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
     SkAlphaType alpha_type,
     uint32_t usage,
     const VulkanImageUsageCache* image_usage_cache) {
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(
-          size, buffer_format, gfx::BufferPlane::DEFAULT)) {
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
     DLOG(ERROR) << "Invalid image size for format.";
     return nullptr;
   }
@@ -398,6 +398,10 @@ bool ExternalVkImageBacking::BeginAccess(
     auto release_semaphore =
         ExternalVkImageGLRepresentationShared::ReleaseTexture(
             external_semaphore_pool(), texture_id, info.fImageLayout);
+    if (!release_semaphore) {
+      context_state_->MarkContextLost();
+      return false;
+    }
     EndAccessInternal(readonly, std::move(release_semaphore));
   }
 

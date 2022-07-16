@@ -222,6 +222,9 @@ class SocketsTcpSecureFunction : public TCPSocketApiFunction {
 
   SocketsTcpSecureFunction();
 
+  SocketsTcpSecureFunction(const SocketsTcpSecureFunction&) = delete;
+  SocketsTcpSecureFunction& operator=(const SocketsTcpSecureFunction&) = delete;
+
  protected:
   ~SocketsTcpSecureFunction() override;
   ResponseAction Work() override;
@@ -238,8 +241,6 @@ class SocketsTcpSecureFunction : public TCPSocketApiFunction {
   bool paused_;
   bool persistent_;
   std::unique_ptr<sockets_tcp::Secure::Params> params_;
-
-  DISALLOW_COPY_AND_ASSIGN(SocketsTcpSecureFunction);
 };
 
 }  // namespace api

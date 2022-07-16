@@ -16,7 +16,7 @@ namespace time_limit_consistency {
 namespace {
 
 // The default resets_at value is 6AM.
-constexpr base::TimeDelta kDefaultResetsAt = base::TimeDelta::FromHours(6);
+constexpr base::TimeDelta kDefaultResetsAt = base::Hours(6);
 
 // Converts a PolicyType object from the time limit processor to a
 // ConsistencyGoldenPolicy used by the goldens.
@@ -99,7 +99,7 @@ base::Value ConvertGoldenInputToProcessorInput(
        input.usage_limits()) {
     utils::AddTimeUsageLimit(
         &policy, ConvertGoldenDayToProcessorDay(usage_limit.effective_day()),
-        base::TimeDelta::FromMinutes(usage_limit.usage_quota_mins()),
+        base::Minutes(usage_limit.usage_quota_mins()),
         usage_limit.has_last_updated_millis()
             ? base::Time::FromJavaTime(usage_limit.last_updated_millis())
             : default_last_updated);
@@ -113,7 +113,7 @@ base::Value ConvertGoldenInputToProcessorInput(
       utils::AddOverrideWithDuration(
           &policy, usage_time_limit::TimeLimitOverride::Action::kUnlock,
           base::Time::FromJavaTime(override_entry.created_at_millis()),
-          base::TimeDelta::FromMilliseconds(override_entry.duration_millis()));
+          base::Milliseconds(override_entry.duration_millis()));
     } else {
       utils::AddOverride(
           &policy,
@@ -173,12 +173,12 @@ GenerateUnlockUsageLimitOverrideStateFromInput(
   previous_state.is_locked = true;
   previous_state.active_policy = usage_time_limit::PolicyType::kUsageLimit;
   previous_state.is_time_usage_limit_enabled = true;
-  previous_state.remaining_usage = base::TimeDelta::FromMinutes(0);
+  previous_state.remaining_usage = base::Minutes(0);
 
   // Usage limit started one minute before the override was created.
   previous_state.time_usage_limit_started =
       base::Time::FromJavaTime(usage_limit_override->created_at_millis()) -
-      base::TimeDelta::FromMinutes(1);
+      base::Minutes(1);
 
   return previous_state;
 }

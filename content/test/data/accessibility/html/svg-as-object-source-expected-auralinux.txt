@@ -1,0 +1,18 @@
+[document web] tag:#document
+++[section] tag:body
+++++[embedded component] name='object without space' tag:object
+++++++[document web] tag:#document
+++++++++[document frame] tag:svg
+++++++++++[push button] name='face' id:face tag:circle
+++++++++++[push button] name='left-eye' id:left-eye tag:ellipse
+++++++++++[push button] name='right-eye' id:right-eye tag:ellipse
+++++++++++[push button] name='nose' id:nose tag:ellipse
+++++++++++[push button] name='smile' id:smile tag:path
+++++[embedded component] name='object with space' tag:object
+++++++[document web] tag:#document
+++++++++[document frame] tag:svg
+++++++++++[push button] name='face' id:face tag:circle
+++++++++++[push button] name='left-eye' id:left-eye tag:ellipse
+++++++++++[push button] name='right-eye' id:right-eye tag:ellipse
+++++++++++[push button] name='nose' id:nose tag:ellipse
+++++++++++[push button] name='smile' id:smile tag:path

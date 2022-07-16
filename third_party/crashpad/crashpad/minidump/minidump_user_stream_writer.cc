@@ -33,6 +33,9 @@ class MinidumpUserStreamWriter::SnapshotContentsWriter final
   explicit SnapshotContentsWriter(const MemorySnapshot* snapshot)
       : snapshot_(snapshot), writer_(nullptr) {}
 
+  SnapshotContentsWriter(const SnapshotContentsWriter&) = delete;
+  SnapshotContentsWriter& operator=(const SnapshotContentsWriter&) = delete;
+
   bool WriteContents(FileWriterInterface* writer) override {
     DCHECK(!writer_);
 
@@ -52,8 +55,6 @@ class MinidumpUserStreamWriter::SnapshotContentsWriter final
  private:
   const MemorySnapshot* snapshot_;
   FileWriterInterface* writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SnapshotContentsWriter);
 };
 
 class MinidumpUserStreamWriter::ExtensionStreamContentsWriter final
@@ -63,6 +64,10 @@ class MinidumpUserStreamWriter::ExtensionStreamContentsWriter final
   explicit ExtensionStreamContentsWriter(
       std::unique_ptr<MinidumpUserExtensionStreamDataSource> data_source)
       : data_source_(std::move(data_source)), writer_(nullptr) {}
+
+  ExtensionStreamContentsWriter(const ExtensionStreamContentsWriter&) = delete;
+  ExtensionStreamContentsWriter& operator=(
+      const ExtensionStreamContentsWriter&) = delete;
 
   bool WriteContents(FileWriterInterface* writer) override {
     DCHECK(!writer_);
@@ -80,8 +85,6 @@ class MinidumpUserStreamWriter::ExtensionStreamContentsWriter final
  private:
   std::unique_ptr<MinidumpUserExtensionStreamDataSource> data_source_;
   FileWriterInterface* writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionStreamContentsWriter);
 };
 
 MinidumpUserStreamWriter::MinidumpUserStreamWriter() : stream_type_() {}

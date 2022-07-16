@@ -38,6 +38,12 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptLoader
       scoped_refptr<ServiceWorkerVersion>
           version_for_main_script_http_response_info,
       const GURL& request_url);
+
+  ServiceWorkerInstalledScriptLoader(
+      const ServiceWorkerInstalledScriptLoader&) = delete;
+  ServiceWorkerInstalledScriptLoader& operator=(
+      const ServiceWorkerInstalledScriptLoader&) = delete;
+
   ~ServiceWorkerInstalledScriptLoader() override;
 
   // ServiceWorkerInstalledScriptReader::Client overrides:
@@ -75,8 +81,6 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptLoader
   mojo::ScopedDataPipeConsumerHandle body_handle_;
   uint64_t body_size_ = 0;
   std::unique_ptr<mojo::DataPipeDrainer> metadata_drainer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerInstalledScriptLoader);
 };
 
 }  // namespace content

@@ -14,8 +14,11 @@ namespace chromecast {
 
 CastContentSettingsClient::CastContentSettingsClient(
     content::RenderFrame* render_frame,
-    const std::string& app_id)
-    : content::RenderFrameObserver(render_frame), app_id_(app_id) {
+    const std::string& app_id,
+    bool allow_insecure_content)
+    : content::RenderFrameObserver(render_frame),
+      app_id_(app_id),
+      allow_insecure_content_(allow_insecure_content) {
   render_frame->GetWebFrame()->SetContentSettingsClient(this);
   content::RenderThread::Get()->BindHostReceiver(
       metrics_helper_remote_.BindNewPipeAndPassReceiver());
@@ -31,7 +34,7 @@ bool CastContentSettingsClient::AllowRunningInsecureContent(
     bool enabled_per_settings,
     const blink::WebURL& url) {
   ReportRendererFeatureUse(app_id_, "ActiveInsecureContent");
-  return true;
+  return allow_insecure_content_;
 }
 
 void CastContentSettingsClient::PassiveInsecureContentFound(
@@ -41,7 +44,7 @@ void CastContentSettingsClient::PassiveInsecureContentFound(
 
 bool CastContentSettingsClient::ShouldAutoupgradeMixedContent() {
   ReportRendererFeatureUse(app_id_, "DisableAutoUpgradeMixedContent");
-  return false;
+  return !allow_insecure_content_;
 }
 
 void CastContentSettingsClient::ReportRendererFeatureUse(

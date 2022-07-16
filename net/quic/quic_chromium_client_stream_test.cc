@@ -42,6 +42,11 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
  public:
   explicit MockQuicClientSessionBase(quic::QuicConnection* connection,
                                      quic::QuicClientPushPromiseIndex* index);
+
+  MockQuicClientSessionBase(const MockQuicClientSessionBase&) = delete;
+  MockQuicClientSessionBase& operator=(const MockQuicClientSessionBase&) =
+      delete;
+
   ~MockQuicClientSessionBase() override;
 
   const quic::QuicCryptoStream* GetCryptoStream() const override {
@@ -62,14 +67,13 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
                quic::QuicSpdyStream*(quic::PendingStream* pending));
   MOCK_METHOD0(CreateOutgoingBidirectionalStream, QuicChromiumClientStream*());
   MOCK_METHOD0(CreateOutgoingUnidirectionalStream, QuicChromiumClientStream*());
-  MOCK_METHOD6(
-      WritevData,
-      quic::QuicConsumedData(quic::QuicStreamId id,
-                             size_t write_length,
-                             quic::QuicStreamOffset offset,
-                             quic::StreamSendingState state,
-                             quic::TransmissionType type,
-                             absl::optional<quic::EncryptionLevel> level));
+  MOCK_METHOD6(WritevData,
+               quic::QuicConsumedData(quic::QuicStreamId id,
+                                      size_t write_length,
+                                      quic::QuicStreamOffset offset,
+                                      quic::StreamSendingState state,
+                                      quic::TransmissionType type,
+                                      quic::EncryptionLevel level));
   MOCK_METHOD2(WriteControlFrame,
                bool(const quic::QuicFrame&, quic::TransmissionType));
   MOCK_METHOD4(SendRstStream,
@@ -139,8 +143,6 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
 
  private:
   std::unique_ptr<quic::QuicCryptoStream> crypto_stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockQuicClientSessionBase);
 };
 
 MockQuicClientSessionBase::MockQuicClientSessionBase(
@@ -1128,6 +1130,52 @@ TEST_P(QuicChromiumClientStreamTest, EarlyHintsAfterInitialHeadersWithoutRead) {
   hints_headers[":status"] = "103";
   ProcessHeaders(hints_headers);
   base::RunLoop().RunUntilIdle();
+}
+
+// Regression test for https://crbug.com/1248970. Write an Early Hints headers,
+// an initial response headers and trailers in succession without reading in
+// the middle of writings.
+TEST_P(QuicChromiumClientStreamTest, TrailersAfterEarlyHintsWithoutRead) {
+  // Process an Early Hints response headers on the stream.
+  spdy::Http2HeaderBlock hints_headers = CreateResponseHeaders("103");
+  quic::QuicHeaderList hints_header_list = ProcessHeaders(hints_headers);
+
+  // Process an initial response headers on the stream.
+  InitializeHeaders();
+  quic::QuicHeaderList header_list = ProcessHeaders(headers_);
+
+  // Process a trailer headers on the stream. This should not hit any DCHECK.
+  spdy::Http2HeaderBlock trailers;
+  trailers["bar"] = "foo";
+  quic::QuicHeaderList trailer_header_list = ProcessTrailers(trailers);
+  base::RunLoop().RunUntilIdle();
+
+  // Read the Early Hints response from the handle.
+  {
+    spdy::Http2HeaderBlock headers;
+    TestCompletionCallback callback;
+    EXPECT_EQ(static_cast<int>(hints_header_list.uncompressed_header_bytes()),
+              handle_->ReadInitialHeaders(&headers, callback.callback()));
+    EXPECT_EQ(headers, hints_headers);
+  }
+
+  // Read the initial headers from the handle.
+  {
+    spdy::Http2HeaderBlock headers;
+    TestCompletionCallback callback;
+    EXPECT_EQ(static_cast<int>(header_list.uncompressed_header_bytes()),
+              handle_->ReadInitialHeaders(&headers, callback.callback()));
+    EXPECT_EQ(headers, headers_);
+  }
+
+  // Read trailers from the handle.
+  {
+    spdy::Http2HeaderBlock headers;
+    TestCompletionCallback callback;
+    EXPECT_EQ(static_cast<int>(trailer_header_list.uncompressed_header_bytes()),
+              handle_->ReadTrailingHeaders(&headers, callback.callback()));
+    EXPECT_EQ(headers, trailers);
+  }
 }
 
 }  // namespace

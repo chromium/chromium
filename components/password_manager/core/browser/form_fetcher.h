@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "components/autofill/core/common/gaia_id_hash.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
@@ -41,6 +40,9 @@ class FormFetcher {
   };
 
   FormFetcher() = default;
+
+  FormFetcher(const FormFetcher&) = delete;
+  FormFetcher& operator=(const FormFetcher&) = delete;
 
   virtual ~FormFetcher() = default;
 
@@ -102,9 +104,6 @@ class FormFetcher {
   // Creates a copy of |*this| with contains the same credentials without the
   // need for calling Fetch().
   virtual std::unique_ptr<FormFetcher> Clone() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FormFetcher);
 };
 
 }  // namespace password_manager

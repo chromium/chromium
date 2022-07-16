@@ -5,6 +5,7 @@
 // Implementation of DLL Exports.
 
 #include <ShlObj.h>
+#include <versionhelpers.h>
 
 #include "chrome/browser/browser_switcher/bho/atl.h"
 #include "chrome/browser/browser_switcher/bho/ie_bho_idl.h"
@@ -29,11 +30,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE instance,
     case DLL_PROCESS_ATTACH: {
       std::wstring log_file_path;
 
-      OSVERSIONINFO info;
-      memset(&info, 0, sizeof(info));
-      info.dwOSVersionInfoSize = sizeof(info);
-      ::GetVersionEx(&info);
-      if (info.dwMajorVersion >= 6) {
+      if (IsWindowsVistaOrGreater()) {
         wchar_t* path = NULL;
         // On modern Windows versions there is a special AppData folder for
         // processes with lowered execution rights, however older versions lack

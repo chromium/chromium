@@ -221,7 +221,8 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
       ![substitute_font.familyName isEqual:@"Apple Color Emoji"];
 
   std::unique_ptr<FontPlatformData> alternate_font = FontPlatformDataFromNSFont(
-      substitute_font, platform_data.size(), synthetic_bold,
+      substitute_font, platform_data.size(), font_description.SpecifiedSize(),
+      synthetic_bold,
       (traits & NSFontItalicTrait) &&
           !(substitute_font_traits & NSFontItalicTrait),
       platform_data.Orientation(), font_description.FontOpticalSizing(),
@@ -285,23 +286,28 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
   // TODO(eae): Remove once skia supports bold emoji. See
   // https://bugs.chromium.org/p/skia/issues/detail?id=4904
   // Bold emoji look the same as normal emoji, so syntheticBold isn't needed.
-  bool synthetic_bold = [platform_font.familyName isEqual:@"Apple Color Emoji"]
-                            ? false
-                            : (IsAppKitFontWeightBold(app_kit_weight) &&
-                               !IsAppKitFontWeightBold(actual_weight)) ||
+  bool synthetic_bold_requested = (IsAppKitFontWeightBold(app_kit_weight) &&
+                                   !IsAppKitFontWeightBold(actual_weight)) ||
                                   font_description.IsSyntheticBold();
+  bool synthetic_bold =
+      [platform_font.familyName isEqual:@"Apple Color Emoji"]
+          ? false
+          : synthetic_bold_requested && font_description.SyntheticBoldAllowed();
 
-  bool synthetic_italic =
+  bool synthetic_italic_requested =
       ((traits & NSFontItalicTrait) && !(actual_traits & NSFontItalicTrait)) ||
       font_description.IsSyntheticItalic();
+  bool synthetic_italic =
+      synthetic_italic_requested && font_description.SyntheticItalicAllowed();
 
   // FontPlatformData::typeface() is null in the case of Chromium out-of-process
   // font loading failing.  Out-of-process loading occurs for registered fonts
   // stored in non-system locations.  When loading fails, we do not want to use
   // the returned FontPlatformData since it will not have a valid SkTypeface.
   std::unique_ptr<FontPlatformData> platform_data = FontPlatformDataFromNSFont(
-      platform_font, size, synthetic_bold, synthetic_italic,
-      font_description.Orientation(), font_description.FontOpticalSizing(),
+      platform_font, size, font_description.SpecifiedSize(), synthetic_bold,
+      synthetic_italic, font_description.Orientation(),
+      font_description.FontOpticalSizing(),
       font_description.VariationSettings());
   if (!platform_data || !platform_data->Typeface()) {
     return nullptr;

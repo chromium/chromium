@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_BACKEND_DELEGATE_IMPL_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_BACKEND_DELEGATE_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
@@ -50,6 +49,9 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
   };
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  HostBackendDelegateImpl(const HostBackendDelegateImpl&) = delete;
+  HostBackendDelegateImpl& operator=(const HostBackendDelegateImpl&) = delete;
 
   ~HostBackendDelegateImpl() override;
 
@@ -102,8 +104,6 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
   absl::optional<multidevice::RemoteDeviceRef> host_from_last_sync_;
 
   base::WeakPtrFactory<HostBackendDelegateImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostBackendDelegateImpl);
 };
 
 }  // namespace multidevice_setup

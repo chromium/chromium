@@ -136,8 +136,6 @@ TEST_F(ParallelDownloadUtilsTest, AddOrMergeReceivedSliceIntoSortedArray) {
 TEST_P(ParallelDownloadUtilsRecoverErrorTest,
        RecoverErrorForHalfOpenErrorStream) {
   // Create a stream that will work on byte range "100-".
-  const int kErrorStreamOffset = 100;
-
   auto error_stream = CreateSourceStream(kErrorStreamOffset);
   error_stream->set_finished(true);
 
@@ -342,9 +340,8 @@ TEST_F(ParallelDownloadUtilsTest, FinchConfigEnabled) {
   EXPECT_TRUE(IsParallelDownloadEnabled());
   EXPECT_EQ(GetMinSliceSizeConfig(), 1234);
   EXPECT_EQ(GetParallelRequestCountConfig(), 6);
-  EXPECT_EQ(GetParallelRequestDelayConfig(), base::TimeDelta::FromSeconds(2));
-  EXPECT_EQ(GetParallelRequestRemainingTimeConfig(),
-            base::TimeDelta::FromSeconds(3));
+  EXPECT_EQ(GetParallelRequestDelayConfig(), base::Seconds(2));
+  EXPECT_EQ(GetParallelRequestRemainingTimeConfig(), base::Seconds(3));
 }
 
 // Test to verify the disable experiment group will actually disable the

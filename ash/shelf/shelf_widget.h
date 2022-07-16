@@ -20,7 +20,6 @@
 #include "ash/shelf/shelf_layout_manager_observer.h"
 #include "ash/shelf/shelf_observer.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -47,6 +46,10 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
                                public views::Widget {
  public:
   explicit ShelfWidget(Shelf* shelf);
+
+  ShelfWidget(const ShelfWidget&) = delete;
+  ShelfWidget& operator=(const ShelfWidget&) = delete;
+
   ~ShelfWidget() override;
 
   // Sets the initial session state and show the UI. Not part of the constructor
@@ -250,8 +253,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   size_t force_show_hotseat_count_ = 0;
 
   base::WeakPtrFactory<ShelfWidget> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfWidget);
 };
 
 }  // namespace ash

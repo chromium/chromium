@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
 
@@ -47,7 +47,7 @@ WebSocketEndpointLockManager::LockReleaser::~LockReleaser() {
 }
 
 WebSocketEndpointLockManager::WebSocketEndpointLockManager()
-    : unlock_delay_(base::TimeDelta::FromMilliseconds(kUnlockDelayInMs)),
+    : unlock_delay_(base::Milliseconds(kUnlockDelayInMs)),
       pending_unlock_count_(0) {}
 
 WebSocketEndpointLockManager::~WebSocketEndpointLockManager() {

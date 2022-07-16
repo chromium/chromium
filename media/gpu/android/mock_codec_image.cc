@@ -7,7 +7,7 @@
 namespace media {
 
 MockCodecImage::MockCodecImage(const gfx::Size& coded_size)
-    : CodecImage(coded_size) {}
+    : CodecImage(coded_size, /*lock=*/nullptr) {}
 
 MockCodecImage::~MockCodecImage() = default;
 

@@ -21,6 +21,11 @@ class FakeSecurityKeyMessageWriter : public SecurityKeyMessageWriter {
  public:
   explicit FakeSecurityKeyMessageWriter(
       const base::RepeatingClosure& write_callback);
+
+  FakeSecurityKeyMessageWriter(const FakeSecurityKeyMessageWriter&) = delete;
+  FakeSecurityKeyMessageWriter& operator=(const FakeSecurityKeyMessageWriter&) =
+      delete;
+
   ~FakeSecurityKeyMessageWriter() override;
 
   // SecurityKeyMessageWriter interface.
@@ -52,8 +57,6 @@ class FakeSecurityKeyMessageWriter : public SecurityKeyMessageWriter {
   base::RepeatingClosure write_callback_;
 
   base::WeakPtrFactory<FakeSecurityKeyMessageWriter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecurityKeyMessageWriter);
 };
 
 }  // namespace remoting

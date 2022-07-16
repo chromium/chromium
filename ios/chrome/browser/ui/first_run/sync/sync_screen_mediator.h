@@ -9,6 +9,7 @@
 
 @class AuthenticationFlow;
 class AuthenticationService;
+class ChromeAccountManagerService;
 @protocol SyncScreenConsumer;
 @protocol SyncScreenMediatorDelegate;
 class SyncSetupService;
@@ -25,6 +26,10 @@ namespace unified_consent {
 class UnifiedConsentService;
 }
 
+namespace syncer {
+class SyncService;
+}
+
 // Mediator that handles the sync operation.
 @interface SyncScreenMediator : NSObject
 
@@ -38,12 +43,19 @@ class UnifiedConsentService;
 - (instancetype)
     initWithAuthenticationService:(AuthenticationService*)authenticationService
                   identityManager:(signin::IdentityManager*)identityManager
+            accountManagerService:
+                (ChromeAccountManagerService*)accountManagerService
                    consentAuditor:
                        (consent_auditor::ConsentAuditor*)consentAuditor
                  syncSetupService:(SyncSetupService*)syncSetupService
             unifiedConsentService:
                 (unified_consent::UnifiedConsentService*)unifiedConsentService
+                      syncService:(syncer::SyncService*)syncService
+
     NS_DESIGNATED_INITIALIZER;
+
+// Disconnect the mediator.
+- (void)disconnect;
 
 // Delegate.
 @property(nonatomic, weak) id<SyncScreenMediatorDelegate> delegate;

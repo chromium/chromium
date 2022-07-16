@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/css/property_registration.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -92,8 +93,19 @@ void RegisterProperty(Document& document,
                       const String& syntax,
                       const absl::optional<String>& initial_value,
                       bool is_inherited) {
-  DCHECK(!initial_value || !initial_value.value().IsNull());
   DummyExceptionStateForTesting exception_state;
+  RegisterProperty(document, name, syntax, initial_value, is_inherited,
+                   exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+}
+
+void RegisterProperty(Document& document,
+                      const String& name,
+                      const String& syntax,
+                      const absl::optional<String>& initial_value,
+                      bool is_inherited,
+                      ExceptionState& exception_state) {
+  DCHECK(!initial_value || !initial_value.value().IsNull());
   PropertyDefinition* property_definition = PropertyDefinition::Create();
   property_definition->setName(name);
   property_definition->setSyntax(syntax);
@@ -102,7 +114,48 @@ void RegisterProperty(Document& document,
     property_definition->setInitialValue(initial_value.value());
   PropertyRegistration::registerProperty(document.GetExecutionContext(),
                                          property_definition, exception_state);
-  ASSERT_FALSE(exception_state.HadException());
+}
+
+void DeclareProperty(Document& document,
+                     const String& name,
+                     const String& syntax,
+                     const absl::optional<String>& initial_value,
+                     bool is_inherited) {
+  StringBuilder builder;
+  builder.Append("@property ");
+  builder.Append(name);
+  builder.Append(" { ");
+
+  // syntax:
+  builder.Append("syntax:\"");
+  builder.Append(syntax);
+  builder.Append("\";");
+
+  // initial-value:
+  if (initial_value.has_value()) {
+    builder.Append("initial-value:");
+    builder.Append(initial_value.value());
+    builder.Append(";");
+  }
+
+  // inherits:
+  builder.Append("inherits:");
+  builder.Append(is_inherited ? "true" : "false");
+  builder.Append(";");
+
+  builder.Append(" }");
+
+  auto* rule =
+      DynamicTo<StyleRuleProperty>(ParseRule(document, builder.ToString()));
+  if (!rule)
+    return;
+  auto* registration = PropertyRegistration::MaybeCreateForDeclaredProperty(
+      document, AtomicString(name), *rule);
+  if (!registration)
+    return;
+  document.EnsurePropertyRegistry().DeclareProperty(AtomicString(name),
+                                                    *registration);
+  document.GetStyleEngine().PropertyRegistryChanged();
 }
 
 scoped_refptr<CSSVariableData> CreateVariableData(String s) {

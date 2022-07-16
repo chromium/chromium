@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/message_loop/message_pump_for_io.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "services/device/serial/serial_io_handler.h"
 
@@ -18,6 +18,10 @@ namespace device {
 
 class SerialIoHandlerWin : public SerialIoHandler,
                            public base::MessagePumpForIO::IOHandler {
+ public:
+  SerialIoHandlerWin(const SerialIoHandlerWin&) = delete;
+  SerialIoHandlerWin& operator=(const SerialIoHandlerWin&) = delete;
+
  protected:
   // SerialIoHandler implementation.
   void ReadImpl() override;
@@ -60,8 +64,6 @@ class SerialIoHandlerWin : public SerialIoHandler,
   // handler that owns it.
   UiThreadHelper* helper_ = nullptr;
   base::WeakPtrFactory<SerialIoHandlerWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SerialIoHandlerWin);
 };
 
 }  // namespace device

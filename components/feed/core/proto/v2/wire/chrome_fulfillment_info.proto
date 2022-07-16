@@ -10,4 +10,5 @@ option optimize_for = LITE_RUNTIME;
 
 message ChromeFulfillmentInfo {
   optional bool notice_card_acknowledged = 1;
+  repeated string acknowledged_notice_key = 2;
 }

@@ -6,6 +6,7 @@ module chrome.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 enum SelectFileDialogType {
   kNone,
@@ -91,11 +92,16 @@ struct AntiVirusProduct {
 // improve stability by executing some tasks out-of-process. This include either
 // crashy tasks, or tasks that requires certain DLLs to be loaded into the
 // process address space that we don't want to load in the main process.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
 interface UtilWin {
   // Returns the pinned state of the current executable.
   IsPinnedToTaskbar() => (bool succeeded,
                           bool is_pinned_to_taskbar,
                           bool is_pinned_to_taskbar_verb_check);
+
+  // Unpins all shortcuts in `shortcut_paths`.
+  UnpinShortcuts(array<mojo_base.mojom.FilePath> shortcut_paths)
+    => ();
 
   // Executes a select file operation that can be executed on a utility process.
   // |owner|:
@@ -143,6 +149,7 @@ interface UtilWin {
 
 // Hosted by a utility service in kNoSandbox (with CET allowed). Called on
 // startup by the browser to record metrics. Uses COM to make WMI calls.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
 interface ProcessorMetrics {
   // Records various metrics about the processor.
   // Note: The service process can terminate as soon as it observes that the

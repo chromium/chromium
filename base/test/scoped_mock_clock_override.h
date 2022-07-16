@@ -33,6 +33,10 @@ namespace base {
 class ScopedMockClockOverride {
  public:
   ScopedMockClockOverride();
+
+  ScopedMockClockOverride(const ScopedMockClockOverride&) = delete;
+  ScopedMockClockOverride& operator=(const ScopedMockClockOverride&) = delete;
+
   ~ScopedMockClockOverride();
 
   static Time Now();
@@ -45,8 +49,6 @@ class ScopedMockClockOverride {
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_clock_overrides_;
   TimeDelta offset_;
   static ScopedMockClockOverride* scoped_mock_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMockClockOverride);
 };
 
 }  // namespace base

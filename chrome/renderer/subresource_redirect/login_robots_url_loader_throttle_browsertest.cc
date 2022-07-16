@@ -125,8 +125,8 @@ class SubresourceRedirectLoginRobotsURLLoaderThrottleTest
     RobotsRulesParserCache& robots_rules_parser_cache =
         RobotsRulesParserCache::Get();
     if (!robots_rules_parser_cache.DoRobotsRulesParserExist(origin)) {
-      robots_rules_parser_cache.CreateRobotsRulesParser(
-          origin, base::TimeDelta::FromSeconds(2));
+      robots_rules_parser_cache.CreateRobotsRulesParser(origin,
+                                                        base::Seconds(2));
     }
     EXPECT_TRUE(robots_rules_parser_cache.DoRobotsRulesParserExist(origin));
     robots_rules_parser_cache.UpdateRobotsRules(
@@ -419,7 +419,7 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
   EXPECT_FALSE(throttle_info1->did_restart_with_url_reset_and_flags());
   EXPECT_FALSE(throttle_info2->did_restart_with_url_reset_and_flags());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   // Both resources should restart and resume loading with the original URL.
   EXPECT_TRUE(throttle_info1->did_restart_with_url_reset_and_flags());

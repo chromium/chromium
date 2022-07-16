@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
 
 if (!is_android) {
   import("//build/config/features.gni")
@@ -86,7 +87,6 @@ static_library("devtools") {
   sources = []
 
   configs += [
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//build/config/compiler:wexit_time_destructors",
     "//build/config:precompiled_headers",
   ]
@@ -123,6 +123,7 @@ static_library("devtools") {
       "//chrome/browser:browser_process",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/web_applications",
       "//chrome/common",
       "//components/guest_view/browser",
       "//components/infobars/content",
@@ -134,6 +135,8 @@ static_library("devtools") {
       "//components/pref_registry",
       "//components/prefs",
       "//components/sessions",
+      "//components/signin/public/identity_manager:identity_manager",
+      "//components/sync/driver:driver",
       "//components/sync_preferences",
       "//components/viz/host",
       "//components/web_modal",
@@ -199,6 +202,8 @@ static_library("devtools") {
       "devtools_file_watcher.h",
       "devtools_infobar_delegate.cc",
       "devtools_infobar_delegate.h",
+      "devtools_settings.cc",
+      "devtools_settings.h",
       "devtools_targets_ui.cc",
       "devtools_targets_ui.h",
       "devtools_toggle_action.cc",
@@ -234,6 +239,7 @@ static_library("devtools") {
       "//chrome/app:command_ids",
       "//components/media_router/browser",
       "//components/media_router/common/mojom:media_router",
+      "//components/payments/content",
       "//components/security_state/content",
       "//components/subresource_filter/content/browser:browser",
       "//components/webapps/browser",
@@ -257,6 +263,9 @@ static_library("devtools") {
         "protocol/window_manager_handler.cc",
         "protocol/window_manager_handler.h",
       ]
+    }
+    if (enable_basic_printing) {
+      deps += [ "//components/printing/browser/print_to_pdf" ]
     }
     sources += rebase_path(_protocol_generated, ".", target_gen_dir)
   }

@@ -25,6 +25,10 @@ class TileProviderBridge : public base::SupportsUserData::Data {
       TileService* tile_service);
 
   explicit TileProviderBridge(TileService* tile_service);
+
+  TileProviderBridge(const TileProviderBridge&) = delete;
+  TileProviderBridge& operator=(const TileProviderBridge&) = delete;
+
   ~TileProviderBridge() override;
 
   // Methods called from Java via JNI.
@@ -43,8 +47,6 @@ class TileProviderBridge : public base::SupportsUserData::Data {
 
   // Not owned.
   TileService* tile_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(TileProviderBridge);
 };
 
 }  // namespace query_tiles

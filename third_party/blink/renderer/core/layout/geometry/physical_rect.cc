@@ -28,9 +28,14 @@ PhysicalSize PhysicalRect::DistanceAsSize(PhysicalOffset target) const {
 }
 
 LayoutUnit PhysicalRect::SquaredDistanceTo(const PhysicalOffset& point) const {
-  LayoutUnit diff_x =
-      point.left - clampTo<LayoutUnit>(point.left, X(), Right());
-  LayoutUnit diff_y = point.top - clampTo<LayoutUnit>(point.top, Y(), Bottom());
+  LayoutUnit x1 = X(), x2 = Right();
+  if (x1 > x2)
+    std::swap(x1, x2);
+  LayoutUnit diff_x = point.left - ClampTo<LayoutUnit>(point.left, x1, x2);
+  LayoutUnit y1 = Y(), y2 = Bottom();
+  if (y1 > y2)
+    std::swap(y1, y2);
+  LayoutUnit diff_y = point.top - ClampTo<LayoutUnit>(point.top, y1, y2);
   return diff_x * diff_x + diff_y * diff_y;
 }
 

@@ -17,6 +17,10 @@ class ImageDecoderImpl::DecodeImageRequest
   DecodeImageRequest(ImageDecoderImpl* decoder,
                      image_fetcher::ImageDecodedCallback callback)
       : decoder_(decoder), callback_(std::move(callback)) {}
+
+  DecodeImageRequest(const DecodeImageRequest&) = delete;
+  DecodeImageRequest& operator=(const DecodeImageRequest&) = delete;
+
   ~DecodeImageRequest() override {}
 
  private:
@@ -33,8 +37,6 @@ class ImageDecoderImpl::DecodeImageRequest
 
   // The callback to call after the request completed.
   image_fetcher::ImageDecodedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecodeImageRequest);
 };
 
 void ImageDecoderImpl::DecodeImageRequest::OnImageDecoded(
@@ -70,9 +72,7 @@ void ImageDecoderImpl::DecodeImage(
       new DecodeImageRequest(this, std::move(callback)));
 
   ::ImageDecoder::StartWithOptions(
-      decode_image_request.get(),
-      std::vector<uint8_t>(image_data.begin(), image_data.end()),
-      ::ImageDecoder::DEFAULT_CODEC,
+      decode_image_request.get(), image_data, ::ImageDecoder::DEFAULT_CODEC,
       /*shrink_to_fit=*/false, desired_image_frame_size);
 
   decode_image_requests_.push_back(std::move(decode_image_request));

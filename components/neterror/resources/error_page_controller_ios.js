@@ -7,7 +7,9 @@ window.errorPageController = {
   downloadButtonClick: function() {},
 
   // Execute a click on the reload button.
-  reloadButtonClick: function() {},
+  reloadButtonClick: function(url) {
+    window.location = url;
+  },
 
   // Execute a "Details" button click.
   detailsButtonClick: function() {},

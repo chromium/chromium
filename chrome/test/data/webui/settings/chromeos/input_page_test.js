@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from 'chrome://os-settings/chromeos/lazy_load.js';
+// #import {LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction, InputsShortcutReminderState} from 'chrome://os-settings/chromeos/lazy_load.js';
 // #import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -12,9 +12,9 @@
 // #import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.m.js';
 // #import {TestLanguagesMetricsProxy} from './test_os_languages_metrics_proxy.m.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {fakeDataBind} from '../../test_util.m.js';
+// #import {fakeDataBind} from '../../test_util.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {isVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 suite('input page', () => {
@@ -100,7 +100,7 @@ suite('input page', () => {
     return CrSettingsPrefs.initialized.then(() => {
       // Set up test browser proxy.
       browserProxy = new settings.TestLanguagesBrowserProxy();
-      settings.LanguagesBrowserProxyImpl.instance_ = browserProxy;
+      settings.LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
       // Sets up test metrics proxy.
       metricsProxy = new settings.TestLanguagesMetricsProxy();
@@ -131,6 +131,24 @@ suite('input page', () => {
 
   teardown(function() {
     settings.Router.getInstance().resetRouteForTesting();
+  });
+
+  suite('language pack notice', () => {
+    test('is shown when needed', () => {
+      inputPage.shouldShowLanguagePacksNotice_ = true;
+      loadTimeData.overrideValues({languagePacksHandwritingEnabled: true});
+      Polymer.dom.flush();
+
+      assertTrue(isVisible(inputPage.$$('#languagePacksNotice')));
+    });
+
+    test('is hidden when needed', () => {
+      inputPage.shouldShowLanguagePacksNotice_ = false;
+      loadTimeData.overrideValues({languagePacksHandwritingEnabled: false});
+      Polymer.dom.flush();
+
+      assertFalse(isVisible(inputPage.$$('#languagePacksNotice')));
+    });
   });
 
   suite('input method list', () => {
@@ -228,10 +246,6 @@ suite('input page', () => {
 
   suite('input page', () => {
     test('Deep link to spell check', async () => {
-      loadTimeData.overrideValues({
-        isDeepLinkingEnabled: true,
-      });
-
       const params = new URLSearchParams;
       params.append('settingId', '1207');
       settings.Router.getInstance().navigateTo(
@@ -239,8 +253,8 @@ suite('input page', () => {
 
       Polymer.dom.flush();
 
-      const deepLinkElement =
-          inputPage.$$('#enableSpellcheckingToggle').$$('cr-toggle');
+      const deepLinkElement = inputPage.$$('#enableSpellcheckingToggle')
+                                  .shadowRoot.querySelector('cr-toggle');
       await test_util.waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -369,6 +383,7 @@ suite('input page', () => {
     });
 
     test('suggested input methods hidden when no languages is enabled', () => {
+      languageHelper.setPrefValue('intl.accept_languages', '');
       languageHelper.setPrefValue('settings.language.preferred_languages', '');
       Polymer.dom.flush();
 
@@ -380,6 +395,7 @@ suite('input page', () => {
 
     test('suggested input methods hidden when no input methods left', () => {
       const languageCode = 'sw';
+      languageHelper.setPrefValue('intl.accept_languages', languageCode);
       languageHelper.setPrefValue(
           'settings.language.preferred_languages', languageCode);
       languageHelper.getInputMethodsForLanguage(languageCode)
@@ -479,6 +495,63 @@ suite('input page', () => {
           settings.LanguagesPageInteraction.SWITCH_INPUT_METHOD,
           await metricsProxy.whenCalled('recordInteraction'));
     });
+
+    test('when dismissing shortcut reminder', async () => {
+      // Enable Update 2.
+      inputPage.languageSettingsV2Update2Enabled_ = true;
+      loadTimeData.overrideValues({enableLanguageSettingsV2Update2: true});
+      Polymer.dom.flush();
+
+      // Default shortcut reminder with two elements should show "last used IME"
+      // reminder.
+      inputPage.$$('keyboard-shortcut-banner').$.dismiss.click();
+      assertEquals(
+          InputsShortcutReminderState.LAST_USED_IME,
+          await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
+      metricsProxy.resetResolver('recordShortcutReminderDismissed');
+
+      // Add US Swahili keyboard, a third party IME.
+      languageHelper.addInputMethod(
+          'ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw');
+      Polymer.dom.flush();
+
+      // Shortcut reminder should show "next IME" shortcut.
+      inputPage.$$('keyboard-shortcut-banner').$.dismiss.click();
+      assertEquals(
+          InputsShortcutReminderState.NEXT_IME,
+          await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
+      metricsProxy.resetResolver('recordShortcutReminderDismissed');
+
+      // Reset shortcut reminder dismissals to display both shortcuts.
+      inputPage.setPrefValue(
+          'ash.shortcut_reminders.last_used_ime_dismissed', false);
+      inputPage.setPrefValue(
+          'ash.shortcut_reminders.next_ime_dismissed', false);
+      Polymer.dom.flush();
+
+      // Shortcut reminder should show both shortcuts.
+      inputPage.$$('keyboard-shortcut-banner').$.dismiss.click();
+      assertEquals(
+          InputsShortcutReminderState.LAST_USED_IME_AND_NEXT_IME,
+          await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
+    });
+
+    test('when clicking on "learn more" about language packs', async () => {
+      inputPage.shouldShowLanguagePacksNotice_ = true;
+      loadTimeData.overrideValues({languagePacksHandwritingEnabled: true});
+      Polymer.dom.flush();
+
+      const anchor = inputPage.$$('#languagePacksNotice').$$('a');
+      // The below would normally create a new window, which would change the
+      // focus from this test to the new window.
+      // Prevent this from happening by adding an event listener on the anchor
+      // element which stops the default behaviour (of opening a new window).
+      anchor.addEventListener('click', (e) => e.preventDefault());
+      anchor.click();
+      assertEquals(
+          await metricsProxy.whenCalled('recordInteraction'),
+          LanguagesPageInteraction.OPEN_LANGUAGE_PACKS_LEARN_MORE);
+    });
   });
 
   suite('spell check v1', () => {
@@ -493,7 +566,10 @@ suite('input page', () => {
       inputPage.languageSettingsV2Update2Enabled_ = false;
       // However, we should still set loadTimeData as some other code may use
       // it (such as languages.js).
-      loadTimeData.overrideValues({enableLanguageSettingsV2Update2: false});
+      loadTimeData.overrideValues({
+        enableLanguageSettingsV2Update2: false,
+        onDeviceGrammarCheckEnabled: false,
+      });
 
       Polymer.dom.flush();
       // spell check is initially on
@@ -1197,7 +1273,7 @@ suite('input page', () => {
       // select, so if the <iron-list> is hidden we should return an empty
       // list instead.
       const list = allLanguages.querySelector('iron-list');
-      if (list.hidden || list.style.display === 'none') {
+      if (!isVisible(list)) {
         return [];
       }
       return [...allLanguages.querySelectorAll(
@@ -1370,19 +1446,10 @@ suite('input page', () => {
       languageHelper.disableLanguage('sw');
       Polymer.dom.flush();
 
-      /**
-       * @param {!HTMLElement|null} el
-       * @return {boolean}
-       */
-      function isHidden(el) {
-        return !el || el.hidden || getComputedStyle(el).display === 'none' ||
-            getComputedStyle(el).visibility === 'hidden';
-      }
-
       // Suggested languages should not show up whatsoever.
-      assertTrue(isHidden(suggestedLanguages));
+      assertFalse(isVisible(suggestedLanguages));
       // The label for all languages should not appear either.
-      assertTrue(isHidden(allLanguages.querySelector('.label')));
+      assertFalse(isVisible(allLanguages.querySelector('.label')));
     });
 
     test('input method languages appear as suggested languages', () => {

@@ -9,7 +9,6 @@
 #include "ash/shell.h"
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/account_id/account_id.h"
 #include "ui/message_center/message_center.h"
@@ -28,6 +27,12 @@ class InactiveUserNotificationBlockerTest
       public message_center::NotificationBlocker::Observer {
  public:
   InactiveUserNotificationBlockerTest() = default;
+
+  InactiveUserNotificationBlockerTest(
+      const InactiveUserNotificationBlockerTest&) = delete;
+  InactiveUserNotificationBlockerTest& operator=(
+      const InactiveUserNotificationBlockerTest&) = delete;
+
   ~InactiveUserNotificationBlockerTest() override = default;
 
   // AshTestBase overrides:
@@ -105,8 +110,6 @@ class InactiveUserNotificationBlockerTest
  private:
   int state_changed_count_ = 0;
   InactiveUserNotificationBlocker* blocker_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(InactiveUserNotificationBlockerTest);
 };
 
 TEST_F(InactiveUserNotificationBlockerTest, Basic) {

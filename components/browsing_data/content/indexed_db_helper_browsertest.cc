@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/browsing_data/content/browsing_data_helper_browsertest.h"
 #include "components/browsing_data/content/indexed_db_helper.h"
@@ -42,8 +43,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBHelperTest, CannedAddIndexedDB) {
   const blink::StorageKey storage_key2 =
       blink::StorageKey::CreateFromStringForTesting("http://host2:1/");
 
-  scoped_refptr<CannedIndexedDBHelper> helper(
-      new CannedIndexedDBHelper(StoragePartition()));
+  auto helper = base::MakeRefCounted<CannedIndexedDBHelper>(StoragePartition());
   helper->Add(storage_key1);
   helper->Add(storage_key2);
 
@@ -64,8 +64,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBHelperTest, CannedUnique) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
 
-  scoped_refptr<CannedIndexedDBHelper> helper(
-      new CannedIndexedDBHelper(StoragePartition()));
+  auto helper = base::MakeRefCounted<CannedIndexedDBHelper>(StoragePartition());
   helper->Add(storage_key);
   helper->Add(storage_key);
 

@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility.h"
@@ -52,6 +52,7 @@ class BrowserAccessibilityManagerAuraLinux;
 #elif defined(OS_MAC)
 class BrowserAccessibilityManagerMac;
 #endif
+class RenderFrameHostImpl;
 class WebContentsAccessibility;
 
 // To be called when a BrowserAccessibilityManager fires a generated event.
@@ -98,7 +99,7 @@ class CONTENT_EXPORT BrowserAccessibilityDelegate {
   virtual gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() = 0;
   virtual gfx::NativeViewAccessible
   AccessibilityGetNativeViewAccessibleForWindow() = 0;
-  virtual WebContents* AccessibilityWebContents() = 0;
+  virtual RenderFrameHostImpl* AccessibilityRenderFrameHost() = 0;
   virtual void AccessibilityHitTest(
       const gfx::Point& point_in_frame_pixels,
       ax::mojom::Event opt_event_to_fire,
@@ -146,6 +147,10 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
       BrowserAccessibilityDelegate* delegate);
 
   static BrowserAccessibilityManager* FromID(ui::AXTreeID ax_tree_id);
+
+  BrowserAccessibilityManager(const BrowserAccessibilityManager&) = delete;
+  BrowserAccessibilityManager& operator=(const BrowserAccessibilityManager&) =
+      delete;
 
   ~BrowserAccessibilityManager() override;
 
@@ -296,7 +301,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   void SignalEndOfTest();
 
   // Retrieve the bounds of the parent View in screen coordinates.
-  virtual gfx::Rect GetViewBoundsInScreenCoordinates() const;
+  gfx::Rect GetViewBoundsInScreenCoordinates() const;
 
   // Fire an event telling native assistive technology to move focus to the
   // given find in page result.
@@ -538,7 +543,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   BrowserAccessibilityDelegate* delegate_;
 
   // A mapping from a node id to its wrapper of type BrowserAccessibility.
-  std::map<int32_t, BrowserAccessibility*> id_wrapper_map_;
+  std::map<ui::AXNodeID, std::unique_ptr<BrowserAccessibility>> id_wrapper_map_;
 
   // True if the user has initiated a navigation to another page.
   bool user_is_navigating_away_;
@@ -633,8 +638,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   // declaration, do not move this member above other members.
   base::ScopedObservation<ui::AXTree, ui::AXTreeObserver> tree_observation_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManager);
 };
 
 }  // namespace content

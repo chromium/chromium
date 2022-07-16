@@ -16,6 +16,12 @@ namespace {
 class TestFrameEvictionManagerClient : public FrameEvictionManagerClient {
  public:
   TestFrameEvictionManagerClient() = default;
+
+  TestFrameEvictionManagerClient(const TestFrameEvictionManagerClient&) =
+      delete;
+  TestFrameEvictionManagerClient& operator=(
+      const TestFrameEvictionManagerClient&) = delete;
+
   ~TestFrameEvictionManagerClient() override = default;
 
   // FrameEvictionManagerClient:
@@ -28,8 +34,6 @@ class TestFrameEvictionManagerClient : public FrameEvictionManagerClient {
 
  private:
   bool has_frame_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFrameEvictionManagerClient);
 };
 
 }  // namespace

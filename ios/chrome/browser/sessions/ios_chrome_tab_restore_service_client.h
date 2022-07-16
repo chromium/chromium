@@ -16,6 +16,12 @@ class IOSChromeTabRestoreServiceClient
     : public sessions::TabRestoreServiceClient {
  public:
   explicit IOSChromeTabRestoreServiceClient(ChromeBrowserState* browser_state);
+
+  IOSChromeTabRestoreServiceClient(const IOSChromeTabRestoreServiceClient&) =
+      delete;
+  IOSChromeTabRestoreServiceClient& operator=(
+      const IOSChromeTabRestoreServiceClient&) = delete;
+
   ~IOSChromeTabRestoreServiceClient() override;
 
  private:
@@ -40,8 +46,6 @@ class IOSChromeTabRestoreServiceClient
   void GetLastSession(sessions::GetLastSessionCallback callback) override;
 
   ChromeBrowserState* browser_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeTabRestoreServiceClient);
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_IOS_CHROME_TAB_RESTORE_SERVICE_CLIENT_H_

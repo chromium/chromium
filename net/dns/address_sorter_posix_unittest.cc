@@ -42,6 +42,9 @@ class TestUDPClientSocket : public DatagramClientSocket {
   explicit TestUDPClientSocket(const AddressMapping* mapping)
       : mapping_(mapping), connected_(false)  {}
 
+  TestUDPClientSocket(const TestUDPClientSocket&) = delete;
+  TestUDPClientSocket& operator=(const TestUDPClientSocket&) = delete;
+
   ~TestUDPClientSocket() override = default;
 
   int Read(IOBuffer*, int, CompletionOnceCallback) override {
@@ -135,14 +138,16 @@ class TestUDPClientSocket : public DatagramClientSocket {
   const AddressMapping* mapping_;
   bool connected_;
   IPEndPoint local_endpoint_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUDPClientSocket);
 };
 
 // Creates TestUDPClientSockets and maintains an AddressMapping.
 class TestSocketFactory : public ClientSocketFactory {
  public:
   TestSocketFactory() = default;
+
+  TestSocketFactory(const TestSocketFactory&) = delete;
+  TestSocketFactory& operator=(const TestSocketFactory&) = delete;
+
   ~TestSocketFactory() override = default;
 
   std::unique_ptr<DatagramClientSocket> CreateDatagramClientSocket(
@@ -189,8 +194,6 @@ class TestSocketFactory : public ClientSocketFactory {
 
  private:
   AddressMapping mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketFactory);
 };
 
 void OnSortComplete(AddressList* result_buf,

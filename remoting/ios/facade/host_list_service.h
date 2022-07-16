@@ -49,6 +49,9 @@ class HostListService {
   // Returns the singleton instance.
   static HostListService* GetInstance();
 
+  HostListService(const HostListService&) = delete;
+  HostListService& operator=(const HostListService&) = delete;
+
   ~HostListService();
 
   // Registers callback to be called when the host list state is changed.
@@ -109,7 +112,6 @@ class HostListService {
   std::unique_ptr<FetchFailureInfo> last_fetch_failure_;
 
   base::WeakPtrFactory<HostListService> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(HostListService);
 };
 
 }  // namespace remoting

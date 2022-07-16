@@ -38,7 +38,7 @@ const char kIceConfigApiUrl[] =
 const char kAuthorizationHeaderFormat[] = "Authorization: Bearer %s";
 
 // Timeout for network calls to Tachyon servers.
-constexpr base::TimeDelta kNetworkTimeout = base::TimeDelta::FromSeconds(4);
+constexpr base::TimeDelta kNetworkTimeout = base::Seconds(4);
 
 // Response with 2 ice server configs takes ~1KB. A loose upper bound of 16KB is
 // chosen to avoid breaking the flow in case the response has longer URLs in ice
@@ -339,7 +339,7 @@ TachyonIceConfigFetcher::ParseIceServersResponse(
     ice_server_cache_ = CloneIceServerList(servers_mojo);
     ice_server_cache_expiration_ =
         base::Time::Now() +
-        base::TimeDelta::FromSeconds(ice_config.lifetime_duration().seconds());
+        base::Seconds(ice_config.lifetime_duration().seconds());
   }
   return servers_mojo;
 }

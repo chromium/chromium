@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SIGNIN_AUTH_ERROR_OBSERVER_H_
 #define CHROME_BROWSER_ASH_LOGIN_SIGNIN_AUTH_ERROR_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -26,6 +25,10 @@ class AuthErrorObserver : public KeyedService,
   static bool ShouldObserve(Profile* profile);
 
   explicit AuthErrorObserver(Profile* profile);
+
+  AuthErrorObserver(const AuthErrorObserver&) = delete;
+  AuthErrorObserver& operator=(const AuthErrorObserver&) = delete;
+
   ~AuthErrorObserver() override;
 
   // Starts to observe SyncService and SigninErrorController.
@@ -50,8 +53,6 @@ class AuthErrorObserver : public KeyedService,
   void HandleAuthError(const GoogleServiceAuthError& auth_error);
 
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthErrorObserver);
 };
 
 }  // namespace ash

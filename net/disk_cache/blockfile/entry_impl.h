@@ -50,6 +50,9 @@ class NET_EXPORT_PRIVATE EntryImpl
 
   EntryImpl(BackendImpl* backend, Addr address, bool read_only);
 
+  EntryImpl(const EntryImpl&) = delete;
+  EntryImpl& operator=(const EntryImpl&) = delete;
+
   // Background implementation of the Entry interface.
   void DoomImpl();
   int ReadDataImpl(int index,
@@ -307,8 +310,6 @@ class NET_EXPORT_PRIVATE EntryImpl
   bool read_only_;            // True if not yet writing.
   bool dirty_;                // True if we detected that this is a dirty entry.
   std::unique_ptr<SparseControl> sparse_;  // Support for sparse entries.
-
-  DISALLOW_COPY_AND_ASSIGN(EntryImpl);
 };
 
 }  // namespace disk_cache

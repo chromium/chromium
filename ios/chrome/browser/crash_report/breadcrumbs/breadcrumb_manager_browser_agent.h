@@ -64,16 +64,16 @@ class BreadcrumbManagerBrowserAgent
   bool IsLoggingEnabled();
   void SetLoggingEnabled(bool enabled);
 
+  BreadcrumbManagerBrowserAgent(const BreadcrumbManagerBrowserAgent&) = delete;
+  BreadcrumbManagerBrowserAgent& operator=(
+      const BreadcrumbManagerBrowserAgent&) = delete;
+
   ~BreadcrumbManagerBrowserAgent() override;
 
  private:
   explicit BreadcrumbManagerBrowserAgent(Browser* browser);
   friend class BrowserUserData<BreadcrumbManagerBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
-
-  BreadcrumbManagerBrowserAgent(const BreadcrumbManagerBrowserAgent&) = delete;
-  BreadcrumbManagerBrowserAgent& operator=(
-      const BreadcrumbManagerBrowserAgent&) = delete;
 
   // Logs a breadcrumb event with message data |event| associated with
   // |browser_|. NOTE: |event| must not include newline characters as newlines

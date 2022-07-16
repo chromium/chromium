@@ -33,6 +33,12 @@ class DesktopProfileSessionDurationsService
       syncer::SyncService* sync_service,
       signin::IdentityManager* identity_manager,
       DesktopSessionDurationTracker* tracker);
+
+  DesktopProfileSessionDurationsService(
+      const DesktopProfileSessionDurationsService&) = delete;
+  DesktopProfileSessionDurationsService& operator=(
+      const DesktopProfileSessionDurationsService&) = delete;
+
   ~DesktopProfileSessionDurationsService() override;
 
   // DesktopSessionDurationtracker::Observer:
@@ -52,8 +58,6 @@ class DesktopProfileSessionDurationsService
   base::ScopedObservation<DesktopSessionDurationTracker,
                           DesktopSessionDurationTracker::Observer>
       session_duration_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopProfileSessionDurationsService);
 };
 
 }  // namespace metrics

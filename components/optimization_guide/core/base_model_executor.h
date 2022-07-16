@@ -8,7 +8,7 @@
 #include "components/optimization_guide/core/base_model_executor_helpers.h"
 #include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
-#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 
 namespace optimization_guide {
 

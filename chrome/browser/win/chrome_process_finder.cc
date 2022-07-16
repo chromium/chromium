@@ -82,8 +82,7 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window) {
 }
 
 base::TimeDelta SetNotificationTimeoutForTesting(base::TimeDelta new_timeout) {
-  base::TimeDelta old_timeout =
-      base::TimeDelta::FromMilliseconds(g_timeout_in_milliseconds);
+  base::TimeDelta old_timeout = base::Milliseconds(g_timeout_in_milliseconds);
   g_timeout_in_milliseconds =
       base::checked_cast<uint32_t>(new_timeout.InMilliseconds());
   return old_timeout;

@@ -22,6 +22,11 @@ class AccessibilityFocusRingLayer : public FocusRingLayer {
  public:
   AccessibilityFocusRingLayer(aura::Window* root_window,
                               AccessibilityLayerDelegate* delegate);
+
+  AccessibilityFocusRingLayer(const AccessibilityFocusRingLayer&) = delete;
+  AccessibilityFocusRingLayer& operator=(const AccessibilityFocusRingLayer&) =
+      delete;
+
   ~AccessibilityFocusRingLayer() override;
 
   // Create the layer and update its bounds and position in the hierarchy.
@@ -33,8 +38,6 @@ class AccessibilityFocusRingLayer : public FocusRingLayer {
 
   // The outline of the current focus ring.
   AccessibilityFocusRing ring_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityFocusRingLayer);
 };
 
 }  // namespace chromecast

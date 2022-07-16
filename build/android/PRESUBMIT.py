@@ -37,9 +37,10 @@ def CommonChecks(input_api, output_api):
           files_to_skip=[
               r'.*_pb2\.py',
               # The following are all temporary due to: crbug.com/1100664
-              r'.*list_java_targets\.py',
               r'.*fast_local_dev_server\.py',
               r'.*incremental_javac_test_android_library.py',
+              r'.*list_class_verification_failures.py',
+              r'.*list_java_targets\.py',
           ] + build_pys,
           extra_paths_list=[
               J(),
@@ -63,20 +64,32 @@ def CommonChecks(input_api, output_api):
           files_to_skip=[
               r'.*_pb2\.py',
               r'.*_pb2\.py',
+              r'.*create_unwind_table\.py',
+              r'.*create_unwind_table_tests\.py',
           ],
           extra_paths_list=[J('gyp'), J('gn')]))
+
+  tests.extend(
+      input_api.canned_checks.GetPylint(
+          input_api,
+          output_api,
+          files_to_check=[
+              r'.*create_unwind_table\.py',
+              r'.*create_unwind_table_tests\.py',
+          ],
+          extra_paths_list=[J('gyp'), J('gn')],
+          version='2.6'))
   # yapf: enable
 
   # Disabled due to http://crbug.com/410936
   #output.extend(input_api.canned_checks.RunUnitTestsInDirectory(
-  #input_api, output_api, J('buildbot', 'tests')))
+  #input_api, output_api, J('buildbot', 'tests', skip_shebang_check=True)))
 
   pylib_test_env = dict(input_api.environ)
   pylib_test_env.update({
       'PYTHONPATH': build_android_dir,
       'PYTHONDONTWRITEBYTECODE': '1',
   })
-  # Tests that still need python2-compatibility.
   tests.extend(
       input_api.canned_checks.GetUnitTests(
           input_api,
@@ -99,9 +112,7 @@ def CommonChecks(input_api, output_api):
               J('pylib', 'output', 'noop_output_manager_test.py'),
               J('pylib', 'output', 'remote_output_manager_test.py'),
               J('pylib', 'results', 'json_results_test.py'),
-              J('pylib', 'symbols', 'apk_native_libs_unittest.py'),
               J('pylib', 'symbols', 'elf_symbolizer_unittest.py'),
-              J('pylib', 'symbols', 'symbol_utils_unittest.py'),
               J('pylib', 'utils', 'chrome_proxy_utils_test.py'),
               J('pylib', 'utils', 'decorators_test.py'),
               J('pylib', 'utils', 'device_dependencies_test.py'),
@@ -109,27 +120,15 @@ def CommonChecks(input_api, output_api):
               J('pylib', 'utils', 'gold_utils_test.py'),
               J('pylib', 'utils', 'proguard_test.py'),
               J('pylib', 'utils', 'test_filter_test.py'),
+              J('gyp', 'util', 'build_utils_test.py'),
+              J('gyp', 'util', 'manifest_utils_test.py'),
+              J('gyp', 'util', 'md5_check_test.py'),
+              J('gyp', 'util', 'resource_utils_test.py'),
           ],
           env=pylib_test_env,
-          run_on_python2=True,
-          run_on_python3=True))
-  # Python3-only tests:
-  tests.extend(
-      input_api.canned_checks.GetUnitTests(input_api,
-                                           output_api,
-                                           unit_tests=[
-                                               J('gyp', 'util',
-                                                 'build_utils_test.py'),
-                                               J('gyp', 'util',
-                                                 'manifest_utils_test.py'),
-                                               J('gyp', 'util',
-                                                 'md5_check_test.py'),
-                                               J('gyp', 'util',
-                                                 'resource_utils_test.py'),
-                                           ],
-                                           env=pylib_test_env,
-                                           run_on_python2=False,
-                                           run_on_python3=True))
+          run_on_python2=False,
+          run_on_python3=True,
+          skip_shebang_check=True))
 
   return input_api.RunTests(tests)
 

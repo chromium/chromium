@@ -80,18 +80,20 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateEvent(
   // we read |send_touch_for_pen_| before we process the event as we want to
   // ensure a TouchRelease is sent appropriately at the end when the stylus is
   // no longer in contact with the digitizer.
-  bool send_touch = send_touch_for_pen_;
+  bool send_touch = send_touch_for_pen_.count(pointer_id) == 0
+                        ? false
+                        : send_touch_for_pen_[pointer_id];
   if (pointer_pen_info.pointerInfo.pointerFlags & POINTER_FLAG_INCONTACT) {
-    if (!pen_in_contact_) {
-      send_touch = send_touch_for_pen_ =
+    if (!pen_in_contact_[pointer_id]) {
+      send_touch = send_touch_for_pen_[pointer_id] =
           (pointer_pen_info.pointerInfo.pointerFlags &
            (POINTER_FLAG_SECONDBUTTON | POINTER_FLAG_THIRDBUTTON |
             POINTER_FLAG_FOURTHBUTTON | POINTER_FLAG_FIFTHBUTTON)) == 0;
     }
-    pen_in_contact_ = true;
+    pen_in_contact_[pointer_id] = true;
   } else {
-    pen_in_contact_ = false;
-    send_touch_for_pen_ = false;
+    pen_in_contact_.erase(pointer_id);
+    send_touch_for_pen_.erase(pointer_id);
   }
 
   if (is_pointer_event || !send_touch) {

@@ -64,6 +64,7 @@
         padding-inline-start: 0;
       }
     </style>
+
     <template is="dom-if" if="[[shouldShowSyncAccountControl_(
         syncStatus.syncSystemEnabled)]]">
       <settings-sync-account-control embedded-in-subpage
@@ -81,6 +82,16 @@
         $i18n{syncDisabledByAdministrator}
       </div>
     </div>
+
+<if expr="chromeos or lacros">
+    <!-- TODO(crbug.com/1231500): Remove this warning after Lacros side-by-side
+      rollout stage. -->
+    <template is="dom-if" if="[[shouldShowLacrosSideBySideWarning_()]]">
+      <div class="cr-row first cr-padded-text">
+        $i18n{syncSettingsLacrosSideBySideWarning}
+      </div>
+    </template>
+</if>
 
     <template is="dom-if" if="[[shouldShowExistingPassphraseBelowAccount_(
         syncPrefs.passphraseRequired)]]"
@@ -120,12 +131,12 @@
         <h2 class="cr-title-text">$i18n{sync}</h2>
       </div>
 
-      <div id="[[pages_.SPINNER]]" class="cr-row first cr-padded-text"
-          hidden$="[[!isStatus_(pages_.SPINNER, pageStatus_)]]">
+      <div id="[[pageStatusEnum_.SPINNER]]" class="cr-row first cr-padded-text"
+          hidden$="[[!isStatus_(pageStatusEnum_.SPINNER, pageStatus_)]]">
         $i18n{syncLoading}
       </div>
-      <div id="[[pages_.CONFIGURE]]"
-          hidden$="[[!isStatus_(pages_.CONFIGURE, pageStatus_)]]">
+      <div id="[[pageStatusEnum_.CONFIGURE]]"
+          hidden$="[[!isStatus_(pageStatusEnum_.CONFIGURE, pageStatus_)]]">
         <div id="other-sync-items" class="list-frame">
           <cr-link-row id="sync-advanced-row"
               label="$i18n{syncAdvancedPageTitle}"

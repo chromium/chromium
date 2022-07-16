@@ -1,0 +1,55 @@
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
+
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_text_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="../../components/display_manager_types.html">
+
+
+
+<dom-module id="app-downloading-element">
+  <template>
+    <style include="oobe-dialog-host-styles">
+      #video-container {
+        height: 80%;
+        min-width: 344px;
+        width: 80%;
+      }
+    </style>
+    <oobe-adaptive-dialog id="app-downloading-dialog" role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'appDownloadingScreenTitle')]]"
+        no-footer-padding>
+      <iron-icon src="chrome://oobe/playstore.svg" slot="icon">
+      </iron-icon>
+      <h1 slot="title" id="title">
+        [[i18nDynamic(locale, 'appDownloadingScreenTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'appDownloadingScreenDescription')]]
+      </div>
+      <div id="video-container" slot="content" class="content-centered">
+        <if expr="chromeos and _google_chrome">
+          <cr-lottie id="downloadingApps" animation-url="downloading_apps.json"
+              singleLoop="false"></cr-lottie>
+        </if>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="continue-setup-button"
+            text-key="appDownloadingContinueSetup" on-click="onContinue_"
+            class="focus-on-show" inverse></oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+  </template>
+  <script src="app_downloading.js"></script>
+</dom-module>

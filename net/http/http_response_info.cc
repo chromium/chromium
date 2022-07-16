@@ -340,8 +340,7 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
   if (flags & RESPONSE_INFO_HAS_STALENESS) {
     if (!iter.ReadInt64(&time_val))
       return false;
-    stale_revalidate_timeout =
-        base::Time() + base::TimeDelta::FromMicroseconds(time_val);
+    stale_revalidate_timeout = base::Time() + base::Microseconds(time_val);
   }
 
   was_fetched_via_spdy = (flags & RESPONSE_INFO_WAS_SPDY) != 0;

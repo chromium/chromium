@@ -37,6 +37,9 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
                      base::span<const uint8_t> blocked_interface_classes,
                      bool allow_security_key_requests);
 
+  DeviceImpl(const DeviceImpl&) = delete;
+  DeviceImpl& operator=(const DeviceImpl&) = delete;
+
   ~DeviceImpl() override;
 
  private:
@@ -124,8 +127,6 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
   mojo::SelfOwnedReceiverRef<mojom::UsbDevice> receiver_;
   mojo::Remote<device::mojom::UsbDeviceClient> client_;
   base::WeakPtrFactory<DeviceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceImpl);
 };
 
 }  // namespace usb

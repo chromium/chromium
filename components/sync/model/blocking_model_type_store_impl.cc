@@ -9,14 +9,11 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store_backend.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/env.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
@@ -109,7 +106,7 @@ class LevelDbWriteBatch : public BlockingModelTypeStoreImpl::WriteBatch {
         leveldb_write_batch_(std::make_unique<leveldb::WriteBatch>()),
         metadata_change_list_(type, leveldb_write_batch_.get()) {}
 
-  ~LevelDbWriteBatch() override {}
+  ~LevelDbWriteBatch() override = default;
 
   ModelType GetModelType() const { return type_; }
 
@@ -242,23 +239,8 @@ absl::optional<ModelError> BlockingModelTypeStoreImpl::CommitWriteBatch(
   std::unique_ptr<LevelDbWriteBatch> write_batch_impl(
       static_cast<LevelDbWriteBatch*>(write_batch.release()));
   DCHECK_EQ(write_batch_impl->GetModelType(), type_);
-
-  static constexpr char kCommitWriteBatchResultHistogramPrefix[] =
-      "Sync.ModelTypeStoreCommitWriteBatchOutcome.";
-  std::string histogram_name =
-      base::StrCat({kCommitWriteBatchResultHistogramPrefix,
-                    ModelTypeToHistogramSuffix(type_)});
-
-  leveldb::Status status;
-  const auto result = backend_->WriteModifications(
-      LevelDbWriteBatch::ToLevelDbWriteBatch(std::move(write_batch_impl)),
-      &status);
-
-  base::UmaHistogramEnumeration(histogram_name,
-                                leveldb_env::GetLevelDBStatusUMAValue(status),
-                                leveldb_env::LEVELDB_STATUS_MAX);
-
-  return result;
+  return backend_->WriteModifications(
+      LevelDbWriteBatch::ToLevelDbWriteBatch(std::move(write_batch_impl)));
 }
 
 absl::optional<ModelError>

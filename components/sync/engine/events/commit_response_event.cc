@@ -14,7 +14,7 @@ CommitResponseEvent::CommitResponseEvent(
     const sync_pb::ClientToServerResponse& response)
     : timestamp_(timestamp), result_(result), response_(response) {}
 
-CommitResponseEvent::~CommitResponseEvent() {}
+CommitResponseEvent::~CommitResponseEvent() = default;
 
 std::unique_ptr<ProtocolEvent> CommitResponseEvent::Clone() const {
   return std::make_unique<CommitResponseEvent>(timestamp_, result_, response_);

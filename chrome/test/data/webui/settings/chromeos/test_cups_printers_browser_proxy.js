@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // #import {CupsPrintersBrowserProxy,PrinterSetupResult,PrintServerResult} from 'chrome://os-settings/chromeos/lazy_load.js';
 // clang-format on
 

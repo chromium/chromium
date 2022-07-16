@@ -13,6 +13,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
+import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
@@ -32,6 +33,7 @@ public class IPHCommandBuilder {
     private int mAccessibilityStringId;
     private View mAnchorView;
     private Runnable mOnShowCallback;
+    private Runnable mOnBlockedCallback;
     private Runnable mOnDismissCallback;
     private Rect mInsetRect;
     private long mAutoDismissTimeout = TextBubble.NO_TIMEOUT;
@@ -40,6 +42,9 @@ public class IPHCommandBuilder {
     private HighlightParams mHighlightParams;
     private Rect mAnchorRect;
     private boolean mRemoveArrow;
+    @AnchoredPopupWindow.VerticalOrientation
+    private int mPreferredVerticalOrientation =
+            AnchoredPopupWindow.VerticalOrientation.MAX_AVAILABLE_SPACE;
 
     /**
      * Constructor for IPHCommandBuilder when you would like your strings to be resolved for you.
@@ -86,6 +91,15 @@ public class IPHCommandBuilder {
      */
     public IPHCommandBuilder setOnShowCallback(Runnable onShowCallback) {
         mOnShowCallback = onShowCallback;
+        return this;
+    }
+
+    /**
+     *
+     * @param onBlockedCallback callback to invoke if the IPH bubble is finally not shown.
+     */
+    public IPHCommandBuilder setOnNotShownCallback(Runnable onBlockedCallback) {
+        mOnBlockedCallback = onBlockedCallback;
         return this;
     }
 
@@ -178,6 +192,17 @@ public class IPHCommandBuilder {
 
     /**
      *
+     * @param preferredVerticalOrientation {@link AnchoredPopupWindow.VerticalOrientation} that
+     *         determines the preferred location for the IPH.
+     */
+    public IPHCommandBuilder setPreferredVerticalOrientation(
+            @AnchoredPopupWindow.VerticalOrientation int preferredVerticalOrientation) {
+        mPreferredVerticalOrientation = preferredVerticalOrientation;
+        return this;
+    }
+
+    /**
+     *
      * @return an (@see IPHCommand) containing the accumulated state of this builder.
      */
     public IPHCommand build() {
@@ -186,6 +211,10 @@ public class IPHCommandBuilder {
         }
         if (mOnShowCallback == null) {
             mOnShowCallback = NO_OP_RUNNABLE;
+        }
+
+        if (mOnBlockedCallback == null) {
+            mOnBlockedCallback = NO_OP_RUNNABLE;
         }
 
         if (mContentString == null) {
@@ -205,7 +234,8 @@ public class IPHCommandBuilder {
         }
 
         return new IPHCommand(mFeatureName, mContentString, mAccessibilityText, mDismissOnTouch,
-                mAnchorView, mOnDismissCallback, mOnShowCallback, mInsetRect, mAutoDismissTimeout,
-                mViewRectProvider, mHighlightParams, mAnchorRect, mRemoveArrow);
+                mAnchorView, mOnDismissCallback, mOnShowCallback, mOnBlockedCallback, mInsetRect,
+                mAutoDismissTimeout, mViewRectProvider, mHighlightParams, mAnchorRect, mRemoveArrow,
+                mPreferredVerticalOrientation);
     }
 }

@@ -13,9 +13,9 @@
 #include "components/search/search.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/common/child_process_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -44,19 +44,27 @@ class EmbeddedSearchClientFactoryImpl
   EmbeddedSearchClientFactoryImpl(
       content::WebContents* web_contents,
       mojo::AssociatedReceiver<search::mojom::EmbeddedSearch>* receiver)
-      : client_receiver_(receiver),
-        factory_receivers_(web_contents,
-                           this,
-                           content::WebContentsFrameReceiverSetPassKey()) {
+      : client_receiver_(receiver), factory_receivers_(web_contents, this) {
     DCHECK(web_contents);
     DCHECK(receiver);
     // Before we are connected to a frame we throw away all messages.
     embedded_search_client_.reset();
   }
 
+  EmbeddedSearchClientFactoryImpl(const EmbeddedSearchClientFactoryImpl&) =
+      delete;
+  EmbeddedSearchClientFactoryImpl& operator=(
+      const EmbeddedSearchClientFactoryImpl&) = delete;
+
   search::mojom::EmbeddedSearchClient* GetEmbeddedSearchClient() override {
     return embedded_search_client_.is_bound() ? embedded_search_client_.get()
                                               : nullptr;
+  }
+
+  void BindFactoryReceiver(mojo::PendingAssociatedReceiver<
+                               search::mojom::EmbeddedSearchConnector> receiver,
+                           content::RenderFrameHost* rfh) override {
+    factory_receivers_.Bind(rfh, std::move(receiver));
   }
 
  private:
@@ -76,10 +84,8 @@ class EmbeddedSearchClientFactoryImpl
   mojo::AssociatedReceiver<search::mojom::EmbeddedSearch>* client_receiver_;
 
   // Receivers used to listen to connection requests.
-  content::WebContentsFrameReceiverSet<search::mojom::EmbeddedSearchConnector>
+  content::RenderFrameHostReceiverSet<search::mojom::EmbeddedSearchConnector>
       factory_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedSearchClientFactoryImpl);
 };
 
 void EmbeddedSearchClientFactoryImpl::Connect(
@@ -112,6 +118,14 @@ SearchIPCRouter::SearchIPCRouter(content::WebContents* web_contents,
 }
 
 SearchIPCRouter::~SearchIPCRouter() = default;
+
+void SearchIPCRouter::BindEmbeddedSearchConnecter(
+    mojo::PendingAssociatedReceiver<search::mojom::EmbeddedSearchConnector>
+        receiver,
+    content::RenderFrameHost* rfh) {
+  embedded_search_client_factory_->BindFactoryReceiver(std::move(receiver),
+                                                       rfh);
+}
 
 void SearchIPCRouter::OnNavigationEntryCommitted() {
   ++commit_counter_;
@@ -150,15 +164,6 @@ void SearchIPCRouter::SendNtpTheme(const NtpTheme& theme) {
     return;
 
   embedded_search_client()->ThemeChanged(theme);
-}
-
-void SearchIPCRouter::SendLocalBackgroundSelected() {
-  if (!policy_->ShouldSendLocalBackgroundSelected() ||
-      !embedded_search_client()) {
-    return;
-  }
-
-  embedded_search_client()->LocalBackgroundSelected();
 }
 
 void SearchIPCRouter::OnTabActivated() {
@@ -208,157 +213,6 @@ void SearchIPCRouter::UndoAllMostVisitedDeletions(int page_seq_no) {
     return;
 
   delegate_->OnUndoAllMostVisitedDeletions();
-}
-
-void SearchIPCRouter::LogEvent(int page_seq_no,
-                               NTPLoggingEventType event,
-                               base::TimeDelta time) {
-  if (page_seq_no != commit_counter_)
-    return;
-
-  if (!policy_->ShouldProcessLogEvent())
-    return;
-
-  delegate_->OnLogEvent(event, time);
-}
-
-void SearchIPCRouter::LogSuggestionEventWithValue(
-    int page_seq_no,
-    NTPSuggestionsLoggingEventType event,
-    int data,
-    base::TimeDelta time) {
-  if (page_seq_no != commit_counter_)
-    return;
-
-  if (!policy_->ShouldProcessLogSuggestionEventWithValue())
-    return;
-
-  delegate_->OnLogSuggestionEventWithValue(event, data, time);
-}
-
-void SearchIPCRouter::LogMostVisitedImpression(
-    int page_seq_no,
-    const ntp_tiles::NTPTileImpression& impression) {
-  if (page_seq_no != commit_counter_)
-    return;
-
-  // Logging impressions is controlled by the same policy as logging events.
-  if (!policy_->ShouldProcessLogEvent())
-    return;
-
-  delegate_->OnLogMostVisitedImpression(impression);
-}
-
-void SearchIPCRouter::LogMostVisitedNavigation(
-    int page_seq_no,
-    const ntp_tiles::NTPTileImpression& impression) {
-  if (page_seq_no != commit_counter_)
-    return;
-
-  // Logging navigations is controlled by the same policy as logging events.
-  if (!policy_->ShouldProcessLogEvent())
-    return;
-
-  delegate_->OnLogMostVisitedNavigation(impression);
-}
-
-void SearchIPCRouter::SetCustomBackgroundInfo(
-    const GURL& background_url,
-    const std::string& attribution_line_1,
-    const std::string& attribution_line_2,
-    const GURL& action_url,
-    const std::string& collection_id) {
-  if (!policy_->ShouldProcessSetCustomBackgroundInfo())
-    return;
-
-  delegate_->OnSetCustomBackgroundInfo(background_url, attribution_line_1,
-                                       attribution_line_2, action_url,
-                                       collection_id);
-}
-
-void SearchIPCRouter::SelectLocalBackgroundImage() {
-  if (!policy_->ShouldProcessSelectLocalBackgroundImage())
-    return;
-
-  delegate_->OnSelectLocalBackgroundImage();
-}
-
-void SearchIPCRouter::BlocklistSearchSuggestion(int32_t task_version,
-                                                int64_t task_id) {
-  if (!policy_->ShouldProcessBlocklistSearchSuggestion())
-    return;
-
-  delegate_->OnBlocklistSearchSuggestion(task_version, task_id);
-}
-
-void SearchIPCRouter::BlocklistSearchSuggestionWithHash(
-    int32_t task_version,
-    int64_t task_id,
-    const std::vector<uint8_t>& hash) {
-  if (!policy_->ShouldProcessBlocklistSearchSuggestionWithHash())
-    return;
-
-  if (hash.size() > 4) {
-    return;
-  }
-  delegate_->OnBlocklistSearchSuggestionWithHash(task_version, task_id,
-                                                 hash.data());
-}
-
-void SearchIPCRouter::SearchSuggestionSelected(
-    int32_t task_version,
-    int64_t task_id,
-    const std::vector<uint8_t>& hash) {
-  if (!policy_->ShouldProcessSearchSuggestionSelected())
-    return;
-
-  if (hash.size() > 4) {
-    return;
-  }
-  delegate_->OnSearchSuggestionSelected(task_version, task_id, hash.data());
-}
-
-void SearchIPCRouter::OptOutOfSearchSuggestions() {
-  if (!policy_->ShouldProcessOptOutOfSearchSuggestions())
-    return;
-
-  delegate_->OnOptOutOfSearchSuggestions();
-}
-
-void SearchIPCRouter::ApplyDefaultTheme() {
-  if (!policy_->ShouldProcessThemeChangeMessages())
-    return;
-
-  delegate_->OnApplyDefaultTheme();
-}
-
-void SearchIPCRouter::ApplyAutogeneratedTheme(SkColor color) {
-  if (!policy_->ShouldProcessThemeChangeMessages())
-    return;
-
-  delegate_->OnApplyAutogeneratedTheme(color);
-}
-
-void SearchIPCRouter::RevertThemeChanges() {
-  if (!policy_->ShouldProcessThemeChangeMessages())
-    return;
-
-  delegate_->OnRevertThemeChanges();
-}
-
-void SearchIPCRouter::ConfirmThemeChanges() {
-  if (!policy_->ShouldProcessThemeChangeMessages())
-    return;
-
-  delegate_->OnConfirmThemeChanges();
-}
-
-void SearchIPCRouter::BlocklistPromo(const std::string& promo_id) {
-  if (!policy_->ShouldProcessBlocklistPromo()) {
-    return;
-  }
-
-  delegate_->BlocklistPromo(promo_id);
 }
 
 void SearchIPCRouter::set_delegate_for_testing(Delegate* delegate) {

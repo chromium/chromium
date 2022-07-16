@@ -15,12 +15,12 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "base/no_destructor.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
     defined(OS_AIX)
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/process/internal_linux.h"
 #include "base/strings/string_number_conversions.h"
@@ -294,6 +294,7 @@ void CPU::Initialize(bool require_branding) {
         (cpu_info[2] & 0x08000000) != 0 /* OSXSAVE */ &&
         (xgetbv(0) & 6) == 6 /* XSAVE enabled by kernel */;
     has_aesni_ = (cpu_info[2] & 0x02000000) != 0;
+    has_fma3_ = (cpu_info[2] & 0x00001000) != 0;
     has_avx2_ = has_avx_ && (cpu_info7[1] & 0x00000020) != 0;
   }
 
@@ -367,6 +368,7 @@ void CPU::Initialize(bool require_branding) {
 
 CPU::IntelMicroArchitecture CPU::GetIntelMicroArchitecture() const {
   if (has_avx2()) return AVX2;
+  if (has_fma3()) return FMA3;
   if (has_avx()) return AVX;
   if (has_sse42()) return SSE42;
   if (has_sse41()) return SSE41;
@@ -621,19 +623,25 @@ bool CPU::GetCumulativeCoreIdleTimes(CoreIdleTimes& idle_times) {
       if (!ReadFileToString(FilePath(path), &content))
         break;
       StringToUint64(content, &idle_state_time);
-      idle_time += TimeDelta::FromMicroseconds(idle_state_time);
+      idle_time += Microseconds(idle_state_time);
     }
 
     idle_times.push_back(idle_time);
 
     // At least one of the cores should have some idle time, otherwise we report
     // a failure.
-    success |= idle_time > base::TimeDelta();
+    success |= idle_time.is_positive();
   }
 
   return success;
 }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) ||
         // defined(OS_AIX)
+
+const CPU& CPU::GetInstanceNoAllocation() {
+  static const base::NoDestructor<const CPU> cpu(CPU(false));
+
+  return *cpu;
+}
 
 }  // namespace base

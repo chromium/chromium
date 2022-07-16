@@ -47,8 +47,14 @@ class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
       return SimpleFixedQueryGenerator(builder_type, 'AND True')
     return SimpleSplitQueryGenerator(builder_type, ['test_id'], 200)
 
+  def _GetRelevantExpectationFilesForQueryResult(self, _):
+    return None
+
   def _StripPrefixFromTestId(self, test_id):
     return test_id.split('.')[-1]
+
+  def _GetActiveBuilderQuery(self, _):
+    return ''
 
 
 def CreateGenericQuerier(suite=None,
@@ -151,13 +157,13 @@ def RegisterGenericBuildersImplementation():
 
 
 class GenericExpectations(expectations.Expectations):
-  def _GetExpectationFilepaths(self):
+  def GetExpectationFilepaths(self):
     return []
 
   def _GetExpectationFileTagHeader(self):
     return """\
 # tags: [ linux mac win ]
-# results: [ Failure RetryOnFailure Skip ]
+# results: [ Failure RetryOnFailure Skip Pass ]
 """
 
 

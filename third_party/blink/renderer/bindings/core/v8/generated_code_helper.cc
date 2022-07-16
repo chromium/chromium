@@ -134,6 +134,38 @@ void SetupIDLCallbackInterfaceTemplate(
       V8AtomicString(isolate, wrapper_type_info->interface_name));
 }
 
+void SetupIDLObservableArrayBackingListTemplate(
+    v8::Isolate* isolate,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::ObjectTemplate> instance_template,
+    v8::Local<v8::FunctionTemplate> interface_template) {
+  interface_template->SetClassName(
+      V8AtomicString(isolate, wrapper_type_info->interface_name));
+
+  instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
+
+  // https://tc39.es/ecma262/#sec-proxy-object-internal-methods-and-internal-slots-getownproperty-p
+  // "length" property must be
+  //   {configurable: false, enumerable: false, writable: true},
+  // so the target object must have a property of {configurable: false}.
+  instance_template->Set(
+      V8AtomicString(isolate, "length"), v8::Undefined(isolate),
+      static_cast<v8::PropertyAttribute>(v8::DontEnum | v8::DontDelete));
+
+  // The target object of an observable array exotic object (= JS Proxy) must
+  // be a JS Array object.  Hence, make the object look like a JS Array.
+  // https://webidl.spec.whatwg.org/#creating-an-observable-array-exotic-object
+  v8::Local<v8::FunctionTemplate> intrinsic_array_prototype_interface_template =
+      v8::FunctionTemplate::New(isolate, /*callback=*/nullptr,
+                                /*data=*/v8::Local<v8::Value>(),
+                                v8::Local<v8::Signature>(), /*length=*/0,
+                                v8::ConstructorBehavior::kThrow);
+  intrinsic_array_prototype_interface_template->SetIntrinsicDataProperty(
+      V8AtomicString(isolate, "prototype"), v8::kArrayPrototype);
+  interface_template->SetPrototypeProviderTemplate(
+      intrinsic_array_prototype_interface_template);
+}
+
 absl::optional<size_t> FindIndexInEnumStringTable(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
@@ -188,7 +220,7 @@ void ReportInvalidEnumSetToAttribute(v8::Isolate* isolate,
 bool IsEsIterableObject(v8::Isolate* isolate,
                         v8::Local<v8::Value> value,
                         ExceptionState& exception_state) {
-  // https://heycam.github.io/webidl/#es-overloads
+  // https://webidl.spec.whatwg.org/#es-overloads
   // step 9. Otherwise: if Type(V) is Object and ...
   if (!value->IsObject())
     return false;
@@ -288,7 +320,7 @@ void InstallUnscopablePropertyNames(
     v8::Local<v8::Object> prototype_object,
     base::span<const char* const> property_name_table) {
   // 3.6.3. Interface prototype object
-  // https://heycam.github.io/webidl/#interface-prototype-object
+  // https://webidl.spec.whatwg.org/#interface-prototype-object
   // step 8. If interface has any member declared with the [Unscopable]
   //   extended attribute, then:
   // step 8.1. Let unscopableObject be the result of performing

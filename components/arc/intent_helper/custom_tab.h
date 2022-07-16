@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/arc/arc_export.h"
 #include "ui/aura/window.h"

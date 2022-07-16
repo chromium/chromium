@@ -8,7 +8,6 @@
 #include <bitset>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"
@@ -103,14 +102,15 @@ class BackForwardCacheMetrics
     kBrowsingInstanceNotSwapped = 47,
     kBackForwardCacheDisabledForDelegate = 48,
     kOptInUnloadHeaderNotPresent = 49,
-    // 50: kUnloadHandlerExistsInMainFrame = 50 was removed, such cases would
-    // report kOptInUnloadHeaderNotPresent.
+    kUnloadHandlerExistsInMainFrame = 50,
     kUnloadHandlerExistsInSubFrame = 51,
     kServiceWorkerUnregistration = 52,
     kCacheControlNoStore = 53,
     kCacheControlNoStoreCookieModified = 54,
     kCacheControlNoStoreHTTPOnlyCookieModified = 55,
-    kMaxValue = kCacheControlNoStoreHTTPOnlyCookieModified,
+    kNoResponseHead = 56,
+    kActivationNavigationsDisallowedForBug1234857 = 57,
+    kMaxValue = kActivationNavigationsDisallowedForBug1234857,
   };
 
   using NotRestoredReasons =
@@ -164,6 +164,9 @@ class BackForwardCacheMetrics
       NavigationEntryImpl* currently_committed_entry,
       bool is_main_frame_navigation,
       int64_t document_sequence_number);
+
+  BackForwardCacheMetrics(const BackForwardCacheMetrics&) = delete;
+  BackForwardCacheMetrics& operator=(const BackForwardCacheMetrics&) = delete;
 
   // Records when the page is evicted after the document is restored e.g. when
   // the race condition by JavaScript happens.
@@ -294,8 +297,6 @@ class BackForwardCacheMetrics
   // The reason why the last attempted navigation in the frame used or didn't
   // use a new BrowsingInstance.
   absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackForwardCacheMetrics);
 };
 
 }  // namespace content

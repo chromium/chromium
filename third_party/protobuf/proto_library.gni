@@ -31,6 +31,10 @@
 #   generate_library (optional, default true)
 #       Generate a "static_library" target for linking with the generated code.
 #
+#   TODO(crbug.com/1237958): Remove allow_optional when proto rolls to 3.15.
+#   allow_optional (optional, default false)
+#       Enables experimental_allow_proto3_optional.
+#
 #   cc_generator_options (optional)
 #       List of extra flags passed to the protocol compiler.  If you need to
 #       add an EXPORT macro to a protobuf's C++ header, set the
@@ -86,6 +90,13 @@
 #
 # Parameters for compiling the generated code:
 #
+#   force_source_set (Default=false)
+#       When set true the generated code will be compiled as a source set.
+#       This can be useful if you need to export the generated symbols from a
+#       shared library. You should use this carefully, as you probably only
+#       want this if your dependencies are *always* shared libraries. Most
+#       of the time, you probably want `component_build_force_source_set`
+#       instead (see the next option).
 #   component_build_force_source_set (Default=false)
 #       When set true the generated code will be compiled as a source set in
 #       the component build. This does not affect static builds.  If you are
@@ -358,6 +369,9 @@ template("proto_library") {
           invoker.cc_generator_options,
         ]
       }
+      if (defined(invoker.allow_optional) && invoker.allow_optional == true) {
+        args += [ "--allow-optional" ]
+      }
       if (defined(invoker.cc_include)) {
         args += [
           "--include",
@@ -446,8 +460,9 @@ template("proto_library") {
   if (!generate_library) {
     # If only descriptor is required, just generate a group wrapper for action output.
     link_target_type = "group"
-  } else if (defined(invoker.component_build_force_source_set) &&
-             invoker.component_build_force_source_set && is_component_build) {
+  } else if ((defined(invoker.force_source_set) && invoker.force_source_set) ||
+             (defined(invoker.component_build_force_source_set) &&
+              invoker.component_build_force_source_set && is_component_build)) {
     # Option to disable building a library in component build.
     link_target_type = "source_set"
   } else {

@@ -46,6 +46,25 @@ const lastReader = null;
 let isSystemInfoReady = false;
 
 /**
+ * Which questions have been appended to the issue description text area.
+ * @type {!Object<string, boolean>}
+ */
+const appendedQuestions = {};
+
+/**
+ * Builds a RegExp that matches one of the given words. Each word has to match
+ * at word boundary and is not at the end of the tested string. For example,
+ * the word "SIM" would match the string "I have a sim card issue" but not
+ * "I have a simple issue" nor "I have a sim" (because the user might not have
+ * finished typing yet).
+ * @param {Array<string>} words The words to match.
+ */
+function buildWordMatcher(words) {
+  return new RegExp(
+      words.map((word) => '\\b' + word + '\\b[^$]').join('|'), 'i');
+}
+
+/**
  * Regular expression to check for all variants of blu[e]toot[h] with or without
  * space between the words; for BT when used as an individual word, or as two
  * individual characters, and for BLE when used as an individual word. Case
@@ -53,6 +72,23 @@ let isSystemInfoReady = false;
  * @type {RegExp}
  */
 const btRegEx = new RegExp('blu[e]?[ ]?toot[h]?|\\bb[ ]?t\\b|\\bble\\b', 'i');
+
+/**
+ * Regular expression to check for wifi-related keywords.
+ * @type {RegExp}
+ */
+const wifiRegEx =
+    buildWordMatcher(['wifi', 'wi-fi', 'internet', 'network', 'hotspot']);
+
+/**
+ * Regular expression to check for cellular-related keywords.
+ * @type {RegExp}
+ */
+const cellularRegEx = buildWordMatcher([
+  '2G',     '3G',      '4G',  '5G',   'LTE',  'UMTS',     'SIM',     'eSIM',
+  'mmWave', 'mobile',  'APN', 'IMEI', 'IMSI', 'eUICC',    'carrier', 'T.Mobile',
+  'TMO',    'Verizon', 'VZW', 'AT&T', 'MVNO', 'pin.lock', 'cellular'
+]);
 
 /**
  * Regular expression to check for all strings indicating that a user can't
@@ -176,13 +212,66 @@ function openSlowTraceWindow() {
  * we show the bluetooth logs option, otherwise hide it.
  * @param {Event} inputEvent The input event for the description textarea.
  */
-function checkForBluetoothKeywords(inputEvent) {
+function checkForSendBluetoothLogs(inputEvent) {
   const isRelatedToBluetooth = btRegEx.test(inputEvent.target.value) ||
       cantConnectRegEx.test(inputEvent.target.value) ||
       tetherRegEx.test(inputEvent.target.value) ||
       smartLockRegEx.test(inputEvent.target.value) ||
       nearbyShareRegEx.test(inputEvent.target.value);
   $('bluetooth-checkbox-container').hidden = !isRelatedToBluetooth;
+}
+
+/**
+ * Checks if any keywords have associated questionnaire in a domain. If so,
+ * we append the questionnaire in $('description-text').
+ * @param {Event} inputEvent The input event for the description textarea.
+ */
+function checkForShowQuestionnaire(inputEvent) {
+  const toAppend = [];
+
+  // Match user-entered description before the questionnaire to reduce false
+  // positives due to matching the questionnaire questions and answers.
+  const questionnaireBeginPos =
+      inputEvent.target.value.indexOf(questionnaireBegin);
+  const matchedText = questionnaireBeginPos >= 0 ?
+      inputEvent.target.value.substring(0, questionnaireBeginPos) :
+      inputEvent.target.value;
+
+  if (btRegEx.test(matchedText)) {
+    toAppend.push(...domainQuestions['bluetooth']);
+  }
+
+  if (wifiRegEx.test(matchedText)) {
+    toAppend.push(...domainQuestions['wifi']);
+  }
+
+  if (cellularRegEx.test(matchedText)) {
+    toAppend.push(...domainQuestions['cellular']);
+  }
+
+  if (toAppend.length === 0) {
+    return;
+  }
+
+  const savedCursor = $('description-text').selectionStart;
+  if (Object.keys(appendedQuestions).length === 0) {
+    $('description-text').value += '\n\n' + questionnaireBegin + '\n';
+    $('questionnaire-notification').textContent = questionnaireNotification;
+  }
+
+  for (const question of toAppend) {
+    if (question in appendedQuestions) {
+      continue;
+    }
+
+    $('description-text').value += '* ' + question + ' \n';
+    appendedQuestions[question] = true;
+  }
+
+  // After appending text, the web engine automatically moves the cursor to the
+  // end of the appended text, so we need to move the cursor back to where the
+  // user was typing before.
+  $('description-text').selectionEnd = savedCursor;
 }
 
 /**
@@ -407,7 +496,15 @@ function initialize() {
             feedbackInfo.flow ==
             chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL);
         $('description-text')
-            .addEventListener('input', checkForBluetoothKeywords);
+            .addEventListener('input', checkForSendBluetoothLogs);
+      }
+
+      if (feedbackInfo.showQuestionnaire) {
+        assert(
+            feedbackInfo.flow ==
+            chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL);
+        $('description-text')
+            .addEventListener('input', checkForShowQuestionnaire);
       }
 
       if ($('assistant-checkbox-container') != null &&

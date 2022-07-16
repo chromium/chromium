@@ -15,7 +15,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 class DockedMagnifierVirtualKeyboardTest
     : public OobeBaseTest,
@@ -53,7 +53,8 @@ class DockedMagnifierVirtualKeyboardTest
   }
 
   int GetMagnifierHeight() {
-    return ash::Shell::Get()->docked_magnifier_controller()
+    return Shell::Get()
+        ->docked_magnifier_controller()
         ->GetMagnifierHeightForTesting();
   }
 
@@ -66,7 +67,7 @@ class DockedMagnifierVirtualKeyboardTest
   }
 
   void HideKeyboard() {
-    keyboard_controller()->HideKeyboard(ash::HideReason::kUser);
+    keyboard_controller()->HideKeyboard(HideReason::kUser);
     ASSERT_EQ(GetKeyboardHeight(), 0);
   }
 
@@ -130,4 +131,4 @@ IN_PROC_BROWSER_TEST_F(DockedMagnifierVirtualKeyboardTest, WelcomeScreen) {
   EXPECT_EQ(original_bounds, GetOobeBounds());
 }
 
-}  // namespace chromeos
+}  // namespace ash

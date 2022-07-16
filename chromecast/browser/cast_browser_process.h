@@ -43,6 +43,10 @@ class CastBrowserProcess {
   static CastBrowserProcess* GetInstance();
 
   CastBrowserProcess();
+
+  CastBrowserProcess(const CastBrowserProcess&) = delete;
+  CastBrowserProcess& operator=(const CastBrowserProcess&) = delete;
+
   virtual ~CastBrowserProcess();
 
   void SetBrowserContext(std::unique_ptr<CastBrowserContext> browser_context);
@@ -125,8 +129,6 @@ class CastBrowserProcess {
 
   // Note: CastService must be destroyed before others.
   std::unique_ptr<CastService> cast_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastBrowserProcess);
 };
 
 }  // namespace shell

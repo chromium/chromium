@@ -5,14 +5,14 @@
 #include "components/sync/model/processor_entity.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -105,8 +105,7 @@ CommitResponseData GenerateAckData(const CommitRequestData& request,
 // tests.
 class ProcessorEntityTest : public ::testing::Test {
  public:
-  ProcessorEntityTest()
-      : ctime_(base::Time::Now() - base::TimeDelta::FromSeconds(1)) {}
+  ProcessorEntityTest() : ctime_(base::Time::Now() - base::Seconds(1)) {}
 
   std::unique_ptr<ProcessorEntity> CreateNew() {
     return ProcessorEntity::CreateNew(kKey, kHash, "", ctime_);

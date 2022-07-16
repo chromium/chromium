@@ -13,13 +13,12 @@
 namespace password_manager {
 class PasswordFormManagerForUI;
 class TestPasswordStore;
-class PasswordStore;
 }  // namespace password_manager
 class TestingPrefServiceSimple;
 
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManager;
-using password_manager::PasswordStore;
+using password_manager::PasswordStoreInterface;
 using password_manager::TestPasswordStore;
 
 // Test PasswordManagerClient.
@@ -27,6 +26,11 @@ class TestPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
   TestPasswordManagerClient();
+
+  TestPasswordManagerClient(const TestPasswordManagerClient&) = delete;
+  TestPasswordManagerClient& operator=(const TestPasswordManagerClient&) =
+      delete;
+
   ~TestPasswordManagerClient() override;
 
   // PromptUserTo*Ptr functions allow to both override PromptUserTo* methods
@@ -48,7 +52,7 @@ class TestPasswordManagerClient
  private:
   // PasswordManagerClient:
   PrefService* GetPrefs() const override;
-  PasswordStore* GetProfilePasswordStore() const override;
+  PasswordStoreInterface* GetProfilePasswordStore() const override;
   const PasswordManager* GetPasswordManager() const override;
   url::Origin GetLastCommittedOrigin() const override;
   // Stores |manager| into |manager_|. Save() should be
@@ -69,8 +73,6 @@ class TestPasswordManagerClient
   PasswordManager password_manager_;
   std::unique_ptr<PasswordFormManagerForUI> manager_;
   scoped_refptr<TestPasswordStore> store_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPasswordManagerClient);
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_TEST_TEST_PASSWORD_MANAGER_CLIENT_H_

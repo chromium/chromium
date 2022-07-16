@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/features.h"
 
 namespace viz {
 
@@ -60,7 +61,13 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
       max_pending_swaps_(max_pending_swaps),
       max_pending_swaps_120hz_(max_pending_swaps_120hz),
       wait_for_all_surfaces_before_draw_(wait_for_all_surfaces_before_draw),
-      observing_begin_frame_source_(false) {
+      observing_begin_frame_source_(false),
+      dynamic_cc_deadlines_percentile_(
+          features::IsDynamicSchedulerEnabledForClients()),
+      dynamic_scheduler_deadlines_percentile_(
+          features::IsDynamicSchedulerEnabledForDraw()) {
+  if (dynamic_cc_deadlines_percentile_.has_value())
+    begin_frame_source_->SetDynamicBeginFrameDeadlineOffsetSource(this);
   begin_frame_deadline_closure_ = base::BindRepeating(
       &DisplayScheduler::OnBeginFrameDeadline, weak_ptr_factory_.GetWeakPtr());
 }
@@ -103,6 +110,15 @@ void DisplayScheduler::OnDisplayDamaged(SurfaceId surface_id) {
 void DisplayScheduler::OnPendingSurfacesChanged() {
   if (UpdateHasPendingSurfaces())
     ScheduleBeginFrameDeadline();
+}
+
+base::TimeDelta DisplayScheduler::GetDeadlineOffset(
+    base::TimeDelta interval) const {
+  if (client_ && dynamic_cc_deadlines_percentile_.has_value()) {
+    return client_->GetEstimatedDisplayDrawTime(
+        interval, dynamic_cc_deadlines_percentile_.value());
+  }
+  return BeginFrameArgs::DefaultEstimatedDisplayDrawTime(interval);
 }
 
 // This is used to force an immediate swap before a resize.
@@ -188,8 +204,17 @@ bool DisplayScheduler::OnBeginFrame(const BeginFrameArgs& args) {
 
   // Schedule the deadline.
   current_begin_frame_args_ = save_args;
-  current_begin_frame_args_.deadline -=
-      BeginFrameArgs::DefaultEstimatedDisplayDrawTime(save_args.interval);
+
+  base::TimeDelta delta;
+  if (client_ && dynamic_scheduler_deadlines_percentile_.has_value() &&
+      !dynamic_cc_deadlines_percentile_.has_value()) {
+    delta = client_->GetEstimatedDisplayDrawTime(
+        save_args.interval, dynamic_scheduler_deadlines_percentile_.value());
+  } else {
+    delta = BeginFrameArgs::DefaultEstimatedDisplayDrawTime(save_args.interval);
+  }
+  current_begin_frame_args_.deadline -= delta;
+
   inside_begin_frame_deadline_interval_ = true;
   if (gpu_pipeline_)
     gpu_pipeline_->SetTargetDuration(save_args.interval);
@@ -202,8 +227,7 @@ bool DisplayScheduler::OnBeginFrame(const BeginFrameArgs& args) {
 
 int DisplayScheduler::MaxPendingSwaps() const {
   // Interval for 120hz with some delta for margin of error.
-  constexpr base::TimeDelta k120HzInterval =
-      base::TimeDelta::FromMicroseconds(8500);
+  constexpr base::TimeDelta k120HzInterval = base::Microseconds(8500);
   if (current_begin_frame_args_.interval > k120HzInterval ||
       !max_pending_swaps_120hz_) {
     return max_pending_swaps_;
@@ -229,6 +253,10 @@ void DisplayScheduler::StartObservingBeginFrames() {
   if (!observing_begin_frame_source_) {
     begin_frame_source_->AddObserver(begin_frame_observer_.get());
     observing_begin_frame_source_ = true;
+    if (client_) {
+      client_->OnObservingBeginFrameSourceChanged(
+          observing_begin_frame_source_);
+    }
     if (gpu_pipeline_)
       gpu_pipeline_active_.emplace(gpu_pipeline_);
   }
@@ -238,6 +266,10 @@ void DisplayScheduler::StopObservingBeginFrames() {
   if (observing_begin_frame_source_) {
     begin_frame_source_->RemoveObserver(begin_frame_observer_.get());
     observing_begin_frame_source_ = false;
+    if (client_) {
+      client_->OnObservingBeginFrameSourceChanged(
+          observing_begin_frame_source_);
+    }
     gpu_pipeline_active_.reset();
 
     // A missed BeginFrame may be queued, so drop that too if we're going to

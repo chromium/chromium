@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that element tree is updated after activation.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
 
   // Save time on style updates.

@@ -18,9 +18,24 @@ import java.util.Map;
 public class ShadowPaymentFeatureList {
     private static final Map<String, Boolean> sFeatureStatuses = new HashMap<>();
 
+    public static void setDefaultStatuses() {
+        ShadowPaymentFeatureList.setFeatureEnabled(PaymentFeatureList.WEB_PAYMENTS, true);
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.WEB_PAYMENTS_SINGLE_APP_UI_SKIP, true);
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.GPAY_APP_DYNAMIC_UPDATE, true);
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES, true);
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD, true);
+    }
+
     @Resetter
     public static void reset() {
         sFeatureStatuses.clear();
+        setDefaultStatuses();
     }
 
     @Implementation

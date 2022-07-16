@@ -18,7 +18,7 @@ class MyClass {
     // |isLambda|, rather than |hasAncestor|.
     auto lambda = [&]() -> int {
       struct NestedStruct {
-        // Expected rewrite: CheckedPtr<int> ptr_field;
+        // Expected rewrite: raw_ptr<int> ptr_field;
         int* ptr_field;
       } var;
       var.ptr_field = &x;

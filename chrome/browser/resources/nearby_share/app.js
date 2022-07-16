@@ -16,6 +16,7 @@ import './nearby_discovery_page.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {NearbyShareSettingsBehavior} from './shared/nearby_share_settings_behavior.m.js';
+import {CloseReason} from './shared/types.m.js';
 
 /** @enum {string} */
 const Page = {
@@ -94,6 +95,20 @@ Polymer({
   },
 
   /**
+   * Called whenever view changes.
+   * ChromeVox screen reader requires focus on #pageContainer to read
+   * dialog.
+   * @param {string} page
+   * @private
+   */
+  focusOnPageContainer_(page) {
+    this.$$(`nearby-${page}-page`)
+        .$$('nearby-page-template')
+        .$$('#pageContainer')
+        .focus();
+  },
+
+  /**
    * Called when component is attached and all settings values have been
    * retrieved.
    */
@@ -106,8 +121,10 @@ Polymer({
         this.set('settings.enabled', true);
       }
       this.getViewManager_().switchView(Page.DISCOVERY);
+      this.focusOnPageContainer_(Page.DISCOVERY);
     } else {
       this.getViewManager_().switchView(Page.ONBOARDING);
+      this.focusOnPageContainer_(Page.ONBOARDING);
     }
   },
 
@@ -118,15 +135,18 @@ Polymer({
    */
   onChangePage_(event) {
     this.getViewManager_().switchView(event.detail.page);
+    this.focusOnPageContainer_(event.detail.page);
   },
 
   /**
    * Handler for the close event.
-   * @param {!Event} event
+   * @param {!CustomEvent<!{reason: CloseReason}>} event
    * @private
    */
   onClose_(event) {
-    chrome.send('close');
+    const reason =
+        event.detail.reason == null ? CloseReason.UNKNOWN : event.detail.reason;
+    chrome.send('close', [reason]);
   },
 
   /**
@@ -136,5 +156,6 @@ Polymer({
    */
   onOnboardingComplete_(event) {
     this.getViewManager_().switchView(Page.DISCOVERY);
+    this.focusOnPageContainer_(Page.DISCOVERY);
   },
 });

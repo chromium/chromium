@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_FILEAPI_ARC_DOCUMENTS_PROVIDER_WATCHER_MANAGER_H_
 #define CHROME_BROWSER_ASH_ARC_FILEAPI_ARC_DOCUMENTS_PROVIDER_WATCHER_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/file_system/watcher_manager.h"
 
@@ -22,6 +21,12 @@ namespace arc {
 class ArcDocumentsProviderWatcherManager : public storage::WatcherManager {
  public:
   ArcDocumentsProviderWatcherManager();
+
+  ArcDocumentsProviderWatcherManager(
+      const ArcDocumentsProviderWatcherManager&) = delete;
+  ArcDocumentsProviderWatcherManager& operator=(
+      const ArcDocumentsProviderWatcherManager&) = delete;
+
   ~ArcDocumentsProviderWatcherManager() override;
 
   // storage::WatcherManager overrides.
@@ -41,8 +46,6 @@ class ArcDocumentsProviderWatcherManager : public storage::WatcherManager {
 
   base::WeakPtrFactory<ArcDocumentsProviderWatcherManager> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderWatcherManager);
 };
 
 }  // namespace arc

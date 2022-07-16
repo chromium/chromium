@@ -45,6 +45,10 @@ class BrokerServices;
 class MainUIWindow {
  public:
   MainUIWindow();
+
+  MainUIWindow(const MainUIWindow&) = delete;
+  MainUIWindow& operator=(const MainUIWindow&) = delete;
+
   ~MainUIWindow();
 
   // Creates the main window, displays it and starts the message pump. This
@@ -187,8 +191,6 @@ class MainUIWindow {
 
   // Pipe used to communicate the logs between the target and the broker.
   HANDLE pipe_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(MainUIWindow);
 };
 
 #endif  // SANDBOX_WIN_SANDBOX_POC_MAIN_UI_WINDOW_H_

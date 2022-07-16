@@ -68,7 +68,6 @@ Input before setting suggested values:
 |       aria-hidden="true"
 |       ""
 |     <slot>
-|       name="user-agent-custom-assign-slot"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "
@@ -160,7 +159,6 @@ Input after setting suggestedValue:
 |       aria-hidden="true"
 |       "TX"
 |     <slot>
-|       name="user-agent-custom-assign-slot"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "
@@ -250,7 +248,6 @@ After resetting suggestedValue value:
 |       aria-hidden="true"
 |       ""
 |     <slot>
-|       name="user-agent-custom-assign-slot"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "

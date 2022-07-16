@@ -8,19 +8,21 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/users/supervised_user_manager.h"
 
 namespace ash {
 class ChromeUserManagerImpl;
 class CrosSettings;
-class SupervisedUserTestBase;
 
 // TODO(crbug.com/1155729): Check this entire class is not used anymore for
 // deprecated supervised users and remove it with all dependencies.
 // Implementation of the UserManager.
 class SupervisedUserManagerImpl : public SupervisedUserManager {
  public:
+  SupervisedUserManagerImpl(const SupervisedUserManagerImpl&) = delete;
+  SupervisedUserManagerImpl& operator=(const SupervisedUserManagerImpl&) =
+      delete;
+
   ~SupervisedUserManagerImpl() override;
 
   std::string GetUserSyncId(const std::string& user_id) const override;
@@ -37,7 +39,6 @@ class SupervisedUserManagerImpl : public SupervisedUserManager {
  private:
   friend class ChromeUserManagerImpl;
   friend class UserManager;
-  friend class SupervisedUserTestBase;
 
   explicit SupervisedUserManagerImpl(ChromeUserManagerImpl* owner);
 
@@ -75,8 +76,6 @@ class SupervisedUserManagerImpl : public SupervisedUserManager {
 
   // Interface to the signed settings store.
   CrosSettings* cros_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserManagerImpl);
 };
 
 }  // namespace ash

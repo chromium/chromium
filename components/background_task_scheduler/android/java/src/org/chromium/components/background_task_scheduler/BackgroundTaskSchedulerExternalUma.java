@@ -25,7 +25,7 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public static final int BACKGROUND_TASK_WEBVIEW_VARIATIONS = 10;
     public static final int BACKGROUND_TASK_OFFLINE_CONTENT_NOTIFICATION = 11;
     public static final int BACKGROUND_TASK_WEBAPK_UPDATE = 12;
-    public static final int BACKGROUND_TASK_DOWNLOAD_RESUMPTION = 13;
+    public static final int BACKGROUND_TASK_DEPRECATED_DOWNLOAD_RESUMPTION = 13;
     public static final int BACKGROUND_TASK_FEED_REFRESH = 14;
     public static final int BACKGROUND_TASK_COMPONENT_UPDATE = 15;
     public static final int BACKGROUND_TASK_DEPRECATED_EXPLORE_SITES_REFRESH = 16;
@@ -40,8 +40,9 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public static final int BACKGROUND_TASK_DOWNLOAD_LATER = 25;
     public static final int BACKGROUND_TASK_OFFLINE_MEASUREMENTS = 26;
     public static final int BACKGROUND_TASK_WEBVIEW_COMPONENT_UPDATE = 27;
+    public static final int BACKGROUND_TASK_ATTRIBUTION_PROVIDER_FLUSH = 28;
     // Keep this one at the end and increment appropriately when adding new tasks.
-    public static final int BACKGROUND_TASK_COUNT = 28;
+    public static final int BACKGROUND_TASK_COUNT = 29;
 
     protected BackgroundTaskSchedulerExternalUma() {}
 
@@ -113,8 +114,8 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_OFFLINE_CONTENT_NOTIFICATION;
             case TaskIds.WEBAPK_UPDATE_JOB_ID:
                 return BACKGROUND_TASK_WEBAPK_UPDATE;
-            case TaskIds.DOWNLOAD_RESUMPTION_JOB_ID:
-                return BACKGROUND_TASK_DOWNLOAD_RESUMPTION;
+            case TaskIds.DEPRECATED_DOWNLOAD_RESUMPTION_JOB_ID:
+                return BACKGROUND_TASK_DEPRECATED_DOWNLOAD_RESUMPTION;
             case TaskIds.FEED_REFRESH_JOB_ID:
                 return BACKGROUND_TASK_FEED_REFRESH;
             case TaskIds.COMPONENT_UPDATE_JOB_ID:
@@ -139,6 +140,8 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_OFFLINE_MEASUREMENTS;
             case TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID:
                 return BACKGROUND_TASK_WEBVIEW_COMPONENT_UPDATE;
+            case TaskIds.ATTRIBUTION_PROVIDER_FLUSH_JOB_ID:
+                return BACKGROUND_TASK_ATTRIBUTION_PROVIDER_FLUSH;
             default:
                 assert false;
         }

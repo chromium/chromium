@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "base/macros.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
@@ -30,6 +30,10 @@ class WaylandPointer {
   WaylandPointer(wl_pointer* pointer,
                  WaylandConnection* connection,
                  Delegate* delegate);
+
+  WaylandPointer(const WaylandPointer&) = delete;
+  WaylandPointer& operator=(const WaylandPointer&) = delete;
+
   virtual ~WaylandPointer();
 
   uint32_t id() const { return obj_.id(); }
@@ -78,7 +82,13 @@ class WaylandPointer {
   WaylandConnection* const connection_;
   Delegate* const delegate_;
 
-  DISALLOW_COPY_AND_ASSIGN(WaylandPointer);
+  // Whether the axis source event has been received for the current frame.
+  //
+  // The axis source event is optional, and the frame event can be sent with no
+  // source set previously.  However, the delegate expects the axis source to be
+  // set explicitly for the axis events.  Hence, we set the default source when
+  // possible so that the sequence of pointer events has it set.
+  bool axis_source_received_ = false;
 };
 
 class WaylandPointer::Delegate {
@@ -95,6 +105,7 @@ class WaylandPointer::Delegate {
   virtual void OnPointerAxisStopEvent(uint32_t axis) = 0;
   virtual void OnResetPointerFlags() = 0;
   virtual const gfx::PointF& GetPointerLocation() const = 0;
+  virtual bool IsPointerButtonPressed(EventFlags button) const = 0;
 };
 
 }  // namespace ui

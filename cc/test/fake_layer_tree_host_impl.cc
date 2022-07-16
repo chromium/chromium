@@ -51,8 +51,7 @@ FakeLayerTreeHostImpl::FakeLayerTreeHostImpl(
   active_tree()->SetDeviceViewportRect(gfx::Rect(100, 100));
 
   // Start an impl frame so tests have a valid frame_time to work with.
-  base::TimeTicks time_ticks =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(1);
+  base::TimeTicks time_ticks = base::TimeTicks() + base::Microseconds(1);
   WillBeginImplFrame(viz::CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE,
                                                          0, 1, time_ticks));
 }

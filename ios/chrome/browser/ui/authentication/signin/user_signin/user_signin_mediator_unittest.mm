@@ -83,13 +83,16 @@ class UserSigninMediatorTest : public PlatformTest {
                       identityManager:identity_manager()
                        consentAuditor:consent_auditor()
                 unifiedConsentService:unified_consent_service()
-                     syncSetupService:sync_setup_service()];
+                     syncSetupService:sync_setup_service()
+                          syncService:sync_service()];
+
     mediator_.delegate = mediator_delegate_mock_;
 
     fake_consent_auditor_ =
         static_cast<consent_auditor::FakeConsentAuditor*>(consent_auditor());
     sync_setup_service_mock_ =
         static_cast<SyncSetupServiceMock*>(sync_setup_service());
+    sync_service_mock_ = static_cast<syncer::MockSyncService*>(sync_service());
   }
 
   void TearDown() override {
@@ -113,7 +116,7 @@ class UserSigninMediatorTest : public PlatformTest {
                  initWithBrowser:browser_.get()
                         identity:identity_
                  shouldClearData:SHOULD_CLEAR_DATA_USER_CHOICE
-                postSignInAction:POST_SIGNIN_ACTION_NONE
+                postSignInAction:POST_SIGNIN_ACTION_COMMIT_SYNC
         presentingViewController:presenting_view_controller_mock_];
     [authentication_flow_ setPerformerForTesting:performer_mock_];
   }
@@ -135,6 +138,7 @@ class UserSigninMediatorTest : public PlatformTest {
                   shouldHandleMergeCaseForIdentity:identity_
                                       browserState:browser_state_.get()])
         .andReturn(NO);
+    OCMExpect([performer_mock_ commitSyncForBrowserState:browser_state_.get()]);
   }
 
   // Sets up the sign-in failure expectations for the
@@ -235,6 +239,10 @@ class UserSigninMediatorTest : public PlatformTest {
     return SyncSetupServiceFactory::GetForBrowserState(browser_state_.get());
   }
 
+  syncer::SyncService* sync_service() {
+    return SyncServiceFactory::GetForBrowserState(browser_state_.get());
+  }
+
   unified_consent::UnifiedConsentService* unified_consent_service() {
     return UnifiedConsentServiceFactory::GetForBrowserState(
         browser_state_.get());
@@ -257,6 +265,7 @@ class UserSigninMediatorTest : public PlatformTest {
   AuthenticationFlowPerformer* performer_mock_ = nullptr;
   UIViewController* presenting_view_controller_mock_ = nullptr;
   SyncSetupServiceMock* sync_setup_service_mock_ = nullptr;
+  syncer::MockSyncService* sync_service_mock_ = nullptr;
 };
 
 // Tests a successful authentication for a given identity.
@@ -282,6 +291,7 @@ TEST_F(UserSigninMediatorTest, AuthenticateWithIdentitySuccess) {
 
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];
+  base::RunLoop().RunUntilIdle();
   ExpectConsent(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON);
 }
 
@@ -289,12 +299,6 @@ TEST_F(UserSigninMediatorTest, AuthenticateWithIdentitySuccess) {
 TEST_F(UserSigninMediatorTest, AuthenticateWithSettingsLinkTapped) {
   SetPerformerSigninExpectations();
 
-  // Retrieving coordinator data for the mediator delegate.
-  OCMExpect(
-      [mediator_delegate_mock_ userSigninMediatorGetConsentConfirmationId])
-      .andReturn(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS);
-  OCMExpect([mediator_delegate_mock_ userSigninMediatorGetConsentStringIds])
-      .andReturn(&consent_string_ids_);
   OCMExpect(
       [mediator_delegate_mock_ userSigninMediatorGetSettingsLinkWasTapped])
       .andReturn(YES);
@@ -309,18 +313,22 @@ TEST_F(UserSigninMediatorTest, AuthenticateWithSettingsLinkTapped) {
 
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];
-  ExpectConsent(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS);
+  base::RunLoop().RunUntilIdle();
 }
 
 // Tests authentication failure for a given identity.
 TEST_F(UserSigninMediatorTest, AuthenticateWithIdentityError) {
   SetPerformerFailureExpectations();
 
+  OCMExpect(
+      [mediator_delegate_mock_ userSigninMediatorGetSettingsLinkWasTapped])
+      .andReturn(NO);
   // Returns to sign-in flow.
   OCMExpect([mediator_delegate_mock_ userSigninMediatorSigninFailed]);
 
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];
+  base::RunLoop().RunUntilIdle();
   ExpectNoConsent();
 }
 
@@ -330,6 +338,7 @@ TEST_F(UserSigninMediatorTest, CancelAuthenticationNotInProgress) {
   OCMExpect(
       [mediator_delegate_mock_ userSigninMediatorSigninFinishedWithResult:
                                    SigninCoordinatorResultCanceledByUser]);
+  OCMExpect([mediator_delegate_mock_ signinStateOnStart]);
 
   [mediator_ cancelSignin];
   ExpectNoConsent();
@@ -339,19 +348,26 @@ TEST_F(UserSigninMediatorTest, CancelAuthenticationNotInProgress) {
 TEST_F(UserSigninMediatorTest, CancelWithAuthenticationInProgress) {
   SetPerformerCancelAndDismissExpectations(/*animated=*/NO);
 
+  OCMExpect(
+      [mediator_delegate_mock_ userSigninMediatorGetSettingsLinkWasTapped])
+      .andReturn(NO);
   // Unsuccessful sign-in completion updates the primary button.
   OCMExpect([mediator_delegate_mock_ userSigninMediatorSigninFailed]);
+  OCMExpect([mediator_delegate_mock_ signinStateOnStart]);
 
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];
   [mediator_ cancelSignin];
+  base::RunLoop().RunUntilIdle();
   ExpectNoConsent();
 }
 
 // Tests a user sign-in operation cancel and dismiss when authentication has not
 // begun.
 TEST_F(UserSigninMediatorTest, CancelAndDismissAuthenticationNotInProgress) {
+  OCMExpect([mediator_delegate_mock_ signinStateOnStart]);
   [mediator_ cancelAndDismissAuthenticationFlowAnimated:NO];
+  base::RunLoop().RunUntilIdle();
   ExpectNoConsent();
 }
 
@@ -361,12 +377,17 @@ TEST_F(UserSigninMediatorTest,
        CancelAndDismissAuthenticationInProgressWithAnimation) {
   SetPerformerCancelAndDismissExpectations(/*animated=*/YES);
 
+  OCMExpect(
+      [mediator_delegate_mock_ userSigninMediatorGetSettingsLinkWasTapped])
+      .andReturn(NO);
   // Unsuccessful sign-in completion updates the primary button.
   OCMExpect([mediator_delegate_mock_ userSigninMediatorSigninFailed]);
+  OCMExpect([mediator_delegate_mock_ signinStateOnStart]);
 
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];
   [mediator_ cancelAndDismissAuthenticationFlowAnimated:YES];
+  base::RunLoop().RunUntilIdle();
   ExpectNoConsent();
 }
 
@@ -376,11 +397,16 @@ TEST_F(UserSigninMediatorTest,
        CancelAndDismissAuthenticationInProgressWithoutAnimation) {
   SetPerformerCancelAndDismissExpectations(/*animated=*/NO);
 
+  OCMExpect(
+      [mediator_delegate_mock_ userSigninMediatorGetSettingsLinkWasTapped])
+      .andReturn(NO);
   // Unsuccessful sign-in completion updates the primary button.
   OCMExpect([mediator_delegate_mock_ userSigninMediatorSigninFailed]);
+  OCMExpect([mediator_delegate_mock_ signinStateOnStart]);
 
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];
   [mediator_ cancelAndDismissAuthenticationFlowAnimated:NO];
+  base::RunLoop().RunUntilIdle();
   ExpectNoConsent();
 }

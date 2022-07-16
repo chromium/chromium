@@ -1,0 +1,340 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Installer histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="InstallerDownloadSources">
+  <variant name="HttpPeer" summary="Download Source: HTTP Peer"/>
+  <variant name="HttpServer" summary="Download Source: HTTP Server"/>
+  <variant name="HttpsServer" summary="Download Source: HTTPS Server"/>
+</variants>
+
+<histogram name="Installer.AttemptsCount.Total" units="count"
+    expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    The number of update attempts until the update has been applied. This is
+    reported every time the device has completed an update.
+  </summary>
+</histogram>
+
+<histogram name="Installer.DevModeErrorCodes" enum="UpdateEngineErrorCode"
+    expires_after="M85">
+  <owner>zeuthen@chromium.org</owner>
+  <summary>Errors from update_engine process when running in dev mode.</summary>
+</histogram>
+
+<histogram name="Installer.DownloadOverheadPercentage" units="%"
+    expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    The overhead in downloading extra bytes due to errors/interruptions.
+    Expressed as a percentage of the bytes that are actually needed to be
+    downloaded for the update to be successful.
+  </summary>
+</histogram>
+
+<histogram name="Installer.DownloadSourcesUsed"
+    enum="UpdateEngineDownloadSources" expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    The combinations of protocol and source server that were used to complete a
+    successful update.
+  </summary>
+</histogram>
+
+<histogram name="Installer.FullPayloadAttemptNumber" units="count"
+    expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    The number of update attempts with a full update payload until the update
+    has been applied. This is reported on every update attempt.
+  </summary>
+</histogram>
+
+<histogram name="Installer.InstallDateProvisioningSource"
+    enum="UpdateEngineInstallDateProvisioningSource" expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    The source used to provision the install-date-days value sent to Omaha with
+    every request. This is reported when OOBE completes (M34 or later) or when
+    upgrading to a version with install-date-days support.
+  </summary>
+</histogram>
+
+<histogram name="Installer.NormalErrorCodes" enum="UpdateEngineErrorCode"
+    expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    Errors from update_engine process when running in normal mode.
+  </summary>
+</histogram>
+
+<histogram name="Installer.OSAgeDays" units="days" expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    The age of the OS, defined as the age of the /etc/lsb-release file. This is
+    reported on every update check but at most once a day.
+  </summary>
+</histogram>
+
+<histogram name="Installer.PayloadAttemptNumber" units="count"
+    expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    The number of update attempts until the update has been applied. This is
+    reported on every update attempt.
+  </summary>
+</histogram>
+
+<histogram name="Installer.PayloadFormat" enum="UpdateEnginePayloadFormat"
+    expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    The type of update payload used to update the device. The difference between
+    &quot;Full&quot; and &quot;Forced Full&quot; is that in the latter, the
+    request sent to Omaha included a directive saying that a delta payload
+    wasn't accepted. A &quot;Full&quot; payload is one where a delta payload was
+    accepted but Omaha provided a full payload. This is reported every time the
+    device has completed an update.
+  </summary>
+</histogram>
+
+<histogram name="Installer.PowerwashCount" units="powerwashes"
+    expires_after="2022-04-10">
+  <owner>kimjae@chromium.org</owner>
+  <owner>chromeos-core-services@chromium.org</owner>
+  <summary>
+    The number of times a Chrome OS device has been powerwashed (factory reset)
+    without subsequently going through recovery and/or changing the dev mode
+    switch. Reported once after each powerwash.
+  </summary>
+</histogram>
+
+<histogram name="Installer.PowerwashDays" units="powerwashdays"
+    expires_after="2022-05-29">
+  <owner>qianwan@google.com</owner>
+  <owner>chromeos-data@google.com</owner>
+  <summary>
+    How many calendar(UTC) days that powerwash occurred before the date that the
+    metric is recorded. The histogram is recorded on the next restart after
+    powerwash. The purpose of this metric is to get the date when the powerwash
+    happened. This histogram is 1 based instead of 0 based and 1 means the
+    device was restarted immediately after powerwash completed. The value for
+    marjority cases is 1, but some edge cases may greater than 1 which means the
+    device was shutdown immediately (by user manually) after the powerwash
+    completed and then restarted more than 1 days later. The powerwash date and
+    the metric recorded date are all get from client device.
+  </summary>
+</histogram>
+
+<histogram name="Installer.RebootToNewPartitionAttempt" units="count"
+    expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    The number of consecutive times a device has failed to boot an update that
+    successfully applied. This metric is reported every time the firmware fails
+    to boot the slot with the update and fell back to the slot it originally
+    updated from.
+  </summary>
+</histogram>
+
+<histogram name="Installer.Recovery.Reason" enum="ChromeOSRecoveryReason"
+    expires_after="2022-04-10">
+  <owner>kimjae@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The reason for entering recovery mode immediately prior to a recovery.
+
+    This is reported on reboot after a successful recovery.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+<histogram
+    name="Installer.SuccessfulMBsDownloadedFrom{InstallerDownloadSources}"
+    units="MB" expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    Number of MBs downloaded from during an update that completed successfully.
+    {InstallerDownloadSources}
+  </summary>
+  <token key="InstallerDownloadSources" variants="InstallerDownloadSources">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Installer.TimeToRebootMinutes" units="Minutes"
+    expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    Wall-clock duration between when an update has successfully completed (and
+    the user is presented with the &quot;reboot arrow&quot;) and when the system
+    has booted into the new update. This is reported every time the device is
+    rebooted after an update has been applied.
+  </summary>
+</histogram>
+
+<histogram name="Installer.TotalMBsDownloadedFrom{InstallerDownloadSources}"
+    units="MB" expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    Total number of MBs downloaded since the last successful update. This also
+    includes all the bytes downloaded during any prior failed attempts.
+    {InstallerDownloadSources}
+  </summary>
+  <token key="InstallerDownloadSources" variants="InstallerDownloadSources">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Installer.UpdateDurationMinutes" units="Minutes"
+    expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    Absolute wall-clock time duration it took for the update to complete from
+    the time an update first began. It includes not just the time the device was
+    up, but also includes the time the device spent sleeping.
+  </summary>
+</histogram>
+
+<histogram name="Installer.UpdateDurationUptimeMinutes" units="Minutes"
+    expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    Uptime duration it took for the update to complete from the time an update
+    first began. It does not include the time the device spent sleeping, but it
+    does include the uptime spent in waiting for the hourly update checks to
+    happen.
+  </summary>
+</histogram>
+
+<histogram name="Installer.UpdateNumReboots" units="count"
+    expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    Number of times the device was rebooted by the user since an update began
+    and until it completed successfully.
+  </summary>
+</histogram>
+
+<histogram name="Installer.UpdatesAbandonedCount" units="count"
+    expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    The number of update attempts that didn't complete because a newer update
+    was detected during the update operation. This is reported every time the
+    device has completed an update.
+  </summary>
+</histogram>
+
+<histogram name="Installer.UpdatesAbandonedEventCount" units="count"
+    expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    The number of consecutive different abandoned update payloads since the last
+    successful update. This is reported every time an update payload is
+    abandoned because a newer update payload is available.
+  </summary>
+</histogram>
+
+<histogram name="Installer.UpdateTime" units="seconds"
+    expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    The time in seconds it took to update a Chrome OS system -- from completing
+    an update check to reboot pending.
+  </summary>
+</histogram>
+
+<histogram name="Installer.UpdateURLSwitches" units="count"
+    expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
+  <owner>zeuthen@chromium.org</owner>
+  <summary>
+    Number of times the download URLs were switched due to failures.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

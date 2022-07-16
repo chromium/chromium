@@ -35,6 +35,10 @@ class PPAPI_PROXY_EXPORT HostResolverResourceBase: public PluginResource {
   HostResolverResourceBase(Connection connection,
                            PP_Instance instance,
                            bool private_api);
+
+  HostResolverResourceBase(const HostResolverResourceBase&) = delete;
+  HostResolverResourceBase& operator=(const HostResolverResourceBase&) = delete;
+
   virtual ~HostResolverResourceBase();
 
   int32_t ResolveImpl(const char* host,
@@ -66,8 +70,6 @@ class PPAPI_PROXY_EXPORT HostResolverResourceBase: public PluginResource {
   bool allow_get_results_;
   std::string canonical_name_;
   std::vector<scoped_refptr<NetAddressResource> > net_address_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostResolverResourceBase);
 };
 
 }  // namespace proxy

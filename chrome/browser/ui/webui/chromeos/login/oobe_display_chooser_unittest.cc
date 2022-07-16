@@ -34,6 +34,9 @@ class TestCrosDisplayConfig : public ash::mojom::CrosDisplayConfigController {
  public:
   TestCrosDisplayConfig() = default;
 
+  TestCrosDisplayConfig(const TestCrosDisplayConfig&) = delete;
+  TestCrosDisplayConfig& operator=(const TestCrosDisplayConfig&) = delete;
+
   mojo::PendingRemote<ash::mojom::CrosDisplayConfigController>
   CreateRemoteAndBind() {
     return receiver_.BindNewPipeAndPassRemote();
@@ -77,13 +80,14 @@ class TestCrosDisplayConfig : public ash::mojom::CrosDisplayConfigController {
 
  private:
   mojo::Receiver<ash::mojom::CrosDisplayConfigController> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestCrosDisplayConfig);
 };
 
 class OobeDisplayChooserTest : public ChromeAshTestBase {
  public:
   OobeDisplayChooserTest() : ChromeAshTestBase() {}
+
+  OobeDisplayChooserTest(const OobeDisplayChooserTest&) = delete;
+  OobeDisplayChooserTest& operator=(const OobeDisplayChooserTest&) = delete;
 
   int64_t GetPrimaryDisplay() {
     return display::Screen::GetScreen()->GetPrimaryDisplay().id();
@@ -106,8 +110,6 @@ class OobeDisplayChooserTest : public ChromeAshTestBase {
  private:
   std::unique_ptr<TestCrosDisplayConfig> cros_display_config_;
   std::unique_ptr<OobeDisplayChooser> display_chooser_;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeDisplayChooserTest);
 };
 
 const uint16_t kAllowlistedId = 0x266e;

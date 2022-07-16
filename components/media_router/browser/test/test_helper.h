@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/test/values_test_util.h"
 #include "components/media_router/browser/issue_manager.h"

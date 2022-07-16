@@ -19,6 +19,12 @@ enum RootTransitionType {
 
 dictionary DocumentTransitionPrepareOptions {
   RootTransitionType rootTransition;
+  DocumentTransitionConfig rootConfig;
   sequence<Element?> sharedElements;
   AbortSignal abortSignal;
+
+  // This config should be folded with the list of |sharedElements| into a
+  // single dictionary. Fix once we have a resolution on API shape :
+  // https://github.com/WICG/shared-element-transitions/issues/2.
+  sequence<DocumentTransitionConfig> sharedElementsConfig;
 };

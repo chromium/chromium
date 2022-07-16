@@ -17,6 +17,10 @@ class ConnectionNotifier
   typedef base::OnceCallback<void()> ConnectedCallback;
 
   ConnectionNotifier(ConnectionNotifier::ConnectedCallback callback);
+
+  ConnectionNotifier(const ConnectionNotifier&) = delete;
+  ConnectionNotifier& operator=(const ConnectionNotifier&) = delete;
+
   ~ConnectionNotifier() override;
 
   // net::NetworkChangeNotifier::NetworkChangeObserver implementation.
@@ -25,8 +29,6 @@ class ConnectionNotifier
 
  private:
   base::OnceCallback<void()> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionNotifier);
 };
 
 }  // namespace offline_pages

@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.TableSorterTest');
 goog.setTestOnly();
@@ -20,7 +12,6 @@ const TagName = goog.require('goog.dom.TagName');
 const classlist = goog.require('goog.dom.classlist');
 const dom = goog.require('goog.dom');
 const events = goog.require('goog.testing.events');
-const googArray = goog.require('goog.array');
 const testSuite = goog.require('goog.testing.testSuite');
 
 let oldHtml;
@@ -33,12 +24,13 @@ let tableSorter;
 function assertOrder(arr, opt_table) {
   const tbl = opt_table || table;
   const actual = [];
-  googArray.forEach(dom.getElementsByTagName(TagName.TD, tbl), (td, idx) => {
-    const txt = dom.getTextContent(td);
-    if (txt) {
-      actual.push(txt);
-    }
-  });
+  Array.prototype.forEach.call(
+      dom.getElementsByTagName(TagName.TD, tbl), (td, idx) => {
+        const txt = dom.getTextContent(td);
+        if (txt) {
+          actual.push(txt);
+        }
+      });
   assertArrayEquals(arr, actual);
 }
 testSuite({
@@ -49,8 +41,11 @@ testSuite({
   setUp() {
     dom.getElement('content').innerHTML = oldHtml;
     table = dom.getElement('sortable');
+    /** @suppress {checkTypes} suppression added to enable type checking */
     alphaHeader = dom.getElementsByTagName(TagName.TH, table)[0];
+    /** @suppress {checkTypes} suppression added to enable type checking */
     numberHeader = dom.getElementsByTagName(TagName.TH, table)[1];
+    /** @suppress {checkTypes} suppression added to enable type checking */
     notSortableHeader = dom.getElementsByTagName(TagName.TH, table)[2];
 
     tableSorter = new TableSorter();
@@ -176,6 +171,10 @@ testSuite({
     tableSorter2.dispose();
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testSortAfterSwapping() {
     // First click
     events.fireClickEvent(alphaHeader);

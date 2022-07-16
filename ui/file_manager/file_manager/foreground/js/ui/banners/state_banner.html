@@ -1,0 +1,66 @@
+<style>
+  :host {
+    width: 100%;
+  }
+
+  .state-banner {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-height: 32px;
+    width: 100%;
+  }
+
+  #state-text-group {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .state-icon {
+    background-image: url(../../../images/files/ui/state_banner_icon.svg);
+    background-size: 32px 32px;
+    flex: none;
+    height: 32px;
+    margin-inline-end: 20px;
+    margin-inline-start: 16px;
+    width: 32px;
+  }
+
+  .state-message {
+    color: var(--cros-text-color-primary);
+  }
+
+  .button-group {
+    align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+    height: 32px;
+    margin-inline-start: auto;
+    padding-inline-start: 40px;
+  }
+
+  ::slotted(cr-button) {
+    border: 1px solid transparent;
+    box-shadow: none;
+    height: 32px;
+    padding-inline: 16px;
+    position: relative;
+  }
+
+  ::slotted(cr-button:focus) {
+    border: 1px solid var(--cros-focus-ring-color);
+  }
+</style>
+<div class="state-banner">
+  <div id="state-text-group">
+    <div class="state-icon"></div>
+    <div class="state-message body2-primary">
+      <slot name="text"></slot>
+    </div>
+  </div>
+  <div class="button-group">
+    <slot name="extra-button"></slot>
+  </div>
+</div>

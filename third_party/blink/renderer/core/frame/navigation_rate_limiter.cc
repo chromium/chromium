@@ -31,7 +31,7 @@ bool NavigationRateLimiter::CanProceed() {
   // can increase this threshold somewhat.
   static constexpr int kStateUpdateLimit = 200;
   static constexpr base::TimeDelta kStateUpdateLimitResetInterval =
-      base::TimeDelta::FromSeconds(10);
+      base::Seconds(10);
 
   if (++count_ <= kStateUpdateLimit)
     return true;

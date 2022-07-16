@@ -17,7 +17,7 @@ V8CSSNumberish* CSSMathNegate::value() {
 
 absl::optional<CSSNumericSumValue> CSSMathNegate::SumValue() const {
   auto maybe_sum = value_->SumValue();
-  if (!maybe_sum)
+  if (!maybe_sum.has_value())
     return absl::nullopt;
 
   std::for_each(maybe_sum->terms.begin(), maybe_sum->terms.end(),
@@ -44,7 +44,7 @@ CSSMathExpressionNode* CSSMathNegate::ToCalcExpressionNode() const {
     return nullptr;
   return CSSMathExpressionBinaryOperation::CreateSimplified(
       CSSMathExpressionNumericLiteral::Create(
-          -1, CSSPrimitiveValue::UnitType::kNumber, false),
+          -1, CSSPrimitiveValue::UnitType::kNumber),
       right_side, CSSMathOperator::kMultiply);
 }
 

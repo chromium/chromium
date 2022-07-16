@@ -194,7 +194,7 @@ void MessageLoopResource::PostClosure(const base::Location& from_here,
                                       int64_t delay_ms) {
   if (task_runner_.get()) {
     task_runner_->PostDelayedTask(from_here, std::move(closure),
-                                  base::TimeDelta::FromMilliseconds(delay_ms));
+                                  base::Milliseconds(delay_ms));
   } else {
     TaskInfo info;
     info.from_here = FROM_HERE;

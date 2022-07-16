@@ -17,6 +17,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 using sync_datatype_helper::test;
 

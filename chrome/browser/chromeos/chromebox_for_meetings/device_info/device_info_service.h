@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_CHROMEBOX_FOR_MEETINGS_DEVICE_INFO_DEVICE_INFO_SERVICE_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/chromebox_for_meetings/service_adaptor.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_observer.h"

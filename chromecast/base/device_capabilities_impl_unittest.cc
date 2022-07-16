@@ -13,7 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -138,12 +138,13 @@ class FakeCapabilitiesObserver : public DeviceCapabilities::Observer {
 class MockCapabilitiesObserver : public DeviceCapabilities::Observer {
  public:
   MockCapabilitiesObserver() {}
+
+  MockCapabilitiesObserver(const MockCapabilitiesObserver&) = delete;
+  MockCapabilitiesObserver& operator=(const MockCapabilitiesObserver&) = delete;
+
   ~MockCapabilitiesObserver() override {}
 
   MOCK_METHOD1(OnCapabilitiesChanged, void(const std::string& path));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCapabilitiesObserver);
 };
 
 // Test fixtures needs an example default capability to test DeviceCapabilities

@@ -39,6 +39,9 @@ class NET_EXPORT ReportingContext {
       URLRequestContext* request_context,
       ReportingCache::PersistentReportingStore* store);
 
+  ReportingContext(const ReportingContext&) = delete;
+  ReportingContext& operator=(const ReportingContext&) = delete;
+
   ~ReportingContext();
 
   const ReportingPolicy& policy() const { return policy_; }
@@ -58,7 +61,10 @@ class NET_EXPORT ReportingContext {
   void RemoveCacheObserver(ReportingCacheObserver* observer);
 
   void NotifyCachedReportsUpdated();
+  void NotifyReportAdded(const ReportingReport* report);
+  void NotifyReportUpdated(const ReportingReport* report);
   void NotifyCachedClientsUpdated();
+  void NotifyEndpointsUpdated();
 
   // Returns whether the data in the cache is persisted across restarts in the
   // PersistentReportingStore.
@@ -101,8 +107,6 @@ class NET_EXPORT ReportingContext {
 
   // |network_change_observer_| must come after |cache_|.
   std::unique_ptr<ReportingNetworkChangeObserver> network_change_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingContext);
 };
 
 }  // namespace net

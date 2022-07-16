@@ -215,6 +215,6 @@ public class SharedClipboardMessageHandler {
                 /*deleteIntent=*/null, /*confirmIntent=*/null, /*cancelIntent=*/null,
                 notificationTitle, resources.getString(R.string.shared_clipboard_notification_text),
                 R.drawable.ic_devices_16dp, R.drawable.shared_clipboard_40dp,
-                R.color.default_icon_color_blue, /*startsActivity=*/false);
+                R.color.default_icon_color_accent1_baseline, /*startsActivity=*/false);
     }
 }

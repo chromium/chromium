@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/bubble/bubble_border.h"
-
 #include <stddef.h>
 
 #include <memory>
@@ -12,6 +10,8 @@
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_border_arrow_utils.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace views {
@@ -363,15 +363,15 @@ TEST_F(BubbleBorderTest, GetBoundsOriginTest) {
          kAnchor.y() + (kAnchor.height() - kTotalSize.height()) / 2},
     };
 
-    for (size_t i = 0; i < base::size(cases); ++i) {
-      SCOPED_TRACE(base::StringPrintf("shadow=%d i=%d arrow=%d",
+    for (size_t j = 0; j < base::size(cases); ++j) {
+      SCOPED_TRACE(base::StringPrintf("shadow=%d j=%d arrow=%d",
                                       static_cast<int>(shadow),
-                                      static_cast<int>(i), cases[i].arrow));
-      const BubbleBorder::Arrow arrow = cases[i].arrow;
+                                      static_cast<int>(j), cases[j].arrow));
+      const BubbleBorder::Arrow arrow = cases[j].arrow;
       border.set_arrow(arrow);
       gfx::Point origin = border.GetBounds(kAnchor, kContentSize).origin();
-      EXPECT_EQ(cases[i].expected_x, origin.x());
-      EXPECT_EQ(cases[i].expected_y, origin.y());
+      EXPECT_EQ(cases[j].expected_x, origin.x());
+      EXPECT_EQ(cases[j].expected_y, origin.y());
     }
   }
 }
@@ -412,8 +412,7 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
   EXPECT_EQ(kAnchor1.bottom() + BubbleBorder::kVisibleArrowGap +
                 BubbleBorder::kBorderThicknessDip,
             bounds.y());
-  EXPECT_EQ(kAnchor1.x() - kInsets.left() + BubbleBorder::kBorderThicknessDip,
-            bounds.x());
+  EXPECT_EQ(kAnchor1.x() - kInsets.left(), bounds.x());
 
   bounds = border.GetBounds(kAnchor2, kContentSize);
   EXPECT_EQ(kContentSize.height() + kInsets.bottom() +
@@ -483,9 +482,7 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
   EXPECT_EQ(kAnchor1.bottom() + BubbleBorder::kVisibleArrowGap +
                 BubbleBorder::kBorderThicknessDip,
             bounds.y());
-  EXPECT_EQ(
-      kAnchor1.right() + kInsets.right() - BubbleBorder::kBorderThicknessDip,
-      bounds.right());
+  EXPECT_EQ(kAnchor1.right() + kInsets.right(), bounds.right());
 
   bounds = border.GetBounds(kAnchor2, kContentSize);
   EXPECT_EQ(kContentSize.height() + kInsets.bottom() +
@@ -523,8 +520,7 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
             bounds.height());
   EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
   EXPECT_EQ(kAnchor1.y() - BubbleBorder::kVisibleArrowGap, bounds.bottom());
-  EXPECT_EQ(kAnchor1.x() - kInsets.left() + BubbleBorder::kBorderThicknessDip,
-            bounds.x());
+  EXPECT_EQ(kAnchor1.x() - kInsets.left(), bounds.x());
 
   bounds = border.GetBounds(kAnchor2, kContentSize);
   EXPECT_EQ(kContentSize.height() + kInsets.top() +
@@ -588,9 +584,7 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
             bounds.height());
   EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
   EXPECT_EQ(kAnchor1.y() - BubbleBorder::kVisibleArrowGap, bounds.bottom());
-  EXPECT_EQ(
-      kAnchor1.right() + kInsets.right() - BubbleBorder::kBorderThicknessDip,
-      bounds.right());
+  EXPECT_EQ(kAnchor1.right() + kInsets.right(), bounds.right());
 
   bounds = border.GetBounds(kAnchor2, kContentSize);
   EXPECT_EQ(kContentSize.height() + kInsets.top() +
@@ -851,6 +845,305 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
   EXPECT_LT(
       kAnchor3.bottom() + kInsets.bottom() - BubbleBorder::kBorderThicknessDip,
       bounds.bottom());
+}
+
+TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
+  // Create bubble bounds located at pixel x=400,y=600 with a dimension of
+  // 300x200 pixels.
+  const gfx::Rect bubble_bounds(400, 600, 300, 200);
+  // The element will have a fixed size as well.
+  const gfx::Size element_size(350, 100);
+
+  int most_left_x_position = 416;
+  int most_right_x_position = 666;
+  // The y position of an arrow at the upper edge of the bubble.
+  // Note that insets need to be taken into account and that the arrow is
+  // actually located above the visible edge.
+  int upper_arrow_y_position = 600;
+  // The y position of an arrow at the lower edge of the bubble.
+  int lower_arrow_y_position = 791;
+  // The horizontal center position of the element, corrected by the spatial
+  // extension of the arrow.
+  int horizontal_element_center = 546;
+
+  struct TestCase {
+    gfx::Point element_origin;
+    BubbleBorder::Arrow supplied_arrow;
+    gfx::Point expected_arrow_position;
+    bool expected_arrow_visibility;
+  } test_cases[]{
+      // First are using the following scenario:
+      //
+      //  y=200        -----------------
+      //               |       x       |   element
+      //               -----------------
+      //
+      //  y=600         -----------
+      //                |         |
+      //                |         |   bubble
+      //                |         |
+      //  y=800         -----------
+      //
+      //               | x=380
+      //                | x=400
+      {{380, 200},
+       BubbleBorder::Arrow::TOP_LEFT,
+       // The arrow sits close to the right edge of the bubble.
+       // The bubble is located above the upper edge. Note that
+       // insets need to be taken into account.
+       {most_left_x_position, upper_arrow_y_position},
+       true},
+      {{380, 200},
+       BubbleBorder::Arrow::TOP_CENTER,
+       // The arrow points to the horizontal center of the element.
+       // Note that the spatial extension of the arrow has to be
+       // taken into account. The bubble is located above the upper
+       // edge. Note that insets need to be taken into account.
+       {horizontal_element_center, upper_arrow_y_position},
+       true},
+      {{380, 200},
+       BubbleBorder::Arrow::TOP_RIGHT,
+       // The arrow points to the horizontal center of the element.
+       // Note that the spatial extension of the arrow has to be
+       // taken into account. The bubble is located above the upper
+       // edge. Note that insets need to be taken into account.
+       {most_right_x_position, upper_arrow_y_position},
+       true},
+      // The following tests are using a bubble that is highly displaced from
+      // the
+      // element:
+      //
+      //  y=200                     -----------------
+      //                            |       x       |   element
+      //                            -----------------
+      //
+      //  y=600         -----------
+      //                |         |
+      //                |         |   bubble
+      //                |         |
+      //  y=800         -----------
+      //
+      //                            | x=750
+      //                | x=400
+      // The arrow should always be located on the most right position.
+      {{750, 200},
+       BubbleBorder::Arrow::TOP_LEFT,
+       {most_right_x_position, upper_arrow_y_position},
+       true},
+      {{750, 200},
+       BubbleBorder::Arrow::TOP_CENTER,
+       {most_right_x_position, upper_arrow_y_position},
+       true},
+      {{750, 200},
+       BubbleBorder::Arrow::TOP_RIGHT,
+       {most_right_x_position, upper_arrow_y_position},
+       true},
+      // And the reverse scenario:
+      //
+      //  y=200    -----------------
+      //           |       x       |   element
+      //           -----------------
+      //
+      //  y=600                             -----------
+      //                                    |         |
+      //                                    |         |    bubble
+      //                                    |         |
+      //  y=800                             -----------
+      //
+      //           | x=0
+      //                                    | x=400
+      // The arrow should always be located on the most right position.
+      {{0, 200},
+       BubbleBorder::Arrow::TOP_LEFT,
+       {most_left_x_position, upper_arrow_y_position},
+       true},
+      {{0, 200},
+       BubbleBorder::Arrow::TOP_CENTER,
+       {most_left_x_position, upper_arrow_y_position},
+       true},
+      {{0, 200},
+       BubbleBorder::Arrow::TOP_RIGHT,
+       {most_left_x_position, upper_arrow_y_position},
+       true},
+      // The following tests use a BOTTOM arrow. This should only replace the
+      // upper_arrow_y_position with the lower_arrow_y_position in all tests.
+      {{380, 200},
+       BubbleBorder::Arrow::BOTTOM_LEFT,
+       {most_left_x_position, lower_arrow_y_position},
+       true},
+      {{380, 200},
+       BubbleBorder::Arrow::BOTTOM_CENTER,
+       {horizontal_element_center, lower_arrow_y_position},
+       true},
+      {{380, 200},
+       BubbleBorder::Arrow::BOTTOM_RIGHT,
+       {most_right_x_position, lower_arrow_y_position},
+       true},
+      {{750, 200},
+       BubbleBorder::Arrow::BOTTOM_LEFT,
+       {most_right_x_position, lower_arrow_y_position},
+       true},
+      {{750, 200},
+       BubbleBorder::Arrow::BOTTOM_CENTER,
+       {most_right_x_position, lower_arrow_y_position},
+       true},
+      {{750, 200},
+       BubbleBorder::Arrow::BOTTOM_RIGHT,
+       {most_right_x_position, lower_arrow_y_position},
+       true},
+      {{0, 200},
+       BubbleBorder::Arrow::BOTTOM_LEFT,
+       {most_left_x_position, lower_arrow_y_position},
+       true},
+      {{0, 200},
+       BubbleBorder::Arrow::BOTTOM_CENTER,
+       {most_left_x_position, lower_arrow_y_position},
+       true},
+      {{0, 200},
+       BubbleBorder::Arrow::BOTTOM_RIGHT,
+       {most_left_x_position, lower_arrow_y_position},
+       true},
+      // Now, the horizontal arrow scenario is tested
+      //  y=600                            -----------
+      //  y=650    -----------------       |         |
+      //           |       x       |       |         |
+      //  y=750    -----------------       |         |
+      //  y=800                            -----------
+      //           | x=0
+      //                                   | x=400
+      // The arrow is always located on the right side to point towards the
+      // vertical center of the element.
+      {{0, 650}, BubbleBorder::Arrow::LEFT_TOP, {400, 691}, true},
+      {{0, 650}, BubbleBorder::Arrow::LEFT_CENTER, {400, 691}, true},
+      {{0, 650}, BubbleBorder::Arrow::LEFT_BOTTOM, {400, 691}, true},
+      // With the element moved to the top of the screen, the arrow should
+      // always be placed at the most top position on the bubble.
+      {{0, 0}, BubbleBorder::Arrow::LEFT_TOP, {400, 614}, true},
+      {{0, 0}, BubbleBorder::Arrow::LEFT_CENTER, {400, 614}, true},
+      {{0, 0}, BubbleBorder::Arrow::LEFT_BOTTOM, {400, 614}, true},
+  };
+
+  for (auto test_case : test_cases) {
+    gfx::Rect bubble_bounds_copy = bubble_bounds;
+    views::BubbleBorder border(BubbleBorder::Arrow::NONE,
+                               BubbleBorder::STANDARD_SHADOW, SK_ColorWHITE);
+    border.set_arrow(test_case.supplied_arrow);
+    border.AddArrowToBubbleCornerAndPointTowardsAnchor(
+        {test_case.element_origin, element_size}, true, bubble_bounds_copy);
+    EXPECT_EQ(border.visible_arrow(), test_case.expected_arrow_visibility);
+    EXPECT_EQ(border.GetVisibibleArrowRectForTesting().origin(),
+              test_case.expected_arrow_position);
+    EXPECT_EQ(GetVisibleArrowSize(test_case.supplied_arrow),
+              border.GetVisibibleArrowRectForTesting().size());
+  }
+}
+
+// Tests that BubbleBorder::IsVerticalArrow() correctly returns if the arrow is
+// placed on the top or on the bottom of the bubble.
+TEST_F(BubbleBorderTest, IsVerticalArrow) {
+  struct TestCase {
+    BubbleBorder::Arrow arrow;
+    bool is_vertical_expected;
+  };
+
+  TestCase test_cases[] = {
+      // BOTTOM and TOP arrows are vertical.
+      {BubbleBorder::Arrow::BOTTOM_CENTER, true},
+      {BubbleBorder::Arrow::BOTTOM_LEFT, true},
+      {BubbleBorder::Arrow::BOTTOM_RIGHT, true},
+      {BubbleBorder::Arrow::TOP_CENTER, true},
+      {BubbleBorder::Arrow::TOP_LEFT, true},
+      {BubbleBorder::Arrow::TOP_RIGHT, true},
+      // The rest is horizontal.
+      {BubbleBorder::Arrow::LEFT_BOTTOM, false},
+      {BubbleBorder::Arrow::LEFT_CENTER, false},
+      {BubbleBorder::Arrow::LEFT_TOP, false},
+      {BubbleBorder::Arrow::RIGHT_BOTTOM, false},
+      {BubbleBorder::Arrow::RIGHT_CENTER, false},
+      {BubbleBorder::Arrow::RIGHT_TOP, false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(IsVerticalArrow(test_case.arrow), test_case.is_vertical_expected);
+  }
+}
+
+// Test that the correct arrow size is returned for a given arrow position.
+TEST_F(BubbleBorderTest, GetVisibleArrowSize) {
+  const gfx::Size vertical_size(2 * BubbleBorder::kVisibleArrowRadius,
+                                BubbleBorder::kVisibleArrowLength);
+  const gfx::Size horizontal_size(BubbleBorder::kVisibleArrowLength,
+                                  2 * BubbleBorder::kVisibleArrowRadius);
+
+  struct TestCase {
+    BubbleBorder::Arrow arrow;
+    gfx::Size expected_size;
+  };
+
+  TestCase test_cases[] = {
+      // BOTTOM and TOP arrows have a vertical size.
+      {BubbleBorder::Arrow::BOTTOM_CENTER, vertical_size},
+      {BubbleBorder::Arrow::BOTTOM_LEFT, vertical_size},
+      {BubbleBorder::Arrow::BOTTOM_RIGHT, vertical_size},
+      {BubbleBorder::Arrow::TOP_CENTER, vertical_size},
+      {BubbleBorder::Arrow::TOP_LEFT, vertical_size},
+      {BubbleBorder::Arrow::TOP_RIGHT, vertical_size},
+      // The rest has a horizontal size.
+      {BubbleBorder::Arrow::LEFT_BOTTOM, horizontal_size},
+      {BubbleBorder::Arrow::LEFT_CENTER, horizontal_size},
+      {BubbleBorder::Arrow::LEFT_TOP, horizontal_size},
+      {BubbleBorder::Arrow::RIGHT_BOTTOM, horizontal_size},
+      {BubbleBorder::Arrow::RIGHT_CENTER, horizontal_size},
+      {BubbleBorder::Arrow::RIGHT_TOP, horizontal_size},
+  };
+
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(GetVisibleArrowSize(test_case.arrow), test_case.expected_size);
+  }
+}
+
+// Test that the contents bounds are moved correctly to place the visible arrow
+// at the appropriate position.
+TEST_F(BubbleBorderTest, MoveContentsBoundsToPlaceVisibleArrow) {
+  const int arrow_length =
+      BubbleBorder::kVisibleArrowLength + BubbleBorder::kVisibleArrowGap;
+
+  struct TestCase {
+    BubbleBorder::Arrow arrow;
+    gfx::Vector2d expected_contents_bounds_move;
+    gfx::Point initial_bubble_origin = gfx::Point(0, 0);
+  };
+
+  TestCase test_cases[] = {
+      // BOTTOM cases: The contents is moved to the top of the screen.
+      {BubbleBorder::Arrow::BOTTOM_LEFT, gfx::Vector2d(0, -arrow_length)},
+      {BubbleBorder::Arrow::BOTTOM_CENTER, gfx::Vector2d(0, -arrow_length)},
+      {BubbleBorder::Arrow::BOTTOM_RIGHT, gfx::Vector2d(0, -arrow_length)},
+      // TOP cases: The contents is moved to the bottom of the screen.
+      {BubbleBorder::Arrow::TOP_LEFT, gfx::Vector2d(0, arrow_length)},
+      {BubbleBorder::Arrow::TOP_CENTER, gfx::Vector2d(0, arrow_length)},
+      {BubbleBorder::Arrow::TOP_RIGHT, gfx::Vector2d(0, arrow_length)},
+      // LEFT cases: The contents is moved to the right.
+      {BubbleBorder::Arrow::LEFT_BOTTOM, gfx::Vector2d(arrow_length, 0)},
+      {BubbleBorder::Arrow::LEFT_CENTER, gfx::Vector2d(arrow_length, 0)},
+      {BubbleBorder::Arrow::LEFT_TOP, gfx::Vector2d(arrow_length, 0)},
+      // RIGHT cases: The contents is moved to the left.
+      {BubbleBorder::Arrow::RIGHT_BOTTOM, gfx::Vector2d(-arrow_length, 0)},
+      {BubbleBorder::Arrow::RIGHT_CENTER, gfx::Vector2d(-arrow_length, 0)},
+      {BubbleBorder::Arrow::RIGHT_TOP, gfx::Vector2d(-arrow_length, 0)},
+  };
+
+  for (const auto& test_case : test_cases) {
+    // Create a bubble border with a visible arrow.
+    views::BubbleBorder border(test_case.arrow, BubbleBorder::STANDARD_SHADOW,
+                               SK_ColorWHITE);
+    border.set_visible_arrow(true);
+
+    // Create, move and verify the contents bounds.
+    EXPECT_EQ(border.GetContentsBoundsOffsetToPlaceVisibleArrow(
+                  test_case.arrow, /*include_gap=*/true),
+              test_case.expected_contents_bounds_move);
+  }
 }
 
 }  // namespace views

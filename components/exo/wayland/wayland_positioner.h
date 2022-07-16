@@ -7,7 +7,6 @@
 
 #include <xdg-shell-server-protocol.h>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -22,8 +21,6 @@ class WaylandPositioner {
   struct Result {
     gfx::Point origin;
     gfx::Size size;
-    bool x_flipped;
-    bool y_flipped;
   };
 
   // Represents the 1-dimensional projection of the gravity/anchor values.
@@ -35,10 +32,11 @@ class WaylandPositioner {
 
   WaylandPositioner(Version v) : version_(v) {}
 
+  WaylandPositioner(const WaylandPositioner&) = delete;
+  WaylandPositioner& operator=(const WaylandPositioner&) = delete;
+
   // Calculate and return bounds from current state.
-  Result CalculateBounds(const gfx::Rect& work_area,
-                         bool flip_x,
-                         bool flip_y) const;
+  Result CalculateBounds(const gfx::Rect& work_area) const;
 
   void SetSize(gfx::Size size) { size_ = std::move(size); }
 
@@ -76,8 +74,6 @@ class WaylandPositioner {
   // resizing) for the placement of the window relative to the |anchor_rect_|.
   // See zxdg_positioner.set_offset() for more details.
   gfx::Vector2d offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandPositioner);
 };
 
 }  // namespace wayland

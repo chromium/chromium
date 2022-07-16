@@ -232,14 +232,14 @@ bool GetVideoCodecs(const base::Value& manifest,
   const std::vector<media::VideoCodecProfile> kAllProfiles = {};
   for (const auto& codec : supported_codecs) {
     if (codec == kCdmSupportedCodecVp8) {
-      result.emplace(media::VideoCodec::kCodecVP8, kAllProfiles);
+      result.emplace(media::VideoCodec::kVP8, kAllProfiles);
     } else if (codec == kCdmSupportedCodecVp9) {
-      result.emplace(media::VideoCodec::kCodecVP9, kAllProfiles);
+      result.emplace(media::VideoCodec::kVP9, kAllProfiles);
     } else if (codec == kCdmSupportedCodecAv1) {
-      result.emplace(media::VideoCodec::kCodecAV1, kAllProfiles);
+      result.emplace(media::VideoCodec::kAV1, kAllProfiles);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     } else if (codec == kCdmSupportedCodecAvc1) {
-      result.emplace(media::VideoCodec::kCodecH264, kAllProfiles);
+      result.emplace(media::VideoCodec::kH264, kAllProfiles);
 #endif
     }
   }

@@ -22,7 +22,6 @@
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/trace_uploader.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -32,6 +31,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/tracing_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/system/fake_statistics_provider.h"
@@ -94,14 +94,6 @@ class TracingControllerTestEndpoint
   TracingController::CompletionCallback done_callback_;
 };
 
-class TestTracingDelegate : public TracingDelegate {
- public:
-  std::unique_ptr<TraceUploader> GetTraceUploader(
-      scoped_refptr<network::SharedURLLoaderFactory>) override {
-    return nullptr;
-  }
-};
-
 class TracingControllerTest : public ContentBrowserTest {
  public:
   TracingControllerTest() {}
@@ -125,7 +117,7 @@ class TracingControllerTest : public ContentBrowserTest {
     EXPECT_TRUE(NavigateToURL(shell, GetTestUrl("", "title1.html")));
   }
 
-  std::unique_ptr<base::DictionaryValue> GenerateMetadataDict() {
+  absl::optional<base::Value> GenerateMetadataDict() {
     return std::move(metadata_);
   }
 
@@ -215,7 +207,7 @@ class TracingControllerTest : public ContentBrowserTest {
 
   void TestStartAndStopTracingStringWithFilter() {
     TracingControllerImpl::GetInstance()->SetTracingDelegateForTesting(
-        std::make_unique<TestTracingDelegate>());
+        std::make_unique<TracingDelegate>());
 
     Navigate(shell());
 
@@ -243,8 +235,8 @@ class TracingControllerTest : public ContentBrowserTest {
       scoped_refptr<TracingController::TraceDataEndpoint> trace_data_endpoint =
           TracingController::CreateStringEndpoint(std::move(callback));
 
-      metadata_ = std::make_unique<base::DictionaryValue>();
-      metadata_->SetString("not-whitelisted", "this_not_found");
+      metadata_ = base::Value(base::Value::Type::DICTIONARY);
+      metadata_->SetStringKey("not-whitelisted", "this_not_found");
       tracing::TraceEventAgent::GetInstance()->AddMetadataGeneratorFunction(
           base::BindRepeating(&TracingControllerTest::GenerateMetadataDict,
                               base::Unretained(this)));
@@ -335,7 +327,7 @@ class TracingControllerTest : public ContentBrowserTest {
   int enable_recording_done_callback_count_;
   int disable_recording_done_callback_count_;
   base::FilePath last_actual_recording_file_path_;
-  std::unique_ptr<base::DictionaryValue> metadata_;
+  absl::optional<base::Value> metadata_;
   std::unique_ptr<std::string> last_data_;
 };
 
@@ -392,29 +384,33 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest,
   // values are not checked to ensure the test is robust.
   absl::optional<base::Value> trace_json = base::JSONReader::Read(last_data());
   ASSERT_TRUE(trace_json);
-  auto* metadata_json = static_cast<base::DictionaryValue*>(
-      trace_json->FindKeyOfType("metadata", base::Value::Type::DICTIONARY));
+  auto* metadata_json = trace_json->FindDictKey("metadata");
   ASSERT_TRUE(metadata_json);
 
-  std::string network_type;
-  metadata_json->GetString("network-type", &network_type);
-  EXPECT_FALSE(network_type.empty());
-  std::string user_agent;
-  metadata_json->GetString("user-agent", &user_agent);
-  EXPECT_FALSE(user_agent.empty());
-  std::string os_name;
-  metadata_json->GetString("os-name", &os_name);
-  EXPECT_FALSE(os_name.empty());
-  std::string command_line;
-  metadata_json->GetString("command_line", &command_line);
-  EXPECT_FALSE(command_line.empty());
-  std::string trace_config;
-  metadata_json->GetString("trace-config", &trace_config);
-  EXPECT_EQ(TraceConfig().ToString(), trace_config);
+  std::string* network_type = metadata_json->FindStringKey("network-type");
+  ASSERT_TRUE(network_type);
+  EXPECT_FALSE(network_type->empty());
+
+  std::string* user_agent = metadata_json->FindStringKey("user-agent");
+  ASSERT_TRUE(user_agent);
+  EXPECT_FALSE(user_agent->empty());
+
+  std::string* os_name = metadata_json->FindStringKey("os-name");
+  ASSERT_TRUE(os_name);
+  EXPECT_FALSE(os_name->empty());
+
+  std::string* command_line = metadata_json->FindStringKey("command_line");
+  ASSERT_TRUE(command_line);
+  EXPECT_FALSE(command_line->empty());
+
+  std::string* trace_config = metadata_json->FindStringKey("trace-config");
+  ASSERT_TRUE(trace_config);
+  EXPECT_EQ(TraceConfig().ToString(), *trace_config);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::string hardware_class;
-  metadata_json->GetString("hardware-class", &hardware_class);
-  EXPECT_EQ(hardware_class, "test-hardware-class");
+  std::string* hardware_class = metadata_json->FindStringKey("hardware-class");
+  ASSERT_TRUE(hardware_class);
+  EXPECT_EQ(*hardware_class, "test-hardware-class");
 #endif
 }
 

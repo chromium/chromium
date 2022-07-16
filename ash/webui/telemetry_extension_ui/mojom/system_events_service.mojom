@@ -1,0 +1,76 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Definitions for the System Events API exposed by the telemetry
+// system web extension.
+// This API is consumed by chrome://.
+//
+// This Mojo interface will go through security review before shipping.
+//
+// This is a subset of the cros_healthd event service interface which is
+// src/chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom and
+// src/chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.
+
+module ash.health.mojom;
+
+// System Events interface exposed by the Telemetry SWX.
+interface SystemEventsService {
+  // Adds an observer to be notified on Bluetooth events. The caller can remove
+  // the observer created by this call by closing their end of the message pipe.
+  //
+  // The request:
+  // * |observer| - Bluetooth observer to be added to system events service.
+  AddBluetoothObserver(pending_remote<BluetoothObserver> observer);
+
+  // Adds an observer to be notified on lid events. The caller can remove the
+  // observer created by this call by closing their end of the message pipe.
+  //
+  // The request:
+  // * |observer| - lid observer to be added to system events service.
+  AddLidObserver(pending_remote<LidObserver> observer);
+
+  // Adds an observer to be notified on power events. The caller can remove the
+  // observer created by this call by closing their end of the message pipe.
+  //
+  // The request:
+  // * |observer| - power observer to be added to system events service.
+  AddPowerObserver(pending_remote<PowerObserver> observer);
+};
+
+// Implemented by clients who desire Bluetooth notifications.
+interface BluetoothObserver {
+  // Fired when a Bluetooth adapter is added.
+  OnAdapterAdded();
+  // Fired when a Bluetooth adapter is removed.
+  OnAdapterRemoved();
+  // Fired when a property of a Bluetooth adapter is changed.
+  OnAdapterPropertyChanged();
+  // Fired when a Bluetooth device is added.
+  OnDeviceAdded();
+  // Fired when a Bluetooth device is removed.
+  OnDeviceRemoved();
+  // Fired when a property of a Bluetooth device is changed.
+  OnDevicePropertyChanged();
+};
+
+// Implemented by clients who desire lid notifications.
+interface LidObserver {
+  // Fired when the device's lid is closed.
+  OnLidClosed();
+  // Fired when the device's lid is opened.
+  OnLidOpened();
+};
+
+// Implemented by clients who desire power notifications.
+interface PowerObserver {
+  // Fired when the power cable is plugged in.
+  OnAcInserted();
+  // Fired when the power cable is unplugged.
+  OnAcRemoved();
+  // Fired when the system is going to be suspended.
+  OnOsSuspend();
+  // Fired when the system was resumed after being suspended or when the suspend
+  // process was cancelled.
+  OnOsResume();
+};

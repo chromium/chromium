@@ -118,8 +118,8 @@ class EnterpriseNetworkingAttributesTest
                                        ipconfig_v6_dictionary);
 
     base::ListValue ip_configs;
-    ip_configs.AppendString(kWifiIPConfigV4Path);
-    ip_configs.AppendString(kWifiIPConfigV6Path);
+    ip_configs.Append(kWifiIPConfigV4Path);
+    ip_configs.Append(kWifiIPConfigV6Path);
     shill_device_client->SetDeviceProperty(
         kWifiDevicePath, shill::kIPConfigsProperty, ip_configs,
         /*notify_changed=*/false);

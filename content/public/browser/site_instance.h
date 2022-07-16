@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/memory/ref_counted.h"
+#include "base/types/id_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -18,6 +19,8 @@
 namespace content {
 class BrowserContext;
 class RenderProcessHost;
+
+using SiteInstanceId = base::IdType32<class SiteInstanceIdTag>;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SiteInstance interface.
@@ -93,7 +96,7 @@ class RenderProcessHost;
 class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
  public:
   // Returns a unique ID for this SiteInstance.
-  virtual int32_t GetId() = 0;
+  virtual SiteInstanceId GetId() = 0;
 
   // Returns a unique ID for the BrowsingInstance (i.e., group of related
   // browsing contexts) to which this SiteInstance belongs. This allows callers

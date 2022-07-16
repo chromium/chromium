@@ -48,7 +48,7 @@ class FlutterSemanticsNode;
 // OnAccessibilityEventRequest proto into a tree update Chrome's accessibility
 // API can work with.
 class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*>,
-                            public CastWebContents::Observer,
+                            public CastWebContentsObserver,
                             public ui::AXActionHandler {
  public:
   class Delegate {
@@ -92,7 +92,7 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*>,
 
   void UpdateTree();
 
-  // CastWebContents::Observer
+  // CastWebContentsObserver
   void PageStopped(PageState page_state, int error_code) override;
 
   void SetAccessibilityEnabled(bool value);
@@ -104,6 +104,10 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*>,
         content::WebContents* web_contents,
         chromecast::accessibility::AXTreeSourceFlutter* ax_tree_source);
 
+    AXTreeWebContentsObserver(const AXTreeWebContentsObserver&) = delete;
+    AXTreeWebContentsObserver& operator=(const AXTreeWebContentsObserver&) =
+        delete;
+
     void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                                 content::RenderFrameHost* new_host) override;
 
@@ -111,8 +115,6 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*>,
 
    private:
     chromecast::accessibility::AXTreeSourceFlutter* ax_tree_source_;
-
-    DISALLOW_COPY_AND_ASSIGN(AXTreeWebContentsObserver);
   };
 
   using AXTreeFlutterSerializer = ui::AXTreeSerializer<FlutterSemanticsNode*>;

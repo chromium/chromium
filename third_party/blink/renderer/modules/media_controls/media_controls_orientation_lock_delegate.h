@@ -123,7 +123,7 @@ class MediaControlsOrientationLockDelegate final : public NativeEventListener {
   // Emprically, 200ms is too short, but 250ms avoids glitches. 500ms gives us
   // a 2x margin in case the device is running slow, without being noticeable.
   MODULES_EXPORT static constexpr base::TimeDelta kLockToAnyDelay =
-      base::TimeDelta::FromMilliseconds(500);
+      base::Milliseconds(500);
 
   // Current state of the object. See comment at the top of the file for a
   // detailed description.

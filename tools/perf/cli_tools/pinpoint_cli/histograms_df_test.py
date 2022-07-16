@@ -4,6 +4,8 @@
 
 import unittest
 
+import six
+
 from cli_tools.pinpoint_cli import histograms_df
 from core.external_modules import pandas
 
@@ -15,7 +17,7 @@ from tracing.value.diagnostics import generic_set
 
 def TestHistogram(name, units, values, **kwargs):
   def DiagnosticValue(value):
-    if isinstance(value, (int, long)):
+    if isinstance(value, six.integer_types):
       return date_range.DateRange(value)
     elif isinstance(value, list):
       return generic_set.GenericSet(value)
@@ -55,7 +57,8 @@ class TestHistogramsDf(unittest.TestCase):
         ('memory', 'sizeInBytes', 512.0, 0.0, 1, 'run2', 'system_health',
          'story2', '2009-02-13 23:41:30', 'device1', 'http://url/to/trace3'),
     ]
-    self.assertItemsEqual(histograms_df.IterRows(hists.AsDicts()), expected)
+    six.assertCountEqual(self, histograms_df.IterRows(hists.AsDicts()),
+                         expected)
 
   def testDataFrame(self):
     run1 = {'benchmarkStart': 1234567890000, 'labels': ['run1'],
@@ -77,7 +80,7 @@ class TestHistogramsDf(unittest.TestCase):
     # It has 3 histograms.
     self.assertEqual(len(df), 3)
     # The benchmark has two stories.
-    self.assertItemsEqual(df['story'].unique(), ['story1', 'story2'])
+    six.assertCountEqual(self, df['story'].unique(), ['story1', 'story2'])
     # We recorded three traces.
     self.assertEqual(len(df['trace_url'].unique()), 3)
     # All benchmarks ran on the same device.

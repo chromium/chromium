@@ -124,7 +124,7 @@ shown on non-ChromeOS platforms -->
         </template>
 </if>
 
-<if expr="not chromeos">
+<if expr="not chromeos and not lacros">
         <cr-link-row id="importDataDialogTrigger"
             label="$i18n{importTitle}"
             on-click="onImportDataTap_"></cr-link-row>

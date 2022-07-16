@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/ash/login/test/https_forwarder.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/ssl/ssl_config.h"
@@ -122,8 +121,7 @@ TestClientCertSamlIdpMixin::HandleSamlWithClientCertsServerRequest(
 // the authentication completion.
 GURL TestClientCertSamlIdpMixin::GetGaiaSamlAssertionUrl(
     const std::string& saml_relay_state) {
-  GURL assertion_url =
-      gaia_mixin_->gaia_https_forwarder()->GetURLForSSLHost("").Resolve("/SSO");
+  GURL assertion_url = gaia_mixin_->GetFakeGaiaURL("/SSO");
   assertion_url =
       net::AppendQueryParameter(assertion_url, "SAMLResponse", kSamlResponse);
   assertion_url = net::AppendQueryParameter(

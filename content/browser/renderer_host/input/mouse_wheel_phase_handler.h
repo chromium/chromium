@@ -17,7 +17,7 @@ class RenderWidgetHostViewBase;
 // The duration after which a synthetic wheel with zero deltas and
 // phase = |kPhaseEnded| will be sent after the last wheel event.
 constexpr base::TimeDelta kDefaultMouseWheelLatchingTransaction =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 
 // Maximum allowed difference between coordinates of two mouse wheel events in
 // the same scroll sequence.
@@ -53,6 +53,10 @@ enum class FirstScrollUpdateAckState {
 class CONTENT_EXPORT MouseWheelPhaseHandler {
  public:
   MouseWheelPhaseHandler(RenderWidgetHostViewBase* const host_view);
+
+  MouseWheelPhaseHandler(const MouseWheelPhaseHandler&) = delete;
+  MouseWheelPhaseHandler& operator=(const MouseWheelPhaseHandler&) = delete;
+
   ~MouseWheelPhaseHandler() {}
 
   void AddPhaseIfNeededAndScheduleEndEvent(
@@ -127,9 +131,7 @@ class CONTENT_EXPORT MouseWheelPhaseHandler {
   // momentum_phase = kPhaseBegan before sending its previous wheel event with
   // phase = kPhaseEnded.
   base::TimeDelta max_time_between_phase_ended_and_momentum_phase_began_ =
-      base::TimeDelta::FromMilliseconds(100);
-
-  DISALLOW_COPY_AND_ASSIGN(MouseWheelPhaseHandler);
+      base::Milliseconds(100);
 };
 
 }  // namespace content

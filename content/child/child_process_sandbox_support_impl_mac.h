@@ -22,6 +22,10 @@ namespace content {
 class WebSandboxSupportMac : public blink::WebSandboxSupport {
  public:
   WebSandboxSupportMac();
+
+  WebSandboxSupportMac(const WebSandboxSupportMac&) = delete;
+  WebSandboxSupportMac& operator=(const WebSandboxSupportMac&) = delete;
+
   ~WebSandboxSupportMac() override;
 
   // blink::WebSandboxSupport:
@@ -36,8 +40,6 @@ class WebSandboxSupportMac : public blink::WebSandboxSupport {
 
   mojo::Remote<mojom::SandboxSupportMac> sandbox_support_;
   base::ReadOnlySharedMemoryMapping color_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSandboxSupportMac);
 };
 
 }  // namespace content

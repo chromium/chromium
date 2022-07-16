@@ -15,11 +15,18 @@ component("common") {
   sources = [
     "account_key_failure.cc",
     "account_key_failure.h",
+    "constants.cc",
     "constants.h",
     "device.cc",
     "device.h",
     "fast_pair/fast_pair_decoder.cc",
     "fast_pair/fast_pair_decoder.h",
+    "fast_pair/fast_pair_feature_usage_metrics_logger.cc",
+    "fast_pair/fast_pair_feature_usage_metrics_logger.h",
+    "fast_pair/fast_pair_metrics.cc",
+    "fast_pair/fast_pair_metrics.h",
+    "fast_pair/fast_pair_service_data_creator.cc",
+    "fast_pair/fast_pair_service_data_creator.h",
     "log_buffer.cc",
     "log_buffer.h",
     "logging.cc",
@@ -28,22 +35,51 @@ component("common") {
     "pair_failure.h",
     "protocol.cc",
     "protocol.h",
+    "quick_pair_browser_delegate.cc",
+    "quick_pair_browser_delegate.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//ash/services/quick_pair/public/mojom",
+    "//base",
+    "//chromeos/components/feature_usage",
+    "//device/bluetooth/public/cpp",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fast_pair/fast_pair_service_data_creator.cc",
+    "fast_pair/fast_pair_service_data_creator.h",
+    "mock_quick_pair_browser_delegate.cc",
+    "mock_quick_pair_browser_delegate.h",
+    "quick_pair_browser_delegate.h",
+  ]
+
+  deps = [
+    "//ash/services/quick_pair/public/mojom",
+    "//base/test:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "device_unittest.cc",
     "fast_pair/fast_pair_decoder_unittest.cc",
+    "fast_pair/fast_pair_feature_usage_metrics_logger_unittest.cc",
     "logging_unittest.cc",
   ]
 
   deps = [
     ":common",
     "//base/test:test_support",
+    "//chromeos/components/feature_usage",
     "//testing/gtest",
   ]
 }

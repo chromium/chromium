@@ -32,6 +32,9 @@ class MockDispatcher : public Dispatcher {
     return base::WrapRefCounted(new MockDispatcher(info));
   }
 
+  MockDispatcher(const MockDispatcher&) = delete;
+  MockDispatcher& operator=(const MockDispatcher&) = delete;
+
   // Dispatcher:
   Type GetType() const override { return Type::UNKNOWN; }
 
@@ -97,8 +100,6 @@ class MockDispatcher : public Dispatcher {
   ~MockDispatcher() override { info_->IncrementDtorCallCount(); }
 
   CoreTestBase::MockHandleInfo* const info_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDispatcher);
 };
 
 }  // namespace

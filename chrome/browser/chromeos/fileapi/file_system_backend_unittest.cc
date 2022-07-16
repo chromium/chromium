@@ -17,6 +17,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 #define FPL(x) FILE_PATH_LITERAL(x)
@@ -30,7 +31,8 @@ FileSystemURL CreateFileSystemURL(const std::string& extension,
                                   const char* path,
                                   ExternalMountPoints* mount_points) {
   return mount_points->CreateCrackedFileSystemURL(
-      url::Origin::Create(GURL("chrome-extension://" + extension + "/")),
+      blink::StorageKey::CreateFromStringForTesting("chrome-extension://" +
+                                                    extension + "/"),
       storage::kFileSystemTypeExternal, base::FilePath::FromUTF8Unsafe(path));
 }
 

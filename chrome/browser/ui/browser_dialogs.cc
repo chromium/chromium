@@ -7,6 +7,10 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 
+#if !defined(TOOLKIT_VIEWS)
+#include "ui/shell_dialogs/selected_file_info.h"
+#endif
+
 namespace chrome {
 
 void RecordDialogCreation(DialogIdentifier identifier) {

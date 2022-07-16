@@ -6,7 +6,6 @@
 #define CHROMEOS_LOGIN_SESSION_SESSION_TERMINATION_MANAGER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
@@ -25,6 +24,11 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_SESSION) SessionTerminationManager {
   };
 
   SessionTerminationManager();
+
+  SessionTerminationManager(const SessionTerminationManager&) = delete;
+  SessionTerminationManager& operator=(const SessionTerminationManager&) =
+      delete;
+
   ~SessionTerminationManager();
 
   static SessionTerminationManager* Get();
@@ -56,8 +60,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_SESSION) SessionTerminationManager {
   base::ObserverList<Observer> observers_;
   bool is_locked_to_single_user_ = false;
   base::WeakPtrFactory<SessionTerminationManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionTerminationManager);
 };
 
 }  // namespace chromeos

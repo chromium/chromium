@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/logging/log_manager.h"
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 
 namespace autofill {
@@ -15,6 +14,9 @@ class LogManagerImpl : public LogManager {
  public:
   LogManagerImpl(LogRouter* log_router,
                  base::RepeatingClosure notification_callback);
+
+  LogManagerImpl(const LogManagerImpl&) = delete;
+  LogManagerImpl& operator=(const LogManagerImpl&) = delete;
 
   ~LogManagerImpl() override;
 
@@ -37,8 +39,6 @@ class LogManagerImpl : public LogManager {
 
   // Called every time the logging activity status changes.
   base::RepeatingClosure notification_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogManagerImpl);
 };
 
 LogManagerImpl::LogManagerImpl(LogRouter* log_router,

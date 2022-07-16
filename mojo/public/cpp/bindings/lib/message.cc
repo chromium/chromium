@@ -15,11 +15,13 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
+#include "base/trace_event/typed_macros.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
@@ -43,9 +45,16 @@ void AllocateHeaderFromBuffer(internal::Buffer* buffer, HeaderType** header) {
   (*header)->num_bytes = sizeof(HeaderType);
 }
 
+uint64_t GetTraceId(uint32_t name, uint32_t trace_nonce) {
+  // |name| is used as additional sources of entropy to reduce the
+  // changes of collision.
+  return (static_cast<uint64_t>(name) << 32) |
+         static_cast<uint64_t>(trace_nonce);
+}
+
 void WriteMessageHeader(uint32_t name,
                         uint32_t flags,
-                        uint32_t trace_id,
+                        uint32_t trace_nonce,
                         size_t payload_interface_id_count,
                         internal::Buffer* payload_buffer) {
   if (payload_interface_id_count > 0) {
@@ -55,7 +64,7 @@ void WriteMessageHeader(uint32_t name,
     header->version = 2;
     header->name = name;
     header->flags = flags;
-    header->trace_id = trace_id;
+    header->trace_nonce = trace_nonce;
     // The payload immediately follows the header.
     header->payload.Set(header + 1);
   } else if (flags &
@@ -66,30 +75,26 @@ void WriteMessageHeader(uint32_t name,
     header->version = 1;
     header->name = name;
     header->flags = flags;
-    header->trace_id = trace_id;
+    header->trace_nonce = trace_nonce;
   } else {
     internal::MessageHeader* header;
     AllocateHeaderFromBuffer(payload_buffer, &header);
     header->version = 0;
     header->name = name;
     header->flags = flags;
-    header->trace_id = trace_id;
+    header->trace_nonce = trace_nonce;
   }
 }
 
 void CreateSerializedMessageObject(uint32_t name,
                                    uint32_t flags,
+                                   uint32_t trace_nonce,
                                    size_t payload_size,
                                    size_t payload_interface_id_count,
                                    MojoCreateMessageFlags create_message_flags,
                                    std::vector<ScopedHandle>* handles,
                                    ScopedMessageHandle* out_handle,
                                    internal::Buffer* out_buffer) {
-  uint32_t trace_id =
-      static_cast<uint32_t>(base::trace_event::GetNextGlobalTraceId());
-  TRACE_EVENT_WITH_FLOW0("toplevel.flow", "mojo::Message Send", trace_id,
-                         TRACE_EVENT_FLAG_FLOW_OUT);
-
   ScopedMessageHandle handle;
   MojoResult rv = CreateMessage(&handle, create_message_flags);
   DCHECK_EQ(MOJO_RESULT_OK, rv);
@@ -107,7 +112,8 @@ void CreateSerializedMessageObject(uint32_t name,
       handles ? reinterpret_cast<MojoHandle*>(handles->data()) : nullptr,
       handles ? static_cast<uint32_t>(handles->size()) : 0, nullptr, &buffer,
       &buffer_size);
-  DCHECK_EQ(MOJO_RESULT_OK, rv);
+  // TODO(crbug.com/1239934): Relax this assertion or fail more gracefully.
+  CHECK_EQ(MOJO_RESULT_OK, rv);
   if (handles) {
     // Handle ownership has been taken by MojoAppendMessageData.
     for (size_t i = 0; i < handles->size(); ++i)
@@ -119,7 +125,7 @@ void CreateSerializedMessageObject(uint32_t name,
 
   // Make sure we zero the memory first!
   memset(payload_buffer.data(), 0, total_size);
-  WriteMessageHeader(name, flags, trace_id, payload_interface_id_count,
+  WriteMessageHeader(name, flags, trace_nonce, payload_interface_id_count,
                      &payload_buffer);
 
   *out_handle = std::move(handle);
@@ -198,8 +204,14 @@ Message::Message(uint32_t name,
                  size_t payload_interface_id_count,
                  MojoCreateMessageFlags create_message_flags,
                  std::vector<ScopedHandle>* handles) {
+  uint32_t trace_nonce =
+      static_cast<uint32_t>(base::trace_event::GetNextGlobalTraceId());
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("mojom"), "mojo::Message::Message",
+              perfetto::Flow::Global(::mojo::GetTraceId(name, trace_nonce)),
+              "name", name, "flags", flags, "trace_nonce", trace_nonce);
+
   CreateSerializedMessageObject(
-      name, flags, payload_size, payload_interface_id_count,
+      name, flags, trace_nonce, payload_size, payload_interface_id_count,
       create_message_flags, handles, &handle_, &payload_buffer_);
   transferable_ = true;
   serialized_ = true;
@@ -220,10 +232,12 @@ Message::Message(uint32_t name,
 Message::Message(ScopedMessageHandle handle,
                  const internal::MessageHeaderV1& header)
     : handle_(std::move(handle)), transferable_(true) {
-  const uint32_t trace_id =
+  const uint32_t trace_nonce =
       static_cast<uint32_t>(base::trace_event::GetNextGlobalTraceId());
-  TRACE_EVENT_WITH_FLOW0("toplevel.flow", "mojo::Message Send", trace_id,
-                         TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT(
+      "mojom", "mojo::Message::Message_FromHandle",
+      perfetto::Flow::Global(::mojo::GetTraceId(header.name, trace_nonce)),
+      "this", this);
 
   void* buffer;
   uint32_t buffer_size;
@@ -233,7 +247,7 @@ Message::Message(ScopedMessageHandle handle,
     return;
 
   payload_buffer_ = internal::Buffer(handle_.get(), 0, buffer, buffer_size);
-  WriteMessageHeader(header.name, header.flags, trace_id,
+  WriteMessageHeader(header.name, header.flags, trace_nonce,
                      /*payload_interface_id_count=*/0, &payload_buffer_);
 
   // We need to copy additional header data which may have been set after
@@ -266,7 +280,10 @@ Message::Message(base::span<const uint8_t> payload,
       handle_->value(), static_cast<uint32_t>(payload.size()),
       reinterpret_cast<MojoHandle*>(handles.data()),
       static_cast<uint32_t>(handles.size()), &options, &buffer, &buffer_size);
-  DCHECK_EQ(MOJO_RESULT_OK, rv);
+
+  // TODO(crbug.com/1239934): Relax this assertion or fail more gracefully.
+  CHECK_EQ(MOJO_RESULT_OK, rv);
+
   // Handle ownership has been taken by MojoAppendMessageData.
   for (auto& handle : handles)
     ignore_result(handle.release());
@@ -423,7 +440,11 @@ void Message::SerializeHandles(AssociatedGroupController* group_controller) {
   if (mutable_associated_endpoint_handles()->empty()) {
     // Attaching only non-associated handles is easier since we don't have to
     // modify the message header. Faster path for that.
-    payload_buffer_.AttachHandles(mutable_handles());
+    bool attached = payload_buffer_.AttachHandles(mutable_handles());
+
+    // TODO(crbug.com/1239934): Relax this assertion or fail more gracefully.
+    CHECK(attached);
+
     return;
   }
 
@@ -438,7 +459,7 @@ void Message::SerializeHandles(AssociatedGroupController* group_controller) {
   mojo::Message new_message(name(), header()->flags, payload_size,
                             num_endpoint_handles, mutable_handles());
   new_message.header()->interface_id = header()->interface_id;
-  new_message.header()->trace_id = header()->trace_id;
+  new_message.header()->trace_nonce = header()->trace_nonce;
   if (header()->version >= 1) {
     new_message.header_v1()->request_id = header_v1()->request_id;
   }
@@ -543,6 +564,20 @@ Message::Message(ScopedMessageHandle message_handle,
   *mutable_handles() = std::move(attached_handles);
 }
 
+uint64_t Message::GetTraceId() const {
+  return ::mojo::GetTraceId(header()->name, header()->trace_nonce);
+}
+
+void Message::WriteIntoTrace(perfetto::TracedValue ctx) const {
+  perfetto::TracedDictionary dict = std::move(ctx).WriteDictionary();
+
+  if (header()) {
+    dict.Add("name", header()->name);
+    dict.Add("flags", header()->flags);
+    dict.Add("trace_nonce", header()->trace_nonce);
+  }
+}
+
 bool MessageReceiver::PrefersSerializedMessages() {
   return false;
 }
@@ -552,6 +587,7 @@ PassThroughFilter::PassThroughFilter() {}
 PassThroughFilter::~PassThroughFilter() {}
 
 bool PassThroughFilter::Accept(Message* message) {
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("mojom"), "PassThroughFilter::Accept");
   return true;
 }
 

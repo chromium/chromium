@@ -406,7 +406,13 @@ class ServerProcess(object):
         if self._proc.stdin:
             if self._logging:
                 _log.info(' IN: ^D')
-            self._proc.stdin.close()
+            try:
+                # When we get here because of an IOError, close()
+                # may throw BrokenPipeError sometimes.
+                # Occasionally seen on mac11.
+                self._proc.stdin.close()
+            except BrokenPipeError:
+                pass
             self._proc.stdin = None
         killed = False
         if timeout_secs:

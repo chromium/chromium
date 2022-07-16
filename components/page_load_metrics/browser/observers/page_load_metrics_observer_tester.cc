@@ -43,6 +43,11 @@ class TestPageLoadMetricsEmbedderInterface
       PageLoadMetricsObserverTester* test)
       : test_(test) {}
 
+  TestPageLoadMetricsEmbedderInterface(
+      const TestPageLoadMetricsEmbedderInterface&) = delete;
+  TestPageLoadMetricsEmbedderInterface& operator=(
+      const TestPageLoadMetricsEmbedderInterface&) = delete;
+
   bool IsNewTabPageUrl(const GURL& url) override { return false; }
 
   // Forward the registration logic to the test class so that derived classes
@@ -71,8 +76,6 @@ class TestPageLoadMetricsEmbedderInterface
 
  private:
   PageLoadMetricsObserverTester* test_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPageLoadMetricsEmbedderInterface);
 };
 
 }  // namespace

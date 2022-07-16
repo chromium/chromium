@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
@@ -31,6 +30,9 @@ class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
  public:
   DesktopBrowserFrameAura(BrowserFrame* browser_frame,
                           BrowserView* browser_view);
+
+  DesktopBrowserFrameAura(const DesktopBrowserFrameAura&) = delete;
+  DesktopBrowserFrameAura& operator=(const DesktopBrowserFrameAura&) = delete;
 
   BrowserView* browser_view() const { return browser_view_; }
   BrowserFrame* browser_frame() const { return browser_frame_; }
@@ -65,8 +67,6 @@ class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
   BrowserDesktopWindowTreeHost* browser_desktop_window_tree_host_;
 
   std::unique_ptr<wm::VisibilityController> visibility_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopBrowserFrameAura);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_H_

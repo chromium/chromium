@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
@@ -89,6 +90,10 @@ class MockCdmServiceClient : public media::CdmService::Client {
 class CdmServiceTest : public testing::Test {
  public:
   CdmServiceTest() = default;
+
+  CdmServiceTest(const CdmServiceTest&) = delete;
+  CdmServiceTest& operator=(const CdmServiceTest&) = delete;
+
   ~CdmServiceTest() override = default;
 
   MOCK_METHOD0(CdmServiceIdle, void());
@@ -169,8 +174,6 @@ class CdmServiceTest : public testing::Test {
   }
   std::unique_ptr<CdmService> service_;
   MockCdmServiceClient* mock_cdm_service_client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmServiceTest);
 };
 
 }  // namespace

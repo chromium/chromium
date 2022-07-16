@@ -4,8 +4,8 @@
 
 #include "components/feed/core/v2/scheduling.h"
 
+#include "base/json/values_util.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feedstore_util.h"
@@ -16,7 +16,7 @@ namespace {
 base::Value VectorToValue(const std::vector<base::TimeDelta>& values) {
   base::Value result(base::Value::Type::LIST);
   for (base::TimeDelta delta : values) {
-    result.Append(util::TimeDeltaToValue(delta));
+    result.Append(base::TimeDeltaToValue(delta));
   }
   return result;
 }
@@ -26,7 +26,7 @@ bool ValueToVector(const base::Value& value,
   if (!value.is_list())
     return false;
   for (const base::Value& entry : value.GetList()) {
-    absl::optional<base::TimeDelta> delta = util::ValueToTimeDelta(entry);
+    absl::optional<base::TimeDelta> delta = base::ValueToTimeDelta(entry);
     if (!delta)
       return false;
     result->push_back(*delta);
@@ -54,7 +54,7 @@ RequestSchedule& RequestSchedule::operator=(RequestSchedule&&) = default;
 
 base::Value RequestScheduleToValue(const RequestSchedule& schedule) {
   base::Value result(base::Value::Type::DICTIONARY);
-  result.SetKey("anchor", util::TimeToValue(schedule.anchor_time));
+  result.SetKey("anchor", base::TimeToValue(schedule.anchor_time));
   result.SetKey("offsets", VectorToValue(schedule.refresh_offsets));
   return result;
 }
@@ -64,7 +64,7 @@ RequestSchedule RequestScheduleFromValue(const base::Value& value) {
     return {};
   RequestSchedule result;
   absl::optional<base::Time> anchor =
-      util::ValueToTime(value.FindKey("anchor"));
+      base::ValueToTime(value.FindKey("anchor"));
   const base::Value* offsets =
       value.FindKeyOfType("offsets", base::Value::Type::LIST);
   if (!anchor || !offsets || !ValueToVector(*offsets, &result.refresh_offsets))
@@ -79,7 +79,7 @@ base::Time NextScheduledRequestTime(base::Time now, RequestSchedule* schedule) {
   // Attempt to detect system clock changes. If |anchor_time| is in the future,
   // or too far in the past, we reset |anchor_time| to now.
   if (now < schedule->anchor_time ||
-      schedule->anchor_time + base::TimeDelta::FromDays(7) < now) {
+      schedule->anchor_time + base::Days(7) < now) {
     schedule->anchor_time = now;
   }
   while (!schedule->refresh_offsets.empty()) {
@@ -110,8 +110,7 @@ bool ShouldWaitForNewContent(const feedstore::Metadata& metadata,
   if (stream_metadata && stream_metadata->has_content_lifetime()) {
     staleness_threshold = GetThresholdTime(
         staleness_threshold,
-        base::TimeDelta::FromMilliseconds(
-            stream_metadata->content_lifetime().stale_age_ms()));
+        base::Milliseconds(stream_metadata->content_lifetime().stale_age_ms()));
   }
 
   return content_age > staleness_threshold;
@@ -128,7 +127,7 @@ bool ContentInvalidFromAge(const feedstore::Metadata& metadata,
   if (stream_metadata && stream_metadata->has_content_lifetime()) {
     content_expiration_threshold = GetThresholdTime(
         content_expiration_threshold,
-        base::TimeDelta::FromMilliseconds(
+        base::Milliseconds(
             stream_metadata->content_lifetime().invalid_age_ms()));
   }
 

@@ -14,6 +14,10 @@ namespace metrics {
 class ChromeVisibilityObserver : public BrowserListObserver {
  public:
   ChromeVisibilityObserver();
+
+  ChromeVisibilityObserver(const ChromeVisibilityObserver&) = delete;
+  ChromeVisibilityObserver& operator=(const ChromeVisibilityObserver&) = delete;
+
   ~ChromeVisibilityObserver() override;
 
  private:
@@ -43,8 +47,6 @@ class ChromeVisibilityObserver : public BrowserListObserver {
   base::TimeDelta visibility_gap_timeout_;
 
   base::WeakPtrFactory<ChromeVisibilityObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeVisibilityObserver);
 };
 
 }  // namespace metrics

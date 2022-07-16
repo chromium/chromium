@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/cdm/cdm_capability.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
@@ -120,11 +121,11 @@ std::unique_ptr<content::CdmInfo> CreateCdmInfoForChromeOS(
   // Not specifying any profiles to indicate that all relevant profiles
   // should be considered supported.
   const std::vector<media::VideoCodecProfile> kAllProfiles = {};
-  capability.video_codecs.emplace(media::VideoCodec::kCodecVP8, kAllProfiles);
-  capability.video_codecs.emplace(media::VideoCodec::kCodecVP9, kAllProfiles);
-  capability.video_codecs.emplace(media::VideoCodec::kCodecAV1, kAllProfiles);
+  capability.video_codecs.emplace(media::VideoCodec::kVP8, kAllProfiles);
+  capability.video_codecs.emplace(media::VideoCodec::kVP9, kAllProfiles);
+  capability.video_codecs.emplace(media::VideoCodec::kAV1, kAllProfiles);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  capability.video_codecs.emplace(media::VideoCodec::kCodecH264, kAllProfiles);
+  capability.video_codecs.emplace(media::VideoCodec::kH264, kAllProfiles);
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
   // Both encryption schemes are supported on ChromeOS.
@@ -235,6 +236,12 @@ void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
 
 void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLacrosUseChromeosProtectedMedia)) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   media::CdmCapability capability;
 
   // The following audio formats are supported for decrypt-only.
@@ -244,12 +251,27 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   // decrypt-and-decode. Not specifying any profiles to indicate that all
   // relevant profiles should be considered supported.
   const std::vector<media::VideoCodecProfile> kAllProfiles = {};
-  capability.video_codecs.emplace(media::VideoCodec::kCodecVP9, kAllProfiles);
+  capability.video_codecs.emplace(media::VideoCodec::kVP9, kAllProfiles);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  capability.video_codecs.emplace(media::VideoCodec::kCodecH264, kAllProfiles);
+  capability.video_codecs.emplace(media::VideoCodec::kH264, kAllProfiles);
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  capability.video_codecs.emplace(media::VideoCodec::kCodecHEVC, kAllProfiles);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLacrosEnablePlatformHevc)) {
+    capability.video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfiles);
+  }
+#else
+  capability.video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfiles);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_AV1)
+  capability.video_codecs.emplace(media::VideoCodec::kAV1, kAllProfiles);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLacrosUseChromeosProtectedAv1)) {
+    capability.video_codecs.emplace(media::VideoCodec::kAV1, kAllProfiles);
+  }
 #endif
 
   // Both encryption schemes are supported on ChromeOS.

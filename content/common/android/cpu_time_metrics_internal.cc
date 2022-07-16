@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/cpu.h"
 #include "base/lazy_instance.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/no_destructor.h"
@@ -107,6 +108,41 @@ const char* GetPowerModeChangeHistogramNameForProcessType(
   }
 }
 
+const char* GetAvgCpuLoadHistogramNameForProcessType(ProcessTypeForUma type) {
+  switch (type) {
+    case ProcessTypeForUma::kBrowser:
+      return "Power.AvgCpuLoad.Browser";
+    case ProcessTypeForUma::kRenderer:
+      return "Power.AvgCpuLoad.Renderer";
+    case ProcessTypeForUma::kGpu:
+      return "Power.AvgCpuLoad.GPU";
+    default:
+      return "Power.AvgCpuLoad.Other";
+  }
+}
+
+const char* GetIdleCpuLoadHistogramNameForProcessType(ProcessTypeForUma type) {
+  switch (type) {
+    case ProcessTypeForUma::kBrowser:
+      return "Power.IdleCpuLoad.Browser";
+    case ProcessTypeForUma::kRenderer:
+      return "Power.IdleCpuLoad.Renderer";
+    case ProcessTypeForUma::kGpu:
+      return "Power.IdleCpuLoad.GPU";
+    default:
+      return "Power.IdleCpuLoad.Other";
+  }
+}
+
+// Return whether the power mode is considered idle for the purpose of the CPU
+// load reporting. "Idle" in this case means that nothing CPU-intensive is
+// expected to be happening while in this mode.
+bool IsIdleMode(power_scheduler::PowerMode power_mode) {
+  return power_mode == power_scheduler::PowerMode::kIdle ||
+         power_mode == power_scheduler::PowerMode::kNopAnimation ||
+         power_mode == power_scheduler::PowerMode::kBackground;
+}
+
 PowerModeForUma GetPowerModeForUma(power_scheduler::PowerMode power_mode) {
   switch (power_mode) {
     case power_scheduler::PowerMode::kIdle:
@@ -127,6 +163,8 @@ PowerModeForUma GetPowerModeForUma(power_scheduler::PowerMode power_mode) {
       return PowerModeForUma::kVideoPlayback;
     case power_scheduler::PowerMode::kMainThreadAnimation:
       return PowerModeForUma::kMainThreadAnimation;
+    case power_scheduler::PowerMode::kScriptExecution:
+      return PowerModeForUma::kScriptExecution;
     case power_scheduler::PowerMode::kLoading:
       return PowerModeForUma::kLoading;
     case power_scheduler::PowerMode::kAnimation:
@@ -369,7 +407,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
         process_metrics_->GetCumulativeCPUUsage();
     base::TimeDelta process_cpu_time_delta =
         cumulative_cpu_time - reported_cpu_time_;
-    if (process_cpu_time_delta > base::TimeDelta()) {
+    if (process_cpu_time_delta.is_positive()) {
       reported_cpu_time_ = cumulative_cpu_time;
     }
 
@@ -468,7 +506,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
 
     // Report the difference of the process's total CPU time and all thread's
     // CPU time as unattributed time (e.g. time consumed by threads that died).
-    if (unattributed_delta > base::TimeDelta()) {
+    if (unattributed_delta.is_positive()) {
       ReportThreadCpuTimeDelta(CpuTimeMetricsThreadType::kUnattributedThread,
                                unattributed_delta);
     }
@@ -536,7 +574,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
     base::TimeDelta total_active_time;
     for (base::TimeDelta core_idle_time : core_idle_times_) {
       base::TimeDelta active_time = wall_time_delta - core_idle_time;
-      if (active_time > base::TimeDelta())
+      if (active_time.is_positive())
         total_active_time += active_time;
     }
 
@@ -619,7 +657,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
 
         // (1) Proportion of execution on this cluster's cores vs others.
         current_cluster_proportion = 0;
-        if (total_active_time > base::TimeDelta())
+        if (total_active_time.is_positive())
           current_cluster_proportion = cluster_active_time / total_active_time;
 
         last_core_index = entry.cluster_core_index;
@@ -640,7 +678,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
       // (3) Proportion of active wall time that this cluster spent in the
       // frequency state.
       double frequency_proportion = 0;
-      if (current_cluster_active_wall_time > base::TimeDelta())
+      if (current_cluster_active_wall_time.is_positive())
         frequency_proportion = time_delta / current_cluster_active_wall_time;
 
       // (4) Scale the process's cpu time by the cluster/frequency pair's
@@ -828,7 +866,7 @@ void ProcessCpuTimeMetrics::CollectHighLevelMetricsOnThreadPool() {
       process_metrics_->GetCumulativeCPUUsage();
   base::TimeDelta process_cpu_time_delta =
       cumulative_cpu_time - reported_cpu_time_;
-  if (process_cpu_time_delta > base::TimeDelta()) {
+  if (process_cpu_time_delta.is_positive()) {
     UMA_HISTOGRAM_SCALED_ENUMERATION("Power.CpuTimeSecondsPerProcessType",
                                      process_type_,
                                      process_cpu_time_delta.InMicroseconds(),
@@ -863,6 +901,66 @@ void ProcessCpuTimeMetrics::CollectHighLevelMetricsOnThreadPool() {
     }
 
     reported_cpu_time_ = cumulative_cpu_time;
+
+    ReportAverageCpuLoad(cumulative_cpu_time);
+  }
+}
+
+void ProcessCpuTimeMetrics::ReportAverageCpuLoad(
+    base::TimeDelta cumulative_cpu_time) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (cpu_load_report_time_ == base::TimeTicks()) {
+    cpu_load_report_time_ = now;
+    cpu_time_on_last_load_report_ = cumulative_cpu_time;
+  }
+
+  base::TimeDelta time_since_report = now - cpu_load_report_time_;
+  if (time_since_report >= kAvgCpuLoadReportInterval) {
+    base::TimeDelta cpu_time_since_report =
+        cumulative_cpu_time - cpu_time_on_last_load_report_;
+    int load = 100LL * cpu_time_since_report.InMilliseconds() /
+               time_since_report.InMilliseconds();
+    static const char* histogram_name =
+        GetAvgCpuLoadHistogramNameForProcessType(process_type_);
+    // CPU load can be greater than 100% because of multiple cores.
+    // That's why we use UmaHistogramCounts, not UmaHistogramPercentage.
+    base::UmaHistogramCounts1000(histogram_name, load);
+
+    cpu_load_report_time_ = now;
+    cpu_time_on_last_load_report_ = cumulative_cpu_time;
+  }
+
+  // When the power mode changes, this function is called first, and the
+  // power_mode_ variable is modified after that. So at this point power_mode_
+  // reflects the mode that has been active before now (and might be active
+  // still).
+  // timestamp_for_idle_cpu_ is used to determine the duration of the idle
+  // power mode. It is updated when the "old" mode is not idle, so when the
+  // mode is idle, it contains the timestamp of the idle mode start.
+  // It's also updated after the cpu load over last 5 idle seconds has been
+  // reported, and a new 5-sec period is started.
+  if (power_mode_.has_value() && IsIdleMode(*power_mode_) &&
+      timestamp_for_idle_cpu_ != base::TimeTicks()) {
+    base::TimeDelta time_in_idle = now - timestamp_for_idle_cpu_;
+    if (time_in_idle >= kIdleCpuLoadReportInterval) {
+      base::TimeDelta cpu_time_in_idle =
+          cumulative_cpu_time - cpu_time_for_idle_cpu_;
+      int idle_load = 100LL * cpu_time_in_idle.InMilliseconds() /
+                      time_in_idle.InMilliseconds();
+      static const char* histogram_name =
+          GetIdleCpuLoadHistogramNameForProcessType(process_type_);
+      base::UmaHistogramCounts1000(histogram_name, idle_load);
+
+      timestamp_for_idle_cpu_ = now;
+      cpu_time_for_idle_cpu_ = cumulative_cpu_time;
+    }
+  } else {
+    // When this function is called next time, we'll know whether the new power
+    // mode is idle or not. If it's idle, we'll use timestamp_for_idle_cpu_
+    // to determine idle mode duration. If it's not, we'll just update
+    // timestamp_for_idle_cpu_ once again.
+    timestamp_for_idle_cpu_ = now;
+    cpu_time_for_idle_cpu_ = cumulative_cpu_time;
   }
 }
 

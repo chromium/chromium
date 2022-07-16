@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
@@ -29,6 +28,11 @@ class FakeSecureChannelClient : public SecureChannelClient {
                                const std::string& feature,
                                ConnectionMedium connection_medium,
                                ConnectionPriority connection_priority);
+
+    ConnectionRequestArguments(const ConnectionRequestArguments&) = delete;
+    ConnectionRequestArguments& operator=(const ConnectionRequestArguments&) =
+        delete;
+
     ~ConnectionRequestArguments();
 
     multidevice::RemoteDeviceRef device_to_connect;
@@ -36,12 +40,13 @@ class FakeSecureChannelClient : public SecureChannelClient {
     std::string feature;
     ConnectionMedium connection_medium;
     ConnectionPriority connection_priority;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ConnectionRequestArguments);
   };
 
   FakeSecureChannelClient();
+
+  FakeSecureChannelClient(const FakeSecureChannelClient&) = delete;
+  FakeSecureChannelClient& operator=(const FakeSecureChannelClient&) = delete;
+
   ~FakeSecureChannelClient() override;
 
   void set_next_initiate_connection_attempt(
@@ -149,8 +154,6 @@ class FakeSecureChannelClient : public SecureChannelClient {
       last_initiate_connection_request_arguments_list_;
   std::vector<std::unique_ptr<ConnectionRequestArguments>>
       last_listen_for_connection_request_arguments_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecureChannelClient);
 };
 
 }  // namespace secure_channel

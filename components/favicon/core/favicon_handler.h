@@ -12,7 +12,6 @@
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/favicon_driver_observer.h"
@@ -132,6 +131,10 @@ class FaviconHandler {
   FaviconHandler(CoreFaviconService* service,
                  Delegate* delegate,
                  FaviconDriverObserver::NotificationIconType handler_type);
+
+  FaviconHandler(const FaviconHandler&) = delete;
+  FaviconHandler& operator=(const FaviconHandler&) = delete;
+
   ~FaviconHandler();
 
   // Initiates loading the favicon for the specified url. |is_same_document| is
@@ -376,8 +379,6 @@ class FaviconHandler {
   // UpdateFaviconCandidate()), the favicon service and the delegate are
   // notified.
   DownloadedFavicon best_favicon_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconHandler);
 };
 
 }  // namespace favicon

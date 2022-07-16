@@ -16,7 +16,7 @@ import android.widget.ImageView;
  */
 public class ImageZoomView extends AlertDialog {
     public ImageZoomView(Context context, Bitmap bitmap) {
-        super(context, R.style.Theme_Chromium_Fullscreen);
+        super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
 
         View view = LayoutInflater.from(context).inflate(R.layout.image_zoom_view, null);
         view.setOnClickListener(v -> dismiss());

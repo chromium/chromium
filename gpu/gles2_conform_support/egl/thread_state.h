@@ -22,6 +22,10 @@ class ThreadState {
   // Factory getter for the class. Should only be called by the API layer, and
   // then passed through Display in order to avoid lock issues.
   static ThreadState* Get();
+
+  ThreadState(const ThreadState&) = delete;
+  ThreadState& operator=(const ThreadState&) = delete;
+
   static void ReleaseThread();
 
   Surface* current_surface() const { return current_surface_.get(); }
@@ -47,12 +51,16 @@ class ThreadState {
   class AutoCurrentContextRestore {
    public:
     AutoCurrentContextRestore(ThreadState*);
+
+    AutoCurrentContextRestore(const AutoCurrentContextRestore&) = delete;
+    AutoCurrentContextRestore& operator=(const AutoCurrentContextRestore&) =
+        delete;
+
     ~AutoCurrentContextRestore();
     void SetCurrent(Surface*, Context*);
 
    private:
     ThreadState* thread_state_;
-    DISALLOW_COPY_AND_ASSIGN(AutoCurrentContextRestore);
   };
 
  private:
@@ -63,7 +71,6 @@ class ThreadState {
   EGLint error_code_;
   scoped_refptr<Surface> current_surface_;
   scoped_refptr<Context> current_context_;
-  DISALLOW_COPY_AND_ASSIGN(ThreadState);
 };
 
 }  // namespace egl

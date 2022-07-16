@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 (async function() {
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   TestRunner.addResult("Test frontend's timeout support.\n");
 
   const executionContext = UI.context.flavor(SDK.ExecutionContext);
@@ -16,7 +16,7 @@
   let supports = executionContext.runtimeModel.hasSideEffectSupport();
   TestRunner.addResult(`\nDoes the runtime also support side effect checks? ${supports}`);
   TestRunner.addResult(`\nClearing cached side effect support`);
-  executionContext.runtimeModel._hasSideEffectSupport = null;
+  executionContext.runtimeModel.hasSideEffectSupportInternal = null;
 
   // Debugger evaluateOnCallFrame test.
   await TestRunner.evaluateInPagePromise(`
@@ -52,7 +52,7 @@
 
   function printDetails(result) {
     const customFormatters = {};
-    for (let name of ['_runtimeModel', '_runtimeAgent'])
+    for (let name of ['runtimeModelInternal', 'runtimeAgent'])
       customFormatters[name] = 'formatAsTypeNameOrNull';
     TestRunner.dump(result, customFormatters);
   }

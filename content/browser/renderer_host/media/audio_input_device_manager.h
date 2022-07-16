@@ -17,7 +17,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "base/unguessable_token.h"
@@ -37,6 +36,9 @@ namespace content {
 class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
  public:
   explicit AudioInputDeviceManager(media::AudioSystem* audio_system);
+
+  AudioInputDeviceManager(const AudioInputDeviceManager&) = delete;
+  AudioInputDeviceManager& operator=(const AudioInputDeviceManager&) = delete;
 
   // Gets the opened device by |session_id|. Returns NULL if the device
   // is not opened, otherwise the opened device. Called on IO thread.
@@ -118,8 +120,6 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
 #endif
 
   media::AudioSystem* const audio_system_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioInputDeviceManager);
 };
 
 }  // namespace content

@@ -19,7 +19,7 @@ class ExternalMetricsTest;
 
 // ExternalMetrics reads structured metrics saved by Chrome OS and uploads them
 // to the UMA server on its behalf. This is structured metrics' equivalent of
-// chromeos::ExternalMetrics.
+// `ash::ExternalMetrics`.
 //
 // Chrome periodically reads a directory of protos and adds their content into
 // the StructuredMetricProvider's regular metrics upload. After reading each

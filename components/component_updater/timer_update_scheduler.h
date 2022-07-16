@@ -6,7 +6,6 @@
 #define COMPONENTS_COMPONENT_UPDATER_TIMER_UPDATE_SCHEDULER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/component_updater/timer.h"
 #include "components/component_updater/update_scheduler.h"
 
@@ -16,6 +15,10 @@ namespace component_updater {
 class TimerUpdateScheduler : public UpdateScheduler {
  public:
   TimerUpdateScheduler();
+
+  TimerUpdateScheduler(const TimerUpdateScheduler&) = delete;
+  TimerUpdateScheduler& operator=(const TimerUpdateScheduler&) = delete;
+
   ~TimerUpdateScheduler() override;
 
   // UpdateScheduler:
@@ -28,8 +31,6 @@ class TimerUpdateScheduler : public UpdateScheduler {
  private:
   Timer timer_;
   base::RepeatingClosure user_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimerUpdateScheduler);
 };
 
 }  // namespace component_updater

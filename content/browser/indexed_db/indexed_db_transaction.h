@@ -16,7 +16,6 @@
 #include "base/containers/queue.h"
 #include "base/containers/stack.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -66,6 +65,14 @@ class CONTENT_EXPORT IndexedDBTransaction {
 
   // Signals the transaction for commit.
   void SetCommitFlag();
+
+  // Returns false if the transaction has been signalled to commit, is in the
+  // process of committing, or finished committing or was aborted. Essentially
+  // when this returns false no tasks should be scheduled that try to modify
+  // the transaction.
+  bool IsAcceptingRequests() {
+    return !is_commit_pending_ && state_ != COMMITTING && state_ != FINISHED;
+  }
 
   // This transaction is ultimately backed by a LevelDBScope. Aborting a
   // transaction rolls back the LevelDBScopes, which (if LevelDBScopes is in
@@ -229,6 +236,10 @@ class CONTENT_EXPORT IndexedDBTransaction {
   class TaskQueue {
    public:
     TaskQueue();
+
+    TaskQueue(const TaskQueue&) = delete;
+    TaskQueue& operator=(const TaskQueue&) = delete;
+
     ~TaskQueue();
     bool empty() const { return queue_.empty(); }
     void push(Operation task) { queue_.push(std::move(task)); }
@@ -237,13 +248,15 @@ class CONTENT_EXPORT IndexedDBTransaction {
 
    private:
     base::queue<Operation> queue_;
-
-    DISALLOW_COPY_AND_ASSIGN(TaskQueue);
   };
 
   class TaskStack {
    public:
     TaskStack();
+
+    TaskStack(const TaskStack&) = delete;
+    TaskStack& operator=(const TaskStack&) = delete;
+
     ~TaskStack();
     bool empty() const { return stack_.empty(); }
     void push(AbortOperation task) { stack_.push(std::move(task)); }
@@ -252,8 +265,6 @@ class CONTENT_EXPORT IndexedDBTransaction {
 
    private:
     base::stack<AbortOperation> stack_;
-
-    DISALLOW_COPY_AND_ASSIGN(TaskStack);
   };
 
   TaskQueue task_queue_;

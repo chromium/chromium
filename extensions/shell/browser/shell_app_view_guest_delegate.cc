@@ -15,7 +15,7 @@ ShellAppViewGuestDelegate::~ShellAppViewGuestDelegate() {
 }
 
 bool ShellAppViewGuestDelegate::HandleContextMenu(
-    content::WebContents* web_contents,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Eat the context menu request, as AppShell doesn't show context menus.
   return true;

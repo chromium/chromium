@@ -20,6 +20,9 @@ class AppInfoDialogBrowserTest : public DialogBrowserTest {
  public:
   AppInfoDialogBrowserTest() {}
 
+  AppInfoDialogBrowserTest(const AppInfoDialogBrowserTest&) = delete;
+  AppInfoDialogBrowserTest& operator=(const AppInfoDialogBrowserTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     extension_environment_ =
@@ -39,8 +42,6 @@ class AppInfoDialogBrowserTest : public DialogBrowserTest {
  private:
   std::unique_ptr<extensions::TestExtensionEnvironment> extension_environment_;
   scoped_refptr<const extensions::Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppInfoDialogBrowserTest);
 };
 
 // Invokes a dialog that shows details of an installed extension.

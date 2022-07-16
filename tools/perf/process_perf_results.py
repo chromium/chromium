@@ -111,9 +111,9 @@ def _upload_perf_results(json_to_upload, name, configuration_name,
       '--buildbucket', buildbucket['build'].get('bucket'),
     ]
 
-  if build_properties.get('git_revision'):
+  if build_properties.get('got_revision'):
     args.append('--git-revision')
-    args.append(build_properties['git_revision'])
+    args.append(build_properties['got_revision'])
   if _is_histogram(json_to_upload):
     args.append('--send-as-histograms')
 
@@ -365,10 +365,12 @@ def process_perf_results(output_json,
     # we are deprecating perf-id crbug.com/817823
     configuration_name = build_properties_map['buildername']
 
-  _update_perf_results_for_calibration(benchmarks_shard_map_file,
-                                       benchmark_enabled_map,
-                                       benchmark_directory_map,
-                                       configuration_name)
+  # The calibration project is paused and the experiments of adding device id,
+  # which currently broken, is removed for now.
+  # _update_perf_results_for_calibration(benchmarks_shard_map_file,
+  #                                      benchmark_enabled_map,
+  #                                      benchmark_directory_map,
+  #                                      configuration_name)
   if not smoke_test_mode and handle_perf:
     try:
       return_code, benchmark_upload_result_map = _handle_perf_results(

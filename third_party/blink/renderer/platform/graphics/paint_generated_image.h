@@ -25,13 +25,10 @@ class PLATFORM_EXPORT PaintGeneratedImage : public GeneratedImage {
             const cc::PaintFlags&,
             const FloatRect&,
             const FloatRect&,
-            const SkSamplingOptions&,
-            RespectImageOrientationEnum,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const ImageDrawOptions& draw_options) override;
   void DrawTile(GraphicsContext&,
                 const FloatRect&,
-                RespectImageOrientationEnum) final;
+                const ImageDrawOptions&) final;
 
   PaintGeneratedImage(sk_sp<PaintRecord> record, const FloatSize& size)
       : GeneratedImage(size), record_(std::move(record)) {}

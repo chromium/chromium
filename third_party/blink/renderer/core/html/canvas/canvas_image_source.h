@@ -50,6 +50,10 @@ enum SourceImageStatus {
 
 // This is the helper function to get the canvas image with a
 // specific alpha op requirements.
+// This function will be a no op if the image is opaque, or if the image was
+// already in the preferred state (if it was premultiplied and it is requested
+// to be premultiplied or if it was unpremultiplied and it is requested to be
+// unpremultiplied).
 scoped_refptr<StaticBitmapImage> GetImageWithAlphaDisposition(
     scoped_refptr<StaticBitmapImage>&&,
     const AlphaDisposition);
@@ -81,6 +85,10 @@ class CORE_EXPORT CanvasImageSource {
   // Ref the spec here:
   //  https://html.spec.whatwg.org/multipage/canvas.html#check-the-usability-of-the-image-argument
   virtual bool IsNeutered() const { return false; }
+
+  // Spec about placeholder context:
+  // https://html.spec.whatwg.org/multipage/canvas.html#offscreencanvas-placeholder
+  virtual bool IsPlaceholder() const { return false; }
 
   virtual FloatSize ElementSize(const FloatSize& default_object_size,
                                 const RespectImageOrientationEnum) const = 0;

@@ -99,4 +99,35 @@ TEST(ManifestUtilTest, CaptureLinksFromString) {
             CaptureLinksFromString("unknown-value"));
 }
 
+TEST(ManifestUtilTest, RouteToFromString) {
+  using RouteTo = Manifest::LaunchHandler::RouteTo;
+  EXPECT_EQ(absl::nullopt, RouteToFromString(""));
+  EXPECT_EQ(RouteTo::kAuto, RouteToFromString("auto"));
+  EXPECT_EQ(RouteTo::kNewClient, RouteToFromString("new-client"));
+  EXPECT_EQ(RouteTo::kExistingClient, RouteToFromString("existing-client"));
+
+  // Uppercase spelling.
+  EXPECT_EQ(RouteTo::kNewClient, RouteToFromString("NEW-CLIENT"));
+
+  // Unknown value.
+  EXPECT_EQ(absl::nullopt, RouteToFromString("unknown-value"));
+}
+
+TEST(ManifestUtilTest, NavigateExistingClientFromString) {
+  using NavigateExistingClient =
+      Manifest::LaunchHandler::NavigateExistingClient;
+  EXPECT_EQ(absl::nullopt, NavigateExistingClientFromString(""));
+  EXPECT_EQ(NavigateExistingClient::kAlways,
+            NavigateExistingClientFromString("always"));
+  EXPECT_EQ(NavigateExistingClient::kNever,
+            NavigateExistingClientFromString("never"));
+
+  // Uppercase spelling.
+  EXPECT_EQ(NavigateExistingClient::kNever,
+            NavigateExistingClientFromString("NEVER"));
+
+  // Unknown value.
+  EXPECT_EQ(absl::nullopt, NavigateExistingClientFromString("unknown-value"));
+}
+
 }  // namespace blink

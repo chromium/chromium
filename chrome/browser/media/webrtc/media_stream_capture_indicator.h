@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
@@ -27,20 +26,22 @@ class ImageSkia;
 
 class StatusIcon;
 
-// Interface to display custom UI during stream capture.
+// Interface to display custom UI during screen-capture (tab/window/screen).
 class MediaStreamUI {
  public:
   // Called when stream capture is stopped.
   virtual ~MediaStreamUI() = default;
 
-  // Called when stream capture starts.
+  // Called when screen capture starts.
   // |stop_callback| is a callback to stop the stream.
   // |source_callback| is a callback to change the desktop capture source.
   // Returns the platform-dependent window ID for the UI, or 0 if not
   // applicable.
+  // |media_ids| represent the display-surfaces whose capture has started.
   virtual gfx::NativeViewId OnStarted(
       base::OnceClosure stop_callback,
-      content::MediaStreamUI::SourceCallback source_callback) = 0;
+      content::MediaStreamUI::SourceCallback source_callback,
+      const std::vector<content::DesktopMediaID>& media_ids) = 0;
 };
 
 // Keeps track of which WebContents are capturing media streams. Used to display
@@ -70,6 +71,10 @@ class MediaStreamCaptureIndicator
   };
 
   MediaStreamCaptureIndicator();
+
+  MediaStreamCaptureIndicator(const MediaStreamCaptureIndicator&) = delete;
+  MediaStreamCaptureIndicator& operator=(const MediaStreamCaptureIndicator&) =
+      delete;
 
   // Registers a new media stream for |web_contents| and returns an object used
   // by the content layer to notify about the state of the stream. Optionally,
@@ -164,8 +169,6 @@ class MediaStreamCaptureIndicator
   CommandTargets command_targets_;
 
   base::ObserverList<Observer, /* check_empty =*/true> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamCaptureIndicator);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_STREAM_CAPTURE_INDICATOR_H_

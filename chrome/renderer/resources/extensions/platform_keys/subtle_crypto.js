@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 var utils = require('utils');
-var internalAPI = require('platformKeys.internalAPI');
+var internalAPI = getInternalApi('platformKeysInternal');
 var keyModule = require('platformKeys.Key');
 var getSpki = keyModule.getSpki;
 var KeyUsage = keyModule.KeyUsage;
@@ -70,10 +70,13 @@ function isSupportedSignAlgorithm(normalizedAlgorithm) {
  * Implementation of WebCrypto.SubtleCrypto used in platformKeys and
  * enterprise.platformKeys.
  * @param {string} tokenId The id of the backing Token.
+ * @param {boolean} softwareBacked Whether the key operations should be executed
+ *     in software.
  * @constructor
  */
-function SubtleCryptoImpl(tokenId) {
+function SubtleCryptoImpl(tokenId, softwareBacked) {
   this.tokenId = tokenId;
+  this.softwareBacked = softwareBacked;
 }
 $Object.setPrototypeOf(SubtleCryptoImpl.prototype, null);
 

@@ -19,14 +19,17 @@ class ActiveHost;
 class MockHostConnectionMetricsLogger : public HostConnectionMetricsLogger {
  public:
   MockHostConnectionMetricsLogger(ActiveHost* active_host);
+
+  MockHostConnectionMetricsLogger(const MockHostConnectionMetricsLogger&) =
+      delete;
+  MockHostConnectionMetricsLogger& operator=(
+      const MockHostConnectionMetricsLogger&) = delete;
+
   ~MockHostConnectionMetricsLogger() override;
 
   MOCK_METHOD2(RecordConnectionToHostResult,
                void(HostConnectionMetricsLogger::ConnectionToHostResult,
                     const std::string&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockHostConnectionMetricsLogger);
 };
 
 }  // namespace tether

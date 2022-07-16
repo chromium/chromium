@@ -5,6 +5,7 @@
 #include "content/browser/sms/user_consent_handler.h"
 #include "base/callback.h"
 #include "content/browser/sms/webotp_service.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 
@@ -36,6 +37,10 @@ PromptBasedUserConsentHandler::~PromptBasedUserConsentHandler() = default;
 void PromptBasedUserConsentHandler::RequestUserConsent(
     const std::string& one_time_code,
     CompletionCallback on_complete) {
+  // This function cannot be called during prerendering as
+  // WebOTPService::OnReceive calls this, so the DCHECK is transitively true.
+  DCHECK_NE(frame_host_->GetLifecycleState(),
+            RenderFrameHost::LifecycleState::kPrerendering);
   WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(frame_host_);
   if (!web_contents->GetDelegate()) {
@@ -43,8 +48,14 @@ void PromptBasedUserConsentHandler::RequestUserConsent(
     return;
   }
 
-  DCHECK_EQ(frame_host_->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kActive);
+  if (!frame_host_->IsActive()) {
+    // Skips showing the SMS prompt if the RFH is inactive. e.g. it's stored in
+    // BackForwardCache or waiting to be unloaded and deleted.
+    // TODO(crbug.com/1230106): Record how often the RFH is inactive upon
+    // requesting user consent.
+    std::move(on_complete).Run(UserConsentResult::kInactiveRenderFrameHost);
+    return;
+  }
 
   on_complete_ = std::move(on_complete);
   is_prompt_open_ = true;

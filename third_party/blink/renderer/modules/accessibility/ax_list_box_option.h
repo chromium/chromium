@@ -41,6 +41,10 @@ class HTMLSelectElement;
 class AXListBoxOption final : public AXLayoutObject {
  public:
   AXListBoxOption(LayoutObject*, AXObjectCacheImpl&);
+
+  AXListBoxOption(const AXListBoxOption&) = delete;
+  AXListBoxOption& operator=(const AXListBoxOption&) = delete;
+
   ~AXListBoxOption() override;
 
   bool IsAXListBoxOption() const override { return true; }
@@ -61,8 +65,6 @@ class AXListBoxOption final : public AXLayoutObject {
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
 
   HTMLSelectElement* ListBoxOptionParentNode() const;
-
-  DISALLOW_COPY_AND_ASSIGN(AXListBoxOption);
 };
 
 }  // namespace blink

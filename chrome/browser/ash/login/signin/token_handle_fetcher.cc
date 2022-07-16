@@ -7,15 +7,14 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -35,6 +34,11 @@ class TokenHandleFetcherShutdownNotifierFactory
     return base::Singleton<TokenHandleFetcherShutdownNotifierFactory>::get();
   }
 
+  TokenHandleFetcherShutdownNotifierFactory(
+      const TokenHandleFetcherShutdownNotifierFactory&) = delete;
+  TokenHandleFetcherShutdownNotifierFactory& operator=(
+      const TokenHandleFetcherShutdownNotifierFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       TokenHandleFetcherShutdownNotifierFactory>;
@@ -45,8 +49,6 @@ class TokenHandleFetcherShutdownNotifierFactory
     DependsOn(IdentityManagerFactory::GetInstance());
   }
   ~TokenHandleFetcherShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(TokenHandleFetcherShutdownNotifierFactory);
 };
 
 }  // namespace
@@ -135,7 +137,7 @@ void TokenHandleFetcher::OnNetworkError(int response_code) {
 void TokenHandleFetcher::OnGetTokenInfoResponse(
     std::unique_ptr<base::DictionaryValue> token_info) {
   bool success = false;
-  if (!token_info->HasKey("error")) {
+  if (!token_info->FindKey("error")) {
     std::string handle;
     if (token_info->GetString("token_handle", &handle)) {
       success = true;

@@ -22,6 +22,10 @@ class ReadingListRemoverHelper : public ReadingListModelObserver {
   using Callback = base::OnceCallback<void(bool)>;
 
   explicit ReadingListRemoverHelper(ChromeBrowserState* browser_state);
+
+  ReadingListRemoverHelper(const ReadingListRemoverHelper&) = delete;
+  ReadingListRemoverHelper& operator=(const ReadingListRemoverHelper&) = delete;
+
   ~ReadingListRemoverHelper() override;
 
   // Removes all Reading list items and asynchronously invoke |completion| with
@@ -45,8 +49,6 @@ class ReadingListRemoverHelper : public ReadingListModelObserver {
       scoped_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListRemoverHelper);
 };
 
 }  // namespace reading_list

@@ -56,6 +56,9 @@ class BlobStorageBrowserTest : public ContentBrowserTest {
     limits_.max_file_size = kTestBlobStorageMaxFileSizeBytes;
   }
 
+  BlobStorageBrowserTest(const BlobStorageBrowserTest&) = delete;
+  BlobStorageBrowserTest& operator=(const BlobStorageBrowserTest&) = delete;
+
   scoped_refptr<ChromeBlobStorageContext> GetBlobContext() {
     return ChromeBlobStorageContext::GetFor(
         shell()->web_contents()->GetBrowserContext());
@@ -86,9 +89,6 @@ class BlobStorageBrowserTest : public ContentBrowserTest {
 
  protected:
   storage::BlobStorageLimits limits_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BlobStorageBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(BlobStorageBrowserTest, BlobCombinations) {

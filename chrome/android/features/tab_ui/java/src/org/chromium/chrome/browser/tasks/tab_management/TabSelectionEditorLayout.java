@@ -50,9 +50,8 @@ class TabSelectionEditorLayout extends SelectableListLayout<Integer> {
             SelectionDelegate<Integer> selectionDelegate) {
         mIsInitialized = true;
         initializeRecyclerView(adapter, recyclerView);
-        mToolbar =
-                (TabSelectionEditorToolbar) initializeToolbar(R.layout.tab_selection_editor_toolbar,
-                        selectionDelegate, 0, 0, 0, null, false, true);
+        mToolbar = (TabSelectionEditorToolbar) initializeToolbar(
+                R.layout.tab_selection_editor_toolbar, selectionDelegate, 0, 0, 0, null, true);
         mParentView = parentView;
     }
 

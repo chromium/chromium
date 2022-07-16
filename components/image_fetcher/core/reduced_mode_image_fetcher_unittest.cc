@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
@@ -54,6 +53,10 @@ const char kImageFetcherEventHistogramName[] = "ImageFetcher.Events";
 class ReducedModeImageFetcherTest : public testing::Test {
  public:
   ReducedModeImageFetcherTest() {}
+
+  ReducedModeImageFetcherTest(const ReducedModeImageFetcherTest&) = delete;
+  ReducedModeImageFetcherTest& operator=(const ReducedModeImageFetcherTest&) =
+      delete;
 
   ~ReducedModeImageFetcherTest() override {
     reduced_mode_image_fetcher_.reset();
@@ -156,8 +159,6 @@ class ReducedModeImageFetcherTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReducedModeImageFetcherTest);
 };
 
 TEST_F(ReducedModeImageFetcherTest, FetchNeedsTranscodingImageFromCache) {

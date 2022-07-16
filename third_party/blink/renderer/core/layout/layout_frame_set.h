@@ -67,6 +67,7 @@ class LayoutFrameSet final : public LayoutBox {
  public:
   LayoutFrameSet(HTMLFrameSetElement*);
   ~LayoutFrameSet() override;
+  void Trace(Visitor*) const override;
 
   LayoutObject* FirstChild() const {
     NOT_DESTROYED();
@@ -96,8 +97,8 @@ class LayoutFrameSet final : public LayoutBox {
 
   bool UserResize(const MouseEvent&);
 
-  bool CanResizeRow(const IntPoint&) const;
-  bool CanResizeColumn(const IntPoint&) const;
+  bool CanResizeRow(const gfx::Point&) const;
+  bool CanResizeColumn(const gfx::Point&) const;
 
   void NotifyFrameEdgeInfoChanged();
   HTMLFrameSetElement* FrameSet() const;

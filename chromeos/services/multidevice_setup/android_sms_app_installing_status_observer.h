@@ -46,6 +46,11 @@ class AndroidSmsAppInstallingStatusObserver
     static Factory* test_factory_;
   };
 
+  AndroidSmsAppInstallingStatusObserver(
+      const AndroidSmsAppInstallingStatusObserver&) = delete;
+  AndroidSmsAppInstallingStatusObserver& operator=(
+      const AndroidSmsAppInstallingStatusObserver&) = delete;
+
   ~AndroidSmsAppInstallingStatusObserver() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -75,8 +80,6 @@ class AndroidSmsAppInstallingStatusObserver
   PrefService* pref_service_;
   base::WeakPtrFactory<AndroidSmsAppInstallingStatusObserver> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidSmsAppInstallingStatusObserver);
 };
 
 }  // namespace multidevice_setup

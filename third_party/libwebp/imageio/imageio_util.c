@@ -148,9 +148,11 @@ void ImgIoUtilCopyPlane(const uint8_t* src, int src_stride,
 
 // -----------------------------------------------------------------------------
 
-int ImgIoUtilCheckSizeArgumentsOverflow(uint64_t nmemb, size_t size) {
-  const uint64_t total_size = nmemb * size;
+int ImgIoUtilCheckSizeArgumentsOverflow(uint64_t stride, size_t height) {
+  const uint64_t total_size = stride * height;
   int ok = (total_size == (size_t)total_size);
+  // check that 'stride' is representable as int:
+  ok = ok && ((uint64_t)(int)stride == stride);
 #if defined(WEBP_MAX_IMAGE_SIZE)
   ok = ok && (total_size <= (uint64_t)WEBP_MAX_IMAGE_SIZE);
 #endif

@@ -30,6 +30,9 @@ class HidGetDevicesFunction : public ExtensionFunction {
 
   HidGetDevicesFunction();
 
+  HidGetDevicesFunction(const HidGetDevicesFunction&) = delete;
+  HidGetDevicesFunction& operator=(const HidGetDevicesFunction&) = delete;
+
  private:
   ~HidGetDevicesFunction() override;
 
@@ -37,8 +40,6 @@ class HidGetDevicesFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   void OnEnumerationComplete(std::unique_ptr<base::ListValue> devices);
-
-  DISALLOW_COPY_AND_ASSIGN(HidGetDevicesFunction);
 };
 
 class HidGetUserSelectedDevicesFunction : public ExtensionFunction {
@@ -47,6 +48,11 @@ class HidGetUserSelectedDevicesFunction : public ExtensionFunction {
                              HID_GETUSERSELECTEDDEVICES)
 
   HidGetUserSelectedDevicesFunction();
+
+  HidGetUserSelectedDevicesFunction(const HidGetUserSelectedDevicesFunction&) =
+      delete;
+  HidGetUserSelectedDevicesFunction& operator=(
+      const HidGetUserSelectedDevicesFunction&) = delete;
 
  private:
   ~HidGetUserSelectedDevicesFunction() override;
@@ -57,8 +63,6 @@ class HidGetUserSelectedDevicesFunction : public ExtensionFunction {
   void OnDevicesChosen(std::vector<device::mojom::HidDeviceInfoPtr> devices);
 
   std::unique_ptr<DevicePermissionsPrompt> prompt_;
-
-  DISALLOW_COPY_AND_ASSIGN(HidGetUserSelectedDevicesFunction);
 };
 
 class HidConnectFunction : public ExtensionFunction {
@@ -66,6 +70,9 @@ class HidConnectFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("hid.connect", HID_CONNECT)
 
   HidConnectFunction();
+
+  HidConnectFunction(const HidConnectFunction&) = delete;
+  HidConnectFunction& operator=(const HidConnectFunction&) = delete;
 
  private:
   ~HidConnectFunction() override;
@@ -77,8 +84,6 @@ class HidConnectFunction : public ExtensionFunction {
       mojo::PendingRemote<device::mojom::HidConnection> connection);
 
   ApiResourceManager<HidConnectionResource>* connection_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(HidConnectFunction);
 };
 
 class HidDisconnectFunction : public ExtensionFunction {
@@ -87,13 +92,14 @@ class HidDisconnectFunction : public ExtensionFunction {
 
   HidDisconnectFunction();
 
+  HidDisconnectFunction(const HidDisconnectFunction&) = delete;
+  HidDisconnectFunction& operator=(const HidDisconnectFunction&) = delete;
+
  private:
   ~HidDisconnectFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(HidDisconnectFunction);
 };
 
 // Base class for extension functions that start some asynchronous work after
@@ -105,7 +111,7 @@ class HidConnectionIoFunction : public ExtensionFunction {
  protected:
   ~HidConnectionIoFunction() override;
 
-  // Returns true if params were successfully read from |args_|.
+  // Returns true if params were successfully read from |args()|.
   virtual bool ReadParameters() = 0;
   virtual void StartWork(device::mojom::HidConnection* connection) = 0;
 
@@ -124,6 +130,9 @@ class HidReceiveFunction : public HidConnectionIoFunction {
 
   HidReceiveFunction();
 
+  HidReceiveFunction(const HidReceiveFunction&) = delete;
+  HidReceiveFunction& operator=(const HidReceiveFunction&) = delete;
+
  private:
   ~HidReceiveFunction() override;
 
@@ -136,8 +145,6 @@ class HidReceiveFunction : public HidConnectionIoFunction {
                   const absl::optional<std::vector<uint8_t>>& buffer);
 
   std::unique_ptr<api::hid::Receive::Params> parameters_;
-
-  DISALLOW_COPY_AND_ASSIGN(HidReceiveFunction);
 };
 
 class HidSendFunction : public HidConnectionIoFunction {
@@ -145,6 +152,9 @@ class HidSendFunction : public HidConnectionIoFunction {
   DECLARE_EXTENSION_FUNCTION("hid.send", HID_SEND)
 
   HidSendFunction();
+
+  HidSendFunction(const HidSendFunction&) = delete;
+  HidSendFunction& operator=(const HidSendFunction&) = delete;
 
  private:
   ~HidSendFunction() override;
@@ -156,8 +166,6 @@ class HidSendFunction : public HidConnectionIoFunction {
   void OnFinished(bool success);
 
   std::unique_ptr<api::hid::Send::Params> parameters_;
-
-  DISALLOW_COPY_AND_ASSIGN(HidSendFunction);
 };
 
 class HidReceiveFeatureReportFunction : public HidConnectionIoFunction {
@@ -166,6 +174,11 @@ class HidReceiveFeatureReportFunction : public HidConnectionIoFunction {
                              HID_RECEIVEFEATUREREPORT)
 
   HidReceiveFeatureReportFunction();
+
+  HidReceiveFeatureReportFunction(const HidReceiveFeatureReportFunction&) =
+      delete;
+  HidReceiveFeatureReportFunction& operator=(
+      const HidReceiveFeatureReportFunction&) = delete;
 
  private:
   ~HidReceiveFeatureReportFunction() override;
@@ -178,8 +191,6 @@ class HidReceiveFeatureReportFunction : public HidConnectionIoFunction {
                   const absl::optional<std::vector<uint8_t>>& buffer);
 
   std::unique_ptr<api::hid::ReceiveFeatureReport::Params> parameters_;
-
-  DISALLOW_COPY_AND_ASSIGN(HidReceiveFeatureReportFunction);
 };
 
 class HidSendFeatureReportFunction : public HidConnectionIoFunction {
@@ -187,6 +198,10 @@ class HidSendFeatureReportFunction : public HidConnectionIoFunction {
   DECLARE_EXTENSION_FUNCTION("hid.sendFeatureReport", HID_SENDFEATUREREPORT)
 
   HidSendFeatureReportFunction();
+
+  HidSendFeatureReportFunction(const HidSendFeatureReportFunction&) = delete;
+  HidSendFeatureReportFunction& operator=(const HidSendFeatureReportFunction&) =
+      delete;
 
  private:
   ~HidSendFeatureReportFunction() override;
@@ -198,8 +213,6 @@ class HidSendFeatureReportFunction : public HidConnectionIoFunction {
   void OnFinished(bool success);
 
   std::unique_ptr<api::hid::SendFeatureReport::Params> parameters_;
-
-  DISALLOW_COPY_AND_ASSIGN(HidSendFeatureReportFunction);
 };
 
 }  // namespace extensions

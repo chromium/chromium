@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "url/gurl.h"
 
@@ -53,6 +54,19 @@ PolicyBlocklistNavigationThrottle::~PolicyBlocklistNavigationThrottle() {
     policy_service_->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
 }
 
+bool PolicyBlocklistNavigationThrottle::IsBlockedViewSourceNavigation() {
+  content::NavigationEntry* nav_entry =
+      navigation_handle()->GetNavigationEntry();
+  if (!nav_entry || !nav_entry->IsViewSourceMode())
+    return false;
+
+  GURL view_source_url = GURL(std::string("view-source:") +
+                              navigation_handle()->GetURL().spec());
+
+  return (blocklist_service_->GetURLBlocklistState(view_source_url) ==
+          URLBlocklistState::URL_IN_BLOCKLIST);
+}
+
 content::NavigationThrottle::ThrottleCheckResult
 PolicyBlocklistNavigationThrottle::WillStartRequest() {
   const GURL& url = navigation_handle()->GetURL();
@@ -66,8 +80,8 @@ PolicyBlocklistNavigationThrottle::WillStartRequest() {
   if (policy_service_) {
     // Defer until policies are loaded if there are no pref defines neither
     // UrlBlocklist nor UrlAllowlist and the policies from the Chrome domain
-    // have not been loaded yet. Otherwise we assume that we all the necessary
-    // info.
+    // have not been loaded yet. Otherwise we assume that we have all the
+    // necessary info.
     if (!prefs_->HasPrefPath(policy::policy_prefs::kUrlBlocklist) &&
         !prefs_->HasPrefPath(policy::policy_prefs::kUrlAllowlist) &&
         !policy_service_->IsFirstPolicyLoadComplete(
@@ -93,6 +107,11 @@ PolicyBlocklistNavigationThrottle::WillStartRequest() {
   URLBlocklistState blocklist_state =
       blocklist_service_->GetURLBlocklistState(url);
   if (blocklist_state == URLBlocklistState::URL_IN_BLOCKLIST) {
+    return ThrottleCheckResult(BLOCK_REQUEST,
+                               net::ERR_BLOCKED_BY_ADMINISTRATOR);
+  }
+
+  if (IsBlockedViewSourceNavigation()) {
     return ThrottleCheckResult(BLOCK_REQUEST,
                                net::ERR_BLOCKED_BY_ADMINISTRATOR);
   }
@@ -154,6 +173,11 @@ void PolicyBlocklistNavigationThrottle::OnFirstPoliciesLoadedImpl(
       "Navigation.PolicyBlocklistNavigationThrottle.PolicyLoadDelay",
       base::TimeTicks::Now() - policy_load_throttle_start_time_);
   if (blocklist_state == URLBlocklistState::URL_IN_BLOCKLIST) {
+    return CancelDeferredNavigation(
+        ThrottleCheckResult(BLOCK_REQUEST, net::ERR_BLOCKED_BY_ADMINISTRATOR));
+  }
+
+  if (IsBlockedViewSourceNavigation()) {
     return CancelDeferredNavigation(
         ThrottleCheckResult(BLOCK_REQUEST, net::ERR_BLOCKED_BY_ADMINISTRATOR));
   }

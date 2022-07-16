@@ -84,8 +84,9 @@ IN_PROC_BROWSER_TEST_F(ChromeTestExtensionLoaderUnitTest,
                   ->HasLoadedScripts());
 
   // Sanity check: Test that the scripts inject.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("example.com", "/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

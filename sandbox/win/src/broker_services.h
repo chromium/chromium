@@ -36,6 +36,9 @@ class BrokerServicesBase final : public BrokerServices,
  public:
   BrokerServicesBase();
 
+  BrokerServicesBase(const BrokerServicesBase&) = delete;
+  BrokerServicesBase& operator=(const BrokerServicesBase&) = delete;
+
   ~BrokerServicesBase();
 
   // BrokerServices interface.
@@ -66,8 +69,6 @@ class BrokerServicesBase final : public BrokerServices,
   // Provides a pool of threads that are used to wait on the IPC calls.
   // Owned by TargetEventsThread which is alive until our destructor.
   ThreadPool* thread_pool_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BrokerServicesBase);
 };
 
 }  // namespace sandbox

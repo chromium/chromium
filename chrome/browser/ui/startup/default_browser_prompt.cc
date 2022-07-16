@@ -9,10 +9,9 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -111,7 +110,7 @@ bool ShouldShowDefaultBrowserPrompt(Profile* profile) {
       return false;  // Failed to parse a reasonable period.
     base::Time show_on_or_after =
         base::Time::FromInternalValue(last_dismissed_value) +
-        base::TimeDelta::FromDays(period_days);
+        base::Days(period_days);
     if (base::Time::Now() < show_on_or_after)
       return false;
   }

@@ -1,14 +1,12 @@
 <style include="scanning-shared">
   #actionToolbar {
-    --height: 40px;
-
     align-items: center;
     background-color: rgba(var(--google-grey-900-rgb), .8);
-    border-radius:  calc(var(--height) / 2);
+    border-radius:  calc(var(--action-toolbar-height) / 2);
     display: flex;
-    height: var(--height);
+    height: var(--action-toolbar-height);
     justify-content: center;
-    width: 176px;
+    width: var(--action-toolbar-width);
   }
 
   .separator {
@@ -21,9 +19,11 @@
   }
 
   cr-icon-button {
-    --cr-icon-button-size: 24px;
-    --cr-icon-button-margin-start: 0;
     --cr-icon-button-fill-color: var(--google-grey-200);
+    --cr-icon-button-hover-background-color:
+          rgba(var(--google-grey-900-rgb), .4);
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-button-size: 24px;
   }
 
   #pageNumbers {
@@ -44,10 +44,14 @@
   }
 </style>
 <div id="actionToolbar">
-  <div id="pageNumbers">[[pageNumberText_]]</div>
+  <div id="pageNumbers" aria-hidden="true">[[pageNumberText_]]</div>
   <div class="separator"></div>
   <div>
-    <cr-icon-button id="removePageIcon" title="[[removeButtonTooltip_]]"></cr-icon-button>
-    <cr-icon-button id="rescanPageIcon" title="[[rescanButtonTooltip_]]"></cr-icon-button>
+    <cr-icon-button id="removePageIcon" on-click="onRemovePageIconClick_"
+        title="[[i18n('removePageButtonLabel')]]">
+    </cr-icon-button>
+    <cr-icon-button id="rescanPageIcon" on-click="onRescanPageIconClick_"
+         title="[[i18n('rescanPageButtonLabel')]]">
+    </cr-icon-button>
   </div>
 </div>

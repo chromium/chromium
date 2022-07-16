@@ -9,7 +9,6 @@
 #include <set>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
@@ -35,6 +34,11 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
                                       public content::WebContentsObserver {
  public:
   explicit TestSubresourceFilterObserver(content::WebContents* web_contents);
+
+  TestSubresourceFilterObserver(const TestSubresourceFilterObserver&) = delete;
+  TestSubresourceFilterObserver& operator=(
+      const TestSubresourceFilterObserver&) = delete;
+
   ~TestSubresourceFilterObserver() override;
 
   // SubresourceFilterObserver:
@@ -81,7 +85,6 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
   base::ScopedObservation<SubresourceFilterObserverManager,
                           SubresourceFilterObserver>
       scoped_observation_{this};
-  DISALLOW_COPY_AND_ASSIGN(TestSubresourceFilterObserver);
 };
 
 }  // namespace subresource_filter

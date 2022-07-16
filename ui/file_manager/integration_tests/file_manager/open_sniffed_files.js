@@ -25,11 +25,45 @@ async function sniffedFileOpen(path, entry) {
   // Open Files.App on |path|, add imgpdf to Downloads and Drive.
   const appId = await setupAndWaitUntilReady(path, [entry], [entry]);
 
-  // Open the pdf file from Files app.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'openFile', appId, [entry.targetPath]));
-  // Wait for a browser window to appear.
-  const browserWindows = await getBrowserWindows();
+  // Open the file from Files app.
+  if (remoteCall.isSwaMode() && entry.mimeType === 'application/pdf') {
+    // When SWA is enabled, Backlight is also enabled and becomes the default
+    // handler for PDF files. So we have to use the "open with" option to open
+    // in the browser.
+
+    // Select the file.
+    chrome.test.assertTrue(
+        !!await remoteCall.callRemoteTestUtil(
+            'selectFile', appId, [entry.targetPath]),
+        'selectFile failed');
+
+    // Right-click the selected file.
+    await remoteCall.waitAndRightClick(appId, '.table-row[selected]');
+
+    // Wait for the file context menu to appear.
+    await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+    await remoteCall.waitAndClickElement(
+        appId,
+        '#file-context-menu:not([hidden]) ' +
+            ' [command="#open-with"]:not([hidden])');
+
+    // Wait for the sub-menu to appear.
+    await remoteCall.waitForElement(appId, '#tasks-menu:not([hidden])');
+
+    // Wait for the sub-menu item "View".
+    await remoteCall.waitAndClickElement(
+        appId,
+        '#tasks-menu:not([hidden]) [file-type-icon="pdf"]:not([hidden])');
+  } else {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'openFile', appId, [entry.targetPath]));
+  }
+
+  // The SWA window itself is detected by getBrowserWindows().
+  const initilWindowCount = remoteCall.isSwaMode() ? 1 : 0;
+  // Wait for a new browser window to appear.
+  const browserWindows = await getBrowserWindows(initilWindowCount);
+
   // Find the main (normal) browser window.
   let normalWindow = undefined;
   for (let i = 0; i < browserWindows.length; ++i) {

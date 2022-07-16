@@ -34,13 +34,14 @@ namespace {
 class MockGroupObserver : public TestGroupCoordinator::Observer {
  public:
   MockGroupObserver() = default;
+
+  MockGroupObserver(const MockGroupObserver&) = delete;
+  MockGroupObserver& operator=(const MockGroupObserver&) = delete;
+
   ~MockGroupObserver() override = default;
 
   MOCK_METHOD1(OnMemberJoinedGroup, void(MockGroupMember* member));
   MOCK_METHOD1(OnMemberLeftGroup, void(MockGroupMember* member));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockGroupObserver);
 };
 
 TEST(GroupCoordinatorTest, NeverUsed) {

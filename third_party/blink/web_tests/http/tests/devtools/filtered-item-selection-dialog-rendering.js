@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies that SelectUISourceCodeDialog rendering works properly.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.evaluateInPagePromise(`    function dummy1() { }
       //# sourceURL=http://test/helloWorld12.js
     `);

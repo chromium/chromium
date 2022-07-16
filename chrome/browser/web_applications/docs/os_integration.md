@@ -1,13 +1,13 @@
 # [Web Apps](../README.md) - Operating System Integration
 
-The WebAppProvider system has to provide a lot of integrations with operating system surfaces for web apps. This functionality is usually different per operating system, and is usually invoked through the [`OsIntegrationManager`](../components/os_integration_manager.h).
+The WebAppProvider system has to provide a lot of integrations with operating system surfaces for web apps. This functionality is usually different per operating system, and is usually invoked through the [`OsIntegrationManager`](../os_integration_manager.h).
 
-The [`OsIntegrationManager`](../components/os_integration_manager.h)'s main responsibility is support the following operations:
+The [`OsIntegrationManager`](../os_integration_manager.h)'s main responsibility is support the following operations:
 1. Install operating system integration for a given web app.
 1. Update operating system integration for a given web app.
 1. Uninstall/remove operating system integration for a given web app.
 
-It owns sub-managers who are responsible for each individual operating system integration functionality (e.g. [`file_handler_manager.h`](../components/file_handler_manager.h) which owns the file handling feature). That manager will implement the non-os-specific logic, and then call into functions that have os-specific implementations (e.g. `web_app_file_handler_registration.h/_mac.h/_win.h/_linux.h` files).
+It owns sub-managers who are responsible for each individual operating system integration functionality (e.g. [`web_app_file_handler_manager.h`](../web_app_file_handler_manager.h) which owns the file handling feature). That manager will implement the non-os-specific logic, and then call into functions that have os-specific implementations (e.g. `web_app_file_handler_registration.h/_mac.h/_win.h/_linux.h` files).
 
 Below are sections describing how each OS integration works.
 
@@ -16,16 +16,16 @@ Below are sections describing how each OS integration works.
 The Protocol Handler component is responsible for handling the registration and
 unregistration of custom protocols for web apps ([explainer](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/URLProtocolHandler/explainer.md)).
 
-### ProtocolHandlerManager
+### WebAppProtocolHandlerManager
 
-The entrypoint to the component is `protocol_handler_manager.cc`, which contains
+The entrypoint to the component is `web_app_protocol_handler_manager.cc`, which contains
 methods for registering and unregistering custom protocol handlers for web apps,
 as well as any other logic related to protocol handling that should be
 OS-agnostic - such as URL translation (translating from a protocol URL to a web
 app URL) and interactions with the `ProtocolHandlerRegistry`, the browser
 component that stores information about handlers internally.
 
-`ProtocolHandlerManager` is also responsible for leveraging the
+`WebAppProtocolHandlerManager` is also responsible for leveraging the
 web_app_protocol_handler_registration API to register and unregister protocols
 with the underlying OS, so that custom protocols for a web app can be used
 from outside the browser.
@@ -46,7 +46,7 @@ as updating the browser internal registry).
 Protocol handlers, like other Web App features, interact both with the OS and
 the browser. On the browser, `protocol_handler_registry.cc` stores and manages
 all protocol handler registrations, for both web apps and web sites (registered
-via the HTML5 `registerProtocolHandler` API). The `ProtocolHandlerManager` is
+via the HTML5 `registerProtocolHandler` API). The `WebAppProtocolHandlerManager` is
 responsible for keeping both the OS and the browser in sync, by ensuring OS
 changes are reflected in the browser registry accordingly.
 
@@ -56,13 +56,13 @@ The flow of execution is similar for both registrations and unregistrations, so
 we only describe registrations below.
 
 1) Other components (typically the `OSIntegrationManager`) call into
-ProtocolHandlerManager:
+WebAppProtocolHandlerManager:
 
 ```cpp
 protocol_handler_manager_->RegisterOsProtocolHandlers(app_id);
 ```
 
-2) `ProtocolHandlerManager` forwards that to
+2) `WebAppProtocolHandlerManager` forwards that to
 `web_app_protocol_handler_registration`, which is OS specific. That API registers
 protocols with the OS via `ShellUtil` utilities off the main thread:
 

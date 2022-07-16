@@ -106,6 +106,10 @@ class MockRegistryValuePredicate : public InstallUtil::RegistryValuePredicate {
 };
 
 class InstallUtilTest : public testing::Test {
+ public:
+  InstallUtilTest(const InstallUtilTest&) = delete;
+  InstallUtilTest& operator=(const InstallUtilTest&) = delete;
+
  protected:
   InstallUtilTest() {}
 
@@ -123,8 +127,6 @@ class InstallUtilTest : public testing::Test {
  private:
   std::unique_ptr<registry_util::RegistryOverrideManager>
       registry_override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallUtilTest);
 };
 
 TEST_F(InstallUtilTest, ComposeCommandLine) {

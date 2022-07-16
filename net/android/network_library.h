@@ -57,12 +57,9 @@ bool GetMimeTypeFromExtension(const std::string& extension,
                               std::string* result);
 
 // Returns MCC+MNC (mobile country code + mobile network code) as
-// the numeric name of the current registered operator.
+// the numeric name of the current registered operator. This function
+// potentially blocks the thread, so use with care.
 NET_EXPORT std::string GetTelephonyNetworkOperator();
-
-// Returns MCC+MNC (mobile country code + mobile network code) as
-// the numeric name of the current SIM operator.
-NET_EXPORT std::string GetTelephonySimOperator();
 
 // Returns true if the device is roaming on the currently active network. When
 // true, it suggests that use of data may incur extra costs.

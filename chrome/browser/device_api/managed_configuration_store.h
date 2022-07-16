@@ -8,7 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/observer_list_threadsafe.h"
 #include "chrome/browser/device_api/managed_configuration_api.h"
-#include "extensions/browser/value_store/leveldb_value_store.h"
+#include "components/value_store/leveldb_value_store.h"
 #include "url/origin.h"
 
 namespace base {
@@ -38,13 +38,13 @@ class ManagedConfigurationStore {
 
   // Read/Write operations must be called on |backend_sequence_|.
   void SetCurrentPolicy(const base::DictionaryValue& current_configuration);
-  ValueStore::ReadResult Get(const std::vector<std::string>& keys);
+  value_store::ValueStore::ReadResult Get(const std::vector<std::string>& keys);
 
  private:
   scoped_refptr<base::SequencedTaskRunner> backend_sequence_;
   const url::Origin origin_;
   const base::FilePath path_;
-  std::unique_ptr<ValueStore> store_;
+  std::unique_ptr<value_store::ValueStore> store_;
   scoped_refptr<base::ObserverListThreadSafe<ManagedConfigurationAPI::Observer>>
       observers_;
 };

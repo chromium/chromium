@@ -61,9 +61,7 @@ source_set("toolbar") {
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/images",
-    "//ios/public/provider/chrome/browser/voice",
+    "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
     "//ios/web",
   ]
 
@@ -148,9 +146,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/test:test_support",
-    "//ios/public/provider/chrome/browser:test_support",
-    "//ios/public/provider/chrome/browser/images:test_support",
-    "//ios/public/provider/chrome/browser/voice",
+    "//ios/public/provider/chrome/browser/voice_search:test_voice_search",
+    "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
     "//ios/web",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
@@ -162,7 +159,6 @@ source_set("unit_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -181,14 +177,18 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
 
-  sources = [ "adaptive_toolbar_app_interface.h" ]
+  sources = [
+    "adaptive_toolbar_app_interface.h",
+    "adaptive_toolbar_app_interface_stub.mm",
+  ]
+
+  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }
 
 source_set("eg2_tests") {
@@ -196,7 +196,6 @@ source_set("eg2_tests") {
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
-  defines = [ "CHROME_EARL_GREY_2" ]
   testonly = true
   sources = [
     "adaptive_toolbar_egtest.mm",

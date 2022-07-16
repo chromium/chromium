@@ -8,7 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -24,7 +24,7 @@ ExtensionInstallEventLogManagerWrapper::
 // static
 ExtensionInstallEventLogManagerWrapper*
 ExtensionInstallEventLogManagerWrapper::CreateForProfile(Profile* profile) {
-  if (!profile->GetUserCloudPolicyManagerChromeOS())
+  if (!profile->GetUserCloudPolicyManagerAsh())
     return nullptr;
   ExtensionInstallEventLogManagerWrapper* wrapper =
       new ExtensionInstallEventLogManagerWrapper(profile);
@@ -68,7 +68,7 @@ void ExtensionInstallEventLogManagerWrapper::Init() {
 void ExtensionInstallEventLogManagerWrapper::CreateManager() {
   log_manager_ = std::make_unique<ExtensionInstallEventLogManager>(
       log_task_runner_.get(),
-      profile_->GetUserCloudPolicyManagerChromeOS()
+      profile_->GetUserCloudPolicyManagerAsh()
           ->GetExtensionInstallEventLogUploader(),
       profile_);
 }

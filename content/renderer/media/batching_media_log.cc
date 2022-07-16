@@ -9,9 +9,9 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "media/base/logging_override_if_enabled.h"
 
@@ -130,11 +130,11 @@ void BatchingMediaLog::AddLogRecordLocked(
       return;
 
     ipc_send_pending_ = true;
-    delay_for_next_ipc_send = base::TimeDelta::FromSeconds(1) -
-                              (tick_clock_->NowTicks() - last_ipc_send_time_);
+    delay_for_next_ipc_send =
+        base::Seconds(1) - (tick_clock_->NowTicks() - last_ipc_send_time_);
   }
 
-  if (delay_for_next_ipc_send > base::TimeDelta()) {
+  if (delay_for_next_ipc_send.is_positive()) {
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&BatchingMediaLog::SendQueuedMediaEvents, weak_this_),
@@ -175,8 +175,8 @@ std::string BatchingMediaLog::MediaEventToMessageString(
     const media::MediaLogRecord& event) {
   switch (event.type) {
     case media::MediaLogRecord::Type::kMediaStatus: {
-      int error_code = 0;
-      event.params.GetInteger(media::MediaLog::kStatusText, &error_code);
+      int error_code =
+          event.params.FindIntKey(media::MediaLog::kStatusText).value_or(0);
       DCHECK_NE(error_code, 0);
       return PipelineStatusToString(
           static_cast<media::PipelineStatus>(error_code));

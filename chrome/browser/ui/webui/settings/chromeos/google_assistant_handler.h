@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_GOOGLE_ASSISTANT_HANDLER_H_
 
 #include "ash/components/audio/cras_audio_handler.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -17,6 +16,10 @@ class GoogleAssistantHandler : public ::settings::SettingsPageUIHandler,
                                chromeos::CrasAudioHandler::AudioObserver {
  public:
   GoogleAssistantHandler();
+
+  GoogleAssistantHandler(const GoogleAssistantHandler&) = delete;
+  GoogleAssistantHandler& operator=(const GoogleAssistantHandler&) = delete;
+
   ~GoogleAssistantHandler() override;
 
   void RegisterMessages() override;
@@ -39,8 +42,6 @@ class GoogleAssistantHandler : public ::settings::SettingsPageUIHandler,
   bool pending_hotword_update_ = false;
 
   base::WeakPtrFactory<GoogleAssistantHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GoogleAssistantHandler);
 };
 
 }  // namespace settings

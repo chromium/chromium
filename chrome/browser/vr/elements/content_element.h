@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_CONTENT_ELEMENT_H_
 #define CHROME_BROWSER_VR_ELEMENTS_CONTENT_ELEMENT_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/platform_ui_element.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 
@@ -27,6 +26,10 @@ class VR_UI_EXPORT ContentElement : public PlatformUiElement {
       ScreenBoundsChangedCallback;
 
   ContentElement(ContentInputDelegate* delegate, ScreenBoundsChangedCallback);
+
+  ContentElement(const ContentElement&) = delete;
+  ContentElement& operator=(const ContentElement&) = delete;
+
   ~ContentElement() override;
 
   // UiElement overrides.
@@ -70,8 +73,6 @@ class VR_UI_EXPORT ContentElement : public PlatformUiElement {
   ContentInputDelegate* content_delegate_ = nullptr;
   base::RepeatingCallback<void(const gfx::SizeF& size)>
       on_size_changed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentElement);
 };
 
 }  // namespace vr

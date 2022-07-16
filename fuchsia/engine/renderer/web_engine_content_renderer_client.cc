@@ -7,15 +7,16 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "components/cdm/renderer/widevine_key_system_properties.h"
 #include "components/media_control/renderer/media_playback_options.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "components/on_load_script_injector/renderer/on_load_script_injector.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
 #include "fuchsia/engine/common/cast_streaming.h"
 #include "fuchsia/engine/features.h"
+#include "fuchsia/engine/renderer/web_engine_media_renderer_factory.h"
 #include "fuchsia/engine/renderer/web_engine_url_loader_throttle_provider.h"
 #include "fuchsia/engine/switches.h"
 #include "media/base/demuxer.h"
@@ -34,10 +35,10 @@ namespace {
 bool IsSupportedHardwareVideoCodec(const media::VideoType& type) {
   // TODO(crbug.com/1013412): Replace these hardcoded checks with a query to the
   // fuchsia.mediacodec FIDL service.
-  if (type.codec == media::kCodecH264 && type.level <= 41)
+  if (type.codec == media::VideoCodec::kH264 && type.level <= 41)
     return true;
 
-  if (type.codec == media::kCodecVP9 && type.level <= 40)
+  if (type.codec == media::VideoCodec::kVP9 && type.level <= 40)
     return true;
 
   return false;
@@ -130,7 +131,7 @@ void WebEngineContentRendererClient::RenderThreadStarted() {
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kBrowserTest)) {
     memory_pressure_monitor_ =
-        std::make_unique<util::MultiSourceMemoryPressureMonitor>();
+        std::make_unique<memory_pressure::MultiSourceMemoryPressureMonitor>();
     memory_pressure_monitor_->Start();
   }
 }
@@ -175,19 +176,19 @@ void WebEngineContentRendererClient::AddSupportedKeySystems(
   media::SupportedCodecs supported_video_codecs = 0;
   constexpr uint8_t kUnknownCodecLevel = 0;
   if (IsSupportedHardwareVideoCodec(media::VideoType{
-          media::kCodecVP9, media::VP9PROFILE_PROFILE0, kUnknownCodecLevel,
-          media::VideoColorSpace::REC709()})) {
+          media::VideoCodec::kVP9, media::VP9PROFILE_PROFILE0,
+          kUnknownCodecLevel, media::VideoColorSpace::REC709()})) {
     supported_video_codecs |= media::EME_CODEC_VP9_PROFILE0;
   }
 
   if (IsSupportedHardwareVideoCodec(media::VideoType{
-          media::kCodecVP9, media::VP9PROFILE_PROFILE2, kUnknownCodecLevel,
-          media::VideoColorSpace::REC709()})) {
+          media::VideoCodec::kVP9, media::VP9PROFILE_PROFILE2,
+          kUnknownCodecLevel, media::VideoColorSpace::REC709()})) {
     supported_video_codecs |= media::EME_CODEC_VP9_PROFILE2;
   }
 
   if (IsSupportedHardwareVideoCodec(media::VideoType{
-          media::kCodecH264, media::H264PROFILE_MAIN, kUnknownCodecLevel,
+          media::VideoCodec::kH264, media::H264PROFILE_MAIN, kUnknownCodecLevel,
           media::VideoColorSpace::REC709()})) {
     supported_video_codecs |= media::EME_CODEC_AVC1;
   }
@@ -261,6 +262,18 @@ WebEngineContentRendererClient::OverrideDemuxerForUrl(
 
   return cast_streaming_demuxer_provider_.OverrideDemuxerForUrl(
       render_frame, url, std::move(media_task_runner));
+}
+
+std::unique_ptr<media::RendererFactory>
+WebEngineContentRendererClient::GetBaseRendererFactory(
+    content::RenderFrame* render_frame,
+    media::MediaLog* media_log,
+    media::DecoderFactory* decoder_factory,
+    base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>
+        get_gpu_factories_cb) {
+  return std::make_unique<WebEngineMediaRendererFactory>(
+      media_log, decoder_factory, std::move(get_gpu_factories_cb),
+      render_frame->GetBrowserInterfaceBroker());
 }
 
 bool WebEngineContentRendererClient::RunClosureWhenInForeground(

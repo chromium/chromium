@@ -16,13 +16,14 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/back_forward_cache/disabled_reason_id.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
@@ -31,6 +32,7 @@
 #include "content/browser/devtools/protocol/handler_helpers.h"
 #include "content/browser/manifest/manifest_manager_host.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -54,6 +56,8 @@
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "net/base/filename_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -192,8 +196,9 @@ bool CanExecuteGlobalCommands(
 
 PageHandler::PageHandler(EmulationHandler* emulation_handler,
                          BrowserHandler* browser_handler,
-                         bool allow_file_access)
+                         bool allow_unsafe_operations)
     : DevToolsDomainHandler(Page::Metainfo::domainName),
+      allow_unsafe_operations_(allow_unsafe_operations),
       enabled_(false),
       screencast_enabled_(false),
       screencast_quality_(kDefaultScreenshotQuality),
@@ -814,7 +819,7 @@ void PageHandler::CaptureScreenshot(
   absl::optional<blink::web_pref::WebPreferences> maybe_original_web_prefs;
   if (capture_beyond_viewport.fromMaybe(false)) {
     blink::web_pref::WebPreferences original_web_prefs =
-        host_->GetRenderViewHost()->GetDelegate()->GetOrCreateWebPreferences();
+        host_->render_view_host()->GetDelegate()->GetOrCreateWebPreferences();
     maybe_original_web_prefs = original_web_prefs;
 
     blink::web_pref::WebPreferences modified_web_prefs = original_web_prefs;
@@ -822,7 +827,7 @@ void PageHandler::CaptureScreenshot(
     // screenshot. Details: https://crbug.com/1003629.
     modified_web_prefs.hide_scrollbars = true;
     modified_web_prefs.record_whole_document = true;
-    host_->GetRenderViewHost()->GetDelegate()->SetWebPreferences(
+    host_->render_view_host()->GetDelegate()->SetWebPreferences(
         modified_web_prefs);
 
     {
@@ -869,27 +874,6 @@ void PageHandler::CaptureScreenshot(
                      requested_image_size, original_params,
                      maybe_original_web_prefs),
       true);
-}
-
-void PageHandler::PrintToPDF(Maybe<bool> landscape,
-                             Maybe<bool> display_header_footer,
-                             Maybe<bool> print_background,
-                             Maybe<double> scale,
-                             Maybe<double> paper_width,
-                             Maybe<double> paper_height,
-                             Maybe<double> margin_top,
-                             Maybe<double> margin_bottom,
-                             Maybe<double> margin_left,
-                             Maybe<double> margin_right,
-                             Maybe<String> page_ranges,
-                             Maybe<bool> ignore_invalid_page_ranges,
-                             Maybe<String> header_template,
-                             Maybe<String> footer_template,
-                             Maybe<bool> prefer_css_page_size,
-                             Maybe<String> transfer_mode,
-                             std::unique_ptr<PrintToPDFCallback> callback) {
-  callback->sendFailure(Response::ServerError("PrintToPDF is not implemented"));
-  return;
 }
 
 Response PageHandler::StartScreencast(Maybe<std::string> format,
@@ -1140,7 +1124,7 @@ void PageHandler::ScreencastFrameCaptured(
           FROM_HERE,
           base::BindOnce(&PageHandler::InnerSwapCompositorFrame,
                          weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kFrameRetryDelayMs));
+          base::Milliseconds(kFrameRetryDelayMs));
     }
     --frames_in_flight_;
     return;
@@ -1181,7 +1165,7 @@ void PageHandler::ScreenshotCaptured(
   }
 
   if (maybe_original_web_prefs) {
-    host_->GetRenderViewHost()->GetDelegate()->SetWebPreferences(
+    host_->render_view_host()->GetDelegate()->SetWebPreferences(
         maybe_original_web_prefs.value());
   }
 
@@ -1207,7 +1191,7 @@ void PageHandler::ScreenshotCaptured(
 
 void PageHandler::GotManifest(std::unique_ptr<GetAppManifestCallback> callback,
                               const GURL& manifest_url,
-                              const ::blink::Manifest& parsed_manifest,
+                              ::blink::mojom::ManifestPtr parsed_manifest,
                               blink::mojom::ManifestDebugInfoPtr debug_info) {
   auto errors = std::make_unique<protocol::Array<Page::AppManifestError>>();
   bool failed = true;
@@ -1226,9 +1210,9 @@ void PageHandler::GotManifest(std::unique_ptr<GetAppManifestCallback> callback,
   }
 
   std::unique_ptr<Page::AppManifestParsedProperties> parsed;
-  if (!parsed_manifest.IsEmpty()) {
+  if (!blink::IsEmptyManifest(parsed_manifest)) {
     parsed = Page::AppManifestParsedProperties::Create()
-                 .SetScope(parsed_manifest.scope.possibly_invalid_spec())
+                 .SetScope(parsed_manifest->scope.possibly_invalid_spec())
                  .Build();
   }
 
@@ -1278,6 +1262,13 @@ void PageHandler::GetManifestIcons(
   // TODO: Use InstallableManager once it moves into content/.
   // Until then, this code is only used to return no image data in the tests.
   callback->sendSuccess(Maybe<Binary>());
+}
+
+void PageHandler::GetAppId(std::unique_ptr<GetAppIdCallback> callback) {
+  // TODO: Use InstallableManager once it moves into content/.
+  // Until then, this code is only used to return no image data in the tests.
+  callback->sendSuccess(protocol::Maybe<protocol::String>(),
+                        protocol::Maybe<protocol::String>());
 }
 
 Response PageHandler::SetBypassCSP(bool enabled) {
@@ -1395,6 +1386,9 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kOptInUnloadHeaderNotPresent:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           OptInUnloadHeaderNotPresent;
+    case Reason::kUnloadHandlerExistsInMainFrame:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          UnloadHandlerExistsInMainFrame;
     case Reason::kUnloadHandlerExistsInSubFrame:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           UnloadHandlerExistsInSubFrame;
@@ -1409,6 +1403,11 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           CacheControlNoStoreHTTPOnlyCookieModified;
+    case Reason::kNoResponseHead:
+      return Page::BackForwardCacheNotRestoredReasonEnum::NoResponseHead;
+    case Reason::kActivationNavigationsDisallowedForBug1234857:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          ActivationNavigationsDisallowedForBug1234857;
     case Reason::kBlocklistedFeatures:
       // Blocklisted features should be handled separately and be broken down
       // into sub reasons.
@@ -1425,6 +1424,8 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
   switch (feature) {
     case WebSchedulerTrackedFeature::kWebSocket:
       return Page::BackForwardCacheNotRestoredReasonEnum::WebSocket;
+    case WebSchedulerTrackedFeature::kWebTransport:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebTransport;
     case WebSchedulerTrackedFeature::kWebRTC:
       return Page::BackForwardCacheNotRestoredReasonEnum::WebRTC;
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
@@ -1489,8 +1490,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
           RequestedStorageAccessGrant;
     case WebSchedulerTrackedFeature::kWebNfc:
       return Page::BackForwardCacheNotRestoredReasonEnum::WebNfc;
-    case WebSchedulerTrackedFeature::kWebFileSystem:
-      return Page::BackForwardCacheNotRestoredReasonEnum::WebFileSystem;
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           OutstandingNetworkRequestFetch;
@@ -1522,13 +1521,117 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           OutstandingNetworkRequestDirectSocket;
-    case WebSchedulerTrackedFeature::kIsolatedWorldScript:
-      return Page::BackForwardCacheNotRestoredReasonEnum::IsolatedWorldScript;
+    case WebSchedulerTrackedFeature::kInjectedJavascript:
+      return Page::BackForwardCacheNotRestoredReasonEnum::InjectedJavascript;
     case WebSchedulerTrackedFeature::kInjectedStyleSheet:
       return Page::BackForwardCacheNotRestoredReasonEnum::InjectedStyleSheet;
-    case WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          MediaSessionImplOnServiceCreated;
+    case WebSchedulerTrackedFeature::kDummy:
+      // This is a test only reason and should never be called.
+      NOTREACHED();
+      return Page::BackForwardCacheNotRestoredReasonEnum::Dummy;
+  }
+}
+
+Page::BackForwardCacheNotRestoredReason
+DisableForRenderFrameHostReasonToProtocol(
+    BackForwardCache::DisabledReason reason) {
+  switch (reason.source) {
+    case BackForwardCache::DisabledSource::kLegacy:
+      NOTREACHED();
+      return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
+    case BackForwardCache::DisabledSource::kTesting:
+      NOTREACHED();
+      return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
+    case BackForwardCache::DisabledSource::kContent:
+      switch (
+          static_cast<BackForwardCacheDisable::DisabledReasonId>(reason.id)) {
+        case BackForwardCacheDisable::DisabledReasonId::kUnknown:
+          return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
+        case BackForwardCacheDisable::DisabledReasonId::kSecurityHandler:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              ContentSecurityHandler;
+        case BackForwardCacheDisable::DisabledReasonId::kWebAuthenticationAPI:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              ContentWebAuthenticationAPI;
+        case BackForwardCacheDisable::DisabledReasonId::kFileChooser:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              ContentFileChooser;
+        case BackForwardCacheDisable::DisabledReasonId::kSerial:
+          return Page::BackForwardCacheNotRestoredReasonEnum::ContentSerial;
+        case BackForwardCacheDisable::DisabledReasonId::kFileSystemAccess:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              ContentFileSystemAccess;
+        case BackForwardCacheDisable::DisabledReasonId::
+            kMediaDevicesDispatcherHost:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              ContentMediaDevicesDispatcherHost;
+        case BackForwardCacheDisable::DisabledReasonId::kWebBluetooth:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              ContentWebBluetooth;
+        case BackForwardCacheDisable::DisabledReasonId::kWebUSB:
+          return Page::BackForwardCacheNotRestoredReasonEnum::ContentWebUSB;
+        case BackForwardCacheDisable::DisabledReasonId::kMediaSession:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              ContentMediaSession;
+        case BackForwardCacheDisable::DisabledReasonId::kMediaSessionService:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              ContentMediaSessionService;
+      }
+    case BackForwardCache::DisabledSource::kEmbedder:
+      switch (static_cast<back_forward_cache::DisabledReasonId>(reason.id)) {
+        case back_forward_cache::DisabledReasonId::kUnknown:
+          return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
+        case back_forward_cache::DisabledReasonId::kPopupBlockerTabHelper:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderPopupBlockerTabHelper;
+        case back_forward_cache::DisabledReasonId::
+            kSafeBrowsingTriggeredPopupBlocker:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderSafeBrowsingTriggeredPopupBlocker;
+        case back_forward_cache::DisabledReasonId::kSafeBrowsingThreatDetails:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderSafeBrowsingThreatDetails;
+        case back_forward_cache::DisabledReasonId::kAppBannerManager:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderAppBannerManager;
+        case back_forward_cache::DisabledReasonId::kDomDistillerViewerSource:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderDomDistillerViewerSource;
+        case back_forward_cache::DisabledReasonId::
+            kDomDistiller_SelfDeletingRequestDelegate:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderDomDistillerSelfDeletingRequestDelegate;
+        case back_forward_cache::DisabledReasonId::kOomInterventionTabHelper:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderOomInterventionTabHelper;
+        case back_forward_cache::DisabledReasonId::kOfflinePage:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderOfflinePage;
+        case back_forward_cache::DisabledReasonId::
+            kChromePasswordManagerClient_BindCredentialManager:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderChromePasswordManagerClientBindCredentialManager;
+        case back_forward_cache::DisabledReasonId::kPermissionRequestManager:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderPermissionRequestManager;
+        case back_forward_cache::DisabledReasonId::kModalDialog:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderModalDialog;
+        case back_forward_cache::DisabledReasonId::kExtensions:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderExtensions;
+        case back_forward_cache::DisabledReasonId::kExtensionMessaging:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderExtensionMessaging;
+        case back_forward_cache::DisabledReasonId::
+            kExtensionMessagingForOpenPort:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderExtensionMessagingForOpenPort;
+        case back_forward_cache::DisabledReasonId::
+            kExtensionSentMessageToCachedFrame:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderExtensionSentMessageToCachedFrame;
+      }
   }
 }
 
@@ -1580,12 +1683,15 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kCacheControlNoStore:
     case Reason::kCacheControlNoStoreCookieModified:
     case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
+    case Reason::kNoResponseHead:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case Reason::kOptInUnloadHeaderNotPresent:
+    case Reason::kUnloadHandlerExistsInMainFrame:
     case Reason::kUnloadHandlerExistsInSubFrame:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
     case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
     case Reason::kUnknown:
+    case Reason::kActivationNavigationsDisallowedForBug1234857:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
     case Reason::kBlocklistedFeatures:
       NOTREACHED();
@@ -1597,60 +1703,67 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     WebSchedulerTrackedFeature feature) {
   switch (feature) {
     case WebSchedulerTrackedFeature::kWebRTC:
-    case WebSchedulerTrackedFeature::kContainsPlugins:
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers:
     case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:
+    case WebSchedulerTrackedFeature::kBroadcastChannel:
+    case WebSchedulerTrackedFeature::kIndexedDBConnection:
+    case WebSchedulerTrackedFeature::kWebXR:
+    case WebSchedulerTrackedFeature::kSharedWorker:
+    case WebSchedulerTrackedFeature::kWebHID:
+    case WebSchedulerTrackedFeature::kWebShare:
+    case WebSchedulerTrackedFeature::kWebDatabase:
+    case WebSchedulerTrackedFeature::kPaymentManager:
+    case WebSchedulerTrackedFeature::kKeyboardLock:
+    case WebSchedulerTrackedFeature::kWebOTPService:
+    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
+    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch:
+    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR:
+    case WebSchedulerTrackedFeature::kWebTransport:
+      return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
+    case WebSchedulerTrackedFeature::kPortal:
+    case WebSchedulerTrackedFeature::kWebNfc:
+    case WebSchedulerTrackedFeature::kRequestedStorageAccessGrant:
     case WebSchedulerTrackedFeature::kRequestedNotificationsPermission:
     case WebSchedulerTrackedFeature::kRequestedMIDIPermission:
     case WebSchedulerTrackedFeature::kRequestedAudioCapturePermission:
     case WebSchedulerTrackedFeature::kRequestedVideoCapturePermission:
     case WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors:
     case WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission:
-    case WebSchedulerTrackedFeature::kBroadcastChannel:
-    case WebSchedulerTrackedFeature::kIndexedDBConnection:
-    case WebSchedulerTrackedFeature::kWebXR:
-    case WebSchedulerTrackedFeature::kSharedWorker:
-    case WebSchedulerTrackedFeature::kWebLocks:
-    case WebSchedulerTrackedFeature::kWebHID:
-    case WebSchedulerTrackedFeature::kWebShare:
-    case WebSchedulerTrackedFeature::kRequestedStorageAccessGrant:
-    case WebSchedulerTrackedFeature::kWebNfc:
-    case WebSchedulerTrackedFeature::kWebFileSystem:
-    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch:
-    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR:
-    case WebSchedulerTrackedFeature::kPrinting:
-    case WebSchedulerTrackedFeature::kWebDatabase:
-    case WebSchedulerTrackedFeature::kPictureInPicture:
-    case WebSchedulerTrackedFeature::kPortal:
-    case WebSchedulerTrackedFeature::kSpeechRecognizer:
+    case WebSchedulerTrackedFeature::kContainsPlugins:
     case WebSchedulerTrackedFeature::kIdleManager:
-    case WebSchedulerTrackedFeature::kPaymentManager:
-    case WebSchedulerTrackedFeature::kSpeechSynthesis:
-    case WebSchedulerTrackedFeature::kKeyboardLock:
-    case WebSchedulerTrackedFeature::kWebOTPService:
-    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
-    case WebSchedulerTrackedFeature::kInjectedStyleSheet:
-    case WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated:
-      return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
+    case WebSchedulerTrackedFeature::kSpeechRecognizer:
+    case WebSchedulerTrackedFeature::kPrinting:
+    case WebSchedulerTrackedFeature::kPictureInPicture:
+    case WebSchedulerTrackedFeature::kWebLocks:
     case WebSchedulerTrackedFeature::kAppBanner:
     case WebSchedulerTrackedFeature::kWebSocket:
     case WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet:
+    case WebSchedulerTrackedFeature::kSpeechSynthesis:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore:
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
-    case WebSchedulerTrackedFeature::kIsolatedWorldScript:
     case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache:
     case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore:
+    case WebSchedulerTrackedFeature::kInjectedStyleSheet:
+    case WebSchedulerTrackedFeature::kInjectedJavascript:
     case WebSchedulerTrackedFeature::kDocumentLoaded:
+    case WebSchedulerTrackedFeature::kDummy:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
   }
+}
+
+Page::BackForwardCacheNotRestoredReasonType
+MapDisableForRenderFrameHostReasonToType(
+    BackForwardCache::DisabledReason reason) {
+  return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
 }
 
 std::unique_ptr<protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>
 CreateNotRestoredExplanation(
     const BackForwardCacheCanStoreDocumentResult::NotStoredReasons
         not_stored_reasons,
-    const blink::scheduler::WebSchedulerTrackedFeatures blocklisted_features) {
+    const blink::scheduler::WebSchedulerTrackedFeatures blocklisted_features,
+    const std::set<BackForwardCache::DisabledReason>& disabled_reasons) {
   auto reasons = std::make_unique<
       protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>();
 
@@ -1666,6 +1779,17 @@ CreateNotRestoredExplanation(
                 .SetReason(BlocklistedFeatureToProtocol(feature))
                 .Build());
       }
+    } else if (reason == BackForwardCacheMetrics::NotRestoredReason::
+                             kDisableForRenderFrameHostCalled) {
+      for (auto disabled_reason : disabled_reasons) {
+        reasons->emplace_back(
+            Page::BackForwardCacheNotRestoredExplanation::Create()
+                .SetType(
+                    MapDisableForRenderFrameHostReasonToType(disabled_reason))
+                .SetReason(
+                    DisableForRenderFrameHostReasonToProtocol(disabled_reason))
+                .Build());
+      }
     } else {
       reasons->emplace_back(
           Page::BackForwardCacheNotRestoredExplanation::Create()
@@ -1675,6 +1799,15 @@ CreateNotRestoredExplanation(
     }
   }
   return reasons;
+}
+
+Response PageHandler::AddCompilationCache(const std::string& url,
+                                          const Binary& data) {
+  // We're just checking a permission here, the real business happens
+  // in the renderer, if we fall through.
+  if (allow_unsafe_operations_)
+    return Response::FallThrough();
+  return Response::ServerError("Permission denied");
 }
 
 void PageHandler::BackForwardCacheNotUsed(
@@ -1689,7 +1822,8 @@ void PageHandler::BackForwardCacheNotUsed(
   std::string frame_id = ftn->devtools_frame_token().ToString();
 
   auto explanation = CreateNotRestoredExplanation(
-      result->not_stored_reasons(), result->blocklisted_features());
+      result->not_stored_reasons(), result->blocklisted_features(),
+      result->disabled_reasons());
 
   frontend_->BackForwardCacheNotUsed(devtools_navigation_token, frame_id,
                                      std::move(explanation));

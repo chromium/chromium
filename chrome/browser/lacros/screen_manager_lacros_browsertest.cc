@@ -82,8 +82,7 @@ uint64_t WaitForWindow(std::string title) {
   // When the browser test start, there is no guarantee that the window is
   // open from ash's perspective.
   base::RepeatingTimer timer;
-  timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
-              std::move(look_for_window));
+  timer.Start(FROM_HERE, base::Milliseconds(1), std::move(look_for_window));
   run_loop.Run();
 
   return window_id;
@@ -99,7 +98,7 @@ uint64_t WaitForLacrosToBeAvailableInAsh(Browser* browser) {
   std::string html =
       base::StringPrintf(kLacrosPageTitleHTMLFormat, title.c_str());
   GURL url(std::string("data:text/html,") + html);
-  ui_test_utils::NavigateToURL(browser, url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
 
   return WaitForWindow(std::move(title));
 }

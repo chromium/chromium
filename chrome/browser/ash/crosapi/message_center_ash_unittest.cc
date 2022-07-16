@@ -55,7 +55,9 @@ class MojoDelegate : public mojom::NotificationDelegate {
   // crosapi::mojom::NotificationDelegate:
   void OnNotificationClosed(bool by_user) override { ++closed_count_; }
   void OnNotificationClicked() override { ++clicked_count_; }
-  void OnNotificationButtonClicked(uint32_t button_index) override {
+  void OnNotificationButtonClicked(
+      uint32_t button_index,
+      const absl::optional<std::u16string>& reply) override {
     ++button_clicked_count_;
     last_button_index_ = button_index;
   }
@@ -128,6 +130,7 @@ TEST_F(MessageCenterAshTest, SerializationSimple) {
   mojo_notification->buttons.push_back(std::move(button1));
   auto button2 = mojom::ButtonInfo::New();
   button2->title = u"button2";
+  button2->placeholder = absl::make_optional(u"placeholder2");
   mojo_notification->buttons.push_back(std::move(button2));
 
   // Display the notification.
@@ -162,6 +165,7 @@ TEST_F(MessageCenterAshTest, SerializationSimple) {
   ASSERT_EQ(2u, ui_notification->buttons().size());
   EXPECT_EQ(u"button1", ui_notification->buttons()[0].title);
   EXPECT_EQ(u"button2", ui_notification->buttons()[1].title);
+  EXPECT_EQ(u"placeholder2", ui_notification->buttons()[1].placeholder.value());
 }
 
 TEST_F(MessageCenterAshTest, SerializationImage) {

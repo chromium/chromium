@@ -29,36 +29,43 @@ using testing::_;
 
 namespace content {
 
-class DummyPictureInPictureSessionObserver
+class DummyPictureInPictureSessionObserver final
     : public blink::mojom::PictureInPictureSessionObserver {
  public:
   DummyPictureInPictureSessionObserver() = default;
-  ~DummyPictureInPictureSessionObserver() final = default;
+
+  DummyPictureInPictureSessionObserver(
+      const DummyPictureInPictureSessionObserver&) = delete;
+  DummyPictureInPictureSessionObserver& operator=(
+      const DummyPictureInPictureSessionObserver&) = delete;
+
+  ~DummyPictureInPictureSessionObserver() override = default;
 
   // Implementation of PictureInPictureSessionObserver.
-  void OnWindowSizeChanged(const gfx::Size&) final {}
-  void OnStopped() final {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DummyPictureInPictureSessionObserver);
+  void OnWindowSizeChanged(const gfx::Size&) override {}
+  void OnStopped() override {}
 };
 
 class PictureInPictureDelegate : public WebContentsDelegate {
  public:
   PictureInPictureDelegate() = default;
 
+  PictureInPictureDelegate(const PictureInPictureDelegate&) = delete;
+  PictureInPictureDelegate& operator=(const PictureInPictureDelegate&) = delete;
+
   MOCK_METHOD3(EnterPictureInPicture,
                PictureInPictureResult(WebContents*,
                                       const viz::SurfaceId&,
                                       const gfx::Size&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PictureInPictureDelegate);
 };
 
 class TestOverlayWindow : public OverlayWindow {
  public:
   TestOverlayWindow() = default;
+
+  TestOverlayWindow(const TestOverlayWindow&) = delete;
+  TestOverlayWindow& operator=(const TestOverlayWindow&) = delete;
+
   ~TestOverlayWindow() override {}
 
   static std::unique_ptr<OverlayWindow> Create(
@@ -91,8 +98,6 @@ class TestOverlayWindow : public OverlayWindow {
 
  private:
   gfx::Size size_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverlayWindow);
 };
 
 class PictureInPictureTestBrowserClient : public TestContentBrowserClient {
@@ -130,6 +135,7 @@ class PictureInPictureMediaPlayerReceiver : public media::mojom::MediaPlayer {
   void RequestSeekTo(base::TimeDelta seek_time) override {}
   void RequestEnterPictureInPicture() override {}
   void RequestExitPictureInPicture() override {}
+  void RequestMute(bool mute) override {}
   void SetVolumeMultiplier(double multiplier) override {}
   void SetPersistentState(bool persistent) override {}
   void SetPowerExperimentState(bool enabled) override {}

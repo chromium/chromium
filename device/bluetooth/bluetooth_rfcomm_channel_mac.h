@@ -27,6 +27,11 @@ class BluetoothRfcommChannelMac : public BluetoothChannelMac {
   // NOTE: The |channel| is expected to already be retained.
   BluetoothRfcommChannelMac(BluetoothSocketMac* socket,
                             IOBluetoothRFCOMMChannel* channel);
+
+  BluetoothRfcommChannelMac(const BluetoothRfcommChannelMac&) = delete;
+  BluetoothRfcommChannelMac& operator=(const BluetoothRfcommChannelMac&) =
+      delete;
+
   ~BluetoothRfcommChannelMac() override;
 
   // Opens a new RFCOMM channel with Channel ID |channel_id| to the target
@@ -61,8 +66,6 @@ class BluetoothRfcommChannelMac : public BluetoothChannelMac {
 
   // The delegate for the native channel.
   base::scoped_nsobject<BluetoothRfcommChannelDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRfcommChannelMac);
 };
 
 }  // namespace device

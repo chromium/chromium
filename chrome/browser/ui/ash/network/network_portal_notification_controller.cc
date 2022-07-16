@@ -15,12 +15,11 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/mobile/mobile_activator.h"
+#include "chrome/browser/ash/net/network_portal_web_dialog.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/net/network_portal_web_dialog.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -61,6 +60,11 @@ class NetworkPortalNotificationControllerDelegate
       base::WeakPtr<NetworkPortalNotificationController> controller)
       : guid_(guid), clicked_(false), controller_(controller) {}
 
+  NetworkPortalNotificationControllerDelegate(
+      const NetworkPortalNotificationControllerDelegate&) = delete;
+  NetworkPortalNotificationControllerDelegate& operator=(
+      const NetworkPortalNotificationControllerDelegate&) = delete;
+
   // Overridden from message_center::NotificationDelegate:
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override;
@@ -74,8 +78,6 @@ class NetworkPortalNotificationControllerDelegate
   bool clicked_;
 
   base::WeakPtr<NetworkPortalNotificationController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkPortalNotificationControllerDelegate);
 };
 
 void NetworkPortalNotificationControllerDelegate::Click(

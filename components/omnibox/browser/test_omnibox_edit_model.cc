@@ -8,9 +8,11 @@
 #include "components/omnibox/browser/test_omnibox_edit_model.h"
 
 TestOmniboxEditModel::TestOmniboxEditModel(OmniboxView* view,
-                                           OmniboxEditController* controller)
+                                           OmniboxEditController* controller,
+                                           PrefService* pref_service)
     : OmniboxEditModel(view, controller, std::make_unique<TestOmniboxClient>()),
-      popup_is_open_(false) {}
+      popup_is_open_(false),
+      pref_service_(pref_service) {}
 
 TestOmniboxEditModel::~TestOmniboxEditModel() {}
 
@@ -33,4 +35,26 @@ void TestOmniboxEditModel::SetPopupIsOpen(bool open) {
 void TestOmniboxEditModel::SetCurrentMatchForTest(
     const AutocompleteMatch& match) {
   override_current_match_ = std::make_unique<AutocompleteMatch>(match);
+}
+
+void TestOmniboxEditModel::OnPopupDataChanged(
+    const std::u16string& temporary_text,
+    bool is_temporary_text,
+    const std::u16string& inline_autocompletion,
+    const std::u16string& prefix_autocompletion,
+    const SplitAutocompletion& split_autocompletion,
+    const std::u16string& keyword,
+    bool is_keyword_hint,
+    const std::u16string& additional_text) {
+  OmniboxEditModel::OnPopupDataChanged(
+      temporary_text, is_temporary_text, inline_autocompletion,
+      prefix_autocompletion, split_autocompletion, keyword, is_keyword_hint,
+      additional_text);
+  text_ = is_temporary_text ? temporary_text : inline_autocompletion;
+  is_temporary_text_ = is_temporary_text;
+}
+
+PrefService* TestOmniboxEditModel::GetPrefService() const {
+  return pref_service_ == nullptr ? OmniboxEditModel::GetPrefService()
+                                  : pref_service_;
 }

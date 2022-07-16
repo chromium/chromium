@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/content/cookie_helper.h"
-#include "components/browsing_data/content/mock_appcache_helper.h"
 #include "components/browsing_data/content/mock_cache_storage_helper.h"
 #include "components/browsing_data/content/mock_cookie_helper.h"
 #include "components/browsing_data/content/mock_database_helper.h"
@@ -64,39 +64,46 @@ class CookiesTreeModelTest : public testing::Test {
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     mock_browsing_data_cookie_helper_ =
-        new browsing_data::MockCookieHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockCookieHelper>(profile_.get());
     mock_browsing_data_database_helper_ =
-        new browsing_data::MockDatabaseHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockDatabaseHelper>(profile_.get());
     mock_browsing_data_local_storage_helper_ =
-        new browsing_data::MockLocalStorageHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockLocalStorageHelper>(
+            profile_.get());
     mock_browsing_data_session_storage_helper_ =
-        new browsing_data::MockLocalStorageHelper(profile_.get());
-    mock_browsing_data_appcache_helper_ =
-        new browsing_data::MockAppCacheHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockLocalStorageHelper>(
+            profile_.get());
     mock_browsing_data_indexed_db_helper_ =
-        new browsing_data::MockIndexedDBHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockIndexedDBHelper>(
+            profile_.get());
     mock_browsing_data_file_system_helper_ =
-        new browsing_data::MockFileSystemHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockFileSystemHelper>(
+            profile_.get());
     mock_browsing_data_quota_helper_ =
-        new MockBrowsingDataQuotaHelper(profile_.get());
+        base::MakeRefCounted<MockBrowsingDataQuotaHelper>(profile_.get());
     mock_browsing_data_service_worker_helper_ =
-        new browsing_data::MockServiceWorkerHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockServiceWorkerHelper>(
+            profile_.get());
     mock_browsing_data_shared_worker_helper_ =
-        new browsing_data::MockSharedWorkerHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockSharedWorkerHelper>(
+            profile_.get());
     mock_browsing_data_cache_storage_helper_ =
-        new browsing_data::MockCacheStorageHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockCacheStorageHelper>(
+            profile_.get());
     mock_browsing_data_media_license_helper_ =
-        new MockBrowsingDataMediaLicenseHelper(profile_.get());
+        base::MakeRefCounted<MockBrowsingDataMediaLicenseHelper>(
+            profile_.get());
 
     const char kExtensionScheme[] = "extensionscheme";
-    scoped_refptr<content_settings::CookieSettings> cookie_settings =
-        new content_settings::CookieSettings(
+    auto cookie_settings =
+        base::MakeRefCounted<content_settings::CookieSettings>(
             HostContentSettingsMapFactory::GetForProfile(profile_.get()),
             profile_->GetPrefs(), profile_->IsIncognitoProfile(),
             kExtensionScheme);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     special_storage_policy_ =
-        new ExtensionSpecialStoragePolicy(cookie_settings.get());
+        base::MakeRefCounted<ExtensionSpecialStoragePolicy>(
+            cookie_settings.get());
 #endif
   }
 
@@ -107,7 +114,6 @@ class CookiesTreeModelTest : public testing::Test {
     mock_browsing_data_quota_helper_ = nullptr;
     mock_browsing_data_file_system_helper_ = nullptr;
     mock_browsing_data_indexed_db_helper_ = nullptr;
-    mock_browsing_data_appcache_helper_ = nullptr;
     mock_browsing_data_session_storage_helper_ = nullptr;
     mock_browsing_data_local_storage_helper_ = nullptr;
     mock_browsing_data_database_helper_ = nullptr;
@@ -119,7 +125,6 @@ class CookiesTreeModelTest : public testing::Test {
         mock_browsing_data_cookie_helper_, mock_browsing_data_database_helper_,
         mock_browsing_data_local_storage_helper_,
         mock_browsing_data_session_storage_helper_,
-        mock_browsing_data_appcache_helper_,
         mock_browsing_data_indexed_db_helper_,
         mock_browsing_data_file_system_helper_,
         mock_browsing_data_quota_helper_,
@@ -268,7 +273,6 @@ class CookiesTreeModelTest : public testing::Test {
     switch (node_type) {
       case CookieTreeNode::DetailedInfo::TYPE_COOKIE:
         return node->GetDetailedInfo().cookie->Name() + ",";
-      case CookieTreeNode::DetailedInfo::TYPE_APPCACHE:
       case CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGE:
       case CookieTreeNode::DetailedInfo::TYPE_DATABASE:
       case CookieTreeNode::DetailedInfo::TYPE_INDEXED_DB:
@@ -323,11 +327,6 @@ class CookiesTreeModelTest : public testing::Test {
   std::string GetDisplayedSessionStorages(CookiesTreeModel* cookies_model) {
     return GetDisplayedNodes(
         cookies_model, CookieTreeNode::DetailedInfo::TYPE_SESSION_STORAGE);
-  }
-
-  std::string GetDisplayedAppCaches(CookiesTreeModel* cookies_model) {
-    return GetDisplayedNodes(cookies_model,
-                             CookieTreeNode::DetailedInfo::TYPE_APPCACHE);
   }
 
   std::string GetDisplayedIndexedDBs(CookiesTreeModel* cookies_model) {
@@ -392,8 +391,6 @@ class CookiesTreeModelTest : public testing::Test {
       mock_browsing_data_local_storage_helper_;
   scoped_refptr<browsing_data::MockLocalStorageHelper>
       mock_browsing_data_session_storage_helper_;
-  scoped_refptr<browsing_data::MockAppCacheHelper>
-      mock_browsing_data_appcache_helper_;
   scoped_refptr<browsing_data::MockIndexedDBHelper>
       mock_browsing_data_indexed_db_helper_;
   scoped_refptr<browsing_data::MockFileSystemHelper>
@@ -1181,7 +1178,6 @@ TEST_F(CookiesTreeModelTest, RemoveSingleCookieNode) {
       mock_browsing_data_cookie_helper_, mock_browsing_data_database_helper_,
       mock_browsing_data_local_storage_helper_,
       mock_browsing_data_session_storage_helper_,
-      mock_browsing_data_appcache_helper_,
       mock_browsing_data_indexed_db_helper_,
       mock_browsing_data_file_system_helper_, mock_browsing_data_quota_helper_,
       mock_browsing_data_service_worker_helper_,
@@ -1301,7 +1297,6 @@ TEST_F(CookiesTreeModelTest, RemoveSingleCookieNodeOf3) {
       mock_browsing_data_cookie_helper_, mock_browsing_data_database_helper_,
       mock_browsing_data_local_storage_helper_,
       mock_browsing_data_session_storage_helper_,
-      mock_browsing_data_appcache_helper_,
       mock_browsing_data_indexed_db_helper_,
       mock_browsing_data_file_system_helper_, mock_browsing_data_quota_helper_,
       mock_browsing_data_service_worker_helper_,
@@ -1427,7 +1422,6 @@ TEST_F(CookiesTreeModelTest, RemoveSecondOrigin) {
       mock_browsing_data_cookie_helper_, mock_browsing_data_database_helper_,
       mock_browsing_data_local_storage_helper_,
       mock_browsing_data_session_storage_helper_,
-      mock_browsing_data_appcache_helper_,
       mock_browsing_data_indexed_db_helper_,
       mock_browsing_data_file_system_helper_, mock_browsing_data_quota_helper_,
       mock_browsing_data_service_worker_helper_,
@@ -1470,7 +1464,6 @@ TEST_F(CookiesTreeModelTest, OriginOrdering) {
       mock_browsing_data_cookie_helper_, mock_browsing_data_database_helper_,
       mock_browsing_data_local_storage_helper_,
       mock_browsing_data_session_storage_helper_,
-      mock_browsing_data_appcache_helper_,
       mock_browsing_data_indexed_db_helper_,
       mock_browsing_data_file_system_helper_, mock_browsing_data_quota_helper_,
       mock_browsing_data_service_worker_helper_,
@@ -1518,7 +1511,6 @@ TEST_F(CookiesTreeModelTest, ContentSettings) {
       mock_browsing_data_cookie_helper_, mock_browsing_data_database_helper_,
       mock_browsing_data_local_storage_helper_,
       mock_browsing_data_session_storage_helper_,
-      mock_browsing_data_appcache_helper_,
       mock_browsing_data_indexed_db_helper_,
       mock_browsing_data_file_system_helper_, mock_browsing_data_quota_helper_,
       mock_browsing_data_service_worker_helper_,
@@ -1644,7 +1636,6 @@ TEST_F(CookiesTreeModelTest, CookiesFilter) {
       mock_browsing_data_cookie_helper_, mock_browsing_data_database_helper_,
       mock_browsing_data_local_storage_helper_,
       mock_browsing_data_session_storage_helper_,
-      mock_browsing_data_appcache_helper_,
       mock_browsing_data_indexed_db_helper_,
       mock_browsing_data_file_system_helper_, mock_browsing_data_quota_helper_,
       mock_browsing_data_service_worker_helper_,
@@ -1685,7 +1676,6 @@ TEST_F(CookiesTreeModelTest, CanonicalizeCookieSource) {
       mock_browsing_data_cookie_helper_, mock_browsing_data_database_helper_,
       mock_browsing_data_local_storage_helper_,
       mock_browsing_data_session_storage_helper_,
-      mock_browsing_data_appcache_helper_,
       mock_browsing_data_indexed_db_helper_,
       mock_browsing_data_file_system_helper_, mock_browsing_data_quota_helper_,
       mock_browsing_data_service_worker_helper_,
@@ -1767,7 +1757,6 @@ TEST_F(CookiesTreeModelTest, CookiesFilterWithoutSource) {
       mock_browsing_data_cookie_helper_, mock_browsing_data_database_helper_,
       mock_browsing_data_local_storage_helper_,
       mock_browsing_data_session_storage_helper_,
-      mock_browsing_data_appcache_helper_,
       mock_browsing_data_indexed_db_helper_,
       mock_browsing_data_file_system_helper_, mock_browsing_data_quota_helper_,
       mock_browsing_data_service_worker_helper_,

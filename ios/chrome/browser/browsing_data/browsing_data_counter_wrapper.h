@@ -29,6 +29,10 @@ class BrowsingDataCounterWrapper {
       PrefService* pref_service,
       UpdateUICallback update_ui_callback);
 
+  BrowsingDataCounterWrapper(const BrowsingDataCounterWrapper&) = delete;
+  BrowsingDataCounterWrapper& operator=(const BrowsingDataCounterWrapper&) =
+      delete;
+
   ~BrowsingDataCounterWrapper();
 
   void RestartCounter();
@@ -50,8 +54,6 @@ class BrowsingDataCounterWrapper {
   // Callback that updates the UI once the counter result is ready. This is
   // invoked by UpdateWithResult.
   UpdateUICallback update_ui_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataCounterWrapper);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_COUNTER_WRAPPER_H_

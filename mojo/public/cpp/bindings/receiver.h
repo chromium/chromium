@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/async_flusher.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
@@ -73,6 +73,9 @@ class Receiver {
       : internal_state_(std::move(impl)) {
     Bind(std::move(pending_receiver), std::move(task_runner));
   }
+
+  Receiver(const Receiver&) = delete;
+  Receiver& operator=(const Receiver&) = delete;
 
   ~Receiver() = default;
 
@@ -301,8 +304,6 @@ class Receiver {
 
  private:
   internal::BindingState<Interface, ImplRefTraits> internal_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(Receiver);
 };
 
 }  // namespace mojo

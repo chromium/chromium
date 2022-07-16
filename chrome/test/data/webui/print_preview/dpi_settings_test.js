@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SelectOption} from 'chrome://print/print_preview.js';
+import 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {assertDeepEquals, assertEquals, assertFalse} from '../chai_assert.js';
-import {fakeDataBind} from '../test_util.m.js';
+import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
 
@@ -44,7 +44,7 @@ suite('DpiSettingsTest', function() {
 
   test('settings select', function() {
     const settingsSelect = /** @type {!PrintPreviewSettingsSelectElement} */ (
-        dpiSection.$$('print-preview-settings-select'));
+        dpiSection.shadowRoot.querySelector('print-preview-settings-select'));
     assertFalse(settingsSelect.disabled);
 
     assertDeepEquals(expectedCapabilityWithLabels, settingsSelect.capability);
@@ -62,7 +62,7 @@ suite('DpiSettingsTest', function() {
 
     // Default is 200 dpi.
     const settingsSelect = /** @type {!PrintPreviewSettingsSelectElement} */ (
-        dpiSection.$$('print-preview-settings-select'));
+        dpiSection.shadowRoot.querySelector('print-preview-settings-select'));
     assertDeepEquals(
         highQualityWithLabel, JSON.parse(settingsSelect.selectedValue));
     assertDeepEquals(highQualityOption, dpiSection.getSettingValue('dpi'));

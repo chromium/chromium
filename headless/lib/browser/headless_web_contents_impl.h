@@ -43,6 +43,9 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
       public content::RenderProcessHostObserver,
       public content::WebContentsObserver {
  public:
+  HeadlessWebContentsImpl(const HeadlessWebContentsImpl&) = delete;
+  HeadlessWebContentsImpl& operator=(const HeadlessWebContentsImpl&) = delete;
+
   ~HeadlessWebContentsImpl() override;
 
   static HeadlessWebContentsImpl* From(HeadlessWebContents* web_contents);
@@ -160,8 +163,6 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
 
   class PendingFrame;
   base::WeakPtr<PendingFrame> pending_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessWebContentsImpl);
 };
 
 }  // namespace headless

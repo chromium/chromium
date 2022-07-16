@@ -111,6 +111,10 @@ extern const char kSafeBrowsingMetricsLastLogTime[];
 // Used for logging metrics. Structure: go/sb-event-ts-pref-struct.
 extern const char kSafeBrowsingEventTimestamps[];
 
+// A timestamp indicating the last time the account tailored security boolean
+// was updated.
+extern const char kAccountTailoredSecurityUpdateTimestamp[];
+
 }  // namespace prefs
 
 namespace safe_browsing {
@@ -162,7 +166,7 @@ enum PasswordProtectionTrigger {
 // numeric values should never be reused.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.safe_browsing
-enum SafeBrowsingState {
+enum class SafeBrowsingState {
   // The user is not opted into Safe Browsing.
   NO_SAFE_BROWSING = 0,
   // The user selected standard protection.

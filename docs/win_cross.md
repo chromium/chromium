@@ -104,7 +104,7 @@ to correctly symbolize stack traces (or if you want to attach a debugger).
 
 You can run the Windows binaries you built on swarming, like so:
 
-    tools/run-swarmed.py out/gnwin base_unittests [ --gtest_filter=... ]
+    tools/run-swarmed.py out/gnwin base_unittests -- [ --gtest_filter=... ]
 
 See the contents of run-swarmed.py for how to do this manually.
 

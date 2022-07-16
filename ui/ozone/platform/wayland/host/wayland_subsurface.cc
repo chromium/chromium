@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -13,17 +14,15 @@
 
 namespace {
 
+// Returns DIP bounds of the subsurface relative to the parent surface.
 gfx::Rect AdjustSubsurfaceBounds(const gfx::Rect& bounds_px,
                                  const gfx::Rect& parent_bounds_px,
-                                 float ui_scale,
-                                 int32_t parent_buffer_scale) {
-  // TODO(fangzhoug): Verify the correctness of using ui_scale here, and in
-  // other ozone wayland files.
-  // Currently, the subsurface tree is at most 1 depth, gpu already sees buffer
-  // bounds in the root_surface-local coordinates. So translation is not
-  // needed for now.
-  const auto bounds_dip = gfx::ScaleToRoundedRect(bounds_px, 1.0 / ui_scale);
-  return gfx::ScaleToRoundedRect(bounds_dip, ui_scale / parent_buffer_scale);
+                                 float buffer_scale) {
+  const auto bounds_dip =
+      gfx::ScaleToEnclosingRect(bounds_px, 1.0f / buffer_scale);
+  const auto parent_bounds_dip =
+      gfx::ScaleToEnclosingRect(parent_bounds_px, 1.0f / buffer_scale);
+  return wl::TranslateBoundsToParentCoordinates(bounds_dip, parent_bounds_dip);
 }
 
 }  // namespace
@@ -67,26 +66,6 @@ bool WaylandSubsurface::IsVisible() const {
   return !!subsurface_;
 }
 
-void WaylandSubsurface::UpdateOpaqueRegion() {
-  gfx::Rect region_px =
-      enable_blend_ ? gfx::Rect() : gfx::Rect(bounds_px_.size());
-  wayland_surface()->SetOpaqueRegion(region_px);
-}
-
-void WaylandSubsurface::SetBounds(const gfx::Rect& bounds) {
-  if (bounds_px_ == bounds)
-    return;
-
-  bounds_px_ = bounds;
-  if (IsVisible()) {
-    // Translate location from screen to surface coordinates.
-    auto bounds_px =
-        AdjustSubsurfaceBounds(bounds_px_, parent_->GetBounds(),
-                               parent_->ui_scale(), parent_->window_scale());
-    wl_subsurface_set_position(subsurface_.get(), bounds_px.x(), bounds_px.y());
-  }
-}
-
 void WaylandSubsurface::CreateSubsurface() {
   DCHECK(parent_);
 
@@ -94,48 +73,36 @@ void WaylandSubsurface::CreateSubsurface() {
   DCHECK(subcompositor);
   subsurface_ = wayland_surface()->CreateSubsurface(parent_->root_surface());
 
-  // Chromium positions quads in display::Display coordinates in physical
-  // pixels, but Wayland requires them to be in local surface coordinates a.k.a
-  // relative to parent window.
-  auto bounds_px =
-      AdjustSubsurfaceBounds(bounds_px_, parent_->GetBounds(),
-                             parent_->ui_scale(), parent_->window_scale());
-
   DCHECK(subsurface_);
-  wl_subsurface_set_position(subsurface_.get(), bounds_px.x(), bounds_px.y());
   wl_subsurface_set_sync(subsurface_.get());
 
   // Subsurfaces don't need to trap input events. Its display rect is fully
   // contained in |parent_|'s. Setting input_region to empty allows |parent_| to
   // dispatch all of the input to platform window.
-  wl::Object<wl_region> region(
-      wl_compositor_create_region(connection_->compositor()));
-  wl_region_add(region.get(), 0, 0, 0, 0);
-  wl_surface_set_input_region(surface(), region.get());
+  gfx::Rect region_px;
+  wayland_surface()->SetInputRegion(&region_px);
 
   connection_->buffer_manager_host()->SetSurfaceConfigured(wayland_surface());
 }
 
 void WaylandSubsurface::ConfigureAndShowSurface(
-    gfx::OverlayTransform transform,
-    const gfx::Rect& bounds_rect,
-    int32_t buffer_scale,
-    bool enable_blend,
+    const gfx::Rect& bounds_px,
+    const gfx::Rect& parent_bounds_px,
+    float buffer_scale,
     const WaylandSurface* reference_below,
     const WaylandSurface* reference_above) {
-  wayland_surface()->SetBufferTransform(transform);
-  wayland_surface()->SetSurfaceBufferScale(buffer_scale);
-
-  auto old_bounds = bounds_px_;
-  SetBounds(bounds_rect);
-
-  if (old_bounds != bounds_px_ || enable_blend_ != enable_blend) {
-    enable_blend_ = enable_blend;
-    UpdateOpaqueRegion();
-  }
-
   Show();
 
+  // Chromium positions quads in display::Display coordinates in physical
+  // pixels, but Wayland requires them to be in local surface coordinates a.k.a
+  // relative to parent window.
+  auto bounds_dip_in_parent_surface =
+      AdjustSubsurfaceBounds(bounds_px, parent_bounds_px, buffer_scale);
+  wl_subsurface_set_position(subsurface_.get(),
+                             bounds_dip_in_parent_surface.x(),
+                             bounds_dip_in_parent_surface.y());
+
+  // Setup the stacking order of this subsurface.
   DCHECK(!reference_above || !reference_below);
   if (reference_below) {
     wl_subsurface_place_above(subsurface_.get(), reference_below->surface());

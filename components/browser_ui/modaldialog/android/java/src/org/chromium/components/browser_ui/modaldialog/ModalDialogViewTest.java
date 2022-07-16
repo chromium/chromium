@@ -21,6 +21,9 @@ import static org.hamcrest.Matchers.not;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -199,8 +202,8 @@ public class ModalDialogViewTest {
     @Feature({"ModalDialog"})
     public void testMessage() {
         // Verify that the message set from builder is displayed.
-        PropertyModel model = createModel(
-                mModelBuilder.with(ModalDialogProperties.MESSAGE, sResources, R.string.more));
+        String msg = sResources.getString(R.string.more);
+        PropertyModel model = createModel(mModelBuilder.with(ModalDialogProperties.MESSAGE, msg));
         onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_scroll_view)).check(matches(isDisplayed()));
@@ -212,6 +215,15 @@ public class ModalDialogViewTest {
         onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_scroll_view)).check(matches(not(isDisplayed())));
         onView(withId(R.id.message)).check(matches(not(isDisplayed())));
+
+        // Use CharSequence for the message.
+        SpannableStringBuilder sb = new SpannableStringBuilder(msg);
+        sb.setSpan(new ForegroundColorSpan(0xffff0000), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        TestThreadUtils.runOnUiThreadBlocking(() -> model.set(ModalDialogProperties.MESSAGE, sb));
+        onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.modal_dialog_scroll_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.message)).check(matches(allOf(isDisplayed(), withText(R.string.more))));
     }
 
     @Test

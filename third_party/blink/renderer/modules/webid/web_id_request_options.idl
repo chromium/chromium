@@ -15,4 +15,5 @@ dictionary WebIdRequestOptions {
   USVString client_id;
   USVString nonce;
   Mode mode = "permission";
+  boolean preferAutoSignIn = false;
 };

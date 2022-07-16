@@ -7,7 +7,6 @@
 
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -17,7 +16,12 @@ class UnifiedSystemTrayController;
 class VPNFeaturePodController : public FeaturePodControllerBase,
                                 public TrayNetworkStateObserver {
  public:
-  VPNFeaturePodController(UnifiedSystemTrayController* tray_controller);
+  explicit VPNFeaturePodController(
+      UnifiedSystemTrayController* tray_controller);
+
+  VPNFeaturePodController(const VPNFeaturePodController&) = delete;
+  VPNFeaturePodController& operator=(const VPNFeaturePodController&) = delete;
+
   ~VPNFeaturePodController() override;
 
   // FeaturePodControllerBase:
@@ -34,8 +38,6 @@ class VPNFeaturePodController : public FeaturePodControllerBase,
   // Unowned.
   UnifiedSystemTrayController* const tray_controller_;
   FeaturePodButton* button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(VPNFeaturePodController);
 };
 
 }  // namespace ash

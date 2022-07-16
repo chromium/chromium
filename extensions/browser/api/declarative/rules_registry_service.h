@@ -59,6 +59,10 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
   };
 
   explicit RulesRegistryService(content::BrowserContext* context);
+
+  RulesRegistryService(const RulesRegistryService&) = delete;
+  RulesRegistryService& operator=(const RulesRegistryService&) = delete;
+
   ~RulesRegistryService() override;
 
   // Unregisters refptrs to concrete RulesRegistries at other objects that were
@@ -169,8 +173,6 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
   content::BrowserContext* browser_context_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesRegistryService);
 };
 
 }  // namespace extensions

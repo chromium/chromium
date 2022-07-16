@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TabStripEmbedderProxy} from 'chrome://tab-strip/tab_strip_embedder_proxy.js';
+import {TabStripEmbedderProxy} from 'chrome://tab-strip.top-chrome/tab_strip_embedder_proxy.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /** @implements {TabStripEmbedderProxy} */
 export class TestTabStripEmbedderProxy extends TestBrowserProxy {

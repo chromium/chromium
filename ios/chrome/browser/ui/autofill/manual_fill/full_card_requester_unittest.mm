@@ -37,6 +37,10 @@ class FakeResultDelegate
     : public autofill::payments::FullCardRequest::ResultDelegate {
  public:
   FakeResultDelegate() : weak_ptr_factory_(this) {}
+
+  FakeResultDelegate(const FakeResultDelegate&) = delete;
+  FakeResultDelegate& operator=(const FakeResultDelegate&) = delete;
+
   ~FakeResultDelegate() override {}
 
   void OnFullCardRequestSucceeded(
@@ -54,8 +58,6 @@ class FakeResultDelegate
 
  private:
   base::WeakPtrFactory<FakeResultDelegate> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeResultDelegate);
 };
 
 class PaymentRequestFullCardRequesterTest : public PlatformTest {
@@ -158,12 +160,12 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismiss) {
                                   fake_result_delegate->GetWeakPtr());
 
   // Spin the run loop to trigger the animation.
-  base::test::ios::SpinRunLoopWithMaxDelay(base::TimeDelta::FromSecondsD(1.0));
+  base::test::ios::SpinRunLoopWithMaxDelay(base::Seconds(1.0));
   EXPECT_TRUE([base_view_controller.presentedViewController
       isMemberOfClass:[CardUnmaskPromptViewController class]]);
 
   full_card_requester.OnUnmaskVerificationResult(
-      autofill::AutofillClient::SUCCESS);
+      autofill::AutofillClient::PaymentsRpcResult::kSuccess);
 
   // Wait until the view controller is ordered to be dismissed and the animation
   // completes.
@@ -171,6 +173,6 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismiss) {
       ^bool {
         return !base_view_controller.presentedViewController;
       },
-      true, base::TimeDelta::FromSeconds(10));
+      true, base::Seconds(10));
   EXPECT_EQ(nil, base_view_controller.presentedViewController);
 }

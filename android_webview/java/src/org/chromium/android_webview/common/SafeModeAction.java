@@ -18,8 +18,11 @@ public interface SafeModeAction {
     public String getId();
 
     /**
-     * Executes the given action. Implementations of this method should be  Java-only (no JNI/C++)
-     * because the native library may not yet be loaded.
+     * Executes the given action. Implementations of this method should be Java-only (no JNI/C++)
+     * because the native library may not yet be loaded. The return status is used for logging
+     * purposes only.
+     *
+     * @return {@code true} if the action succeeded, {@code false} otherwise.
      */
-    void execute();
+    boolean execute();
 }

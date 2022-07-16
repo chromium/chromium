@@ -241,8 +241,7 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
                 new NotificationMetadata(NotificationUmaTracker.SystemNotificationType.MEDIA,
                         null /* notificationTag */, notificationId);
         return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                true /* preferCompat */, ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK,
-                null /* remoteAppPackageName*/, metadata);
+                ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK, metadata);
     }
 
     private static Context getContext() {

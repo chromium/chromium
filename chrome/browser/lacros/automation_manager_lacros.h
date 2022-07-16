@@ -51,6 +51,8 @@ class AutomationManagerLacros
                                int32_t request_id,
                                base::Value optional_args) override;
   void PerformAction(const ui::AXActionData& action_data) override;
+  void NotifyAllAutomationExtensionsGone() override;
+  void NotifyExtensionListenerAdded() override;
 
   // Bound on construction given an AutomationFactory remote is available.
   mojo::Remote<crosapi::mojom::Automation> automation_remote_;

@@ -15,6 +15,9 @@ namespace android_webview {
 
 AwGLSurface::AwGLSurface(bool is_angle) : is_angle_(is_angle) {}
 
+AwGLSurface::AwGLSurface(scoped_refptr<gl::GLSurface> surface)
+    : is_angle_(false), wrapped_surface_(std::move(surface)) {}
+
 AwGLSurface::~AwGLSurface() {
   Destroy();
 }
@@ -59,10 +62,14 @@ gfx::Size AwGLSurface::GetSize() {
 }
 
 void* AwGLSurface::GetHandle() {
+  if (wrapped_surface_)
+    return wrapped_surface_->GetHandle();
   return surface_;
 }
 
 void* AwGLSurface::GetDisplay() {
+  if (wrapped_surface_)
+    return wrapped_surface_->GetDisplay();
   if (!is_angle_)
     return nullptr;
   return gl::GLSurfaceEGL::GetDisplay();
@@ -83,11 +90,19 @@ bool AwGLSurface::Resize(const gfx::Size& size,
   return Initialize(gl::GLSurfaceFormat());
 }
 
+bool AwGLSurface::OnMakeCurrent(gl::GLContext* context) {
+  if (!gl::GLSurfaceEGL::OnMakeCurrent(context))
+    return false;
+  return !wrapped_surface_ || wrapped_surface_->OnMakeCurrent(context);
+}
+
 void AwGLSurface::SetSize(const gfx::Size& size) {
   size_ = size;
 }
 
 EGLConfig AwGLSurface::GetConfig() {
+  if (wrapped_surface_)
+    return wrapped_surface_->GetConfig();
   if (!is_angle_)
     return nullptr;
   return gl::GLSurfaceEGL::GetConfig();

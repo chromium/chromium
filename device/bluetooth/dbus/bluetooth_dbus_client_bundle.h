@@ -34,6 +34,11 @@ class BluetoothProfileManagerClient;
 class DEVICE_BLUETOOTH_EXPORT BluetoothDBusClientBundle {
  public:
   explicit BluetoothDBusClientBundle(bool use_fakes);
+
+  BluetoothDBusClientBundle(const BluetoothDBusClientBundle&) = delete;
+  BluetoothDBusClientBundle& operator=(const BluetoothDBusClientBundle&) =
+      delete;
+
   ~BluetoothDBusClientBundle();
 
   // Returns true if |client| is stubbed.
@@ -133,8 +138,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDBusClientBundle {
   // See "Alternate D-Bus Client" note in bluez_dbus_manager.h.
   std::unique_ptr<BluetoothAdapterClient> alternate_bluetooth_adapter_client_;
   std::unique_ptr<BluetoothDeviceClient> alternate_bluetooth_device_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDBusClientBundle);
 };
 
 }  // namespace bluez

@@ -39,9 +39,6 @@
 
 namespace base {
 class Value;
-namespace trace_event {
-class ProcessMemoryDump;
-}
 }
 
 namespace net {
@@ -103,6 +100,9 @@ struct NET_EXPORT HttpNetworkSessionParams {
   size_t spdy_session_max_recv_window_size;
   // Maximum number of capped frames that can be queued at any time.
   int spdy_session_max_queued_capped_frames;
+  // Whether SPDY pools should mark sessions as going away upon relevant network
+  // changes (instead of closing them). Default value is OS specific.
+  bool spdy_go_away_on_ip_change;
   // HTTP/2 connection settings.
   // Unknown settings will still be sent to the server.
   // Might contain unknown setting identifiers from a predefined set that
@@ -111,6 +111,12 @@ struct NET_EXPORT HttpNetworkSessionParams {
   // The same setting will be sent on every connection to prevent the retry
   // logic from hiding broken servers.
   spdy::SettingsMap http2_settings;
+  // If true, a setting parameter with reserved identifier will be sent in every
+  // initial SETTINGS frame, see
+  // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
+  // The setting identifier and value will be drawn independently for each
+  // connection to prevent tracking of the client.
+  bool enable_http2_settings_grease;
   // If set, an HTTP/2 frame with a reserved frame type will be sent after
   // every HTTP/2 SETTINGS frame and before every HTTP/2 DATA frame.
   // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
@@ -277,11 +283,6 @@ class NET_EXPORT HttpNetworkSession {
 
   // Populates |server_config| and |proxy_config| based on this session.
   void GetSSLConfig(SSLConfig* server_config, SSLConfig* proxy_config) const;
-
-  // Dumps memory allocation stats. |parent_dump_absolute_name| is the name
-  // used by the parent MemoryAllocatorDump in the memory dump hierarchy.
-  void DumpMemoryStats(base::trace_event::ProcessMemoryDump* pmd,
-                       const std::string& parent_absolute_name) const;
 
   // Evaluates if QUIC is enabled for new streams.
   bool IsQuicEnabled() const;

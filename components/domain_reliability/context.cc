@@ -261,7 +261,7 @@ void DomainReliabilityContext::RemoveOldestBeacon() {
 
 void DomainReliabilityContext::RemoveExpiredBeacons() {
   base::TimeTicks now = time_->NowTicks();
-  const base::TimeDelta kMaxAge = base::TimeDelta::FromHours(1);
+  const base::TimeDelta kMaxAge = base::Hours(1);
   while (!beacons_.empty() && now - beacons_.front()->start_time >= kMaxAge) {
     beacons_.front()->outcome = DomainReliabilityBeacon::Outcome::kExpired;
     beacons_.pop_front();

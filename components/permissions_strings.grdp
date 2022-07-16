@@ -66,7 +66,23 @@
       <message name="IDS_MULTI_DOWNLOAD_WARNING" desc="Warning invoked if multiple downloads are attempted without user interaction.">
       <ph name="ORIGIN">$1<ex>https://backgroundfetch.com</ex></ph> wants to download multiple files
     </message>
-  </if>
+
+    <message name="IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android camera permission when a website has requested access to camera, but Chrome is missing the Android camera permission.">
+      Allow camera?
+    </message>
+    <message name="IDS_MESSAGE_MISSING_STORAGE_ACCESS_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android storage access permission when a website has requested access to storage access, but Chrome is missing the Android storage access permission.">
+      Allow storage access?
+    </message>
+    <message name="IDS_MESSAGE_MISSING_MICROPHONE_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android microphone permission when a website has requested access to microphone, but Chrome is missing the Android microphone permission.">
+      Allow microphone?
+    </message>
+    <message name="IDS_MESSAGE_MISSING_LOCATION_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android location permission when a website has requested access to location, but Chrome is missing the Android location permission.">
+      Allow location?
+    </message>
+    <message name="IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android microphone and camera permission when a website has requested access to microphone and camera, but Chrome is missing the Android microphone and camera permission.">
+      Allow 2 permissions?
+    </message>
+</if>
   <if expr="is_android or chromeos or lacros or is_win">
     <message name="IDS_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's protected media identifier.">
       Know your unique device identifier
@@ -130,6 +146,12 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   </message>
   <message name="IDS_SECURITY_KEY_ATTESTATION_PERMISSION_FRAGMENT" desc="A permission prompt shown to a user when a website wants to see information that identifies the user's Security Key, such as make and model number. The text '[website URL] wants to:' precedes this string. The 'make' of a device is the brand name of the manufacturer, e.g. Yubikey is a make of Security Key. The 'model' of a device is the specific product, e.g. Yubikey Neo is a model of Security Key.">
     See the make and model of your Security Key
+  </message>
+  <message name="IDS_U2F_API_PERMISSION_FRAGMENT" desc="A permission prompt shown to a user when a website wants to make a request to access a user's Security Key. A 'Security Key' is a small USB device that a user can touch in order to sign into a website.">
+    Use your Security Key
+  </message>
+  <message name="IDS_U2F_API_PERMISSION_EXPLANATION" desc="A permission prompt shown to a user when a website wants to make a request to access a user's Security Key. A 'Security Key' is a small USB device that a user can touch in order to sign into a website. 'U2F API' and 'Web Authentication API' are the names of two different web platform APIs for interacting with Security Keys.">
+    This site won't be able to use the U2F API after February 2022. If you own this site, you should change it to use the Web Authentication API.
   </message>
   <message name="IDS_PERMISSION_ALLOW" desc="Label on button to allow a permissions request.">
     Allow
@@ -236,6 +258,13 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     </message>
     <message name="IDS_IDLE_DETECTION_PERMISSION_CHIP" desc="Button text representing a request for using using idle detection from a website. When clicked, shows a permission prompt bubble with more information.">
       Know your device use?
+    </message>
+
+    <message name="IDS_GEOLOCATION_PERMISSION_BLOCKED_CHIP" desc="Button text representing a blocked or expired request for the user's physical location from a website. When clicked, shows a permission prompt bubble with more information.">
+      Location blocked
+    </message>
+    <message name="IDS_NOTIFICATION_PERMISSIONS_BLOCKED_CHIP" desc="Button text representing a blocked or expired request for showing notifications from a website. When clicked, shows a permission prompt bubble with more information.">
+      Notifications blocked
     </message>
   </if>
 

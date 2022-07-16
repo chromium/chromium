@@ -1,3 +1,3 @@
-CONSOLE ERROR: line 7: Refused to load plugin data from '' because it violates the following Content Security Policy directive: "object-src 'none'".
+CONSOLE ERROR: Refused to load plugin data from '' because it violates the following Content Security Policy directive: "object-src 'none'".
 
 This test passes if there is a console message saying the plugin was blocked. 

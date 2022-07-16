@@ -44,7 +44,7 @@ class SlowConstructor {
  public:
   SlowConstructor() : some_int_(0) {
     // Sleep for 1 second to try to cause a race.
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+    base::PlatformThread::Sleep(base::Seconds(1));
     ++constructed;
     some_int_ = 12;
   }
@@ -289,7 +289,7 @@ TEST(LazyInstanceTest, PriorityInversionAtInitializationResolves) {
   background_getter.Start();
 
   while (!BlockingConstructor::WasConstructorCalled())
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+    base::PlatformThread::Sleep(base::Milliseconds(1));
 
   // Spin 4 foreground thread per core contending to get the already under
   // construction LazyInstance. When they are all running and poking at it :
@@ -316,6 +316,5 @@ TEST(LazyInstanceTest, PriorityInversionAtInitializationResolves) {
 
   // Fail if this test takes more than 5 seconds (it takes 5-10 seconds on a
   // Z840 without r527445 but is expected to be fast (~30ms) with the fix).
-  EXPECT_LT(base::TimeTicks::Now() - test_begin,
-            base::TimeDelta::FromSeconds(5));
+  EXPECT_LT(base::TimeTicks::Now() - test_begin, base::Seconds(5));
 }

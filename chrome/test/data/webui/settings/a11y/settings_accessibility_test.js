@@ -39,18 +39,18 @@ SettingsAccessibilityV3Test.axeOptions = {
 // Default accessibility audit options. Specify in test definition to use.
 SettingsAccessibilityV3Test.violationFilter = {
   'aria-valid-attr': function(nodeResult) {
-    const attributeWhitelist = [
+    const attributeAllowlist = [
       'aria-active-attribute',  // Polymer components use aria-active-attribute.
       'aria-roledescription',   // This attribute is now widely supported.
     ];
 
-    return attributeWhitelist.some(a => nodeResult.element.hasAttribute(a));
+    return attributeAllowlist.some(a => nodeResult.element.hasAttribute(a));
   },
   'aria-allowed-attr': function(nodeResult) {
-    const attributeWhitelist = [
+    const attributeAllowlist = [
       'aria-roledescription',  // This attribute is now widely supported.
     ];
-    return attributeWhitelist.some(a => nodeResult.element.hasAttribute(a));
+    return attributeAllowlist.some(a => nodeResult.element.hasAttribute(a));
   },
   'button-name': function(nodeResult) {
     if (nodeResult.element.classList.contains('icon-expand-more')) {
@@ -71,7 +71,7 @@ SettingsAccessibilityV3Test.prototype = {
 
   /** @override */
   browsePreload:
-      'chrome://settings/test_loader.html?module=settings/a11y/basic_a11y_v3_test.js',
+      'chrome://settings/test_loader.html?module=settings/a11y/basic_a11y_v3_test.js&host=webui-test',
 
   // Include files that define the mocha tests.
   extraLibraries: [

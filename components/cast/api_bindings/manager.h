@@ -24,6 +24,10 @@ class CAST_COMPONENT_EXPORT Manager {
       std::unique_ptr<cast_api_bindings::MessagePort>)>;
 
   Manager();
+
+  Manager(const Manager&) = delete;
+  Manager& operator=(const Manager&) = delete;
+
   virtual ~Manager();
 
   // Registers a |handler| which will receive MessagePorts originating from
@@ -53,8 +57,6 @@ class CAST_COMPONENT_EXPORT Manager {
 
  private:
   base::flat_map<std::string, MessagePortConnectedHandler> port_handlers_;
-
-  DISALLOW_COPY_AND_ASSIGN(Manager);
 };
 
 }  // namespace cast_api_bindings

@@ -31,6 +31,9 @@ class ExtensionCreatorTest : public testing::Test {
  public:
   ExtensionCreatorTest() = default;
 
+  ExtensionCreatorTest(const ExtensionCreatorTest&) = delete;
+  ExtensionCreatorTest& operator=(const ExtensionCreatorTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     test_path_ = temp_dir_.GetPath();
@@ -55,8 +58,6 @@ class ExtensionCreatorTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::FilePath test_path_;
   std::unique_ptr<ExtensionCreator> extension_creator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionCreatorTest);
 };
 
 TEST_F(ExtensionCreatorTest, ReadInputKeyPathNonExistent) {

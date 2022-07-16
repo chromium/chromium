@@ -16,6 +16,10 @@ namespace spellcheck {
 class SpellCheckMockPanelHost : public spellcheck::mojom::SpellCheckPanelHost {
  public:
   explicit SpellCheckMockPanelHost(content::RenderProcessHost* process_host);
+
+  SpellCheckMockPanelHost(const SpellCheckMockPanelHost&) = delete;
+  SpellCheckMockPanelHost& operator=(const SpellCheckMockPanelHost&) = delete;
+
   ~SpellCheckMockPanelHost() override;
 
   content::RenderProcessHost* process_host() const { return process_host_; }
@@ -35,8 +39,6 @@ class SpellCheckMockPanelHost : public spellcheck::mojom::SpellCheckPanelHost {
   bool show_spelling_panel_called_ = false;
   bool spelling_panel_visible_ = false;
   base::OnceClosure quit_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckMockPanelHost);
 };
 }  // namespace spellcheck
 

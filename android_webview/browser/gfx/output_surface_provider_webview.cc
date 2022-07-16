@@ -4,8 +4,9 @@
 
 #include "android_webview/browser/gfx/output_surface_provider_webview.h"
 
+#include <utility>
+
 #include "android_webview/browser/gfx/aw_gl_surface_external_stencil.h"
-#include "android_webview/browser/gfx/aw_render_thread_context_provider.h"
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "android_webview/browser/gfx/deferred_gpu_command_service.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
@@ -15,12 +16,15 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/single_task_sequence.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -29,6 +33,37 @@
 namespace android_webview {
 
 namespace {
+
+using GLSurfaceContextPair =
+    std::pair<scoped_refptr<gl::GLSurface>, scoped_refptr<gl::GLContext>>;
+
+GLSurfaceContextPair GetRealContextForVulkan() {
+  // TODO(crbug.com/1143279): Remove all of this after code no longer expects
+  // GL to be present (eg for getting capabilities or calling glGetError).
+  static base::NoDestructor<base::WeakPtr<gl::GLSurface>> cached_surface;
+  static base::NoDestructor<base::WeakPtr<gl::GLContext>> cached_context;
+
+  scoped_refptr<gl::GLSurface> surface = cached_surface.get()->get();
+  scoped_refptr<gl::GLContext> context = cached_context.get()->get();
+  if (surface && context)
+    return std::make_pair(std::move(surface), std::move(context));
+
+  surface = gl::init::CreateOffscreenGLSurface(gfx::Size(1, 1));
+  DCHECK(surface);
+  // Allow context and surface to be null and just fallback to
+  // not having any real EGL context in that case instead of crashing.
+  if (surface) {
+    gl::GLContextAttribs attribs;
+    context = gl::init::CreateGLContext(nullptr, surface.get(), attribs);
+  }
+  DCHECK(context);
+
+  if (surface)
+    *cached_surface.get() = surface->AsWeakPtr();
+  if (context)
+    *cached_context.get() = context->AsWeakPtr();
+  return std::make_pair(std::move(surface), std::move(context));
+}
 
 void OnContextLost(std::unique_ptr<bool> expect_loss, bool synthetic_loss) {
   if (expect_loss && *expect_loss)
@@ -87,38 +122,48 @@ void OutputSurfaceProviderWebView::InitializeContext() {
       !enable_vulkan_ &&
       gl::GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported();
 
-  if (renderer_settings_.use_skia_renderer && !enable_vulkan_) {
+  GLSurfaceContextPair real_context;
+  if (enable_vulkan_) {
+    DCHECK(!is_angle);
+    real_context = GetRealContextForVulkan();
+    gl_surface_ =
+        base::MakeRefCounted<AwGLSurface>(std::move(real_context.first));
+  } else {
     // We need to draw to FBO for External Stencil support with SkiaRenderer
     gl_surface_ = base::MakeRefCounted<AwGLSurfaceExternalStencil>(is_angle);
-  } else {
-    // TODO(crbug.com/1143279): Should not be needed when vulkan is enabled.
-    gl_surface_ = base::MakeRefCounted<AwGLSurface>(is_angle);
   }
 
   bool result = gl_surface_->Initialize(gl::GLSurfaceFormat());
   DCHECK(result);
 
-  auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
+  scoped_refptr<gl::GLContext> gl_context;
   gpu::GpuDriverBugWorkarounds workarounds(
       GpuServiceWebView::GetInstance()
           ->gpu_feature_info()
           .enabled_gpu_driver_bug_workarounds);
-  gl::GLContextAttribs attribs;
-  // For ANGLE EGL, we need to create ANGLE context from the current native
-  // EGL context.
-  attribs.angle_create_from_external_context = is_angle;
+  // If failed to create real context for vulkan, just fallback to using
+  // GLNonOwnedContext instead of crashing.
+  if (enable_vulkan_ && real_context.second) {
+    gl_context = std::move(real_context.second);
+  } else {
+    auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
+    gl::GLContextAttribs attribs;
+    // For ANGLE EGL, we need to create ANGLE context from the current native
+    // EGL context.
+    attribs.angle_create_from_external_context = is_angle;
 
-  // Skip validation when dcheck is off.
+    // Skip validation when dcheck is off.
 #if DCHECK_IS_ON()
-  attribs.can_skip_validation = false;
+    attribs.can_skip_validation = false;
 #else
-  attribs.can_skip_validation = true;
+    attribs.can_skip_validation = true;
 #endif
+    gl_context = gl::init::CreateGLContext(share_group.get(), gl_surface_.get(),
+                                           attribs);
+    gl_context->MakeCurrent(gl_surface_.get());
+  }
 
-  auto gl_context =
-      gl::init::CreateGLContext(share_group.get(), gl_surface_.get(), attribs);
-  gl_context->MakeCurrent(gl_surface_.get());
-
+  auto* share_group = gl_context->share_group();
   auto expect_context_loss_ptr = std::make_unique<bool>(false);
   expect_context_loss_ = expect_context_loss_ptr.get();
   shared_context_state_ = base::MakeRefCounted<gpu::SharedContextState>(

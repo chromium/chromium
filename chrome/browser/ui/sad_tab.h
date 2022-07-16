@@ -29,6 +29,9 @@ class SadTab {
   // Returns true if the sad tab should be shown.
   static bool ShouldShow(base::TerminationStatus status);
 
+  SadTab(const SadTab&) = delete;
+  SadTab& operator=(const SadTab&) = delete;
+
   virtual ~SadTab() {}
 
   // Called when the sad tab needs to be reinstalled in its window,
@@ -73,8 +76,6 @@ class SadTab {
   // True if repeatedly crashing and the browser is Google Chrome branded.
   bool show_feedback_button_;
   bool recorded_paint_;
-
-  DISALLOW_COPY_AND_ASSIGN(SadTab);
 };
 
 #endif  // CHROME_BROWSER_UI_SAD_TAB_H_

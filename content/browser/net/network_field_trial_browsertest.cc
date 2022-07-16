@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/test/mock_entropy_provider.h"
@@ -26,6 +25,10 @@ class TestFieldTrialListObserver : public base::FieldTrialList::Observer {
  public:
   TestFieldTrialListObserver() { base::FieldTrialList::AddObserver(this); }
 
+  TestFieldTrialListObserver(const TestFieldTrialListObserver&) = delete;
+  TestFieldTrialListObserver& operator=(const TestFieldTrialListObserver&) =
+      delete;
+
   ~TestFieldTrialListObserver() override {
     base::FieldTrialList::RemoveObserver(this);
   }
@@ -43,8 +46,6 @@ class TestFieldTrialListObserver : public base::FieldTrialList::Observer {
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFieldTrialListObserver);
 };
 
 }  // namespace
@@ -65,12 +66,14 @@ class NetworkFieldTrialBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(trial);
   }
 
+  NetworkFieldTrialBrowserTest(const NetworkFieldTrialBrowserTest&) = delete;
+  NetworkFieldTrialBrowserTest& operator=(const NetworkFieldTrialBrowserTest&) =
+      delete;
+
   ~NetworkFieldTrialBrowserTest() override = default;
 
  private:
   std::unique_ptr<base::FieldTrialList> field_trial_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkFieldTrialBrowserTest);
 };
 
 // Test that when the network process activates a field trial, the browser

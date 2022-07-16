@@ -19,7 +19,7 @@ TEST(TimeTest, Time) {
 }
 
 TEST(TimeTest, TimeDelta) {
-  base::TimeDelta in = base::TimeDelta::FromDays(123);
+  base::TimeDelta in = base::Days(123);
   base::TimeDelta out;
 
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::TimeDelta>(in, out));

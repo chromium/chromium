@@ -224,8 +224,8 @@ public final class SyncTestUtil {
         } else if (clientId.isEmpty()) {
             throw new IllegalArgumentException("Client ID cannot be empty.");
         } else if (!clientId.startsWith("s") && !clientId.startsWith("c")) {
-            throw new IllegalArgumentException(String.format(
-                    "Client ID (%s) must start with c or s.", clientId));
+            throw new IllegalArgumentException(
+                    String.format("Client ID (%s) must start with c or s.", clientId));
         }
 
         return clientId.substring(1);
@@ -247,8 +247,8 @@ public final class SyncTestUtil {
      *
      * @return a List of Pair<String, JSONObject> representing the local Sync data
      */
-    public static List<Pair<String, JSONObject>> getLocalData(
-            Context context, String typeString) throws JSONException {
+    public static List<Pair<String, JSONObject>> getLocalData(Context context, String typeString)
+            throws JSONException {
         JSONArray localData = getAllNodesAsJsonArray();
         JSONArray datatypeNodes = new JSONArray();
         for (int i = 0; i < localData.length(); i++) {

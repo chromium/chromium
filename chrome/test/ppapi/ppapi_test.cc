@@ -12,9 +12,9 @@
 #include "base/location.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -48,10 +48,6 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/gl/gl_switches.h"
-
-#if defined(OS_WIN)
-#include "base/win/windows_version.h"
-#endif
 
 using content::RenderViewHost;
 using content::TestMessageHandler;
@@ -263,7 +259,7 @@ void PPAPITestBase::RunTestURL(const GURL& test_url) {
       browser()->tab_strip_model()->GetActiveWebContents(),
       &handler);
 
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   ASSERT_TRUE(observer.Run()) << handler.error_message();
   EXPECT_STREQ("PASS", handler.message().c_str());
@@ -319,12 +315,10 @@ void OutOfProcessPPAPITest::SetUpCommandLine(base::CommandLine* command_line) {
 }
 
 void OutOfProcessPPAPITest::RunTest(const std::string& test_case) {
-  // TODO(crbug.com/1231528): Investigate why this test fails on Win 7 bots.
 #if defined(OS_WIN)
-  if (test_case == "Printing" &&
-      base::win::GetVersion() <= base::win::Version::WIN7) {
+  // See crbug.com/1231528 for context.
+  if (test_case == "Printing")
     return;
-  }
 #endif
 
   PPAPITestBase::RunTest(test_case);

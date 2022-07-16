@@ -39,6 +39,6 @@ public class DefaultBrowserPromoManager {
         RoleManager roleManager = (RoleManager) mActivity.getSystemService(Context.ROLE_SERVICE);
 
         Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_BROWSER);
-        mWindowAndroid.showCancelableIntent(intent, (window, resultCode, data) -> {}, null);
+        mWindowAndroid.showCancelableIntent(intent, (resultCode, data) -> {}, null);
     }
 }

@@ -186,7 +186,7 @@ void SecurityStatePageLoadMetricsObserver::OnComplete(
       security_state::GetSecurityLevelHistogramName(kTimeOnPagePrefix,
                                                     current_security_level_),
       GetDelegate().GetVisibilityTracker().GetForegroundDuration(),
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1), 100);
+      base::Milliseconds(1), base::Hours(1), 100);
   base::UmaHistogramEnumeration(kSecurityLevelOnComplete,
                                 current_security_level_,
                                 security_state::SECURITY_LEVEL_COUNT);
@@ -200,7 +200,7 @@ void SecurityStatePageLoadMetricsObserver::OnComplete(
       security_state::GetSafetyTipHistogramName(kTimeOnPagePrefix,
                                                 safety_tip_status),
       GetDelegate().GetVisibilityTracker().GetForegroundDuration(),
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1), 100);
+      base::Milliseconds(1), base::Hours(1), 100);
 }
 
 void SecurityStatePageLoadMetricsObserver::DidChangeVisibleSecurityState() {

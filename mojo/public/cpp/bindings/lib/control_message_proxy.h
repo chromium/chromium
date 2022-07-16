@@ -26,6 +26,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ControlMessageProxy {
  public:
   // Doesn't take ownership of |owner|. It must outlive this object.
   explicit ControlMessageProxy(InterfaceEndpointClient* owner);
+
+  ControlMessageProxy(const ControlMessageProxy&) = delete;
+  ControlMessageProxy& operator=(const ControlMessageProxy&) = delete;
+
   ~ControlMessageProxy();
 
   void QueryVersion(base::OnceCallback<void(uint32_t)> callback);
@@ -48,8 +52,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ControlMessageProxy {
   bool encountered_error_ = false;
 
   base::OnceClosure pending_flush_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ControlMessageProxy);
 };
 
 }  // namespace internal

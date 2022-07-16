@@ -8,21 +8,18 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/system/fake_statistics_provider.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/local_policy_test_server.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace system {
-class ScopedFakeStatisticsProvider;
-}  // namespace system
-
+namespace ash {
 namespace test {
 
 // Test constants used during enrollment wherever appropriate.
@@ -39,6 +36,11 @@ constexpr char kTestHardwareClass[] = "hw";
 class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
  public:
   explicit LocalPolicyTestServerMixin(InProcessBrowserTestMixinHost* host);
+
+  LocalPolicyTestServerMixin(const LocalPolicyTestServerMixin&) = delete;
+  LocalPolicyTestServerMixin& operator=(const LocalPolicyTestServerMixin&) =
+      delete;
+
   ~LocalPolicyTestServerMixin() override;
 
   policy::LocalPolicyTestServer* server() { return policy_test_server_.get(); }
@@ -65,8 +67,9 @@ class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
                         const base::Value& recommended_policy,
                         const std::string& policy_user);
 
-  void ExpectTokenEnrollment(const std::string& enrollment_token,
-                             const std::string& token_creator);
+  // Sets a fixed timestamp for the user policy served by the local policy
+  // server. By default the timestamp is set to current time on each request.
+  bool UpdateUserPolicyTimestamp(const base::Time& timestamp);
 
   void SetUpdateDeviceAttributesPermission(bool allowed);
 
@@ -79,6 +82,17 @@ class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
   void SetExpectedDeviceEnrollmentError(int net_error_code);
   void SetExpectedDeviceAttributeUpdateError(int net_error_code);
   void SetExpectedPolicyFetchError(int net_error_code);
+
+  // Configures server to expect these optional PSM (private set membership)
+  // execution values (i.e. `psm_execution_result` and
+  // `psm_determination_timestamp`) as part of DeviceRegisterRequest.
+  // Note: `device_brand_code` and `device_serial_number` values will be used on
+  // the server as a key to retrieve the PSM execution values.
+  void SetExpectedPsmParamsInDeviceRegisterRequest(
+      const std::string& device_brand_code,
+      const std::string& device_serial_number,
+      int psm_execution_result,
+      const absl::optional<int64_t> psm_determination_timestamp);
 
   // Set response for DeviceStateRetrievalRequest. Returns that if finds state
   // key passed in the request. State keys could be set by RegisterClient call
@@ -122,21 +136,14 @@ class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
   base::Value server_config_;
   bool canned_signing_keys_enabled_ = false;
   bool automatic_rotation_of_signing_keys_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalPolicyTestServerMixin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::LocalPolicyTestServerMixin;
-namespace test {
-using ::chromeos::test::kTestDomain;
-using ::chromeos::test::kTestRlzBrandCodeKey;
-using ::chromeos::test::kTestSerialNumber;
-}  // namespace test
-}  // namespace ash
+namespace chromeos {
+using ::ash::LocalPolicyTestServerMixin;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_LOCAL_POLICY_TEST_SERVER_MIXIN_H_

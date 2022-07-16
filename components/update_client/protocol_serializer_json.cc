@@ -24,8 +24,9 @@ std::string ProtocolSerializerJSON::Serialize(
   auto* request_node =
       root_node.SetKey("request", Value(Value::Type::DICTIONARY));
   request_node->SetKey("protocol", Value(request.protocol_version));
+  request_node->SetKey("ismachine", Value(request.is_machine));
   request_node->SetKey("dedup", Value("cr"));
-  request_node->SetKey("acceptformat", Value("crx2,crx3"));
+  request_node->SetKey("acceptformat", Value("crx3"));
   if (!request.additional_attributes.empty()) {
     for (const auto& attr : request.additional_attributes)
       request_node->SetKey(attr.first, Value(attr.second));
@@ -91,6 +92,8 @@ std::string ProtocolSerializerJSON::Serialize(
     Value app_node(Value::Type::DICTIONARY);
     app_node.SetKey("appid", Value(app.app_id));
     app_node.SetKey("version", Value(app.version));
+    if (!app.ap.empty())
+      app_node.SetKey("ap", Value(app.ap));
     if (!app.brand_code.empty())
       app_node.SetKey("brand", Value(app.brand_code));
     if (!app.install_source.empty())
@@ -128,6 +131,13 @@ std::string ProtocolSerializerJSON::Serialize(
           app_node.SetKey("updatecheck", Value(Value::Type::DICTIONARY));
       if (app.update_check->is_update_disabled)
         update_check_node->SetKey("updatedisabled", Value(true));
+      if (app.update_check->rollback_allowed)
+        update_check_node->SetKey("rollback_allowed", Value(true));
+      if (!app.update_check->target_version_prefix.empty()) {
+        update_check_node->SetKey(
+            "targetversionprefix",
+            Value(app.update_check->target_version_prefix));
+      }
     }
 
     if (app.ping) {

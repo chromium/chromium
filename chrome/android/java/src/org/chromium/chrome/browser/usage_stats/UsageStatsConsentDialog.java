@@ -45,13 +45,13 @@ public class UsageStatsConsentDialog {
         if (mIsRevocation) {
             builder.with(ModalDialogProperties.TITLE, resources,
                            R.string.usage_stats_revocation_prompt)
-                    .with(ModalDialogProperties.MESSAGE, resources,
-                            R.string.usage_stats_revocation_explanation)
+                    .with(ModalDialogProperties.MESSAGE,
+                            resources.getString(R.string.usage_stats_revocation_explanation))
                     .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.remove);
         } else {
             builder.with(ModalDialogProperties.TITLE, resources, R.string.usage_stats_consent_title)
-                    .with(ModalDialogProperties.MESSAGE, resources,
-                            R.string.usage_stats_consent_prompt)
+                    .with(ModalDialogProperties.MESSAGE,
+                            resources.getString(R.string.usage_stats_consent_prompt))
                     .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.show);
         }
 

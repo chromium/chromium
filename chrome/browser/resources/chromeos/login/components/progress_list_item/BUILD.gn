@@ -3,11 +3,32 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("../../oobe_auto_imports.gni")
 
-js_type_check("closure_compile") {
-  deps = [ ":progress_list_item" ]
+group("polymer3_elements") {
+  public_deps = [ ":progress_list_item_module" ]
 }
 
-js_library("progress_list_item") {
-  deps = [ "../behaviors:oobe_i18n_behavior" ]
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  closure_flags = default_closure_args
+  deps = [ ":progress_list_item.m" ]
+}
+
+js_library("progress_list_item.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/progress_list_item/progress_list_item.m.js" ]
+  deps = [
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":progress_list_item_module" ]
+}
+
+polymer_modulizer("progress_list_item") {
+  js_file = "progress_list_item.js"
+  html_file = "progress_list_item.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
 }

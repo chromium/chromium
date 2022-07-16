@@ -93,7 +93,7 @@ void SodaLanguagePackComponentInstallerPolicy::
 }
 
 bool SodaLanguagePackComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   return base::PathExists(
       install_dir.Append(speech::kSodaLanguagePackDirectoryRelativePath));
@@ -111,7 +111,7 @@ bool SodaLanguagePackComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 SodaLanguagePackComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return SodaComponentInstallerPolicy::SetComponentDirectoryPermission(
       install_dir);
@@ -122,7 +122,7 @@ void SodaLanguagePackComponentInstallerPolicy::OnCustomUninstall() {}
 void SodaLanguagePackComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
   if (on_installed_callback_)

@@ -6,7 +6,6 @@
 #define ASH_METRICS_USER_METRICS_RECORDER_TEST_API_H_
 
 #include "ash/metrics/user_metrics_recorder.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -14,6 +13,11 @@ namespace ash {
 class UserMetricsRecorderTestAPI {
  public:
   UserMetricsRecorderTestAPI();
+
+  UserMetricsRecorderTestAPI(const UserMetricsRecorderTestAPI&) = delete;
+  UserMetricsRecorderTestAPI& operator=(const UserMetricsRecorderTestAPI&) =
+      delete;
+
   ~UserMetricsRecorderTestAPI();
 
   // Accessor to UserMetricsRecorder::RecordPeriodicMetrics().
@@ -25,8 +29,6 @@ class UserMetricsRecorderTestAPI {
  private:
   // The UserMetricsRecorder that |this| is providing internal access to.
   UserMetricsRecorder user_metrics_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserMetricsRecorderTestAPI);
 };
 
 }  // namespace ash

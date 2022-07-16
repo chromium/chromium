@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -35,14 +35,19 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_provider.h"
 #include "chrome/browser/ash/policy/login/login_profile_policy_provider.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "components/policy/core/common/proxy_policy_provider.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -70,9 +75,7 @@ class ProxiedPoliciesPropagatedWatcher : PolicyService::ProviderUpdateObserver {
     device_wide_policy_service->AddProviderUpdateObserver(this);
 
     timeout_timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromSeconds(
-            kProxiedPoliciesPropagationTimeoutInSeconds),
+        FROM_HERE, base::Seconds(kProxiedPoliciesPropagationTimeoutInSeconds),
         this,
         &ProxiedPoliciesPropagatedWatcher::OnProviderUpdatePropagationTimedOut);
   }
@@ -123,16 +126,16 @@ class ProxiedPoliciesPropagatedWatcher : PolicyService::ProviderUpdateObserver {
 namespace {
 // Returns the PolicyService that holds device-wide policies.
 PolicyService* GetDeviceWidePolicyService() {
-  BrowserPolicyConnectorChromeOS* browser_policy_connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  BrowserPolicyConnectorAsh* browser_policy_connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return browser_policy_connector->GetPolicyService();
 }
 
 // Returns the ProxyPolicyProvider which is used to forward primary Profile
 // policies into the device-wide PolicyService.
 ProxyPolicyProvider* GetProxyPolicyProvider() {
-  BrowserPolicyConnectorChromeOS* browser_policy_connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  BrowserPolicyConnectorAsh* browser_policy_connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return browser_policy_connector->GetGlobalUserCloudPolicyProvider();
 }
 }  // namespace
@@ -155,9 +158,13 @@ void ProfilePolicyConnector::Init(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* browser_policy_connector =
-      static_cast<BrowserPolicyConnectorChromeOS*>(connector);
+      static_cast<BrowserPolicyConnectorAsh*>(connector);
 #else
   DCHECK_EQ(nullptr, user);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  browser_policy_connector_ = connector;
 #endif
 
   ConfigurationPolicyProvider* platform_provider =
@@ -293,8 +300,37 @@ bool ProfilePolicyConnector::IsManaged() const {
   const CloudPolicyStore* actual_policy_store = GetActualPolicyStore();
   if (actual_policy_store)
     return actual_policy_store->is_managed();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // As Lacros uses different ways to handle the main and the secondary
+  // profiles, these profiles need to be handled differently:
+  // ChromeOS's way is using mirror and we need to check with Ash using the
+  // device account (via IsManagedDeviceAccount).
+  // Desktop's way is used for secondary profiles and is using dice, which
+  // can be read directly from the profile.
+  // TODO(crbug/1245077): Remove this once Lacros only uses mirror.
+  if (browser_policy_connector_ && IsMainProfile())
+    return browser_policy_connector_->IsMainUserManaged();
+#endif
   return false;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ProfilePolicyConnector::IsMainProfile() const {
+  // If there is only a single profile or this connector object is owned by the
+  // main profile, it must be the main profile.
+  // TODO(crbug/1245077): Remove this once Lacros only uses mirror.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (profile_manager->GetNumberOfProfiles() <= 1)
+    return true;
+
+  auto profiles = profile_manager->GetLoadedProfiles();
+  const auto main_it = base::ranges::find_if(
+      profiles, [](Profile* profile) { return profile->IsMainProfile(); });
+  if (main_it == profiles.end())
+    return false;
+  return (*main_it)->GetProfilePolicyConnector() == this;
+}
+#endif
 
 bool ProfilePolicyConnector::IsProfilePolicy(const char* policy_key) const {
   const ConfigurationPolicyProvider* const provider =
@@ -325,9 +361,9 @@ const CloudPolicyStore* ProfilePolicyConnector::GetActualPolicyStore() const {
   if (special_user_policy_provider_) {
     // |special_user_policy_provider_| is non-null for device-local accounts,
     // for the login profile, and the lock screen app profile.
-    const DeviceCloudPolicyManagerChromeOS* const device_cloud_policy_manager =
+    const DeviceCloudPolicyManagerAsh* const device_cloud_policy_manager =
         g_browser_process->platform_part()
-            ->browser_policy_connector_chromeos()
+            ->browser_policy_connector_ash()
             ->GetDeviceCloudPolicyManager();
     // The device_cloud_policy_manager can be a nullptr in unit tests.
     if (device_cloud_policy_manager)

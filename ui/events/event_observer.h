@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_EVENT_OBSERVER_H_
 #define UI_EVENTS_EVENT_OBSERVER_H_
 
-#include "base/macros.h"
 #include "ui/events/events_export.h"
 
 namespace ui {

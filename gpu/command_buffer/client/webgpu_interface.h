@@ -24,12 +24,28 @@ struct ReservedTexture {
   uint32_t deviceGeneration;
 };
 
+// APIChannel is a RefCounted class which holds the Dawn wire client.
+class APIChannel : public base::RefCounted<APIChannel> {
+ public:
+  // Get the proc table.
+  // As long as a reference to this APIChannel alive, it is valid to
+  // call these procs.
+  virtual const DawnProcTable& GetProcs() const = 0;
+
+  // Disconnect. All commands using the WebGPU API should become a
+  // no-op and server-side resources can be freed.
+  virtual void Disconnect() = 0;
+
+ protected:
+  friend class base::RefCounted<APIChannel>;
+  APIChannel() = default;
+  virtual ~APIChannel() = default;
+};
+
 class WebGPUInterface : public InterfaceBase {
  public:
-  WebGPUInterface() {}
-  virtual ~WebGPUInterface() {}
-
-  virtual const DawnProcTable& GetProcs() const = 0;
+  WebGPUInterface() = default;
+  virtual ~WebGPUInterface() = default;
 
   // Flush all commands.
   virtual void FlushCommands() = 0;
@@ -44,9 +60,8 @@ class WebGPUInterface : public InterfaceBase {
   // nothing.
   virtual void FlushAwaitingCommands() = 0;
 
-  // Disconnect. All commands should become a no-op and server-side resources
-  // can be freed.
-  virtual void DisconnectContextAndDestroyServer() = 0;
+  // Get a strong reference to the APIChannel backing the implementation.
+  virtual scoped_refptr<APIChannel> GetAPIChannel() const = 0;
 
   virtual ReservedTexture ReserveTexture(WGPUDevice device) = 0;
   virtual void RequestAdapterAsync(
@@ -57,7 +72,9 @@ class WebGPUInterface : public InterfaceBase {
   virtual void RequestDeviceAsync(
       uint32_t adapter_service_id,
       const WGPUDeviceProperties& requested_device_properties,
-      base::OnceCallback<void(WGPUDevice)> request_device_callback) = 0;
+      base::OnceCallback<void(WGPUDevice,
+                              const WGPUSupportedLimits*,
+                              const char*)> request_device_callback) = 0;
 
   // Gets or creates a usable WGPUDevice synchronously. It really should not
   // be used, and the async request adapter and request device APIs should be
@@ -68,6 +85,16 @@ class WebGPUInterface : public InterfaceBase {
 // it means we can easily edit the non-auto generated parts right here in
 // this file instead of having to edit some template or the code generator.
 #include "gpu/command_buffer/client/webgpu_interface_autogen.h"
+
+  void AssociateMailbox(GLuint device_id,
+                        GLuint device_generation,
+                        GLuint id,
+                        GLuint generation,
+                        GLuint usage,
+                        const GLbyte* mailbox) {
+    AssociateMailbox(device_id, device_generation, id, generation, usage,
+                     WEBGPU_MAILBOX_NONE, mailbox);
+  }
 };
 
 }  // namespace webgpu

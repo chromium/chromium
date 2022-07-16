@@ -14,7 +14,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/async_file_util_adapter.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
@@ -102,7 +102,8 @@ IsolatedFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   return nullptr;
 }
 
-FileSystemOperation* IsolatedFileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<FileSystemOperation>
+IsolatedFileSystemBackend::CreateFileSystemOperation(
     const FileSystemURL& url,
     FileSystemContext* context,
     base::File::Error* error_code) const {

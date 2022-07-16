@@ -122,12 +122,18 @@ cc_component("cc") {
     "layers/picture_layer_impl.h",
     "layers/recording_source.cc",
     "layers/recording_source.h",
+    "layers/region_capture_bounds.cc",
+    "layers/region_capture_bounds.h",
     "layers/render_surface_impl.cc",
     "layers/render_surface_impl.h",
     "layers/scrollbar_layer_base.cc",
     "layers/scrollbar_layer_base.h",
     "layers/scrollbar_layer_impl_base.cc",
     "layers/scrollbar_layer_impl_base.h",
+    "layers/shared_element_layer.cc",
+    "layers/shared_element_layer.h",
+    "layers/shared_element_layer_impl.cc",
+    "layers/shared_element_layer_impl.h",
     "layers/solid_color_layer.cc",
     "layers/solid_color_layer.h",
     "layers/solid_color_layer_impl.cc",
@@ -335,6 +341,8 @@ cc_component("cc") {
     "trees/clip_expander.h",
     "trees/clip_node.cc",
     "trees/clip_node.h",
+    "trees/commit_state.cc",
+    "trees/commit_state.h",
     "trees/compositor_commit_data.cc",
     "trees/compositor_commit_data.h",
     "trees/compositor_mode.h",
@@ -373,6 +381,8 @@ cc_component("cc") {
     "trees/layer_tree_settings.h",
     "trees/managed_memory_policy.cc",
     "trees/managed_memory_policy.h",
+    "trees/mobile_optimized_viewport_util.cc",
+    "trees/mobile_optimized_viewport_util.h",
     "trees/mutator_host.h",
     "trees/mutator_host_client.h",
     "trees/occlusion.cc",
@@ -410,8 +420,6 @@ cc_component("cc") {
     "trees/swap_promise.h",
     "trees/swap_promise_manager.cc",
     "trees/swap_promise_manager.h",
-    "trees/swap_promise_monitor.cc",
-    "trees/swap_promise_monitor.h",
     "trees/target_property.cc",
     "trees/target_property.h",
     "trees/task_runner_provider.cc",
@@ -426,6 +434,7 @@ cc_component("cc") {
     "trees/ukm_manager.h",
     "trees/viewport_layers.cc",
     "trees/viewport_layers.h",
+    "trees/viewport_property_ids.h",
   ]
 
   public_deps = [
@@ -525,7 +534,6 @@ cc_test_static_library("test_support") {
     "test/fake_ui_resource_layer_tree_host_impl.h",
     "test/fake_video_frame_provider.cc",
     "test/fake_video_frame_provider.h",
-    "test/geometry_test_utils.h",
     "test/layer_test_common.cc",
     "test/layer_test_common.h",
     "test/layer_tree_impl_test_base.cc",
@@ -538,6 +546,9 @@ cc_test_static_library("test_support") {
     "test/layer_tree_pixel_test.h",
     "test/layer_tree_test.cc",
     "test/layer_tree_test.h",
+    "test/lottie_test_data.h",
+    "test/mock_latency_info_swap_promise_monitor.cc",
+    "test/mock_latency_info_swap_promise_monitor.h",
     "test/mock_layer_tree_mutator.cc",
     "test/mock_layer_tree_mutator.h",
     "test/mock_mutator_host.cc",
@@ -820,9 +831,14 @@ cc_test("cc_unittests") {
     "test/run_all_unittests.cc",
   ]
 
-  if (!is_android) {
+  if (skia_support_skottie) {
     data = [ "//components/viz/test/data/" ]
-    sources += [ "paint/skottie_transfer_cache_entry_unittest.cc" ]
+    sources += [
+      "paint/skottie_mru_resource_provider_unittest.cc",
+      "paint/skottie_resource_metadata_unittest.cc",
+      "paint/skottie_transfer_cache_entry_unittest.cc",
+      "paint/skottie_wrapper_unittest.cc",
+    ]
   }
 
   deps = [
@@ -849,6 +865,7 @@ cc_test("cc_unittests") {
     "//media",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
+    "//skia:buildflags",
     "//skia:skcms",
     "//testing/gmock",
     "//testing/gtest",

@@ -21,14 +21,17 @@ class BookmarkLocalChangesBuilder {
   // this object.
   BookmarkLocalChangesBuilder(SyncedBookmarkTracker* bookmark_tracker,
                               bookmarks::BookmarkModel* bookmark_model);
+
+  BookmarkLocalChangesBuilder(const BookmarkLocalChangesBuilder&) = delete;
+  BookmarkLocalChangesBuilder& operator=(const BookmarkLocalChangesBuilder&) =
+      delete;
+
   // Builds the commit requests list.
   syncer::CommitRequestDataList BuildCommitRequests(size_t max_entries) const;
 
  private:
   SyncedBookmarkTracker* const bookmark_tracker_;
   bookmarks::BookmarkModel* const bookmark_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkLocalChangesBuilder);
 };
 
 }  // namespace sync_bookmarks

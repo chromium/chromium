@@ -62,6 +62,10 @@ class XRCompositorCommon : public base::Thread,
       base::OnceCallback<void(bool result, mojom::XRSessionPtr)>;
 
   XRCompositorCommon();
+
+  XRCompositorCommon(const XRCompositorCommon&) = delete;
+  XRCompositorCommon& operator=(const XRCompositorCommon&) = delete;
+
   ~XRCompositorCommon() override;
 
   // on_presentation_ended will be called when this the compositor stops
@@ -215,8 +219,6 @@ class XRCompositorCommon : public base::Thread,
       mojom::XRVisibilityState::VISIBLE;
   mojom::VRStageParametersPtr current_stage_parameters_;
   uint32_t stage_parameters_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(XRCompositorCommon);
 };
 
 }  // namespace device

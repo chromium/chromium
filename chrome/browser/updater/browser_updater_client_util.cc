@@ -4,6 +4,6 @@
 
 #include "chrome/browser/updater/browser_updater_client_util.h"
 
-// TODO(crbug.com/1134631): Make updater branding files mergeable with browser
-// branding files.
-const char kUpdaterName[] = "ChromiumUpdater";
+#include "chrome/updater/updater_branding.h"
+
+const char kUpdaterName[] = PRODUCT_FULLNAME_STRING;

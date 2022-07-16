@@ -23,6 +23,11 @@ class AdvancedProtectionStatusManagerFactory
 
   static AdvancedProtectionStatusManagerFactory* GetInstance();
 
+  AdvancedProtectionStatusManagerFactory(
+      const AdvancedProtectionStatusManagerFactory&) = delete;
+  AdvancedProtectionStatusManagerFactory& operator=(
+      const AdvancedProtectionStatusManagerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       AdvancedProtectionStatusManagerFactory>;
@@ -36,8 +41,6 @@ class AdvancedProtectionStatusManagerFactory
   bool ServiceIsCreatedWithBrowserContext() const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AdvancedProtectionStatusManagerFactory);
 };
 
 }  // namespace safe_browsing

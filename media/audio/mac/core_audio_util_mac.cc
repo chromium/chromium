@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "base/mac/mac_logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace media {
 namespace core_audio_mac {

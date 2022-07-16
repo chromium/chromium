@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_settings.h"
@@ -28,7 +27,7 @@
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-blink.h"
-#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/widget/visual_properties.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -48,6 +47,7 @@
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
+#include "ui/display/display.h"
 #include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -211,16 +211,11 @@ void WidgetBase::InitializeCompositing(
 
   FrameWidget* frame_widget = client_->FrameWidget();
 
+  // |compositor_thread_scheduler| will be null for a popup (since it has no
+  // FrameWidget) or in tests without a compositor thread.
   scheduler::WebThreadScheduler* compositor_thread_scheduler =
-      scheduler::WebThreadScheduler::CompositorThreadScheduler();
-  scoped_refptr<base::SingleThreadTaskRunner> compositor_input_task_runner;
-  // Use the compositor thread task runner unless this is a popup or other such
-  // non-frame widgets. The |compositor_thread_scheduler| can be null in tests
-  // without a compositor thread.
-  if (frame_widget && compositor_thread_scheduler) {
-    compositor_input_task_runner =
-        compositor_thread_scheduler->DefaultTaskRunner();
-  }
+      frame_widget ? scheduler::WebThreadScheduler::CompositorThreadScheduler()
+                   : nullptr;
 
   // We only use an external input handler for frame widgets because only
   // frames use the compositor for input handling. Other kinds of widgets
@@ -229,8 +224,8 @@ void WidgetBase::InitializeCompositing(
   bool uses_input_handler = frame_widget;
   widget_input_handler_manager_ = WidgetInputHandlerManager::Create(
       weak_ptr_factory_.GetWeakPtr(), std::move(frame_widget_input_handler),
-      never_composited_, std::move(compositor_input_task_runner),
-      main_thread_scheduler, uses_input_handler);
+      never_composited_, compositor_thread_scheduler, main_thread_scheduler,
+      uses_input_handler);
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -408,7 +403,10 @@ void WidgetBase::UpdateVisualProperties(
       gfx::ScaleToCeiledSize(visual_properties.visible_viewport_size,
                              screen_info.device_scale_factor));
 
+  base::TimeTicks update_start = base::TimeTicks::Now();
   client_->UpdateVisualProperties(visual_properties);
+  base::TimeDelta update_duration = base::TimeTicks::Now() - update_start;
+  LayerTreeHost()->SetVisualPropertiesUpdateDuration(update_duration);
 }
 
 void WidgetBase::UpdateScreenRects(const gfx::Rect& widget_screen_rect,
@@ -462,6 +460,33 @@ void WidgetBase::WasShown(base::TimeTicks show_request_timestamp,
   }
 
   client_->WasShown(was_evicted);
+}
+
+void WidgetBase::RequestPresentationTimeForNextFrame(
+    base::TimeTicks show_request_timestamp,
+    mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+  DCHECK(visible_time_request);
+  if (is_hidden_)
+    return;
+
+  // Tab was shown while widget was already painting, eg. due to being
+  // captured.
+  LayerTreeHost()->RequestPresentationTimeForNextFrame(
+      tab_switch_time_recorder_.TabWasShown(
+          false /* has_saved_frames */, visible_time_request->event_start_time,
+          visible_time_request->destination_is_loaded,
+          visible_time_request->show_reason_tab_switching,
+          visible_time_request->show_reason_unoccluded,
+          visible_time_request->show_reason_bfcache_restore,
+          show_request_timestamp));
+}
+
+void WidgetBase::CancelPresentationTimeRequest() {
+  if (is_hidden_)
+    return;
+
+  // Tab was hidden while widget keeps painting, eg. due to being captured.
+  tab_switch_time_recorder_.TabWasHidden();
 }
 
 void WidgetBase::ApplyViewportChanges(
@@ -652,7 +677,8 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
           viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR));
 
 #if defined(OS_ANDROID)
-  if (Platform::Current()->IsSynchronousCompositingEnabledForAndroidWebView()) {
+  if (Platform::Current()->IsSynchronousCompositingEnabledForAndroidWebView() &&
+      !is_for_child_local_root_) {
     // TODO(ericrk): Collapse with non-webview registration below.
     if (::features::IsUsingVizFrameSubmissionForWebView()) {
       widget_host_->CreateFrameSink(std::move(compositor_frame_sink_receiver),
@@ -711,8 +737,9 @@ void WidgetBase::WillCommitCompositorFrame() {
   client_->BeginCommitCompositorFrame();
 }
 
-void WidgetBase::DidCommitCompositorFrame(base::TimeTicks commit_start_time) {
-  client_->EndCommitCompositorFrame(commit_start_time);
+void WidgetBase::DidCommitCompositorFrame(base::TimeTicks commit_start_time,
+                                          base::TimeTicks commit_finish_time) {
+  client_->EndCommitCompositorFrame(commit_start_time, commit_finish_time);
 }
 
 void WidgetBase::DidCompletePageScaleAnimation() {
@@ -830,6 +857,10 @@ void WidgetBase::UpdateTooltipFromKeyboard(const String& tooltip_text,
   widget_host_->UpdateTooltipFromKeyboard(
       tooltip_text.IsEmpty() ? "" : tooltip_text, ToBaseTextDirection(dir),
       BlinkSpaceToEnclosedDIPs(bounds));
+}
+
+void WidgetBase::ClearKeyboardTriggeredTooltip() {
+  widget_host_->ClearKeyboardTriggeredTooltip();
 }
 
 void WidgetBase::ShowVirtualKeyboard() {
@@ -992,7 +1023,7 @@ void WidgetBase::ClearTextInputState() {
 }
 
 void WidgetBase::ShowVirtualKeyboardOnElementFocus() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // On ChromeOS, virtual keyboard is triggered only when users leave the
   // mouse button or the finger and a text input element is focused at that
   // time. Focus event itself shouldn't trigger virtual keyboard.
@@ -1103,7 +1134,7 @@ bool WidgetBase::ShouldUpdateCompositionInfo(const gfx::Range& range,
     return true;
   if (bounds.size() != composition_character_bounds_.size())
     return true;
-  for (size_t i = 0; i < bounds.size(); ++i) {
+  for (wtf_size_t i = 0; i < bounds.size(); ++i) {
     if (bounds[i] != composition_character_bounds_[i])
       return true;
   }
@@ -1368,6 +1399,10 @@ void WidgetBase::RequestAnimationAfterDelayTimerFired(TimerBase*) {
   client_->ScheduleAnimation();
 }
 
+float WidgetBase::GetOriginalDeviceScaleFactor() const {
+  return client_->GetOriginalScreenInfos().current().device_scale_factor;
+}
+
 void WidgetBase::UpdateSurfaceAndScreenInfo(
     const viz::LocalSurfaceId& new_local_surface_id,
     const gfx::Rect& compositor_viewport_pixel_rect,
@@ -1389,29 +1424,33 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
       previous_screen_info.orientation_angle !=
           new_screen_info.orientation_angle ||
       previous_screen_info.orientation_type != new_screen_info.orientation_type;
-  display::ScreenInfo previous_original_screen_info =
-      client_->GetOriginalScreenInfo();
+  display::ScreenInfos previous_original_screen_infos =
+      client_->GetOriginalScreenInfos();
 
   local_surface_id_from_parent_ = new_local_surface_id;
   screen_infos_ = new_screen_infos;
 
   // Note carefully that the DSF specified in |new_screen_info| is not the
   // DSF used by the compositor during device emulation!
-  LayerTreeHost()->SetViewportRectAndScale(
-      compositor_viewport_pixel_rect,
-      client_->GetOriginalScreenInfo().device_scale_factor,
-      local_surface_id_from_parent_);
+  LayerTreeHost()->SetViewportRectAndScale(compositor_viewport_pixel_rect,
+                                           GetOriginalDeviceScaleFactor(),
+                                           local_surface_id_from_parent_);
   // The VisualDeviceViewportIntersectionRect derives from the LayerTreeView's
   // viewport size, which is set above.
   LayerTreeHost()->SetVisualDeviceViewportIntersectionRect(
       client_->ViewportVisibleRect());
-  LayerTreeHost()->SetDisplayColorSpaces(
-      screen_infos_.current().display_color_spaces);
+  if (display::Display::HasForceRasterColorProfile()) {
+    LayerTreeHost()->SetDisplayColorSpaces(gfx::DisplayColorSpaces(
+        display::Display::GetForcedRasterColorProfile()));
+  } else {
+    LayerTreeHost()->SetDisplayColorSpaces(
+        screen_infos_.current().display_color_spaces);
+  }
 
   if (orientation_changed)
     client_->OrientationChanged();
 
-  client_->DidUpdateSurfaceAndScreen(previous_original_screen_info);
+  client_->DidUpdateSurfaceAndScreen(previous_original_screen_infos);
 }
 
 void WidgetBase::UpdateScreenInfo(
@@ -1499,7 +1538,7 @@ bool WidgetBase::ComputePreferCompositingToLCDText() {
       *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(switches::kDisablePreferCompositingToLCDText))
     return false;
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
   // On Android, we never have subpixel antialiasing. On Chrome OS we prefer to
   // composite all scrollers for better scrolling performance.
   return true;
@@ -1527,76 +1566,76 @@ void WidgetBase::CountDroppedPointerDownForEventTiming(unsigned count) {
 gfx::PointF WidgetBase::DIPsToBlinkSpace(const gfx::PointF& point) {
   if (!use_zoom_for_dsf_)
     return point;
-  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
-  return gfx::ScalePoint(point,
-                         client_->GetOriginalScreenInfo().device_scale_factor);
+  // TODO(danakj): Should this use non-original scale factor so it changes under
+  // emulation?
+  return gfx::ScalePoint(point, GetOriginalDeviceScaleFactor());
 }
 
 gfx::Point WidgetBase::DIPsToRoundedBlinkSpace(const gfx::Point& point) {
   if (!use_zoom_for_dsf_)
     return point;
-  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
-  return gfx::ScaleToRoundedPoint(
-      point, client_->GetOriginalScreenInfo().device_scale_factor);
+  // TODO(danakj): Should this use non-original scale factor so it changes under
+  // emulation?
+  return gfx::ScaleToRoundedPoint(point, GetOriginalDeviceScaleFactor());
 }
 
 gfx::PointF WidgetBase::BlinkSpaceToDIPs(const gfx::PointF& point) {
   if (!use_zoom_for_dsf_)
     return point;
-  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
-  return gfx::ScalePoint(
-      point, 1.f / client_->GetOriginalScreenInfo().device_scale_factor);
+  // TODO(danakj): Should this use non-original scale factor so it changes under
+  // emulation?
+  return gfx::ScalePoint(point, 1.f / GetOriginalDeviceScaleFactor());
 }
 
 gfx::Point WidgetBase::BlinkSpaceToFlooredDIPs(const gfx::Point& point) {
   if (!use_zoom_for_dsf_)
     return point;
-  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
-  // TODO(dtapuska): Determine if this should be a floor vs rounded.
-  float reverse = 1 / client_->GetOriginalScreenInfo().device_scale_factor;
+  // TODO(danakj): Should this use non-original scale factor so it changes under
+  // emulation?
+  float reverse = 1 / GetOriginalDeviceScaleFactor();
   return gfx::ScaleToFlooredPoint(point, reverse);
 }
 
 gfx::Size WidgetBase::DIPsToCeiledBlinkSpace(const gfx::Size& size) {
   if (!use_zoom_for_dsf_)
     return size;
-  return gfx::ScaleToCeiledSize(
-      size, client_->GetOriginalScreenInfo().device_scale_factor);
+  return gfx::ScaleToCeiledSize(size, GetOriginalDeviceScaleFactor());
 }
 
 gfx::RectF WidgetBase::DIPsToBlinkSpace(const gfx::RectF& rect) {
   if (!use_zoom_for_dsf_)
     return rect;
-  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
-  return gfx::ScaleRect(rect,
-                        client_->GetOriginalScreenInfo().device_scale_factor);
+  // TODO(danakj): Should this use non-original scale factor so it changes under
+  // emulation?
+  return gfx::ScaleRect(rect, GetOriginalDeviceScaleFactor());
 }
 
 float WidgetBase::DIPsToBlinkSpace(float scalar) {
   if (!use_zoom_for_dsf_)
     return scalar;
-  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
-  return client_->GetOriginalScreenInfo().device_scale_factor * scalar;
+  // TODO(danakj): Should this use non-original scale factor so it changes under
+  // emulation?
+  return GetOriginalDeviceScaleFactor() * scalar;
 }
 
 gfx::Size WidgetBase::BlinkSpaceToFlooredDIPs(const gfx::Size& size) {
   if (!use_zoom_for_dsf_)
     return size;
-  float reverse = 1 / client_->GetOriginalScreenInfo().device_scale_factor;
+  float reverse = 1 / GetOriginalDeviceScaleFactor();
   return gfx::ScaleToFlooredSize(size, reverse);
 }
 
 gfx::Rect WidgetBase::BlinkSpaceToEnclosedDIPs(const gfx::Rect& rect) {
   if (!use_zoom_for_dsf_)
     return rect;
-  float reverse = 1 / client_->GetOriginalScreenInfo().device_scale_factor;
+  float reverse = 1 / GetOriginalDeviceScaleFactor();
   return gfx::ScaleToEnclosedRect(rect, reverse);
 }
 
 gfx::RectF WidgetBase::BlinkSpaceToDIPs(const gfx::RectF& rect) {
   if (!use_zoom_for_dsf_)
     return rect;
-  float reverse = 1 / client_->GetOriginalScreenInfo().device_scale_factor;
+  float reverse = 1 / GetOriginalDeviceScaleFactor();
   return gfx::ScaleRect(rect, reverse);
 }
 

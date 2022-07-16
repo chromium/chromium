@@ -46,7 +46,7 @@ UpdaterScope GetUpdaterScope() {
   }
 
   // crbug.com(1214058): consider handling the elevation case by
-  // calling IsRunningElevated().
+  // calling IsUserAdmin().
   return UpdaterScope::kUser;
 #else
   return IsSystemProcess() ? UpdaterScope::kSystem : UpdaterScope::kUser;

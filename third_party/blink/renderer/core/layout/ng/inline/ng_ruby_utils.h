@@ -72,7 +72,6 @@ struct NGAnnotationMetrics {
 NGAnnotationMetrics ComputeAnnotationOverflow(
     const NGLogicalLineItems& logical_line,
     const FontHeight& line_box_metrics,
-    LayoutUnit line_over,
     const ComputedStyle& line_style);
 
 }  // namespace blink

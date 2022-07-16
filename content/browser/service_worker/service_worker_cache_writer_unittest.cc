@@ -29,6 +29,12 @@ class MockServiceWorkerCacheWriterObserver
     : public ServiceWorkerCacheWriter::WriteObserver {
  public:
   MockServiceWorkerCacheWriterObserver() : data_length_(0), result_(net::OK) {}
+
+  MockServiceWorkerCacheWriterObserver(
+      const MockServiceWorkerCacheWriterObserver&) = delete;
+  MockServiceWorkerCacheWriterObserver& operator=(
+      const MockServiceWorkerCacheWriterObserver&) = delete;
+
   ~MockServiceWorkerCacheWriterObserver() {}
 
   int WillWriteResponseHead(
@@ -60,8 +66,6 @@ class MockServiceWorkerCacheWriterObserver
   size_t data_length_;
   base::OnceCallback<void(net::Error)> callback_;
   net::Error result_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockServiceWorkerCacheWriterObserver);
 };
 
 class ServiceWorkerCacheWriterTest : public ::testing::Test {
@@ -74,6 +78,11 @@ class ServiceWorkerCacheWriterTest : public ::testing::Test {
   };
 
   ServiceWorkerCacheWriterTest() {}
+
+  ServiceWorkerCacheWriterTest(const ServiceWorkerCacheWriterTest&) = delete;
+  ServiceWorkerCacheWriterTest& operator=(const ServiceWorkerCacheWriterTest&) =
+      delete;
+
   ~ServiceWorkerCacheWriterTest() override {}
 
   MockServiceWorkerResourceReader* ExpectReader() {
@@ -175,9 +184,6 @@ class ServiceWorkerCacheWriterTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
     return error;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerCacheWriterTest);
 };
 
 // Passthrough tests:

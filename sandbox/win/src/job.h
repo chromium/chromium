@@ -22,6 +22,9 @@ class Job {
  public:
   Job();
 
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job();
 
   // Initializes and creates the job object. The security of the job is based
@@ -61,8 +64,6 @@ class Job {
  private:
   // Handle to the job referenced by the object.
   base::win::ScopedHandle job_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 }  // namespace sandbox

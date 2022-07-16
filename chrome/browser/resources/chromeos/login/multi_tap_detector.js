@@ -6,10 +6,13 @@
  * @fileoverview Multi-tap gesture detector for web UI OOBE.
  */
 
+
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+
 /** Multi-tap gesture detector. */
-class MultiTapDetector {
+/* #export */ class MultiTapDetector {
   /**
-   * @param {!Element} element UI element to attach the multi-tap detector to.
+   * @param {?HTMLElement} element UI element to attach the multi-tap detector to.
    * @param {number} tapsCount Number of taps in multi-tap gesture to detect.
    * @param {!function()} callback Callback to be called when multi-tap gesture
    *     is detected.

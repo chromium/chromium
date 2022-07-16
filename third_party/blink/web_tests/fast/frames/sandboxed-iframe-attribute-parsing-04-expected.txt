@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 7: Blocked form submission to 'javascript:top.disallowedFormSubmitted();' because the form's frame is sandboxed and the 'allow-forms' permission is not set.
+CONSOLE ERROR: Blocked form submission to 'javascript:top.disallowedFormSubmitted();' because the form's frame is sandboxed and the 'allow-forms' permission is not set.
 Tab characters before and after attribute value
 
 PASS

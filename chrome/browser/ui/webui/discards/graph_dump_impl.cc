@@ -10,7 +10,6 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -50,6 +49,9 @@ class DiscardsGraphDumpImpl::FaviconRequestHelper {
   FaviconRequestHelper(base::WeakPtr<DiscardsGraphDumpImpl> graph_dump,
                        scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  FaviconRequestHelper(const FaviconRequestHelper&) = delete;
+  FaviconRequestHelper& operator=(const FaviconRequestHelper&) = delete;
+
   void RequestFavicon(GURL page_url,
                       performance_manager::WebContentsProxy contents_proxy,
                       int64_t serialization_id);
@@ -63,8 +65,6 @@ class DiscardsGraphDumpImpl::FaviconRequestHelper {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconRequestHelper);
 };
 
 DiscardsGraphDumpImpl::FaviconRequestHelper::FaviconRequestHelper(

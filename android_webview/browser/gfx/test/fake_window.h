@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
@@ -46,6 +46,10 @@ class WindowHooks {
 class FakeWindow {
  public:
   FakeWindow(BrowserViewRenderer* view, WindowHooks* hooks, gfx::Rect location);
+
+  FakeWindow(const FakeWindow&) = delete;
+  FakeWindow& operator=(const FakeWindow&) = delete;
+
   ~FakeWindow();
 
   void Detach();
@@ -94,8 +98,6 @@ class FakeWindow {
   bool context_current_;
 
   base::WeakPtrFactory<FakeWindow> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWindow);
 };
 
 class FakeFunctor {

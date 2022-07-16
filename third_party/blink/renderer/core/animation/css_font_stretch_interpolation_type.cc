@@ -77,7 +77,7 @@ void CSSFontStretchInterpolationType::ApplyStandardPropertyValue(
     const NonInterpolableValue*,
     StyleResolverState& state) const {
   state.GetFontBuilder().SetStretch(FontSelectionValue(
-      clampTo(To<InterpolableNumber>(interpolable_value).Value(), 0.0)));
+      ClampTo(To<InterpolableNumber>(interpolable_value).Value(), 0.0)));
 }
 
 }  // namespace blink

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/sync_service.h"
@@ -26,13 +25,17 @@ namespace syncer {
 class TestSyncService : public SyncService {
  public:
   TestSyncService();
+
+  TestSyncService(const TestSyncService&) = delete;
+  TestSyncService& operator=(const TestSyncService&) = delete;
+
   ~TestSyncService() override;
 
   void SetDisableReasons(DisableReasonSet disable_reasons);
   void SetTransportState(TransportState transport_state);
   void SetLocalSyncEnabled(bool local_sync_enabled);
-  void SetAuthenticatedAccountInfo(const CoreAccountInfo& account_info);
-  void SetIsAuthenticatedAccountPrimary(bool is_primary);
+  void SetAccountInfo(const CoreAccountInfo& account_info);
+  void SetHasSyncConsent(bool has_consent);
   void SetSetupInProgress(bool in_progress);
   void SetAuthError(const GoogleServiceAuthError& auth_error);
   void SetFirstSetupComplete(bool first_setup_complete);
@@ -60,8 +63,8 @@ class TestSyncService : public SyncService {
   DisableReasonSet GetDisableReasons() const override;
   TransportState GetTransportState() const override;
   bool IsLocalSyncEnabled() const override;
-  CoreAccountInfo GetAuthenticatedAccountInfo() const override;
-  bool IsAuthenticatedAccountPrimary() const override;
+  CoreAccountInfo GetAccountInfo() const override;
+  bool HasSyncConsent() const override;
   GoogleServiceAuthError GetAuthError() const override;
   base::Time GetAuthErrorTime() const override;
   bool RequiresClientUpgrade() const override;
@@ -120,7 +123,7 @@ class TestSyncService : public SyncService {
   TransportState transport_state_ = TransportState::ACTIVE;
   bool local_sync_enabled_ = false;
   CoreAccountInfo account_info_;
-  bool account_is_primary_ = true;
+  bool has_sync_consent_ = true;
   bool setup_in_progress_ = false;
   GoogleServiceAuthError auth_error_;
 
@@ -135,8 +138,6 @@ class TestSyncService : public SyncService {
   base::ObserverList<syncer::SyncServiceObserver>::Unchecked observers_;
 
   GURL sync_service_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncService);
 };
 
 }  // namespace syncer

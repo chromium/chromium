@@ -347,7 +347,7 @@ bool WebDialogView::ShouldShowCloseButton() const {
 }
 
 bool WebDialogView::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   if (delegate_)
     return delegate_->HandleContextMenu(render_frame_host, params);

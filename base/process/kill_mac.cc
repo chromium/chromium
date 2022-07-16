@@ -114,7 +114,7 @@ void WaitForChildToDie(pid_t child, int timeout) {
     } else {
       // Keep track of the elapsed time to be able to restart kevent if it's
       // interrupted.
-      TimeDelta remaining_delta = TimeDelta::FromSeconds(timeout);
+      TimeDelta remaining_delta = Seconds(timeout);
       TimeTicks deadline = TimeTicks::Now() + remaining_delta;
       result = -1;
       struct kevent event = {0};

@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 
 namespace base {
@@ -25,6 +24,11 @@ class FakeGCMDriverForInstanceID : public gcm::FakeGCMDriver,
   FakeGCMDriverForInstanceID();
   explicit FakeGCMDriverForInstanceID(
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
+
+  FakeGCMDriverForInstanceID(const FakeGCMDriverForInstanceID&) = delete;
+  FakeGCMDriverForInstanceID& operator=(const FakeGCMDriverForInstanceID&) =
+      delete;
+
   ~FakeGCMDriverForInstanceID() override;
 
   // FakeGCMDriver overrides:
@@ -69,8 +73,6 @@ class FakeGCMDriverForInstanceID : public gcm::FakeGCMDriver,
   std::string last_gettoken_app_id_;
   std::string last_gettoken_authorized_entity_;
   std::string last_deletetoken_app_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGCMDriverForInstanceID);
 };
 
 }  // namespace instance_id

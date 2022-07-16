@@ -71,36 +71,12 @@ void UpdateStatistics(Action action) {
 }
 
 // Maximum interval to display in full mode.
-constexpr base::TimeDelta kMaxIntervalToDisplayInFullMode =
-    base::TimeDelta::FromSecondsD(5.0);
+constexpr base::TimeDelta kMaxIntervalToDisplayInFullMode = base::Seconds(5.0);
 
 base::FilePath GetLastTracingModelPath(Profile* profile) {
   DCHECK(profile);
   return file_manager::util::GetDownloadsFolderForProfile(profile).AppendASCII(
       kLastTracingModelName);
-}
-
-base::FilePath GetModelPathFromTitle(Profile* profile,
-                                     const std::string& title) {
-  constexpr size_t max_name_size = 32;
-  char normalized_name[max_name_size];
-  size_t index = 0;
-  for (char c : title) {
-    c = base::ToLowerASCII(c);
-    if (index == max_name_size)
-      break;
-    if (c == ' ') {
-      normalized_name[index++] = '_';
-      continue;
-    }
-    if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))
-      normalized_name[index++] = c;
-  }
-  normalized_name[index] = 0;
-  return file_manager::util::GetDownloadsFolderForProfile(profile).AppendASCII(
-      base::StringPrintf("overview_tracing_%s_%" PRId64 ".json",
-                         normalized_name,
-                         (base::Time::Now() - base::Time()).InSeconds()));
 }
 
 std::pair<base::Value, std::string> MaybeLoadLastGraphicsModel(
@@ -128,15 +104,16 @@ std::pair<base::Value, std::string> MaybeLoadLastGraphicsModel(
 class ProcessFilterPassAll : public base::ProcessFilter {
  public:
   ProcessFilterPassAll() = default;
+
+  ProcessFilterPassAll(const ProcessFilterPassAll&) = delete;
+  ProcessFilterPassAll& operator=(const ProcessFilterPassAll&) = delete;
+
   ~ProcessFilterPassAll() override = default;
 
   // base::ProcessFilter:
   bool Includes(const base::ProcessEntry& process) const override {
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessFilterPassAll);
 };
 
 // Reads name of thread from /proc/pid/task/tid/status.
@@ -321,6 +298,31 @@ base::trace_event::TraceConfig GetTracingConfig(ArcGraphicsTracingMode mode) {
 
 }  // namespace
 
+// static
+base::FilePath ArcGraphicsTracingHandler::GetModelPathFromTitle(
+    Profile* profile,
+    const std::string& title) {
+  constexpr size_t kMaxNameSize = 32;
+  char normalized_name[kMaxNameSize];
+  size_t index = 0;
+  for (char c : title) {
+    if (index == kMaxNameSize - 1)
+      break;
+    c = base::ToLowerASCII(c);
+    if (c == ' ') {
+      normalized_name[index++] = '_';
+      continue;
+    }
+    if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))
+      normalized_name[index++] = c;
+  }
+  normalized_name[index] = 0;
+  return file_manager::util::GetDownloadsFolderForProfile(profile).AppendASCII(
+      base::StringPrintf("overview_tracing_%s_%" PRId64 ".json",
+                         normalized_name,
+                         (base::Time::Now() - base::Time()).InSeconds()));
+}
+
 ArcGraphicsTracingHandler::ArcGraphicsTracingHandler(
     ArcGraphicsTracingMode mode)
     : wm_helper_(exo::WMHelper::HasInstance() ? exo::WMHelper::GetInstance()
@@ -347,22 +349,22 @@ ArcGraphicsTracingHandler::~ArcGraphicsTracingHandler() {
 }
 
 void ArcGraphicsTracingHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "ready", base::BindRepeating(&ArcGraphicsTracingHandler::HandleReady,
                                    base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "loadFromText",
       base::BindRepeating(&ArcGraphicsTracingHandler::HandleLoadFromText,
                           base::Unretained(this)));
   switch (mode_) {
     case ArcGraphicsTracingMode::kFull:
-      web_ui()->RegisterMessageCallback(
+      web_ui()->RegisterDeprecatedMessageCallback(
           "setStopOnJank",
           base::BindRepeating(&ArcGraphicsTracingHandler::HandleSetStopOnJank,
                               base::Unretained(this)));
       break;
     case ArcGraphicsTracingMode::kOverview:
-      web_ui()->RegisterMessageCallback(
+      web_ui()->RegisterDeprecatedMessageCallback(
           "setMaxTime",
           base::BindRepeating(&ArcGraphicsTracingHandler::HandleSetMaxTime,
                               base::Unretained(this)));
@@ -612,7 +614,7 @@ void ArcGraphicsTracingHandler::HandleReady(const base::ListValue* args) {
 
 void ArcGraphicsTracingHandler::HandleSetStopOnJank(
     const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
   DCHECK_EQ(ArcGraphicsTracingMode::kFull, mode_);
   if (!args->GetList()[0].is_bool()) {
     LOG(ERROR) << "Invalid input";
@@ -622,20 +624,20 @@ void ArcGraphicsTracingHandler::HandleSetStopOnJank(
 }
 
 void ArcGraphicsTracingHandler::HandleSetMaxTime(const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
   DCHECK_EQ(ArcGraphicsTracingMode::kOverview, mode_);
 
   if (!args->GetList()[0].is_int()) {
     LOG(ERROR) << "Invalid input";
     return;
   }
-  max_tracing_time_ = base::TimeDelta::FromSeconds(args->GetList()[0].GetInt());
-  DCHECK_GE(max_tracing_time_, base::TimeDelta::FromSeconds(1));
+  max_tracing_time_ = base::Seconds(args->GetList()[0].GetInt());
+  DCHECK_GE(max_tracing_time_, base::Seconds(1));
 }
 
 void ArcGraphicsTracingHandler::HandleLoadFromText(
     const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
   if (!args->GetList()[0].is_string()) {
     LOG(ERROR) << "Invalid input";
     return;

@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -53,10 +54,15 @@ TEST(MediaValuesTest, Basic) {
   };
 
   for (unsigned i = 0; test_cases[i].viewport_width; ++i) {
+    MediaValuesCached::MediaValuesCachedData data;
+    data.em_size = test_cases[i].font_size;
+    data.viewport_width = test_cases[i].viewport_width;
+    data.viewport_height = test_cases[i].viewport_height;
+    MediaValuesCached media_values(data);
+
     double output = 0;
-    bool success = MediaValues::ComputeLength(
-        test_cases[i].value, test_cases[i].type, test_cases[i].font_size,
-        test_cases[i].viewport_width, test_cases[i].viewport_height, output);
+    bool success = media_values.ComputeLength(test_cases[i].value,
+                                              test_cases[i].type, output);
     EXPECT_EQ(test_cases[i].success, success);
     if (success)
       EXPECT_FLOAT_EQ(test_cases[i].output, output);

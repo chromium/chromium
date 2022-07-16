@@ -179,6 +179,9 @@ class WebRequestCancelAction : public WebRequestAction {
  public:
   WebRequestCancelAction();
 
+  WebRequestCancelAction(const WebRequestCancelAction&) = delete;
+  WebRequestCancelAction& operator=(const WebRequestCancelAction&) = delete;
+
   // Implementation of WebRequestAction:
   std::string GetName() const override;
   absl::optional<extension_web_request_api_helpers::EventResponseDelta>
@@ -188,13 +191,15 @@ class WebRequestCancelAction : public WebRequestAction {
 
  private:
   ~WebRequestCancelAction() override;
-  DISALLOW_COPY_AND_ASSIGN(WebRequestCancelAction);
 };
 
 // Action that instructs to redirect a network request.
 class WebRequestRedirectAction : public WebRequestAction {
  public:
   explicit WebRequestRedirectAction(const GURL& redirect_url);
+
+  WebRequestRedirectAction(const WebRequestRedirectAction&) = delete;
+  WebRequestRedirectAction& operator=(const WebRequestRedirectAction&) = delete;
 
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
@@ -208,14 +213,17 @@ class WebRequestRedirectAction : public WebRequestAction {
   ~WebRequestRedirectAction() override;
 
   GURL redirect_url_;  // Target to which the request shall be redirected.
-
-  DISALLOW_COPY_AND_ASSIGN(WebRequestRedirectAction);
 };
 
 // Action that instructs to redirect a network request to a transparent image.
 class WebRequestRedirectToTransparentImageAction : public WebRequestAction {
  public:
   WebRequestRedirectToTransparentImageAction();
+
+  WebRequestRedirectToTransparentImageAction(
+      const WebRequestRedirectToTransparentImageAction&) = delete;
+  WebRequestRedirectToTransparentImageAction& operator=(
+      const WebRequestRedirectToTransparentImageAction&) = delete;
 
   // Implementation of WebRequestAction:
   std::string GetName() const override;
@@ -226,7 +234,6 @@ class WebRequestRedirectToTransparentImageAction : public WebRequestAction {
 
  private:
   ~WebRequestRedirectToTransparentImageAction() override;
-  DISALLOW_COPY_AND_ASSIGN(WebRequestRedirectToTransparentImageAction);
 };
 
 
@@ -234,6 +241,11 @@ class WebRequestRedirectToTransparentImageAction : public WebRequestAction {
 class WebRequestRedirectToEmptyDocumentAction : public WebRequestAction {
  public:
   WebRequestRedirectToEmptyDocumentAction();
+
+  WebRequestRedirectToEmptyDocumentAction(
+      const WebRequestRedirectToEmptyDocumentAction&) = delete;
+  WebRequestRedirectToEmptyDocumentAction& operator=(
+      const WebRequestRedirectToEmptyDocumentAction&) = delete;
 
   // Implementation of WebRequestAction:
   std::string GetName() const override;
@@ -244,7 +256,6 @@ class WebRequestRedirectToEmptyDocumentAction : public WebRequestAction {
 
  private:
   ~WebRequestRedirectToEmptyDocumentAction() override;
-  DISALLOW_COPY_AND_ASSIGN(WebRequestRedirectToEmptyDocumentAction);
 };
 
 // Action that instructs to redirect a network request.
@@ -255,6 +266,11 @@ class WebRequestRedirectByRegExAction : public WebRequestAction {
   explicit WebRequestRedirectByRegExAction(
       std::unique_ptr<re2::RE2> from_pattern,
       const std::string& to_pattern);
+
+  WebRequestRedirectByRegExAction(const WebRequestRedirectByRegExAction&) =
+      delete;
+  WebRequestRedirectByRegExAction& operator=(
+      const WebRequestRedirectByRegExAction&) = delete;
 
   // Conversion of capture group styles between Perl style ($1, $2, ...) and
   // RE2 (\1, \2, ...).
@@ -273,8 +289,6 @@ class WebRequestRedirectByRegExAction : public WebRequestAction {
 
   std::unique_ptr<re2::RE2> from_pattern_;
   std::string to_pattern_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRequestRedirectByRegExAction);
 };
 
 // Action that instructs to set a request header.
@@ -282,6 +296,11 @@ class WebRequestSetRequestHeaderAction : public WebRequestAction {
  public:
   WebRequestSetRequestHeaderAction(const std::string& name,
                                    const std::string& value);
+
+  WebRequestSetRequestHeaderAction(const WebRequestSetRequestHeaderAction&) =
+      delete;
+  WebRequestSetRequestHeaderAction& operator=(
+      const WebRequestSetRequestHeaderAction&) = delete;
 
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
@@ -296,13 +315,17 @@ class WebRequestSetRequestHeaderAction : public WebRequestAction {
 
   std::string name_;
   std::string value_;
-  DISALLOW_COPY_AND_ASSIGN(WebRequestSetRequestHeaderAction);
 };
 
 // Action that instructs to remove a request header.
 class WebRequestRemoveRequestHeaderAction : public WebRequestAction {
  public:
   explicit WebRequestRemoveRequestHeaderAction(const std::string& name);
+
+  WebRequestRemoveRequestHeaderAction(
+      const WebRequestRemoveRequestHeaderAction&) = delete;
+  WebRequestRemoveRequestHeaderAction& operator=(
+      const WebRequestRemoveRequestHeaderAction&) = delete;
 
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
@@ -316,7 +339,6 @@ class WebRequestRemoveRequestHeaderAction : public WebRequestAction {
   ~WebRequestRemoveRequestHeaderAction() override;
 
   std::string name_;
-  DISALLOW_COPY_AND_ASSIGN(WebRequestRemoveRequestHeaderAction);
 };
 
 // Action that instructs to add a response header.
@@ -324,6 +346,11 @@ class WebRequestAddResponseHeaderAction : public WebRequestAction {
  public:
   WebRequestAddResponseHeaderAction(const std::string& name,
                                     const std::string& value);
+
+  WebRequestAddResponseHeaderAction(const WebRequestAddResponseHeaderAction&) =
+      delete;
+  WebRequestAddResponseHeaderAction& operator=(
+      const WebRequestAddResponseHeaderAction&) = delete;
 
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
@@ -338,7 +365,6 @@ class WebRequestAddResponseHeaderAction : public WebRequestAction {
 
   std::string name_;
   std::string value_;
-  DISALLOW_COPY_AND_ASSIGN(WebRequestAddResponseHeaderAction);
 };
 
 // Action that instructs to remove a response header.
@@ -347,6 +373,11 @@ class WebRequestRemoveResponseHeaderAction : public WebRequestAction {
   explicit WebRequestRemoveResponseHeaderAction(const std::string& name,
                                                 const std::string& value,
                                                 bool has_value);
+
+  WebRequestRemoveResponseHeaderAction(
+      const WebRequestRemoveResponseHeaderAction&) = delete;
+  WebRequestRemoveResponseHeaderAction& operator=(
+      const WebRequestRemoveResponseHeaderAction&) = delete;
 
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
@@ -362,7 +393,6 @@ class WebRequestRemoveResponseHeaderAction : public WebRequestAction {
   std::string name_;
   std::string value_;
   bool has_value_;
-  DISALLOW_COPY_AND_ASSIGN(WebRequestRemoveResponseHeaderAction);
 };
 
 // Action that instructs to ignore rules below a certain priority.
@@ -370,6 +400,10 @@ class WebRequestIgnoreRulesAction : public WebRequestAction {
  public:
   explicit WebRequestIgnoreRulesAction(int minimum_priority,
                                        const std::string& ignore_tag);
+
+  WebRequestIgnoreRulesAction(const WebRequestIgnoreRulesAction&) = delete;
+  WebRequestIgnoreRulesAction& operator=(const WebRequestIgnoreRulesAction&) =
+      delete;
 
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
@@ -386,7 +420,6 @@ class WebRequestIgnoreRulesAction : public WebRequestAction {
   // Rules are ignored if they have a tag matching |ignore_tag_| and
   // |ignore_tag_| is non-empty.
   std::string ignore_tag_;
-  DISALLOW_COPY_AND_ASSIGN(WebRequestIgnoreRulesAction);
 };
 
 // Action that instructs to modify (add, edit, remove) a request cookie.
@@ -397,6 +430,10 @@ class WebRequestRequestCookieAction : public WebRequestAction {
 
   explicit WebRequestRequestCookieAction(
       RequestCookieModification request_cookie_modification);
+
+  WebRequestRequestCookieAction(const WebRequestRequestCookieAction&) = delete;
+  WebRequestRequestCookieAction& operator=(
+      const WebRequestRequestCookieAction&) = delete;
 
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
@@ -410,7 +447,6 @@ class WebRequestRequestCookieAction : public WebRequestAction {
   ~WebRequestRequestCookieAction() override;
 
   const RequestCookieModification request_cookie_modification_;
-  DISALLOW_COPY_AND_ASSIGN(WebRequestRequestCookieAction);
 };
 
 // Action that instructs to modify (add, edit, remove) a response cookie.
@@ -421,6 +457,11 @@ class WebRequestResponseCookieAction : public WebRequestAction {
 
   explicit WebRequestResponseCookieAction(
       ResponseCookieModification response_cookie_modification);
+
+  WebRequestResponseCookieAction(const WebRequestResponseCookieAction&) =
+      delete;
+  WebRequestResponseCookieAction& operator=(
+      const WebRequestResponseCookieAction&) = delete;
 
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
@@ -434,7 +475,6 @@ class WebRequestResponseCookieAction : public WebRequestAction {
   ~WebRequestResponseCookieAction() override;
 
   const ResponseCookieModification response_cookie_modification_;
-  DISALLOW_COPY_AND_ASSIGN(WebRequestResponseCookieAction);
 };
 
 // Action that triggers the chrome.declarativeWebRequest.onMessage event in
@@ -442,6 +482,11 @@ class WebRequestResponseCookieAction : public WebRequestAction {
 class WebRequestSendMessageToExtensionAction : public WebRequestAction {
  public:
   explicit WebRequestSendMessageToExtensionAction(const std::string& message);
+
+  WebRequestSendMessageToExtensionAction(
+      const WebRequestSendMessageToExtensionAction&) = delete;
+  WebRequestSendMessageToExtensionAction& operator=(
+      const WebRequestSendMessageToExtensionAction&) = delete;
 
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
@@ -455,7 +500,6 @@ class WebRequestSendMessageToExtensionAction : public WebRequestAction {
   ~WebRequestSendMessageToExtensionAction() override;
 
   std::string message_;
-  DISALLOW_COPY_AND_ASSIGN(WebRequestSendMessageToExtensionAction);
 };
 
 }  // namespace extensions

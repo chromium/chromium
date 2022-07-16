@@ -21,6 +21,10 @@ class SlewVolume {
   // Use raised negative cosine function when |use_cosine_slew| is true and
   // linear otherwise.
   SlewVolume(int max_slew_time_ms, bool use_cosine_slew);
+
+  SlewVolume(const SlewVolume&) = delete;
+  SlewVolume& operator=(const SlewVolume&) = delete;
+
   ~SlewVolume() = default;
 
   void SetSampleRate(int sample_rate);
@@ -85,7 +89,6 @@ class SlewVolume {
   double slew_offset_;
   double slew_cos_;
   double slew_sin_;
-  DISALLOW_COPY_AND_ASSIGN(SlewVolume);
 };
 
 }  // namespace media

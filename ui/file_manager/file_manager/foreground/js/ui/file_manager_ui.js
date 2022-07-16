@@ -11,6 +11,7 @@ import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
 import {Splitter} from 'chrome://resources/js/cr/ui/splitter.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
+import {DialogType} from '../../../common/js/dialog_type.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
@@ -18,7 +19,6 @@ import {FilesPasswordDialog} from '../../elements/files_password_dialog.js';
 import {FilesToast} from '../../elements/files_toast.js';
 import {FilesTooltip} from '../../elements/files_tooltip.js';
 import {BannerController} from '../banner_controller.js';
-import {DialogType} from '../dialog_type.js';
 import {LaunchParam} from '../launch_param.js';
 import {ProvidersModel} from '../providers_model.js';
 
@@ -76,16 +76,6 @@ export class FileManagerUI {
      * @private
      */
     this.dialogType_ = launchParam.type;
-
-    /**
-     * <hr> elements in Menu.
-     * This is a workaround for crbug.com/689255. This member variable is just
-     * for keeping explicit reference to decorated <hr>s to prevent GC from
-     * collecting <hr> wrappers, and not used anywhere.
-     * TODO(fukino): Remove this member variable once the root cause is fixed.
-     * @private {!Array<!Element>}
-     */
-    this.separators_ = [].slice.call(document.querySelectorAll('cr-menu > hr'));
 
     /**
      * Alert dialog.
@@ -342,30 +332,6 @@ export class FileManagerUI {
     };
 
     /**
-     * The menu button for share options
-     * @type {!MultiMenuButton}
-     * @const
-     */
-    this.shareMenuButton =
-        util.queryDecoratedElement('#share-menu-button', MultiMenuButton);
-    const shareMenuButtonToggleRipple =
-        /** @type {!FilesToggleRippleElement} */ (
-            queryRequiredElement('files-toggle-ripple', this.shareMenuButton));
-    this.shareMenuButton.addEventListener('menushow', () => {
-      shareMenuButtonToggleRipple.activated = true;
-    });
-    this.shareMenuButton.addEventListener('menuhide', () => {
-      shareMenuButtonToggleRipple.activated = false;
-    });
-
-    /**
-     * @type {!Menu}
-     * @const
-     */
-    this.shareSubMenu = util.queryDecoratedElement('#share-sub-menu', Menu);
-    this.shareMenuButton.overflow = this.shareSubMenu;
-
-    /**
      * Banners in the file list.
      * @type {Banners|BannerController}
      */
@@ -529,6 +495,12 @@ export class FileManagerUI {
     document.addEventListener('dragend', () => {
       this.dragInProcess = false;
     });
+
+    // Observe the dialog header content box size: the breadcrumb and action
+    // bar buttons can become wide enough to extend past the available viewport,
+    // and this.layoutChanged_() is used to clamp their size to the viewport.
+    const resizeObserver = new ResizeObserver(() => this.layoutChanged_());
+    resizeObserver.observe(queryRequiredElement('div.dialog-header'));
   }
 
   /**
@@ -606,7 +578,6 @@ export class FileManagerUI {
    * Relayouts the UI.
    */
   relayout() {
-    this.locationLine.truncate();
     // May not be available during initialization.
     if (this.listContainer.currentListType !==
         ListContainer.ListType.UNINITIALIZED) {

@@ -42,6 +42,7 @@ constexpr char kLorgnetteNetworkIpDeviceName[] = "test:MX3100_192.168.0.3";
 constexpr char kLorgnetteNetworkUrlDeviceName[] =
     "http://testscanner.domain.org";
 constexpr char kLorgnetteUsbDeviceName[] = "test:04A91752_94370B";
+constexpr char kLorgnetteNetworkEpsonDeviceName[] = "epson2:net:192.168.0.3";
 
 // A scanner name that does not correspond to a known scanner.
 constexpr char kUnknownScannerName[] = "Unknown Scanner";
@@ -74,9 +75,27 @@ lorgnette::ListScannersResponse CreateListScannersResponse(
 
 // Returns a zeroconf Scanner with the device name marked as |usable|.
 Scanner CreateZeroconfScanner(bool usable = true) {
-  return CreateSaneAirscanScanner("Test MX3100",
-                                  ZeroconfScannerDetector::kEsclsServiceType,
-                                  "", net::IPAddress(192, 168, 0, 3), 5, usable)
+  return CreateSaneScanner("Test MX3100",
+                           ZeroconfScannerDetector::kEsclsServiceType, "",
+                           net::IPAddress(192, 168, 0, 3), 5, usable)
+      .value();
+}
+
+// Returns a zeroconf Scanner with the Epsonds backend and the device name
+// marked as |usable|
+Scanner CreateNonEsclEpsonZeroconfScanner(bool usable = true) {
+  return CreateSaneScanner("EPSON TEST",
+                           ZeroconfScannerDetector::kGenericScannerServiceType,
+                           "", net::IPAddress(192, 168, 0, 3), 5, usable)
+      .value();
+}
+
+// Returns a zeroconf Scanner with an Epson name but ESCLs Service marked as
+// |usable|.
+Scanner CreateEsclEpsonZeroconfScanner(bool usable = true) {
+  return CreateSaneScanner("EPSON TEST",
+                           ZeroconfScannerDetector::kEsclsServiceType, "",
+                           net::IPAddress(192, 168, 0, 3), 5, usable)
       .value();
 }
 
@@ -84,9 +103,9 @@ Scanner CreateZeroconfScanner(bool usable = true) {
 // |usable|.
 Scanner CreateScannerCustomName(const std::string& scanner_name,
                                 bool usable = true) {
-  return CreateSaneAirscanScanner(scanner_name,
-                                  ZeroconfScannerDetector::kEsclsServiceType,
-                                  "", net::IPAddress(192, 168, 0, 3), 5, usable)
+  return CreateSaneScanner(scanner_name,
+                           ZeroconfScannerDetector::kEsclsServiceType, "",
+                           net::IPAddress(192, 168, 0, 3), 5, usable)
       .value();
 }
 
@@ -153,10 +172,15 @@ class LorgnetteScannerManagerTest : public testing::Test {
     fake_zeroconf_scanner_detector_ = fake_zeroconf_scanner_detector.get();
     lorgnette_scanner_manager_ = LorgnetteScannerManager::Create(
         std::move(fake_zeroconf_scanner_detector));
+    // Set empty but successful capabilities response by default.
+    lorgnette::ScannerCapabilities capabilities;
+    GetLorgnetteManagerClient()->SetScannerCapabilitiesResponse(capabilities);
   }
 
   ~LorgnetteScannerManagerTest() override { DBusThreadManager::Shutdown(); }
 
+  // Returns a FakeLorgnetteManagerClient with an empty but successful
+  // GetCapabilities response by default.
   FakeLorgnetteManagerClient* GetLorgnetteManagerClient() {
     return static_cast<FakeLorgnetteManagerClient*>(
         DBusThreadManager::Get()->GetLorgnetteManagerClient());
@@ -286,6 +310,21 @@ TEST_F(LorgnetteScannerManagerTest, NoScanners) {
   EXPECT_TRUE(scanner_names().empty());
 }
 
+// Test that no scanner names are returned when scanners are detected, but none
+// return capabilities.
+TEST_F(LorgnetteScannerManagerTest, NoScannersWithNoCap) {
+  GetLorgnetteManagerClient()->SetListScannersResponse(
+      CreateListScannersResponse(kLorgnetteNetworkIpDeviceName));
+  auto scanner = CreateZeroconfScanner();
+  fake_zeroconf_scanner_detector()->AddDetections({scanner});
+  auto epson_scanner = CreateNonEsclEpsonZeroconfScanner();
+  fake_zeroconf_scanner_detector()->AddDetections({epson_scanner});
+  GetLorgnetteManagerClient()->SetScannerCapabilitiesResponse(absl::nullopt);
+  GetScannerNames();
+  WaitForResult();
+  EXPECT_TRUE(scanner_names().empty());
+}
+
 // Test that the name of a detected zeroconf scanner can be retrieved.
 TEST_F(LorgnetteScannerManagerTest, ZeroconfScanner) {
   auto scanner = CreateZeroconfScanner();
@@ -294,6 +333,36 @@ TEST_F(LorgnetteScannerManagerTest, ZeroconfScanner) {
   GetScannerNames();
   WaitForResult();
   EXPECT_THAT(scanner_names(), ElementsAreArray({scanner.display_name}));
+}
+
+// Test that the name of a detected Epson zeroconf scanner can be retrieved.
+TEST_F(LorgnetteScannerManagerTest, NonEsclEpsonZeroconfScanner) {
+  auto scanner = CreateNonEsclEpsonZeroconfScanner();
+  fake_zeroconf_scanner_detector()->AddDetections({scanner});
+  CompleteTasks();
+  GetScannerNames();
+  WaitForResult();
+  EXPECT_THAT(scanner_names(), ElementsAreArray({scanner.display_name}));
+}
+
+// Test that the name of a detected ESCL Epson zeroconf scanner can be
+// retrieved.
+TEST_F(LorgnetteScannerManagerTest, EsclEpsonZeroconfScanner) {
+  auto scanner = CreateEsclEpsonZeroconfScanner();
+  fake_zeroconf_scanner_detector()->AddDetections({scanner});
+  CompleteTasks();
+  GetScannerNames();
+  WaitForResult();
+  EXPECT_THAT(scanner_names(), ElementsAreArray({scanner.display_name}));
+}
+
+// Test that the name of a detected non-ESCL zeroconf scanner does not generate
+// a scanner if it is not an Epson.
+TEST_F(LorgnetteScannerManagerTest, NonEsclNonEpsonZeroconfScanner) {
+  absl::optional<chromeos::Scanner> scanner = CreateSaneScanner(
+      "Test MX3100", ZeroconfScannerDetector::kGenericScannerServiceType, "",
+      net::IPAddress(192, 168, 0, 3), 5, true);
+  EXPECT_FALSE(scanner.has_value());
 }
 
 // Test that the name of a detected lorgnette scanner can be retrieved.
@@ -315,10 +384,32 @@ TEST_F(LorgnetteScannerManagerTest, DeduplicateScanner) {
       CreateListScannersResponse(kLorgnetteNetworkIpDeviceName));
   auto scanner = CreateZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
+  auto epson_scanner = CreateNonEsclEpsonZeroconfScanner();
+  fake_zeroconf_scanner_detector()->AddDetections({epson_scanner});
+  auto escl_epson_scanner = CreateEsclEpsonZeroconfScanner();
+  fake_zeroconf_scanner_detector()->AddDetections({escl_epson_scanner});
   CompleteTasks();
   GetScannerNames();
   WaitForResult();
-  EXPECT_THAT(scanner_names(), ElementsAreArray({scanner.display_name}));
+  EXPECT_THAT(scanner_names(), ElementsAreArray({epson_scanner.display_name,
+                                                 scanner.display_name}));
+}
+
+// Test that two detected zeroconf Epson scanners and a lorgnette Epson scanner
+// with the same IP address are deduplicated and reported with single scanner
+// name.
+TEST_F(LorgnetteScannerManagerTest, DeduplicateLorgnetteEpsonScanner) {
+  GetLorgnetteManagerClient()->SetListScannersResponse(
+      CreateListScannersResponse(kLorgnetteNetworkEpsonDeviceName,
+                                 "EPSON Test2"));
+  auto epson_scanner = CreateNonEsclEpsonZeroconfScanner();
+  fake_zeroconf_scanner_detector()->AddDetections({epson_scanner});
+  auto escl_epson_scanner = CreateEsclEpsonZeroconfScanner();
+  fake_zeroconf_scanner_detector()->AddDetections({escl_epson_scanner});
+  CompleteTasks();
+  GetScannerNames();
+  WaitForResult();
+  EXPECT_THAT(scanner_names(), ElementsAreArray({epson_scanner.display_name}));
 }
 
 // Test that two detected scanners with the same IP address are deduplicated and
@@ -464,12 +555,12 @@ TEST_F(LorgnetteScannerManagerTest, GetCaps) {
   auto scanner = CreateZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
   CompleteTasks();
-  GetScannerNames();
-  WaitForResult();
   lorgnette::ScannerCapabilities capabilities;
   capabilities.add_resolutions(300);
   capabilities.add_color_modes(lorgnette::MODE_COLOR);
   GetLorgnetteManagerClient()->SetScannerCapabilitiesResponse(capabilities);
+  GetScannerNames();
+  WaitForResult();
   GetScannerCapabilities(scanner.display_name);
   WaitForResult();
   ASSERT_TRUE(scanner_capabilities());

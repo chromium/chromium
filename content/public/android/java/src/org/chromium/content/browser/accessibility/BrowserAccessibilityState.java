@@ -17,6 +17,8 @@ import android.provider.Settings;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -131,6 +133,44 @@ public class BrowserAccessibilityState {
         }
     }
 
+    @VisibleForTesting
+    public static void setFeedbackTypeMaskForTesting(int value) {
+        if (!sInitialized) updateAccessibilityServices();
+
+        sFeedbackTypeMask = value;
+
+        // Inform all listeners of this change.
+        for (Listener listener : sListeners) {
+            listener.onBrowserAccessibilityStateChanged(sScreenReader);
+        }
+    }
+
+    @VisibleForTesting
+    public static void setEventTypeMaskForTesting() {
+        if (!sInitialized) updateAccessibilityServices();
+
+        // Explicitly set mask so all events are relevant to currently enabled service.
+        sEventTypeMask = ~0;
+
+        // Inform all listeners of this change.
+        for (Listener listener : sListeners) {
+            listener.onBrowserAccessibilityStateChanged(true);
+        }
+    }
+
+    @VisibleForTesting
+    public static void setEventTypeMaskEmptyForTesting() {
+        if (!sInitialized) updateAccessibilityServices();
+
+        // Explicitly set mask so no events are relevant to currently enabled service.
+        sEventTypeMask = 0;
+
+        // Inform all listeners of this change.
+        for (Listener listener : sListeners) {
+            listener.onBrowserAccessibilityStateChanged(true);
+        }
+    }
+
     static void updateAccessibilityServices() {
         sInitialized = true;
         sEventTypeMask = 0;
@@ -174,6 +214,8 @@ public class BrowserAccessibilityState {
         if (serviceNamesString != null && !serviceNamesString.isEmpty()) {
             String[] serviceNames = serviceNamesString.split(":");
             for (String name : serviceNames) {
+                // null or empty names can be skipped
+                if (name == null || name.isEmpty()) continue;
                 // Try to canonicalize the component name if possible.
                 ComponentName componentName = ComponentName.unflattenFromString(name);
                 if (componentName != null) {
@@ -235,7 +277,7 @@ public class BrowserAccessibilityState {
      * @return
      */
     @CalledByNative
-    private static int getAccessibilityServiceFeedbackTypeMask() {
+    public static int getAccessibilityServiceFeedbackTypeMask() {
         if (!sInitialized) updateAccessibilityServices();
         return sFeedbackTypeMask;
     }

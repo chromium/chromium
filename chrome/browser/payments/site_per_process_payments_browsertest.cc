@@ -29,6 +29,12 @@ namespace payments {
 class SitePerProcessPaymentsBrowserTest : public InProcessBrowserTest {
  public:
   SitePerProcessPaymentsBrowserTest() {}
+
+  SitePerProcessPaymentsBrowserTest(const SitePerProcessPaymentsBrowserTest&) =
+      delete;
+  SitePerProcessPaymentsBrowserTest& operator=(
+      const SitePerProcessPaymentsBrowserTest&) = delete;
+
   ~SitePerProcessPaymentsBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -52,15 +58,12 @@ class SitePerProcessPaymentsBrowserTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessPaymentsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessPaymentsBrowserTest,
                        IframePaymentRequestDoesNotCrash) {
   GURL url = https_server_->GetURL("a.com", "/payment_request_main.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();

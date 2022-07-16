@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "cc/paint/skottie_frame_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
@@ -95,6 +95,9 @@ class GFX_EXPORT Canvas {
   // Note: the caller must ensure that sk_canvas outlives this object, or until
   // RecreateBackingCanvas is called.
   Canvas(cc::PaintCanvas* sk_canvas, float image_scale);
+
+  Canvas(const Canvas&) = delete;
+  Canvas& operator=(const Canvas&) = delete;
 
   virtual ~Canvas();
 
@@ -356,10 +359,13 @@ class GFX_EXPORT Canvas {
 
   // Draws the frame of the |skottie| animation specified by the normalized time
   // instant t [0->first frame .. 1->last frame] onto the region corresponded by
-  // |dst| in the canvas.
+  // |dst| in the canvas. |images| is a map from asset id to the corresponding
+  // image to use when rendering this frame; it may be empty if this animation
+  // frame does not contain any images in it.
   void DrawSkottie(scoped_refptr<cc::SkottieWrapper> skottie,
                    const Rect& dst,
-                   float t);
+                   float t,
+                   cc::SkottieFrameDataMap images);
 
   // Draws text with the specified color, fonts and location. The text is
   // aligned to the left, vertically centered, clipped to the region. If the
@@ -460,8 +466,6 @@ class GFX_EXPORT Canvas {
   absl::optional<SkBitmap> bitmap_;
   absl::optional<cc::SkiaPaintCanvas> owned_canvas_;
   cc::PaintCanvas* canvas_;
-
-  DISALLOW_COPY_AND_ASSIGN(Canvas);
 };
 
 }  // namespace gfx

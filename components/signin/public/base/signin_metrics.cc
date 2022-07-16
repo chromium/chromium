@@ -119,6 +119,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromGoogleServicesSettings"));
       break;
+    case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromEnterpriseSignoutSheet"));
+      break;
     case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is only used to trigger non-sync sign-in and this"
@@ -189,6 +193,7 @@ void RecordSigninWithDefaultUserActionForAccessPoint(
       base::RecordAction(base::UserMetricsAction(
           "Signin_SigninWithDefault_FromManageCardsBubble"));
       break;
+    case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_START_PAGE:
     case AccessPoint::ACCESS_POINT_NTP_LINK:
     case AccessPoint::ACCESS_POINT_MENU:
@@ -268,6 +273,7 @@ void RecordSigninNotDefaultUserActionForAccessPoint(
       base::RecordAction(base::UserMetricsAction(
           "Signin_SigninNotDefault_FromManageCardsBubble"));
       break;
+    case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_START_PAGE:
     case AccessPoint::ACCESS_POINT_NTP_LINK:
     case AccessPoint::ACCESS_POINT_MENU:
@@ -351,6 +357,7 @@ void RecordSigninNewAccountNoExistingAccountUserActionForAccessPoint(
       base::RecordAction(base::UserMetricsAction(
           "Signin_SigninNewAccountNoExistingAccount_FromManageCardsBubble"));
       break;
+    case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_START_PAGE:
     case AccessPoint::ACCESS_POINT_NTP_LINK:
     case AccessPoint::ACCESS_POINT_MENU:
@@ -437,6 +444,7 @@ void RecordSigninNewAccountExistingAccountUserActionForAccessPoint(
       base::RecordAction(base::UserMetricsAction(
           "Signin_SigninNewAccountExistingAccount_FromManageCardsBubble"));
       break;
+    case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_START_PAGE:
     case AccessPoint::ACCESS_POINT_NTP_LINK:
     case AccessPoint::ACCESS_POINT_MENU:
@@ -514,16 +522,6 @@ void RecordSigninNewAccountExistingAccountUserActionForAccessPoint(
       break;                                                                   \
   }
 
-// Helper method to determine which |DifferentPrimaryAccounts| applies.
-DifferentPrimaryAccounts ComparePrimaryAccounts(bool primary_accounts_same,
-                                                int pre_count_gaia_cookies) {
-  if (primary_accounts_same)
-    return ACCOUNTS_SAME;
-  if (pre_count_gaia_cookies == 0)
-    return NO_COOKIE_PRESENT;
-  return COOKIE_AND_TOKEN_PRIMARIES_DIFFERENT;
-}
-
 void LogSigninAccessPointStarted(AccessPoint access_point,
                                  PromoAction promo_action) {
   UMA_HISTOGRAM_ENUMERATION("Signin.SigninStartedAccessPoint",
@@ -598,37 +596,6 @@ void LogSigninReason(Reason reason) {
   UMA_HISTOGRAM_ENUMERATION("Signin.SigninReason", reason);
 }
 
-void LogSigninAccountReconciliation(int total_number_accounts,
-                                    int count_added_to_cookie_jar,
-                                    int count_removed_from_cookie_jar,
-                                    bool primary_accounts_same,
-                                    bool is_first_reconcile,
-                                    int pre_count_gaia_cookies) {
-  RecordAccountsPerProfile(total_number_accounts);
-  // We want to include zeroes in the counts of added or removed accounts to
-  // easily capture _relatively_ how often we merge accounts.
-  if (is_first_reconcile) {
-    UMA_HISTOGRAM_COUNTS_100("Signin.Reconciler.AddedToCookieJar.FirstRun",
-                             count_added_to_cookie_jar);
-    UMA_HISTOGRAM_COUNTS_100("Signin.Reconciler.RemovedFromCookieJar.FirstRun",
-                             count_removed_from_cookie_jar);
-    UMA_HISTOGRAM_ENUMERATION(
-        "Signin.Reconciler.DifferentPrimaryAccounts.FirstRun",
-        ComparePrimaryAccounts(primary_accounts_same, pre_count_gaia_cookies),
-        NUM_DIFFERENT_PRIMARY_ACCOUNT_METRICS);
-  } else {
-    UMA_HISTOGRAM_COUNTS_100("Signin.Reconciler.AddedToCookieJar.SubsequentRun",
-                             count_added_to_cookie_jar);
-    UMA_HISTOGRAM_COUNTS_100(
-        "Signin.Reconciler.RemovedFromCookieJar.SubsequentRun",
-        count_removed_from_cookie_jar);
-    UMA_HISTOGRAM_ENUMERATION(
-        "Signin.Reconciler.DifferentPrimaryAccounts.SubsequentRun",
-        ComparePrimaryAccounts(primary_accounts_same, pre_count_gaia_cookies),
-        NUM_DIFFERENT_PRIMARY_ACCOUNT_METRICS);
-  }
-}
-
 void RecordAccountsPerProfile(int total_number_accounts) {
   UMA_HISTOGRAM_COUNTS_100("Profile.NumberOfAccountsPerProfile",
                            total_number_accounts);
@@ -638,12 +605,12 @@ void LogSigninAccountReconciliationDuration(base::TimeDelta duration,
                                             bool successful) {
   if (successful) {
     UMA_HISTOGRAM_CUSTOM_TIMES("Signin.Reconciler.Duration.UpTo3mins.Success",
-                               duration, base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMinutes(3), 100);
+                               duration, base::Milliseconds(1),
+                               base::Minutes(3), 100);
   } else {
     UMA_HISTOGRAM_CUSTOM_TIMES("Signin.Reconciler.Duration.UpTo3mins.Failure",
-                               duration, base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMinutes(3), 100);
+                               duration, base::Milliseconds(1),
+                               base::Minutes(3), 100);
   }
 }
 
@@ -698,8 +665,7 @@ void LogCookieJarStableAge(const base::TimeDelta stable_age,
   INVESTIGATOR_HISTOGRAM_CUSTOM_COUNTS(
       "Signin.CookieJar.StableAge", type,
       base::saturated_cast<int>(stable_age.InSeconds()), 1,
-      base::saturated_cast<int>(base::TimeDelta::FromDays(365).InSeconds()),
-      100);
+      base::saturated_cast<int>(base::Days(365).InSeconds()), 100);
 }
 
 void LogCookieJarCounts(const int signed_in,
@@ -768,6 +734,23 @@ void RecordRefreshTokenUpdatedFromSource(
 void RecordRefreshTokenRevokedFromSource(
     SourceForRefreshTokenOperation source) {
   UMA_HISTOGRAM_ENUMERATION("Signin.RefreshTokenRevoked.Source", source);
+}
+
+void RecordSigninAccountType(signin::ConsentLevel consent_level,
+                             bool is_managed_account) {
+  SigninAccountType account_type = is_managed_account
+                                       ? SigninAccountType::kManaged
+                                       : SigninAccountType::kRegular;
+  switch (consent_level) {
+    case signin::ConsentLevel::kSignin:
+      base::UmaHistogramEnumeration("Signin.AccountType.SigninConsent",
+                                    account_type);
+      break;
+    case signin::ConsentLevel::kSync:
+      base::UmaHistogramEnumeration("Signin.AccountType.SyncConsent",
+                                    account_type);
+      break;
+  }
 }
 
 // --------------------------------------------------------------
@@ -885,6 +868,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromUserManager"));
       break;
+    case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_CONTENT_AREA:
     case AccessPoint::ACCESS_POINT_EXTENSIONS:
     case AccessPoint::ACCESS_POINT_SUPERVISED_USER:
@@ -1008,6 +992,7 @@ void RecordSigninImpressionWithAccountUserActionForAccessPoint(
             "Signin_ImpressionWithNoAccount_FromManageCardsBubble"));
       }
       break;
+    case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_START_PAGE:
     case AccessPoint::ACCESS_POINT_NTP_LINK:
     case AccessPoint::ACCESS_POINT_MENU:

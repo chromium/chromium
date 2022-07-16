@@ -131,6 +131,10 @@ class GPU_GLES2_EXPORT Sampler : public base::RefCounted<Sampler> {
 class GPU_GLES2_EXPORT SamplerManager {
  public:
   SamplerManager(FeatureInfo* feature_info);
+
+  SamplerManager(const SamplerManager&) = delete;
+  SamplerManager& operator=(const SamplerManager&) = delete;
+
   ~SamplerManager();
 
   // Must call before destruction.
@@ -164,8 +168,6 @@ class GPU_GLES2_EXPORT SamplerManager {
   SamplerMap samplers_;
 
   bool have_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(SamplerManager);
 };
 
 }  // namespace gles2

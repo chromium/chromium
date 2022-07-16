@@ -16,7 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -797,10 +797,12 @@ void AppWindow::StartAppIconDownload() {
 
   // Avoid using any previous icons that were being downloaded.
   image_loader_ptr_factory_.InvalidateWeakPtrs();
+  const gfx::Size preferred_size(app_delegate_->PreferredIconSize(),
+                                 app_delegate_->PreferredIconSize());
   web_contents()->DownloadImage(
       app_icon_url_,
       true,  // is a favicon
-      app_delegate_->PreferredIconSize(),
+      preferred_size,
       0,      // no maximum size
       false,  // normal cache policy
       base::BindOnce(&AppWindow::DidDownloadFavicon,

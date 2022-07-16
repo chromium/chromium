@@ -26,13 +26,15 @@ class ASH_EXPORT AppListMenuModelAdapter : public AppMenuModelAdapter {
   // metrics, if a new value is added make sure to modify
   // RecordHistogramOnMenuClosed().
   enum AppListViewAppType {
-    FULLSCREEN_SEARCH_RESULT,
-    FULLSCREEN_SUGGESTED,
-    FULLSCREEN_APP_GRID,
-    PEEKING_SUGGESTED,
-    HALF_SEARCH_RESULT,
-    SEARCH_RESULT,
-    APP_LIST_APP_TYPE_LAST
+    FULLSCREEN_SEARCH_RESULT = 0,
+    FULLSCREEN_SUGGESTED = 1,
+    FULLSCREEN_APP_GRID = 2,
+    PEEKING_SUGGESTED = 3,
+    HALF_SEARCH_RESULT = 4,
+    SEARCH_RESULT = 5,
+    PRODUCTIVITY_LAUNCHER_RECENT_APP = 6,
+    PRODUCTIVITY_LAUNCHER_APP_GRID = 7,
+    APP_LIST_APP_TYPE_LAST = 8
   };
 
   AppListMenuModelAdapter(const std::string& app_id,
@@ -43,6 +45,10 @@ class ASH_EXPORT AppListMenuModelAdapter : public AppMenuModelAdapter {
                           AppListViewAppType type,
                           base::OnceClosure on_menu_closed_callback,
                           bool is_tablet_mode);
+
+  AppListMenuModelAdapter(const AppListMenuModelAdapter&) = delete;
+  AppListMenuModelAdapter& operator=(const AppListMenuModelAdapter&) = delete;
+
   ~AppListMenuModelAdapter() override;
 
   // Overridden from AppMenuModelAdapter:
@@ -61,8 +67,6 @@ class ASH_EXPORT AppListMenuModelAdapter : public AppMenuModelAdapter {
 
   // The type of app which is using this object to show a menu.
   const AppListViewAppType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListMenuModelAdapter);
 };
 
 }  // namespace ash

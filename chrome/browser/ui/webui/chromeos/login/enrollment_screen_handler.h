@@ -9,9 +9,12 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/error_screens_histogram_helper.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
@@ -20,10 +23,7 @@
 #include "net/cookies/canonical_cookie.h"
 
 namespace chromeos {
-
 class CookieWaiter;
-class ErrorScreensHistogramHelper;
-class HelpAppLauncher;
 
 // Possible error states of the Active Directory screen. Must be in the same
 // order as ACTIVE_DIRECTORY_ERROR_STATE enum values.
@@ -62,6 +62,10 @@ class EnrollmentScreenHandler
       JSCallsContainer* js_calls_container,
       const scoped_refptr<NetworkStateInformer>& network_state_informer,
       ErrorScreen* error_screen);
+
+  EnrollmentScreenHandler(const EnrollmentScreenHandler&) = delete;
+  EnrollmentScreenHandler& operator=(const EnrollmentScreenHandler&) = delete;
+
   ~EnrollmentScreenHandler() override;
 
   // Implements WebUIMessageHandler:
@@ -76,6 +80,8 @@ class EnrollmentScreenHandler
   void SetFlowType(FlowType flow_type) override;
   void Show() override;
   void Hide() override;
+  void Bind(ash::EnrollmentScreen* screen) override;
+  void Unbind() override;
   void ShowSigninScreen() override;
   void ShowUserError(UserErrorType error_type,
                      const std::string& email) override;
@@ -87,12 +93,14 @@ class EnrollmentScreenHandler
   void ShowAttributePromptScreen(const std::string& asset_id,
                                  const std::string& location) override;
   void ShowEnrollmentSuccessScreen() override;
-  void ShowEnrollmentSpinnerScreen() override;
+  void ShowEnrollmentWorkingScreen() override;
+  void ShowEnrollmentTPMCheckingScreen() override;
   void ShowAuthError(const GoogleServiceAuthError& error) override;
   void ShowEnrollmentStatus(policy::EnrollmentStatus status) override;
   void ShowOtherError(
       EnterpriseEnrollmentHelper::OtherError error_code) override;
   void Shutdown() override;
+  void SetIsBrandedBuild(bool is_branded) override;
 
   // Implements BaseScreenHandler:
   void Initialize() override;
@@ -197,6 +205,7 @@ class EnrollmentScreenHandler
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 
   ErrorScreen* error_screen_ = nullptr;
+  ash::EnrollmentScreen* screen_ = nullptr;
 
   std::string signin_partition_name_;
 
@@ -210,8 +219,6 @@ class EnrollmentScreenHandler
   bool use_fake_login_for_testing_ = false;
 
   base::WeakPtrFactory<EnrollmentScreenHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentScreenHandler);
 };
 
 }  // namespace chromeos

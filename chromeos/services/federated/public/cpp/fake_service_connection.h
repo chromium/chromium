@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/services/federated/public/cpp/service_connection.h"
 #include "chromeos/services/federated/public/mojom/example.mojom.h"
 #include "chromeos/services/federated/public/mojom/federated_service.mojom.h"

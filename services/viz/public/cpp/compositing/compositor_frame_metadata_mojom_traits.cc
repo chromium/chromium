@@ -41,6 +41,8 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   if (!data.ReadContentColorUsage(&out->content_color_usage))
     return false;
   out->may_contain_video = data.may_contain_video();
+  out->may_throttle_if_undrawn_frames = data.may_throttle_if_undrawn_frames();
+  out->has_shared_element_resources = data.has_shared_element_resources();
   out->is_resourceless_software_draw_with_scroll_or_animation =
       data.is_resourceless_software_draw_with_scroll_or_animation();
   out->send_frame_token_to_embedder = data.send_frame_token_to_embedder();
@@ -56,7 +58,7 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
 
   // Preferred_frame_interval must be nullopt or non-negative.
   if (out->preferred_frame_interval &&
-      *out->preferred_frame_interval < base::TimeDelta()) {
+      out->preferred_frame_interval->is_negative()) {
     return false;
   }
 
@@ -67,7 +69,8 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
          data.ReadBeginFrameAck(&out->begin_frame_ack) &&
          data.ReadDisplayTransformHint(&out->display_transform_hint) &&
          data.ReadDelegatedInkMetadata(&out->delegated_ink_metadata) &&
-         data.ReadTransitionDirectives(&out->transition_directives);
+         data.ReadTransitionDirectives(&out->transition_directives) &&
+         data.ReadCaptureBounds(&out->capture_bounds);
 }
 
 }  // namespace mojo

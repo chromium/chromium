@@ -61,7 +61,10 @@ class AppListControllerDelegate {
 
   // Handle the "create window" context menu items of Chrome App.
   // |incognito| is true to create an incognito window.
-  virtual void CreateNewWindow(bool incognito) = 0;
+  // |should_trigger_session_restore| is true to restore the session for a
+  // browser window.
+  virtual void CreateNewWindow(bool incognito,
+                               bool should_trigger_session_restore) = 0;
 
   // Opens the URL.
   virtual void OpenURL(Profile* profile,

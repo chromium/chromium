@@ -6,12 +6,15 @@
 #define UI_VIEWS_CONTROLS_TABLE_TEST_TABLE_MODEL_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/base/models/table_model.h"
 
 class TestTableModel : public ui::TableModel {
  public:
   explicit TestTableModel(int row_count);
+
+  TestTableModel(const TestTableModel&) = delete;
+  TestTableModel& operator=(const TestTableModel&) = delete;
+
   ~TestTableModel() override;
 
   // ui::TableModel overrides:
@@ -23,8 +26,6 @@ class TestTableModel : public ui::TableModel {
  private:
   int row_count_;
   ui::TableModelObserver* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTableModel);
 };
 
 #endif  // UI_VIEWS_CONTROLS_TABLE_TEST_TABLE_MODEL_H_

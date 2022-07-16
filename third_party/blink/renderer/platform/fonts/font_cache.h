@@ -35,6 +35,7 @@
 #include <memory>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -73,8 +74,9 @@ class SkTypeface;
 namespace base {
 namespace trace_event {
 class ProcessMemoryDump;
-}
-}
+}  // namespace trace_event
+struct Feature;
+}  // namespace base
 
 namespace blink {
 
@@ -83,6 +85,9 @@ class FontFaceCreationParams;
 class FontFallbackMap;
 class FontGlobalContext;
 class SimpleFontData;
+class WebFontPrewarmer;
+
+PLATFORM_EXPORT extern const base::Feature kAsyncFontAccess;
 
 enum class AlternateFontName {
   kAllowAlternate,
@@ -177,6 +182,16 @@ class PLATFORM_EXPORT FontCache {
   sk_sp<SkFontMgr> FontManager() { return font_manager_; }
   static void SetFontManager(sk_sp<SkFontMgr>);
 
+#if defined(OS_WIN)
+  static WebFontPrewarmer* GetFontPrewarmer() { return prewarmer_; }
+  static void SetFontPrewarmer(WebFontPrewarmer* prewarmer) {
+    prewarmer_ = prewarmer;
+  }
+  static void PrewarmFamily(const AtomicString& family_name);
+#else
+  static void PrewarmFamily(const AtomicString& family_name) {}
+#endif
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // These are needed for calling QueryRenderStyleForStrike, since
   // gfx::GetFontRenderParams makes distinctions based on DSF.
@@ -247,6 +262,9 @@ class PLATFORM_EXPORT FontCache {
   static void AcceptLanguagesChanged(const String&);
 
 #if defined(OS_ANDROID)
+  static AtomicString GetGenericFamilyNameForScript(
+      const AtomicString& family_name,
+      const FontDescription&);
   // Locale-specific families can use different |SkTypeface| for a family name
   // if locale is different.
   static const char* GetLocaleSpecificFamilyName(
@@ -363,6 +381,7 @@ class PLATFORM_EXPORT FontCache {
   static SkFontMgr* static_font_manager_;
 
 #if defined(OS_WIN)
+  static WebFontPrewarmer* prewarmer_;
   static bool antialiased_text_enabled_;
   static bool lcd_text_enabled_;
   static HashMap<String, sk_sp<SkTypeface>, CaseFoldingHash>* sideloaded_fonts_;
@@ -409,7 +428,7 @@ class PLATFORM_EXPORT FontCache {
 
   friend class SimpleFontData;  // For fontDataFromFontPlatformData
   friend class FontFallbackList;
-  FRIEND_TEST_ALL_PREFIXES(FontCacheAndroid, LocaleSpecificTypeface);
+  FRIEND_TEST_ALL_PREFIXES(FontCacheAndroidTest, LocaleSpecificTypeface);
 };
 
 class PLATFORM_EXPORT FontCachePurgePreventer {
@@ -425,11 +444,12 @@ class PLATFORM_EXPORT FontCachePurgePreventer {
 AtomicString ToAtomicString(const SkString&);
 
 #if defined(OS_ANDROID)
+// TODO(crbug.com/1241875) Can this be simplified?
 // static
 inline const char* FontCache::GetLocaleSpecificFamilyName(
     const AtomicString& family_name) {
   // Only `serif` has `fallbackFor` according to the current `fonts.xml`.
-  if (family_name == font_family_names::kWebkitSerif)
+  if (family_name == font_family_names::kSerif)
     return "serif";
   return nullptr;
 }

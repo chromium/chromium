@@ -53,16 +53,14 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
  public:
   explicit SequenceManagerThreadDelegate(
       MessagePumpType message_pump_type,
-      OnceCallback<std::unique_ptr<MessagePump>()> message_pump_factory,
-      sequence_manager::TimeDomain* time_domain)
+      OnceCallback<std::unique_ptr<MessagePump>()> message_pump_factory)
       : sequence_manager_(
             sequence_manager::internal::SequenceManagerImpl::CreateUnbound(
                 sequence_manager::SequenceManager::Settings::Builder()
                     .SetMessagePumpType(message_pump_type)
                     .Build())),
         default_task_queue_(sequence_manager_->CreateTaskQueue(
-            sequence_manager::TaskQueue::Spec("default_tq")
-                .SetTimeDomain(time_domain))),
+            sequence_manager::TaskQueue::Spec("default_tq"))),
         message_pump_factory_(std::move(message_pump_factory)) {
     sequence_manager_->SetDefaultTaskRunner(default_task_queue_->task_runner());
   }
@@ -114,7 +112,6 @@ Thread::Options::Options(Options&& other)
     : message_pump_type(std::move(other.message_pump_type)),
       delegate(std::move(other.delegate)),
       timer_slack(std::move(other.timer_slack)),
-      task_queue_time_domain(std::move(other.task_queue_time_domain)),
       message_pump_factory(std::move(other.message_pump_factory)),
       stack_size(std::move(other.stack_size)),
       priority(std::move(other.priority)),
@@ -128,7 +125,6 @@ Thread::Options& Thread::Options::operator=(Thread::Options&& other) {
   message_pump_type = std::move(other.message_pump_type);
   delegate = std::move(other.delegate);
   timer_slack = std::move(other.timer_slack);
-  task_queue_time_domain = std::move(other.task_queue_time_domain);
   message_pump_factory = std::move(other.message_pump_factory);
   stack_size = std::move(other.stack_size);
   priority = std::move(other.priority);
@@ -157,6 +153,15 @@ Thread::~Thread() {
   Stop();
 }
 
+/**
+ * @brief 开始执行线程（模型），本质上是通过:
+ * SequenceManagerImpl ->
+ * ThreadControllerWithMessagePumpImpl ->
+ * MessagePump(例如：MessagePumpLibevent)
+ * 来实现的线程模型，即：通过给MessagePump设置Delegate实例来执行消息泵唤醒时的调用，
+ * 进而调用 SingleThreadTaskRunner(本质是TaskRunner) 去真正的执行消息队列。
+ * 这样就准备好了消息模型.
+ */
 bool Thread::Start() {
   DCHECK(owning_sequence_checker_.CalledOnValidSequence());
 
@@ -190,18 +195,17 @@ bool Thread::StartWithOptions(Options options) {
 
   if (options.delegate) {
     DCHECK(!options.message_pump_factory);
-    DCHECK(!options.task_queue_time_domain);
     delegate_ = std::move(options.delegate);
   } else if (options.message_pump_factory) {
     delegate_ = std::make_unique<SequenceManagerThreadDelegate>(
-        MessagePumpType::CUSTOM, options.message_pump_factory,
-        options.task_queue_time_domain);
+        MessagePumpType::CUSTOM, options.message_pump_factory);
   } else {
+    // 在 MessagePumpType 构造函数中会创建并初始化消息泵，使其处于等待休眠状态
     delegate_ = std::make_unique<SequenceManagerThreadDelegate>(
         options.message_pump_type,
-        BindOnce([](MessagePumpType type) { return MessagePump::Create(type); },
-                 options.message_pump_type),
-        options.task_queue_time_domain);
+        BindOnce([](MessagePumpType type) {
+          return MessagePump::Create(type);
+        }, options.message_pump_type));
   }
 
   start_event_.Reset();
@@ -299,7 +303,8 @@ void Thread::StopSoon() {
   stopping_ = true;
 
   task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&Thread::ThreadQuitHelper, Unretained(this)));
+      FROM_HERE,
+      base::BindOnce(&Thread::ThreadQuitHelper, Unretained(this)));
 }
 
 void Thread::DetachFromSequence() {

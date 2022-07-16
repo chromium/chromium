@@ -77,6 +77,10 @@ class DownloadUIAdapter : public OfflineContentProvider,
                     RequestCoordinator* coordinator,
                     std::unique_ptr<VisualsDecoder> visuals_decoder,
                     std::unique_ptr<Delegate> delegate);
+
+  DownloadUIAdapter(const DownloadUIAdapter&) = delete;
+  DownloadUIAdapter& operator=(const DownloadUIAdapter&) = delete;
+
   ~DownloadUIAdapter() override;
 
   static DownloadUIAdapter* FromOfflinePageModel(OfflinePageModel* model);
@@ -192,8 +196,6 @@ class DownloadUIAdapter : public OfflineContentProvider,
   std::unique_ptr<Delegate> delegate_;
 
   base::WeakPtrFactory<DownloadUIAdapter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadUIAdapter);
 };
 
 }  // namespace offline_pages

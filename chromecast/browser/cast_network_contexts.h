@@ -53,6 +53,10 @@ class CastNetworkContexts : public net::ProxyConfigService::Observer,
  public:
   explicit CastNetworkContexts(
       std::vector<std::string> cors_exempt_headers_list);
+
+  CastNetworkContexts(const CastNetworkContexts&) = delete;
+  CastNetworkContexts& operator=(const CastNetworkContexts&) = delete;
+
   ~CastNetworkContexts() override;
 
   // Returns the System NetworkContext. Does any initialization of the
@@ -142,8 +146,6 @@ class CastNetworkContexts : public net::ProxyConfigService::Observer,
   mojo::ReceiverSet<network::mojom::ProxyConfigPollerClient>
       poller_receiver_set_;
   mojo::RemoteSet<network::mojom::ProxyConfigClient> proxy_config_client_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastNetworkContexts);
 };
 
 }  // namespace shell

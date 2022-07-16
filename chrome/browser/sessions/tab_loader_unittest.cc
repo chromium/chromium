@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -34,6 +35,9 @@ class TabLoaderTest : public BrowserWithTestWindowTest {
   using RestoredTab = SessionRestoreDelegate::RestoredTab;
 
   TabLoaderTest() : max_simultaneous_loads_(1) {}
+
+  TabLoaderTest(const TabLoaderTest&) = delete;
+  TabLoaderTest& operator=(const TabLoaderTest&) = delete;
 
   void OnTabLoaderCreated(TabLoader* tab_loader) {
     tab_loader_.SetTabLoader(tab_loader);
@@ -74,12 +78,14 @@ class TabLoaderTest : public BrowserWithTestWindowTest {
     clock_.SetNowTicks(tab_loader_.force_load_time());
     tab_loader_.force_load_timer().Stop();
     tab_loader_.ForceLoadTimerFired();
+    SimulatePrimaryPageChangedIfNecessary();
   }
 
   void SimulateStartedToLoad(size_t tab_index) {
     auto* contents = restored_tabs_[tab_index].contents();
     auto* tracker = TabLoadTracker::Get();
     tracker->TransitionStateForTesting(contents, LoadingState::LOADING);
+    SimulatePrimaryPageChangedIfNecessary();
   }
 
   void SimulateLoaded(size_t tab_index) {
@@ -90,6 +96,7 @@ class TabLoaderTest : public BrowserWithTestWindowTest {
     if (tracker->GetLoadingState(contents) != LoadingState::LOADING)
       tracker->TransitionStateForTesting(contents, LoadingState::LOADING);
     tracker->TransitionStateForTesting(contents, LoadingState::LOADED);
+    SimulatePrimaryPageChangedIfNecessary();
   }
 
   void SimulateLoadedAll() {
@@ -136,7 +143,36 @@ class TabLoaderTest : public BrowserWithTestWindowTest {
       CreateRestoredWebContents(false);
   }
 
+  // Since it couldn't get PrimaryPageChanged() by loading, it simulates
+  // PrimaryPageChanged() to update the status.
+  void SimulatePrimaryPageChanged(content::WebContents* web_contents) {
+    auto* helper = ResourceCoordinatorTabHelper::FromWebContents(web_contents);
+    helper->PrimaryPageChanged(web_contents->GetPrimaryPage());
+  }
+
+  // If the tab initiates loading, TransitionState is updated by
+  // PrimaryPageChanged() in a normal browser flow. Since this is a unit test,
+  // we simulate SimulatePrimaryPageChanged() for the loading initiated tabs.
+  void SimulatePrimaryPageChangedIfNecessary() {
+    if (!TabLoaderTester::shared_tab_loader())
+      return;
+
+    // Copy because the set can change while calling
+    // SimulatePrimaryPageChanged() and the iteration is invalidated.
+    base::flat_set<content::WebContents*> load_initiated =
+        tab_loader_.tabs_load_initiated();
+    for (auto* web_contents : load_initiated)
+      SimulatePrimaryPageChanged(web_contents);
+  }
+
   void StartTabLoader() {
+    // Call PrimaryPageChanged() that would be caused by LoadIfNecessary() from
+    // CreateRestoredWebContents().
+    for (auto& tab : restored_tabs_) {
+      if (tab.is_active())
+        SimulatePrimaryPageChanged(tab.contents());
+    }
+
     TabLoader::RestoreTabs(restored_tabs_, clock_.NowTicks());
     EXPECT_TRUE(tab_loader_.IsSharedTabLoader());
     EXPECT_FALSE(tab_loader_.IsLoadingEnabled());
@@ -162,9 +198,6 @@ class TabLoaderTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<testing::ScopedAlwaysLoadSessionRestoreTestPolicy>
       test_policy_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabLoaderTest);
 };
 
 TEST_F(TabLoaderTest, AllLoadingSlotsUsed) {
@@ -379,6 +412,7 @@ TEST_F(TabLoaderTest, DelegatePolicyIsApplied) {
   // Simulate another tab as having loaded. The last 2 tabs should be deferred
   // (still need reloads) and the tab loader should detach.
   SimulateLoaded(1);
+  SimulateLoaded(2);
   EXPECT_TRUE(restored_tabs_[3].contents()->GetController().NeedsReload());
   EXPECT_TRUE(restored_tabs_[4].contents()->GetController().NeedsReload());
   EXPECT_TRUE(TabLoaderTester::shared_tab_loader() == nullptr);

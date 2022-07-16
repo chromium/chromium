@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -92,7 +92,7 @@ def _generate_rollup_config(tmp_out_dir, path_to_plugin, in_path, host_url,
     export default ({{
       plugins: [
         plugin('{in_path}', '{host_url}', {exclude_list},
-               {external_path_list}) ]
+               {external_path_list}, /* allowEmptyExtension= */ false) ]
     }});
     '''.format(plugin_path=path_to_plugin.replace('\\', '/'),
                in_path=in_path.replace('\\', '/'),
@@ -181,7 +181,7 @@ def _bundle_v3(tmp_out_dir, in_path, out_path, manifest_out_path, args,
          (len(generated_paths))
 
   for bundled_file in bundled_paths:
-    with open(bundled_file, 'r') as f:
+    with open(bundled_file, 'r', encoding='utf-8') as f:
       output = f.read()
       assert "<if expr" not in output, \
           'Unexpected <if expr> found in bundled output. Check that all ' + \
@@ -196,10 +196,9 @@ def _optimize(in_folder, args):
   tmp_out_dir = tempfile.mkdtemp(dir=out_path).replace('\\', '/')
 
   excludes = _BASE_EXCLUDES + [
-    # This file is dynamically created by C++. Need to specify an exclusion
-    # URL for both the relative URL and chrome:// URL syntax.
+    # This file is dynamically created by C++. Should always be imported with a
+    # relative path.
     'strings.m.js',
-    '%s/strings.m.js' % args.host_url,
   ]
   excludes.extend(args.exclude or [])
   external_paths = args.external_paths or []
@@ -216,7 +215,7 @@ def _optimize(in_folder, args):
                  ['--no-inline-includes', '-f'] +
                  bundled_paths + ['-o'] + pcb_out_paths)
 
-    # Pass the JS files through Uglify and write the output to its final
+    # Pass the JS files through Terser and write the output to its final
     # destination.
     for index, js_out_file in enumerate(args.js_out_files):
       node.RunNode([node_modules.PathToTerser(),
@@ -257,19 +256,21 @@ def main(argv):
 
   # Prior call to _optimize() generated an output manifest file, containing
   # information about all files that were bundled. Grab it from there.
-  manifest = json.loads(open(manifest_out_path, 'r').read())
+  with open(manifest_out_path, 'r') as f:
+    manifest = json.loads(f.read())
 
-  # Output a manifest file that will be used to auto-generate a grd file later.
-  if args.out_manifest:
-    manifest_data = {
-      'base_dir': args.out_folder,
-      'files': list(manifest.keys()),
-    }
-    with open(os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'w') \
-        as manifest_file:
-      json.dump(manifest_data, manifest_file)
+    # Output a manifest file that will be used to auto-generate a grd file
+    # later.
+    if args.out_manifest:
+      manifest_data = {
+        'base_dir': args.out_folder,
+        'files': list(manifest.keys()),
+      }
+      with open(os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'w') \
+          as manifest_file:
+        json.dump(manifest_data, manifest_file)
 
-  _update_dep_file(args.input, args, manifest)
+    _update_dep_file(args.input, args, manifest)
 
 
 if __name__ == '__main__':

@@ -196,12 +196,12 @@ template <typename InterfaceType>
 struct MidiPort {
   MidiPort() = default;
 
+  MidiPort(const MidiPort&) = delete;
+  MidiPort& operator=(const MidiPort&) = delete;
+
   uint32_t index;
   WRL::ComPtr<InterfaceType> handle;
   EventRegistrationToken token_MessageReceived;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MidiPort);
 };
 
 }  // namespace
@@ -637,6 +637,9 @@ class MidiManagerWinrt::MidiInPortManager final
   MidiInPortManager(MidiManagerWinrt* midi_manager)
       : MidiPortManager(midi_manager) {}
 
+  MidiInPortManager(const MidiInPortManager&) = delete;
+  MidiInPortManager& operator=(const MidiInPortManager&) = delete;
+
  private:
   // MidiPortManager overrides:
   bool RegisterOnMessageReceived(Win::Devices::Midi::IMidiInPort* handle,
@@ -730,8 +733,6 @@ class MidiManagerWinrt::MidiInPortManager final
 
     midi_manager_->ReceiveMidiData(port->index, &data[0], data.size(), time);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MidiInPortManager);
 };
 
 class MidiManagerWinrt::MidiOutPortManager final
@@ -743,6 +744,9 @@ class MidiManagerWinrt::MidiOutPortManager final
   MidiOutPortManager(MidiManagerWinrt* midi_manager)
       : MidiPortManager(midi_manager) {}
 
+  MidiOutPortManager(const MidiOutPortManager&) = delete;
+  MidiOutPortManager& operator=(const MidiOutPortManager&) = delete;
+
  private:
   // MidiPortManager overrides:
   void AddPort(mojom::PortInfo info) final {
@@ -752,8 +756,6 @@ class MidiManagerWinrt::MidiOutPortManager final
   void SetPortState(uint32_t port_index, PortState state) final {
     midi_manager_->SetOutputPortState(port_index, state);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MidiOutPortManager);
 };
 
 namespace {

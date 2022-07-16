@@ -287,6 +287,10 @@ bool PdfMetafileCg::GetData(void* dst_buffer, uint32_t dst_buffer_size) const {
   return true;
 }
 
+mojom::MetafileDataType PdfMetafileCg::GetDataType() const {
+  return mojom::MetafileDataType::kPDF;
+}
+
 CGContextRef PdfMetafileCg::context() const {
   return context_.get();
 }

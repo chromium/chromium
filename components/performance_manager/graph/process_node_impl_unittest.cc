@@ -83,7 +83,7 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
 
   // Resurrect again and verify the launch time and measurements
   // are cleared.
-  const base::Time launch2_time = launch_time + base::TimeDelta::FromSeconds(1);
+  const base::Time launch2_time = launch_time + base::Seconds(1);
   process_node->SetProcess(self.Duplicate(), launch2_time);
 
   EXPECT_EQ(launch2_time, process_node->launch_time());
@@ -297,8 +297,7 @@ class LenientFakeBackgroundTracingManager
   bool SetActiveScenarioWithReceiveCallback(
       std::unique_ptr<content::BackgroundTracingConfig> config,
       ReceiveCallback receive_callback,
-      DataFiltering data_filtering,
-      bool local_output = false) override {
+      DataFiltering data_filtering) override {
     return true;
   }
 

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_TAB_MODAL_CONFIRM_DIALOG_BROWSERTEST_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -25,6 +24,12 @@ class MockTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
 
   MockTabModalConfirmDialogDelegate(content::WebContents* web_contents,
                                     Delegate* delegate);
+
+  MockTabModalConfirmDialogDelegate(const MockTabModalConfirmDialogDelegate&) =
+      delete;
+  MockTabModalConfirmDialogDelegate& operator=(
+      const MockTabModalConfirmDialogDelegate&) = delete;
+
   ~MockTabModalConfirmDialogDelegate() override;
 
   std::u16string GetTitle() override;
@@ -36,8 +41,6 @@ class MockTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
 
  private:
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTabModalConfirmDialogDelegate);
 };
 
 class TabModalConfirmDialogTest
@@ -45,6 +48,10 @@ class TabModalConfirmDialogTest
       public MockTabModalConfirmDialogDelegate::Delegate {
  public:
   TabModalConfirmDialogTest();
+
+  TabModalConfirmDialogTest(const TabModalConfirmDialogTest&) = delete;
+  TabModalConfirmDialogTest& operator=(const TabModalConfirmDialogTest&) =
+      delete;
 
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
@@ -64,9 +71,6 @@ class TabModalConfirmDialogTest
   int accepted_count_;
   int canceled_count_;
   int closed_count_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabModalConfirmDialogTest);
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_MODAL_CONFIRM_DIALOG_BROWSERTEST_H_

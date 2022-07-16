@@ -414,6 +414,11 @@ def _UnionField(module, parsed_field, union):
   """
   field = mojom.UnionField()
   field.mojom_name = parsed_field.mojom_name
+  # Disallow unions from being self-recursive.
+  parsed_typename = parsed_field.typename
+  if parsed_typename.endswith('?'):
+    parsed_typename = parsed_typename[:-1]
+  assert parsed_typename != union.mojom_name
   field.kind = _Kind(module.kinds, _MapKind(parsed_field.typename),
                      (module.mojom_namespace, union.mojom_name))
   field.ordinal = parsed_field.ordinal.value if parsed_field.ordinal else None
@@ -696,6 +701,11 @@ def _CollectReferencedKinds(module, all_defined_kinds):
         for referenced_kind in extract_referenced_user_kinds(param.kind):
           sanitized_kind = sanitize_kind(referenced_kind)
           referenced_user_kinds[sanitized_kind.spec] = sanitized_kind
+  # Consts can reference imported enums.
+  for const in module.constants:
+    if not const.kind in mojom.PRIMITIVES:
+      sanitized_kind = sanitize_kind(const.kind)
+      referenced_user_kinds[sanitized_kind.spec] = sanitized_kind
 
   return referenced_user_kinds
 
@@ -739,6 +749,16 @@ def _AssertTypeIsStable(kind):
       if method.response_param_struct:
         for response_param in method.response_param_struct.fields:
           assertDependencyIsStable(response_param.kind)
+
+
+def _AssertStructIsValid(kind):
+  expected_ordinals = set(range(0, len(kind.fields)))
+  ordinals = set(map(lambda field: field.ordinal, kind.fields))
+  if ordinals != expected_ordinals:
+    raise Exception(
+        'Structs must use contiguous ordinals starting from 0. ' +
+        '{} is missing the following ordinals: {}.'.format(
+            kind.mojom_name, ', '.join(map(str, expected_ordinals - ordinals))))
 
 
 def _Module(tree, path, imports):
@@ -846,6 +866,9 @@ def _Module(tree, path, imports):
     for kind in kinds:
       if kind.stable:
         _AssertTypeIsStable(kind)
+
+  for kind in module.structs:
+    _AssertStructIsValid(kind)
 
   return module
 

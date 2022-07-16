@@ -5,15 +5,26 @@
 # pylint: disable=protected-access
 
 import argparse
+import re
 import unittest
 
-import mock
+import six
+
+if six.PY2:
+  import mock
+else:
+  import unittest.mock as mock  # pylint: disable=no-name-in-module,import-error,wrong-import-order
 
 from cli_tools.update_wpr import update_wpr
 from core.services import request
 
 
 WPR_UPDATER = 'cli_tools.update_wpr.update_wpr.'
+
+BUILTIN_MODULE = '__builtin__' if six.PY2 else 'builtins'
+
+# This is \\<story\\> in Python 2 and <story> in Python 3.
+ESCAPED_STORY = re.escape('<story>')
 
 
 class UpdateWprTest(unittest.TestCase):
@@ -26,7 +37,7 @@ class UpdateWprTest(unittest.TestCase):
     self._check_call = mock.patch('subprocess.check_call').start()
     self._info = mock.patch('core.cli_helpers.Info').start()
     self._comment = mock.patch('core.cli_helpers.Comment').start()
-    self._open = mock.patch('__builtin__.open').start()
+    self._open = mock.patch(BUILTIN_MODULE + '.open').start()
     datetime = mock.patch('datetime.datetime').start()
     datetime.now.return_value.strftime.return_value = '<tstamp>'
 
@@ -183,7 +194,8 @@ class UpdateWprTest(unittest.TestCase):
         [
             '.../run_benchmark', 'run', '--browser=system',
             'system_health.memory_desktop', '--output-format=html',
-            '--show-stdout', '--reset-results', '--story-filter=^\\<story\\>$',
+            '--show-stdout', '--reset-results',
+            '--story-filter=^%s$' % ESCAPED_STORY,
             '--browser-logging-verbosity=verbose', '--pageset-repeat=1',
             '--output-dir', '/tmp/dir', '--also-run-disabled-tests',
             '--legacy-json-trace-format', '--use-live-sites'
@@ -302,9 +314,12 @@ class UpdateWprTest(unittest.TestCase):
     del delete_existing_wpr  # Unused.
     self.wpr_updater.RecordWpr()
     self._check_log.assert_called_once_with([
-      '.../record_wpr', '--story-filter=^\\<story\\>$',
-      '--browser=system', 'desktop_system_health_story_set'
-    ], env={'LC_ALL': 'en_US.UTF-8'}, log_path='/tmp/dir/record_<tstamp>')
+        '.../record_wpr',
+        '--story-filter=^%s$' % ESCAPED_STORY, '--browser=system',
+        'desktop_system_health_story_set'
+    ],
+                                            env={'LC_ALL': 'en_US.UTF-8'},
+                                            log_path='/tmp/dir/record_<tstamp>')
     print_run_info.assert_called_once_with(
         '/tmp/dir/record_<tstamp>', chrome_log_file=True, results_details=False)
 
@@ -315,10 +330,13 @@ class UpdateWprTest(unittest.TestCase):
     self.wpr_updater.device_id = '<serial>'
     self.wpr_updater.RecordWpr()
     self._check_log.assert_called_once_with([
-      '.../record_wpr', '--story-filter=^\\<story\\>$',
-      '--browser=android-system-chrome', '--device=<serial>',
-      'mobile_system_health_story_set'
-    ], env={'LC_ALL': 'en_US.UTF-8'}, log_path='/tmp/dir/record_<tstamp>')
+        '.../record_wpr',
+        '--story-filter=^%s$' % ESCAPED_STORY,
+        '--browser=android-system-chrome', '--device=<serial>',
+        'mobile_system_health_story_set'
+    ],
+                                            env={'LC_ALL': 'en_US.UTF-8'},
+                                            log_path='/tmp/dir/record_<tstamp>')
     print_run_info.assert_called_once_with(
         '/tmp/dir/record_<tstamp>', chrome_log_file=False,
         results_details=False)

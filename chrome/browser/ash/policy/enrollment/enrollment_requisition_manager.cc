@@ -52,7 +52,7 @@ const char EnrollmentRequisitionManager::kRialtoRequisition[] = "rialto";
 // static
 void EnrollmentRequisitionManager::Initialize() {
   // OEM statistics are only loaded when OOBE is not completed.
-  if (chromeos::StartupUtils::IsOobeCompleted())
+  if (ash::StartupUtils::IsOobeCompleted())
     return;
 
   // Demo requisition may have been set in a prior enrollment attempt that was
@@ -87,12 +87,12 @@ void EnrollmentRequisitionManager::Initialize() {
 
 // static
 std::string EnrollmentRequisitionManager::GetDeviceRequisition() {
-  std::string requisition;
   const PrefService::Preference* pref =
       g_browser_process->local_state()->FindPreference(
           prefs::kDeviceEnrollmentRequisition);
-  if (!pref->IsDefaultValue())
-    pref->GetValue()->GetAsString(&requisition);
+  std::string requisition;
+  if (!pref->IsDefaultValue() && pref->GetValue()->is_string())
+    requisition = pref->GetValue()->GetString();
 
   if (requisition == kNoRequisition)
     requisition.clear();
@@ -132,13 +132,12 @@ bool EnrollmentRequisitionManager::IsSharkRequisition() {
 
 // static
 std::string EnrollmentRequisitionManager::GetSubOrganization() {
-  std::string sub_organization;
   const PrefService::Preference* pref =
       g_browser_process->local_state()->FindPreference(
           prefs::kDeviceEnrollmentSubOrganization);
-  if (!pref->IsDefaultValue())
-    pref->GetValue()->GetAsString(&sub_organization);
-  return sub_organization;
+  if (!pref->IsDefaultValue() && pref->GetValue()->is_string())
+    return pref->GetValue()->GetString();
+  return std::string();
 }
 
 // static

@@ -139,8 +139,6 @@ if (enable_pdf) {
       "pdfium/pdfium_engine_exports.h",
       "pdfium/pdfium_form_filler.cc",
       "pdfium/pdfium_form_filler.h",
-      "pdfium/pdfium_mem_buffer_file_read.cc",
-      "pdfium/pdfium_mem_buffer_file_read.h",
       "pdfium/pdfium_mem_buffer_file_write.cc",
       "pdfium/pdfium_mem_buffer_file_write.h",
       "pdfium/pdfium_page.cc",
@@ -175,10 +173,11 @@ if (enable_pdf) {
     public_deps = [
       "//printing/mojom",
       "//skia",
+      "//v8",
     ]
 
     deps = [
-      ":accessibility_structs",
+      ":accessibility",
       ":features",
       ":ppapi_migration",
       "//base",
@@ -229,7 +228,7 @@ if (enable_pdf) {
     configs += [ ":common" ]
 
     deps = [
-      ":accessibility_structs",
+      ":accessibility",
       ":internal",
       ":pdf",
       ":ppapi_migration",
@@ -240,7 +239,7 @@ if (enable_pdf) {
     ]
   }
 
-  source_set("accessibility_structs") {
+  source_set("accessibility") {
     visibility = [
       ":*",
       "//components:components_browsertests",
@@ -253,6 +252,8 @@ if (enable_pdf) {
       "accessibility_helper.h",
       "accessibility_structs.cc",
       "accessibility_structs.h",
+      "pdf_accessibility_action_handler.h",
+      "pdf_accessibility_data_handler.h",
     ]
 
     configs += [ ":strict" ]
@@ -325,13 +326,12 @@ if (enable_pdf) {
     public_deps = [ "//third_party/abseil-cpp:absl" ]
 
     deps = [
-      ":accessibility_structs",
+      ":accessibility",
       ":internal",
       ":ppapi_migration",
       "//base",
       "//build:chromeos_buildflags",
       "//net",
-      "//pdf:buildflags",
       "//ppapi/cpp:objects",
       "//ppapi/cpp/private:internal_module",
       "//skia",
@@ -339,6 +339,7 @@ if (enable_pdf) {
       "//third_party/blink/public/common:headers",
       "//ui/base",
       "//ui/base/cursor/mojom:cursor_type",
+      "//url",
     ]
   }
 
@@ -365,7 +366,7 @@ if (enable_pdf) {
     public_deps = [ "//pdf/mojom" ]
 
     deps = [
-      ":accessibility_structs",
+      ":accessibility",
       ":internal",
       ":ppapi_migration",
       "//base",
@@ -381,6 +382,7 @@ if (enable_pdf) {
       "//third_party/blink/public/common:headers",
       "//ui/base/cursor:cursor_base",
       "//ui/base/cursor/mojom:cursor_type",
+      "//ui/display",
       "//ui/events/blink",
       "//v8",
     ]
@@ -398,6 +400,8 @@ if (enable_pdf) {
       "test/test_document_loader.h",
       "test/test_helpers.cc",
       "test/test_helpers.h",
+      "test/test_pdfium_engine.cc",
+      "test/test_pdfium_engine.h",
     ]
 
     configs += [ ":common" ]
@@ -407,9 +411,11 @@ if (enable_pdf) {
       ":ppapi_migration",
       "//base",
       "//ppapi/cpp:objects",
+      "//testing/gmock",
       "//testing/gtest",
-      "//ui/gfx:geometry_skia",
+      "//third_party/blink/public/common:headers",
       "//ui/gfx/range",
+      "//ui/latency:latency",
     ]
   }
 
@@ -467,7 +473,7 @@ if (enable_pdf) {
     data = [ "test/data/" ]
 
     deps = [
-      ":accessibility_structs",
+      ":accessibility",
       ":assert_enums",
       ":features",
       ":internal",
@@ -495,9 +501,11 @@ if (enable_pdf) {
       "//third_party/blink/public/common:headers",
       "//third_party/pdfium",
       "//ui/base",
+      "//ui/events/blink:blink",
       "//ui/gfx:test_support",
       "//ui/gfx/geometry",
       "//ui/gfx/range",
+      "//v8",
     ]
 
     if (v8_use_external_startup_data) {

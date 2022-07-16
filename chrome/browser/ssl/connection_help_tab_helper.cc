@@ -33,9 +33,7 @@ ConnectionHelpTabHelper::~ConnectionHelpTabHelper() {}
 
 void ConnectionHelpTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
+  // Ignore pre-rendering navigations.
   if (navigation_handle->IsInPrimaryMainFrame() &&
       (web_contents()->GetURL().EqualsIgnoringRef(GetHelpCenterURL()) ||
        web_contents()->GetURL().EqualsIgnoringRef(GURL(kSymantecSupportUrl))) &&
@@ -59,4 +57,4 @@ GURL ConnectionHelpTabHelper::GetHelpCenterURL() {
   return GURL(kHelpCenterConnectionHelpUrl);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ConnectionHelpTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ConnectionHelpTabHelper);

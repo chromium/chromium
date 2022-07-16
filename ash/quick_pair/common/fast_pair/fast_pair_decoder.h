@@ -5,6 +5,7 @@
 #ifndef ASH_QUICK_PAIR_COMMON_FAST_PAIR_FAST_PAIR_DECODER_H_
 #define ASH_QUICK_PAIR_COMMON_FAST_PAIR_FAST_PAIR_DECODER_H_
 
+#include <cstdint>
 #include <vector>
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -12,6 +13,12 @@
 namespace ash {
 namespace quick_pair {
 namespace fast_pair_decoder {
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+int GetVersion(const std::vector<uint8_t>* service_data);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+int GetIdLength(const std::vector<uint8_t>* service_data);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 bool HasModelId(const std::vector<uint8_t>* service_data);

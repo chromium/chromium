@@ -15,6 +15,7 @@
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/commerce/price_alert_util.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -24,12 +25,14 @@
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/commands/thumb_strip_commands.h"
+#import "ios/chrome/browser/ui/commerce/price_card/price_card_mediator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/gestures/view_controller_trait_collection_observer.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
@@ -103,6 +106,8 @@
 @property(nonatomic, strong) TabGridMediator* regularTabsMediator;
 // Mediator for incognito Tabs.
 @property(nonatomic, strong) TabGridMediator* incognitoTabsMediator;
+// Mediator for PriceCardView - this is only for regular Tabs.
+@property(nonatomic, strong) PriceCardMediator* priceCardMediator;
 // Mediator for incognito reauth.
 @property(nonatomic, strong) IncognitoReauthMediator* incognitoAuthMediator;
 // Mediator for remote Tabs.
@@ -164,6 +169,7 @@
                      forProtocol:@protocol(ApplicationSettingsCommands)];
     [_dispatcher startDispatchingToTarget:browsingDataCommandEndpoint
                               forProtocol:@protocol(BrowsingDataCommands)];
+
     _regularBrowser = regularBrowser;
     _incognitoBrowser = incognitoBrowser;
 
@@ -212,6 +218,10 @@
                            browser:incognitoBrowser
                           delegate:self];
     [self.incognitoSnackbarCoordinator start];
+
+    [incognitoBrowser->GetCommandDispatcher()
+        startDispatchingToTarget:[self bookmarkInteractionController]
+                     forProtocol:@protocol(BookmarksCommands)];
   }
 
   if ([self isThumbStripEnabled]) {
@@ -250,10 +260,10 @@
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion {
   // A modal may be presented on top of the Recent Tabs or tab grid.
   [self.baseViewController dismissModals];
-  [self.actionSheetCoordinator stop];
-  self.actionSheetCoordinator = nil;
-  [self.sharingCoordinator stop];
-  self.sharingCoordinator = nil;
+  self.baseViewController.tabGridMode = TabGridModeNormal;
+
+  [self dismissPopovers];
+
   if (_bookmarkInteractionController) {
     [_bookmarkInteractionController dismissBookmarkModalControllerAnimated:YES];
   }
@@ -328,8 +338,6 @@
     // incognito (crbug.com/1136882).
     TabGridPage currentActivePage = self.baseViewController.activePage;
     dispatch_async(dispatch_get_main_queue(), ^{
-      self.baseViewController.childViewControllerForStatusBarStyle = nil;
-
       self.transitionHandler = [[TabGridTransitionHandler alloc]
           initWithLayoutProvider:self.baseViewController];
       self.transitionHandler.animationDisabled = !animated;
@@ -341,6 +349,13 @@
                    self.bvcContainer = nil;
                    [self.baseViewController contentDidAppear];
                  }];
+
+      // On iOS 15+, snapshotting views with afterScreenUpdates:YES waits 0.5s
+      // for the status bar style to update. Work around that delay by taking
+      // the snapshot first (during
+      // |transitionFromBrowser:toTabGrid:activePage:withCompletion|) and then
+      // updating the status bar style afterwards.
+      self.baseViewController.childViewControllerForStatusBarStyle = nil;
     });
   }
   self.tabGridEnterTime = base::TimeTicks::Now();
@@ -432,9 +447,6 @@
     self.firstPresentation = NO;
   };
 
-  self.baseViewController.childViewControllerForStatusBarStyle =
-      self.bvcContainer.currentBVC;
-
   [self.baseViewController contentWillDisappearAnimated:animated];
 
   self.transitionHandler = [[TabGridTransitionHandler alloc]
@@ -447,6 +459,14 @@
              withCompletion:^{
                extendedCompletion();
              }];
+
+  // On iOS 15+, snapshotting views with afterScreenUpdates:YES waits 0.5s for
+  // the status bar style to update. Work around that delay by taking the
+  // snapshot first (during
+  // |transitionFromTabGrid:toBrowser:activePage:withCompletion|) and then
+  // updating the status bar style afterwards.
+  self.baseViewController.childViewControllerForStatusBarStyle =
+      self.bvcContainer.currentBVC;
 }
 
 #pragma mark - Private
@@ -549,6 +569,8 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  // TODO(crbug.com/1246931): refactor to call setIncognitoBrowser from this
+  // function.
   IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
       agentFromScene:SceneStateBrowserAgent::FromBrowser(_incognitoBrowser)
                          ->GetSceneState()];
@@ -563,6 +585,7 @@
       HandlerForProtocol(self.dispatcher, ApplicationCommands);
   baseViewController.reauthHandler =
       HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
+  baseViewController.reauthAgent = reauthAgent;
   baseViewController.tabPresentationDelegate = self;
   baseViewController.delegate = self;
   _baseViewController = baseViewController;
@@ -573,6 +596,10 @@
       _regularBrowser ? _regularBrowser->GetBrowserState() : nullptr;
   WebStateList* regularWebStateList =
       _regularBrowser ? _regularBrowser->GetWebStateList() : nullptr;
+  if (IsPriceAlertsEnabled()) {
+    self.priceCardMediator =
+        [[PriceCardMediator alloc] initWithWebStateList:regularWebStateList];
+  }
 
   self.regularTabsMediator.browser = _regularBrowser;
   self.regularTabsMediator.delegate = self;
@@ -591,6 +618,7 @@
   baseViewController.regularTabsDragDropHandler = self.regularTabsMediator;
   baseViewController.incognitoTabsDragDropHandler = self.incognitoTabsMediator;
   baseViewController.regularTabsImageDataSource = self.regularTabsMediator;
+  baseViewController.priceCardDataSource = self.priceCardMediator;
   baseViewController.incognitoTabsImageDataSource = self.incognitoTabsMediator;
   baseViewController.regularTabsShareableItemsProvider =
       self.regularTabsMediator;
@@ -601,29 +629,25 @@
       initWithConsumer:self.baseViewController.incognitoTabsConsumer
            reauthAgent:reauthAgent];
 
-  if (@available(iOS 13.0, *)) {
-    self.recentTabsContextMenuHelper =
-        [[RecentTabsContextMenuHelper alloc] initWithBrowser:self.regularBrowser
-                              recentTabsPresentationDelegate:self
-                                      tabContextMenuDelegate:self];
-    self.baseViewController.remoteTabsViewController.menuProvider =
-        self.recentTabsContextMenuHelper;
-  }
+  self.recentTabsContextMenuHelper =
+      [[RecentTabsContextMenuHelper alloc] initWithBrowser:self.regularBrowser
+                            recentTabsPresentationDelegate:self
+                                    tabContextMenuDelegate:self];
+  self.baseViewController.remoteTabsViewController.menuProvider =
+      self.recentTabsContextMenuHelper;
 
-  if (@available(iOS 13.0, *)) {
-    self.regularTabsGridContextMenuHelper =
-        [[GridContextMenuHelper alloc] initWithBrowser:self.regularBrowser
-                                     actionsDataSource:self.regularTabsMediator
-                                tabContextMenuDelegate:self];
-    self.baseViewController.regularTabsContextMenuProvider =
-        self.regularTabsGridContextMenuHelper;
-    self.incognitoTabsGridContextMenuHelper = [[GridContextMenuHelper alloc]
-               initWithBrowser:self.incognitoBrowser
-             actionsDataSource:self.incognitoTabsMediator
-        tabContextMenuDelegate:self];
-    self.baseViewController.incognitoTabsContextMenuProvider =
-        self.incognitoTabsGridContextMenuHelper;
-  }
+  self.regularTabsGridContextMenuHelper =
+      [[GridContextMenuHelper alloc] initWithBrowser:self.regularBrowser
+                                   actionsDataSource:self.regularTabsMediator
+                              tabContextMenuDelegate:self];
+  self.baseViewController.regularTabsContextMenuProvider =
+      self.regularTabsGridContextMenuHelper;
+  self.incognitoTabsGridContextMenuHelper =
+      [[GridContextMenuHelper alloc] initWithBrowser:self.incognitoBrowser
+                                   actionsDataSource:self.incognitoTabsMediator
+                              tabContextMenuDelegate:self];
+  self.baseViewController.incognitoTabsContextMenuProvider =
+      self.incognitoTabsGridContextMenuHelper;
 
   // TODO(crbug.com/845192) : Remove RecentTabsTableViewController dependency on
   // ChromeBrowserState so that we don't need to expose the view controller.
@@ -677,6 +701,13 @@
                                                      delegate:self];
   [self.incognitoSnackbarCoordinator start];
 
+  [_regularBrowser->GetCommandDispatcher()
+      startDispatchingToTarget:[self bookmarkInteractionController]
+                   forProtocol:@protocol(BookmarksCommands)];
+  [_incognitoBrowser->GetCommandDispatcher()
+      startDispatchingToTarget:[self bookmarkInteractionController]
+                   forProtocol:@protocol(BookmarksCommands)];
+
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.regularBrowser)->GetSceneState();
   [sceneState addObserver:self];
@@ -700,6 +731,8 @@
   // setting the handler to nil.
   self.baseViewController.handler = nil;
   self.recentTabsContextMenuHelper = nil;
+  self.regularTabsGridContextMenuHelper = nil;
+  self.incognitoTabsGridContextMenuHelper = nil;
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   [self.dispatcher stopDispatchingForProtocol:@protocol(ApplicationCommands)];
@@ -714,6 +747,7 @@
   // TODO(crbug.com/845192) : RecentTabsTableViewController behaves like a
   // coordinator and that should be factored out.
   [self.baseViewController.remoteTabsViewController dismissModals];
+  self.baseViewController.remoteTabsViewController.browser = nil;
   [self.remoteTabsMediator disconnect];
   self.remoteTabsMediator = nil;
   [self.actionSheetCoordinator stop];
@@ -775,54 +809,6 @@
                focusOmnibox:focusOmnibox];
 }
 
-- (void)showCloseAllConfirmationActionSheetWitTabGridMediator:
-            (TabGridMediator*)tabGridMediator
-                                                 numberOfTabs:
-                                                     (NSInteger)numberOfTabs
-                                                       anchor:(UIBarButtonItem*)
-                                                                  buttonAnchor {
-  if (tabGridMediator == self.regularTabsMediator) {
-    base::RecordAction(base::UserMetricsAction(
-        "MobileTabGridCloseAllRegularTabsConfirmationPresented"));
-  } else {
-    base::RecordAction(base::UserMetricsAction(
-        "MobileTabGridCloseAllIncognitoTabsConfirmationPresented"));
-  }
-
-  self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                           title:nil
-                         message:nil
-                   barButtonItem:buttonAnchor];
-
-  self.actionSheetCoordinator.alertStyle = UIAlertControllerStyleActionSheet;
-
-  __weak TabGridCoordinator* weakSelf = self;
-
-  [self.actionSheetCoordinator
-      addItemWithTitle:base::SysUTF16ToNSString(
-                           l10n_util::GetPluralStringFUTF16(
-                               IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION,
-                               numberOfTabs))
-                action:^{
-                  base::RecordAction(base::UserMetricsAction(
-                      "MobileTabGridCloseAllTabsConfirmationConfirmed"));
-                  [tabGridMediator closeAllItems];
-                  [weakSelf.baseViewController closeAllTabsConfirmationClosed];
-                }
-                 style:UIAlertActionStyleDestructive];
-  [self.actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                action:^{
-                  base::RecordAction(base::UserMetricsAction(
-                      "MobileTabGridCloseAllTabsConfirmationCanceled"));
-                  [weakSelf.baseViewController closeAllTabsConfirmationClosed];
-                }
-                 style:UIAlertActionStyleCancel];
-  [self.actionSheetCoordinator start];
-}
-
 - (void)
     showCloseItemsConfirmationActionSheetWithTabGridMediator:
         (TabGridMediator*)tabGridMediator
@@ -882,6 +868,13 @@
                           params:params
                           anchor:buttonAnchor];
   [self.sharingCoordinator start];
+}
+
+- (void)dismissPopovers {
+  [self.actionSheetCoordinator stop];
+  self.actionSheetCoordinator = nil;
+  [self.sharingCoordinator stop];
+  self.sharingCoordinator = nil;
 }
 
 #pragma mark - TabGridViewControllerDelegate
@@ -1012,6 +1005,12 @@
   } else {
     [self.regularTabsMediator closeItemWithID:identifier];
   }
+}
+
+- (void)selectTabs {
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridTabContextMenuSelectTabs"));
+  self.baseViewController.tabGridMode = TabGridModeSelection;
 }
 
 - (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {

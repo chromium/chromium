@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.tree.TypeAheadTest');
 goog.setTestOnly();
@@ -121,7 +113,15 @@ testSuite({
 
     // Simulate a DOWN key on the tree, now the selection should be on 'eve3'
     const e = new Object();
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     e.keyCode = KeyCodes.DOWN;
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     e.preventDefault = () => {};
     handled = tree.handleKeyEvent(e);
     selectedItem = tree.getSelectedItem();
@@ -137,18 +137,53 @@ testSuite({
     // Period character('.'): keyCode = 190, charCode = 46
     // String.fromCharCode(190) = '3/4'  <-- incorrect
     // String.fromCharCode(46) = '.'  <-- correct
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     e.keyCode = KeyCodes.PERIOD;
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     e.charCode = 46;
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     e.preventDefault = () => {};
     typeAhead.handleTypeAheadChar(e);
     assertEquals('.', typeAhead.buffer_);
 
     // charCode not supplied.
     // This is expected to work only for alpha-num characters.
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     e.keyCode = KeyCodes.A;
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     e.charCode = undefined;
     typeAhead.buffer_ = '';
     typeAhead.handleTypeAheadChar(e);
     assertEquals('a', typeAhead.buffer_);
+
+    // keyCodes should not be used for keys that produce non-printable chars.
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
+    e.keyCode = KeyCodes.F5;
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
+    e.charCode = 0;
+    typeAhead.buffer_ = '';
+    typeAhead.handleTypeAheadChar(e);
+    assertEquals('', typeAhead.buffer_);
   },
 });

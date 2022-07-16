@@ -21,6 +21,10 @@ struct AllocationSite {
   AllocationSite(AllocatorType allocator,
                  std::vector<Address>&& stack,
                  int context_id);
+
+  AllocationSite(const AllocationSite&) = delete;
+  AllocationSite& operator=(const AllocationSite&) = delete;
+
   ~AllocationSite();
 
   // Type of the allocator responsible for the allocation. Possible values are
@@ -42,8 +46,6 @@ struct AllocationSite {
 
  private:
   const uint32_t hash_;
-
-  DISALLOW_COPY_AND_ASSIGN(AllocationSite);
 };
 
 inline bool operator==(const AllocationSite& a, const AllocationSite& b) {

@@ -27,6 +27,12 @@ namespace remoting {
 class SecurityKeyMessageReaderImplTest : public testing::Test {
  public:
   SecurityKeyMessageReaderImplTest();
+
+  SecurityKeyMessageReaderImplTest(const SecurityKeyMessageReaderImplTest&) =
+      delete;
+  SecurityKeyMessageReaderImplTest& operator=(
+      const SecurityKeyMessageReaderImplTest&) = delete;
+
   ~SecurityKeyMessageReaderImplTest() override;
 
   // SecurityKeyMessageCallback passed to the Reader. Stores |message| so it can
@@ -64,8 +70,6 @@ class SecurityKeyMessageReaderImplTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyMessageReaderImplTest);
 };
 
 SecurityKeyMessageReaderImplTest::SecurityKeyMessageReaderImplTest()

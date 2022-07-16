@@ -16,13 +16,16 @@ class SafeBrowsingPrivateGetReferrerChainFunction : public ExtensionFunction {
 
   SafeBrowsingPrivateGetReferrerChainFunction();
 
+  SafeBrowsingPrivateGetReferrerChainFunction(
+      const SafeBrowsingPrivateGetReferrerChainFunction&) = delete;
+  SafeBrowsingPrivateGetReferrerChainFunction& operator=(
+      const SafeBrowsingPrivateGetReferrerChainFunction&) = delete;
+
  protected:
   ~SafeBrowsingPrivateGetReferrerChainFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingPrivateGetReferrerChainFunction);
 };
 
 }  // namespace extensions

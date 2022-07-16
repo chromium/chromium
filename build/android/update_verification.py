@@ -28,6 +28,8 @@ import argparse
 import logging
 import sys
 
+# import raw_input when converted to python3
+from six.moves import input  # pylint: disable=redefined-builtin
 import devil_chromium
 
 from devil.android import apk_helper
@@ -36,17 +38,11 @@ from devil.android import device_errors
 from devil.android import device_utils
 from devil.utils import run_tests_helper
 
-try:
-  from builtins import input as raw_input  # pylint: disable=redefined-builtin
-except ImportError:
-  # Python-2 already has raw_input.
-  pass
-
 
 def CreateAppData(device, old_apk, app_data, package_name):
   device.Install(old_apk)
-  raw_input('Set the application state. Once ready, press enter and '
-            'select "Backup my data" on the device.')
+  input('Set the application state. Once ready, press enter and '
+        'select "Backup my data" on the device.')
   device.adb.Backup(app_data, packages=[package_name])
   logging.critical('Application data saved to %s', app_data)
 
@@ -54,8 +50,8 @@ def TestUpdate(device, old_apk, new_apk, app_data, package_name):
   device.Install(old_apk)
   device.adb.Restore(app_data)
   # Restore command is not synchronous
-  raw_input('Select "Restore my data" on the device. Then press enter to '
-            'continue.')
+  input('Select "Restore my data" on the device. Then press enter to '
+        'continue.')
   if not device.IsApplicationInstalled(package_name):
     raise Exception('Expected package %s to already be installed. '
                     'Package name might have changed!' % package_name)

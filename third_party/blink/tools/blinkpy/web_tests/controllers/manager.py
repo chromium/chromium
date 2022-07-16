@@ -39,9 +39,12 @@ The Manager object has a constructor and one main method called run.
 import fnmatch
 import json
 import logging
+import os
 import random
+import signal
 import sys
 import time
+import traceback
 
 from six.moves import range
 
@@ -165,6 +168,17 @@ class Manager(object):
         should_retry_failures = self._options.num_retries > 0
 
         try:
+            if not self._port.host.platform.is_win():
+                _pid = os.getpid()
+                def sighandler(signum, frame):
+                    self._printer.write_update("Received SIGTERM in %d" % os.getpid())
+                    message = ''.join(traceback.format_stack(frame))
+                    self._printer.write_update(message)
+                    if os.getpid() == _pid:
+                        os.killpg(os.getpgrp(), signal.SIGINT)
+                    else:
+                        os.kill(os.getpid(), signal.SIGINT)
+                signal.signal(signal.SIGTERM, sighandler)
             self._start_servers(tests_to_run)
             if self._options.watch:
                 run_results = self._run_test_loop(tests_to_run, tests_to_skip)
@@ -173,6 +187,7 @@ class Manager(object):
                                                   should_retry_failures)
             initial_results, all_retry_results = run_results
         finally:
+            _log.info("Finally stop servers and clean up")
             self._stop_servers()
             self._clean_up_run()
 
@@ -256,8 +271,8 @@ class Manager(object):
 
     def _run_test_once(self, tests_to_run, tests_to_skip,
                        should_retry_failures):
-        num_workers = self._port.num_workers(
-            int(self._options.child_processes))
+        num_workers = int(
+            self._port.num_workers(int(self._options.child_processes)))
 
         initial_results = self._run_tests(
             tests_to_run, tests_to_skip, self._options.repeat_each,
@@ -354,7 +369,7 @@ class Manager(object):
         Perf tests are locked because heavy load caused by running other
         tests in parallel might cause some of them to time out.
         """
-        return self._is_http_test(test_file) or self._is_perf_test(test_file)
+        return self._is_perf_test(test_file)
 
     def _test_is_slow(self, test_file):
         if not self._expectations:
@@ -365,7 +380,7 @@ class Manager(object):
 
     def _needs_servers(self, test_names):
         return any(
-            self._test_requires_lock(test_name) for test_name in test_names)
+            self._is_http_test(test_name) for test_name in test_names)
 
     def _rename_results_folder(self):
         try:

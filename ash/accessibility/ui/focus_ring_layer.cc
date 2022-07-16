@@ -40,10 +40,6 @@ void FocusRingLayer::ResetColor() {
   custom_color_.reset();
 }
 
-bool FocusRingLayer::NeedToAnimate() const {
-  return true;
-}
-
 int FocusRingLayer::GetInset() const {
   return kShadowRadius + 2;
 }

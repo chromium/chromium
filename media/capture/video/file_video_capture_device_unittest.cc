@@ -26,7 +26,7 @@ namespace media {
 
 namespace {
 
-const base::TimeDelta kWaitTimeoutSecs = base::TimeDelta::FromSeconds(3);
+const base::TimeDelta kWaitTimeoutSecs = base::Seconds(3);
 
 class MockImageCaptureClient {
  public:

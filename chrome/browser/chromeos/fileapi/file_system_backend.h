@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/account_id/account_id.h"
 #include "storage/browser/file_system/file_system_backend.h"
@@ -87,6 +86,10 @@ class FileSystemBackend : public storage::ExternalFileSystemBackend {
       std::unique_ptr<FileSystemBackendDelegate> smbfs_delegate,
       scoped_refptr<storage::ExternalMountPoints> mount_points,
       storage::ExternalMountPoints* system_mount_points);
+
+  FileSystemBackend(const FileSystemBackend&) = delete;
+  FileSystemBackend& operator=(const FileSystemBackend&) = delete;
+
   ~FileSystemBackend() override;
 
   // Adds system mount points, such as "archive", and "removable". This
@@ -111,7 +114,7 @@ class FileSystemBackend : public storage::ExternalFileSystemBackend {
   storage::CopyOrMoveFileValidatorFactory* GetCopyOrMoveFileValidatorFactory(
       storage::FileSystemType type,
       base::File::Error* error_code) override;
-  storage::FileSystemOperation* CreateFileSystemOperation(
+  std::unique_ptr<storage::FileSystemOperation> CreateFileSystemOperation(
       const storage::FileSystemURL& url,
       storage::FileSystemContext* context,
       base::File::Error* error_code) const override;
@@ -190,8 +193,6 @@ class FileSystemBackend : public storage::ExternalFileSystemBackend {
   // Globally visible mount points. System MountPonts instance should outlive
   // all FileSystemBackend instances, so raw pointer is safe.
   storage::ExternalMountPoints* system_mount_points_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemBackend);
 };
 
 }  // namespace chromeos

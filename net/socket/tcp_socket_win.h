@@ -38,6 +38,10 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
       NetLog* net_log,
       const NetLogSource& source);
+
+  TCPSocketWin(const TCPSocketWin&) = delete;
+  TCPSocketWin& operator=(const TCPSocketWin&) = delete;
+
   ~TCPSocketWin() override;
 
   int Open(AddressFamily family);
@@ -199,8 +203,6 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
   NetLogWithSource net_log_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TCPSocketWin);
 };
 
 }  // namespace net

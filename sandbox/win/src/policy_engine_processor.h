@@ -114,6 +114,9 @@ class PolicyProcessor {
     SetInternalState(0, EVAL_FALSE);
   }
 
+  PolicyProcessor(const PolicyProcessor&) = delete;
+  PolicyProcessor& operator=(const PolicyProcessor&) = delete;
+
   // Evaluates a policy-opcode stream. See the comments at the top of this
   // class for more info. Returns POLICY_MATCH if a rule set was found that
   // matches an active policy.
@@ -135,7 +138,6 @@ class PolicyProcessor {
   void SetInternalState(size_t index, EvalResult result);
 
   PolicyBuffer* policy_;
-  DISALLOW_COPY_AND_ASSIGN(PolicyProcessor);
 };
 
 }  // namespace sandbox

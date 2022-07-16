@@ -26,6 +26,10 @@ class MockBluetoothGattService : public BluetoothRemoteGattService {
                            const std::string& identifier,
                            const BluetoothUUID& uuid,
                            bool is_primary);
+
+  MockBluetoothGattService(const MockBluetoothGattService&) = delete;
+  MockBluetoothGattService& operator=(const MockBluetoothGattService&) = delete;
+
   ~MockBluetoothGattService() override;
 
   MOCK_CONST_METHOD0(GetIdentifier, std::string());
@@ -44,9 +48,6 @@ class MockBluetoothGattService : public BluetoothRemoteGattService {
 
   void AddMockCharacteristic(
       std::unique_ptr<MockBluetoothGattCharacteristic> mock_characteristic);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockBluetoothGattService);
 };
 
 }  // namespace device

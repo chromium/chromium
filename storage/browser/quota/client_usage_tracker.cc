@@ -256,10 +256,10 @@ void ClientUsageTracker::DidGetStorageKeysForGlobalUsage(
 
   for (const auto& host_and_storage_keys : storage_keys_by_host) {
     const std::string& host = host_and_storage_keys.first;
-    const std::vector<blink::StorageKey>& storage_keys =
+    const std::vector<blink::StorageKey>& storage_keys_for_host =
         host_and_storage_keys.second;
     if (host_usage_accumulators_.Add(host, accumulator))
-      GetUsageForStorageKeys(host, storage_keys);
+      GetUsageForStorageKeys(host, storage_keys_for_host);
   }
 
   // Fire the sentinel as we've now called GetUsageForStorageKeys for all

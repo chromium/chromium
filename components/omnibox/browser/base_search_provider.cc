@@ -226,7 +226,8 @@ bool BaseSearchProvider::IsNTPPage(
          (classification == OEP::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS) ||
          (classification == OEP::NTP_REALBOX) ||
          (classification == OEP::START_SURFACE_HOMEPAGE) ||
-         (classification == OEP::START_SURFACE_NEW_TAB);
+         (classification == OEP::START_SURFACE_NEW_TAB) ||
+         (classification == OEP::ANDROID_SHORTCUTS_WIDGET);
 }
 
 // static
@@ -475,7 +476,7 @@ void BaseSearchProvider::SetDeletionURL(const std::string& deletion_url,
   GURL url =
       template_url_service->GetDefaultSearchProvider()->GenerateSearchURL(
           template_url_service->search_terms_data());
-  url = url.GetOrigin().Resolve(deletion_url);
+  url = url.DeprecatedGetOriginAsURL().Resolve(deletion_url);
   if (url.is_valid()) {
     match->RecordAdditionalInfo(BaseSearchProvider::kDeletionUrlKey,
                                 url.spec());

@@ -26,6 +26,15 @@
     ctx.font = 'small-caps italic 400 12px/2 Unknown Font, sans-serif';
     @assert ctx.font === 'italic small-caps 12px "Unknown Font", sans-serif'; @moz-todo
 
+- name: 2d.text.font.parse.family
+  testing:
+  - 2d.text.font.parse
+  - 2d.text.font.get
+  - 2d.text.font.lineheight
+  code: |
+    ctx.font = '20px cursive,fantasy,monospace,sans-serif,serif,UnquotedFont,"QuotedFont\\\\\\","';
+    @assert ctx.font === '20px cursive, fantasy, monospace, sans-serif, serif, UnquotedFont, "QuotedFont\\\\\\","';
+
   # TODO:
   #   2d.text.font.parse.size.absolute
   #     xx-small x-small small medium large x-large xx-large

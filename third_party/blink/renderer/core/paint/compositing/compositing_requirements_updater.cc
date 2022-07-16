@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
@@ -41,7 +42,7 @@ class OverlapMapContainer {
  public:
   void Add(const IntRect& bounds) {
     layer_rects_.push_back(bounds);
-    bounding_box_.Unite(bounds);
+    bounding_box_.Union(bounds);
   }
 
   bool OverlapsLayers(const IntRect& bounds) const {
@@ -59,7 +60,7 @@ class OverlapMapContainer {
 
   void Unite(const OverlapMapContainer& other_container) {
     layer_rects_.AppendVector(other_container.layer_rects_);
-    bounding_box_.Unite(other_container.bounding_box_);
+    bounding_box_.Union(other_container.bounding_box_);
   }
 
  private:
@@ -214,9 +215,7 @@ CompositingRequirementsUpdater::CompositingRequirementsUpdater(
     LayoutView& layout_view)
     : layout_view_(layout_view) {}
 
-void CompositingRequirementsUpdater::Update(
-    PaintLayer* root,
-    CompositingReasonsStats& compositing_reasons_stats) {
+void CompositingRequirementsUpdater::Update(PaintLayer* root) {
   TRACE_EVENT0("blink", "CompositingRequirementsUpdater::updateRecursive");
 
   // Go through the layers in presentation order, so that we can compute which
@@ -231,11 +230,13 @@ void CompositingRequirementsUpdater::Update(
   // of them dynamically, we are requiring a full tree walk. This
   // should be removed as soon as proper overlap testing based on
   // scrolling and animation bounds is implemented (crbug.com/252472).
-  Vector<PaintLayer*> unclipped_descendants;
+  HeapVector<Member<PaintLayer>> unclipped_descendants;
+  ClearCollectionScope<HeapVector<Member<PaintLayer>>> scope(
+      &unclipped_descendants);
   IntRect absolute_descendant_bounding_box;
   UpdateRecursive(nullptr, root, overlap_test_request_map, recursion_data,
                   saw3d_transform, unclipped_descendants,
-                  absolute_descendant_bounding_box, compositing_reasons_stats);
+                  absolute_descendant_bounding_box);
 }
 
 #if DCHECK_IS_ON()
@@ -243,7 +244,7 @@ static void CheckSubtreeHasNoCompositing(PaintLayer* layer) {
   if (layer->GetLayoutObject().ChildPrePaintBlockedByDisplayLock())
     return;
 
-  PaintLayerPaintOrderIterator iterator(*layer, kAllChildren);
+  PaintLayerPaintOrderIterator iterator(layer, kAllChildren);
   while (PaintLayer* cur_layer = iterator.Next()) {
     DCHECK(cur_layer->GetCompositingState() == kNotComposited);
     DCHECK(!cur_layer->DirectCompositingReasons() ||
@@ -259,9 +260,8 @@ void CompositingRequirementsUpdater::UpdateRecursive(
     OverlapMap& overlap_map,
     RecursionData& current_recursion_data,
     bool& descendant_has3d_transform,
-    Vector<PaintLayer*>& unclipped_descendants,
-    IntRect& absolute_descendant_bounding_box,
-    CompositingReasonsStats& compositing_reasons_stats) {
+    HeapVector<Member<PaintLayer>>& unclipped_descendants,
+    IntRect& absolute_descendant_bounding_box) {
   PaintLayerCompositor* compositor = layout_view_.Compositor();
 
   CompositingReasons reasons_to_composite = CompositingReason::kNone;
@@ -402,7 +402,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   }
 
 #if DCHECK_IS_ON()
-  PaintLayerListMutationDetector mutation_checker(*layer);
+  PaintLayerListMutationDetector mutation_checker(layer);
 #endif
 
   bool any_descendant_has3d_transform = false;
@@ -437,14 +437,13 @@ void CompositingRequirementsUpdater::UpdateRecursive(
       recursion_blocked_by_display_lock || skip_children_ignoring_display_lock;
 
   if (!skip_children) {
-    PaintLayerPaintOrderIterator iterator(*layer, kNegativeZOrderChildren);
+    PaintLayerPaintOrderIterator iterator(layer, kNegativeZOrderChildren);
     while (PaintLayer* child_layer = iterator.Next()) {
       IntRect absolute_child_descendant_bounding_box;
       UpdateRecursive(layer, child_layer, overlap_map, child_recursion_data,
                       any_descendant_has3d_transform, unclipped_descendants,
-                      absolute_child_descendant_bounding_box,
-                      compositing_reasons_stats);
-      absolute_descendant_bounding_box.Unite(
+                      absolute_child_descendant_bounding_box);
+      absolute_descendant_bounding_box.Union(
           absolute_child_descendant_bounding_box);
 
       // If we have to make a layer for this child, make one now so we can have
@@ -487,15 +486,14 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   }
 
   if (!skip_children) {
-    PaintLayerPaintOrderIterator iterator(*layer,
+    PaintLayerPaintOrderIterator iterator(layer,
                                           kNormalFlowAndPositiveZOrderChildren);
     while (PaintLayer* child_layer = iterator.Next()) {
       IntRect absolute_child_descendant_bounding_box;
       UpdateRecursive(layer, child_layer, overlap_map, child_recursion_data,
                       any_descendant_has3d_transform, unclipped_descendants,
-                      absolute_child_descendant_bounding_box,
-                      compositing_reasons_stats);
-      absolute_descendant_bounding_box.Unite(
+                      absolute_child_descendant_bounding_box);
+      absolute_descendant_bounding_box.Union(
           absolute_child_descendant_bounding_box);
     }
   }
@@ -632,16 +630,6 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   }
 
   layer->ClearNeedsCompositingRequirementsUpdate();
-  if (reasons_to_composite & CompositingReason::kOverlap)
-    compositing_reasons_stats.overlap_layers++;
-  if (reasons_to_composite & CompositingReason::kComboActiveAnimation)
-    compositing_reasons_stats.active_animation_layers++;
-  if (reasons_to_composite & CompositingReason::kAssumedOverlap)
-    compositing_reasons_stats.assumed_overlap_layers++;
-  if (!(reasons_to_composite & CompositingReason::kComboAllDirectReasons))
-    compositing_reasons_stats.indirect_composited_layers++;
-  if (reasons_to_composite != CompositingReason::kNone)
-    compositing_reasons_stats.total_composited_layers++;
 }
 
 }  // namespace blink

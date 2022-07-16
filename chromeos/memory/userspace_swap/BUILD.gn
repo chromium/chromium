@@ -30,11 +30,11 @@ component("userspace_swap") {
   deps = [
     ":mojom",
     "//base",
-    "//base/util/memory_pressure",
     "//chromeos:chromeos_export",
     "//chromeos/dbus",
     "//chromeos/dbus/constants",
     "//chromeos/memory",
+    "//components/memory_pressure",
     "//crypto",
     "//crypto:platform",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",

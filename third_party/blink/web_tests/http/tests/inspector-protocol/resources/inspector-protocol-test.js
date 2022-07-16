@@ -15,11 +15,31 @@ var TestRunner = class {
   }
 
   static get stabilizeNames() {
-    return ['id', 'nodeId', 'objectId', 'scriptId', 'timestamp',
-        'backendNodeId', 'parentId', 'frameId', 'loaderId', 'baseURL',
-        'documentURL', 'styleSheetId', 'executionContextId', 'openerId',
-        'targetId', 'browserContextId', 'sessionId', 'receivedBytes',
-        'ownerNode', 'guid', 'requestId', 'openerFrameId'];
+    return [
+      'id',
+      'nodeId',
+      'objectId',
+      'scriptId',
+      'timestamp',
+      'backendNodeId',
+      'parentId',
+      'frameId',
+      'loaderId',
+      'baseURL',
+      'documentURL',
+      'styleSheetId',
+      'executionContextId',
+      'openerId',
+      'targetId',
+      'browserContextId',
+      'sessionId',
+      'receivedBytes',
+      'ownerNode',
+      'guid',
+      'requestId',
+      'openerFrameId',
+      'issueId',
+    ];
   }
 
   startDumpingProtocolMessages() {
@@ -274,6 +294,10 @@ TestRunner.Page = class {
   constructor(testRunner, targetId) {
     this._testRunner = testRunner;
     this._targetId = targetId;
+  }
+
+  targetId() {
+    return this._targetId;
   }
 
   async createSession() {

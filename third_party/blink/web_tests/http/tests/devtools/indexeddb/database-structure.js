@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that database names are correctly loaded and saved in IndexedDBModel.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
@@ -16,7 +16,7 @@
 
   function dumpDatabase() {
     TestRunner.addResult('Dumping database:');
-    const database = indexedDBModel._databases.get(databaseId);
+    const database = indexedDBModel.databasesInternal.get(databaseId);
     if (!database)
       return;
     TestRunner.addResult(database.databaseId.name);
@@ -43,14 +43,14 @@
     TestRunner.addResult('');
   }
 
-  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', step2, false);
+  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', step2, false);
 
   function step2() {
     ApplicationTestRunner.createDatabase(mainFrameId, databaseName, step3);
   }
 
   function step3() {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', step4, false);
+    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', step4, false);
     indexedDBModel.refreshDatabaseNames();
   }
 

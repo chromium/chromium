@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -30,6 +29,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -39,10 +39,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/switches.h"
-#include "net/http/http_status_code.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -57,44 +55,45 @@ namespace {
 // Parameters for the several extensions and apps that are used by the tests in
 // this file (note that the paths are given relative to the src/chrome/test/data
 // directory):
-// * The manual testing app which is whitelisted for running in the sign-in
+// * The manual testing app which is allowlisted for running in the sign-in
 //   profile:
-const char kWhitelistedAppId[] = "bjaiihebfngildkcjkjckolinodhliff";
-const char kWhitelistedAppCrxPath[] =
+const char kAllowlistedAppId[] = "bjaiihebfngildkcjkjckolinodhliff";
+const char kAllowlistedAppCrxPath[] =
     "extensions/signin_screen_manual_test_app/app_signed_by_webstore.crx";
-// * A trivial test app which is NOT whitelisted for running in the sign-in
+// * A trivial test app which is NOT allowlisted for running in the sign-in
 //   profile:
-const char kNotWhitelistedAppId[] = "mockapnacjbcdncmpkjngjalkhphojek";
-const char kNotWhitelistedAppPath[] = "extensions/trivial_platform_app/app/";
-const char kNotWhitelistedAppPemPath[] =
+const char kNotAllowlistedAppId[] = "mockapnacjbcdncmpkjngjalkhphojek";
+const char kNotAllowlistedAppPath[] = "extensions/trivial_platform_app/app/";
+const char kNotAllowlistedAppPemPath[] =
     "extensions/trivial_platform_app/app.pem";
-// * A trivial test extension which is whitelisted for running in the sign-in
+// * A trivial test extension which is allowlisted for running in the sign-in
 //   profile:
-const char kWhitelistedExtensionId[] = "ngjobkbdodapjbbncmagbccommkggmnj";
-const char kWhitelistedExtensionCrxPath[] =
+const char kAllowlistedExtensionId[] = "ngjobkbdodapjbbncmagbccommkggmnj";
+const char kAllowlistedExtensionCrxPath[] =
     "extensions/signin_screen_manual_test_extension/"
     "extension_signed_by_webstore.crx";
-// * A trivial test extension which is NOT whitelisted for running in the
+// * A trivial test extension which is NOT allowlisted for running in the
 //   sign-in profile:
-const char kNotWhitelistedExtensionId[] = "mockepjebcnmhmhcahfddgfcdgkdifnc";
-const char kNotWhitelistedExtensionPath[] =
+const char kNotAllowlistedExtensionId[] = "mockepjebcnmhmhcahfddgfcdgkdifnc";
+const char kNotAllowlistedExtensionPath[] =
     "extensions/trivial_extension/extension/";
-const char kNotWhitelistedExtensionPemPath[] =
+const char kNotAllowlistedExtensionPemPath[] =
     "extensions/trivial_extension/extension.pem";
-// * An extension which is NOT whitelisted for running in the sign-in profile
+// * An extension which is NOT allowlisted for running in the sign-in profile
 //   and that suppresses its immediate auto updates:
 const char kNoImmediateUpdateExtensionId[] = "noidlplbgmdmbccnafgibfgokggdpncj";
-const char kNoImmediateUpdateExtensionUpdateManifestPathFormat[] =
-    "/extensions/no_immediate_update_extension/crx/%s/update_manifest.xml";
+const char kNoImmediateUpdateExtensionPathTemplate[] =
+    "extensions/no_immediate_update_extension/src-%s";
+const char kNoImmediateUpdateExtensionPemPath[] =
+    "extensions/no_immediate_update_extension/key.pem";
 const char kNoImmediateUpdateExtensionLatestVersion[] = "2.0";
 const char kNoImmediateUpdateExtensionOlderVersion[] = "1.0";
 
-// Returns the update manifest path for the no_immediate_update_extension with
-// the given version.
-std::string GetNoImmediateUpdateExtensionUpdateManifestPath(
-    const std::string& version) {
-  return base::StringPrintf(kNoImmediateUpdateExtensionUpdateManifestPathFormat,
-                            version.c_str());
+// Returns the path to the no_immediate_update_extension with the given version.
+base::FilePath GetNoImmediateUpdateExtensionPath(const std::string& version) {
+  return base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+      .AppendASCII(base::StringPrintf(kNoImmediateUpdateExtensionPathTemplate,
+                                      version.c_str()));
 }
 
 // Observer that allows waiting for an installation failure of a specific
@@ -113,6 +112,10 @@ class ExtensionInstallErrorObserver final {
                 &ExtensionInstallErrorObserver::IsNotificationRelevant,
                 base::Unretained(this))) {}
 
+  ExtensionInstallErrorObserver(const ExtensionInstallErrorObserver&) = delete;
+  ExtensionInstallErrorObserver& operator=(
+      const ExtensionInstallErrorObserver&) = delete;
+
   void Wait() { notification_observer_.Wait(); }
 
  private:
@@ -130,8 +133,6 @@ class ExtensionInstallErrorObserver final {
   const Profile* const profile_;
   const std::string extension_id_;
   content::WindowedNotificationObserver notification_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallErrorObserver);
 };
 
 // Observer that allows waiting until the specified version of the given
@@ -187,6 +188,12 @@ class ExtensionUpdateAvailabilityObserver final
 // Class for testing sign-in profile apps/extensions.
 class SigninProfileExtensionsPolicyTest
     : public SigninProfileExtensionsPolicyTestBase {
+ public:
+  SigninProfileExtensionsPolicyTest(const SigninProfileExtensionsPolicyTest&) =
+      delete;
+  SigninProfileExtensionsPolicyTest& operator=(
+      const SigninProfileExtensionsPolicyTest&) = delete;
+
  protected:
   SigninProfileExtensionsPolicyTest()
       : SigninProfileExtensionsPolicyTestBase(version_info::Channel::STABLE) {}
@@ -199,77 +206,74 @@ class SigninProfileExtensionsPolicyTest
   }
 
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SigninProfileExtensionsPolicyTest);
 };
 
 }  // namespace
 
-// Tests that a whitelisted app gets installed.
+// Tests that a allowlisted app gets installed.
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest,
-                       WhitelistedAppInstallation) {
+                       AllowlistedAppInstallation) {
   EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromCrx(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kWhitelistedAppCrxPath),
+          .AppendASCII(kAllowlistedAppCrxPath),
       ExtensionForceInstallMixin::WaitMode::kLoad));
   const extensions::Extension* extension =
-      extension_force_install_mixin_.GetEnabledExtension(kWhitelistedAppId);
+      extension_force_install_mixin_.GetEnabledExtension(kAllowlistedAppId);
   ASSERT_TRUE(extension);
   EXPECT_TRUE(extension->is_platform_app());
 }
 
-// Tests that a non-whitelisted app is forbidden from installation.
+// Tests that a non-allowlisted app is forbidden from installation.
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest,
-                       NotWhitelistedAppInstallation) {
+                       NotAllowlistedAppInstallation) {
   Profile* profile = GetInitialProfile();
 
   ExtensionInstallErrorObserver install_error_observer(profile,
-                                                       kNotWhitelistedAppId);
+                                                       kNotAllowlistedAppId);
   EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromSourceDir(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kNotWhitelistedAppPath),
+          .AppendASCII(kNotAllowlistedAppPath),
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kNotWhitelistedAppPemPath),
+          .AppendASCII(kNotAllowlistedAppPemPath),
       ExtensionForceInstallMixin::WaitMode::kNone));
   install_error_observer.Wait();
   EXPECT_FALSE(extension_force_install_mixin_.GetInstalledExtension(
-      kNotWhitelistedAppId));
+      kNotAllowlistedAppId));
 }
 
-// Tests that a whitelisted extension is installed. Force-installed extensions
+// Tests that a allowlisted extension is installed. Force-installed extensions
 // on the sign-in screen should also automatically have the
 // |login_screen_extension| type.
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest,
-                       WhitelistedExtensionInstallation) {
+                       AllowlistedExtensionInstallation) {
   EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromCrx(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kWhitelistedExtensionCrxPath),
+          .AppendASCII(kAllowlistedExtensionCrxPath),
       ExtensionForceInstallMixin::WaitMode::kLoad));
 
   const extensions::Extension* extension =
       extension_force_install_mixin_.GetEnabledExtension(
-          kWhitelistedExtensionId);
+          kAllowlistedExtensionId);
   ASSERT_TRUE(extension);
   EXPECT_TRUE(extension->is_login_screen_extension());
 }
 
-// Tests that a non-whitelisted extension is forbidden from installation.
+// Tests that a non-allowlisted extension is forbidden from installation.
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest,
-                       NotWhitelistedExtensionInstallation) {
+                       NotAllowlistedExtensionInstallation) {
   Profile* profile = GetInitialProfile();
 
   ExtensionInstallErrorObserver install_error_observer(
-      profile, kNotWhitelistedExtensionId);
+      profile, kNotAllowlistedExtensionId);
   EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromSourceDir(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kNotWhitelistedExtensionPath),
+          .AppendASCII(kNotAllowlistedExtensionPath),
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kNotWhitelistedExtensionPemPath),
+          .AppendASCII(kNotAllowlistedExtensionPemPath),
       ExtensionForceInstallMixin::WaitMode::kNone));
   install_error_observer.Wait();
   EXPECT_FALSE(extension_force_install_mixin_.GetInstalledExtension(
-      kNotWhitelistedExtensionId));
+      kNotAllowlistedExtensionId));
 }
 
 // Tests that the extension system enables non-standard extensions in the
@@ -285,10 +289,8 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest, ExtensionsEnabled) {
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest, BackgroundPage) {
   EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromCrx(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kWhitelistedAppCrxPath),
-      ExtensionForceInstallMixin::WaitMode::kBackgroundPageReady));
-  EXPECT_TRUE(extension_force_install_mixin_.IsExtensionBackgroundPageReady(
-      kWhitelistedAppId));
+          .AppendASCII(kAllowlistedAppCrxPath),
+      ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad));
 }
 
 // Tests installation of multiple sign-in profile apps/extensions.
@@ -296,17 +298,17 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest,
                        MultipleAppsOrExtensions) {
   EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromCrx(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kWhitelistedAppCrxPath),
+          .AppendASCII(kAllowlistedAppCrxPath),
       ExtensionForceInstallMixin::WaitMode::kLoad));
   EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromCrx(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kWhitelistedExtensionCrxPath),
+          .AppendASCII(kAllowlistedExtensionCrxPath),
       ExtensionForceInstallMixin::WaitMode::kLoad));
 
   EXPECT_TRUE(
-      extension_force_install_mixin_.GetEnabledExtension(kWhitelistedAppId));
+      extension_force_install_mixin_.GetEnabledExtension(kAllowlistedAppId));
   EXPECT_TRUE(extension_force_install_mixin_.GetEnabledExtension(
-      kWhitelistedExtensionId));
+      kAllowlistedExtensionId));
 }
 
 // Tests that a sign-in profile app or a sign-in profile extension has isolated
@@ -317,19 +319,19 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest,
 
   EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromCrx(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kWhitelistedAppCrxPath),
-      ExtensionForceInstallMixin::WaitMode::kBackgroundPageReady));
+          .AppendASCII(kAllowlistedAppCrxPath),
+      ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad));
   EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromCrx(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kWhitelistedExtensionCrxPath),
-      ExtensionForceInstallMixin::WaitMode::kBackgroundPageReady));
+          .AppendASCII(kAllowlistedExtensionCrxPath),
+      ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad));
 
   content::StoragePartition* storage_partition_for_app =
       extensions::util::GetStoragePartitionForExtensionId(
-          kWhitelistedAppId, profile, /*can_create=*/false);
+          kAllowlistedAppId, profile, /*can_create=*/false);
   content::StoragePartition* storage_partition_for_extension =
       extensions::util::GetStoragePartitionForExtensionId(
-          kWhitelistedExtensionId, profile, /*can_create=*/false);
+          kAllowlistedExtensionId, profile, /*can_create=*/false);
   content::StoragePartition* default_storage_partition =
       profile->GetDefaultStoragePartition();
 
@@ -347,25 +349,29 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest,
 class SigninProfileExtensionsPolicyOfflineLaunchTest
     : public SigninProfileExtensionsPolicyTest {
  protected:
+  SigninProfileExtensionsPolicyOfflineLaunchTest() {
+    // In the non-PRE test, this simulates inability to make network requests
+    // for fetching the extension update manifest and CRX files. In the PRE test
+    // the server is not hung, allowing the initial installation of the
+    // extension.
+    if (!content::IsPreTest()) {
+      extension_force_install_mixin_.SetServerErrorMode(
+          ExtensionForceInstallMixin::ServerErrorMode::kHung);
+    }
+  }
+
   void SetUpOnMainThread() override {
     SigninProfileExtensionsPolicyTest::SetUpOnMainThread();
 
     test_extension_registry_observer_ =
         std::make_unique<extensions::TestExtensionRegistryObserver>(
             extensions::ExtensionRegistry::Get(GetInitialProfile()),
-            kWhitelistedAppId);
+            kAllowlistedAppId);
 
     EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromCrx(
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-            .AppendASCII(kWhitelistedAppCrxPath),
+            .AppendASCII(kAllowlistedAppCrxPath),
         ExtensionForceInstallMixin::WaitMode::kNone));
-
-    // In the non-PRE test, this simulates inability to make network requests
-    // for fetching the extension update manifest and CRX files. In the PRE test
-    // the server is not shut down, in order to allow the initial installation
-    // of the extension.
-    if (!content::IsPreTest())
-      EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   }
 
   void TearDownOnMainThread() override {
@@ -383,14 +389,14 @@ class SigninProfileExtensionsPolicyOfflineLaunchTest
       test_extension_registry_observer_;
 };
 
-// This is the preparation step for the actual test. Here the whitelisted app
+// This is the preparation step for the actual test. Here the allowlisted app
 // gets installed into the sign-in profile.
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyOfflineLaunchTest,
                        PRE_Test) {
   WaitForTestExtensionLoaded();
 }
 
-// Tests that the whitelisted app gets launched using the cached version even
+// Tests that the allowlisted app gets launched using the cached version even
 // when there's no network connection (i.e., neither the extension update
 // manifest nor the CRX file can be fetched during this browser execution).
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyOfflineLaunchTest, Test) {
@@ -407,11 +413,11 @@ class SigninProfileExtensionsPolicyCorruptCacheTest
     test_extension_registry_observer_ =
         std::make_unique<extensions::TestExtensionRegistryObserver>(
             extensions::ExtensionRegistry::Get(GetInitialProfile()),
-            kWhitelistedAppId);
+            kAllowlistedAppId);
 
     EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromCrx(
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-            .AppendASCII(kWhitelistedAppCrxPath),
+            .AppendASCII(kAllowlistedAppCrxPath),
         ExtensionForceInstallMixin::WaitMode::kNone, &installed_extension_id_,
         &installed_extension_version_));
   }
@@ -426,7 +432,7 @@ class SigninProfileExtensionsPolicyCorruptCacheTest
     test_extension_registry_observer_->WaitForExtensionLoaded();
   }
 
-  const base::FilePath GetCachedCrxFilePath() {
+  base::FilePath GetCachedCrxFilePath() const {
     const base::FilePath cache_file_path =
         base::PathService::CheckedGet(chromeos::DIR_SIGNIN_PROFILE_EXTENSIONS);
     const std::string file_name =
@@ -472,9 +478,13 @@ class SigninProfileExtensionsAutoUpdatePolicyTest
     : public SigninProfileExtensionsPolicyTest {
  public:
   SigninProfileExtensionsAutoUpdatePolicyTest() {
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &SigninProfileExtensionsAutoUpdatePolicyTest::HandleTestServerRequest,
-        base::Unretained(this)));
+    // Initially block the server that hosts the extension. This is to let the
+    // test bodies simulate the offline scenario or to let them make the updated
+    // manifest seen by the extension system quickly (background: once it
+    // fetches a manifest for the first time, the next check will happen after a
+    // very long delay, which would make the test time out).
+    extension_force_install_mixin_.SetServerErrorMode(
+        ExtensionForceInstallMixin::ServerErrorMode::kInternalError);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -498,20 +508,20 @@ class SigninProfileExtensionsAutoUpdatePolicyTest
             GetInitialProfile(), kNoImmediateUpdateExtensionId,
             base::Version(kNoImmediateUpdateExtensionLatestVersion));
 
-    AddExtensionForForceInstallation(kNoImmediateUpdateExtensionId,
-                                     kRedirectingUpdateManifestPath);
+    const std::string version = content::IsPreTest()
+                                    ? kNoImmediateUpdateExtensionOlderVersion
+                                    : kNoImmediateUpdateExtensionLatestVersion;
+    EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromSourceDir(
+        GetNoImmediateUpdateExtensionPath(version),
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+            .AppendASCII(kNoImmediateUpdateExtensionPemPath),
+        ExtensionForceInstallMixin::WaitMode::kNone));
   }
 
   void TearDownOnMainThread() override {
     test_extension_latest_version_update_available_observer_.reset();
     test_extension_registry_observer_.reset();
     SigninProfileExtensionsPolicyTest::TearDownOnMainThread();
-  }
-
-  // Enables serving the test extension's update manifest at the specified
-  // version.
-  void StartServingTestExtension(const std::string& extension_version) {
-    served_extension_version_ = extension_version;
   }
 
   void WaitForTestExtensionLoaded() {
@@ -522,51 +532,16 @@ class SigninProfileExtensionsAutoUpdatePolicyTest
     test_extension_latest_version_update_available_observer_->Wait();
   }
 
-  base::Version GetTestExtensionVersion() {
+  base::Version GetTestExtensionVersion() const {
     const extensions::Extension* const extension =
-        extensions::ExtensionRegistry::Get(GetInitialProfile())
-            ->enabled_extensions()
-            .GetByID(kNoImmediateUpdateExtensionId);
+        extension_force_install_mixin_.GetEnabledExtension(
+            kNoImmediateUpdateExtensionId);
     if (!extension)
       return base::Version();
     return extension->version();
   }
 
  private:
-  // Path on the embedded test server that redirects to the update manifest of
-  // the test extension for the version that is currently served.
-  const std::string kRedirectingUpdateManifestPath =
-      "/redirecting-update-manifest-path.xml";
-
-  // Handler for the embedded test server. Provides special behavior for the
-  // test extension's update manifest URL in accordance to
-  // |served_extension_version_|.
-  std::unique_ptr<net::test_server::HttpResponse> HandleTestServerRequest(
-      const net::test_server::HttpRequest& request) {
-    if (request.GetURL().path() != kRedirectingUpdateManifestPath)
-      return nullptr;
-    if (served_extension_version_.empty()) {
-      // No extension is served now, so return an error.
-      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-      response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
-      return response;
-    }
-    // Redirect to the XML file for the corresponding version.
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->set_code(net::HTTP_TEMPORARY_REDIRECT);
-    response->AddCustomHeader(
-        "Location",
-        embedded_test_server()
-            ->GetURL(GetNoImmediateUpdateExtensionUpdateManifestPath(
-                served_extension_version_))
-            .spec());
-    return response;
-  }
-
-  // Specifies which version of the test extension needs to be served. An empty
-  // string means that no version is served.
-  std::string served_extension_version_;
-
   std::unique_ptr<extensions::TestExtensionRegistryObserver>
       test_extension_registry_observer_;
   std::unique_ptr<ExtensionUpdateAvailabilityObserver>
@@ -574,17 +549,20 @@ class SigninProfileExtensionsAutoUpdatePolicyTest
 };
 
 // This is the first preparation step for the actual test. Here the old version
-// of the app is served, and it gets installed into the sign-in profile.
+// of the extension is served, and it gets installed into the sign-in profile.
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsAutoUpdatePolicyTest,
                        PRE_PRE_Test) {
-  StartServingTestExtension(kNoImmediateUpdateExtensionOlderVersion);
+  // Unblock the server hosting the extension immediately.
+  extension_force_install_mixin_.SetServerErrorMode(
+      ExtensionForceInstallMixin::ServerErrorMode::kNone);
+
   WaitForTestExtensionLoaded();
   EXPECT_EQ(GetTestExtensionVersion(),
             base::Version(kNoImmediateUpdateExtensionOlderVersion));
 }
 
 // This is the second preparation step for the actual test. Here the new version
-// of the app is served, and it gets fetched and cached.
+// of the extension is served, and it gets fetched and cached.
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsAutoUpdatePolicyTest, PRE_Test) {
   // Let the extensions system load the previously fetched version before
   // starting to serve the newer version, to avoid hitting flaky DCHECKs in the
@@ -597,7 +575,13 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsAutoUpdatePolicyTest, PRE_Test) {
   // fetch this version due to the retry mechanism when the fetch request to the
   // update servers was failing. We verify that the new version eventually gets
   // fetched and becomes available for an update.
-  StartServingTestExtension(kNoImmediateUpdateExtensionLatestVersion);
+  EXPECT_TRUE(extension_force_install_mixin_.UpdateFromSourceDir(
+      GetNoImmediateUpdateExtensionPath(
+          kNoImmediateUpdateExtensionLatestVersion),
+      kNoImmediateUpdateExtensionId,
+      ExtensionForceInstallMixin::UpdateWaitMode::kNone));
+  extension_force_install_mixin_.SetServerErrorMode(
+      ExtensionForceInstallMixin::ServerErrorMode::kNone);
   WaitForTestExtensionLatestVersionUpdateAvailable();
 
   // The running extension should stay at the older version, since it ignores
@@ -611,9 +595,10 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsAutoUpdatePolicyTest, PRE_Test) {
             base::Version(kNoImmediateUpdateExtensionOlderVersion));
 }
 
-// This is the actual test. Here we verify that the new version of the app, as
-// fetched in the PRE_Test, gets launched even in the "offline" mode (since
-// we're not serving any version of the extension in this part of the test).
+// This is the actual test. Here we verify that the new version of the
+// extension, as fetched in the PRE_Test, gets launched even in the "offline"
+// mode (since the server hosting the extension stays in the error mode
+// throughout this part).
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsAutoUpdatePolicyTest, Test) {
   WaitForTestExtensionLoaded();
   EXPECT_EQ(GetTestExtensionVersion(),

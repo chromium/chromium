@@ -28,6 +28,11 @@ class FolderUploadConfirmationViewTest : public DialogBrowserTest {
     }
   }
 
+  FolderUploadConfirmationViewTest(const FolderUploadConfirmationViewTest&) =
+      delete;
+  FolderUploadConfirmationViewTest& operator=(
+      const FolderUploadConfirmationViewTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     widget_ = FolderUploadConfirmationView::ShowDialog(
@@ -51,8 +56,6 @@ class FolderUploadConfirmationViewTest : public DialogBrowserTest {
 
   bool callback_called_ = false;
   std::vector<ui::SelectedFileInfo> callback_files_;
-
-  DISALLOW_COPY_AND_ASSIGN(FolderUploadConfirmationViewTest);
 };
 
 IN_PROC_BROWSER_TEST_F(FolderUploadConfirmationViewTest,

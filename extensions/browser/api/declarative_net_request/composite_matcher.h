@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -30,7 +31,15 @@ struct RequestAction;
 class CompositeMatcher {
  public:
   struct ActionInfo {
-    ActionInfo(absl::optional<RequestAction> action, bool notify);
+    // Constructs a no-op ActionInfo object.
+    ActionInfo();
+
+    ActionInfo(absl::optional<RequestAction> action,
+               bool notify_request_withheld);
+
+    ActionInfo(const ActionInfo&) = delete;
+    ActionInfo& operator=(const ActionInfo&) = delete;
+
     ~ActionInfo();
     ActionInfo(ActionInfo&& other);
     ActionInfo& operator=(ActionInfo&& other);
@@ -42,17 +51,23 @@ class CompositeMatcher {
     // be redirected as the extension lacks the appropriate host permission for
     // the request. Can only be true for redirect actions.
     bool notify_request_withheld = false;
-
-    DISALLOW_COPY_AND_ASSIGN(ActionInfo);
   };
 
   using MatcherList = std::vector<std::unique_ptr<RulesetMatcher>>;
 
   // Each RulesetMatcher should have a distinct RulesetID.
-  explicit CompositeMatcher(MatcherList matchers);
+  CompositeMatcher(MatcherList matchers, HostPermissionsAlwaysRequired mode);
+
+  CompositeMatcher(const CompositeMatcher&) = delete;
+  CompositeMatcher& operator=(const CompositeMatcher&) = delete;
+
   ~CompositeMatcher();
 
   const MatcherList& matchers() const { return matchers_; }
+
+  HostPermissionsAlwaysRequired host_permissions_always_required() const {
+    return host_permissions_always_required_;
+  }
 
   // Returns a pointer to RulesetMatcher with the given |id| if one is present.
   const RulesetMatcher* GetMatcherWithID(RulesetID id) const;
@@ -103,7 +118,7 @@ class CompositeMatcher {
   // be taken to reset this as this object is modified.
   mutable absl::optional<bool> has_any_extra_headers_matcher_;
 
-  DISALLOW_COPY_AND_ASSIGN(CompositeMatcher);
+  const HostPermissionsAlwaysRequired host_permissions_always_required_;
 };
 
 }  // namespace declarative_net_request

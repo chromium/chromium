@@ -36,8 +36,8 @@ SPLIT_COMPAT_UTILS_IMPL_NAME_RE = re.compile(
 COMMENT_RE = re.compile(r'^\s*(//|/\*|\*)')
 
 BROWSER_ROOT = 'chrome/android/java/src/org/chromium/chrome/browser/'
-SIGNIN_UI_BROWSER_ROOT = 'chrome/browser/signin/ui/android'
-'/java/src/org/chromium/chrome/browser/signin/ui/'
+SIGNIN_UI_BROWSER_ROOT = 'chrome/browser/ui/android/signin'
+'/java/src/org/chromium/chrome/browser/ui/signin'
 
 
 def CheckChangeOnUpload(input_api, output_api):

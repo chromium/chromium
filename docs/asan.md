@@ -265,6 +265,28 @@ ninja -C out_asan_chroot/Release chrome
 
 **Note**: `disable_nacl=1` is needed for now.
 
+## Running on Chrome OS
+
+For the linux-chromeos "emulator" build, run Asan following the instructions
+above, just like you would for Linux.
+
+For Chromebook hardware, add `is_asan = true` to your args.gn and build.
+`deploy_chrome` with `--mount` and `--nostrip`. ASan logs can be found in
+`/var/log/asan/`.
+
+To catch crashes in gdb:
+
+-   Edit `/etc/chrome_dev.conf` and add `ASAN_OPTIONS=abort_on_error=1`
+-   `restart ui`
+-   gdb -p 12345  # Find the pid from /var/log/chrome/chrome
+
+When you trigger the crash, you'll get a SIGABRT in gdb. `bt` will show the
+stack.
+
+See
+[Chrome OS stack traces](https://chromium.googlesource.com/chromiumos/docs/+/main/stack_traces.md)
+for more details.
+
 ## AsanCoverage
 
 AsanCoverage is a minimalistic code coverage implementation built into ASan. For

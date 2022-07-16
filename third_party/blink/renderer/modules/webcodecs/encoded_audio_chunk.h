@@ -7,8 +7,8 @@
 
 #include "media/base/decoder_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -29,7 +29,8 @@ class MODULES_EXPORT EncodedAudioChunk final : public ScriptWrappable {
   String type() const;
   int64_t timestamp() const;
   uint64_t byteLength() const;
-  void copyTo(const V8BufferSource* destination,
+  absl::optional<uint64_t> duration() const;
+  void copyTo(const AllowSharedBufferSource* destination,
               ExceptionState& exception_state);
 
   scoped_refptr<media::DecoderBuffer> buffer() const { return buffer_; }

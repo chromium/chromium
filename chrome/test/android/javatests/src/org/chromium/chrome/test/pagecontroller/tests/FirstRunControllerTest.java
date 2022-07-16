@@ -23,10 +23,12 @@ import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiAutomatorTestRule;
 
 /**
- * Test the First Run Experience.
+ * Test the First Run Experience pre-MICe. The MICe FRE flow is covered by the test
+ * {@link FirstRunActivitySigninAndSyncTest}.
  */
 @SmallTest
 @RunWith(BaseJUnit4ClassRunner.class)
+@CommandLineFlags.Add({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
 public class FirstRunControllerTest {
     public ChromeUiAutomatorTestRule mUiAutomatorRule = new ChromeUiAutomatorTestRule();
     public ChromeUiApplicationTestRule mChromeUiRule = new ChromeUiApplicationTestRule();

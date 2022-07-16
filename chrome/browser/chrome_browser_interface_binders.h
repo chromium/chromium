@@ -37,6 +37,12 @@ void PopulateChromeFrameBinders(
 void PopulateChromeWebUIFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map);
 
+// PopulateChromeWebUIFrameInterfaceBrokers registers BrowserInterfaceBrokers
+// for each WebUI, these brokers are used to handle that WebUI's JavaScript
+// Mojo.bindInterface calls.
+void PopulateChromeWebUIFrameInterfaceBrokers(
+    content::WebUIBrowserInterfaceBrokerRegistry& registry);
+
 template <typename Interface, int N, typename... Subclasses>
 struct BinderHelper;
 

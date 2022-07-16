@@ -62,15 +62,20 @@ public class BookmarksTest {
     // A container to store bookmark information for data verification.
     private static class Bookmark {
         public final String id;
+        public final String guid;
         public final String title;
         public final String url;
         public final String parentId;
+        public final String parentGuid;
 
-        private Bookmark(String id, String title, String url, String parentId) {
+        private Bookmark(String id, String guid, String title, String url, String parentId,
+                String parentGuid) {
             this.id = id;
+            this.guid = guid;
             this.title = title;
             this.url = url;
             this.parentId = parentId;
+            this.parentGuid = parentGuid;
         }
 
         public boolean isFolder() {
@@ -124,7 +129,7 @@ public class BookmarksTest {
 
         // Modify on server, sync, and verify the modification locally.
         Bookmark bookmark = getClientBookmarks().get(0);
-        modifyServerBookmark(bookmark.id, MODIFIED_TITLE, URL);
+        modifyServerBookmark(bookmark.id, bookmark.guid, MODIFIED_TITLE, URL);
         SyncTestUtil.triggerSync();
         mSyncTestRule.pollInstrumentationThread(() -> {
             Bookmark modifiedBookmark = getClientBookmarks().get(0);
@@ -182,7 +187,7 @@ public class BookmarksTest {
         // On the server, move the bookmark into the folder then sync, and
         // verify the move locally.
         mSyncTestRule.getFakeServerHelper().modifyBookmarkEntity(
-                bookmark.id, TITLE, URL, folder.id);
+                bookmark.id, bookmark.guid, TITLE, URL, folder.id, folder.guid);
         SyncTestUtil.triggerSync();
         mSyncTestRule.pollInstrumentationThread(() -> {
             List<Bookmark> bookmarks = getClientBookmarks();
@@ -222,7 +227,7 @@ public class BookmarksTest {
         // Modify on server, sync, and verify the modification locally.
         Bookmark folder = getClientBookmarks().get(0);
         Assert.assertTrue(folder.isFolder());
-        modifyServerBookmarkFolder(folder.id, MODIFIED_TITLE);
+        modifyServerBookmarkFolder(folder.id, folder.guid, MODIFIED_TITLE);
         SyncTestUtil.triggerSync();
 
         mSyncTestRule.pollInstrumentationThread(() -> {
@@ -412,24 +417,33 @@ public class BookmarksTest {
         return id;
     }
 
+    private String getBookmarkBarGuid() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return mBookmarkBridge.getBookmarkGuidByIdForTesting(
+                    mBookmarkBridge.getDesktopFolderId());
+        });
+    }
+
     private void addServerBookmark(String title, GURL url) {
-        mSyncTestRule.getFakeServerHelper().injectBookmarkEntity(
-                title, url, mSyncTestRule.getFakeServerHelper().getBookmarkBarFolderId());
+        mSyncTestRule.getFakeServerHelper().injectBookmarkEntity(title, url,
+                mSyncTestRule.getFakeServerHelper().getBookmarkBarFolderId(), getBookmarkBarGuid());
     }
 
     private void addServerBookmarkFolder(String title) {
-        mSyncTestRule.getFakeServerHelper().injectBookmarkFolderEntity(
-                title, mSyncTestRule.getFakeServerHelper().getBookmarkBarFolderId());
+        mSyncTestRule.getFakeServerHelper().injectBookmarkFolderEntity(title,
+                mSyncTestRule.getFakeServerHelper().getBookmarkBarFolderId(), getBookmarkBarGuid());
     }
 
-    private void modifyServerBookmark(String bookmarkId, String title, GURL url) {
-        mSyncTestRule.getFakeServerHelper().modifyBookmarkEntity(bookmarkId, title, url,
-                mSyncTestRule.getFakeServerHelper().getBookmarkBarFolderId());
+    private void modifyServerBookmark(
+            String bookmarkId, String bookmarkGuid, String title, GURL url) {
+        mSyncTestRule.getFakeServerHelper().modifyBookmarkEntity(bookmarkId, bookmarkGuid, title,
+                url, mSyncTestRule.getFakeServerHelper().getBookmarkBarFolderId(),
+                getBookmarkBarGuid());
     }
 
-    private void modifyServerBookmarkFolder(String folderId, String title) {
-        mSyncTestRule.getFakeServerHelper().modifyBookmarkFolderEntity(
-                folderId, title, mSyncTestRule.getFakeServerHelper().getBookmarkBarFolderId());
+    private void modifyServerBookmarkFolder(String folderId, String folderGuid, String title) {
+        mSyncTestRule.getFakeServerHelper().modifyBookmarkFolderEntity(folderId, folderGuid, title,
+                mSyncTestRule.getFakeServerHelper().getBookmarkBarFolderId(), getBookmarkBarGuid());
     }
 
     private void deleteClientBookmark(final BookmarkId id) {
@@ -454,8 +468,9 @@ public class BookmarksTest {
             for (Pair<String, JSONObject> rawBookmark : rawBookmarks) {
                 String id = rawBookmark.first;
                 JSONObject json = rawBookmark.second;
-                bookmarks.add(new Bookmark(id, json.getString("legacy_canonicalized_title"),
-                        json.optString("url", null), json.getString("parent_id")));
+                bookmarks.add(new Bookmark(id, json.getString("guid"),
+                        json.getString("legacy_canonicalized_title"), json.optString("url", null),
+                        json.getString("parent_id"), json.getString("parent_guid")));
             }
             return bookmarks;
         } catch (JSONException ex) {
@@ -474,8 +489,10 @@ public class BookmarksTest {
                 String id = entity.getIdString();
                 String parentId = entity.getParentIdString();
                 BookmarkSpecifics specifics = entity.getSpecifics().getBookmark();
-                bookmarks.add(new Bookmark(id, specifics.getLegacyCanonicalizedTitle(),
-                        entity.getFolder() ? null : specifics.getUrl(), parentId));
+                bookmarks.add(new Bookmark(id, specifics.getGuid(),
+                        specifics.getLegacyCanonicalizedTitle(),
+                        entity.getFolder() ? null : specifics.getUrl(), parentId,
+                        specifics.getParentGuid()));
             }
             return bookmarks;
         } catch (InvalidProtocolBufferException ex) {

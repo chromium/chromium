@@ -30,10 +30,21 @@ enum LogoutStatus {
   kError,
 };
 
-
 enum RequestMode {
   kMediated,
   kPermission,
+};
+
+// The details of a single logout request from an identity provider.
+struct LogoutRequest {
+  // Endpoint to which the request will be sent. The origin is validated to
+  // have an associated active session.
+  url.mojom.Url endpoint;
+
+  // Identifier for the account being logged out. This is used to verify that
+  // the logout request correlates to a previous sign-in event, and will
+  // result in the corresponding active session being terminated.
+  string account_id;
 };
 
 // Create a federated sign-in request using the specified provider.
@@ -48,10 +59,11 @@ interface FederatedAuthRequest {
   RequestIdToken(url.mojom.Url provider,
                  string client_id,
                  string nonce,
-                 RequestMode mode) =>
+                 RequestMode mode,
+                 bool prefer_auto_sign_in) =>
       (RequestIdTokenStatus status, string? id_token);
 
-  // Contact the list of Relying Party logout endpoints to attempt to initiate
-  // user logout.
-  Logout(array<string> rp_logout_endpoints) => (LogoutStatus status);
+  // Contact the list of Relying Party logout endpoints and account IDs to
+  // attempt to initiate user logout.
+  Logout(array<LogoutRequest> rp_logout_requests) => (LogoutStatus status);
 };

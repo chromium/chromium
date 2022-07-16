@@ -9,28 +9,20 @@
 
 #include "base/callback.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-class DictionaryValue;
-}
-
-namespace network {
-class SharedURLLoaderFactory;
-}
+class Value;
+}  // namespace base
 
 namespace content {
 class BackgroundTracingConfig;
-class TraceUploader;
 
 // This can be implemented by the embedder to provide functionality for the
 // about://tracing WebUI.
 class CONTENT_EXPORT TracingDelegate {
  public:
   virtual ~TracingDelegate() {}
-
-  // Provide trace uploading functionality; see trace_uploader.h.
-  virtual std::unique_ptr<TraceUploader> GetTraceUploader(
-      scoped_refptr<network::SharedURLLoaderFactory>) = 0;
 
   // This can be used to veto a particular background tracing scenario.
   virtual bool IsAllowedToBeginBackgroundScenario(
@@ -47,7 +39,7 @@ class CONTENT_EXPORT TracingDelegate {
   virtual bool IsSystemWideTracingEnabled();
 
   // Used to add any additional metadata to traces.
-  virtual std::unique_ptr<base::DictionaryValue> GenerateMetadataDict();
+  virtual absl::optional<base::Value> GenerateMetadataDict();
 };
 
 }  // namespace content

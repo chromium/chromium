@@ -21,7 +21,10 @@
         android:fillViewport="false"
         android:requiresFadingEdge="vertical" >
 
-        <include layout="@layout/incognito_description_layout" />
+        <ViewStub
+            android:id="@+id/incognito_description_layout_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </org.chromium.chrome.browser.ntp.NewTabPageScrollView>
 

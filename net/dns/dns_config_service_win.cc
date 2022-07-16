@@ -19,14 +19,17 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/free_deleter.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
@@ -43,6 +46,9 @@ namespace internal {
 
 namespace {
 
+// Interval between retries to parse config. Used only until parsing succeeds.
+const int kRetryIntervalSeconds = 5;
+
 // Registry key paths.
 const wchar_t kTcpipPath[] =
     L"SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters";
@@ -52,83 +58,11 @@ const wchar_t kDnscachePath[] =
     L"SYSTEM\\CurrentControlSet\\Services\\Dnscache\\Parameters";
 const wchar_t kPolicyPath[] =
     L"SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient";
-const wchar_t kPrimaryDnsSuffixPath[] =
-    L"SOFTWARE\\Policies\\Microsoft\\System\\DNSClient";
-const wchar_t kNrptPath[] =
-    L"SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient\\DnsPolicyConfig";
-const wchar_t kControlSetNrptPath[] =
-    L"SYSTEM\\CurrentControlSet\\Services\\Dnscache\\Parameters\\"
-    L"DnsPolicyConfig";
-const wchar_t kDnsConnectionsPath[] =
-    L"SYSTEM\\CurrentControlSet\\Services\\Dnscache\\Parameters\\"
-    L"DnsConnections";
-const wchar_t kDnsConnectionsProxies[] =
-    L"SYSTEM\\CurrentControlSet\\Services\\Dnscache\\Parameters\\"
-    L"DnsConnectionsProxies";
 
-// Convenience for reading values using RegKey.
-class RegistryReader {
- public:
-  explicit RegistryReader(const wchar_t key[]) {
-    // Ignoring the result. |key_.Valid()| will catch failures.
-    key_.Open(HKEY_LOCAL_MACHINE, key, KEY_QUERY_VALUE);
-  }
-
-  ~RegistryReader() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
-
-  absl::optional<DnsSystemSettings::RegString> ReadString(
-      const wchar_t name[]) const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DnsSystemSettings::RegString reg_string;
-    reg_string.set = false;
-    if (!key_.Valid()) {
-      // Assume that if the |key_| is invalid then the key is missing.
-      return reg_string;
-    }
-    LONG result = key_.ReadValue(name, &reg_string.value);
-    if (result == ERROR_SUCCESS) {
-      reg_string.set = true;
-      return reg_string;
-    }
-
-    if (result == ERROR_FILE_NOT_FOUND)
-      return reg_string;
-
-    return absl::nullopt;
-  }
-
-  absl::optional<DnsSystemSettings::RegDword> ReadDword(
-      const wchar_t name[]) const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DnsSystemSettings::RegDword reg_dword;
-    reg_dword.set = false;
-    if (!key_.Valid()) {
-      // Assume that if the |key_| is invalid then the key is missing.
-      return reg_dword;
-    }
-    LONG result = key_.ReadValueDW(name, &reg_dword.value);
-    if (result == ERROR_SUCCESS) {
-      reg_dword.set = true;
-      return reg_dword;
-    }
-
-    if (result == ERROR_FILE_NOT_FOUND)
-      return reg_dword;
-
-    return absl::nullopt;
-  }
-
- private:
-  base::win::RegKey key_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryReader);
-};
-
-// Wrapper for GetAdaptersAddresses. Returns NULL if failed.
-std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> ReadIpHelper(
-    ULONG flags) {
+// Wrapper for GetAdaptersAddresses to get unicast addresses.
+// Returns nullptr if failed.
+std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter>
+ReadAdapterUnicastAddresses() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -140,107 +74,15 @@ std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> ReadIpHelper(
        tries++) {
     out.reset(static_cast<PIP_ADAPTER_ADDRESSES>(malloc(len)));
     memset(out.get(), 0, len);
-    rv = GetAdaptersAddresses(AF_UNSPEC, flags, nullptr, out.get(), &len);
+    rv = GetAdaptersAddresses(AF_UNSPEC,
+                              GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_DNS_SERVER |
+                              GAA_FLAG_SKIP_MULTICAST |
+                              GAA_FLAG_SKIP_FRIENDLY_NAME,
+                              nullptr, out.get(), &len);
   }
   if (rv != NO_ERROR)
     out.reset();
   return out;
-}
-
-absl::optional<DnsSystemSettings::DevolutionSetting> ReadDevolutionSetting(
-    const RegistryReader& reader) {
-  DnsSystemSettings::DevolutionSetting setting;
-
-  absl::optional<DnsSystemSettings::RegDword> reg_value =
-      reader.ReadDword(L"UseDomainNameDevolution");
-  if (!reg_value)
-    return absl::nullopt;
-  setting.enabled = reg_value.value();
-
-  reg_value = reader.ReadDword(L"DomainNameDevolutionLevel");
-  if (!reg_value)
-    return absl::nullopt;
-  setting.level = reg_value.value();
-
-  return setting;
-}
-
-// Reads DnsSystemSettings from IpHelper and registry.
-absl::optional<DnsSystemSettings> ReadSystemSettings() {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  DnsSystemSettings settings;
-
-  settings.addresses =
-      ReadIpHelper(GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_UNICAST |
-                   GAA_FLAG_SKIP_MULTICAST | GAA_FLAG_SKIP_FRIENDLY_NAME);
-  if (!settings.addresses.get())
-    return absl::nullopt;
-
-  RegistryReader tcpip_reader(kTcpipPath);
-  RegistryReader tcpip6_reader(kTcpip6Path);
-  RegistryReader dnscache_reader(kDnscachePath);
-  RegistryReader policy_reader(kPolicyPath);
-  RegistryReader primary_dns_suffix_reader(kPrimaryDnsSuffixPath);
-
-  absl::optional<DnsSystemSettings::RegString> reg_string =
-      policy_reader.ReadString(L"SearchList");
-  if (!reg_string)
-    return absl::nullopt;
-  settings.policy_search_list = std::move(reg_string).value();
-
-  reg_string = tcpip_reader.ReadString(L"SearchList");
-  if (!reg_string)
-    return absl::nullopt;
-  settings.tcpip_search_list = std::move(reg_string).value();
-
-  reg_string = tcpip_reader.ReadString(L"Domain");
-  if (!reg_string)
-    return absl::nullopt;
-  settings.tcpip_domain = std::move(reg_string).value();
-
-  absl::optional<DnsSystemSettings::DevolutionSetting> devolution_setting =
-      ReadDevolutionSetting(policy_reader);
-  if (!devolution_setting)
-    return absl::nullopt;
-  settings.policy_devolution = devolution_setting.value();
-
-  devolution_setting = ReadDevolutionSetting(dnscache_reader);
-  if (!devolution_setting)
-    return absl::nullopt;
-  settings.dnscache_devolution = devolution_setting.value();
-
-  devolution_setting = ReadDevolutionSetting(tcpip_reader);
-  if (!devolution_setting)
-    return absl::nullopt;
-  settings.tcpip_devolution = devolution_setting.value();
-
-  absl::optional<DnsSystemSettings::RegDword> reg_dword =
-      policy_reader.ReadDword(L"AppendToMultiLabelName");
-  if (!reg_dword)
-    return absl::nullopt;
-  settings.append_to_multi_label_name = reg_dword.value();
-
-  reg_string = primary_dns_suffix_reader.ReadString(L"PrimaryDnsSuffix");
-  if (!reg_string) {
-    return absl::nullopt;
-  }
-  settings.primary_dns_suffix = std::move(reg_string).value();
-
-  base::win::RegistryKeyIterator nrpt_rules(HKEY_LOCAL_MACHINE, kNrptPath);
-  base::win::RegistryKeyIterator cs_nrpt_rules(HKEY_LOCAL_MACHINE,
-                                               kControlSetNrptPath);
-  settings.have_name_resolution_policy =
-      (nrpt_rules.SubkeyCount() > 0 || cs_nrpt_rules.SubkeyCount() > 0);
-
-  base::win::RegistryKeyIterator dns_connections(HKEY_LOCAL_MACHINE,
-                                                 kDnsConnectionsPath);
-  base::win::RegistryKeyIterator dns_connections_proxies(
-      HKEY_LOCAL_MACHINE, kDnsConnectionsProxies);
-  settings.have_proxy = (dns_connections.SubkeyCount() > 0 ||
-                         dns_connections_proxies.SubkeyCount() > 0);
-
-  return settings;
 }
 
 // Default address of "localhost" and local computer name can be overridden
@@ -273,8 +115,7 @@ bool AddLocalhostEntriesTo(DnsHosts& in_out_hosts) {
     return true;
 
   std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> addresses =
-      ReadIpHelper(GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_DNS_SERVER |
-                   GAA_FLAG_SKIP_MULTICAST | GAA_FLAG_SKIP_FRIENDLY_NAME);
+      ReadAdapterUnicastAddresses();
   if (!addresses.get())
     return false;
 
@@ -316,6 +157,9 @@ class RegistryWatcher {
   typedef base::RepeatingCallback<void(bool succeeded)> CallbackType;
   RegistryWatcher() {}
 
+  RegistryWatcher(const RegistryWatcher&) = delete;
+  RegistryWatcher& operator=(const RegistryWatcher&) = delete;
+
   ~RegistryWatcher() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
   bool Watch(const wchar_t key[], const CallbackType& callback) {
@@ -347,20 +191,7 @@ class RegistryWatcher {
   base::win::RegKey key_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryWatcher);
 };
-
-// Returns true iff |address| is DNS address from IPv6 stateless discovery,
-// i.e., matches fec0:0:0:ffff::{1,2,3}.
-// http://tools.ietf.org/html/draft-ietf-ipngwg-dns-discovery
-bool IsStatelessDiscoveryAddress(const IPAddress& address) {
-  if (!address.IsIPv6())
-    return false;
-  const uint8_t kPrefix[] = {0xfe, 0xc0, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff,
-                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-  return IPAddressStartsWith(address, kPrefix) && (address.bytes().back() < 4);
-}
 
 // Returns the path to the HOSTS file.
 base::FilePath GetHostsPath() {
@@ -371,20 +202,20 @@ base::FilePath GetHostsPath() {
       FILE_PATH_LITERAL("drivers\\etc\\hosts"));
 }
 
-void ConfigureSuffixSearch(const DnsSystemSettings& settings,
+void ConfigureSuffixSearch(const WinDnsSystemSettings& settings,
                            DnsConfig& in_out_config) {
   // SearchList takes precedence, so check it first.
-  if (settings.policy_search_list.set) {
+  if (settings.policy_search_list.has_value()) {
     std::vector<std::string> search =
-        ParseSearchList(settings.policy_search_list.value);
+        ParseSearchList(settings.policy_search_list.value());
     if (!search.empty()) {
       in_out_config.search = std::move(search);
       return;
     }
     // Even if invalid, the policy disables the user-specified setting below.
-  } else if (settings.tcpip_search_list.set) {
+  } else if (settings.tcpip_search_list.has_value()) {
     std::vector<std::string> search =
-        ParseSearchList(settings.tcpip_search_list.value);
+        ParseSearchList(settings.tcpip_search_list.value());
     if (!search.empty()) {
       in_out_config.search = std::move(search);
       return;
@@ -403,10 +234,10 @@ void ConfigureSuffixSearch(const DnsSystemSettings& settings,
   // The user setting (tcpip_domain) can be configurred at Computer Name in
   // System Settings
   std::string primary_suffix;
-  if (settings.primary_dns_suffix.set)
-    primary_suffix = ParseDomainASCII(settings.primary_dns_suffix.value);
-  if (primary_suffix.empty() && settings.tcpip_domain.set)
-    primary_suffix = ParseDomainASCII(settings.tcpip_domain.value);
+  if (settings.primary_dns_suffix.has_value())
+    primary_suffix = ParseDomainASCII(settings.primary_dns_suffix.value());
+  if (primary_suffix.empty() && settings.tcpip_domain.has_value())
+    primary_suffix = ParseDomainASCII(settings.tcpip_domain.value());
   if (primary_suffix.empty())
     return;  // No primary suffix, hence no devolution.
   // Primary suffix goes in front.
@@ -415,20 +246,21 @@ void ConfigureSuffixSearch(const DnsSystemSettings& settings,
   // Devolution is determined by precedence: policy > dnscache > tcpip.
   // |enabled|: UseDomainNameDevolution and |level|: DomainNameDevolutionLevel
   // are overridden independently.
-  DnsSystemSettings::DevolutionSetting devolution = settings.policy_devolution;
+  WinDnsSystemSettings::DevolutionSetting devolution =
+      settings.policy_devolution;
 
-  if (!devolution.enabled.set)
+  if (!devolution.enabled.has_value())
     devolution.enabled = settings.dnscache_devolution.enabled;
-  if (!devolution.enabled.set)
+  if (!devolution.enabled.has_value())
     devolution.enabled = settings.tcpip_devolution.enabled;
-  if (devolution.enabled.set && (devolution.enabled.value == 0))
+  if (devolution.enabled.has_value() && (devolution.enabled.value() == 0))
     return;  // Devolution disabled.
 
   // By default devolution is enabled.
 
-  if (!devolution.level.set)
+  if (!devolution.level.has_value())
     devolution.level = settings.dnscache_devolution.level;
-  if (!devolution.level.set)
+  if (!devolution.level.has_value())
     devolution.level = settings.tcpip_devolution.level;
 
   // After the recent update, Windows will try to determine a safe default
@@ -440,7 +272,7 @@ void ConfigureSuffixSearch(const DnsSystemSettings& settings,
   // devolution setting.
   //
   // If the level is explicitly set below 2, devolution is disabled.
-  if (!devolution.level.set || devolution.level.value < 2)
+  if (!devolution.level.has_value() || devolution.level.value() < 2)
     return;  // Devolution disabled.
 
   // Devolve the primary suffix. This naive logic matches the observed
@@ -450,43 +282,13 @@ void ConfigureSuffixSearch(const DnsSystemSettings& settings,
   unsigned num_dots = std::count(primary_suffix.begin(),
                                  primary_suffix.end(), '.');
 
-  for (size_t offset = 0; num_dots >= devolution.level.value; --num_dots) {
+  for (size_t offset = 0; num_dots >= devolution.level.value(); --num_dots) {
     offset = primary_suffix.find('.', offset + 1);
     in_out_config.search.push_back(primary_suffix.substr(offset + 1));
   }
 }
 
 }  // namespace
-
-DnsSystemSettings::DnsSystemSettings()
-    : policy_search_list(),
-      tcpip_search_list(),
-      tcpip_domain(),
-      primary_dns_suffix(),
-      policy_devolution(),
-      dnscache_devolution(),
-      tcpip_devolution(),
-      append_to_multi_label_name() {
-  policy_search_list.set = false;
-  tcpip_search_list.set = false;
-  tcpip_domain.set = false;
-  primary_dns_suffix.set = false;
-
-  policy_devolution.enabled.set = false;
-  policy_devolution.level.set = false;
-  dnscache_devolution.enabled.set = false;
-  dnscache_devolution.level.set = false;
-  tcpip_devolution.enabled.set = false;
-  tcpip_devolution.level.set = false;
-
-  append_to_multi_label_name.set = false;
-}
-
-DnsSystemSettings::~DnsSystemSettings() {
-}
-
-DnsSystemSettings::DnsSystemSettings(DnsSystemSettings&&) = default;
-DnsSystemSettings& DnsSystemSettings::operator=(DnsSystemSettings&&) = default;
 
 std::string ParseDomainASCII(base::WStringPiece widestr) {
   if (widestr.empty())
@@ -537,7 +339,7 @@ std::vector<std::string> ParseSearchList(base::WStringPiece value) {
 }
 
 absl::optional<DnsConfig> ConvertSettingsToDnsConfig(
-    const DnsSystemSettings& settings) {
+    const WinDnsSystemSettings& settings) {
   bool uses_vpn = false;
 
   DnsConfig dns_config;
@@ -567,7 +369,7 @@ absl::optional<DnsConfig> ConvertSettingsToDnsConfig(
       IPEndPoint ipe;
       if (ipe.FromSockAddr(address->Address.lpSockaddr,
                            address->Address.iSockaddrLength)) {
-        if (IsStatelessDiscoveryAddress(ipe.address()))
+        if (WinDnsSystemSettings::IsStatelessDiscoveryAddress(ipe.address()))
           continue;
         // Override unset port.
         if (!ipe.port())
@@ -594,11 +396,11 @@ absl::optional<DnsConfig> ConvertSettingsToDnsConfig(
   // Windows always tries a multi-label name "as is" before using suffixes.
   dns_config.ndots = 1;
 
-  if (!settings.append_to_multi_label_name.set) {
+  if (!settings.append_to_multi_label_name.has_value()) {
     dns_config.append_to_multi_label_name = false;
   } else {
     dns_config.append_to_multi_label_name =
-        (settings.append_to_multi_label_name.value != 0);
+        (settings.append_to_multi_label_name.value() != 0);
   }
 
   if (settings.have_name_resolution_policy) {
@@ -621,6 +423,10 @@ class DnsConfigServiceWin::Watcher
  public:
   explicit Watcher(DnsConfigServiceWin& service)
       : DnsConfigService::Watcher(service) {}
+
+  Watcher(const Watcher&) = delete;
+  Watcher& operator=(const Watcher&) = delete;
+
   ~Watcher() override { NetworkChangeNotifier::RemoveIPAddressObserver(this); }
 
   bool Watch() override {
@@ -680,40 +486,56 @@ class DnsConfigServiceWin::Watcher
   RegistryWatcher dnscache_watcher_;
   RegistryWatcher policy_watcher_;
   base::FilePathWatcher hosts_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(Watcher);
 };
 
 // Reads config from registry and IpHelper. All work performed in ThreadPool.
 class DnsConfigServiceWin::ConfigReader : public SerialWorker {
  public:
-  explicit ConfigReader(DnsConfigServiceWin& service)
-      : SerialWorker(/*max_number_of_retries=*/3), service_(&service) {}
-
- private:
+  explicit ConfigReader(DnsConfigServiceWin& service) : service_(&service) {}
   ~ConfigReader() override {}
 
-  void DoWork() override {
-    absl::optional<DnsSystemSettings> settings = ReadSystemSettings();
-    if (settings.has_value())
-      dns_config_ = ConvertSettingsToDnsConfig(settings.value());
+  // SerialWorker::
+  std::unique_ptr<SerialWorker::WorkItem> CreateWorkItem() override {
+    return std::make_unique<WorkItem>();
   }
 
-  bool OnWorkFinished() override {
+  void OnWorkFinished(std::unique_ptr<SerialWorker::WorkItem>
+                          serial_worker_work_item) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(serial_worker_work_item);
     DCHECK(!IsCancelled());
-    if (dns_config_.has_value()) {
-      service_->OnConfigRead(std::move(dns_config_).value());
-      return true;
+
+    WorkItem* work_item = static_cast<WorkItem*>(serial_worker_work_item.get());
+    if (work_item->dns_config_.has_value()) {
+      service_->OnConfigRead(std::move(work_item->dns_config_).value());
     } else {
       LOG(WARNING) << "Failed to read DnsConfig.";
-      return false;
+      // Try again in a while in case DnsConfigWatcher missed the signal.
+      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE, base::BindOnce(&ConfigReader::WorkNow, AsWeakPtr()),
+          base::Seconds(kRetryIntervalSeconds));
     }
   }
 
+ private:
+  class WorkItem : public SerialWorker::WorkItem {
+   public:
+    ~WorkItem() override = default;
+
+    void DoWork() override {
+      absl::optional<WinDnsSystemSettings> settings =
+          ReadWinSystemDnsSettings();
+      if (settings.has_value())
+        dns_config_ = ConvertSettingsToDnsConfig(settings.value());
+    }
+
+   private:
+    friend DnsConfigServiceWin::ConfigReader;
+    absl::optional<DnsConfig> dns_config_;
+  };
+
   DnsConfigServiceWin* service_;
   // Written in DoWork(), read in OnWorkFinished(). No locking required.
-  absl::optional<DnsConfig> dns_config_;
 };
 
 // Extension of DnsConfigService::HostsReader that fills in localhost and local
@@ -723,18 +545,32 @@ class DnsConfigServiceWin::HostsReader : public DnsConfigService::HostsReader {
   explicit HostsReader(DnsConfigServiceWin& service)
       : DnsConfigService::HostsReader(GetHostsPath().value(), service) {}
 
+  ~HostsReader() override = default;
+
   HostsReader(const HostsReader&) = delete;
   HostsReader& operator=(const HostsReader&) = delete;
 
- protected:
-  bool AddAdditionalHostsTo(DnsHosts& in_out_dns_hosts) override {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
-    return AddLocalhostEntriesTo(in_out_dns_hosts);
+  // SerialWorker:
+  std::unique_ptr<SerialWorker::WorkItem> CreateWorkItem() override {
+    return std::make_unique<WorkItem>(GetHostsPath());
   }
 
  private:
-  ~HostsReader() override = default;
+  class WorkItem : public DnsConfigService::HostsReader::WorkItem {
+   public:
+    explicit WorkItem(base::FilePath hosts_file_path)
+        : DnsConfigService::HostsReader::WorkItem(
+              std::make_unique<DnsHostsFileParser>(
+                  std::move(hosts_file_path))) {}
+
+    ~WorkItem() override = default;
+
+    bool AddAdditionalHostsTo(DnsHosts& in_out_dns_hosts) override {
+      base::ScopedBlockingCall scoped_blocking_call(
+          FROM_HERE, base::BlockingType::MAY_BLOCK);
+      return AddLocalhostEntriesTo(in_out_dns_hosts);
+    }
+  };
 };
 
 DnsConfigServiceWin::DnsConfigServiceWin()
@@ -752,18 +588,19 @@ DnsConfigServiceWin::~DnsConfigServiceWin() {
 }
 
 void DnsConfigServiceWin::ReadConfigNow() {
+  if (!config_reader_)
+    config_reader_ = std::make_unique<ConfigReader>(*this);
   config_reader_->WorkNow();
 }
 
 void DnsConfigServiceWin::ReadHostsNow() {
+  if (!hosts_reader_)
+    hosts_reader_ = std::make_unique<HostsReader>(*this);
   hosts_reader_->WorkNow();
 }
 
 bool DnsConfigServiceWin::StartWatching() {
-  if (!config_reader_)
-    config_reader_ = base::MakeRefCounted<ConfigReader>(*this);
-  if (!hosts_reader_)
-    hosts_reader_ = base::MakeRefCounted<HostsReader>(*this);
+  DCHECK(!watcher_);
   // TODO(szym): re-start watcher if that makes sense. http://crbug.com/116139
   watcher_ = std::make_unique<Watcher>(*this);
   return watcher_->Watch();

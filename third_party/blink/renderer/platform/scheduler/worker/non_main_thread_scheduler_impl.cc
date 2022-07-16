@@ -33,10 +33,10 @@ scoped_refptr<NonMainThreadTaskQueue>
 NonMainThreadSchedulerImpl::CreateTaskQueue(const char* name,
                                             bool can_be_throttled) {
   helper_.CheckOnValidThread();
-  return helper_.NewTaskQueue(base::sequence_manager::TaskQueue::Spec(name)
-                                  .SetShouldMonitorQuiescence(true)
-                                  .SetTimeDomain(nullptr),
-                              can_be_throttled);
+  return helper_.NewTaskQueue(
+      base::sequence_manager::TaskQueue::Spec(name).SetShouldMonitorQuiescence(
+          true),
+      can_be_throttled);
 }
 
 void NonMainThreadSchedulerImpl::RunIdleTask(Thread::IdleTask task,
@@ -96,22 +96,7 @@ NonMainThreadSchedulerImpl::ControlTaskRunner() {
   return helper_.ControlNonMainThreadTaskQueue()->task_runner();
 }
 
-void NonMainThreadSchedulerImpl::RegisterTimeDomain(
-    base::sequence_manager::TimeDomain* time_domain) {
-  return helper_.RegisterTimeDomain(time_domain);
-}
-
-void NonMainThreadSchedulerImpl::UnregisterTimeDomain(
-    base::sequence_manager::TimeDomain* time_domain) {
-  return helper_.UnregisterTimeDomain(time_domain);
-}
-
-base::sequence_manager::TimeDomain*
-NonMainThreadSchedulerImpl::GetActiveTimeDomain() {
-  return helper_.real_time_domain();
-}
-
-const base::TickClock* NonMainThreadSchedulerImpl::GetTickClock() {
+const base::TickClock* NonMainThreadSchedulerImpl::GetTickClock() const {
   return helper_.GetClock();
 }
 
@@ -122,6 +107,11 @@ NonMainThreadSchedulerImpl::DeprecatedDefaultTaskRunner() {
 
 void NonMainThreadSchedulerImpl::AttachToCurrentThread() {
   helper_.AttachToCurrentThread();
+}
+
+WTF::Vector<base::OnceClosure>&
+NonMainThreadSchedulerImpl::GetOnTaskCompletionCallbacks() {
+  return on_task_completion_callbacks_;
 }
 
 }  // namespace scheduler

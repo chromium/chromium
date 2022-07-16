@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_BACKGROUND_SYNC_BACKGROUND_SYNC_METRICS_H_
 #define CONTENT_BROWSER_BACKGROUND_SYNC_BACKGROUND_SYNC_METRICS_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/browser/background_sync/background_sync.pb.h"
 #include "content/browser/background_sync/background_sync_status.h"
@@ -38,6 +37,10 @@ class CONTENT_EXPORT BackgroundSyncMetrics {
     REGISTRATION_IS_NOT_DUPLICATE,
     REGISTRATION_IS_DUPLICATE
   };
+
+  BackgroundSyncMetrics() = delete;
+  BackgroundSyncMetrics(const BackgroundSyncMetrics&) = delete;
+  BackgroundSyncMetrics& operator=(const BackgroundSyncMetrics&) = delete;
 
   // Records the start of a sync event.
   static void RecordEventStarted(blink::mojom::BackgroundSyncType sync_type,
@@ -88,9 +91,6 @@ class CONTENT_EXPORT BackgroundSyncMetrics {
   static void RecordEventsFiredFromWakeupTask(
       blink::mojom::BackgroundSyncType sync_type,
       bool fired_events);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BackgroundSyncMetrics);
 };
 
 }  // namespace content

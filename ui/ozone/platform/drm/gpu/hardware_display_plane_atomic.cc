@@ -7,6 +7,7 @@
 #include <drm_fourcc.h>
 
 #include "base/logging.h"
+#include "build/chromeos_buildflags.h"
 #include "media/media_buildflags.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
@@ -51,7 +52,15 @@ uint32_t OverlayTransformToDrmRotationPropertyValue(
 bool IsRotationTransformSupported(gfx::OverlayTransform transform,
                                   uint32_t format_fourcc) {
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  if ((format_fourcc == DRM_FORMAT_NV12 || format_fourcc == DRM_FORMAT_P010) &&
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  const bool enable_more_rotations =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLacrosUseChromeosProtectedMedia);
+#else
+  const bool enable_more_rotations = true;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (enable_more_rotations &&
+      (format_fourcc == DRM_FORMAT_NV12 || format_fourcc == DRM_FORMAT_P010) &&
       (transform == gfx::OVERLAY_TRANSFORM_ROTATE_90 ||
        transform == gfx::OVERLAY_TRANSFORM_ROTATE_270)) {
     return true;

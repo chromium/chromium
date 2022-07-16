@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/arguments.h"
 #include "gin/handle.h"
@@ -42,6 +41,10 @@ class GamepadControllerBindings
  public:
   static gin::WrapperInfo kWrapperInfo;
 
+  GamepadControllerBindings(const GamepadControllerBindings&) = delete;
+  GamepadControllerBindings& operator=(const GamepadControllerBindings&) =
+      delete;
+
   static void Install(base::WeakPtr<GamepadController> controller,
                       blink::WebLocalFrame* frame);
 
@@ -65,8 +68,6 @@ class GamepadControllerBindings
   void SetDualRumbleVibrationActuator(int index, bool enabled);
 
   base::WeakPtr<GamepadController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadControllerBindings);
 };
 
 gin::WrapperInfo GamepadControllerBindings::kWrapperInfo = {

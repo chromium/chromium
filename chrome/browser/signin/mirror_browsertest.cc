@@ -48,21 +48,27 @@ namespace {
 class HeaderModifyingThrottle : public blink::URLLoaderThrottle {
  public:
   HeaderModifyingThrottle() = default;
+
+  HeaderModifyingThrottle(const HeaderModifyingThrottle&) = delete;
+  HeaderModifyingThrottle& operator=(const HeaderModifyingThrottle&) = delete;
+
   ~HeaderModifyingThrottle() override = default;
 
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override {
     request->headers.SetHeader(signin::kChromeConnectedHeader, "User Data");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeaderModifyingThrottle);
 };
 
 class ThrottleContentBrowserClient : public ChromeContentBrowserClient {
  public:
   explicit ThrottleContentBrowserClient(const GURL& watch_url)
       : watch_url_(watch_url) {}
+
+  ThrottleContentBrowserClient(const ThrottleContentBrowserClient&) = delete;
+  ThrottleContentBrowserClient& operator=(const ThrottleContentBrowserClient&) =
+      delete;
+
   ~ThrottleContentBrowserClient() override = default;
 
   // ContentBrowserClient overrides:
@@ -81,8 +87,6 @@ class ThrottleContentBrowserClient : public ChromeContentBrowserClient {
 
  private:
   const GURL watch_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottleContentBrowserClient);
 };
 
 // Subclass of DiceManageAccountBrowserTest with Mirror enabled.
@@ -225,7 +229,8 @@ IN_PROC_BROWSER_TEST_F(MirrorBrowserTest, MirrorRequestHeader) {
       old_browser_client = content::SetBrowserClientForTesting(&browser_client);
 
     // Navigate to first url.
-    ui_test_utils::NavigateToURL(browser(), test_case.original_url);
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), test_case.original_url));
 
     if (test_case.inject_header)
       content::SetBrowserClientForTesting(old_browser_client);

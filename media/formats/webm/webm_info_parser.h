@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/formats/webm/webm_parser.h"
@@ -19,6 +18,10 @@ namespace media {
 class MEDIA_EXPORT WebMInfoParser : public WebMParserClient {
  public:
   WebMInfoParser();
+
+  WebMInfoParser(const WebMInfoParser&) = delete;
+  WebMInfoParser& operator=(const WebMInfoParser&) = delete;
+
   ~WebMInfoParser() override;
 
   // Parses a WebM Info element in |buf|.
@@ -44,8 +47,6 @@ class MEDIA_EXPORT WebMInfoParser : public WebMParserClient {
   int64_t timecode_scale_ns_;
   double duration_;
   base::Time date_utc_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMInfoParser);
 };
 
 }  // namespace media

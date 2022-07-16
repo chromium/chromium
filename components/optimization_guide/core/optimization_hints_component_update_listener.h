@@ -12,6 +12,8 @@
 #include "components/optimization_guide/core/optimization_hints_component_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class OptimizationGuideServiceTest;
+
 namespace optimization_guide {
 
 // Tracks the info for the current Optimization Hints component and notifies
@@ -51,6 +53,7 @@ class OptimizationHintsComponentUpdateListener {
 
   friend class base::NoDestructor<OptimizationHintsComponentUpdateListener>;
   friend class OptimizationHintsComponentUpdateListenerTest;
+  friend class ::OptimizationGuideServiceTest;
 
   void ResetStateForTesting();
 

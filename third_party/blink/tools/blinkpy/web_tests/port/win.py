@@ -35,7 +35,7 @@ import tempfile
 # The _winreg library is only available on Windows.
 # https://docs.python.org/2/library/_winreg.html
 try:
-    import _winreg  # pylint: disable=import-error
+    import six.moves.winreg as _winreg  # pylint: disable=import-error
 except ImportError:
     _winreg = None  # pylint: disable=invalid-name
 
@@ -51,10 +51,11 @@ _log = logging.getLogger(__name__)
 class WinPort(base.Port):
     port_name = 'win'
 
-    SUPPORTED_VERSIONS = ('win7', 'win10')
+    SUPPORTED_VERSIONS = ('win7', 'win10.20h2')
 
-    FALLBACK_PATHS = {'win10': ['win']}
-    FALLBACK_PATHS['win7'] = ['win7'] + FALLBACK_PATHS['win10']
+    FALLBACK_PATHS = {}
+    FALLBACK_PATHS['win10.20h2'] = ['win']
+    FALLBACK_PATHS['win7'] = ['win7'] + FALLBACK_PATHS['win10.20h2']
 
     BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/master/docs/windows_build_instructions.md'
 
@@ -65,9 +66,10 @@ class WinPort(base.Port):
             # We don't maintain separate baselines for vista, so we pretend it is win7.
             if host.platform.os_version in ('vista', '7sp0', '7sp1'):
                 version = 'win7'
-            # Same for win8, we treat it as win10.
-            elif host.platform.os_version in ('8', '8.1', '10', 'future'):
-                version = 'win10'
+            # Same for win8, win10.1909 we treat it as win10.
+            elif host.platform.os_version in ('8', '8.1', '10.1909', '10.20h2',
+                                              'future'):
+                version = 'win10.20h2'
             else:
                 version = host.platform.os_version
             port_name = port_name + '-' + version
@@ -151,6 +153,8 @@ class WinPort(base.Port):
         # Make TMP an alias for TEMP
         self.host.environ['TMP'] = self.host.environ['TEMP']
         env = super(WinPort, self).setup_environ_for_server()
+        # App Container needs a valid LOCALAPPDATA to function correctly.
+        env['LOCALAPPDATA'] = self.host.environ['TEMP']
         apache_envvars = ['SYSTEMDRIVE', 'SYSTEMROOT', 'TEMP', 'TMP']
         for key, value in self.host.environ.copy().items():
             if key not in env and key in apache_envvars:
@@ -178,7 +182,9 @@ class WinPort(base.Port):
         # program name to find the working one.
         _log.debug('Searching for Python 3 command name')
 
-        exts = filter(len, os.getenv('PATHEXT', '').split(';'))
+        exts = [
+            path for path in os.getenv('PATHEXT', '').split(';') if len(path)
+        ]
         for ext in [''] + exts:
             python = 'python3%s' % ext
             _log.debug('Trying "%s"' % python)
@@ -190,7 +196,17 @@ class WinPort(base.Port):
         raise WindowsError('Unable to find a valid python3 command name')
 
     def relative_test_filename(self, filename):
-        path = filename[len(self.web_tests_dir()) + 1:]
+        # If this is a path we won't be able to make relative, we create a
+        # path in the form /drive_letter:/path/to/file, e.g. /c:/path/to/file.
+        # This is technically a valid Unix-style path, but can still be
+        # converted into a usable Windows-style path if necessary, unlike if we
+        # dropped the drive letter.
+        is_abspath = False
+        if not filename.startswith(self.web_tests_dir()):
+            is_abspath = True
+        path = super(WinPort, self).relative_test_filename(filename)
+        if is_abspath:
+            path = '/' + path
         return path.replace('\\', '/')
 
     def uses_apache(self):

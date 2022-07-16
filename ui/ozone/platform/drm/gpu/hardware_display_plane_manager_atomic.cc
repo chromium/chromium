@@ -92,11 +92,11 @@ bool HardwareDisplayPlaneManagerAtomic::SetConnectorProps(
     drmModeAtomicReq* atomic_request,
     uint32_t connector_id,
     uint32_t crtc_id) {
-  int connector_index = LookupConnectorIndex(connector_id);
-  DCHECK_GE(connector_index, 0);
+  auto connector_index = LookupConnectorIndex(connector_id);
+  DCHECK(connector_index.has_value());
   // Only making a copy here to retrieve the the props IDs. The state will be
   // updated only after a successful modeset.
-  ConnectorProperties connector_props = connectors_props_[connector_index];
+  ConnectorProperties connector_props = connectors_props_[*connector_index];
   connector_props.crtc_id.value = crtc_id;
   // Always set link-status to DRM_MODE_LINK_STATUS_GOOD. In case a link
   // training has failed and link-status is now BAD, the kernel expects the
@@ -222,7 +222,13 @@ void HardwareDisplayPlaneManagerAtomic::SetAtomicPropsForCommit(
   }
 
   for (uint32_t crtc : crtcs) {
-    int idx = LookupCrtcIndex(crtc);
+    // This is actually pretty important, since these CRTC lists are generated
+    // from planes who may or may not have crtcs ids set to 0 when not in use
+    // (or when waiting for vblank).
+    // TODO(b/189073356): See if we can use a DCHECK after we clean things up
+    auto idx = LookupCrtcIndex(crtc);
+    if (!idx)
+      continue;
 
 #if defined(COMMIT_PROPERTIES_ON_PAGE_FLIP)
     // Apply all CRTC properties in the page-flip so we don't block the
@@ -237,7 +243,7 @@ void HardwareDisplayPlaneManagerAtomic::SetAtomicPropsForCommit(
 #endif
 
     AddPropertyIfValid(atomic_request, crtc,
-                       crtc_state_[idx].properties.background_color);
+                       crtc_state_[*idx].properties.background_color);
   }
 
   if (test_only) {
@@ -338,15 +344,15 @@ bool HardwareDisplayPlaneManagerAtomic::SetColorCorrectionOnAllCrtcPlanes(
   ScopedDrmPropertyBlob property_blob(
       drm_->CreatePropertyBlob(ctm_blob_data.get(), sizeof(drm_color_ctm)));
 
-  const int crtc_index = LookupCrtcIndex(crtc_id);
-  DCHECK_GE(crtc_index, 0);
+  const auto crtc_index = LookupCrtcIndex(crtc_id);
+  DCHECK(crtc_index.has_value());
 
   for (auto& plane : planes_) {
     HardwareDisplayPlaneAtomic* atomic_plane =
         static_cast<HardwareDisplayPlaneAtomic*>(plane.get());
 
     // This assumes planes can only belong to one crtc.
-    if (!atomic_plane->CanUseForCrtc(crtc_index))
+    if (!atomic_plane->CanUseForCrtc(*crtc_index))
       continue;
 
     if (!atomic_plane->SetPlaneCtm(property_set.get(), property_blob->id())) {
@@ -499,9 +505,9 @@ bool HardwareDisplayPlaneManagerAtomic::AddOutFencePtrProperties(
 
   for (uint32_t crtc : crtcs) {
     const auto crtc_index = LookupCrtcIndex(crtc);
-    DCHECK_GE(crtc_index, 0);
+    DCHECK(crtc_index.has_value());
     const auto out_fence_ptr_id =
-        crtc_state_[crtc_index].properties.out_fence_ptr.id;
+        crtc_state_[*crtc_index].properties.out_fence_ptr.id;
 
     if (out_fence_ptr_id > 0) {
       out_fence_fds->push_back(base::ScopedFD());

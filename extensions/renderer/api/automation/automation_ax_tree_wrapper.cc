@@ -152,7 +152,7 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
     if (ShouldIgnoreGeneratedEvent(targeted_event.event_params.event))
       continue;
     ui::AXEvent generated_event;
-    generated_event.id = targeted_event.node->id();
+    generated_event.id = targeted_event.node_id;
     generated_event.event_from = targeted_event.event_params.event_from;
     generated_event.event_from_action =
         targeted_event.event_params.event_from_action;

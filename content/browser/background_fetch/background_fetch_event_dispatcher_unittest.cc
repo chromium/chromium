@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
@@ -30,6 +29,12 @@ const char kExampleUniqueId2[] = "bb48a9fb-c21f-4c2d-a9ae-58bd48a9fb53";
 class BackgroundFetchEventDispatcherTest : public BackgroundFetchTestBase {
  public:
   BackgroundFetchEventDispatcherTest() = default;
+
+  BackgroundFetchEventDispatcherTest(
+      const BackgroundFetchEventDispatcherTest&) = delete;
+  BackgroundFetchEventDispatcherTest& operator=(
+      const BackgroundFetchEventDispatcherTest&) = delete;
+
   ~BackgroundFetchEventDispatcherTest() override = default;
 
   void SetUp() override {
@@ -45,8 +50,6 @@ class BackgroundFetchEventDispatcherTest : public BackgroundFetchTestBase {
  protected:
   std::unique_ptr<BackgroundFetchEventDispatcher> event_dispatcher_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchEventDispatcherTest);
 };
 
 TEST_F(BackgroundFetchEventDispatcherTest, DispatchInvalidRegistration) {

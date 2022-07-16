@@ -192,7 +192,7 @@ void LoginPublicAccountUserView::UpdateArrowButtonOpacity(float target_opacity,
     ui::ScopedLayerAnimationSettings settings(
         arrow_button_->layer()->GetAnimator());
     settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kArrowButtonFadeAnimationDurationMs));
+        base::Milliseconds(kArrowButtonFadeAnimationDurationMs));
     settings.SetTweenType(gfx::Tween::EASE_IN_OUT);
 
     arrow_button_->layer()->SetOpacity(target_opacity);

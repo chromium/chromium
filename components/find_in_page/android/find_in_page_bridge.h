@@ -6,7 +6,6 @@
 #define COMPONENTS_FIND_IN_PAGE_ANDROID_FIND_IN_PAGE_BRIDGE_H_
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "content/public/browser/web_contents.h"
 
 namespace find_in_page {
@@ -16,6 +15,10 @@ class FindInPageBridge {
   FindInPageBridge(JNIEnv* env,
                    const base::android::JavaRef<jobject>& obj,
                    const base::android::JavaRef<jobject>& j_web_contents);
+
+  FindInPageBridge(const FindInPageBridge&) = delete;
+  FindInPageBridge& operator=(const FindInPageBridge&) = delete;
+
   void Destroy(JNIEnv*, const base::android::JavaParamRef<jobject>&);
 
   void StartFinding(JNIEnv* env,
@@ -49,8 +52,6 @@ class FindInPageBridge {
  private:
   content::WebContents* web_contents_;
   JavaObjectWeakGlobalRef weak_java_ref_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindInPageBridge);
 };
 
 }  // namespace find_in_page

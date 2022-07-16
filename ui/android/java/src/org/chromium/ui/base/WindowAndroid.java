@@ -623,11 +623,10 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     public interface IntentCallback {
         /**
          * Handles the data returned by the requested intent.
-         * @param window A window reference.
          * @param resultCode Result code of the requested intent.
          * @param data The data returned by the intent.
          */
-        void onIntentCompleted(WindowAndroid window, int resultCode, Intent data);
+        void onIntentCompleted(int resultCode, Intent data);
     }
 
     /**

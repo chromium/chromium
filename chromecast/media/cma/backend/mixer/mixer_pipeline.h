@@ -39,6 +39,9 @@ class MixerPipeline {
       PostProcessingPipelineFactory* factory,
       int expected_input_channels);
 
+  MixerPipeline(const MixerPipeline&) = delete;
+  MixerPipeline& operator=(const MixerPipeline&) = delete;
+
   ~MixerPipeline();
 
   // Sets the sample rate of all processors.
@@ -100,8 +103,6 @@ class MixerPipeline {
   base::flat_map<std::string, FilterGroup*> stream_sinks_;
   FilterGroup* loopback_output_group_ = nullptr;
   FilterGroup* output_group_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MixerPipeline);
 };
 
 }  // namespace media

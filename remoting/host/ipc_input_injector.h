@@ -20,6 +20,10 @@ class IpcInputInjector : public InputInjector {
  public:
   explicit IpcInputInjector(
       scoped_refptr<DesktopSessionProxy> desktop_session_proxy);
+
+  IpcInputInjector(const IpcInputInjector&) = delete;
+  IpcInputInjector& operator=(const IpcInputInjector&) = delete;
+
   ~IpcInputInjector() override;
 
   // ClipboardStub interface.
@@ -38,8 +42,6 @@ class IpcInputInjector : public InputInjector {
  private:
   // Wraps the IPC channel to the desktop process.
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcInputInjector);
 };
 
 }  // namespace remoting

@@ -127,11 +127,9 @@ const char kPreferredAppsKey[] = "preferred_apps";
 const char kVersionKey[] = "version";
 
 base::Value ConvertPreferredAppsToValue(
-    const PreferredAppsList::PreferredApps& preferred_apps,
-    bool upgraded_for_sharing) {
+    const PreferredAppsList::PreferredApps& preferred_apps) {
   base::Value preferred_apps_value(base::Value::Type::DICTIONARY);
-  int version =
-      upgraded_for_sharing ? kVersionSupportsSharing : kVersionInitial;
+  int version = kVersionSupportsSharing;
   preferred_apps_value.SetIntKey(kVersionKey, version);
   base::Value preferred_apps_list(base::Value::Type::LIST);
   for (auto& preferred_app : preferred_apps) {

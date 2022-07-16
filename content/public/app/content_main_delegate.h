@@ -11,6 +11,8 @@
 
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "content/public/common/main_function_params.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace variations {
 class VariationsIdsProvider;
@@ -24,7 +26,6 @@ class ContentGpuClient;
 class ContentRendererClient;
 class ContentUtilityClient;
 class ZygoteForkDelegate;
-struct MainFunctionParams;
 
 class CONTENT_EXPORT ContentMainDelegate {
  public:
@@ -45,10 +46,13 @@ class CONTENT_EXPORT ContentMainDelegate {
   // has been initialized.
   virtual void SandboxInitialized(const std::string& process_type) {}
 
-  // Asks the embedder to start a process. Return -1 for the default behavior.
-  virtual int RunProcess(
+  // Asks the embedder to start a process. The embedder may return the
+  // |main_function_params| back to decline the request and kick-off the
+  // default behavior or return a non-negative exit code to indicate it handled
+  // the request.
+  virtual absl::variant<int, MainFunctionParams> RunProcess(
       const std::string& process_type,
-      const MainFunctionParams& main_function_params);
+      MainFunctionParams main_function_params);
 
   // Called right before the process exits.
   virtual void ProcessExiting(const std::string& process_type) {}

@@ -5,7 +5,6 @@
 #include "chrome/browser/password_manager/android/account_chooser_dialog_android.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -13,12 +12,13 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
-#include "components/password_manager/core/browser/mock_biometric_authenticator.h"
+#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/mock_biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -28,9 +28,9 @@
 namespace {
 
 using base::test::RunOnceCallback;
-using password_manager::BiometricAuthRequester;
-using password_manager::BiometricsAvailability;
-using password_manager::MockBiometricAuthenticator;
+using device_reauth::BiometricAuthRequester;
+using device_reauth::BiometricsAvailability;
+using device_reauth::MockBiometricAuthenticator;
 using testing::_;
 using testing::Eq;
 using testing::Pointee;
@@ -67,7 +67,7 @@ password_manager::PasswordFormData kFormData2 = {
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
-  MOCK_METHOD(scoped_refptr<password_manager::BiometricAuthenticator>,
+  MOCK_METHOD(scoped_refptr<device_reauth::BiometricAuthenticator>,
               GetBiometricAuthenticator,
               (),
               (override));
@@ -77,7 +77,13 @@ class MockPasswordManagerClient
 
 class AccountChooserDialogAndroidTest : public ChromeRenderViewHostTestHarness {
  public:
-  AccountChooserDialogAndroidTest() {}
+  AccountChooserDialogAndroidTest();
+
+  AccountChooserDialogAndroidTest(const AccountChooserDialogAndroidTest&) =
+      delete;
+  AccountChooserDialogAndroidTest& operator=(
+      const AccountChooserDialogAndroidTest&) = delete;
+
   ~AccountChooserDialogAndroidTest() override {}
 
   void SetUp() override;
@@ -98,8 +104,13 @@ class AccountChooserDialogAndroidTest : public ChromeRenderViewHostTestHarness {
       credential_callback_;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(AccountChooserDialogAndroidTest);
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+AccountChooserDialogAndroidTest::AccountChooserDialogAndroidTest() {
+  scoped_feature_list_.InitAndEnableFeature(
+      password_manager::features::kBiometricTouchToFill);
+}
 
 void AccountChooserDialogAndroidTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
@@ -177,7 +188,8 @@ TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthNotAvailable) {
 
   EXPECT_CALL(client_, GetBiometricAuthenticator)
       .WillOnce(Return(authenticator_));
-  EXPECT_CALL(*authenticator_.get(), CanAuthenticate())
+  EXPECT_CALL(*authenticator_.get(),
+              CanAuthenticate(BiometricAuthRequester::kAccountChooserDialog))
       .WillOnce(Return(BiometricsAvailability::kNotEnrolled));
   std::unique_ptr<password_manager::PasswordForm> form =
       FillPasswordFormWithData(kFormData2);
@@ -194,7 +206,8 @@ TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthSuccessful) {
 
   EXPECT_CALL(client_, GetBiometricAuthenticator)
       .WillOnce(Return(authenticator_));
-  EXPECT_CALL(*authenticator_.get(), CanAuthenticate())
+  EXPECT_CALL(*authenticator_.get(),
+              CanAuthenticate(BiometricAuthRequester::kAccountChooserDialog))
       .WillOnce(Return(BiometricsAvailability::kAvailable));
   EXPECT_CALL(*authenticator_.get(),
               Authenticate(BiometricAuthRequester::kAccountChooserDialog, _))
@@ -214,7 +227,8 @@ TEST_F(AccountChooserDialogAndroidTest, DoesntSendCredentialIfAuthFailed) {
 
   EXPECT_CALL(client_, GetBiometricAuthenticator)
       .WillOnce(Return(authenticator_));
-  EXPECT_CALL(*authenticator_.get(), CanAuthenticate())
+  EXPECT_CALL(*authenticator_.get(),
+              CanAuthenticate(BiometricAuthRequester::kAccountChooserDialog))
       .WillOnce(Return(BiometricsAvailability::kAvailable));
   EXPECT_CALL(*authenticator_.get(),
               Authenticate(BiometricAuthRequester::kAccountChooserDialog, _))
@@ -234,7 +248,8 @@ TEST_F(AccountChooserDialogAndroidTest, CancelsAuthIfDestroyed) {
 
   EXPECT_CALL(client_, GetBiometricAuthenticator)
       .WillOnce(Return(authenticator_));
-  EXPECT_CALL(*authenticator_.get(), CanAuthenticate())
+  EXPECT_CALL(*authenticator_.get(),
+              CanAuthenticate(BiometricAuthRequester::kAccountChooserDialog))
       .WillOnce(Return(BiometricsAvailability::kAvailable));
   EXPECT_CALL(*authenticator_.get(),
               Authenticate(BiometricAuthRequester::kAccountChooserDialog, _));

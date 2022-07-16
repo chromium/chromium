@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/optional_trace_event.h"
 #include "components/viz/common/features.h"
 #include "content/browser/renderer_host/cursor_manager.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -32,20 +33,22 @@ CrossProcessFrameConnector::CrossProcessFrameConnector(
     : use_zoom_for_device_scale_factor_(IsUseZoomForDSFEnabled()),
       frame_proxy_in_parent_renderer_(frame_proxy_in_parent_renderer) {
   // Skip for tests.
-  if (!frame_proxy_in_parent_renderer_)
+  if (!frame_proxy_in_parent_renderer_) {
+    screen_infos_ = display::ScreenInfos(display::ScreenInfo());
     return;
+  }
 
   // At this point, SetView() has not been called and so the associated
   // RenderWidgetHost doesn't have a view yet. That means calling
-  // GetScreenInfo() on the associated RenderWidgetHost will just default to the
-  // primary display, which may not be appropriate. So instead we call
-  // GetScreenInfo() on the root RenderWidgetHost, which will be guaranteed to
-  // be on the correct display. All subsequent updates to |screen_info_|
+  // GetScreenInfos() on the associated RenderWidgetHost will just default to
+  // the primary display, which may not be appropriate. So instead we call
+  // GetScreenInfos() on the root RenderWidgetHost, which will be guaranteed to
+  // be on the correct display. All subsequent updates to |screen_infos_|
   // ultimately come from the root, so it makes sense to do it here as well.
-  current_child_frame_host()
-      ->GetOutermostMainFrame()
-      ->GetRenderWidgetHost()
-      ->GetScreenInfo(&screen_info_);
+  screen_infos_ = current_child_frame_host()
+                      ->GetOutermostMainFrameOrEmbedder()
+                      ->GetRenderWidgetHost()
+                      ->GetScreenInfos();
 }
 
 CrossProcessFrameConnector::~CrossProcessFrameConnector() {
@@ -112,12 +115,18 @@ void CrossProcessFrameConnector::SetView(RenderWidgetHostViewChildFrame* view) {
 }
 
 void CrossProcessFrameConnector::RenderProcessGone() {
+  OPTIONAL_TRACE_EVENT1("content",
+                        "CrossProcessFrameConnector::RenderProcessGone",
+                        "visibility", visibility_);
   has_crashed_ = true;
 
-  RenderFrameHost* rfh =
-      frame_proxy_in_parent_renderer_->frame_tree_node()->current_frame_host();
-  int process_id = rfh->GetProcess()->GetID();
-  for (rfh = rfh->GetParent(); rfh; rfh = rfh->GetParent()) {
+  RenderFrameHostImpl* current_child_rfh = current_child_frame_host();
+  int process_id = current_child_rfh->GetProcess()->GetID();
+
+  // If a parent, outer document or embedder of `current_child_rfh` has crashed
+  // and has the same RPH, we only want to record the crash once.
+  for (auto* rfh = current_child_rfh->GetParentOrOuterDocumentOrEmbedder(); rfh;
+       rfh = rfh->GetParentOrOuterDocumentOrEmbedder()) {
     if (rfh->GetProcess()->GetID() == process_id) {
       // The crash will be already logged by the ancestor - ignore this crash in
       // the current instance of the CrossProcessFrameConnector.
@@ -130,9 +139,34 @@ void CrossProcessFrameConnector::RenderProcessGone() {
 
   frame_proxy_in_parent_renderer_->ChildProcessGone();
 
-  auto* parent_view = GetParentRenderWidgetHostView();
-  if (parent_view && parent_view->host()->delegate())
-    parent_view->host()->delegate()->SubframeCrashed(visibility_);
+  if (current_child_rfh->delegate()) {
+    // If a subframe crashed on a hidden tab, mark the tab for reload to avoid
+    // showing a sad frame to the user if they ever switch back to that tab. Do
+    // this for subframes that are either visible in viewport or visible but
+    // scrolled out of view, but skip subframes that are not rendered (e.g., via
+    // "display:none"), since in that case the user wouldn't see a sad frame
+    // anyway. Prerendering subframes do not enter this code since
+    // RenderFrameHostImpl immediately cancels prerender if a render process
+    // exits.
+    bool did_mark_for_reload = false;
+    if (current_child_rfh->delegate()->GetVisibility() != Visibility::VISIBLE &&
+        visibility_ != blink::mojom::FrameVisibility::kNotRendered &&
+        base::FeatureList::IsEnabled(
+            features::kReloadHiddenTabsWithCrashedSubframes)) {
+      frame_proxy_in_parent_renderer_->frame_tree_node()
+          ->frame_tree()
+          ->controller()
+          .SetNeedsReload(
+              NavigationControllerImpl::NeedsReloadType::kCrashedSubframe);
+      did_mark_for_reload = true;
+      UMA_HISTOGRAM_ENUMERATION(
+          "Stability.ChildFrameCrash.TabMarkedForReload.Visibility",
+          visibility_);
+    }
+
+    UMA_HISTOGRAM_BOOLEAN("Stability.ChildFrameCrash.TabMarkedForReload",
+                          did_mark_for_reload);
+  }
 }
 
 void CrossProcessFrameConnector::SendIntrinsicSizingInfoToParent(
@@ -152,7 +186,7 @@ void CrossProcessFrameConnector::SynchronizeVisualProperties(
     bool propagate) {
   last_received_zoom_level_ = visual_properties.zoom_level;
   last_received_local_frame_size_ = visual_properties.local_frame_size;
-  screen_info_ = visual_properties.screen_info;
+  screen_infos_ = visual_properties.screen_infos;
   local_surface_id_ = visual_properties.local_surface_id;
 
   capture_sequence_number_ = visual_properties.capture_sequence_number;
@@ -162,6 +196,8 @@ void CrossProcessFrameConnector::SynchronizeVisualProperties(
 
   if (!view_)
     return;
+
+  view_->UpdateScreenInfo();
 
   RenderWidgetHostImpl* render_widget_host = view_->host();
   DCHECK(render_widget_host);
@@ -308,10 +344,10 @@ void CrossProcessFrameConnector::OnSynchronizeVisualProperties(
       TRACE_EVENT_FLAG_FLOW_IN, "message",
       "FrameHostMsg_SynchronizeVisualProperties", "new_local_surface_id",
       visual_properties.local_surface_id.ToString());
-  // If the |screen_space_rect| or |screen_info| of the frame has changed, then
-  // the viz::LocalSurfaceId must also change.
+  // If the |screen_space_rect| or current ScreenInfo of the frame has
+  // changed, then the viz::LocalSurfaceId must also change.
   if ((last_received_local_frame_size_ != visual_properties.local_frame_size ||
-       screen_info_ != visual_properties.screen_info ||
+       screen_infos_.current() != visual_properties.screen_infos.current() ||
        capture_sequence_number() != visual_properties.capture_sequence_number ||
        last_received_zoom_level_ != visual_properties.zoom_level) &&
       local_surface_id_ == visual_properties.local_surface_id) {
@@ -384,10 +420,8 @@ void CrossProcessFrameConnector::OnVisibilityChanged(
   // the visibility. The Show/Hide methods will not be called if an inner
   // WebContents exists since the corresponding WebContents will itself call
   // Show/Hide on all the RenderWidgetHostViews (including this) one.
-  if (frame_proxy_in_parent_renderer_->frame_tree_node()
-          ->render_manager()
-          ->IsMainFrameForInnerDelegate()) {
-    view_->host()->delegate()->OnRenderFrameProxyVisibilityChanged(visibility_);
+  if (view_->host()->delegate()->OnRenderFrameProxyVisibilityChanged(
+          frame_proxy_in_parent_renderer_, visibility_)) {
     return;
   }
 
@@ -418,15 +452,17 @@ CrossProcessFrameConnector::GetRootRenderWidgetHostView() {
     return nullptr;
 
   RenderFrameHostImpl* root =
-      current_child_frame_host()->GetOutermostMainFrame();
+      current_child_frame_host()->GetOutermostMainFrameOrEmbedder();
   return static_cast<RenderWidgetHostViewBase*>(root->GetView());
 }
 
 RenderWidgetHostViewBase*
 CrossProcessFrameConnector::GetParentRenderWidgetHostView() {
+  // Input always hits the parent view if there is one so we should
+  // escape to an embedder.
   RenderFrameHostImpl* parent =
       current_child_frame_host()
-          ? current_child_frame_host()->ParentOrOuterDelegateFrame()
+          ? current_child_frame_host()->GetParentOrOuterDocumentOrEmbedder()
           : nullptr;
   return parent ? static_cast<RenderWidgetHostViewBase*>(parent->GetView())
                 : nullptr;
@@ -477,32 +513,31 @@ void CrossProcessFrameConnector::SetVisibilityForChildViews(
 void CrossProcessFrameConnector::SetLocalFrameSize(
     const gfx::Size& local_frame_size) {
   has_size_ = true;
+  const float dsf = screen_infos_.current().device_scale_factor;
   if (use_zoom_for_device_scale_factor_) {
     local_frame_size_in_pixels_ = local_frame_size;
-    local_frame_size_in_dip_ = gfx::ScaleToRoundedSize(
-        local_frame_size, 1.f / screen_info_.device_scale_factor);
+    local_frame_size_in_dip_ =
+        gfx::ScaleToRoundedSize(local_frame_size, 1.f / dsf);
   } else {
     local_frame_size_in_dip_ = local_frame_size;
-    local_frame_size_in_pixels_ = gfx::ScaleToCeiledSize(
-        local_frame_size, screen_info_.device_scale_factor);
+    local_frame_size_in_pixels_ = gfx::ScaleToCeiledSize(local_frame_size, dsf);
   }
 }
 
 void CrossProcessFrameConnector::SetScreenSpaceRect(
     const gfx::Rect& screen_space_rect) {
   gfx::Rect old_rect = screen_space_rect_in_pixels_;
+  const float dsf = screen_infos_.current().device_scale_factor;
 
   if (use_zoom_for_device_scale_factor_) {
     screen_space_rect_in_pixels_ = screen_space_rect;
     screen_space_rect_in_dip_ = gfx::Rect(
-        gfx::ScaleToFlooredPoint(screen_space_rect.origin(),
-                                 1.f / screen_info_.device_scale_factor),
-        gfx::ScaleToCeiledSize(screen_space_rect.size(),
-                               1.f / screen_info_.device_scale_factor));
+        gfx::ScaleToFlooredPoint(screen_space_rect.origin(), 1.f / dsf),
+        gfx::ScaleToCeiledSize(screen_space_rect.size(), 1.f / dsf));
   } else {
     screen_space_rect_in_dip_ = screen_space_rect;
-    screen_space_rect_in_pixels_ = gfx::ScaleToEnclosingRect(
-        screen_space_rect, screen_info_.device_scale_factor);
+    screen_space_rect_in_pixels_ =
+        gfx::ScaleToEnclosingRect(screen_space_rect, dsf);
   }
 
   if (view_ && frame_proxy_in_parent_renderer_) {

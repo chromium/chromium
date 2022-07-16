@@ -18,12 +18,6 @@ bool ShellDelegate::IsTabDrag(const ui::OSExchangeData& drop_data) {
   return false;
 }
 
-aura::Window* ShellDelegate::CreateBrowserForTabDrop(
-    aura::Window* source_window,
-    const ui::OSExchangeData& drop_data) {
-  return nullptr;
-}
-
 media_session::MediaSessionService* ShellDelegate::GetMediaSessionService() {
   return nullptr;
 }
@@ -34,6 +28,10 @@ bool ShellDelegate::IsUiDevToolsStarted() const {
 
 int ShellDelegate::GetUiDevToolsPort() const {
   return -1;
+}
+
+desks_storage::DeskModel* ShellDelegate::GetDeskModel() {
+  return nullptr;
 }
 
 }  // namespace ash

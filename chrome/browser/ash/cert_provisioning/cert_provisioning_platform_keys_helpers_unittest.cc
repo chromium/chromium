@@ -15,9 +15,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_test_helpers.h"
-#include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
+#include "chrome/browser/ash/platform_keys/mock_platform_keys_service.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/cert/x509_certificate.h"
@@ -360,8 +360,8 @@ TEST_F(CertProvisioningCertDeleterTest, CertWasRenewed) {
   const char kCertId2[] = "id2";
 
   base::Time t1 = base::Time::Now();
-  base::Time t2 = t1 + base::TimeDelta::FromDays(30);
-  base::Time t3 = t2 + base::TimeDelta::FromDays(30);
+  base::Time t2 = t1 + base::Days(30);
+  base::Time t3 = t2 + base::Days(30);
 
   auto cert = certificate_helper_.AddCert(kCertScope, kRenewedCertId,
                                           Status::kSuccess, t1, t2);

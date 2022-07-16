@@ -33,6 +33,10 @@ class BASE_EXPORT FilteredServiceDirectory {
   // Creates a directory that proxies requests to the specified service
   // |directory|.
   explicit FilteredServiceDirectory(sys::ServiceDirectory* directory);
+
+  FilteredServiceDirectory(const FilteredServiceDirectory&) = delete;
+  FilteredServiceDirectory& operator=(const FilteredServiceDirectory&) = delete;
+
   ~FilteredServiceDirectory();
 
   // Adds the specified service to the list of allowed services.
@@ -51,8 +55,6 @@ class BASE_EXPORT FilteredServiceDirectory {
  private:
   const sys::ServiceDirectory* const directory_;
   sys::OutgoingDirectory outgoing_directory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilteredServiceDirectory);
 };
 
 }  // namespace base

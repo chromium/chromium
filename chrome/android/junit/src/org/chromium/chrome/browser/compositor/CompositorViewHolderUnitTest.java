@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Context;
 import android.os.IBinder;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -108,7 +109,8 @@ public class CompositorViewHolderUnitTest {
                 mTabModelSelector, R.dimen.control_container_height);
         when(mBrowserControlsManager.getTab()).thenReturn(mTab);
 
-        mContext = ApplicationProvider.getApplicationContext();
+        mContext = new ContextThemeWrapper(
+                ApplicationProvider.getApplicationContext(), R.style.ColorOverlay);
         mCompositorViewHolder = spy(new CompositorViewHolder(mContext));
         mCompositorViewHolder.setCompositorViewForTesting(mCompositorView);
         mCompositorViewHolder.setBrowserControlsManager(mBrowserControlsManager);

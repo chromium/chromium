@@ -1,10 +1,12 @@
 include_rules = [
-  "+dbus",
   # For Lacros.
   "+chromeos/crosapi/mojom",
   "+chromeos/crosapi/cpp/crosapi_constants.h",
   "+chromeos/lacros/lacros_service.h",
   "+chromeos/ui/base",
+
   # Common includes.
+  "+components/crash/core/common",
+  "+dbus",
   "+ui/base/linux",
 ]

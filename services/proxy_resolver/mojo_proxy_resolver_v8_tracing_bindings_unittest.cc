@@ -18,6 +18,11 @@ class MojoProxyResolverV8TracingBindingsTest : public testing::Test {
  public:
   MojoProxyResolverV8TracingBindingsTest() = default;
 
+  MojoProxyResolverV8TracingBindingsTest(
+      const MojoProxyResolverV8TracingBindingsTest&) = delete;
+  MojoProxyResolverV8TracingBindingsTest& operator=(
+      const MojoProxyResolverV8TracingBindingsTest&) = delete;
+
   void Alert(const std::string& message) { alerts_.push_back(message); }
 
   void OnError(int32_t line_number, const std::string& message) {
@@ -36,9 +41,6 @@ class MojoProxyResolverV8TracingBindingsTest : public testing::Test {
 
   std::vector<std::string> alerts_;
   std::vector<std::pair<int, std::string>> errors_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoProxyResolverV8TracingBindingsTest);
 };
 
 TEST_F(MojoProxyResolverV8TracingBindingsTest, Basic) {

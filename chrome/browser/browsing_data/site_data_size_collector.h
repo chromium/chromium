@@ -8,9 +8,9 @@
 #include <list>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/browsing_data/content/appcache_helper.h"
 #include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/database_helper.h"
@@ -33,14 +33,17 @@ class SiteDataSizeCollector {
 
   SiteDataSizeCollector(
       const base::FilePath& default_storage_partition_path,
-      browsing_data::CookieHelper* cookie_helper,
-      browsing_data::DatabaseHelper* database_helper,
-      browsing_data::LocalStorageHelper* local_storage_helper,
-      browsing_data::AppCacheHelper* appcache_helper,
-      browsing_data::IndexedDBHelper* indexed_db_helper,
-      browsing_data::FileSystemHelper* file_system_helper,
-      browsing_data::ServiceWorkerHelper* service_worker_helper,
-      browsing_data::CacheStorageHelper* cache_storage_helper);
+      scoped_refptr<browsing_data::CookieHelper> cookie_helper,
+      scoped_refptr<browsing_data::DatabaseHelper> database_helper,
+      scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
+      scoped_refptr<browsing_data::IndexedDBHelper> indexed_db_helper,
+      scoped_refptr<browsing_data::FileSystemHelper> file_system_helper,
+      scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
+      scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper);
+
+  SiteDataSizeCollector(const SiteDataSizeCollector&) = delete;
+  SiteDataSizeCollector& operator=(const SiteDataSizeCollector&) = delete;
+
   virtual ~SiteDataSizeCollector();
 
   using FetchCallback = base::OnceCallback<void(int64_t)>;
@@ -50,8 +53,6 @@ class SiteDataSizeCollector {
 
  private:
   // Callback methods to be invoked when fetching the data is complete.
-  void OnAppCacheModelInfoLoaded(
-      const std::list<content::StorageUsageInfo>& info_list);
   void OnCookiesModelInfoLoaded(const net::CookieList& cookie_list);
   void OnDatabaseModelInfoLoaded(const DatabaseInfoList& database_info_list);
   void OnLocalStorageModelInfoLoaded(
@@ -73,7 +74,6 @@ class SiteDataSizeCollector {
 
   // Pointers to the helper objects, needed to retreive all the types of locally
   // stored data.
-  scoped_refptr<browsing_data::AppCacheHelper> appcache_helper_;
   scoped_refptr<browsing_data::CookieHelper> cookie_helper_;
   scoped_refptr<browsing_data::DatabaseHelper> database_helper_;
   scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper_;
@@ -92,8 +92,6 @@ class SiteDataSizeCollector {
   int64_t total_bytes_;
 
   base::WeakPtrFactory<SiteDataSizeCollector> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataSizeCollector);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_SITE_DATA_SIZE_COLLECTOR_H_

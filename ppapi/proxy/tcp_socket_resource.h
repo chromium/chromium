@@ -24,6 +24,9 @@ class PPAPI_PROXY_EXPORT TCPSocketResource : public thunk::PPB_TCPSocket_API,
                     PP_Instance instance,
                     TCPSocketVersion version);
 
+  TCPSocketResource(const TCPSocketResource&) = delete;
+  TCPSocketResource& operator=(const TCPSocketResource&) = delete;
+
   ~TCPSocketResource() override;
 
   // PluginResource overrides.
@@ -68,8 +71,6 @@ class PPAPI_PROXY_EXPORT TCPSocketResource : public thunk::PPB_TCPSocket_API,
                     int pending_host_id,
                     const PP_NetAddress_Private& local_addr,
                     const PP_NetAddress_Private& remote_addr);
-
-  DISALLOW_COPY_AND_ASSIGN(TCPSocketResource);
 };
 
 }  // namespace proxy

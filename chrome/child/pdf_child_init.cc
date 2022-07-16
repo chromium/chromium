@@ -14,6 +14,7 @@
 #include "base/win/windows_version.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #endif
@@ -49,16 +50,18 @@ DWORD WINAPI GetFontDataPatch(HDC hdc,
 
 }  // namespace
 
-void MaybeInitializeGDI() {
+void MaybePatchGdiGetFontData() {
 #if defined(OS_WIN)
   // Only patch utility processes which explicitly need GDI.
-  sandbox::policy::SandboxType service_sandbox_type =
-      sandbox::policy::SandboxTypeFromCommandLine(
-          *base::CommandLine::ForCurrentProcess());
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  auto service_sandbox_type =
+      sandbox::policy::SandboxTypeFromCommandLine(command_line);
   bool need_gdi =
-      service_sandbox_type == sandbox::policy::SandboxType::kPpapi ||
-      service_sandbox_type == sandbox::policy::SandboxType::kPrintCompositor ||
-      service_sandbox_type == sandbox::policy::SandboxType::kPdfConversion;
+      service_sandbox_type == sandbox::mojom::Sandbox::kPpapi ||
+      service_sandbox_type == sandbox::mojom::Sandbox::kPrintCompositor ||
+      service_sandbox_type == sandbox::mojom::Sandbox::kPdfConversion ||
+      (service_sandbox_type == sandbox::mojom::Sandbox::kRenderer &&
+       command_line.HasSwitch(switches::kPdfRenderer));
   if (!need_gdi)
     return;
 
@@ -69,8 +72,8 @@ void MaybeInitializeGDI() {
   HMODULE module = CURRENT_MODULE();
 #endif  // defined(COMPONENT_BUILD)
 
-  // Need to patch GetFontData() for font loading to work correctly. This can be
-  // removed once PDFium switches to use Skia. https://crbug.com/pdfium/11
+  // Need to patch GetFontData() for font loading to work correctly.
+  // TODO(crbug.com/pdfium/11): Can be removed once PDFium switches to use Skia.
   static base::NoDestructor<base::win::IATPatchFunction> patch_get_font_data;
   patch_get_font_data->PatchFromModule(
       module, "gdi32.dll", "GetFontData",

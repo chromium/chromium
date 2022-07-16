@@ -15,8 +15,7 @@ namespace history {
 // the below 2 methods are used convert between base::Time and the milliseconds
 // stored in database.
 inline base::Time FromDatabaseTime(int64_t milliseconds) {
-  return base::TimeDelta::FromMilliseconds(milliseconds) +
-         base::Time::UnixEpoch();
+  return base::Milliseconds(milliseconds) + base::Time::UnixEpoch();
 }
 
 inline int64_t ToDatabaseTime(const base::Time& time) {

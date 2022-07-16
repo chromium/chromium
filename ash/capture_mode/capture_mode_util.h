@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace aura {
 class Window;
@@ -18,6 +19,10 @@ namespace gfx {
 class Point;
 class Rect;
 }  // namespace gfx
+
+namespace views {
+class View;
+}  // namespace views
 
 namespace ash {
 
@@ -42,6 +47,27 @@ void SetStopRecordingButtonVisibility(aura::Window* root, bool visible);
 // Triggers an accessibility alert to give the user feedback.
 void TriggerAccessibilityAlert(const std::string& message);
 void TriggerAccessibilityAlert(int message_id);
+
+// Notification Utils //
+// Constants related to the banner view on the image capture notifications.
+constexpr int kBannerHeightDip = 36;
+constexpr int kBannerHorizontalInsetDip = 12;
+constexpr int kBannerVerticalInsetDip = 8;
+constexpr int kBannerIconTextSpacingDip = 8;
+constexpr int kBannerIconSizeDip = 20;
+
+// Constants related to the play icon view for video capture notifications.
+constexpr int kPlayIconSizeDip = 24;
+constexpr int kPlayIconBackgroundCornerRadiusDip = 20;
+constexpr gfx::Size kPlayIconViewSize{40, 40};
+
+std::unique_ptr<views::View> CreateClipboardShortcutView();
+// Creates the banner view that will show on top of the notification image.
+std::unique_ptr<views::View> CreateBannerView();
+
+// Creates the play icon view which shows on top of the video thumbnail in the
+// notification.
+std::unique_ptr<views::View> CreatePlayIconView();
 
 }  // namespace capture_mode_util
 

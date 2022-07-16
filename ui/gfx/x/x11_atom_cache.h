@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace base {
@@ -34,6 +33,9 @@ class COMPONENT_EXPORT(X11) X11AtomCache {
  public:
   static X11AtomCache* GetInstance();
 
+  X11AtomCache(const X11AtomCache&) = delete;
+  X11AtomCache& operator=(const X11AtomCache&) = delete;
+
  private:
   friend Atom GetAtom(const std::string& atom_name);
   friend struct base::DefaultSingletonTraits<X11AtomCache>;
@@ -49,8 +51,6 @@ class COMPONENT_EXPORT(X11) X11AtomCache {
 
   // Using std::map, as it is possible for thousands of atoms to be registered.
   mutable std::map<std::string, Atom> cached_atoms_;
-
-  DISALLOW_COPY_AND_ASSIGN(X11AtomCache);
 };
 
 }  // namespace x11

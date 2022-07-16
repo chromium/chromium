@@ -11,7 +11,7 @@
 // TODO(xdai): Rename it to 'settings-cups-printers-page'.
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/cr_toast/cr_toast.m.js';
+import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '//resources/js/action_link.js';
 import '//resources/cr_elements/action_link_css.m.js';
@@ -23,7 +23,7 @@ import './cups_enterprise_printers.js';
 import './cups_printer_shared_css.js';
 import './cups_saved_printers.js';
 import './cups_nearby_printers.js';
-import '../localized_link/localized_link.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
 import '../../icons.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
@@ -36,9 +36,10 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
 import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
 import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, ManufacturersInfo, ModelsInfo, PrinterMakeModel, PrinterPpdMakeModel, PrinterSetupResult, PrintServerResult} from './cups_printers_browser_proxy.js';

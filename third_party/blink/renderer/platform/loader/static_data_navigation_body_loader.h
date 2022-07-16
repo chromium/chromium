@@ -28,7 +28,8 @@ class PLATFORM_EXPORT StaticDataNavigationBodyLoader
 
   void SetDefersLoading(LoaderFreezeMode) override;
   void StartLoadingBody(WebNavigationBodyLoader::Client*,
-                        blink::mojom::CodeCacheHost* host) override;
+                        CodeCacheHost* host) override;
+  void StartLoadingCodeCache(CodeCacheHost* code_cache_host) override;
 
  private:
   void Continue();

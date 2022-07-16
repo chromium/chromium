@@ -30,23 +30,23 @@ void StartupPagesHandler::RegisterMessages() {
   if (Profile::FromWebUI(web_ui())->IsOffTheRecord())
     return;
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "addStartupPage",
       base::BindRepeating(&StartupPagesHandler::HandleAddStartupPage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "editStartupPage",
       base::BindRepeating(&StartupPagesHandler::HandleEditStartupPage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "onStartupPrefsPageLoad",
       base::BindRepeating(&StartupPagesHandler::HandleOnStartupPrefsPageLoad,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "removeStartupPage",
       base::BindRepeating(&StartupPagesHandler::HandleRemoveStartupPage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setStartupPagesToCurrentPages",
       base::BindRepeating(
           &StartupPagesHandler::HandleSetStartupPagesToCurrentPages,
@@ -133,7 +133,7 @@ void StartupPagesHandler::HandleEditStartupPage(const base::ListValue* args) {
   const base::Value& callback_id = list[0];
   int index = list[1].GetInt();
 
-  if (index < 0 || index > startup_custom_pages_table_model_.RowCount()) {
+  if (index < 0 || index >= startup_custom_pages_table_model_.RowCount()) {
     RejectJavascriptCallback(callback_id, base::Value());
     NOTREACHED();
     return;

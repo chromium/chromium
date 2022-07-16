@@ -62,11 +62,13 @@ bool MockSSLHostStateDelegate::DidHostRunInsecureContent(
          hosts_ran_insecure_content_.end();
 }
 
-void MockSSLHostStateDelegate::AllowHttpForHost(const std::string& host) {
+void MockSSLHostStateDelegate::AllowHttpForHost(const std::string& host,
+                                                WebContents* web_contents) {
   allow_http_hosts_.insert(host);
 }
 
-bool MockSSLHostStateDelegate::IsHttpAllowedForHost(const std::string& host) {
+bool MockSSLHostStateDelegate::IsHttpAllowedForHost(const std::string& host,
+                                                    WebContents* web_contents) {
   return base::Contains(allow_http_hosts_, host);
 }
 

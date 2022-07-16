@@ -54,6 +54,9 @@ class FakeUpdateClient : public update_client::UpdateClient {
  public:
   FakeUpdateClient();
 
+  FakeUpdateClient(const FakeUpdateClient&) = delete;
+  FakeUpdateClient& operator=(const FakeUpdateClient&) = delete;
+
   // Returns the data we've gotten from the CrxDataCallback for ids passed to
   // the Update function.
   std::vector<absl::optional<update_client::CrxComponent>>* data() {
@@ -110,15 +113,15 @@ class FakeUpdateClient : public update_client::UpdateClient {
   }
   bool IsUpdating(const std::string& id) const override { return false; }
   void Stop() override {}
-  void SendUninstallPing(const std::string& id,
-                         const base::Version& version,
+  void SendUninstallPing(const update_client::CrxComponent& crx_component,
                          int reason,
                          update_client::Callback callback) override {
-    uninstall_pings_.emplace_back(id, version, reason);
+    uninstall_pings_.emplace_back(crx_component.app_id, crx_component.version,
+                                  reason);
   }
-  void SendRegistrationPing(const std::string& id,
-                            const base::Version& version,
+  void SendRegistrationPing(const update_client::CrxComponent& crx_component,
                             update_client::Callback Callback) override {}
+
   void FireEvent(Observer::Events event, const std::string& extension_id) {
     for (Observer* observer : observers_)
       observer->OnEvent(event, extension_id);
@@ -159,9 +162,6 @@ class FakeUpdateClient : public update_client::UpdateClient {
   bool is_malware_update_item_ = false;
   extensions::AllowlistState allowlist_state = extensions::ALLOWLIST_UNDEFINED;
   std::vector<UpdateRequest> delayed_requests_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeUpdateClient);
 };
 
 FakeUpdateClient::FakeUpdateClient() : delay_update_(false) {}

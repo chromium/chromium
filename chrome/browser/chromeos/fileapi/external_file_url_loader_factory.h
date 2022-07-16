@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_FILEAPI_EXTERNAL_FILE_URL_LOADER_FACTORY_H_
 #define CHROME_BROWSER_CHROMEOS_FILEAPI_EXTERNAL_FILE_URL_LOADER_FACTORY_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -32,6 +31,10 @@ class ExternalFileURLLoaderFactory
       void* profile_id,
       int render_process_host_id);
 
+  ExternalFileURLLoaderFactory(const ExternalFileURLLoaderFactory&) = delete;
+  ExternalFileURLLoaderFactory& operator=(const ExternalFileURLLoaderFactory&) =
+      delete;
+
  private:
   ExternalFileURLLoaderFactory(
       void* profile_id,
@@ -54,8 +57,6 @@ class ExternalFileURLLoaderFactory
 
   void* profile_id_;
   const int render_process_host_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalFileURLLoaderFactory);
 };
 
 }  // namespace chromeos

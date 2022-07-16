@@ -1,10 +1,8 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-
 mojom("mojom") {
   generate_java = true
   sources = [
@@ -22,15 +20,19 @@ mojom("mojom") {
     "compositing/filter_operation.mojom",
     "compositing/filter_operations.mojom",
     "compositing/frame_deadline.mojom",
+    "compositing/frame_sink_bundle.mojom",
+    "compositing/frame_sink_bundle_id.mojom",
     "compositing/frame_sink_id.mojom",
     "compositing/frame_timing_details.mojom",
     "compositing/local_surface_id.mojom",
     "compositing/paint_filter.mojom",
     "compositing/quads.mojom",
+    "compositing/region_capture_bounds.mojom",
     "compositing/resource_id.mojom",
     "compositing/resource_settings.mojom",
     "compositing/returned_resource.mojom",
     "compositing/selection.mojom",
+    "compositing/shared_element_resource_id.mojom",
     "compositing/shared_quad_state.mojom",
     "compositing/subtree_capture_id.mojom",
     "compositing/surface_id.mojom",
@@ -45,7 +47,6 @@ mojom("mojom") {
     "hit_test/hit_test_region_list.mojom",
     "hit_test/input_target_client.mojom",
   ]
-
   public_deps = [
     ":resource_format",
     "//gpu/ipc/common:interfaces",
@@ -57,16 +58,23 @@ mojom("mojom") {
     "//ui/gl/mojom",
     "//ui/latency/mojom",
   ]
-
   if (is_chromeos_ash) {
     public_deps += [ "//components/chromeos_camera/common" ]
   }
-
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/public/platform/web_common.h"
-
   shared_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "viz.mojom.FrameSinkBundleId"
+          cpp = "::viz::FrameSinkBundleId"
+        },
+      ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/frame_sink_bundle_id_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
     {
       types = [
         {
@@ -89,6 +97,20 @@ mojom("mojom") {
       traits_headers = [
         "//services/viz/public/cpp/compositing/local_surface_id_mojom_traits.h",
       ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.RegionCaptureBounds"
+          cpp = "::viz::RegionCaptureBounds"
+        },
+        {
+          mojom = "map"
+          cpp = "base::flat_map"
+        },
+      ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/region_capture_bounds_mojom_traits.h" ]
       traits_public_deps = [ "//components/viz/common" ]
     },
     {
@@ -162,7 +184,6 @@ mojom("mojom") {
       traits_public_deps = [ "//components/viz/common" ]
     },
   ]
-
   cpp_typemaps = shared_cpp_typemaps
   cpp_typemaps += [
     {
@@ -404,6 +425,16 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "viz.mojom.SharedElementResourceId"
+          cpp = "::viz::SharedElementResourceId"
+        },
+      ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/shared_element_resource_id_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
           mojom = "viz.mojom.BufferUsageAndFormat"
           cpp = "::std::pair<::gfx::BufferUsage, gfx::BufferFormat>"
         },
@@ -456,7 +487,6 @@ mojom("mojom") {
       ]
     },
   ]
-
   blink_cpp_typemaps = shared_cpp_typemaps
   blink_cpp_typemaps += [
     {
@@ -558,7 +588,6 @@ mojom("mojom") {
     },
   ]
 }
-
 mojom("resource_format") {
   generate_java = true
   sources = [ "compositing/resource_format.mojom" ]

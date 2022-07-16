@@ -170,57 +170,6 @@ enum AppDiscoveryRequestState {
   PHONESKY_RESULT_INVALID_DATA = 16,
 };
 
-// Describes the type/category of an app data search result.
-[Extensible]
-enum AppDataResultType {
-  PERSON = 0,         // Person search result.
-  NOTE_DOCUMENT = 1,  // Note document search result.
-};
-
-// Describes an app data search result.
-struct AppDataResult {
-  // Intent uri to launch the result.
-  string launch_intent_uri@0;
-  // Label for the result.
-  string label@1;
-  // Text information for the result.
-  string text@3;
-  // Icon information in png format. It could be null if not provided. Decoded
-  // in the utility process. This will be replaced by |icon|.
-  array<uint8>? icon_png_data@2;
-  // Type of this app data search result.
-  [MinVersion=28] AppDataResultType type@4;
-  // Icon information in png format. It could be null if not provided. Decoded
-  // in the utility process.
-  [MinVersion=46] RawIconPngData? icon@5;
-};
-
-// Describes the status of an app data search request, including completed
-// states and all possible anomalies.
-[Extensible]
-enum AppDataRequestState {
-  // Request is handled successfully.
-  REQUEST_SUCCESS = 0,
-  // Request is canceled.
-  REQUEST_CANCELED = 1,
-  // Request times out.
-  REQUEST_TIMEOUT = 2,
-  // Request fails for the case of an interrupted status.
-  REQUEST_INTERRUPTED = 3,
-  // Request fails for the case of response document error.
-  RESPONSE_DOCUMENT_ERROR = 4,
-  // Request has an unexpected exception of call to GmsCore.
-  REQUEST_UNEXPECTED_EXCEPTION = 5,
-  // Request has invalid parameters.
-  REQUEST_HAS_INVALID_PARAMS = 6,
-  // AppDataSearchProxyService is not available.
-  APP_DATA_SEARCH_PROXY_NOT_AVAILABLE = 7,
-  // Failed to call globalQuery to GmsCore.
-  FAILED_TO_CALL_GLOBALQUERY = 8,
-  // Failed to sign into GmsCore.
-  NOT_SIGNED_IN = 9,
-};
-
 // Describes the category type of app shortcut item.
 [Extensible]
 enum AppShortcutItemType {
@@ -406,7 +355,7 @@ interface AppHost {
 
 // TODO(lhchavez): Migrate all request/response messages to Mojo.
 // Next method ID: 40
-// Deprecated method IDs: 2, 3, 13
+// Deprecated method IDs: 0, 1, 2, 3, 4, 9, 12, 13, 15, 17, 22
 interface AppInstance {
   // DEPRECATED: Please use Init@21 instead.
   InitDeprecated@0(pending_remote<AppHost> host_remote);
@@ -566,11 +515,6 @@ interface AppInstance {
   // Sends a request to ARC to get app shortcuts for app with |package_name|.
   [MinVersion=29] GetAppShortcutItems@23(string package_name) =>
       (array<AppShortcutItem> shortcut_items);
-
-  // Starts a query for app data, which is querying icing indexable contents.
-  [MinVersion=27] GetIcingGlobalQueryResults@22(
-      string query, int32 max_results) =>
-          (AppDataRequestState state, array<AppDataResult> results);
 
   // Starts a query for Play Store apps.
   [MinVersion=20] GetRecentAndSuggestedAppsFromPlayStore@16(

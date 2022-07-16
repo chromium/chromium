@@ -61,6 +61,9 @@ namespace google {
 namespace protobuf {
 namespace internal {
 
+InitSCCCallback g_init_scc_enter = nullptr;
+InitSCCCallback g_init_scc_leave = nullptr;
+
 void DestroyMessage(const void* message) {
   static_cast<const MessageLite*>(message)->~MessageLite();
 }
@@ -80,6 +83,11 @@ static bool InitProtobufDefaultsImpl() {
 void InitProtobufDefaults() {
   static bool is_inited = InitProtobufDefaultsImpl();
   (void)is_inited;
+}
+
+void RegisterInitSCCHooks(InitSCCCallback enter, InitSCCCallback leave) {
+  g_init_scc_enter = enter;
+  g_init_scc_leave = leave;
 }
 
 const std::string& GetEmptyString() {
@@ -817,9 +825,17 @@ void InitSCCImpl(SCCInfoBase* scc) {
              SCCInfoBase::kRunning);
     return;
   }
+
+  // Give the chance to the embedder to adjust thread priority before performing
+  // protobuf initialisation. The process-wide lock |mu| is a source of
+  // contention and should aboid being taken at low thread priority.
+  if (g_init_scc_enter)
+    g_init_scc_enter();
+
   InitProtobufDefaults();
   mu.Lock();
   runner.store(me, std::memory_order_relaxed);
+
   InitSCC_DFS(scc);
 
 #ifndef GOOGLE_PROTOBUF_SUPPORT_WINDOWS_XP
@@ -829,6 +845,10 @@ void InitSCCImpl(SCCInfoBase* scc) {
 #endif  // #ifndef GOOGLE_PROTOBUF_SUPPORT_WINDOWS_XP
 
   mu.Unlock();
+
+  // If needed, restore the thread priority.
+  if (g_init_scc_leave)
+    g_init_scc_leave();
 }
 
 }  // namespace internal

@@ -25,9 +25,6 @@ namespace {
 // Speed up the initial component checking.
 const char kSwitchFastUpdate[] = "fast-update";
 
-// Add "testrequest=1" attribute to the update check request.
-const char kSwitchTestRequestParam[] = "test-request";
-
 // Disables pings. Pings are the requests sent to the update server that report
 // the success or the failure of component install or update attempts.
 const char kSwitchDisablePings[] = "disable-pings";
@@ -67,6 +64,9 @@ std::string GetSwitchArgument(const std::vector<std::string>& vec,
 }
 
 }  // namespace
+
+// Add "testrequest=1" attribute to the update check request.
+const char kSwitchTestRequestParam[] = "test-request";
 
 ComponentUpdaterCommandLineConfigPolicy::
     ComponentUpdaterCommandLineConfigPolicy(const base::CommandLine* cmdline) {

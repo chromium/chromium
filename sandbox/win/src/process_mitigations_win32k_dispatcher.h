@@ -19,6 +19,12 @@ namespace sandbox {
 class ProcessMitigationsWin32KDispatcher : public Dispatcher {
  public:
   explicit ProcessMitigationsWin32KDispatcher(PolicyBase* policy_base);
+
+  ProcessMitigationsWin32KDispatcher(
+      const ProcessMitigationsWin32KDispatcher&) = delete;
+  ProcessMitigationsWin32KDispatcher& operator=(
+      const ProcessMitigationsWin32KDispatcher&) = delete;
+
   ~ProcessMitigationsWin32KDispatcher() override;
 
   // Dispatcher interface.
@@ -26,8 +32,6 @@ class ProcessMitigationsWin32KDispatcher : public Dispatcher {
 
  private:
   PolicyBase* policy_base_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMitigationsWin32KDispatcher);
 };
 
 }  // namespace sandbox

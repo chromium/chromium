@@ -6,9 +6,7 @@
  * @fileoverview Enable developer features screen implementation.
  */
 
-'use strict';
-
-(function() {
+/* #js_imports_placeholder */
 
 /**
  * Possible UI states of the enable debugging screen.
@@ -16,7 +14,7 @@
  * in C++ code and the order of the enum must be the same.
  * @enum {string}
  */
-const UI_STATE = {
+const EnableDebuggingState = {
   ERROR: 'error',
   NONE: 'none',
   REMOVE_PROTECTION: 'remove-protection',
@@ -25,62 +23,91 @@ const UI_STATE = {
   DONE: 'done',
 };
 
-Polymer({
-  is: 'oobe-debugging-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ */
+ const EnableDebuggingBase = Polymer.mixinBehaviors(
+  [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+  Polymer.Element);
 
-  behaviors: [
-    OobeI18nBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+/**
+ * @typedef {{
+ *   removeProtectionProceedButton:  OobeTextButtonElement,
+ *   password:  CrInputElement,
+ *   okButton:  OobeTextButtonElement,
+ *   errorOkButton: OobeTextButtonElement
+ * }}
+ */
+ EnableDebuggingBase.$;
 
-  EXTERNAL_API: ['updateState'],
+/**
+ * @polymer
+ */
+class EnableDebugging extends EnableDebuggingBase {
 
-  properties: {
-    /**
-     * Current value of password input field.
-     */
-    password_: {type: String, value: ''},
+  static get is() { return 'enable-debugging-element'; }
 
-    /**
-     * Current value of repeat password input field.
-     */
-    passwordRepeat_: {type: String, value: ''},
+  /* #html_template_placeholder */
 
-    /**
-     * Whether password input fields are matching.
-     */
-    passwordsMatch_: {
-      type: Boolean,
-      computed: 'computePasswordsMatch_(password_, passwordRepeat_)',
-    },
-  },
+  get EXTERNAL_API() {
+    return ['updateState'];
+  }
+
+  static get properties() {
+    return {
+      /**
+       * Current value of password input field.
+       */
+      password_: {type: String, value: ''},
+
+      /**
+       * Current value of repeat password input field.
+       */
+      passwordRepeat_: {type: String, value: ''},
+
+      /**
+       * Whether password input fields are matching.
+       */
+      passwordsMatch_: {
+        type: Boolean,
+        computed: 'computePasswordsMatch_(password_, passwordRepeat_)',
+      },
+    };
+  }
 
   ready() {
+    super.ready();
     this.initializeLoginScreen('EnableDebuggingScreen', {
       resetAllowed: false,
     });
-  },
+  }
 
   defaultUIStep() {
-    return UI_STATE.NONE;
-  },
+    return EnableDebuggingState.NONE;
+  }
 
-  UI_STEPS: UI_STATE,
+  get UI_STEPS() {
+    return EnableDebuggingState;
+  }
 
   /**
    * Returns a control which should receive an initial focus.
    */
   get defaultControl() {
-    if (this.uiStep == UI_STATE.REMOVE_PROTECTION)
+    if (this.uiStep == EnableDebuggingState.REMOVE_PROTECTION)
       return this.$.removeProtectionProceedButton;
-    else if (this.uiStep == UI_STATE.SETUP)
+    else if (this.uiStep == EnableDebuggingState.SETUP)
       return this.$.password;
-    else if (this.uiStep == UI_STATE.DONE)
+    else if (this.uiStep == EnableDebuggingState.DONE)
       return this.$.okButton;
-    else if (this.uiStep == UI_STATE.ERROR)
+    else if (this.uiStep == EnableDebuggingState.ERROR)
       return this.$.errorOkButton;
-  },
+    else
+      return null;
+  }
 
   /**
    * Cancels the enable debugging screen and drops the user back to the
@@ -88,43 +115,42 @@ Polymer({
    */
   cancel() {
     this.userActed('cancel');
-  },
+  }
 
   /**
    * Update UI for corresponding state of the screen.
    * @param {number} state
-   * @suppress {missingProperties}
    */
   updateState(state) {
-    // Use `state + 1` as index to locate the corresponding UI_STATE
-    this.setUIStep(Object.values(UI_STATE)[state + 1]);
+    // Use `state + 1` as index to locate the corresponding EnableDebuggingState
+    this.setUIStep(Object.values(EnableDebuggingState)[state + 1]);
 
     if (this.defaultControl)
       this.defaultControl.focus();
-  },
+  }
 
   computePasswordsMatch_(password, password2) {
     return (password.length == 0 && password2.length == 0) ||
         (password == password2 && password.length >= 4);
-  },
+  }
 
   onHelpLinkClicked_() {
     this.userActed('learnMore');
-  },
+  }
 
   onRemoveButtonClicked_() {
     this.userActed('removeRootFSProtection');
-  },
+  }
 
   onEnableButtonClicked_() {
     chrome.send('enableDebuggingOnSetup', [this.password_]);
     this.password_ = '';
     this.passwordRepeat_ = '';
-  },
+  }
 
   onOKButtonClicked_() {
     this.userActed('done');
-  },
+  }
+}
 
-});
-})();
+customElements.define(EnableDebugging.is, EnableDebugging);

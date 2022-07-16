@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL reload() appears as a reload to service worker fetch event handlers promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'getRegistration')"
+Harness: the test ran to completion.
+

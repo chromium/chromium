@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -54,6 +53,10 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   // for testing.
   static scoped_refptr<LegacyCacheStorageManager> CreateForTesting(
       LegacyCacheStorageManager* old_manager);
+
+  LegacyCacheStorageManager(const LegacyCacheStorageManager&) = delete;
+  LegacyCacheStorageManager& operator=(const LegacyCacheStorageManager&) =
+      delete;
 
   // Map a database identifier (computed from a storage key) to the path.
   static base::FilePath ConstructStorageKeyPath(
@@ -168,8 +171,6 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LegacyCacheStorageManager);
 };
 
 }  // namespace content

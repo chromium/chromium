@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/network/network_handler_callbacks.h"
 
 namespace base {
@@ -48,6 +47,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandler {
   static const char kErrorUnknown[];
 
   NetworkDeviceHandler();
+
+  NetworkDeviceHandler(const NetworkDeviceHandler&) = delete;
+  NetworkDeviceHandler& operator=(const NetworkDeviceHandler&) = delete;
+
   virtual ~NetworkDeviceHandler();
 
   // Invokes |callback| with the properties for the device matching
@@ -153,7 +156,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandler {
   // Enables/disables roaming of all cellular devices. This happens
   // asychronously in the background and applies also to devices which become
   // available in the future.
-  virtual void SetCellularAllowRoaming(bool allow_roaming) = 0;
+  virtual void SetCellularAllowRoaming(bool allow_roaming,
+                                       bool policy_allow_roaming) = 0;
 
   // Sets up MAC address randomization if available. This applies to devices
   // which become available in the future.
@@ -165,9 +169,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandler {
 
   static std::unique_ptr<NetworkDeviceHandler> InitializeForTesting(
       NetworkStateHandler* network_state_handler);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkDeviceHandler);
 };
 
 }  // namespace chromeos

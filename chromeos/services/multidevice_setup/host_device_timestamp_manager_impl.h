@@ -48,6 +48,11 @@ class HostDeviceTimestampManagerImpl : public HostDeviceTimestampManager,
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  HostDeviceTimestampManagerImpl(const HostDeviceTimestampManagerImpl&) =
+      delete;
+  HostDeviceTimestampManagerImpl& operator=(
+      const HostDeviceTimestampManagerImpl&) = delete;
+
   ~HostDeviceTimestampManagerImpl() override;
 
   // HostDeviceTimestampManager:
@@ -71,8 +76,6 @@ class HostDeviceTimestampManagerImpl : public HostDeviceTimestampManager,
   HostStatusProvider* host_status_provider_;
   PrefService* pref_service_;
   base::Clock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostDeviceTimestampManagerImpl);
 };
 
 }  // namespace multidevice_setup

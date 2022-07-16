@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_PARTITIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_PARTITIONS_H_
 
-#include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
@@ -47,11 +47,20 @@ class WTF_EXPORT Partitions {
 
   // Should be called on the thread which is or will become the main one.
   static void Initialize();
+  static void InitializeArrayBufferPartition();
   static void StartPeriodicReclaim(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  // The ArrayBufferPartition is initialized separately from the other
+  // partitions and so may not always be available. This function can be used to
+  // determine whether the partition has been initialized.
+  ALWAYS_INLINE static bool ArrayBufferPartitionInitialized() {
+    return array_buffer_root_ != nullptr;
+  }
+
   ALWAYS_INLINE static base::ThreadSafePartitionRoot* ArrayBufferPartition() {
     DCHECK(initialized_);
+    DCHECK(ArrayBufferPartitionInitialized());
     return array_buffer_root_;
   }
 
@@ -77,13 +86,18 @@ class WTF_EXPORT Partitions {
 
   static void DumpMemoryStats(bool is_light_dump, base::PartitionStatsDumper*);
 
-  static void* BufferMalloc(size_t n, const char* type_name);
-  static void* BufferTryRealloc(void* p, size_t n, const char* type_name);
+  static void* MALLOC_FN BufferMalloc(size_t n,
+                                      const char* type_name) MALLOC_ALIGNED;
+  static void* BufferTryRealloc(void* p,
+                                size_t n,
+                                const char* type_name) MALLOC_ALIGNED;
   static void BufferFree(void* p);
   static size_t BufferPotentialCapacity(size_t n);
 
-  static void* FastMalloc(size_t n, const char* type_name);
-  static void* FastZeroedMalloc(size_t n, const char* type_name);
+  static void* MALLOC_FN FastMalloc(size_t n,
+                                    const char* type_name) MALLOC_ALIGNED;
+  static void* MALLOC_FN FastZeroedMalloc(size_t n,
+                                          const char* type_name) MALLOC_ALIGNED;
   static void FastFree(void* p);
 
   static void HandleOutOfMemory(size_t size);

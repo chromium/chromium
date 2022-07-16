@@ -63,7 +63,8 @@ class ActivityServiceMediatorTest : public PlatformTest {
            bookmarksHandler:mocked_bookmarks_handler_
         qrGenerationHandler:mocked_qr_generation_handler_
                 prefService:pref_service_.get()
-              bookmarkModel:nil];
+              bookmarkModel:nil
+         baseViewController:nil];
 
     pref_service_->registry()->RegisterBooleanPref(prefs::kPrintingEnabled,
                                                    true);
@@ -292,21 +293,43 @@ TEST_F(ActivityServiceMediatorTest, ActivitiesForImageData) {
 
   NSArray* activities = [mediator_ applicationActivitiesForImageData:data];
 
-  // For now, we don't have any custom activities.
-  EXPECT_EQ(0U, [activities count]);
+  // For now, we only customize the print activity.
+  EXPECT_EQ(1U, [activities count]);
+  VerifyTypes(activities, @[ [PrintActivity class] ]);
 }
 
-// Tests that computing the list of excluded activities works for one item.
-TEST_F(ActivityServiceMediatorTest, ExcludedActivityTypes_SingleItem) {
+// Tests that computing the list of excluded activities works for one URL.
+TEST_F(ActivityServiceMediatorTest, ExcludedActivityTypes_SingleItemURL) {
   ChromeActivityURLSource* activityURLSource = [[ChromeActivityURLSource alloc]
       initWithShareURL:[NSURL URLWithString:@"https://example.com"]
                subject:@"Does not matter"];
 
-  NSSet* computedExclusion =
+  NSSet* expectedSet = [NSSet setWithArray:@[
+    UIActivityTypeAddToReadingList, UIActivityTypeCopyToPasteboard,
+    UIActivityTypePrint, UIActivityTypeSaveToCameraRoll
+  ]];
+  NSSet* mediatorSet =
       [mediator_ excludedActivityTypesForItems:@[ activityURLSource ]];
 
-  EXPECT_TRUE(
-      [activityURLSource.excludedActivityTypes isEqualToSet:computedExclusion]);
+  EXPECT_NSEQ(expectedSet, activityURLSource.excludedActivityTypes);
+  EXPECT_NSEQ(expectedSet, mediatorSet);
+}
+
+// Tests that computing the list of excluded activities works for one image.
+TEST_F(ActivityServiceMediatorTest, ExcludedActivityTypes_SingleItemImage) {
+  ChromeActivityImageSource* activityImageSource =
+      [[ChromeActivityImageSource alloc] initWithImage:[[UIImage alloc] init]
+                                                 title:@"something"];
+  NSSet* expectedSet = [NSSet setWithArray:@[
+    UIActivityTypeAssignToContact,
+    UIActivityTypePrint,
+  ]];
+
+  NSSet* mediatorSet =
+      [mediator_ excludedActivityTypesForItems:@[ activityImageSource ]];
+
+  EXPECT_NSEQ(expectedSet, activityImageSource.excludedActivityTypes);
+  EXPECT_NSEQ(expectedSet, mediatorSet);
 }
 
 // Tests that computing the list of excluded activities works for two item.

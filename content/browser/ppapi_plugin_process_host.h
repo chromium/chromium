@@ -13,7 +13,6 @@
 
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
@@ -61,6 +60,9 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
    protected:
     ~PluginClient() override {}
   };
+
+  PpapiPluginProcessHost(const PpapiPluginProcessHost&) = delete;
+  PpapiPluginProcessHost& operator=(const PpapiPluginProcessHost&) = delete;
 
   ~PpapiPluginProcessHost() override;
 
@@ -159,8 +161,6 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
   const absl::optional<url::Origin> origin_lock_;
 
   std::unique_ptr<BrowserChildProcessHostImpl> process_;
-
-  DISALLOW_COPY_AND_ASSIGN(PpapiPluginProcessHost);
 };
 
 class PpapiPluginProcessHostIterator

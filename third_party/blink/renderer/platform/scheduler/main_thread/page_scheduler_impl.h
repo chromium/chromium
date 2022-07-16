@@ -51,11 +51,11 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
  public:
   // Interval between throttled wake ups, without intensive throttling.
   static constexpr base::TimeDelta kDefaultThrottledWakeUpInterval =
-      base::TimeDelta::FromSeconds(1);
+      base::Seconds(1);
 
   // Interval between throttled wake ups, with intensive throttling.
   static constexpr base::TimeDelta kIntensiveThrottledWakeUpInterval =
-      base::TimeDelta::FromMinutes(1);
+      base::Minutes(1);
 
   PageSchedulerImpl(PageScheduler::Delegate*, AgentGroupSchedulerImpl&);
   PageSchedulerImpl(const PageSchedulerImpl&) = delete;
@@ -68,7 +68,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   void SetPageVisible(bool page_visible) override;
   void SetPageFrozen(bool) override;
   void SetPageBackForwardCached(bool) override;
-  void SetKeepActive(bool) override;
   bool IsMainFrameLocal() const override;
   void SetIsMainFrameLocal(bool is_local) override;
   void OnLocalMainFrameNetworkAlmostIdle() override;
@@ -112,7 +111,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // Returns whether CPU time is throttled for the page. Note: This is
   // independent from wake up rate throttling.
   bool IsCPUTimeThrottled() const;
-  bool KeepActive() const;
 
   bool IsLoading() const;
 
@@ -124,9 +122,10 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   AgentGroupSchedulerImpl& GetAgentGroupScheduler() override;
 
   void Unregister(FrameSchedulerImpl*);
-  void OnNavigation();
 
   void OnThrottlingStatusUpdated();
+
+  void OnVirtualTimeEnabled();
 
   void OnTraceLogEnabled();
 
@@ -229,8 +228,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // silence during which a logo and button are shown after a YouTube ad. Since
   // most pages don't play audio in background, it was decided that the delay
   // can be increased to 30 seconds without significantly affecting performance.
-  static constexpr base::TimeDelta kRecentAudioDelay =
-      base::TimeDelta::FromSeconds(30);
+  static constexpr base::TimeDelta kRecentAudioDelay = base::Seconds(30);
 
   static const char kHistogramPageLifecycleStateTransition[];
 
@@ -262,8 +260,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   void MaybeInitializeBackgroundCPUTimeBudgetPool(
       base::sequence_manager::LazyNow* lazy_now);
 
-  void OnThrottlingReported(base::TimeDelta throttling_duration);
-
   // Depending on page visibility, either turns throttling off, or schedules a
   // call to enable it after a grace period.
   void UpdatePolicyOnVisibilityChange(NotificationPolicy notification_policy);
@@ -291,11 +287,12 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   void EnableThrottling();
 
   // Returns true if the page is backgrounded, false otherwise. A page is
-  // considered backgrounded if it is both not visible and not playing audio.
+  // considered backgrounded if it is not visible, not playing audio and
+  // virtual time is disabled.
   bool IsBackgrounded() const;
 
   // Returns true if the page should be frozen after delay, which happens if
-  // IsBackgrounded() and freezing is enabled.
+  // IsBackgrounded() is true and freezing is enabled.
   bool ShouldFreezePage() const;
 
   // Callback for freezing the page. Freezing must be enabled and the page must
@@ -322,13 +319,11 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   base::TimeTicks page_visibility_changed_time_;
   AudioState audio_state_;
   bool is_frozen_;
-  bool reported_background_throttling_since_navigation_;
   bool opted_out_from_aggressive_throttling_;
   bool nested_runloop_;
   bool is_main_frame_local_;
   bool is_cpu_time_throttled_;
   bool are_wake_ups_intensively_throttled_;
-  bool keep_active_;
   bool had_recent_title_or_favicon_update_;
   std::unique_ptr<CPUTimeBudgetPool> cpu_time_budget_pool_;
 

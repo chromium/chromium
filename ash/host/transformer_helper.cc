@@ -21,7 +21,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ash {
 namespace {
@@ -32,6 +32,10 @@ class SimpleRootWindowTransformer : public RootWindowTransformer {
   SimpleRootWindowTransformer(const aura::Window* root_window,
                               const gfx::Transform& transform)
       : root_window_(root_window), transform_(transform) {}
+
+  SimpleRootWindowTransformer(const SimpleRootWindowTransformer&) = delete;
+  SimpleRootWindowTransformer& operator=(const SimpleRootWindowTransformer&) =
+      delete;
 
   // RootWindowTransformer overrides:
   gfx::Transform GetTransform() const override { return transform_; }
@@ -62,8 +66,6 @@ class SimpleRootWindowTransformer : public RootWindowTransformer {
 
   const aura::Window* root_window_;
   const gfx::Transform transform_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleRootWindowTransformer);
 };
 
 }  // namespace

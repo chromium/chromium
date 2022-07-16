@@ -6,7 +6,6 @@
 #define ASH_ACCESSIBILITY_CHROMEVOX_TOUCH_ACCESSIBILITY_ENABLER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
@@ -49,6 +48,11 @@ class ASH_EXPORT TouchAccessibilityEnabler : public ui::EventHandler {
  public:
   TouchAccessibilityEnabler(aura::Window* root_window,
                             TouchAccessibilityEnablerDelegate* delegate);
+
+  TouchAccessibilityEnabler(const TouchAccessibilityEnabler&) = delete;
+  TouchAccessibilityEnabler& operator=(const TouchAccessibilityEnabler&) =
+      delete;
+
   ~TouchAccessibilityEnabler() override;
 
   bool IsInNoFingersDownForTesting() { return state_ == NO_FINGERS_DOWN; }
@@ -131,8 +135,6 @@ class ASH_EXPORT TouchAccessibilityEnabler : public ui::EventHandler {
   bool event_handler_installed_ = false;
 
   base::WeakPtrFactory<TouchAccessibilityEnabler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TouchAccessibilityEnabler);
 };
 
 }  // namespace ash

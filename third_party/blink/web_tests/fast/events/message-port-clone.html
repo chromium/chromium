@@ -36,7 +36,7 @@ debug("Posting a detached ArrayBufferView should throw.");
 channel = new MessageChannel;
 var uint16Array = new Uint16Array(10);
 
-shouldThrow("channel.port1.postMessage('msg', [uint16Array])", '"TypeError: Failed to execute \'postMessage\' on \'MessagePort\': Value at index 0 does not have a transferable type."');
+shouldThrow("channel.port1.postMessage('msg', [uint16Array])", '"DataCloneError: Failed to execute \'postMessage\' on \'MessagePort\': Value at index 0 does not have a transferable type."');
 
 channel.port1.postMessage("msg", [uint16Array.buffer]);
 shouldThrow("channel.port1.postMessage(uint16Array, [])", '"DataCloneError: Failed to execute \'postMessage\' on \'MessagePort\': An ArrayBuffer is detached and could not be cloned."');

@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview The decompressor for Base88 compressed character lists.
@@ -45,6 +37,7 @@ goog.require('goog.i18n.uChar');
  * @final
  */
 goog.i18n.CharListDecompressor = function() {
+  'use strict';
   this.buildCharMap_(
       '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr' +
       'stuvwxyz!#$%()*+,-.:;<=>?@[]^_`{|}~');
@@ -67,6 +60,7 @@ goog.i18n.CharListDecompressor.prototype.charMap_ = null;
  * @private
  */
 goog.i18n.CharListDecompressor.prototype.buildCharMap_ = function(str) {
+  'use strict';
   if (!this.charMap_) {
     this.charMap_ = {};
     for (var i = 0; i < str.length; i++) {
@@ -88,6 +82,7 @@ goog.i18n.CharListDecompressor.prototype.buildCharMap_ = function(str) {
  */
 goog.i18n.CharListDecompressor.prototype.getCodeAt_ = function(
     str, start, leng) {
+  'use strict';
   var result = 0;
   for (var i = 0; i < leng; i++) {
     var c = this.charMap_[str.charAt(start + i)];
@@ -112,6 +107,7 @@ goog.i18n.CharListDecompressor.prototype.getCodeAt_ = function(
  */
 goog.i18n.CharListDecompressor.prototype.addChars_ = function(
     list, lastcode, value, type) {
+  'use strict';
   if (type == 0) {
     lastcode += value + 1;
     goog.array.extend(list, goog.i18n.uChar.fromCharCode(lastcode));
@@ -135,6 +131,7 @@ goog.i18n.CharListDecompressor.prototype.addChars_ = function(
  *     string in base 88 scheme.
  */
 goog.i18n.CharListDecompressor.prototype.toCharList = function(str) {
+  'use strict';
   var metasize = 8;
   var result = [];
   var lastcode = 0;

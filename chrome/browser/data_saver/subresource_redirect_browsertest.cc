@@ -90,6 +90,11 @@ class SubresourceRedirectBrowserTest : public InProcessBrowserTest {
         https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         compression_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
+  SubresourceRedirectBrowserTest(const SubresourceRedirectBrowserTest&) =
+      delete;
+  SubresourceRedirectBrowserTest& operator=(
+      const SubresourceRedirectBrowserTest&) = delete;
+
   void SetUp() override {
     // |http_server| setup.
     http_server_.ServeFilesFromSourceDirectory("chrome/test/data");
@@ -362,7 +367,7 @@ class SubresourceRedirectBrowserTest : public InProcessBrowserTest {
     } else if (compression_server_failure_mode_ ==
                CompressionServerFailureMode::TIMEOUT) {
       return std::make_unique<net::test_server::DelayedHttpResponse>(
-          base::TimeDelta::FromSeconds(10));
+          base::Seconds(10));
     }
 
     // For the purpose of this browsertest, a redirect to the compression server
@@ -424,8 +429,6 @@ class SubresourceRedirectBrowserTest : public InProcessBrowserTest {
   bool https_server_image_fail_ = false;
   CompressionServerFailureMode compression_server_failure_mode_ =
       CompressionServerFailureMode::NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceRedirectBrowserTest);
 };
 
 class RedirectDisabledSubresourceRedirectBrowserTest
@@ -473,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL url = HttpsURLWithPath("/load_image/image_delayed_load.html");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
       histogram_tester(), "SubresourceRedirect.CompressionAttempt.ResponseCode",
@@ -510,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
   // trigger bypass.
   SetCompressionServerToFail(CompressionServerFailureMode::TIMEOUT);
   base::RunLoop().RunUntilIdle();
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
       histogram_tester(), "SubresourceRedirect.CompressionAttempt.ResponseCode",
@@ -528,9 +531,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
 
   // The second navigation should not attempt subresource redirect.
   SetCompressionServerToFail(CompressionServerFailureMode::NONE);
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      HttpsURLWithPath("/load_image/image_delayed_load.html?second"));
+      HttpsURLWithPath("/load_image/image_delayed_load.html?second")));
 
   base::RunLoop().RunUntilIdle();
   RetryForHistogramUntilCountReached(
@@ -541,11 +544,11 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
 
   // The third navigation should attempt subresource redirect, once the bypass
   // is cleared.
-  VerifyAndClearBypassTimeout(base::TimeDelta::FromSeconds(4));
+  VerifyAndClearBypassTimeout(base::Seconds(4));
   url = HttpsURLWithPath("/load_image/image_delayed_load.html?third");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
   base::RunLoop().RunUntilIdle();
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
   EXPECT_EQ(request_url().port(), compression_url().port());
@@ -568,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(
   CreateUkmRecorder();
   GURL url = HttpsURLWithPath("/load_image/private_url_image.html");
   SetUpPublicImageURLPaths(url, {"/load_image/private_url_image.png"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
       histogram_tester(), "SubresourceRedirect.CompressionAttempt.ResponseCode",
@@ -595,8 +598,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
                        NoTriggerWhenDataSaverOff) {
   EnableDataSaver(false);
   CreateUkmRecorder();
-  ui_test_utils::NavigateToURL(
-      browser(), HttpsURLWithPath("/load_image/image_delayed_load.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), HttpsURLWithPath("/load_image/image_delayed_load.html")));
 
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -623,9 +626,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest, NoTriggerInIncognito) {
   EnableDataSaver(true);
   CreateUkmRecorder();
   auto* incognito_browser = CreateIncognitoBrowser();
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser,
-      HttpsURLWithPath("/load_image/image_delayed_load.html"));
+      HttpsURLWithPath("/load_image/image_delayed_load.html")));
 
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -664,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
   CreateUkmRecorder();
   GURL url = HttpURLWithPath("/load_image/image_delayed_load.html");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -693,7 +696,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest, NoTriggerOnNonImage) {
   CreateUkmRecorder();
   GURL url = HttpsURLWithPath("/favicon/page_with_favicon.html");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -722,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
   CreateUkmRecorder();
   GURL url = HttpsURLWithPath("/load_image/fail_image.html");
   SetUpPublicImageURLPaths(url, {"/load_image/fail_image.png"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
   content::FetchHistogramsFromChildProcesses();
@@ -761,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
   SetCompressionServerToFail(CompressionServerFailureMode::EMPTY_RESPONSE);
 
   base::RunLoop().RunUntilIdle();
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
   RetryForHistogramUntilCountReached(
@@ -795,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(
   SetCompressionServerToFail(CompressionServerFailureMode::EMPTY_RESPONSE);
 
   base::RunLoop().RunUntilIdle();
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // The image should failed to load, but some redirect metrics are recorded.
   EXPECT_FALSE(RunScriptExtractBool("checkImage()"));
@@ -827,9 +830,9 @@ IN_PROC_BROWSER_TEST_F(
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
 
   base::RunLoop().RunUntilIdle();
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GetSubresourceURLForURL("/load_image/image_delayed_load.html"));
+      GetSubresourceURLForURL("/load_image/image_delayed_load.html")));
 
   // The image should failed to load, but some redirect
   // metrics are recorded.
@@ -858,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = HttpsURLWithPath("/load_image/two_images.html");
   SetUpPublicImageURLPaths(
       url, {"/load_image/image.png", "/load_image/image.png?foo"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
       histogram_tester(), "SubresourceRedirect.CompressionAttempt.ResponseCode",
@@ -890,7 +893,7 @@ IN_PROC_BROWSER_TEST_F(
   CreateUkmRecorder();
   GURL url = HttpsURLWithPath("/load_image/two_images.html");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
       histogram_tester(), "SubresourceRedirect.CompressionAttempt.ResponseCode",
@@ -922,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(
   CreateUkmRecorder();
   GURL url = HttpsURLWithPath("/load_image/image_with_fragment.html");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
       histogram_tester(), "SubresourceRedirect.CompressionAttempt.ResponseCode",
@@ -954,7 +957,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
   CreateUkmRecorder();
   GURL url = HttpsURLWithPath("/load_image/image_js.html");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -985,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
   CreateUkmRecorder();
   GURL url = HttpsURLWithPath("/load_image/image_csp_img_src.html");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -1019,7 +1022,7 @@ IN_PROC_BROWSER_TEST_F(
   CreateUkmRecorder();
   GURL url = HttpsURLWithPath("/load_image/image_csp_default_src.html");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -1052,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL url = HttpsURLWithPath("/load_image/image_csp_img_allowed.html");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
       histogram_tester(), "SubresourceRedirect.CompressionAttempt.ResponseCode",
@@ -1084,7 +1087,7 @@ IN_PROC_BROWSER_TEST_F(
   CreateUkmRecorder();
   GURL url = HttpsURLWithPath("/load_image/image_crossorigin_attribute.html");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png?nocrossorgin"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
       histogram_tester(), "SubresourceRedirect.CompressionAttempt.ResponseCode",
@@ -1115,7 +1118,7 @@ IN_PROC_BROWSER_TEST_F(
   CreateUkmRecorder();
   GURL url = HttpsURLWithPath("/load_image/image_delayed_load.html");
   SetUpPublicImageURLPaths(url, {});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   histogram_tester()->ExpectTotalCount(
       "SubresourceRedirect.CompressionAttempt.ResponseCode", 0);
@@ -1143,8 +1146,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
                        TestNoRedirectWithoutHints) {
   EnableDataSaver(true);
   CreateUkmRecorder();
-  ui_test_utils::NavigateToURL(
-      browser(), HttpsURLWithPath("/load_image/image_delayed_load.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), HttpsURLWithPath("/load_image/image_delayed_load.html")));
 
   histogram_tester()->ExpectTotalCount(
       "SubresourceRedirect.CompressionAttempt.ResponseCode", 0);
@@ -1172,8 +1175,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
                        TestNoRedirectWithoutHintsTwoImages) {
   EnableDataSaver(true);
   CreateUkmRecorder();
-  ui_test_utils::NavigateToURL(browser(),
-                               HttpsURLWithPath("/load_image/two_images.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), HttpsURLWithPath("/load_image/two_images.html")));
 
   histogram_tester()->ExpectTotalCount(
       "SubresourceRedirect.CompressionAttempt.ResponseCode", 0);
@@ -1205,7 +1208,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
   CreateUkmRecorder();
   GURL url = HttpsURLWithPath("/load_image/image_delayed_load.html");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
       histogram_tester(), "SubresourceRedirect.CompressionAttempt.ResponseCode",
@@ -1229,8 +1232,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
   // Initiate a same-origin navigation without hints, and let the timeout ukm be
   // recorded.
   CreateUkmRecorder();
-  ui_test_utils::NavigateToURL(browser(),
-                               HttpsURLWithPath("/load_image/two_images.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), HttpsURLWithPath("/load_image/two_images.html")));
 
   histogram_tester()->ExpectTotalCount(
       "SubresourceRedirect.CompressionAttempt.ResponseCode", 2);
@@ -1263,7 +1266,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
   SetCompressionServerToFail(
       CompressionServerFailureMode::LOADSHED_503_RETRY_AFTER_RESPONSE);
   base::RunLoop().RunUntilIdle();
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
   RetryForHistogramUntilCountReached(
@@ -1285,9 +1288,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
 
   // The second navigation should not attempt subresource redirect.
   SetCompressionServerToFail(CompressionServerFailureMode::NONE);
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      HttpsURLWithPath("/load_image/image_delayed_load.html?second"));
+      HttpsURLWithPath("/load_image/image_delayed_load.html?second")));
 
   base::RunLoop().RunUntilIdle();
   RetryForHistogramUntilCountReached(
@@ -1298,11 +1301,11 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
 
   // The third navigation should attempt subresource redirect, once the bypass
   // is cleared.
-  VerifyAndClearBypassTimeout(base::TimeDelta::FromSeconds(4));
+  VerifyAndClearBypassTimeout(base::Seconds(4));
   url = HttpsURLWithPath("/load_image/image_delayed_load.html?third");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
   base::RunLoop().RunUntilIdle();
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
   RetryForHistogramUntilCountReached(
@@ -1321,7 +1324,7 @@ IN_PROC_BROWSER_TEST_F(RedirectDisabledSubresourceRedirectBrowserTest,
   CreateUkmRecorder();
   GURL url = HttpsURLWithPath("/load_image/image_delayed_load.html");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -1349,8 +1352,8 @@ IN_PROC_BROWSER_TEST_F(InfoBarEnabledSubresourceRedirectBrowserTest,
                        InfoBarNotShownWhenDataSaverOff) {
   EnableDataSaver(false);
   CreateUkmRecorder();
-  ui_test_utils::NavigateToURL(
-      browser(), HttpsURLWithPath("/load_image/image_delayed_load.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), HttpsURLWithPath("/load_image/image_delayed_load.html")));
 
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -1377,9 +1380,9 @@ IN_PROC_BROWSER_TEST_F(InfoBarEnabledSubresourceRedirectBrowserTest,
   EnableDataSaver(true);
   CreateUkmRecorder();
   auto* incognito_browser = CreateIncognitoBrowser();
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser,
-      HttpsURLWithPath("/load_image/image_delayed_load.html"));
+      HttpsURLWithPath("/load_image/image_delayed_load.html")));
 
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -1420,7 +1423,7 @@ IN_PROC_BROWSER_TEST_F(
   // infobar.
   GURL url = HttpsURLWithPath("/load_image/image_delayed_load.html");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -1449,7 +1452,7 @@ IN_PROC_BROWSER_TEST_F(
   // be shown.
   url = HttpsURLWithPath("/load_image/image_delayed_load.html?second");
   SetUpPublicImageURLPaths(url, {"/load_image/image.png"});
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
       histogram_tester(), "SubresourceRedirect.CompressionAttempt.ResponseCode",
@@ -1538,8 +1541,10 @@ class SubresourceRedirectWithHintsServerBrowserTest
         optimization_guide::proto::OptimizationType::COMPRESS_PUBLIC_IMAGES);
     auto* public_image_metadata = optimization->mutable_public_image_metadata();
 
-    for (const auto& url : public_image_paths)
-      public_image_metadata->add_url(HttpsURLWithPath(url).spec());
+    for (const auto& public_image_path : public_image_paths) {
+      public_image_metadata->add_url(
+          HttpsURLWithPath(public_image_path).spec());
+    }
 
     base::AutoLock lock(lock_);
     get_hints_response.SerializeToString(&get_hints_response_);
@@ -1551,7 +1556,7 @@ class SubresourceRedirectWithHintsServerBrowserTest
     switch (hint_fetch_mode_) {
       case HintFetchMode::HINT_FETCH_AFTER_IMAGES_LOADED: {
         auto response = std::make_unique<net::test_server::DelayedHttpResponse>(
-            base::TimeDelta::FromSeconds(3));
+            base::Seconds(3));
         response->set_content(get_hints_response_);
         response->set_code(net::HTTP_OK);
         return std::move(response);
@@ -1583,8 +1588,8 @@ IN_PROC_BROWSER_TEST_F(
   SetUpPublicImageURLPaths("/load_image/two_images.html",
                            {"/load_image/image.png"},
                            HintFetchMode::HINT_FETCH_AFTER_IMAGES_LOADED);
-  ui_test_utils::NavigateToURL(browser(),
-                               HttpsURLWithPath("/load_image/two_images.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), HttpsURLWithPath("/load_image/two_images.html")));
 
   // Let the images load.
   EXPECT_TRUE(RunScriptExtractBool("checkBothImagesLoaded()"));

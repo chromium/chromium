@@ -58,6 +58,8 @@ class LoadingMobileStorySet(story.StorySet):
     if '*' in include_tags or 'global' in include_tags:
       self.AddStories(['global'], [
           ('https://www.google.com/search?q=flower#q=flower+delivery',
+           'Google'),
+          ('https://www.google.com/search?q=flower#q=flower+delivery',
            'GoogleRedirectToGoogleJapan'),
           ('https://www.youtube.com/watch?v=MU3YuvNRhVY', 'Youtube'),
           # pylint: disable=line-too-long

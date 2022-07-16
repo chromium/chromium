@@ -47,6 +47,10 @@ public:
     };
 
     HTMLToken();
+
+    HTMLToken(const HTMLToken&) = delete;
+    HTMLToken& operator=(const HTMLToken&) = delete;
+
     ~HTMLToken();
 
     void clear()
@@ -132,8 +136,6 @@ public:
 private:
     Type m_type;
     std::vector<LChar> m_data;
-
-    DISALLOW_COPY_AND_ASSIGN(HTMLToken);
 };
 }
 

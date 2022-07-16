@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "printing/backend/printing_restrictions.h"
+#include "printing/buildflags/buildflags.h"
 
 class PrefValueMap;
 
@@ -126,6 +127,22 @@ class PrintingPaperSizeDefaultPolicyHandler : public TypeCheckingPolicyHandler {
                 PolicyErrorMap* errors,
                 const base::Value** result);
 };
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
+class PrintPdfAsImageDefaultPolicyHandler : public TypeCheckingPolicyHandler {
+ public:
+  PrintPdfAsImageDefaultPolicyHandler();
+  ~PrintPdfAsImageDefaultPolicyHandler() override;
+
+  // ConfigurationPolicyHandler implementation:
+  bool CheckPolicySettings(const PolicyMap& policies,
+                           PolicyErrorMap* errors) override;
+  void ApplyPolicySettings(const PolicyMap& policies,
+                           PrefValueMap* prefs) override;
+};
+
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 }  // namespace policy
 

@@ -9,8 +9,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace chromeos {
 namespace string_matching {
 
@@ -41,6 +39,9 @@ class SequenceMatcher {
                   const std::u16string& second_string,
                   bool use_edit_distance,
                   double num_matching_blocks_penalty);
+
+  SequenceMatcher(const SequenceMatcher&) = delete;
+  SequenceMatcher& operator=(const SequenceMatcher&) = delete;
 
   ~SequenceMatcher() = default;
 
@@ -81,7 +82,6 @@ class SequenceMatcher {
   std::unordered_map<char, std::vector<int>> char_to_positions_;
   // Memory for dynamic programming algorithm used in FindLongestMatch().
   std::vector<int> dp_common_string_;
-  DISALLOW_COPY_AND_ASSIGN(SequenceMatcher);
 };
 
 }  // namespace string_matching

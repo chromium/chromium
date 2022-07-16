@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -32,6 +31,9 @@ class CONTENT_EXPORT BackgroundSyncScheduler
   static BackgroundSyncScheduler* GetFor(BrowserContext* browser_context);
 
   BackgroundSyncScheduler();
+
+  BackgroundSyncScheduler(const BackgroundSyncScheduler&) = delete;
+  BackgroundSyncScheduler& operator=(const BackgroundSyncScheduler&) = delete;
 
   // Schedules delayed_processing for |sync_type| for |storage_partition|.
   // On non-Android platforms, runs |delayed_task| after |delay| has passed.
@@ -79,8 +81,6 @@ class CONTENT_EXPORT BackgroundSyncScheduler
       };
 
   base::WeakPtrFactory<BackgroundSyncScheduler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncScheduler);
 };
 
 }  // namespace content

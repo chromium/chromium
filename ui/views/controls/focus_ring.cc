@@ -4,6 +4,7 @@
 
 #include "ui/views/controls/focus_ring.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -15,15 +16,17 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/focusable_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -31,45 +34,33 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(views::FocusRing*)
 
 namespace views {
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kDrawFocusRingBackgroundOutline, false)
+
 namespace {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(FocusRing*, kFocusRingIdKey, nullptr)
+
+constexpr float kOutlineThickness = 1.0f;
 
 bool IsPathUsable(const SkPath& path) {
   return !path.isEmpty() && (path.isRect(nullptr) || path.isOval(nullptr) ||
                              path.isRRect(nullptr));
 }
 
-ui::NativeTheme::ColorId ColorIdForValidity(bool valid) {
-  return valid ? ui::NativeTheme::kColorId_FocusedBorderColor
-               : ui::NativeTheme::kColorId_AlertSeverityHigh;
-}
-
-SkColor GetBackgroundColor(View* view) {
-  const absl::optional<SkColor> color =
-      GetCascadingProperty(view, kCascadingBackgroundColor);
-  return color.value_or(view->GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_WindowBackground));
-}
-
 SkColor GetColor(View* focus_ring, bool valid) {
-  const SkColor default_color =
-      focus_ring->GetNativeTheme()->GetSystemColor(ColorIdForValidity(valid));
-
-  if (!valid)
-    return default_color;
-
-  return color_utils::PickGoogleColor(
-      default_color, GetBackgroundColor(focus_ring),
-      color_utils::kMinimumVisibleContrastRatio);
+  if (!valid) {
+    return focus_ring->GetColorProvider()->GetColor(
+        ui::kColorAlertHighSeverity);
+  }
+  return GetCascadingAccentColor(focus_ring);
 }
 
-double GetCornerRadius() {
-  const double thickness = PlatformStyle::kFocusHaloThickness / 2.f;
+double GetCornerRadius(float halo_thickness) {
+  const double thickness = halo_thickness / 2.f;
   return FocusableBorder::kCornerRadiusDp + thickness;
 }
 
-SkPath GetHighlightPathInternal(const View* view) {
+SkPath GetHighlightPathInternal(const View* view, float halo_thickness) {
   HighlightPathGenerator* path_generator =
       view->GetProperty(kHighlightPathGeneratorKey);
 
@@ -81,12 +72,24 @@ SkPath GetHighlightPathInternal(const View* view) {
       return highlight_path;
   }
 
-  const double corner_radius = GetCornerRadius();
-  return SkPath().addRRect(SkRRect::MakeRectXY(
-      RectToSkRect(view->GetLocalBounds()), corner_radius, corner_radius));
+  gfx::Rect client_rect = view->GetLocalBounds();
+  const double corner_radius = GetCornerRadius(halo_thickness);
+  // Make sure the path is large enough to contain the corners. This covers
+  // narrow views and the case where view->GetLocalBounds() are empty. Doing so
+  // prevents DCHECK(IsPathUsable(path)) from failing in GetRingRoundRect()
+  // because the resulting path is empty.
+  if (client_rect.width() < 2 * corner_radius ||
+      client_rect.height() < 2 * corner_radius) {
+    client_rect.Outset(corner_radius);
+  }
+  return SkPath().addRRect(SkRRect::MakeRectXY(RectToSkRect(client_rect),
+                                               corner_radius, corner_radius));
 }
 
 }  // namespace
+
+constexpr float FocusRing::kDefaultHaloThickness;
+constexpr float FocusRing::kDefaultHaloInset;
 
 // static
 void FocusRing::Install(View* host) {
@@ -139,6 +142,16 @@ void FocusRing::SetColor(absl::optional<SkColor> color) {
   SchedulePaint();
 }
 
+void FocusRing::SetHaloThickness(float halo_thickness) {
+  halo_thickness_ = halo_thickness;
+  SchedulePaint();
+}
+
+void FocusRing::SetHaloInset(float halo_inset) {
+  halo_inset_ = halo_inset;
+  SchedulePaint();
+}
+
 void FocusRing::Layout() {
   // The focus ring handles its own sizing, which is simply to fill the parent
   // and extend a little beyond its borders.
@@ -149,11 +162,29 @@ void FocusRing::Layout() {
   // by the time layout happens. This may be due to synchronous Layout() calls.
   const SkPath path = GetPath();
   if (IsPathUsable(path)) {
-    focus_bounds.Union(
-        gfx::ToEnclosingRect(gfx::SkRectToRectF(path.getBounds())));
+    const gfx::Rect path_bounds =
+        gfx::ToEnclosingRect(gfx::SkRectToRectF(path.getBounds()));
+    const gfx::Rect expanded_bounds =
+        gfx::UnionRects(focus_bounds, path_bounds);
+    // These insets are how much we need to inset `focus_bounds` to enclose the
+    // path as well. They'll be either zero or negative (we're effectively
+    // outsetting).
+    gfx::Insets expansion_insets = focus_bounds.InsetsFrom(expanded_bounds);
+    // Make sure we extend the focus-ring bounds symmetrically on the X axis to
+    // retain the shared center point with parent(). This is required for canvas
+    // flipping to position the focus-ring path correctly after the RTL flip.
+    const int min_x_inset =
+        std::min(expansion_insets.left(), expansion_insets.right());
+    expansion_insets.set_left(min_x_inset);
+    expansion_insets.set_right(min_x_inset);
+    focus_bounds.Inset(expansion_insets);
   }
 
-  focus_bounds.Inset(gfx::Insets(PlatformStyle::kFocusHaloInset));
+  focus_bounds.Inset(gfx::Insets(halo_inset_));
+
+  if (parent()->GetProperty(kDrawFocusRingBackgroundOutline))
+    focus_bounds.Inset(gfx::Insets(-2 * kOutlineThickness));
+
   SetBoundsRect(focus_bounds);
 
   // Need to match canvas direction with the parent. This is required to ensure
@@ -188,13 +219,22 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
     return;
   }
 
+  const SkRRect ring_rect = GetRingRoundRect();
   cc::PaintFlags paint;
   paint.setAntiAlias(true);
-  paint.setColor(color_.value_or(GetColor(this, !invalid_)));
   paint.setStyle(cc::PaintFlags::kStroke_Style);
-  paint.setStrokeWidth(PlatformStyle::kFocusHaloThickness);
 
-  canvas->sk_canvas()->drawRRect(GetRingRoundRect(), paint);
+  if (parent()->GetProperty(kDrawFocusRingBackgroundOutline)) {
+    // Draw with full stroke width + 2x outline thickness to effectively paint
+    // the outline thickness on both sides of the FocusRing.
+    paint.setStrokeWidth(halo_thickness_ + 2 * kOutlineThickness);
+    paint.setColor(GetCascadingBackgroundColor(this));
+    canvas->sk_canvas()->drawRRect(ring_rect, paint);
+  }
+
+  paint.setColor(color_.value_or(GetColor(this, !invalid_)));
+  paint.setStrokeWidth(halo_thickness_);
+  canvas->sk_canvas()->drawRRect(ring_rect, paint);
 }
 
 SkRRect FocusRing::GetRingRoundRect() const {
@@ -251,7 +291,7 @@ SkPath FocusRing::GetPath() const {
 
   // If there's no path generator or the generated path is unusable, fall back
   // to the default.
-  return GetHighlightPathInternal(parent());
+  return GetHighlightPathInternal(parent(), halo_thickness_);
 }
 
 void FocusRing::RefreshLayer() {
@@ -275,13 +315,13 @@ void FocusRing::RefreshLayer() {
 }
 
 SkRRect FocusRing::RingRectFromPathRect(const SkRect& rect) const {
-  const double corner_radius = GetCornerRadius();
+  const double corner_radius = GetCornerRadius(halo_thickness_);
   return RingRectFromPathRect(
       SkRRect::MakeRectXY(rect, corner_radius, corner_radius));
 }
 
 SkRRect FocusRing::RingRectFromPathRect(const SkRRect& rrect) const {
-  double thickness = PlatformStyle::kFocusHaloThickness / 2.f;
+  const double thickness = halo_thickness_ / 2.f;
   gfx::RectF r = gfx::SkRectToRectF(rrect.rect());
   View::ConvertRectToTarget(parent(), this, &r);
 
@@ -291,14 +331,14 @@ SkRRect FocusRing::RingRectFromPathRect(const SkRRect& rrect) const {
   // The focus indicator should hug the normal border, when present (as in the
   // case of text buttons). Since it's drawn outside the parent view, increase
   // the rounding slightly by adding half the ring thickness.
-  skr.inset(PlatformStyle::kFocusHaloInset, PlatformStyle::kFocusHaloInset);
+  skr.inset(halo_inset_, halo_inset_);
   skr.inset(thickness, thickness);
 
   return skr;
 }
 
-SkPath GetHighlightPath(const View* view) {
-  SkPath path = GetHighlightPathInternal(view);
+SkPath GetHighlightPath(const View* view, float halo_thickness) {
+  SkPath path = GetHighlightPathInternal(view, halo_thickness);
   if (view->GetFlipCanvasOnPaintForRTLUI() && base::i18n::IsRTL()) {
     gfx::Point center = view->GetLocalBounds().CenterPoint();
     SkMatrix flip;

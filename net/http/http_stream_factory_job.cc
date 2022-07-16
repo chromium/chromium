@@ -18,9 +18,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -81,8 +81,9 @@ base::Value NetLogHttpStreamJobParams(const NetLogSource& source,
   base::Value dict(base::Value::Type::DICTIONARY);
   if (source.IsValid())
     source.AddToEventParameters(&dict);
-  dict.SetStringKey("original_url", original_url.GetOrigin().spec());
-  dict.SetStringKey("url", url.GetOrigin().spec());
+  dict.SetStringKey("original_url",
+                    original_url.DeprecatedGetOriginAsURL().spec());
+  dict.SetStringKey("url", url.DeprecatedGetOriginAsURL().spec());
   dict.SetBoolKey("expect_spdy", expect_spdy);
   dict.SetBoolKey("using_quic", using_quic);
   dict.SetStringKey("priority", RequestPriorityToString(priority));
@@ -315,13 +316,6 @@ NextProto HttpStreamFactory::Job::negotiated_protocol() const {
 
 bool HttpStreamFactory::Job::using_spdy() const {
   return using_spdy_;
-}
-
-size_t HttpStreamFactory::Job::EstimateMemoryUsage() const {
-  StreamSocket::SocketMemoryStats stats;
-  if (connection_)
-    connection_->DumpMemoryStats(&stats);
-  return stats.total_size;
 }
 
 const SSLConfig& HttpStreamFactory::Job::server_ssl_config() const {
@@ -767,8 +761,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
           net_log_.AddEvent(NetLogEventType::HTTP_STREAM_JOB_THROTTLED);
           next_state_ = STATE_INIT_CONNECTION;
           base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-              FROM_HERE, resume_callback,
-              base::TimeDelta::FromMilliseconds(kHTTP2ThrottleMs));
+              FROM_HERE, resume_callback, base::Milliseconds(kHTTP2ThrottleMs));
           return ERR_IO_PENDING;
         }
       } else if (enable_ip_based_pooling_) {

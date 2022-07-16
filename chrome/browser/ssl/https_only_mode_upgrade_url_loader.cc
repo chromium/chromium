@@ -22,14 +22,16 @@
 
 namespace {
 
+// Updates a URL to HTTPS. URLs with the default port will result in the HTTPS
+// URL using the default port 443. URLs with non-default ports won't have the
+// port changed. For tests, the HTTPS port used can be overridden with
+// HttpsOnlyModeUpgradeInterceptor::SetHttpsPortForTesting().
 GURL UpgradeUrlToHttps(const GURL& url) {
   if (url.SchemeIsCryptographic())
     return url;
 
-  // Replace scheme with HTTPS. Also remove the port in order to fallback to
-  // the default port 443 (unless a port is specified for testing).
+  // Replace scheme with HTTPS.
   GURL::Replacements upgrade_url;
-  upgrade_url.ClearPort();
   upgrade_url.SetSchemeStr(url::kHttpsScheme);
 
   // For tests that use the EmbeddedTestServer, the server's port needs to be
@@ -44,6 +46,7 @@ GURL UpgradeUrlToHttps(const GURL& url) {
     DCHECK(!url.port().empty());
     upgrade_url.SetPortStr(port_str);
   }
+
   return url.ReplaceComponents(upgrade_url);
 }
 

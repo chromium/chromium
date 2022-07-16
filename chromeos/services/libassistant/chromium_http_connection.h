@@ -11,9 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "libassistant/shared/internal_api/http_connection.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/http/http_request_headers.h"
@@ -41,6 +40,9 @@ class ChromiumHttpConnection
   ChromiumHttpConnection(std::unique_ptr<network::PendingSharedURLLoaderFactory>
                              pending_url_loader_factory,
                          Delegate* delegate);
+
+  ChromiumHttpConnection(const ChromiumHttpConnection&) = delete;
+  ChromiumHttpConnection& operator=(const ChromiumHttpConnection&) = delete;
 
   // assistant_client::HttpConnection implementation:
   void SetRequest(const std::string& url, Method method) override;
@@ -126,8 +128,6 @@ class ChromiumHttpConnection
 
   base::OnceClosure on_resume_callback_;
   std::string partial_response_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromiumHttpConnection);
 };
 
 class ChromiumHttpConnectionFactory
@@ -136,6 +136,11 @@ class ChromiumHttpConnectionFactory
   explicit ChromiumHttpConnectionFactory(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory);
+
+  ChromiumHttpConnectionFactory(const ChromiumHttpConnectionFactory&) = delete;
+  ChromiumHttpConnectionFactory& operator=(
+      const ChromiumHttpConnectionFactory&) = delete;
+
   ~ChromiumHttpConnectionFactory() override;
 
   // assistant_client::HttpConnectionFactory implementation:
@@ -144,8 +149,6 @@ class ChromiumHttpConnectionFactory
 
  private:
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromiumHttpConnectionFactory);
 };
 
 }  // namespace libassistant

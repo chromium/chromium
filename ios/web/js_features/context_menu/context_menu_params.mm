@@ -12,11 +12,18 @@ namespace web {
 
 ContextMenuParams::ContextMenuParams()
     : is_main_frame(true),
-      menu_title_origin(ContextMenuTitleOrigin::kUnknown),
       referrer_policy(ReferrerPolicyDefault),
       location(CGPointZero) {}
 
 ContextMenuParams::ContextMenuParams(const ContextMenuParams& other) = default;
+
+ContextMenuParams& ContextMenuParams::operator=(
+    const ContextMenuParams& other) = default;
+
+ContextMenuParams::ContextMenuParams(ContextMenuParams&& other) = default;
+
+ContextMenuParams& ContextMenuParams::operator=(ContextMenuParams&& other) =
+    default;
 
 ContextMenuParams::~ContextMenuParams() {}
 

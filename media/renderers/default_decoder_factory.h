@@ -19,6 +19,10 @@ class MEDIA_EXPORT DefaultDecoderFactory final : public DecoderFactory {
   // additional decoders.
   explicit DefaultDecoderFactory(
       std::unique_ptr<DecoderFactory> external_decoder_factory);
+
+  DefaultDecoderFactory(const DefaultDecoderFactory&) = delete;
+  DefaultDecoderFactory& operator=(const DefaultDecoderFactory&) = delete;
+
   ~DefaultDecoderFactory() final;
 
   void CreateAudioDecoders(
@@ -46,8 +50,6 @@ class MEDIA_EXPORT DefaultDecoderFactory final : public DecoderFactory {
 
   std::unique_ptr<DecoderFactory> external_decoder_factory_
       GUARDED_BY(shutdown_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultDecoderFactory);
 };
 
 }  // namespace media

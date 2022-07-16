@@ -50,8 +50,8 @@ constexpr uint8_t kMessageHeader[] =
     // 5.3. "A single 0 byte which serves as a separator." [spec text]
     "HTTP Exchange 1 b3";
 
-constexpr base::TimeDelta kOneWeek = base::TimeDelta::FromDays(7);
-constexpr base::TimeDelta kFourWeeks = base::TimeDelta::FromDays(4 * 7);
+constexpr base::TimeDelta kOneWeek = base::Days(7);
+constexpr base::TimeDelta kFourWeeks = base::Days(4 * 7);
 
 absl::optional<crypto::SignatureVerifier::SignatureAlgorithm>
 GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
@@ -190,7 +190,7 @@ std::vector<uint8_t> GenerateSignedMessage(
 }
 
 base::Time TimeFromSignedExchangeUnixTime(uint64_t t) {
-  return base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(t);
+  return base::Time::UnixEpoch() + base::Seconds(t);
 }
 
 SignedExchangeSignatureVerifier::Result VerifyValidityPeriod(

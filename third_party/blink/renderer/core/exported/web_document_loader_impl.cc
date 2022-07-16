@@ -56,10 +56,6 @@ bool WebDocumentLoader::WillLoadUrlAsEmpty(const WebURL& url) {
   return DocumentLoader::WillLoadUrlAsEmpty(url);
 }
 
-WebURL WebDocumentLoaderImpl::OriginalUrl() const {
-  return DocumentLoader::OriginalUrl();
-}
-
 WebString WebDocumentLoaderImpl::OriginalReferrer() const {
   return DocumentLoader::OriginalReferrer().referrer;
 }
@@ -195,10 +191,6 @@ WebArchiveInfo WebDocumentLoaderImpl::GetArchiveInfo() const {
 
 bool WebDocumentLoaderImpl::LastNavigationHadTransientUserActivation() const {
   return DocumentLoader::LastNavigationHadTransientUserActivation();
-}
-
-bool WebDocumentLoaderImpl::IsListingFtpDirectory() const {
-  return DocumentLoader::IsListingFtpDirectory();
 }
 
 void WebDocumentLoaderImpl::SetCodeCacheHost(

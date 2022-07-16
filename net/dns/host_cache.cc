@@ -71,9 +71,8 @@ bool AddressListFromListValue(const base::Value* value,
   out_list->emplace();
   for (const auto& it : value->GetList()) {
     IPAddress address;
-    std::string addr_string;
-    if (!it.GetAsString(&addr_string) ||
-        !address.AssignFromIPLiteral(addr_string)) {
+    const std::string* addr_string = it.GetIfString();
+    if (!addr_string || !address.AssignFromIPLiteral(*addr_string)) {
       return false;
     }
     out_list->value().push_back(IPEndPoint(address, 0));
@@ -171,9 +170,7 @@ HostCache::Key::~Key() = default;
 HostCache::Entry::Entry(int error,
                         Source source,
                         absl::optional<base::TimeDelta> ttl)
-    : error_(error),
-      source_(source),
-      ttl_(ttl.value_or(base::TimeDelta::FromSeconds(-1))) {
+    : error_(error), source_(source), ttl_(ttl.value_or(base::Seconds(-1))) {
   // If |ttl| has a value, must not be negative.
   DCHECK_GE(ttl.value_or(base::TimeDelta()), base::TimeDelta());
   DCHECK_NE(OK, error_);
@@ -280,7 +277,7 @@ HostCache::Entry::Entry(const HostCache::Entry& entry,
       hostnames_(entry.hostnames()),
       experimental_results_(entry.experimental_results()),
       source_(entry.source()),
-      pinned_(entry.pinned()),
+      pinning_(entry.pinning()),
       ttl_(entry.ttl()),
       expires_(now + ttl),
       network_changes_(network_changes) {}
@@ -406,7 +403,8 @@ base::Value HostCache::Entry::GetAsValue(bool include_staleness) const {
     entry_dict.SetIntKey(kNetworkChangesKey, network_changes());
     // The "pinned" status is meaningful only if "network_changes" is also
     // preserved.
-    entry_dict.SetBoolKey(kPinnedKey, pinned());
+    if (pinning())
+      entry_dict.SetBoolKey(kPinnedKey, *pinning());
   } else {
     // Convert expiration time in TimeTicks to Time for serialization, using a
     // string because base::Value doesn't handle 64-bit integers.
@@ -455,8 +453,8 @@ base::Value HostCache::Entry::GetAsValue(bool include_staleness) const {
 }
 
 // static
-const HostCache::EntryStaleness HostCache::kNotStale = {
-    base::TimeDelta::FromSeconds(-1), 0, 0};
+const HostCache::EntryStaleness HostCache::kNotStale = {base::Seconds(-1), 0,
+                                                        0};
 
 HostCache::HostCache(size_t max_entries)
     : max_entries_(max_entries),
@@ -532,12 +530,12 @@ HostCache::GetLessStaleMoreSecureResult(
     DCHECK(result1->first.secure != result2->first.secure);
     // If the results have the same number of network changes, prefer a
     // non-expired result.
-    if (staleness1.expired_by < base::TimeDelta() &&
+    if (staleness1.expired_by.is_negative() &&
         staleness2.expired_by >= base::TimeDelta()) {
       return result1;
     }
     if (staleness1.expired_by >= base::TimeDelta() &&
-        staleness2.expired_by < base::TimeDelta()) {
+        staleness2.expired_by.is_negative()) {
       return result2;
     }
     // Both results are equally stale, so prefer a secure result.
@@ -580,11 +578,11 @@ void HostCache::Set(const Key& key,
   if (caching_is_disabled())
     return;
 
-  bool preserve_pin = false;
+  bool has_active_pin = false;
   bool result_changed = false;
   auto it = entries_.find(key);
   if (it != entries_.end()) {
-    preserve_pin = HasActivePin(it->second);
+    has_active_pin = HasActivePin(it->second);
 
     absl::optional<AddressListDeltaType> addresses_delta;
     if (entry.addresses() || it->second.addresses()) {
@@ -652,9 +650,7 @@ void HostCache::Set(const Key& key,
   }
 
   Entry entry_for_cache(entry, now, ttl, network_changes_);
-  if (preserve_pin)
-    entry_for_cache.set_pinned(true);
-
+  entry_for_cache.set_pinning(entry.pinning().value_or(has_active_pin));
   entry_for_cache.PrepareForCacheInsertion();
   AddEntry(key, std::move(entry_for_cache));
 
@@ -683,6 +679,7 @@ const HostCache::Key* HostCache::GetMatchingKeyForTesting(
 
 void HostCache::AddEntry(const Key& key, Entry&& entry) {
   DCHECK_EQ(0u, entries_.count(key));
+  DCHECK(entry.pinning().has_value());
   entries_.emplace(key, std::move(entry));
 }
 
@@ -855,6 +852,7 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
     const base::Value* hostname_records_value = nullptr;
     const base::Value* host_ports_value = nullptr;
     absl::optional<int> maybe_error = entry_dict.FindIntKey(kNetErrorKey);
+    absl::optional<bool> maybe_pinned = entry_dict.FindBoolKey(kPinnedKey);
     if (maybe_error.has_value()) {
       error = maybe_error.value();
     } else {
@@ -933,11 +931,11 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
     // replace the entry.
     auto found = entries_.find(key);
     if (found == entries_.end()) {
-      AddEntry(
-          key,
-          Entry(error, address_list, std::move(text_records),
-                std::move(hostname_records), std::move(experimental_results),
-                Entry::SOURCE_UNKNOWN, expiration_time, network_changes_ - 1));
+      Entry entry(error, address_list, std::move(text_records),
+                  std::move(hostname_records), std::move(experimental_results),
+                  Entry::SOURCE_UNKNOWN, expiration_time, network_changes_ - 1);
+      entry.set_pinning(maybe_pinned.value_or(false));
+      AddEntry(key, std::move(entry));
       restore_size_++;
     }
   }
@@ -995,7 +993,8 @@ bool HostCache::EvictOneEntry(base::TimeTicks now) {
 }
 
 bool HostCache::HasActivePin(const Entry& entry) {
-  return entry.pinned() && entry.network_changes() == network_changes();
+  return entry.pinning().value_or(false) &&
+         entry.network_changes() == network_changes();
 }
 
 }  // namespace net

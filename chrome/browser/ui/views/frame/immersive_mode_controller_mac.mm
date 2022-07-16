@@ -152,15 +152,23 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
    public:
     RevealedLock(base::WeakPtr<ImmersiveModeControllerMac> controller,
                  AnimateReveal animate_reveal);
+
+    RevealedLock(const RevealedLock&) = delete;
+    RevealedLock& operator=(const RevealedLock&) = delete;
+
     ~RevealedLock() override;
 
    private:
     base::WeakPtr<ImmersiveModeControllerMac> controller_;
     AnimateReveal animate_reveal_;
-    DISALLOW_COPY_AND_ASSIGN(RevealedLock);
   };
 
   ImmersiveModeControllerMac();
+
+  ImmersiveModeControllerMac(const ImmersiveModeControllerMac&) = delete;
+  ImmersiveModeControllerMac& operator=(const ImmersiveModeControllerMac&) =
+      delete;
+
   ~ImmersiveModeControllerMac() override;
 
   // ImmersiveModeController overrides:
@@ -206,8 +214,6 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   base::scoped_nsobject<NSObject> menu_reveal_monitor_;
 
   base::WeakPtrFactory<ImmersiveModeControllerMac> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerMac);
 };
 
 }  // namespace

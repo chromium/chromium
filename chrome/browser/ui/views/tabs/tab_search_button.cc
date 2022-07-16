@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/view_class_properties.h"
 
 TabSearchButton::TabSearchButton(TabStrip* tab_strip)
     : NewTabButton(tab_strip, PressedCallback()),
@@ -18,6 +20,7 @@ TabSearchButton::TabSearchButton(TabStrip* tab_strip)
           tab_strip->controller()->GetProfile())) {
   SetImageHorizontalAlignment(HorizontalAlignment::ALIGN_CENTER);
   SetImageVerticalAlignment(VerticalAlignment::ALIGN_MIDDLE);
+  SetProperty(views::kElementIdentifierKey, kTabSearchButtonElementId);
 }
 
 TabSearchButton::~TabSearchButton() = default;

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -19,6 +18,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -102,7 +103,8 @@ class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
   // ScreenCaptureNotificationUI:
   gfx::NativeViewId OnStarted(
       base::OnceClosure stop_callback,
-      content::MediaStreamUI::SourceCallback source_callback) override;
+      content::MediaStreamUI::SourceCallback source_callback,
+      const std::vector<content::DesktopMediaID>& media_ids) override;
 
   // views::WidgetDelegateView:
   views::ClientView* CreateClientView(views::Widget* widget) override;
@@ -196,7 +198,8 @@ ScreenCaptureNotificationUIViews::~ScreenCaptureNotificationUIViews() {
 
 gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
     base::OnceClosure stop_callback,
-    content::MediaStreamUI::SourceCallback source_callback) {
+    content::MediaStreamUI::SourceCallback source_callback,
+    const std::vector<content::DesktopMediaID>& media_ids) {
   if (GetWidget())
     return 0;
 
@@ -226,8 +229,8 @@ gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
   widget->set_frame_type(views::Widget::FrameType::kForceCustom);
   widget->Init(std::move(params));
 
-  SetBackground(views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogBackground)));
+  SetBackground(views::CreateSolidBackground(
+      GetColorProvider()->GetColor(ui::kColorDialogBackground)));
 
   display::Screen* screen = display::Screen::GetScreen();
   // TODO(sergeyu): Move the notification to the display being captured when
@@ -241,7 +244,14 @@ gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
       work_area.y() + work_area.height() - size.height(),
       size.width(), size.height());
   widget->SetBounds(bounds);
-  widget->Show();
+  if (media_ids.empty() ||
+      media_ids.front().type == content::DesktopMediaID::Type::TYPE_SCREEN) {
+    // Focus the notification widget if sharing a screen.
+    widget->Show();
+  } else {
+    // Do not focus the notification widget if sharing a window.
+    widget->ShowInactive();
+  }
   // This has to be called after Show() to have effect.
   widget->SetOpacity(kWindowAlphaValue);
   widget->SetVisibleOnAllWorkspaces(true);
@@ -262,8 +272,8 @@ ScreenCaptureNotificationUIViews::CreateNonClientFrameView(
   constexpr auto kPadding = gfx::Insets(5, 10);
   auto frame =
       std::make_unique<views::BubbleFrameView>(gfx::Insets(), kPadding);
-  SkColor color = widget->GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogBackground);
+  SkColor color =
+      widget->GetColorProvider()->GetColor(ui::kColorDialogBackground);
   frame->SetBubbleBorder(std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW, color));
   return frame;

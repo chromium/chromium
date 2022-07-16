@@ -72,7 +72,7 @@ int LoadLocalePakFromApk(const std::string& app_locale,
 std::unique_ptr<DataPack> LoadDataPackFromLocalePak(
     int locale_pack_fd,
     const base::MemoryMappedFile::Region& region) {
-  auto data_pack = std::make_unique<DataPack>(SCALE_FACTOR_100P);
+  auto data_pack = std::make_unique<DataPack>(k100Percent);
   if (!data_pack->LoadFromFileRegion(base::File(locale_pack_fd), region)) {
     LOG(WARNING) << "failed to load locale.pak";
     NOTREACHED();
@@ -93,7 +93,7 @@ void ResourceBundle::LoadCommonResources() {
   DCHECK(success);
 
   AddDataPackFromFileRegion(base::File(g_chrome_100_percent_fd),
-                            g_chrome_100_percent_region, SCALE_FACTOR_100P);
+                            g_chrome_100_percent_region, k100Percent);
 }
 
 // static
@@ -233,7 +233,7 @@ void LoadMainAndroidPackFile(const char* path_within_apk,
                         &g_resources_pack_region)) {
     ResourceBundle::GetSharedInstance().AddDataPackFromFileRegion(
         base::File(g_resources_pack_fd), g_resources_pack_region,
-        SCALE_FACTOR_NONE);
+        kScaleFactorNone);
   }
 }
 
@@ -243,7 +243,7 @@ void LoadPackFileFromApk(const std::string& path,
   int fd = base::android::OpenApkAsset(path, split_name, &region);
   CHECK_GE(fd, 0) << "Could not find " << path << " in APK.";
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromFileRegion(
-      base::File(fd), region, ui::SCALE_FACTOR_NONE);
+      base::File(fd), region, ui::kScaleFactorNone);
 }
 
 int GetMainAndroidPackFd(base::MemoryMappedFile::Region* out_region) {

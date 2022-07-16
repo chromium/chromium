@@ -30,7 +30,7 @@ class RecentlyDestroyedHostsTest : public testing::Test {
 
   void AddReuseInterval(base::TimeDelta interval) {
     instance_->AddReuseInterval(interval);
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   void ClearReuseIntervals() { instance_->reuse_intervals_.clear(); }
@@ -55,8 +55,7 @@ TEST_F(RecentlyDestroyedHostsTest,
   const ProcessLock process_lock = ProcessLock::Create(
       isolation_context,
       UrlInfo::CreateForTesting(GURL("https://www.google.com"),
-                                CreateStoragePartitionConfigForTesting()),
-      WebExposedIsolationInfo::CreateNonIsolated());
+                                CreateStoragePartitionConfigForTesting()));
 
   constexpr char kHistogramName[] =
       "SiteIsolation.ReusePendingOrCommittedSite."
@@ -70,7 +69,7 @@ TEST_F(RecentlyDestroyedHostsTest,
   RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
       base::TimeTicks::Now(), process_lock, &browser_context_);
   constexpr base::TimeDelta kRecentlyDestroyedNotFoundSentinel =
-      base::TimeDelta::FromSeconds(20);
+      base::Seconds(20);
   histogram_tester->ExpectUniqueTimeSample(
       kHistogramName, kRecentlyDestroyedNotFoundSentinel, 1);
 
@@ -93,11 +92,11 @@ TEST_F(RecentlyDestroyedHostsTest,
   // expires.
   task_environment_.FastForwardBy(
       RecentlyDestroyedHosts::kRecentlyDestroyedStorageTimeout -
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
   RecentlyDestroyedHosts::Add(
       &host, /*time_spent_running_unload_handlers=*/base::TimeDelta(),
       &browser_context_);
-  constexpr base::TimeDelta kReuseInterval = base::TimeDelta::FromSeconds(5);
+  constexpr base::TimeDelta kReuseInterval = base::Seconds(5);
   task_environment_.FastForwardBy(kReuseInterval);
   histogram_tester = std::make_unique<base::HistogramTester>();
   RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
@@ -118,12 +117,12 @@ TEST_F(RecentlyDestroyedHostsTest,
 }
 
 TEST_F(RecentlyDestroyedHostsTest, AddReuseInterval) {
-  const base::TimeDelta t1 = base::TimeDelta::FromSeconds(4);
-  const base::TimeDelta t2 = base::TimeDelta::FromSeconds(5);
-  const base::TimeDelta t3 = base::TimeDelta::FromSecondsD(6.7);
-  const base::TimeDelta t4 = base::TimeDelta::FromSecondsD(8.2);
-  const base::TimeDelta t5 = base::TimeDelta::FromSeconds(10);
-  const base::TimeDelta t6 = base::TimeDelta::FromSeconds(11);
+  const base::TimeDelta t1 = base::Seconds(4);
+  const base::TimeDelta t2 = base::Seconds(5);
+  const base::TimeDelta t3 = base::Seconds(6.7);
+  const base::TimeDelta t4 = base::Seconds(8.2);
+  const base::TimeDelta t5 = base::Seconds(10);
+  const base::TimeDelta t6 = base::Seconds(11);
 
   AddReuseInterval(t2);
   EXPECT_THAT(GetReuseIntervals(), testing::ElementsAre(t2));
@@ -163,21 +162,21 @@ TEST_F(RecentlyDestroyedHostsTest, GetPercentileReuseInterval) {
 
   for (auto& test_case : kPercentileReuseIntervalTestCases) {
     for (auto& interval : test_case.reuse_interval_seconds) {
-      AddReuseInterval(base::TimeDelta::FromSecondsD(interval));
+      AddReuseInterval(base::Seconds(interval));
     }
-    EXPECT_EQ(base::TimeDelta::FromSecondsD(test_case.percentile_0),
+    EXPECT_EQ(base::Seconds(test_case.percentile_0),
               RecentlyDestroyedHosts::GetPercentileReuseInterval(
                   0, &browser_context_));
-    EXPECT_EQ(base::TimeDelta::FromSecondsD(test_case.percentile_33),
+    EXPECT_EQ(base::Seconds(test_case.percentile_33),
               RecentlyDestroyedHosts::GetPercentileReuseInterval(
                   33, &browser_context_));
-    EXPECT_EQ(base::TimeDelta::FromSecondsD(test_case.percentile_50),
+    EXPECT_EQ(base::Seconds(test_case.percentile_50),
               RecentlyDestroyedHosts::GetPercentileReuseInterval(
                   50, &browser_context_));
-    EXPECT_EQ(base::TimeDelta::FromSecondsD(test_case.percentile_75),
+    EXPECT_EQ(base::Seconds(test_case.percentile_75),
               RecentlyDestroyedHosts::GetPercentileReuseInterval(
                   75, &browser_context_));
-    EXPECT_EQ(base::TimeDelta::FromSecondsD(test_case.percentile_100),
+    EXPECT_EQ(base::Seconds(test_case.percentile_100),
               RecentlyDestroyedHosts::GetPercentileReuseInterval(
                   100, &browser_context_));
     ClearReuseIntervals();

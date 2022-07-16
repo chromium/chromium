@@ -13,12 +13,14 @@ namespace {
 class Cronet_BufferCallbackUnowned : public Cronet_BufferCallback {
  public:
   Cronet_BufferCallbackUnowned() = default;
+
+  Cronet_BufferCallbackUnowned(const Cronet_BufferCallbackUnowned&) = delete;
+  Cronet_BufferCallbackUnowned& operator=(const Cronet_BufferCallbackUnowned&) =
+      delete;
+
   ~Cronet_BufferCallbackUnowned() override = default;
 
   void OnDestroy(Cronet_BufferPtr buffer) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Cronet_BufferCallbackUnowned);
 };
 
 }  // namespace

@@ -13,12 +13,10 @@
 namespace {
 
 // Default interval to check memory stats.
-constexpr base::TimeDelta kDefaultMonitoringDelta =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kDefaultMonitoringDelta = base::Seconds(1);
 
 // Default cooldown interval to resume monitoring after a detection.
-constexpr base::TimeDelta kDefaultCooldownDelta =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kDefaultCooldownDelta = base::Seconds(30);
 
 }  // namespace
 

@@ -12,24 +12,22 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/base/logging.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/backoff_delay_provider.h"
 #include "components/sync/engine/sync_engine_switches.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace syncer {
 
 namespace {
 
-constexpr base::TimeDelta kLocalChangeNudgeDelayForTest =
-    TimeDelta::FromMilliseconds(1);
+constexpr base::TimeDelta kLocalChangeNudgeDelayForTest = base::Milliseconds(1);
 
 bool IsConfigRelatedUpdateOriginValue(
     sync_pb::SyncEnums::GetUpdatesOrigin origin) {
@@ -221,7 +219,7 @@ base::Time SyncSchedulerImpl::ComputeLastPollOnStart(
 }
 
 ModelTypeSet SyncSchedulerImpl::GetEnabledAndUnblockedTypes() {
-  ModelTypeSet enabled_types = cycle_context_->GetEnabledTypes();
+  ModelTypeSet enabled_types = cycle_context_->GetConnectedTypes();
   ModelTypeSet enabled_protocol_types =
       Intersection(ProtocolTypes(), enabled_types);
   ModelTypeSet blocked_types = nudge_tracker_.GetBlockedTypes();
@@ -294,7 +292,7 @@ bool SyncSchedulerImpl::CanRunNudgeJobNow(JobPriority priority) {
     return false;
   }
 
-  const ModelTypeSet enabled_types = cycle_context_->GetEnabledTypes();
+  const ModelTypeSet enabled_types = cycle_context_->GetConnectedTypes();
   if (nudge_tracker_.GetBlockedTypes().HasAll(enabled_types)) {
     SDVLOG(1) << "Not running a nudge because we're fully type throttled or "
                  "backed off.";
@@ -314,7 +312,7 @@ void SyncSchedulerImpl::ScheduleLocalNudge(ModelType type) {
 
   SDVLOG(2) << "Scheduling sync because of local change to "
             << ModelTypeToString(type);
-  TimeDelta nudge_delay = nudge_tracker_.RecordLocalChange(type);
+  base::TimeDelta nudge_delay = nudge_tracker_.RecordLocalChange(type);
   ScheduleNudgeImpl(nudge_delay);
 }
 
@@ -324,7 +322,7 @@ void SyncSchedulerImpl::ScheduleLocalRefreshRequest(ModelTypeSet types) {
 
   SDVLOG(2) << "Scheduling sync because of local refresh request for "
             << ModelTypeSetToString(types);
-  TimeDelta nudge_delay = nudge_tracker_.RecordLocalRefreshRequest(types);
+  base::TimeDelta nudge_delay = nudge_tracker_.RecordLocalRefreshRequest(types);
   ScheduleNudgeImpl(nudge_delay);
 }
 
@@ -336,7 +334,7 @@ void SyncSchedulerImpl::ScheduleInvalidationNudge(
 
   SDVLOG(2) << "Scheduling sync because we received invalidation for "
             << ModelTypeToString(model_type);
-  TimeDelta nudge_delay = nudge_tracker_.RecordRemoteInvalidation(
+  base::TimeDelta nudge_delay = nudge_tracker_.RecordRemoteInvalidation(
       model_type, std::move(invalidation));
   ScheduleNudgeImpl(nudge_delay);
 }
@@ -348,12 +346,12 @@ void SyncSchedulerImpl::ScheduleInitialSyncNudge(ModelType model_type) {
   SDVLOG(2) << "Scheduling non-blocking initial sync for "
             << ModelTypeToString(model_type);
   nudge_tracker_.RecordInitialSyncRequired(model_type);
-  ScheduleNudgeImpl(TimeDelta::FromSeconds(0));
+  ScheduleNudgeImpl(base::Seconds(0));
 }
 
 // TODO(zea): Consider adding separate throttling/backoff for datatype
 // refresh requests.
-void SyncSchedulerImpl::ScheduleNudgeImpl(const TimeDelta& delay) {
+void SyncSchedulerImpl::ScheduleNudgeImpl(const base::TimeDelta& delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!started_) {
@@ -396,8 +394,7 @@ const char* SyncSchedulerImpl::GetModeString(SyncScheduler::Mode mode) {
 
 void SyncSchedulerImpl::ForceShortNudgeDelayForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Only protocol types can have their delay customized.
-  for (ModelType type : syncer::ProtocolTypes()) {
+  for (ModelType type : ModelTypeSet::All()) {
     nudge_tracker_.SetLocalChangeDelayIgnoringMinForTest(
         type, kLocalChangeNudgeDelayForTest);
   }
@@ -504,9 +501,9 @@ void SyncSchedulerImpl::HandleFailure(
         IsGlobalBackoff()
             ? wait_interval_->length
             : delay_provider_->GetInitialDelay(model_neutral_state);
-    TimeDelta next_delay = delay_provider_->GetDelay(previous_delay);
+    base::TimeDelta next_delay = delay_provider_->GetDelay(previous_delay);
     wait_interval_ = std::make_unique<WaitInterval>(
-        WaitInterval::EXPONENTIAL_BACKOFF, next_delay);
+        WaitInterval::BlockingMode::kExponentialBackoff, next_delay);
     SDVLOG(2) << "Sync cycle failed.  Will back off for "
               << wait_interval_->length.InMilliseconds() << "ms.";
   }
@@ -528,7 +525,7 @@ void SyncSchedulerImpl::DoPollSyncCycleJob() {
   }
 }
 
-TimeDelta SyncSchedulerImpl::GetPollInterval() {
+base::TimeDelta SyncSchedulerImpl::GetPollInterval() {
   return syncer_poll_interval_seconds_;
 }
 
@@ -538,8 +535,8 @@ void SyncSchedulerImpl::AdjustPolling(PollAdjustType type) {
   if (!started_)
     return;
 
-  TimeDelta poll_interval = GetPollInterval();
-  TimeDelta poll_delay = poll_interval;
+  base::TimeDelta poll_interval = GetPollInterval();
+  base::TimeDelta poll_delay = poll_interval;
   const TimeTicks now = TimeTicks::Now();
 
   if (type == UPDATE_INTERVAL) {
@@ -549,11 +546,11 @@ void SyncSchedulerImpl::AdjustPolling(PollAdjustType type) {
       TimeTicks new_poll_time = poll_interval + last_poll_reset_;
       poll_delay = new_poll_time - TimeTicks::Now();
 
-      if (poll_delay < TimeDelta()) {
+      if (poll_delay.is_negative()) {
         // The desired poll time was in the past, so trigger a poll now (the
         // timer will post the task asynchronously, so re-entrancy isn't an
         // issue).
-        poll_delay = TimeDelta();
+        poll_delay = base::TimeDelta();
       }
     } else {
       // There was no previous poll. Keep the delay set to the normal interval,
@@ -592,7 +589,7 @@ void SyncSchedulerImpl::RestartWaiting() {
     NotifyRetryTime(base::Time::Now() + wait_interval_->length);
     SDVLOG(2) << "Starting WaitInterval timer of length "
               << wait_interval_->length.InMilliseconds() << "ms.";
-    if (wait_interval_->mode == WaitInterval::THROTTLED) {
+    if (wait_interval_->mode == WaitInterval::BlockingMode::kThrottled) {
       pending_wakeup_timer_.Start(
           FROM_HERE, wait_interval_->length,
           base::BindOnce(&SyncSchedulerImpl::Unthrottle,
@@ -605,7 +602,7 @@ void SyncSchedulerImpl::RestartWaiting() {
     }
   } else if (nudge_tracker_.IsAnyTypeBlocked()) {
     // Per-datatype throttled or backed off.
-    TimeDelta time_until_next_unblock =
+    base::TimeDelta time_until_next_unblock =
         nudge_tracker_.GetTimeUntilNextUnblock();
     if (!IsEarlierThanCurrentPendingJob(time_until_next_unblock)) {
       return;
@@ -696,7 +693,7 @@ void SyncSchedulerImpl::RetryTimerCallback() {
 
 void SyncSchedulerImpl::Unthrottle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(WaitInterval::THROTTLED, wait_interval_->mode);
+  DCHECK_EQ(WaitInterval::BlockingMode::kThrottled, wait_interval_->mode);
 
   // We're no longer throttled, so clear the wait interval.
   wait_interval_.reset();
@@ -753,10 +750,11 @@ void SyncSchedulerImpl::NotifyBlockedTypesChanged() {
   ModelTypeSet backed_off_types;
   for (ModelType type : types) {
     WaitInterval::BlockingMode mode = nudge_tracker_.GetTypeBlockingMode(type);
-    if (mode == WaitInterval::THROTTLED) {
+    if (mode == WaitInterval::BlockingMode::kThrottled) {
       throttled_types.Put(type);
-    } else if (mode == WaitInterval::EXPONENTIAL_BACKOFF ||
-               mode == WaitInterval::EXPONENTIAL_BACKOFF_RETRYING) {
+    } else if (mode == WaitInterval::BlockingMode::kExponentialBackoff ||
+               mode ==
+                   WaitInterval::BlockingMode::kExponentialBackoffRetrying) {
       backed_off_types.Put(type);
     }
   }
@@ -771,27 +769,29 @@ void SyncSchedulerImpl::NotifyBlockedTypesChanged() {
 
 bool SyncSchedulerImpl::IsGlobalThrottle() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return wait_interval_ && wait_interval_->mode == WaitInterval::THROTTLED;
+  return wait_interval_ &&
+         wait_interval_->mode == WaitInterval::BlockingMode::kThrottled;
 }
 
 bool SyncSchedulerImpl::IsGlobalBackoff() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return wait_interval_ &&
-         wait_interval_->mode == WaitInterval::EXPONENTIAL_BACKOFF;
+  return wait_interval_ && wait_interval_->mode ==
+                               WaitInterval::BlockingMode::kExponentialBackoff;
 }
 
-void SyncSchedulerImpl::OnThrottled(const TimeDelta& throttle_duration) {
+void SyncSchedulerImpl::OnThrottled(const base::TimeDelta& throttle_duration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  wait_interval_ = std::make_unique<WaitInterval>(WaitInterval::THROTTLED,
-                                                  throttle_duration);
+  wait_interval_ = std::make_unique<WaitInterval>(
+      WaitInterval::BlockingMode::kThrottled, throttle_duration);
   for (auto& observer : *cycle_context_->listeners()) {
     observer.OnThrottledTypesChanged(ModelTypeSet::All());
   }
   RestartWaiting();
 }
 
-void SyncSchedulerImpl::OnTypesThrottled(ModelTypeSet types,
-                                         const TimeDelta& throttle_duration) {
+void SyncSchedulerImpl::OnTypesThrottled(
+    ModelTypeSet types,
+    const base::TimeDelta& throttle_duration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SDVLOG(1) << "Throttling " << ModelTypeSetToString(types) << " for "
             << throttle_duration.InSeconds() << " seconds.";
@@ -803,13 +803,13 @@ void SyncSchedulerImpl::OnTypesThrottled(ModelTypeSet types,
 void SyncSchedulerImpl::OnTypesBackedOff(ModelTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (ModelType type : types) {
-    TimeDelta last_backoff_time = kInitialBackoffRetryTime;
+    base::TimeDelta last_backoff_time = kInitialBackoffRetryTime;
     if (nudge_tracker_.GetTypeBlockingMode(type) ==
-        WaitInterval::EXPONENTIAL_BACKOFF_RETRYING) {
+        WaitInterval::BlockingMode::kExponentialBackoffRetrying) {
       last_backoff_time = nudge_tracker_.GetTypeLastBackoffInterval(type);
     }
 
-    TimeDelta length = delay_provider_->GetDelay(last_backoff_time);
+    base::TimeDelta length = delay_provider_->GetDelay(last_backoff_time);
     nudge_tracker_.SetTypeBackedOff(type, length, TimeTicks::Now());
     SDVLOG(1) << "Backing off " << ModelTypeToString(type) << " for "
               << length.InSeconds() << " second.";
@@ -822,7 +822,7 @@ bool SyncSchedulerImpl::IsAnyThrottleOrBackoff() {
 }
 
 void SyncSchedulerImpl::OnReceivedPollIntervalUpdate(
-    const TimeDelta& new_interval) {
+    const base::TimeDelta& new_interval) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (new_interval == syncer_poll_interval_seconds_)
@@ -834,7 +834,7 @@ void SyncSchedulerImpl::OnReceivedPollIntervalUpdate(
 }
 
 void SyncSchedulerImpl::OnReceivedCustomNudgeDelays(
-    const std::map<ModelType, TimeDelta>& nudge_delays) {
+    const std::map<ModelType, base::TimeDelta>& nudge_delays) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (force_short_nudge_delay_for_test_)
@@ -870,7 +870,7 @@ void SyncSchedulerImpl::OnSyncProtocolError(
   }
 }
 
-void SyncSchedulerImpl::OnReceivedGuRetryDelay(const TimeDelta& delay) {
+void SyncSchedulerImpl::OnReceivedGuRetryDelay(const base::TimeDelta& delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   nudge_tracker_.SetNextRetryTime(TimeTicks::Now() + delay);
@@ -895,7 +895,8 @@ void SyncSchedulerImpl::SetNotificationsEnabled(bool notifications_enabled) {
     nudge_tracker_.OnInvalidationsDisabled();
 }
 
-bool SyncSchedulerImpl::IsEarlierThanCurrentPendingJob(const TimeDelta& delay) {
+bool SyncSchedulerImpl::IsEarlierThanCurrentPendingJob(
+    const base::TimeDelta& delay) {
   TimeTicks incoming_run_time = TimeTicks::Now() + delay;
   if (pending_wakeup_timer_.IsRunning() &&
       (pending_wakeup_timer_.desired_run_time() < incoming_run_time)) {

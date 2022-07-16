@@ -19,10 +19,11 @@ class WebUIIOS;
 class PrefsInternalsUI : public web::WebUIIOSController {
  public:
   explicit PrefsInternalsUI(web::WebUIIOS* web_ui, const std::string& host);
-  ~PrefsInternalsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrefsInternalsUI);
+  PrefsInternalsUI(const PrefsInternalsUI&) = delete;
+  PrefsInternalsUI& operator=(const PrefsInternalsUI&) = delete;
+
+  ~PrefsInternalsUI() override;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_PREFS_INTERNALS_UI_H_

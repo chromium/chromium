@@ -75,7 +75,7 @@ void WebDialogUIBase::HandleRenderFrameCreated(
     RenderFrameHost* render_frame_host) {
   // Hook up the javascript function calls, also known as chrome.send("foo")
   // calls in the HTML, to the actual C++ functions.
-  web_ui_->RegisterMessageCallback(
+  web_ui_->RegisterDeprecatedMessageCallback(
       "dialogClose", base::BindRepeating(&WebDialogUIBase::OnDialogClosed,
                                          base::Unretained(this)));
 

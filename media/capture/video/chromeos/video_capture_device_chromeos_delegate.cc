@@ -31,6 +31,9 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
  public:
   PowerManagerClientProxy() = default;
 
+  PowerManagerClientProxy(const PowerManagerClientProxy&) = delete;
+  PowerManagerClientProxy& operator=(const PowerManagerClientProxy&) = delete;
+
   void Init(base::WeakPtr<VideoCaptureDeviceChromeOSDelegate> device,
             scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
             scoped_refptr<base::SingleThreadTaskRunner> dbus_task_runner) {
@@ -98,8 +101,6 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
   base::WeakPtr<VideoCaptureDeviceChromeOSDelegate> device_;
   scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> dbus_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerManagerClientProxy);
 };
 
 VideoCaptureDeviceChromeOSDelegate::VideoCaptureDeviceChromeOSDelegate(
@@ -152,7 +153,6 @@ void VideoCaptureDeviceChromeOSDelegate::AllocateAndStart(
     std::unique_ptr<VideoCaptureDevice::Client> client,
     ClientType client_type) {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
-  DCHECK(!camera_device_delegate_);
   if (!HasDeviceClient()) {
     TRACE_EVENT0("camera", "Start Device");
     if (!camera_device_ipc_thread_.Start()) {
@@ -287,7 +287,7 @@ void VideoCaptureDeviceChromeOSDelegate::CloseDevice(
                                       device_closed->Signal();
                                     },
                                     base::Unretained(&device_closed_))));
-  base::TimeDelta kWaitTimeoutSecs = base::TimeDelta::FromSeconds(3);
+  base::TimeDelta kWaitTimeoutSecs = base::Seconds(3);
   device_closed_.TimedWait(kWaitTimeoutSecs);
   if (!unblock_suspend_token.is_empty())
     power_manager_client_proxy_->UnblockSuspend(unblock_suspend_token);

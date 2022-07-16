@@ -74,19 +74,22 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
 
   bool HasIntrinsicSize() const override { return image_->HasIntrinsicSize(); }
 
-  bool ApplyShader(cc::PaintFlags&, const SkMatrix& local_matrix) override;
+  bool ApplyShader(cc::PaintFlags&,
+                   const SkMatrix& local_matrix,
+                   const FloatRect& dst_rect,
+                   const FloatRect& src_rect,
+                   const ImageDrawOptions& draw_options) override;
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
-            const FloatRect&,
-            const FloatRect&,
-            const SkSamplingOptions&,
-            RespectImageOrientationEnum,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const FloatRect& dest_rect,
+            const FloatRect& src_rect,
+            const ImageDrawOptions&) override;
 
   // FIXME: Implement this to be less conservative.
   bool CurrentFrameKnownToBeOpaque() override { return false; }
+
+  bool IsSVGImageForContainer() const override { return true; }
 
   PaintImage PaintImageForCurrentFrame() override;
 
@@ -95,7 +98,7 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
                    const cc::PaintFlags&,
                    const FloatRect& dest_rect,
                    const ImageTilingInfo&,
-                   RespectImageOrientationEnum) override;
+                   const ImageDrawOptions& draw_options) override;
 
  private:
   SVGImageForContainer(SVGImage* image,

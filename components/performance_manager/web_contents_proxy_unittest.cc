@@ -22,12 +22,13 @@ namespace performance_manager {
 class WebContentsProxyTest : public PerformanceManagerTestHarness {
  public:
   WebContentsProxyTest() {}
+
+  WebContentsProxyTest(const WebContentsProxyTest&) = delete;
+  WebContentsProxyTest& operator=(const WebContentsProxyTest&) = delete;
+
   ~WebContentsProxyTest() override {}
 
   void GetContentsViaProxy(bool delete_before_deref);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebContentsProxyTest);
 };
 
 TEST_F(WebContentsProxyTest, EndToEnd) {

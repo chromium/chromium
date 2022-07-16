@@ -16,6 +16,12 @@ namespace ash {
 class RotationLockFeaturePodControllerTest : public AshTestBase {
  public:
   RotationLockFeaturePodControllerTest() = default;
+
+  RotationLockFeaturePodControllerTest(
+      const RotationLockFeaturePodControllerTest&) = delete;
+  RotationLockFeaturePodControllerTest& operator=(
+      const RotationLockFeaturePodControllerTest&) = delete;
+
   ~RotationLockFeaturePodControllerTest() override = default;
 
   // AshTestBase:
@@ -34,8 +40,6 @@ class RotationLockFeaturePodControllerTest : public AshTestBase {
  private:
   std::unique_ptr<RotationLockFeaturePodController> controller_;
   std::unique_ptr<FeaturePodButton> button_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(RotationLockFeaturePodControllerTest);
 };
 
 void RotationLockFeaturePodControllerTest::SetUp() {

@@ -13,7 +13,6 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "url/origin.h"
@@ -67,16 +66,15 @@ class FileSystemHelper : public base::RefCountedThreadSafe<FileSystemHelper> {
       base::OnceCallback<void(const std::list<FileSystemInfo>&)>;
 
   // Creates a FileSystemHelper instance for the file systems stored
-  // in |profile|'s user data directory. The FileSystemHelper object
+  // in `profile`'s user data directory. The FileSystemHelper object
   // will hold a reference to the FileSystemContext that's passed in, but is not
   // responsible for destroying it.
   //
   // The FileSystemHelper will not change the profile itself, but
   // can modify data it contains (by removing file systems).
-  static FileSystemHelper* Create(
-      storage::FileSystemContext* file_system_context,
-      const std::vector<storage::FileSystemType>& additional_types,
-      content::NativeIOContext* native_io_context);
+  FileSystemHelper(storage::FileSystemContext* filesystem_context,
+                   const std::vector<storage::FileSystemType>& additional_types,
+                   content::NativeIOContext* native_io_context);
 
   // Starts the process of fetching file system data, which will call |callback|
   // upon completion, passing it a constant list of FileSystemInfo objects.
@@ -94,10 +92,6 @@ class FileSystemHelper : public base::RefCountedThreadSafe<FileSystemHelper> {
 
  protected:
   friend class base::RefCountedThreadSafe<FileSystemHelper>;
-
-  FileSystemHelper(storage::FileSystemContext* filesystem_context,
-                   const std::vector<storage::FileSystemType>& additional_types,
-                   content::NativeIOContext* native_io_context);
 
   virtual ~FileSystemHelper();
 
@@ -150,6 +144,9 @@ class CannedFileSystemHelper : public FileSystemHelper {
       const std::vector<storage::FileSystemType>& additional_types,
       content::NativeIOContext* native_io_context);
 
+  CannedFileSystemHelper(const CannedFileSystemHelper&) = delete;
+  CannedFileSystemHelper& operator=(const CannedFileSystemHelper&) = delete;
+
   // Manually adds a filesystem to the set of canned file systems that this
   // helper returns via StartFetching.
   void Add(const url::Origin& origin);
@@ -175,8 +172,6 @@ class CannedFileSystemHelper : public FileSystemHelper {
 
   // Holds the current list of filesystems returned to the client.
   std::set<url::Origin> pending_origins_;
-
-  DISALLOW_COPY_AND_ASSIGN(CannedFileSystemHelper);
 };
 
 }  // namespace browsing_data

@@ -20,8 +20,8 @@
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -38,7 +38,7 @@
 #include "ui/gfx/image/image_skia.h"
 
 #if defined(OS_WIN)
-#include "chrome/browser/web_applications/components/web_app_shortcut_win.h"
+#include "chrome/browser/web_applications/web_app_shortcut_win.h"
 #endif
 
 #if defined(OS_MAC)
@@ -169,7 +169,7 @@ void GetShortcutInfoForApp(const extensions::Extension* extension,
       info_list.push_back(extensions::ImageLoader::ImageRepresentation(
           resource, extensions::ImageLoader::ImageRepresentation::ALWAYS_RESIZE,
           gfx::Size(size, size),
-          GetScaleForResourceScaleFactor(ui::SCALE_FACTOR_100P)));
+          GetScaleForResourceScaleFactor(ui::k100Percent)));
     }
   }
 
@@ -189,7 +189,7 @@ void GetShortcutInfoForApp(const extensions::Extension* extension,
     info_list.push_back(extensions::ImageLoader::ImageRepresentation(
         resource, extensions::ImageLoader::ImageRepresentation::ALWAYS_RESIZE,
         gfx::Size(size, size),
-        GetScaleForResourceScaleFactor(ui::SCALE_FACTOR_100P)));
+        GetScaleForResourceScaleFactor(ui::k100Percent)));
   }
 
   // |info_list| may still be empty at this point, in which case
@@ -246,14 +246,6 @@ bool ShouldCreateShortcutFor(ShortcutCreationReason reason,
   // Always create shortcuts for v2 packaged apps.
   if (extension->is_platform_app())
     return true;
-
-#if defined(OS_MAC)
-  if (extension->is_hosted_app() &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableHostedAppShimCreation)) {
-    return false;
-  }
-#endif
 
   // Allow shortcut creation if it was explicitly requested by the user (i.e. is
   // not automatic).

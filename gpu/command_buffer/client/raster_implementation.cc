@@ -139,6 +139,12 @@ class RasterImplementation::TransferCacheSerializeHelperImpl final
  public:
   explicit TransferCacheSerializeHelperImpl(RasterImplementation* ri)
       : ri_(ri) {}
+
+  TransferCacheSerializeHelperImpl(const TransferCacheSerializeHelperImpl&) =
+      delete;
+  TransferCacheSerializeHelperImpl& operator=(
+      const TransferCacheSerializeHelperImpl&) = delete;
+
   ~TransferCacheSerializeHelperImpl() final = default;
 
   uint32_t take_end_offset_of_last_inlined_entry() {
@@ -218,8 +224,6 @@ class RasterImplementation::TransferCacheSerializeHelperImpl final
 
   RasterImplementation* const ri_;
   uint32_t end_offset_of_last_inlined_entry_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(TransferCacheSerializeHelperImpl);
 };
 
 // Helper to copy PaintOps to the GPU service over the transfer buffer.
@@ -239,6 +243,9 @@ class RasterImplementation::PaintOpSerializer {
     buffer_ =
         static_cast<char*>(ri_->MapRasterCHROMIUM(initial_size, &free_bytes_));
   }
+
+  PaintOpSerializer(const PaintOpSerializer&) = delete;
+  PaintOpSerializer& operator=(const PaintOpSerializer&) = delete;
 
   ~PaintOpSerializer() {
     // Need to call SendSerializedData;
@@ -343,8 +350,6 @@ class RasterImplementation::PaintOpSerializer {
   uint32_t free_bytes_ = 0;
 
   size_t* max_op_size_hint_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintOpSerializer);
 };
 
 RasterImplementation::SingleThreadChecker::SingleThreadChecker(
@@ -1304,6 +1309,22 @@ void RasterImplementation::ConvertYUVAMailboxesToRGB(
       static_cast<GLenum>(subsampling), reinterpret_cast<GLbyte*>(mailboxes));
 }
 
+void RasterImplementation::ConvertRGBAToYUVAMailboxes(
+    SkYUVColorSpace planes_yuv_color_space,
+    SkYUVAInfo::PlaneConfig plane_config,
+    SkYUVAInfo::Subsampling subsampling,
+    const gpu::Mailbox yuva_plane_mailboxes[],
+    const gpu::Mailbox& source_mailbox) {
+  gpu::Mailbox mailboxes[kNumMailboxes]{};
+  for (int i = 0; i < SkYUVAInfo::NumPlanes(plane_config); ++i) {
+    mailboxes[i] = yuva_plane_mailboxes[i];
+  }
+  mailboxes[kNumMailboxes - 1] = source_mailbox;
+  helper_->ConvertRGBAToYUVAMailboxesINTERNALImmediate(
+      planes_yuv_color_space, static_cast<GLenum>(plane_config),
+      static_cast<GLenum>(subsampling), reinterpret_cast<GLbyte*>(mailboxes));
+}
+
 void RasterImplementation::BeginRasterCHROMIUM(
     GLuint sk_color,
     GLboolean needs_clear,
@@ -1330,7 +1351,8 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
                                           const gfx::Vector2dF& post_translate,
                                           const gfx::Vector2dF& post_scale,
                                           bool requires_clear,
-                                          size_t* max_op_size_hint) {
+                                          size_t* max_op_size_hint,
+                                          bool preserve_recording) {
   TRACE_EVENT1("gpu", "RasterImplementation::RasterCHROMIUM",
                "raster_chromium_id", ++raster_chromium_id_);
   DCHECK(max_op_size_hint);
@@ -1382,8 +1404,13 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
           raster_properties_->color_space, raster_properties_->can_use_lcd_text,
           capabilities().context_supports_distance_field_text,
           capabilities().max_texture_size));
-  serializer.Serialize(&list->paint_op_buffer_, &temp_raster_offsets_,
-                       preamble);
+  if (preserve_recording) {
+    serializer.Serialize(&list->paint_op_buffer_, &temp_raster_offsets_,
+                         preamble);
+  } else {
+    auto* buffer = const_cast<cc::PaintOpBuffer*>(&list->paint_op_buffer_);
+    serializer.SerializeAndDestroy(buffer, &temp_raster_offsets_, preamble);
+  }
   // TODO(piman): raise error if !serializer.valid()?
   op_serializer.SendSerializedData();
 }

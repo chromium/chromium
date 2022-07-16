@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/account_id/account_id.h"
@@ -66,9 +66,9 @@ void UserCloudPolicyManager::Connect(
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       client->GetURLLoaderFactory();
 
-  CreateComponentCloudPolicyService(
-      dm_protocol::kChromeExtensionPolicyType, component_policy_cache_path_,
-      POLICY_SOURCE_CLOUD, client.get(), schema_registry());
+  CreateComponentCloudPolicyService(dm_protocol::kChromeExtensionPolicyType,
+                                    component_policy_cache_path_, client.get(),
+                                    schema_registry());
   core()->Connect(std::move(client));
   core()->StartRefreshScheduler();
   core()->TrackRefreshDelayPref(local_state,

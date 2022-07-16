@@ -24,6 +24,10 @@ class MODULES_EXPORT TaskPriorityChangeEvent final : public Event {
 
   TaskPriorityChangeEvent(const AtomicString& type,
                           const TaskPriorityChangeEventInit*);
+
+  TaskPriorityChangeEvent(const TaskPriorityChangeEvent&) = delete;
+  TaskPriorityChangeEvent& operator=(const TaskPriorityChangeEvent&) = delete;
+
   ~TaskPriorityChangeEvent() override;
 
   const AtomicString& InterfaceName() const override;
@@ -32,8 +36,6 @@ class MODULES_EXPORT TaskPriorityChangeEvent final : public Event {
 
  private:
   const V8TaskPriority previous_priority_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskPriorityChangeEvent);
 };
 
 }  // namespace blink

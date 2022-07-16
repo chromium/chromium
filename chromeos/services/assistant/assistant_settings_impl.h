@@ -29,6 +29,10 @@ class ServiceContext;
 class AssistantSettingsImpl : public AssistantSettings {
  public:
   explicit AssistantSettingsImpl(ServiceContext* context);
+
+  AssistantSettingsImpl(const AssistantSettingsImpl&) = delete;
+  AssistantSettingsImpl& operator=(const AssistantSettingsImpl&) = delete;
+
   ~AssistantSettingsImpl() override;
 
   void Initialize(
@@ -70,8 +74,6 @@ class AssistantSettingsImpl : public AssistantSettings {
       speaker_id_enrollment_remote_;
 
   base::WeakPtrFactory<AssistantSettingsImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantSettingsImpl);
 };
 
 }  // namespace assistant

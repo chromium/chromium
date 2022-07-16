@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_NAVIGATE_ACTION_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_NAVIGATE_ACTION_H_
 
-#include "base/macros.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 
 namespace autofill_assistant {
@@ -13,13 +12,15 @@ namespace autofill_assistant {
 class NavigateAction : public Action {
  public:
   explicit NavigateAction(ActionDelegate* delegate, const ActionProto& proto);
+
+  NavigateAction(const NavigateAction&) = delete;
+  NavigateAction& operator=(const NavigateAction&) = delete;
+
   ~NavigateAction() override;
 
  private:
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigateAction);
 };
 
 }  // namespace autofill_assistant

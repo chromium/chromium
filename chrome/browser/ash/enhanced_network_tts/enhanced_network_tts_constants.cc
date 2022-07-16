@@ -14,5 +14,23 @@ const char kReadAloudServerUrl[] =
 
 const char kNetworkRequestUploadType[] = "application/json";
 
+const char kDefaultVoiceKey[] = "default_voice";
+
+const char kLanguageKey[] = "language";
+
+const char kSelectionKey[] = "selection";
+
+const char kCriteriaKey[] = "criteria";
+
+const char kTextPartsPath[] = "text.text_parts";
+
+const char kSpeechFactorPath[] =
+    "advanced_options.audio_generation_options.speed_factor";
+
+const char kForceLanguagePath[] = "advanced_options.force_language";
+
+const char kVoiceCriteriaAndSelectionsPath[] =
+    "voice_settings.voice_criteria_and_selections";
+
 }  // namespace enhanced_network_tts
 }  // namespace ash

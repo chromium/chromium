@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/common/content_export.h"
@@ -56,6 +55,10 @@ class CONTENT_EXPORT Navigator {
             FrameTree& frame_tree,
             NavigatorDelegate* delegate,
             NavigationControllerDelegate* navigation_controller_delegate);
+
+  Navigator(const Navigator&) = delete;
+  Navigator& operator=(const Navigator&) = delete;
+
   ~Navigator();
 
   // This method verifies that a navigation to |url| doesn't commit into a WebUI
@@ -236,8 +239,6 @@ class CONTENT_EXPORT Navigator {
   NavigatorDelegate* delegate_;
 
   std::unique_ptr<Navigator::NavigationMetricsData> navigation_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(Navigator);
 };
 
 }  // namespace content

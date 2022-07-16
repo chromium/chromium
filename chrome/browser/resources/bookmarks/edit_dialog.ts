@@ -21,7 +21,9 @@ import {BookmarkNode} from './types.js';
 export interface BookmarksEditDialogElement {
   $: {
     dialog: CrDialogElement,
+    saveButton: HTMLElement,
     url: CrInputElement,
+    name: CrInputElement,
   }
 }
 
@@ -113,8 +115,9 @@ export class BookmarksEditDialogElement extends PolymerElement {
   /**
    * Validates the value of the URL field, returning true if it is a valid URL.
    * May modify the value by prepending 'http://' in order to make it valid.
+   * Note: Made public only for the purposes of testing.
    */
-  private validateUrl_(): boolean {
+  validateUrl(): boolean {
     const urlInput = this.$.url;
     const originalValue = this.urlValue_;
 
@@ -136,7 +139,7 @@ export class BookmarksEditDialogElement extends PolymerElement {
     const edit: { title: string, url?: string, parentId?: string|null } =
         { 'title': this.titleValue_ };
     if (!this.isFolder_) {
-      if (!this.validateUrl_()) {
+      if (!this.validateUrl()) {
         return;
       }
 
@@ -155,6 +158,12 @@ export class BookmarksEditDialogElement extends PolymerElement {
 
   private onCancelButtonTap_() {
     this.$.dialog.cancel();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'bookmarks-edit-dialog': BookmarksEditDialogElement;
   }
 }
 

@@ -42,7 +42,7 @@ class PaymentResponseHelperTest : public testing::Test,
     visa_card_.set_use_count(5u);
     autofill_app_ = std::make_unique<AutofillPaymentApp>(
         "visa", visa_card_, billing_addresses_, "en-US",
-        &test_payment_request_delegate_);
+        test_payment_request_delegate_.GetWeakPtr());
   }
   ~PaymentResponseHelperTest() override {}
 
@@ -96,8 +96,8 @@ class PaymentResponseHelperTest : public testing::Test,
   autofill::AutofillProfile* test_address() { return &address_; }
   const autofill::CreditCard& test_credit_card() { return visa_card_; }
   base::WeakPtr<PaymentApp> test_app() { return autofill_app_->AsWeakPtr(); }
-  PaymentRequestDelegate* test_payment_request_delegate() {
-    return &test_payment_request_delegate_;
+  base::WeakPtr<PaymentRequestDelegate> test_payment_request_delegate() {
+    return test_payment_request_delegate_.GetWeakPtr();
   }
 
   base::WeakPtr<PaymentResponseHelperTest> GetWeakPtr() {

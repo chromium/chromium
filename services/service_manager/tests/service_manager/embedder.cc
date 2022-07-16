@@ -20,12 +20,14 @@ class PackagedService : public service_manager::Service {
   explicit PackagedService(
       mojo::PendingReceiver<service_manager::mojom::Service> receiver)
       : service_receiver_(this, std::move(receiver)) {}
+
+  PackagedService(const PackagedService&) = delete;
+  PackagedService& operator=(const PackagedService&) = delete;
+
   ~PackagedService() override = default;
 
  private:
   service_manager::ServiceReceiver service_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(PackagedService);
 };
 
 class Embedder : public service_manager::Service {
@@ -33,6 +35,10 @@ class Embedder : public service_manager::Service {
   explicit Embedder(
       mojo::PendingReceiver<service_manager::mojom::Service> receiver)
       : service_receiver_(this, std::move(receiver)) {}
+
+  Embedder(const Embedder&) = delete;
+  Embedder& operator=(const Embedder&) = delete;
+
   ~Embedder() override = default;
 
  private:
@@ -55,8 +61,6 @@ class Embedder : public service_manager::Service {
 
   service_manager::ServiceReceiver service_receiver_;
   std::unique_ptr<service_manager::Service> packaged_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(Embedder);
 };
 
 }  // namespace

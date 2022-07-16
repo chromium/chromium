@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_VP8_PICTURE_H_
 #define MEDIA_GPU_VP8_PICTURE_H_
 
-#include "base/macros.h"
 #include "media/gpu/codec_picture.h"
 #include "media/parsers/vp8_parser.h"
 
@@ -18,6 +17,9 @@ class VP8Picture : public CodecPicture {
  public:
   VP8Picture();
 
+  VP8Picture(const VP8Picture&) = delete;
+  VP8Picture& operator=(const VP8Picture&) = delete;
+
   virtual V4L2VP8Picture* AsV4L2VP8Picture();
   virtual VaapiVP8Picture* AsVaapiVP8Picture();
 
@@ -25,9 +27,6 @@ class VP8Picture : public CodecPicture {
 
  protected:
   ~VP8Picture() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VP8Picture);
 };
 
 }  // namespace media

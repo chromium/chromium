@@ -6,6 +6,7 @@ include_rules = [
   "+skia/ext",
   "+third_party/harfbuzz-ng",
   "+third_party/skia",
+  "+third_party/test_fonts",
   "+ui/ios",
   "+ui/ozone/buildflags.h",
 

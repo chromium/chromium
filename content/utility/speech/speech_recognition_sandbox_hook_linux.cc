@@ -6,6 +6,7 @@
 
 #include <dlfcn.h>
 
+#include "components/soda/buildflags.h"
 #include "components/soda/constants.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
@@ -36,6 +37,14 @@ std::vector<BrokerFilePermission> GetSodaFilePermissions() {
         language_packs_dir.AsEndingWithSeparator().value()));
   }
 
+#if BUILDFLAG(ENABLE_SODA)
+  auto test_resources_dir = GetSodaTestResourcesDirectory();
+  if (!test_resources_dir.empty()) {
+    permissions.push_back(BrokerFilePermission::ReadOnlyRecursive(
+        test_resources_dir.AsEndingWithSeparator().value()));
+  }
+#endif
+
   return permissions;
 }
 
@@ -43,6 +52,12 @@ std::vector<BrokerFilePermission> GetSodaFilePermissions() {
 
 bool SpeechRecognitionPreSandboxHook(
     sandbox::policy::SandboxLinux::Options options) {
+#if BUILDFLAG(ENABLE_SODA)
+  void* soda_test_library = dlopen(GetSodaTestBinaryPath().value().c_str(),
+                                   RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
+  DCHECK(soda_test_library);
+#endif
+
   void* soda_library = dlopen(GetSodaBinaryPath().value().c_str(),
                               RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
   DCHECK(soda_library);

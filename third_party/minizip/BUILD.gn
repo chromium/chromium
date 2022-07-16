@@ -9,6 +9,7 @@ config("minizip_compiler_flags") {
     cflags = [
       # mz_zip.c does |UINT_MAX == UINT16_MAX && ...|.
       "-Wno-unreachable-code",
+      "-Wno-unused-but-set-variable",
       "-Wno-unused-function",
       "-Wno-implicit-fallthrough",
     ]
@@ -97,7 +98,6 @@ static_library("minizip") {
     # NOTE: Modifying visibility list requires approval from security team.
     ":minizip_compress_fuzzer",
     ":minizip_uncompress_fuzzer",
-    "//chrome/browser/resources/chromeos/zip_archiver/cpp:zip_archiver_library",
   ]
 }
 

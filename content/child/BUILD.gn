@@ -162,7 +162,6 @@ target(link_target_type, "child") {
 
   configs += [
     "//content:content_implementation",
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 }
 

@@ -13,8 +13,8 @@ namespace {
 // Values for a valid filter configuration.
 constexpr int16_t kDeviceFoundRSSIThreshold = -80;
 constexpr int16_t kDeviceLostRSSIThreshold = -100;
-constexpr base::TimeDelta kDeviceFoundTimeout = base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kDeviceLostTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kDeviceFoundTimeout = base::Seconds(1);
+constexpr base::TimeDelta kDeviceLostTimeout = base::Seconds(5);
 const std::vector<uint8_t> kPatternValue = {0xff};
 
 device::BluetoothLowEnergyScanFilter::Pattern GetPattern() {
@@ -56,12 +56,12 @@ TEST(BluetoothLowEnergyScanFilterTest, InvalidPatternTooLong) {
 TEST(BluetoothLowEnergyScanFilterTest, InvalidBadTimeout) {
   auto filter = device::BluetoothLowEnergyScanFilter::Create(
       kDeviceFoundRSSIThreshold, kDeviceLostRSSIThreshold, kDeviceFoundTimeout,
-      base::TimeDelta::FromSeconds(0), {GetPattern()});
+      base::Seconds(0), {GetPattern()});
   EXPECT_FALSE(filter);
 
   filter = device::BluetoothLowEnergyScanFilter::Create(
       kDeviceFoundRSSIThreshold, kDeviceLostRSSIThreshold, kDeviceFoundTimeout,
-      base::TimeDelta::FromSeconds(301), {GetPattern()});
+      base::Seconds(301), {GetPattern()});
   EXPECT_FALSE(filter);
 }
 

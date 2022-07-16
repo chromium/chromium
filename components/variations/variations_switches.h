@@ -16,6 +16,8 @@ namespace switches {
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kDisableFieldTrialTestingConfig[];
 COMPONENT_EXPORT(VARIATIONS)
+extern const char kDisableVariationsSafeMode[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kEnableBenchmarking[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kFakeVariationsChannel[];

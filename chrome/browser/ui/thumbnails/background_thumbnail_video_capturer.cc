@@ -16,7 +16,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 BackgroundThumbnailVideoCapturer::BackgroundThumbnailVideoCapturer(
     content::WebContents* contents,
@@ -66,8 +66,7 @@ void BackgroundThumbnailVideoCapturer::Start(
   video_capturer_->SetMinSizeChangePeriod(base::TimeDelta());
   video_capturer_->SetFormat(media::PIXEL_FORMAT_ARGB,
                              gfx::ColorSpace::CreateREC709());
-  video_capturer_->SetMinCapturePeriod(base::TimeDelta::FromSeconds(1) /
-                                       kMaxFrameRate);
+  video_capturer_->SetMinCapturePeriod(base::Seconds(1) / kMaxFrameRate);
   video_capturer_->Start(this);
 }
 
@@ -185,9 +184,8 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Tab.Preview.TimeToStoreAfterFrameReceived",
-      base::TimeTicks::Now() - time_of_call,
-      base::TimeDelta::FromMicroseconds(10),
-      base::TimeDelta::FromMilliseconds(10), 50);
+      base::TimeTicks::Now() - time_of_call, base::Microseconds(10),
+      base::Milliseconds(10), 50);
 
   got_frame_callback_.Run(cropped_frame, frame_id);
 }

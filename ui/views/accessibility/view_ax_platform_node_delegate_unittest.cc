@@ -77,6 +77,9 @@ class TestTableModel : public ui::TableModel {
  public:
   TestTableModel() = default;
 
+  TestTableModel(const TestTableModel&) = delete;
+  TestTableModel& operator=(const TestTableModel&) = delete;
+
   // ui::TableModel:
   int RowCount() override { return 10; }
 
@@ -96,9 +99,6 @@ class TestTableModel : public ui::TableModel {
   }
 
   void SetObserver(ui::TableModelObserver* observer) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestTableModel);
 };
 
 class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
@@ -309,30 +309,24 @@ class ViewAXPlatformNodeDelegateMenuTest
 };
 
 TEST_F(ViewAXPlatformNodeDelegateTest, FocusBehaviorShouldAffectIgnoredState) {
-  EXPECT_EQ(ax::mojom::Role::kButton, button_accessibility()->GetData().role);
-  EXPECT_FALSE(
-      button_accessibility()->GetData().HasState(ax::mojom::State::kIgnored));
+  EXPECT_EQ(ax::mojom::Role::kButton, button_accessibility()->GetRole());
+  EXPECT_FALSE(button_accessibility()->HasState(ax::mojom::State::kIgnored));
 
   // Since the label is a subview of |button_|, and the button is keyboard
   // focusable, the label is assumed to form part of the button and should be
   // ignored.
-  EXPECT_EQ(ax::mojom::Role::kStaticText,
-            label_accessibility()->GetData().role);
-  EXPECT_TRUE(
-      label_accessibility()->GetData().HasState(ax::mojom::State::kIgnored));
+  EXPECT_EQ(ax::mojom::Role::kStaticText, label_accessibility()->GetRole());
+  EXPECT_TRUE(label_accessibility()->HasState(ax::mojom::State::kIgnored));
 
   // This will happen for all potentially keyboard-focusable Views with
   // non-keyboard-focusable children, so if we make the button unfocusable, the
   // label will not be ignored any more.
   button_->SetFocusBehavior(View::FocusBehavior::NEVER);
 
-  EXPECT_EQ(ax::mojom::Role::kButton, button_accessibility()->GetData().role);
-  EXPECT_FALSE(
-      button_accessibility()->GetData().HasState(ax::mojom::State::kIgnored));
-  EXPECT_EQ(ax::mojom::Role::kStaticText,
-            label_accessibility()->GetData().role);
-  EXPECT_FALSE(
-      label_accessibility()->GetData().HasState(ax::mojom::State::kIgnored));
+  EXPECT_EQ(ax::mojom::Role::kButton, button_accessibility()->GetRole());
+  EXPECT_FALSE(button_accessibility()->HasState(ax::mojom::State::kIgnored));
+  EXPECT_EQ(ax::mojom::Role::kStaticText, label_accessibility()->GetRole());
+  EXPECT_FALSE(label_accessibility()->HasState(ax::mojom::State::kIgnored));
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, BoundsShouldMatch) {
@@ -356,8 +350,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, LabelIsChildOfButton) {
   // platform APIs.
   EXPECT_NE(View::FocusBehavior::NEVER, button_->GetFocusBehavior());
   EXPECT_EQ(0, button_accessibility()->GetChildCount());
-  EXPECT_EQ(ax::mojom::Role::kStaticText,
-            label_accessibility()->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, label_accessibility()->GetRole());
 
   // Modify the focus behavior to make the button unfocusable, and verify that
   // the label is now a child of the button.
@@ -367,22 +360,17 @@ TEST_F(ViewAXPlatformNodeDelegateTest, LabelIsChildOfButton) {
             button_accessibility()->ChildAtIndex(0));
   EXPECT_EQ(button_->GetNativeViewAccessible(),
             label_accessibility()->GetParent());
-  EXPECT_EQ(ax::mojom::Role::kStaticText,
-            label_accessibility()->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, label_accessibility()->GetRole());
 }
 
 // Verify Views with invisible ancestors have ax::mojom::State::kInvisible.
 TEST_F(ViewAXPlatformNodeDelegateTest, InvisibleViews) {
   EXPECT_TRUE(widget_->IsVisible());
-  EXPECT_FALSE(
-      button_accessibility()->GetData().HasState(ax::mojom::State::kInvisible));
-  EXPECT_FALSE(
-      label_accessibility()->GetData().HasState(ax::mojom::State::kInvisible));
+  EXPECT_FALSE(button_accessibility()->HasState(ax::mojom::State::kInvisible));
+  EXPECT_FALSE(label_accessibility()->HasState(ax::mojom::State::kInvisible));
   button_->SetVisible(false);
-  EXPECT_TRUE(
-      button_accessibility()->GetData().HasState(ax::mojom::State::kInvisible));
-  EXPECT_TRUE(
-      label_accessibility()->GetData().HasState(ax::mojom::State::kInvisible));
+  EXPECT_TRUE(button_accessibility()->HasState(ax::mojom::State::kInvisible));
+  EXPECT_TRUE(label_accessibility()->HasState(ax::mojom::State::kInvisible));
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, SetFocus) {
@@ -862,22 +850,22 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
   RunMenu();
 
   ViewAXPlatformNodeDelegate* submenu = submenu_accessibility();
-  EXPECT_FALSE(submenu->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_FALSE(submenu->HasState(ax::mojom::State::kFocusable));
   EXPECT_EQ(submenu->GetChildCount(), 8);
-  EXPECT_EQ(submenu->GetData().role, ax::mojom::Role::kMenu);
+  EXPECT_EQ(submenu->GetRole(), ax::mojom::Role::kMenu);
   EXPECT_EQ(submenu->GetData().GetHasPopup(), ax::mojom::HasPopup::kMenu);
 
   auto items = submenu->view()->children();
 
   // MenuItemView::Type::kNormal
   ViewAXPlatformNodeDelegate* normal_item = view_accessibility(items[0]);
-  EXPECT_TRUE(normal_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(normal_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_TRUE(normal_item->GetData().IsSelectable());
-  EXPECT_FALSE(normal_item->GetData().GetBoolAttribute(
-      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(
+      normal_item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(normal_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(normal_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(normal_item->GetData().role, ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(normal_item->GetRole(), ax::mojom::Role::kMenuItem);
   EXPECT_EQ(normal_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kFalse);
   EXPECT_EQ(normal_item->GetPosInSet(), 1);
   EXPECT_EQ(normal_item->GetSetSize(), 7);
@@ -886,13 +874,13 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
 
   // MenuItemView::Type::kSubMenu
   ViewAXPlatformNodeDelegate* submenu_item = view_accessibility(items[1]);
-  EXPECT_TRUE(submenu_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(submenu_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_TRUE(submenu_item->GetData().IsSelectable());
-  EXPECT_FALSE(submenu_item->GetData().GetBoolAttribute(
-      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(
+      submenu_item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(submenu_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(submenu_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(submenu_item->GetData().role, ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(submenu_item->GetRole(), ax::mojom::Role::kMenuItem);
   EXPECT_EQ(submenu_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kMenu);
   EXPECT_EQ(submenu_item->GetPosInSet(), 2);
   EXPECT_EQ(submenu_item->GetSetSize(), 7);
@@ -908,15 +896,13 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
   // MenuItemView::Type::kActionableSubMenu
   ViewAXPlatformNodeDelegate* actionable_submenu_item =
       view_accessibility(items[2]);
-  EXPECT_TRUE(actionable_submenu_item->GetData().HasState(
-      ax::mojom::State::kFocusable));
+  EXPECT_TRUE(actionable_submenu_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_TRUE(actionable_submenu_item->GetData().IsSelectable());
-  EXPECT_FALSE(actionable_submenu_item->GetData().GetBoolAttribute(
+  EXPECT_FALSE(actionable_submenu_item->GetBoolAttribute(
       ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(actionable_submenu_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(actionable_submenu_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(actionable_submenu_item->GetData().role,
-            ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(actionable_submenu_item->GetRole(), ax::mojom::Role::kMenuItem);
   EXPECT_EQ(actionable_submenu_item->GetData().GetHasPopup(),
             ax::mojom::HasPopup::kMenu);
   EXPECT_EQ(actionable_submenu_item->GetPosInSet(), 3);
@@ -932,13 +918,13 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
 
   // MenuItemView::Type::kCheckbox
   ViewAXPlatformNodeDelegate* checkbox_item = view_accessibility(items[3]);
-  EXPECT_TRUE(checkbox_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(checkbox_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_TRUE(checkbox_item->GetData().IsSelectable());
-  EXPECT_TRUE(checkbox_item->GetData().GetBoolAttribute(
-      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_TRUE(
+      checkbox_item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(checkbox_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(checkbox_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(checkbox_item->GetData().role, ax::mojom::Role::kMenuItemCheckBox);
+  EXPECT_EQ(checkbox_item->GetRole(), ax::mojom::Role::kMenuItemCheckBox);
   EXPECT_EQ(checkbox_item->GetData().GetHasPopup(),
             ax::mojom::HasPopup::kFalse);
   EXPECT_EQ(checkbox_item->GetPosInSet(), 4);
@@ -948,13 +934,13 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
 
   // MenuItemView::Type::kRadio
   ViewAXPlatformNodeDelegate* radio_item = view_accessibility(items[4]);
-  EXPECT_TRUE(radio_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(radio_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_TRUE(radio_item->GetData().IsSelectable());
-  EXPECT_FALSE(radio_item->GetData().GetBoolAttribute(
-      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(
+      radio_item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(radio_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(radio_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(radio_item->GetData().role, ax::mojom::Role::kMenuItemRadio);
+  EXPECT_EQ(radio_item->GetRole(), ax::mojom::Role::kMenuItemRadio);
   EXPECT_EQ(radio_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kFalse);
   EXPECT_EQ(radio_item->GetPosInSet(), 5);
   EXPECT_EQ(radio_item->GetSetSize(), 7);
@@ -963,33 +949,31 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
 
   // MenuItemView::Type::kSeparator
   ViewAXPlatformNodeDelegate* separator_item = view_accessibility(items[5]);
-  EXPECT_FALSE(
-      separator_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_FALSE(separator_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_FALSE(separator_item->GetData().IsSelectable());
-  EXPECT_FALSE(separator_item->GetData().GetBoolAttribute(
-      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(
+      separator_item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(separator_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(separator_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(separator_item->GetData().role, ax::mojom::Role::kSplitter);
+  EXPECT_EQ(separator_item->GetRole(), ax::mojom::Role::kSplitter);
   EXPECT_EQ(separator_item->GetData().GetHasPopup(),
             ax::mojom::HasPopup::kFalse);
-  EXPECT_FALSE(separator_item->GetData().HasIntAttribute(
-      ax::mojom::IntAttribute::kPosInSet));
-  EXPECT_FALSE(separator_item->GetData().HasIntAttribute(
-      ax::mojom::IntAttribute::kSetSize));
+  EXPECT_FALSE(
+      separator_item->HasIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+  EXPECT_FALSE(
+      separator_item->HasIntAttribute(ax::mojom::IntAttribute::kSetSize));
   EXPECT_EQ(separator_item->GetChildCount(), 0);
   EXPECT_EQ(separator_item->GetIndexInParent(), 5);
 
   // MenuItemView::Type::kHighlighted
   ViewAXPlatformNodeDelegate* highlighted_item = view_accessibility(items[6]);
-  EXPECT_TRUE(
-      highlighted_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(highlighted_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_TRUE(highlighted_item->GetData().IsSelectable());
-  EXPECT_FALSE(highlighted_item->GetData().GetBoolAttribute(
-      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(
+      highlighted_item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(highlighted_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(highlighted_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(highlighted_item->GetData().role, ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(highlighted_item->GetRole(), ax::mojom::Role::kMenuItem);
   EXPECT_EQ(highlighted_item->GetData().GetHasPopup(),
             ax::mojom::HasPopup::kFalse);
   EXPECT_EQ(highlighted_item->GetPosInSet(), 6);
@@ -999,13 +983,13 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
 
   // MenuItemView::Type::kTitle
   ViewAXPlatformNodeDelegate* title_item = view_accessibility(items[7]);
-  EXPECT_TRUE(title_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(title_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_TRUE(title_item->GetData().IsSelectable());
-  EXPECT_FALSE(title_item->GetData().GetBoolAttribute(
-      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(
+      title_item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(title_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(title_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(title_item->GetData().role, ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(title_item->GetRole(), ax::mojom::Role::kMenuItem);
   EXPECT_EQ(title_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kFalse);
   EXPECT_EQ(title_item->GetPosInSet(), 7);
   EXPECT_EQ(title_item->GetSetSize(), 7);

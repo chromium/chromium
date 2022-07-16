@@ -22,6 +22,9 @@ class GPU_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
  public:
   using DestructionCallback = base::OnceCallback<void(const gpu::SyncToken&)>;
 
+  GpuMemoryBufferImpl(const GpuMemoryBufferImpl&) = delete;
+  GpuMemoryBufferImpl& operator=(const GpuMemoryBufferImpl&) = delete;
+
   ~GpuMemoryBufferImpl() override;
 
   // Overridden from gfx::GpuMemoryBuffer:
@@ -57,9 +60,6 @@ class GPU_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
   // Unmap() operations to avoid corrupt mutation across multiple threads.
   base::Lock map_lock_;
   uint32_t map_count_ GUARDED_BY(map_lock_) = 0u;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferImpl);
 };
 
 }  // namespace gpu

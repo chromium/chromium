@@ -27,10 +27,9 @@ Polymer({
   },
 
   onBeforeShow() {
-    document.documentElement.setAttribute('new-layout', '');
-    this.$$('#lazy').get();
-    var contentContainer = this.$$('#contentContainer');
-    var scrollContainer = this.$$('#scrollContainer');
+    this.shadowRoot.querySelector('#lazy').get();
+    var contentContainer = this.shadowRoot.querySelector('#contentContainer');
+    var scrollContainer = this.shadowRoot.querySelector('#scrollContainer');
     if (!scrollContainer || !contentContainer) {
       return;
     }
@@ -52,6 +51,6 @@ Polymer({
   /** @private */
   onNoLazyChanged_() {
     if (this.noLazy)
-      this.$$('#lazy').get();
+      this.shadowRoot.querySelector('#lazy').get();
   }
 });

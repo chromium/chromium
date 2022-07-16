@@ -17,15 +17,14 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
-#include "chrome/browser/web_applications/test/web_app_install_observer.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
@@ -49,23 +48,24 @@ class CreateShortcutBrowserTest : public WebAppControllerBrowserTest {
  public:
   AppId InstallShortcutAppForCurrentUrl(bool open_as_window = false) {
     chrome::SetAutoAcceptWebAppDialogForTesting(true, open_as_window);
-    WebAppInstallObserver observer(profile());
+    WebAppTestInstallObserver observer(profile());
+    observer.BeginListening();
     CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
-    AppId app_id = observer.AwaitNextInstall();
+    AppId app_id = observer.Wait();
     chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
     return app_id;
   }
 
   WebAppRegistrar& registrar() {
-    auto* provider = WebAppProvider::Get(profile());
+    auto* provider = WebAppProvider::GetForTest(profile());
     CHECK(provider);
     return provider->registrar();
   }
 
-  AppRegistryController& registry_controller() {
-    auto* provider = WebAppProvider::Get(profile());
+  WebAppSyncBridge& sync_bridge() {
+    auto* provider = WebAppProvider::GetForTest(profile());
     CHECK(provider);
-    return provider->registry_controller();
+    return provider->sync_bridge();
   }
 };
 
@@ -88,15 +88,16 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, InstallSourceRecorded) {
 
   // LatestWebAppInstallSource should be correctly set and reported to UMA for
   // both installable and non-installable sites.
-  for (const GURL& url : {GetInstallableAppURL(),
-                          embedded_test_server()->GetURL(
-                              "/web_apps/theme_color_only_manifest.html")}) {
+  for (const GURL& url :
+       {GetInstallableAppURL(),
+        embedded_test_server()->GetURL(
+            "/web_apps/get_manifest.html?theme_color_only.json")}) {
     base::HistogramTester histogram_tester;
     NavigateToURLAndWait(browser(), url);
     AppId app_id = InstallShortcutAppForCurrentUrl();
 
-    absl::optional<int> install_source = GetIntWebAppPref(
-        profile()->GetPrefs(), app_id, kLatestWebAppInstallSource);
+    absl::optional<int> install_source =
+        GetWebAppInstallSource(profile()->GetPrefs(), app_id);
     EXPECT_TRUE(install_source.has_value());
     EXPECT_EQ(static_cast<webapps::WebappInstallSource>(*install_source),
               webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
@@ -126,8 +127,8 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
   AppId app_id = InstallShortcutAppForCurrentUrl();
   // Change launch container to open in window.
-  registry_controller().SetAppUserDisplayMode(app_id, DisplayMode::kStandalone,
-                                              /*is_user_action=*/false);
+  sync_bridge().SetAppUserDisplayMode(app_id, DisplayMode::kStandalone,
+                                      /*is_user_action=*/false);
 
   Browser* new_browser =
       NavigateInNewWindowAndAwaitInstallabilityCheck(GetInstallableAppURL());
@@ -142,6 +143,8 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 // This simulates a case where the user has manually navigated to a page hosted
 // within an extension, then added it as a shortcut app.
 // Regression test for https://crbug.com/828233.
+//
+// TODO(crbug.com/1253234): Remove chrome-extension scheme for web apps.
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        ShouldShowCustomTabBarForExtensionPage) {
   // This involves the creation of a regular (non-app) extension with a popup
@@ -162,6 +165,10 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   const GURL popup_url("chrome-extension://" + extension_id + "/popup.html");
 
   NavigateToURLAndWait(browser(), popup_url);
+
+  // TODO(crbug.com/1253234): IDC_CREATE_SHORTCUT command must become disabled.
+  ASSERT_TRUE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
+
   const AppId app_id = InstallShortcutAppForCurrentUrl();
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
   CHECK(app_browser);
@@ -200,9 +207,9 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, WorksAfterDelayedIFrameLoad) {
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        UseNonPromotableManifestData) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  NavigateToURLAndWait(browser(),
-                       embedded_test_server()->GetURL(
-                           "/web_apps/theme_color_only_manifest.html"));
+  NavigateToURLAndWait(
+      browser(), embedded_test_server()->GetURL(
+                     "/web_apps/get_manifest.html?theme_color_only.json"));
   AppId app_id = InstallShortcutAppForCurrentUrl();
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
             SkColorSetRGB(0x12, 0x34, 0x56));
@@ -212,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, IgnoreInvalidManifestData) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(
-      "/web_apps/invalid_start_url_manifest.html");
+      "/web_apps/get_manifest.html?invalid_start_url.json");
   NavigateToURLAndWait(browser(), url);
   AppId app_id = InstallShortcutAppForCurrentUrl();
   EXPECT_EQ(registrar().GetAppStartUrl(app_id), url);

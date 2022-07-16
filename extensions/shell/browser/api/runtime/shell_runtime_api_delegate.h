@@ -17,6 +17,10 @@ namespace extensions {
 class ShellRuntimeAPIDelegate : public RuntimeAPIDelegate {
  public:
   explicit ShellRuntimeAPIDelegate(content::BrowserContext* browser_context);
+
+  ShellRuntimeAPIDelegate(const ShellRuntimeAPIDelegate&) = delete;
+  ShellRuntimeAPIDelegate& operator=(const ShellRuntimeAPIDelegate&) = delete;
+
   ~ShellRuntimeAPIDelegate() override;
 
   // RuntimeAPIDelegate implementation.
@@ -31,8 +35,6 @@ class ShellRuntimeAPIDelegate : public RuntimeAPIDelegate {
 
  private:
   content::BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellRuntimeAPIDelegate);
 };
 
 }  // namespace extensions

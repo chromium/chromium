@@ -15,7 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -32,6 +32,10 @@ class TimeZoneMonitorLinux : public TimeZoneMonitor {
  public:
   TimeZoneMonitorLinux(
       scoped_refptr<base::SequencedTaskRunner> file_task_runner);
+
+  TimeZoneMonitorLinux(const TimeZoneMonitorLinux&) = delete;
+  TimeZoneMonitorLinux& operator=(const TimeZoneMonitorLinux&) = delete;
+
   ~TimeZoneMonitorLinux() override;
 
   void NotifyClientsFromImpl() {
@@ -59,8 +63,6 @@ class TimeZoneMonitorLinux : public TimeZoneMonitor {
 
  private:
   scoped_refptr<TimeZoneMonitorLinuxImpl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeZoneMonitorLinux);
 };
 
 namespace {
@@ -82,6 +84,9 @@ class TimeZoneMonitorLinuxImpl
                        impl));
     return impl;
   }
+
+  TimeZoneMonitorLinuxImpl(const TimeZoneMonitorLinuxImpl&) = delete;
+  TimeZoneMonitorLinuxImpl& operator=(const TimeZoneMonitorLinuxImpl&) = delete;
 
   void StopWatching() {
     DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
@@ -161,8 +166,6 @@ class TimeZoneMonitorLinuxImpl
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   TimeZoneMonitorLinux* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeZoneMonitorLinuxImpl);
 };
 
 }  // namespace

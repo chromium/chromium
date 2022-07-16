@@ -16,6 +16,11 @@ namespace android_webview {
 class AwPicture {
  public:
   AwPicture(sk_sp<SkPicture> picture);
+
+  AwPicture() = delete;
+  AwPicture(const AwPicture&) = delete;
+  AwPicture& operator=(const AwPicture&) = delete;
+
   ~AwPicture();
 
   // Methods called from Java.
@@ -28,8 +33,6 @@ class AwPicture {
 
  private:
   sk_sp<SkPicture> picture_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AwPicture);
 };
 
 }  // android_webview

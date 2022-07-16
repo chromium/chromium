@@ -7,19 +7,17 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
 namespace web_app {
 
-constexpr base::TimeDelta kDelayBetweenChecks = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kDelayBetweenChecks = base::Days(1);
 constexpr const char kDisableManifestUpdateThrottle[] =
     "disable-manifest-update-throttle";
 
@@ -29,17 +27,19 @@ ManifestUpdateManager::~ManifestUpdateManager() = default;
 
 void ManifestUpdateManager::SetSubsystems(
     WebAppRegistrar* registrar,
-    AppIconManager* icon_manager,
+    WebAppIconManager* icon_manager,
     WebAppUiManager* ui_manager,
-    InstallManager* install_manager,
+    WebAppInstallFinalizer* install_finalizer,
     SystemWebAppManager* system_web_app_manager,
-    OsIntegrationManager* os_integration_manager) {
+    OsIntegrationManager* os_integration_manager,
+    WebAppSyncBridge* sync_bridge) {
   registrar_ = registrar;
   icon_manager_ = icon_manager;
   ui_manager_ = ui_manager;
-  install_manager_ = install_manager;
+  install_finalizer_ = install_finalizer;
   system_web_app_manager_ = system_web_app_manager;
   os_integration_manager_ = os_integration_manager;
+  sync_bridge_ = sync_bridge;
 }
 
 void ManifestUpdateManager::Start() {
@@ -81,7 +81,7 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
   if (base::Contains(tasks_, app_id))
     return;
 
-  if (!MaybeConsumeUpdateCheck(url.GetOrigin(), app_id)) {
+  if (!MaybeConsumeUpdateCheck(url.DeprecatedGetOriginAsURL(), app_id)) {
     NotifyResult(url, app_id, ManifestUpdateResult::kThrottled);
     return;
   }
@@ -92,7 +92,8 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
                   base::BindOnce(&ManifestUpdateManager::OnUpdateStopped,
                                  base::Unretained(this)),
                   hang_update_checks_for_testing_, *registrar_, *icon_manager_,
-                  ui_manager_, install_manager_, *os_integration_manager_));
+                  ui_manager_, install_finalizer_, *os_integration_manager_,
+                  sync_bridge_));
 }
 
 bool ManifestUpdateManager::IsUpdateConsumed(const AppId& app_id) {

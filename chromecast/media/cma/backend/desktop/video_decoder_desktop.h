@@ -19,6 +19,10 @@ class MediaSinkDesktop;
 class VideoDecoderDesktop : public MediaPipelineBackend::VideoDecoder {
  public:
   VideoDecoderDesktop();
+
+  VideoDecoderDesktop(const VideoDecoderDesktop&) = delete;
+  VideoDecoderDesktop& operator=(const VideoDecoderDesktop&) = delete;
+
   ~VideoDecoderDesktop() override;
 
   void Start(base::TimeDelta start_pts);
@@ -36,7 +40,6 @@ class VideoDecoderDesktop : public MediaPipelineBackend::VideoDecoder {
  private:
   Delegate* delegate_;
   std::unique_ptr<MediaSinkDesktop> sink_;
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderDesktop);
 };
 
 }  // namespace media

@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.xsurface;
 
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import java.util.Map;
 
 /**
@@ -26,22 +24,6 @@ public interface FeedActionsHandler {
      * Sends data back to the server when content is clicked.
      */
     default void processThereAndBackAgainData(byte[] data) {}
-
-    /**
-     * Sends data back to the server when content is clicked and provides the corresponding view
-     * through |actionSourceView| which can be null.
-     */
-    @Deprecated
-    default void processThereAndBackAgainData(byte[] data, @Nullable View actionSourceView) {}
-
-    /**
-     * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
-     * message.
-     *
-     * This is in the process of being removed, replaced by FeedLoggingDependencyProvider.
-     */
-    @Deprecated
-    default void processViewAction(byte[] data) {}
 
     /**
      * Triggers Chrome to send user feedback for this card.
@@ -112,4 +94,47 @@ public interface FeedActionsHandler {
      * @param title The title of the page to be shared.
      */
     default void share(String url, String title) {}
+
+    /**
+     * Opens the settings to manager autoplay.
+     */
+    default void openAutoplaySettings() {}
+
+    /**
+     * Watches a view to get notified when the first time it has the visible area percentage not
+     * less than the given threshold. The watch is based on the visibility of full
+     * ListContentManager item containing the view.
+     * @param view The view to watch for.
+     * @param viewedThreshold The threshold of the percentage of the visible area on screen.
+     * @param runnable The runnable to get notified.
+     */
+    default void watchForViewFirstVisible(View view, float viewedThreshold, Runnable runnable) {}
+
+    /**
+     * Reports that the notice identified by the given key is created. It may not be visible yet.
+     * @param key Key to identify the type of the notice. For each new key, please update
+     *            "NoticeKey" token in histograms.xml and NoticeUmaName() in metrics_reporter.cc.
+     */
+    default void reportNoticeCreated(String key) {}
+
+    /**
+     * Reports that the notice identified by the given key is viewed, fully visible in the viewport.
+     * @param key Key to identify the type of the notice. This interaction info can be used to
+     * determine if it is necessary to show the notice to the user again.
+     */
+    default void reportNoticeViewed(String key) {}
+
+    /**
+     * Reports that the user has clicked/tapped the notice identified by the given key to perform
+     * an open action. This interaction info can be used to determine if it is necessary to show
+     * the notice to the user again.
+     * @param key Key to identify the type of the notice.
+     */
+    default void reportNoticeOpenAction(String key) {}
+
+    /**
+     * Reports that the notice identified by the given key is dismissed by the user.
+     * @param key Key to identify the type of the notice.
+     */
+    default void reportNoticeDismissed(String key) {}
 }

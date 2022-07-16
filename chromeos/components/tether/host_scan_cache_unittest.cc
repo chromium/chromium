@@ -21,6 +21,9 @@ class TestObserver final : public HostScanCache::Observer {
  public:
   TestObserver() : empty_cache_count_(0) {}
 
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   uint32_t empty_cache_count() const { return empty_cache_count_; }
 
   // HostScanCache::Observer:
@@ -28,13 +31,15 @@ class TestObserver final : public HostScanCache::Observer {
 
  private:
   uint32_t empty_cache_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace
 
 class HostScanCacheTest : public testing::Test {
+ public:
+  HostScanCacheTest(const HostScanCacheTest&) = delete;
+  HostScanCacheTest& operator=(const HostScanCacheTest&) = delete;
+
  protected:
   HostScanCacheTest()
       : test_entries_(host_scan_test_util::CreateTestEntries()) {}
@@ -54,9 +59,6 @@ class HostScanCacheTest : public testing::Test {
 
   std::unique_ptr<FakeHostScanCache> host_scan_cache_;
   std::unique_ptr<TestObserver> observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostScanCacheTest);
 };
 
 TEST_F(HostScanCacheTest, TestSetAndRemove) {

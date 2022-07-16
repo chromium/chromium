@@ -37,7 +37,7 @@ class ClientCertStoreLacros final : public net::ClientCertStore {
                             ClientCertListCallback>>;
 
   void WaitForCertDb();
-  void OnCertDbReady(bool is_cert_db_ready);
+  void OnCertDbReady();
 
   bool are_certs_loaded_ = false;
   CertDbInitializer* cert_db_initializer_ = nullptr;

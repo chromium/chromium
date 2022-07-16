@@ -19,6 +19,11 @@ class ASH_EXPORT AccessibilityCursorRingLayer : public FocusRingLayer {
                                int red,
                                int green,
                                int blue);
+
+  AccessibilityCursorRingLayer(const AccessibilityCursorRingLayer&) = delete;
+  AccessibilityCursorRingLayer& operator=(const AccessibilityCursorRingLayer&) =
+      delete;
+
   ~AccessibilityCursorRingLayer() override;
 
   // Create the layer and update its bounds and position in the hierarchy.
@@ -34,8 +39,6 @@ class ASH_EXPORT AccessibilityCursorRingLayer : public FocusRingLayer {
   int red_;
   int green_;
   int blue_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityCursorRingLayer);
 };
 
 }  // namespace ash

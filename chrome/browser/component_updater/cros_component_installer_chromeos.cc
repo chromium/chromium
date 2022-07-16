@@ -35,18 +35,12 @@ constexpr char kComponentsRootPath[] = "cros-components";
 
 // All downloadable Chrome OS components.
 const ComponentConfig kConfigs[] = {
-    {"epson-inkjet-printer-escpr", ComponentConfig::PolicyType::kEnvVersion,
-     "5.0", "1913a5e0a6cad30b6f03e176177e0d7ed62c5d6700a9c66da556d7c3f5d6a47e"},
-    {"cros-termina", ComponentConfig::PolicyType::kEnvVersion, "940.1",
+    {"cros-termina", ComponentConfig::PolicyType::kEnvVersion, "980.1",
      "e9d960f84f628e1f42d05de4046bb5b3154b6f1f65c08412c6af57a29aecaffb"},
-    {"rtanalytics-light", ComponentConfig::PolicyType::kEnvVersion, "94.0",
+    {"rtanalytics-light", ComponentConfig::PolicyType::kEnvVersion, "96.0",
      "69f09d33c439c2ab55bbbe24b47ab55cb3f6c0bd1f1ef46eefea3216ec925038"},
-    {"rtanalytics-full", ComponentConfig::PolicyType::kEnvVersion, "94.0",
+    {"rtanalytics-full", ComponentConfig::PolicyType::kEnvVersion, "96.0",
      "c93c3e1013c52100a20038b405ac854d69fa889f6dc4fa6f188267051e05e444"},
-    {"star-cups-driver", ComponentConfig::PolicyType::kEnvVersion, "1.1",
-     "6d24de30f671da5aee6d463d9e446cafe9ddac672800a9defe86877dcde6c466"},
-    {"cros-cellular", ComponentConfig::PolicyType::kEnvVersion, "1.0",
-     "5714811c04f0a63aac96b39096faa759ace4c04e9b68291e7c9716128f5a2722"},
     {"demo-mode-resources", ComponentConfig::PolicyType::kEnvVersion, "1.0",
      "93c093ebac788581389015e9c59c5af111d2fa5174d206eb795042e6376cbd10"},
     // NOTE: If you change the lacros component names, you must also update
@@ -55,8 +49,10 @@ const ComponentConfig kConfigs[] = {
      "7a85ffb4b316a3b89135a3f43660ef3049950a61a2f8df4237e1ec213852b848"},
     {"lacros-dogfood-dev", ComponentConfig::PolicyType::kLacros, nullptr,
      "b3e1ef1780c0acd2d3fa44b4d73c657a0f1ed3ad83fd8c964a18a3502ccf5f4f"},
-    {"lacros-dogfood-stable", ComponentConfig::PolicyType::kLacros, nullptr,
+    {"lacros-dogfood-beta", ComponentConfig::PolicyType::kLacros, nullptr,
      "7d5c1428f7f67b56f95123851adec1da105980c56b5c126352040f3b65d3e43b"},
+    {"lacros-dogfood-stable", ComponentConfig::PolicyType::kLacros, nullptr,
+     "47f910805afac79e2d4d9117c42d5291a32ac60a4ea1a42e537fd86082c3ba48"},
 };
 
 const char* g_ash_version_for_test = nullptr;
@@ -147,7 +143,7 @@ bool CrOSComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 CrOSComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   cros_component_installer_->EmitInstalledSignal(GetName());
 
@@ -162,7 +158,7 @@ void CrOSComponentInstallerPolicy::OnCustomUninstall() {
 }
 
 bool CrOSComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   return true;
 }
@@ -190,15 +186,14 @@ EnvVersionInstallerPolicy::EnvVersionInstallerPolicy(
 
 EnvVersionInstallerPolicy::~EnvVersionInstallerPolicy() = default;
 
-void EnvVersionInstallerPolicy::ComponentReady(
-    const base::Version& version,
-    const base::FilePath& path,
-    std::unique_ptr<base::DictionaryValue> manifest) {
-  std::string min_env_version;
-  if (!manifest || !manifest->GetString("min_env_version", &min_env_version))
+void EnvVersionInstallerPolicy::ComponentReady(const base::Version& version,
+                                               const base::FilePath& path,
+                                               base::Value manifest) {
+  std::string* min_env_version = manifest.FindStringKey("min_env_version");
+  if (!min_env_version)
     return;
 
-  if (!IsCompatible(env_version_, min_env_version))
+  if (!IsCompatible(env_version_, *min_env_version))
     return;
 
   cros_component_installer_->RegisterCompatiblePath(GetName(), path);
@@ -229,10 +224,9 @@ LacrosInstallerPolicy::LacrosInstallerPolicy(
 
 LacrosInstallerPolicy::~LacrosInstallerPolicy() = default;
 
-void LacrosInstallerPolicy::ComponentReady(
-    const base::Version& version,
-    const base::FilePath& path,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+void LacrosInstallerPolicy::ComponentReady(const base::Version& version,
+                                           const base::FilePath& path,
+                                           base::Value manifest) {
   // Each version of Lacros guarantees it will be compatible through the next
   // major ash/OS version. For example, Lacros 89 will work with ash/OS 90,
   // but may not work with ash/OS 91.

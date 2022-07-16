@@ -45,6 +45,11 @@ enum class CopyTextureMethod {
 // The target of |dest_id| texture must be GL_TEXTURE_2D.
 class GPU_GLES2_EXPORT CopyTextureCHROMIUMResourceManager {
  public:
+  CopyTextureCHROMIUMResourceManager(
+      const CopyTextureCHROMIUMResourceManager&) = delete;
+  CopyTextureCHROMIUMResourceManager& operator=(
+      const CopyTextureCHROMIUMResourceManager&) = delete;
+
   virtual ~CopyTextureCHROMIUMResourceManager();
 
   // Factory generating a real implementation.
@@ -106,9 +111,6 @@ class GPU_GLES2_EXPORT CopyTextureCHROMIUMResourceManager {
 
  protected:
   CopyTextureCHROMIUMResourceManager();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CopyTextureCHROMIUMResourceManager);
 };
 
 }  // namespace gles2

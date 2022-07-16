@@ -54,7 +54,7 @@ constexpr uint8_t codec_private[4] = {
 
 // Force new clusters at a maximum rate of 10 Hz.
 constexpr base::TimeDelta kMinimumForcedClusterDuration =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 
 void WriteOpusHeader(const media::AudioParameters& params, uint8_t* header) {
   // See https://wiki.xiph.org/OggOpus#ID_Header.
@@ -97,13 +97,13 @@ static const char kPcmCodecId[] = "A_PCM/FLOAT/IEEE";
 
 static const char* MkvCodeIcForMediaVideoCodecId(VideoCodec video_codec) {
   switch (video_codec) {
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       return mkvmuxer::Tracks::kVp8CodecId;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       return mkvmuxer::Tracks::kVp9CodecId;
-    case kCodecAV1:
+    case VideoCodec::kAV1:
       return mkvmuxer::Tracks::kAv1CodecId;
-    case kCodecH264:
+    case VideoCodec::kH264:
       return kH264CodecId;
     default:
       NOTREACHED() << "Unsupported codec " << GetCodecName(video_codec);
@@ -204,7 +204,7 @@ WebmMuxer::VideoParameters::VideoParameters(
     scoped_refptr<media::VideoFrame> frame)
     : visible_rect_size(frame->visible_rect().size()),
       frame_rate(frame->metadata().frame_rate.value_or(0.0)),
-      codec(kUnknownVideoCodec),
+      codec(VideoCodec::kUnknown),
       color_space(frame->ColorSpace()) {}
 
 WebmMuxer::VideoParameters::VideoParameters(
@@ -229,7 +229,7 @@ WebmMuxer::WebmMuxer(AudioCodec audio_codec,
                      bool has_audio,
                      std::unique_ptr<Delegate> delegate)
     : audio_codec_(audio_codec),
-      video_codec_(kUnknownVideoCodec),
+      video_codec_(VideoCodec::kUnknown),
       video_track_index_(0),
       audio_track_index_(0),
       has_video_(has_video),
@@ -238,7 +238,7 @@ WebmMuxer::WebmMuxer(AudioCodec audio_codec,
       force_one_libwebm_error_(false) {
   DCHECK(has_video_ || has_audio_);
   DCHECK(delegate_);
-  DCHECK(audio_codec == kCodecOpus || audio_codec == kCodecPCM)
+  DCHECK(audio_codec == AudioCodec::kOpus || audio_codec == AudioCodec::kPCM)
       << " Unsupported audio codec: " << GetCodecName(audio_codec);
 
   delegate_->InitSegment(&segment_);
@@ -268,10 +268,10 @@ bool WebmMuxer::OnEncodedVideo(const VideoParameters& params,
                                bool is_key_frame) {
   DVLOG(2) << __func__ << " - " << encoded_data.size() << "B";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(params.codec == kCodecVP8 || params.codec == kCodecVP9 ||
-         params.codec == kCodecH264 || params.codec == kCodecAV1)
+  DCHECK(params.codec == VideoCodec::kVP8 || params.codec == VideoCodec::kVP9 ||
+         params.codec == VideoCodec::kH264 || params.codec == VideoCodec::kAV1)
       << " Unsupported video codec: " << GetCodecName(params.codec);
-  DCHECK(video_codec_ == kUnknownVideoCodec || video_codec_ == params.codec)
+  DCHECK(video_codec_ == VideoCodec::kUnknown || video_codec_ == params.codec)
       << "Unsupported: codec switched, to: " << GetCodecName(params.codec);
 
   if (encoded_data.size() == 0u) {
@@ -292,7 +292,7 @@ bool WebmMuxer::OnEncodedVideo(const VideoParameters& params,
       last_frame_timestamp_video_ = first_frame_timestamp_video_;
     }
     // Add codec private for AV1.
-    if (params.codec == kCodecAV1 &&
+    if (params.codec == VideoCodec::kAV1 &&
         !segment_.GetTrackByNumber(video_track_index_)
              ->SetCodecPrivate(av1::codec_private, sizeof(av1::codec_private)))
       LOG(ERROR) << __func__ << " failed to set CodecPrivate for AV1.";
@@ -409,7 +409,7 @@ void WebmMuxer::AddVideoTrack(
   DCHECK_EQ(1000000ull, segment_.GetSegmentInfo()->timecode_scale());
 
   // Set alpha channel parameters for only VPX (crbug.com/711825).
-  if (video_codec_ == kCodecH264)
+  if (video_codec_ == VideoCodec::kH264)
     return;
   video_track->SetAlphaMode(mkvmuxer::VideoTrack::kAlpha);
   // Alpha channel, if present, is stored in a BlockAdditional next to the
@@ -445,7 +445,7 @@ void WebmMuxer::AddAudioTrack(const media::AudioParameters& params) {
   // Audio data is always pcm_f32le.
   audio_track->set_bit_depth(32u);
 
-  if (audio_codec_ == kCodecOpus) {
+  if (audio_codec_ == AudioCodec::kOpus) {
     audio_track->set_codec_id(mkvmuxer::Tracks::kOpusCodecId);
 
     uint8_t opus_header[OPUS_EXTRADATA_SIZE];
@@ -457,7 +457,7 @@ void WebmMuxer::AddAudioTrack(const media::AudioParameters& params) {
     // Segment's timestamps should be in milliseconds, DCHECK it. See
     // http://www.webmproject.org/docs/container/#muxer-guidelines
     DCHECK_EQ(1000000ull, segment_.GetSegmentInfo()->timecode_scale());
-  } else if (audio_codec_ == kCodecPCM) {
+  } else if (audio_codec_ == AudioCodec::kPCM) {
     audio_track->set_codec_id(kPcmCodecId);
   }
 }

@@ -15,11 +15,6 @@ component("range") {
     sources += [ "range_mac.mm" ]
   }
 
-  configs += [
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
-
   defines = [ "GFX_RANGE_IMPLEMENTATION" ]
 
   deps = [

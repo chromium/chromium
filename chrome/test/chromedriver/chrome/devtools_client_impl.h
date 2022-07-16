@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
@@ -80,6 +79,9 @@ class DevToolsClientImpl : public DevToolsClient {
                      const std::string& id,
                      const FrontendCloserFunc& frontend_closer_func,
                      const ParserFunc& parser_func);
+
+  DevToolsClientImpl(const DevToolsClientImpl&) = delete;
+  DevToolsClientImpl& operator=(const DevToolsClientImpl&) = delete;
 
   ~DevToolsClientImpl() override;
 
@@ -193,8 +195,6 @@ class DevToolsClientImpl : public DevToolsClient {
   std::map<int, scoped_refptr<ResponseInfo>> response_info_map_;
   int next_id_;  // The id identifying a particular request.
   int stack_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsClientImpl);
 };
 
 namespace internal {

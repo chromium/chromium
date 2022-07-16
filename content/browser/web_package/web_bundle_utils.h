@@ -46,6 +46,9 @@ constexpr char kWebBundleFileMimeTypeWithoutParameters[] =
 constexpr char kNoSniffErrorMessage[] =
     "Web Bundle response must have \"X-Content-Type-Options: nosniff\" header.";
 
+constexpr char kNoPrimaryUrlErrorMessage[] =
+    "Web Bundle is missing the Primary URL to navigate to.";
+
 extern const net::NetworkTrafficAnnotationTag kTrafficAnnotation;
 
 // Adds |error_message| to the console and calls OnComplete() of |client|.

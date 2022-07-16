@@ -14,6 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -284,6 +285,8 @@ class AutocompleteInput {
   bool added_default_scheme_to_typed_url() const {
     return added_default_scheme_to_typed_url_;
   }
+
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   friend class AutocompleteProviderTest;

@@ -24,10 +24,11 @@ class FileReaderTest : public testing::Test {
  public:
   FileReaderTest() {}
 
+  FileReaderTest(const FileReaderTest&) = delete;
+  FileReaderTest& operator=(const FileReaderTest&) = delete;
+
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileReaderTest);
 };
 
 class Receiver {
@@ -37,6 +38,9 @@ class Receiver {
             std::move(resources),
             FileReader::OptionalFileSequenceTask(),
             base::BindOnce(&Receiver::DidReadFile, base::Unretained(this)))) {}
+
+  Receiver(const Receiver&) = delete;
+  Receiver& operator=(const Receiver&) = delete;
 
   void Run() {
     file_reader_->Start();
@@ -73,8 +77,6 @@ class Receiver {
   std::vector<std::unique_ptr<std::string>> data_;
   scoped_refptr<FileReader> file_reader_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(Receiver);
 };
 
 void RunBasicTest(const std::vector<std::string>& filenames) {

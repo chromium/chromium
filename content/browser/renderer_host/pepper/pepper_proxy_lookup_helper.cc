@@ -8,7 +8,7 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -34,6 +34,9 @@ class PepperProxyLookupHelper::UIThreadHelper
         base::BindOnce(&UIThreadHelper::StartLookup, base::Unretained(this),
                        url, std::move(look_up_proxy_for_url_callback)));
   }
+
+  UIThreadHelper(const UIThreadHelper&) = delete;
+  UIThreadHelper& operator=(const UIThreadHelper&) = delete;
 
   ~UIThreadHelper() override { DCHECK_CURRENTLY_ON(BrowserThread::UI); }
 
@@ -68,8 +71,6 @@ class PepperProxyLookupHelper::UIThreadHelper
 
   LookUpCompleteCallback look_up_complete_callback_;
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(UIThreadHelper);
 };
 
 PepperProxyLookupHelper::PepperProxyLookupHelper() {}

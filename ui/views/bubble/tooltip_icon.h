@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -39,12 +38,18 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
 
   explicit TooltipIcon(const std::u16string& tooltip,
                        int tooltip_icon_size = 16);
+
+  TooltipIcon(const TooltipIcon&) = delete;
+  TooltipIcon& operator=(const TooltipIcon&) = delete;
+
   ~TooltipIcon() override;
 
   // ImageView:
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnFocus() override;
+  void OnBlur() override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
@@ -106,8 +111,6 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
   base::ScopedObservation<Widget, WidgetObserver> observation_{this};
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipIcon);
 };
 
 }  // namespace views

@@ -20,6 +20,10 @@ namespace sandbox {
 class ThreadProcessDispatcher : public Dispatcher {
  public:
   explicit ThreadProcessDispatcher(PolicyBase* policy_base);
+
+  ThreadProcessDispatcher(const ThreadProcessDispatcher&) = delete;
+  ThreadProcessDispatcher& operator=(const ThreadProcessDispatcher&) = delete;
+
   ~ThreadProcessDispatcher() override {}
 
   // Dispatcher interface.
@@ -61,7 +65,6 @@ class ThreadProcessDispatcher : public Dispatcher {
                     DWORD creation_flags);
 
   PolicyBase* policy_base_;
-  DISALLOW_COPY_AND_ASSIGN(ThreadProcessDispatcher);
 };
 
 }  // namespace sandbox

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
+#include "base/memory/raw_ptr.h"
 
 class MyClass {
   // Lambdas are backed by a class that may have (depending on what the lambda
@@ -20,8 +20,8 @@ class MyClass {
     // |isLambda|, rather than |hasAncestor|.
     auto lambda = [&]() -> int {
       struct NestedStruct {
-        // Expected rewrite: CheckedPtr<int> ptr_field;
-        CheckedPtr<int> ptr_field;
+        // Expected rewrite: raw_ptr<int> ptr_field;
+        raw_ptr<int> ptr_field;
       } var;
       var.ptr_field = &x;
 

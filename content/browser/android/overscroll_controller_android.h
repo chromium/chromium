@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -47,6 +46,10 @@ class CONTENT_EXPORT OverscrollControllerAndroid
       float dpi_scale,
       std::unique_ptr<ui::OverscrollGlow> glow_effect,
       std::unique_ptr<ui::OverscrollRefresh> refresh_effect);
+
+  OverscrollControllerAndroid(const OverscrollControllerAndroid&) = delete;
+  OverscrollControllerAndroid& operator=(const OverscrollControllerAndroid&) =
+      delete;
 
   ~OverscrollControllerAndroid() override;
 
@@ -99,8 +102,6 @@ class CONTENT_EXPORT OverscrollControllerAndroid
   // TODO(jdduke): Factor out a common API from the two overscroll effects.
   std::unique_ptr<ui::OverscrollGlow> glow_effect_;
   std::unique_ptr<ui::OverscrollRefresh> refresh_effect_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscrollControllerAndroid);
 };
 
 }  // namespace content

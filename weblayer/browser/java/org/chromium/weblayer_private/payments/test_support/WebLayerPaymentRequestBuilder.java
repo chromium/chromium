@@ -46,7 +46,6 @@ public class WebLayerPaymentRequestBuilder implements PaymentRequestService.Dele
     private final WebContents mWebContents;
     private final JourneyLogger mJourneyLogger;
     private final PaymentRequestSpec mSpec;
-    private final boolean mGoogleBridgeEligible;
     private final PaymentOptions mOptions;
     private String mSupportedMethod = "https://www.chromium.org";
 
@@ -79,7 +78,6 @@ public class WebLayerPaymentRequestBuilder implements PaymentRequestService.Dele
         mDetails.total = new PaymentItem();
         mOptions = new PaymentOptions();
         mSpec = Mockito.mock(PaymentRequestSpec.class);
-        mGoogleBridgeEligible = false;
     }
 
     /**
@@ -105,7 +103,7 @@ public class WebLayerPaymentRequestBuilder implements PaymentRequestService.Dele
                 (client, onClosed)
                         -> new PaymentRequestService(
                                 mRenderFrameHost, client, onClosed, /*delegate=*/this, () -> null));
-        request.init(mClient, mMethodData, mDetails, mOptions, mGoogleBridgeEligible);
+        request.init(mClient, mMethodData, mDetails, mOptions);
         return request;
     }
 

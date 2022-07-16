@@ -976,8 +976,14 @@
   <message desc="This is an abbreviated ARIA widget role name shown on a braille display. When translating, try to find a contracted form of the translation for 'status' according to local conventions. If reasonable, use all lowercase and avoid punctuation to keep the number of characters as low as possible." name="IDS_CHROMEVOX_ROLE_STATUS_BRL">
     sts
   </message>
+  <message desc="Accessibility role description for subscript," name="IDS_CHROMEVOX_ROLE_SUBSCRIPT" is_accessibility_with_no_ui="true">
+    Subscript
+  </message>
   <message desc="Accessibility role description for suggestion, meaning a suggested change to some content" name="IDS_CHROMEVOX_ROLE_SUGGESTION" is_accessibility_with_no_ui="true">
     Suggest
+  </message>
+  <message desc="Accessibility role description for superscript," name="IDS_CHROMEVOX_ROLE_SUPERSCRIPT" is_accessibility_with_no_ui="true">
+    Superscript
   </message>
   <message desc="Describes an element with the ARIA role tab." meaning="UI element" name="IDS_CHROMEVOX_ROLE_TAB">
     Tab
@@ -1249,6 +1255,9 @@
   <message desc="Describes an element with the ARIA attribute aria-invalid=grammar." name="IDS_CHROMEVOX_ARIA_INVALID_GRAMMAR">
     Grammatical mistake detected
   </message>
+  <message desc="Describes a spoken hint when aria-invalid=grammar." name="IDS_CHROMEVOX_HINT_INVALID_GRAMMAR">
+    grammar error
+  </message>
   <message desc="Shown on a braille display as a suffix to text fields that are marked as containing a grammatical mistake. When translating, stick to lowercase." name="IDS_CHROMEVOX_ARIA_INVALID_GRAMMAR_BRL">
     grammatical mistake
   </message>
@@ -1256,6 +1265,9 @@
     Spelling mistake detected
   </message>
   <message desc="Shown on a braille display as a suffix to text fields that are marked as containing a misspelling. When translating, stick to lowercase." name="IDS_CHROMEVOX_ARIA_INVALID_SPELLING_BRL">
+    misspelled
+  </message>
+  <message desc="Describes a spoken hint when aria-invalid=spelling." name="IDS_CHROMEVOX_HINT_INVALID_SPELLING">
     misspelled
   </message>
   <message desc="Describes an element with the ARIA attribute aria-multiline=true." name="IDS_CHROMEVOX_ARIA_MULTILINE_TRUE">
@@ -1684,6 +1696,15 @@
   <message desc="The description of the next similar item command." name="IDS_CHROMEVOX_NEXT_SIMILAR_ITEM">
     Next similar item
   </message>
+  <message desc="The description of the previous invalid command." name="IDS_CHROMEVOX_PREVIOUS_INVALID_ITEM">
+    Previous invalid item
+  </message>
+  <message desc="The description of the next invalid item command." name="IDS_CHROMEVOX_NEXT_INVALID_ITEM">
+    Next invalid item
+  </message>
+  <message desc="Spoken if the user attempts to jump to the previous or next invalid item when none exists." name="IDS_CHROMEVOX_NO_INVALID_ITEM">
+    No invalid item
+  </message>
   <message desc="Describes nodes or anything describing them as a landmark." name="IDS_CHROMEVOX_ROLE_LANDMARK">
     Landmark
   </message>
@@ -1982,6 +2003,9 @@
   </message>
   <message desc="Title of the button that opens up the ChromeVox menus." name="IDS_CHROMEVOX_MENUS_TITLE">
     ChromeVox Menus
+  </message>
+  <message desc="Title of the button that opens up the ChromeVox menus." name="IDS_CHROMEVOX_MENUS_COLLAPSE_TITLE">
+    ChromeVox Menus collapse
   </message>
   <message desc="Title of the button that opens up ChromeVox options." name="IDS_CHROMEVOX_OPTIONS">
     ChromeVox Options
@@ -3046,7 +3070,7 @@
     Double tap with one finger
   </message>
   <message desc="The text label for the use pitch changes checkbox." name="IDS_CHROMEVOX_OPTIONS_USE_PITCH_CHANGES_CHECKBOX_LABEL">
-    Change pitch when speaking element types and quoted, deleted, bolded, parenthesized, or capitalized text.
+    Change pitch when speaking element types and formatted text
   </message>
   <message desc="Describes the current web page position of the ChromeVox focus." is_accessibility_with_no_ui="true" name="IDS_CHROMEVOX_DESCRIBE_POS_BY_PAGE">
     Page <ph name="currentPage">$1<ex>1</ex></ph> of <ph name="totalPages">$2<ex>10</ex></ph>

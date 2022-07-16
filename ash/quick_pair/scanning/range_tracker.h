@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,12 +28,12 @@ using RangeTrackerCallback = base::OnceCallback<void(device::BluetoothDevice*)>;
 
 // RangeTracker provides an API to invoke a callback when a BluetoothDevice
 // enters a given threshold range.
-class RangeTracker : public device::BluetoothAdapter::Observer {
+class RangeTracker final : public device::BluetoothAdapter::Observer {
  public:
   explicit RangeTracker(scoped_refptr<device::BluetoothAdapter> adapter);
   RangeTracker(const RangeTracker&) = delete;
   RangeTracker& operator=(const RangeTracker&) = delete;
-  ~RangeTracker() final;
+  ~RangeTracker() override;
 
   // Start tracking |device| and invoke |callback| once it is within
   // |threshold_in_meters|. |callback| is invoked immediately if the device
@@ -58,17 +59,20 @@ class RangeTracker : public device::BluetoothAdapter::Observer {
     TrackingInfo(double threshold_in_meters,
                  RangeTrackerCallback callback,
                  absl::optional<int8_t> known_tx_power);
-    TrackingInfo& operator=(TrackingInfo&&) = default;
+    TrackingInfo(TrackingInfo&&);
     ~TrackingInfo();
 
-    double threshold_in_meters_;
-    RangeTrackerCallback callback_;
-    absl::optional<int8_t> known_tx_power_;
+    double threshold_in_meters;
+    RangeTrackerCallback callback;
+    absl::optional<int8_t> known_tx_power;
+    base::OneShotTimer timeout_timer;
   };
 
   bool IsDeviceWithinThreshold(device::BluetoothDevice* device,
                                double threshold_in_meters,
                                const absl::optional<int8_t>& known_tx_power);
+
+  void OnTimeout(const std::string& device_address);
 
   scoped_refptr<device::BluetoothAdapter> adapter_;
   std::map<std::string, TrackingInfo> device_callbacks_;

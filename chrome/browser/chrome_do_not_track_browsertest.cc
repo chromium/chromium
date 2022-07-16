@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDoNotTrackTest, NotEnabled) {
   SetEnableDoNotTrack(false /* enabled */);
 
   GURL url = embedded_test_server()->GetURL("/echoheader?DNT");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(false,
             GetWebContents()->GetMutableRendererPrefs()->enable_do_not_track);
   ExpectPageTextEq("None");
@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDoNotTrackTest, Enabled) {
   SetEnableDoNotTrack(true /* enabled */);
 
   GURL url = embedded_test_server()->GetURL("/echoheader?DNT");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(true,
             GetWebContents()->GetMutableRendererPrefs()->enable_do_not_track);
   ExpectPageTextEq("1");
@@ -68,10 +68,10 @@ IN_PROC_BROWSER_TEST_F(ChromeDoNotTrackTest, FetchFromWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   SetEnableDoNotTrack(true /* enabled */);
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL(
-          "/workers/fetch_from_worker.html?script=fetch_from_worker.js"));
+          "/workers/fetch_from_worker.html?script=fetch_from_worker.js")));
   EXPECT_EQ("1",
             EvalJs(GetWebContents(), "fetch_from_worker('/echoheader?DNT');"));
 
@@ -87,10 +87,10 @@ IN_PROC_BROWSER_TEST_F(ChromeDoNotTrackTest, FetchFromNestedWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   SetEnableDoNotTrack(true /* enabled */);
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("/workers/fetch_from_worker.html?"
-                                     "script=fetch_from_nested_worker.js"));
+                                     "script=fetch_from_nested_worker.js")));
   EXPECT_EQ("1",
             EvalJs(GetWebContents(), "fetch_from_worker('/echoheader?DNT');"));
 
@@ -113,9 +113,9 @@ IN_PROC_BROWSER_TEST_F(ChromeDoNotTrackTest, MAYBE_FetchFromSharedWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   SetEnableDoNotTrack(true /* enabled */);
 
-  ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/workers/fetch_from_shared_worker.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/workers/fetch_from_shared_worker.html")));
   EXPECT_EQ("1", EvalJs(GetWebContents(),
                         "fetch_from_shared_worker('/echoheader?DNT');"));
 
@@ -130,9 +130,9 @@ IN_PROC_BROWSER_TEST_F(ChromeDoNotTrackTest, FetchFromServiceWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   SetEnableDoNotTrack(true /* enabled */);
 
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(
-                                   "/workers/fetch_from_service_worker.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/workers/fetch_from_service_worker.html")));
   EXPECT_EQ("ready", EvalJs(GetWebContents(), "setup();"));
   EXPECT_EQ("1", EvalJs(GetWebContents(),
                         "fetch_from_service_worker('/echoheader?DNT');"));

@@ -8,8 +8,8 @@
 #include "build/build_config.h"
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
-#include "services/network/public/cpp/http_raw_request_response_info.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/http_raw_headers.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -30,8 +30,8 @@ std::string GetUploadData(const network::ResourceRequest& request) {
   return std::string(element.As<DataElementBytes>().AsStringPiece());
 }
 
-mojom::URLResponseHeadPtr CreateURLResponseHead(net::HttpStatusCode http_status,
-                                                bool report_raw_headers) {
+mojom::URLResponseHeadPtr CreateURLResponseHead(
+    net::HttpStatusCode http_status) {
   auto head = mojom::URLResponseHead::New();
   std::string status_line(
       base::StringPrintf("HTTP/1.1 %d %s", static_cast<int>(http_status),
@@ -39,11 +39,6 @@ mojom::URLResponseHeadPtr CreateURLResponseHead(net::HttpStatusCode http_status,
   std::string headers = status_line + "\nContent-type: text/html\n\n";
   head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
-  if (report_raw_headers) {
-    head->raw_request_response_info = mojom::HttpRawRequestResponseInfo::New();
-    head->raw_request_response_info->http_status_text = status_line;
-    head->raw_request_response_info->http_status_code = http_status;
-  }
   return head;
 }
 
@@ -51,10 +46,6 @@ void AddCookiesToURLResponseHead(const std::vector<std::string>& cookies,
                                  mojom::URLResponseHead* response_head) {
   for (const auto& cookie_string : cookies) {
     response_head->headers->AddCookie(cookie_string);
-    if (response_head->raw_request_response_info) {
-      response_head->raw_request_response_info->response_headers.push_back(
-          mojom::HttpRawHeaderPair::New("Set-Cookie", cookie_string));
-    }
   }
 }
 

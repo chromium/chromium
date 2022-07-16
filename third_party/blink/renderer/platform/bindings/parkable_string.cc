@@ -15,10 +15,11 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
 #include "third_party/blink/renderer/platform/crypto.h"
@@ -55,9 +56,9 @@ enum class ParkingAction { kParked, kUnparked, kWritten, kRead };
 void RecordStatistics(size_t size,
                       base::TimeDelta duration,
                       ParkingAction action) {
-  size_t throughput_mb_s =
-      static_cast<size_t>(size / duration.InSecondsF()) / 1000000;
-  size_t size_kb = size / 1000;
+  int throughput_mb_s =
+      base::ClampRound(size / duration.InSecondsF() / 1000000);
+  int size_kb = static_cast<int>(size / 1000);
 
   const char *size_histogram, *latency_histogram, *throughput_histogram;
   switch (action) {
@@ -88,9 +89,9 @@ void RecordStatistics(size_t size,
   base::UmaHistogramCounts1000(size_histogram, size_kb);
   // Size is at least 10kB, and at most ~10MB, and throughput ranges from
   // single-digit MB/s to ~1000MB/s depending on the CPU/disk, hence the ranges.
-  base::UmaHistogramCustomMicrosecondsTimes(
-      latency_histogram, duration, base::TimeDelta::FromMicroseconds(500),
-      base::TimeDelta::FromSeconds(1), 100);
+  base::UmaHistogramCustomMicrosecondsTimes(latency_histogram, duration,
+                                            base::Microseconds(500),
+                                            base::Seconds(1), 100);
   base::UmaHistogramCounts1000(throughput_histogram, throughput_mb_s);
 }
 
@@ -346,7 +347,7 @@ const String& ParkableStringImpl::ToString() {
   return string_;
 }
 
-unsigned ParkableStringImpl::CharactersSizeInBytes() const {
+size_t ParkableStringImpl::CharactersSizeInBytes() const {
   AssertOnValidThread();
   if (!may_be_parked())
     return string_.CharactersSizeInBytes();
@@ -483,6 +484,7 @@ void ParkableStringImpl::DiscardUncompressedData() {
 void ParkableStringImpl::DiscardCompressedData() {
   metadata_->compressed_ = nullptr;
   metadata_->state_ = State::kOnDisk;
+  metadata_->last_disk_parking_time_ = base::TimeTicks::Now();
   ParkableStringManager::Instance().OnWrittenToDisk(this);
 }
 
@@ -525,11 +527,31 @@ void ParkableStringImpl::Unpark() {
   if (metadata_->state_ == State::kUnparked)
     return;
 
-  TRACE_EVENT1("blink", "ParkableStringImpl::Unpark", "size",
-               CharactersSizeInBytes());
+  TRACE_EVENT(
+      "blink", "ParkableStringImpl::Unpark", [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_parkable_string_unpark();
+        data->set_size_bytes(
+            base::saturated_cast<int32_t>(CharactersSizeInBytes()));
+        int32_t write_time = base::saturated_cast<int32_t>(
+            metadata_->last_disk_parking_time_.is_null()
+                ? -1
+                : (base::TimeTicks::Now() - metadata_->last_disk_parking_time_)
+                      .InSeconds());
+        data->set_time_since_last_disk_write_sec(write_time);
+      });
+
   DCHECK(metadata_->compressed_ || metadata_->on_disk_metadata_);
   string_ = UnparkInternal();
   metadata_->state_ = State::kUnparked;
+  if (metadata_->last_disk_parking_time_ != base::TimeTicks()) {
+    // Can be quite short, can be multiple hours, hence long times, and 100
+    // buckets.
+    base::UmaHistogramLongTimes100(
+        "Memory.ParkableString.Read.SinceLastDiskWrite",
+        base::TimeTicks::Now() - metadata_->last_disk_parking_time_);
+    metadata_->last_disk_parking_time_ = base::TimeTicks();
+  }
   ParkableStringManager::Instance().OnUnparked(this);
 }
 
@@ -543,10 +565,12 @@ String ParkableStringImpl::UnparkInternal() {
   auto& manager = ParkableStringManager::Instance();
 
   if (is_on_disk()) {
+    TRACE_EVENT("blink", "ParkableStringImpl::ReadFromDisk");
     base::ElapsedTimer disk_read_timer;
     DCHECK(has_on_disk_data());
     metadata_->compressed_ = std::make_unique<Vector<uint8_t>>();
-    metadata_->compressed_->Grow(metadata_->on_disk_metadata_->size());
+    metadata_->compressed_->Grow(
+        base::checked_cast<wtf_size_t>(metadata_->on_disk_metadata_->size()));
     manager.data_allocator().Read(*metadata_->on_disk_metadata_,
                                   metadata_->compressed_->data());
     base::TimeDelta elapsed = disk_read_timer.Elapsed();
@@ -556,6 +580,7 @@ String ParkableStringImpl::UnparkInternal() {
     manager.RecordDiskReadTime(elapsed);
   }
 
+  TRACE_EVENT("blink", "ParkableStringImpl::Decompress");
   base::StringPiece compressed_string_piece(
       reinterpret_cast<const char*>(metadata_->compressed_->data()),
       metadata_->compressed_->size() * sizeof(uint8_t));
@@ -616,8 +641,13 @@ void ParkableStringImpl::PostBackgroundCompressionTask() {
 // static
 void ParkableStringImpl::CompressInBackground(
     std::unique_ptr<BackgroundTaskParams> params) {
-  TRACE_EVENT1("blink", "ParkableStringImpl::CompressInBackground", "size",
-               params->size);
+  TRACE_EVENT(
+      "blink", "ParkableStringImpl::CompressInBackground",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_parkable_string_compress_in_background();
+        data->set_size_bytes(base::saturated_cast<int32_t>(params->size));
+      });
 
   base::ElapsedTimer timer;
 #if defined(ADDRESS_SANITIZER)
@@ -674,7 +704,7 @@ void ParkableStringImpl::CompressInBackground(
       // Not using realloc() as we want the compressed data to be a regular
       // WTF::Vector.
       compressed->Append(reinterpret_cast<const uint8_t*>(buffer.data()),
-                         compressed_size);
+                         base::checked_cast<wtf_size_t>(compressed_size));
     }
   }
   base::TimeDelta thread_elapsed = thread_timer.Elapsed();
@@ -790,7 +820,7 @@ void ParkableStringImpl::OnWritingCompleteOnMainThread(
          metadata_->state_ == State::kParked);
   if (metadata_->state_ == State::kParked) {
     DiscardCompressedData();
-    metadata_->state_ = State::kOnDisk;
+    DCHECK_EQ(metadata_->state_, State::kOnDisk);
   }
 
   // Record the time no matter whether the string was discarded or not, as the
@@ -846,7 +876,7 @@ const String& ParkableString::ToString() const {
   return impl_ ? impl_->ToString() : g_empty_string;
 }
 
-wtf_size_t ParkableString::CharactersSizeInBytes() const {
+size_t ParkableString::CharactersSizeInBytes() const {
   return impl_ ? impl_->CharactersSizeInBytes() : 0;
 }
 

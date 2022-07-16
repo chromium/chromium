@@ -9,22 +9,21 @@ import './task_module.mojom-lite.js';
  * interface used for retrieving a shopping task for a task module.
  */
 
-/** @type {TaskModuleHandlerProxy} */
-let instance = null;
+/** @type {?taskModule.mojom.TaskModuleHandlerRemote} */
+let handler = null;
 
 export class TaskModuleHandlerProxy {
-  /** @return {!TaskModuleHandlerProxy} */
-  static getInstance() {
-    return instance || (instance = new TaskModuleHandlerProxy());
+  /** @return {!taskModule.mojom.TaskModuleHandlerRemote} */
+  static getHandler() {
+    return handler ||
+        (handler = taskModule.mojom.TaskModuleHandler.getRemote());
   }
 
-  /** @param {TaskModuleHandlerProxy} newInstance */
-  static setInstance(newInstance) {
-    instance = newInstance;
+  /** @param {!taskModule.mojom.TaskModuleHandlerRemote} newHandler */
+  static setHandler(newHandler) {
+    handler = newHandler;
   }
 
-  constructor() {
-    /** @type {!taskModule.mojom.TaskModuleHandlerRemote} */
-    this.handler = taskModule.mojom.TaskModuleHandler.getRemote();
-  }
+  /** @private */
+  constructor() {}
 }

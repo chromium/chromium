@@ -21,13 +21,14 @@ namespace {
 class VlogNetLogObserver : public net::NetLog::ThreadSafeObserver {
  public:
   VlogNetLogObserver();
+
+  VlogNetLogObserver(const VlogNetLogObserver&) = delete;
+  VlogNetLogObserver& operator=(const VlogNetLogObserver&) = delete;
+
   ~VlogNetLogObserver() override;
 
   // NetLog::ThreadSafeObserver overrides:
   void OnAddEntry(const net::NetLogEntry& entry) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VlogNetLogObserver);
 };
 
 VlogNetLogObserver::VlogNetLogObserver() {

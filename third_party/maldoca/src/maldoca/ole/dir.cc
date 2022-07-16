@@ -17,16 +17,24 @@
 
 #include "maldoca/ole/dir.h"
 
+#include <iostream>
+
 #include "absl/container/flat_hash_set.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/string_view.h"
+#ifndef MALDOCA_IN_CHROMIUM
 #include "maldoca/base/cleanup.h"
+#endif
 #include "maldoca/base/utf8/unicodetext.h"
 #include "maldoca/ole/endian_reader.h"
 #include "maldoca/ole/fat.h"
 #include "maldoca/ole/stream.h"
+
+#ifdef MALDOCA_IN_CHROMIUM
+#include "base/callback_helpers.h"
+#endif
 
 // Directory entry ID constants (from AAF specifications). These are
 // constants that we don't need to share so they are defined here.
@@ -244,6 +252,11 @@ bool IsValidSectorIndex(uint32_t sector_index,
   return true;
 }
 
+void CleanUpDirectory(std::vector<OLEDirectoryEntry *> *dir_entries,
+                      uint32_t sector_index) {
+  (*dir_entries)[sector_index] = nullptr;
+}
+
 // Helper function to read a directory node from a stream, recursively
 // build a directory tree from the new node and attach the node to its
 // parent.
@@ -260,8 +273,14 @@ static bool BuildDirectoryTreeElement(
   }
 
   auto child = absl::make_unique<OLEDirectoryEntry>();
+#ifdef MALDOCA_IN_CHROMIUM
+  auto cleanup = base::ScopedClosureRunner(
+      base::BindOnce(CleanUpDirectory, dir_entries, sector_index));
+#else
   auto cleanup = MakeCleanup(
       [dir_entries, sector_index] { (*dir_entries)[sector_index] = nullptr; });
+#endif
+
   (*dir_entries)[sector_index] = child.get();
   if (!OLEDirectoryEntry::ReadDirectoryEntryFromStream(
           input, sector_index, sector_size, child.get())) {
@@ -279,7 +298,12 @@ static bool BuildDirectoryTreeElement(
   // Only release the child now - we can return above with an error
   // without triggering a memory leak.
   child.release();
+
+#ifdef MALDOCA_IN_CHROMIUM
+  cleanup.Release();
+#else
   std::move(cleanup).Cancel();
+#endif
   return true;
 }
 

@@ -18,10 +18,12 @@
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/state.h"
 #include "components/autofill_assistant/browser/top_padding.h"
+#include "components/autofill_assistant/browser/tts_button_state.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/viewport_mode.h"
 #include "components/autofill_assistant/browser/wait_for_dom_observer.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/icu/source/common/unicode/umachine.h"
 
 class GURL;
@@ -51,7 +53,8 @@ class ActionDelegate {
  public:
   virtual ~ActionDelegate() = default;
 
-  // Show status message on the bottom bar.
+  // Show status message on the bottom bar. Additionally, it overrides the TTS
+  // message and stops any ongoing TTS.
   virtual void SetStatusMessage(const std::string& message) = 0;
 
   // Returns the current status message. Usually used to restore a message after
@@ -65,6 +68,18 @@ class ActionDelegate {
   // Returns the current bubble / status message. Usually used to restore a
   // message after the action.
   virtual std::string GetBubbleMessage() const = 0;
+
+  // Overrides the TTS message to be played when requested. The TTS message
+  // defaults to the current status message but can be overridden (until the
+  // next status message change) with this method. Stops any ongoing TTS.
+  virtual void SetTtsMessage(const std::string& message) = 0;
+
+  // Returns the current TTS button state.
+  virtual TtsButtonState GetTtsButtonState() const = 0;
+
+  // Play TTS message if TextToSpeech is enabled (via "ENABLE_TTS"
+  // script param). Will also stop any ongoing TTS message.
+  virtual void MaybePlayTtsMessage() = 0;
 
   // Checks one or more elements.
   virtual void RunElementChecks(BatchElementChecker* checker) = 0;
@@ -272,8 +287,8 @@ class ActionDelegate {
   // string.
   virtual std::string GetEmailAddressForAccessTokenAccount() const = 0;
 
-  // Returns the locale for the current device or platform.
-  virtual std::string GetLocale() const = 0;
+  // Returns the UkmRecorder.
+  virtual ukm::UkmRecorder* GetUkmRecorder() const = 0;
 
   // Sets or updates contextual information.
   // Passing nullptr clears the contextual information.
@@ -290,9 +305,6 @@ class ActionDelegate {
 
   // Sets or updates info box.
   virtual void SetInfoBox(const InfoBox& infoBox) = 0;
-
-  // Set the progress bar at |progress|%.
-  virtual void SetProgress(int progress) = 0;
 
   // Set the progress bar at the |active_step| linked to the given
   // |active_step_identifier|.
@@ -338,6 +350,10 @@ class ActionDelegate {
 
   // Returns the current client settings.
   virtual const ClientSettings& GetSettings() const = 0;
+
+  // Sets/Updates current client settings.
+  virtual void SetClientSettings(
+      const ClientSettingsProto& client_settings) = 0;
 
   // Show a form to the user and call |changed_callback| with its values
   // whenever there is a change. |changed_callback| will be called directly with
@@ -401,6 +417,10 @@ class ActionDelegate {
   // Maybe shows a warning letting the user know that a slow connection was
   // detected, depending on the current settings.
   virtual void MaybeShowSlowConnectionWarning() = 0;
+
+  // Get modifiable log information gathered while executing the action. This
+  // gets attached to the action's response if non empty.
+  virtual ProcessedActionStatusDetailsProto& GetLogInfo() = 0;
 
   virtual base::WeakPtr<ActionDelegate> GetWeakPtr() const = 0;
 

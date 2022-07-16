@@ -25,6 +25,10 @@ class PreviewsAndroidBridge {
 
   PreviewsAndroidBridge(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj);
+
+  PreviewsAndroidBridge(const PreviewsAndroidBridge&) = delete;
+  PreviewsAndroidBridge& operator=(const PreviewsAndroidBridge&) = delete;
+
   virtual ~PreviewsAndroidBridge();
 
   jboolean IsHttpsImageCompressionApplied(
@@ -34,8 +38,6 @@ class PreviewsAndroidBridge {
 
  private:
   base::WeakPtrFactory<PreviewsAndroidBridge> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PreviewsAndroidBridge);
 };
 
 #endif  // CHROME_BROWSER_SUBRESOURCE_REDIRECT_ANDROID_PREVIEWS_ANDROID_BRIDGE_H_

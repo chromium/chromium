@@ -26,6 +26,10 @@ struct IndexedRule;
 class FlatRulesetIndexer {
  public:
   FlatRulesetIndexer();
+
+  FlatRulesetIndexer(const FlatRulesetIndexer&) = delete;
+  FlatRulesetIndexer& operator=(const FlatRulesetIndexer&) = delete;
+
   ~FlatRulesetIndexer();
 
   // Adds |indexed_rule| to the ruleset.
@@ -56,8 +60,6 @@ class FlatRulesetIndexer {
 
   size_t indexed_rules_count_ = 0;  // Number of rules indexed till now.
   bool finished_ = false;           // Whether Finish() has been called.
-
-  DISALLOW_COPY_AND_ASSIGN(FlatRulesetIndexer);
 };
 
 }  // namespace declarative_net_request

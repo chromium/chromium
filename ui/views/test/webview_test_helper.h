@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace content {
 class TestContentClientInitializer;
 }  // namespace content
@@ -18,13 +16,15 @@ namespace views {
 class WebViewTestHelper {
  public:
   WebViewTestHelper();
+
+  WebViewTestHelper(const WebViewTestHelper&) = delete;
+  WebViewTestHelper& operator=(const WebViewTestHelper&) = delete;
+
   virtual ~WebViewTestHelper();
 
  private:
   std::unique_ptr<content::TestContentClientInitializer>
       test_content_client_initializer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewTestHelper);
 };
 
 }  // namespace views

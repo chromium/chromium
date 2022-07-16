@@ -57,6 +57,12 @@ const multidevice::RemoteDeviceRef kFakePhoneB =
 
 class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest
     : public testing::Test {
+ public:
+  MultiDeviceSetupAccountStatusChangeDelegateNotifierTest(
+      const MultiDeviceSetupAccountStatusChangeDelegateNotifierTest&) = delete;
+  MultiDeviceSetupAccountStatusChangeDelegateNotifierTest& operator=(
+      const MultiDeviceSetupAccountStatusChangeDelegateNotifierTest&) = delete;
+
  protected:
   MultiDeviceSetupAccountStatusChangeDelegateNotifierTest() = default;
 
@@ -199,9 +205,6 @@ class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest
   std::unique_ptr<base::SimpleTestClock> test_clock_;
 
   std::unique_ptr<AccountStatusChangeDelegateNotifier> delegate_notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      MultiDeviceSetupAccountStatusChangeDelegateNotifierTest);
 };
 
 TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,

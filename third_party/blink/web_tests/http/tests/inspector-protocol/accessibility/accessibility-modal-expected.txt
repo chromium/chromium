@@ -1,5 +1,6 @@
 Tests accessibility values in modal dialog.
 {
+    childIds : <object>
     domNode : dialog#modal
     ignored : false
     name : {
@@ -21,6 +22,7 @@ Tests accessibility values in modal dialog.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focused
@@ -43,6 +45,7 @@ Tests accessibility values in modal dialog.
     }
 }
 {
+    childIds : <object>
     domNode : div
     ignored : false
     name : {
@@ -67,6 +70,7 @@ Tests accessibility values in modal dialog.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -75,6 +79,7 @@ Tests accessibility values in modal dialog.
     }
 }
 {
+    childIds : <object>
     domNode : div
     ignored : false
     name : {
@@ -96,6 +101,7 @@ Tests accessibility values in modal dialog.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : modal
@@ -111,6 +117,7 @@ Tests accessibility values in modal dialog.
     }
 }
 {
+    childIds : <object>
     domNode : div
     ignored : false
     name : {
@@ -132,6 +139,7 @@ Tests accessibility values in modal dialog.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : modal
@@ -147,6 +155,7 @@ Tests accessibility values in modal dialog.
     }
 }
 {
+    childIds : <object>
     domNode : div
     ignored : false
     name : {
@@ -168,6 +177,7 @@ Tests accessibility values in modal dialog.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : modal
@@ -183,6 +193,7 @@ Tests accessibility values in modal dialog.
     }
 }
 {
+    childIds : <object>
     domNode : dialog
     ignored : true
     ignoredReasons : [
@@ -195,12 +206,14 @@ Tests accessibility values in modal dialog.
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
     }
 }
 {
+    childIds : <object>
     domNode : dialog
     ignored : false
     name : {
@@ -222,6 +235,7 @@ Tests accessibility values in modal dialog.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : modal

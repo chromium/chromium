@@ -132,11 +132,11 @@ class PageInfoUI {
     // Textual description of the site's connection status that is displayed to
     // the user.
     std::string connection_status_description;
-    // Set when the user has explicitly bypassed an SSL error for this host and
-    // has a flag set to remember ssl decisions (explicit flag or in the
-    // experimental group).  When |show_ssl_decision_revoke_button| is true, the
-    // connection area of the page info will include an option for the user to
-    // revoke their decision to bypass the SSL error for this host.
+    // Set when the user has explicitly bypassed an SSL error for this host
+    // and/or the user has explicitly bypassed an HTTP warning (from HTTPS-First
+    // Mode) for this host. When `show_ssl_decision_revoke_button` is true, the
+    // connection area of the page info UI will include an option for the user
+    // to revoke their decision to bypass warnings for this host.
     bool show_ssl_decision_revoke_button;
     // Set when the user ignored the password reuse modal warning dialog. When
     // |show_change_password_buttons| is true, the page identity area of the
@@ -152,6 +152,12 @@ class PageInfoUI {
     bool is_vr_presentation_in_headset;
   };
 
+  struct PermissionUIInfo {
+    ContentSettingsType type;
+    int string_id;
+    int string_id_mid_sentence;
+  };
+
   using CookieInfoList = std::vector<CookieInfo>;
   using PermissionInfoList = std::vector<PageInfo::PermissionInfo>;
   using ChosenObjectInfoList = std::vector<std::unique_ptr<ChosenObjectInfo>>;
@@ -160,6 +166,12 @@ class PageInfoUI {
 
   // Returns the UI string for the given permission |type|.
   static std::u16string PermissionTypeToUIString(ContentSettingsType type);
+  // Returns the UI string for the given permission |type| when used
+  // mid-sentence.
+  static std::u16string PermissionTypeToUIStringMidSentence(
+      ContentSettingsType type);
+  static base::span<const PermissionUIInfo>
+  GetContentSettingsUIInfoForTesting();
 
   // Returns the UI string describing the action taken for a permission,
   // including why that action was taken. E.g. "Allowed by you",
@@ -224,6 +236,10 @@ class PageInfoUI {
 
   static std::unique_ptr<SecurityDescription>
   CreateSafetyTipSecurityDescription(const security_state::SafetyTipInfo& info);
+
+  // Ensures the cookie information UI is present, with placeholder information
+  // if necessary.
+  virtual void EnsureCookieInfo() {}
 
   // Sets cookie information.
   virtual void SetCookieInfo(const CookieInfoList& cookie_info_list) {}

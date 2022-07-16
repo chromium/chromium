@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
@@ -18,9 +17,8 @@
 #include "chrome/browser/sync/test/integration/sync_app_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
-#include "chrome/common/extensions/manifest_handlers/app_theme_color_info.h"
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
@@ -57,10 +55,12 @@ class TwoClientExtensionAppsSyncTest : public SyncTest {
  public:
   TwoClientExtensionAppsSyncTest() : SyncTest(TWO_CLIENT) {}
 
-  ~TwoClientExtensionAppsSyncTest() override = default;
+  TwoClientExtensionAppsSyncTest(const TwoClientExtensionAppsSyncTest&) =
+      delete;
+  TwoClientExtensionAppsSyncTest& operator=(
+      const TwoClientExtensionAppsSyncTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientExtensionAppsSyncTest);
+  ~TwoClientExtensionAppsSyncTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
@@ -191,7 +191,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
   ASSERT_TRUE(AppsMatchChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ENABLED(Merge)) {
+// TODO(https://crbug.com/1265969): Change back to E2E_ENABLED when flakiness is
+// fixed.
+IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ONLY(Merge)) {
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());

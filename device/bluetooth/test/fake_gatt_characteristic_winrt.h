@@ -38,6 +38,10 @@ class FakeGattCharacteristicWinrt
                               base::StringPiece uuid,
                               uint16_t attribute_handle);
 
+  FakeGattCharacteristicWinrt(const FakeGattCharacteristicWinrt&) = delete;
+  FakeGattCharacteristicWinrt& operator=(const FakeGattCharacteristicWinrt&) =
+      delete;
+
   ~FakeGattCharacteristicWinrt() override;
 
   // IGattCharacteristic:
@@ -192,8 +196,6 @@ class FakeGattCharacteristicWinrt
   std::vector<Microsoft::WRL::ComPtr<FakeGattDescriptorWinrt>>
       fake_descriptors_;
   uint16_t last_descriptor_attribute_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGattCharacteristicWinrt);
 };
 
 }  // namespace device

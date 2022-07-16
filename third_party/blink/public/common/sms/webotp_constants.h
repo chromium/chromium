@@ -11,8 +11,7 @@ namespace blink {
 
 static constexpr int kMaxUniqueOriginInAncestorChainForWebOTP = 2;
 // This is Blink.Sms.Receive.TimeSuccess at > 99.7 percentile.
-static constexpr base::TimeDelta kWebOTPRequestTimeout =
-    base::TimeDelta::FromMinutes(4);
+static constexpr base::TimeDelta kWebOTPRequestTimeout = base::Minutes(4);
 
 }  // namespace blink
 

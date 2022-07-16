@@ -21,12 +21,11 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/rand_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/common/cloud_print/cloud_print_constants.h"
@@ -51,11 +50,10 @@ const char kCUPSDefaultSupportedTypes[] =
     "application/pdf,application/postscript,image/jpeg,image/png,image/gif";
 
 // Time interval to check for printer's updates.
-constexpr base::TimeDelta kCheckForPrinterUpdatesTime =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kCheckForPrinterUpdatesTime = base::Minutes(5);
 
 // Job update timeout
-constexpr base::TimeDelta kJobUpdateTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kJobUpdateTimeout = base::Seconds(5);
 
 // Job id for dry run (it should not affect CUPS job ids, since 0 job-id is
 // invalid in CUPS.
@@ -187,6 +185,9 @@ class PrintServerWatcherCUPS
   explicit PrintServerWatcherCUPS(PrintSystemCUPS* print_system)
       : print_system_(print_system) {}
 
+  PrintServerWatcherCUPS(const PrintServerWatcherCUPS&) = delete;
+  PrintServerWatcherCUPS& operator=(const PrintServerWatcherCUPS&) = delete;
+
   // PrintSystem::PrintServerWatcher implementation.
   bool StartWatching(
       PrintSystem::PrintServerWatcher::Delegate* delegate) override {
@@ -243,8 +244,6 @@ class PrintServerWatcherCUPS
   scoped_refptr<PrintSystemCUPS> print_system_;
   PrintSystem::PrintServerWatcher::Delegate* delegate_ = nullptr;
   std::string printers_hash_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintServerWatcherCUPS);
 };
 
 class PrinterWatcherCUPS
@@ -255,6 +254,9 @@ class PrinterWatcherCUPS
       : printer_name_(printer_name),
         print_system_(print_system) {
   }
+
+  PrinterWatcherCUPS(const PrinterWatcherCUPS&) = delete;
+  PrinterWatcherCUPS& operator=(const PrinterWatcherCUPS&) = delete;
 
   // PrintSystem::PrinterWatcher implementation.
   bool StartWatching(PrintSystem::PrinterWatcher::Delegate* delegate) override {
@@ -360,8 +362,6 @@ class PrinterWatcherCUPS
   PrintSystem::PrinterWatcher::Delegate* delegate_ = nullptr;
   scoped_refptr<PrintSystemCUPS> print_system_;
   std::string settings_hash_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterWatcherCUPS);
 };
 
 class JobSpoolerCUPS : public PrintSystem::JobSpooler {
@@ -370,6 +370,9 @@ class JobSpoolerCUPS : public PrintSystem::JobSpooler {
       : print_system_(print_system) {
     DCHECK(print_system_.get());
   }
+
+  JobSpoolerCUPS(const JobSpoolerCUPS&) = delete;
+  JobSpoolerCUPS& operator=(const JobSpoolerCUPS&) = delete;
 
   // PrintSystem::JobSpooler implementation.
   bool Spool(const std::string& print_ticket,
@@ -404,8 +407,6 @@ class JobSpoolerCUPS : public PrintSystem::JobSpooler {
 
  private:
   scoped_refptr<PrintSystemCUPS> print_system_;
-
-  DISALLOW_COPY_AND_ASSIGN(JobSpoolerCUPS);
 };
 
 PrintSystemCUPS::PrintSystemCUPS(
@@ -413,7 +414,7 @@ PrintSystemCUPS::PrintSystemCUPS(
   if (print_system_settings) {
     int timeout;
     if (print_system_settings->GetInteger(kCUPSUpdateTimeoutMs, &timeout))
-      update_timeout_ = base::TimeDelta::FromMilliseconds(timeout);
+      update_timeout_ = base::Milliseconds(timeout);
 
     int encryption;
     if (print_system_settings->GetInteger(kCUPSEncryption, &encryption))
@@ -436,7 +437,7 @@ void PrintSystemCUPS::InitPrintBackends(
   const base::ListValue* url_list;
   if (print_system_settings &&
       print_system_settings->GetList(kCUPSPrintServerURLs, &url_list)) {
-    for (size_t i = 0; i < url_list->GetSize(); i++) {
+    for (size_t i = 0; i < url_list->GetList().size(); i++) {
       std::string print_server_url;
       if (url_list->GetString(i, &print_server_url))
         AddPrintServer(print_server_url);

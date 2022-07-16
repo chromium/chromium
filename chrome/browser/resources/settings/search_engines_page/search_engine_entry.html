@@ -14,6 +14,11 @@
         word-break: break-word;
       }
 
+      #shortcut-column {
+        flex: 4;
+        word-break: break-word;
+      }
+
       #keyword-column > div {
         margin-inline-end: 8px;
       }
@@ -21,35 +26,72 @@
       #url-column {
         flex: 4;
       }
+
+      #url-column-padded {
+        flex: 3;
+        margin-inline-end: 40px;
+      }
     </style>
 
-    <div class="list-item" focus-row-container>
-      <div id="name-column">
+    <div class="list-item cr-row" role="row">
+      <span role="cell" id="name-column">
         <site-favicon
             favicon-url="[[engine.iconURL]]"
             url="[[engine.url]]">
         </site-favicon>
         <div>[[engine.displayName]]</div>
-      </div>
-      <div id="keyword-column"><div>[[engine.keyword]]</div></div>
-      <div id="url-column" class="text-elide">[[engine.url]]</div>
-      <cr-icon-button class="icon-more-vert" on-click="onDotsTap_"
-          title="$i18n{moreActions}" focus-row-control
-          focus-type="cr-menu-button"></cr-icon-button>
-      <cr-action-menu role-description="$i18n{menu}">
-        <button class="dropdown-item" on-click="onMakeDefaultTap_"
-            disabled$="[[!engine.canBeDefault]]" id="makeDefault">
-          $i18n{searchEnginesMakeDefault}
-        </button>
-        <button class="dropdown-item" on-click="onEditTap_"
-            disabled$="[[!engine.canBeEdited]]" id="edit">
-          $i18n{edit}
-        </button>
-        <button class="dropdown-item" on-click="onDeleteTap_"
-            disabled$="[[!engine.canBeRemoved]]" id="delete">
-          $i18n{searchEnginesRemoveFromList}
-        </button>
-      </cr-action-menu>
+      </span>
+      <span role="cell" id="keyword-column"
+          hidden="[[isActiveSearchEnginesFlagEnabled]]">
+        <div>[[engine.keyword]]</div>
+      </span>
+      <span role="cell" id="shortcut-column" hidden="[[!showShortcut]]">
+        <div>[[engine.keyword]]</div>
+      </span>
+      <span role="cell" id="url-column" class="text-elide"
+          hidden="[[isActiveSearchEnginesFlagEnabled]]">
+        <div>[[engine.url]]</div>
+      </span>
+      <span role="cell" id="url-column-padded" class="text-elide"
+          hidden="[[!showQueryUrl]]">
+        <div>[[engine.url]]</div>
+      </span>
+      <span role="cell">
+        <template is="dom-if" if="[[isActiveSearchEnginesFlagEnabled]]">
+          <cr-button class="secondary-button" on-click="onActivateTap_"
+              hidden="[[!engine.canBeActivated]]" id="activate">
+            $i18n{searchEnginesActivate}
+          </cr-button>
+          <cr-icon-button class="icon-edit" on-click="onEditTap_"
+              title="$i18n{edit}" hidden="[[engine.canBeActivated]]"
+              disabled$="[[!engine.canBeEdited]]" id="editIconButton">
+          </cr-icon-button>
+        </template>
+        <cr-icon-button class="icon-more-vert" on-click="onDotsTap_"
+            disabled$="[[disableMenuButton]]" title="$i18n{moreActions}">
+        </cr-icon-button>
+        <cr-action-menu role-description="$i18n{menu}">
+          <button class="dropdown-item" on-click="onMakeDefaultTap_"
+              disabled$="[[!engine.canBeDefault]]" id="makeDefault">
+            $i18n{searchEnginesMakeDefault}
+          </button>
+          <template is="dom-if" if="[[isActiveSearchEnginesFlagEnabled]]">
+            <button class="dropdown-item" on-click="onDeactivateTap_"
+                hidden="[[!engine.canBeDeactivated]]" id="deactivate">
+              $i18n{searchEnginesDeactivate}
+            </button>
+          </template>
+          <button class="dropdown-item" on-click="onEditTap_"
+              hidden="[[isActiveSearchEnginesFlagEnabled]]"
+              disabled$="[[!engine.canBeEdited]]" id="edit">
+            $i18n{edit}
+          </button>
+          <button class="dropdown-item" on-click="onDeleteTap_"
+              hidden="[[!engine.canBeRemoved]]" id="delete">
+            $i18n{delete}
+          </button>
+        </cr-action-menu>
+      </span>
     </div>
     <template is="dom-if" if="[[engine.extension]]">
       <extension-controlled-indicator

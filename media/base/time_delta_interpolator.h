@@ -5,7 +5,6 @@
 #ifndef MEDIA_BASE_TIME_DELTA_INTERPOLATOR_H_
 #define MEDIA_BASE_TIME_DELTA_INTERPOLATOR_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 
@@ -25,6 +24,10 @@ class MEDIA_EXPORT TimeDeltaInterpolator {
   //
   // |tick_clock| is used for sampling wall clock time for interpolating.
   explicit TimeDeltaInterpolator(const base::TickClock* tick_clock);
+
+  TimeDeltaInterpolator(const TimeDeltaInterpolator&) = delete;
+  TimeDeltaInterpolator& operator=(const TimeDeltaInterpolator&) = delete;
+
   ~TimeDeltaInterpolator();
 
   bool interpolating() { return interpolating_; }
@@ -76,8 +79,6 @@ class MEDIA_EXPORT TimeDeltaInterpolator {
   base::TimeTicks reference_;
 
   double playback_rate_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeDeltaInterpolator);
 };
 
 }  // namespace media

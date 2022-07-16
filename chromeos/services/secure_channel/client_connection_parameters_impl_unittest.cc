@@ -22,6 +22,12 @@ const char kTestFeature[] = "testFeature";
 }  // namespace
 
 class SecureChannelClientConnectionParametersImplTest : public testing::Test {
+ public:
+  SecureChannelClientConnectionParametersImplTest(
+      const SecureChannelClientConnectionParametersImplTest&) = delete;
+  SecureChannelClientConnectionParametersImplTest& operator=(
+      const SecureChannelClientConnectionParametersImplTest&) = delete;
+
  protected:
   SecureChannelClientConnectionParametersImplTest() = default;
   ~SecureChannelClientConnectionParametersImplTest() override = default;
@@ -91,8 +97,6 @@ class SecureChannelClientConnectionParametersImplTest : public testing::Test {
   std::unique_ptr<FakeClientConnectionParametersObserver> fake_observer_;
 
   std::unique_ptr<ClientConnectionParameters> client_connection_parameters_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelClientConnectionParametersImplTest);
 };
 
 TEST_F(SecureChannelClientConnectionParametersImplTest,

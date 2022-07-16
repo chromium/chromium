@@ -1,0 +1,19 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// The `FencedFrameOwnerHost` interface is used by the HTMLFencedFrameElement in
+// the renderer process that hosts the "outer" frame tree. It is used to
+// interact with the backing `content::FencedFrame` in the browser process which
+// hosts an "inner" frame tree via Multiple Page Architecture.
+interface FencedFrameOwnerHost {
+  // Navigates the main frame of the fenced frame's frame tree, to `url`.
+  // TODO(crbug.com/1243568): Document the restrictions on the types of URLs
+  // that `url` can represent, once these restrictions are made.
+  Navigate(url.mojom.Url url);
+};

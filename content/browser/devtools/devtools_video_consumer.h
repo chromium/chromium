@@ -29,6 +29,10 @@ class CONTENT_EXPORT DevToolsVideoConsumer
       base::RepeatingCallback<void(scoped_refptr<media::VideoFrame> frame)>;
 
   explicit DevToolsVideoConsumer(OnFrameCapturedCallback callback);
+
+  DevToolsVideoConsumer(const DevToolsVideoConsumer&) = delete;
+  DevToolsVideoConsumer& operator=(const DevToolsVideoConsumer&) = delete;
+
   ~DevToolsVideoConsumer() override;
 
   // Copies |frame| onto a SkBitmap and returns it.
@@ -90,8 +94,6 @@ class CONTENT_EXPORT DevToolsVideoConsumer
 
   // If |capturer_| is alive, then we are currently capturing.
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> capturer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsVideoConsumer);
 };
 
 }  // namespace content

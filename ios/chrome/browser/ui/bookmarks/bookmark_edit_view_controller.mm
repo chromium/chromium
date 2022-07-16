@@ -35,14 +35,12 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -188,9 +186,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
                          browser:(Browser*)browser {
   DCHECK(bookmark);
   DCHECK(browser);
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? ChromeTableViewStyle()
-                               : UITableViewStylePlain;
+  UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
     DCHECK(!bookmark->is_folder());
@@ -277,13 +273,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
                            target:nil
                            action:nil];
   deleteButton.tintColor = [UIColor colorNamed:kRedColor];
-
-  if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    // Setting the image to nil will cause the default shadowImage to be used,
-    // we need to create a new one.
-    [self.navigationController.toolbar setShadowImage:[UIImage new]
-                                   forToolbarPosition:UIBarPositionAny];
-  }
 
   [self setToolbarItems:@[ spaceButton, deleteButton, spaceButton ]
                animated:NO];
@@ -374,6 +363,10 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   NSIndexPath* indexPath =
       [self.tableViewModel indexPathForItemType:ItemTypeFolder
                               sectionIdentifier:SectionIdentifierInfo];
+  if (!indexPath) {
+    return;
+  }
+
   NSString* folderName = @"";
   if (self.bookmark) {
     folderName = bookmark_utils_ios::TitleForBookmarkNode(self.folder);
@@ -488,9 +481,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 #pragma mark - BookmarkTextFieldItemDelegate
 
 - (void)textDidChangeForItem:(BookmarkTextFieldItem*)item {
-  if (@available(iOS 13, *)) {
-    self.modalInPresentation = YES;
-  }
+  self.modalInPresentation = YES;
   [self updateSaveButtonState];
   if (self.displayingValidURL != [self inputURLIsValid]) {
     self.displayingValidURL = [self inputURLIsValid];

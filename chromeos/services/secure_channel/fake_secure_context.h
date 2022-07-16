@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/secure_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,6 +19,10 @@ namespace secure_channel {
 class FakeSecureContext : public SecureContext {
  public:
   FakeSecureContext();
+
+  FakeSecureContext(const FakeSecureContext&) = delete;
+  FakeSecureContext& operator=(const FakeSecureContext&) = delete;
+
   ~FakeSecureContext() override;
 
   // SecureContext:
@@ -40,8 +43,6 @@ class FakeSecureContext : public SecureContext {
  private:
   ProtocolVersion protocol_version_;
   absl::optional<std::string> channel_binding_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecureContext);
 };
 
 }  // namespace secure_channel

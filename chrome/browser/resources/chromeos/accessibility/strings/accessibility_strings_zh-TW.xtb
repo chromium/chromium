@@ -66,8 +66,10 @@
 <translation id="133801305381959373">沒有下一個可編輯的文字欄位</translation>
 <translation id="1342835525016946179">文章</translation>
 <translation id="1346059596910821859">訣竅</translation>
+<translation id="1354356357730355833">複製</translation>
 <translation id="135978014023467274">你已更新至 ChromeVox 63！</translation>
 <translation id="1360699455582016846">按一下路由機碼 <ph name="ROUTING_KEY_NUMBER" /> 底下的項目</translation>
+<translation id="1376703628032300005">移至下一個字元</translation>
 <translation id="1377925789329510816">這是最後一個標題。按下搜尋鍵 + H 鍵可跳到第一個標題，按下搜尋鍵 + Shift 鍵 + H 鍵則可前往本頁的第二個標題。</translation>
 <translation id="138218114945450791">淺藍色</translation>
 <translation id="1383876407941801731">搜尋</translation>
@@ -212,6 +214,7 @@
 <translation id="2450814015951372393">核取方塊</translation>
 <translation id="2461822463642141190">電流</translation>
 <translation id="2462626033734746142">圓形按鈕群組</translation>
+<translation id="2467741090055146971">取消選取</translation>
 <translation id="2471138580042810658">標題 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{星號}other{# 個星號}}</translation>
 <translation id="2490721194269245365">玫瑰褐</translation>
@@ -242,6 +245,7 @@
 <translation id="267442004702508783">重新整理</translation>
 <translation id="2675533876313964202">查特酒綠</translation>
 <translation id="2684412629217766642">關閉 ChromeVox 教學課程</translation>
+<translation id="2692503699962701720">在朗讀元素類型和格式化文字時變更音調</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">文字轉換候選</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{左括弧}other{# 個左括弧}}</translation>
@@ -352,6 +356,7 @@
 <translation id="3286372614333682499">肖像</translation>
 <translation id="3286390186030710347">滑桿</translation>
 <translation id="3300348286427369683">支援 RTF 格式：ChromeVox 現在支援 RTF 格式欄位，包括跳轉指令、點字游標路徑、選取等等。</translation>
+<translation id="3300733168898541351">復原</translation>
 <translation id="3307886118343381874">前往表格結尾</translation>
 <translation id="3312997241656799641">下一個造訪過的連結</translation>
 <translation id="3313245066383501820">ChromeVox 輔助鍵</translation>
@@ -372,6 +377,7 @@
 <translation id="3406283310380167331">顯示表單清單</translation>
 <translation id="3414400929511680526">愛麗絲藍</translation>
 <translation id="3418936350470374046">下方沒有儲存格</translation>
+<translation id="3419269701801640163">貼上</translation>
 <translation id="3435494200763325275">Tab 鍵導覽 (續)</translation>
 <translation id="344800400831402066">秘魯色</translation>
 <translation id="3457000393508828486">部分已按下</translation>
@@ -425,6 +431,7 @@
 <translation id="3813387282697781382">淺珊瑚紅</translation>
 <translation id="3816633764618089385">下一個媒體元素</translation>
 <translation id="3840823741487267909">縮寫</translation>
+<translation id="3841319830220785495">預設的自然語音</translation>
 <translation id="385383972552776628">開啟選項頁面</translation>
 <translation id="3856075812838139784">唯讀</translation>
 <translation id="3857141338659865495">中綠松石色</translation>
@@ -451,7 +458,9 @@
 <translation id="4006140876663370126">圖片</translation>
 <translation id="4021716437419160885">向下捲動</translation>
 <translation id="4035381225449278841">春季</translation>
+<translation id="4038098586530338813">重做</translation>
 <translation id="4047216625641135770">標記</translation>
+<translation id="4047910800766704982">裝置連上網路後，你可以使用自然的人聲語音。系統會將文字傳送給 Google 進行處理。你隨時可以前往「設定」頁面關閉這項功能。</translation>
 <translation id="4053520724192563562">萊姆綠</translation>
 <translation id="4054936709456751127">狀態</translation>
 <translation id="4058278702844053247">網頁載入中</translation>
@@ -558,6 +567,7 @@
 <translation id="4854380505292502090">沒有上一個媒體小工具</translation>
 <translation id="4855927945655956315">重要按鍵：Control 鍵</translation>
 <translation id="4862744964787595316">不是粗體文字</translation>
+<translation id="4865995900839719272">移至上一行</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">啟用 TTS 記錄功能</translation>
 <translation id="4886524826165775965">第 <ph name="INDEX" /> 個，共 <ph name="TOTAL" /> 個</translation>
@@ -605,6 +615,7 @@
 <translation id="5170206230005240598">點字字幕已啟用</translation>
 <translation id="5183440668879371625">上一行點字</translation>
 <translation id="5189244881767082992">行</translation>
+<translation id="5234747236692380506">輸入「<ph name="TEXT" />」</translation>
 <translation id="5263034204789987535">玉米絲色</translation>
 <translation id="5263344797180442561">第 2 階</translation>
 <translation id="528468243742722775">結束</translation>
@@ -615,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />，分頁</translation>
 <translation id="5308380583665731573">連線</translation>
 <translation id="5310788376443009632">已移除：</translation>
+<translation id="5316825363044614340">移至下一行</translation>
 <translation id="5320727453979144100">固定模式已啟用</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{逗號}other{# 個逗號}}</translation>
 <translation id="532485153932049746">文字格式
@@ -687,6 +699,7 @@
 <translation id="5748623122140342504">上一個第 5 階標題</translation>
 <translation id="5760594853119905566">附錄</translation>
 <translation id="5761219715606611783">非常好！你已成功掌握 ChromeVox 觸控操作的基本概念。現在可以再瀏覽一次教學課程，也可以使用下方按鈕來結束教學課程。</translation>
+<translation id="5776001898637896684">Google 加強型網路文字轉語音擴充功能</translation>
 <translation id="5805940204952508776">以兩指輕觸</translation>
 <translation id="5819072574982403430">樹狀目錄項目</translation>
 <translation id="5822819874379903994">深綠松石色</translation>
@@ -731,6 +744,7 @@
 <translation id="6034000775414344507">淺灰色</translation>
 <translation id="6036135911048686884">輕觸探索</translation>
 <translation id="6037602951055904232">向前平移</translation>
+<translation id="604240746417122825">文法錯誤</translation>
 <translation id="6082768461603900813">基本瀏覽操作</translation>
 <translation id="609281021724813947">沒有上一個滑桿</translation>
 <translation id="6100239002225743044">上移一行</translation>
@@ -787,6 +801,7 @@
 <translation id="6544923685317771506">海貝色</translation>
 <translation id="6551185905438378412">象牙白</translation>
 <translation id="6561818612645211875">前往目前列的開頭</translation>
+<translation id="6563126228219321999">沒有無效項目</translation>
 <translation id="6579990219486187401">淺粉紅色</translation>
 <translation id="6583174818554398774">移至較高的精細度等級</translation>
 <translation id="6584162722998608255">接下來將介紹在螢幕畫面上移動的方式。只要用單指由左往右滑動，即可移至下一個項目。馬上試試看，繼續進行下一步吧！</translation>
@@ -817,6 +832,7 @@
 <translation id="6815255864998354418">檸檬綢色</translation>
 <translation id="6816066673340002913">灰金菊色</translation>
 <translation id="6826226459053491773">以雙指向下滑動</translation>
+<translation id="6826669432862053130">下一個無效項目</translation>
 <translation id="6833103209700200188">頁尾</translation>
 <translation id="6837853484260746864">選擇語音：</translation>
 <translation id="6858047746862060282">序言</translation>
@@ -830,6 +846,7 @@
 <translation id="6910211073230771657">已刪除</translation>
 <translation id="6910969481785184048">開啟、關閉及停止</translation>
 <translation id="6919104639734799681">顯示表格清單</translation>
+<translation id="692135145298539227">刪除</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6949846980769640811">中碧藍</translation>
 <translation id="6951482098621102657">沒有下一個第 5 階標題</translation>
@@ -851,7 +868,7 @@
 <translation id="7062635574500127092">藍綠色</translation>
 <translation id="7086377898680121060">調高亮度</translation>
 <translation id="7088743565397416204">輕觸兩下即可啟用目前聚焦的項目</translation>
-<translation id="7088960765736518739">開關功能</translation>
+<translation id="7088960765736518739">切換控制功能</translation>
 <translation id="7090715360595433170">這種方式也可能會比向左/向右滑動單指更有效率。</translation>
 <translation id="7091296112653361280">那瓦霍白</translation>
 <translation id="7095834689119144465">編輯文字時僅限輸入數字</translation>
@@ -889,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">沒有上一個表單欄位</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">說明</translation>
 <translation id="7317017974771324508">部分已選取</translation>
 <translation id="7322442671176251901">輕觸探索</translation>
 <translation id="7344012264516629579">其他跳轉指令包含了以連結、按鈕或核取方塊等方式進行跳轉。ChromeVox 選單中包含了跳轉指令的完整清單，按下搜尋鍵 + 句號鍵即可開啟 ChromeVox 選單。</translation>
@@ -909,7 +927,7 @@
 <translation id="743783356331413498">範例</translation>
 <translation id="7439060726180460871">目錄</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7484805699335881122">朗讀元素類型、引號內文字、刪除的文字、粗體文字、括號內文字或大寫文字時變更音調。</translation>
+<translation id="7465123027577412805">要使用自然語音嗎？</translation>
 <translation id="7491962110804786152">分頁</translation>
 <translation id="7492497529767769458">移至下一個區段，例如「狀態匣」和「啟動器」。</translation>
 <translation id="7505149250476994901">在字母前讀出「大寫」</translation>
@@ -957,7 +975,7 @@
 <translation id="7801768143868631306">提示：用一根手指向左或向右滑動即可瀏覽。</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7810781339813764006">下一個群組</translation>
-<translation id="7813616274030162878">開關功能選單</translation>
+<translation id="7813616274030162878">切換控制功能選單</translation>
 <translation id="7839679365527550018">上一個字詞</translation>
 <translation id="7842115774595115751">啟用導覽控制項</translation>
 <translation id="7846634333498149051">鍵盤</translation>
@@ -979,6 +997,7 @@
 <translation id="7968340748835037139">深綠</translation>
 <translation id="7972507042926081808">巧克力色</translation>
 <translation id="7974390230414479278">選單項目</translation>
+<translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> 語音 <ph name="COUNT" /></translation>
 <translation id="8004507136466386272">字詞</translation>
 <translation id="8004512796067398576">增加</translation>
 <translation id="8007540374018858731">第 3 階</translation>
@@ -1004,8 +1023,10 @@
 <translation id="8126386426083591964">沒有上一個第 5 階標題</translation>
 <translation id="812886159861361726">已停止下載「<ph name="FILE_NAME" />」</translation>
 <translation id="8129445297241948503">上方沒有儲存格</translation>
+<translation id="8132248161074464367">上一個無效項目</translation>
 <translation id="8138880386467279117">輕觸</translation>
 <translation id="8146613869421949343">接下來，我們會學習搜尋鍵。搜尋鍵可搭配其他按鍵使用，以執行 ChromeVox 指令。搜尋鍵位於左側 Shift 鍵的正上方。如要繼續，請按下搜尋鍵。</translation>
+<translation id="8158033275290782295">全選</translation>
 <translation id="816818801578874684">這是第一個標題。按下搜尋鍵 + H 鍵可前往下一個標題。</translation>
 <translation id="8173092779156526980">以四指向左滑動</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{底線}other{# 個底線}}</translation>
@@ -1113,6 +1134,7 @@
 <translation id="9014206344398081366">ChromeVox 教學課程</translation>
 <translation id="9040132695316389094">標題 1</translation>
 <translation id="9061884144798498064">選取 8 點點字表：</translation>
+<translation id="9063946545000394379">移至上一個字元</translation>
 <translation id="9065283790526219006">含彈出式元件</translation>
 <translation id="9065912140022662363">沒有下一個圓形按鈕</translation>
 <translation id="9067522039955793016">分頁符號</translation>
@@ -1121,6 +1143,7 @@
 <translation id="9077305471618729969">淺海綠</translation>
 <translation id="9080299285199342830">跳至結尾</translation>
 <translation id="9089864840575085222">循環輸入語音回應</translation>
+<translation id="9099429023611373837">剪下</translation>
 <translation id="9108370397979208512">數學</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{百分比符號}other{# 個百分比符號}}</translation>

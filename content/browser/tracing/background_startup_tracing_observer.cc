@@ -119,23 +119,22 @@ BackgroundStartupTracingObserver::IncludeStartupConfigIfNeeded(
   if (!enabled_in_current_session_ || startup_rule)
     return config;
 
-  std::unique_ptr<base::DictionaryValue> rules_dict(
-      new base::DictionaryValue());
-  rules_dict->SetString("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-  rules_dict->SetString("trigger_name", kStartupTracingConfig);
-  rules_dict->SetInteger("trigger_delay", 30);
-  rules_dict->SetString("category", "BENCHMARK_STARTUP");
+  base::Value rules_dict(base::Value::Type::DICTIONARY);
+  rules_dict.SetStringKey("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+  rules_dict.SetStringKey("trigger_name", kStartupTracingConfig);
+  rules_dict.SetIntKey("trigger_delay", 30);
+  rules_dict.SetStringKey("category", "BENCHMARK_STARTUP");
 
   if (config) {
     config->AddReactiveRule(
-        rules_dict.get(),
+        rules_dict,
         BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_STARTUP);
   } else {
-    base::DictionaryValue dict;
-    base::ListValue rules_list;
+    base::Value dict(base::Value::Type::DICTIONARY);
+    base::Value rules_list(base::Value::Type::LIST);
     rules_list.Append(std::move(rules_dict));
     dict.SetKey("configs", std::move(rules_list));
-    config = BackgroundTracingConfigImpl::ReactiveFromDict(&dict);
+    config = BackgroundTracingConfigImpl::ReactiveFromDict(dict);
   }
   DCHECK(FindStartupRuleInConfig(*config));
   return config;

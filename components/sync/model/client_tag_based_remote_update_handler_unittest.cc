@@ -8,6 +8,9 @@
 
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/processor_entity_tracker.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/engine/mock_model_type_processor.h"
 #include "components/sync/test/engine/mock_model_type_worker.h"
 #include "components/sync/test/model/fake_model_type_sync_bridge.h"

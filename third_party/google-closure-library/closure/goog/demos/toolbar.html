@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!--
-Copyright 2010 The Closure Library Authors. All Rights Reserved.
+Copyright The Closure Library Authors. All Rights Reserved.
 
 Use of this source code is governed by the Apache License, Version 2.0.
 See the COPYING file for details.
@@ -12,7 +12,6 @@ See the COPYING file for details.
   <script>
     goog.require('goog.array');
     goog.require('goog.debug.DivConsole');
-    goog.require('goog.debug.LogManager');
     goog.require('goog.dom');
     goog.require('goog.events');
     goog.require('goog.events.EventType');
@@ -483,6 +482,7 @@ See the COPYING file for details.
       <b style="color: #800;">Warning!</b> On Gecko, the event log may cause
       the page to flicker when mousing over toolbar items. This is a Gecko
       issue triggered by scrolling in the event log.
+
       <br><br>
       Enable logging: <input id="enable_log" type="checkbox" checked>
     </div>
@@ -493,7 +493,7 @@ See the COPYING file for details.
     var timer;
 
     // Set up a logger.
-    goog.debug.LogManager.getRoot().setLevel(goog.log.Level.ALL);
+    goog.log.setLevel(goog.log.getRootLogger(), goog.log.Level.ALL);
     var logger = goog.log.getLogger('demo');
     var logconsole = new goog.debug.DivConsole(goog.dom.getElement('log'));
     logconsole.setCapturing(true);
@@ -598,7 +598,7 @@ See the COPYING file for details.
     t1rtl.getChildAt(3).setEnabled(false);
     t1rtl.addChild(new goog.ui.ToolbarButton('YetAnotherButton'), true);
     // For reasons unknown, on FF2, we have to inject an &nbsp; character into
-    // the icon div for RTL positioning to work.  FF2 BiDi sucks!
+    // the icon div for RTL positioning to work.
     var rtlToggleButton = new goog.ui.ToolbarToggleButton(goog.dom.createDom(
         goog.dom.TagName.DIV, 'icon goog-edit-bold', '\u00A0'));
     rtlToggleButton.setChecked(true);

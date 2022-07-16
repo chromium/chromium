@@ -38,6 +38,7 @@
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
+#include "services/network/sct_auditing/sct_auditing_reporter.h"
 
 #if defined(OS_ANDROID)
 #include "base/test/android/url_utils.h"
@@ -97,6 +98,9 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     }
   }
 
+  NetworkServiceTestImpl(const NetworkServiceTestImpl&) = delete;
+  NetworkServiceTestImpl& operator=(const NetworkServiceTestImpl&) = delete;
+
   ~NetworkServiceTestImpl() override {
     network::NetworkContext::SetCertVerifierForTesting(nullptr);
   }
@@ -115,6 +119,10 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
           break;
         case network::mojom::ResolverType::kResolverTypeFailTimeout:
           host_resolver->AddSimulatedTimeoutFailure(rule->host_pattern);
+          break;
+        case network::mojom::ResolverType::
+            kResolverTypeFailHTTPSServiceFormRecord:
+          host_resolver->AddSimulatedHTTPSServiceFormRecord(rule->host_pattern);
           break;
         case network::mojom::ResolverType::kResolverTypeIPLiteral: {
           net::IPAddress ip_address;
@@ -240,26 +248,8 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   void SetSCTAuditingRetryDelay(
       absl::optional<base::TimeDelta> delay,
       SetSCTAuditingRetryDelayCallback callback) override {
-    network::NetworkService::GetNetworkServiceForTesting()
-        ->sct_auditing_cache()
-        ->SetRetryDelayForTesting(delay);
+    network::SCTAuditingReporter::SetRetryDelayForTesting(delay);
     std::move(callback).Run();
-  }
-
-  void GetSCTAuditingPendingReportsCount(
-      GetSCTAuditingPendingReportsCountCallback callback) override {
-    std::move(callback).Run(
-        network::NetworkService::GetNetworkServiceForTesting()
-            ->sct_auditing_cache()
-            ->GetPendingReportersForTesting()
-            ->size());
-  }
-
-  void SetSCTAuditingReportCompletionCallback(
-      SetSCTAuditingReportCompletionCallbackCallback callback) override {
-    network::NetworkService::GetNetworkServiceForTesting()
-        ->sct_auditing_cache()
-        ->SetCompletionCallbackForTesting(std::move(callback));
   }
 
   void GetEnvironmentVariableValue(
@@ -310,8 +300,6 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   base::MemoryPressureListener::MemoryPressureLevel
       latest_memory_pressure_level_ =
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceTestImpl);
 };
 
 NetworkServiceTestHelper::NetworkServiceTestHelper()

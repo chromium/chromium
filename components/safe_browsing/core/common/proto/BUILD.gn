@@ -24,7 +24,7 @@ proto_library("webui_proto") {
   sources = [ "webui.proto" ]
 }
 
-proto_library("realtimeapi_proto") {
+fuzzable_proto_library("realtimeapi_proto") {
   proto_in_dir = "//"
   sources = [ "realtimeapi.proto" ]
   deps = [ ":csd_proto" ]

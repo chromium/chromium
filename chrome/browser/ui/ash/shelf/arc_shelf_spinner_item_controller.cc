@@ -4,14 +4,14 @@
 
 #include "chrome/browser/ui/ash/shelf/arc_shelf_spinner_item_controller.h"
 
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
+#include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/chromeos/full_restore/arc_app_launch_handler.h"
-#include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
-#include "components/full_restore/full_restore_utils.h"
 
 ArcShelfSpinnerItemController::ArcShelfSpinnerItemController(
     const std::string& arc_app_id,
@@ -54,10 +54,9 @@ void ArcShelfSpinnerItemController::ItemSelected(
     const ItemFilterPredicate& filter_predicate) {
   if (window_info_ &&
       window_info_->window_id >
-          full_restore::kArcSessionIdOffsetForRestoredLaunching) {
-    chromeos::full_restore::FullRestoreArcTaskHandler::GetForProfile(
-        observed_profile_)
-        ->arc_app_launch_handler()
+          app_restore::kArcSessionIdOffsetForRestoredLaunching) {
+    ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(observed_profile_)
+        ->full_restore_arc_app_launch_handler()
         ->LaunchApp(app_id());
     std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
     return;
@@ -103,7 +102,7 @@ void ArcShelfSpinnerItemController::OnAppConnectionReady() {
   // this item when timeout.
   if (IsCreatedByFullRestore() && !close_timer_) {
     close_timer_ = std::make_unique<base::OneShotTimer>();
-    close_timer_->Start(FROM_HERE, chromeos::full_restore::kStopRestoreDelay,
+    close_timer_->Start(FROM_HERE, ash::app_restore::kStopRestoreDelay,
                         base::BindOnce(&ArcShelfSpinnerItemController::Close,
                                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -119,5 +118,5 @@ void ArcShelfSpinnerItemController::OnArcPlayStoreEnabledChanged(bool enabled) {
 bool ArcShelfSpinnerItemController::IsCreatedByFullRestore() {
   return window_info_ &&
          window_info_->window_id >
-             full_restore::kArcSessionIdOffsetForRestoredLaunching;
+             app_restore::kArcSessionIdOffsetForRestoredLaunching;
 }

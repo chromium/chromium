@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -23,6 +22,9 @@ class CrostiniThrottleTest : public testing::Test {
         std::make_unique<TestDelegateImpl>(this));
   }
 
+  CrostiniThrottleTest(const CrostiniThrottleTest&) = delete;
+  CrostiniThrottleTest& operator=(const CrostiniThrottleTest&) = delete;
+
  protected:
   CrostiniThrottle* crostini_throttle() { return &crostini_throttle_; }
 
@@ -38,6 +40,10 @@ class CrostiniThrottleTest : public testing::Test {
   class TestDelegateImpl : public CrostiniThrottle::Delegate {
    public:
     explicit TestDelegateImpl(CrostiniThrottleTest* test) : test_(test) {}
+
+    TestDelegateImpl(const TestDelegateImpl&) = delete;
+    TestDelegateImpl& operator=(const TestDelegateImpl&) = delete;
+
     ~TestDelegateImpl() override = default;
 
     void SetCpuRestriction(bool restrict) override {
@@ -48,7 +54,6 @@ class CrostiniThrottleTest : public testing::Test {
     }
 
     CrostiniThrottleTest* test_;
-    DISALLOW_COPY_AND_ASSIGN(TestDelegateImpl);
   };
 
   content::BrowserTaskEnvironment task_environment_;
@@ -57,8 +62,6 @@ class CrostiniThrottleTest : public testing::Test {
   CrostiniThrottle crostini_throttle_;
   size_t disable_cpu_restriction_counter_{0};
   size_t enable_cpu_restriction_counter_{0};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniThrottleTest);
 };
 
 // Tests that CrostiniThrottle can be constructed and destructed.
@@ -68,23 +71,23 @@ TEST_F(CrostiniThrottleTest, TestConstructDestruct) {}
 // when ThrottleInstance is called.
 TEST_F(CrostiniThrottleTest, TestThrottleInstance) {
   crostini_throttle()->set_level_for_testing(
-      chromeos::ThrottleObserver::PriorityLevel::LOW);
+      ash::ThrottleObserver::PriorityLevel::LOW);
   EXPECT_EQ(1U, enable_cpu_restriction_counter());
   EXPECT_EQ(0U, disable_cpu_restriction_counter());
 
   // CrostiniThrottle level is already LOW, expect no change
   crostini_throttle()->set_level_for_testing(
-      chromeos::ThrottleObserver::PriorityLevel::LOW);
+      ash::ThrottleObserver::PriorityLevel::LOW);
   EXPECT_EQ(1U, enable_cpu_restriction_counter());
   EXPECT_EQ(0U, disable_cpu_restriction_counter());
 
   crostini_throttle()->set_level_for_testing(
-      chromeos::ThrottleObserver::PriorityLevel::CRITICAL);
+      ash::ThrottleObserver::PriorityLevel::CRITICAL);
   EXPECT_EQ(1U, enable_cpu_restriction_counter());
   EXPECT_EQ(1U, disable_cpu_restriction_counter());
 
   crostini_throttle()->set_level_for_testing(
-      chromeos::ThrottleObserver::PriorityLevel::LOW);
+      ash::ThrottleObserver::PriorityLevel::LOW);
   EXPECT_EQ(2U, enable_cpu_restriction_counter());
   EXPECT_EQ(1U, disable_cpu_restriction_counter());
 }

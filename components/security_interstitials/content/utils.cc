@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/notreached.h"
 #include "base/process/launch.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -26,7 +27,7 @@
 
 namespace security_interstitials {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void LaunchDateAndTimeSettings() {
 // The code for each OS is completely separate, in order to avoid bugs like
 // https://crbug.com/430877 .
@@ -94,6 +95,9 @@ void LaunchDateAndTimeSettings() {
   options.wait = false;
   base::LaunchProcess(command, options);
 
+#elif defined(OS_FUCHSIA)
+  // TODO(crbug.com/1233494): Send to the platform settings.
+  NOTIMPLEMENTED_LOG_ONCE();
 #else
 #error Unsupported target architecture.
 #endif

@@ -575,6 +575,7 @@ VP8LMapARGBFunc VP8LMapColor32b;
 VP8LMapAlphaFunc VP8LMapColor8b;
 
 extern void VP8LDspInitSSE2(void);
+extern void VP8LDspInitSSE41(void);
 extern void VP8LDspInitNEON(void);
 extern void VP8LDspInitMIPSdspR2(void);
 extern void VP8LDspInitMSA(void);
@@ -621,9 +622,14 @@ WEBP_DSP_INIT_FUNC(VP8LDspInit) {
 
   // If defined, use CPUInfo() to overwrite some pointers with faster versions.
   if (VP8GetCPUInfo != NULL) {
-#if defined(WEBP_USE_SSE2)
+#if defined(WEBP_HAVE_SSE2)
     if (VP8GetCPUInfo(kSSE2)) {
       VP8LDspInitSSE2();
+#if defined(WEBP_HAVE_SSE41)
+      if (VP8GetCPUInfo(kSSE4_1)) {
+        VP8LDspInitSSE41();
+      }
+#endif
     }
 #endif
 #if defined(WEBP_USE_MIPS_DSP_R2)
@@ -638,7 +644,7 @@ WEBP_DSP_INIT_FUNC(VP8LDspInit) {
 #endif
   }
 
-#if defined(WEBP_USE_NEON)
+#if defined(WEBP_HAVE_NEON)
   if (WEBP_NEON_OMIT_C_CODE ||
       (VP8GetCPUInfo != NULL && VP8GetCPUInfo(kNEON))) {
     VP8LDspInitNEON();

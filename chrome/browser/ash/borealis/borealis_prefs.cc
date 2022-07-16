@@ -18,10 +18,13 @@ const char kEngagementPrefsPrefix[] = "borealis.metrics";
 
 const char kBorealisMicAllowed[] = "borealis.microphone_allowed";
 
+const char kExtraLaunchOptions[] = "borealis.extra_launch_options";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kBorealisInstalledOnDevice, false);
   registry->RegisterBooleanPref(kBorealisAllowedForUser, true);
   registry->RegisterBooleanPref(kBorealisMicAllowed, false);
+  registry->RegisterStringPref(kExtraLaunchOptions, std::string());
   guest_os::prefs::RegisterEngagementProfilePrefs(registry,
                                                   kEngagementPrefsPrefix);
 }

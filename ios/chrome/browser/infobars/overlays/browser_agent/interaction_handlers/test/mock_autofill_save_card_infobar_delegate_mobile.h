@@ -13,7 +13,6 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class GURL;
@@ -30,7 +29,6 @@ class MockAutofillSaveCardInfoBarDelegateMobile
           upload_save_card_prompt_callback,
       autofill::AutofillClient::LocalSaveCardPromptCallback
           local_save_card_prompt_callback,
-      PrefService* pref_service,
       const AccountInfo& displayed_target_account);
   ~MockAutofillSaveCardInfoBarDelegateMobile() override;
 
@@ -50,11 +48,9 @@ class MockAutofillSaveCardInfoBarDelegateMobileFactory {
   static std::unique_ptr<MockAutofillSaveCardInfoBarDelegateMobile>
   CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(
       bool upload,
-      PrefService* service,
       autofill::CreditCard card);
 
  private:
-  std::unique_ptr<PrefService> prefs_;
   autofill::CreditCard credit_card_;
 };
 

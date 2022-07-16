@@ -63,7 +63,7 @@ class BookmarkUIState {
         state.mUrl = uri.toString();
 
         if (state.mUrl.equals(UrlConstants.BOOKMARKS_URL)) {
-            return createFolderState(bookmarkModel.getDefaultFolder(), bookmarkModel);
+            return createFolderState(bookmarkModel.getDefaultFolderViewLocation(), bookmarkModel);
         } else if (state.mUrl.startsWith(UrlConstants.BOOKMARKS_FOLDER_URL)) {
             String path = uri.getLastPathSegment();
             if (!path.isEmpty()) {
@@ -73,7 +73,7 @@ class BookmarkUIState {
         }
 
         if (!state.isValid(bookmarkModel)) {
-            state = createFolderState(bookmarkModel.getDefaultFolder(), bookmarkModel);
+            state = createFolderState(bookmarkModel.getDefaultFolderViewLocation(), bookmarkModel);
         }
 
         return state;

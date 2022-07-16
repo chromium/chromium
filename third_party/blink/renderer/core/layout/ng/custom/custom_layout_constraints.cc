@@ -20,7 +20,7 @@ CustomLayoutConstraints::CustomLayoutConstraints(
     : fixed_inline_size_(border_box_size.inline_size),
       fixed_block_size_(border_box_size.block_size) {
   if (data)
-    layout_worklet_world_v8_data_.Set(isolate, data->Deserialize(isolate));
+    layout_worklet_world_v8_data_.Reset(isolate, data->Deserialize(isolate));
 }
 
 CustomLayoutConstraints::~CustomLayoutConstraints() = default;
@@ -44,7 +44,7 @@ ScriptValue CustomLayoutConstraints::data(ScriptState* script_state) const {
 
   return ScriptValue(
       script_state->GetIsolate(),
-      layout_worklet_world_v8_data_.NewLocal(script_state->GetIsolate()));
+      layout_worklet_world_v8_data_.Get(script_state->GetIsolate()));
 }
 
 void CustomLayoutConstraints::Trace(Visitor* visitor) const {

@@ -13,8 +13,8 @@ class ArcFeaturesParserTest : public testing::Test {
  public:
   ArcFeaturesParserTest() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcFeaturesParserTest);
+  ArcFeaturesParserTest(const ArcFeaturesParserTest&) = delete;
+  ArcFeaturesParserTest& operator=(const ArcFeaturesParserTest&) = delete;
 };
 
 constexpr const char kValidJson[] = R"json({"features": [

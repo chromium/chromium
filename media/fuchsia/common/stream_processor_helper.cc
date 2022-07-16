@@ -266,7 +266,7 @@ void StreamProcessorHelper::OnOutputPacket(fuchsia::media::Packet output_packet,
   auto packet_index = output_packet.header().packet_index();
   base::TimeDelta timestamp =
       output_packet.has_timestamp_ish()
-          ? base::TimeDelta::FromNanoseconds(output_packet.timestamp_ish())
+          ? base::Nanoseconds(output_packet.timestamp_ish())
           : kNoTimestamp;
 
   client_->OnStreamProcessorOutputPacket(IoPacket(

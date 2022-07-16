@@ -133,11 +133,11 @@ bool CopyHashListFromHeader(base::DictionaryValue* header_dict,
   }
 
   out->clear();
-  out->reserve(list->GetSize());
+  out->reserve(list->GetList().size());
 
   std::string sha256_base64;
 
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     sha256_base64.clear();
 
     if (!list->GetString(i, &sha256_base64))
@@ -226,26 +226,20 @@ bool CRLSet::Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set) {
   if (contents != "CRLSet")
     return false;
 
-  int version;
-  if (!header_dict->GetInteger("Version", &version) ||
-      version != kCurrentFileVersion) {
-    return false;
-  }
-
-  int sequence;
-  if (!header_dict->GetInteger("Sequence", &sequence))
+  if (header_dict->FindIntKey("Version") != kCurrentFileVersion)
     return false;
 
-  double not_after;
-  if (!header_dict->GetDouble("NotAfter", &not_after)) {
-    // NotAfter is optional for now.
-    not_after = 0;
-  }
+  absl::optional<int> sequence = header_dict->FindIntKey("Sequence");
+  if (!sequence)
+    return false;
+
+  // NotAfter is optional for now.
+  double not_after = header_dict->FindDoubleKey("NotAfter").value_or(0);
   if (not_after < 0)
     return false;
 
   scoped_refptr<CRLSet> crl_set(new CRLSet());
-  crl_set->sequence_ = static_cast<uint32_t>(sequence);
+  crl_set->sequence_ = static_cast<uint32_t>(*sequence);
   crl_set->not_after_ = static_cast<uint64_t>(not_after);
   crl_set->crls_.reserve(64);  // Value observed experimentally.
 

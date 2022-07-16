@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"
@@ -24,6 +23,9 @@ class TouchFilter;
 // Finds touches which are should be filtered.
 class COMPONENT_EXPORT(EVDEV) FalseTouchFinder {
  public:
+  FalseTouchFinder(const FalseTouchFinder&) = delete;
+  FalseTouchFinder& operator=(const FalseTouchFinder&) = delete;
+
   ~FalseTouchFinder();
 
   static std::unique_ptr<FalseTouchFinder> Create(gfx::Size touchscreen_size);
@@ -52,8 +54,6 @@ class COMPONENT_EXPORT(EVDEV) FalseTouchFinder {
   // Delay filters may filter questionable new touches for an indefinite time,
   // but should not start filtering a touch that it had previously allowed.
   std::vector<std::unique_ptr<TouchFilter>> delay_filters_;
-
-  DISALLOW_COPY_AND_ASSIGN(FalseTouchFinder);
 };
 
 }  // namespace ui

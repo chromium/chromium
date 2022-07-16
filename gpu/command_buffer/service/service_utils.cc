@@ -147,8 +147,6 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
       command_line->HasSwitch(switches::kEnableThreadedTextureMailboxes);
   gpu_preferences.gl_shader_interm_output =
       command_line->HasSwitch(switches::kGLShaderIntermOutput);
-  gpu_preferences.emulate_shader_precision =
-      command_line->HasSwitch(switches::kEmulateShaderPrecision);
   gpu_preferences.enable_gpu_service_logging =
       command_line->HasSwitch(switches::kEnableGPUServiceLogging);
   gpu_preferences.enable_gpu_service_tracing =
@@ -159,7 +157,7 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
       command_line->HasSwitch(switches::kIgnoreGpuBlocklist);
   gpu_preferences.enable_webgpu =
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU) ||
-      command_line->HasSwitch(switches::kEnableUnsafeWebGPUService);
+      base::FeatureList::IsEnabled(features::kWebGPUService);
   gpu_preferences.enable_webgpu_spirv =
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU);
   gpu_preferences.force_webgpu_compat =

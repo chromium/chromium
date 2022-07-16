@@ -106,8 +106,7 @@ inline static void MaybeInit() {
     InitLookupCell(0, 0, 0, 0, 0, 0);
     InitLookupCell(0, 0, 0, kSwapMask, 0, kSwapMask);
     InitLookupCell(0, 0, 0, kInvertMask, 0, kInvertMask);
-    InitLookupCell(0, 0, 0, kSwapMask | kInvertMask, 0,
-                   kSwapMask | kInvertMask);
+    InitLookupCell(0, 0, 0, kSwapMask | kInvertMask, 0, kSwapMask | kInvertMask);
   });
 }
 

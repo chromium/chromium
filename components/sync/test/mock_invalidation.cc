@@ -21,7 +21,7 @@ std::unique_ptr<MockInvalidation> MockInvalidation::Build(
       new MockInvalidation(false, version, payload));
 }
 
-MockInvalidation::~MockInvalidation() {}
+MockInvalidation::~MockInvalidation() = default;
 
 bool MockInvalidation::IsUnknownVersion() const {
   return is_unknown_version_;

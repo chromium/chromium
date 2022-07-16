@@ -5,7 +5,8 @@
 #include "components/ui_devtools/views/element_utility.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "extensions/common/image_util.h"
+#include "base/strings/stringprintf.h"
+#include "cc/trees/layer_tree_host.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
@@ -32,6 +33,13 @@ void AppendLayerPropertiesMatchedStyle(
                     base::NumberToString(layer->layer_brightness()));
   ret->emplace_back("layer-grayscale",
                     base::NumberToString(layer->layer_grayscale()));
+  ret->emplace_back("layer-fills-bounds-opaquely",
+                    layer->fills_bounds_opaquely() ? "true" : "false");
+  if (layer->type() == ui::LAYER_SOLID_COLOR) {
+    ret->emplace_back("layer-color",
+                      base::StringPrintf("%X", layer->GetTargetColor()));
+  }
+
   const auto offset = layer->GetSubpixelOffset();
   if (!offset.IsZero())
     ret->emplace_back("layer-subpixel-offset", offset.ToString());
@@ -60,16 +68,6 @@ void AppendLayerPropertiesMatchedStyle(
                         cc::RenderSurfaceReasonToString(render_surface));
     }
   }
-}
-
-bool ParseColorFromFrontend(const std::string& input, std::string* output) {
-  std::string value;
-  base::TrimWhitespaceASCII(input, base::TRIM_ALL, &value);
-  SkColor color;
-  if (!extensions::image_util::ParseCssColorString(value, &color))
-    return false;
-  *output = base::NumberToString(color);
-  return true;
 }
 
 }  // namespace ui_devtools

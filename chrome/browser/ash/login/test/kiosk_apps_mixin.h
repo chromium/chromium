@@ -10,7 +10,7 @@
 #include "chrome_device_policy.pb.h"
 #include "content/public/test/browser_test_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 class KioskAppsMixin : public InProcessBrowserTestMixin {
  public:
@@ -21,6 +21,8 @@ class KioskAppsMixin : public InProcessBrowserTestMixin {
   static void AppendKioskAccount(
       enterprise_management::ChromeDeviceSettingsProto* policy_payload);
   static void AppendWebKioskAccount(
+      enterprise_management::ChromeDeviceSettingsProto* policy_payload);
+  static void AppendAutoLaunchKioskAccount(
       enterprise_management::ChromeDeviceSettingsProto* policy_payload);
 
   KioskAppsMixin(InProcessBrowserTestMixinHost* host,
@@ -35,15 +37,15 @@ class KioskAppsMixin : public InProcessBrowserTestMixin {
 
  private:
   net::EmbeddedTestServer* embedded_test_server_ = nullptr;
-  ash::FakeCWS fake_cws_;
+  FakeCWS fake_cws_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::KioskAppsMixin;
+namespace chromeos {
+using ::ash::KioskAppsMixin;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_KIOSK_APPS_MIXIN_H_

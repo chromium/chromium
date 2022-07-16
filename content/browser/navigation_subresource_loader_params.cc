@@ -16,8 +16,6 @@ SubresourceLoaderParams::SubresourceLoaderParams(
 
 SubresourceLoaderParams& SubresourceLoaderParams::operator=(
     SubresourceLoaderParams&& other) {
-  pending_appcache_loader_factory =
-      std::move(other.pending_appcache_loader_factory);
   controller_service_worker_info =
       std::move(other.controller_service_worker_info);
   controller_service_worker_object_host =

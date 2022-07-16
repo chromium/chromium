@@ -73,6 +73,9 @@ class RemoteDeviceProviderImpl : public RemoteDeviceProvider,
                            const std::string& user_email,
                            const std::string& user_private_key);
 
+  RemoteDeviceProviderImpl(const RemoteDeviceProviderImpl&) = delete;
+  RemoteDeviceProviderImpl& operator=(const RemoteDeviceProviderImpl&) = delete;
+
   ~RemoteDeviceProviderImpl() override;
 
   // RemoteDeviceProvider:
@@ -122,8 +125,6 @@ class RemoteDeviceProviderImpl : public RemoteDeviceProvider,
 
   multidevice::RemoteDeviceList synced_remote_devices_;
   base::WeakPtrFactory<RemoteDeviceProviderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDeviceProviderImpl);
 };
 
 }  // namespace device_sync

@@ -8,7 +8,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -87,14 +86,17 @@ struct BlockingLoginTestParam {
 // to see if the profile finishes loading which is not at all what it is
 // intended to test. We need to fix this test or remove it (crbug.com/580537).
 class BlockingLoginTest
-    : public OobeBaseTest,
+    : public ash::OobeBaseTest,
       public content::NotificationObserver,
       public testing::WithParamInterface<BlockingLoginTestParam> {
  public:
   BlockingLoginTest() : profile_added_(NULL) {}
 
+  BlockingLoginTest(const BlockingLoginTest&) = delete;
+  BlockingLoginTest& operator=(const BlockingLoginTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    OobeBaseTest::SetUpCommandLine(command_line);
+    ash::OobeBaseTest::SetUpCommandLine(command_line);
 
     command_line->AppendSwitchASCII(
         switches::kDeviceManagementUrl,
@@ -105,13 +107,13 @@ class BlockingLoginTest
     registrar_.Add(this, chrome::NOTIFICATION_PROFILE_ADDED,
                    content::NotificationService::AllSources());
 
-    OobeBaseTest::SetUpOnMainThread();
+    ash::OobeBaseTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     RunUntilIdle();
     EXPECT_TRUE(responses_.empty());
-    OobeBaseTest::TearDownOnMainThread();
+    ash::OobeBaseTest::TearDownOnMainThread();
   }
 
   void Observe(int type,
@@ -217,8 +219,6 @@ class BlockingLoginTest
  private:
   std::vector<std::unique_ptr<net::test_server::HttpResponse>> responses_;
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingLoginTest);
 };
 
 IN_PROC_BROWSER_TEST_P(BlockingLoginTest, LoginBlocksForUser) {

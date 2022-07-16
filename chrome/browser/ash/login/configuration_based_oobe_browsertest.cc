@@ -5,8 +5,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
 #include "chrome/browser/ash/login/test/enrollment_helper_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
@@ -21,8 +19,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/ui/webui/chromeos/login/demo_preferences_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
@@ -42,16 +38,9 @@
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/mock_notification_observer.h"
-#include "ui/base/ime/chromeos/input_method_util.h"
+#include "ui/base/ime/ash/input_method_util.h"
 
-using testing::_;
-using testing::Invoke;
-
-// Disabled due to flakiness: https://crbug.com/997685.
-#define MAYBE_TestDemoModeOfflineNetwork DISABLED_TestDemoModeOfflineNetwork
-#define MAYBE_TestDemoModeAcceptEula DISABLED_TestDemoModeAcceptEula
-
-namespace chromeos {
+namespace ash {
 
 // This test case will use
 // src/chromeos/test/data/oobe_configuration/<TestName>.json file as
@@ -61,6 +50,9 @@ namespace chromeos {
 class OobeConfigurationTest : public OobeBaseTest {
  public:
   OobeConfigurationTest() = default;
+
+  OobeConfigurationTest(const OobeConfigurationTest&) = delete;
+  OobeConfigurationTest& operator=(const OobeConfigurationTest&) = delete;
 
   bool ShouldWaitForOobeUI() override { return false; }
 
@@ -79,17 +71,6 @@ class OobeConfigurationTest : public OobeBaseTest {
     // Let screens to settle.
     base::RunLoop().RunUntilIdle();
   }
-
-  void SimulateOfflineEnvironment() {
-    DemoSetupController* controller =
-        WizardController::default_controller()->demo_setup_controller();
-
-    // Simulate offline data directory.
-    ASSERT_TRUE(test::SetupDummyOfflinePolicyDir("test", &fake_policy_dir_));
-    controller->SetPreinstalledOfflineResourcesPathForTesting(
-        fake_policy_dir_.GetPath());
-  }
-
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // File name is based on the test name.
@@ -110,7 +91,8 @@ class OobeConfigurationTest : public OobeBaseTest {
     const ::testing::TestInfo* const test_info =
         ::testing::UnitTest::GetInstance()->current_test_info();
     const std::string filename = std::string(test_info->name()) + suffix;
-    return test_utils::GetTestDataPath("oobe_configuration", filename, file);
+    return chromeos::test_utils::GetTestDataPath("oobe_configuration", filename,
+                                                 file);
   }
 
   // Overridden from InProcessBrowserTest:
@@ -127,51 +109,33 @@ class OobeConfigurationTest : public OobeBaseTest {
     LoadConfiguration();
 
     // Make sure that OOBE is run as an "official" build.
-    branded_build_override_ =
-        WizardController::ForceBrandedBuildForTesting(true);
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
 
     // Clear portal list (as it is by default in OOBE).
     NetworkHandler::Get()->network_state_handler()->SetCheckPortalList("");
   }
 
  protected:
-  std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
   base::ScopedTempDir fake_policy_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OobeConfigurationTest);
-};
-
-// EnterpriseEnrollmentConfigurationTest with no input devices.
-class OobeConfigurationTestNoHID : public OobeConfigurationTest {
- public:
-  OobeConfigurationTestNoHID() = default;
-  ~OobeConfigurationTestNoHID() override = default;
-
- protected:
-  test::HIDControllerMixin hid_controller_{&mixin_host_};
-
- private:
-  // HID detection screen only appears for Chromebases, Chromebits, and
-  // Chromeboxes.
-  base::test::ScopedChromeOSVersionInfo version_{"DEVICETYPE=CHROMEBOX",
-                                                 base::Time::Now()};
-  DISALLOW_COPY_AND_ASSIGN(OobeConfigurationTestNoHID);
 };
 
 class OobeConfigurationEnrollmentTest : public OobeConfigurationTest {
  public:
   OobeConfigurationEnrollmentTest() = default;
+
+  OobeConfigurationEnrollmentTest(const OobeConfigurationEnrollmentTest&) =
+      delete;
+  OobeConfigurationEnrollmentTest& operator=(
+      const OobeConfigurationEnrollmentTest&) = delete;
+
   ~OobeConfigurationEnrollmentTest() override = default;
 
  protected:
   LocalPolicyTestServerMixin policy_server_{&mixin_host_};
   // We need fake gaia to fetch device local account tokens.
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OobeConfigurationEnrollmentTest);
 };
 
 // Check that configuration lets correctly pass Welcome screen.
@@ -185,8 +149,7 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestSwitchLanguageIME) {
   LoadConfiguration();
   OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
 
-  chromeos::input_method::InputMethodManager* imm =
-      chromeos::input_method::InputMethodManager::Get();
+  auto* imm = input_method::InputMethodManager::Get();
 
   // Configuration specified in TestSwitchLanguageIME.json sets non-default
   // input method fo German (xkb:de:neo:ger) to ensure that input method value
@@ -200,52 +163,6 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestSwitchLanguageIME) {
   const std::string language_code = g_browser_process->local_state()->GetString(
       language::prefs::kApplicationLocale);
   EXPECT_EQ("de", language_code);
-}
-
-// Check that configuration lets correctly start Demo mode setup.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestEnableDemoMode) {
-  LoadConfiguration();
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-}
-
-// Check that configuration lets correctly pass through demo preferences.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestDemoModePreferences) {
-  LoadConfiguration();
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
-}
-
-// Check that configuration lets correctly use offline demo mode on network
-// screen.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTest,
-                       MAYBE_TestDemoModeOfflineNetwork) {
-  LoadConfiguration();
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  SimulateOfflineEnvironment();
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
-}
-
-// Check that configuration lets correctly use offline demo mode on EULA
-// screen.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, MAYBE_TestDemoModeAcceptEula) {
-  LoadConfiguration();
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  SimulateOfflineEnvironment();
-  OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-}
-
-// Check that configuration lets correctly use offline demo mode on ARC++ ToS
-// screen.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestDemoModeAcceptArcTos) {
-  LoadConfiguration();
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  SimulateOfflineEnvironment();
-
-  test::OobeJS().Evaluate(
-      "login.ArcTermsOfServiceScreen.setTosForTesting('Test "
-      "Play Store Terms of Service');");
-  test::OobeJS().ClickOnPath({"demo-preferences", "nextButton"});
-
-  OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
 }
 
 // Check that configuration lets correctly select a network by GUID.
@@ -295,38 +212,4 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationEnrollmentTest, TestSkipUpdate) {
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
 }
 
-IN_PROC_BROWSER_TEST_F(OobeConfigurationEnrollmentTest, TestEnrollUsingToken) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->AllowlistSignSimpleChallengeKey(
-          /*username=*/"",
-          chromeos::attestation::GetKeyNameForProfile(
-              chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
-              ""));
-
-  policy_server_.SetUpdateDeviceAttributesPermission(false);
-  policy_server_.SetFakeAttestationFlow();
-
-  // Token from configuration file:
-  policy_server_.ExpectTokenEnrollment("00000000-1111-2222-3333-444444444444",
-                                       FakeGaiaMixin::kEnterpriseUser1);
-  LoadConfiguration();
-  OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-}
-
-// Check that HID detection screen is shown if it is not specified by
-// configuration.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTestNoHID, TestShowHID) {
-  LoadConfiguration();
-  OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
-}
-
-// Check that HID detection screen is really skipped and rest of configuration
-// is applied.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTestNoHID, TestSkipHIDDetection) {
-  LoadConfiguration();
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
-}
-
-}  // namespace chromeos
+}  // namespace ash

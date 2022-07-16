@@ -49,12 +49,14 @@ class NullContextMenuContentType : public ContextMenuContentType {
   NullContextMenuContentType(content::WebContents* web_contents,
                              const content::ContextMenuParams& params)
       : ContextMenuContentType(web_contents, params, false) {}
+
+  NullContextMenuContentType(const NullContextMenuContentType&) = delete;
+  NullContextMenuContentType& operator=(const NullContextMenuContentType&) =
+      delete;
+
   ~NullContextMenuContentType() override = default;
 
   bool SupportsGroup(int group) override { return false; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NullContextMenuContentType);
 };
 
 }  // namespace

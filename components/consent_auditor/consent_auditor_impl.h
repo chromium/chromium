@@ -7,9 +7,7 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "components/consent_auditor/consent_auditor.h"
@@ -27,6 +25,10 @@ class ConsentAuditorImpl : public ConsentAuditor {
                      const std::string& app_version,
                      const std::string& app_locale,
                      base::Clock* clock);
+
+  ConsentAuditorImpl(const ConsentAuditorImpl&) = delete;
+  ConsentAuditorImpl& operator=(const ConsentAuditorImpl&) = delete;
+
   ~ConsentAuditorImpl() override;
 
   // KeyedService (through ConsentAuditor) implementation.
@@ -70,8 +72,6 @@ class ConsentAuditorImpl : public ConsentAuditor {
   std::string app_version_;
   std::string app_locale_;
   base::Clock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConsentAuditorImpl);
 };
 
 }  // namespace consent_auditor

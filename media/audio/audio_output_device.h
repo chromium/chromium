@@ -67,7 +67,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
@@ -97,6 +96,9 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner,
       const AudioSinkParameters& sink_params,
       base::TimeDelta authorization_timeout);
+
+  AudioOutputDevice(const AudioOutputDevice&) = delete;
+  AudioOutputDevice& operator=(const AudioOutputDevice&) = delete;
 
   // Request authorization to use the device specified in the constructor.
   void RequestDeviceAuthorization();
@@ -239,8 +241,6 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
   // if you add more usage of this lock ensure you have not added a deadlock.
   base::Lock device_info_lock_;
   OutputDeviceInfoCB pending_device_info_cb_ GUARDED_BY(device_info_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputDevice);
 };
 
 }  // namespace media

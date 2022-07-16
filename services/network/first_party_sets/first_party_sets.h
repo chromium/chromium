@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 
+#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "net/base/schemeful_site.h"
@@ -29,6 +30,10 @@ class FirstPartySets {
   FirstPartySets(const FirstPartySets&) = delete;
   FirstPartySets& operator=(const FirstPartySets&) = delete;
 
+  // Stores the First-Party Set that was provided via the `kUseFirstPartySet`
+  // flag/switch.
+  //
+  // Has no effect if `kFirstPartySets` is disabled.
   void SetManuallySpecifiedSet(const std::string& flag_value);
 
   // Overwrites the current members-to-owners map with the values in |raw_sets|,
@@ -39,8 +44,22 @@ class FirstPartySets {
   //
   // In case of invalid input, clears the current members-to-owners map, but
   // keeps any manually-specified set (i.e. a set provided on the command line).
+  //
+  // Has no effect if `kFirstPartySets` is disabled.
   base::flat_map<net::SchemefulSite, net::SchemefulSite>* ParseAndSet(
       base::StringPiece raw_sets);
+
+  // Overwrites the current members-to-owners map with the values in `input`,
+  // which should be a newline-delimited collection of JSON-encoded set
+  // declarations according to the format specified in this document:
+  // https://github.com/privacycg/first-party-sets. Exactly one JSON record must
+  // be on each line.
+  //
+  // In case of invalid input, clears the current members-to-owners map, but
+  // keeps any manually-specified set (i.e. a set provided on the command line).
+  //
+  // Has no effect if `kFirstPartySets` is disabled.
+  void ParseAndSetFromStream(std::istream& input);
 
   // Returns whether the `site` is same-party with the `party_context`, and
   // `top_frame_site` (if it is not nullptr). That is, is the `site`'s owner the
@@ -87,12 +106,25 @@ class FirstPartySets {
   // the members of the set includes the owner.
   base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>> Sets() const;
 
+  // Sets the `raw_persisted_sets_`, which is a JSON-encoded
+  // string representation of a map of site -> site.
+  void SetPersistedSets(base::StringPiece persisted_sets);
+  // Sets the `on_site_data_cleared_` callback, which takes input of a
+  // JSON-encoded string representation of a map of site -> site.
+  void SetOnSiteDataCleared(
+      base::OnceCallback<void(const std::string&)> callback);
+
  private:
-  // Returns a pointer to `site`'s owner (optionally inferring a singleton set
-  // if necessary), or `nullptr` if `site` has no owner. Must not return
-  // `nullptr` if `infer_singleton_sets` is true.
-  const net::SchemefulSite* FindOwner(const net::SchemefulSite& site,
-                                      bool infer_singleton_sets) const;
+  // Performs bookkeeping after receiving a new set of sets from Component
+  // Updater.
+  void OnComponentSetsReceived();
+
+  // Returns `site`'s owner (optionally inferring a singleton set if necessary),
+  // or `nullopt` if `site` has no owner. Must not return `nullopt` if
+  // `infer_singleton_sets` is true.
+  const absl::optional<net::SchemefulSite> FindOwner(
+      const net::SchemefulSite& site,
+      bool infer_singleton_sets) const;
 
   // We must ensure there's no intersection between the manually-specified set
   // and the sets that came from Component Updater. (When reconciling the
@@ -101,6 +133,19 @@ class FirstPartySets {
   // `manually_specified_set_`.
   void ApplyManuallySpecifiedSet();
 
+  // Compares the map `old_sets` to `sets_` and returns the set of sites that:
+  // 1) were in `old_sets` but are no longer in `sets_`, i.e. leave the FPSs;
+  // or, 2) mapped to a different owner site.
+  base::flat_set<net::SchemefulSite> ComputeSetsDiff(
+      const base::flat_map<net::SchemefulSite, net::SchemefulSite>& old_sets);
+
+  // Checks the required inputs have been received, and if so, computes the diff
+  // between the `sets_` and the parsed `raw_persisted_sets_`, and clears the
+  // site data of the set of sites based on the diff.
+  //
+  // TODO(shuuran@chromium.org): Implement the code to clear site state.
+  void ClearSiteDataOnChangedSetsIfReady();
+
   // Represents the mapping of site -> site, where keys are members of sets, and
   // values are owners of the sets. Owners are explicitly represented as members
   // of the set.
@@ -108,6 +153,23 @@ class FirstPartySets {
   absl::optional<
       std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>>
       manually_specified_set_;
+
+  std::string raw_persisted_sets_;
+
+  bool persisted_sets_ready_ = false;
+  bool component_sets_ready_ = false;
+  bool manual_sets_ready_ = false;
+
+  // The callback runs after the site state clearing is completed.
+  base::OnceCallback<void(const std::string&)> on_site_data_cleared_;
+
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_SitesJoined);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_SitesLeft);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_OwnerChanged);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_OwnerLeft);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest,
+                           ComputeSetsDiff_OwnerMemberRotate);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_EmptySets);
 };
 
 }  // namespace network

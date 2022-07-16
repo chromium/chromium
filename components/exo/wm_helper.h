@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/base/cursor/cursor.h"
@@ -49,10 +48,13 @@ class VSyncTimingManager;
 // Helper interface for accessing WindowManager related features.
 class WMHelper : public aura::client::DragDropDelegate {
  public:
-  using DropCallback = aura::client::DragDropDelegate::DropCallback;
 
   class DragDropObserver {
    public:
+    using DropCallback =
+        base::OnceCallback<void(const ui::DropTargetEvent& event,
+                                ui::mojom::DragOperation& output_drag_op)>;
+
     virtual void OnDragEntered(const ui::DropTargetEvent& event) = 0;
     virtual aura::client::DragUpdateInfo OnDragUpdated(
         const ui::DropTargetEvent& event) = 0;
@@ -78,6 +80,10 @@ class WMHelper : public aura::client::DragDropDelegate {
     };
 
     LifetimeManager();
+
+    LifetimeManager(const LifetimeManager&) = delete;
+    LifetimeManager& operator=(const LifetimeManager&) = delete;
+
     ~LifetimeManager();
 
     void AddObserver(Observer* observer);
@@ -85,8 +91,6 @@ class WMHelper : public aura::client::DragDropDelegate {
 
    private:
     base::ObserverList<Observer> observers_;
-
-    DISALLOW_COPY_AND_ASSIGN(LifetimeManager);
   };
 
   // Used to resolve the properties to be set to the window
@@ -105,7 +109,17 @@ class WMHelper : public aura::client::DragDropDelegate {
         ui::PropertyHandler& out_properties_container) = 0;
   };
 
+  class ExoWindowObserver : public base::CheckedObserver {
+   public:
+    // Called every time exo creates a new window but before it is shown.
+    virtual void OnExoWindowCreated(aura::Window* window) {}
+  };
+
   WMHelper();
+
+  WMHelper(const WMHelper&) = delete;
+  WMHelper& operator=(const WMHelper&) = delete;
+
   ~WMHelper() override;
 
   static WMHelper* GetInstance();
@@ -119,6 +133,8 @@ class WMHelper : public aura::client::DragDropDelegate {
       aura::client::FocusChangeObserver* observer) = 0;
   virtual void RemoveFocusObserver(
       aura::client::FocusChangeObserver* observer) = 0;
+  void AddExoWindowObserver(ExoWindowObserver* observer);
+  void RemoveExoWindowObserver(ExoWindowObserver* observer);
 
   virtual void AddDragDropObserver(DragDropObserver* observer) = 0;
   virtual void RemoveDragDropObserver(DragDropObserver* observer) = 0;
@@ -148,8 +164,6 @@ class WMHelper : public aura::client::DragDropDelegate {
   virtual double GetDefaultDeviceScaleFactor() const = 0;
   virtual double GetDeviceScaleFactorForWindow(aura::Window* window) const = 0;
   virtual void SetDefaultScaleCancellation(bool default_scale_cancellation) = 0;
-  virtual void SetImeBlocked(aura::Window* window, bool ime_blocked) = 0;
-  virtual bool IsImeBlocked(aura::Window* window) const = 0;
 
   virtual LifetimeManager* GetLifetimeManager() = 0;
   virtual aura::client::CaptureClient* GetCaptureClient() = 0;
@@ -162,7 +176,8 @@ class WMHelper : public aura::client::DragDropDelegate {
   ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event,
       std::unique_ptr<ui::OSExchangeData> data) override = 0;
-  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override = 0;
+  aura::client::DragDropDelegate::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override = 0;
 
   // Registers an AppPropertyResolver. Multiple resolver can be registered and
   // all resolvers are called in the registration order by the method below.
@@ -176,10 +191,14 @@ class WMHelper : public aura::client::DragDropDelegate {
   void PopulateAppProperties(const AppPropertyResolver::Params& params,
                              ui::PropertyHandler& out_properties_container);
 
- protected:
-  std::vector<std::unique_ptr<AppPropertyResolver>> resolver_list_;
+  // Notifies observers that |window| has been created by exo and is ready for
+  // to receive content.
+  void NotifyExoWindowCreated(aura::Window* window);
 
-  DISALLOW_COPY_AND_ASSIGN(WMHelper);
+ protected:
+  base::ObserverList<ExoWindowObserver> exo_window_observers_;
+
+  std::vector<std::unique_ptr<AppPropertyResolver>> resolver_list_;
 };
 
 }  // namespace exo

@@ -88,7 +88,8 @@ int SVGInlineTextBox::OffsetForPositionInFragment(
   TextRun text_run = ConstructTextRun(line_layout_item.StyleRef(), fragment);
   return fragment.character_offset - Start() +
          line_layout_item.ScaledFont().OffsetForPosition(
-             text_run, position, IncludePartialGlyphs, BreakGlyphs);
+             text_run, position, kIncludePartialGlyphs,
+             BreakGlyphsOption(true));
 }
 
 LayoutUnit SVGInlineTextBox::PositionForOffset(int) const {
@@ -121,7 +122,7 @@ FloatRect SVGInlineTextBox::SelectionRectForTextFragment(
   if (scaling_factor != 1)
     text_origin.Scale(scaling_factor, scaling_factor);
 
-  text_origin.Move(0, -scaled_font_metrics.FloatAscent());
+  text_origin.Offset(0, -scaled_font_metrics.FloatAscent());
 
   FloatRect selection_rect = scaled_font.SelectionRectForText(
       ConstructTextRun(style, fragment), text_origin,
@@ -164,7 +165,7 @@ LayoutRect SVGInlineTextBox::LocalSelectionRect(
     if (fragment.IsTransformed())
       fragment_rect = fragment.BuildFragmentTransform().MapRect(fragment_rect);
 
-    selection_rect.Unite(fragment_rect);
+    selection_rect.Union(fragment_rect);
   }
 
   return LayoutRect(EnclosingIntRect(selection_rect));
@@ -258,21 +259,21 @@ void SVGInlineTextBox::PaintTextMarkerBackground(const PaintInfo& paint_info,
                                                            marker, style, font);
 }
 
-FloatRect SVGInlineTextBox::CalculateBoundaries() const {
+gfx::RectF SVGInlineTextBox::CalculateBoundaries() const {
   LineLayoutSVGInlineText line_layout_item =
       LineLayoutSVGInlineText(GetLineLayoutItem());
   const SimpleFontData* font_data = line_layout_item.ScaledFont().PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
-    return FloatRect();
+    return gfx::RectF();
 
   float scaling_factor = line_layout_item.ScalingFactor();
   DCHECK(scaling_factor);
   float baseline = font_data->GetFontMetrics().FloatAscent() / scaling_factor;
 
-  FloatRect text_bounding_rect;
+  gfx::RectF text_bounding_rect;
   for (const SVGTextFragment& fragment : text_fragments_)
-    text_bounding_rect.Unite(fragment.OverflowBoundingBox(baseline));
+    text_bounding_rect.Union(fragment.OverflowBoundingBox(baseline));
 
   return text_bounding_rect;
 }

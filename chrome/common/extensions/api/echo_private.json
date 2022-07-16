@@ -37,20 +37,19 @@
             "name": "id",
             "type": "string",
             "description": "The service id of the offer eligibility check."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "object",
-                "additionalProperties": { "type": "any" },
-                "description": "The returned offer info. If the offer info is not available, api will raise error."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "object",
+              "additionalProperties": { "type": "any" },
+              "description": "The returned offer info. If the offer info is not available, api will raise error."
+            }
+          ]
+        }
       },
       {
         "name": "getRegistrationCode",
@@ -61,37 +60,34 @@
             "name": "type",
             "type": "string",
             "description": "Type of coupon code requested to be read (coupon or group)."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "string",
-                "description" : "The coupon code."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "string",
+              "description" : "The coupon code."
+            }
+          ]
+        }
       },
       {
         "name": "getOobeTimestamp",
         "description": "Get the OOBE timestamp.",
         "type": "function",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "string",
-                "description" : "The OOBE timestamp."
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "string",
+              "description" : "The OOBE timestamp."
+            }
+          ]
+        }
       },
       {
         "name": "getUserConsent",
@@ -117,21 +113,20 @@
                 "minimum": 0,
                 "optional": true,
                 "description": "The ID of the tab from which the user consent was requested. The tab ID is used to determine with which tab to associate the user consent request dialog. If the user consent was requested from an app window, the tab ID should not be set."
-	      }
-            }
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "boolean",
-                "description": "Whether the user consent was given."
               }
-            ]
+            }
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "boolean",
+              "description": "Whether the user consent was given."
+            }
+          ]
+        }
       }
     ]
   }

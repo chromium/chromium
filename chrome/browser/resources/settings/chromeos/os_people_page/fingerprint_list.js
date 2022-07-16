@@ -60,8 +60,6 @@ Polymer({
     supportedSettingIds: {
       type: Object,
       value: () => new Set([
-        chromeos.settings.mojom.Setting.kAddFingerprint,
-        chromeos.settings.mojom.Setting.kRemoveFingerprint,
         chromeos.settings.mojom.Setting.kAddFingerprintV2,
         chromeos.settings.mojom.Setting.kRemoveFingerprintV2,
       ]),
@@ -73,8 +71,6 @@ Polymer({
 
   /** @override */
   attached() {
-    this.addWebUIListener(
-        'on-fingerprint-attempt-received', this.onAttemptReceived_.bind(this));
     this.addWebUIListener('on-screen-locked', this.onScreenLocked_.bind(this));
     this.browserProxy_ = settings.FingerprintBrowserProxyImpl.getInstance();
     this.browserProxy_.startAuthentication();
@@ -125,41 +121,6 @@ Polymer({
     }
 
     this.attemptDeepLink();
-  },
-
-  /**
-   * Sends a ripple when the user taps the sensor with a registered fingerprint.
-   * @param {!settings.FingerprintAttempt} fingerprintAttempt
-   * @private
-   */
-  onAttemptReceived_(fingerprintAttempt) {
-    /** @type {NodeList<!HTMLElement>} */ const listItems =
-        /** @type {NodeList<!HTMLElement>} */
-        (this.$.fingerprintsList.querySelectorAll('.list-item'));
-    /** @type {Array<number>} */ const filteredIndexes =
-        fingerprintAttempt.indexes.filter(function(index) {
-          return index >= 0 && index < listItems.length;
-        });
-
-    // Flash the background and produce a ripple for each list item that
-    // corresponds to the attempted finger.
-    filteredIndexes.forEach(function(index) {
-      const listItem = listItems[index];
-      const ripple = listItem.querySelector('paper-ripple');
-
-      // Activate the ripple.
-      if (ripple) {
-        ripple.simulatedRipple();
-      }
-
-      // Flash the background.
-      listItem.animate(
-          [
-            {backgroundColor: ['var(--google-grey-300)']},
-            {backgroundColor: ['white']}
-          ],
-          FLASH_DURATION_MS);
-    });
   },
 
   /** @private */

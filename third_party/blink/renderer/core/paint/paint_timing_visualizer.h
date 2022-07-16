@@ -6,12 +6,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_TIMING_VISUALIZER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+
+namespace gfx {
+class Rect;
+class RectF;
+}  // namespace gfx
 
 namespace blink {
 
-class IntRect;
+class ImageResourceContent;
+class LayoutObject;
 class LocalFrameView;
 
 // While Largest Contentful Paint only concerns about the largest contentful
@@ -23,17 +28,17 @@ class CORE_EXPORT PaintTimingVisualizer {
  public:
   static bool IsTracingEnabled();
 
-  void DumpTextDebuggingRect(const LayoutObject&, const FloatRect&);
+  void DumpTextDebuggingRect(const LayoutObject&, const gfx::RectF&);
   void DumpImageDebuggingRect(const LayoutObject&,
-                              const FloatRect&,
+                              const gfx::RectF&,
                               const ImageResourceContent&);
   void RecordMainFrameViewport(LocalFrameView& frame_view);
   inline void OnViewportChanged() { need_recording_viewport = true; }
 
  private:
   void RecordObject(const LayoutObject&, std::unique_ptr<TracedValue>&);
-  void RecordRects(const IntRect& rect, std::unique_ptr<TracedValue>&);
-  void RecordMainFrameViewport(const IntRect&);
+  void RecordRects(const gfx::Rect& rect, std::unique_ptr<TracedValue>&);
+  void RecordMainFrameViewport(const gfx::Rect&);
   void DumpTrace(std::unique_ptr<TracedValue>);
 
   bool need_recording_viewport = true;

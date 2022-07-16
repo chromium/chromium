@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -62,6 +61,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
                  OutputSurface* output_surface,
                  DisplayResourceProvider* resource_provider,
                  OverlayProcessorInterface* overlay_processor);
+
+  DirectRenderer(const DirectRenderer&) = delete;
+  DirectRenderer& operator=(const DirectRenderer&) = delete;
+
   virtual ~DirectRenderer();
 
   void Initialize();
@@ -376,8 +379,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   gfx::ColorSpace reshape_color_space_;
   absl::optional<gfx::BufferFormat> reshape_buffer_format_;
   bool reshape_use_stencil_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectRenderer);
 };
 
 }  // namespace viz

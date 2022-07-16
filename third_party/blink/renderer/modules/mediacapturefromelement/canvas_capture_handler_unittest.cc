@@ -13,6 +13,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
@@ -49,8 +50,13 @@ class CanvasCaptureHandlerTest
  public:
   CanvasCaptureHandlerTest() = default;
 
+  CanvasCaptureHandlerTest(const CanvasCaptureHandlerTest&) = delete;
+  CanvasCaptureHandlerTest& operator=(const CanvasCaptureHandlerTest&) = delete;
+
   void SetUp() override {
     MediaStreamComponent* component = nullptr;
+    copier_ = std::make_unique<StaticBitmapImageToVideoFrameCopier>(
+        /*allow_accelerated_frame_pool=*/false);
     canvas_capture_handler_ = CanvasCaptureHandler::CreateCanvasCaptureHandler(
         /*LocalFrame =*/nullptr,
         gfx::Size(kTestCanvasCaptureWidth, kTestCanvasCaptureHeight),
@@ -127,19 +133,17 @@ class CanvasCaptureHandlerTest
   }
 
   Persistent<MediaStreamComponent> component_;
+  std::unique_ptr<StaticBitmapImageToVideoFrameCopier> copier_;
   // The Class under test. Needs to be scoped_ptr to force its destruction.
   std::unique_ptr<CanvasCaptureHandler> canvas_capture_handler_;
 
  protected:
-  media::VideoCapturerSource* GetVideoCapturerSource(
+  VideoCapturerSource* GetVideoCapturerSource(
       blink::MediaStreamVideoCapturerSource* ms_source) {
     return ms_source->GetSourceForTesting();
   }
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CanvasCaptureHandlerTest);
 };
 
 // Checks that the initialization-destruction sequence works fine.
@@ -171,7 +175,7 @@ TEST_P(CanvasCaptureHandlerTest, GetFormatsStartAndStop) {
       static_cast<blink::MediaStreamVideoCapturerSource*>(
           media_stream_source->GetPlatformSource());
   EXPECT_TRUE(ms_source);
-  media::VideoCapturerSource* source = GetVideoCapturerSource(ms_source);
+  VideoCapturerSource* source = GetVideoCapturerSource(ms_source);
   EXPECT_TRUE(source);
 
   media::VideoCaptureFormats formats = source->GetPreferredFormats();
@@ -193,11 +197,12 @@ TEST_P(CanvasCaptureHandlerTest, GetFormatsStartAndStop) {
                           base::Unretained(this)),
       base::BindRepeating(&CanvasCaptureHandlerTest::OnRunning,
                           base::Unretained(this)));
-  canvas_capture_handler_->SendNewFrame(
-      GenerateTestImage(testing::get<0>(GetParam()),
-                        testing::get<1>(GetParam()),
-                        testing::get<2>(GetParam())),
-      nullptr);
+  copier_->Convert(GenerateTestImage(testing::get<0>(GetParam()),
+                                     testing::get<1>(GetParam()),
+                                     testing::get<2>(GetParam())),
+                   canvas_capture_handler_->CanDiscardAlpha(),
+                   /*context_provider=*/nullptr,
+                   canvas_capture_handler_->GetNewFrameCallback());
   run_loop.Run();
 
   source->StopCapture();
@@ -209,7 +214,7 @@ TEST_P(CanvasCaptureHandlerTest, VerifyFrame) {
   const bool width = testing::get<1>(GetParam());
   const bool height = testing::get<1>(GetParam());
   InSequence s;
-  media::VideoCapturerSource* const source = GetVideoCapturerSource(
+  VideoCapturerSource* const source = GetVideoCapturerSource(
       static_cast<blink::MediaStreamVideoCapturerSource*>(
           component_->Source()->GetPlatformSource()));
   EXPECT_TRUE(source);
@@ -223,8 +228,10 @@ TEST_P(CanvasCaptureHandlerTest, VerifyFrame) {
                           base::Unretained(this), opaque_frame, width, height),
       base::BindRepeating(&CanvasCaptureHandlerTest::OnRunning,
                           base::Unretained(this)));
-  canvas_capture_handler_->SendNewFrame(
-      GenerateTestImage(opaque_frame, width, height), nullptr);
+  copier_->Convert(GenerateTestImage(opaque_frame, width, height),
+                   canvas_capture_handler_->CanDiscardAlpha(),
+                   /*context_provider=*/nullptr,
+                   canvas_capture_handler_->GetNewFrameCallback());
   run_loop.RunUntilIdle();
 }
 
@@ -233,7 +240,7 @@ TEST_F(CanvasCaptureHandlerTest, DropAlphaDeliversOpaqueFrame) {
   const int width = 2;
   const int height = 2;
   InSequence s;
-  media::VideoCapturerSource* const source = GetVideoCapturerSource(
+  VideoCapturerSource* const source = GetVideoCapturerSource(
       static_cast<blink::MediaStreamVideoCapturerSource*>(
           component_->Source()->GetPlatformSource()));
   EXPECT_TRUE(source);
@@ -249,15 +256,17 @@ TEST_F(CanvasCaptureHandlerTest, DropAlphaDeliversOpaqueFrame) {
                           height),
       base::BindRepeating(&CanvasCaptureHandlerTest::OnRunning,
                           base::Unretained(this)));
-  canvas_capture_handler_->SendNewFrame(
-      GenerateTestImage(/*opaque_frame=*/false, width, height), nullptr);
+  copier_->Convert(GenerateTestImage(/*opaque=*/false, width, height),
+                   canvas_capture_handler_->CanDiscardAlpha(),
+                   /*context_provider=*/nullptr,
+                   canvas_capture_handler_->GetNewFrameCallback());
   run_loop.RunUntilIdle();
 }
 
 // Checks that needsNewFrame() works as expected.
 TEST_F(CanvasCaptureHandlerTest, CheckNeedsNewFrame) {
   InSequence s;
-  media::VideoCapturerSource* source = GetVideoCapturerSource(
+  VideoCapturerSource* source = GetVideoCapturerSource(
       static_cast<blink::MediaStreamVideoCapturerSource*>(
           component_->Source()->GetPlatformSource()));
   EXPECT_TRUE(source);

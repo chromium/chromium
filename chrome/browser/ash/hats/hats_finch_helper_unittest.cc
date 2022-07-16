@@ -27,6 +27,9 @@ class HatsFinchHelperTest : public testing::Test {
  public:
   HatsFinchHelperTest() {}
 
+  HatsFinchHelperTest(const HatsFinchHelperTest&) = delete;
+  HatsFinchHelperTest& operator=(const HatsFinchHelperTest&) = delete;
+
   void SetFeatureParams(const base::FieldTrialParams& params) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kHappinessTrackingSystem, params);
@@ -57,8 +60,6 @@ class HatsFinchHelperTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HatsFinchHelperTest);
 };
 
 TEST_F(HatsFinchHelperTest, InitFinchSeed_ValidValues) {
@@ -104,26 +105,25 @@ TEST_F(HatsFinchHelperTest, TestComputeNextDate) {
   HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
 
   // Case 1
-  base::Time start_date = current_time - base::TimeDelta::FromDays(10);
+  base::Time start_date = current_time - base::Days(10);
   hats_finch_helper.first_survey_start_date_ = start_date;
   base::Time expected_date =
-      start_date +
-      base::TimeDelta::FromDays(2 * hats_finch_helper.survey_cycle_length_);
+      start_date + base::Days(2 * hats_finch_helper.survey_cycle_length_);
   EXPECT_EQ(expected_date.ToJsTime(),
             hats_finch_helper.ComputeNextEndDate().ToJsTime());
 
   // Case 2
-  base::Time future_time = current_time + base::TimeDelta::FromDays(10);
+  base::Time future_time = current_time + base::Days(10);
   hats_finch_helper.first_survey_start_date_ = future_time;
-  expected_date = future_time + base::TimeDelta::FromDays(
-                                    hats_finch_helper.survey_cycle_length_);
+  expected_date =
+      future_time + base::Days(hats_finch_helper.survey_cycle_length_);
   EXPECT_EQ(expected_date.ToJsTime(),
             hats_finch_helper.ComputeNextEndDate().ToJsTime());
 }
 
 TEST_F(HatsFinchHelperTest, ResetSurveyCycle) {
-  base::FieldTrialParams params =
-      CreateParamMap("0.5", "7", "1475613895337", "true", "0", kValidTriggerId);
+  base::FieldTrialParams params = CreateParamMap(
+      "0.5", "7", "1475613895337", "true", "false", kValidTriggerId);
   SetFeatureParams(params);
 
   int64_t initial_timestamp = base::Time::Now().ToInternalValue();
@@ -146,8 +146,8 @@ TEST_F(HatsFinchHelperTest, ResetSurveyCycle) {
 }
 
 TEST_F(HatsFinchHelperTest, ResetHats) {
-  base::FieldTrialParams params =
-      CreateParamMap("0.5", "7", "1475613895337", "0", "true", kValidTriggerId);
+  base::FieldTrialParams params = CreateParamMap(
+      "0.5", "7", "1475613895337", "false", "true", kValidTriggerId);
   SetFeatureParams(params);
 
   int64_t initial_timestamp = base::Time::Now().ToInternalValue();

@@ -7,13 +7,23 @@
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
+#import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_service_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_view_controller_model_delegate.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#include "ios/chrome/grit/ios_strings.h"
+#import "net/base/mac/url_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+@interface ManageSyncSettingsTableViewController () <
+    PopoverLabelViewControllerDelegate>
+@end
 
 @implementation ManageSyncSettingsTableViewController
 
@@ -64,8 +74,36 @@
                     forControlEvents:UIControlEventValueChanged];
     ListItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
     switchCell.switchView.tag = item.type;
+  } else if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
+    TableViewInfoButtonCell* managedCell =
+        base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+    managedCell.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    [managedCell.trailingButton addTarget:self
+                                   action:@selector(didTapManagedUIInfoButton:)
+                         forControlEvents:UIControlEventTouchUpInside];
   }
   return cell;
+}
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  UIView* view = [super tableView:tableView viewForFooterInSection:section];
+
+  if (![self.tableViewModel footerForSection:section]) {
+    // Don't set up the footer view when there isn't a footer in the model.
+    return view;
+  }
+
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSection:section];
+
+  if (sectionIdentifier == SignOutSectionIdentifier) {
+    TableViewLinkHeaderFooterView* linkView =
+        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+    linkView.delegate = self;
+  }
+
+  return view;
 }
 
 #pragma mark - ChromeTableViewController
@@ -123,6 +161,37 @@
   CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
   [self.serviceDelegate didSelectItem:item cellRect:cellRect];
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+#pragma mark - Sync helpers
+
+// Called when the user clicks on the information button of the managed
+// setting's UI. Shows a textual bubble with the information of the enterprise.
+- (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
+  EnterpriseInfoPopoverViewController* bubbleViewController =
+      [[EnterpriseInfoPopoverViewController alloc]
+          initWithMessage:l10n_util::GetNSString(
+                              IDS_IOS_ENTERPRISE_MANAGED_SYNC)
+           enterpriseName:nil];
+  [self presentViewController:bubbleViewController animated:YES completion:nil];
+
+  // Disable the button when showing the bubble.
+  buttonView.enabled = NO;
+
+  // Set the anchor and arrow direction of the bubble.
+  bubbleViewController.popoverPresentationController.sourceView = buttonView;
+  bubbleViewController.popoverPresentationController.sourceRect =
+      buttonView.bounds;
+  bubbleViewController.popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionAny;
+  bubbleViewController.delegate = self;
+}
+
+#pragma mark - PopoverLabelViewControllerDelegate
+
+- (void)didTapLinkURL:(NSURL*)URL {
+  GURL convertedURL = net::GURLWithNSURL(URL);
+  [self view:nil didTapLinkURL:convertedURL];
 }
 
 @end

@@ -429,9 +429,8 @@ int InstallGoogleChrome(const char* source_path,
         isbrandchar(brand_code[1]) && isbrandchar(brand_code[2]) &&
         isbrandchar(brand_code[3]);
 
-    NSString* brand_path = nil;
     if (valid_brand_code)
-      brand_path = WriteBrandCode(brand_code, user);
+      WriteBrandCode(brand_code, user);
 
     // Write master prefs.
     if (master_prefs_contents)

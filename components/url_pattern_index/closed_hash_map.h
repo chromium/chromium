@@ -16,7 +16,6 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace url_pattern_index {
@@ -111,6 +110,9 @@ class ClosedHashMap {
         prober_(prober) {
     entries_.reserve(capacity);
   }
+
+  ClosedHashMap(const ClosedHashMap&) = delete;
+  ClosedHashMap& operator=(const ClosedHashMap&) = delete;
 
   // Returns the number of distinct keys.
   uint32_t size() const { return entries_.size(); }
@@ -242,8 +244,6 @@ class ClosedHashMap {
 
   // The strategy used to find a slot for a key.
   Prober prober_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClosedHashMap);
 };
 
 // The implementation of Prober that uses a simple form of quadratic probing.

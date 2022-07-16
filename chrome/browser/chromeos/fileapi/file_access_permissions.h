@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "url/origin.h"
 
@@ -20,6 +19,10 @@ namespace chromeos {
 class FileAccessPermissions {
  public:
   FileAccessPermissions();
+
+  FileAccessPermissions(const FileAccessPermissions&) = delete;
+  FileAccessPermissions& operator=(const FileAccessPermissions&) = delete;
+
   virtual ~FileAccessPermissions();
 
   // Grants |origin| access to |path|.
@@ -37,8 +40,6 @@ class FileAccessPermissions {
 
   mutable base::Lock lock_;  // Synchronize all access to path_map_.
   PathAccessMap path_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileAccessPermissions);
 };
 
 }  // namespace chromeos

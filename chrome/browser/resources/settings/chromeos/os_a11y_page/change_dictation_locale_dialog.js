@@ -22,12 +22,14 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources
 
 /**
  * A locale option for Dictation, including the human-readable name, the
- * locale value (like en-US), whether it works offline, and whether it should
- * be highlighted as recommended to the user.
+ * locale value (like en-US), whether it works offline, whether the language
+ * pack for the locale is installed, and whether it should be highlighted as
+ * recommended to the user.
  * @typedef {{
  *   name: string,
  *   value: string,
- *   offline: boolean,
+ *   worksOffline: boolean,
+ *   installed: boolean,
  *   recommended: boolean,
  * }}
  */
@@ -136,7 +138,7 @@ export class ChangeDictationLocaleDialog extends
   /** @override */
   ready() {
     super.ready();
-    this.addEventListener('exit-pane', this.onPaneExit_.bind(this));
+    this.addEventListener('exit-pane', () => this.onPaneExit_());
   }
 
   /** @override */
@@ -266,7 +268,7 @@ export class ChangeDictationLocaleDialog extends
    * @private
    */
   getAriaLabelForItem_(item, selected) {
-    const longName = item.offline ?
+    const longName = item.worksOffline ?
         this.i18n(
             'dictationChangeLanguageDialogOfflineDescription', item.name) :
         item.name;

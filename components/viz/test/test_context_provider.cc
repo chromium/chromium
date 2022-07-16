@@ -50,6 +50,12 @@ class TestGLES2InterfaceForContextProvider : public TestGLES2Interface {
       std::string additional_extensions = std::string())
       : extension_string_(
             BuildExtensionString(std::move(additional_extensions))) {}
+
+  TestGLES2InterfaceForContextProvider(
+      const TestGLES2InterfaceForContextProvider&) = delete;
+  TestGLES2InterfaceForContextProvider& operator=(
+      const TestGLES2InterfaceForContextProvider&) = delete;
+
   ~TestGLES2InterfaceForContextProvider() override = default;
 
   // TestGLES2Interface:
@@ -114,8 +120,6 @@ class TestGLES2InterfaceForContextProvider : public TestGLES2Interface {
   }
 
   const std::string extension_string_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestGLES2InterfaceForContextProvider);
 };
 
 }  // namespace

@@ -32,6 +32,7 @@ import optparse
 import sys
 import unittest
 
+from blinkpy.common.system import filesystem_mock
 from blinkpy.common.system import output_capture
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.web_tests.port import port_testcase
@@ -70,15 +71,15 @@ class WinPortTest(port_testcase.PortTestCase):
         self.assert_name(None, 'win7', 'win-win7')
         self.assert_name('win', 'win7', 'win-win7')
 
-        self.assert_name(None, '10', 'win-win10')
-        self.assert_name('win', '10', 'win-win10')
-        self.assert_name('win-win10', '10', 'win-win10')
-        self.assert_name('win-win10', 'win7', 'win-win10')
+        self.assert_name(None, '10.20h2', 'win-win10.20h2')
+        self.assert_name('win', '10.20h2', 'win-win10.20h2')
+        self.assert_name('win-win10.20h2', '10.20h2', 'win-win10.20h2')
+        self.assert_name('win-win10.20h2', 'win7', 'win-win10.20h2')
 
-        self.assert_name(None, '8', 'win-win10')
-        self.assert_name(None, '8.1', 'win-win10')
-        self.assert_name('win', '8', 'win-win10')
-        self.assert_name('win', '8.1', 'win-win10')
+        self.assert_name(None, '8', 'win-win10.20h2')
+        self.assert_name(None, '8.1', 'win-win10.20h2')
+        self.assert_name('win', '8', 'win-win10.20h2')
+        self.assert_name('win', '8.1', 'win-win10.20h2')
 
         self.assert_name(None, '7sp1', 'win-win7')
         self.assert_name(None, '7sp0', 'win-win7')
@@ -90,9 +91,9 @@ class WinPortTest(port_testcase.PortTestCase):
         self.assert_name('win-win7', '7sp0', 'win-win7')
         self.assert_name('win-win7', 'vista', 'win-win7')
 
-        self.assert_name(None, 'future', 'win-win10')
-        self.assert_name('win', 'future', 'win-win10')
-        self.assert_name('win-win10', 'future', 'win-win10')
+        self.assert_name(None, 'future', 'win-win10.20h2')
+        self.assert_name('win', 'future', 'win-win10.20h2')
+        self.assert_name('win-win10.20h2', 'future', 'win-win10.20h2')
 
         with self.assertRaises(AssertionError):
             self.assert_name(None, 'w2k', 'win-win7')
@@ -107,7 +108,7 @@ class WinPortTest(port_testcase.PortTestCase):
 
     def test_baseline_path(self):
         self.assert_baseline_paths('win-win7', 'win7', '/win')
-        self.assert_baseline_paths('win-win10', 'win')
+        self.assert_baseline_paths('win-win10.20h2', 'win')
 
     def test_operating_system(self):
         self.assertEqual('win', self.make_port().operating_system())
@@ -165,3 +166,19 @@ class WinPortTest(port_testcase.PortTestCase):
             self.make_port().path_to_apache_config_file(),
             '/mock-checkout/third_party/blink/tools/apache_config/win-httpd.conf'
         )
+
+    def test_relative_test_filename(self):
+        port = self.make_port()
+        relative_path = port._filesystem.join(port.web_tests_dir(), 'foo',
+                                              'bar')
+        self.assertEqual(port.relative_test_filename(relative_path), 'foo/bar')
+        absolute_path = 'C:\\foo\\bar\\not_relative'
+        # Non-Windows platforms won't see the given path as absolute, so mock
+        # that out.
+        if sys.platform != 'win32':
+            mock_filesystem = filesystem_mock.MockFileSystem()
+            mock_filesystem.abspath = lambda p: p
+            port._filesystem = mock_filesystem
+            port.host.filesystem = mock_filesystem
+        self.assertEqual(port.relative_test_filename(absolute_path),
+                         '/C:/foo/bar/not_relative')

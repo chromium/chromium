@@ -41,6 +41,9 @@ class PeImageReader::OptionalHeaderImpl : public PeImageReader::OptionalHeader {
       : optional_header_(reinterpret_cast<const OPTIONAL_HEADER_TYPE*>(
             optional_header_start)) {}
 
+  OptionalHeaderImpl(const OptionalHeaderImpl&) = delete;
+  OptionalHeaderImpl& operator=(const OptionalHeaderImpl&) = delete;
+
   WordSize GetWordSize() override { return TraitsType::word_size; }
 
   size_t GetDataDirectoryOffset() override {
@@ -59,7 +62,6 @@ class PeImageReader::OptionalHeaderImpl : public PeImageReader::OptionalHeader {
 
  private:
   const OPTIONAL_HEADER_TYPE* optional_header_;
-  DISALLOW_COPY_AND_ASSIGN(OptionalHeaderImpl);
 };
 
 PeImageReader::PeImageReader() {}

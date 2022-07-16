@@ -54,7 +54,7 @@ void BluetoothRemoteGATTCharacteristic::RemoteCharacteristicValueChanged(
   SetValue(BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value));
   if (notification_registration_in_progress()) {
     // Save event and value to be dispatched after notification is registered.
-    deferred_value_change_data_.insert(
+    deferred_value_change_data_.push_back(
         MakeGarbageCollected<DeferredValueChange>(
             Event::Create(event_type_names::kCharacteristicvaluechanged),
             value_, /*promise=*/nullptr));
@@ -110,7 +110,7 @@ void BluetoothRemoteGATTCharacteristic::ReadValueCallback(
     SetValue(dom_data_view);
     if (notification_registration_in_progress()) {
       // Save event to be dispatched after notification is registered.
-      deferred_value_change_data_.insert(
+      deferred_value_change_data_.push_back(
           MakeGarbageCollected<DeferredValueChange>(
               Event::Create(event_type_names::kCharacteristicvaluechanged),
               dom_data_view, resolver));
@@ -301,6 +301,7 @@ void BluetoothRemoteGATTCharacteristic::NotificationsCallback(
     // Dispatch deferred characteristicvaluechanged events created during the
     // registration of notifications.
     auto deferred_value_change_data = std::move(deferred_value_change_data_);
+    deferred_value_change_data_.clear();
     for (const auto& value_changed_data : deferred_value_change_data) {
       auto prior_value = value_;
       value_ = value_changed_data->dom_data_view;

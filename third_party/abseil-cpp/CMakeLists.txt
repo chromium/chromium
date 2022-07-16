@@ -67,6 +67,13 @@ else()
   option(ABSL_ENABLE_INSTALL "Enable install rule" ON)
 endif()
 
+option(ABSL_PROPAGATE_CXX_STD
+  "Use CMake C++ standard meta features (e.g. cxx_std_11) that propagate to targets that link to Abseil"
+  OFF)  # TODO: Default to ON for CMake 3.8 and greater.
+if((${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8) AND (NOT ABSL_PROPAGATE_CXX_STD))
+  message(WARNING "A future Abseil release will default ABSL_PROPAGATE_CXX_STD to ON for CMake 3.8 and up. We recommend enabling this option to ensure your project still builds correctly.")
+endif()
+
 list(APPEND CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_LIST_DIR}/CMake
   ${CMAKE_CURRENT_LIST_DIR}/absl/copts
@@ -153,22 +160,16 @@ if(BUILD_TESTING)
 
   if (NOT ABSL_FIND_GOOGLETEST)
     # When Google Test is included directly rather than through find_package, the aliases are missing.
-    add_library(GTest::gtest_main ALIAS gtest_main)
     add_library(GTest::gtest ALIAS gtest)
+    add_library(GTest::gtest_main ALIAS gtest_main)
     add_library(GTest::gmock ALIAS gmock)
+    add_library(GTest::gmock_main ALIAS gmock_main)
   endif()
 
   check_target(GTest::gtest)
   check_target(GTest::gtest_main)
   check_target(GTest::gmock)
   check_target(GTest::gmock_main)
-
-  list(APPEND ABSL_TEST_COMMON_LIBRARIES
-    GTest::gtest_main
-    GTest::gtest
-    GTest::gmock
-    ${CMAKE_THREAD_LIBS_INIT}
-  )
 endif()
 
 add_subdirectory(absl)

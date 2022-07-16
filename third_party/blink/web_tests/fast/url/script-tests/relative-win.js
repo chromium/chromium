@@ -24,7 +24,7 @@ cases = [
   ["file:///C:/foo", "/z:/bar", "file:///Z:/bar"],
   // Treat absolute paths as being off of the drive.
   ["file:///C:/foo", "/bar", "file:///C:/bar"],
-  ["file://localhost/C:/foo", "/bar", "file://localhost/C:/bar"],
+  ["file://localhost/C:/foo", "/bar", "file:///C:/bar"],
   ["file:///C:/foo/com/", "/bar", "file:///C:/bar"],
   // On Windows, two slashes without a drive letter when the base is a file
   // means that the path is UNC.

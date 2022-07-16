@@ -2,6 +2,7 @@ include_rules = [
   "+net",
   "+ui/aura",
   "+ui/base",
+  "+ui/color",
   "+ui/display",
   "+ui/events",
   "+ui/gfx",

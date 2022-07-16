@@ -1080,6 +1080,7 @@ public class CompositorViewHolder extends FrameLayout
 
         mDidSwapFrameCallbacks.addAll(mOnCompositorLayoutCallbacks);
         mOnCompositorLayoutCallbacks.clear();
+        updateNeedsSwapBuffersCallback();
 
         TraceEvent.end("CompositorViewHolder:layout");
     }
@@ -1126,7 +1127,10 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public void requestRender(Runnable onUpdateEffective) {
-        if (onUpdateEffective != null) mOnCompositorLayoutCallbacks.add(onUpdateEffective);
+        if (onUpdateEffective != null) {
+            mOnCompositorLayoutCallbacks.add(onUpdateEffective);
+            updateNeedsSwapBuffersCallback();
+        }
         mCompositorView.requestRender();
     }
 
@@ -1164,6 +1168,7 @@ public class CompositorViewHolder extends FrameLayout
 
         mDidSwapBuffersCallbacks.addAll(mDidSwapFrameCallbacks);
         mDidSwapFrameCallbacks.clear();
+        updateNeedsSwapBuffersCallback();
     }
 
     @Override
@@ -1172,6 +1177,7 @@ public class CompositorViewHolder extends FrameLayout
             runnable.run();
         }
         mDidSwapBuffersCallbacks.clear();
+        updateNeedsSwapBuffersCallback();
     }
 
     @Override
@@ -1686,6 +1692,13 @@ public class CompositorViewHolder extends FrameLayout
             }
             return mPixelRect;
         }
+    }
+
+    // Should be called any time inputs used to compute `needsSwapCallback` changes.
+    private void updateNeedsSwapBuffersCallback() {
+        boolean needsSwapCallback = !mOnCompositorLayoutCallbacks.isEmpty()
+                || !mDidSwapFrameCallbacks.isEmpty() || !mDidSwapBuffersCallbacks.isEmpty();
+        mCompositorView.setRenderHostNeedsDidSwapBuffersCallback(needsSwapCallback);
     }
 
     void setCompositorViewForTesting(CompositorView compositorView) {

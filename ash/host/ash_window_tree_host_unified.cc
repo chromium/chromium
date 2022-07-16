@@ -11,6 +11,7 @@
 #include "ash/host/root_window_transformer.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/macros.h"
 #include "base/notreached.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -29,6 +30,9 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
       : src_root_(src_root), dst_root_(dst_root), delegate_(delegate) {
     DCHECK(delegate);
   }
+
+  UnifiedEventTargeter(const UnifiedEventTargeter&) = delete;
+  UnifiedEventTargeter& operator=(const UnifiedEventTargeter&) = delete;
 
   ui::EventTarget* FindTargetForEvent(ui::EventTarget* root,
                                       ui::Event* event) override {
@@ -57,8 +61,6 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
   aura::Window* src_root_;
   aura::Window* dst_root_;
   AshWindowTreeHostMirroringDelegate* delegate_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedEventTargeter);
 };
 
 AshWindowTreeHostUnified::AshWindowTreeHostUnified(

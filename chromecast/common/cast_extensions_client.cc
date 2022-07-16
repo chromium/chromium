@@ -34,6 +34,12 @@ namespace {
 class ShellPermissionMessageProvider : public PermissionMessageProvider {
  public:
   ShellPermissionMessageProvider() {}
+
+  ShellPermissionMessageProvider(const ShellPermissionMessageProvider&) =
+      delete;
+  ShellPermissionMessageProvider& operator=(
+      const ShellPermissionMessageProvider&) = delete;
+
   ~ShellPermissionMessageProvider() override {}
 
   // PermissionMessageProvider implementation.
@@ -55,9 +61,6 @@ class ShellPermissionMessageProvider : public PermissionMessageProvider {
       Manifest::Type extension_type) const override {
     return PermissionIDSet();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellPermissionMessageProvider);
 };
 
 }  // namespace

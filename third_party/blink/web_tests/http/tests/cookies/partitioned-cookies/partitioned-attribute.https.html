@@ -1,0 +1,32 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+test(() => {
+  assert_equals(document.cookie, "");
+
+  // Valid Partitioned cookie: __Host- prefix and no SameParty attribute.
+  const validCookie = "__Host-foo=bar";
+  const validCookieAttributes = "; Secure; Path=/; SameSite=None; Partitioned";
+  const validCookieLine = validCookie + validCookieAttributes;
+  document.cookie = validCookieLine;
+  assert_equals(document.cookie, validCookie);
+  // Clean up cookie
+  const expiresInPast = "; Expires=Thu, 01 Jan 1970 00:00:01 GMT";
+  document.cookie = validCookieLine + expiresInPast;
+  assert_equals(document.cookie, "");
+
+  // Invalid Partitioned cookie: no __Host- prefix.
+  const noPrefixCookie = "foo=bar";
+  const noPrefixCookieLine = noPrefixCookie + validCookieAttributes;
+  document.cookie = noPrefixCookieLine;
+  assert_equals(document.cookie, "");
+
+  // Invalid Partitioned cookie: SameParty attribute.
+  const samePartyCookieLine = validCookieLine + "; SameParty";
+  document.cookie = samePartyCookieLine;
+  assert_equals(document.cookie, "");
+}, "Partitioned cookie attribute semantics");
+
+</script>

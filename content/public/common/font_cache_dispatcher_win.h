@@ -7,7 +7,6 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "content/common/content_export.h"
 #include "content/public/common/font_cache_win.mojom.h"
@@ -21,6 +20,10 @@ namespace content {
 class CONTENT_EXPORT FontCacheDispatcher : public mojom::FontCacheWin {
  public:
   FontCacheDispatcher();
+
+  FontCacheDispatcher(const FontCacheDispatcher&) = delete;
+  FontCacheDispatcher& operator=(const FontCacheDispatcher&) = delete;
+
   ~FontCacheDispatcher() override;
 
   static void Create(mojo::PendingReceiver<mojom::FontCacheWin> receiver);
@@ -30,8 +33,6 @@ class CONTENT_EXPORT FontCacheDispatcher : public mojom::FontCacheWin {
   void PreCacheFont(const LOGFONT& log_font,
                     PreCacheFontCallback callback) override;
   void ReleaseCachedFonts() override;
-
-  DISALLOW_COPY_AND_ASSIGN(FontCacheDispatcher);
 };
 
 }  // namespace content

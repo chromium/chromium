@@ -28,6 +28,10 @@ class TestDeviceIdProvider final : public FtlDeviceIdProvider {
   };
 
   explicit TestDeviceIdProvider(TokenStorage* token_storage);
+
+  TestDeviceIdProvider(const TestDeviceIdProvider&) = delete;
+  TestDeviceIdProvider& operator=(const TestDeviceIdProvider&) = delete;
+
   ~TestDeviceIdProvider() override;
 
   // FtlDeviceIdProvider implementations.
@@ -35,7 +39,6 @@ class TestDeviceIdProvider final : public FtlDeviceIdProvider {
 
  private:
   TokenStorage* token_storage_;
-  DISALLOW_COPY_AND_ASSIGN(TestDeviceIdProvider);
 };
 
 }  // namespace test

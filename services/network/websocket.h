@@ -21,12 +21,13 @@
 #include "base/types/strong_alias.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/network_delegate.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
-#include "services/network/throttling/scoped_throttling_token.h"
+#include "services/network/websocket_interceptor.h"
 #include "services/network/websocket_throttler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -76,6 +77,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       base::TimeDelta delay,
       const absl::optional<base::UnguessableToken>& throttling_profile_id);
 
+  WebSocket(const WebSocket&) = delete;
+  WebSocket& operator=(const WebSocket&) = delete;
+
   ~WebSocket() override;
 
   // mojom::WebSocket methods:
@@ -91,8 +95,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
 
   // These methods are called by the network delegate to forward these events to
   // the |header_client_|.
-  int OnBeforeStartTransaction(net::CompletionOnceCallback callback,
-                               net::HttpRequestHeaders* headers);
+  int OnBeforeStartTransaction(
+      const net::HttpRequestHeaders& headers,
+      net::NetworkDelegate::OnBeforeStartTransactionCallback callback);
   int OnHeadersReceived(
       net::CompletionOnceCallback callback,
       const net::HttpResponseHeaders* original_response_headers,
@@ -116,12 +121,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
    public:
     explicit UnownedPointer(WebSocket* pointer) : pointer_(pointer) {}
 
+    UnownedPointer(const UnownedPointer&) = delete;
+    UnownedPointer& operator=(const UnownedPointer&) = delete;
+
     WebSocket* get() const { return pointer_; }
 
    private:
     WebSocket* const pointer_;
-
-    DISALLOW_COPY_AND_ASSIGN(UnownedPointer);
   };
 
   struct DataFrame final {
@@ -151,8 +157,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       base::OnceCallback<void(const net::AuthCredentials*)> callback,
       const absl::optional<net::AuthCredentials>& credential);
   void OnBeforeSendHeadersComplete(
-      net::CompletionOnceCallback callback,
-      net::HttpRequestHeaders* out_headers,
+      net::NetworkDelegate::OnBeforeStartTransactionCallback callback,
       int result,
       const absl::optional<net::HttpRequestHeaders>& headers);
   void OnHeadersReceivedComplete(
@@ -173,8 +178,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   // Datapipe functions to send.
   void OnReadable(MojoResult result, const mojo::HandleSignalsState& state);
 
-  // ReadAndSendFromDataPipe() may indirectly delete |this|.
   void ReadAndSendFromDataPipe();
+  // This helper method only called from ReadAndSendFromDataPipe.
+  // Note that it may indirectly delete |this|.
+  // Returns true if the frame has been sent completely.
+  bool ReadAndSendFrameFromDataPipe(DataFrame* data_frame);
   void ResumeDataPipeReading();
 
   // |factory_| owns |this|.
@@ -246,11 +254,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
 
   const absl::optional<base::UnguessableToken> throttling_profile_id_;
   uint32_t net_log_source_id_ = net::NetLogSource::kInvalidId;
-  std::unique_ptr<ScopedThrottlingToken> throttling_token_;
+  std::unique_ptr<WebSocketInterceptor> incoming_frame_interceptor_;
+  std::unique_ptr<WebSocketInterceptor> outgoing_frame_interceptor_;
 
   base::WeakPtrFactory<WebSocket> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocket);
 };
 
 }  // namespace network

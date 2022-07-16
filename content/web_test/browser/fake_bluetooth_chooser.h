@@ -41,6 +41,9 @@ class FakeBluetoothChooser : public mojom::FakeBluetoothChooser,
       mojo::PendingReceiver<mojom::FakeBluetoothChooser> receiver,
       mojo::PendingAssociatedRemote<mojom::FakeBluetoothChooserClient> client);
 
+  FakeBluetoothChooser(const FakeBluetoothChooser&) = delete;
+  FakeBluetoothChooser& operator=(const FakeBluetoothChooser&) = delete;
+
   // Resets the test scan duration to timeout immediately and sends a
   // |CHOOSER_CLOSED| event to the client.
   ~FakeBluetoothChooser() override;
@@ -75,8 +78,6 @@ class FakeBluetoothChooser : public mojom::FakeBluetoothChooser,
   // Stores the associated pointer to the client that will be receiving events
   // from FakeBluetoothChooser.
   mojo::AssociatedRemote<mojom::FakeBluetoothChooserClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothChooser);
 };
 
 }  // namespace content

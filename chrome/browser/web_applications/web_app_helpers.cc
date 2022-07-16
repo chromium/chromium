@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 
 #include "base/base64.h"
 #include "base/strings/strcat.h"
@@ -12,7 +12,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/crx_file/id_util.h"
 #include "crypto/sha2.h"
-#include "extensions/common/constants.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -47,18 +47,16 @@ AppId GetAppIdFromApplicationName(const std::string& app_name) {
   return app_name.substr(prefix.length());
 }
 
-static std::string GenerateAppHashFromURL(const GURL& url) {
-  return crypto::SHA256HashString(url.spec());
-}
-
 std::string GenerateAppIdUnhashed(
     const absl::optional<std::string>& manifest_id,
     const GURL& start_url) {
   // When manifest_id is specified, the app id is generated from
   // <start_url_origin>/<manifest_id>.
-  // Note: start_url.GetOrigin().spec() returns the origin ending with slash.
+  // Note: start_url.DeprecatedGetOriginAsURL().spec() returns the origin ending
+  // with slash.
   if (manifest_id.has_value()) {
-    GURL app_id(start_url.GetOrigin().spec() + manifest_id.value());
+    GURL app_id(start_url.DeprecatedGetOriginAsURL().spec() +
+                manifest_id.value());
     DCHECK(app_id.is_valid());
     return app_id.spec();
   }
@@ -71,50 +69,50 @@ AppId GenerateAppId(const absl::optional<std::string>& manifest_id,
       crypto::SHA256HashString(GenerateAppIdUnhashed(manifest_id, start_url)));
 }
 
-AppId GenerateAppIdFromManifest(const blink::Manifest& manifest) {
-  return GenerateAppId(
+std::string GenerateAppIdUnhashedFromManifest(
+    const blink::mojom::Manifest& manifest) {
+  return GenerateAppIdUnhashed(
       manifest.id.has_value()
           ? absl::optional<std::string>(base::UTF16ToUTF8(manifest.id.value()))
           : absl::nullopt,
       manifest.start_url);
 }
 
-// Generate the public key for the fake extension that we synthesize to contain
-// a web app.
-//
-// Web apps are not signed, but the public key for an extension doubles as
-// its unique identity, and we need one of those. A web app's unique identity
-// is its manifest URL, so we hash that (*) to create a public key. There will
-// be no corresponding private key, which means that these extensions cannot be
-// auto-updated using ExtensionUpdater.
-//
-// (*) The comment above says that we hash the manifest URL, but in practice,
-// it seems that we hash the start URL.
-std::string GenerateAppKeyFromURL(const GURL& url) {
-  std::string key;
-  base::Base64Encode(GenerateAppHashFromURL(url), &key);
-  return key;
+AppId GenerateAppIdFromManifest(const blink::mojom::Manifest& manifest) {
+  return crx_file::id_util::GenerateId(
+      crypto::SHA256HashString(GenerateAppIdUnhashedFromManifest(manifest)));
+}
+
+std::string GenerateRecommendedId(const GURL& start_url) {
+  if (!start_url.is_valid()) {
+    return base::EmptyString();
+  }
+
+  std::string full_url = start_url.spec();
+  std::string origin = start_url.DeprecatedGetOriginAsURL().spec();
+  DCHECK(!full_url.empty() && !origin.empty() &&
+         origin.size() <= full_url.size());
+  // Make recommended id starts with a leading slash so it's clear to developers
+  // that it's a root-relative url path. In reality it's always root-relative
+  // because the base_url is the origin.
+  return full_url.substr(origin.size() - 1);
 }
 
 bool IsValidWebAppUrl(const GURL& app_url) {
   if (app_url.is_empty() || app_url.inner_url())
     return false;
-  // kExtensionScheme is defined in extensions/common:common_constants. It's ok
-  // to depend on it.
+
+  // TODO(crbug.com/1253234): Remove chrome-extension scheme and use
+  // SchemeIsHTTPOrHTTPS() instead of IsValidWebAppUrl();
   return app_url.SchemeIs(url::kHttpScheme) ||
          app_url.SchemeIs(url::kHttpsScheme) ||
-         app_url.SchemeIs(extensions::kExtensionScheme);
-}
-
-bool IsValidExtensionUrl(const GURL& app_url) {
-  return !app_url.is_empty() && !app_url.inner_url() &&
-         app_url.SchemeIs(extensions::kExtensionScheme);
+         app_url.SchemeIs("chrome-extension");
 }
 
 absl::optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,
                                                      const GURL& url,
                                                      bool window_only) {
-  auto* provider = WebAppProvider::Get(profile);
+  auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   return provider ? provider->registrar().FindInstalledAppWithUrlInScope(
                         url, window_only)
                   : absl::nullopt;

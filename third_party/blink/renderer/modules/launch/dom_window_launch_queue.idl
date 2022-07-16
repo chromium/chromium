@@ -7,7 +7,7 @@
 
 [
     ImplementedAs=DOMWindowLaunchQueue,
-    RuntimeEnabled=FileHandling
+    RuntimeEnabled=WebAppLaunchQueue
 ] partial interface Window {
     readonly attribute LaunchQueue launchQueue;
 };

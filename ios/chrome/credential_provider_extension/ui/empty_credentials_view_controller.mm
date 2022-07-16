@@ -21,7 +21,6 @@ constexpr CGFloat kStackViewSpacingAfterIllustration = 32;
   self.customSpacingAfterImage = kStackViewSpacingAfterIllustration;
 
   self.helpButtonAvailable = NO;
-  self.primaryActionAvailable = NO;
   NSString* titleString =
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_EMPTY_CREDENTIALS_TITLE",
                         @"The title in the empty credentials screen.");
@@ -30,10 +29,6 @@ constexpr CGFloat kStackViewSpacingAfterIllustration = 32;
       @"The subtitle in the empty credentials screen.");
   self.titleString = titleString;
   self.subtitleString = subtitleString;
-
-  if (@available(iOS 13.4, *)) {
-    self.pointerInteractionEnabled = YES;
-  }
 
   [super loadView];
 }

@@ -17,7 +17,6 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/gfx/geometry/rect.h"
@@ -53,6 +52,10 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
                                       public WindowBackdrop::Observer {
  public:
   explicit BackdropController(aura::Window* container);
+
+  BackdropController(const BackdropController&) = delete;
+  BackdropController& operator=(const BackdropController&) = delete;
+
   ~BackdropController() override;
 
   void OnWindowAddedToLayout(aura::Window* window);
@@ -184,8 +187,6 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
       window_backdrop_observations_{this};
 
   base::WeakPtrFactory<BackdropController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackdropController);
 };
 
 }  // namespace ash

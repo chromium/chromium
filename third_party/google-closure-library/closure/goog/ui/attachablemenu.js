@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Definition of the AttachableMenu class.
@@ -20,7 +12,6 @@ goog.provide('goog.ui.AttachableMenu');
 
 goog.require('goog.a11y.aria');
 goog.require('goog.a11y.aria.State');
-goog.require('goog.array');
 goog.require('goog.asserts');
 goog.require('goog.dom');
 goog.require('goog.dom.classlist');
@@ -32,6 +23,7 @@ goog.require('goog.ui.ItemEvent');
 goog.require('goog.ui.MenuBase');
 goog.require('goog.ui.PopupBase');
 goog.require('goog.userAgent');
+goog.requireType('goog.events.KeyEvent');
 
 
 
@@ -53,10 +45,10 @@ goog.require('goog.userAgent');
  * @final
  */
 goog.ui.AttachableMenu = function(opt_element) {
+  'use strict';
   goog.ui.MenuBase.call(this, opt_element);
 };
 goog.inherits(goog.ui.AttachableMenu, goog.ui.MenuBase);
-goog.tagUnsealableClass(goog.ui.AttachableMenu);
 
 
 /**
@@ -89,11 +81,12 @@ goog.ui.AttachableMenu.prototype.selectedItemClassName_ = 'menu-item-selected';
  * @type {number}
  * @private
  */
-goog.ui.AttachableMenu.prototype.lastKeyDown_ = goog.now();
+goog.ui.AttachableMenu.prototype.lastKeyDown_ = Date.now();
 
 
 /** @override */
 goog.ui.AttachableMenu.prototype.disposeInternal = function() {
+  'use strict';
   goog.ui.AttachableMenu.superClass_.disposeInternal.call(this);
   this.selectedElement_ = null;
 };
@@ -105,6 +98,7 @@ goog.ui.AttachableMenu.prototype.disposeInternal = function() {
  * @return {string} The class name to use for items.
  */
 goog.ui.AttachableMenu.prototype.getItemClassName = function() {
+  'use strict';
   return this.itemClassName_;
 };
 
@@ -115,28 +109,31 @@ goog.ui.AttachableMenu.prototype.getItemClassName = function() {
  * @param {string} name The class name to use for items.
  */
 goog.ui.AttachableMenu.prototype.setItemClassName = function(name) {
+  'use strict';
   this.itemClassName_ = name;
 };
 
 
 /**
  * Sets the class name to use for selected menu items
- * todo(user) - reevaluate if we can simulate pseudo classes in IE
+ * todo(jonp) - reevaluate if we can simulate pseudo classes in IE
  *
  * @return {string} The class name to use for selected items.
  */
 goog.ui.AttachableMenu.prototype.getSelectedItemClassName = function() {
+  'use strict';
   return this.selectedItemClassName_;
 };
 
 
 /**
  * Sets the class name to use for selected menu items
- * todo(user) - reevaluate if we can simulate pseudo classes in IE
+ * todo(jonp) - reevaluate if we can simulate pseudo classes in IE
  *
  * @param {string} name The class name to use for selected items.
  */
 goog.ui.AttachableMenu.prototype.setSelectedItemClassName = function(name) {
+  'use strict';
   this.selectedItemClassName_ = name;
 };
 
@@ -148,12 +145,14 @@ goog.ui.AttachableMenu.prototype.setSelectedItemClassName = function(name) {
  * @override
  */
 goog.ui.AttachableMenu.prototype.getSelectedItem = function() {
+  'use strict';
   return this.selectedElement_;
 };
 
 
 /** @override */
 goog.ui.AttachableMenu.prototype.setSelectedItem = function(obj) {
+  'use strict';
   var elt = /** @type {HTMLElement} */ (obj);
   if (this.selectedElement_) {
     goog.dom.classlist.remove(
@@ -196,6 +195,7 @@ goog.ui.AttachableMenu.prototype.setSelectedItem = function(obj) {
 
 /** @override */
 goog.ui.AttachableMenu.prototype.showPopupElement = function() {
+  'use strict';
   // The scroll position cannot be set for hidden (display: none) elements in
   // gecko browsers.
   var el = /** @type {Element} */ (this.getElement());
@@ -212,6 +212,7 @@ goog.ui.AttachableMenu.prototype.showPopupElement = function() {
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.ui.AttachableMenu.prototype.onShow = function() {
+  'use strict';
   goog.ui.AttachableMenu.superClass_.onShow.call(this);
 
   // In IE, focusing the menu causes weird scrolling to happen. Focusing the
@@ -231,6 +232,7 @@ goog.ui.AttachableMenu.prototype.onShow = function() {
  * @protected
  */
 goog.ui.AttachableMenu.prototype.getNextPrevItem = function(prev) {
+  'use strict';
   // first find the index of the next element
   var elements = this.getElement().getElementsByTagName('*');
   var elementCount = elements.length;
@@ -278,13 +280,14 @@ goog.ui.AttachableMenu.prototype.getNextPrevItem = function(prev) {
  * @override
  */
 goog.ui.AttachableMenu.prototype.onMouseOver = function(e) {
+  'use strict';
   var eltItem = this.getAncestorMenuItem_(/** @type {Element} */ (e.target));
   if (eltItem == null) {
     return;
   }
 
   // Stop the keydown triggering a mouseover in FF.
-  if (goog.now() - this.lastKeyDown_ > goog.ui.PopupBase.DEBOUNCE_DELAY_MS) {
+  if (Date.now() - this.lastKeyDown_ > goog.ui.PopupBase.DEBOUNCE_DELAY_MS) {
     this.setSelectedItem(eltItem);
   }
 };
@@ -297,13 +300,14 @@ goog.ui.AttachableMenu.prototype.onMouseOver = function(e) {
  * @override
  */
 goog.ui.AttachableMenu.prototype.onMouseOut = function(e) {
+  'use strict';
   var eltItem = this.getAncestorMenuItem_(/** @type {Element} */ (e.target));
   if (eltItem == null) {
     return;
   }
 
   // Stop the keydown triggering a mouseout in FF.
-  if (goog.now() - this.lastKeyDown_ > goog.ui.PopupBase.DEBOUNCE_DELAY_MS) {
+  if (Date.now() - this.lastKeyDown_ > goog.ui.PopupBase.DEBOUNCE_DELAY_MS) {
     this.setSelectedItem(null);
   }
 };
@@ -325,6 +329,7 @@ goog.ui.AttachableMenu.prototype.onMouseDown = goog.events.Event.preventDefault;
  * @override
  */
 goog.ui.AttachableMenu.prototype.onMouseUp = function(e) {
+  'use strict';
   var eltItem = this.getAncestorMenuItem_(/** @type {Element} */ (e.target));
   if (eltItem == null) {
     return;
@@ -341,14 +346,15 @@ goog.ui.AttachableMenu.prototype.onMouseUp = function(e) {
  * @override
  */
 goog.ui.AttachableMenu.prototype.onKeyDown = function(e) {
+  'use strict';
   switch (e.keyCode) {
     case goog.events.KeyCodes.DOWN:
       this.setSelectedItem(this.getNextPrevItem(false));
-      this.lastKeyDown_ = goog.now();
+      this.lastKeyDown_ = Date.now();
       break;
     case goog.events.KeyCodes.UP:
       this.setSelectedItem(this.getNextPrevItem(true));
-      this.lastKeyDown_ = goog.now();
+      this.lastKeyDown_ = Date.now();
       break;
     case goog.events.KeyCodes.ENTER:
       if (this.selectedElement_) {
@@ -390,6 +396,7 @@ goog.ui.AttachableMenu.prototype.onKeyDown = function(e) {
  */
 goog.ui.AttachableMenu.prototype.selectByName_ = function(
     prefix, opt_direction, opt_skip) {
+  'use strict';
   var elements = this.getElement().getElementsByTagName('*');
   var elementCount = elements.length;
   var index;
@@ -399,7 +406,8 @@ goog.ui.AttachableMenu.prototype.selectByName_ = function(
   }
 
   if (!this.selectedElement_ ||
-      (index = goog.array.indexOf(elements, this.selectedElement_)) == -1) {
+      (index = Array.prototype.indexOf.call(elements, this.selectedElement_)) ==
+          -1) {
     // no selection or selection isn't known => start at the beginning
     index = 0;
   }
@@ -436,10 +444,10 @@ goog.ui.AttachableMenu.prototype.selectByName_ = function(
  * @private
  */
 goog.ui.AttachableMenu.prototype.onItemSelected_ = function(opt_item) {
-  this.dispatchEvent(
-      new goog.ui.ItemEvent(
-          goog.ui.MenuBase.Events.ITEM_ACTION, this,
-          opt_item || this.selectedElement_));
+  'use strict';
+  this.dispatchEvent(new goog.ui.ItemEvent(
+      goog.ui.MenuBase.Events.ITEM_ACTION, this,
+      opt_item || this.selectedElement_));
 };
 
 
@@ -450,6 +458,7 @@ goog.ui.AttachableMenu.prototype.onItemSelected_ = function(opt_item) {
  * @private
  */
 goog.ui.AttachableMenu.prototype.isMenuItem_ = function(elt) {
+  'use strict';
   return !!elt && goog.dom.classlist.contains(elt, this.itemClassName_);
 };
 
@@ -463,6 +472,7 @@ goog.ui.AttachableMenu.prototype.isMenuItem_ = function(elt) {
  * @private
  */
 goog.ui.AttachableMenu.prototype.getAncestorMenuItem_ = function(elt) {
+  'use strict';
   if (elt) {
     var ownerDocumentBody = goog.dom.getOwnerDocument(elt).body;
     while (elt != null && elt != ownerDocumentBody) {

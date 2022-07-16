@@ -13,11 +13,11 @@ namespace blink {
 
 class CORE_EXPORT CSSFontFamilyValue : public CSSValue {
  public:
-  static CSSFontFamilyValue* Create(const String& family_name);
+  static CSSFontFamilyValue* Create(const AtomicString& family_name);
 
-  CSSFontFamilyValue(const String&);
+  explicit CSSFontFamilyValue(const AtomicString&);
 
-  String Value() const { return string_; }
+  const AtomicString& Value() const { return string_; }
 
   String CustomCSSText() const;
 
@@ -30,8 +30,7 @@ class CORE_EXPORT CSSFontFamilyValue : public CSSValue {
  private:
   friend class CSSValuePool;
 
-  // TODO(sashab): Change this to an AtomicString.
-  String string_;
+  AtomicString string_;
 };
 
 template <>

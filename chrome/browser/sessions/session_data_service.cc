@@ -11,6 +11,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_data_deleter.h"
 #include "chrome/browser/sessions/sessions_features.h"
 #include "chrome/browser/ui/browser.h"
@@ -81,13 +82,13 @@ void SessionDataService::MaybeContinueDeletionFromLastSesssion(
     case Status::kInitialized:
       // Deletion did not happen on shutdown and we didn't even update the
       // status preference. Check profile status:
-      switch (profile_->GetLastSessionExitType()) {
-        case Profile::EXIT_CRASHED:
+      switch (ExitTypeService::GetLastSessionExitType(profile_)) {
+        case ExitType::kCrashed:
           // To allow the user to continue a session after a crash, we will not
           // delete cookies.
           return;
-        case Profile::EXIT_NORMAL:
-        case Profile::EXIT_SESSION_ENDED:
+        case ExitType::kClean:
+        case ExitType::kForcedShutdown:
           // In case of a regular shutdown that skipped deletion, we should
           // delete cookies.
           break;
@@ -132,8 +133,8 @@ void SessionDataService::OnBrowserRemoved(Browser* browser) {
     return;
 
   // Check for any open windows for the current profile.
-  for (auto* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() == profile_)
+  for (auto* open_browser : *BrowserList::GetInstance()) {
+    if (open_browser->profile() == profile_)
       return;
   }
 

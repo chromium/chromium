@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "printing/print_dialog_gtk_interface.h"
 #include "printing/printing_context_linux.h"
@@ -32,6 +31,9 @@ class PrintDialogGtk : public printing::PrintDialogGtkInterface,
   // Creates and returns a print dialog.
   static printing::PrintDialogGtkInterface* CreatePrintDialog(
       PrintingContextLinux* context);
+
+  PrintDialogGtk(const PrintDialogGtk&) = delete;
+  PrintDialogGtk& operator=(const PrintDialogGtk&) = delete;
 
   // printing::PrintDialogGtkInterface implementation.
   void UseDefaultSettings() override;
@@ -81,8 +83,6 @@ class PrintDialogGtk : public printing::PrintDialogGtkInterface,
   GtkPrinter* printer_ = nullptr;
 
   base::FilePath path_to_pdf_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintDialogGtk);
 };
 
 #endif  // UI_GTK_PRINTING_PRINT_DIALOG_GTK_H_

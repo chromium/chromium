@@ -28,7 +28,9 @@ NGConstraintSpace CreateConstraintSpaceForMathChild(
     const NGLayoutInputNode&,
     const NGCacheSlot = NGCacheSlot::kLayout,
     const absl::optional<NGConstraintSpace::MathTargetStretchBlockSizes>
-        target_stretch_block_sizes = absl::nullopt);
+        target_stretch_block_sizes = absl::nullopt,
+    const absl::optional<LayoutUnit> target_stretch_inline_size =
+        absl::nullopt);
 
 MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
     const ComputedStyle& parent_style,
@@ -98,6 +100,28 @@ bool IsUnderOverLaidOutAsSubSup(const NGBlockNode& node);
 bool IsOperatorWithSpecialShaping(const NGBlockNode& node);
 
 LayoutUnit MathTableBaseline(const ComputedStyle&, LayoutUnit block_offset);
+
+// For nodes corresponding to embellished operators, this function returns the
+// properties of its core operator. Otherwise, it returns a null optional.
+// See https://mathml-refresh.github.io/mathml-core/#embellished-operators
+struct MathMLEmbellishedOperatorProperties {
+  bool has_movablelimits;
+  bool is_large_op;
+  bool is_stretchy;
+  bool is_vertical;
+  LayoutUnit lspace;
+  LayoutUnit rspace;
+};
+absl::optional<MathMLEmbellishedOperatorProperties>
+GetMathMLEmbellishedOperatorProperties(const NGBlockNode&);
+
+bool IsStretchyOperator(const NGBlockNode& node, bool stretch_axis_is_vertical);
+inline bool IsBlockAxisStretchyOperator(const NGBlockNode& node) {
+  return IsStretchyOperator(node, true);
+}
+inline bool IsInlineAxisStretchyOperator(const NGBlockNode& node) {
+  return IsStretchyOperator(node, false);
+}
 
 }  // namespace blink
 

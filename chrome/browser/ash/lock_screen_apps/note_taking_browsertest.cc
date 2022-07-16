@@ -11,7 +11,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
-#include "chrome/browser/chromeos/note_taking_helper.h"
+#include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -34,6 +34,11 @@ const char kTestAppId[] = "cadfeochfldmbdgoccgbeianhamecbae";
 class LockScreenAppsEnabledWaiter : public lock_screen_apps::StateObserver {
  public:
   LockScreenAppsEnabledWaiter() = default;
+
+  LockScreenAppsEnabledWaiter(const LockScreenAppsEnabledWaiter&) = delete;
+  LockScreenAppsEnabledWaiter& operator=(const LockScreenAppsEnabledWaiter&) =
+      delete;
+
   ~LockScreenAppsEnabledWaiter() override {}
 
   // Runs loop until lock_screen_apps::StateController enters |target_state|.
@@ -68,13 +73,15 @@ class LockScreenAppsEnabledWaiter : public lock_screen_apps::StateObserver {
       lock_screen_apps_state_observation_{this};
 
   base::OnceClosure state_change_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenAppsEnabledWaiter);
 };
 
 class LockScreenNoteTakingTest : public extensions::ExtensionBrowserTest {
  public:
   LockScreenNoteTakingTest() { set_chromeos_user_ = true; }
+
+  LockScreenNoteTakingTest(const LockScreenNoteTakingTest&) = delete;
+  LockScreenNoteTakingTest& operator=(const LockScreenNoteTakingTest&) = delete;
+
   ~LockScreenNoteTakingTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* cmd_line) override {
@@ -106,9 +113,9 @@ class LockScreenNoteTakingTest : public extensions::ExtensionBrowserTest {
   }
 
   bool EnableLockScreenAppLaunch(const std::string& app_id) {
-    chromeos::NoteTakingHelper::Get()->SetPreferredApp(profile(), app_id);
-    chromeos::NoteTakingHelper::Get()->SetPreferredAppEnabledOnLockScreen(
-        profile(), true);
+    ash::NoteTakingHelper::Get()->SetPreferredApp(profile(), app_id);
+    ash::NoteTakingHelper::Get()->SetPreferredAppEnabledOnLockScreen(profile(),
+                                                                     true);
 
     session_manager::SessionManager::Get()->SetSessionState(
         session_manager::SessionState::LOCKED);
@@ -182,8 +189,6 @@ class LockScreenNoteTakingTest : public extensions::ExtensionBrowserTest {
 
  private:
   std::unique_ptr<extensions::ResultCatcher> result_catcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenNoteTakingTest);
 };
 
 }  // namespace

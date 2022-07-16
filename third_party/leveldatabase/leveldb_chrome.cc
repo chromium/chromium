@@ -74,6 +74,9 @@ class Globals {
             base::BindRepeating(&Globals::OnMemoryPressure,
                                 base::Unretained(this))) {}
 
+  Globals(const Globals&) = delete;
+  Globals& operator=(const Globals&) = delete;
+
   Cache* web_block_cache() const {
     if (web_block_cache_)
       return web_block_cache_.get();
@@ -125,8 +128,6 @@ class Globals {
   base::flat_set<leveldb::Env*> in_memory_envs_;
   // Listens for the system being under memory pressure.
   const base::MemoryPressureListener memory_pressure_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(Globals);
 };
 
 class ChromeMemEnv : public leveldb::EnvWrapper {
@@ -137,6 +138,9 @@ class ChromeMemEnv : public leveldb::EnvWrapper {
         name_(name) {
     Globals::GetInstance()->DidCreateChromeMemEnv(this);
   }
+
+  ChromeMemEnv(const ChromeMemEnv&) = delete;
+  ChromeMemEnv& operator=(const ChromeMemEnv&) = delete;
 
   ~ChromeMemEnv() override {
     Globals::GetInstance()->WillDestroyChromeMemEnv(this);
@@ -241,7 +245,6 @@ class ChromeMemEnv : public leveldb::EnvWrapper {
   const std::string name_;
   base::Lock files_lock_;
   std::set<std::string> file_names_;
-  DISALLOW_COPY_AND_ASSIGN(ChromeMemEnv);
 };
 
 void Globals::DumpAllTrackedEnvs(const MemoryDumpArgs& dump_args,

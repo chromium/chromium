@@ -29,6 +29,11 @@ class WaylandRelativePointerDelegate : public RelativePointerDelegate {
     pointer->RegisterRelativePointerDelegate(this);
   }
 
+  WaylandRelativePointerDelegate(const WaylandRelativePointerDelegate&) =
+      delete;
+  WaylandRelativePointerDelegate& operator=(
+      const WaylandRelativePointerDelegate&) = delete;
+
   ~WaylandRelativePointerDelegate() override {
     if (pointer_)
       pointer_->UnregisterRelativePointerDelegate(this);
@@ -50,8 +55,6 @@ class WaylandRelativePointerDelegate : public RelativePointerDelegate {
  private:
   wl_resource* const resource_;
   Pointer* pointer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandRelativePointerDelegate);
 };
 
 void relative_pointer_destroy(wl_client* client, wl_resource* resource) {

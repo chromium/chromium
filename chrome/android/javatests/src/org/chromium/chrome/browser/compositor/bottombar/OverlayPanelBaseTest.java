@@ -4,16 +4,20 @@
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,24 +25,28 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.DummyUiActivity;
 
 /**
  * Tests logic in the OverlayPanelBase.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class OverlayPanelBaseTest extends DummyUiChromeActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class OverlayPanelBaseTest {
     private static final float UPWARD_VELOCITY = -1.0f;
     private static final float DOWNWARD_VELOCITY = 1.0f;
 
@@ -47,6 +55,12 @@ public class OverlayPanelBaseTest extends DummyUiChromeActivityTestCase {
     private static final float MOCK_MAXIMIZED_HEIGHT = 600.0f;
 
     private static final int MOCK_TOOLBAR_HEIGHT = 100;
+
+    @ClassRule
+    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
+    @ClassRule
+    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -60,6 +74,7 @@ public class OverlayPanelBaseTest extends DummyUiChromeActivityTestCase {
     @Mock
     private Tab mTab;
 
+    Activity mActivity;
     ActivityWindowAndroid mWindowAndroid;
     MockOverlayPanel mNoExpandPanel;
     MockOverlayPanel mExpandPanel;
@@ -126,12 +141,17 @@ public class OverlayPanelBaseTest extends DummyUiChromeActivityTestCase {
         }
     }
 
+    @BeforeClass
+    public static void setupSuite() {
+        activityTestRule.launchActivity(null);
+    }
+
     @Before
-    public void setUp() {
+    public void setupTest() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mWindowAndroid =
-                    new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true,
-                            IntentRequestTracker.createFromActivity(getActivity()));
+            mActivity = activityTestRule.getActivity();
+            mWindowAndroid = new ActivityWindowAndroid(mActivity, /* listenToActivityState= */ true,
+                    IntentRequestTracker.createFromActivity(mActivity));
             OverlayPanelManager panelManager = new OverlayPanelManager();
             mExpandPanel = new MockOverlayPanel(InstrumentationRegistry.getTargetContext(),
                     mLayoutManager, panelManager, mBrowserControlsStateProvider, mWindowAndroid,
@@ -281,7 +301,7 @@ public class OverlayPanelBaseTest extends DummyUiChromeActivityTestCase {
      * Tests that a panel is only maximized when desired height is far above the max.
      */
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"OverlayPanelBase"})
     @UiThreadTest
     public void testLargeDesiredHeightIsMaximized() {

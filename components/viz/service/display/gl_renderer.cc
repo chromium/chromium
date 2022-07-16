@@ -78,15 +78,11 @@
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/gpu_fence_handle.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/skia_util.h"
-
-#if defined(USE_X11)
-#include "ui/base/ui_base_features.h"
-#endif
 
 using gpu::gles2::GLES2Interface;
 
@@ -395,6 +391,9 @@ class GLRenderer::ScopedUseGrContext {
     return nullptr;
   }
 
+  ScopedUseGrContext(const ScopedUseGrContext&) = delete;
+  ScopedUseGrContext& operator=(const ScopedUseGrContext&) = delete;
+
   ~ScopedUseGrContext() {
     // Pass context control back to GLrenderer.
     scoped_gpu_raster_ = nullptr;
@@ -415,8 +414,6 @@ class GLRenderer::ScopedUseGrContext {
 
   std::unique_ptr<cc::ScopedGpuRaster> scoped_gpu_raster_;
   GLRenderer* renderer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUseGrContext);
 };
 
 GLRenderer::GLRenderer(
@@ -651,6 +648,11 @@ void GLRenderer::DoDrawQuad(const DrawQuad* quad,
       break;
     case DrawQuad::Material::kSurfaceContent:
       // Surface content should be fully resolved to other quad types before
+      // reaching a direct renderer.
+      NOTREACHED();
+      break;
+    case DrawQuad::Material::kSharedElement:
+      // Shared element should be fully resolved to other quad types before
       // reaching a direct renderer.
       NOTREACHED();
       break;
@@ -3064,12 +3066,7 @@ void GLRenderer::FinishDrawingFrame() {
   ScheduleOutputSurfaceAsOverlay();
 
 #if defined(OS_ANDROID) || defined(USE_OZONE)
-  bool schedule_overlays = true;
-#if defined(USE_X11)
-  schedule_overlays = features::IsUsingOzonePlatform();
-#endif
-  if (schedule_overlays)
-    ScheduleOverlays();
+  ScheduleOverlays();
 #elif defined(OS_APPLE)
   ScheduleCALayers();
 #elif defined(OS_WIN)
@@ -3132,7 +3129,7 @@ void GLRenderer::AddCompositeTimeTraces(base::TimeTicks ready_timestamp) {
     durations.emplace(duration, timer_queries_.front().second);
     queries_to_delete.push_back(timer_queries_.front().first);
     timer_queries_.pop();
-    start_time_ticks -= base::TimeDelta::FromNanoseconds(duration);
+    start_time_ticks -= base::Nanoseconds(duration);
   }
 
   // Delete all timer queries for which results have been retrieved.
@@ -3158,7 +3155,7 @@ void GLRenderer::AddCompositeTimeTraces(base::TimeTicks ready_timestamp) {
         TRACE_DISABLED_BY_DEFAULT("viz.gpu_composite_time"), "Composite Time",
         TRACE_ID_LOCAL(trace_unique_id), durations.front().second.c_str(),
         start_time_ticks);
-    start_time_ticks += base::TimeDelta::FromNanoseconds(duration);
+    start_time_ticks += base::Nanoseconds(duration);
     durations.pop();
   }
 
@@ -3625,9 +3622,11 @@ void GLRenderer::BindFramebufferToTexture(
                                  offscreen_stencil_renderbuffer_id_);
   }
 
+#if EXPENSIVE_DCHECKS_ARE_ON()
   DCHECK(gl_->CheckFramebufferStatus(GL_FRAMEBUFFER) ==
              GL_FRAMEBUFFER_COMPLETE ||
          IsContextLost());
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   if (overdraw_feedback_) {
     SetupOverdrawFeedback();

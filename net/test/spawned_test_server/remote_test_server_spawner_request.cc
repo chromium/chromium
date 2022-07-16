@@ -11,8 +11,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "net/base/elements_upload_data_stream.h"
@@ -32,6 +32,10 @@ static const int kBufferSize = 2048;
 class RemoteTestServerSpawnerRequest::Core : public URLRequest::Delegate {
  public:
   Core();
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core() override;
 
   void SendRequest(const GURL& url, const std::string& post_data);
@@ -62,8 +66,6 @@ class RemoteTestServerSpawnerRequest::Core : public URLRequest::Delegate {
   scoped_refptr<IOBuffer> read_buffer_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 RemoteTestServerSpawnerRequest::Core::Core()

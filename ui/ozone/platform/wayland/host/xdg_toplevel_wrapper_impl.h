@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
 
 namespace ui {
@@ -43,6 +42,8 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void SetMaxSize(int32_t width, int32_t height) override;
   void SetAppId(const std::string& app_id) override;
   void SetDecoration(DecorationMode decoration) override;
+  void Lock(WaylandOrientationLockType lock_type) override;
+  void Unlock() override;
 
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 
@@ -76,6 +77,8 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
 
   // XDG Shell Stable object.
   wl::Object<xdg_toplevel> xdg_toplevel_;
+  // Aura shell toplevel addons.
+  wl::Object<zaura_toplevel> aura_toplevel_;
 
   wl::Object<zxdg_toplevel_decoration_v1> zxdg_toplevel_decoration_;
 

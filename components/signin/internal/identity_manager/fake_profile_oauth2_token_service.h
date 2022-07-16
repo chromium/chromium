@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "google_apis/gaia/fake_oauth2_access_token_manager.h"
 
@@ -40,6 +39,11 @@ class FakeProfileOAuth2TokenService : public ProfileOAuth2TokenService {
   FakeProfileOAuth2TokenService(
       PrefService* user_prefs,
       std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate);
+
+  FakeProfileOAuth2TokenService(const FakeProfileOAuth2TokenService&) = delete;
+  FakeProfileOAuth2TokenService& operator=(
+      const FakeProfileOAuth2TokenService&) = delete;
+
   ~FakeProfileOAuth2TokenService() override;
 
   // Gets a list of active requests (can be used by tests to validate that the
@@ -86,8 +90,6 @@ class FakeProfileOAuth2TokenService : public ProfileOAuth2TokenService {
 
  private:
   FakeOAuth2AccessTokenManager* GetFakeAccessTokenManager();
-
-  DISALLOW_COPY_AND_ASSIGN(FakeProfileOAuth2TokenService);
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_FAKE_PROFILE_OAUTH2_TOKEN_SERVICE_H_

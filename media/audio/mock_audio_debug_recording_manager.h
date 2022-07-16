@@ -5,8 +5,7 @@
 #ifndef MEDIA_AUDIO_MOCK_AUDIO_DEBUG_RECORDING_MANAGER_H_
 #define MEDIA_AUDIO_MOCK_AUDIO_DEBUG_RECORDING_MANAGER_H_
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/audio/audio_debug_recording_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -17,15 +16,17 @@ class MockAudioDebugRecordingManager : public AudioDebugRecordingManager {
   explicit MockAudioDebugRecordingManager(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+  MockAudioDebugRecordingManager(const MockAudioDebugRecordingManager&) =
+      delete;
+  MockAudioDebugRecordingManager& operator=(
+      const MockAudioDebugRecordingManager&) = delete;
+
   ~MockAudioDebugRecordingManager() override;
 
   MOCK_METHOD1(EnableDebugRecording,
                void(AudioDebugRecordingManager::CreateWavFileCallback
                         create_file_callback));
   MOCK_METHOD0(DisableDebugRecording, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAudioDebugRecordingManager);
 };
 
 }  // namespace media.

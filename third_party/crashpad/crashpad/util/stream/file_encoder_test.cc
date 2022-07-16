@@ -19,7 +19,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "gtest/gtest.h"
 #include "test/scoped_temp_dir.h"
 #include "util/file/file_io.h"

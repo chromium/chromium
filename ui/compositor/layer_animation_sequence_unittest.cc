@@ -16,7 +16,7 @@
 #include "ui/compositor/test/test_layer_animation_observer.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 
@@ -26,7 +26,7 @@ namespace {
 TEST(LayerAnimationSequenceTest, NoElement) {
   LayerAnimationSequence sequence;
   base::TimeTicks start_time;
-  start_time += base::TimeDelta::FromSeconds(1);
+  start_time += base::Seconds(1);
   sequence.set_start_time(start_time);
   EXPECT_TRUE(sequence.IsFinished(start_time));
   EXPECT_EQ(static_cast<LayerAnimationElement::AnimatableProperties>(
@@ -44,7 +44,7 @@ TEST(LayerAnimationSequenceTest, SingleElement) {
   float middle = 0.5f;
   float target = 1.0f;
   base::TimeTicks start_time;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
   sequence.AddElement(
       LayerAnimationElement::CreateBrightnessElement(target, delta));
 
@@ -56,12 +56,10 @@ TEST(LayerAnimationSequenceTest, SingleElement) {
     sequence.Start(&delegate);
     sequence.Progress(start_time, &delegate);
     EXPECT_FLOAT_EQ(start, delegate.GetBrightnessForAnimation());
-    sequence.Progress(start_time + base::TimeDelta::FromMilliseconds(500),
-                      &delegate);
+    sequence.Progress(start_time + base::Milliseconds(500), &delegate);
     EXPECT_FLOAT_EQ(middle, delegate.GetBrightnessForAnimation());
     EXPECT_TRUE(sequence.IsFinished(start_time + delta));
-    sequence.Progress(start_time + base::TimeDelta::FromMilliseconds(1000),
-                      &delegate);
+    sequence.Progress(start_time + base::Milliseconds(1000), &delegate);
     EXPECT_FLOAT_EQ(target, delegate.GetBrightnessForAnimation());
   }
 
@@ -80,7 +78,7 @@ TEST(LayerAnimationSequenceTest, SingleThreadedElement) {
   float target = 1.0f;
   base::TimeTicks start_time;
   base::TimeTicks effective_start;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
   sequence.AddElement(
       LayerAnimationElement::CreateOpacityElement(target, delta));
 
@@ -122,7 +120,7 @@ TEST(LayerAnimationSequenceTest, MultipleElement) {
   base::TimeTicks start_time;
   base::TimeTicks opacity_effective_start;
   base::TimeTicks transform_effective_start;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
   sequence.AddElement(
       LayerAnimationElement::CreateOpacityElement(target_opacity, delta));
 
@@ -205,7 +203,7 @@ TEST(LayerAnimationSequenceTest, AbortingRepeatingSequence) {
   float start_brightness = 0.0f;
   float target_brightness = 1.0f;
   base::TimeTicks start_time;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
   sequence.AddElement(
       LayerAnimationElement::CreateBrightnessElement(target_brightness, delta));
 
@@ -220,18 +218,16 @@ TEST(LayerAnimationSequenceTest, AbortingRepeatingSequence) {
   start_time += delta;
   sequence.set_start_time(start_time);
   sequence.Start(&delegate);
-  sequence.Progress(start_time + base::TimeDelta::FromMilliseconds(101000),
-                    &delegate);
+  sequence.Progress(start_time + base::Milliseconds(101000), &delegate);
   EXPECT_FLOAT_EQ(target_brightness, delegate.GetBrightnessForAnimation());
   sequence.Abort(&delegate);
 
   // Should be able to reuse the sequence after aborting.
   delegate.SetBrightnessFromAnimation(start_brightness,
                                       PropertyChangeReason::NOT_FROM_ANIMATION);
-  start_time += base::TimeDelta::FromMilliseconds(101000);
+  start_time += base::Milliseconds(101000);
   sequence.set_start_time(start_time);
-  sequence.Progress(start_time + base::TimeDelta::FromMilliseconds(100000),
-                    &delegate);
+  sequence.Progress(start_time + base::Milliseconds(100000), &delegate);
   EXPECT_FLOAT_EQ(start_brightness, delegate.GetBrightnessForAnimation());
 }
 
@@ -242,7 +238,7 @@ TEST(LayerAnimationSequenceTest, SetTarget) {
   TestLayerAnimationDelegate delegate;
   float start_opacity = 0.0f;
   float target_opacity = 1.0f;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
   sequence.AddElement(
       LayerAnimationElement::CreateOpacityElement(target_opacity, delta));
 
@@ -259,7 +255,7 @@ TEST(LayerAnimationSequenceTest, SetTarget) {
 
 TEST(LayerAnimationSequenceTest, AddObserver) {
   base::TimeTicks start_time;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
   LayerAnimationSequence sequence;
   sequence.AddElement(
       LayerAnimationElement::CreateBrightnessElement(1.0f, delta));
@@ -277,7 +273,7 @@ TEST(LayerAnimationSequenceTest, AddObserver) {
 }
 
 TEST(LayerAnimationSequenceTest, ToString) {
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
   LayerAnimationSequence sequence;
   EXPECT_EQ(
       "LayerAnimationSequence{size=0, properties=, elements=[], "

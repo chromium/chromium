@@ -113,15 +113,6 @@ Test.prototype = {
   webuiHost: null,
 
   /**
-   * When set to a string value representing an html page in the test
-   * directory, generate BrowsePrintPreload call, which will browse to a url
-   * representing the file, cause print, and call fixture.preLoad of the
-   * currentTestCase.
-   * @type {?string}
-   */
-  browsePrintPreload: null,
-
-  /**
    * When set to a function, will be called in the context of the test
    * generation inside the function, after AddLibrary calls and before
    * generated C++.

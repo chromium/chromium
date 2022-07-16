@@ -66,9 +66,9 @@ public class TestWebContentsObserver extends WebContentsObserver {
     }
 
     @Override
-    public void didFailLoad(boolean isMainFrame, int errorCode, GURL failingUrl,
+    public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode, GURL failingUrl,
             @LifecycleState int frameLifecycleState) {
-        super.didFailLoad(isMainFrame, errorCode, failingUrl, frameLifecycleState);
+        super.didFailLoad(isInPrimaryMainFrame, errorCode, failingUrl, frameLifecycleState);
         mOnReceivedErrorHelper.notifyCalled(errorCode, "Error " + errorCode, failingUrl.getSpec());
     }
 

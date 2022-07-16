@@ -21,6 +21,7 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -206,7 +207,8 @@ void WebstoreStandaloneInstaller::OnInstallPromptDone(
 
     ExtensionService* extension_service =
         ExtensionSystem::Get(profile_)->extension_service();
-    if (ExtensionPrefs::Get(profile_)->IsExtensionBlocklisted(id_)) {
+    if (blocklist_prefs::IsExtensionBlocklisted(
+            id_, ExtensionPrefs::Get(profile_))) {
       // Don't install a blocklisted extension.
       install_result = webstore_install::BLOCKLISTED;
       install_message = webstore_install::kExtensionIsBlocklisted;
@@ -243,22 +245,28 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseSuccess(
     return;
   }
 
-  std::string error;
+  absl::optional<double> average_rating_setting =
+      webstore_data->FindDoubleKey(kAverageRatingKey);
+  absl::optional<int> rating_count_setting =
+      webstore_data->FindIntKey(kRatingCountKey);
 
   // Manifest, number of users, average rating and rating count are required.
   std::string manifest;
   if (!webstore_data->GetString(kManifestKey, &manifest) ||
       !webstore_data->GetString(kUsersKey, &localized_user_count_) ||
-      !webstore_data->GetDouble(kAverageRatingKey, &average_rating_) ||
-      !webstore_data->GetInteger(kRatingCountKey, &rating_count_)) {
+      !average_rating_setting || !rating_count_setting) {
     CompleteInstall(webstore_install::INVALID_WEBSTORE_RESPONSE,
                     webstore_install::kInvalidWebstoreResponseError);
     return;
   }
 
-  // Optional.
-  show_user_count_ = true;
-  webstore_data->GetBoolean(kShowUserCountKey, &show_user_count_);
+  average_rating_ = *average_rating_setting;
+  rating_count_ = *rating_count_setting;
+
+  // Showing user count is optional.
+  absl::optional<bool> show_user_count_opt =
+      webstore_data->FindBoolKey(kShowUserCountKey);
+  show_user_count_ = show_user_count_opt.value_or(true);
 
   if (average_rating_ < ExtensionInstallPrompt::kMinExtensionRating ||
       average_rating_ > ExtensionInstallPrompt::kMaxExtensionRating) {

@@ -11,6 +11,7 @@
 #include "components/android_autofill/browser/autofill_provider.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "content/public/browser/web_contents.h"
@@ -25,7 +26,7 @@ AutofillManager* GetAutofillManager(content::WebContents* web_contents,
   if (ContentAutofillDriverFactory* factory =
           ContentAutofillDriverFactory::FromWebContents(web_contents)) {
     if (ContentAutofillDriver* driver =
-            static_cast<ContentAutofillDriver*>(factory->DriverForKey(rfh))) {
+            ContentAutofillDriverFactoryTestApi(factory).GetDriver(rfh)) {
       return driver->autofill_manager();
     }
   }

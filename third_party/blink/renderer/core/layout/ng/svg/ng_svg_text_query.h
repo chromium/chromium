@@ -7,10 +7,13 @@
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace gfx {
+class PointF;
+class RectF;
+}  // namespace gfx
+
 namespace blink {
 
-class FloatPoint;
-class FloatRect;
 class LayoutObject;
 
 // An NG version of blink::SVGTextQuery, which is an implementation of SVG DOM
@@ -23,11 +26,11 @@ class NGSvgTextQuery {
 
   unsigned NumberOfCharacters() const;
   float SubStringLength(unsigned start_index, unsigned length) const;
-  FloatPoint StartPositionOfCharacter(unsigned index) const;
-  FloatPoint EndPositionOfCharacter(unsigned index) const;
-  FloatRect ExtentOfCharacter(unsigned index) const;
+  gfx::PointF StartPositionOfCharacter(unsigned index) const;
+  gfx::PointF EndPositionOfCharacter(unsigned index) const;
+  gfx::RectF ExtentOfCharacter(unsigned index) const;
   float RotationOfCharacter(unsigned index) const;
-  int CharacterNumberAtPosition(const FloatPoint& position) const;
+  int CharacterNumberAtPosition(const gfx::PointF& position) const;
 
  private:
   LayoutObject& query_root_;

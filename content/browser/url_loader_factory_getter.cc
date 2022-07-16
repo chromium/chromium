@@ -35,6 +35,12 @@ class URLLoaderFactoryGetter::PendingURLLoaderFactoryForIOThread
   explicit PendingURLLoaderFactoryForIOThread(
       scoped_refptr<URLLoaderFactoryGetter> factory_getter)
       : factory_getter_(std::move(factory_getter)) {}
+
+  PendingURLLoaderFactoryForIOThread(
+      const PendingURLLoaderFactoryForIOThread&) = delete;
+  PendingURLLoaderFactoryForIOThread& operator=(
+      const PendingURLLoaderFactoryForIOThread&) = delete;
+
   ~PendingURLLoaderFactoryForIOThread() override = default;
 
   scoped_refptr<URLLoaderFactoryGetter>& url_loader_factory_getter() {
@@ -46,8 +52,6 @@ class URLLoaderFactoryGetter::PendingURLLoaderFactoryForIOThread
   scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override;
 
   scoped_refptr<URLLoaderFactoryGetter> factory_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingURLLoaderFactoryForIOThread);
 };
 
 class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
@@ -68,6 +72,10 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
         is_corb_enabled_(false) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
   }
+
+  URLLoaderFactoryForIOThread(const URLLoaderFactoryForIOThread&) = delete;
+  URLLoaderFactoryForIOThread& operator=(const URLLoaderFactoryForIOThread&) =
+      delete;
 
   // mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
@@ -108,8 +116,6 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
 
   scoped_refptr<URLLoaderFactoryGetter> factory_getter_;
   bool is_corb_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryForIOThread);
 };
 
 scoped_refptr<network::SharedURLLoaderFactory>

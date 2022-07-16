@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_UNHANDLED_TAP_WEB_CONTENTS_OBSERVER_H_
 #define CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_UNHANDLED_TAP_WEB_CONTENTS_OBSERVER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace contextual_search {
@@ -26,6 +25,11 @@ class UnhandledTapWebContentsObserver
   // instance of the contextual_search::CreateUnhandledTapNotifierImpl to handle
   // those messages.
   explicit UnhandledTapWebContentsObserver(content::WebContents* web_contents);
+
+  UnhandledTapWebContentsObserver(const UnhandledTapWebContentsObserver&) =
+      delete;
+  UnhandledTapWebContentsObserver& operator=(
+      const UnhandledTapWebContentsObserver&) = delete;
 
   ~UnhandledTapWebContentsObserver() override;
 
@@ -50,8 +54,6 @@ class UnhandledTapWebContentsObserver
   UnhandledTapCallback unhandled_tap_callback_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(UnhandledTapWebContentsObserver);
 };
 
 }  // namespace contextual_search

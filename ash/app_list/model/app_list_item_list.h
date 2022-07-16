@@ -13,7 +13,6 @@
 
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_model_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/sync/model/string_ordinal.h"
 
@@ -21,16 +20,25 @@ namespace ash {
 
 namespace test {
 class AppsGridViewTest;
+class AppListTestModel;
 }  // namespace test
 
 class AppListItem;
+class AppListModelDelegate;
 
 // Class to manage items in the app list. Used both by AppListModel and
 // AppListFolderItem. Manages the position ordinal of items in the list, and
 // notifies observers when items in the list are added / deleted / moved.
+// TODO(https://crbug.com/1257605): make `AppListItemList` a consumer of items.
+// If `AppListItemList` wants to trigger updates on items, such as moving an
+// item, `AppListItemList` should always use `app_list_model_delegate_`.
 class APP_LIST_MODEL_EXPORT AppListItemList {
  public:
-  AppListItemList();
+  explicit AppListItemList(AppListModelDelegate* app_list_model_delegate);
+
+  AppListItemList(const AppListItemList&) = delete;
+  AppListItemList& operator=(const AppListItemList&) = delete;
+
   virtual ~AppListItemList();
 
   void AddObserver(AppListItemListObserver* observer);
@@ -50,10 +58,19 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
   // Triggers observers_.OnListItemMoved().
   void MoveItem(size_t from_index, size_t to_index);
 
-  // Sets the position of |item| which is expected to be a member of
-  // |app_list_items_| and sorts the list accordingly. If |new_position| is
-  // invalid, move the item to the end of the list.
-  void SetItemPosition(AppListItem* item, syncer::StringOrdinal new_position);
+  // Sets the position of `item` which is expected to be a member of
+  // `app_list_items_` and sorts the list accordingly. Returns true if the index
+  // of `item` in the sorted list changes after setting the position. If
+  // `new_position` is invalid, move the item to the end of the list. This
+  // method should not be called by `AppListItemList` itself. Because
+  // `AppListItemList` is not the owner of app list item attributes (such as
+  // item position) but the consumer. If `AppListItemList` wants to trigger the
+  // update on app list item positions, it should always use the APIs provided
+  // by `app_list_model_delegate_`.
+  // TODO(https://crbug.com/125779): It is confusing to have a method that
+  // shares the similar functionality with a delegate but is only available to
+  // external classes. Fixing this issue can eliminate such confusion.
+  bool SetItemPosition(AppListItem* item, syncer::StringOrdinal new_position);
 
   // Add a "page break" item right after the specified item in item list.
   AppListItem* AddPageBreakItemAfter(const AppListItem* previous_item);
@@ -68,9 +85,13 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
   }
   size_t item_count() const { return app_list_items_.size(); }
 
+  // For debugging only.
+  std::string ToString();
+
  private:
   friend class AppListItemListTest;
   friend class AppListModel;
+  friend class test::AppListTestModel;
   friend class test::AppsGridViewTest;
 
   // Returns a unique, valid StringOrdinal immediately before |position| or at
@@ -112,10 +133,11 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
   // previous item's position. |index| must be > 0.
   void FixItemPosition(size_t index);
 
+  // Used to initiate updates on app list item positions from the ash side.
+  AppListModelDelegate* const app_list_model_delegate_;
+
   std::vector<std::unique_ptr<AppListItem>> app_list_items_;
   base::ObserverList<AppListItemListObserver, true> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListItemList);
 };
 
 }  // namespace ash

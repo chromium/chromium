@@ -40,6 +40,10 @@ class COMPONENT_EXPORT(TRACING_CPP) PosixSystemProducer
   };
   PosixSystemProducer(const char* socket,
                       base::tracing::PerfettoTaskRunner* task_runner);
+
+  PosixSystemProducer(const PosixSystemProducer&) = delete;
+  PosixSystemProducer& operator=(const PosixSystemProducer&) = delete;
+
   ~PosixSystemProducer() override;
 
   // Functions needed for PosixSystemProducer only.
@@ -153,7 +157,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PosixSystemProducer
   // NOTE: Weak pointers must be invalidated before all other member variables.
   // and thus must be the last member variable.
   base::WeakPtrFactory<PosixSystemProducer> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PosixSystemProducer);
 };
 
 }  // namespace tracing

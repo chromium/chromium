@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
@@ -42,6 +41,10 @@ class CONTENT_EXPORT PepperProxyLookupHelper {
       base::OnceCallback<void(absl::optional<net::ProxyInfo> proxy_info)>;
 
   PepperProxyLookupHelper();
+
+  PepperProxyLookupHelper(const PepperProxyLookupHelper&) = delete;
+  PepperProxyLookupHelper& operator=(const PepperProxyLookupHelper&) = delete;
+
   ~PepperProxyLookupHelper();
 
   // Starts a lookup for |url| on the UI thread. Invokes
@@ -63,8 +66,6 @@ class CONTENT_EXPORT PepperProxyLookupHelper {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<PepperProxyLookupHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperProxyLookupHelper);
 };
 
 }  // namespace content

@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests script snippet model.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadLegacyModule('snippets');
 
   await TestRunner.showPanel('sources');
@@ -118,7 +118,7 @@ doesNothing;
 
       const functionPromise = TestRunner.addSnifferPromise(
           Console.ConsoleViewMessage.prototype,
-          '_formattedParameterAsFunctionForTest');
+          'formattedParameterAsFunctionForTest');
       TestRunner.addResult('Run Snippet2..');
       Snippets.evaluateScriptSnippet(uiSourceCode2);
       await ConsoleTestRunner.waitUntilMessageReceivedPromise();
@@ -162,7 +162,7 @@ doesNothing;
 
     async function testEvaluateWithWorker(next) {
       TestRunner.addSniffer(
-          SDK.RuntimeModel.prototype, '_executionContextCreated',
+          SDK.RuntimeModel.prototype, 'executionContextCreated',
           contextCreated);
       TestRunner.evaluateInPagePromise(`
           var workerScript = "postMessage('Done.');";

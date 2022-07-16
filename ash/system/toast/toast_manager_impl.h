@@ -24,6 +24,10 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
                                     public SessionObserver {
  public:
   ToastManagerImpl();
+
+  ToastManagerImpl(const ToastManagerImpl&) = delete;
+  ToastManagerImpl& operator=(const ToastManagerImpl&) = delete;
+
   ~ToastManagerImpl() override;
 
   // ToastManager overrides:
@@ -56,8 +60,6 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
 
   ScopedSessionObserver scoped_session_observer_{this};
   base::WeakPtrFactory<ToastManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ToastManagerImpl);
 };
 
 }  // namespace ash

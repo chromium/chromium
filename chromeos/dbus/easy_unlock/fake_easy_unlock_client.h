@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
 
 namespace chromeos {
@@ -23,6 +22,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_EASY_UNLOCK) FakeEasyUnlockClient
                               const std::string& public_key);
 
   FakeEasyUnlockClient();
+
+  FakeEasyUnlockClient(const FakeEasyUnlockClient&) = delete;
+  FakeEasyUnlockClient& operator=(const FakeEasyUnlockClient&) = delete;
+
   ~FakeEasyUnlockClient() override;
 
   // EasyUnlockClient overrides
@@ -43,8 +46,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_EASY_UNLOCK) FakeEasyUnlockClient
 
  private:
   int generated_keys_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeEasyUnlockClient);
 };
 
 }  // namespace chromeos

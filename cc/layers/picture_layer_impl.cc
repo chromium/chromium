@@ -207,11 +207,6 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
 
-  // If did_checkerboard_quad_ is set to true, don't set to false until the
-  // scroll is completed.
-  if (!ScrollInteractionInProgress())
-    SetDidCheckerboardQuad(false);
-
   if (raster_source_->IsSolidColor()) {
     // TODO(979672): This is still hard-coded at 1.0. This has some history:
     //  - for crbug.com/769319, the contents scale was allowed to change, to
@@ -549,7 +544,6 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       append_quads_data->checkerboarded_no_recording_content_area +=
           visible_geometry_area - checkerboarded_has_recording_area;
 
-      SetDidCheckerboardQuad(true);
       continue;
     }
 
@@ -1013,8 +1007,8 @@ bool PictureLayerImpl::ScrollInteractionInProgress() const {
          ActivelyScrollingType::kNone;
 }
 
-bool PictureLayerImpl::DidCheckerboardQuad() const {
-  return did_checkerboard_quad_;
+bool PictureLayerImpl::CurrentScrollCheckerboardsDueToNoRecording() const {
+  return layer_tree_impl()->CurrentScrollCheckerboardsDueToNoRecording();
 }
 
 gfx::Rect PictureLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
@@ -1222,7 +1216,7 @@ void PictureLayerImpl::RemoveAllTilings() {
   ResetRasterScale();
 }
 
-bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTranslation(
+bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTransform(
     const PictureLayerTiling& high_res) const {
   // This is for the sync tree only to avoid flickering.
   if (!layer_tree_impl()->IsSyncTree())
@@ -1238,8 +1232,10 @@ bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTranslation(
   // Also avoid re-rasterization during pinch-zoom.
   if (layer_tree_impl()->PinchGestureActive())
     return false;
-  // Keep the current LCD text and raster translation if there is no text.
-  if (lcd_text_disallowed_reason_ == LCDTextDisallowedReason::kNoText)
+  // Keep the current LCD text and raster translation if there is no text and
+  // the raster scale is ideal.
+  if (lcd_text_disallowed_reason_ == LCDTextDisallowedReason::kNoText &&
+      high_res.raster_transform().scale() == raster_contents_scale_)
     return false;
   return true;
 }
@@ -1261,7 +1257,7 @@ void PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation(
         high_res->can_use_lcd_text() != can_use_lcd_text();
     bool should_recreate_high_res =
         (raster_transform_is_not_ideal || can_use_lcd_text_changed) &&
-        CanRecreateHighResTilingForLCDTextAndRasterTranslation(*high_res);
+        CanRecreateHighResTilingForLCDTextAndRasterTransform(*high_res);
     if (should_recreate_high_res) {
       tilings_->Remove(high_res);
       high_res = nullptr;

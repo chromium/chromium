@@ -39,6 +39,9 @@ class TestWakeLockObserver : public mojom::WakeLockObserver {
         mojom::WakeLockType::kPreventDisplaySleepAllowDimming, EventCount());
   }
 
+  TestWakeLockObserver(const TestWakeLockObserver&) = delete;
+  TestWakeLockObserver& operator=(const TestWakeLockObserver&) = delete;
+
   ~TestWakeLockObserver() override = default;
 
   void AddReceiver(mojo::PendingReceiver<mojom::WakeLockObserver> receiver) {
@@ -65,13 +68,15 @@ class TestWakeLockObserver : public mojom::WakeLockObserver {
   mojo::ReceiverSet<mojom::WakeLockObserver> receivers_;
 
   std::map<mojom::WakeLockType, EventCount> wake_lock_events_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWakeLockObserver);
 };
 
 class WakeLockTest : public DeviceServiceTestBase {
  public:
   WakeLockTest() = default;
+
+  WakeLockTest(const WakeLockTest&) = delete;
+  WakeLockTest& operator=(const WakeLockTest&) = delete;
+
   ~WakeLockTest() override = default;
 
  protected:
@@ -146,8 +151,6 @@ class WakeLockTest : public DeviceServiceTestBase {
 
   mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider_;
   mojo::Remote<mojom::WakeLock> wake_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(WakeLockTest);
 };
 
 // Request a wake lock, then cancel.

@@ -49,6 +49,9 @@ class ScopedDevtoolsOpener {
       : ScopedDevtoolsOpener(
             content::DevToolsAgentHost::GetOrCreateFor(web_contents)) {}
 
+  ScopedDevtoolsOpener(const ScopedDevtoolsOpener&) = delete;
+  ScopedDevtoolsOpener& operator=(const ScopedDevtoolsOpener&) = delete;
+
   ~ScopedDevtoolsOpener() { agent_host_->DetachClient(&test_client_); }
 
   void EnableAdBlocking(bool enabled) {
@@ -69,7 +72,6 @@ class ScopedDevtoolsOpener {
  private:
   TestClient test_client_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedDevtoolsOpener);
 };
 
 }  // namespace
@@ -85,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTest,
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
 
   // Should not trigger activation, the URL is not on the blocklist.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 
   // Open up devtools and trigger forced activation.
@@ -93,12 +95,12 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTest,
     ScopedDevtoolsOpener devtools(web_contents());
     devtools.EnableAdBlocking(true);
 
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 
     // Close devtools, should stop forced activation.
   }
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 }
 
@@ -117,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
   ResetConfiguration(std::move(config));
 
   // Should not trigger activation, the URL is not on the blocklist.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 
   content::WebContentsConsoleObserver console_observer(web_contents());
@@ -127,14 +129,14 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
   {
     ScopedDevtoolsOpener devtools(web_contents());
     devtools.EnableAdBlocking(true);
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
     console_observer.Wait();
     EXPECT_EQ(kActivationWarningConsoleMessage,
               console_observer.GetMessageAt(0u));
     // Close devtools, should stop forced activation.
   }
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 }
 
@@ -149,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTest,
   ScopedDevtoolsOpener devtools(web_contents());
   devtools.EnableAdBlocking(true);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   EXPECT_FALSE(console_observer.messages().empty());
 }
@@ -177,12 +179,12 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTestWithSitePerProcess,
 
   const GURL frame_with_script =
       GetTestUrl("subresource_filter/frame_with_included_script.html");
-  ui_test_utils::NavigateToURL(browser(), frame_with_script);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), frame_with_script));
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 
   const GURL cross_site_frames = embedded_test_server()->GetURL(
       "a.com", "/subresource_filter/frame_cross_site_set.html");
-  ui_test_utils::NavigateToURL(browser(), cross_site_frames);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), cross_site_frames));
 
   // Simulate attaching and detaching subframe clients. The browser should not
   // process any of the ad blocking messages when the frames detach.
@@ -191,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTestWithSitePerProcess,
       ScopedDevtoolsOpener opener(host);
   }
 
-  ui_test_utils::NavigateToURL(browser(), frame_with_script);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), frame_with_script));
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 }
 

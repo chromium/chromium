@@ -59,7 +59,7 @@ public class FaceDetectionImplGmsCore implements FaceDetection {
     }
 
     @Override
-    public void detect(org.chromium.skia.mojom.BitmapN32 bitmapData, DetectResponse callback) {
+    public void detect(org.chromium.skia.mojom.BitmapN32 bitmapData, Detect_Response callback) {
         // The vision library will be downloaded the first time the API is used
         // on the device; this happens "fast", but it might have not completed,
         // bail in this case.

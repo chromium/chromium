@@ -197,6 +197,24 @@ class MediaCodecBridge {
         private int channelCount() {
             return mFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
         }
+
+        @CalledByNative("GetOutputFormatResult")
+        private int colorStandard() {
+            if (!mFormat.containsKey(MediaFormat.KEY_COLOR_STANDARD)) return -1;
+            return mFormat.getInteger(MediaFormat.KEY_COLOR_STANDARD);
+        }
+
+        @CalledByNative("GetOutputFormatResult")
+        private int colorRange() {
+            if (!mFormat.containsKey(MediaFormat.KEY_COLOR_RANGE)) return -1;
+            return mFormat.getInteger(MediaFormat.KEY_COLOR_RANGE);
+        }
+
+        @CalledByNative("GetOutputFormatResult")
+        private int colorTransfer() {
+            if (!mFormat.containsKey(MediaFormat.KEY_COLOR_TRANSFER)) return -1;
+            return mFormat.getInteger(MediaFormat.KEY_COLOR_TRANSFER);
+        }
     }
 
     // Warning: This class may execute on an arbitrary thread for the lifetime

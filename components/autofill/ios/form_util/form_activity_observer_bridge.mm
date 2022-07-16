@@ -55,4 +55,16 @@ void FormActivityObserverBridge::DocumentSubmitted(web::WebState* web_state,
                                inFrame:sender_frame];
   }
 }
+
+void FormActivityObserverBridge::FormRemoved(web::WebState* web_state,
+                                             web::WebFrame* sender_frame,
+                                             const FormRemovalParams& params) {
+  DCHECK_EQ(web_state, web_state_);
+  if ([owner_ respondsToSelector:@selector(webState:
+                                     didRegisterFormRemoval:inFrame:)]) {
+    [owner_ webState:web_state
+        didRegisterFormRemoval:params
+                       inFrame:sender_frame];
+  }
+}
 }  // namespace autofill

@@ -16,8 +16,7 @@
 namespace {
 
 const char kTestPrefName[] = "test_pref_name";
-constexpr base::TimeDelta kTestRequestPeriod =
-    base::TimeDelta::FromMinutes(123);
+constexpr base::TimeDelta kTestRequestPeriod = base::Minutes(123);
 
 }  // namespace
 
@@ -55,20 +54,19 @@ class NearbySharePeriodicSchedulerTest : public ::testing::Test {
 
 TEST_F(NearbySharePeriodicSchedulerTest, PeriodicRequest) {
   // Set Now() to something nontrivial.
-  FastForward(base::TimeDelta::FromDays(100));
+  FastForward(base::Days(100));
 
   // Immediately runs a first-time periodic request.
   scheduler()->Start();
   absl::optional<base::TimeDelta> time_until_next_request =
       scheduler()->GetTimeUntilNextRequest();
-  EXPECT_EQ(base::TimeDelta::FromSeconds(0),
-            scheduler()->GetTimeUntilNextRequest());
+  EXPECT_EQ(base::Seconds(0), scheduler()->GetTimeUntilNextRequest());
   FastForward(*time_until_next_request);
   scheduler()->HandleResult(/*success=*/true);
   EXPECT_EQ(Now(), scheduler()->GetLastSuccessTime());
 
   // Let 1 minute elapse since last success.
-  base::TimeDelta elapsed_time = base::TimeDelta::FromMinutes(1);
+  base::TimeDelta elapsed_time = base::Minutes(1);
   FastForward(elapsed_time);
 
   EXPECT_EQ(kTestRequestPeriod - elapsed_time,

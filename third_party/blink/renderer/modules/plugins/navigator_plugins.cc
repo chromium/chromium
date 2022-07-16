@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/modules/plugins/dom_mime_type.h"
 #include "third_party/blink/renderer/modules/plugins/dom_mime_type_array.h"
 #include "third_party/blink/renderer/modules/plugins/dom_plugin_array.h"
@@ -17,8 +18,29 @@
 
 namespace blink {
 
+namespace {
+bool ShouldReturnFixedPluginData(Navigator& navigator) {
+  if (auto* window = navigator.DomWindow()) {
+    if (auto* frame = window->GetFrame()) {
+      if (frame->GetSettings()->GetAllowNonEmptyNavigatorPlugins()) {
+        // See https://crbug.com/1171373 for more context. P/Nacl plugins will
+        // be supported on some platforms through at least June, 2022. Since
+        // some apps need to use feature detection, we need to continue
+        // returning plugin data for those.
+        return false;
+      }
+    }
+  }
+  // Otherwise, depend on the feature flag, which can be disabled via
+  // Finch killswitch.
+  return RuntimeEnabledFeatures::NavigatorPluginsFixedEnabled();
+}
+}  // namespace
+
 NavigatorPlugins::NavigatorPlugins(Navigator& navigator)
-    : Supplement<Navigator>(navigator) {}
+    : Supplement<Navigator>(navigator),
+      should_return_fixed_plugin_data_(ShouldReturnFixedPluginData(navigator)) {
+}
 
 // static
 NavigatorPlugins& NavigatorPlugins::From(Navigator& navigator) {
@@ -49,6 +71,12 @@ DOMMimeTypeArray* NavigatorPlugins::mimeTypes(Navigator& navigator) {
 }
 
 // static
+bool NavigatorPlugins::pdfViewerEnabled(Navigator& navigator) {
+  return NavigatorPlugins::From(navigator).pdfViewerEnabled(
+      navigator.DomWindow());
+}
+
+// static
 bool NavigatorPlugins::javaEnabled(Navigator& navigator) {
   return false;
 }
@@ -76,7 +104,7 @@ void RecordPlugins(LocalDOMWindow* window, DOMPluginArray* plugins) {
     }
   }
   IdentifiabilityMetricBuilder(window->UkmSourceID())
-      .SetWebfeature(WebFeature::kNavigatorPlugins, builder.GetToken())
+      .AddWebFeature(WebFeature::kNavigatorPlugins, builder.GetToken())
       .Record(window->UkmRecorder());
 }
 
@@ -101,15 +129,17 @@ void RecordMimeTypes(LocalDOMWindow* window, DOMMimeTypeArray* mime_types) {
     }
   }
   IdentifiabilityMetricBuilder(window->UkmSourceID())
-      .Set(surface, builder.GetToken())
+      .Add(surface, builder.GetToken())
       .Record(window->UkmRecorder());
 }
 
 }  // namespace
 
 DOMPluginArray* NavigatorPlugins::plugins(LocalDOMWindow* window) const {
-  if (!plugins_)
-    plugins_ = MakeGarbageCollected<DOMPluginArray>(window);
+  if (!plugins_) {
+    plugins_ = MakeGarbageCollected<DOMPluginArray>(
+        window, should_return_fixed_plugin_data_);
+  }
 
   DOMPluginArray* result = plugins_.Get();
   RecordPlugins(window, result);
@@ -118,10 +148,15 @@ DOMPluginArray* NavigatorPlugins::plugins(LocalDOMWindow* window) const {
 
 DOMMimeTypeArray* NavigatorPlugins::mimeTypes(LocalDOMWindow* window) const {
   if (!mime_types_) {
-    mime_types_ = MakeGarbageCollected<DOMMimeTypeArray>(window);
+    mime_types_ = MakeGarbageCollected<DOMMimeTypeArray>(
+        window, should_return_fixed_plugin_data_);
     RecordMimeTypes(window, mime_types_.Get());
   }
   return mime_types_.Get();
+}
+
+bool NavigatorPlugins::pdfViewerEnabled(LocalDOMWindow* window) const {
+  return plugins(window)->IsPdfViewerAvailable();
 }
 
 void NavigatorPlugins::Trace(Visitor* visitor) const {

@@ -33,6 +33,9 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
  public:
   explicit AwRenderFrameExt(content::RenderFrame* render_frame);
 
+  AwRenderFrameExt(const AwRenderFrameExt&) = delete;
+  AwRenderFrameExt& operator=(const AwRenderFrameExt&) = delete;
+
   static AwRenderFrameExt* FromRenderFrame(content::RenderFrame* render_frame);
 
  private:
@@ -73,8 +76,6 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
       this};
 
   mojo::AssociatedRemote<mojom::FrameHost> frame_host_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwRenderFrameExt);
 };
 
 }  // namespace android_webview

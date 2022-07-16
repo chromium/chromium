@@ -9,13 +9,13 @@
 
 #include <array>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/unguessable_token.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/color_space.h"
@@ -39,6 +39,7 @@ namespace viz {
 class ContextProvider;
 class CopyOutputRequest;
 class GLI420Converter;
+class GLNV12Converter;
 class GLScaler;
 class TextureDeleter;
 
@@ -73,6 +74,9 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
   GLRendererCopier(ContextProvider* context_provider,
                    TextureDeleter* texture_deleter);
 
+  GLRendererCopier(const GLRendererCopier&) = delete;
+  GLRendererCopier& operator=(const GLRendererCopier&) = delete;
+
   ~GLRendererCopier();
 
   // Executes the |request|, copying from the currently-bound framebuffer of the
@@ -82,8 +86,8 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
   // optional, but desired for performance: If provided, the texture might be
   // used as the source, to avoid having to make a copy of the framebuffer.
   // |flipped_source| is true (common case) if the framebuffer content is
-  // vertically flipped (bottom-up row order). |color_space| specifies the color
-  // space of the pixels in the framebuffer.
+  // vertically flipped (bottom-up row order). |framebuffer_color_space|
+  // specifies the color space of the pixels in the framebuffer.
   //
   // This implementation may change a wide variety of GL state, such as texture
   // and framebuffer bindings, shader programs, and related attributes; and so
@@ -96,7 +100,7 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
       GLuint framebuffer_texture,
       const gfx::Size& framebuffer_texture_size,
       bool flipped_source,
-      const gfx::ColorSpace& color_space);
+      const gfx::ColorSpace& framebuffer_color_space);
 
   // Checks whether cached resources should be freed because recent copy
   // activity is no longer using them. This should be called after a frame has
@@ -125,23 +129,25 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
     gfx::Size result_texture_size;
     GLuint readback_framebuffer = 0;
 
-    // I420_PLANES requests: I420 scaling and format conversion, and
-    // textures+framebuffers for readback.
+    // I420_PLANES & NV12_PLANES requests: I420, NV12 scaling and format
+    // conversion, and textures+framebuffers for readback.
     std::unique_ptr<GLI420Converter> i420_converter;
+    std::unique_ptr<GLNV12Converter> nv12_converter;
     std::array<GLuint, 3> yuv_textures = {0, 0, 0};
-    gfx::Size y_texture_size;
+    std::array<gfx::Size, 3> texture_sizes;
     std::array<GLuint, 3> yuv_readback_framebuffers = {0, 0, 0};
 
     ReusableThings();
+
+    ReusableThings(const ReusableThings&) = delete;
+    ReusableThings& operator=(const ReusableThings&) = delete;
+
     ~ReusableThings();
 
     // Frees all the GL objects and scalers. This is in-lieu of a ReusableThings
     // destructor because a valid GL context is required to free some of the
     // objects.
     void Free(gpu::gles2::GLES2Interface* gl);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ReusableThings);
   };
 
   // Manages the execution of one asynchronous framebuffer readback and contains
@@ -184,10 +190,11 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
 
   // Renders a scaled/transformed copy of a source texture according to the
   // |request| parameters and other source characteristics. |result_texture|
-  // must be allocated/sized by the caller. For RGBA_BITMAP requests, the image
-  // content will be rendered in top-down row order and maybe red-blue swapped,
-  // to support efficient readback later on. For RGBA_TEXTURE requests, the
-  // image content is always rendered Y-flipped (bottom-up row order).
+  // must be allocated/sized by the caller. For RGBA requests with destination
+  // set to system memory, the image content will be rendered in top-down row
+  // order and maybe red-blue swapped, to support efficient readback later on.
+  // For RGBA requests with ResultDestination::kNativeTextures set, the image
+  // content is always rendered Y-flipped (bottom-up row order).
   void RenderResultTexture(const CopyOutputRequest& request,
                            bool flipped_source,
                            const gfx::ColorSpace& source_color_space,
@@ -236,6 +243,71 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
     std::array<int, 3> data_offsets_;
   };
 
+  // Like the ReadPixelsWorkflow, except for NV12 planes readback. Because there
+  // are two separate glReadPixels operations that may complete in any order,
+  // a ReadNV12PlanesWorkflow will receive notifications from two separate "GL
+  // query" callbacks. It is only after all two operations have completed that
+  // a fully-assembled CopyOutputResult can be sent.
+  //
+  // See class comments for GLNV12Converter for an explanation of how planar
+  // data is packed into RGBA textures.
+  class ReadNV12PlanesWorkflow {
+   public:
+    ReadNV12PlanesWorkflow(std::unique_ptr<CopyOutputRequest> copy_request,
+                           const gfx::Rect& aligned_rect,
+                           const gfx::Rect& result_rect,
+                           base::WeakPtr<GLRendererCopier> copier_weak_ptr,
+                           ContextProvider* context_provider);
+    ~ReadNV12PlanesWorkflow();
+
+    void BindTransferBuffer();
+    void StartPlaneReadback(int plane, GLenum readback_format);
+    void UnbindTransferBuffer();
+
+    gfx::Rect aligned_rect() const { return aligned_rect_; }
+
+    gfx::Rect result_rect() const { return result_rect_; }
+
+    std::unique_ptr<CopyOutputRequest> TakeRequest() {
+      DCHECK(copy_request_);
+
+      return std::move(copy_request_);
+    }
+
+    GLuint TakeTransferBuffer() {
+      DCHECK(transfer_buffer_);
+
+      GLuint result = transfer_buffer_;
+      transfer_buffer_ = 0;
+      return result;
+    }
+
+    // Returns true if the workflow has completed (i.e. readback requests for
+    // all planes have finished).
+    bool IsCompleted() const {
+      return queries_ == std::array<GLuint, 2>{{0, 0}};
+    }
+
+    GLuint query(int plane) { return queries_[plane]; }
+
+    // Marks that a readback has completed for a given plane.
+    void MarkQueryCompleted(int plane) { queries_[plane] = 0; }
+
+   private:
+    gfx::Size y_texture_size() const;
+    gfx::Size chroma_texture_size() const;
+
+    std::unique_ptr<CopyOutputRequest> copy_request_;
+    const gfx::Rect aligned_rect_;
+    const gfx::Rect result_rect_;
+    GLuint transfer_buffer_;
+    std::array<GLuint, 2> queries_;
+
+    base::WeakPtr<GLRendererCopier> copier_weak_ptr_;
+    ContextProvider* const context_provider_;
+    std::array<int, 2> data_offsets_;
+  };
+
   // Similar to RenderResultTexture(), except also transform the image into I420
   // format (a popular video format). Three textures, representing each of the
   // Y/U/V planes (as described in GLI420Converter), are populated and their GL
@@ -256,8 +328,29 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
                                const gfx::Rect& result_rect,
                                ReusableThings* things);
 
+  // Similar to RenderResultTexture(), except also transform the image into NV12
+  // format (a popular video format). Two textures, representing each of the
+  // Y/UV planes (as described in GLNV12Converter), are populated and their GL
+  // references placed in |things|. The image content is always rendered in
+  // top-down row order and swizzled (if needed), to support efficient readback
+  // later on.
+  //
+  // For alignment reasons, sometimes a slightly larger result will be provided,
+  // and the return Rect will indicate the actual bounds that were rendered
+  // (|result_rect|'s coordinate system). See StartNV12ReadbackFromTextures()
+  // for more details.
+  gfx::Rect RenderNV12Textures(const CopyOutputRequest& request,
+                               bool flipped_source,
+                               const gfx::ColorSpace& source_color_space,
+                               GLuint source_texture,
+                               const gfx::Size& source_texture_size,
+                               const gfx::Rect& sampling_rect,
+                               const gfx::Rect& result_rect,
+                               ReusableThings* things);
+
   // Binds the |things->result_texture| to a framebuffer and calls
-  // StartReadbackFromFramebuffer(). This is for RGBA_BITMAP requests only.
+  // StartReadbackFromFramebuffer(). This is only for RGBA requests with
+  // destination set to kSystemMemory.
   // Assumes the image content is in top-down row order (and is red-blue swapped
   // iff RenderResultTexture() would have done that).
   void StartReadbackFromTexture(std::unique_ptr<CopyOutputRequest> request,
@@ -307,6 +400,20 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
                                      const gfx::Rect& result_rect,
                                      ReusableThings* things);
 
+  // Like StartReadbackFromTexture(), except that this processes the two Y/UV
+  // result textures in |things| by using two framebuffers and two asynchronous
+  // readback operations. A single pixel transfer buffer is used to hold the
+  // results of both readbacks (i.e., each plane starts at a different offset in
+  // the transfer buffer).
+  //
+  // |aligned_rect| is the Rect returned from the RenderNV12Textures() call, and
+  // is required so that the CopyOutputResult sent at the end of this workflow
+  // will access the correct region of pixels.
+  void StartNV12ReadbackFromTextures(std::unique_ptr<CopyOutputRequest> request,
+                                     const gfx::Rect& aligned_rect,
+                                     const gfx::Rect& result_rect,
+                                     ReusableThings* things);
+
   // Retrieves a cached ReusableThings instance for the given CopyOutputRequest
   // source, or creates a new instance.
   std::unique_ptr<ReusableThings> TakeReusableThingsOrCreate(
@@ -333,6 +440,8 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
 
   void FinishReadPixelsWorkflow(ReadPixelsWorkflow*);
   void FinishReadI420PlanesWorkflow(ReadI420PlanesWorkflow*, int plane);
+  void FinishReadNV12PlanesWorkflow(ReadNV12PlanesWorkflow* workflow,
+                                    int plane);
 
   // Injected dependencies.
   ContextProvider* const context_provider_;
@@ -364,11 +473,10 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
 
   std::vector<std::unique_ptr<ReadPixelsWorkflow>> read_pixels_workflows_;
   std::vector<std::unique_ptr<ReadI420PlanesWorkflow>> read_i420_workflows_;
+  std::vector<std::unique_ptr<ReadNV12PlanesWorkflow>> read_nv12_workflows_;
 
   // Weak ptr to this class.
   base::WeakPtrFactory<GLRendererCopier> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GLRendererCopier);
 };
 
 }  // namespace viz

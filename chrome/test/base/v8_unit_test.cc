@@ -387,8 +387,8 @@ void V8UnitTest::ChromeSend(const v8::FunctionCallbackInfo<v8::Value>& args) {
   g_test_result_ok =
       test_result->Get(context, 0).ToLocalChecked()->BooleanValue(isolate);
   if (!g_test_result_ok) {
-    v8::String::Utf8Value message(
+    v8::String::Utf8Value error_message(
         isolate, test_result->Get(context, 1).ToLocalChecked());
-    LOG(ERROR) << *message;
+    LOG(ERROR) << *error_message;
   }
 }

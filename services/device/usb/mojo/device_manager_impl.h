@@ -40,6 +40,10 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
   DeviceManagerImpl();
   // Mostly be used for testing.
   explicit DeviceManagerImpl(std::unique_ptr<UsbService> usb_service);
+
+  DeviceManagerImpl(const DeviceManagerImpl&) = delete;
+  DeviceManagerImpl& operator=(const DeviceManagerImpl&) = delete;
+
   ~DeviceManagerImpl() override;
 
   void AddReceiver(mojo::PendingReceiver<mojom::UsbDeviceManager> receiver);
@@ -118,8 +122,6 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
   mojo::AssociatedRemoteSet<mojom::UsbDeviceManagerClient> clients_;
 
   base::WeakPtrFactory<DeviceManagerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceManagerImpl);
 };
 
 }  // namespace usb

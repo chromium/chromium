@@ -18,7 +18,7 @@
   var sourcesNavigator = new Sources.NetworkNavigatorView();
   sourcesNavigator.show(UI.inspectorView.element);
   TestRunner.addResult('BEFORE:\n' + fs.dumpAsText());
-  sourcesNavigator._handleContextMenuCreate(uiSourceCode.project(), '', uiSourceCode);
+  sourcesNavigator.handleContextMenuCreate(uiSourceCode.project(), '', uiSourceCode);
   await TestRunner.waitForUISourceCode('NewFile');
   TestRunner.addResult('\nAFTER:\n' + fs.dumpAsText());
   TestRunner.completeTest();

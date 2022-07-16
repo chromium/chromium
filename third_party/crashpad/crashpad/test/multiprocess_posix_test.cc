@@ -18,7 +18,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "base/macros.h"
 #include "gtest/gtest.h"
 #include "test/gtest_death.h"
 #include "util/file/file_io.h"
@@ -30,6 +29,9 @@ namespace {
 class TestMultiprocess final : public Multiprocess {
  public:
   TestMultiprocess() : Multiprocess() {}
+
+  TestMultiprocess(const TestMultiprocess&) = delete;
+  TestMultiprocess& operator=(const TestMultiprocess&) = delete;
 
   ~TestMultiprocess() {}
 
@@ -66,8 +68,6 @@ class TestMultiprocess final : public Multiprocess {
     CheckedReadFileExactly(ReadPipeHandle(), &c, 1);
     EXPECT_EQ(c, 'm');
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestMultiprocess);
 };
 
 TEST(Multiprocess, Multiprocess) {
@@ -94,6 +94,9 @@ class TestMultiprocessUnclean final : public Multiprocess {
     }
   }
 
+  TestMultiprocessUnclean(const TestMultiprocessUnclean&) = delete;
+  TestMultiprocessUnclean& operator=(const TestMultiprocessUnclean&) = delete;
+
   ~TestMultiprocessUnclean() {}
 
  private:
@@ -115,8 +118,6 @@ class TestMultiprocessUnclean final : public Multiprocess {
   }
 
   TerminationType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMultiprocessUnclean);
 };
 
 TEST(Multiprocess, SuccessfulExit) {
@@ -158,6 +159,10 @@ class TestMultiprocessClosePipe final : public Multiprocess {
     // Fails under "threadsafe" mode on macOS 10.11.
     testing::GTEST_FLAG(death_test_style) = "fast";
   }
+
+  TestMultiprocessClosePipe(const TestMultiprocessClosePipe&) = delete;
+  TestMultiprocessClosePipe& operator=(const TestMultiprocessClosePipe&) =
+      delete;
 
   ~TestMultiprocessClosePipe() {}
 
@@ -241,8 +246,6 @@ class TestMultiprocessClosePipe final : public Multiprocess {
 
   WhoCloses who_closes_;
   WhatCloses what_closes_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMultiprocessClosePipe);
 };
 
 TEST(MultiprocessDeathTest, ParentClosesReadPipe) {

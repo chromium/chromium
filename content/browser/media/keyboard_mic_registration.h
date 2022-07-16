@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_MEDIA_KEYBOARD_MIC_REGISTRATION_H_
 #define CONTENT_BROWSER_MEDIA_KEYBOARD_MIC_REGISTRATION_H_
 
-#include "base/macros.h"
-
 namespace content {
 
 // Chrome OS keyboard mic stream registration. Used on UI thread only and owned
@@ -15,6 +13,10 @@ namespace content {
 class KeyboardMicRegistration {
  public:
   KeyboardMicRegistration();
+
+  KeyboardMicRegistration(const KeyboardMicRegistration&) = delete;
+  KeyboardMicRegistration& operator=(const KeyboardMicRegistration&) = delete;
+
   ~KeyboardMicRegistration();
 
   void Register();
@@ -22,8 +24,6 @@ class KeyboardMicRegistration {
 
  private:
   int register_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardMicRegistration);
 };
 
 }  // namespace content

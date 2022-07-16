@@ -259,8 +259,7 @@ void CSSPreloadScanner::EmitRule(const SegmentedString& source) {
     auto request = PreloadRequest::CreateIfNeeded(
         fetch_initiator_type_names::kCSS, position, url,
         *predicted_base_element_url_, ResourceType::kCSSStyleSheet,
-        referrer_policy_, PreloadRequest::kBaseUrlIsReferrer,
-        ResourceFetcher::kImageNotImageSet, exclusion_info_);
+        referrer_policy_, ResourceFetcher::kImageNotImageSet, exclusion_info_);
     if (request) {
       // FIXME: Should this be including the charset in the preload request?
       requests_->push_back(std::move(request));

@@ -103,18 +103,6 @@ std::string FileCleanupReasonToHistogramSuffix(FileCleanupReason reason) {
   return std::string();
 }
 
-// Helper method to log StartUpResult.
-void LogStartUpResult(bool in_recovery, StartUpResult result) {
-  if (in_recovery) {
-    base::UmaHistogramEnumeration("Download.Service.StartUpStatus.Recovery",
-                                  result, StartUpResult::COUNT);
-  } else {
-    base::UmaHistogramEnumeration(
-        "Download.Service.StartUpStatus.Initialization", result,
-        StartUpResult::COUNT);
-  }
-}
-
 // Helper method to log the pause reason for a particular download.
 void LogDownloadPauseReason(PauseReason reason, bool on_upload_data_received) {
   std::string name(on_upload_data_received
@@ -140,6 +128,17 @@ void LogControllerStartupStatus(bool in_recovery, const StartupStatus& status) {
     LogStartUpResult(in_recovery, StartUpResult::FAILURE_REASON_MODEL);
   if (!status.file_monitor_ok.value())
     LogStartUpResult(in_recovery, StartUpResult::FAILURE_REASON_FILE_MONITOR);
+}
+
+void LogStartUpResult(bool in_recovery, StartUpResult result) {
+  if (in_recovery) {
+    base::UmaHistogramEnumeration("Download.Service.StartUpStatus.Recovery",
+                                  result, StartUpResult::COUNT);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Download.Service.StartUpStatus.Initialization", result,
+        StartUpResult::COUNT);
+  }
 }
 
 void LogServiceApiAction(DownloadClient client, ServiceApiAction action) {
@@ -232,15 +231,7 @@ void LogFileCleanupStatus(FileCleanupReason reason,
 
 void LogFileLifeTime(const base::TimeDelta& file_life_time) {
   UMA_HISTOGRAM_CUSTOM_TIMES("Download.Service.Files.LifeTime", file_life_time,
-                             base::TimeDelta::FromSeconds(1),
-                             base::TimeDelta::FromDays(8), 100);
-}
-
-void LogFileDirDiskUtilization(int64_t total_disk_space,
-                               int64_t free_disk_space,
-                               int64_t files_size) {
-  UMA_HISTOGRAM_PERCENTAGE("Download.Service.Files.FreeDiskSpace",
-                           (free_disk_space * 100) / total_disk_space);
+                             base::Seconds(1), base::Days(8), 100);
 }
 
 void LogEntryEvent(DownloadEvent event) {

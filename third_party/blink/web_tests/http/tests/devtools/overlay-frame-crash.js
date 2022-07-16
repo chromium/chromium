@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult('Regression test for crbug.com/1058718\n');
 
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`<div id='foo'>foo</div>`);
   await TestRunner.addScriptTag('network/resources/gc.js');

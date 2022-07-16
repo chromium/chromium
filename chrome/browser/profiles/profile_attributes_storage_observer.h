@@ -48,6 +48,8 @@ class ProfileAttributesStorageObserver {
   }
   virtual void OnProfileHostedDomainChanged(
       const base::FilePath& profile_path) {}
+  virtual void OnProfileUserManagementAcceptanceChanged(
+      const base::FilePath& profile_path) {}
 
  protected:
   ProfileAttributesStorageObserver() = default;

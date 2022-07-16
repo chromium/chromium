@@ -51,8 +51,8 @@ SyntheticGesture::Result SyntheticTouchscreenPinchGesture::ForwardInputEvents(
             content::mojom::GestureSourceType::kDefaultInput);
 
   if (!synthetic_pointer_driver_)
-    synthetic_pointer_driver_ =
-        SyntheticPointerDriver::Create(gesture_source_type_);
+    synthetic_pointer_driver_ = SyntheticPointerDriver::Create(
+        gesture_source_type_, params_.from_devtools_debugger);
 
   if (gesture_source_type_ == content::mojom::GestureSourceType::kTouchInput) {
     ForwardTouchInputEvents(timestamp, target);
@@ -159,8 +159,7 @@ void SyntheticTouchscreenPinchGesture::SetupCoordinatesAndStopTime(
       1e6 * (static_cast<double>(std::abs(2 * max_pointer_delta_0_)) /
              params_.relative_pointer_speed_in_pixels_s));
   DCHECK_GT(total_duration_in_us, 0);
-  stop_time_ =
-      start_time_ + base::TimeDelta::FromMicroseconds(total_duration_in_us);
+  stop_time_ = start_time_ + base::Microseconds(total_duration_in_us);
 }
 
 float SyntheticTouchscreenPinchGesture::GetDeltaForPointer0AtTime(

@@ -6,13 +6,15 @@
 #define CHROME_BROWSER_ANDROID_NTP_RECENT_TABS_PAGE_PREFS_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 
 class RecentTabsPagePrefs {
  public:
   explicit RecentTabsPagePrefs(Profile* profile);
   void Destroy(JNIEnv* env);
+
+  RecentTabsPagePrefs(const RecentTabsPagePrefs&) = delete;
+  RecentTabsPagePrefs& operator=(const RecentTabsPagePrefs&) = delete;
 
   jboolean GetSnapshotDocumentCollapsed(JNIEnv* env);
   void SetSnapshotDocumentCollapsed(
@@ -42,7 +44,6 @@ class RecentTabsPagePrefs {
   virtual ~RecentTabsPagePrefs();
 
   Profile* profile_;  // weak
-  DISALLOW_COPY_AND_ASSIGN(RecentTabsPagePrefs);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_NTP_RECENT_TABS_PAGE_PREFS_H_

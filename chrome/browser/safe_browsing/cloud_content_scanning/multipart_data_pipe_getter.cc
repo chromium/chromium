@@ -118,9 +118,8 @@ void MultipartDataPipeGetter::Write() {
   if (write_position_ == FullSize()) {
     base::TimeDelta write_duration = base::TimeTicks::Now() - write_start_time_;
     base::UmaHistogramCustomTimes("Enterprise.MultipartDataPipe.WriteDuration",
-                                  write_duration,
-                                  base::TimeDelta::FromMilliseconds(1),
-                                  base::TimeDelta::FromMinutes(5), 50);
+                                  write_duration, base::Milliseconds(1),
+                                  base::Minutes(5), 50);
     int64_t bps =
         (1000 * FullSize()) /
         std::max(1, static_cast<int>(write_duration.InMilliseconds()));

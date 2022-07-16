@@ -74,7 +74,7 @@ const char kUICompositorDefaultMemoryLimitMB[] = "512";
 // keeps track of the effective resolution most used on internal display by the
 // user.
 constexpr base::TimeDelta kEffectiveResolutionRepeatingDelay =
-    base::TimeDelta::FromMinutes(30);
+    base::Minutes(30);
 
 display::DisplayManager* GetDisplayManager() {
   return Shell::Get()->display_manager();
@@ -161,6 +161,9 @@ class FocusActivationStore {
         focused_(nullptr),
         active_(nullptr) {}
 
+  FocusActivationStore(const FocusActivationStore&) = delete;
+  FocusActivationStore& operator=(const FocusActivationStore&) = delete;
+
   void Store(bool clear_focus) {
     if (!activation_client_) {
       aura::Window* root = Shell::GetPrimaryRootWindow();
@@ -214,8 +217,6 @@ class FocusActivationStore {
   aura::WindowTracker tracker_;
   aura::Window* focused_;
   aura::Window* active_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusActivationStore);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

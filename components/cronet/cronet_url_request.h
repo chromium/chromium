@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/base/idempotency.h"
@@ -153,6 +152,9 @@ class CronetURLRequest { // 发起网络请求
                    int32_t traffic_stats_uid,
                    net::Idempotency idempotency);
 
+  CronetURLRequest(const CronetURLRequest&) = delete;
+  CronetURLRequest& operator=(const CronetURLRequest&) = delete;
+
   // Methods called prior to Start are never called on network thread.
 
   // Sets the request method GET, POST etc.
@@ -211,6 +213,9 @@ class CronetURLRequest { // 发起网络请求
                  bool traffic_stats_uid_set,
                  int32_t traffic_stats_uid,
                  net::Idempotency idempotency);
+
+    NetworkTasks(const NetworkTasks&) = delete;
+    NetworkTasks& operator=(const NetworkTasks&) = delete;
 
     // Invoked on the network thread.
     ~NetworkTasks() override;
@@ -295,7 +300,6 @@ class CronetURLRequest { // 发起网络请求
     std::unique_ptr<net::URLRequest> url_request_;
 
     THREAD_CHECKER(network_thread_checker_);
-    DISALLOW_COPY_AND_ASSIGN(NetworkTasks);
   };
 
   CronetURLRequestContext* context_;
@@ -306,8 +310,6 @@ class CronetURLRequest { // 发起网络请求
   std::string initial_method_;
   std::unique_ptr<net::HttpRequestHeaders> initial_request_headers_;
   std::unique_ptr<net::UploadDataStream> upload_;
-
-  DISALLOW_COPY_AND_ASSIGN(CronetURLRequest);
 };
 
 }  // namespace cronet

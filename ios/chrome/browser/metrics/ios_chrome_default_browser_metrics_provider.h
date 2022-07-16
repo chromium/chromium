@@ -14,6 +14,12 @@ class IOSChromeDefaultBrowserMetricsProvider : public metrics::MetricsProvider {
  public:
   explicit IOSChromeDefaultBrowserMetricsProvider(
       metrics::MetricsLogUploader::MetricServiceType metrics_service_type);
+
+  IOSChromeDefaultBrowserMetricsProvider(
+      const IOSChromeDefaultBrowserMetricsProvider&) = delete;
+  IOSChromeDefaultBrowserMetricsProvider& operator=(
+      const IOSChromeDefaultBrowserMetricsProvider&) = delete;
+
   ~IOSChromeDefaultBrowserMetricsProvider() override;
 
   // metrics::MetricsProvider:
@@ -21,8 +27,6 @@ class IOSChromeDefaultBrowserMetricsProvider : public metrics::MetricsProvider {
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeDefaultBrowserMetricsProvider);
-
   // The type of the metrics service for which to emit the user demographics
   // status histogram (e.g., UMA).
   const metrics::MetricsLogUploader::MetricServiceType metrics_service_type_;

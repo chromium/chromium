@@ -16,6 +16,8 @@ via the Common Unix Printing System (CUPS), *not* Cloud Print.
   settings code.
 * `chrome/browser/printing/` - Cloud print support, and common print dialog
   support.
+* `chrome/browser/ash/printing/` - ChromeOS printing code that runs in
+  ash-chrome.
 
 ## Printing Docs
 

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
@@ -68,8 +68,8 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
     return false;
 
   shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
-  frame_sink_manager_ =
-      std::make_unique<viz::FrameSinkManagerImpl>(shared_bitmap_manager_.get());
+  frame_sink_manager_ = std::make_unique<viz::FrameSinkManagerImpl>(
+      viz::FrameSinkManagerImpl::InitParams(shared_bitmap_manager_.get()));
 
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
       display_controller;
@@ -99,8 +99,7 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
               compositor_task_runner_.get()),
           viz::BeginFrameSource::kNotRestartableId);
       begin_frame_source_->OnUpdateVSyncParameters(
-          base::TimeTicks::Now(),
-          base::TimeDelta::FromMilliseconds(1000.f / refresh_rate_));
+          base::TimeTicks::Now(), base::Milliseconds(1000.f / refresh_rate_));
       display_begin_frame_source_ = begin_frame_source_.get();
     }
     scheduler = std::make_unique<viz::DisplayScheduler>(

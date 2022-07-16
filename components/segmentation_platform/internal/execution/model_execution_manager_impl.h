@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
@@ -54,7 +56,7 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
           const SegmentationModelHandler::ModelUpdatedCallback&)>;
 
   explicit ModelExecutionManagerImpl(
-      std::vector<OptimizationTarget> segment_ids,
+      const base::flat_set<OptimizationTarget>& segment_ids,
       ModelHandlerCreator model_handler_creator,
       base::Clock* clock,
       SegmentInfoDatabase* segment_database,
@@ -110,7 +112,7 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
 
   // Helper function for synchronously invoking the callback with the given
   // result and status.
-  void RunModelExecutionCallback(ModelExecutionCallback callback,
+  void RunModelExecutionCallback(std::unique_ptr<ExecutionState> state,
                                  float result,
                                  ModelExecutionStatus status);
 

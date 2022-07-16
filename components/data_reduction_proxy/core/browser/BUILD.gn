@@ -88,8 +88,6 @@ static_library("test_support") {
     "data_reduction_proxy_test_utils.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   public_deps = [ ":browser" ]
   deps = [
     "//base",
@@ -130,8 +128,6 @@ source_set("unit_tests") {
     "data_reduction_proxy_settings_unittest.cc",
     "data_usage_store_unittest.cc",
   ]
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
   deps = [
     ":browser",

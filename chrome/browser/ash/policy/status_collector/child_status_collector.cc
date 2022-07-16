@@ -14,6 +14,8 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/settings/timezone_settings.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -37,12 +39,10 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "chromeos/system/statistics_provider.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/enterprise_reporting.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -57,17 +57,15 @@ namespace {
 namespace em = enterprise_management;
 
 using base::Time;
-using base::TimeDelta;
 
 // How much time in the past to store active periods for.
-constexpr TimeDelta kMaxStoredPastActivityInterval = TimeDelta::FromDays(30);
+constexpr base::TimeDelta kMaxStoredPastActivityInterval = base::Days(30);
 
 // How much time in the future to store active periods for.
-constexpr TimeDelta kMaxStoredFutureActivityInterval = TimeDelta::FromDays(2);
+constexpr base::TimeDelta kMaxStoredFutureActivityInterval = base::Days(2);
 
 // How often the child's usage time is stored.
-constexpr base::TimeDelta kUpdateChildActiveTimeInterval =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kUpdateChildActiveTimeInterval = base::Seconds(30);
 
 const char kReportSizeHistogramName[] =
     "ChromeOS.FamilyLink.ChildStatusReportRequest.Size";
@@ -125,7 +123,7 @@ ChildStatusCollector::ChildStatusCollector(
     Profile* profile,
     chromeos::system::StatisticsProvider* provider,
     const AndroidStatusFetcher& android_status_fetcher,
-    TimeDelta activity_day_start)
+    base::TimeDelta activity_day_start)
     : StatusCollector(provider, ash::CrosSettings::Get()),
       pref_service_(pref_service),
       profile_(profile),
@@ -151,9 +149,9 @@ ChildStatusCollector::ChildStatusCollector(
   auto callback = base::BindRepeating(
       &ChildStatusCollector::UpdateReportingSettings, base::Unretained(this));
   version_info_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceVersionInfo, callback);
-  boot_mode_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceBootMode, callback);
+      ash::kReportDeviceVersionInfo, callback);
+  boot_mode_subscription_ =
+      cros_settings_->AddSettingsObserver(ash::kReportDeviceBootMode, callback);
 
   // Watch for changes on the device state to calculate the child's active time.
   ash::UsageTimeStateNotifier::GetInstance()->AddObserver(this);
@@ -179,9 +177,9 @@ ChildStatusCollector::~ChildStatusCollector() {
   ash::UsageTimeStateNotifier::GetInstance()->RemoveObserver(this);
 }
 
-TimeDelta ChildStatusCollector::GetActiveChildScreenTime() {
+base::TimeDelta ChildStatusCollector::GetActiveChildScreenTime() {
   UpdateChildUsageTime();
-  return TimeDelta::FromMilliseconds(
+  return base::Milliseconds(
       pref_service_->GetInteger(prefs::kChildScreenTimeMilliseconds));
 }
 
@@ -197,7 +195,7 @@ void ChildStatusCollector::UpdateReportingSettings() {
   // Attempt to fetch the current value of the reporting settings.
   // If trusted values are not available, register this function to be called
   // back when they are available.
-  if (chromeos::CrosSettingsProvider::TRUSTED !=
+  if (ash::CrosSettingsProvider::TRUSTED !=
       cros_settings_->PrepareTrustedValues(
           base::BindOnce(&ChildStatusCollector::UpdateReportingSettings,
                          weak_factory_.GetWeakPtr()))) {
@@ -208,11 +206,10 @@ void ChildStatusCollector::UpdateReportingSettings() {
   // Keep the default values in sync with DeviceReportingProto in
   // chrome/browser/ash/policy/status_collector/child_status_collector.cc.
   report_version_info_ = true;
-  cros_settings_->GetBoolean(chromeos::kReportDeviceVersionInfo,
+  cros_settings_->GetBoolean(ash::kReportDeviceVersionInfo,
                              &report_version_info_);
   report_boot_mode_ = true;
-  cros_settings_->GetBoolean(chromeos::kReportDeviceBootMode,
-                             &report_boot_mode_);
+  cros_settings_->GetBoolean(ash::kReportDeviceBootMode, &report_boot_mode_);
 }
 
 void ChildStatusCollector::OnAppActivityReportSubmitted() {
@@ -239,7 +236,7 @@ void ChildStatusCollector::UpdateChildUsageTime() {
   Time now = clock_->Now();
   Time reset_time = activity_storage_->GetBeginningOfDay(now);
   if (reset_time > now)
-    reset_time -= TimeDelta::FromDays(1);
+    reset_time -= base::Days(1);
   // Reset screen time if it has not been reset today.
   if (reset_time > pref_service_->GetTime(prefs::kLastChildScreenTimeReset)) {
     pref_service_->SetTime(prefs::kLastChildScreenTimeReset, now);
@@ -252,7 +249,7 @@ void ChildStatusCollector::UpdateChildUsageTime() {
     // negative (which can happen when the clock changes), assume a single
     // interval of activity. This is the same strategy used to enterprise users.
     base::TimeDelta active_seconds = now - last_active_check_;
-    if (active_seconds < base::TimeDelta::FromSeconds(0) ||
+    if (active_seconds < base::Seconds(0) ||
         active_seconds >= (2 * kUpdateChildActiveTimeInterval)) {
       activity_storage_->AddActivityPeriod(now - kUpdateChildActiveTimeInterval,
                                            now, now);
@@ -314,8 +311,7 @@ bool ChildStatusCollector::GetAppActivity(
     if (last_successful_report_time_int > 0) {
       base::Time last_successful_report_time =
           base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMicroseconds(
-                  last_successful_report_time_int));
+              base::Microseconds(last_successful_report_time_int));
       DCHECK_LT(last_successful_report_time,
                 last_report_params_->generation_time);
       base::TimeDelta elapsed_time =
@@ -356,9 +352,8 @@ bool ChildStatusCollector::FillUserSpecificFields(
     scoped_refptr<ChildStatusCollectorState> state,
     em::ChildStatusReportRequest* status) {
   // Time zone.
-  const std::string current_timezone =
-      base::UTF16ToUTF8(chromeos::system::TimezoneSettings::GetInstance()
-                            ->GetCurrentTimezoneID());
+  const std::string current_timezone = base::UTF16ToUTF8(
+      ash::system::TimezoneSettings::GetInstance()->GetCurrentTimezoneID());
   status->set_time_zone(current_timezone);
 
   // Android status.
@@ -412,26 +407,26 @@ void ChildStatusCollector::OnSubmittedSuccessfully() {
   OnAppActivityReportSubmitted();
 }
 
-bool ChildStatusCollector::ShouldReportActivityTimes() const {
+bool ChildStatusCollector::IsReportingActivityTimes() const {
   return true;
 }
 
-bool ChildStatusCollector::ShouldReportNetworkInterfaces() const {
+bool ChildStatusCollector::IsReportingHardwareData() const {
   return false;
 }
 
-bool ChildStatusCollector::ShouldReportUsers() const {
+bool ChildStatusCollector::IsReportingNetworkData() const {
   return false;
 }
 
-bool ChildStatusCollector::ShouldReportHardwareStatus() const {
+bool ChildStatusCollector::IsReportingUsers() const {
   return false;
 }
 
-bool ChildStatusCollector::ShouldReportCrashReportInfo() const {
+bool ChildStatusCollector::IsReportingCrashReportInfo() const {
   return false;
 }
-bool ChildStatusCollector::ShouldReportAppInfoAndActivity() const {
+bool ChildStatusCollector::IsReportingAppInfoAndActivity() const {
   return false;
 }
 

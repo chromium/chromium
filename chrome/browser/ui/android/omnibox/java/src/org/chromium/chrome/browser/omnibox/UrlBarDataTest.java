@@ -93,6 +93,9 @@ public class UrlBarDataTest {
         verifyOriginSpan("blob:https://origin", "/GUID", "blob:https://origin/GUID");
         verifyOriginSpan("blob:http://origin", "/GUID", "blob:http://origin/GUID");
         verifyOriginSpan("blob:google.com", "/GUID", "blob:google.com/GUID");
+
+        // crbug.com/1257746
+        verifyOriginSpan("content://dev/blah", null, "content://dev/blah");
     }
 
     private void verifyOriginSpan(

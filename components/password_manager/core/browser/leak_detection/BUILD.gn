@@ -22,8 +22,6 @@ source_set("leak_detection_interface_headers") {
 
 source_set("leak_detection") {
   sources = [
-    "authenticated_leak_check.cc",
-    "authenticated_leak_check.h",
     "bulk_leak_check.h",
     "bulk_leak_check_impl.cc",
     "bulk_leak_check_impl.h",
@@ -33,6 +31,8 @@ source_set("leak_detection") {
     "leak_detection_check_factory.h",
     "leak_detection_check_factory_impl.cc",
     "leak_detection_check_factory_impl.h",
+    "leak_detection_check_impl.cc",
+    "leak_detection_check_impl.h",
     "leak_detection_request.cc",
     "leak_detection_request.h",
     "leak_detection_request_factory.cc",
@@ -79,10 +79,10 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "authenticated_leak_check_unittest.cc",
     "bulk_leak_check_impl_unittest.cc",
     "encryption_utils_unittest.cc",
     "leak_detection_check_factory_impl_unittest.cc",
+    "leak_detection_check_impl_unittest.cc",
     "leak_detection_request_unittest.cc",
     "leak_detection_request_utils_unittest.cc",
   ]

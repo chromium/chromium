@@ -118,8 +118,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Block popups switch.
   [model addSectionWithIdentifier:SectionIdentifierMainSwitch];
 
-  if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
-      _browserState->GetPrefs()->IsManagedPreference(
+  if (_browserState->GetPrefs()->IsManagedPreference(
           prefs::kManagedDefaultPopupsSetting)) {
     _blockPopupsManagedItem = [self blockPopupsManagedItem];
     [model addItem:_blockPopupsManagedItem
@@ -135,7 +134,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   if ([self popupsCurrentlyBlocked] &&
-      (_exceptions.GetSize() || _allowPopupsByPolicy.GetSize())) {
+      (_exceptions.GetList().size() || _allowPopupsByPolicy.GetList().size())) {
     [self populateExceptionsItems];
   }
 }
@@ -145,7 +144,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (BOOL)editButtonEnabled {
-  return _exceptions.GetSize() > 0;
+  return _exceptions.GetList().size() > 0;
 }
 
 // Override.
@@ -220,7 +219,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self deleteItemAtIndexPaths:@[ indexPath ]];
   if (![self.tableViewModel
           hasSectionForSectionIdentifier:SectionIdentifierExceptions] ||
-      !_exceptions.GetSize()) {
+      !_exceptions.GetList().size()) {
     self.navigationItem.rightBarButtonItem.enabled = NO;
   }
 }
@@ -289,6 +288,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Deletes the item at the |indexPaths|. Removes the SectionIdentifierExceptions
 // if it is now empty.
 - (void)deleteItemAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
+  NSSortDescriptor* sortDescriptor =
+      [[NSSortDescriptor alloc] initWithKey:@"item" ascending:NO];
+  indexPaths = [indexPaths sortedArrayUsingDescriptors:@[ sortDescriptor ]];
+
   for (NSIndexPath* indexPath in indexPaths) {
     size_t urlIndex = indexPath.item;
     std::string urlToRemove;
@@ -362,10 +365,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
       if (entries[i].source == "policy") {
         // Add the urls to |_allowPopupsByPolicy| if the allowed urls are set by
         // the policy.
-        _allowPopupsByPolicy.AppendString(
-            entries[i].primary_pattern.ToString());
+        _allowPopupsByPolicy.Append(entries[i].primary_pattern.ToString());
       } else {
-        _exceptions.AppendString(entries[i].primary_pattern.ToString());
+        _exceptions.Append(entries[i].primary_pattern.ToString());
       }
     } else {
       LOG(ERROR) << "Secondary content settings patterns are not "
@@ -384,7 +386,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model setHeader:header forSectionWithIdentifier:SectionIdentifierExceptions];
 
   // Populate the exception items set by the user.
-  for (size_t i = 0; i < _exceptions.GetSize(); ++i) {
+  for (size_t i = 0; i < _exceptions.GetList().size(); ++i) {
     std::string allowed_url;
     _exceptions.GetString(i, &allowed_url);
     TableViewDetailTextItem* item =
@@ -394,7 +396,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   // Populate the exception items set by the policy.
-  for (size_t l = 0; l < _allowPopupsByPolicy.GetSize(); ++l) {
+  for (size_t l = 0; l < _allowPopupsByPolicy.GetList().size(); ++l) {
     std::string allowed_url_by_policy;
     _allowPopupsByPolicy.GetString(l, &allowed_url_by_policy);
     TableViewDetailTextItem* item = [[TableViewDetailTextItem alloc]
@@ -405,7 +407,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)layoutSections:(BOOL)blockPopupsIsOn {
-  BOOL hasExceptions = _exceptions.GetSize() || _allowPopupsByPolicy.GetSize();
+  BOOL hasExceptions =
+      _exceptions.GetList().size() || _allowPopupsByPolicy.GetList().size();
   BOOL exceptionsListShown = [self.tableViewModel
       hasSectionForSectionIdentifier:SectionIdentifierExceptions];
 

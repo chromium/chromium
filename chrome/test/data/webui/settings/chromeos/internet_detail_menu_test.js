@@ -11,7 +11,7 @@
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertTrue} from '../../chai_assert.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
 // #import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
@@ -49,8 +49,7 @@ suite('InternetDetailMenu', function() {
   /** @param {boolean=} opt_isGuest */
   async function init(opt_isGuest) {
     const isGuest = !!opt_isGuest;
-    loadTimeData.overrideValues(
-        {updatedCellularActivationUi: true, isGuest: isGuest});
+    loadTimeData.overrideValues({isGuest: isGuest});
 
     const params = new URLSearchParams;
     params.append('guid', 'cellular_guid');
@@ -65,11 +64,14 @@ suite('InternetDetailMenu', function() {
     await flushAsync();
   }
 
-  async function addEsimCellularNetwork(iccid, eid) {
+  async function addEsimCellularNetwork(iccid, eid, is_managed) {
     const cellular =
         getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
     cellular.typeProperties.cellular.iccid = iccid;
     cellular.typeProperties.cellular.eid = eid;
+    if (is_managed) {
+      cellular.source = mojom.OncSource.kDevicePolicy;
+    }
     mojoApi_.setManagedPropertiesForTest(cellular);
     await flushAsync();
   }
@@ -260,6 +262,27 @@ suite('InternetDetailMenu', function() {
       inhibitReason: mojom.InhibitReason.kNotInhibited,
     };
     assertFalse(tripleDot.disabled);
+  });
+
+  test('Menu is disabled on managed profile', async function() {
+    addEsimCellularNetwork('100000', '11111111111111111111111111111111', true);
+    init();
+
+    const params = new URLSearchParams;
+    params.append('guid', 'cellular_guid');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.NETWORK_DETAIL, params);
+
+    await flushAsync();
+    const tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    assertTrue(!!tripleDot);
+    assertFalse(tripleDot.disabled);
+
+    internetDetailMenu.deviceState = {
+      type: mojom.NetworkType.kCellular,
+      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
+    };
+    assertTrue(tripleDot.disabled);
   });
 
   test(

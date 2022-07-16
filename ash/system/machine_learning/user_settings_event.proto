@@ -44,6 +44,7 @@ message UserSettingsEvent {
       HIGHLIGHT_MOUSE_CURSOR = 13;
       HIGHLIGHT_KEYBOARD_FOCUS = 14;
       STICKY_KEYS = 15;
+      LIVE_CAPTION = 16;
     }
 
     // Randomly generated ID that links together settings events that occurred

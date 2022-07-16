@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_BACKGROUND_SYNC_BACKGROUND_SYNC_CONTROLLER_FACTORY_H_
 #define CHROME_BROWSER_BACKGROUND_SYNC_BACKGROUND_SYNC_CONTROLLER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -18,6 +17,11 @@ class BackgroundSyncControllerFactory
   static BackgroundSyncControllerImpl* GetForProfile(Profile* profile);
   static BackgroundSyncControllerFactory* GetInstance();
 
+  BackgroundSyncControllerFactory(const BackgroundSyncControllerFactory&) =
+      delete;
+  BackgroundSyncControllerFactory& operator=(
+      const BackgroundSyncControllerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<BackgroundSyncControllerFactory>;
 
@@ -29,8 +33,6 @@ class BackgroundSyncControllerFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncControllerFactory);
 };
 
 #endif  // CHROME_BROWSER_BACKGROUND_SYNC_BACKGROUND_SYNC_CONTROLLER_FACTORY_H_

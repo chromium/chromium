@@ -267,6 +267,39 @@ TEST_F(EditingUtilitiesTest,
       << "No adjustment because both position are in same enclosing element";
 }
 
+// http://crbug.com/1249655 and http://crbug.com/1252377
+TEST_F(EditingUtilitiesTest,
+       PositionRespectingEditingBoundaryWithPointerEventNone) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 10px/15px Ahem; margin: 0px; }"
+      "input { pointer-events: none; }");
+  SetBodyContent("<div>012 <input id=target placeholder=abc> 345</div>");
+  const auto& target = *To<TextControlElement>(GetElementById("target"));
+  const auto& text_abc = *To<Text>(target.PlaceholderElement()->firstChild());
+
+  const HitTestRequest hit_request(HitTestRequest::kActive);
+  const HitTestLocation hit_location(PhysicalOffset(50, 5));
+  HitTestResult hit_result(hit_request, hit_location);
+  ASSERT_TRUE(
+      GetDocument().View()->GetLayoutView()->HitTest(hit_location, hit_result));
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    ASSERT_EQ(PositionWithAffinity(Position(text_abc, 1)),
+              hit_result.GetPosition());
+    // Simulates drag from "abc"@2 to "abc@1"
+    EXPECT_EQ(
+        PositionWithAffinity(Position(text_abc, 1)),
+        PositionRespectingEditingBoundary(Position(text_abc, 2), hit_result));
+  } else {
+    ASSERT_EQ(PositionWithAffinity(Position::BeforeNode(target)),
+              hit_result.GetPosition());
+  // Simulates drag from "abc"@2 to "abc@1"
+    EXPECT_EQ(
+        PositionWithAffinity(Position::BeforeNode(target)),
+        PositionRespectingEditingBoundary(Position(text_abc, 2), hit_result));
+  }
+}
+
 TEST_F(EditingUtilitiesTest, RepeatString) {
   EXPECT_EQ("", RepeatString("xyz", 0));
   EXPECT_EQ("xyz", RepeatString("xyz", 1));

@@ -20,13 +20,15 @@ class UkmRotationScheduler : public metrics::MetricsRotationScheduler {
       const base::RepeatingClosure& rotation_callback,
       bool fast_startup_for_testing,
       const base::RepeatingCallback<base::TimeDelta(void)>& interval_callback);
+
+  UkmRotationScheduler(const UkmRotationScheduler&) = delete;
+  UkmRotationScheduler& operator=(const UkmRotationScheduler&) = delete;
+
   ~UkmRotationScheduler() override;
 
  private:
   // Record the init sequence order histogram.
   void LogMetricsInitSequence(InitSequence sequence) override;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmRotationScheduler);
 };
 
 }  // namespace ukm

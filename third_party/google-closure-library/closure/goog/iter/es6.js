@@ -1,22 +1,15 @@
-// Copyright 2017 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Shims between goog.iter.Iterator and ES6 iterator.
  */
 
 goog.module('goog.iter.es6');
+goog.module.declareLegacyNamespace();
 
 const GoogIterable = goog.require('goog.iter.Iterable');
 const GoogIterator = goog.require('goog.iter.Iterator');
@@ -64,7 +57,7 @@ class ShimIterable {
     if (iter instanceof ShimIterableImpl || iter instanceof ShimGoogIterator ||
         iter instanceof ShimEs6Iterator) {
       return iter;
-    } else if (typeof iter.next == 'function') {
+    } else if (typeof iter.nextValueOrThrow == 'function') {
       return new ShimIterableImpl(
           () => wrapGoog(/** @type {!Iterator|!GoogIterator} */ (iter)));
     } else if (typeof iter[Symbol.iterator] == 'function') {
@@ -93,7 +86,7 @@ const wrapGoog = (iter) => {
       let value;
       while (!done) {
         try {
-          value = iter.next();
+          value = iter.nextValueOrThrow();
           break;
         } catch (err) {
           if (err !== StopIteration) throw err;
@@ -156,18 +149,12 @@ class ShimGoogIterator extends GoogIterator {
   }
 
   /** @override */
-  __iterator__() {
-    // TODO(sdh): this seems ridiculous, but the compiler complains
-    // that it's not implemented if we don't have it.
-    return super.__iterator__();
-  }
-
-  /** @override */
-  next() {
+  nextValueOrThrow() {
     const result = this.iter_.next();
     if (result.done) throw StopIteration;
     return result.value;
   }
+
 
   /** @override */
   toGoog() {

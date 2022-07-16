@@ -11,7 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sqlite_proto/table_manager.h"
 
 namespace sqlite_proto {

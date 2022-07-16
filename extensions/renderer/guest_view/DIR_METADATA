@@ -1,3 +1,1 @@
-monorail {
-  component: "Platform>Apps>BrowserTag"
-}
+mixins: "//components/guest_view/COMMON_METADATA"

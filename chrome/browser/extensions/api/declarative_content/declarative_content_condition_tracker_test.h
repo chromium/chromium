@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_view_host.h"
@@ -30,6 +29,12 @@ namespace extensions {
 class DeclarativeContentConditionTrackerTest : public testing::Test {
  public:
   DeclarativeContentConditionTrackerTest();
+
+  DeclarativeContentConditionTrackerTest(
+      const DeclarativeContentConditionTrackerTest&) = delete;
+  DeclarativeContentConditionTrackerTest& operator=(
+      const DeclarativeContentConditionTrackerTest&) = delete;
+
   ~DeclarativeContentConditionTrackerTest() override;
 
  protected:
@@ -62,8 +67,6 @@ class DeclarativeContentConditionTrackerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 
   uintptr_t next_predicate_group_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentConditionTrackerTest);
 };
 
 }  // namespace extensions

@@ -10,6 +10,8 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {ClickInfo, Command} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
+import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
@@ -17,20 +19,19 @@ import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-w
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BackgroundManager} from './background_manager.js';
-import {BackgroundSelection, BackgroundSelectionType, CustomizeDialogPage} from './customize_dialog_types.js';
+import {CustomizeDialogPage} from './customize_dialog_types.js';
 import {I18nBehavior, loadTimeData} from './i18n_setup.js';
 import {recordLoadDuration} from './metrics_utils.js';
 import {ModuleRegistry} from './modules/module_registry.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
-import {PromoBrowserCommandProxy} from './promo_browser_command_proxy.js';
 import {$$} from './utils.js';
 import {Action as VoiceAction, recordVoiceAction} from './voice_search_overlay.js';
 import {WindowProxy} from './window_proxy.js';
 
 /**
  * @typedef {{
- *   commandId: promoBrowserCommand.mojom.Command<number>,
- *   clickInfo: !promoBrowserCommand.mojom.ClickInfo
+ *   commandId: Command<number>,
+ *   clickInfo: ClickInfo
  * }}
  */
 let CommandData;
@@ -52,6 +53,9 @@ export const NtpElement = {
   kModule: 7,
   kCustomize: 8,
 };
+
+/** @const {string} */
+const CUSTOMIZE_URL_PARAM = 'customize';
 
 /** @param {NtpElement} element */
 function recordClick(element) {
@@ -105,7 +109,7 @@ class AppElement extends mixinBehaviors
       oneGoogleBarDarkThemeEnabled_: {
         type: Boolean,
         computed: `computeOneGoogleBarDarkThemeEnabled_(oneGoogleBarLoaded_,
-            theme_, backgroundSelection_)`,
+            theme_)`,
         observer: 'notifyOneGoogleBarDarkThemeEnabledChange_',
       },
 
@@ -116,48 +120,46 @@ class AppElement extends mixinBehaviors
       },
 
       /** @private */
-      showCustomizeDialog_: Boolean,
+      showCustomizeDialog_: {
+        type: Boolean,
+        value: () =>
+            WindowProxy.getInstance().url.searchParams.has(CUSTOMIZE_URL_PARAM),
+      },
 
       /** @private {?string} */
-      selectedCustomizeDialogPage_: String,
+      selectedCustomizeDialogPage_: {
+        type: String,
+        value: () =>
+            WindowProxy.getInstance().url.searchParams.get(CUSTOMIZE_URL_PARAM),
+      },
 
       /** @private */
       showVoiceSearchOverlay_: Boolean,
 
       /** @private */
       showBackgroundImage_: {
-        computed: 'computeShowBackgroundImage_(theme_, backgroundSelection_)',
+        computed: 'computeShowBackgroundImage_(theme_)',
         observer: 'onShowBackgroundImageChange_',
         reflectToAttribute: true,
         type: Boolean,
       },
 
-      /** @private {!BackgroundSelection} */
-      backgroundSelection_: {
-        type: Object,
-        value: () => ({type: BackgroundSelectionType.NO_SELECTION}),
-        observer: 'updateBackgroundImagePath_',
-      },
-
       /** @private */
       backgroundImageAttribution1_: {
         type: String,
-        computed: `computeBackgroundImageAttribution1_(theme_,
-            backgroundSelection_)`,
+        computed: `computeBackgroundImageAttribution1_(theme_)`,
       },
 
       /** @private */
       backgroundImageAttribution2_: {
         type: String,
-        computed: `computeBackgroundImageAttribution2_(theme_,
-            backgroundSelection_)`,
+        computed: `computeBackgroundImageAttribution2_(theme_)`,
       },
 
       /** @private */
       backgroundImageAttributionUrl_: {
         type: String,
-        computed: `computeBackgroundImageAttributionUrl_(theme_,
-            backgroundSelection_)`,
+        computed: `computeBackgroundImageAttributionUrl_(theme_)`,
       },
 
       /** @private {SkColor} */
@@ -169,12 +171,12 @@ class AppElement extends mixinBehaviors
       /** @private */
       logoColor_: {
         type: String,
-        computed: 'computeLogoColor_(theme_, backgroundSelection_)',
+        computed: 'computeLogoColor_(theme_)',
       },
 
       /** @private */
       singleColoredLogo_: {
-        computed: 'computeSingleColoredLogo_(theme_, backgroundSelection_)',
+        computed: 'computeSingleColoredLogo_(theme_)',
         type: Boolean,
       },
 
@@ -188,6 +190,12 @@ class AppElement extends mixinBehaviors
       logoEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('logoEnabled'),
+      },
+
+      /** @private */
+      oneGoogleBarEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('oneGoogleBarEnabled'),
       },
 
       /** @private */
@@ -273,6 +281,16 @@ class AppElement extends mixinBehaviors
     this.backgroundImageLoadStartEpoch_ = performance.timeOrigin;
     /** @private {number} */
     this.backgroundImageLoadStart_ = 0;
+
+    chrome.metricsPrivate.recordValue(
+        {
+          metricName: 'NewTabPage.Height',
+          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
+          min: 1,
+          max: 1000,
+          buckets: 200,
+        },
+        Math.floor(document.documentElement.clientHeight));
   }
 
   /** @override */
@@ -344,15 +362,7 @@ class AppElement extends mixinBehaviors
    * @private
    */
   computeOneGoogleBarDarkThemeEnabled_() {
-    switch (this.backgroundSelection_.type) {
-      case BackgroundSelectionType.IMAGE:
-        return true;
-      case BackgroundSelectionType.NO_BACKGROUND:
-      case BackgroundSelectionType.DAILY_REFRESH:
-      case BackgroundSelectionType.NO_SELECTION:
-      default:
-        return this.theme_ && this.theme_.isDark;
-    }
+    return this.theme_ && this.theme_.isDark;
   }
 
   /** @private */
@@ -370,16 +380,7 @@ class AppElement extends mixinBehaviors
    * @private
    */
   computeBackgroundImageAttribution1_() {
-    switch (this.backgroundSelection_.type) {
-      case BackgroundSelectionType.NO_SELECTION:
-        return this.theme_ && this.theme_.backgroundImageAttribution1 || '';
-      case BackgroundSelectionType.IMAGE:
-        return this.backgroundSelection_.image.attribution1;
-      case BackgroundSelectionType.NO_BACKGROUND:
-      case BackgroundSelectionType.DAILY_REFRESH:
-      default:
-        return '';
-    }
+    return this.theme_ && this.theme_.backgroundImageAttribution1 || '';
   }
 
   /**
@@ -387,16 +388,7 @@ class AppElement extends mixinBehaviors
    * @private
    */
   computeBackgroundImageAttribution2_() {
-    switch (this.backgroundSelection_.type) {
-      case BackgroundSelectionType.NO_SELECTION:
-        return this.theme_ && this.theme_.backgroundImageAttribution2 || '';
-      case BackgroundSelectionType.IMAGE:
-        return this.backgroundSelection_.image.attribution2;
-      case BackgroundSelectionType.NO_BACKGROUND:
-      case BackgroundSelectionType.DAILY_REFRESH:
-      default:
-        return '';
-    }
+    return this.theme_ && this.theme_.backgroundImageAttribution2 || '';
   }
 
   /**
@@ -404,18 +396,9 @@ class AppElement extends mixinBehaviors
    * @private
    */
   computeBackgroundImageAttributionUrl_() {
-    switch (this.backgroundSelection_.type) {
-      case BackgroundSelectionType.NO_SELECTION:
-        return this.theme_ && this.theme_.backgroundImageAttributionUrl ?
-            this.theme_.backgroundImageAttributionUrl.url :
-            '';
-      case BackgroundSelectionType.IMAGE:
-        return this.backgroundSelection_.image.attributionUrl.url;
-      case BackgroundSelectionType.NO_BACKGROUND:
-      case BackgroundSelectionType.DAILY_REFRESH:
-      default:
-        return '';
-    }
+    return this.theme_ && this.theme_.backgroundImageAttributionUrl ?
+        this.theme_.backgroundImageAttributionUrl.url :
+        '';
   }
 
   /**
@@ -441,6 +424,9 @@ class AppElement extends mixinBehaviors
 
   /** @private */
   async onLazyRendered_() {
+    // Integration tests use this attribute to determine when lazy load has
+    // completed.
+    document.documentElement.setAttribute('lazy-loaded', true);
     // Instantiate modules even if |modulesEnabled| is false to counterfactually
     // trigger a HaTS survey in a potential control group.
     if (!loadTimeData.getBoolean('modulesLoadEnabled') ||
@@ -508,16 +494,7 @@ class AppElement extends mixinBehaviors
    * @private
    */
   computeShowBackgroundImage_() {
-    switch (this.backgroundSelection_.type) {
-      case BackgroundSelectionType.NO_SELECTION:
-        return !!this.theme_ && !!this.theme_.backgroundImage;
-      case BackgroundSelectionType.IMAGE:
-        return true;
-      case BackgroundSelectionType.NO_BACKGROUND:
-      case BackgroundSelectionType.DAILY_REFRESH:
-      default:
-        return false;
-    }
+    return !!this.theme_ && !!this.theme_.backgroundImage;
   }
 
   /** @private */
@@ -551,47 +528,9 @@ class AppElement extends mixinBehaviors
    * @private
    */
   updateBackgroundImagePath_() {
-    // The |backgroundSelection_| is retained after the dialog commits the
-    // change to the theme. Since |backgroundSelection_| has precedence over
-    // the theme background, the |backgroundSelection_| needs to be reset when
-    // the theme is updated. This is only necessary when the dialog is closed.
-    // If the dialog is open, it will either commit the |backgroundSelection_|
-    // or reset |backgroundSelection_| on cancel.
-    //
-    // Update after background image path is updated so the image is not shown
-    // before the path is updated.
-    if (!this.showCustomizeDialog_ &&
-        this.backgroundSelection_.type !==
-            BackgroundSelectionType.NO_SELECTION) {
-      // Wait when local image is selected, then no background is previewed
-      // followed by selecting a new local image. This avoids a flicker. The
-      // iframe with the old image is shown briefly before it navigates to a new
-      // iframe location, then fetches and renders the new local image.
-      if (this.backgroundSelection_.type ===
-          BackgroundSelectionType.NO_BACKGROUND) {
-        setTimeout(() => {
-          this.backgroundSelection_ = {
-            type: BackgroundSelectionType.NO_SELECTION
-          };
-        }, 100);
-      } else {
-        this.backgroundSelection_ = {
-          type: BackgroundSelectionType.NO_SELECTION
-        };
-      }
-    }
     /** @type {newTabPage.mojom.BackgroundImage|undefined} */
-    let backgroundImage;
-    switch (this.backgroundSelection_.type) {
-      case BackgroundSelectionType.NO_SELECTION:
-        backgroundImage = this.theme_ && this.theme_.backgroundImage;
-        break;
-      case BackgroundSelectionType.IMAGE:
-        backgroundImage = {
-          url: {url: this.backgroundSelection_.image.imageUrl.url}
-        };
-        break;
-    }
+    const backgroundImage = this.theme_ && this.theme_.backgroundImage;
+
     if (backgroundImage) {
       this.backgroundManager_.setBackgroundImage(backgroundImage);
     }
@@ -613,17 +552,9 @@ class AppElement extends mixinBehaviors
    * @private
    */
   computeLogoColor_() {
-    switch (this.backgroundSelection_.type) {
-      case BackgroundSelectionType.IMAGE:
-        return hexColorToSkColor('#ffffff');
-      case BackgroundSelectionType.NO_SELECTION:
-      case BackgroundSelectionType.NO_BACKGROUND:
-      case BackgroundSelectionType.DAILY_REFRESH:
-      default:
-        return this.theme_ &&
-            (this.theme_.logoColor ||
-             (this.theme_.isDark ? hexColorToSkColor('#ffffff') : null));
-    }
+    return this.theme_ &&
+        (this.theme_.logoColor ||
+         (this.theme_.isDark ? hexColorToSkColor('#ffffff') : null));
   }
 
   /**
@@ -631,15 +562,7 @@ class AppElement extends mixinBehaviors
    * @private
    */
   computeSingleColoredLogo_() {
-    switch (this.backgroundSelection_.type) {
-      case BackgroundSelectionType.IMAGE:
-        return true;
-      case BackgroundSelectionType.DAILY_REFRESH:
-      case BackgroundSelectionType.NO_BACKGROUND:
-      case BackgroundSelectionType.NO_SELECTION:
-      default:
-        return this.theme_ && (!!this.theme_.logoColor || this.theme_.isDark);
-    }
+    return this.theme_ && (!!this.theme_.logoColor || this.theme_.isDark);
   }
 
   /**
@@ -655,17 +578,15 @@ class AppElement extends mixinBehaviors
    */
   canShowPromoWithBrowserCommand_(messageData, commandSource, commandOrigin) {
     // Make sure we don't send unsupported commands to the browser.
-    /** @type {!promoBrowserCommand.mojom.Command} */
-    const commandId = Object.values(promoBrowserCommand.mojom.Command)
-                          .includes(messageData.commandId) ?
+    /** @type {!Command} */
+    const commandId = Object.values(Command).includes(messageData.commandId) ?
         messageData.commandId :
-        promoBrowserCommand.mojom.Command.kUnknownCommand;
+        Command.kUnknownCommand;
 
-    PromoBrowserCommandProxy.getInstance()
-        .handler.canShowPromoWithCommand(commandId)
-        .then(({canShow}) => {
+    BrowserCommandProxy.getInstance().handler.canExecuteCommand(commandId).then(
+        ({canExecute}) => {
           const response = {messageType: messageData.messageType};
-          response[messageData.commandId] = canShow;
+          response[messageData.commandId] = canExecute;
           commandSource.postMessage(response, commandOrigin);
         });
   }
@@ -683,14 +604,16 @@ class AppElement extends mixinBehaviors
    */
   executePromoBrowserCommand_(commandData, commandSource, commandOrigin) {
     // Make sure we don't send unsupported commands to the browser.
-    /** @type {!promoBrowserCommand.mojom.Command} */
-    const commandId = Object.values(promoBrowserCommand.mojom.Command)
-                          .includes(commandData.commandId) ?
+    /** @type {!Command} */
+    const commandId = Object.values(Command).includes(commandData.commandId) ?
         commandData.commandId :
-        promoBrowserCommand.mojom.Command.kUnknownCommand;
+        Command.kUnknownCommand;
 
-    PromoBrowserCommandProxy.getInstance()
-        .handler.executeCommand(commandId, commandData.clickInfo)
+    BrowserCommandProxy.getInstance()
+        .handler
+        .executeCommand(
+            commandId,
+            /** @type {!ClickInfo} */ (commandData.clickInfo))
         .then(({commandExecuted}) => {
           commandSource.postMessage(commandExecuted, commandOrigin);
         });

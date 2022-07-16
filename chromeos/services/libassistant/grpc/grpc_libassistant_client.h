@@ -6,8 +6,9 @@
 #define CHROMEOS_SERVICES_LIBASSISTANT_GRPC_GRPC_LIBASSISTANT_CLIENT_H_
 
 #include <memory>
+#include <string>
 
-#include "chromeos/assistant/internal/proto/shared/proto/v2/customer_registration_interface.pb.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/services/libassistant/grpc/grpc_client_thread.h"
 #include "chromeos/services/libassistant/grpc/grpc_state.h"
 #include "chromeos/services/libassistant/grpc/grpc_util.h"
@@ -16,17 +17,9 @@
 namespace chromeos {
 namespace libassistant {
 
-namespace {
-
-// Defines one async client method.
-#define LIBAS_GRPC_CLIENT_INTERFACE(method)                               \
-  void method(const ::assistant::api::method##Request& request,           \
-              chromeos::libassistant::ResponseCallback<                   \
-                  grpc::Status, ::assistant::api::method##Response> done, \
-              chromeos::libassistant::StateConfig state_config =          \
-                  chromeos::libassistant::StateConfig());
-
-}  // namespace
+// Return gRPC method names.
+template <typename Request>
+std::string GetLibassistGrpcMethodName();
 
 // Interface for all methods we as a client can invoke from Libassistant gRPC
 // services. All client methods should be implemented here to send the requests
@@ -38,10 +31,17 @@ class GrpcLibassistantClient {
   GrpcLibassistantClient& operator=(const GrpcLibassistantClient&) = delete;
   ~GrpcLibassistantClient();
 
-  // CustomerRegistrationService:
-  // Handles CustomerRegistrationRequest sent from libassistant customers to
-  // register themselves before allowing to use libassistant services.
-  LIBAS_GRPC_CLIENT_INTERFACE(RegisterCustomer)
+  template <typename Request, typename Response>
+  void CallServiceMethod(
+      const Request& request,
+      chromeos::libassistant::ResponseCallback<grpc::Status, Response> done,
+      chromeos::libassistant::StateConfig state_config) {
+    new chromeos::libassistant::RPCState<Response>(
+        channel_, client_thread_.completion_queue(),
+        GetLibassistGrpcMethodName<Request>(), request, std::move(done),
+        /*callback_task_runner=*/base::SequencedTaskRunnerHandle::Get(),
+        state_config);
+  }
 
  private:
   // This channel will be shared between all stubs used to communicate with

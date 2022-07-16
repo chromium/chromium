@@ -41,6 +41,7 @@
 #include "components/security_interstitials/core/ssl_error_options_mask.h"
 #include "components/security_interstitials/core/ssl_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/url_data_source.h"
@@ -83,9 +84,8 @@ scoped_refptr<net::X509Certificate> CreateFakeCert() {
   std::string cert_der;
   if (!net::x509_util::CreateKeyAndSelfSignedCert(
           "CN=Error", static_cast<uint32_t>(g_serial_number.GetNext()),
-          base::Time::Now() - base::TimeDelta::FromMinutes(5),
-          base::Time::Now() + base::TimeDelta::FromMinutes(5), &unused_key,
-          &cert_der)) {
+          base::Time::Now() - base::Minutes(5),
+          base::Time::Now() + base::Minutes(5), &unused_key, &cert_der)) {
     return nullptr;
   }
 
@@ -98,6 +98,10 @@ scoped_refptr<net::X509Certificate> CreateFakeCert() {
 class InterstitialHTMLSource : public content::URLDataSource {
  public:
   InterstitialHTMLSource() = default;
+
+  InterstitialHTMLSource(const InterstitialHTMLSource&) = delete;
+  InterstitialHTMLSource& operator=(const InterstitialHTMLSource&) = delete;
+
   ~InterstitialHTMLSource() override = default;
 
   // content::URLDataSource:
@@ -114,8 +118,6 @@ class InterstitialHTMLSource : public content::URLDataSource {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   std::string GetSupervisedUserInterstitialHTML(const std::string& path);
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(InterstitialHTMLSource);
 };
 
 std::unique_ptr<SSLBlockingPage> CreateSslBlockingPage(
@@ -218,22 +220,10 @@ std::unique_ptr<BadClockBlockingPage> CreateBadClockBlockingPage(
   // Set up a fake clock error.
   int cert_error = net::ERR_CERT_DATE_INVALID;
   GURL request_url("https://example.com");
-  bool overridable = false;
-  bool strict_enforcement = false;
   std::string url_param;
   if (net::GetValueForKeyInQuery(web_contents->GetURL(), "url", &url_param) &&
       GURL(url_param).is_valid()) {
     request_url = GURL(url_param);
-  }
-  std::string overridable_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "overridable",
-                                 &overridable_param)) {
-    overridable = overridable_param == "1";
-  }
-  std::string strict_enforcement_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "strict_enforcement",
-                                 &strict_enforcement_param)) {
-    strict_enforcement = strict_enforcement_param == "1";
   }
 
   // Determine whether to change the clock to be ahead or behind.
@@ -251,13 +241,6 @@ std::unique_ptr<BadClockBlockingPage> CreateBadClockBlockingPage(
   net::SSLInfo ssl_info;
   ssl_info.cert = ssl_info.unverified_cert = CreateFakeCert();
   // This delegate doesn't create an interstitial.
-  int options_mask = 0;
-  if (overridable)
-    options_mask |=
-        security_interstitials::SSLErrorOptionsMask::SOFT_OVERRIDE_ENABLED;
-  if (strict_enforcement)
-    options_mask |=
-        security_interstitials::SSLErrorOptionsMask::STRICT_ENFORCEMENT;
   ChromeSecurityBlockingPageFactory blocking_page_factory;
   return blocking_page_factory.CreateBadClockBlockingPage(
       web_contents, cert_error, ssl_info, request_url, base::Time::Now(),
@@ -328,14 +311,15 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
       threat_type = safe_browsing::SB_THREAT_TYPE_BILLING;
     }
   }
+  const content::GlobalRenderFrameHostId primary_main_frame_id =
+      web_contents->GetMainFrame()->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
   resource.is_subresource = request_url != main_frame_url;
   resource.is_subframe = false;
   resource.threat_type = threat_type;
-  resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
-      web_contents->GetMainFrame()->GetProcess()->GetID(),
-      web_contents->GetMainFrame()->GetRoutingID());
+  resource.render_process_id = primary_main_frame_id.child_id;
+  resource.render_frame_id = primary_main_frame_id.frame_routing_id;
   resource.threat_source = g_browser_process->safe_browsing_service()
                                ->database_manager()
                                ->GetThreatSource();
@@ -381,14 +365,15 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
       is_giant_webview = true;
     }
   }
+  const content::GlobalRenderFrameHostId primary_main_frame_id =
+      web_contents->GetMainFrame()->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
   resource.is_subresource = request_url != main_frame_url;
   resource.is_subframe = false;
   resource.threat_type = threat_type;
-  resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
-      web_contents->GetMainFrame()->GetProcess()->GetID(),
-      web_contents->GetMainFrame()->GetRoutingID());
+  resource.render_process_id = primary_main_frame_id.child_id;
+  resource.render_frame_id = primary_main_frame_id.frame_routing_id;
   resource.threat_source = g_browser_process->safe_browsing_service()
                                ->database_manager()
                                ->GetThreatSource();
@@ -572,19 +557,6 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
     allow_access_requests = allow_access_requests_string == "1";
   }
 
-  bool is_child_account = false;
-  std::string is_child_account_string;
-  if (net::GetValueForKeyInQuery(url, "is_child_account",
-                                 &is_child_account_string)) {
-    is_child_account = is_child_account_string == "1";
-  }
-
-  bool is_deprecated = false;
-  std::string is_deprecated_string;
-  if (net::GetValueForKeyInQuery(url, "is_deprecated", &is_deprecated_string)) {
-    is_deprecated = is_deprecated_string == "1" && !is_child_account;
-  }
-
   std::string custodian;
   net::GetValueForKeyInQuery(url, "custodian", &custodian);
   std::string second_custodian;
@@ -603,7 +575,7 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
       supervised_user_error_page::DEFAULT;
   std::string reason_string;
   if (net::GetValueForKeyInQuery(url, "reason", &reason_string)) {
-    if (reason_string == "safe_sites" && is_child_account) {
+    if (reason_string == "safe_sites") {
       reason = supervised_user_error_page::ASYNC_CHECKER;
     } else if (reason_string == "manual") {
       reason = supervised_user_error_page::MANUAL;
@@ -614,8 +586,8 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
 
   return supervised_user_error_page::BuildHtml(
       allow_access_requests, profile_image_url, profile_image_url2, custodian,
-      custodian_email, second_custodian, second_custodian_email,
-      is_child_account, is_deprecated, reason,
-      g_browser_process->GetApplicationLocale());
+      custodian_email, second_custodian, second_custodian_email, reason,
+      g_browser_process->GetApplicationLocale(), /*already_sent_request=*/false,
+      /*is_main_frame=*/true);
 }
 #endif

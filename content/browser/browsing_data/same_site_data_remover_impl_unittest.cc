@@ -40,6 +40,12 @@ struct StoragePartitionSameSiteRemovalData {
 class SameSiteRemoverTestStoragePartition : public TestStoragePartition {
  public:
   SameSiteRemoverTestStoragePartition() {}
+
+  SameSiteRemoverTestStoragePartition(
+      const SameSiteRemoverTestStoragePartition&) = delete;
+  SameSiteRemoverTestStoragePartition& operator=(
+      const SameSiteRemoverTestStoragePartition&) = delete;
+
   ~SameSiteRemoverTestStoragePartition() override {}
 
   void ClearData(uint32_t removal_mask,
@@ -63,8 +69,6 @@ class SameSiteRemoverTestStoragePartition : public TestStoragePartition {
 
  private:
   StoragePartitionSameSiteRemovalData storage_partition_removal_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(SameSiteRemoverTestStoragePartition);
 };
 
 class SameSiteDataRemoverImplTest : public testing::Test {
@@ -74,6 +78,10 @@ class SameSiteDataRemoverImplTest : public testing::Test {
         same_site_remover_(
             std::make_unique<SameSiteDataRemoverImpl>(browser_context_.get())) {
   }
+
+  SameSiteDataRemoverImplTest(const SameSiteDataRemoverImplTest&) = delete;
+  SameSiteDataRemoverImplTest& operator=(const SameSiteDataRemoverImplTest&) =
+      delete;
 
   void TearDown() override { browser_context_.reset(); }
 
@@ -113,8 +121,6 @@ class SameSiteDataRemoverImplTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<SameSiteDataRemoverImpl> same_site_remover_;
-
-  DISALLOW_COPY_AND_ASSIGN(SameSiteDataRemoverImplTest);
 };
 
 TEST_F(SameSiteDataRemoverImplTest, TestRemoveSameSiteNoneCookies) {

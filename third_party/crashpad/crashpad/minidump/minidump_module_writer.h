@@ -25,7 +25,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "minidump/minidump_extensions.h"
 #include "minidump/minidump_stream_writer.h"
 #include "minidump/minidump_writable.h"
@@ -42,13 +41,15 @@ class MinidumpUTF16StringWriter;
 //!     MINIDUMP_MODULE::CvRecord in minidump files.
 class MinidumpModuleCodeViewRecordWriter : public internal::MinidumpWritable {
  public:
+  MinidumpModuleCodeViewRecordWriter(
+      const MinidumpModuleCodeViewRecordWriter&) = delete;
+  MinidumpModuleCodeViewRecordWriter& operator=(
+      const MinidumpModuleCodeViewRecordWriter&) = delete;
+
   ~MinidumpModuleCodeViewRecordWriter() override;
 
  protected:
   MinidumpModuleCodeViewRecordWriter() : MinidumpWritable() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MinidumpModuleCodeViewRecordWriter);
 };
 
 namespace internal {
@@ -59,6 +60,11 @@ template <typename CodeViewRecordType>
 class MinidumpModuleCodeViewRecordPDBLinkWriter
     : public MinidumpModuleCodeViewRecordWriter {
  public:
+  MinidumpModuleCodeViewRecordPDBLinkWriter(
+      const MinidumpModuleCodeViewRecordPDBLinkWriter&) = delete;
+  MinidumpModuleCodeViewRecordPDBLinkWriter& operator=(
+      const MinidumpModuleCodeViewRecordPDBLinkWriter&) = delete;
+
   //! \brief Sets the name of the `.pdb` file being linked to.
   void SetPDBName(const std::string& pdb_name) { pdb_name_ = pdb_name; }
 
@@ -79,8 +85,6 @@ class MinidumpModuleCodeViewRecordPDBLinkWriter
  private:
   CodeViewRecordType codeview_record_;
   std::string pdb_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpModuleCodeViewRecordPDBLinkWriter);
 };
 
 }  // namespace internal
@@ -97,13 +101,15 @@ class MinidumpModuleCodeViewRecordPDB20Writer final
       : internal::MinidumpModuleCodeViewRecordPDBLinkWriter<
             CodeViewRecordPDB20>() {}
 
+  MinidumpModuleCodeViewRecordPDB20Writer(
+      const MinidumpModuleCodeViewRecordPDB20Writer&) = delete;
+  MinidumpModuleCodeViewRecordPDB20Writer& operator=(
+      const MinidumpModuleCodeViewRecordPDB20Writer&) = delete;
+
   ~MinidumpModuleCodeViewRecordPDB20Writer() override;
 
   //! \brief Sets CodeViewRecordPDB20::timestamp and CodeViewRecordPDB20::age.
   void SetTimestampAndAge(time_t timestamp, uint32_t age);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MinidumpModuleCodeViewRecordPDB20Writer);
 };
 
 //! \brief The writer for a CodeViewRecordPDB70 object in a minidump file.
@@ -114,6 +120,11 @@ class MinidumpModuleCodeViewRecordPDB70Writer final
   MinidumpModuleCodeViewRecordPDB70Writer()
       : internal::MinidumpModuleCodeViewRecordPDBLinkWriter<
             CodeViewRecordPDB70>() {}
+
+  MinidumpModuleCodeViewRecordPDB70Writer(
+      const MinidumpModuleCodeViewRecordPDB70Writer&) = delete;
+  MinidumpModuleCodeViewRecordPDB70Writer& operator=(
+      const MinidumpModuleCodeViewRecordPDB70Writer&) = delete;
 
   ~MinidumpModuleCodeViewRecordPDB70Writer() override;
 
@@ -131,9 +142,6 @@ class MinidumpModuleCodeViewRecordPDB70Writer final
     codeview_record()->uuid = uuid;
     codeview_record()->age = age;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MinidumpModuleCodeViewRecordPDB70Writer);
 };
 
 //! \brief The writer for a CodeViewRecordBuildID object in a minidump file.
@@ -141,6 +149,12 @@ class MinidumpModuleCodeViewRecordBuildIDWriter final
     : public MinidumpModuleCodeViewRecordWriter {
  public:
   MinidumpModuleCodeViewRecordBuildIDWriter();
+
+  MinidumpModuleCodeViewRecordBuildIDWriter(
+      const MinidumpModuleCodeViewRecordBuildIDWriter&) = delete;
+  MinidumpModuleCodeViewRecordBuildIDWriter& operator=(
+      const MinidumpModuleCodeViewRecordBuildIDWriter&) = delete;
+
   ~MinidumpModuleCodeViewRecordBuildIDWriter() override;
 
   //! \brief Sets the build ID used for symbol lookup.
@@ -152,8 +166,6 @@ class MinidumpModuleCodeViewRecordBuildIDWriter final
   bool WriteObject(FileWriterInterface* file_writer) override;
 
   std::vector<uint8_t> build_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpModuleCodeViewRecordBuildIDWriter);
 };
 
 //! \brief The writer for an IMAGE_DEBUG_MISC object in a minidump file.
@@ -163,6 +175,12 @@ class MinidumpModuleMiscDebugRecordWriter final
     : public internal::MinidumpWritable {
  public:
   MinidumpModuleMiscDebugRecordWriter();
+
+  MinidumpModuleMiscDebugRecordWriter(
+      const MinidumpModuleMiscDebugRecordWriter&) = delete;
+  MinidumpModuleMiscDebugRecordWriter& operator=(
+      const MinidumpModuleMiscDebugRecordWriter&) = delete;
+
   ~MinidumpModuleMiscDebugRecordWriter() override;
 
   //! \brief Sets IMAGE_DEBUG_MISC::DataType.
@@ -189,8 +207,6 @@ class MinidumpModuleMiscDebugRecordWriter final
   IMAGE_DEBUG_MISC image_debug_misc_;
   std::string data_;
   std::u16string data_utf16_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpModuleMiscDebugRecordWriter);
 };
 
 //! \brief The writer for a MINIDUMP_MODULE object in a minidump file.
@@ -202,6 +218,10 @@ class MinidumpModuleMiscDebugRecordWriter final
 class MinidumpModuleWriter final : public internal::MinidumpWritable {
  public:
   MinidumpModuleWriter();
+
+  MinidumpModuleWriter(const MinidumpModuleWriter&) = delete;
+  MinidumpModuleWriter& operator=(const MinidumpModuleWriter&) = delete;
+
   ~MinidumpModuleWriter() override;
 
   //! \brief Initializes the MINIDUMP_MODULE based on \a module_snapshot.
@@ -320,8 +340,6 @@ class MinidumpModuleWriter final : public internal::MinidumpWritable {
   std::unique_ptr<internal::MinidumpUTF16StringWriter> name_;
   std::unique_ptr<MinidumpModuleCodeViewRecordWriter> codeview_record_;
   std::unique_ptr<MinidumpModuleMiscDebugRecordWriter> misc_debug_record_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpModuleWriter);
 };
 
 //! \brief The writer for a MINIDUMP_MODULE_LIST stream in a minidump file,
@@ -329,6 +347,10 @@ class MinidumpModuleWriter final : public internal::MinidumpWritable {
 class MinidumpModuleListWriter final : public internal::MinidumpStreamWriter {
  public:
   MinidumpModuleListWriter();
+
+  MinidumpModuleListWriter(const MinidumpModuleListWriter&) = delete;
+  MinidumpModuleListWriter& operator=(const MinidumpModuleListWriter&) = delete;
+
   ~MinidumpModuleListWriter() override;
 
   //! \brief Adds an initialized MINIDUMP_MODULE for each module in \a
@@ -363,8 +385,6 @@ class MinidumpModuleListWriter final : public internal::MinidumpStreamWriter {
  private:
   std::vector<std::unique_ptr<MinidumpModuleWriter>> modules_;
   MINIDUMP_MODULE_LIST module_list_base_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpModuleListWriter);
 };
 
 }  // namespace crashpad

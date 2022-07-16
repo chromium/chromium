@@ -5,9 +5,8 @@
 #ifndef MEDIA_VIDEO_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
 #define MEDIA_VIDEO_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "media/base/video_frame.h"
 
 namespace base {
@@ -38,6 +37,11 @@ class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
       const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
       const scoped_refptr<base::TaskRunner>& worker_task_runner,
       GpuVideoAcceleratorFactories* gpu_factories);
+
+  GpuMemoryBufferVideoFramePool(const GpuMemoryBufferVideoFramePool&) = delete;
+  GpuMemoryBufferVideoFramePool& operator=(
+      const GpuMemoryBufferVideoFramePool&) = delete;
+
   virtual ~GpuMemoryBufferVideoFramePool();
 
   // Callback used by MaybeCreateHardwareFrame to deliver a new VideoFrame
@@ -61,11 +65,13 @@ class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
   // Allows injection of a base::SimpleTestClock for testing.
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
+  // Returns true if SharedImages should be bound for each individual plane
+  // of a multiplanar GpuMemoryBuffer. Exposed externally for testing.
+  static bool MultiPlaneVideoSharedImagesEnabled();
+
  private:
   class PoolImpl;
   scoped_refptr<PoolImpl> pool_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferVideoFramePool);
 };
 
 }  // namespace media

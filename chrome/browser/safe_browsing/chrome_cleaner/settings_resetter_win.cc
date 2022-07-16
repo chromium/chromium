@@ -13,12 +13,12 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/win/registry.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 #include "chrome/browser/profiles/profile.h"
@@ -74,6 +74,9 @@ class SettingsResetter : public base::RefCounted<SettingsResetter> {
       std::unique_ptr<PostCleanupSettingsResetter::Delegate> delegate,
       base::OnceClosure done_callback);
 
+  SettingsResetter(const SettingsResetter&) = delete;
+  SettingsResetter& operator=(const SettingsResetter&) = delete;
+
   // Resets settings for all profiles in |profiles_to_reset_| and invokes
   // |done_callback_| when done.
   void Run();
@@ -113,8 +116,6 @@ class SettingsResetter : public base::RefCounted<SettingsResetter> {
   base::OnceClosure done_callback_;
 
   std::unique_ptr<PostCleanupSettingsResetter::Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsResetter);
 };
 
 SettingsResetter::SettingsResetter(
@@ -220,7 +221,6 @@ void PostCleanupSettingsResetter::TagForResetting(Profile* profile) {
   DCHECK(profile);
 
   RecordResetPending(true, profile);
-  UMA_HISTOGRAM_BOOLEAN("SoftwareReporter.TaggedProfileForResetting", true);
 }
 
 void PostCleanupSettingsResetter::ResetTaggedProfiles(

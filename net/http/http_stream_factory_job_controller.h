@@ -158,9 +158,6 @@ class HttpStreamFactory::JobController
   // Returns true if |this| has a pending alternative job that is not completed.
   bool HasPendingAltJob() const;
 
-  // Returns the estimated memory usage in bytes.
-  size_t EstimateMemoryUsage() const;
-
  private:
   friend class test::JobControllerPeer;
 

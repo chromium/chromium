@@ -7,7 +7,6 @@
 #include <set>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
@@ -67,6 +66,9 @@ class TouchSelectionControllerClientAura::EnvEventObserver
     env->AddEventObserver(this, env, types);
   }
 
+  EnvEventObserver(const EnvEventObserver&) = delete;
+  EnvEventObserver& operator=(const EnvEventObserver&) = delete;
+
   ~EnvEventObserver() override {
     aura::Env::GetInstance()->RemoveEventObserver(this);
   }
@@ -99,8 +101,6 @@ class TouchSelectionControllerClientAura::EnvEventObserver
 
   ui::TouchSelectionController* selection_controller_;
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnvEventObserver);
 };
 
 TouchSelectionControllerClientAura::TouchSelectionControllerClientAura(
@@ -110,7 +110,7 @@ TouchSelectionControllerClientAura::TouchSelectionControllerClientAura(
       active_client_(&internal_client_),
       active_menu_client_(this),
       quick_menu_timer_(FROM_HERE,
-                        base::TimeDelta::FromMilliseconds(kQuickMenuDelayInMs),
+                        base::Milliseconds(kQuickMenuDelayInMs),
                         base::BindRepeating(
                             &TouchSelectionControllerClientAura::ShowQuickMenu,
                             base::Unretained(this))),
@@ -429,10 +429,6 @@ TouchSelectionControllerClientAura::InternalClient::CreateDrawable() {
 // of these will initiate a compositor frame and thus the regular update
 // process, there is nothing to do here.
 void TouchSelectionControllerClientAura::InternalClient::DidScroll() {}
-
-const char* TouchSelectionControllerClientAura::GetType() {
-  return "TouchSelectionControllerClientAura";
-}
 
 bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
     int command_id) const {

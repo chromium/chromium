@@ -19,7 +19,6 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
@@ -98,6 +97,9 @@ class ServiceWorkerStorage {
   using GetUserDataForAllRegistrationsInDBCallback =
       base::OnceCallback<void(ServiceWorkerDatabase::Status,
                               std::vector<mojom::ServiceWorkerUserDataPtr>)>;
+
+  ServiceWorkerStorage(const ServiceWorkerStorage&) = delete;
+  ServiceWorkerStorage& operator=(const ServiceWorkerStorage&) = delete;
 
   ~ServiceWorkerStorage();
 
@@ -562,8 +564,6 @@ class ServiceWorkerStorage {
       resource_metadata_writers_;
 
   base::WeakPtrFactory<ServiceWorkerStorage> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerStorage);
 };
 
 }  // namespace storage

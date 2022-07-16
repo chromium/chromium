@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_METRICS_UPGRADE_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_UPGRADE_METRICS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 
 // UpgradeMetricsProvider reports the state of detected pending updates in UMA
@@ -13,14 +12,15 @@
 class UpgradeMetricsProvider : public metrics::MetricsProvider {
  public:
   UpgradeMetricsProvider();
+
+  UpgradeMetricsProvider(const UpgradeMetricsProvider&) = delete;
+  UpgradeMetricsProvider& operator=(const UpgradeMetricsProvider&) = delete;
+
   ~UpgradeMetricsProvider() override;
 
   // metrics::MetricsProvider:
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpgradeMetricsProvider);
 };
 
 #endif  // CHROME_BROWSER_METRICS_UPGRADE_METRICS_PROVIDER_H_

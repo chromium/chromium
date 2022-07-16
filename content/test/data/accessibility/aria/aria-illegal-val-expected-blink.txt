@@ -11,7 +11,7 @@ rootWebArea
 ++++++treeItem expanded name='Expanded illegal' selected=false
 ++++++group name='Grabbed illegal'
 ++++++button name='Haspopup illegal'
-++++++group ariaInvalidValue='X-ILLEGAL' name='Invalid illegal' invalidState=other
+++++++group name='Invalid illegal' invalidState=true
 ++++++log containerLiveRelevant='additions text' containerLiveStatus='X-ILLEGAL' name='Live illegal' liveRelevant='additions text' liveStatus='X-ILLEGAL' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false
 ++++++dialog name='Modal illegal' modal=true
 ++++++textField multiline name='Multiline illegal'

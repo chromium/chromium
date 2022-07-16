@@ -12,7 +12,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/power_scheduler/power_mode.h"
@@ -39,8 +39,8 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -192,7 +192,8 @@ bool SynchronousLayerTreeFrameSink::BindToClient(
   // The SharedBitmapManager is null since software compositing is not supported
   // or used on Android.
   frame_sink_manager_ = std::make_unique<viz::FrameSinkManagerImpl>(
-      /*shared_bitmap_manager=*/nullptr);
+      viz::FrameSinkManagerImpl::InitParams(
+          /*shared_bitmap_manager=*/nullptr));
 
   if (synthetic_begin_frame_source_) {
     client_->SetBeginFrameSource(synthetic_begin_frame_source_.get());

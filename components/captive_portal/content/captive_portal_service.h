@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
+#include "components/captive_portal/core/captive_portal_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
 #include "net/base/backoff_entry.h"
@@ -66,12 +66,16 @@ class CaptivePortalService : public KeyedService {
       PrefService* pref_service,
       const base::TickClock* clock_for_testing = nullptr,
       network::mojom::URLLoaderFactory* loader_factory_for_testing = nullptr);
+
+  CaptivePortalService(const CaptivePortalService&) = delete;
+  CaptivePortalService& operator=(const CaptivePortalService&) = delete;
+
   ~CaptivePortalService() override;
 
   // Triggers a check for a captive portal.  If there's already a check in
   // progress, does nothing.  Throttles the rate at which requests are sent.
   // Always sends the result notification asynchronously.
-  void DetectCaptivePortal(CaptivePortalProbeReason probe_reason);
+  void DetectCaptivePortal();
 
   base::CallbackListSubscription RegisterCallback(
       const base::RepeatingCallback<void(const Results&)>& cb) {
@@ -131,7 +135,7 @@ class CaptivePortalService : public KeyedService {
 
   // Initiates a captive portal check, without any throttling.  If the service
   // is disabled, just acts like there's an Internet connection.
-  void DetectCaptivePortalInternal(CaptivePortalProbeReason probe_reason);
+  void DetectCaptivePortalInternal();
 
   // Called by CaptivePortalDetector when detection completes.
   void OnPortalDetectionCompleted(
@@ -214,8 +218,6 @@ class CaptivePortalService : public KeyedService {
 
   // Test tick clock used by unit tests.
   const base::TickClock* const tick_clock_for_testing_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalService);
 };
 
 }  // namespace captive_portal

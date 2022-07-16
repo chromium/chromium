@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_EMULATION_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_EMULATION_HANDLER_H_
 
-#include "base/macros.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/emulation.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -28,6 +27,10 @@ class EmulationHandler : public DevToolsDomainHandler,
                          public Emulation::Backend {
  public:
   EmulationHandler();
+
+  EmulationHandler(const EmulationHandler&) = delete;
+  EmulationHandler& operator=(const EmulationHandler&) = delete;
+
   ~EmulationHandler() override;
 
   static std::vector<EmulationHandler*> ForAgentHost(
@@ -84,7 +87,11 @@ class EmulationHandler : public DevToolsDomainHandler,
 
   bool device_emulation_enabled() { return device_emulation_enabled_; }
 
-  void ApplyOverrides(net::HttpRequestHeaders* headers);
+  // Applies the network request header overrides on `headers`.  If the
+  // User-Agent header was overridden, `user_agent_overridden` is set to true;
+  // otherwise, it's set to false.
+  void ApplyOverrides(net::HttpRequestHeaders* headers,
+                      bool* user_agent_overridden);
   bool ApplyUserAgentMetadataOverrides(
       absl::optional<blink::UserAgentMetadata>* override_out);
 
@@ -111,8 +118,6 @@ class EmulationHandler : public DevToolsDomainHandler,
   RenderFrameHostImpl* host_;
 
   base::ScopedClosureRunner capture_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmulationHandler);
 };
 
 }  // namespace protocol

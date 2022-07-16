@@ -19,7 +19,7 @@ namespace offline_pages {
 // eventually deleted if their offline_id does not correspond to an offline
 // item. Two days gives us plenty of time so that the prefetched item can be
 // imported into the offline item database.
-const base::TimeDelta kVisualsExpirationDelta = base::TimeDelta::FromDays(2);
+const base::TimeDelta kVisualsExpirationDelta = base::Days(2);
 
 namespace {
 

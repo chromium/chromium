@@ -17,9 +17,9 @@
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/font_list.h"
@@ -32,6 +32,11 @@ namespace base {
 class File;
 class Lock;
 class RefCountedMemory;
+class RefCountedString;
+}  // namespace base
+
+namespace gfx {
+class ImageSkiaRep;
 }
 
 namespace ui {
@@ -150,6 +155,10 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     virtual ~Delegate() = default;
   };
 
+  using LottieImageParseFunction =
+      gfx::ImageSkiaRep (*)(const base::RefCountedString& bytes_string,
+                            float scale);
+
   // Initialize the ResourceBundle for this process. Does not take ownership of
   // the |delegate| value. Returns the language selected or an empty string if
   // no candidate bundle file could be determined, or crashes the process if a
@@ -190,6 +199,14 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // Initialize the ResourceBundle using data pack from given buffer.
   // Return the global resource loader instance.
   static ResourceBundle& GetSharedInstance();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  static void SetParseLottieAsStillImage(
+      LottieImageParseFunction parse_lottie_as_still_image);
+#endif
+
+  ResourceBundle(const ResourceBundle&) = delete;
+  ResourceBundle& operator=(const ResourceBundle&) = delete;
 
   // Loads a secondary locale data pack using the given file region.
   void LoadSecondaryLocaleDataWithPakFileRegion(
@@ -266,7 +283,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // Loads the raw bytes of a data resource nearest the scale factor
   // |scale_factor| into |bytes|. If the resource is compressed, decompress
-  // before returning. Use ResourceHandle::SCALE_FACTOR_NONE for scale
+  // before returning. Use ResourceHandle::kScaleFactorNone for scale
   // independent image resources (such as wallpaper). Returns null if we fail
   // to read the resource.
   base::RefCountedMemory* LoadDataResourceBytesForScale(
@@ -279,7 +296,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // Return the contents of a resource in a StringPiece given the resource id
   // nearest the scale factor |scale_factor|.
-  // Use ResourceHandle::SCALE_FACTOR_NONE for scale independent image resources
+  // Use ResourceHandle::kScaleFactorNone for scale independent image resources
   // (such as wallpaper).
   base::StringPiece GetRawDataResourceForScale(
       int resource_id,
@@ -348,8 +365,8 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   static base::FilePath GetLocaleFilePath(const std::string& app_locale);
 
   // Returns the maximum scale factor currently loaded.
-  // Returns SCALE_FACTOR_100P if no resource is loaded.
-  ResourceScaleFactor GetMaxScaleFactor() const;
+  // Returns k100Percent if no resource is loaded.
+  ResourceScaleFactor GetMaxResourceScaleFactor() const;
 
   // Returns true if |scale_factor| is supported by this platform.
   static bool IsScaleFactorSupported(ResourceScaleFactor scale_factor);
@@ -443,8 +460,8 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // Fills the |bitmap| given the |resource_id| and |scale_factor|.
   // Returns false if the resource does not exist. This may fall back to
-  // the data pack with SCALE_FACTOR_NONE, and when this happens,
-  // |scale_factor| will be set to SCALE_FACTOR_NONE.
+  // the data pack with kScaleFactorNone, and when this happens,
+  // |scale_factor| will be set to kScaleFactorNone.
   bool LoadBitmap(int resource_id,
                   ResourceScaleFactor* scale_factor,
                   SkBitmap* bitmap,
@@ -462,6 +479,21 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
                         size_t size,
                         SkBitmap* bitmap,
                         bool* fell_back_to_1x);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Creates the |rep| from the Lottie asset with the given |resource_id|,
+  // rasterizing at the given |scale|. The |scale_factor| is used to select
+  // among multiple versions specially designed for different scales. For
+  // example, a picture of a flower could have a large-scale version with dew
+  // drops to add visual interest, and a small-scale version with no dew drops
+  // because such fine details cannot look good at that scale. There can only be
+  // a few such versions, but each of them is vector graphics to be rasterized
+  // at a more precise |scale|. Returns false if the resource does not exist.
+  bool LoadLottie(int resource_id,
+                  float scale,
+                  ResourceScaleFactor scale_factor,
+                  gfx::ImageSkiaRep* rep) const;
+#endif
 
   // Returns an empty image for when a resource cannot be loaded. This is a
   // bright red bitmap.
@@ -525,8 +557,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   std::string loaded_locale_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceBundle);
 };
 
 }  // namespace ui

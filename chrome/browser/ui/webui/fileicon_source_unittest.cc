@@ -114,8 +114,8 @@ MATCHER(CallbackIsNull, "") {
 
 TEST_F(FileIconSourceTest, FileIconSource_Parse) {
   std::vector<ui::ResourceScaleFactor> supported_scale_factors;
-  supported_scale_factors.push_back(ui::SCALE_FACTOR_100P);
-  supported_scale_factors.push_back(ui::SCALE_FACTOR_200P);
+  supported_scale_factors.push_back(ui::k100Percent);
+  supported_scale_factors.push_back(ui::k200Percent);
   ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
       supported_scale_factors);
 

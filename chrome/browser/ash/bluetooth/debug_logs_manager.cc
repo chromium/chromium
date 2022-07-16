@@ -10,6 +10,7 @@
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/dbus/bluetooth_debug_manager_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
@@ -23,7 +24,7 @@ const uint8_t kVerboseDisabledLevel = 0;
 const uint8_t kVerboseBasicLevel = 1;
 
 const int kDbusRetryCount = 10;
-constexpr base::TimeDelta kDbusRetryInterval = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kDbusRetryInterval = base::Seconds(3);
 }  // namespace
 
 DebugLogsManager::DebugLogsManager(const std::string& primary_user_email,
@@ -89,6 +90,11 @@ void DebugLogsManager::SendDBusVerboseLogsMessage(bool enable,
                                                   int num_completed_attempts) {
   uint8_t level = enable ? kVerboseBasicLevel : kVerboseDisabledLevel;
   VLOG(1) << (enable ? "Enabling" : "Disabling") << " bluetooth verbose logs";
+
+  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+    VLOG(1) << "Floss does not yet support dynamic verbose logging.";
+    return;
+  }
 
   bluez::BluezDBusManager::Get()
       ->GetBluetoothDebugManagerClient()

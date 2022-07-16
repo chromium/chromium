@@ -1036,42 +1036,43 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
 
 #if defined(OS_FUCHSIA)
   if (gfx::HasExtension(enabled_extensions,
-                        VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME)) {
-    vkCreateBufferCollectionFUCHSIA =
-        reinterpret_cast<PFN_vkCreateBufferCollectionFUCHSIA>(
-            vkGetDeviceProcAddr(vk_device, "vkCreateBufferCollectionFUCHSIA"));
-    if (!vkCreateBufferCollectionFUCHSIA) {
+                        VK_FUCHSIA_BUFFER_COLLECTION_X_EXTENSION_NAME)) {
+    vkCreateBufferCollectionFUCHSIAX =
+        reinterpret_cast<PFN_vkCreateBufferCollectionFUCHSIAX>(
+            vkGetDeviceProcAddr(vk_device, "vkCreateBufferCollectionFUCHSIAX"));
+    if (!vkCreateBufferCollectionFUCHSIAX) {
       DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                    << "vkCreateBufferCollectionFUCHSIA";
+                    << "vkCreateBufferCollectionFUCHSIAX";
       return false;
     }
 
-    vkSetBufferCollectionConstraintsFUCHSIA =
-        reinterpret_cast<PFN_vkSetBufferCollectionConstraintsFUCHSIA>(
+    vkSetBufferCollectionConstraintsFUCHSIAX =
+        reinterpret_cast<PFN_vkSetBufferCollectionConstraintsFUCHSIAX>(
             vkGetDeviceProcAddr(vk_device,
-                                "vkSetBufferCollectionConstraintsFUCHSIA"));
-    if (!vkSetBufferCollectionConstraintsFUCHSIA) {
+                                "vkSetBufferCollectionConstraintsFUCHSIAX"));
+    if (!vkSetBufferCollectionConstraintsFUCHSIAX) {
       DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                    << "vkSetBufferCollectionConstraintsFUCHSIA";
+                    << "vkSetBufferCollectionConstraintsFUCHSIAX";
       return false;
     }
 
-    vkGetBufferCollectionPropertiesFUCHSIA =
-        reinterpret_cast<PFN_vkGetBufferCollectionPropertiesFUCHSIA>(
+    vkGetBufferCollectionPropertiesFUCHSIAX =
+        reinterpret_cast<PFN_vkGetBufferCollectionPropertiesFUCHSIAX>(
             vkGetDeviceProcAddr(vk_device,
-                                "vkGetBufferCollectionPropertiesFUCHSIA"));
-    if (!vkGetBufferCollectionPropertiesFUCHSIA) {
+                                "vkGetBufferCollectionPropertiesFUCHSIAX"));
+    if (!vkGetBufferCollectionPropertiesFUCHSIAX) {
       DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                    << "vkGetBufferCollectionPropertiesFUCHSIA";
+                    << "vkGetBufferCollectionPropertiesFUCHSIAX";
       return false;
     }
 
-    vkDestroyBufferCollectionFUCHSIA =
-        reinterpret_cast<PFN_vkDestroyBufferCollectionFUCHSIA>(
-            vkGetDeviceProcAddr(vk_device, "vkDestroyBufferCollectionFUCHSIA"));
-    if (!vkDestroyBufferCollectionFUCHSIA) {
+    vkDestroyBufferCollectionFUCHSIAX =
+        reinterpret_cast<PFN_vkDestroyBufferCollectionFUCHSIAX>(
+            vkGetDeviceProcAddr(vk_device,
+                                "vkDestroyBufferCollectionFUCHSIAX"));
+    if (!vkDestroyBufferCollectionFUCHSIAX) {
       DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                    << "vkDestroyBufferCollectionFUCHSIA";
+                    << "vkDestroyBufferCollectionFUCHSIAX";
       return false;
     }
   }

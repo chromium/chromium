@@ -10,7 +10,6 @@
 #include <unordered_map>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task_manager.h"
@@ -65,6 +64,9 @@ class SyncWorker : public SyncWorkerInterface,
                  extension_service,
              extensions::ExtensionRegistry* extension_registry,
              leveldb::Env* env_override);
+
+  SyncWorker(const SyncWorker&) = delete;
+  SyncWorker& operator=(const SyncWorker&) = delete;
 
   ~SyncWorker() override;
 
@@ -181,7 +183,6 @@ class SyncWorker : public SyncWorkerInterface,
   base::SequenceChecker sequence_checker_;
 
   base::WeakPtrFactory<SyncWorker> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SyncWorker);
 };
 
 }  // namespace drive_backend

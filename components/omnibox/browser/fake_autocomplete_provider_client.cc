@@ -104,9 +104,6 @@ query_tiles::TileService* FakeAutocompleteProviderClient::GetQueryTileService()
   return tile_service_.get();
 }
 
-bool FakeAutocompleteProviderClient::IsTabOpenWithURL(
-    const GURL& url,
-    const AutocompleteInput* input) {
-  return !substring_to_match_.empty() &&
-         url.spec().find(substring_to_match_) != std::string::npos;
+const TabMatcher& FakeAutocompleteProviderClient::GetTabMatcher() const {
+  return fake_tab_matcher_;
 }

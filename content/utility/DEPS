@@ -1,10 +1,10 @@
 include_rules = [
+  "+ash/services/ime",
   "+components/services/storage",
   "+content/child",
   "+content/public/utility",
   "+content/services",
   "+chromeos/assistant/buildflags.h",
-  "+chromeos/services/ime",
   "+chromeos/services/libassistant",
   "+chromeos/services/tts",
   "+device/vr/buildflags",

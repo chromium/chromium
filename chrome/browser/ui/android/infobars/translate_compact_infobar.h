@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ANDROID_INFOBARS_TRANSLATE_COMPACT_INFOBAR_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/infobars/android/infobar_android.h"
 #include "components/translate/content/android/translate_utils.h"
@@ -24,6 +23,10 @@ class TranslateCompactInfoBar
  public:
   explicit TranslateCompactInfoBar(
       std::unique_ptr<translate::TranslateInfoBarDelegate> delegate);
+
+  TranslateCompactInfoBar(const TranslateCompactInfoBar&) = delete;
+  TranslateCompactInfoBar& operator=(const TranslateCompactInfoBar&) = delete;
+
   ~TranslateCompactInfoBar() override;
 
   // JNI method specific to string settings in translate.
@@ -98,7 +101,6 @@ class TranslateCompactInfoBar
     FLAG_NEVER_SITE = 1 << 4,
     FLAG_EXPAND_MENU = 1 << 5,
   };
-  DISALLOW_COPY_AND_ASSIGN(TranslateCompactInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_TRANSLATE_COMPACT_INFOBAR_H_

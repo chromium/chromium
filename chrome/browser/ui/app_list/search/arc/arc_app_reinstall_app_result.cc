@@ -10,7 +10,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -18,10 +18,10 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 
 namespace app_list {
 
@@ -52,6 +52,7 @@ ArcAppReinstallAppResult::ArcAppReinstallAppResult(
     : observer_(observer), package_name_(mojom_data->package_name) {
   DCHECK(observer_);
   set_id(kPlayStoreAppUrlPrefix + mojom_data->package_name);
+  SetCategory(Category::kPlayStore);
   SetResultType(ash::AppListSearchResultType::kPlayStoreReinstallApp);
   SetTitle(base::UTF8ToUTF16(mojom_data->title));
   SetDisplayType(ash::SearchResultDisplayType::kTile);
@@ -61,11 +62,10 @@ ArcAppReinstallAppResult::ArcAppReinstallAppResult(
   set_relevance(kAppReinstallRelevance);
   SetNotifyVisibilityChange(true);
   const gfx::ImageSkia masked_app_icon(ApplyBackgroundAndMask(app_icon));
-  SetIcon(masked_app_icon);
+  SetIcon(IconInfo(masked_app_icon));
   SetChipIcon(masked_app_icon);
   SetBadgeIcon(ui::ImageModel::FromVectorIcon(
-      vector_icons::kCloudDownloadIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor,
+      vector_icons::kCloudDownloadIcon, ui::kColorIcon,
       ash::SharedAppListConfig::instance().search_tile_badge_icon_dimension()));
   SetUseBadgeIconBackground(true);
   SetNotifyVisibilityChange(true);

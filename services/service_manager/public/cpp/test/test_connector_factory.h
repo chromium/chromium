@@ -45,6 +45,10 @@ class TestConnectorFactory : public mojom::ServiceControl {
   // Creates a simple TestConnectorFactory which can be used register Service
   // instances and vend Connectors which can connect to them.
   TestConnectorFactory();
+
+  TestConnectorFactory(const TestConnectorFactory&) = delete;
+  TestConnectorFactory& operator=(const TestConnectorFactory&) = delete;
+
   ~TestConnectorFactory() override;
 
   // A mapping from service names to Service proxies for registered instances.
@@ -116,8 +120,6 @@ class TestConnectorFactory : public mojom::ServiceControl {
 
   bool ignore_unknown_service_requests_ = false;
   bool ignore_quit_requests_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConnectorFactory);
 };
 
 }  // namespace service_manager

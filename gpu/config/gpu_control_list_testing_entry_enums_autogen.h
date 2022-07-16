@@ -89,9 +89,8 @@ enum GpuControlListTestingEntryEnum {
   kGpuControlListEntryTest_SubpixelFontRenderingDontCare = 73,
   kGpuControlListEntryTest_IntelDriverVendorEntry = 74,
   kGpuControlListEntryTest_IntelDriverVersionEntry = 75,
-  kGpuControlListEntryTest_IntelOldDriverVersionEntry = 76,
-  kGpuControlListEntryTest_DeviceRevisionEntry = 77,
-  kGpuControlListEntryTest_DeviceRevisionUnspecifiedEntry = 78,
+  kGpuControlListEntryTest_DeviceRevisionEntry = 76,
+  kGpuControlListEntryTest_DeviceRevisionUnspecifiedEntry = 77,
 };
 }  // namespace gpu
 

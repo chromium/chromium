@@ -161,8 +161,7 @@ bool WaitForProfile(metrics::SampledProfile::TriggerEvent trigger_event,
   ProfileInterceptor::GetInstance().SetFoundClosure(run_loop.QuitClosure());
   ProfileInterceptor::GetInstance().SetPredicate(predicate);
 
-  base::test::ScopedRunLoopTimeout timeout(FROM_HERE,
-                                           base::TimeDelta::FromSeconds(30));
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(30));
   run_loop.Run();
   return ProfileInterceptor::GetInstance().ProfileWasFound();
 }

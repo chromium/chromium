@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/containers/flat_set.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/time/clock.h"
 #include "chrome/browser/lite_video/lite_video_hint_cache.h"
 #include "chrome/browser/lite_video/lite_video_user_blocklist.h"
@@ -144,7 +144,7 @@ class LiteVideoDecider
 
   // The store of hints provided by the optimization guide keyed by mainframe
   // host. If the hint is empty, then the optimization guide returned kFalse.
-  base::HashingMRUCache<std::string, absl::optional<LiteVideoHint>>
+  base::HashingLRUCache<std::string, absl::optional<LiteVideoHint>>
       cached_opt_guide_hints_;
 
   // The set of hosts that are permanently blocked from having LiteVideos

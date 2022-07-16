@@ -21,10 +21,10 @@ namespace {
 const unsigned kMaxMessagesToLog = 100;
 }
 
-const size_t PushPullFIFO::kMaxFIFOLength = 65536;
+const uint32_t PushPullFIFO::kMaxFIFOLength = 65536;
 
 PushPullFIFO::PushPullFIFO(unsigned number_of_channels,
-                           size_t fifo_length,
+                           uint32_t fifo_length,
                            unsigned render_quantum_frames)
     : fifo_length_(fifo_length), render_quantum_frames_(render_quantum_frames) {
   CHECK_LE(fifo_length_, kMaxFIFOLength);
@@ -69,7 +69,7 @@ void PushPullFIFO::Push(const AudioBus* input_bus) {
   SECURITY_CHECK(input_bus->length() <= fifo_length_);
   SECURITY_CHECK(index_write_ < fifo_length_);
 
-  const size_t input_bus_length = input_bus->length();
+  const uint32_t input_bus_length = input_bus->length();
   const size_t remainder = fifo_length_ - index_write_;
 
   for (unsigned i = 0; i < fifo_bus_->NumberOfChannels(); ++i) {
@@ -112,7 +112,7 @@ void PushPullFIFO::Push(const AudioBus* input_bus) {
 
 // Pull the data out of FIFO to |output_bus|. If remaining frame in the FIFO
 // is less than the frames to pull, provides remaining frame plus the silence.
-size_t PushPullFIFO::Pull(AudioBus* output_bus, size_t frames_requested) {
+size_t PushPullFIFO::Pull(AudioBus* output_bus, uint32_t frames_requested) {
   TRACE_EVENT2("webaudio", "PushPullFIFO::Pull", "this",
                static_cast<void*>(this), "frames", frames_requested);
 
@@ -212,7 +212,7 @@ size_t PushPullFIFO::Pull(AudioBus* output_bus, size_t frames_requested) {
 }
 
 size_t PushPullFIFO::PullAndUpdateEarmark(AudioBus* output_bus,
-                                          size_t frames_requested) {
+                                          uint32_t frames_requested) {
   TRACE_EVENT2("webaudio", "PushPullFIFO::PullAndUpdateEarmark", "this",
                static_cast<void*>(this), "frames_requested", frames_requested);
 

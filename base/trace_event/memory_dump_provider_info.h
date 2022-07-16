@@ -60,6 +60,9 @@ struct BASE_EXPORT MemoryDumpProviderInfo
                          const MemoryDumpProvider::Options& options,
                          bool allowed_in_background_mode);
 
+  MemoryDumpProviderInfo(const MemoryDumpProviderInfo&) = delete;
+  MemoryDumpProviderInfo& operator=(const MemoryDumpProviderInfo&) = delete;
+
   // It is safe to access the const fields below from any thread as they are
   // never mutated.
 
@@ -98,8 +101,6 @@ struct BASE_EXPORT MemoryDumpProviderInfo
  private:
   friend class base::RefCountedThreadSafe<MemoryDumpProviderInfo>;
   ~MemoryDumpProviderInfo();
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryDumpProviderInfo);
 };
 
 }  // namespace trace_event

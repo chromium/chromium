@@ -26,6 +26,8 @@ namespace enterprise_connectors {
 
 class BoxUploader;
 
+using State = download::DownloadItem::DownloadState;
+
 class BoxUploaderTestBase : public testing::Test {
  public:
   explicit BoxUploaderTestBase(base::FilePath::StringPieceType file_name =
@@ -35,8 +37,6 @@ class BoxUploaderTestBase : public testing::Test {
   base::FilePath GetFilePath() const;
 
  protected:
-  using State = download::DownloadItem::DownloadState;
-
   virtual void CreateTemporaryFile();
   void CreateTemporaryFileWithContent(std::string content);
   void InitFolderIdInPrefs(std::string folder_id);
@@ -87,6 +87,7 @@ class BoxUploaderTestBase : public testing::Test {
   download::DownloadInterruptReason reason_{
       download::DOWNLOAD_INTERRUPT_REASON_NONE};
   base::FilePath file_name_reported_back_;
+  DownloadItemRerouteInfo reroute_info_reported_back_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

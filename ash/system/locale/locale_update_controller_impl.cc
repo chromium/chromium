@@ -35,6 +35,10 @@ class LocaleNotificationDelegate : public message_center::NotificationDelegate {
   explicit LocaleNotificationDelegate(
       base::OnceCallback<void(LocaleNotificationResult)> callback);
 
+  LocaleNotificationDelegate(const LocaleNotificationDelegate&) = delete;
+  LocaleNotificationDelegate& operator=(const LocaleNotificationDelegate&) =
+      delete;
+
  protected:
   ~LocaleNotificationDelegate() override;
 
@@ -45,8 +49,6 @@ class LocaleNotificationDelegate : public message_center::NotificationDelegate {
 
  private:
   base::OnceCallback<void(LocaleNotificationResult)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocaleNotificationDelegate);
 };
 
 LocaleNotificationDelegate::LocaleNotificationDelegate(

@@ -495,7 +495,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
 
     @Override
     public void onVerificationError(String errorMessage) {
-        mFactoryDelegate.onPaymentAppCreationError(errorMessage);
+        mFactoryDelegate.onPaymentAppCreationError(errorMessage, AppCreationFailureReason.UNKNOWN);
     }
 
     @Override

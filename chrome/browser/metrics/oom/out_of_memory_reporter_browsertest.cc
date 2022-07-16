@@ -7,7 +7,6 @@
 #include <set>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -54,6 +53,12 @@ class MAYBE_OutOfMemoryReporterBrowserTest
       public OutOfMemoryReporter::Observer {
  public:
   MAYBE_OutOfMemoryReporterBrowserTest() = default;
+
+  MAYBE_OutOfMemoryReporterBrowserTest(
+      const MAYBE_OutOfMemoryReporterBrowserTest&) = delete;
+  MAYBE_OutOfMemoryReporterBrowserTest& operator=(
+      const MAYBE_OutOfMemoryReporterBrowserTest&) = delete;
+
   ~MAYBE_OutOfMemoryReporterBrowserTest() override = default;
 
   // InProcessBrowserTest:
@@ -78,21 +83,18 @@ class MAYBE_OutOfMemoryReporterBrowserTest
 
  protected:
   absl::optional<GURL> last_oom_url_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MAYBE_OutOfMemoryReporterBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MAYBE_OutOfMemoryReporterBrowserTest, MemoryExhaust) {
   OutOfMemoryReporter::FromWebContents(web_contents())->AddObserver(this);
 
   const GURL crash_url = embedded_test_server()->GetURL("/title1.html");
-  NavigateToURL(browser(), crash_url);
+  ASSERT_TRUE(NavigateToURL(browser(), crash_url));
 
   // Careful, this doesn't actually commit the navigation. So, navigating to
   // this URL will cause an OOM associated with the previous committed URL.
   ScopedAllowRendererCrashes allow_renderer_crashes(web_contents());
-  NavigateToURL(browser(), GURL(blink::kChromeUIMemoryExhaustURL));
+  ASSERT_TRUE(NavigateToURL(browser(), GURL(blink::kChromeUIMemoryExhaustURL)));
   EXPECT_EQ(crash_url, last_oom_url_.value());
 }
 
@@ -131,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PortalOutOfMemoryReporterBrowserTest,
   const GURL memory_exhaust_url(blink::kChromeUIMemoryExhaustURL);
 
   // Navigate the main web contents to a page with a <portal> element.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   std::vector<WebContents*> inner_web_contents =
       web_contents()->GetInnerWebContents();
   ASSERT_EQ(1u, inner_web_contents.size());
@@ -174,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PortalOutOfMemoryReporterBrowserTest,
   const GURL memory_exhaust_url(blink::kChromeUIMemoryExhaustURL);
 
   // Navigate the main web contents to a page with a <portal> element.
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   std::vector<WebContents*> inner_web_contents =
       web_contents()->GetInnerWebContents();
   ASSERT_EQ(1u, inner_web_contents.size());
@@ -224,9 +226,12 @@ class MAYBE_OutOfMemoryReporterPrerenderBrowserTest
             &MAYBE_OutOfMemoryReporterPrerenderBrowserTest::web_contents,
             base::Unretained(this))) {}
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    MAYBE_OutOfMemoryReporterBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
-    // embedded_test_server is started on MainThread for the prerender helper.
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     MAYBE_OutOfMemoryReporterBrowserTest::SetUpOnMainThread();
   }
@@ -243,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_OutOfMemoryReporterPrerenderBrowserTest,
   const GURL prerender_url(embedded_test_server()->GetURL("/title1.html"));
 
   // Navigate to an initial page.
-  NavigateToURL(browser(), url);
+  ASSERT_TRUE(NavigateToURL(browser(), url));
 
   // Start a prerender.
   int host_id = prerender_helper_.AddPrerender(prerender_url);
@@ -278,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_OutOfMemoryReporterPrerenderBrowserTest,
   const GURL memory_exhaust_url(blink::kChromeUIMemoryExhaustURL);
 
   // Navigate to an initial page.
-  NavigateToURL(browser(), url);
+  ASSERT_TRUE(NavigateToURL(browser(), url));
 
   // Start a prerender.
   prerender_helper_.AddPrerender(prerender_url);
@@ -291,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_OutOfMemoryReporterPrerenderBrowserTest,
 
   // Exhaust renderer process memory of the activated page.
   ScopedAllowRendererCrashes allow_renderer_crashes(web_contents());
-  NavigateToURL(browser(), memory_exhaust_url);
+  ASSERT_TRUE(NavigateToURL(browser(), memory_exhaust_url));
 
   // Ensure OOM is reported with the activated page.
   EXPECT_EQ(prerender_url, last_oom_url_.value());

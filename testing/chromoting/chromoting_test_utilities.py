@@ -4,6 +4,8 @@
 
 """Utility script to run tests on the Chromoting bot."""
 
+from __future__ import print_function
+
 import hashlib
 import os
 from os.path import expanduser
@@ -47,13 +49,13 @@ def RunCommandInSubProcess(command):
 
   cmd_line = [command]
   try:
-    print 'Going to run:\n%s' % command
+    print('Going to run:\n%s' % command)
     results = subprocess.check_output(cmd_line, stderr=subprocess.STDOUT,
                                       shell=True)
-  except subprocess.CalledProcessError, e:
+  except subprocess.CalledProcessError as e:
     results = e.output
   finally:
-    print results
+    print(results)
   return results
 
 
@@ -133,7 +135,7 @@ def RestartMe2MeHost():
   # Stop chromoting host.
   RunCommandInSubProcess(CHROMOTING_HOST_PATH + ' --stop')
   # Start chromoting host.
-  print 'Starting chromoting host from %s' % CHROMOTING_HOST_PATH
+  print('Starting chromoting host from %s' % CHROMOTING_HOST_PATH)
   results = RunCommandInSubProcess(CHROMOTING_HOST_PATH + ' --start')
 
   os.chdir(previous_directory)
@@ -148,7 +150,7 @@ def RestartMe2MeHost():
   if HOST_READY_INDICATOR not in results:
     # Host start failed. Print out host-log. Don't run any tests.
     with open(log_file, 'r') as f:
-      print f.read()
+      print(f.read())
     raise HostOperationFailedException('Host restart failed.')
 
   return log_file
@@ -194,9 +196,9 @@ def PrintRunningProcesses():
   processes = psutil.get_process_list()
   processes = sorted(processes, key=lambda process: process.name)
 
-  print 'List of running processes:\n'
+  print('List of running processes:\n')
   for process in processes:
-    print process.name
+    print(process.name)
 
 
 def PrintHostLogContents(host_log_files=None):
@@ -206,7 +208,7 @@ def PrintHostLogContents(host_log_files=None):
       with open(log_file, 'r') as log:
         host_log_contents += '\nHOST LOG %s\n CONTENTS:\n%s' % (
             log_file, log.read())
-    print host_log_contents
+    print(host_log_contents)
 
 
 def TestCaseSetup(args):

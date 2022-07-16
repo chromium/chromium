@@ -8,6 +8,8 @@
 #include "base/test/gtest_util.h"
 #include "base/values.h"
 #include "mojo/public/cpp/base/values_mojom_traits.h"
+#include "mojo/public/cpp/bindings/lib/validation_context.h"
+#include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/mojom/base/values.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -144,13 +146,36 @@ TEST(ValuesStructTraitsTest, SerializeInvalidListValue) {
 // A deeply nested base::Value should trigger a deserialization error.
 TEST(ValuesStructTraitsTest, DeeplyNestedValue) {
   base::Value in;
-  for (int i = 0; i < 100; ++i) {
+  for (int i = 0; i < kMaxRecursionDepth; ++i) {
     base::Value::ListStorage storage;
     storage.emplace_back(std::move(in));
     in = base::Value(std::move(storage));
   }
-  base::Value out;
-  ASSERT_FALSE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
+
+  // It should work if the depth is less than kMaxRecursionDepth.
+  {
+    mojo::internal::ValidationErrorObserverForTesting warning_observer{
+        base::DoNothing()};
+    base::Value out;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
+    EXPECT_EQ(mojo::internal::VALIDATION_ERROR_NONE,
+              warning_observer.last_error());
+  }
+
+  // Add one more depth.
+  base::Value::ListStorage storage;
+  storage.emplace_back(std::move(in));
+  in = base::Value(std::move(storage));
+
+  // It gets VALIDATION_ERROR_MAX_RECURSION_DEPTH error.
+  {
+    mojo::internal::ValidationErrorObserverForTesting warning_observer{
+        base::DoNothing()};
+    base::Value out;
+    ASSERT_FALSE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
+    EXPECT_EQ(mojo::internal::VALIDATION_ERROR_MAX_RECURSION_DEPTH,
+              warning_observer.last_error());
+  }
 }
 
 }  // namespace mojo_base

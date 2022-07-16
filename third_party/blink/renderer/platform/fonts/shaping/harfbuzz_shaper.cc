@@ -88,13 +88,7 @@ void CheckShapeResultRange(const ShapeResult* result,
   StringBuilder log;
   log.Append("Font='");
   const FontDescription& font_description = font->GetFontDescription();
-  for (const FontFamily* family = &font_description.Family();;) {
-    log.Append(family->Family());
-    family = family->Next();
-    if (!family)
-      break;
-    log.Append(", ");
-  }
+  log.Append(font_description.Family().ToString());
   log.AppendFormat("', %f", font_description.ComputedSize());
 
   // Log the primary font with its family name in the font file.
@@ -294,7 +288,8 @@ inline bool ShapeRange(hb_buffer_t* buffer,
                        scoped_refptr<UnicodeRangeSet> current_font_range_set,
                        UScriptCode current_run_script,
                        hb_direction_t direction,
-                       hb_language_t language) {
+                       hb_language_t language,
+                       float specified_size) {
   const FontPlatformData* platform_data = &(current_font->PlatformData());
   HarfBuzzFace* face = platform_data->GetHarfBuzzFace();
   if (!face) {
@@ -309,8 +304,9 @@ inline bool ShapeRange(hb_buffer_t* buffer,
   hb_font_t* hb_font =
       face->GetScaledFont(std::move(current_font_range_set),
                           HB_DIRECTION_IS_VERTICAL(direction)
-                              ? HarfBuzzFace::PrepareForVerticalLayout
-                              : HarfBuzzFace::NoVerticalLayout);
+                              ? HarfBuzzFace::kPrepareForVerticalLayout
+                              : HarfBuzzFace::kNoVerticalLayout,
+                          specified_size);
   hb_shape(hb_font, buffer, font_features, font_features_size);
   if (!face->ShouldSubpixelPosition())
     RoundHarfBuzzBufferPositions(buffer);
@@ -794,9 +790,11 @@ void HarfBuzzShaper::ShapeSegment(
     SmallCapsIterator::SmallCapsBehavior small_caps_behavior =
         SmallCapsIterator::kSmallCapsSameCase;
     if (needs_caps_handling) {
-      caps_support = OpenTypeCapsSupport(
-          font_data->PlatformData().GetHarfBuzzFace(),
-          font_description.VariantCaps(), ICUScriptToHBScript(segment.script));
+      caps_support =
+          OpenTypeCapsSupport(font_data->PlatformData().GetHarfBuzzFace(),
+                              font_description.VariantCaps(),
+                              font_description.GetFontSynthesisSmallCaps(),
+                              ICUScriptToHBScript(segment.script));
       if (caps_support.NeedsRunCaseSplitting()) {
         SplitUntilNextCaseChange(text_, &range_data->reshape_queue,
                                  current_queue_item, small_caps_behavior);
@@ -848,7 +846,7 @@ void HarfBuzzShaper::ShapeSegment(
                         : range_data->font_features.data(),
                     range_data->font_features.size(), adjusted_font,
                     current_font_data_for_range_set->Ranges(), segment.script,
-                    direction, language))
+                    direction, language, font_description.SpecifiedSize()))
       DLOG(ERROR) << "Shaping range failed.";
 
     ExtractShapeResults(range_data, font_cycle_queued, current_queue_item,

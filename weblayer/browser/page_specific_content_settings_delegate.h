@@ -21,8 +21,7 @@ class PageSpecificContentSettingsDelegate
   PageSpecificContentSettingsDelegate& operator=(
       const PageSpecificContentSettingsDelegate&) = delete;
 
-  static void UpdateRendererContentSettingRules(
-      content::RenderProcessHost* process);
+  static void InitializeRenderer(content::RenderProcessHost* process);
 
  private:
   // PageSpecificContentSettings::Delegate:

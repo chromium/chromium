@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/zoom_level_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
@@ -26,10 +27,6 @@
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
-
-#if !defined(OS_ANDROID)
-#include "content/public/browser/zoom_level_delegate.h"
-#endif
 
 class GURL;
 
@@ -84,11 +81,13 @@ class DownloadManager;
 class ClientHintsControllerDelegate;
 class ContentIndexProvider;
 class DownloadManagerDelegate;
+class FederatedIdentityActiveSessionPermissionContextDelegate;
 class FederatedIdentityRequestPermissionContextDelegate;
 class FederatedIdentitySharingPermissionContextDelegate;
 class FileSystemAccessPermissionContext;
 class PermissionController;
 class PermissionControllerDelegate;
+class PlatformNotificationService;
 class PushMessagingService;
 class ResourceContext;
 class SharedCorsOriginAccessList;
@@ -159,8 +158,13 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns the number of StoragePartitions that exist for `this`
   // BrowserContext.
   size_t GetStoragePartitionCount();
+
+  // Starts an asynchronous best-effort attempt to delete all on-disk storage
+  // related to |partition_domain| and synchronously invokes |done_callback|
+  // once all on-disk storage is deleted.
   void AsyncObliterateStoragePartition(const std::string& partition_domain,
-                                       base::OnceClosure on_gc_required);
+                                       base::OnceClosure on_gc_required,
+                                       base::OnceClosure done_callback);
 
   // This function clears the contents of |active_paths| but does not take
   // ownership of the pointer.
@@ -297,12 +301,10 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // TODO(https://crbug.com/1179776): Migrate method declarations from this
   // section into a separate BrowserContextDelegate class.
 
-#if !defined(OS_ANDROID)
   // Creates a delegate to initialize a HostZoomMap and persist its information.
   // This is called during creation of each StoragePartition.
   virtual std::unique_ptr<ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) = 0;
-#endif
 
   // Returns the path of the directory where this context's data is stored.
   virtual base::FilePath GetPath() = 0;
@@ -328,6 +330,11 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
 
   // Returns a special storage policy implementation, or nullptr.
   virtual storage::SpecialStoragePolicy* GetSpecialStoragePolicy() = 0;
+
+  // Returns the platform notification service, capable of displaying Web
+  // Notifications to the user. The embedder can return a nullptr if they don't
+  // support this functionality. Must be called on the UI thread.
+  virtual PlatformNotificationService* GetPlatformNotificationService() = 0;
 
   // Returns a push messaging service. The embedder owns the service, and is
   // responsible for ensuring that it outlives RenderProcessHost. It's valid to
@@ -400,6 +407,11 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   virtual std::unique_ptr<media::VideoDecodePerfHistory>
   CreateVideoDecodePerfHistory();
 
+  // Gets the permission context for allowing session management capabilities
+  // between an identity provider and a relying party if one exists, or
+  // nullptr otherwise.
+  virtual FederatedIdentityActiveSessionPermissionContextDelegate*
+  GetFederatedIdentityActiveSessionPermissionContext();
   // Gets the permission context for issuing WebID requests if one exists, or
   // nullptr otherwise.
   virtual FederatedIdentityRequestPermissionContextDelegate*

@@ -69,7 +69,7 @@ void PassKitTabHelper::Download(std::unique_ptr<web::DownloadTask> task) {
   // unfinished tasks.
   tasks_.insert(std::move(task));
   task_ptr->AddObserver(this);
-  task_ptr->Start(std::make_unique<net::URLFetcherStringWriter>());
+  task_ptr->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
 }
 
 void PassKitTabHelper::OnDownloadUpdated(web::DownloadTask* updated_task) {
@@ -79,9 +79,7 @@ void PassKitTabHelper::OnDownloadUpdated(web::DownloadTask* updated_task) {
   if (!updated_task->IsDone())
     return;
 
-  net::URLFetcherResponseWriter* writer = updated_task->GetResponseWriter();
-  std::string data = writer->AsStringWriter()->data();
-  NSData* nsdata = [NSData dataWithBytes:data.c_str() length:data.size()];
+  NSData* nsdata = updated_task->GetResponseData();
   PKPass* pass = [[PKPass alloc] initWithData:nsdata error:nil];
   [delegate_ passKitTabHelper:this
          presentDialogForPass:pass

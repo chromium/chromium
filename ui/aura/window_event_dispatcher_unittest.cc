@@ -11,9 +11,8 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -47,7 +46,7 @@
 #include "ui/events/test/test_event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/wm/core/capture_controller.h"
 
@@ -59,6 +58,10 @@ class NonClientDelegate : public test::TestWindowDelegate {
  public:
   NonClientDelegate()
       : non_client_count_(0), mouse_event_count_(0), mouse_event_flags_(0x0) {}
+
+  NonClientDelegate(const NonClientDelegate&) = delete;
+  NonClientDelegate& operator=(const NonClientDelegate&) = delete;
+
   ~NonClientDelegate() override = default;
 
   int non_client_count() const { return non_client_count_; }
@@ -88,14 +91,16 @@ class NonClientDelegate : public test::TestWindowDelegate {
   int mouse_event_count_;
   gfx::Point mouse_event_location_;
   int mouse_event_flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(NonClientDelegate);
 };
 
 // A simple event handler that consumes key events.
 class ConsumeKeyHandler : public ui::test::TestEventHandler {
  public:
   ConsumeKeyHandler() {}
+
+  ConsumeKeyHandler(const ConsumeKeyHandler&) = delete;
+  ConsumeKeyHandler& operator=(const ConsumeKeyHandler&) = delete;
+
   ~ConsumeKeyHandler() override {}
 
   // Overridden from ui::EventHandler:
@@ -103,9 +108,6 @@ class ConsumeKeyHandler : public ui::test::TestEventHandler {
     ui::test::TestEventHandler::OnKeyEvent(event);
     event->StopPropagation();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConsumeKeyHandler);
 };
 
 // InputMethodDelegate that tracks the events passed to PostIME phase.
@@ -301,6 +303,10 @@ class TestEventClient : public client::EventClient {
         test::CreateTestWindowWithBounds(root_window_->bounds(), root_window_);
     non_lock_window->SetId(kNonLockWindowId);
   }
+
+  TestEventClient(const TestEventClient&) = delete;
+  TestEventClient& operator=(const TestEventClient&) = delete;
+
   ~TestEventClient() override { client::SetEventClient(root_window_, NULL); }
 
   // Starts/stops locking. Locking prevents windows other than those inside
@@ -331,8 +337,6 @@ class TestEventClient : public client::EventClient {
 
   Window* root_window_;
   bool lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventClient);
 };
 
 }  // namespace
@@ -529,6 +533,9 @@ class EventFilterRecorder : public ui::EventHandler {
       : wait_until_event_(ui::ET_UNKNOWN),
         last_touch_may_cause_scrolling_(false) {}
 
+  EventFilterRecorder(const EventFilterRecorder&) = delete;
+  EventFilterRecorder& operator=(const EventFilterRecorder&) = delete;
+
   const Events& events() const { return events_; }
 
   const EventLocations& mouse_locations() const { return mouse_locations_; }
@@ -600,8 +607,6 @@ class EventFilterRecorder : public ui::EventHandler {
   EventLocations gesture_locations_;
   EventFlags mouse_event_flags_;
   bool last_touch_may_cause_scrolling_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventFilterRecorder);
 };
 
 // Converts an EventType to a string.
@@ -1048,6 +1053,11 @@ class HoldPointerOnScrollHandler : public ui::test::TestEventHandler {
   HoldPointerOnScrollHandler(WindowEventDispatcher* dispatcher,
                              EventFilterRecorder* filter)
       : dispatcher_(dispatcher), filter_(filter), holding_moves_(false) {}
+
+  HoldPointerOnScrollHandler(const HoldPointerOnScrollHandler&) = delete;
+  HoldPointerOnScrollHandler& operator=(const HoldPointerOnScrollHandler&) =
+      delete;
+
   ~HoldPointerOnScrollHandler() override = default;
 
  private:
@@ -1066,8 +1076,6 @@ class HoldPointerOnScrollHandler : public ui::test::TestEventHandler {
   WindowEventDispatcher* dispatcher_;
   EventFilterRecorder* filter_;
   bool holding_moves_;
-
-  DISALLOW_COPY_AND_ASSIGN(HoldPointerOnScrollHandler);
 };
 
 // Tests that touch-move events don't contribute to an in-progress scroll
@@ -1083,7 +1091,7 @@ TEST_F(WindowEventDispatcherTest, TouchMovesHeldOnScroll) {
 
   ui::test::EventGenerator generator(root_window());
   generator.GestureScrollSequence(gfx::Point(60, 60), gfx::Point(10, 60),
-                                  base::TimeDelta::FromMilliseconds(100), 25);
+                                  base::Milliseconds(100), 25);
 
   // |handler| will have reset |filter| and started holding the touch-move
   // events when scrolling started. At the end of the scroll (i.e. upon
@@ -1428,6 +1436,10 @@ TEST_F(WindowEventDispatcherTest,
 class DeletingEventFilter : public ui::EventHandler {
  public:
   DeletingEventFilter() : delete_during_pre_handle_(false) {}
+
+  DeletingEventFilter(const DeletingEventFilter&) = delete;
+  DeletingEventFilter& operator=(const DeletingEventFilter&) = delete;
+
   ~DeletingEventFilter() override = default;
 
   void Reset(bool delete_during_pre_handle) {
@@ -1447,14 +1459,16 @@ class DeletingEventFilter : public ui::EventHandler {
   }
 
   bool delete_during_pre_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeletingEventFilter);
 };
 
 class DeletingWindowDelegate : public test::TestWindowDelegate {
  public:
   DeletingWindowDelegate()
       : window_(nullptr), delete_during_handle_(false), got_event_(false) {}
+
+  DeletingWindowDelegate(const DeletingWindowDelegate&) = delete;
+  DeletingWindowDelegate& operator=(const DeletingWindowDelegate&) = delete;
+
   ~DeletingWindowDelegate() override = default;
 
   void Reset(Window* window, bool delete_during_handle) {
@@ -1481,8 +1495,6 @@ class DeletingWindowDelegate : public test::TestWindowDelegate {
   Window* window_;
   bool delete_during_handle_;
   bool got_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeletingWindowDelegate);
 };
 
 TEST_F(WindowEventDispatcherTest, DeleteWindowDuringDispatch) {
@@ -1534,6 +1546,11 @@ namespace {
 class DetachesParentOnTapDelegate : public test::TestWindowDelegate {
  public:
   DetachesParentOnTapDelegate() {}
+
+  DetachesParentOnTapDelegate(const DetachesParentOnTapDelegate&) = delete;
+  DetachesParentOnTapDelegate& operator=(const DetachesParentOnTapDelegate&) =
+      delete;
+
   ~DetachesParentOnTapDelegate() override {}
 
  private:
@@ -1549,8 +1566,6 @@ class DetachesParentOnTapDelegate : public test::TestWindowDelegate {
       event->SetHandled();
     }
   }
-
-  DISALLOW_COPY_AND_ASSIGN(DetachesParentOnTapDelegate);
 };
 
 }  // namespace
@@ -1577,6 +1592,10 @@ class NestedGestureDelegate : public test::TestWindowDelegate {
       : generator_(generator),
         tap_location_(tap_location),
         gesture_end_count_(0) {}
+
+  NestedGestureDelegate(const NestedGestureDelegate&) = delete;
+  NestedGestureDelegate& operator=(const NestedGestureDelegate&) = delete;
+
   ~NestedGestureDelegate() override {}
 
   int gesture_end_count() const { return gesture_end_count_; }
@@ -1603,7 +1622,6 @@ class NestedGestureDelegate : public test::TestWindowDelegate {
   ui::test::EventGenerator* generator_;
   const gfx::Point tap_location_;
   int gesture_end_count_;
-  DISALLOW_COPY_AND_ASSIGN(NestedGestureDelegate);
 };
 
 }  // namespace
@@ -1663,6 +1681,10 @@ class RepostGestureEventRecorder : public EventFilterRecorder {
         reposted_(false),
         done_cleanup_(false) {}
 
+  RepostGestureEventRecorder(const RepostGestureEventRecorder&) = delete;
+  RepostGestureEventRecorder& operator=(const RepostGestureEventRecorder&) =
+      delete;
+
   ~RepostGestureEventRecorder() override {}
 
   void OnTouchEvent(ui::TouchEvent* event) override {
@@ -1700,7 +1722,6 @@ class RepostGestureEventRecorder : public EventFilterRecorder {
   bool reposted_;
   // set true if we're done cleaning up after hiding repost_source_;
   bool done_cleanup_;
-  DISALLOW_COPY_AND_ASSIGN(RepostGestureEventRecorder);
 };
 
 // Tests whether events which are generated after the reposted gesture event
@@ -1741,8 +1762,7 @@ TEST_F(WindowEventDispatcherTest, GestureRepostEventOrder) {
 
   ui::test::EventGenerator scroll_generator(root_window(), repost_target.get());
   scroll_generator.GestureScrollSequence(
-      gfx::Point(80, 80), gfx::Point(100, 100),
-      base::TimeDelta::FromMilliseconds(100), 3);
+      gfx::Point(80, 80), gfx::Point(100, 100), base::Milliseconds(100), 3);
   RunAllPendingInMessageLoop();
 
   int tap_down_count = 0;
@@ -1769,6 +1789,12 @@ class OnMouseExitDeletingEventFilter : public EventFilterRecorder {
   explicit OnMouseExitDeletingEventFilter(T* object_to_delete)
       : object_to_delete_(object_to_delete) {}
   OnMouseExitDeletingEventFilter() : object_to_delete_(nullptr) {}
+
+  OnMouseExitDeletingEventFilter(const OnMouseExitDeletingEventFilter&) =
+      delete;
+  OnMouseExitDeletingEventFilter& operator=(
+      const OnMouseExitDeletingEventFilter&) = delete;
+
   ~OnMouseExitDeletingEventFilter() override {}
 
   void set_object_to_delete(T* object_to_delete) {
@@ -1794,8 +1820,6 @@ class OnMouseExitDeletingEventFilter : public EventFilterRecorder {
   // Closure that is run prior to |object_to_delete_| being deleted.
   base::OnceClosure delete_closure_;
   T* object_to_delete_;
-
-  DISALLOW_COPY_AND_ASSIGN(OnMouseExitDeletingEventFilter);
 };
 
 // Tests that RootWindow drops mouse-moved event that is supposed to be sent to
@@ -1905,6 +1929,11 @@ class ValidRootDuringDestructionWindowObserver : public aura::WindowObserver {
                                            bool* has_valid_root)
       : got_destroying_(got_destroying), has_valid_root_(has_valid_root) {}
 
+  ValidRootDuringDestructionWindowObserver(
+      const ValidRootDuringDestructionWindowObserver&) = delete;
+  ValidRootDuringDestructionWindowObserver& operator=(
+      const ValidRootDuringDestructionWindowObserver&) = delete;
+
   // WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
     *got_destroying_ = true;
@@ -1914,8 +1943,6 @@ class ValidRootDuringDestructionWindowObserver : public aura::WindowObserver {
  private:
   bool* got_destroying_;
   bool* has_valid_root_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValidRootDuringDestructionWindowObserver);
 };
 
 }  // namespace
@@ -1946,6 +1973,12 @@ class DontResetHeldEventWindowDelegate : public test::TestWindowDelegate {
  public:
   explicit DontResetHeldEventWindowDelegate(aura::Window* root)
       : root_(root), mouse_event_count_(0) {}
+
+  DontResetHeldEventWindowDelegate(const DontResetHeldEventWindowDelegate&) =
+      delete;
+  DontResetHeldEventWindowDelegate& operator=(
+      const DontResetHeldEventWindowDelegate&) = delete;
+
   ~DontResetHeldEventWindowDelegate() override = default;
 
   int mouse_event_count() const { return mouse_event_count_; }
@@ -1964,8 +1997,6 @@ class DontResetHeldEventWindowDelegate : public test::TestWindowDelegate {
  private:
   Window* root_;
   int mouse_event_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(DontResetHeldEventWindowDelegate);
 };
 
 }  // namespace
@@ -2002,6 +2033,12 @@ class DeleteHostFromHeldMouseEventDelegate : public test::TestWindowDelegate {
  public:
   explicit DeleteHostFromHeldMouseEventDelegate(WindowTreeHost* host)
       : host_(host), got_mouse_event_(false), got_destroy_(false) {}
+
+  DeleteHostFromHeldMouseEventDelegate(
+      const DeleteHostFromHeldMouseEventDelegate&) = delete;
+  DeleteHostFromHeldMouseEventDelegate& operator=(
+      const DeleteHostFromHeldMouseEventDelegate&) = delete;
+
   ~DeleteHostFromHeldMouseEventDelegate() override = default;
 
   bool got_mouse_event() const { return got_mouse_event_; }
@@ -2020,8 +2057,6 @@ class DeleteHostFromHeldMouseEventDelegate : public test::TestWindowDelegate {
   WindowTreeHost* host_;
   bool got_mouse_event_;
   bool got_destroy_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteHostFromHeldMouseEventDelegate);
 };
 
 }  // namespace
@@ -2219,6 +2254,10 @@ namespace {
 class CaptureWindowTracker : public test::TestWindowDelegate {
  public:
   CaptureWindowTracker() {}
+
+  CaptureWindowTracker(const CaptureWindowTracker&) = delete;
+  CaptureWindowTracker& operator=(const CaptureWindowTracker&) = delete;
+
   ~CaptureWindowTracker() override {}
 
   void CreateCaptureWindow(aura::Window* root_window) {
@@ -2240,8 +2279,6 @@ class CaptureWindowTracker : public test::TestWindowDelegate {
 
  private:
   std::unique_ptr<aura::Window> capture_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureWindowTracker);
 };
 
 }  // namespace
@@ -2270,6 +2307,10 @@ class RunLoopHandler : public ui::EventHandler {
       : run_loop_(base::RunLoop::Type::kNestableTasksAllowed), target_(target) {
     target_->AddPreTargetHandler(this);
   }
+
+  RunLoopHandler(const RunLoopHandler&) = delete;
+  RunLoopHandler& operator=(const RunLoopHandler&) = delete;
+
   ~RunLoopHandler() override { target_->RemovePreTargetHandler(this); }
   int num_scroll_updates() const { return num_scroll_updates_; }
 
@@ -2292,8 +2333,6 @@ class RunLoopHandler : public ui::EventHandler {
   int num_scroll_updates_ = 0;
 
   aura::Window* target_;
-
-  DISALLOW_COPY_AND_ASSIGN(RunLoopHandler);
 };
 
 }  // namespace
@@ -2336,6 +2375,11 @@ TEST_F(WindowEventDispatcherTest, HeldTouchMoveWithRunLoop) {
 class ExitMessageLoopOnMousePress : public ui::test::TestEventHandler {
  public:
   ExitMessageLoopOnMousePress() {}
+
+  ExitMessageLoopOnMousePress(const ExitMessageLoopOnMousePress&) = delete;
+  ExitMessageLoopOnMousePress& operator=(const ExitMessageLoopOnMousePress&) =
+      delete;
+
   ~ExitMessageLoopOnMousePress() override {}
 
  protected:
@@ -2344,15 +2388,18 @@ class ExitMessageLoopOnMousePress : public ui::test::TestEventHandler {
     if (event->type() == ui::ET_MOUSE_PRESSED)
       base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExitMessageLoopOnMousePress);
 };
 
 class WindowEventDispatcherTestWithMessageLoop
     : public WindowEventDispatcherTest {
  public:
   WindowEventDispatcherTestWithMessageLoop() {}
+
+  WindowEventDispatcherTestWithMessageLoop(
+      const WindowEventDispatcherTestWithMessageLoop&) = delete;
+  WindowEventDispatcherTestWithMessageLoop& operator=(
+      const WindowEventDispatcherTestWithMessageLoop&) = delete;
+
   ~WindowEventDispatcherTestWithMessageLoop() override {}
 
   void RunTest() {
@@ -2405,8 +2452,6 @@ class WindowEventDispatcherTestWithMessageLoop
 
   std::unique_ptr<Window> window_;
   ExitMessageLoopOnMousePress handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowEventDispatcherTestWithMessageLoop);
 };
 
 TEST_F(WindowEventDispatcherTestWithMessageLoop, EventRepostedInNonNestedLoop) {
@@ -2483,7 +2528,7 @@ TEST_F(WindowEventDispatcherTestInHighDPI, TouchMovesHeldOnScroll) {
 
   ui::test::EventGenerator generator(root_window());
   generator.GestureScrollSequence(gfx::Point(120, 120), gfx::Point(20, 120),
-                                  base::TimeDelta::FromMilliseconds(100), 25);
+                                  base::Milliseconds(100), 25);
 
   // |handler| will have reset |filter| and started holding the touch-move
   // events when scrolling started. At the end of the scroll (i.e. upon
@@ -2511,6 +2556,12 @@ class TriggerNestedLoopOnRightMousePress : public ui::test::TestEventHandler {
   explicit TriggerNestedLoopOnRightMousePress(
       const base::RepeatingClosure& callback)
       : callback_(callback) {}
+
+  TriggerNestedLoopOnRightMousePress(
+      const TriggerNestedLoopOnRightMousePress&) = delete;
+  TriggerNestedLoopOnRightMousePress& operator=(
+      const TriggerNestedLoopOnRightMousePress&) = delete;
+
   ~TriggerNestedLoopOnRightMousePress() override {}
 
   const gfx::Point mouse_move_location() const { return mouse_move_location_; }
@@ -2534,8 +2585,6 @@ class TriggerNestedLoopOnRightMousePress : public ui::test::TestEventHandler {
 
   base::RepeatingClosure callback_;
   gfx::Point mouse_move_location_;
-
-  DISALLOW_COPY_AND_ASSIGN(TriggerNestedLoopOnRightMousePress);
 };
 
 // Tests that if dispatching a 'held' event triggers a nested run loop, then
@@ -2579,6 +2628,10 @@ TEST_F(WindowEventDispatcherTestInHighDPI,
 class SelfDestructDelegate : public test::TestWindowDelegate {
  public:
   SelfDestructDelegate() {}
+
+  SelfDestructDelegate(const SelfDestructDelegate&) = delete;
+  SelfDestructDelegate& operator=(const SelfDestructDelegate&) = delete;
+
   ~SelfDestructDelegate() override {}
 
   void OnMouseEvent(ui::MouseEvent* event) override { window_.reset(); }
@@ -2590,7 +2643,6 @@ class SelfDestructDelegate : public test::TestWindowDelegate {
 
  private:
   std::unique_ptr<aura::Window> window_;
-  DISALLOW_COPY_AND_ASSIGN(SelfDestructDelegate);
 };
 
 TEST_F(WindowEventDispatcherTest, SynthesizedLocatedEvent) {
@@ -2645,6 +2697,10 @@ TEST_F(WindowEventDispatcherTest, DestroyWindowOnCaptureChanged) {
 class StaticFocusClient : public client::FocusClient {
  public:
   explicit StaticFocusClient(Window* focused) : focused_(focused) {}
+
+  StaticFocusClient(const StaticFocusClient&) = delete;
+  StaticFocusClient& operator=(const StaticFocusClient&) = delete;
+
   ~StaticFocusClient() override = default;
 
  private:
@@ -2656,8 +2712,6 @@ class StaticFocusClient : public client::FocusClient {
   Window* GetFocusedWindow() override { return focused_; }
 
   Window* focused_;
-
-  DISALLOW_COPY_AND_ASSIGN(StaticFocusClient);
 };
 
 // Tests that host-cancel-mode event can be dispatched to a dispatcher safely
@@ -2682,6 +2736,10 @@ class DispatchEventHandler : public ui::EventHandler {
  public:
   explicit DispatchEventHandler(Window* target)
       : target_(target), dispatched_(false) {}
+
+  DispatchEventHandler(const DispatchEventHandler&) = delete;
+  DispatchEventHandler& operator=(const DispatchEventHandler&) = delete;
+
   ~DispatchEventHandler() override = default;
 
   bool dispatched() const { return dispatched_; }
@@ -2705,8 +2763,6 @@ class DispatchEventHandler : public ui::EventHandler {
 
   Window* target_;
   bool dispatched_;
-
-  DISALLOW_COPY_AND_ASSIGN(DispatchEventHandler);
 };
 
 // Moves |window| to |root_window| when it receives a mouse-move event.
@@ -2714,6 +2770,10 @@ class MoveWindowHandler : public ui::EventHandler {
  public:
   MoveWindowHandler(Window* window, Window* root_window)
       : window_to_move_(window), root_window_to_move_to_(root_window) {}
+
+  MoveWindowHandler(const MoveWindowHandler&) = delete;
+  MoveWindowHandler& operator=(const MoveWindowHandler&) = delete;
+
   ~MoveWindowHandler() override = default;
 
  private:
@@ -2727,8 +2787,6 @@ class MoveWindowHandler : public ui::EventHandler {
 
   Window* window_to_move_;
   Window* root_window_to_move_to_;
-
-  DISALLOW_COPY_AND_ASSIGN(MoveWindowHandler);
 };
 
 // Tests that nested event dispatch works correctly if the target of the older
@@ -2782,13 +2840,17 @@ TEST_F(WindowEventDispatcherTest, NestedEventDispatchTargetMoved) {
 class AlwaysMouseDownInputStateLookup : public InputStateLookup {
  public:
   AlwaysMouseDownInputStateLookup() {}
+
+  AlwaysMouseDownInputStateLookup(const AlwaysMouseDownInputStateLookup&) =
+      delete;
+  AlwaysMouseDownInputStateLookup& operator=(
+      const AlwaysMouseDownInputStateLookup&) = delete;
+
   ~AlwaysMouseDownInputStateLookup() override {}
 
  private:
   // InputStateLookup:
   bool IsMouseButtonDown() const override { return true; }
-
-  DISALLOW_COPY_AND_ASSIGN(AlwaysMouseDownInputStateLookup);
 };
 
 TEST_F(WindowEventDispatcherTest,
@@ -2893,6 +2955,9 @@ class AsyncWindowDelegate : public test::TestWindowDelegate {
   AsyncWindowDelegate(WindowEventDispatcher* dispatcher)
       : dispatcher_(dispatcher), window_(nullptr) {}
 
+  AsyncWindowDelegate(const AsyncWindowDelegate&) = delete;
+  AsyncWindowDelegate& operator=(const AsyncWindowDelegate&) = delete;
+
   void set_window(Window* window) { window_ = window; }
 
  private:
@@ -2908,8 +2973,6 @@ class AsyncWindowDelegate : public test::TestWindowDelegate {
 
   WindowEventDispatcher* dispatcher_;
   Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncWindowDelegate);
 };
 
 // Tests that gesture events dispatched through the asynchronous flow have
@@ -2982,10 +3045,10 @@ TEST_F(WindowEventDispatcherTest, TouchMovesMarkedWhenCausingScroll) {
   recorder.Reset();
 
   // Delay the release to avoid fling generation.
-  ui::TouchEvent release(
-      ui::ET_TOUCH_RELEASED, location + gfx::Vector2d(200, 200),
-      ui::EventTimeForNow() + base::TimeDelta::FromSeconds(1),
-      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+  ui::TouchEvent release(ui::ET_TOUCH_RELEASED,
+                         location + gfx::Vector2d(200, 200),
+                         ui::EventTimeForNow() + base::Seconds(1),
+                         ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   DispatchEventUsingWindowDispatcher(&release);
   EXPECT_TRUE(recorder.LastTouchMayCauseScrolling());
   EXPECT_TRUE(recorder.HasReceivedEvent(ui::ET_TOUCH_RELEASED));

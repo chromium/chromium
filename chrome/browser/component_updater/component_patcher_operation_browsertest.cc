@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -41,6 +40,9 @@ class PatchTest : public InProcessBrowserTest {
     EXPECT_TRUE(input_dir_.CreateUniqueTempDir());
     EXPECT_TRUE(unpack_dir_.CreateUniqueTempDir());
   }
+
+  PatchTest(const PatchTest&) = delete;
+  PatchTest& operator=(const PatchTest&) = delete;
 
   static base::FilePath TestFile(const char* name) {
     base::FilePath path;
@@ -133,8 +135,6 @@ class PatchTest : public InProcessBrowserTest {
   base::ScopedTempDir unpack_dir_;
   base::OnceClosure quit_closure_;
   bool done_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(PatchTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PatchTest, CheckBsdiffOperation) {

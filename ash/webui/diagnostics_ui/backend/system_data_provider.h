@@ -31,7 +31,7 @@ class SystemDataProvider : public mojom::SystemDataProvider,
                            public PowerManagerClient::Observer {
  public:
   SystemDataProvider();
-  SystemDataProvider(TelemetryLog* telemetry_log_ptr);
+  explicit SystemDataProvider(TelemetryLog* telemetry_log_ptr);
 
   ~SystemDataProvider() override;
 
@@ -67,6 +67,10 @@ class SystemDataProvider : public mojom::SystemDataProvider,
       std::unique_ptr<base::RepeatingTimer> timer);
 
   void SetCpuUsageTimerForTesting(std::unique_ptr<base::RepeatingTimer> timer);
+
+  // Handler for when remote attached to |receiver_| disconnects.
+  void OnBoundInterfaceDisconnect();
+  bool ReceiverIsBound();
 
  private:
   void BindCrosHealthdProbeServiceIfNeccessary();

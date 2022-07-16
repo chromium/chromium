@@ -90,5 +90,15 @@ bool CheckChildProcessSecurityPolicy(
   return true;
 }
 
+bool CheckFrameNotPrerendering(content::RenderFrameHost* frame) {
+  if (frame->GetLifecycleState() ==
+      content::RenderFrameHost::LifecycleState::kPrerendering) {
+    bad_message::ReceivedBadMessage(
+        frame->GetProcess(), BadMessageReason::CPMD_BAD_ORIGIN_PRERENDERING);
+    return false;
+  }
+  return true;
+}
+
 }  // namespace bad_message
 }  // namespace password_manager

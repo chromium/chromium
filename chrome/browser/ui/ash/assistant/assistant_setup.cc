@@ -69,7 +69,7 @@ void AssistantSetup::MaybeStartAssistantOptInFlow() {
         FROM_HERE,
         base::BindOnce(&AssistantSetup::StartAssistantOptInFlow,
                        weak_factory_.GetWeakPtr(), ash::FlowType::kConsentFlow,
-                       base::DoNothing::Once<bool>()));
+                       base::DoNothing()));
   }
 }
 

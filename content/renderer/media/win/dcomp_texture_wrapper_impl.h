@@ -5,7 +5,7 @@
 #ifndef CONTENT_RENDERER_MEDIA_WIN_DCOMP_TEXTURE_WRAPPER_IMPL_H_
 #define CONTENT_RENDERER_MEDIA_WIN_DCOMP_TEXTURE_WRAPPER_IMPL_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "content/renderer/media/win/dcomp_texture_factory.h"
@@ -32,9 +32,6 @@ class DCOMPTextureMailboxResources;
 // - We create a SharedImage mailbox representing the DCOMPTexture at a given
 //   size.
 // - We create a VideoFrame which takes ownership of this SharedImage mailbox.
-// - When the DCOMPTexture's OnDCOMPSurfaceHandleBound() callback is fired, we
-//   notify MediaFoundationRendererClient that the DCOMP handle has been bound,
-//   via the `dcomp_surface_handle_bound_cb_` callback.
 class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
                                 public DCOMPTextureHost::Listener {
  public:
@@ -44,17 +41,18 @@ class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
 
   ~DCOMPTextureWrapperImpl() override;
 
-  // Initializes `this` and run `init_cb` with success or failure. All other
-  // methods should only be called after a successful initialization.
-  void Initialize(const gfx::Size& natural_size,
-                  DCOMPSurfaceHandleBoundCB dcomp_surface_handle_bound_cb,
-                  CompositionParamsReceivedCB comp_params_received_cb,
-                  InitCB init_cb) override;
+  // Initializes `this` and returns success or failure. All other methods should
+  // only be called after a successful initialization.
+  bool Initialize(const gfx::Size& output_size,
+                  OutputRectChangeCB output_rect_change_cb) override;
 
   // DCOMPTextureWrapper:
   void UpdateTextureSize(const gfx::Size& natural_size) override;
-  void SetDCOMPSurface(const base::UnguessableToken& surface_token) override;
-  void CreateVideoFrame(CreateVideoFrameCB create_video_frame_cb) override;
+  void SetDCOMPSurfaceHandle(
+      const base::UnguessableToken& token,
+      SetDCOMPSurfaceHandleCB set_dcomp_surface_handle_cb) override;
+  void CreateVideoFrame(const gfx::Size& natural_size,
+                        CreateVideoFrameCB create_video_frame_cb) override;
 
  private:
   DCOMPTextureWrapperImpl(
@@ -65,15 +63,14 @@ class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
 
   // DCOMPTextureHost::Listener:
   void OnSharedImageMailboxBound(gpu::Mailbox mailbox) override;
-  void OnDCOMPSurfaceHandleBound(bool success) override;
-  void OnCompositionParamsReceived(gfx::Rect output_rect) override;
+  void OnOutputRectChange(gfx::Rect output_rect) override;
 
   scoped_refptr<DCOMPTextureFactory> factory_;
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
 
   gfx::Size natural_size_;  // Size of the video frames.
-  DCOMPSurfaceHandleBoundCB dcomp_surface_handle_bound_cb_;
-  CompositionParamsReceivedCB comp_params_received_cb_;
+  gfx::Size output_size_;   // Size of the video output (on-screen size).
+  OutputRectChangeCB output_rect_change_cb_;
 
   std::unique_ptr<DCOMPTextureHost> dcomp_texture_host_;
 

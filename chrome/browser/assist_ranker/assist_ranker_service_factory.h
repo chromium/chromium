@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASSIST_RANKER_ASSIST_RANKER_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ASSIST_RANKER_ASSIST_RANKER_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -25,6 +24,10 @@ class AssistRankerServiceFactory : public BrowserContextKeyedServiceFactory {
   static AssistRankerService* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
+  AssistRankerServiceFactory(const AssistRankerServiceFactory&) = delete;
+  AssistRankerServiceFactory& operator=(const AssistRankerServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<AssistRankerServiceFactory>;
 
@@ -36,8 +39,6 @@ class AssistRankerServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistRankerServiceFactory);
 };
 
 }  // namespace assist_ranker

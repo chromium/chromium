@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
@@ -54,7 +53,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
-#include "chrome/browser/ash/policy/dlp/dlp_content_tab_helper.h"
+#endif
+
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -137,6 +139,11 @@ class ChromeAppDelegate::NewWindowContentsDelegate
     : public content::WebContentsDelegate {
  public:
   NewWindowContentsDelegate() {}
+
+  NewWindowContentsDelegate(const NewWindowContentsDelegate&) = delete;
+  NewWindowContentsDelegate& operator=(const NewWindowContentsDelegate&) =
+      delete;
+
   ~NewWindowContentsDelegate() override {}
 
   void BecomeOwningDeletageOf(
@@ -151,8 +158,6 @@ class ChromeAppDelegate::NewWindowContentsDelegate
 
  private:
   std::vector<std::unique_ptr<content::WebContents>> owned_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(NewWindowContentsDelegate);
 };
 
 content::WebContents*
@@ -225,7 +230,7 @@ void ChromeAppDelegate::InitWebContents(content::WebContents* web_contents) {
 
   apps::AudioFocusWebContentsObserver::CreateForWebContents(web_contents);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   policy::DlpContentTabHelper::MaybeCreateForWebContents(web_contents);
 #endif
 
@@ -234,7 +239,9 @@ void ChromeAppDelegate::InitWebContents(content::WebContents* web_contents) {
 
 void ChromeAppDelegate::RenderFrameCreated(
     content::RenderFrameHost* frame_host) {
-  if (!chrome::IsRunningInForcedAppMode()) {
+  // Only do this for the primary main frame.
+  if (!chrome::IsRunningInForcedAppMode() &&
+      frame_host->IsInPrimaryMainFrame()) {
     // Due to a bug in the way apps reacted to default zoom changes, some apps
     // can incorrectly have host level zoom settings. These aren't wanted as
     // apps cannot be zoomed, so are removed. This should be removed if apps
@@ -243,14 +250,10 @@ void ChromeAppDelegate::RenderFrameCreated(
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(frame_host);
     DCHECK(web_contents);
-
-    // Only do this for the initial main frame.
-    if (frame_host == web_contents->GetMainFrame()) {
-      content::HostZoomMap* zoom_map =
-          content::HostZoomMap::GetForWebContents(web_contents);
-      DCHECK(zoom_map);
-      zoom_map->SetZoomLevelForHost(web_contents->GetURL().host(), 0);
-    }
+    content::HostZoomMap* zoom_map =
+        content::HostZoomMap::GetForWebContents(web_contents);
+    DCHECK(zoom_map);
+    zoom_map->SetZoomLevelForHost(web_contents->GetURL().host(), 0);
   }
 }
 
@@ -357,8 +360,8 @@ void ChromeAppDelegate::SetTerminatingCallback(base::OnceClosure callback) {
 void ChromeAppDelegate::OnHide() {
   is_hidden_ = true;
   if (has_been_shown_) {
-    keep_alive_.reset();
     profile_keep_alive_.reset();
+    keep_alive_.reset();
     return;
   }
 
@@ -368,7 +371,7 @@ void ChromeAppDelegate::OnHide() {
       FROM_HERE,
       base::BindOnce(&ChromeAppDelegate::RelinquishKeepAliveAfterTimeout,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kAppWindowFirstShowTimeoutSeconds));
+      base::Seconds(kAppWindowFirstShowTimeoutSeconds));
 }
 
 void ChromeAppDelegate::OnShow() {

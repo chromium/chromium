@@ -22,12 +22,9 @@ typedef NS_ENUM(NSInteger, ContentSuggestionType) {
   // this type are empty and should not be displayed. The informations to be
   // displayed are contained in the SectionInfo.
   ContentSuggestionTypeEmpty,
-  ContentSuggestionTypeArticle,
-  ContentSuggestionTypeReadingList,
   ContentSuggestionTypeMostVisited,
   ContentSuggestionTypeReturnToRecentTab,
   ContentSuggestionTypePromo,
-  ContentSuggestionTypeLearnMore,
   ContentSuggestionTypeDiscover,
 };
 
@@ -93,16 +90,6 @@ addSuggestionsToModel:
 
 // Returns whether |section| contains the Discover feed.
 - (BOOL)isDiscoverSection:(NSInteger)section;
-
-// Returns whether |section| is one of the section containing ContentSuggestions
-// items.
-- (BOOL)isContentSuggestionsSection:(NSInteger)section;
-
-// Returns whether |itemType| is a Discover ItemType.
-- (BOOL)isDiscoverItem:(NSInteger)itemType;
-
-// Dismisses the |item| from the model. Does not change the UI.
-- (void)dismissItem:(CollectionViewItem<SuggestedContent>*)item;
 
 @end
 

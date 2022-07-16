@@ -63,6 +63,12 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
   using OnPublicSessionViewDismissed = base::RepeatingClosure;
   explicit LoginExpandedPublicAccountView(
       const OnPublicSessionViewDismissed& on_dismissed);
+
+  LoginExpandedPublicAccountView(const LoginExpandedPublicAccountView&) =
+      delete;
+  LoginExpandedPublicAccountView& operator=(
+      const LoginExpandedPublicAccountView&) = delete;
+
   ~LoginExpandedPublicAccountView() override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -89,8 +95,6 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
   std::unique_ptr<ui::EventHandler> event_handler_;
 
   base::WeakPtrFactory<LoginExpandedPublicAccountView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginExpandedPublicAccountView);
 };
 
 }  // namespace ash

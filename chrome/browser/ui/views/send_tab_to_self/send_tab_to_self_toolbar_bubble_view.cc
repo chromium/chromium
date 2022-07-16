@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_icon_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,8 +42,7 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
     SendTabToSelfToolbarIconView* parent,
     const SendTabToSelfEntry& entry,
     base::OnceCallback<void(NavigateParams*)> navigate_callback)
-    : views::BubbleDialogDelegateView(dynamic_cast<views::View*>(parent),
-                                      views::BubbleBorder::TOP_RIGHT),
+    : views::BubbleDialogDelegateView(parent, views::BubbleBorder::TOP_RIGHT),
       toolbar_button_(parent),
       navigate_callback_(std::move(navigate_callback)),
       profile_(profile),
@@ -107,7 +107,7 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
                       views::LayoutAlignment::kEnd);
   AddChildView(std::move(button));
 
-  base::TimeDelta kTimeoutMs = base::TimeDelta::FromMilliseconds(30000);
+  base::TimeDelta kTimeoutMs = base::Milliseconds(30000);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&SendTabToSelfToolbarBubbleView::Timeout,
@@ -127,6 +127,7 @@ void SendTabToSelfToolbarBubbleView::OpenInNewTab() {
 }
 
 void SendTabToSelfToolbarBubbleView::Timeout() {
+  send_tab_to_self::RecordNotificationTimedOut();
   GetWidget()->Close();
 }
 

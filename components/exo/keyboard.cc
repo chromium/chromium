@@ -5,6 +5,7 @@
 #include "components/exo/keyboard.h"
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/public/cpp/accelerators.h"
@@ -96,6 +97,8 @@ bool IsImeSupportedSurface(Surface* surface) {
       case ash::AppType::ARC_APP:
       case ash::AppType::LACROS:
         return true;
+      case ash::AppType::CROSTINI_APP:
+        return base::FeatureList::IsEnabled(ash::features::kCrostiniImeSupport);
       default:
         // Do nothing.
         break;
@@ -164,8 +167,8 @@ bool ProcessAshAcceleratorIfPossible(Surface* surface, ui::KeyEvent* event) {
 Keyboard::Keyboard(std::unique_ptr<KeyboardDelegate> delegate, Seat* seat)
     : delegate_(std::move(delegate)),
       seat_(seat),
-      expiration_delay_for_pending_key_acks_(base::TimeDelta::FromMilliseconds(
-          kExpirationDelayForPendingKeyAcksMs)) {
+      expiration_delay_for_pending_key_acks_(
+          base::Milliseconds(kExpirationDelayForPendingKeyAcksMs)) {
   seat_->AddObserver(this, kKeyboardSeatObserverPriority);
   ash::KeyboardController::Get()->AddObserver(this);
   ash::ImeControllerImpl* ime_controller = ash::Shell::Get()->ime_controller();
@@ -196,7 +199,7 @@ bool Keyboard::HasDeviceConfigurationDelegate() const {
 void Keyboard::SetDeviceConfigurationDelegate(
     KeyboardDeviceConfigurationDelegate* delegate) {
   device_configuration_delegate_ = delegate;
-  OnKeyboardEnabledChanged(IsVirtualKeyboardEnabled());
+  UpdateKeyboardType();
 }
 
 void Keyboard::AddObserver(KeyboardObserver* observer) {
@@ -397,14 +400,9 @@ void Keyboard::OnSurfaceFocused(Surface* gained_focus) {
 ////////////////////////////////////////////////////////////////////////////////
 // ash::KeyboardControllerObserver overrides:
 
-void Keyboard::OnKeyboardEnabledChanged(bool enabled) {
-  if (device_configuration_delegate_) {
-    // Ignore kAndroidDisabled which affects |enabled| and just test for a11y
-    // and touch enabled keyboards. TODO(yhanada): Fix this using an Android
-    // specific KeyboardUI implementation. https://crbug.com/897655.
-    bool is_physical = !IsVirtualKeyboardEnabled();
-    device_configuration_delegate_->OnKeyboardTypeChanged(is_physical);
-  }
+void Keyboard::OnKeyboardEnableFlagsChanged(
+    const std::set<keyboard::KeyboardEnableFlag>& flags) {
+  UpdateKeyboardType();
 }
 
 void Keyboard::OnKeyRepeatSettingsChanged(
@@ -514,6 +512,17 @@ void Keyboard::RemoveEventHandler() {
     toplevel_window->RemovePreTargetHandler(this);
   else
     toplevel_window->RemovePostTargetHandler(this);
+}
+
+void Keyboard::UpdateKeyboardType() {
+  if (!device_configuration_delegate_)
+    return;
+
+  // Ignore kAndroidDisabled which affects |enabled| and just test for a11y
+  // and touch enabled keyboards. TODO(yhanada): Fix this using an Android
+  // specific KeyboardUI implementation. https://crbug.com/897655.
+  const bool is_physical = !IsVirtualKeyboardEnabled();
+  device_configuration_delegate_->OnKeyboardTypeChanged(is_physical);
 }
 
 }  // namespace exo

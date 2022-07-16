@@ -122,7 +122,7 @@ TEST(NativeUnwinderAndroidTest, MAYBE_PlainFunction) {
                         ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
                         UnwindResult result = unwinder->TryUnwind(
                             thread_context, stack_top, sample);
-                        EXPECT_EQ(UnwindResult::COMPLETED, result);
+                        EXPECT_EQ(UnwindResult::kCompleted, result);
                       }));
 
   // Check that all the modules are valid.
@@ -163,7 +163,7 @@ TEST(NativeUnwinderAndroidTest, MAYBE_Alloca) {
                         ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
                         UnwindResult result = unwinder->TryUnwind(
                             thread_context, stack_top, sample);
-                        EXPECT_EQ(UnwindResult::COMPLETED, result);
+                        EXPECT_EQ(UnwindResult::kCompleted, result);
                       }));
 
   // Check that all the modules are valid.
@@ -206,7 +206,7 @@ TEST(NativeUnwinderAndroidTest, MAYBE_OtherLibrary) {
                         ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
                         UnwindResult result = unwinder->TryUnwind(
                             thread_context, stack_top, sample);
-                        EXPECT_EQ(UnwindResult::COMPLETED, result);
+                        EXPECT_EQ(UnwindResult::kCompleted, result);
                       }));
 
   // The stack should contain a full unwind.
@@ -238,7 +238,7 @@ TEST(NativeUnwinderAndroidTest, ExcludeOtherLibrary) {
                                                uintptr_t stack_top,
                                                std::vector<Frame>* sample) {
                         ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
-                        EXPECT_EQ(UnwindResult::UNRECOGNIZED_FRAME,
+                        EXPECT_EQ(UnwindResult::kUnrecognizedFrame,
                                   unwinder->TryUnwind(thread_context, stack_top,
                                                       sample));
                         EXPECT_FALSE(unwinder->CanUnwindFrom(sample->back()));
@@ -299,7 +299,7 @@ TEST(NativeUnwinderAndroidTest, MAYBE_ResumeUnwinding) {
         // chrome frames. It might not contain SampleAddressRange.
         ASSERT_TRUE(unwinder_for_native->CanUnwindFrom(sample->back()));
         EXPECT_EQ(
-            UnwindResult::UNRECOGNIZED_FRAME,
+            UnwindResult::kUnrecognizedFrame,
             unwinder_for_native->TryUnwind(thread_context, stack_top, sample));
         EXPECT_FALSE(unwinder_for_native->CanUnwindFrom(sample->back()));
 
@@ -312,7 +312,7 @@ TEST(NativeUnwinderAndroidTest, MAYBE_ResumeUnwinding) {
         // |other_library|. It won't contain SetupFunctionAddressRange.
         ASSERT_TRUE(unwinder_for_chrome->CanUnwindFrom(sample->back()));
         EXPECT_EQ(
-            UnwindResult::UNRECOGNIZED_FRAME,
+            UnwindResult::kUnrecognizedFrame,
             unwinder_for_chrome->TryUnwind(thread_context, stack_top, sample));
         EXPECT_FALSE(unwinder_for_chrome->CanUnwindFrom(sample->back()));
         EXPECT_LT(prior_stack_size, sample->size());
@@ -324,7 +324,7 @@ TEST(NativeUnwinderAndroidTest, MAYBE_ResumeUnwinding) {
         // |unwinder_for_all| should complete unwinding through all frames.
         ASSERT_TRUE(unwinder_for_all->CanUnwindFrom(sample->back()));
         EXPECT_EQ(
-            UnwindResult::COMPLETED,
+            UnwindResult::kCompleted,
             unwinder_for_all->TryUnwind(thread_context, stack_top, sample));
       }));
 
@@ -387,7 +387,7 @@ TEST(NativeUnwinderAndroidTest, DISABLED_JavaFunction) {
                         UnwindResult result = unwinder->TryUnwind(
                             thread_context, stack_top, sample);
                         if (can_always_unwind)
-                          EXPECT_EQ(UnwindResult::COMPLETED, result);
+                          EXPECT_EQ(UnwindResult::kCompleted, result);
                       }));
 
   // Check that all the modules are valid.

@@ -18,10 +18,11 @@ namespace {
 class AudioSinkManagerInstance : public AudioSinkManager {
  public:
   AudioSinkManagerInstance() {}
-  ~AudioSinkManagerInstance() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioSinkManagerInstance);
+  AudioSinkManagerInstance(const AudioSinkManagerInstance&) = delete;
+  AudioSinkManagerInstance& operator=(const AudioSinkManagerInstance&) = delete;
+
+  ~AudioSinkManagerInstance() override {}
 };
 
 }  // namespace

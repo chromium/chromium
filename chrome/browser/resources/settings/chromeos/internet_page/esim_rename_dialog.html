@@ -10,7 +10,7 @@
   }
 
   #warningMessage {
-    --iron-icon-fill-color: var(--google-grey-600);
+    --iron-icon-fill-color: var(--cros-icon-color-disabled);
     --iron-icon-height: 16px;
     --iron-icon-width: 16px;
     font-size: smaller;
@@ -35,8 +35,8 @@
   }
 
   #inputInfo {
-    background-color: white;
-    color: var(--google-grey-700);
+    background-color: var(--cros-bg-color);
+    color: var(--cros-text-color-secondary);
     font-size: var(--cr-form-field-label-font-size);
     font-weight: 400;
     height: 30px;
@@ -47,8 +47,17 @@
     width: 100%;
   }
 
+  @media (prefers-color-scheme: dark) {
+    #inputInfo {
+      /* Note: In dark mode, cr-dialog applies a linear-gradient() to add a 4%
+       * white layer on top of the fully opaque background-color. */
+      background-image: linear-gradient(rgba(255, 255, 255, 0.04),
+                                        rgba(255, 255, 255, 0.04));
+    }
+  }
+
   #inputInfo.error {
-    color: var(--google-red-600);
+    color: var(--cros-text-color-alert);
   }
 
   #inputSubtitle {

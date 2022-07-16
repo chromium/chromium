@@ -44,6 +44,11 @@ class PairingRegistryDelegateWin
     : public protocol::PairingRegistry::Delegate {
  public:
   PairingRegistryDelegateWin();
+
+  PairingRegistryDelegateWin(const PairingRegistryDelegateWin&) = delete;
+  PairingRegistryDelegateWin& operator=(const PairingRegistryDelegateWin&) =
+      delete;
+
   ~PairingRegistryDelegateWin() override;
 
   // Passes the root keys to be used to access the pairing registry store.
@@ -62,8 +67,6 @@ class PairingRegistryDelegateWin
  private:
   base::win::RegKey privileged_;
   base::win::RegKey unprivileged_;
-
-  DISALLOW_COPY_AND_ASSIGN(PairingRegistryDelegateWin);
 };
 
 }  // namespace remoting

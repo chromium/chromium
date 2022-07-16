@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -25,6 +24,9 @@ class BookmarkUndoServiceTest : public testing::Test {
  public:
   BookmarkUndoServiceTest();
 
+  BookmarkUndoServiceTest(const BookmarkUndoServiceTest&) = delete;
+  BookmarkUndoServiceTest& operator=(const BookmarkUndoServiceTest&) = delete;
+
   void SetUp() override;
   void TearDown() override;
 
@@ -34,8 +36,6 @@ class BookmarkUndoServiceTest : public testing::Test {
  private:
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<BookmarkUndoService> bookmark_undo_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkUndoServiceTest);
 };
 
 BookmarkUndoServiceTest::BookmarkUndoServiceTest() {}

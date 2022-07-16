@@ -22,7 +22,7 @@
 
 namespace {
 // The interval between two scheduled computation tasks.
-constexpr base::TimeDelta kScheduleInterval = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kScheduleInterval = base::Days(1);
 
 // Pref name for the persistent timestamp of the last stats reporting.
 // Should be in sync with similar name in the reporter's impl.
@@ -49,6 +49,11 @@ class DomainDiversityReporterTest : public testing::Test {
 
   DomainDiversityReporterTest()
       : test_clock_(base::subtle::TimeNowIgnoringOverride()) {}
+
+  DomainDiversityReporterTest(const DomainDiversityReporterTest&) = delete;
+  DomainDiversityReporterTest& operator=(const DomainDiversityReporterTest&) =
+      delete;
+
   ~DomainDiversityReporterTest() override = default;
 
   void SetUp() override {
@@ -63,7 +68,7 @@ class DomainDiversityReporterTest : public testing::Test {
     // issues in time arithmetic caused by uneven day lengths due to Daylight
     // Saving Time.
     test_clock_.SetTime(MidnightNDaysLater(test_clock_.Now(), 0) +
-                        base::TimeDelta::FromHours(10));
+                        base::Hours(10));
   }
 
   void CreateDomainDiversityReporter() {
@@ -121,7 +126,6 @@ class DomainDiversityReporterTest : public testing::Test {
 
   // The mock clock used by DomainDiversity internally.
   TestClock test_clock_;
-  DISALLOW_COPY_AND_ASSIGN(DomainDiversityReporterTest);
 };
 
 TEST_F(DomainDiversityReporterTest, HistoryNotLoaded) {
@@ -293,7 +297,7 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
   histograms().ExpectBucketCount("History.DomainCount28Day", 4, 2);
 
   test_clock().SetTime(MidnightNDaysLater(test_clock().Now(), 1) +
-                       base::TimeDelta::FromHours(10));
+                       base::Hours(10));
   FastForwardAndWait(kScheduleInterval);  // fast-forward 24 hours
 
   // The new report will include the four domain visits on the last
@@ -349,7 +353,7 @@ TEST_F(DomainDiversityReporterTest, OnlyOneReportPerDay) {
 
   // Set the mock clock to 20:00 on the same day
   test_clock().SetTime(MidnightNDaysLater(test_clock().Now(), 0) +
-                       base::TimeDelta::FromHours(20));
+                       base::Hours(20));
 
   // Fast-forward the scheduler's clock by another 24 hours in order to trigger
   // the next report

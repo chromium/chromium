@@ -179,7 +179,6 @@ TEST(ComputedHashesTest, DotSpaceSuffix) {
            {hash_value}},
       },
       &computed_hashes));
-  std::vector<std::string> read_hashes;
 
   struct TestCase {
     const char* path;

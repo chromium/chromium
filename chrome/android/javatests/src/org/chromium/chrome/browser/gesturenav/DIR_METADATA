@@ -1,4 +1,4 @@
+mixins: "//chrome/android/java/src/org/chromium/chrome/browser/gesturenav/COMMON_METADATA"
 monorail {
   component: "UI>Browser>Mobile"
 }
-team_email: "clank-app-team@google.com"

@@ -45,8 +45,8 @@ ScopedJavaLocalRef<jobject> FormDataAndroid::GetJavaPeer(
       UpdateFieldTypes(*form_structure);
     ScopedJavaLocalRef<jstring> jname =
         ConvertUTF16ToJavaString(env, form_.name);
-    ScopedJavaLocalRef<jstring> jhost =
-        ConvertUTF8ToJavaString(env, form_.url.GetOrigin().spec());
+    ScopedJavaLocalRef<jstring> jhost = ConvertUTF8ToJavaString(
+        env, form_.url.DeprecatedGetOriginAsURL().spec());
     obj = Java_FormData_createFormData(env, reinterpret_cast<intptr_t>(this),
                                        jname, jhost, form_.fields.size());
     java_ref_ = JavaObjectWeakGlobalRef(env, obj);

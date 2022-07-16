@@ -16,12 +16,14 @@ class CloudExternalDataPolicyHandler
  public:
   CloudExternalDataPolicyHandler();
 
+  CloudExternalDataPolicyHandler(const CloudExternalDataPolicyHandler&) =
+      delete;
+  CloudExternalDataPolicyHandler& operator=(
+      const CloudExternalDataPolicyHandler&) = delete;
+
   virtual void RemoveForAccountId(const AccountId& account_id) = 0;
 
   static AccountId GetAccountId(const std::string& user_id);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CloudExternalDataPolicyHandler);
 };
 
 }  // namespace policy

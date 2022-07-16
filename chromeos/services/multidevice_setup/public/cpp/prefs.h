@@ -22,6 +22,7 @@ extern const char kMessagesAllowedPrefName[];
 extern const char kSmartLockAllowedPrefName[];
 extern const char kSmartLockSigninAllowedPrefName[];
 extern const char kPhoneHubAllowedPrefName[];
+extern const char kPhoneHubCameraRollAllowedPrefName[];
 extern const char kPhoneHubNotificationsAllowedPrefName[];
 extern const char kPhoneHubTaskContinuationAllowedPrefName[];
 extern const char kWifiSyncAllowedPrefName[];
@@ -35,6 +36,7 @@ extern const char kInstantTetheringEnabledPrefName[];
 extern const char kMessagesEnabledPrefName[];
 extern const char kSmartLockEnabledPrefName[];
 extern const char kPhoneHubEnabledPrefName[];
+extern const char kPhoneHubCameraRollEnabledPrefName[];
 extern const char kPhoneHubNotificationsEnabledPrefName[];
 extern const char kPhoneHubTaskContinuationEnabledPrefName[];
 extern const char kEcheEnabledPrefName[];
@@ -61,8 +63,9 @@ bool IsDefaultFeatureEnabledValue(mojom::Feature feature,
 // source migration is finished.
 namespace ash {
 namespace multidevice_setup {
+using ::chromeos::multidevice_setup::AreAnyMultiDeviceFeaturesAllowed;
 using ::chromeos::multidevice_setup::IsFeatureAllowed;
-}
+}  // namespace multidevice_setup
 }  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_PREFS_H_

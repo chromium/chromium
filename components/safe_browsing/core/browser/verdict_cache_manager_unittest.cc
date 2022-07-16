@@ -68,6 +68,17 @@ class VerdictCacheManagerTest : public ::testing::Test {
         cache_expression_match_type);
   }
 
+  ChromeUserPopulation::PageLoadToken CreatePageLoadToken(
+      int token_time_msec,
+      std::string token_value) {
+    ChromeUserPopulation::PageLoadToken token;
+    token.set_token_source(
+        ChromeUserPopulation::PageLoadToken::CLIENT_GENERATION);
+    token.set_token_time_msec(token_time_msec);
+    token.set_token_value(token_value);
+    return token;
+  }
+
  protected:
   std::unique_ptr<VerdictCacheManager> cache_manager_;
   scoped_refptr<HostContentSettingsMap> content_setting_map_;
@@ -287,7 +298,13 @@ TEST_F(VerdictCacheManagerTest, TestRemoveCachedVerdictOnURLsDeleted) {
                     LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
 }
 
-TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdict) {
+// TODO(crbug.com/1264925): This test is flaky on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_TestCleanUpExpiredVerdict TestCleanUpExpiredVerdict
+#else
+#define MAYBE_TestCleanUpExpiredVerdict DISABLED_TestCleanUpExpiredVerdict
+#endif
+TEST_F(VerdictCacheManagerTest, MAYBE_TestCleanUpExpiredVerdict) {
   // Prepare 4 verdicts for PASSWORD_REUSE_EVENT with SIGN_IN_PASSWORD type:
   // (1) "foo.com/abc/" valid
   // (2) "foo.com/def/" expired
@@ -339,6 +356,16 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdict) {
   cache_manager_->CacheRealTimeUrlVerdict(GURL("https://www.example.com/"),
                                           response, base::Time::Now());
   ASSERT_EQ(2u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
+
+  // Prepare 2 page load tokens:
+  // (1) "www.example.com" expired
+  // (2) "www.example1.com" valid
+  cache_manager_->SetPageLoadTokenForTesting(
+      GURL("https://www.example.com"),
+      CreatePageLoadToken((now - base::Hours(1)).ToJavaTime(), "token1"));
+  cache_manager_->SetPageLoadTokenForTesting(
+      GURL("https://www.example1.com"),
+      CreatePageLoadToken(now.ToJavaTime(), "token2"));
 
   cache_manager_->CleanUpExpiredVerdicts();
 
@@ -400,6 +427,15 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdict) {
       RTLookupResponse::ThreatInfo::DANGEROUS,
       cache_manager_->GetCachedRealTimeUrlVerdict(
           GURL("https://www.example.com/path"), &actual_real_time_threat_info));
+
+  // token1 is cleaned up.
+  EXPECT_FALSE(
+      cache_manager_->GetPageLoadToken(GURL("https://www.example.com/"))
+          .has_token_value());
+  // token2 will be returned for www.example1.com.
+  EXPECT_EQ("token2",
+            cache_manager_->GetPageLoadToken(GURL("https://www.example1.com/"))
+                .token_value());
 }
 
 TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictWithInvalidEntry) {
@@ -679,28 +715,28 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictInBackground) {
   cache_manager_->CacheRealTimeUrlVerdict(GURL("https://www.example.com/"),
                                           response, base::Time::Now());
   ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(119));
+  task_environment_.FastForwardBy(base::Seconds(119));
   ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
   // The first cleanup task should happen at 120 seconds after construction.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment_.FastForwardBy(base::Seconds(2));
   ASSERT_EQ(0u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
 
   cache_manager_->CacheRealTimeUrlVerdict(GURL("https://www.example.com/"),
                                           response, base::Time::Now());
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1798));
+  task_environment_.FastForwardBy(base::Seconds(1798));
   ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
   // The second cleanup task should happen at 120 + 1800 seconds after
   // construction.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment_.FastForwardBy(base::Seconds(2));
   ASSERT_EQ(0u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
 
   cache_manager_->CacheRealTimeUrlVerdict(GURL("https://www.example.com/"),
                                           response, base::Time::Now());
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1798));
+  task_environment_.FastForwardBy(base::Seconds(1798));
   ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
   // The third cleanup task should happen at 120 + 1800 + 1800 seconds after
   // construction.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment_.FastForwardBy(base::Seconds(2));
   ASSERT_EQ(0u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
 }
 
@@ -717,11 +753,50 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpVerdictOlderThanUpperBound) {
                                           response, base::Time::Now());
   ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
   // Fast forward by 8 days.
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(8 * 24 * 60 * 60));
+  task_environment_.FastForwardBy(base::Seconds(8 * 24 * 60 * 60));
   // Although the cache duration is set to 20 days, it is stored longer than the
   // upper bound(7 days). The cache should be cleaned up.
   ASSERT_EQ(0u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
+}
+
+TEST_F(VerdictCacheManagerTest, TestGetPageLoadToken) {
+  GURL url1("https://www.example.com/path1");
+  GURL url2("http://www.example.com/path2");  // different scheme and path
+  GURL url3("https://www.example1.com/path1");
+  cache_manager_->CreatePageLoadToken(url1);
+  ChromeUserPopulation::PageLoadToken token1 =
+      cache_manager_->GetPageLoadToken(url1);
+  ChromeUserPopulation::PageLoadToken token2 =
+      cache_manager_->GetPageLoadToken(url2);
+  // token1 and token2 are the same, because the hostname is the same.
+  ASSERT_TRUE(token1.has_token_value());
+  ASSERT_TRUE(token2.has_token_value());
+  ASSERT_EQ(token1.token_value(), token2.token_value());
+
+  cache_manager_->CreatePageLoadToken(url1);
+  ChromeUserPopulation::PageLoadToken token3 =
+      cache_manager_->GetPageLoadToken(url1);
+  // token1 and token3 are different, because CreatePageLoadToken should
+  // create a new token for the hostname.
+  ASSERT_TRUE(token3.has_token_value());
+  ASSERT_NE(token1.token_value(), token3.token_value());
+  ChromeUserPopulation::PageLoadToken token4 =
+      cache_manager_->GetPageLoadToken(url3);
+  // token4 should be empty, because url3 has a different hostname.
+  ASSERT_FALSE(token4.has_token_value());
+}
+
+TEST_F(VerdictCacheManagerTest, TestGetExpiredPageLoadToken) {
+  GURL url("https://www.example.com/path");
+  cache_manager_->CreatePageLoadToken(url);
+  ChromeUserPopulation::PageLoadToken token =
+      cache_manager_->GetPageLoadToken(url);
+  ASSERT_TRUE(token.has_token_value());
+
+  task_environment_.FastForwardBy(base::Minutes(6));
+  token = cache_manager_->GetPageLoadToken(url);
+  // Token is not found because it has already expired.
+  ASSERT_FALSE(token.has_token_value());
 }
 
 }  // namespace safe_browsing

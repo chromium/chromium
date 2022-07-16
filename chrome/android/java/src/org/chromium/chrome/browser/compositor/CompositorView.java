@@ -81,10 +81,15 @@ public class CompositorView
     private boolean mIsSurfaceControlEnabled;
     private boolean mSelectionHandlesActive;
 
+    private boolean mRenderHostNeedsDidSwapBuffersCallback;
+
     // On P and above, toggling the screen off gets us in a state where the Surface is destroyed but
     // it is never recreated when it is turned on again. This is the only workaround that seems to
     // be working, see crbug.com/931195.
     class ScreenStateReceiverWorkaround extends BroadcastReceiver {
+        // True indicates we should destroy and recreate the surface manager.
+        private boolean mNeedsReset;
+
         ScreenStateReceiverWorkaround() {
             IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
             getContext().getApplicationContext().registerReceiver(this, filter);
@@ -99,6 +104,15 @@ public class CompositorView
             if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)
                     && mCompositorSurfaceManager != null && !mIsInXr
                     && mNativeCompositorView != 0) {
+                mNeedsReset = true;
+            }
+        }
+
+        public void maybeResetCompositorSurfaceManager() {
+            if (!mNeedsReset) return;
+            mNeedsReset = false;
+
+            if (mCompositorSurfaceManager != null) {
                 mCompositorSurfaceManager.shutDown();
                 createCompositorSurfaceManager();
             }
@@ -140,7 +154,7 @@ public class CompositorView
         // Cover the black surface before it has valid content.  Set this placeholder view to
         // visible, but don't yet make SurfaceView visible, in order to delay
         // surfaceCreate/surfaceChanged calls until the native library is loaded.
-        setBackgroundColor(ChromeColors.getPrimaryBackgroundColor(getResources(), false));
+        setBackgroundColor(ChromeColors.getPrimaryBackgroundColor(getContext(), false));
         super.setVisibility(View.VISIBLE);
 
         // Request the opaque surface.  We might need the translucent one, but
@@ -386,6 +400,7 @@ public class CompositorView
         // See https://crbug.com/1174273 and https://crbug.com/1223299 for more details.
         runDrawFinishedCallback();
         mDrawingFinishedCallback = drawingFinished;
+        updateNeedsDidSwapBuffersCallback();
         if (mNativeCompositorView != 0) {
             CompositorViewJni.get().setNeedsComposite(mNativeCompositorView, CompositorView.this);
         }
@@ -404,8 +419,9 @@ public class CompositorView
     public void surfaceCreated(Surface surface) {
         if (mNativeCompositorView == 0) return;
 
-        CompositorViewJni.get().surfaceCreated(mNativeCompositorView, CompositorView.this);
         mFramesUntilHideBackground = 2;
+        updateNeedsDidSwapBuffersCallback();
+        CompositorViewJni.get().surfaceCreated(mNativeCompositorView, CompositorView.this);
         mRenderHost.onSurfaceCreated();
     }
 
@@ -422,6 +438,10 @@ public class CompositorView
         }
 
         CompositorViewJni.get().surfaceDestroyed(mNativeCompositorView, CompositorView.this);
+
+        if (mScreenStateReceiver != null) {
+            mScreenStateReceiver.maybeResetCompositorSurfaceManager();
+        }
     }
 
     @Override
@@ -488,6 +508,26 @@ public class CompositorView
         }
     }
 
+    /**
+     * Called by LayoutRenderHost to inform whether it needs `didSwapBuffers` calls.
+     * Note the implementation is asynchronous so it may miss already pending calls when enabled
+     * and can have a few trailing calls when disabled.
+     */
+    public void setRenderHostNeedsDidSwapBuffersCallback(boolean enable) {
+        if (mRenderHostNeedsDidSwapBuffersCallback == enable) return;
+        mRenderHostNeedsDidSwapBuffersCallback = enable;
+        updateNeedsDidSwapBuffersCallback();
+    }
+
+    // Should be called any time the inputs used to compute `needsSwapCallback` change.
+    private void updateNeedsDidSwapBuffersCallback() {
+        if (mNativeCompositorView == 0) return;
+        boolean needsSwapCallback = mRenderHostNeedsDidSwapBuffersCallback
+                || mFramesUntilHideBackground > 0 || mDrawingFinishedCallback != null;
+        CompositorViewJni.get().setDidSwapBuffersCallbackEnabled(
+                mNativeCompositorView, needsSwapCallback);
+    }
+
     @CalledByNative
     private void didSwapFrame(int pendingFrameCount) {
         mRenderHost.didSwapFrame(pendingFrameCount);
@@ -541,6 +581,8 @@ public class CompositorView
         }
 
         mRenderHost.didSwapBuffers(swappedCurrentSize);
+
+        updateNeedsDidSwapBuffersCallback();
     }
 
     @CalledByNative
@@ -619,6 +661,7 @@ public class CompositorView
         if (runnable != null) {
             runnable.run();
         }
+        updateNeedsDidSwapBuffersCallback();
     }
 
     /**
@@ -702,5 +745,6 @@ public class CompositorView
         void evictCachedBackBuffer(long nativeCompositorView, CompositorView caller);
         void onTabChanged(long nativeCompositorView, CompositorView caller);
         void preserveChildSurfaceControls(long nativeCompositorView, CompositorView caller);
+        void setDidSwapBuffersCallbackEnabled(long nativeCompositorView, boolean enabled);
     }
 }

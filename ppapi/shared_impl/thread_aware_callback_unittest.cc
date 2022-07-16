@@ -11,7 +11,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/proxy/ppapi_proxy_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

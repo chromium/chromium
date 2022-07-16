@@ -40,12 +40,13 @@ class ScopedFlush {
  public:
   explicit ScopedFlush(gles2::GLES2Interface* gl) : gl_(gl) {}
 
+  ScopedFlush(const ScopedFlush&) = delete;
+  ScopedFlush& operator=(const ScopedFlush&) = delete;
+
   ~ScopedFlush() { gl_->Flush(); }
 
  private:
   gles2::GLES2Interface* gl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFlush);
 };
 
 // Helper class for allocating and holding an RGBA texture of a given
@@ -59,14 +60,15 @@ class TextureHolder {
                    GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
   }
 
+  TextureHolder(const TextureHolder&) = delete;
+  TextureHolder& operator=(const TextureHolder&) = delete;
+
   GLuint texture() const { return texture_.id(); }
   gfx::Size size() const { return size_; }
 
  private:
   ScopedTexture texture_;
   gfx::Size size_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextureHolder);
 };
 
 class I420ConverterImpl : public I420Converter {
@@ -77,6 +79,9 @@ class I420ConverterImpl : public I420Converter {
                     bool flip_output,
                     bool swizzle,
                     bool use_mrt);
+
+  I420ConverterImpl(const I420ConverterImpl&) = delete;
+  I420ConverterImpl& operator=(const I420ConverterImpl&) = delete;
 
   ~I420ConverterImpl() override;
 
@@ -124,8 +129,6 @@ class I420ConverterImpl : public I420Converter {
   // Intermediate texture, holding the UV interim output (if the MRT shader
   // is being used).
   absl::optional<ScopedTexture> uv_;
-
-  DISALLOW_COPY_AND_ASSIGN(I420ConverterImpl);
 };
 
 }  // namespace
@@ -215,6 +218,10 @@ class GLHelper::CopyTextureToImpl
   class FinishRequestHelper {
    public:
     FinishRequestHelper() {}
+
+    FinishRequestHelper(const FinishRequestHelper&) = delete;
+    FinishRequestHelper& operator=(const FinishRequestHelper&) = delete;
+
     ~FinishRequestHelper() {
       while (!requests_.empty()) {
         Request* request = requests_.front();
@@ -227,7 +234,6 @@ class GLHelper::CopyTextureToImpl
 
    private:
     base::queue<Request*> requests_;
-    DISALLOW_COPY_AND_ASSIGN(FinishRequestHelper);
   };
 
   // A readback pipeline that also converts the data to YUV before
@@ -241,6 +247,9 @@ class GLHelper::CopyTextureToImpl
                     bool flip_vertically,
                     ReadbackSwizzle swizzle,
                     bool use_mrt);
+
+    ReadbackYUVImpl(const ReadbackYUVImpl&) = delete;
+    ReadbackYUVImpl& operator=(const ReadbackYUVImpl&) = delete;
 
     ~ReadbackYUVImpl() override;
 
@@ -281,8 +290,6 @@ class GLHelper::CopyTextureToImpl
     ScopedFramebuffer y_readback_framebuffer_;
     ScopedFramebuffer u_readback_framebuffer_;
     ScopedFramebuffer v_readback_framebuffer_;
-
-    DISALLOW_COPY_AND_ASSIGN(ReadbackYUVImpl);
   };
 
   void ReadbackDone(Request* request, size_t bytes_per_pixel);
@@ -753,15 +760,15 @@ void GLHelper::CopyTextureToImpl::ReadbackYUVImpl::ReadbackYUV(
                               GL_TEXTURE_2D, texture, 0);
   };
   SetUpAndBindFramebuffer(y_readback_framebuffer_, y_);
-  copy_impl_->ReadbackPlane(
-      GetYPlaneTextureSize(output_rect.size()), y_plane_row_stride_bytes,
-      y_plane_data, 0, paste_rect, swizzle_, base::DoNothing::Once<bool>());
+  copy_impl_->ReadbackPlane(GetYPlaneTextureSize(output_rect.size()),
+                            y_plane_row_stride_bytes, y_plane_data, 0,
+                            paste_rect, swizzle_, base::DoNothing());
   SetUpAndBindFramebuffer(u_readback_framebuffer_, u_);
   const gfx::Size chroma_texture_size =
       GetChromaPlaneTextureSize(output_rect.size());
   copy_impl_->ReadbackPlane(chroma_texture_size, u_plane_row_stride_bytes,
                             u_plane_data, 1, paste_rect, swizzle_,
-                            base::DoNothing::Once<bool>());
+                            base::DoNothing());
   SetUpAndBindFramebuffer(v_readback_framebuffer_, v_);
   copy_impl_->ReadbackPlane(chroma_texture_size, v_plane_row_stride_bytes,
                             v_plane_data, 1, paste_rect, swizzle_,

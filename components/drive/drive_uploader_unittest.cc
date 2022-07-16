@@ -20,8 +20,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/drive/service/dummy_drive_service.h"
+#include "google_apis/common/test_util.h"
 #include "google_apis/drive/drive_api_parser.h"
-#include "google_apis/drive/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using google_apis::ApiErrorCode;

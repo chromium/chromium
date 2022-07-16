@@ -46,6 +46,8 @@ class BuildConfigGenerator extends DefaultTask {
     // https://source.chromium.org/chromium/infra/infra/+/master:recipes/recipe_modules/support_3pp/resolved_spec.py?q=symbol:PACKAGE_EPOCH&ss=chromium
     private static final String THREEPP_EPOCH = '2'
 
+    // Use this to exclude a dep from being depended upon. Useful for deps like androidx_window_window_java.
+    private static final String EXCLUDE_THIS_LIB = 'EXCLUDE_THIS_LIB'
     // Some libraries are hosted in Chromium's //third_party directory. This is a mapping between
     // them so they can be used instead of android_deps pulling in its own copy.
     static final Map<String, String> EXISTING_LIBS = [
@@ -58,15 +60,30 @@ class BuildConfigGenerator extends DefaultTask {
         org_hamcrest_hamcrest_core: '//third_party/hamcrest:hamcrest_core_java',
         org_hamcrest_hamcrest_integration: '//third_party/hamcrest:hamcrest_integration_java',
         org_hamcrest_hamcrest_library: '//third_party/hamcrest:hamcrest_library_java',
+        // Remove androidx_window_window from being depended upon since we don't use it and it bloats binary size due to
+        // overly broad proguard keep rules. Perhaps when http://b/165268619 is fixed then we can allow it to be
+        // depended upon again.
+        androidx_window_window: EXCLUDE_THIS_LIB,
     ]
 
     /**
-     * Prefixes of androidx dependencies which are allowed to use non-SNAPSHOT versions.
+     * Prefixes of androidx dependencies which are allowed to use non-SNAPSHOT
+     * versions. These are the legacy androidx targets that are no longer being
+     * released regularly (thus are not part of the snapshots) but are still
+     * required by chromium.
+     *
+     * If an assert fails pointing at a dep which *does* exist in the androidx
+     * snapshot then adding it here will only silence the sanity check rather
+     * than fix the underlying issue (which is we should always use the snapshot
+     * versions of androidx deps when possible). A better solution could be to
+     * add it in //third_party/androidx/build.gradle.template
      */
     static final Set<String> ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES = [
       'androidx_constraintlayout',
+      'androidx_documentfile',
       'androidx_legacy',
       'androidx_multidex_multidex',
+      'androidx_print',
       'androidx_test',
     ]
 
@@ -454,7 +471,10 @@ class BuildConfigGenerator extends DefaultTask {
             String existingLib = EXISTING_LIBS.get(dep.id)
             String depTargetName = translateTargetName(dep.id) + '_java'
             if (existingLib) {
-                depsStr += "\"${existingLib}\","
+                // Explicitly allow removing specific deps via |EXCLUDE_THIS_LIB| (e.g. androidx_window_window_java).
+                if (existingLib != EXCLUDE_THIS_LIB) {
+                    depsStr += "\"${existingLib}\","
+                }
             } else if (excludeDependency(dep)) {
                 String thirdPartyDir = (dep.id.startsWith('androidx')) ? 'androidx' : 'android_deps'
                 depsStr += "\"//third_party/${thirdPartyDir}:${depTargetName}\","
@@ -626,7 +646,6 @@ class BuildConfigGenerator extends DefaultTask {
                 |  ]
                 |
                 |  proguard_configs = ["androidx_fragment.flags"]
-                |  use_classic_desugar = true
                 |
                 |  bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"
                 |'''.stripMargin())
@@ -644,6 +663,9 @@ class BuildConfigGenerator extends DefaultTask {
             case 'androidx_mediarouter_mediarouter':
                 sb.append('  # https://crbug.com/1000382\n')
                 sb.append('  proguard_configs = ["androidx_mediarouter.flags"]\n')
+                break
+            case 'androidx_room_room_runtime':
+                sb.append('  enable_bytecode_checks = false\n')
                 break
             case 'androidx_transition_transition':
                 // Not specified in the POM, compileOnly dependency not supposed to be used unless
@@ -673,6 +695,7 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('\n')
                 sb.append('  # Reduce binary size. https:crbug.com/954584\n')
                 sb.append('  ignore_proguard_configs = true\n')
+                sb.append('  proguard_configs = ["material_design.flags"]\n')
                 break
             case 'com_android_support_support_annotations':
                 sb.append('  # https://crbug.com/989505\n')
@@ -746,6 +769,7 @@ class BuildConfigGenerator extends DefaultTask {
             case 'com_google_j2objc_j2objc_annotations':
             case 'com_google_guava_listenablefuture':
             case 'com_googlecode_java_diff_utils_diffutils':
+            case 'org_checkerframework_checker_qual':
             case 'org_codehaus_mojo_animal_sniffer_annotations':
                 sb.append('\n')
                 sb.append('  # Needed to break dependency cycle for errorprone_plugin_java.\n')
@@ -815,6 +839,11 @@ class BuildConfigGenerator extends DefaultTask {
                     append('    "com/google/protobuf/Wrappers*",\n')
                     append('  ]')
                 }
+                break
+            case 'androidx_slidingpanelayout_slidingpanelayout':
+            case 'androidx_window_window_java':
+                // Every target that has a dep on androidx_window_window will need these checks turned off.
+                sb.append('  enable_bytecode_checks = false\n')
                 break
             case 'androidx_startup_startup_runtime':
                 sb.append('  # Keeps emoji2 code. See http://crbug.com/1205141\n')
@@ -981,7 +1010,7 @@ class BuildConfigGenerator extends DefaultTask {
                 }
                 if (!hasAllowedDep) {
                     String errorMsg = ("${dependency.fileName} uses non-SNAPSHOT version."
-                          + 'If this is expected, add the library to '
+                          + "If this is expected, add ${dependency.id} to "
                           + '|ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES| list.')
                     throw new IllegalStateException(errorMsg)
                 }

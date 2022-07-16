@@ -64,7 +64,7 @@ void ExtensionWebRequestTimeTracker::AnalyzeLogRequest(
 
   // Ignore really short requests. Time spent on these is negligible, and any
   // extra delay the extension adds is likely to be noise.
-  constexpr auto kMinRequestTimeToCare = base::TimeDelta::FromMilliseconds(10);
+  constexpr auto kMinRequestTimeToCare = base::Milliseconds(10);
   if (request_duration >= kMinRequestTimeToCare) {
     const int percentage =
         base::ClampRound(log.block_duration / request_duration * 100);

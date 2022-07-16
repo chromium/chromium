@@ -4,7 +4,10 @@
 
 #include "components/exo/shell_surface.h"
 
+#include <vector>
+
 #include "ash/accessibility/accessibility_delegate.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -37,6 +40,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -45,6 +49,7 @@
 #include "ui/events/event.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
 
@@ -396,7 +401,7 @@ TEST_F(ShellSurfaceTest, ActivationPermission) {
   EXPECT_FALSE(HasPermissionToActivate(window));
 
   // Can grant permission.
-  GrantPermissionToActivate(window, base::TimeDelta::FromDays(1));
+  GrantPermissionToActivate(window, base::Days(1));
   exo::Permission* permission = window->GetProperty(kPermissionKey);
   EXPECT_TRUE(permission->Check(Permission::Capability::kActivate));
   EXPECT_TRUE(HasPermissionToActivate(window));
@@ -406,7 +411,7 @@ TEST_F(ShellSurfaceTest, ActivationPermission) {
   EXPECT_FALSE(HasPermissionToActivate(window));
 
   // Can grant permission again.
-  GrantPermissionToActivate(window, base::TimeDelta::FromDays(2));
+  GrantPermissionToActivate(window, base::Days(2));
   exo::Permission* permission2 = window->GetProperty(kPermissionKey);
   EXPECT_TRUE(permission2->Check(Permission::Capability::kActivate));
   EXPECT_TRUE(HasPermissionToActivate(window));
@@ -439,8 +444,7 @@ TEST_F(ShellSurfaceTest, WidgetActivation) {
   EXPECT_TRUE(widget2->IsActive());
 
   // Grant permission to activate the first window.
-  GrantPermissionToActivate(widget1->GetNativeWindow(),
-                            base::TimeDelta::FromDays(1));
+  GrantPermissionToActivate(widget1->GetNativeWindow(), base::Days(1));
 
   // The first window can activate itself.
   surface1->RequestActivation();
@@ -958,6 +962,39 @@ TEST_F(ShellSurfaceTest, CycleSnap) {
             shell_surface->GetWidget()->GetWindowBoundsInScreen().width());
 }
 
+TEST_F(ShellSurfaceTest, ShellSurfaceWithMaximumSize) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetMaximumSize(gfx::Size(10, 10))
+          .BuildShellSurface();
+
+  auto* window_state =
+      ash::WindowState::Get(shell_surface->GetWidget()->GetNativeWindow());
+  EXPECT_FALSE(window_state->CanMaximize());
+  EXPECT_FALSE(window_state->CanSnap());
+
+  shell_surface->SetMaximumSize(gfx::Size(0, 0));
+  shell_surface->root_surface()->Commit();
+
+  EXPECT_TRUE(window_state->CanMaximize());
+  EXPECT_TRUE(window_state->CanSnap());
+
+  // If the max size is bigger than 16k resolution, allow max/snap state.
+  shell_surface->SetMaximumSize(
+      gfx::Size(ash::kAllowMaximizeThreshold, ash::kAllowMaximizeThreshold));
+  shell_surface->root_surface()->Commit();
+  EXPECT_FALSE(window_state->CanMaximize());
+  EXPECT_FALSE(window_state->CanSnap());
+
+  // If the max size is bigger than 32k resolution, allow max/snap state.
+  shell_surface->SetMaximumSize(gfx::Size(ash::kAllowMaximizeThreshold + 1,
+                                          ash::kAllowMaximizeThreshold + 1));
+  shell_surface->root_surface()->Commit();
+
+  EXPECT_TRUE(window_state->CanMaximize());
+  EXPECT_TRUE(window_state->CanSnap());
+}
+
 TEST_F(ShellSurfaceTest, Transient) {
   gfx::Size buffer_size(256, 256);
 
@@ -1316,6 +1353,7 @@ TEST_F(ShellSurfaceTest, NotifyLeaveEnter) {
     DCHECK_EQ(0, *new_display_id);
     *old_display_id = old_id;
     *new_display_id = new_id;
+    return true;
   };
 
   int64_t old_display_id = 0, new_display_id = 0;
@@ -1391,6 +1429,125 @@ TEST_F(ShellSurfaceTest, ServerStartResize) {
 
   EXPECT_EQ(widget->GetWindowBoundsInScreen().size().width(),
             size.width() + kDragAmount);
+}
+
+// Make sure that resize shadow does not update until commit when the window
+// property |aura::client::kUseWindowBoundsForShadow| is false.
+TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64}).BuildShellSurface();
+  shell_surface->OnSetServerStartResize();
+  shell_surface->root_surface()->Commit();
+  ASSERT_TRUE(shell_surface->GetWidget());
+
+  auto* widget = shell_surface->GetWidget();
+
+  gfx::Size size = widget->GetWindowBoundsInScreen().size();
+  widget->SetBounds(gfx::Rect(size));
+  widget->GetNativeWindow()->SetProperty(
+      aura::client::kUseWindowBoundsForShadow, false);
+
+  // Starts mouse event to make sure resize shadow is created.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(size.width() + 2, size.height() / 2);
+
+  // Creates resize shadow and normal shadow for resizable exo window.
+  ash::ResizeShadow* resize_shadow =
+      ash::Shell::Get()->resize_shadow_controller()->GetShadowForWindowForTest(
+          widget->GetNativeWindow());
+  ASSERT_TRUE(resize_shadow);
+  shell_surface->root_surface()->SetFrame(SurfaceFrameType::SHADOW);
+  shell_surface->root_surface()->Commit();
+  ui::Shadow* normal_shadow =
+      wm::ShadowController::GetShadowForWindow(widget->GetNativeWindow());
+  ASSERT_TRUE(normal_shadow);
+
+  // ash::ResizeShadow::InitParams set the default |thickness| to 8.
+  const int kResizeShadowThickness = 8;
+
+  EXPECT_EQ(gfx::Size(size.width() + kResizeShadowThickness, size.height()),
+            resize_shadow->GetLayerForTest()->bounds().size());
+  EXPECT_EQ(size, normal_shadow->content_bounds().size());
+
+  gfx::Size new_size(100, 100);
+  gfx::Rect new_bounds(new_size);
+  uint32_t serial = 0;
+  auto configure_callback = base::BindRepeating(
+      [](uint32_t* const serial_ptr, const gfx::Size& size,
+         chromeos::WindowStateType state_type, bool resizing, bool activated,
+         const gfx::Vector2d& origin_offset) { return ++(*serial_ptr); },
+      &serial);
+
+  shell_surface->set_configure_callback(configure_callback);
+
+  // Resize the widget and set geometry.
+  shell_surface->StartResize(HTBOTTOMRIGHT);
+  shell_surface->SetWidgetBounds(new_bounds);
+  shell_surface->SetGeometry(new_bounds);
+
+  // Client acknowledge configure for resizing. Shadow sizes should not be
+  // updated yet until commit.
+  shell_surface->AcknowledgeConfigure(serial);
+  EXPECT_EQ(gfx::Size(size.width() + kResizeShadowThickness, size.height()),
+            resize_shadow->GetLayerForTest()->bounds().size());
+  EXPECT_EQ(size, normal_shadow->content_bounds().size());
+
+  // Normal and resize shadow sizes are updated after commit.
+  shell_surface->root_surface()->Commit();
+  EXPECT_EQ(
+      gfx::Size(new_size.width() + kResizeShadowThickness, new_size.height()),
+      resize_shadow->GetLayerForTest()->bounds().size());
+  EXPECT_EQ(new_size, normal_shadow->content_bounds().size());
+}
+
+// Make sure that resize shadow updates as soon as widget bounds change when
+// the window property |aura::client::kUseWindowBoundsForShadow| is false.
+TEST_F(ShellSurfaceTest, ResizeShadowDependentBounds) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64}).BuildShellSurface();
+  shell_surface->OnSetServerStartResize();
+  shell_surface->root_surface()->Commit();
+  ASSERT_TRUE(shell_surface->GetWidget());
+
+  auto* widget = shell_surface->GetWidget();
+
+  gfx::Size size = widget->GetWindowBoundsInScreen().size();
+  widget->SetBounds(gfx::Rect(size));
+
+  // Starts mouse event to make sure resize shadow is created.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(size.width() + 2, size.height() / 2);
+
+  // Creates resize shadow and normal shadow for resizable exo window.
+  ash::ResizeShadow* resize_shadow =
+      ash::Shell::Get()->resize_shadow_controller()->GetShadowForWindowForTest(
+          widget->GetNativeWindow());
+  ASSERT_TRUE(resize_shadow);
+  shell_surface->root_surface()->SetFrame(SurfaceFrameType::SHADOW);
+  shell_surface->root_surface()->Commit();
+  ui::Shadow* normal_shadow =
+      wm::ShadowController::GetShadowForWindow(widget->GetNativeWindow());
+  ASSERT_TRUE(normal_shadow);
+
+  // ash::ResizeShadow::InitParams set the default |thickness| to 8.
+  const int kResizeShadowThickness = 8;
+
+  EXPECT_EQ(gfx::Size(size.width() + kResizeShadowThickness, size.height()),
+            resize_shadow->GetLayerForTest()->bounds().size());
+  EXPECT_EQ(size, normal_shadow->content_bounds().size());
+
+  gfx::Size new_size(100, 100);
+  gfx::Rect new_bounds(new_size);
+
+  // Resize the widget and set geometry.
+  shell_surface->StartResize(HTBOTTOMRIGHT);
+  shell_surface->SetWidgetBounds(new_bounds);
+  shell_surface->SetGeometry(new_bounds);
+  // Shadow bounds are updated as soon as the widget bounds change.
+  EXPECT_EQ(
+      gfx::Size(new_size.width() + kResizeShadowThickness, new_size.height()),
+      resize_shadow->GetLayerForTest()->bounds().size());
+  EXPECT_EQ(new_size, normal_shadow->content_bounds().size());
 }
 
 TEST_F(ShellSurfaceTest, PropertyResolverTest) {
@@ -1590,6 +1747,38 @@ TEST_F(ShellSurfaceTest, OverlayCanResize) {
     shell_surface->AddOverlay(std::move(params));
   }
   EXPECT_TRUE(shell_surface->GetWidget()->widget_delegate()->CanResize());
+}
+
+class TestWindowObserver : public WMHelper::ExoWindowObserver {
+ public:
+  TestWindowObserver() {}
+
+  TestWindowObserver(const TestWindowObserver&) = delete;
+  TestWindowObserver& operator=(const TestWindowObserver&) = delete;
+
+  // WMHelper::ExoWindowObserver overrides
+  void OnExoWindowCreated(aura::Window* window) override {
+    windows_.push_back(window);
+  }
+
+  const std::vector<aura::Window*>& observed_windows() { return windows_; }
+
+ private:
+  std::vector<aura::Window*> windows_;
+};
+
+TEST_F(ShellSurfaceTest, NotifyOnWindowCreation) {
+  auto shell_surface =
+      test::ShellSurfaceBuilder({100, 100}).SetNoCommit().BuildShellSurface();
+
+  TestWindowObserver observer;
+  WMHelper::GetInstance()->AddExoWindowObserver(&observer);
+
+  // Committing a surface triggers window creation if it isn't already attached
+  // to the root.
+  shell_surface->surface_for_testing()->Commit();
+
+  EXPECT_EQ(1u, observer.observed_windows().size());
 }
 
 }  // namespace exo

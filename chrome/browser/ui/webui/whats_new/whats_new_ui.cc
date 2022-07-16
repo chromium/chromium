@@ -5,20 +5,27 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 
 #include "base/feature_list.h"
+#include "base/strings/stringprintf.h"
 #include "base/version.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/common/chrome_version.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_handler.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "chrome/grit/whats_new_resources.h"
 #include "chrome/grit/whats_new_resources_map.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace {
@@ -36,7 +43,14 @@ content::WebUIDataSource* CreateWhatsNewUIHtmlSource(Profile* profile) {
       {"reloadButton", IDS_RELOAD},
   };
   source->AddLocalizedStrings(kStrings);
+  source->AddBoolean("showFeedbackButton",
+                     features::kChromeWhatsNewUIFeedbackButton.Get());
 
+  // Allow embedding of iframe from chrome.com
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ChildSrc,
+      base::StringPrintf("child-src chrome://test https: %s;",
+                         whats_new::kChromeWhatsNewURLShort));
   return source;
 }
 
@@ -47,34 +61,43 @@ void WhatsNewUI::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kLastWhatsNewVersion, 0);
 }
 
-// static
-bool WhatsNewUI::ShouldShowForState(PrefService* local_state) {
-  if (!local_state)
-    return false;
-
-  if (!base::FeatureList::IsEnabled(features::kChromeWhatsNewUI))
-    return false;
-
-  int last_version = local_state->GetInteger(prefs::kLastWhatsNewVersion);
-  return CHROME_VERSION_MAJOR > last_version;
+WhatsNewUI::WhatsNewUI(content::WebUI* web_ui)
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
+      browser_command_factory_receiver_(this),
+      profile_(Profile::FromWebUI(web_ui)) {
+  content::WebUIDataSource* source = CreateWhatsNewUIHtmlSource(profile_);
+  content::WebUIDataSource::Add(profile_, source);
+  web_ui->AddMessageHandler(std::make_unique<WhatsNewHandler>());
 }
 
 // static
-void WhatsNewUI::SetLastVersion(PrefService* local_state) {
-  if (!local_state) {
-    return;
-  }
-
-  local_state->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
+base::RefCountedMemory* WhatsNewUI::GetFaviconResourceBytes(
+    ui::ResourceScaleFactor scale_factor) {
+  return static_cast<base::RefCountedMemory*>(
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+          IDR_NTP_FAVICON, scale_factor));
 }
 
-WhatsNewUI::WhatsNewUI(content::WebUI* web_ui) : WebUIController(web_ui) {
-  content::WebUIDataSource* source =
-      CreateWhatsNewUIHtmlSource(Profile::FromWebUI(web_ui));
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
+WEB_UI_CONTROLLER_TYPE_IMPL(WhatsNewUI)
 
-  // TODO(rbpotter): Once we have a way to detect that the content has loaded
-  // successfully, update the kLastWhatsNewVersion pref.
+void WhatsNewUI::BindInterface(
+    mojo::PendingReceiver<browser_command::mojom::CommandHandlerFactory>
+        pending_receiver) {
+  if (browser_command_factory_receiver_.is_bound())
+    browser_command_factory_receiver_.reset();
+  browser_command_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void WhatsNewUI::CreateBrowserCommandHandler(
+    mojo::PendingReceiver<browser_command::mojom::CommandHandler>
+        pending_handler) {
+  std::vector<browser_command::mojom::Command> supported_commands = {
+      browser_command::mojom::Command::kOpenFeedbackForm};
+  command_handler_ = std::make_unique<BrowserCommandHandler>(
+      std::move(pending_handler), profile_, supported_commands);
+  command_handler_->ConfigureFeedbackCommand(
+      {GURL(chrome::kChromeUIWhatsNewURL), chrome::kFeedbackSourceWhatsNew,
+       "whats-new-page"});
 }
 
 WhatsNewUI::~WhatsNewUI() = default;

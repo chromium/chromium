@@ -26,6 +26,11 @@ class NetworkingPrivateChromeOS : public NetworkingPrivateDelegate {
  public:
   // |verify_delegate| is passed to NetworkingPrivateDelegate and may be NULL.
   explicit NetworkingPrivateChromeOS(content::BrowserContext* browser_context);
+
+  NetworkingPrivateChromeOS(const NetworkingPrivateChromeOS&) = delete;
+  NetworkingPrivateChromeOS& operator=(const NetworkingPrivateChromeOS&) =
+      delete;
+
   ~NetworkingPrivateChromeOS() override;
 
   // NetworkingPrivateApi
@@ -108,8 +113,6 @@ class NetworkingPrivateChromeOS : public NetworkingPrivateDelegate {
 
   content::BrowserContext* browser_context_;
   base::WeakPtrFactory<NetworkingPrivateChromeOS> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateChromeOS);
 };
 
 }  // namespace extensions

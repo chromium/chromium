@@ -27,6 +27,10 @@ const char kInternetReferrerURL[] = "http://example.com/some-other-url";
 class QuarantineServiceTest : public testing::Test {
  public:
   QuarantineServiceTest() = default;
+
+  QuarantineServiceTest(const QuarantineServiceTest&) = delete;
+  QuarantineServiceTest& operator=(const QuarantineServiceTest&) = delete;
+
   ~QuarantineServiceTest() override = default;
 
   void OnFileQuarantined(const base::FilePath& test_file,
@@ -44,8 +48,6 @@ class QuarantineServiceTest : public testing::Test {
 
  private:
   QuarantineImpl service_{quarantine_.BindNewPipeAndPassReceiver()};
-
-  DISALLOW_COPY_AND_ASSIGN(QuarantineServiceTest);
 };
 
 TEST_F(QuarantineServiceTest, QuarantineFile) {

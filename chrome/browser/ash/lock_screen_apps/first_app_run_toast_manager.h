@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_FIRST_APP_RUN_TOAST_MANAGER_H_
 #define CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_FIRST_APP_RUN_TOAST_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -27,6 +26,10 @@ class FirstAppRunToastManager : public extensions::AppWindowRegistry::Observer,
                                 public views::WidgetObserver {
  public:
   explicit FirstAppRunToastManager(Profile* profile);
+
+  FirstAppRunToastManager(const FirstAppRunToastManager&) = delete;
+  FirstAppRunToastManager& operator=(const FirstAppRunToastManager&) = delete;
+
   ~FirstAppRunToastManager() override;
 
   // Runs the manager for an app window launch. It determines whether the first
@@ -83,8 +86,6 @@ class FirstAppRunToastManager : public extensions::AppWindowRegistry::Observer,
   std::unique_ptr<AppWidgetObserver> app_widget_observer_;
 
   base::WeakPtrFactory<FirstAppRunToastManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FirstAppRunToastManager);
 };
 
 }  // namespace lock_screen_apps

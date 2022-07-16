@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -39,6 +38,10 @@ class ModelTypeRegistry : public ModelTypeConnector,
   ModelTypeRegistry(NudgeHandler* nudge_handler,
                     CancelationSignal* cancelation_signal,
                     SyncEncryptionHandler* sync_encryption_handler);
+
+  ModelTypeRegistry(const ModelTypeRegistry&) = delete;
+  ModelTypeRegistry& operator=(const ModelTypeRegistry&) = delete;
+
   ~ModelTypeRegistry() override;
 
   // Implementation of ModelTypeConnector.
@@ -55,8 +58,7 @@ class ModelTypeRegistry : public ModelTypeConnector,
   void OnPassphraseAccepted() override;
   void OnTrustedVaultKeyRequired() override;
   void OnTrustedVaultKeyAccepted() override;
-  void OnBootstrapTokenUpdated(const std::string& bootstrap_token,
-                               BootstrapTokenType type) override;
+  void OnBootstrapTokenUpdated(const std::string& bootstrap_token) override;
   void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                bool encrypt_everything) override;
   void OnCryptographerStateChanged(Cryptographer* cryptographer,
@@ -64,8 +66,10 @@ class ModelTypeRegistry : public ModelTypeConnector,
   void OnPassphraseTypeChanged(PassphraseType type,
                                base::Time passphrase_time) override;
 
-  // Gets the set of enabled types.
-  ModelTypeSet GetEnabledTypes() const;
+  // Gets the set of connected types, which is essentially the set of types that
+  // the sync engine cares about. For each of these, a worker exists to
+  // propagate changes between the server and the local model's processor.
+  ModelTypeSet GetConnectedTypes() const;
 
   bool proxy_tabs_datatype_enabled() const;
 
@@ -106,8 +110,6 @@ class ModelTypeRegistry : public ModelTypeConnector,
   SyncEncryptionHandler* const sync_encryption_handler_;
 
   base::WeakPtrFactory<ModelTypeRegistry> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModelTypeRegistry);
 };
 
 }  // namespace syncer

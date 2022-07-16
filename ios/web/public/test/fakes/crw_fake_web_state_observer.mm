@@ -15,12 +15,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace web {
-TestUpdateFaviconUrlCandidatesInfo::TestUpdateFaviconUrlCandidatesInfo() {}
-TestUpdateFaviconUrlCandidatesInfo::~TestUpdateFaviconUrlCandidatesInfo() =
-    default;
-}
-
 @implementation CRWFakeWebStateObserver {
   // Arguments passed to |webStateWasShown:|.
   std::unique_ptr<web::TestWasShownInfo> _wasShownInfo;
@@ -28,13 +22,23 @@ TestUpdateFaviconUrlCandidatesInfo::~TestUpdateFaviconUrlCandidatesInfo() =
   std::unique_ptr<web::TestWasHiddenInfo> _wasHiddenInfo;
   // Arguments passed to |webState:didStartNavigation:|.
   std::unique_ptr<web::TestDidStartNavigationInfo> _didStartNavigationInfo;
+  // Arguments passed to |webState:didRedirectNavigation:|.
+  std::unique_ptr<web::TestDidRedirectNavigationInfo>
+      _didRedirectNavigationInfo;
   // Arguments passed to |webState:didFinishNavigationForURL:|.
   std::unique_ptr<web::TestDidFinishNavigationInfo> _didFinishNavigationInfo;
+  // Arguments passed to |webStateDidStartLoading:|.
+  std::unique_ptr<web::TestStartLoadingInfo> _startLoadingInfo;
+  // Arguments passed to |webStateDidStopLoading:|.
+  std::unique_ptr<web::TestStopLoadingInfo> _stopLoadingInfo;
   // Arguments passed to |webState:didLoadPageWithSuccess:|.
   std::unique_ptr<web::TestLoadPageInfo> _loadPageInfo;
   // Arguments passed to |webState:didChangeLoadingProgress:|.
   std::unique_ptr<web::TestChangeLoadingProgressInfo>
       _changeLoadingProgressInfo;
+  // Arguments passed to |webStateDidChangeBackForwardState:|.
+  std::unique_ptr<web::TestDidChangeBackForwardStateInfo>
+      _changeBackForwardStateInfo;
   // Arguments passed to |webStateDidChangeTitle:|.
   std::unique_ptr<web::TestTitleWasSetInfo> _titleWasSetInfo;
   // Arguments passed to |webStateDidChangeVisibleSecurityState:|.
@@ -45,12 +49,10 @@ TestUpdateFaviconUrlCandidatesInfo::~TestUpdateFaviconUrlCandidatesInfo() =
       _updateFaviconUrlCandidatesInfo;
   // Arguments passed to |webState:renderProcessGoneForWebState:|.
   std::unique_ptr<web::TestRenderProcessGoneInfo> _renderProcessGoneInfo;
+  // Arguments passed to |webStateRealized:|.
+  std::unique_ptr<web::TestWebStateRealizedInfo> _webStateRealizedInfo;
   // Arguments passed to |webStateDestroyed:|.
   std::unique_ptr<web::TestWebStateDestroyedInfo> _webStateDestroyedInfo;
-  // Arguments passed to |webStateDidStopLoading:|.
-  std::unique_ptr<web::TestStopLoadingInfo> _stopLoadingInfo;
-  // Arguments passed to |webStateDidStartLoading:|.
-  std::unique_ptr<web::TestStartLoadingInfo> _startLoadingInfo;
 }
 
 - (web::TestWasShownInfo*)wasShownInfo {
@@ -65,8 +67,20 @@ TestUpdateFaviconUrlCandidatesInfo::~TestUpdateFaviconUrlCandidatesInfo() =
   return _didStartNavigationInfo.get();
 }
 
+- (web::TestDidRedirectNavigationInfo*)didRedirectNavigationInfo {
+  return _didRedirectNavigationInfo.get();
+}
+
 - (web::TestDidFinishNavigationInfo*)didFinishNavigationInfo {
   return _didFinishNavigationInfo.get();
+}
+
+- (web::TestStartLoadingInfo*)startLoadingInfo {
+  return _startLoadingInfo.get();
+}
+
+- (web::TestStopLoadingInfo*)stopLoadingInfo {
+  return _stopLoadingInfo.get();
 }
 
 - (web::TestLoadPageInfo*)loadPageInfo {
@@ -75,6 +89,10 @@ TestUpdateFaviconUrlCandidatesInfo::~TestUpdateFaviconUrlCandidatesInfo() =
 
 - (web::TestChangeLoadingProgressInfo*)changeLoadingProgressInfo {
   return _changeLoadingProgressInfo.get();
+}
+
+- (web::TestDidChangeBackForwardStateInfo*)changeBackForwardStateInfo {
+  return _changeBackForwardStateInfo.get();
 }
 
 - (web::TestTitleWasSetInfo*)titleWasSetInfo {
@@ -94,16 +112,12 @@ TestUpdateFaviconUrlCandidatesInfo::~TestUpdateFaviconUrlCandidatesInfo() =
   return _renderProcessGoneInfo.get();
 }
 
+- (web::TestWebStateRealizedInfo*)webStateRealizedInfo {
+  return _webStateRealizedInfo.get();
+}
+
 - (web::TestWebStateDestroyedInfo*)webStateDestroyedInfo {
   return _webStateDestroyedInfo.get();
-}
-
-- (web::TestStopLoadingInfo*)stopLoadingInfo {
-  return _stopLoadingInfo.get();
-}
-
-- (web::TestStartLoadingInfo*)startLoadingInfo {
-  return _startLoadingInfo.get();
 }
 
 #pragma mark CRWWebStateObserver methods -
@@ -134,6 +148,22 @@ TestUpdateFaviconUrlCandidatesInfo::~TestUpdateFaviconUrlCandidatesInfo() =
 }
 
 - (void)webState:(web::WebState*)webState
+    didRedirectNavigation:(web::NavigationContext*)navigation {
+  ASSERT_TRUE(!navigation->GetError() || !navigation->IsSameDocument());
+  _didRedirectNavigationInfo =
+      std::make_unique<web::TestDidRedirectNavigationInfo>();
+  _didRedirectNavigationInfo->web_state = webState;
+  std::unique_ptr<web::NavigationContextImpl> context =
+      web::NavigationContextImpl::CreateNavigationContext(
+          navigation->GetWebState(), navigation->GetUrl(),
+          navigation->HasUserGesture(), navigation->GetPageTransition(),
+          navigation->IsRendererInitiated());
+  context->SetIsSameDocument(navigation->IsSameDocument());
+  context->SetError(navigation->GetError());
+  _didRedirectNavigationInfo->context = std::move(context);
+}
+
+- (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigation {
   ASSERT_TRUE(!navigation->GetError() || !navigation->IsSameDocument());
   _didFinishNavigationInfo =
@@ -147,6 +177,16 @@ TestUpdateFaviconUrlCandidatesInfo::~TestUpdateFaviconUrlCandidatesInfo() =
   context->SetIsSameDocument(navigation->IsSameDocument());
   context->SetError(navigation->GetError());
   _didFinishNavigationInfo->context = std::move(context);
+}
+
+- (void)webStateDidStartLoading:(web::WebState*)webState {
+  _startLoadingInfo = std::make_unique<web::TestStartLoadingInfo>();
+  _startLoadingInfo->web_state = webState;
+}
+
+- (void)webStateDidStopLoading:(web::WebState*)webState {
+  _stopLoadingInfo = std::make_unique<web::TestStopLoadingInfo>();
+  _stopLoadingInfo->web_state = webState;
 }
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
@@ -166,6 +206,12 @@ TestUpdateFaviconUrlCandidatesInfo::~TestUpdateFaviconUrlCandidatesInfo() =
 - (void)webStateDidChangeTitle:(web::WebState*)webState {
   _titleWasSetInfo = std::make_unique<web::TestTitleWasSetInfo>();
   _titleWasSetInfo->web_state = webState;
+}
+
+- (void)webStateDidChangeBackForwardState:(web::WebState*)webState {
+  _changeBackForwardStateInfo =
+      std::make_unique<web::TestDidChangeBackForwardStateInfo>();
+  _changeBackForwardStateInfo->web_state = webState;
 }
 
 - (void)webStateDidChangeVisibleSecurityState:(web::WebState*)webState {
@@ -188,19 +234,14 @@ TestUpdateFaviconUrlCandidatesInfo::~TestUpdateFaviconUrlCandidatesInfo() =
   _renderProcessGoneInfo->web_state = webState;
 }
 
+- (void)webStateRealized:(web::WebState*)webState {
+  _webStateRealizedInfo = std::make_unique<web::TestWebStateRealizedInfo>();
+  _webStateRealizedInfo->web_state = webState;
+}
+
 - (void)webStateDestroyed:(web::WebState*)webState {
   _webStateDestroyedInfo = std::make_unique<web::TestWebStateDestroyedInfo>();
   _webStateDestroyedInfo->web_state = webState;
-}
-
-- (void)webStateDidStopLoading:(web::WebState*)webState {
-  _stopLoadingInfo = std::make_unique<web::TestStopLoadingInfo>();
-  _stopLoadingInfo->web_state = webState;
-}
-
-- (void)webStateDidStartLoading:(web::WebState*)webState {
-  _startLoadingInfo = std::make_unique<web::TestStartLoadingInfo>();
-  _startLoadingInfo->web_state = webState;
 }
 
 @end

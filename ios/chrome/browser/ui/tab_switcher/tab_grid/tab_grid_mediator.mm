@@ -9,12 +9,15 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/favicon/ios/web_favicon_driver.h"
+#import "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -30,12 +33,14 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
+#import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
+#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/util/url_with_title.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
@@ -366,6 +371,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 - (void)closeItemsWithIDs:(NSArray<NSString*>*)itemIDs {
   __block bool allTabsClosed = true;
 
+  base::UmaHistogramCounts100("IOS.TabGrid.Selection.CloseTabs", itemIDs.count);
+
   self.webStateList->PerformBatchOperation(
       base::BindOnce(^(WebStateList* list) {
         for (NSString* itemID in itemIDs) {
@@ -401,8 +408,6 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
 }
 
-// TODO(crbug.com/1123536): Merges this method with |closeAllItems| once
-// EnableCloseAllTabsConfirmation is landed.
 - (void)saveAndCloseAllItems {
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
@@ -438,19 +443,12 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
 }
 
-- (void)showCloseAllConfirmationActionSheetWithAnchor:
-    (UIBarButtonItem*)buttonAnchor {
-  [self.delegate
-      showCloseAllConfirmationActionSheetWitTabGridMediator:self
-                                               numberOfTabs:self.webStateList
-                                                                ->count()
-                                                     anchor:buttonAnchor];
-}
-
 - (void)
     showCloseItemsConfirmationActionSheetWithItems:(NSArray<NSString*>*)items
                                             anchor:
                                                 (UIBarButtonItem*)buttonAnchor {
+  [self.delegate dismissPopovers];
+
   [self.delegate
       showCloseItemsConfirmationActionSheetWithTabGridMediator:self
                                                          items:items
@@ -459,6 +457,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 
 - (void)shareItems:(NSArray<NSString*>*)items
             anchor:(UIBarButtonItem*)buttonAnchor {
+  [self.delegate dismissPopovers];
+
   NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
   for (NSString* itemIdentifier in items) {
     GridItem* item = [self gridItemForCellIdentifier:itemIdentifier];
@@ -466,25 +466,39 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
                                                     title:item.title];
     [URLs addObject:URL];
   }
-
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridSelectionShareTabs"));
+  base::UmaHistogramCounts100("IOS.TabGrid.Selection.ShareTabs", items.count);
   [self.delegate tabGridMediator:self shareURLs:URLs anchor:buttonAnchor];
 }
 
-- (NSArray<UIMenuElement*>*)addToButtonMenuElementsForGridViewController:
-    (GridViewController*)gridViewController {
+- (NSArray<UIMenuElement*>*)addToButtonMenuElementsForItems:
+    (NSArray<NSString*>*)items {
+  if (!self.browser) {
+    return nil;
+  }
+
   ActionFactory* actionFactory =
       [[ActionFactory alloc] initWithScenario:MenuScenario::kTabGridAddTo];
-  __weak GridViewController* weakGrid = gridViewController;
+
   __weak TabGridMediator* weakSelf = self;
+
+  UIAction* bookmarkAction = [actionFactory actionToBookmarkWithBlock:^{
+    [weakSelf addItemsToBookmarks:items];
+  }];
+  // Bookmarking can be disabled from prefs (from an enterprise policy),
+  // if that's the case grey out the option in the menu.
+  BOOL isEditBookmarksEnabled =
+      self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
+          bookmarks::prefs::kEditBookmarksEnabled);
+  if (!isEditBookmarksEnabled)
+    bookmarkAction.attributes = UIMenuElementAttributesDisabled;
+
   return @[
     [actionFactory actionToAddToReadingListWithBlock:^{
-      [weakSelf
-          addItemsToReadingList:weakGrid.selectedShareableItemIDsForEditing];
+      [weakSelf addItemsToReadingList:items];
     }],
-    [actionFactory actionToBookmarkWithBlock:^{
-      [weakSelf
-          addItemsToBookmarks:weakGrid.selectedShareableItemIDsForEditing];
-    }]
+    bookmarkAction
   ];
 }
 
@@ -726,14 +740,12 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   if (!_readingListHandler) {
     return;
   }
+  [self.delegate dismissPopovers];
 
-  NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
-  for (NSString* itemIdentifier in items) {
-    GridItem* item = [self gridItemForCellIdentifier:itemIdentifier];
-    URLWithTitle* URL = [[URLWithTitle alloc] initWithURL:item.URL
-                                                    title:item.title];
-    [URLs addObject:URL];
-  }
+  base::UmaHistogramCounts100("IOS.TabGrid.Selection.AddToReadingList",
+                              items.count);
+
+  NSArray<URLWithTitle*>* URLs = [self urlsWithTitleFromItemIDs:items];
 
   ReadingListAddCommand* command =
       [[ReadingListAddCommand alloc] initWithURLs:URLs];
@@ -741,7 +753,32 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 }
 
 - (void)addItemsToBookmarks:(NSArray<NSString*>*)items {
-  // TODO(crbug.com/1196906): Implement add items to bookmarks.
+  id<BookmarksCommands> bookmarkHandler =
+      HandlerForProtocol(_browser->GetCommandDispatcher(), BookmarksCommands);
+
+  if (!bookmarkHandler) {
+    return;
+  }
+  [self.delegate dismissPopovers];
+
+  base::UmaHistogramCounts100("IOS.TabGrid.Selection.AddToBookmarks",
+                              items.count);
+
+  NSArray<URLWithTitle*>* URLs = [self urlsWithTitleFromItemIDs:items];
+
+  BookmarkAddCommand* command = [[BookmarkAddCommand alloc] initWithURLs:URLs];
+  [bookmarkHandler bookmark:command];
+}
+
+- (NSArray<URLWithTitle*>*)urlsWithTitleFromItemIDs:(NSArray<NSString*>*)items {
+  NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
+  for (NSString* itemIdentifier in items) {
+    GridItem* item = [self gridItemForCellIdentifier:itemIdentifier];
+    URLWithTitle* URL = [[URLWithTitle alloc] initWithURL:item.URL
+                                                    title:item.title];
+    [URLs addObject:URL];
+  }
+  return URLs;
 }
 
 @end

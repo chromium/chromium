@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_SCOPED_ACTIVE_URL_H_
 #define CONTENT_BROWSER_SCOPED_ACTIVE_URL_H_
 
-#include "base/macros.h"
-
 class GURL;
 
 namespace url {
@@ -40,14 +38,15 @@ class ScopedActiveURL {
   // the frame tree node of |view|'s main frame.
   explicit ScopedActiveURL(RenderViewHost* view);
 
+  ScopedActiveURL(const ScopedActiveURL&) = delete;
+  ScopedActiveURL& operator=(const ScopedActiveURL&) = delete;
+
   // Calls ContentClient::SetActiveURL with empty arguments (to reset the crash
   // keys).
   ~ScopedActiveURL();
 
  private:
   explicit ScopedActiveURL(FrameTreeNode* node);
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedActiveURL);
 };
 
 }  // namespace content

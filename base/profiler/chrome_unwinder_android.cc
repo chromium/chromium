@@ -39,19 +39,19 @@ UnwindResult ChromeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
     auto entry = cfi_table_->FindEntryForAddress(func_addr);
     if (entry) {
       if (!Step(thread_context, stack_top, *entry))
-        return UnwindResult::ABORTED;
+        return UnwindResult::kAborted;
     } else if (stack->size() == 1) {
       // Try unwinding by sourcing the return address from the lr register.
       if (!StepUsingLrRegister(thread_context, stack_top))
-        return UnwindResult::ABORTED;
+        return UnwindResult::kAborted;
     } else {
-      return UnwindResult::ABORTED;
+      return UnwindResult::kAborted;
     }
     stack->emplace_back(RegisterContextInstructionPointer(thread_context),
                         module_cache()->GetModuleForAddress(
                             RegisterContextInstructionPointer(thread_context)));
   } while (CanUnwindFrom(stack->back()));
-  return UnwindResult::UNRECOGNIZED_FRAME;
+  return UnwindResult::kUnrecognizedFrame;
 }
 
 // static

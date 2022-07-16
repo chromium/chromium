@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/hover_button.h"
 
 namespace test {
@@ -61,6 +60,10 @@ class PageInfoHoverButton : public HoverButton {
       const std::u16string& tooltip_text,
       const std::u16string& subtitle_text,
       absl::optional<ui::ImageModel> action_image_icon = absl::nullopt);
+
+  PageInfoHoverButton(const PageInfoHoverButton&) = delete;
+  PageInfoHoverButton& operator=(const PageInfoHoverButton&) = delete;
+
   ~PageInfoHoverButton() override = default;
 
   // Updates the title text, and applies the secondary style to the secondary
@@ -69,6 +72,8 @@ class PageInfoHoverButton : public HoverButton {
                     const std::u16string& secondary_text);
 
   void SetTitleText(const std::u16string& title_text);
+
+  void SetSubtitleMultiline(bool is_multiline);
 
  protected:
   views::StyledLabel* title() const { return title_; }
@@ -89,8 +94,6 @@ class PageInfoHoverButton : public HoverButton {
   // Shows secondary text on right side. Used for page info v2 only.
   views::Label* secondary_label_ = nullptr;
   views::Label* subtitle_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PageInfoHoverButton);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_HOVER_BUTTON_H_

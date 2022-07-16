@@ -61,7 +61,6 @@ class StartupBrowserCreatorImpl {
   // starting up. If process_startup is false, it indicates Chrome was
   // already running and the user wants to launch another instance.
   bool Launch(Profile* profile,
-              const std::vector<GURL>& urls_to_open,
               bool process_startup,
               std::unique_ptr<LaunchModeRecorder> launch_mode_recorder);
 
@@ -84,6 +83,8 @@ class StartupBrowserCreatorImpl {
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
                            DetermineStartupTabs_CommandLine);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
+                           DetermineStartupTabs_Crosapi);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
                            DetermineStartupTabs_NewTabPage);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
                            DetermineStartupTabs_WelcomeBackPage);
@@ -98,6 +99,21 @@ class StartupBrowserCreatorImpl {
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
                            DetermineStartupTabs_NewFeaturesPage);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest, ShouldLaunch);
+
+  enum class LaunchResult {
+    kNormally,
+    kWithGivenUrls,  // URLs are given from platform, e.g. via command line.
+  };
+
+  struct DetermineStartupTabsResult {
+    DetermineStartupTabsResult(StartupTabs tabs, LaunchResult launch_result);
+    DetermineStartupTabsResult(DetermineStartupTabsResult&&);
+    DetermineStartupTabsResult& operator=(DetermineStartupTabsResult&&);
+    ~DetermineStartupTabsResult();
+
+    StartupTabs tabs;  // List of startup tabs.
+    LaunchResult launch_result;
+  };
 
   enum class WelcomeRunType {
     NONE,                // Do not inject the welcome page for this run.
@@ -134,21 +150,22 @@ class StartupBrowserCreatorImpl {
   // Determines the URLs to be shown at startup by way of various policies
   // (welcome, pinned tabs, etc.), determines whether a session restore
   // is necessary, and opens the URLs in a new or restored browser accordingly.
-  void DetermineURLsAndLaunch(bool process_startup,
-                              const std::vector<GURL>& cmd_line_urls);
+  LaunchResult DetermineURLsAndLaunch(bool process_startup);
 
-  // Returns the tabs to be shown on startup, based on the policy functions in
-  // the given StartupTabProvider, the given tabs passed by the command line,
-  // and the interactions between those policies.
-  StartupTabs DetermineStartupTabs(const StartupTabProvider& provider,
-                                   const StartupTabs& cmd_line_tabs,
-                                   bool process_startup,
-                                   bool is_ephemeral_profile,
-                                   bool is_post_crash_launch,
-                                   bool has_incompatible_applications,
-                                   bool promotional_tabs_enabled,
-                                   bool welcome_enabled,
-                                   bool whats_new_enabled);
+  // Returns a tuple of
+  // - the tabs to be shown on startup, based on the policy functions in
+  //   the given StartupTabProvider, the given tabs passed by the command line,
+  //   and the interactions between those policies.
+  // - Whether there's launch tabs.
+  DetermineStartupTabsResult DetermineStartupTabs(
+      const StartupTabProvider& provider,
+      bool process_startup,
+      bool is_ephemeral_profile,
+      bool is_post_crash_launch,
+      bool has_incompatible_applications,
+      bool promotional_tabs_enabled,
+      bool welcome_enabled,
+      bool whats_new_enabled);
 
   // Begins an asynchronous session restore if current state allows it (e.g.,
   // this is not process startup) and SessionService indicates that one is

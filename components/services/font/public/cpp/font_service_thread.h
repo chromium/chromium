@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "components/services/font/public/mojom/font_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -34,6 +33,9 @@ class MappedFontFile;
 class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
  public:
   FontServiceThread();
+
+  FontServiceThread(const FontServiceThread&) = delete;
+  FontServiceThread& operator=(const FontServiceThread&) = delete;
 
   // Initializes the thread, binding to |pending_font_service| in the
   // background sequence.
@@ -188,8 +190,6 @@ class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
   std::set<base::WaitableEvent*> pending_waitable_events_;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontServiceThread);
 };
 
 }  // namespace internal

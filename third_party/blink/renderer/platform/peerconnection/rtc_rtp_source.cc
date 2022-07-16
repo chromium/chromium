@@ -30,8 +30,7 @@ RTCRtpSource::Type RTCRtpSource::SourceType() const {
 }
 
 base::TimeTicks RTCRtpSource::Timestamp() const {
-  return base::TimeTicks() +
-         base::TimeDelta::FromMilliseconds(source_.timestamp_ms());
+  return base::TimeTicks() + base::Milliseconds(source_.timestamp_ms());
 }
 
 uint32_t RTCRtpSource::Source() const {

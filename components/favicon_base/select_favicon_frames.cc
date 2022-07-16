@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "components/favicon_base/favicon_util.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -57,14 +56,14 @@ SkBitmap SampleNearestNeighbor(const SkBitmap& contents, int desired_size) {
 size_t GetCandidateIndexWithBestScore(
     const std::vector<gfx::Size>& candidate_sizes,
     int desired_size,
-    float* score) {
+    float* output_score) {
   DCHECK_NE(desired_size, 0);
 
   // Try to find an exact match.
   for (size_t i = 0; i < candidate_sizes.size(); ++i) {
     if (candidate_sizes[i].width() == desired_size &&
         candidate_sizes[i].height() == desired_size) {
-      *score = 1;
+      *output_score = 1;
       return i;
     }
   }
@@ -100,7 +99,7 @@ size_t GetCandidateIndexWithBestScore(
       candidate_score = score;
     }
   }
-  *score = candidate_score;
+  *output_score = candidate_score;
 
   return candidate_index;
 }
@@ -174,6 +173,10 @@ SkBitmap GetResizedBitmap(const SkBitmap& source_bitmap,
 class FaviconImageSource : public gfx::ImageSkiaSource {
  public:
   FaviconImageSource() {}
+
+  FaviconImageSource(const FaviconImageSource&) = delete;
+  FaviconImageSource& operator=(const FaviconImageSource&) = delete;
+
   ~FaviconImageSource() override {}
 
   // gfx::ImageSkiaSource:
@@ -207,7 +210,6 @@ class FaviconImageSource : public gfx::ImageSkiaSource {
 
  private:
   std::vector<gfx::ImageSkiaRep> image_skia_reps_;
-  DISALLOW_COPY_AND_ASSIGN(FaviconImageSource);
 };
 
 }  // namespace

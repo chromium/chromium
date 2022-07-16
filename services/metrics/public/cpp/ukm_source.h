@@ -110,6 +110,10 @@ class METRICS_EXPORT UkmSource {
 
   UkmSource(SourceId id, const GURL& url);
   UkmSource(SourceId id, const NavigationData& data);
+
+  UkmSource(const UkmSource&) = delete;
+  UkmSource& operator=(const UkmSource&) = delete;
+
   ~UkmSource();
 
   ukm::SourceId id() const { return id_; }
@@ -151,8 +155,6 @@ class METRICS_EXPORT UkmSource {
 
   // When this object was created.
   const base::TimeTicks creation_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmSource);
 };
 
 }  // namespace ukm

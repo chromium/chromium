@@ -11,6 +11,8 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -113,38 +115,64 @@ void WebDatabaseHostImpl::OpenFileValidated(const std::u16string& vfs_file_name,
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
 
   base::File file;
-  const base::File* tracked_file = nullptr;
   std::string origin_identifier;
   std::u16string database_name;
 
-  // When in Incognito mode, we want to make sure that all DB files are
-  // removed when the Incognito browser context goes away, so we add the
-  // SQLITE_OPEN_DELETEONCLOSE flag when opening all files, and keep
-  // open handles to them in the database tracker to make sure they're
-  // around for as long as needed.
+  if (!vfs_file_name.empty() &&
+      DatabaseUtil::CrackVfsFileName(vfs_file_name, &origin_identifier,
+                                     &database_name, nullptr) &&
+      !db_tracker_->IsDatabaseScheduledForDeletion(origin_identifier,
+                                                   database_name)) {
+    DCHECK(db_tracker_->quota_manager_proxy());
+    db_tracker_->quota_manager_proxy()->GetOrCreateBucket(
+        blink::StorageKey(storage::GetOriginFromIdentifier(origin_identifier)),
+        storage::kDefaultBucketName, db_tracker_->task_runner(),
+        base::BindOnce(&WebDatabaseHostImpl::OpenFileWithBucketCreated,
+                       weak_ptr_factory_.GetWeakPtr(), vfs_file_name,
+                       desired_flags, std::move(callback)));
+    return;
+  }
+
   if (vfs_file_name.empty()) {
     file = VfsBackend::OpenTempFileInDirectory(
         db_tracker_->database_directory(), desired_flags);
-  } else if (DatabaseUtil::CrackVfsFileName(vfs_file_name, &origin_identifier,
-                                            &database_name, nullptr) &&
-             !db_tracker_->IsDatabaseScheduledForDeletion(origin_identifier,
-                                                          database_name)) {
-    base::FilePath db_file = DatabaseUtil::GetFullFilePathForVfsFile(
-        db_tracker_.get(), vfs_file_name);
-    if (!db_file.empty()) {
-      if (db_tracker_->IsIncognitoProfile()) {
-        tracked_file = db_tracker_->GetIncognitoFile(vfs_file_name);
-        if (!tracked_file) {
-          file = VfsBackend::OpenFile(
-              db_file, desired_flags | SQLITE_OPEN_DELETEONCLOSE);
-          if (!(desired_flags & SQLITE_OPEN_DELETEONCLOSE)) {
-            tracked_file =
-                db_tracker_->SaveIncognitoFile(vfs_file_name, std::move(file));
-          }
+  }
+
+  std::move(callback).Run(std::move(file));
+}
+
+void WebDatabaseHostImpl::OpenFileWithBucketCreated(
+    const std::u16string& vfs_file_name,
+    int32_t desired_flags,
+    OpenFileCallback callback,
+    storage::QuotaErrorOr<storage::BucketInfo> bucket) {
+  DCHECK(bucket.ok());
+
+  base::File file;
+  const base::File* tracked_file = nullptr;
+  base::FilePath db_file =
+      DatabaseUtil::GetFullFilePathForVfsFile(db_tracker_.get(), vfs_file_name);
+
+  if (!db_file.empty()) {
+    // When in Incognito mode, we want to make sure that all DB files are
+    // removed when the Incognito browser context goes away, so we add the
+    // SQLITE_OPEN_DELETEONCLOSE flag when opening all files, and keep
+    // open handles to them in the database tracker to make sure they're
+    // around for as long as needed.
+    if (db_tracker_->IsIncognitoProfile()) {
+      tracked_file = db_tracker_->GetIncognitoFile(vfs_file_name);
+      if (!tracked_file) {
+        base::File open_file = VfsBackend::OpenFile(
+            db_file, desired_flags | SQLITE_OPEN_DELETEONCLOSE);
+        if (!(desired_flags & SQLITE_OPEN_DELETEONCLOSE)) {
+          tracked_file = db_tracker_->SaveIncognitoFile(vfs_file_name,
+                                                        std::move(open_file));
+        } else {
+          file = std::move(open_file);
         }
-      } else {
-        file = VfsBackend::OpenFile(db_file, desired_flags);
       }
+    } else {
+      file = VfsBackend::OpenFile(db_file, desired_flags);
     }
   }
 
@@ -294,7 +322,7 @@ void WebDatabaseHostImpl::DatabaseDeleteFile(
           base::BindOnce(&WebDatabaseHostImpl::DatabaseDeleteFile,
                          weak_ptr_factory_.GetWeakPtr(), vfs_file_name,
                          sync_dir, std::move(callback), reschedule_count - 1),
-          base::TimeDelta::FromMilliseconds(kDelayDeleteRetryMs));
+          base::Milliseconds(kDelayDeleteRetryMs));
       return;
     }
   }

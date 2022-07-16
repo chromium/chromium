@@ -25,6 +25,10 @@ class EventFilter {
  public:
   typedef int MatcherID;
   EventFilter();
+
+  EventFilter(const EventFilter&) = delete;
+  EventFilter& operator=(const EventFilter&) = delete;
+
   ~EventFilter();
 
   // Adds an event matcher that will be used in calls to MatchEvent(). Returns
@@ -65,6 +69,10 @@ class EventFilter {
         std::unique_ptr<EventMatcher> event_matcher,
         url_matcher::URLMatcher* url_matcher,
         const url_matcher::URLMatcherConditionSet::Vector& condition_sets);
+
+    EventMatcherEntry(const EventMatcherEntry&) = delete;
+    EventMatcherEntry& operator=(const EventMatcherEntry&) = delete;
+
     ~EventMatcherEntry();
 
     // Prevents the removal of condition sets when this class is destroyed. We
@@ -82,8 +90,6 @@ class EventFilter {
     // The id sets in |url_matcher_| that this EventMatcher owns.
     std::vector<url_matcher::URLMatcherConditionSet::ID> condition_set_ids_;
     url_matcher::URLMatcher* url_matcher_;
-
-    DISALLOW_COPY_AND_ASSIGN(EventMatcherEntry);
   };
 
   // Maps from a matcher id to an event matcher entry.
@@ -119,8 +125,6 @@ class EventFilter {
 
   // Maps from event matcher ids to the name of the event they match on.
   std::map<MatcherID, std::string> id_to_event_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventFilter);
 };
 
 }  // namespace extensions

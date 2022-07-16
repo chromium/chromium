@@ -17,8 +17,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/api/video/video_frame.h"
-#include "third_party/webrtc/media/base/vp9_profile.h"
+#include "third_party/webrtc/api/video_codecs/vp9_profile.h"
 #include "third_party/webrtc/modules/video_coding/codecs/h264/include/h264.h"
 #include "third_party/webrtc/rtc_base/ref_count.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
@@ -66,14 +66,19 @@ constexpr gfx::Size kDefaultSize(640, 480);
 // normal operation.  It includes all buffers that we have not gotten an output
 // for.  "Normal operation" means that we believe that the decoder is trying to
 // drain the queue.  During init and reset, for example, we don't expect it.
-constexpr int32_t kMaxPendingBuffers = 8;
+// Note: This value is chosen to be Ludicrously High(tm), so that we can see
+// where reasonable limits should be via UMA.
+constexpr int32_t kMaxPendingBuffers = 64;
 
 // Absolute maximum number of pending buffers, whether we think the decoder is
 // draining them or not.  If, at any time, we believe that there are this many
 // decodes in-flight when a new decode request arrives, we will fall back to
 // software decoding.  It indicates that (a) reset never completed, (b) init
 // never completed, or (c) we're hopelessly behind.
-constexpr int32_t kAbsoluteMaxPendingBuffers = 32;
+// Note: This value is chosen to be Ludicrously High(tm), so that we can see
+// where reasonable limits should be via UMA.  Changing this changes UMA, so
+// probably don't.
+constexpr int32_t kAbsoluteMaxPendingBuffers = 256;
 
 // Name we'll report for hardware decoders.
 constexpr const char* kExternalDecoderName = "ExternalDecoder";
@@ -219,7 +224,7 @@ RTCVideoDecoderStreamAdapter::Create(
     return nullptr;
 
   // Bail early for unknown codecs.
-  if (WebRtcToMediaVideoCodec(video_codec_type) == media::kUnknownVideoCodec)
+  if (WebRtcToMediaVideoCodec(video_codec_type) == media::VideoCodec::kUnknown)
     return nullptr;
 
   // Avoid the thread hop if the decoder is known not to support the config.
@@ -241,7 +246,6 @@ RTCVideoDecoderStreamAdapter::Create(
       base::WrapUnique(new RTCVideoDecoderStreamAdapter(
           gpu_factories, decoder_factory, std::move(media_task_runner),
           render_color_space, config, format));
-  rtc_video_decoder_adapter->InitializeSync(config);
   return rtc_video_decoder_adapter;
 }
 
@@ -266,6 +270,8 @@ RTCVideoDecoderStreamAdapter::RTCVideoDecoderStreamAdapter(
   decoder_info_.implementation_name = kExternalDecoderName;
   decoder_info_.is_hardware_accelerated = false;
   DETACH_FROM_SEQUENCE(decoding_sequence_checker_);
+  // This is normally constructed on the media thread, but the first one is
+  // constructed immediately so that we can post to the media thread.
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
@@ -273,47 +279,61 @@ RTCVideoDecoderStreamAdapter::~RTCVideoDecoderStreamAdapter() {
   DVLOG(1) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
-  if (have_started_decoding_)
-    --(*GetDecoderCounter());
+  {
+    // It doesn't really need to be guarded by a lock since it's only accessed
+    // off-thread here, but this forces memory barriers and such.
+    base::AutoLock auto_lock(lock_);
+    RecordMaxInFlightDecodesLockedOnMedia();
+
+    if (contributes_to_decoder_count_) {
+      contributes_to_decoder_count_ = false;  // paranoia
+      --(*GetDecoderCounter());
+    }
+  }
 }
 
-void RTCVideoDecoderStreamAdapter::InitializeSync(
-    const media::VideoDecoderConfig& config) {
+void RTCVideoDecoderStreamAdapter::InitializeOrReinitializeSync() {
   DVLOG(3) << __func__;
 
   // Can be called on |worker_thread_| or |decoding_thread_|.
   DCHECK(!media_task_runner_->RunsTasksInCurrentSequence());
-  base::AutoLock auto_lock(lock_);
-  start_time_ = base::TimeTicks::Now();
+
+  // Anything that's posted to the media thread after this must start with a
+  // keyframe, since we're about to post a task to reset the state.
+  key_frame_required_ = true;
 
   // Allow init to complete asynchronously, since we'll probably succeed.
   // Trying to do it synchronously can block the mojo pipe, and deadlock.
-  auto init_cb =
-      CrossThreadBindOnce(&RTCVideoDecoderStreamAdapter::OnInitializeDone,
-                          weak_this_, *start_time_);
-
   PostCrossThreadTask(
       *media_task_runner_.get(), FROM_HERE,
       CrossThreadBindOnce(
-          &RTCVideoDecoderStreamAdapter::InitializeOnMediaThread,
-          CrossThreadUnretained(this), config, std::move(init_cb)));
+          &RTCVideoDecoderStreamAdapter::RestartDecoderStreamOnMedia,
+          weak_this_));
 }
 
-int32_t RTCVideoDecoderStreamAdapter::InitDecode(
-    const webrtc::VideoCodec* codec_settings,
-    int32_t number_of_cores) {
+bool RTCVideoDecoderStreamAdapter::Configure(const Settings& settings) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
 
-  video_codec_type_ = codec_settings->codecType;
+  video_codec_type_ = settings.codec_type();
   DCHECK_EQ(webrtc::PayloadStringToCodecType(format_.name), video_codec_type_);
 
   base::AutoLock auto_lock(lock_);
   init_decode_complete_ = true;
-  current_resolution_ =
-      gfx::Size(codec_settings->width, codec_settings->height);
+  const webrtc::RenderResolution& resolution = settings.max_render_resolution();
+  if (resolution.Valid()) {
+    // This lets our initial decoder selection see something that's at least
+    // maybe related to the stream, rather than our default guess.
+    current_resolution_ = gfx::Size(resolution.Width(), resolution.Height());
+    config_.set_coded_size(current_resolution_);
+    config_.set_visible_rect(gfx::Rect(current_resolution_));
+    config_.set_natural_size(current_resolution_);
+  }
+
+  // Now that we have a guess at the resolution, try to init.
+  InitializeOrReinitializeSync();
   AttemptLogInitializationState_Locked();
-  return has_error_ ? WEBRTC_VIDEO_CODEC_UNINITIALIZED : WEBRTC_VIDEO_CODEC_OK;
+  return !has_error_;
 }
 
 void RTCVideoDecoderStreamAdapter::AttemptLogInitializationState_Locked() {
@@ -348,12 +368,6 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
 
-  // If this is the first decode, then increment the count of working decoders.
-  if (!have_started_decoding_) {
-    have_started_decoding_ = true;
-    ++(*GetDecoderCounter());
-  }
-
 #if defined(OS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
   const bool has_software_fallback =
       video_codec_type_ != webrtc::kVideoCodecH264;
@@ -364,37 +378,80 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
   // Don't allow hardware decode for small videos if there are too many
   // decoder instances.  This includes the case where our resolution drops while
   // too many decoders exist.  When DecoderStream supports software decoders,
-  // this should be moved to DecoderSelector.
+  // this should be moved to DecoderSelector.  If we don't contribute to the
+  // decoder count already, then just keep going.
   {
     base::AutoLock auto_lock(lock_);
-    if (has_software_fallback &&
+    // If we don't prefer software decoders, and we're not already contributing
+    // to the decoder count, then do so now.  Note that we wait until the first
+    // decode, since that's when things actually get initialized.  It's common
+    // for sites to create unused rtc codecs.
+    if (!contributes_to_decoder_count_ && !prefer_software_decoders_) {
+      contributes_to_decoder_count_ = true;
+      ++(*GetDecoderCounter());
+    }
+
+    // Note that it's okay to FallBackToSoftwareLocked without a software
+    // fallback; it will use the hw decoder anyway.  It's only because chrome sw
+    // decoders are not always enabled for RTC that we have to be careful -- we
+    // don't want to fall back to rtc software decoders when the only option is
+    // chrome hw.
+    // TODO(liberato): since DecoderStream selects sw anyway for low res, should
+    // this even be needed?  We never check if we actually have a hw impl, only
+    // that we haven't specifically asked to prefer a sw one.  DecoderStream
+    // might have chosen sw anyway, assuming that `kMinResolution` agrees with
+    // whatever threshold it uses.
+    if (has_software_fallback && contributes_to_decoder_count_ &&
         current_resolution_.GetArea() < kMinResolution.GetArea() &&
         GetDecoderCounter()->load() > kMaxDecoderInstances) {
-      // Decrement the count and clear the flag, so that other decoders don't
-      // fall back also.
-      have_started_decoding_ = false;
-      --(*GetDecoderCounter());
-      return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+      return FallBackToSoftwareLocked();
     }
-  }
 
-  // Fall back to software decoding if there's no support for VP9 spatial
-  // layers. See https://crbug.com/webrtc/9304.
-  // TODO(chromium:1187565): Update RTCVideoDecoderFactory::QueryCodecSupport()
-  // if RTCVideoDecoderStream is changed to handle SW decoding and not return
-  // WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE.
-  if (video_codec_type_ == webrtc::kVideoCodecVP9 &&
-      input_image.SpatialIndex().value_or(0) > 0 &&
-      !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers()) {
-    DLOG(ERROR) << __func__ << " multiple spatial layers.";
-    RecordRTCVideoDecoderFallbackReason(
-        config_.codec(), RTCVideoDecoderFallbackReason::kSpatialLayers);
-    return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+    // Fall back to software decoding if there's no support for VP9 spatial
+    // layers. See https://crbug.com/webrtc/9304.
+    // TODO(chromium:1187565): Update
+    // RTCVideoDecoderFactory::QueryCodecSupport() if RTCVideoDecoderStream is
+    // changed to handle SW decoding and not return
+    // WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE.
+
+    // This dapater is diffrent from rtc_video_decoder_dapater.
+    // Consider two cases:
+    // 1. If it's hardware decoder, the D3D11 supports decoding the VP9 kSVC
+    // stream, but DXVA not. Currently just a reasonably temporary measure. Once
+    // the DXVA supports decoding VP9 kSVC stream, the boolen
+    // |need_fallback_to_software| should be removed, and if the OS is windows
+    // but not win7, we will return true in 'Vp9HwSupportForSpatialLayers'
+    // instead of false to Media Capability.
+    // 2. If it's software(libvpx) decoder, currently libvpx can decode vp9 kSVC
+    // stream properly. So only when |decoder_info_.is_hardware_accelerated| is
+    // true, we will do the decoder capability check.
+    if (video_codec_type_ == webrtc::kVideoCodecVP9 &&
+        input_image.SpatialIndex().value_or(0) > 0 &&
+        !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers() &&
+        decoder_configured_ && decoder_info_.is_hardware_accelerated) {
+      bool need_fallback_to_software = true;
+#if defined(OS_WIN)
+      if (video_decoder_type_ == media::VideoDecoderType::kD3D11 &&
+          base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding)) {
+        need_fallback_to_software = false;
+      }
+#endif
+      if (need_fallback_to_software) {
+        DLOG(ERROR) << __func__
+                    << " fallback to software due to decoder doesn't support "
+                       "decoding VP9 multiple spatial layers.";
+        RecordRTCVideoDecoderFallbackReason(
+            config_.codec(), RTCVideoDecoderFallbackReason::kSpatialLayers);
+        return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+      }
+    }
   }
 
   if (missing_frames) {
     DVLOG(2) << "Missing frames";
-    // We probably can't handle broken frames. Request a key frame.
+    // We probably can't handle broken frames. Request a key frame and wait
+    // until we get it.
+    key_frame_required_ = true;
     return WEBRTC_VIDEO_CODEC_ERROR;
   }
 
@@ -412,12 +469,13 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
   }
 
   std::vector<uint32_t> spatial_layer_frame_size;
-  size_t max_sl_index = input_image.SpatialIndex().value_or(0);
-  for (size_t i = 0; i <= max_sl_index; i++) {
+  int max_sl_index = input_image.SpatialIndex().value_or(0);
+  for (int i = 0; i <= max_sl_index; i++) {
     auto frame_size = input_image.SpatialLayerFrameSize(i);
     if (!frame_size)
       continue;
-    spatial_layer_frame_size.push_back(*frame_size);
+    spatial_layer_frame_size.push_back(
+        base::checked_cast<uint32_t>(*frame_size));
   }
 
   // Convert to media::DecoderBuffer.
@@ -435,7 +493,7 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
         media::DecoderBuffer::CopyFrom(input_image.data(), input_image.size());
   }
   pending_buffer->buffer->set_timestamp(
-      base::TimeDelta::FromMicroseconds(input_image.Timestamp()));
+      base::Microseconds(input_image.Timestamp()));
   pending_buffer->buffer->set_is_key_frame(
       input_image._frameType == webrtc::VideoFrameType::kVideoFrameKey);
 
@@ -453,10 +511,13 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
     // here, to reset the decoder state.  For now, just fail.
     if (has_error_) {
       DLOG(ERROR) << __func__ << " decoding failed.";
+
+      // Try again, but prefer software decoders this time.
       RecordRTCVideoDecoderFallbackReason(
           config_.codec(),
           RTCVideoDecoderFallbackReason::kPreviousErrorOnDecode);
-      return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+      // Since we now need a keyframe, request one.
+      return FallBackToSoftwareLocked();
     }
 
     if (pending_buffer_count_ >= max_pending_buffer_count_) {
@@ -480,6 +541,7 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
         RecordRTCVideoDecoderFallbackReason(
             config_.codec(),
             RTCVideoDecoderFallbackReason::kConsecutivePendingBufferOverflow);
+        // We might want to try FallBackToSoftwareLocked(), but for now, don't.
         return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
       }
 
@@ -525,7 +587,7 @@ int32_t RTCVideoDecoderStreamAdapter::RegisterDecodeCompleteCallback(
     RecordRTCVideoDecoderFallbackReason(
         config_.codec(),
         RTCVideoDecoderFallbackReason::kPreviousErrorOnRegisterCallback);
-    return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+    return FallBackToSoftwareLocked();
   }
   return WEBRTC_VIDEO_CODEC_OK;
 }
@@ -578,6 +640,10 @@ void RTCVideoDecoderStreamAdapter::InitializeOnMediaThread(
   auto traits =
       std::make_unique<media::DecoderStreamTraits<media::DemuxerStream::VIDEO>>(
           media_log_.get());
+  {
+    base::AutoLock auto_lock(lock_);
+    traits->SetPreferNonPlatformDecoders(prefer_software_decoders_);
+  }
 
   media::RequestOverlayInfoCB request_overlay_cb = base::DoNothing();
   auto create_decoders_cb = base::BindRepeating(
@@ -610,39 +676,48 @@ void RTCVideoDecoderStreamAdapter::InitializeOnMediaThread(
 void RTCVideoDecoderStreamAdapter::OnInitializeDone(base::TimeTicks start_time,
                                                     bool success) {
   RecordInitializationLatency(base::TimeTicks::Now() - start_time);
-  base::AutoLock auto_lock(lock_);
-  init_complete_ = true;
+  {
+    base::AutoLock auto_lock(lock_);
+    init_complete_ = true;
 
-  if (!success) {
-    has_error_ = true;
-    // TODO(crbug.com/1150103): Is it guaranteed that there will be a next
-    // decode call to signal the error?  If not, then we should use the decode
-    // callback if we have one yet.
-  } else {
-    AdjustQueueLength_Locked();
-    AttemptRead_Locked();
+    if (!success) {
+      has_error_ = true;
+      // TODO(crbug.com/1150103): Is it guaranteed that there will be a next
+      // decode call to signal the error?  If not, then we should use the decode
+      // callback if we have one yet.
+    } else {
+      AdjustQueueLength_Locked();
+    }
+
+    AttemptLogInitializationState_Locked();
   }
 
-  AttemptLogInitializationState_Locked();
+  if (success)
+    AttemptRead();
 }
 
 void RTCVideoDecoderStreamAdapter::DecodeOnMediaThread(
     std::unique_ptr<PendingBuffer> pending_buffer) {
   DVLOG(4) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  {
+    base::AutoLock auto_lock(lock_);
 
-  base::AutoLock auto_lock(lock_);
+    // If we're in the error state, then do nothing.  `Decode()` will notify
+    // about the error.
+    if (has_error_)
+      return;
 
-  // If we're in the error state, then do nothing.  `Decode()` will notify about
-  // the error.
-  if (has_error_)
-    return;
+    // Update the max recorded pending buffers.  This is kept up-to-date on the
+    // decoder thread when the buffer is queued.
+    RecordMaxInFlightDecodesLockedOnMedia();
 
-  // Remember that this timestamp has already been added to the list.
-  demuxer_stream_->EnqueueBuffer(std::move(pending_buffer));
+    // Remember that this timestamp has already been added to the list.
+    demuxer_stream_->EnqueueBuffer(std::move(pending_buffer));
+  }
 
   // Kickstart reading output, if we're not already.
-  AttemptRead_Locked();
+  AttemptRead();
 }
 
 void RTCVideoDecoderStreamAdapter::OnFrameReady(
@@ -684,50 +759,58 @@ void RTCVideoDecoderStreamAdapter::OnFrameReady(
           .set_rotation(webrtc::kVideoRotation_0)
           .build();
 
-  base::AutoLock auto_lock(lock_);
+  {
+    base::AutoLock auto_lock(lock_);
 
-  // Record time to first frame if we haven't yet.
-  if (start_time_) {
-    // We haven't recorded the first frame time yet, so do so now.
-    base::UmaHistogramTimes("Media.RTCVideoDecoderFirstFrameLatencyMs",
-                            base::TimeTicks::Now() - *start_time_);
-    start_time_.reset();
+    // Record time to first frame if we haven't yet.
+    if (start_time_) {
+      // We haven't recorded the first frame time yet, so do so now.
+      base::UmaHistogramTimes("Media.RTCVideoDecoderFirstFrameLatencyMs",
+                              base::TimeTicks::Now() - *start_time_);
+      start_time_.reset();
+    }
+
+    // Update `current_resolution_`, in case it's changed.  This lets us fall
+    // back to software, or avoid doing so, if we're over the decoder limit.
+    current_resolution_ = gfx::Size(rtc_frame.width(), rtc_frame.height());
+
+    // Assumes that Decoded() can be safely called with the lock held, which
+    // apparently it can be because RTCVideoDecoder does the same.
+
+    // Since we can reset the queue length while things are in flight, just
+    // clamp to zero.  We could choose to discard this frame, too, since it was
+    // before a reset was issued.
+    if (pending_buffer_count_ > 0)
+      pending_buffer_count_--;
+    if (decode_complete_callback_)
+      decode_complete_callback_->Decoded(rtc_frame);
+    AdjustQueueLength_Locked();
   }
 
-  // Update `current_resolution_`, in case it's changed.  This lets us fall back
-  // to software, or avoid doing so, if we're over the decoder limit.
-  current_resolution_ = gfx::Size(rtc_frame.width(), rtc_frame.height());
-
   // Try to read the next output, if any, regardless if this succeeded.
-  AttemptRead_Locked();
-
-  // Assumes that Decoded() can be safely called with the lock held, which
-  // apparently it can be because RTCVideoDecoder does the same.
-
-  // Since we can reset the queue length while things are in flight, just clamp
-  // to zero.  We could choose to discard this frame, too, since it was before a
-  // reset was issued.
-  if (pending_buffer_count_ > 0)
-    pending_buffer_count_--;
-  if (decode_complete_callback_)
-    decode_complete_callback_->Decoded(rtc_frame);
-  AdjustQueueLength_Locked();
+  AttemptRead();
 }
 
-void RTCVideoDecoderStreamAdapter::AttemptRead_Locked() {
+void RTCVideoDecoderStreamAdapter::AttemptRead() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  lock_.AssertAcquired();
+  {
+    base::AutoLock auto_lock(lock_);
 
-  // Only one read may be in-flight at once.  We'll try again once the previous
-  // read completes.  If a reset is in progress, a read is not allowed to start.
-  // We also may not read until DecoderStream init completes.
-  if (pending_read_ || pending_reset_ || !init_complete_ || has_error_)
-    return;
+    // Only one read may be in-flight at once.  We'll try again once the
+    // previous read completes.  If a reset is in progress, a read is not
+    // allowed to start. We also may not read until DecoderStream init
+    // completes.
+    if (pending_read_ || pending_reset_ || !init_complete_ || has_error_)
+      return;
 
-  // We don't care if there are any pending decodes; keep a read running even if
-  // there aren't any.  This way, we don't have to count correctly.
+    // We don't care if there are any pending decodes; keep a read running even
+    // if there aren't any.  This way, we don't have to count correctly.
 
-  pending_read_ = true;
+    pending_read_ = true;
+  }
+
+  // Do not call this with the lock held, since it might deliver a frame to us
+  // before it returns.
   decoder_stream_->Read(
       base::BindOnce(&RTCVideoDecoderStreamAdapter::OnFrameReady, weak_this_));
 }
@@ -769,12 +852,14 @@ void RTCVideoDecoderStreamAdapter::OnResetCompleteOnMediaThread() {
   DCHECK(pending_reset_);
   DCHECK(!pending_read_);
 
-  base::AutoLock auto_lock(lock_);
+  {
+    base::AutoLock auto_lock(lock_);
 
-  pending_reset_ = false;
+    pending_reset_ = false;
 
-  AdjustQueueLength_Locked();
-  AttemptRead_Locked();
+    AdjustQueueLength_Locked();
+  }
+  AttemptRead();
 }
 
 void RTCVideoDecoderStreamAdapter::AdjustQueueLength_Locked() {
@@ -801,35 +886,134 @@ void RTCVideoDecoderStreamAdapter::AdjustQueueLength_Locked() {
 void RTCVideoDecoderStreamAdapter::ShutdownOnMediaThread() {
   DVLOG(3) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+
+  base::AutoLock auto_lock(lock_);
   weak_this_factory_.InvalidateWeakPtrs();
+  weak_this_ = weak_this_factory_.GetWeakPtr();
   decoder_stream_.reset();
   demuxer_stream_.reset();
 
-  base::AutoLock auto_lock(lock_);
+  RecordMaxInFlightDecodesLockedOnMedia();
+
   pending_reset_ = false;
   pending_read_ = false;
   init_complete_ = false;
   init_decode_complete_ = false;
   logged_init_status_ = false;
   pending_buffer_count_ = 0;
+  max_reported_buffer_count_ = 0;
+  max_buffer_count_metric_ = nullptr;
   // `has_error_` might or might not be set.
 }
 
 void RTCVideoDecoderStreamAdapter::OnDecoderChanged(
     media::VideoDecoder* decoder) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-
-  if (!decoder)
-    return;
-
   base::AutoLock auto_lock(lock_);
 
+  if (!decoder) {
+    decoder_configured_ = false;
+    return;
+  }
+
+  decoder_configured_ = true;
   decoder_info_.is_hardware_accelerated = decoder->IsPlatformDecoder();
-  decoder_info_.implementation_name =
-      decoder->IsPlatformDecoder()
-          ? kExternalDecoderName
-          : media::GetDecoderName(decoder->GetDecoderType()) +
-                " (DecoderStream)";
+  video_decoder_type_ = decoder->GetDecoderType();
+
+  // In order not to break RTC statistics collection, name these in a way that
+  // third_party/webrtc/video/receive_statistics_proxy2.cc understands.
+  if (decoder->IsPlatformDecoder()) {
+    decoder_info_.implementation_name = kExternalDecoderName;
+    return;
+  }
+
+  switch (video_decoder_type_) {
+    case media::VideoDecoderType::kVpx:
+      decoder_info_.implementation_name = "libvpx (DecoderStream)";
+      break;
+    case media::VideoDecoderType::kFFmpeg:
+      decoder_info_.implementation_name = "FFmpeg (DecoderStream)";
+      break;
+    default:
+      decoder_info_.implementation_name =
+          media::GetDecoderName(decoder->GetDecoderType()) + " (DecoderStream)";
+  }
+}
+
+void RTCVideoDecoderStreamAdapter::RecordMaxInFlightDecodesLockedOnMedia() {
+  lock_.AssertAcquired();
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+
+  // If we've reported this maximum before, then don't waste the IPC.  This also
+  // covers the case where `!pending_buffer_count_`, since the reported count
+  // starts at zero.  Also, don't record if this isn't a new maximum.
+  if (pending_buffer_count_ <= max_reported_buffer_count_)
+    return;
+
+  if (!max_buffer_count_metric_) {
+    max_buffer_count_metric_ =
+        base::SingleSampleMetricsFactory::Get()->CreateCustomCountsMetric(
+            "Media.RTCVideoDecoderMaxInFlightDecodes", 0,
+            kAbsoluteMaxPendingBuffers + 1, 100);
+  }
+
+  // It's unclear if the factory can fail, so simply don't record if it does.
+  if (max_buffer_count_metric_) {
+    max_buffer_count_metric_->SetSample(
+        static_cast<int>(pending_buffer_count_));
+  }
+
+  // Mark it as recorded either way, so we don't keep trying.
+  max_reported_buffer_count_ = pending_buffer_count_;
+}
+
+void RTCVideoDecoderStreamAdapter::RestartDecoderStreamOnMedia() {
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+
+  // Shut down and begin re-init.  It's okay if there has not been an init
+  // before this.
+  ShutdownOnMediaThread();
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  {
+    base::AutoLock auto_lock(lock_);
+    start_time_ = start_time;
+    has_error_ = false;
+  }
+  auto init_cb = CrossThreadBindOnce(
+      &RTCVideoDecoderStreamAdapter::OnInitializeDone, weak_this_, start_time);
+  InitializeOnMediaThread(config_, std::move(init_cb));
+}
+
+int32_t RTCVideoDecoderStreamAdapter::FallBackToSoftwareLocked() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+  lock_.AssertAcquired();
+
+  // We will either prefer software decoders by asking DecodersStream, or prefer
+  // them by asking rtc to use rtc sw decoders.  Either way, we don't contribute
+  // to the decoder count any more.  Remember that, if we request sw but get hw
+  // anyway, then we still don't contribute to the decoder count since it means
+  // that there's no alternative.  It's approximate, but all of this logic
+  // should be moved into DecoderSelector anyway eventually, where it can be
+  // done exactly.  That would also prevent destroying the adapter here, just to
+  // end up with the same hw decoder anyway.
+  if (contributes_to_decoder_count_) {
+    contributes_to_decoder_count_ = false;
+    --(*GetDecoderCounter());
+  }
+
+  // If there aren't chrome sw decoders for DecoderStream to use, then give up
+  // and ask rtc to do it.
+  if (!base::FeatureList::IsEnabled(media::kExposeSwDecodersToWebRTC)) {
+    // Oh well.
+    return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+  }
+
+  // Note that they might already be preferred, which is okay.
+  prefer_software_decoders_ = true;
+  InitializeOrReinitializeSync();
+
+  // Request a keyframe.
+  return WEBRTC_VIDEO_CODEC_ERROR;
 }
 
 }  // namespace blink

@@ -60,6 +60,8 @@ blink_core_sources_style = [
   "shape_clip_path_operation.h",
   "shape_value.h",
   "style_aspect_ratio.h",
+  "style_base_data.h",
+  "style_base_data.cc",
   "style_cached_data.h",
   "style_content_alignment_data.h",
   "style_crossfade_image.cc",
@@ -74,12 +76,15 @@ blink_core_sources_style = [
   "style_filter_data.h",
   "style_generated_image.cc",
   "style_generated_image.h",
+  "style_highlight_data.cc",
+  "style_highlight_data.h",
   "style_image.cc",
   "style_image.h",
   "style_inherited_variables.cc",
   "style_inherited_variables.h",
   "style_initial_data.cc",
   "style_initial_data.h",
+  "style_intrinsic_length.h",
   "style_name.h",
   "style_name_or_keyword.h",
   "style_non_inherited_variables.h",
@@ -107,6 +112,7 @@ blink_core_sources_style = [
 ]
 
 blink_core_tests_style = [
+  "applied_text_decoration_test.cc",
   "border_value_test.cc",
   "computed_style_test.cc",
   "filter_operations_test.cc",

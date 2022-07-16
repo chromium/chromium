@@ -50,13 +50,20 @@ void EmbeddedFrameSinkProviderImpl::RegisterEmbeddedFrameSink(
       std::move(client), std::move(destroy_callback));
 }
 
+void EmbeddedFrameSinkProviderImpl::RegisterEmbeddedFrameSinkBundle(
+    const viz::FrameSinkBundleId& bundle_id,
+    mojo::PendingReceiver<viz::mojom::FrameSinkBundle> receiver,
+    mojo::PendingRemote<viz::mojom::FrameSinkBundleClient> client) {
+  host_frame_sink_manager_->CreateFrameSinkBundle(
+      bundle_id, std::move(receiver), std::move(client));
+}
+
 void EmbeddedFrameSinkProviderImpl::CreateCompositorFrameSink(
     const viz::FrameSinkId& frame_sink_id,
     mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
     mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver) {
-  // TODO(kylechar): Kill the renderer too.
   if (frame_sink_id.client_id() != renderer_client_id_) {
-    DLOG(ERROR) << "Invalid client id " << frame_sink_id;
+    receivers_.ReportBadMessage("Invalid client ID");
     return;
   }
 
@@ -68,6 +75,26 @@ void EmbeddedFrameSinkProviderImpl::CreateCompositorFrameSink(
 
   iter->second->CreateCompositorFrameSink(std::move(client),
                                           std::move(receiver));
+}
+
+void EmbeddedFrameSinkProviderImpl::CreateBundledCompositorFrameSink(
+    const viz::FrameSinkId& frame_sink_id,
+    const viz::FrameSinkBundleId& bundle_id,
+    mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver) {
+  if (frame_sink_id.client_id() != renderer_client_id_) {
+    receivers_.ReportBadMessage("Invalid client ID");
+    return;
+  }
+
+  auto iter = frame_sink_map_.find(frame_sink_id);
+  if (iter == frame_sink_map_.end()) {
+    DLOG(ERROR) << "No EmbeddedFrameSinkImpl for " << frame_sink_id;
+    return;
+  }
+
+  iter->second->CreateBundledCompositorFrameSink(bundle_id, std::move(client),
+                                                 std::move(receiver));
 }
 
 void EmbeddedFrameSinkProviderImpl::CreateSimpleCompositorFrameSink(
@@ -108,6 +135,26 @@ void EmbeddedFrameSinkProviderImpl::ConnectToEmbedder(
 void EmbeddedFrameSinkProviderImpl::DestroyEmbeddedFrameSink(
     viz::FrameSinkId frame_sink_id) {
   frame_sink_map_.erase(frame_sink_id);
+}
+
+void EmbeddedFrameSinkProviderImpl::RegisterFrameSinkHierarchy(
+    const viz::FrameSinkId& frame_sink_id) {
+  auto iter = frame_sink_map_.find(frame_sink_id);
+  if (iter == frame_sink_map_.end()) {
+    DLOG(ERROR) << "No EmbeddedFrameSinkImpl for " << frame_sink_id;
+    return;
+  }
+  iter->second->RegisterFrameSinkHierarchy();
+}
+
+void EmbeddedFrameSinkProviderImpl::UnregisterFrameSinkHierarchy(
+    const viz::FrameSinkId& frame_sink_id) {
+  auto iter = frame_sink_map_.find(frame_sink_id);
+  if (iter == frame_sink_map_.end()) {
+    DLOG(ERROR) << "No EmbeddedFrameSinkImpl for " << frame_sink_id;
+    return;
+  }
+  iter->second->UnregisterFrameSinkHierarchy();
 }
 
 }  // namespace content

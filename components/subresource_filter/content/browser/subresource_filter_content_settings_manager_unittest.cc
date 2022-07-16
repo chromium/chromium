@@ -7,7 +7,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,6 +27,11 @@ namespace {
 class SubresourceFilterContentSettingsManagerTest : public testing::Test {
  public:
   SubresourceFilterContentSettingsManagerTest() {}
+
+  SubresourceFilterContentSettingsManagerTest(
+      const SubresourceFilterContentSettingsManagerTest&) = delete;
+  SubresourceFilterContentSettingsManagerTest& operator=(
+      const SubresourceFilterContentSettingsManagerTest&) = delete;
 
   // Creates and configures the SubresourceFilterContentSettingsManager instance
   // used by the tests, first creating the dependencies that need to be supplied
@@ -85,8 +89,6 @@ class SubresourceFilterContentSettingsManagerTest : public testing::Test {
 
   // Instance under test.
   std::unique_ptr<SubresourceFilterContentSettingsManager> settings_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterContentSettingsManagerTest);
 };
 
 TEST_F(SubresourceFilterContentSettingsManagerTest, LogDefaultSetting) {
@@ -160,7 +162,7 @@ TEST_F(SubresourceFilterContentSettingsManagerTest,
 
   task_environment()->FastForwardBy(
       SubresourceFilterContentSettingsManager::kMaxPersistMetadataDuration -
-      base::TimeDelta::FromMinutes(1));
+      base::Minutes(1));
 
   // Setting metadata in safe browsing does not overwrite the existing
   // expiration set by the ads intervention.
@@ -172,7 +174,7 @@ TEST_F(SubresourceFilterContentSettingsManagerTest,
   EXPECT_NE(dict, nullptr);
 
   // Advance the clock, metadata should be cleared.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment()->FastForwardBy(base::Minutes(1));
 
   dict = settings_manager()->GetSiteMetadata(url);
   EXPECT_EQ(dict, nullptr);

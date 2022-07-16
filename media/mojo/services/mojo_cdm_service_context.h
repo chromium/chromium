@@ -10,7 +10,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/services/media_mojo_export.h"
@@ -24,6 +23,10 @@ class MojoCdmService;
 class MEDIA_MOJO_EXPORT MojoCdmServiceContext {
  public:
   MojoCdmServiceContext();
+
+  MojoCdmServiceContext(const MojoCdmServiceContext&) = delete;
+  MojoCdmServiceContext& operator=(const MojoCdmServiceContext&) = delete;
+
   ~MojoCdmServiceContext();
 
   // Registers the |cdm_service| and returns a unique (per-process) CDM ID.
@@ -39,8 +42,6 @@ class MEDIA_MOJO_EXPORT MojoCdmServiceContext {
  private:
   // A map between CDM ID and MojoCdmService.
   std::map<base::UnguessableToken, MojoCdmService*> cdm_services_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoCdmServiceContext);
 };
 
 }  // namespace media

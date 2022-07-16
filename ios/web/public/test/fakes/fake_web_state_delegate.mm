@@ -120,23 +120,4 @@ void FakeWebStateDelegate::OnAuthRequired(
   last_authentication_request_->auth_callback = std::move(callback);
 }
 
-bool FakeWebStateDelegate::ShouldPreviewLink(WebState* source,
-                                             const GURL& link_url) {
-  last_link_url_ = link_url;
-  return should_preview_link_;
-}
-
-UIViewController* FakeWebStateDelegate::GetPreviewingViewController(
-    WebState* source,
-    const GURL& link_url) {
-  last_link_url_ = link_url;
-  return previewing_view_controller_;
-}
-
-void FakeWebStateDelegate::CommitPreviewingViewController(
-    WebState* source,
-    UIViewController* previewing_view_controller) {
-  last_previewing_view_controller_ = previewing_view_controller;
-}
-
 }  // namespace web

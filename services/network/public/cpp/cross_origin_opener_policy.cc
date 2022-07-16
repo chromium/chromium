@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 
 namespace network {
 
@@ -22,7 +23,9 @@ bool CrossOriginOpenerPolicy::operator==(
   return value == other.value &&
          reporting_endpoint == other.reporting_endpoint &&
          report_only_value == other.report_only_value &&
-         report_only_reporting_endpoint == other.report_only_reporting_endpoint;
+         report_only_reporting_endpoint ==
+             other.report_only_reporting_endpoint &&
+         soap_by_default_value == other.soap_by_default_value;
 }
 
 bool IsAccessFromCoopPage(mojom::CoopAccessReportType type) {
@@ -52,6 +55,32 @@ const char* CoopAccessReportTypeToString(mojom::CoopAccessReportType type) {
       return "access-to-coop-page-from-openee";
     case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOther:
       return "access-to-coop-page-from-other";
+  }
+}
+
+void AugmentCoopWithCoep(CrossOriginOpenerPolicy* coop,
+                         const CrossOriginEmbedderPolicy& coep) {
+  // COOP:
+  if (coop->value == mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
+      CompatibleWithCrossOriginIsolated(coep.value)) {
+    coop->value = mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
+  }
+
+  // COOP: SOAP by default
+  if (coop->soap_by_default_value ==
+          mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
+      CompatibleWithCrossOriginIsolated(coep.value)) {
+    coop->soap_by_default_value =
+        mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
+  }
+
+  // COOP-Report-Only:
+  if (coop->report_only_value ==
+          mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
+      (CompatibleWithCrossOriginIsolated(coep.value) ||
+       CompatibleWithCrossOriginIsolated(coep.report_only_value))) {
+    coop->report_only_value =
+        mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
   }
 }
 

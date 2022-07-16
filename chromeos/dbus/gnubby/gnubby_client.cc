@@ -22,6 +22,9 @@ class GnubbyClientImpl : public GnubbyClient {
  public:
   GnubbyClientImpl() {}
 
+  GnubbyClientImpl(const GnubbyClientImpl&) = delete;
+  GnubbyClientImpl& operator=(const GnubbyClientImpl&) = delete;
+
   // GnubbyClient override.
   void AddObserver(Observer* observer) override {
     observer_list_.AddObserver(observer);
@@ -62,8 +65,6 @@ class GnubbyClientImpl : public GnubbyClient {
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::WeakPtrFactory<GnubbyClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GnubbyClientImpl);
 };
 
 }  // namespace

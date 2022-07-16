@@ -11,7 +11,7 @@
 namespace blink {
 
 // This is a wrapper class for a range in flat tree that is relocatable by
-// relacating the start and end positions in DOM tree.
+// relocating the start and end positions in DOM tree.
 class CORE_EXPORT RangeInFlatTree final
     : public GarbageCollected<RangeInFlatTree> {
  public:

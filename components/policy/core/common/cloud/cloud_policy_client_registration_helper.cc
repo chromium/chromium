@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -115,12 +116,13 @@ void CloudPolicyClientRegistrationHelper::StartRegistration(
 void CloudPolicyClientRegistrationHelper::StartRegistrationWithEnrollmentToken(
     const std::string& token,
     const std::string& client_id,
+    const ClientDataDelegate& client_data_delegate,
     base::OnceClosure callback) {
   DVLOG(1) << "Starting registration process with enrollment token";
   DCHECK(!client_->is_registered());
   callback_ = std::move(callback);
   client_->AddObserver(this);
-  client_->RegisterWithToken(token, client_id);
+  client_->RegisterWithToken(token, client_id, client_data_delegate);
 }
 
 void CloudPolicyClientRegistrationHelper::OnTokenFetched(

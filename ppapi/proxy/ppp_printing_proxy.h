@@ -25,6 +25,10 @@ namespace proxy {
 class PPP_Printing_Proxy : public InterfaceProxy {
  public:
   explicit PPP_Printing_Proxy(Dispatcher* dispatcher);
+
+  PPP_Printing_Proxy(const PPP_Printing_Proxy&) = delete;
+  PPP_Printing_Proxy& operator=(const PPP_Printing_Proxy&) = delete;
+
   ~PPP_Printing_Proxy() override;
 
   static const PPP_Printing_Dev* GetProxyInterface();
@@ -49,12 +53,9 @@ class PPP_Printing_Proxy : public InterfaceProxy {
   // pointer so we don't have to retrieve it from the dispatcher each time.
   // In the host, this value is always NULL.
   const PPP_Printing_Dev* ppp_printing_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPP_Printing_Proxy);
 };
 
 }  // namespace proxy
 }  // namespace ppapi
 
 #endif  // PPAPI_PROXY_PPP_PRINTING_PROXY_H_
-

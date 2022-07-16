@@ -21,7 +21,7 @@ namespace {
 
 class SettingsPrivateGuestModeTest : public MixinBasedInProcessBrowserTest {
  protected:
-  chromeos::GuestSessionMixin guest_session_{&mixin_host_};
+  ash::GuestSessionMixin guest_session_{&mixin_host_};
 };
 
 // Regression test for https://crbug.com/887383.

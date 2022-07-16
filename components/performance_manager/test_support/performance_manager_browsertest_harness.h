@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
-#include "components/performance_manager/embedder/graph_features_helper.h"
+#include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/test/content_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +40,7 @@ class PerformanceManagerBrowserTestHarness
 
   // An additional seam that gets invoked as part of the PM initialization. This
   // will be invoked on the PM sequence. This will be called after graph
-  // features have been configured (see "graph_features_helper").
+  // features have been configured (see "GetGraphFeatures").
   virtual void OnGraphCreated(Graph* graph);
 
   // Creates a content shell with its own window, hosting a single tab that is
@@ -86,16 +86,14 @@ class PerformanceManagerBrowserTestHarness
   // Allows configuring which Graph features are initialized during "SetUp".
   // This defaults to initializing no features. Features will be initialized
   // before "OnGraphCreated" is called.
-  GraphFeaturesHelper& GetGraphFeaturesHelper() {
-    return graph_features_helper_;
-  }
+  GraphFeatures& GetGraphFeatures() { return graph_features_; }
 
  private:
   // This is called during "SetUp". It installs features on the graph and then
   // delegates to "OnGraphCreated".
   void OnGraphCreatedImpl(Graph* graph);
 
-  GraphFeaturesHelper graph_features_helper_;
+  GraphFeatures graph_features_;
 };
 
 }  // namespace performance_manager

@@ -16,7 +16,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -69,6 +68,10 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
       std::unique_ptr<RemoteSuggestionsDatabase> database,
       std::unique_ptr<RemoteSuggestionsStatusService> status_service,
       std::unique_ptr<base::OneShotTimer> fetch_timeout_timer);
+
+  RemoteSuggestionsProviderImpl(const RemoteSuggestionsProviderImpl&) = delete;
+  RemoteSuggestionsProviderImpl& operator=(
+      const RemoteSuggestionsProviderImpl&) = delete;
 
   ~RemoteSuggestionsProviderImpl() override;
 
@@ -457,8 +460,6 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
   // tracked by this variable (as they do not need any special actions on
   // completion).
   FetchRequestStatus request_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsProviderImpl);
 };
 
 }  // namespace ntp_snippets

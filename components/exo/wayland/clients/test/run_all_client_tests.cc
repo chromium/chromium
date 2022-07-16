@@ -12,13 +12,14 @@ namespace {
 class ExoClientPerfTestSuite : public WaylandClientTestSuiteServer {
   using WaylandClientTestSuiteServer::WaylandClientTestSuiteServer;
 
+  ExoClientPerfTestSuite(const ExoClientPerfTestSuite&) = delete;
+  ExoClientPerfTestSuite& operator=(const ExoClientPerfTestSuite&) = delete;
+
   void SetClientTestUIThreadTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner)
       override {
     WaylandClientTest::SetUIThreadTaskRunner(std::move(ui_thread_task_runner));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ExoClientPerfTestSuite);
 };
 
 std::unique_ptr<WaylandClientTestSuiteServer> MakeServer(int argc,

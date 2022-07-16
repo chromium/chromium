@@ -44,6 +44,12 @@ using sync_sessions::SessionSyncService;
 
 namespace {
 
+// Note: iOS doesn't use the "chrome-native://" scheme, but in some
+// circumstances, such URLs can get synced from other platforms. Marking them as
+// "non-syncable" here means they'll be filtered out from UIs such as Recent
+// Tabs.
+const char kChromeNativeScheme[] = "chrome-native";
+
 bool ShouldSyncURLImpl(const GURL& url) {
   if (url == kChromeUIHistoryURL) {
     // Allow the chrome history page, home for "Tabs from other devices",
@@ -51,7 +57,7 @@ bool ShouldSyncURLImpl(const GURL& url) {
     return true;
   }
   return url.is_valid() && !url.SchemeIs(kChromeUIScheme) &&
-         !url.SchemeIsFile() &&
+         !url.SchemeIs(kChromeNativeScheme) && !url.SchemeIsFile() &&
          !url.SchemeIs(dom_distiller::kDomDistillerScheme);
 }
 
@@ -71,6 +77,9 @@ class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
                 ios::sync_start_util::GetFlareForSyncableService(
                     browser_state_->GetStatePath()))),
         session_sync_prefs_(browser_state->GetPrefs()) {}
+
+  SyncSessionsClientImpl(const SyncSessionsClientImpl&) = delete;
+  SyncSessionsClientImpl& operator=(const SyncSessionsClientImpl&) = delete;
 
   ~SyncSessionsClientImpl() override {}
 
@@ -121,8 +130,6 @@ class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
   const std::unique_ptr<IOSChromeLocalSessionEventRouter>
       local_session_event_router_;
   sync_sessions::SessionSyncPrefs session_sync_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSessionsClientImpl);
 };
 
 }  // namespace

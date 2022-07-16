@@ -11,6 +11,7 @@
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -31,7 +32,7 @@ class RoutineLogTest : public testing::Test {
     log_path_ = temp_dir_.GetPath().AppendASCII(kLogFileName);
   }
 
-  ~RoutineLogTest() override = default;
+  ~RoutineLogTest() override { base::RunLoop().RunUntilIdle(); }
 
  protected:
   base::test::TaskEnvironment task_environment_{
@@ -44,8 +45,11 @@ class RoutineLogTest : public testing::Test {
 TEST_F(RoutineLogTest, Empty) {
   RoutineLog log(log_path_);
 
+  // Ensure pending tasks complete.
+  task_environment_.RunUntilIdle();
+
   EXPECT_FALSE(base::PathExists(log_path_));
-  EXPECT_TRUE(log.GetContents().empty());
+  EXPECT_TRUE(log.GetContentsForCategory("all").empty());
 }
 
 TEST_F(RoutineLogTest, Basic) {
@@ -53,9 +57,12 @@ TEST_F(RoutineLogTest, Basic) {
 
   log.LogRoutineStarted(mojom::RoutineType::kCpuStress);
 
+  // Ensure pending tasks complete.
+  task_environment_.RunUntilIdle();
+
   EXPECT_TRUE(base::PathExists(log_path_));
 
-  const std::string contents = log.GetContents();
+  const std::string contents = log.GetContentsForCategory("system");
   const std::string first_line = GetLogLines(contents)[0];
   const std::vector<std::string> first_line_contents =
       GetLogLineContents(first_line);
@@ -71,9 +78,13 @@ TEST_F(RoutineLogTest, TwoLine) {
   log.LogRoutineStarted(mojom::RoutineType::kMemory);
   log.LogRoutineCompleted(mojom::RoutineType::kMemory,
                           mojom::StandardRoutineResult::kTestPassed);
+
+  // Ensure pending tasks complete.
+  task_environment_.RunUntilIdle();
+
   EXPECT_TRUE(base::PathExists(log_path_));
 
-  const std::string contents = log.GetContents();
+  const std::string contents = log.GetContentsForCategory("system");
   const std::vector<std::string> log_lines = GetLogLines(contents);
   const std::string first_line = log_lines[0];
   const std::vector<std::string> first_line_contents =
@@ -96,10 +107,14 @@ TEST_F(RoutineLogTest, Cancelled) {
   RoutineLog log(log_path_);
 
   log.LogRoutineStarted(mojom::RoutineType::kMemory);
-  log.LogRoutineCancelled();
+  log.LogRoutineCancelled(mojom::RoutineType::kMemory);
+
+  // Ensure pending tasks complete.
+  task_environment_.RunUntilIdle();
+
   EXPECT_TRUE(base::PathExists(log_path_));
 
-  const std::string contents = log.GetContents();
+  const std::string contents = log.GetContentsForCategory("system");
   LOG(ERROR) << contents;
   const std::vector<std::string> log_lines = GetLogLines(contents);
 

@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
@@ -87,7 +86,8 @@ void IndexedDBInternalsHandler::OnJavascriptDisallowed() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void IndexedDBInternalsHandler::GetAllStorageKeys(const base::ListValue* args) {
+void IndexedDBInternalsHandler::GetAllStorageKeys(
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   AllowJavascript();
@@ -137,27 +137,18 @@ static void FindControl(const base::FilePath& partition_path,
 }
 
 bool IndexedDBInternalsHandler::GetStorageKeyData(
-    const base::ListValue* args,
+    base::Value::ConstListView args,
     std::string* callback_id,
     base::FilePath* partition_path,
     blink::StorageKey* storage_key,
     storage::mojom::IndexedDBControl** control) {
-  std::string callback_string;
-  if (!args->GetString(0, &callback_string)) {
-    return false;
-  }
-  *callback_id = callback_string;
-
-  std::string path_string;
-  if (!args->GetString(1, &path_string))
-    return false;
-  *partition_path = base::FilePath::FromUTF8Unsafe(path_string);
-
-  std::string url_string;
-  if (!args->GetString(2, &url_string))
+  if (args.size() < 3)
     return false;
 
-  *storage_key = blink::StorageKey(url::Origin::Create(GURL(url_string)));
+  *callback_id = args[0].GetString();
+  *partition_path = base::FilePath::FromUTF8Unsafe(args[1].GetString());
+  *storage_key =
+      blink::StorageKey(url::Origin::Create(GURL(args[2].GetString())));
 
   return GetStorageKeyControl(*partition_path, *storage_key, control);
 }
@@ -182,7 +173,7 @@ bool IndexedDBInternalsHandler::GetStorageKeyControl(
 }
 
 void IndexedDBInternalsHandler::DownloadStorageKeyData(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::string callback_id;
@@ -227,7 +218,7 @@ void IndexedDBInternalsHandler::DownloadStorageKeyData(
 }
 
 void IndexedDBInternalsHandler::ForceCloseStorageKey(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::string callback_id;
@@ -322,6 +313,10 @@ void IndexedDBInternalsHandler::OnDownloadDataReady(
 class FileDeleter : public download::DownloadItem::Observer {
  public:
   explicit FileDeleter(const base::FilePath& temp_dir) : temp_dir_(temp_dir) {}
+
+  FileDeleter(const FileDeleter&) = delete;
+  FileDeleter& operator=(const FileDeleter&) = delete;
+
   ~FileDeleter() override;
 
   void OnDownloadUpdated(download::DownloadItem* download) override;
@@ -331,8 +326,6 @@ class FileDeleter : public download::DownloadItem::Observer {
 
  private:
   const base::FilePath temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileDeleter);
 };
 
 void FileDeleter::OnDownloadUpdated(download::DownloadItem* item) {

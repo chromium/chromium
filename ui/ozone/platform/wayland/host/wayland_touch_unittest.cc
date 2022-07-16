@@ -34,6 +34,9 @@ class WaylandTouchTest : public WaylandTest {
  public:
   WaylandTouchTest() {}
 
+  WaylandTouchTest(const WaylandTouchTest&) = delete;
+  WaylandTouchTest& operator=(const WaylandTouchTest&) = delete;
+
   void SetUp() override {
     WaylandTest::SetUp();
 
@@ -56,9 +59,6 @@ class WaylandTouchTest : public WaylandTest {
   }
 
   wl::TestTouch* touch_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WaylandTouchTest);
 };
 
 TEST_P(WaylandTouchTest, KeypressAndMotion) {

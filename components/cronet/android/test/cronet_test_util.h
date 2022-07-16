@@ -7,9 +7,8 @@
 
 #include <jni.h>
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace net {
 class URLRequest;
@@ -23,6 +22,10 @@ namespace cronet {
 // classes to provide access to internals.
 class TestUtil {
  public:
+  TestUtil() = delete;
+  TestUtil(const TestUtil&) = delete;
+  TestUtil& operator=(const TestUtil&) = delete;
+
   // CronetURLRequestContextAdapter manipulation:
 
   // Returns SingleThreadTaskRunner for the network thread of the context
@@ -43,8 +46,6 @@ class TestUtil {
  private:
   static void RunAfterContextInitOnNetworkThread(jlong jcontext_adapter,
                                                  base::OnceClosure task);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TestUtil);
 };
 
 }  // namespace cronet

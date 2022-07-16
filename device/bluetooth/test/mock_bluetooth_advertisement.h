@@ -14,14 +14,16 @@ class MockBluetoothAdvertisement : public device::BluetoothAdvertisement {
  public:
   MockBluetoothAdvertisement();
 
+  MockBluetoothAdvertisement(const MockBluetoothAdvertisement&) = delete;
+  MockBluetoothAdvertisement& operator=(const MockBluetoothAdvertisement&) =
+      delete;
+
   // BluetoothAdvertisement overrides:
   void Unregister(SuccessCallback success_callback,
                   ErrorCallback error_callback) override;
 
  private:
   ~MockBluetoothAdvertisement() override;
-
-  DISALLOW_COPY_AND_ASSIGN(MockBluetoothAdvertisement);
 };
 
 }  // namespace device

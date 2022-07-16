@@ -20,6 +20,10 @@ class ClientContext {
  public:
   ClientContext(
       const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner);
+
+  ClientContext(const ClientContext&) = delete;
+  ClientContext& operator=(const ClientContext&) = delete;
+
   virtual ~ClientContext();
 
   void Start();
@@ -37,8 +41,6 @@ class ClientContext {
 
   // A thread that handles all audio decode operations.
   base::Thread audio_decode_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientContext);
 };
 
 }  // namespace remoting

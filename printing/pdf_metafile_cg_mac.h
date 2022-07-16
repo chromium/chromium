@@ -9,13 +9,14 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <stdint.h>
 
+#include "base/component_export.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "printing/metafile.h"
 
 namespace printing {
 
 // This class creates a graphics context that renders into a PDF data stream.
-class COMPONENT_EXPORT(PRINTING) PdfMetafileCg : public Metafile {
+class COMPONENT_EXPORT(PRINTING_METAFILE) PdfMetafileCg : public Metafile {
  public:
   PdfMetafileCg();
   PdfMetafileCg(const PdfMetafileCg&) = delete;
@@ -34,6 +35,7 @@ class COMPONENT_EXPORT(PRINTING) PdfMetafileCg : public Metafile {
 
   uint32_t GetDataSize() const override;
   bool GetData(void* dst_buffer, uint32_t dst_buffer_size) const override;
+  mojom::MetafileDataType GetDataType() const override;
 
   gfx::Rect GetPageBounds(unsigned int page_number) const override;
   unsigned int GetPageCount() const override;

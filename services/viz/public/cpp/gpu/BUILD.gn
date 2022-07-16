@@ -67,8 +67,4 @@ source_set("tests") {
     "//ui/gfx/geometry",
     "//ui/gfx/geometry/mojom",
   ]
-
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
-  }
 }

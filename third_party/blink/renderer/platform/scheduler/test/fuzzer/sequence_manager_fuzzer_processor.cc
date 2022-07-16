@@ -19,7 +19,7 @@ SequenceManagerFuzzerProcessor::SequenceManagerFuzzerProcessor()
 SequenceManagerFuzzerProcessor::SequenceManagerFuzzerProcessor(
     bool log_for_testing)
     : log_for_testing_(log_for_testing),
-      initial_time_(base::TimeTicks() + base::TimeDelta::FromMilliseconds(1)),
+      initial_time_(base::TimeTicks() + base::Milliseconds(1)),
       thread_pool_manager_(std::make_unique<ThreadPoolManager>(this)),
       main_thread_manager_(
           std::make_unique<ThreadManager>(initial_time_, this)) {}

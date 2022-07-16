@@ -192,7 +192,7 @@ TEST_F(SmoothnessHelperTest, NNRTaskRecordsMaxNNRs) {
   // Fast forward by a lot, so that the next NNR isn't consecutive.  Nothing
   // should be reported, because it's less than the current maximum.
   EXPECT_CALL(*nnr_ltc_, UpdateDefaultTarget(_, OPT_TARGET(_))).Times(0);
-  FastForwardBy(base::TimeDelta::FromSeconds(1000));
+  FastForwardBy(base::Seconds(1000));
   helper_->NotifyNNR();
   // It might be okay if this reported 2, since it's a tie.
   helper_->NotifyNNR();

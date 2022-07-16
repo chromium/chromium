@@ -359,7 +359,13 @@ App.prototype = {
         /** @type {HTMLElement} */ (this.appContents_.querySelector('.title'));
     appSpan.textContent = this.appData_.title;
     appSpan.title = this.appData_.full_name;
-    this.addLaunchClickTarget_(appSpan);
+    this.addLaunchClickTarget_(
+        /** @type {HTMLElement} */
+        (this.querySelector('.app-title-container')));
+
+    if (this.appData_.is_deprecated_app) {
+      this.classList.add('deprecated');
+    }
 
     this.addEventListener('keydown', contextMenuHandler);
     this.addEventListener('keyup', contextMenuHandler);

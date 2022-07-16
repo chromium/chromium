@@ -39,7 +39,10 @@ CustomProperty::CustomProperty(const AtomicString& name,
                                const PropertyRegistration* registration)
     : Variable(InheritedFlag(registration)),
       name_(name),
-      registration_(registration) {}
+      registration_(registration) {
+  DCHECK_EQ(IsShorthand(), CSSProperty::IsShorthand(GetCSSPropertyName()));
+  DCHECK_EQ(IsRepeated(), CSSProperty::IsRepeated(GetCSSPropertyName()));
+}
 
 const AtomicString& CustomProperty::GetPropertyNameAtomicString() const {
   return name_;
@@ -176,7 +179,7 @@ const CSSValue* CustomProperty::CSSValueFromComputedStyleInternal(
   if (!data)
     return nullptr;
 
-  return MakeGarbageCollected<CSSCustomPropertyDeclaration>(name_, data);
+  return MakeGarbageCollected<CSSCustomPropertyDeclaration>(data);
 }
 
 const CSSValue* CustomProperty::ParseUntyped(
@@ -185,8 +188,7 @@ const CSSValue* CustomProperty::ParseUntyped(
     const CSSParserLocalContext& local_context) const {
   // TODO(crbug.com/661854): Pass through the original string when we have it.
   return CSSVariableParser::ParseDeclarationValue(
-      name_, {range, StringView()}, local_context.IsAnimationTainted(),
-      context);
+      {range, StringView()}, local_context.IsAnimationTainted(), context);
 }
 
 const CSSValue* CustomProperty::ParseTyped(

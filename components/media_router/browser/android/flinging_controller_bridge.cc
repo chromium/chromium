@@ -131,10 +131,10 @@ void FlingingControllerBridge::OnMediaStatusUpdated(
   status.can_seek = Java_MediaStatusBridge_canSeek(env, j_status);
   status.is_muted = Java_MediaStatusBridge_isMuted(env, j_status);
   status.volume = Java_MediaStatusBridge_volume(env, j_status);
-  status.duration = base::TimeDelta::FromMilliseconds(
-      Java_MediaStatusBridge_duration(env, j_status));
-  status.current_time = base::TimeDelta::FromMilliseconds(
-      Java_MediaStatusBridge_currentTime(env, j_status));
+  status.duration =
+      base::Milliseconds(Java_MediaStatusBridge_duration(env, j_status));
+  status.current_time =
+      base::Milliseconds(Java_MediaStatusBridge_currentTime(env, j_status));
 
   observer_->OnMediaStatusUpdated(status);
 }
@@ -146,7 +146,7 @@ base::TimeDelta FlingingControllerBridge::GetApproximateCurrentTime() {
   long time_in_ms = Java_FlingingControllerBridge_getApproximateCurrentTime(
       env, j_flinging_controller_bridge_);
 
-  return base::TimeDelta::FromMilliseconds(time_in_ms);
+  return base::Milliseconds(time_in_ms);
 }
 
 }  // namespace media_router

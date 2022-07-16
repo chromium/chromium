@@ -12,7 +12,6 @@
 #include "ash/system/screen_layout_observer.h"
 #include "ash/system/tray/time_to_click_recorder.h"
 #include "ash/system/tray/tray_bubble_base.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -44,6 +43,10 @@ class ASH_EXPORT UnifiedSystemTrayBubble
       public TabletModeObserver {
  public:
   explicit UnifiedSystemTrayBubble(UnifiedSystemTray* tray);
+
+  UnifiedSystemTrayBubble(const UnifiedSystemTrayBubble&) = delete;
+  UnifiedSystemTrayBubble& operator=(const UnifiedSystemTrayBubble&) = delete;
+
   ~UnifiedSystemTrayBubble() override;
 
   // Return the bounds of the bubble in the screen.
@@ -69,6 +72,9 @@ class ASH_EXPORT UnifiedSystemTrayBubble
 
   // Show audio settings detailed view.
   void ShowAudioDetailedView();
+
+  // Show calendar view.
+  void ShowCalendarView();
 
   // Show network settings detailed view.
   void ShowNetworkDetailedView(bool force);
@@ -165,8 +171,6 @@ class ASH_EXPORT UnifiedSystemTrayBubble
 
   TrayBubbleView* bubble_view_ = nullptr;
   UnifiedSystemTrayView* unified_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTrayBubble);
 };
 
 }  // namespace ash

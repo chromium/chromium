@@ -19,6 +19,10 @@ namespace android_webview {
 class ScopedAddFeatureFlags {
  public:
   explicit ScopedAddFeatureFlags(base::CommandLine* cl);
+
+  ScopedAddFeatureFlags(const ScopedAddFeatureFlags&) = delete;
+  ScopedAddFeatureFlags& operator=(const ScopedAddFeatureFlags&) = delete;
+
   ~ScopedAddFeatureFlags();
 
   // Any existing (user set) enable/disable takes precedence.
@@ -33,8 +37,6 @@ class ScopedAddFeatureFlags {
   base::CommandLine* const cl_;
   std::vector<std::string> enabled_features_;
   std::vector<std::string> disabled_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAddFeatureFlags);
 };
 
 }  // namespace android_webview

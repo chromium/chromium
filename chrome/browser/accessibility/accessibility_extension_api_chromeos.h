@@ -127,6 +127,16 @@ class AccessibilityPrivateMoveMagnifierToRectFunction
                              ACCESSIBILITY_PRIVATE_MOVEMAGNIFIERTORECT)
 };
 
+// API function that is called by the Accessibility Common extension to center
+// the magnifier viewport on a passed-in point.
+class AccessibilityPrivateMagnifierCenterOnPointFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateMagnifierCenterOnPointFunction() override {}
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.magnifierCenterOnPoint",
+                             ACCESSIBILITY_PRIVATE_MAGNIFIERCENTERONPOINT)
+};
+
 // API function that is called when a user toggles Dictation from another
 // acessibility feature.
 class AccessibilityPrivateToggleDictationFunction : public ExtensionFunction {

@@ -222,7 +222,7 @@ void ClipboardRecentContentIOS::GetRecentImageFromClipboard(
 ClipboardRecentContentIOS::~ClipboardRecentContentIOS() {}
 
 base::TimeDelta ClipboardRecentContentIOS::GetClipboardContentAge() const {
-  return base::TimeDelta::FromSeconds(
+  return base::Seconds(
       static_cast<int64_t>([implementation_ clipboardContentAge]));
 }
 

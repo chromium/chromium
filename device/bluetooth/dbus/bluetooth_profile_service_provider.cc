@@ -69,6 +69,11 @@ class BluetoothProfileServiceProviderImpl
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  BluetoothProfileServiceProviderImpl(
+      const BluetoothProfileServiceProviderImpl&) = delete;
+  BluetoothProfileServiceProviderImpl& operator=(
+      const BluetoothProfileServiceProviderImpl&) = delete;
+
   ~BluetoothProfileServiceProviderImpl() override {
     DVLOG(1) << "Cleaning up Bluetooth Profile: " << object_path_.value();
 
@@ -235,8 +240,6 @@ class BluetoothProfileServiceProviderImpl
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothProfileServiceProviderImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothProfileServiceProviderImpl);
 };
 
 BluetoothProfileServiceProvider::BluetoothProfileServiceProvider() = default;

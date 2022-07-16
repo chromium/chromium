@@ -14,11 +14,12 @@ namespace mac {
 class Operation {
  public:
   Operation() = default;
+
+  Operation(const Operation&) = delete;
+  Operation& operator=(const Operation&) = delete;
+
   virtual ~Operation() = default;
   virtual void Run() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Operation);
 };
 
 }  // namespace mac

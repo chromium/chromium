@@ -28,6 +28,11 @@ class AccessibilityEventRecorderUia : public AccessibilityEventRecorder {
       BrowserAccessibilityManager* manager,
       base::ProcessId pid,
       const base::StringPiece& application_name_match_pattern);
+
+  AccessibilityEventRecorderUia(const AccessibilityEventRecorderUia&) = delete;
+  AccessibilityEventRecorderUia& operator=(
+      const AccessibilityEventRecorderUia&) = delete;
+
   ~AccessibilityEventRecorderUia() override;
 
   // Called to ensure the event recorder has finished recording async events.
@@ -78,6 +83,10 @@ class AccessibilityEventRecorderUia : public AccessibilityEventRecorder {
                          public IUIAutomationEventHandler {
      public:
       EventHandler();
+
+      EventHandler(const EventHandler&) = delete;
+      EventHandler& operator=(const EventHandler&) = delete;
+
       virtual ~EventHandler();
 
       void Init(AccessibilityEventRecorderUia::Thread* owner,
@@ -122,8 +131,6 @@ class AccessibilityEventRecorderUia : public AccessibilityEventRecorder {
       Microsoft::WRL::ComPtr<IUIAutomationElement> root_;
 
       std::vector<int32_t> last_focused_runtime_id_;
-
-      DISALLOW_COPY_AND_ASSIGN(EventHandler);
     };
     Microsoft::WRL::ComPtr<CComObject<EventHandler>> uia_event_handler_;
   };
@@ -131,8 +138,6 @@ class AccessibilityEventRecorderUia : public AccessibilityEventRecorder {
   Thread thread_;
   base::RunLoop shutdown_loop_;
   base::PlatformThreadHandle thread_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorderUia);
 };
 
 }  // namespace content

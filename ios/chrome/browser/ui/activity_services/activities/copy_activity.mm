@@ -66,6 +66,7 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 }
 
 - (void)performActivity {
+  [self activityDidFinish:YES];
   if (self.dataItems.count == 1 && self.dataItems.firstObject.additionalText) {
     StoreInPasteboard(self.dataItems.firstObject.additionalText,
                       self.dataItems.firstObject.shareURL);
@@ -76,7 +77,6 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
     }
     StoreURLsInPasteboard(urls);
   }
-  [self activityDidFinish:YES];
 }
 
 @end

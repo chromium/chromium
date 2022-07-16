@@ -24,6 +24,10 @@ namespace android {
 class RlzPingHandler {
  public:
   explicit RlzPingHandler(const base::android::JavaRef<jobject>& jprofile);
+
+  RlzPingHandler(const RlzPingHandler&) = delete;
+  RlzPingHandler& operator=(const RlzPingHandler&) = delete;
+
   ~RlzPingHandler();
 
   // Makes a GET request to the designated web end point with the given
@@ -43,8 +47,6 @@ class RlzPingHandler {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   base::android::ScopedJavaGlobalRef<jobject> j_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RlzPingHandler);
 };
 
 }  // namespace android

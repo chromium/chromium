@@ -1,0 +1,5 @@
+monorail {
+  component: "Blink>BackgroundSync"
+}
+
+team_email: "platform-capabilities@chromium.org"

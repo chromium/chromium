@@ -18,9 +18,8 @@ class AutoCanvasDrawListener : public GarbageCollected<AutoCanvasDrawListener>,
   explicit AutoCanvasDrawListener(std::unique_ptr<CanvasCaptureHandler>);
   ~AutoCanvasDrawListener() override = default;
 
-  void SendNewFrame(
-      scoped_refptr<StaticBitmapImage>,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>) override;
+  NewFrameCallback GetNewFrameCallback() override;
+  bool CanDiscardAlpha() const final;
   bool NeedsNewFrame() const final;
   void RequestFrame() final;
 

@@ -71,6 +71,15 @@ export function mojoTimeDelta(timeDelta) {
 }
 
 /**
+ * Converts a time ticks in milliseconds to mojoBase.mojom.TimeTicks.
+ * @param {number} timeTicks time ticks in milliseconds
+ * @returns {!mojoBase.mojom.TimeTicks}
+ */
+export function mojoTimeTicks(timeTicks) {
+  return {internalValue: BigInt(Math.floor(timeTicks * 1000))};
+}
+
+/**
  * Queries |selector| on |element|'s shadow root and returns the resulting
  * element if there is any.
  * @param {!Element} element

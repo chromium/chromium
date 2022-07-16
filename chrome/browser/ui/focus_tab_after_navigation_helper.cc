@@ -93,4 +93,4 @@ bool FocusTabAfterNavigationHelper::IsNtpURL(const GURL& url) {
   return search::IsNTPOrRelatedURL(url, profile);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FocusTabAfterNavigationHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FocusTabAfterNavigationHelper);

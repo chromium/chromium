@@ -30,6 +30,10 @@ namespace {
 class TestMediaController : public ash::MediaController {
  public:
   TestMediaController() = default;
+
+  TestMediaController(const TestMediaController&) = delete;
+  TestMediaController& operator=(const TestMediaController&) = delete;
+
   ~TestMediaController() override = default;
 
   // ash::MediaController:
@@ -51,13 +55,15 @@ class TestMediaController : public ash::MediaController {
 
  private:
   bool force_media_client_key_handling_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMediaController);
 };
 
 class TestMediaKeysDelegate : public ui::MediaKeysListener::Delegate {
  public:
   TestMediaKeysDelegate() = default;
+
+  TestMediaKeysDelegate(const TestMediaKeysDelegate&) = delete;
+  TestMediaKeysDelegate& operator=(const TestMediaKeysDelegate&) = delete;
+
   ~TestMediaKeysDelegate() override = default;
 
   void OnMediaKeysAccelerator(const ui::Accelerator& accelerator) override {
@@ -72,8 +78,6 @@ class TestMediaKeysDelegate : public ui::MediaKeysListener::Delegate {
 
  private:
   absl::optional<ui::Accelerator> last_media_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMediaKeysDelegate);
 };
 
 }  // namespace
@@ -81,6 +85,10 @@ class TestMediaKeysDelegate : public ui::MediaKeysListener::Delegate {
 class MediaClientTest : public BrowserWithTestWindowTest {
  public:
   MediaClientTest() = default;
+
+  MediaClientTest(const MediaClientTest&) = delete;
+  MediaClientTest& operator=(const MediaClientTest&) = delete;
+
   ~MediaClientTest() override = default;
 
   void SetUp() override {
@@ -141,8 +149,6 @@ class MediaClientTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<Browser> alt_browser_;
   std::unique_ptr<BrowserWindow> alt_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaClientTest);
 };
 
 class MediaClientAppUsingCameraTest : public testing::Test {

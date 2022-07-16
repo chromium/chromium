@@ -14,15 +14,17 @@ namespace extensions {
 class ShellAppViewGuestDelegate : public AppViewGuestDelegate {
  public:
   ShellAppViewGuestDelegate();
+
+  ShellAppViewGuestDelegate(const ShellAppViewGuestDelegate&) = delete;
+  ShellAppViewGuestDelegate& operator=(const ShellAppViewGuestDelegate&) =
+      delete;
+
   ~ShellAppViewGuestDelegate() override;
 
   // AppViewGuestDelegate:
-  bool HandleContextMenu(content::WebContents* web_contents,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
   AppDelegate* CreateAppDelegate(content::WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellAppViewGuestDelegate);
 };
 
 }  // namespace extensions

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 442 tests; 387 PASS, 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 452 tests; 396 PASS, 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface CSSStyleSheet: original interface defined
@@ -84,9 +84,7 @@ PASS StyleSheet interface: attribute parentStyleSheet
 PASS StyleSheet interface: attribute title
 PASS StyleSheet interface: attribute media
 PASS StyleSheet interface: attribute disabled
-FAIL CSSStyleSheet interface: existence and properties of interface object assert_throws_js: interface object didn't throw TypeError when called as a constructor function "function() {
-                new interface_object();
-            }" did not throw
+PASS CSSStyleSheet interface: existence and properties of interface object
 PASS CSSStyleSheet interface object length
 PASS CSSStyleSheet interface object name
 PASS CSSStyleSheet interface: existence and properties of interface prototype object
@@ -96,6 +94,8 @@ PASS CSSStyleSheet interface: attribute ownerRule
 PASS CSSStyleSheet interface: attribute cssRules
 PASS CSSStyleSheet interface: operation insertRule(CSSOMString, optional unsigned long)
 PASS CSSStyleSheet interface: operation deleteRule(unsigned long)
+PASS CSSStyleSheet interface: operation replace(USVString)
+PASS CSSStyleSheet interface: operation replaceSync(USVString)
 PASS CSSStyleSheet interface: attribute rules
 PASS CSSStyleSheet interface: operation addRule(optional DOMString, optional DOMString, optional unsigned long)
 PASS CSSStyleSheet interface: operation removeRule(optional unsigned long)
@@ -107,6 +107,10 @@ PASS CSSStyleSheet interface: sheet must inherit property "insertRule(CSSOMStrin
 PASS CSSStyleSheet interface: calling insertRule(CSSOMString, optional unsigned long) on sheet with too few arguments must throw TypeError
 PASS CSSStyleSheet interface: sheet must inherit property "deleteRule(unsigned long)" with the proper type
 PASS CSSStyleSheet interface: calling deleteRule(unsigned long) on sheet with too few arguments must throw TypeError
+PASS CSSStyleSheet interface: sheet must inherit property "replace(USVString)" with the proper type
+PASS CSSStyleSheet interface: calling replace(USVString) on sheet with too few arguments must throw TypeError
+PASS CSSStyleSheet interface: sheet must inherit property "replaceSync(USVString)" with the proper type
+PASS CSSStyleSheet interface: calling replaceSync(USVString) on sheet with too few arguments must throw TypeError
 PASS CSSStyleSheet interface: sheet must inherit property "rules" with the proper type
 PASS CSSStyleSheet interface: sheet must inherit property "addRule(optional DOMString, optional DOMString, optional unsigned long)" with the proper type
 PASS CSSStyleSheet interface: calling addRule(optional DOMString, optional DOMString, optional unsigned long) on sheet with too few arguments must throw TypeError
@@ -438,9 +442,13 @@ PASS Window interface: operation getComputedStyle(Element, optional CSSOMString?
 PASS Window interface: window must inherit property "getComputedStyle(Element, optional CSSOMString?)" with the proper type
 PASS Window interface: calling getComputedStyle(Element, optional CSSOMString?) on window with too few arguments must throw TypeError
 PASS Document interface: attribute styleSheets
+PASS Document interface: attribute adoptedStyleSheets
 PASS Document interface: document must inherit property "styleSheets" with the proper type
+FAIL Document interface: document must inherit property "adoptedStyleSheets" with the proper type Right-hand side of 'instanceof' is not an object
 PASS Document interface: new Document() must inherit property "styleSheets" with the proper type
+FAIL Document interface: new Document() must inherit property "adoptedStyleSheets" with the proper type Right-hand side of 'instanceof' is not an object
 PASS ShadowRoot interface: attribute styleSheets
+PASS ShadowRoot interface: attribute adoptedStyleSheets
 PASS ProcessingInstruction interface: attribute sheet
 PASS ProcessingInstruction interface: xmlss_pi must inherit property "sheet" with the proper type
 PASS MathMLElement interface: attribute style

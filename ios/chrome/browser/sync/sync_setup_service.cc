@@ -8,7 +8,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
@@ -30,8 +29,7 @@ SyncSetupService::SyncSetupService(syncer::SyncService* sync_service)
   DCHECK(sync_service_);
 }
 
-SyncSetupService::~SyncSetupService() {
-}
+SyncSetupService::~SyncSetupService() {}
 
 syncer::ModelType SyncSetupService::GetModelType(SyncableDatatype datatype) {
   DCHECK(datatype < base::size(kDataTypes));
@@ -91,7 +89,6 @@ bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
     case SyncSetupService::kSyncServiceSignInNeedsUpdate:
     case SyncSetupService::kSyncServiceNeedsPassphrase:
     case SyncSetupService::kSyncServiceUnrecoverableError:
-    case SyncSetupService::kSyncSettingsNotConfirmed:
       return true;
     case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
       return IsEncryptEverythingEnabled();
@@ -114,7 +111,6 @@ void SyncSetupService::SetSyncingAllDataTypes(bool sync_all) {
 }
 
 bool SyncSetupService::IsSyncRequested() const {
-  DCHECK(base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency));
   return sync_service_->GetUserSettings()->IsSyncRequested();
 }
 
@@ -132,6 +128,8 @@ SyncSetupService::SyncServiceState SyncSetupService::GetSyncServiceState() {
   switch (sync_service_->GetAuthError().state()) {
     case GoogleServiceAuthError::REQUEST_CANCELED:
       return kSyncServiceCouldNotConnect;
+    // TODO(crbug.com/1194007): This will support the SyncDisabled policy that
+    // can force the Sync service to become unavailable.
     // Based on GetSyncStatusLabelsForAuthError, SERVICE_UNAVAILABLE
     // corresponds to sync having been disabled for the user's domain.
     case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
@@ -162,8 +160,6 @@ SyncSetupService::SyncServiceState SyncSetupService::GetSyncServiceState() {
           ->IsPassphraseRequiredForPreferredDataTypes()) {
     return kSyncServiceNeedsPassphrase;
   }
-  if (!IsFirstSetupComplete() && CanSyncFeatureStart())
-    return kSyncSettingsNotConfirmed;
   if (sync_service_->GetUserSettings()
           ->IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
     return kSyncServiceNeedsTrustedVaultKey;
@@ -184,7 +180,11 @@ bool SyncSetupService::HasFinishedInitialSetup() {
   //   1. User is signed in with sync enabled and the sync setup was completed.
   //   OR
   //   2. User is not signed in or has disabled sync.
-  return !sync_service_->CanSyncFeatureStart() ||
+  // Note that if the user visits the Advanced Settings during the opt-in flow,
+  // the Sync consent is not granted yet. In this case, IsSyncRequested() is
+  // set to true, indicating that the sync was requested but the initial setup
+  // has not been finished yet.
+  return !IsSyncRequested() ||
          sync_service_->GetUserSettings()->IsFirstSetupComplete();
 }
 

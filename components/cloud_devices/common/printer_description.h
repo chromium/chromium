@@ -76,6 +76,10 @@ class RangeVendorCapability {
                         const std::string& max_value,
                         const std::string& default_value);
   RangeVendorCapability(RangeVendorCapability&& other);
+
+  RangeVendorCapability(const RangeVendorCapability&) = delete;
+  RangeVendorCapability& operator=(const RangeVendorCapability&) = delete;
+
   ~RangeVendorCapability();
 
   RangeVendorCapability& operator=(RangeVendorCapability&& other);
@@ -94,8 +98,6 @@ class RangeVendorCapability {
   std::string min_value_;
   std::string max_value_;
   std::string default_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(RangeVendorCapability);
 };
 
 struct SelectVendorCapabilityOption {
@@ -128,6 +130,11 @@ class TypedValueVendorCapability {
   TypedValueVendorCapability(ValueType value_type,
                              const std::string& default_value);
   TypedValueVendorCapability(TypedValueVendorCapability&& other);
+
+  TypedValueVendorCapability(const TypedValueVendorCapability&) = delete;
+  TypedValueVendorCapability& operator=(const TypedValueVendorCapability&) =
+      delete;
+
   ~TypedValueVendorCapability();
 
   TypedValueVendorCapability& operator=(TypedValueVendorCapability&& other);
@@ -144,8 +151,6 @@ class TypedValueVendorCapability {
  private:
   ValueType value_type_;
   std::string default_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(TypedValueVendorCapability);
 };
 
 class VendorCapability {
@@ -168,6 +173,10 @@ class VendorCapability {
                    const std::string& display_name,
                    TypedValueVendorCapability typed_value_capability);
   VendorCapability(VendorCapability&& other);
+
+  VendorCapability(const VendorCapability&) = delete;
+  VendorCapability& operator=(const VendorCapability&) = delete;
+
   ~VendorCapability();
 
   bool operator==(const VendorCapability& other) const;
@@ -192,8 +201,6 @@ class VendorCapability {
     SelectVendorCapability select_capability_;
     TypedValueVendorCapability typed_value_capability_;
   };
-
-  DISALLOW_COPY_AND_ASSIGN(VendorCapability);
 };
 
 enum class ColorType {

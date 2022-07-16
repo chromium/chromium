@@ -81,8 +81,8 @@ Time TimeNowIgnoringOverride() {
   // Combine seconds and microseconds in a 64-bit field containing microseconds
   // since the epoch.  That's enough for nearly 600 centuries.  Adjust from
   // Unix (1970) to Windows (1601) epoch.
-  return Time() + TimeDelta::FromMicroseconds(
-                      (tv.tv_sec * Time::kMicrosecondsPerSecond + tv.tv_usec) +
+  return Time() +
+         Microseconds((tv.tv_sec * Time::kMicrosecondsPerSecond + tv.tv_usec) +
                       Time::kTimeTToMicrosecondsOffset);
 }
 
@@ -96,13 +96,13 @@ Time TimeNowFromSystemTimeIgnoringOverride() {
 
 namespace subtle {
 TimeTicks TimeTicksNowIgnoringOverride() {
-  return TimeTicks() + TimeDelta::FromMicroseconds(ClockNow(CLOCK_MONOTONIC));
+  return TimeTicks() + Microseconds(ClockNow(CLOCK_MONOTONIC));
 }
 
 absl::optional<TimeTicks> MaybeTimeTicksNowIgnoringOverride() {
   absl::optional<int64_t> now = MaybeClockNow(CLOCK_MONOTONIC);
   if (now.has_value())
-    return TimeTicks() + TimeDelta::FromMicroseconds(now.value());
+    return TimeTicks() + Microseconds(now.value());
   return absl::nullopt;
 }
 }  // namespace subtle
@@ -128,8 +128,7 @@ namespace subtle {
 ThreadTicks ThreadTicksNowIgnoringOverride() {
 #if (defined(_POSIX_THREAD_CPUTIME) && (_POSIX_THREAD_CPUTIME >= 0)) || \
     defined(OS_ANDROID)
-  return ThreadTicks() +
-         TimeDelta::FromMicroseconds(ClockNow(CLOCK_THREAD_CPUTIME_ID));
+  return ThreadTicks() + Microseconds(ClockNow(CLOCK_THREAD_CPUTIME_ID));
 #else
   NOTREACHED();
   return ThreadTicks();

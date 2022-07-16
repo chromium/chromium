@@ -35,7 +35,9 @@ UpgradeParams::UpgradeParams()
           !base::FeatureList::IsEnabled(arc::kBootCompletedBroadcastFeature)),
       packages_cache_mode(GetPackagesCacheMode()),
       skip_gms_core_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kArcDisableGmsCoreCache)) {}
+          chromeos::switches::kArcDisableGmsCoreCache)),
+      enable_arc_nearby_share(
+          base::FeatureList::IsEnabled(arc::kEnableArcNearbyShare)) {}
 
 UpgradeParams::UpgradeParams(const UpgradeParams& other) = default;
 UpgradeParams::UpgradeParams(UpgradeParams&& other) = default;

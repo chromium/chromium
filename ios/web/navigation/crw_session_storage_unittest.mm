@@ -111,11 +111,6 @@ TEST_F(CRWNSessionStorageTest, EncodeDecode) {
 // Tests that unarchiving CRWSessionStorage data results in an equivalent
 // storage when the user agent is automatic.
 TEST_F(CRWNSessionStorageTest, EncodeDecodeAutomatic) {
-  // The kUseDefaultUserAgentInWebClient feature is only available on iOS 13+.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    return;
-  }
-
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeature(web::features::kUseDefaultUserAgentInWebClient);
   session_storage_.userAgentType = web::UserAgentType::AUTOMATIC;

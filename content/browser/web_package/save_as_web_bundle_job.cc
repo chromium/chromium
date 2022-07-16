@@ -24,7 +24,7 @@ void SaveAsWebBundleJob::Start(
   std::vector<
       mojo::PendingRemote<data_decoder::mojom::ResourceSnapshotForWebBundle>>
       snapshots;
-  web_contents->ForEachFrame(base::BindRepeating(
+  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
       [](std::vector<mojo::PendingRemote<
              data_decoder::mojom::ResourceSnapshotForWebBundle>>* snapshots,
          RenderFrameHost* render_frame_host) {

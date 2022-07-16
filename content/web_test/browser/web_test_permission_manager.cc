@@ -66,7 +66,7 @@ void WebTestPermissionManager::RequestPermission(
       GetPermissionStatus(permission, requesting_origin,
                           WebContents::FromRenderFrameHost(render_frame_host)
                               ->GetLastCommittedURL()
-                              .GetOrigin()));
+                              .DeprecatedGetOriginAsURL()));
 }
 
 void WebTestPermissionManager::RequestPermissions(
@@ -83,7 +83,7 @@ void WebTestPermissionManager::RequestPermissions(
   const GURL& embedding_origin =
       WebContents::FromRenderFrameHost(render_frame_host)
           ->GetLastCommittedURL()
-          .GetOrigin();
+          .DeprecatedGetOriginAsURL();
   for (const auto& permission : permissions) {
     result.push_back(
         GetPermissionStatus(permission, requesting_origin, embedding_origin));
@@ -142,7 +142,7 @@ WebTestPermissionManager::GetPermissionStatusForFrame(
       permission, requesting_origin,
       content::WebContents::FromRenderFrameHost(render_frame_host)
           ->GetLastCommittedURL()
-          .GetOrigin());
+          .DeprecatedGetOriginAsURL());
 }
 
 WebTestPermissionManager::SubscriptionId
@@ -158,7 +158,8 @@ WebTestPermissionManager::SubscribePermissionStatusChange(
   if (render_frame_host) {
     WebContents* web_contents =
         WebContents::FromRenderFrameHost(render_frame_host);
-    embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
+    embedding_origin =
+        web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   }
 
   auto subscription = std::make_unique<Subscription>();
@@ -191,8 +192,8 @@ void WebTestPermissionManager::SetPermission(
     const GURL& embedding_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  PermissionDescription description(permission, url.GetOrigin(),
-                                    embedding_url.GetOrigin());
+  PermissionDescription description(permission, url.DeprecatedGetOriginAsURL(),
+                                    embedding_url.DeprecatedGetOriginAsURL());
 
   {
     base::AutoLock lock(permissions_lock_);

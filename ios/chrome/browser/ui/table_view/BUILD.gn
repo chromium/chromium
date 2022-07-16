@@ -15,7 +15,6 @@ source_set("table_view") {
     "table_view_navigation_controller.mm",
   ]
   deps = [
-    ":feature_flags",
     ":presentation",
     ":styler",
     ":views",
@@ -95,15 +94,6 @@ source_set("views") {
   ]
 }
 
-source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "feature_flags.h",
-    "feature_flags.mm",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -139,8 +129,5 @@ source_set("utils") {
     "table_view_utils.h",
     "table_view_utils.mm",
   ]
-  deps = [
-    "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/util",
-  ]
+  deps = [ "//ios/chrome/common/ui/util" ]
 }

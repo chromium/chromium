@@ -80,7 +80,7 @@ public class PhotoPickerToolbar extends SelectableListToolbar<PickerBitmap> {
 
         if (selectCount > 0) {
             ApiCompatibilityUtils.setTextAppearance(
-                    done, R.style.TextAppearance_TextMedium_Primary_Inverse);
+                    done, R.style.TextAppearance_TextMedium_Secondary);
         } else {
             ApiCompatibilityUtils.setTextAppearance(
                     done, R.style.TextAppearance_TextMedium_Disabled);

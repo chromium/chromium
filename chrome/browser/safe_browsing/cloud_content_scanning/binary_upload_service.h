@@ -42,10 +42,6 @@ class BinaryUploadService : public KeyedService {
 
   explicit BinaryUploadService(Profile* profile);
 
-  BinaryUploadService(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      Profile* profile);
-
   // This constructor is useful in tests, if you want to keep a reference to the
   // service's |binary_fcm_service_|.
   BinaryUploadService(
@@ -184,6 +180,7 @@ class BinaryUploadService : public KeyedService {
     const std::string& fcm_notification_token() const;
     const std::string& filename() const;
     const std::string& digest() const;
+    const std::string& content_type() const;
 
     // Finish the request, with the given |result| and |response| from the
     // server.

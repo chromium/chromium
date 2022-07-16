@@ -1,4 +1,14 @@
 include_rules = [
   "+components/cast",
   "+content/public/test",
+  "+fuchsia/fidl/chromium/cast/cpp/fidl.h",
+  "+net",
 ]
+
+specific_include_rules = {
+  ".*_browsertest\.cc": [
+    # WebEngine test helpers.
+    "+fuchsia/engine/test/frame_for_test.h",
+    "+fuchsia/engine/test/web_engine_browser_test.h",
+  ],
+}

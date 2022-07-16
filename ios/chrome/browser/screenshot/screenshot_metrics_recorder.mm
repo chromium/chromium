@@ -39,11 +39,9 @@ char const* kSingleScreenUserActionName = "MobileSingleScreenScreenshot";
   // there is a single window in the foreground.
   UIApplication* sharedApplication = [UIApplication sharedApplication];
   NSInteger countForegroundScenes = 1;
-  if (@available(iOS 13, *)) {
-    if (sharedApplication.supportsMultipleScenes) {
-      countForegroundScenes =
-          [self countForegroundScenes:[sharedApplication connectedScenes]];
-    }
+  if (sharedApplication.supportsMultipleScenes) {
+    countForegroundScenes =
+        [self countForegroundScenes:[sharedApplication connectedScenes]];
   }
 
   // Only register screenshots taken of chrome in a single screen in the

@@ -55,6 +55,8 @@ fuchsia::media::sessions2::PlayerCapabilityFlags ActionToCapabilityFlag(
       return {};  // PlayerControl does not support hanging up.
     case MediaSessionAction::kRaise:
       return {};  // PlayerControl does not support raising.
+    case MediaSessionAction::kSetMute:
+      return {};  // TODO(crbug.com/1240811): implement set mute.
   }
 }
 
@@ -139,13 +141,13 @@ void MediaPlayerImpl::Seek(zx_duration_t position) {
 }
 
 void MediaPlayerImpl::SkipForward() {
-  media_session_->Seek(base::TimeDelta::FromSeconds(
-      media_session::mojom::kDefaultSeekTimeSeconds));
+  media_session_->Seek(
+      base::Seconds(media_session::mojom::kDefaultSeekTimeSeconds));
 }
 
 void MediaPlayerImpl::SkipReverse() {
-  media_session_->Seek(-base::TimeDelta::FromSeconds(
-      media_session::mojom::kDefaultSeekTimeSeconds));
+  media_session_->Seek(
+      -base::Seconds(media_session::mojom::kDefaultSeekTimeSeconds));
 }
 
 void MediaPlayerImpl::NextItem() {

@@ -67,7 +67,7 @@ class BufferIdManagerTest : public testing::Test {
         .WillOnce(Return(MediaPipelineBackend::AudioDecoder::RenderingDelay(
             rendering_delay, timestamp)));
     auto buffer = base::MakeRefCounted<CastDecoderBufferImpl>(1);
-    buffer->set_timestamp(base::TimeDelta::FromMicroseconds(pts));
+    buffer->set_timestamp(base::Microseconds(pts));
     auto result = id_manager_->AssignBufferId(*buffer);
     Mock::VerifyAndClearExpectations(&audio_decoder_);
     return result;

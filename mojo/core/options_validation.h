@@ -42,6 +42,9 @@ class UserOptionsReader {
     // (Or maybe assert that its type is uint32_t?)
   }
 
+  UserOptionsReader(const UserOptionsReader&) = delete;
+  UserOptionsReader& operator=(const UserOptionsReader&) = delete;
+
   bool is_valid() const { return !!options_; }
 
   const Options& options() const {
@@ -75,8 +78,6 @@ class UserOptionsReader {
   }
 
   const Options* options_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserOptionsReader);
 };
 
 // Macro to invoke |UserOptionsReader<Options>::HasMember()| parametrized by

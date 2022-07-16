@@ -47,6 +47,7 @@ class LabelButton;
 class LabelButtonBorder;
 class NavButtonProvider;
 class WindowButtonOrderObserver;
+class WindowFrameProvider;
 
 // Adapter class with targets to render like different toolkits. Set by any
 // project that wants to do linux desktop native rendering.
@@ -173,6 +174,13 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   // Returns a new NavButtonProvider, or nullptr if the underlying
   // toolkit does not support drawing client-side navigation buttons.
   virtual std::unique_ptr<NavButtonProvider> CreateNavButtonProvider() = 0;
+
+  // Returns a WindowFrameProvider, or nullptr if the underlying toolkit does
+  // not support drawing client-side window decorations. |solid_frame| indicates
+  // if transparency is unsupported and the frame should be rendered opaque.
+  // The returned object is not owned by the caller and will remain alive until
+  // the process ends.
+  virtual WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) = 0;
 
   // Returns a map of KeyboardEvent code to KeyboardEvent key values.
   virtual base::flat_map<std::string, std::string> GetKeyboardLayoutMap() = 0;

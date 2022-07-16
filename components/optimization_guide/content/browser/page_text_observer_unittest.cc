@@ -12,12 +12,14 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -26,6 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace optimization_guide {
 
@@ -1053,6 +1056,66 @@ TEST_F(PageTextObserverTest, AMPRequestedOnNonOOPIF) {
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"abcdef"),
       }));
+}
+
+class PageTextObserverWithPrerenderTest : public PageTextObserverTest {
+ public:
+  PageTextObserverWithPrerenderTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2},
+        // Disable the memory requirement of Prerender2 so the test can run on
+        // any bot.
+        {blink::features::kPrerender2MemoryControls});
+  }
+  ~PageTextObserverWithPrerenderTest() override = default;
+
+  content::RenderFrameHost* AddPrerender(const GURL& prerender_url) {
+    content::RenderFrameHost* prerender_frame =
+        content::WebContentsTester::For(web_contents())
+            ->AddPrerenderAndCommitNavigation(prerender_url);
+    DCHECK(prerender_frame);
+    EXPECT_EQ(prerender_frame->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kPrerendering);
+    EXPECT_EQ(prerender_frame->GetLastCommittedURL(), prerender_url);
+    return prerender_frame;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PageTextObserverWithPrerenderTest,
+       PrerenderingShouldNotResetOutstatndingRequest) {
+  TestConsumer consumer;
+  observer()->AddConsumer(&consumer);
+  EXPECT_FALSE(consumer.was_called());
+
+  consumer.PopulateRequest(
+      /*max_size=*/1024,
+      /*events=*/{mojom::TextDumpEvent::kFirstLayout},
+      /*request_amp=*/true);
+  EXPECT_EQ(observer()->outstanding_requests(), 0U);
+
+  NavigateAndCommit(GURL("http://www.test.com"));
+  EXPECT_EQ(observer()->outstanding_requests(), 1U);
+  consumer.Reset();
+
+  // Add a prerender page.
+  const GURL prerender_url = GURL("http://www.test.com");
+  content::RenderFrameHost* prerender_frame = AddPrerender(prerender_url);
+  EXPECT_FALSE(consumer.was_called());
+  // |outstanding_requests_| should not be reset to 0 by prerendering.
+  EXPECT_EQ(observer()->outstanding_requests(), 1U);
+  consumer.Reset();
+
+  // Activate the prerendered page.
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      prerender_url, web_contents()->GetMainFrame());
+  EXPECT_EQ(prerender_frame->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+  EXPECT_TRUE(consumer.was_called());
+  // |outstanding_requests_| should be reset to 0 after activating.
+  EXPECT_EQ(observer()->outstanding_requests(), 0U);
 }
 
 }  // namespace optimization_guide

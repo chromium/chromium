@@ -57,7 +57,7 @@ class PersistentPageConsistencyCheckTaskTest : public ModelTaskTestBase {
 #endif
 TEST_F(PersistentPageConsistencyCheckTaskTest,
        MAYBE_ClearExpiredPersistentPages) {
-  base::Time expire_time = base::Time::Now() - base::TimeDelta::FromDays(400);
+  base::Time expire_time = base::Time::Now() - base::Days(400);
 
   // |page{1,4}| will be marked as missing file.
   // |page{2,5}| will be deleted from DB, since they've been expired for longer
@@ -128,7 +128,7 @@ TEST_F(PersistentPageConsistencyCheckTaskTest,
 #endif
 TEST_F(PersistentPageConsistencyCheckTaskTest,
        MAYBE_ClearExpiredPersistentPagesByFilePath) {
-  base::Time expire_time = base::Time::Now() - base::TimeDelta::FromDays(400);
+  base::Time expire_time = base::Time::Now() - base::Days(400);
   // |page| will be deleted from DB, since it's been expired for longer than
   // threshold.
   generator()->SetSystemDownloadId(kArchivePublishedWithoutDownloadId);

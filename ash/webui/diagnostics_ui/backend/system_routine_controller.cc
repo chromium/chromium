@@ -72,6 +72,7 @@ mojom::StandardRoutineResult TestStatusToResult(
     case healthd::DiagnosticRoutineStatusEnum::kWaiting:
     case healthd::DiagnosticRoutineStatusEnum::kRemoved:
     case healthd::DiagnosticRoutineStatusEnum::kCancelling:
+    case healthd::DiagnosticRoutineStatusEnum::kUnknown:
       NOTREACHED();
       return mojom::StandardRoutineResult::kExecutionError;
   }
@@ -124,8 +125,8 @@ SystemRoutineController::~SystemRoutineController() {
     diagnostics_service_->GetRoutineUpdate(
         inflight_routine_id_, healthd::DiagnosticRoutineCommandEnum::kCancel,
         /*should_include_output=*/false, base::DoNothing());
-    if (IsLoggingEnabled()) {
-      routine_log_ptr_->LogRoutineCancelled();
+    if (IsLoggingEnabled() && inflight_routine_type_.has_value()) {
+      routine_log_ptr_->LogRoutineCancelled(inflight_routine_type_.value());
     }
   }
 
@@ -170,7 +171,19 @@ void SystemRoutineController::GetSupportedRoutines(
 
 void SystemRoutineController::BindInterface(
     mojo::PendingReceiver<mojom::SystemRoutineController> pending_receiver) {
+  DCHECK(!ReceiverIsBound());
   receiver_.Bind(std::move(pending_receiver));
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&SystemRoutineController::OnBoundInterfaceDisconnect,
+                     base::Unretained(this)));
+}
+
+bool SystemRoutineController::ReceiverIsBound() {
+  return receiver_.is_bound();
+}
+
+void SystemRoutineController::OnBoundInterfaceDisconnect() {
+  receiver_.reset();
 }
 
 void SystemRoutineController::OnAvailableRoutinesFetched(
@@ -191,6 +204,24 @@ void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
   BindCrosHealthdDiagnosticsServiceIfNeccessary();
 
   switch (routine_type) {
+    case mojom::RoutineType::kArcDnsResolution:
+      diagnostics_service_->RunArcDnsResolutionRoutine(
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
+
+    case mojom::RoutineType::kArcHttp:
+      diagnostics_service_->RunArcHttpRoutine(
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
+
+    case mojom::RoutineType::kArcPing:
+      diagnostics_service_->RunArcPingRoutine(
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
+
     case mojom::RoutineType::kBatteryCharge:
       diagnostics_service_->RunBatteryChargeRoutine(
           GetExpectedRoutineDurationInSeconds(routine_type),
@@ -321,6 +352,7 @@ void SystemRoutineController::OnRoutineStarted(
 
   DCHECK_EQ(kInvalidRoutineId, inflight_routine_id_);
   inflight_routine_id_ = response_ptr->id;
+  inflight_routine_type_ = routine_type;
 
   // Sleep for the length of the test using a one-shot timer, then start
   // querying again for status.
@@ -342,6 +374,7 @@ void SystemRoutineController::OnPowerRoutineStarted(
 
   DCHECK_EQ(kInvalidRoutineId, inflight_routine_id_);
   inflight_routine_id_ = response_ptr->id;
+  inflight_routine_type_ = routine_type;
 
   ContinuePowerRoutine(routine_type);
 }
@@ -431,6 +464,7 @@ void SystemRoutineController::OnRoutineStatusUpdated(
     case healthd::DiagnosticRoutineStatusEnum::kRemoved:
     case healthd::DiagnosticRoutineStatusEnum::kCancelling:
     case healthd::DiagnosticRoutineStatusEnum::kNotRun:
+    case healthd::DiagnosticRoutineStatusEnum::kUnknown:
       // Any other reason, report failure.
       DVLOG(2) << "Routine failed: " << update->status_message;
       OnStandardRoutineResult(routine_type, TestStatusToResult(status));
@@ -495,7 +529,7 @@ void SystemRoutineController::ScheduleCheckRoutineStatus(
     uint32_t duration_in_seconds,
     mojom::RoutineType routine_type) {
   inflight_routine_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(duration_in_seconds),
+      FROM_HERE, base::Seconds(duration_in_seconds),
       base::BindOnce(&SystemRoutineController::CheckRoutineStatus,
                      weak_factory_.GetWeakPtr(), routine_type));
 }
@@ -630,6 +664,7 @@ void SystemRoutineController::SendRoutineResult(
   inflight_routine_runner_->OnRoutineResult(std::move(result_info));
   inflight_routine_runner_.reset();
   inflight_routine_id_ = kInvalidRoutineId;
+  inflight_routine_type_.reset();
 }
 
 void SystemRoutineController::BindCrosHealthdDiagnosticsServiceIfNeccessary() {
@@ -671,8 +706,8 @@ void SystemRoutineController::OnInflightRoutineRunnerDisconnected() {
   // Reset `inflight_routine_id_` to maintain invariant.
   inflight_routine_id_ = kInvalidRoutineId;
 
-  if (IsLoggingEnabled()) {
-    routine_log_ptr_->LogRoutineCancelled();
+  if (IsLoggingEnabled() && inflight_routine_type_.has_value()) {
+    routine_log_ptr_->LogRoutineCancelled(inflight_routine_type_.value());
   }
 }
 

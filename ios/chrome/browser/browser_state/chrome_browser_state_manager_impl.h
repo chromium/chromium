@@ -19,6 +19,11 @@ class ChromeBrowserStateImpl;
 class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager {
  public:
   ChromeBrowserStateManagerImpl();
+
+  ChromeBrowserStateManagerImpl(const ChromeBrowserStateManagerImpl&) = delete;
+  ChromeBrowserStateManagerImpl& operator=(
+      const ChromeBrowserStateManagerImpl&) = delete;
+
   ~ChromeBrowserStateManagerImpl() override;
 
   // ChromeBrowserStateManager:
@@ -47,8 +52,6 @@ class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager {
   // Holds the ChromeBrowserStateImpl instances that this instance has created.
   ChromeBrowserStateImplPathMap browser_states_;
   std::unique_ptr<BrowserStateInfoCache> browser_state_info_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserStateManagerImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_MANAGER_IMPL_H_

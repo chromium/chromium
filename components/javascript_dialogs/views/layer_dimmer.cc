@@ -20,13 +20,12 @@ LayerDimmer::LayerDimmer(aura::Window* parent, aura::Window* dialog)
 
   layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
   layer_->SetName(parent_->GetName() + "_LayerDimmer");
-  layer_->SetAnimator(
-      new ui::LayerAnimator(base::TimeDelta::FromMilliseconds(200)));
+  layer_->SetAnimator(new ui::LayerAnimator(base::Milliseconds(200)));
   layer_->SetColor(SkColorSetA(SK_ColorBLACK, 127));
   {
     // Don't animate these changes right now.
     ui::ScopedLayerAnimationSettings settings(layer_->GetAnimator());
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(0));
+    settings.SetTransitionDuration(base::Milliseconds(0));
     layer_->SetOpacity(0.f);
     layer_->SetBounds(parent_->bounds());
   }
@@ -70,7 +69,7 @@ void LayerDimmer::OnWindowBoundsChanged(aura::Window* window,
   if (window == parent_) {
     // Don't animate this bounds change.
     ui::ScopedLayerAnimationSettings settings(layer_->GetAnimator());
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(0));
+    settings.SetTransitionDuration(base::Milliseconds(0));
     layer_->SetBounds(gfx::Rect(new_bounds.size()));
   }
 }

@@ -29,6 +29,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/commerce:commerce",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/policy:feature_flags",
@@ -43,6 +44,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/bookmarks",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/commerce:price_card",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/default_promo",
     "//ios/chrome/browser/ui/gestures",
@@ -137,6 +139,7 @@ source_set("tab_grid_ui") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/gestures",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions",
@@ -174,8 +177,11 @@ source_set("unit_tests") {
     "grid:grid_ui",
     "//base",
     "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
     "//components/sessions",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ntp",
@@ -199,6 +205,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/browser/web_state_list/web_usage_enabler",
     "//ios/chrome/test:block_cleanup_test",
+    "//ios/chrome/test:test_support",
     "//ios/web/common",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
@@ -208,7 +215,6 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",

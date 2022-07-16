@@ -37,17 +37,23 @@ if (current_toolchain == default_toolchain &&
   # token.cc (initializer offset 0x27f024c size 0x11c)
   expected_static_initializer_count += 1
 
-  if (target_cpu == "arm") {
-    # This one is from //third_party/gvr-android-sdk
-    # base_logging.cc (initializer offset 0x9a4b0c size 0x48)
-    expected_static_initializer_count += 1
-  }
+  # This one is from //third_party/gvr-android-sdk
+  # base_logging.cc (initializer offset 0x9a4b0c size 0x48)
+  expected_static_initializer_count += 1
 
-  if (use_static_angle && !is_official_build) {
+  if (use_static_angle && !is_official_build &&
+      (is_debug || dcheck_always_on)) {
     # TODO(https://crbug.com/1172451): remove global variables from ANGLE:
     #
     # doc.cpp (initializer offset 0xcf9c6c size 0x138)
     # SPVRemapper.cpp (initializer offset 0xcf2924 size 0x64)
     expected_static_initializer_count += 2
+  }
+
+  if (target_cpu == "arm64") {
+    # TODO(https://crbug.com/1184398): Switching from libgcc to compiler-rt
+    # adds an init_have_lse_atomics constructor, which supports more efficient
+    # atomic operations on Arm processors.
+    expected_static_initializer_count += 1
   }
 }

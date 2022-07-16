@@ -31,6 +31,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
@@ -45,6 +46,7 @@ class SkMatrix;
 namespace blink {
 
 class FloatPoint;
+struct ImageDrawOptions;
 
 class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
   USING_FAST_MALLOC(Gradient);
@@ -107,7 +109,11 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
   }
   void AddColorStops(const Vector<Gradient::ColorStop>&);
 
-  void ApplyToFlags(PaintFlags&, const SkMatrix& local_matrix) const;
+  void ApplyToFlags(PaintFlags&,
+                    const SkMatrix& local_matrix,
+                    const ImageDrawOptions& draw_options);
+
+  DarkModeFilter& EnsureDarkModeFilter();
 
  protected:
   Gradient(Type, GradientSpreadMethod, ColorInterpolation, DegenerateHandling);
@@ -126,7 +132,7 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
   }
 
  private:
-  sk_sp<PaintShader> CreateShaderInternal(const SkMatrix& local_matrix) const;
+  sk_sp<PaintShader> CreateShaderInternal(const SkMatrix& local_matrix);
 
   void SortStopsIfNecessary() const;
   void FillSkiaStops(ColorBuffer&, OffsetBuffer&) const;
@@ -138,6 +144,8 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
 
   mutable Vector<ColorStop, 2> stops_;
   mutable bool stops_sorted_;
+  bool is_dark_mode_enabled_ = false;
+  std::unique_ptr<DarkModeFilter> dark_mode_filter_;
 
   mutable sk_sp<PaintShader> cached_shader_;
   mutable sk_sp<SkColorFilter> color_filter_;

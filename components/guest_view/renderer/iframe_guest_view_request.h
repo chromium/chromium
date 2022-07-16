@@ -7,11 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/guest_view/renderer/guest_view_request.h"
 #include "ipc/ipc_message.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace guest_view {
 class GuestViewContainer;
@@ -27,6 +26,11 @@ class GuestViewAttachIframeRequest : public guest_view::GuestViewRequest {
                                std::unique_ptr<base::DictionaryValue> params,
                                v8::Local<v8::Function> callback,
                                v8::Isolate* isolate);
+
+  GuestViewAttachIframeRequest(const GuestViewAttachIframeRequest&) = delete;
+  GuestViewAttachIframeRequest& operator=(const GuestViewAttachIframeRequest&) =
+      delete;
+
   ~GuestViewAttachIframeRequest() override;
 
   void PerformRequest() override;
@@ -36,8 +40,6 @@ class GuestViewAttachIframeRequest : public guest_view::GuestViewRequest {
   const int render_frame_routing_id_;
   const int guest_instance_id_;
   std::unique_ptr<base::DictionaryValue> params_;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestViewAttachIframeRequest);
 };
 
 }  // namespace guest_view

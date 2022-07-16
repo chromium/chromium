@@ -44,11 +44,9 @@ const char kTestProfileUserName[] = "test@google.com";
 const char* kTestPersonNames[] = {"BBB BBB", "CCC CCC", "AAA AAA"};
 
 // From nearby_share_contact_manager_impl.cc.
-constexpr base::TimeDelta kContactUploadPeriod = base::TimeDelta::FromHours(24);
-constexpr base::TimeDelta kContactDownloadPeriod =
-    base::TimeDelta::FromHours(12);
-constexpr base::TimeDelta kContactDownloadRpcTimeout =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kContactUploadPeriod = base::Hours(24);
+constexpr base::TimeDelta kContactDownloadPeriod = base::Hours(12);
+constexpr base::TimeDelta kContactDownloadRpcTimeout = base::Seconds(60);
 
 std::string GetTestContactId(size_t index) {
   return kTestContactIdPrefix + base::NumberToString(index);

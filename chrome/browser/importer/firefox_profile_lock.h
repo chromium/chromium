@@ -13,7 +13,6 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 
 // Firefox is designed to allow only one application to access its
 // profile at the same time.
@@ -68,6 +67,10 @@
 class FirefoxProfileLock {
  public:
   explicit FirefoxProfileLock(const base::FilePath& path);
+
+  FirefoxProfileLock(const FirefoxProfileLock&) = delete;
+  FirefoxProfileLock& operator=(const FirefoxProfileLock&) = delete;
+
   ~FirefoxProfileLock();
 
   // Locks and releases the profile.
@@ -105,8 +108,6 @@ class FirefoxProfileLock {
   // other cases.
   bool LockWithFcntl();
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(FirefoxProfileLock);
 };
 
 #endif  // CHROME_BROWSER_IMPORTER_FIREFOX_PROFILE_LOCK_H__

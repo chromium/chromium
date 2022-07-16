@@ -9,7 +9,6 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -20,6 +19,12 @@ class ASH_EXPORT RotationLockFeaturePodController
       public ScreenOrientationController::Observer {
  public:
   RotationLockFeaturePodController();
+
+  RotationLockFeaturePodController(const RotationLockFeaturePodController&) =
+      delete;
+  RotationLockFeaturePodController& operator=(
+      const RotationLockFeaturePodController&) = delete;
+
   ~RotationLockFeaturePodController() override;
 
   // FeaturePodControllerBase:
@@ -37,8 +42,6 @@ class ASH_EXPORT RotationLockFeaturePodController
   void UpdateButton();
 
   FeaturePodButton* button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RotationLockFeaturePodController);
 };
 
 }  // namespace ash

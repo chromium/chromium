@@ -16,6 +16,10 @@ namespace extensions {
 class CastExtensionsClient : public ExtensionsClient {
  public:
   CastExtensionsClient();
+
+  CastExtensionsClient(const CastExtensionsClient&) = delete;
+  CastExtensionsClient& operator=(const CastExtensionsClient&) = delete;
+
   ~CastExtensionsClient() override;
 
   // ExtensionsClient overrides:
@@ -42,8 +46,6 @@ class CastExtensionsClient : public ExtensionsClient {
 
   const GURL webstore_base_url_;
   const GURL webstore_update_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionsClient);
 };
 
 }  // namespace extensions

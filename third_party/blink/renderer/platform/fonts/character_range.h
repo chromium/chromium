@@ -11,12 +11,9 @@ struct CharacterRange {
   CharacterRange(float from, float to, float ascent, float descent)
       : start(from), end(to), ascent(ascent), descent(descent) {
 #if DCHECK_IS_ON()
-    if (isnan(start)) {
-      // start/end can saturate in tests, but not a real world case.
-      DCHECK(isnan(end));
-    } else {
+    // start/end can saturate in tests or a fuzzer, but not a real world case.
+    if (!isnan(start))
       DCHECK_LE(start, end);
-    }
 #endif
   }
 

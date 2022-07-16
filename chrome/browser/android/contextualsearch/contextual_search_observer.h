@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_OBSERVER_H_
 #define CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_OBSERVER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -31,6 +30,10 @@ class ContextualSearchObserver
       public content::WebContentsUserData<ContextualSearchObserver> {
  public:
   explicit ContextualSearchObserver(content::WebContents* web_contents);
+
+  ContextualSearchObserver(const ContextualSearchObserver&) = delete;
+  ContextualSearchObserver& operator=(const ContextualSearchObserver&) = delete;
+
   ~ContextualSearchObserver() override;
 
   static void SetHandlerForWebContents(content::WebContents* web_contents,
@@ -48,8 +51,6 @@ class ContextualSearchObserver
   ContextualSearchJsApiHandler* api_handler_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchObserver);
 };
 
 }  // namespace contextual_search

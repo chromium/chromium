@@ -5,19 +5,18 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_CAPTION_SETTINGS_DIALOG_H_
 #define CHROME_BROWSER_ACCESSIBILITY_CAPTION_SETTINGS_DIALOG_H_
 
-#include "base/macros.h"
-
 namespace captions {
 
 // An abstraction of a caption settings dialog. This is used for the captions
 // sub-section of Settings.
 class CaptionSettingsDialog {
  public:
+  CaptionSettingsDialog() = delete;
+  CaptionSettingsDialog(const CaptionSettingsDialog&) = delete;
+  CaptionSettingsDialog& operator=(const CaptionSettingsDialog&) = delete;
+
   // Displays the native captions manager dialog.
   static void ShowCaptionSettingsDialog();
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(CaptionSettingsDialog);
 };
 
 }  // namespace captions

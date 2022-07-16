@@ -20,8 +20,8 @@
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -106,10 +106,7 @@ void DispatchFocusChange(arc::mojom::AccessibilityNodeInfoData* node_data,
       display::Screen::GetScreen()->GetDisplayNearestView(active_window);
   bounds_in_screen.Offset(display.bounds().x(), display.bounds().y());
 
-  bool is_editable = arc::GetBooleanProperty(
-      node_data, arc::mojom::AccessibilityBooleanProperty::EDITABLE);
-
-  accessibility_manager->OnViewFocusedInArc(bounds_in_screen, is_editable);
+  accessibility_manager->OnViewFocusedInArc(bounds_in_screen);
 }
 
 // Singleton factory for ArcAccessibilityHelperBridge.

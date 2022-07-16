@@ -9,15 +9,14 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -216,12 +215,20 @@ class SimpleHttpServer {
   using ParserFactory = base::RepeatingCallback<Parser*(const SendCallback&)>;
 
   SimpleHttpServer(const ParserFactory& factory, net::IPEndPoint endpoint);
+
+  SimpleHttpServer(const SimpleHttpServer&) = delete;
+  SimpleHttpServer& operator=(const SimpleHttpServer&) = delete;
+
   virtual ~SimpleHttpServer();
 
  private:
   class Connection {
    public:
     Connection(net::StreamSocket* socket, const ParserFactory& factory);
+
+    Connection(const Connection&) = delete;
+    Connection& operator=(const Connection&) = delete;
+
     virtual ~Connection();
 
    private:
@@ -241,8 +248,6 @@ class SimpleHttpServer {
     SEQUENCE_CHECKER(sequence_checker_);
 
     base::WeakPtrFactory<Connection> weak_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(Connection);
   };
 
   void OnConnect();
@@ -255,8 +260,6 @@ class SimpleHttpServer {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SimpleHttpServer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleHttpServer);
 };
 
 SimpleHttpServer::SimpleHttpServer(const ParserFactory& factory,

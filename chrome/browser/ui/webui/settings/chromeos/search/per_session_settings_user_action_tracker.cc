@@ -13,20 +13,18 @@ namespace {
 
 // The maximum amount of time that the settings window can be blurred to be
 // considered short enough for the "first change" metric.
-constexpr base::TimeDelta kShortBlurTimeLimit = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kShortBlurTimeLimit = base::Minutes(1);
 
 // The minimum amount of time between a setting change and a subsequent setting
 // change. If two changes occur les than this amount of time from each other,
 // they are ignored by metrics. See https://crbug.com/1073714 for details.
-constexpr base::TimeDelta kMinSubsequentChange =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kMinSubsequentChange = base::Milliseconds(200);
 
 // Min/max values for the duration metrics. Note that these values are tied to
 // the metrics defined below; if these ever change, the metric names must also
 // be updated.
-constexpr base::TimeDelta kMinDurationMetric =
-    base::TimeDelta::FromMilliseconds(100);
-constexpr base::TimeDelta kMaxDurationMetric = base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kMinDurationMetric = base::Milliseconds(100);
+constexpr base::TimeDelta kMaxDurationMetric = base::Minutes(10);
 
 void LogDurationMetric(const char* metric_name, base::TimeDelta duration) {
   base::UmaHistogramCustomTimes(metric_name, duration, kMinDurationMetric,

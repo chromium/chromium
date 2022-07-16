@@ -62,7 +62,7 @@ volumeManagerUtil.validateError = error => {
  * instance for the volume.
  * @return {!Promise<!VolumeInfo>} Promise settled with the VolumeInfo instance.
  */
-volumeManagerUtil.createVolumeInfo = volumeMetadata => {
+volumeManagerUtil.createVolumeInfo = async volumeMetadata => {
   let localizedLabel;
   switch (volumeMetadata.volumeType) {
     case VolumeManagerCommon.VolumeType.DOWNLOADS:

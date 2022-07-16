@@ -42,7 +42,7 @@ public class UiAutomatorUtils {
     private static final long SHORT_CLICK_DURATION = 10L;
     private static final long LONG_CLICK_DURATION = 1000L;
     // Give applications more time to launch.
-    private static final long LAUNCH_TIMEOUT_MULTIPLIER = 3L;
+    private static final long LAUNCH_TIMEOUT_MS = 9000L;
     // 100 steps corresponds to ~1 secs, this was determined
     // experimentally.  Internally uses UiDevice.drag to simulate
     // clicking, steps is one of the parameters to drag.
@@ -69,20 +69,12 @@ public class UiAutomatorUtils {
     }
 
     /**
-     * Returns the timeout used for location operations.
-     * @return Timeout in milliseconds.
-     */
-    public long getTimeout() {
-        return mLocatorHelper.getTimeout();
-    }
-
-    /**
      * Launch application.
      * @param packageName Package name of the application.
      */
     public void launchApplication(String packageName) {
         Log.d(TAG, "Launching " + packageName);
-        launchApplication(packageName, mLocatorHelper.getTimeout() * LAUNCH_TIMEOUT_MULTIPLIER);
+        launchApplication(packageName, LAUNCH_TIMEOUT_MS);
     }
 
     /**

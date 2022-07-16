@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
@@ -47,6 +48,7 @@ struct ContextInfo {
   bool chrome_remote_desktop_app_blocked;
   absl::optional<bool> third_party_blocking_enabled;
   SettingValue os_firewall;
+  std::vector<std::string> system_dns_servers;
 };
 
 // Interface used by the chrome.enterprise.reportingPrivate.getContextInfo()
@@ -90,26 +92,32 @@ class ContextInfoFetcher {
 
   std::vector<std::string> GetOnSecurityEventProviders();
 
-  safe_browsing::SafeBrowsingState GetSafeBrowsingProtectionLevel();
-
-  bool GetBuiltInDnsClientEnabled();
-
-  absl::optional<safe_browsing::PasswordProtectionTrigger>
-  GetPasswordProtectionWarningTrigger();
-
-  absl::optional<bool> GetThirdPartyBLockingEnabled();
-
-  absl::optional<bool> GetChromeCleanupEnabled();
-
-  bool GetChromeRemoteDesktopAppBlocked();
-
   SettingValue GetOSFirewall();
+
+  ContextInfo FetchAsyncSignals(ContextInfo info);
+
+  std::vector<std::string> GetDnsServers();
 
   content::BrowserContext* browser_context_;
 
   // |connectors_service| is used to obtain the value of each Connector policy.
   enterprise_connectors::ConnectorsService* connectors_service_;
 };
+
+#if defined(OS_LINUX)
+class ScopedUfwConfigPathForTesting {
+ public:
+  explicit ScopedUfwConfigPathForTesting(const char* path);
+  ~ScopedUfwConfigPathForTesting();
+
+  ScopedUfwConfigPathForTesting& operator=(
+      const ScopedUfwConfigPathForTesting&) = delete;
+  ScopedUfwConfigPathForTesting(const ScopedUfwConfigPathForTesting&) = delete;
+
+ private:
+  const char* initial_path_;
+};
+#endif  // defined(OS_LINUX)
 
 }  // namespace enterprise_signals
 

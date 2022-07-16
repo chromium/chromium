@@ -51,7 +51,7 @@
       var visible = (offsetBottom <= 0 || offsetTop >= height) ? ' ' :
           (offsetTop >= 0 && offsetBottom <= height ? '*' : '+');
       var selected = child.classList.contains('selected') ? ' (selected)' : '';
-      var text = child === list._topElement ? 'top' : (child === list._bottomElement ? 'bottom' : child.textContent);
+      var text = child === list.topElement ? 'top' : (child === list.bottomElement ? 'bottom' : child.textContent);
       TestRunner.addResult(`${visible}[${offsetTop}] ${text}${selected}`);
     }
     TestRunner.addResult('');
@@ -70,7 +70,7 @@
   dumpList();
 
   TestRunner.addResult('ArrowDown');
-  list._onKeyDown(TestRunner.createKeyEvent('ArrowDown'));
+  list.onKeyDown(TestRunner.createKeyEvent('ArrowDown'));
   dumpList();
 
   TestRunner.addResult('Selecting 2');
@@ -78,15 +78,15 @@
   dumpList();
 
   TestRunner.addResult('PageUp');
-  list._onKeyDown(TestRunner.createKeyEvent('PageUp'));
+  list.onKeyDown(TestRunner.createKeyEvent('PageUp'));
   dumpList();
 
   TestRunner.addResult('PageDown');
-  list._onKeyDown(TestRunner.createKeyEvent('PageDown'));
+  list.onKeyDown(TestRunner.createKeyEvent('PageDown'));
   dumpList();
 
   TestRunner.addResult('ArrowDown');
-  list._onKeyDown(TestRunner.createKeyEvent('ArrowDown'));
+  list.onKeyDown(TestRunner.createKeyEvent('ArrowDown'));
   dumpList();
 
   TestRunner.addResult('Replacing 0 with 5, 6, 7');
@@ -94,7 +94,7 @@
   dumpList();
 
   TestRunner.addResult('ArrowUp');
-  list._onKeyDown(TestRunner.createKeyEvent('ArrowUp'));
+  list.onKeyDown(TestRunner.createKeyEvent('ArrowUp'));
   dumpList();
 
   TestRunner.addResult('Pushing 10');
@@ -160,7 +160,7 @@
   dumpList();
 
   TestRunner.addResult('PageDown');
-  list._onKeyDown(TestRunner.createKeyEvent('PageDown'));
+  list.onKeyDown(TestRunner.createKeyEvent('PageDown'));
   dumpList();
 
   TestRunner.addResult('Replacing 1, 2, 3 with [31-43]');
@@ -172,7 +172,7 @@
   dumpList();
 
   TestRunner.addResult('ArrowUp');
-  list._onKeyDown(TestRunner.createKeyEvent('ArrowUp'));
+  list.onKeyDown(TestRunner.createKeyEvent('ArrowUp'));
   dumpList();
 
   TestRunner.addResult('Selecting -1');
@@ -180,7 +180,7 @@
   dumpList();
 
   TestRunner.addResult('ArrowUp');
-  list._onKeyDown(TestRunner.createKeyEvent('ArrowUp'));
+  list.onKeyDown(TestRunner.createKeyEvent('ArrowUp'));
   dumpList();
 
   TestRunner.addResult('Selecting -1');
@@ -188,7 +188,7 @@
   dumpList();
 
   TestRunner.addResult('ArrowDown');
-  list._onKeyDown(TestRunner.createKeyEvent('ArrowDown'));
+  list.onKeyDown(TestRunner.createKeyEvent('ArrowDown'));
   dumpList();
 
   TestRunner.addResult('Selecting -1');
@@ -196,7 +196,7 @@
   dumpList();
 
   TestRunner.addResult('PageUp');
-  list._onKeyDown(TestRunner.createKeyEvent('PageUp'));
+  list.onKeyDown(TestRunner.createKeyEvent('PageUp'));
   dumpList();
 
   TestRunner.addResult('Replacing all but 29 with []');
@@ -204,7 +204,7 @@
   dumpList();
 
   TestRunner.addResult('ArrowDown');
-  list._onKeyDown(TestRunner.createKeyEvent('ArrowDown'));
+  list.onKeyDown(TestRunner.createKeyEvent('ArrowDown'));
   dumpList();
 
   var newModel = new UI.ListModel([5, 6, 7]);

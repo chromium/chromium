@@ -54,17 +54,11 @@ void OnContactsSelected(
 
 }  // namespace
 
-// static
-void ContactsManagerImpl::Create(
+ContactsManagerImpl::ContactsManagerImpl(
     RenderFrameHostImpl* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::ContactsManager> receiver) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<ContactsManagerImpl>(render_frame_host),
-      std::move(receiver));
-}
-
-ContactsManagerImpl::ContactsManagerImpl(RenderFrameHostImpl* render_frame_host)
-    : contacts_provider_(CreateProvider(render_frame_host)),
+    mojo::PendingReceiver<blink::mojom::ContactsManager> receiver)
+    : DocumentService(render_frame_host, std::move(receiver)),
+      contacts_provider_(CreateProvider(render_frame_host)),
       source_id_(render_frame_host->GetPageUkmSourceId()) {}
 
 ContactsManagerImpl::~ContactsManagerImpl() = default;

@@ -31,6 +31,9 @@ struct PortId;
 // versions handle main thread vs. service worker threads.
 class IPCMessageSender {
  public:
+  IPCMessageSender(const IPCMessageSender&) = delete;
+  IPCMessageSender& operator=(const IPCMessageSender&) = delete;
+
   virtual ~IPCMessageSender();
 
   // Used to distinguish API calls & events from each other in activity log.
@@ -103,8 +106,6 @@ class IPCMessageSender {
 
  protected:
   IPCMessageSender();
-
-  DISALLOW_COPY_AND_ASSIGN(IPCMessageSender);
 };
 
 }  // namespace extensions

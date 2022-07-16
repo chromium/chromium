@@ -23,6 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_ELEMENT_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
@@ -183,9 +184,20 @@ class CORE_EXPORT HTMLElement : public Element {
                            CSSPropertyID,
                            const String& color);
 
+  // This corresponds to:
+  //  'map to the aspect-ratio property (using dimension rules)'
+  // described by:
+  // https://html.spec.whatwg.org/multipage/rendering.html#map-to-the-aspect-ratio-property-(using-dimension-rules)
   void ApplyAspectRatioToStyle(const AtomicString& width,
                                const AtomicString& height,
                                MutableCSSPropertyValueSet*);
+  // This corresponds to:
+  //  'map to the aspect-ratio property'
+  // described by:
+  // https://html.spec.whatwg.org/multipage/rendering.html#map-to-the-aspect-ratio-property
+  void ApplyIntegerAspectRatioToStyle(const AtomicString& width,
+                                      const AtomicString& height,
+                                      MutableCSSPropertyValueSet*);
   void ApplyAlignmentAttributeToStyle(const AtomicString&,
                                       MutableCSSPropertyValueSet*);
   void ApplyBorderAttributeToStyle(const AtomicString&,
@@ -221,14 +233,20 @@ class CORE_EXPORT HTMLElement : public Element {
 
   void MapLanguageAttributeToLocale(const AtomicString&,
                                     MutableCSSPropertyValueSet*);
+  void ApplyAspectRatioToStyle(double width,
+                               double height,
+                               MutableCSSPropertyValueSet* style);
 
   DocumentFragment* TextToFragment(const String&, ExceptionState&);
 
   void AdjustDirectionalityIfNeededAfterChildAttributeChanged(Element* child);
   void AdjustDirectionalityIfNeededAfterChildrenChanged(
       const ChildrenChange& change);
-  TextDirection ResolveAutoDirectionality(bool& is_deferred,
-                                          Node* stay_within) const;
+
+  template <typename Traversal>
+  absl::optional<TextDirection> ResolveAutoDirectionality(
+      bool& is_deferred,
+      Node* stay_within) const;
 
   TranslateAttributeMode GetTranslateAttributeMode() const;
 

@@ -34,7 +34,7 @@ class InfobarBannerOverlayRequestCancelHandlerTest : public PlatformTest {
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     InfobarOverlayRequestInserter::CreateForWebState(
-        &web_state_, std::make_unique<FakeInfobarOverlayRequestFactory>());
+        &web_state_, &FakeInfobarOverlayRequestFactory);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
   }
 

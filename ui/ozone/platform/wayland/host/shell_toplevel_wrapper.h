@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/platform_window/extensions/wayland_extension.h"
 
 namespace gfx {
 class Rect;
@@ -94,6 +95,14 @@ class ShellToplevelWrapper {
   // wayland compositor to update the decoration mode for a surface associated
   // with this top level window.
   virtual void SetDecoration(DecorationMode decoration) = 0;
+
+  // Request that the server set the orientation lock to the provided lock type.
+  // This is only accepted if the requesting window is running in immersive
+  // fullscreen mode and in a tablet configuration.
+  virtual void Lock(WaylandOrientationLockType lock_type) = 0;
+
+  // Request that the server remove the applied orientation lock.
+  virtual void Unlock() = 0;
 };
 
 // Look for |value| in |wl_array| in C++ style.

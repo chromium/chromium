@@ -21,7 +21,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/extensions/api/module/module.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -38,6 +37,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "crypto/sha2.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -100,6 +100,13 @@ int CalculateActivePingDays(const base::Time& last_active_ping_day,
   return SanitizeDays((base::Time::Now() - last_active_ping_day).InDays());
 }
 
+std::string GetUpdateURLData(const extensions::ExtensionPrefs* prefs,
+                             const std::string& extension_id) {
+  std::string data;
+  prefs->ReadPrefAsString(extension_id, extensions::kUpdateURLData, &data);
+  return data;
+}
+
 }  // namespace
 
 namespace extensions {
@@ -148,7 +155,7 @@ ExtensionUpdater::ExtensionUpdater(
     const ExtensionDownloader::Factory& downloader_factory)
     : service_(service),
       downloader_factory_(downloader_factory),
-      frequency_(base::TimeDelta::FromSeconds(frequency_seconds)),
+      frequency_(base::Seconds(frequency_seconds)),
       extension_prefs_(extension_prefs),
       prefs_(prefs),
       profile_(profile),
@@ -160,7 +167,7 @@ ExtensionUpdater::ExtensionUpdater(
   frequency_seconds = std::max(frequency_seconds, kMinUpdateFrequencySeconds);
 #endif
   frequency_seconds = std::min(frequency_seconds, kMaxUpdateFrequencySeconds);
-  frequency_ = base::TimeDelta::FromSeconds(frequency_seconds);
+  frequency_ = base::Seconds(frequency_seconds);
 }
 
 ExtensionUpdater::~ExtensionUpdater() {
@@ -214,7 +221,7 @@ void ExtensionUpdater::ScheduleNextCheck() {
   DCHECK(alive_);
   // Jitter the frequency by +/- 20%.
   const double jitter_factor = RandDouble() * 0.4 + 0.8;
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(
+  base::TimeDelta delay = base::Milliseconds(
       static_cast<int64_t>(frequency_.InMilliseconds() * jitter_factor));
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostDelayedTask(FROM_HERE,
@@ -333,8 +340,7 @@ bool ExtensionUpdater::AddExtensionToDownloader(
   // communicate to the gallery update servers.
   std::string update_url_data;
   if (!ManifestURL::UpdatesFromGallery(&extension))
-    update_url_data =
-        extension::GetUpdateURLData(extension_prefs_, extension.id());
+    update_url_data = GetUpdateURLData(extension_prefs_, extension.id());
 
   return downloader_->AddPendingExtensionWithVersion(
       extension.id(), update_url, extension.location(),
@@ -443,9 +449,11 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
                     params.fetch_priority, &update_check_params);
     ExtensionSet remotely_disabled_extensions;
     for (auto extension : registry_->blocklisted_extensions()) {
-      if (extension_prefs_->HasDisableReason(
-              extension->id(), disable_reason::DISABLE_REMOTELY_FOR_MALWARE))
+      if (blocklist_prefs::HasOmahaBlocklistState(
+              extension->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE,
+              extension_prefs_)) {
         remotely_disabled_extensions.Insert(extension);
+      }
     }
     AddToDownloader(&remotely_disabled_extensions, pending_ids, request_id,
                     params.fetch_priority, &update_check_params);

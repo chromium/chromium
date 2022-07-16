@@ -32,7 +32,7 @@ const base::Feature kTrimArcOnMemoryPressure{"TrimArcOnMemoryPressure",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kTrimArcVmOnMemoryPressure{
-    "TrimArcVmOnMemoryPressure", base::FEATURE_DISABLED_BY_DEFAULT};
+    "TrimArcVmOnMemoryPressure", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kTrimOnFreeze{"TrimOnFreeze",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
@@ -62,15 +62,17 @@ const base::FeatureParam<int> kArcProcessInactivityTimeSec = {
     &kTrimArcOnMemoryPressure, "ArcProcessInactivityTimeSec", 600};
 
 const base::FeatureParam<base::TimeDelta> kArcVmInactivityTimeMs = {
-    &kTrimArcVmOnMemoryPressure, "ArcVmInactivityTimeMs",
-    base::TimeDelta::FromSeconds(600)};
+    &kTrimArcVmOnMemoryPressure, "ArcVmInactivityTimeMs", base::Seconds(1200)};
 
 const base::FeatureParam<base::TimeDelta> kArcVmTrimBackoffTimeMs = {
-    &kTrimArcVmOnMemoryPressure, "ArcVmTrimBackoffTimeMs",
-    base::TimeDelta::FromSeconds(900)};
+    &kTrimArcVmOnMemoryPressure, "ArcVmTrimBackoffTimeMs", base::Seconds(1800)};
 
 const base::FeatureParam<bool> kTrimArcVmOnCriticalPressure = {
     &kTrimArcVmOnMemoryPressure, "TrimArcVmOnCriticalPressure", false};
+
+const base::FeatureParam<bool> kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot = {
+    &kTrimArcVmOnMemoryPressure, "TrimArcVmOnFirstMemoryPressureAfterArcVmBoot",
+    false};
 
 // Specifies the minimum amount of time a parent frame node must be invisible
 // before considering the process node for working set trim.
@@ -84,21 +86,21 @@ const base::FeatureParam<int> kNodeTrimBackoffTimeSec = {
 
 TrimOnMemoryPressureParams::TrimOnMemoryPressureParams() = default;
 TrimOnMemoryPressureParams::TrimOnMemoryPressureParams(
-    const TrimOnMemoryPressureParams& other) = default;
+    const TrimOnMemoryPressureParams&) = default;
+TrimOnMemoryPressureParams& TrimOnMemoryPressureParams::operator=(
+    const TrimOnMemoryPressureParams&) = default;
 
 TrimOnMemoryPressureParams TrimOnMemoryPressureParams::GetParams() {
   TrimOnMemoryPressureParams params;
   params.graph_walk_backoff_time =
-      base::TimeDelta::FromSeconds(kGraphWalkBackoffTimeSec.Get());
-  params.node_invisible_time =
-      base::TimeDelta::FromSeconds(kNodeInvisibileTimeSec.Get());
-  params.node_trim_backoff_time =
-      base::TimeDelta::FromSeconds(kNodeTrimBackoffTimeSec.Get());
+      base::Seconds(kGraphWalkBackoffTimeSec.Get());
+  params.node_invisible_time = base::Seconds(kNodeInvisibileTimeSec.Get());
+  params.node_trim_backoff_time = base::Seconds(kNodeTrimBackoffTimeSec.Get());
 
   params.arc_process_trim_backoff_time =
-      base::TimeDelta::FromSeconds(kArcProcessTrimBackoffTimeSec.Get());
+      base::Seconds(kArcProcessTrimBackoffTimeSec.Get());
   params.arc_process_list_fetch_backoff_time =
-      base::TimeDelta::FromSeconds(kArcProcessListFetchBackoffTimeSec.Get());
+      base::Seconds(kArcProcessListFetchBackoffTimeSec.Get());
   params.trim_arc_system_processes = kTrimArcSystemProcesses.Get();
   params.trim_arc_app_processes = kTrimArcAppProcesses.Get();
   params.trim_arc_aggressive = kTrimArcAggressive.Get();
@@ -106,8 +108,7 @@ TrimOnMemoryPressureParams TrimOnMemoryPressureParams::GetParams() {
 
   const int arc_inactivity_time = kArcProcessInactivityTimeSec.Get();
   if (arc_inactivity_time > 0) {
-    params.arc_process_inactivity_time =
-        base::TimeDelta::FromSeconds(arc_inactivity_time);
+    params.arc_process_inactivity_time = base::Seconds(arc_inactivity_time);
   } else {
     // This causes us to ignore the last activity time if it was not configured.
     params.arc_process_inactivity_time = base::TimeDelta::Min();
@@ -116,6 +117,8 @@ TrimOnMemoryPressureParams TrimOnMemoryPressureParams::GetParams() {
   params.arcvm_inactivity_time = kArcVmInactivityTimeMs.Get();
   params.arcvm_trim_backoff_time = kArcVmTrimBackoffTimeMs.Get();
   params.trim_arcvm_on_critical_pressure = kTrimArcVmOnCriticalPressure.Get();
+  params.trim_arcvm_on_first_memory_pressure_after_arcvm_boot =
+      kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot.Get();
 
   return params;
 }

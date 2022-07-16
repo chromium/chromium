@@ -10,22 +10,22 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/mojom/accelerated_widget_mojom_traits.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom.h"
 #include "ui/gfx/mojom/presentation_feedback_mojom_traits.h"
 #include "ui/gfx/mojom/traits_test_service.mojom.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/rrect_f.h"
 #include "ui/gfx/selection_bound.h"
-#include "ui/gfx/transform.h"
 
 namespace gfx {
 
 namespace {
 
 gfx::AcceleratedWidget CastToAcceleratedWidget(int i) {
-#if defined(USE_OZONE) || defined(USE_X11) || defined(OS_APPLE)
+#if defined(USE_OZONE) || defined(OS_APPLE)
   return static_cast<gfx::AcceleratedWidget>(i);
 #else
   return reinterpret_cast<gfx::AcceleratedWidget>(i);
@@ -35,6 +35,9 @@ gfx::AcceleratedWidget CastToAcceleratedWidget(int i) {
 class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
  public:
   StructTraitsTest() {}
+
+  StructTraitsTest(const StructTraitsTest&) = delete;
+  StructTraitsTest& operator=(const StructTraitsTest&) = delete;
 
  protected:
   mojo::Remote<mojom::TraitsTestService> GetTraitsTestRemote() {
@@ -67,8 +70,6 @@ class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
 
   base::test::TaskEnvironment task_environment_;
   mojo::ReceiverSet<TraitsTestService> traits_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(StructTraitsTest);
 };
 
 }  // namespace
@@ -239,18 +240,14 @@ TEST_F(StructTraitsTest, BufferUsage) {
 }
 
 TEST_F(StructTraitsTest, PresentationFeedback) {
-  base::TimeTicks timestamp =
-      base::TimeTicks() + base::TimeDelta::FromSeconds(12);
-  base::TimeDelta interval = base::TimeDelta::FromMilliseconds(23);
+  base::TimeTicks timestamp = base::TimeTicks() + base::Seconds(12);
+  base::TimeDelta interval = base::Milliseconds(23);
   uint32_t flags =
       PresentationFeedback::kVSync | PresentationFeedback::kZeroCopy;
   PresentationFeedback input{timestamp, interval, flags};
-  input.available_timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(20);
-  input.ready_timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(21);
-  input.latch_timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(22);
+  input.available_timestamp = base::TimeTicks() + base::Milliseconds(20);
+  input.ready_timestamp = base::TimeTicks() + base::Milliseconds(21);
+  input.latch_timestamp = base::TimeTicks() + base::Milliseconds(22);
   PresentationFeedback output;
   mojo::test::SerializeAndDeserialize<gfx::mojom::PresentationFeedback>(input,
                                                                         output);

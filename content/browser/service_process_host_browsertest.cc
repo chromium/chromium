@@ -18,17 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-// Provides sandbox for echo::mojom::EchoService.
-namespace echo {
-namespace mojom {
-class EchoService;
-}
-}  // namespace echo
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<echo::mojom::EchoService>() {
-  return sandbox::policy::SandboxType::kUtility;
-}
 
 namespace content {
 
@@ -37,6 +26,10 @@ using ServiceProcessHostBrowserTest = ContentBrowserTest;
 class EchoServiceProcessObserver : public ServiceProcessHost::Observer {
  public:
   EchoServiceProcessObserver() { ServiceProcessHost::AddObserver(this); }
+
+  EchoServiceProcessObserver(const EchoServiceProcessObserver&) = delete;
+  EchoServiceProcessObserver& operator=(const EchoServiceProcessObserver&) =
+      delete;
 
   ~EchoServiceProcessObserver() override {
     ServiceProcessHost::RemoveObserver(this);
@@ -67,8 +60,6 @@ class EchoServiceProcessObserver : public ServiceProcessHost::Observer {
   base::RunLoop launch_loop_;
   base::RunLoop death_loop_;
   base::RunLoop crash_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(EchoServiceProcessObserver);
 };
 
 IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, Launch) {
@@ -148,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, IdleTimeout) {
   auto echo_service = ServiceProcessHost::Launch<echo::mojom::EchoService>();
 
   base::RunLoop wait_for_idle_loop;
-  constexpr auto kTimeout = base::TimeDelta::FromSeconds(1);
+  constexpr auto kTimeout = base::Seconds(1);
   echo_service.set_idle_handler(kTimeout, base::BindLambdaForTesting([&] {
                                   wait_for_idle_loop.Quit();
                                   echo_service.reset();

@@ -17,12 +17,11 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/native_library.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
@@ -35,6 +34,11 @@ namespace {
 class NetErrorDiagnosticsDialog : public ui::BaseShellDialogImpl {
  public:
   NetErrorDiagnosticsDialog() {}
+
+  NetErrorDiagnosticsDialog(const NetErrorDiagnosticsDialog&) = delete;
+  NetErrorDiagnosticsDialog& operator=(const NetErrorDiagnosticsDialog&) =
+      delete;
+
   ~NetErrorDiagnosticsDialog() override {}
 
   // NetErrorDiagnosticsDialog implementation.
@@ -78,8 +82,6 @@ class NetErrorDiagnosticsDialog : public ui::BaseShellDialogImpl {
     EndRun(std::move(run_state));
     std::move(callback).Run();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(NetErrorDiagnosticsDialog);
 };
 
 }  // namespace

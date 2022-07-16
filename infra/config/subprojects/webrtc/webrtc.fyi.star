@@ -43,7 +43,6 @@ defaults.execution_timeout.set(2 * time.hour)
 defaults.os.set(os.LINUX_XENIAL_OR_BIONIC_REMOVE)
 defaults.pool.set("luci.chromium.webrtc.fyi")
 defaults.service_account.set("chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com")
-defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 defaults.triggered_by.set(["webrtc-gitiles-trigger"])
 
 # Builders are defined in lexicographic order by name
@@ -64,13 +63,13 @@ builder(
 )
 
 builder(
-    name = "WebRTC Chromium FYI Android Tests (dbg) (L Nexus5)",
-    triggered_by = ["WebRTC Chromium FYI Android Builder (dbg)"],
+    name = "WebRTC Chromium FYI Android Tests (dbg) (M Nexus5X)",
+    triggered_by = ["WebRTC Chromium FYI Android Builder ARM64 (dbg)"],
 )
 
 builder(
-    name = "WebRTC Chromium FYI Android Tests (dbg) (M Nexus5X)",
-    triggered_by = ["WebRTC Chromium FYI Android Builder ARM64 (dbg)"],
+    name = "WebRTC Chromium FYI Android Tests (dbg) (N Nexus5X)",
+    triggered_by = ["WebRTC Chromium FYI Android Builder (dbg)"],
 )
 
 builder(

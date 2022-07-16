@@ -1,0 +1,103 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/swift_source_set.gni")
+
+source_set("overflow_menu") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "overflow_menu_mediator.h",
+    "overflow_menu_mediator.mm",
+  ]
+  deps = [
+    ":overflow_menu_swift",
+    "resources:overflow_menu_action_bookmark",
+    "resources:overflow_menu_action_edit_bookmark",
+    "resources:overflow_menu_action_find_in_page",
+    "resources:overflow_menu_action_help",
+    "resources:overflow_menu_action_incognito",
+    "resources:overflow_menu_action_new_tab",
+    "resources:overflow_menu_action_new_window",
+    "resources:overflow_menu_action_read_later",
+    "resources:overflow_menu_action_reload",
+    "resources:overflow_menu_action_report_issue",
+    "resources:overflow_menu_action_request_desktop",
+    "resources:overflow_menu_action_request_mobile",
+    "resources:overflow_menu_action_stop",
+    "resources:overflow_menu_action_text_zoom",
+    "resources:overflow_menu_action_translate",
+    "resources:overflow_menu_destination_bookmarks",
+    "resources:overflow_menu_destination_downloads",
+    "resources:overflow_menu_destination_history",
+    "resources:overflow_menu_destination_passwords",
+    "resources:overflow_menu_destination_reading_list",
+    "resources:overflow_menu_destination_recent_tabs",
+    "resources:overflow_menu_destination_settings",
+    "resources:overflow_menu_destination_site_info",
+    "resources:overflow_menu_footer_managed",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/language/ios/browser",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/profile_metrics",
+    "//components/translate/core/browser",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/browser/find_in_page",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/reading_list",
+    "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/ui/activity_services",
+    "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/browser_container:ui",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/default_promo:utils",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web/font_size",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/window_activities",
+    "//ios/web/common:user_agent",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+}
+
+swift_source_set("overflow_menu_swift") {
+  sources = [
+    "overflow_menu_action.swift",
+    "overflow_menu_action_group.swift",
+    "overflow_menu_action_list.swift",
+    "overflow_menu_action_row.swift",
+    "overflow_menu_action_section.swift",
+    "overflow_menu_destination.swift",
+    "overflow_menu_destination_list.swift",
+    "overflow_menu_destination_view.swift",
+    "overflow_menu_footer.swift",
+    "overflow_menu_footer_row.swift",
+    "overflow_menu_item.swift",
+    "overflow_menu_model.swift",
+    "overflow_menu_view.swift",
+    "overflow_menu_view_provider.swift",
+  ]
+
+  deps = [ "//ios/chrome/common/ui/colors:swift" ]
+
+  frameworks = [
+    "Foundation.framework",
+    "SwiftUI.framework",
+  ]
+}
+
+source_set("feature_flags") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "feature_flags.h",
+    "feature_flags.mm",
+  ]
+  deps = [ "//base" ]
+}

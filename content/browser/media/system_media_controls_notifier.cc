@@ -31,11 +31,9 @@ const int kMinImageSize = 71;
 const int kDesiredImageSize = 150;
 
 #if defined(OS_WIN)
-constexpr base::TimeDelta kScreenLockPollInterval =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kScreenLockPollInterval = base::Seconds(1);
 constexpr int kHideSmtcDelaySeconds = 5;
-constexpr base::TimeDelta kHideSmtcDelay =
-    base::TimeDelta::FromSeconds(kHideSmtcDelaySeconds);
+constexpr base::TimeDelta kHideSmtcDelay = base::Seconds(kHideSmtcDelaySeconds);
 #endif  // defined(OS_WIN)
 
 SystemMediaControlsNotifier::SystemMediaControlsNotifier(

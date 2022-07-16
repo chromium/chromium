@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/event_router_factory.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_system.h"
@@ -55,6 +56,9 @@ ExtensionSystemSharedFactory::ExtensionSystemSharedFactory()
   // IdentityManager for webstore authentication.
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(InstallStageTrackerFactory::GetInstance());
+  // ExtensionService (owned by the ExtensionSystem) depends on
+  // ExtensionHostRegistry.
+  DependsOn(ExtensionHostRegistry::GetFactory());
 }
 
 ExtensionSystemSharedFactory::~ExtensionSystemSharedFactory() {

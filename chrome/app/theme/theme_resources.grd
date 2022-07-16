@@ -51,6 +51,11 @@
         <structure type="chrome_scaled_image" name="IDR_ASH_SHELF_ICON_TASK_MANAGER" file="cros/task_manager.png" />
         <structure type="chrome_scaled_image" name="IDR_ASH_SHELF_LIST_BROWSER" file="cros/window_switcher_icon_normal.png" />
         <structure type="chrome_scaled_image" name="IDR_ASH_SHELF_LIST_INCOGNITO_BROWSER" file="cros/window_switcher_icon_incognito.png" />
+      </if>
+      <if expr="toolkit_views">
+        <structure type="chrome_scaled_image" name="IDR_AUTOFILL_OFFERS" file="common/autofill_offers.png" />
+      </if>
+      <if expr="chromeos">
         <structure type="chrome_scaled_image" name="IDR_AVATAR_HOLDER" file="cros/avatar_holder.png" />
         <structure type="chrome_scaled_image" name="IDR_AVATAR_HOLDER_MASK" file="cros/avatar_holder_mask.png" />
       </if>
@@ -106,7 +111,7 @@
       <if expr="chromeos">
         <structure type="chrome_scaled_image" name="IDR_FATAL_ERROR" file="cros/fatal_error.png" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos or lacros">
         <structure type="chrome_scaled_image" name="IDR_FILETYPE_AUDIO" file="cros/file_types/audio.png" />
         <structure type="chrome_scaled_image" name="IDR_FILETYPE_GENERIC" file="cros/file_types/generic.png" />
         <structure type="chrome_scaled_image" name="IDR_FILETYPE_IMAGE" file="cros/file_types/image.png" />
@@ -264,10 +269,6 @@
         <structure type="chrome_scaled_image" name="IDR_SAVED_PASSWORDS_SAFE_STATE_DARK" file="common/passwords_safe_state_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_ADDRESS" file="common/save_address.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_ADDRESS_DARK" file="common/save_address_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD_MULTI_DEVICE" file="common/save_password_multi_device.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK" file="common/save_password_multi_device_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD_ONE_DEVICE" file="common/save_password_one_device.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD_ONE_DEVICE_DARK" file="common/save_password_one_device_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD" file="common/save_password.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD_DARK" file="common/save_password_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CARD" file="common/save_card.png" />
@@ -341,16 +342,12 @@
       <if expr="not is_android">
         <structure type="chrome_scaled_image" name="IDR_UPLOAD_SCANNING" file="common/upload_scanning.png" />
         <structure type="chrome_scaled_image" name="IDR_UPLOAD_SUCCESS" file="common/upload_success.png" />
+        <structure type="chrome_scaled_image" name="IDR_UPLOAD_WARNING" file="common/upload_warning.png" />
         <structure type="chrome_scaled_image" name="IDR_UPLOAD_VIOLATION" file="common/upload_violation.png" />
         <structure type="chrome_scaled_image" name="IDR_UPLOAD_SCANNING_DARK" file="common/upload_scanning_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_UPLOAD_SUCCESS_DARK" file="common/upload_success_dark.png" />
+        <structure type="chrome_scaled_image" name="IDR_UPLOAD_WARNING_DARK" file="common/upload_warning_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_UPLOAD_VIOLATION_DARK" file="common/upload_violation_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASTE_SCANNING" file="common/paste_scanning.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASTE_SUCCESS" file="common/paste_success.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASTE_VIOLATION" file="common/paste_violation.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASTE_SCANNING_DARK" file="common/paste_scanning_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASTE_SUCCESS_DARK" file="common/paste_success_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASTE_VIOLATION_DARK" file="common/paste_violation_dark.png" />
       </if>
       <if expr="not _google_chrome">
         <if expr="not is_android">

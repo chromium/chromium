@@ -6,7 +6,7 @@
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/run_loop.h"
-#include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
+#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -113,7 +113,7 @@ TEST_F(SystemNodeImplTest, ObserverWorks) {
 TEST_F(SystemNodeImplTest, MemoryPressureNotification) {
   MockObserver obs;
   graph()->AddSystemNodeObserver(&obs);
-  util::test::FakeMemoryPressureMonitor mem_pressure_monitor;
+  memory_pressure::test::FakeMemoryPressureMonitor mem_pressure_monitor;
 
   {
     base::RunLoop run_loop;

@@ -19,6 +19,10 @@ namespace notifier {
 class FakePushClient : public PushClient {
  public:
   FakePushClient();
+
+  FakePushClient(const FakePushClient&) = delete;
+  FakePushClient& operator=(const FakePushClient&) = delete;
+
   ~FakePushClient() override;
 
   // PushClient implementation.
@@ -54,8 +58,6 @@ class FakePushClient : public PushClient {
   std::string token_;
   std::vector<Notification> sent_notifications_;
   int sent_pings_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePushClient);
 };
 
 }  // namespace notifier

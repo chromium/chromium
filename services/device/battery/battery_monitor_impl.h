@@ -18,6 +18,10 @@ class BatteryMonitorImpl : public mojom::BatteryMonitor {
   static void Create(mojo::PendingReceiver<mojom::BatteryMonitor> receiver);
 
   BatteryMonitorImpl();
+
+  BatteryMonitorImpl(const BatteryMonitorImpl&) = delete;
+  BatteryMonitorImpl& operator=(const BatteryMonitorImpl&) = delete;
+
   ~BatteryMonitorImpl() override;
 
  private:
@@ -33,8 +37,6 @@ class BatteryMonitorImpl : public mojom::BatteryMonitor {
   QueryNextStatusCallback callback_;
   mojom::BatteryStatus status_;
   bool status_to_report_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryMonitorImpl);
 };
 
 }  // namespace device

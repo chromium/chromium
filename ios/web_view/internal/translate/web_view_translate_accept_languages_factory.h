@@ -28,6 +28,11 @@ class WebViewTranslateAcceptLanguagesFactory
       WebViewBrowserState* browser_state);
   static WebViewTranslateAcceptLanguagesFactory* GetInstance();
 
+  WebViewTranslateAcceptLanguagesFactory(
+      const WebViewTranslateAcceptLanguagesFactory&) = delete;
+  WebViewTranslateAcceptLanguagesFactory& operator=(
+      const WebViewTranslateAcceptLanguagesFactory&) = delete;
+
  private:
   friend class base::NoDestructor<WebViewTranslateAcceptLanguagesFactory>;
 
@@ -39,8 +44,6 @@ class WebViewTranslateAcceptLanguagesFactory
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewTranslateAcceptLanguagesFactory);
 };
 
 }  // namespace ios_web_view

@@ -98,10 +98,9 @@ std::u16string GetLocalizedString(int resource_id) {
       resource_id);
 }
 
-// Returns the label to display for the custom data contained within |data|.
-std::u16string GetLabelForCustomData(const ui::ClipboardData& data) {
-  // Currently the only supported type of custom data is file system data. This
-  // code should not be reached if `data` does not contain file system data.
+// Returns label to display for the file system data contained within |data|.
+std::u16string GetLabelForFileSystemData(const ui::ClipboardData& data) {
+  // This code should not be reached if `data` doesn't contain file system data.
   std::u16string sources;
   std::vector<base::StringPiece16> source_list;
   ClipboardHistoryUtil::GetSplitFileSystemData(data, &source_list, &sources);
@@ -176,17 +175,16 @@ std::u16string ClipboardHistoryResourceManager::GetLabel(
     case ui::ClipboardInternalFormat::kRtf:
       RecordPlaceholderString(ClipboardHistoryPlaceholderStringType::kRtf);
       return GetLocalizedString(IDS_CLIPBOARD_MENU_RTF_CONTENT);
-    case ui::ClipboardInternalFormat::kFilenames:
-      DCHECK(!data.filenames().empty());
-      return base::UTF8ToUTF16(data.filenames()[0].display_name.value());
     case ui::ClipboardInternalFormat::kBookmark:
       return base::UTF8ToUTF16(data.bookmark_title());
     case ui::ClipboardInternalFormat::kWeb:
       RecordPlaceholderString(
           ClipboardHistoryPlaceholderStringType::kWebSmartPaste);
       return GetLocalizedString(IDS_CLIPBOARD_MENU_WEB_SMART_PASTE);
+    case ui::ClipboardInternalFormat::kFilenames:
     case ui::ClipboardInternalFormat::kCustom:
-      return GetLabelForCustomData(data);
+      // Currently the only supported type of custom data is file system data.
+      return GetLabelForFileSystemData(data);
   }
 }
 
@@ -272,7 +270,7 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
 
   // See if we have an |existing| item that will render the same as |item|.
   auto it = std::find_if(items.begin(), items.end(), [&](const auto& existing) {
-    return &existing != &item && existing.data().bitmap().isNull() &&
+    return &existing != &item && existing.data().png().empty() &&
            existing.data().markup_data() == item.data().markup_data();
   });
 

@@ -283,6 +283,14 @@ void StylePropertyMap::set(
 
   DCHECK(IsValidCSSPropertyID(property_id));
   const CSSProperty& property = CSSProperty::Get(property_id);
+
+  // Descriptors (like 'src') have CSSProperty instances, but are not
+  // valid properties in this context.
+  if (!property.IsProperty()) {
+    exception_state.ThrowTypeError("Invalid propertyName: " + property_name);
+    return;
+  }
+
   if (property.IsShorthand()) {
     if (values.size() != 1) {
       exception_state.ThrowTypeError("Invalid type for property");

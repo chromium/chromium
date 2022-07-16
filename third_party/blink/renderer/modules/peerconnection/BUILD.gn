@@ -127,6 +127,8 @@ blink_modules_sources("peerconnection") {
     "rtc_void_request_promise_impl.h",
     "rtc_void_request_script_promise_resolver_impl.cc",
     "rtc_void_request_script_promise_resolver_impl.h",
+    "speed_limit_uma_listener.cc",
+    "speed_limit_uma_listener.h",
     "thermal_resource.cc",
     "thermal_resource.h",
     "thermal_uma_listener.cc",
@@ -152,6 +154,7 @@ blink_modules_sources("peerconnection") {
     "//third_party/blink/renderer/modules/crypto",
     "//third_party/blink/renderer/modules/mediastream",
     "//third_party/blink/renderer/modules/webrtc",
+    "//third_party/re2",
   ]
 
   allow_circular_includes_from =

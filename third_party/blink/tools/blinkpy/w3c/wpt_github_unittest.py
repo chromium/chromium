@@ -41,8 +41,10 @@ class WPTGitHubTest(unittest.TestCase):
                 pr_history_window=MAX_PR_HISTORY_WINDOW + 1)
 
     def test_auth_token(self):
-        self.assertEqual(self.wpt_github.auth_token(),
-                         base64.encodestring('rutabaga:decafbad').strip())
+        self.assertEqual(
+            self.wpt_github.auth_token(),
+            base64.encodestring(
+                'rutabaga:decafbad'.encode('utf-8')).strip().decode('utf-8'))
 
     def test_extract_link_next(self):
         link_header = (

@@ -45,7 +45,7 @@ absl::optional<PatternProvider::Map> GetConfigurationFromJsonObject(
 // into a valid map used in |PatternProvider| and swap it in for further use.
 // The callback is used as a signal for testing.
 void PopulateFromResourceBundle(
-    base::OnceClosure done_callback = base::DoNothing::Once());
+    base::OnceClosure done_callback = base::DoNothing());
 
 // Tries to parse the given JSON string into a valid map used in the
 // |PatternProvider| and swap it in for further use.

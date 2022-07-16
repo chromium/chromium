@@ -83,6 +83,8 @@ class FocusRingBrowserTest : public InProcessBrowserTest {
     platform_suffix = "_mac";
 #elif defined(OS_WIN)
     platform_suffix = "_win";
+#elif defined(OS_LINUX)
+    platform_suffix = "_linux";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
     platform_suffix = "_chromeos";
 #endif

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/test/base/web_ui_browser_test.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
@@ -23,6 +22,12 @@ class ScopedTestDialogAutoConfirm;
 class ExtensionSettingsUIBrowserTest : public WebUIBrowserTest {
  public:
   ExtensionSettingsUIBrowserTest();
+
+  ExtensionSettingsUIBrowserTest(const ExtensionSettingsUIBrowserTest&) =
+      delete;
+  ExtensionSettingsUIBrowserTest& operator=(
+      const ExtensionSettingsUIBrowserTest&) = delete;
+
   ~ExtensionSettingsUIBrowserTest() override;
 
  protected:
@@ -73,8 +78,6 @@ class ExtensionSettingsUIBrowserTest : public WebUIBrowserTest {
 
   std::unique_ptr<extensions::ScopedTestDialogAutoConfirm>
       uninstall_auto_confirm_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionSettingsUIBrowserTest);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSION_SETTINGS_BROWSERTEST_H_

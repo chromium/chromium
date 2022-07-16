@@ -33,31 +33,6 @@ namespace exo {
 // will use external wayland server.
 scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner_ = nullptr;
 
-class WaylandClientTestHelper::WaylandWatcher
-    : public base::MessagePumpLibevent::FdWatcher {
- public:
-  explicit WaylandWatcher(exo::wayland::Server* server)
-      : controller_(FROM_HERE), server_(server) {
-    base::CurrentUIThread::Get()->WatchFileDescriptor(
-        server_->GetFileDescriptor(),
-        /*persistent=*/true, base::MessagePumpLibevent::WATCH_READ,
-        &controller_, this);
-  }
-
-  // base::MessagePumpLibevent::FdWatcher:
-  void OnFileCanReadWithoutBlocking(int fd) override {
-    server_->Dispatch(base::TimeDelta());
-    server_->Flush();
-  }
-  void OnFileCanWriteWithoutBlocking(int fd) override { NOTREACHED(); }
-
- private:
-  base::MessagePumpLibevent::FdWatchController controller_;
-  exo::wayland::Server* const server_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandWatcher);
-};
-
 // static
 void WaylandClientTestHelper::SetUIThreadTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
@@ -114,12 +89,10 @@ void WaylandClientTestHelper::SetUpOnUIThread(base::WaitableEvent* event) {
   display_ = std::make_unique<Display>(nullptr, nullptr, nullptr, nullptr);
   wayland_server_ = exo::wayland::Server::Create(display_.get());
   DCHECK(wayland_server_);
-  wayland_watcher_ = std::make_unique<WaylandWatcher>(wayland_server_.get());
   event->Signal();
 }
 
 void WaylandClientTestHelper::TearDownOnUIThread(base::WaitableEvent* event) {
-  wayland_watcher_.reset();
   wayland_server_.reset();
   display_.reset();
   wm_helper_.reset();

@@ -36,6 +36,10 @@ constexpr char kTestServiceName[] = "testServiceName";
 }  // namespace
 
 class AutoConnectNotifierTest : public AshTestBase {
+ public:
+  AutoConnectNotifierTest(const AutoConnectNotifierTest&) = delete;
+  AutoConnectNotifierTest& operator=(const AutoConnectNotifierTest&) = delete;
+
  protected:
   AutoConnectNotifierTest() = default;
   ~AutoConnectNotifierTest() override = default;
@@ -99,8 +103,6 @@ class AutoConnectNotifierTest : public AshTestBase {
       network_handler_test_helper_;
   std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoConnectNotifierTest);
 };
 
 TEST_F(AutoConnectNotifierTest, NoExplicitConnectionRequested) {

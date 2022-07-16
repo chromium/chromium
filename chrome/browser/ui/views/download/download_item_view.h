@@ -319,6 +319,14 @@ class DownloadItemView : public views::View,
   base::ScopedObservation<DownloadUIModel, DownloadUIModel::Observer>
       observation_{this};
 
+  // Whether or not a histogram has been emitted recording that the dropdown
+  // button shown.
+  bool dropdown_button_shown_recorded_ = false;
+
+  // Whether or not a histogram has been emitted recording that the dropdown
+  // button was pressed.
+  bool dropdown_button_pressed_recorded_ = false;
+
   // Method factory used to delay reenabling of the item when opening the
   // downloaded file.
   base::WeakPtrFactory<DownloadItemView> weak_ptr_factory_{this};

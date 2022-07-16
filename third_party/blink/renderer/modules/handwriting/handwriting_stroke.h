@@ -21,6 +21,10 @@ class MODULES_EXPORT HandwritingStroke final : public ScriptWrappable {
 
  public:
   HandwritingStroke();
+
+  HandwritingStroke(const HandwritingStroke&) = delete;
+  HandwritingStroke& operator=(const HandwritingStroke&) = delete;
+
   ~HandwritingStroke() override;
 
   static HandwritingStroke* Create();
@@ -34,8 +38,6 @@ class MODULES_EXPORT HandwritingStroke final : public ScriptWrappable {
 
  private:
   HeapVector<Member<const HandwritingPoint>> points_;
-
-  DISALLOW_COPY_AND_ASSIGN(HandwritingStroke);
 };
 
 }  // namespace blink

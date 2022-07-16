@@ -41,6 +41,10 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener,
   PasswordManagerPorter(password_manager::CredentialProviderInterface*
                             credential_provider_interface,
                         ProgressCallback on_export_progress_callback);
+
+  PasswordManagerPorter(const PasswordManagerPorter&) = delete;
+  PasswordManagerPorter& operator=(const PasswordManagerPorter&) = delete;
+
   ~PasswordManagerPorter() override;
 
   void set_web_contents(content::WebContents* web_contents) {
@@ -103,8 +107,6 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener,
 
   // Caching the current WebContents for when PresentFileSelector is called.
   content::WebContents* web_contents_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerPorter);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_MANAGER_PORTER_H_

@@ -180,4 +180,10 @@ sync_access_handle_test((t, handle) => {
   }
 }, 'Test read at an offset');
 
+sync_access_handle_test((t, handle) => {
+  const readBuffer = new Uint8Array(24);
+  assert_throws_dom(
+    'NotSupportedError', () => handle.read(readBuffer, { at: -1 }));
+}, 'Test reading at a negative offset fails.');
+
 done();

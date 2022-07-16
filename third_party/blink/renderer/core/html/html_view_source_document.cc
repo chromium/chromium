@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
@@ -89,6 +90,10 @@ void HTMLViewSourceDocument::CreateContainingTable() {
   auto* html = MakeGarbageCollected<HTMLHtmlElement>(*this);
   ParserAppendChild(html);
   auto* head = MakeGarbageCollected<HTMLHeadElement>(*this);
+  auto* meta = MakeGarbageCollected<HTMLMetaElement>(*this);
+  meta->setAttribute(html_names::kNameAttr, "color-scheme");
+  meta->setAttribute(html_names::kContentAttr, "light dark");
+  head->ParserAppendChild(meta);
   html->ParserAppendChild(head);
   auto* body = MakeGarbageCollected<HTMLBodyElement>(*this);
   html->ParserAppendChild(body);

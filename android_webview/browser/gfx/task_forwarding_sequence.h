@@ -27,6 +27,10 @@ class TaskForwardingSequence : public gpu::SingleTaskSequence {
  public:
   explicit TaskForwardingSequence(TaskQueueWebView* task_queue,
                                   gpu::SyncPointManager* sync_point_manager);
+
+  TaskForwardingSequence(const TaskForwardingSequence&) = delete;
+  TaskForwardingSequence& operator=(const TaskForwardingSequence&) = delete;
+
   ~TaskForwardingSequence() override;
 
   // SingleTaskSequence implementation.
@@ -62,8 +66,6 @@ class TaskForwardingSequence : public gpu::SingleTaskSequence {
   TaskQueueWebView* const task_queue_;
   gpu::SyncPointManager* const sync_point_manager_;
   scoped_refptr<gpu::SyncPointOrderData> sync_point_order_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskForwardingSequence);
 };
 
 }  // namespace android_webview

@@ -45,12 +45,19 @@ LayoutMultiColumnSet* LayoutMultiColumnSet::CreateAnonymous(
     LayoutFlowThread& flow_thread,
     const ComputedStyle& parent_style) {
   Document& document = flow_thread.GetDocument();
-  LayoutMultiColumnSet* layout_object = new LayoutMultiColumnSet(&flow_thread);
+  LayoutMultiColumnSet* layout_object =
+      MakeGarbageCollected<LayoutMultiColumnSet>(&flow_thread);
   layout_object->SetDocumentForAnonymous(&document);
   layout_object->SetStyle(
       document.GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent_style, EDisplay::kBlock));
   return layout_object;
+}
+
+void LayoutMultiColumnSet::Trace(Visitor* visitor) const {
+  visitor->Trace(fragmentainer_groups_);
+  visitor->Trace(flow_thread_);
+  LayoutBlockFlow::Trace(visitor);
 }
 
 unsigned LayoutMultiColumnSet::FragmentainerGroupIndexAtFlowThreadOffset(

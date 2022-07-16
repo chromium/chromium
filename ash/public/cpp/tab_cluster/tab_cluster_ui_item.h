@@ -32,6 +32,8 @@ class ASH_PUBLIC_EXPORT TabClusterUIItem {
     std::string source;
     // The cluster to which the tab belongs.
     int cluster_id = -1;
+    // The boundary strength of the cluster.
+    double boundary_strength = 0.0;
     // The browser window that holds the tab's contents.
     aura::Window* browser_window = nullptr;
   };
@@ -48,6 +50,8 @@ class ASH_PUBLIC_EXPORT TabClusterUIItem {
 
   Info current_info() const { return current_info_; }
   Info old_info() const { return old_info_; }
+  void SetCurrentClusterId(int cluster_id);
+  void SetCurrentBoundaryStrength(double boundary_strength);
 
  private:
   // Current tab item info.

@@ -17,8 +17,8 @@
 
 constexpr notifications::SchedulerClientType kNotificationType =
     notifications::SchedulerClientType::kReadingList;
-const base::TimeDelta kDeliverStartTimeDelta = base::TimeDelta::FromDays(7);
-const base::TimeDelta kDeliverEndTimeDelta = base::TimeDelta::FromMinutes(5);
+const base::TimeDelta kDeliverStartTimeDelta = base::Days(7);
+const base::TimeDelta kDeliverEndTimeDelta = base::Minutes(5);
 
 ReadingListNotificationService::Config::Config() = default;
 ReadingListNotificationService::Config::~Config() = default;

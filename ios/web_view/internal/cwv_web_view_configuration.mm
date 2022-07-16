@@ -8,7 +8,7 @@
 
 #include "base/threading/thread_restrictions.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/browser/password_store_impl.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_data_manager_internal.h"
@@ -131,7 +131,7 @@ NSHashTable<CWVWebViewConfiguration*>* gNonPersistentConfigurations = nil;
     autofill::PersonalDataManager* personalDataManager =
         ios_web_view::WebViewPersonalDataManagerFactory::GetForBrowserState(
             self.browserState);
-    scoped_refptr<password_manager::PasswordStore> passwordStore =
+    scoped_refptr<password_manager::PasswordStoreInterface> passwordStore =
         ios_web_view::WebViewAccountPasswordStoreFactory::GetForBrowserState(
             self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
     _autofillDataManager = [[CWVAutofillDataManager alloc]

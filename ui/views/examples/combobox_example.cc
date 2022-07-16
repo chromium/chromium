@@ -9,9 +9,11 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/examples/examples_window.h"
+#include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -38,7 +40,9 @@ class ComboboxModelExample : public ui::ComboboxModel {
 
 }  // namespace
 
-ComboboxExample::ComboboxExample() : ExampleBase("Combo Box") {}
+ComboboxExample::ComboboxExample()
+    : ExampleBase(l10n_util::GetStringUTF8(IDS_COMBOBOX_SELECT_LABEL).c_str()) {
+}
 
 ComboboxExample::~ComboboxExample() = default;
 
@@ -55,12 +59,16 @@ void ComboboxExample::CreateExampleView(View* container) {
                   .CopyAddressTo(&combobox_)
                   .SetOwnedModel(std::make_unique<ComboboxModelExample>())
                   .SetSelectedIndex(3)
+                  .SetAccessibleName(
+                      l10n_util::GetStringUTF16(IDS_COMBOBOX_NAME_1))
                   .SetCallback(base::BindRepeating(
                       &ComboboxExample::ValueChanged, base::Unretained(this))),
               Builder<Combobox>()
                   .SetOwnedModel(std::make_unique<ComboboxModelExample>())
                   .SetEnabled(false)
                   .SetSelectedIndex(4)
+                  .SetAccessibleName(
+                      l10n_util::GetStringUTF16(IDS_COMBOBOX_NAME_2))
                   .SetCallback(base::BindRepeating(
                       &ComboboxExample::ValueChanged, base::Unretained(this))))
           .Build();

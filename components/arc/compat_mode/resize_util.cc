@@ -176,14 +176,18 @@ void EnableResizingWithConfirmationIfNeeded(
 }
 
 ResizeCompatMode PredictCurrentMode(const views::Widget* widget) {
-  const aura::Window* window = widget->GetNativeWindow();
-  if (window->GetProperty(ash::kArcResizeLockTypeKey) ==
-      ash::ArcResizeLockType::RESIZABLE) {
+  return PredictCurrentMode(widget->GetNativeWindow());
+}
+
+ResizeCompatMode PredictCurrentMode(const aura::Window* window) {
+  const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
+  if (resize_lock_type == ash::ArcResizeLockType::NONE ||
+      resize_lock_type == ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE) {
     return ResizeCompatMode::kResizable;
   }
 
-  const int width = widget->GetWindowBoundsInScreen().width();
-  const int height = widget->GetWindowBoundsInScreen().height();
+  const int width = window->bounds().width();
+  const int height = window->bounds().height();
   // We don't use the exact size here to predict tablet or phone size because
   // the window size might be bigger than it due to the ARC app-side minimum
   // size constraints.

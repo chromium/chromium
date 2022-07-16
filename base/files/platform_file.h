@@ -38,6 +38,6 @@ constexpr PlatformFile kInvalidPlatformFile = -1;
 
 #endif
 
-}  // namespace
+}  // namespace base
 
 #endif  // BASE_FILES_PLATFORM_FILE_H_

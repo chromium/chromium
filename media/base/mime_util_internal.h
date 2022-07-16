@@ -10,7 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "build/build_config.h"
 #include "media/base/media_export.h"
 #include "media/base/mime_util.h"
 #include "media/base/video_codecs.h"
@@ -25,6 +25,10 @@ namespace internal {
 class MEDIA_EXPORT MimeUtil {
  public:
   MimeUtil();
+
+  MimeUtil(const MimeUtil&) = delete;
+  MimeUtil& operator=(const MimeUtil&) = delete;
+
   ~MimeUtil();
 
   enum Codec {
@@ -196,8 +200,6 @@ class MEDIA_EXPORT MimeUtil {
 
   // A map of mime_types and hash map of the supported codecs for the mime_type.
   MediaFormatMappings media_format_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MimeUtil);
 };
 
 }  // namespace internal

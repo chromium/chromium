@@ -25,8 +25,12 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
 
   MOCK_CONST_METHOD0(ShouldShowAccountStorageBubbleUi, bool());
 
+  MOCK_CONST_METHOD0(ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally,
+                     bool());
+
   MOCK_METHOD1(SetDefaultPasswordStore, void(const PasswordForm::Store& store));
   MOCK_CONST_METHOD0(GetDefaultPasswordStore, PasswordForm::Store());
+  MOCK_CONST_METHOD0(IsDefaultPasswordStoreSet, bool());
 
   MOCK_CONST_METHOD0(ComputePasswordAccountStorageUsageLevel,
                      metrics_util::PasswordAccountStorageUsageLevel());

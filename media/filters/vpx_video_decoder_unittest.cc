@@ -31,10 +31,13 @@ class VpxVideoDecoderTest : public testing::Test {
       : decoder_(new VpxVideoDecoder()),
         i_frame_buffer_(ReadTestDataFile("vp9-I-frame-320x240")) {}
 
+  VpxVideoDecoderTest(const VpxVideoDecoderTest&) = delete;
+  VpxVideoDecoderTest& operator=(const VpxVideoDecoderTest&) = delete;
+
   ~VpxVideoDecoderTest() override { Destroy(); }
 
   void Initialize() {
-    InitializeWithConfig(TestVideoConfig::Normal(kCodecVP9));
+    InitializeWithConfig(TestVideoConfig::Normal(VideoCodec::kVP9));
   }
 
   void InitializeWithConfigWithResult(const VideoDecoderConfig& config,
@@ -56,7 +59,7 @@ class VpxVideoDecoderTest : public testing::Test {
   }
 
   void Reinitialize() {
-    InitializeWithConfig(TestVideoConfig::Large(kCodecVP9));
+    InitializeWithConfig(TestVideoConfig::Large(VideoCodec::kVP9));
   }
 
   void Reset() {
@@ -172,9 +175,6 @@ class VpxVideoDecoderTest : public testing::Test {
 
   scoped_refptr<DecoderBuffer> i_frame_buffer_;
   OutputFrames output_frames_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VpxVideoDecoderTest);
 };
 
 TEST_F(VpxVideoDecoderTest, Initialize_Normal) {

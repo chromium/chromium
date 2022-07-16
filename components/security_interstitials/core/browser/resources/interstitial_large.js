@@ -101,7 +101,7 @@ function setupEvents() {
     $('body').classList.add('safe-browsing');
     // Override the default theme color.
     document.querySelector('meta[name=theme-color]').setAttribute('content',
-      'rgb(206, 52, 38)');
+      'rgb(217, 48, 37)');
   }
 
   $('icon').classList.add('icon');

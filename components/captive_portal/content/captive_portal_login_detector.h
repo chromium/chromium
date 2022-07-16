@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CAPTIVE_PORTAL_CONTENT_CAPTIVE_PORTAL_LOGIN_DETECTOR_H_
 #define COMPONENTS_CAPTIVE_PORTAL_CONTENT_CAPTIVE_PORTAL_LOGIN_DETECTOR_H_
 
-#include "base/macros.h"
 #include "components/captive_portal/content/captive_portal_service.h"
 
 namespace captive_portal {
@@ -22,6 +21,10 @@ class CaptivePortalLoginDetector {
  public:
   explicit CaptivePortalLoginDetector(
       CaptivePortalService* captive_portal_service);
+
+  CaptivePortalLoginDetector(const CaptivePortalLoginDetector&) = delete;
+  CaptivePortalLoginDetector& operator=(const CaptivePortalLoginDetector&) =
+      delete;
 
   ~CaptivePortalLoginDetector();
 
@@ -42,8 +45,6 @@ class CaptivePortalLoginDetector {
   // Page is on its first load since being tagged as a login tab.  Used to
   // prevent a second captive portal check on the first load of the login page.
   bool first_login_tab_load_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalLoginDetector);
 };
 
 }  // namespace captive_portal

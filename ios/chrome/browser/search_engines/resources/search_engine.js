@@ -3,22 +3,8 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Add functionality related to getting image data.
+ * @fileoverview Add functionality related to getting search engine details.
  */
-goog.provide('__crWeb.searchEngine');
-
-/**
- * Namespace for this file. It depends on |__gCrWeb| having already been
- * injected.
- */
-__gCrWeb.searchEngine = {};
-
-/**
- * Store common namespace object in a global __gCrWeb object referenced by a
- * string, so it does not get renamed by closure compiler during the
- * minification.
- */
-__gCrWeb['searchEngine'] = __gCrWeb.searchEngine;
 
 /* Beginning of anonymous object. */
 (function() {
@@ -290,8 +276,8 @@ document.addEventListener('submit', function(event) {
   }
   let url = generateSearchableUrl_(event.target);
   if (url) {
-    __gCrWeb.message.invokeOnHost(
-        {'command': 'searchEngine.searchableUrl', 'url': url});
+    __gCrWeb.common.sendWebKitMessage( 'SearchEngineMessage',
+        {'command': 'searchableUrl', 'url': url});
   }
 }, false);
 
@@ -306,8 +292,8 @@ function findOpenSearchLink() {
   let links = document.getElementsByTagName('link');
   for (let i = 0; i < links.length; ++i) {
     if (links[i].type == 'application/opensearchdescription+xml') {
-      __gCrWeb.message.invokeOnHost({
-        'command': 'searchEngine.openSearch',
+      __gCrWeb.common.sendWebKitMessage( 'SearchEngineMessage', {
+        'command': 'openSearch',
         'pageUrl': document.URL,
         'osddUrl': links[i].href
       });

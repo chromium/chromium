@@ -59,7 +59,7 @@ class AppInstall : public App {
   void GetVersionDone(scoped_refptr<UpdateService>,
                       const base::Version& version);
 
-  void InstallCandidateDone(int result);
+  void InstallCandidateDone(bool valid_version, int result);
 
   void WakeCandidate();
 

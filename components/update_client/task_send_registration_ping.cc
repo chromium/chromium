@@ -17,12 +17,10 @@ namespace update_client {
 
 TaskSendRegistrationPing::TaskSendRegistrationPing(
     scoped_refptr<UpdateEngine> update_engine,
-    const std::string& id,
-    const base::Version& version,
+    const CrxComponent& crx_component,
     Callback callback)
     : update_engine_(update_engine),
-      id_(id),
-      version_(version),
+      crx_component_(crx_component),
       callback_(std::move(callback)) {}
 
 TaskSendRegistrationPing::~TaskSendRegistrationPing() {
@@ -32,13 +30,13 @@ TaskSendRegistrationPing::~TaskSendRegistrationPing() {
 void TaskSendRegistrationPing::Run() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (id_.empty()) {
+  if (crx_component_.app_id.empty()) {
     TaskComplete(Error::INVALID_ARGUMENT);
     return;
   }
 
   update_engine_->SendRegistrationPing(
-      id_, version_,
+      crx_component_,
       base::BindOnce(&TaskSendRegistrationPing::TaskComplete, this));
 }
 
@@ -49,7 +47,7 @@ void TaskSendRegistrationPing::Cancel() {
 }
 
 std::vector<std::string> TaskSendRegistrationPing::GetIds() const {
-  return std::vector<std::string>{id_};
+  return std::vector<std::string>{crx_component_.app_id};
 }
 
 void TaskSendRegistrationPing::TaskComplete(Error error) {

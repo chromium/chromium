@@ -28,25 +28,7 @@ OSExchangeDataProviderNonBacked::~OSExchangeDataProviderNonBacked() = default;
 std::unique_ptr<OSExchangeDataProvider> OSExchangeDataProviderNonBacked::Clone()
     const {
   auto clone = std::make_unique<OSExchangeDataProviderNonBacked>();
-
-  clone->formats_ = formats_;
-  clone->string_ = string_;
-  clone->url_ = url_;
-  clone->title_ = title_;
-  clone->filenames_ = filenames_;
-  clone->pickle_data_ = pickle_data_;
-  // We skip copying the drag images.
-  clone->file_contents_filename_ = file_contents_filename_;
-  clone->file_contents_ = file_contents_;
-  clone->html_ = html_;
-  clone->base_url_ = base_url_;
-  clone->source_ =
-      source_ ? std::make_unique<ui::DataTransferEndpoint>(*source_.get())
-              : nullptr;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  clone->originated_from_renderer_ = originated_from_renderer_;
-#endif
-
+  CopyData(clone.get());
   return clone;
 }
 
@@ -278,6 +260,27 @@ void OSExchangeDataProviderNonBacked::SetSource(
 
 DataTransferEndpoint* OSExchangeDataProviderNonBacked::GetSource() const {
   return source_.get();
+}
+
+void OSExchangeDataProviderNonBacked::CopyData(
+    OSExchangeDataProviderNonBacked* provider) const {
+  DCHECK(provider);
+  provider->formats_ = formats_;
+  provider->string_ = string_;
+  provider->url_ = url_;
+  provider->title_ = title_;
+  provider->filenames_ = filenames_;
+  provider->pickle_data_ = pickle_data_;
+  provider->file_contents_filename_ = file_contents_filename_;
+  provider->file_contents_ = file_contents_;
+  provider->html_ = html_;
+  provider->base_url_ = base_url_;
+  provider->source_ =
+      source_ ? std::make_unique<DataTransferEndpoint>(*source_.get())
+              : nullptr;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  provider->originated_from_renderer_ = originated_from_renderer_;
+#endif
 }
 
 }  // namespace ui

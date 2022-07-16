@@ -52,7 +52,7 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext {
   bool HasPendingActivity() const override;
 
   ScriptPromise closeContext(ScriptState*, ExceptionState&);
-  bool IsContextClosed() const final;
+  bool IsContextCleared() const final;
 
   ScriptPromise suspendContext(ScriptState*);
   ScriptPromise resumeContext(ScriptState*, ExceptionState&);
@@ -207,7 +207,7 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext {
   // all that's needed.
   size_t total_audible_renders_ = 0;
 
-  SelfKeepAlive<AudioContext> keep_alive_;
+  SelfKeepAlive<AudioContext> keep_alive_{this};
 };
 
 }  // namespace blink

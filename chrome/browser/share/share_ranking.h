@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "build/build_config.h"
 #include "chrome/browser/share/proto/share_ranking_message.pb.h"
 #include "chrome/browser/share/share_history.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -47,13 +48,17 @@ class ShareRanking : public base::SupportsUserData::Data {
             const std::string& type,
             const std::vector<std::string>& available_on_system,
             unsigned int fold,
+            unsigned int length,
             bool persist_update,
             GetRankingCallback callback);
+
+  void Clear(const base::Time& start = base::Time(),
+             const base::Time& end = base::Time());
 
   // The core of the ranking algorithm, exposed as a pure function for ease of
   // testing and reasoning about the code. This function takes the existing
   // share history and ranking for this type, a set of all targets available on
-  // the current system, and a fold, and computes the new display ranking and
+  // the current system, and a length, and computes the new display ranking and
   // the new persistent ranking.
   //
   // TODO(ellyjones): Document (publicly) how this works and why.
@@ -63,7 +68,7 @@ class ShareRanking : public base::SupportsUserData::Data {
       const Ranking& old_ranking,
       const std::vector<std::string>& available_on_system,
       unsigned int fold,
-      bool fix_more,
+      unsigned int length,
       Ranking* display_ranking,
       Ranking* persisted_ranking);
 
@@ -85,6 +90,7 @@ class ShareRanking : public base::SupportsUserData::Data {
     std::string type;
     std::vector<std::string> available_on_system;
     unsigned int fold;
+    unsigned int length;
     bool persist_update;
     GetRankingCallback callback;
 

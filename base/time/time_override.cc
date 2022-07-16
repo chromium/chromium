@@ -17,21 +17,27 @@ ScopedTimeClockOverrides::ScopedTimeClockOverrides(
   DCHECK(!overrides_active_);
   overrides_active_ = true;
   if (time_override) {
-    internal::g_time_now_function = time_override;
-    internal::g_time_now_from_system_time_function = time_override;
+    internal::g_time_now_function.store(time_override,
+                                        std::memory_order_relaxed);
+    internal::g_time_now_from_system_time_function.store(
+        time_override, std::memory_order_relaxed);
   }
-  if (time_ticks_override)
-    internal::g_time_ticks_now_function = time_ticks_override;
-  if (thread_ticks_override)
-    internal::g_thread_ticks_now_function = thread_ticks_override;
+  if (time_ticks_override) {
+    internal::g_time_ticks_now_function.store(time_ticks_override,
+                                              std::memory_order_relaxed);
+  }
+  if (thread_ticks_override) {
+    internal::g_thread_ticks_now_function.store(thread_ticks_override,
+                                                std::memory_order_relaxed);
+  }
 }
 
 ScopedTimeClockOverrides::~ScopedTimeClockOverrides() {
-  internal::g_time_now_function = &TimeNowIgnoringOverride;
-  internal::g_time_now_from_system_time_function =
-      &TimeNowFromSystemTimeIgnoringOverride;
-  internal::g_time_ticks_now_function = &TimeTicksNowIgnoringOverride;
-  internal::g_thread_ticks_now_function = &ThreadTicksNowIgnoringOverride;
+  internal::g_time_now_function.store(&TimeNowIgnoringOverride);
+  internal::g_time_now_from_system_time_function.store(
+      &TimeNowFromSystemTimeIgnoringOverride);
+  internal::g_time_ticks_now_function.store(&TimeTicksNowIgnoringOverride);
+  internal::g_thread_ticks_now_function.store(&ThreadTicksNowIgnoringOverride);
   overrides_active_ = false;
 }
 

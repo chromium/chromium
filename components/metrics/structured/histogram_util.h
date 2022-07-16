@@ -24,11 +24,13 @@ enum class StructuredMetricsError {
   kKeyParseError = 6,
   kKeyWriteError = 7,
   kKeySerializationError = 8,
-  kEventReadError = 5,
-  kEventParseError = 6,
-  kEventWriteError = 7,
-  kEventSerializationError = 8,
-  kMaxValue = kEventSerializationError,
+  kEventReadError = 9,
+  kEventParseError = 10,
+  kEventWriteError = 11,
+  kEventSerializationError = 12,
+  kUninitializedClient = 13,
+  kInvalidEventParsed = 14,
+  kMaxValue = kInvalidEventParsed,
 };
 
 // Whether a single event was recorded correctly, or otherwise what error state
@@ -56,11 +58,6 @@ enum class KeyValidationState {
 
 void LogInternalError(StructuredMetricsError error);
 
-// Log an error on reading the JSONPrefStore from disk. A
-// PREF_READ_ERROR_NO_FILE is expected when a profile first logs in on a
-// particular device.
-void LogPrefReadError(PersistentPrefStore::PrefReadError error);
-
 void LogEventRecordingState(EventRecordingState state);
 
 void LogKeyValidation(KeyValidationState state);
@@ -68,6 +65,11 @@ void LogKeyValidation(KeyValidationState state);
 // Log how many structured metrics events were contained in a call to
 // ProvideCurrentSessionData.
 void LogNumEventsInUpload(int num_events);
+
+void LogClientInitializationSuccessful(bool success);
+
+// Logs that an event was recorded using the mojo API.
+void LogIsEventRecordedUsingMojo(bool used_mojo_api);
 
 }  // namespace structured
 }  // namespace metrics

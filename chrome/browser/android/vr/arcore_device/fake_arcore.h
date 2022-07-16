@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "device/vr/android/arcore/arcore.h"
@@ -21,6 +20,10 @@ namespace device {
 class FakeArCore : public ArCore {
  public:
   FakeArCore();
+
+  FakeArCore(const FakeArCore&) = delete;
+  FakeArCore& operator=(const FakeArCore&) = delete;
+
   ~FakeArCore() override;
 
   // ArCore implementation.
@@ -112,8 +115,6 @@ class FakeArCore : public ArCore {
   };
 
   std::unordered_map<uint64_t, FakeAnchorData> anchors_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeArCore);
 };
 
 class FakeArCoreFactory : public ArCoreFactory {

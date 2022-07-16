@@ -61,8 +61,7 @@ void SetBackgroundMode() {
   }
 }
 bool IsWowRedirectionActive() {
-  return base::win::OSInfo::GetInstance()->wow64_status() ==
-         base::win::OSInfo::WOW64_ENABLED;
+  return base::win::OSInfo::GetInstance()->IsWowX86OnAMD64();
 }
 
 bool IsX64Architecture() {

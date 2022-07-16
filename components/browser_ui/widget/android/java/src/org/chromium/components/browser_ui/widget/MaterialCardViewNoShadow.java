@@ -5,29 +5,28 @@
 package org.chromium.components.browser_ui.widget;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
+import android.widget.FrameLayout;
 
-import com.google.android.material.card.MaterialCardView;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /**
- * Extension of {@link MaterialCardView} that set outline provider to null
- * in order to remove shadow.
+ * Extension of {@link FrameLayout} that sets background resource to a rounded corner rectangle,
+ * with dynamic background color from ElevationOverlayProvider based on card elevation.
+ * Reuse the name of MaterialCardViewNoShadow to keep the same usage.
+ * But this class is no longer an extension of MaterialCardView.
  */
-public class MaterialCardViewNoShadow extends MaterialCardView {
-    /**
-     * Constructs an instance of MaterialCardViewNoShadow,
-     * which is an extension of {@link MaterialCardView} with shadow removed.
-     */
+public class MaterialCardViewNoShadow extends FrameLayout {
     public MaterialCardViewNoShadow(Context context, AttributeSet attrs) {
-        this(context, attrs, R.attr.materialCardViewStyle);
+        this(context, attrs, 0);
     }
 
-    /**
-     * Constructs an instance of MaterialCardViewNoShadow,
-     * which is an extension of {@link MaterialCardView} with shadow removed.
-     */
     public MaterialCardViewNoShadow(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.setOutlineProvider(null);
+        setBackgroundResource(R.drawable.card_with_corners_background);
+        GradientDrawable gradientDrawable = (GradientDrawable) getBackground();
+        gradientDrawable.setColor(
+                ChromeColors.getSurfaceColor(getContext(), R.dimen.card_elevation));
     }
 }

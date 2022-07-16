@@ -35,6 +35,9 @@ class MatchRequestsTask : public DatabaseTask {
       std::unique_ptr<BackgroundFetchRequestMatchParams> match_params,
       SettledFetchesCallback callback);
 
+  MatchRequestsTask(const MatchRequestsTask&) = delete;
+  MatchRequestsTask& operator=(const MatchRequestsTask&) = delete;
+
   ~MatchRequestsTask() override;
 
   // DatabaseTask implementation:
@@ -60,8 +63,6 @@ class MatchRequestsTask : public DatabaseTask {
   std::vector<blink::mojom::BackgroundFetchSettledFetchPtr> settled_fetches_;
 
   base::WeakPtrFactory<MatchRequestsTask> weak_factory_{this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(MatchRequestsTask);
 };
 
 }  // namespace background_fetch

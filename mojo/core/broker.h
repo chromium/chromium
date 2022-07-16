@@ -26,6 +26,10 @@ class Broker {
   // Otherwise, no initialization message is expected and this will not wait for
   // one.
   Broker(PlatformHandle handle, bool wait_for_channel_handle);
+
+  Broker(const Broker&) = delete;
+  Broker& operator=(const Broker&) = delete;
+
   ~Broker();
 
   // Returns the platform handle that should be used to establish a NodeChannel
@@ -49,8 +53,6 @@ class Broker {
   // with message ordering since we can only have one request at a time
   // in-flight.
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(Broker);
 };
 
 }  // namespace core

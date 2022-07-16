@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_THEME_HELPER_MAC_H_
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "content/public/browser/notification_observer.h"
@@ -31,6 +30,9 @@ class ThemeHelperMac : public NotificationObserver {
   // Return pointer to the singleton instance for the current process, or NULL
   // if none.
   static ThemeHelperMac* GetInstance();
+
+  ThemeHelperMac(const ThemeHelperMac&) = delete;
+  ThemeHelperMac& operator=(const ThemeHelperMac&) = delete;
 
   // Duplicates a handle to the read-only copy of the system color table,
   // which can be shared to sandboxed child processes.
@@ -69,8 +71,6 @@ class ThemeHelperMac : public NotificationObserver {
   base::ReadOnlySharedMemoryRegion read_only_color_map_;
 
   NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeHelperMac);
 };
 
 }  // namespace content

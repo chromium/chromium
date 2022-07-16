@@ -8,11 +8,11 @@
 #include "base/token.h"
 #include "build/build_config.h"
 #include "content/public/common/cdm_info.h"
-#include "media/mojo/mojom/cdm_service.mojom.h"
+#include "media/mojo/mojom/cdm_service.mojom-forward.h"
 #include "url/gurl.h"
 
 #if defined(OS_WIN)
-#include "media/mojo/mojom/media_foundation_service.mojom.h"
+#include "media/mojo/mojom/media_foundation_service.mojom-forward.h"
 #endif  // defined(OS_WIN)
 
 namespace content {

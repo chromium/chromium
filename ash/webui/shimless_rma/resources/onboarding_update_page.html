@@ -1,32 +1,48 @@
 <style include="cr-shared-style shimless-rma-shared">
-  iron-icon {
+  .large-icon {
+    height: 200px;
     width: 300px;
-    height: 500px;
+  }
+
+  .small-icon {
+    height: 20px;
+    width: 20px;
+  }
+
+  #performUpdateButton {
+    border-color: var(--google-blue-600);
+    border-radius: 12px;
   }
 </style>
 
 <base-page orientation="column">
   <div slot="header">
-    <!-- TODO(joonbug): Update strings for i18n -->
-    <h1>Make sure Chrome OS is up to date</h1>
-    <p>Update to the latest version of Chrome OS for an optimized repair process.</p>
-    <p id="versionInfo">{{currentVersionText_}}</p>
-    <p id="networkUnavailable" hidden$="{{networkAvailable}}">
+    <h1>[[i18n('osUpdateTitleText')]]</h1>
+    <div>[[updateNoticeMessage_]]</div>
+    <div id="versionInfo">
+      <iron-icon id="updateIcon" icon="[[getUpdateNoticeIcon_(updateAvailable_)]]"
+        class="small-icon">
+      </iron-icon>
+      [[currentVersionText_]]
+    </div>
+    <div id="progressMessage">
+      <paper-spinner-lite hidden$="[[!updateInProgress_]]" active>
+      </paper-spinner-lite>
+      [[updateProgressMessage_]]
+    </div>
+    <p id="networkUnavailable" hidden$="[[networkAvailable]]">
       To check if OS is up to date, connect to the internet in previous screen
     </p>
-    <p hidden$="{{!checkInProgress_}}">Checking OS version...</p>
-    <cr-button disabled="{{checkInProgress_}}"
-        hidden$="{{updateCheckButtonHidden_(networkAvailable, updateAvailable_)}}"
-        id="checkUpdate" on-click="onUpdateCheckButtonClicked_">
-      Check for updates
-    </cr-button>
-    <cr-button hidden$="{{!updateAvailable_}}"
-        id="performUpdate" on-click="onUpdateButtonClicked_">
-      Update version and restart
+    <cr-button id="performUpdateButton" disabled="[[updateInProgress_]]"
+        hidden$="[[!updateAvailable_]]" on-click="onUpdateButtonClicked_">
+        [[i18n('updateVersionRestartLabel')]]
+      <iron-icon id="restartIcon" icon="shimless-icon:update"
+          class="small-icon">
+      </iron-icon>
     </cr-button>
   </div>
   <div slot="body">
-    <!-- TODO(joonbug): Replace with real image -->
-    <iron-icon icon="shimless:shimless-placeholder"></iron-icon>
+    <!-- TODO(gavindodd): Replace with real image -->
+    <iron-icon icon="shimless:shimless-placeholder" class="large-icon"></iron-icon>
   </div>
 </base-page>

@@ -12,6 +12,7 @@
 #include "ash/assistant/ui/main_stage/assistant_ui_element_view_animator.h"
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
+#include "base/macros.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/event.h"
@@ -28,6 +29,9 @@ namespace {
 
 using assistant::util::DeepLinkParam;
 using assistant::util::DeepLinkType;
+
+constexpr char kAssistantCardElementHistogram[] =
+    "Ash.Assistant.AnimationSmoothness.CardElement";
 
 // Helpers ---------------------------------------------------------------------
 
@@ -198,7 +202,7 @@ void AssistantCardElementView::InitLayout() {
 
 std::unique_ptr<ElementAnimator> AssistantCardElementView::CreateAnimator() {
   return std::make_unique<AssistantUiElementViewAnimator>(
-      this, assistant::ui::kAssistantCardElementHistogram);
+      this, kAssistantCardElementHistogram);
 }
 
 }  // namespace ash

@@ -5,6 +5,7 @@
 module audio.mojom;
 
 import "media/mojo/mojom/audio_stream_factory.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "services/audio/public/mojom/debug_recording.mojom";
 import "services/audio/public/mojom/device_notifications.mojom";
 import "services/audio/public/mojom/log_factory_manager.mojom";
@@ -12,7 +13,9 @@ import "services/audio/public/mojom/system_info.mojom";
 import "services/audio/public/mojom/testing_api.mojom";
 
 // The main interface to the Audio service. This is a privileged interface and
-// must only be bound by trusted processes, e.g. a browser process.
+// must only be bound by trusted processes, e.g. a browser process. Note that
+// the sandbox can be disabled (to kNoSandbox) by policy.
+[ServiceSandbox=sandbox.mojom.Sandbox.kAudio]
 interface AudioService {
   // Binds a SystemInfo interface receiver.
   BindSystemInfo(pending_receiver<SystemInfo> receiver);
@@ -33,4 +36,3 @@ interface AudioService {
   // environments.
   BindTestingApi(pending_receiver<TestingApi> receiver);
 };
-

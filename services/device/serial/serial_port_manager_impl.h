@@ -34,6 +34,10 @@ class SerialPortManagerImpl : public mojom::SerialPortManager,
   SerialPortManagerImpl(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
+  SerialPortManagerImpl(const SerialPortManagerImpl&) = delete;
+  SerialPortManagerImpl& operator=(const SerialPortManagerImpl&) = delete;
+
   ~SerialPortManagerImpl() override;
 
   void Bind(mojo::PendingReceiver<mojom::SerialPortManager> receiver);
@@ -70,8 +74,6 @@ class SerialPortManagerImpl : public mojom::SerialPortManager,
 
   mojo::ReceiverSet<SerialPortManager> receivers_;
   mojo::RemoteSet<mojom::SerialPortManagerClient> clients_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerialPortManagerImpl);
 };
 
 }  // namespace device

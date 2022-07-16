@@ -28,8 +28,7 @@ using bookmark_utils_ios::NodesSection;
 class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTest {
  protected:
   base::Time timeFromEpoch(int days, int hours) {
-    return base::Time::UnixEpoch() + base::TimeDelta::FromDays(days) +
-           base::TimeDelta::FromHours(hours);
+    return base::Time::UnixEpoch() + base::Days(days) + base::Hours(hours);
   }
 };
 

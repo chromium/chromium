@@ -43,13 +43,14 @@ FeaturePodButton* ProjectorFeaturePodController::CreateButton() {
   button_->SetLabel(label_text);
   button_->icon_button()->SetTooltipText(label_text);
   button_->SetLabelTooltip(label_text);
+
+  auto* projector_controller = Shell::Get()->projector_controller();
+  DCHECK(projector_controller);
   button_->SetVisible(
-      !Shell::Get()->session_controller()->IsUserSessionBlocked());
-  button_->SetToggled(Shell::Get()
-                          ->projector_controller()
-                          ->ui_controller()
-                          ->model()
-                          ->bar_enabled());
+      !Shell::Get()->session_controller()->IsUserSessionBlocked() &&
+      projector_controller->CanStartNewSession());
+  button_->SetToggled(
+      projector_controller->ui_controller()->model()->bar_enabled());
   return button_;
 }
 
@@ -58,17 +59,9 @@ void ProjectorFeaturePodController::OnIconPressed() {
   tray_controller_->CloseBubble();
 
   auto* projector_controller = Shell::Get()->projector_controller();
-  auto* projector_session = projector_controller->projector_session();
   DCHECK(projector_controller);
-  DCHECK(projector_session);
 
-  if (projector_session->is_active()) {
-    projector_session->Stop();
-    projector_controller->SetProjectorToolsVisible(false);
-  } else {
-    projector_session->Start(SourceType::kUnset);
-    projector_controller->SetProjectorToolsVisible(true);
-  }
+  projector_controller->StartProjectorSession("projector_data");
 }
 
 SystemTrayItemUmaType ProjectorFeaturePodController::GetUmaType() const {

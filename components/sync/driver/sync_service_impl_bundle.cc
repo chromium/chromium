@@ -26,7 +26,7 @@ SyncServiceImplBundle::SyncServiceImplBundle()
   identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
 }
 
-SyncServiceImplBundle::~SyncServiceImplBundle() {}
+SyncServiceImplBundle::~SyncServiceImplBundle() = default;
 
 std::unique_ptr<SyncClientMock> SyncServiceImplBundle::CreateSyncClientMock() {
   auto sync_client = std::make_unique<testing::NiceMock<SyncClientMock>>();

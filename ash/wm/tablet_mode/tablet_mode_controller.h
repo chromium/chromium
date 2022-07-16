@@ -16,7 +16,6 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell_observer.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -96,6 +95,10 @@ class ASH_EXPORT TabletModeController
   GetObservedTabletTransitionProperty();
 
   TabletModeController();
+
+  TabletModeController(const TabletModeController&) = delete;
+  TabletModeController& operator=(const TabletModeController&) = delete;
+
   ~TabletModeController() override;
 
   void Shutdown();
@@ -193,6 +196,11 @@ class ASH_EXPORT TabletModeController
   // Returns true if the system tray should have a overview button.
   bool ShouldShowOverviewButton() const;
 
+  // True if it is possible to enter tablet mode in the current
+  // configuration. If this returns false, it should never be the case that
+  // tablet mode becomes enabled.
+  bool CanEnterTabletMode() const;
+
   // ForcePhysicalTabletState is to control physical tablet state. The default
   // state is not to force the state, so the tablet-mode controller will observe
   // device configurations.
@@ -262,11 +270,6 @@ class ASH_EXPORT TabletModeController
   // the unstable angle to trigger tablet mode is error-prone. So we wait for
   // a certain range of time before using unstable angle.
   bool CanUseUnstableLidAngle() const;
-
-  // True if it is possible to enter tablet mode in the current
-  // configuration. If this returns false, it should never be the case that
-  // tablet mode becomes enabled.
-  bool CanEnterTabletMode();
 
   // Record UMA stats tracking TabletMode usage. If |type| is
   // TABLET_MODE_INTERVAL_INACTIVE, then record that TabletMode has been
@@ -499,8 +502,6 @@ class ASH_EXPORT TabletModeController
   bool initial_input_device_set_up_finished_ = false;
 
   base::WeakPtrFactory<TabletModeController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeController);
 };
 
 }  // namespace ash

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_cloud_external_data_policy_handler.h"
 
 class PrefRegistrySimple;
@@ -26,6 +25,12 @@ class DeviceWallpaperImageExternalDataHandler final
  public:
   DeviceWallpaperImageExternalDataHandler(PrefService* local_state,
                                           PolicyService* policy_service);
+
+  DeviceWallpaperImageExternalDataHandler(
+      const DeviceWallpaperImageExternalDataHandler&) = delete;
+  DeviceWallpaperImageExternalDataHandler& operator=(
+      const DeviceWallpaperImageExternalDataHandler&) = delete;
+
   ~DeviceWallpaperImageExternalDataHandler() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -42,8 +47,6 @@ class DeviceWallpaperImageExternalDataHandler final
 
   std::unique_ptr<DeviceCloudExternalDataPolicyObserver>
       device_wallpaper_image_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceWallpaperImageExternalDataHandler);
 };
 
 }  // namespace policy

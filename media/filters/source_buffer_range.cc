@@ -537,7 +537,7 @@ base::TimeDelta SourceBufferRange::GetBufferedEndTimestamp() const {
   // report 1 microsecond for the last buffer's duration if it is a 0 duration
   // buffer.
   if (duration.is_zero())
-    duration = base::TimeDelta::FromMicroseconds(1);
+    duration = base::Microseconds(1);
 
   return GetEndTimestamp() + duration;
 }

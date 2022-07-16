@@ -19,14 +19,14 @@ class TutorialDialogTest : public DialogBrowserTest {
         BrowserView::GetBrowserViewForBrowser(browser());
 
     FeaturePromoBubbleView::CreateParams params;
+    params.has_close_button = true;
     params.anchor_view = browser_view->toolbar()->app_menu_button();
     params.arrow = views::BubbleBorder::TOP_RIGHT;
     params.body_text = u"Hello world, I am a tutorial";
     params.persist_on_blur = true;
     params.tutorial_progress_current = 3;
     params.tutorial_progress_max = 5;
-    params.timeout_default = base::TimeDelta();
-    params.timeout_short = base::TimeDelta();
+    params.timeout = base::TimeDelta();
 
     FeaturePromoBubbleView::Create(std::move(params));
   }

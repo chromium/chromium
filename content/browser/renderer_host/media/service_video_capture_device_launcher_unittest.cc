@@ -50,6 +50,12 @@ class MockVideoCaptureDeviceLauncherCallbacks
 class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
  public:
   ServiceVideoCaptureDeviceLauncherTest() {}
+
+  ServiceVideoCaptureDeviceLauncherTest(
+      const ServiceVideoCaptureDeviceLauncherTest&) = delete;
+  ServiceVideoCaptureDeviceLauncherTest& operator=(
+      const ServiceVideoCaptureDeviceLauncherTest&) = delete;
+
   ~ServiceVideoCaptureDeviceLauncherTest() override {}
 
   void CloseSourceReceiver() { source_receiver_.reset(); }
@@ -146,9 +152,6 @@ class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
   bool launcher_has_connected_to_source_provider_;
   bool launcher_has_released_source_provider_;
   base::RunLoop wait_for_release_connection_cb_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceVideoCaptureDeviceLauncherTest);
 };
 
 TEST_F(ServiceVideoCaptureDeviceLauncherTest, LaunchingDeviceSucceeds) {

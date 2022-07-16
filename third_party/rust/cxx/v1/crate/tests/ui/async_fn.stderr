@@ -1,0 +1,5 @@
+error: async function is not directly supported yet, but see https://cxx.rs/async.html for a working approach
+ --> $DIR/async_fn.rs:4:9
+  |
+4 |         async fn f();
+  |         ^^^^^^^^^^^^^

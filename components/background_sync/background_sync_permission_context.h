@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 #define COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "components/permissions/permission_context_base.h"
 
 // Manages user permissions for background sync. The context is scoped to the
@@ -19,6 +18,12 @@ class BackgroundSyncPermissionContext
  public:
   explicit BackgroundSyncPermissionContext(
       content::BrowserContext* browser_context);
+
+  BackgroundSyncPermissionContext(const BackgroundSyncPermissionContext&) =
+      delete;
+  BackgroundSyncPermissionContext& operator=(
+      const BackgroundSyncPermissionContext&) = delete;
+
   ~BackgroundSyncPermissionContext() override = default;
 
  private:
@@ -31,8 +36,6 @@ class BackgroundSyncPermissionContext
       bool user_gesture,
       permissions::BrowserPermissionCallback callback) override;
   bool IsRestrictedToSecureOrigins() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncPermissionContext);
 };
 
 #endif  // COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_

@@ -182,7 +182,6 @@ TEST(RandUtilTest, InsecureRandomGeneratorProducesBothValuesOfAllBits) {
   uint64_t found_zeros = kAllOnes;
 
   InsecureRandomGenerator generator;
-  generator.Seed();
 
   for (size_t i = 0; i < 1000; ++i) {
     uint64_t value = generator.RandUint64();
@@ -271,7 +270,7 @@ TEST(RandUtilTest, InsecureRandomGeneratorChiSquared) {
       size_t samples = 1 << 16;
       InsecureRandomGenerator gen;
       // Fix the seed to make the test non-flaky.
-      gen.SeedForTesting(kIterations + 1);
+      gen.ReseedForTesting(kIterations + 1);
       bool pass = ChiSquaredTest(gen, samples, start_bit, 8);
       pass_count += pass;
     }
@@ -286,7 +285,6 @@ TEST(RandUtilTest, InsecureRandomGeneratorChiSquared) {
 
 TEST(RandUtilTest, InsecureRandomGeneratorRandDouble) {
   InsecureRandomGenerator gen;
-  gen.Seed();
 
   for (int i = 0; i < 1000; i++) {
     volatile double x = gen.RandDouble();

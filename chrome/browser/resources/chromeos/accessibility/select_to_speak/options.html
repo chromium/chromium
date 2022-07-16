@@ -10,10 +10,8 @@
     <link rel="stylesheet" type="text/css" href="options.css">
   </head>
   <body>
-    <h1 class="i18n" msgid="name"></h1>
-
     <div class="container">
-
+      <h1 class="i18n" msgid="name"></h1>
       <h2 class="i18n" msgid="options_speech"></h2>
       <div class="option-group" id="noNaturalVoicesOptions">
         <div class="option">
@@ -59,8 +57,8 @@
           <div class="subtitle">
             <span class="i18n" msgid="options_natural_voices_explanation">
             </span>
-            <!-- TODO(https://crbug.com/1227547): Change to correct link -->
-            <a href="https://support.google.com/chromebook/?p=accessibility">
+            <a target="_blank" rel="noreferrer"
+               href="https://support.google.com/chromebook?p=select_to_speak">
               <span class="i18n"
                     msgid="options_natural_voices_explanation_more">
               </span>
@@ -150,7 +148,7 @@
           </div>
         </div>
         <hr aria-hidden="true">
-        <div class="option hidden" id="navigationControlsOption">
+        <div class="option" id="navigationControlsOption">
           <input id="navigationControls" type="checkbox" role="switch"
               class="checkbox" name="navigationControls"
               aria-labeledby="navigationControlsLabel">

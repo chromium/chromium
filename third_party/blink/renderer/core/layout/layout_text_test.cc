@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -14,9 +16,12 @@
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
+
+using testing::ElementsAre;
 
 namespace {
 
@@ -70,7 +75,8 @@ class LayoutTextTest : public RenderingTest {
 
   std::string GetSnapCode(const LayoutText& layout_text,
                           const std::string& caret_text) {
-    return GetSnapCode(layout_text, caret_text.find('|'));
+    return GetSnapCode(layout_text,
+                       static_cast<unsigned>(caret_text.find('|')));
   }
 
   std::string GetSnapCode(const char* id, const std::string& caret_text) {
@@ -214,6 +220,68 @@ TEST_F(LayoutTextTest, ContainsOnlyWhitespaceOrNbsp) {
   EXPECT_EQ(OnlyWhitespaceOrNbsp::kNo,
             GetBasicText()->ContainsOnlyWhitespaceOrNbsp());
 }
+
+#if defined(OS_WIN)
+TEST_F(LayoutTextTest, PrewarmFamily) {
+  base::test::ScopedFeatureList features(kAsyncFontAccess);
+  test::ScopedTestFontPrewarmer prewarmer;
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #container { font-family: testfont; }
+    </style>
+    <div id="container">text</div>
+  )HTML");
+  EXPECT_THAT(prewarmer.PrewarmedFamilyNames(), ElementsAre("testfont"));
+  LayoutObject* container = GetLayoutObjectByElementId("container");
+  EXPECT_TRUE(container->StyleRef()
+                  .GetFont()
+                  .GetFontDescription()
+                  .Family()
+                  .IsPrewarmed());
+}
+
+// Test `@font-face` fonts are NOT prewarmed.
+TEST_F(LayoutTextTest, PrewarmFontFace) {
+  base::test::ScopedFeatureList features(kAsyncFontAccess);
+  test::ScopedTestFontPrewarmer prewarmer;
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    @font-face {
+      font-family: testfont;
+      src: local(Arial);
+    }
+    #container { font-family: testfont; }
+    </style>
+    <div id="container">text</div>
+  )HTML");
+  EXPECT_THAT(prewarmer.PrewarmedFamilyNames(), ElementsAre());
+  LayoutObject* container = GetLayoutObjectByElementId("container");
+  EXPECT_FALSE(container->StyleRef()
+                   .GetFont()
+                   .GetFontDescription()
+                   .Family()
+                   .IsPrewarmed());
+}
+
+TEST_F(LayoutTextTest, PrewarmGenericFamily) {
+  base::test::ScopedFeatureList features(kAsyncFontAccess);
+  test::ScopedTestFontPrewarmer prewarmer;
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #container { font-family: serif; }
+    </style>
+    <div id="container">text</div>
+  )HTML");
+  // No prewarms because |GenericFontFamilySettings| is empty.
+  EXPECT_THAT(prewarmer.PrewarmedFamilyNames(), ElementsAre());
+  LayoutObject* container = GetLayoutObjectByElementId("container");
+  EXPECT_TRUE(container->StyleRef()
+                  .GetFont()
+                  .GetFontDescription()
+                  .Family()
+                  .IsPrewarmed());
+}
+#endif
 
 struct NGOffsetMappingTestData {
   const char* text;

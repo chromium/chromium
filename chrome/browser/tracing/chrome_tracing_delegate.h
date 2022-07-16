@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "content/public/browser/tracing_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
@@ -23,10 +24,7 @@ class PrefRegistrySimple;
 
 namespace base {
 class Time;
-}
-
-namespace network {
-class SharedURLLoaderFactory;
+class Value;
 }
 
 class ChromeTracingDelegate : public content::TracingDelegate,
@@ -41,9 +39,6 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   ~ChromeTracingDelegate() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  std::unique_ptr<content::TraceUploader> GetTraceUploader(
-      scoped_refptr<network::SharedURLLoaderFactory> factory) override;
 
   // Returns if the tracing session is allowed to begin. Also updates the
   // background tracing state in prefs using BackgroundTracingStateManager. So,
@@ -65,7 +60,7 @@ class ChromeTracingDelegate : public content::TracingDelegate,
 
   bool IsSystemWideTracingEnabled() override;
 
-  std::unique_ptr<base::DictionaryValue> GenerateMetadataDict() override;
+  absl::optional<base::Value> GenerateMetadataDict() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeTracingDelegateBrowserTest,
@@ -157,9 +152,18 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   void OnBrowserAdded(Browser* browser) override;
 #endif
 
-  bool IsAllowedToBeginBackgroundScenarioInternal(
-      const content::BackgroundTracingConfig& config,
-      bool requires_anonymized_data) const;
+  // The types of action that are guarded by IsActionAllowed.
+  enum class BackgroundScenarioAction {
+    kStartTracing,
+    kUploadTrace,
+  };
+
+  // Returns true if the delegate should be allowed to perform `action` for the
+  // scenario described in `config`.
+  bool IsActionAllowed(BackgroundScenarioAction action,
+                       const content::BackgroundTracingConfig& config,
+                       bool requires_anonymized_data,
+                       bool ignore_trace_limit) const;
 
   bool incognito_launched_ = false;
 };

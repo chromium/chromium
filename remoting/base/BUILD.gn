@@ -27,6 +27,8 @@ source_set("base") {
     "compound_buffer.h",
     "constants.cc",
     "constants.h",
+    "cpu_utils.cc",
+    "cpu_utils.h",
     "directory_service_client.cc",
     "directory_service_client.h",
     "leaky_bucket.cc",
@@ -108,6 +110,11 @@ source_set("base") {
 
   if (is_win) {
     sources += [ "scoped_sc_handle_win.h" ]
+  } else if (is_linux || is_chromeos) {
+    sources += [
+      "file_path_util_linux.cc",
+      "file_path_util_linux.h",
+    ]
   }
 }
 
@@ -159,6 +166,38 @@ source_set("breakpad") {
   if (is_win) {
     sources += [ "breakpad_win.cc" ]
     deps += [ "//third_party/breakpad:breakpad_handler" ]
+  }
+}
+
+source_set("settings") {
+  sources = [
+    "host_settings.cc",
+    "host_settings.h",
+    "user_settings.cc",
+    "user_settings.h",
+  ]
+  deps = [
+    "//base",
+    "//remoting/base",
+  ]
+
+  if (is_win) {
+    sources += [
+      "host_settings_win.cc",
+      "host_settings_win.h",
+      "user_settings_win.cc",
+      "user_settings_win.h",
+    ]
+  } else if (is_mac || (is_linux && !is_chromeos)) {
+    sources += [
+      "file_host_settings.cc",
+      "file_host_settings.h",
+    ]
+    if (is_linux) {
+      sources += [ "file_host_settings_linux.cc" ]
+    } else if (is_mac) {
+      sources += [ "file_host_settings_mac.cc" ]
+    }
   }
 }
 

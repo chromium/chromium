@@ -22,7 +22,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
@@ -51,26 +51,16 @@ ConfirmBubbleViews::ConfirmBubbleViews(
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
+  SetLayoutManager(std::make_unique<views::BoxLayout>());
 
-  // Use a fixed maximum message width, so longer messages will wrap.
-  const int kMaxMessageWidth = 400;
-  views::ColumnSet* cs = layout->AddColumnSet(0);
-  cs->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                views::GridLayout::kFixedSize,
-                views::GridLayout::ColumnSize::kFixed, kMaxMessageWidth, false);
-
-  // Add the message label.
-  auto label = std::make_unique<views::Label>(
+  label_ = AddChildView(std::make_unique<views::Label>(
       model_->GetMessageText(), views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_SECONDARY);
-  DCHECK(!label->GetText().empty());
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetMultiLine(true);
-  label->SizeToFit(kMaxMessageWidth);
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  label_ = layout->AddView(std::move(label));
+      views::style::STYLE_SECONDARY));
+  DCHECK(!label_->GetText().empty());
+  label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label_->SetMultiLine(true);
+  // Use a fixed maximum message width, so longer messages will wrap.
+  label_->SetMaximumWidth(400);
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::CONFIRM_BUBBLE);
 }

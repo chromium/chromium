@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_DISPLAY_QUIRKS_MANAGER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_ASH_DISPLAY_QUIRKS_MANAGER_DELEGATE_IMPL_H_
 
-#include "base/macros.h"
 #include "components/quirks/quirks_manager.h"
 
 namespace quirks {
@@ -16,6 +15,10 @@ class QuirksManagerDelegateImpl : public QuirksManager::Delegate {
  public:
   QuirksManagerDelegateImpl() = default;
 
+  QuirksManagerDelegateImpl(const QuirksManagerDelegateImpl&) = delete;
+  QuirksManagerDelegateImpl& operator=(const QuirksManagerDelegateImpl&) =
+      delete;
+
   // QuirksManager::Delegate implementation.
   std::string GetApiKey() const override;
   base::FilePath GetDisplayProfileDirectory() const override;
@@ -23,8 +26,6 @@ class QuirksManagerDelegateImpl : public QuirksManager::Delegate {
 
  private:
   ~QuirksManagerDelegateImpl() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(QuirksManagerDelegateImpl);
 };
 
 }  // namespace quirks

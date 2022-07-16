@@ -14,7 +14,7 @@ namespace chromecast {
 namespace media {
 
 namespace {
-constexpr auto kMaxRateChangeInterval = base::TimeDelta::FromMinutes(5);
+constexpr auto kMaxRateChangeInterval = base::Minutes(5);
 }  // namespace
 
 RateAdjuster::RateAdjuster(const Config& config,

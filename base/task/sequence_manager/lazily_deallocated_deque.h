@@ -198,8 +198,7 @@ class LazilyDeallocatedDeque {
       return;
 
     SetCapacity(new_capacity);
-    next_resize_time_ =
-        current_time + TimeDelta::FromSeconds(kMinimumShrinkIntervalInSeconds);
+    next_resize_time_ = current_time + Seconds(kMinimumShrinkIntervalInSeconds);
   }
 
   void SetCapacity(size_t new_capacity) {

@@ -28,7 +28,14 @@ class FeedStream;
 // Coordinates the state of subscription to web feeds.
 class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
  public:
-  explicit WebFeedSubscriptionCoordinator(FeedStream* feed_stream);
+  class Delegate {
+   public:
+    virtual void RegisterFollowingFeedFollowCountFieldTrial(
+        size_t follow_count) = 0;
+  };
+
+  explicit WebFeedSubscriptionCoordinator(Delegate* delegate,
+                                          FeedStream* feed_stream);
   virtual ~WebFeedSubscriptionCoordinator();
   WebFeedSubscriptionCoordinator(const WebFeedSubscriptionCoordinator&) =
       delete;
@@ -62,6 +69,9 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   void RefreshSubscriptions(
       base::OnceCallback<void(RefreshResult)> callback) override;
   void IsWebFeedSubscriber(base::OnceCallback<void(bool)> callback) override;
+  void SubscribedWebFeedCount(base::OnceCallback<void(int)> callback) override;
+  void DumpStateForDebugging(std::ostream& ss) override;
+  void RefreshRecommendedFeeds() override;
 
   // Types / functions exposed for task implementations.
 
@@ -156,9 +166,10 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       FetchSubscribedWebFeedsTask::Result result);
   void CallRefreshCompleteCallbacks(RefreshResult);
   void IsWebFeedSubscriberDone(base::OnceCallback<void(bool)> callback);
+  void SubscribedWebFeedCountDone(base::OnceCallback<void(int)> callback);
 
+  Delegate* delegate_;       // Always non-null.
   FeedStream* feed_stream_;  // Always non-null, it owns this.
-
   WebFeedIndex index_;
   // Whether `Populate()` has been called.
   bool populated_ = false;

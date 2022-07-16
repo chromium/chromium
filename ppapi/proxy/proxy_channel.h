@@ -67,6 +67,9 @@ class PPAPI_PROXY_EXPORT ProxyChannel
         base::ProcessId remote_pid) = 0;
   };
 
+  ProxyChannel(const ProxyChannel&) = delete;
+  ProxyChannel& operator=(const ProxyChannel&) = delete;
+
   ~ProxyChannel() override;
 
   // Alternative to InitWithChannel() for unit tests that want to send all
@@ -142,8 +145,6 @@ class PPAPI_PROXY_EXPORT ProxyChannel
   // Will be null for some tests when there is a test_sink_, and if the
   // remote side has crashed.
   std::unique_ptr<IPC::SyncChannel> channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyChannel);
 };
 
 }  // namespace proxy

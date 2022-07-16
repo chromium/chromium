@@ -93,7 +93,7 @@ SwitchAccessE2ETest = class extends E2ETestBase {
         return;
       }
 
-      console.error(
+      console.log(
           `\nStill waiting for expectation: ${JSON.stringify(expected)}\n` +
           `Focus is: ${Navigator.byItem.node_.debugString()}`);
     }, 1000);

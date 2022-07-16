@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
@@ -82,6 +81,10 @@ class SSOAccessTokenFetcher : public OAuth2AccessTokenFetcher {
   SSOAccessTokenFetcher(OAuth2AccessTokenConsumer* consumer,
                         DeviceAccountsProvider* provider,
                         const AccountInfo& account);
+
+  SSOAccessTokenFetcher(const SSOAccessTokenFetcher&) = delete;
+  SSOAccessTokenFetcher& operator=(const SSOAccessTokenFetcher&) = delete;
+
   ~SSOAccessTokenFetcher() override;
 
   void Start(const std::string& client_id,
@@ -100,8 +103,6 @@ class SSOAccessTokenFetcher : public OAuth2AccessTokenFetcher {
   AccountInfo account_;
   bool request_was_cancelled_;
   base::WeakPtrFactory<SSOAccessTokenFetcher> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSOAccessTokenFetcher);
 };
 
 SSOAccessTokenFetcher::SSOAccessTokenFetcher(

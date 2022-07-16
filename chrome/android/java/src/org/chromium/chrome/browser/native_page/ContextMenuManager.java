@@ -18,6 +18,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.ui.base.WindowAndroid.OnCloseContextMenuListener;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
@@ -36,8 +37,7 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
     @IntDef({ContextMenuItemId.SEARCH, ContextMenuItemId.OPEN_IN_NEW_TAB,
             ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP, ContextMenuItemId.OPEN_IN_INCOGNITO_TAB,
             ContextMenuItemId.OPEN_IN_NEW_WINDOW, ContextMenuItemId.SAVE_FOR_OFFLINE,
-            ContextMenuItemId.ADD_TO_MY_APPS, ContextMenuItemId.REMOVE,
-            ContextMenuItemId.LEARN_MORE})
+            ContextMenuItemId.ADD_TO_MY_APPS, ContextMenuItemId.REMOVE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ContextMenuItemId {
         // The order of the items will be based on the value of their ID. So if new items are added,
@@ -51,9 +51,8 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         int SAVE_FOR_OFFLINE = 5;
         int ADD_TO_MY_APPS = 6;
         int REMOVE = 7;
-        int LEARN_MORE = 8;
 
-        int NUM_ENTRIES = 9;
+        int NUM_ENTRIES = 8;
     }
 
     private final NativePageNavigationDelegate mNavigationDelegate;
@@ -126,12 +125,6 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         @Override
         public void onContextMenuCreated() {}
     }
-
-    /**
-     * Delegate used by the {@link ContextMenuManager} to disable touch events on the outer view
-     * while the context menu is open.
-     */
-    public interface TouchEnabledDelegate { void setTouchEnabled(boolean enabled); }
 
     /**
      * @param navigationDelegate The {@link NativePageNavigationDelegate} for handling navigation
@@ -273,8 +266,6 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
             }
             case ContextMenuItemId.REMOVE:
                 return true;
-            case ContextMenuItemId.LEARN_MORE:
-                return true;
             case ContextMenuItemId.ADD_TO_MY_APPS:
                 return false;
             default:
@@ -305,8 +296,6 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
                 return R.string.contextmenu_save_link;
             case ContextMenuItemId.REMOVE:
                 return R.string.remove;
-            case ContextMenuItemId.LEARN_MORE:
-                return R.string.learn_more;
         }
         assert false;
         return 0;
@@ -343,10 +332,6 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
             case ContextMenuItemId.REMOVE:
                 delegate.removeItem();
                 RecordUserAction.record(mUserActionPrefix + ".ContextMenu.RemoveItem");
-                return true;
-            case ContextMenuItemId.LEARN_MORE:
-                mNavigationDelegate.navigateToHelpPage();
-                RecordUserAction.record(mUserActionPrefix + ".ContextMenu.LearnMore");
                 return true;
             default:
                 return false;

@@ -109,7 +109,7 @@ const BehaviorTestCase kBehaviorTestCases[] = {
 std::unique_ptr<KeyedService> TestPolicyCertServiceFactory(
     content::BrowserContext* context) {
   return policy::PolicyCertService::CreateForTesting(
-      kUsers[0], user_manager::UserManager::Get());
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace
@@ -126,6 +126,11 @@ class MultiProfileUserControllerTest
       test_users_.push_back(AccountId::FromUserEmail(kUsers[i]));
     }
   }
+
+  MultiProfileUserControllerTest(const MultiProfileUserControllerTest&) =
+      delete;
+  MultiProfileUserControllerTest& operator=(
+      const MultiProfileUserControllerTest&) = delete;
 
   ~MultiProfileUserControllerTest() override {}
 
@@ -216,9 +221,6 @@ class MultiProfileUserControllerTest
   int user_not_allowed_count_;
 
   std::vector<AccountId> test_users_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MultiProfileUserControllerTest);
 };
 
 // Tests that everyone is allowed before a session starts.
@@ -333,8 +335,12 @@ TEST_F(MultiProfileUserControllerTest,
        UsedPolicyCertificatesAllowedForPrimary) {
   // Verifies that any user can sign-in as the primary user, regardless of the
   // tainted state.
-  policy::PolicyCertServiceFactory::SetUsedPolicyCertificates(
-      test_users_[0].GetUserEmail());
+  ASSERT_TRUE(
+      policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
+  policy::PolicyCertServiceFactory::GetForProfile(profile(0))
+      ->SetUsedPolicyCertificates();
+
   MultiProfileUserController::UserAllowedInSessionReason reason;
   EXPECT_TRUE(controller()->IsUserAllowedInSession(
       test_users_[0].GetUserEmail(), &reason));
@@ -361,8 +367,12 @@ TEST_F(MultiProfileUserControllerTest,
       test_users_[0].GetUserEmail(), &reason));
   EXPECT_EQ(MultiProfileUserController::ALLOWED, reason);
 
-  policy::PolicyCertServiceFactory::SetUsedPolicyCertificates(
-      test_users_[0].GetUserEmail());
+  ASSERT_TRUE(
+      policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
+  policy::PolicyCertServiceFactory::GetForProfile(profile(0))
+      ->SetUsedPolicyCertificates();
+
   EXPECT_TRUE(controller()->IsUserAllowedInSession(
       test_users_[0].GetUserEmail(), &reason));
   EXPECT_EQ(MultiProfileUserController::ALLOWED, reason);
@@ -372,13 +382,12 @@ TEST_F(MultiProfileUserControllerTest,
        SecondaryAllowedWhenPrimaryUsedPolicyCertificates) {
   // Verifies that if a tainted user is signed-in then other users can still be
   // added.
-  policy::PolicyCertServiceFactory::SetUsedPolicyCertificates(
-      test_users_[0].GetUserEmail());
-  LoginUser(0);
-
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
+  policy::PolicyCertServiceFactory::GetForProfile(profile(0))
+      ->SetUsedPolicyCertificates();
+  LoginUser(0);
 
   MultiProfileUserController::UserAllowedInSessionReason reason;
   EXPECT_TRUE(controller()->IsUserAllowedInSession(
@@ -386,8 +395,13 @@ TEST_F(MultiProfileUserControllerTest,
   EXPECT_EQ(MultiProfileUserController::ALLOWED, reason);
   EXPECT_EQ(MultiProfileUserController::ALLOWED,
             MultiProfileUserController::GetPrimaryUserPolicy());
-  policy::PolicyCertServiceFactory::SetUsedPolicyCertificates(
-      test_users_[1].GetUserEmail());
+
+  ASSERT_TRUE(
+      policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(1), base::BindRepeating(&TestPolicyCertServiceFactory)));
+  policy::PolicyCertServiceFactory::GetForProfile(profile(1))
+      ->SetUsedPolicyCertificates();
+
   EXPECT_TRUE(controller()->IsUserAllowedInSession(
       test_users_[1].GetUserEmail(), &reason));
   EXPECT_EQ(MultiProfileUserController::ALLOWED, reason);

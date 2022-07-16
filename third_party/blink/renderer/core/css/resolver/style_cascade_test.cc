@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/resolver/cascade_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -117,7 +118,10 @@ class TestCascade {
     DCHECK_LE(origin, CascadeOrigin::kAuthor) << "Animations not supported";
     DCHECK_LE(current_origin_, origin) << "Please add declarations in order";
     EnsureAtLeast(origin);
-    cascade_.MutableMatchResult().AddMatchedProperties(set, link_match_type);
+    cascade_.MutableMatchResult().AddMatchedProperties(
+        set, AddMatchedPropertiesOptions::Builder()
+                 .SetLinkMatchType(link_match_type)
+                 .Build());
   }
 
   void Apply(CascadeFilter filter = CascadeFilter()) {
@@ -138,7 +142,8 @@ class TestCascade {
                           const CSSValue& value,
                           CascadeOrigin& origin) {
     TestCascadeResolver resolver;
-    return cascade_.Resolve(property, value, origin, resolver.InnerResolver());
+    return cascade_.Resolve(property, value, CascadePriority(origin), origin,
+                            resolver.InnerResolver());
   }
 
   std::unique_ptr<CSSBitset> GetImportantSet() {
@@ -658,13 +663,13 @@ TEST_F(StyleCascadeTest, ResolverDetectCycle) {
   CustomProperty c("--c", GetDocument());
 
   {
-    TestCascadeAutoLock lock(a, resolver);
+    TestCascadeAutoLock lock_a(a, resolver);
     EXPECT_FALSE(resolver.InCycle());
     {
-      TestCascadeAutoLock lock(b, resolver);
+      TestCascadeAutoLock lock_b(b, resolver);
       EXPECT_FALSE(resolver.InCycle());
       {
-        TestCascadeAutoLock lock(c, resolver);
+        TestCascadeAutoLock lock_c(c, resolver);
         EXPECT_FALSE(resolver.InCycle());
 
         EXPECT_TRUE(resolver.DetectCycle(a));
@@ -687,13 +692,13 @@ TEST_F(StyleCascadeTest, ResolverDetectNoCycle) {
   CustomProperty x("--x", GetDocument());
 
   {
-    TestCascadeAutoLock lock(a, resolver);
+    TestCascadeAutoLock lock_a(a, resolver);
     EXPECT_FALSE(resolver.InCycle());
     {
-      TestCascadeAutoLock lock(b, resolver);
+      TestCascadeAutoLock lock_b(b, resolver);
       EXPECT_FALSE(resolver.InCycle());
       {
-        TestCascadeAutoLock lock(c, resolver);
+        TestCascadeAutoLock lock_c(c, resolver);
         EXPECT_FALSE(resolver.InCycle());
 
         EXPECT_FALSE(resolver.DetectCycle(x));
@@ -734,16 +739,16 @@ TEST_F(StyleCascadeTest, ResolverDetectMultiCycle) {
   CustomProperty d("--d", GetDocument());
 
   {
-    AutoLock lock(a, resolver);
+    AutoLock lock_a(a, resolver);
     EXPECT_FALSE(resolver.InCycle());
     {
-      AutoLock lock(b, resolver);
+      AutoLock lock_b(b, resolver);
       EXPECT_FALSE(resolver.InCycle());
       {
-        AutoLock lock(c, resolver);
+        AutoLock lock_c(c, resolver);
         EXPECT_FALSE(resolver.InCycle());
         {
-          AutoLock lock(d, resolver);
+          AutoLock lock_d(d, resolver);
           EXPECT_FALSE(resolver.InCycle());
 
           // Cycle 1 (big cycle):
@@ -776,16 +781,16 @@ TEST_F(StyleCascadeTest, ResolverDetectMultiCycleReverse) {
   CustomProperty d("--d", GetDocument());
 
   {
-    AutoLock lock(a, resolver);
+    AutoLock lock_a(a, resolver);
     EXPECT_FALSE(resolver.InCycle());
     {
-      AutoLock lock(b, resolver);
+      AutoLock lock_b(b, resolver);
       EXPECT_FALSE(resolver.InCycle());
       {
-        AutoLock lock(c, resolver);
+        AutoLock lock_c(c, resolver);
         EXPECT_FALSE(resolver.InCycle());
         {
-          AutoLock lock(d, resolver);
+          AutoLock lock_d(d, resolver);
           EXPECT_FALSE(resolver.InCycle());
 
           // Cycle 1 (small cycle):
@@ -818,13 +823,13 @@ TEST_F(StyleCascadeTest, CurrentProperty) {
 
   EXPECT_FALSE(resolver.CurrentProperty());
   {
-    AutoLock lock(a, resolver);
+    AutoLock lock_a(a, resolver);
     EXPECT_EQ(&a, resolver.CurrentProperty());
     {
-      AutoLock lock(b, resolver);
+      AutoLock lock_b(b, resolver);
       EXPECT_EQ(&b, resolver.CurrentProperty());
       {
-        AutoLock lock(c, resolver);
+        AutoLock lock_c(c, resolver);
         EXPECT_EQ(&c, resolver.CurrentProperty());
       }
       EXPECT_EQ(&b, resolver.CurrentProperty());
@@ -846,14 +851,14 @@ TEST_F(StyleCascadeTest, CycleWithExtraEdge) {
   CustomProperty d("--d", GetDocument());
 
   {
-    AutoLock lock(a, resolver);
+    AutoLock lock_a(a, resolver);
     EXPECT_FALSE(resolver.InCycle());
     {
-      AutoLock lock(b, resolver);
+      AutoLock lock_b(b, resolver);
       EXPECT_FALSE(resolver.InCycle());
 
       {
-        AutoLock lock(c, resolver);
+        AutoLock lock_c(c, resolver);
         EXPECT_FALSE(resolver.InCycle());
 
         // Cycle:
@@ -869,7 +874,7 @@ TEST_F(StyleCascadeTest, CycleWithExtraEdge) {
 
       {
         // We should not be in a cycle when locking a new property ...
-        AutoLock lock(d, resolver);
+        AutoLock lock_d(d, resolver);
         EXPECT_FALSE(resolver.InCycle());
         // AutoLock ctor does not affect in-cycle range:
         EXPECT_EQ(1u, resolver.CycleStart());

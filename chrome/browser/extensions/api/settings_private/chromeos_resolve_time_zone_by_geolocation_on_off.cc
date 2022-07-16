@@ -28,14 +28,17 @@ class GeneratedResolveTimezoneByGeolocationOnOff
     : public GeneratedTimeZonePrefBase {
  public:
   explicit GeneratedResolveTimezoneByGeolocationOnOff(Profile* profile);
+
+  GeneratedResolveTimezoneByGeolocationOnOff(
+      const GeneratedResolveTimezoneByGeolocationOnOff&) = delete;
+  GeneratedResolveTimezoneByGeolocationOnOff& operator=(
+      const GeneratedResolveTimezoneByGeolocationOnOff&) = delete;
+
   ~GeneratedResolveTimezoneByGeolocationOnOff() override;
 
   // GeneratedPref implementation:
   std::unique_ptr<settings_api::PrefObject> GetPrefObject() const override;
   SetPrefResult SetPref(const base::Value* value) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GeneratedResolveTimezoneByGeolocationOnOff);
 };
 
 GeneratedResolveTimezoneByGeolocationOnOff::

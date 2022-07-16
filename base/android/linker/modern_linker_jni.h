@@ -23,7 +23,12 @@ enum class RelroSharingStatus {
   NOT_ATTEMPTED = 0,
   SHARED = 1,
   NOT_IDENTICAL = 2,
-  COUNT = 3,
+  EXTERNAL_RELRO_FD_NOT_PROVIDED = 3,
+  EXTERNAL_RELRO_NOT_FOUND = 4,
+  NO_SHMEM_FUNCTIONS = 5,
+  REMAP_FAILED = 6,
+  CORRUPTED_IN_JAVA = 7,
+  COUNT = 8,
 };
 
 struct SharedMemoryFunctions;

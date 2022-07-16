@@ -13,6 +13,10 @@ namespace vr {
 class Stars : public UiElement {
  public:
   Stars();
+
+  Stars(const Stars&) = delete;
+  Stars& operator=(const Stars&) = delete;
+
   ~Stars() override;
 
   void Render(UiElementRenderer* renderer,
@@ -21,6 +25,10 @@ class Stars : public UiElement {
   class Renderer : public BaseRenderer {
    public:
     Renderer();
+
+    Renderer(const Renderer&) = delete;
+    Renderer& operator=(const Renderer&) = delete;
+
     ~Renderer() override;
     void Draw(float t, const gfx::Transform& view_proj_matrix);
 
@@ -37,16 +45,12 @@ class Stars : public UiElement {
     // Attributes
     GLuint opacity_handle_;
     GLuint phase_handle_;
-
-    DISALLOW_COPY_AND_ASSIGN(Renderer);
   };
 
  private:
   void Initialize(SkiaSurfaceProvider* provider) override;
 
   base::TimeTicks start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(Stars);
 };
 
 }  // namespace vr

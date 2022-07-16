@@ -33,6 +33,10 @@ class PushMessagingClient final : public GarbageCollected<PushMessagingClient>,
   static const char kSupplementName[];
 
   explicit PushMessagingClient(LocalDOMWindow&);
+
+  PushMessagingClient(const PushMessagingClient&) = delete;
+  PushMessagingClient& operator=(const PushMessagingClient&) = delete;
+
   ~PushMessagingClient() = default;
 
   static PushMessagingClient* From(LocalDOMWindow&);
@@ -66,8 +70,6 @@ class PushMessagingClient final : public GarbageCollected<PushMessagingClient>,
                     mojom::blink::PushSubscriptionPtr subscription);
 
   HeapMojoRemote<mojom::blink::PushMessaging> push_messaging_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingClient);
 };
 
 }  // namespace blink

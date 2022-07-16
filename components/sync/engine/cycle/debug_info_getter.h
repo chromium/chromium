@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_SYNC_ENGINE_CYCLE_DEBUG_INFO_GETTER_H_
 #define COMPONENTS_SYNC_ENGINE_CYCLE_DEBUG_INFO_GETTER_H_
 
-#include "components/sync/protocol/sync.pb.h"
+namespace sync_pb {
+class DebugInfo;
+}
 
 namespace syncer {
 

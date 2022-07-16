@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"
 
@@ -43,6 +42,9 @@ class CONTENT_EXPORT WebBundleSource {
   static std::unique_ptr<WebBundleSource> MaybeCreateFromNetworkUrl(
       const GURL& url);
 
+  WebBundleSource(const WebBundleSource&) = delete;
+  WebBundleSource& operator=(const WebBundleSource&) = delete;
+
   ~WebBundleSource() = default;
 
   std::unique_ptr<WebBundleSource> Clone() const;
@@ -64,8 +66,6 @@ class CONTENT_EXPORT WebBundleSource {
   const Type type_;
   const base::FilePath file_path_;
   const GURL url_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebBundleSource);
 };
 
 }  // namespace content

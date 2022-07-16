@@ -10,10 +10,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/apps/intent_helper/page_transition_util.h"
-#include "chrome/browser/ash/apps/metrics/intent_handling_metrics.h"
 #include "chrome/browser/ash/arc/arc_web_contents_data.h"
-#include "chrome/browser/chromeos/external_protocol_dialog.h"
+#include "chrome/browser/ash/external_protocol_dialog.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
@@ -22,9 +22,9 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/arc/session/arc_service_manager.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -34,8 +34,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
 using content::WebContents;
@@ -68,8 +68,7 @@ ui::ImageModel CreateDeviceIcon(
   const gfx::VectorIcon& icon = device_type == sync_pb::SyncEnums::TYPE_TABLET
                                     ? kTabletIcon
                                     : kHardwareSmartphoneIcon;
-  return ui::ImageModel::FromVectorIcon(
-      icon, ui::NativeTheme::kColorId_DefaultIconColor, kDeviceIconSize);
+  return ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kDeviceIconSize);
 }
 
 // Adds |devices| to |picker_entries| and returns the new list. The devices are
@@ -481,6 +480,7 @@ void OnIntentPickerClosed(
   // blocking fashion.
   WebContents* web_contents =
       tab_util::GetWebContentsByID(render_process_host_id, routing_id);
+  auto* context = web_contents ? web_contents->GetBrowserContext() : nullptr;
 
   if (web_contents)
     IntentPickerTabHelper::SetShouldShowIcon(web_contents, false);
@@ -491,9 +491,11 @@ void OnIntentPickerClosed(
     HandleDeviceSelection(web_contents, devices, selected_app_package, url);
     apps::IntentHandlingMetrics::RecordExternalProtocolMetrics(
         Scheme::TEL, entry_type, /*accepted=*/true, should_persist);
-    apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
-        web_contents->GetBrowserContext(), selected_app_package, entry_type,
-        reason, apps::Source::kExternalProtocol, should_persist);
+    if (context) {
+      apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
+          context, selected_app_package, entry_type, reason,
+          apps::Source::kExternalProtocol, should_persist);
+    }
     return;
   }
 
@@ -537,6 +539,7 @@ void OnIntentPickerClosed(
       }
 
       // Launch the selected app.
+      // As the current web page is closed, |web_contents| will be invalidated.
       HandleUrl(render_process_host_id, routing_id, url, handlers,
                 selected_app_index, /*out_result=*/nullptr, safe_to_bypass_ui);
       break;
@@ -586,9 +589,11 @@ void OnIntentPickerClosed(
   apps::IntentHandlingMetrics::RecordExternalProtocolMetrics(
       url_scheme, entry_type, protocol_accepted, should_persist);
 
-  apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
-      web_contents->GetBrowserContext(), selected_app_package, entry_type,
-      reason, apps::Source::kExternalProtocol, should_persist);
+  if (context) {
+    apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
+        context, selected_app_package, entry_type, reason,
+        apps::Source::kExternalProtocol, should_persist);
+  }
 }
 
 // Called when ARC returned activity icons for the |handlers|.
@@ -697,7 +702,7 @@ void OnUrlHandlerList(int render_process_host_id,
   GetActionResult result;
   if (HandleUrl(render_process_host_id, routing_id, url, handlers,
                 handlers.size(), &result, safe_to_bypass_ui)) {
-    if (result == GetActionResult::HANDLE_URL_IN_ARC) {
+    if (context && result == GetActionResult::HANDLE_URL_IN_ARC) {
       apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
           context, std::string(), apps::PickerEntryType::kArc,
           apps::IntentPickerCloseReason::PREFERRED_APP_FOUND,

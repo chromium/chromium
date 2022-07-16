@@ -24,4 +24,6 @@ public abstract class ContinuousNavigationUserData implements UserData {
     }
 
     public abstract void updateData(ContinuousNavigationMetadata metadata, GURL currentUrl);
+
+    public abstract void updateCurrentUrl(GURL url);
 }

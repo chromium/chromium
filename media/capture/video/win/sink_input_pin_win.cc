@@ -231,7 +231,7 @@ HRESULT SinkInputPin::Receive(IMediaSample* sample) {
   base::TimeDelta timestamp = kNoTimestamp;
   if (SUCCEEDED(sample->GetTime(&start_time, &end_time))) {
     DCHECK(start_time <= end_time);
-    timestamp = base::TimeDelta::FromMicroseconds(start_time / 10);
+    timestamp = base::Microseconds(start_time / 10);
   }
 
   observer_->FrameReceived(buffer, length, resulting_format_, timestamp,

@@ -12,10 +12,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/ntp_snippets/remote/remote_suggestion.h"
 
@@ -49,6 +48,9 @@ class RemoteSuggestionsDatabase {
       std::unique_ptr<leveldb_proto::ProtoDatabase<SnippetProto>> database,
       std::unique_ptr<leveldb_proto::ProtoDatabase<SnippetImageProto>>
           image_database);
+  RemoteSuggestionsDatabase(const RemoteSuggestionsDatabase&) = delete;
+  RemoteSuggestionsDatabase& operator=(const RemoteSuggestionsDatabase&) =
+      delete;
   ~RemoteSuggestionsDatabase();
 
   // Returns whether the database has finished initialization. While this is
@@ -147,8 +149,6 @@ class RemoteSuggestionsDatabase {
   base::RepeatingClosure error_callback_;
 
   base::WeakPtrFactory<RemoteSuggestionsDatabase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsDatabase);
 };
 
 }  // namespace ntp_snippets

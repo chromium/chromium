@@ -22,6 +22,12 @@ class BLINK_PLATFORM_EXPORT WebMediaStreamSink {
   virtual void OnContentHintChanged(
       WebMediaStreamTrack::ContentHintType content_hint) {}
 
+  // OnVideoConstraintsChanged is called when constraints set on the source
+  // MediaStreamVideoTrack change. Never called in case the sink isn't connected
+  // to a video track.
+  virtual void OnVideoConstraintsChanged(absl::optional<double> min_fps,
+                                         absl::optional<double> max_fps) {}
+
  protected:
   virtual ~WebMediaStreamSink() {}
 };

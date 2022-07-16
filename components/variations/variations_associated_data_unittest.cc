@@ -4,7 +4,6 @@
 
 #include "components/variations/variations_associated_data.h"
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,14 +37,15 @@ class VariationsAssociatedDataTest : public ::testing::Test {
  public:
   VariationsAssociatedDataTest() {}
 
+  VariationsAssociatedDataTest(const VariationsAssociatedDataTest&) = delete;
+  VariationsAssociatedDataTest& operator=(const VariationsAssociatedDataTest&) =
+      delete;
+
   ~VariationsAssociatedDataTest() override {
     // Ensure that the maps are cleared between tests, since they are stored as
     // process singletons.
     testing::ClearAllVariationIDs();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VariationsAssociatedDataTest);
 };
 
 // Test that if the trial is immediately disabled, GetGoogleVariationID just

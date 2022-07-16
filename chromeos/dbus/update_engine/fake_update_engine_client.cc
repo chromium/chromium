@@ -32,6 +32,12 @@ void FakeUpdateEngineClient::RequestUpdateCheck(UpdateCheckCallback callback) {
   std::move(callback).Run(update_check_result_);
 }
 
+void FakeUpdateEngineClient::RequestUpdateCheckWithoutApplying(
+    UpdateCheckCallback callback) {
+  request_update_check_without_applying_call_count_++;
+  std::move(callback).Run(update_check_result_);
+}
+
 void FakeUpdateEngineClient::Rollback() {
   rollback_call_count_++;
 }

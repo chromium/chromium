@@ -1,0 +1,55 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("commerce") {
+  sources = [
+    "price_alert_util.h",
+    "price_alert_util.mm",
+    "shopping_persisted_data_tab_helper.h",
+    "shopping_persisted_data_tab_helper.mm",
+  ]
+  deps = [
+    "//components/commerce/core:proto",
+    "//components/optimization_guide/core:core",
+    "//components/payments/core:core",
+    "//components/prefs:prefs",
+    "//components/unified_consent:unified_consent",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state:browser_state",
+    "//ios/chrome/browser/optimization_guide:optimization_guide",
+    "//ios/chrome/browser/signin:signin",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/web",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "price_alert_util_unittest.mm",
+    "shopping_persisted_data_tab_helper_unittest.mm",
+  ]
+  deps = [
+    ":commerce",
+    "//base/test:test_support",
+    "//components/commerce/core:proto",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/unified_consent:unified_consent",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/optimization_guide:optimization_guide",
+    "//ios/chrome/browser/optimization_guide:unit_tests",
+    "//ios/chrome/browser/signin:signin",
+    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
+    "//ios/web/public:public",
+    "//ios/web/public/test:test",
+    "//ios/web/public/test:util",
+    "//ios/web/public/test/fakes:fakes",
+  ]
+}

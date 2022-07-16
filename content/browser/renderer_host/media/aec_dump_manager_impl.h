@@ -23,6 +23,10 @@ namespace content {
 class AecDumpManagerImpl : public blink::mojom::AecDumpManager {
  public:
   AecDumpManagerImpl();
+
+  AecDumpManagerImpl(const AecDumpManagerImpl&) = delete;
+  AecDumpManagerImpl& operator=(const AecDumpManagerImpl&) = delete;
+
   ~AecDumpManagerImpl() override;
 
   void AddReceiver(
@@ -53,8 +57,6 @@ class AecDumpManagerImpl : public blink::mojom::AecDumpManager {
   mojo::ReceiverSet<blink::mojom::AecDumpManager> receiver_set_;
 
   base::WeakPtrFactory<AecDumpManagerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AecDumpManagerImpl);
 };
 
 }  // namespace content

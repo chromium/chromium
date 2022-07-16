@@ -31,13 +31,12 @@ void FinishLoader(std::unique_ptr<PluginResponseWriter> /*response_writer*/) {
 }
 
 void CreateLoaderAndStart(
-    const GURL& source_url,
-    const GURL& original_url,
+    const PdfStreamDelegate::StreamInfo& stream_info,
     const network::ResourceRequest& request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  auto response_writer = std::make_unique<PluginResponseWriter>(
-      source_url, original_url, std::move(client));
+  auto response_writer =
+      std::make_unique<PluginResponseWriter>(stream_info, std::move(client));
 
   auto* unowned_response_writer = response_writer.get();
   unowned_response_writer->Start(
@@ -99,8 +98,7 @@ PdfURLLoaderRequestInterceptor::CreateRequestHandler(
   if (tentative_resource_request.url != stream->original_url)
     return {};
 
-  return base::BindOnce(&CreateLoaderAndStart, std::move(stream->stream_url),
-                        std::move(stream->original_url));
+  return base::BindOnce(&CreateLoaderAndStart, std::move(stream.value()));
 }
 
 }  // namespace pdf

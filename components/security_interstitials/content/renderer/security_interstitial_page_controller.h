@@ -26,6 +26,11 @@ class SecurityInterstitialPageController
  public:
   static gin::WrapperInfo kWrapperInfo;
 
+  SecurityInterstitialPageController(
+      const SecurityInterstitialPageController&) = delete;
+  SecurityInterstitialPageController& operator=(
+      const SecurityInterstitialPageController&) = delete;
+
   // Creates an instance of SecurityInterstitialPageController which will invoke
   // SendCommand() in response to user actions taken on the interstitial page.
   static void Install(content::RenderFrame* render_frame);
@@ -63,8 +68,6 @@ class SecurityInterstitialPageController
   // True if |this| forwards interstitial commands to the browser. This will be
   // set to false after any navigation.
   bool active_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityInterstitialPageController);
 };
 
 }  // namespace security_interstitials

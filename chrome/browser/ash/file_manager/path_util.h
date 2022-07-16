@@ -177,6 +177,13 @@ bool ExtractMountNameFileSystemNameFullPath(const base::FilePath& absolute_path,
                                             std::string* file_system_name,
                                             std::string* full_path);
 
+// Extracts the file/directory name from the URL and unescape to convert %20 to
+// space.
+std::string GetDisplayableFileName(GURL file_url);
+std::string GetDisplayableFileName(storage::FileSystemURL file_url);
+std::u16string GetDisplayableFileName16(GURL file_url);
+std::u16string GetDisplayableFileName16(storage::FileSystemURL file_url);
+
 }  // namespace util
 }  // namespace file_manager
 

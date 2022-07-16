@@ -16,7 +16,6 @@
 #define CRASHPAD_UTIL_IOS_IOS_INTERMEDIATE_DUMP_WRITER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "util/ios/ios_intermediate_dump_format.h"
 
 namespace crashpad {
@@ -41,6 +40,10 @@ namespace internal {
 class IOSIntermediateDumpWriter final {
  public:
   IOSIntermediateDumpWriter() = default;
+
+  IOSIntermediateDumpWriter(const IOSIntermediateDumpWriter&) = delete;
+  IOSIntermediateDumpWriter& operator=(const IOSIntermediateDumpWriter&) =
+      delete;
 
   //! \brief Command instructions for the intermediate dump reader.
   enum class CommandType : uint8_t {
@@ -88,11 +91,14 @@ class IOSIntermediateDumpWriter final {
         : writer_(writer) {
       writer->RootMapStart();
     }
+
+    ScopedRootMap(const ScopedRootMap&) = delete;
+    ScopedRootMap& operator=(const ScopedRootMap&) = delete;
+
     ~ScopedRootMap() { writer_->RootMapEnd(); }
 
    private:
     IOSIntermediateDumpWriter* writer_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedRootMap);
   };
 
   //! \brief A scoped wrapper for calls to MapStart and MapEnd.
@@ -103,11 +109,14 @@ class IOSIntermediateDumpWriter final {
         : writer_(writer) {
       writer->MapStart(key);
     }
+
+    ScopedMap(const ScopedMap&) = delete;
+    ScopedMap& operator=(const ScopedMap&) = delete;
+
     ~ScopedMap() { writer_->MapEnd(); }
 
    private:
     IOSIntermediateDumpWriter* writer_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedMap);
   };
 
   //! \brief A scoped wrapper for calls to ArrayMapStart and MapEnd.
@@ -117,11 +126,14 @@ class IOSIntermediateDumpWriter final {
         : writer_(writer) {
       writer->ArrayMapStart();
     }
+
+    ScopedArrayMap(const ScopedArrayMap&) = delete;
+    ScopedArrayMap& operator=(const ScopedArrayMap&) = delete;
+
     ~ScopedArrayMap() { writer_->MapEnd(); }
 
    private:
     IOSIntermediateDumpWriter* writer_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedArrayMap);
   };
 
   //! \brief A scoped wrapper for calls to ArrayStart and ArrayEnd.
@@ -132,11 +144,14 @@ class IOSIntermediateDumpWriter final {
         : writer_(writer) {
       writer->ArrayStart(key);
     }
+
+    ScopedArray(const ScopedArray&) = delete;
+    ScopedArray& operator=(const ScopedArray&) = delete;
+
     ~ScopedArray() { writer_->ArrayEnd(); }
 
    private:
     IOSIntermediateDumpWriter* writer_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedArray);
   };
 
   //! \return The `true` if able to AddPropertyInternal the \a key \a value
@@ -187,8 +202,6 @@ class IOSIntermediateDumpWriter final {
   bool RootMapEnd();
 
   int fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSIntermediateDumpWriter);
 };
 
 }  // namespace internal

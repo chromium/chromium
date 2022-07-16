@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_test_helper.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader_test_helper.h"
+#include "chrome/browser/enterprise/connectors/file_system/uma_metrics_util.h"
 #include "components/download/public/common/download_interrupt_reasons_utils.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -82,14 +83,15 @@ TEST_F(BoxUploaderCreateTest, LoadFromReroutedInfo) {
   DownloadItemRerouteInfo rerouted_info;
   rerouted_info.set_service_provider(BoxUploader::kServiceProvider);
   rerouted_info.mutable_box()->set_file_id(kFileSystemBoxUploadResponseFileId);
+  rerouted_info.mutable_box()->set_folder_id(kFileSystemBoxFolderIdInPref);
   test_item_.SetRerouteInfo(rerouted_info);
 
   uploader_ = BoxUploader::Create(&test_item_);
   ASSERT_TRUE(uploader_);
   ASSERT_EQ(uploader_->GetUploadedFileUrl(),
             GURL(kFileSystemBoxUploadResponseFileUrl));
-  // TODO(https://crbug.com/1215847) Update to set folder id and check folder
-  // link too.
+  ASSERT_EQ(uploader_->GetDestinationFolderUrl(),
+            GURL(kFileSystemBoxFolderIdInPrefUrl));
 
   ASSERT_FALSE(authentication_retry_);
   EXPECT_FALSE(download_thread_cb_called_);
@@ -152,8 +154,9 @@ class BoxUploaderTest : public BoxUploaderTestBase {
     // deleted as part of error handling. Otherwise, upload API call flow got
     // InterceptedPreUpload(), so file was not deleted.
     EXPECT_EQ(upload_initiated_, base::PathExists(GetFilePath()));
-    // Only 1 update in StartUpload() when PreflightCheck succeeds.
-    EXPECT_EQ(progress_update_cb_called_, 1);
+    // 1 update in Init(), and 1 update in StartUpload() when PreflightCheck
+    // succeeds.
+    EXPECT_EQ(progress_update_cb_called_, 2);
   }
 
   void InterceptedPreUpload() {
@@ -212,7 +215,7 @@ TEST_F(BoxUploaderTest, AuthenticationRetry) {
 
   // Should be retrying authentication, no report via callback yet.
   ASSERT_EQ(authentication_retry_, 1);
-  ASSERT_EQ(progress_update_cb_called_, 0);
+  ASSERT_EQ(progress_update_cb_called_, 1);  // 1 in Init().
   EXPECT_FALSE(upload_initiated_);
   EXPECT_FALSE(download_thread_cb_called_);
   EXPECT_EQ(uploader_->GetFolderIdForTesting(), "");
@@ -271,6 +274,28 @@ TEST_F(BoxUploaderTest, CreateFolder_TerminateTask) {
   EXPECT_TRUE(download_thread_cb_called_);
   EXPECT_EQ(reason_, terminate_reason);
   EXPECT_EQ(uploader_->GetFolderIdForTesting(), "");
+}
+
+TEST_F(BoxUploaderTest, CreateFolder_Conflict_DueToIndexingLatency) {
+  // Check that a conflict response for create folder step will continue using
+  // the provided conflicting folder.
+  AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
+                 kFileSystemBoxFindFolderResponseEmptyEntriesList);
+  AddFetchResult(kFileSystemBoxCreateFolderUrl, net::HTTP_CONFLICT,
+                 kFileSystemBoxCreateFolderConflictResponseBody);
+  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
+
+  InitQuitClosure();
+  uploader_->TryTask(url_factory_, "test_token");
+  RunWithQuitClosure();
+
+  EXPECT_EQ(authentication_retry_, 0);
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(),
+            kFileSystemBoxCreateFolderResponseFolderId);
+  EXPECT_EQ(uploader_->GetUploadFileName().value(), kUploadFileName);
+  ASSERT_TRUE(upload_initiated_);
+  EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
+  EXPECT_FALSE(upload_success_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -474,7 +499,7 @@ TEST_F(BoxUploader_PreflightCheckTest, AuthenticationRetry) {
 
   // Need to retry authentication, so no report via callback yet.
   ASSERT_EQ(authentication_retry_, 1);
-  ASSERT_EQ(progress_update_cb_called_, 0);
+  ASSERT_EQ(progress_update_cb_called_, 1);  // 1 in Init().
   ASSERT_FALSE(upload_initiated_);
   EXPECT_FALSE(download_thread_cb_called_);
   EXPECT_FALSE(upload_success_);
@@ -558,9 +583,9 @@ class BoxUploaderNetErrorTest : public BoxUploaderTestBase {
     // If upload was not initiated due to some error, file should've been
     // deleted as part of error handling.
     EXPECT_FALSE(base::PathExists(GetFilePath()));
-    // 1 update in StartUpload() when PreflightCheck succeeds, and 1 update in
-    // OnApiCallFlowDone().
-    EXPECT_EQ(progress_update_cb_called_, 2);
+    // 1 update in Init(), 1 update in StartUpload() when PreflightCheck
+    // succeeds, and 1 update in OnApiCallFlowDone().
+    EXPECT_EQ(progress_update_cb_called_, 3);
   }
   std::unique_ptr<BoxUploaderForNetErrorTest> uploader_;
 };
@@ -677,55 +702,107 @@ TEST_F(BoxUploader_FileDeleteTest, TerminateTask) {
   ASSERT_FALSE(upload_success_);
 }
 
-TEST_F(BoxUploader_FileDeleteTest, LoadFromReroutedInfo_InProgress) {
-  test_item_.SetState(State::IN_PROGRESS);
+DownloadItemRerouteInfo MakeDownloadItemRerouteInfo(
+    std::string folder_id = std::string(),
+    std::string file_id = std::string()) {
+  DownloadItemRerouteInfo info;
+  info.set_service_provider(BoxUploader::kServiceProvider);
+  info.mutable_box();  // Set the oneof to be Box.
+  if (!folder_id.empty())
+    info.mutable_box()->set_folder_id(folder_id);
+  if (!file_id.empty())
+    info.mutable_box()->set_file_id(file_id);
+  return info;
+}
+
+class BoxUploader_FromRerouteInfoTestBase : public BoxUploaderTestBase {
+ public:
+  BoxUploader_FromRerouteInfoTestBase()
+      : BoxUploaderTestBase(
+            FILE_PATH_LITERAL("box_uploader_from_reroute_info_test.txt")) {}
+
+ protected:
+  void TearDown() override {
+    EXPECT_EQ(authentication_retry_, 0);
+    EXPECT_EQ(progress_update_cb_called_ > 0, download_thread_cb_called_);
+    EXPECT_FALSE(test_item_.GetFileExternallyRemoved());
+    // Ended with no local temporary file.
+    ASSERT_FALSE(base::PathExists(GetFilePath()));
+  }
+
+  std::unique_ptr<BoxUploader> uploader_;
+};
+
+class BoxUploader_IncompleteItemFromRerouteInfoTest
+    : public BoxUploader_FromRerouteInfoTestBase,
+      public testing::WithParamInterface<State> {};
+
+TEST_P(BoxUploader_IncompleteItemFromRerouteInfoTest, RetryUpload) {
+  // Skip COMPLETE to allow Range() to generate all other enum values.
+  if (GetParam() == State::COMPLETE)
+    return SUCCEED();
+
   CreateTemporaryFile();
 
-  DownloadItemRerouteInfo rerouted_info;
-  rerouted_info.set_service_provider(BoxUploader::kServiceProvider);
-  rerouted_info.mutable_box();  // set the oneof to be box;
-  test_item_.SetRerouteInfo(rerouted_info);
+  test_item_.SetState(GetParam());
+  DownloadItemRerouteInfo reroute_info = MakeDownloadItemRerouteInfo();
+  test_item_.SetRerouteInfo(reroute_info);
+  uploader_ = BoxUploader::Create(&test_item_);
+  ASSERT_TRUE(uploader_);
 
-  // Recreate uploader to load rerouted info.
-  uploader_ = std::make_unique<BoxUploaderForFileDeleteTest>(&test_item_);
+  // Assume there is already a folder_id stored in prefs, preflight check
+  // passes, and upload request succeeds.
+  InitFolderIdInPrefs(kFileSystemBoxFolderIdInPref);
+  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
+  AddFetchResult(kFileSystemBoxDirectUploadUrl, net::HTTP_CREATED,
+                 kFileSystemBoxUploadResponseBody);
+
+  // Try uploading.
   InitUploader(uploader_.get());
   InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
-  ASSERT_TRUE(uploader_);
+  ASSERT_EQ(reroute_info_reported_back_.box().file_id(),
+            kFileSystemBoxUploadResponseFileId);
+  ASSERT_EQ(reroute_info_reported_back_.box().folder_id(),
+            kFileSystemBoxFolderIdInPref);
   ASSERT_EQ(uploader_->GetUploadedFileUrl(),
             GURL(kFileSystemBoxUploadResponseFileUrl));
-  // TODO(https://crbug.com/1215847) Update to set folder id and check folder
-  // link too.
+  ASSERT_EQ(uploader_->GetDestinationFolderUrl(),
+            GURL(kFileSystemBoxFolderIdInPrefUrl));
 
   ASSERT_FALSE(authentication_retry_);
   EXPECT_TRUE(download_thread_cb_called_);
-  EXPECT_TRUE(progress_update_cb_called_);
+  EXPECT_GE(progress_update_cb_called_, 2);
   ASSERT_TRUE(upload_success_);
-  EXPECT_FALSE(base::PathExists(GetFilePath()));  // File deleted.
 }
 
-TEST_F(BoxUploader_FileDeleteTest, LoadFromReroutedInfo_Complete) {
+INSTANTIATE_TEST_CASE_P(,
+                        BoxUploader_IncompleteItemFromRerouteInfoTest,
+                        testing::Range(State::IN_PROGRESS,
+                                       State::MAX_DOWNLOAD_STATE));
+
+class BoxUploader_CompletedItemFromRerouteInfoTest
+    : public BoxUploader_FromRerouteInfoTestBase {};
+
+TEST_F(BoxUploader_CompletedItemFromRerouteInfoTest, Normal) {
   test_item_.SetState(State::COMPLETE);
+  const std::string folder_id = "357321";
+  const std::string file_id = "13576123";
+  DownloadItemRerouteInfo reroute_info =
+      MakeDownloadItemRerouteInfo(folder_id, file_id);
+  test_item_.SetRerouteInfo(reroute_info);
 
-  DownloadItemRerouteInfo rerouted_info;
-  rerouted_info.set_service_provider(BoxUploader::kServiceProvider);
-  rerouted_info.mutable_box()->set_file_id(kFileSystemBoxUploadResponseFileId);
-  test_item_.SetRerouteInfo(rerouted_info);
-
-  // Recreate uploader to load rerouted info.
-  uploader_ = std::make_unique<BoxUploaderForFileDeleteTest>(&test_item_);
+  uploader_ = BoxUploader::Create(&test_item_);
   ASSERT_TRUE(uploader_);
   ASSERT_EQ(uploader_->GetUploadedFileUrl(),
-            GURL(kFileSystemBoxUploadResponseFileUrl));
-  // TODO(https://crbug.com/1215847) Update to set folder id and check folder
-  // link too.
+            BoxApiCallFlow::MakeUrlToShowFile(file_id));
+  ASSERT_EQ(uploader_->GetDestinationFolderUrl(),
+            BoxApiCallFlow::MakeUrlToShowFolder(folder_id));
 
-  ASSERT_FALSE(authentication_retry_);
   EXPECT_FALSE(download_thread_cb_called_);  // No upload call was made.
   EXPECT_FALSE(progress_update_cb_called_);
-  EXPECT_FALSE(base::PathExists(GetFilePath()));  // File not created.
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -773,7 +850,7 @@ TEST_F(BoxDirectUploaderTest, SuccessfulUpload) {
   EXPECT_EQ(uploader_->GetUploadedFileUrl(),
             kFileSystemBoxUploadResponseFileUrl);
   EXPECT_EQ(uploader_->GetDestinationFolderUrl(),
-            kFileSystemBoxUploadResponseFolderUrl);
+            kFileSystemBoxFolderIdInPrefUrl);
 }
 
 TEST_F(BoxDirectUploaderTest, FileReadFailure) {
@@ -788,7 +865,7 @@ TEST_F(BoxDirectUploaderTest, FileReadFailure) {
   EXPECT_FALSE(upload_success_);
   EXPECT_TRUE(uploader_->GetUploadedFileUrl().is_empty());
   EXPECT_EQ(uploader_->GetDestinationFolderUrl(),
-            kFileSystemBoxUploadResponseFolderUrl);
+            kFileSystemBoxFolderIdInPrefUrl);
   ASSERT_REASON_EQ(FILE_FAILED, reason_);
 }
 
@@ -1171,6 +1248,162 @@ TEST_F(BoxChunkedUploaderFileFailureTest, FailedToOpen) {
   ASSERT_EQ(authentication_retry_, 0);
   EXPECT_TRUE(download_thread_cb_called_);
   ASSERT_FALSE(upload_success_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// BoxUploaderForUma: DownloadsRouting UMA histograms test
+////////////////////////////////////////////////////////////////////////////////
+
+class BoxUploaderForUmaTest : public BoxUploader {
+ public:
+  // using BoxUploader::BoxUploader() doesn't work.
+  explicit BoxUploaderForUmaTest(download::DownloadItem* download_item)
+      : BoxUploader(download_item) {}
+
+  using BoxUploader::OnApiCallFlowDone;
+
+  // Overriding to skip API calls flow for this set of tests.
+  std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall() override {
+    return std::make_unique<MockApiCallFlow>();
+  }
+};
+
+class BoxUploader_UmaTest : public BoxUploaderTestBase {
+ public:
+  BoxUploader_UmaTest()
+      : BoxUploaderTestBase(FILE_PATH_LITERAL("box_uploader_uma_test.txt")),
+        uploader_(std::make_unique<BoxUploaderForUmaTest>(&test_item_)) {}
+
+ protected:
+  void SetUp() override {
+    BoxUploaderTestBase::SetUp();
+    InitUploader(uploader_.get());
+  }
+
+  void TearDown() override {
+    EXPECT_EQ(authentication_retry_, 0);
+    EXPECT_EQ(progress_update_cb_called_ > 0, download_thread_cb_called_);
+    EXPECT_FALSE(test_item_.GetFileExternallyRemoved());
+  }
+
+  std::unique_ptr<BoxUploaderForUmaTest> uploader_;
+};
+
+TEST_F(BoxUploader_UmaTest, Success) {
+  base::HistogramTester histogram_tester;
+  InitQuitClosure();
+  uploader_->OnApiCallFlowDone(download::DOWNLOAD_INTERRUPT_REASON_NONE,
+                               kFileSystemBoxUploadResponseFileId);
+  RunWithQuitClosure();
+
+  histogram_tester.ExpectUniqueSample(
+      kBoxDownloadsRoutingStatusUmaLabel,
+      EnterpriseFileSystemDownloadsRoutingStatus::ROUTING_SUCCEEDED, 1);
+}
+
+TEST_F(BoxUploader_UmaTest, BoxError) {
+  base::HistogramTester histogram_tester;
+  InitQuitClosure();
+  uploader_->OnApiCallFlowDone(
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
+      kFileSystemBoxUploadResponseFileId);
+  uploader_->OnApiCallFlowDone(
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_NO_RANGE,
+      kFileSystemBoxUploadResponseFileId);
+  uploader_->OnApiCallFlowDone(
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH,
+      kFileSystemBoxUploadResponseFileId);
+  RunWithQuitClosure();
+
+  histogram_tester.ExpectUniqueSample(
+      kBoxDownloadsRoutingStatusUmaLabel,
+      EnterpriseFileSystemDownloadsRoutingStatus::
+          ROUTING_FAILED_SERVICE_PROVIDER_ERROR,
+      3);
+}
+
+TEST_F(BoxUploader_UmaTest, BoxOutage) {
+  base::HistogramTester histogram_tester;
+  InitQuitClosure();
+  uploader_->OnApiCallFlowDone(
+      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN,
+      kFileSystemBoxUploadResponseFileId);
+  RunWithQuitClosure();
+
+  histogram_tester.ExpectUniqueSample(
+      kBoxDownloadsRoutingStatusUmaLabel,
+      EnterpriseFileSystemDownloadsRoutingStatus::
+          ROUTING_FAILED_SERVICE_PROVIDER_OUTAGE,
+      1);
+}
+
+TEST_F(BoxUploader_UmaTest, BrowserError) {
+  base::HistogramTester histogram_tester;
+  InitQuitClosure();
+  uploader_->OnApiCallFlowDone(download::DOWNLOAD_INTERRUPT_REASON_CRASH,
+                               kFileSystemBoxUploadResponseFileId);
+  RunWithQuitClosure();
+
+  histogram_tester.ExpectUniqueSample(
+      kBoxDownloadsRoutingStatusUmaLabel,
+      EnterpriseFileSystemDownloadsRoutingStatus::ROUTING_FAILED_BROWSER_ERROR,
+      1);
+}
+
+TEST_F(BoxUploader_UmaTest, Canceled) {
+  base::HistogramTester histogram_tester;
+  InitQuitClosure();
+  uploader_->OnApiCallFlowDone(
+      download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED,
+      kFileSystemBoxUploadResponseFileId);
+  RunWithQuitClosure();
+
+  histogram_tester.ExpectUniqueSample(
+      kBoxDownloadsRoutingStatusUmaLabel,
+      EnterpriseFileSystemDownloadsRoutingStatus::ROUTING_CANCELED, 1);
+}
+
+TEST_F(BoxUploader_UmaTest, FileError) {
+  base::HistogramTester histogram_tester;
+  InitQuitClosure();
+  uploader_->OnApiCallFlowDone(
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED,
+      kFileSystemBoxUploadResponseFileId);
+  uploader_->OnApiCallFlowDone(
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR,
+      kFileSystemBoxUploadResponseFileId);
+  uploader_->OnApiCallFlowDone(
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE,
+      kFileSystemBoxUploadResponseFileId);
+  uploader_->OnApiCallFlowDone(download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
+                               kFileSystemBoxUploadResponseFileId);
+
+  RunWithQuitClosure();
+
+  histogram_tester.ExpectUniqueSample(
+      kBoxDownloadsRoutingStatusUmaLabel,
+      EnterpriseFileSystemDownloadsRoutingStatus::ROUTING_FAILED_FILE_ERROR, 4);
+}
+
+TEST_F(BoxUploader_UmaTest, NetError) {
+  base::HistogramTester histogram_tester;
+  InitQuitClosure();
+  uploader_->OnApiCallFlowDone(
+      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT,
+      kFileSystemBoxUploadResponseFileId);
+  uploader_->OnApiCallFlowDone(
+      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED,
+      kFileSystemBoxUploadResponseFileId);
+  uploader_->OnApiCallFlowDone(
+      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED,
+      kFileSystemBoxUploadResponseFileId);
+
+  RunWithQuitClosure();
+
+  histogram_tester.ExpectUniqueSample(
+      kBoxDownloadsRoutingStatusUmaLabel,
+      EnterpriseFileSystemDownloadsRoutingStatus::ROUTING_FAILED_NETWORK_ERROR,
+      3);
 }
 
 }  // namespace enterprise_connectors

@@ -50,15 +50,17 @@ void MatchedProperties::Trace(Visitor* visitor) const {
 
 void MatchResult::AddMatchedProperties(
     const CSSPropertyValueSet* properties,
-    unsigned link_match_type,
-    ValidPropertyFilter valid_property_filter) {
+    const AddMatchedPropertiesOptions& options) {
   matched_properties_.Grow(matched_properties_.size() + 1);
   MatchedProperties& new_properties = matched_properties_.back();
   new_properties.properties = const_cast<CSSPropertyValueSet*>(properties);
-  new_properties.types_.link_match_type = link_match_type;
+  new_properties.types_.link_match_type = options.GetLinkMatchType();
   new_properties.types_.valid_property_filter =
       static_cast<std::underlying_type_t<ValidPropertyFilter>>(
-          valid_property_filter);
+          options.GetValidPropertyFilter());
+  new_properties.types_.layer_order =
+      ClampTo<uint16_t>(options.GetLayerOrder());
+  new_properties.types_.is_inline_style = options.IsInlineStyle();
   new_properties.types_.origin = current_origin_;
   new_properties.types_.tree_order = current_tree_order_;
 }

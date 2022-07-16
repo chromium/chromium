@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/paint/text_control_single_line_painter.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 
@@ -69,7 +68,6 @@ void LayoutTextControlSingleLine::Paint(const PaintInfo& paint_info) const {
 
 void LayoutTextControlSingleLine::UpdateLayout() {
   NOT_DESTROYED();
-  LayoutAnalyzer::Scope analyzer(*this);
 
   LayoutBlockFlow::UpdateBlockLayout(true);
 

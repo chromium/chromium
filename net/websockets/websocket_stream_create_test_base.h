@@ -38,6 +38,11 @@ class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
   using HeaderKeyValuePair = std::pair<std::string, std::string>;
 
   WebSocketStreamCreateTestBase();
+
+  WebSocketStreamCreateTestBase(const WebSocketStreamCreateTestBase&) = delete;
+  WebSocketStreamCreateTestBase& operator=(
+      const WebSocketStreamCreateTestBase&) = delete;
+
   virtual ~WebSocketStreamCreateTestBase();
 
   // A wrapper for CreateAndConnectStreamForTesting that knows about our default
@@ -100,7 +105,6 @@ class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
 
  private:
   class TestConnectDelegate;
-  DISALLOW_COPY_AND_ASSIGN(WebSocketStreamCreateTestBase);
 };
 
 }  // namespace net

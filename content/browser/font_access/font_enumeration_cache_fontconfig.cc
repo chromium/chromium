@@ -6,14 +6,23 @@
 
 #include <fontconfig/fontconfig.h>
 
+#include <memory>
+
 #include "base/feature_list.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
+#include "base/types/pass_key.h"
+#include "content/browser/font_access/font_enumeration_cache.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
 namespace content {
 
@@ -131,38 +140,34 @@ float FCWidthToWebStretch(int width) {
 
 }  // namespace
 
-FontEnumerationCacheFontconfig::FontEnumerationCacheFontconfig() = default;
-FontEnumerationCacheFontconfig::~FontEnumerationCacheFontconfig() = default;
-
 // static
-FontEnumerationCache* FontEnumerationCache::GetInstance() {
-  static base::NoDestructor<FontEnumerationCacheFontconfig> instance;
-  return instance.get();
+base::SequenceBound<FontEnumerationCache>
+FontEnumerationCache::CreateForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    absl::optional<std::string> locale_override) {
+  return base::SequenceBound<FontEnumerationCacheFontconfig>(
+      std::move(task_runner), std::move(locale_override),
+      base::PassKey<FontEnumerationCache>());
 }
 
-void FontEnumerationCacheFontconfig::SchedulePrepareFontEnumerationCache() {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
+FontEnumerationCacheFontconfig::FontEnumerationCacheFontconfig(
+    absl::optional<std::string> locale_override,
+    base::PassKey<FontEnumerationCache>)
+    : FontEnumerationCache(std::move(locale_override)) {}
 
-  scoped_refptr<base::SequencedTaskRunner> results_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-
-  results_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &FontEnumerationCacheFontconfig::PrepareFontEnumerationCache,
-          // Safe because this is an initialized singleton.
-          base::Unretained(this)));
+FontEnumerationCacheFontconfig::~FontEnumerationCacheFontconfig() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
-  DCHECK(!enumeration_cache_built_->IsSet());
-  // Metrics.
-  const base::ElapsedTimer start_timer;
-  int incomplete_count = 0;
-  int duplicate_count = 0;
+blink::FontEnumerationTable
+FontEnumerationCacheFontconfig::ComputeFontEnumerationData(
+    const std::string& locale) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto font_enumeration_table = std::make_unique<blink::FontEnumerationTable>();
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  blink::FontEnumerationTable font_enumeration_table;
 
   std::unique_ptr<FcObjectSet, decltype(&FcObjectSetDestroy)> object_set(
       FcObjectSetBuild(FC_POSTSCRIPT_NAME, FC_FULLNAME, FC_FAMILY, FC_STYLE,
@@ -172,42 +177,47 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
   std::unique_ptr<FcFontSet, decltype(&FcFontSetDestroy)> fontset(
       ListFonts(object_set.get()), FcFontSetDestroy);
 
-  base::UmaHistogramCustomCounts(
-      "Fonts.AccessAPI.EnumerationCache.Fontconfig.FontCount", fontset->nfont,
-      1, 5000, 50);
-
   // Used to filter duplicates.
   std::set<std::string> fonts_seen;
 
   for (int i = 0; i < fontset->nfont; ++i) {
-    char* postscript_name;
-    char* full_name;
-    char* family;
-    char* style;
+    char* postscript_name = nullptr;
     if (FcPatternGetString(fontset->fonts[i], FC_POSTSCRIPT_NAME, 0,
                            reinterpret_cast<FcChar8**>(&postscript_name)) !=
-            FcResultMatch ||
-        FcPatternGetString(fontset->fonts[i], FC_FULLNAME, 0,
+        FcResultMatch) {
+      // Skip incomplete or malformed font.
+      continue;
+    }
+
+    char* full_name = nullptr;
+    if (FcPatternGetString(fontset->fonts[i], FC_FULLNAME, 0,
                            reinterpret_cast<FcChar8**>(&full_name)) !=
-            FcResultMatch ||
-        FcPatternGetString(fontset->fonts[i], FC_FAMILY, 0,
+        FcResultMatch) {
+      // Skip incomplete or malformed font.
+      continue;
+    }
+
+    char* family = nullptr;
+    if (FcPatternGetString(fontset->fonts[i], FC_FAMILY, 0,
                            reinterpret_cast<FcChar8**>(&family)) !=
-            FcResultMatch ||
-        FcPatternGetString(fontset->fonts[i], FC_STYLE, 0,
+        FcResultMatch) {
+      // Skip incomplete or malformed font.
+      continue;
+    }
+
+    char* style = nullptr;
+    if (FcPatternGetString(fontset->fonts[i], FC_STYLE, 0,
                            reinterpret_cast<FcChar8**>(&style)) !=
-            FcResultMatch) {
-      // Skip incomplete or malformed fonts.
-      ++incomplete_count;
+        FcResultMatch) {
+      // Skip incomplete or malformed font.
       continue;
     }
 
-    if (fonts_seen.count(postscript_name) != 0) {
-      ++duplicate_count;
-      // Skip duplicates.
+    auto it_and_success = fonts_seen.emplace(postscript_name);
+    if (!it_and_success.second) {
+      // Skip duplicate.
       continue;
     }
-
-    fonts_seen.insert(postscript_name);
 
     // These properties may not be present, so defaults are provided and such
     // fonts are not skipped. These defaults should map to the default web
@@ -222,32 +232,18 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
         fontset->fonts[i], FC_WIDTH, 0,
         FC_WIDTH_NORMAL);  // Maps to width: 100% (normal).
 
-    blink::FontEnumerationTable_FontMetadata metadata;
-    metadata.set_postscript_name(postscript_name);
-    metadata.set_full_name(full_name);
-    metadata.set_family(family);
-    metadata.set_style(style);
-    metadata.set_italic(FCSlantToWebItalic(slant));
-    metadata.set_weight(FCWeightToWebWeight(weight));
-    metadata.set_stretch(FCWidthToWebStretch(width));
-
-    blink::FontEnumerationTable_FontMetadata* added_font_meta =
-        font_enumeration_table->add_fonts();
-    *added_font_meta = metadata;
+    blink::FontEnumerationTable_FontMetadata* metadata =
+        font_enumeration_table.add_fonts();
+    metadata->set_postscript_name(postscript_name);
+    metadata->set_full_name(full_name);
+    metadata->set_family(family);
+    metadata->set_style(style);
+    metadata->set_italic(FCSlantToWebItalic(slant));
+    metadata->set_weight(FCWeightToWebWeight(weight));
+    metadata->set_stretch(FCWidthToWebStretch(width));
   }
 
-  base::UmaHistogramCounts100(
-      "Fonts.AccessAPI.EnumerationCache.Fontconfig.IncompleteFontCount",
-      incomplete_count);
-  base::UmaHistogramCounts100(
-      "Fonts.AccessAPI.EnumerationCache.DuplicateFontCount", duplicate_count);
-
-  BuildEnumerationCache(std::move(font_enumeration_table));
-
-  base::UmaHistogramMediumTimes("Fonts.AccessAPI.EnumerationTime",
-                                start_timer.Elapsed());
-  // Respond to pending and future requests.
-  StartCallbacksTaskQueue();
+  return font_enumeration_table;
 }
 
 }  // namespace content

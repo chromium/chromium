@@ -11,6 +11,7 @@ class AppMenuButton;
 class AvatarToolbarButton;
 class ExtensionsToolbarContainer;
 class PageActionIconView;
+class ReadLaterToolbarButton;
 class ReloadButton;
 class ToolbarButton;
 
@@ -60,6 +61,9 @@ class ToolbarButtonProvider {
 
   // See comment in browser_window.h for more info.
   virtual void ZoomChangedForActiveTab(bool can_show_bubble) = 0;
+
+  // Returns the side panel button.
+  virtual ReadLaterToolbarButton* GetSidePanelButton() = 0;
 
   // Returns the avatar button.
   virtual AvatarToolbarButton* GetAvatarToolbarButton() = 0;

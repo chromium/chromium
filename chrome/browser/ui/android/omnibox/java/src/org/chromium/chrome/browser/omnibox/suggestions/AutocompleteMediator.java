@@ -29,9 +29,9 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics.RefineActionUsage;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.ExploreIconProvider;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -90,6 +90,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
     private @Nullable Runnable mCurrentAutocompleteRequest;
     private @Nullable Runnable mDeferredLoadAction;
+    private @Nullable PropertyModel mDeleteDialogModel;
 
     private boolean mNativeInitialized;
     private AutocompleteController mAutocomplete;
@@ -120,6 +121,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     }
     @EditSessionState
     private int mEditSessionState = EditSessionState.INACTIVE;
+
+    @RefineActionUsage
+    private int mRefineActionUsage = RefineActionUsage.NOT_USED;
 
     // The timestamp (using SystemClock.elapsedRealtime()) at the point when the user started
     // modifying the omnibox with new input.
@@ -245,15 +249,11 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
 
     /**
      * Specifies the visual state to be used by the suggestions.
-     * @param useDarkColors Whether dark colors should be used for fonts and icons.
-     * @param isIncognito Whether the UI is for incognito mode or not.
+     * @param omniboxTheme The {@link @OmniboxTheme}.
      */
-    void updateVisualsForState(boolean useDarkColors, boolean isIncognito) {
-        @OmniboxTheme
-        int omniboxTheme = OmniboxResourceProvider.getThemeFromDarkColorsAndIncognito(
-                useDarkColors, isIncognito);
+    void updateVisualsForState(@OmniboxTheme int omniboxTheme) {
         mDropdownViewInfoListManager.setOmniboxTheme(omniboxTheme);
-        mListPropertyModel.set(SuggestionListProperties.IS_INCOGNITO, isIncognito);
+        mListPropertyModel.set(SuggestionListProperties.OMNIBOX_THEME, omniboxTheme);
     }
 
     /**
@@ -289,6 +289,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     /** @see org.chromium.chrome.browser.omnibox.UrlFocusChangeListener#onUrlFocusChange(boolean) */
     void onUrlFocusChange(boolean hasFocus) {
         if (hasFocus) {
+            dismissDeleteDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
+            mRefineActionUsage = RefineActionUsage.NOT_USED;
             mOmniboxFocusResultedInNavigation = false;
             mUrlFocusTime = System.currentTimeMillis();
             mJankTracker.startTrackingScenario(JankScenario.OMNIBOX_FOCUS);
@@ -315,6 +317,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             cancelAutocompleteRequests();
             SuggestionsMetrics.recordOmniboxFocusResultedInNavigation(
                     mOmniboxFocusResultedInNavigation);
+            SuggestionsMetrics.recordRefineActionUsage(mRefineActionUsage);
+
             setSuggestionVisibilityState(SuggestionVisibilityState.DISALLOWED);
             mEditSessionState = EditSessionState.INACTIVE;
             mNewOmniboxEditSessionTimestamp = -1;
@@ -434,13 +438,21 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     public void onRefineSuggestion(AutocompleteMatch suggestion) {
         stopAutocomplete(false);
         boolean isSearchSuggestion = suggestion.isSearchSuggestion();
+        boolean isZeroPrefix =
+                TextUtils.isEmpty(mUrlBarEditingTextProvider.getTextWithoutAutocomplete());
         String refineText = suggestion.getFillIntoEdit();
         if (isSearchSuggestion) refineText = TextUtils.concat(refineText, " ").toString();
 
         mDelegate.setOmniboxEditingText(refineText);
         onTextChanged(mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
                 mUrlBarEditingTextProvider.getTextWithAutocomplete());
+
         if (isSearchSuggestion) {
+            // Note: the logic below toggles assumes individual values to be represented by
+            // individual bits. This allows proper reporting of different refine button uses
+            // during single interaction with the Omnibox.
+            mRefineActionUsage |= isZeroPrefix ? RefineActionUsage.SEARCH_WITH_ZERO_PREFIX
+                                               : RefineActionUsage.SEARCH_WITH_PREFIX;
             RecordUserAction.record("MobileOmniboxRefineSuggestion.Search");
         } else {
             RecordUserAction.record("MobileOmniboxRefineSuggestion.Url");
@@ -449,7 +461,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
 
     @Override
     public void onSwitchToTab(AutocompleteMatch suggestion, int position) {
-        Tab tab = mAutocomplete.findMatchingTabWithUrl(suggestion.getUrl());
+        Tab tab = mAutocomplete.getMatchingTabForSuggestion(position);
         if (tab == null || !mTabWindowManagerSupplier.hasValue()) {
             onSuggestionClicked(suggestion, position, suggestion.getUrl());
             return;
@@ -511,7 +523,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             }
 
             @Override
-            public void onDismiss(PropertyModel model, int dismissalCause) {}
+            public void onDismiss(PropertyModel model, int dismissalCause) {
+                mDeleteDialogModel = null;
+            }
         };
 
         Resources resources = mContext.getResources();
@@ -521,11 +535,11 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             dialogMessageId = R.string.omnibox_confirm_delete_from_clipboard;
         }
 
-        PropertyModel model =
+        mDeleteDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, dialogController)
                         .with(ModalDialogProperties.TITLE, suggestion.getDisplayText())
-                        .with(ModalDialogProperties.MESSAGE, resources, dialogMessageId)
+                        .with(ModalDialogProperties.MESSAGE, resources.getString(dialogMessageId))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.ok)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
                                 R.string.cancel)
@@ -534,7 +548,19 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
 
         // Prevent updates to the shown omnibox suggestions list while the dialog is open.
         stopAutocomplete(false);
-        manager.showDialog(model, ModalDialogManager.ModalDialogType.APP);
+        manager.showDialog(mDeleteDialogModel, ModalDialogManager.ModalDialogType.APP);
+    }
+
+    /**
+     * Dismiss the delete suggestion dialog if it is showing.
+     *
+     * @param cause The cause of dismiss.
+     */
+    private void dismissDeleteDialog(@DialogDismissalCause int cause) {
+        if (mDeleteDialogModel == null) return;
+
+        assert mModalDialogManagerSupplier.hasValue() : "Dialog shown with no registered manager";
+        mModalDialogManagerSupplier.get().dismissDialog(mDeleteDialogModel, cause);
     }
 
     /**
@@ -848,6 +874,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private void hideSuggestions() {
         if (!mNativeInitialized || mAutocomplete == null) return;
         stopAutocomplete(true);
+        dismissDeleteDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
 
         mDropdownViewInfoListManager.clear();
         mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;

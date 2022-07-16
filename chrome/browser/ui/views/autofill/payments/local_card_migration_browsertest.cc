@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -146,6 +145,11 @@ class PersonalDataLoadedObserverMock : public PersonalDataManagerObserver {
 class LocalCardMigrationBrowserTest
     : public SyncTest,
       public LocalCardMigrationManager::ObserverForTest {
+ public:
+  LocalCardMigrationBrowserTest(const LocalCardMigrationBrowserTest&) = delete;
+  LocalCardMigrationBrowserTest& operator=(
+      const LocalCardMigrationBrowserTest&) = delete;
+
  protected:
   // Various events that can be waited on by the DialogEventWaiter.
   enum class DialogEvent : int {
@@ -270,10 +274,10 @@ class LocalCardMigrationBrowserTest
   }
 
   void NavigateTo(const std::string& file_path) {
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), file_path.find("data:") == 0U
                        ? GURL(file_path)
-                       : embedded_test_server()->GetURL(file_path));
+                       : embedded_test_server()->GetURL(file_path)));
   }
 
   void OnDecideToRequestLocalCardMigration() override {
@@ -536,8 +540,6 @@ class LocalCardMigrationBrowserTest
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationBrowserTest);
 };
 
 // TODO(crbug.com/932818): Remove this class after experiment flag is cleaned

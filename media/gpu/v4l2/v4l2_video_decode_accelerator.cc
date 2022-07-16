@@ -15,12 +15,13 @@
 #include <sys/mman.h>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -1286,7 +1287,7 @@ void V4L2VideoDecodeAccelerator::CheckGLFences() {
             FROM_HERE,
             base::BindOnce(&V4L2VideoDecodeAccelerator::Enqueue,
                            base::Unretained(this)),
-            base::TimeDelta::FromMilliseconds(resched_delay));
+            base::Milliseconds(resched_delay));
       }
       break;
     }
@@ -1925,7 +1926,7 @@ bool V4L2VideoDecodeAccelerator::StopDevicePoll() {
   // Must be done after the Stop() above to ensure
   // |cancelable_service_device_task_callback_| is not copied.
   cancelable_service_device_task_.Cancel();
-  cancelable_service_device_task_callback_ = {};
+  cancelable_service_device_task_callback_ = base::NullCallback();
   // Clear the interrupt now, to be sure.
   if (!device_->ClearDevicePollInterrupt()) {
     PLOG(ERROR) << "ClearDevicePollInterrupt: failed";
@@ -2366,7 +2367,33 @@ bool V4L2VideoDecodeAccelerator::ProcessFrame(int32_t bitstream_buffer_id,
 
   scoped_refptr<VideoFrame> input_frame = buf->GetVideoFrame();
   if (!input_frame) {
-    VLOGF(1) << "Failed wrapping input frame!";
+    VLOGF(1) << "Could not get the input frame for the image processor!";
+    return false;
+  }
+
+  // The |input_frame| has a potentially incorrect visible rectangle and natural
+  // size: that frame gets created by V4L2Buffer::CreateVideoFrame() which uses
+  // v4l2_format::fmt.pix_mp.width and v4l2_format::fmt.pix_mp.height as the
+  // visible rectangle and natural size. However, those dimensions actually
+  // correspond to the coded size. Therefore, we should wrap |input_frame| into
+  // another frame with the right visible rectangle and natural size.
+  DCHECK(input_frame->visible_rect().origin().IsOrigin());
+  const gfx::Rect visible_rect = image_processor_->input_config().visible_rect;
+  const gfx::Size natural_size = visible_rect.size();
+  if (!gfx::Rect(input_frame->coded_size()).Contains(visible_rect) ||
+      !input_frame->visible_rect().Contains(visible_rect)) {
+    VLOGF(1) << "The visible size is too large!";
+    return false;
+  }
+  if (!gfx::Rect(input_frame->natural_size())
+           .Contains(gfx::Rect(natural_size))) {
+    VLOGF(1) << "The natural size is too large!";
+    return false;
+  }
+  scoped_refptr<VideoFrame> cropped_input_frame = VideoFrame::WrapVideoFrame(
+      input_frame, input_frame->format(), visible_rect, natural_size);
+  if (!cropped_input_frame) {
+    VLOGF(1) << "Could not wrap the input frame for the image processor!";
     return false;
   }
 
@@ -2378,13 +2405,13 @@ bool V4L2VideoDecodeAccelerator::ProcessFrame(int32_t bitstream_buffer_id,
   // FrameReadyCB is executed.
   if (image_processor_->output_mode() == ImageProcessor::OutputMode::IMPORT) {
     image_processor_->Process(
-        input_frame, output_record.output_frame,
+        cropped_input_frame, output_record.output_frame,
         base::BindOnce(&V4L2VideoDecodeAccelerator::FrameProcessed,
                        base::Unretained(this), bitstream_buffer_id,
                        buf->BufferId()));
   } else {
     image_processor_->Process(
-        input_frame,
+        cropped_input_frame,
         base::BindOnce(&V4L2VideoDecodeAccelerator::FrameProcessed,
                        base::Unretained(this), bitstream_buffer_id));
   }

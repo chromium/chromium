@@ -97,7 +97,7 @@ class CC_EXPORT CompositorFrameReportingController {
   std::unique_ptr<CompositorFrameReporter>* reporters() { return reporters_; }
 
   void SetDroppedFrameCounter(DroppedFrameCounter* counter) {
-    dropped_frame_counter_ = counter;
+    global_trackers_.dropped_frame_counter = counter;
   }
 
   void BeginMainFrameStarted(base::TimeTicks begin_main_frame_start_time) {
@@ -191,7 +191,7 @@ class CC_EXPORT CompositorFrameReportingController {
 
   const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
 
-  DroppedFrameCounter* dropped_frame_counter_ = nullptr;
+  GlobalMetricsTrackers global_trackers_;
 
   // When a frame with events metrics fails to be presented, its events metrics
   // will be added to this map. The first following presented frame will get

@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -28,6 +28,10 @@ class WebAudioOutputIPCFactory::Impl {
 
   explicit Impl(scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
       : io_task_runner_(std::move(io_task_runner)) {}
+
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl&) = delete;
+
   ~Impl() { DCHECK(factory_remotes_.IsEmpty()); }
 
   mojom::blink::RendererAudioOutputStreamFactory* GetRemoteFactory(
@@ -44,9 +48,6 @@ class WebAudioOutputIPCFactory::Impl {
   // Maps frame id to the corresponding factory.
   StreamFactoryMap factory_remotes_;
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 // static

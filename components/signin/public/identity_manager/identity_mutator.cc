@@ -4,9 +4,9 @@
 
 #include "components/signin/public/identity_manager/identity_mutator.h"
 
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 
@@ -30,9 +30,11 @@ bool JniIdentityMutator::SetPrimaryAccount(
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
 
-  return primary_account_mutator->SetPrimaryAccount(
-      ConvertFromJavaCoreAccountId(env, primary_account_id),
-      static_cast<ConsentLevel>(j_consent_level));
+  PrimaryAccountMutator::PrimaryAccountError error =
+      primary_account_mutator->SetPrimaryAccount(
+          ConvertFromJavaCoreAccountId(env, primary_account_id),
+          static_cast<ConsentLevel>(j_consent_level));
+  return error == PrimaryAccountMutator::PrimaryAccountError::kNoError;
 }
 
 bool JniIdentityMutator::ClearPrimaryAccount(JNIEnv* env,

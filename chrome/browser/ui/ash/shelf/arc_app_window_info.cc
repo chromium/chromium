@@ -50,9 +50,9 @@ void ArcAppWindowInfo::SetDescription(const std::string& title,
   icon_ = icon;
 }
 
-void ArcAppWindowInfo::set_hidden_from_shelf(bool hidden) {
-  if (hidden_from_shelf_ != hidden) {
-    hidden_from_shelf_ = hidden;
+void ArcAppWindowInfo::set_window_hidden_from_shelf(bool hidden) {
+  if (window_hidden_from_shelf_ != hidden) {
+    window_hidden_from_shelf_ = hidden;
     UpdateWindowProperties();
   }
 }
@@ -61,9 +61,10 @@ void ArcAppWindowInfo::UpdateWindowProperties() {
   aura::Window* const win = window();
   if (!win)
     return;
-  win->SetProperty(ash::kHideInDeskMiniViewKey, hidden_from_shelf_);
-  win->SetProperty(ash::kHideInOverviewKey, hidden_from_shelf_);
-  win->SetProperty(ash::kHideInShelfKey, hidden_from_shelf_);
+  bool hidden = window_hidden_from_shelf_ || task_hidden_from_shelf_;
+  win->SetProperty(ash::kHideInDeskMiniViewKey, hidden);
+  win->SetProperty(ash::kHideInOverviewKey, hidden);
+  win->SetProperty(ash::kHideInShelfKey, hidden);
 }
 
 void ArcAppWindowInfo::set_window(aura::Window* window) {
@@ -101,4 +102,15 @@ const gfx::ImageSkia& ArcAppWindowInfo::icon() const {
 
 const std::string& ArcAppWindowInfo::logical_window_id() const {
   return logical_window_id_;
+}
+
+void ArcAppWindowInfo::set_task_hidden_from_shelf() {
+  if (!task_hidden_from_shelf_) {
+    task_hidden_from_shelf_ = true;
+    UpdateWindowProperties();
+  }
+}
+
+bool ArcAppWindowInfo::task_hidden_from_shelf() const {
+  return task_hidden_from_shelf_;
 }

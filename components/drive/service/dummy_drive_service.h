@@ -11,7 +11,7 @@
 #include <string>
 
 #include "components/drive/service/drive_service_interface.h"
-#include "google_apis/drive/auth_service_interface.h"
+#include "google_apis/common/auth_service_interface.h"
 
 namespace drive {
 

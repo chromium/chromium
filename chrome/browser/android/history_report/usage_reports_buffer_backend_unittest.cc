@@ -10,7 +10,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "chrome/browser/android/history_report/usage_report_util.h"
 #include "chrome/browser/android/proto/delta_file.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,6 +30,11 @@ namespace history_report {
 class UsageReportsBufferBackendTest : public testing::Test {
  public:
   UsageReportsBufferBackendTest() {}
+
+  UsageReportsBufferBackendTest(const UsageReportsBufferBackendTest&) = delete;
+  UsageReportsBufferBackendTest& operator=(
+      const UsageReportsBufferBackendTest&) = delete;
+
   ~UsageReportsBufferBackendTest() override {}
 
  protected:
@@ -42,9 +46,6 @@ class UsageReportsBufferBackendTest : public testing::Test {
 
   std::unique_ptr<UsageReportsBufferBackend> buffer_;
   base::ScopedTempDir temp_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsageReportsBufferBackendTest);
 };
 
 TEST_F(UsageReportsBufferBackendTest, AddTypedVisit) {

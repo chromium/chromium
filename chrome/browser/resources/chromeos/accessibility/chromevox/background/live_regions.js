@@ -109,13 +109,11 @@ export class LiveRegions {
     // Schedule all live regions after all events in the native C++
     // EventBundle.
     this.liveRegionNodeSet_ = new WeakSet();
-    setTimeout(function() {
-      for (let i = 0; i < this.changedNodes_.length; i++) {
-        const node = this.changedNodes_[i];
-        this.outputLiveRegionChange_(node, null);
-      }
-      this.changedNodes_ = [];
-    }.bind(this), 0);
+    for (let i = 0; i < this.changedNodes_.length; i++) {
+      const node = this.changedNodes_[i];
+      this.outputLiveRegionChange_(node, null);
+    }
+    this.changedNodes_ = [];
   }
 
   /**

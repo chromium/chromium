@@ -250,12 +250,6 @@ base::Value WebSocketTransportClientSocketPool::GetInfoAsValue(
   return dict;
 }
 
-void WebSocketTransportClientSocketPool::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_dump_absolute_name) const {
-  // Not supported.
-}
-
 bool WebSocketTransportClientSocketPool::IsStalled() const {
   return !stalled_request_queue_.empty();
 }

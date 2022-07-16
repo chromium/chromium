@@ -13,10 +13,11 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -696,9 +697,9 @@ TEST_F(BlobRegistryImplTest, Register_FileSystemFile_Valid) {
   ASSERT_EQ(BlobStatus::DONE, handle->GetBlobStatus());
 
   BlobDataBuilder expected_blob_data(kId);
-  expected_blob_data.AppendFileSystemFile(file_system_context_->CrackURL(url),
-                                          0, 16, base::Time(),
-                                          file_system_context_);
+  expected_blob_data.AppendFileSystemFile(
+      file_system_context_->CrackURLInFirstPartyContext(url), 0, 16,
+      base::Time(), file_system_context_);
 
   EXPECT_EQ(expected_blob_data, *handle->CreateSnapshot());
   EXPECT_EQ(0u, BlobsUnderConstruction());

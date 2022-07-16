@@ -23,6 +23,10 @@ class ExtensionCache {
                               bool file_ownership_passed)>;
 
   ExtensionCache() = default;
+
+  ExtensionCache(const ExtensionCache&) = delete;
+  ExtensionCache& operator=(const ExtensionCache&) = delete;
+
   virtual ~ExtensionCache() = default;
 
   // Initialize cache in background. The |callback| is called when cache ready.
@@ -57,9 +61,6 @@ class ExtensionCache {
                             const base::FilePath& file_path,
                             const std::string& version,
                             PutExtensionCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionCache);
 };
 
 }  // namespace extensions

@@ -23,38 +23,31 @@ class CORE_EXPORT ReferrerScriptInfo {
   STACK_ALLOCATED();
 
  public:
-  enum class BaseUrlSource {
-    kClassicScriptCORSSameOrigin,
-    kClassicScriptCORSCrossOrigin,
-    kOther
-  };
   ReferrerScriptInfo() {}
   ReferrerScriptInfo(const KURL& base_url,
                      network::mojom::CredentialsMode credentials_mode,
                      const String& nonce,
                      ParserDisposition parser_state,
-                     network::mojom::ReferrerPolicy referrer_policy,
-                     BaseUrlSource base_url_source)
+                     network::mojom::ReferrerPolicy referrer_policy)
       : base_url_(base_url),
         credentials_mode_(credentials_mode),
         nonce_(nonce),
         parser_state_(parser_state),
-        referrer_policy_(referrer_policy),
-        base_url_source_(base_url_source) {}
-  ReferrerScriptInfo(const KURL& base_url,
-                     const ScriptFetchOptions& options,
-                     BaseUrlSource base_url_source)
+        referrer_policy_(referrer_policy) {}
+  ReferrerScriptInfo(const KURL& base_url, const ScriptFetchOptions& options)
       : ReferrerScriptInfo(base_url,
                            options.CredentialsMode(),
                            options.Nonce(),
                            options.ParserState(),
-                           options.GetReferrerPolicy(),
-                           base_url_source) {}
+                           options.GetReferrerPolicy()) {}
 
   static ReferrerScriptInfo FromV8HostDefinedOptions(
       v8::Local<v8::Context>,
-      v8::Local<v8::PrimitiveArray>);
-  v8::Local<v8::PrimitiveArray> ToV8HostDefinedOptions(v8::Isolate*) const;
+      v8::Local<v8::Data>,
+      const KURL& script_origin_resource_name);
+  v8::Local<v8::Data> ToV8HostDefinedOptions(
+      v8::Isolate*,
+      const KURL& script_origin_resource_name) const;
 
   const KURL& BaseURL() const { return base_url_; }
   network::mojom::CredentialsMode CredentialsMode() const {
@@ -65,22 +58,12 @@ class CORE_EXPORT ReferrerScriptInfo {
   network::mojom::ReferrerPolicy GetReferrerPolicy() const {
     return referrer_policy_;
   }
-  BaseUrlSource GetBaseUrlSource() const { return base_url_source_; }
 
-  bool IsDefaultValue() const {
-    return base_url_.IsNull() &&
-           credentials_mode_ == network::mojom::CredentialsMode::kSameOrigin &&
-           nonce_.IsEmpty() && parser_state_ == kNotParserInserted &&
-           base_url_source_ == BaseUrlSource::kOther;
-  }
+  bool IsDefaultValue(const KURL& script_origin_resource_name) const;
 
  private:
   // Spec: "referencing script's base URL"
   // https://html.spec.whatwg.org/C/#concept-script-base-url
-  //
-  // If base_url_.IsNull(), refer to ScriptOrigin::ResourceName() instead.
-  // Note: This improves the chance of getting into the fast path in
-  //       ToV8HostDefinedOptions().
   const KURL base_url_;
 
   // Spec: "referencing script's credentials mode"
@@ -102,9 +85,6 @@ class CORE_EXPORT ReferrerScriptInfo {
   // https://html.spec.whatwg.org/C/#default-classic-script-fetch-options
   const network::mojom::ReferrerPolicy referrer_policy_ =
       network::mojom::ReferrerPolicy::kDefault;
-
-  // Temporary flag to collect UMA for crbug.com/1082086.
-  const BaseUrlSource base_url_source_ = BaseUrlSource::kOther;
 };
 
 }  // namespace blink

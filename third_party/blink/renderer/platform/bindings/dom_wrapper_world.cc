@@ -33,13 +33,20 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
+#include "third_party/blink/renderer/platform/bindings/v8_object_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
+
+static_assert(kMainDOMWorldId == DOMWrapperWorld::kMainWorldId,
+              "The publicly-exposed kMainWorldId constant must match "
+              "the internal blink value.");
 
 unsigned DOMWrapperWorld::number_of_non_main_worlds_in_main_thread_ = 0;
 
@@ -74,7 +81,8 @@ DOMWrapperWorld::DOMWrapperWorld(v8::Isolate* isolate,
     : world_type_(world_type),
       world_id_(world_id),
       dom_data_store_(
-          MakeGarbageCollected<DOMDataStore>(isolate, IsMainWorld())) {
+          MakeGarbageCollected<DOMDataStore>(isolate, IsMainWorld())),
+      v8_object_data_store_(MakeGarbageCollected<V8ObjectDataStore>()) {
   switch (world_type_) {
     case WorldType::kMain:
       // The main world is managed separately from worldMap(). See worldMap().
@@ -104,10 +112,10 @@ DOMWrapperWorld& DOMWrapperWorld::MainWorld() {
 
 void DOMWrapperWorld::AllWorldsInCurrentThread(
     Vector<scoped_refptr<DOMWrapperWorld>>& worlds) {
+  DCHECK(worlds.IsEmpty());
+  WTF::CopyValuesToVector(GetWorldMap(), worlds);
   if (IsMainThread())
     worlds.push_back(&MainWorld());
-  for (DOMWrapperWorld* world : GetWorldMap().Values())
-    worlds.push_back(world);
 }
 
 DOMWrapperWorld::~DOMWrapperWorld() {
@@ -206,7 +214,9 @@ static IsolatedWorldStableIdMap& IsolatedWorldStableIds() {
 
 String DOMWrapperWorld::NonMainWorldStableId() const {
   DCHECK(!IsMainWorld());
-  return IsolatedWorldStableIds().at(GetWorldId());
+  const auto& map = IsolatedWorldStableIds();
+  const auto it = map.find(GetWorldId());
+  return it != map.end() ? it->value : String();
 }
 
 void DOMWrapperWorld::SetNonMainWorldStableId(int32_t world_id,
@@ -226,7 +236,9 @@ static IsolatedWorldHumanReadableNameMap& IsolatedWorldHumanReadableNames() {
 
 String DOMWrapperWorld::NonMainWorldHumanReadableName() const {
   DCHECK(!IsMainWorld());
-  return IsolatedWorldHumanReadableNames().at(GetWorldId());
+  const auto& map = IsolatedWorldHumanReadableNames();
+  const auto it = map.find(GetWorldId());
+  return it != map.end() ? it->value : String();
 }
 
 void DOMWrapperWorld::SetNonMainWorldHumanReadableName(

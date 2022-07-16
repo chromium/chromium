@@ -17,7 +17,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/browser/web_contents.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -130,11 +129,8 @@ void ReportResult(int frame_tree_node_id,
     return;
   SiteInstance* site_instance = frame_host->GetSiteInstance();
   DCHECK(site_instance);
-  WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
-  if (!web_contents)
-    return;
   StoragePartition* partition =
-      web_contents->GetBrowserContext()->GetStoragePartition(site_instance);
+      frame_host->GetBrowserContext()->GetStoragePartition(site_instance);
   DCHECK(partition);
   partition->GetNetworkContext()->QueueSignedExchangeReport(
       std::move(report), network_isolation_key);

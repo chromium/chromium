@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/arc/session/arc_session.h"
 #include "components/arc/session/arc_stop_reason.h"
 
@@ -22,6 +21,10 @@ namespace arc {
 class FakeArcSession : public ArcSession {
  public:
   FakeArcSession();
+
+  FakeArcSession(const FakeArcSession&) = delete;
+  FakeArcSession& operator=(const FakeArcSession&) = delete;
+
   ~FakeArcSession() override;
 
   // ArcSession overrides:
@@ -73,8 +76,6 @@ class FakeArcSession : public ArcSession {
   bool running_ = false;
   bool stop_requested_ = false;
   std::string upgrade_locale_param_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeArcSession);
 };
 
 }  // namespace arc

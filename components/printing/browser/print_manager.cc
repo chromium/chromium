@@ -13,12 +13,15 @@ namespace printing {
 
 PrintManager::PrintManager(content::WebContents* contents)
     : content::WebContentsObserver(contents),
-      print_manager_host_receivers_(
-          contents,
-          this,
-          content::WebContentsFrameReceiverSetPassKey()) {}
+      print_manager_host_receivers_(contents, this) {}
 
 PrintManager::~PrintManager() = default;
+
+void PrintManager::BindReceiver(
+    mojo::PendingAssociatedReceiver<mojom::PrintManagerHost> receiver,
+    content::RenderFrameHost* rfh) {
+  print_manager_host_receivers_.Bind(rfh, std::move(receiver));
+}
 
 void PrintManager::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_SESSION_ARC_PLAY_STORE_ENABLED_PREFERENCE_HANDLER_H_
 #define CHROME_BROWSER_ASH_ARC_SESSION_ARC_PLAY_STORE_ENABLED_PREFERENCE_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -21,6 +20,12 @@ class ArcPlayStoreEnabledPreferenceHandler {
  public:
   ArcPlayStoreEnabledPreferenceHandler(Profile* profile,
                                        ArcSessionManager* arc_session_manager);
+
+  ArcPlayStoreEnabledPreferenceHandler(
+      const ArcPlayStoreEnabledPreferenceHandler&) = delete;
+  ArcPlayStoreEnabledPreferenceHandler& operator=(
+      const ArcPlayStoreEnabledPreferenceHandler&) = delete;
+
   ~ArcPlayStoreEnabledPreferenceHandler();
 
   // Starts observing Google Play Store enabled preference change.
@@ -47,8 +52,6 @@ class ArcPlayStoreEnabledPreferenceHandler {
   // Must be the last member.
   base::WeakPtrFactory<ArcPlayStoreEnabledPreferenceHandler> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreEnabledPreferenceHandler);
 };
 
 }  // namespace arc

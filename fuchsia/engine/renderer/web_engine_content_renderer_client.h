@@ -8,15 +8,22 @@
 #include "base/macros.h"
 #include "components/cast_streaming/renderer/public/demuxer_provider.h"
 #include "content/public/renderer/content_renderer_client.h"
+#include "fuchsia/engine/renderer/web_engine_audio_device_factory.h"
 #include "fuchsia/engine/renderer/web_engine_render_frame_observer.h"
 
-namespace util {
+namespace memory_pressure {
 class MultiSourceMemoryPressureMonitor;
-}  // namespace util
+}  // namespace memory_pressure
 
 class WebEngineContentRendererClient : public content::ContentRendererClient {
  public:
   WebEngineContentRendererClient();
+
+  WebEngineContentRendererClient(const WebEngineContentRendererClient&) =
+      delete;
+  WebEngineContentRendererClient& operator=(
+      const WebEngineContentRendererClient&) = delete;
+
   ~WebEngineContentRendererClient() override;
 
   // Returns the WebEngineRenderFrameObserver corresponding to
@@ -46,9 +53,19 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
       content::RenderFrame* render_frame,
       const GURL& url,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner) override;
+  std::unique_ptr<media::RendererFactory> GetBaseRendererFactory(
+      content::RenderFrame* render_frame,
+      media::MediaLog* media_log,
+      media::DecoderFactory* decoder_factory,
+      base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>
+          get_gpu_factories_cb) override;
 
   bool RunClosureWhenInForeground(content::RenderFrame* render_frame,
                                   base::OnceClosure closure);
+
+  // Overrides the default Content/Blink audio pipeline, to allow Renderers to
+  // use the AudioConsumer service directly.
+  WebEngineAudioDeviceFactory audio_device_factory_;
 
   // Handles interaction with cast_streaming component.
   cast_streaming::DemuxerProvider cast_streaming_demuxer_provider_;
@@ -59,10 +76,8 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
 
   // Initiates cache purges and Blink/V8 garbage collection when free memory
   // is limited.
-  std::unique_ptr<util::MultiSourceMemoryPressureMonitor>
+  std::unique_ptr<memory_pressure::MultiSourceMemoryPressureMonitor>
       memory_pressure_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebEngineContentRendererClient);
 };
 
 #endif  // FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_CONTENT_RENDERER_CLIENT_H_

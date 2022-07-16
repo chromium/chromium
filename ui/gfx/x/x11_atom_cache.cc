@@ -104,7 +104,6 @@ constexpr const char* kAtomsToCache[] = {
     "_MOTIF_WM_HINTS",
     "_NETSCAPE_URL",
     "_NET_ACTIVE_WINDOW",
-    "_NET_CLIENT_LIST_STACKING",
     "_NET_CURRENT_DESKTOP",
     "_NET_FRAME_EXTENTS",
     "_NET_SUPPORTED",

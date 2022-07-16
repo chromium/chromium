@@ -25,8 +25,17 @@ namespace device {
 class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
     : public FidoAuthenticator {
  public:
-  explicit ChromeOSAuthenticator(
-      base::RepeatingCallback<uint32_t()> generate_request_id_callback);
+  struct COMPONENT_EXPORT(DEVICE_FIDO) Config {
+    // Whether uv platform authenticator is available (PIN or fingerprint
+    // enrolled).
+    bool uv_available;
+    // Whether using the power button for user presence checking is enabled.
+    bool power_button_enabled;
+  };
+
+  ChromeOSAuthenticator(
+      base::RepeatingCallback<uint32_t()> generate_request_id_callback,
+      Config config);
   ~ChromeOSAuthenticator() override;
 
   static void HasCredentialForGetAssertionRequest(
@@ -37,7 +46,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
       const CtapGetAssertionRequest& request,
       base::OnceCallback<void(bool has_credential)> callback);
 
-  // Invokes |callback| with a bool indicating  whether the platform
+  // Invokes |callback| with a bool indicating whether the platform
   // authenticator is available, which is true if the current user has a PIN set
   // up or biometrics enrolled.
   static void IsUVPlatformAuthenticatorAvailable(
@@ -94,6 +103,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
 
   // Callback to set request_id in the window property.
   base::RepeatingCallback<uint32_t()> generate_request_id_callback_;
+  const Config config_;
   base::WeakPtrFactory<ChromeOSAuthenticator> weak_factory_;
 };
 

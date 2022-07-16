@@ -96,11 +96,11 @@ std::unique_ptr<net::MockDnsClient> CreateHangingMockDnsClient() {
   net::MockDnsClientRuleList rules;
   rules.emplace_back(
       kHostname, net::dns_protocol::kTypeA, false /* secure */,
-      net::MockDnsClientRule::Result(net::MockDnsClientRule::FAIL),
+      net::MockDnsClientRule::Result(net::MockDnsClientRule::ResultType::kFail),
       true /* delay */);
   rules.emplace_back(
       kHostname, net::dns_protocol::kTypeAAAA, false /* secure */,
-      net::MockDnsClientRule::Result(net::MockDnsClientRule::FAIL),
+      net::MockDnsClientRule::Result(net::MockDnsClientRule::ResultType::kFail),
       true /* delay */);
 
   return std::make_unique<net::MockDnsClient>(config, std::move(rules));
@@ -140,7 +140,7 @@ class StaleHostResolverTest : public testing::Test {
         resolve_pending_(false),
         resolve_complete_(false) {
     // Make value clock not empty.
-    tick_clock_.Advance(base::TimeDelta::FromMicroseconds(1));
+    tick_clock_.Advance(base::Microseconds(1));
   }
 
   ~StaleHostResolverTest() override {}
@@ -148,7 +148,7 @@ class StaleHostResolverTest : public testing::Test {
   void SetStaleDelay(int stale_delay_sec) {
     DCHECK(!resolver_);
 
-    options_.delay = base::TimeDelta::FromSeconds(stale_delay_sec);
+    options_.delay = base::Seconds(stale_delay_sec);
   }
 
   void SetUseStaleOnNameNotResolved() {
@@ -162,8 +162,7 @@ class StaleHostResolverTest : public testing::Test {
                          bool allow_other_network) {
     DCHECK(!resolver_);
 
-    options_.max_expired_time =
-        base::TimeDelta::FromSeconds(max_expired_time_sec);
+    options_.max_expired_time = base::Seconds(max_expired_time_sec);
     options_.max_stale_uses = max_stale_uses;
     options_.allow_other_network = allow_other_network;
   }
@@ -230,7 +229,7 @@ class StaleHostResolverTest : public testing::Test {
     DCHECK(resolver_);
     DCHECK(resolver_->GetHostCache());
 
-    base::TimeDelta ttl(base::TimeDelta::FromSeconds(kCacheEntryTTLSec));
+    base::TimeDelta ttl(base::Seconds(kCacheEntryTTLSec));
     net::HostCache::Key key(kHostname, net::DnsQueryType::UNSPECIFIED, 0,
                             net::HostResolverSource::ANY,
                             net::NetworkIsolationKey());
@@ -238,7 +237,7 @@ class StaleHostResolverTest : public testing::Test {
         error,
         error == net::OK ? MakeAddressList(kCacheAddress) : net::AddressList(),
         net::HostCache::Entry::SOURCE_UNKNOWN, ttl);
-    base::TimeDelta age = base::TimeDelta::FromSeconds(age_sec);
+    base::TimeDelta age = base::Seconds(age_sec);
     base::TimeTicks then = tick_clock_.NowTicks() - age;
     resolver_->GetHostCache()->Set(key, entry, then, ttl);
   }
@@ -293,8 +292,7 @@ class StaleHostResolverTest : public testing::Test {
     // Run until resolve completes or timeout.
     resolve_closure_ = run_loop.QuitWhenIdleClosure();
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, resolve_closure_,
-        base::TimeDelta::FromSeconds(kWaitTimeoutSec));
+        FROM_HERE, resolve_closure_, base::Seconds(kWaitTimeoutSec));
     run_loop.Run();
   }
 
@@ -620,15 +618,15 @@ TEST_F(StaleHostResolverTest, MAYBE_StaleUsability) {
     CreateResolver();
     CreateCacheEntry(kCacheEntryTTLSec + test_case.age_sec, test_case.error);
 
-    AdvanceTickClock(base::TimeDelta::FromMilliseconds(1));
+    AdvanceTickClock(base::Milliseconds(1));
     for (int j = 0; j < test_case.network_changes; ++j)
       OnNetworkChange();
 
-    AdvanceTickClock(base::TimeDelta::FromMilliseconds(1));
+    AdvanceTickClock(base::Milliseconds(1));
     for (int j = 0; j < test_case.stale_use - 1; ++j)
       LookupStale();
 
-    AdvanceTickClock(base::TimeDelta::FromMilliseconds(1));
+    AdvanceTickClock(base::Milliseconds(1));
     Resolve(absl::nullopt);
     WaitForResolve();
     EXPECT_TRUE(resolve_complete()) << i;
@@ -652,7 +650,7 @@ TEST_F(StaleHostResolverTest, MAYBE_StaleUsability) {
       }
     }
     // Make sure that all tasks complete so jobs are freed properly.
-    AdvanceTickClock(base::TimeDelta::FromSeconds(kLongStaleDelaySec));
+    AdvanceTickClock(base::Seconds(kLongStaleDelaySec));
     WaitForNetworkResolveComplete();
     base::RunLoop run_loop;
     run_loop.RunUntilIdle();

@@ -50,11 +50,33 @@ declare_args() {
                                            (is_cast_audio_only && is_android))
 }
 
+declare_args() {
+  # True to enable the cast audio renderer.
+  enable_cast_audio_renderer = false
+}
+
 # Configures media options for cast.  See media/media_options.gni
 cast_mojo_media_services = []
 cast_mojo_media_host = ""
 
-if (enable_cast_renderer) {
+if (enable_cast_audio_renderer) {
+  if (is_android) {
+    cast_mojo_media_services = [
+      "cdm",
+      "audio_decoder",
+    ]
+  }
+
+  if (!is_cast_audio_only) {
+    cast_mojo_media_services += [ "video_decoder" ]
+  }
+
+  if (is_android && is_cast_audio_only) {
+    cast_mojo_media_host = "browser"
+  } else {
+    cast_mojo_media_host = "gpu"
+  }
+} else if (enable_cast_renderer) {
   # In this path, mojo media services are hosted in two processes:
   # 1. "renderer" and "cdm" run in browser process. This is hard coded in the
   # code.
@@ -63,7 +85,6 @@ if (enable_cast_renderer) {
     "cdm",
     "renderer",
   ]
-
   if (!is_cast_audio_only) {
     cast_mojo_media_services += [ "video_decoder" ]
   }

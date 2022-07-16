@@ -38,6 +38,10 @@ struct SyncToken;
 class GPU_EXPORT GpuControl {
  public:
   GpuControl() = default;
+
+  GpuControl(const GpuControl&) = delete;
+  GpuControl& operator=(const GpuControl&) = delete;
+
   virtual ~GpuControl() = default;
 
   virtual void SetGpuControlClient(GpuControlClient* gpu_control_client) = 0;
@@ -122,9 +126,6 @@ class GPU_EXPORT GpuControl {
   // Notifies the surface of the ideal frame rate that the content is updated
   // at. This can be used to tune the hardware refresh rate.
   virtual void SetFrameRate(float frame_rate) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GpuControl);
 };
 
 }  // namespace gpu

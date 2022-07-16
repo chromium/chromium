@@ -22,7 +22,6 @@
 #include <limits>
 #include <vector>
 
-#include "base/macros.h"
 #include "util/file/file_io.h"
 
 namespace crashpad {
@@ -35,6 +34,9 @@ namespace internal {
 //!     file.
 class MinidumpWritable {
  public:
+  MinidumpWritable(const MinidumpWritable&) = delete;
+  MinidumpWritable& operator=(const MinidumpWritable&) = delete;
+
   virtual ~MinidumpWritable();
 
   //! \brief Writes an object and all of its children to a minidump file.
@@ -270,8 +272,6 @@ class MinidumpWritable {
 
   size_t leading_pad_bytes_;
   State state_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpWritable);
 };
 
 }  // namespace internal

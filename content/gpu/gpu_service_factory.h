@@ -5,10 +5,9 @@
 #ifndef CONTENT_GPU_GPU_SERVICE_FACTORY_H_
 #define CONTENT_GPU_GPU_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -37,6 +36,10 @@ class GpuServiceFactory {
       base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager,
       gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       media::AndroidOverlayMojoFactoryCB android_overlay_factory_cb);
+
+  GpuServiceFactory(const GpuServiceFactory&) = delete;
+  GpuServiceFactory& operator=(const GpuServiceFactory&) = delete;
+
   ~GpuServiceFactory();
 
   void RunMediaService(
@@ -57,8 +60,6 @@ class GpuServiceFactory {
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
   gpu::GpuFeatureInfo gpu_feature_info_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(GpuServiceFactory);
 };
 
 }  // namespace content

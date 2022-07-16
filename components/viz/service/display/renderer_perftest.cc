@@ -32,7 +32,7 @@
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display/skia_renderer.h"
-#include "components/viz/service/display/viz_perf_test.h"
+#include "components/viz/service/display/viz_perftest.h"
 #include "components/viz/service/display_embedder/gl_output_surface_offscreen.h"
 #include "components/viz/service/display_embedder/in_process_gpu_memory_buffer_manager.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
@@ -75,6 +75,9 @@ class WaitForSwapDisplayClient : public DisplayClient {
  public:
   WaitForSwapDisplayClient() = default;
 
+  WaitForSwapDisplayClient(const WaitForSwapDisplayClient&) = delete;
+  WaitForSwapDisplayClient& operator=(const WaitForSwapDisplayClient&) = delete;
+
   void DisplayOutputSurfaceLost() override {}
   void DisplayWillDrawAndSwap(
       bool will_draw_and_swap,
@@ -103,8 +106,6 @@ class WaitForSwapDisplayClient : public DisplayClient {
 
  private:
   std::unique_ptr<base::RunLoop> loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForSwapDisplayClient);
 };
 
 std::unique_ptr<CompositorRenderPass> CreateTestRootRenderPass() {
@@ -232,12 +233,15 @@ template <typename RendererType>
 class RendererPerfTest : public VizPerfTest {
  public:
   RendererPerfTest()
-      : manager_(&shared_bitmap_manager_),
+      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
         support_(
             std::make_unique<CompositorFrameSinkSupport>(nullptr,
                                                          &manager_,
                                                          kArbitraryFrameSinkId,
                                                          true /* is_root */)) {}
+
+  RendererPerfTest(const RendererPerfTest&) = delete;
+  RendererPerfTest& operator=(const RendererPerfTest&) = delete;
 
   // Overloaded for concrete RendererType below.
   std::unique_ptr<OutputSurface> CreateOutputSurface(
@@ -666,8 +670,6 @@ class RendererPerfTest : public VizPerfTest {
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
   std::vector<TransferableResource> resource_list_;
   std::unique_ptr<gl::DisableNullDrawGLBindings> enable_pixel_output_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererPerfTest);
 };
 
 template <>

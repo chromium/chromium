@@ -36,6 +36,9 @@ class URLRequestFailedJob : public URLRequestJob {
   URLRequestFailedJob(URLRequest* request,
                       int net_error);
 
+  URLRequestFailedJob(const URLRequestFailedJob&) = delete;
+  URLRequestFailedJob& operator=(const URLRequestFailedJob&) = delete;
+
   ~URLRequestFailedJob() override;
 
   // URLRequestJob implementation:
@@ -81,8 +84,6 @@ class URLRequestFailedJob : public URLRequestJob {
   int64_t total_received_bytes_;
 
   base::WeakPtrFactory<URLRequestFailedJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestFailedJob);
 };
 
 }  // namespace net

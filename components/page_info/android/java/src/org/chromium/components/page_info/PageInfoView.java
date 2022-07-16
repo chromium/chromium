@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -21,7 +22,7 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     private PageInfoRowView mConnectionRow;
     private PageInfoRowView mPermissionsRow;
     private PageInfoRowView mCookiesRow;
-    private PageInfoRowView mHistoryRow;
+    private PageInfoRowView mPageZoomRow;
     private Button mForgetSiteButton;
     private TextView mHttpsImageCompressionMessage;
     private Button mInstantAppButton;
@@ -49,7 +50,8 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         initConnection();
         initPermissions();
         initCookies(params);
-        initHistory();
+        initPageZoom();
+        initForgetSiteButton();
         initHttpsImageCompression(params);
         initInstantApp(params);
         initOpenOnline(params);
@@ -73,8 +75,11 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         mOnUiClosingCallback = params.onUiClosingCallback;
     }
 
-    private void initHistory() {
-        mHistoryRow = findViewById(R.id.page_info_history_row);
+    private void initPageZoom() {
+        mPageZoomRow = findViewById(R.id.page_info_page_zoom_row);
+    }
+
+    private void initForgetSiteButton() {
         mForgetSiteButton = findViewById(R.id.page_info_forget_site_button);
         initializePageInfoViewChild(mForgetSiteButton, false, null);
     }
@@ -111,8 +116,12 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         return mCookiesRow;
     }
 
-    public PageInfoRowView getHistoryRowView() {
-        return mHistoryRow;
+    public PageInfoRowView getPageZoomRowView() {
+        return mPageZoomRow;
+    }
+
+    public ViewGroup getRowWrapper() {
+        return mRowWrapper;
     }
 
     public Button getForgetSiteButton() {

@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_COCOA_TEXT_INPUT_HOST_H_
 #define UI_VIEWS_COCOA_TEXT_INPUT_HOST_H_
 
-#include "base/macros.h"
 #include "components/remote_cocoa/common/text_input_host.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -22,6 +21,10 @@ class NativeWidgetMacNSWindowHost;
 class VIEWS_EXPORT TextInputHost : public remote_cocoa::mojom::TextInputHost {
  public:
   explicit TextInputHost(NativeWidgetMacNSWindowHost* host_impl);
+
+  TextInputHost(const TextInputHost&) = delete;
+  TextInputHost& operator=(const TextInputHost&) = delete;
+
   ~TextInputHost() override;
   void BindReceiver(
       mojo::PendingAssociatedReceiver<remote_cocoa::mojom::TextInputHost>
@@ -85,7 +88,6 @@ class VIEWS_EXPORT TextInputHost : public remote_cocoa::mojom::TextInputHost {
 
   mojo::AssociatedReceiver<remote_cocoa::mojom::TextInputHost> mojo_receiver_{
       this};
-  DISALLOW_COPY_AND_ASSIGN(TextInputHost);
 };
 
 }  // namespace views

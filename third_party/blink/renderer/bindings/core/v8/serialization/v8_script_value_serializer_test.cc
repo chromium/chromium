@@ -1606,7 +1606,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileV4WithSnapshot) {
   // From v4 to v7, the last modified time is written in seconds.
   // So -0.25 represents 250 ms before the Unix epoch.
   EXPECT_EQ(-250, new_file->lastModified());
-  EXPECT_EQ(base::TimeDelta::FromMillisecondsD(-250.0),
+  EXPECT_EQ(base::Milliseconds(-250.0),
             new_file->LastModifiedTime() - base::Time::UnixEpoch());
 }
 
@@ -1658,7 +1658,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileV8WithSnapshot) {
   EXPECT_EQ(512u, new_file->size());
   // From v8, the last modified time is written in milliseconds.
   // So -0.25 represents 0.25 ms before the Unix epoch.
-  EXPECT_EQ(base::TimeDelta::FromMillisecondsD(-0.25),
+  EXPECT_EQ(base::Milliseconds(-0.25),
             new_file->LastModifiedTime() - base::Time::UnixEpoch());
   // lastModified IDL attribute can't represent -0.25 ms.
   EXPECT_EQ(INT64_C(0), new_file->lastModified());

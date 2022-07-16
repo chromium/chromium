@@ -29,6 +29,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "chrome/common/pref_names.h"
+#include "ui/lottie/resource.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -87,6 +88,11 @@ std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
       local_state->GetString(language::prefs::kApplicationLocale);
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ui::ResourceBundle::SetParseLottieAsStillImage(
+      &lottie::ParseLottieAsStillImage);
+#endif
+
   TRACE_EVENT0("startup",
                "ChromeBrowserMainParts::InitResourceBundleAndDetermineLocale");
   // On a POSIX OS other than ChromeOS, the parameter that is passed to the
@@ -110,7 +116,7 @@ std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
     // resources are loaded on-use, when an already-installed DFM loads.
 #else
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        resources_pack_path, ui::SCALE_FACTOR_NONE);
+        resources_pack_path, ui::kScaleFactorNone);
 #endif  // defined(OS_ANDROID)
   }
 

@@ -483,6 +483,8 @@ class HeadlessWebContentsPDFPageSizeRoundingTest
 
 HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessWebContentsPDFPageSizeRoundingTest);
 
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+
 const char kExpectedStructTreeJSON[] = R"({
    "lang": "en",
    "type": "Document",
@@ -571,13 +573,6 @@ class HeadlessWebContentsTaggedPDFTest
     : public HeadlessAsyncDevTooledBrowserTest,
       public page::Observer {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Specifically request a tagged (accessible) PDF. Maybe someday
-    // we can enable this by default.
-    HeadlessAsyncDevTooledBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kExportTaggedPDF);
-  }
-
   void RunDevTooledTest() override {
     EXPECT_TRUE(embedded_test_server()->Start());
 
@@ -635,6 +630,8 @@ class HeadlessWebContentsTaggedPDFTest
 };
 
 HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessWebContentsTaggedPDFTest);
+
+#endif  // BUILDFLAG(ENABLE_TAGGED_PDF)
 
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 

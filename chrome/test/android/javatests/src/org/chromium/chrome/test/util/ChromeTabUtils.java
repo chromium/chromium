@@ -594,8 +594,8 @@ public class ChromeTabUtils {
     /**
      * Close all tabs and waits for all tabs pending closure to be observed.
      */
-    public static void closeAllTabs(
-            Instrumentation instrumentation, final ChromeTabbedActivity activity) {
+    public static void closeAllTabs(Instrumentation instrumentation,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         final CallbackHelper closeCallback = new CallbackHelper();
         final TabModelObserver observer = new TabModelObserver() {
             @Override
@@ -606,7 +606,7 @@ public class ChromeTabUtils {
         instrumentation.runOnMainSync(new Runnable() {
             @Override
             public void run() {
-                TabModelSelector selector = activity.getTabModelSelector();
+                TabModelSelector selector = tabModelSelectorSupplier.get();
                 for (TabModel tabModel : selector.getModels()) {
                     tabModel.addObserver(observer);
                 }
@@ -614,7 +614,7 @@ public class ChromeTabUtils {
         });
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { activity.getTabModelSelector().closeAllTabs(); });
+                () -> { tabModelSelectorSupplier.get().closeAllTabs(); });
 
         try {
             closeCallback.waitForCallback(0);
@@ -624,13 +624,23 @@ public class ChromeTabUtils {
         instrumentation.runOnMainSync(new Runnable() {
             @Override
             public void run() {
-                TabModelSelector selector = activity.getTabModelSelector();
+                TabModelSelector selector = tabModelSelectorSupplier.get();
                 for (TabModel tabModel : selector.getModels()) {
                     tabModel.removeObserver(observer);
                 }
             }
         });
         instrumentation.waitForIdleSync();
+    }
+
+    /**
+     * @deprecated Transitory method, use {@link #closeAllTabs(Instrumentation,
+     *         ObservableSupplier<TabModelSelector>)} instead.
+     * TODO(crbug.com/1233155): Remove this after the usages are migrated.
+     */
+    public static void closeAllTabs(
+            Instrumentation instrumentation, final ChromeTabbedActivity activity) {
+        closeAllTabs(instrumentation, activity.getTabModelSelectorSupplier());
     }
 
     /**
@@ -737,15 +747,17 @@ public class ChromeTabUtils {
         final CallbackHelper createdCallback = new CallbackHelper();
         final TabModel tabModel =
                 testRule.getActivity().getTabModelSelector().getModel(expectIncognito);
-        tabModel.addObserver(new TabModelObserver() {
-            @Override
-            public void didAddTab(
-                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
-                if (TextUtils.equals(expectedUrl, tab.getUrl().getSpec())) {
-                    createdCallback.notifyCalled();
-                    tabModel.removeObserver(this);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tabModel.addObserver(new TabModelObserver() {
+                @Override
+                public void didAddTab(
+                        Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+                    if (TextUtils.equals(expectedUrl, tab.getUrl().getSpec())) {
+                        createdCallback.notifyCalled();
+                        tabModel.removeObserver(this);
+                    }
                 }
-            }
+            });
         });
 
         TestTouchUtils.performLongClickOnMainSync(
@@ -787,15 +799,17 @@ public class ChromeTabUtils {
         final CallbackHelper createdCallback = new CallbackHelper();
         final TabModel tabModel =
                 backgroundActivity.getTabModelSelector().getModel(expectIncognito);
-        tabModel.addObserver(new TabModelObserver() {
-            @Override
-            public void didAddTab(
-                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
-                if (TextUtils.equals(expectedUrl, tab.getUrl().getSpec())) {
-                    createdCallback.notifyCalled();
-                    tabModel.removeObserver(this);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tabModel.addObserver(new TabModelObserver() {
+                @Override
+                public void didAddTab(
+                        Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+                    if (TextUtils.equals(expectedUrl, tab.getUrl().getSpec())) {
+                        createdCallback.notifyCalled();
+                        tabModel.removeObserver(this);
+                    }
                 }
-            }
+            });
         });
 
         TestTouchUtils.performLongClickOnMainSync(

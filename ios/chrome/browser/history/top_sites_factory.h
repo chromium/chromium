@@ -25,6 +25,9 @@ class TopSitesFactory : public RefcountedBrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state);
   static TopSitesFactory* GetInstance();
 
+  TopSitesFactory(const TopSitesFactory&) = delete;
+  TopSitesFactory& operator=(const TopSitesFactory&) = delete;
+
  private:
   friend class base::NoDestructor<TopSitesFactory>;
 
@@ -37,8 +40,6 @@ class TopSitesFactory : public RefcountedBrowserStateKeyedServiceFactory {
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TopSitesFactory);
 };
 
 }  // namespace ios

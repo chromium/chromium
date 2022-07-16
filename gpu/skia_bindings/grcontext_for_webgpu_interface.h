@@ -32,6 +32,10 @@ class GrContextForWebGPUInterface
                               size_t max_resource_cache_bytes,
                               size_t max_glyph_cache_texture_bytes);
 
+  GrContextForWebGPUInterface(const GrContextForWebGPUInterface&) = delete;
+  GrContextForWebGPUInterface& operator=(const GrContextForWebGPUInterface&) =
+      delete;
+
   ~GrContextForWebGPUInterface() override;
 
   // GrContextOptions::ShaderErrorHandler implementation
@@ -43,8 +47,6 @@ class GrContextForWebGPUInterface
  private:
   sk_sp<class GrDirectContext> gr_context_;
   gpu::ContextSupport* context_support_;
-
-  DISALLOW_COPY_AND_ASSIGN(GrContextForWebGPUInterface);
 };
 
 }  // namespace skia_bindings

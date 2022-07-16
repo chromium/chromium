@@ -23,7 +23,33 @@ void FormForestTestApi::ExpandForm(base::stack<FrameForm>& frontier,
   }
 }
 
-std::ostream& FormForestTestApi::PrintTree(std::ostream& os) {
+std::ostream& FormForestTestApi::PrintFrames(std::ostream& os) {
+  os << "#Frames = " << frame_datas().size() << std::endl;
+  for (const std::unique_ptr<FrameData>& frame : frame_datas()) {
+    ContentAutofillDriver* driver = frame->driver;
+    os << "Token = " << frame->frame_token.ToString() << ":" << std::endl;
+    os << "Driver = " << driver << std::endl;
+    os << "URL = "
+       << (driver ? driver->render_frame_host()->GetLastCommittedURL() : GURL())
+       << std::endl;
+    if (frame->parent_form)
+      os << "ParentForm = " << *frame->parent_form << ":" << std::endl;
+    os << "#Forms = " << frame->child_forms.size() << std::endl;
+    for (const FormData& form : frame->child_forms) {
+      os << "  Form = " << form.global_id() << ":" << std::endl;
+      os << "  #Frames " << form.child_frames.size() << ":" << std::endl;
+      for (const FrameTokenWithPredecessor& child : form.child_frames) {
+        os << "  ChildFrame = "
+           << absl::visit([](auto x) { return x.ToString(); }, child.token)
+           << " / " << child.predecessor << std::endl;
+      }
+    }
+    os << std::endl;
+  }
+  return os;
+}
+
+std::ostream& FormForestTestApi::PrintForest(std::ostream& os) {
   base::stack<FrameForm> frontier;
   for (const std::unique_ptr<FrameData>& frame : frame_datas()) {
     DCHECK(frame);
@@ -52,8 +78,8 @@ std::ostream& FormForestTestApi::PrintForm(std::ostream& os,
                                            int level) {
   std::string prefix(2 * level, ' ');
   os << prefix << "Form " << *form.unique_renderer_id << " at "
-     << form.host_frame << " at " << form.full_url.GetOrigin() << " with "
-     << form.fields.size() << " fields" << std::endl;
+     << form.host_frame << " at " << form.full_url.DeprecatedGetOriginAsURL()
+     << " with " << form.fields.size() << " fields" << std::endl;
   os << prefix << "Origin " << form.main_frame_origin.Serialize() << std::endl;
   if (!form.name.empty())
     os << prefix << "Name " << form.name << std::endl;

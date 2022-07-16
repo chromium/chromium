@@ -15,9 +15,9 @@
 template <class T>
 class scoped_refptr;
 
-namespace autofill {
+namespace webauthn {
 class InternalAuthenticator;
-}  // namespace autofill
+}  // namespace webauthn
 
 namespace payments {
 
@@ -25,6 +25,7 @@ class PaymentManifestWebDataService;
 class PaymentRequestDialog;
 class PaymentRequestDisplayManager;
 class PaymentUIObserver;
+class SecurePaymentConfirmationNoCreds;
 
 // The delegate for PaymentRequest that can use content.
 class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
@@ -33,7 +34,7 @@ class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
 
   // Creates and returns an instance of the InternalAuthenticator interface for
   // communication with WebAuthn.
-  virtual std::unique_ptr<autofill::InternalAuthenticator>
+  virtual std::unique_ptr<webauthn::InternalAuthenticator>
   CreateInternalAuthenticator() const = 0;
 
   // Returns the web data service for caching payment method manifests.
@@ -74,8 +75,15 @@ class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
   virtual std::string GetTwaPackageName() const = 0;
 
   virtual PaymentRequestDialog* GetDialogForTesting() = 0;
+  virtual SecurePaymentConfirmationNoCreds*
+  GetNoMatchingCredentialsDialogForTesting() = 0;
 
-  virtual const PaymentUIObserver* GetPaymentUIObserver() const = 0;
+  virtual const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver()
+      const = 0;
+
+  virtual void ShowNoMatchingPaymentCredentialDialog(
+      const std::u16string& merchant_name,
+      base::OnceClosure response_callback) = 0;
 
   // Returns a weak pointer to this delegate.
   base::WeakPtr<ContentPaymentRequestDelegate> GetContentWeakPtr();

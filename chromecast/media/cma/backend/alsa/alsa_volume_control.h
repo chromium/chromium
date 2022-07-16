@@ -24,6 +24,10 @@ class AlsaVolumeControl : public SystemVolumeControl,
                           public base::MessagePumpForIO::FdWatcher {
  public:
   explicit AlsaVolumeControl(Delegate* delegate);
+
+  AlsaVolumeControl(const AlsaVolumeControl&) = delete;
+  AlsaVolumeControl& operator=(const AlsaVolumeControl&) = delete;
+
   ~AlsaVolumeControl() override;
 
   // SystemVolumeControl interface.
@@ -89,8 +93,6 @@ class AlsaVolumeControl : public SystemVolumeControl,
 
   std::vector<std::unique_ptr<base::MessagePumpForIO::FdWatchController>>
       file_descriptor_watchers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlsaVolumeControl);
 };
 
 }  // namespace media

@@ -21,7 +21,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
@@ -88,7 +87,7 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
   sync_service_.SetFirstSetupComplete(false);
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   sync_service_.SetIsUsingExplicitPassphrase(false);
-  sync_service_.SetAuthenticatedAccountInfo(account_info);
+  sync_service_.SetAccountInfo(account_info);
 
   CWVSyncController* sync_controller = [[CWVSyncController alloc]
       initWithSyncService:&sync_service_
@@ -131,6 +130,18 @@ TEST_F(CWVSyncControllerTest, StopSyncAndClearIdentity) {
   EXPECT_FALSE(sync_controller.currentIdentity);
 }
 
+TEST_F(CWVSyncControllerTest, Syncing) {
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+  sync_service_.SetTransportState(
+      syncer::SyncService::TransportState::DISABLED);
+  EXPECT_FALSE(sync_controller.syncing);
+  sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  EXPECT_TRUE(sync_controller.syncing);
+}
+
 TEST_F(CWVSyncControllerTest, PassphraseNeeded) {
   CWVSyncController* sync_controller = [[CWVSyncController alloc]
       initWithSyncService:&sync_service_
@@ -142,6 +153,28 @@ TEST_F(CWVSyncControllerTest, PassphraseNeeded) {
   EXPECT_TRUE(sync_controller.passphraseNeeded);
 }
 
+TEST_F(CWVSyncControllerTest, TrustedVaultKeysRequired) {
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+  sync_service_.SetTrustedVaultKeyRequiredForPreferredDataTypes(false);
+  EXPECT_FALSE(sync_controller.trustedVaultKeysRequired);
+  sync_service_.SetTrustedVaultKeyRequiredForPreferredDataTypes(true);
+  EXPECT_TRUE(sync_controller.trustedVaultKeysRequired);
+}
+
+TEST_F(CWVSyncControllerTest, TrustedVaultRecoverabilityDegraded) {
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+  sync_service_.SetTrustedVaultRecoverabilityDegraded(false);
+  EXPECT_FALSE(sync_controller.trustedVaultRecoverabilityDegraded);
+  sync_service_.SetTrustedVaultRecoverabilityDegraded(true);
+  EXPECT_TRUE(sync_controller.trustedVaultRecoverabilityDegraded);
+}
+
 TEST_F(CWVSyncControllerTest, DelegateDidStartAndStopSync) {
   CWVSyncController* sync_controller = [[CWVSyncController alloc]
       initWithSyncService:&sync_service_
@@ -149,12 +182,15 @@ TEST_F(CWVSyncControllerTest, DelegateDidStartAndStopSync) {
               prefService:&pref_service_];
 
   id delegate = OCMStrictProtocolMock(@protocol(CWVSyncControllerDelegate));
+  [delegate setExpectationOrderMatters:YES];
   sync_controller.delegate = delegate;
 
   // TestSyncService's transport state has to actually change before a callback
   // will be fired, so we have to start it before we can stop it.
   OCMExpect([delegate syncControllerDidStartSync:sync_controller]);
+  OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
   OCMExpect([delegate syncControllerDidStopSync:sync_controller]);
+  OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   sync_service_.FireStateChanged();
   sync_service_.SetTransportState(
@@ -171,6 +207,7 @@ TEST_F(CWVSyncControllerTest, DelegateDidFailWithError) {
               prefService:&pref_service_];
 
   id delegate = OCMStrictProtocolMock(@protocol(CWVSyncControllerDelegate));
+  [delegate setExpectationOrderMatters:YES];
   sync_controller.delegate = delegate;
 
   OCMExpect([delegate
@@ -180,9 +217,24 @@ TEST_F(CWVSyncControllerTest, DelegateDidFailWithError) {
                error.domain == CWVSyncErrorDomain &&
                [error.userInfo[CWVSyncErrorIsTransientKey] boolValue];
       }]]);
+  OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
   sync_service_.SetAuthError(GoogleServiceAuthError::FromConnectionError(0));
   sync_service_.FireStateChanged();
 
+  [delegate verify];
+}
+
+TEST_F(CWVSyncControllerTest, DelegateDidUpdateState) {
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+
+  id delegate = OCMStrictProtocolMock(@protocol(CWVSyncControllerDelegate));
+  sync_controller.delegate = delegate;
+
+  OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
+  sync_service_.FireStateChanged();
   [delegate verify];
 }
 

@@ -101,6 +101,7 @@ template("chrome_bundle") {
         "${_bundle_target_name}__${_module_desc.name}_bundle_module") {
       forward_variables_from(invoker,
                              [
+                               "add_view_trace_events",
                                "base_module_target",
                                "is_64_bit_browser",
                                "is_monochrome_or_trichrome",
@@ -140,6 +141,7 @@ template("chrome_bundle") {
   android_app_bundle(target_name) {
     forward_variables_from(invoker,
                            [
+                             "add_view_trace_events",
                              "base_module_target",
                              "bundle_name",
                              "compress_shared_libraries",

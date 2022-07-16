@@ -75,15 +75,30 @@ class CONTENT_EXPORT WebUI {
 
   // Used by WebUIMessageHandlers. If the given message is already registered,
   // the call has no effect.
-  using MessageCallback = base::RepeatingCallback<void(const base::ListValue*)>;
+  using MessageCallback =
+      base::RepeatingCallback<void(base::Value::ConstListView)>;
   virtual void RegisterMessageCallback(base::StringPiece message,
-                                       const MessageCallback& callback) = 0;
+                                       MessageCallback callback) = 0;
+
+  // Always use RegisterMessageCallback() above in new code.
+  //
+  // TODO(crbug.com/1243386): Existing callers of
+  // RegisterDeprecatedMessageCallback() should be migrated to
+  // RegisterMessageCallback() if possible.
+  //
+  // Used by WebUIMessageHandlers. If the given message is already registered,
+  // the call has no effect.
+  using DeprecatedMessageCallback =
+      base::RepeatingCallback<void(const base::ListValue*)>;
+  virtual void RegisterDeprecatedMessageCallback(
+      base::StringPiece message,
+      const DeprecatedMessageCallback& callback) = 0;
 
   template <typename... Args>
   void RegisterHandlerCallback(
       base::StringPiece message,
       base::RepeatingCallback<void(Args...)> callback) {
-    RegisterMessageCallback(
+    RegisterDeprecatedMessageCallback(
         message, base::BindRepeating(
                      &Call<std::index_sequence_for<Args...>, Args...>::Impl,
                      callback, message));

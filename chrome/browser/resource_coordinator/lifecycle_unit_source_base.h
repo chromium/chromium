@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_LIFECYCLE_UNIT_SOURCE_BASE_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_LIFECYCLE_UNIT_SOURCE_BASE_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source.h"
 
@@ -17,6 +16,10 @@ class LifecycleUnitBase;
 class LifecycleUnitSourceBase : public LifecycleUnitSource {
  public:
   LifecycleUnitSourceBase();
+
+  LifecycleUnitSourceBase(const LifecycleUnitSourceBase&) = delete;
+  LifecycleUnitSourceBase& operator=(const LifecycleUnitSourceBase&) = delete;
+
   ~LifecycleUnitSourceBase() override;
 
   // LifecycleUnitSource:
@@ -58,8 +61,6 @@ class LifecycleUnitSourceBase : public LifecycleUnitSource {
 
   // The count of lifecycle units associated with this source.
   size_t lifecycle_unit_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(LifecycleUnitSourceBase);
 };
 
 }  // namespace resource_coordinator

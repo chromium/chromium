@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
@@ -55,6 +54,10 @@ enum class TabDragKind {
 class BrowserFrame : public views::Widget, public views::ContextMenuController {
  public:
   explicit BrowserFrame(BrowserView* browser_view);
+
+  BrowserFrame(const BrowserFrame&) = delete;
+  BrowserFrame& operator=(const BrowserFrame&) = delete;
+
   ~BrowserFrame() override;
 
   // Initialize the frame (creates the underlying native window).
@@ -123,6 +126,8 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   bool GetAccelerator(int command_id,
                       ui::Accelerator* accelerator) const override;
   const ui::ThemeProvider* GetThemeProvider() const override;
+  ui::ColorProviderManager::InitializerSupplier* GetCustomTheme()
+      const override;
   void OnNativeWidgetWorkspaceChanged() override;
 
   // views::ContextMenuController:
@@ -193,15 +198,13 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // contents for smoother dragging.
   TabDragKind tab_drag_kind_ = TabDragKind::kNone;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Store the number of virtual desks that currently exist. Used to determine
   // whether the system menu should be reset. If the value is -1, then either
   // the ash::DesksHelper does not exist or haven't retrieved the system menu
   // model yet.
   int num_desks_ = -1;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserFrame);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_H_

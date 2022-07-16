@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.StorePersistedTabData.StorePersistedTabDataProto;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 
 import java.nio.ByteBuffer;
 import java.util.Locale;
@@ -277,9 +278,13 @@ public class StorePersistedTabData extends PersistedTabData {
      * @param callback {@link Callback} {@link StorePersistedTabData is passed back in}
      */
     public static void from(Tab tab, Callback<StorePersistedTabData> callback) {
+        // TODO(crbug.com/995852): Replace MISSING_TRAFFIC_ANNOTATION with a real traffic
+        // annotation.
         PersistedTabData.from(tab,
-                (data, storage, id)
-                        -> { return new StorePersistedTabData(tab, data, storage, id); },
+                (data, storage, id, factoryCallback)
+                        -> {
+                    factoryCallback.onResult(new StorePersistedTabData(tab, storage, id));
+                },
                 (supplierCallback)
                         -> {
                     EndpointFetcher.fetchUsingOAuth(
@@ -290,7 +295,8 @@ public class StorePersistedTabData extends PersistedTabData {
                             },
                             Profile.getLastUsedRegularProfile(), PERSISTED_TAB_DATA_ID,
                             String.format(Locale.US, ENDPOINT, tab.getUrl().getSpec()),
-                            HTTPS_METHOD, CONTENT_TYPE, SCOPES, EMPTY_POST_DATA, TIMEOUT_MS);
+                            HTTPS_METHOD, CONTENT_TYPE, SCOPES, EMPTY_POST_DATA, TIMEOUT_MS,
+                            NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
                 },
                 StorePersistedTabData.class, callback);
     }

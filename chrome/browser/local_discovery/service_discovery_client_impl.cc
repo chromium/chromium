@@ -9,7 +9,7 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/local_discovery/service_discovery_client_impl.h"
 #include "net/dns/public/dns_protocol.h"
@@ -318,7 +318,7 @@ void ServiceWatcherImpl::ScheduleQuery(int timeout_seconds) {
         FROM_HERE,
         base::BindOnce(&ServiceWatcherImpl::SendQuery, AsWeakPtr(),
                        timeout_seconds * 2 /*next_timeout_seconds*/),
-        base::TimeDelta::FromSeconds(timeout_seconds));
+        base::Seconds(timeout_seconds));
   }
 }
 
@@ -541,7 +541,7 @@ void LocalDomainResolverImpl::OnTransactionComplete(
 
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, timeout_callback_.callback(),
-        base::TimeDelta::FromMilliseconds(kLocalDomainSecondAddressTimeoutMs));
+        base::Milliseconds(kLocalDomainSecondAddressTimeoutMs));
   } else if (transactions_finished_ == 2
       || address_family_ != net::ADDRESS_FAMILY_UNSPECIFIED) {
     SendResolvedAddresses();

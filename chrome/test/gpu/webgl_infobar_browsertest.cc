@@ -72,10 +72,9 @@ IN_PROC_BROWSER_TEST_F(WebGLInfoBarTest, DISABLED_ContextLossRaisesInfoBar) {
   content::WindowedNotificationObserver observer(
       content::NOTIFICATION_LOAD_STOP,
       content::NotificationService::AllSources());
-  ui_test_utils::NavigateToURL(
-      browser(),
-      content::GetFileUrlWithQuery(
-          gpu_test_dir_.AppendASCII("webgl.html"), "query=kill"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), content::GetFileUrlWithQuery(
+                     gpu_test_dir_.AppendASCII("webgl.html"), "query=kill")));
   observer.Wait();
 
   infobars::ContentInfoBarManager* infobar_manager =

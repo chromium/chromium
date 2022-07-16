@@ -115,14 +115,15 @@ bool NotificationUIManagerImpl::Update(
 
     // Add/remove notification in the local list but just update the same
     // one in MessageCenter.
-    auto new_notification =
+    auto new_profile_notification =
         std::make_unique<ProfileNotification>(profile, notification);
-    const message_center::Notification& notification =
-        new_notification->notification();
+    const message_center::Notification& new_notification =
+        new_profile_notification->notification();
     // Delete the old one after the new one is created to ensure we don't run
     // out of KeepAlives.
     profile_notifications_.erase(old_id);
-    profile_notifications_[notification.id()] = std::move(new_notification);
+    profile_notifications_[new_notification.id()] =
+        std::move(new_profile_notification);
 
     // TODO(liyanhou): Add routing updated notifications to alternative
     // providers.
@@ -131,7 +132,8 @@ bool NotificationUIManagerImpl::Update(
     // center via the notification within a ProfileNotification object or the
     // profile ID will not be correctly set for ChromeOS.
     MessageCenter::Get()->UpdateNotification(
-        old_id, std::make_unique<message_center::Notification>(notification));
+        old_id,
+        std::make_unique<message_center::Notification>(new_notification));
     return true;
   }
 

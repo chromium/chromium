@@ -39,7 +39,6 @@
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
-#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -202,7 +201,7 @@ class TestPluginWebFrameClient : public frame_test_helpers::TestWebFrameClient {
       const WebString& fallback_name,
       const FramePolicy&,
       const WebFrameOwnerProperties&,
-      mojom::blink::FrameOwnerElementType owner_type,
+      FrameOwnerElementType owner_type,
       WebPolicyContainerBindParams policy_container_bind_params) override {
     return CreateLocalChild(*Frame(), scope,
                             std::make_unique<TestPluginWebFrameClient>(),
@@ -287,7 +286,7 @@ void ExecuteContextMenuCommand(WebViewImpl* web_view,
                                const WebString& command_name) {
   auto event = frame_test_helpers::CreateMouseEvent(
       WebMouseEvent::Type::kMouseDown, WebMouseEvent::Button::kRight,
-      IntPoint(30, 30), 0);
+      gfx::Point(30, 30), 0);
   event.click_count = 1;
 
   web_view->MainFrameWidget()->HandleInputEvent(
@@ -407,7 +406,7 @@ TEST_F(WebPluginContainerTest, CopyFromContextMenu) {
 
   auto event = frame_test_helpers::CreateMouseEvent(
       WebMouseEvent::Type::kMouseDown, WebMouseEvent::Button::kRight,
-      IntPoint(30, 30), 0);
+      gfx::Point(30, 30), 0);
   event.click_count = 1;
 
   // Now, let's try a more complex scenario:
@@ -657,17 +656,17 @@ class EventTestPlugin : public FakeWebPlugin {
         event.GetType() == WebInputEvent::Type::kMouseWheel) {
       const WebMouseEvent& mouse_event =
           static_cast<const WebMouseEvent&>(event);
-      last_event_location_ = IntPoint(mouse_event.PositionInWidget().x(),
-                                      mouse_event.PositionInWidget().y());
+      last_event_location_ = gfx::Point(mouse_event.PositionInWidget().x(),
+                                        mouse_event.PositionInWidget().y());
     } else if (WebInputEvent::IsTouchEventType(event.GetType())) {
       const WebTouchEvent& touch_event =
           static_cast<const WebTouchEvent&>(event);
       if (touch_event.touches_length == 1) {
         last_event_location_ =
-            IntPoint(touch_event.touches[0].PositionInWidget().x(),
-                     touch_event.touches[0].PositionInWidget().y());
+            gfx::Point(touch_event.touches[0].PositionInWidget().x(),
+                       touch_event.touches[0].PositionInWidget().y());
       } else {
-        last_event_location_ = IntPoint();
+        last_event_location_ = gfx::Point();
       }
     }
 
@@ -675,7 +674,7 @@ class EventTestPlugin : public FakeWebPlugin {
   }
   WebInputEvent::Type GetLastInputEventType() { return last_event_type_; }
 
-  IntPoint GetLastEventLocation() { return last_event_location_; }
+  gfx::Point GetLastEventLocation() { return last_event_location_; }
 
   int GetLastEventModifiers() { return last_event_modifiers_; }
 
@@ -690,7 +689,7 @@ class EventTestPlugin : public FakeWebPlugin {
 
   size_t coalesced_event_count_;
   WebInputEvent::Type last_event_type_;
-  IntPoint last_event_location_;
+  gfx::Point last_event_location_;
   int last_event_modifiers_;
 };
 
@@ -760,7 +759,7 @@ TEST_F(WebPluginContainerTest, MouseEventButtons) {
 
   WebMouseEvent event = frame_test_helpers::CreateMouseEvent(
       WebMouseEvent::Type::kMouseMove, WebMouseEvent::Button::kNoButton,
-      IntPoint(30, 30),
+      gfx::Point(30, 30),
       WebInputEvent::kMiddleButtonDown | WebInputEvent::kShiftKey);
 
   gfx::Rect rect = plugin_container_one_element.BoundsInViewport();
@@ -808,8 +807,8 @@ TEST_F(WebPluginContainerTest, MouseWheelEventTranslated) {
 
   EXPECT_EQ(WebInputEvent::Type::kMouseWheel,
             test_plugin->GetLastInputEventType());
-  EXPECT_EQ(rect.width() / 2, test_plugin->GetLastEventLocation().X());
-  EXPECT_EQ(rect.height() / 2, test_plugin->GetLastEventLocation().Y());
+  EXPECT_EQ(rect.width() / 2, test_plugin->GetLastEventLocation().x());
+  EXPECT_EQ(rect.height() / 2, test_plugin->GetLastEventLocation().y());
 }
 
 TEST_F(WebPluginContainerTest, TouchEventScrolled) {
@@ -852,8 +851,8 @@ TEST_F(WebPluginContainerTest, TouchEventScrolled) {
 
   EXPECT_EQ(WebInputEvent::Type::kTouchStart,
             test_plugin->GetLastInputEventType());
-  EXPECT_EQ(rect.width() / 2, test_plugin->GetLastEventLocation().X());
-  EXPECT_EQ(rect.height() / 2, test_plugin->GetLastEventLocation().Y());
+  EXPECT_EQ(rect.width() / 2, test_plugin->GetLastEventLocation().x());
+  EXPECT_EQ(rect.height() / 2, test_plugin->GetLastEventLocation().y());
 }
 
 TEST_F(WebPluginContainerTest, TouchEventScrolledWithCoalescedTouches) {
@@ -900,8 +899,8 @@ TEST_F(WebPluginContainerTest, TouchEventScrolledWithCoalescedTouches) {
               test_plugin->GetCoalescedEventCount());
     EXPECT_EQ(WebInputEvent::Type::kTouchStart,
               test_plugin->GetLastInputEventType());
-    EXPECT_EQ(rect.width() / 2, test_plugin->GetLastEventLocation().X());
-    EXPECT_EQ(rect.height() / 2, test_plugin->GetLastEventLocation().Y());
+    EXPECT_EQ(rect.width() / 2, test_plugin->GetLastEventLocation().x());
+    EXPECT_EQ(rect.height() / 2, test_plugin->GetLastEventLocation().y());
   }
 
   {
@@ -948,8 +947,8 @@ TEST_F(WebPluginContainerTest, TouchEventScrolledWithCoalescedTouches) {
               test_plugin->GetCoalescedEventCount());
     EXPECT_EQ(WebInputEvent::Type::kTouchMove,
               test_plugin->GetLastInputEventType());
-    EXPECT_EQ(rect.width() / 2 + 1, test_plugin->GetLastEventLocation().X());
-    EXPECT_EQ(rect.height() / 2 + 1, test_plugin->GetLastEventLocation().Y());
+    EXPECT_EQ(rect.width() / 2 + 1, test_plugin->GetLastEventLocation().x());
+    EXPECT_EQ(rect.height() / 2 + 1, test_plugin->GetLastEventLocation().y());
   }
 }
 
@@ -989,8 +988,8 @@ TEST_F(WebPluginContainerTest, MouseWheelEventScrolled) {
 
   EXPECT_EQ(WebInputEvent::Type::kMouseWheel,
             test_plugin->GetLastInputEventType());
-  EXPECT_EQ(rect.width() / 2, test_plugin->GetLastEventLocation().X());
-  EXPECT_EQ(rect.height() / 2, test_plugin->GetLastEventLocation().Y());
+  EXPECT_EQ(rect.width() / 2, test_plugin->GetLastEventLocation().x());
+  EXPECT_EQ(rect.height() / 2, test_plugin->GetLastEventLocation().y());
 }
 
 TEST_F(WebPluginContainerTest, MouseEventScrolled) {
@@ -1029,8 +1028,8 @@ TEST_F(WebPluginContainerTest, MouseEventScrolled) {
 
   EXPECT_EQ(WebInputEvent::Type::kMouseMove,
             test_plugin->GetLastInputEventType());
-  EXPECT_EQ(rect.width() / 2, test_plugin->GetLastEventLocation().X());
-  EXPECT_EQ(rect.height() / 2, test_plugin->GetLastEventLocation().Y());
+  EXPECT_EQ(rect.width() / 2, test_plugin->GetLastEventLocation().x());
+  EXPECT_EQ(rect.height() / 2, test_plugin->GetLastEventLocation().y());
 }
 
 TEST_F(WebPluginContainerTest, MouseEventZoomed) {
@@ -1074,8 +1073,8 @@ TEST_F(WebPluginContainerTest, MouseEventZoomed) {
   // there is a scale of 2 set.
   EXPECT_EQ(WebInputEvent::Type::kMouseMove,
             test_plugin->GetLastInputEventType());
-  EXPECT_EQ(rect.width() / 4, test_plugin->GetLastEventLocation().X());
-  EXPECT_EQ(rect.height() / 4, test_plugin->GetLastEventLocation().Y());
+  EXPECT_EQ(rect.width() / 4, test_plugin->GetLastEventLocation().x());
+  EXPECT_EQ(rect.height() / 4, test_plugin->GetLastEventLocation().y());
 }
 
 TEST_F(WebPluginContainerTest, MouseWheelEventZoomed) {
@@ -1119,8 +1118,8 @@ TEST_F(WebPluginContainerTest, MouseWheelEventZoomed) {
   // there is a scale of 2 set.
   EXPECT_EQ(WebInputEvent::Type::kMouseWheel,
             test_plugin->GetLastInputEventType());
-  EXPECT_EQ(rect.width() / 4, test_plugin->GetLastEventLocation().X());
-  EXPECT_EQ(rect.height() / 4, test_plugin->GetLastEventLocation().Y());
+  EXPECT_EQ(rect.width() / 4, test_plugin->GetLastEventLocation().x());
+  EXPECT_EQ(rect.height() / 4, test_plugin->GetLastEventLocation().y());
 }
 
 TEST_F(WebPluginContainerTest, TouchEventZoomed) {
@@ -1168,8 +1167,8 @@ TEST_F(WebPluginContainerTest, TouchEventZoomed) {
   // there is a scale of 2 set.
   EXPECT_EQ(WebInputEvent::Type::kTouchStart,
             test_plugin->GetLastInputEventType());
-  EXPECT_EQ(rect.width() / 4, test_plugin->GetLastEventLocation().X());
-  EXPECT_EQ(rect.height() / 4, test_plugin->GetLastEventLocation().Y());
+  EXPECT_EQ(rect.width() / 4, test_plugin->GetLastEventLocation().x());
+  EXPECT_EQ(rect.height() / 4, test_plugin->GetLastEventLocation().y());
 }
 
 // Verify that isRectTopmost returns false when the document is detached.
@@ -1277,29 +1276,33 @@ TEST_F(WebPluginContainerTest, ClippedRectsForShiftedIframedElement) {
   IntSize plugin_size(40, 40);
   IntSize iframe_size(40, 40);
 
-  IntPoint iframe_offset_in_root_frame(0, 300);
-  IntPoint plugin_offset_in_iframe(0, 40);
+  gfx::Vector2d iframe_offset_in_root_frame(0, 300);
+  gfx::Vector2d plugin_offset_in_iframe(0, 40);
 
   auto compute_expected_values = [=](IntSize root_document_scroll_to,
                                      IntSize iframe_scroll_to) {
-    IntPoint offset_in_iframe = plugin_offset_in_iframe - iframe_scroll_to;
-    IntPoint offset_in_root_document =
-        iframe_offset_in_root_frame - root_document_scroll_to;
+    gfx::Vector2d offset_in_iframe =
+        plugin_offset_in_iframe - ToGfxVector2d(iframe_scroll_to);
+    gfx::Vector2d offset_in_root_document =
+        iframe_offset_in_root_frame - ToGfxVector2d(root_document_scroll_to);
     // window_rect is a plugin rectangle in the root frame coordinates.
-    IntRect expected_window_rect =
-        IntRect(offset_in_root_document + offset_in_iframe, plugin_size);
+    IntRect expected_window_rect(
+        gfx::PointAtOffsetFromOrigin(offset_in_root_document +
+                                     offset_in_iframe),
+        plugin_size);
 
     // unobscured_rect is the visible part of the plugin, inside the iframe.
-    IntRect expected_unobscured_rect(IntPoint(iframe_scroll_to), iframe_size);
-    expected_unobscured_rect.Intersect({plugin_offset_in_iframe, plugin_size});
-    expected_unobscured_rect.MoveBy(-plugin_offset_in_iframe);
+    IntRect expected_unobscured_rect(ToGfxPoint(iframe_scroll_to), iframe_size);
+    expected_unobscured_rect.Intersect(IntRect(
+        gfx::PointAtOffsetFromOrigin(plugin_offset_in_iframe), plugin_size));
+    expected_unobscured_rect.Offset(-IntSize(plugin_offset_in_iframe));
 
     // clip_rect is the visible part of the unobscured_rect, inside the
     // root_frame.
     IntRect expected_clip_rect = expected_unobscured_rect;
-    expected_clip_rect.MoveBy(expected_window_rect.Location());
+    expected_clip_rect.MoveBy(expected_window_rect.origin());
     expected_clip_rect.Intersect({{0, 0}, IntSize(300, 300)});
-    expected_clip_rect.MoveBy(-expected_window_rect.Location());
+    expected_clip_rect.Offset(-ToIntSize(expected_window_rect.origin()));
 
     return std::make_tuple(expected_window_rect, expected_clip_rect,
                            expected_unobscured_rect);
@@ -1319,11 +1322,11 @@ TEST_F(WebPluginContainerTest, ClippedRectsForShiftedIframedElement) {
 
   for (auto& root_document_scroll_to : root_document_scrolls_to) {
     for (auto& iframe_scroll_to : iframe_scrolls_to) {
-      web_view->SmoothScroll(root_document_scroll_to.Width(),
-                             root_document_scroll_to.Height(),
+      web_view->SmoothScroll(root_document_scroll_to.width(),
+                             root_document_scroll_to.height(),
                              base::TimeDelta());
-      iframe->SetScrollOffset(gfx::ScrollOffset(iframe_scroll_to.Width(),
-                                                iframe_scroll_to.Height()));
+      iframe->SetScrollOffset(
+          gfx::Vector2dF(iframe_scroll_to.width(), iframe_scroll_to.height()));
       UpdateAllLifecyclePhases(web_view);
       RunPendingTasks();
 
@@ -1457,8 +1460,7 @@ class CompositedPlugin : public FakeWebPlugin {
 
 }  // namespace
 
-TEST_F(WebPluginContainerTest, CompositedPluginCAP) {
-  ScopedCompositeAfterPaintForTest enable_cap(true);
+TEST_F(WebPluginContainerTest, CompositedPlugin) {
   RegisterMockedURL("plugin.html");
   // Must outlive |web_view_helper|
   CustomPluginWebFrameClient<CompositedPlugin> web_frame_client;
@@ -1476,10 +1478,10 @@ TEST_F(WebPluginContainerTest, CompositedPluginCAP) {
   auto paint_controller =
       std::make_unique<PaintController>(PaintController::kTransient);
   paint_controller->UpdateCurrentPaintChunkProperties(
-      nullptr, PropertyTreeState::Root());
+      PropertyTreeState::Root());
   GraphicsContext graphics_context(*paint_controller);
   container->Paint(graphics_context, kGlobalPaintNormalPhase,
-                   CullRect(IntRect(10, 10, 400, 300)));
+                   CullRect(gfx::Rect(10, 10, 400, 300)));
   paint_controller->CommitNewDisplayItems();
 
   const auto& display_items =

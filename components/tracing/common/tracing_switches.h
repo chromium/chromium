@@ -23,8 +23,8 @@ TRACING_EXPORT extern const char kTraceStartupOwner[];
 TRACING_EXPORT extern const char kTraceStartupEnablePrivacyFiltering[];
 TRACING_EXPORT extern const char kPerfettoDisableInterning[];
 TRACING_EXPORT extern const char kTraceToConsole[];
-TRACING_EXPORT extern const char kTraceUploadURL[];
 TRACING_EXPORT extern const char kBackgroundTracingOutputFile[];
+TRACING_EXPORT extern const char kTraceSmbSize[];
 
 }  // namespace switches
 

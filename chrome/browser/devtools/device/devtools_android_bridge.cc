@@ -19,7 +19,6 @@
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -270,16 +269,14 @@ void DevToolsAndroidBridge::ReceivedDeviceList(
   }
 
   DeviceListListeners copy(device_list_listeners_);
-  for (auto it = copy.begin(); it != copy.end(); ++it)
-    (*it)->DeviceListChanged(remote_devices);
+  for (auto* listener : copy)
+    listener->DeviceListChanged(remote_devices);
 
   ForwardingStatus status =
       port_forwarding_controller_->DeviceListChanged(complete_devices);
   PortForwardingListeners forwarding_listeners(port_forwarding_listeners_);
-  for (auto it = forwarding_listeners.begin(); it != forwarding_listeners.end();
-       ++it) {
-    (*it)->PortStatusChanged(status);
-  }
+  for (auto* listener : forwarding_listeners)
+    listener->PortStatusChanged(status);
 }
 
 void DevToolsAndroidBridge::StartDeviceCountPolling() {
@@ -306,8 +303,8 @@ void DevToolsAndroidBridge::ReceivedDeviceCount(int count) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   DeviceCountListeners copy(device_count_listeners_);
-  for (auto it = copy.begin(); it != copy.end(); ++it)
-    (*it)->DeviceCountChanged(count);
+  for (auto* listener : copy)
+    listener->DeviceCountChanged(count);
 
   if (device_count_listeners_.empty())
      return;
@@ -318,15 +315,16 @@ void DevToolsAndroidBridge::ReceivedDeviceCount(int count) {
 }
 
 static std::set<net::HostPortPair> ParseTargetDiscoveryPreferenceValue(
-    const base::ListValue* preferenceValue) {
+    const base::Value* preferenceValue) {
   std::set<net::HostPortPair> targets;
   if (!preferenceValue || preferenceValue->GetList().empty())
     return targets;
   std::string address;
-  for (size_t i = 0; i < preferenceValue->GetSize(); i++) {
-    if (!preferenceValue->GetString(i, &address))
+  for (const auto& address : preferenceValue->GetList()) {
+    if (!address.is_string())
       continue;
-    net::HostPortPair target = net::HostPortPair::FromString(address);
+    net::HostPortPair target =
+        net::HostPortPair::FromString(address.GetString());
     if (target.IsEmpty()) {
       LOG(WARNING) << "Invalid target: " << address;
       continue;
@@ -337,7 +335,7 @@ static std::set<net::HostPortPair> ParseTargetDiscoveryPreferenceValue(
 }
 
 static scoped_refptr<TCPDeviceProvider> CreateTCPDeviceProvider(
-    const base::ListValue* targetDiscoveryConfig) {
+    const base::Value* targetDiscoveryConfig) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   std::set<net::HostPortPair> targets =
       ParseTargetDiscoveryPreferenceValue(targetDiscoveryConfig);
@@ -364,7 +362,7 @@ static scoped_refptr<TCPDeviceProvider> CreateTCPDeviceProvider(
 void DevToolsAndroidBridge::CreateDeviceProviders() {
   AndroidDeviceManager::DeviceProviders device_providers;
   PrefService* service = profile_->GetPrefs();
-  const base::ListValue* targets =
+  const base::Value* targets =
       service->GetBoolean(prefs::kDevToolsDiscoverTCPTargetsEnabled)
           ? service->GetList(prefs::kDevToolsTCPDiscoveryConfig)
           : nullptr;

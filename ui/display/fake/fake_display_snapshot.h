@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/display/fake/fake_display_export.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
@@ -28,6 +27,10 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
   class Builder {
    public:
     Builder();
+
+    Builder(const Builder&) = delete;
+    Builder& operator=(const Builder&) = delete;
+
     ~Builder();
 
     // Builds new FakeDisplaySnapshot. At the very minimum you must set id and
@@ -35,6 +38,9 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     std::unique_ptr<FakeDisplaySnapshot> Build();
 
     Builder& SetId(int64_t id);
+    Builder& SetPortDisplayId(int64_t id);
+    Builder& SetEdidDisplayId(int64_t id);
+    Builder& SetConnectorIndex(uint16_t index);
     // Adds display mode with |size| and set as native mode. If a display mode
     // with |size| already exists then it will be reused.
     Builder& SetNativeMode(const gfx::Size& size);
@@ -86,6 +92,9 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     const DisplayMode* AddOrFindDisplayMode(std::unique_ptr<DisplayMode> mode);
 
     int64_t id_ = kInvalidDisplayId;
+    int64_t port_display_id_ = kInvalidDisplayId;
+    int64_t edid_display_id_ = kInvalidDisplayId;
+    uint16_t connector_index_ = 0u;
     gfx::Point origin_;
     float dpi_ = 96.0;
     DisplayConnectionType type_ = DISPLAY_CONNECTION_TYPE_UNKNOWN;
@@ -105,11 +114,12 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     gfx::ColorSpace color_space_;
     uint32_t bits_per_channel_ = 8u;
     gfx::HDRStaticMetadata hdr_static_metadata_;
-
-    DISALLOW_COPY_AND_ASSIGN(Builder);
   };
 
   FakeDisplaySnapshot(int64_t display_id,
+                      int64_t port_display_id,
+                      int64_t edid_display_id,
+                      uint16_t connector_index,
                       const gfx::Point& origin,
                       const gfx::Size& physical_size,
                       DisplayConnectionType type,
@@ -129,6 +139,10 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
                       const gfx::ColorSpace& color_space,
                       uint32_t bits_per_channel,
                       const gfx::HDRStaticMetadata& hdr_static_metadata);
+
+  FakeDisplaySnapshot(const FakeDisplaySnapshot&) = delete;
+  FakeDisplaySnapshot& operator=(const FakeDisplaySnapshot&) = delete;
+
   ~FakeDisplaySnapshot() override;
 
   // Creates a display snapshot from the provided |spec| string. Returns null if
@@ -137,9 +151,6 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
   static std::unique_ptr<DisplaySnapshot> CreateFromSpec(
       int64_t id,
       const std::string& spec);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeDisplaySnapshot);
 };
 
 }  // namespace display

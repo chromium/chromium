@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/tab_cluster/clusterer.h"
 #include "base/observer_list.h"
 
 namespace ash {
@@ -36,11 +37,15 @@ class ASH_PUBLIC_EXPORT TabClusterUIController {
   TabClusterUIItem* AddTabItem(std::unique_ptr<TabClusterUIItem> tab_item);
   void UpdateTabItem(TabClusterUIItem* tab_item);
   void RemoveTabItem(TabClusterUIItem* tab_item);
+  void ChangeActiveCandidate(TabClusterUIItem* old_active_item,
+                             TabClusterUIItem* new_active_item);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
  private:
+  Clusterer clusterer_;
+  // List of tab items.
   TabItems tab_items_;
   base::ObserverList<Observer> observers_;
 };

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/machine_learning/fake_machine_learning_client.h"
 #include "dbus/bus.h"
@@ -22,13 +21,18 @@ namespace {
 // TODO(crbug.com/1163656): the tast test platform.MLServiceBootstrap flakiness
 // shows ml-service bootstrap fails occasionally for timeout. Try to fix this
 // with a long period (2 minutes).
-constexpr base::TimeDelta kLongTimeout = base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kLongTimeout = base::Minutes(2);
 
 MachineLearningClient* g_instance = nullptr;
 
 class MachineLearningClientImpl : public MachineLearningClient {
  public:
   MachineLearningClientImpl() = default;
+
+  MachineLearningClientImpl(const MachineLearningClientImpl&) = delete;
+  MachineLearningClientImpl& operator=(const MachineLearningClientImpl&) =
+      delete;
+
   ~MachineLearningClientImpl() override = default;
 
   // MachineLearningClient:
@@ -65,8 +69,6 @@ class MachineLearningClientImpl : public MachineLearningClient {
 
   // Must be last class member.
   base::WeakPtrFactory<MachineLearningClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MachineLearningClientImpl);
 };
 
 }  // namespace

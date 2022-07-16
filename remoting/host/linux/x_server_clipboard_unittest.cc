@@ -19,6 +19,10 @@ namespace {
 class ClipboardTestClient : public x11::EventObserver {
  public:
   ClipboardTestClient() = default;
+
+  ClipboardTestClient(const ClipboardTestClient&) = delete;
+  ClipboardTestClient& operator=(const ClipboardTestClient&) = delete;
+
   ~ClipboardTestClient() override {
     DCHECK(connection_);
     connection_->RemoveEventObserver(this);
@@ -64,8 +68,6 @@ class ClipboardTestClient : public x11::EventObserver {
   XServerClipboard clipboard_;
   x11::Connection* connection_ = nullptr;
   bool dispatched_event_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardTestClient);
 };
 
 }  // namespace

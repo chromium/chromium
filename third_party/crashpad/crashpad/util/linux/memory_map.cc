@@ -190,6 +190,9 @@ class SparseReverseIterator : public MemoryMap::Iterator {
 
   SparseReverseIterator() : mappings_(), riter_(mappings_.rend()) {}
 
+  SparseReverseIterator(const SparseReverseIterator&) = delete;
+  SparseReverseIterator& operator=(const SparseReverseIterator&) = delete;
+
   // Iterator:
   const MemoryMap::Mapping* Next() override {
     return riter_ == mappings_.rend() ? nullptr : *(riter_++);
@@ -200,8 +203,6 @@ class SparseReverseIterator : public MemoryMap::Iterator {
  private:
   std::vector<const MemoryMap::Mapping*> mappings_;
   std::vector<const MemoryMap::Mapping*>::reverse_iterator riter_;
-
-  DISALLOW_COPY_AND_ASSIGN(SparseReverseIterator);
 };
 
 class FullReverseIterator : public MemoryMap::Iterator {
@@ -210,6 +211,9 @@ class FullReverseIterator : public MemoryMap::Iterator {
       std::vector<MemoryMap::Mapping>::const_reverse_iterator rbegin,
       std::vector<MemoryMap::Mapping>::const_reverse_iterator rend)
       : riter_(rbegin), rend_(rend) {}
+
+  FullReverseIterator(const FullReverseIterator&) = delete;
+  FullReverseIterator& operator=(const FullReverseIterator&) = delete;
 
   // Iterator:
   const MemoryMap::Mapping* Next() override {
@@ -221,8 +225,6 @@ class FullReverseIterator : public MemoryMap::Iterator {
  private:
   std::vector<MemoryMap::Mapping>::const_reverse_iterator riter_;
   std::vector<MemoryMap::Mapping>::const_reverse_iterator rend_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullReverseIterator);
 };
 
 }  // namespace
@@ -238,7 +240,7 @@ MemoryMap::Mapping::Mapping()
       executable(false),
       shareable(false) {}
 
-MemoryMap::MemoryMap() : mappings_(), initialized_() {}
+MemoryMap::MemoryMap() : mappings_(), connection_(nullptr), initialized_() {}
 
 MemoryMap::~MemoryMap() {}
 
@@ -254,6 +256,7 @@ bool MemoryMap::Mapping::Equals(const Mapping& other) const {
 
 bool MemoryMap::Initialize(PtraceConnection* connection) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
+  connection_ = connection;
 
   // If the maps file is not read atomically, entries can be read multiple times
   // or missed entirely. The kernel reads entries from this file into a page
@@ -266,8 +269,8 @@ bool MemoryMap::Initialize(PtraceConnection* connection) {
   do {
     std::string contents;
     char path[32];
-    snprintf(path, sizeof(path), "/proc/%d/maps", connection->GetProcessID());
-    if (!connection->ReadFileContents(base::FilePath(path), &contents)) {
+    snprintf(path, sizeof(path), "/proc/%d/maps", connection_->GetProcessID());
+    if (!connection_->ReadFileContents(base::FilePath(path), &contents)) {
       return false;
     }
 
@@ -296,6 +299,7 @@ bool MemoryMap::Initialize(PtraceConnection* connection) {
 
 const MemoryMap::Mapping* MemoryMap::FindMapping(LinuxVMAddress address) const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  address = connection_->Memory()->PointerToAddress(address);
 
   for (const auto& mapping : mappings_) {
     if (mapping.range.Base() <= address && mapping.range.End() > address) {

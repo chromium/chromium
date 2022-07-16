@@ -15,6 +15,11 @@ class GCM_EXPORT GCMRegistrationRequestHandler
     : public RegistrationRequest::CustomRequestHandler {
  public:
   GCMRegistrationRequestHandler(const std::string& senders);
+
+  GCMRegistrationRequestHandler(const GCMRegistrationRequestHandler&) = delete;
+  GCMRegistrationRequestHandler& operator=(
+      const GCMRegistrationRequestHandler&) = delete;
+
   ~GCMRegistrationRequestHandler() override;
 
   // RegistrationRequest::RequestHandler overrides:
@@ -24,8 +29,6 @@ class GCM_EXPORT GCMRegistrationRequestHandler
 
  private:
   std::string senders_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMRegistrationRequestHandler);
 };
 
 }  // namespace gcm

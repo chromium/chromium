@@ -276,10 +276,9 @@ void Ui::SetSpeechRecognitionEnabled(bool enabled) {
       OnSpeechRecognitionEnded();
     } else {
       auto sequence = std::make_unique<Sequence>();
-      sequence->Add(
-          base::BindOnce(&Ui::OnSpeechRecognitionEnded,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kSpeechRecognitionResultTimeoutMs));
+      sequence->Add(base::BindOnce(&Ui::OnSpeechRecognitionEnded,
+                                   weak_ptr_factory_.GetWeakPtr()),
+                    base::Milliseconds(kSpeechRecognitionResultTimeoutMs));
       scene_->AddSequence(std::move(sequence));
     }
   }

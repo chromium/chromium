@@ -108,8 +108,8 @@ bool WaitForProcessesToExit(const FilePath::StringType& executable_name,
       result = true;
       break;
     }
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
-  } while ((end_time - TimeTicks::Now()) > TimeDelta());
+    PlatformThread::Sleep(Milliseconds(100));
+  } while ((end_time - TimeTicks::Now()).is_positive());
 
   return result;
 }
@@ -133,6 +133,9 @@ class BackgroundReaper : public PlatformThread::Delegate {
   BackgroundReaper(base::Process child_process, const TimeDelta& wait_time)
       : child_process_(std::move(child_process)), wait_time_(wait_time) {}
 
+  BackgroundReaper(const BackgroundReaper&) = delete;
+  BackgroundReaper& operator=(const BackgroundReaper&) = delete;
+
   void ThreadMain() override {
     if (!wait_time_.is_zero()) {
       child_process_.WaitForExitWithTimeout(wait_time_, nullptr);
@@ -145,7 +148,6 @@ class BackgroundReaper : public PlatformThread::Delegate {
  private:
   Process child_process_;
   const TimeDelta wait_time_;
-  DISALLOW_COPY_AND_ASSIGN(BackgroundReaper);
 };
 
 }  // namespace
@@ -157,7 +159,7 @@ void EnsureProcessTerminated(Process process) {
     return;
 
   PlatformThread::CreateNonJoinable(
-      0, new BackgroundReaper(std::move(process), TimeDelta::FromSeconds(2)));
+      0, new BackgroundReaper(std::move(process), Seconds(2)));
 }
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -31,8 +31,8 @@ namespace {
 namespace em = ::enterprise_management;
 
 std::string GetDeviceId() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetInstallAttributes()->GetDeviceId();
 }
 
@@ -67,7 +67,7 @@ void PublicSamlUrlFetcher::Fetch(base::OnceClosure callback) {
   callback_ = std::move(callback);
   policy::DeviceManagementService* service =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->device_management_service();
   std::unique_ptr<policy::DMServerJobConfiguration> config = std::make_unique<
       policy::DMServerJobConfiguration>(

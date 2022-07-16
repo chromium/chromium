@@ -511,7 +511,25 @@
             ]
           }
         ]
-       }
+       },
+       {
+        "name": "isSwaEnabled",
+        "type": "function",
+        "description": "Gets if the new wallpaper picker SWA is enabled.",
+        "nodoc": true,
+        "parameters": [
+          {
+            "type": "function",
+            "name": "callback",
+            "parameters": [
+              {
+                "type": "boolean",
+                "name": "swaEnabled"
+              }
+            ]
+          }
+        ]
+      }
     ],
     "events": [
       {

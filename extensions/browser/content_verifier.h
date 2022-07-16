@@ -73,6 +73,10 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
 
   ContentVerifier(content::BrowserContext* context,
                   std::unique_ptr<ContentVerifierDelegate> delegate);
+
+  ContentVerifier(const ContentVerifier&) = delete;
+  ContentVerifier& operator=(const ContentVerifier&) = delete;
+
   void Start();
   void Shutdown();
 
@@ -227,8 +231,6 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
 
   // Data that should only be used on the IO thread.
   ContentVerifierIOData io_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentVerifier);
 };
 
 }  // namespace extensions

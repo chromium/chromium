@@ -38,6 +38,9 @@ class CONTENT_EXPORT CrOSHandwritingRecognitionServiceImpl final
   void QueryHandwritingRecognizerSupport(
       handwriting::mojom::HandwritingFeatureQueryPtr query,
       QueryHandwritingRecognizerSupportCallback callback) override;
+  void QueryHandwritingRecognizer(
+      handwriting::mojom::HandwritingModelConstraintPtr model_constraint,
+      QueryHandwritingRecognizerCallback callback) override;
 };
 
 }  // namespace content

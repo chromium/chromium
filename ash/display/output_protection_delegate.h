@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -29,6 +28,10 @@ class ASH_EXPORT OutputProtectionDelegate : public aura::WindowObserver,
   using SetProtectionCallback = base::OnceCallback<void(bool success)>;
 
   explicit OutputProtectionDelegate(aura::Window* window);
+
+  OutputProtectionDelegate(const OutputProtectionDelegate&) = delete;
+  OutputProtectionDelegate& operator=(const OutputProtectionDelegate&) = delete;
+
   ~OutputProtectionDelegate() override;
 
   void QueryStatus(QueryStatusCallback callback);
@@ -63,8 +66,6 @@ class ASH_EXPORT OutputProtectionDelegate : public aura::WindowObserver,
   std::unique_ptr<ClientIdHolder> client_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OutputProtectionDelegate);
 };
 
 }  // namespace ash

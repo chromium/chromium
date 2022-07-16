@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
 #include "chrome/browser/sync_file_system/task_logger.h"
@@ -48,6 +47,10 @@ class SyncTaskToken {
   void UpdateTask(const base::Location& location, SyncStatusCallback callback);
 
   const base::Location& location() const { return location_; }
+
+  SyncTaskToken(const SyncTaskToken&) = delete;
+  SyncTaskToken& operator=(const SyncTaskToken&) = delete;
+
   virtual ~SyncTaskToken();
 
   static SyncStatusCallback WrapToCallback(
@@ -86,8 +89,6 @@ class SyncTaskToken {
 
   std::unique_ptr<TaskLogger::TaskLog> task_log_;
   std::unique_ptr<TaskBlocker> task_blocker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncTaskToken);
 };
 
 }  // namespace drive_backend

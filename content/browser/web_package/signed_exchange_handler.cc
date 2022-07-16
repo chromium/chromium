@@ -555,7 +555,7 @@ SignedExchangeLoadResult SignedExchangeHandler::CheckCertRequirements(
   // extension that have a Validity Period longer than 90 days. [spec text]
   base::TimeDelta validity_period =
       verified_cert->valid_expiry() - verified_cert->valid_start();
-  if (validity_period > base::TimeDelta::FromDays(90) &&
+  if (validity_period > base::Days(90) &&
       !unverified_cert_chain_->ShouldIgnoreErrors() &&
       !g_should_ignore_cert_validity_period_error) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
@@ -754,9 +754,8 @@ bool SignedExchangeHandler::GetSignedExchangeInfoForPrefetchCache(
     return false;
   entry.SetHeaderIntegrity(std::make_unique<net::SHA256HashValue>(
       envelope_->ComputeHeaderIntegrity()));
-  entry.SetSignatureExpireTime(
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(envelope_->signature().expires));
+  entry.SetSignatureExpireTime(base::Time::UnixEpoch() +
+                               base::Seconds(envelope_->signature().expires));
   entry.SetCertUrl(envelope_->signature().cert_url);
   entry.SetCertServerIPAddress(cert_server_ip_address_);
   return true;

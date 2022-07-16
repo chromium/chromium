@@ -6,6 +6,7 @@ let inIncognito = chrome.extension.inIncognitoContext;
 let alarmName = inIncognito ? 'incognito' : 'normal';
 let alarmTriggered = false;
 let testEventFired = false;
+let createParams = {delayInMinutes: 0.001, periodInMinutes: 60};
 
 function checkAndCompleteTest() {
   if (alarmTriggered && testEventFired)
@@ -28,8 +29,7 @@ chrome.test.runTests([
   function createAlarm() {
     // This test will pass when checkAndComplete() is called
     // after the C++ code sends the expected message.
-    chrome.alarms.create(alarmName, {delayInMinutes: 0.001,
-                                     periodInMinutes: 60});
+    chrome.alarms.create(alarmName, createParams);
   },
   function getAlarm() {
     chrome.alarms.get(alarmName, function(alarm) {
@@ -49,7 +49,15 @@ chrome.test.runTests([
       chrome.test.assertTrue(wasCleared);
       chrome.test.succeed();
     });
-  }
+  },
+  function clearAlarms() {
+    chrome.alarms.create(alarmName + '-1', createParams);
+    chrome.alarms.create(alarmName + '-2', createParams);
+    chrome.alarms.clearAll(function(wasCleared) {
+      chrome.test.assertTrue(wasCleared);
+      chrome.test.succeed();
+    });
+  },
 ]);
 
 // Send a message to C++ to let it know that JS has registered event

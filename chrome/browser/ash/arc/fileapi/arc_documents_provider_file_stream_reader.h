@@ -31,6 +31,12 @@ class ArcDocumentsProviderFileStreamReader : public storage::FileStreamReader {
  public:
   ArcDocumentsProviderFileStreamReader(const storage::FileSystemURL& url,
                                        int64_t offset);
+
+  ArcDocumentsProviderFileStreamReader(
+      const ArcDocumentsProviderFileStreamReader&) = delete;
+  ArcDocumentsProviderFileStreamReader& operator=(
+      const ArcDocumentsProviderFileStreamReader&) = delete;
+
   ~ArcDocumentsProviderFileStreamReader() override;
 
   // storage::FileStreamReader override:
@@ -53,8 +59,6 @@ class ArcDocumentsProviderFileStreamReader : public storage::FileStreamReader {
 
   base::WeakPtrFactory<ArcDocumentsProviderFileStreamReader> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderFileStreamReader);
 };
 
 }  // namespace arc

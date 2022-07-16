@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Date range data structure. Based loosely on
@@ -37,6 +29,7 @@ goog.require('goog.iter.StopIteration');
  * @final
  */
 goog.date.DateRange = function(startDate, endDate) {
+  'use strict';
   /**
    * The first date in the range.
    * @type {goog.date.Date}
@@ -71,6 +64,7 @@ goog.date.DateRange.MAXIMUM_DATE = new goog.date.Date(9999, 11, 31);
  * @return {goog.date.Date} The first date in the range.
  */
 goog.date.DateRange.prototype.getStartDate = function() {
+  'use strict';
   return this.startDate_;
 };
 
@@ -79,6 +73,7 @@ goog.date.DateRange.prototype.getStartDate = function() {
  * @return {goog.date.Date} The last date in the range.
  */
 goog.date.DateRange.prototype.getEndDate = function() {
+  'use strict';
   return this.endDate_;
 };
 
@@ -90,6 +85,7 @@ goog.date.DateRange.prototype.getEndDate = function() {
  * @return {boolean} Whether the date is in the range.
  */
 goog.date.DateRange.prototype.contains = function(date) {
+  'use strict';
   return date.valueOf() >= this.startDate_.valueOf() &&
       date.valueOf() <= this.endDate_.valueOf();
 };
@@ -99,6 +95,7 @@ goog.date.DateRange.prototype.contains = function(date) {
  * @return {!goog.date.DateRange.Iterator} An iterator over the date range.
  */
 goog.date.DateRange.prototype.iterator = function() {
+  'use strict';
   return new goog.date.DateRange.Iterator(this);
 };
 
@@ -110,6 +107,7 @@ goog.date.DateRange.prototype.iterator = function() {
  * @return {boolean} Whether |a| is the same range as |b|.
  */
 goog.date.DateRange.equals = function(a, b) {
+  'use strict';
   // Test for same object reference; type conversion is irrelevant.
   if (a === b) {
     return true;
@@ -132,6 +130,7 @@ goog.date.DateRange.equals = function(a, b) {
  * @private
  */
 goog.date.DateRange.offsetInDays_ = function(date, offset) {
+  'use strict';
   var newDate = date.clone();
   newDate.add(new goog.date.Interval(goog.date.Interval.DAYS, offset));
   return newDate;
@@ -148,6 +147,7 @@ goog.date.DateRange.offsetInDays_ = function(date, offset) {
  * @private
  */
 goog.date.DateRange.offsetInMonths_ = function(date, offset) {
+  'use strict';
   var newDate = date.clone();
   newDate.setDate(1);
   newDate.add(new goog.date.Interval(goog.date.Interval.MONTHS, offset));
@@ -162,6 +162,7 @@ goog.date.DateRange.offsetInMonths_ = function(date, offset) {
  * @return {!goog.date.DateRange} The range that includes only yesterday.
  */
 goog.date.DateRange.yesterday = function(opt_today) {
+  'use strict';
   var today = goog.date.DateRange.cloneOrCreate_(opt_today);
   var yesterday = goog.date.DateRange.offsetInDays_(today, -1);
   return new goog.date.DateRange(yesterday, yesterday.clone());
@@ -175,6 +176,7 @@ goog.date.DateRange.yesterday = function(opt_today) {
  * @return {!goog.date.DateRange} The range that includes only today.
  */
 goog.date.DateRange.today = function(opt_today) {
+  'use strict';
   var today = goog.date.DateRange.cloneOrCreate_(opt_today);
   return new goog.date.DateRange(today, today.clone());
 };
@@ -188,6 +190,7 @@ goog.date.DateRange.today = function(opt_today) {
  *     end yesterday.
  */
 goog.date.DateRange.last7Days = function(opt_today) {
+  'use strict';
   var today = goog.date.DateRange.cloneOrCreate_(opt_today);
   var yesterday = goog.date.DateRange.offsetInDays_(today, -1);
   return new goog.date.DateRange(
@@ -204,6 +207,7 @@ goog.date.DateRange.last7Days = function(opt_today) {
  *     and ends the last day of this month.
  */
 goog.date.DateRange.thisMonth = function(opt_today) {
+  'use strict';
   var today = goog.date.DateRange.cloneOrCreate_(opt_today);
   return new goog.date.DateRange(
       goog.date.DateRange.offsetInMonths_(today, 0),
@@ -221,6 +225,7 @@ goog.date.DateRange.thisMonth = function(opt_today) {
  *     and ends the last day of last month.
  */
 goog.date.DateRange.lastMonth = function(opt_today) {
+  'use strict';
   var today = goog.date.DateRange.cloneOrCreate_(opt_today);
   return new goog.date.DateRange(
       goog.date.DateRange.offsetInMonths_(today, -1),
@@ -238,6 +243,7 @@ goog.date.DateRange.lastMonth = function(opt_today) {
  *     today and ends the Sunday on or after today.
  */
 goog.date.DateRange.thisWeek = function(opt_today) {
+  'use strict';
   var today = goog.date.DateRange.cloneOrCreate_(opt_today);
   var iso = today.getIsoWeekday();
   var firstDay = today.getFirstDayOfWeek();
@@ -258,6 +264,7 @@ goog.date.DateRange.thisWeek = function(opt_today) {
  *     Monday on or before today and ends the Sunday on or before yesterday.
  */
 goog.date.DateRange.lastWeek = function(opt_today) {
+  'use strict';
   var thisWeek = goog.date.DateRange.thisWeek(opt_today);
   var start = goog.date.DateRange.offsetInDays_(thisWeek.getStartDate(), -7);
   var end = goog.date.DateRange.offsetInDays_(thisWeek.getEndDate(), -7);
@@ -274,6 +281,7 @@ goog.date.DateRange.lastWeek = function(opt_today) {
  *     Monday on or before today and ends the Friday before today.
  */
 goog.date.DateRange.lastBusinessWeek = function(opt_today) {
+  'use strict';
   // TODO(user): should be i18nized.
   var today = goog.date.DateRange.cloneOrCreate_(opt_today);
   var start =
@@ -292,6 +300,7 @@ goog.date.DateRange.lastBusinessWeek = function(opt_today) {
  *     January 1, 1900 and December 31, 9999.
  */
 goog.date.DateRange.allTime = function(opt_today) {
+  'use strict';
   return new goog.date.DateRange(
       goog.date.DateRange.MINIMUM_DATE, goog.date.DateRange.MAXIMUM_DATE);
 };
@@ -324,6 +333,7 @@ goog.date.DateRange.StandardDateRangeKeys = {
  * @throws {Error} If no standard date range with that key exists.
  */
 goog.date.DateRange.standardDateRange = function(dateRangeKey, opt_today) {
+  'use strict';
   switch (dateRangeKey) {
     case goog.date.DateRange.StandardDateRangeKeys.YESTERDAY:
       return goog.date.DateRange.yesterday(opt_today);
@@ -366,6 +376,7 @@ goog.date.DateRange.standardDateRange = function(dateRangeKey, opt_today) {
  * @private
  */
 goog.date.DateRange.cloneOrCreate_ = function(opt_today) {
+  'use strict';
   return opt_today ? opt_today.clone() : new goog.date.Date();
 };
 
@@ -380,6 +391,7 @@ goog.date.DateRange.cloneOrCreate_ = function(opt_today) {
  * @final
  */
 goog.date.DateRange.Iterator = function(dateRange) {
+  'use strict';
   /**
    * The next date.
    * @type {goog.date.Date}
@@ -398,7 +410,8 @@ goog.inherits(goog.date.DateRange.Iterator, goog.iter.Iterator);
 
 
 /** @override */
-goog.date.DateRange.Iterator.prototype.next = function() {
+goog.date.DateRange.Iterator.prototype.nextValueOrThrow = function() {
+  'use strict';
   if (Number(this.nextDate_.toIsoString()) > this.endDate_) {
     throw goog.iter.StopIteration;
   }

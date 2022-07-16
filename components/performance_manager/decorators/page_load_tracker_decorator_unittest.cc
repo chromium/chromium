@@ -26,6 +26,11 @@ using LIS = Data::LoadIdleState;
 using LS = PageNode::LoadingState;
 
 class PageLoadTrackerDecoratorTest : public GraphTestHarness {
+ public:
+  PageLoadTrackerDecoratorTest(const PageLoadTrackerDecoratorTest&) = delete;
+  PageLoadTrackerDecoratorTest& operator=(const PageLoadTrackerDecoratorTest&) =
+      delete;
+
  protected:
   using Super = GraphTestHarness;
 
@@ -50,9 +55,6 @@ class PageLoadTrackerDecoratorTest : public GraphTestHarness {
   }
 
   PageLoadTrackerDecorator* pltd_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PageLoadTrackerDecoratorTest);
 };
 
 void PageLoadTrackerDecoratorTest::TestPageAlmostIdleTransitions(
@@ -77,33 +79,32 @@ void PageLoadTrackerDecoratorTest::TestPageAlmostIdleTransitions(
   PageLoadTrackerDecorator::DidStartLoading(page_node);
   auto* page_data = Data::GetForTesting(page_node);
   ASSERT_TRUE(page_data);
-  EXPECT_EQ(LIS::kLoadingWaitingForResponse, page_data->load_idle_state());
+  EXPECT_EQ(LIS::kWaitingForNavigation, page_data->load_idle_state());
   EXPECT_EQ(LS::kLoading, page_node->loading_state());
   EXPECT_TRUE(page_data->timer_.IsRunning());
   EXPECT_EQ(page_data->timer_.GetCurrentDelay(),
-            PageLoadTrackerDecorator::kWaitingForResponseTimeout);
+            PageLoadTrackerDecorator::kWaitingForNavigationTimeout);
 
   if (timeout_waiting_for_response) {
     // Let the timeout run down. The page should transition to loading timed
     // out.
     task_env().FastForwardBy(
-        PageLoadTrackerDecorator::kWaitingForResponseTimeout);
-    EXPECT_EQ(LIS::kLoadingWaitingForResponseTimedOut,
-              page_data->load_idle_state());
+        PageLoadTrackerDecorator::kWaitingForNavigationTimeout);
+    EXPECT_EQ(LIS::kWaitingForNavigationTimedOut, page_data->load_idle_state());
     EXPECT_EQ(LS::kLoadingTimedOut, page_node->loading_state());
     EXPECT_FALSE(page_data->timer_.IsRunning());
   }
 
-  // Indicate that a response was received. The state should transition to
-  // kLoadingDidReceiveResponse (no matter whether the
-  // kWaitingForResponseTimeout expired since load started).
-  PageLoadTrackerDecorator::DidReceiveResponse(page_node);
-  EXPECT_EQ(LIS::kLoadingDidReceiveResponse, page_data->load_idle_state());
+  // Indicate that a page change was committed. The state should transition to
+  // kLoading (no matter whether the kWaitingForNavigationTimeout expired since
+  // load started).
+  PageLoadTrackerDecorator::PrimaryPageChanged(page_node);
+  EXPECT_EQ(LIS::kLoading, page_data->load_idle_state());
   EXPECT_EQ(LS::kLoading, page_node->loading_state());
   EXPECT_FALSE(page_data->timer_.IsRunning());
 
   // Mark the page as idling. It should transition from
-  // kLoadingDidReceiveResponse directly to kLoadedAndIdling after this.
+  // kLoading directly to kLoadedAndIdling after this.
   frame_node->SetNetworkAlmostIdle();
   proc_node->SetMainThreadTaskLoadIsLow(true);
   PageLoadTrackerDecorator::DidStopLoading(page_node);
@@ -174,13 +175,13 @@ TEST_F(PageLoadTrackerDecoratorTest, TestTransitionsNotIdlingOnDidStopLoading) {
   EXPECT_FALSE(Data::GetForTesting(page_node));
   EXPECT_EQ(LS::kLoadingNotStarted, page_node->loading_state());
 
-  // The state should transition to loading when DidReceiveResponse() is called
+  // The state should transition to loading when PrimaryPageChanged() is called
   // to indicate that loading starts.
   PageLoadTrackerDecorator::DidStartLoading(page_node);
-  PageLoadTrackerDecorator::DidReceiveResponse(page_node);
+  PageLoadTrackerDecorator::PrimaryPageChanged(page_node);
   auto* page_data = Data::GetForTesting(page_node);
   ASSERT_TRUE(page_data);
-  EXPECT_EQ(LIS::kLoadingDidReceiveResponse, page_data->load_idle_state());
+  EXPECT_EQ(LIS::kLoading, page_data->load_idle_state());
   EXPECT_EQ(LS::kLoading, page_node->loading_state());
   EXPECT_FALSE(page_data->timer_.IsRunning());
 
@@ -206,13 +207,13 @@ TEST_F(PageLoadTrackerDecoratorTest, TestStartLoadingAgainBeforeIdle) {
   EXPECT_FALSE(Data::GetForTesting(page_node));
   EXPECT_EQ(LS::kLoadingNotStarted, page_node->loading_state());
 
-  // The state should transition to loading when DidReceiveResponse() is called
+  // The state should transition to loading when PrimaryPageChanged() is called
   // to indicate that loading starts.
   PageLoadTrackerDecorator::DidStartLoading(page_node);
-  PageLoadTrackerDecorator::DidReceiveResponse(page_node);
+  PageLoadTrackerDecorator::PrimaryPageChanged(page_node);
   auto* page_data = Data::GetForTesting(page_node);
   ASSERT_TRUE(page_data);
-  EXPECT_EQ(LIS::kLoadingDidReceiveResponse, page_data->load_idle_state());
+  EXPECT_EQ(LIS::kLoading, page_data->load_idle_state());
   EXPECT_EQ(LS::kLoading, page_node->loading_state());
 
   // Mark the page as not idling.
@@ -228,12 +229,12 @@ TEST_F(PageLoadTrackerDecoratorTest, TestStartLoadingAgainBeforeIdle) {
   // The state should transition to loading if DidStartLoading() is invoked
   // again, before the page reaches an idle state.
   PageLoadTrackerDecorator::DidStartLoading(page_node);
-  EXPECT_EQ(LIS::kLoadingWaitingForResponse, page_data->load_idle_state());
+  EXPECT_EQ(LIS::kWaitingForNavigation, page_data->load_idle_state());
   EXPECT_EQ(LS::kLoading, page_node->loading_state());
 
   // Test transitions until the page is loaded and idle.
-  PageLoadTrackerDecorator::DidReceiveResponse(page_node);
-  EXPECT_EQ(LIS::kLoadingDidReceiveResponse, page_data->load_idle_state());
+  PageLoadTrackerDecorator::PrimaryPageChanged(page_node);
+  EXPECT_EQ(LIS::kLoading, page_data->load_idle_state());
   EXPECT_EQ(LS::kLoading, page_node->loading_state());
 
   PageLoadTrackerDecorator::DidStopLoading(page_node);

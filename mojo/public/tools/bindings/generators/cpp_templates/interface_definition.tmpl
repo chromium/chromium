@@ -73,13 +73,16 @@ class {{class_name}}_{{method.name}}_HandleSyncResponse
 {%-       endfor %} {
     DCHECK(!*result_);
   }
+
+  {{class_name}}_{{method.name}}_HandleSyncResponse(const {{class_name}}_{{method.name}}_HandleSyncResponse&) = delete;
+  {{class_name}}_{{method.name}}_HandleSyncResponse& operator=(const {{class_name}}_{{method.name}}_HandleSyncResponse&) = delete;
+
   bool Accept(mojo::Message* message) override;
  private:
   bool* result_;
 {%-       for param in method.response_parameters %}
   {{param.kind|cpp_wrapper_call_type}}* out_{{param.name}}_;
 {%-       endfor -%}
-  DISALLOW_COPY_AND_ASSIGN({{class_name}}_{{method.name}}_HandleSyncResponse);
 };
 {%-     endif %}
 
@@ -90,10 +93,13 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
       {{class_name}}::{{method.name}}Callback callback
       ) : callback_(std::move(callback)) {
   }
+
+  {{class_name}}_{{method.name}}_ForwardToCallback(const {{class_name}}_{{method.name}}_ForwardToCallback&) = delete;
+  {{class_name}}_{{method.name}}_ForwardToCallback& operator=(const {{class_name}}_{{method.name}}_ForwardToCallback&) = delete;
+
   bool Accept(mojo::Message* message) override;
  private:
   {{class_name}}::{{method.name}}Callback callback_;
-  DISALLOW_COPY_AND_ASSIGN({{class_name}}_{{method.name}}_ForwardToCallback);
 };
 {%-   endif %}
 {%- endfor %}
@@ -122,11 +128,11 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
 bool {{proxy_name}}::{{method.name}}(
     {{interface_macros.declare_sync_method_params("param_", method)}}) {
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
-{%-     set qualified_method_name = "%s::%s::%s" % (namespace_as_string,
+{%-     set event_name = "Call %s::%s::%s (sync)" % (namespace_as_string,
                                                     class_name, method.name) %}
   {{interface_macros.trace_event(prefix="param_",
                                  method_parameters=method.parameters,
-                                 method_name=qualified_method_name,
+                                 method_name=event_name,
                                  parameter_group="input_parameters",
                                  trace_event_type='_BEGIN')}}
 #endif
@@ -161,11 +167,11 @@ bool {{proxy_name}}::{{method.name}}(
 {%-     for param in method.response_parameters -%}
           , out_param_{{param.name}}
 {%-     endfor %}));
-  ignore_result(receiver_->AcceptWithResponder(&message, std::move(responder)));
+  ::mojo::internal::SendMessage(*receiver_, message, std::move(responder));
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
   {{interface_macros.trace_event(prefix="out_param_",
                                  method_parameters=method.response_parameters,
-                                 method_name=qualified_method_name,
+                                 method_name=event_name,
                                  parameter_group="sync_response_parameters",
                                  trace_event_type='_END',
                                  dereference_parameters=True)}}
@@ -177,11 +183,11 @@ bool {{proxy_name}}::{{method.name}}(
 void {{proxy_name}}::{{method.name}}(
     {{interface_macros.declare_request_params("in_", method)}}) {
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
-{%- set qualified_method_name = "%s::%s::%s" % (namespace_as_string, class_name,
-                                                method.name) %}
+{%- set event_name = "Send %s::%s::%s" % (namespace_as_string, class_name,
+                                          method.name) %}
   {{interface_macros.trace_event(prefix="in_",
                                  method_parameters=method.parameters,
-                                 method_name=qualified_method_name,
+                                 method_name=event_name,
                                  parameter_group="input_parameters")}}
 #endif
 {%- if method.response_parameters != None %}
@@ -215,11 +221,11 @@ void {{proxy_name}}::{{method.name}}(
   std::unique_ptr<mojo::MessageReceiver> responder(
       new {{class_name}}_{{method.name}}_ForwardToCallback(
           std::move(callback)));
-  ignore_result(receiver_->AcceptWithResponder(&message, std::move(responder)));
+  ::mojo::internal::SendMessage(*receiver_, message, std::move(responder));
 {%- else %}
   // This return value may be ignored as false implies the Connector has
   // encountered an error, which will be visible through other means.
-  ignore_result(receiver_->Accept(&message));
+  ::mojo::internal::SendMessage(*receiver_, message);
 {%- endif %}
 }
 {%- endfor %}
@@ -234,15 +240,14 @@ void {{proxy_name}}::{{method.name}}(
             "%s.%s response"|format(interface.name, method.name) %}
 {%-     set response_message_typename =
             "%s_%s_Response_Message"|format(interface.name, method.name) %}
-class {{class_name}}_{{method.name}}_ProxyToResponder {
+class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal::ProxyToResponder {
  public:
   static {{class_name}}::{{method.name}}Callback CreateCallback(
-      uint64_t request_id,
-      bool is_sync,
-      std::unique_ptr<mojo::MessageReceiverWithStatus>* responder) {
+      ::mojo::Message& message,
+      std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
     std::unique_ptr<{{class_name}}_{{method.name}}_ProxyToResponder> proxy(
         new {{class_name}}_{{method.name}}_ProxyToResponder(
-            request_id, is_sync, responder));
+            message, std::move(responder)));
     return base::BindOnce(&{{class_name}}_{{method.name}}_ProxyToResponder::Run,
                           std::move(proxy));
   }
@@ -257,19 +262,13 @@ class {{class_name}}_{{method.name}}_ProxyToResponder {
       responder_->IsConnectedAsync(base::BindOnce(&OnIsConnectedComplete));
     }
 #endif
-    // If the Callback was dropped then deleting the responder will close
-    // the pipe so the calling application knows to stop waiting for a reply.
-    responder_ = nullptr;
   }
 
  private:
   {{class_name}}_{{method.name}}_ProxyToResponder(
-      uint64_t request_id,
-      bool is_sync,
-      std::unique_ptr<mojo::MessageReceiverWithStatus>* responder)
-      : request_id_(request_id),
-        is_sync_(is_sync),
-        responder_(std::move(*responder)) {
+      ::mojo::Message& message,
+      std::unique_ptr<mojo::MessageReceiverWithStatus> responder)
+      : ::mojo::internal::ProxyToResponder(message, std::move(responder)) {
   }
 
 #if DCHECK_IS_ON()
@@ -284,12 +283,6 @@ class {{class_name}}_{{method.name}}_ProxyToResponder {
 
   void Run(
       {{interface_macros.declare_params("in_", method.response_parameters)}});
-
-  uint64_t request_id_;
-  bool is_sync_;
-  std::unique_ptr<mojo::MessageReceiverWithStatus> responder_;
-
-  DISALLOW_COPY_AND_ASSIGN({{class_name}}_{{method.name}}_ProxyToResponder);
 };
 
 {%-     if method|method_supports_lazy_serialization %}
@@ -301,8 +294,8 @@ class {{class_name}}_{{method.name}}_ProxyToResponder {
 bool {{class_name}}_{{method.name}}_ForwardToCallback::Accept(
     mojo::Message* message) {
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
-  TRACE_EVENT1("mojom", "{{namespace_as_string}}::{{class_name}}::{{method.name}}Callback",
-               "message", message->name());
+  TRACE_EVENT("toplevel", "Receive reply {{namespace_as_string}}::{{class_name}}::{{method.name}}",
+               perfetto::Flow::Global(message->GetTraceId()));
 #endif
 {%-     if method|method_supports_lazy_serialization %}
   if (!message->is_serialized()) {
@@ -337,13 +330,12 @@ bool {{class_name}}_{{method.name}}_ForwardToCallback::Accept(
 void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
     {{interface_macros.declare_params("in_", method.response_parameters)}}) {
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
-{%-     set qualified_method_name = "(Impl)%s::%s::%sCallback"
+{%-     set event_name = "Send reply %s::%s::%s"
 		% (namespace_as_string, class_name, method.name) %}
   {{interface_macros.trace_event(prefix="in_",
                                  method_parameters=method.response_parameters,
-                                 method_name=qualified_method_name,
+                                 method_name=event_name,
                                  parameter_group="async_response_parameters",
-                                 trace_event_type='_BEGIN',
                                  dereference_parameters=False)}}
 #endif
 {%-   if method|method_supports_lazy_serialization %}
@@ -361,18 +353,14 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
       response_params_description, "kFlags", "message")}}
 {%-   endif %}
 
-#if BUILDFLAG(MOJO_TRACE_ENABLED)
-  TRACE_EVENT_END1("mojom", "{{qualified_method_name}}", "message",
-                   message.name());
-#endif
-
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);
   message.set_method_name("{{method.name}}");
 #endif
 
   message.set_request_id(request_id_);
-  ignore_result(responder_->Accept(&message));
+  message.set_trace_nonce(trace_nonce_);
+  ::mojo::internal::SendMessage(*responder_, message);
   // TODO(darin): Accept() returning false indicates a malformed message, and
   // that may be good reason to close the connection. However, we don't have a
   // way to do that from here. We should add a way.
@@ -434,10 +422,10 @@ bool {{class_name}}StubDispatch::Accept(
     case internal::k{{class_name}}_{{method.name}}_Name: {
 {%-     if method.response_parameters == None %}
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
-      TRACE_EVENT1(
-          "mojom",
-          "(Impl){{namespace_as_string}}::{{class_name}}::{{method.name}}",
-          "message", message->name());
+      TRACE_EVENT(
+          "toplevel",
+          "Receive {{namespace_as_string}}::{{class_name}}::{{method.name}}",
+          perfetto::Flow::Global(message->GetTraceId()));
 #endif
       static constexpr uint32_t kMessageHash = base::MD5Hash32Constexpr(
               "(Impl){{namespace_as_string}}::{{class_name}}::{{method.name}}");
@@ -495,10 +483,10 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
     case internal::k{{class_name}}_{{method.name}}_Name: {
 {%-     if method.response_parameters != None %}
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
-      TRACE_EVENT1(
-          "mojom",
-          "(Impl){{namespace_as_string}}::{{class_name}}::{{method.name}}",
-          "message", message->name());
+      TRACE_EVENT(
+          "toplevel",
+          "Receive {{namespace_as_string}}::{{class_name}}::{{method.name}}",
+          perfetto::Flow::Global(message->GetTraceId()));
 #endif
       static constexpr uint32_t kMessageHash = base::MD5Hash32Constexpr(
               "(Impl){{namespace_as_string}}::{{class_name}}::{{method.name}}");
@@ -515,7 +503,7 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
         } else {
           {{class_name}}::{{method.name}}Callback callback =
               {{class_name}}_{{method.name}}_ProxyToResponder::CreateCallback(
-                  message->request_id(), message_is_sync, &responder);
+                  *message, std::move(responder));
           context->Dispatch(message, impl, std::move(callback));
           return true;
         }
@@ -532,7 +520,7 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
           indent(4)}}
       {{class_name}}::{{method.name}}Callback callback =
           {{class_name}}_{{method.name}}_ProxyToResponder::CreateCallback(
-              message->request_id(), message_is_sync, &responder);
+              *message, std::move(responder));
       // A null |impl| means no implementation was bound.
       DCHECK(impl);
       impl->{{method.name}}(

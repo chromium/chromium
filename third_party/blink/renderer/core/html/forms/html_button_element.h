@@ -41,6 +41,10 @@ class HTMLButtonElement final : public HTMLFormControlElement {
 
   bool WillRespondToMouseClickEvents() override;
 
+  void DispatchBlurEvent(Element*,
+                         mojom::blink::FocusType,
+                         InputDeviceCapabilities*) override;
+
  private:
   enum Type { SUBMIT, RESET, BUTTON };
 

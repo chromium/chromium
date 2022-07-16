@@ -154,6 +154,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
       tapToolsMenuButton:chrome_test_util::OpenNewWindowMenuButton()];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
 
   // Verify the second window.
   [ChromeEarlGrey waitForForegroundWindowCount:2];

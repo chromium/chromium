@@ -90,9 +90,6 @@ std::string BuildClientDataJson(
     case ClientDataRequestType::kWebAuthnGet:
       ret.append(R"({"type":"webauthn.get")");
       break;
-    case ClientDataRequestType::kPaymentCreate:
-      ret.append(R"({"type":"payment.create")");
-      break;
     case ClientDataRequestType::kPaymentGet:
       ret.append(R"({"type":"payment.get")");
       break;
@@ -118,6 +115,9 @@ std::string BuildClientDataJson(
 
     ret.append(R"(,"topOrigin":)");
     ret.append(ToJSONString(payment_top_origin));
+
+    ret.append(R"(,"payeeOrigin":)");
+    ret.append(ToJSONString(payment_options->payee_origin.Serialize()));
 
     ret.append(R"(,"total":{)");
 

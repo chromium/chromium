@@ -4,14 +4,15 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/webui/eche_app_ui/url_constants.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chromeos/components/eche_app_ui/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
@@ -22,7 +23,10 @@
 class EcheAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
   EcheAppIntegrationTest() {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kEcheSWA);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kEcheSWA,
+                              chromeos::features::kPhoneHubRecentApps},
+        /*disabled_features=*/{});
   }
 
  private:
@@ -32,7 +36,7 @@ class EcheAppIntegrationTest : public SystemWebAppIntegrationTest {
 // Test that the Eche App installs and launches correctly. Runs some spot checks
 // on the manifest.
 IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, EcheApp) {
-  const GURL url(chromeos::eche_app::kChromeUIEcheAppURL);
+  const GURL url(ash::eche_app::kChromeUIEcheAppURL);
   EXPECT_NO_FATAL_FAILURE(
       ExpectSystemWebAppValid(web_app::SystemAppType::ECHE, url, "Eche App"));
 }
@@ -100,8 +104,9 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, HiddenInLauncherAndSearch) {
   WaitForTestSystemAppInstall();
 
   // Check system_web_app_manager has the correct attributes for Eche App.
-  EXPECT_FALSE(GetManager().ShouldShowInLauncher(web_app::SystemAppType::ECHE));
-  EXPECT_FALSE(GetManager().ShouldShowInSearch(web_app::SystemAppType::ECHE));
+  auto* system_app = GetManager().GetSystemApp(web_app::SystemAppType::ECHE);
+  EXPECT_FALSE(system_app->ShouldShowInLauncher());
+  EXPECT_FALSE(system_app->ShouldShowInSearch());
 }
 
 IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
@@ -130,9 +135,9 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, ShouldAllowCloseWindow) {
   WaitForTestSystemAppInstall();
   Browser* browser;
   LaunchApp(web_app::SystemAppType::ECHE, &browser);
-  EXPECT_TRUE(web_app::WebAppProvider::Get(browser->profile())
-                  ->system_web_app_manager()
-                  .AllowScriptsToCloseWindows(web_app::SystemAppType::ECHE));
+  EXPECT_TRUE(browser->app_controller()
+                  ->system_app()
+                  ->ShouldAllowScriptsToCloseWindows());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
@@ -142,8 +147,10 @@ class EcheAppEnableResizingTest : public SystemWebAppIntegrationTest {
  public:
   EcheAppEnableResizingTest() {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kEcheSWA, chromeos::features::kEcheSWAResizing},
-        {});
+        /*enabled_features=*/{chromeos::features::kEcheSWA,
+                              chromeos::features::kEcheSWAResizing,
+                              chromeos::features::kPhoneHubRecentApps},
+        /*disabled_features=*/{});
   }
 
  private:

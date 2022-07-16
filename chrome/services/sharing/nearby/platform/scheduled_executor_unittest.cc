@@ -20,8 +20,7 @@ namespace chrome {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultDelayTimeDelta =
-    base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kDefaultDelayTimeDelta = base::Minutes(10);
 
 }  // namespace
 

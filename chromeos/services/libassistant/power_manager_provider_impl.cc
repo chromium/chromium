@@ -55,16 +55,15 @@ PowerManagerProviderImpl::AlarmId PowerManagerProviderImpl::AddWakeAlarm(
     assistant_client::Callback0 callback) {
   const AlarmId id = next_id_++;
   DVLOG(1) << __func__ << "Add alarm ID " << id << " for "
-           << base::Time::Now() +
-                  base::TimeDelta::FromMilliseconds(relative_time_ms);
+           << base::Time::Now() + base::Milliseconds(relative_time_ms);
 
   main_thread_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&PowerManagerProviderImpl::AddWakeAlarmOnMainThread,
-                     weak_factory_.GetWeakPtr(), id,
-                     GetCurrentBootTime() +
-                         base::TimeDelta::FromMilliseconds(relative_time_ms),
-                     std::move(callback)));
+      base::BindOnce(
+          &PowerManagerProviderImpl::AddWakeAlarmOnMainThread,
+          weak_factory_.GetWeakPtr(), id,
+          GetCurrentBootTime() + base::Milliseconds(relative_time_ms),
+          std::move(callback)));
   return id;
 }
 

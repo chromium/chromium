@@ -5,8 +5,6 @@
 #ifndef BASE_MEMORY_UNSAFE_SHARED_MEMORY_REGION_H_
 #define BASE_MEMORY_UNSAFE_SHARED_MEMORY_REGION_H_
 
-#include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 
@@ -56,6 +54,9 @@ class BASE_EXPORT UnsafeSharedMemoryRegion {
   // Move operations are allowed.
   UnsafeSharedMemoryRegion(UnsafeSharedMemoryRegion&&);
   UnsafeSharedMemoryRegion& operator=(UnsafeSharedMemoryRegion&&);
+
+  UnsafeSharedMemoryRegion(const UnsafeSharedMemoryRegion&) = delete;
+  UnsafeSharedMemoryRegion& operator=(const UnsafeSharedMemoryRegion&) = delete;
 
   // Destructor closes shared memory region if valid.
   // All created mappings will remain valid.
@@ -112,8 +113,6 @@ class BASE_EXPORT UnsafeSharedMemoryRegion {
   static CreateFunction* create_hook_;
 
   subtle::PlatformSharedMemoryRegion handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnsafeSharedMemoryRegion);
 };
 
 }  // namespace base

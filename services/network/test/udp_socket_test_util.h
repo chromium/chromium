@@ -64,6 +64,10 @@ class UDPSocketListenerImpl : public mojom::UDPSocketListener {
   };
 
   UDPSocketListenerImpl();
+
+  UDPSocketListenerImpl(const UDPSocketListenerImpl&) = delete;
+  UDPSocketListenerImpl& operator=(const UDPSocketListenerImpl&) = delete;
+
   ~UDPSocketListenerImpl() override;
 
   const std::vector<ReceivedResult>& results() const { return results_; }
@@ -77,8 +81,6 @@ class UDPSocketListenerImpl : public mojom::UDPSocketListener {
   std::unique_ptr<base::RunLoop> run_loop_;
   std::vector<ReceivedResult> results_;
   size_t expected_receive_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(UDPSocketListenerImpl);
 };
 
 }  // namespace test

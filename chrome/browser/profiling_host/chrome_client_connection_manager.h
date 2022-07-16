@@ -17,10 +17,12 @@ class ChromeClientConnectionManager : public ClientConnectionManager {
  public:
   ChromeClientConnectionManager(base::WeakPtr<Controller> controller,
                                 Mode mode);
-  bool AllowedToProfileRenderer(content::RenderProcessHost* host) override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeClientConnectionManager);
+  ChromeClientConnectionManager(const ChromeClientConnectionManager&) = delete;
+  ChromeClientConnectionManager& operator=(
+      const ChromeClientConnectionManager&) = delete;
+
+  bool AllowedToProfileRenderer(content::RenderProcessHost* host) override;
 };
 
 }  // namespace heap_profiling

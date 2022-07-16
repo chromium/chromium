@@ -113,7 +113,7 @@ std::string ContentPageAnnotatorDriver::GenerateSourceId(
   return std::string();
 }
 
-void ContentPageAnnotatorDriver::DidFinishDocumentLoad() {
+void ContentPageAnnotatorDriver::DidDispatchDOMContentLoadedEvent() {
   if (!render_frame()->IsMainFrame())
     return;
 
@@ -138,7 +138,7 @@ void ContentPageAnnotatorDriver::DidFinishDocumentLoad() {
       FROM_HERE,
       base::BindOnce(&ContentPageAnnotatorDriver::FindAndTrackImages,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kDomCrawlDelayMs));
+      base::Milliseconds(kDomCrawlDelayMs));
 }
 
 void ContentPageAnnotatorDriver::OnDestruct() {

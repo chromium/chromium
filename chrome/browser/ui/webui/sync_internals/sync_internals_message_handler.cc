@@ -24,8 +24,8 @@
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/type_entities_count.h"
-#include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
+#include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
@@ -39,21 +39,19 @@ using syncer::SyncService;
 namespace {
 
 // Converts the string at |index| in |list| to an int, defaulting to 0 on error.
-int64_t StringAtIndexToInt64(const base::ListValue* list, int index) {
-  std::string str;
-  if (list->GetString(index, &str)) {
+int64_t StringAtIndexToInt64(const base::ListValue* list, size_t index) {
+  if (list->GetList().size() > index && list->GetList()[index].is_string()) {
     int64_t integer = 0;
-    if (base::StringToInt64(str, &integer))
+    if (base::StringToInt64(list->GetList()[index].GetString(), &integer))
       return integer;
   }
   return 0;
 }
 
 // Returns whether the there is any value at the given |index|.
-bool HasSomethingAtIndex(const base::ListValue* list, int index) {
-  std::string str;
-  if (list->GetString(index, &str)) {
-    return !str.empty();
+bool HasSomethingAtIndex(const base::ListValue* list, size_t index) {
+  if (list->GetList().size() > index && list->GetList()[index].is_string()) {
+    return !list->GetList()[index].GetString().empty();
   }
   return false;
 }
@@ -96,58 +94,58 @@ void SyncInternalsMessageHandler::OnJavascriptDisallowed() {
 void SyncInternalsMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       syncer::sync_ui_util::kRequestDataAndRegisterForUpdates,
       base::BindRepeating(
           &SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       syncer::sync_ui_util::kRequestListOfTypes,
       base::BindRepeating(
           &SyncInternalsMessageHandler::HandleRequestListOfTypes,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       syncer::sync_ui_util::kRequestIncludeSpecificsInitialState,
       base::BindRepeating(&SyncInternalsMessageHandler::
                               HandleRequestIncludeSpecificsInitialState,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       syncer::sync_ui_util::kSetIncludeSpecifics,
       base::BindRepeating(
           &SyncInternalsMessageHandler::HandleSetIncludeSpecifics,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       syncer::sync_ui_util::kWriteUserEvent,
       base::BindRepeating(&SyncInternalsMessageHandler::HandleWriteUserEvent,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       syncer::sync_ui_util::kRequestStart,
       base::BindRepeating(&SyncInternalsMessageHandler::HandleRequestStart,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       syncer::sync_ui_util::kRequestStopKeepData,
       base::BindRepeating(
           &SyncInternalsMessageHandler::HandleRequestStopKeepData,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       syncer::sync_ui_util::kRequestStopClearData,
       base::BindRepeating(
           &SyncInternalsMessageHandler::HandleRequestStopClearData,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       syncer::sync_ui_util::kTriggerRefresh,
       base::BindRepeating(&SyncInternalsMessageHandler::HandleTriggerRefresh,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       syncer::sync_ui_util::kGetAllNodes,
       base::BindRepeating(&SyncInternalsMessageHandler::HandleGetAllNodes,
                           base::Unretained(this)));
@@ -187,7 +185,7 @@ void SyncInternalsMessageHandler::HandleRequestListOfTypes(
   ListValue type_list;
   syncer::ModelTypeSet protocol_types = syncer::ProtocolTypes();
   for (syncer::ModelType type : protocol_types) {
-    type_list.AppendString(ModelTypeToString(type));
+    type_list.Append(ModelTypeToString(type));
   }
   event_details.SetKey(syncer::sync_ui_util::kTypes, std::move(type_list));
   FireWebUIListener(syncer::sync_ui_util::kOnReceivedListOfTypes,
@@ -208,12 +206,10 @@ void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
 }
 
 void SyncInternalsMessageHandler::HandleGetAllNodes(const ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
   AllowJavascript();
 
-  std::string callback_id;
-  bool success = args->GetString(0, &callback_id);
-  DCHECK(success);
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   SyncService* service = GetSyncService();
   if (service) {
@@ -229,14 +225,14 @@ void SyncInternalsMessageHandler::HandleGetAllNodes(const ListValue* args) {
 
 void SyncInternalsMessageHandler::HandleSetIncludeSpecifics(
     const ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
   AllowJavascript();
   include_specifics_ = args->GetList()[0].GetBool();
 }
 
 void SyncInternalsMessageHandler::HandleWriteUserEvent(
     const base::ListValue* args) {
-  DCHECK_EQ(2U, args->GetSize());
+  DCHECK_EQ(2U, args->GetList().size());
   AllowJavascript();
 
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -249,11 +245,11 @@ void SyncInternalsMessageHandler::HandleWriteUserEvent(
   event_specifics.mutable_test_event();
 
   // |event_time_usec| is required.
-  event_specifics.set_event_time_usec(StringAtIndexToInt64(args, 0));
+  event_specifics.set_event_time_usec(StringAtIndexToInt64(args, 0u));
 
   // |navigation_id| is optional, treat empty string and 0 differently.
   if (HasSomethingAtIndex(args, 1)) {
-    event_specifics.set_navigation_id(StringAtIndexToInt64(args, 1));
+    event_specifics.set_navigation_id(StringAtIndexToInt64(args, 1u));
   }
 
   user_event_service->RecordUserEvent(event_specifics);
@@ -261,7 +257,7 @@ void SyncInternalsMessageHandler::HandleWriteUserEvent(
 
 void SyncInternalsMessageHandler::HandleRequestStart(
     const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetSize());
+  DCHECK_EQ(0U, args->GetList().size());
 
   SyncService* service = GetSyncService();
   if (!service)
@@ -277,7 +273,7 @@ void SyncInternalsMessageHandler::HandleRequestStart(
 
 void SyncInternalsMessageHandler::HandleRequestStopKeepData(
     const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetSize());
+  DCHECK_EQ(0U, args->GetList().size());
 
   SyncService* service = GetSyncService();
   if (!service)
@@ -288,7 +284,7 @@ void SyncInternalsMessageHandler::HandleRequestStopKeepData(
 
 void SyncInternalsMessageHandler::HandleRequestStopClearData(
     const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetSize());
+  DCHECK_EQ(0U, args->GetList().size());
 
   SyncService* service = GetSyncService();
   if (!service)
@@ -303,10 +299,7 @@ void SyncInternalsMessageHandler::HandleTriggerRefresh(
   if (!service)
     return;
 
-  // Only allowed to trigger refresh/schedule nudges for protocol types, things
-  // like PROXY_TABS are not allowed.
-  service->TriggerRefresh(base::util::Intersection(
-      service->GetActiveDataTypes(), syncer::ProtocolTypes()));
+  service->TriggerRefresh(syncer::ModelTypeSet::All());
 }
 
 void SyncInternalsMessageHandler::OnReceivedAllNodes(

@@ -20,13 +20,15 @@ namespace message_center_utils {
 bool CompareNotifications(message_center::Notification* n1,
                           message_center::Notification* n2);
 
-// Returns a vector of visible notifications sorted for display, using
-// CompareNotifications() above for the sorting order.
-std::vector<message_center::Notification*> GetSortedVisibleNotifications();
+// Returns a vector of notifications that should have their own message
+// view sorted for display, using CompareNotifications() above for the sorting
+// order.
+std::vector<message_center::Notification*> GetSortedNotificationsWithOwnView();
 
 // Returns total notifications count, with a filter to not count some of them
-// (These notifications such as camera, media controls, etc. don't need an
-// indicator in status area since they already have a dedicated tray item).
+// These notifications such as camera, media controls, etc. don't need an
+// indicator in status area since they already have a dedicated tray item, and
+// grouped notifications only need to be counted as one.
 size_t ASH_EXPORT GetNotificationCount();
 
 }  // namespace message_center_utils

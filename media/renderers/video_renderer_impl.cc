@@ -15,8 +15,8 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/bind_to_current_loop.h"
@@ -657,8 +657,7 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
 
   // Update average frame duration.
   base::TimeDelta frame_duration = algorithm_->average_frame_duration();
-  if (frame_duration != kNoTimestamp &&
-      frame_duration != base::TimeDelta::FromSeconds(0)) {
+  if (frame_duration != kNoTimestamp && frame_duration != base::Seconds(0)) {
     fps_estimator_.AddSample(frame_duration);
   } else {
     fps_estimator_.Reset();

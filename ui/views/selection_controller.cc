@@ -123,8 +123,8 @@ bool SelectionController::OnMouseDragged(const ui::MouseEvent& event) {
     SelectThroughLastDragLocation();
 
     drag_selection_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(drag_selection_delay),
-        this, &SelectionController::SelectThroughLastDragLocation);
+        FROM_HERE, base::Milliseconds(drag_selection_delay), this,
+        &SelectionController::SelectThroughLastDragLocation);
   }
 
   return true;

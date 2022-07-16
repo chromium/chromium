@@ -9,9 +9,12 @@
 #include "base/callback_helpers.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
@@ -19,6 +22,33 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/event_constants.h"
+
+namespace {
+class Waiter : public BrowserListObserver {
+ public:
+  static Browser* WaitForNewBrowser() {
+    base::RunLoop loop;
+    Waiter waiter(loop.QuitClosure());
+    loop.Run();
+    return waiter.browser_;
+  }
+
+ private:
+  explicit Waiter(base::OnceClosure callback) : callback_{std::move(callback)} {
+    BrowserList::AddObserver(this);
+  }
+
+  ~Waiter() override { BrowserList::RemoveObserver(this); }
+
+  void OnBrowserAdded(Browser* browser) override {
+    browser_ = browser;
+    std::move(callback_).Run();
+  }
+
+  base::OnceClosure callback_;
+  Browser* browser_ = nullptr;
+};
+}  // namespace
 
 // Unit tests for the left click menu and interaction with the menu items. There
 // are integration tests in ./chrome_shelf_controller_browsertest.cc which
@@ -34,19 +64,19 @@ class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void InstallApp() {
-    web_app::WebAppProvider::Get(browser()->profile())
+    web_app::WebAppProvider::GetForTest(browser()->profile())
         ->system_web_app_manager()
         .InstallSystemAppsForTesting();
 
     app_id_ = *web_app::GetAppIdForSystemWebApp(
         browser()->profile(), web_app::SystemAppType::TERMINAL);
     app_shelf_id_ = ash::ShelfID(app_id_);
-    controller_->PinAppWithID(app_id_);
+    PinAppWithIDToShelf(app_id_);
   }
 
   Browser* LaunchApp() {
     crostini::LaunchTerminal(browser()->profile());
-    return chrome::FindLastActive();
+    return Waiter::WaitForNewBrowser();
   }
 
   ash::ShelfItemDelegate* GetShelfItemDelegate() {

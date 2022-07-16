@@ -7,9 +7,9 @@
 import {ActionName} from 'chrome://personalization/trusted/personalization_actions.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_reducers.js';
 import {Paths} from 'chrome://personalization/trusted/personalization_router_element.js';
-import {WallpaperSelected} from 'chrome://personalization/trusted/wallpaper_selected_element.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
+import {mockTimeoutForTesting, WallpaperSelected} from 'chrome://personalization/trusted/wallpaper_selected_element.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from '../../chai_assert.js';
+import {flushTasks, waitAfterNextRender} from '../../test_util.js';
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
@@ -38,60 +38,66 @@ export function WallpaperSelectedTest() {
     await flushTasks();
   });
 
-  test('shows loading spinner when there are in-flight requests', async () => {
-    personalizationStore.data.loading = {
-      ...personalizationStore.data.loading,
-      selected: 1,
-      setImage: 0,
-    };
-    wallpaperSelectedElement = initElement(WallpaperSelected.is);
+  test(
+      'shows loading placeholder when there are in-flight requests',
+      async () => {
+        personalizationStore.data.loading = {
+          ...personalizationStore.data.loading,
+          selected: 1,
+          setImage: 0,
+        };
+        wallpaperSelectedElement = initElement(WallpaperSelected.is);
 
-    assertEquals(
-        null, wallpaperSelectedElement.shadowRoot.querySelector('img'));
+        assertEquals(
+            null, wallpaperSelectedElement.shadowRoot.querySelector('img'));
 
-    assertEquals(
-        null,
-        wallpaperSelectedElement.shadowRoot.getElementById('textContainer'));
+        assertEquals(
+            null,
+            wallpaperSelectedElement.shadowRoot.getElementById(
+                'textContainer'));
 
-    const spinner =
-        wallpaperSelectedElement.shadowRoot.querySelector('paper-spinner-lite');
+        const placeholder = wallpaperSelectedElement.shadowRoot.getElementById(
+            'imagePlaceholder');
 
-    assertTrue(spinner.active);
+        assertTrue(!!placeholder);
 
-    // Loading spinner should be hidden.
-    personalizationStore.data.loading = {
-      ...personalizationStore.data.loading,
-      selected: 0,
-      setImage: 0,
-    };
-    personalizationStore.notifyObservers();
-    waitAfterNextRender(wallpaperSelectedElement);
+        // Loading placeholder should be hidden.
+        personalizationStore.data.loading = {
+          ...personalizationStore.data.loading,
+          selected: 0,
+          setImage: 0,
+        };
+        personalizationStore.data.currentSelected =
+            wallpaperProvider.currentWallpaper;
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(wallpaperSelectedElement);
 
-    assertFalse(spinner.active);
+        assertEquals('none', placeholder.style.display);
 
-    // Sent a request to update user wallpaper. Loading spinner should come
-    // back.
-    personalizationStore.data.loading = {
-      ...personalizationStore.data.loading,
-      selected: 0,
-      setImage: 1,
-    };
-    personalizationStore.notifyObservers();
-    waitAfterNextRender(wallpaperSelectedElement);
+        // Sent a request to update user wallpaper. Loading placeholder should
+        // come back.
+        personalizationStore.data.loading = {
+          ...personalizationStore.data.loading,
+          selected: 0,
+          setImage: 1,
+        };
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(wallpaperSelectedElement);
 
-    assertTrue(spinner.active);
-  });
+        assertEquals('', placeholder.style.display);
+      });
 
   test('sets wallpaper image in store on first load', async () => {
     personalizationStore.expectAction(ActionName.SET_SELECTED_IMAGE);
     wallpaperSelectedElement = initElement(WallpaperSelected.is);
     const action =
         await personalizationStore.waitForAction(ActionName.SET_SELECTED_IMAGE);
-    assertEquals(wallpaperProvider.currentWallpaper, action.image);
+    assertDeepEquals(wallpaperProvider.currentWallpaper, action.image);
   });
 
   test('shows wallpaper image and attribution when loaded', async () => {
-    personalizationStore.data.selected = wallpaperProvider.currentWallpaper;
+    personalizationStore.data.currentSelected =
+        wallpaperProvider.currentWallpaper;
 
     wallpaperSelectedElement = initElement(WallpaperSelected.is);
     await waitAfterNextRender(wallpaperSelectedElement);
@@ -103,9 +109,9 @@ export function WallpaperSelectedTest() {
 
     const textContainerElements =
         wallpaperSelectedElement.shadowRoot.querySelectorAll(
-            '#textContainer p');
+            '#textContainer span');
 
-    // First p tag is 'Currently Set' text.
+    // First span tag is 'Currently Set' text.
     assertEquals('currentlySet', textContainerElements[0].id);
     assertEquals(
         wallpaperSelectedElement.i18n('currentlySet'),
@@ -123,7 +129,7 @@ export function WallpaperSelectedTest() {
   });
 
   test('shows unknown for empty attribution', async () => {
-    personalizationStore.data.selected = {
+    personalizationStore.data.currentSelected = {
       url: {url: 'data:image/png;base64,abc='},
       attribution: [],
       assetId: BigInt(100),
@@ -140,7 +146,7 @@ export function WallpaperSelectedTest() {
   });
 
   test('removes high resolution suffix from image url', async () => {
-    personalizationStore.data.selected = {
+    personalizationStore.data.currentSelected = {
       url: {url: 'https://images.googleusercontent.com/abc12=w456'},
       attribution: [],
       assetId: BigInt(100),
@@ -155,7 +161,8 @@ export function WallpaperSelectedTest() {
   });
 
   test('updates image when store is updated', async () => {
-    personalizationStore.data.selected = wallpaperProvider.currentWallpaper;
+    personalizationStore.data.currentSelected =
+        wallpaperProvider.currentWallpaper;
     personalizationStore.data.loading.selected = false;
 
     wallpaperSelectedElement = initElement(WallpaperSelected.is);
@@ -166,7 +173,7 @@ export function WallpaperSelectedTest() {
         `chrome://image/?${wallpaperProvider.currentWallpaper.url.url}`,
         img.src);
 
-    personalizationStore.data.selected = {
+    personalizationStore.data.currentSelected = {
       url: {url: 'https://testing'},
       attribution: ['New attribution'],
       assetId: BigInt(100),
@@ -177,58 +184,52 @@ export function WallpaperSelectedTest() {
     assertEquals('chrome://image/?https://testing', img.src);
   });
 
-  test('shows error text when image fails to load', async () => {
+  test('shows placeholders when image fails to load', async () => {
     wallpaperSelectedElement = initElement(WallpaperSelected.is);
     await waitAfterNextRender(wallpaperSelectedElement);
 
     // Still loading.
     personalizationStore.data.loading.selected = true;
-    personalizationStore.data.selected = null;
+    personalizationStore.data.currentSelected = null;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    const spinner =
-        wallpaperSelectedElement.shadowRoot.querySelector('paper-spinner-lite');
-    assertTrue(spinner.active);
+    const placeholder =
+        wallpaperSelectedElement.shadowRoot.getElementById('imagePlaceholder');
+    assertTrue(!!placeholder);
 
     // Loading finished and still no current wallpaper.
     personalizationStore.data.loading.selected = false;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    assertFalse(spinner.active);
-
+    // Dom-if will set display: none if the element is hidden. Make sure it is
+    // not hidden.
+    assertNotEquals('none', placeholder.style.display);
     assertEquals(
         null, wallpaperSelectedElement.shadowRoot.querySelector('img'));
-
-    assertEquals(
-        'There was an error',
-        wallpaperSelectedElement.shadowRoot.getElementById('error').innerText);
   });
 
-  test('sets selected wallpaper data in store', async () => {
+  test('sets selected wallpaper data in store on changed', async () => {
     // Make sure state starts as expected.
     assertDeepEquals(emptyState(), personalizationStore.data);
-    // Run the actual reducers.
-    personalizationStore.setReducersEnabled(true);
 
     wallpaperSelectedElement = initElement(WallpaperSelected.is);
 
-    // In-flight request to get current wallpaper.
-    assertEquals(1, personalizationStore.data.loading.selected);
+    await wallpaperProvider.whenCalled('setWallpaperObserver');
 
-    // Wait for api call to complete.
-    await wallpaperProvider.whenCalled('getCurrentWallpaper');
+    personalizationStore.expectAction(ActionName.SET_SELECTED_IMAGE);
+    wallpaperProvider.wallpaperObserverRemote.onWallpaperChanged(
+        wallpaperProvider.currentWallpaper);
 
-    // Should be done loading now.
-    assertEquals(0, personalizationStore.data.loading.selected);
-    // Shallow equals - they should be the same object.
-    assertEquals(
-        wallpaperProvider.currentWallpaper, personalizationStore.data.selected);
+    const {image} =
+        await personalizationStore.waitForAction(ActionName.SET_SELECTED_IMAGE);
+
+    assertDeepEquals(wallpaperProvider.currentWallpaper, image);
   });
 
   test('shows image url with data scheme', async () => {
-    personalizationStore.data.selected = {
+    personalizationStore.data.currentSelected = {
       url: {url: 'data:image/png;base64,abc='},
       attribution: [],
       assetId: BigInt(100),
@@ -242,7 +243,7 @@ export function WallpaperSelectedTest() {
   });
 
   test('shows daily refresh option on the collection view', async () => {
-    personalizationStore.data.selected = {
+    personalizationStore.data.currentSelected = {
       url: {url: 'data:image/png;base64,abc='},
       attribution: [],
       assetId: BigInt(100),
@@ -259,13 +260,13 @@ export function WallpaperSelectedTest() {
 
     const refreshWallpaper =
         wallpaperSelectedElement.shadowRoot.getElementById('refreshWallpaper');
-    assertFalse(!!refreshWallpaper);
+    assertTrue(refreshWallpaper.hidden);
   });
 
   test(
       'shows refresh button only on collection with daily refresh enabled',
       async () => {
-        personalizationStore.data.selected = {
+        personalizationStore.data.currentSelected = {
           url: {url: 'data:image/png;base64,abc='},
           attribution: [],
           assetId: BigInt(100),
@@ -286,6 +287,58 @@ export function WallpaperSelectedTest() {
         const newRefreshWallpaper =
             wallpaperSelectedElement.shadowRoot.getElementById(
                 'refreshWallpaper');
-        assertTrue(!!newRefreshWallpaper);
+        assertFalse(newRefreshWallpaper.hidden);
       });
+
+  test('sets current image to null after timeout', async () => {
+    let timeoutCallback;
+    mockTimeoutForTesting({
+      setTimeout(callback, delay) {
+        assertEquals(120 * 1000, delay);
+        timeoutCallback = callback;
+        return 1234;
+      },
+      clearTimeout(id) {
+        assertNotReached('Should not clear timeout');
+      },
+    });
+
+    wallpaperProvider.wallpaperObserverUpdateTimeout = 100;
+
+    wallpaperSelectedElement =
+        initElement(WallpaperSelected.is, {'path': Paths.CollectionImages});
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    personalizationStore.expectAction(ActionName.SET_SELECTED_IMAGE);
+
+    timeoutCallback.call(wallpaperSelectedElement);
+
+    const action =
+        await personalizationStore.waitForAction(ActionName.SET_SELECTED_IMAGE);
+    assertEquals(null, action.image);
+  });
+
+  test('cancels timeout after receiving first image', async () => {
+    const timeoutId = 1234;
+    const clearTimeoutPromise = new Promise(resolve => {
+      mockTimeoutForTesting({
+        setTimeout(callback, delay) {
+          return timeoutId;
+        },
+        clearTimeout(id) {
+          assertEquals(timeoutId, id);
+          resolve();
+        },
+      });
+    });
+
+    wallpaperSelectedElement =
+        initElement(WallpaperSelected.is, {'path': Paths.CollectionImages});
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    wallpaperProvider.wallpaperObserverRemote.onWallpaperChanged(
+        wallpaperProvider.currentWallpaper);
+
+    await clearTimeoutPromise;
+  });
 }

@@ -22,9 +22,7 @@ class BufferedDataSourceHostImplTest : public testing::Test {
   BufferedDataSourceHostImplTest& operator=(
       const BufferedDataSourceHostImplTest&) = delete;
 
-  void Add() {
-    host_.AddBufferedTimeRanges(&ranges_, base::TimeDelta::FromSeconds(10));
-  }
+  void Add() { host_.AddBufferedTimeRanges(&ranges_, base::Seconds(10)); }
 
   void ProgressCallback() { progress_callback_calls_++; }
 
@@ -46,18 +44,18 @@ TEST_F(BufferedDataSourceHostImplTest, AddBufferedTimeRanges) {
   host_.SetTotalBytes(100);
   Add();
   EXPECT_EQ(1u, ranges_.size());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1), ranges_.start(0));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(2), ranges_.end(0));
+  EXPECT_EQ(base::Seconds(1), ranges_.start(0));
+  EXPECT_EQ(base::Seconds(2), ranges_.end(0));
 }
 
 TEST_F(BufferedDataSourceHostImplTest, AddBufferedTimeRanges_Merges) {
-  ranges_.Add(base::TimeDelta::FromSeconds(0), base::TimeDelta::FromSeconds(1));
+  ranges_.Add(base::Seconds(0), base::Seconds(1));
   host_.AddBufferedByteRange(10, 20);
   host_.SetTotalBytes(100);
   Add();
   EXPECT_EQ(1u, ranges_.size());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(0), ranges_.start(0));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(2), ranges_.end(0));
+  EXPECT_EQ(base::Seconds(0), ranges_.start(0));
+  EXPECT_EQ(base::Seconds(2), ranges_.end(0));
 }
 
 TEST_F(BufferedDataSourceHostImplTest, AddBufferedTimeRanges_Snaps) {
@@ -65,8 +63,8 @@ TEST_F(BufferedDataSourceHostImplTest, AddBufferedTimeRanges_Snaps) {
   host_.SetTotalBytes(1000);
   Add();
   EXPECT_EQ(1u, ranges_.size());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(0), ranges_.start(0));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(10), ranges_.end(0));
+  EXPECT_EQ(base::Seconds(0), ranges_.start(0));
+  EXPECT_EQ(base::Seconds(10), ranges_.end(0));
 }
 
 TEST_F(BufferedDataSourceHostImplTest, SetTotalBytes) {
@@ -90,22 +88,22 @@ TEST_F(BufferedDataSourceHostImplTest, CanPlayThrough) {
   EXPECT_EQ(100000,
             host_.UnloadedBytesInInterval(Interval<int64_t>(0, 100000)));
   host_.AddBufferedByteRange(0, 10000);
-  clock_.Advance(base::TimeDelta::FromSeconds(1));
+  clock_.Advance(base::Seconds(1));
   host_.AddBufferedByteRange(10000, 20000);
-  clock_.Advance(base::TimeDelta::FromSeconds(1));
+  clock_.Advance(base::Seconds(1));
   host_.AddBufferedByteRange(20000, 30000);
-  clock_.Advance(base::TimeDelta::FromSeconds(1));
+  clock_.Advance(base::Seconds(1));
   host_.AddBufferedByteRange(30000, 40000);
-  clock_.Advance(base::TimeDelta::FromSeconds(1));
+  clock_.Advance(base::Seconds(1));
   host_.AddBufferedByteRange(40000, 50000);
-  clock_.Advance(base::TimeDelta::FromSeconds(1));
+  clock_.Advance(base::Seconds(1));
   EXPECT_EQ(50000, host_.UnloadedBytesInInterval(Interval<int64_t>(0, 100000)));
   host_.AddBufferedByteRange(50000, 60000);
-  clock_.Advance(base::TimeDelta::FromSeconds(1));
+  clock_.Advance(base::Seconds(1));
   host_.AddBufferedByteRange(60000, 70000);
-  clock_.Advance(base::TimeDelta::FromSeconds(1));
+  clock_.Advance(base::Seconds(1));
   host_.AddBufferedByteRange(70000, 80000);
-  clock_.Advance(base::TimeDelta::FromSeconds(1));
+  clock_.Advance(base::Seconds(1));
   host_.AddBufferedByteRange(80000, 90000);
   // Download rate is allowed to be estimated low, but not high.
   EXPECT_LE(host_.DownloadRate(), 10000.0f);
@@ -113,24 +111,24 @@ TEST_F(BufferedDataSourceHostImplTest, CanPlayThrough) {
   EXPECT_EQ(10000, host_.UnloadedBytesInInterval(Interval<int64_t>(0, 100000)));
   EXPECT_EQ(9, progress_callback_calls_);
   // If the video is 0.1s we can't play through.
-  EXPECT_FALSE(host_.CanPlayThrough(base::TimeDelta(),
-                                    base::TimeDelta::FromSecondsD(0.01), 1.0));
+  EXPECT_FALSE(
+      host_.CanPlayThrough(base::TimeDelta(), base::Seconds(0.01), 1.0));
   // If the video is 1000s we can play through.
-  EXPECT_TRUE(host_.CanPlayThrough(base::TimeDelta(),
-                                   base::TimeDelta::FromSecondsD(1000.0), 1.0));
+  EXPECT_TRUE(
+      host_.CanPlayThrough(base::TimeDelta(), base::Seconds(1000.0), 1.0));
   // No more downloads for 1000 seconds...
-  clock_.Advance(base::TimeDelta::FromSeconds(1000));
+  clock_.Advance(base::Seconds(1000));
   // Can't play through..
-  EXPECT_FALSE(host_.CanPlayThrough(base::TimeDelta(),
-                                    base::TimeDelta::FromSecondsD(100.0), 1.0));
+  EXPECT_FALSE(
+      host_.CanPlayThrough(base::TimeDelta(), base::Seconds(100.0), 1.0));
   host_.AddBufferedByteRange(90000, 100000);
-  clock_.Advance(base::TimeDelta::FromSeconds(1));
+  clock_.Advance(base::Seconds(1));
   EXPECT_EQ(0, host_.UnloadedBytesInInterval(Interval<int64_t>(0, 100000)));
 
   // Media is fully downloaded, so we can certainly play through, even if
   // we only have 0.01 seconds to do it.
-  EXPECT_TRUE(host_.CanPlayThrough(base::TimeDelta(),
-                                   base::TimeDelta::FromSecondsD(0.01), 1.0));
+  EXPECT_TRUE(
+      host_.CanPlayThrough(base::TimeDelta(), base::Seconds(0.01), 1.0));
 }
 
 TEST_F(BufferedDataSourceHostImplTest, CanPlayThroughSmallAdvances) {
@@ -138,7 +136,7 @@ TEST_F(BufferedDataSourceHostImplTest, CanPlayThroughSmallAdvances) {
   EXPECT_EQ(20000, host_.UnloadedBytesInInterval(Interval<int64_t>(0, 20000)));
   for (int j = 1; j <= 100; j++) {
     host_.AddBufferedByteRange(0, j * 100);
-    clock_.Advance(base::TimeDelta::FromSecondsD(0.01));
+    clock_.Advance(base::Seconds(0.01));
   }
   // Download rate is allowed to be estimated low, but not high.
   EXPECT_LE(host_.DownloadRate(), 10000.0f);
@@ -146,11 +144,11 @@ TEST_F(BufferedDataSourceHostImplTest, CanPlayThroughSmallAdvances) {
   EXPECT_EQ(10000, host_.UnloadedBytesInInterval(Interval<int64_t>(0, 20000)));
   EXPECT_EQ(100, progress_callback_calls_);
   // If the video is 0.1s we can't play through.
-  EXPECT_FALSE(host_.CanPlayThrough(base::TimeDelta(),
-                                    base::TimeDelta::FromSecondsD(0.01), 1.0));
+  EXPECT_FALSE(
+      host_.CanPlayThrough(base::TimeDelta(), base::Seconds(0.01), 1.0));
   // If the video is 1000s we can play through.
-  EXPECT_TRUE(host_.CanPlayThrough(base::TimeDelta(),
-                                   base::TimeDelta::FromSecondsD(1000.0), 1.0));
+  EXPECT_TRUE(
+      host_.CanPlayThrough(base::TimeDelta(), base::Seconds(1000.0), 1.0));
 }
 
 }  // namespace blink

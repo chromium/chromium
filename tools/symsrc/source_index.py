@@ -51,6 +51,8 @@ from __future__ import print_function
 try:
   # Python 3.x
   from urllib.parse import urlparse
+  # Replace the Python 2 unicode function with str when running Python 3.
+  unicode = str
 except ImportError:
   # Python 2.x
   from urlparse import urlparse
@@ -190,6 +192,7 @@ def ReadSourceStream(pdb_filename, toolchain_dir):
                               '-p:%s' % pdb_filename],
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   data, _ = pdbstr.communicate()
+  data = data.decode('utf-8')
 
   # Old version of pdbstr.exe return -1 when the source requested stream is
   # missing, while more recent ones return 1, use |abs| to workaround this.
@@ -204,7 +207,7 @@ def WriteSourceStream(pdb_filename, data, toolchain_dir):
   # Write out the data to a temporary filename that we can pass to pdbstr.
   (f, fname) = tempfile.mkstemp()
   f = os.fdopen(f, "wb")
-  f.write(data)
+  f.write(data.encode('utf-8'))
   f.close()
 
   srctool = subprocess.Popen([FindSrcSrvFile('pdbstr.exe', toolchain_dir),
@@ -213,6 +216,7 @@ def WriteSourceStream(pdb_filename, data, toolchain_dir):
                               '-p:%s' % pdb_filename],
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   data, _ = srctool.communicate()
+  data = data.decode('utf-8')
 
   if ((srctool.returncode != 0 and srctool.returncode != -1) or
       data.startswith("pdbstr: ")):
@@ -489,10 +493,10 @@ def UpdatePDB(pdb_filename, verbose=True, build_dir=None, toolchain_dir=None,
     'SRCSRV: variables ------------------------------------------',
     'SRC_EXTRACT_TARGET_DIR=%targ%\\%fnbksl%(%var2%)\\%var3%',
     'SRC_EXTRACT_TARGET=%SRC_EXTRACT_TARGET_DIR%\\%fnfile%(%var1%)',
-    'SRC_EXTRACT_CMD=cmd /c "mkdir "%SRC_EXTRACT_TARGET_DIR%" & python -c '
-        '"import urllib2, base64;'
+    'SRC_EXTRACT_CMD=cmd /c "mkdir "%SRC_EXTRACT_TARGET_DIR%" & python3 -c '
+        '"import urllib.request, base64;'
         'url = \\\"%var4%\\\";'
-        'u = urllib2.urlopen(url);'
+        'u = urllib.request.urlopen(url);'
         'open(r\\\"%SRC_EXTRACT_TARGET%\\\", \\\"wb\\\").write(%var5%('
             'u.read()))"',
     'SRCSRVTRG=%SRC_EXTRACT_TARGET%',

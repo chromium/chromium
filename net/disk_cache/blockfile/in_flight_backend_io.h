@@ -12,7 +12,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
@@ -44,6 +44,9 @@ class BackendIO : public BackgroundIO {
   BackendIO(InFlightIO* controller,
             BackendImpl* backend,
             RangeResultCallback callback);
+
+  BackendIO(const BackendIO&) = delete;
+  BackendIO& operator=(const BackendIO&) = delete;
 
   // Runs the actual operation on the background thread.
   void ExecuteOperation();
@@ -180,8 +183,6 @@ class BackendIO : public BackgroundIO {
   int64_t offset64_;
   base::TimeTicks start_time_;
   base::OnceClosure task_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackendIO);
 };
 
 // The specialized controller that keeps track of current operations.
@@ -190,6 +191,10 @@ class InFlightBackendIO : public InFlightIO {
   InFlightBackendIO(
       BackendImpl* backend,
       const scoped_refptr<base::SingleThreadTaskRunner>& background_thread);
+
+  InFlightBackendIO(const InFlightBackendIO&) = delete;
+  InFlightBackendIO& operator=(const InFlightBackendIO&) = delete;
+
   ~InFlightBackendIO() override;
 
   // Proxied operations.
@@ -265,8 +270,6 @@ class InFlightBackendIO : public InFlightIO {
   BackendImpl* backend_;
   scoped_refptr<base::SingleThreadTaskRunner> background_thread_;
   base::WeakPtrFactory<InFlightBackendIO> ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InFlightBackendIO);
 };
 
 }  // namespace disk_cache

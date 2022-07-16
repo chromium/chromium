@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_INFOBARS_INFOBAR_RESPONDER_H_
 #define CHROME_BROWSER_INFOBARS_INFOBAR_RESPONDER_H_
 
-#include "base/macros.h"
 #include "components/infobars/core/infobar_manager.h"
 
 namespace infobars {
@@ -31,6 +30,10 @@ class InfoBarResponder : public infobars::InfoBarManager::Observer {
   // The responder will asynchronously perform the requested |response|.
   InfoBarResponder(infobars::ContentInfoBarManager* infobar_manager,
                    AutoResponseType response);
+
+  InfoBarResponder(const InfoBarResponder&) = delete;
+  InfoBarResponder& operator=(const InfoBarResponder&) = delete;
+
   ~InfoBarResponder() override;
 
   // infobars::InfoBarManager::Observer:
@@ -43,8 +46,6 @@ class InfoBarResponder : public infobars::InfoBarManager::Observer {
 
   infobars::ContentInfoBarManager* infobar_manager_;
   AutoResponseType response_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBarResponder);
 };
 
 #endif  // CHROME_BROWSER_INFOBARS_INFOBAR_RESPONDER_H_

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_NET_NQE_NETWORK_QUALITY_PROVIDER_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "net/nqe/effective_connection_type.h"
@@ -21,6 +20,9 @@ class NetworkQualityProvider
  public:
   NetworkQualityProvider(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj);
+
+  NetworkQualityProvider(const NetworkQualityProvider&) = delete;
+  NetworkQualityProvider& operator=(const NetworkQualityProvider&) = delete;
 
  private:
   // Note that this destructor is currently dead code. This destructor is never
@@ -40,8 +42,6 @@ class NetworkQualityProvider
   base::android::ScopedJavaGlobalRef<jobject> j_obj_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityProvider);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_NET_NQE_NETWORK_QUALITY_PROVIDER_H_

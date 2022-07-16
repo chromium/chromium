@@ -4,6 +4,10 @@
 
 #include "components/autofill_assistant/browser/field_formatter.h"
 
+#include <utility>
+#include <vector>
+
+#include "base/containers/flat_map.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -26,9 +30,10 @@ namespace {
 // the prefix before the key, the second for the key itself.
 const char kPlaceholderExtractor[] = R"re((.*?)\$\{([^{}]+)\})re";
 
+template <typename T>
 absl::optional<std::string> GetFieldValue(
-    const std::map<std::string, std::string>& mappings,
-    const std::string& key) {
+    const base::flat_map<T, std::string>& mappings,
+    const T& key) {
   auto it = mappings.find(key);
   if (it == mappings.end()) {
     return absl::nullopt;
@@ -36,18 +41,18 @@ absl::optional<std::string> GetFieldValue(
   return it->second;
 }
 
-std::map<std::string, std::string> CreateFormGroupMappings(
+base::flat_map<Key, std::string> CreateFormGroupMappings(
     const autofill::FormGroup& form_group,
     const std::string& locale) {
-  std::map<std::string, std::string> mappings;
+  std::vector<std::pair<Key, std::string>> mappings;
   autofill::ServerFieldTypeSet available_fields;
   form_group.GetNonEmptyTypes(locale, &available_fields);
   for (const auto field : available_fields) {
-    mappings.emplace(base::NumberToString(static_cast<int>(field)),
-                     base::UTF16ToUTF8(form_group.GetInfo(
-                         autofill::AutofillType(field), locale)));
+    mappings.emplace_back(Key(field),
+                          base::UTF16ToUTF8(form_group.GetInfo(
+                              autofill::AutofillType(field), locale)));
   }
-  return mappings;
+  return base::flat_map<Key, std::string>(std::move(mappings));
 }
 
 void GetNameAndAbbreviationViaAlternativeStateNameMap(
@@ -93,11 +98,39 @@ std::string ApplyChunkReplacement(
   return value;
 }
 
+std::string GetMaybeQuotedChunk(const std::string& value, bool quote_meta) {
+  if (quote_meta) {
+    return re2::RE2::QuoteMeta(value);
+  }
+  return value;
+}
+
 }  // namespace
+
+Key::Key(int key) : int_key(key) {}
+Key::Key(AutofillFormatProto::AutofillAssistantCustomField custom_field)
+    : int_key(static_cast<int>(custom_field)) {}
+Key::Key(autofill::ServerFieldType autofill_field)
+    : int_key(static_cast<int>(autofill_field)) {}
+Key::Key(std::string key) : string_key(key) {}
+
+Key::~Key() = default;
+Key::Key(const Key&) = default;
+
+bool Key::operator<(const Key& other) const {
+  return std::make_tuple(this->int_key.value_or(0),
+                         this->string_key.value_or(std::string())) <
+         std::make_tuple(other.int_key.value_or(0),
+                         other.string_key.value_or(std::string()));
+}
+
+bool Key::operator==(const Key& other) const {
+  return !(*this < other) && !(other < *this);
+}
 
 absl::optional<std::string> FormatString(
     const std::string& pattern,
-    const std::map<std::string, std::string>& mappings,
+    const base::flat_map<std::string, std::string>& mappings,
     bool strict) {
   if (pattern.empty()) {
     return std::string();
@@ -127,11 +160,10 @@ absl::optional<std::string> FormatString(
   return out;
 }
 
-ClientStatus FormatExpression(
-    const ValueExpression& value_expression,
-    const std::map<std::string, std::string>& mappings,
-    bool quote_meta,
-    std::string* out_value) {
+ClientStatus FormatExpression(const ValueExpression& value_expression,
+                              const base::flat_map<Key, std::string>& mappings,
+                              bool quote_meta,
+                              std::string* out_value) {
   out_value->clear();
   for (const auto& chunk : value_expression.chunk()) {
     std::string chunk_value;
@@ -140,16 +172,19 @@ ClientStatus FormatExpression(
         chunk_value = chunk.text();
         break;
       case ValueExpression::Chunk::kKey: {
-        auto rewrite_value =
-            GetFieldValue(mappings, base::NumberToString(chunk.key()));
+        auto rewrite_value = GetFieldValue(mappings, Key(chunk.key()));
         if (!rewrite_value.has_value()) {
           return ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE);
         }
-        if (quote_meta) {
-          chunk_value = re2::RE2::QuoteMeta(*rewrite_value);
-        } else {
-          chunk_value = *rewrite_value;
+        chunk_value = GetMaybeQuotedChunk(*rewrite_value, quote_meta);
+        break;
+      }
+      case ValueExpression::Chunk::kMemoryKey: {
+        auto rewrite_value = GetFieldValue(mappings, Key(chunk.memory_key()));
+        if (!rewrite_value.has_value()) {
+          return ClientStatus(CLIENT_MEMORY_KEY_NOT_AVAILABLE);
         }
+        chunk_value = GetMaybeQuotedChunk(*rewrite_value, quote_meta);
         break;
       }
       case ValueExpression::Chunk::CHUNK_NOT_SET:
@@ -170,7 +205,10 @@ std::string GetHumanReadableValueExpression(
         out += chunk.text();
         break;
       case ValueExpression::Chunk::kKey:
-        out += "${" + base::NumberToString(chunk.key()) + "}";
+        out += base::StrCat({"${", base::NumberToString(chunk.key()), "}"});
+        break;
+      case ValueExpression::Chunk::kMemoryKey:
+        out += base::StrCat({"${", chunk.memory_key(), "}"});
         break;
       case ValueExpression::Chunk::CHUNK_NOT_SET:
         out += "<CHUNK_NOT_SET>";
@@ -181,7 +219,7 @@ std::string GetHumanReadableValueExpression(
 }
 
 template <>
-std::map<std::string, std::string>
+base::flat_map<Key, std::string>
 CreateAutofillMappings<autofill::AutofillProfile>(
     const autofill::AutofillProfile& profile,
     const std::string& locale) {
@@ -190,8 +228,8 @@ CreateAutofillMappings<autofill::AutofillProfile>(
   std::string country_code =
       base::UTF16ToUTF8(profile.GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
   if (!country_code.empty()) {
-    mappings[base::NumberToString(static_cast<int>(
-        AutofillFormatProto::ADDRESS_HOME_COUNTRY_CODE))] = country_code;
+    mappings.emplace(Key(AutofillFormatProto::ADDRESS_HOME_COUNTRY_CODE),
+                     country_code);
   }
   auto state = profile.GetInfo(
       autofill::AutofillType(autofill::ADDRESS_HOME_STATE), locale);
@@ -211,15 +249,12 @@ CreateAutofillMappings<autofill::AutofillProfile>(
       GetNameAndAbbreviationViaAlternativeStateNameMap(
           country_code, state, &full_name, &abbreviation);
     }
-    mappings[base::NumberToString(
-        static_cast<int>(AutofillFormatProto::ADDRESS_HOME_STATE_NAME))] =
-        base::UTF16ToUTF8(full_name);
+    mappings.emplace(Key(AutofillFormatProto::ADDRESS_HOME_STATE_NAME),
+                     base::UTF16ToUTF8(full_name));
     if (abbreviation.empty()) {
-      mappings.erase(
-          base::NumberToString(static_cast<int>(autofill::ADDRESS_HOME_STATE)));
+      mappings.erase(Key(autofill::ADDRESS_HOME_STATE));
     } else {
-      mappings[base::NumberToString(
-          static_cast<int>(autofill::ADDRESS_HOME_STATE))] =
+      mappings[Key(autofill::ADDRESS_HOME_STATE)] =
           base::UTF16ToUTF8(base::i18n::ToUpper(abbreviation));
     }
   }
@@ -227,7 +262,7 @@ CreateAutofillMappings<autofill::AutofillProfile>(
 }
 
 template <>
-std::map<std::string, std::string> CreateAutofillMappings<autofill::CreditCard>(
+base::flat_map<Key, std::string> CreateAutofillMappings<autofill::CreditCard>(
     const autofill::CreditCard& credit_card,
     const std::string& locale) {
   auto mappings = CreateFormGroupMappings(credit_card, locale);
@@ -236,28 +271,25 @@ std::map<std::string, std::string> CreateAutofillMappings<autofill::CreditCard>(
       autofill::data_util::GetPaymentRequestData(credit_card.network())
           .basic_card_issuer_network);
   if (!network.empty()) {
-    mappings[base::NumberToString(
-        static_cast<int>(AutofillFormatProto::CREDIT_CARD_NETWORK))] = network;
+    mappings.emplace(Key(AutofillFormatProto::CREDIT_CARD_NETWORK), network);
   }
   auto network_for_display = base::UTF16ToUTF8(credit_card.NetworkForDisplay());
   if (!network_for_display.empty()) {
-    mappings[base::NumberToString(static_cast<int>(
-        AutofillFormatProto::CREDIT_CARD_NETWORK_FOR_DISPLAY))] =
-        network_for_display;
+    mappings.emplace(Key(AutofillFormatProto::CREDIT_CARD_NETWORK_FOR_DISPLAY),
+                     network_for_display);
   }
   auto last_four_digits = base::UTF16ToUTF8(credit_card.LastFourDigits());
   if (!last_four_digits.empty()) {
-    mappings[base::NumberToString(static_cast<int>(
-        AutofillFormatProto::CREDIT_CARD_NUMBER_LAST_FOUR_DIGITS))] =
-        last_four_digits;
+    mappings.emplace(
+        Key(AutofillFormatProto::CREDIT_CARD_NUMBER_LAST_FOUR_DIGITS),
+        last_four_digits);
   }
   int month;
   if (base::StringToInt(
           credit_card.GetInfo(autofill::CREDIT_CARD_EXP_MONTH, locale),
           &month)) {
-    mappings[base::NumberToString(static_cast<int>(
-        AutofillFormatProto::CREDIT_CARD_NON_PADDED_EXP_MONTH))] =
-        base::NumberToString(month);
+    mappings.emplace(Key(AutofillFormatProto::CREDIT_CARD_NON_PADDED_EXP_MONTH),
+                     base::NumberToString(month));
   }
 
   return mappings;

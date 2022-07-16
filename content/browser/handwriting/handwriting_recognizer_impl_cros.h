@@ -14,6 +14,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/handwriting/handwriting.mojom-forward.h"
 
 namespace content {
 
@@ -40,6 +41,12 @@ class CONTENT_EXPORT CrOSHandwritingRecognizerImpl final
 
   // Returns whether the provided |language_tag| is supported.
   static bool SupportsLanguageTag(base::StringPiece language_tag);
+
+  // Returns the description for the model that best satisfies `constraint`.
+  // Returns nullptr if we can't find such a model.
+  static handwriting::mojom::QueryHandwritingRecognizerResultPtr
+  GetModelDescriptor(
+      handwriting::mojom::HandwritingModelConstraintPtr constraint);
 
  private:
   explicit CrOSHandwritingRecognizerImpl(

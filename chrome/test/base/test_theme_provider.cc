@@ -42,7 +42,7 @@ bool TestThemeProvider::HasCustomColor(int id) const {
 
 base::RefCountedMemory* TestThemeProvider::GetRawData(
     int id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ResourceScaleFactor scale_factor) const {
   return nullptr;
 }
 

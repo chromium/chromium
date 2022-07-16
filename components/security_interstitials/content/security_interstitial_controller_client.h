@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SECURITY_INTERSTITIAL_CONTROLLER_CLIENT_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SECURITY_INTERSTITIAL_CONTROLLER_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "url/gurl.h"
 
@@ -30,6 +29,11 @@ class SecurityInterstitialControllerClient
       const std::string& app_locale,
       const GURL& default_safe_page,
       std::unique_ptr<SettingsPageHelper> settings_page_helper);
+
+  SecurityInterstitialControllerClient(
+      const SecurityInterstitialControllerClient&) = delete;
+  SecurityInterstitialControllerClient& operator=(
+      const SecurityInterstitialControllerClient&) = delete;
 
   ~SecurityInterstitialControllerClient() override;
 
@@ -60,8 +64,6 @@ class SecurityInterstitialControllerClient
   // back to, e.g. chrome:kChromeUINewTabURL.
   const GURL default_safe_page_;
   std::unique_ptr<SettingsPageHelper> settings_page_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityInterstitialControllerClient);
 };
 
 }  // namespace security_interstitials

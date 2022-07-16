@@ -26,9 +26,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/account_manager/account_manager_migrator.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
-#include "chrome/browser/ash/account_manager/account_migration_runner.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -68,10 +66,10 @@ class ChromeOSLimitedAccessAccountReconcilorDelegate
   base::TimeDelta GetReconcileTimeout() const override {
     switch (reconcilor_behavior_) {
       case ReconcilorBehavior::kChild:
-        return base::TimeDelta::FromSeconds(10);
+        return base::Seconds(10);
       case ReconcilorBehavior::kEnterprise:
         // 60 seconds is enough to cover about 99% of all reconcile cases.
-        return base::TimeDelta::FromSeconds(60);
+        return base::Seconds(60);
       default:
         NOTREACHED();
         return MirrorAccountReconcilorDelegate::GetReconcileTimeout();
@@ -107,41 +105,6 @@ class ChromeOSLimitedAccessAccountReconcilorDelegate
 
  private:
   const ReconcilorBehavior reconcilor_behavior_;
-};
-
-// An |AccountReconcilorDelegate| for Chrome OS that is exactly the same as
-// |MirrorAccountReconcilorDelegate|, except that it does not begin account
-// reconciliation until accounts have been migrated to Chrome OS Account
-// Manager.
-// TODO(sinhak): Remove this when all users have been migrated to Chrome OS
-// Account Manager.
-class ChromeOSAccountReconcilorDelegate
-    : public signin::MirrorAccountReconcilorDelegate {
- public:
-  ChromeOSAccountReconcilorDelegate(
-      signin::IdentityManager* identity_manager,
-      ash::AccountManagerMigrator* account_migrator)
-      : signin::MirrorAccountReconcilorDelegate(identity_manager),
-        account_migrator_(account_migrator) {}
-  ~ChromeOSAccountReconcilorDelegate() override = default;
-
- private:
-  // AccountReconcilorDelegate:
-  bool IsReconcileEnabled() const override {
-    if (!MirrorAccountReconcilorDelegate::IsReconcileEnabled()) {
-      return false;
-    }
-
-    const ash::AccountMigrationRunner::Status status =
-        account_migrator_->GetStatus();
-    return status != ash::AccountMigrationRunner::Status::kNotStarted &&
-           status != ash::AccountMigrationRunner::Status::kRunning;
-  }
-
-  // A non-owning pointer.
-  const ash::AccountManagerMigrator* const account_migrator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOSAccountReconcilorDelegate);
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -225,23 +188,19 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
             IdentityManagerFactory::GetForProfile(profile));
       }
 
-      // TODO(sinhak): Use |MirrorAccountReconcilorDelegate|) when all Chrome OS
-      // users have been migrated to Account Manager.
-      return std::make_unique<ChromeOSAccountReconcilorDelegate>(
-          IdentityManagerFactory::GetForProfile(profile),
-          ash::AccountManagerMigratorFactory::GetForBrowserContext(profile));
-#endif
       return std::make_unique<signin::MirrorAccountReconcilorDelegate>(
           IdentityManagerFactory::GetForProfile(profile));
+#else
+      return std::make_unique<signin::MirrorAccountReconcilorDelegate>(
+          IdentityManagerFactory::GetForProfile(profile));
+#endif
 
     case signin::AccountConsistencyMethod::kDisabled:
       return std::make_unique<signin::AccountReconcilorDelegate>();
 
     case signin::AccountConsistencyMethod::kDice:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-      return std::make_unique<signin::DiceAccountReconcilorDelegate>(
-          ChromeSigninClientFactory::GetForProfile(profile),
-          AccountConsistencyModeManager::IsDiceMigrationCompleted(profile));
+      return std::make_unique<signin::DiceAccountReconcilorDelegate>();
 #else
       NOTREACHED();
       return nullptr;

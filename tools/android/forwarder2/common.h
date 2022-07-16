@@ -54,6 +54,9 @@ class FixedSizeStringBuilder {
     Reset();
   }
 
+  FixedSizeStringBuilder(const FixedSizeStringBuilder&) = delete;
+  FixedSizeStringBuilder& operator=(const FixedSizeStringBuilder&) = delete;
+
   const char* buffer() const { return buffer_; }
 
   void Reset() {
@@ -81,7 +84,6 @@ class FixedSizeStringBuilder {
   char buffer_[BufferSize];
 
   static_assert(BufferSize >= 1, "size of buffer must be at least one");
-  DISALLOW_COPY_AND_ASSIGN(FixedSizeStringBuilder);
 };
 
 }  // namespace forwarder2

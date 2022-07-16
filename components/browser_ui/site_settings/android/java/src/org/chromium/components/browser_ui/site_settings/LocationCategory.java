@@ -9,8 +9,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 /**
  * A class for dealing with the Geolocation category.

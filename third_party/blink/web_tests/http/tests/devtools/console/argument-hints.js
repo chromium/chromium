@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests function argument hints.\n`);
 
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -104,7 +104,7 @@
         x => TestRunner.addSniffer(
             ObjectUI.javaScriptAutocomplete, 'argumentsHint',
             (text, retVal) => x(retVal)));
-    consoleEditor._autocompleteController._onCursorActivity();
+    consoleEditor.autocompleteController.onCursorActivity();
     var message = 'Checking \'' + +'\'';
 
     const signatures = await signaturesPromise;

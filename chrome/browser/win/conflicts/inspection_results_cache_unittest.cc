@@ -50,6 +50,10 @@ class InspectionResultsCacheTest : public testing::Test {
   InspectionResultsCacheTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  InspectionResultsCacheTest(const InspectionResultsCacheTest&) = delete;
+  InspectionResultsCacheTest& operator=(const InspectionResultsCacheTest&) =
+      delete;
+
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     scoped_feature_list_.InitAndEnableFeature(kInspectionResultsCache);
@@ -67,8 +71,6 @@ class InspectionResultsCacheTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   base::ScopedTempDir scoped_temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(InspectionResultsCacheTest);
 };
 
 TEST_F(InspectionResultsCacheTest, ReadMissingCache) {

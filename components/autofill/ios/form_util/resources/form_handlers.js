@@ -322,6 +322,78 @@ attachListeners_();
 setTimeout(attachListeners_, 1000);
 
 /**
+ * Extracts changed form and input elements.
+ * @param {MutationRecord} An observed mutation.
+ * @return {Element} An extracted form element or null.
+ */
+function extractChangedFormElements_(mutation) {
+  const addedElements = [];
+  for (let j = 0; j < mutation.addedNodes.length; j++) {
+    const node = mutation.addedNodes[j];
+    // Ignore non-element nodes.
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      continue;
+    }
+    addedElements.push(node);
+    [].push.apply(addedElements, [].slice.call(node.getElementsByTagName('*')));
+  }
+  return addedElements.find(function(element) {
+    return element.tagName.match(/^(FORM|INPUT|SELECT|OPTION|TEXTAREA)$/);
+  });
+}
+
+/**
+ * @param {MutationRecord} An observed mutation.
+ * @return {Array<Element>} Extracted form and input elements.
+ */
+function extractRemovedFormElements_(mutation) {
+  const removedElements = [];
+  for (let j = 0; j < mutation.removedNodes.length; j++) {
+    const node = mutation.removedNodes[j];
+    // Ignore non-element nodes.
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      continue;
+    }
+    removedElements.push(node);
+    [].push.apply(
+        removedElements, [].slice.call(node.getElementsByTagName('FORM')));
+    [].push.apply(
+        removedElements, [].slice.call(node.getElementsByTagName('INPUT')));
+  }
+  return removedElements;
+}
+
+/**
+ * @param {Array<Element>} All form and input elements removed from DOM.
+ * @return {HTMLFormElement} Extracted password form.
+ */
+function extractRemovedPasswordForm_(removedElements) {
+  return removedElements.find(function(element) {
+    if (element.tagName !== 'FORM') {
+      return false;
+    }
+    for (let i = 0; i < element.elements.length; i++) {
+      if (isPasswordField_(element.elements[i])) {
+        return true;
+      }
+    }
+    return false;
+  });
+}
+
+/**
+ * @param {Array<Element>} All form and input elements removed from DOM.
+ * @return {Array<String>} Renderer ids of removed formless password fields.
+ */
+function extractRemovedFormlessPasswordFieldsIds_(removedElements) {
+  const formlessPasswordFieldsGone = removedElements.filter(function(element) {
+    return element.tagName === 'INPUT' && !element.form &&
+        isPasswordField_(element);
+  });
+  return formlessPasswordFieldsGone.map(__gCrWeb.fill.getUniqueID);
+}
+
+/**
  * Installs a MutationObserver to track form related changes. Waits |delay|
  * milliseconds before sending a message to browser. A delay is used because
  * form mutations are likely to come in batches. An undefined or zero value for
@@ -343,20 +415,7 @@ __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
       if (mutation.type !== 'childList') {
         continue;
       }
-      const addedElements = [];
-      for (let j = 0; j < mutation.addedNodes.length; j++) {
-        const node = mutation.addedNodes[j];
-        // Ignore non-element nodes.
-        if (node.nodeType !== Node.ELEMENT_NODE) {
-          continue;
-        }
-        addedElements.push(node);
-        [].push.apply(
-            addedElements, [].slice.call(node.getElementsByTagName('*')));
-      }
-      const formChanged = addedElements.find(function(element) {
-        return element.tagName.match(/^(FORM|INPUT|SELECT|OPTION|TEXTAREA)$/);
-      });
+      const formChanged = extractChangedFormElements_(mutation);
       if (formChanged) {
         const msg = {
           'command': 'form.activity',
@@ -373,41 +432,29 @@ __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
         return sendFormMutationMessageAfterDelay_(msg, delay);
       }
 
-      const removedElements = [];
-      for (let j = 0; j < mutation.removedNodes.length; j++) {
-        const node = mutation.removedNodes[j];
-        // Ignore non-element nodes.
-        if (node.nodeType !== Node.ELEMENT_NODE) {
-          continue;
-        }
-        removedElements.push(node);
-        [].push.apply(
-            removedElements, [].slice.call(node.getElementsByTagName('FORM')));
-      }
-      const formGone = removedElements.find(function(element) {
-        if (element.tagName.match(/^(FORM)$/)) {
-          for (let k = 0; k < element.elements.length; k++) {
-            if (isPasswordField_(element.elements[k])) {
-              return true;
-            }
-          }
-          return false;
-        }
-        return false;
-      });
-      const uniqueFormId = __gCrWeb.fill.getUniqueID(formGone);
+      const removedElements = extractRemovedFormElements_(mutation);
+      const formGone = extractRemovedPasswordForm_(removedElements);
       if (formGone) {
+        const uniqueFormId = __gCrWeb.fill.getUniqueID(formGone);
         const msg = {
-          'command': 'form.activity',
+          'command': 'form.removal',
+          'frameID': __gCrWeb.message.getFrameId(),
+          'formName': __gCrWeb.form.getFormIdentifier(formGone),
+          'uniqueFormID': uniqueFormId,
+          'uniqueFieldID': '',
+        };
+        return sendFormMutationMessageAfterDelay_(msg, delay);
+      }
+
+      const removedFormlessPasswordFieldsIds =
+          extractRemovedFormlessPasswordFieldsIds_(removedElements);
+      if (removedFormlessPasswordFieldsIds.length > 0) {
+        const msg = {
+          'command': 'form.removal',
           'frameID': __gCrWeb.message.getFrameId(),
           'formName': '',
-          'uniqueFormID': uniqueFormId,
-          'fieldIdentifier': '',
-          'uniqueFieldID': '',
-          'fieldType': '',
-          'type': 'password_form_removed',
-          'value': '',
-          'hasUserGesture': false
+          'uniqueFormID': '',
+          'uniqueFieldID': __gCrWeb.stringify(removedFormlessPasswordFieldsIds),
         };
         return sendFormMutationMessageAfterDelay_(msg, delay);
       }

@@ -90,8 +90,6 @@ static_library("test_support") {
     "power_monitor_test.h",
     "scoped_command_line.cc",
     "scoped_command_line.h",
-    "scoped_environment_variable_override.cc",
-    "scoped_environment_variable_override.h",
     "scoped_feature_list.cc",
     "scoped_feature_list.h",
     "scoped_field_trial_list_resetter.cc",
@@ -118,6 +116,7 @@ static_library("test_support") {
     "test_discardable_memory_allocator.h",
     "test_file_util.cc",
     "test_file_util.h",
+    "test_future.h",
     "test_io_thread.cc",
     "test_io_thread.h",
     "test_message_loop.cc",
@@ -162,6 +161,7 @@ static_library("test_support") {
   deps = [
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
+    "//build:os_buildflags",
     "//third_party/icu:icuuc",
     "//third_party/libxml:libxml_utils",
     "//third_party/libxml:xml_reader",
@@ -196,11 +196,7 @@ static_library("test_support") {
 
   if (is_linux || is_chromeos) {
     sources += [ "test_file_util_linux.cc" ]
-    public_deps += [ ":fontconfig_util_linux" ]
-    data_deps += [ "//third_party/test_fonts" ]
-    if (current_toolchain == host_toolchain) {
-      data_deps += [ ":do_generate_fontconfig_caches" ]
-    }
+    public_deps += [ "//third_party/test_fonts/fontconfig:test_support" ]
   }
 
   if (is_mac) {
@@ -408,47 +404,6 @@ shared_library("test_shared_library") {
   sources = [ "test_shared_library.cc" ]
 
   deps = [ ":native_library_test_utils" ]
-}
-
-if (is_linux || is_chromeos) {
-  source_set("fontconfig_util_linux") {
-    sources = [
-      "fontconfig_util_linux.cc",
-      "fontconfig_util_linux.h",
-    ]
-    data_deps = [ ":fonts_conf" ]
-    deps = [
-      "//base",
-      "//third_party/fontconfig",
-    ]
-  }
-
-  copy("fonts_conf") {
-    sources = [ "fonts.conf" ]
-    outputs = [ "${root_build_dir}/etc/fonts/{{source_file_part}}" ]
-  }
-
-  if (current_toolchain == host_toolchain) {
-    executable("generate_fontconfig_caches") {
-      testonly = true
-      sources = [ "generate_fontconfig_caches.cc" ]
-      deps = [
-        ":fontconfig_util_linux",
-        "//base",
-      ]
-    }
-
-    compiled_action("do_generate_fontconfig_caches") {
-      testonly = true
-      tool = ":generate_fontconfig_caches"
-
-      # The copied test fonts are inputs to generate_fontconfig_caches, so must
-      # be listed in deps, not data_deps (https://crbug.com/919422).
-      deps = [ "//third_party/test_fonts" ]
-      args = []
-      outputs = [ "$root_out_dir/fontconfig_caches/fb5c91b2895aa445d23aebf7f9e2189c-le64.cache-7" ]
-    }
-  }
 }
 
 if (is_fuchsia || is_linux || is_chromeos) {

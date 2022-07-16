@@ -4,6 +4,9 @@
 
 #include "net/base/backoff_entry.h"
 
+#include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/tick_clock.h"
 #include "base/values.h"
 #include "net/base/backoff_entry_serializer.h"
@@ -14,8 +17,10 @@ namespace net {
 namespace {
 
 using base::Time;
-using base::TimeDelta;
 using base::TimeTicks;
+
+const Time kParseTime =
+    Time::FromJsTime(1430907555111);  // May 2015 for realism
 
 BackoffEntry::Policy base_policy = {
   0 /* num_errors_to_ignore */,
@@ -58,14 +63,14 @@ TEST(BackoffEntrySerializerTest, SpecialCasesOfBackoffDuration) {
   TestCase test_cases[] = {
       // Non-overflowing subtraction works as expected.
       {
-          .release_time = kZeroTicks + base::TimeDelta::FromMicroseconds(100),
-          .timeticks_now = kZeroTicks + base::TimeDelta::FromMicroseconds(75),
-          .expected_backoff_duration = base::TimeDelta::FromMicroseconds(25),
+          .release_time = kZeroTicks + base::Microseconds(100),
+          .timeticks_now = kZeroTicks + base::Microseconds(75),
+          .expected_backoff_duration = base::Microseconds(25),
       },
       {
-          .release_time = kZeroTicks + base::TimeDelta::FromMicroseconds(25),
-          .timeticks_now = kZeroTicks + base::TimeDelta::FromMicroseconds(100),
-          .expected_backoff_duration = base::TimeDelta::FromMicroseconds(-75),
+          .release_time = kZeroTicks + base::Microseconds(25),
+          .timeticks_now = kZeroTicks + base::Microseconds(100),
+          .expected_backoff_duration = base::Microseconds(-75),
       },
       // Defaults to zero when one of the operands is +/- infinity.
       {
@@ -112,24 +117,17 @@ TEST(BackoffEntrySerializerTest, SpecialCasesOfBackoffDuration) {
       // Defaults to zero when the subtraction overflows, even when neither
       // operand is infinity.
       {
-          .release_time =
-              base::TimeTicks::Max() - base::TimeDelta::FromMicroseconds(1),
-          .timeticks_now = kZeroTicks + base::TimeDelta::FromMicroseconds(-1),
-          .expected_backoff_duration = base::TimeDelta(),
-      },
-      // Defaults to zero when the computed backoff_duration cannot be
-      // represented as a double.
-      {
-          // Note that |release_time| must be finite. Otherwise,
-          // SerializeToValue will not compute |release_time - timeticks_now|.
-          .release_time =
-              base::TimeTicks::Max() - base::TimeDelta::FromMicroseconds(1),
-          .timeticks_now = kZeroTicks,
+          .release_time = base::TimeTicks::Max() - base::Microseconds(1),
+          .timeticks_now = kZeroTicks + base::Microseconds(-1),
           .expected_backoff_duration = base::TimeDelta(),
       },
   };
 
+  size_t test_index = 0;
   for (const TestCase& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("Running test case #%zu", test_index));
+    ++test_index;
+
     Time original_time = base::Time::Now();
     TestTickClock original_ticks;
     original_ticks.set_now(test_case.timeticks_now);
@@ -140,11 +138,14 @@ TEST(BackoffEntrySerializerTest, SpecialCasesOfBackoffDuration) {
         BackoffEntrySerializer::SerializeToValue(original, original_time);
 
     // Check that the serialized backoff duration matches our expectation.
-    double serialized_backoff_duration_double;
-    serialized_backoff_duration_double = serialized.GetList()[2].GetDouble();
+    const std::string& serialized_backoff_duration_string =
+        serialized.GetList()[2].GetString();
+    int64_t serialized_backoff_duration_us;
+    EXPECT_TRUE(base::StringToInt64(serialized_backoff_duration_string,
+                                    &serialized_backoff_duration_us));
 
     base::TimeDelta serialized_backoff_duration =
-        base::TimeDelta::FromSecondsD(serialized_backoff_duration_double);
+        base::Microseconds(serialized_backoff_duration_us);
     EXPECT_EQ(serialized_backoff_duration, test_case.expected_backoff_duration);
   }
 }
@@ -159,8 +160,8 @@ TEST(BackoffEntrySerializerTest, SpecialCasesOfBackoffDuration) {
 // This test induces backoff_duration to be a nonzero duration and directly sets
 // original_time as a large value, such that their addition will overflow.
 TEST(BackoffEntrySerializerTest, SerializeFiniteReleaseTime) {
-  const TimeTicks release_time = TimeTicks() + TimeDelta::FromMicroseconds(5);
-  const Time original_time = Time::Max() - TimeDelta::FromMicroseconds(4);
+  const TimeTicks release_time = TimeTicks() + base::Microseconds(5);
+  const Time original_time = Time::Max() - base::Microseconds(4);
 
   TestTickClock original_ticks;
   original_ticks.set_now(TimeTicks());
@@ -176,11 +177,9 @@ TEST(BackoffEntrySerializerTest, SerializeFiniteReleaseTime) {
 
   // Test that |DeserializeFromValue| notices this zero-valued release time and
   // does not take it at face value.
-  const Time parse_time =
-      Time::FromJsTime(1430907555111);  // May 2015 for realism
   std::unique_ptr<BackoffEntry> deserialized =
       BackoffEntrySerializer::DeserializeFromValue(serialized, &base_policy,
-                                                   &original_ticks, parse_time);
+                                                   &original_ticks, kParseTime);
   ASSERT_TRUE(deserialized.get());
   EXPECT_EQ(original.GetReleaseTime(), deserialized->GetReleaseTime());
 }
@@ -224,7 +223,7 @@ TEST(BackoffEntrySerializerTest, SerializeTimeOffsets) {
   {
     // Test deserialization when wall clock has advanced but TimeTicks::Now()
     // hasn't (e.g. device was rebooted).
-    Time later_time = original_time + TimeDelta::FromDays(1);
+    Time later_time = original_time + base::Days(1);
     std::unique_ptr<BackoffEntry> deserialized =
         BackoffEntrySerializer::DeserializeFromValue(
             serialized, &base_policy, &original_ticks, later_time);
@@ -235,7 +234,7 @@ TEST(BackoffEntrySerializerTest, SerializeTimeOffsets) {
     // will decrease accordingly.
     EXPECT_GT(original.GetTimeUntilRelease(),
               deserialized->GetTimeUntilRelease());
-    EXPECT_EQ(original.GetReleaseTime() - TimeDelta::FromDays(1),
+    EXPECT_EQ(original.GetReleaseTime() - base::Days(1),
               deserialized->GetReleaseTime());
   }
 
@@ -243,7 +242,7 @@ TEST(BackoffEntrySerializerTest, SerializeTimeOffsets) {
     // Test deserialization when TimeTicks::Now() has advanced but wall clock
     // hasn't (e.g. it's an hour later, but a DST change cancelled that out).
     TestTickClock later_ticks;
-    later_ticks.set_now(TimeTicks() + TimeDelta::FromDays(1));
+    later_ticks.set_now(TimeTicks() + base::Days(1));
     std::unique_ptr<BackoffEntry> deserialized =
         BackoffEntrySerializer::DeserializeFromValue(
             serialized, &base_policy, &later_ticks, original_time);
@@ -258,7 +257,7 @@ TEST(BackoffEntrySerializerTest, SerializeTimeOffsets) {
     // be somewhat marginal.
     EXPECT_EQ(original.GetTimeUntilRelease(),
               deserialized->GetTimeUntilRelease());
-    EXPECT_EQ(original.GetReleaseTime() + TimeDelta::FromDays(1),
+    EXPECT_EQ(original.GetReleaseTime() + base::Days(1),
               deserialized->GetReleaseTime());
   }
 
@@ -266,8 +265,8 @@ TEST(BackoffEntrySerializerTest, SerializeTimeOffsets) {
     // Test deserialization when both wall clock and TimeTicks::Now() have
     // advanced (e.g. it's just later than it used to be).
     TestTickClock later_ticks;
-    later_ticks.set_now(TimeTicks() + TimeDelta::FromDays(1));
-    Time later_time = original_time + TimeDelta::FromDays(1);
+    later_ticks.set_now(TimeTicks() + base::Days(1));
+    Time later_time = original_time + base::Days(1);
     std::unique_ptr<BackoffEntry> deserialized =
         BackoffEntrySerializer::DeserializeFromValue(serialized, &base_policy,
                                                      &later_ticks, later_time);
@@ -284,8 +283,8 @@ TEST(BackoffEntrySerializerTest, SerializeTimeOffsets) {
   {
     // Test deserialization when wall clock has gone backwards but TimeTicks
     // haven't (e.g. the system clock was fast but they fixed it).
-    EXPECT_LT(TimeDelta::FromSeconds(1), original.GetTimeUntilRelease());
-    Time earlier_time = original_time - TimeDelta::FromSeconds(1);
+    EXPECT_LT(base::Seconds(1), original.GetTimeUntilRelease());
+    Time earlier_time = original_time - base::Seconds(1);
     std::unique_ptr<BackoffEntry> deserialized =
         BackoffEntrySerializer::DeserializeFromValue(
             serialized, &base_policy, &original_ticks, earlier_time);
@@ -304,6 +303,78 @@ TEST(BackoffEntrySerializerTest, SerializeTimeOffsets) {
     // will be equal too in this particular case.
     EXPECT_EQ(original.GetReleaseTime(), deserialized->GetReleaseTime());
   }
+}
+
+TEST(BackoffEntrySerializerTest, DeserializeUnknownVersion) {
+  base::Value serialized(base::Value::Type::LIST);
+  serialized.Append(0);       // Format version that never existed
+  serialized.Append(0);       // Failure count
+  serialized.Append(2.0);     // Backoff duration
+  serialized.Append("1234");  // Absolute release time
+
+  auto deserialized = BackoffEntrySerializer::DeserializeFromValue(
+      serialized, &base_policy, nullptr, kParseTime);
+  ASSERT_FALSE(deserialized);
+}
+
+TEST(BackoffEntrySerializerTest, DeserializeVersion1) {
+  base::Value serialized(base::Value::Type::LIST);
+  serialized.Append(SerializationFormatVersion::kVersion1);
+  serialized.Append(0);       // Failure count
+  serialized.Append(2.0);     // Backoff duration in seconds as double
+  serialized.Append("1234");  // Absolute release time
+
+  auto deserialized = BackoffEntrySerializer::DeserializeFromValue(
+      serialized, &base_policy, nullptr, kParseTime);
+  ASSERT_TRUE(deserialized);
+}
+
+TEST(BackoffEntrySerializerTest, DeserializeVersion2) {
+  base::Value serialized(base::Value::Type::LIST);
+  serialized.Append(SerializationFormatVersion::kVersion2);
+  serialized.Append(0);       // Failure count
+  serialized.Append("2000");  // Backoff duration
+  serialized.Append("1234");  // Absolute release time
+
+  auto deserialized = BackoffEntrySerializer::DeserializeFromValue(
+      serialized, &base_policy, nullptr, kParseTime);
+  ASSERT_TRUE(deserialized);
+}
+
+TEST(BackoffEntrySerializerTest, DeserializeVersion2NegativeDuration) {
+  base::Value serialized(base::Value::Type::LIST);
+  serialized.Append(SerializationFormatVersion::kVersion2);
+  serialized.Append(0);        // Failure count
+  serialized.Append("-2000");  // Backoff duration
+  serialized.Append("1234");   // Absolute release time
+
+  auto deserialized = BackoffEntrySerializer::DeserializeFromValue(
+      serialized, &base_policy, nullptr, kParseTime);
+  ASSERT_TRUE(deserialized);
+}
+
+TEST(BackoffEntrySerializerTest, DeserializeVersion1WrongDurationType) {
+  base::Value serialized(base::Value::Type::LIST);
+  serialized.Append(SerializationFormatVersion::kVersion1);
+  serialized.Append(0);       // Failure count
+  serialized.Append("2000");  // Backoff duration in seconds as double
+  serialized.Append("1234");  // Absolute release time
+
+  auto deserialized = BackoffEntrySerializer::DeserializeFromValue(
+      serialized, &base_policy, nullptr, kParseTime);
+  ASSERT_FALSE(deserialized);
+}
+
+TEST(BackoffEntrySerializerTest, DeserializeVersion2WrongDurationType) {
+  base::Value serialized(base::Value::Type::LIST);
+  serialized.Append(SerializationFormatVersion::kVersion2);
+  serialized.Append(0);       // Failure count
+  serialized.Append(2.0);     // Backoff duration
+  serialized.Append("1234");  // Absolute release time
+
+  auto deserialized = BackoffEntrySerializer::DeserializeFromValue(
+      serialized, &base_policy, nullptr, kParseTime);
+  ASSERT_FALSE(deserialized);
 }
 
 }  // namespace

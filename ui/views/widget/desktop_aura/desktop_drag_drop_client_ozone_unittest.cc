@@ -32,6 +32,7 @@
 namespace views {
 namespace {
 
+using ::ui::mojom::DragEventSource;
 using ::ui::mojom::DragOperation;
 
 // Platforms have different approaches to handling window coordinates.  For
@@ -53,6 +54,10 @@ constexpr gfx::PointF kStartDragLocation{100, 100};
 class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
  public:
   FakePlatformWindow() { SetWmDragHandler(this, this); }
+
+  FakePlatformWindow(const FakePlatformWindow&) = delete;
+  FakePlatformWindow& operator=(const FakePlatformWindow&) = delete;
+
   ~FakePlatformWindow() override = default;
 
   void set_modifiers(int modifiers) { modifiers_ = modifiers; }
@@ -92,6 +97,7 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
   // ui::WmDragHandler
   bool StartDrag(const OSExchangeData& data,
                  int operation,
+                 DragEventSource source,
                  gfx::NativeCursor cursor,
                  bool can_grab_pointer,
                  WmDragHandler::Delegate* delegate) override {
@@ -159,8 +165,6 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
   std::unique_ptr<ui::OSExchangeData> source_data_;
   base::OnceClosure drag_loop_quit_closure_;
   int modifiers_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePlatformWindow);
 };
 
 // DragDropDelegate which counts the number of each type of drag-drop event.
@@ -168,6 +172,10 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
  public:
   FakeDragDropDelegate()
       : num_enters_(0), num_updates_(0), num_exits_(0), num_drops_(0) {}
+
+  FakeDragDropDelegate(const FakeDragDropDelegate&) = delete;
+  FakeDragDropDelegate& operator=(const FakeDragDropDelegate&) = delete;
+
   ~FakeDragDropDelegate() override = default;
 
   int num_enters() const { return num_enters_; }
@@ -233,8 +241,6 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
   std::unique_ptr<ui::OSExchangeData> received_data_;
   DragOperation destination_operation_;
   int last_event_flags_ = ui::EF_NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDragDropDelegate);
 };
 
 }  // namespace
@@ -242,6 +248,12 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
 class DesktopDragDropClientOzoneTest : public ViewsTestBase {
  public:
   DesktopDragDropClientOzoneTest() = default;
+
+  DesktopDragDropClientOzoneTest(const DesktopDragDropClientOzoneTest&) =
+      delete;
+  DesktopDragDropClientOzoneTest& operator=(
+      const DesktopDragDropClientOzoneTest&) = delete;
+
   ~DesktopDragDropClientOzoneTest() override = default;
 
   void SetModifiers(int modifiers) {
@@ -307,8 +319,6 @@ class DesktopDragDropClientOzoneTest : public ViewsTestBase {
 
   // The widget used to initiate drags.
   std::unique_ptr<Widget> widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopDragDropClientOzoneTest);
 };
 
 TEST_F(DesktopDragDropClientOzoneTest, StartDrag) {

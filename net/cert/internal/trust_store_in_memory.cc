@@ -44,19 +44,18 @@ void TrustStoreInMemory::SyncGetIssuersOf(const ParsedCertificate* cert,
     issuers->push_back(it->second.cert);
 }
 
-void TrustStoreInMemory::GetTrust(const scoped_refptr<ParsedCertificate>& cert,
-                                  CertificateTrust* trust,
-                                  base::SupportsUserData* debug_data) const {
+CertificateTrust TrustStoreInMemory::GetTrust(
+    const ParsedCertificate* cert,
+    base::SupportsUserData* debug_data) const {
   auto range = entries_.equal_range(cert->normalized_subject().AsStringPiece());
   for (auto it = range.first; it != range.second; ++it) {
-    if (cert.get() == it->second.cert.get() ||
+    if (cert == it->second.cert.get() ||
         cert->der_cert() == it->second.cert->der_cert()) {
-      *trust = it->second.trust;
       // NOTE: ambiguity when there are duplicate entries.
-      return;
+      return it->second.trust;
     }
   }
-  *trust = CertificateTrust::ForUnspecified();
+  return CertificateTrust::ForUnspecified();
 }
 
 bool TrustStoreInMemory::Contains(const ParsedCertificate* cert) const {

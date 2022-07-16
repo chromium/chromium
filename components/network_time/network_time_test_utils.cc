@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/http/http_response_headers.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -52,7 +53,7 @@ FieldTrialTest::FieldTrialTest() {}
 
 FieldTrialTest::~FieldTrialTest() {}
 
-void FieldTrialTest::SetNetworkQueriesWithVariationsService(
+void FieldTrialTest::SetFeatureParams(
     bool enable,
     float query_probability,
     NetworkTimeTracker::FetchBehavior fetch_behavior) {
@@ -64,7 +65,8 @@ void FieldTrialTest::SetNetworkQueriesWithVariationsService(
 
   base::FieldTrialParams params;
   params["RandomQueryProbability"] = base::NumberToString(query_probability);
-  params["CheckTimeIntervalSeconds"] = base::NumberToString(360);
+  // See string format defined by `base::TimeDeltaFromString`.
+  params["CheckTimeInterval"] = "360s";
   std::string fetch_behavior_param;
   switch (fetch_behavior) {
     case NetworkTimeTracker::FETCH_BEHAVIOR_UNKNOWN:

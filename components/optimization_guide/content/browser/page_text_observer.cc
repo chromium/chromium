@@ -331,31 +331,22 @@ PageTextObserver* PageTextObserver::GetOrCreateForWebContents(
   return PageTextObserver::FromWebContents(web_contents);
 }
 
-void PageTextObserver::DidStartNavigation(content::NavigationHandle* handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!handle->IsInPrimaryMainFrame()) {
-    return;
-  }
-
-  requests_.clear();
-  page_result_.reset();
-  outstanding_requests_ = 0;
-  outstanding_requests_grace_timer_.reset();
-}
-
 void PageTextObserver::DidFinishNavigation(content::NavigationHandle* handle) {
   // Only main frames are supported for right now.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!handle->IsInPrimaryMainFrame()) {
     return;
   }
 
   if (!handle->HasCommitted()) {
     return;
+  }
+
+  // Reset consumer requests if the navigation is not in the same document.
+  if (!handle->IsSameDocument()) {
+    requests_.clear();
+    page_result_.reset();
+    outstanding_requests_ = 0;
+    outstanding_requests_grace_timer_.reset();
   }
 
   if (consumers_.empty()) {
@@ -478,6 +469,6 @@ void PageTextObserver::RemoveConsumer(Consumer* consumer) {
   consumers_.erase(consumer);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PageTextObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PageTextObserver);
 
 }  // namespace optimization_guide

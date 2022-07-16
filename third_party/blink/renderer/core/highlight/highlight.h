@@ -38,6 +38,9 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
   const int32_t& priority() const { return priority_; }
   void setPriority(const int32_t&);
 
+  AtomicString type() const { return type_; }
+  void setType(const AtomicString& type) { type_ = type; }
+
   bool Contains(AbstractRange*) const;
 
   class IterationSource final : public HighlightSetIterable::IterationSource {
@@ -70,6 +73,7 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
  private:
   HeapLinkedHashSet<Member<AbstractRange>> highlight_ranges_;
   int32_t priority_ = 0;
+  AtomicString type_ = "highlight";
   // Since a Highlight can be registered many times under different names in
   // many HighlightRegistries, we need to keep track of the number of times
   // it's present in each registry. If the Highlight is not registered anywhere,

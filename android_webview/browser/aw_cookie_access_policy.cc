@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/websocket_handshake_request_info.h"
 #include "net/base/net_errors.h"
@@ -49,11 +50,12 @@ bool AwCookieAccessPolicy::GetShouldAcceptThirdPartyCookies(
     int render_frame_id,
     int frame_tree_node_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  const content::GlobalRenderFrameHostId rfh_id(render_process_id,
+                                                render_frame_id);
   std::unique_ptr<AwContentsIoThreadClient> io_thread_client =
       (frame_tree_node_id != content::RenderFrameHost::kNoFrameTreeNodeId)
           ? AwContentsIoThreadClient::FromID(frame_tree_node_id)
-          : AwContentsIoThreadClient::FromID(render_process_id,
-                                             render_frame_id);
+          : AwContentsIoThreadClient::FromID(rfh_id);
 
   if (!io_thread_client) {
     return false;

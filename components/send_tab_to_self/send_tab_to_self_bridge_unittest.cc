@@ -114,6 +114,10 @@ MATCHER_P(GuidIs, e, "") {
 }
 
 class SendTabToSelfBridgeTest : public testing::Test {
+ public:
+  SendTabToSelfBridgeTest(const SendTabToSelfBridgeTest&) = delete;
+  SendTabToSelfBridgeTest& operator=(const SendTabToSelfBridgeTest&) = delete;
+
  protected:
   SendTabToSelfBridgeTest()
       : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
@@ -125,7 +129,7 @@ class SendTabToSelfBridgeTest : public testing::Test {
 
     SetLocalDeviceCacheGuid(kLocalDeviceCacheGuid);
     local_device_ = CreateDevice(kLocalDeviceCacheGuid, "device",
-                                 clock()->Now() - base::TimeDelta::FromDays(1));
+                                 clock()->Now() - base::Days(1));
     AddTestDevice(local_device_.get(), /*local=*/true);
   }
 
@@ -155,8 +159,7 @@ class SendTabToSelfBridgeTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  base::Time AdvanceAndGetTime(
-      base::TimeDelta delta = base::TimeDelta::FromMilliseconds(10)) {
+  base::Time AdvanceAndGetTime(base::TimeDelta delta = base::Milliseconds(10)) {
     clock_.Advance(delta);
     return clock_.Now();
   }
@@ -247,8 +250,6 @@ class SendTabToSelfBridgeTest : public testing::Test {
   testing::NiceMock<MockSendTabToSelfModelObserver> mock_observer_;
 
   std::unique_ptr<syncer::DeviceInfo> local_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfBridgeTest);
 };
 
 TEST_F(SendTabToSelfBridgeTest, CheckEmpties) {
@@ -696,16 +697,15 @@ TEST_F(SendTabToSelfBridgeTest,
 
   // Create multiple DeviceInfo objects with the same name but different guids.
   std::unique_ptr<syncer::DeviceInfo> recent_device =
-      CreateDevice(kRecentGuid, "device_name",
-                   clock()->Now() - base::TimeDelta::FromDays(1));
+      CreateDevice(kRecentGuid, "device_name", clock()->Now() - base::Days(1));
   AddTestDevice(recent_device.get());
 
-  std::unique_ptr<syncer::DeviceInfo> old_device = CreateDevice(
-      kOldGuid, "device_name", clock()->Now() - base::TimeDelta::FromDays(3));
+  std::unique_ptr<syncer::DeviceInfo> old_device =
+      CreateDevice(kOldGuid, "device_name", clock()->Now() - base::Days(3));
   AddTestDevice(old_device.get());
 
-  std::unique_ptr<syncer::DeviceInfo> older_device = CreateDevice(
-      kOlderGuid, "device_name", clock()->Now() - base::TimeDelta::FromDays(5));
+  std::unique_ptr<syncer::DeviceInfo> older_device =
+      CreateDevice(kOlderGuid, "device_name", clock()->Now() - base::Days(5));
   AddTestDevice(older_device.get());
 
   TargetDeviceInfo target_device_info(
@@ -746,14 +746,12 @@ TEST_F(SendTabToSelfBridgeTest,
        GetTargetDeviceInfoSortedList_NoExpiredDevices) {
   InitializeBridge();
 
-  std::unique_ptr<syncer::DeviceInfo> expired_device =
-      CreateDevice("expired_guid", "expired_device_name",
-                   clock()->Now() - base::TimeDelta::FromDays(11));
+  std::unique_ptr<syncer::DeviceInfo> expired_device = CreateDevice(
+      "expired_guid", "expired_device_name", clock()->Now() - base::Days(11));
   AddTestDevice(expired_device.get());
 
-  std::unique_ptr<syncer::DeviceInfo> valid_device =
-      CreateDevice("valid_guid", "valid_device_name",
-                   clock()->Now() - base::TimeDelta::FromDays(1));
+  std::unique_ptr<syncer::DeviceInfo> valid_device = CreateDevice(
+      "valid_guid", "valid_device_name", clock()->Now() - base::Days(1));
   AddTestDevice(valid_device.get());
 
   TargetDeviceInfo target_device_info(
@@ -798,13 +796,11 @@ TEST_F(SendTabToSelfBridgeTest,
 
   // Set a device that is about to expire and a more recent device.
   std::unique_ptr<syncer::DeviceInfo> older_device =
-      CreateDevice("older_guid", "older_name",
-                   clock()->Now() - base::TimeDelta::FromDays(9));
+      CreateDevice("older_guid", "older_name", clock()->Now() - base::Days(9));
   AddTestDevice(older_device.get());
 
-  std::unique_ptr<syncer::DeviceInfo> recent_device =
-      CreateDevice("recent_guid", "recent_name",
-                   clock()->Now() - base::TimeDelta::FromDays(1));
+  std::unique_ptr<syncer::DeviceInfo> recent_device = CreateDevice(
+      "recent_guid", "recent_name", clock()->Now() - base::Days(1));
   AddTestDevice(recent_device.get());
 
   TargetDeviceInfo older_device_info(
@@ -816,14 +812,14 @@ TEST_F(SendTabToSelfBridgeTest,
       recent_device->guid(), recent_device->device_type(),
       recent_device->last_updated_timestamp());
 
-  // Set the map by calling it. Make sure it has the 2 devices.
+  // Make sure the list has the 2 devices.
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(recent_device_info, older_device_info));
 
   // Advance the time so that the older device expires.
-  clock()->Advance(base::TimeDelta::FromDays(5));
+  clock()->Advance(base::Days(5));
 
-  // Make sure only the recent device is in the map.
+  // Make sure only the recent device is in the list.
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(recent_device_info));
 }
@@ -838,7 +834,7 @@ TEST_F(SendTabToSelfBridgeTest,
       CreateDevice("guid", "name", clock()->Now());
   AddTestDevice(device.get());
 
-  // Set the map by calling it. Make sure it has the device.
+  // Make sure the list has the device.
   TargetDeviceInfo device_info(device->client_name(), device->client_name(),
                                device->guid(), device->device_type(),
                                device->last_updated_timestamp());
@@ -851,13 +847,55 @@ TEST_F(SendTabToSelfBridgeTest,
       CreateDevice("new_guid", "new_name", clock()->Now());
   AddTestDevice(new_device.get());
 
-  // Make sure both devices are in the map.
+  // Make sure both devices are in the list.
   TargetDeviceInfo new_device_info(
       new_device->client_name(), new_device->client_name(), new_device->guid(),
       new_device->device_type(), new_device->last_updated_timestamp());
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(device_info, new_device_info));
+}
+
+// Tests the device list is updated if the last_updated_timestamp of one of
+// them changes. Regression test for crbug.com/1257573.
+TEST_F(SendTabToSelfBridgeTest,
+       GetTargetDeviceInfoSortedList_Updated_LastUpdatedTimestampChanged) {
+  InitializeBridge();
+
+  std::unique_ptr<syncer::DeviceInfo> device1 =
+      CreateDevice("guid1", "name1", clock()->Now() - base::Days(1));
+  AddTestDevice(device1.get());
+  std::unique_ptr<syncer::DeviceInfo> device2_old =
+      CreateDevice("guid2", "name2", clock()->Now() - base::Days(2));
+  AddTestDevice(device2_old.get());
+
+  EXPECT_THAT(
+      bridge()->GetTargetDeviceInfoSortedList(),
+      ElementsAre(
+          TargetDeviceInfo(device1->client_name(), device1->client_name(),
+                           device1->guid(), device1->device_type(),
+                           device1->last_updated_timestamp()),
+          TargetDeviceInfo(device2_old->client_name(),
+                           device2_old->client_name(), device2_old->guid(),
+                           device2_old->device_type(),
+                           device2_old->last_updated_timestamp())));
+
+  // Simulate device 2 being used today.
+  std::unique_ptr<syncer::DeviceInfo> device2_new = CreateDevice(
+      device2_old->guid(), device2_old->client_name(), clock()->Now());
+  device_info_tracker()->Replace(device2_old.get(), device2_new.get());
+
+  // Device 2 is now the most recently used and should be the first on the list.
+  EXPECT_THAT(
+      bridge()->GetTargetDeviceInfoSortedList(),
+      ElementsAre(
+          TargetDeviceInfo(device2_new->client_name(),
+                           device2_new->client_name(), device2_new->guid(),
+                           device2_new->device_type(),
+                           device2_new->last_updated_timestamp()),
+          TargetDeviceInfo(device1->client_name(), device1->client_name(),
+                           device1->guid(), device1->device_type(),
+                           device1->last_updated_timestamp())));
 }
 
 TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryOpened) {
@@ -895,14 +933,13 @@ TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryOpened) {
 }
 
 TEST_F(SendTabToSelfBridgeTest,
-       ShouldNotUpdateTargetDeviceInfoListWhileEmptyDeviceInfo) {
+       ShouldHaveEmptyTargetDeviceInfoListWhileEmptyDeviceInfo) {
   InitializeBridgeWithoutDevice();
   SetLocalDeviceCacheGuid("cache_guid");
 
   ASSERT_FALSE(bridge()->change_processor()->TrackedCacheGuid().empty());
   ASSERT_FALSE(device_info_tracker()->IsSyncing());
 
-  EXPECT_FALSE(bridge()->ShouldUpdateTargetDeviceInfoListForTest());
   EXPECT_FALSE(bridge()->HasValidTargetDevice());
 }
 

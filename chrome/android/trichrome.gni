@@ -35,6 +35,7 @@ trichrome_jinja_variables = [
   "trichrome_library=$trichrome_library_package",
   "trichrome_certdigest=$trichrome_certdigest",
   "use32bitAbi=android:use32bitAbi=\"true\"",
+  "zygote_preload_class=org.chromium.chrome.app.TrichromeZygotePreload",
 ]
 
 trichrome_synchronized_proguard =

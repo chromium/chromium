@@ -32,14 +32,17 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
   // The pointer type for the first touch point in the gesture.
   WebPointerProperties::PointerType primary_pointer_type =
       WebPointerProperties::PointerType::kUnknown;
+  // The unique_touch_event id of the first touch in the gesture sequence
+  uint32_t primary_unique_touch_event_id = 0;
 
   // If the WebGestureEvent has source_device ==
   // mojom::GestureDevice::kTouchscreen, this field contains the unique
   // identifier for the touch event that released this event at
   // TouchDispositionGestureFilter. If the WebGestureEvents was not released
-  // through a touch event (e.g. timer-released gesture events or gesture events
-  // with source_device != mojom::GestureDevice::kTouchscreen), the field
-  // contains 0. See crbug.com/618738.
+  // through a touch event (e.g. synthesized gesture events and pinches
+  // or gesture events with source_device !=
+  // mojom::GestureDevice::kTouchscreen), the field contains 0. See
+  // crbug.com/618738.
   uint32_t unique_touch_event_id = 0;
 
   union {

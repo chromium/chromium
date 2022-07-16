@@ -37,11 +37,11 @@ AccessibilityLabelsBubbleModel::AccessibilityLabelsBubbleModel(
     Profile* profile,
     content::WebContents* web_contents,
     bool enable_always)
-    : WebContentsObserver(web_contents),
-      profile_(profile),
+    : profile_(profile),
+      web_contents_(web_contents->GetWeakPtr()),
       enable_always_(enable_always) {}
 
-AccessibilityLabelsBubbleModel::~AccessibilityLabelsBubbleModel() {}
+AccessibilityLabelsBubbleModel::~AccessibilityLabelsBubbleModel() = default;
 
 std::u16string AccessibilityLabelsBubbleModel::GetTitle() const {
   return l10n_util::GetStringUTF16(
@@ -96,8 +96,8 @@ void AccessibilityLabelsBubbleModel::OpenHelpPage() {
   OpenURLParams params(GetHelpPageURL(), Referrer(),
                        WindowOpenDisposition::NEW_FOREGROUND_TAB,
                        ui::PAGE_TRANSITION_LINK, false);
-  if (web_contents()) {
-    web_contents()->OpenURL(params);
+  if (web_contents_) {
+    web_contents_->OpenURL(params);
     return;
   }
   // The web contents used to open this dialog have been destroyed.

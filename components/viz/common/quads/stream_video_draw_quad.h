@@ -29,8 +29,8 @@ class VIZ_COMMON_EXPORT StreamVideoDrawQuad : public DrawQuad {
               bool needs_blending,
               ResourceId resource_id,
               gfx::Size resource_size_in_pixels,
-              const gfx::PointF& uv_top_left,
-              const gfx::PointF& uv_bottom_right);
+              const gfx::PointF& top_left,
+              const gfx::PointF& bottom_right);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
@@ -38,8 +38,8 @@ class VIZ_COMMON_EXPORT StreamVideoDrawQuad : public DrawQuad {
               bool needs_blending,
               ResourceId resource_id,
               gfx::Size resource_size_in_pixels,
-              const gfx::PointF& uv_top_left,
-              const gfx::PointF& uv_bottom_right);
+              const gfx::PointF& top_left,
+              const gfx::PointF& bottom_right);
 
   gfx::PointF uv_top_left;
   gfx::PointF uv_bottom_right;

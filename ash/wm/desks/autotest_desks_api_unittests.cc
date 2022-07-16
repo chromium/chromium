@@ -38,6 +38,8 @@ class TestDesksActivationObserver : public DesksController::Observer {
   }
   void OnDeskSwitchAnimationLaunching() override {}
   void OnDeskSwitchAnimationFinished() override {}
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override {}
 
  private:
   int activation_changes_ = 0;

@@ -31,10 +31,6 @@ const char kAllowSyncXHRInPageDismissal[] = "allow-sync-xhr-in-page-dimissal";
 // This is used in blimp to emulate android fonts on linux.
 const char kAndroidFontsPath[]          = "android-fonts-path";
 
-// Allows app cache to be forced on, even when gated by an origin trial.
-// TODO(enne): remove this once app cache has been removed.
-const char kAppCacheForceEnabled[] = "app-cache-force-enabled";
-
 // Causes the browser process to crash on startup.
 const char kBrowserCrashTest[]              = "crash-test";
 
@@ -69,6 +65,13 @@ const char kConversionsDebugMode[] = "conversions-debug-mode";
 const char kCrossOriginWebAssemblyModuleSharingAllowed[] =
     "cross-origin-webassembly-module-sharing-allowed";
 
+// Enables gating of getDisplayMedia by the display-capture permissions-policy.
+// This switch supports the shipping of display-capture, as it allows admins to
+// temporarily disable display-capture gating with an Enterprise policy.
+// TODO(crbug.com/1233969): Remove this around m100.
+const char kDisplayCapturePermissionsPolicyAllowed[] =
+    "display-capture-permissions-policy-allowed";
+
 // Disable antialiasing on 2d canvas.
 const char kDisable2dCanvasAntialiasing[]   = "disable-canvas-aa";
 
@@ -86,6 +89,10 @@ const char kDisableAccelerated2dCanvas[]    = "disable-accelerated-2d-canvas";
 
 // Enable in-progress canvas 2d API methods BeginLayer and EndLayer.
 const char kEnableCanvas2DLayers[] = "canvas-2d-layers";
+
+// Enables canvas to clear its context when it is running in background.
+const char kEnableCanvasContextLostInBackground[] =
+    "enable-canvas-context-lost-in-background";
 
 // Enable in-progress canvas 2d API features.
 const char kEnableNewCanvas2DAPI[] = "new-canvas-2d-api";
@@ -312,10 +319,6 @@ const char kDisable2dCanvasClipAntialiasing[] = "disable-2d-canvas-clip-aa";
 // Has no effect unless GPU rasterization is enabled.
 const char kDisableYUVImageDecoding[] = "disable-yuv-image-decoding";
 
-// Logs Runtime Call Stats for Blink. --single-process also needs to be
-// used along with this for the stats to be logged.
-const char kDumpBlinkRuntimeCallStats[] = "dump-blink-runtime-call-stats";
-
 // Enables LCD text.
 const char kEnableLCDText[]                 = "enable-lcd-text";
 
@@ -338,13 +341,9 @@ const char kEnableCaretBrowsing[] = "enable-caret-browsing";
 // them off individually to identify the problematic feature anyway.
 //
 // At present this turns on:
-//   net::features::kCookiesWithoutSameSiteMustBeSecure
-//   net::features::kSameSiteByDefaultCookies
 //   net::features::kSameSiteDefaultChecksMethodRigorously
-// It will soon also turn on:
-//   content_settings::kImprovedCookieControls
-//   content_settings::kImprovedCookieControlsForThirdPartyCookieBlocking
 //   net::features::kSchemefulSameSite
+//   net::features::kCookieSameSiteConsidersRedirectChain
 const char kEnableExperimentalCookieFeatures[] =
     "enable-experimental-cookie-features";
 
@@ -369,9 +368,6 @@ const char kEnableFakeNoAllocDirectCallForTesting[] =
 // Enables blink runtime enabled features with status:"test" or
 // status:"experimental", which are enabled when running web tests.
 const char kEnableBlinkTestFeatures[] = "enable-blink-test-features";
-
-// Enables support for FTP URLs. See https://crbug.com/333943.
-const char kEnableFtp[] = "enable-ftp";
 
 // Disables all RuntimeEnabledFeatures that can be enabled via OriginTrials.
 const char kDisableOriginTrialControlledBlinkFeatures[] =
@@ -477,12 +473,6 @@ const char kEnableWebGLDraftExtensions[] = "enable-webgl-draft-extensions";
 // Enables WebGL rendering into a scanout buffer for overlay support.
 const char kEnableWebGLImageChromium[] = "enable-webgl-image-chromium";
 
-// Handle to the shared memory segment containing field trial state that is to
-// be shared between processes. The argument to this switch is the handle id
-// (pointer on Windows) as a string, followed by a comma, then the size of the
-// shared memory segment as a string.
-const char kFieldTrialHandle[] = "field-trial-handle";
-
 // Define an alias root directory which is replaced with the replacement string
 // in file URLs. The format is "/alias=/replacement", which would turn
 // file:///alias/some/path.html into file:///replacement/some/path.html.
@@ -494,6 +484,9 @@ const char kDisableOopRasterization[] = "disable-oop-rasterization";
 // Turns on out of process raster for the renderer whenever gpu raster
 // would have been used.  Enables the chromium_raster_transport extension.
 const char kEnableOopRasterization[] = "enable-oop-rasterization";
+
+// Forces the Chrome major version to 100 in the User-Agent string.
+const char kForceMajorVersionTo100[] = "force-major-version-to-100";
 
 // Forces use of hardware overlay for fullscreen video playback. Useful for
 // testing the Android overlay fullscreen functionality on other platforms.
@@ -557,9 +550,6 @@ const char kJavaScriptHarmony[]             = "javascript-harmony";
 // Enables unsafe fast JS calls between Blink and V8.
 const char kEnableUnsafeFastJSCalls[] = "enable-unsafe-fast-js-calls";
 
-// Specifies the flags passed to JS engine.
-const char kJavaScriptFlags[]               = "js-flags";
-
 // Flag to launch tests in the browser process.
 const char kLaunchAsBrowser[] = "as-browser";
 
@@ -615,11 +605,12 @@ const char kNoUnsandboxedZygote[] = "no-unsandboxed-zygote";
 // zygote to work.
 const char kNoZygote[] = "no-zygote";
 
-// Disables V8 mitigations for executing untrusted code.
-const char kNoV8UntrustedCodeMitigations[] = "no-v8-untrusted-code-mitigations";
-
 // Number of worker threads used to rasterize content.
 const char kNumRasterThreads[]              = "num-raster-threads";
+
+// Overrides the language detection result determined based on the page
+// contents.
+const char kOverrideLanguageDetection[] = "override-language-detection";
 
 // Runs PPAPI (Pepper) plugins in-process.
 const char kPpapiInProcess[]                = "ppapi-in-process";
@@ -823,6 +814,13 @@ const char kUseFakeUIForMediaStream[]     = "use-fake-ui-for-media-stream";
 
 // Texture target for CHROMIUM_image backed video frame textures.
 const char kVideoImageTextureTarget[] = "video-image-texture-target";
+
+#if defined(OS_ANDROID) && defined(INCLUDE_BOTH_V8_SNAPSHOTS)
+// Switch supplied to the renderer if the feature `kUseContextSnapshot` is
+// enabled. A switch is used as at the time the renderer needs this information
+// features have not yet been loaded.
+const char kUseContextSnapshotSwitch[] = "use-context-snapshot";
+#endif
 
 // Set when Chromium should use a mobile user agent.
 const char kUseMobileUserAgent[] = "use-mobile-user-agent";
@@ -1042,6 +1040,9 @@ const char kEnableWin7WebRtcHWH264Decoding[] =
 // DirectWrite FontCache is shared by browser to renderers using shared memory.
 // This switch allows us to pass the shared memory handle to the renderer.
 const char kFontCacheSharedHandle[] = "font-cache-shared-handle";
+
+// Renderer process that runs the non-PPAPI PDF plugin.
+const char kPdfRenderer[] = "pdf-renderer";
 
 // The boolean value (0/1) of FontRenderParams::antialiasing to be passed to
 // Ppapi processes.

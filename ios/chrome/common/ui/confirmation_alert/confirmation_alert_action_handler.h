@@ -9,11 +9,13 @@
 
 @protocol ConfirmationAlertActionHandler <NSObject>
 
-// The "Dismiss" button was touched.
-- (void)confirmationAlertDismissAction;
-
 // The "Primary Action" was touched.
 - (void)confirmationAlertPrimaryAction;
+
+@optional
+
+// The "Dismiss" button was touched.
+- (void)confirmationAlertDismissAction;
 
 // The "Secondary Action" was touched.
 - (void)confirmationAlertSecondaryAction;
@@ -21,7 +23,6 @@
 // The "Learn More" button was touched.
 - (void)confirmationAlertLearnMoreAction;
 
-@optional
 // The "Tertiary Action" was touched.
 - (void)confirmationAlertTertiaryAction;
 

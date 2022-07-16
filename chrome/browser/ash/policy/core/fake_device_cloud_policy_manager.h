@@ -7,9 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -19,23 +18,26 @@ namespace policy {
 
 class DeviceCloudPolicyStoreAsh;
 
-class FakeDeviceCloudPolicyManager : public DeviceCloudPolicyManagerChromeOS {
+class FakeDeviceCloudPolicyManager : public DeviceCloudPolicyManagerAsh {
  public:
   FakeDeviceCloudPolicyManager(
       std::unique_ptr<DeviceCloudPolicyStoreAsh> store,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  FakeDeviceCloudPolicyManager(const FakeDeviceCloudPolicyManager&) = delete;
+  FakeDeviceCloudPolicyManager& operator=(const FakeDeviceCloudPolicyManager&) =
+      delete;
+
   ~FakeDeviceCloudPolicyManager() override;
 
   void set_unregister_result(bool value) { unregister_result_ = value; }
 
-  // DeviceCloudPolicyManagerChromeOS:
+  // DeviceCloudPolicyManagerAsh:
   void Unregister(UnregisterCallback callback) override;
   void Disconnect() override;
 
  private:
   bool unregister_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceCloudPolicyManager);
 };
 
 }  // namespace policy

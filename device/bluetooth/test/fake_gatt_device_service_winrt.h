@@ -37,6 +37,11 @@ class FakeGattDeviceServiceWinrt
       base::StringPiece uuid,
       uint16_t attribute_handle,
       bool allowed);
+
+  FakeGattDeviceServiceWinrt(const FakeGattDeviceServiceWinrt&) = delete;
+  FakeGattDeviceServiceWinrt& operator=(const FakeGattDeviceServiceWinrt&) =
+      delete;
+
   ~FakeGattDeviceServiceWinrt() override;
 
   // IGattDeviceService:
@@ -128,8 +133,6 @@ class FakeGattDeviceServiceWinrt
   std::vector<Microsoft::WRL::ComPtr<FakeGattCharacteristicWinrt>>
       fake_characteristics_;
   uint16_t characteristic_attribute_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGattDeviceServiceWinrt);
 };
 
 }  // namespace device

@@ -61,6 +61,9 @@ class HardwareRenderer {
   // * Append new frame without waiting on it.
   static ChildFrameQueue WaitAndPruneFrameQueue(ChildFrameQueue* child_frames);
 
+  HardwareRenderer(const HardwareRenderer&) = delete;
+  HardwareRenderer& operator=(const HardwareRenderer&) = delete;
+
   virtual ~HardwareRenderer();
 
   void Draw(const HardwareRendererDrawParams& params,
@@ -69,6 +72,8 @@ class HardwareRenderer {
   virtual void RemoveOverlays(
       OverlaysParams::MergeTransactionFn merge_transaction) = 0;
   virtual void AbandonContext() = 0;
+
+  void SetChildFrameForTesting(std::unique_ptr<ChildFrame> child_frame);
 
  protected:
   explicit HardwareRenderer(RenderThreadManager* state);
@@ -109,8 +114,6 @@ class HardwareRenderer {
 
   // Draw params that was used in previous draw. Used in reporting draw metric.
   HardwareRendererDrawParams last_draw_params_ = {};
-
-  DISALLOW_COPY_AND_ASSIGN(HardwareRenderer);
 };
 
 }  // namespace android_webview

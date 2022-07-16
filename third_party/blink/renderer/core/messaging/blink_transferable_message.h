@@ -39,9 +39,6 @@ struct CORE_EXPORT BlinkTransferableMessage : BlinkCloneableMessage {
 CORE_EXPORT scoped_refptr<blink::StaticBitmapImage> ToStaticBitmapImage(
     const SkBitmap& sk_bitmap);
 
-CORE_EXPORT absl::optional<SkBitmap> ToSkBitmap(
-    const scoped_refptr<blink::StaticBitmapImage>& static_bitmap_image);
-
 }  // namespace blink
 
 namespace WTF {

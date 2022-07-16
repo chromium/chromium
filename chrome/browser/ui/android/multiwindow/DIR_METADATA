@@ -2,4 +2,3 @@ monorail {
   component: "UI>Browser>Mobile>MultiInstance"
 }
 team_email: "chrome-android-app@chromium.org"
-os: ANDROID

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 
 namespace guest_view {
@@ -23,6 +22,10 @@ class GuestViewEvent {
  public:
   GuestViewEvent(const std::string& name,
                  std::unique_ptr<base::DictionaryValue> args);
+
+  GuestViewEvent(const GuestViewEvent&) = delete;
+  GuestViewEvent& operator=(const GuestViewEvent&) = delete;
+
   ~GuestViewEvent();
 
   // This method will dispatch the event to the specified |guest|'s embedder and
@@ -32,8 +35,6 @@ class GuestViewEvent {
 private:
   const std::string name_;
   std::unique_ptr<base::DictionaryValue> args_;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestViewEvent);
 };
 
 }  // namespace guest_view

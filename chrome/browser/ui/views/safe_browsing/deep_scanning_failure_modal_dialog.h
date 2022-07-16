@@ -28,12 +28,14 @@ class DeepScanningFailureModalDialog : public views::DialogDelegateView {
   static void ShowForWebContents(content::WebContents* web_contents,
                                  base::OnceClosure accept_callback,
                                  base::OnceClosure cancel_callback,
+                                 base::OnceClosure close_callback,
                                  base::OnceClosure open_now_callback);
 
   // Create a DeepScanningFailureModalDialog attached to |web_contents|. The
   // dialog will call |accept_callback| if the user accepts the prompt.
   DeepScanningFailureModalDialog(base::OnceClosure accept_callback,
                                  base::OnceClosure cancel_callback,
+                                 base::OnceClosure close_callback,
                                  base::OnceClosure open_now_callback);
   DeepScanningFailureModalDialog(const DeepScanningFailureModalDialog&) =
       delete;

@@ -60,8 +60,7 @@ base::Time StringToTime(const std::string& time) {
     return base::Time();
   }
 
-  return base::Time::UnixEpoch() +
-         base::TimeDelta::FromSeconds(seconds_from_epoch);
+  return base::Time::UnixEpoch() + base::Seconds(seconds_from_epoch);
 }
 
 // Convert a history file's timestamp, which is the number of seconds since

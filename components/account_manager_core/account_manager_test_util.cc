@@ -3,16 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/account_manager_core/account_manager_test_util.h"
+#include "components/account_manager_core/account.h"
 
 namespace account_manager {
 
-account_manager::Account CreateTestGaiaAccount(const std::string& raw_email) {
-  account_manager::Account account;
-  account.key.account_type = account_manager::AccountType::kGaia;
+Account CreateTestGaiaAccount(const std::string& raw_email) {
   // TODO(https://crbug.com/1150770): Use signin::GetTestGaiaIdForEmail here.
-  account.key.id = std::string("gaia_id_for_") + raw_email;
-  account.raw_email = raw_email;
-  return account;
+  AccountKey key(std::string("gaia_id_for_") + raw_email, AccountType::kGaia);
+  return {key, raw_email};
 }
 
 }  // namespace account_manager

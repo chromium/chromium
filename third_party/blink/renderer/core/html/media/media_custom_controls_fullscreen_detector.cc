@@ -58,9 +58,9 @@ bool IsFullscreenVideoOfDifferentRatio(const IntSize& video_size,
     return false;
 
   const float x_occupation_proportion =
-      1.0f * intersection_size.Width() / viewport_size.Width();
+      1.0f * intersection_size.width() / viewport_size.width();
   const float y_occupation_proportion =
-      1.0f * intersection_size.Height() / viewport_size.Height();
+      1.0f * intersection_size.height() / viewport_size.height();
 
   // The video should occupy most of the viewport in at least one dimension.
   if (std::max(x_occupation_proportion, y_occupation_proportion) <

@@ -6,9 +6,8 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_BLOCKING_PAGE_H_
 
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -41,6 +40,9 @@ class SSLBlockingPage : public SSLBlockingPageBase {
   // Interstitial type, used in tests.
   static const security_interstitials::SecurityInterstitialPage::TypeID
       kTypeForTesting;
+
+  SSLBlockingPage(const SSLBlockingPage&) = delete;
+  SSLBlockingPage& operator=(const SSLBlockingPage&) = delete;
 
   ~SSLBlockingPage() override;
 
@@ -83,8 +85,6 @@ class SSLBlockingPage : public SSLBlockingPageBase {
   const bool overridable_;  // The UI allows the user to override the error.
 
   const std::unique_ptr<security_interstitials::SSLErrorUI> ssl_error_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLBlockingPage);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_BLOCKING_PAGE_H_

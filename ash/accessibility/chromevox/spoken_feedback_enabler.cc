@@ -14,7 +14,7 @@ namespace ash {
 namespace {
 
 // Delay between timer callbacks. Each one plays a tick sound.
-constexpr base::TimeDelta kTimerDelay = base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kTimerDelay = base::Milliseconds(500);
 
 // The number of ticks of the timer before the first sound is generated.
 constexpr int kTimerTicksOfFirstSoundFeedback = 6;

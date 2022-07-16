@@ -10,9 +10,11 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './mojo/nearby_share_target_types.mojom-lite.js';
 import './mojo/nearby_share_share_type.mojom-lite.js';
 import './mojo/nearby_share.mojom-lite.js';
@@ -25,6 +27,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getDiscoveryManager} from './discovery_manager.js';
+import {CloseReason} from './shared/types.m.js';
 
 /** @implements {nearbyShare.mojom.TransferUpdateListenerInterface} */
 class TransferUpdateListener {
@@ -51,6 +54,18 @@ class TransferUpdateListener {
     this.page_.onTransferUpdate(status, token);
   }
 }
+
+/**
+ * The progress bar asset URL for light mode
+ * @type {string}
+ */
+const PROGRESS_BAR_URL_LIGHT = 'nearby_share_progress_bar_light.json';
+
+/**
+ * The progress bar asset URL for dark mode
+ * @type {string}
+ */
+const PROGRESS_BAR_URL_DARK = 'nearby_share_progress_bar_dark.json';
 
 Polymer({
   is: 'nearby-confirmation-page',
@@ -150,6 +165,15 @@ Polymer({
       type: nearbyShare.mojom.TransferStatus,
       value: null,
     },
+
+    /**
+     * Whether the confirmation page is being rendered in dark mode.
+     * @private {boolean}
+     */
+    isDarkModeActive_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   listeners: {
@@ -206,8 +230,12 @@ Polymer({
         this.needsConfirmation_ = false;
         break;
       case nearbyShare.mojom.TransferStatus.kInProgress:
+        getDiscoveryManager().stopDiscovery().then(
+            () => this.fire('close', {reason: CloseReason.TRANSFER_STARTED}));
+        break;
       case nearbyShare.mojom.TransferStatus.kComplete:
-        getDiscoveryManager().stopDiscovery().then(() => this.fire('close'));
+        getDiscoveryManager().stopDiscovery().then(
+            () => this.fire('close', {reason: CloseReason.TRANSFER_SUCCEEDED}));
         break;
       case nearbyShare.mojom.TransferStatus.kRejected:
         this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
@@ -269,14 +297,14 @@ Polymer({
   /** @private */
   onReject_() {
     this.confirmationManager.reject().then(result => {
-      this.fire('close');
+      this.fire('close', {reason: CloseReason.REJECTED});
     });
   },
 
   /** @private */
   onCancel_() {
     this.confirmationManager.cancel().then(result => {
-      this.fire('close');
+      this.fire('close', {reason: CloseReason.CANCELLED});
     });
   },
 
@@ -316,4 +344,13 @@ Polymer({
         this.payloadPreview.description :
         'Unknown file';
   },
+
+  /**
+   * Returns the URL for the asset that defines a file transfer's animated
+   * progress bar.
+   */
+  getAnimationUrl_() {
+    return this.isDarkModeActive_ ? PROGRESS_BAR_URL_DARK :
+                                    PROGRESS_BAR_URL_LIGHT;
+  }
 });

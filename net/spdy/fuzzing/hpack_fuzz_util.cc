@@ -149,13 +149,12 @@ bool HpackFuzzUtil::RunHeaderBlockThroughFuzzerStages(
           input_block.data(), input_block.size())) {
     return false;
   }
-  if (!context->first_stage->HandleControlFrameHeadersComplete(nullptr)) {
+  if (!context->first_stage->HandleControlFrameHeadersComplete()) {
     return false;
   }
   // Second stage: Re-encode the decoded header block. This must succeed.
-  std::string second_stage_out;
-  CHECK(context->second_stage->EncodeHeaderSet(
-      context->first_stage->decoded_block(), &second_stage_out));
+  std::string second_stage_out = context->second_stage->EncodeHeaderBlock(
+      context->first_stage->decoded_block());
 
   // Third stage: Expect a decoding of the re-encoded block to succeed, but
   // don't require it. It's possible for the stage-two encoder to produce an
@@ -164,7 +163,7 @@ bool HpackFuzzUtil::RunHeaderBlockThroughFuzzerStages(
           second_stage_out.data(), second_stage_out.length())) {
     return false;
   }
-  if (!context->third_stage->HandleControlFrameHeadersComplete(nullptr)) {
+  if (!context->third_stage->HandleControlFrameHeadersComplete()) {
     return false;
   }
   return true;

@@ -8,10 +8,10 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
 import {BookmarksApiProxy} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
-import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
+import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {eventToPromise, flushTasks, waitAfterNextRender} from '../../test_util.m.js';
+import {eventToPromise, flushTasks, waitAfterNextRender} from '../../test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
@@ -70,10 +70,7 @@ suite('SidePanelBookmarkFolderTest', () => {
   test('UpdatesDepthVariables', () => {
     bookmarkFolder.depth = 3;
     assertEquals('3', bookmarkFolder.style.getPropertyValue('--node-depth'));
-    assertEquals(
-        '4',
-        bookmarkFolder.shadowRoot.querySelector('#children')
-            .style.getPropertyValue('--node-depth'));
+    assertEquals('4', bookmarkFolder.style.getPropertyValue('--child-depth'));
   });
 
   test('RendersChildren', () => {
@@ -85,10 +82,28 @@ suite('SidePanelBookmarkFolderTest', () => {
 
     assertEquals(
         folder.children[1].title,
-        childElements[1].querySelector('.title').innerText);
+        childElements[1].querySelector('.title').textContent);
     assertEquals(
         folder.children[2].title,
-        childElements[2].querySelector('.title').innerText);
+        childElements[2].querySelector('.title').textContent);
+  });
+
+  test('UpdatesChildCountVariable', () => {
+    assertEquals('3', bookmarkFolder.style.getPropertyValue('--child-count'));
+
+    bookmarkFolder.folder = Object.assign({}, folder, {
+      children: [
+        {
+          id: '1',
+          title: 'Shopping list',
+          children: [],
+        },
+      ]
+    });
+    assertEquals('1', bookmarkFolder.style.getPropertyValue('--child-count'));
+
+    bookmarkFolder.folder = Object.assign({}, folder, {children: undefined});
+    assertEquals('0', bookmarkFolder.style.getPropertyValue('--child-count'));
   });
 
   test('ShowsFaviconForBookmarks', () => {
@@ -243,5 +258,41 @@ suite('SidePanelBookmarkFolderTest', () => {
         bookmarkFolder.folder.children[0].children[0],
         bookmarkFolder.shadowRoot.activeElement.shadowRoot.activeElement
             .folder);
+  });
+
+  test('SendsClickModifiers', async () => {
+    const item = getChildElements()[1];
+    item.dispatchEvent(new MouseEvent('click'));
+    const [, , click] = await bookmarksApi.whenCalled('openBookmark');
+    assertFalse(
+        click.middleButton || click.altKey || click.ctrlKey || click.metaKey ||
+        click.shiftKey);
+    bookmarksApi.resetResolver('openBookmark');
+
+    // Middle mouse button click.
+    item.dispatchEvent(new MouseEvent('auxclick', {button: 1}));
+    const [, , auxClick] = await bookmarksApi.whenCalled('openBookmark');
+    assertTrue(auxClick.middleButton);
+    assertFalse(
+        auxClick.altKey || auxClick.ctrlKey || auxClick.metaKey ||
+        auxClick.shiftKey);
+    bookmarksApi.resetResolver('openBookmark');
+
+    // Non-middle mouse aux clicks.
+    item.dispatchEvent(new MouseEvent('auxclick', {button: 2}));
+    assertEquals(0, bookmarksApi.getCallCount('openBookmark'));
+
+    // Modifier keys.
+    item.dispatchEvent(new MouseEvent('click', {
+      altKey: true,
+      ctrlKey: true,
+      metaKey: true,
+      shiftKey: true,
+    }));
+    const [, , modifiedClick] = await bookmarksApi.whenCalled('openBookmark');
+    assertFalse(modifiedClick.middleButton);
+    assertTrue(
+        modifiedClick.altKey && modifiedClick.ctrlKey &&
+        modifiedClick.metaKey && modifiedClick.shiftKey);
   });
 });

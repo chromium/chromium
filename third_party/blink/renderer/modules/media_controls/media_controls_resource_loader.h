@@ -42,14 +42,17 @@ class MediaControlsResourceLoader
   String GetUAStyleSheet() override;
 
   MediaControlsResourceLoader();
+
+  MediaControlsResourceLoader(const MediaControlsResourceLoader&) = delete;
+  MediaControlsResourceLoader& operator=(const MediaControlsResourceLoader&) =
+      delete;
+
   ~MediaControlsResourceLoader() override;
 
  private:
   String GetMediaControlsCSS() const;
 
   String GetMediaControlsAndroidCSS() const;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControlsResourceLoader);
 };
 
 }  // namespace blink

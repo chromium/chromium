@@ -18,8 +18,8 @@
 #include "base/values.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
@@ -119,7 +119,7 @@ int PacFileDecider::Start(const ProxyConfigWithAnnotation& config,
 
   // Save the |wait_delay| as a non-negative value.
   wait_delay_ = wait_delay;
-  if (wait_delay_ < base::TimeDelta())
+  if (wait_delay_.is_negative())
     wait_delay_ = base::TimeDelta();
 
   pac_mandatory_ = config.value().pac_mandatory();
@@ -286,20 +286,17 @@ int PacFileDecider::DoQuickCheck() {
 
   HostResolver* host_resolver =
       pac_file_fetcher_->GetRequestContext()->host_resolver();
-  // It's safe to use an empty NetworkIsolationKey() here, since this is only
-  // for fetching the PAC script, so can't usefully leak data to web-initiated
-  // requests (Which can't use an empty NIK for resolving IPs other than that of
-  // the proxy).
   resolve_request_ = host_resolver->CreateRequest(
-      HostPortPair(host, 80), NetworkIsolationKey(), net_log_, parameters);
+      HostPortPair(host, 80),
+      pac_file_fetcher_->isolation_info().network_isolation_key(), net_log_,
+      parameters);
 
   CompletionRepeatingCallback callback = base::BindRepeating(
       &PacFileDecider::OnIOCompletion, base::Unretained(this));
 
   next_state_ = STATE_QUICK_CHECK_COMPLETE;
-  quick_check_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kQuickCheckDelayMs),
-      base::BindOnce(callback, ERR_NAME_NOT_RESOLVED));
+  quick_check_timer_.Start(FROM_HERE, base::Milliseconds(kQuickCheckDelayMs),
+                           base::BindOnce(callback, ERR_NAME_NOT_RESOLVED));
 
   return resolve_request_->Start(callback);
 }

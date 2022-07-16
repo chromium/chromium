@@ -7,25 +7,27 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/grit/ash_help_app_resources.h"
+#include "ash/webui/help_app_ui/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/help_app_ui/url_constants.h"
-#include "chromeos/grit/chromeos_help_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 
+namespace ash {
+
 namespace {
 constexpr gfx::Size HELP_DEFAULT_SIZE(960, 600);
-}
+}  // namespace
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForHelpWebApp() {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
-  info->start_url = GURL(chromeos::kChromeUIHelpAppURL);
-  info->scope = GURL(chromeos::kChromeUIHelpAppURL);
+  info->start_url = GURL(kChromeUIHelpAppURL);
+  info->scope = GURL(kChromeUIHelpAppURL);
 
   info->title = l10n_util::GetStringUTF16(IDS_HELP_APP_EXPLORE);
   web_app::CreateIconInfoForSystemWebApp(
@@ -39,7 +41,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForHelpWebApp() {
   info->theme_color = 0xffffffff;
   info->background_color = 0xffffffff;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->open_as_window = true;
+  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
   return info;
 }
 
@@ -75,8 +77,7 @@ std::vector<int> HelpAppSystemAppDelegate::GetAdditionalSearchTerms() const {
 
 absl::optional<web_app::SystemAppBackgroundTaskInfo>
 HelpAppSystemAppDelegate::GetTimerInfo() const {
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kHelpAppBackgroundPage)) {
+  if (base::FeatureList::IsEnabled(features::kHelpAppBackgroundPage)) {
     return web_app::SystemAppBackgroundTaskInfo(
         absl::nullopt, GURL("chrome://help-app/background"),
         /*open_immediately=*/true);
@@ -89,3 +90,5 @@ std::unique_ptr<WebApplicationInfo> HelpAppSystemAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForHelpWebApp();
 }
+
+}  // namespace ash

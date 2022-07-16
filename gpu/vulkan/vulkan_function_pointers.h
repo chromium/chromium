@@ -277,14 +277,14 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
 #endif  // defined(OS_FUCHSIA)
 
 #if defined(OS_FUCHSIA)
-  VulkanFunction<PFN_vkCreateBufferCollectionFUCHSIA>
-      vkCreateBufferCollectionFUCHSIA;
-  VulkanFunction<PFN_vkSetBufferCollectionConstraintsFUCHSIA>
-      vkSetBufferCollectionConstraintsFUCHSIA;
-  VulkanFunction<PFN_vkGetBufferCollectionPropertiesFUCHSIA>
-      vkGetBufferCollectionPropertiesFUCHSIA;
-  VulkanFunction<PFN_vkDestroyBufferCollectionFUCHSIA>
-      vkDestroyBufferCollectionFUCHSIA;
+  VulkanFunction<PFN_vkCreateBufferCollectionFUCHSIAX>
+      vkCreateBufferCollectionFUCHSIAX;
+  VulkanFunction<PFN_vkSetBufferCollectionConstraintsFUCHSIAX>
+      vkSetBufferCollectionConstraintsFUCHSIAX;
+  VulkanFunction<PFN_vkGetBufferCollectionPropertiesFUCHSIAX>
+      vkGetBufferCollectionPropertiesFUCHSIAX;
+  VulkanFunction<PFN_vkDestroyBufferCollectionFUCHSIAX>
+      vkDestroyBufferCollectionFUCHSIAX;
 #endif  // defined(OS_FUCHSIA)
 
   VulkanFunction<PFN_vkAcquireNextImageKHR> vkAcquireNextImageKHR;
@@ -1104,14 +1104,14 @@ ALWAYS_INLINE VkResult vkGetMemoryZirconHandleFUCHSIA(
 #endif  // defined(OS_FUCHSIA)
 
 #if defined(OS_FUCHSIA)
-#define vkCreateBufferCollectionFUCHSIA \
-  gpu::GetVulkanFunctionPointers()->vkCreateBufferCollectionFUCHSIA
-#define vkSetBufferCollectionConstraintsFUCHSIA \
-  gpu::GetVulkanFunctionPointers()->vkSetBufferCollectionConstraintsFUCHSIA
-#define vkGetBufferCollectionPropertiesFUCHSIA \
-  gpu::GetVulkanFunctionPointers()->vkGetBufferCollectionPropertiesFUCHSIA
-#define vkDestroyBufferCollectionFUCHSIA \
-  gpu::GetVulkanFunctionPointers()->vkDestroyBufferCollectionFUCHSIA
+#define vkCreateBufferCollectionFUCHSIAX \
+  gpu::GetVulkanFunctionPointers()->vkCreateBufferCollectionFUCHSIAX
+#define vkSetBufferCollectionConstraintsFUCHSIAX \
+  gpu::GetVulkanFunctionPointers()->vkSetBufferCollectionConstraintsFUCHSIAX
+#define vkGetBufferCollectionPropertiesFUCHSIAX \
+  gpu::GetVulkanFunctionPointers()->vkGetBufferCollectionPropertiesFUCHSIAX
+#define vkDestroyBufferCollectionFUCHSIAX \
+  gpu::GetVulkanFunctionPointers()->vkDestroyBufferCollectionFUCHSIAX
 #endif  // defined(OS_FUCHSIA)
 
 ALWAYS_INLINE VkResult vkAcquireNextImageKHR(VkDevice device,

@@ -31,6 +31,9 @@ class MockEnrollmentScreenView : public EnrollmentScreenView {
   MockEnrollmentScreenView();
   virtual ~MockEnrollmentScreenView();
 
+  void Bind(EnrollmentScreen* screen) override;
+  void Unbind() override;
+
   MOCK_METHOD(void,
               SetEnrollmentConfig,
               (const policy::EnrollmentConfig& config));
@@ -41,6 +44,8 @@ class MockEnrollmentScreenView : public EnrollmentScreenView {
   MOCK_METHOD(void, SetFlowType, (FlowType flow_type));
   MOCK_METHOD(void, Show, ());
   MOCK_METHOD(void, Hide, ());
+  MOCK_METHOD(void, MockBind, (EnrollmentScreen * screen));
+  MOCK_METHOD(void, MockUnbind, ());
   MOCK_METHOD(void, ShowSigninScreen, ());
   MOCK_METHOD(void,
               ShowUserError,
@@ -59,11 +64,16 @@ class MockEnrollmentScreenView : public EnrollmentScreenView {
               ShowAttributePromptScreen,
               (const std::string& asset_id, const std::string& location));
   MOCK_METHOD(void, ShowEnrollmentSuccessScreen, ());
-  MOCK_METHOD(void, ShowEnrollmentSpinnerScreen, ());
+  MOCK_METHOD(void, ShowEnrollmentTPMCheckingScreen, ());
+  MOCK_METHOD(void, ShowEnrollmentWorkingScreen, ());
   MOCK_METHOD(void, ShowAuthError, (const GoogleServiceAuthError&));
   MOCK_METHOD(void, ShowOtherError, (EnterpriseEnrollmentHelper::OtherError));
   MOCK_METHOD(void, ShowEnrollmentStatus, (policy::EnrollmentStatus status));
   MOCK_METHOD(void, Shutdown, ());
+  MOCK_METHOD(void, SetIsBrandedBuild, (bool is_branded));
+
+ private:
+  EnrollmentScreen* screen_ = nullptr;
 };
 
 }  // namespace ash

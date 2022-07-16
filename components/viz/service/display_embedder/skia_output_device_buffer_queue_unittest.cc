@@ -29,6 +29,10 @@
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gl/gl_surface_stub.h"
 
+#if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 using ::testing::_;
 using ::testing::Expectation;
 using ::testing::Ne;
@@ -209,13 +213,10 @@ class MockGLSurfaceAsync : public gl::GLSurfaceStub {
     presentation_callbacks_.push_back(std::move(presentation_callback));
   }
 
-  bool ScheduleOverlayPlane(int z_order,
-                            gfx::OverlayTransform transform,
-                            gl::GLImage* image,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override {
+  bool ScheduleOverlayPlane(
+      gl::GLImage* image,
+      std::unique_ptr<gfx::GpuFence> gpu_fence,
+      const gfx::OverlayPlaneData& overlay_plane_data) override {
     return true;
   }
 
@@ -288,8 +289,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   }
 
   virtual DidSwapBufferCompleteCallback GetDidSwapBuffersCompleteCallback() {
-    return base::DoNothing::Repeatedly<gpu::SwapBuffersCompleteParams,
-                                       const gfx::Size&, gfx::GpuFenceHandle>();
+    return base::DoNothing();
   }
 
   void SetUpOnGpu() override {
@@ -311,12 +311,20 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
 
     auto present_callback = GetDidSwapBuffersCompleteCallback();
 
+    bool supports_non_backed_solid_color_buffers = false;
+#if defined(USE_OZONE)
+    supports_non_backed_solid_color_buffers =
+        ui::OzonePlatform::GetInstance()
+            ->GetPlatformRuntimeProperties()
+            .supports_non_backed_solid_color_buffers;
+#endif
     output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
         std::make_unique<OutputPresenterGL>(
             gl_surface_, dependency_.get(), shared_image_factory_.get(),
             shared_image_representation_factory_.get()),
         dependency_.get(), shared_image_representation_factory_.get(),
-        memory_tracker_.get(), present_callback, false);
+        memory_tracker_.get(), present_callback, false,
+        supports_non_backed_solid_color_buffers);
   }
 
   void TearDownOnGpu() override {
@@ -402,18 +410,11 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   }
 
   virtual void SwapBuffers() {
-    auto present_callback =
-        base::DoNothing::Once<const gfx::PresentationFeedback&>();
-
-    output_device_->SwapBuffers(std::move(present_callback),
-                                OutputSurfaceFrame());
+    output_device_->SwapBuffers(base::DoNothing(), OutputSurfaceFrame());
   }
 
   void CommitOverlayPlanes() {
-    auto present_callback =
-        base::DoNothing::Once<const gfx::PresentationFeedback&>();
-
-    output_device_->CommitOverlayPlanes(std::move(present_callback),
+    output_device_->CommitOverlayPlanes(base::DoNothing(),
                                         OutputSurfaceFrame());
   }
 

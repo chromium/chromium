@@ -5,7 +5,6 @@
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"

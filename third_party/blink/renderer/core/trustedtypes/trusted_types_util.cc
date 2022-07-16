@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 
+#include "base/unguessable_token.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -15,6 +16,8 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/exception_metadata.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
@@ -110,10 +113,10 @@ const char* GetMessage(TrustedTypeViolationKind kind) {
   return "";
 }
 
-String GetSamplePrefix(const ExceptionState& exception_state,
+String GetSamplePrefix(const ExceptionContext& exception_context,
                        const String& value) {
-  const char* interface_name = exception_state.InterfaceName();
-  const char* property_name = exception_state.PropertyName();
+  const char* interface_name = exception_context.GetClassName();
+  const char* property_name = exception_context.GetPropertyName();
 
   // We have two sample formats, one for eval and one for assignment.
   // If we don't have the required values being passed in, just leave the
@@ -153,13 +156,13 @@ const char* GetElementName(const ScriptElementBase::Type type) {
 HeapVector<ScriptValue> GetDefaultCallbackArgs(
     v8::Isolate* isolate,
     const char* type,
-    const ExceptionState& exception_state,
+    const ExceptionContext& exception_context,
     const String& value = g_empty_string) {
   ScriptState* script_state = ScriptState::Current(isolate);
   HeapVector<ScriptValue> args;
   args.push_back(ScriptValue::From(script_state, type));
-  args.push_back(
-      ScriptValue::From(script_state, GetSamplePrefix(exception_state, value)));
+  args.push_back(ScriptValue::From(script_state,
+                                   GetSamplePrefix(exception_context, value)));
   return args;
 }
 
@@ -183,14 +186,20 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
   if (execution_context->GetTrustedTypes())
     execution_context->GetTrustedTypes()->CountTrustedTypeAssignmentError();
 
-  String prefix = GetSamplePrefix(exception_state, value);
+  String prefix = GetSamplePrefix(exception_state.GetContext(), value);
+  // This issue_id is used to generate a link in the DevTools front-end from
+  // the JavaScript TypeError to the inspector issue which is reported by
+  // ContentSecurityPolicy::ReportViolation via the call to
+  // AllowTrustedTypeAssignmentFailure below.
+  base::UnguessableToken issue_id = base::UnguessableToken::Create();
   bool allow =
       execution_context->GetContentSecurityPolicy()
           ->AllowTrustedTypeAssignmentFailure(
               GetMessage(kind),
-              prefix == "Function" ? value.Substring(strlen(kAnonymousPrefix))
+              prefix == "Function" ? value.Substring(static_cast<wtf_size_t>(
+                                         strlen(kAnonymousPrefix)))
                                    : value,
-              prefix);
+              prefix, issue_id);
 
   // TODO(1087743): Add a console message for Trusted Type-related Function
   // constructor failures, to warn the developer of the outstanding issues
@@ -209,11 +218,12 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
   }
   probe::OnContentSecurityPolicyViolation(
       const_cast<ExecutionContext*>(execution_context),
-      ContentSecurityPolicy::ContentSecurityPolicyViolationType::
-          kTrustedTypesSinkViolation);
+      ContentSecurityPolicyViolationType::kTrustedTypesSinkViolation);
 
   if (!allow) {
     exception_state.ThrowTypeError(GetMessage(kind));
+    MaybeAssociateExceptionMetaData(exception_state, "issueId",
+                                    IdentifiersFactory::IdFromToken(issue_id));
   }
   return !allow;
 }
@@ -277,7 +287,7 @@ String GetStringFromScriptHelper(
   TrustedScript* result = default_policy->CreateScript(
       context->GetIsolate(), script,
       GetDefaultCallbackArgs(context->GetIsolate(), "TrustedScript",
-                             exception_state, script),
+                             exception_state.GetContext(), script),
       exception_state);
   if (exception_state.HadException()) {
     exception_state.ClearException();
@@ -299,7 +309,8 @@ String GetStringFromScriptHelper(
 
 bool RequireTrustedTypesCheck(const ExecutionContext* execution_context) {
   return execution_context && execution_context->RequireTrustedTypes() &&
-         !ContentSecurityPolicy::ShouldBypassMainWorld(execution_context);
+         !ContentSecurityPolicy::ShouldBypassMainWorldDeprecated(
+             execution_context);
 }
 
 String TrustedTypesCheckForHTML(String html,
@@ -333,7 +344,7 @@ String TrustedTypesCheckForHTML(String html,
   TrustedHTML* result = default_policy->CreateHTML(
       execution_context->GetIsolate(), html,
       GetDefaultCallbackArgs(execution_context->GetIsolate(), "TrustedHTML",
-                             exception_state),
+                             exception_state.GetContext()),
       exception_state);
   if (exception_state.HadException()) {
     return g_empty_string;
@@ -382,7 +393,7 @@ String TrustedTypesCheckForScript(String script,
   TrustedScript* result = default_policy->CreateScript(
       execution_context->GetIsolate(), script,
       GetDefaultCallbackArgs(execution_context->GetIsolate(), "TrustedScript",
-                             exception_state, script),
+                             exception_state.GetContext(), script),
       exception_state);
   DCHECK_EQ(!result, exception_state.HadException());
   if (exception_state.HadException()) {
@@ -434,7 +445,7 @@ String TrustedTypesCheckForScriptURL(String script_url,
   TrustedScriptURL* result = default_policy->CreateScriptURL(
       execution_context->GetIsolate(), script_url,
       GetDefaultCallbackArgs(execution_context->GetIsolate(),
-                             "TrustedScriptURL", exception_state),
+                             "TrustedScriptURL", exception_state.GetContext()),
       exception_state);
 
   if (exception_state.HadException()) {

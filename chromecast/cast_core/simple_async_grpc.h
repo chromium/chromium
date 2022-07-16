@@ -10,6 +10,20 @@
 
 namespace chromecast {
 
+// This class is some common state machine glue between GrpcServer, request
+// objects, and their delegates.  There are two threads/sequences involved: the
+// gRPC thread and the main task runner.  The important element that this class
+// helps handle is that after GrpcServer::Stop(), we can't reference gRPC
+// objects that may lead back to the underlying server.  This includes not
+// making any new requests (i.e. not call `new T` in Clone()).
+//
+// There are two signals this class uses to cancel gRPC operations: |delegate|
+// and |is_shutdown|.  |delegate| should return nullptr when the actual delegate
+// is no longer alive (so it's likely a base::WeakPtr).  |is_shutdown| should
+// return a bool* that, when dereferenced, indicates whether the GrpcServer has
+// been or is being shutdown.  |is_shtudown| will not be dereferenced when
+// |delegate| is nullptr, so it's safe to tie |is_shutdown| to the lifetime of
+// |delegate|.
 template <typename T, typename RequestType, typename ResponseType>
 class SimpleAsyncGrpc : public GrpcMethod {
  public:
@@ -23,7 +37,11 @@ class SimpleAsyncGrpc : public GrpcMethod {
       : GrpcMethod(cq), responder_(&ctx_) {}
 
   GrpcMethod* Clone() override {
-    return new T(self()->service(), self()->delegate(), cq_);
+    if (!self()->delegate() || *self()->is_shutdown()) {
+      return nullptr;
+    }
+    return new T(self()->service(), self()->delegate(), cq_,
+                 self()->is_shutdown());
   }
 
   void StepInternal(grpc::Status status) override {
@@ -31,12 +49,20 @@ class SimpleAsyncGrpc : public GrpcMethod {
       case kStart:
         DCHECK(status.ok());
         state_ = kRespond;
-        self()->DoMethod();
+        if (self()->delegate()) {
+          self()->DoMethod();
+        } else {
+          delete this;
+        }
         break;
       case kRespond:
         state_ = kFinish;
-        responder_.Finish(response_, status, static_cast<GRPC*>(this));
-        Done();
+        if (!status.ok() || !self()->delegate() || *self()->is_shutdown()) {
+          delete this;
+        } else {
+          responder_.Finish(response_, status, static_cast<GRPC*>(this));
+          Done();
+        }
         break;
       default:
         NOTREACHED();

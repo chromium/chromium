@@ -117,7 +117,7 @@ SerialConnectFunction::SerialConnectFunction() {}
 SerialConnectFunction::~SerialConnectFunction() {}
 
 ExtensionFunction::ResponseAction SerialConnectFunction::Run() {
-  auto params = serial::Connect::Params::Create(*args_);
+  auto params = serial::Connect::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // Fill in any omitted options to ensure a known initial configuration.
@@ -196,7 +196,7 @@ SerialUpdateFunction::SerialUpdateFunction() = default;
 SerialUpdateFunction::~SerialUpdateFunction() = default;
 
 ExtensionFunction::ResponseAction SerialUpdateFunction::Run() {
-  auto params = serial::Update::Params::Create(*args_);
+  auto params = serial::Update::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -216,7 +216,7 @@ SerialDisconnectFunction::SerialDisconnectFunction() = default;
 SerialDisconnectFunction::~SerialDisconnectFunction() = default;
 
 ExtensionFunction::ResponseAction SerialDisconnectFunction::Run() {
-  auto params = serial::Disconnect::Params::Create(*args_);
+  auto params = serial::Disconnect::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -237,22 +237,15 @@ SerialSendFunction::SerialSendFunction() = default;
 SerialSendFunction::~SerialSendFunction() = default;
 
 ExtensionFunction::ResponseAction SerialSendFunction::Run() {
-  auto params = serial::Send::Params::Create(*args_);
+  auto params = serial::Send::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
   if (!connection)
     return RespondNow(Error(kErrorSerialConnectionNotFound));
 
-  if (!connection->Send(
-          params->data,
-          base::BindOnce(&SerialSendFunction::OnSendComplete, this))) {
-    serial::SendInfo send_info;
-    send_info.bytes_sent = 0;
-    send_info.error = serial::SEND_ERROR_PENDING;
-    return RespondNow(
-        OneArgument(base::Value::FromUniquePtrValue(send_info.ToValue())));
-  }
+  connection->Send(params->data,
+                   base::BindOnce(&SerialSendFunction::OnSendComplete, this));
   return RespondLater();
 }
 
@@ -268,7 +261,7 @@ SerialFlushFunction::SerialFlushFunction() = default;
 SerialFlushFunction::~SerialFlushFunction() = default;
 
 ExtensionFunction::ResponseAction SerialFlushFunction::Run() {
-  auto params = serial::Flush::Params::Create(*args_);
+  auto params = serial::Flush::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -288,7 +281,7 @@ SerialSetPausedFunction::SerialSetPausedFunction() = default;
 SerialSetPausedFunction::~SerialSetPausedFunction() = default;
 
 ExtensionFunction::ResponseAction SerialSetPausedFunction::Run() {
-  auto params = serial::SetPaused::Params::Create(*args_);
+  auto params = serial::SetPaused::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -305,7 +298,7 @@ SerialGetInfoFunction::SerialGetInfoFunction() = default;
 SerialGetInfoFunction::~SerialGetInfoFunction() = default;
 
 ExtensionFunction::ResponseAction SerialGetInfoFunction::Run() {
-  auto params = serial::GetInfo::Params::Create(*args_);
+  auto params = serial::GetInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -369,7 +362,7 @@ SerialGetControlSignalsFunction::SerialGetControlSignalsFunction() = default;
 SerialGetControlSignalsFunction::~SerialGetControlSignalsFunction() = default;
 
 ExtensionFunction::ResponseAction SerialGetControlSignalsFunction::Run() {
-  auto params = serial::GetControlSignals::Params::Create(*args_);
+  auto params = serial::GetControlSignals::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -394,7 +387,7 @@ SerialSetControlSignalsFunction::SerialSetControlSignalsFunction() = default;
 SerialSetControlSignalsFunction::~SerialSetControlSignalsFunction() = default;
 
 ExtensionFunction::ResponseAction SerialSetControlSignalsFunction::Run() {
-  auto params = serial::SetControlSignals::Params::Create(*args_);
+  auto params = serial::SetControlSignals::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -416,7 +409,7 @@ SerialSetBreakFunction::SerialSetBreakFunction() = default;
 SerialSetBreakFunction::~SerialSetBreakFunction() = default;
 
 ExtensionFunction::ResponseAction SerialSetBreakFunction::Run() {
-  auto params = serial::SetBreak::Params::Create(*args_);
+  auto params = serial::SetBreak::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -440,7 +433,7 @@ SerialClearBreakFunction::SerialClearBreakFunction() = default;
 SerialClearBreakFunction::~SerialClearBreakFunction() = default;
 
 ExtensionFunction::ResponseAction SerialClearBreakFunction::Run() {
-  auto params = serial::ClearBreak::Params::Create(*args_);
+  auto params = serial::ClearBreak::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);

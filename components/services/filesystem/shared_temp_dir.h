@@ -19,13 +19,14 @@ class SharedTempDir : public base::RefCounted<SharedTempDir> {
  public:
   SharedTempDir(std::unique_ptr<base::ScopedTempDir> temp_dir);
 
+  SharedTempDir(const SharedTempDir&) = delete;
+  SharedTempDir& operator=(const SharedTempDir&) = delete;
+
  private:
   friend class base::RefCounted<SharedTempDir>;
   ~SharedTempDir();
 
   std::unique_ptr<base::ScopedTempDir> temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedTempDir);
 };
 
 }  // namespace filesystem

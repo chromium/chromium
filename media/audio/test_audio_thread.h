@@ -18,6 +18,10 @@ class TestAudioThread final : public AudioThread {
  public:
   TestAudioThread();
   explicit TestAudioThread(bool use_real_thread);
+
+  TestAudioThread(const TestAudioThread&) = delete;
+  TestAudioThread& operator=(const TestAudioThread&) = delete;
+
   ~TestAudioThread() final;
 
   // AudioThread implementation.
@@ -31,7 +35,6 @@ class TestAudioThread final : public AudioThread {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(TestAudioThread);
 };
 
 }  // namespace media

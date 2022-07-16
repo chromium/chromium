@@ -18,7 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/download/public/common/mock_download_item.h"
-#include "components/enterprise/common/proto/download_item_reroute_info.pb.h"
+#include "components/enterprise/common/download_item_reroute_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -383,9 +383,9 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
     EXPECT_CALL(item(), GetTotalBytes())
         .WillRepeatedly(Return(test_case.total_bytes));
     EXPECT_CALL(item(), TimeRemaining(_))
-        .WillRepeatedly(testing::DoAll(
-            testing::SetArgPointee<0>(base::TimeDelta::FromSeconds(10)),
-            Return(test_case.time_remaining_known)));
+        .WillRepeatedly(
+            testing::DoAll(testing::SetArgPointee<0>(base::Seconds(10)),
+                           Return(test_case.time_remaining_known)));
     EXPECT_CALL(item(), GetOpenWhenComplete())
         .WillRepeatedly(Return(test_case.open_when_complete));
     EXPECT_CALL(item(), IsPaused())

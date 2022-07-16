@@ -7,10 +7,12 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/cloud_devices/common/cloud_device_description.h"
 #include "components/cloud_devices/common/printer_description.h"
@@ -30,27 +32,16 @@ constexpr char kKind[] = "kind";
 constexpr char kIdPattern[] = "idPattern";
 constexpr char kNamePattern[] = "namePattern";
 
-idl::PrinterSource PrinterSourceToIdl(chromeos::Printer::Source source) {
-  switch (source) {
-    case chromeos::Printer::Source::SRC_USER_PREFS:
-      return idl::PRINTER_SOURCE_USER;
-    case chromeos::Printer::Source::SRC_POLICY:
-      return idl::PRINTER_SOURCE_POLICY;
-  }
-  NOTREACHED();
-  return idl::PRINTER_SOURCE_USER;
-}
-
 bool DoesPrinterMatchDefaultPrinterRules(
-    const chromeos::Printer& printer,
+    const crosapi::mojom::LocalDestinationInfo& printer,
     const absl::optional<DefaultPrinterRules>& rules) {
   if (!rules.has_value())
     return false;
   return (rules->kind.empty() || rules->kind == kLocal) &&
          (rules->id_pattern.empty() ||
-          RE2::FullMatch(printer.id(), rules->id_pattern)) &&
+          RE2::FullMatch(printer.id, rules->id_pattern)) &&
          (rules->name_pattern.empty() ||
-          RE2::FullMatch(printer.display_name(), rules->name_pattern));
+          RE2::FullMatch(printer.name, rules->name_pattern));
 }
 
 }  // namespace
@@ -82,18 +73,21 @@ absl::optional<DefaultPrinterRules> GetDefaultPrinterRules(
 }
 
 idl::Printer PrinterToIdl(
-    const chromeos::Printer& printer,
+    const crosapi::mojom::LocalDestinationInfo& printer,
     const absl::optional<DefaultPrinterRules>& default_printer_rules,
     const base::flat_map<std::string, int>& recently_used_ranks) {
   idl::Printer idl_printer;
-  idl_printer.id = printer.id();
-  idl_printer.name = printer.display_name();
-  idl_printer.description = printer.description();
-  idl_printer.uri = printer.uri().GetNormalized(true /*always_print_port*/);
-  idl_printer.source = PrinterSourceToIdl(printer.source());
+  idl_printer.id = printer.id;
+  idl_printer.name = printer.name;
+  idl_printer.description = printer.description;
+  if (printer.uri)
+    idl_printer.uri = *printer.uri;
+  idl_printer.source = printer.configured_via_policy
+                           ? idl::PRINTER_SOURCE_POLICY
+                           : idl::PRINTER_SOURCE_USER;
   idl_printer.is_default =
       DoesPrinterMatchDefaultPrinterRules(printer, default_printer_rules);
-  auto it = recently_used_ranks.find(printer.id());
+  auto it = recently_used_ranks.find(printer.id);
   if (it != recently_used_ranks.end())
     idl_printer.recently_used_rank = std::make_unique<int>(it->second);
   else
@@ -122,7 +116,7 @@ idl::PrinterStatus PrinterStatusToIdl(chromeos::PrinterErrorCode status) {
     case chromeos::PrinterErrorCode::STOPPED:
       return idl::PRINTER_STATUS_STOPPED;
     default:
-      return idl::PRINTER_STATUS_GENERIC_ISSUE;
+      break;
   }
   return idl::PRINTER_STATUS_GENERIC_ISSUE;
 }

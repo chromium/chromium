@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/common/content_export.h"

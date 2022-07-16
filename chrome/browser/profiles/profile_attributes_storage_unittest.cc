@@ -141,6 +141,8 @@ class ProfileAttributesTestObserver
                void(const base::FilePath& profile_path));
   MOCK_METHOD1(OnProfileHostedDomainChanged,
                void(const base::FilePath& profile_path));
+  MOCK_METHOD1(OnProfileUserManagementAcceptanceChanged,
+               void(const base::FilePath& profile_path));
 };
 
 size_t GetDefaultAvatarIconResourceIDAtIndex(int index) {
@@ -491,8 +493,9 @@ TEST_F(ProfileAttributesStorageTest, MultipleProfiles) {
 
   std::vector<ProfileAttributesEntry*> entries =
       storage()->GetAllProfilesAttributes();
-  for (auto* entry : entries) {
-    EXPECT_NE(GetProfilePath("testing_profile_path0"), entry->GetPath());
+  for (auto* attributes_entry : entries) {
+    EXPECT_NE(GetProfilePath("testing_profile_path0"),
+              attributes_entry->GetPath());
   }
 }
 
@@ -711,6 +714,17 @@ TEST_F(ProfileAttributesStorageTest, EntryAccessors) {
   EXPECT_FALSE(entry->IsUsingDefaultName());
   VerifyAndResetCallExpectations();
 
+  // GaiaIds.
+  EXPECT_TRUE(entry->GetGaiaIds().empty());
+  base::flat_set<std::string> accounts1({"a"});
+  base::flat_set<std::string> accounts2({"b", "c"});
+  entry->SetGaiaIds(accounts1);
+  EXPECT_EQ(accounts1, entry->GetGaiaIds());
+  entry->SetGaiaIds(accounts2);
+  EXPECT_EQ(accounts2, entry->GetGaiaIds());
+  entry->SetGaiaIds({});
+  EXPECT_TRUE(entry->GetGaiaIds().empty());
+
   TEST_STRING16_ACCESSORS(ProfileAttributesEntry, entry, ShortcutName);
   TEST_ACCESSORS(ProfileAttributesEntry, entry, BackgroundStatus, true, false);
 
@@ -743,6 +757,11 @@ TEST_F(ProfileAttributesStorageTest, EntryAccessors) {
   TEST_BOOL_ACCESSORS(ProfileAttributesEntry, entry, IsUsingDefaultAvatar);
   TEST_STRING_ACCESSORS(ProfileAttributesEntry, entry,
                         LastDownloadedGAIAPictureUrlWithSize);
+
+  EXPECT_CALL(observer(), OnProfileUserManagementAcceptanceChanged(_)).Times(2);
+  TEST_BOOL_ACCESSORS(ProfileAttributesEntry, entry,
+                      UserAcceptedAccountManagement);
+  VerifyAndResetCallExpectations();
 }
 
 TEST_F(ProfileAttributesStorageTest, EntryInternalAccessors) {
@@ -846,18 +865,18 @@ TEST_F(ProfileAttributesStorageTest, ProfileActiveTime) {
   // Store the time and check for the result. Allow for a difference one second
   // because the 64-bit integral representation in base::Time is rounded off to
   // a double, which is what base::Value stores. http://crbug.com/346827
-  base::Time lower_bound = base::Time::Now() - base::TimeDelta::FromSeconds(1);
+  base::Time lower_bound = base::Time::Now() - base::Seconds(1);
   entry->SetActiveTimeToNow();
-  base::Time upper_bound = base::Time::Now() + base::TimeDelta::FromSeconds(1);
+  base::Time upper_bound = base::Time::Now() + base::Seconds(1);
   EXPECT_TRUE(entry->IsDouble(kActiveTimeKey));
   EXPECT_LE(lower_bound, entry->GetActiveTime());
   EXPECT_GE(upper_bound, entry->GetActiveTime());
 
   // If the active time was less than one hour ago, SetActiveTimeToNow should do
   // nothing.
-  base::Time past = base::Time::Now() - base::TimeDelta::FromMinutes(10);
-  lower_bound = past - base::TimeDelta::FromSeconds(1);
-  upper_bound = past + base::TimeDelta::FromSeconds(1);
+  base::Time past = base::Time::Now() - base::Minutes(10);
+  lower_bound = past - base::Seconds(1);
+  upper_bound = past + base::Seconds(1);
   ASSERT_TRUE(entry->SetDouble(kActiveTimeKey, past.ToDoubleT()));
   base::Time stored_time = entry->GetActiveTime();
   ASSERT_LE(lower_bound, stored_time);

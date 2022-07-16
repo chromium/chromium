@@ -1,0 +1,8 @@
+rootWebArea htmlTag='#document'
+++genericContainer ignored htmlTag='html'
+++++genericContainer htmlTag='body'
+++++++svgRoot htmlTag='svg'
+++++++++group description='Group with circle and text' htmlTag='g' descriptionFrom=svgDescElement
+++++++++++genericContainer htmlTag='text'
+++++++++++++staticText name='hello world'
+++++++++++++++inlineTextBox name='hello world'

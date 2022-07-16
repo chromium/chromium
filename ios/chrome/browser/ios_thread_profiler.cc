@@ -49,7 +49,7 @@ base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
 
 const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
     CallStackProfileParams::Process process) {
-  if (process != CallStackProfileParams::RENDERER_PROCESS)
+  if (process != CallStackProfileParams::Process::kRenderer)
     return base::RepeatingClosure();
   static const base::SampleMetadata process_backgrounded("ProcessBackgrounded");
   return base::BindRepeating(
@@ -137,7 +137,7 @@ std::unique_ptr<IOSThreadProfiler>
 IOSThreadProfiler::CreateAndStartOnMainThread() {
   DCHECK(!g_main_thread_instance);
   auto instance = base::WrapUnique(
-      new IOSThreadProfiler(CallStackProfileParams::MAIN_THREAD));
+      new IOSThreadProfiler(CallStackProfileParams::Thread::kMain));
   if (!g_main_thread_instance)
     g_main_thread_instance = instance.get();
   return instance;
@@ -179,9 +179,9 @@ void IOSThreadProfiler::SetCollectorForChildProcess(
 base::StackSamplingProfiler::SamplingParams
 IOSThreadProfiler::GetSamplingParams() {
   base::StackSamplingProfiler::SamplingParams params;
-  params.initial_delay = base::TimeDelta::FromMilliseconds(0);
-  const base::TimeDelta duration = base::TimeDelta::FromSeconds(30);
-  params.sampling_interval = base::TimeDelta::FromMilliseconds(100);
+  params.initial_delay = base::Milliseconds(0);
+  const base::TimeDelta duration = base::Seconds(30);
+  params.sampling_interval = base::Milliseconds(100);
   params.samples_per_profile = duration / params.sampling_interval;
 
   return params;
@@ -208,7 +208,7 @@ IOSThreadProfiler::GetSamplingParams() {
 IOSThreadProfiler::IOSThreadProfiler(
     CallStackProfileParams::Thread thread,
     scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner)
-    : process_(CallStackProfileParams::BROWSER_PROCESS),
+    : process_(CallStackProfileParams::Process::kBrowser),
       thread_(thread),
       owning_thread_task_runner_(owning_thread_task_runner),
       work_id_recorder_(std::make_unique<WorkIdRecorder>(
@@ -219,8 +219,9 @@ IOSThreadProfiler::IOSThreadProfiler(
   startup_profiler_ = std::make_unique<StackSamplingProfiler>(
       base::GetSamplingProfilerCurrentThreadToken(), sampling_params,
       std::make_unique<CallStackProfileBuilder>(
-          CallStackProfileParams(process_, thread,
-                                 CallStackProfileParams::PROCESS_STARTUP),
+          CallStackProfileParams(
+              process_, thread,
+              CallStackProfileParams::Trigger::kProcessStartup),
           work_id_recorder_.get()),
       CreateCoreUnwindersFactory(),
       GetApplyPerSampleMetadataCallback(process_));
@@ -280,8 +281,9 @@ void IOSThreadProfiler::StartPeriodicSamplingCollection() {
       base::GetSamplingProfilerCurrentThreadToken(),
       IOSThreadProfiler::GetSamplingParams(),
       std::make_unique<CallStackProfileBuilder>(
-          CallStackProfileParams(process_, thread_,
-                                 CallStackProfileParams::PERIODIC_COLLECTION),
+          CallStackProfileParams(
+              process_, thread_,
+              CallStackProfileParams::Trigger::kPeriodicCollection),
           work_id_recorder_.get(),
           base::BindOnce(&IOSThreadProfiler::OnPeriodicCollectionCompleted,
                          owning_thread_task_runner_,

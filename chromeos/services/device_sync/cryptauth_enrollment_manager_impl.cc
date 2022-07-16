@@ -52,8 +52,8 @@ const char kDeviceSoftwarePackage[] = "com.google.chrome.cryptauth";
 std::unique_ptr<SyncScheduler> CreateSyncScheduler(
     SyncScheduler::Delegate* delegate) {
   return std::make_unique<SyncSchedulerImpl>(
-      delegate, base::TimeDelta::FromDays(kEnrollmentRefreshPeriodDays),
-      base::TimeDelta::FromMinutes(kEnrollmentBaseRecoveryPeriodMinutes),
+      delegate, base::Days(kEnrollmentRefreshPeriodDays),
+      base::Minutes(kEnrollmentBaseRecoveryPeriodMinutes),
       kEnrollmentMaxJitterRatio, "CryptAuth Enrollment");
 }
 
@@ -177,7 +177,7 @@ bool CryptAuthEnrollmentManagerImpl::IsEnrollmentValid() const {
   base::Time last_enrollment_time = GetLastEnrollmentTime();
   return !last_enrollment_time.is_null() &&
          (clock_->Now() - last_enrollment_time) <
-             base::TimeDelta::FromDays(kValidEnrollmentPeriodDays);
+             base::Days(kValidEnrollmentPeriodDays);
 }
 
 base::Time CryptAuthEnrollmentManagerImpl::GetLastEnrollmentTime() const {

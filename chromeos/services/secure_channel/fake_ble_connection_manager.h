@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_CONNECTION_MANAGER_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_CONNECTION_MANAGER_H_
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/ble_connection_manager.h"
 #include "chromeos/services/secure_channel/connection_role.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
@@ -20,6 +19,10 @@ namespace secure_channel {
 class FakeBleConnectionManager : public BleConnectionManager {
  public:
   FakeBleConnectionManager();
+
+  FakeBleConnectionManager(const FakeBleConnectionManager&) = delete;
+  FakeBleConnectionManager& operator=(const FakeBleConnectionManager&) = delete;
+
   ~FakeBleConnectionManager() override;
 
   // Make public for testing.
@@ -48,8 +51,6 @@ class FakeBleConnectionManager : public BleConnectionManager {
       ConnectionPriority connection_priority) override;
   void PerformCancelBleListenerConnectionAttempt(
       const DeviceIdPair& device_id_pair) override;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleConnectionManager);
 };
 
 }  // namespace secure_channel

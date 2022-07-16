@@ -150,6 +150,14 @@ security_state::SecurityLevel LocationBarModelImpl::GetSecurityLevel() const {
   return delegate_->GetSecurityLevel();
 }
 
+net::CertStatus LocationBarModelImpl::GetCertStatus() const {
+  // When empty, assume no cert status.
+  if (!ShouldDisplayURL())
+    return 0;
+
+  return delegate_->GetCertStatus();
+}
+
 OmniboxEventProto::PageClassification
 LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source) {
   // We may be unable to fetch the current URL during startup or shutdown when
@@ -192,6 +200,11 @@ const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
 
   if (IsOfflinePage())
     return omnibox::kOfflinePinIcon;
+
+  if (GetSecurityLevel() == security_state::SecurityLevel::SECURE &&
+      delegate_->IsShowingAccuracyTip()) {
+    return omnibox::kHttpIcon;
+  }
 #endif
 
   return location_bar_model::GetSecurityVectorIcon(
@@ -211,7 +224,9 @@ std::u16string LocationBarModelImpl::GetSecureDisplayText() const {
     case security_state::WARNING:
       return l10n_util::GetStringUTF16(IDS_NOT_SECURE_VERBOSE_STATE);
     case security_state::SECURE:
-      return std::u16string();
+      return delegate_->IsShowingAccuracyTip()
+                 ? l10n_util::GetStringUTF16(IDS_ACCURACY_CHECK_VERBOSE_STATE)
+                 : std::u16string();
     case security_state::DANGEROUS: {
       std::unique_ptr<security_state::VisibleSecurityState>
           visible_security_state = delegate_->GetVisibleSecurityState();
@@ -258,4 +273,9 @@ bool LocationBarModelImpl::IsOfflinePage() const {
 
 bool LocationBarModelImpl::ShouldPreventElision() const {
   return delegate_->ShouldPreventElision();
+}
+
+bool LocationBarModelImpl::ShouldUseUpdatedConnectionSecurityIndicators()
+    const {
+  return delegate_->ShouldUseUpdatedConnectionSecurityIndicators();
 }

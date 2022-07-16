@@ -16,9 +16,9 @@
 class Browser;
 
 // Controller class for the tabstrip.  Manages displaying tabs and keeping the
-// display in sync with the TabModel.  This controller is only instantiated on
-// tablet.  The tab strip view itself is a subclass of UIScrollView, which
-// manages scroll offsets and scroll animations.
+// display in sync with a Browser's WebStateList.  This controller is only
+// instantiated on tablet.  The tab strip view itself is a subclass of
+// UIScrollView, which manages scroll offsets and scroll animations.
 @interface TabStripController : NSObject
 
 @property(nonatomic, assign) BOOL highlightsSelectedTab;

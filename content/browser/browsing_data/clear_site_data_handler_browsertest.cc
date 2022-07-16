@@ -169,7 +169,8 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
         storage_partition()->GetCookieManagerForBrowserProcess();
 
     std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-        url, "A=1", base::Time::Now(), absl::nullopt /* server_time */));
+        url, "A=1", base::Time::Now(), absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */));
 
     base::RunLoop run_loop;
     cookie_manager->SetCanonicalCookie(
@@ -824,7 +825,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, ClosedTab) {
 }
 
 // Tests that sending Clear-Site-Data during a service worker installation
-// doesn't fail. (see crbug.com/898465)
+// results in the service worker not installed. (see crbug.com/898465)
 IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
                        ClearSiteDataDuringServiceWorkerInstall) {
   GURL url = embedded_test_server()->GetURL("127.0.0.1", "/");
@@ -833,6 +834,14 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
   delegate()->ExpectClearSiteDataCall(url::Origin::Create(url), false, true,
                                       false);
   SetClearSiteDataHeader("\"storage\"");
+  EXPECT_FALSE(RunScriptAndGetBool("installServiceWorker()"));
+  delegate()->VerifyAndClearExpectations();
+  EXPECT_FALSE(RunScriptAndGetBool("hasServiceWorker()"));
+
+  // Install the service worker again without CSD header to verify that
+  // future network requests are not broken and the service worker
+  // installs correctly.
+  SetClearSiteDataHeader("");
   EXPECT_TRUE(RunScriptAndGetBool("installServiceWorker()"));
   delegate()->VerifyAndClearExpectations();
   EXPECT_TRUE(RunScriptAndGetBool("hasServiceWorker()"));

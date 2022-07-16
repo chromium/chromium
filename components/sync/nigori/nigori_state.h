@@ -7,13 +7,11 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
-#include "components/sync/nigori/nigori.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -263,8 +263,8 @@ bool EsParserAdts::UpdateAudioConfiguration(const uint8_t* adts_header,
   scheme = init_encryption_scheme_;
 #endif
   AudioDecoderConfig audio_decoder_config(
-      kCodecAAC, kSampleFormatS16, channel_layout, extended_samples_per_second,
-      extra_data, scheme);
+      AudioCodec::kAAC, kSampleFormatS16, channel_layout,
+      extended_samples_per_second, extra_data, scheme);
 
   if (!audio_decoder_config.IsValidConfig()) {
     DVLOG(1) << "Invalid config: "

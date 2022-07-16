@@ -56,7 +56,7 @@ export class ViewportScroller {
         ViewportScroller.DRAG_TIMER_INTERVAL_MS_;
     position.y += (this.scrollVelocity_.y * timeAdjustment);
     position.x += (this.scrollVelocity_.x * timeAdjustment);
-    this.viewport_.position = position;
+    this.viewport_.setPosition(position);
     this.lastFrameTime_ = currentFrameTime;
   }
 

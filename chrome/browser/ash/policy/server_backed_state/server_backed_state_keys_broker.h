@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace base {
@@ -37,6 +36,11 @@ class ServerBackedStateKeysBroker {
 
   explicit ServerBackedStateKeysBroker(
       chromeos::SessionManagerClient* session_manager_client);
+
+  ServerBackedStateKeysBroker(const ServerBackedStateKeysBroker&) = delete;
+  ServerBackedStateKeysBroker& operator=(const ServerBackedStateKeysBroker&) =
+      delete;
+
   ~ServerBackedStateKeysBroker();
 
   // Registers a callback to be invoked whenever the state keys get updated.
@@ -93,8 +97,6 @@ class ServerBackedStateKeysBroker {
   StateKeysCallbackList request_callbacks_;
 
   base::WeakPtrFactory<ServerBackedStateKeysBroker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServerBackedStateKeysBroker);
 };
 
 }  // namespace policy

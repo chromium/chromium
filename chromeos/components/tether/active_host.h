@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
@@ -80,6 +79,10 @@ class ActiveHost {
   };
 
   ActiveHost(TetherHostFetcher* tether_host_fetcher, PrefService* pref_service);
+
+  ActiveHost(const ActiveHost&) = delete;
+  ActiveHost& operator=(const ActiveHost&) = delete;
+
   virtual ~ActiveHost();
 
   // Registers the prefs used by this class to the given |registry|.
@@ -156,8 +159,6 @@ class ActiveHost {
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::WeakPtrFactory<ActiveHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveHost);
 };
 
 }  // namespace tether

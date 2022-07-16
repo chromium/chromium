@@ -32,7 +32,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_computed_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unrestricteddouble.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
@@ -60,11 +60,10 @@ void AnimationEffect::EnsureNormalizedTiming() const {
     return;
 
   normalized_ = Timing::NormalizedTiming();
-  if (GetAnimation() && GetAnimation()->timeline() &&
-      GetAnimation()->timeline()->IsProgressBasedTimeline()) {
+  // A valid timeline duration signifies use of a progress based timeline.
+  if (TimelineDuration()) {
     // Normalize timings for progress based timelines
-    normalized_->timeline_duration = GetAnimation()->timeline()->GetDuration();
-    DCHECK(normalized_->timeline_duration);
+    normalized_->timeline_duration = TimelineDuration();
 
     if (timing_.iteration_duration) {
       // Scaling up iteration_duration allows animation effect to be able to
@@ -113,9 +112,8 @@ void AnimationEffect::EnsureNormalizedTiming() const {
       DCHECK(normalized_->start_delay.is_zero() &&
              normalized_->end_delay.is_zero());
 
-      normalized_->iteration_duration =
-          GetAnimation()->timeline()->CalculateIntrinsicIterationDuration(
-              timing_);
+      normalized_->iteration_duration = IntrinsicIterationDuration();
+
       // TODO: add support for progress based timelines and "auto" duration
       // effects
     }
@@ -191,7 +189,7 @@ ComputedEffectTiming* AnimationEffect::getComputedTiming() const {
 void AnimationEffect::updateTiming(OptionalEffectTiming* optional_timing,
                                    ExceptionState& exception_state) {
   if (GetAnimation() && GetAnimation()->timeline() &&
-      GetAnimation()->timeline()->IsProgressBasedTimeline()) {
+      GetAnimation()->timeline()->IsScrollTimeline()) {
     if (optional_timing->hasDuration()) {
       if (optional_timing->duration()->IsUnrestrictedDouble()) {
         double duration =
@@ -267,14 +265,12 @@ absl::optional<Timing::Phase> TimelinePhaseToTimingPhase(
 void AnimationEffect::UpdateInheritedTime(
     absl::optional<AnimationTimeDelta> inherited_time,
     absl::optional<TimelinePhase> inherited_timeline_phase,
+    bool at_progress_timeline_boundary,
+    double inherited_playback_rate,
     TimingUpdateReason reason) const {
-  absl::optional<double> playback_rate = absl::nullopt;
-  if (GetAnimation())
-    playback_rate = GetAnimation()->playbackRate();
   const Timing::AnimationDirection direction =
-      (playback_rate && playback_rate.value() < 0)
-          ? Timing::AnimationDirection::kBackwards
-          : Timing::AnimationDirection::kForwards;
+      (inherited_playback_rate < 0) ? Timing::AnimationDirection::kBackwards
+                                    : Timing::AnimationDirection::kForwards;
 
   absl::optional<Timing::Phase> timeline_phase =
       TimelinePhaseToTimingPhase(inherited_timeline_phase);
@@ -288,8 +284,9 @@ void AnimationEffect::UpdateInheritedTime(
 
   if (needs_update) {
     Timing::CalculatedTiming calculated = SpecifiedTiming().CalculateTimings(
-        inherited_time, timeline_phase, NormalizedTiming(), direction,
-        IsA<KeyframeEffect>(this), playback_rate);
+        inherited_time, timeline_phase, at_progress_timeline_boundary,
+        NormalizedTiming(), direction, IsA<KeyframeEffect>(this),
+        inherited_playback_rate);
 
     const bool was_canceled = calculated.phase != calculated_.phase &&
                               calculated.phase == Timing::kPhaseNone;

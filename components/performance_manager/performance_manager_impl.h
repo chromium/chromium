@@ -14,8 +14,8 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -24,6 +24,7 @@
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
 #include "content/public/browser/browsing_instance_id.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/common/process_type.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -38,6 +39,9 @@ class PageNodeImpl;
 class PerformanceManagerImpl : public PerformanceManager {
  public:
   using FrameNodeCreationCallback = base::OnceCallback<void(FrameNodeImpl*)>;
+
+  PerformanceManagerImpl(const PerformanceManagerImpl&) = delete;
+  PerformanceManagerImpl& operator=(const PerformanceManagerImpl&) = delete;
 
   ~PerformanceManagerImpl() override;
 
@@ -93,11 +97,10 @@ class PerformanceManagerImpl : public PerformanceManager {
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,
       FrameNodeImpl* parent_frame_node,
-      int frame_tree_node_id,
       int render_frame_id,
       const blink::LocalFrameToken& frame_token,
       content::BrowsingInstanceId browsing_instance_id,
-      int32_t site_instance_id,
+      content::SiteInstanceId site_instance_id,
       FrameNodeCreationCallback creation_callback =
           FrameNodeCreationCallback());
   static std::unique_ptr<PageNodeImpl> CreatePageNode(
@@ -185,8 +188,6 @@ class PerformanceManagerImpl : public PerformanceManager {
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PerformanceManagerImpl);
 };
 
 // static

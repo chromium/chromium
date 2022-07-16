@@ -73,11 +73,11 @@ WebGLRenderingContext.texImage2D().
 
       const tex = gl.createTexture();
       gl.bindTexture(gl.TEXTURE_2D, tex);
+
       for (let i = 0; i < frames_to_draw; i++) {
         let frame = await source.getNextFrame();
 
         const format = gl.RGBA;
-        const srcFormat = gl.RGBA;
         gl.texImage2D(gl.TEXTURE_2D, 0, format, format, gl.UNSIGNED_BYTE, frame);
         gl.generateMipmap(gl.TEXTURE_2D);
 
@@ -85,11 +85,31 @@ WebGLRenderingContext.texImage2D().
         gl.uniform1i(texLoc, 0);
 
         gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+        gl.finish();
 
+        switch (source_type) {
+          case 'camera': {
+            if (arg.validate_camera_frames)
+              checkFourColorsFrame(gl, canvas.width, canvas.height, 5);
+            else
+              TEST.log("Skip render result validation");
+            break;
+          }
+          case 'offscreen':
+          case 'capture': {
+            checkFourColorsFrame(gl, canvas.width, canvas.height, 5);
+            break;
+          }
+          case 'hw_decoder':
+          case 'sw_decoder': {
+            checkFourColorsFrame(gl, canvas.width, canvas.height, 15);
+            break;
+          }
+          default:
+            TEST.reportFailure("Unexpected frame source.");
+        }
         frame.close();
         await waitForNextFrame();
-        // TODO(crbug.com/1206000): Take snapshot of the canvas and
-        // compare it to the frame.
       }
     }
   </script>

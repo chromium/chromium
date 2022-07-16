@@ -43,7 +43,6 @@ source_set("autofill") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/translate:translate",
     "//ios/chrome/browser/ui/autofill/cells",
-    "//ios/chrome/browser/ui/autofill/form_input_accessory:form_input_accessory_ui",
     "//ios/chrome/browser/ui/autofill/manual_fill:manual_fill",
     "//ios/chrome/browser/ui/autofill/manual_fill:manual_fill_ui",
     "//ios/chrome/browser/ui/collection_view/cells",
@@ -52,7 +51,8 @@ source_set("autofill") {
     "//ios/chrome/browser/web_state_list:web_state_list",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common",
-    "//ios/public/provider/chrome/browser",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
+    "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
     "//ios/third_party/material_components_ios",
     "//ios/web/common",
     "//ios/web/public/deprecated",
@@ -112,7 +112,6 @@ source_set("autofill_ui") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/image_util",
-    "//ios/chrome/browser/ui/infobars:infobars_ui",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
@@ -157,7 +156,6 @@ source_set("autofill_metrics") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -172,6 +170,7 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
+    "//components/autofill/core/common:features",
     "//components/autofill/ios/browser:autofill_test_bundle_data",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
@@ -191,7 +190,6 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -215,7 +213,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/test/app:test_support",
-    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
     "//ios/web/public:public",
     "//ios/web/public/js_messaging",
     "//services/network:test_support",
@@ -223,7 +221,6 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",

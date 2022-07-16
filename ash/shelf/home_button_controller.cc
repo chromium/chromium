@@ -27,8 +27,7 @@
 namespace ash {
 namespace {
 
-constexpr base::TimeDelta kAssistantAnimationDelay =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kAssistantAnimationDelay = base::Milliseconds(200);
 
 // Returns true if the button should appear activatable.
 bool CanActivate(int64_t display_id) {

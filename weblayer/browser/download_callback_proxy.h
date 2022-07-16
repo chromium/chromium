@@ -20,6 +20,10 @@ class Profile;
 class DownloadCallbackProxy : public DownloadDelegate {
  public:
   DownloadCallbackProxy(JNIEnv* env, jobject obj, Profile* profile);
+
+  DownloadCallbackProxy(const DownloadCallbackProxy&) = delete;
+  DownloadCallbackProxy& operator=(const DownloadCallbackProxy&) = delete;
+
   ~DownloadCallbackProxy() override;
 
   // DownloadDelegate:
@@ -41,8 +45,6 @@ class DownloadCallbackProxy : public DownloadDelegate {
  private:
   Profile* profile_;
   base::android::ScopedJavaGlobalRef<jobject> java_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadCallbackProxy);
 };
 
 }  // namespace weblayer

@@ -145,6 +145,13 @@ class GPU_EXPORT SharedImageInterface {
                                  std::unique_ptr<gfx::GpuFence> acquire_fence,
                                  const Mailbox& mailbox) = 0;
 
+  // Update the GpuMemoryBuffer associated with the shared image |mailbox| after
+  // |sync_token| is released. This needed when the GpuMemoryBuffer is backed by
+  // shared memory on platforms like Windows where the renderer cannot create
+  // native GMBs.
+  virtual void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
+                                     const Mailbox& mailbox);
+
   // Destroys the shared image, unregistering its mailbox, after |sync_token|
   // has been released. After this call, the mailbox can't be used to reference
   // the image any more, however if the image was imported into other APIs,

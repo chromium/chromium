@@ -151,14 +151,6 @@ component("aura") {
     ]
   }
 
-  if (use_x11) {
-    public_deps += [ "//ui/base/x" ]
-    deps += [
-      "//ui/events/platform/x11",
-      "//ui/platform_window/x11",
-    ]
-  }
-
   if (is_win) {
     sources -= [ "input_state_lookup.cc" ]
 
@@ -222,9 +214,6 @@ static_library("test_support") {
     "test/window_test_api.h",
   ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   public_deps = [
     ":aura",
 
@@ -256,23 +245,6 @@ static_library("test_support") {
 
   if (is_win) {
     sources += [ "test/ui_controls_factory_aurawin.cc" ]
-  }
-
-  if (is_linux || is_chromeos) {
-    sources += [ "test/ui_controls_factory_aura_linux.cc" ]
-  }
-
-  if (use_x11) {
-    sources += [
-      "test/ui_controls_aurax11.cc",
-      "test/ui_controls_aurax11.h",
-      "test/x11_event_sender.h",
-    ]
-
-    deps += [
-      "//ui/events/platform/x11",
-      "//ui/gfx/x",
-    ]
   }
 
   if (use_ozone) {
@@ -317,10 +289,6 @@ executable("aura_demo") {
     "//ui/gl",
     "//ui/gl/init",
   ]
-
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
-  }
 }
 
 test("aura_unittests") {
@@ -397,6 +365,7 @@ source_set("aura_interactive_ui_tests") {
       "//base/test:test_support",
       "//mojo/core/embedder",
       "//testing/gtest",
+      "//ui/base:test_support",
       "//ui/base/ime/init",
       "//ui/display:display",
       "//ui/gfx",

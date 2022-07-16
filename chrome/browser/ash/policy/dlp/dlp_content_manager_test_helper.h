@@ -7,9 +7,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
-#include "chrome/browser/ash/policy/dlp/dlp_content_restriction_set.h"
-
-class GURL;
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 
 namespace content {
 class WebContents;
@@ -34,8 +32,6 @@ class DlpContentManagerTestHelper {
   void DestroyWebContents(content::WebContents* web_contents);
 
   base::TimeDelta GetPrivacyScreenOffDelay() const;
-
-  DlpContentRestrictionSet GetRestrictionSetForURL(const GURL& url) const;
 
   DlpContentManager* GetContentManager() const;
   DlpReportingManager* GetReportingManager() const;

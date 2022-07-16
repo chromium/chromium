@@ -14,6 +14,10 @@
 
 class DesktopMediaListObserver;
 
+namespace content {
+class WebContents;
+}
+
 // DesktopMediaList provides the list of desktop media source (screens, windows,
 // tabs), and their thumbnails, to the desktop media picker dialog. It
 // transparently updates the list in the background, and notifies the desktop
@@ -33,8 +37,18 @@ class DesktopMediaList {
     kCurrentTab,   // TYPE_WEB_CONTENTS of the current tab.
   };
 
+  // A WebContents filter can be applied to DesktopMediaList::Type::kWebContents
+  // MediaList object in order to provide a way to filter out any WebContents
+  // that shouldn't be included.
+  using WebContentsFilter =
+      base::RepeatingCallback<bool(content::WebContents*)>;
+
   // Struct used to represent each entry in the list.
   struct Source {
+    Source();
+    Source(const Source& other_source);
+    ~Source();
+
     // Id of the source.
     content::DesktopMediaID id;
 
@@ -43,6 +57,10 @@ class DesktopMediaList {
 
     // The thumbnail for the source.
     gfx::ImageSkia thumbnail;
+
+    // A preview for this source, used when both a thumbnail and preview are
+    // used. Currently only the case in the tab_desktop_media_list.
+    gfx::ImageSkia preview;
   };
 
   using UpdateCallback = base::OnceClosure;
@@ -82,6 +100,11 @@ class DesktopMediaList {
   virtual const Source& GetSource(int index) const = 0;
 
   virtual Type GetMediaListType() const = 0;
+
+  // Set or clear the id of a single source which needs a preview image
+  // generating in addition to its thumbnail.
+  virtual void SetPreviewedSource(
+      const absl::optional<content::DesktopMediaID>& id) = 0;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_H_

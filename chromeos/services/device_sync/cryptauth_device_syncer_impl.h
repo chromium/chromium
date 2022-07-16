@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -84,6 +83,10 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
    private:
     static Factory* test_factory_;
   };
+
+  CryptAuthDeviceSyncerImpl(const CryptAuthDeviceSyncerImpl&) = delete;
+  CryptAuthDeviceSyncerImpl& operator=(const CryptAuthDeviceSyncerImpl&) =
+      delete;
 
   ~CryptAuthDeviceSyncerImpl() override;
 
@@ -224,8 +227,6 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
   std::unique_ptr<base::OneShotTimer> timer_;
 
   base::WeakPtrFactory<CryptAuthDeviceSyncerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceSyncerImpl);
 };
 
 }  // namespace device_sync

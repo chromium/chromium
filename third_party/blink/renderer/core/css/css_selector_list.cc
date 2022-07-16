@@ -140,7 +140,7 @@ String CSSSelectorList::SelectorsText() const {
     result.Append(s->SelectorText());
   }
 
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 }  // namespace blink

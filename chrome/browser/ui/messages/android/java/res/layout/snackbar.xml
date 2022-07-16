@@ -65,12 +65,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="@dimen/snackbar_text_view_margin"
             android:layout_marginTop="14dp"
             android:layout_marginBottom="14dp"
             android:layout_weight="1"
             android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary.Light" />
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline.Light" />
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/snackbar_button"

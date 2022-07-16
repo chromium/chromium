@@ -72,6 +72,11 @@ class ShellDesktopControllerAura
       public KeepAliveStateObserver {
  public:
   explicit ShellDesktopControllerAura(content::BrowserContext* browser_context);
+
+  ShellDesktopControllerAura(const ShellDesktopControllerAura&) = delete;
+  ShellDesktopControllerAura& operator=(const ShellDesktopControllerAura&) =
+      delete;
+
   ~ShellDesktopControllerAura() override;
 
   // DesktopController:
@@ -176,8 +181,6 @@ class ShellDesktopControllerAura
 
   // Non-null between WillRunMainMessageLoop() and MaybeQuit().
   base::OnceClosure quit_when_idle_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellDesktopControllerAura);
 };
 
 }  // namespace extensions

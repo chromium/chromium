@@ -81,9 +81,9 @@ class WebTimeCalculationBrowserTest : public MixinBasedInProcessBrowserTest {
 
   app_time::AppTimeLimitsAllowlistPolicyBuilder builder_;
 
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kChild,
-      embedded_test_server(), this};
+  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,
+                                          LoggedInUserMixin::LogInType::kChild,
+                                          embedded_test_server(), this};
 };
 
 void WebTimeCalculationBrowserTest::SetUp() {

@@ -15,9 +15,10 @@ class OneEuroFilterTest : public InputFilterTest {
  public:
   explicit OneEuroFilterTest() {}
 
-  void SetUp() override { filter_ = std::make_unique<OneEuroFilter>(1, 1); }
+  OneEuroFilterTest(const OneEuroFilterTest&) = delete;
+  OneEuroFilterTest& operator=(const OneEuroFilterTest&) = delete;
 
-  DISALLOW_COPY_AND_ASSIGN(OneEuroFilterTest);
+  void SetUp() override { filter_ = std::make_unique<OneEuroFilter>(1, 1); }
 };
 
 TEST_F(OneEuroFilterTest, TestClone) {

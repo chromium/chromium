@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!--
+This file cannot be upstreamed to WPT until:
+* The test changes to use a method to trigger cancellation of prerendering that
+  is guaranteed by the specification. Currently the test cancels prerendering
+  by performing a main frame navigation after the initial prerendering
+  navigation.
+* `unload` event handling matches what the specification expects. The current
+  specification expects that the unload event handler is never fired, and the
+  test passes whether or not it is fired.
+* `pageshow` and `pagehide` behaviors during prerendering is clearly defined
+  in the specification. This test just checks current behaviors.
+  (https://crbug.com/1222551)
+-->
+<title>unload event handlers</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/unload-utils.js"></script>
+<script>
+  promise_test(async t => {
+    const gotMessages = waitChannelMessage('Done');
+    const url = 'resources/unload-on-prerender-main-frame-navigation.html';
+    window.open(url, '_blank', 'noopener');
+    const result = await gotMessages;
+
+    const expected = [
+      // If `optional` is specified as true, that entry may not appear.
+      { message: 'load start' },
+      { message: 'load prerendering in prerendering' },
+      { message: 'request fallback' },
+      // TODO(https://crbug.com/1200241): `pagehide` and `unload` may not run
+      // sometimes for unknown reason. Clarify the reason and fix it.
+      { message: 'pagehide main-frame in prerendering', optional: true },
+      { message: 'unload main-frame in prerendering', optional: true },
+      { message: 'load prerendering' },
+      { message: 'pagehide main-frame' },
+      { message: 'visibilitychange main-frame' },
+      { message: 'unload main-frame' },
+      { message: 'load another-page' },
+      { message: 'Done' },
+    ];
+    let offset = 0;
+    assert_less_than_equal(result.length, expected.length);
+    for (let i = 0; i < expected.length; ++i) {
+      assert_less_than(offset, result.length);
+      if (expected[i].optional && expected[i].message != result[offset])
+        continue;
+      assert_equals(result[offset], expected[i].message, `messages${offset}`);
+      offset++;
+    }
+    assert_equals(offset, result.length);
+  }, 'unload on main frame navigation to cancel prerendering');
+</script>

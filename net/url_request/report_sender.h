@@ -46,6 +46,9 @@ class NET_EXPORT ReportSender
   explicit ReportSender(URLRequestContext* request_context,
                         net::NetworkTrafficAnnotationTag traffic_annotation);
 
+  ReportSender(const ReportSender&) = delete;
+  ReportSender& operator=(const ReportSender&) = delete;
+
   ~ReportSender() override;
 
   // TransportSecurityState::ReportSenderInterface implementation.
@@ -64,8 +67,6 @@ class NET_EXPORT ReportSender
   net::URLRequestContext* const request_context_;
   std::map<URLRequest*, std::unique_ptr<URLRequest>> inflight_requests_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportSender);
 };
 
 }  // namespace net

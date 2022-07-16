@@ -89,7 +89,7 @@ class AssistantPeekHeightCoordinator {
         // Show only actions if we are in the peek state and peek mode is HANDLE_HEADER_CAROUSELS.
         mBottomSheetController.addObserver(new EmptyBottomSheetObserver() {
             @Override
-            public void onSheetStateChanged(int newState) {
+            public void onSheetStateChanged(int newState, int reason) {
                 maybeShowOnlyCarousels();
             }
         });

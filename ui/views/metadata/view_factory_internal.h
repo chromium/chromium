@@ -8,10 +8,13 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/views/views_export.h"
@@ -122,17 +125,23 @@ class ClassPropertyUniquePtrSetter : public PropertySetterBase {
   std::unique_ptr<TValue> value_;
 };
 
-template <typename TClass, typename TSig, TSig Set>
+template <typename TClass, typename TSig, TSig Set, typename... Args>
 class ClassMethodCaller : public PropertySetterBase {
  public:
-  ClassMethodCaller() = default;
+  explicit ClassMethodCaller(Args... args)
+      : args_(std::make_tuple<Args...>(std::forward<Args>(args)...)) {}
   ClassMethodCaller(const ClassMethodCaller&) = delete;
   ClassMethodCaller& operator=(const ClassMethodCaller&) = delete;
   ~ClassMethodCaller() override = default;
 
-  void SetProperty(View* obj) override { (static_cast<TClass*>(obj)->*Set)(); }
+  void SetProperty(View* obj) override {
+    base::apply(
+        Set, std::tuple_cat(std::make_tuple(static_cast<TClass*>(obj)), args_));
+  }
 
  private:
+  using Parameters = std::tuple<Args...>;
+  Parameters args_;
 };
 
 class VIEWS_EXPORT ViewBuilderCore {
@@ -146,7 +155,10 @@ class VIEWS_EXPORT ViewBuilderCore {
   virtual std::unique_ptr<ViewBuilderCore> Release() WARN_UNUSED_RESULT = 0;
 
  protected:
-  using ChildList = std::vector<std::unique_ptr<ViewBuilderCore>>;
+  // Vector of child view builders. If the optional index is included it will be
+  // passed to View::AddChildViewAt().
+  using ChildList = std::vector<
+      std::pair<std::unique_ptr<ViewBuilderCore>, absl::optional<size_t>>>;
   using PropertyList = std::vector<std::unique_ptr<PropertySetterBase>>;
 
   void AddPropertySetter(std::unique_ptr<PropertySetterBase> setter);

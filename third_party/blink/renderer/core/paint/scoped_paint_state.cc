@@ -20,9 +20,8 @@ void ScopedPaintState::AdjustForPaintOffsetTranslation(
     // are painting table row background behind a cell having paint offset
     // translation.
     input_paint_info_.context.Save();
-    FloatSize translation = paint_offset_translation.Translation2D();
-    input_paint_info_.context.Translate(translation.Width(),
-                                        translation.Height());
+    gfx::Vector2dF translation = paint_offset_translation.Translation2D();
+    input_paint_info_.context.Translate(translation.x(), translation.y());
     paint_offset_translation_as_drawing_ = true;
   } else {
     chunk_properties_.emplace(

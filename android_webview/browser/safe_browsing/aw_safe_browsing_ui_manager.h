@@ -46,6 +46,9 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
   // Construction needs to happen on the UI thread.
   AwSafeBrowsingUIManager();
 
+  AwSafeBrowsingUIManager(const AwSafeBrowsingUIManager&) = delete;
+  AwSafeBrowsingUIManager& operator=(const AwSafeBrowsingUIManager&) = delete;
+
   // Gets the correct ErrorUiType for the web contents
   int GetErrorUiType(content::WebContents* web_contents) const;
 
@@ -87,8 +90,6 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_on_io_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       shared_url_loader_factory_on_io_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwSafeBrowsingUIManager);
 };
 
 }  // namespace android_webview

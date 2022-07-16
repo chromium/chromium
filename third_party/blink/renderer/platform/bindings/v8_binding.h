@@ -46,6 +46,8 @@
 
 namespace blink {
 
+class ExceptionState;
+
 namespace bindings {
 class DictionaryBase;
 }
@@ -344,6 +346,38 @@ enum class NamedPropertyDeleterResult {
 // script is executing (e.g. during parsing of a meta tag in markup), or the
 // script context is otherwise unavailable.
 PLATFORM_EXPORT String GetCurrentScriptUrl(int max_stack_depth);
+
+namespace bindings {
+
+struct V8PropertyDescriptorBag {
+ private:
+  STACK_ALLOCATED();
+
+ public:
+  bool has_enumerable = false;
+  bool has_configurable = false;
+  bool has_value = false;
+  bool has_writable = false;
+  bool has_get = false;
+  bool has_set = false;
+
+  bool enumerable = false;
+  bool configurable = false;
+  bool writable = false;
+  v8::Local<v8::Value> value;
+  v8::Local<v8::Value> get;
+  v8::Local<v8::Value> set;
+};
+
+// ToPropertyDescriptor
+// https://tc39.es/ecma262/#sec-topropertydescriptor
+PLATFORM_EXPORT void V8ObjectToPropertyDescriptor(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> descriptor_object,
+    V8PropertyDescriptorBag& descriptor_bag,
+    ExceptionState& exception_state);
+
+}  // namespace bindings
 
 }  // namespace blink
 

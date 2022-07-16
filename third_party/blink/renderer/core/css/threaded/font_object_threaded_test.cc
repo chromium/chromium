@@ -40,7 +40,7 @@ TSAN_TEST(FontObjectThreadedTest, GetFontDefinition) {
 
     EXPECT_EQ(desc.SpecifiedSize(), 15);
     EXPECT_EQ(desc.ComputedSize(), 15);
-    EXPECT_EQ(desc.Family().Family(), "Ahem");
+    EXPECT_EQ(desc.Family().FamilyName(), "Ahem");
   });
 }
 

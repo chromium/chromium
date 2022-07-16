@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_VIDEO_FRAME_MAPPER_H_
 #define MEDIA_GPU_VIDEO_FRAME_MAPPER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -18,6 +17,9 @@ namespace media {
 // VideoFrameMapper should be created by using VideoFrameMapperFactory.
 class MEDIA_GPU_EXPORT VideoFrameMapper {
  public:
+  VideoFrameMapper(const VideoFrameMapper&) = delete;
+  VideoFrameMapper& operator=(const VideoFrameMapper&) = delete;
+
   virtual ~VideoFrameMapper() = default;
 
   // Maps data referred by |video_frame| and creates a VideoFrame whose dtor
@@ -33,8 +35,6 @@ class MEDIA_GPU_EXPORT VideoFrameMapper {
 
   // The allowed pixel format of video frames on Map().
   VideoPixelFormat format_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameMapper);
 };
 
 }  // namespace media

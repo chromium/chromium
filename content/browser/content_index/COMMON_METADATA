@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>ContentIndexing"
+}
+team_email: "platform-capabilities@chromium.org"

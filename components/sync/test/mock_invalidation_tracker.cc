@@ -25,7 +25,7 @@ MockInvalidationTracker::IssueInvalidation(int64_t version,
 
 MockInvalidationTracker::MockInvalidationTracker() : next_id_(0) {}
 
-MockInvalidationTracker::~MockInvalidationTracker() {}
+MockInvalidationTracker::~MockInvalidationTracker() = default;
 
 void MockInvalidationTracker::Acknowledge(int invalidation_id) {
   acknowledged_.insert(invalidation_id);

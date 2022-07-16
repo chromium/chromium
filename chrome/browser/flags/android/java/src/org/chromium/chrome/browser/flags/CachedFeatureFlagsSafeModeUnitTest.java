@@ -16,8 +16,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.CachedFlagsSafeMode.Behavior;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,6 +47,7 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         CachedFeatureFlags.swapDefaultsForTesting(mDefaultsSwapped);
 
         FeatureList.setTestFeatures(null);
+        CachedFlagsSafeMode.clearDiskForTesting();
     }
 
     @Test
@@ -103,8 +102,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Crash streak is 2. Engage Safe Mode.
         // Safe values are false/true, and are used during this run.
         // Cached values remain true(crashy)/true, but are not used because Safe Mode is engaged.
-        // TODO(crbug.com/1217708): Assert CachedFeatureFlags.getSafeModeBehaviorForTesting()) is
-        // Behavior.ENGAGED_WITH_SAFE_VALUES.
+        assertEquals(Behavior.ENGAGED_WITH_SAFE_VALUES,
+                CachedFeatureFlags.getSafeModeBehaviorForTesting());
         // TODO(crbug.com/1217708): Assert cached flags values are false/true.
         endCleanRun(false, false);
         // Cached values became false/false, cached from native.
@@ -271,8 +270,10 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Cached values became true(crashy)/true.
 
         // Pretend safe values are from an older version
-        SharedPreferencesManager.getInstance().writeString(
-                ChromePreferenceKeys.FLAGS_CACHED_SAFE_VALUES_VERSION, "1.0.0.0");
+        CachedFlagsSafeMode.getSafeValuePreferences()
+                .edit()
+                .putString(CachedFlagsSafeMode.PREF_SAFE_VALUES_VERSION, "1.0.0.0")
+                .apply();
 
         startRun();
         // Crash streak is 0. Do not engage Safe Mode.

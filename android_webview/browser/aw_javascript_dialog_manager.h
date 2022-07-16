@@ -13,6 +13,11 @@ namespace android_webview {
 class AwJavaScriptDialogManager : public content::JavaScriptDialogManager {
  public:
   AwJavaScriptDialogManager();
+
+  AwJavaScriptDialogManager(const AwJavaScriptDialogManager&) = delete;
+  AwJavaScriptDialogManager& operator=(const AwJavaScriptDialogManager&) =
+      delete;
+
   ~AwJavaScriptDialogManager() override;
 
   // Overridden from content::JavaScriptDialogManager:
@@ -29,9 +34,6 @@ class AwJavaScriptDialogManager : public content::JavaScriptDialogManager {
                              DialogClosedCallback callback) override;
   void CancelDialogs(content::WebContents* web_contents,
                      bool reset_state) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AwJavaScriptDialogManager);
 };
 
 }  // namespace android_webview

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_PAYMENT_HANDLER_NAVIGATION_THROTTLE_H_
 #define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_HANDLER_NAVIGATION_THROTTLE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 

@@ -16,7 +16,7 @@ import './customize_modules.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BackgroundSelection, BackgroundSelectionType, CustomizeDialogPage} from './customize_dialog_types.js';
+import {CustomizeDialogPage} from './customize_dialog_types.js';
 import {I18nBehavior, loadTimeData} from './i18n_setup.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {createScrollBorders} from './utils.js';
@@ -49,17 +49,6 @@ class CustomizeDialogElement extends mixinBehaviors
 
   static get properties() {
     return {
-      /**
-       * This is the background selection which is two-way bound to ntp-app for
-       * previewing the background and ntp-customize-background which makes the
-       * image and no background selections.
-       * @type {!BackgroundSelection}
-       */
-      backgroundSelection: {
-        type: Object,
-        notify: true,
-      },
-
       /** @type {!newTabPage.mojom.Theme} */
       theme: Object,
 
@@ -83,8 +72,7 @@ class CustomizeDialogElement extends mixinBehaviors
       /** @private */
       isRefreshToggleChecked_: {
         type: Boolean,
-        computed: `computeIsRefreshToggleChecked_(theme, selectedCollection_,
-            backgroundSelection)`,
+        computed: `computeIsRefreshToggleChecked_(theme, selectedCollection_)`,
       },
 
       /** @private */
@@ -107,7 +95,6 @@ class CustomizeDialogElement extends mixinBehaviors
     this.pageHandler_ = NewTabPageProxy.getInstance().handler;
     /** @private {!Array<!IntersectionObserver>} */
     this.intersectionObservers_ = [];
-    this.backgroundSelection = {type: BackgroundSelectionType.NO_SELECTION};
   }
 
   /** @override */
@@ -136,9 +123,9 @@ class CustomizeDialogElement extends mixinBehaviors
 
   /** @private */
   onCancel_() {
+    this.$.backgrounds.revertBackgroundChanges();
     /** @type {CustomizeThemesElement} */ (this.$.customizeThemes)
         .revertThemeChanges();
-    this.backgroundSelection = {type: BackgroundSelectionType.NO_SELECTION};
   }
 
   /** @private */
@@ -149,35 +136,15 @@ class CustomizeDialogElement extends mixinBehaviors
   }
 
   /**
-   * The |backgroundSelection| is used in ntp-app to preview the image and has
-   * precedence over the theme background setting. |backgroundSelection| is not
-   * reset because it takes time for the theme to update, and after the update
-   * the theme and |backgroundSelection| are the same. By not resetting the
-   * value here, ntp-app can reset it if needed (other theme update). This
-   * prevents a flicker between |backgroundSelection| and the previous theme
-   * background setting.
    * @private
    */
   onDoneClick_() {
+    this.$.backgrounds.confirmBackgroundChanges();
     /** @type {CustomizeThemesElement} */ (this.$.customizeThemes)
         .confirmThemeChanges();
     this.shadowRoot.querySelector('ntp-customize-shortcuts').apply();
     if (this.modulesEnabled_) {
       this.shadowRoot.querySelector('ntp-customize-modules').apply();
-    }
-    switch (this.backgroundSelection.type) {
-      case BackgroundSelectionType.NO_BACKGROUND:
-        this.pageHandler_.setNoBackgroundImage();
-        break;
-      case BackgroundSelectionType.IMAGE:
-        const {attribution1, attribution2, attributionUrl, imageUrl} =
-            assert(this.backgroundSelection.image);
-        this.pageHandler_.setBackgroundImage(
-            attribution1, attribution2, attributionUrl, imageUrl);
-        break;
-      case BackgroundSelectionType.DAILY_REFRESH:
-        this.pageHandler_.setDailyRefreshCollectionId(
-            assert(this.backgroundSelection.dailyRefreshCollectionId));
     }
     this.pageHandler_.onCustomizeDialogAction(
         newTabPage.mojom.CustomizeDialogAction.kDoneClicked);
@@ -210,15 +177,8 @@ class CustomizeDialogElement extends mixinBehaviors
     if (!this.selectedCollection_) {
       return false;
     }
-    switch (this.backgroundSelection.type) {
-      case BackgroundSelectionType.NO_SELECTION:
-        return !!this.theme &&
-            this.selectedCollection_.id === this.theme.dailyRefreshCollectionId;
-      case BackgroundSelectionType.DAILY_REFRESH:
-        return this.selectedCollection_.id ===
-            this.backgroundSelection.dailyRefreshCollectionId;
-    }
-    return false;
+    return !!this.theme &&
+        this.selectedCollection_.id === this.theme.dailyRefreshCollectionId;
   }
 
   /**
@@ -241,12 +201,10 @@ class CustomizeDialogElement extends mixinBehaviors
   /** @private */
   onBackgroundDailyRefreshToggleChange_() {
     if (this.$.refreshToggle.checked) {
-      this.backgroundSelection = {
-        type: BackgroundSelectionType.DAILY_REFRESH,
-        dailyRefreshCollectionId: this.selectedCollection_.id,
-      };
+      this.pageHandler_.setDailyRefreshCollectionId(
+          this.selectedCollection_.id);
     } else {
-      this.backgroundSelection = {type: BackgroundSelectionType.NO_BACKGROUND};
+      this.pageHandler_.setDailyRefreshCollectionId('');
     }
     this.pageHandler_.onCustomizeDialogAction(
         newTabPage.mojom.CustomizeDialogAction

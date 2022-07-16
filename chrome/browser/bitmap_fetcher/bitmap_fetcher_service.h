@@ -9,8 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/containers/mru_cache.h"
-#include "base/macros.h"
+#include "base/containers/lru_cache.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -48,6 +47,10 @@ class BitmapFetcherService : public KeyedService, public BitmapFetcherDelegate {
   };
 
   explicit BitmapFetcherService(content::BrowserContext* context);
+
+  BitmapFetcherService(const BitmapFetcherService&) = delete;
+  BitmapFetcherService& operator=(const BitmapFetcherService&) = delete;
+
   ~BitmapFetcherService() override;
 
   // Cancels a request, if it is still in-flight.
@@ -124,15 +127,13 @@ class BitmapFetcherService : public KeyedService, public BitmapFetcherDelegate {
 
     std::unique_ptr<const SkBitmap> bitmap;
   };
-  base::MRUCache<GURL, std::unique_ptr<CacheEntry>> cache_;
+  base::LRUCache<GURL, std::unique_ptr<CacheEntry>> cache_;
 
   // Current request ID to be used.
   int current_request_id_;
 
   // Browser context this service is active for.
   content::BrowserContext* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(BitmapFetcherService);
 };
 
 #endif  // CHROME_BROWSER_BITMAP_FETCHER_BITMAP_FETCHER_SERVICE_H_

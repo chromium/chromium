@@ -23,10 +23,10 @@
 #include "gtest/gtest.h"
 #include "maldoca/base/digest.h"
 #include "maldoca/base/file.h"
-#include "maldoca/base/get_runfiles_dir.h"
 #include "maldoca/base/logging.h"
 #include "maldoca/base/testing/protocol-buffer-matchers.h"
 #include "maldoca/base/testing/status_matchers.h"
+#include "maldoca/base/testing/test_utils.h"
 #include "maldoca/service/common/office_processing_component.h"
 
 #ifndef MALDOCA_CHROME
@@ -39,13 +39,9 @@ namespace maldoca {
 namespace {
 
 using ::maldoca::testing::EqualsProto;
+using ::maldoca::testing::ServiceTestFilename;
 using ::maldoca::testing::proto::IgnoringRepeatedFieldOrdering;
 using ::testing::Test;
-
-std::string TestFilename(absl::string_view filename) {
-  return file::JoinPath(GetRunfilesDir(),
-                        absl::StrCat("maldoca/service/testdata/", filename));
-}
 
 class ProcesDocTest : public Test {
  protected:
@@ -58,7 +54,7 @@ class ProcesDocTest : public Test {
   }
 #endif
 
-  void SetupPipeline(HandlerConfig config) {
+  void SetupPipeline(const HandlerConfig &config) {
 #ifndef MALDOCA_CHROME
     pdf_parser_vector_.push_back(
         std::make_unique<PdfParserHandler>("Parser", &processor_));
@@ -86,7 +82,8 @@ class ProcesDocTest : public Test {
                               absl::string_view ext) {
     std::string input_file_name = absl::StrCat(file_base, ".", ext);
     std::string input;
-    MALDOCA_ASSERT_OK(file::GetContents(TestFilename(input_file_name), &input));
+    MALDOCA_ASSERT_OK(
+        testing::GetTestContents(ServiceTestFilename(input_file_name), &input));
 
 #ifndef MALDOCA_CHROME
     pdf_pipeline_.ResetPipelineData();
@@ -122,15 +119,17 @@ class ProcesDocTest : public Test {
         absl::StrCat(file_base, ".parsed.textproto");
 
     ParsedDocument expected_parsed_doc;
-    MALDOCA_ASSERT_OK(file::GetTextProto(
-        TestFilename(expected_parsed_doc_file_name), &expected_parsed_doc));
+    MALDOCA_ASSERT_OK(
+        file::GetTextProto(ServiceTestFilename(expected_parsed_doc_file_name),
+                           &expected_parsed_doc));
 
     std::string expected_doc_features_file_name =
         absl::StrCat(file_base, ".features.textproto");
 
     DocumentFeatures expected_doc_features;
-    MALDOCA_ASSERT_OK(file::GetTextProto(
-        TestFilename(expected_doc_features_file_name), &expected_doc_features));
+    MALDOCA_ASSERT_OK(
+        file::GetTextProto(ServiceTestFilename(expected_doc_features_file_name),
+                           &expected_doc_features));
 
 #ifdef MALDOCA_CHROME
     // remove vba features from the expected
@@ -199,10 +198,12 @@ TEST_F(ProcesDocTest, CorrectlyParse) {
   HandlerConfig config;
   SetupPipeline(config);
   ValidateProcessedProto(
-      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
+      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_"
+      "0x42_encoded",
       "doc");
   ValidateProcessedProto(
-      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d",
+      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_"
+      "0x42_encoded",
       "docx");
 #ifndef MALDOCA_CHROME
   ValidateProcessedProto("image_and_text", "pdf");
@@ -217,13 +218,24 @@ TEST_F(ProcesDocTest, CorrectlyParse_Sandbox) {
   config.mutable_parser_config()->set_use_sandbox(true);
   SetupPipeline(config);
   ValidateProcessedProto(
-      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
+      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_"
+      "0x42_encoded",
       "doc");
   ValidateProcessedProto(
-      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d",
+      "c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d_xor_"
+      "0x42_encoded",
       "docx");
   ValidateProcessedProto("image_and_text", "pdf");
 }
 #endif
 }  // namespace
 }  // namespace maldoca
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+#ifdef MALDOCA_CHROME
+  // mini_chromium needs InitLogging
+  maldoca::InitLogging();
+#endif
+  return RUN_ALL_TESTS();
+}

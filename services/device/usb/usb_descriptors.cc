@@ -126,7 +126,8 @@ void OnReadConfigDescriptorHeader(scoped_refptr<UsbDeviceHandle> device_handle,
                                   UsbTransferStatus status,
                                   scoped_refptr<base::RefCountedBytes> header,
                                   size_t length) {
-  if (status == UsbTransferStatus::COMPLETED && length == 4) {
+  if (status == UsbTransferStatus::COMPLETED &&
+      length == kConfigurationDescriptorLength) {
     const uint8_t* data = header->front();
     uint16_t total_length = data[2] | data[3] << 8;
     auto buffer = base::MakeRefCounted<base::RefCountedBytes>(total_length);
@@ -174,7 +175,8 @@ void OnReadDeviceDescriptor(
       base::BindOnce(OnDoneReadingConfigDescriptors, device_handle,
                      std::move(desc), std::move(callback)));
   for (uint8_t i = 0; i < num_configurations; ++i) {
-    auto header = base::MakeRefCounted<base::RefCountedBytes>(4);
+    auto header = base::MakeRefCounted<base::RefCountedBytes>(
+        kConfigurationDescriptorLength);
     device_handle->ControlTransfer(
         UsbTransferDirection::INBOUND, UsbControlTransferType::STANDARD,
         UsbControlTransferRecipient::DEVICE, kGetDescriptorRequest,

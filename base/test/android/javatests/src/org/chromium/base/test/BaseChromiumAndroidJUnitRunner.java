@@ -618,6 +618,9 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
     }
 
+    // This method clears the data directory for the test apk, but device_utils.py clears the data
+    // for the apk under test via `pm clear`. Fake module smoke tests in particular requires some
+    // data to be kept for the apk under test: /sdcard/Android/data/package/files/local_testing
     private static void clearDataDirectory(Context targetContext) {
         File dataDir = ContextCompat.getDataDir(targetContext);
         File[] files = dataDir.listFiles();

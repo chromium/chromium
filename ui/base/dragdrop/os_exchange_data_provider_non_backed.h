@@ -78,6 +78,14 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   void SetSource(std::unique_ptr<DataTransferEndpoint> data_source) override;
   DataTransferEndpoint* GetSource() const override;
 
+ protected:
+  // Copy internal data into |provider| object.
+  void CopyData(OSExchangeDataProviderNonBacked* provider) const;
+
+  const std::map<ClipboardFormatType, base::Pickle>& pickle_data() const {
+    return pickle_data_;
+  }
+
  private:
   // Returns true if |formats_| contains a file format and the file name can be
   // parsed as a URL.

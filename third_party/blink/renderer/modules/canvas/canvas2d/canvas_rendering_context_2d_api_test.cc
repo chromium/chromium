@@ -6,13 +6,14 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_hit_region_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_csscolorvalue_canvasgradient_canvaspattern_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -344,66 +345,13 @@ void ResetCanvasForAccessibilityRectTest(Document& document) {
   EXPECT_TRUE(canvas->RenderingContext()->IsRenderingContext2D());
 }
 
-TEST_F(CanvasRenderingContext2DAPITest, AccessibilityRectTestForAddHitRegion) {
-  ResetCanvasForAccessibilityRectTest(GetDocument());
-  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
-
-  Element* button_element = GetDocument().getElementById("button");
-  auto* canvas = To<HTMLCanvasElement>(GetDocument().getElementById("canvas"));
-  CanvasRenderingContext2D* context =
-      static_cast<CanvasRenderingContext2D*>(canvas->RenderingContext());
-
-  NonThrowableExceptionState exception_state;
-  HitRegionOptions* options = HitRegionOptions::Create();
-  options->setControl(button_element);
-
-  context->beginPath();
-  context->rect(10, 10, 40, 40);
-  context->addHitRegion(options, exception_state);
-
-  auto* ax_object_cache =
-      To<AXObjectCacheImpl>(GetDocument().ExistingAXObjectCache());
-  AXObject* ax_object = ax_object_cache->GetOrCreate(button_element);
-
-  LayoutRect ax_bounds = ax_object->GetBoundsInFrameCoordinates();
-  EXPECT_EQ(25, ax_bounds.X().ToInt());
-  EXPECT_EQ(25, ax_bounds.Y().ToInt());
-  EXPECT_EQ(40, ax_bounds.Width().ToInt());
-  EXPECT_EQ(40, ax_bounds.Height().ToInt());
-}
-
-TEST_F(CanvasRenderingContext2DAPITest,
-       AccessibilityRectTestForDrawFocusIfNeeded) {
-  ResetCanvasForAccessibilityRectTest(GetDocument());
-  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
-
-  Element* button_element = GetDocument().getElementById("button");
-  auto* canvas = To<HTMLCanvasElement>(GetDocument().getElementById("canvas"));
-  CanvasRenderingContext2D* context =
-      static_cast<CanvasRenderingContext2D*>(canvas->RenderingContext());
-
-  GetDocument().UpdateStyleAndLayoutTreeForNode(canvas);
-
-  context->beginPath();
-  context->rect(10, 10, 40, 40);
-  context->drawFocusIfNeeded(button_element);
-
-  auto* ax_object_cache =
-      To<AXObjectCacheImpl>(GetDocument().ExistingAXObjectCache());
-  AXObject* ax_object = ax_object_cache->GetOrCreate(button_element);
-
-  LayoutRect ax_bounds = ax_object->GetBoundsInFrameCoordinates();
-  EXPECT_EQ(25, ax_bounds.X().ToInt());
-  EXPECT_EQ(25, ax_bounds.Y().ToInt());
-  EXPECT_EQ(40, ax_bounds.Width().ToInt());
-  EXPECT_EQ(40, ax_bounds.Height().ToInt());
-}
 
 // A IdentifiabilityStudySettingsProvider implementation that opts-into study
 // participation.
 class ActiveSettingsProvider : public IdentifiabilityStudySettingsProvider {
  public:
-  bool IsActive() const override { return true; }
+  explicit ActiveSettingsProvider(bool enabled) : enabled_(enabled) {}
+  bool IsActive() const override { return enabled_; }
   bool IsAnyTypeOrSurfaceBlocked() const override { return false; }
   bool IsSurfaceAllowed(IdentifiableSurface surface) const override {
     return true;
@@ -411,15 +359,18 @@ class ActiveSettingsProvider : public IdentifiabilityStudySettingsProvider {
   bool IsTypeAllowed(IdentifiableSurface::Type type) const override {
     return true;
   }
+
+ private:
+  const bool enabled_ = true;
 };
 
 // An RAII class that opts into study participation using
 // ActiveSettingsProvider.
 class StudyParticipationRaii {
  public:
-  StudyParticipationRaii() {
+  explicit StudyParticipationRaii(bool enabled = true) {
     IdentifiabilityStudySettings::SetGlobalProvider(
-        std::make_unique<ActiveSettingsProvider>());
+        std::make_unique<ActiveSettingsProvider>(enabled));
   }
   ~StudyParticipationRaii() {
     IdentifiabilityStudySettings::ResetStateForTesting();
@@ -448,104 +399,210 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyMaxOperations) {
 
   EXPECT_TRUE(Context2D()->IdentifiabilityEncounteredSkippedOps());
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
-TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_Font) {
+// TODO(crbug.com/1239374): Fix test on Android L and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_Font \
+  DISABLED_IdentifiabilityStudyDigest_Font
+#else
+#define MAYBE_IdentifiabilityStudyDigest_Font IdentifiabilityStudyDigest_Font
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest, MAYBE_IdentifiabilityStudyDigest_Font) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
   Context2D()->setFont("Arial");
-  EXPECT_EQ(INT64_C(4260982106376580867),
+  EXPECT_EQ(INT64_C(-7111871220951205888),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
-TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_StrokeText) {
+TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDisabled) {
+  StudyParticipationRaii study_participation_raii(/*enabled=*/false);
+  constexpr int64_t kTokenBuilderInitialDigest = INT64_C(6544625333304541877);
+
+  CreateContext(kNonOpaque);
+
+  Context2D()->setFont("Arial");
+  EXPECT_EQ(kTokenBuilderInitialDigest,
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
+
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
+}
+
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_StrokeText \
+  DISABLED_IdentifiabilityStudyDigest_StrokeText
+#else
+#define MAYBE_IdentifiabilityStudyDigest_StrokeText \
+  IdentifiabilityStudyDigest_StrokeText
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_StrokeText) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
   Context2D()->strokeText("Sensitive message", 1.0, 1.0);
-  EXPECT_EQ(INT64_C(-2943272460643878232),
+  EXPECT_EQ(INT64_C(2232415440872807707),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
   EXPECT_TRUE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
-TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_FillText) {
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_FillText \
+  DISABLED_IdentifiabilityStudyDigest_FillText
+#else
+#define MAYBE_IdentifiabilityStudyDigest_FillText \
+  IdentifiabilityStudyDigest_FillText
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_FillText) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
   Context2D()->fillText("Sensitive message", 1.0, 1.0);
-  EXPECT_EQ(INT64_C(8733208206881150098),
+  EXPECT_EQ(INT64_C(6317349156921019980),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
   EXPECT_TRUE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
-TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_TextAlign) {
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_TextAlign \
+  DISABLED_IdentifiabilityStudyDigest_TextAlign
+#else
+#define MAYBE_IdentifiabilityStudyDigest_TextAlign \
+  IdentifiabilityStudyDigest_TextAlign
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_TextAlign) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
   Context2D()->setTextAlign("center");
-  EXPECT_EQ(INT64_C(-4778938416456134710),
+  EXPECT_EQ(INT64_C(-1799394612814265049),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_TextBaseline \
+  DISABLED_IdentifiabilityStudyDigest_TextBaseline
+#else
+#define MAYBE_IdentifiabilityStudyDigest_TextBaseline \
+  IdentifiabilityStudyDigest_TextBaseline
+#endif  // defined(OS_ANDROID)
+
 TEST_F(CanvasRenderingContext2DAPITest,
-       IdentifiabilityStudyDigest_TextBaseline) {
+       MAYBE_IdentifiabilityStudyDigest_TextBaseline) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
   Context2D()->setTextBaseline("top");
-  EXPECT_EQ(INT64_C(-3065573128425485855),
+  EXPECT_EQ(INT64_C(-7620161594820691651),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_StrokeStyle \
+  DISABLED_IdentifiabilityStudyDigest_StrokeStyle
+#else
+#define MAYBE_IdentifiabilityStudyDigest_StrokeStyle \
+  IdentifiabilityStudyDigest_StrokeStyle
+#endif  // defined(OS_ANDROID)
+
 TEST_F(CanvasRenderingContext2DAPITest,
-       IdentifiabilityStudyDigest_StrokeStyle) {
+       MAYBE_IdentifiabilityStudyDigest_StrokeStyle) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
   auto* style = MakeGarbageCollected<
       V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("blue");
   Context2D()->setStrokeStyle(style);
-  EXPECT_EQ(INT64_C(2059186787917525779),
+  EXPECT_EQ(INT64_C(-1964835352532316734),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
-TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_FillStyle) {
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_FillStyle \
+  DISABLED_IdentifiabilityStudyDigest_FillStyle
+#else
+#define MAYBE_IdentifiabilityStudyDigest_FillStyle \
+  IdentifiabilityStudyDigest_FillStyle
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_FillStyle) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
   auto* style = MakeGarbageCollected<
       V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("blue");
   Context2D()->setFillStyle(style);
-  EXPECT_EQ(INT64_C(-6322980727372024031),
+  EXPECT_EQ(INT64_C(-4860826471555317536),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
-TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_Combo) {
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_Combo \
+  DISABLED_IdentifiabilityStudyDigest_Combo
+#else
+#define MAYBE_IdentifiabilityStudyDigest_Combo IdentifiabilityStudyDigest_Combo
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_Combo) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
   Context2D()->fillText("Sensitive message", 1.0, 1.0);
-  EXPECT_EQ(INT64_C(8733208206881150098),
+  EXPECT_EQ(INT64_C(6317349156921019980),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
   Context2D()->setFont("Helvetica");
   Context2D()->setTextBaseline("bottom");
@@ -554,11 +611,69 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_Combo) {
       V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("red");
   Context2D()->setFillStyle(style);
   Context2D()->fillText("Bye", 4.0, 3.0);
-  EXPECT_EQ(INT64_C(2368400155273386771),
+  EXPECT_EQ(INT64_C(5574475585707445774),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
   EXPECT_TRUE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
+}
+
+// TODO(crbug.com/1239374): Fix test on Android L and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_putImageData \
+  DISABLED_IdentifiabilityStudyDigest_putImageData
+#else
+#define MAYBE_IdentifiabilityStudyDigest_putImageData \
+  IdentifiabilityStudyDigest_putImageData
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_putImageData) {
+  StudyParticipationRaii study_participation_raii;
+  CreateContext(kNonOpaque);
+  NonThrowableExceptionState exception_state;
+
+  ImageData* image_data =
+      Context2D()->createImageData(/*sw=*/1, /*sh=*/1, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  Context2D()->putImageData(image_data, /*dx=*/1, /*dy=*/1, exception_state);
+  EXPECT_EQ(INT64_C(2821795876044191773),
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
+
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_TRUE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
+}
+
+// TODO(crbug.com/1239374): Fix test on Android L and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_drawImage \
+  DISABLED_IdentifiabilityStudyDigest_drawImage
+#else
+#define MAYBE_IdentifiabilityStudyDigest_drawImage \
+  IdentifiabilityStudyDigest_drawImage
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_drawImage) {
+  StudyParticipationRaii study_participation_raii;
+  CreateContext(kNonOpaque);
+  NonThrowableExceptionState exception_state;
+
+  // We can use our own canvas as the image source!
+  auto* image_source =
+      MakeGarbageCollected<V8CanvasImageSource>(&CanvasElement());
+  Context2D()->drawImage(/*script_state=*/nullptr, image_source, /*x=*/1,
+                         /*y=*/1, exception_state);
+  EXPECT_EQ(INT64_C(-4851825694092845811),
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
+
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_TRUE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
 }  // namespace blink

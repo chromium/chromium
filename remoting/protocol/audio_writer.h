@@ -26,6 +26,9 @@ class AudioWriter : public ChannelDispatcherBase,
   // should be used to initialize it for the session.
   static std::unique_ptr<AudioWriter> Create(const SessionConfig& config);
 
+  AudioWriter(const AudioWriter&) = delete;
+  AudioWriter& operator=(const AudioWriter&) = delete;
+
   ~AudioWriter() override;
 
   // AudioStub interface.
@@ -36,8 +39,6 @@ class AudioWriter : public ChannelDispatcherBase,
   AudioWriter();
 
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioWriter);
 };
 
 }  // namespace protocol

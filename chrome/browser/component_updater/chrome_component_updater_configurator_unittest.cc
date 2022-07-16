@@ -24,6 +24,12 @@ namespace component_updater {
 class ChromeComponentUpdaterConfiguratorTest : public testing::Test {
  public:
   ChromeComponentUpdaterConfiguratorTest() = default;
+
+  ChromeComponentUpdaterConfiguratorTest(
+      const ChromeComponentUpdaterConfiguratorTest&) = delete;
+  ChromeComponentUpdaterConfiguratorTest& operator=(
+      const ChromeComponentUpdaterConfiguratorTest&) = delete;
+
   ~ChromeComponentUpdaterConfiguratorTest() override = default;
 
   // Overrides from testing::Test.
@@ -34,8 +40,6 @@ class ChromeComponentUpdaterConfiguratorTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeComponentUpdaterConfiguratorTest);
 };
 
 void ChromeComponentUpdaterConfiguratorTest::SetUp() {
@@ -117,15 +121,16 @@ TEST_F(ChromeComponentUpdaterConfiguratorTest, TestEnabledCupSigning) {
 
 TEST_F(ChromeComponentUpdaterConfiguratorTest, TestUseEncryption) {
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  const auto config(
-      MakeChromeComponentUpdaterConfigurator(cmdline, pref_service()));
 
-  const auto urls = config->UpdateUrl();
-  ASSERT_EQ(2u, urls.size());
-  ASSERT_STREQ(kUpdaterJSONDefaultUrl, urls[0].spec().c_str());
-  ASSERT_STREQ(kUpdaterJSONFallbackUrl, urls[1].spec().c_str());
-
-  ASSERT_EQ(config->UpdateUrl(), config->PingUrl());
+  {
+    const auto config(
+        MakeChromeComponentUpdaterConfigurator(cmdline, pref_service()));
+    const auto urls = config->UpdateUrl();
+    ASSERT_EQ(2u, urls.size());
+    ASSERT_STREQ(kUpdaterJSONDefaultUrl, urls[0].spec().c_str());
+    ASSERT_STREQ(kUpdaterJSONFallbackUrl, urls[1].spec().c_str());
+    ASSERT_EQ(config->UpdateUrl(), config->PingUrl());
+  }
 
   // Use the configurator implementation to test the filtering of
   // unencrypted URLs.

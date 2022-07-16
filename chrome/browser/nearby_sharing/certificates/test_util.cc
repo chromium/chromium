@@ -188,7 +188,7 @@ base::Time GetNearbyShareTestNotBefore() {
 
 base::TimeDelta GetNearbyShareTestValidityOffset() {
   static const base::TimeDelta offset =
-      base::TimeDelta::FromMilliseconds(kTestValidityOffsetMillis);
+      base::Milliseconds(kTestValidityOffsetMillis);
   return offset;
 }
 

@@ -107,12 +107,12 @@ found in the LICENSE file.
           const video_src = GetVideoSource(video_count, i, codec);
 
           createOneVideo(video_top, video_left, video_width, video_height,
-            video_src, /*has_border=*/i == (video_count-1));
+            video_src, /*has_border=*/i == 0);
           // Create an icon on top of each video.
           createOneIcon(video_top, video_left, video_width, video_height, icon_height);
 
           // For the voice animation on the last video.
-          if (i == (video_count - 1)) {
+          if (i == 0) {
             var animatedBar = document.createElement('icon');
             var icon_bottom = video_top + icon_height * 2;
             createVoiceAnimationBar(animatedBar, video_top, video_left,
@@ -123,7 +123,7 @@ found in the LICENSE file.
 
       // Create one small video at the upper right corner to similate the one
       // from the local camera (640x360).
-      createLocalViceoAndIcon(video_width, video_height, codec);
+      createLocalVideoAndIcon(video_width, video_height, codec);
 
       // Start the voice icon animation.
       const frameTime30Fps = 32;  // ms
@@ -165,7 +165,10 @@ found in the LICENSE file.
       video.style.top = top;
       video.style.left = left;
       if (has_border) {
-        video.style.borderWidth = 5;
+        const borderWidth = 3;
+        video.style.borderWidth = borderWidth;
+        video.width = width - borderWidth * 2;
+        video.height = height - borderWidth * 2;
         video.style.borderStyle = "solid";
         video.style.borderColor = "rgba(90, 129, 193, 255)";
       }
@@ -175,7 +178,7 @@ found in the LICENSE file.
     }
 
     function createOneIcon(video_top, video_left, video_width, video_height, icon_height) {
-      const icon = document.createElement('icon');      
+      const icon = document.createElement('icon');  
 
       icon.style.backgroundColor = "rgba(29, 110, 216, 255)";
       icon.style.position = "absolute";
@@ -187,7 +190,7 @@ found in the LICENSE file.
       container.appendChild(icon);
     }
 
-    function createLocalViceoAndIcon(video_width, video_height, codec) {
+    function createLocalVideoAndIcon(video_width, video_height, codec) {
       const small_video_width = video_width / 3;
       const small_video_height = video_height / 3;
       const icon_height = small_video_height / 8;

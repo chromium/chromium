@@ -63,7 +63,8 @@ static uint64_t ToIntegerMilliseconds(base::TimeDelta duration,
 
 PerformanceTiming::PerformanceTiming(ExecutionContext* context)
     : ExecutionContextClient(context) {
-  cross_origin_isolated_capability_ = context->CrossOriginIsolatedCapability();
+  cross_origin_isolated_capability_ =
+      context && context->CrossOriginIsolatedCapability();
 }
 
 uint64_t PerformanceTiming::navigationStart() const {
@@ -354,12 +355,12 @@ PerformanceTiming::BackForwardCacheRestore() const {
 
   WTF::Vector<BackForwardCacheRestoreTiming> restore_timings(
       navigation_starts.size());
-  for (size_t i = 0; i < restore_timings.size(); i++) {
+  for (wtf_size_t i = 0; i < restore_timings.size(); i++) {
     restore_timings[i].navigation_start =
         MonotonicTimeToIntegerMilliseconds(navigation_starts[i]);
     restore_timings[i].first_paint =
         MonotonicTimeToIntegerMilliseconds(first_paints[i]);
-    for (size_t j = 0; j < request_animation_frames[i].size(); j++) {
+    for (wtf_size_t j = 0; j < request_animation_frames[i].size(); j++) {
       restore_timings[i].request_animation_frames[j] =
           MonotonicTimeToIntegerMilliseconds(request_animation_frames[i][j]);
     }
@@ -434,6 +435,15 @@ uint64_t PerformanceTiming::LargestImagePaintSize() const {
   return paint_timing_detector->LargestImagePaintSize();
 }
 
+LargestContentfulPaintTypeMask PerformanceTiming::LargestContentfulPaintType()
+    const {
+  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
+  if (!paint_timing_detector) {
+    return 0;
+  }
+  return paint_timing_detector->LargestContentfulPaintType();
+}
+
 uint64_t PerformanceTiming::LargestTextPaint() const {
   PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
   if (!paint_timing_detector)
@@ -449,40 +459,6 @@ uint64_t PerformanceTiming::LargestTextPaintSize() const {
     return 0;
 
   return paint_timing_detector->LargestTextPaintSize();
-}
-
-uint64_t PerformanceTiming::ExperimentalLargestImagePaint() const {
-  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
-  if (!paint_timing_detector)
-    return 0;
-
-  return MonotonicTimeToIntegerMilliseconds(
-      paint_timing_detector->ExperimentalLargestImagePaint());
-}
-
-uint64_t PerformanceTiming::ExperimentalLargestImagePaintSize() const {
-  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
-  if (!paint_timing_detector)
-    return 0;
-
-  return paint_timing_detector->ExperimentalLargestImagePaintSize();
-}
-
-uint64_t PerformanceTiming::ExperimentalLargestTextPaint() const {
-  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
-  if (!paint_timing_detector)
-    return 0;
-
-  return MonotonicTimeToIntegerMilliseconds(
-      paint_timing_detector->ExperimentalLargestTextPaint());
-}
-
-uint64_t PerformanceTiming::ExperimentalLargestTextPaintSize() const {
-  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
-  if (!paint_timing_detector)
-    return 0;
-
-  return paint_timing_detector->ExperimentalLargestTextPaintSize();
 }
 
 base::TimeTicks PerformanceTiming::LargestContentfulPaintAsMonotonicTime()
@@ -775,6 +751,38 @@ std::unique_ptr<TracedValue> PerformanceTiming::GetNavigationTracingData() {
 }
 
 // static
+bool PerformanceTiming::IsAttributeName(const AtomicString& name) {
+  return GetAttributeMapping().Contains(name);
+}
+
+uint64_t PerformanceTiming::GetNamedAttribute(const AtomicString& name) const {
+  DCHECK(IsAttributeName(name)) << "The string passed as parameter must be an "
+                                   "attribute of performance.timing";
+  PerformanceTimingGetter fn = GetAttributeMapping().at(name);
+  return (this->*fn)();
+}
+
+ScriptValue PerformanceTiming::toJSONForBinding(
+    ScriptState* script_state) const {
+  V8ObjectBuilder result(script_state);
+  for (const auto& name_attribute_pair : GetAttributeMapping()) {
+    result.AddNumber(name_attribute_pair.key,
+                     (this->*(name_attribute_pair.value))());
+  }
+  return result.GetScriptValue();
+}
+
+uint64_t PerformanceTiming::MonotonicTimeToIntegerMilliseconds(
+    base::TimeTicks time) const {
+  const DocumentLoadTiming* timing = GetDocumentLoadTiming();
+  if (!timing)
+    return 0;
+
+  return ToIntegerMilliseconds(timing->MonotonicTimeToPseudoWallTime(time),
+                               cross_origin_isolated_capability_);
+}
+
+// static
 const PerformanceTiming::NameToAttributeMap&
 PerformanceTiming::GetAttributeMapping() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<NameToAttributeMap>, map, ());
@@ -806,26 +814,6 @@ PerformanceTiming::GetAttributeMapping() {
     };
   }
   return *map;
-}
-
-ScriptValue PerformanceTiming::toJSONForBinding(
-    ScriptState* script_state) const {
-  V8ObjectBuilder result(script_state);
-  for (const auto& name_attribute_pair : GetAttributeMapping()) {
-    result.AddNumber(name_attribute_pair.key,
-                     (this->*(name_attribute_pair.value))());
-  }
-  return result.GetScriptValue();
-}
-
-uint64_t PerformanceTiming::MonotonicTimeToIntegerMilliseconds(
-    base::TimeTicks time) const {
-  const DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing)
-    return 0;
-
-  return ToIntegerMilliseconds(timing->MonotonicTimeToPseudoWallTime(time),
-                               cross_origin_isolated_capability_);
 }
 
 void PerformanceTiming::Trace(Visitor* visitor) const {

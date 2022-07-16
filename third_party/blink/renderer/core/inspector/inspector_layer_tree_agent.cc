@@ -33,7 +33,6 @@
 
 #include <memory>
 
-#include "cc/base/features.h"
 #include "cc/base/region.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/layer_tree_host.h"
@@ -48,13 +47,11 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/picture_snapshot.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -108,40 +105,25 @@ static std::unique_ptr<protocol::LayerTree::ScrollRect> BuildScrollRect(
 }
 
 static std::unique_ptr<Array<protocol::LayerTree::ScrollRect>>
-BuildScrollRectsForLayer(const cc::Layer* layer, bool report_wheel_scrollers) {
+BuildScrollRectsForLayer(const cc::Layer* layer) {
   auto scroll_rects =
       std::make_unique<protocol::Array<protocol::LayerTree::ScrollRect>>();
   const cc::Region& non_fast_scrollable_rects =
       layer->non_fast_scrollable_region();
   for (gfx::Rect rect : non_fast_scrollable_rects) {
     scroll_rects->emplace_back(BuildScrollRect(
-        IntRect(rect),
-        protocol::LayerTree::ScrollRect::TypeEnum::RepaintsOnScroll));
+        rect, protocol::LayerTree::ScrollRect::TypeEnum::RepaintsOnScroll));
   }
   const cc::Region& touch_event_handler_regions =
       layer->touch_action_region().GetAllRegions();
-
   for (gfx::Rect rect : touch_event_handler_regions) {
     scroll_rects->emplace_back(BuildScrollRect(
-        IntRect(rect),
-        protocol::LayerTree::ScrollRect::TypeEnum::TouchEventHandler));
+        rect, protocol::LayerTree::ScrollRect::TypeEnum::TouchEventHandler));
   }
-
-  if (base::FeatureList::IsEnabled(::features::kWheelEventRegions)) {
-    const cc::Region& wheel_event_handler_region = layer->wheel_event_region();
-    for (gfx::Rect rect : wheel_event_handler_region) {
-      scroll_rects->emplace_back(BuildScrollRect(
-          IntRect(rect),
-          protocol::LayerTree::ScrollRect::TypeEnum::WheelEventHandler));
-    }
-  } else {
-    if (report_wheel_scrollers) {
-      scroll_rects->emplace_back(BuildScrollRect(
-          // TODO(pdr): Use the correct region for wheel event handlers, see
-          // https://crbug.com/841364.
-          gfx::Rect(0, 0, layer->bounds().width(), layer->bounds().height()),
-          protocol::LayerTree::ScrollRect::TypeEnum::WheelEventHandler));
-    }
+  const cc::Region& wheel_event_handler_region = layer->wheel_event_region();
+  for (gfx::Rect rect : wheel_event_handler_region) {
+    scroll_rects->emplace_back(BuildScrollRect(
+        rect, protocol::LayerTree::ScrollRect::TypeEnum::WheelEventHandler));
   }
   return scroll_rects->empty() ? nullptr : std::move(scroll_rects);
 }
@@ -204,8 +186,7 @@ BuildStickyInfoForLayer(const cc::Layer* root, const cc::Layer* layer) {
 
 static std::unique_ptr<protocol::LayerTree::Layer> BuildObjectForLayer(
     const cc::Layer* root,
-    const cc::Layer* layer,
-    bool report_wheel_event_listeners) {
+    const cc::Layer* layer) {
   // When the front-end doesn't show internal layers, it will use the the first
   // DrawsContent layer as the root of the shown layer tree. This doesn't work
   // because the non-DrawsContent root layer is the parent of all DrawsContent
@@ -252,7 +233,7 @@ static std::unique_ptr<protocol::LayerTree::Layer> BuildObjectForLayer(
     layer_object->setAnchorZ(0.f);
   }
   std::unique_ptr<Array<protocol::LayerTree::ScrollRect>> scroll_rects =
-      BuildScrollRectsForLayer(layer, report_wheel_event_listeners);
+      BuildScrollRectsForLayer(layer);
   if (scroll_rects)
     layer_object->setScrollRects(std::move(scroll_rects));
   std::unique_ptr<protocol::LayerTree::StickyPositionConstraint> sticky_info =
@@ -284,20 +265,11 @@ void InspectorLayerTreeAgent::Restore() {
 
 Response InspectorLayerTreeAgent::enable() {
   instrumenting_agents_->AddInspectorLayerTreeAgent(this);
-  Document* document = inspected_frames_->Root()->GetDocument();
-  if (!document)
-    return Response::ServerError("The root frame doesn't have document");
-
-  inspected_frames_->Root()->View()->UpdateAllLifecyclePhases(
-      DocumentUpdateReason::kInspector);
-
-  if (auto* root_layer = RootLayer())
-    root_layer->layer_tree_host()->UpdateLayers();
-
-  LayerTreePainted();
-  LayerTreeDidChange();
-
-  return Response::Success();
+  if (auto* view = inspected_frames_->Root()->View()) {
+    view->ScheduleAnimation();
+    return Response::Success();
+  }
+  return Response::ServerError("The root frame doesn't have a view");
 }
 
 Response InspectorLayerTreeAgent::disable() {
@@ -326,34 +298,20 @@ InspectorLayerTreeAgent::BuildLayerTree() {
     return nullptr;
 
   auto layers = std::make_unique<protocol::Array<protocol::LayerTree::Layer>>();
-  auto* root_frame = inspected_frames_->Root();
-  bool have_blocking_wheel_event_handlers =
-      root_frame->GetChromeClient().EventListenerProperties(
-          root_frame, cc::EventListenerClass::kMouseWheel) ==
-      cc::EventListenerProperties::kBlocking;
-
-  GatherLayers(root_layer, layers, have_blocking_wheel_event_handlers,
-               root_layer->layer_tree_host()->OuterViewportScrollElementId());
+  GatherLayers(root_layer, layers);
   return layers;
 }
 
 void InspectorLayerTreeAgent::GatherLayers(
     const cc::Layer* layer,
-    std::unique_ptr<Array<protocol::LayerTree::Layer>>& layers,
-    bool has_wheel_event_handlers,
-    CompositorElementId outer_viewport_scroll_element_id) {
+    std::unique_ptr<Array<protocol::LayerTree::Layer>>& layers) {
   if (client_->IsInspectorLayer(layer))
     return;
   if (layer->layer_tree_host()->is_hud_layer(layer))
     return;
-  layers->emplace_back(BuildObjectForLayer(
-      RootLayer(), layer,
-      has_wheel_event_handlers &&
-          layer->element_id() == outer_viewport_scroll_element_id));
-  for (auto child : layer->children()) {
-    GatherLayers(child.get(), layers, has_wheel_event_handlers,
-                 outer_viewport_scroll_element_id);
-  }
+  layers->emplace_back(BuildObjectForLayer(RootLayer(), layer));
+  for (auto child : layer->children())
+    GatherLayers(child.get(), layers);
 }
 
 const cc::Layer* InspectorLayerTreeAgent::RootLayer() {
@@ -458,7 +416,7 @@ Response InspectorLayerTreeAgent::loadSnapshot(
   for (wtf_size_t i = 0; i < tiles_length; ++i) {
     protocol::LayerTree::PictureTile* tile = (*tiles)[i].get();
     decoded_tiles[i] = base::AdoptRef(new PictureSnapshot::TilePictureStream());
-    decoded_tiles[i]->layer_offset.Set(tile->getX(), tile->getY());
+    decoded_tiles[i]->layer_offset.SetPoint(tile->getX(), tile->getY());
     const protocol::Binary& data = tile->getPicture();
     decoded_tiles[i]->picture =
         SkPicture::MakeFromData(data.data(), data.size());
@@ -529,10 +487,9 @@ Response InspectorLayerTreeAgent::profileSnapshot(
   FloatRect rect;
   if (clip_rect.isJust())
     ParseRect(clip_rect.fromJust(), &rect);
-  auto timings = snapshot->Profile(
-      min_repeat_count.fromMaybe(1),
-      base::TimeDelta::FromSecondsD(min_duration.fromMaybe(0)),
-      clip_rect.isJust() ? &rect : nullptr);
+  auto timings = snapshot->Profile(min_repeat_count.fromMaybe(1),
+                                   base::Seconds(min_duration.fromMaybe(0)),
+                                   clip_rect.isJust() ? &rect : nullptr);
   *out_timings = std::make_unique<Array<Array<double>>>();
   for (const auto& row : timings) {
     auto out_row = std::make_unique<protocol::Array<double>>();

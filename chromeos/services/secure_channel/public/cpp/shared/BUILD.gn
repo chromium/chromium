@@ -8,6 +8,7 @@ source_set("shared") {
     "connection_medium.h",
     "connection_priority.cc",
     "connection_priority.h",
+    "presence_monitor.h",
   ]
 
   deps = [ "//base" ]

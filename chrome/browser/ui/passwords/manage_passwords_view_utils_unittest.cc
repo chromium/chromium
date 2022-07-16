@@ -33,6 +33,9 @@ class ScopedResourceOverride {
         bundle_(GetOrCreateSharedInstance()),
         app_locale_(g_browser_process->GetApplicationLocale()) {}
 
+  ScopedResourceOverride(const ScopedResourceOverride&) = delete;
+  ScopedResourceOverride& operator=(const ScopedResourceOverride&) = delete;
+
   ~ScopedResourceOverride() {
     if (had_shared_instance_) {
       // Reloading the resources will discard all overrides.
@@ -59,8 +62,6 @@ class ScopedResourceOverride {
   const bool had_shared_instance_;  // Was there a shared bundle before?
   ui::ResourceBundle& bundle_;      // The shared bundle.
   const std::string app_locale_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedResourceOverride);
 };
 
 const struct {

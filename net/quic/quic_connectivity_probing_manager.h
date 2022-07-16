@@ -52,6 +52,12 @@ class NET_EXPORT_PRIVATE QuicConnectivityProbingManager
 
   QuicConnectivityProbingManager(Delegate* delegate,
                                  base::SequencedTaskRunner* task_runner);
+
+  QuicConnectivityProbingManager(const QuicConnectivityProbingManager&) =
+      delete;
+  QuicConnectivityProbingManager& operator=(
+      const QuicConnectivityProbingManager&) = delete;
+
   ~QuicConnectivityProbingManager();
 
   // QuicChromiumPacketWriter::Delegate interface.
@@ -143,7 +149,6 @@ class NET_EXPORT_PRIVATE QuicConnectivityProbingManager
   bool stateless_reset_received_;
 
   base::WeakPtrFactory<QuicConnectivityProbingManager> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(QuicConnectivityProbingManager);
 };
 
 }  // namespace net

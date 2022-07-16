@@ -43,6 +43,10 @@ void SetLacrosDefaultPaths(const base::FilePath& documents_dir,
   GetDefaultPaths().drivefs = drivefs;
 }
 
+void SetDriveFsMountPointPath(const base::FilePath& drivefs) {
+  GetDefaultPaths().drivefs = drivefs;
+}
+
 bool GetDefaultUserDataDirectory(base::FilePath* result) {
   if (base::SysInfo::IsRunningOnChromeOS()) {
     *result = base::FilePath(crosapi::kLacrosUserDataPath);

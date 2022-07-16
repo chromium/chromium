@@ -25,10 +25,29 @@ CanvasRenderingContext2D.drawImage().
       for (let i = 0; i < frames_to_draw; i++) {
         let frame = await source.getNextFrame();
         ctx.drawImage(frame, 0, 0, cnv.width, cnv.height);
+        switch (source_type) {
+          case 'camera': {
+            if (arg.validate_camera_frames)
+              checkFourColorsFrame(ctx, cnv.width, cnv.height, 5);
+            else
+              TEST.log("Skip render result validation");
+            break;
+          }
+          case 'offscreen':
+          case 'capture': {
+            checkFourColorsFrame(ctx, cnv.width, cnv.height, 5);
+            break;
+          }
+          case 'sw_decoder':
+          case 'hw_decoder': {
+            checkFourColorsFrame(ctx, cnv.width, cnv.height, 15);
+            break;
+          }
+          default:
+            TEST.reportFailure("Unexpected frame source.");
+        }
         frame.close();
         await waitForNextFrame();
-        // TODO(crbug.com/1206000): Take snapshot of the canvas and
-        // compare it to the frame.
       }
     }
   </script>

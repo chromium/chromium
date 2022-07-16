@@ -39,6 +39,10 @@ class NET_EXPORT_PRIVATE HttpBasicStream : public HttpStream {
   // initialize it correctly.
   HttpBasicStream(std::unique_ptr<ClientSocketHandle> connection,
                   bool using_proxy);
+
+  HttpBasicStream(const HttpBasicStream&) = delete;
+  HttpBasicStream& operator=(const HttpBasicStream&) = delete;
+
   ~HttpBasicStream() override;
 
   // HttpStream methods:
@@ -105,8 +109,6 @@ class NET_EXPORT_PRIVATE HttpBasicStream : public HttpStream {
   HttpBasicState state_;
   base::TimeTicks confirm_handshake_end_;
   RequestHeadersCallback request_headers_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpBasicStream);
 };
 
 }  // namespace net

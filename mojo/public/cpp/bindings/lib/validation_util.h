@@ -184,8 +184,6 @@ template <typename T>
 bool ValidateContainer(const Pointer<T>& input,
                        ValidationContext* validation_context,
                        const ContainerValidateParams* validate_params) {
-  ValidationContext::ScopedDepthTracker depth_tracker(validation_context);
-
   return ValidateParams(input, validation_context) &&
          T::Validate(input.Get(), validation_context, validate_params);
 }
@@ -202,7 +200,6 @@ bool ValidateStruct(const Pointer<T>& input,
 template <typename T>
 bool ValidateInlinedUnion(const T& input,
                           ValidationContext* validation_context) {
-  ValidationContext::ScopedDepthTracker depth_tracker(validation_context);
   if (validation_context->ExceedsMaxDepth()) {
     ReportValidationError(validation_context,
                           VALIDATION_ERROR_MAX_RECURSION_DEPTH);
@@ -214,8 +211,6 @@ bool ValidateInlinedUnion(const T& input,
 template <typename T>
 bool ValidateNonInlinedUnion(const Pointer<T>& input,
                              ValidationContext* validation_context) {
-  ValidationContext::ScopedDepthTracker depth_tracker(validation_context);
-
   return ValidateParams(input, validation_context) &&
          T::Validate(input.Get(), validation_context, false);
 }

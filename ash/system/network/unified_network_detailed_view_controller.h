@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/system/unified/detailed_view_controller.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -24,6 +23,12 @@ class UnifiedNetworkDetailedViewController : public DetailedViewController {
  public:
   explicit UnifiedNetworkDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
+
+  UnifiedNetworkDetailedViewController(
+      const UnifiedNetworkDetailedViewController&) = delete;
+  UnifiedNetworkDetailedViewController& operator=(
+      const UnifiedNetworkDetailedViewController&) = delete;
+
   ~UnifiedNetworkDetailedViewController() override;
 
   // DetailedViewControllerBase:
@@ -34,8 +39,6 @@ class UnifiedNetworkDetailedViewController : public DetailedViewController {
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
   tray::NetworkListView* view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedNetworkDetailedViewController);
 };
 
 }  // namespace ash

@@ -30,8 +30,16 @@
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
+#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -171,7 +179,7 @@ AffineTransform& AffineTransform::PreMultiply(const AffineTransform& other) {
 
 AffineTransform& AffineTransform::Rotate(double a) {
   // angle is in degree. Switch to radian
-  return RotateRadians(deg2rad(a));
+  return RotateRadians(Deg2rad(a));
 }
 
 AffineTransform& AffineTransform::RotateRadians(double a) {
@@ -237,15 +245,15 @@ AffineTransform& AffineTransform::Shear(double sx, double sy) {
 }
 
 AffineTransform& AffineTransform::Skew(double angle_x, double angle_y) {
-  return Shear(tan(deg2rad(angle_x)), tan(deg2rad(angle_y)));
+  return Shear(tan(Deg2rad(angle_x)), tan(Deg2rad(angle_y)));
 }
 
 AffineTransform& AffineTransform::SkewX(double angle) {
-  return Shear(tan(deg2rad(angle)), 0);
+  return Shear(tan(Deg2rad(angle)), 0);
 }
 
 AffineTransform& AffineTransform::SkewY(double angle) {
-  return Shear(0, tan(deg2rad(angle)));
+  return Shear(0, tan(Deg2rad(angle)));
 }
 
 void AffineTransform::Map(double x, double y, double& x2, double& y2) const {
@@ -253,38 +261,49 @@ void AffineTransform::Map(double x, double y, double& x2, double& y2) const {
   y2 = (transform_[1] * x + transform_[3] * y + transform_[5]);
 }
 
-IntPoint AffineTransform::MapPoint(const IntPoint& point) const {
+gfx::Point AffineTransform::MapPoint(const gfx::Point& point) const {
   double x2, y2;
-  Map(point.X(), point.Y(), x2, y2);
+  Map(point.x(), point.y(), x2, y2);
 
   // Round the point.
-  return IntPoint(static_cast<int>(lround(x2)), static_cast<int>(lround(y2)));
+  return gfx::Point(static_cast<int>(lround(x2)), static_cast<int>(lround(y2)));
 }
 
 FloatPoint AffineTransform::MapPoint(const FloatPoint& point) const {
   double x2, y2;
-  Map(point.X(), point.Y(), x2, y2);
+  Map(point.x(), point.y(), x2, y2);
 
-  return FloatPoint(clampTo<float>(x2), clampTo<float>(y2));
+  return FloatPoint(ClampTo<float>(x2), ClampTo<float>(y2));
+}
+
+gfx::PointF AffineTransform::MapPoint(const gfx::PointF& point) const {
+  double x2, y2;
+  Map(point.x(), point.y(), x2, y2);
+
+  return gfx::PointF(ClampTo<float>(x2), ClampTo<float>(y2));
 }
 
 IntSize AffineTransform::MapSize(const IntSize& size) const {
-  double width2 = size.Width() * XScale();
-  double height2 = size.Height() * YScale();
+  double width2 = size.width() * XScale();
+  double height2 = size.height() * YScale();
 
   return IntSize(static_cast<int>(lround(width2)),
                  static_cast<int>(lround(height2)));
 }
 
 FloatSize AffineTransform::MapSize(const FloatSize& size) const {
-  double width2 = size.Width() * XScale();
-  double height2 = size.Height() * YScale();
+  double width2 = size.width() * XScale();
+  double height2 = size.height() * YScale();
 
-  return FloatSize(clampTo<float>(width2), clampTo<float>(height2));
+  return FloatSize(ClampTo<float>(width2), ClampTo<float>(height2));
 }
 
 IntRect AffineTransform::MapRect(const IntRect& rect) const {
   return EnclosingIntRect(MapRect(FloatRect(rect)));
+}
+
+gfx::Rect AffineTransform::MapRect(const gfx::Rect& rect) const {
+  return gfx::ToEnclosingRect(MapRect(gfx::RectF(rect)));
 }
 
 FloatRect AffineTransform::MapRect(const FloatRect& rect) const {
@@ -293,32 +312,41 @@ FloatRect AffineTransform::MapRect(const FloatRect& rect) const {
       return rect;
 
     FloatRect mapped_rect(rect);
-    mapped_rect.Move(clampTo<float>(transform_[4]),
-                     clampTo<float>(transform_[5]));
+    mapped_rect.Offset(ClampTo<float>(transform_[4]),
+                       ClampTo<float>(transform_[5]));
     return mapped_rect;
   }
 
   FloatQuad result;
-  result.SetP1(MapPoint(rect.Location()));
-  result.SetP2(MapPoint(FloatPoint(rect.MaxX(), rect.Y())));
-  result.SetP3(MapPoint(FloatPoint(rect.MaxX(), rect.MaxY())));
-  result.SetP4(MapPoint(FloatPoint(rect.X(), rect.MaxY())));
+  result.set_p1(MapPoint(rect.origin()));
+  result.set_p2(MapPoint(rect.top_right()));
+  result.set_p3(MapPoint(rect.bottom_right()));
+  result.set_p4(MapPoint(rect.bottom_left()));
   return result.BoundingBox();
 }
 
+gfx::RectF AffineTransform::MapRect(const gfx::RectF& rect) const {
+  // Still use FloatRect/FloatQuad version because FloatQuad::BoundingBox()
+  // clamp to int range, which is required by some callers.
+  // TODO(crbug.com/738465): Find a way to use gfx types.
+  return ToGfxRectF(MapRect(FloatRect(rect)));
+}
+
 FloatQuad AffineTransform::MapQuad(const FloatQuad& q) const {
+  return FloatQuad(MapQuad(ToGfxQuadF(q)));
+}
+
+gfx::QuadF AffineTransform::MapQuad(const gfx::QuadF& q) const {
   if (IsIdentityOrTranslation()) {
-    FloatQuad mapped_quad(q);
-    mapped_quad.Move(clampTo<float>(transform_[4]),
-                     clampTo<float>(transform_[5]));
-    return mapped_quad;
+    return q + gfx::Vector2dF(ClampTo<float>(transform_[4]),
+                              ClampTo<float>(transform_[5]));
   }
 
-  FloatQuad result;
-  result.SetP1(MapPoint(q.P1()));
-  result.SetP2(MapPoint(q.P2()));
-  result.SetP3(MapPoint(q.P3()));
-  result.SetP4(MapPoint(q.P4()));
+  gfx::QuadF result;
+  result.set_p1(MapPoint(q.p1()));
+  result.set_p2(MapPoint(q.p2()));
+  result.set_p3(MapPoint(q.p3()));
+  result.set_p4(MapPoint(q.p4()));
   return result;
 }
 
@@ -400,7 +428,7 @@ String AffineTransform::ToString(bool as_matrix) const {
       "remainder(%lg,%lg,%lg,%lg)",
       decomposition.translate_x, decomposition.translate_y,
       decomposition.scale_x, decomposition.scale_y,
-      rad2deg(decomposition.angle), decomposition.remainder_a,
+      Rad2deg(decomposition.angle), decomposition.remainder_a,
       decomposition.remainder_b, decomposition.remainder_c,
       decomposition.remainder_d);
 }

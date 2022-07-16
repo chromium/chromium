@@ -105,7 +105,7 @@ TEST_F(StyleTraversalRootTest, Update_SingleRoot) {
 
 TEST_F(StyleTraversalRootTest, Update_CommonRoot) {
   StyleTraversalRootTestImpl root;
-  root.MarkDirty(DivElement(kC));
+  root.MarkDirty(DivElement(kB));
 
   // Initially make B a single root.
   root.Update(nullptr, DivElement(kB));
@@ -113,7 +113,7 @@ TEST_F(StyleTraversalRootTest, Update_CommonRoot) {
   EXPECT_TRUE(root.IsSingleRoot());
 
   // Adding C makes A a common root.
-  root.MarkDirty(DivElement(kB));
+  root.MarkDirty(DivElement(kC));
   root.Update(DivElement(kA), DivElement(kC));
   EXPECT_EQ(DivElement(kA), root.GetRootNode());
   EXPECT_FALSE(root.IsSingleRoot());

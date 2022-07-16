@@ -33,7 +33,7 @@
 
 #include <memory>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -144,7 +144,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
 
   // Clamp the given point, in document coordinates, to the maximum/minimum
   // scroll extents of the viewport within the document.
-  IntPoint ClampDocumentOffsetAtScale(const IntPoint& offset, float scale);
+  gfx::Point ClampDocumentOffsetAtScale(const gfx::Point& offset, float scale);
 
   // FIXME: This is kind of a hack. Ideally, we would just resize the
   // viewports to account for browser controls. However, LocalFrameView includes
@@ -171,8 +171,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
 
   FloatPoint ViewportToRootFrame(const FloatPoint&) const;
   FloatPoint RootFrameToViewport(const FloatPoint&) const;
-  IntPoint ViewportToRootFrame(const IntPoint&) const;
-  IntPoint RootFrameToViewport(const IntPoint&) const;
+  gfx::Point ViewportToRootFrame(const gfx::Point&) const;
+  gfx::Point RootFrameToViewport(const gfx::Point&) const;
 
   // ScrollableArea implementation
   ChromeClient* GetChromeClient() const override;
@@ -228,9 +228,10 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   mojom::blink::ColorScheme UsedColorScheme() const override;
 
   // VisualViewport scrolling may involve pinch zoom and gets routed through
-  // WebViewImpl explicitly rather than via ScrollingCoordinator::DidScroll
-  // since it needs to be set in tandem with the page scale delta.
-  void DidScroll(const FloatPoint&) final { NOTREACHED(); }
+  // WebViewImpl explicitly rather than via
+  // ScrollingCoordinator::DidCompositorScroll() since it needs to be set in
+  // tandem with the page scale delta.
+  void DidCompositorScroll(const FloatPoint&) final { NOTREACHED(); }
 
   // Visual Viewport API implementation.
   double OffsetLeft() const;

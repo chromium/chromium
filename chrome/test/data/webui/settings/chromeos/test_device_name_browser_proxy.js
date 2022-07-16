@@ -3,28 +3,47 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
+// #import {SetDeviceNameResult} from 'chrome://os-settings/chromeos/os_settings.js'
 // clang-format on
 
 /** @implements {DeviceNameBrowserProxy} */
 /* #export */ class TestDeviceNameBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
-      'getDeviceNameMetadata',
+      'notifyReadyForDeviceName',
+      'attemptSetDeviceName',
     ]);
 
-    /** @private {String} */
+    /** @private {string} */
     this.deviceName_ = '';
+
+    /** @private {!SetDeviceNameResult} */
+    this.deviceNameResult_ = SetDeviceNameResult.UPDATE_SUCCESSFUL;
   }
 
-  /** @param {String} deviceName */
-  setDeviceName(deviceName) {
-    this.deviceName_ = deviceName;
+  /** @param {!SetDeviceNameResult} deviceNameResult */
+  setDeviceNameResult(deviceNameResult) {
+    this.deviceNameResult_ = deviceNameResult;
+  }
+
+  /** @return {string} */
+  getDeviceName() {
+    return this.deviceName_;
   }
 
   /** @override */
-  getDeviceNameMetadata() {
-    this.methodCalled('getDeviceNameMetadata');
-    return Promise.resolve({deviceName: this.deviceName_});
+  notifyReadyForDeviceName() {
+    this.methodCalled('notifyReadyForDeviceName');
+  }
+
+  /** @override */
+  attemptSetDeviceName(name) {
+    if (this.deviceNameResult_ === SetDeviceNameResult.UPDATE_SUCCESSFUL) {
+      this.deviceName_ = name;
+    }
+
+    this.methodCalled('attemptSetDeviceName');
+    return Promise.resolve(this.deviceNameResult_);
   }
 }

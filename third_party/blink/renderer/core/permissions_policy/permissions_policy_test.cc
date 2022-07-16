@@ -200,7 +200,7 @@ class PermissionsPolicyParserParsingTest
       const Vector<PolicyParserMessageBuffer::Message>& actual,
       const std::vector<String> expected) {
     ASSERT_EQ(actual.size(), expected.size());
-    for (size_t i = 0; i < actual.size(); ++i) {
+    for (wtf_size_t i = 0; i < actual.size(); ++i) {
       EXPECT_EQ(actual[i].content, expected[i]);
     }
   }

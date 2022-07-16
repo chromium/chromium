@@ -88,6 +88,10 @@ class MockFaviconServiceWithFake : public MockFaviconService {
             });
   }
 
+  MockFaviconServiceWithFake(const MockFaviconServiceWithFake&) = delete;
+  MockFaviconServiceWithFake& operator=(const MockFaviconServiceWithFake&) =
+      delete;
+
   ~MockFaviconServiceWithFake() override = default;
 
   // Simulates the service having an icon stored for |page_url|, the URL of the
@@ -111,9 +115,6 @@ class MockFaviconServiceWithFake : public MockFaviconService {
           return kTaskId;
         });
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockFaviconServiceWithFake);
 };
 
 class MockLargeIconServiceWithFake : public LargeIconService {
@@ -133,6 +134,10 @@ class MockLargeIconServiceWithFake : public LargeIconService {
                            FAILURE_HTTP_ERROR);
             });
   }
+
+  MockLargeIconServiceWithFake(const MockLargeIconServiceWithFake&) = delete;
+  MockLargeIconServiceWithFake& operator=(const MockLargeIconServiceWithFake&) =
+      delete;
 
   ~MockLargeIconServiceWithFake() override = default;
 
@@ -192,8 +197,6 @@ class MockLargeIconServiceWithFake : public LargeIconService {
 
  private:
   MockFaviconServiceWithFake* const mock_favicon_service_with_fake_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockLargeIconServiceWithFake);
 };
 
 class HistoryUiFaviconRequestHandlerImplTest : public ::testing::Test {
@@ -206,6 +209,11 @@ class HistoryUiFaviconRequestHandlerImplTest : public ::testing::Test {
     // Allow sending history data by default.
     ON_CALL(can_send_history_data_getter_, Run()).WillByDefault(Return(true));
   }
+
+  HistoryUiFaviconRequestHandlerImplTest(
+      const HistoryUiFaviconRequestHandlerImplTest&) = delete;
+  HistoryUiFaviconRequestHandlerImplTest& operator=(
+      const HistoryUiFaviconRequestHandlerImplTest&) = delete;
 
  protected:
   testing::NiceMock<MockFaviconServiceWithFake> mock_favicon_service_;
@@ -224,8 +232,6 @@ class HistoryUiFaviconRequestHandlerImplTest : public ::testing::Test {
   const std::string kOriginHistogramSuffix = ".HISTORY";
   const std::string kAvailabilityHistogramName =
       "Sync.SyncedHistoryFaviconAvailability";
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryUiFaviconRequestHandlerImplTest);
 };
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetEmptyBitmap) {

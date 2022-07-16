@@ -17,15 +17,16 @@ namespace test {
 class ExoTestSuiteAura : public base::TestSuite {
  public:
   ExoTestSuiteAura(int argc, char** argv);
+
+  ExoTestSuiteAura(const ExoTestSuiteAura&) = delete;
+  ExoTestSuiteAura& operator=(const ExoTestSuiteAura&) = delete;
+
   ~ExoTestSuiteAura() override;
 
  protected:
   // base::TestSuite:
   void Initialize() override;
   void Shutdown() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExoTestSuiteAura);
 };
 
 }  // namespace test

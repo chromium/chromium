@@ -25,11 +25,6 @@
         android:summary="@string/autocomplete_searches_and_urls_summary"
         android:persistent="false"/>
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-        android:key="navigation_error"
-        android:title="@string/navigation_error_suggestions_title"
-        android:summary="@string/navigation_error_suggestions_summary"
-        android:persistent="false"/>
-    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="usage_and_crash_reports"
         android:title="@string/usage_and_crash_reports_title"
         android:summary="@string/usage_and_crash_reports_summary"

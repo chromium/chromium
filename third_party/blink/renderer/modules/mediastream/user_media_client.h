@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink-forward.h"
@@ -47,6 +48,10 @@ class MODULES_EXPORT UserMediaClient
   UserMediaClient(LocalFrame* frame,
                   UserMediaProcessor* user_media_processor,
                   scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  UserMediaClient(const UserMediaClient&) = delete;
+  UserMediaClient& operator=(const UserMediaClient&) = delete;
+
   virtual ~UserMediaClient();
 
   void RequestUserMedia(UserMediaRequest* user_media_request);
@@ -56,6 +61,10 @@ class MODULES_EXPORT UserMediaClient
   void ContextDestroyed();
 
   bool IsCapturing();
+
+#if !defined(OS_ANDROID)
+  void FocusCapturedSurface(const String& label, bool focus);
+#endif
 
   void Trace(Visitor*) const;
 
@@ -69,6 +78,10 @@ class MODULES_EXPORT UserMediaClient
     explicit Request(UserMediaRequest* request);
     explicit Request(blink::ApplyConstraintsRequest* request);
     explicit Request(MediaStreamComponent* request);
+
+    Request(const Request&) = delete;
+    Request& operator=(const Request&) = delete;
+
     ~Request();
 
     UserMediaRequest* MoveUserMediaRequest();
@@ -93,8 +106,6 @@ class MODULES_EXPORT UserMediaClient
     Member<UserMediaRequest> user_media_request_;
     Member<blink::ApplyConstraintsRequest> apply_constraints_request_;
     Member<MediaStreamComponent> track_to_stop_;
-
-    DISALLOW_COPY_AND_ASSIGN(Request);
   };
 
   void MaybeProcessNextRequestInfo();
@@ -126,8 +137,6 @@ class MODULES_EXPORT UserMediaClient
   HeapDeque<Member<Request>> pending_request_infos_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(UserMediaClient);
 };
 
 }  // namespace blink

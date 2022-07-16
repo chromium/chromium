@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 
+#include "base/callback.h"
+
 namespace ash {
 
 // static
@@ -16,6 +18,17 @@ LoginDisplayHost::LoginDisplayHost() {
 
 LoginDisplayHost::~LoginDisplayHost() {
   default_host_ = nullptr;
+}
+
+void LoginDisplayHost::AddWizardCreatedObserverForTests(
+    base::RepeatingClosure on_created) {
+  DCHECK(!on_wizard_controller_created_for_tests_);
+  on_wizard_controller_created_for_tests_ = std::move(on_created);
+}
+
+void LoginDisplayHost::NotifyWizardCreated() {
+  if (on_wizard_controller_created_for_tests_)
+    on_wizard_controller_created_for_tests_.Run();
 }
 
 }  // namespace ash

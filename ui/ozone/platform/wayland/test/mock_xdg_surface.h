@@ -31,6 +31,10 @@ class MockXdgTopLevel;
 class MockXdgSurface : public ServerObject {
  public:
   MockXdgSurface(wl_resource* resource, wl_resource* surface);
+
+  MockXdgSurface(const MockXdgSurface&) = delete;
+  MockXdgSurface& operator=(const MockXdgSurface&) = delete;
+
   ~MockXdgSurface() override;
 
   MOCK_METHOD1(AckConfigure, void(uint32_t serial));
@@ -53,14 +57,16 @@ class MockXdgSurface : public ServerObject {
 
   // MockSurface that is the ground for this xdg_surface.
   wl_resource* surface_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockXdgSurface);
 };
 
 // Manage zxdg_toplevel for providing desktop UI.
 class MockXdgTopLevel : public ServerObject {
  public:
   MockXdgTopLevel(wl_resource* resource, const void* implementation);
+
+  MockXdgTopLevel(const MockXdgTopLevel&) = delete;
+  MockXdgTopLevel& operator=(const MockXdgTopLevel&) = delete;
+
   ~MockXdgTopLevel() override;
 
   MOCK_METHOD1(SetParent, void(wl_resource* parent));
@@ -94,8 +100,6 @@ class MockXdgTopLevel : public ServerObject {
 
   std::string title_;
   std::string app_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockXdgTopLevel);
 };
 
 }  // namespace wl

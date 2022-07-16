@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon_base/favicon_types.h"
@@ -38,6 +37,12 @@ class NTPTilesInternalsMessageHandler : public MostVisitedSites::Observer {
   // |favicon_service| must not be null and must outlive this object.
   explicit NTPTilesInternalsMessageHandler(
       favicon::FaviconService* favicon_service);
+
+  NTPTilesInternalsMessageHandler(const NTPTilesInternalsMessageHandler&) =
+      delete;
+  NTPTilesInternalsMessageHandler& operator=(
+      const NTPTilesInternalsMessageHandler&) = delete;
+
   ~NTPTilesInternalsMessageHandler() override;
 
   // Called when the WebUI page's JavaScript has loaded and it is ready to
@@ -81,8 +86,6 @@ class NTPTilesInternalsMessageHandler : public MostVisitedSites::Observer {
 
   base::CancelableTaskTracker cancelable_task_tracker_;
   base::WeakPtrFactory<NTPTilesInternalsMessageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NTPTilesInternalsMessageHandler);
 };
 
 }  // namespace ntp_tiles

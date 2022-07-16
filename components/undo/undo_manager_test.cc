@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "components/undo/undo_manager_observer.h"
 #include "components/undo/undo_operation.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,12 +27,13 @@ std::vector<UndoOperation*> ConvertToRawPtrVector(
 
 class UndoManagerTestApi {
  public:
+  UndoManagerTestApi() = delete;
+  UndoManagerTestApi(const UndoManagerTestApi&) = delete;
+  UndoManagerTestApi& operator=(const UndoManagerTestApi&) = delete;
+
   // Returns all UndoOperations that are awaiting Undo or Redo.
   static std::vector<UndoOperation*> GetAllUndoOperations(
       const UndoManager& undo_manager);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(UndoManagerTestApi);
 };
 
 std::vector<UndoOperation*> UndoManagerTestApi::GetAllUndoOperations(
@@ -90,6 +90,10 @@ class TestUndoService {
 class TestUndoOperation : public UndoOperation {
  public:
   explicit TestUndoOperation(TestUndoService* undo_service);
+
+  TestUndoOperation(const TestUndoOperation&) = delete;
+  TestUndoOperation& operator=(const TestUndoOperation&) = delete;
+
   ~TestUndoOperation() override;
 
   // UndoOperation:
@@ -99,8 +103,6 @@ class TestUndoOperation : public UndoOperation {
 
  private:
   TestUndoService* undo_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUndoOperation);
 };
 
 TestUndoOperation::TestUndoOperation(TestUndoService* undo_service)
@@ -155,14 +157,16 @@ class TestObserver : public UndoManagerObserver {
  public:
   TestObserver() : state_change_count_(0) {}
   // Returns the number of state change callbacks
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   int state_change_count() { return state_change_count_; }
 
   void OnUndoManagerStateChange() override { ++state_change_count_; }
 
  private:
   int state_change_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 // Tests -----------------------------------------------------------------------

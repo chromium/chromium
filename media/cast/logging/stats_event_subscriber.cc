@@ -159,7 +159,7 @@ void StatsEventSubscriber::OnReceiveFrameEvent(const FrameEvent& frame_event) {
     base::TimeDelta delay_delta = frame_event.delay_delta;
 
     // Positive delay_delta means the frame is late.
-    if (delay_delta > base::TimeDelta()) {
+    if (delay_delta.is_positive()) {
       num_frames_late_++;
       histograms_[LATE_FRAME_MS_HISTO]->Add(delay_delta.InMillisecondsF());
     }
@@ -665,7 +665,7 @@ void StatsEventSubscriber::PopulateFpsStat(base::TimeTicks end_time,
     double fps = 0.0;
     base::TimeDelta duration = (end_time - start_time_);
     int count = it->second.event_counter;
-    if (duration > base::TimeDelta())
+    if (duration.is_positive())
       fps = count / duration.InSecondsF();
     stats_map->insert(std::make_pair(stat, fps));
   }
@@ -695,7 +695,7 @@ void StatsEventSubscriber::PopulateFrameBitrateStat(base::TimeTicks end_time,
   if (it != frame_stats_.end()) {
     double kbps = 0.0;
     base::TimeDelta duration = end_time - start_time_;
-    if (duration > base::TimeDelta()) {
+    if (duration.is_positive()) {
       kbps = it->second.sum_size / duration.InMillisecondsF() * 8;
     }
 
@@ -712,7 +712,7 @@ void StatsEventSubscriber::PopulatePacketBitrateStat(
   if (it != packet_stats_.end()) {
     double kbps = 0;
     base::TimeDelta duration = end_time - start_time_;
-    if (duration > base::TimeDelta()) {
+    if (duration.is_positive()) {
       kbps = it->second.sum_size / duration.InMillisecondsF() * 8;
     }
 

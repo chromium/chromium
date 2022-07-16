@@ -23,6 +23,9 @@ class NavigationItem;
 class NewTabPageTabHelper : public web::WebStateObserver,
                             public web::WebStateUserData<NewTabPageTabHelper> {
  public:
+  NewTabPageTabHelper(const NewTabPageTabHelper&) = delete;
+  NewTabPageTabHelper& operator=(const NewTabPageTabHelper&) = delete;
+
   ~NewTabPageTabHelper() override;
 
   static void CreateForWebState(web::WebState* web_state);
@@ -46,6 +49,10 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // state.
   bool IgnoreLoadRequests() const;
 
+  // Sets the NTP's NavigationItem title and virtualURL to the appropriate
+  // string and chrome://newtab respectively.
+  static void UpdateItem(web::NavigationItem* item);
+
  private:
   friend class web::WebStateUserData<NewTabPageTabHelper>;
 
@@ -62,10 +69,6 @@ class NewTabPageTabHelper : public web::WebStateObserver,
 
   // Enable or disable the tab helper.
   void SetActive(bool active);
-
-  // Sets the NTP's NavigationItem title and virtualURL to the appropriate
-  // string and chrome://newtab respectively.
-  void UpdateItem(web::NavigationItem* item);
 
   // Returns true if an |url| is either chrome://newtab or about://newtab.
   bool IsNTPURL(const GURL& url);
@@ -95,8 +98,6 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   std::unique_ptr<base::OneShotTimer> ignore_load_requests_timer_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(NewTabPageTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_NTP_NEW_TAB_PAGE_TAB_HELPER_H_

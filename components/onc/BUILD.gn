@@ -3,15 +3,14 @@
 # found in the LICENSE file.
 
 component("onc") {
+  defines = [ "IS_ONC_IMPL" ]
+
   sources = [
     "onc_constants.cc",
     "onc_constants.h",
-    "onc_export.h",
     "onc_pref_names.cc",
     "onc_pref_names.h",
   ]
-
-  defines = [ "ONC_IMPLEMENTATION" ]
 
   deps = [
     "//base",

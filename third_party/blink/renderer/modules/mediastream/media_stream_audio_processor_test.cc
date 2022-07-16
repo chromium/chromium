@@ -14,14 +14,12 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/aligned_memory.h"
 #include "base/path_service.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
-#include "media/webrtc/webrtc_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -88,7 +86,7 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     const int packet_size = params.frames_per_buffer() * 2 * params.channels();
     const size_t length = packet_size * kNumberOfPacketsForTest;
     std::unique_ptr<char[]> capture_data(new char[length]);
-    ReadDataFromSpeechFile(capture_data.get(), length);
+    ReadDataFromSpeechFile(capture_data.get(), static_cast<int>(length));
     const int16_t* data_ptr =
         reinterpret_cast<const int16_t*>(capture_data.get());
     std::unique_ptr<media::AudioBus> data_bus =
@@ -107,11 +105,10 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
       data_bus_playout_to_use = data_bus_playout.get();
     }
 
-    const base::TimeDelta input_capture_delay =
-        base::TimeDelta::FromMilliseconds(20);
-    const base::TimeDelta output_buffer_duration =
-        expected_output_buffer_size * base::TimeDelta::FromSeconds(1) /
-        expected_output_sample_rate;
+    const base::TimeDelta input_capture_delay = base::Milliseconds(20);
+    const base::TimeDelta output_buffer_duration = expected_output_buffer_size *
+                                                   base::Seconds(1) /
+                                                   expected_output_sample_rate;
     for (int i = 0; i < kNumberOfPacketsForTest; ++i) {
       data_bus->FromInterleaved<media::SignedInt16SampleTypeTraits>(
           data_ptr, data_bus->frames());
@@ -123,22 +120,23 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
       const bool is_aec_enabled = ap && ap->GetConfig().echo_canceller.enabled;
       if (is_aec_enabled) {
         if (has_keyboard_mic) {
-          for (int i = 0; i < data_bus_playout->channels(); ++i) {
+          for (int channel = 0; channel < data_bus_playout->channels();
+               ++channel) {
             data_bus_playout->SetChannelData(
-                i, const_cast<float*>(data_bus->channel(i)));
+                channel, const_cast<float*>(data_bus->channel(channel)));
           }
         }
         audio_processor->OnPlayoutData(data_bus_playout_to_use,
                                        params.sample_rate(),
-                                       base::TimeDelta::FromMilliseconds(10));
+                                       base::Milliseconds(10));
       }
 
       media::AudioBus* processed_data = nullptr;
       base::TimeDelta capture_delay;
-      int new_volume = 0;
+      absl::optional<double> new_volume;
       int num_preferred_channels = -1;
       while (audio_processor->ProcessAndConsumeData(
-          255, num_preferred_channels, false, &processed_data, &capture_delay,
+          1.0, num_preferred_channels, false, &processed_data, &capture_delay,
           &new_volume)) {
         EXPECT_TRUE(processed_data);
         EXPECT_NEAR(input_capture_delay.InMillisecondsF(),
@@ -380,8 +378,7 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
     // Run the test consecutively to make sure the stereo channels are not
     // flipped back and forth.
     static const int kNumberOfPacketsForTest = 100;
-    const base::TimeDelta pushed_capture_delay =
-        base::TimeDelta::FromMilliseconds(42);
+    const base::TimeDelta pushed_capture_delay = base::Milliseconds(42);
     media::AudioBus* processed_data = nullptr;
 
     for (int num_preferred_channels = 0; num_preferred_channels <= 5;
@@ -390,9 +387,9 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
         audio_processor->PushCaptureData(*wrapper, pushed_capture_delay);
 
         base::TimeDelta capture_delay;
-        int new_volume = 0;
+        absl::optional<double> new_volume;
         EXPECT_TRUE(audio_processor->ProcessAndConsumeData(
-            0, num_preferred_channels, false, &processed_data, &capture_delay,
+            0.0, num_preferred_channels, false, &processed_data, &capture_delay,
             &new_volume));
         EXPECT_TRUE(processed_data);
         EXPECT_EQ(pushed_capture_delay, capture_delay);
@@ -446,329 +443,6 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel,
   // Stop |audio_processor| so that it removes itself from
   // |webrtc_audio_device| and clears its pointer to it.
   audio_processor->Stop();
-}
-
-// Checks that AGC1 is enabled and that the experimental AGC and AGC2 are
-// disabled.
-TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableDefaultAgc1) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kWebRtcHybridAgc);
-
-  blink::AudioProcessingProperties properties;
-  properties.goog_auto_gain_control = true;
-  properties.goog_experimental_auto_gain_control = false;
-
-  scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
-      new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
-  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
-      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, /*use_capture_multi_channel_processing=*/true,
-          webrtc_audio_device));
-
-  absl::optional<webrtc::AudioProcessing::Config> apm_config =
-      audio_processor->GetAudioProcessingModuleConfig();
-  ASSERT_TRUE(apm_config);
-
-  // Check that AGC1 is enabled.
-  EXPECT_TRUE(apm_config->gain_controller1.enabled);
-  EXPECT_EQ(
-      apm_config->gain_controller1.mode,
-  // TODO(bugs.webrtc.org/7909): Add OS_IOS once bug fixed.
-#if defined(OS_ANDROID)
-      webrtc::AudioProcessing::Config::GainController1::Mode::kFixedDigital);
-#else
-      webrtc::AudioProcessing::Config::GainController1::Mode::kAdaptiveAnalog);
-#endif  // defined(OS_ANDROID)
-
-  // Checks that the experimental AGC is disabled.
-#if BUILDFLAG(IS_CHROMECAST)
-  EXPECT_FALSE(apm_config->gain_controller1.analog_gain_controller.enabled);
-#endif
-
-  // Check that AGC2 is disabled.
-  EXPECT_FALSE(apm_config->gain_controller2.enabled);
-  EXPECT_FLOAT_EQ(apm_config->gain_controller2.fixed_digital.gain_db, 0.0f);
-  EXPECT_FALSE(apm_config->gain_controller2.adaptive_digital.enabled);
-}
-
-// Checks that AGC1 and the experimental AGC are enabled and that AGC2 is
-// disabled.
-TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableExperimentalAgc1) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kWebRtcHybridAgc);
-
-  blink::AudioProcessingProperties properties;
-  properties.goog_auto_gain_control = true;
-  properties.goog_experimental_auto_gain_control = true;
-
-  scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
-      new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
-  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
-      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, /*use_capture_multi_channel_processing=*/true,
-          webrtc_audio_device.get()));
-
-  absl::optional<webrtc::AudioProcessing::Config> apm_config =
-      audio_processor->GetAudioProcessingModuleConfig();
-  ASSERT_TRUE(apm_config);
-
-  // Check that AGC1 is enabled.
-  EXPECT_TRUE(apm_config->gain_controller1.enabled);
-  EXPECT_EQ(
-      apm_config->gain_controller1.mode,
-#if defined(OS_ANDROID)
-      webrtc::AudioProcessing::Config::GainController1::Mode::kFixedDigital);
-#else
-      webrtc::AudioProcessing::Config::GainController1::Mode::kAdaptiveAnalog);
-#endif  // defined(OS_ANDROID)
-
-  // Check that the experimental AGC and its digital adaptive controller are
-  // used.
-  EXPECT_TRUE(apm_config->gain_controller1.analog_gain_controller.enabled);
-  EXPECT_TRUE(apm_config->gain_controller1.analog_gain_controller
-                  .enable_digital_adaptive);
-
-  // Check that AGC2 is disabled.
-  EXPECT_FALSE(apm_config->gain_controller2.enabled);
-  EXPECT_FLOAT_EQ(apm_config->gain_controller2.fixed_digital.gain_db, 0.0f);
-  EXPECT_FALSE(apm_config->gain_controller2.adaptive_digital.enabled);
-}
-
-// Checks that AGC1, the experimental AGC and AGC2 adaptive digital are enabled
-// and that the adaptive digital controller of AGC1 is disabled.
-TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgc) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kWebRtcHybridAgc, {{"dry_run", "false"},
-                                   {"vad_reset_period_ms", "1230"},
-                                   {"adjacent_speech_frames_threshold", "4"},
-                                   {"max_gain_change_db_per_second", "5"},
-                                   {"max_output_noise_level_dbfs", "-6"},
-                                   {"sse2_allowed", "true"},
-                                   {"avx2_allowed", "true"},
-                                   {"neon_allowed", "true"}});
-
-  blink::AudioProcessingProperties properties;
-  properties.goog_auto_gain_control = true;
-  properties.goog_experimental_auto_gain_control = true;
-
-  scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
-      new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
-  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
-      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, /*use_capture_multi_channel_processing=*/true,
-          webrtc_audio_device));
-
-  absl::optional<webrtc::AudioProcessing::Config> apm_config =
-      audio_processor->GetAudioProcessingModuleConfig();
-  ASSERT_TRUE(apm_config);
-
-  // Check that AGC1 is enabled except for its digital adaptive controller.
-  EXPECT_TRUE(apm_config->gain_controller1.enabled);
-  EXPECT_EQ(
-      apm_config->gain_controller1.mode,
-#if defined(OS_ANDROID)
-      webrtc::AudioProcessing::Config::GainController1::Mode::kFixedDigital);
-#else
-      webrtc::AudioProcessing::Config::GainController1::Mode::kAdaptiveAnalog);
-#endif  // defined(OS_ANDROID)
-
-  // Checks that the experimental AGC is enabled and that its digital adaptive
-  // controller is disabled.
-  EXPECT_TRUE(apm_config->gain_controller1.analog_gain_controller.enabled);
-  EXPECT_FALSE(apm_config->gain_controller1.analog_gain_controller
-                   .enable_digital_adaptive);
-
-  // Check that AGC2 is enabled and that the properties are correctly read from
-  // the field trials.
-  EXPECT_TRUE(apm_config->gain_controller2.enabled);
-  // `compression_gain_db` has no effect when hybrid AGC is active.
-  EXPECT_EQ(apm_config->gain_controller2.fixed_digital.gain_db, 0);
-
-  const auto& adaptive_digital = apm_config->gain_controller2.adaptive_digital;
-  EXPECT_TRUE(adaptive_digital.enabled);
-  EXPECT_FALSE(adaptive_digital.dry_run);
-  EXPECT_EQ(adaptive_digital.vad_reset_period_ms, 1230);
-  EXPECT_EQ(adaptive_digital.adjacent_speech_frames_threshold, 4);
-  EXPECT_FLOAT_EQ(adaptive_digital.max_gain_change_db_per_second, 5.0f);
-  EXPECT_FLOAT_EQ(adaptive_digital.max_output_noise_level_dbfs, -6.0f);
-  EXPECT_TRUE(adaptive_digital.sse2_allowed);
-  EXPECT_TRUE(adaptive_digital.avx2_allowed);
-  EXPECT_TRUE(adaptive_digital.neon_allowed);
-}
-
-// Checks that AGC1, the experimental AGC and AGC1 adaptive digital are enabled
-// and that AGC2 adaptive digital is enabled in dry-run mode.
-TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgcDryRun) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kWebRtcHybridAgc, {{"dry_run", "true"},
-                                   {"vad_reset_period_ms", "1230"},
-                                   {"adjacent_speech_frames_threshold", "4"},
-                                   {"max_gain_change_db_per_second", "5"},
-                                   {"max_output_noise_level_dbfs", "-6"},
-                                   {"sse2_allowed", "true"},
-                                   {"avx2_allowed", "true"},
-                                   {"neon_allowed", "true"}});
-
-  blink::AudioProcessingProperties properties;
-  properties.goog_auto_gain_control = true;
-  properties.goog_experimental_auto_gain_control = true;
-
-  scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
-      new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
-  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
-      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, /*use_capture_multi_channel_processing=*/true,
-          webrtc_audio_device.get()));
-
-  absl::optional<webrtc::AudioProcessing::Config> apm_config =
-      audio_processor->GetAudioProcessingModuleConfig();
-  ASSERT_TRUE(apm_config);
-
-  // Check that AGC1 is enabled except for its digital adaptive controller.
-  EXPECT_TRUE(apm_config->gain_controller1.enabled);
-  EXPECT_EQ(
-      apm_config->gain_controller1.mode,
-#if defined(OS_ANDROID)
-      webrtc::AudioProcessing::Config::GainController1::Mode::kFixedDigital);
-#else
-      webrtc::AudioProcessing::Config::GainController1::Mode::kAdaptiveAnalog);
-#endif  // defined(OS_ANDROID)
-
-  // Checks that the experimental AGC is enabled as well as its digital adaptive
-  // controller because the AGC2 counterpart runs in dry-run mode.
-  EXPECT_TRUE(apm_config->gain_controller1.analog_gain_controller.enabled);
-  EXPECT_TRUE(apm_config->gain_controller1.analog_gain_controller
-                  .enable_digital_adaptive);
-
-  // Check that AGC2 is enabled and that the properties are correctly read from
-  // the field trials.
-  EXPECT_TRUE(apm_config->gain_controller2.enabled);
-  // `compression_gain_db` has no effect when hybrid AGC is active.
-  EXPECT_EQ(apm_config->gain_controller2.fixed_digital.gain_db, 0);
-
-  const auto& adaptive_digital = apm_config->gain_controller2.adaptive_digital;
-  EXPECT_TRUE(adaptive_digital.enabled);
-  EXPECT_TRUE(adaptive_digital.dry_run);
-  EXPECT_EQ(adaptive_digital.vad_reset_period_ms, 1230);
-  EXPECT_EQ(adaptive_digital.adjacent_speech_frames_threshold, 4);
-  EXPECT_FLOAT_EQ(adaptive_digital.max_gain_change_db_per_second, 5.0f);
-  EXPECT_FLOAT_EQ(adaptive_digital.max_output_noise_level_dbfs, -6.0f);
-  EXPECT_TRUE(adaptive_digital.sse2_allowed);
-  EXPECT_TRUE(adaptive_digital.avx2_allowed);
-  EXPECT_TRUE(adaptive_digital.neon_allowed);
-}
-
-TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgcSimdNotAllowed) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(features::kWebRtcHybridAgc,
-                                                  {{"sse2_allowed", "false"},
-                                                   {"avx2_allowed", "false"},
-                                                   {"neon_allowed", "false"}});
-
-  blink::AudioProcessingProperties properties;
-  properties.goog_auto_gain_control = true;
-  properties.goog_experimental_auto_gain_control = true;
-
-  scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
-      new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
-  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
-      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, /*use_capture_multi_channel_processing=*/true,
-          webrtc_audio_device));
-
-  absl::optional<webrtc::AudioProcessing::Config> apm_config =
-      audio_processor->GetAudioProcessingModuleConfig();
-  ASSERT_TRUE(apm_config);
-
-  EXPECT_FALSE(apm_config->gain_controller2.adaptive_digital.sse2_allowed);
-  EXPECT_FALSE(apm_config->gain_controller2.adaptive_digital.avx2_allowed);
-  EXPECT_FALSE(apm_config->gain_controller2.adaptive_digital.neon_allowed);
-}
-
-TEST_F(MediaStreamAudioProcessorTest,
-       TestAgcEnableClippingControlDefaultParams) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWebRtcAnalogAgcClippingControl);
-
-  blink::AudioProcessingProperties properties;
-  properties.goog_auto_gain_control = true;
-  properties.goog_experimental_auto_gain_control = true;
-
-  scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
-      new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
-  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
-      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, /*use_capture_multi_channel_processing=*/true,
-          webrtc_audio_device));
-
-  absl::optional<webrtc::AudioProcessing::Config> apm_config =
-      audio_processor->GetAudioProcessingModuleConfig();
-  ASSERT_TRUE(apm_config);
-
-  const AnalogGainController& analog_agc =
-      apm_config->gain_controller1.analog_gain_controller;
-  EXPECT_TRUE(analog_agc.clipping_predictor.enabled);
-  EXPECT_EQ(
-      analog_agc.clipping_predictor.mode,
-      AnalogGainController::ClippingPredictor::Mode::kClippingEventPrediction);
-  EXPECT_EQ(analog_agc.clipping_predictor.window_length, 5);
-  EXPECT_EQ(analog_agc.clipping_predictor.reference_window_length, 5);
-  EXPECT_EQ(analog_agc.clipping_predictor.reference_window_delay, 5);
-  EXPECT_FLOAT_EQ(analog_agc.clipping_predictor.clipping_threshold, -1.0f);
-  EXPECT_FLOAT_EQ(analog_agc.clipping_predictor.crest_factor_margin, 3.0f);
-  EXPECT_TRUE(analog_agc.clipping_predictor.use_predicted_step);
-  EXPECT_EQ(analog_agc.clipped_level_step, 15);
-  EXPECT_FLOAT_EQ(analog_agc.clipped_ratio_threshold, 0.1f);
-  EXPECT_EQ(analog_agc.clipped_wait_frames, 300);
-}
-
-TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableClippingControl) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kWebRtcAnalogAgcClippingControl,
-      {{"mode", "2"},  // kFixedStepClippingPeakPrediction
-       {"window_length", "111"},
-       {"reference_window_length", "222"},
-       {"reference_window_delay", "333"},
-       {"clipping_threshold", "4.44"},
-       {"crest_factor_margin", ".555"},
-       {"clipped_level_step", "255"},
-       {"clipped_ratio_threshold", "0.77"},
-       {"clipped_wait_frames", "888"},
-       {"use_predicted_step", "false"}});
-
-  blink::AudioProcessingProperties properties;
-  properties.goog_auto_gain_control = true;
-  properties.goog_experimental_auto_gain_control = true;
-
-  scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
-      new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
-  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
-      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, /*use_capture_multi_channel_processing=*/true,
-          webrtc_audio_device));
-
-  absl::optional<webrtc::AudioProcessing::Config> apm_config =
-      audio_processor->GetAudioProcessingModuleConfig();
-  ASSERT_TRUE(apm_config);
-
-  const AnalogGainController& analog_agc =
-      apm_config->gain_controller1.analog_gain_controller;
-  EXPECT_TRUE(analog_agc.clipping_predictor.enabled);
-  EXPECT_EQ(analog_agc.clipping_predictor.mode,
-            AnalogGainController::ClippingPredictor::Mode::
-                kFixedStepClippingPeakPrediction);
-  EXPECT_EQ(analog_agc.clipping_predictor.window_length, 111);
-  EXPECT_EQ(analog_agc.clipping_predictor.reference_window_length, 222);
-  EXPECT_EQ(analog_agc.clipping_predictor.reference_window_delay, 333);
-  EXPECT_FLOAT_EQ(analog_agc.clipping_predictor.clipping_threshold, 4.44f);
-  EXPECT_FLOAT_EQ(analog_agc.clipping_predictor.crest_factor_margin, 0.555f);
-  EXPECT_FALSE(analog_agc.clipping_predictor.use_predicted_step);
-  EXPECT_EQ(analog_agc.clipped_level_step, 255);
-  EXPECT_FLOAT_EQ(analog_agc.clipped_ratio_threshold, 0.77f);
-  EXPECT_EQ(analog_agc.clipped_wait_frames, 888);
 }
 
 // Ensure that discrete channel layouts do not crash with audio processing

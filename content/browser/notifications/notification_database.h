@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/platform_notification_context.h"
@@ -80,6 +79,9 @@ class CONTENT_EXPORT NotificationDatabase {
   };
 
   NotificationDatabase(const base::FilePath& path, UkmCallback callback);
+
+  NotificationDatabase(const NotificationDatabase&) = delete;
+  NotificationDatabase& operator=(const NotificationDatabase&) = delete;
 
   ~NotificationDatabase();
 
@@ -263,8 +265,6 @@ class CONTENT_EXPORT NotificationDatabase {
 
   // Callback to use for recording UKM metrics. Must be posted to the UI thread.
   UkmCallback record_notification_to_ukm_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationDatabase);
 };
 
 }  // namespace content

@@ -95,7 +95,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
     }
 
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     @Test
     public void testIPHCommandHelper() {
         assertNull(mOptionalNewTabButtonController.get(/*tab*/ null)
@@ -115,7 +115,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void testIPHEvent() {
         doReturn(true).when(mTracker).shouldTriggerHelpUI(
                 FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE);

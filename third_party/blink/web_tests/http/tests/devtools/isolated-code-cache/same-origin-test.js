@@ -30,7 +30,8 @@
   async function stopAndPrintTimeline() {
     await PerformanceTestRunner.stopTimeline();
     await PerformanceTestRunner.printTimelineRecordsWithDetails(
-        TimelineModel.TimelineModel.RecordType.CompileScript);
+        TimelineModel.TimelineModel.RecordType.CompileScript,
+        TimelineModel.TimelineModel.RecordType.CacheScript);
   }
 
   async function expectationComment(msg) {

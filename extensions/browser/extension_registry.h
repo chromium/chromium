@@ -49,6 +49,10 @@ class ExtensionRegistry : public KeyedService {
   };
 
   explicit ExtensionRegistry(content::BrowserContext* browser_context);
+
+  ExtensionRegistry(const ExtensionRegistry&) = delete;
+  ExtensionRegistry& operator=(const ExtensionRegistry&) = delete;
+
   ~ExtensionRegistry() override;
 
   // Returns the instance for the given |browser_context|.
@@ -213,8 +217,6 @@ class ExtensionRegistry : public KeyedService {
   base::ObserverList<ExtensionRegistryObserver>::Unchecked observers_;
 
   content::BrowserContext* const browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionRegistry);
 };
 
 }  // namespace extensions

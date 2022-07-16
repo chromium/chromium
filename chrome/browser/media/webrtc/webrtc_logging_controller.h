@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/rtp_dump_type.h"
@@ -62,6 +61,9 @@ class WebRtcLoggingController
                                         WebRtcLogUploader* log_uploader);
   static WebRtcLoggingController* FromRenderProcessHost(
       content::RenderProcessHost* host);
+
+  WebRtcLoggingController(const WebRtcLoggingController&) = delete;
+  WebRtcLoggingController& operator=(const WebRtcLoggingController&) = delete;
 
   // Sets meta data that will be uploaded along with the log and also written
   // in the beginning of the log. Must be called on the IO thread before calling
@@ -234,8 +236,6 @@ class WebRtcLoggingController
   // "client" meta data key, if exists. 0 means undefined, and is the hash of
   // the empty string.
   int web_app_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcLoggingController);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_LOGGING_CONTROLLER_H_

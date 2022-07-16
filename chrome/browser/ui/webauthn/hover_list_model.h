@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "ui/gfx/vector_icon_types.h"
 
 // List model that controls which item is added to WebAuthN UI views.
@@ -33,6 +32,10 @@ class HoverListModel {
   };
 
   HoverListModel() = default;
+
+  HoverListModel(const HoverListModel&) = delete;
+  HoverListModel& operator=(const HoverListModel&) = delete;
+
   virtual ~HoverListModel() = default;
 
   virtual bool ShouldShowPlaceholderForEmptyList() const = 0;
@@ -70,8 +73,6 @@ class HoverListModel {
 
  private:
   Observer* observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(HoverListModel);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_HOVER_LIST_MODEL_H_

@@ -12,7 +12,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 class ErrorScreensHistogramHelperTest : public testing::Test {
  public:
@@ -75,7 +75,7 @@ TEST_F(ErrorScreensHistogramHelperTest, TestShowHideTime) {
   second_helper_->OnScreenShow();
   base::Time now = base::Time::Now();
   helper_->OnErrorShowTime(NetworkError::ERROR_STATE_PORTAL, now);
-  now += base::TimeDelta::FromMilliseconds(1000);
+  now += base::Milliseconds(1000);
   helper_->OnErrorHideTime(now);
   helper_.reset();
   histograms_.ExpectUniqueSample("OOBE.ErrorScreensTime.TestScreen.Portal",
@@ -89,11 +89,11 @@ TEST_F(ErrorScreensHistogramHelperTest, TestShowHideShowHideTime) {
   second_helper_->OnScreenShow();
   base::Time now = base::Time::Now();
   helper_->OnErrorShowTime(NetworkError::ERROR_STATE_PROXY, now);
-  now += base::TimeDelta::FromMilliseconds(1000);
+  now += base::Milliseconds(1000);
   helper_->OnErrorHideTime(now);
-  now += base::TimeDelta::FromMilliseconds(1000);
+  now += base::Milliseconds(1000);
   helper_->OnErrorShowTime(NetworkError::ERROR_STATE_PORTAL, now);
-  now += base::TimeDelta::FromMilliseconds(1000);
+  now += base::Milliseconds(1000);
   helper_->OnErrorHideTime(now);
   helper_.reset();
   histograms_.ExpectUniqueSample("OOBE.ErrorScreensTime.TestScreen.Portal",
@@ -107,13 +107,13 @@ TEST_F(ErrorScreensHistogramHelperTest, TestShowShowHideTime) {
   second_helper_->OnScreenShow();
   base::Time now = base::Time::Now();
   helper_->OnErrorShowTime(NetworkError::ERROR_STATE_PROXY, now);
-  now += base::TimeDelta::FromMilliseconds(1000);
+  now += base::Milliseconds(1000);
   helper_->OnErrorShowTime(NetworkError::ERROR_STATE_PORTAL, now);
-  now += base::TimeDelta::FromMilliseconds(1000);
+  now += base::Milliseconds(1000);
   helper_->OnErrorHideTime(now);
   helper_.reset();
   histograms_.ExpectUniqueSample("OOBE.ErrorScreensTime.TestScreen.Portal",
                                  2000, 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

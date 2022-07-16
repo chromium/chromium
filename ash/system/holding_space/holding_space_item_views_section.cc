@@ -19,9 +19,9 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/style/platform_style.h"
 
 namespace ash {
 
@@ -30,8 +30,7 @@ namespace {
 using ScrollBarMode = views::ScrollView::ScrollBarMode;
 
 // Animation.
-constexpr base::TimeDelta kAnimationDuration =
-    base::TimeDelta::FromMilliseconds(167);
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(167);
 
 // Helpers ---------------------------------------------------------------------
 
@@ -88,9 +87,8 @@ class HoldingSpaceScrollView : public views::ScrollView,
     // avoid clipping of these focus rings. Note that a clip rect *does* need to
     // be applied to prevent this view from painting its contents outside of its
     // viewport.
-    const float kFocusInsets =
-        kHoldingSpaceFocusInsets -
-        (views::PlatformStyle::kFocusHaloThickness / 2.f);
+    const float kFocusInsets = kHoldingSpaceFocusInsets -
+                               (views::FocusRing::kDefaultHaloThickness / 2.f);
     gfx::Rect bounds = GetLocalBounds();
     bounds.Inset(gfx::Insets(kFocusInsets));
     layer()->SetClipRect(bounds);
@@ -309,7 +307,7 @@ void HoldingSpaceItemViewsSection::RemoveAllHoldingSpaceItemViews() {
   // not visible to the user.
   DCHECK(!IsDrawn() || !container_->IsDrawn() ||
          container_->layer()->opacity() == 0.f);
-  container_->RemoveAllChildViews(/*delete_children=*/true);
+  container_->RemoveAllChildViews();
   views_by_item_id_.clear();
 }
 

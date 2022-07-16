@@ -42,6 +42,10 @@ class MockLoopbackAudioObserver
             this, &MockLoopbackAudioObserver::OnLoopbackAudioImpl));
   }
 
+  MockLoopbackAudioObserver(const MockLoopbackAudioObserver&) = delete;
+  MockLoopbackAudioObserver& operator=(const MockLoopbackAudioObserver&) =
+      delete;
+
   MOCK_METHOD6(OnLoopbackAudio,
                void(int64_t timestamp,
                     SampleFormat sample_format,
@@ -68,8 +72,6 @@ class MockLoopbackAudioObserver
   }
 
   std::vector<float> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockLoopbackAudioObserver);
 };
 
 class ExternalAudioPipelineTest : public ::testing::Test {
@@ -77,6 +79,10 @@ class ExternalAudioPipelineTest : public ::testing::Test {
   ExternalAudioPipelineTest()
       : external_audio_pipeline_support_(
             testing::GetFakeExternalAudioPipelineSupport()) {}
+
+  ExternalAudioPipelineTest(const ExternalAudioPipelineTest&) = delete;
+  ExternalAudioPipelineTest& operator=(const ExternalAudioPipelineTest&) =
+      delete;
 
   void SetUp() override {
     // Set that external library is supported.
@@ -116,8 +122,6 @@ class ExternalAudioPipelineTest : public ::testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalAudioPipelineTest);
 };
 
 // Check that |expected| matches |actual| exactly.

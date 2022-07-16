@@ -22,6 +22,11 @@
 class SessionCrashedBubbleViewTest : public DialogBrowserTest {
  public:
   SessionCrashedBubbleViewTest() = default;
+
+  SessionCrashedBubbleViewTest(const SessionCrashedBubbleViewTest&) = delete;
+  SessionCrashedBubbleViewTest& operator=(const SessionCrashedBubbleViewTest&) =
+      delete;
+
   ~SessionCrashedBubbleViewTest() override = default;
 
   void ShowUi(const std::string& name) override {
@@ -32,9 +37,6 @@ class SessionCrashedBubbleViewTest : public DialogBrowserTest {
 
  protected:
   views::BubbleDialogDelegate* crash_bubble_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionCrashedBubbleViewTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,

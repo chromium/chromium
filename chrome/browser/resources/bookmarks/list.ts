@@ -11,29 +11,24 @@ import './item.js';
 import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
-import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/js/list_property_update_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {afterNextRender, html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {deselectItems, selectAll, selectItem, updateAnchor} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {MenuSource} from './constants.js';
 import {BookmarksItemElement} from './item.js';
-import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
-import {BookmarksPageState, OpenCommandMenuDetail} from './types.js';
+import {StoreClientMixin} from './store_client_mixin.js';
+import {OpenCommandMenuDetail} from './types.js';
 import {canReorderChildren, getDisplayedList} from './util.js';
 
 const BookmarksListElementBase =
-    mixinBehaviors([StoreClient, ListPropertyUpdateBehavior], PolymerElement) as
-    {
-      new (): PolymerElement & BookmarksStoreClientInterface &
-      StoreObserver<BookmarksPageState>& ListPropertyUpdateBehavior
-    };
+    StoreClientMixin(ListPropertyUpdateMixin(PolymerElement));
 
 export interface BookmarksListElement {
   $: {
@@ -110,17 +105,11 @@ export class BookmarksListElement extends BookmarksListElementBase {
     list.scrollTarget = this;
 
     this.watch('displayedIds_', function(state) {
-      return getDisplayedList(state as BookmarksPageState);
+      return getDisplayedList(state);
     });
-    this.watch('searchTerm_', function(state) {
-      return (state as BookmarksPageState).search.term;
-    });
-    this.watch('selectedFolder_', function(state) {
-      return (state as BookmarksPageState).selectedFolder;
-    });
-    this.watch('selectedItems_', function(state) {
-      return (state as BookmarksPageState).selection.items;
-    });
+    this.watch('searchTerm_', state => state.search.term);
+    this.watch('selectedFolder_', state => state.selectedFolder);
+    this.watch('selectedItems_', state => state.selection.items);
     this.updateFromStore();
 
     this.$.list.addEventListener(
@@ -371,6 +360,12 @@ export class BookmarksListElement extends BookmarksListElementBase {
 
   private getAriaSelected_(id: string): boolean {
     return this.selectedItems_.has(id);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'bookmarks-list': BookmarksListElement;
   }
 }
 

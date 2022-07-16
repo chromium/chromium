@@ -15,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -161,6 +160,10 @@ class FileBrowserHandlerExecutor {
                              const Extension* extension,
                              const std::string& action_id);
 
+  FileBrowserHandlerExecutor(const FileBrowserHandlerExecutor&) = delete;
+  FileBrowserHandlerExecutor& operator=(const FileBrowserHandlerExecutor&) =
+      delete;
+
   // Executes the task for each file. |done| will be run with the result.
   void Execute(const std::vector<FileSystemURL>& file_urls,
                file_tasks::FileTaskFinishedCallback done);
@@ -201,8 +204,6 @@ class FileBrowserHandlerExecutor {
   const std::string action_id_;
   file_tasks::FileTaskFinishedCallback done_;
   base::WeakPtrFactory<FileBrowserHandlerExecutor> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileBrowserHandlerExecutor);
 };
 
 // static
@@ -377,7 +378,7 @@ void FileBrowserHandlerExecutor::SetupPermissionsAndDispatchEvent(
       file_definition_list.get(), extension_.get(), handler_pid);
 
   std::unique_ptr<base::ListValue> event_args(new base::ListValue());
-  event_args->AppendString(action_id_);
+  event_args->Append(action_id_);
   auto details = std::make_unique<base::DictionaryValue>();
   // Get file definitions. These will be replaced with Entry instances by
   // dispatchEvent() method from event_binding.js.

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_ANDROID_INTERCEPT_OMA_DOWNLOAD_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_DOWNLOAD_ANDROID_INTERCEPT_OMA_DOWNLOAD_NAVIGATION_THROTTLE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
 
 // Used to intercept the OMA DRM download from navigation and pass it to Android
@@ -15,6 +14,12 @@ class InterceptOMADownloadNavigationThrottle
  public:
   static std::unique_ptr<content::NavigationThrottle> Create(
       content::NavigationHandle* handle);
+
+  InterceptOMADownloadNavigationThrottle(
+      const InterceptOMADownloadNavigationThrottle&) = delete;
+  InterceptOMADownloadNavigationThrottle& operator=(
+      const InterceptOMADownloadNavigationThrottle&) = delete;
+
   ~InterceptOMADownloadNavigationThrottle() override;
 
   // content::NavigationThrottle:
@@ -28,8 +33,6 @@ class InterceptOMADownloadNavigationThrottle
 
   // Helper method to intercept the download.
   void InterceptDownload();
-
-  DISALLOW_COPY_AND_ASSIGN(InterceptOMADownloadNavigationThrottle);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_INTERCEPT_OMA_DOWNLOAD_NAVIGATION_THROTTLE_H_

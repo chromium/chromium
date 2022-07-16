@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "media/base/android/media_drm_bridge_client.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media_export.h"
@@ -22,6 +21,10 @@ namespace media {
 class MEDIA_EXPORT MediaDrmBridgeDelegate {
  public:
   MediaDrmBridgeDelegate();
+
+  MediaDrmBridgeDelegate(const MediaDrmBridgeDelegate&) = delete;
+  MediaDrmBridgeDelegate& operator=(const MediaDrmBridgeDelegate&) = delete;
+
   virtual ~MediaDrmBridgeDelegate();
 
   // Returns the UUID of the DRM scheme that this delegate applies to.
@@ -38,9 +41,6 @@ class MEDIA_EXPORT MediaDrmBridgeDelegate {
       const std::vector<uint8_t>& init_data,
       std::vector<uint8_t>* init_data_out,
       std::vector<std::string>* optional_parameters_out);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaDrmBridgeDelegate);
 };
 
 }  // namespace media

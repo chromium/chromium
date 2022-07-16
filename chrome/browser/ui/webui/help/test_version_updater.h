@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_HELP_TEST_VERSION_UPDATER_H_
 #define CHROME_BROWSER_UI_WEBUI_HELP_TEST_VERSION_UPDATER_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
@@ -17,6 +16,10 @@
 class TestVersionUpdater : public VersionUpdater {
  public:
   TestVersionUpdater();
+
+  TestVersionUpdater(const TestVersionUpdater&) = delete;
+  TestVersionUpdater& operator=(const TestVersionUpdater&) = delete;
+
   ~TestVersionUpdater() override;
 
   void CheckForUpdate(StatusCallback callback, PromoteCallback) override;
@@ -46,8 +49,6 @@ class TestVersionUpdater : public VersionUpdater {
   std::string version_;
   int64_t update_size_ = 0;
   std::u16string message_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestVersionUpdater);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_HELP_TEST_VERSION_UPDATER_H_

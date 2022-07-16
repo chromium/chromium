@@ -29,7 +29,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SavingBrowserHistoryDisabled) {
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("empty.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // Verify that the navigation wasn't saved in the history.
   ui_test_utils::HistoryEnumerator enumerator1(browser()->profile());
   EXPECT_EQ(0u, enumerator1.urls().size());
@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SavingBrowserHistoryDisabled) {
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
                nullptr);
   UpdateProviderPolicy(policies);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // Verify that the navigation was saved in the history.
   ui_test_utils::HistoryEnumerator enumerator2(browser()->profile());
   ASSERT_EQ(1u, enumerator2.urls().size());

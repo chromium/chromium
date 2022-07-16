@@ -15,11 +15,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
 
-namespace chromeos {
+namespace ash {
 
 constexpr char kPacketCaptureNotificationId[] = "debugd-packetcapture";
-
-using ash::AshTestBase;
 
 class DebugdNotificationHandlerTest : public AshTestBase {
  public:
@@ -31,14 +29,14 @@ class DebugdNotificationHandlerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     debug_daemon_client_ = std::make_unique<chromeos::FakeDebugDaemonClient>();
-    handler_ = std::make_unique<chromeos::DebugdNotificationHandler>(
-        debug_daemon_client_.get());
+    handler_ =
+        std::make_unique<DebugdNotificationHandler>(debug_daemon_client_.get());
     message_center_ = message_center::MessageCenter::Get();
   }
 
  protected:
   std::unique_ptr<chromeos::DebugDaemonClient> debug_daemon_client_;
-  std::unique_ptr<chromeos::DebugdNotificationHandler> handler_;
+  std::unique_ptr<DebugdNotificationHandler> handler_;
   message_center::MessageCenter* message_center_;
 };
 
@@ -80,4 +78,4 @@ TEST_F(DebugdNotificationHandlerTest,
       kPacketCaptureNotificationId));
 }
 
-}  // namespace chromeos
+}  // namespace ash

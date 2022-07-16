@@ -106,7 +106,8 @@ enum Event {
 // Web: this attribute is only used in web content.
 //
 // Native: this attribute is only used in native UI.
-// Next value: 185
+// Next version: 4
+// Next value: 209
 [Extensible, Stable, Uuid="d258eb73-e0cc-490c-b881-80ee11d3fec2"]
 enum Role {
   // Used for role="none"/"presentation" -- ignored in platform tree.
@@ -206,7 +207,7 @@ enum Role {
   kGenericContainer = 88,
   // --------------------------------------------------------------
   // ARIA Graphics module roles:
-  // https://rawgit.com/w3c/graphics-aam/master/#mapping_role_table
+  // https://rawgit.com/w3c/graphics-aam/main/#mapping_role_table
   kGraphicsDocument = 89,
   kGraphicsObject = 90,
   kGraphicsSymbol = 91,
@@ -245,6 +246,30 @@ enum Role {
   kMark = 119,
   kMarquee = 120,
   kMath = 121,
+  // MathML roles
+  // https://w3c.github.io/mathml-aam
+  [MinVersion=3] kMathMLFraction = 188,
+  [MinVersion=3] kMathMLIdentifier = 189,
+  [MinVersion=2] kMathMLMath = 187,
+  [MinVersion=3] kMathMLMultiscripts = 190,
+  [MinVersion=3] kMathMLNoneScript = 191,
+  [MinVersion=3] kMathMLNumber = 192,
+  [MinVersion=3] kMathMLOperator = 193,
+  [MinVersion=3] kMathMLOver = 194,
+  [MinVersion=3] kMathMLPrescriptDelimiter = 195,
+  [MinVersion=3] kMathMLRoot = 196,
+  [MinVersion=3] kMathMLRow = 197,
+  [MinVersion=3] kMathMLSquareRoot = 198,
+  [MinVersion=3] kMathMLStringLiteral = 199,
+  [MinVersion=3] kMathMLSub = 200,
+  [MinVersion=3] kMathMLSubSup = 201,
+  [MinVersion=3] kMathMLSup = 202,
+  [MinVersion=3] kMathMLTable = 203,
+  [MinVersion=3] kMathMLTableCell = 204,
+  [MinVersion=3] kMathMLTableRow = 205,
+  [MinVersion=3] kMathMLText = 206,
+  [MinVersion=3] kMathMLUnder = 207,
+  [MinVersion=3] kMathMLUnderOver = 208,
   kMenu = 122,
   kMenuBar = 123,
   kMenuItem = 124,
@@ -284,7 +309,9 @@ enum Role {
   kStaticText = 158,
   kStatus = 159,
   kStrong = 160,
+  [MinVersion=1] kSubscript = 185,
   kSuggestion = 161,
+  [MinVersion=1] kSuperscript = 186,
   kSvgRoot = 162,
   kSwitch = 163,
   kTab = 164,
@@ -520,7 +547,8 @@ enum StringAttribute {
   [Default]kNone = 0,
   kAccessKey = 1,
   kAppId = 2,
-  // Only used when invalid_state == invalid_state_other.
+  // AriaInvalidValue is deprecated. Spelling and Grammar errors are stored
+  // using markers and invalid state in general is stored using invalidState.
   kAriaInvalidValue = 3,
   kAutoComplete = 4,
   kCheckedStateDescription = 5,
@@ -698,6 +726,7 @@ enum IntAttribute {
   kDOMNodeId = 60,
 };
 
+// Next version: 2
 // Next value: 8
 [Extensible, Stable, Uuid="6ee6b6eb-8af4-488f-96d5-343e56be5beb"]
 enum FloatAttribute {
@@ -719,6 +748,10 @@ enum FloatAttribute {
 
   // The text indent of the text, in mm.
   kTextIndent = 7,
+
+  // Only on ChromeOS. The scaling factor applied to the child tree.
+  // Used with kChildTreeId.
+  [MinVersion=1] kChildTreeScale = 8,
 };
 
 // These attributes can take three states:
@@ -805,10 +838,12 @@ enum BoolAttribute {
   kTouchPassthrough = 20,
 };
 
-// Next value: 16
+// Next version: 4
+// Next value: 21
 [Extensible, Stable, Uuid="6d1f823f-28a9-4263-bc4a-69fb19a4ef46"]
 enum IntListAttribute {
   [Default]kNone = 0,
+
   // Ids of nodes that are children of this node logically, but are
   // not children of this node in the tree structure. As an example,
   // a table cell is a child of a row, and an 'indirect' child of a
@@ -825,10 +860,15 @@ enum IntListAttribute {
 
   // For static text. These int lists must be the same size; they represent
   // the start and end character offset of each marker. Examples of markers
-  // include spelling and grammar errors, and find-in-page matches.
+  // include spelling and grammar errors, highlights, and find-in-page matches.
   kMarkerTypes = 8,
   kMarkerStarts = 9,
   kMarkerEnds = 10,
+  // Types of the custom highlights (if any) (see |HighlightType|).
+  [MinVersion=3] kHighlightTypes = 20,
+
+  // Caret bounds in screen coordinates - [left, top, width, height].
+  [MinVersion=1] kCaretBounds = 16,
 
   // For inline text. This is the pixel position of the end of this
   // character within the bounding rectangle of this object, in the
@@ -838,14 +878,18 @@ enum IntListAttribute {
   // is the right coordinate of the second character, and so on.
   kCharacterOffsets = 11,
 
-  // Used for caching. Do not read directly. Use
-  // |AXNode::GetOrComputeLineStartOffsets|
-  // For all text fields and content editable roots: A list of the start
-  // offsets of each line inside this object.
-  kCachedLineStarts = 12,
+  // A list of the start and end character offsets of each line inside this
+  // node's on-screen text.
+  kLineStarts = 12,
+  [MinVersion=2] kLineEnds = 17,
 
-  // For inline text. These int lists must be the same size; they represent
-  // the start and end character offset of each word within this text.
+  // A list of the start and end character offsets of each sentence inside this
+  // node's on-screen text.
+  [MinVersion=2] kSentenceStarts = 18,
+  [MinVersion=2] kSentenceEnds = 19,
+
+  // A list of the start and end character offsets of each word inside this
+  // node's on-screen text.
   kWordStarts = 13,
   kWordEnds = 14,
 
@@ -884,6 +928,14 @@ enum MarkerType {
   // purposes
   kActiveSuggestion = 16,
   kSuggestion = 32,
+  kHighlight = 64,
+};
+
+enum HighlightType {
+  kNone = 0,
+  kHighlight = 1,
+  kSpellingError = 2,
+  kGrammarError = 3,
 };
 
 // Describes a move direction in the accessibility tree that is independent of
@@ -934,7 +986,7 @@ enum InputEventType {
   kInsertText = 1,
   kInsertLineBreak = 2,
   kInsertParagraph = 3,
-  kInsertOrderedList= 4,
+  kInsertOrderedList = 4,
   kInsertUnorderedList = 5,
   kInsertHorizontalRule = 6,
   kInsertFromPaste = 7,
@@ -985,12 +1037,15 @@ enum InputEventType {
 // e.g. at the start or end of a text field.
 //
 // TODO(nektar): Split TextBoundary into TextUnit and TextBoundary.
-// Next value: 20
+// Next version: 3
+// Next value: 23
 [Extensible, Stable, Uuid="8e6e10f0-5c0f-4c1e-a67e-9407ee10bd85"]
 enum TextBoundary {
   [Default]kNone = 0,
   kCharacter = 1,
-  kFormat = 2,
+  kFormatEnd = 2,
+  [MinVersion=2] kFormatStart = 21,
+  [MinVersion=2] kFormatStartOrEnd = 22,
   kLineEnd = 3,
   kLineStart = 4,
   kLineStartOrEnd = 5,
@@ -1000,6 +1055,13 @@ enum TextBoundary {
   kPageStartOrEnd = 9,
   kParagraphEnd = 10,
   kParagraphStart = 11,
+
+  // For UI Automation, empty lines after a paragraph should be merged into the
+  // preceding paragraph.
+  //
+  // See https://docs.microsoft.com/en-us/windows/desktop/api/UIAutomationCore/ne-uiautomationcore-textunit
+  [MinVersion=1] kParagraphStartSkippingEmptyParagraphs = 20,
+
   kParagraphStartOrEnd = 12,
   kSentenceEnd = 13,
   kSentenceStart = 14,
@@ -1079,7 +1141,6 @@ enum InvalidState {
   kNone,
   kFalse,
   kTrue,
-  kOther,
 };
 
 // Input restriction associated with an object.
@@ -1127,6 +1188,7 @@ enum DescriptionFrom {
   kRelatedElement,
   kRubyAnnotation,
   kSummary,  // HTML-AAM 5.8.2
+  kSvgDescElement,
   kTableCaption,  // HTML-AAM 5.9.2
   kTitle
 };

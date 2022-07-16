@@ -27,6 +27,11 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   // present UI.
   CardUnmaskPromptViewBridge(CardUnmaskPromptController* controller,
                              UIViewController* base_view_controller);
+
+  CardUnmaskPromptViewBridge(const CardUnmaskPromptViewBridge&) = delete;
+  CardUnmaskPromptViewBridge& operator=(const CardUnmaskPromptViewBridge&) =
+      delete;
+
   ~CardUnmaskPromptViewBridge() override;
 
   // CardUnmaskPromptView:
@@ -56,8 +61,6 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   __weak UIViewController* base_view_controller_;
 
   base::WeakPtrFactory<CardUnmaskPromptViewBridge> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CardUnmaskPromptViewBridge);
 };
 
 }  // namespace autofill

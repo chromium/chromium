@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 
@@ -25,6 +24,9 @@ class RouteMessageObserver {
   // |route_id|: ID of MediaRoute to listen for messages.
   RouteMessageObserver(MediaRouter* router, const MediaRoute::Id& route_id);
 
+  RouteMessageObserver(const RouteMessageObserver&) = delete;
+  RouteMessageObserver& operator=(const RouteMessageObserver&) = delete;
+
   virtual ~RouteMessageObserver();
 
   // Invoked by |router_| whenever messages are received from the route sink.
@@ -37,8 +39,6 @@ class RouteMessageObserver {
  private:
   MediaRouter* const router_;
   const MediaRoute::Id route_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(RouteMessageObserver);
 };
 
 }  // namespace media_router

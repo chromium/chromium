@@ -1,0 +1,40 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module parent_access_ui.mojom;
+
+enum GetOAuthTokenStatus {
+  kSuccess,
+  kError,
+  kOnlyOneFetchAtATime,
+};
+
+// Result of the parent access flow returned for either of two kinds of the
+// flow: parent verification and parent consent.
+enum ParentAccessResultStatus {
+  // Indicates that the parent's identity was verified.
+  // Returned by either verification or consent flow.
+  // In consent flow it also means that parent provided the consent and
+  // that consent was recorded.
+  kParentVerified,
+  // Indicates that the parent's identity was verified and the parent did not
+  // consent for the requested action.
+  // Can be only returned for the consent flow.
+  kConsentDeclined,
+  // An internal error occurred in any of the flows.
+  // The user should be prompted with an unrecoverable error in this case.
+  kError,
+};
+
+// Interface that supports integration between the ParentAccess WebUI and
+// ChromeOS.
+interface ParentAccessUIHandler {
+  // Returns the oauth token to be passed to the server.
+  GetOAuthToken() => (GetOAuthTokenStatus status, string oauth_token);
+
+  // When called, signals that the server widget has provided a result.
+  // Returns an enum indicating the result of parsing the result.
+  OnParentAccessResult(string parent_access_result) =>
+     (ParentAccessResultStatus status);
+};

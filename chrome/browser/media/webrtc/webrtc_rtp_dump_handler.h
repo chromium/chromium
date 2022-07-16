@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/webrtc/rtp_dump_type.h"
@@ -51,6 +50,10 @@ class WebRtcRtpDumpHandler {
   // which should guarantee the uniqueness across tabs and dump streams in
   // practice.
   explicit WebRtcRtpDumpHandler(const base::FilePath& dump_dir);
+
+  WebRtcRtpDumpHandler(const WebRtcRtpDumpHandler&) = delete;
+  WebRtcRtpDumpHandler& operator=(const WebRtcRtpDumpHandler&) = delete;
+
   ~WebRtcRtpDumpHandler();
 
   // Starts the specified type of dumping. Incoming/outgoing dumping can be
@@ -133,8 +136,6 @@ class WebRtcRtpDumpHandler {
   std::unique_ptr<WebRtcRtpDumpWriter> dump_writer_;
 
   base::WeakPtrFactory<WebRtcRtpDumpHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcRtpDumpHandler);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_RTP_DUMP_HANDLER_H_

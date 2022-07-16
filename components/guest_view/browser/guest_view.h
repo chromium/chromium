@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
 #define COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
 
-#include "base/macros.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "content/public/browser/render_frame_host.h"
@@ -38,6 +37,9 @@ class GuestView : public GuestViewBase {
     return FromWebContents(web_contents);
   }
 
+  GuestView(const GuestView&) = delete;
+  GuestView& operator=(const GuestView&) = delete;
+
   // GuestViewBase implementation.
   const char* GetViewType() const final {
     return T::Type;
@@ -65,8 +67,6 @@ class GuestView : public GuestViewBase {
 
     return static_cast<T*>(guest);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(GuestView);
 };
 
 }  // namespace guest_view

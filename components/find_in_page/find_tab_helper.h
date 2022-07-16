@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/find_in_page/find_notification_details.h"
 #include "content/public/browser/web_contents_user_data.h"

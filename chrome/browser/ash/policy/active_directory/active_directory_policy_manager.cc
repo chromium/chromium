@@ -34,7 +34,7 @@ constexpr const char* kPoliciesToExpand[] = {key::kNativePrinters,
 
 // Fetch policy every 90 minutes which matches the Windows default:
 // https://technet.microsoft.com/en-us/library/cc940895.aspx
-constexpr base::TimeDelta kFetchInterval = base::TimeDelta::FromMinutes(90);
+constexpr base::TimeDelta kFetchInterval = base::Minutes(90);
 
 void RunRefreshCallback(base::OnceCallback<void(bool success)> callback,
                         authpolicy::ErrorType error) {

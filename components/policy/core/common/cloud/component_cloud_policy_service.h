@@ -64,11 +64,6 @@ class POLICY_EXPORT ComponentCloudPolicyService
   // allowed values are: |dm_protocol::kChromeExtensionPolicyType|,
   // |dm_protocol::kChromeSigninExtensionPolicyType|.
   //
-  // |policy_source| specifies where the policy originates from, and can be used
-  // to configure precedence when the same components are configured by policies
-  // from different sources. It only accepts POLICY_SOURCE_CLOUD and
-  // POLICY_SOURCE_PRIORITY_CLOUD now.
-  //
   // The |delegate| is notified of updates to the downloaded policies and must
   // outlive this object.
   //
@@ -93,7 +88,6 @@ class POLICY_EXPORT ComponentCloudPolicyService
   // |backend_task_runner|, which must support file I/O.
   ComponentCloudPolicyService(
       const std::string& policy_type,
-      PolicySource policy_source,
       Delegate* delegate,
       SchemaRegistry* schema_registry,
       CloudPolicyCore* core,

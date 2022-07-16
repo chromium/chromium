@@ -75,6 +75,10 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Node {
 
   // Does not take ownership of the delegate.
   Node(const NodeName& name, NodeDelegate* delegate);
+
+  Node(const Node&) = delete;
+  Node& operator=(const Node&) = delete;
+
   ~Node();
 
   // Returns true iff there are no open ports referring to another node or ports
@@ -185,6 +189,10 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Node {
   class DelegateHolder {
    public:
     DelegateHolder(Node* node, NodeDelegate* delegate);
+
+    DelegateHolder(const DelegateHolder&) = delete;
+    DelegateHolder& operator=(const DelegateHolder&) = delete;
+
     ~DelegateHolder();
 
     NodeDelegate* operator->() const {
@@ -201,8 +209,6 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Node {
 
     Node* const node_;
     NodeDelegate* const delegate_;
-
-    DISALLOW_COPY_AND_ASSIGN(DelegateHolder);
   };
 
   int OnUserMessage(std::unique_ptr<UserMessageEvent> message);
@@ -310,8 +316,6 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Node {
   // port on a peer node. The key to this map is the corresponding peer node
   // name.
   std::unordered_map<NodeName, PeerPortMap> peer_port_maps_;
-
-  DISALLOW_COPY_AND_ASSIGN(Node);
 };
 
 }  // namespace ports

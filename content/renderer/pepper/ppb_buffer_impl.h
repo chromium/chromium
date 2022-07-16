@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -22,6 +21,9 @@ class PPB_Buffer_Impl : public ppapi::Resource,
   static PP_Resource Create(PP_Instance instance, uint32_t size);
   static scoped_refptr<PPB_Buffer_Impl> CreateResource(PP_Instance instance,
                                                        uint32_t size);
+
+  PPB_Buffer_Impl(const PPB_Buffer_Impl&) = delete;
+  PPB_Buffer_Impl& operator=(const PPB_Buffer_Impl&) = delete;
 
   virtual PPB_Buffer_Impl* AsPPB_Buffer_Impl();
 
@@ -52,8 +54,6 @@ class PPB_Buffer_Impl : public ppapi::Resource,
   base::WritableSharedMemoryMapping shared_mapping_;
   uint32_t size_;
   int map_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_Buffer_Impl);
 };
 
 // Ensures that the given buffer is mapped, and returns it to its previous
@@ -61,6 +61,10 @@ class PPB_Buffer_Impl : public ppapi::Resource,
 class BufferAutoMapper {
  public:
   explicit BufferAutoMapper(ppapi::thunk::PPB_Buffer_API* api);
+
+  BufferAutoMapper(const BufferAutoMapper&) = delete;
+  BufferAutoMapper& operator=(const BufferAutoMapper&) = delete;
+
   ~BufferAutoMapper();
 
   // Will be NULL on failure to map.
@@ -74,8 +78,6 @@ class BufferAutoMapper {
 
   const uint8_t* data_;
   uint32_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferAutoMapper);
 };
 
 }  // namespace content

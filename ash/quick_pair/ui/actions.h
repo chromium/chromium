@@ -19,8 +19,9 @@ enum class COMPONENT_EXPORT(QUICK_PAIR_UI) DiscoveryAction {
 
 enum class COMPONENT_EXPORT(QUICK_PAIR_UI) AssociateAccountAction {
   kAssoicateAccount = 0,
-  kDismissedByUser = 1,
-  kDismissed = 2
+  kLearnMore = 1,
+  kDismissedByUser = 2,
+  kDismissed = 3
 };
 
 enum class COMPONENT_EXPORT(QUICK_PAIR_UI) CompanionAppAction {

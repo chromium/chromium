@@ -20,6 +20,11 @@ class WaylandClientTestSuiteServer : public ash::AshTestSuite {
                                                                        char**)>;
 
   WaylandClientTestSuiteServer(int argc, char** argv);
+
+  WaylandClientTestSuiteServer(const WaylandClientTestSuiteServer&) = delete;
+  WaylandClientTestSuiteServer& operator=(const WaylandClientTestSuiteServer&) =
+      delete;
+
   ~WaylandClientTestSuiteServer() override;
 
   int Run();
@@ -47,8 +52,6 @@ class WaylandClientTestSuiteServer : public ash::AshTestSuite {
 
   // Result of RunTestsOnClientThread().
   int result_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandClientTestSuiteServer);
 };
 
 }  // namespace exo

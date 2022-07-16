@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
@@ -33,6 +32,10 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
       const blink::StorageKey& storage_key,
       base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
       scoped_refptr<base::SequencedTaskRunner> idb_runner);
+
+  TransactionImpl(const TransactionImpl&) = delete;
+  TransactionImpl& operator=(const TransactionImpl&) = delete;
+
   ~TransactionImpl() override;
 
   // blink::mojom::IDBTransaction implementation
@@ -47,9 +50,6 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
            blink::mojom::IDBPutMode mode,
            const std::vector<blink::IndexedDBIndexKeys>& index_keys,
            blink::mojom::IDBTransaction::PutCallback callback) override;
-  void PutAll(int64_t object_store_id,
-              std::vector<blink::mojom::IDBPutParamsPtr> puts,
-              PutAllCallback callback) override;
   void Commit(int64_t num_errors_handled) override;
 
   void OnGotUsageAndQuotaForCommit(blink::mojom::QuotaStatusCode status,
@@ -72,8 +72,6 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<TransactionImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TransactionImpl);
 };
 
 }  // namespace content

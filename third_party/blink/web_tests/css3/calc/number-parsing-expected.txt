@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Ensure using calc() for CSS numbers does not crash or produce incorrect values. assert_equals: -webkit-box-ordinal-group: calc(6 + 4) expected "10" but got "calc(10)"
+Harness: the test ran to completion.
+

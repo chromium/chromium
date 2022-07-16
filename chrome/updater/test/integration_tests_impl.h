@@ -7,22 +7,29 @@
 
 #include <string>
 
+#include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
-#include "chrome/updater/updater_scope.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
+class Value;
 class Version;
 }  // namespace base
 
 class GURL;
 
 namespace updater {
+
+enum class UpdaterScope;
+
 namespace test {
+
+class ScopedServer;
 
 // Prints the updater.log file to stdout.
 void PrintLog(UpdaterScope scope);
@@ -49,6 +56,10 @@ void CopyLog(const base::FilePath& src_dir);
 // prior to completing the actual uninstallation.
 void SleepFor(int seconds);
 
+// Waits for a given predicate to become true, testing it by polling. Returns
+// true if the predicate becomes true before a timeout, otherwise returns false.
+bool WaitFor(base::RepeatingCallback<bool()> predicate);
+
 // Returns the path to the updater data dir.
 absl::optional<base::FilePath> GetDataDirPath(UpdaterScope scope);
 
@@ -62,8 +73,8 @@ void Install(UpdaterScope scope);
 // are updated correctly.
 void ExpectActiveUpdater(UpdaterScope scope);
 
-void ExpectVersionActive(const std::string& version);
-void ExpectVersionNotActive(const std::string& version);
+void ExpectVersionActive(UpdaterScope scope, const std::string& version);
+void ExpectVersionNotActive(UpdaterScope scope, const std::string& version);
 
 // Uninstalls the updater. If the updater was installed during the test, it
 // should be uninstalled before the end of the test to avoid having an actual
@@ -74,9 +85,11 @@ void Uninstall(UpdaterScope scope);
 // `exit_code`. The server should exit a few seconds after.
 void RunWake(UpdaterScope scope, int exit_code);
 
-// Registers the test app. As a result, the bundled updater is installed,
-// promoted and registered.
-void RegisterTestApp(UpdaterScope scope);
+// Invokes the active instance's UpdateService::Update (via RPC) for an app.
+void Update(UpdaterScope scope, const std::string& app_id);
+
+// Invokes the active instance's UpdateService::UpdateAll (via RPC).
+void UpdateAll(UpdaterScope scope);
 
 // Runs the command and waits for it to exit or time out.
 bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code);
@@ -91,7 +104,7 @@ absl::optional<base::FilePath> GetFakeUpdaterInstallFolderPath(
     const base::Version& version);
 
 // Creates Prefs with the fake updater version set as active.
-void SetupFakeUpdaterPrefs(const base::Version& version);
+void SetupFakeUpdaterPrefs(UpdaterScope scope, const base::Version& version);
 
 // Creates an install folder on the system with the fake updater version.
 void SetupFakeUpdaterInstallFolder(UpdaterScope scope,
@@ -115,24 +128,53 @@ void ExpectActive(UpdaterScope scope, const std::string& app_id);
 // Expects that the active bit for `app_id` is unset.
 void ExpectNotActive(UpdaterScope scope, const std::string& app_id);
 
-void SetExistenceCheckerPath(const std::string& app_id,
+void SetExistenceCheckerPath(UpdaterScope scope,
+                             const std::string& app_id,
                              const base::FilePath& path);
 
-void SetServerStarts(int value);
+void SetServerStarts(UpdaterScope scope, int value);
 
-void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id);
+void ExpectAppUnregisteredExistenceCheckerPath(UpdaterScope scope,
+                                               const std::string& app_id);
 
-void RegisterApp(const std::string& app_id);
+void ExpectAppVersion(UpdaterScope scope,
+                      const std::string& app_id,
+                      const base::Version& version);
+
+void RegisterApp(UpdaterScope scope, const std::string& app_id);
 
 void WaitForServerExit(UpdaterScope scope);
 
 #if defined(OS_WIN)
 void ExpectInterfacesRegistered(UpdaterScope scope);
+void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
+                                    const std::string& app_id);
+void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope);
+void RunTestServiceCommand(const std::string& sub_command);
+
+// Calls a function defined in test/service/win/rpc_client.py.
+// Entries of the `arguments` dictionary should be the function's parameter
+// name/value pairs.
+void InvokeTestServiceFunction(
+    const std::string& function_name,
+    const base::flat_map<std::string, base::Value>& arguments);
 #endif  // OS_WIN
 
 // Returns the number of files in the directory, not including directories,
 // links, or dot dot.
 int CountDirectoryFiles(const base::FilePath& dir);
+
+// Returns true if the `request_body_regex` partially matches `request_body`.
+bool RequestMatcherRegex(const std::string& request_body_regex,
+                         const std::string& request_body);
+
+void ExpectUpdateSequence(UpdaterScope scope,
+                          ScopedServer* test_server,
+                          const std::string& app_id,
+                          const base::Version& from_version,
+                          const base::Version& to_version);
+
+void StressUpdateService(UpdaterScope scope);
 
 }  // namespace test
 }  // namespace updater

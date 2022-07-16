@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
@@ -51,6 +50,11 @@ class MAYBE_WebRtcMediaRecorderTest
       public testing::WithParamInterface<struct EncodingParameters> {
  public:
   MAYBE_WebRtcMediaRecorderTest() {}
+
+  MAYBE_WebRtcMediaRecorderTest(const MAYBE_WebRtcMediaRecorderTest&) = delete;
+  MAYBE_WebRtcMediaRecorderTest& operator=(
+      const MAYBE_WebRtcMediaRecorderTest&) = delete;
+
   ~MAYBE_WebRtcMediaRecorderTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -69,9 +73,6 @@ class MAYBE_WebRtcMediaRecorderTest
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableAcceleratedVideoDecode);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MAYBE_WebRtcMediaRecorderTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest, Start) {

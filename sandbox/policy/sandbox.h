@@ -7,13 +7,15 @@
 
 #include "build/build_config.h"
 #include "sandbox/policy/export.h"
-#include "sandbox/policy/sandbox_type.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "sandbox/policy/linux/sandbox_linux.h"
 #endif
 
 namespace sandbox {
+namespace mojom {
+enum class Sandbox;
+}  // namespace mojom
 struct SandboxInterfaceInfo;
 }  // namespace sandbox
 
@@ -31,13 +33,13 @@ namespace policy {
 class SANDBOX_POLICY_EXPORT Sandbox {
  public:
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  static bool Initialize(SandboxType sandbox_type,
+  static bool Initialize(sandbox::mojom::Sandbox sandbox_type,
                          SandboxLinux::PreSandboxHook hook,
                          const SandboxLinux::Options& options);
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 #if defined(OS_WIN)
-  static bool Initialize(SandboxType sandbox_type,
+  static bool Initialize(sandbox::mojom::Sandbox sandbox_type,
                          SandboxInterfaceInfo* sandbox_info);
 #endif  // defined(OS_WIN)
 

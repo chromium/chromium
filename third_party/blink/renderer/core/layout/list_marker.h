@@ -75,7 +75,11 @@ class CORE_EXPORT ListMarker {
   static const CounterStyle& GetCounterStyle(Document&, const ComputedStyle&);
 
  private:
-  enum MarkerTextFormat { kWithPrefixSuffix, kWithoutPrefixSuffix };
+  enum MarkerTextFormat {
+    kWithPrefixSuffix,
+    kWithoutPrefixSuffix,
+    kAlternativeText
+  };
   enum MarkerTextType {
     kNotText,  // The marker doesn't have a LayoutText, either because it has
                // not been created yet or because 'list-style-type' is 'none',
@@ -101,6 +105,8 @@ class CORE_EXPORT ListMarker {
   LayoutObject* GetContentChild(const LayoutObject& marker) const;
 
   unsigned marker_text_type_ : 3;  // MarkerTextType
+
+  friend class StyleEngineTest;
 };
 
 }  // namespace blink

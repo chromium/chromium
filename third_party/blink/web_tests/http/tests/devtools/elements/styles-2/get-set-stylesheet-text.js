@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that WebInspector.CSSStyleSheet methods work as expected.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -62,8 +62,8 @@
 
   function testNewElementStyles() {
     function callback(response) {
-      if (response[Protocol.Error]) {
-        TestRunner.addResult('error: ' + response[Protocol.Error]);
+      if (response.getError()) {
+        TestRunner.addResult('error: ' + response.getError());
         return;
       }
 

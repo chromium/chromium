@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -37,6 +36,10 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
       FrameTreeNode::Observer {
  public:
   static AuthenticatorEnvironmentImpl* GetInstance();
+
+  AuthenticatorEnvironmentImpl(const AuthenticatorEnvironmentImpl&) = delete;
+  AuthenticatorEnvironmentImpl& operator=(const AuthenticatorEnvironmentImpl&) =
+      delete;
 
   // Enables the scoped virtual authenticator environment for the |node| and its
   // descendants.
@@ -109,8 +112,6 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
 #if defined(OS_WIN)
   device::WinWebAuthnApi* win_webauthn_api_for_testing_ = nullptr;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorEnvironmentImpl);
 };
 
 }  // namespace content

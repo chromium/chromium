@@ -39,6 +39,10 @@ class DataPipeReader {
                    base::BindRepeating(&DataPipeReader::OnDataAvailable,
                                        base::Unretained(this)));
   }
+
+  DataPipeReader(const DataPipeReader&) = delete;
+  DataPipeReader& operator=(const DataPipeReader&) = delete;
+
   ~DataPipeReader() = default;
 
   const std::string& data() const { return data_; }
@@ -72,13 +76,15 @@ class DataPipeReader {
   base::OnceClosure on_read_done_;
   SimpleWatcher watcher_;
   std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeReader);
 };
 
 class StringDataSourceTest : public testing::Test {
  public:
   StringDataSourceTest() = default;
+
+  StringDataSourceTest(const StringDataSourceTest&) = delete;
+  StringDataSourceTest& operator=(const StringDataSourceTest&) = delete;
+
   ~StringDataSourceTest() override = default;
 
  protected:
@@ -127,8 +133,6 @@ class StringDataSourceTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringDataSourceTest);
 };
 
 TEST_F(StringDataSourceTest, EqualCapacity) {

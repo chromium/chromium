@@ -47,6 +47,11 @@ class TestingMojoWilcoDtcSupportdServiceFactory final
       : get_service_handler_callback_(std::move(get_service_handler_callback)) {
   }
 
+  TestingMojoWilcoDtcSupportdServiceFactory(
+      const TestingMojoWilcoDtcSupportdServiceFactory&) = delete;
+  TestingMojoWilcoDtcSupportdServiceFactory& operator=(
+      const TestingMojoWilcoDtcSupportdServiceFactory&) = delete;
+
   // Completes the Mojo receiver of |this| to the given Mojo pending receiver.
   // This method allows to redirect to |this| the calls on the
   // WilcoDtcSupportdServiceFactory interface that are made by the
@@ -96,8 +101,6 @@ class TestingMojoWilcoDtcSupportdServiceFactory final
           chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdClient>
           mojo_wilco_dtc_supportd_client)>
       get_service_handler_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingMojoWilcoDtcSupportdServiceFactory);
 };
 
 // Testing implementation of the WilcoDtcSupportdBridge delegate that stubs out
@@ -111,6 +114,11 @@ class TestingWilcoDtcSupportdBridgeWrapperDelegate final
           mojo_wilco_dtc_supportd_service_factory)
       : mojo_wilco_dtc_supportd_service_factory_(
             std::move(mojo_wilco_dtc_supportd_service_factory)) {}
+
+  TestingWilcoDtcSupportdBridgeWrapperDelegate(
+      const TestingWilcoDtcSupportdBridgeWrapperDelegate&) = delete;
+  TestingWilcoDtcSupportdBridgeWrapperDelegate& operator=(
+      const TestingWilcoDtcSupportdBridgeWrapperDelegate&) = delete;
 
   // WilcoDtcSupportdBridge::Delegate overrides:
 
@@ -134,8 +142,6 @@ class TestingWilcoDtcSupportdBridgeWrapperDelegate final
  private:
   std::unique_ptr<TestingMojoWilcoDtcSupportdServiceFactory>
       mojo_wilco_dtc_supportd_service_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingWilcoDtcSupportdBridgeWrapperDelegate);
 };
 
 FakeWilcoDtcSupportdClient* GetFakeDbusWilcoDtcSupportdClient() {

@@ -25,6 +25,10 @@ class JavaService : public Service {
  public:
   explicit JavaService(
       const base::android::JavaParamRef<jobject>& java_service);
+
+  JavaService(const JavaService&) = delete;
+  JavaService& operator=(const JavaService&) = delete;
+
   ~JavaService() override;
 
   // Get scripts for a given |url|, which should be a valid URL.
@@ -52,8 +56,6 @@ class JavaService : public Service {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaService);
 };
 
 }  // namespace autofill_assistant

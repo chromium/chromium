@@ -21,12 +21,17 @@ class WebContents;
 }  // namespace content
 
 // Implementation of fuchsia.web.NavigationController for content::WebContents.
-class NavigationControllerImpl : public fuchsia::web::NavigationController,
-                                 public content::WebContentsObserver,
-                                 public favicon::FaviconDriverObserver {
+class NavigationControllerImpl final
+    : public fuchsia::web::NavigationController,
+      public content::WebContentsObserver,
+      public favicon::FaviconDriverObserver {
  public:
   explicit NavigationControllerImpl(content::WebContents* web_contents);
-  ~NavigationControllerImpl() final;
+
+  NavigationControllerImpl(const NavigationControllerImpl&) = delete;
+  NavigationControllerImpl& operator=(const NavigationControllerImpl&) = delete;
+
+  ~NavigationControllerImpl() override;
 
   void AddBinding(
       fidl::InterfaceRequest<fuchsia::web::NavigationController> controller);
@@ -52,22 +57,25 @@ class NavigationControllerImpl : public fuchsia::web::NavigationController,
   // fuchsia::web::NavigationController implementation.
   void LoadUrl(std::string url,
                fuchsia::web::LoadUrlParams params,
-               LoadUrlCallback callback) final;
-  void GoBack() final;
-  void GoForward() final;
-  void Stop() final;
-  void Reload(fuchsia::web::ReloadType type) final;
-  void GetVisibleEntry(GetVisibleEntryCallback callback) final;
+               LoadUrlCallback callback) override;
+  void GoBack() override;
+  void GoForward() override;
+  void Stop() override;
+  void Reload(fuchsia::web::ReloadType type) override;
+  void GetVisibleEntry(GetVisibleEntryCallback callback) override;
 
   // content::WebContentsObserver implementation.
-  void TitleWasSet(content::NavigationEntry*) final;
+  void TitleWasSet(content::NavigationEntry*) override;
   void DocumentAvailableInMainFrame(
-      content::RenderFrameHost* render_frame_host) final;
+      content::RenderFrameHost* render_frame_host) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) final;
-  void RenderProcessGone(base::TerminationStatus status) final;
-  void DidStartNavigation(content::NavigationHandle* navigation_handle) final;
-  void DidFinishNavigation(content::NavigationHandle* navigation_handle) final;
+                     const GURL& validated_url) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // favicon::FaviconDriverObserver implementation.
   void OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
@@ -101,8 +109,6 @@ class NavigationControllerImpl : public fuchsia::web::NavigationController,
   bool send_favicon_ = false;
 
   base::WeakPtrFactory<NavigationControllerImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationControllerImpl);
 };
 
 // Computes the differences from old_entry to new_entry and stores the result in

@@ -14,7 +14,7 @@ namespace content {
 // static
 std::unique_ptr<ui::AXTreeFormatter>
 AXInspectFactory::CreatePlatformFormatter() {
-  return AXInspectFactory::CreateFormatter(kAndroid);
+  return AXInspectFactory::CreateFormatter(ui::AXApiType::kAndroid);
 }
 
 // static
@@ -22,16 +22,17 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreatePlatformRecorder(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector) {
-  return AXInspectFactory::CreateRecorder(kAndroid, manager, pid, selector);
+  return AXInspectFactory::CreateRecorder(ui::AXApiType::kAndroid, manager, pid,
+                                          selector);
 }
 
 // static
 std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
-    AXInspectFactory::Type type) {
+    ui::AXApiType::Type type) {
   switch (type) {
-    case kAndroid:
+    case ui::AXApiType::kAndroid:
       return std::make_unique<AccessibilityTreeFormatterAndroid>();
-    case kBlink:
+    case ui::AXApiType::kBlink:
       return std::make_unique<AccessibilityTreeFormatterBlink>();
     default:
       NOTREACHED() << "Unsupported inspect type " << type;
@@ -41,7 +42,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
 
 // static
 std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
-    AXInspectFactory::Type type,
+    ui::AXApiType::Type type,
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector) {

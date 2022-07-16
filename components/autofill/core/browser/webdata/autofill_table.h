@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/sync_metadata_store.h"
@@ -35,7 +34,6 @@ class AutofillProfile;
 class AutofillTableEncryptor;
 class AutofillTableTest;
 class CreditCard;
-struct CreditCardArtImage;
 struct CreditCardCloudTokenData;
 struct FormFieldData;
 struct PaymentsCustomerData;
@@ -429,6 +427,7 @@ struct PaymentsCustomerData;
 //                      offer_id in the offer_data table.
 //   merchant_domain    List of full origins for merchant websites on which
 //                      this offer would apply.
+// TODO(crbug.com/1196021): Remove unused table.
 // credit_card_art_images
 //                      Contains the card art image for the server credit card.
 //
@@ -441,6 +440,10 @@ class AutofillTable : public WebDatabaseTable,
                       public syncer::SyncMetadataStore {
  public:
   AutofillTable();
+
+  AutofillTable(const AutofillTable&) = delete;
+  AutofillTable& operator=(const AutofillTable&) = delete;
+
   ~AutofillTable() override;
 
   // Retrieves the AutofillTable* owned by |db|.
@@ -596,12 +599,6 @@ class AutofillTable : public WebDatabaseTable,
       std::vector<std::unique_ptr<CreditCardCloudTokenData>>*
           credit_card_cloud_token_data);
 
-  // Setters and getters related to the credit card art images.
-  bool AddCreditCardArtImage(const CreditCardArtImage& credit_card_art_image);
-  bool GetCreditCardArtImages(
-      std::vector<std::unique_ptr<CreditCardArtImage>>* credit_card_art_images);
-  bool ClearCreditCardArtImage(const std::string& id);
-
   // Setters and getters related to the Google Payments customer data.
   // Passing null to the setter will clear the data.
   void SetPaymentsCustomerData(const PaymentsCustomerData* customer_data);
@@ -723,6 +720,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion94AddPromoCodeColumnsToOfferData();
   bool MigrateToVersion95AddVirtualCardMetadata();
   bool MigrateToVersion96AddAutofillProfileDisallowConfirmableMergesColumn();
+  bool MigrateToVersion98RemoveStatusColumnMaskedCreditCards();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
@@ -838,8 +836,6 @@ class AutofillTable : public WebDatabaseTable,
   bool InitCreditCardArtImagesTable();
 
   std::unique_ptr<AutofillTableEncryptor> autofill_table_encryptor_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillTable);
 };
 
 }  // namespace autofill

@@ -395,10 +395,16 @@ interface HidManager {
   //
   // If |allow_protected_reports| is true, this connection is exempted from
   // the HID blocklist so that protected reports may be sent and received.
+  //
+  // If |allow_fido_reports| is true, this connection is allowed to send and
+  // receive protected reports contained within top-level collections with the
+  // kPageFido usage page even if those reports would be blocked by the HID
+  // blocklist.
   Connect@2(string device_guid,
           pending_remote<HidConnectionClient>? connection_client,
           pending_remote<HidConnectionWatcher>? watcher,
-          [MinVersion=1] bool allow_protected_reports)
+          [MinVersion=1] bool allow_protected_reports,
+          [MinVersion=2] bool allow_fido_reports)
       => (pending_remote<HidConnection>? connection);
 
   // Binds a HidManager endpoint.

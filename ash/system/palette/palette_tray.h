@@ -14,7 +14,6 @@
 #include "ash/system/palette/palette_tool_manager.h"
 #include "ash/system/palette/stylus_battery_delegate.h"
 #include "ash/system/tray/tray_background_view.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
@@ -49,6 +48,10 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
                                public ui::InputDeviceEventObserver {
  public:
   explicit PaletteTray(Shelf* shelf);
+
+  PaletteTray(const PaletteTray&) = delete;
+  PaletteTray& operator=(const PaletteTray&) = delete;
+
   ~PaletteTray() override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -180,8 +183,6 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   ScopedSessionObserver scoped_session_observer_;
 
   base::WeakPtrFactory<PaletteTray> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaletteTray);
 };
 
 }  // namespace ash

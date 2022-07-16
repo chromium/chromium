@@ -42,29 +42,30 @@ DownloadsHandler::~DownloadsHandler() {
 }
 
 void DownloadsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializeDownloads",
       base::BindRepeating(&DownloadsHandler::HandleInitialize,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "resetAutoOpenFileTypes",
       base::BindRepeating(&DownloadsHandler::HandleResetAutoOpenFileTypes,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "selectDownloadLocation",
       base::BindRepeating(&DownloadsHandler::HandleSelectDownloadLocation,
                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getDownloadLocationText",
       base::BindRepeating(&DownloadsHandler::HandleGetDownloadLocationText,
                           base::Unretained(this)));
 #endif
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setDownloadsConnectionAccountLink",
-      base::BindRepeating(&DownloadsHandler::SetDownloadsConnectionAccountLink,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &DownloadsHandler::HandleSetDownloadsConnectionAccountLink,
+          base::Unretained(this)));
 }
 
 void DownloadsHandler::OnJavascriptAllowed() {
@@ -144,11 +145,9 @@ void DownloadsHandler::FileSelectionCanceled(void* params) {
 void DownloadsHandler::HandleGetDownloadLocationText(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetSize());
-  std::string callback_id;
-  std::string path;
-  CHECK(args->GetString(0, &callback_id));
-  CHECK(args->GetString(1, &path));
+  CHECK_EQ(2U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
+  const std::string& path = args->GetList()[1].GetString();
 
   ResolveJavascriptCallback(
       base::Value(callback_id),
@@ -165,64 +164,65 @@ bool DownloadsHandler::IsDownloadsConnectionPolicyEnabled() const {
 
 void DownloadsHandler::SendDownloadsConnectionPolicyToJavascript() {
   bool routing_enabled = IsDownloadsConnectionPolicyEnabled();
-  if (routing_enabled)
+  if (routing_enabled) {
+    std::vector<std::string> connection_prefs =
+        ec::GetFileSystemConnectorPrefsForSettingsPage(profile_);
+    for (const std::string& pref : connection_prefs) {
+      if (pref_registrar_.IsObserved(pref))
+        continue;
+      pref_registrar_.Add(
+          pref, base::BindRepeating(
+                    &DownloadsHandler::SendDownloadsConnectionInfoToJavascript,
+                    base::Unretained(this)));
+    }
     SendDownloadsConnectionInfoToJavascript();
+  }
+
   FireWebUIListener("downloads-connection-policy-changed",
                     base::Value(routing_enabled));
 }
 
-bool linked = true;
-// TODO(https://crbug.com/1168812): check whether an account has been linked.
-
-void DownloadsHandler::SetDownloadsConnectionAccountLink(
+void DownloadsHandler::HandleSetDownloadsConnectionAccountLink(
     const base::ListValue* args) {
   DCHECK(IsDownloadsConnectionPolicyEnabled());
-  CHECK_EQ(2U, args->GetSize());
-  bool enable_link = args[1].GetBool();
-
-  // Early erturn if linked status already match the desired state.
-  if (linked == enable_link) {
-    OnDownloadsConnectionAccountLinkSet(true);
-    return;
-  }
-
-  // Early erturn after quick clearing function calls.
-  if (linked) {
-    bool success = ec::ClearFileSystemConnectorLinkedAccount(
-        ec::GetFileSystemSettings(profile_).value(), profile_->GetPrefs());
-    OnDownloadsConnectionAccountLinkSet(success);
-    return;
-  }
-
-  // This shows dialogs for the sign-in experience that the user needs to
-  // interact with, so the process is async.
-  ec::StartFileSystemConnectorSigninExperienceForSettingsPage(
-      profile_,
+  CHECK_EQ(1U, args->GetList().size());
+  bool enable_link = args->GetList()[0].GetBool();
+  ec::SetFileSystemConnectorAccountLinkForSettingsPage(
+      enable_link, profile_,
       base::BindOnce(&DownloadsHandler::OnDownloadsConnectionAccountLinkSet,
                      weak_factory_.GetWeakPtr()));
 }
 
 void DownloadsHandler::OnDownloadsConnectionAccountLinkSet(bool success) {
-  if (success) {
-    linked = !linked;
-  } else {
+  if (!success) {
     DLOG(ERROR) << "Failed to set downloads connection account link";
   }
   SendDownloadsConnectionInfoToJavascript();
 }
 
 void DownloadsHandler::SendDownloadsConnectionInfoToJavascript() {
-  base::DictionaryValue account_info;
-  account_info.SetBoolKey("linked", linked);
-  if (linked) {
-    account_info.SetStringKey("account.name", "Jane Doe");
-    account_info.SetStringKey("account.login", "janedoe@example.com");
-    account_info.SetStringKey("folder.link",
-                              "https://example.com/folder/12345");
-    account_info.SetStringKey("folder.name", "ChromeDownloads");
-    // TODO(https://crbug.com/1168812): retrieve them from prefs.
+  absl::optional<ec::FileSystemSettings> settings =
+      ec::GetFileSystemSettings(profile_);
+
+  absl::optional<ec::AccountInfo> info;
+  bool got_linked_account =
+      settings.has_value() && (info = GetFileSystemConnectorLinkedAccountInfo(
+                                   settings.value(), profile_->GetPrefs()))
+                                  .has_value();
+  // Dict to match the fields used in downloads_page.html.
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetBoolKey("linked", got_linked_account);
+  if (got_linked_account) {
+    base::Value account(base::Value::Type::DICTIONARY);
+    account.SetStringKey("name", info->account_name);
+    account.SetStringKey("login", info->account_login);
+    dict.SetKey("account", std::move(account));
+    base::Value folder(base::Value::Type::DICTIONARY);
+    folder.SetStringKey("name", info->folder_name);
+    folder.SetStringKey("link", info->folder_link);
+    dict.SetKey("folder", std::move(folder));
   }
-  FireWebUIListener("downloads-connection-link-changed", account_info);
+  FireWebUIListener("downloads-connection-link-changed", dict);
 }
 
 }  // namespace settings

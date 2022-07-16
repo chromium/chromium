@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace autofill {
 
 // The cross-platform UI interface which prompts the user to unlock a masked
@@ -16,6 +14,9 @@ namespace autofill {
 // lifetime.
 class CardUnmaskPromptView {
  public:
+  CardUnmaskPromptView(const CardUnmaskPromptView&) = delete;
+  CardUnmaskPromptView& operator=(const CardUnmaskPromptView&) = delete;
+
   virtual void Show() = 0;
   virtual void Dismiss() {}
   virtual void ControllerGone() = 0;
@@ -26,9 +27,6 @@ class CardUnmaskPromptView {
  protected:
   CardUnmaskPromptView() {}
   virtual ~CardUnmaskPromptView() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CardUnmaskPromptView);
 };
 
 }  // namespace autofill

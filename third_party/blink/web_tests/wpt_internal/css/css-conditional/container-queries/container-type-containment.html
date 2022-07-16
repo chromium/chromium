@@ -70,13 +70,13 @@
 <hr>
 
 <div id=test5 class=square>
-  <div id=child5 style="float:left; container-type:inline-size block-size">A</div>
+  <div id=child5 style="float:left; container-type:size">A</div>
 </div>
 <script>
   test(() => {
     assert_equals(child5.offsetHeight, 0);
     assert_equals(child5.offsetWidth, 0);
-  }, 'container-type:inline-size block-size turns on full size containment');
+  }, 'container-type:size turns on full size containment');
 </script>
 
 <hr>

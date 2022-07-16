@@ -28,10 +28,11 @@ class FakeNavigationManager : public web::FakeNavigationManager {
  public:
   FakeNavigationManager() = default;
 
+  FakeNavigationManager(const FakeNavigationManager&) = delete;
+  FakeNavigationManager& operator=(const FakeNavigationManager&) = delete;
+
   // web::NavigationManager implementation.
   int GetLastCommittedItemIndex() const override { return 0; }
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNavigationManager);
 };
 
 }  // namespace
@@ -41,6 +42,11 @@ class WebStateListOrderControllerTest : public PlatformTest {
   WebStateListOrderControllerTest()
       : web_state_list_(&web_state_list_delegate_),
         order_controller_(&web_state_list_) {}
+
+  WebStateListOrderControllerTest(const WebStateListOrderControllerTest&) =
+      delete;
+  WebStateListOrderControllerTest& operator=(
+      const WebStateListOrderControllerTest&) = delete;
 
  protected:
   FakeWebStateListDelegate web_state_list_delegate_;
@@ -55,9 +61,6 @@ class WebStateListOrderControllerTest : public PlatformTest {
     web_state_list_.InsertWebState(index, std::move(test_web_state),
                                    WebStateList::INSERT_FORCE_INDEX, opener);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateListOrderControllerTest);
 };
 
 TEST_F(WebStateListOrderControllerTest, DetermineInsertionIndex) {

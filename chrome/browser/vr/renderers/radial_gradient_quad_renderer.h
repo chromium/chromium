@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_RENDERERS_RADIAL_GRADIENT_QUAD_RENDERER_H_
 #define CHROME_BROWSER_VR_RENDERERS_RADIAL_GRADIENT_QUAD_RENDERER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/renderers/base_renderer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -23,6 +22,11 @@ struct CornerRadii;
 class RadialGradientQuadRenderer : public BaseRenderer {
  public:
   RadialGradientQuadRenderer();
+
+  RadialGradientQuadRenderer(const RadialGradientQuadRenderer&) = delete;
+  RadialGradientQuadRenderer& operator=(const RadialGradientQuadRenderer&) =
+      delete;
+
   ~RadialGradientQuadRenderer() override;
 
   void Draw(const gfx::Transform& model_view_proj_matrix,
@@ -45,8 +49,6 @@ class RadialGradientQuadRenderer : public BaseRenderer {
   GLuint center_color_handle_;
   GLuint edge_color_handle_;
   GLuint aspect_ratio_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(RadialGradientQuadRenderer);
 };
 
 }  // namespace vr

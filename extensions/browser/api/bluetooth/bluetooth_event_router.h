@@ -12,11 +12,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/bluetooth.h"
@@ -38,10 +37,14 @@ class BluetoothApiPairingDelegate;
 struct EventListenerInfo;
 
 class BluetoothEventRouter : public device::BluetoothAdapter::Observer,
-                             public content::NotificationObserver,
-                             public ExtensionRegistryObserver {
+                             public ExtensionRegistryObserver,
+                             public ExtensionHostRegistry::Observer {
  public:
   explicit BluetoothEventRouter(content::BrowserContext* context);
+
+  BluetoothEventRouter(const BluetoothEventRouter&) = delete;
+  BluetoothEventRouter& operator=(const BluetoothEventRouter&) = delete;
+
   ~BluetoothEventRouter() override;
 
   // Returns true if adapter_ has been initialized for testing or bluetooth
@@ -119,11 +122,6 @@ class BluetoothEventRouter : public device::BluetoothAdapter::Observer,
                             device::BluetoothDevice* device,
                             const std::string& old_address) override;
 
-  // Overridden from content::NotificationObserver.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // Overridden from ExtensionRegistryObserver.
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,
@@ -156,6 +154,10 @@ class BluetoothEventRouter : public device::BluetoothAdapter::Observer,
       base::OnceClosure callback,
       std::unique_ptr<device::BluetoothDiscoverySession> discovery_session);
 
+  // ExtensionHostRegistry::Observer:
+  void OnExtensionHostDestroyed(content::BrowserContext* browser_context,
+                                ExtensionHost* host) override;
+
   content::BrowserContext* browser_context_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
 
@@ -178,14 +180,13 @@ class BluetoothEventRouter : public device::BluetoothAdapter::Observer,
       PairingDelegateMap;
   PairingDelegateMap pairing_delegate_map_;
 
-  content::NotificationRegistrar registrar_;
-
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+  base::ScopedObservation<ExtensionHostRegistry,
+                          ExtensionHostRegistry::Observer>
+      extension_host_registry_observation_{this};
 
   base::WeakPtrFactory<BluetoothEventRouter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothEventRouter);
 };
 
 }  // namespace extensions

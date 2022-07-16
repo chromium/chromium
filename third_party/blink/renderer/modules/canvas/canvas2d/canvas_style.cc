@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/skia/include/core/SkShader.h"
@@ -111,12 +112,14 @@ CanvasStyle::CanvasStyle(CanvasPattern* pattern)
     : type_(kImagePattern), pattern_(pattern) {}
 
 void CanvasStyle::ApplyToFlags(PaintFlags& flags) const {
+  ImageDrawOptions draw_options;
   switch (type_) {
     case kColorRGBA:
       flags.setShader(nullptr);
       break;
     case kGradient:
-      GetCanvasGradient()->GetGradient()->ApplyToFlags(flags, SkMatrix::I());
+      GetCanvasGradient()->GetGradient()->ApplyToFlags(flags, SkMatrix::I(),
+                                                       draw_options);
       break;
     case kImagePattern:
       GetCanvasPattern()->GetPattern()->ApplyToFlags(

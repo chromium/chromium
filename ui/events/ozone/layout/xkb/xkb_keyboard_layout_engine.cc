@@ -11,14 +11,15 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -680,16 +681,24 @@ bool XkbKeyboardLayoutEngine::CanSetCurrentLayout() const {
 
 bool XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
     const std::string& layout_name) {
+  return SetCurrentLayoutByNameWithCallback(layout_name, base::DoNothing());
+}
+
+bool XkbKeyboardLayoutEngine::SetCurrentLayoutByNameWithCallback(
+    const std::string& layout_name,
+    base::OnceClosure callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   current_layout_name_ = layout_name;
   for (const auto& entry : xkb_keymaps_) {
     if (entry.layout_name == layout_name) {
       SetKeymap(entry.keymap);
+      std::move(callback).Run();
       return true;
     }
   }
-  LoadKeymapCallback reply_callback = base::BindOnce(
-      &XkbKeyboardLayoutEngine::OnKeymapLoaded, weak_ptr_factory_.GetWeakPtr());
+  LoadKeymapCallback reply_callback =
+      base::BindOnce(&XkbKeyboardLayoutEngine::OnKeymapLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
@@ -703,6 +712,7 @@ bool XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
 }
 
 void XkbKeyboardLayoutEngine::OnKeymapLoaded(
+    base::OnceClosure callback,
     const std::string& layout_name,
     std::unique_ptr<char, base::FreeDeleter> keymap_str) {
   if (keymap_str) {
@@ -711,8 +721,10 @@ void XkbKeyboardLayoutEngine::OnKeymapLoaded(
         XKB_KEYMAP_COMPILE_NO_FLAGS);
     XkbKeymapEntry entry = {layout_name, keymap};
     xkb_keymaps_.push_back(entry);
-    if (layout_name == current_layout_name_)
+    if (layout_name == current_layout_name_) {
       SetKeymap(keymap);
+      std::move(callback).Run();
+    }
   } else {
     LOG(FATAL) << "Keymap file failed to load: " << layout_name;
   }
@@ -851,7 +863,9 @@ void XkbKeyboardLayoutEngine::SetKeymap(xkb_keymap* keymap) {
                {ui::EF_NUM_LOCK_ON, XKB_MOD_NAME_NUM}};
   xkb_flag_map_.clear();
   xkb_flag_map_.reserve(base::size(flags));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   xkb_mod_mask_t num_lock_mask = 0;
+#endif
   for (size_t i = 0; i < base::size(flags); ++i) {
     xkb_mod_index_t index = xkb_keymap_mod_get_index(keymap, flags[i].xkb_name);
     if (index == XKB_MOD_INVALID) {
@@ -860,8 +874,10 @@ void XkbKeyboardLayoutEngine::SetKeymap(xkb_keymap* keymap) {
       xkb_mod_mask_t flag = static_cast<xkb_mod_mask_t>(1) << index;
       XkbFlagMapEntry e = {flags[i].ui_flag, flag, index};
       xkb_flag_map_.push_back(e);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       if (flags[i].ui_flag == EF_NUM_LOCK_ON)
         num_lock_mask = flag;
+#endif
     }
   }
 

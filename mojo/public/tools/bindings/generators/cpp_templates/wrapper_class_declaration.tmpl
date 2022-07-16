@@ -45,6 +45,12 @@ class {{export_attribute}} {{struct.name}} {
 {%-     if not loop.last -%},{%- endif %}
 {%-   endfor %});
 {% endfor %}
+
+{%- if struct|contains_move_only_members %}
+{{struct.name}}(const {{struct.name}}&) = delete;
+{{struct.name}}& operator=(const {{struct.name}}&) = delete;
+{%- endif %}
+
   ~{{struct.name}}();
 
   // Clone() is a template so it is only instantiated if it is used. Thus, the
@@ -135,15 +141,11 @@ class {{export_attribute}} {{struct.name}} {
 {%- endfor %}
 
   // Serialise this struct into a trace.
-  void WriteIntoTrace(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue traced_context) const;
 
  private:
   static bool Validate(const void* data,
                        mojo::internal::ValidationContext* validation_context);
-
-{%- if struct|contains_move_only_members %}
-  DISALLOW_COPY_AND_ASSIGN({{struct.name}});
-{%- endif %}
 };
 
 // The comparison operators are templates, so they are only instantiated if they

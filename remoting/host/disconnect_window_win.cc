@@ -46,7 +46,7 @@ constexpr int kWindowBorderRadius = 14;
 constexpr int kWindowTextMargin = 8;
 
 // The amount of time to wait before hiding the disconnect window.
-constexpr base::TimeDelta kAutoHideTimeout = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kAutoHideTimeout = base::Seconds(10);
 
 // The length of the hide and show animations.
 constexpr DWORD kAnimationDurationMs = 200;
@@ -54,6 +54,10 @@ constexpr DWORD kAnimationDurationMs = 200;
 class DisconnectWindowWin : public HostWindow {
  public:
   DisconnectWindowWin();
+
+  DisconnectWindowWin(const DisconnectWindowWin&) = delete;
+  DisconnectWindowWin& operator=(const DisconnectWindowWin&) = delete;
+
   ~DisconnectWindowWin() override;
 
   // Allow dialog to auto-hide after a period of time.  The dialog will be
@@ -130,8 +134,6 @@ class DisconnectWindowWin : public HostWindow {
   webrtc::DesktopVector mouse_position_;
 
   base::WeakPtrFactory<DisconnectWindowWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisconnectWindowWin);
 };
 
 // Returns the text for the given dialog control window.
@@ -336,6 +338,9 @@ void DisconnectWindowWin::EndDialog() {
     hwnd_ = nullptr;
   }
 
+  // Disable auto-hide events since the window has been destroyed.
+  auto_hide_timer_.Stop();
+
   if (client_session_control_)
     client_session_control_->DisconnectSession(protocol::OK);
 }
@@ -359,7 +364,7 @@ void DisconnectWindowWin::ShowDialog() {
     PLOG(ERROR) << "AnimateWindow() failed to show dialog: ";
     ShowWindow(hwnd_, SW_SHOW);
 
-    // If the windows still isn't visible, then disconnect the session.
+    // If the window still isn't visible, then disconnect the session.
     if (!IsWindowVisible(hwnd_))
       client_session_control_->DisconnectSession(protocol::OK);
   }
@@ -367,11 +372,11 @@ void DisconnectWindowWin::ShowDialog() {
 }
 
 void DisconnectWindowWin::HideDialog() {
-  if (was_auto_hidden_ || !local_input_monitor_)
+  if (was_auto_hidden_ || !local_input_monitor_ || !hwnd_)
     return;
 
   if (!AnimateWindow(hwnd_, kAnimationDurationMs, AW_BLEND | AW_HIDE))
-    PLOG(ERROR) << "AnimateWindow() failed to show dialog: ";
+    PLOG(ERROR) << "AnimateWindow() failed to hide dialog: ";
   else
     was_auto_hidden_ = true;
 }

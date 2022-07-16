@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database_index_interface.h"
 #include "chrome/browser/sync_file_system/drive_backend/tracker_id_set.h"
 
@@ -33,6 +32,10 @@ class MetadataDatabaseIndexOnDisk : public MetadataDatabaseIndexInterface {
  public:
   static std::unique_ptr<MetadataDatabaseIndexOnDisk> Create(
       LevelDBWrapper* db);
+
+  MetadataDatabaseIndexOnDisk(const MetadataDatabaseIndexOnDisk&) = delete;
+  MetadataDatabaseIndexOnDisk& operator=(const MetadataDatabaseIndexOnDisk&) =
+      delete;
 
   ~MetadataDatabaseIndexOnDisk() override;
 
@@ -170,8 +173,6 @@ class MetadataDatabaseIndexOnDisk : public MetadataDatabaseIndexInterface {
   std::unique_ptr<ServiceMetadata> service_metadata_;
 
   size_t num_dirty_trackers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetadataDatabaseIndexOnDisk);
 };
 
 }  // namespace drive_backend

@@ -139,6 +139,8 @@ struct Capabilities {
 
   bool android_use_running_app;
 
+  bool android_keep_app_data_dir = false;
+
   int android_devtools_port = 0;
 
   base::FilePath binary;

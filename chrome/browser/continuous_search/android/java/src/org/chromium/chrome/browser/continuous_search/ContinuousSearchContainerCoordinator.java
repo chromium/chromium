@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.view.View;
 import android.view.ViewStub;
 
@@ -42,19 +42,19 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
 
     static class VisibilitySettings {
         private boolean mIsVisible;
-        private Runnable mOnHideRunnable;
+        private Runnable mOnFinishRunnable;
 
-        VisibilitySettings(boolean isVisible, Runnable onHideRunnable) {
+        VisibilitySettings(boolean isVisible, Runnable onFinishRunnable) {
             mIsVisible = isVisible;
-            mOnHideRunnable = onHideRunnable;
+            mOnFinishRunnable = onFinishRunnable;
         }
 
         boolean isVisible() {
             return mIsVisible;
         }
 
-        Runnable getOnHideRunnable() {
-            return mOnHideRunnable;
+        Runnable getOnFinishRunnable() {
+            return mOnFinishRunnable;
         }
     }
 
@@ -76,7 +76,7 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Boolean> canAnimateNativeBrowserControls,
             Supplier<Integer> defaultTopContainerHeightSupplier,
-            ThemeColorProvider themeColorProvider, Resources resources,
+            ThemeColorProvider themeColorProvider, Context context,
             Callback<Boolean> hideToolbarShadow) {
         mViewStub = containerViewStub;
         mLayoutManager = layoutManager;
@@ -85,14 +85,14 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
                 layoutManager, canAnimateNativeBrowserControls, defaultTopContainerHeightSupplier,
                 this::initializeLayout, hideToolbarShadow);
         mListCoordinator = new ContinuousSearchListCoordinator(browserControlsStateProvider,
-                tabSupplier, this::updateVisibility, themeColorProvider, resources);
+                tabSupplier, this::updateVisibility, themeColorProvider, context);
     }
 
     private void updateVisibility(VisibilitySettings visibilitySettings) {
         if (visibilitySettings.isVisible()) {
-            mContainerMediator.show();
+            mContainerMediator.show(visibilitySettings.getOnFinishRunnable());
         } else {
-            mContainerMediator.hide(visibilitySettings.getOnHideRunnable());
+            mContainerMediator.hide(visibilitySettings.getOnFinishRunnable());
         }
     }
 

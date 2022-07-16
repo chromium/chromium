@@ -17,6 +17,8 @@ export const BadgeType = {
   RUNNING: 'running',
   STOPPED: 'stopped',
   SUCCESS: 'success',
+  SKIPPED: 'skipped',
+  WARNING: 'warning',
 };
 
 /**

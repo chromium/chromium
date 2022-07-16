@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
@@ -28,6 +27,9 @@ class EnterpriseStartupDialog {
   // click 'Relaunch Chrome' button on the dialog.
   using DialogResultCallback =
       base::OnceCallback<void(bool was_accepted, bool can_show_browser_window)>;
+
+  EnterpriseStartupDialog(const EnterpriseStartupDialog&) = delete;
+  EnterpriseStartupDialog& operator=(const EnterpriseStartupDialog&) = delete;
 
   virtual ~EnterpriseStartupDialog() = default;
 
@@ -51,9 +53,6 @@ class EnterpriseStartupDialog {
 
  protected:
   EnterpriseStartupDialog() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseStartupDialog);
 };
 
 }  // namespace policy

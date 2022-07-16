@@ -11,6 +11,7 @@
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/test_log_listener_safe.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "fuchsia/base/test/context_provider_test_connector.h"
 #include "fuchsia/base/test/frame_test_util.h"
@@ -146,6 +147,7 @@ TEST_F(WebEngineIntegrationLoggingTest, SetJavaScriptLogLevel_DEBUG) {
 
   // Verify that the message is formatted as expected.
   EXPECT_EQ(NormalizeConsoleLogMessage(logged_message->msg),
-            std::string("http://127.0.0.1:") + kNormalizedPortNumber +
-                "/console_logging.html:8 : This is a debug() message.");
+            base::StringPrintf("[http://127.0.0.1:%s/console_logging.html(8)] "
+                               "This is a debug() message.",
+                               kNormalizedPortNumber));
 }

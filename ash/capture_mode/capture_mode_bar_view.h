@@ -47,7 +47,9 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
  public:
   METADATA_HEADER(CaptureModeBarView);
 
-  CaptureModeBarView();
+  // |projector_mode| is true when the current session was started through the
+  // projector workflow.
+  explicit CaptureModeBarView(bool projector_mode);
   CaptureModeBarView(const CaptureModeBarView&) = delete;
   CaptureModeBarView& operator=(const CaptureModeBarView&) = delete;
   ~CaptureModeBarView() override;

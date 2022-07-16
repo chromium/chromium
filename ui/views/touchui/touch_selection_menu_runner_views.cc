@@ -36,6 +36,14 @@ Widget* TouchSelectionMenuRunnerViews::TestApi::GetWidget() {
   TouchSelectionMenuViews* menu = menu_runner_->menu_;
   return menu ? menu->GetWidget() : nullptr;
 }
+
+void TouchSelectionMenuRunnerViews::TestApi::ShowMenu(
+    TouchSelectionMenuViews* menu,
+    const gfx::Rect& anchor_rect,
+    const gfx::Size& handle_image_size) {
+  menu_runner_->ShowMenu(menu, anchor_rect, handle_image_size);
+}
+
 TouchSelectionMenuRunnerViews::TouchSelectionMenuRunnerViews() = default;
 
 TouchSelectionMenuRunnerViews::~TouchSelectionMenuRunnerViews() {
@@ -46,6 +54,8 @@ void TouchSelectionMenuRunnerViews::ShowMenu(
     TouchSelectionMenuViews* menu,
     const gfx::Rect& anchor_rect,
     const gfx::Size& handle_image_size) {
+  CloseMenu();
+
   menu_ = menu;
   menu_->ShowMenu(anchor_rect, handle_image_size);
 }

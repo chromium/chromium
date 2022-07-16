@@ -26,6 +26,12 @@ const char kTestFeature[] = "testFeature";
 
 class SecureChannelPendingBleInitiatorConnectionRequestTest
     : public testing::Test {
+ public:
+  SecureChannelPendingBleInitiatorConnectionRequestTest(
+      const SecureChannelPendingBleInitiatorConnectionRequestTest&) = delete;
+  SecureChannelPendingBleInitiatorConnectionRequestTest& operator=(
+      const SecureChannelPendingBleInitiatorConnectionRequestTest&) = delete;
+
  protected:
   SecureChannelPendingBleInitiatorConnectionRequestTest() = default;
   ~SecureChannelPendingBleInitiatorConnectionRequestTest() override = default;
@@ -75,9 +81,6 @@ class SecureChannelPendingBleInitiatorConnectionRequestTest
 
   std::unique_ptr<PendingConnectionRequest<BleInitiatorFailureType>>
       pending_ble_initiator_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      SecureChannelPendingBleInitiatorConnectionRequestTest);
 };
 
 TEST_F(SecureChannelPendingBleInitiatorConnectionRequestTest,

@@ -34,6 +34,12 @@ class TypedURLSyncMetadataDatabaseTest : public testing::Test,
                                          public TypedURLSyncMetadataDatabase {
  public:
   TypedURLSyncMetadataDatabaseTest() {}
+
+  TypedURLSyncMetadataDatabaseTest(const TypedURLSyncMetadataDatabaseTest&) =
+      delete;
+  TypedURLSyncMetadataDatabaseTest& operator=(
+      const TypedURLSyncMetadataDatabaseTest&) = delete;
+
   ~TypedURLSyncMetadataDatabaseTest() override {}
 
  protected:
@@ -58,9 +64,6 @@ class TypedURLSyncMetadataDatabaseTest : public testing::Test,
   base::ScopedTempDir temp_dir_;
   sql::Database db_;
   sql::MetaTable meta_table_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TypedURLSyncMetadataDatabaseTest);
 };
 
 TEST_F(TypedURLSyncMetadataDatabaseTest, TypedURLNoMetadata) {

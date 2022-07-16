@@ -9,10 +9,8 @@
 
 #include <list>
 #include <set>
-#include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/service_worker_context.h"
 #include "url/gurl.h"
@@ -40,6 +38,9 @@ class ServiceWorkerHelper
   // stored in |context|'s associated profile's user data directory.
   explicit ServiceWorkerHelper(content::ServiceWorkerContext* context);
 
+  ServiceWorkerHelper(const ServiceWorkerHelper&) = delete;
+  ServiceWorkerHelper& operator=(const ServiceWorkerHelper&) = delete;
+
   // Starts the fetching process, which will notify its completion via
   // |callback|. This must be called only in the UI thread.
   virtual void StartFetching(FetchCallback callback);
@@ -54,14 +55,6 @@ class ServiceWorkerHelper
 
  private:
   friend class base::RefCountedThreadSafe<ServiceWorkerHelper>;
-
-  // Enumerates all Service Worker instances on the service worker core thread.
-  void FetchServiceWorkerUsageInfoOnCoreThread(FetchCallback callback);
-
-  // Deletes Service Workers for an origin on the service worker core thread.
-  void DeleteServiceWorkersOnCoreThread(const url::Origin& origin);
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerHelper);
 };
 
 // This class is an implementation of ServiceWorkerHelper that does
@@ -70,6 +63,10 @@ class ServiceWorkerHelper
 class CannedServiceWorkerHelper : public ServiceWorkerHelper {
  public:
   explicit CannedServiceWorkerHelper(content::ServiceWorkerContext* context);
+
+  CannedServiceWorkerHelper(const CannedServiceWorkerHelper&) = delete;
+  CannedServiceWorkerHelper& operator=(const CannedServiceWorkerHelper&) =
+      delete;
 
   // Add a Service Worker to the set of canned Service Workers that is
   // returned by this helper.
@@ -95,8 +92,6 @@ class CannedServiceWorkerHelper : public ServiceWorkerHelper {
   ~CannedServiceWorkerHelper() override;
 
   std::set<url::Origin> pending_origins_;
-
-  DISALLOW_COPY_AND_ASSIGN(CannedServiceWorkerHelper);
 };
 
 }  // namespace browsing_data

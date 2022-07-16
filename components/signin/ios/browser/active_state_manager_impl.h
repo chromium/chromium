@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SIGNIN_IOS_BROWSER_ACTIVE_STATE_MANAGER_IMPL_H_
 #define COMPONENTS_SIGNIN_IOS_BROWSER_ACTIVE_STATE_MANAGER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "components/signin/ios/browser/active_state_manager.h"
@@ -20,6 +19,10 @@ class ActiveStateManagerImpl : public ActiveStateManager,
                                public base::SupportsUserData::Data {
  public:
   explicit ActiveStateManagerImpl(web::BrowserState* browser_state);
+
+  ActiveStateManagerImpl(const ActiveStateManagerImpl&) = delete;
+  ActiveStateManagerImpl& operator=(const ActiveStateManagerImpl&) = delete;
+
   ~ActiveStateManagerImpl() override;
 
   // ActiveStateManager methods.
@@ -34,8 +37,6 @@ class ActiveStateManagerImpl : public ActiveStateManager,
   bool active_;
   // The list of observers.
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveStateManagerImpl);
 };
 
 #endif  // COMPONENTS_SIGNIN_IOS_BROWSER_ACTIVE_STATE_MANAGER_IMPL_H_

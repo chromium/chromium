@@ -4,7 +4,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -36,6 +35,10 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
  public:
   CredentialManagerBrowserTest() = default;
 
+  CredentialManagerBrowserTest(const CredentialManagerBrowserTest&) = delete;
+  CredentialManagerBrowserTest& operator=(const CredentialManagerBrowserTest&) =
+      delete;
+
   void SetUpOnMainThread() override {
     PasswordManagerBrowserTestBase::SetUpOnMainThread();
     // Redirect all requests to localhost.
@@ -60,7 +63,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
                      const std::string& relative_url) {
     NavigationObserver observer(WebContents());
     GURL url = test_server.GetURL(hostname, relative_url);
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     observer.Wait();
   }
 
@@ -115,7 +118,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
     const GURL a_url2 = https_test_server().GetURL("bar.a.com", "/title2.html");
 
     // Navigate to a mostly empty page.
-    ui_test_utils::NavigateToURL(browser(), a_url1);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url1));
 
     ChromePasswordManagerClient* client =
         ChromePasswordManagerClient::FromWebContents(WebContents());
@@ -133,7 +136,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
         WebContents(), "user", "hunter2"));
 
     // Trigger a same-site navigation.
-    ui_test_utils::NavigateToURL(browser(), a_url2);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url2));
 
     // Ensure that the old document no longer has a mojom::CredentialManager
     // interface connection to the ContentCredentialManager, nor can it get one
@@ -201,8 +204,9 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
         test_password_store->stored_passwords().begin()->second[0];
     EXPECT_EQ(u"user", signin_form.username_value);
     EXPECT_EQ(u"hunter2", signin_form.password_value);
-    EXPECT_EQ(a_url1.GetOrigin().spec(), signin_form.signon_realm);
-    EXPECT_EQ(a_url1.GetOrigin(), signin_form.url);
+    EXPECT_EQ(a_url1.DeprecatedGetOriginAsURL().spec(),
+              signin_form.signon_realm);
+    EXPECT_EQ(a_url1.DeprecatedGetOriginAsURL(), signin_form.url);
   }
 
   // Tests the when navigator.credentials.store() is called in an `unload`
@@ -221,7 +225,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
     const GURL b_url = https_test_server().GetURL("b.com", "/title2.html");
 
     // Navigate to a mostly empty page.
-    ui_test_utils::NavigateToURL(browser(), a_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
 
     ChromePasswordManagerClient* client =
         ChromePasswordManagerClient::FromWebContents(WebContents());
@@ -242,7 +246,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
     // and which will swap out the old RenderFrameHost.
     content::RenderFrameDeletedObserver rfh_destruction_observer(
         WebContents()->GetMainFrame());
-    ui_test_utils::NavigateToURL(browser(), b_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
 
     // Ensure that the navigator.credentials.store() call is never serviced.
     // The sufficient conditions for this are:
@@ -258,8 +262,6 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialManagerBrowserTest);
 };
 
 // Tests.
@@ -725,8 +727,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   AddHSTSHost(https_test_server().host_port_pair().host());
 
   // Navigate to HTTPS page and trigger the migration.
-  ui_test_utils::NavigateToURL(
-      browser(), https_test_server().GetURL("/password/done.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server().GetURL("/password/done.html")));
 
   // Call the API to trigger the account chooser.
   ASSERT_TRUE(content::ExecuteScript(
@@ -824,7 +826,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
       browser()->profile()->GetPrefs());
 
   // Navigate to a mostly empty page.
-  ui_test_utils::NavigateToURL(browser(), a_url1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url1));
 
   ChromePasswordManagerClient* client =
       ChromePasswordManagerClient::FromWebContents(WebContents());
@@ -848,7 +850,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   EXPECT_TRUE(client->was_store_ever_called());
 
   // Trigger a same-site navigation.
-  ui_test_utils::NavigateToURL(browser(), a_url2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url2));
 
   // Expect the Mojo connection closed.
   EXPECT_FALSE(client->has_binding_for_credential_manager());
@@ -861,21 +863,21 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   EXPECT_TRUE(client->has_binding_for_credential_manager());
 
   // Same-document navigation. Call to get() succeeds.
-  ui_test_utils::NavigateToURL(browser(), a_url2_ref);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url2_ref));
   EXPECT_TRUE(client->has_binding_for_credential_manager());
   ASSERT_NO_FATAL_FAILURE(
       TriggerNavigatorGetPasswordCredentialsAndExpectHasResult(WebContents(),
                                                                true));
 
   // Cross-site navigation. Call to get() succeeds without results.
-  ui_test_utils::NavigateToURL(browser(), b_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
   ASSERT_NO_FATAL_FAILURE(
       TriggerNavigatorGetPasswordCredentialsAndExpectHasResult(WebContents(),
                                                                false));
 
   // Trigger a cross-site navigation back. Call to get() should still succeed,
   // and once again with results.
-  ui_test_utils::NavigateToURL(browser(), a_url1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url1));
   ASSERT_NO_FATAL_FAILURE(
       TriggerNavigatorGetPasswordCredentialsAndExpectHasResult(WebContents(),
                                                                true));
@@ -917,7 +919,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, SaveViaAPIAndAutofill) {
   EXPECT_EQ(u"API", signin_form.password_value);
   EXPECT_EQ(embedded_test_server()->base_url().spec(),
             signin_form.signon_realm);
-  EXPECT_EQ(current_url.GetOrigin(), signin_form.url);
+  EXPECT_EQ(current_url.DeprecatedGetOriginAsURL(), signin_form.url);
 }
 
 IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
@@ -973,9 +975,13 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
   // timestamp.
   EXPECT_GT(stored[signin_form.signon_realm][0].date_last_used,
             signin_form.date_last_used);
+  EXPECT_NE(stored[signin_form.signon_realm][0].date_password_modified,
+            base::Time());
   // Now make them equal to be able to check the equality of other fields.
   signin_form.date_last_used =
       stored[signin_form.signon_realm][0].date_last_used;
+  signin_form.date_password_modified =
+      stored[signin_form.signon_realm][0].date_password_modified;
   EXPECT_THAT(signin_form,
               MatchesFormExceptStore(stored[signin_form.signon_realm][0]));
 }

@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-forward.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_loader_freeze_mode.h"
@@ -114,9 +114,6 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   bool bypass_redirect_checks_ = false;
   KURL last_loaded_url_;
   WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper_;
-
-  // For UMA.
-  base::TimeTicks on_receive_response_time_;
 
   base::WeakPtrFactory<MojoURLLoaderClient> weak_factory_{this};
 };

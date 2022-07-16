@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -38,32 +38,14 @@ bool IsFeatureEnabled(RenderFrameHost* rfh,
   return rfh->IsFeatureEnabled(feature);
 }
 
-void SetAndCheckAncestorFlag(MediaStreamRequest* request) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderFrameHostImpl* rfh =
-      RenderFrameHostImpl::FromID(request->render_process_id,
-                                  request->render_frame_id);
-
-  if (rfh == nullptr) {
-    // RenderFrame destroyed before the request is handled?
-    return;
-  }
-
-  while (rfh->GetParent()) {
-    if (!rfh->GetLastCommittedOrigin().IsSameOriginWith(
-            rfh->GetParent()->GetLastCommittedOrigin())) {
-      request->all_ancestors_have_same_origin =  false;
-      return;
-    }
-    rfh = rfh->GetParent();
-  }
-  request->all_ancestors_have_same_origin = true;
-}
-
 class MediaStreamUIProxy::Core {
  public:
   explicit Core(const base::WeakPtr<MediaStreamUIProxy>& proxy,
                 RenderFrameHostDelegate* test_render_delegate);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core();
 
   void RequestAccess(std::unique_ptr<MediaStreamRequest> request);
@@ -74,12 +56,29 @@ class MediaStreamUIProxy::Core {
   void OnDeviceStopped(const std::string& label,
                        const DesktopMediaID& media_id);
 
+#if !defined(OS_ANDROID)
+  void SetFocus(const DesktopMediaID& media_id,
+                bool focus,
+                bool is_from_microtask,
+                bool is_from_timer);
+#endif
+
   void ProcessAccessRequestResponse(
       int render_process_id,
       int render_frame_id,
       const blink::MediaStreamDevices& devices,
       blink::mojom::MediaStreamRequestResult result,
       std::unique_ptr<MediaStreamUI> stream_ui);
+
+  base::WeakPtr<Core> GetWeakPtr() {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    // This weak pointer is created in the ctor, which runs on the IO thread.
+    // This pointer is always posted from the IO thread to the UI thread,
+    // meaning reading |weak_this_| happens on the IO thead, but dereferencing
+    // the actual pointer happens in the UI thread. Invalidation happens in the
+    // destructor, which runs on the UI thread, so this is safe.
+    return weak_this_;
+  }
 
  private:
   friend class FakeMediaStreamUIProxy;
@@ -96,22 +95,23 @@ class MediaStreamUIProxy::Core {
   bool tests_use_fake_render_frame_hosts_;
   RenderFrameHostDelegate* const test_render_delegate_;
 
-  // WeakPtr<> is used to RequestMediaAccessPermission() because there is no way
-  // cancel media requests.
+  base::WeakPtr<Core> weak_this_;
+
   base::WeakPtrFactory<Core> weak_factory_{this};
 
   // Used for calls supplied to `ui_`. Invalidated every time a new UI is
   // created.
   base::WeakPtrFactory<Core> weak_factory_for_ui_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 MediaStreamUIProxy::Core::Core(const base::WeakPtr<MediaStreamUIProxy>& proxy,
                                RenderFrameHostDelegate* test_render_delegate)
     : proxy_(proxy),
       tests_use_fake_render_frame_hosts_(test_render_delegate != nullptr),
-      test_render_delegate_(test_render_delegate) {}
+      test_render_delegate_(test_render_delegate) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  weak_this_ = weak_factory_.GetWeakPtr();
+}
 
 MediaStreamUIProxy::Core::~Core() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -133,13 +133,11 @@ void MediaStreamUIProxy::Core::RequestAccess(
         std::unique_ptr<MediaStreamUI>());
     return;
   }
-  SetAndCheckAncestorFlag(request.get());
 
   render_delegate->RequestMediaAccessPermission(
       *request,
-      base::BindOnce(&Core::ProcessAccessRequestResponse,
-                     weak_factory_.GetWeakPtr(), request->render_process_id,
-                     request->render_frame_id));
+      base::BindOnce(&Core::ProcessAccessRequestResponse, weak_this_,
+                     request->render_process_id, request->render_frame_id));
 }
 
 void MediaStreamUIProxy::Core::OnStarted(
@@ -169,10 +167,23 @@ void MediaStreamUIProxy::Core::OnStarted(
 
 void MediaStreamUIProxy::Core::OnDeviceStopped(const std::string& label,
                                                const DesktopMediaID& media_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (ui_) {
     ui_->OnDeviceStopped(label, media_id);
   }
 }
+
+#if !defined(OS_ANDROID)
+void MediaStreamUIProxy::Core::SetFocus(const DesktopMediaID& media_id,
+                                        bool focus,
+                                        bool is_from_microtask,
+                                        bool is_from_timer) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (ui_) {
+    ui_->SetFocus(media_id, focus, is_from_microtask, is_from_timer);
+  }
+}
+#endif
 
 void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
     int render_process_id,
@@ -253,6 +264,7 @@ void MediaStreamUIProxy::Core::ProcessStateChangeFromUI(
 RenderFrameHostDelegate* MediaStreamUIProxy::Core::GetRenderFrameHostDelegate(
     int render_process_id,
     int render_frame_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (test_render_delegate_)
     return test_render_delegate_;
   RenderFrameHostImpl* host =
@@ -289,9 +301,8 @@ void MediaStreamUIProxy::RequestAccess(
 
   response_callback_ = std::move(response_callback);
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Core::RequestAccess, base::Unretained(core_.get()),
-                     std::move(request)));
+      FROM_HERE, base::BindOnce(&Core::RequestAccess, core_->GetWeakPtr(),
+                                std::move(request)));
 }
 
 void MediaStreamUIProxy::OnStarted(
@@ -312,7 +323,7 @@ void MediaStreamUIProxy::OnStarted(
 
   GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce(&Core::OnStarted, base::Unretained(core_.get()), window_id,
+      base::BindOnce(&Core::OnStarted, core_->GetWeakPtr(), window_id,
                      !!source_callback_, label, screen_share_ids),
       base::BindOnce(&MediaStreamUIProxy::OnWindowId,
                      weak_factory_.GetWeakPtr(), std::move(window_id_callback),
@@ -324,10 +335,22 @@ void MediaStreamUIProxy::OnDeviceStopped(const std::string& label,
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Core::OnDeviceStopped, base::Unretained(core_.get()),
-                     label, media_id));
+      FROM_HERE, base::BindOnce(&Core::OnDeviceStopped, core_->GetWeakPtr(),
+                                label, media_id));
 }
+
+#if !defined(OS_ANDROID)
+void MediaStreamUIProxy::SetFocus(const DesktopMediaID& media_id,
+                                  bool focus,
+                                  bool is_from_microtask,
+                                  bool is_from_timer) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&Core::SetFocus, core_->GetWeakPtr(), media_id,
+                                focus, is_from_microtask, is_from_timer));
+}
+#endif
 
 void MediaStreamUIProxy::ProcessAccessRequestResponse(
     const blink::MediaStreamDevices& devices,
@@ -403,7 +426,7 @@ void FakeMediaStreamUIProxy::RequestAccess(
         FROM_HERE,
         base::BindOnce(
             &MediaStreamUIProxy::Core::ProcessAccessRequestResponse,
-            base::Unretained(core_.get()), request->render_process_id,
+            core_->GetWeakPtr(), request->render_process_id,
             request->render_frame_id, blink::MediaStreamDevices(),
             blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
             std::unique_ptr<MediaStreamUI>()));
@@ -445,7 +468,7 @@ void FakeMediaStreamUIProxy::RequestAccess(
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaStreamUIProxy::Core::ProcessAccessRequestResponse,
-                     base::Unretained(core_.get()), request->render_process_id,
+                     core_->GetWeakPtr(), request->render_process_id,
                      request->render_frame_id, devices_to_use,
                      devices_to_use.empty()
                          ? blink::mojom::MediaStreamRequestResult::NO_HARDWARE

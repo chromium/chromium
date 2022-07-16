@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 
 /**
@@ -37,13 +29,16 @@ goog.require('goog.object');
 goog.require('goog.string');
 goog.require('goog.uri.utils');
 goog.require('goog.userAgent');
+goog.requireType('goog.net.XhrLike');
+goog.requireType('goog.net.XmlHttpFactory');
 
 
 
 goog.scope(function() {
-var userAgent = goog.userAgent;
-var xhr = goog.labs.net.xhr;
-var HttpStatus = goog.net.HttpStatus;
+'use strict';
+const userAgent = goog.userAgent;
+const xhr = goog.labs.net.xhr;
+const HttpStatus = goog.net.HttpStatus;
 
 
 /**
@@ -123,7 +118,9 @@ xhr.ResponseType = {
  *     response text once the request completes.
  */
 xhr.get = function(url, opt_options) {
+  'use strict';
   return xhr.send('GET', url, null, opt_options).then(function(request) {
+    'use strict';
     return request.responseText;
   });
 };
@@ -140,7 +137,9 @@ xhr.get = function(url, opt_options) {
  *     response text once the request completes.
  */
 xhr.post = function(url, data, opt_options) {
+  'use strict';
   return xhr.send('POST', url, data, opt_options).then(function(request) {
+    'use strict';
     return request.responseText;
   });
 };
@@ -156,7 +155,9 @@ xhr.post = function(url, data, opt_options) {
  *     response JSON once the request completes.
  */
 xhr.getJson = function(url, opt_options) {
+  'use strict';
   return xhr.send('GET', url, null, opt_options).then(function(request) {
+    'use strict';
     return xhr.parseJson_(request.responseText, opt_options);
   });
 };
@@ -173,13 +174,15 @@ xhr.getJson = function(url, opt_options) {
  *     immutable Blob representing the file once the request completes.
  */
 xhr.getBlob = function(url, opt_options) {
+  'use strict';
   goog.asserts.assert(
       'Blob' in goog.global, 'getBlob is not supported in this browser.');
 
-  var options = opt_options ? goog.object.clone(opt_options) : {};
+  const options = opt_options ? goog.object.clone(opt_options) : {};
   options.responseType = xhr.ResponseType.BLOB;
 
   return xhr.send('GET', url, null, options).then(function(request) {
+    'use strict';
     return /** @type {!Blob} */ (request.response);
   });
 };
@@ -199,14 +202,16 @@ xhr.getBlob = function(url, opt_options) {
  *     resolved with an array of bytes once the request completes.
  */
 xhr.getBytes = function(url, opt_options) {
+  'use strict';
   goog.asserts.assert(
       !userAgent.IE || userAgent.isDocumentModeOrHigher(9),
       'getBytes is not supported in this browser.');
 
-  var options = opt_options ? goog.object.clone(opt_options) : {};
+  const options = opt_options ? goog.object.clone(opt_options) : {};
   options.responseType = xhr.ResponseType.ARRAYBUFFER;
 
   return xhr.send('GET', url, null, options).then(function(request) {
+    'use strict';
     // Use the ArrayBuffer response in browsers that support XMLHttpRequest2.
     // This covers nearly all modern browsers: http://caniuse.com/xhr2
     if (request.response) {
@@ -243,7 +248,9 @@ xhr.getBytes = function(url, opt_options) {
  *     response JSON once the request completes.
  */
 xhr.postJson = function(url, data, opt_options) {
+  'use strict';
   return xhr.send('POST', url, data, opt_options).then(function(request) {
+    'use strict';
     return xhr.parseJson_(request.responseText, opt_options);
   });
 };
@@ -264,106 +271,132 @@ xhr.postJson = function(url, data, opt_options) {
  *     resolved with the XHR object once the request completes.
  */
 xhr.send = function(method, url, data, opt_options) {
-  var options = opt_options || {};
-  var request = options.xmlHttpFactory ?
+  'use strict';
+  const options = opt_options || {};
+  const request = options.xmlHttpFactory ?
       options.xmlHttpFactory.createInstance() :
       goog.net.XmlHttp();
 
-  var result = new goog.Promise(/** @suppress {strictPrimitiveOperators} Part of the go/strict_warnings_migration */
-                                function(resolve, reject) {
-    var timer;
+  const result =
+      new goog
+          .Promise(/**
+                      @suppress {strictPrimitiveOperators} Part of the
+                      go/strict_warnings_migration
+                    */
+                   function(resolve, reject) {
+                     'use strict';
+                     let timer;
 
-    try {
-      request.open(method, url, true);
-    } catch (e) {
-      // XMLHttpRequest.open may throw when 'open' is called, for example, IE7
-      // throws "Access Denied" for cross-origin requests.
-      reject(new xhr.Error('Error opening XHR: ' + e.message, url, request));
-    }
+                     try {
+                       request.open(method, url, true);
+                     } catch (e) {
+                       // XMLHttpRequest.open may throw when 'open' is called,
+                       // for example, IE7 throws "Access Denied" for
+                       // cross-origin requests.
+                       reject(new xhr.Error(
+                           'Error opening XHR: ' + e.message, url, request));
+                     }
 
-    // So sad that IE doesn't support onload and onerror.
-    request.onreadystatechange = function() {
-      if (request.readyState == goog.net.XmlHttp.ReadyState.COMPLETE) {
-        goog.global.clearTimeout(timer);
-        // Note: When developing locally, XHRs to file:// schemes return
-        // a status code of 0. We mark that case as a success too.
-        if (HttpStatus.isSuccess(request.status) ||
-            request.status === 0 && !xhr.isEffectiveSchemeHttp_(url)) {
-          resolve(request);
-        } else {
-          reject(new xhr.HttpError(request.status, url, request));
-        }
-      }
-    };
-    request.onerror = function() {
-      reject(new xhr.Error('Network error', url, request));
-    };
+                     // So sad that IE doesn't support onload and onerror.
+                     request.onreadystatechange = function() {
+                       'use strict';
+                       if (request.readyState ==
+                           goog.net.XmlHttp.ReadyState.COMPLETE) {
+                         goog.global.clearTimeout(timer);
+                         // Note: When developing locally, XHRs to file://
+                         // schemes return a status code of 0. We mark that case
+                         // as a success too.
+                         if (HttpStatus.isSuccess(request.status) ||
+                             request.status === 0 &&
+                                 !xhr.isEffectiveSchemeHttp_(url)) {
+                           resolve(request);
+                         } else {
+                           reject(
+                               new xhr.HttpError(request.status, url, request));
+                         }
+                       }
+                     };
+                     request.onerror = function() {
+                       'use strict';
+                       reject(new xhr.Error('Network error', url, request));
+                     };
 
-    // Set the headers.
-    var contentType;
-    if (options.headers) {
-      for (var key in options.headers) {
-        var value = options.headers[key];
-        if (value != null) {
-          request.setRequestHeader(key, value);
-        }
-      }
-      contentType = options.headers[xhr.CONTENT_TYPE_HEADER];
-    }
+                     // Set the headers.
+                     let contentType;
+                     if (options.headers) {
+                       for (let key in options.headers) {
+                         const value = options.headers[key];
+                         if (value != null) {
+                           request.setRequestHeader(key, value);
+                         }
+                       }
+                       contentType = options.headers[xhr.CONTENT_TYPE_HEADER];
+                     }
 
-    // Browsers will automatically set the content type to multipart/form-data
-    // when passed a FormData object.
-    var dataIsFormData =
-        (goog.global['FormData'] && (data instanceof goog.global['FormData']));
-    // If a content type hasn't been set, it hasn't been explicitly set to null,
-    // and the data isn't a FormData, default to form-urlencoded/UTF8 for POSTs.
-    // This is because some proxies have been known to reject posts without a
-    // content-type.
-    if (method == 'POST' && contentType === undefined && !dataIsFormData) {
-      request.setRequestHeader(xhr.CONTENT_TYPE_HEADER, xhr.FORM_CONTENT_TYPE);
-    }
+                     // Browsers will automatically set the content type to
+                     // multipart/form-data when passed a FormData object.
+                     const dataIsFormData =
+                         (goog.global['FormData'] &&
+                          (data instanceof goog.global['FormData']));
+                     // If a content type hasn't been set, it hasn't been
+                     // explicitly set to null, and the data isn't a FormData,
+                     // default to form-urlencoded/UTF8 for POSTs. This is
+                     // because some proxies have been known to reject posts
+                     // without a content-type.
+                     if (method == 'POST' && contentType === undefined &&
+                         !dataIsFormData) {
+                       request.setRequestHeader(
+                           xhr.CONTENT_TYPE_HEADER, xhr.FORM_CONTENT_TYPE);
+                     }
 
-    // Set whether to include cookies with cross-domain requests. See:
-    // http://www.w3.org/TR/XMLHttpRequest/#the-withcredentials-attribute
-    if (options.withCredentials) {
-      request.withCredentials = options.withCredentials;
-    }
+                     // Set whether to include cookies with cross-domain
+                     // requests. See:
+                     // http://www.w3.org/TR/XMLHttpRequest/#the-withcredentials-attribute
+                     if (options.withCredentials) {
+                       request.withCredentials = options.withCredentials;
+                     }
 
-    // Allows setting an alternative response type, such as an ArrayBuffer. See:
-    // http://www.w3.org/TR/XMLHttpRequest/#dom-xmlhttprequest-responsetype
-    if (options.responseType) {
-      request.responseType = options.responseType;
-    }
+                     // Allows setting an alternative response type, such as an
+                     // ArrayBuffer. See:
+                     // http://www.w3.org/TR/XMLHttpRequest/#dom-xmlhttprequest-responsetype
+                     if (options.responseType) {
+                       request.responseType = options.responseType;
+                     }
 
-    // Allow the request to override the MIME type of the response. See:
-    // http://www.w3.org/TR/XMLHttpRequest/#dom-xmlhttprequest-overridemimetype
-    if (options.mimeType) {
-      request.overrideMimeType(options.mimeType);
-    }
+                     // Allow the request to override the MIME type of the
+                     // response. See:
+                     // http://www.w3.org/TR/XMLHttpRequest/#dom-xmlhttprequest-overridemimetype
+                     if (options.mimeType) {
+                       request.overrideMimeType(options.mimeType);
+                     }
 
-    // Handle timeouts, if requested.
-    if (options.timeoutMs > 0) {
-      timer = goog.global.setTimeout(function() {
-        // Clear event listener before aborting so the errback will not be
-        // called twice.
-        request.onreadystatechange = goog.nullFunction;
-        request.abort();
-        reject(new xhr.TimeoutError(url, request));
-      }, options.timeoutMs);
-    }
+                     // Handle timeouts, if requested.
+                     if (options.timeoutMs > 0) {
+                       timer = goog.global.setTimeout(function() {
+                         'use strict';
+                         // Clear event listener before aborting so the errback
+                         // will not be called twice.
+                         request.onreadystatechange = goog.nullFunction;
+                         request.abort();
+                         reject(new xhr.TimeoutError(url, request));
+                       }, options.timeoutMs);
+                     }
 
-    // Trigger the send.
-    try {
-      request.send(data);
-    } catch (e) {
-      // XMLHttpRequest.send is known to throw on some versions of FF,
-      // for example if a cross-origin request is disallowed.
-      request.onreadystatechange = goog.nullFunction;
-      goog.global.clearTimeout(timer);
-      reject(new xhr.Error('Error sending XHR: ' + e.message, url, request));
-    }
-  });
+                     // Trigger the send.
+                     try {
+                       request.send(data);
+                     } catch (e) {
+                       // XMLHttpRequest.send is known to throw on some versions
+                       // of FF, for example if a cross-origin request is
+                       // disallowed.
+                       request.onreadystatechange = goog.nullFunction;
+                       goog.global.clearTimeout(timer);
+                       reject(new xhr.Error(
+                           'Error sending XHR: ' + e.message, url, request));
+                     }
+                   });
   return result.thenCatch(function(error) {
+    'use strict';
     if (error instanceof goog.Promise.CancellationError) {
       request.abort();
     }
@@ -378,7 +411,8 @@ xhr.send = function(method, url, data, opt_options) {
  * @private
  */
 xhr.isEffectiveSchemeHttp_ = function(url) {
-  var scheme = goog.uri.utils.getEffectiveScheme(url);
+  'use strict';
+  const scheme = goog.uri.utils.getEffectiveScheme(url);
   // NOTE(user): Empty-string is for the case under FF3.5 when the location
   // is not defined inside a web worker.
   return scheme == 'http' || scheme == 'https' || scheme == '';
@@ -391,6 +425,7 @@ xhr.isEffectiveSchemeHttp_ = function(url) {
  * @return {!Object} JSON-parsed value of the original responseText.
  */
 xhr.parseJson = function(responseText, opt_xssiPrefix) {
+  'use strict';
   return xhr.parseJson_(responseText, {xssiPrefix: opt_xssiPrefix});
 };
 
@@ -404,7 +439,8 @@ xhr.parseJson = function(responseText, opt_xssiPrefix) {
  * @private
  */
 xhr.parseJson_ = function(responseText, options) {
-  var prefixStrippedResult = responseText;
+  'use strict';
+  let prefixStrippedResult = responseText;
   if (options && options.xssiPrefix) {
     prefixStrippedResult =
         xhr.stripXssiPrefix_(options.xssiPrefix, prefixStrippedResult);
@@ -422,6 +458,7 @@ xhr.parseJson_ = function(responseText, options) {
  * @private
  */
 xhr.stripXssiPrefix_ = function(prefix, string) {
+  'use strict';
   if (goog.string.startsWith(string, prefix)) {
     string = string.substring(prefix.length);
   }
@@ -440,6 +477,7 @@ xhr.stripXssiPrefix_ = function(prefix, string) {
  * @constructor
  */
 xhr.Error = function(message, url, request) {
+  'use strict';
   xhr.Error.base(this, 'constructor', message + ', url=' + url);
 
   /**
@@ -473,6 +511,7 @@ xhr.Error.prototype.name = 'XhrError';
  * @final
  */
 xhr.HttpError = function(status, url, request) {
+  'use strict';
   xhr.HttpError.base(
       this, 'constructor', 'Request Failed, status=' + status, url, request);
 
@@ -500,6 +539,7 @@ xhr.HttpError.prototype.name = 'XhrHttpError';
  * @final
  */
 xhr.TimeoutError = function(url, request) {
+  'use strict';
   xhr.TimeoutError.base(this, 'constructor', 'Request timed out', url, request);
 };
 goog.inherits(xhr.TimeoutError, xhr.Error);
@@ -507,5 +547,4 @@ goog.inherits(xhr.TimeoutError, xhr.Error);
 
 /** @override */
 xhr.TimeoutError.prototype.name = 'XhrTimeoutError';
-
 });  // goog.scope

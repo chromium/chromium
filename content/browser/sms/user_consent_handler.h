@@ -14,7 +14,12 @@ namespace content {
 
 class RenderFrameHost;
 
-enum class UserConsentResult { kApproved, kDenied, kNoDelegate };
+enum class UserConsentResult {
+  kApproved,
+  kDenied,
+  kNoDelegate,
+  kInactiveRenderFrameHost
+};
 using CompletionCallback = base::OnceCallback<void(UserConsentResult)>;
 
 class CONTENT_EXPORT UserConsentHandler {

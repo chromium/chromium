@@ -1199,7 +1199,6 @@ template("mojom") {
       generator_cpp_output_suffixes += [
         "${variant_dash_suffix}-forward.h",
         "${variant_dash_suffix}-import-headers.h",
-        "${variant_dash_suffix}-test-utils.cc",
         "${variant_dash_suffix}-test-utils.h",
         "${variant_dash_suffix}.cc",
         "${variant_dash_suffix}.h",
@@ -1231,7 +1230,6 @@ template("mojom") {
           outputs += [
             "$root_gen_dir/${base_path}${variant_dash_suffix}-forward.h",
             "$root_gen_dir/${base_path}${variant_dash_suffix}-import-headers.h",
-            "$root_gen_dir/${base_path}${variant_dash_suffix}-test-utils.cc",
             "$root_gen_dir/${base_path}${variant_dash_suffix}-test-utils.h",
             "$root_gen_dir/${base_path}${variant_dash_suffix}.cc",
             "$root_gen_dir/${base_path}${variant_dash_suffix}.h",

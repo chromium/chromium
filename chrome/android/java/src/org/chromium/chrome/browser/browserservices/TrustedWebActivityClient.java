@@ -97,6 +97,9 @@ public class TrustedWebActivityClient {
         default void onNoTwaFound() {}
     }
 
+    /**
+     * Interface for callbacks to {@link #connectAndExecute}.
+     */
     public interface ExecutionCallback {
         void onConnected(Origin origin, TrustedWebActivityServiceConnection service)
                 throws RemoteException;
@@ -290,8 +293,7 @@ public class TrustedWebActivityClient {
 
         Bitmap bitmap = service.getSmallIconBitmap();
         if (!builder.hasStatusBarIconBitmap()) {
-            builder.setStatusBarIconForRemoteApp(
-                    id, bitmap, service.getComponentName().getPackageName());
+            builder.setStatusBarIconForRemoteApp(id, bitmap);
         }
         if (!builder.hasSmallIconForContent()) {
             builder.setContentSmallIconForRemoteApp(bitmap);

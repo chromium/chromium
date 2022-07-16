@@ -18,15 +18,17 @@ namespace protocol {
 class ChromiumPortAllocatorFactory : public PortAllocatorFactory {
  public:
   ChromiumPortAllocatorFactory();
+
+  ChromiumPortAllocatorFactory(const ChromiumPortAllocatorFactory&) = delete;
+  ChromiumPortAllocatorFactory& operator=(const ChromiumPortAllocatorFactory&) =
+      delete;
+
   ~ChromiumPortAllocatorFactory() override;
 
    // PortAllocatorFactory interface.
   std::unique_ptr<cricket::PortAllocator> CreatePortAllocator(
       scoped_refptr<TransportContext> transport_context,
       base::WeakPtr<SessionOptionsProvider> session_options_provider) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromiumPortAllocatorFactory);
 };
 
 }  // namespace protocol

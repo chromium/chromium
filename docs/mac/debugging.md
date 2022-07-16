@@ -270,6 +270,27 @@ analysis.
 See also [How to Obtain a Heap
 Dump](../memory-infra/heap_profiler.md#how-to-obtain-a-heap-dump-m66_linux_macos_windows).
 
+## Profiling using Instruments Time Profiler
+
+For more sophisticated CPU sampling, use the Time Profiler tool from Instruments. Instruments is macOS's performance analysis toolkit that comes with Xcode. The following steps assume that you've installed Xcode 12.0 or later.
+
+After installing Xcode, run `xcode-select -s XCODE_FOLDER` from the command line to set up the Xcode folder for the command line tools. `XCODE_FOLDER` is where the Xcode is installed, and should be something like `/Applications/Xcode.app/Contents/Developer`.
+
+Time Profiler provides a GUI to record traces, but is likely to be janky. To generate a trace from the terminal,
+
+1. Start Chrome.
+2. Run `xcrun xctrace record --template 'Time Profiler' --all-processes` in terminal to start tracing.
+3. Perform actions that you want to profile, e.g. open a new tab page.
+4. Back to the terminal, press Ctrl+C to terminate the profiling. A `.trace` profile file will be generated at the current working path.
+
+In Step 2, if you know which process you are looking at, you can change the `--all-processes` to `--attach PID`.
+
+To visualize a trace,
+
+1. In Time Profiler, load the profile file by File > Open. You will see the traces of all threads and other stats like the Thermal State. You may filter the threads of your interest.
+2. For official Google Chrome builds, you need to follow [this doc](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/mac/debugging.md#chrome-builds) to download the dSYMs files for symbolization.
+3. In Time Profiler, use File > Symbols to load symbols. Loading symbols only for the main executable (Google Chrome) should be sufficient for other executables (Google Chrome Helper and Renderer) as well.
+
 ## Working with Minidumps
 
 [See this

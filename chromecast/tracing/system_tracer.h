@@ -20,6 +20,9 @@ class SystemTracer {
  public:
   static std::unique_ptr<SystemTracer> Create();
 
+  SystemTracer(const SystemTracer&) = delete;
+  SystemTracer& operator=(const SystemTracer&) = delete;
+
   virtual ~SystemTracer() = default;
 
   enum class Status {
@@ -45,9 +48,6 @@ class SystemTracer {
 
  protected:
   SystemTracer() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemTracer);
 };
 
 }  // namespace chromecast

@@ -12,18 +12,16 @@
 namespace base {
 namespace internal {
 
-// Handles alignment up to XMM instructions on Intel.
 static constexpr size_t kCookieSize = 16;
 
-// Cookies are enabled for debug builds.
+// Cookie is enabled for debug builds.
 #if DCHECK_IS_ON()
 
 static constexpr unsigned char kCookieValue[kCookieSize] = {
     0xDE, 0xAD, 0xBE, 0xEF, 0xCA, 0xFE, 0xD0, 0x0D,
     0x13, 0x37, 0xF0, 0x05, 0xBA, 0x11, 0xAB, 0x1E};
 
-constexpr size_t kPartitionCookieSizeAdjustment = 2 * kCookieSize;
-constexpr size_t kPartitionCookieOffsetAdjustment = kCookieSize;
+constexpr size_t kPartitionCookieSizeAdjustment = kCookieSize;
 
 ALWAYS_INLINE void PartitionCookieCheckValue(void* ptr) {
   unsigned char* cookie_ptr = reinterpret_cast<unsigned char*>(ptr);
@@ -40,7 +38,6 @@ ALWAYS_INLINE void PartitionCookieWriteValue(void* ptr) {
 #else
 
 constexpr size_t kPartitionCookieSizeAdjustment = 0;
-constexpr size_t kPartitionCookieOffsetAdjustment = 0;
 
 ALWAYS_INLINE void PartitionCookieCheckValue(void* ptr) {}
 

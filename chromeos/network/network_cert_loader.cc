@@ -139,6 +139,9 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
   explicit CertCache(base::RepeatingClosure certificates_updated_callback)
       : certificates_updated_callback_(certificates_updated_callback) {}
 
+  CertCache(const CertCache&) = delete;
+  CertCache& operator=(const CertCache&) = delete;
+
   ~CertCache() override {
     net::CertDatabase::GetInstance()->RemoveObserver(this);
   }
@@ -286,8 +289,6 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<CertCache> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CertCache);
 };
 
 NetworkCertLoader::NetworkCert::NetworkCert(net::ScopedCERTCertificate cert,

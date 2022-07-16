@@ -19,6 +19,10 @@ namespace proxy {
 class PPP_InputEvent_Proxy : public InterfaceProxy {
  public:
   explicit PPP_InputEvent_Proxy(Dispatcher* dispatcher);
+
+  PPP_InputEvent_Proxy(const PPP_InputEvent_Proxy&) = delete;
+  PPP_InputEvent_Proxy& operator=(const PPP_InputEvent_Proxy&) = delete;
+
   ~PPP_InputEvent_Proxy() override;
 
   static const PPP_InputEvent* GetProxyInterface();
@@ -38,8 +42,6 @@ class PPP_InputEvent_Proxy : public InterfaceProxy {
   // pointer so we don't have to retrieve it from the dispatcher each time.
   // In the host, this value is always NULL.
   const PPP_InputEvent* ppp_input_event_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPP_InputEvent_Proxy);
 };
 
 }  // namespace proxy

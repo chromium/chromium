@@ -102,6 +102,11 @@ memory_instrumentation::mojom::GlobalMemoryDumpPtr GenerateMemoryDump(
 }  // namespace
 
 class ProcessMetricsDecoratorTest : public GraphTestHarness {
+ public:
+  ProcessMetricsDecoratorTest(const ProcessMetricsDecoratorTest&) = delete;
+  ProcessMetricsDecoratorTest& operator=(const ProcessMetricsDecoratorTest&) =
+      delete;
+
  protected:
   using Super = GraphTestHarness;
 
@@ -138,8 +143,6 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
 
   std::unique_ptr<ProcessMetricsDecorator::ScopedMetricsInterestToken>
       metrics_interest_token_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMetricsDecoratorTest);
 };
 
 TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {

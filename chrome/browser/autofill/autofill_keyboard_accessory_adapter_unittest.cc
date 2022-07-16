@@ -37,6 +37,10 @@ class MockAccessoryView
     : public AutofillKeyboardAccessoryAdapter::AccessoryView {
  public:
   MockAccessoryView() {}
+
+  MockAccessoryView(const MockAccessoryView&) = delete;
+  MockAccessoryView& operator=(const MockAccessoryView&) = delete;
+
   MOCK_METHOD0(Initialize, bool());
   MOCK_METHOD0(Hide, void());
   MOCK_METHOD0(Show, void());
@@ -45,8 +49,6 @@ class MockAccessoryView
                     const std::u16string&,
                     base::OnceClosure));
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAccessoryView);
 };
 
 Suggestion createPasswordEntry(std::string password,

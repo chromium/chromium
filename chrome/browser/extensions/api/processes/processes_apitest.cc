@@ -18,15 +18,16 @@
 class ProcessesApiTest : public extensions::ExtensionApiTest {
  public:
   ProcessesApiTest() {}
+
+  ProcessesApiTest(const ProcessesApiTest&) = delete;
+  ProcessesApiTest& operator=(const ProcessesApiTest&) = delete;
+
   ~ProcessesApiTest() override {}
 
   int GetListenersCount() {
     return extensions::ProcessesAPI::Get(profile())->
         processes_event_router()->listeners_;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessesApiTest);
 };
 
 

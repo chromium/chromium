@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
@@ -119,7 +118,7 @@ void MaybePrintResourceId(uint16_t resource_id) {
 class ScopedFileWriter {
  public:
   // Constructor takes a |path| parameter and tries to open the file.
-  // Call valid() to check if the operation was succesful.
+  // Call valid() to check if the operation was successful.
   explicit ScopedFileWriter(const base::FilePath& path)
       : valid_(true), file_(base::OpenFile(path, "wb")) {
     if (!file_) {
@@ -128,10 +127,13 @@ class ScopedFileWriter {
     }
   }
 
+  ScopedFileWriter(const ScopedFileWriter&) = delete;
+  ScopedFileWriter& operator=(const ScopedFileWriter&) = delete;
+
   // Destructor.
   ~ScopedFileWriter() { Close(); }
 
-  // Return true if the last i/o operation was succesful.
+  // Return true if the last i/o operation was successful.
   bool valid() const { return valid_; }
 
   // Try to write |data_size| bytes from |data| into the file, if a previous
@@ -159,8 +161,6 @@ class ScopedFileWriter {
  private:
   bool valid_ = false;
   FILE* file_ = nullptr;  // base::ScopedFILE doesn't check errors on close.
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFileWriter);
 };
 
 bool MmapHasGzipHeader(const base::MemoryMappedFile* mmap) {
@@ -213,6 +213,9 @@ class DataPack::MemoryMappedDataSource : public DataPack::DataSource {
   explicit MemoryMappedDataSource(std::unique_ptr<base::MemoryMappedFile> mmap)
       : mmap_(std::move(mmap)) {}
 
+  MemoryMappedDataSource(const MemoryMappedDataSource&) = delete;
+  MemoryMappedDataSource& operator=(const MemoryMappedDataSource&) = delete;
+
   ~MemoryMappedDataSource() override {}
 
   // DataPack::DataSource:
@@ -221,14 +224,15 @@ class DataPack::MemoryMappedDataSource : public DataPack::DataSource {
 
  private:
   std::unique_ptr<base::MemoryMappedFile> mmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryMappedDataSource);
 };
 
 // Takes ownership of a string of uncompressed pack data.
 class DataPack::StringDataSource : public DataPack::DataSource {
  public:
   explicit StringDataSource(std::string&& data) : data_(std::move(data)) {}
+
+  StringDataSource(const StringDataSource&) = delete;
+  StringDataSource& operator=(const StringDataSource&) = delete;
 
   ~StringDataSource() override {}
 
@@ -240,14 +244,15 @@ class DataPack::StringDataSource : public DataPack::DataSource {
 
  private:
   const std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringDataSource);
 };
 
 class DataPack::BufferDataSource : public DataPack::DataSource {
  public:
   explicit BufferDataSource(base::span<const uint8_t> buffer)
       : buffer_(buffer) {}
+
+  BufferDataSource(const BufferDataSource&) = delete;
+  BufferDataSource& operator=(const BufferDataSource&) = delete;
 
   ~BufferDataSource() override {}
 
@@ -257,8 +262,6 @@ class DataPack::BufferDataSource : public DataPack::DataSource {
 
  private:
   base::span<const uint8_t> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferDataSource);
 };
 
 DataPack::DataPack(ResourceScaleFactor resource_scale_factor)
@@ -579,8 +582,8 @@ bool DataPack::WritePack(const base::FilePath& path,
 
   // We place an extra entry after the last item that allows us to read the
   // size of the last item.
-  const uint16_t resource_id = 0;
-  file.Write(&resource_id, sizeof(resource_id));
+  const uint16_t extra_resource_id = 0;
+  file.Write(&extra_resource_id, sizeof(extra_resource_id));
   file.Write(&data_offset, sizeof(data_offset));
 
   // Write the aliases table, if any. Note: |aliases| is an std::map,

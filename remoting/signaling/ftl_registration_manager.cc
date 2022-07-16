@@ -37,7 +37,7 @@ constexpr remoting::ftl::FtlCapability::Feature kFtlCapabilities[] = {
 constexpr size_t kFtlCapabilityCount =
     sizeof(kFtlCapabilities) / sizeof(ftl::FtlCapability::Feature);
 
-constexpr base::TimeDelta kRefreshBufferTime = base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kRefreshBufferTime = base::Hours(1);
 
 constexpr char kSignInGaiaPath[] = "/v1/registration:signingaia";
 
@@ -72,6 +72,10 @@ class FtlRegistrationManager::RegistrationClientImpl final
   RegistrationClientImpl(
       OAuthTokenGetter* token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  RegistrationClientImpl(const RegistrationClientImpl&) = delete;
+  RegistrationClientImpl& operator=(const RegistrationClientImpl&) = delete;
+
   ~RegistrationClientImpl() override;
 
   // RegistrationClient implementations.
@@ -81,8 +85,6 @@ class FtlRegistrationManager::RegistrationClientImpl final
 
  private:
   ProtobufHttpClient http_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistrationClientImpl);
 };
 
 FtlRegistrationManager::RegistrationClientImpl::RegistrationClientImpl(
@@ -214,7 +216,7 @@ void FtlRegistrationManager::OnSignInGaiaResponse(
   ftl_auth_token_ = response->auth_token().payload();
   VLOG(1) << "Auth token set on FtlClient";
   base::TimeDelta refresh_delay =
-      base::TimeDelta::FromMicroseconds(response->auth_token().expires_in());
+      base::Microseconds(response->auth_token().expires_in());
   if (refresh_delay > kRefreshBufferTime) {
     refresh_delay -= kRefreshBufferTime;
   } else {
@@ -223,8 +225,7 @@ void FtlRegistrationManager::OnSignInGaiaResponse(
   sign_in_refresh_timer_.Start(
       FROM_HERE, refresh_delay,
       base::BindOnce(&FtlRegistrationManager::SignInGaia,
-                     base::Unretained(this),
-                     base::DoNothing::Once<const ProtobufHttpStatus&>()));
+                     base::Unretained(this), base::DoNothing()));
   VLOG(1) << "Scheduled auth token refresh in: " << refresh_delay;
   std::move(on_done).Run(status);
 }

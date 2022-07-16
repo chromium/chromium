@@ -4,26 +4,6 @@
 
 #include "chrome/common/search/instant_types.h"
 
-SearchBoxTheme::SearchBoxTheme() = default;
-
-SearchBoxTheme::SearchBoxTheme(const SearchBoxTheme& other) = default;
-
-SearchBoxTheme::~SearchBoxTheme() = default;
-
-bool SearchBoxTheme::operator==(const SearchBoxTheme& rhs) const {
-  return bg == rhs.bg && icon == rhs.icon &&
-         icon_selected == rhs.icon_selected && placeholder == rhs.placeholder &&
-         results_bg == rhs.results_bg &&
-         results_bg_hovered == rhs.results_bg_hovered &&
-         results_bg_selected == rhs.results_bg_selected &&
-         results_dim == rhs.results_dim &&
-         results_dim_selected == rhs.results_dim_selected &&
-         results_text == rhs.results_text &&
-         results_text_selected == rhs.results_text_selected &&
-         results_url == rhs.results_url &&
-         results_url_selected == rhs.results_url_selected && text == rhs.text;
-}
-
 NtpTheme::NtpTheme() = default;
 
 NtpTheme::NtpTheme(const NtpTheme& other) = default;
@@ -32,17 +12,6 @@ NtpTheme::~NtpTheme() = default;
 
 bool NtpTheme::operator==(const NtpTheme& rhs) const {
   return using_default_theme == rhs.using_default_theme &&
-         using_dark_colors == rhs.using_dark_colors &&
-         custom_background_disabled_by_policy ==
-             rhs.custom_background_disabled_by_policy &&
-         custom_background_url == rhs.custom_background_url &&
-         custom_background_attribution_line_1 ==
-             rhs.custom_background_attribution_line_1 &&
-         custom_background_attribution_line_2 ==
-             rhs.custom_background_attribution_line_2 &&
-         custom_background_attribution_action_url ==
-             rhs.custom_background_attribution_action_url &&
-         collection_id == rhs.collection_id &&
          background_color == rhs.background_color &&
          text_color == rhs.text_color &&
          text_color_light == rhs.text_color_light && theme_id == rhs.theme_id &&
@@ -51,16 +20,10 @@ bool NtpTheme::operator==(const NtpTheme& rhs) const {
          image_tiling == rhs.image_tiling &&
          has_attribution == rhs.has_attribution &&
          logo_alternate == rhs.logo_alternate &&
-         has_theme_image == rhs.has_theme_image &&
-         theme_name == rhs.theme_name && color_id == rhs.color_id &&
-         color_dark == rhs.color_dark && color_light == rhs.color_light &&
-         color_picked == rhs.color_picked && logo_color == rhs.logo_color &&
-         shortcut_color == rhs.shortcut_color && search_box == rhs.search_box;
+         has_theme_image == rhs.has_theme_image;
 }
 
-InstantMostVisitedItem::InstantMostVisitedItem()
-    : title_source(ntp_tiles::TileTitleSource::UNKNOWN),
-      source(ntp_tiles::TileSource::TOP_SITES) {}
+InstantMostVisitedItem::InstantMostVisitedItem() = default;
 
 InstantMostVisitedItem::InstantMostVisitedItem(
     const InstantMostVisitedItem& other) = default;

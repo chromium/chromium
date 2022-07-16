@@ -12,6 +12,8 @@
 namespace {
 
 constexpr char kCastStreamingMessagePortOrigin[] = "cast-streaming:receiver";
+constexpr char kCastStreamingVideoOnlyMessagePortOrigin[] =
+    "cast-streaming:video-only-receiver";
 
 }  // namespace
 
@@ -23,7 +25,12 @@ bool IsCastStreamingEnabled() {
 }
 
 bool IsCastStreamingAppOrigin(base::StringPiece origin) {
-  return origin == kCastStreamingMessagePortOrigin;
+  return origin == kCastStreamingMessagePortOrigin ||
+         IsCastStreamingVideoOnlyAppOrigin(origin);
+}
+
+bool IsCastStreamingVideoOnlyAppOrigin(base::StringPiece origin) {
+  return origin == kCastStreamingVideoOnlyMessagePortOrigin;
 }
 
 bool IsValidCastStreamingMessage(const fuchsia::web::WebMessage& message) {

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/url_data_source.h"
@@ -23,6 +22,10 @@ namespace chromeos {
 class ImageSource : public content::URLDataSource {
  public:
   ImageSource();
+
+  ImageSource(const ImageSource&) = delete;
+  ImageSource& operator=(const ImageSource&) = delete;
+
   ~ImageSource() override;
 
   // content::URLDataSource implementation.
@@ -48,8 +51,6 @@ class ImageSource : public content::URLDataSource {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<ImageSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageSource);
 };
 
 }  // namespace chromeos

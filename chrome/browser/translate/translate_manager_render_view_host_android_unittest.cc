@@ -42,6 +42,11 @@ class TranslateManagerRenderViewHostAndroidTest
  public:
   TranslateManagerRenderViewHostAndroidTest() {}
 
+  TranslateManagerRenderViewHostAndroidTest(
+      const TranslateManagerRenderViewHostAndroidTest&) = delete;
+  TranslateManagerRenderViewHostAndroidTest& operator=(
+      const TranslateManagerRenderViewHostAndroidTest&) = delete;
+
   // Simulates navigating to a page and getting the page contents and language
   // for that navigation.
   void SimulateNavigation(const GURL& url,
@@ -121,8 +126,6 @@ class TranslateManagerRenderViewHostAndroidTest
   std::set<infobars::InfoBarDelegate*> removed_infobars_;
 
   FakeTranslateAgent fake_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateManagerRenderViewHostAndroidTest);
 };
 
 TEST_F(TranslateManagerRenderViewHostAndroidTest,

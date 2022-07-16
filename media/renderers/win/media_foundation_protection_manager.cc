@@ -203,7 +203,7 @@ void MediaFoundationProtectionManager::OnBeginEnableContent() {
 
   // If EnableContent takes too long, report waiting for key status. Choose a
   // timeout of 500ms to be on the safe side, e.g. on slower machines.
-  const auto kWaitingForKeyTimeOut = base::TimeDelta::FromMilliseconds(500);
+  const auto kWaitingForKeyTimeOut = base::Milliseconds(500);
 
   waiting_for_key_time_out_cb_.Reset(
       base::BindOnce(&MediaFoundationProtectionManager::OnWaitingForKeyTimeOut,

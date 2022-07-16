@@ -70,6 +70,9 @@ message Printer {
 
   // The source of the printer.
   PrinterSource source = 3;
+
+  // Printer ID.
+  string id = 4;
 }
 
 // Print job information. The ordering of these enums must match that of
@@ -113,6 +116,8 @@ message PrintJobInfo {
     FILTER_FAILED = 9;
     // Generic unknown error.
     UNKNOWN_ERROR = 10;
+    // The authorization with the printer has failed.
+    CLIENT_UNAUTHORIZED = 11;
   }
 
   // The ID of the job.

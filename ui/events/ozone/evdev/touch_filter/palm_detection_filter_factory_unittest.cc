@@ -27,6 +27,11 @@ class PalmDetectionFilterFactoryTest : public testing::Test {
  public:
   PalmDetectionFilterFactoryTest() = default;
 
+  PalmDetectionFilterFactoryTest(const PalmDetectionFilterFactoryTest&) =
+      delete;
+  PalmDetectionFilterFactoryTest& operator=(
+      const PalmDetectionFilterFactoryTest&) = delete;
+
   void SetUp() override {
     EXPECT_TRUE(
         CapabilitiesToDeviceInfo(kEveTouchScreen, &eve_touchscreen_info_));
@@ -46,8 +51,6 @@ class PalmDetectionFilterFactoryTest : public testing::Test {
       nocturne_touchscreen_info_, nocturne_stylus_info_,
       kohaku_touchscreen_info_;
   SharedPalmDetectionFilterState shared_palm_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(PalmDetectionFilterFactoryTest);
 };
 
 class PalmDetectionFilterFactoryDeathTest
@@ -139,9 +142,8 @@ TEST_F(PalmDetectionFilterFactoryTest, HeuristicTimesSet) {
             palm_filter->FilterNameForTesting());
   HeuristicStylusPalmDetectionFilter* heuristic_filter =
       static_cast<HeuristicStylusPalmDetectionFilter*>(palm_filter.get());
-  EXPECT_EQ(base::TimeDelta::FromSecondsD(0.8), heuristic_filter->CancelTime());
-  EXPECT_EQ(base::TimeDelta::FromSecondsD(15.327),
-            heuristic_filter->HoldTime());
+  EXPECT_EQ(base::Seconds(0.8), heuristic_filter->CancelTime());
+  EXPECT_EQ(base::Seconds(15.327), heuristic_filter->HoldTime());
 }
 TEST_F(PalmDetectionFilterFactoryTest, NeuralReportNoNeuralDetectSet) {
   scoped_feature_list_->InitWithFeatures(

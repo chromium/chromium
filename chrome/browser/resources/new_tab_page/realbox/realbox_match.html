@@ -1,23 +1,26 @@
 <style include="cr-hidden-style cr-icons">
   :host {
+    display: block;
+    outline: none;
+  }
+
+
+  #action {
+      margin-inline-start: 40px; /* icon width + text padding */
+  }
+
+  .container {
     align-items: center;
     cursor: default;
     display: flex;
-    outline: none;
     padding-bottom: 6px;
     padding-inline-end: 16px;
     padding-inline-start: 12px;
     padding-top: 6px;
   }
 
-  #container {
-    align-items: center;
-    display: flex;
-    flex-grow: 1;
-    overflow: hidden;
-    padding-inline-end: 8px;
-    padding-inline-start: 8px;
-    white-space: nowrap;
+  .container + .container {
+    padding-top: 0;
   }
 
   #contents,
@@ -30,7 +33,17 @@
     white-space: pre;
   }
 
-  :host([is-rich-suggestion]) #container {
+  #text-container {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+    padding-inline-end: 8px;
+    padding-inline-start: 8px;
+    white-space: nowrap;
+  }
+
+  :host([is-rich-suggestion]) #text-container {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -92,14 +105,25 @@
   }
 
 </style>
-<ntp-realbox-icon id="icon" match="[[match]]"></ntp-realbox-icon>
-<div id="container">
-  <span id="contents" inner-h-t-m-l="[[contentsHtml_]]"></span>
-  <span id="separator" class="dim">[[separatorText_]]</span>
-  <span id="description" inner-h-t-m-l="[[descriptionHtml_]]"></span>
-</div>
-<cr-icon-button id="remove" class="icon-clear"
+<div class="container">
+  <ntp-realbox-icon id="icon" match="[[match]]"></ntp-realbox-icon>
+  <div id="text-container">
+    <span id="contents" inner-h-t-m-l="[[contentsHtml_]]"></span>
+    <span id="separator" class="dim">[[separatorText_]]</span>
+    <span id="description" inner-h-t-m-l="[[descriptionHtml_]]"></span>
+  </div>
+  <cr-icon-button id="remove" class="icon-clear"
     aria-label="[[removeButtonAriaLabel_]]"
     on-click="onRemoveButtonClick_" on-mousedown="onRemoveButtonMouseDown_"
-    title="[[removeButtonTitle_]]" hidden$="[[!removeButtonIsVisible_]]">
-</cr-icon-button>
+    title="[[removeButtonTitle_]]" hidden$="[[!removeButtonIsVisible_]]"
+    tabindex="2">
+  </cr-icon-button>
+</div>
+<template is="dom-if" if="[[actionIsVisible_]]">
+  <div class="container">
+    <ntp-realbox-action id="action" action="[[match.action]]"
+                     tabindex="1" on-click="onActionClick_"
+                     on-keydown="onActionKeyDown_">
+    </ntp-realbox-action>
+  </div>
+</template>

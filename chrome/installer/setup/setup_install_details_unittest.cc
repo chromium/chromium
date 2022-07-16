@@ -7,7 +7,6 @@
 #include <windows.h>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/test/test_reg_util_win.h"
 #include "build/branding_buildflags.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
@@ -468,6 +467,10 @@ constexpr TestData kTestData[] = {
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class MakeInstallDetailsTest : public testing::TestWithParam<TestData> {
+ public:
+  MakeInstallDetailsTest(const MakeInstallDetailsTest&) = delete;
+  MakeInstallDetailsTest& operator=(const MakeInstallDetailsTest&) = delete;
+
  protected:
   MakeInstallDetailsTest()
       : test_data_(GetParam()),
@@ -534,8 +537,6 @@ class MakeInstallDetailsTest : public testing::TestWithParam<TestData> {
   nt::ROOT_KEY nt_root_key_;
   base::CommandLine command_line_;
   std::unique_ptr<installer::InitialPreferences> initial_preferences_;
-
-  DISALLOW_COPY_AND_ASSIGN(MakeInstallDetailsTest);
 };
 
 TEST_P(MakeInstallDetailsTest, Test) {

@@ -247,7 +247,7 @@ TEST(MimeUtilTest, ParseVideoCodecString) {
                                   &out_colorspace));
   if (kUsePropCodecs) {
     EXPECT_FALSE(out_is_ambiguous);
-    EXPECT_EQ(kCodecH264, out_codec);
+    EXPECT_EQ(VideoCodec::kH264, out_codec);
     EXPECT_EQ(H264PROFILE_BASELINE, out_profile);
     EXPECT_EQ(30, out_level);
     EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);
@@ -258,7 +258,7 @@ TEST(MimeUtilTest, ParseVideoCodecString) {
                                     &out_is_ambiguous, &out_codec, &out_profile,
                                     &out_level, &out_colorspace));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecVP9, out_codec);
+  EXPECT_EQ(VideoCodec::kVP9, out_codec);
   EXPECT_EQ(VP9PROFILE_PROFILE0, out_profile);
   EXPECT_EQ(10, out_level);
   EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);
@@ -268,7 +268,7 @@ TEST(MimeUtilTest, ParseVideoCodecString) {
                                     &out_is_ambiguous, &out_codec, &out_profile,
                                     &out_level, &out_colorspace));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecVP9, out_codec);
+  EXPECT_EQ(VideoCodec::kVP9, out_codec);
   EXPECT_EQ(VP9PROFILE_PROFILE2, out_profile);
   EXPECT_EQ(10, out_level);
   EXPECT_EQ(VideoColorSpace::REC601(), out_colorspace);
@@ -280,7 +280,7 @@ TEST(MimeUtilTest, ParseVideoCodecString) {
                             &out_profile, &out_level, &out_colorspace));
   if (kUsePropCodecs) {
     EXPECT_TRUE(out_is_ambiguous);
-    EXPECT_EQ(kCodecH264, out_codec);
+    EXPECT_EQ(VideoCodec::kH264, out_codec);
     EXPECT_EQ(VIDEO_CODEC_PROFILE_UNKNOWN, out_profile);
     EXPECT_EQ(0, out_level);
     EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);
@@ -316,7 +316,7 @@ TEST(MimeUtilTest, ParseVideoCodecString_NoMimeType) {
                                     &out_codec, &out_profile, &out_level,
                                     &out_colorspace));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecH264, out_codec);
+  EXPECT_EQ(VideoCodec::kH264, out_codec);
   EXPECT_EQ(H264PROFILE_BASELINE, out_profile);
   EXPECT_EQ(30, out_level);
   EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);
@@ -326,7 +326,7 @@ TEST(MimeUtilTest, ParseVideoCodecString_NoMimeType) {
                                     &out_codec, &out_profile, &out_level,
                                     &out_colorspace));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecVP9, out_codec);
+  EXPECT_EQ(VideoCodec::kVP9, out_codec);
   EXPECT_EQ(VP9PROFILE_PROFILE0, out_profile);
   EXPECT_EQ(10, out_level);
   EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);
@@ -335,7 +335,7 @@ TEST(MimeUtilTest, ParseVideoCodecString_NoMimeType) {
                                     &out_is_ambiguous, &out_codec, &out_profile,
                                     &out_level, &out_colorspace));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecVP9, out_codec);
+  EXPECT_EQ(VideoCodec::kVP9, out_codec);
   EXPECT_EQ(VP9PROFILE_PROFILE2, out_profile);
   EXPECT_EQ(10, out_level);
   EXPECT_EQ(VideoColorSpace::REC601(), out_colorspace);
@@ -344,7 +344,7 @@ TEST(MimeUtilTest, ParseVideoCodecString_NoMimeType) {
   EXPECT_TRUE(ParseVideoCodecString("", "avc3", &out_is_ambiguous, &out_codec,
                                     &out_profile, &out_level, &out_colorspace));
   EXPECT_TRUE(out_is_ambiguous);
-  EXPECT_EQ(kCodecH264, out_codec);
+  EXPECT_EQ(VideoCodec::kH264, out_codec);
   EXPECT_EQ(VIDEO_CODEC_PROFILE_UNKNOWN, out_profile);
   EXPECT_EQ(0, out_level);
   EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);
@@ -368,7 +368,7 @@ TEST(MimeUtilTest, ParseAudioCodecString) {
   EXPECT_TRUE(ParseAudioCodecString("audio/webm", "opus", &out_is_ambiguous,
                                     &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecOpus, out_codec);
+  EXPECT_EQ(AudioCodec::kOpus, out_codec);
 
   // Valid AAC string when proprietary codecs are supported.
   EXPECT_EQ(kUsePropCodecs,
@@ -376,14 +376,14 @@ TEST(MimeUtilTest, ParseAudioCodecString) {
                                   &out_codec));
   if (kUsePropCodecs) {
     EXPECT_FALSE(out_is_ambiguous);
-    EXPECT_EQ(kCodecAAC, out_codec);
+    EXPECT_EQ(AudioCodec::kAAC, out_codec);
   }
 
   // Valid FLAC string with MP4. Neither decoding nor demuxing is proprietary.
   EXPECT_TRUE(ParseAudioCodecString("audio/mp4", "flac", &out_is_ambiguous,
                                     &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecFLAC, out_codec);
+  EXPECT_EQ(AudioCodec::kFLAC, out_codec);
 
   // Ambiguous AAC string.
   // TODO(chcunningha): This can probably be allowed. I think we treat all
@@ -393,20 +393,20 @@ TEST(MimeUtilTest, ParseAudioCodecString) {
                                   &out_codec));
   if (kUsePropCodecs) {
     EXPECT_TRUE(out_is_ambiguous);
-    EXPECT_EQ(kCodecAAC, out_codec);
+    EXPECT_EQ(AudioCodec::kAAC, out_codec);
   }
 
   // Valid empty codec string. Codec unambiguously implied by mime type.
   EXPECT_TRUE(
       ParseAudioCodecString("audio/flac", "", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecFLAC, out_codec);
+  EXPECT_EQ(AudioCodec::kFLAC, out_codec);
 
   // Valid audio codec should still be allowed with video mime type.
   EXPECT_TRUE(ParseAudioCodecString("video/webm", "opus", &out_is_ambiguous,
                                     &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecOpus, out_codec);
+  EXPECT_EQ(AudioCodec::kOpus, out_codec);
 
   // Video codec is not valid for audio API.
   EXPECT_FALSE(ParseAudioCodecString("audio/webm", "vp09.00.10.08",
@@ -427,18 +427,18 @@ TEST(MimeUtilTest, ParseAudioCodecString_NoMimeType) {
   // Valid Opus string.
   EXPECT_TRUE(ParseAudioCodecString("", "opus", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecOpus, out_codec);
+  EXPECT_EQ(AudioCodec::kOpus, out_codec);
 
   // Valid AAC string when proprietary codecs are supported.
   EXPECT_TRUE(
       ParseAudioCodecString("", "mp4a.40.2", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecAAC, out_codec);
+  EXPECT_EQ(AudioCodec::kAAC, out_codec);
 
   // Valid FLAC string. Neither decoding nor demuxing is proprietary.
   EXPECT_TRUE(ParseAudioCodecString("", "flac", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecFLAC, out_codec);
+  EXPECT_EQ(AudioCodec::kFLAC, out_codec);
 
   // Ambiguous AAC string.
   // TODO(chcunningha): This can probably be allowed. I think we treat all
@@ -447,7 +447,7 @@ TEST(MimeUtilTest, ParseAudioCodecString_NoMimeType) {
       ParseAudioCodecString("", "mp4a.40", &out_is_ambiguous, &out_codec));
   if (kUsePropCodecs) {
     EXPECT_TRUE(out_is_ambiguous);
-    EXPECT_EQ(kCodecAAC, out_codec);
+    EXPECT_EQ(AudioCodec::kAAC, out_codec);
   }
 
   // Video codec is not valid for audio API.
@@ -468,26 +468,26 @@ TEST(MimeUtilTest, ParseAudioCodecString_Mp3) {
   EXPECT_TRUE(ParseAudioCodecString("audio/mpeg", "mp3", &out_is_ambiguous,
                                     &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecMP3, out_codec);
+  EXPECT_EQ(AudioCodec::kMP3, out_codec);
 
   EXPECT_TRUE(
       ParseAudioCodecString("audio/mpeg", "", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecMP3, out_codec);
+  EXPECT_EQ(AudioCodec::kMP3, out_codec);
 
   EXPECT_TRUE(ParseAudioCodecString("", "mp3", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecMP3, out_codec);
+  EXPECT_EQ(AudioCodec::kMP3, out_codec);
 
   EXPECT_TRUE(
       ParseAudioCodecString("", "mp4a.69", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecMP3, out_codec);
+  EXPECT_EQ(AudioCodec::kMP3, out_codec);
 
   EXPECT_TRUE(
       ParseAudioCodecString("", "mp4a.6B", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecMP3, out_codec);
+  EXPECT_EQ(AudioCodec::kMP3, out_codec);
 }
 
 // These codecs really only have one profile. Ensure that |out_profile| is
@@ -504,7 +504,7 @@ TEST(MimeUtilTest, ParseVideoCodecString_SimpleCodecsHaveProfiles) {
                                     &out_codec, &out_profile, &out_level,
                                     &out_colorspace));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecVP8, out_codec);
+  EXPECT_EQ(VideoCodec::kVP8, out_codec);
   EXPECT_EQ(VP8PROFILE_ANY, out_profile);
   EXPECT_EQ(0, out_level);
   EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);
@@ -520,7 +520,7 @@ TEST(MimeUtilTest, ParseVideoCodecString_SimpleCodecsHaveProfiles) {
                                     &out_codec, &out_profile, &out_level,
                                     &out_colorspace));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecTheora, out_codec);
+  EXPECT_EQ(VideoCodec::kTheora, out_codec);
   EXPECT_EQ(THEORAPROFILE_ANY, out_profile);
   EXPECT_EQ(0, out_level);
   EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);

@@ -33,7 +33,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -108,6 +108,9 @@ class FakeDataChannel {
  public:
   FakeDataChannel()
       : read_buf_len_(0), closed_(false), write_called_after_close_(false) {}
+
+  FakeDataChannel(const FakeDataChannel&) = delete;
+  FakeDataChannel& operator=(const FakeDataChannel&) = delete;
 
   int Read(IOBuffer* buf, int buf_len, CompletionOnceCallback callback) {
     DCHECK(read_callback_.is_null());
@@ -215,8 +218,6 @@ class FakeDataChannel {
   bool write_called_after_close_;
 
   base::WeakPtrFactory<FakeDataChannel> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDataChannel);
 };
 
 class FakeSocket : public StreamSocket {
@@ -224,6 +225,9 @@ class FakeSocket : public StreamSocket {
   FakeSocket(FakeDataChannel* incoming_channel,
              FakeDataChannel* outgoing_channel)
       : incoming_(incoming_channel), outgoing_(outgoing_channel) {}
+
+  FakeSocket(const FakeSocket&) = delete;
+  FakeSocket& operator=(const FakeSocket&) = delete;
 
   ~FakeSocket() override = default;
 
@@ -299,8 +303,6 @@ class FakeSocket : public StreamSocket {
   NetLogWithSource net_log_;
   FakeDataChannel* incoming_;
   FakeDataChannel* outgoing_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSocket);
 };
 
 }  // namespace
@@ -1138,7 +1140,7 @@ TEST_F(SSLServerSocketTest, ClientWriteAfterServerClose) {
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromMilliseconds(10));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(10));
   run_loop.Run();
 }
 

@@ -61,8 +61,11 @@ class WebFeedIndex {
     return subscribed_feeds_update_time_;
   }
   bool HasSubscriptions() const;
+  int SubscriptionCount() const;
+  int RecommendedWebFeedCount() const;
 
   std::vector<Entry> GetRecommendedEntriesForTesting() const;
+  void DumpStateForDebugging(std::ostream& os);
 
  private:
   using EntrySet = web_feed_index_internal::EntrySet;

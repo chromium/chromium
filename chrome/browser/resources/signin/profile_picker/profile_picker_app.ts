@@ -10,7 +10,7 @@ import './strings.m.js';
 
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -25,9 +25,7 @@ export interface ProfilePickerAppElement {
   };
 }
 
-const ProfilePickerAppElementBase =
-    mixinBehaviors([I18nBehavior], NavigationMixin(PolymerElement)) as
-    {new (): PolymerElement & I18nBehavior & NavigationMixinInterface};
+const ProfilePickerAppElementBase = I18nMixin(NavigationMixin(PolymerElement));
 
 export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
   static get is() {
@@ -83,7 +81,8 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
         document.title = this.getDocumentTitle_('mainView');
         this.$.viewManager.switchView('mainView', 'fade-in', 'no-animation');
       }
-      this.manageProfilesBrowserProxy_.loadSignInProfileCreationFlow(null);
+      // TODO(https://crbug.com/1237418): Add support for ForceSignin on Lacros.
+      this.manageProfilesBrowserProxy_.loadSignInProfileCreationFlow(null, '');
       return;
     }
 
@@ -115,6 +114,10 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
         return this.i18n('localProfileCreationTitle');
       case 'profileSwitch':
         return this.i18n('profileSwitchTitle');
+      // <if expr="lacros">
+      case 'accountSelectionLacros':
+        return this.i18n('accountSelectionLacrosTitle');
+      // </if>
       default:
         return '';
     }
@@ -125,6 +128,9 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
       case Routes.MAIN:
         return Promise.resolve();
       case Routes.NEW_PROFILE:
+      // <if expr="lacros">
+      case Routes.ACCOUNT_SELECTION_LACROS:
+        // </if>
         return Promise.all(
             [this.initializeNewProfileThemeInfo_(), ensureLazyLoaded()]);
       case Routes.PROFILE_SWITCH:
@@ -147,6 +153,12 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
   private setMinimumSize_() {
     this.style.setProperty(
         '--view-min-size', loadTimeData.getString('minimumPickerSize'));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'profile-picker-app': ProfilePickerAppElement;
   }
 }
 

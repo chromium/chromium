@@ -54,7 +54,7 @@ NSString* GetReadingListCellDistillationDateText(int64_t distillation_date) {
   } else {
     return base::SysUTF16ToNSString(ui::TimeFormat::SimpleWithMonthAndYear(
         ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG,
-        base::TimeDelta::FromMicroseconds(elapsed), true));
+        base::Microseconds(elapsed), true));
   }
 }
 

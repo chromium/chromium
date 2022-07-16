@@ -123,7 +123,7 @@ base::FilePath GetAppDataDir() {
 
 // Delete files which where not deleted by chrome.
 void DeleteLeakedFiles(const base::FilePath& dir) {
-  base::Time delete_before = base::Time::Now() - base::TimeDelta::FromDays(1);
+  base::Time delete_before = base::Time::Now() - base::Days(1);
   base::FileEnumerator enumerator(dir, false, base::FileEnumerator::FILES);
   for (base::FilePath file_path = enumerator.Next(); !file_path.empty();
        file_path = enumerator.Next()) {

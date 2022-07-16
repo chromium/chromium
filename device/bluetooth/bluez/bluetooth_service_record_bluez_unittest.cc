@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_device_bluez.h"
@@ -19,6 +20,7 @@
 #include "device/bluetooth/dbus/fake_bluetooth_device_client.h"
 #include "device/bluetooth/test/bluetooth_test_bluez.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluez {
 
@@ -39,6 +41,11 @@ class BluetoothServiceRecordBlueZTest : public device::BluetoothTestBlueZ {
         success_callbacks_(0),
         error_callbacks_(0),
         last_seen_handle_(0) {}
+
+  BluetoothServiceRecordBlueZTest(const BluetoothServiceRecordBlueZTest&) =
+      delete;
+  BluetoothServiceRecordBlueZTest& operator=(
+      const BluetoothServiceRecordBlueZTest&) = delete;
 
   void SetUp() override {
     BluetoothTestBlueZ::SetUp();
@@ -159,8 +166,6 @@ class BluetoothServiceRecordBlueZTest : public device::BluetoothTestBlueZ {
 
   uint32_t last_seen_handle_;
   std::vector<BluetoothServiceRecordBlueZ> records_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothServiceRecordBlueZTest);
 };
 
 TEST_F(BluetoothServiceRecordBlueZTest, CreateAndRemove) {
@@ -185,7 +190,16 @@ TEST_F(BluetoothServiceRecordBlueZTest, GetServiceRecords) {
       static_cast<BluetoothDeviceBlueZ*>(adapter_->GetDevice(
           bluez::FakeBluetoothDeviceClient::kPairedDeviceAddress));
   GetServiceRecords(device, false);
-  device->Connect(nullptr, GetConnectCallback(Call::EXPECTED, Result::SUCCESS));
+  base::RunLoop run_loop;
+  device->Connect(
+      nullptr,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<device::BluetoothDevice::ConnectErrorCode>
+                          error_code) {
+            EXPECT_FALSE(error_code.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
   GetServiceRecords(device, true);
   VerifyRecords();
 }

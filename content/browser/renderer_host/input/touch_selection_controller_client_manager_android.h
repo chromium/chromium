@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_SELECTION_CONTROLLER_CLIENT_MANAGER_ANDROID_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_SELECTION_CONTROLLER_CLIENT_MANAGER_ANDROID_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/viz/host/hit_test/hit_test_region_observer.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
@@ -31,6 +30,12 @@ class TouchSelectionControllerClientManagerAndroid
   explicit TouchSelectionControllerClientManagerAndroid(
       RenderWidgetHostViewAndroid* rwhv,
       viz::HostFrameSinkManager* frame_host_sink_manager);
+
+  TouchSelectionControllerClientManagerAndroid(
+      const TouchSelectionControllerClientManagerAndroid&) = delete;
+  TouchSelectionControllerClientManagerAndroid& operator=(
+      const TouchSelectionControllerClientManagerAndroid&) = delete;
+
   ~TouchSelectionControllerClientManagerAndroid() override;
 
   // TouchSelectionControllerClientManager implementation.
@@ -83,8 +88,6 @@ class TouchSelectionControllerClientManagerAndroid
   gfx::SelectionBound manager_selection_end_;
   base::ObserverList<TouchSelectionControllerClientManager::Observer>
       observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionControllerClientManagerAndroid);
 };
 
 }  // namespace content

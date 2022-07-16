@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -20,6 +19,10 @@ using base::Time;
 class TokenServiceTableTest : public testing::Test {
  public:
   TokenServiceTableTest() {}
+
+  TokenServiceTableTest(const TokenServiceTableTest&) = delete;
+  TokenServiceTableTest& operator=(const TokenServiceTableTest&) = delete;
+
   ~TokenServiceTableTest() override {}
 
  protected:
@@ -40,9 +43,6 @@ class TokenServiceTableTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TokenServiceTable> table_;
   std::unique_ptr<WebDatabase> db_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TokenServiceTableTest);
 };
 
 TEST_F(TokenServiceTableTest, TokenServiceGetAllRemoveAll) {

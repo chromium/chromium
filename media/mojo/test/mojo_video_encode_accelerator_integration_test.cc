@@ -52,6 +52,11 @@ class MockVideoEncodeAcceleratorClient : public VideoEncodeAccelerator::Client {
  public:
   MockVideoEncodeAcceleratorClient() = default;
 
+  MockVideoEncodeAcceleratorClient(const MockVideoEncodeAcceleratorClient&) =
+      delete;
+  MockVideoEncodeAcceleratorClient& operator=(
+      const MockVideoEncodeAcceleratorClient&) = delete;
+
   MOCK_METHOD3(RequireBitstreamBuffers,
                void(unsigned int, const gfx::Size&, size_t));
   MOCK_METHOD2(BitstreamBufferReady,
@@ -59,14 +64,16 @@ class MockVideoEncodeAcceleratorClient : public VideoEncodeAccelerator::Client {
   MOCK_METHOD1(NotifyError, void(VideoEncodeAccelerator::Error));
   MOCK_METHOD1(NotifyEncoderInfoChange,
                void(const media::VideoEncoderInfo& info));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockVideoEncodeAcceleratorClient);
 };
 
 class MojoVideoEncodeAcceleratorIntegrationTest : public ::testing::Test {
  public:
   MojoVideoEncodeAcceleratorIntegrationTest() = default;
+
+  MojoVideoEncodeAcceleratorIntegrationTest(
+      const MojoVideoEncodeAcceleratorIntegrationTest&) = delete;
+  MojoVideoEncodeAcceleratorIntegrationTest& operator=(
+      const MojoVideoEncodeAcceleratorIntegrationTest&) = delete;
 
   void SetUp() override {
     mojo::PendingRemote<mojom::VideoEncodeAccelerator> mojo_vea;
@@ -123,8 +130,6 @@ class MojoVideoEncodeAcceleratorIntegrationTest : public ::testing::Test {
 
   // The class under test, as a generic media::VideoEncodeAccelerator.
   std::unique_ptr<VideoEncodeAccelerator> mojo_vea_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoEncodeAcceleratorIntegrationTest);
 };
 
 TEST_F(MojoVideoEncodeAcceleratorIntegrationTest, CreateAndDestroy) {}

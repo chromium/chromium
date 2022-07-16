@@ -6,7 +6,6 @@
 #define MEDIA_BASE_FAKE_AUDIO_WORKER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
 
@@ -36,6 +35,10 @@ class MEDIA_EXPORT FakeAudioWorker {
   FakeAudioWorker(
       const scoped_refptr<base::SingleThreadTaskRunner>& worker_task_runner,
       const AudioParameters& params);
+
+  FakeAudioWorker(const FakeAudioWorker&) = delete;
+  FakeAudioWorker& operator=(const FakeAudioWorker&) = delete;
+
   ~FakeAudioWorker();
 
   // Start executing |worker_cb| at a regular intervals.  Stop() must be called
@@ -57,8 +60,6 @@ class MEDIA_EXPORT FakeAudioWorker {
   // after the call to Stop() (on the main thread) returns.
   class Worker;
   const scoped_refptr<Worker> worker_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioWorker);
 };
 
 }  // namespace media

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_enums.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
@@ -17,10 +18,6 @@ class PrefService;
 namespace signin {
 class IdentityManager;
 }
-
-// Callback to open account creation URL. Related to
-// |openAccountCreationURLCallback|.
-typedef void (^AddAccountOpenAccountCreationURLCallback)(NSURL* URL);
 
 // Delegate that displays screens for the add account flows.
 @protocol AddAccountSigninManagerDelegate
@@ -42,31 +39,25 @@ typedef void (^AddAccountOpenAccountCreationURLCallback)(NSURL* URL);
 // Manager that handles add account and reauthentication UI.
 @interface AddAccountSigninManager : NSObject
 
-// This callback is in charge to open the URL. This callback is used when
-// GCRSSOService is initialized with GCRSSOAccountCreationWithURL.
-// If this callback is missing with GCRSSOAccountCreationWithURL, the default
-// browser is used to open the URL.
-@property(nonatomic, copy)
-    AddAccountOpenAccountCreationURLCallback openAccountCreationURLCallback;
-
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)
-    initWithPresentingViewController:(UIViewController*)viewController
-          identityInteractionManager:
-              (ChromeIdentityInteractionManager*)identityInteractionManager
-                         prefService:(PrefService*)prefService
-                     identityManager:(signin::IdentityManager*)identityManager
-    NS_DESIGNATED_INITIALIZER;
-
 // The delegate.
 @property(nonatomic, weak) id<AddAccountSigninManagerDelegate> delegate;
 
-// Indicates that the add account sign-in flow was interrupted.
-@property(nonatomic, readwrite) BOOL signinInterrupted;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                identityInteractionManager:(ChromeIdentityInteractionManager*)
+                                               identityInteractionManager
+                               prefService:(PrefService*)prefService
+                           identityManager:
+                               (signin::IdentityManager*)identityManager
+    NS_DESIGNATED_INITIALIZER;
 
 // Displays the add account sign-in flow.
 // |signinIntent| is the add account intent.
 - (void)showSigninWithIntent:(AddAccountSigninIntent)addAccountSigninIntent;
+
+// Interrupts the add account view.
+- (void)interruptAddAccountAnimated:(BOOL)animated
+                         completion:(ProceduralBlock)completion;
 
 @end
 

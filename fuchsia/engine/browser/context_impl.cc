@@ -4,6 +4,7 @@
 
 #include "fuchsia/engine/browser/context_impl.h"
 
+#include <lib/fpromise/result.h>
 #include <lib/zx/channel.h>
 #include <lib/zx/handle.h>
 #include <memory>
@@ -12,13 +13,13 @@
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -85,14 +86,11 @@ void ContextImpl::CreateFrameWithParams(
                             std::move(frame));
 }
 
-void ContextImpl::CreateFrameForWebContents(
+FrameImpl* ContextImpl::CreateFrameForWebContents(
     std::unique_ptr<content::WebContents> web_contents,
     fuchsia::web::CreateFrameParams params,
     fidl::InterfaceRequest<fuchsia::web::Frame> frame_request) {
   DCHECK(frame_request.is_valid());
-
-  blink::web_pref::WebPreferences web_preferences =
-      web_contents->GetOrCreateWebPreferences();
 
   // Register the new Frame with the DevTools controller. The controller will
   // reject registration if user-debugging is requested, but it is not enabled
@@ -102,40 +100,21 @@ void ContextImpl::CreateFrameForWebContents(
   if (!devtools_controller_->OnFrameCreated(web_contents.get(),
                                             user_debugging_requested)) {
     frame_request.Close(ZX_ERR_INVALID_ARGS);
-    return;
+    return nullptr;
   }
 
   // |params.debug_name| is not currently supported.
   // TODO(crbug.com/1051533): Determine whether it is still needed.
 
-  // REQUIRE_USER_ACTIVATION is the default per the FIDL API.
-  web_preferences.autoplay_policy =
-      blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
-
-  if (params.has_autoplay_policy()) {
-    switch (params.autoplay_policy()) {
-      case fuchsia::web::AutoplayPolicy::ALLOW:
-        web_preferences.autoplay_policy =
-            blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
-        break;
-      case fuchsia::web::AutoplayPolicy::REQUIRE_USER_ACTIVATION:
-        web_preferences.autoplay_policy =
-            blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
-        break;
-    }
-  }
-  web_contents->SetWebPreferences(web_preferences);
-
   // Verify the explicit sites filter error page content. If the parameter is
   // present, it will be provided to the FrameImpl after it is created below.
   absl::optional<std::string> explicit_sites_filter_error_page;
   if (params.has_explicit_sites_filter_error_page()) {
-    explicit_sites_filter_error_page.emplace();
-    if (!cr_fuchsia::StringFromMemData(
-            params.explicit_sites_filter_error_page(),
-            &explicit_sites_filter_error_page.value())) {
+    explicit_sites_filter_error_page =
+        base::StringFromMemData(params.explicit_sites_filter_error_page());
+    if (!explicit_sites_filter_error_page) {
       frame_request.Close(ZX_ERR_INVALID_ARGS);
-      return;
+      return nullptr;
     }
   }
 
@@ -148,7 +127,7 @@ void ContextImpl::CreateFrameForWebContents(
   if (status != ZX_OK) {
     ZX_LOG(ERROR, status) << "CreateFrameParams clone failed";
     frame_request.Close(ZX_ERR_INVALID_ARGS);
-    return;
+    return nullptr;
   }
 
   // Wrap the WebContents into a FrameImpl owned by |this|.
@@ -163,7 +142,9 @@ void ContextImpl::CreateFrameForWebContents(
         std::move(*explicit_sites_filter_error_page));
   }
 
+  FrameImpl* frame_ptr = frame_impl.get();
   frames_.insert(std::move(frame_impl));
+  return frame_ptr;
 }
 
 void ContextImpl::GetCookieManager(
@@ -175,16 +156,12 @@ void ContextImpl::GetRemoteDebuggingPort(
     GetRemoteDebuggingPortCallback callback) {
   devtools_controller_->GetDevToolsPort(base::BindOnce(
       [](GetRemoteDebuggingPortCallback callback, uint16_t port) {
-        fuchsia::web::Context_GetRemoteDebuggingPort_Result result;
         if (port == 0) {
-          result.set_err(
-              fuchsia::web::ContextError::REMOTE_DEBUGGING_PORT_NOT_OPENED);
+          callback(fpromise::error(
+              fuchsia::web::ContextError::REMOTE_DEBUGGING_PORT_NOT_OPENED));
         } else {
-          fuchsia::web::Context_GetRemoteDebuggingPort_Response response;
-          response.port = port;
-          result.set_response(std::move(response));
+          callback(fpromise::ok(port));
         }
-        callback(std::move(result));
       },
       std::move(callback)));
 }

@@ -34,6 +34,10 @@ class NavigationControllerImpl : public NavigationController,
                                  public content::WebContentsObserver {
  public:
   explicit NavigationControllerImpl(TabImpl* tab);
+
+  NavigationControllerImpl(const NavigationControllerImpl&) = delete;
+  NavigationControllerImpl& operator=(const NavigationControllerImpl&) = delete;
+
   ~NavigationControllerImpl() override;
 
   // Creates the NavigationThrottle used to ensure WebContents::Stop() is called
@@ -64,7 +68,7 @@ class NavigationControllerImpl : public NavigationController,
       const base::TimeDelta& largest_contentful_paint);
 
   void OnPageDestroyed(Page* page);
-  void OnPageLanguageDetermined(Page* page, std::string language);
+  void OnPageLanguageDetermined(Page* page, const std::string& language);
 
 #if defined(OS_ANDROID)
   void SetNavigationControllerImpl(
@@ -153,6 +157,15 @@ class NavigationControllerImpl : public NavigationController,
   void DoNavigate(
       std::unique_ptr<content::NavigationController::LoadURLParams> params);
 
+  // Schedules a load to happen as soon as possible. This is used in cases
+  // where it is not safe to call load. In particular, if a load was just
+  // started. Content is generally not reentrant when starting a load and has
+  // CHECKs to ensure it doesn't happen.
+  void ScheduleDelayedLoad(
+      std::unique_ptr<content::NavigationController::LoadURLParams> params);
+  void CancelDelayedLoad();
+  void ProcessDelayedLoad();
+
   base::ObserverList<NavigationObserver>::Unchecked observers_;
   std::map<content::NavigationHandle*, std::unique_ptr<NavigationImpl>>
       navigation_map_;
@@ -173,9 +186,11 @@ class NavigationControllerImpl : public NavigationController,
   // ones that we need to allow deletion from (such as completed/failed).
   bool should_delay_web_contents_deletion_ = false;
 
-  base::WeakPtrFactory<NavigationControllerImpl> weak_ptr_factory_{this};
+  // See comment in ScheduleDelayedLoad() for details.
+  std::unique_ptr<content::NavigationController::LoadURLParams>
+      delayed_load_params_;
 
-  DISALLOW_COPY_AND_ASSIGN(NavigationControllerImpl);
+  base::WeakPtrFactory<NavigationControllerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace weblayer

@@ -34,6 +34,7 @@ POLICY_EXPORT extern const char kEnrollmentTokenAuthHeaderPrefix[];
 
 // String extern constants for the device and app type we report to the server.
 POLICY_EXPORT extern const char kValueAppType[];
+POLICY_EXPORT extern const char kValueBrowserUploadPublicKey[];
 POLICY_EXPORT extern const char kValueDeviceType[];
 POLICY_EXPORT extern const char kValueRequestAutoEnrollment[];
 POLICY_EXPORT extern const char kValueRequestPsmHasDeviceState[];
@@ -43,6 +44,7 @@ POLICY_EXPORT extern const char kValueRequestRegister[];
 POLICY_EXPORT extern const char kValueRequestApiAuthorization[];
 POLICY_EXPORT extern const char kValueRequestUnregister[];
 POLICY_EXPORT extern const char kValueRequestUploadCertificate[];
+POLICY_EXPORT extern const char kValueRequestUploadEuiccInfo[];
 POLICY_EXPORT extern const char kValueRequestDeviceStateRetrieval[];
 POLICY_EXPORT extern const char kValueRequestUploadStatus[];
 POLICY_EXPORT extern const char kValueRequestRemoteCommands[];

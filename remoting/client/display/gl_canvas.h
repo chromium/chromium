@@ -22,6 +22,10 @@ class GlCanvas : public Canvas {
  public:
   // gl_version: version number of the OpenGL ES context. Either 2 or 3.
   GlCanvas(int gl_version);
+
+  GlCanvas(const GlCanvas&) = delete;
+  GlCanvas& operator=(const GlCanvas&) = delete;
+
   ~GlCanvas() override;
 
   // Canvas implementation.
@@ -58,8 +62,6 @@ class GlCanvas : public Canvas {
 
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<Canvas> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GlCanvas);
 };
 
 }  // namespace remoting

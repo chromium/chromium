@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_POPUP_MESSAGE_ACTION_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_POPUP_MESSAGE_ACTION_H_
 
-#include "base/macros.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 
 namespace autofill_assistant {
@@ -19,13 +18,15 @@ class PopupMessageAction : public Action {
  public:
   explicit PopupMessageAction(ActionDelegate* delegate,
                               const ActionProto& proto);
+
+  PopupMessageAction(const PopupMessageAction&) = delete;
+  PopupMessageAction& operator=(const PopupMessageAction&) = delete;
+
   ~PopupMessageAction() override;
 
  private:
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(PopupMessageAction);
 };
 
 }  // namespace autofill_assistant

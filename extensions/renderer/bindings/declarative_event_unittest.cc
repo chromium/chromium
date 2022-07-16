@@ -59,6 +59,10 @@ class DeclarativeEventTest : public APIBindingTest {
  public:
   DeclarativeEventTest()
       : type_refs_(APITypeReferenceMap::InitializeTypeCallback()) {}
+
+  DeclarativeEventTest(const DeclarativeEventTest&) = delete;
+  DeclarativeEventTest& operator=(const DeclarativeEventTest&) = delete;
+
   ~DeclarativeEventTest() override {}
 
   void OnRequest(std::unique_ptr<APIRequestHandler::Request> request,
@@ -111,8 +115,6 @@ class DeclarativeEventTest : public APIBindingTest {
   std::unique_ptr<TestInteractionProvider> interaction_provider_;
   std::unique_ptr<APIRequestHandler> request_handler_;
   std::unique_ptr<APIRequestHandler::Request> last_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeEventTest);
 };
 
 // Test that the rules schema behaves properly. This is designed to be more of
@@ -203,14 +205,12 @@ TEST_F(DeclarativeEventWithSchemaTest, TestAllMethods) {
       kDeclarativeAPIName, context, nullptr);
   ASSERT_FALSE(api.IsEmpty());
 
-  v8::Local<v8::Value> declarative_event =
-      GetPropertyFromObject(api, context, "declarativeEvent");
-  ASSERT_FALSE(declarative_event.IsEmpty());
-  ASSERT_TRUE(declarative_event->IsObject());
-  v8::Local<v8::Value> add_rules = GetPropertyFromObject(
-      declarative_event.As<v8::Object>(), context, "addRules");
-  ASSERT_FALSE(add_rules.IsEmpty());
-  ASSERT_TRUE(add_rules->IsFunction());
+  v8::Local<v8::Object> declarative_event;
+  ASSERT_TRUE(GetPropertyFromObjectAs(api, context, "declarativeEvent",
+                                      &declarative_event));
+  v8::Local<v8::Function> add_rules;
+  ASSERT_TRUE(GetPropertyFromObjectAs(declarative_event, context, "addRules",
+                                      &add_rules));
 
   v8::Local<v8::Value> args[] = {api};
 
@@ -224,8 +224,9 @@ TEST_F(DeclarativeEventWithSchemaTest, TestAllMethods) {
                     actions: ['cat'],
                   }]);
              }))";
-    v8::Local<v8::Function> add_rules = FunctionFromString(context, kAddRules);
-    RunFunctionOnGlobal(add_rules, context, base::size(args), args);
+    v8::Local<v8::Function> add_rules_func =
+        FunctionFromString(context, kAddRules);
+    RunFunctionOnGlobal(add_rules_func, context, base::size(args), args);
     ValidateLastRequest("events.addRules",
                         "['alpha.declarativeEvent',0,"
                         "[{'actions':['cat'],"

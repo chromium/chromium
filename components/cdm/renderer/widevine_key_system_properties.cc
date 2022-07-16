@@ -4,6 +4,7 @@
 
 #include "components/cdm/renderer/widevine_key_system_properties.h"
 
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
@@ -144,12 +145,19 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
 #if defined(OS_CHROMEOS)
   // Hardware security requires HWDRM or remote attestation, both of these
   // require an identifier.
-  if (robustness >= Robustness::HW_SECURE_CRYPTO || hw_secure_codecs_required)
+  if (robustness >= Robustness::HW_SECURE_CRYPTO || hw_secure_codecs_required) {
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kLacrosUseChromeosProtectedMedia)) {
+      return EmeConfigRule::IDENTIFIER_REQUIRED;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     return EmeConfigRule::IDENTIFIER_AND_HW_SECURE_CODECS_REQUIRED;
 #else
     return EmeConfigRule::IDENTIFIER_REQUIRED;
 #endif
+  }
 
   // For video, recommend remote attestation if HW_SECURE_ALL is available,
   // regardless of the value of |robustness|, because it enables hardware

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -40,6 +39,10 @@ struct DomKeyAndFlags {
 class PlatformKeyMapTest : public testing::Test {
  public:
   PlatformKeyMapTest() {}
+
+  PlatformKeyMapTest(const PlatformKeyMapTest&) = delete;
+  PlatformKeyMapTest& operator=(const PlatformKeyMapTest&) = delete;
+
   ~PlatformKeyMapTest() override {}
 
   void CheckKeyboardCodeToKeyString(const char* label,
@@ -102,9 +105,6 @@ class PlatformKeyMapTest : public testing::Test {
     result.key = keymap.DomKeyFromKeyboardCodeImpl(key_code, &result.flags);
     return result;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PlatformKeyMapTest);
 };
 
 TEST_F(PlatformKeyMapTest, USLayout) {

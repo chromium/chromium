@@ -8,42 +8,48 @@
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
     fill: var(--google-grey-700);
-    margin-right: 5px;
+    margin-right: 6px;
     top: 1px;
   }
 
   #networkListContainer {
-    overflow: hidden;
+   align-items: center;
+   box-sizing: border-box;
+   display: flex;
+   flex-direction: column;
+   height: inherit;
+   position: relative;
   }
 
   #settingsLink {
     @apply --diagnostics-settings-link-font;
+    line-height: 20px;
   }
 
   .settings-link-container {
     align-items: center;
     display: flex;
+    height: 40px;
+    padding-bottom: 40px;
   }
 </style>
-
-<div id="networkListContainer" class="diagnostics-cards-container">
-  <div class="diagnostics-cards-container">
-    <template is="dom-if" if="[[activeGuid_]]">
+<div id="networkListContainer" class="diagnostics-network-list-container" tabindex="0">
+  <div class="diagnostics-cards-container-nav">
+    <template is="dom-if" if="[[activeGuid_]]" restamp>
       <connectivity-card class="card-width" active-guid="[[activeGuid_]]"
-          is-test-running="{{isTestRunning}}"
+          test-suite-status="{{testSuiteStatus}}"
           is-active="[[isActive]]">
       </connectivity-card>
     </template>
+    <dom-repeat id="networkCardList" items="[[otherNetworkGuids_]]" as="guid">
+      <template>
+        <network-card class="card-width" guid="[[guid]]">
+        </network-card>
+      </template>
+    </dom-repeat>
   </div>
-  <dom-repeat id="networkCardList" items="[[otherNetworkGuids_]]" as="guid">
-    <template>
-      <network-card class="card-width" guid="[[guid]]">
-      </network-card>
-    </template>
-  </dom-repeat>
-  <div class="settings-link-container">
-    <iron-icon icon="cr:settings_icon" id="settingsIcon"></iron-icon>
-    <div id="settingsLink" inner-h-t-m-l="[[getSettingsString_()]]">
-    </div>
+  <div class="settings-link-container" hidden$="[[!isLoggedIn_]]">
+    <iron-icon icon="diagnostics:settings" id="settingsIcon"></iron-icon>
+    <div id="settingsLink" inner-h-t-m-l="[[getSettingsString_()]]"></div>
   </div>
 </div>

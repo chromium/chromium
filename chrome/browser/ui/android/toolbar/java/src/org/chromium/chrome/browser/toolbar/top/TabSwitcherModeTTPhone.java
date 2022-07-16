@@ -87,13 +87,13 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
     }
 
     void initialize(boolean isGridTabSwitcherEnabled, boolean isTabToGtsAnimationEnabled,
-            boolean isStartSurfaceEnabled, BooleanSupplier isIncognitoModeEnabledSupplier) {
+            BooleanSupplier isIncognitoModeEnabledSupplier) {
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
         mShowZoomingAnimation = isGridTabSwitcherEnabled && isTabToGtsAnimationEnabled;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
 
         mNewTabImageButton.setGridTabSwitcherEnabled(isGridTabSwitcherEnabled);
-        mNewTabImageButton.setStartSurfaceEnabled(isStartSurfaceEnabled);
+        mNewTabImageButton.setStartSurfaceEnabled(false);
         updateTabSwitchingElements(shouldShowIncognitoToggle());
         updateNewTabButtonVisibility();
     }
@@ -177,7 +177,7 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
 
         mVisiblityAnimator.start();
 
-        if (DeviceClassManager.enableAccessibilityLayout()) mVisiblityAnimator.end();
+        if (DeviceClassManager.enableAccessibilityLayout(getContext())) mVisiblityAnimator.end();
     }
 
     /**
@@ -296,7 +296,7 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
             // the tab switcher, which is the standard mode background. Note that horizontal tab
             // switcher is an exception, which uses the correspond background color for standard
             // and incognito mode.
-            int backgroundColor = ChromeColors.getPrimaryBackgroundColor(getResources(), false);
+            int backgroundColor = ChromeColors.getPrimaryBackgroundColor(getContext(), false);
             useLightIcons = ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
         } else {
             useLightIcons = ColorUtils.shouldUseLightForegroundOnBackground(primaryColor);
@@ -320,8 +320,9 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
 
     private int getToolbarColorForCurrentState() {
         // TODO(huayinz): Split tab switcher background color from primary background color.
-        if (DeviceClassManager.enableAccessibilityLayout() || mIsGridTabSwitcherEnabled) {
-            return ChromeColors.getPrimaryBackgroundColor(getResources(), mIsIncognito);
+        if (DeviceClassManager.enableAccessibilityLayout(getContext())
+                || mIsGridTabSwitcherEnabled) {
+            return ChromeColors.getPrimaryBackgroundColor(getContext(), mIsIncognito);
         }
 
         return Color.TRANSPARENT;

@@ -19,6 +19,11 @@ class PersistentSystemProfileTest : public testing::Test {
   const int32_t kAllocatorMemorySize = 1 << 20;  // 1 MiB
 
   PersistentSystemProfileTest() {}
+
+  PersistentSystemProfileTest(const PersistentSystemProfileTest&) = delete;
+  PersistentSystemProfileTest& operator=(const PersistentSystemProfileTest&) =
+      delete;
+
   ~PersistentSystemProfileTest() override {}
 
   void SetUp() override {
@@ -58,8 +63,6 @@ class PersistentSystemProfileTest : public testing::Test {
   PersistentSystemProfile persistent_profile_;
   std::unique_ptr<base::PersistentMemoryAllocator> memory_allocator_;
   std::unique_ptr<PersistentSystemProfile::RecordAllocator> records_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentSystemProfileTest);
 };
 
 TEST_F(PersistentSystemProfileTest, Create) {

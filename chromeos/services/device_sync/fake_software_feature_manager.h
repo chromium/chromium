@@ -38,6 +38,11 @@ class FakeSoftwareFeatureManager : public SoftwareFeatureManager {
         base::OnceClosure success_callback,
         base::OnceCallback<void(NetworkRequestError)> error_callback,
         bool is_exclusive);
+
+    SetSoftwareFeatureStateArgs(const SetSoftwareFeatureStateArgs&) = delete;
+    SetSoftwareFeatureStateArgs& operator=(const SetSoftwareFeatureStateArgs&) =
+        delete;
+
     ~SetSoftwareFeatureStateArgs();
 
     std::string public_key;
@@ -46,9 +51,6 @@ class FakeSoftwareFeatureManager : public SoftwareFeatureManager {
     base::OnceClosure success_callback;
     base::OnceCallback<void(NetworkRequestError)> error_callback;
     bool is_exclusive;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SetSoftwareFeatureStateArgs);
   };
 
   struct SetFeatureStatusArgs {
@@ -58,6 +60,10 @@ class FakeSoftwareFeatureManager : public SoftwareFeatureManager {
         FeatureStatusChange status_change,
         base::OnceClosure success_callback,
         base::OnceCallback<void(NetworkRequestError)> error_callback);
+
+    SetFeatureStatusArgs(const SetFeatureStatusArgs&) = delete;
+    SetFeatureStatusArgs& operator=(const SetFeatureStatusArgs&) = delete;
+
     ~SetFeatureStatusArgs();
 
     std::string device_id;
@@ -65,9 +71,6 @@ class FakeSoftwareFeatureManager : public SoftwareFeatureManager {
     FeatureStatusChange status_change;
     base::OnceClosure success_callback;
     base::OnceCallback<void(NetworkRequestError)> error_callback;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SetFeatureStatusArgs);
   };
 
   struct FindEligibleDevicesArgs {
@@ -77,6 +80,10 @@ class FakeSoftwareFeatureManager : public SoftwareFeatureManager {
             const std::vector<cryptauth::ExternalDeviceInfo>&,
             const std::vector<cryptauth::IneligibleDevice>&)> success_callback,
         base::OnceCallback<void(NetworkRequestError)> error_callback);
+
+    FindEligibleDevicesArgs(const FindEligibleDevicesArgs&) = delete;
+    FindEligibleDevicesArgs& operator=(const FindEligibleDevicesArgs&) = delete;
+
     ~FindEligibleDevicesArgs();
 
     multidevice::SoftwareFeature software_feature;
@@ -84,12 +91,14 @@ class FakeSoftwareFeatureManager : public SoftwareFeatureManager {
                             const std::vector<cryptauth::IneligibleDevice>&)>
         success_callback;
     base::OnceCallback<void(NetworkRequestError)> error_callback;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(FindEligibleDevicesArgs);
   };
 
   FakeSoftwareFeatureManager();
+
+  FakeSoftwareFeatureManager(const FakeSoftwareFeatureManager&) = delete;
+  FakeSoftwareFeatureManager& operator=(const FakeSoftwareFeatureManager&) =
+      delete;
+
   ~FakeSoftwareFeatureManager() override;
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
@@ -138,8 +147,6 @@ class FakeSoftwareFeatureManager : public SoftwareFeatureManager {
   std::vector<std::unique_ptr<SetFeatureStatusArgs>> set_feature_status_calls_;
   std::vector<std::unique_ptr<FindEligibleDevicesArgs>>
       find_eligible_multidevice_host_calls_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSoftwareFeatureManager);
 };
 
 }  // namespace device_sync

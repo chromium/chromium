@@ -22,6 +22,10 @@ class NET_EXPORT_PRIVATE HttpNetworkSessionPeer {
  public:
   // |session| should outlive the HttpNetworkSessionPeer.
   explicit HttpNetworkSessionPeer(HttpNetworkSession* session);
+
+  HttpNetworkSessionPeer(const HttpNetworkSessionPeer&) = delete;
+  HttpNetworkSessionPeer& operator=(const HttpNetworkSessionPeer&) = delete;
+
   ~HttpNetworkSessionPeer();
 
   void SetClientSocketPoolManager(
@@ -34,8 +38,6 @@ class NET_EXPORT_PRIVATE HttpNetworkSessionPeer {
 
  private:
   HttpNetworkSession* const session_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpNetworkSessionPeer);
 };
 
 }  // namespace net

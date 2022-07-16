@@ -27,7 +27,7 @@ DownloadShelfWebView::DownloadShelfWebView(Browser* browser,
 
   LoadInitialURL(GURL(chrome::kChromeUIDownloadShelfURL));
 
-  shelf_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(
+  shelf_animation_.SetSlideDuration(base::Milliseconds(
       gfx::Animation::ShouldRenderRichAnimation() ? 120 : 0));
 
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
@@ -47,7 +47,7 @@ gfx::Size DownloadShelfWebView::CalculatePreferredSize() const {
 }
 
 bool DownloadShelfWebView::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Suppress native context menu, since the web content shows one.
   return true;

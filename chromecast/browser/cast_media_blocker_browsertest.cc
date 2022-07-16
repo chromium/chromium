@@ -29,6 +29,10 @@ class CastMediaBlockerBrowserTest : public CastBrowserTest {
  public:
   CastMediaBlockerBrowserTest() {}
 
+  CastMediaBlockerBrowserTest(const CastMediaBlockerBrowserTest&) = delete;
+  CastMediaBlockerBrowserTest& operator=(const CastMediaBlockerBrowserTest&) =
+      delete;
+
  protected:
   // CastBrowserTest implementation.
   void TearDownOnMainThread() override {
@@ -60,8 +64,7 @@ class CastMediaBlockerBrowserTest : public CastBrowserTest {
       LOG(INFO) << "Checking media blocking, re-try = " << i;
       base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(),
-          base::TimeDelta::FromMilliseconds(100));
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
       run_loop.Run();
 
       const std::string command =
@@ -86,8 +89,6 @@ class CastMediaBlockerBrowserTest : public CastBrowserTest {
  private:
   content::WebContents* web_contents_;
   std::unique_ptr<CastMediaBlocker> blocker_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastMediaBlockerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CastMediaBlockerBrowserTest, Audio_BlockUnblock) {

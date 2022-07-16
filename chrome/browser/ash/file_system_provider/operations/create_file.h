@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/file_system_provider/operations/operation.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -35,6 +34,10 @@ class CreateFile : public Operation {
              const ProvidedFileSystemInfo& file_system_info,
              const base::FilePath& file_path,
              storage::AsyncFileUtil::StatusCallback callback);
+
+  CreateFile(const CreateFile&) = delete;
+  CreateFile& operator=(const CreateFile&) = delete;
+
   ~CreateFile() override;
 
   // Operation overrides.
@@ -49,8 +52,6 @@ class CreateFile : public Operation {
  private:
   base::FilePath file_path_;
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CreateFile);
 };
 
 }  // namespace operations

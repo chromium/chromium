@@ -5,6 +5,7 @@
 #include "tools/json_schema_compiler/test/functions_on_types.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -13,40 +14,40 @@ namespace functions_on_types = test::api::functions_on_types;
 
 TEST(JsonSchemaCompilerFunctionsOnTypesTest, StorageAreaGetParamsCreate) {
   {
-    auto params_value = std::make_unique<base::ListValue>();
+    std::vector<base::Value> params_value;
     std::unique_ptr<functions_on_types::StorageArea::Get::Params> params(
-        functions_on_types::StorageArea::Get::Params::Create(*params_value));
+        functions_on_types::StorageArea::Get::Params::Create(params_value));
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->keys);
   }
   {
-    auto params_value = std::make_unique<base::ListValue>();
-    params_value->Append(9);
+    std::vector<base::Value> params_value;
+    params_value.emplace_back(9);
     std::unique_ptr<functions_on_types::StorageArea::Get::Params> params(
-        functions_on_types::StorageArea::Get::Params::Create(*params_value));
+        functions_on_types::StorageArea::Get::Params::Create(params_value));
     EXPECT_FALSE(params);
   }
   {
-    auto params_value = std::make_unique<base::ListValue>();
-    params_value->Append("test");
+    std::vector<base::Value> params_value;
+    params_value.emplace_back("test");
     std::unique_ptr<functions_on_types::StorageArea::Get::Params> params(
-        functions_on_types::StorageArea::Get::Params::Create(*params_value));
+        functions_on_types::StorageArea::Get::Params::Create(params_value));
     ASSERT_TRUE(params);
     ASSERT_TRUE(params->keys);
     EXPECT_EQ("test", *params->keys->as_string);
   }
   {
-    auto keys_object_value = std::make_unique<base::DictionaryValue>();
-    keys_object_value->SetInteger("integer", 5);
-    keys_object_value->SetString("string", "string");
-    auto params_value = std::make_unique<base::ListValue>();
-    params_value->Append(keys_object_value->CreateDeepCopy());
+    base::Value keys_object_value(base::Value::Type::DICTIONARY);
+    keys_object_value.SetIntKey("integer", 5);
+    keys_object_value.SetStringKey("string", "string");
+    std::vector<base::Value> params_value;
+    params_value.push_back(keys_object_value.Clone());
     std::unique_ptr<functions_on_types::StorageArea::Get::Params> params(
-        functions_on_types::StorageArea::Get::Params::Create(*params_value));
+        functions_on_types::StorageArea::Get::Params::Create(params_value));
     ASSERT_TRUE(params);
     ASSERT_TRUE(params->keys);
-    EXPECT_TRUE(keys_object_value->Equals(
-        &params->keys->as_object->additional_properties));
+    EXPECT_EQ(keys_object_value,
+              params->keys->as_object->additional_properties);
   }
 }
 
@@ -62,12 +63,12 @@ TEST(JsonSchemaCompilerFunctionsOnTypesTest, StorageAreaGetResultCreate) {
 }
 
 TEST(JsonSchemaCompilerFunctionsOnTypesTest, ChromeSettingGetParamsCreate) {
-  auto details_value = std::make_unique<base::DictionaryValue>();
-  details_value->SetBoolean("incognito", true);
-  auto params_value = std::make_unique<base::ListValue>();
-  params_value->Append(std::move(details_value));
+  base::Value details_value(base::Value::Type::DICTIONARY);
+  details_value.SetBoolKey("incognito", true);
+  std::vector<base::Value> params_value;
+  params_value.push_back(std::move(details_value));
   std::unique_ptr<functions_on_types::ChromeSetting::Get::Params> params(
-      functions_on_types::ChromeSetting::Get::Params::Create(*params_value));
+      functions_on_types::ChromeSetting::Get::Params::Create(params_value));
   EXPECT_TRUE(params.get());
   EXPECT_TRUE(*params->details.incognito);
 }

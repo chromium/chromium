@@ -6,28 +6,33 @@
 from __future__ import print_function
 
 import argparse
+import datetime
 import json
-import re
+import os
 import urllib
 
-_COMMITS_URL = 'https://api.github.com/repos/google/turbine/commits?per_page=1'
+_COMMITS_URL = 'https://api.github.com/repos/google/turbine/commits?per_page=1&until={}'
 _ARCHIVE_URL = 'https://github.com/google/turbine/archive/{}.tar.gz'
 
 
-def get_last_commit_data():
-    return json.loads(urllib.urlopen(_COMMITS_URL).read().strip())
+def get_last_commit_of_the_week():
+    """Returns data of last commit until the end of last week."""
+    # Get a datetime object representing today ignoring time of day.
+    today = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
+    # Find number of days since last monday.
+    days_since_week_start = today.weekday()
+    # Get time at the start of this week (start of Monday of this week).
+    end_of_last_week = today-datetime.timedelta(days=days_since_week_start)
+    url = _COMMITS_URL.format(end_of_last_week.isoformat())
+    # Search for the last commit until the start of this week.
+    return json.loads(urllib.urlopen(url).read().strip())[0]
 
 
 def do_latest():
-    message = get_last_commit_data()[0]['commit']['message']
-    rev_id_match = re.search(r'PiperOrigin-RevId: (\d+)', message)
-    assert rev_id_match is not None, (
-        'Unable to find PiperOrigin-RevId in commit message:' + message)
-    print(rev_id_match.group(1))
+    print(get_last_commit_of_the_week()['sha'])
 
 
-def get_download_url():
-    sha = get_last_commit_data()[0]['sha']
+def get_download_url(sha):
     partial_manifest = {
         'url': [_ARCHIVE_URL.format(sha)],
         'ext': '.tar.gz',
@@ -43,7 +48,8 @@ def main():
     latest.set_defaults(func=do_latest)
 
     download = sub.add_parser("get_url")
-    download.set_defaults(func=get_download_url)
+    download.set_defaults(
+        func=lambda : get_download_url(os.environ['_3PP_VERSION']))
 
     opts = ap.parse_args()
     opts.func()

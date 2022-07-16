@@ -1,8 +1,0 @@
-Tests different types of search-and-replace in SourceFrame
-
-Running replace test for /replaceMe1/replaced/ :
-  - // replace#Me1#d#
-Running replace test for /replaceMe2/replaced/  (replaceAll):
-  - // replace#Me2 replaceMe2#d replaced#
-  - // #REPLACEME2 REPLACEME2#replaced replaced#
-

@@ -82,7 +82,7 @@ CertificateReportingServiceFactory::CertificateReportingServiceFactory()
       server_public_key_(nullptr),
       server_public_key_version_(0),
       clock_(base::DefaultClock::GetInstance()),
-      queued_report_ttl_(base::TimeDelta::FromSeconds(kMaxReportAgeInSeconds)),
+      queued_report_ttl_(base::Seconds(kMaxReportAgeInSeconds)),
       max_queued_report_count_(kMaxReportCountInQueue),
       service_reset_callback_(base::DoNothing()) {}
 
@@ -100,11 +100,8 @@ KeyedService* CertificateReportingServiceFactory::BuildServiceInstanceFor(
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
   if (test_url_loader_factory_.get()) {
     url_loader_factory = test_url_loader_factory_;
-  } else if (base::FeatureList::IsEnabled(
-                 safe_browsing::kSafeBrowsingRemoveCookies)) {
-    url_loader_factory = profile->GetURLLoaderFactory();
   } else {
-    url_loader_factory = safe_browsing_service->GetURLLoaderFactory();
+    url_loader_factory = profile->GetURLLoaderFactory();
   }
   return new CertificateReportingService(
       safe_browsing_service, url_loader_factory, static_cast<Profile*>(profile),

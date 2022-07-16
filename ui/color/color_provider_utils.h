@@ -27,6 +27,10 @@ base::StringPiece COMPONENT_EXPORT(COLOR)
 base::StringPiece COMPONENT_EXPORT(COLOR)
     ContrastModeName(ColorProviderManager::ContrastMode contrast_mode);
 
+// Converts SystemTheme.
+base::StringPiece COMPONENT_EXPORT(COLOR)
+    SystemThemeName(ColorProviderManager::SystemTheme system_theme);
+
 // Converts ColorId.
 base::StringPiece COMPONENT_EXPORT(COLOR) ColorIdName(ColorId color_id);
 
@@ -38,6 +42,15 @@ base::StringPiece COMPONENT_EXPORT(COLOR)
 // value and return it as a string. Otherwise return as an rgba(xx, xxx, xxx,
 // xxx) string.
 std::string COMPONENT_EXPORT(COLOR) SkColorName(SkColor color);
+
+// Converts Color Provider Color Id in string format from kColorXXX to
+// "--color-X-X-X" for CSS
+std::string COMPONENT_EXPORT(COLOR)
+    ConvertColorProviderColorIdToCSSColorId(std::string color_id_name);
+
+// Converts SkColor in ARGB format to CSS color in RGBA color. Returns the color
+// in a Hex string representation.
+std::string COMPONENT_EXPORT(COLOR) ConvertSkColorToCSSColor(SkColor color);
 
 }  // namespace ui
 

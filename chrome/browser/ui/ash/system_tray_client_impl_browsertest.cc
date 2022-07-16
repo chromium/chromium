@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseTest, TrayEnterprise) {
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }
 
-class SystemTrayClientClockTest : public chromeos::LoginManagerTest {
+class SystemTrayClientClockTest : public ash::LoginManagerTest {
  public:
   SystemTrayClientClockTest() : LoginManagerTest() {
     // Use consumer emails to avoid having to fake a policy fetch.
@@ -80,6 +80,10 @@ class SystemTrayClientClockTest : public chromeos::LoginManagerTest {
     account_id1_ = login_mixin_.users()[0].account_id;
     account_id2_ = login_mixin_.users()[1].account_id;
   }
+
+  SystemTrayClientClockTest(const SystemTrayClientClockTest&) = delete;
+  SystemTrayClientClockTest& operator=(const SystemTrayClientClockTest&) =
+      delete;
 
   ~SystemTrayClientClockTest() override = default;
 
@@ -94,10 +98,7 @@ class SystemTrayClientClockTest : public chromeos::LoginManagerTest {
  protected:
   AccountId account_id1_;
   AccountId account_id2_;
-  chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemTrayClientClockTest);
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
 };
 
 // Test that clock type is taken from user profile for current active user.
@@ -162,13 +163,13 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientClockTest, FocusedPod24HourClock) {
 
 class SystemTrayClientClockUnknownPrefTest
     : public SystemTrayClientClockTest,
-      public chromeos::LocalStateMixin::Delegate {
+      public ash::LocalStateMixin::Delegate {
  public:
   SystemTrayClientClockUnknownPrefTest() {
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        chromeos::kSystemUse24HourClock, true);
+        ash::kSystemUse24HourClock, true);
   }
-  // chromeos::localStateMixin::Delegate:
+  // ash::localStateMixin::Delegate:
   void SetUpLocalState() override {
     // First user does not have a preference.
     ASSERT_FALSE(user_manager::known_user::GetBooleanPref(
@@ -181,7 +182,7 @@ class SystemTrayClientClockUnknownPrefTest
 
  protected:
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  chromeos::LocalStateMixin local_state_{&mixin_host_, this};
+  ash::LocalStateMixin local_state_{&mixin_host_, this};
 };
 
 IN_PROC_BROWSER_TEST_F(SystemTrayClientClockUnknownPrefTest, SwitchToDefault) {
@@ -202,15 +203,14 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientClockUnknownPrefTest, SwitchToDefault) {
   EXPECT_TRUE(tray_test_api->Is24HourClock());
 }
 
-class SystemTrayClientEnterpriseAccountTest
-    : public chromeos::LoginManagerTest {
+class SystemTrayClientEnterpriseAccountTest : public ash::LoginManagerTest {
  protected:
   SystemTrayClientEnterpriseAccountTest() : LoginManagerTest() {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kManagedDeviceUIRedesign);
 
-    std::unique_ptr<chromeos::ScopedUserPolicyUpdate>
-        scoped_user_policy_update = user_policy_mixin_.RequestPolicyUpdate();
+    std::unique_ptr<ash::ScopedUserPolicyUpdate> scoped_user_policy_update =
+        user_policy_mixin_.RequestPolicyUpdate();
     scoped_user_policy_update->policy_data()->set_managed_by(kManager);
   }
   SystemTrayClientEnterpriseAccountTest(
@@ -219,14 +219,14 @@ class SystemTrayClientEnterpriseAccountTest
       const SystemTrayClientEnterpriseAccountTest&) = delete;
   ~SystemTrayClientEnterpriseAccountTest() override = default;
 
-  const chromeos::LoginManagerMixin::TestUserInfo unmanaged_user_{
+  const ash::LoginManagerMixin::TestUserInfo unmanaged_user_{
       AccountId::FromUserEmailGaiaId(kNewUser, kNewGaiaID)};
-  const chromeos::LoginManagerMixin::TestUserInfo managed_user_{
+  const ash::LoginManagerMixin::TestUserInfo managed_user_{
       AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
-  chromeos::UserPolicyMixin user_policy_mixin_{&mixin_host_,
-                                               managed_user_.account_id};
-  chromeos::LoginManagerMixin login_mixin_{&mixin_host_,
-                                           {managed_user_, unmanaged_user_}};
+  ash::UserPolicyMixin user_policy_mixin_{&mixin_host_,
+                                          managed_user_.account_id};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_,
+                                      {managed_user_, unmanaged_user_}};
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

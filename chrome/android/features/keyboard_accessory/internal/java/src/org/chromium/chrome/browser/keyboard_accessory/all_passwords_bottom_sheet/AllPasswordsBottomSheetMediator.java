@@ -4,12 +4,9 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet;
 
-import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetMetricsRecorder.UMA_ALL_PASSWORDS_BOTTOM_SHEET_ACTIONS;
-import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetMetricsRecorder.recordHistogram;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.VISIBLE;
 
-import org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetMetricsRecorder.AllPasswordsBottomSheetActions;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modelutil.ListModel;
@@ -28,7 +25,6 @@ class AllPasswordsBottomSheetMediator {
     private PropertyModel mModel;
     private Credential[] mCredentials;
     private boolean mIsPasswordField;
-    private boolean mSearchUsed;
 
     void initialize(AllPasswordsBottomSheetCoordinator.Delegate delegate, PropertyModel model) {
         assert delegate != null;
@@ -63,7 +59,6 @@ class AllPasswordsBottomSheetMediator {
      * @param newText the text used to filter the credentials.
      */
     void onQueryTextChange(String newText) {
-        mSearchUsed = true;
         ListModel<ListItem> sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
 
@@ -98,23 +93,12 @@ class AllPasswordsBottomSheetMediator {
     }
 
     void onCredentialSelected(Credential credential) {
-        recordHistogram(UMA_ALL_PASSWORDS_BOTTOM_SHEET_ACTIONS,
-                AllPasswordsBottomSheetActions.CREDENTIAL_SELECTED,
-                AllPasswordsBottomSheetActions.COUNT);
-        if (mSearchUsed) {
-            recordHistogram(UMA_ALL_PASSWORDS_BOTTOM_SHEET_ACTIONS,
-                    AllPasswordsBottomSheetActions.SEARCH_USED,
-                    AllPasswordsBottomSheetActions.COUNT);
-        }
         mModel.set(VISIBLE, false);
         mDelegate.onCredentialSelected(credential);
     }
 
     void onDismissed(@StateChangeReason Integer reason) {
         if (!mModel.get(VISIBLE)) return; // Dismiss only if not dismissed yet.
-        recordHistogram(UMA_ALL_PASSWORDS_BOTTOM_SHEET_ACTIONS,
-                AllPasswordsBottomSheetActions.SHEET_DISMISSED,
-                AllPasswordsBottomSheetActions.COUNT);
         mModel.set(VISIBLE, false);
         mDelegate.onDismissed();
     }

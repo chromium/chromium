@@ -160,7 +160,7 @@ let CrosButton = class CrosButton extends MwcButton {
       /* TODO(calamity): Specs say this should be a 2px border 2px away from the button. */
       :host button:focus-visible {
         outline: none;
-        box-shadow: 0 0 0 2px var(--cros-button-focus-ring-color);
+        box-shadow: 0 0 0 2px var(--cros-focus-ring-color);
       }
 
       :host button:active, :host button.active {

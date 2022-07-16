@@ -48,10 +48,10 @@ static IntRect ConvertToContentCoordinatesWithoutCollapsingToZero(
     const IntRect& rect_in_viewport,
     const LocalFrameView* view) {
   IntRect rect_in_contents = view->ViewportToFrame(rect_in_viewport);
-  if (rect_in_viewport.Width() > 0 && !rect_in_contents.Width())
-    rect_in_contents.SetWidth(1);
-  if (rect_in_viewport.Height() > 0 && !rect_in_contents.Height())
-    rect_in_contents.SetHeight(1);
+  if (rect_in_viewport.width() > 0 && !rect_in_contents.width())
+    rect_in_contents.set_width(1);
+  if (rect_in_viewport.height() > 0 && !rect_in_contents.height())
+    rect_in_contents.set_height(1);
   return rect_in_contents;
 }
 
@@ -85,12 +85,12 @@ SmartClipData SmartClip::DataForRect(const IntRect& crop_rect_in_viewport) {
     hit_nodes.push_back(best_node);
   }
 
-  // Unite won't work with the empty rect, so we initialize to the first rect.
+  // Union won't work with the empty rect, so we initialize to the first rect.
   IntRect united_rects = hit_nodes[0]->PixelSnappedBoundingBox();
   StringBuilder collected_text;
   for (wtf_size_t i = 0; i < hit_nodes.size(); ++i) {
     collected_text.Append(ExtractTextFromNode(hit_nodes[i]));
-    united_rects.Unite(hit_nodes[i]->PixelSnappedBoundingBox());
+    united_rects.Union(hit_nodes[i]->PixelSnappedBoundingBox());
   }
 
   return SmartClipData(
@@ -251,8 +251,8 @@ String SmartClip::ExtractTextFromNode(Node* node) {
         if (node_value == "\n")
           node_value = "";
 
-        if (node_rect.Y() != prev_y_pos) {
-          prev_y_pos = node_rect.Y();
+        if (node_rect.y() != prev_y_pos) {
+          prev_y_pos = node_rect.y();
           result.Append('\n');
         }
 

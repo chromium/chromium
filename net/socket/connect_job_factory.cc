@@ -162,13 +162,9 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
   scoped_refptr<SOCKSSocketParams> socks_params;
 
   if (!proxy_server.is_direct()) {
-    // No need to use a NetworkIsolationKey for looking up the proxy's IP
-    // address. Cached proxy IP addresses doesn't really expose useful
-    // information to destination sites, and not caching them has a performance
-    // cost.
     auto proxy_tcp_params = base::MakeRefCounted<TransportSocketParams>(
-        proxy_server.host_port_pair(), NetworkIsolationKey(), secure_dns_policy,
-        resolution_callback);
+        proxy_server.host_port_pair(), proxy_dns_network_isolation_key_,
+        secure_dns_policy, resolution_callback);
 
     if (proxy_server.is_http_like()) {
       scoped_refptr<SSLSocketParams> ssl_params;

@@ -25,6 +25,12 @@
 #include "components/sync/engine/cycle/status_controller.h"
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/engine/sync_engine_switches.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/password_specifics.pb.h"
+#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/test/engine/fake_cryptographer.h"
 #include "components/sync/test/engine/mock_model_type_processor.h"
 #include "components/sync/test/engine/mock_nudge_handler.h"
@@ -33,8 +39,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
-using sync_pb::BookmarkSpecifics;
 using sync_pb::EntitySpecifics;
 using sync_pb::ModelTypeState;
 using sync_pb::SyncEntity;
@@ -126,7 +130,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
         is_encrypted_type_(is_encrypted_type),
         mock_server_(std::make_unique<SingleTypeMockServer>(model_type)) {}
 
-  ~ModelTypeWorkerTest() override {}
+  ~ModelTypeWorkerTest() override = default;
 
   // One of these Initialize functions should be called at the beginning of
   // each test.
@@ -1318,46 +1322,57 @@ TEST_F(ModelTypeWorkerTest, DecryptUpdateIfPossibleDespiteEncryptionDisabled) {
 TEST_F(ModelTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
   base::HistogramTester histogram_tester;
   NormalInitialize();
-  int gu_responses_while_should_have_been_known = 0;
+  int get_updates_while_should_have_been_known = 0;
 
   // Send a GetUpdatesResponse containing data encrypted with an unknown key.
   // The cryptographer doesn't have pending keys, so in theory this key should
-  // have been known.
+  // have been known by now. This will cause
+  // |get_updates_while_should_have_been_known| to be incremented by the end
+  // of this GetUpdates cycle.
   SetUpdateEncryptionFilter(1);
-  TriggerUpdateFromServer(10, kTag1, kValue1);
-  gu_responses_while_should_have_been_known++;
+  TriggerPartialUpdateFromServer(10, kTag1, kValue1);
 
   // The fact that the data type is now blocked should have been recorded.
   histogram_tester.ExpectUniqueSample(
       "Sync.ModelTypeBlockedDueToUndecryptableUpdate",
       ModelTypeHistogramValue(worker()->GetModelType()), 1);
 
-  // Send empty GetUpdatesResponse. Again, the cryptographer isn't in a pending
-  // state, so increase |gu_responses_while_should_have_been_known|.
+  // Send empty GetUpdatesResponse. The counter shouldn't change.
   worker()->ProcessGetUpdatesResponse(
       server()->GetProgress(), server()->GetContext(), {}, status_controller());
-  gu_responses_while_should_have_been_known++;
+
+  // Finish the GetUpdates cycle. The counter should be set to 1.
+  ApplyUpdates();
+  get_updates_while_should_have_been_known++;
+
+  // An empty GetUpdates cycle. The counter should be set to 2.
+  worker()->ProcessGetUpdatesResponse(
+      server()->GetProgress(), server()->GetContext(), {}, status_controller());
+  ApplyUpdates();
+  get_updates_while_should_have_been_known++;
 
   // Send the Nigori containing the missing key. The key isn't available yet
   // though.
   AddPendingKey();
 
-  // Another empty GetUpdatesResponse. This one shouldn't be counted, since the
+  // Another empty GetUpdates cycle. This one shouldn't be counted, since the
   // cryptographer now knows it's lacking some keys.
   worker()->ProcessGetUpdatesResponse(
       server()->GetProgress(), server()->GetContext(), {}, status_controller());
+  ApplyUpdates();
 
   // Double check the histogram hasn't been recorded so far.
   const std::string histogram_name =
-      std::string("Sync.ModelTypeTimeUntilEncryptionKeyFound.") +
+      std::string("Sync.ModelTypeTimeUntilEncryptionKeyFound2.") +
       ModelTypeToHistogramSuffix(worker()->GetModelType());
   EXPECT_TRUE(histogram_tester.GetAllSamples(histogram_name).empty());
 
-  // Make the key available. The correct number of GetUpdatesResponse should
+  // Make the key available. The correct number of GetUpdates cycles should
   // have been recorded.
   DecryptPendingKey();
+  ASSERT_EQ(2, get_updates_while_should_have_been_known);
   histogram_tester.ExpectUniqueSample(
-      histogram_name, gu_responses_while_should_have_been_known, 1);
+      histogram_name, get_updates_while_should_have_been_known, 1);
 }
 
 TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
@@ -1367,7 +1382,7 @@ TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
       switches::kIgnoreSyncEncryptionKeysLongMissing);
 
   NormalInitialize();
-  worker()->SetMinGuResponsesToIgnoreKeyForTest(2);
+  worker()->SetMinGetUpdatesToIgnoreKeyForTest(2);
 
   // Send an update encrypted with a key that shall remain unknown.
   SetUpdateEncryptionFilter(1);
@@ -1377,9 +1392,10 @@ TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
   // the worker is still blocked.
   EXPECT_TRUE(worker()->BlockForEncryption());
 
-  // Send empty GetUpdatesResponse, reaching the threshold of 2.
+  // Send empty GetUpdates, reaching the threshold of 2.
   worker()->ProcessGetUpdatesResponse(
       server()->GetProgress(), server()->GetContext(), {}, status_controller());
+  ApplyUpdates();
 
   // The undecryptable update should have been dropped and the worker is no
   // longer blocked.
@@ -1513,7 +1529,6 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
   const EntityData& data = response_data.entity;
   EXPECT_FALSE(data.id.empty());
   EXPECT_FALSE(data.parent_id.empty());
-  EXPECT_FALSE(data.is_folder);
   EXPECT_EQ("CLIENT_TAG", data.client_tag_hash.value());
   EXPECT_EQ("SERVER_TAG", data.server_defined_unique_tag);
   EXPECT_FALSE(data.is_deleted());
@@ -1548,14 +1563,14 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkTombstone) {
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
-     BookmarkWithUniquePosition) {
+     BookmarkWithUniquePositionInSyncEntity) {
+  const UniquePosition kUniquePosition =
+      UniquePosition::InitialPosition(UniquePosition::RandomSuffix());
   sync_pb::SyncEntity entity;
-
-  *entity.mutable_unique_position() =
-      UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
+  *entity.mutable_unique_position() = kUniquePosition.ToProto();
   entity.set_client_defined_unique_tag("CLIENT_TAG");
   entity.set_server_defined_unique_tag("SERVER_TAG");
-  *entity.mutable_specifics() = GenerateSpecifics(kTag1, kValue1);
+  entity.mutable_specifics()->mutable_bookmark();
 
   UpdateResponseData response_data;
 
@@ -1563,17 +1578,18 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
             ModelTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
-  EXPECT_TRUE(data.unique_position.IsValid());
+  EXPECT_TRUE(syncer::UniquePosition::FromProto(
+                  data.specifics.bookmark().unique_position())
+                  .Equals(kUniquePosition));
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
      BookmarkWithPositionInParent) {
   sync_pb::SyncEntity entity;
-
   entity.set_position_in_parent(5);
   entity.set_client_defined_unique_tag("CLIENT_TAG");
   entity.set_server_defined_unique_tag("SERVER_TAG");
-  *entity.mutable_specifics() = GenerateSpecifics(kTag1, kValue1);
+  entity.mutable_specifics()->mutable_bookmark();
 
   UpdateResponseData response_data;
 
@@ -1581,17 +1597,18 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
             ModelTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
-  EXPECT_TRUE(data.unique_position.IsValid());
+  EXPECT_TRUE(syncer::UniquePosition::FromProto(
+                  data.specifics.bookmark().unique_position())
+                  .IsValid());
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
      BookmarkWithInsertAfterItemId) {
   sync_pb::SyncEntity entity;
-
   entity.set_insert_after_item_id("ITEM_ID");
   entity.set_client_defined_unique_tag("CLIENT_TAG");
   entity.set_server_defined_unique_tag("SERVER_TAG");
-  *entity.mutable_specifics() = GenerateSpecifics(kTag1, kValue1);
+  entity.mutable_specifics()->mutable_bookmark();
 
   UpdateResponseData response_data;
 
@@ -1599,19 +1616,17 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
             ModelTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
-  EXPECT_TRUE(data.unique_position.IsValid());
+  EXPECT_TRUE(syncer::UniquePosition::FromProto(
+                  data.specifics.bookmark().unique_position())
+                  .IsValid());
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
-     BookmarkWithMissingPosition) {
+     BookmarkWithMissingPositionFallsBackToRandom) {
   sync_pb::SyncEntity entity;
-
   entity.set_client_defined_unique_tag("CLIENT_TAG");
   entity.set_server_defined_unique_tag("SERVER_TAG");
-  EntitySpecifics specifics;
-  specifics.mutable_bookmark()->set_url("http://www.url.com");
-
-  *entity.mutable_specifics() = specifics;
+  entity.mutable_specifics()->mutable_bookmark();
 
   UpdateResponseData response_data;
 
@@ -1619,22 +1634,9 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
             ModelTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
-  EXPECT_FALSE(data.unique_position.IsValid());
-}
-
-TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, NonBookmarkWithNoPosition) {
-  sync_pb::SyncEntity entity;
-
-  EntitySpecifics specifics;
-  *entity.mutable_specifics() = GenerateSpecifics(kTag1, kValue1);
-
-  UpdateResponseData response_data;
-
-  EXPECT_EQ(ModelTypeWorker::SUCCESS,
-            ModelTypeWorker::PopulateUpdateResponseData(
-                FakeCryptographer(), PREFERENCES, entity, &response_data));
-  const EntityData& data = response_data.entity;
-  EXPECT_FALSE(data.unique_position.IsValid());
+  EXPECT_TRUE(syncer::UniquePosition::FromProto(
+                  data.specifics.bookmark().unique_position())
+                  .IsValid());
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkWithGUID) {
@@ -1667,6 +1669,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkWithMissingGUID) {
   sync_pb::SyncEntity entity;
 
   // Generate specifics without a GUID.
+  entity.mutable_specifics()->mutable_bookmark();
   entity.set_originator_client_item_id(kGuid1);
   *entity.mutable_unique_position() =
       UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
@@ -1691,6 +1694,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
 
   // Generate specifics without a GUID and with an invalid
   // originator_client_item_id.
+  entity.mutable_specifics()->mutable_bookmark();
   entity.set_originator_client_item_id(kInvalidOCII);
   *entity.mutable_unique_position() =
       UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
@@ -2223,8 +2227,7 @@ TEST_F(ModelTypeWorkerBookmarksTest,
                                                 .guid()));
 }
 
-TEST_F(ModelTypeWorkerBookmarksTest,
-       ShouldNotHaveLocalChangesOnSuccessfulLastCommit) {
+TEST_F(ModelTypeWorkerTest, ShouldNotHaveLocalChangesOnSuccessfulLastCommit) {
   const size_t kMaxEntities = 5;
 
   NormalInitialize();
@@ -2247,7 +2250,7 @@ TEST_F(ModelTypeWorkerBookmarksTest,
   EXPECT_FALSE(worker()->HasLocalChangesForTest());
 }
 
-TEST_F(ModelTypeWorkerBookmarksTest, ShouldHaveLocalChangesOnCommitFailure) {
+TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesOnCommitFailure) {
   NormalInitialize();
 
   ASSERT_FALSE(worker()->HasLocalChangesForTest());
@@ -2259,15 +2262,17 @@ TEST_F(ModelTypeWorkerBookmarksTest, ShouldHaveLocalChangesOnCommitFailure) {
   EXPECT_TRUE(worker()->HasLocalChangesForTest());
 }
 
-TEST_F(ModelTypeWorkerBookmarksTest,
-       ShouldHaveLocalChangesOnSuccessfulNotLastCommit) {
+TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesOnSuccessfulNotLastCommit) {
   const size_t kMaxEntities = 2;
   NormalInitialize();
 
+  sync_pb::EntitySpecifics specifics;
+  specifics.mutable_bookmark();
+
   ASSERT_FALSE(worker()->HasLocalChangesForTest());
-  processor()->AppendCommitRequest(kHash1, GenerateSpecifics(kTag1, kValue1));
-  processor()->AppendCommitRequest(kHash2, GenerateSpecifics(kTag2, kValue2));
-  processor()->AppendCommitRequest(kHash3, GenerateSpecifics(kTag3, kValue3));
+  processor()->AppendCommitRequest(kHash1, specifics);
+  processor()->AppendCommitRequest(kHash2, specifics);
+  processor()->AppendCommitRequest(kHash3, specifics);
   worker()->NudgeForCommit();
   ASSERT_TRUE(worker()->HasLocalChangesForTest());
 
@@ -2285,8 +2290,7 @@ TEST_F(ModelTypeWorkerBookmarksTest,
   EXPECT_FALSE(worker()->HasLocalChangesForTest());
 }
 
-TEST_F(ModelTypeWorkerBookmarksTest,
-       ShouldHaveLocalChangesWhenNudgedWhileInFlight) {
+TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesWhenNudgedWhileInFlight) {
   const size_t kMaxEntities = 5;
   NormalInitialize();
 
@@ -2317,8 +2321,7 @@ TEST_F(ModelTypeWorkerBookmarksTest,
   EXPECT_FALSE(worker()->HasLocalChangesForTest());
 }
 
-TEST_F(ModelTypeWorkerBookmarksTest,
-       ShouldHaveLocalChangesWhenContributedMaxEntities) {
+TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesWhenContributedMaxEntities) {
   const size_t kMaxEntities = 2;
   NormalInitialize();
   ASSERT_FALSE(worker()->HasLocalChangesForTest());

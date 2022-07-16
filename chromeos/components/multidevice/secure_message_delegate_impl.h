@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_MULTIDEVICE_SECURE_MESSAGE_DELEGATE_IMPL_H_
 #define CHROMEOS_COMPONENTS_MULTIDEVICE_SECURE_MESSAGE_DELEGATE_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/multidevice/secure_message_delegate.h"
 
@@ -32,6 +31,10 @@ class SecureMessageDelegateImpl : public SecureMessageDelegate {
    private:
     static Factory* test_factory_instance_;
   };
+
+  SecureMessageDelegateImpl(const SecureMessageDelegateImpl&) = delete;
+  SecureMessageDelegateImpl& operator=(const SecureMessageDelegateImpl&) =
+      delete;
 
   ~SecureMessageDelegateImpl() override;
 
@@ -71,8 +74,6 @@ class SecureMessageDelegateImpl : public SecureMessageDelegate {
   chromeos::EasyUnlockClient* dbus_client_;
 
   base::WeakPtrFactory<SecureMessageDelegateImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecureMessageDelegateImpl);
 };
 
 }  // namespace multidevice

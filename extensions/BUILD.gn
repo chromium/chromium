@@ -125,10 +125,6 @@ static_library("test_support") {
     "test/logging_timer.h",
     "test/result_catcher.cc",
     "test/result_catcher.h",
-    "test/test_background_page_first_load_observer.cc",
-    "test/test_background_page_first_load_observer.h",
-    "test/test_background_page_ready_observer.cc",
-    "test/test_background_page_ready_observer.h",
     "test/test_content_script_load_waiter.cc",
     "test/test_content_script_load_waiter.h",
     "test/test_content_utility_client.cc",
@@ -141,9 +137,6 @@ static_library("test_support") {
     "test/test_permission_message_provider.h",
   ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     ":extensions_resources",
     "//base",
@@ -152,8 +145,8 @@ static_library("test_support") {
     "//components/crx_file",
     "//components/guest_view/browser:test_support",
     "//components/keyed_service/content",
-    "//components/prefs:test_support",
     "//components/pref_registry",
+    "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//components/update_client",
     "//components/user_prefs",
@@ -175,6 +168,17 @@ static_library("test_support") {
     "//third_party/cld_3/src/src:cld_3",
     "//third_party/zlib/google:zip",
   ]
+
+  # Generally, //extensions should not depend on //chromeos. However, a number
+  # of the APIs and the extensions shell already do. We should try to avoid
+  # expanding these dependencies.
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/login/login_state" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros:test_support" ]
+  }
 
   public_deps = [ "//content/public/browser" ]
 }
@@ -256,6 +260,13 @@ test("extensions_unittests") {
   ]
 
   data_deps = [ "//third_party/mesa_headers" ]
+
+  if (is_fuchsia) {
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+      "//build/config/fuchsia/test/network_capabilities.test-cmx",
+    ]
+  }
 }
 
 test("extensions_browsertests") {

@@ -20,34 +20,6 @@
 
   var gRemoteStreams = {};
 
-  // When using external SDES, the crypto key is chosen by javascript.
-  var EXTERNAL_SDES_LINES = {
-    'audio': 'a=crypto:1 AES_CM_128_HMAC_SHA1_80 ' +
-        'inline:PS1uQCVeeCFCanVmcjkpPywjNWhcYD0mXXtxaVBR',
-    'video': 'a=crypto:1 AES_CM_128_HMAC_SHA1_80 ' +
-        'inline:d0RmdmcmVCspeEc3QGZiNWpVLFJhQX1cfHAwJSoj',
-    'data': 'a=crypto:1 AES_CM_128_HMAC_SHA1_80 ' +
-        'inline:NzB4d1BINUAvLEw6UzF3WSJ+PSdFcGdUJShpX1Zj'
-  };
-
-  // Test that we can setup call with legacy settings.
-  function callWithLegacySdp() {
-    setOfferSdpTransform(function(sdp) {
-      return removeBundle(useExternalSdes(sdp));
-    });
-    createConnections({
-      'mandatory': {'DtlsSrtpKeyAgreement': false}
-    });
-    navigator.mediaDevices.getUserMedia({audio: true, video: true})
-        .then(addStreamToBothConnectionsAndNegotiate)
-        .catch(failTest);
-
-    Promise.all([
-      detectVideoPlaying('remote-view-1'),
-      detectVideoPlaying('remote-view-2')
-    ]).then(reportTestSuccess);
-  }
-
   function callWithSctpDataOnly() {
     createConnections({optional: [{DtlsSrtpKeyAgreement: true}]});
     promiseSctpDataChannelExchange({reliable: true})
@@ -237,17 +209,6 @@
 
   function removeBundle(sdp) {
     return sdp.replace(/a=group:BUNDLE .*\r\n/g, '');
-  }
-
-  function useExternalSdes(sdp) {
-    // Remove current crypto specification.
-    sdp = sdp.replace(/a=crypto.*\r\n/g, '');
-    sdp = sdp.replace(/a=fingerprint.*\r\n/g, '');
-    // Add external crypto.  This is not compatible with |removeMsid|.
-    sdp = sdp.replace(/a=mid:(\w+)\r\n/g, function(subString, group) {
-      return subString + EXTERNAL_SDES_LINES[group] + '\r\n';
-    });
-    return sdp;
   }
 
   </script>

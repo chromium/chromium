@@ -32,6 +32,10 @@ APIEventListeners::ContextOwnerIdGetter CreateContextOwnerIdGetter() {
 class EventEmitterUnittest : public APIBindingTest {
  public:
   EventEmitterUnittest() = default;
+
+  EventEmitterUnittest(const EventEmitterUnittest&) = delete;
+  EventEmitterUnittest& operator=(const EventEmitterUnittest&) = delete;
+
   ~EventEmitterUnittest() override = default;
 
   // A helper method to dispose of a context and set a flag.
@@ -41,9 +45,6 @@ class EventEmitterUnittest : public APIBindingTest {
     *did_invalidate = true;
     DisposeContext(context);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventEmitterUnittest);
 };
 
 TEST_F(EventEmitterUnittest, TestDispatchMethod) {

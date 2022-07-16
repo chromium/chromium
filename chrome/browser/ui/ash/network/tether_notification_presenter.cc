@@ -52,6 +52,10 @@ class TetherNotificationDelegate
                              base::RepeatingClosure close)
       : HandleNotificationClickDelegate(click), close_callback_(close) {}
 
+  TetherNotificationDelegate(const TetherNotificationDelegate&) = delete;
+  TetherNotificationDelegate& operator=(const TetherNotificationDelegate&) =
+      delete;
+
   // NotificationDelegate:
   void Close(bool by_user) override {
     if (!close_callback_.is_null())
@@ -62,8 +66,6 @@ class TetherNotificationDelegate
   ~TetherNotificationDelegate() override = default;
 
   base::RepeatingClosure close_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TetherNotificationDelegate);
 };
 
 class SettingsUiDelegateImpl

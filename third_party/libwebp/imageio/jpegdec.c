@@ -274,7 +274,7 @@ int ReadJPEG(const uint8_t* const data, size_t data_size,
   ctx.data = data;
   ctx.data_size = data_size;
 
-  memset((j_decompress_ptr)&dinfo, 0, sizeof(dinfo));   // for setjmp sanity
+  memset((j_decompress_ptr)&dinfo, 0, sizeof(dinfo));   // for setjmp safety
   dinfo.err = jpeg_std_error(&jerr.pub);
   jerr.pub.error_exit = my_error_exit;
 

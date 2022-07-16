@@ -13,7 +13,6 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/p2p/socket_tcp.h"
-#include "services/network/p2p/socket_tcp_server.h"
 #include "services/network/p2p/socket_udp.h"
 #include "services/network/proxy_resolving_client_socket_factory.h"
 
@@ -169,16 +168,6 @@ std::unique_ptr<P2PSocket> P2PSocket::Create(
     case P2P_SOCKET_UDP:
       return std::make_unique<P2PSocketUdp>(
           delegate, std::move(client), std::move(socket), throttler, net_log);
-    case P2P_SOCKET_TCP_SERVER:
-      return std::make_unique<P2PSocketTcpServer>(delegate, std::move(client),
-                                                  std::move(socket),
-                                                  P2P_SOCKET_TCP_CLIENT);
-
-    case P2P_SOCKET_STUN_TCP_SERVER:
-      return std::make_unique<P2PSocketTcpServer>(delegate, std::move(client),
-                                                  std::move(socket),
-                                                  P2P_SOCKET_STUN_TCP_CLIENT);
-
     case P2P_SOCKET_TCP_CLIENT:
     case P2P_SOCKET_SSLTCP_CLIENT:
     case P2P_SOCKET_TLS_CLIENT:

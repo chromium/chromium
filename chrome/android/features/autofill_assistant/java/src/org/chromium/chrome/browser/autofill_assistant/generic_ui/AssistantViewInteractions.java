@@ -98,14 +98,22 @@ public class AssistantViewInteractions {
     }
 
     @CalledByNative
+    // TODO(HLUCA): EditorTextField is VisibleForTesting. Find a solution that does not require to
+    // suppress this warning.
+    @SuppressWarnings("VisibleForTests")
     static boolean setViewText(View view, String text, AssistantGenericUiDelegate delegate) {
         if (view instanceof TextView) {
             AssistantTextUtils.applyVisualAppearanceTags(
                     (TextView) view, text, delegate::onTextLinkClicked);
             return true;
         } else if (view instanceof EditorTextField) {
-            AssistantTextUtils.applyVisualAppearanceTags(
-                    ((EditorTextField) view).getEditText(), text, delegate::onTextLinkClicked);
+            // If the current text is already up to date (e.g. because the model change was
+            // triggered by the user typing), don't set the text again. Setting the text causes the
+            // cursor to be moved to the start of the field which makes typing inconvenient.
+            if (!((EditorTextField) view).getEditText().getText().toString().equals(text)) {
+                AssistantTextUtils.applyVisualAppearanceTags(
+                        ((EditorTextField) view).getEditText(), text, delegate::onTextLinkClicked);
+            }
             return true;
         }
         return false;

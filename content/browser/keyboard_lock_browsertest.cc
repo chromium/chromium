@@ -6,12 +6,10 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/keyboard_lock/keyboard_lock_metrics.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -20,6 +18,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -143,6 +142,12 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewAura {
 class FakeKeyboardLockWebContentsDelegate : public WebContentsDelegate {
  public:
   FakeKeyboardLockWebContentsDelegate() {}
+
+  FakeKeyboardLockWebContentsDelegate(
+      const FakeKeyboardLockWebContentsDelegate&) = delete;
+  FakeKeyboardLockWebContentsDelegate& operator=(
+      const FakeKeyboardLockWebContentsDelegate&) = delete;
+
   ~FakeKeyboardLockWebContentsDelegate() override {}
 
   // WebContentsDelegate overrides.
@@ -158,8 +163,6 @@ class FakeKeyboardLockWebContentsDelegate : public WebContentsDelegate {
  private:
   bool is_fullscreen_ = false;
   bool keyboard_lock_requested_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeKeyboardLockWebContentsDelegate);
 };
 
 void FakeKeyboardLockWebContentsDelegate::EnterFullscreenModeForTab(
@@ -223,6 +226,8 @@ class KeyboardLockBrowserTest : public ContentBrowserTest {
   void SetUp() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
+  void SetUpInProcessBrowserTestFixture() override;
+  void TearDownInProcessBrowserTestFixture() override;
 
   // Helper methods for common tasks.
   bool KeyboardLockApiExists();
@@ -260,6 +265,7 @@ class KeyboardLockBrowserTest : public ContentBrowserTest {
   }
 
  private:
+  content::ContentMockCertVerifier mock_cert_verifier_;
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_test_server_;
   FakeKeyboardLockWebContentsDelegate web_contents_delegate_;
@@ -279,13 +285,14 @@ void KeyboardLockBrowserTest::SetUp() {
 
 void KeyboardLockBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  // Ignore cert errors so that the sign-in URL can be loaded from a site other
-  // than localhost (the EmbeddedTestServer serves a certificate that is valid
-  // for localhost).
-  command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  ContentBrowserTest::SetUpCommandLine(command_line);
+  mock_cert_verifier_.SetUpCommandLine(command_line);
 }
 
 void KeyboardLockBrowserTest::SetUpOnMainThread() {
+  ContentBrowserTest::SetUpOnMainThread();
+  mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+
   web_contents()->SetDelegate(&web_contents_delegate_);
 
   // KeyboardLock requires a secure context (HTTPS).
@@ -293,6 +300,16 @@ void KeyboardLockBrowserTest::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
   SetupCrossSiteRedirector(https_test_server());
   ASSERT_TRUE(https_test_server()->Start());
+}
+
+void KeyboardLockBrowserTest::SetUpInProcessBrowserTestFixture() {
+  ContentBrowserTest::SetUpInProcessBrowserTestFixture();
+  mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+}
+
+void KeyboardLockBrowserTest::TearDownInProcessBrowserTestFixture() {
+  ContentBrowserTest::TearDownInProcessBrowserTestFixture();
+  mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
 }
 
 bool KeyboardLockBrowserTest::KeyboardLockApiExists() {

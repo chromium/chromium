@@ -170,6 +170,12 @@ class SSLClientCertificateSelectorMultiProfileTest
     : public SSLClientCertificateSelectorTest {
  public:
   SSLClientCertificateSelectorMultiProfileTest() = default;
+
+  SSLClientCertificateSelectorMultiProfileTest(
+      const SSLClientCertificateSelectorMultiProfileTest&) = delete;
+  SSLClientCertificateSelectorMultiProfileTest& operator=(
+      const SSLClientCertificateSelectorMultiProfileTest&) = delete;
+
   ~SSLClientCertificateSelectorMultiProfileTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -218,9 +224,6 @@ class SSLClientCertificateSelectorMultiProfileTest
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_1_;
   scoped_refptr<StrictMock<SSLClientAuthRequestorMock> > auth_requestor_1_;
   SSLClientCertificateSelector* selector_1_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SSLClientCertificateSelectorMultiProfileTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorTest, SelectNone) {
@@ -331,7 +334,14 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiTabTest, SelectSecond) {
   EXPECT_CALL(*auth_requestor_, CancelCertificateSelection());
 }
 
-IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiProfileTest, Escape) {
+// TODO(crbug.com/1249827): Test is flaky on Mac, Linux and Lacros.
+#if defined(OS_MAC) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_Escape DISABLED_Escape
+#else
+#define MAYBE_Escape Escape
+#endif
+IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiProfileTest,
+                       MAYBE_Escape) {
   EXPECT_CALL(*auth_requestor_1_, CertificateSelected(nullptr, nullptr));
 
   EXPECT_TRUE(ui_test_utils::SendKeyPressSync(
@@ -346,8 +356,14 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiProfileTest, Escape) {
   EXPECT_CALL(*auth_requestor_, CancelCertificateSelection());
 }
 
+// TODO(crbug.com/1249705): Test is flaky on Mac, Linux and Lacros.
+#if defined(OS_MAC) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_SelectDefault DISABLED_SelectDefault
+#else
+#define MAYBE_SelectDefault SelectDefault
+#endif
 IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiProfileTest,
-                       SelectDefault) {
+                       MAYBE_SelectDefault) {
   EXPECT_CALL(*auth_requestor_1_,
               CertificateSelected(cert_identity_1_->certificate(),
                                   cert_identity_1_->ssl_private_key()));

@@ -15,6 +15,9 @@ class UniqueIDDataTabHelper
     : public web::WebStateObserver,
       public web::WebStateUserData<UniqueIDDataTabHelper> {
  public:
+  UniqueIDDataTabHelper(const UniqueIDDataTabHelper&) = delete;
+  UniqueIDDataTabHelper& operator=(const UniqueIDDataTabHelper&) = delete;
+
   ~UniqueIDDataTabHelper() override;
 
   // Returns the next available renderer id for WebState.
@@ -43,8 +46,6 @@ class UniqueIDDataTabHelper
   scoped_refptr<autofill::FieldDataManager> field_data_manager_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(UniqueIDDataTabHelper);
 };
 
 #endif  // COMPONENTS_AUTOFILL_IOS_FORM_UTIL_UNIQUE_ID_DATA_TAB_HELPER_H_

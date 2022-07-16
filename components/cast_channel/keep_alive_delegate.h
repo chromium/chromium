@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CAST_CHANNEL_KEEP_ALIVE_DELEGATE_H_
 #define COMPONENTS_CAST_CHANNEL_KEEP_ALIVE_DELEGATE_H_
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "components/cast_channel/cast_channel_enum.h"
 #include "components/cast_channel/cast_transport.h"
@@ -39,6 +38,9 @@ class KeepAliveDelegate : public CastTransport::Delegate {
                     base::TimeDelta ping_interval,
                     base::TimeDelta liveness_timeout);
 
+  KeepAliveDelegate(const KeepAliveDelegate&) = delete;
+  KeepAliveDelegate& operator=(const KeepAliveDelegate&) = delete;
+
   ~KeepAliveDelegate() override;
 
   void SetTimersForTest(
@@ -55,8 +57,6 @@ class KeepAliveDelegate : public CastTransport::Delegate {
   std::unique_ptr<CastTransport::Delegate> inner_delegate_;
 
   KeepAliveHandler handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveDelegate);
 };
 
 }  // namespace cast_channel

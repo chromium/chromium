@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
-#include "base/macros.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/gfx/geometry/point_f.h"
 

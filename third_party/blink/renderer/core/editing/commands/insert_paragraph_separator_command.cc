@@ -594,8 +594,7 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
                  ->CollapseWhiteSpace())
           << position_after_split;
       DeleteInsignificantTextDownstream(position_after_split);
-      if (auto* is_text_node =
-              DynamicTo<Text>(position_after_split.AnchorNode())) {
+      if (position_after_split.AnchorNode()->IsTextNode()) {
         InsertTextIntoNode(
             To<Text>(position_after_split.ComputeContainerNode()), 0,
             NonBreakingSpaceString());

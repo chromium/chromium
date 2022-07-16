@@ -33,6 +33,12 @@ AccountId GetChildAccountId() {
 }
 
 class ParentAccessControllerImplTest : public LoginTestBase {
+ public:
+  ParentAccessControllerImplTest(const ParentAccessControllerImplTest&) =
+      delete;
+  ParentAccessControllerImplTest& operator=(
+      const ParentAccessControllerImplTest&) = delete;
+
  protected:
   ParentAccessControllerImplTest() : account_id_(GetChildAccountId()) {}
   ~ParentAccessControllerImplTest() override = default;
@@ -157,9 +163,6 @@ class ParentAccessControllerImplTest : public LoginTestBase {
   base::HistogramTester histogram_tester_;
 
   PinRequestView* view_ = nullptr;  // Owned by test widget view hierarchy.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ParentAccessControllerImplTest);
 };
 
 // Tests parent access dialog showing/hiding and focus behavior for parent

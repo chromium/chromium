@@ -188,6 +188,10 @@ public class PlayerFrameView extends FrameLayout {
         return (provider != null) ? provider : super.getAccessibilityNodeProvider();
     }
 
+    void destroy() {
+        mBitmapPainter.destroy();
+    }
+
     /**
      * Override onProvideVirtualStructure on API level 23.
      */
@@ -198,6 +202,7 @@ public class PlayerFrameView extends FrameLayout {
                 @Nullable Runnable firstPaintListener) {
             super(context, canDetectZoom, playerFrameViewDelegate, gestureDetectorDelegate,
                     firstPaintListener);
+            setWillNotDraw(false);
         }
 
         @Override

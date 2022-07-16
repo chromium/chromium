@@ -22,6 +22,10 @@ class FileBrowserHandler {
   using List = std::vector<std::unique_ptr<FileBrowserHandler>>;
 
   FileBrowserHandler();
+
+  FileBrowserHandler(const FileBrowserHandler&) = delete;
+  FileBrowserHandler& operator=(const FileBrowserHandler&) = delete;
+
   ~FileBrowserHandler();
 
   // extension id
@@ -82,22 +86,22 @@ class FileBrowserHandler {
 
   // A list of file filters.
   extensions::URLPatternSet url_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileBrowserHandler);
 };
 
 // Parses the "file_browser_handlers" extension manifest key.
 class FileBrowserHandlerParser : public extensions::ManifestHandler {
  public:
   FileBrowserHandlerParser();
+
+  FileBrowserHandlerParser(const FileBrowserHandlerParser&) = delete;
+  FileBrowserHandlerParser& operator=(const FileBrowserHandlerParser&) = delete;
+
   ~FileBrowserHandlerParser() override;
 
   bool Parse(extensions::Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(FileBrowserHandlerParser);
 };
 
 #endif  // CHROME_COMMON_EXTENSIONS_API_FILE_BROWSER_HANDLERS_FILE_BROWSER_HANDLER_H_

@@ -29,6 +29,11 @@ class FuzzedDatagramClientSocket : public DatagramClientSocket {
  public:
   // |data_provider| must outlive the created socket.
   explicit FuzzedDatagramClientSocket(FuzzedDataProvider* data_provider);
+
+  FuzzedDatagramClientSocket(const FuzzedDatagramClientSocket&) = delete;
+  FuzzedDatagramClientSocket& operator=(const FuzzedDatagramClientSocket&) =
+      delete;
+
   ~FuzzedDatagramClientSocket() override;
 
   // DatagramClientSocket implementation:
@@ -92,8 +97,6 @@ class FuzzedDatagramClientSocket : public DatagramClientSocket {
   IPEndPoint remote_address_;
 
   base::WeakPtrFactory<FuzzedDatagramClientSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FuzzedDatagramClientSocket);
 };
 
 }  // namespace net

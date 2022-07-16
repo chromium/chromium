@@ -32,7 +32,8 @@ class FakePaintedScrollbarLayer : public PaintedScrollbarLayer {
 
   bool Update() override;
 
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void PushPropertiesTo(LayerImpl* layer,
+                        const CommitState& commit_state) override;
 
   using PaintedScrollbarLayer::IgnoreSetNeedsCommit;
 

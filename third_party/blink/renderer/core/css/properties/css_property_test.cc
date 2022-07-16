@@ -145,4 +145,9 @@ TEST_F(CSSPropertyTest, PairsWithIdenticalValues) {
   EXPECT_NE(*border_radius, *perspective_origin);
 }
 
+TEST_F(CSSPropertyTest, StaticVariableInstanceFlags) {
+  EXPECT_FALSE(GetCSSPropertyVariable().IsShorthand());
+  EXPECT_FALSE(GetCSSPropertyVariable().IsRepeated());
+}
+
 }  // namespace blink

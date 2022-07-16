@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_ISSUE_CONVERSION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_ISSUE_CONVERSION_H_
 
-#include "third_party/blink/renderer/core/inspector/protocol/Audits.h"
+#include "third_party/blink/renderer/core/inspector/protocol/audits.h"
 
 namespace blink {
 

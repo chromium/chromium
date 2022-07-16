@@ -5,9 +5,9 @@
 #ifndef UI_OZONE_TEST_MOCK_PLATFORM_WINDOW_DELEGATE_H_
 #define UI_OZONE_TEST_MOCK_PLATFORM_WINDOW_DELEGATE_H_
 
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/platform_window/platform_window_delegate.h"
 
@@ -16,6 +16,11 @@ namespace ui {
 class MockPlatformWindowDelegate : public PlatformWindowDelegate {
  public:
   MockPlatformWindowDelegate();
+
+  MockPlatformWindowDelegate(const MockPlatformWindowDelegate&) = delete;
+  MockPlatformWindowDelegate& operator=(const MockPlatformWindowDelegate&) =
+      delete;
+
   ~MockPlatformWindowDelegate();
 
   MOCK_METHOD1(OnBoundsChanged, void(const BoundsChange& change));
@@ -35,10 +40,9 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD0(GetMinimumSizeForWindow, absl::optional<gfx::Size>());
   MOCK_METHOD0(GetMaximumSizeForWindow, absl::optional<gfx::Size>());
   MOCK_METHOD0(GetMenuType, absl::optional<MenuType>());
+  MOCK_METHOD0(GetOwnedWindowAnchorAndRectInPx,
+               absl::optional<OwnedWindowAnchor>());
   MOCK_METHOD0(OnMouseEnter, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPlatformWindowDelegate);
 };
 
 bool operator==(const PlatformWindowDelegate::BoundsChange& bounds,

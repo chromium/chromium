@@ -201,9 +201,11 @@ void Adapter::SetName(const std::string& name, SetNameCallback callback) {
                      std::move(split_callback.second)));
 }
 
-void Adapter::StartDiscoverySession(StartDiscoverySessionCallback callback) {
+void Adapter::StartDiscoverySession(const std::string& client_name,
+                                    StartDiscoverySessionCallback callback) {
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   adapter_->StartDiscoverySession(
+      client_name,
       base::BindOnce(&Adapter::OnStartDiscoverySession,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(split_callback.first)),

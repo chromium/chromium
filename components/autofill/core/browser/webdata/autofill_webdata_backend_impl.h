@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/observer_list.h"
@@ -57,6 +56,10 @@ class AutofillWebDataBackendImpl
       const base::RepeatingClosure& on_address_conversion_completed_callback,
       const base::RepeatingCallback<void(syncer::ModelType)>&
           on_sync_started_callback);
+
+  AutofillWebDataBackendImpl(const AutofillWebDataBackendImpl&) = delete;
+  AutofillWebDataBackendImpl& operator=(const AutofillWebDataBackendImpl&) =
+      delete;
 
   void SetAutofillProfileChangedCallback(
       base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
@@ -241,10 +244,12 @@ class AutofillWebDataBackendImpl
   class SupportsUserDataAggregatable : public base::SupportsUserData {
    public:
     SupportsUserDataAggregatable() {}
-    ~SupportsUserDataAggregatable() override {}
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SupportsUserDataAggregatable);
+    SupportsUserDataAggregatable(const SupportsUserDataAggregatable&) = delete;
+    SupportsUserDataAggregatable& operator=(
+        const SupportsUserDataAggregatable&) = delete;
+
+    ~SupportsUserDataAggregatable() override {}
   };
 
   // The task runner that this class uses for its UI tasks.
@@ -269,8 +274,6 @@ class AutofillWebDataBackendImpl
       on_autofill_profile_changed_cb_;
   base::RepeatingCallback<void(const std::vector<std::string>&)>
       on_card_art_image_change_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillWebDataBackendImpl);
 };
 
 }  // namespace autofill

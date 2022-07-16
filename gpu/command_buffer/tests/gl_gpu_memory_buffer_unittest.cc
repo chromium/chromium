@@ -126,6 +126,8 @@ GLenum InternalFormat(gfx::BufferFormat format) {
       return GL_R16_EXT;
     case gfx::BufferFormat::RG_88:
       return GL_RG;
+    case gfx::BufferFormat::RG_1616:
+      return GL_RG16_EXT;
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_1010102:
       return GL_RGB;
@@ -171,6 +173,7 @@ uint32_t BufferFormatToFourCC(gfx::BufferFormat format) {
     case gfx::BufferFormat::R_8:
     case gfx::BufferFormat::R_16:
     case gfx::BufferFormat::RG_88:
+    case gfx::BufferFormat::RG_1616:
     case gfx::BufferFormat::RGBA_F16:
     case gfx::BufferFormat::BGRX_8888:
     case gfx::BufferFormat::RGBX_8888:

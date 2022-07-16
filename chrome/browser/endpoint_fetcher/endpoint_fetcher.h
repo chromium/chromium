@@ -98,6 +98,8 @@ class EndpointFetcher {
       const std::string& content_type,
       int64_t timeout_ms,
       const std::string& post_data,
+      const std::vector<std::string>& headers,
+      const std::vector<std::string>& cors_exempt_headers,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       const bool is_oauth_fetch);
@@ -112,6 +114,8 @@ class EndpointFetcher {
   void Fetch(EndpointFetcherCallback callback);
   virtual void PerformRequest(EndpointFetcherCallback endpoint_fetcher_callback,
                               const char* key);
+
+  std::string GetUrlForTesting();
 
  protected:
   // Used for Mock only. see MockEndpointFetcher class.
@@ -139,6 +143,7 @@ class EndpointFetcher {
   int64_t timeout_ms_;
   const std::string post_data_;
   const std::vector<std::string> headers_;
+  const std::vector<std::string> cors_exempt_headers_;
   const net::NetworkTrafficAnnotationTag annotation_tag_;
   signin::ScopeSet oauth_scopes_;
 

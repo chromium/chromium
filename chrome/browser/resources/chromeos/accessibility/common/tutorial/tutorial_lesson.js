@@ -68,7 +68,7 @@ export const TutorialLesson = Polymer({
       this.populatePracticeContent();
       for (const evt of this.events) {
         this.$.practiceContent.addEventListener(
-            evt, this.onPracticeEvent.bind(this), true);
+            evt, event => this.onPracticeEvent(event), true);
       }
       this.$.practiceContent.addEventListener('focus', (evt) => {
         // The practice area has the potential to overflow, so ensure elements
@@ -118,7 +118,7 @@ export const TutorialLesson = Polymer({
     focus.focus();
     if (!focus.isEqualNode(this.shadowRoot.activeElement)) {
       // Call show() again if we weren't able to focus the target element.
-      setTimeout(this.show.bind(this), 500);
+      setTimeout(() => this.show(), 500);
     }
   },
 

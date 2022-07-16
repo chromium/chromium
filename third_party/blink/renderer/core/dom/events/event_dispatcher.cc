@@ -163,8 +163,8 @@ DispatchEventResult EventDispatcher::Dispatch() {
   LocalFrame* frame = node_->GetDocument().GetFrame();
   if (frame && frame->DomWindow()) {
     eventTiming = EventTiming::Create(frame->DomWindow(), *event_);
-    // TODO(hbsong): Calculate First Input Delay for filtered events.
-    EventTiming::HandleInputDelay(frame->DomWindow(), *event_);
+    if (!base::FeatureList::IsEnabled(kFirstInputDelayWithoutEventListener))
+      EventTiming::HandleInputDelay(frame->DomWindow(), *event_);
   }
 
   if (event_->type() == event_type_names::kChange && event_->isTrusted() &&

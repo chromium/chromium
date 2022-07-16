@@ -5,9 +5,15 @@
 #ifndef REMOTING_HOST_WORKER_PROCESS_IPC_DELEGATE_H_
 #define REMOTING_HOST_WORKER_PROCESS_IPC_DELEGATE_H_
 
+#include <string>
+
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+
+namespace mojo {
+class ScopedInterfaceEndpointHandle;
+}  // namespace mojo
 
 namespace IPC {
 class Message;
@@ -32,6 +38,11 @@ class WorkerProcessIpcDelegate {
 
   // Notifies that the worker process stops for any reason.
   virtual void OnWorkerProcessStopped() = 0;
+
+  // Handles associated interface requests sent by the client.
+  virtual void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) = 0;
 };
 
 }  // namespace remoting

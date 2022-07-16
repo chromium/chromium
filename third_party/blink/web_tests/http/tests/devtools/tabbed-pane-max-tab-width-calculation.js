@@ -6,7 +6,7 @@
   TestRunner.addResult(`Tests tabbed pane max tab element width calculation.\n`);
 
   function calculateAndDumpMaxWidth(measuredWidths, totalWidth) {
-    var maxWidth = UI.TabbedPane.prototype._calculateMaxWidth(measuredWidths, totalWidth);
+    var maxWidth = UI.TabbedPane.prototype.calculateMaxWidth(measuredWidths, totalWidth);
     TestRunner.addResult(
         'measuredWidths = [' + String(measuredWidths) + '], totalWidth = ' + totalWidth + ', maxWidth = ' + maxWidth +
         '.');

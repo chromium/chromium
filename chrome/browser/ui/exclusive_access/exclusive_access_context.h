@@ -55,6 +55,8 @@ class ExclusiveAccessContext {
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
       bool force_update) = 0;
 
+  virtual bool IsExclusiveAccessBubbleDisplayed() const = 0;
+
   // Informs the exclusive access system of some user input, which may update
   // internal timers and/or re-display the bubble.
   virtual void OnExclusiveAccessUserInput() = 0;

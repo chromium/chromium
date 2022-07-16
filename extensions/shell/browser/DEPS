@@ -11,6 +11,7 @@ include_rules = [
   "+components/sessions",
   "+components/update_client",
   "+components/user_prefs",
+  "+components/value_store",
   "+components/web_modal",
   "+content/public/browser",
 

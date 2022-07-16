@@ -30,6 +30,11 @@ namespace {
 class NSSTempCertsCacheChromeOSTest : public testing::Test {
  public:
   NSSTempCertsCacheChromeOSTest() {}
+
+  NSSTempCertsCacheChromeOSTest(const NSSTempCertsCacheChromeOSTest&) = delete;
+  NSSTempCertsCacheChromeOSTest& operator=(
+      const NSSTempCertsCacheChromeOSTest&) = delete;
+
   ~NSSTempCertsCacheChromeOSTest() override {}
 
  protected:
@@ -90,9 +95,6 @@ class NSSTempCertsCacheChromeOSTest : public testing::Test {
         net::ParseTbsCertificate(tbs_certificate_tlv, options, &tbs, nullptr));
     *out_subject = tbs.subject_tlv;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NSSTempCertsCacheChromeOSTest);
 };
 
 // Checks that a certificate made available through the

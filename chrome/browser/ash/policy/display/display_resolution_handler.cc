@@ -7,10 +7,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -44,11 +44,11 @@ struct DisplayResolutionHandler::InternalDisplaySettings {
   }
 
   // Get settings for the internal display from
-  // |chromeos::kDeviceDisplayResolution| setting value.
+  // |ash::kDeviceDisplayResolution| setting value.
   static std::unique_ptr<InternalDisplaySettings> FromPolicySetting(
       const base::DictionaryValue* pref) {
     const base::Value* scale_value =
-        pref->FindKeyOfType(chromeos::kDeviceDisplayResolutionKeyInternalScale,
+        pref->FindKeyOfType(ash::kDeviceDisplayResolutionKeyInternalScale,
                             base::Value::Type::INTEGER);
     return scale_value ? std::make_unique<InternalDisplaySettings>(
                              scale_value->GetInt())
@@ -110,21 +110,21 @@ struct DisplayResolutionHandler::ExternalDisplaySettings {
   }
 
   // Get settings for the external displays from
-  // |chromeos::kDeviceDisplayResolution| setting value;
+  // |ash::kDeviceDisplayResolution| setting value;
   static std::unique_ptr<ExternalDisplaySettings> FromPolicySetting(
       const base::DictionaryValue* pref) {
     const base::Value* width_value =
-        pref->FindKeyOfType(chromeos::kDeviceDisplayResolutionKeyExternalWidth,
+        pref->FindKeyOfType(ash::kDeviceDisplayResolutionKeyExternalWidth,
                             base::Value::Type::INTEGER);
     const base::Value* height_value =
-        pref->FindKeyOfType(chromeos::kDeviceDisplayResolutionKeyExternalHeight,
+        pref->FindKeyOfType(ash::kDeviceDisplayResolutionKeyExternalHeight,
                             base::Value::Type::INTEGER);
     const base::Value* scale_value =
-        pref->FindKeyOfType(chromeos::kDeviceDisplayResolutionKeyExternalScale,
+        pref->FindKeyOfType(ash::kDeviceDisplayResolutionKeyExternalScale,
                             base::Value::Type::INTEGER);
-    const base::Value* use_native_value = pref->FindKeyOfType(
-        chromeos::kDeviceDisplayResolutionKeyExternalUseNative,
-        base::Value::Type::BOOLEAN);
+    const base::Value* use_native_value =
+        pref->FindKeyOfType(ash::kDeviceDisplayResolutionKeyExternalUseNative,
+                            base::Value::Type::BOOLEAN);
 
     auto result = std::make_unique<ExternalDisplaySettings>();
 
@@ -152,16 +152,16 @@ DisplayResolutionHandler::DisplayResolutionHandler() = default;
 DisplayResolutionHandler::~DisplayResolutionHandler() = default;
 
 const char* DisplayResolutionHandler::SettingName() {
-  return chromeos::kDeviceDisplayResolution;
+  return ash::kDeviceDisplayResolution;
 }
 
-// Reads |chromeos::kDeviceDisplayResolution| from CrosSettings and stores
+// Reads |ash::kDeviceDisplayResolution| from CrosSettings and stores
 // the settings in |recommended_|, |external_display_settings_| and
 // |internal_display_settings_|. Also updates |policy_enabled_| flag.
 void DisplayResolutionHandler::OnSettingUpdate() {
   policy_enabled_ = false;
   const base::DictionaryValue* resolution_pref = nullptr;
-  ash::CrosSettings::Get()->GetDictionary(chromeos::kDeviceDisplayResolution,
+  ash::CrosSettings::Get()->GetDictionary(ash::kDeviceDisplayResolution,
                                           &resolution_pref);
   if (!resolution_pref)
     return;
@@ -174,8 +174,7 @@ void DisplayResolutionHandler::OnSettingUpdate() {
   bool new_recommended = false;
   policy_enabled_ = new_external_config || new_internal_config;
   const base::Value* recommended_value = resolution_pref->FindKeyOfType(
-      chromeos::kDeviceDisplayResolutionKeyRecommended,
-      base::Value::Type::BOOLEAN);
+      ash::kDeviceDisplayResolutionKeyRecommended, base::Value::Type::BOOLEAN);
 
   if (recommended_value)
     new_recommended = recommended_value->GetBool();

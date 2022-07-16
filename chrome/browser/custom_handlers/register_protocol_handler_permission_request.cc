@@ -20,7 +20,7 @@ RegisterProtocolHandlerPermissionRequest::
         GURL url,
         base::ScopedClosureRunner fullscreen_block)
     : PermissionRequest(
-          url.GetOrigin(),
+          url.DeprecatedGetOriginAsURL(),
           permissions::RequestType::kRegisterProtocolHandler,
           /*has_gesture=*/false,
           base::BindOnce(

@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-#import "ios/public/provider/chrome/browser/voice/logo_animation_controller.h"
+#import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 
 namespace web {
 class WebState;
@@ -21,12 +21,6 @@ class WebState;
 // Coordinator handling the NTP.
 @interface NewTabPageCoordinator
     : ChromeCoordinator <LogoAnimationControllerOwnerOwner>
-
-// Initializes this Coordinator with its |browser|.
-- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 // ViewController associated with this coordinator.
 @property(nonatomic, strong, readonly) UIViewController* viewController;
@@ -70,7 +64,7 @@ class WebState;
 // The content offset of the scroll view.
 - (CGPoint)contentOffset;
 
-// Reloads the content of the NewTabPage.
+// Reloads the content of the NewTabPage. Does not do anything on Incognito.
 - (void)reload;
 
 // Calls when the visibility of the NTP changes.
@@ -84,6 +78,10 @@ class WebState;
 
 // Constrains the named layout guide for the Discover header menu button.
 - (void)constrainDiscoverHeaderMenuButtonNamedGuide;
+
+// TODO(crbug.com/1200303):Remove this method once we stop starting/stopping the
+// Coordinator when turning the feed on/off.
+- (void)disconnect;
 
 @end
 

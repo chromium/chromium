@@ -7,6 +7,7 @@
 
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/view.h"
 
 class TabGroupViews;
@@ -18,7 +19,9 @@ class TabGroupUnderline : public views::View {
  public:
   METADATA_HEADER(TabGroupUnderline);
 
-  static constexpr int kStrokeThickness = 3;
+  static constexpr int kStrokeThickness =
+      views::FocusRing::kDefaultHaloThickness;
+
   static int GetStrokeInset();
 
   TabGroupUnderline(TabGroupViews* tab_group_views,

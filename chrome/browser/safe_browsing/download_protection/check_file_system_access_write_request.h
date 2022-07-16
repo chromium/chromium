@@ -31,6 +31,12 @@ class CheckFileSystemAccessWriteRequest
       DownloadProtectionService* service,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor);
+
+  CheckFileSystemAccessWriteRequest(const CheckFileSystemAccessWriteRequest&) =
+      delete;
+  CheckFileSystemAccessWriteRequest& operator=(
+      const CheckFileSystemAccessWriteRequest&) = delete;
+
   ~CheckFileSystemAccessWriteRequest() override;
 
  private:
@@ -48,7 +54,8 @@ class CheckFileSystemAccessWriteRequest
                                   const std::string& response_body) override;
   absl::optional<enterprise_connectors::AnalysisSettings> ShouldUploadBinary(
       DownloadCheckResultReason reason) override;
-  void UploadBinary(DownloadCheckResultReason reason,
+  void UploadBinary(DownloadCheckResult result,
+                    DownloadCheckResultReason reason,
                     enterprise_connectors::AnalysisSettings settings) override;
   bool ShouldPromptForDeepScanning(bool server_requests_prompt) const override;
   void NotifyRequestFinished(DownloadCheckResult result,
@@ -60,8 +67,6 @@ class CheckFileSystemAccessWriteRequest
 
   base::WeakPtrFactory<CheckFileSystemAccessWriteRequest> weakptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(CheckFileSystemAccessWriteRequest);
 };
 
 }  // namespace safe_browsing

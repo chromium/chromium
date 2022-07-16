@@ -11,12 +11,13 @@ class UpdateRecommendedDialogTest : public DialogBrowserTest {
  public:
   UpdateRecommendedDialogTest() {}
 
+  UpdateRecommendedDialogTest(const UpdateRecommendedDialogTest&) = delete;
+  UpdateRecommendedDialogTest& operator=(const UpdateRecommendedDialogTest&) =
+      delete;
+
   void ShowUi(const std::string& name) override {
     InProcessBrowserTest::browser()->window()->ShowUpdateChromeDialog();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpdateRecommendedDialogTest);
 };
 
 // Test that calls ShowUi("default").

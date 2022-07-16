@@ -127,7 +127,7 @@ void PresentationServiceImpl::SetController(
     mojo::PendingRemote<blink::mojom::PresentationController>
         presentation_controller_remote) {
   if (presentation_controller_remote_) {
-    mojo::ReportBadMessage(
+    presentation_service_receivers_.ReportBadMessage(
         "There can only be one PresentationController at any given time.");
     return;
   }
@@ -151,14 +151,15 @@ void PresentationServiceImpl::SetReceiver(
   }
 
   if (!receiver_delegate_ || !is_main_frame_) {
-    mojo::ReportBadMessage(
+    presentation_service_receivers_.ReportBadMessage(
         "SetReceiver can only be called from a "
         "presentation receiver main frame.");
     return;
   }
 
   if (presentation_receiver_remote_) {
-    mojo::ReportBadMessage("SetReceiver can only be called once.");
+    presentation_service_receivers_.ReportBadMessage(
+        "SetReceiver can only be called once.");
     return;
   }
 

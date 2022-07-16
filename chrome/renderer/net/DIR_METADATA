@@ -1,4 +1,1 @@
-monorail: {
-  component: "Internals>Network"
-}
-team_email: "net-dev@chromium.org"
+mixins: "//net/COMMON_METADATA"

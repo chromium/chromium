@@ -81,6 +81,11 @@
 #define EGL_GENERATE_RESET_ON_VIDEO_MEMORY_PURGE_NV 0x334C
 #endif /*EGL_NV_robustness_video_memory_purge */
 
+#ifndef EGL_ANGLE_context_virtualization
+#define EGL_ANGLE_context_virtualization 1
+#define EGL_CONTEXT_VIRTUALIZATION_GROUP_ANGLE 0x3481
+#endif /* EGL_ANGLE_context_virtualization */
+
 using ui::GetLastEGLErrorString;
 
 namespace gl {
@@ -94,25 +99,32 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
   DCHECK(!context_);
 
   display_ = compatible_surface->GetDisplay();
-  config_ = compatible_surface->GetConfig();
 
-  EGLint config_renderable_type = 0;
-  if (!eglGetConfigAttrib(display_, config_, EGL_RENDERABLE_TYPE,
-                          &config_renderable_type)) {
-    LOG(ERROR) << "eglGetConfigAttrib failed with error "
-               << GetLastEGLErrorString();
-    return false;
+  // Always prefer to use EGL_KHR_no_config_context so that all surfaces and
+  // contexts are compatible
+  if (!GLSurfaceEGL::IsEGLNoConfigContextSupported()) {
+    config_ = compatible_surface->GetConfig();
   }
 
   EGLint context_client_major_version = attribs.client_major_es_version;
   EGLint context_client_minor_version = attribs.client_minor_es_version;
 
-  // If the requested context is ES3 but the config cannot support ES3, request
-  // ES2 instead.
-  if ((config_renderable_type & EGL_OPENGL_ES3_BIT) == 0 &&
-      context_client_major_version >= 3) {
-    context_client_major_version = 2;
-    context_client_minor_version = 0;
+  if (config_) {
+    EGLint config_renderable_type = 0;
+    if (!eglGetConfigAttrib(display_, config_, EGL_RENDERABLE_TYPE,
+                            &config_renderable_type)) {
+      LOG(ERROR) << "eglGetConfigAttrib failed with error "
+                 << GetLastEGLErrorString();
+      return false;
+    }
+
+    // If the requested context is ES3 but the config cannot support ES3,
+    // request ES2 instead.
+    if ((config_renderable_type & EGL_OPENGL_ES3_BIT) == 0 &&
+        context_client_major_version >= 3) {
+      context_client_major_version = 2;
+      context_client_minor_version = 0;
+    }
   }
 
   std::vector<EGLint> context_attributes;
@@ -238,7 +250,7 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
 
   if (GLSurfaceEGL::IsANGLEPowerPreferenceSupported()) {
     GpuPreference pref = attribs.gpu_preference;
-    pref = GLContext::AdjustGpuPreference(pref);
+    pref = GLSurface::AdjustGpuPreference(pref);
     switch (pref) {
       case GpuPreference::kDefault:
         // Don't request any GPU, let ANGLE and the native driver decide.
@@ -265,6 +277,12 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
       context_attributes.push_back(EGL_EXTERNAL_CONTEXT_SAVE_STATE_ANGLE);
       context_attributes.push_back(EGL_TRUE);
     }
+  }
+
+  if (GLSurfaceEGL::IsANGLEContextVirtualizationSupported()) {
+    context_attributes.push_back(EGL_CONTEXT_VIRTUALIZATION_GROUP_ANGLE);
+    context_attributes.push_back(
+        static_cast<EGLint>(attribs.angle_context_virtualization_group_number));
   }
 
   // Append final EGL_NONE to signal the context attributes are finished

@@ -41,6 +41,10 @@ class GPU_EXPORT GLHelperScaling {
   using ShaderProgramKeyType = std::pair<ShaderType, bool>;
 
   GLHelperScaling(gles2::GLES2Interface* gl, GLHelper* helper);
+
+  GLHelperScaling(const GLHelperScaling&) = delete;
+  GLHelperScaling& operator=(const GLHelperScaling&) = delete;
+
   ~GLHelperScaling();
   void InitBuffer();
 
@@ -189,7 +193,6 @@ class GPU_EXPORT GLHelperScaling {
   friend class ScalerImpl;
   friend class GLHelperBenchmark;
   friend class GLHelperTest;
-  DISALLOW_COPY_AND_ASSIGN(GLHelperScaling);
 };
 
 }  // namespace gpu

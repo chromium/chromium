@@ -12,4 +12,5 @@ public interface BrowserFragmentArgs {
      * A boolean value indicating whether the profile is incognito.
      */
     String IS_INCOGNITO = "is_incognito";
+    String USE_VIEW_MODEL = "use_view_model";
 }

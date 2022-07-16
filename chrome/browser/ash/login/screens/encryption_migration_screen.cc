@@ -125,6 +125,9 @@ enum class RemoveCryptohomeResult {
   COUNT
 };
 
+EncryptionMigrationScreen::EncryptionMigrationScreenTestDelegate*
+    test_delegate = nullptr;
+
 bool IsTestingUI() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kTestEncryptionMigrationUI);
@@ -241,8 +244,6 @@ EncryptionMigrationScreen::EncryptionMigrationScreen(
     : BaseScreen(EncryptionMigrationScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
       view_(view) {
-  free_disk_space_fetcher_ = base::BindRepeating(
-      &base::SysInfo::AmountOfFreeDiskSpace, base::FilePath(kCheckStoragePath));
   DCHECK(view_);
   if (view_)
     view_->SetDelegate(this);
@@ -304,6 +305,12 @@ void EncryptionMigrationScreen::SetupInitialView() {
   }
   power_manager_observation_.Observe(PowerManagerClient::Get());
   CheckAvailableStorage();
+}
+
+// static
+void EncryptionMigrationScreen::SetEncryptionMigrationScreenTestDelegate(
+    EncryptionMigrationScreenTestDelegate* delegate) {
+  test_delegate = delegate;
 }
 
 void EncryptionMigrationScreen::OnUserAction(const std::string& action_id) {
@@ -430,13 +437,17 @@ void EncryptionMigrationScreen::UpdateUIState(
       FROM_HERE,
       base::BindOnce(&EncryptionMigrationScreen::OnDelayedRecordVisibleScreen,
                      weak_ptr_factory_.GetWeakPtr(), state),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 }
 
 void EncryptionMigrationScreen::CheckAvailableStorage() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(free_disk_space_fetcher_),
+      test_delegate
+          ? base::BindOnce(&EncryptionMigrationScreenTestDelegate::GetFreeSpace,
+                           base::Unretained(test_delegate))
+          : base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
+                           base::FilePath(kCheckStoragePath)),
       base::BindOnce(&EncryptionMigrationScreen::OnGetAvailableStorage,
                      weak_ptr_factory_.GetWeakPtr()));
 }

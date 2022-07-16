@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_DICTIONARY_EVENT_ROUTER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
@@ -22,6 +21,12 @@ class ExtensionDictionaryEventRouter
     : public SpellcheckCustomDictionary::Observer {
  public:
   explicit ExtensionDictionaryEventRouter(content::BrowserContext* context);
+
+  ExtensionDictionaryEventRouter(const ExtensionDictionaryEventRouter&) =
+      delete;
+  ExtensionDictionaryEventRouter& operator=(
+      const ExtensionDictionaryEventRouter&) = delete;
+
   virtual ~ExtensionDictionaryEventRouter();
 
   // SpellcheckCustomDictionary::Observer implementation.
@@ -35,8 +40,6 @@ class ExtensionDictionaryEventRouter
   content::BrowserContext* context_;
   base::WeakPtr<SpellcheckService> service_;
   bool loaded_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDictionaryEventRouter);
 };
 
 }  // namespace chromeos

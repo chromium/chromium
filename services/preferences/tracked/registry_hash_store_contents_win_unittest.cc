@@ -31,6 +31,12 @@ constexpr char kAtomicPrefPath[] = "path1";
 constexpr char kSplitPrefPath[] = "extension";
 
 class RegistryHashStoreContentsWinTest : public testing::Test {
+ public:
+  RegistryHashStoreContentsWinTest(const RegistryHashStoreContentsWinTest&) =
+      delete;
+  RegistryHashStoreContentsWinTest& operator=(
+      const RegistryHashStoreContentsWinTest&) = delete;
+
  protected:
   RegistryHashStoreContentsWinTest() {}
 
@@ -46,8 +52,6 @@ class RegistryHashStoreContentsWinTest : public testing::Test {
 
  private:
   registry_util::RegistryOverrideManager registry_override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryHashStoreContentsWinTest);
 };
 
 }  // namespace

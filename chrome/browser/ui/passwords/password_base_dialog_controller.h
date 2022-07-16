@@ -10,13 +10,16 @@
 class PasswordBaseDialogController {
  public:
   PasswordBaseDialogController() = default;
+
+  PasswordBaseDialogController(const PasswordBaseDialogController&) = delete;
+  PasswordBaseDialogController& operator=(const PasswordBaseDialogController&) =
+      delete;
+
   virtual ~PasswordBaseDialogController() = default;
 
   // Returns true if account chooser dialog created by derived credential
   // manager controller is active.
   virtual bool IsShowingAccountChooser() const = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordBaseDialogController);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORD_BASE_DIALOG_CONTROLLER_H_

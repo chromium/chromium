@@ -31,6 +31,7 @@ void CanvasFormattedTextRun::Dispose() {
 }
 
 void CanvasFormattedTextRun::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_text_);
   ScriptWrappable::Trace(visitor);
 }
 

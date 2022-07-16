@@ -14,13 +14,13 @@ generate_token.py http://127.0.0.1:8000 WindowPlacementOT2 --expire-timestamp=20
 
 test(t => {
   OriginTrialsHelper.check_properties_exist(this, {
-     'global': ['getScreens'],
+     'global': ['getScreenDetails'],
      'Screen': ['isExtended', 'onchange'],
   });
 }, 'Window Placement API interfaces and properties in Origin-Trial enabled document.');
 
 test(t => {
-  assert_not_equals(window.getScreens, undefined);
+  assert_not_equals(window.getScreenDetails, undefined);
   assert_not_equals(window.screen.isExtended, undefined);
   assert_not_equals(window.screen.onchange, undefined);
 }, 'Window Placement API entry point in Origin-Trial enabled document.');

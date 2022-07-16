@@ -21,8 +21,8 @@
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
@@ -50,7 +50,8 @@ std::set<std::string> GetUniqueSuffixes(
     const storage::FileSystemContext* context) {
   std::set<std::string> suffixes;
   for (size_t i = 0; i < url_list.size(); ++i) {
-    const FileSystemURL url = context->CrackURL(GURL(url_list[i]));
+    const FileSystemURL url =
+        context->CrackURLInFirstPartyContext(GURL(url_list[i]));
     if (!url.is_valid() || url.path().empty())
       return std::set<std::string>();
     // We'll skip empty suffixes.
@@ -83,7 +84,7 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
   using extensions::api::file_manager_private_internal::ExecuteTask::Params;
   using extensions::api::file_manager_private_internal::ExecuteTask::Results::
       Create;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   file_manager::file_tasks::TaskType task_type =
@@ -107,7 +108,7 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
   std::vector<FileSystemURL> urls;
   for (size_t i = 0; i < params->urls.size(); i++) {
     const FileSystemURL url =
-        file_system_context->CrackURL(GURL(params->urls[i]));
+        file_system_context->CrackURLInFirstPartyContext(GURL(params->urls[i]));
     if (!chromeos::FileSystemBackend::CanHandleURL(url)) {
       return RespondNow(Error(kInvalidFileUrl));
     }
@@ -115,7 +116,7 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
   }
 
   const bool result = file_manager::file_tasks::ExecuteFileTask(
-      profile, source_url(), task, urls,
+      profile, task, urls,
       base::BindOnce(
           &FileManagerPrivateInternalExecuteTaskFunction::OnTaskExecuted,
           this));
@@ -146,7 +147,7 @@ FileManagerPrivateInternalGetFileTasksFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetFileTasksFunction::Run() {
   using extensions::api::file_manager_private_internal::GetFileTasks::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->urls.empty())
@@ -161,7 +162,8 @@ FileManagerPrivateInternalGetFileTasksFunction::Run() {
   // file paths.
   for (size_t i = 0; i < params->urls.size(); ++i) {
     const GURL url(params->urls[i]);
-    storage::FileSystemURL file_system_url(file_system_context->CrackURL(url));
+    storage::FileSystemURL file_system_url(
+        file_system_context->CrackURLInFirstPartyContext(url));
     if (!chromeos::FileSystemBackend::CanHandleURL(file_system_url))
       continue;
     urls_.push_back(url);
@@ -237,7 +239,7 @@ void FileManagerPrivateInternalGetFileTasksFunction::OnFileTasksListed(
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalSetDefaultTaskFunction::Run() {
   using extensions::api::file_manager_private_internal::SetDefaultTask::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());

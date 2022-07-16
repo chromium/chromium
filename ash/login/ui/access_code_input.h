@@ -121,14 +121,15 @@ class FlexCodeInput : public AccessCodeInput {
 class AccessibleInputField : public views::Textfield {
  public:
   AccessibleInputField() = default;
+
+  AccessibleInputField(const AccessibleInputField&) = delete;
+  AccessibleInputField& operator=(const AccessibleInputField&) = delete;
+
   ~AccessibleInputField() override = default;
 
   bool IsGroupFocusTraversable() const override;
   View* GetSelectedViewForGroup(int group) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibleInputField);
 };
 
 // Digital access code input view for variable length of input codes.

@@ -69,6 +69,8 @@ class TestWebTransportCreator final
       mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>)
       override;
 
+  void Reset();
+
  private:
   void BindConnector(mojo::ScopedMessagePipeHandle handle);
 

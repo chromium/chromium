@@ -10,7 +10,9 @@
 #include "base/bind.h"
 #include "base/files/scoped_file.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
+#include "chromeos/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -47,6 +49,16 @@ void MojoConnectionServiceProvider::Start(
       ::mojo_connection_service::kBootstrapMojoConnectionForSensorClientsMethod,
       base::BindRepeating(&MojoConnectionServiceProvider::
                               BootstrapMojoConnectionForSensorClients,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&MojoConnectionServiceProvider::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  exported_object_->ExportMethod(
+      ::mojo_connection_service::kMojoConnectionServiceInterface,
+      ::mojo_connection_service::
+          kBootstrapMojoConnectionForRollbackNetworkConfigMethod,
+      base::BindRepeating(&MojoConnectionServiceProvider::
+                              BootstrapMojoConnectionForRollbackNetworkConfig,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&MojoConnectionServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -89,6 +101,25 @@ void MojoConnectionServiceProvider::BootstrapMojoConnectionForSensorClients(
   chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient>(
           std::move(pipe), 0u /* version */));
+
+  SendResponse(std::move(platform_channel), method_call,
+               std::move(response_sender));
+}
+
+void MojoConnectionServiceProvider::
+    BootstrapMojoConnectionForRollbackNetworkConfig(
+        dbus::MethodCall* method_call,
+        dbus::ExportedObject::ResponseSender response_sender) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  mojo::PlatformChannel platform_channel;
+  mojo::ScopedMessagePipeHandle pipe;
+  SendInvitation(&platform_channel, &pipe);
+
+  rollback_network_config::BindToInProcessInstance(
+      mojo::PendingReceiver<
+          chromeos::rollback_network_config::mojom::RollbackNetworkConfig>(
+          std::move(pipe)));
 
   SendResponse(std::move(platform_channel), method_call,
                std::move(response_sender));

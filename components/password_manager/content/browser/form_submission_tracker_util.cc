@@ -17,12 +17,15 @@ void NotifyDidNavigateMainFrame(bool is_renderer_initiated,
 
   // Password manager is interested in
   // - form submission navigations,
-  // - any JavaScript initiated navigations, because many form submissions are
-  // done with JavaScript. Password manager is not interested in
+  // - any JavaScript initiated navigations besides history navigations, because
+  //   many form submissions are done with JavaScript.
+  // Password manager is not interested in
   // - browser initiated navigations (e.g. reload, bookmark click),
   // - hyperlink navigations.
+  // - session history navigations
   bool form_may_be_submitted =
       is_renderer_initiated &&
+      !(transition & ui::PAGE_TRANSITION_FORWARD_BACK) &&
       (ui::PageTransitionCoreTypeIs(transition,
                                     ui::PAGE_TRANSITION_FORM_SUBMIT) ||
        !was_initiated_by_link_click);

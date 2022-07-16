@@ -7,11 +7,11 @@
 #include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
-#include "components/security_interstitials/core/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/net_errors.h"
 #include "net/cert/ct_sct_to_string.h"
+#include "net/cert/x509_certificate.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace security_interstitials {

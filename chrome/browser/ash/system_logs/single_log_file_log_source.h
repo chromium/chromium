@@ -9,7 +9,6 @@
 #include <sys/types.h>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 
@@ -49,6 +48,10 @@ class SingleLogFileLogSource : public SystemLogsSource {
   };
 
   explicit SingleLogFileLogSource(SupportedSource source);
+
+  SingleLogFileLogSource(const SingleLogFileLogSource&) = delete;
+  SingleLogFileLogSource& operator=(const SingleLogFileLogSource&) = delete;
+
   ~SingleLogFileLogSource() override;
 
   // During testing, use this to set a custom Chrome start time to override the
@@ -107,8 +110,6 @@ class SingleLogFileLogSource : public SystemLogsSource {
   size_t max_read_size_;
 
   base::WeakPtrFactory<SingleLogFileLogSource> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SingleLogFileLogSource);
 };
 
 }  // namespace system_logs

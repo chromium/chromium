@@ -15,6 +15,10 @@ namespace ui {
 class VulkanImplementationGbm : public gpu::VulkanImplementation {
  public:
   VulkanImplementationGbm();
+
+  VulkanImplementationGbm(const VulkanImplementationGbm&) = delete;
+  VulkanImplementationGbm& operator=(const VulkanImplementationGbm&) = delete;
+
   ~VulkanImplementationGbm() override;
 
   // VulkanImplementation:
@@ -52,8 +56,6 @@ class VulkanImplementationGbm : public gpu::VulkanImplementation {
   PFN_vkGetPhysicalDeviceExternalFencePropertiesKHR
       vkGetPhysicalDeviceExternalFencePropertiesKHR_ = nullptr;
   PFN_vkGetFenceFdKHR vkGetFenceFdKHR_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanImplementationGbm);
 };
 
 }  // namespace ui

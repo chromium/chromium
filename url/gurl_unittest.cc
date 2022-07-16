@@ -398,7 +398,7 @@ TEST(GURLTest, GetOrigin) {
   };
   for (size_t i = 0; i < base::size(cases); i++) {
     GURL url(cases[i].input);
-    GURL origin = url.GetOrigin();
+    GURL origin = url.DeprecatedGetOriginAsURL();
     EXPECT_EQ(cases[i].expected, origin.spec());
   }
 }
@@ -558,23 +558,34 @@ TEST(GURLTest, ClearFragmentOnDataUrl) {
   // http://crbug.com/291747 - a data URL may legitimately have trailing
   // whitespace in the spec after the ref is cleared. Test this does not trigger
   // the Parsed importing validation DCHECK in GURL.
-  GURL url(" data: one ? two # three ");
+  GURL url(" data: one # two ");
+  EXPECT_TRUE(url.is_valid());
 
   // By default the trailing whitespace will have been stripped.
-  EXPECT_EQ("data: one ? two #%20three", url.spec());
+  EXPECT_EQ("data: one #%20two", url.spec());
+
+  // Clear the URL's ref and observe the trailing whitespace.
   GURL::Replacements repl;
   repl.ClearRef();
   GURL url_no_ref = url.ReplaceComponents(repl);
-
-  EXPECT_EQ("data: one ? two ", url_no_ref.spec());
+  EXPECT_TRUE(url_no_ref.is_valid());
+  EXPECT_EQ("data: one ", url_no_ref.spec());
 
   // Importing a parsed URL via this constructor overload will retain trailing
   // whitespace.
   GURL import_url(url_no_ref.spec(),
                   url_no_ref.parsed_for_possibly_invalid_spec(),
                   url_no_ref.is_valid());
+  EXPECT_TRUE(import_url.is_valid());
   EXPECT_EQ(url_no_ref, import_url);
-  EXPECT_EQ(import_url.query(), " two ");
+  EXPECT_EQ("data: one ", import_url.spec());
+  EXPECT_EQ(" one ", import_url.path());
+
+  // For completeness, test that re-parsing the same URL rather than importing
+  // it trims the trailing whitespace.
+  GURL reparsed_url(url_no_ref.spec());
+  EXPECT_TRUE(reparsed_url.is_valid());
+  EXPECT_EQ("data: one", reparsed_url.spec());
 }
 
 TEST(GURLTest, PathForRequest) {
@@ -862,7 +873,7 @@ TEST(GURLTest, ContentForNonStandardURLs) {
       {"http://www.example.com/GUID#ref", "www.example.com/GUID"},
       {"http://me:secret@example.com/GUID/#ref", "me:secret@example.com/GUID/"},
       {"data:text/html,Question?<div style=\"color: #bad\">idea</div>",
-       "text/html,Question?<div style=\"color: "},
+       "text/html,Question?%3Cdiv%20style=%22color:%20"},
 
       // TODO(mkwst): This seems like a bug. https://crbug.com/513600
       {"filesystem:http://example.com/path", "/"},

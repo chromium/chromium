@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/rand_util.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,13 +39,8 @@ ParsedPrefs ConvertDictionaryValueToMap(const base::DictionaryValue* value) {
     nqe::internal::NetworkID network_id =
         nqe::internal::NetworkID::FromString(it.first);
 
-    std::string effective_connection_type_string;
-    const bool effective_connection_type_available =
-        it.second.GetAsString(&effective_connection_type_string);
-    DCHECK(effective_connection_type_available);
-
     absl::optional<EffectiveConnectionType> effective_connection_type =
-        GetEffectiveConnectionTypeForName(effective_connection_type_string);
+        GetEffectiveConnectionTypeForName(it.second.GetString());
     DCHECK(effective_connection_type.has_value());
 
     nqe::internal::CachedNetworkQuality cached_network_quality(

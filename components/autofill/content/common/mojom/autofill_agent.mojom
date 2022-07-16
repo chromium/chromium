@@ -81,8 +81,9 @@ interface AutofillAgent {
   GetElementFormAndFieldDataAtIndex(string selector, int32 index) => (
       autofill.mojom.FormData form, autofill.mojom.FormFieldData field);
 
-  // Set whether or not an assistant action is currently running an action.
-  SetAssistantActionState(bool running);
+  // Set whether or not the Autofill Assistant currently wants to suppress the
+  // keyboard from showing.
+  SetAssistantKeyboardSuppressState(bool suppress);
 
   // Allows heavy scraping of form data (e.g., button titles for
   // unowned forms).

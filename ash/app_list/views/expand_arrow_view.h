@@ -27,6 +27,10 @@ class ASH_EXPORT ExpandArrowView : public views::Button,
                                    public views::ViewTargeterDelegate {
  public:
   ExpandArrowView(ContentsView* contents_view, AppListView* app_list_view);
+
+  ExpandArrowView(const ExpandArrowView&) = delete;
+  ExpandArrowView& operator=(const ExpandArrowView&) = delete;
+
   ~ExpandArrowView() override;
 
   // views::Button:
@@ -88,8 +92,6 @@ class ASH_EXPORT ExpandArrowView : public views::Button,
   base::OneShotTimer hinting_animation_timer_;
 
   base::WeakPtrFactory<ExpandArrowView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExpandArrowView);
 };
 
 }  // namespace ash

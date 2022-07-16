@@ -12,3 +12,11 @@ imageset("default_world_favicon") {
     "default_world_favicon.imageset/default_world_favicon@3x.png",
   ]
 }
+
+imageset("help_icon") {
+  sources = [
+    "help_icon.imageset/Contents.json",
+    "help_icon.imageset/ic_help@2x.png",
+    "help_icon.imageset/ic_help@3x.png",
+  ]
+}

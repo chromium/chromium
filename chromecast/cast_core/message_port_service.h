@@ -12,8 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chromecast/cast_core/grpc_method.h"
 #include "components/cast/message_port/message_port.h"
-#include "third_party/openscreen/src/cast/cast_core/api/v2/core_application_service.grpc.pb.h"
-#include "third_party/openscreen/src/cast/cast_core/api/web/message_channel.pb.h"
+#include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"
+#include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
 namespace chromecast {
 
@@ -25,12 +25,8 @@ class MessagePortService {
       std::unique_ptr<cast_api_bindings::MessagePort>*,
       std::unique_ptr<cast_api_bindings::MessagePort>*)>;
 
-  // |create_pair| is used to create a connected pair of MessagePorts in place
-  // of calling MessagePort::CreatePair.  This is to allow multiple MessagePort
-  // implementations to be used with this service in the same binary.  |grpc_cq|
-  // and |core_app_stub| must outlive |this|.
-  MessagePortService(CreatePairCallback create_pair,
-                     grpc::CompletionQueue* grpc_cq,
+  // |grpc_cq| and |core_app_stub| must outlive |this|.
+  MessagePortService(grpc::CompletionQueue* grpc_cq,
                      cast::v2::CoreApplicationService::Stub* core_app_stub);
   ~MessagePortService();
 
@@ -41,9 +37,6 @@ class MessagePortService {
   // channel ID.
   void HandleMessage(const cast::web::Message& message,
                      cast::web::MessagePortStatus* response);
-
-  void CreatePair(std::unique_ptr<cast_api_bindings::MessagePort>* client,
-                  std::unique_ptr<cast_api_bindings::MessagePort>* server);
 
   // Connects |port| to the remote port with name |port_name|.
   bool ConnectToPort(base::StringPiece port_name,

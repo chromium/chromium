@@ -5,12 +5,15 @@
 // https://drafts.csswg.org/web-animations-1/#the-effecttiming-dictionaries
 
 dictionary OptionalEffectTiming {
-    double                             delay;
-    double                             endDelay;
-    FillMode                           fill;
-    double                             iterationStart;
-    unrestricted double                iterations;
-    (unrestricted double or DOMString) duration;
-    PlaybackDirection                  direction;
-    DOMString                          easing;
+    double                                                delay;
+    double                                                endDelay;
+    FillMode                                              fill;
+    double                                                iterationStart;
+    unrestricted double                                   iterations;
+    // CSSNumericValue is only included here so that it continues to match
+    // EffectTiming which allows code that expects them to match to continue
+    // working. Duration cannot be set using CSSNumericValue.
+    (unrestricted double or CSSNumericValue or DOMString) duration;
+    PlaybackDirection                                     direction;
+    DOMString                                             easing;
 };

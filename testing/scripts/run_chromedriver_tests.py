@@ -6,21 +6,16 @@
 """Runs chrome driver tests.
 
 This script attempts to emulate the contract of gtest-style tests
-invoked via recipes. The main contract is that the caller passes the
-argument:
+invoked via recipes.
 
-  --isolated-script-test-output=[FILENAME]
+If optional argument --isolated-script-test-output=[FILENAME] is passed
+to the script, json is written to that file in the format detailed in
+//docs/testing/json-test-results-format.md.
 
-json is written to that file in the format detailed here:
-https://www.chromium.org/developers/the-json-test-results-format
-
-Optional argument:
-
-  --isolated-script-test-filter=[TEST_NAMES]
-
-is a double-colon-separated ("::") list of test names, to run just that subset
-of tests. This list is forwarded to the chrome driver test runner.
-"""
+If optional argument --isolated-script-test-filter=[TEST_NAMES] is passed to
+the script, it should be a  double-colon-separated ("::") list of test names,
+to run just that subset of tests. This list is forwarded to the chrome driver
+test runner.  """
 
 import argparse
 import json

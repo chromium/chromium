@@ -14,13 +14,13 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/net/net_export_helper.h"
@@ -45,7 +45,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/android/intent_helper.h"
+#include "components/browser_ui/share/android/intent_helper.h"
 #endif
 
 using content::BrowserThread;
@@ -87,6 +87,10 @@ class NetExportMessageHandler
       public net_log::NetExportFileWriter::StateObserver {
  public:
   NetExportMessageHandler();
+
+  NetExportMessageHandler(const NetExportMessageHandler&) = delete;
+  NetExportMessageHandler& operator=(const NetExportMessageHandler&) = delete;
+
   ~NetExportMessageHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -154,8 +158,6 @@ class NetExportMessageHandler
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
   base::WeakPtrFactory<NetExportMessageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetExportMessageHandler);
 };
 
 NetExportMessageHandler::NetExportMessageHandler()
@@ -176,23 +178,23 @@ NetExportMessageHandler::~NetExportMessageHandler() {
 void NetExportMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       net_log::kEnableNotifyUIWithStateHandler,
       base::BindRepeating(&NetExportMessageHandler::OnEnableNotifyUIWithState,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       net_log::kStartNetLogHandler,
       base::BindRepeating(&NetExportMessageHandler::OnStartNetLog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       net_log::kStopNetLogHandler,
       base::BindRepeating(&NetExportMessageHandler::OnStopNetLog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       net_log::kSendNetLogHandler,
       base::BindRepeating(&NetExportMessageHandler::OnSendNetLog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       net_log::kShowFile,
       base::BindRepeating(&NetExportMessageHandler::OnShowFile,
                           base::Unretained(this)));
@@ -308,10 +310,9 @@ void NetExportMessageHandler::SendEmail(const base::FilePath& file_to_send) {
   std::string body =
       "Please add some informative text about the network issues.";
   base::FilePath::StringType file_to_attach(file_to_send.value());
-  chrome::android::SendEmail(
-      base::UTF8ToUTF16(email), base::UTF8ToUTF16(subject),
-      base::UTF8ToUTF16(body), base::UTF8ToUTF16(title),
-      base::UTF8ToUTF16(file_to_attach));
+  browser_ui::SendEmail(base::UTF8ToUTF16(email), base::UTF8ToUTF16(subject),
+                        base::UTF8ToUTF16(body), base::UTF8ToUTF16(title),
+                        base::UTF8ToUTF16(file_to_attach));
 #endif
 }
 

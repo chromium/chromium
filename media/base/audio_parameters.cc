@@ -162,7 +162,7 @@ double AudioParameters::GetMicrosecondsPerFrame() const {
 }
 
 base::TimeDelta AudioParameters::GetBufferDuration() const {
-  return base::TimeDelta::FromMicroseconds(static_cast<int64_t>(
+  return base::Microseconds(static_cast<int64_t>(
       frames_per_buffer_ * base::Time::kMicrosecondsPerSecond /
       static_cast<float>(sample_rate_)));
 }

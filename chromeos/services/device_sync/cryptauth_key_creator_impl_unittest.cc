@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_constants.h"
@@ -51,6 +50,12 @@ size_t NumBytesForSymmetricKeyType(cryptauthv2::KeyType key_type) {
 }  // namespace
 
 class DeviceSyncCryptAuthKeyCreatorImplTest : public testing::Test {
+ public:
+  DeviceSyncCryptAuthKeyCreatorImplTest(
+      const DeviceSyncCryptAuthKeyCreatorImplTest&) = delete;
+  DeviceSyncCryptAuthKeyCreatorImplTest& operator=(
+      const DeviceSyncCryptAuthKeyCreatorImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthKeyCreatorImplTest()
       : fake_secure_message_delegate_factory_(
@@ -151,8 +156,6 @@ class DeviceSyncCryptAuthKeyCreatorImplTest : public testing::Test {
       base::flat_map<CryptAuthKeyBundle::Name, absl::optional<CryptAuthKey>>>
       new_keys_;
   absl::optional<absl::optional<CryptAuthKey>> client_ephemeral_dh_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthKeyCreatorImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest, AsymmetricKeyCreation) {

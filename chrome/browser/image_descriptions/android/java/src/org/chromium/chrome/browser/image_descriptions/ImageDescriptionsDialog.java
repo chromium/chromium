@@ -159,7 +159,8 @@ public class ImageDescriptionsDialog
                                 R.string.no_thanks)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mContext.getResources(),
                                 R.string.image_descriptions_dialog_get_descriptions_button)
-                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
+                        .with(ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .build();
     }
 

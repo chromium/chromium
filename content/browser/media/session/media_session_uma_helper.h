@@ -50,7 +50,8 @@ class CONTENT_EXPORT MediaSessionUmaHelper {
     kToggleCamera = 17,
     kHangUp = 18,
     kRaise = 19,
-    kMaxValue = kRaise,
+    kSetMute = 20,
+    kMaxValue = kSetMute,
   };
 
   MediaSessionUmaHelper();

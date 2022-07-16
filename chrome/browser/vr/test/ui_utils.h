@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/vr/ui_test_input.h"
@@ -33,6 +32,10 @@ class UiUtils {
   static std::unique_ptr<UiUtils> Create();
 
   UiUtils();
+
+  UiUtils(const UiUtils&) = delete;
+  UiUtils& operator=(const UiUtils&) = delete;
+
   ~UiUtils();
 
   // Runs |action| and waits until the native UI reports that |element_name|'s
@@ -63,8 +66,6 @@ class UiUtils {
   std::vector<base::OnceCallback<void()>> ui_operation_callbacks_;
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(UiUtils);
 };
 
 }  // namespace vr

@@ -15,7 +15,7 @@ namespace policy {
 FakeDeviceCloudPolicyManager::FakeDeviceCloudPolicyManager(
     std::unique_ptr<DeviceCloudPolicyStoreAsh> store,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
-    : DeviceCloudPolicyManagerChromeOS(
+    : DeviceCloudPolicyManagerAsh(
           std::move(store),
           std::make_unique<MockCloudExternalDataManager>(),
           task_runner,

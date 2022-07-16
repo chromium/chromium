@@ -26,8 +26,8 @@ namespace blink {
 // A factory for creating AudioRendererSinks and AudioCapturerSources. There is
 // a global factory function that can be installed for the purposes of testing
 // to provide specialized implementations.
-// TODO(olka): rename it, probably split it into AudioRendererSinkFactory and
-// AudioCapturerSourceFactory.
+// TODO(crbug.com/1255249): Rename the class and probably split it into
+// AudioRendererSinkFactory and AudioCapturerSourceFactory.
 class BLINK_MODULES_EXPORT WebAudioDeviceFactory {
  public:
   WebAudioDeviceFactory(const WebAudioDeviceFactory&) = delete;

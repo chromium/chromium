@@ -19,12 +19,23 @@ namespace base {
 
 // This file introduces a class to monitor sockets and issue callbacks when
 // sockets are ready for I/O on iOS.
+// 该文件引入了一个类来监视套接字并在套接字准备好在 iOS 上进行 I/O 时发出回调。
+// iOS采用的是 CFRunLoop 机制来监听IO事件.
+// CFRunLoop对象负责监控事件输入源以及对其进行分发管理。
+// CFRunLoop管理的类型通常分为三种类型：
+// 1. sources(CFRunLoopSource)
+// 2. timers(CFRunLoopTimer)
+// 3. observers(CFRunLoopObserver)
 class BASE_EXPORT MessagePumpIOSForIO : public MessagePumpNSRunLoop,
                                         public WatchableIOMessagePumpPosix {
  public:
+  // IO事件监控控制器：提供callback
   class FdWatchController : public FdWatchControllerInterface {
    public:
     explicit FdWatchController(const Location& from_here);
+
+    FdWatchController(const FdWatchController&) = delete;
+    FdWatchController& operator=(const FdWatchController&) = delete;
 
     // Implicitly calls StopWatchingFileDescriptor.
     ~FdWatchController() override;
@@ -54,14 +65,26 @@ class BASE_EXPORT MessagePumpIOSForIO : public MessagePumpNSRunLoop,
     bool is_persistent_ = false;  // false if this event is one-shot.
     base::mac::ScopedCFFileDescriptorRef fdref_;
     CFOptionFlags callback_types_ = 0;
+
+    // CFRunLoopSourceRef 是产生事件的地方。Source包括Source0和Source1两个版本，
+    // 1. Source0：主要由应用程序管理，它并不能主动触发事件。使用时，你需要先调用
+    // CFRunLoopSourceSignal(source)，将这个Source标记为待处理，然后手动调用
+    // CFRunLoopWakeUp(runloop)来唤醒RunLoop，让其处理这个事件。通常我们使用
+    // 的也是Source0事件。
+    // 2. Source1：主要由于RunLoop和kernel进行管理。包含了一个mach_port和一个
+    // 回调（函数指针），被用于通过内核和其他线程相互发送消息。这种Source能主动唤
+    // 醒RunLoop的线程。
+    // 这里IO监听，采用的是 Source1.
     base::ScopedCFTypeRef<CFRunLoopSourceRef> fd_source_;
     base::WeakPtr<MessagePumpIOSForIO> pump_;
     FdWatcher* watcher_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(FdWatchController);
   };
 
   MessagePumpIOSForIO();
+
+  MessagePumpIOSForIO(const MessagePumpIOSForIO&) = delete;
+  MessagePumpIOSForIO& operator=(const MessagePumpIOSForIO&) = delete;
+
   ~MessagePumpIOSForIO() override;
 
   bool WatchFileDescriptor(int fd,
@@ -82,8 +105,6 @@ class BASE_EXPORT MessagePumpIOSForIO : public MessagePumpNSRunLoop,
   ThreadChecker watch_file_descriptor_caller_checker_;
 
   base::WeakPtrFactory<MessagePumpIOSForIO> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpIOSForIO);
 };
 
 }  // namespace base

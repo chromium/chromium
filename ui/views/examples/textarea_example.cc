@@ -8,14 +8,18 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/textarea/textarea.h"
+#include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 
 namespace views {
 namespace examples {
 
-TextareaExample::TextareaExample() : ExampleBase("Textarea") {}
+TextareaExample::TextareaExample()
+    : ExampleBase(l10n_util::GetStringUTF8(IDS_TEXTAREA_SELECT_LABEL).c_str()) {
+}
 
 void TextareaExample::CreateExampleView(View* container) {
   constexpr char16_t kLongText[] =
@@ -28,6 +32,7 @@ void TextareaExample::CreateExampleView(View* container) {
       u"culpa qui officia deserunt mollit anim id est laborum.";
   auto textarea = std::make_unique<Textarea>();
   textarea->SetText(kLongText);
+  textarea->SetAccessibleName(l10n_util::GetStringUTF16(IDS_TEXTAREA_NAME));
   container->SetLayoutManager(std::make_unique<views::FillLayout>());
   container->AddChildView(std::move(textarea));
 }

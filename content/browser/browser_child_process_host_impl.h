@@ -15,8 +15,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event_watcher.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/tracing/tracing_service_controller.h"
@@ -69,11 +69,6 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   // Terminates all child processes and deletes each BrowserChildProcessHost
   // instance.
   static void TerminateAll();
-
-  // Copies kEnableFeatures and kDisableFeatures to the command line. Generates
-  // them from the FeatureList override state, to take into account overrides
-  // from FieldTrials.
-  static void CopyFeatureAndFieldTrialFlags(base::CommandLine* cmd_line);
 
   // Appends kTraceStartup and kTraceRecordMode flags to the command line, if
   // needed.

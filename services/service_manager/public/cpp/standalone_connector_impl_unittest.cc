@@ -24,6 +24,9 @@ class TestConnectorDelegate : public StandaloneConnectorImpl::Delegate {
   TestConnectorDelegate(Handler handler)
       : TestConnectorDelegate(base::BindLambdaForTesting(handler)) {}
 
+  TestConnectorDelegate(const TestConnectorDelegate&) = delete;
+  TestConnectorDelegate& operator=(const TestConnectorDelegate&) = delete;
+
   ~TestConnectorDelegate() override = default;
 
  private:
@@ -40,8 +43,6 @@ class TestConnectorDelegate : public StandaloneConnectorImpl::Delegate {
   }
 
   const Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConnectorDelegate);
 };
 
 class StandaloneConnectorImplTest : public testing::Test {

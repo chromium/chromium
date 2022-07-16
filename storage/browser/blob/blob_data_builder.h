@@ -41,6 +41,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
   using ItemCopyEntry = BlobEntry::ItemCopyEntry;
 
   explicit BlobDataBuilder(const std::string& uuid);
+
+  BlobDataBuilder(const BlobDataBuilder&) = delete;
+  BlobDataBuilder& operator=(const BlobDataBuilder&) = delete;
+
   ~BlobDataBuilder();
 
   const std::string& uuid() const { return uuid_; }
@@ -58,6 +62,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
    public:
     FutureData(FutureData&&);
     FutureData& operator=(FutureData&&);
+
+    FutureData(const FutureData&) = delete;
+    FutureData& operator=(const FutureData&) = delete;
+
     ~FutureData();
 
     // Populates a part of an item previously allocated with AppendFutureData.
@@ -80,7 +88,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
     FutureData(scoped_refptr<BlobDataItem>);
 
     scoped_refptr<BlobDataItem> item_;
-    DISALLOW_COPY_AND_ASSIGN(FutureData);
   };
 
   // Adds an item that is flagged for future data population. The memory is not
@@ -93,6 +100,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
    public:
     FutureFile(FutureFile&&);
     FutureFile& operator=(FutureFile&&);
+
+    FutureFile(const FutureFile&) = delete;
+    FutureFile& operator=(const FutureFile&) = delete;
+
     ~FutureFile();
 
     // Populates a part of an item previously allocated with AppendFutureFile.
@@ -106,7 +117,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
     FutureFile(scoped_refptr<BlobDataItem>);
 
     scoped_refptr<BlobDataItem> item_;
-    DISALLOW_COPY_AND_ASSIGN(FutureFile);
   };
 
   // Adds an item that is flagged for future data population. Use
@@ -241,8 +251,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
   std::vector<scoped_refptr<ShareableBlobDataItem>> pending_transport_items_;
   std::set<std::string> dependent_blob_uuids_;
   std::vector<ItemCopyEntry> copies_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlobDataBuilder);
 };
 
 #if defined(UNIT_TEST)

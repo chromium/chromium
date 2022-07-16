@@ -445,13 +445,13 @@ TEST_F(OmniboxFieldTrialTest, HalfLifeTimeDecay) {
   HUPScoringParams::ScoreBuckets buckets;
 
   // No decay by default.
-  EXPECT_EQ(1.0, buckets.HalfLifeTimeDecay(base::TimeDelta::FromDays(7)));
+  EXPECT_EQ(1.0, buckets.HalfLifeTimeDecay(base::Days(7)));
 
   buckets.set_half_life_days(7);
-  EXPECT_EQ(0.5, buckets.HalfLifeTimeDecay(base::TimeDelta::FromDays(7)));
-  EXPECT_EQ(0.25, buckets.HalfLifeTimeDecay(base::TimeDelta::FromDays(14)));
-  EXPECT_EQ(1.0, buckets.HalfLifeTimeDecay(base::TimeDelta::FromDays(0)));
-  EXPECT_EQ(1.0, buckets.HalfLifeTimeDecay(base::TimeDelta::FromDays(-1)));
+  EXPECT_EQ(0.5, buckets.HalfLifeTimeDecay(base::Days(7)));
+  EXPECT_EQ(0.25, buckets.HalfLifeTimeDecay(base::Days(14)));
+  EXPECT_EQ(1.0, buckets.HalfLifeTimeDecay(base::Days(0)));
+  EXPECT_EQ(1.0, buckets.HalfLifeTimeDecay(base::Days(-1)));
 }
 
 TEST_F(OmniboxFieldTrialTest, GetSuggestPollingStrategy) {

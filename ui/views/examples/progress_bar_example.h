@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_PROGRESS_BAR_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_PROGRESS_BAR_EXAMPLE_H_
 
-#include "base/macros.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -16,6 +15,10 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT ProgressBarExample : public ExampleBase {
  public:
   ProgressBarExample();
+
+  ProgressBarExample(const ProgressBarExample&) = delete;
+  ProgressBarExample& operator=(const ProgressBarExample&) = delete;
+
   ~ProgressBarExample() override;
 
   // ExampleBase:
@@ -26,8 +29,6 @@ class VIEWS_EXAMPLES_EXPORT ProgressBarExample : public ExampleBase {
 
   ProgressBar* progress_bar_ = nullptr;
   double current_percent_ = 0.0;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgressBarExample);
 };
 
 }  // namespace examples

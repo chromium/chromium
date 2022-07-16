@@ -36,6 +36,10 @@ class ManifestFetcher final : public GarbageCollected<ManifestFetcher>,
 
  public:
   explicit ManifestFetcher(const KURL& url);
+
+  ManifestFetcher(const ManifestFetcher&) = delete;
+  ManifestFetcher& operator=(const ManifestFetcher&) = delete;
+
   ~ManifestFetcher() override;
 
   void Start(LocalDOMWindow& window,
@@ -61,8 +65,6 @@ class ManifestFetcher final : public GarbageCollected<ManifestFetcher>,
   std::unique_ptr<TextResourceDecoder> decoder_;
   StringBuilder data_;
   Member<ThreadableLoader> loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestFetcher);
 };
 
 }  // namespace blink

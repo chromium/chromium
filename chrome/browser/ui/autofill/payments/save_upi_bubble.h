@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_SAVE_UPI_BUBBLE_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_SAVE_UPI_BUBBLE_H_
 
-#include "base/macros.h"
-
 namespace autofill {
 
 // The desktop UI interface which displays the "Remember your UPI ID?" bubble.

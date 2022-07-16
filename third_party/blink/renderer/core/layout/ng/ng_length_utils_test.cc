@@ -225,7 +225,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeContentContribution) {
   expected = MinMaxSizes{LayoutUnit(30), LayoutUnit(40)};
   style_->SetPaddingLeft(Length::Fixed(0));
   style_->SetLogicalWidth(Length(CalculationValue::Create(
-      PixelsAndPercent(100, -10), kValueRangeNonNegative)));
+      PixelsAndPercent(100, -10), Length::ValueRange::kNonNegative)));
   EXPECT_EQ(expected, ComputeMinAndMaxContentContributionForTest(
                           style_->GetWritingMode(), node, space, sizes));
 
@@ -303,7 +303,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeInlineSizeForFragment) {
   EXPECT_EQ(LayoutUnit(200), ComputeInlineSizeForFragment());
 
   style_->SetLogicalWidth(Length(CalculationValue::Create(
-      PixelsAndPercent(100, -10), kValueRangeNonNegative)));
+      PixelsAndPercent(100, -10), Length::ValueRange::kNonNegative)));
   EXPECT_EQ(LayoutUnit(80), ComputeInlineSizeForFragment());
 
   NGConstraintSpace constraint_space =
@@ -375,7 +375,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeBlockSizeForFragment) {
   EXPECT_EQ(LayoutUnit(300), ComputeBlockSizeForFragment());
 
   style_->SetLogicalHeight(Length(CalculationValue::Create(
-      PixelsAndPercent(100, -10), kValueRangeNonNegative)));
+      PixelsAndPercent(100, -10), Length::ValueRange::kNonNegative)));
   EXPECT_EQ(LayoutUnit(70), ComputeBlockSizeForFragment());
 
   constraint_space = ConstructConstraintSpace(200, 200, true, true);

@@ -44,12 +44,6 @@ public abstract class WebContentsObserver {
      */
     public void renderFrameDeleted(GlobalRenderFrameHostId id) {}
 
-    /**
-     * Called when the RenderView of the current RenderViewHost is ready, e.g. because we recreated
-     * it after a crash.
-     */
-    public void renderViewReady() {}
-
     public void renderProcessGone(boolean wasOomProtected) {}
 
     /**
@@ -109,12 +103,12 @@ public abstract class WebContentsObserver {
 
     /**
      * Called when an error occurs while loading a document that fails to load.
-     * @param isMainFrame Whether the navigation occurred in the main frame.
+     * @param isInPrimaryMainFrame Whether the navigation occurred in the primary main frame.
      * @param errorCode Error code for the occurring error.
      * @param failingUrl The url that was loading when the error occurred.
      * @param frameLifecycleState The lifecycle state of the associated RenderFrameHost.
      */
-    public void didFailLoad(boolean isMainFrame, int errorCode, GURL failingUrl,
+    public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode, GURL failingUrl,
             @LifecycleState int rfhLifecycleState) {}
 
     /**
@@ -148,19 +142,19 @@ public abstract class WebContentsObserver {
      * @param rfhId Identifier of the navigating frame.
      * @param url The validated URL that is being navigated to.
      * @param isKnownValid Whether the URL is known to be valid.
-     * @param isMainFrame Whether the load is happening for the main frame.
+     * @param isInPrimaryMainFrame Whether the load is happening for the primary main frame.
      * @param rfhLifecycleState The lifecycle state of the associated frame.
      */
     public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
-            boolean isMainFrame, @LifecycleState int rfhLifecycleState) {}
+            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {}
 
     /**
      * Notifies that the document has finished loading for the given frame.
      * @param rfhId Identifier of the navigating frame.
-     * @param isMainFrame Whether the load is happening for the main frame.
+     * @param isInPrimaryMainFrame Whether the load is happening for the primary main frame.
      * @param rfhLifecycleState The lifecycle state of the associated frame.
      */
-    public void documentLoadedInFrame(GlobalRenderFrameHostId rfhId, boolean isMainFrame,
+    public void documentLoadedInFrame(GlobalRenderFrameHostId rfhId, boolean isInPrimaryMainFrame,
             @LifecycleState int rfhLifecycleState) {}
 
     /**

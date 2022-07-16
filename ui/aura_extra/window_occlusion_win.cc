@@ -14,12 +14,14 @@ namespace {
 class WindowBoundsDelegateImpl : public WindowBoundsDelegate {
  public:
   WindowBoundsDelegateImpl();
+
+  WindowBoundsDelegateImpl(const WindowBoundsDelegateImpl&) = delete;
+  WindowBoundsDelegateImpl& operator=(const WindowBoundsDelegateImpl&) = delete;
+
   ~WindowBoundsDelegateImpl() override {}
 
   // WindowBoundsDelegate:
   gfx::Rect GetBoundsInPixels(aura::WindowTreeHost* window) override;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowBoundsDelegateImpl);
 };
 
 WindowBoundsDelegateImpl::WindowBoundsDelegateImpl() = default;

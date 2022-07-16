@@ -6,9 +6,9 @@
 
 namespace syncer {
 
-MockDebugInfoGetter::MockDebugInfoGetter() {}
+MockDebugInfoGetter::MockDebugInfoGetter() = default;
 
-MockDebugInfoGetter::~MockDebugInfoGetter() {}
+MockDebugInfoGetter::~MockDebugInfoGetter() = default;
 
 sync_pb::DebugInfo MockDebugInfoGetter::GetDebugInfo() const {
   return debug_info_;

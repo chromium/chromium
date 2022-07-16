@@ -298,8 +298,8 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&, const PositionInFlatTree&);
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-void showTree(const blink::Position&);
-void showTree(const blink::Position*);
+void ShowTree(const blink::Position&);
+void ShowTree(const blink::Position*);
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_POSITION_H_

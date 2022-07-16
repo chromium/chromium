@@ -24,6 +24,10 @@ class ExtensionURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   explicit ExtensionURLLoaderThrottle(ExtensionThrottleManager* manager);
 
+  ExtensionURLLoaderThrottle(const ExtensionURLLoaderThrottle&) = delete;
+  ExtensionURLLoaderThrottle& operator=(const ExtensionURLLoaderThrottle&) =
+      delete;
+
   ~ExtensionURLLoaderThrottle() override;
 
   // blink::URLLoaderThrottle:
@@ -46,8 +50,6 @@ class ExtensionURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   ExtensionThrottleManager* manager_ = nullptr;
   GURL start_request_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionURLLoaderThrottle);
 };
 
 }  // namespace extensions

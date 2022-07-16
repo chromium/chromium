@@ -6,7 +6,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -20,8 +19,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 class ProxyAuthDialogWaiter : public content::WindowedNotificationObserver {
@@ -32,6 +30,9 @@ class ProxyAuthDialogWaiter : public content::WindowedNotificationObserver {
             base::BindRepeating(&ProxyAuthDialogWaiter::SetLoginHandler,
                                 base::Unretained(this))),
         login_handler_(nullptr) {}
+
+  ProxyAuthDialogWaiter(const ProxyAuthDialogWaiter&) = delete;
+  ProxyAuthDialogWaiter& operator=(const ProxyAuthDialogWaiter&) = delete;
 
   ~ProxyAuthDialogWaiter() override {}
 
@@ -46,8 +47,6 @@ class ProxyAuthDialogWaiter : public content::WindowedNotificationObserver {
   }
 
   LoginHandler* login_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyAuthDialogWaiter);
 };
 
 }  // namespace
@@ -61,6 +60,11 @@ class ProxyAuthOnUserBoardScreenTest : public LoginManagerTest {
                       base::FilePath()) {
     login_manager_mixin_.AppendRegularUsers(1);
   }
+
+  ProxyAuthOnUserBoardScreenTest(const ProxyAuthOnUserBoardScreenTest&) =
+      delete;
+  ProxyAuthOnUserBoardScreenTest& operator=(
+      const ProxyAuthOnUserBoardScreenTest&) = delete;
 
   ~ProxyAuthOnUserBoardScreenTest() override {}
 
@@ -78,20 +82,18 @@ class ProxyAuthOnUserBoardScreenTest : public LoginManagerTest {
  private:
   net::SpawnedTestServer proxy_server_;
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyAuthOnUserBoardScreenTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ProxyAuthOnUserBoardScreenTest,
                        ProxyAuthDialogOnUserBoardScreen) {
-  ASSERT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  ASSERT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   ProxyAuthDialogWaiter auth_dialog_waiter;
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   OobeScreenWaiter(chromeos::UserCreationView::kScreenId).Wait();
-  chromeos::test::OobeJS().TapOnPath({"user-creation", "nextButton"});
+  test::OobeJS().TapOnPath({"user-creation", "nextButton"});
   OobeScreenWaiter(chromeos::GaiaView::kScreenId).Wait();
   auth_dialog_waiter.Wait();
   ASSERT_TRUE(auth_dialog_waiter.login_handler());
 }
 
-}  // namespace chromeos
+}  // namespace ash

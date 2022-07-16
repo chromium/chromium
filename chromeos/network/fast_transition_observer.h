@@ -16,12 +16,16 @@ class PrefRegistrySimple;
 namespace chromeos {
 
 // FastTransitionObserver is a singleton, owned by
-// ChromeBrowserMainPartsChromeos.
+// `ChromeBrowserMainPartsAsh`.
 // This class is responsible for propagating Fast Transition policy
 // changes (prefs::kFastTransitionEnabled) in Chrome down to Shill.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) FastTransitionObserver {
  public:
   explicit FastTransitionObserver(PrefService* local_state);
+
+  FastTransitionObserver(const FastTransitionObserver&) = delete;
+  FastTransitionObserver& operator=(const FastTransitionObserver&) = delete;
+
   ~FastTransitionObserver();
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -32,10 +36,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FastTransitionObserver {
 
   PrefService* local_state_;
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(FastTransitionObserver);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::FastTransitionObserver;
+}
 
 #endif  // CHROMEOS_NETWORK_FAST_TRANSITION_OBSERVER_H_

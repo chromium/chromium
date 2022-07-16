@@ -14,8 +14,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/hdr_metadata.h"
-#include "ui/gfx/transform.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/gl_export.h"
 
@@ -56,9 +56,6 @@ struct GL_EXPORT DCRendererLayerParams {
       gfx::ProtectedVideoType::kClear;
 
   gfx::HDRMetadata hdr_metadata;
-
-  // Ends access should this get accesssed from a shared image.
-  std::array<base::OnceClosure, kNumImages> release_image_cb;
 };
 
 }  // namespace ui

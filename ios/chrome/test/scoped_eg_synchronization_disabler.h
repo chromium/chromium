@@ -13,6 +13,11 @@
 class ScopedSynchronizationDisabler {
  public:
   ScopedSynchronizationDisabler();
+
+  ScopedSynchronizationDisabler(const ScopedSynchronizationDisabler&) = delete;
+  ScopedSynchronizationDisabler& operator=(
+      const ScopedSynchronizationDisabler&) = delete;
+
   ~ScopedSynchronizationDisabler();
 
  private:
@@ -20,8 +25,6 @@ class ScopedSynchronizationDisabler {
   static void SetEgSynchronizationEnabled(BOOL flag);
 
   BOOL saved_eg_synchronization_enabled_value_ = NO;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSynchronizationDisabler);
 };
 
 #endif  // IOS_CHROME_TEST_SCOPED_EG_SYNCHRONIZATION_DISABLER_H_

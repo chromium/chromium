@@ -12,12 +12,12 @@ namespace blink {
 class ScriptPromiseResolver;
 namespace file_system_access_error {
 
-// Rejects |resolver| with an appropriate exception if |status| represents an
-// error. Resolves |resolver| with undefined otherwise.
+// Rejects `resolver` with an appropriate exception if `status` represents an
+// error. Resolves `resolver` with undefined otherwise.
 void ResolveOrReject(ScriptPromiseResolver* resolver,
                      const mojom::blink::FileSystemAccessError& status);
 
-// Rejects |resolver| with an appropriate exception if |status| represents an
+// Rejects `resolver` with an appropriate exception if `status` represents an
 // error. DCHECKs otherwise.
 void Reject(ScriptPromiseResolver* resolver,
             const mojom::blink::FileSystemAccessError& error);

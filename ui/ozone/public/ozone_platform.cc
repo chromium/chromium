@@ -40,6 +40,10 @@ void EnsureInstance() {
 
 }  // namespace
 
+OzonePlatform::PlatformRuntimeProperties::SupportsSsdForTest
+    OzonePlatform::PlatformRuntimeProperties::override_supports_ssd_for_test =
+        OzonePlatform::PlatformRuntimeProperties::SupportsSsdForTest::kNotSet;
+
 OzonePlatform::PlatformProperties::PlatformProperties() = default;
 OzonePlatform::PlatformProperties::~PlatformProperties() = default;
 
@@ -149,16 +153,10 @@ OzonePlatform::GetPlatformProperties() {
 
 const OzonePlatform::PlatformRuntimeProperties&
 OzonePlatform::GetPlatformRuntimeProperties() {
-  static const OzonePlatform::PlatformRuntimeProperties properties;
+  DCHECK(initialized_ui_ || initialized_gpu_);
+
+  static const PlatformRuntimeProperties properties;
   return properties;
-}
-
-const OzonePlatform::InitializedHostProperties&
-OzonePlatform::GetInitializedHostProperties() {
-  DCHECK(initialized_ui_);
-
-  static InitializedHostProperties host_properties;
-  return host_properties;
 }
 
 void OzonePlatform::AddInterfaces(mojo::BinderMap* binders) {}

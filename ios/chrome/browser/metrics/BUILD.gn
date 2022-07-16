@@ -39,6 +39,8 @@ source_set("metrics") {
     "ios_profile_session_durations_service.mm",
     "ios_profile_session_durations_service_factory.h",
     "ios_profile_session_durations_service_factory.mm",
+    "ios_profile_session_metrics_provider.h",
+    "ios_profile_session_metrics_provider.mm",
     "mobile_session_shutdown_metrics_provider.h",
     "mobile_session_shutdown_metrics_provider.mm",
     "pageload_foreground_duration_tab_helper.h",
@@ -75,9 +77,9 @@ source_set("metrics") {
     "//components/version_info",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser",
+    "//ios/chrome/browser:chrome_paths",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/crash_report",
-    "//ios/chrome/browser/google",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/signin",
@@ -93,6 +95,7 @@ source_set("metrics") {
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/web/common",
     "//ios/web/public/deprecated",
     "//url",
@@ -238,7 +241,6 @@ source_set("unit_tests_internal") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -254,7 +256,6 @@ source_set("eg2_tests") {
     ":tab_usage_recorder_metrics",
     "//base/test:test_support",
     "//components/metrics/demographics",
-    "//components/signin/public/base",
     "//components/strings:components_strings_grit",
     "//components/ukm",
     "//ios/chrome/app/strings:ios_strings_grit",
@@ -281,7 +282,6 @@ generate_expired_histograms_array("expired_histograms_array") {
 }
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -312,7 +312,6 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",

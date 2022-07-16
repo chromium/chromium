@@ -86,6 +86,10 @@ class URLPatternSet {
   URLPatternSet();
   URLPatternSet(URLPatternSet&& rhs);
   explicit URLPatternSet(const std::set<URLPattern>& patterns);
+
+  URLPatternSet(const URLPatternSet&) = delete;
+  URLPatternSet& operator=(const URLPatternSet&) = delete;
+
   ~URLPatternSet();
 
   URLPatternSet& operator=(URLPatternSet&& rhs);
@@ -149,8 +153,6 @@ class URLPatternSet {
  private:
   // The list of URL patterns that comprise the extent.
   std::set<URLPattern> patterns_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLPatternSet);
 };
 
 std::ostream& operator<<(std::ostream& out,

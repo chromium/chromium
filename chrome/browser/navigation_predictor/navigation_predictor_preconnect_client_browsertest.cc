@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,6 +27,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -44,11 +44,16 @@ class NavigationPredictorPreconnectClientBrowserTest
     feature_list_.InitFromCommandLine(
         std::string(),
         "NavigationPredictorPreconnectHoldback,PreconnectToSearch");
-  }
-
-  void SetUp() override {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
+  }
+
+  NavigationPredictorPreconnectClientBrowserTest(
+      const NavigationPredictorPreconnectClientBrowserTest&) = delete;
+  NavigationPredictorPreconnectClientBrowserTest& operator=(
+      const NavigationPredictorPreconnectClientBrowserTest&) = delete;
+
+  void SetUp() override {
     https_server_->ServeFilesFromSourceDirectory(
         "chrome/test/data/navigation_predictor");
     ASSERT_TRUE(https_server_->Start());
@@ -99,13 +104,11 @@ class NavigationPredictorPreconnectClientBrowserTest
 
  protected:
   int preresolve_done_count_ = 0;
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
  private:
-  std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationPredictorPreconnectClientBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTest,
@@ -129,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTest,
   model->SetUserSelectedDefaultSearchProvider(template_url);
   const GURL& url = GetTestURL("/anchors_different_area.html?q=cats");
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // There should be preconnect from navigation, but not preconnect client.
   EXPECT_EQ(1, preresolve_done_count_);
 }
@@ -139,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTest,
   base::HistogramTester histogram_tester;
   const GURL& url = GetTestURL("/anchors_different_area.html");
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // There should be one preconnect from navigation and one from preconnect
   // client.
   WaitForPreresolveCount(2);
@@ -152,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTest,
                        PreconnectNotSearchBackgroundForeground) {
   const GURL& url = GetTestURL("/anchors_different_area.html");
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // There should be one preconnect from navigation and one from preconnect
   // client.
   WaitForPreresolveCount(2);
@@ -187,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(
     NavigationPredictorPreconnectClientBrowserTestWithUnusedIdleSocketTimeout,
     ActionAccuracy_timeout) {
   const GURL& url = GetTestURL("/page_with_same_host_anchor_element.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   WaitForPreresolveCount(3);
   EXPECT_LE(3, preresolve_done_count_);
@@ -202,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(
     NavigationPredictorPreconnectClientBrowserTestWithUnusedIdleSocketTimeout,
     CappedAtFiveAttempts) {
   const GURL& url = GetTestURL("/page_with_same_host_anchor_element.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Expect 1 navigation preresolve and 5 repeated onLoad calls.
   WaitForPreresolveCount(6);
@@ -219,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(
   // By default, same document navigation should not trigger new preconnects.
   const GURL& same_document_url =
       GetTestURL("/page_with_same_host_anchor_element.html#foobar");
-  ui_test_utils::NavigateToURL(browser(), same_document_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_document_url));
   // Expect another one.
   WaitForPreresolveCount(6);
   EXPECT_EQ(6, preresolve_done_count_);
@@ -243,11 +246,11 @@ IN_PROC_BROWSER_TEST_F(
     NoPreconnectHoldback) {
   const GURL& url = GetTestURL("/anchors_different_area.html");
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // There should be preconnect from navigation, but not preconnect client.
   EXPECT_EQ(1, preresolve_done_count_);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // There should be 2 preconnects from navigation, but not any from preconnect
   // client.
   EXPECT_EQ(2, preresolve_done_count_);
@@ -276,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(
     PreconnectNotSearch) {
   const GURL& url = GetTestURL("/anchors_different_area.html");
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // There should be preconnect from navigation and one from OnLoad client.
   WaitForPreresolveCount(2);
   EXPECT_EQ(2, preresolve_done_count_);
@@ -301,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(
     PreconnectNotSearch) {
   const GURL& url = GetTestURL("/anchors_different_area.html");
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // There should be a navigation preconnect, a commit preconnect, and an OnLoad
   // preconnect.
   WaitForPreresolveCount(3);
@@ -339,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(
     NavigationPredictorSameDocumentPreconnectClientBrowserTest,
     SameDocumentNavigation) {
   const GURL& url = GetTestURL("/page_with_same_host_anchor_element.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   WaitForPreresolveCount(3);
   EXPECT_LE(3, preresolve_done_count_);
@@ -350,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(
 
   const GURL& same_document_url =
       GetTestURL("/page_with_same_host_anchor_element.html#foobar");
-  ui_test_utils::NavigateToURL(browser(), same_document_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_document_url));
   // Expect another one.
   WaitForPreresolveCount(8);
   EXPECT_LE(8, preresolve_done_count_);
@@ -367,8 +370,7 @@ class NavigationPredictorPreconnectClientBrowserTestWithSearch
  public:
   NavigationPredictorPreconnectClientBrowserTestWithSearch()
       : NavigationPredictorPreconnectClientBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {kPreconnectToSearchTest, features::kPreconnectToSearchNonGoogle}, {});
+    feature_list_.InitWithFeatures({kPreconnectToSearchTest}, {});
   }
 
  private:
@@ -395,6 +397,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTestWithSearch,
   data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(GetTestURL(kSearchURL).spec());
+  data.preconnect_to_search_url = true;
 
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
   ASSERT_TRUE(template_url);
@@ -410,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTestWithSearch,
   WaitForPreresolveCount(2);
   EXPECT_EQ(2, preresolve_done_count_);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // Now there should be an onload preconnect as well as a navigation
   // preconnect.
   WaitForPreresolveCount(4);
@@ -422,15 +425,17 @@ class NavigationPredictorPreconnectClientLocalURLBrowserTest
  public:
   NavigationPredictorPreconnectClientLocalURLBrowserTest() = default;
 
+  NavigationPredictorPreconnectClientLocalURLBrowserTest(
+      const NavigationPredictorPreconnectClientLocalURLBrowserTest&) = delete;
+  NavigationPredictorPreconnectClientLocalURLBrowserTest& operator=(
+      const NavigationPredictorPreconnectClientLocalURLBrowserTest&) = delete;
+
  private:
   void SetUpOnMainThread() override {
     NavigationPredictorPreconnectClientBrowserTest::SetUpOnMainThread();
     NavigationPredictorPreconnectClient::EnablePreconnectsForLocalIPsForTesting(
         false);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(
-      NavigationPredictorPreconnectClientLocalURLBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientLocalURLBrowserTest,
@@ -438,11 +443,123 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientLocalURLBrowserTest,
   base::HistogramTester histogram_tester;
   const GURL& url = GetTestURL("/anchors_different_area.html");
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // There should not be any preconnects to non-public addresses.
   histogram_tester.ExpectUniqueSample("NavigationPredictor.IsPubliclyRoutable",
                                       false, 1);
+}
+
+class NavigationPredictorPreconnectClientPrerenderBrowserTestNoDelay
+    : public NavigationPredictorPreconnectClientBrowserTestPreconnectOnDidFinishNavigationNoDelay {
+ public:
+  NavigationPredictorPreconnectClientPrerenderBrowserTestNoDelay()
+      : prerender_test_helper_(base::BindRepeating(
+            &NavigationPredictorPreconnectClientPrerenderBrowserTestNoDelay::
+                GetWebContents,
+            base::Unretained(this))) {}
+  ~NavigationPredictorPreconnectClientPrerenderBrowserTestNoDelay() override =
+      default;
+  NavigationPredictorPreconnectClientPrerenderBrowserTestNoDelay(
+      const NavigationPredictorPreconnectClientPrerenderBrowserTestNoDelay&) =
+      delete;
+
+  NavigationPredictorPreconnectClientPrerenderBrowserTestNoDelay& operator=(
+      const NavigationPredictorPreconnectClientPrerenderBrowserTestNoDelay&) =
+      delete;
+
+  void SetUp() override {
+    prerender_test_helper_.SetUp(https_server_.get());
+    NavigationPredictorPreconnectClientBrowserTestPreconnectOnDidFinishNavigationNoDelay::
+        SetUp();
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_test_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_test_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    NavigationPredictorPreconnectClientPrerenderBrowserTestNoDelay,
+    NoAdditionalPreresolves) {
+  const GURL& url = GetTestURL("/anchors_different_area.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Start prerendering. The NavigationPredictorClient should ignore
+  // non-primary page navigations.
+  int host_id = prerender_test_helper().AddPrerender(url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+
+  // There should be a navigation preconnect, a commit preconnect, and an OnLoad
+  // preconnect, none from Prerenders.
+  WaitForPreresolveCount(3);
+  EXPECT_EQ(3, preresolve_done_count_);
+}
+
+class NavigationPredictorPreconnectClientFencedFrameBrowserTest
+    : public NavigationPredictorPreconnectClientBrowserTest {
+ public:
+  NavigationPredictorPreconnectClientFencedFrameBrowserTest() = default;
+  ~NavigationPredictorPreconnectClientFencedFrameBrowserTest() override =
+      default;
+  NavigationPredictorPreconnectClientFencedFrameBrowserTest(
+      const NavigationPredictorPreconnectClientFencedFrameBrowserTest&) =
+      delete;
+
+  NavigationPredictorPreconnectClientFencedFrameBrowserTest& operator=(
+      const NavigationPredictorPreconnectClientFencedFrameBrowserTest&) =
+      delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    NavigationPredictorPreconnectClientFencedFrameBrowserTest,
+    FencedFrameDoesNotCountIsPubliclyRoutable) {
+  base::HistogramTester histogram_tester;
+  const GURL& url = GetTestURL("/anchors_different_area.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // There should be one preconnect from navigation and one from preconnect
+  // client.
+  WaitForPreresolveCount(2);
+  EXPECT_EQ(2, preresolve_done_count_);
+  histogram_tester.ExpectTotalCount("NavigationPredictor.IsPubliclyRoutable",
+                                    1);
+
+  // Create a fenced frame.
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), url);
+  // The count should not increase in DidFinishLoad method.
+  histogram_tester.ExpectTotalCount("NavigationPredictor.IsPubliclyRoutable",
+                                    1);
+
+  // Navigate the fenced frame.
+  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
+                                                            url);
+  // Histogram count should not increase after navigating the fenced frame.
+  histogram_tester.ExpectTotalCount("NavigationPredictor.IsPubliclyRoutable",
+                                    1);
 }
 
 }  // namespace

@@ -11,6 +11,8 @@
 
 namespace android_webview {
 
+extern const char kWebViewAppsPackageNamesAllowlistComponentId[];
+
 void GetWebViewAppsPackageNamesAllowlistPublicKeyHash(
     std::vector<uint8_t>* hash);
 

@@ -114,7 +114,7 @@ class GitCLTest(unittest.TestCase):
             'status_code':
             200,
             'body':
-            SEARCHBUILDS_RESPONSE_PREFIX + """{
+            SEARCHBUILDS_RESPONSE_PREFIX + b"""{
                 "builds": [
                     {
                         "status": "STARTED",
@@ -146,7 +146,7 @@ class GitCLTest(unittest.TestCase):
         # git_cl.fetch_raw_try_job_results = lambda **_: []
         response = {
             'status_code': 200,
-            'body': SEARCHBUILDS_RESPONSE_PREFIX + "{}"
+            'body': SEARCHBUILDS_RESPONSE_PREFIX + b"{}"
         }
         # Specify the same response 10 times to ensure each poll gets ones.
         git_cl._host.web = MockWeb(responses=[response] * 10)
@@ -170,7 +170,7 @@ class GitCLTest(unittest.TestCase):
             'status_code':
             200,
             'body':
-            SEARCHBUILDS_RESPONSE_PREFIX + """{
+            SEARCHBUILDS_RESPONSE_PREFIX + b"""{
                     "builds": [
                         {
                             "status": "STARTED",
@@ -200,7 +200,7 @@ class GitCLTest(unittest.TestCase):
             'status_code':
             200,
             'body':
-            SEARCHBUILDS_RESPONSE_PREFIX + """{
+            SEARCHBUILDS_RESPONSE_PREFIX + b"""{
                     "builds": [
                         {
                             "status": "FAILURE",
@@ -295,7 +295,7 @@ class GitCLTest(unittest.TestCase):
             'status_code':
             200,
             'body':
-            SEARCHBUILDS_RESPONSE_PREFIX + """{
+            SEARCHBUILDS_RESPONSE_PREFIX + b"""{
                     "builds": [
                         {
                             "status": "SCHEDULED",
@@ -383,7 +383,7 @@ class GitCLTest(unittest.TestCase):
             'status_code':
             200,
             'body':
-            SEARCHBUILDS_RESPONSE_PREFIX + """{
+            SEARCHBUILDS_RESPONSE_PREFIX + b"""{
                     "builds": [
                         {
                             "status": "SUCCESS",
@@ -427,7 +427,7 @@ class GitCLTest(unittest.TestCase):
             'status_code':
             200,
             'body':
-            SEARCHBUILDS_RESPONSE_PREFIX + """{
+            SEARCHBUILDS_RESPONSE_PREFIX + b"""{
                     "builds": [
                         {
                             "status": "STARTED",
@@ -449,7 +449,7 @@ class GitCLTest(unittest.TestCase):
             'status_code':
             200,
             'body':
-            SEARCHBUILDS_RESPONSE_PREFIX + """{
+            SEARCHBUILDS_RESPONSE_PREFIX + b"""{
                     "builds": [
                         {
                             "status": "FAILURE",
@@ -495,7 +495,7 @@ class GitCLTest(unittest.TestCase):
             'status_code':
             200,
             'body':
-            SEARCHBUILDS_RESPONSE_PREFIX + """{
+            SEARCHBUILDS_RESPONSE_PREFIX + b"""{
                     "builds": [
                         {
                             "status": "FAILURE",
@@ -522,7 +522,7 @@ class GitCLTest(unittest.TestCase):
             'status_code':
             200,
             'body':
-            SEARCHBUILDS_RESPONSE_PREFIX + """{
+            SEARCHBUILDS_RESPONSE_PREFIX + b"""{
                     "builds": [
                         {
                             "status": "SUCCESS",
@@ -569,7 +569,7 @@ class GitCLTest(unittest.TestCase):
             'status_code':
             200,
             'body':
-            SEARCHBUILDS_RESPONSE_PREFIX + """{
+            SEARCHBUILDS_RESPONSE_PREFIX + b"""{
                     "builds": [
                         {
                             "status": "SUCCESS",

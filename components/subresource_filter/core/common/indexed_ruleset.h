@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/subresource_filter/core/common/flat/indexed_ruleset_generated.h"
 #include "components/subresource_filter/core/common/load_policy.h"
@@ -59,6 +58,10 @@ class RulesetIndexer {
   static const int kIndexedFormatVersion;
 
   RulesetIndexer();
+
+  RulesetIndexer(const RulesetIndexer&) = delete;
+  RulesetIndexer& operator=(const RulesetIndexer&) = delete;
+
   ~RulesetIndexer();
 
   // Adds |rule| to the ruleset and the index unless the |rule| has unsupported
@@ -89,8 +92,6 @@ class RulesetIndexer {
   // Maintains a map of domain vectors to their existing offsets, to avoid
   // storing a particular vector more than once.
   url_pattern_index::FlatDomainMap domain_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetIndexer);
 };
 
 // Matches URLs against the FlatBuffer representation of an indexed ruleset.
@@ -104,6 +105,9 @@ class IndexedRulesetMatcher {
   // provided as the root object of serialized data in the |buffer| of the given
   // |size|.
   IndexedRulesetMatcher(const uint8_t* buffer, size_t size);
+
+  IndexedRulesetMatcher(const IndexedRulesetMatcher&) = delete;
+  IndexedRulesetMatcher& operator=(const IndexedRulesetMatcher&) = delete;
 
   // Returns whether the subset of subresource filtering rules specified by the
   // |activation_type| should be disabled for the |document| loaded from
@@ -140,8 +144,6 @@ class IndexedRulesetMatcher {
   url_pattern_index::UrlPatternIndexMatcher blocklist_;
   url_pattern_index::UrlPatternIndexMatcher allowlist_;
   url_pattern_index::UrlPatternIndexMatcher deactivation_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedRulesetMatcher);
 };
 
 }  // namespace subresource_filter

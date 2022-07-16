@@ -22,6 +22,10 @@ class SchemefulSite;
 class TestCookieAccessDelegate : public CookieAccessDelegate {
  public:
   TestCookieAccessDelegate();
+
+  TestCookieAccessDelegate(const TestCookieAccessDelegate&) = delete;
+  TestCookieAccessDelegate& operator=(const TestCookieAccessDelegate&) = delete;
+
   ~TestCookieAccessDelegate() override;
 
   // CookieAccessDelegate implementation:
@@ -68,8 +72,6 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   std::map<std::string, bool> ignore_samesite_restrictions_schemes_;
   base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
       first_party_sets_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCookieAccessDelegate);
 };
 
 }  // namespace net

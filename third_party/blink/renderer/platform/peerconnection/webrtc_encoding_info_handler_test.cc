@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -93,7 +94,7 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
               [expected_format, expected_scalability_mode, support](
                   const webrtc::SdpVideoFormat& format,
                   absl::optional<std::string> scalability_mode) {
-                format.IsSameCodec(*expected_format);
+                EXPECT_TRUE(format.IsSameCodec(*expected_format));
                 EXPECT_EQ(scalability_mode, expected_scalability_mode);
                 return support;
               }));

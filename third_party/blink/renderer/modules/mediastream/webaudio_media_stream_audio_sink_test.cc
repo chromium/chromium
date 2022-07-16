@@ -60,7 +60,7 @@ TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow) {
 
   // Point the WebVector into memory owned by |sink_bus_|.
   WebVector<float*> audio_data(static_cast<size_t>(sink_bus_->channels()));
-  for (size_t i = 0; i < audio_data.size(); ++i)
+  for (int i = 0; i < sink_bus_->channels(); ++i)
     audio_data[i] = sink_bus_->channel(i);
 
   // Enable the |source_provider_| by asking for data. This will inject
@@ -94,9 +94,8 @@ TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow) {
   }
 
   // Make a second data delivery.
-  estimated_capture_time += source_bus->frames() *
-                            base::TimeDelta::FromSeconds(1) /
-                            source_params_.sample_rate();
+  estimated_capture_time +=
+      source_bus->frames() * base::Seconds(1) / source_params_.sample_rate();
   source_provider_->OnData(*source_bus, estimated_capture_time);
 
   // Verify that non-zero data samples are present in the results of the

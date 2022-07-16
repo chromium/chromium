@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/ownership/ownership_export.h"
 #include "crypto/scoped_nss_types.h"
@@ -25,6 +24,9 @@ class OWNERSHIP_EXPORT PublicKey
     : public base::RefCountedThreadSafe<PublicKey> {
  public:
   PublicKey();
+
+  PublicKey(const PublicKey&) = delete;
+  PublicKey& operator=(const PublicKey&) = delete;
 
   std::vector<uint8_t>& data() { return data_; }
 
@@ -41,8 +43,6 @@ class OWNERSHIP_EXPORT PublicKey
   virtual ~PublicKey();
 
   std::vector<uint8_t> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(PublicKey);
 };
 
 // This class is a ref-counted wrapper around a SECKEYPrivateKey
@@ -52,6 +52,9 @@ class OWNERSHIP_EXPORT PrivateKey
  public:
   explicit PrivateKey(crypto::ScopedSECKEYPrivateKey key);
 
+  PrivateKey(const PrivateKey&) = delete;
+  PrivateKey& operator=(const PrivateKey&) = delete;
+
   SECKEYPrivateKey* key() { return key_.get(); }
 
  private:
@@ -60,8 +63,6 @@ class OWNERSHIP_EXPORT PrivateKey
   virtual ~PrivateKey();
 
   crypto::ScopedSECKEYPrivateKey key_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrivateKey);
 };
 
 // This class is a helper class that allows to import public/private

@@ -30,6 +30,20 @@ inline UScriptCode getScriptForOpenType(UChar32 ch, UErrorCode* status) {
   return script;
 }
 
+inline bool IsHanScript(UScriptCode script) {
+  return script == USCRIPT_HAN || script == USCRIPT_HIRAGANA ||
+         script == USCRIPT_BOPOMOFO;
+}
+
+inline UScriptCode FirstHanScript(
+    const ScriptRunIterator::UScriptCodeList& list) {
+  const auto* const result =
+      std::find_if(list.begin(), list.end(), IsHanScript);
+  if (result != list.end())
+    return *result;
+  return USCRIPT_INVALID_CODE;
+}
+
 }  // namespace
 
 typedef ScriptData::PairedBracketType PairedBracketType;
@@ -226,6 +240,17 @@ void ScriptRunIterator::CloseBracket(UChar32 ch) {
       if (it->ch == target) {
         // Have a match, use open paren's resolved script.
         UScriptCode script = it->script;
+        // Han languages are multi-scripts, and there are font features that
+        // apply to consecutive punctuation characters.
+        // When encountering a closing bracket do not insist on the closing
+        // bracket getting assigned the same script as the opening bracket if
+        // current_set_ provides an option to resolve to any other possible Han
+        // script as well, which avoids breaking the run.
+        if (IsHanScript(script)) {
+          const UScriptCode current_han_script = FirstHanScript(current_set_);
+          if (current_han_script != USCRIPT_INVALID_CODE)
+            script = current_han_script;
+        }
         if (script != USCRIPT_COMMON) {
           next_set_->clear();
           next_set_->push_back(script);

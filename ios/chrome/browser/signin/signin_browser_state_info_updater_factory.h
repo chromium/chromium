@@ -23,6 +23,11 @@ class SigninBrowserStateInfoUpdaterFactory
   // Returns an instance of the factory singleton.
   static SigninBrowserStateInfoUpdaterFactory* GetInstance();
 
+  SigninBrowserStateInfoUpdaterFactory(
+      const SigninBrowserStateInfoUpdaterFactory&) = delete;
+  SigninBrowserStateInfoUpdaterFactory& operator=(
+      const SigninBrowserStateInfoUpdaterFactory&) = delete;
+
  private:
   friend class base::NoDestructor<SigninBrowserStateInfoUpdaterFactory>;
 
@@ -33,8 +38,6 @@ class SigninBrowserStateInfoUpdaterFactory
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* state) const override;
   bool ServiceIsCreatedWithBrowserState() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninBrowserStateInfoUpdaterFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_SIGNIN_BROWSER_STATE_INFO_UPDATER_FACTORY_H_

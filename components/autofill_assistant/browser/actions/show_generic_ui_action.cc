@@ -141,7 +141,7 @@ void ShowGenericUiAction::InternalProcessAction(
   }
   for (const auto& additional_value :
        proto_.show_generic_ui().request_user_data().additional_values()) {
-    if (!delegate_->GetUserData()->has_additional_value(
+    if (!delegate_->GetUserData()->HasAdditionalValue(
             additional_value.source_identifier())) {
       EndAction(ClientStatus(PRECONDITION_FAILED));
       return;
@@ -149,7 +149,7 @@ void ShowGenericUiAction::InternalProcessAction(
   }
   for (const auto& additional_value :
        proto_.show_generic_ui().request_user_data().additional_values()) {
-    ValueProto value = *delegate_->GetUserData()->additional_value(
+    ValueProto value = *delegate_->GetUserData()->GetAdditionalValue(
         additional_value.source_identifier());
     value.set_is_client_side_only(true);
     delegate_->GetUserModel()->SetValue(additional_value.model_identifier(),

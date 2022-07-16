@@ -15,6 +15,9 @@ class ProcessManager;
 
 class ProcessManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ProcessManagerFactory(const ProcessManagerFactory&) = delete;
+  ProcessManagerFactory& operator=(const ProcessManagerFactory&) = delete;
+
   static ProcessManager* GetForBrowserContext(content::BrowserContext* context);
   // Returns NULL if there is no ProcessManager associated with this context.
   static ProcessManager* GetForBrowserContextIfExists(
@@ -32,8 +35,6 @@ class ProcessManagerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessManagerFactory);
 };
 
 }  // namespace extensions

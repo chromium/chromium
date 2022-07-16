@@ -105,11 +105,12 @@ DisplayResourceProviderSoftware::DeleteAndReturnUnusedResourcesToChildImpl(
 
 void DisplayResourceProviderSoftware::PopulateSkBitmapWithResource(
     SkBitmap* sk_bitmap,
-    const ChildResource* resource) {
+    const ChildResource* resource,
+    SkAlphaType alpha_type) {
   DCHECK(IsBitmapFormatSupported(resource->transferable.format));
   SkImageInfo info =
-      SkImageInfo::MakeN32Premul(resource->transferable.size.width(),
-                                 resource->transferable.size.height());
+      SkImageInfo::MakeN32(resource->transferable.size.width(),
+                           resource->transferable.size.height(), alpha_type);
   bool pixels_installed = sk_bitmap->installPixels(
       info, resource->shared_bitmap->pixels(), info.minRowBytes());
   DCHECK(pixels_installed);
@@ -118,8 +119,7 @@ void DisplayResourceProviderSoftware::PopulateSkBitmapWithResource(
 DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
     DisplayResourceProviderSoftware* resource_provider,
     ResourceId resource_id,
-    SkAlphaType alpha_type,
-    GrSurfaceOrigin origin)
+    SkAlphaType alpha_type)
     : resource_provider_(resource_provider), resource_id_(resource_id) {
   const ChildResource* resource = resource_provider->LockForRead(resource_id);
   DCHECK(resource);
@@ -144,9 +144,9 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
     return;
   }
 
-  DCHECK(origin == kTopLeft_GrSurfaceOrigin);
   SkBitmap sk_bitmap;
-  resource_provider->PopulateSkBitmapWithResource(&sk_bitmap, resource);
+  resource_provider->PopulateSkBitmapWithResource(&sk_bitmap, resource,
+                                                  alpha_type);
   sk_bitmap.setImmutable();
   sk_image_ = SkImage::MakeFromBitmap(sk_bitmap);
   resource_provider_->resource_sk_images_[resource_id] = sk_image_;

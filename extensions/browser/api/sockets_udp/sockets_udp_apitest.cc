@@ -44,9 +44,9 @@ IN_PROC_BROWSER_TEST_F(SocketsUdpApiTest, SocketsUdpCreateGood) {
 
   base::DictionaryValue* value = NULL;
   ASSERT_TRUE(result->GetAsDictionary(&value));
-  int socketId = -1;
-  EXPECT_TRUE(value->GetInteger("socketId", &socketId));
-  ASSERT_TRUE(socketId > 0);
+  absl::optional<int> socketId = value->FindIntKey("socketId");
+  EXPECT_TRUE(socketId);
+  ASSERT_TRUE(*socketId > 0);
 }
 
 // Disable SocketsUdpExtension on Mac due to time out.

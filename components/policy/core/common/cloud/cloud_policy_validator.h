@@ -15,7 +15,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/account_id/account_id.h"
@@ -53,7 +53,7 @@ namespace policy {
 class POLICY_EXPORT CloudPolicyValidatorBase {
  public:
   // Validation result codes. These values are also used for UMA histograms by
-  // UserCloudPolicyStoreChromeOS and must stay stable - new elements should
+  // UserCloudPolicyStoreAsh and must stay stable - new elements should
   // be added at the end before VALIDATION_STATUS_SIZE. Also update the
   // associated enum definition in histograms.xml.
   enum Status {

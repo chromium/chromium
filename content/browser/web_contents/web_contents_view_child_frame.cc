@@ -5,13 +5,13 @@
 #include "content/browser/web_contents/web_contents_view_child_frame.h"
 
 #include "build/build_config.h"
-#include "content/browser/renderer_host/display_util.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/display/display_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -79,13 +79,8 @@ void WebContentsViewChildFrame::CreateView(gfx::NativeView context) {
 
 RenderWidgetHostViewBase* WebContentsViewChildFrame::CreateViewForWidget(
     RenderWidgetHost* render_widget_host) {
-  display::ScreenInfo screen_info;
-  if (auto* view = web_contents_->GetRenderWidgetHostView())
-    view->GetScreenInfo(&screen_info);
-  else
-    DisplayUtil::GetDefaultScreenInfo(&screen_info);
-  return RenderWidgetHostViewChildFrame::Create(render_widget_host,
-                                                screen_info);
+  return CreateRenderWidgetHostViewForInnerFrameTree(web_contents_,
+                                                     render_widget_host);
 }
 
 RenderWidgetHostViewBase* WebContentsViewChildFrame::CreateViewForChildWidget(
@@ -112,6 +107,8 @@ bool WebContentsViewChildFrame::CloseTabAfterEventTrackingIfNeeded() {
   return false;
 }
 #endif
+
+void WebContentsViewChildFrame::OnCapturerCountChanged() {}
 
 void WebContentsViewChildFrame::RestoreFocus() {
   NOTREACHED();
@@ -146,21 +143,13 @@ void WebContentsViewChildFrame::GotFocus(
 }
 
 void WebContentsViewChildFrame::TakeFocus(bool reverse) {
-  RenderFrameProxyHost* rfp = web_contents_->GetMainFrame()
-                                  ->frame_tree_node()
-                                  ->render_manager()
-                                  ->GetProxyToOuterDelegate();
-  FrameTreeNode* outer_node = FrameTreeNode::GloballyFindByID(
-      web_contents_->GetOuterDelegateFrameTreeNodeId());
-  RenderFrameHostImpl* rfhi = outer_node->parent();
-
-  rfhi->AdvanceFocus(reverse ? blink::mojom::FocusType::kBackward
-                             : blink::mojom::FocusType::kForward,
-                     rfp);
+  // This is handled in RenderFrameHostImpl::TakeFocus we shouldn't
+  // end up here.
+  NOTREACHED();
 }
 
 void WebContentsViewChildFrame::ShowContextMenu(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     const ContextMenuParams& params) {
   NOTREACHED();
 }
@@ -178,6 +167,22 @@ void WebContentsViewChildFrame::StartDragging(
   } else {
     web_contents_->GetOuterWebContents()->SystemDragEnded(source_rwh);
   }
+}
+
+RenderWidgetHostViewChildFrame*
+WebContentsViewChildFrame::CreateRenderWidgetHostViewForInnerFrameTree(
+    WebContentsImpl* web_contents,
+    RenderWidgetHost* render_widget_host) {
+  display::ScreenInfos screen_infos;
+  if (auto* view = web_contents->GetRenderWidgetHostView()) {
+    screen_infos = view->GetScreenInfos();
+  } else {
+    display::ScreenInfo screen_info;
+    display::DisplayUtil::GetDefaultScreenInfo(&screen_info);
+    screen_infos = display::ScreenInfos(screen_info);
+  }
+  return RenderWidgetHostViewChildFrame::Create(render_widget_host,
+                                                screen_infos);
 }
 
 }  // namespace content

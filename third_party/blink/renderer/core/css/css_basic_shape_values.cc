@@ -59,7 +59,7 @@ static String BuildCircleString(const String& radius,
     result.Append(center_y);
   }
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 static String SerializePositionOffset(const CSSValuePair& offset,
@@ -181,7 +181,7 @@ static String BuildEllipseString(const String& radius_x,
     result.Append(center_y);
   }
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String CSSBasicShapeEllipseValue::CustomCSSText() const {
@@ -271,7 +271,7 @@ static String BuildPolygonString(const WindRule& wind_rule,
   }
 
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String CSSBasicShapePolygonValue::CustomCSSText() const {
@@ -383,7 +383,7 @@ static String BuildInsetString(const String& top,
   }
   result.Append(')');
 
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 static inline void UpdateCornerRadiusWidthAndHeight(

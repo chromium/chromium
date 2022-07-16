@@ -8,6 +8,8 @@
 
 GEN('#include "content/public/test/browser_test.h"');
 
+/* eslint-disable no-var */
+
 /** Test fixture for testing shared JS module resources. */
 var WebUIResourceModuleAsyncTest = class extends testing.Test {
   /** @override */
@@ -43,6 +45,17 @@ TEST_F('CrModuleTest', 'SendWithPromise', function() {
 
 TEST_F('CrModuleTest', 'WebUIListeners', function() {
   mocha.fgrep('CrModuleWebUIListenersTest').run();
+});
+
+var IconModuleTest = class extends WebUIResourceModuleAsyncTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=js/icon_test.js';
+  }
+};
+
+TEST_F('IconModuleTest', 'All', function() {
+  mocha.run();
 });
 
 var PromiseResolverModuleTest = class extends WebUIResourceModuleAsyncTest {
@@ -93,7 +106,7 @@ TEST_F('UtilModuleTest', 'All', function() {
 var LoadTimeDataModuleTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/load_time_data_test.m.js';
+    return 'chrome://test/test_loader.html?module=js/load_time_data_test.js';
   }
 };
 
@@ -109,6 +122,28 @@ var I18nBehaviorModuleTest = class extends WebUIResourceModuleAsyncTest {
 };
 
 TEST_F('I18nBehaviorModuleTest', 'All', function() {
+  mocha.run();
+});
+
+var I18nMixinTest = class extends WebUIResourceModuleAsyncTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=js/i18n_mixin_test.js';
+  }
+};
+
+TEST_F('I18nMixinTest', 'All', function() {
+  mocha.run();
+});
+
+var WebUIListenerMixinTest = class extends WebUIResourceModuleAsyncTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=js/web_ui_listener_mixin_test.js';
+  }
+};
+
+TEST_F('WebUIListenerMixinTest', 'All', function() {
   mocha.run();
 });
 
@@ -131,5 +166,16 @@ var CustomElementModuleTest = class extends WebUIResourceModuleAsyncTest {
 };
 
 TEST_F('CustomElementModuleTest', 'All', function() {
+  mocha.run();
+});
+
+var StaticTypesTest = class extends WebUIResourceModuleAsyncTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=js/static_types_test.js';
+  }
+};
+
+TEST_F('StaticTypesTest', 'All', function() {
   mocha.run();
 });

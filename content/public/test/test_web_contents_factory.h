@@ -8,8 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace content {
 class BrowserContext;
 class RenderViewHostTestEnabler;
@@ -30,6 +28,10 @@ class WebContents;
 class TestWebContentsFactory {
  public:
   TestWebContentsFactory();
+
+  TestWebContentsFactory(const TestWebContentsFactory&) = delete;
+  TestWebContentsFactory& operator=(const TestWebContentsFactory&) = delete;
+
   ~TestWebContentsFactory();
 
   // Creates a new WebContents with the given |context|, and returns it.
@@ -45,8 +47,6 @@ class TestWebContentsFactory {
 
   // The vector of web contents that this class created.
   std::vector<std::unique_ptr<WebContents>> web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebContentsFactory);
 };
 
 }  // namespace content

@@ -124,6 +124,9 @@ class CdmAdapterTestBase : public testing::Test,
         base::NumberToString(GetCdmInterfaceVersion()));
   }
 
+  CdmAdapterTestBase(const CdmAdapterTestBase&) = delete;
+  CdmAdapterTestBase& operator=(const CdmAdapterTestBase&) = delete;
+
   ~CdmAdapterTestBase() override { CdmModule::ResetInstanceForTesting(); }
 
  protected:
@@ -186,9 +189,6 @@ class CdmAdapterTestBase : public testing::Test,
   scoped_refptr<ContentDecryptionModule> cdm_;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CdmAdapterTestBase);
 };
 
 class CdmAdapterTestWithClearKeyCdm : public CdmAdapterTestBase {

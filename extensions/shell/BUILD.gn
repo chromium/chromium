@@ -81,10 +81,6 @@ source_set("app_shell_lib") {
   # TODO(michaelpg): remove Mac support and always use aura.
   if (use_aura) {
     deps += [ "//ui/aura" ]
-
-    if (use_x11) {
-      deps += [ "//ui/events/devices/x11" ]
-    }
   }
 
   if (toolkit_views) {

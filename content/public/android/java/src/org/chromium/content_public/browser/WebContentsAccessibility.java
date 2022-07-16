@@ -50,6 +50,12 @@ public interface WebContentsAccessibility {
     void setAccessibilityEnabledForTesting();
 
     /**
+     * Enables a11y service mask flags in the BrowserAccessibilityState for testing.
+     */
+    @VisibleForTesting
+    void setBrowserAccessibilityStateForTesting();
+
+    /**
      *  Add a spelling error.
      */
     @VisibleForTesting
@@ -109,6 +115,11 @@ public interface WebContentsAccessibility {
      * WebView.
      */
     void setShouldFocusOnPageLoad(boolean on);
+
+    /**
+     * Sets whether or not the image descriptions feature should be allowed.
+     */
+    void setAllowImageDescriptions(boolean allowImageDescriptions);
 
     /**
      * Called when autofill popup is displayed. Used to upport navigation through the view.

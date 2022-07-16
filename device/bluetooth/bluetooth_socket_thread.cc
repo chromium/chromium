@@ -8,7 +8,7 @@
 
 #include "base/lazy_instance.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 
 namespace device {

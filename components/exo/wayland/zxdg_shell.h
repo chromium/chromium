@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-
 struct wl_client;
 
 namespace exo {
@@ -21,13 +19,14 @@ struct WaylandZxdgShell {
   WaylandZxdgShell(Display* display, SerialTracker* serial_tracker)
       : display(display), serial_tracker(serial_tracker) {}
 
+  WaylandZxdgShell(const WaylandZxdgShell&) = delete;
+  WaylandZxdgShell& operator=(const WaylandZxdgShell&) = delete;
+
   // Owned by WaylandServerController, which always outlives zxdg_shell.
   Display* const display;
 
   // Owned by Server, which always outlives zxdg_shell.
   SerialTracker* const serial_tracker;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandZxdgShell);
 };
 
 void bind_zxdg_shell_v6(wl_client* client,

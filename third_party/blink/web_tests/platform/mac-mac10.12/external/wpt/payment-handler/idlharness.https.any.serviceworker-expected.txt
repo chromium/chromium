@@ -1,0 +1,103 @@
+This is a testharness.js-based test.
+Found 99 tests; 66 PASS, 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface ServiceWorkerRegistration: original interface defined
+PASS Partial interface ServiceWorkerRegistration: member names are unique
+PASS Partial interface ServiceWorkerGlobalScope: original interface defined
+PASS Partial interface ServiceWorkerGlobalScope: member names are unique
+PASS Partial interface ServiceWorkerGlobalScope[2]: original interface defined
+PASS Partial interface ServiceWorkerGlobalScope[2]: member names are unique
+PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
+FAIL PaymentManager interface: existence and properties of interface object assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
+FAIL PaymentManager interface object length assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
+FAIL PaymentManager interface object name assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
+FAIL PaymentManager interface: existence and properties of interface prototype object assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
+FAIL PaymentManager interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
+FAIL PaymentManager interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
+FAIL PaymentManager interface: attribute instruments assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
+FAIL PaymentManager interface: attribute userHint assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
+FAIL PaymentManager must be primary interface of paymentManager assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
+PASS Stringification of paymentManager
+PASS PaymentManager interface: paymentManager must inherit property "instruments" with the proper type
+PASS PaymentManager interface: paymentManager must inherit property "userHint" with the proper type
+PASS PaymentInstruments interface: existence and properties of interface object
+PASS PaymentInstruments interface object length
+PASS PaymentInstruments interface object name
+PASS PaymentInstruments interface: existence and properties of interface prototype object
+PASS PaymentInstruments interface: existence and properties of interface prototype object's "constructor" property
+PASS PaymentInstruments interface: existence and properties of interface prototype object's @@unscopables property
+PASS PaymentInstruments interface: operation delete(DOMString)
+PASS PaymentInstruments interface: operation get(DOMString)
+PASS PaymentInstruments interface: operation keys()
+PASS PaymentInstruments interface: operation has(DOMString)
+PASS PaymentInstruments interface: operation set(DOMString, PaymentInstrument)
+PASS PaymentInstruments interface: operation clear()
+PASS PaymentInstruments must be primary interface of instruments
+PASS Stringification of instruments
+PASS PaymentInstruments interface: instruments must inherit property "delete(DOMString)" with the proper type
+PASS PaymentInstruments interface: calling delete(DOMString) on instruments with too few arguments must throw TypeError
+PASS PaymentInstruments interface: instruments must inherit property "get(DOMString)" with the proper type
+PASS PaymentInstruments interface: calling get(DOMString) on instruments with too few arguments must throw TypeError
+PASS PaymentInstruments interface: instruments must inherit property "keys()" with the proper type
+PASS PaymentInstruments interface: instruments must inherit property "has(DOMString)" with the proper type
+PASS PaymentInstruments interface: calling has(DOMString) on instruments with too few arguments must throw TypeError
+PASS PaymentInstruments interface: instruments must inherit property "set(DOMString, PaymentInstrument)" with the proper type
+PASS PaymentInstruments interface: calling set(DOMString, PaymentInstrument) on instruments with too few arguments must throw TypeError
+PASS PaymentInstruments interface: instruments must inherit property "clear()" with the proper type
+PASS CanMakePaymentEvent interface: existence and properties of interface object
+FAIL CanMakePaymentEvent interface object length assert_equals: wrong value for CanMakePaymentEvent.length expected 1 but got 2
+PASS CanMakePaymentEvent interface object name
+PASS CanMakePaymentEvent interface: existence and properties of interface prototype object
+PASS CanMakePaymentEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS CanMakePaymentEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS CanMakePaymentEvent interface: attribute topOrigin
+PASS CanMakePaymentEvent interface: attribute paymentRequestOrigin
+PASS CanMakePaymentEvent interface: attribute methodData
+PASS CanMakePaymentEvent interface: operation respondWith(Promise<boolean>)
+FAIL CanMakePaymentEvent must be primary interface of new CanMakePaymentEvent("type") assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'CanMakePaymentEvent': 2 arguments required, but only 1 present."
+FAIL Stringification of new CanMakePaymentEvent("type") assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'CanMakePaymentEvent': 2 arguments required, but only 1 present."
+FAIL CanMakePaymentEvent interface: new CanMakePaymentEvent("type") must inherit property "topOrigin" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'CanMakePaymentEvent': 2 arguments required, but only 1 present."
+FAIL CanMakePaymentEvent interface: new CanMakePaymentEvent("type") must inherit property "paymentRequestOrigin" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'CanMakePaymentEvent': 2 arguments required, but only 1 present."
+FAIL CanMakePaymentEvent interface: new CanMakePaymentEvent("type") must inherit property "methodData" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'CanMakePaymentEvent': 2 arguments required, but only 1 present."
+FAIL CanMakePaymentEvent interface: new CanMakePaymentEvent("type") must inherit property "respondWith(Promise<boolean>)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'CanMakePaymentEvent': 2 arguments required, but only 1 present."
+FAIL CanMakePaymentEvent interface: calling respondWith(Promise<boolean>) on new CanMakePaymentEvent("type") with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'CanMakePaymentEvent': 2 arguments required, but only 1 present."
+PASS PaymentRequestEvent interface: existence and properties of interface object
+FAIL PaymentRequestEvent interface object length assert_equals: wrong value for PaymentRequestEvent.length expected 1 but got 2
+PASS PaymentRequestEvent interface object name
+PASS PaymentRequestEvent interface: existence and properties of interface prototype object
+PASS PaymentRequestEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS PaymentRequestEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS PaymentRequestEvent interface: attribute topOrigin
+PASS PaymentRequestEvent interface: attribute paymentRequestOrigin
+PASS PaymentRequestEvent interface: attribute paymentRequestId
+PASS PaymentRequestEvent interface: attribute methodData
+PASS PaymentRequestEvent interface: attribute total
+PASS PaymentRequestEvent interface: attribute modifiers
+PASS PaymentRequestEvent interface: attribute instrumentKey
+PASS PaymentRequestEvent interface: operation openWindow(USVString)
+PASS PaymentRequestEvent interface: operation changePaymentMethod(DOMString, optional object?)
+PASS PaymentRequestEvent interface: operation respondWith(Promise<PaymentHandlerResponse>)
+FAIL PaymentRequestEvent must be primary interface of new PaymentRequestEvent("type") assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
+FAIL Stringification of new PaymentRequestEvent("type") assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
+FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "topOrigin" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
+FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "paymentRequestOrigin" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
+FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "paymentRequestId" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
+FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "methodData" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
+FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "total" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
+FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "modifiers" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
+FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "instrumentKey" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
+FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "openWindow(USVString)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
+FAIL PaymentRequestEvent interface: calling openWindow(USVString) on new PaymentRequestEvent("type") with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
+FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "changePaymentMethod(DOMString, optional object?)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
+FAIL PaymentRequestEvent interface: calling changePaymentMethod(DOMString, optional object?) on new PaymentRequestEvent("type") with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
+FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "respondWith(Promise<PaymentHandlerResponse>)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
+FAIL PaymentRequestEvent interface: calling respondWith(Promise<PaymentHandlerResponse>) on new PaymentRequestEvent("type") with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
+PASS ServiceWorkerRegistration interface: attribute paymentManager
+PASS ServiceWorkerRegistration interface: registration must inherit property "paymentManager" with the proper type
+PASS ServiceWorkerGlobalScope interface: attribute oncanmakepayment
+PASS ServiceWorkerGlobalScope interface: attribute onpaymentrequest
+PASS ServiceWorkerGlobalScope interface: self must inherit property "oncanmakepayment" with the proper type
+PASS ServiceWorkerGlobalScope interface: self must inherit property "onpaymentrequest" with the proper type
+Harness: the test ran to completion.
+

@@ -5,13 +5,12 @@
 #ifndef CHROME_BROWSER_LITE_VIDEO_LITE_VIDEO_OBSERVER_H_
 #define CHROME_BROWSER_LITE_VIDEO_LITE_VIDEO_OBSERVER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/lite_video/lite_video_navigation_metrics.h"
 #include "chrome/browser/lite_video/lite_video_user_blocklist.h"
 #include "chrome/common/lite_video_service.mojom.h"
 #include "content/public/browser/media_player_id.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,6 +34,10 @@ class LiteVideoObserver
       public lite_video::mojom::LiteVideoService {
  public:
   static void MaybeCreateForWebContents(content::WebContents* web_contents);
+  static void BindLiteVideoService(
+      mojo::PendingAssociatedReceiver<lite_video::mojom::LiteVideoService>
+          receiver,
+      content::RenderFrameHost* rfh);
 
   ~LiteVideoObserver() override;
 
@@ -104,7 +107,7 @@ class LiteVideoObserver
   // Current response bytes that have been targeted for LiteVideo throttling.
   uint64_t current_throttled_video_bytes_ = 0;
 
-  content::WebContentsFrameReceiverSet<lite_video::mojom::LiteVideoService>
+  content::RenderFrameHostReceiverSet<lite_video::mojom::LiteVideoService>
       receivers_;
 
   // Used to get a weak pointer to |this|.

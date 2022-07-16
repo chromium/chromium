@@ -17,7 +17,7 @@
     // https://drafts.csswg.org/cssom-view/#extensions-to-the-document-interface
     [Measure] Element? elementFromPoint(double x, double y);
     [Measure] sequence<Element> elementsFromPoint(double x, double y);
-    [Affects=Nothing] readonly attribute Element? activeElement;
+    readonly attribute Element? activeElement;
     [SameObject] readonly attribute StyleSheetList styleSheets;
     // PointerLock API
     // https://w3c.github.io/pointerlock/

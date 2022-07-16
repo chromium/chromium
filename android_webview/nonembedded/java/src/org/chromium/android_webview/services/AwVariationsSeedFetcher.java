@@ -31,6 +31,7 @@ import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedFet
 import org.chromium.components.version_info.Channel;
 import org.chromium.components.version_info.VersionConstants;
 
+import java.net.HttpURLConnection;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -184,9 +185,9 @@ public class AwVariationsSeedFetcher extends JobService {
                     return null;
                 }
 
-                // VariationsSeedFetcher returns a negative status code for IOExceptions or other
-                // failures that indicate the HTTP request didn't complete.
-                if (fetchInfo.seedFetchResult < 0) {
+                // VariationsSeedFetcher returns HttpURLConnection.HTTP_OK if and only if it
+                // succeeds.
+                if (fetchInfo.seedFetchResult != HttpURLConnection.HTTP_OK) {
                     int requestCount = mParams.getExtras().getInt(JOB_REQUEST_COUNT_KEY) + 1;
                     mParams.getExtras().putInt(JOB_REQUEST_COUNT_KEY, requestCount);
                     // Limit the retries to JOB_MAX_REQUEST_COUNT.

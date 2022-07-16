@@ -34,6 +34,10 @@ namespace remoting {
 class SecurityKeyIpcClientTest : public testing::Test {
  public:
   SecurityKeyIpcClientTest();
+
+  SecurityKeyIpcClientTest(const SecurityKeyIpcClientTest&) = delete;
+  SecurityKeyIpcClientTest& operator=(const SecurityKeyIpcClientTest&) = delete;
+
   ~SecurityKeyIpcClientTest() override;
 
   // Passed to the object used for testing to be called back to signal
@@ -110,9 +114,6 @@ class SecurityKeyIpcClientTest : public testing::Test {
 
   // Stores the contents of the last IPC message received for validation.
   std::string last_message_received_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyIpcClientTest);
 };
 
 SecurityKeyIpcClientTest::SecurityKeyIpcClientTest()
@@ -120,7 +121,7 @@ SecurityKeyIpcClientTest::SecurityKeyIpcClientTest()
       fake_ipc_server_(
           kTestConnectionId,
           /*client_session_details=*/nullptr,
-          /*initial_connect_timeout=*/base::TimeDelta::FromMilliseconds(500),
+          /*initial_connect_timeout=*/base::Milliseconds(500),
           base::BindRepeating(&SecurityKeyIpcClientTest::SendMessageToClient,
                               base::Unretained(this)),
           base::BindOnce(&SecurityKeyIpcClientTest::SendConnectionMessage,
@@ -199,7 +200,7 @@ void SecurityKeyIpcClientTest::EstablishConnection(bool expect_connected,
   security_key_ipc_client_.SetIpcChannelHandleForTest(server_name);
   ASSERT_TRUE(fake_ipc_server_.CreateChannel(
       server_name,
-      /*request_timeout=*/base::TimeDelta::FromMilliseconds(500)));
+      /*request_timeout=*/base::Milliseconds(500)));
 
   ASSERT_TRUE(security_key_ipc_client_.CheckForSecurityKeyIpcServerChannel());
 

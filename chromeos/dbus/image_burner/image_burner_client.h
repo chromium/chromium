@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/dbus_client.h"
 
 namespace chromeos {
@@ -23,6 +22,9 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_BURNER) ImageBurnerClient
     : public DBusClient {
  public:
+  ImageBurnerClient(const ImageBurnerClient&) = delete;
+  ImageBurnerClient& operator=(const ImageBurnerClient&) = delete;
+
   ~ImageBurnerClient() override;
 
   // A callback to be called when DBus method call fails.
@@ -64,9 +66,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_BURNER) ImageBurnerClient
  protected:
   // Create() should be used instead.
   ImageBurnerClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageBurnerClient);
 };
 
 }  // namespace chromeos

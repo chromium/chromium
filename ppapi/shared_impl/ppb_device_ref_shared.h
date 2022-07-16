@@ -33,9 +33,14 @@ class PPAPI_SHARED_EXPORT PPB_DeviceRef_Shared
     : public Resource,
       public thunk::PPB_DeviceRef_API {
  public:
+  PPB_DeviceRef_Shared() = delete;
+
   PPB_DeviceRef_Shared(ResourceObjectType type,
                        PP_Instance instance,
                        const DeviceRefData& data);
+
+  PPB_DeviceRef_Shared(const PPB_DeviceRef_Shared&) = delete;
+  PPB_DeviceRef_Shared& operator=(const PPB_DeviceRef_Shared&) = delete;
 
   // Resource overrides.
   PPB_DeviceRef_API* AsPPB_DeviceRef_API() override;
@@ -47,8 +52,6 @@ class PPAPI_SHARED_EXPORT PPB_DeviceRef_Shared
 
  private:
   DeviceRefData data_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PPB_DeviceRef_Shared);
 };
 
 }  // namespace ppapi

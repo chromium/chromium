@@ -17,14 +17,9 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/chrome_colors/chrome_colors_factory.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
-#include "chrome/browser/search/promos/promo_service.h"
-#include "chrome/browser/search/promos/promo_service_factory.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/search/search_suggest/search_suggest_service.h"
-#include "chrome/browser/search/search_suggest/search_suggest_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -62,12 +57,25 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class NewTabPageConcretePage {
+  kOther = 0,
+  k1PWebUiNtp = 1,
+  k3PWebUiNtp = 2,
+  k3PRemoteNtp = 3,
+  kExtensionNtp = 4,
+  kOffTheRecordNtp = 5,
+  kMaxValue = kOffTheRecordNtp,
+};
 
 bool IsCacheableNTP(content::WebContents* contents) {
   content::NavigationEntry* entry =
@@ -112,6 +120,30 @@ void RecordNewTabLoadTime(content::WebContents* contents) {
   core_tab_helper->set_new_tab_start_time(base::TimeTicks());
 }
 
+void RecordConcreteNtp(content::NavigationHandle* navigation_handle) {
+  NewTabPageConcretePage concrete_page = NewTabPageConcretePage::kOther;
+  if (navigation_handle->GetURL().DeprecatedGetOriginAsURL() ==
+      GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL()) {
+    concrete_page = NewTabPageConcretePage::k1PWebUiNtp;
+  } else if (navigation_handle->GetURL().DeprecatedGetOriginAsURL() ==
+             GURL(chrome::kChromeUINewTabPageThirdPartyURL)
+                 .DeprecatedGetOriginAsURL()) {
+    concrete_page = NewTabPageConcretePage::k3PWebUiNtp;
+  } else if (search::IsInstantNTP(navigation_handle->GetWebContents())) {
+    concrete_page = NewTabPageConcretePage::k3PRemoteNtp;
+  } else if (navigation_handle->GetURL().SchemeIs(
+                 extensions::kExtensionScheme)) {
+    concrete_page = NewTabPageConcretePage::kExtensionNtp;
+  } else if (Profile::FromBrowserContext(
+                 navigation_handle->GetWebContents()->GetBrowserContext())
+                 ->IsOffTheRecord() &&
+             navigation_handle->GetURL().DeprecatedGetOriginAsURL() ==
+                 GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL()) {
+    concrete_page = NewTabPageConcretePage::kOffTheRecordNtp;
+  }
+  base::UmaHistogramEnumeration("NewTabPage.ConcretePage", concrete_page);
+}
+
 }  // namespace
 
 SearchTabHelper::SearchTabHelper(content::WebContents* web_contents)
@@ -127,12 +159,6 @@ SearchTabHelper::SearchTabHelper(content::WebContents* web_contents)
   if (instant_service_)
     instant_service_->AddObserver(this);
 
-  search_suggest_service_ =
-      SearchSuggestServiceFactory::GetForProfile(profile());
-
-  chrome_colors_service_ =
-      chrome_colors::ChromeColorsFactory::GetForProfile(profile());
-
   OmniboxTabHelper::CreateForWebContents(web_contents);
   OmniboxTabHelper::FromWebContents(web_contents_)->AddObserver(this);
 }
@@ -142,8 +168,19 @@ SearchTabHelper::~SearchTabHelper() {
     instant_service_->RemoveObserver(this);
   if (auto* helper = OmniboxTabHelper::FromWebContents(web_contents_))
     helper->RemoveObserver(this);
-  if (select_file_dialog_)
-    select_file_dialog_->ListenerDestroyed();
+}
+
+void SearchTabHelper::BindEmbeddedSearchConnecter(
+    mojo::PendingAssociatedReceiver<search::mojom::EmbeddedSearchConnector>
+        receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* tab_helper = SearchTabHelper::FromWebContents(web_contents);
+  if (!tab_helper)
+    return;
+  tab_helper->ipc_router_.BindEmbeddedSearchConnecter(std::move(receiver), rfh);
 }
 
 void SearchTabHelper::OnTabActivated() {
@@ -157,11 +194,6 @@ void SearchTabHelper::OnTabDeactivated() {
   ipc_router_.OnTabDeactivated();
 }
 
-void SearchTabHelper::OnTabClosing() {
-  if (search::IsInstantNTP(web_contents_) && chrome_colors_service_)
-    chrome_colors_service_->RevertThemeChangesForTab(web_contents_);
-}
-
 void SearchTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
@@ -173,9 +205,10 @@ void SearchTabHelper::DidStartNavigation(
   if (navigation_handle->IsSameDocument())
     return;
 
-  // When navigating away from NTP we should revert all the unconfirmed state.
-  if (search::IsInstantNTP(web_contents_) && chrome_colors_service_)
-    chrome_colors_service_->RevertThemeChangesForTab(web_contents_);
+  if (web_contents_->GetVisibleURL().DeprecatedGetOriginAsURL() ==
+      GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL()) {
+    RecordConcreteNtp(navigation_handle);
+  }
 
   if (search::IsNTPOrRelatedURL(navigation_handle->GetURL(), profile())) {
     // Set the title on any pending entry corresponding to the NTP. This
@@ -274,78 +307,6 @@ void SearchTabHelper::OnUndoAllMostVisitedDeletions() {
     instant_service_->UndoAllMostVisitedDeletions();
 }
 
-void SearchTabHelper::OnLogEvent(NTPLoggingEventType event,
-                                 base::TimeDelta time) {
-  if (logger_)
-    logger_->LogEvent(event, time);
-}
-
-void SearchTabHelper::OnLogSuggestionEventWithValue(
-    NTPSuggestionsLoggingEventType event,
-    int data,
-    base::TimeDelta time) {
-  if (logger_)
-    logger_->LogSuggestionEventWithValue(event, data, time);
-}
-
-void SearchTabHelper::OnLogMostVisitedImpression(
-    const ntp_tiles::NTPTileImpression& impression) {
-  if (logger_)
-    logger_->LogMostVisitedImpression(impression);
-}
-
-void SearchTabHelper::OnLogMostVisitedNavigation(
-    const ntp_tiles::NTPTileImpression& impression) {
-  if (logger_)
-    logger_->LogMostVisitedNavigation(impression);
-}
-
-void SearchTabHelper::OnSetCustomBackgroundInfo(
-    const GURL& background_url,
-    const std::string& attribution_line_1,
-    const std::string& attribution_line_2,
-    const GURL& action_url,
-    const std::string& collection_id) {
-  if (instant_service_) {
-    instant_service_->SetCustomBackgroundInfo(
-        background_url, attribution_line_1, attribution_line_2, action_url,
-        collection_id);
-  }
-}
-
-void SearchTabHelper::FileSelected(const base::FilePath& path,
-                                   int index,
-                                   void* params) {
-  if (instant_service_) {
-    profile()->set_last_selected_directory(path.DirName());
-    instant_service_->SelectLocalBackgroundImage(path);
-  }
-
-  select_file_dialog_ = nullptr;
-  // File selection can happen at any time after NTP load, and is not logged
-  // with the event.
-  if (logger_) {
-    logger_->LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_DONE,
-                      base::TimeDelta::FromSeconds(0));
-    logger_->LogEvent(NTP_BACKGROUND_UPLOAD_DONE,
-                      base::TimeDelta::FromSeconds(0));
-  }
-
-  ipc_router_.SendLocalBackgroundSelected();
-}
-
-void SearchTabHelper::FileSelectionCanceled(void* params) {
-  select_file_dialog_ = nullptr;
-  // File selection can happen at any time after NTP load, and is not logged
-  // with the event.
-  if (logger_) {
-    logger_->LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_CANCEL,
-                      base::TimeDelta::FromSeconds(0));
-    logger_->LogEvent(NTP_BACKGROUND_UPLOAD_CANCEL,
-                      base::TimeDelta::FromSeconds(0));
-  }
-}
-
 void SearchTabHelper::OnOmniboxInputStateChanged() {
   ipc_router_.SetInputInProgress(IsInputInProgress());
 }
@@ -361,97 +322,6 @@ void SearchTabHelper::OnOmniboxFocusChanged(OmniboxFocusState state,
     ipc_router_.SetInputInProgress(IsInputInProgress());
 }
 
-void SearchTabHelper::OnSelectLocalBackgroundImage() {
-  if (select_file_dialog_)
-    return;
-
-  select_file_dialog_ = ui::SelectFileDialog::Create(
-      this, std::make_unique<ChromeSelectFilePolicy>(web_contents_));
-
-  const base::FilePath directory = profile()->last_selected_directory();
-
-  gfx::NativeWindow parent_window = web_contents_->GetTopLevelNativeWindow();
-
-  ui::SelectFileDialog::FileTypeInfo file_types;
-  file_types.allowed_paths = ui::SelectFileDialog::FileTypeInfo::NATIVE_PATH;
-  file_types.extensions.resize(1);
-  file_types.extensions[0].push_back(FILE_PATH_LITERAL("jpg"));
-  file_types.extensions[0].push_back(FILE_PATH_LITERAL("jpeg"));
-  file_types.extensions[0].push_back(FILE_PATH_LITERAL("png"));
-  file_types.extension_description_overrides.push_back(
-      l10n_util::GetStringUTF16(IDS_UPLOAD_IMAGE_FORMAT));
-
-  select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(), directory,
-      &file_types, 0, base::FilePath::StringType(), parent_window, nullptr);
-}
-
-void SearchTabHelper::OnBlocklistSearchSuggestion(int task_version,
-                                                  long task_id) {
-  if (search_suggest_service_)
-    search_suggest_service_->BlocklistSearchSuggestion(task_version, task_id);
-}
-
-void SearchTabHelper::OnBlocklistSearchSuggestionWithHash(
-    int task_version,
-    long task_id,
-    const uint8_t hash[4]) {
-  if (search_suggest_service_)
-    search_suggest_service_->BlocklistSearchSuggestionWithHash(task_version,
-                                                               task_id, hash);
-}
-
-void SearchTabHelper::OnSearchSuggestionSelected(int task_version,
-                                                 long task_id,
-                                                 const uint8_t hash[4]) {
-  if (search_suggest_service_)
-    search_suggest_service_->SearchSuggestionSelected(task_version, task_id,
-                                                      hash);
-}
-
-void SearchTabHelper::OnOptOutOfSearchSuggestions() {
-  if (search_suggest_service_)
-    search_suggest_service_->OptOutOfSearchSuggestions();
-}
-
-void SearchTabHelper::OnApplyDefaultTheme() {
-  if (chrome_colors_service_ &&
-      search::DefaultSearchProviderIsGoogle(profile())) {
-    chrome_colors_service_->ApplyDefaultTheme(web_contents_);
-  }
-}
-
-void SearchTabHelper::OnApplyAutogeneratedTheme(SkColor color) {
-  if (chrome_colors_service_ &&
-      search::DefaultSearchProviderIsGoogle(profile())) {
-    chrome_colors_service_->ApplyAutogeneratedTheme(color, web_contents_);
-  }
-}
-
-void SearchTabHelper::OnRevertThemeChanges() {
-  if (chrome_colors_service_ &&
-      search::DefaultSearchProviderIsGoogle(profile())) {
-    chrome_colors_service_->RevertThemeChanges();
-  }
-}
-
-void SearchTabHelper::OnConfirmThemeChanges() {
-  if (chrome_colors_service_ &&
-      search::DefaultSearchProviderIsGoogle(profile())) {
-    chrome_colors_service_->ConfirmThemeChanges();
-  }
-}
-
-void SearchTabHelper::BlocklistPromo(const std::string& promo_id) {
-  auto* promo_service = PromoServiceFactory::GetForProfile(profile());
-  if (!promo_service) {
-    NOTREACHED();
-    return;
-  }
-
-  promo_service->BlocklistPromo(promo_id);
-}
-
 Profile* SearchTabHelper::profile() const {
   return Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 }
@@ -460,4 +330,4 @@ bool SearchTabHelper::IsInputInProgress() const {
   return search::IsOmniboxInputInProgress(web_contents_);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchTabHelper);

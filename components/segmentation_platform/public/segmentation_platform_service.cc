@@ -9,7 +9,7 @@ namespace features {
 
 // Core feature flag for segmentation platform.
 const base::Feature kSegmentationPlatformFeature{
-    "SegmentationPlatform", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SegmentationPlatform", base::FEATURE_ENABLED_BY_DEFAULT};
 }  // namespace features
 
 }  // namespace segmentation_platform

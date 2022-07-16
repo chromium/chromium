@@ -5,39 +5,41 @@
 #ifndef CONTENT_BROWSER_FONT_ACCESS_FONT_ENUMERATION_CACHE_MAC_H_
 #define CONTENT_BROWSER_FONT_ACCESS_FONT_ENUMERATION_CACHE_MAC_H_
 
-#include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
-#include "base/task_runner.h"
+#include <string>
+
+#include "base/types/pass_key.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/common/content_export.h"
-
-using blink::mojom::FontEnumerationStatus;
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
 namespace content {
 
 // Mac implementation of FontEnumerationCache.
 class CONTENT_EXPORT FontEnumerationCacheMac : public FontEnumerationCache {
  public:
-  FontEnumerationCacheMac();
-  ~FontEnumerationCacheMac();
+  // The constructor is public for internal use of base::SequenceBound.
+  //
+  // Production code should call FontEnumerationCache::Create(). Testing code
+  // should call FontEnumerationCache::CreateForTesting().
+  FontEnumerationCacheMac(absl::optional<std::string> locale_override,
+                          base::PassKey<FontEnumerationCache>);
 
-  // Disallow copy and assign.
   FontEnumerationCacheMac(const FontEnumerationCacheMac&) = delete;
-  FontEnumerationCacheMac operator=(const FontEnumerationCacheMac&) = delete;
+  FontEnumerationCacheMac& operator=(const FontEnumerationCacheMac&) = delete;
 
-  static FontEnumerationCacheMac* GetInstance();
+  ~FontEnumerationCacheMac() override;
 
  protected:
-  // FontEnumerationCache interface.
-  void SchedulePrepareFontEnumerationCache() override;
+  // FontEnumerationCache:
+  blink::FontEnumerationTable ComputeFontEnumerationData(
+      const std::string& locale) override;
 
  private:
-  friend class base::NoDestructor<FontEnumerationCacheMac>;
-  // This gives FontEnumerationCache::GetInstance access to the class
-  // constructor.
-  friend class FontEnumerationCache;
-
   void PrepareFontEnumerationCache();
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content

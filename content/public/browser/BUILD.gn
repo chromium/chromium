@@ -28,8 +28,6 @@ source_set("browser_sources") {
   sources = [
     "allow_service_worker_result.cc",
     "allow_service_worker_result.h",
-    "appcache_service.cc",
-    "appcache_service.h",
     "audio_service.h",
     "audio_service_info.cc",
     "audio_service_info.h",
@@ -83,7 +81,6 @@ source_set("browser_sources") {
     "browser_ppapi_host.h",
     "browser_task_traits.cc",
     "browser_task_traits.h",
-    "browser_thread.cc",
     "browser_thread.h",
     "browser_url_handler.h",
     "browsing_data_filter_builder.h",
@@ -141,7 +138,12 @@ source_set("browser_sources") {
     "devtools_permission_overrides.cc",
     "devtools_permission_overrides.h",
     "devtools_socket_factory.h",
-    "document_service_base.h",
+    "disallow_activation_reason.h",
+    "document_service.h",
+    "document_service_internal.cc",
+    "document_service_internal.h",
+    "document_user_data.cc",
+    "document_user_data.h",
     "dom_storage_context.h",
     "download_item_utils.h",
     "download_manager.cc",
@@ -155,6 +157,7 @@ source_set("browser_sources") {
     "favicon_status.cc",
     "favicon_status.h",
     "feature_observer_client.h",
+    "federated_identity_active_session_permission_context_delegate.h",
     "federated_identity_request_permission_context_delegate.h",
     "federated_identity_sharing_permission_context_delegate.h",
     "file_select_listener.h",
@@ -189,9 +192,10 @@ source_set("browser_sources") {
     "hid_chooser.h",
     "hid_delegate.h",
     "histogram_fetcher.h",
+    "host_zoom_map.h",
     "identity_request_dialog_controller.cc",
     "identity_request_dialog_controller.h",
-    "idle_manager.h",
+    "idle_time_provider.h",
     "installability_error.cc",
     "installability_error.h",
     "installed_payment_apps_finder.h",
@@ -268,6 +272,7 @@ source_set("browser_sources") {
     "peer_connection_tracker_host_observer.cc",
     "peer_connection_tracker_host_observer.h",
     "pepper_vpn_provider_resource_host_proxy.h",
+    "per_web_ui_browser_interface_broker.h",
     "permission_controller.h",
     "permission_controller_delegate.cc",
     "permission_controller_delegate.h",
@@ -276,6 +281,7 @@ source_set("browser_sources") {
     "picture_in_picture_window_controller.h",
     "platform_notification_context.h",
     "platform_notification_service.h",
+    "prerender_handle.h",
     "presentation_receiver_flags.h",
     "presentation_request.cc",
     "presentation_request.h",
@@ -289,8 +295,6 @@ source_set("browser_sources") {
     "push_messaging_service.h",
     "quota_permission_context.h",
     "reload_type.h",
-    "render_document_host_user_data.cc",
-    "render_document_host_user_data.h",
     "render_frame_host.h",
     "render_frame_host_receiver_set.h",
     "render_frame_metadata_provider.h",
@@ -316,10 +320,6 @@ source_set("browser_sources") {
     "save_page_type.h",
     "screen_orientation_delegate.h",
     "screenlock_observer.h",
-    "security_style_explanation.cc",
-    "security_style_explanation.h",
-    "security_style_explanations.cc",
-    "security_style_explanations.h",
     "serial_chooser.cc",
     "serial_chooser.h",
     "serial_delegate.h",
@@ -344,6 +344,7 @@ source_set("browser_sources") {
     "shared_worker_service.h",
     "site_instance.h",
     "site_instance_process_assignment.h",
+    "site_isolation_mode.h",
     "site_isolation_policy.cc",
     "site_isolation_policy.h",
     "sms_fetcher.h",
@@ -360,7 +361,6 @@ source_set("browser_sources") {
     "ssl_host_state_delegate.h",
     "ssl_status.cc",
     "ssl_status.h",
-    "startup_data.h",
     "storage_notification_service.h",
     "storage_partition.h",
     "storage_partition_config.cc",
@@ -372,7 +372,6 @@ source_set("browser_sources") {
     "supported_delegations.h",
     "swap_metrics_driver.h",
     "touch_selection_controller_client_manager.h",
-    "trace_uploader.h",
     "tracing_controller.h",
     "tracing_delegate.cc",
     "tracing_delegate.h",
@@ -397,13 +396,12 @@ source_set("browser_sources") {
     "web_contents_media_capture_id.h",
     "web_contents_observer.cc",
     "web_contents_observer.h",
-    "web_contents_receiver_set.cc",
-    "web_contents_receiver_set.h",
     "web_contents_user_data.h",
     "web_contents_view_delegate.cc",
     "web_contents_view_delegate.h",
     "web_drag_dest_delegate.h",
     "web_ui.h",
+    "web_ui_browser_interface_broker_registry.h",
     "web_ui_controller.cc",
     "web_ui_controller.h",
     "web_ui_controller_factory.h",
@@ -416,6 +414,7 @@ source_set("browser_sources") {
     "webrtc_log.h",
     "websocket_handshake_request_info.h",
     "worker_type.h",
+    "zoom_level_delegate.h",
   ]
   configs += [
     "//build/config:precompiled_headers",
@@ -441,6 +440,7 @@ source_set("browser_sources") {
   }
 
   public_deps = [
+    "//base",
     "//build:chromecast_buildflags",
     "//components/download/public/common:public",
     "//components/services/storage/public/mojom",
@@ -451,6 +451,7 @@ source_set("browser_sources") {
     "//media/mojo/mojom:remoting",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
+    "//sandbox/policy/mojom",
     "//services/audio/public/mojom",
     "//services/cert_verifier/public/mojom",
     "//services/data_decoder/public/mojom",
@@ -490,6 +491,7 @@ source_set("browser_sources") {
     "//services/device/public/cpp/geolocation",
     "//services/metrics/public/cpp:metrics_cpp",
     "//third_party/blink/public/common:buildflags",
+    "//third_party/blink/public/common:headers",
     "//ui/accessibility",
     "//ui/base",
     "//ui/base/clipboard",
@@ -518,6 +520,7 @@ source_set("browser_sources") {
     sources += [
       "android/android_overlay_provider.h",
       "android/app_web_message_port.h",
+      "android/browser_context_handle.h",
       "android/child_process_importance.h",
       "android/compositor.h",
       "android/compositor_client.h",
@@ -549,12 +552,17 @@ source_set("browser_sources") {
     ]
   }
 
+  if (is_fuchsia) {
+    sources += [ "ax_inspect_factory_fuchsia.cc" ]
+  }
+
   if (is_win) {
     sources += [ "ax_inspect_factory_win.cc" ]
   }
 
   if (use_atk) {
     sources += [ "ax_inspect_factory_auralinux.cc" ]
+    configs += [ "//build/config/linux/atspi2" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -563,10 +571,11 @@ source_set("browser_sources") {
 
   if (!is_android) {
     sources += [
+      # Some Web Authentication related targets only apply to desktop because
+      # Android provides its own native implementation of that API.
       "authenticator_request_client_delegate.cc",
       "authenticator_request_client_delegate.h",
-      "host_zoom_map.h",
-      "zoom_level_delegate.h",
+      "web_authentication_request_proxy.h",
     ]
   }
 

@@ -6,13 +6,15 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
-#include "chrome/browser/chromeos/full_restore/full_restore_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/webui/settings/chromeos/android_apps_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/guest_os_handler.h"
@@ -22,8 +24,8 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
+#include "components/app_restore/features.h"
 #include "components/arc/arc_prefs.h"
-#include "components/full_restore/features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -50,6 +52,44 @@ const std::vector<SearchConcept>& GetAppsSearchConcepts() {
        {.subpage = mojom::Subpage::kAppManagement},
        {IDS_OS_SETTINGS_TAG_APPS_MANAGEMENT_ALT1, SearchConcept::kAltTagEnd}},
   });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetAppNotificationsSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_APP_NOTIFICATIONS,
+       mojom::kAppNotificationsSubpagePath,
+       mojom::SearchResultIcon::kAppsGrid,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kAppNotifications}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetTurnOffAppNotificationSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_OFF,
+        mojom::kAppNotificationsSubpagePath,
+        mojom::SearchResultIcon::kAppsGrid,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kDoNotDisturbOnOff},
+        {IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_OFF_ALT1,
+         SearchConcept::kAltTagEnd}}});
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetTurnOnAppNotificationSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_ON,
+        mojom::kAppNotificationsSubpagePath,
+        mojom::SearchResultIcon::kAppsGrid,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kDoNotDisturbOnOff},
+        {IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_ON_ALT1,
+         SearchConcept::kAltTagEnd}}});
   return *tags;
 }
 
@@ -132,18 +172,33 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
        IDS_APP_MANAGEMENT_POLICY_APP_POLICY_STRING},
       {"appManagementCameraPermissionLabel", IDS_APP_MANAGEMENT_CAMERA},
       {"appManagementContactsPermissionLabel", IDS_APP_MANAGEMENT_CONTACTS},
-      {"appManagementLocationPermissionLabel", IDS_APP_MANAGEMENT_LOCATION},
-      {"appManagementIntentSharingOpenBrowserLabel",
-       IDS_APP_MANAGEMENT_INTENT_SHARING_BROWSER_OPEN},
-      {"appManagementIntentSharingLabel", IDS_APP_MANAGEMENT_INTENT_SHARING},
+      {"appManagementIntentOverlapChangeButton",
+       IDS_APP_MANAGEMENT_INTENT_OVERLAP_CHANGE_BUTTON},
+      {"appManagementIntentOverlapDialogText1App",
+       IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TEXT_1_APP},
+      {"appManagementIntentOverlapDialogText2Apps",
+       IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TEXT_2_APPS},
+      {"appManagementIntentOverlapDialogText3Apps",
+       IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TEXT_3_APPS},
+      {"appManagementIntentOverlapDialogText4Apps",
+       IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TEXT_4_APPS},
+      {"appManagementIntentOverlapDialogText5OrMoreApps",
+       IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TEXT_5_OR_MORE_APPS},
+      {"appManagementIntentOverlapDialogTitle",
+       IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TITLE},
+      {"appManagementIntentSettingsDialogTitle",
+       IDS_APP_MANAGEMENT_INTENT_SETTINGS_DIALOG_TITLE},
+      {"appManagementIntentSettingsTitle",
+       IDS_APP_MANAGEMENT_INTENT_SETTINGS_TITLE},
       {"appManagementIntentSharingOpenAppLabel",
        IDS_APP_MANAGEMENT_INTENT_SHARING_APP_OPEN},
+      {"appManagementIntentSharingOpenBrowserLabel",
+       IDS_APP_MANAGEMENT_INTENT_SHARING_BROWSER_OPEN},
       {"appManagementIntentSharingTabExplanation",
        IDS_APP_MANAGEMENT_INTENT_SHARING_TAB_EXPLANATION},
-      {"appManagementIntentSharingTabLearnMore",
-       IDS_APP_MANAGEMENT_INTENT_SHARING_TAB_LEARN_MORE},
+      {"appManagementLocationPermissionLabel", IDS_APP_MANAGEMENT_LOCATION},
       {"appManagementMicrophonePermissionLabel", IDS_APP_MANAGEMENT_MICROPHONE},
-      {"appManagementMoreSettingsLabel", IDS_APP_MANAGEMENT_MORE_SETTINGS},
+      {"appManagementMorePermissionsLabel", IDS_APP_MANAGEMENT_MORE_SETTINGS},
       {"appManagementNoAppsFound", IDS_APP_MANAGEMENT_NO_APPS_FOUND},
       {"appManagementNoPermissions",
        IDS_APPLICATION_INFO_APP_NO_PERMISSIONS_TEXT},
@@ -192,6 +247,16 @@ void AddGuestOsStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
+void AddBorealisStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"borealisMainPermissionText",
+       IDS_SETTINGS_APPS_BOREALIS_MAIN_PERMISSION_TEXT},
+      {"borealisAppPermissionText",
+       IDS_SETTINGS_APPS_BOREALIS_APP_PERMISSION_TEXT},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+
 bool ShowPluginVm(const Profile* profile, const PrefService& pref_service) {
   // Even if not allowed, we still want to show Plugin VM if the VM image is on
   // disk, so that users are still able to delete the image at will.
@@ -210,13 +275,20 @@ AppsSection::AppsSection(Profile* profile,
                          SearchTagRegistry* search_tag_registry,
                          PrefService* pref_service,
                          ArcAppListPrefs* arc_app_list_prefs,
-                         apps::AppServiceProxyChromeOs* app_service_proxy)
+                         apps::AppServiceProxy* app_service_proxy)
     : OsSettingsSection(profile, search_tag_registry),
       pref_service_(pref_service),
       arc_app_list_prefs_(arc_app_list_prefs),
       app_service_proxy_(app_service_proxy) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetAppsSearchConcepts());
+
+  // Note: The MessageCenterAsh check here is added for unit testing purposes
+  // otherwise check statements are not needed in production.
+  if (ash::MessageCenterAsh::Get()) {
+    ash::MessageCenterAsh::Get()->AddObserver(this);
+    OnQuietModeChanged(ash::MessageCenterAsh::Get()->IsQuietMode());
+  }
 
   if (arc::IsArcAllowedForProfile(profile)) {
     pref_change_registrar_.Init(pref_service_);
@@ -236,6 +308,13 @@ AppsSection::AppsSection(Profile* profile,
 }
 
 AppsSection::~AppsSection() {
+  // TODO(crbug.com/1237465): observer is never removed because ash::Shell is
+  // destroyed first.
+  // Note: The MessageCenterAsh check is also added for unit testing purposes.
+  if (ash::MessageCenterAsh::Get()) {
+    ash::MessageCenterAsh::Get()->RemoveObserver(this);
+  }
+
   if (arc::IsArcAllowedForProfile(profile())) {
     if (arc_app_list_prefs_)
       arc_app_list_prefs_->RemoveObserver(this);
@@ -249,10 +328,17 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"appNotificationsTitle", IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TEXT},
       {"doNotDisturbToggleTitle",
        IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_TITLE},
-      {"doNotDisturbToggleDesc",
-       IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESC},
+      {"doNotDisturbToggleDescription",
+       IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION},
+      {"appNotificationsLinkToBrowserSettingsDescription",
+       IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TO_BROWSER_SETTINGS_DESCRIPTION},
+      {"appNotificationsCountDescription",
+       IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddString("appNotificationsBrowserSettingsURL",
+                         chrome::kAppNotificationsBrowserSettingsURL);
 
   // We have 2 variants of Android apps settings. Default case, when the Play
   // Store app exists we show expandable section that allows as to
@@ -274,6 +360,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddGuestOsStrings(html_source);
   AddAndroidAppStrings(html_source);
   AddPluginVmLoadTimeData(html_source);
+  AddBorealisStrings(html_source);
   AddOnStartupTimeData(html_source);
 }
 
@@ -306,6 +393,11 @@ std::string AppsSection::GetSectionPath() const {
 
 bool AppsSection::LogMetric(mojom::Setting setting, base::Value& value) const {
   // Unimplemented.
+  if (setting == mojom::Setting::kDoNotDisturbOnOff) {
+    base::UmaHistogramBoolean("ChromeOS.Settings.Apps.DoNotDisturbOnOff",
+                              value.GetBool());
+    return true;
+  }
   return false;
 }
 
@@ -325,6 +417,9 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                      mojom::SearchResultIcon::kAppsGrid,
                                      mojom::SearchResultDefaultRank::kMedium,
                                      mojom::kAppNotificationsSubpagePath);
+
+  generator->RegisterNestedSetting(mojom::Setting::kDoNotDisturbOnOff,
+                                   mojom::Subpage::kAppNotifications);
   // Note: The subpage name in the UI is updated dynamically based on the app
   // being shown, but we use a generic "App details" string here.
   generator->RegisterNestedSubpage(
@@ -454,6 +549,26 @@ void AppsSection::UpdateAndroidSearchTags() {
       arc_app_list_prefs_->IsRegistered(arc::kSettingsAppId)) {
     updater.AddSearchTags(GetAndroidSettingsSearchConcepts());
   }
+}
+
+void AppsSection::OnQuietModeChanged(bool in_quiet_mode) {
+  if (!features::IsAppNotificationsPageEnabled()) {
+    return;
+  }
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+
+  updater.RemoveSearchTags(GetTurnOnAppNotificationSearchConcepts());
+  updater.RemoveSearchTags(GetTurnOffAppNotificationSearchConcepts());
+  updater.RemoveSearchTags(GetAppNotificationsSearchConcepts());
+
+  updater.AddSearchTags(GetAppNotificationsSearchConcepts());
+
+  if (!ash::MessageCenterAsh::Get()->IsQuietMode()) {
+    updater.AddSearchTags(GetTurnOnAppNotificationSearchConcepts());
+    return;
+  }
+
+  updater.AddSearchTags(GetTurnOffAppNotificationSearchConcepts());
 }
 
 }  // namespace settings

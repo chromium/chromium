@@ -399,7 +399,11 @@ bool IsEndOfEditableOrNonEditableContent(
 // the text node. It seems weird to return false in this case.
 bool HasRenderedNonAnonymousDescendantsWithHeight(
     const LayoutObject* layout_object) {
-  if (DisplayLockUtilities::NearestLockedInclusiveAncestor(*layout_object))
+  // If we're not painting the element then we conceptually don't have children
+  // with height. We should treat this as if we didn't have layout objects (i.e.
+  // we were display: none).
+  if (DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
+          *layout_object))
     return false;
   if (auto* block_flow = DynamicTo<LayoutBlockFlow>(layout_object)) {
     // Returns false for empty content editable, e.g.
@@ -433,7 +437,7 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
 }
 
 PositionWithAffinity PositionForContentsPointRespectingEditingBoundary(
-    const IntPoint& contents_point,
+    const gfx::Point& contents_point,
     LocalFrame* frame) {
   HitTestRequest request = HitTestRequest::kMove | HitTestRequest::kReadOnly |
                            HitTestRequest::kActive |
@@ -639,8 +643,15 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
   // iterate backward from there, looking for a qualified position
   Node* const boundary = EnclosingVisualBoundary<Strategy>(start_node);
   // FIXME: PositionIterator should respect Before and After positions.
-  PositionIteratorAlgorithm<Strategy> last_visible(
-      AdjustPositionForBackwardIteration<Strategy>(position));
+  const PositionTemplate<Strategy>& adjusted_position =
+      AdjustPositionForBackwardIteration<Strategy>(position);
+#if DCHECK_IS_ON()
+  // Debug what causes bug 1248744
+  if (adjusted_position.IsNull())
+    position.ShowTreeForThis();
+  DCHECK(adjusted_position.IsNotNull()) << position;
+#endif
+  PositionIteratorAlgorithm<Strategy> last_visible(adjusted_position);
   const bool start_editable = HasEditableStyle(*start_node);
   Node* last_node = start_node;
   bool boundary_crossed = false;
@@ -680,7 +691,7 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
         layout_object->Style()->Visibility() != EVisibility::kVisible)
       continue;
 
-    if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object))
+    if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object))
       continue;
 
     if (!writing_mode.has_value()) {
@@ -767,7 +778,7 @@ bool HasInvisibleFirstLetter(const Node* node) {
   if (!first_letter || first_letter == remaining_text)
     return false;
   return first_letter->StyleRef().Visibility() != EVisibility::kVisible ||
-         DisplayLockUtilities::NearestLockedExclusiveAncestor(*first_letter);
+         DisplayLockUtilities::LockedAncestorPreventingPaint(*first_letter);
 }
 }  // namespace
 
@@ -839,7 +850,7 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
         layout_object->Style()->Visibility() != EVisibility::kVisible)
       continue;
 
-    if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object))
+    if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object))
       continue;
 
     if (!writing_mode.has_value()) {
@@ -943,7 +954,7 @@ static bool IsVisuallyEquivalentCandidateAlgorithm(
   if (layout_object->Style()->Visibility() != EVisibility::kVisible)
     return false;
 
-  if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object))
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object))
     return false;
 
   if (layout_object->IsBR()) {
@@ -1292,7 +1303,7 @@ static FloatRect ComputeTextRectTemplate(
     const EphemeralRangeTemplate<Strategy>& range) {
   FloatRect result;
   for (auto rect : ComputeTextBounds<Strategy>(range))
-    result.Unite(rect.BoundingBox());
+    result.Union(rect.BoundingBox());
   return result;
 }
 
@@ -1331,20 +1342,20 @@ IntRect FirstRectForRange(const EphemeralRange& range) {
   if (end_caret_rect.IsEmpty())
     return IntRect();
 
-  if (start_caret_rect.Y() == end_caret_rect.Y()) {
+  if (start_caret_rect.y() == end_caret_rect.y()) {
     // start and end are on the same line
     return IntRect(
-        std::min(start_caret_rect.X(), end_caret_rect.X()),
-        start_caret_rect.Y(), abs(end_caret_rect.X() - start_caret_rect.X()),
-        std::max(start_caret_rect.Height(), end_caret_rect.Height()));
+        std::min(start_caret_rect.x(), end_caret_rect.x()),
+        start_caret_rect.y(), abs(end_caret_rect.x() - start_caret_rect.x()),
+        std::max(start_caret_rect.height(), end_caret_rect.height()));
   }
 
   // start and end aren't on the same line, so go from start to the end of its
   // line
   return IntRect(
-      start_caret_rect.X(), start_caret_rect.Y(),
-      (start_caret_rect.Width() + extra_width_to_end_of_line).ToInt(),
-      start_caret_rect.Height());
+      start_caret_rect.x(), start_caret_rect.y(),
+      (start_caret_rect.width() + extra_width_to_end_of_line).ToInt(),
+      start_caret_rect.height());
 }
 
 }  // namespace blink

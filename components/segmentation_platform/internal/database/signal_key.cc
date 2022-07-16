@@ -41,8 +41,8 @@ SignalKey::Kind FromInternalSignalKindRepresentation(char kind) {
 }
 
 base::Time StripResolutionSmallerThanSeconds(base::Time time) {
-  return base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromSeconds(
-      time.ToDeltaSinceWindowsEpoch().InSeconds()));
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::Seconds(time.ToDeltaSinceWindowsEpoch().InSeconds()));
 }
 }  // namespace
 
@@ -83,22 +83,34 @@ std::string SignalKey::GetPrefixInBinary() const {
 }
 
 // static
-void SignalKey::FromBinary(const std::string& input, SignalKey* output) {
+bool SignalKey::FromBinary(const std::string& input, SignalKey* output) {
   SignalKeyInternal internal_key;
-  SignalKeyInternalFromBinary(input, &internal_key);
+  if (!SignalKeyInternalFromBinary(input, &internal_key))
+    return false;
   output->kind_ =
       FromInternalSignalKindRepresentation(internal_key.prefix.kind);
   output->name_hash_ = internal_key.prefix.name_hash;
   output->range_start_ = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromSeconds(internal_key.time_range_start_sec));
+      base::Seconds(internal_key.time_range_start_sec));
   output->range_end_ = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromSeconds(internal_key.time_range_end_sec));
+      base::Seconds(internal_key.time_range_end_sec));
+  return true;
 }
 
 std::string SignalKey::ToDebugString() const {
   std::stringstream buffer;
   buffer << *this;
   return buffer.str();
+}
+
+bool SignalKey::operator<(const SignalKey& other) const {
+  if (kind_ != other.kind_)
+    return kind_ < other.kind_;
+  if (name_hash_ != other.name_hash_)
+    return name_hash_ < other.name_hash_;
+  if (range_end_ < other.range_end_)
+    return range_end_ < other.range_end_;
+  return range_start_ < other.range_start_;
 }
 
 std::ostream& operator<<(std::ostream& os, const SignalKey& key) {

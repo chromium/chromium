@@ -6,14 +6,12 @@
 #define CONTENT_BROWSER_WORKER_HOST_TEST_SHARED_WORKER_SERVICE_IMPL_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace content {
 
-class ChromeAppCacheService;
 class ServiceWorkerContextWrapper;
 class StoragePartitionImpl;
 
@@ -22,8 +20,12 @@ class TestSharedWorkerServiceImpl : public SharedWorkerServiceImpl {
  public:
   TestSharedWorkerServiceImpl(
       StoragePartitionImpl* storage_partition,
-      scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
-      scoped_refptr<ChromeAppCacheService> appcache_service);
+      scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
+
+  TestSharedWorkerServiceImpl(const TestSharedWorkerServiceImpl&) = delete;
+  TestSharedWorkerServiceImpl& operator=(const TestSharedWorkerServiceImpl&) =
+      delete;
+
   ~TestSharedWorkerServiceImpl() override;
 
   void TerminateAllWorkers(base::OnceClosure callback);
@@ -43,8 +45,6 @@ class TestSharedWorkerServiceImpl : public SharedWorkerServiceImpl {
   // Holds all remote shared workers whose host have been deleted and are now
   // expected to soon cause the disconnection handler to fire.
   mojo::RemoteSet<blink::mojom::SharedWorker> workers_awaiting_disconnection_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSharedWorkerServiceImpl);
 };
 
 }  // namespace content

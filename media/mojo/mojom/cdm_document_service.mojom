@@ -6,6 +6,25 @@
 module media.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+
+// Contains data linked to an origin that the CDM stores in the browser
+// process.
+[EnableIf=is_win]
+struct MediaFoundationCdmData {
+  // The origin ID of the document associated with the CDM. The origin ID
+  // is used in place of the origin when hiding the concrete origin is needed.
+  // The origin ID is also user resettable by clearing the browsing data.
+  mojo_base.mojom.UnguessableToken origin_id;
+
+  // The token is set by the CDM. The token is then saved in the Pref Service so
+  // that it can be reused by the CDM for that same origin in the future.
+  array<uint8>? client_token;
+
+  // The path where the MediaFoundation CDM should store its data. The path is
+  // specific to the current chrome user and the device's architecture.
+  mojo_base.mojom.FilePath cdm_store_path_root;
+};
 
 // The service itself is associated with a RenderFrameHost in the browser
 // process and will be called by a client living in the utility process hosting
@@ -38,13 +57,18 @@ interface CdmDocumentService {
   GetStorageId(uint32 version) => (uint32 version, array<uint8> storage_id);
 
   // Returns true if Verified Access is enabled in settings, false otherwise.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   IsVerifiedAccessEnabled() => (bool enabled);
 
-  // Gets the origin ID of the frame associated with the CDM. The origin ID is
-  // used in place of the origin when hiding the concrete origin is needed. The
-  // origin ID is also user resettable by clearing the browsing data.
-  // - `cdm_origin_id`: The origin id of the frame associated with the CDM.
+  // Gets the Media FoundationCDM data for the origin associated with the CDM.
+  // - `media_foundation_cdm_data`: The CDM data for the origin associated with
+  //                                the CDM.
   [EnableIf=is_win]
-  GetCdmOriginId() => (mojo_base.mojom.UnguessableToken cdm_origin_id);
+  GetMediaFoundationCdmData() => (MediaFoundationCdmData cdm_data);
+
+  // Sets the client token for the origin associated with the CDM. The token is
+  // set by the CDM. The token is then saved in the Pref Service so that it can
+  // be reused by the CDM for that same origin in the future.
+  [EnableIf=is_win]
+  SetCdmClientToken(array<uint8> client_token);
 };

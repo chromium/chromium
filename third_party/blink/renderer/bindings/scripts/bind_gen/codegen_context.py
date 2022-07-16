@@ -59,6 +59,7 @@ class CodeGenContext(object):
             "enumeration": None,
             "interface": None,
             "namespace": None,
+            "observable_array": None,
             "typedef": None,
             "union": None,
 

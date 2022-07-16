@@ -19,6 +19,7 @@
 #include "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
 #include "ios/chrome/browser/autocomplete/remote_suggestions_service_factory.h"
 #include "ios/chrome/browser/autocomplete/shortcuts_backend_factory.h"
+#include "ios/chrome/browser/autocomplete/tab_matcher_impl.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
@@ -47,7 +48,8 @@ AutocompleteProviderClientImpl::AutocompleteProviderClientImpl(
               NewPersonalizedDataCollectionConsentHelper(
                   SyncServiceFactory::GetForBrowserState(browser_state_))),
       omnibox_triggered_feature_service_(
-          std::make_unique<OmniboxTriggeredFeatureService>()) {}
+          std::make_unique<OmniboxTriggeredFeatureService>()),
+      tab_matcher_(browser_state_) {}
 
 AutocompleteProviderClientImpl::~AutocompleteProviderClientImpl() {}
 
@@ -235,19 +237,6 @@ void AutocompleteProviderClientImpl::DeleteMatchingURLsForKeywordFromHistory(
 
 void AutocompleteProviderClientImpl::PrefetchImage(const GURL& url) {}
 
-bool AutocompleteProviderClientImpl::IsTabOpenWithURL(
-    const GURL& url,
-    const AutocompleteInput* input) {
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state_);
-  std::set<Browser*> browsers = browser_state_->IsOffTheRecord()
-                                    ? browser_list->AllIncognitoBrowsers()
-                                    : browser_list->AllRegularBrowsers();
-  for (Browser* browser : browsers) {
-    if (browser->GetWebStateList()->GetIndexOfInactiveWebStateWithURL(url) !=
-        WebStateList::kInvalidIndex) {
-      return true;
-    }
-  }
-  return false;
+const TabMatcher& AutocompleteProviderClientImpl::GetTabMatcher() const {
+  return tab_matcher_;
 }

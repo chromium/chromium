@@ -4,7 +4,6 @@
 
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "ui/display/screen.h"
 
@@ -12,6 +11,10 @@ namespace ui {
 namespace {
 class GestureConfigurationDefault : public GestureConfiguration {
  public:
+  GestureConfigurationDefault(const GestureConfigurationDefault&) = delete;
+  GestureConfigurationDefault& operator=(const GestureConfigurationDefault&) =
+      delete;
+
   ~GestureConfigurationDefault() override {
   }
 
@@ -23,7 +26,6 @@ class GestureConfigurationDefault : public GestureConfiguration {
   GestureConfigurationDefault() {}
 
   friend struct base::DefaultSingletonTraits<GestureConfigurationDefault>;
-  DISALLOW_COPY_AND_ASSIGN(GestureConfigurationDefault);
 };
 
 }  // namespace

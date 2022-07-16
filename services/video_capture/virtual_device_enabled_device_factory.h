@@ -23,6 +23,12 @@ class VirtualDeviceEnabledDeviceFactory : public DeviceFactory {
  public:
   explicit VirtualDeviceEnabledDeviceFactory(
       std::unique_ptr<DeviceFactory> factory);
+
+  VirtualDeviceEnabledDeviceFactory(const VirtualDeviceEnabledDeviceFactory&) =
+      delete;
+  VirtualDeviceEnabledDeviceFactory& operator=(
+      const VirtualDeviceEnabledDeviceFactory&) = delete;
+
   ~VirtualDeviceEnabledDeviceFactory() override;
 
   // DeviceFactory implementation.
@@ -69,7 +75,6 @@ class VirtualDeviceEnabledDeviceFactory : public DeviceFactory {
       devices_changed_observers_;
 
   base::WeakPtrFactory<VirtualDeviceEnabledDeviceFactory> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(VirtualDeviceEnabledDeviceFactory);
 };
 
 }  // namespace video_capture

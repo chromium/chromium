@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
@@ -35,7 +35,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getScanService} from './mojo_interface_provider.js';
-import {AppState, MAX_NUM_SAVED_SCANNERS, ScannerArr, ScannerCapabilitiesResponse, ScannerInfo, ScannerSetting, ScanSettings} from './scanning_app_types.js';
+import {AppState, MAX_NUM_SAVED_SCANNERS, ScannerArr, ScannerCapabilitiesResponse, ScannerInfo, ScannerSetting, ScanSettings, StartMultiPageScanResponse} from './scanning_app_types.js';
 import {colorModeFromString, fileTypeFromString, getScannerDisplayName, pageSizeFromString, tokenToString} from './scanning_app_util.js';
 import {ScanningBrowserProxy, ScanningBrowserProxyImpl, SelectedPath} from './scanning_browser_proxy.js';
 
@@ -64,6 +64,9 @@ Polymer({
 
   /** @private {?ash.scanning.mojom.ScanServiceInterface} */
   scanService_: null,
+
+  /** @private {?ash.scanning.mojom.MultiPageScanControllerRemote} */
+  multiPageScanController_: null,
 
   /** @private {!Map<string, !ScannerInfo>} */
   scannerInfoMap_: new Map(),
@@ -165,7 +168,7 @@ Polymer({
     selectedSourcePageSizes_: {
       type: Array,
       value: () => [],
-      computed: 'computePageSizes_(selectedSource)',
+      computed: 'computePageSizes_(selectedSource, capabilities_.sources)',
     },
 
     /**
@@ -266,32 +269,11 @@ Polymer({
     },
 
     /**
-     * Indicates the result of the scan job. Set to kSuccess when the scan job
-     * succeeds.
-     * @private {!ash.scanning.mojom.ScanResult}
-     */
-    scanResult_: {
-      type: Number,
-      value: ash.scanning.mojom.ScanResult.kSuccess,
-    },
-
-    /**
      * The key to retrieve the appropriate string to display in an error dialog
      * when a scan job fails.
      * @private {string}
      */
-    scanFailedDialogTextKey_: {
-      type: String,
-      computed: 'computeScanFailedDialogTextKey_(scanResult_)',
-    },
-
-    /** @private {boolean} */
-    scanAppStickySettingsEnabled_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('scanAppStickySettingsEnabled');
-      }
-    },
+    scanFailedDialogTextKey_: String,
 
     /** @private {!ScanSettings} */
     savedScanSettings_: {
@@ -328,9 +310,19 @@ Polymer({
     },
 
     /** {boolean} */
-    multiPageScanChecked: {
+    multiPageScanChecked: Boolean,
+
+    /**
+     * Only true when the multi-page checkbox is checked and the supported scan
+     * settings are chosen. Multi-page scanning only supports creating PDFs from
+     * the Flatbed source.
+     * @private {boolean}
+     */
+    isMultiPageScan_: {
       type: Boolean,
-      observer: 'onMultiPageScanCheckedChange_',
+      computed: 'computeIsMultiPageScan_(multiPageScanChecked, ' +
+          'selectedFileType, selectedSource)',
+      observer: 'onIsMultiPageScanChange_',
     },
 
     /** @private {boolean} */
@@ -371,17 +363,15 @@ Polymer({
         /* @type {string} */ (myFilesPath) => {
           this.selectedFilePath = myFilesPath;
         });
-    if (this.scanAppStickySettingsEnabled_) {
-      this.browserProxy_.getScanSettings().then(
-          /* @type {string} */ (scanSettings) => {
-            if (!scanSettings) {
-              return;
-            }
+    this.browserProxy_.getScanSettings().then(
+        /* @type {string} */ (scanSettings) => {
+          if (!scanSettings) {
+            return;
+          }
 
-            this.savedScanSettings_ =
-                /** @type {!ScanSettings} */ (JSON.parse(scanSettings));
-          });
-    }
+          this.savedScanSettings_ =
+              /** @type {!ScanSettings} */ (JSON.parse(scanSettings));
+        });
   },
 
   /** @override */
@@ -419,22 +409,44 @@ Polymer({
   onPageProgress(pageNumber, progressPercent) {
     assert(
         this.appState_ === AppState.SCANNING ||
-        this.appState_ === AppState.CANCELING);
-    this.pageNumber_ = pageNumber;
+        this.appState_ === AppState.MULTI_PAGE_SCANNING ||
+        this.appState_ === AppState.CANCELING ||
+        this.appState_ === AppState.MULTI_PAGE_CANCELING);
+
+    // The Scan app increments |this.pageNumber_| itself during a multi-page
+    // scan.
+    if (!this.isMultiPageScan_) {
+      this.pageNumber_ = pageNumber;
+    }
     this.progressPercent_ = progressPercent;
   },
 
   /**
    * Overrides ash.scanning.mojom.ScanJobObserverInterface.
    * @param {!Array<number>} pageData
+   * @param {number} newPageIndex
    */
-  onPageComplete(pageData) {
+  onPageComplete(pageData, newPageIndex) {
     assert(
         this.appState_ === AppState.SCANNING ||
-        this.appState_ === AppState.CANCELING);
+        this.appState_ === AppState.MULTI_PAGE_SCANNING ||
+        this.appState_ === AppState.CANCELING ||
+        this.appState_ === AppState.MULTI_PAGE_CANCELING);
+
     const blob = new Blob([Uint8Array.from(pageData)], {'type': 'image/png'});
-    this.push('objectUrls_', URL.createObjectURL(blob));
-    if (this.multiPageScanChecked) {
+    const objectUrl = URL.createObjectURL(blob);
+    if (newPageIndex === this.objectUrls_.length) {
+      this.push('objectUrls_', objectUrl);
+    } else {
+      this.splice('objectUrls_', newPageIndex, 1, objectUrl);
+    }
+
+    // |pageNumber_| gets set to the number of existing scanned images so
+    // when the next scan is started, |pageNumber_| gets incremented and
+    // the preview area shows 'Scanning length+1'.
+    this.pageNumber_ = this.objectUrls_.length;
+
+    if (this.isMultiPageScan_) {
       this.setAppState_(AppState.MULTI_PAGE_NEXT_ACTION);
     }
   },
@@ -445,9 +457,9 @@ Polymer({
    * @param {!Array<!mojoBase.mojom.FilePath>} scannedFilePaths
    */
   onScanComplete(result, scannedFilePaths) {
-    this.scanResult_ = result;
-    if (this.scanResult_ !== ash.scanning.mojom.ScanResult.kSuccess ||
+    if (result !== ash.scanning.mojom.ScanResult.kSuccess ||
         this.objectUrls_.length == 0) {
+      this.setScanFailedDialogTextKey_(result);
       this.$.scanFailedDialog.showModal();
       return;
     }
@@ -464,23 +476,46 @@ Polymer({
   onCancelComplete(success) {
     // If the cancel request fails, continue showing the scan progress page.
     if (!success) {
-      this.setAppState_(AppState.SCANNING);
       this.showToast_('cancelFailedToastText');
+      this.setAppState_(
+          this.appState_ === AppState.MULTI_PAGE_CANCELING ?
+              AppState.MULTI_PAGE_SCANNING :
+              AppState.SCANNING);
       return;
     }
 
+    if (this.appState_ === AppState.MULTI_PAGE_CANCELING) {
+      // For multi-page scans |pageNumber_| needs to be set to the number of
+      // existing scanned images since the next scan isn't guaranteed to be the
+      // first page. So when the next scan is started, |pageNumber_| will get
+      // incremented and the preview area will show 'Scanning length+1'.
+      this.pageNumber_ = this.objectUrls_.length;
+      this.setAppState_(AppState.MULTI_PAGE_NEXT_ACTION);
+    } else {
+      this.setAppState_(AppState.READY);
+    }
+
     this.showToast_('scanCanceledToastText');
-    this.setAppState_(AppState.READY);
   },
 
   /**
-   * @param {string} selectedSource
+   * Overrides ash.scanning.mojom.ScanJobObserverInterface.
+   * @param {!ash.scanning.mojom.ScanResult} result
+   */
+  onMultiPageScanFail(result) {
+    assert(result !== ash.scanning.mojom.ScanResult.kSuccess);
+
+    this.setScanFailedDialogTextKey_(result);
+    this.$.scanFailedDialog.showModal();
+  },
+
+  /**
    * @return {!Array<ash.scanning.mojom.PageSize>}
    * @private
    */
-  computePageSizes_(selectedSource) {
+  computePageSizes_() {
     for (const source of this.capabilities_.sources) {
-      if (source.name === selectedSource) {
+      if (source.name === this.selectedSource) {
         return source.pageSizes;
       }
     }
@@ -499,8 +534,7 @@ Polymer({
     this.selectedFileType = ash.scanning.mojom.FileType.kPdf.toString();
 
     this.setAppState_(
-        this.scanAppStickySettingsEnabled_ &&
-                this.areSavedScanSettingsAvailable_() ?
+        this.areSavedScanSettingsAvailable_() ?
             AppState.SETTING_SAVED_SETTINGS :
             AppState.READY);
   },
@@ -554,20 +588,6 @@ Polymer({
       return;
     }
 
-    const fileType = fileTypeFromString(this.selectedFileType);
-    const colorMode = colorModeFromString(this.selectedColorMode);
-    const pageSize = pageSizeFromString(this.selectedPageSize);
-    const resolution = Number(this.selectedResolution);
-
-    const settings = {
-      sourceName: this.selectedSource,
-      scanToPath: {path: this.selectedFilePath},
-      fileType: fileType,
-      colorMode: colorMode,
-      pageSize: pageSize,
-      resolutionDpi: resolution,
-    };
-
     if (!this.scanJobObserverReceiver_) {
       this.scanJobObserverReceiver_ =
           new ash.scanning.mojom.ScanJobObserverReceiver(
@@ -577,24 +597,36 @@ Polymer({
               (this));
     }
 
-    this.scanService_
-        .startScan(
-            this.getSelectedScannerToken_(), settings,
-            this.scanJobObserverReceiver_.$.bindNewPipeAndPassRemote())
-        .then(
-            /*@type {!{success: boolean}}*/ (response) => {
-              this.onStartScanResponse_(response);
-            });
-    if (this.scanAppStickySettingsEnabled_) {
-      this.saveScanSettings_();
+    const settings = this.getScanSettings_();
+    if (this.isMultiPageScan_) {
+      this.scanService_
+          .startMultiPageScan(
+              this.getSelectedScannerToken_(), settings,
+              this.scanJobObserverReceiver_.$.bindNewPipeAndPassRemote())
+          .then(
+              /*@type {!StartMultiPageScanResponse}*/
+              (response) => {
+                this.onStartMultiPageScanResponse_(response);
+              });
+    } else {
+      this.scanService_
+          .startScan(
+              this.getSelectedScannerToken_(), settings,
+              this.scanJobObserverReceiver_.$.bindNewPipeAndPassRemote())
+          .then(
+              /*@type {!{success: boolean}}*/ (response) => {
+                this.onStartScanResponse_(response);
+              });
     }
+
+    this.saveScanSettings_();
 
     const scanJobSettingsForMetrics = {
       sourceType: this.sourceTypeMap_.get(this.selectedSource),
-      fileType: fileType,
-      colorMode: colorMode,
-      pageSize: pageSize,
-      resolution: resolution,
+      fileType: settings.fileType,
+      colorMode: settings.colorMode,
+      pageSize: settings.pageSize,
+      resolution: settings.resolutionDpi,
     };
     this.browserProxy_.recordScanJobSettings(scanJobSettingsForMetrics);
 
@@ -622,6 +654,116 @@ Polymer({
     this.progressPercent_ = 0;
   },
 
+  /**
+   * @param {!StartMultiPageScanResponse} response
+   * @private
+   */
+  onStartMultiPageScanResponse_(response) {
+    if (!response.controller) {
+      this.showToast_('startScanFailedToast');
+      return;
+    }
+
+    this.setAppState_(AppState.SCANNING);
+
+    assert(!this.multiPageScanController_);
+    this.multiPageScanController_ = response.controller;
+    this.pageNumber_ = 1;
+    this.progressPercent_ = 0;
+  },
+
+  /** @private */
+  onScanNextPage_() {
+    this.multiPageScanController_
+        .scanNextPage(this.getSelectedScannerToken_(), this.getScanSettings_())
+        .then(
+            /*@type {!{success: boolean}}*/ (response) => {
+              this.onScanNextPageResponse_(response);
+            });
+  },
+
+  /**
+   * @param {Event} e
+   * @private
+   */
+  onRemovePage_(e) {
+    const pageIndex = e.detail;
+    assert(pageIndex >= 0 && pageIndex < this.objectUrls_.length);
+
+    this.splice('objectUrls_', pageIndex, 1);
+    this.pageNumber_ = this.objectUrls_.length;
+    this.multiPageScanController_.removePage(pageIndex);
+
+    // If the last page was removed, end the multi-page session and return to
+    // the scan settings page.
+    if (this.objectUrls_.length === 0) {
+      this.resetMultiPageScanController_();
+      this.setAppState_(AppState.READY);
+    }
+  },
+
+  /**
+   * Sends the request to initiate a new scan and once completed, use it to
+   * replace the existing scanned image at |pageIndex|.
+   * @param {Event} e
+   * @private
+   */
+  onRescanPage_(e) {
+    const pageIndex = e.detail;
+    assert(pageIndex >= 0 && pageIndex < this.objectUrls_.length);
+
+    this.multiPageScanController_
+        .rescanPage(
+            this.getSelectedScannerToken_(), this.getScanSettings_(), pageIndex)
+        .then(
+            /*@type {!{success: boolean}}*/ (response) => {
+              this.onRescanPageResponse_(response, pageIndex);
+            });
+  },
+
+  /** @private */
+  onCompleteMultiPageScan_() {
+    this.multiPageScanController_.completeMultiPageScan();
+    this.resetMultiPageScanController_();
+  },
+
+  /** @private */
+  resetMultiPageScanController_() {
+    this.multiPageScanController_.$.close();
+    this.multiPageScanController_ = null;
+  },
+
+  /**
+   * @param {!{success: boolean}} response
+   * @private
+   */
+  onScanNextPageResponse_(response) {
+    if (!response.success) {
+      this.showToast_('startScanFailedToast');
+      return;
+    }
+
+    this.setAppState_(AppState.MULTI_PAGE_SCANNING);
+    ++this.pageNumber_;
+    this.progressPercent_ = 0;
+  },
+
+  /**
+   * @param {!{success: boolean}} response
+   * @param {number} pageIndex
+   * @private
+   */
+  onRescanPageResponse_(response, pageIndex) {
+    if (!response.success) {
+      this.showToast_('startScanFailedToast');
+      return;
+    }
+
+    this.progressPercent_ = 0;
+    this.pageNumber_ = ++pageIndex;
+    this.setAppState_(AppState.MULTI_PAGE_SCANNING);
+  },
+
   /** @private */
   toggleClicked_() {
     this.$$('#collapse').toggle();
@@ -647,8 +789,13 @@ Polymer({
 
   /** @private */
   onCancelClick_() {
-    assert(this.appState_ === AppState.SCANNING);
-    this.setAppState_(AppState.CANCELING);
+    assert(
+        this.appState_ === AppState.SCANNING ||
+        this.appState_ === AppState.MULTI_PAGE_SCANNING);
+    this.setAppState_(
+        this.appState_ === AppState.MULTI_PAGE_SCANNING ?
+            AppState.MULTI_PAGE_CANCELING :
+            AppState.CANCELING);
     this.scanService_.cancelScan();
   },
 
@@ -692,7 +839,8 @@ Polymer({
             this.appState_ === AppState.SETTING_SAVED_SETTINGS ||
             this.appState_ === AppState.SCANNING ||
             this.appState_ === AppState.DONE ||
-            this.appState_ === AppState.CANCELING);
+            this.appState_ === AppState.CANCELING ||
+            this.appState_ === AppState.MULTI_PAGE_NEXT_ACTION);
         this.clearObjectUrls_();
         break;
       case (AppState.SCANNING):
@@ -703,7 +851,8 @@ Polymer({
       case (AppState.DONE):
         assert(
             this.appState_ === AppState.SCANNING ||
-            this.appState_ === AppState.CANCELING);
+            this.appState_ === AppState.CANCELING ||
+            this.appState_ === AppState.MULTI_PAGE_NEXT_ACTION);
         break;
       case (AppState.CANCELING):
         assert(this.appState_ === AppState.SCANNING);
@@ -711,8 +860,20 @@ Polymer({
       case (AppState.NO_SCANNERS):
         assert(this.appState_ === AppState.GETTING_SCANNERS);
         break;
+      case (AppState.MULTI_PAGE_SCANNING):
+        assert(
+            this.appState_ === AppState.MULTI_PAGE_NEXT_ACTION ||
+            this.appState_ === AppState.MULTI_PAGE_CANCELING);
+        break;
       case (AppState.MULTI_PAGE_NEXT_ACTION):
-        assert(this.appState_ === AppState.SCANNING);
+        assert(
+            this.appState_ === AppState.SCANNING ||
+            this.appState_ === AppState.CANCELING ||
+            this.appState_ === AppState.MULTI_PAGE_SCANNING ||
+            this.appState_ === AppState.MULTI_PAGE_CANCELING);
+        break;
+      case (AppState.MULTI_PAGE_CANCELING):
+        assert(this.appState_ === AppState.MULTI_PAGE_SCANNING);
         break;
     }
 
@@ -729,7 +890,9 @@ Polymer({
     this.cancelButtonDisabled_ = this.appState_ === AppState.CANCELING;
     this.showDoneSection_ = this.appState_ === AppState.DONE;
     this.showMultiPageScan_ =
-        this.appState_ === AppState.MULTI_PAGE_NEXT_ACTION;
+        this.appState_ === AppState.MULTI_PAGE_NEXT_ACTION ||
+        this.appState_ === AppState.MULTI_PAGE_SCANNING ||
+        this.appState_ === AppState.MULTI_PAGE_CANCELING;
     this.showScanSettings_ = !this.showDoneSection_ && !this.showMultiPageScan_;
 
     // Need to wait for elements to render after updating their disabled and
@@ -742,9 +905,7 @@ Polymer({
         this.$$('#scannerSelect').$$('#scannerSelect').focus();
       } else if (this.appState_ === AppState.SCANNING) {
         this.$$('#cancelButton').focus();
-      } else if (
-          this.appState_ === AppState.DONE ||
-          this.appState_ === AppState.MULTI_PAGE_NEXT_ACTION) {
+      } else if (this.appState_ === AppState.DONE) {
         this.$$('#scanPreview').$$('#previewDiv').focus();
       }
     });
@@ -773,13 +934,22 @@ Polymer({
   },
 
   /** @private */
-  onDialogOkClick_() {
+  onScanFailedDialogOkClick_() {
     this.$.scanFailedDialog.close();
+    if (this.appState_ === AppState.MULTI_PAGE_SCANNING) {
+      // |pageNumber_| gets set to the number of existing scanned images so
+      // when the next scan is started, |pageNumber_| gets incremented and
+      // the preview area shows 'Scanning length+1'.
+      this.pageNumber_ = this.objectUrls_.length;
+      this.setAppState_(AppState.MULTI_PAGE_NEXT_ACTION);
+      return;
+    }
+
     this.setAppState_(AppState.READY);
   },
 
   /** @private */
-  onDialogGetHelpClick_() {
+  onScanFailedDialogGetHelpClick_() {
     this.$.scanFailedDialog.close();
     this.setAppState_(AppState.READY);
     window.open(HELP_PAGE_LINK);
@@ -827,23 +997,29 @@ Polymer({
   },
 
   /**
-   * @return {string}
+   * @param {!ash.scanning.mojom.ScanResult} scanResult Indicates the result of
+   *   the scan job.
    * @private
    */
-  computeScanFailedDialogTextKey_() {
-    switch (this.scanResult_) {
-      case (ash.scanning.mojom.ScanResult.kDeviceBusy):
-        return 'scanFailedDialogDeviceBusyText';
-      case (ash.scanning.mojom.ScanResult.kAdfJammed):
-        return 'scanFailedDialogAdfJammedText';
-      case (ash.scanning.mojom.ScanResult.kAdfEmpty):
-        return 'scanFailedDialogAdfEmptyText';
-      case (ash.scanning.mojom.ScanResult.kFlatbedOpen):
-        return 'scanFailedDialogFlatbedOpenText';
-      case (ash.scanning.mojom.ScanResult.kIoError):
-        return 'scanFailedDialogIoErrorText';
+  setScanFailedDialogTextKey_(scanResult) {
+    switch (scanResult) {
+      case ash.scanning.mojom.ScanResult.kDeviceBusy:
+        this.scanFailedDialogTextKey_ = 'scanFailedDialogDeviceBusyText';
+        break;
+      case ash.scanning.mojom.ScanResult.kAdfJammed:
+        this.scanFailedDialogTextKey_ = 'scanFailedDialogAdfJammedText';
+        break;
+      case ash.scanning.mojom.ScanResult.kAdfEmpty:
+        this.scanFailedDialogTextKey_ = 'scanFailedDialogAdfEmptyText';
+        break;
+      case ash.scanning.mojom.ScanResult.kFlatbedOpen:
+        this.scanFailedDialogTextKey_ = 'scanFailedDialogFlatbedOpenText';
+        break;
+      case ash.scanning.mojom.ScanResult.kIoError:
+        this.scanFailedDialogTextKey_ = 'scanFailedDialogIoErrorText';
+        break;
       default:
-        return 'scanFailedDialogUnknownErrorText';
+        this.scanFailedDialogTextKey_ = 'scanFailedDialogUnknownErrorText';
     }
   },
 
@@ -861,10 +1037,16 @@ Polymer({
     }
 
     this.setSelectedSourceTypeIfAvailable_(scannerSettings.sourceName);
-    this.setSelectedFileTypeIfAvailable_(scannerSettings.fileType);
-    this.setSelectedColorModeIfAvailable_(scannerSettings.colorMode);
-    this.setSelectedPageSizeIfAvailable_(scannerSettings.pageSize);
-    this.setSelectedResolutionIfAvailable_(scannerSettings.resolutionDpi);
+    afterNextRender(this, () => {
+      this.setSelectedFileTypeIfAvailable_(scannerSettings.fileType);
+      this.setSelectedColorModeIfAvailable_(scannerSettings.colorMode);
+      this.setSelectedPageSizeIfAvailable_(scannerSettings.pageSize);
+      this.setSelectedResolutionIfAvailable_(scannerSettings.resolutionDpi);
+    });
+
+    // This must be set last because it depends on the values of sourceType and
+    // fileType.
+    this.setMultiPageScanIfAvailable_(scannerSettings.multiPageScanChecked);
   },
 
   /**
@@ -964,8 +1146,6 @@ Polymer({
 
   /** @private */
   saveScanSettings_() {
-    assert(this.scanAppStickySettingsEnabled_);
-
     const scannerName = this.getSelectedScannerDisplayName_();
     this.savedScanSettings_.lastUsedScannerName = scannerName;
     this.savedScanSettings_.scanToPath = this.selectedFilePath;
@@ -1015,6 +1195,7 @@ Polymer({
       colorMode: colorModeFromString(this.selectedColorMode),
       pageSize: pageSizeFromString(this.selectedPageSize),
       resolutionDpi: Number(this.selectedResolution),
+      multiPageScanChecked: this.multiPageScanChecked,
     });
   },
 
@@ -1056,13 +1237,40 @@ Polymer({
   },
 
   /** @private */
-  onMultiPageScanCheckedChange_() {
-    const nextPageNum = this.multiPageScanChecked ? 1 : 0;
+  computeIsMultiPageScan_() {
+    return this.multiPageScanChecked && this.isPDFSelected_() &&
+        this.isFlatbedSelected_();
+  },
+
+  /** @private */
+  onIsMultiPageScanChange_() {
+    assert(!this.isMultiPageScan_ || this.scanAppMultiPageScanEnabled_);
+
+    const nextPageNum = this.isMultiPageScan_ ? 1 : 0;
     this.browserProxy_.getPluralString('scanButtonText', nextPageNum)
         .then(
             /* @type {string} */ (pluralString) => {
               this.scanButtonText_ = pluralString;
             });
+  },
+
+  /**
+   * @return {!ash.scanning.mojom.ScanSettings}
+   * @private
+   */
+  getScanSettings_() {
+    const fileType = fileTypeFromString(this.selectedFileType);
+    const colorMode = colorModeFromString(this.selectedColorMode);
+    const pageSize = pageSizeFromString(this.selectedPageSize);
+    const resolution = Number(this.selectedResolution);
+    return {
+      sourceName: this.selectedSource,
+      scanToPath: {path: this.selectedFilePath},
+      fileType: fileType,
+      colorMode: colorMode,
+      pageSize: pageSize,
+      resolutionDpi: resolution,
+    };
   },
 
   /**
@@ -1112,6 +1320,18 @@ Polymer({
   setSelectedResolutionIfAvailable_(resolution) {
     if (this.capabilities_.resolutions.includes(resolution)) {
       this.selectedResolution = resolution.toString();
+    }
+  },
+
+  /**
+   * @param {boolean} multiPageScanChecked
+   * @private
+   */
+  setMultiPageScanIfAvailable_(multiPageScanChecked) {
+    // Only set the checkbox if it's visible (flag is enabled and correct scan
+    // settings are selected).
+    if (this.showMultiPageCheckbox_) {
+      this.multiPageScanChecked = multiPageScanChecked;
     }
   },
 });

@@ -18,10 +18,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace aura {
-class Window;
-}  // namespace aura
-
 namespace enterprise_management {
 class ChildStatusReportRequest;
 }  // namespace enterprise_management
@@ -93,13 +89,13 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
   void OnAppAvailable(const AppId& app_id) override;
   void OnAppBlocked(const AppId& app_id) override;
   void OnAppActive(const AppId& app_id,
-                   aura::Window* window,
+                   const apps::Instance::InstanceKey& instance_key,
                    base::Time timestamp) override;
   void OnAppInactive(const AppId& app_id,
-                     aura::Window* window,
+                     const apps::Instance::InstanceKey& instance_key,
                      base::Time timestamp) override;
   void OnAppDestroyed(const AppId& app_id,
-                      aura::Window* window,
+                      const apps::Instance::InstanceKey& instance_key,
                       base::Time timestamp) override;
 
   bool IsAppInstalled(const AppId& app_id) const;
@@ -209,12 +205,12 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
     // Contains information about current app state and logged activity.
     AppActivity activity{AppState::kAvailable};
 
-    // Contains the set of active windows for the application.
-    std::set<aura::Window*> active_windows;
+    // Contains the set of active instances for the application.
+    std::set<apps::Instance::InstanceKey> active_instances;
 
-    // The set of widows AppActivityRegistry has requested to be paused, but
+    // The set of instances AppActivityRegistry has requested to be paused, but
     // which have not been paused yet.
-    std::set<aura::Window*> paused_windows;
+    std::set<apps::Instance::InstanceKey> paused_instances;
 
     // Contains information about restriction set for the app.
     absl::optional<AppLimit> limit;

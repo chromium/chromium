@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "content/common/font_list.h"
 #include "content/public/browser/browser_ppapi_host.h"
@@ -24,6 +23,9 @@ class FontMessageFilter : public ppapi::host::ResourceMessageFilter {
  public:
   FontMessageFilter();
 
+  FontMessageFilter(const FontMessageFilter&) = delete;
+  FontMessageFilter& operator=(const FontMessageFilter&) = delete;
+
   // ppapi::host::ResourceMessageFilter implementation.
   scoped_refptr<base::SequencedTaskRunner> OverrideTaskRunnerForMessage(
       const IPC::Message& msg) override;
@@ -36,8 +38,6 @@ class FontMessageFilter : public ppapi::host::ResourceMessageFilter {
 
   // Message handler.
   int32_t OnHostMsgGetFontFamilies(ppapi::host::HostMessageContext* context);
-
-  DISALLOW_COPY_AND_ASSIGN(FontMessageFilter);
 };
 
 FontMessageFilter::FontMessageFilter() {}

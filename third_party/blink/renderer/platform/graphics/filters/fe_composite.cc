@@ -107,7 +107,7 @@ FloatRect FEComposite::MapInputs(const FloatRect& rect) const {
   switch (type_) {
     case FECOMPOSITE_OPERATOR_IN:
       // 'in' has output only in the intersection of both inputs.
-      return Intersection(i1, i2);
+      return IntersectRects(i1, i2);
     case FECOMPOSITE_OPERATOR_ATOP:
       // 'atop' has output only in the extents of the second input.
       return i2;
@@ -139,14 +139,14 @@ FloatRect FEComposite::MapInputs(const FloatRect& rect) const {
       // are non-transparent. Use intersection.
       // [k1 > 0 and k2 = k3 = k4 = 0 => result(i1,i2) = k1*i1*i2]
       if (K1() > 0)
-        return Intersection(i1, i2);
+        return IntersectRects(i1, i2);
       // [k1 = k2 = k3 = k4 = 0 => result(i1,i2) = 0]
       return FloatRect();
     default:
       break;
   }
   // Take the union of both input effects.
-  return UnionRect(i1, i2);
+  return UnionRects(i1, i2);
 }
 
 SkBlendMode ToBlendMode(CompositeOperationType mode) {

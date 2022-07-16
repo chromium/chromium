@@ -33,6 +33,17 @@
     Time limit removed for <ph name="APP_NAME">$1<ex>Gmail</ex></ph>
   </message>
 
+  <!-- Website Permission -->
+  <message name="IDS_WEBSITE_APPROVED_NOTIFICATION_TITLE" desc="Title of system notification for remote website approvals. This is shown to a child user when a parent has remotely approved their request to access a certain website.">
+    Website request approved
+  </message>
+  <message name="IDS_WEBSITE_APPROVED_NOTIFICATION_MESSAGE" desc="Message in system notification for remote website approvals. This is shown to a child user when a parent has remotely approved their request to access a certain website.">
+    Click here to visit <ph name="APPROVED_URL">$1<ex>www.google.com</ex></ph>
+  </message>
+  <message name="IDS_WEBSITE_APPROVED_NOTIFICATION_DISPLAY_SOURCE" desc="The string shown as the display source of website approval notifications. Family Link is the name of a Google app.">
+    Family Link
+  </message>
+
   <!-- Wallpaper Manager (Deprecated Chrome App Version) -->
   <message name="IDS_WALLPAPER_MANAGER_APP_NAME" desc="Name of the app which allows users to pick their wallpaper.">
     Wallpaper Picker
@@ -110,53 +121,6 @@
     Default wallpaper
   </message>
 
-  <!-- Zip Archiver -->
-  <message desc="The product name for Zip Archiver." name="IDS_ZIP_ARCHIVER_NAME">
-    Zip Archiver
-  </message>
-  <message desc="The product description, displayed in the Chrome Extensions page." name="IDS_ZIP_ARCHIVER_DESCRIPTION">
-    Zip Archiver - Open and pack ZIP files in Files app.
-  </message>
-  <message desc="Title of the password input dialog." name="IDS_ZIP_ARCHIVER_PASSPHRASE_TITLE">
-    Enter your password
-  </message>
-  <message desc="Label of the password input field." name="IDS_ZIP_ARCHIVER_PASSPHRASE_INPUT_LABEL">
-    Password
-  </message>
-  <message desc="Short name of the password accept button." name="IDS_ZIP_ARCHIVER_PASSPHRASE_ACCEPT">
-    Unlock
-  </message>
-  <message desc="Short name of the password cancel button." name="IDS_ZIP_ARCHIVER_PASSPHRASE_CANCEL">
-    Cancel
-  </message>
-  <message desc="Title for of a checkbox whether the password should be remembered. Please keep it as short." name="IDS_ZIP_ARCHIVER_PASSPHRASE_REMEMBER">
-    Remember
-  </message>
-  <message desc="Error message when opening an archive fails because of an unknown reason." name="IDS_ZIP_ARCHIVER_OTHER_ERROR_MESSAGE">
-    The archive format is not supported, or the file is broken.
-  </message>
-  <message desc="Error message when the Zip Archiver has crashed." name="IDS_ZIP_ARCHIVER_CRASH_ERROR_MESSAGE">
-    Aw, Snap! The Zip Archiver encountered an error.
-  </message>
-  <message desc="Message shown when opening an archive takes long time." name="IDS_ZIP_ARCHIVER_MOUNTING_MESSAGE">
-    Please wait, the archive is being scanned...
-  </message>
-  <message desc="Message shown when packing an archive takes long time." name="IDS_ZIP_ARCHIVER_PACKING_DEFERRED_MESSAGE">
-    Please wait...
-  </message>
-  <message desc="Message shown when packing fails." name="IDS_ZIP_ARCHIVER_PACKING_ERROR_MESSAGE">
-    Packing failed.
-  </message>
-  <message desc="Message shown when packing is in progress." name="IDS_ZIP_ARCHIVER_PACKING_PROGRESS_MESSAGE">
-    Please wait, packing...
-  </message>
-  <message desc="Label text used to cancel zip operation in progress." name="IDS_ZIP_ARCHIVER_PACKING_CANCEL_BUTTON_LABEL">
-    Cancel
-  </message>
-  <message desc="Message shown when limit of open FSPs reached." name="IDS_ZIP_ARCHIVER_TOO_MANY_OPENED">
-    Too many file systems opened.
-  </message>
-
   <!-- MultiDevice setup dialog. -->
   <message name="IDS_MULTIDEVICE_SETUP_ACCEPT_LABEL" desc="Label for button to accept conditions and begin MultiDevice setup workflow.">
     Accept &amp; continue
@@ -189,7 +153,7 @@
     Connect to your phone
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE" desc="Summary to tell user that they can share their Android's capabilities with their Chrome OS device; includes details on specific features that can be used and a link to an information page">
-    You can text from your computer, share your internet connection, reply to conversation notification and unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> with your phone.<ph name="FOOTNOTE_POINTER">$2<ex>*</ex></ph> <ph name="LINK_BEGIN">&lt;a href="$3<ex>https://support.google.com/chromebook/?p=multidevice</ex>" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    You can text from your computer, share your internet connection, reply to conversation notifications and unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> with your phone.<ph name="FOOTNOTE_POINTER">$2<ex>*</ex></ph> <ph name="LINK_BEGIN">&lt;a href="$3<ex>https://support.google.com/chromebook/?p=multidevice</ex>" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE" desc="Footnote for multi-device feature setup page, which indicates that the exact set of features available to users differs according to the device model used.">
     <ph name="FOOTNOTE_POINTER">$1<ex>*</ex></ph>Features vary by device
@@ -215,6 +179,9 @@
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_WIFI_SYNC" desc="Description of a feature that syncs Wi-Fi network configurations between Chrome OS devices and a connected Android phone">
     Sync Wi-Fi networks with your phone
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_CAMERA_ROLL" desc="Description of a feature that allows user to download most recent items in camera roll on the connected Android phone">
+    Access your phone's camera roll
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_INSTALL_APPS_DESCRIPTION" desc="Tell the user that Better Together can automatically install apps on their Chromebook">
     Automatically install apps
@@ -388,45 +355,6 @@
     Verifying confirmation code...
   </message>
 
-  <!-- Upgrade notifications -->
-  <message name="IDS_RELAUNCH_REQUIRED_TITLE_DAYS" desc="The title of a dialog that tells users the device must be restarted within two or more days.">
-    {0, plural,
-      =1 {Update device within a day}
-      other {Update device within # days}}
-  </message>
-  <message name="IDS_RELAUNCH_REQUIRED_TITLE_HOURS" desc="The title of a dialog that tells users the device must be restarted within one or more hours.">
-    {0, plural,
-      =1 {Update device within an hour}
-      other {Update device within # hours}}
-  </message>
-  <message name="IDS_RELAUNCH_REQUIRED_TITLE_MINUTES" desc="The title of a dialog that tells users the device must be restarted within one or more minutes.">
-    {0, plural,
-      =1 {Update device within 1 minute}
-      other {Update device within # minutes}}
-  </message>
-  <message name="IDS_RELAUNCH_REQUIRED_TITLE_SECONDS" desc="The title of a dialog that tells users the device must be restarted within some number of seconds.">
-    {0, plural,
-      =0 {Update device now}
-      =1 {Update device within 1 second}
-      other {Update device within # seconds}}
-  </message>
-  <message name="IDS_RELAUNCH_REQUIRED_BODY" desc="The body text of a dialog that tells users the device must be restarted. MANAGER can be a domain or an email address.">
-    <ph name="MANAGER">$1<ex>google.com</ex></ph> requires you to update this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> before the deadline.
-  </message>
-
-  <message name="IDS_RELAUNCH_RECOMMENDED_TITLE" desc="The title of a dialog that tells users that a device restart is recommended for an update.">
-    Update available
-  </message>
-  <message name="IDS_RELAUNCH_RECOMMENDED_OVERDUE_TITLE" desc="The title of a dialog that tells users that a device restart had been recommended for an update.">
-    Update overdue
-  </message>
-  <message name="IDS_RELAUNCH_RECOMMENDED_BODY" desc="The body text of a dialog that tells users the device must be restarted. MANAGER can be a domain or an email address.">
-    <ph name="MANAGER">$1<ex>google.com</ex></ph> recommends that you update this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
-  </message>
-  <message name="IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY" desc="The body text of a dialog that tells users the device must be restarted right now. MANAGER can be a domain or an email address.">
-    <ph name="MANAGER">$1<ex>google.com</ex></ph> requires you to update this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> immediately.
-  </message>
-
   <!-- Chrome OS Strings -->
   <message name="IDS_ECHO_CONSENT_DIALOG_TEXT" desc="Dialog text shown when user is asked to give consent to proceed with redeeming an ECHO offer.">
     <ph name="SERVICE_NAME">$1<ex>Google Drive</ex></ph> wants to check if you are using an eligible Chrome OS device.
@@ -557,11 +485,11 @@
   <message name="IDS_OOBE_GENERIC_FATAL_ERROR_TITLE" desc="A generic title to be shown during OOBE to be used in error screens.">
     Something went wrong
   </message>
-  <message name="IDS_WELCOME_SCREEN_GREETING" desc="Greeting message on the OOBE welcome screen">
-    Welcome!
-  </message>
   <message name="IDS_NEW_WELCOME_SCREEN_GREETING" desc="Greeting message on the OOBE welcome screen">
-    Welcome to <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+    Welcome to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  </message>
+  <message name="IDS_WELCOME_SCREEN_GREETING_CLOUD_READY" desc="Greeting message on the OOBE welcome screen">
+    Welcome to <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
   </message>
   <message name="IDS_WELCOME_SCREEN_GREETING_SUBTITLE" desc="Greeting message on the OOBE welcome screen">
     Fast. Secure. Effortless.
@@ -619,9 +547,6 @@
   </message>
   <message name="IDS_RESET_SCREEN_ICON_TITLE" desc="Accessible title of the reset screen icon depicting exclamation mark.">
     Exclamation mark icon
-  </message>
-  <message name="IDS_RESET_SCREEN_ILLUSTRATION_TITLE" desc="Accessible title of the reset screen illustration depicting powerwash.">
-    Powerwash illustration
   </message>
   <message name="IDS_UPDATING_SCREEN_TITLE" desc="Title of the OOBE screen displayed while system update is being dowloaded.">
     Updating...
@@ -725,6 +650,9 @@
   <message name="IDS_LANGUAGE_SECTION_TITLE" desc="Title of language selection screen" meaning="A title of the dialog where user should select Chrome OS UI language and default keyboard layout during initial device setup.">
     Choose your language &amp; keyboard
   </message>
+  <message name="IDS_LANGUAGE_SECTION_HINT" desc="Under-title line on the language selection screen" meaning="A hint to the user that language files are shared among users.">
+    Language files are shared among users to save disk space.
+  </message>
   <message name="IDS_ACCESSIBILITY_SECTION_TITLE" desc="Title of accessibility options screen" meaning="A title of the dialog where user can control Chrome OS UI accessibility (like large cursor or screen reader) options during initial device setup.">
     Accessibility settings
   </message>
@@ -817,6 +745,110 @@
   </message>
   <message name="IDS_OOBE_EULA_ACCEPT_AND_CONTINUE_BUTTON_TEXT" desc="Label on a button on the Title of Terms of Service OOBE screen to accept EULA and continue.">
     Accept and continue
+  </message>
+
+  <!-- Strings for the Bluetooth pairing dialog -->
+  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_WRITE_NOT_PERMITTED" desc="Bluetooth pairing dialog: Error message displayed when write operation is not permitted on Bluetooth device.">
+    Write operation is not permitted on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_UNSUPPORTED_DEVICE" desc="Bluetooth pairing dialog: Error message displayed when Bluetooth device is not supported.">
+    Unsupported Bluetooth device: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_REQUEST_NOT_SUPPORTED" desc="Bluetooth pairing dialog: Error message displayed when Bluetooth pair request is not supported.">
+    The given request is not supported to: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_READ_NOT_PERMITTED" desc="Bluetooth pairing dialog: Error message displayed when read operation is not permitted on pairing Bluetooth device.">
+    Read operation is not permitted on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_OFFSET_INVALID" desc="Bluetooth pairing dialog: Error message displayed during pairing operation when read or write has an invalid offset.">
+    Read or write operation was requested with an invalid offset on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_INSUFFICIENT_ENCRYPTION" desc="Bluetooth pairing dialog: Error message displayed during Bluetooth pairing when operation is not sufficiently encrypted.">
+    Insufficient encryption for a given operation on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_IN_PROGRESS" desc="Bluetooth pairing dialog: Message informing that current Bluetooth device is still being connected to.">
+    Connection to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>" still in progress
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_FAILED" desc="Bluetooth pairing dialog: Error message informing that connection to Bluetooth device failed.">
+    Failed to connect to "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>".
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_CONNECTION_CONGESTED" desc="Bluetooth pairing dialog: Error message informing that connection to Bluetooth device is congested.">
+    Connection is congested to remote device: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_AUTH_TIMEOUT" desc="Bluetooth pairing dialog: Error message informing that Bluetooth authentication connection timed out.">
+    Authentication timeout while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_AUTH_REJECTED" desc="Bluetooth pairing dialog: Error message informing that Bluetooth authentication code was rejected while connecting to a Bluetooth device.">
+    Authentication code rejected while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_AUTH_FAILED" desc="Bluetooth pairing dialog: Error message informing that authentication failed while trying to connect to Bluetooth device">
+    Authentication failed while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_AUTH_CANCELED" desc="Bluetooth pairing dialog: Error message informing that authentication was canceled while connecting a Bluetooth device.">
+    Authentication canceled while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_ATTRIBUTE_LENGTH_INVALID" desc="Bluetooth pairing dialog: Error message informing that write operations exceeds the maximum length of attribute to a Bluetooth device.">
+    Write operation exceeds the maximum length of the attribute to: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_CONFIRM_PASSKEY" desc="Bluetooth pairing dialog: Bluetooth pairing message typically shown when pairing with a device that has a display.">
+    Please confirm this passkey is shown on "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_DISPLAY_PASSKEY" desc="Bluetooth pairing dialog: Bluetooth pairing message typically displayed when pairing a Bluetooth 2.1 and later wireless keyboard.">
+    Please enter this passkey on "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_REQUEST_PASSKEY" desc="Bluetooth pairing dialog: Bluetooth pairing message typically displayed when the external Bluetooth 2.1 and later device has no display or means of input, and does not support SSP.">
+    Please enter the passkey for "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_DISPLAY_PINCODE" desc="Bluetooth pairing dialog: Bluetooth pairing message typically displayed when pairing a Bluetooth 2.0 and older wireless keyboard.">
+    Please enter this PIN code on "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_REQUEST_PINCODE" desc="Bluetooth pairing dialog: Bluetooth pairing message typically displayed when the external Bluetooth 2.0 and older device has no display or means of input.">
+    Please enter the PIN for "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_START_CONNECTING">
+    Connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>"
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_REJECT_PASSKEY" desc="Bluetooth pairing dialog: Text for button to reject pairing a device.">
+    Reject
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_PAIR" desc="Label for the settings button to pair a previously paired Bluetooth device.">
+    Pair
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_ENTER_KEY" desc="Bluetooth pairing dialog: Text for enter key when pairing keyboard devices." >
+    enter
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_ACCEPT_PASSKEY" desc="Bluetooth pairing dialog: Text for button to accept pairing code.">
+    Accept
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_PAIR_NEW_DEVICES" desc="Message displayed describing how to pair a new Bluetooth device.">
+    Pair new device
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_PAIRING_AVAILABLE_DEVICES" desc="Bluetooth pairing dialog: Title for the list of Bluetooth devices that are available for pairing.">
+    Available devices
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_PAIRING_NO_AVAILABLE_DEVICES" desc="Bluetooth pairing dialog: Title for the list of Bluetooth devices when no devices are available for pairing.">
+    No devices found
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_LEARN_MORE" desc="Bluetooth pairing dialog: Message informing the user on what actions to take in order to see a device in the list of available devices.">
+    Make sure your Bluetooth device is in pairing mode and nearby. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_ENTER_PIN" desc="Bluetooth pairing dialog: Message displayed informing the user to enter a PIN in other to complete device pairing.">
+    Enter PIN to pair with <ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>
+  </message>
+  <message name="IDS_BLUETOOTH_DEVICE_ITEM_BATTERY_PERCENTAGE" desc="Label for a Bluetooth device in a list that indicates the battery level of the device.">
+    <ph name="BATTERY_PERCENTAGE">$1<ex>32</ex></ph>%
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_PAIRING" desc="Bluetooth pairing dialog: Message informing the user that the device is being paired to.">
+    Pairing...
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_PAIRING_FAILED" desc="Bluetooth pairing dialog: Message informing the user that the device pairing failed.">
+    Couldn't pair. Select device to try again.
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_CONFIRM_CODE_MESSAGE" desc="Bluetooth pairing dialog: Message informing the user to confirm the code displayed is the same as the code displayed on the device being paired to.">
+    Before pairing, make sure this code is the same on both devices
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_ENTER_KEYS" desc="Bluetooth pairing dialog: Message displayed informing the user to enter the keys below on the device being paired.">
+    Enter these keys on <ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>
   </message>
 
   <!-- Strings for the OOBE packaged license screen -->
@@ -1035,35 +1067,100 @@
     Please retry. If you see this error again please contact your support representative.
   </message>
 
+  <!-- Strings for OS trial screen-->
+  <message name="IDS_OS_TRIAL_TITLE" desc="Title of the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
+    Start using <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
+  </message>
+  <message name="IDS_OS_TRIAL_SUBTITLE" desc="Subtitle of the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>For the best experience, install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> to your internal disk. You can also install it later from the login screen.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>If you're not ready to install, you can run from USB to try it out. This will keep your existing OS and data, but you may see storage and performance limits.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_OS_TRIAL_INSTALL_TITLE" desc="Title of the try option in the install or try screen, the first screen of the CloudReady 2.0 Installation flow.">
+    Install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
+  </message>
+  <message name="IDS_OS_TRIAL_INSTALL_SUBTITLE" desc="Subtitle of the try option in the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
+    Convert this device into a <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> device.
+  </message>
+  <message name="IDS_OS_TRIAL_TRY_TITLE" desc="Title of the install option in the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
+    Try it first
+  </message>
+  <message name="IDS_OS_TRIAL_TRY_SUBTITLE" desc="Subtitle of the install option in the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
+    Keep your OS and run <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> from USB.
+  </message>
+  <message name="IDS_OS_TRIAL_NEXT_BUTTON" desc="Text of the next button in the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
+    Next
+  </message>
+
   <!-- Strings for OS install -->
-  <message name="IDS_OS_INSTALL_SCREEN_ERROR_TITLE" desc="Title of the error page of the OS install screen">
-    Installation failed
+  <message name="IDS_OS_INSTALL_SCREEN_INTRO_TITLE" desc="Title of the introduction page in the OS install screen.">
+    Install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
   </message>
-  <message name="IDS_OS_INSTALL_SCREEN_ERROR_FAILED_SUBTITLE" desc="Subtitle of the error page of the OS install screen for general failure" translateable="false">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Sorry, something went wrong and we were unable to install CloudReady.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>Please visit [TBD LINK] for additional information or view logs for details.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  <message name="IDS_OS_INSTALL_SCREEN_INTRO_SUBTITLE" desc="Subtitle text of the OS install screen's introduction step.">
+    Installing <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> will overwrite all data on your device.
   </message>
-  <message name="IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_SUBTITLE" desc="Subtitle of the error page of the OS install screen when no valid destination for installation was found" translateable="false">
-    The installer could not find a valid destination to install CloudReady. Please visit [TBD LINK] for additional information.
+  <message name="IDS_OS_INSTALL_SCREEN_INTRO_CONTENT_0" desc="First part of body text of the OS install screen's introduction step.">
+    Before starting, make sure you have a backup of your data. Installing <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> will overwrite your hard drive. Learn more at g.co/TBD.
   </message>
-  <message name="IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_CONTENT" desc="Content of the error page of the OS install screen when no valid destination for installation was found" translateable="false">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Check that your device contains working internal storage such as a HDD, SDD, or eMMC.
+  <message name="IDS_OS_INSTALL_SCREEN_INTRO_CONTENT_1" desc="Second part of body text of the OS install screen's introduction step.">
+    Installation takes a few easy steps. You’ll have another chance to confirm before changes are made to your computer.
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_INTRO_FOOTER" desc="Footer text of the OS install screen's introduction step.">
+    Google isn’t responsible for any data loss, and <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> may not work on uncertified models. Learn more at g.co/TBD.
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_INTRO_NEXT_BUTTON" desc="Text of the next button on the introduction page of the OS install screen">
+    Install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_TITLE" desc="Title of the confirmation dialog of the OS install screen">
+    Install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> and erase hard drive?
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_BODY" desc="Body text of the OS install screen's confirmation dialog">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Installation <ph name="BEGIN_BOLD">&lt;b&gt;</ph>will erase your entire hard drive<ph name="END_BOLD">&lt;/b&gt;</ph>. Make sure your data is backed up.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>Once installation starts it can’t be canceled.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_NEXT_BUTTON" desc="Text of the next button on the confirmation dialog of the OS install screen">
+    Install
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_IN_PROGRESS_TITLE" desc="Title of the in-progress page of the OS install screen">
+    Installing <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_IN_PROGRESS_SUBTITLE" desc="Subtitle of the in-progress page of the OS install screen">
+    Make sure your device is plugged in, and don’t turn it off. Installation may take up to 20 minutes. Your device will automatically shut down when installation is complete.
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_ERROR_TITLE" desc="Title of the error page of the OS install screen.">
+    Couldn’t complete installation
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_ERROR_FAILED_SUBTITLE" desc="Subtitle of the error page of the OS install screen for general failure.">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Something went wrong and <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> couldn’t be installed.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>For more help visit: g.co/xxxxx<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_ERROR_VIEW_LOGS" desc="Label for an actionable link that opens dialog with installation logs.">
+    View logs
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_SUBTITLE" desc="Subtitle of the error page of the OS install screen when no valid destination for installation was found.">
+    The installer couldn’t find a valid destination to install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>.
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_CONTENT" desc="Content of the error page of the OS install screen when no valid destination for installation was found.">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Try these troubleshooting steps:
     <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
-    <ph name="LIST_ITEM">&lt;li&gt;</ph>Check that your internal storage device is greater than 16GB.
-    <ph name="LIST_ITEM">&lt;li&gt;</ph>Check the connection to the internal storage, if physically accessible.
-    <ph name="LIST_ITEM">&lt;li&gt;</ph>Make sure you're using a certified model, and if so check all install notes for this model.
+    <ph name="LIST_ITEM">&lt;li&gt;</ph>Make sure your device contains working internal storage such as a HDD, SSD, or eMMC
+    <ph name="LIST_ITEM">&lt;li&gt;</ph>Check that your internal storage device is greater than 16GB
+    <ph name="LIST_ITEM">&lt;li&gt;</ph>Check the connection to the internal storage, if physically accessible
+    <ph name="LIST_ITEM">&lt;li&gt;</ph>Make sure you're using a certified model and check install notes
     <ph name="END_LIST">&lt;/ul&gt;</ph>
     <ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>View logs for additional details.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>For more help, visit: g.co/xxxxx<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
-  <message name="IDS_OS_INSTALL_SCREEN_ERROR_SERVICE_LOGS_LINK_TEXT" desc="Text of the link to service logs dialog of the OS install screen">
-    Show service logs
+  <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE" desc="Title of the success page of the OS install screen">
+    Installation complete
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE" desc="Subtitle of the success page of the OS install screen">
+    Remove the USB and restart your device to start using <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>. Otherwise your device will shut down in <ph name="TIME_LEFT">$2<ex>60 seconds</ex></ph>.
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_SERVICE_LOGS_TITLE" desc="Title of service logs dialog of the OS install screen">
     Service logs
   </message>
-  <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE" desc="Title of the success page of the OS install screen">
-    Installation complete
+  <message name="IDS_OS_INSTALL_SCREEN_RESTART_BUTTON" translateable="false" desc="Text of the restart button on the OS install screen">
+    Restart
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_SEND_FEEDBACK" desc="Text of the send feedback button on the OS install screen">
     Send feedback
@@ -1113,7 +1210,7 @@
     The following services help keep your data safe and secure. You can turn these features off at any time.
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2" desc="Alternate subtitle of the dialog that explains Chrome Sync and privacy options on first login for non-split.">
-    Your saved preferences will be ready on any Chrome OS device when you sign in with your Google Account. You can choose what to sync in Settings.
+    Your saved preferences and activity will be ready on any Chrome OS device when you sign in with your Google Account. You can choose what to sync in Settings.
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME" desc="Title of the 'Settings sync' section of the sync confirmation dialog that is displayed on the first user log in.">
     Chrome OS settings sync
@@ -1172,22 +1269,10 @@
     No thanks
   </message>
 
-  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE" desc="The title of the dialog that recommend apps which user has installed in other devices">
-    Install apps from your other devices
-  </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION" desc="The description of the 'Recommend Apps' section">
-    We found <ph name="NUMBER_OF_APPS">$1<ex>10</ex></ph> apps from your account that can be used on this device.
-  </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_SKIP" desc="The label on the button that skips installing any recommended apps">
-    Skip
-  </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_INSTALL" desc="The label on the button that installs the user selected apps">
-    Install &#38; continue
-  </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE_NEW" desc="The title of the dialog that recommend apps to user">
+  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE" desc="The title of the dialog that recommend apps to user">
     Find apps for work and play
   </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION_NEW" desc="The description of the 'Recommend Apps' section">
+  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION" desc="The description of the 'Recommend Apps' section">
     Get creative, be productive, and stay entertained with apps on the Google Play Store
   </message>
   <message name="IDS_LOGIN_RECOMMEND_APPS_SELECT_ALL" desc="The label on the button that selects all recommended apps">
@@ -1202,22 +1287,10 @@
   <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_LOADING" desc="Message shown while the recommended app list is being downloaded.">
     Please wait...
   </message>
-  <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_SINGULAR" desc="The title of the dialog that tells the user the selected Android App is downloading.">
-    We'll install that app for you
-  </message>
-  <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_PLURAL" desc="The title of the dialog that tells the user the selected Android Apps are downloading.">
-    We'll install those <ph name="NUMBER_OF_APPS">$1<ex>10</ex></ph> apps for you
-  </message>
-  <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_DESCRIPTION" desc="The description of the 'App Downloading' section">
-    You can find more apps for your device in the Play Store.
-  </message>
-  <message name="IDS_LOGIN_APP_DOWNLOADING_CONTINUE_SETUP" desc="The label on the button that continues the setup flow.">
-    Continue setup
-  </message>
   <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE" desc="The title of the dialog that tells the user the selected Android Apps are downloading.">
     Apps downloading
   </message>
-  <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_DESCRIPTION_NEW" desc="The description of the 'App Downloading' section.">
+  <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_DESCRIPTION" desc="The description of the 'App Downloading' section.">
     We'll install those apps for you. You can find more apps for your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> in the Play Store.
   </message>
   <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_NEXT" desc="The label on the button that continues the setup flow.">
@@ -1426,8 +1499,8 @@
   <message name="IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN" desc="Message to show when the authentication could not be completed because the user's auth token retrieved.">
     Sign-in failed because your access token could not be retrieved. Please check your network connection and try again.
   </message>
-  <message name="IDS_LOGIN_SAML_INTERSTITIAL_MESSAGE" desc="Message to show on the SAML interstitial page to tell the user to continue signing in using their enterprise account.">
-    This device is managed by <ph name="DOMAIN">$1<ex>acmecorp.com</ex></ph> and requires you to sign in every time.
+  <message name="IDS_LOGIN_SAML_INTERSTITIAL_MESSAGE" desc="Message to show on the SAML interstitial page to tell the user to continue signing in using their enterprise account. MANAGER can be a domain or an email address.">
+    This device is managed by <ph name="MANAGER">$1<ex>acmecorp.com</ex></ph> and requires you to sign in every time.
   </message>
   <message name="IDS_LOGIN_SAML_INTERSTITIAL_CHANGE_ACCOUNT_LINK_TEXT" desc="Text of the link that allows the user to change the login account.">
     Sign in with a different account
@@ -1778,17 +1851,11 @@
   <message name="IDS_ENABLE_ARC_ADB_SIDELOADING_SETUP_MESSAGE" desc="Setup message in dialog for enabling ARC ADB Sideloading.">
     Continuing will enable ADB debugging for creating and testing Android apps. Note that this action allows installation of Android apps that haven't been verified by Google, and requires a factory reset to disable.
   </message>
-  <message name="IDS_ENABLE_ARC_ADB_SIDELOADING_SETUP_ILLUSTRATION_TITLE" desc="Accessible title of ARC ADB sideloading illustration depicting the setup screen.">
-    Enabling adb to create apps illustration
-  </message>
   <message name="IDS_ENABLE_ARC_ADB_SIDELOADING_ERROR_TITLE" desc="Title message when enabling of ARC ADB Sideloading fails.">
     Something went wrong
   </message>
   <message name="IDS_ENABLE_ARC_ADB_SIDELOADING_ERROR_MESSAGE" desc="Error message when enabling of ARC ADB Sideloading fails.">
     Couldn't enable ADB debugging. Go to Settings and try again.
-  </message>
-  <message name="IDS_ENABLE_ARC_ADB_SIDELOADING_ERROR_ILLUSTRATION_TITLE" desc="Accessible title of ARC ADB sideloading illustration depicting the error screen.">
-    Failed to enable ADB illustration
   </message>
   <message name="IDS_ENABLE_ARC_ADB_SIDELOADING_LEARN_MORE" desc="Learn more link text in the enable ARC ADB Sideloading dialog.">
     Learn more
@@ -2148,8 +2215,22 @@
   <message name="IDS_LOGIN_ERROR_TPM_FAILURE_TITLE" desc="Title of the screen notifying user about TPM error.">
     Something went wrong with signing in
   </message>
+  <message name="IDS_LOGIN_ERROR_TPM_DBUS_ERROR_TITLE" desc="Title of the screen notifying user about TPM error." translateable="false">
+    Something went wrong during TPM check
+  </message>
   <message name="IDS_LOGIN_ERROR_TPM_FAILURE_REBOOT" desc="Suggestion to restart device in case of the TPM error.">
     Please restart your device to fix this error.
+  </message>
+  <message name="IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_TITLE" desc="Title of the screen notifying user about TPM error.">
+    Trusted Platform Module (TPM) detected
+  </message>
+  <message name="IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_SUBTITLE" desc="Subtitile of the screen notifying user about TPM ownership error.">
+    <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> detected an active TPM which can store your data more securely.
+  </message>
+  <message name="IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_CONTENT" desc="Steps that can help users to properly setup TPM manually.">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Before enrolling you need to clear the TPM so <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> can take ownership of the device.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can also turn off the TPM device entirely. Your data will still be stored safely with software encryption, but certain security features such as hardware-backed certificates will be disabled.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>You can change your TPM settings by rebooting and entering the system BIOS/UEFI settings. Steps vary based on the device model. For more info, open the <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> documentation on a separate device before you reboot: [URL link]<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_LOGIN_ERROR_TPM_FAILURE_REBOOT_BUTTON" desc="Label on button that restarts device.">
     Restart
@@ -2467,8 +2548,8 @@
   <message name="IDS_UPDATE_REQUIRED_SCREEN_TITLE" desc="The title of the update required dialog on the login screen to inform the user that policy prevents user sign in before OS version is is updated.">
      Immediate update required
   </message>
-  <message name="IDS_UPDATE_REQUIRED_SCREEN_MESSAGE" desc="The message of the update required dialog on the login screen to inform the user that policy prevents user sign in before OS version is is updated.">
-     <ph name="DOMAIN">$1<ex>example.com</ex></ph> requires you to update your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> immediately.
+  <message name="IDS_UPDATE_REQUIRED_SCREEN_MESSAGE" desc="The message of the update required dialog on the login screen to inform the user that policy prevents user sign in before OS version is is updated. MANAGER can be a domain or an email address.">
+     <ph name="MANAGER">$1<ex>example.com</ex></ph> requires you to update your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> immediately.
   </message>
   <message name="IDS_UPDATE_REQUIRED_SCREEN_START_UPDATE" desc="Label for the update button on the update required dialog on the login screen to start the update process.">
      Update now
@@ -2479,14 +2560,14 @@
   <message name="IDS_UPDATE_REQUIRED_SCREEN_EOL_MESSAGE" desc="The message on login screen to inform the user that policy prevents the device from being used as it has reached its end of life.">
     The deadline to return this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> has passed.
   </message>
-  <message name="IDS_UPDATE_REQUIRED_SCREEN_METERED_MESSAGE" desc="The message on the dialog shown to the user in Chrome OS before forced update is attempted if the Chrome OS device is connected to a cellular/metered network. The dialog warns the user that procceeding on a metered network can cause overage charges.">
-    <ph name="DOMAIN">$1<ex>example.com</ex></ph> requires you to connect to Wi-Fi now and download an update. Or, download from a metered connection (charges may apply).
+  <message name="IDS_UPDATE_REQUIRED_SCREEN_METERED_MESSAGE" desc="The message on the dialog shown to the user in Chrome OS before forced update is attempted if the Chrome OS device is connected to a cellular/metered network. The dialog warns the user that procceeding on a metered network can cause overage charges. MANAGER can be a domain or an email address.">
+    <ph name="MANAGER">$1<ex>example.com</ex></ph> requires you to connect to Wi-Fi now and download an update. Or, download from a metered connection (charges may apply).
   </message>
   <message name="IDS_UPDATE_REQUIRED_SCREEN_ALLOW_METERED" desc="Label for button to allow downloading update over a metered connection.">
     Use metered connection
   </message>
-  <message name="IDS_UPDATE_REQUIRED_SCREEN_NO_NETWORK_MESSAGE" desc="The message on the dialog shown to the user in Chrome OS before forced update is attempted if the Chrome OS device is not connected to a network.">
-    <ph name="DOMAIN">$1<ex>example.com</ex></ph> requires you to connect to Wi-Fi now and download an update.
+  <message name="IDS_UPDATE_REQUIRED_SCREEN_NO_NETWORK_MESSAGE" desc="The message on the dialog shown to the user in Chrome OS before forced update is attempted if the Chrome OS device is not connected to a network. MANAGER can be a domain or an email address.">
+    <ph name="MANAGER">$1<ex>example.com</ex></ph> requires you to connect to Wi-Fi now and download an update.
   </message>
   <message name="IDS_UPDATE_REQUIRED_SCREEN_OPEN_NETWORK_SETTINGS" desc="Label for network configuration button on the update required dialog on the login screen to open network settings so that the user can connect to a network.">
     Open network settings
@@ -2737,8 +2818,8 @@
   </message>
 
   <!-- Strings for the enterprise enrollment page -->
-  <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED" desc="Error message shown on the enrollment screen if enrollment is not allowed because of CloudReady.">
-    Enrollment is only supported after installation. To manage this device, install CloudReady first.
+  <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED" desc="Error message shown on the enrollment screen if enrollment is not allowed because of OS installation flow.">
+    Enrollment is only supported after you install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>.
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_REGISTRATION_FAILED" desc="Error message shown on the enrollment screen upon failed device registration.">
     Error when registering the device with the server: <ph name="CLIENT_ERROR">$1<ex>Failed to connect to the server</ex></ph>.
@@ -2815,8 +2896,8 @@
   <message name="IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE" desc="Error message to show when the user tries to enroll a device with a packaged license using a consumer account.">
     Your device includes a Chrome Enterprise Upgrade, but your username is not associated with an enterprise account. Please create an enterprise account by visiting g.co/ChromeEnterpriseAccount on a secondary device.
   </message>
-  <message name="IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_BUSINESS_DOMAIN_WITH_PACKAGED_LICENSE" desc="Error message to show when the user tries to enroll a device with a packaged license using a consumer account with business domain.">
-    <ph name="DOMAIN">$1<ex>gmail.com</ex></ph> isn't a valid organization. Contact your administator. If you are an administator, you can set up your organization by visiting: g.co/ChromeEnterpriseAccount
+  <message name="IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE_ACCOUNT_CHECK" desc="Error message to show after account check when the user tries to enroll a device with a packaged license using a consumer account.">
+    <ph name="USER_EMAIL">$1<ex>john.doe@example.com</ex></ph> does not belong to a valid organization. Contact your administrator. If you are an administrator, you can set up your organization by visiting: g.co/ChromeEnterpriseAccount
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL" desc="Error message to show when the user tries to enroll a device with an ineligible enterprise account.">
     Your username belongs to your organization's enterprise account. To enroll devices to the account, first verify domain ownership in the Admin console. You will need administrative privileges on the account to verify.
@@ -2857,9 +2938,6 @@
   <message name="IDS_ENTERPRISE_ENROLLMENT_ERROR_TITLE" desc="Title of the screen to be shown upon an error during enterprise enrollment.">
     Enrollment Error
   </message>
-  <message name="IDS_ENTERPRISE_ENROLLMENT_ERROR_ILLUSTRATION_TITLE" desc="Accessible title of the enterprise enrollment screen illustration depicting error during enrollment.">
-    Enrollment error illustration
-  </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_RETRY" desc="Label for the retry button on the error step in the enterprise enrollment dialog.">
     Try again
   </message>
@@ -2878,9 +2956,6 @@
   <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS" desc="Success message to be shown once enterprise enrollment completes.">
     Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> has successfully been enrolled for enterprise management.
   </message>
-  <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS_ILLUSTRATION_TITLE" desc="Accessible title of the enterprise enrollment screen illustration depicting successful enrollment.">
-    Successful enrollment illustration
-  </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS_DOMAIN" desc="Success message to be shown once enterprise enrollment completes. MANAGER can be a domain or an email address.">
     This <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> will be managed by <ph name="MANAGER">$2<ex>acmecorp.com</ex></ph>.
   </message>
@@ -2889,6 +2964,13 @@
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_LOCATION_LABEL" desc="Label for location tex box on the device naming screen in the enterprise enrollment dialog.">
     Device Location
+  </message>
+  <!-- Pre-enrollment TPM check. -->
+  <message name="IDS_TPM_CHECK_TITLE" desc="The title of loading dialog shown during TPM status check.">
+    Device enrollment
+  </message>
+  <message name="IDS_TPM_CHECK_SUBTITLE" desc="The subtitle of loading dialog shown during TPM status check.">
+    Checking TPM status...
   </message>
   <!-- Administrator facing strings for Active Directory screens. -->
   <message name="IDS_AD_DEVICE_NAME_INPUT_LABEL" desc="Admin-facing. Label for device name input field on the Active Directory domain join screen. User should tell us the name of their device.">
@@ -3504,7 +3586,7 @@
     Settings - Remove Android apps
   </message>
   <message name="IDS_ARC_SIGN_IN_NETWORK_ERROR" desc="Android sign-in error because of network error">
-    Network connection was lost. Please check your network connection or try another Wi-Fi network.
+    Network connection was lost. Check your network connection or try another Wi-Fi network.
   </message>
   <message name="IDS_ARC_SIGN_IN_GMS_SIGNIN_ERROR" desc="Android sign-in error because of service is unavailable">
     Couldn't connect to Google Play. Check your network connection and try again. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
@@ -3528,7 +3610,7 @@
     Provisioning flow was interrupted. Please try again or contact your device owner or administrator. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
   </message>
   <message name="IDS_ARC_SIGN_IN_CLOUD_PROVISION_FLOW_NETWORK_ERROR" desc="Android permament sign-in error because of cloud provision flow failed">
-    Couldn’t connect with the server. Please check your network connection and try again. If you're still having trouble, try restarting your Chromebook. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
+    Couldn’t connect with the server. Check your network connection and try again. If you're still having trouble, try restarting your Chromebook. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
   </message>
   <message name="IDS_ARC_SIGN_IN_CLOUD_PROVISION_FLOW_PERMANENT_ERROR" desc="Android permament sign-in error because of cloud provision flow failed">
     Something went wrong. Please contact your device owner or administrator. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
@@ -3543,13 +3625,13 @@
     Something went wrong. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
   </message>
   <message name="IDS_ARC_SERVER_COMMUNICATION_ERROR" desc="Android sign-in error because of server communication error">
-    Couldn’t connect with the server. Please check your network connection and try again. If you're still having trouble, try restarting your Chromebook.
+    Couldn’t connect with the server. Check your network connection and try again. If you're still having trouble, try restarting your Chromebook.
   </message>
   <message name="IDS_ARC_ANDROID_MANAGEMENT_REQUIRED_ERROR" desc="Error message shown when Android management is required for an unmanaged Chrome OS user.">
     Your organization has not enabled Google Play Store for your account. Contact your administrator for more information.
   </message>
   <message name="IDS_ARC_NETWORK_UNAVAILABLE_ERROR" desc="Error message shown when Android cannot set up network connection.">
-    Network connection cannot be established. Please check your network connection and try again.
+    Network connection cannot be established. Check your network connection and try again.
   </message>
   <message name="IDS_ARC_CRITICALLY_LOW_DISK_NOTIFICATION_TITLE" desc="Title of the notification warning users that they are critically low on disk space and Android apps can not be launched.">
     Device disk space critically low
@@ -3662,6 +3744,9 @@
   <message name="IDS_ARC_ACCESSIBILITY_SELECTED_STATUS" desc="Text used by screen readers that represents that the element is selected.">
     Selected
   </message>
+  <message name="IDS_ARC_ACCESSIBILITY_WINDOW_TITLE_IN_PIP" is_accessibility_with_no_ui="true" desc="A hint text that is read by screen readers appended to the window title, explaning that the window is in the picture-pi-picture mode.">
+    Picture in picture
+  </message>
   <message name="IDS_ASSISTANT_OPT_IN_LOADING" desc="Loading message of the Assistasnt opt-in flow dialog.">
     Loading Google Assistant...
   </message>
@@ -3696,16 +3781,10 @@
     Screen context
   </message>
   <message name="IDS_ASSISTANT_SCREEN_CONTEXT_DESC" desc="Description for assistant screen context optin.">
-    To get tailored responses when you ask questions, let your Assistant use info on your screen. This may include info about songs or videos that are playing.
+    To get tailored responses when you ask questions, let your Assistant access a screenshot of what’s on your screen. This may also include info about songs or videos that are playing.
   </message>
   <message name="IDS_ASSISTANT_SCREEN_CONTEXT_DESC_CHILD" desc="Description for assistant screen context optin, when a child account is in use.">
-    To get tailored responses when <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> asks questions, let Assistant use info on <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s screen. This may include info about songs or videos that are playing.
-  </message>
-  <message name="IDS_ASSISTANT_READY_SCREEN_TITLE" desc="Title for assistant ready screen.">
-    Your Assistant is ready
-  </message>
-  <message name="IDS_ASSISTANT_READY_SCREEN_MESSAGE" desc="Message for Assistant ready screen.">
-    When your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is set up, press the Assistant button or say "Ok Google" to get help anytime. Go to Assistant settings to make changes.
+    To get tailored responses when <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> asks questions, let Assistant access a screenshot of what’s on <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s screen. This may also include info about songs or videos that are playing.
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_TITLE" desc="Title for assistant related info screen.">
     Allow your Assistant to use info on your screen to help
@@ -3720,10 +3799,10 @@
     Google Assistant works here too
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE" desc="Message for assistant related info screen for returned users.">
-    Looks like you’ve already set up Google Assistant on another device. Get even more out of your Assistant by turning on Screen context.
+    Looks like you’ve already set up Google Assistant on another device. Get even more out of your Assistant by turning on Screen context on this device.
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE_CHILD" desc="Message for assistant related info screen for returned users, when a child account is in use.">
-    Looks like <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> has already set up Google Assistant on another device. <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> can get even more out of Assistant by turning on Screen context.
+    Looks like <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> has already set up Google Assistant on another device. <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> can get even more out of Assistant by turning on Screen context on this device.
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE" desc="Message to illustrate the use cases for assistant related info.">
     You could ask “Hey Google, what song is this?” or “Hey Google, what's on my screen?”
@@ -3747,23 +3826,36 @@
     Let <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> access Google Assistant with “Hey Google”
   </message>
   <message name="IDS_ASSISTANT_VOICE_MATCH_MESSAGE" desc="Message for Assistant voice match screen.">
-    Voice Match helps your Google Assistant identify your voice on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and tell you apart from others.
+    If you agree, Google Assistant will wait in standby mode to detect “Hey Google” and can recognize it is you speaking with Voice Match.
     <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Keep in mind:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access your personal results, too. You can remove Voice Match permission later by turning it off in Assistant Settings.
+    Voice Match allows your Assistant to identify you and tell you apart from others. The Assistant takes clips of your voice to form a unique voice model, which is only stored on your device. Your voice model may be sent temporarily to Google to better identify your voice.
+    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
+    If you decide later that Voice Match isn’t for you, simply remove it in Assistant settings. To view or delete the audio clips you record during Voice Match setup, go to <ph name="VOICE_MATCH_SETTINGS_URL">g.co/assistant/match</ph>.
+    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
+    <ph name="FOOTER_MESSAGE">$1<ex>Note: A similar voice or recording might be able to access your personal results or your Assistant.</ex></ph>
   </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_NO_DSP_MESSAGE" desc="Message without DSP support for Assistant voice match screen.">
-    Voice Match helps your Google Assistant identify your voice on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and tell you apart from others. To save battery, “Hey Google” is only on when your device is connected to a power source. To make changes, go to Settings.
-    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Keep in mind:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access your personal results, too. You can remove Voice Match permission later by turning it off in Assistant Settings.
+  <message name="IDS_ASSISTANT_VOICE_MATCH_NOTICE_MESSAGE" desc="Notice message for Assistant voice match screen.">
+    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Note:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access your personal results or your Assistant.
+  </message>
+  <message name="IDS_ASSISTANT_VOICE_MATCH_NO_DSP_NOTICE_MESSAGE" desc="Notice message without DSP support for Assistant voice match screen.">
+    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Note:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access your personal results or your Assistant. To save battery, you can select in your Assistant settings to have “Hey Google” on only when this device is connected to a power source.
   </message>
   <message name="IDS_ASSISTANT_VOICE_MATCH_MESSAGE_CHILD" desc="Message for Assistant voice match screen, when a child account is in use.">
-    Voice Match helps Google Assistant identify <ph name="SUPERVISED_USER_NAME">$2<ex>Child 1</ex></ph>’s voice on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and tell them apart from others.
+    If you agree, Google Assistant will wait in standby mode to detect “Hey Google” and can recognize it is <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> speaking with Voice Match.
+    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
+    Voice Match helps Google Assistant identify <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s voice on your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> and tell them apart from others.
     <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
     The Assistant takes clips of your child’s voice to form a unique voice model, which is only stored on their device(s). Your child’s voice model may be sent temporarily to Google to better identify their voice.
     <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    If you decide later that Voice Match isn’t right for your child, simply remove it in their Assistant Settings. To view or delete the audio clips your child records during Voice Match setup, go to g.co/assistant/match from your child’s account.
+    If you decide later that Voice Match isn’t right for your child, simply remove it in their Assistant Settings. To view or delete the audio clips your child records during Voice Match setup, go to <ph name="VOICE_MATCH_SETTINGS_URL">g.co/assistant/match</ph> from your child’s account.
     <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Note:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME">$2<ex>Child 1</ex></ph>’s personal results. To save battery, “Hey Google” is only on when this device is connected to a power source.
+    <ph name="FOOTER_MESSAGE">$3<ex>Note: A similar voice or recording might be able to access your personal results or your Assistant.</ex></ph>
+  </message>
+  <message name="IDS_ASSISTANT_VOICE_MATCH_NOTICE_MESSAGE_CHILD" desc="Footer message for Assistant voice match screen, when a child account is in use.">
+    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Note:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s personal results.
+  </message>
+  <message name="IDS_ASSISTANT_VOICE_MATCH_NO_DSP_NOTICE_MESSAGE_CHILD" desc="Footer message without DSP support for Assistant voice match screen, when a child account is in use.">
+    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Note:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s personal results. To save battery, you can select in <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s Assistant settings to have “Hey Google” on only when this device is connected to a power source.
   </message>
   <message name="IDS_ASSISTANT_VOICE_MATCH_RECORDING" desc="Title for recording in assistant voice match screen. This is also used as the sub label for the Assistant voice settings.">
     Teach your Assistant to recognize your voice
@@ -3831,6 +3923,173 @@
     Loading...
   </message>
 
+  <!-- Consolidated Consent OOBE screen. -->
+  <!-- TODO(crbug.com/1249479): Remove translateable tags when strings are finalized. -->
+  <message name="IDS_CONSOLIDATED_CONSENT_HEADER" desc="Title of the consolidated consent screen." translateable="false">
+    Review these terms and control your data
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_HEADER_CHILD" desc="Title of the consolidated consent screen for child account." translateable="false">
+    Review these terms and control your child's data
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_SUBHEADER" desc="Subtitle of the consolidated consent screen." translateable="false">
+    You can control what data is shared with Google. You can change this anytime in Settings. Data will be used according to Google's <ph name="BEGIN_LINK">&lt;a id="privacyPolicyLink"&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_TERMS_TITLE" desc="Title of the main terms and conditions to be accepted in the consolidated consent screen" translateable="false">
+    Terms and conditions
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_TERMS" desc="Main terms to be accepted in the consolidated consent screen." translateable="false">
+    I have read and agree to the <ph name="BEGIN_LINK1">&lt;a id="googleEulaLink"&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/a&gt;</ph>, <ph name="BEGIN_LINK2">&lt;a id="crosEulaLink"&gt;</ph>Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>, and <ph name="BEGIN_LINK3">&lt;a id="arcTosLink"&gt;</ph>Play Terms of Service<ph name="END_LINK3">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_TERMS_ARC_DISABLED" desc="Main terms to be accepted in the consolidated consent screen when arc is disabled." translateable="false">
+    I have read and agree to the <ph name="BEGIN_LINK1">&lt;a id="googleEulaLinkArcDisabled"&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK2">&lt;a id="crosEulaLinkArcDisabled"&gt;</ph>Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_TITLE" desc="Title for the message in the consolidated consent screen to opt-in for metrics for accounts." translateable="false">
+    Send usage and diagnostic data.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN" desc="Message in the consolidated consent screen to opt-in for metrics." translateable="false">
+    Help improve Chrome OS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google. Some aggregate data will also help Android apps and Google partners. If the Web &amp; App Activity setting is turned on for your Google Account, your Android data may be saved to your Google Account.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_CHILD" desc="Message in the consolidated consent screen to opt-in for metrics for a child account." translateable="false">
+    Help improve Chrome OS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google. Some aggregate data will also help Android apps and Google partners. If the Web &amp; App Activity setting is turned on for your child's Google Account, your child's Android data may be saved to your child's Google Account.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_ARC_DISABLED" desc="Message in the consolidated consent screen to opt-in for metrics when ARC is disabled." translateable="false">
+    Help improve Chrome OS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for metrics opt-in." translateable="false">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing your Chrome OS devices to send automatic reports helps us prioritize what to fix and improve in Chrome OS. These reports can include things like when Chrome OS crashes, which features you use, how much memory you typically use, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your Chrome OS device settings. If you’re a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>Turning off this feature doesn't affect your device's ability to send the information needed for essential services such as system updates and security.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH4">&lt;p&gt;</ph>If the Web &amp; App Activity setting is turned on for your Google Account, your Android data may be saved to your Google Account. You can see your data, delete it, and change your account settings at account.google.com.<ph name="END_PARAGRAPH4">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_CHILD" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for metrics opt-in for a child account." translateable="false">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing Chrome OS devices to send automatic reports helps us prioritize what to fix and improve in Chrome OS. These reports can include things like when Chrome OS crashes, which features were used, how much memory was typically used, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your child's Chrome OS device settings. If you're a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>Turning off this feature doesn't affect this device's ability to send the information needed for essential services such as system updates and security.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH4">&lt;p&gt;</ph>If the Web &amp; App Activity setting is turned on for your child’s Google Account, your child’s Android data may be saved to their Google Account. Learn more about these settings and how to adjust them at families.google.com.<ph name="END_PARAGRAPH4">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for metrics opt-in when ARC is disabled." translateable="false">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing Chrome OS devices to send automatic reports helps us prioritize what to fix and improve in Chrome OS. These reports can include things like when Chrome OS crashes, which features were used, how much memory was typically used.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your Chrome device settings. If you’re a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED_CHILD" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for metrics opt-in when ARC is disabled in a child account." translateable="false">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing Chrome OS devices to send automatic reports helps us prioritize what to fix and improve in Chrome OS. These reports can include things like when Chrome OS crashes, which features were used, how much memory was typically used, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your child's Chrome OS device settings. If you're a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_TITLE" desc="Title for the message in the consolidated consent screen to opt-in for back-up." translateable="false">
+    Back up Android apps to Google Drive.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN" desc="Message in the consolidated consent screen to opt-in for back-up." translateable="false">
+    Easily restore your data or switch device at any time. Your backups are uploaded to Google and encrypted using your Google Account password.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_CHILD" desc="Message in the consolidated consent screen to opt-in for back-up for a child account." translateable="false">
+    Easily restore your data or switch devices at any time. Backups are uploaded to Google and encrypted using your child’s Google Account password
+  </message>
+    <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_LEARN_MORE" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for back-up opt-in." translateable="false">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages, and photos. Backup data will not count toward your Drive storage quota.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn this service off in Settings.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_LEARN_MORE_CHILD" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for back-up opt-in for a child account." translateable="false">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages, and photos. Backup data will not count toward your child's Drive storage quota.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn this service off in Settings.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_TITLE" desc="Title for the message in the consolidated consent screen to opt-in for location services." translateable="false">
+    Use location for Android apps and services.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN" desc="Message in the consolidated consent screen to opt-in for location services." translateable="false">
+    Allow Android apps and services with location permission to use your device's location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_CHILD" desc="Message in the consolidated consent screen to opt-in for location services for child accounts." translateable="false">
+    Allow Android apps and services with location permission to use this device's location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_LEARN_MORE" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for location services opt-in." translateable="false">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Google's location service uses sources like Wi-Fi, mobile networks, and sensors to help estimate your device’s location.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn off Android location on your device at any time by going to Settings &gt; Apps &gt; Google Play Store &gt; Manage Android preferences &gt; Security &amp; location &gt; Location. You can also turn off the use of Wi-Fi, mobile networks, and sensors by turning off “Google Location Accuracy” in the same menu.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_LEARN_MORE_CHILD" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for location services opt-in. for a child account" translateable="false">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Google's location service uses sources like Wi-Fi, mobile networks, and sensors to help estimate this device’s location.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn off Android location on this device at any time by going to Settings &gt; Apps &gt; Google Play Store &gt; Manage Android preferences &gt; Security &amp; location &gt; Location. You can also turn off the use of Wi-Fi, mobile networks, and sensors by turning off “Google Location Accuracy” in the same menu.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_FOOTER" desc="Message in the footer of the consolidated consent screen." translateable="false">
+    By continuing, you agree that this device may also automatically download and install updates and apps from Google, your carrier, and your device's manufacturer, possibly using cellular data. Some of these apps may offer in-app purchases.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_FOOTER_CHILD" desc="Message in the footer of the consolidated consent screen for a child account." translateable="false">
+    By continuing, you agree that this device may also automatically download and install updates and apps from Google, your child’s carrier, and this device's manufacturer, possibly using cellular data. Some of these apps may offer in-app purchases.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_FOOTER_LEARN_MORE" desc="Message shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more in the footer." translateable="false">
+    To remove apps, go to Settings &gt; Apps &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_LEARN_MORE" desc="Learn more link text in the consolidated consent screen." translateable="false">
+    Learn more
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE" desc="Accept and continue button in the consolidated consent screen." translateable="false">
+    Accept and continue
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_OK" desc="Button for acknowledging in a dialog for terms of service." translateable="false">
+    OK
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_LOADING" desc="Message shown while the terms of service are being downloaded." translateable="false">
+    Loading...
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_TERMS_LOAD_ERROR" desc="Load error message of the consolidated consent dialog." translateable="false">
+    Terms of Service cannot be loaded. Please check your network connection and retry.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_RETRY" desc="Retry button of the consolidated consent dialog that reloads terms of service." translateable="false">
+    Retry
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_GOOGLE_EULA_TITLE" desc="Title of Google terms of service screen" translateable="false">
+    Google terms of service
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_CROS_EULA_TITLE" desc="Title of Google Chrome and Chrome OS additional terms screen" translateable="false">
+    Google Chrome and Chrome OS Additional Terms
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_ARC_TITLE" desc="Title of Goolge Play terms of service in opt-in screen" translateable="false">
+    Google Play terms of service
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_PRIVACY_POLICY_TITLE" desc="Text of the Link to Goolge Privacy Policy in opt-in screen" translateable="false">
+    Google privacy policy
+  </message>
+
+  <!-- Guest ToS Screen -->
+  <message name="IDS_GUEST_TOS_TITLE" desc="Title of guest terms of service screen">
+    Browse as a Guest
+  </message>
+  <message name="IDS_GUEST_TOS_TERMS_TITLE" desc="Title of the terms and conditions to be accepted before starting a guest session">
+    Terms and conditions
+  </message>
+  <message name="IDS_GUEST_TOS_TERMS" desc="Terms and conditions to be accepted before starting a guest session">
+    I have read and agree to the <ph name="BEGIN_LINK1">&lt;a id="googleEulaLink"&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/a&gt;</ph>, <ph name="BEGIN_LINK2">&lt;a id="crosEulaLink"&gt;</ph>Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_GUEST_TOS_LOADING" desc="Message shown while the terms of service are being downloaded">
+    Loading...
+  </message>
+  <message name="IDS_GUEST_TOS_ACCEPT" desc="Accept and continue button in the guest terms of service screen.">
+    Accept and continue
+  </message>
+  <message name="IDS_GUEST_TOS_OK" desc="Button for acknowledging in a dialog for terms of service.">
+    OK
+  </message>
+  <message name="IDS_GUEST_TOS_GOOGLE_EULA_TITLE" desc="Title of Google terms of service screen">
+    Google terms of service
+  </message>
+  <message name="IDS_GUEST_TOS_CROS_EULA_TITLE" desc="Title of Google Chrome and Chrome OS additional terms screen">
+    Google Chrome and Chrome OS Additional Terms
+  </message>
+  <!-- TODO(crbug.com/1241468): remove translateable="false" once the strings are finalized-->
+  <message name="IDS_GUEST_TOS_USAGE_OPT_IN_TITLE" desc="Title for the message in the guest terms of service screen to opt-in for metrics during the guest session." translateable="false">
+    Send usage and diagnostic data.
+  </message>
+  <message name="IDS_GUEST_TOS_USAGE_OPT_IN" desc="Message in the guest terms of service screen to opt-in for metrics during the guest session." translateable="false">
+    Help improve Chrome and Chrome OS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google. Some aggregate data will also help Android apps and Google partners. If the Web &amp; App Activity setting is turned on for your Google Account, your Android data may be saved to your Google Account.
+  </message>
+  <message name="IDS_GUEST_TOS_LEARN_MORE" desc="Learn more link text in guest terms of service screen." translateable="false">
+    Learn more
+  </message>
+  <message name="IDS_GUEST_TOS_USAGE_OPT_IN_LEARN_MORE" desc="Text shown in a pop-up dialog in the guest terms of service screen when the user clicks on the learn more for metrics opt-in." translateable="false">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing your Chrome OS devices to send automatic reports helps us prioritize what to fix and improve in Chrome OS. These reports can include things like when Chrome OS crashes, which features you use, how much memory you typically use, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your Chrome OS device settings. If you’re a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>Turning off this feature doesn't affect your device's ability to send the information needed for essential services such as system updates and security.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
+  </message>
+
   <!-- Supervision transition OOBE screen. -->
   <message name="IDS_ADDING_MANAGEMENT_TITLE" desc="Title of the management transition OOBE scree when user transitions to managed state. MANAGER can be a domain or an email address.">
     Setting up management by <ph name="MANAGER">$1<ex>example.com</ex></ph>
@@ -3858,11 +4117,12 @@
   </message>
 
   <!-- Lacros data migration screen. -->
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_TITLE" desc="Title of the data migration screen.">
-    Updating Chrome browser
+  <!-- TODO(crbug.com/1266669): Remove translateable tag when the string is finalized. -->
+  <message translateable="false" name="IDS_LACROS_DATA_MIGRATION_SCREEN_TITLE" desc="Title of the data migration screen.">
+    Updating Chrome browser (alpha)
   </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_SUBTITLE" desc="Subtitle of the data migration screen.">
-    You will be able to use your Chromebook shortly.
+  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_SUBTITLE" desc="Shows the % of progress.">
+    <ph name="PERCENT">$1<ex>100</ex></ph>% completed
   </message>
 
   <!-- Print Job Notification -->
@@ -3877,6 +4137,9 @@
   </message>
   <message name="IDS_PRINT_JOB_ERROR_NOTIFICATION_TITLE" desc="Title of the error printing notification.">
     Couldn't print. Check printer and try again.
+  </message>
+  <message name="IDS_PRINT_JOB_AUTHORIZATION_ERROR_NOTIFICATION_TITLE" desc="Title of the authorization error printing notification.">
+    Authorization Failed
   </message>
   <message name="IDS_PRINT_JOB_PAPER_JAM_NOTIFICATION_TITLE" desc="Title of the error printing notification.">
     Paper is jammed
@@ -3904,6 +4167,12 @@
   </message>
   <message name="IDS_PRINT_JOB_NOTIFICATION_MESSAGE" desc="Message of the print job notification.">
     <ph name="PAGE_NUMBER">$1<ex>5</ex></ph> pages to <ph name="PRINTER_NAME">$2<ex>printer</ex></ph>
+  </message>
+  <message name="IDS_PRINT_JOB_NOTIFICATION_CLIENT_UNAUTHORIZED_MESSAGE" desc="Message of the print job notification when client is unauthorized.">
+    <ph name="PROFILE_USERNAME">$1</ph> is not authorized to print to <ph name="PRINTER_NAME">$2<ex>printer</ex></ph>. Please contact your administrator.
+  </message>
+  <message name="IDS_PRINT_JOB_NOTIFICATION_IDENTIFICATION_REQUIRED_MESSAGE" desc="Message of the print job notification when credentials is not sent to the printer.">
+    Identification required to print to <ph name="PRINTER_NAME">$1<ex>printer</ex></ph>. Please contact your administrator.
   </message>
   <message name="IDS_PRINT_JOB_NOTIFICATION_SINGLE_PAGE_MESSAGE" desc="Message of the print job notification for a single page.">
     1 page to <ph name="PRINTER_NAME">$1<ex>printer</ex></ph>
@@ -4177,12 +4446,6 @@
   <message name="IDS_CROSTINI_INSTALLER_SETUP_CONTAINER_ERROR" desc="Text shown in the Crostini installer dialog when the container fails to be set up inside the VM">
     The Linux container setup did not complete. Please try again.
   </message>
-  <message name="IDS_CROSTINI_INSTALLER_FETCH_SSH_KEYS_ERROR" desc="Text shown in the Crostini installer dialog when there is an error fetching ssh keys">
-    Error configuring Linux files. Please try again.
-  </message>
-  <message name="IDS_CROSTINI_INSTALLER_MOUNT_CONTAINER_ERROR" desc="Text shown in the Crostini installer dialog when the container ssh mount fails">
-    Error mounting Linux files. Please try again.
-  </message>
   <message name="IDS_CROSTINI_INSTALLER_UNKNOWN_ERROR" desc="Text shown in the Crostini installer dialog when some unknown error happens">
     Something went wrong. Please try again.
   </message>
@@ -4329,6 +4592,18 @@
   </message>
   <message name="IDS_CROSTINI_UPGRADER_NOT_NOW" desc="Text on the button to defer performing the upgrade">
     Not now
+  </message>
+  <message name="IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_TITLE" desc="Title for a dialog to warn the user that the OS version in their crostini container is unsupported">
+    Upgrade your Linux container
+  </message>
+  <message name="IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_BODY" desc="Body of a dialog to warn the user that the OS version in their crostini container is unsupported">
+    The operating system in your Linux container is no longer supported. It will stop receiving security updates and bug fixes, and features that currently work may break unexpectedly. Please upgrade to the latest version to continue using Linux.
+  </message>
+  <message name="IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_CONTINUE_BUTTON" desc="Button to continue using crostini even though the OS version in their crostini container is unsupported">
+    Continue anyway
+  </message>
+  <message name="IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_UPGRADE_BUTTON" desc="Button to begin upgrading the crostini container after warning that the OS version in their crostini container is unsupported">
+    Upgrade
   </message>
   <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_LABEL" desc="Label for dialog warning user of unavailable Linux container until software configurations are applied.">
     Configuring Linux
@@ -4654,6 +4929,26 @@
   </message>
   <message name="IDS_SMART_LOCK_SCREENLOCK_AUTHENTICATED_LABEL" desc="Label for the Smart Lock icon used for accessibility purposes. Describes when a phone eligible to unlock the Chromebook is detected and authenticated.">
     Your device can be unlocked with Smart Lock. Press Enter to unlock.
+  </message>
+
+  <!-- Strings for EcheApp -->
+  <message name="IDS_ECHE_APP_SCREEN_LOCK_SETTINGS_BUTTON" desc="Label for the button in the screen lock notification of EcheApp to open the settings app.">
+    Open Settings
+  </message>
+  <message name="IDS_ECHE_APP_SCREEN_LOCK_LEARN_MORE" desc="Learn more link text in screen lock notification of EcheApp.">
+    Learn more
+  </message>
+  <message name="IDS_ECHE_APP_NOTIFICATION_TRY_AGAIN_BUTTON" desc="Label for the connection lost button of EcheApp to try again.">
+    Try again
+  </message>
+  <message name="IDS_ECHE_APP_NOTIFICATION_HELP_BUTTON" desc="Help link text in connection lost notification of EcheApp.">
+    Help
+  </message>
+  <message name="IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_TITLE" desc="Title for notification shown when screen lock is not enabled while using app stream of EcheApp.">
+    Couldn’t open the App
+  </message>
+  <message name="IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_MESSAGE" desc="Message for the notification shown when screen lock is not enabled while using app stream of EcheApp.">
+    Set a pin or password on this Chromebook to protect access to your phone’s apps.
   </message>
 
   <!-- User Image Selection Dialog -->
@@ -5430,7 +5725,27 @@ You can manage this account’s settings by installing the Family Link app on yo
     Sign out
   </message>
 
-    <!-- Strings for gnubby U2FD authentication UI -->
+  <!-- Strings for Parent Access screen -->
+  <message name="IDS_PARENT_ACCESS_PAGE_TITLE" desc="Title for the Chrome OS Parent Access screen.">
+    Parent Access
+  </message>
+  <message name="IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_TITLE" desc="Title for the local web approvals dialog.">
+    Approve web request?
+  </message>
+  <message name="IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_SUBTITLE" desc="Subtitle for the local web approvals dialog describing that a supervised user is requesting access to a site.">
+    <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> wants to access the following content:
+  </message>
+  <message name="IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_DETAILS" desc="Details about the local web approvals request, including the domain that access is requested for.">
+    All pages of <ph name="DOMAIN_NAME">$1<ex>google.com</ex></ph>
+  </message>
+  <message name="IDS_PARENT_ACCESS_AFTER_APPROVE_BUTTON" desc="Approve button on the local web approvals dialog.">
+    Approve
+  </message>
+  <message name="IDS_PARENT_ACCESS_AFTER_DENY_BUTTON" desc="Deny button on the local web approvals dialog.">
+    Deny
+  </message>
+
+  <!-- Strings for gnubby U2FD authentication UI -->
   <message name="IDS_GNUBBY_NOTIFICATION_TITLE" desc="Title for notification informing user to press power button for gnubby U2FD.">
     A security key is being requested
   </message>
@@ -5506,12 +5821,6 @@ You can manage this account’s settings by installing the Family Link app on yo
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_ACCOUNT_REMOVED_MESSAGE" desc="Notification message after account removal.">
     <ph name="EMAIL">$1<ex>abcd@google.com</ex></ph> was removed from this device
-  </message>
-  <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_PASSWORD_LABEL" desc="An input box label that tells the user to enter their password in that input box.">
-    Password
-  </message>
-  <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_INVALID_PASSWORD" desc="Text on a password field that tells the user the password is incorrect.">
-    Invalid password
   </message>
 
   <!-- ADB sideloading policy-change notifications -->
@@ -5668,6 +5977,9 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     <message name="IDS_RESTORE_NOTIFICATION_CANCEL_BUTTON" desc="The cancel button label of the notification for the user to select not restore on startup.">
       No thanks
     </message>
+    <message name="IDS_RESTORE_NOTIFICATION_SETTINGS_BUTTON" desc="The settings button label of the notification for the user to set the restore setting.">
+      Settings
+    </message>
     <message name="IDS_RESTORE_NOTIFICATION_TITLE" desc="This is the title of the notification for the user to select restore or not on startup.">
       Restore apps?
     </message>
@@ -5675,7 +5987,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
       Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> restarted unexpectedly
     </message>
     <message name="IDS_RESTORE_NOTIFICATION_MESSAGE" desc="This is the text message of the notification for the user to select restore or not on startup if the 'restore_apps' setting is 'Ask every time', and the system is not crashed before reboot.">
-      Continue from where you left off. You can set apps to restore automatically in Settings.
+      Continue from where you left off. You can set apps to always restore on startup or turn off restore in Settings.
     </message>
     <message name="IDS_RESTORE_CRASH_NOTIFICATION_MESSAGE" desc="This is the text message of the notification for the user to select restore or not on startup after crash.">
       You can restore your previous apps
@@ -5693,6 +6005,26 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
 
   <message name="IDS_SELFIE_CAMERA_BUBBLE_COLLAPSED" desc="Tooltip for the selfie camera resize button in collapsed state">
     1x
+  </message>
+
+  <message name="IDS_PROJECTOR_APP_NAME" desc="Name for the Projector app in the launcher">
+    Projector
+  </message>
+
+  <!-- Dictation accessibility feature confirmation dialog -->
+  <message name="IDS_ACCESSIBILITY_DICTATION_CONFIRMATION_TITLE" desc="The title for the modal dialog shown the first time the user enables dictation. Only displayed if the user is using network speech recognition.">
+    Dictation
+  </message>
+  <message name="IDS_ACCESSIBILITY_DICTATION_CONFIRMATION_TEXT" desc="The message shown the first time the user enables Dictation, explaining that the audio data will be sent to Google for transcription. Only displayed if the user is using network speech recognition.">
+    Dictation sends your voice to Google to allow voice typing in any text field.
+  </message>
+
+   <!-- Strings for OsUrlHandler applications -->
+  <message name="IDS_OS_FLAGS_APP_NAME" translateable="false" desc="Name for the system flags app.">
+    Flags
+  </message>
+  <message name="IDS_OS_URL_HANDLER_APP_NAME" translateable="false" desc="Name for a hidden app which shows os:// and chrome:// system pages in an app">
+    ChromeOS-URLs
   </message>
 
 </grit-part>

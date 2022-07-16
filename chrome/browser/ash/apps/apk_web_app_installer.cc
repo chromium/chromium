@@ -10,10 +10,10 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/components/install_manager.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_install_utils.h"
+#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
@@ -93,7 +93,7 @@ void ApkWebAppInstaller::Start(arc::mojom::WebAppInfoPtr web_app_info,
         static_cast<SkColor>(web_app_info->theme_color), SK_AlphaOPAQUE);
   }
   web_app_info_->display_mode = blink::mojom::DisplayMode::kStandalone;
-  web_app_info_->open_as_window = true;
+  web_app_info_->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
   is_web_only_twa_ = web_app_info->is_web_only_twa;
   sha256_fingerprint_ = web_app_info->certificate_sha256_fingerprint;
@@ -158,14 +158,16 @@ void ApkWebAppInstaller::OnImageDecoded(const SkBitmap& decoded_image) {
 }
 
 void ApkWebAppInstaller::DoInstall() {
-  auto* provider = web_app::WebAppProvider::Get(profile_);
+  auto* provider = web_app::WebAppProvider::GetDeprecated(profile_);
   DCHECK(provider);
 
   GURL start_url = web_app_info_->start_url;
 
+  // Doesn't overwrite already existing web app with manifest fields from the
+  // apk.
   provider->install_manager().InstallWebAppFromInfo(
-      std::move(web_app_info_), web_app::ForInstallableSite::kYes,
-      webapps::WebappInstallSource::ARC,
+      std::move(web_app_info_), /*overwrite_existing_manifest_fields=*/false,
+      web_app::ForInstallableSite::kYes, webapps::WebappInstallSource::ARC,
       base::BindOnce(&ApkWebAppInstaller::OnWebAppCreated,
                      base::Unretained(this), std::move(start_url)));
 }

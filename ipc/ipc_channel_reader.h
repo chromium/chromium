@@ -32,6 +32,10 @@ namespace internal {
 class COMPONENT_EXPORT(IPC) ChannelReader {
  public:
   explicit ChannelReader(Listener* listener);
+
+  ChannelReader(const ChannelReader&) = delete;
+  ChannelReader& operator=(const ChannelReader&) = delete;
+
   virtual ~ChannelReader();
 
   void set_listener(Listener* listener) { listener_ = listener; }
@@ -157,8 +161,6 @@ class COMPONENT_EXPORT(IPC) ChannelReader {
   // This is not a constant because we update it to reflect the reality
   // of std::string::reserve() implementation.
   size_t max_input_buffer_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelReader);
 };
 
 }  // namespace internal

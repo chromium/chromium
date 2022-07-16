@@ -5,53 +5,47 @@
 package org.chromium.chrome.browser.subscriptions;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.Callback;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Tests related to {@link SubscriptionsManagerImpl}.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
-@DisabledTest(message = "crbug.com/1194736 Enable this test if the bug is resolved")
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+
 public class SubscriptionsManagerImplTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
-    @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
-
     @Mock
     private Profile mProfile;
 
@@ -66,20 +60,31 @@ public class SubscriptionsManagerImplTest {
     private static final String OFFER_ID_3 = "offer_id_3";
     private static final String OFFER_ID_4 = "offer_id_4";
 
+    @Mock
     private CommerceSubscriptionsStorage mStorage;
+
+    @Mock
+    private CommerceSubscriptionsServiceProxy mProxy;
+
     private SubscriptionsManagerImpl mSubscriptionsManager;
     private CommerceSubscription mSubscription1;
     private CommerceSubscription mSubscription2;
     private CommerceSubscription mSubscription3;
     private CommerceSubscription mSubscription4;
 
+    private final class SubscriptionsComparator implements Comparator<CommerceSubscription> {
+        @Override
+        public int compare(CommerceSubscription s1, CommerceSubscription s2) {
+            return s1.getTrackingId().compareTo(s2.getTrackingId());
+        }
+    }
+
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+
         mMocker.mock(CommerceSubscriptionsStorageJni.TEST_HOOKS, mCommerceSubscriptionsStorageJni);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mStorage = new CommerceSubscriptionsStorage(mProfile);
-            mSubscriptionsManager = new SubscriptionsManagerImpl(mProfile);
-        });
+        mSubscriptionsManager = new SubscriptionsManagerImpl(mProfile, mStorage, mProxy);
 
         mSubscription1 =
                 new CommerceSubscription(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK,
@@ -110,155 +115,342 @@ public class SubscriptionsManagerImplTest {
 
     @MediumTest
     @Test
-    public void testSubscribeSingle() throws TimeoutException {
-        // Since remoteSubscriptions reflect the latest subscriptions from server-side, it should
-        // contain newSubscription.
+    public void testSubscribeDeferred() {
+        List<CommerceSubscription> remoteSubscriptions =
+                new ArrayList<>(Arrays.asList(mSubscription1, mSubscription2));
+
+        Callback<Integer> subsCallback = Mockito.mock(Callback.class);
+
+        // Call subscribe before the service is ready.
+        mSubscriptionsManager.subscribe(mSubscription1, subsCallback);
+        verify(subsCallback, never()).onResult(any(Integer.class));
+
+        // Capture the getSubscriptions callback but don't resolve it.
+        ArgumentCaptor<Callback<List<CommerceSubscription>>> getSubscriptionsCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mProxy, times(1))
+                .get(eq(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK),
+                        getSubscriptionsCallbackCaptor.capture());
+
+        setLoadWithPrefixMockResponse(new ArrayList<>());
+        setMockProxyCreateResponse(true);
+
+        // Resolve the original callback to getSubscriptions started through initTypes.
+        getSubscriptionsCallbackCaptor.getValue().onResult(remoteSubscriptions);
+
+        // Resolve the callback for getSubscriptions started through subscribe.
+        verify(mProxy, times(2))
+                .get(eq(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK),
+                        getSubscriptionsCallbackCaptor.capture());
+        getSubscriptionsCallbackCaptor.getValue().onResult(remoteSubscriptions);
+
+        verify(subsCallback, times(1)).onResult(eq(SubscriptionsManager.StatusCode.OK));
+    }
+
+    @MediumTest
+    @Test
+    public void testSubscribeDeferredInternalError() {
+        List<CommerceSubscription> remoteSubscriptions =
+                new ArrayList<>(Arrays.asList(mSubscription1, mSubscription2));
+
+        Callback<Integer> subsCallback = Mockito.mock(Callback.class);
+
+        // Call subscribe before the service is ready.
+        mSubscriptionsManager.subscribe(mSubscription1, subsCallback);
+        verify(subsCallback, never()).onResult(any(Integer.class));
+
+        ArgumentCaptor<Callback<List<CommerceSubscription>>> getSubscriptionsCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mProxy, times(1))
+                .get(eq(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK),
+                        getSubscriptionsCallbackCaptor.capture());
+
+        setLoadWithPrefixMockResponse(new ArrayList<>());
+        setMockProxyCreateResponse(false);
+
+        // Resolve the original callback to getSubscriptions started through initTypes.
+        getSubscriptionsCallbackCaptor.getValue().onResult(remoteSubscriptions);
+        verify(subsCallback, times(1)).onResult(eq(SubscriptionsManager.StatusCode.NETWORK_ERROR));
+    }
+
+    @MediumTest
+    @Test
+    public void testSubscribeSingle() {
         CommerceSubscription newSubscription = mSubscription4;
         List<CommerceSubscription> remoteSubscriptions =
                 new ArrayList<>(Arrays.asList(mSubscription1, mSubscription2, newSubscription));
         List<CommerceSubscription> localSubscriptions =
                 new ArrayList<>(Arrays.asList(mSubscription2, mSubscription3));
-        List<CommerceSubscription> expectedSubscriptions =
-                new ArrayList<>(Arrays.asList(mSubscription1, mSubscription2, newSubscription));
-        // Simulate subscription state in local database and remote server.
-        for (CommerceSubscription subscription : localSubscriptions) {
-            save(subscription);
-            loadSingleAndCheckResult(
-                    CommerceSubscriptionsStorage.getKey(subscription), subscription);
-        }
+
+        mSubscriptionsManager.setCanHandlerequests(true);
+
+        setMockProxyCreateResponse(true);
+        setLoadWithPrefixMockResponse(localSubscriptions);
+
         mSubscriptionsManager.setRemoteSubscriptionsForTesting(remoteSubscriptions);
+        Callback<Integer> subsCallback = Mockito.mock(Callback.class);
 
-        // Test local cache is updated after single subscription.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mSubscriptionsManager.subscribe(newSubscription, (didSucceed) -> {}));
+        // Call subscribe and verify the result.
+        mSubscriptionsManager.subscribe(newSubscription, subsCallback);
+        verify(subsCallback, times(1)).onResult(SubscriptionsManager.StatusCode.OK);
 
-        loadSingleAndCheckResult(CommerceSubscriptionsStorage.getKey(mSubscription3), null);
-        loadPrefixAndCheckResult(
-                CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK, expectedSubscriptions);
+        ArgumentCaptor<CommerceSubscription> storageSaveCaptor =
+                ArgumentCaptor.forClass(CommerceSubscription.class);
+        verify(mStorage, times(2)).save(storageSaveCaptor.capture());
+        System.out.println(storageSaveCaptor.getAllValues());
+
+        ArgumentCaptor<CommerceSubscription> storageDeleteCaptor =
+                ArgumentCaptor.forClass(CommerceSubscription.class);
+        verify(mStorage, times(1)).delete(storageDeleteCaptor.capture());
+        System.out.println(storageDeleteCaptor.getAllValues());
+
+        List<CommerceSubscription> subscriptionsToSave = storageSaveCaptor.getAllValues();
+        Collections.sort(subscriptionsToSave, new SubscriptionsComparator());
+
+        List<CommerceSubscription> subscriptionsToDelete = storageDeleteCaptor.getAllValues();
+        Collections.sort(subscriptionsToDelete, new SubscriptionsComparator());
+
+        assertEquals(new ArrayList<>(Arrays.asList(mSubscription1, newSubscription)),
+                subscriptionsToSave);
+        assertEquals(new ArrayList<>(Arrays.asList(mSubscription3)), subscriptionsToDelete);
     }
 
     @MediumTest
     @Test
-    public void testSubscribeList() throws TimeoutException {
-        // Since remoteSubscriptions reflect the latest subscriptions from server-side, it should
-        // contain all subscriptions from newSubscriptions.
+    public void testSubscribeInvalidSubscription() {
+        mSubscriptionsManager.setCanHandlerequests(true);
+        // Null subscription.
+        CommerceSubscription newSubscription = null;
+        Callback<Integer> subsCallback = Mockito.mock(Callback.class);
+        mSubscriptionsManager.subscribe(newSubscription, subsCallback);
+        verify(subsCallback, times(1)).onResult(SubscriptionsManager.StatusCode.INVALID_ARGUMENT);
+
+        // Invalid type.
+        newSubscription = new CommerceSubscription(
+                CommerceSubscription.CommerceSubscriptionType.TYPE_UNSPECIFIED, OFFER_ID_1,
+                CommerceSubscription.SubscriptionManagementType.CHROME_MANAGED,
+                CommerceSubscription.TrackingIdType.OFFER_ID);
+        Callback<Integer> subsCallback2 = Mockito.mock(Callback.class);
+        mSubscriptionsManager.subscribe(newSubscription, subsCallback2);
+        verify(subsCallback, times(1)).onResult(SubscriptionsManager.StatusCode.INVALID_ARGUMENT);
+    }
+
+    @MediumTest
+    @Test
+    public void testSubscribeDuplicatesNop() {
+        mSubscriptionsManager.setCanHandlerequests(true);
+        List<CommerceSubscription> localSubscriptions =
+                new ArrayList<>(Arrays.asList(mSubscription2, mSubscription3));
+        List<CommerceSubscription> newSubscriptions = localSubscriptions;
+
+        setLoadWithPrefixMockResponse(localSubscriptions);
+
+        Callback<Integer> subsCallback = Mockito.mock(Callback.class);
+        mSubscriptionsManager.subscribe(newSubscriptions, subsCallback);
+        verify(subsCallback, times(1)).onResult(SubscriptionsManager.StatusCode.OK);
+        verify(mProxy, never()).create(any(List.class), any(Callback.class));
+    }
+
+    @MediumTest
+    @Test
+    public void testSubscribeCreateUnique() {
+        mSubscriptionsManager.setCanHandlerequests(true);
+        List<CommerceSubscription> localSubscriptions =
+                new ArrayList<>(Arrays.asList(mSubscription2, mSubscription3));
+        List<CommerceSubscription> newSubscriptions =
+                new ArrayList<>(Arrays.asList(mSubscription1, mSubscription2));
+
+        setLoadWithPrefixMockResponse(localSubscriptions);
+        setMockProxyCreateResponse(true);
+
+        Callback<Integer> subsCallback = Mockito.mock(Callback.class);
+        mSubscriptionsManager.subscribe(newSubscriptions, subsCallback);
+
+        ArgumentCaptor<List<CommerceSubscription>> subscriptionsToCreateCaptor =
+                ArgumentCaptor.forClass(List.class);
+        verify(mProxy, times(1)).create(subscriptionsToCreateCaptor.capture(), any(Callback.class));
+        assertEquals(new ArrayList<>(Arrays.asList(mSubscription1)),
+                subscriptionsToCreateCaptor.getValue());
+    }
+
+    @MediumTest
+    @Test
+    public void testSubscribeList() {
+        mSubscriptionsManager.setCanHandlerequests(true);
         List<CommerceSubscription> newSubscriptions =
                 new ArrayList<>(Arrays.asList(mSubscription1, mSubscription2));
         List<CommerceSubscription> remoteSubscriptions =
                 new ArrayList<>(Arrays.asList(mSubscription1, mSubscription2, mSubscription4));
         List<CommerceSubscription> localSubscriptions =
                 new ArrayList<>(Arrays.asList(mSubscription2, mSubscription3));
-        List<CommerceSubscription> expectedSubscriptions =
-                new ArrayList<>(Arrays.asList(mSubscription1, mSubscription2, mSubscription4));
-        // Simulate subscription state in local database and remote server.
-        for (CommerceSubscription subscription : localSubscriptions) {
-            save(subscription);
-            loadSingleAndCheckResult(
-                    CommerceSubscriptionsStorage.getKey(subscription), subscription);
-        }
+
+        setMockProxyCreateResponse(true);
+        setLoadWithPrefixMockResponse(localSubscriptions);
+
         mSubscriptionsManager.setRemoteSubscriptionsForTesting(remoteSubscriptions);
-        // Test local cache is updated after subscribing a list of subscriptions.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mSubscriptionsManager.subscribe(newSubscriptions, (didSucceed) -> {}));
-        loadSingleAndCheckResult(CommerceSubscriptionsStorage.getKey(mSubscription3), null);
-        loadPrefixAndCheckResult(
-                CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK, expectedSubscriptions);
+        Callback<Integer> subsCallback = Mockito.mock(Callback.class);
+
+        // Call subscribe and verify the result.
+        mSubscriptionsManager.subscribe(newSubscriptions, subsCallback);
+        verify(subsCallback, times(1)).onResult(SubscriptionsManager.StatusCode.OK);
+
+        ArgumentCaptor<CommerceSubscription> storageSaveCaptor =
+                ArgumentCaptor.forClass(CommerceSubscription.class);
+        verify(mStorage, times(2)).save(storageSaveCaptor.capture());
+
+        ArgumentCaptor<CommerceSubscription> storageDeleteCaptor =
+                ArgumentCaptor.forClass(CommerceSubscription.class);
+        verify(mStorage, times(1)).delete(storageDeleteCaptor.capture());
+        System.out.println(storageDeleteCaptor.getAllValues());
+
+        List<CommerceSubscription> subscriptionsToSave = storageSaveCaptor.getAllValues();
+        Collections.sort(subscriptionsToSave, new SubscriptionsComparator());
+
+        List<CommerceSubscription> subscriptionsToDelete = storageDeleteCaptor.getAllValues();
+        Collections.sort(subscriptionsToDelete, new SubscriptionsComparator());
+
+        assertEquals(new ArrayList<>(Arrays.asList(mSubscription1, mSubscription4)),
+                subscriptionsToSave);
+        assertEquals(new ArrayList<>(Arrays.asList(mSubscription3)), subscriptionsToDelete);
     }
 
     @MediumTest
     @Test
-    public void testUnsubscribe() throws TimeoutException {
-        // Since remoteSubscriptions reflect the latest subscriptions from server-side, it should
-        // not contain removedSubscription.
+    public void testUnsubscribe() {
+        mSubscriptionsManager.setCanHandlerequests(true);
         CommerceSubscription removedSubscription = mSubscription3;
         List<CommerceSubscription> remoteSubscriptions =
                 new ArrayList<>(Arrays.asList(mSubscription2, mSubscription4));
         List<CommerceSubscription> localSubscriptions =
                 new ArrayList<>(Arrays.asList(mSubscription2, removedSubscription, mSubscription4));
-        List<CommerceSubscription> expectedSubscriptions =
-                new ArrayList<>(Arrays.asList(mSubscription2, mSubscription4));
-        // Simulate subscription state in local database and remote server.
-        for (CommerceSubscription subscription : localSubscriptions) {
-            save(subscription);
-            loadSingleAndCheckResult(
-                    CommerceSubscriptionsStorage.getKey(subscription), subscription);
-        }
+
+        setMockProxyDeleteResponse(true);
+        setLoadWithPrefixMockResponse(localSubscriptions);
+
         mSubscriptionsManager.setRemoteSubscriptionsForTesting(remoteSubscriptions);
-        // Test local cache is updated after unsubscription.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mSubscriptionsManager.unsubscribe(removedSubscription, (didSucceed) -> {}));
-        loadSingleAndCheckResult(CommerceSubscriptionsStorage.getKey(removedSubscription), null);
-        loadPrefixAndCheckResult(
-                CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK, expectedSubscriptions);
+        Callback<Integer> subsCallback = Mockito.mock(Callback.class);
+
+        // Call unsubscribe and verify the result.
+        mSubscriptionsManager.unsubscribe(removedSubscription, subsCallback);
+        verify(subsCallback, times(1)).onResult(SubscriptionsManager.StatusCode.OK);
+
+        ArgumentCaptor<CommerceSubscription> storageSaveCaptor =
+                ArgumentCaptor.forClass(CommerceSubscription.class);
+        verify(mStorage, never()).save(storageSaveCaptor.capture());
+
+        ArgumentCaptor<CommerceSubscription> storageDeleteCaptor =
+                ArgumentCaptor.forClass(CommerceSubscription.class);
+        verify(mStorage, times(1)).delete(storageDeleteCaptor.capture());
+        System.out.println(storageDeleteCaptor.getAllValues());
+
+        List<CommerceSubscription> subscriptionsToDelete = storageDeleteCaptor.getAllValues();
+        Collections.sort(subscriptionsToDelete, new SubscriptionsComparator());
+
+        assertEquals(new ArrayList<>(Arrays.asList(removedSubscription)), subscriptionsToDelete);
     }
 
     @MediumTest
     @Test
-    public void testGetLocalSubscriptions() throws TimeoutException {
-        List<CommerceSubscription> subscriptions =
+    public void testUnsubscribeNop() {
+        mSubscriptionsManager.setCanHandlerequests(true);
+        List<CommerceSubscription> localSubscriptions =
+                new ArrayList<>(Arrays.asList(mSubscription2, mSubscription3));
+
+        setLoadWithPrefixMockResponse(localSubscriptions);
+
+        Callback<Integer> subsCallback = Mockito.mock(Callback.class);
+        mSubscriptionsManager.unsubscribe(mSubscription4, subsCallback);
+
+        ArgumentCaptor<List<CommerceSubscription>> subscriptionsToDeleteCaptor =
+                ArgumentCaptor.forClass(List.class);
+        verify(mProxy, never()).delete(subscriptionsToDeleteCaptor.capture(), any(Callback.class));
+    }
+
+    @MediumTest
+    @Test
+    public void testUnsubscribeDeleteIfInCache() {
+        mSubscriptionsManager.setCanHandlerequests(true);
+        List<CommerceSubscription> localSubscriptions =
+                new ArrayList<>(Arrays.asList(mSubscription2, mSubscription3));
+
+        setLoadWithPrefixMockResponse(localSubscriptions);
+
+        Callback<Integer> subsCallback = Mockito.mock(Callback.class);
+        mSubscriptionsManager.unsubscribe(mSubscription2, subsCallback);
+
+        ArgumentCaptor<List<CommerceSubscription>> subscriptionsToDeleteCaptor =
+                ArgumentCaptor.forClass(List.class);
+        verify(mProxy, times(1)).delete(subscriptionsToDeleteCaptor.capture(), any(Callback.class));
+        assertEquals(new ArrayList<>(Arrays.asList(mSubscription2)),
+                subscriptionsToDeleteCaptor.getValue());
+    }
+
+    @MediumTest
+    @Test
+    public void testGetLocalSubscriptions() {
+        mSubscriptionsManager.setCanHandlerequests(true);
+        List<CommerceSubscription> localSubscriptions =
                 new ArrayList<>(Arrays.asList(mSubscription1, mSubscription2));
-        for (CommerceSubscription subscription : subscriptions) {
-            save(subscription);
-            loadSingleAndCheckResult(
-                    CommerceSubscriptionsStorage.getKey(subscription), subscription);
-        }
-        SubscriptionsLoadCallbackHelper ch = new SubscriptionsLoadCallbackHelper();
-        int chCount = ch.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mSubscriptionsManager.getSubscriptions(
-                                CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK, false,
-                                (res) -> ch.notifyCalled(res)));
-        ch.waitForCallback(chCount);
-        List<CommerceSubscription> results = ch.getResultList();
-        assertNotNull(results);
-        assertEquals(subscriptions.size(), results.size());
-        for (int i = 0; i < subscriptions.size(); i++) {
-            assertEquals(subscriptions.get(i), results.get(i));
-        }
+
+        setLoadWithPrefixMockResponse(localSubscriptions);
+
+        Callback<List<CommerceSubscription>> getSubscriptionsCallback =
+                Mockito.mock(Callback.class);
+        mSubscriptionsManager.getSubscriptions(
+                CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK, false,
+                getSubscriptionsCallback);
+
+        ArgumentCaptor<List<CommerceSubscription>> resultCaptor =
+                ArgumentCaptor.forClass(List.class);
+        verify(getSubscriptionsCallback, times(1)).onResult(resultCaptor.capture());
+
+        Collections.sort(resultCaptor.getValue(), new SubscriptionsComparator());
+        Collections.sort(localSubscriptions, new SubscriptionsComparator());
+        assertEquals(localSubscriptions, resultCaptor.getValue());
     }
 
-    private void save(CommerceSubscription subscription) throws TimeoutException {
-        CallbackHelper ch = new CallbackHelper();
-        int chCount = ch.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mStorage.saveWithCallback(subscription, new Runnable() {
-                @Override
-                public void run() {
-                    ch.notifyCalled();
-                }
-            });
-        });
-        ch.waitForCallback(chCount);
+    private void setLoadWithPrefixMockResponse(List<CommerceSubscription> subscriptions) {
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                Callback callback = (Callback) invocation.getArguments()[1];
+                callback.onResult(subscriptions);
+                return null;
+            }
+        })
+                .when(mStorage)
+                .loadWithPrefix(any(String.class), any(Callback.class));
     }
 
-    private void loadSingleAndCheckResult(String key, CommerceSubscription expected)
-            throws TimeoutException {
-        SubscriptionsLoadCallbackHelper ch = new SubscriptionsLoadCallbackHelper();
-        int chCount = ch.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> mStorage.load(key, (res) -> ch.notifyCalled(res)));
-        ch.waitForCallback(chCount);
-        CommerceSubscription actual = ch.getSingleResult();
-        if (expected == null) {
-            assertNull(actual);
-            return;
-        }
-        assertNotNull(actual);
-        assertEquals(expected, actual);
+    private void setMockProxyCreateResponse(boolean expectedResult) {
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                Callback callback = (Callback) invocation.getArguments()[1];
+                callback.onResult(expectedResult);
+                return null;
+            }
+        })
+                .when(mProxy)
+                .create(any(List.class), any(Callback.class));
     }
 
-    private void loadPrefixAndCheckResult(String prefix, List<CommerceSubscription> expected)
-            throws TimeoutException {
-        SubscriptionsLoadCallbackHelper ch = new SubscriptionsLoadCallbackHelper();
-        int chCount = ch.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mStorage.loadWithPrefix(prefix, (res) -> ch.notifyCalled(res)));
-        ch.waitForCallback(chCount);
-        List<CommerceSubscription> actual = ch.getResultList();
-        assertNotNull(actual);
-        assertEquals(expected.size(), actual.size());
-        for (int i = 0; i < expected.size(); i++) {
-            assertEquals(expected.get(i), actual.get(i));
+    private void setMockProxyDeleteResponse(boolean expectedResult) {
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                Callback callback = (Callback) invocation.getArguments()[1];
+                callback.onResult(expectedResult);
+                return null;
+            }
+        })
+                .when(mProxy)
+                .delete(any(List.class), any(Callback.class));
+    }
+
+    private void printList(List<CommerceSubscription> list) {
+        for (CommerceSubscription ss : list) {
+            System.out.println(ss.getTrackingId());
         }
     }
 }

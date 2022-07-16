@@ -11,9 +11,13 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "storage/browser/blob/blob_data_handle.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
+#if !defined(OS_IOS)
+#include "storage/browser/blob/blob_data_handle.h"
+#endif  // OS_IOS
 
 namespace net {
 class HttpResponseHeaders;
@@ -69,9 +73,11 @@ struct DriverEntry {
   // Will be empty file path in incognito mode.
   base::FilePath current_file_path;
 
+#if !defined(OS_IOS)
   // The blob data handle that contains download data.
   // Will be available after the download is completed in incognito mode.
   absl::optional<storage::BlobDataHandle> blob_handle;
+#endif  // OS_IOS
 
   // Time the download was marked as complete, base::Time() if the download is
   // not yet complete.

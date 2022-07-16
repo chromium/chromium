@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/storage_monitor/storage_monitor.h"
 
@@ -32,6 +31,9 @@ class StorageMonitorMac : public StorageMonitor,
 
   // Should only be called by browser start up code.  Use GetInstance() instead.
   StorageMonitorMac();
+
+  StorageMonitorMac(const StorageMonitorMac&) = delete;
+  StorageMonitorMac& operator=(const StorageMonitorMac&) = delete;
 
   ~StorageMonitorMac() override;
 
@@ -68,8 +70,6 @@ class StorageMonitorMac : public StorageMonitor,
   int pending_disk_updates_;
 
   std::unique_ptr<ImageCaptureDeviceManager> image_capture_device_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageMonitorMac);
 };
 
 }  // namespace storage_monitor

@@ -14,7 +14,6 @@ import("//third_party/protobuf/proto_library.gni")
 group("all_tests") {
   testonly = true
   deps = [
-    ":ios_chrome_perftests",
     ":ios_chrome_unittests",
     "//ios/chrome/test/xcuitest:ios_chrome_device_check_xcuitests_module",
     "//ios/chrome/test/xcuitest:ios_chrome_xcuitests",
@@ -25,8 +24,6 @@ source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "ios_chrome_scoped_testing_chrome_browser_provider.h",
-    "ios_chrome_scoped_testing_chrome_browser_provider.mm",
     "ios_chrome_scoped_testing_chrome_browser_state_manager.cc",
     "ios_chrome_scoped_testing_chrome_browser_state_manager.h",
     "ios_chrome_scoped_testing_local_state.cc",
@@ -73,7 +70,6 @@ source_set("test_support") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -157,33 +153,11 @@ source_set("run_all_unittests") {
   }
 }
 
-test("ios_chrome_perftests") {
-  deps = [
-    # Ensure that all perf tests are run, use fake hooks and pack resources.
-    ":run_all_unittests",
-    "//ios/chrome/app:tests_fake_hook",
-    "//ios/chrome/app/resources:packed_resources",
-    "//ios/chrome/browser/ui/main",
-
-    # Use the same provider as Chromium.app to have meaningful perf numbers.
-    ios_provider_target,
-
-    # Add perf_tests target here.
-    "//ios/chrome/browser/ui/ntp:perf_tests",
-    "//ios/chrome/browser/ui/omnibox:perf_tests",
-    "//ios/chrome/browser/web:perf_tests",
-  ]
-
-  assert_no_deps = ios_assert_no_deps
-}
-
 bundle_data_ib_file("base_scene_storyboard") {
   source = "BaseScene.storyboard"
 }
 
 test("ios_chrome_unittests") {
-  info_plist = "//ios/chrome/test/unittest-scene-lifecycle-Info.plist"
-
   deps = [
     # Ensure that all unit tests are run, use fake hooks and pack resources.
     ":run_all_unittests",
@@ -204,15 +178,16 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/autofill/manual_fill:unit_tests",
     "//ios/chrome/browser/browser_state:unit_tests",
     "//ios/chrome/browser/browsing_data:unit_tests",
+    "//ios/chrome/browser/commerce:unit_tests",
     "//ios/chrome/browser/complex_tasks:unit_tests",
     "//ios/chrome/browser/crash_report:unit_tests",
     "//ios/chrome/browser/crash_report/breadcrumbs:unit_tests",
     "//ios/chrome/browser/device_sharing:unit_tests",
     "//ios/chrome/browser/download:unit_tests",
+    "//ios/chrome/browser/download/background_service:unit_tests",
     "//ios/chrome/browser/favicon:unit_tests",
     "//ios/chrome/browser/find_in_page:unit_tests",
     "//ios/chrome/browser/flags:unit_tests",
-    "//ios/chrome/browser/geolocation:unit_tests",
     "//ios/chrome/browser/history:unit_tests",
     "//ios/chrome/browser/infobars:unit_tests",
     "//ios/chrome/browser/infobars/overlays:unit_tests",
@@ -221,6 +196,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common:unit_tests",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/confirm:unit_tests",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/passwords:unit_tests",
+    "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/reading_list:unit_tests",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/save_card:unit_tests",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/translate:unit_tests",
     "//ios/chrome/browser/itunes_urls:unit_tests",
@@ -234,6 +210,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ntp:unit_tests",
     "//ios/chrome/browser/omaha:unit_tests",
     "//ios/chrome/browser/open_in:unit_tests",
+    "//ios/chrome/browser/optimization_guide:unit_tests",
     "//ios/chrome/browser/overlays:unit_tests",
     "//ios/chrome/browser/overlays/public/common/confirmation:unit_tests",
     "//ios/chrome/browser/overlays/public/web_content_area:unit_tests",
@@ -266,8 +243,10 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/authentication/signin:unit_tests",
     "//ios/chrome/browser/ui/authentication/signin/add_account_signin:unit_tests",
     "//ios/chrome/browser/ui/authentication/signin/advanced_settings_signin:unit_tests",
+    "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin:unit_tests",
     "//ios/chrome/browser/ui/authentication/signin/trusted_vault_reauthentication:unit_tests",
     "//ios/chrome/browser/ui/authentication/signin/user_signin:unit_tests",
+    "//ios/chrome/browser/ui/authentication/signin_sync:unit_tests",
     "//ios/chrome/browser/ui/authentication/unified_consent:unit_tests",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser:unit_tests",
     "//ios/chrome/browser/ui/autofill/cells:unit_tests",
@@ -286,6 +265,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/content_suggestions:unit_tests",
     "//ios/chrome/browser/ui/content_suggestions/cells:unit_tests",
     "//ios/chrome/browser/ui/content_suggestions/identifier:unit_tests",
+    "//ios/chrome/browser/ui/context_menu:unit_tests",
     "//ios/chrome/browser/ui/default_promo:unit_tests",
     "//ios/chrome/browser/ui/dialogs:unit_tests",
     "//ios/chrome/browser/ui/dialogs:unit_tests_internal",
@@ -352,6 +332,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/settings/utils:unit_tests",
     "//ios/chrome/browser/ui/sharing:unit_tests",
     "//ios/chrome/browser/ui/side_swipe:unit_tests",
+    "//ios/chrome/browser/ui/start_surface:unit_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:unit_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:unit_tests",
     "//ios/chrome/browser/ui/table_view:unit_tests",
@@ -388,18 +369,11 @@ test("ios_chrome_unittests") {
     deps += [ "//ios/chrome/browser/widget_kit:unit_tests" ]
   }
 
-  if (ios_enable_search_widget_extension) {
-    deps += [ "//ios/chrome/search_widget_extension:unit_tests" ]
-  }
-
-  if (ios_enable_content_widget_extension) {
-    deps += [ "//ios/chrome/content_widget_extension:unit_tests" ]
-  }
-
   if (ios_enable_credential_provider_extension) {
     deps += [
       "//ios/chrome/browser/credential_provider:unit_tests",
       "//ios/chrome/credential_provider_extension:unit_tests",
+      "//ios/chrome/credential_provider_extension/ui:unit_tests",
     ]
   }
 

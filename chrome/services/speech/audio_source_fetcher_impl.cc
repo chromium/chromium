@@ -58,9 +58,12 @@ void AudioSourceFetcherImpl::Start(
 
   device_id_ = device_id;
   audio_parameters_ = audio_parameters;
-  audio_capturer_source_ =
-      audio::CreateInputDevice(std::move(stream_factory), device_id_,
-                               audio::DeadStreamDetection::kEnabled);
+  auto audio_log_remote = VLOG_IS_ON(1)
+                              ? audio_log_receiver_.BindNewPipeAndPassRemote()
+                              : mojo::NullRemote();
+  audio_capturer_source_ = audio::CreateInputDevice(
+      std::move(stream_factory), device_id_,
+      audio::DeadStreamDetection::kEnabled, std::move(audio_log_remote));
   DCHECK(audio_capturer_source_);
 
   // TODO(crbug.com/1185978): Check implementation / sandbox policy on Mac and
@@ -118,6 +121,35 @@ void AudioSourceFetcherImpl::SendAudioToSpeechRecognitionService(
 media::AudioCapturerSource* AudioSourceFetcherImpl::GetAudioCapturerSource() {
   return audio_capturer_source_for_tests_ ? audio_capturer_source_for_tests_
                                           : audio_capturer_source_.get();
+}
+
+void AudioSourceFetcherImpl::OnCreated(const media::AudioParameters& params,
+                                       const std::string& device_id) {
+  VLOG(1) << "Created fetcher for device " << device_id << " with params "
+          << params.AsHumanReadableString();
+}
+
+void AudioSourceFetcherImpl::OnStarted() {
+  VLOG(1) << "OnStarted for " << device_id_;
+}
+void AudioSourceFetcherImpl::OnStopped() {
+  VLOG(1) << "OnStopped for " << device_id_;
+}
+void AudioSourceFetcherImpl::OnClosed() {
+  VLOG(1) << "OnClosed for " << device_id_;
+}
+void AudioSourceFetcherImpl::OnError() {
+  VLOG(1) << "OnError for " << device_id_;
+}
+void AudioSourceFetcherImpl::OnSetVolume(double volume) {
+  VLOG(1) << "Set volume for " << device_id_ << " to " << volume;
+}
+void AudioSourceFetcherImpl::OnLogMessage(const std::string& message) {
+  VLOG(1) << "Log Messages for " << device_id_ << ": " << message;
+}
+void AudioSourceFetcherImpl::OnProcessingStateChanged(
+    const std::string& message) {
+  VLOG(1) << "Processing State Changed for " << device_id_ << ": " << message;
 }
 
 }  // namespace speech

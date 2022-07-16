@@ -11,7 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
-#include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
+#include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -43,6 +44,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   QRCodeGeneratorBubble(views::View* anchor_view,
                         content::WebContents* web_contents,
                         base::OnceClosure on_closing,
+                        base::OnceClosure on_back_button_pressed,
                         const GURL& url);
   QRCodeGeneratorBubble(const QRCodeGeneratorBubble&) = delete;
   QRCodeGeneratorBubble& operator=(const QRCodeGeneratorBubble&) = delete;
@@ -93,6 +95,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
 
   // views::BubbleDialogDelegateView:
   void Init() override;
+  void AddedToWidget() override;
 
   // TextfieldController:
   void ContentsChanged(views::Textfield* sender,
@@ -103,6 +106,8 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
                         const ui::MouseEvent& mouse_event) override;
 
   void DownloadButtonPressed();
+
+  void BackButtonPressed();
 
   // Callback for the request to the OOP service to generate a new image.
   void OnCodeGeneratorResponse(const mojom::GenerateQRCodeResponsePtr response);
@@ -123,6 +128,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   views::Label* bottom_error_label_ = nullptr;
 
   base::OnceClosure on_closing_;
+  base::OnceClosure on_back_button_pressed_;
   content::WebContents* web_contents_;           // weak.
 };
 

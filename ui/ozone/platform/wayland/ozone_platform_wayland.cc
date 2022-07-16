@@ -10,14 +10,16 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
+#include "ui/base/dragdrop/os_exchange_data_provider_factory_ozone.h"
 #include "ui/base/ime/linux/input_method_auralinux.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/display/display_switches.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
@@ -27,15 +29,18 @@
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/gpu/drm_render_node_path_finder.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
+#include "ui/ozone/platform/wayland/gpu/wayland_gl_egl_utility.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_overlay_manager.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_connector.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_exchange_data_provider.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_menu_utils.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/wayland_utils.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -53,7 +58,6 @@
 #include "ui/gfx/buffer_format_util.h"
 
 #if defined(WAYLAND_GBM)
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/linux/gbm_wrapper.h"  // nogncheck
 #include "ui/ozone/platform/wayland/gpu/drm_render_node_handle.h"
 #endif
@@ -72,16 +76,27 @@ namespace ui {
 
 namespace {
 
-class OzonePlatformWayland : public OzonePlatform {
+class OzonePlatformWayland : public OzonePlatform,
+                             public OSExchangeDataProviderFactoryOzone {
  public:
   OzonePlatformWayland()
       : old_synthesize_key_repeat_enabled_(
             KeyEvent::IsSynthesizeKeyRepeatEnabled()) {
-    CHECK(features::IsUsingOzonePlatform());
+    // Forcing the device scale factor on Wayland is not fully/well supported
+    // and is provided for test purposes only.
+    // See https://crbug.com/1241546
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kForceDeviceScaleFactor)) {
+      LOG(WARNING) << "--" << switches::kForceDeviceScaleFactor
+                   << " on Wayland is TEST ONLY.  Use it at your own risk.";
+    }
+
     // Disable key-repeat flag synthesizing. On Wayland, key repeat events are
     // generated inside Chrome, and the flag is properly set.
     // See also WaylandEventSource.
     KeyEvent::SetSynthesizeKeyRepeatEnabled(false);
+
+    OSExchangeDataProviderFactoryOzone::SetInstance(this);
   }
 
   OzonePlatformWayland(const OzonePlatformWayland&) = delete;
@@ -147,6 +162,12 @@ class OzonePlatformWayland : public OzonePlatform {
     return connection_->clipboard();
   }
 
+  PlatformGLEGLUtility* GetPlatformGLEGLUtility() override {
+    if (!gl_egl_utility_)
+      gl_egl_utility_ = std::make_unique<WaylandGLEGLUtility>();
+    return gl_egl_utility_.get();
+  }
+
   std::unique_ptr<InputMethod> CreateInputMethod(
       internal::InputMethodDelegate* delegate,
       gfx::AcceleratedWidget widget) override {
@@ -166,6 +187,8 @@ class OzonePlatformWayland : public OzonePlatform {
   PlatformMenuUtils* GetPlatformMenuUtils() override {
     return menu_utils_.get();
   }
+
+  WaylandUtils* GetPlatformUtils() override { return wayland_utils_.get(); }
 
   bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                      gfx::BufferUsage usage) const override {
@@ -221,6 +244,7 @@ class OzonePlatformWayland : public OzonePlatform {
 #endif
 
     menu_utils_ = std::make_unique<WaylandMenuUtils>(connection_.get());
+    wayland_utils_ = std::make_unique<WaylandUtils>();
   }
 
   void InitializeGPU(const InitParams& args) override {
@@ -250,22 +274,15 @@ class OzonePlatformWayland : public OzonePlatform {
     static base::NoDestructor<OzonePlatform::PlatformProperties> properties;
     static bool initialised = false;
     if (!initialised) {
-      // Supporting server-side decorations requires a support of
-      // xdg-decorations. But this protocol has been accepted into the upstream
-      // recently, and it will take time before it is taken by compositors. For
-      // now, always use custom frames and disallow switching to server-side
-      // frames.
-      // https://github.com/wayland-project/wayland-protocols/commit/76d1ae8c65739eff3434ef219c58a913ad34e988
+      // Server-side decorations on Wayland require support of xdg-decoration or
+      // some other protocol extensions specific for the particular environment.
+      // Whether the environment has any support only gets known at run time, so
+      // we use the custom frame by default.  If there is support, the user will
+      // be able to enable the system frame.
       properties->custom_frame_pref_default = true;
 
       properties->uses_external_vulkan_image_factory = true;
 
-      // Wayland doesn't provide clients with global screen coordinates.
-      // Instead, it forces clients to position windows relative to their top
-      // level windows if the have child-parent relationship. In case of
-      // toplevel windows, clients simply don't know their position on screens
-      // and always assume they are located at some arbitrary position.
-      properties->ignore_screen_bounds_for_menus = true;
       // Wayland uses sub-surfaces to show tooltips, and sub-surfaces must be
       // bound to their root surfaces always, but finding the correct root
       // surface at the moment of creating the tooltip is not always possible
@@ -283,6 +300,14 @@ class OzonePlatformWayland : public OzonePlatform {
       properties->needs_background_image =
           ui::IsWaylandOverlayDelegationEnabled();
 
+      // By design, clients are disallowed to manipulate global screen
+      // coordinates, instead only surface-local ones are supported.
+      // Non-toplevel surfaces, for example, must be positioned relative to
+      // their parents. As for toplevel surfaces, clients simply don't know
+      // their position on screens and always assume they are located at some
+      // arbitrary position.
+      properties->supports_global_screen_coordinates = false;
+
       initialised = true;
     }
 
@@ -290,21 +315,35 @@ class OzonePlatformWayland : public OzonePlatform {
   }
 
   const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
+    using SupportsSsdForTest =
+        OzonePlatform::PlatformRuntimeProperties::SupportsSsdForTest;
+    const auto& override_supports_ssd_for_test = OzonePlatform::
+        PlatformRuntimeProperties::override_supports_ssd_for_test;
+
     static OzonePlatform::PlatformRuntimeProperties properties;
     if (connection_) {
+      DCHECK(has_initialized_ui());
+      // These properties are set when GetPlatformRuntimeProperties is called on
+      // the browser process side.
       properties.supports_server_side_window_decorations =
-          (connection_->xdg_decoration_manager_v1() != nullptr);
-    }
-    return properties;
-  }
-
-  const InitializedHostProperties& GetInitializedHostProperties() override {
-    static OzonePlatform::InitializedHostProperties properties;
-    static bool initialized = false;
-    if (!initialized) {
+          override_supports_ssd_for_test == SupportsSsdForTest::kNotSet
+              ? (connection_->xdg_decoration_manager_v1() != nullptr)
+              : (override_supports_ssd_for_test == SupportsSsdForTest::kNo
+                     ? false
+                     : true);
       properties.supports_overlays =
           ui::IsWaylandOverlayDelegationEnabled() && connection_->viewporter();
-      initialized = true;
+      properties.supports_non_backed_solid_color_buffers =
+          ui::IsWaylandOverlayDelegationEnabled() &&
+          connection_->buffer_manager_host()
+              ->SupportsNonBackedSolidColorBuffers();
+    } else if (buffer_manager_) {
+      DCHECK(has_initialized_gpu());
+      // These properties are set when the GetPlatformRuntimeProperties is
+      // called on the gpu process side.
+      properties.supports_non_backed_solid_color_buffers =
+          ui::IsWaylandOverlayDelegationEnabled() &&
+          buffer_manager_->supports_non_backed_solid_color_buffers();
     }
     return properties;
   }
@@ -328,6 +367,11 @@ class OzonePlatformWayland : public OzonePlatform {
     connection_->SetShutdownCb(std::move(shutdown_cb));
   }
 
+  // OSExchangeDataProviderFactoryOzone:
+  std::unique_ptr<OSExchangeDataProvider> CreateProvider() override {
+    return std::make_unique<WaylandExchangeDataProvider>();
+  }
+
  private:
   // Keeps the old value of KeyEvent::IsSynthesizeKeyRepeatEnabled(), to
   // restore it on destruction.
@@ -347,10 +391,12 @@ class OzonePlatformWayland : public OzonePlatform {
       input_method_context_factory_;
   std::unique_ptr<WaylandBufferManagerConnector> buffer_manager_connector_;
   std::unique_ptr<WaylandMenuUtils> menu_utils_;
+  std::unique_ptr<WaylandUtils> wayland_utils_;
 
   // Objects, which solely live in the GPU process.
   std::unique_ptr<WaylandBufferManagerGpu> buffer_manager_;
   std::unique_ptr<WaylandOverlayManager> overlay_manager_;
+  std::unique_ptr<WaylandGLEGLUtility> gl_egl_utility_;
 
   // Provides supported buffer formats for native gpu memory buffers
   // framework.

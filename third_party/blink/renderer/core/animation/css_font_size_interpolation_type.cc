@@ -138,9 +138,9 @@ void CSSFontSizeInterpolationType::ApplyStandardPropertyValue(
     const NonInterpolableValue*,
     StyleResolverState& state) const {
   const FontDescription& parent_font = state.ParentFontDescription();
-  Length font_size_length =
-      To<InterpolableLength>(interpolable_value)
-          .CreateLength(state.FontSizeConversionData(), kValueRangeNonNegative);
+  Length font_size_length = To<InterpolableLength>(interpolable_value)
+                                .CreateLength(state.FontSizeConversionData(),
+                                              Length::ValueRange::kNonNegative);
   float font_size =
       FloatValueForLength(font_size_length, parent_font.GetSize().value);
   state.GetFontBuilder().SetSize(FontDescription::Size(

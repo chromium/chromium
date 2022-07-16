@@ -12,8 +12,13 @@
 #include "base/callback_forward.h"
 #include "base/observer_list.h"
 #include "content/public/browser/service_worker_context.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 class GURL;
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace content {
 
@@ -29,15 +34,21 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
       std::tuple<GURL, blink::TransferableMessage, ResultCallback>;
 
   FakeServiceWorkerContext();
+
+  FakeServiceWorkerContext(const FakeServiceWorkerContext&) = delete;
+  FakeServiceWorkerContext& operator=(const FakeServiceWorkerContext&) = delete;
+
   ~FakeServiceWorkerContext() override;
 
   void AddObserver(ServiceWorkerContextObserver* observer) override;
   void RemoveObserver(ServiceWorkerContextObserver* observer) override;
   void RegisterServiceWorker(
       const GURL& script_url,
+      const blink::StorageKey& key,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
       StatusCodeCallback callback) override;
   void UnregisterServiceWorker(const GURL& scope,
+                               const blink::StorageKey& key,
                                ResultCallback callback) override;
   ServiceWorkerExternalRequestResult StartingExternalRequest(
       int64_t service_worker_version_id,
@@ -45,30 +56,36 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
   ServiceWorkerExternalRequestResult FinishedExternalRequest(
       int64_t service_worker_version_id,
       const std::string& request_uuid) override;
-  size_t CountExternalRequestsForTest(const url::Origin& origin) override;
-  bool MaybeHasRegistrationForOrigin(const url::Origin& origin) override;
+  size_t CountExternalRequestsForTest(const blink::StorageKey& key) override;
+  bool MaybeHasRegistrationForStorageKey(const blink::StorageKey& key) override;
   void GetAllOriginsInfo(GetUsageInfoCallback callback) override;
-  void DeleteForOrigin(const url::Origin& origin,
-                       ResultCallback callback) override;
+  void DeleteForStorageKey(const blink::StorageKey& key,
+                           ResultCallback callback) override;
   void CheckHasServiceWorker(const GURL& url,
+                             const blink::StorageKey& key,
                              CheckHasServiceWorkerCallback callback) override;
   void CheckOfflineCapability(
       const GURL& url,
+      const blink::StorageKey& key,
       const ServiceWorkerContext::CheckOfflineCapabilityCallback callback)
       override;
   void ClearAllServiceWorkersForTest(base::OnceClosure) override;
   void StartWorkerForScope(
       const GURL& scope,
+      const blink::StorageKey& key,
       ServiceWorkerContext::StartWorkerCallback info_callback,
       ServiceWorkerContext::StatusCodeCallback failure_callback) override;
   void StartServiceWorkerAndDispatchMessage(
       const GURL& scope,
+      const blink::StorageKey& key,
       blink::TransferableMessage message,
       FakeServiceWorkerContext::ResultCallback result_callback) override;
   void StartServiceWorkerForNavigationHint(
       const GURL& document_url,
+      const blink::StorageKey& key,
       StartServiceWorkerForNavigationHintCallback callback) override;
-  void StopAllServiceWorkersForOrigin(const url::Origin& origin) override;
+  void StopAllServiceWorkersForStorageKey(
+      const blink::StorageKey& key) override;
   void StopAllServiceWorkers(base::OnceClosure callback) override;
   const base::flat_map<int64_t, ServiceWorkerRunningInfo>&
   GetRunningServiceWorkerInfos() override;
@@ -78,8 +95,8 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
   void NotifyObserversOnVersionRedundant(int64_t version_id, const GURL& scope);
   void NotifyObserversOnNoControllees(int64_t version_id, const GURL& scope);
 
-  // Inserts |origin| into |registered_origins_| if it doesn't already exist.
-  void AddRegistrationToRegisteredOrigins(const url::Origin& origin);
+  // Inserts `key` into `registered_storage_keys_` if it doesn't already exist.
+  void AddRegistrationToRegisteredStorageKeys(const blink::StorageKey& key);
 
   bool start_service_worker_for_navigation_hint_called() {
     return start_service_worker_for_navigation_hint_called_;
@@ -112,9 +129,7 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
 
   base::ObserverList<ServiceWorkerContextObserver, true>::Unchecked observers_;
 
-  DISALLOW_COPY_AND_ASSIGN(FakeServiceWorkerContext);
-
-  std::set<url::Origin> registered_origins_;
+  std::set<blink::StorageKey> registered_storage_keys_;
 };
 
 }  // namespace content

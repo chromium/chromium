@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_state.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
@@ -80,6 +79,11 @@ LayoutSVGText::~LayoutSVGText() {
   DCHECK(descendant_text_nodes_.IsEmpty());
 }
 
+void LayoutSVGText::Trace(Visitor* visitor) const {
+  visitor->Trace(descendant_text_nodes_);
+  LayoutSVGBlock::Trace(visitor);
+}
+
 void LayoutSVGText::StyleDidChange(StyleDifference diff,
                                    const ComputedStyle* old_style) {
   NOT_DESTROYED();
@@ -113,7 +117,7 @@ const LayoutSVGBlock* LayoutSVGText::LocateLayoutSVGTextAncestor(
 
 static inline void CollectDescendantTextNodes(
     LayoutSVGText& text_root,
-    Vector<LayoutSVGInlineText*>& descendant_text_nodes) {
+    HeapVector<Member<LayoutSVGInlineText>>& descendant_text_nodes) {
   for (LayoutObject* descendant = text_root.FirstChild(); descendant;
        descendant = descendant->NextInPreOrder(&text_root)) {
     if (descendant->IsSVGInlineText())
@@ -169,9 +173,9 @@ static inline void UpdateFontAndMetrics(LayoutSVGText& text_root) {
 
 static inline void CheckDescendantTextNodeConsistency(
     LayoutSVGText& text,
-    Vector<LayoutSVGInlineText*>& expected_descendant_text_nodes) {
+    HeapVector<Member<LayoutSVGInlineText>>& expected_descendant_text_nodes) {
 #if DCHECK_IS_ON()
-  Vector<LayoutSVGInlineText*> new_descendant_text_nodes;
+  HeapVector<Member<LayoutSVGInlineText>> new_descendant_text_nodes;
   CollectDescendantTextNodes(text, new_descendant_text_nodes);
   DCHECK(new_descendant_text_nodes == expected_descendant_text_nodes);
 #endif
@@ -199,7 +203,6 @@ void LayoutSVGText::UpdateLayout() {
   DCHECK(NeedsLayout());
   // This flag is set and reset as needed only within this function.
   DCHECK(!needs_reordering_);
-  LayoutAnalyzer::Scope analyzer(*this);
 
   ClearOffsetMappingIfNeeded();
 
@@ -269,7 +272,7 @@ void LayoutSVGText::UpdateLayout() {
     SetChildrenInline(true);
 
   // FIXME: We need to find a way to only layout the child boxes, if needed.
-  FloatRect old_boundaries = ObjectBoundingBox();
+  gfx::RectF old_boundaries = ObjectBoundingBox();
   DCHECK(ChildrenInline());
 
   RebuildFloatsFromIntruding();
@@ -323,7 +326,8 @@ void LayoutSVGText::RecalcVisualOverflow() {
 
 RootInlineBox* LayoutSVGText::CreateRootInlineBox() {
   NOT_DESTROYED();
-  RootInlineBox* box = new SVGRootInlineBox(LineLayoutItem(this));
+  RootInlineBox* box =
+      MakeGarbageCollected<SVGRootInlineBox>(LineLayoutItem(this));
   box->SetHasVirtualLogicalHeight();
   return box;
 }
@@ -392,7 +396,7 @@ PositionWithAffinity LayoutSVGText::PositionForPoint(
 void LayoutSVGText::AbsoluteQuads(Vector<FloatQuad>& quads,
                                   MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  quads.push_back(LocalToAbsoluteQuad(StrokeBoundingBox(), mode));
+  quads.push_back(LocalToAbsoluteQuad(FloatRect(StrokeBoundingBox()), mode));
 }
 
 void LayoutSVGText::Paint(const PaintInfo& paint_info) const {
@@ -400,24 +404,24 @@ void LayoutSVGText::Paint(const PaintInfo& paint_info) const {
   SVGTextPainter(*this).Paint(paint_info);
 }
 
-FloatRect LayoutSVGText::ObjectBoundingBox() const {
+gfx::RectF LayoutSVGText::ObjectBoundingBox() const {
   NOT_DESTROYED();
   if (const RootInlineBox* box = FirstRootBox())
-    return FloatRect(box->FrameRect());
-  return FloatRect();
+    return gfx::RectF(box->FrameRect());
+  return gfx::RectF();
 }
 
-FloatRect LayoutSVGText::StrokeBoundingBox() const {
+gfx::RectF LayoutSVGText::StrokeBoundingBox() const {
   NOT_DESTROYED();
   if (!FirstRootBox())
-    return FloatRect();
+    return gfx::RectF();
   return SVGLayoutSupport::ExtendTextBBoxWithStroke(*this, ObjectBoundingBox());
 }
 
-FloatRect LayoutSVGText::VisualRectInLocalSVGCoordinates() const {
+gfx::RectF LayoutSVGText::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
   if (!FirstRootBox())
-    return FloatRect();
+    return gfx::RectF();
   return SVGLayoutSupport::ComputeVisualRectForText(*this, ObjectBoundingBox());
 }
 

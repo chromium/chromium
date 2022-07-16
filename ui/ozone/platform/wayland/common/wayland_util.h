@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -89,7 +88,7 @@ gfx::Rect TranslateWindowBoundsToParentDIP(ui::WaylandWindow* window,
 std::vector<gfx::Rect> CreateRectsFromSkPath(const SkPath& path);
 
 // Returns converted SkPath in DIPs from the one in pixels.
-SkPath ConvertPathToDIP(const SkPath& path_in_pixels, const int32_t scale);
+SkPath ConvertPathToDIP(const SkPath& path_in_pixels, float scale);
 
 }  // namespace wl
 

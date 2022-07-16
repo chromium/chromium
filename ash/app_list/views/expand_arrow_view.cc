@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -32,7 +33,8 @@ namespace ash {
 
 namespace {
 
-// The width of this view.
+// The dimensions of this view.
+constexpr int kTileHeight = 72;
 constexpr int kTileWidth = 60;
 
 // The arrow dimension of expand arrow.
@@ -73,8 +75,8 @@ constexpr float kPulseMinOpacity = 0.f;
 constexpr float kPulseMaxOpacity = 0.3f;
 constexpr int kAnimationInitialWaitTimeInSec = 3;
 constexpr int kAnimationIntervalInSec = 10;
-constexpr auto kCycleDuration = base::TimeDelta::FromMilliseconds(1000);
-constexpr auto kCycleInterval = base::TimeDelta::FromMilliseconds(500);
+constexpr auto kCycleDuration = base::Milliseconds(1000);
+constexpr auto kCycleInterval = base::Milliseconds(500);
 
 constexpr int kFocusRingWidth = 2;
 
@@ -154,8 +156,8 @@ ExpandArrowView::ExpandArrowView(ContentsView* contents_view,
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetLocalBounds().InsetsFrom(GetCircleBounds()),
             views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-            color_provider->GetRippleAttributesBaseColor(),
-            color_provider->GetRippleAttributesInkDropOpacity());
+            color_provider->GetInkDropBaseColor(),
+            color_provider->GetInkDropOpacity());
       },
       this));
 
@@ -259,9 +261,7 @@ void ExpandArrowView::PaintButtonContents(gfx::Canvas* canvas) {
 }
 
 gfx::Size ExpandArrowView::CalculatePreferredSize() const {
-  return gfx::Size(
-      kTileWidth,
-      app_list_view_->GetAppListConfig().expand_arrow_tile_height());
+  return gfx::Size(kTileWidth, kTileHeight);
 }
 
 bool ExpandArrowView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -303,14 +303,10 @@ void ExpandArrowView::AnimationProgressed(const gfx::Animation* animation) {
   }
 
   // Update pulse opacity.
-  constexpr auto kPulseOpacityShowBeginTime =
-      base::TimeDelta::FromMilliseconds(100);
-  constexpr auto kPulseOpacityShowEndTime =
-      base::TimeDelta::FromMilliseconds(200);
-  constexpr auto kPulseOpacityHideBeginTime =
-      base::TimeDelta::FromMilliseconds(800);
-  constexpr auto kPulseOpacityHideEndTime =
-      base::TimeDelta::FromMilliseconds(1000);
+  constexpr auto kPulseOpacityShowBeginTime = base::Milliseconds(100);
+  constexpr auto kPulseOpacityShowEndTime = base::Milliseconds(200);
+  constexpr auto kPulseOpacityHideBeginTime = base::Milliseconds(800);
+  constexpr auto kPulseOpacityHideEndTime = base::Milliseconds(1000);
   if (time > kPulseOpacityShowBeginTime && time <= kPulseOpacityShowEndTime) {
     pulse_opacity_ =
         kPulseMinOpacity +
@@ -333,11 +329,10 @@ void ExpandArrowView::AnimationProgressed(const gfx::Animation* animation) {
                                                   time / kCycleDuration));
 
   // Update y position offset of the arrow.
-  constexpr auto kArrowMoveOutBeginTime =
-      base::TimeDelta::FromMilliseconds(100);
-  constexpr auto kArrowMoveOutEndTime = base::TimeDelta::FromMilliseconds(500);
-  constexpr auto kArrowMoveInBeginTime = base::TimeDelta::FromMilliseconds(500);
-  constexpr auto kArrowMoveInEndTime = base::TimeDelta::FromMilliseconds(900);
+  constexpr auto kArrowMoveOutBeginTime = base::Milliseconds(100);
+  constexpr auto kArrowMoveOutEndTime = base::Milliseconds(500);
+  constexpr auto kArrowMoveInBeginTime = base::Milliseconds(500);
+  constexpr auto kArrowMoveInEndTime = base::Milliseconds(900);
   if (time > kArrowMoveOutBeginTime && time <= kArrowMoveOutEndTime) {
     const double progress = (time - kArrowMoveOutBeginTime) /
                             (kArrowMoveOutEndTime - kArrowMoveOutBeginTime);
@@ -390,7 +385,7 @@ void ExpandArrowView::MaybeEnableHintingAnimation(bool enabled) {
   // crash when spoken feedback is enabled (See https://crbug.com/926038).
   if (enabled && !app_list_view_->is_side_shelf() &&
       !app_list_view_->is_tablet_mode() &&
-      !AppListView::ShortAnimationsForTesting()) {
+      !ui::ScopedAnimationDurationScaleMode::is_zero()) {
     ScheduleHintingAnimation(true);
   } else {
     hinting_animation_timer_.Stop();
@@ -409,9 +404,8 @@ void ExpandArrowView::ScheduleHintingAnimation(bool is_first_time) {
   int delay_in_sec = kAnimationIntervalInSec;
   if (is_first_time)
     delay_in_sec = kAnimationInitialWaitTimeInSec;
-  hinting_animation_timer_.Start(FROM_HERE,
-                                 base::TimeDelta::FromSeconds(delay_in_sec),
-                                 this, &ExpandArrowView::StartHintingAnimation);
+  hinting_animation_timer_.Start(FROM_HERE, base::Seconds(delay_in_sec), this,
+                                 &ExpandArrowView::StartHintingAnimation);
 }
 
 void ExpandArrowView::StartHintingAnimation() {

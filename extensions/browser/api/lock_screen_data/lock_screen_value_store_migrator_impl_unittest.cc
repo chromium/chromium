@@ -17,6 +17,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/value_store/test_value_store_factory.h"
+#include "components/value_store/testing_value_store.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "crypto/symmetric_key.h"
@@ -24,15 +26,17 @@
 #include "extensions/browser/api/lock_screen_data/operation_result.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/local_value_store_cache.h"
+#include "extensions/browser/api/storage/value_store_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extensions_browser_client.h"
-#include "extensions/browser/value_store/test_value_store_factory.h"
-#include "extensions/browser/value_store/testing_value_store.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using value_store::TestValueStoreFactory;
+using value_store::ValueStore;
 
 namespace extensions {
 namespace lock_screen_data {
@@ -80,6 +84,12 @@ void GetRegisteredItemsCallback(
 class LockScreenValueStoreMigratorImplTest : public testing::Test {
  public:
   LockScreenValueStoreMigratorImplTest() = default;
+
+  LockScreenValueStoreMigratorImplTest(
+      const LockScreenValueStoreMigratorImplTest&) = delete;
+  LockScreenValueStoreMigratorImplTest& operator=(
+      const LockScreenValueStoreMigratorImplTest&) = delete;
+
   ~LockScreenValueStoreMigratorImplTest() override = default;
 
   void SetUp() override {
@@ -349,8 +359,12 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
     TestValueStoreFactory* factory = storage_type == StorageType::SOURCE
                                          ? source_value_store_factory_.get()
                                          : target_value_store_factory_.get();
-    TestingValueStore* store =
-        static_cast<TestingValueStore*>(factory->GetExisting(extension_id));
+    base::FilePath value_store_dir = value_store_util::GetValueStoreDir(
+        settings_namespace::LOCAL, value_store_util::ModelType::APP,
+        extension_id);
+    value_store::TestingValueStore* store =
+        static_cast<value_store::TestingValueStore*>(
+            factory->GetExisting(value_store_dir));
     ASSERT_TRUE(store);
 
     store->set_status_code(code);
@@ -382,8 +396,6 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
   std::unique_ptr<LockScreenValueStoreMigratorImpl> migrator_;
 
   std::map<ExtensionId, base::RunLoop> extension_waiters_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenValueStoreMigratorImplTest);
 };
 
 TEST_F(LockScreenValueStoreMigratorImplTest, Basic) {

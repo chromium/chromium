@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,7 +29,6 @@
 #include "chrome/browser/ui/views/overlay/toggle_microphone_button.h"
 #include "chrome/browser/ui/views/overlay/track_image_button.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/url_formatter/url_formatter.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -39,6 +37,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -137,6 +136,10 @@ T* AddChildView(std::vector<std::unique_ptr<views::View>>* views,
 class OverlayWindowFrameView : public views::NonClientFrameView {
  public:
   explicit OverlayWindowFrameView(views::Widget* widget) : widget_(widget) {}
+
+  OverlayWindowFrameView(const OverlayWindowFrameView&) = delete;
+  OverlayWindowFrameView& operator=(const OverlayWindowFrameView&) = delete;
+
   ~OverlayWindowFrameView() override = default;
 
   // views::NonClientFrameView:
@@ -196,8 +199,6 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
 
  private:
   views::Widget* widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayWindowFrameView);
 };
 
 // OverlayWindow implementation of WidgetDelegate.
@@ -212,6 +213,11 @@ class OverlayWindowWidgetDelegate : public views::WidgetDelegate {
     SetTitle(IDS_PICTURE_IN_PICTURE_TITLE_TEXT);
     SetOwnedByWidget(true);
   }
+
+  OverlayWindowWidgetDelegate(const OverlayWindowWidgetDelegate&) = delete;
+  OverlayWindowWidgetDelegate& operator=(const OverlayWindowWidgetDelegate&) =
+      delete;
+
   ~OverlayWindowWidgetDelegate() override = default;
 
   // views::WidgetDelegate:
@@ -219,9 +225,6 @@ class OverlayWindowWidgetDelegate : public views::WidgetDelegate {
       views::Widget* widget) override {
     return std::make_unique<OverlayWindowFrameView>(widget);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverlayWindowWidgetDelegate);
 };
 
 // static
@@ -283,7 +286,7 @@ OverlayWindowViews::OverlayWindowViews(
       min_size_(kMinWindowSize),
       hide_controls_timer_(
           FROM_HERE,
-          base::TimeDelta::FromMilliseconds(2500),
+          base::Milliseconds(2500),
           base::BindRepeating(&OverlayWindowViews::UpdateControlsVisibility,
                               base::Unretained(this),
                               false /* is_visible */)) {
@@ -375,7 +378,9 @@ void OverlayWindowViews::SetUpViews() {
   auto close_controls_view =
       std::make_unique<views::CloseImageButton>(base::BindRepeating(
           [](OverlayWindowViews* overlay) {
-            overlay->controller_->Close(/*should_pause_video=*/true);
+            // Only pause the video if play/pause is available.
+            const bool should_pause_video = overlay->show_play_pause_button_;
+            overlay->controller_->Close(should_pause_video);
             overlay->RecordButtonPressed(OverlayWindowControl::kClose);
           },
           base::Unretained(this)));
@@ -625,13 +630,10 @@ void OverlayWindowViews::UpdateLayerBoundsWithLetterboxing(
       letterbox_region.set_height(window_size.height());
   }
 
-  gfx::Size letterbox_size = letterbox_region.size();
-  gfx::Point origin =
-      gfx::Point((window_size.width() - letterbox_size.width()) / 2,
-                 (window_size.height() - letterbox_size.height()) / 2);
-
-  video_bounds_.set_origin(origin);
-  video_bounds_.set_size(letterbox_region.size());
+  const gfx::Rect video_bounds(
+      gfx::Point((window_size.width() - letterbox_region.size().width()) / 2,
+                 (window_size.height() - letterbox_region.size().height()) / 2),
+      letterbox_region.size());
 
   // Update the layout of the controls.
   UpdateControlsBounds();
@@ -639,9 +641,9 @@ void OverlayWindowViews::UpdateLayerBoundsWithLetterboxing(
   // Update the surface layer bounds to scale with window size changes.
   window_background_view_->SetBoundsRect(
       gfx::Rect(gfx::Point(0, 0), GetBounds().size()));
-  video_view_->SetBoundsRect(video_bounds_);
+  video_view_->SetBoundsRect(video_bounds);
   if (video_view_->layer()->has_external_content())
-    video_view_->layer()->SetSurfaceSize(video_bounds_.size());
+    video_view_->layer()->SetSurfaceSize(video_bounds.size());
 
   // Notify the controller that the bounds have changed.
   controller_->UpdateLayerBounds();
@@ -663,7 +665,7 @@ void OverlayWindowViews::UpdateControlsBounds() {
 
   update_controls_bounds_timer_ = std::make_unique<base::OneShotTimer>();
   update_controls_bounds_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(1),
+      FROM_HERE, base::Seconds(1),
       base::BindOnce(&OverlayWindowViews::OnUpdateControlsBounds,
                      base::Unretained(this)));
 }
@@ -849,21 +851,14 @@ bool OverlayWindowViews::IsActive() const {
 void OverlayWindowViews::Close() {
   views::Widget::Close();
 
-  if (auto* frame_sink_id = GetCurrentFrameSinkId())
-    GetCompositor()->RemoveChildFrameSink(*frame_sink_id);
+  if (has_registered_frame_sink_hierarchy_) {
+    DCHECK(GetCurrentFrameSinkId());
+    GetCompositor()->RemoveChildFrameSink(*GetCurrentFrameSinkId());
+    has_registered_frame_sink_hierarchy_ = false;
+  }
 }
 
 void OverlayWindowViews::ShowInactive() {
-  if (back_to_tab_label_button_) {
-    back_to_tab_label_button_->SetText(url_formatter::FormatUrl(
-        controller_->GetWebContents()->GetLastCommittedURL(),
-        url_formatter::kFormatUrlOmitDefaults |
-            url_formatter::kFormatUrlOmitHTTPS |
-            url_formatter::kFormatUrlOmitTrivialSubdomains |
-            url_formatter::kFormatUrlTrimAfterHost,
-        net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
-  }
-
   views::Widget::ShowInactive();
   views::Widget::SetVisibleOnAllWorkspaces(true);
 
@@ -893,6 +888,12 @@ void OverlayWindowViews::ShowInactive() {
 
 void OverlayWindowViews::Hide() {
   views::Widget::Hide();
+
+  if (has_registered_frame_sink_hierarchy_) {
+    DCHECK(GetCurrentFrameSinkId());
+    GetCompositor()->RemoveChildFrameSink(*GetCurrentFrameSinkId());
+    has_registered_frame_sink_hierarchy_ = false;
+  }
 }
 
 bool OverlayWindowViews::IsVisible() {
@@ -991,19 +992,26 @@ void OverlayWindowViews::SetHangUpButtonVisibility(bool is_visible) {
 }
 
 void OverlayWindowViews::SetSurfaceId(const viz::SurfaceId& surface_id) {
-  // TODO(https://crbug.com/925346): We also want to unregister the page that
-  // used to embed the video as its parent.
-  if (!GetCurrentFrameSinkId()) {
-    GetCompositor()->AddChildFrameSink(surface_id.frame_sink_id());
-  } else if (*GetCurrentFrameSinkId() != surface_id.frame_sink_id()) {
+  // The PiP window may have a previous surface set. If the window stays open
+  // since then, we need to unregister the previous frame sink; otherwise the
+  // surface frame sink should already be removed when the window closed.
+  if (has_registered_frame_sink_hierarchy_) {
+    DCHECK(GetCurrentFrameSinkId());
     GetCompositor()->RemoveChildFrameSink(*GetCurrentFrameSinkId());
-    GetCompositor()->AddChildFrameSink(surface_id.frame_sink_id());
   }
 
+  // Add the new frame sink to the PiP window and set the surface.
+  GetCompositor()->AddChildFrameSink(surface_id.frame_sink_id());
+  has_registered_frame_sink_hierarchy_ = true;
   video_view_->layer()->SetShowSurface(
       surface_id, GetBounds().size(), SK_ColorBLACK,
       cc::DeadlinePolicy::UseDefaultDeadline(),
       true /* stretch_content_to_fill_bounds */);
+}
+
+void OverlayWindowViews::OnNativeFocus() {
+  UpdateControlsVisibility(true);
+  views::Widget::OnNativeFocus();
 }
 
 void OverlayWindowViews::OnNativeBlur() {
@@ -1017,7 +1025,8 @@ void OverlayWindowViews::OnNativeBlur() {
 
 void OverlayWindowViews::OnNativeWidgetDestroyed() {
   views::Widget::OnNativeWidgetDestroyed();
-  controller_->OnWindowDestroyed(/*should_pause_video=*/true);
+  controller_->OnWindowDestroyed(
+      /*should_pause_video=*/show_play_pause_button_);
 }
 
 gfx::Size OverlayWindowViews::GetMinimumSize() const {
@@ -1075,11 +1084,11 @@ void OverlayWindowViews::OnKeyEvent(ui::KeyEvent* event) {
     UpdateControlsVisibility(true);
   }
 
-  // If there is no focus affordance on the buttons, only handle space key to
-  // for TogglePlayPause().
+  // If there is no focus affordance on the buttons and play/pause button is
+  // visible, only handle space key for TogglePlayPause().
   views::View* focused_view = GetFocusManager()->GetFocusedView();
   if (!focused_view && event->type() == ui::ET_KEY_PRESSED &&
-      event->key_code() == ui::VKEY_SPACE) {
+      event->key_code() == ui::VKEY_SPACE && show_play_pause_button_) {
     TogglePlayPause();
     event->SetHandled();
   }
@@ -1108,15 +1117,16 @@ void OverlayWindowViews::OnMouseEvent(ui::MouseEvent* event) {
 
     case ui::ET_MOUSE_EXITED: {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // On Lacros, the |event| will always occur within |video_bounds_| despite
-      // the mouse exiting the respective surface so always hide the controls.
+      // On Lacros, the |event| will always occur within
+      // |window_background_view_| despite the mouse exiting the respective
+      // surface so always hide the controls.
       const bool should_update_control_visibility = true;
 #else
       // On Windows, ui::ET_MOUSE_EXITED is triggered when hovering over the
       // media controls because of the HitTest. This check ensures the controls
       // are visible if the mouse is still over the window.
       const bool should_update_control_visibility =
-          !video_bounds_.Contains(event->location());
+          !window_background_view_->bounds().Contains(event->location());
 #endif
       if (should_update_control_visibility)
         UpdateControlsVisibility(false);
@@ -1282,7 +1292,16 @@ void OverlayWindowViews::UpdateMaxSize(const gfx::Rect& work_area) {
   if (work_area.IsEmpty())
     return;
 
-  max_size_ = gfx::Size(work_area.width() / 2, work_area.height() / 2);
+  const auto new_max_size =
+      gfx::Size(work_area.width() / 2, work_area.height() / 2);
+  // Make sure we only run the logic to update the current size if the maximum
+  // size actually changes. Running it unconditionally means also running it
+  // when DPI <-> pixel computations introduce off-by-1 errors, which leads to
+  // incorrect window sizing/positioning.
+  if (new_max_size == max_size_)
+    return;
+
+  max_size_ = new_max_size;
 
   if (!native_widget())
     return;
@@ -1295,7 +1314,9 @@ void OverlayWindowViews::UpdateMaxSize(const gfx::Rect& work_area) {
     return;
   }
 
-  SetSize(max_size_);
+  gfx::Size clamped_size = GetBounds().size();
+  clamped_size.SetToMin(max_size_);
+  SetSize(clamped_size);
 }
 
 void OverlayWindowViews::TogglePlayPause() {
@@ -1343,6 +1364,10 @@ HangUpButton* OverlayWindowViews::hang_up_button_for_testing() const {
 BackToTabLabelButton* OverlayWindowViews::back_to_tab_label_button_for_testing()
     const {
   return back_to_tab_label_button_;
+}
+
+views::CloseImageButton* OverlayWindowViews::close_button_for_testing() const {
+  return close_controls_view_;
 }
 
 gfx::Point OverlayWindowViews::close_image_position_for_testing() const {

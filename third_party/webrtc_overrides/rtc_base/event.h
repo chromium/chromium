@@ -19,6 +19,10 @@ class RTC_EXPORT Event {
 
   Event();
   Event(bool manual_reset, bool initially_signaled);
+
+  Event(const Event&) = delete;
+  Event& operator=(const Event&) = delete;
+
   ~Event();
 
   void Set();
@@ -33,7 +37,6 @@ class RTC_EXPORT Event {
 
  private:
   base::WaitableEvent event_;
-  DISALLOW_COPY_AND_ASSIGN(Event);
 };
 
 // Pull ScopedAllowBaseSyncPrimitives(ForTesting) into the rtc namespace.

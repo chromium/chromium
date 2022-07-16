@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -25,7 +24,7 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "components/history/core/browser/web_history_service.h"
 #include "components/history/core/test/fake_web_history_service.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -41,6 +40,10 @@ static const int kFirstProfileIndex = 0;
 class SyncAwareCounterTest : public SyncTest {
  public:
   SyncAwareCounterTest() : SyncTest(SINGLE_CLIENT) {}
+
+  SyncAwareCounterTest(const SyncAwareCounterTest&) = delete;
+  SyncAwareCounterTest& operator=(const SyncAwareCounterTest&) = delete;
+
   ~SyncAwareCounterTest() override {}
 
   void SetUpOnMainThread() override {
@@ -93,8 +96,6 @@ class SyncAwareCounterTest : public SyncTest {
 
   bool finished_;
   bool sync_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncAwareCounterTest);
 };
 
 // Test that the counting restarts when autofill sync state changes.

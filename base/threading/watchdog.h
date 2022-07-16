@@ -36,6 +36,10 @@ class BASE_EXPORT Watchdog {
   Watchdog(const TimeDelta& duration,
            const std::string& thread_watched_name,
            bool enabled);
+
+  Watchdog(const Watchdog&) = delete;
+  Watchdog& operator=(const Watchdog&) = delete;
+
   virtual ~Watchdog();
 
   // Notify watchdog thread to finish up. Sets the state_ to SHUTDOWN.
@@ -87,8 +91,6 @@ class BASE_EXPORT Watchdog {
   ThreadDelegate delegate_;  // Store it, because it must outlive the thread.
 
   TimeTicks start_time_;  // Start of epoch, and alarm after duration_.
-
-  DISALLOW_COPY_AND_ASSIGN(Watchdog);
 };
 
 }  // namespace base

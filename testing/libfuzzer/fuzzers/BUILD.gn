@@ -361,13 +361,6 @@ fuzzer_test("angle_translator_fuzzer") {
   dict = "dicts/webgl-glsl.dict"
 }
 
-if (target_cpu == "x86" || target_cpu == "x64") {
-  fuzzer_test("swiftshader_vertex_routine_fuzzer") {
-    sources = []
-    deps = [ "//third_party/swiftshader:vertex_routine_fuzzer" ]
-  }
-}
-
 fuzzer_test("sha1_fuzzer") {
   sources = [ "sha1_fuzzer.cc" ]
   deps = [ "//base" ]

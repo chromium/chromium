@@ -205,42 +205,36 @@ void TransportConnectJob::HistogramDuration(
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta total_duration = now - connect_timing.dns_start;
   UMA_HISTOGRAM_CUSTOM_TIMES("Net.DNS_Resolution_And_TCP_Connection_Latency2",
-                             total_duration,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMinutes(10), 100);
+                             total_duration, base::Milliseconds(1),
+                             base::Minutes(10), 100);
 
   base::TimeDelta connect_duration = now - connect_timing.connect_start;
   UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency", connect_duration,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMinutes(10), 100);
+                             base::Milliseconds(1), base::Minutes(10), 100);
 
   switch (race_result) {
     case RACE_IPV4_WINS:
       UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency_IPv4_Wins_Race",
-                                 connect_duration,
-                                 base::TimeDelta::FromMilliseconds(1),
-                                 base::TimeDelta::FromMinutes(10), 100);
+                                 connect_duration, base::Milliseconds(1),
+                                 base::Minutes(10), 100);
       break;
 
     case RACE_IPV4_SOLO:
       UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency_IPv4_No_Race",
-                                 connect_duration,
-                                 base::TimeDelta::FromMilliseconds(1),
-                                 base::TimeDelta::FromMinutes(10), 100);
+                                 connect_duration, base::Milliseconds(1),
+                                 base::Minutes(10), 100);
       break;
 
     case RACE_IPV6_WINS:
       UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency_IPv6_Raceable",
-                                 connect_duration,
-                                 base::TimeDelta::FromMilliseconds(1),
-                                 base::TimeDelta::FromMinutes(10), 100);
+                                 connect_duration, base::Milliseconds(1),
+                                 base::Minutes(10), 100);
       break;
 
     case RACE_IPV6_SOLO:
       UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency_IPv6_Solo",
-                                 connect_duration,
-                                 base::TimeDelta::FromMilliseconds(1),
-                                 base::TimeDelta::FromMinutes(10), 100);
+                                 connect_duration, base::Milliseconds(1),
+                                 base::Minutes(10), 100);
       break;
 
     default:
@@ -251,7 +245,7 @@ void TransportConnectJob::HistogramDuration(
 
 // static
 base::TimeDelta TransportConnectJob::ConnectionTimeout() {
-  return base::TimeDelta::FromSeconds(TransportConnectJob::kTimeoutInSeconds);
+  return base::Seconds(TransportConnectJob::kTimeoutInSeconds);
 }
 
 void TransportConnectJob::OnIOComplete(int result) {
@@ -299,9 +293,15 @@ int TransportConnectJob::DoResolveHost() {
   HostResolver::ResolveHostParameters parameters;
   parameters.initial_priority = priority();
   parameters.secure_dns_policy = params_->secure_dns_policy();
-  request_ = host_resolver()->CreateRequest(
-      ToLegacyDestinationEndpoint(params_->destination()),
-      params_->network_isolation_key(), net_log(), parameters);
+  if (absl::holds_alternative<url::SchemeHostPort>(params_->destination())) {
+    request_ = host_resolver()->CreateRequest(
+        absl::get<url::SchemeHostPort>(params_->destination()),
+        params_->network_isolation_key(), net_log(), parameters);
+  } else {
+    request_ = host_resolver()->CreateRequest(
+        absl::get<HostPortPair>(params_->destination()),
+        params_->network_isolation_key(), net_log(), parameters);
+  }
 
   return request_->Start(base::BindOnce(&TransportConnectJob::OnIOComplete,
                                         base::Unretained(this)));
@@ -369,9 +369,9 @@ int TransportConnectJob::DoTransportConnect() {
   int rv = transport_socket_->Connect(base::BindOnce(
       &TransportConnectJob::OnIOComplete, base::Unretained(this)));
   if (rv == ERR_IO_PENDING && try_ipv6_connect_with_ipv4_fallback) {
-    fallback_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(kIPv6FallbackTimerInMs),
-        this, &TransportConnectJob::DoIPv6FallbackTransportConnect);
+    fallback_timer_.Start(FROM_HERE, base::Milliseconds(kIPv6FallbackTimerInMs),
+                          this,
+                          &TransportConnectJob::DoIPv6FallbackTransportConnect);
   }
   return rv;
 }

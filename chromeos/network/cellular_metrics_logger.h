@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -75,6 +74,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
       const absl::optional<std::string>& shill_error_name = absl::nullopt);
 
   CellularMetricsLogger();
+
+  CellularMetricsLogger(const CellularMetricsLogger&) = delete;
+  CellularMetricsLogger& operator=(const CellularMetricsLogger&) = delete;
+
   ~CellularMetricsLogger() override;
 
   void Init(NetworkStateHandler* network_state_handler,
@@ -382,8 +385,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
 
   // Tracks ESim feature usage for the Standard Feature Usage Logging Framework.
   std::unique_ptr<ESimFeatureUsageMetrics> esim_feature_usage_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(CellularMetricsLogger);
 };
 
 }  // namespace chromeos

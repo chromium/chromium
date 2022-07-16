@@ -14,9 +14,9 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
+#include "remoting/base/host_settings.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/host_setting_keys.h"
-#include "remoting/host/host_settings.h"
 #include "remoting/host/mac/permission_utils.h"
 #include "remoting/proto/audio.pb.h"
 

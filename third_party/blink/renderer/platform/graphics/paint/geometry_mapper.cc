@@ -32,15 +32,14 @@ void ExpandFixedBoundsInScroller(const TransformPaintPropertyNode* local,
 
   // First move the rect back to the min scroll offset, by accounting for the
   // current scroll offset.
-  FloatSize scroll_offset = node->Translation2D();
-  rect_to_map.Rect().Move(scroll_offset);
+  rect_to_map.Rect().Offset(node->Translation2D());
 
   // Calculate the max scroll offset and expand by that amount. The max scroll
   // offset is the contents size minus one viewport's worth of space (i.e. the
   // container rect size).
-  IntSize contents_size = node->ScrollNode()->ContentsSize();
-  IntSize container_size = node->ScrollNode()->ContainerRect().Size();
-  rect_to_map.Rect().Expand(FloatSize(contents_size - container_size));
+  gfx::Size expansion = node->ScrollNode()->ContentsRect().size() -
+                        node->ScrollNode()->ContainerRect().size();
+  rect_to_map.Rect().Outset(0, 0, expansion.width(), expansion.height());
 }
 
 }  // namespace
@@ -241,7 +240,7 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     // </div>
     // Either way, the element won't be renderable thus returning empty rect.
     success = true;
-    rect_to_map = FloatClipRect(FloatRect());
+    rect_to_map = FloatClipRect(gfx::RectF());
     return false;
   }
 
@@ -270,19 +269,12 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     return !rect_to_map.Rect().IsEmpty();
   }
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // On SPv1 we may fail when the paint invalidation container creates an
-    // overflow clip (in ancestor_state) which is not in localState of an
-    // out-of-flow positioned descendant. See crbug.com/513108 and web test
-    // compositing/overflow/handle-non-ancestor-clip-parent.html (run with
-    // --enable-prefer-compositing-to-lcd-text) for details.
-    // Ignore it for SPv1 for now.
-    success = true;
-  } else if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
-    // TODO(crbug.com/803649): We still have clip hierarchy issues with fragment
-    // clips. See crbug.com/1228364 for the tests.
-    success = true;
-  }
+  // TODO(crbug.com/803649): We still have clip hierarchy issues with fragment
+  // clips. See crbug.com/1228364 for the test cases. Will remove the following
+  // statement (leaving success==false) after both CompositeAfterPaint and
+  // LayoutNGBlockFragmentation are fully launched.
+  success = true;
+
   rect_to_map.ClearIsTight();
   return !rect_to_map.Rect().IsEmpty();
 }
@@ -326,7 +318,7 @@ bool GeometryMapper::SlowLocalToAncestorVisualRectWithEffects(
         clip_behavior, inclusive_behavior, expand, success);
     if (!success || !intersects) {
       success = true;
-      mapping_rect = FloatClipRect(FloatRect());
+      mapping_rect = FloatClipRect(gfx::RectF());
       return false;
     }
 
@@ -371,10 +363,12 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRect(
 
 static FloatClipRect GetClipRect(const ClipPaintPropertyNode& clip_node,
                                  OverlayScrollbarClipBehavior clip_behavior) {
-  FloatClipRect clip_rect(
+  // TODO(crbug.com/1248598): Do we need to use PaintClipRect when mapping for
+  // painting/compositing?
+  FloatClipRect clip_rect =
       UNLIKELY(clip_behavior == kExcludeOverlayScrollbarSizeForHitTesting)
-          ? clip_node.UnsnappedClipRectExcludingOverlayScrollbars()
-          : FloatClipRect(clip_node.UnsnappedClipRect()));
+          ? clip_node.LayoutClipRectExcludingOverlayScrollbars()
+          : clip_node.LayoutClipRect();
   if (clip_node.ClipPath())
     clip_rect.ClearIsTight();
   return clip_rect;
@@ -427,20 +421,11 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
     clip_node = clip_node->UnaliasedParent();
   }
   if (!clip_node) {
-    success = false;
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      // On SPv1 we may fail when the paint invalidation container creates an
-      // overflow clip (in ancestor_state) which is not in localState of an
-      // out-of-flow positioned descendant. See crbug.com/513108 and layout
-      // test compositing/overflow/handle-non-ancestor-clip-parent.html (run
-      // with --enable-prefer-compositing-to-lcd-text) for details.
-      // Ignore it for SPv1 for now.
-      success = true;
-    } else if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
-      // TODO(crbug.com/803649): We still have clip hierarchy issues with
-      // fragment clips. See crbug.com/1228364 for the tests.
-      success = true;
-    }
+    // TODO(crbug.com/803649): We still have clip hierarchy issues with
+    // fragment clips. See crbug.com/1228364 for the test cases. Will change
+    // the following to "success = false" after both CompositeAfterPaint and
+    // LayoutNGBlockFragmentation are fully launched.
+    success = true;
     return InfiniteLooseFloatClipRect();
   }
 
@@ -456,7 +441,7 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
             has_animation, has_fixed, success);
     if (!success) {
       success = true;
-      return FloatClipRect(FloatRect());
+      return FloatClipRect(gfx::RectF());
     }
 
     // Don't apply this clip if it's transformed by any animating transform.

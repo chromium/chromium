@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/radio_button_controller.h"
+
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -17,12 +20,13 @@ class RadioButtonControllerTest : public testing::Test {
   RadioButtonControllerTest() : controller_(&user_model_) {}
   ~RadioButtonControllerTest() override {}
 
-  std::map<std::string, std::set<std::string>> GetRadioGroups() {
+  base::flat_map<std::string, base::flat_set<std::string>> GetRadioGroups() {
     return controller_.radio_groups_;
   }
 
   void SetRadioGroups(
-      const std::map<std::string, std::set<std::string>>& radio_groups) {
+      const base::flat_map<std::string, base::flat_set<std::string>>&
+          radio_groups) {
     controller_.radio_groups_ = radio_groups;
   }
 
@@ -33,23 +37,25 @@ class RadioButtonControllerTest : public testing::Test {
 TEST_F(RadioButtonControllerTest, AddRadioButtonToGroup) {
   EXPECT_THAT(GetRadioGroups(), SizeIs(0));
   controller_.AddRadioButtonToGroup("group_1", "id_1");
-  EXPECT_THAT(GetRadioGroups(), UnorderedElementsAre(Pair(
-                                    "group_1", std::set<std::string>{"id_1"})));
+  EXPECT_THAT(GetRadioGroups(),
+              UnorderedElementsAre(
+                  Pair("group_1", base::flat_set<std::string>{"id_1"})));
 
   controller_.AddRadioButtonToGroup("group_1", "id_1");
-  EXPECT_THAT(GetRadioGroups(), UnorderedElementsAre(Pair(
-                                    "group_1", std::set<std::string>{"id_1"})));
+  EXPECT_THAT(GetRadioGroups(),
+              UnorderedElementsAre(
+                  Pair("group_1", base::flat_set<std::string>{"id_1"})));
 
   controller_.AddRadioButtonToGroup("group_1", "id_2");
   EXPECT_THAT(GetRadioGroups(),
-              UnorderedElementsAre(
-                  Pair("group_1", std::set<std::string>{"id_1", "id_2"})));
+              UnorderedElementsAre(Pair(
+                  "group_1", base::flat_set<std::string>{"id_1", "id_2"})));
 
   controller_.AddRadioButtonToGroup("group_2", "id_3");
   EXPECT_THAT(GetRadioGroups(),
               UnorderedElementsAre(
-                  Pair("group_1", std::set<std::string>{"id_1", "id_2"}),
-                  Pair("group_2", std::set<std::string>{"id_3"})));
+                  Pair("group_1", base::flat_set<std::string>{"id_1", "id_2"}),
+                  Pair("group_2", base::flat_set<std::string>{"id_3"})));
 }
 
 TEST_F(RadioButtonControllerTest, RemoveRadioButtonFromGroup) {
@@ -58,17 +64,18 @@ TEST_F(RadioButtonControllerTest, RemoveRadioButtonFromGroup) {
 
   // Does not create group_3 or remove id_1 from a different group.
   controller_.RemoveRadioButtonFromGroup("group_3", "id_1");
-  EXPECT_THAT(GetRadioGroups(),
-              UnorderedElementsAre(
-                  Pair("group_1", std::set<std::string>{"id_1", "id_2"}),
-                  Pair("group_2", std::set<std::string>{"id_3", "id_4"})));
+  EXPECT_THAT(
+      GetRadioGroups(),
+      UnorderedElementsAre(
+          Pair("group_1", base::flat_set<std::string>{"id_1", "id_2"}),
+          Pair("group_2", base::flat_set<std::string>{"id_3", "id_4"})));
 
   controller_.RemoveRadioButtonFromGroup("group_1", "id_2");
   controller_.RemoveRadioButtonFromGroup("group_2", "id_3");
-  EXPECT_THAT(
-      GetRadioGroups(),
-      UnorderedElementsAre(Pair("group_1", std::set<std::string>{"id_1"}),
-                           Pair("group_2", std::set<std::string>{"id_4"})));
+  EXPECT_THAT(GetRadioGroups(),
+              UnorderedElementsAre(
+                  Pair("group_1", base::flat_set<std::string>{"id_1"}),
+                  Pair("group_2", base::flat_set<std::string>{"id_4"})));
 }
 
 TEST_F(RadioButtonControllerTest, UpdateRadioButtonGroup) {

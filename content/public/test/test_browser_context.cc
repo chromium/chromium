@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/browser/platform_notification_service.h"
 #include "content/public/test/mock_resource_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/mock_background_sync_controller.h"
@@ -68,16 +69,19 @@ void TestBrowserContext::SetPermissionControllerDelegate(
   permission_controller_delegate_ = std::move(delegate);
 }
 
+void TestBrowserContext::SetPlatformNotificationService(
+    std::unique_ptr<PlatformNotificationService> service) {
+  platform_notification_service_ = std::move(service);
+}
+
 base::FilePath TestBrowserContext::GetPath() {
   return browser_context_dir_.GetPath();
 }
 
-#if !defined(OS_ANDROID)
 std::unique_ptr<ZoomLevelDelegate> TestBrowserContext::CreateZoomLevelDelegate(
     const base::FilePath& partition_path) {
   return nullptr;
 }
-#endif  // !defined(OS_ANDROID)
 
 bool TestBrowserContext::IsOffTheRecord() {
   return is_off_the_record_;
@@ -99,6 +103,11 @@ BrowserPluginGuestManager* TestBrowserContext::GetGuestManager() {
 
 storage::SpecialStoragePolicy* TestBrowserContext::GetSpecialStoragePolicy() {
   return special_storage_policy_.get();
+}
+
+PlatformNotificationService*
+TestBrowserContext::GetPlatformNotificationService() {
+  return platform_notification_service_.get();
 }
 
 PushMessagingService* TestBrowserContext::GetPushMessagingService() {

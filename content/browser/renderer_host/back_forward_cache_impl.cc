@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/field_trial_params.h"
@@ -25,6 +26,8 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -33,6 +36,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/frame/event_page_show_persisted.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-shared.h"
 #if defined(OS_ANDROID)
@@ -98,14 +102,6 @@ bool IsContentInjectionSupported() {
   return content_injection_supported.Get();
 }
 
-bool IsFileSystemSupported() {
-  if (!IsBackForwardCacheEnabled())
-    return false;
-  static constexpr base::FeatureParam<bool> file_system_api_supported(
-      &features::kBackForwardCache, "file_system_api_supported", false);
-  return file_system_api_supported.Get();
-}
-
 bool IsOptInHeaderRequired() {
   if (!IsBackForwardCacheEnabled())
     return false;
@@ -143,6 +139,7 @@ constexpr base::FeatureParam<BackForwardCacheImpl::UnloadSupportStrategy>::
         {BackForwardCacheImpl::UnloadSupportStrategy::kAlways, "always"},
         {BackForwardCacheImpl::UnloadSupportStrategy::kOptInHeaderRequired,
          "opt_in_header_required"},
+        {BackForwardCacheImpl::UnloadSupportStrategy::kNo, "no"},
 };
 
 BackForwardCacheImpl::UnloadSupportStrategy GetUnloadSupportStrategy() {
@@ -150,7 +147,7 @@ BackForwardCacheImpl::UnloadSupportStrategy GetUnloadSupportStrategy() {
 #if defined(OS_ANDROID)
       BackForwardCacheImpl::UnloadSupportStrategy::kAlways;
 #else
-      BackForwardCacheImpl::UnloadSupportStrategy::kOptInHeaderRequired;
+      BackForwardCacheImpl::UnloadSupportStrategy::kNo;
 #endif
 
   if (!IsBackForwardCacheEnabled())
@@ -175,9 +172,12 @@ WebSchedulerTrackedFeatures SupportedFeaturesImpl() {
                         base::SPLIT_WANT_NONEMPTY);
   for (const std::string& token : tokens) {
     auto feature = blink::scheduler::StringToFeature(token);
-    DCHECK(feature.has_value()) << "invalid feature string: " << token;
     if (feature.has_value()) {
       features.Put(feature.value());
+    } else {
+      // |feature| might not have its value when the user is in an experimental
+      // group with the feature, and the feature is already removed.
+      DLOG(WARNING) << "Invalid feature string: " << token;
     }
   }
   return features;
@@ -221,6 +221,7 @@ BlockListedFeatures GetDisallowedFeatures(
       WebSchedulerTrackedFeature::kBroadcastChannel,
       WebSchedulerTrackedFeature::kContainsPlugins,
       WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet,
+      WebSchedulerTrackedFeature::kDummy,
       WebSchedulerTrackedFeature::kIdleManager,
       WebSchedulerTrackedFeature::kIndexedDBConnection,
       WebSchedulerTrackedFeature::kKeyboardLock,
@@ -245,13 +246,13 @@ BlockListedFeatures GetDisallowedFeatures(
       WebSchedulerTrackedFeature::kWebRTC,
       WebSchedulerTrackedFeature::kWebShare,
       WebSchedulerTrackedFeature::kWebSocket,
-      WebSchedulerTrackedFeature::kWebXR,
-      WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated);
+      WebSchedulerTrackedFeature::kWebTransport,
+      WebSchedulerTrackedFeature::kWebXR);
 
   WebSchedulerTrackedFeatures result = kAlwaysDisallowedFeatures;
 
   if (!IsContentInjectionSupported()) {
-    result.Put(WebSchedulerTrackedFeature::kIsolatedWorldScript);
+    result.Put(WebSchedulerTrackedFeature::kInjectedJavascript);
     result.Put(WebSchedulerTrackedFeature::kInjectedStyleSheet);
   }
 
@@ -259,10 +260,6 @@ BlockListedFeatures GetDisallowedFeatures(
     result.Put(WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers);
     result.Put(WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch);
     result.Put(WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR);
-  }
-
-  if (!IsFileSystemSupported()) {
-    result.Put(WebSchedulerTrackedFeature::kWebFileSystem);
   }
 
   if (requested_features == RequestedFeatures::kOnlySticky) {
@@ -351,7 +348,7 @@ void RestoreBrowserControlsState(RenderFrameHostImpl* cached_rfh) {
     // If we currently aren't showing the controls let the cached renderer
     // know, so that it then reacts correctly to the SHOW controls message
     // that might follow during DidCommitNavigation.
-    cached_rfh->UpdateBrowserControlsState(
+    cached_rfh->GetPage().UpdateBrowserControlsState(
         cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kHidden,
         // Do not animate as we want this to happen "instantaneously"
         false);
@@ -364,18 +361,21 @@ void RequestRecordTimeToVisible(RenderFrameHostImpl* rfh,
   // cases like page navigating back with window.history.back(), while being
   // hidden.
   if (rfh->delegate()->GetVisibility() != Visibility::HIDDEN) {
-    rfh->GetView()->SetRecordContentToVisibleTimeRequest(
-        navigation_start, false /* destination_is_loaded */,
-        false /* show_reason_tab_switching */,
-        false /* show_reason_unoccluded */,
-        true /* show_reason_bfcache_restore */);
+    auto* trigger = rfh->GetRenderWidgetHost()->GetVisibleTimeRequestTrigger();
+    // The only way this should be null is if there is no RenderWidgetHostView.
+    DCHECK(rfh->GetView());
+    DCHECK(trigger);
+    trigger->UpdateRequest(navigation_start, false /* destination_is_loaded */,
+                           false /* show_reason_tab_switching */,
+                           false /* show_reason_unoccluded */,
+                           true /* show_reason_bfcache_restore */);
   }
 }
 
 // Returns true if any of the processes associated with the RenderViewHosts in
 // this Entry are foregrounded.
 bool HasForegroundedProcess(BackForwardCacheImpl::Entry& entry) {
-  for (auto* rvh : entry.render_view_hosts) {
+  for (auto* rvh : entry.render_view_hosts()) {
     if (!rvh->GetProcess()->IsProcessBackgrounded()) {
       return true;
     }
@@ -387,12 +387,52 @@ bool HasForegroundedProcess(BackForwardCacheImpl::Entry& entry) {
 // acknowledgement from renderer.
 bool AllRenderViewHostsReceivedAckFromRenderer(
     BackForwardCacheImpl::Entry& entry) {
-  for (auto* rvh : entry.render_view_hosts) {
+  for (auto* rvh : entry.render_view_hosts()) {
     if (!rvh->DidReceiveBackForwardCacheAck()) {
       return false;
     }
   }
   return true;
+}
+
+// Behavior on pages with cache-control:no-store specified by flags.
+enum class CacheControlNoStoreExperimentLevel {
+  // No experiments for cache-control:no-store are running.
+  kDoNotStore = 1,
+  // Only the metrics gathering experiment is on.
+  kStoreAndEvictUponRestore = 2,
+  // Restore the entry only when cookies have not changed while in cache.
+  kStoreAndRestoreUnlessCookieChange = 3,
+  // Restore the entry only when HTTP Only cookies have not changed while in
+  // cache.
+  kStoreAndRestoreUnlessHTTPOnlyCookieChange = 4,
+};
+
+const char kCacheControlNoStoreExperimentLevelName[] = "level";
+
+static constexpr base::FeatureParam<CacheControlNoStoreExperimentLevel>::Option
+    cache_control_levels[] = {
+        {CacheControlNoStoreExperimentLevel::kStoreAndEvictUponRestore,
+         "store-and-evict"},
+        {CacheControlNoStoreExperimentLevel::kStoreAndRestoreUnlessCookieChange,
+         "restore-unless-cookie-change"},
+        {CacheControlNoStoreExperimentLevel::
+             kStoreAndRestoreUnlessHTTPOnlyCookieChange,
+         "restore-unless-http-only-cookie-change"},
+};
+const base::FeatureParam<CacheControlNoStoreExperimentLevel>
+    cache_control_level{&kCacheControlNoStoreEnterBackForwardCache,
+                        kCacheControlNoStoreExperimentLevelName,
+                        CacheControlNoStoreExperimentLevel::kDoNotStore,
+                        &cache_control_levels};
+
+CacheControlNoStoreExperimentLevel GetCacheControlNoStoreLevel() {
+  if (!IsBackForwardCacheEnabled() ||
+      !base::FeatureList::IsEnabled(
+          kCacheControlNoStoreEnterBackForwardCache)) {
+    return CacheControlNoStoreExperimentLevel::kDoNotStore;
+  }
+  return cache_control_level.Get();
 }
 
 }  // namespace
@@ -423,27 +463,24 @@ BackForwardCacheImpl::GetChannelAssociatedMessageHandlingPolicy() {
   }
 }
 
-BackForwardCacheImpl::Entry::Entry(
-    std::unique_ptr<RenderFrameHostImpl> rfh,
-    RenderFrameProxyHostMap proxies,
-    std::set<RenderViewHostImpl*> render_view_hosts)
-    : render_frame_host(std::move(rfh)),
-      proxy_hosts(std::move(proxies)),
-      render_view_hosts(std::move(render_view_hosts)) {}
+BackForwardCacheImpl::Entry::Entry(std::unique_ptr<StoredPage> stored_page)
+    : stored_page_(std::move(stored_page)) {
+  if (BackForwardCacheImpl::AllowStoringPagesWithCacheControlNoStore()) {
+    cookie_modified_ = {/*http_only_cookie_modified*/ false,
+                        /*cookie_modified*/ false};
+  }
+}
 
 BackForwardCacheImpl::Entry::~Entry() = default;
 
 void BackForwardCacheImpl::Entry::WriteIntoTrace(
     perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("render_frame_host", render_frame_host);
+  dict.Add("render_frame_host", render_frame_host());
 }
 
 void BackForwardCacheImpl::Entry::StartMonitoringCookieChange() {
-  cookie_monitor = std::make_unique<CookieMonitor>(render_frame_host.get());
-}
-
-BackForwardCacheImpl::CookieMonitor::CookieMonitor(RenderFrameHostImpl* rfh) {
+  RenderFrameHostImpl* rfh = stored_page_->render_frame_host.get();
   StoragePartition* storage_partition = rfh->GetStoragePartition();
   auto* cookie_manager = storage_partition->GetCookieManagerForBrowserProcess();
   if (!cookie_listener_receiver_.is_bound()) {
@@ -453,25 +490,13 @@ BackForwardCacheImpl::CookieMonitor::CookieMonitor(RenderFrameHostImpl* rfh) {
         rfh->GetLastCommittedURL(), absl::nullopt,
         cookie_listener_receiver_.BindNewPipeAndPassRemote());
   }
-  // Initialize the member values to report.
-  cookie_modified_ = false;
-  http_only_cookie_modified_ = false;
 }
 
-BackForwardCacheImpl::CookieMonitor::~CookieMonitor() = default;
-
-void BackForwardCacheImpl::CookieMonitor::OnCookieChange(
+void BackForwardCacheImpl::Entry::OnCookieChange(
     const net::CookieChangeInfo& change) {
-  http_only_cookie_modified_ = change.cookie.IsHttpOnly();
-  cookie_modified_ = true;
-}
-
-bool BackForwardCacheImpl::CookieMonitor::CookieModified() {
-  return cookie_modified_;
-}
-
-bool BackForwardCacheImpl::CookieMonitor::HTTPOnlyCookieModified() {
-  return http_only_cookie_modified_;
+  DCHECK(cookie_modified_.has_value());
+  cookie_modified_->http_only_cookie_modified = change.cookie.IsHttpOnly();
+  cookie_modified_->cookie_modified = true;
 }
 
 void BackForwardCacheImpl::RenderProcessBackgroundedChanged(
@@ -512,7 +537,7 @@ base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache() {
     return base::TimeDelta::Max();
   }
 
-  return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
       features::kBackForwardCache, "TimeToLiveInBackForwardCacheInSeconds",
       kDefaultTimeToLiveInBackForwardCacheInSeconds));
 }
@@ -539,13 +564,90 @@ bool BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit() {
   return GetForegroundedEntriesCacheSize() > 0;
 }
 
+BackForwardCacheImpl::Entry* BackForwardCacheImpl::FindMatchingEntry(
+    PageImpl& page) {
+  RenderFrameHostImpl* render_frame_host = &page.GetMainDocument();
+  Entry* matching_entry = nullptr;
+  for (std::unique_ptr<Entry>& entry : entries_) {
+    if (render_frame_host == entry->render_frame_host()) {
+      matching_entry = entry.get();
+      break;
+    }
+  }
+  return matching_entry;
+}
+
+void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
+    BackForwardCacheCanStoreDocumentResult* result,
+    RenderFrameHostImpl* render_frame_host) {
+  // If the feature is disabled, do nothing.
+  if (!AllowStoringPagesWithCacheControlNoStore())
+    return;
+  // If the page didn't have cache-control: no-store, do nothing.
+  if (!render_frame_host->GetBackForwardCacheDisablingFeatures().Has(
+          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore)) {
+    return;
+  }
+
+  auto* matching_entry = FindMatchingEntry(render_frame_host->GetPage());
+  // |matching_entry| can be nullptr for tests because this can be called from
+  // |CanStorePageNow()|, at which point |rfh| may not have a matching entry
+  // yet.
+  if (!matching_entry)
+    return;
+
+  // Note that kCacheControlNoStoreHTTPOnlyCookieModified,
+  // kCacheControlNoStoreCookieModified and kCacheControlNoStore are mutually
+  // exclusive.
+  if (matching_entry->cookie_modified_->http_only_cookie_modified) {
+    result->No(BackForwardCacheMetrics::NotRestoredReason::
+                   kCacheControlNoStoreHTTPOnlyCookieModified);
+  } else if (matching_entry->cookie_modified_->cookie_modified) {
+    // JavaScript cookies are modified but not HTTP cookies. Only restore based
+    // on the experiment level.
+    if (GetCacheControlNoStoreLevel() <=
+        CacheControlNoStoreExperimentLevel::
+            kStoreAndRestoreUnlessCookieChange) {
+      result->No(BackForwardCacheMetrics::NotRestoredReason::
+                     kCacheControlNoStoreCookieModified);
+    }
+  } else if (GetCacheControlNoStoreLevel() ==
+             CacheControlNoStoreExperimentLevel::kStoreAndEvictUponRestore) {
+    result->No(
+        BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore);
+  }
+}
+
+BackForwardCacheCanStoreDocumentResult
+BackForwardCacheImpl::CanRestorePageNowForTesting(
+    RenderFrameHostImpl* render_frame_host) {
+  BackForwardCacheCanStoreDocumentResult can_store =
+      CanStorePageNow(render_frame_host);
+  UpdateCanStoreToIncludeCacheControlNoStore(&can_store, render_frame_host);
+  return can_store;
+}
+
 BackForwardCacheCanStoreDocumentResult BackForwardCacheImpl::CanStorePageNow(
     RenderFrameHostImpl* rfh) {
   BackForwardCacheCanStoreDocumentResult result =
       CanPotentiallyStorePageLater(rfh);
   CheckDynamicBlocklistedFeaturesOnSubtree(&result, rfh);
+
+  // With the flag on, |result| does not contain CacheControlNoStore, so it may
+  // need to be updated.
+  if (AllowStoringPagesWithCacheControlNoStore()) {
+    // If there are no reasons apart from CacheControlNoStore then allow the
+    // page to be stored. (Do not only report CacheControlNoStore as the
+    // page should enter bfcache in that case.)
+    if (!result.CanStore()) {
+      UpdateCanStoreToIncludeCacheControlNoStore(&result, rfh);
+    }
+  }
   DVLOG(1) << "CanStorePageNow: " << rfh->GetLastCommittedURL() << " : "
            << result.ToString();
+  TRACE_EVENT("navigation", "BackForwardCacheImpl::CanPotentiallyStorePageNow",
+              ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult,
+              result);
   return result;
 }
 
@@ -554,7 +656,7 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
   BackForwardCacheCanStoreDocumentResult result;
 
   // Use the BackForwardCache only for the main frame.
-  if (rfh->GetParent())
+  if (rfh->GetParentOrOuterDocument())
     result.No(BackForwardCacheMetrics::NotRestoredReason::kNotMainFrame);
 
   // If the the delegate doesn't support back forward cache, disable it.
@@ -563,10 +665,11 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
                   kBackForwardCacheDisabledForDelegate);
   }
 
-  const bool is_prerendering = rfh->GetLifecycleState() ==
-                               RenderFrameHost::LifecycleState::kPrerendering;
+  const bool is_prerendering =
+      rfh->lifecycle_state() ==
+      RenderFrameHostImpl::LifecycleStateImpl::kPrerendering;
   if (!IsBackForwardCacheEnabled() || is_disabled_for_testing_ ||
-      is_prerendering) {
+      is_prerendering || rfh->IsFencedFrameRoot()) {
     result.No(
         BackForwardCacheMetrics::NotRestoredReason::kBackForwardCacheDisabled);
 
@@ -628,11 +731,31 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
   if (rfh->last_http_method() != net::HttpRequestHeaders::kGetMethod)
     result.No(BackForwardCacheMetrics::NotRestoredReason::kHTTPMethodNotGET);
 
+  // Only store documents that have a valid network::mojom::URLResponseHead.
+  // We actually don't know the actual case this reason is solely set without
+  // kHTTPStatusNotOK and kSchemeNotHTTPOrHTTPS, but crash reports imply it
+  // happens.
+  // TODO(https://crbug.com/1216997): Understand the case and remove
+  // DebugScenario::kDebugNoResponseHeadForHTTPOrHTTPS.
+  if (!rfh->last_response_head())
+    result.No(BackForwardCacheMetrics::NotRestoredReason::kNoResponseHead);
+
   // Do not store main document with non HTTP/HTTPS URL scheme. Among other
   // things, this excludes the new tab page and all WebUI pages.
   if (!rfh->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
     result.No(
         BackForwardCacheMetrics::NotRestoredReason::kSchemeNotHTTPOrHTTPS);
+  }
+
+  // Do not store if activation navigations are disabled by the
+  // NavigatorDelegate as a workaround for the following bug.
+  // TODO(https://crbug.com/1234857): Remove this when the bug is fixed.
+  if (rfh->frame_tree()
+          ->navigator()
+          .GetDelegate()
+          ->IsActivationNavigationDisallowedForBug1234857()) {
+    result.No(BackForwardCacheMetrics::NotRestoredReason::
+                  kActivationNavigationsDisallowedForBug1234857);
   }
 
   // We should not cache pages with Cache-control: no-store. Note that
@@ -646,7 +769,7 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
 
   BlockListedFeatures cache_control_no_store_feature(
       WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore);
-  if (!Intersection(rfh->scheduler_tracked_features(),
+  if (!Intersection(rfh->GetBackForwardCacheDisablingFeatures(),
                     cache_control_no_store_feature)
            .Empty()) {
     if (!AllowStoringPagesWithCacheControlNoStore()) {
@@ -683,6 +806,9 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
 
   DVLOG(1) << "CanPotentiallyStorePageLater: " << rfh->GetLastCommittedURL()
            << " : " << result.ToString();
+  TRACE_EVENT(
+      "navigation", "BackForwardCacheImpl::CanPotentiallyStorePageLater",
+      ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult, result);
   return result;
 }
 
@@ -705,8 +831,10 @@ void BackForwardCacheImpl::CanStoreRenderFrameHostLater(
   }
 
   // Do not store documents if they have inner WebContents.
-  if (rfh->IsOuterDelegateFrame())
+  if (rfh->inner_tree_main_frame_tree_node_id() !=
+      FrameTreeNode::kFrameTreeNodeInvalidId) {
     result->No(BackForwardCacheMetrics::NotRestoredReason::kHaveInnerContents);
+  }
 
   const bool has_unload_handler = rfh->GetSuddenTerminationDisablerState(
       blink::mojom::SuddenTerminationDisablerType::kUnloadHandler);
@@ -737,6 +865,15 @@ void BackForwardCacheImpl::CanStoreRenderFrameHostLater(
         }
       }
       break;
+    case BackForwardCacheImpl::UnloadSupportStrategy::kNo:
+      if (has_unload_handler) {
+        result->No(rfh->GetParent()
+                       ? BackForwardCacheMetrics::NotRestoredReason::
+                             kUnloadHandlerExistsInSubFrame
+                       : BackForwardCacheMetrics::NotRestoredReason::
+                             kUnloadHandlerExistsInMainFrame);
+      }
+      break;
   }
 
   // When it's not the final decision for putting a page in the back-forward
@@ -745,7 +882,7 @@ void BackForwardCacheImpl::CanStoreRenderFrameHostLater(
   // since the first time it's used.
   WebSchedulerTrackedFeatures banned_features =
       Intersection(GetDisallowedFeatures(rfh, RequestedFeatures::kOnlySticky),
-                   rfh->scheduler_tracked_features());
+                   rfh->GetBackForwardCacheDisablingFeatures());
   if (!banned_features.Empty()) {
     if (!ShouldIgnoreBlocklists()) {
       result->NoDueToFeatures(banned_features);
@@ -771,18 +908,15 @@ void BackForwardCacheImpl::CheckDynamicBlocklistedFeaturesOnSubtree(
   // on whether we should store a page in the back-forward cache or not.
   WebSchedulerTrackedFeatures banned_features =
       Intersection(GetDisallowedFeatures(rfh, RequestedFeatures::kAll),
-                   rfh->scheduler_tracked_features());
-  if (!banned_features.Empty()) {
-    bool should_ignore_features_for_now =
-        CheckFeatureUsageOnlyAfterAck() &&
-        !rfh->render_view_host()->DidReceiveBackForwardCacheAck();
-    if (!ShouldIgnoreBlocklists() && !should_ignore_features_for_now) {
-      result->NoDueToFeatures(banned_features);
-    }
+                   rfh->GetBackForwardCacheDisablingFeatures());
+  if (!banned_features.Empty() && !ShouldIgnoreBlocklists() &&
+      rfh->render_view_host()->DidReceiveBackForwardCacheAck()) {
+    result->NoDueToFeatures(banned_features);
   }
 
   // Do not cache if we have navigations in any of the subframes.
-  if (rfh->GetParent() && rfh->frame_tree_node()->HasNavigation()) {
+  if (rfh->GetParentOrOuterDocument() &&
+      rfh->frame_tree_node()->HasNavigation()) {
     result->No(
         BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating);
   }
@@ -795,7 +929,7 @@ void BackForwardCacheImpl::CheckDynamicBlocklistedFeaturesOnSubtree(
 void BackForwardCacheImpl::StoreEntry(
     std::unique_ptr<BackForwardCacheImpl::Entry> entry) {
   TRACE_EVENT("navigation", "BackForwardCache::StoreEntry", "entry", entry);
-  DCHECK(CanStorePageNow(entry->render_frame_host.get()));
+  DCHECK(CanStorePageNow(entry->render_frame_host()));
 
 #if defined(OS_ANDROID)
   if (!IsProcessBindingEnabled()) {
@@ -805,19 +939,22 @@ void BackForwardCacheImpl::StoreEntry(
     // priority RenderWidgetHost. We don't need to reset the priority in
     // RestoreEntry as it is taken care by WebContentsImpl::NotifyFrameSwapped
     // on restoration.
-    RenderWidgetHostImpl* rwh = entry->render_frame_host->GetRenderWidgetHost();
+    RenderWidgetHostImpl* rwh =
+        entry->render_frame_host()->GetRenderWidgetHost();
     ChildProcessImportance current_importance = rwh->importance();
     rwh->SetImportance(
         std::min(current_importance, kChildProcessImportanceParam.Get()));
   }
 #endif
 
-  entry->render_frame_host->DidEnterBackForwardCache();
-  if (entry->render_frame_host->scheduler_tracked_features().Has(
-          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore)) {
-    // Start monitoring the cookie change only when cache-control:no-store
-    // header is present.
-    entry->StartMonitoringCookieChange();
+  entry->render_frame_host()->DidEnterBackForwardCache();
+  if (AllowStoringPagesWithCacheControlNoStore()) {
+    if (entry->render_frame_host()->GetBackForwardCacheDisablingFeatures().Has(
+            WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore)) {
+      // Start monitoring the cookie change only when cache-control:no-store
+      // header is present.
+      entry->StartMonitoringCookieChange();
+    }
   }
   entries_.push_front(std::move(entry));
   AddProcessesForEntry(*entries_.front());
@@ -847,7 +984,7 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
   size_t count = 0;
   size_t not_received_ack_count = 0;
   for (auto& stored_entry : entries_) {
-    if (stored_entry->render_frame_host->is_evicted_from_back_forward_cache())
+    if (stored_entry->render_frame_host()->is_evicted_from_back_forward_cache())
       continue;
     if (foregrounded_only && !HasForegroundedProcess(*stored_entry))
       continue;
@@ -856,7 +993,7 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
       continue;
     }
     if (++count > limit) {
-      stored_entry->render_frame_host->EvictFromBackForwardCacheWithReason(
+      stored_entry->render_frame_host()->EvictFromBackForwardCacheWithReason(
           foregrounded_only
               ? BackForwardCacheMetrics::NotRestoredReason::
                     kForegroundCacheLimit
@@ -870,39 +1007,21 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
   return count;
 }
 
-void BackForwardCacheImpl::MaybeEvictDueToCacheControlNoStoreBeforeRestore(
-    Entry* entry) {
-  if (!entry->render_frame_host->scheduler_tracked_features().Has(
-          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore))
-    return;
-
-  if (entry->cookie_monitor->HTTPOnlyCookieModified()) {
-    entry->render_frame_host->EvictFromBackForwardCacheWithReason(
-        BackForwardCacheMetrics::NotRestoredReason::
-            kCacheControlNoStoreHTTPOnlyCookieModified);
-  } else if (entry->cookie_monitor->CookieModified()) {
-    entry->render_frame_host->EvictFromBackForwardCacheWithReason(
-        BackForwardCacheMetrics::NotRestoredReason::
-            kCacheControlNoStoreCookieModified);
-  } else {
-    // Do not evict if the flag is on when cookies do not change.
-    if (AllowRestoringPagesWithCacheControlNoStore())
-      return;
-    entry->render_frame_host->EvictFromBackForwardCacheWithReason(
-        BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore);
-  }
-}
-
 std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
     int navigation_entry_id,
     blink::mojom::PageRestoreParamsPtr page_restore_params) {
   TRACE_EVENT0("navigation", "BackForwardCache::RestoreEntry");
+  blink::RecordUMAEventPageShowPersisted(
+      blink::EventPageShowPersisted::
+          kYesInBrowser_BackForwardCache_RestoreEntry_Attempt);
+
   // Select the RenderFrameHostImpl matching the navigation entry.
-  auto matching_entry = std::find_if(
-      entries_.begin(), entries_.end(),
-      [navigation_entry_id](std::unique_ptr<Entry>& entry) {
-        return entry->render_frame_host->nav_entry_id() == navigation_entry_id;
-      });
+  auto matching_entry =
+      std::find_if(entries_.begin(), entries_.end(),
+                   [navigation_entry_id](std::unique_ptr<Entry>& entry) {
+                     return entry->render_frame_host()->nav_entry_id() ==
+                            navigation_entry_id;
+                   });
 
   // Not found.
   if (matching_entry == entries_.end())
@@ -910,7 +1029,8 @@ std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
 
   // Don't restore an evicted frame.
   if ((*matching_entry)
-          ->render_frame_host->is_evicted_from_back_forward_cache())
+          ->render_frame_host()
+          ->is_evicted_from_back_forward_cache())
     return nullptr;
 
   std::unique_ptr<Entry> entry = std::move(*matching_entry);
@@ -920,20 +1040,23 @@ std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
 
   entries_.erase(matching_entry);
   RemoveProcessesForEntry(*entry);
-  entry->page_restore_params = std::move(page_restore_params);
-  RequestRecordTimeToVisible(entry->render_frame_host.get(),
-                             entry->page_restore_params->navigation_start);
-  entry->render_frame_host->WillLeaveBackForwardCache();
+  base::TimeTicks start_time = page_restore_params->navigation_start;
+  entry->SetPageRestoreParams(std::move(page_restore_params));
+  RequestRecordTimeToVisible(entry->render_frame_host(), start_time);
+  entry->render_frame_host()->WillLeaveBackForwardCache();
 
-  RestoreBrowserControlsState(entry->render_frame_host.get());
+  RestoreBrowserControlsState(entry->render_frame_host());
 
+  blink::RecordUMAEventPageShowPersisted(
+      blink::EventPageShowPersisted::
+          kYesInBrowser_BackForwardCache_RestoreEntry_Succeed);
   return entry;
 }
 
 void BackForwardCacheImpl::Flush() {
   TRACE_EVENT0("navigation", "BackForwardCache::Flush");
   for (std::unique_ptr<Entry>& entry : entries_) {
-    entry->render_frame_host->EvictFromBackForwardCacheWithReason(
+    entry->render_frame_host()->EvictFromBackForwardCacheWithReason(
         BackForwardCacheMetrics::NotRestoredReason::kCacheFlushed);
   }
 }
@@ -949,9 +1072,9 @@ void BackForwardCacheImpl::Shutdown() {
 void BackForwardCacheImpl::EvictFramesInRelatedSiteInstances(
     SiteInstance* site_instance) {
   for (std::unique_ptr<Entry>& entry : entries_) {
-    if (entry->render_frame_host->GetSiteInstance()->IsRelatedSiteInstance(
+    if (entry->render_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
             site_instance)) {
-      entry->render_frame_host->EvictFromBackForwardCacheWithReason(
+      entry->render_frame_host()->EvictFromBackForwardCacheWithReason(
           BackForwardCacheMetrics::NotRestoredReason::
               kConflictingBrowsingInstance);
     }
@@ -1017,24 +1140,37 @@ BackForwardCacheImpl::GetEntries() {
 
 BackForwardCacheImpl::Entry* BackForwardCacheImpl::GetEntry(
     int navigation_entry_id) {
-  auto matching_entry = std::find_if(
-      entries_.begin(), entries_.end(),
-      [navigation_entry_id](std::unique_ptr<Entry>& entry) {
-        return entry->render_frame_host->nav_entry_id() == navigation_entry_id;
-      });
+  auto matching_entry =
+      std::find_if(entries_.begin(), entries_.end(),
+                   [navigation_entry_id](std::unique_ptr<Entry>& entry) {
+                     return entry->render_frame_host()->nav_entry_id() ==
+                            navigation_entry_id;
+                   });
 
   if (matching_entry == entries_.end())
     return nullptr;
 
   if (AllowStoringPagesWithCacheControlNoStore() &&
       (*matching_entry)
-          ->render_frame_host->scheduler_tracked_features()
-          .Has(WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore))
-    MaybeEvictDueToCacheControlNoStoreBeforeRestore((*matching_entry).get());
+          ->render_frame_host()
+          ->GetBackForwardCacheDisablingFeatures()
+          .Has(WebSchedulerTrackedFeature::
+                   kMainResourceHasCacheControlNoStore)) {
+    auto* render_frame_host = (*matching_entry)->render_frame_host();
+    BackForwardCacheCanStoreDocumentResult can_store =
+        CanStorePageNow(render_frame_host);
+    UpdateCanStoreToIncludeCacheControlNoStore(&can_store, render_frame_host);
+    if (!can_store) {
+      (*matching_entry)
+          ->render_frame_host()
+          ->EvictFromBackForwardCacheWithReasons(can_store);
+    }
+  }
 
   // Don't return the frame if it is evicted.
   if ((*matching_entry)
-          ->render_frame_host->is_evicted_from_back_forward_cache())
+          ->render_frame_host()
+          ->is_evicted_from_back_forward_cache())
     return nullptr;
 
   return (*matching_entry).get();
@@ -1043,7 +1179,7 @@ BackForwardCacheImpl::Entry* BackForwardCacheImpl::GetEntry(
 void BackForwardCacheImpl::AddProcessesForEntry(Entry& entry) {
   if (!UsingForegroundBackgroundCacheSizeLimit())
     return;
-  for (auto* rvh : entry.render_view_hosts) {
+  for (auto* rvh : entry.render_view_hosts()) {
     RenderProcessHostImpl* process =
         static_cast<RenderProcessHostImpl*>(rvh->GetProcess());
     if (observed_processes_.find(process) == observed_processes_.end())
@@ -1055,7 +1191,7 @@ void BackForwardCacheImpl::AddProcessesForEntry(Entry& entry) {
 void BackForwardCacheImpl::RemoveProcessesForEntry(Entry& entry) {
   if (!UsingForegroundBackgroundCacheSizeLimit())
     return;
-  for (auto* rvh : entry.render_view_hosts) {
+  for (auto* rvh : entry.render_view_hosts()) {
     RenderProcessHostImpl* process =
         static_cast<RenderProcessHostImpl*>(rvh->GetProcess());
     // Remove 1 instance of this process from the multiset.
@@ -1071,7 +1207,14 @@ void BackForwardCacheImpl::DestroyEvictedFrames() {
     return;
 
   base::EraseIf(entries_, [this](std::unique_ptr<Entry>& entry) {
-    if (entry->render_frame_host->is_evicted_from_back_forward_cache()) {
+    if (entry->render_frame_host()->is_evicted_from_back_forward_cache()) {
+      BackForwardCacheCanStoreDocumentResult can_store;
+      UpdateCanStoreToIncludeCacheControlNoStore(&can_store,
+                                                 entry->render_frame_host());
+      if (auto* metrics =
+              entry->render_frame_host()->GetBackForwardCacheMetrics()) {
+        metrics->MarkNotRestoredWithReason(can_store);
+      }
       RemoveProcessesForEntry(*entry);
       return true;
     }
@@ -1124,26 +1267,13 @@ bool BackForwardCacheImpl::IsQueryAllowed(const GURL& current_url) {
   return true;
 }
 
-bool BackForwardCacheImpl::CheckFeatureUsageOnlyAfterAck() {
-  if (!IsBackForwardCacheEnabled())
-    return false;
-
-  return base::GetFieldTrialParamByFeatureAsBool(
-      features::kBackForwardCache, "check_eligibility_after_pagehide", false);
-}
-
-bool BackForwardCacheImpl::IsMediaSessionImplOnServiceCreatedAllowed() {
-  return SupportedFeatures().Has(
-      WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated);
-}
-
 void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(
     Entry& bfcache_entry,
     base::OnceClosure done_callback) {
   // Disable JS eviction in renderers and defer the navigation commit until
   // we've received confirmation that eviction is disabled from renderers.
   auto cb = base::BarrierClosure(
-      bfcache_entry.render_view_hosts.size(),
+      bfcache_entry.render_view_hosts().size(),
       base::BindOnce(
           [](base::TimeTicks ipc_start_time, base::OnceClosure cb) {
             std::move(cb).Run();
@@ -1153,26 +1283,51 @@ void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(
           },
           base::TimeTicks::Now(), std::move(done_callback)));
 
-  for (auto* rvh : bfcache_entry.render_view_hosts) {
+  blink::RecordUMAEventPageShowPersisted(
+      blink::EventPageShowPersisted::
+          kYesInBrowser_BackForwardCache_WillCommitNavigationToCachedEntry);
+  for (auto* rvh : bfcache_entry.render_view_hosts()) {
     rvh->PrepareToLeaveBackForwardCache(cb);
   }
 }
 
 bool BackForwardCacheImpl::AllowStoringPagesWithCacheControlNoStore() {
-  if (!IsBackForwardCacheEnabled())
-    return false;
-
-  return base::FeatureList::IsEnabled(
-      kCacheControlNoStoreEnterBackForwardCache);
+  return GetCacheControlNoStoreLevel() >
+         CacheControlNoStoreExperimentLevel::kDoNotStore;
 }
 
-bool BackForwardCacheImpl::AllowRestoringPagesWithCacheControlNoStore() {
-  if (!IsBackForwardCacheEnabled() ||
-      !AllowStoringPagesWithCacheControlNoStore())
-    return false;
+bool BackForwardCacheImpl::IsBrowsingInstanceInBackForwardCacheForDebugging(
+    BrowsingInstanceId browsing_instance_id) {
+  for (std::unique_ptr<Entry>& entry : entries_) {
+    if (entry->render_frame_host()
+            ->GetSiteInstance()
+            ->GetBrowsingInstanceId() == browsing_instance_id) {
+      return true;
+    }
+  }
+  return false;
+}
 
+bool BackForwardCacheImpl::IsProxyInBackForwardCacheForDebugging(
+    RenderFrameProxyHost* proxy) {
+  for (std::unique_ptr<Entry>& entry : entries_) {
+    for (auto& proxy_map_entry : entry->proxy_hosts()) {
+      if (proxy_map_entry.second.get() == proxy) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool BackForwardCacheImpl::IsMediaSessionPlaybackStateChangedAllowed() {
   return base::FeatureList::IsEnabled(
-      kCacheControlNoStoreRestoreFromBackForwardCacheUnlessCookieChange);
+      kBackForwardCacheMediaSessionPlaybackStateChange);
+}
+
+bool BackForwardCacheImpl::IsMediaSessionServiceAllowed() {
+  return base::FeatureList::IsEnabled(
+      features::kBackForwardCacheMediaSessionService);
 }
 
 bool BackForwardCache::DisabledReason::operator<(

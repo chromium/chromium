@@ -30,6 +30,12 @@ using ::i18n::addressinput::TestdataSource;
 
 class AutofillProfileValidationUtilTest : public testing::Test,
                                           public LoadRulesListener {
+ public:
+  AutofillProfileValidationUtilTest(const AutofillProfileValidationUtilTest&) =
+      delete;
+  AutofillProfileValidationUtilTest& operator=(
+      const AutofillProfileValidationUtilTest&) = delete;
+
  protected:
   AutofillProfileValidationUtilTest() {
     base::FilePath file_path;
@@ -73,8 +79,6 @@ class AutofillProfileValidationUtilTest : public testing::Test,
   // LoadRulesListener implementation.
   void OnAddressValidationRulesLoaded(const std::string& country_code,
                                       bool success) override {}
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileValidationUtilTest);
 };
 
 TEST_F(AutofillProfileValidationUtilTest, ValidateFullValidProfileForCanada) {

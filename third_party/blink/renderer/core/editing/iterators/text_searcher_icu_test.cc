@@ -118,13 +118,13 @@ TEST(TextSearcherICUTest, BrokenSurrogate) {
   TextSearcherICU searcher;
   UChar one[1];
   one[0] = 0xDB00;
-  const String pattern(one, 1);
+  const String pattern(one, 1u);
   searcher.SetPattern(pattern, kWholeWord);
 
   UChar two[2];
   two[0] = 0x0022;
   two[1] = 0xDB00;
-  const String text(two, 2);
+  const String text(two, 2u);
   searcher.SetText(text.Characters16(), text.length());
 
   // Note: Because even if ICU find U+DB00 but ICU doesn't think U+DB00 as

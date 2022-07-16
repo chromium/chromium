@@ -14,7 +14,7 @@
 #include <zircon/status.h>
 #include <zircon/syscalls.h>
 
-#include "base/base_paths_fuchsia.h"
+#include "base/base_paths.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/fuchsia/fuchsia_logging.h"

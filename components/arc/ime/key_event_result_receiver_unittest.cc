@@ -41,11 +41,12 @@ TEST_F(KeyEventResultReceiverTest, ExpireCallback) {
   absl::optional<bool> result;
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
+  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE};
 
-  receiver()->SetCallback(std::move(callback));
+  receiver()->SetCallback(std::move(callback), &event);
   EXPECT_FALSE(result.has_value());
 
-  ForwardBy(base::TimeDelta::FromSeconds(1));
+  ForwardBy(base::Seconds(1));
 
   EXPECT_TRUE(result.has_value());
   EXPECT_FALSE(result.value());
@@ -55,11 +56,11 @@ TEST_F(KeyEventResultReceiverTest, EventStoppedPropagation) {
   absl::optional<bool> result;
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
+  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE};
 
-  receiver()->SetCallback(std::move(callback));
+  receiver()->SetCallback(std::move(callback), &event);
   EXPECT_FALSE(result.has_value());
 
-  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE};
   event.StopPropagation();
   receiver()->DispatchKeyEventPostIME(&event);
 
@@ -71,13 +72,13 @@ TEST_F(KeyEventResultReceiverTest, EventConsumedByIME) {
   absl::optional<bool> result;
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
-
-  receiver()->SetCallback(std::move(callback));
-  EXPECT_FALSE(result.has_value());
-
   ui::KeyEvent event{ui::ET_KEY_PRESSED,  ui::VKEY_PROCESSKEY,
                      ui::DomCode::NONE,   ui::EF_IS_SYNTHESIZED,
                      ui::DomKey::PROCESS, ui::EventTimeForNow()};
+
+  receiver()->SetCallback(std::move(callback), &event);
+  EXPECT_FALSE(result.has_value());
+
   receiver()->DispatchKeyEventPostIME(&event);
 
   EXPECT_TRUE(result.has_value());
@@ -86,15 +87,15 @@ TEST_F(KeyEventResultReceiverTest, EventConsumedByIME) {
 
 TEST_F(KeyEventResultReceiverTest, EventNotCharacter) {
   absl::optional<bool> result;
-  auto callback =
-      base::BindLambdaForTesting([&result](bool res) { result = res; });
-
-  receiver()->SetCallback(std::move(callback));
-  EXPECT_FALSE(result.has_value());
-
   ui::KeyEvent event{ui::ET_KEY_PRESSED,      ui::VKEY_LEFT,
                      ui::DomCode::ARROW_LEFT, ui::EF_NONE,
                      ui::DomKey::ARROW_LEFT,  ui::EventTimeForNow()};
+  auto callback =
+      base::BindLambdaForTesting([&result](bool res) { result = res; });
+
+  receiver()->SetCallback(std::move(callback), &event);
+  EXPECT_FALSE(result.has_value());
+
   receiver()->DispatchKeyEventPostIME(&event);
 
   // A KeyEvent with no character is sent to ARC.
@@ -107,12 +108,13 @@ TEST_F(KeyEventResultReceiverTest, UnmodifiedEnterAndBackspace) {
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
 
-  receiver()->SetCallback(std::move(callback));
-  EXPECT_FALSE(result.has_value());
-
   ui::KeyEvent event{ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
                      ui::DomCode::ENTER, ui::EF_NONE,
                      ui::DomKey::ENTER,  ui::EventTimeForNow()};
+
+  receiver()->SetCallback(std::move(callback), &event);
+  EXPECT_FALSE(result.has_value());
+
   receiver()->DispatchKeyEventPostIME(&event);
 
   // An Enter key event without modifiers is sent to ARC.
@@ -120,14 +122,15 @@ TEST_F(KeyEventResultReceiverTest, UnmodifiedEnterAndBackspace) {
   EXPECT_FALSE(result.value());
 
   result.reset();
-  auto callback2 =
-      base::BindLambdaForTesting([&result](bool res) { result = res; });
-  receiver()->SetCallback(std::move(callback2));
 
   ui::KeyEvent event2{ui::ET_KEY_PRESSED,     ui::VKEY_BACK,
                       ui::DomCode::BACKSPACE, ui::EF_NONE,
                       ui::DomKey::BACKSPACE,  ui::EventTimeForNow()};
-  receiver()->DispatchKeyEventPostIME(&event);
+  auto callback2 =
+      base::BindLambdaForTesting([&result](bool res) { result = res; });
+  receiver()->SetCallback(std::move(callback2), &event2);
+
+  receiver()->DispatchKeyEventPostIME(&event2);
 
   // A Backspace key event without modifiers is sent to ARC as well.
   EXPECT_TRUE(result.has_value());
@@ -136,13 +139,13 @@ TEST_F(KeyEventResultReceiverTest, UnmodifiedEnterAndBackspace) {
 
 TEST_F(KeyEventResultReceiverTest, ControlCharacters) {
   absl::optional<bool> result;
+  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_CONTROL_DOWN};
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
 
-  receiver()->SetCallback(std::move(callback));
+  receiver()->SetCallback(std::move(callback), &event);
   EXPECT_FALSE(result.has_value());
 
-  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_CONTROL_DOWN};
   receiver()->DispatchKeyEventPostIME(&event);
 
   // Ctrl-A should be sent to the proxy IME.
@@ -152,13 +155,13 @@ TEST_F(KeyEventResultReceiverTest, ControlCharacters) {
 
 TEST_F(KeyEventResultReceiverTest, EventWithSystemModifier) {
   absl::optional<bool> result;
+  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_ALT_DOWN};
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
 
-  receiver()->SetCallback(std::move(callback));
+  receiver()->SetCallback(std::move(callback), &event);
   EXPECT_FALSE(result.has_value());
 
-  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_ALT_DOWN};
   receiver()->DispatchKeyEventPostIME(&event);
 
   // Alt-A should be sent to the proxy IME.
@@ -168,13 +171,13 @@ TEST_F(KeyEventResultReceiverTest, EventWithSystemModifier) {
 
 TEST_F(KeyEventResultReceiverTest, NormalCharacters) {
   absl::optional<bool> result;
+  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE};
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
 
-  receiver()->SetCallback(std::move(callback));
+  receiver()->SetCallback(std::move(callback), &event);
   EXPECT_FALSE(result.has_value());
 
-  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE};
   receiver()->DispatchKeyEventPostIME(&event);
 
   // 'A' key should be sent to the proxy IME.
@@ -185,23 +188,60 @@ TEST_F(KeyEventResultReceiverTest, NormalCharacters) {
 TEST_F(KeyEventResultReceiverTest, Histrogram) {
   base::HistogramTester histogram_tester;
   constexpr char kHistogramName[] = "Arc.ChromeOsImeLatency";
-  auto delay = base::TimeDelta::FromMilliseconds(100);
+  auto delay = base::Milliseconds(100);
 
-  receiver()->SetCallback(base::DoNothing());
+  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE};
+  receiver()->SetCallback(base::DoNothing(), &event);
 
   ForwardBy(delay);
 
-  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE};
   receiver()->DispatchKeyEventPostIME(&event);
 
   histogram_tester.ExpectTotalCount(kHistogramName, 1);
   histogram_tester.ExpectUniqueTimeSample(kHistogramName, delay, 1);
 
-  receiver()->SetCallback(base::DoNothing());
+  receiver()->SetCallback(base::DoNothing(), &event);
 
-  ForwardBy(base::TimeDelta::FromSeconds(1));
+  ForwardBy(base::Seconds(1));
 
   histogram_tester.ExpectTotalCount(kHistogramName, 2);
+}
+
+TEST_F(KeyEventResultReceiverTest, DifferentEvent) {
+  absl::optional<bool> result;
+  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE};
+  ui::KeyEvent event2{'b', ui::VKEY_B, ui::DomCode::NONE, ui::EF_NONE};
+  auto callback =
+      base::BindLambdaForTesting([&result](bool res) { result = res; });
+
+  receiver()->SetCallback(std::move(callback), &event);
+  EXPECT_FALSE(result.has_value());
+
+  receiver()->DispatchKeyEventPostIME(&event2);
+
+  // The callback should not be called with a different event.
+  EXPECT_FALSE(result.has_value());
+
+  receiver()->DispatchKeyEventPostIME(&event);
+
+  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result.value());
+}
+
+TEST_F(KeyEventResultReceiverTest, ProcessedKey) {
+  absl::optional<bool> result;
+  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE};
+  ui::KeyEvent event2{'b', ui::VKEY_PROCESSKEY, ui::DomCode::NONE, ui::EF_NONE};
+  auto callback =
+      base::BindLambdaForTesting([&result](bool res) { result = res; });
+
+  receiver()->SetCallback(std::move(callback), &event);
+  EXPECT_FALSE(result.has_value());
+
+  receiver()->DispatchKeyEventPostIME(&event2);
+
+  // The callback should be called with a VKEY_PROCESSKEY event.
+  EXPECT_TRUE(result.has_value());
 }
 
 }  // namespace arc

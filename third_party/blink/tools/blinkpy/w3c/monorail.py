@@ -36,7 +36,7 @@ class MonorailIssue(object):
         for field in self._STRING_LIST_FIELDS:
             if field in self._body:
                 # Not a str or unicode.
-                assert not isinstance(self._body[field], basestring)
+                assert not isinstance(self._body[field], str)
                 # Is iterable (TypeError would be raised otherwise).
                 self._body[field] = list(self._body[field])
         # We expect a KeyError to be raised if 'status' is missing.
@@ -45,20 +45,20 @@ class MonorailIssue(object):
             'Unknown status %s.' % self._body['status']
         assert self._body['summary'], 'summary cannot be empty.'
 
-    def __unicode__(self):
-        result = (u'Monorail issue in project {}\n'
+    def __str__(self):
+        result = ('Monorail issue in project {}\n'
                   'Summary: {}\n'
                   'Status: {}\n').format(self.project_id, self.body['summary'],
                                          self.body['status'])
         if 'cc' in self.body:
-            result += u'CC: {}\n'.format(', '.join(self.body['cc']))
+            result += 'CC: {}\n'.format(', '.join(self.body['cc']))
         if 'components' in self.body:
-            result += u'Components: {}\n'.format(', '.join(
+            result += 'Components: {}\n'.format(', '.join(
                 self.body['components']))
         if 'labels' in self.body:
-            result += u'Labels: {}\n'.format(', '.join(self.body['labels']))
+            result += 'Labels: {}\n'.format(', '.join(self.body['labels']))
         if 'description' in self.body:
-            result += u'Description:\n{}\n'.format(self.body['description'])
+            result += 'Description:\n{}\n'.format(self.body['description'])
         return result
 
     @property

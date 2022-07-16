@@ -187,4 +187,11 @@ void ProximityAuthSystem::OnFocusedUserChanged(const AccountId& account_id) {
   }
 }
 
+std::string ProximityAuthSystem::GetLastRemoteStatusUnlockForLogging() {
+  if (unlock_manager_) {
+    return unlock_manager_->GetLastRemoteStatusUnlockForLogging();
+  }
+  return std::string();
+}
+
 }  // namespace proximity_auth

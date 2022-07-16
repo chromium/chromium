@@ -4,22 +4,22 @@
 
 #include "components/account_manager_core/account.h"
 
+#include "base/check.h"
+
 namespace account_manager {
 
-bool AccountKey::IsValid() const {
-  return !id.empty();
+AccountKey::AccountKey(const std::string& id, AccountType type)
+    : id_(id), account_type_(type) {
+  DCHECK(!id_.empty());
 }
 
 bool AccountKey::operator<(const AccountKey& other) const {
-  if (id != other.id) {
-    return id < other.id;
-  }
-
-  return account_type < other.account_type;
+  return std::tie(id_, account_type_) <
+         std::tie(other.id_, other.account_type_);
 }
 
 bool AccountKey::operator==(const AccountKey& other) const {
-  return id == other.id && account_type == other.account_type;
+  return id_ == other.id_ && account_type_ == other.account_type_;
 }
 
 bool AccountKey::operator!=(const AccountKey& other) const {
@@ -42,8 +42,8 @@ std::ostream& operator<<(std::ostream& os, const AccountType& account_type) {
 
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 std::ostream& operator<<(std::ostream& os, const AccountKey& account_key) {
-  os << "{ id: " << account_key.id
-     << ", account_type: " << account_key.account_type << " }";
+  os << "{ id: " << account_key.id()
+     << ", account_type: " << account_key.account_type() << " }";
 
   return os;
 }

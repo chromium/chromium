@@ -6,6 +6,7 @@
 // bounds checks work when integrated with all of Chrome.
 
 #include "base/base_switches.h"
+#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -15,6 +16,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/blink/public/common/switches.h"
 
 namespace {
 // |kIsTrapHandlerSupported| indicates whether the trap handler is supported
@@ -35,6 +37,11 @@ constexpr bool kIsTrapHandlerSupported = false;
 class WasmTrapHandlerBrowserTest : public InProcessBrowserTest {
  public:
   WasmTrapHandlerBrowserTest() {}
+
+  WasmTrapHandlerBrowserTest(const WasmTrapHandlerBrowserTest&) = delete;
+  WasmTrapHandlerBrowserTest& operator=(const WasmTrapHandlerBrowserTest&) =
+      delete;
+
   ~WasmTrapHandlerBrowserTest() override {}
 
  protected:
@@ -81,23 +88,15 @@ class WasmTrapHandlerBrowserTest : public InProcessBrowserTest {
 #if defined(OS_POSIX)
     command_line->AppendSwitch(switches::kEnableCrashReporterForTesting);
 #endif
-    command_line->AppendSwitchASCII(switches::kJavaScriptFlags,
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
                                     "--allow-natives-syntax");
   }
-
-  DISALLOW_COPY_AND_ASSIGN(WasmTrapHandlerBrowserTest);
 };
 
-// This test fails on Linux MSan and Linux ChromiumOS MSan. crbug.com/1231858
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_OutOfBounds DISABLED_OutOfBounds
-#else
-#define MAYBE_OutOfBounds OutOfBounds
-#endif
-IN_PROC_BROWSER_TEST_F(WasmTrapHandlerBrowserTest, MAYBE_OutOfBounds) {
+IN_PROC_BROWSER_TEST_F(WasmTrapHandlerBrowserTest, OutOfBounds) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const auto& url = embedded_test_server()->GetURL("/wasm/out_of_bounds.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_NO_FATAL_FAILURE(RunJSTest("peek_in_bounds()"));
   ASSERT_NO_FATAL_FAILURE(

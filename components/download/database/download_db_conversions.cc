@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "components/download/public/common/download_features.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 
 namespace download {
 namespace {
@@ -20,8 +21,7 @@ int64_t FromTimeToMilliseconds(base::Time time) {
 
 // Converts a time stamp in milliseconds to base::Time.
 base::Time FromMillisecondsToTime(int64_t time_ms) {
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMilliseconds(time_ms));
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Milliseconds(time_ms));
 }
 
 }  // namespace
@@ -218,7 +218,14 @@ download_pb::InProgressInfo DownloadDBConversions::InProgressInfoToProto(
             in_progress_info.download_schedule.value()));
     proto.set_allocated_download_schedule(download_schedule_proto.release());
   }
-
+  // Fill in the output proto's |reroute_info| iff |in_progress_info|'s
+  // |reroute_info| is initialized, because it has a required field and parsing
+  // an uninitialized one to and from serialized strings would fail.
+  if (in_progress_info.reroute_info.IsInitialized()) {
+    *proto.mutable_reroute_info() = in_progress_info.reroute_info;
+  }
+  proto.set_credentials_mode(
+      static_cast<int32_t>(in_progress_info.credentials_mode));
   return proto;
 }
 
@@ -274,6 +281,13 @@ InProgressInfo DownloadDBConversions::InProgressInfoFromProto(
     info.download_schedule = DownloadScheduleFromProto(
         proto.download_schedule(), !proto.metered() /*only_on_wifi*/);
     DCHECK_NE(info.download_schedule->only_on_wifi(), info.metered);
+  }
+  if (proto.has_reroute_info()) {
+    info.reroute_info = proto.reroute_info();
+  }
+  if (proto.has_credentials_mode()) {
+    info.credentials_mode = static_cast<::network::mojom::CredentialsMode>(
+        proto.credentials_mode());
   }
 
   return info;

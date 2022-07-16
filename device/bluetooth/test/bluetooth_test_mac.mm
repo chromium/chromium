@@ -38,13 +38,14 @@ class BluetoothTestMac::ScopedMockCentralManager {
     mock_central_manager_.reset(mock_central_manager);
   }
 
+  ScopedMockCentralManager(const ScopedMockCentralManager&) = delete;
+  ScopedMockCentralManager& operator=(const ScopedMockCentralManager&) = delete;
+
   // Returns MockCentralManager instance.
   MockCentralManager* get() { return mock_central_manager_; }
 
  private:
   scoped_nsobject<MockCentralManager> mock_central_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMockCentralManager);
 };
 
 namespace {

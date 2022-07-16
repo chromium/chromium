@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -56,12 +55,15 @@ EmbeddedWorkerInstance::StatusCallback ReceiveStatus(
       out_status, std::move(quit));
 }
 
-const char kHistogramServiceWorkerRuntime[] = "ServiceWorker.Runtime";
-
 }  // namespace
 
 class EmbeddedWorkerInstanceTest : public testing::Test,
                                    public EmbeddedWorkerInstance::Listener {
+ public:
+  EmbeddedWorkerInstanceTest(const EmbeddedWorkerInstanceTest&) = delete;
+  EmbeddedWorkerInstanceTest& operator=(const EmbeddedWorkerInstanceTest&) =
+      delete;
+
  protected:
   EmbeddedWorkerInstanceTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
@@ -223,9 +225,6 @@ class EmbeddedWorkerInstanceTest : public testing::Test,
   std::vector<EventLog> events_;
   base::test::ScopedFeatureList scoped_feature_list_;
   bool has_fetch_handler_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedWorkerInstanceTest);
 };
 
 TEST_F(EmbeddedWorkerInstanceTest, StartAndStop) {
@@ -656,89 +655,6 @@ TEST_F(EmbeddedWorkerInstanceTest, HasFetchHandler) {
 
   EXPECT_FALSE(has_fetch_handler_);
   worker2->Stop();
-}
-
-// Tests recording the lifetime UMA.
-TEST_F(EmbeddedWorkerInstanceTest, Lifetime) {
-  const GURL scope("http://example.com/");
-  const GURL url("http://example.com/worker.js");
-
-  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(scope, url);
-  auto worker = std::make_unique<EmbeddedWorkerInstance>(pair.second.get());
-
-  base::HistogramTester metrics;
-
-  // Start the worker.
-  StartWorker(worker.get(), CreateStartParams(pair.second));
-  metrics.ExpectTotalCount(kHistogramServiceWorkerRuntime, 0);
-
-  // Stop the worker.
-  worker->Stop();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
-
-  // The runtime metric should have been recorded.
-  metrics.ExpectTotalCount(kHistogramServiceWorkerRuntime, 1);
-}
-
-// Tests that the lifetime UMA isn't recorded if DevTools was attached
-// while the worker was running.
-TEST_F(EmbeddedWorkerInstanceTest, Lifetime_DevToolsAttachedAfterStart) {
-  const GURL scope("http://example.com/");
-  const GURL url("http://example.com/worker.js");
-
-  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(scope, url);
-  auto worker = std::make_unique<EmbeddedWorkerInstance>(pair.second.get());
-
-  base::HistogramTester metrics;
-
-  // Start the worker.
-  StartWorker(worker.get(), CreateStartParams(pair.second));
-
-  // Attach DevTools.
-  worker->SetDevToolsAttached(true);
-
-  // To make things tricky, detach DevTools.
-  worker->SetDevToolsAttached(false);
-
-  // Stop the worker.
-  worker->Stop();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
-
-  // The runtime metric should not have ben recorded since DevTools
-  // was attached at some point during the worker's life.
-  metrics.ExpectTotalCount(kHistogramServiceWorkerRuntime, 0);
-}
-
-// Tests that the lifetime UMA isn't recorded if DevTools was attached
-// before the worker finished starting.
-TEST_F(EmbeddedWorkerInstanceTest, Lifetime_DevToolsAttachedDuringStart) {
-  const GURL scope("http://example.com/");
-  const GURL url("http://example.com/worker.js");
-
-  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(scope, url);
-  auto worker = std::make_unique<EmbeddedWorkerInstance>(pair.second.get());
-
-  base::HistogramTester metrics;
-
-  // Attach DevTools while the worker is starting.
-  worker->Start(CreateStartParams(pair.second), base::DoNothing());
-  worker->SetDevToolsAttached(true);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, worker->status());
-
-  // To make things tricky, detach DevTools.
-  worker->SetDevToolsAttached(false);
-
-  // Stop the worker.
-  worker->Stop();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
-
-  // The runtime metric should not have ben recorded since DevTools
-  // was attached at some point during the worker's life.
-  metrics.ExpectTotalCount(kHistogramServiceWorkerRuntime, 0);
 }
 
 }  // namespace content

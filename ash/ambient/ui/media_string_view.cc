@@ -27,11 +27,11 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/font.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/gfx/text_constants.h"
-#include "ui/gfx/transform.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -128,7 +128,8 @@ MediaStringView::~MediaStringView() = default;
 
 void MediaStringView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  media_text_->SetShadows(ambient::util::GetTextShadowValues(GetNativeTheme()));
+  media_text_->SetShadows(
+      ambient::util::GetTextShadowValues(GetColorProvider()));
 }
 void MediaStringView::OnViewBoundsChanged(views::View* observed_view) {
   UpdateMaskLayer();
@@ -330,8 +331,7 @@ void MediaStringView::StartScrolling(bool is_initial) {
     const int end_x = -(text_width + shadow_width) / 2;
     const int transform_distance = start_x - end_x;
     const base::TimeDelta kScrollingDuration =
-        base::TimeDelta::FromSeconds(10) * transform_distance /
-        kMediaStringMaxWidthDip;
+        base::Seconds(10) * transform_distance / kMediaStringMaxWidthDip;
 
     ui::ScopedLayerAnimationSettings animation(text_layer->GetAnimator());
     animation.SetTransitionDuration(kScrollingDuration);

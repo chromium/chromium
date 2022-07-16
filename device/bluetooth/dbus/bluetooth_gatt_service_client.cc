@@ -34,6 +34,11 @@ class BluetoothGattServiceClientImpl : public BluetoothGattServiceClient,
  public:
   BluetoothGattServiceClientImpl() : object_manager_(nullptr) {}
 
+  BluetoothGattServiceClientImpl(const BluetoothGattServiceClientImpl&) =
+      delete;
+  BluetoothGattServiceClientImpl& operator=(
+      const BluetoothGattServiceClientImpl&) = delete;
+
   ~BluetoothGattServiceClientImpl() override {
     object_manager_->UnregisterInterface(
         bluetooth_gatt_service::kBluetoothGattServiceInterface);
@@ -127,8 +132,6 @@ class BluetoothGattServiceClientImpl : public BluetoothGattServiceClient,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothGattServiceClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattServiceClientImpl);
 };
 
 BluetoothGattServiceClient::BluetoothGattServiceClient() = default;

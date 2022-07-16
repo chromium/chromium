@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeHostedAppTabChanges) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyExtension()));
 
   // Now reload and check that the last entry's title now starts with "App:".
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Force the TaskManager to query the title.
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeHostedAppTabChanges) {
 
   // Disable extension and reload.
   DisableExtension(last_loaded_extension_id());
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // The hosted app should now show up as a normal "Tab: ".
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyTab()));
@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeHostedAppTabAfterReload) {
       test_data_dir_.AppendASCII("api_test").AppendASCII("app_process")));
 
   // Now reload, which should transition this tab to being an App.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ShowTaskManager();
 
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, WebWorkerJSHeapMemory) {
 
   ShowTaskManager();
   model()->ToggleColumnVisibility(ColumnSpecifier::V8_MEMORY);
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
   size_t minimal_heap_size = 4 * 1024 * 1024 * sizeof(void*);
   std::string test_js = base::StringPrintf(
       "var blob = new Blob([\n"
@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, WebWorkerJSHeapMemory) {
 // Checks that task manager counts renderer JS heap size.
 IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, JSHeapMemory) {
   ShowTaskManager();
-  ui_test_utils::NavigateToURL(browser(), GetTestURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   size_t minimal_heap_size = 4 * 1024 * 1024 * sizeof(void*);
   std::string test_js = base::StringPrintf(
       "mem = new Array(%lu);\n"
@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_SentDataObserved) {
   ShowTaskManager();
   GURL test_gurl = embedded_test_server()->GetURL("/title1.html");
 
-  ui_test_utils::NavigateToURL(browser(), test_gurl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_gurl));
   std::string test_js = R"(
       document.title = 'network use';
       var mem = new Uint8Array(16 << 20);
@@ -711,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_TotalSentDataObserved) {
   ShowTaskManager();
   GURL test_gurl = embedded_test_server()->GetURL("/title1.html");
 
-  ui_test_utils::NavigateToURL(browser(), test_gurl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_gurl));
   std::string test_js = R"(
       document.title = 'network use';
       var mem = new Uint8Array(16 << 20);
@@ -772,7 +772,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_IdleWakeups) {
   ShowTaskManager();
   model()->ToggleColumnVisibility(ColumnSpecifier::IDLE_WAKEUPS);
 
-  ui_test_utils::NavigateToURL(browser(), GetTestURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
 
   std::string test_js =
     "function myWait() {\n"
@@ -805,7 +805,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerUtilityProcessBrowserTest,
 
   auto proxy_resolver_name =
       l10n_util::GetStringUTF16(IDS_PROXY_RESOLVER_DISPLAY_NAME);
-  ui_test_utils::NavigateToURL(browser(), GetTestURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   // The PAC script is trivial, so don't expect a large heap.
   size_t minimal_heap_size = 1024;
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerStatToExceed(
@@ -860,11 +860,12 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, DevToolsOldUndockedWindow) {
 IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, HistoryNavigationInNewTab) {
   ShowTaskManager();
 
-  ui_test_utils::NavigateToURL(browser(), GetTestURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("title1.html")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
 
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("About Version")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
 
@@ -894,9 +895,9 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, SubframeHistoryNavigation) {
   // This URL will have two out-of-process iframe processes (for b.com and
   // c.com) under --site-per-process: it's an a.com page containing a b.com
   // <iframe> containing a b.com <iframe> containing a c.com <iframe>.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "a.com", "/cross_site_iframe_factory.html?a(b(b(c)))"));
+                     "a.com", "/cross_site_iframe_factory.html?a(b(b(c)))")));
 
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab("Cross-site iframe factory")));
@@ -1021,7 +1022,7 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, KillSubframe) {
   // https://crbug.com/642958 wouldn't repro in presence of process swaps).
   navigation_observer.Wait();
   auto* b_frame =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetAllFrames()[1];
+      ChildFrameAt(browser()->tab_strip_model()->GetActiveWebContents(), 0);
   GURL b_url = b_frame->GetLastCommittedURL();
   ASSERT_EQ(b_url.host(), "b.com");  // Sanity check of test code / setup.
   ASSERT_TRUE(b_frame->GetSiteInstance()->RequiresDedicatedProcess());

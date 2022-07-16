@@ -27,8 +27,8 @@ NamedLineCollection::NamedLineCollection(
     const ComputedStyle& grid_container_style,
     const String& named_line,
     GridTrackSizingDirection direction,
-    size_t last_line,
-    size_t auto_repeat_tracks_count)
+    wtf_size_t last_line,
+    wtf_size_t auto_repeat_tracks_count)
     : last_line_(last_line),
       auto_repeat_total_tracks_(auto_repeat_tracks_count) {
   bool is_row_axis = direction == kForColumns;
@@ -76,20 +76,20 @@ bool NamedLineCollection::HasNamedLines() {
   return HasExplicitNamedLines() || implicit_named_lines_indexes_;
 }
 
-bool NamedLineCollection::Contains(size_t line) {
+bool NamedLineCollection::Contains(wtf_size_t line) {
   CHECK(HasNamedLines());
 
   if (line > last_line_)
     return false;
 
-  auto find = [](const Vector<size_t>* indexes, size_t line) {
+  auto find = [](const Vector<wtf_size_t>* indexes, wtf_size_t line) {
     return indexes && indexes->Find(line) != kNotFound;
   };
 
   if (find(implicit_named_lines_indexes_, line))
     return true;
 
-  if (auto_repeat_track_list_length_ == 0LU || line < insertion_point_)
+  if (auto_repeat_track_list_length_ == 0 || line < insertion_point_)
     return find(named_lines_indexes_, line);
 
   DCHECK(auto_repeat_total_tracks_);
@@ -108,7 +108,7 @@ bool NamedLineCollection::Contains(size_t line) {
            find(named_lines_indexes_, insertion_point_ + 1);
   }
 
-  size_t auto_repeat_index_in_first_repetition =
+  wtf_size_t auto_repeat_index_in_first_repetition =
       (line - insertion_point_) % auto_repeat_track_list_length_;
   if (!auto_repeat_index_in_first_repetition &&
       find(auto_repeat_named_lines_indexes_, auto_repeat_track_list_length_))
@@ -117,10 +117,10 @@ bool NamedLineCollection::Contains(size_t line) {
               auto_repeat_index_in_first_repetition);
 }
 
-size_t NamedLineCollection::FirstExplicitPosition() {
+wtf_size_t NamedLineCollection::FirstExplicitPosition() {
   DCHECK(HasExplicitNamedLines());
 
-  size_t first_line = 0;
+  wtf_size_t first_line = 0;
 
   // If there is no auto repeat(), there must be some named line outside, return
   // the 1st one. Also return it if it precedes the auto-repeat().
@@ -137,10 +137,10 @@ size_t NamedLineCollection::FirstExplicitPosition() {
   return named_lines_indexes_->at(first_line) + auto_repeat_total_tracks_ - 1;
 }
 
-size_t NamedLineCollection::FirstPosition() {
+wtf_size_t NamedLineCollection::FirstPosition() {
   CHECK(HasNamedLines());
 
-  size_t first_line = 0;
+  wtf_size_t first_line = 0;
 
   if (!implicit_named_lines_indexes_)
     return FirstExplicitPosition();
@@ -188,16 +188,17 @@ static void InitialAndFinalPositionsFromStyle(
     initial_position.SetSpanPosition(1, g_null_atom);
 }
 
-static size_t LookAheadForNamedGridLine(int start,
-                                        size_t number_of_lines,
-                                        size_t grid_last_line,
-                                        NamedLineCollection& lines_collection) {
+static wtf_size_t LookAheadForNamedGridLine(
+    int start,
+    wtf_size_t number_of_lines,
+    wtf_size_t grid_last_line,
+    NamedLineCollection& lines_collection) {
   DCHECK(number_of_lines);
 
   // Only implicit lines on the search direction are assumed to have the given
   // name, so we can start to look from first line.
   // See: https://drafts.csswg.org/css-grid/#grid-placement-span-int
-  size_t end = std::max(start, 0);
+  wtf_size_t end = std::max(start, 0);
 
   if (!lines_collection.HasNamedLines()) {
     end = std::max(end, grid_last_line + 1);
@@ -214,7 +215,7 @@ static size_t LookAheadForNamedGridLine(int start,
 }
 
 static int LookBackForNamedGridLine(int end,
-                                    size_t number_of_lines,
+                                    wtf_size_t number_of_lines,
                                     int grid_last_line,
                                     NamedLineCollection& lines_collection) {
   DCHECK(number_of_lines);
@@ -257,10 +258,10 @@ static GridSpan DefiniteGridSpanWithNamedSpanAgainstOpposite(
   return GridSpan::UntranslatedDefiniteGridSpan(start, end);
 }
 
-size_t GridPositionsResolver::ExplicitGridColumnCount(
+wtf_size_t GridPositionsResolver::ExplicitGridColumnCount(
     const ComputedStyle& grid_container_style,
-    size_t auto_repeat_tracks_count) {
-  return std::min<size_t>(
+    wtf_size_t auto_repeat_tracks_count) {
+  return std::min<wtf_size_t>(
       std::max(
           grid_container_style.GridTemplateColumns().LegacyTrackList().size() +
               auto_repeat_tracks_count,
@@ -268,10 +269,10 @@ size_t GridPositionsResolver::ExplicitGridColumnCount(
       kGridMaxTracks);
 }
 
-size_t GridPositionsResolver::ExplicitGridRowCount(
+wtf_size_t GridPositionsResolver::ExplicitGridRowCount(
     const ComputedStyle& grid_container_style,
-    size_t auto_repeat_tracks_count) {
-  return std::min<size_t>(
+    wtf_size_t auto_repeat_tracks_count) {
+  return std::min<wtf_size_t>(
       std::max(
           grid_container_style.GridTemplateRows().LegacyTrackList().size() +
               auto_repeat_tracks_count,
@@ -279,9 +280,10 @@ size_t GridPositionsResolver::ExplicitGridRowCount(
       kGridMaxTracks);
 }
 
-static size_t ExplicitGridSizeForSide(const ComputedStyle& grid_container_style,
-                                      GridPositionSide side,
-                                      size_t auto_repeat_tracks_count) {
+static wtf_size_t ExplicitGridSizeForSide(
+    const ComputedStyle& grid_container_style,
+    GridPositionSide side,
+    wtf_size_t auto_repeat_tracks_count) {
   return (side == kColumnStartSide || side == kColumnEndSide)
              ? GridPositionsResolver::ExplicitGridColumnCount(
                    grid_container_style, auto_repeat_tracks_count)
@@ -293,7 +295,7 @@ static GridSpan ResolveNamedGridLinePositionAgainstOppositePosition(
     const ComputedStyle& grid_container_style,
     int opposite_line,
     const GridPosition& position,
-    size_t auto_repeat_tracks_count,
+    wtf_size_t auto_repeat_tracks_count,
     GridPositionSide side) {
   DCHECK(position.IsSpan());
   DCHECK(!position.NamedGridLine().IsNull());
@@ -301,8 +303,8 @@ static GridSpan ResolveNamedGridLinePositionAgainstOppositePosition(
   // been handled during parsing.
   DCHECK_GT(position.SpanPosition(), 0);
 
-  size_t last_line = ExplicitGridSizeForSide(grid_container_style, side,
-                                             auto_repeat_tracks_count);
+  wtf_size_t last_line = ExplicitGridSizeForSide(grid_container_style, side,
+                                                 auto_repeat_tracks_count);
   NamedLineCollection lines_collection(
       grid_container_style, position.NamedGridLine(), DirectionFromSide(side),
       last_line, auto_repeat_tracks_count);
@@ -314,7 +316,7 @@ static GridSpan DefiniteGridSpanWithSpanAgainstOpposite(
     int opposite_line,
     const GridPosition& position,
     GridPositionSide side) {
-  size_t position_offset = position.SpanPosition();
+  wtf_size_t position_offset = position.SpanPosition();
   if (side == kColumnStartSide || side == kRowStartSide)
     return GridSpan::UntranslatedDefiniteGridSpan(
         opposite_line - position_offset, opposite_line);
@@ -328,7 +330,7 @@ static GridSpan ResolveGridPositionAgainstOppositePosition(
     int opposite_line,
     const GridPosition& position,
     GridPositionSide side,
-    size_t auto_repeat_tracks_count) {
+    wtf_size_t auto_repeat_tracks_count) {
   if (position.IsAuto()) {
     if (side == kColumnStartSide || side == kRowStartSide)
       return GridSpan::UntranslatedDefiniteGridSpan(opposite_line - 1,
@@ -351,8 +353,8 @@ static GridSpan ResolveGridPositionAgainstOppositePosition(
   return DefiniteGridSpanWithSpanAgainstOpposite(opposite_line, position, side);
 }
 
-static size_t SpanSizeFromPositions(const GridPosition& initial_position,
-                                    const GridPosition& final_position) {
+static wtf_size_t SpanSizeFromPositions(const GridPosition& initial_position,
+                                        const GridPosition& final_position) {
   // This method will only be used when both positions need to be resolved
   // against the opposite one.
   DCHECK(initial_position.ShouldBeResolvedAgainstOppositePosition() &&
@@ -367,7 +369,7 @@ static size_t SpanSizeFromPositions(const GridPosition& initial_position,
   return span_position.SpanPosition();
 }
 
-size_t GridPositionsResolver::SpanSizeForAutoPlacedItem(
+wtf_size_t GridPositionsResolver::SpanSizeForAutoPlacedItem(
     const ComputedStyle& grid_item_style,
     GridTrackSizingDirection direction) {
   GridPosition initial_position, final_position;
@@ -380,11 +382,11 @@ static int ResolveNamedGridLinePositionFromStyle(
     const ComputedStyle& grid_container_style,
     const GridPosition& position,
     GridPositionSide side,
-    size_t auto_repeat_tracks_count) {
+    wtf_size_t auto_repeat_tracks_count) {
   DCHECK(!position.NamedGridLine().IsNull());
 
-  size_t last_line = ExplicitGridSizeForSide(grid_container_style, side,
-                                             auto_repeat_tracks_count);
+  wtf_size_t last_line = ExplicitGridSizeForSide(grid_container_style, side,
+                                                 auto_repeat_tracks_count);
   NamedLineCollection lines_collection(
       grid_container_style, position.NamedGridLine(), DirectionFromSide(side),
       last_line, auto_repeat_tracks_count);
@@ -401,7 +403,7 @@ static int ResolveGridPositionFromStyle(
     const ComputedStyle& grid_container_style,
     const GridPosition& position,
     GridPositionSide side,
-    size_t auto_repeat_tracks_count) {
+    wtf_size_t auto_repeat_tracks_count) {
   switch (position.GetType()) {
     case kExplicitPosition: {
       DCHECK(position.IntegerPosition());
@@ -414,9 +416,9 @@ static int ResolveGridPositionFromStyle(
       if (position.IsPositive())
         return position.IntegerPosition() - 1;
 
-      size_t resolved_position = abs(position.IntegerPosition()) - 1;
-      size_t end_of_track = ExplicitGridSizeForSide(grid_container_style, side,
-                                                    auto_repeat_tracks_count);
+      wtf_size_t resolved_position = abs(position.IntegerPosition()) - 1;
+      wtf_size_t end_of_track = ExplicitGridSizeForSide(
+          grid_container_style, side, auto_repeat_tracks_count);
 
       return end_of_track - resolved_position;
     }
@@ -428,8 +430,8 @@ static int ResolveGridPositionFromStyle(
       String named_grid_line = position.NamedGridLine();
       DCHECK(!position.NamedGridLine().IsNull());
 
-      size_t last_line = ExplicitGridSizeForSide(grid_container_style, side,
-                                                 auto_repeat_tracks_count);
+      wtf_size_t last_line = ExplicitGridSizeForSide(grid_container_style, side,
+                                                     auto_repeat_tracks_count);
       NamedLineCollection implicit_lines(
           grid_container_style,
           ImplicitNamedGridLineForSide(named_grid_line, side),
@@ -464,7 +466,7 @@ GridSpan GridPositionsResolver::ResolveGridPositionsFromStyle(
     const ComputedStyle& grid_container_style,
     const ComputedStyle& grid_item_style,
     GridTrackSizingDirection direction,
-    size_t auto_repeat_tracks_count) {
+    wtf_size_t auto_repeat_tracks_count) {
   GridPosition initial_position, final_position;
   InitialAndFinalPositionsFromStyle(grid_item_style, direction,
                                     initial_position, final_position);

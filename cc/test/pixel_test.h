@@ -11,7 +11,7 @@
 
 #include "base/files/file_util.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_comparator.h"

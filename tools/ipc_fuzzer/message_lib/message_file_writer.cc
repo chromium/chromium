@@ -22,6 +22,10 @@ namespace {
 class Writer {
  public:
   Writer(const base::FilePath& path);
+
+  Writer(const Writer&) = delete;
+  Writer& operator=(const Writer&) = delete;
+
   ~Writer() {}
   bool Write(const MessageVector& messages);
 
@@ -49,8 +53,6 @@ class Writer {
   base::File file_;
   const MessageVector* messages_;
   TypesSet types_;
-
-  DISALLOW_COPY_AND_ASSIGN(Writer);
 };
 
 Writer::Writer(const base::FilePath& path) : path_(path), messages_(NULL) {

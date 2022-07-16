@@ -44,6 +44,9 @@ class UpstartClientImpl : public UpstartClient {
  public:
   explicit UpstartClientImpl(dbus::Bus* bus) : bus_(bus) {}
 
+  UpstartClientImpl(const UpstartClientImpl&) = delete;
+  UpstartClientImpl& operator=(const UpstartClientImpl&) = delete;
+
   ~UpstartClientImpl() override = default;
 
   // UpstartClient overrides:
@@ -137,8 +140,6 @@ class UpstartClientImpl : public UpstartClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<UpstartClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UpstartClientImpl);
 };
 
 }  // namespace

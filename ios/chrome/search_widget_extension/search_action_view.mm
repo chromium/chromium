@@ -35,21 +35,13 @@ const CGFloat kIconSize = 35;
     UIVibrancyEffect* primaryEffect = nil;
     UIVibrancyEffect* secondaryEffect = nil;
     UIVibrancyEffect* iconBackgroundEffect = nil;
-    if (@available(iOS 13, *)) {
-      primaryEffect = [UIVibrancyEffect
-          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleLabel];
-      secondaryEffect = [UIVibrancyEffect
-          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
-      iconBackgroundEffect = [UIVibrancyEffect
-          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleTertiaryFill];
-    }
-#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
-    else {
-      primaryEffect = [UIVibrancyEffect widgetPrimaryVibrancyEffect];
-      secondaryEffect = [UIVibrancyEffect widgetSecondaryVibrancyEffect];
-      iconBackgroundEffect = [UIVibrancyEffect widgetSecondaryVibrancyEffect];
-    }
-#endif
+    primaryEffect = [UIVibrancyEffect
+        widgetEffectForVibrancyStyle:UIVibrancyEffectStyleLabel];
+    secondaryEffect = [UIVibrancyEffect
+        widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
+    iconBackgroundEffect = [UIVibrancyEffect
+        widgetEffectForVibrancyStyle:UIVibrancyEffectStyleTertiaryFill];
+
     DCHECK(primaryEffect);
     DCHECK(secondaryEffect);
     DCHECK(iconBackgroundEffect);
@@ -69,11 +61,7 @@ const CGFloat kIconSize = 35;
 
     UIView* circleView = [[UIView alloc] initWithFrame:CGRectZero];
     circleView.translatesAutoresizingMaskIntoConstraints = NO;
-    if (@available(iOS 13, *)) {
-      circleView.backgroundColor = UIColor.whiteColor;
-    } else {
-      circleView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.05];
-    }
+    circleView.backgroundColor = UIColor.whiteColor;
     circleView.layer.cornerRadius = kActionButtonSize / 2;
     [iconBackgroundEffectView.contentView addSubview:circleView];
     AddSameConstraints(iconBackgroundEffectView.contentView, circleView);

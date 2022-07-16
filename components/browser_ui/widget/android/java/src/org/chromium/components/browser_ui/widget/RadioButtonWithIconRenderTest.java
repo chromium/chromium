@@ -40,9 +40,9 @@ public class RadioButtonWithIconRenderTest extends DummyUiActivityTestCase {
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
-    private static final int REVISION = 2;
+    private static final int REVISION = 3;
     private static final String REVISION_DESCRIPTION =
-            "Use Google standard colors as the background.";
+            "Test rendering of the icon in a disabled state.";
 
     @Rule
     public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus()
@@ -55,6 +55,7 @@ public class RadioButtonWithIconRenderTest extends DummyUiActivityTestCase {
     private RadioButtonWithDescription mRadioButtonWithIcon1;
     private RadioButtonWithDescription mRadioButtonWithIcon2;
     private RadioButtonWithDescription mRadioButtonWithIcon3;
+    private RadioButtonWithDescription mRadioButtonWithIcon4;
 
     private final int mFakeBgColor;
 
@@ -79,12 +80,14 @@ public class RadioButtonWithIconRenderTest extends DummyUiActivityTestCase {
             mRadioButtonWithIcon1 = content.findViewById(R.id.icon_primary_only);
             mRadioButtonWithIcon2 = content.findViewById(R.id.icon_primary_description);
             mRadioButtonWithIcon3 = content.findViewById(R.id.icon_bg_override);
+            mRadioButtonWithIcon4 = content.findViewById(R.id.icon_disabled);
         });
 
         Assert.assertNotNull(mLayout);
         Assert.assertNotNull(mRadioButtonWithIcon1);
         Assert.assertNotNull(mRadioButtonWithIcon2);
         Assert.assertNotNull(mRadioButtonWithIcon3);
+        Assert.assertNotNull(mRadioButtonWithIcon4);
     }
 
     @Test
@@ -94,5 +97,6 @@ public class RadioButtonWithIconRenderTest extends DummyUiActivityTestCase {
         mRenderTestRule.render(mRadioButtonWithIcon1, "icon_primary_only");
         mRenderTestRule.render(mRadioButtonWithIcon2, "icon_primary_description");
         mRenderTestRule.render(mRadioButtonWithIcon3, "icon_bg_override");
+        mRenderTestRule.render(mRadioButtonWithIcon4, "icon_disabled");
     }
 }

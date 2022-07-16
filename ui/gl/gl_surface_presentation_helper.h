@@ -6,7 +6,6 @@
 #define UI_GL_GL_SURFACE_PRESENTATION_HELPER_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/gfx/swap_result.h"
@@ -35,6 +34,10 @@ class GL_EXPORT GLSurfacePresentationHelper {
     ScopedSwapBuffers(GLSurfacePresentationHelper* helper,
                       GLSurface::PresentationCallback callback,
                       int frame_id);
+
+    ScopedSwapBuffers(const ScopedSwapBuffers&) = delete;
+    ScopedSwapBuffers& operator=(const ScopedSwapBuffers&) = delete;
+
     ~ScopedSwapBuffers();
 
     void set_result(gfx::SwapResult result) { result_ = result; }
@@ -43,8 +46,6 @@ class GL_EXPORT GLSurfacePresentationHelper {
    private:
     GLSurfacePresentationHelper* const helper_;
     gfx::SwapResult result_ = gfx::SwapResult::SWAP_ACK;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedSwapBuffers);
   };
 
   explicit GLSurfacePresentationHelper(gfx::VSyncProvider* vsync_provider);
@@ -52,6 +53,11 @@ class GL_EXPORT GLSurfacePresentationHelper {
   // For using fixed VSync provider.
   GLSurfacePresentationHelper(const base::TimeTicks timebase,
                               const base::TimeDelta interval);
+
+  GLSurfacePresentationHelper(const GLSurfacePresentationHelper&) = delete;
+  GLSurfacePresentationHelper& operator=(const GLSurfacePresentationHelper&) =
+      delete;
+
   ~GLSurfacePresentationHelper();
 
   void OnMakeCurrent(GLContext* context, GLSurface* surface);
@@ -111,8 +117,6 @@ class GL_EXPORT GLSurfacePresentationHelper {
   bool update_vsync_pending_ = false;
 
   base::WeakPtrFactory<GLSurfacePresentationHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GLSurfacePresentationHelper);
 };
 
 }  // namespace gl

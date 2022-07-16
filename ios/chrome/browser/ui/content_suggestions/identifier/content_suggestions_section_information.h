@@ -22,9 +22,6 @@ typedef NS_ENUM(NSInteger, ContentSuggestionsSectionID) {
   ContentSuggestionsSectionReturnToRecentTab,
   ContentSuggestionsSectionPromo,
   ContentSuggestionsSectionMostVisited,
-  ContentSuggestionsSectionArticles,
-  ContentSuggestionsSectionReadingList,
-  ContentSuggestionsSectionLearnMore,
   ContentSuggestionsSectionDiscover,
 
   // Do not use this. It will trigger a DCHECK.

@@ -10,9 +10,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/ui_devtools/DOM.h"
 #include "components/ui_devtools/devtools_export.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -139,6 +139,11 @@ class UI_DEVTOOLS_EXPORT UIElement {
 
   // Get the sources for the element.
   std::vector<Source> GetSources();
+
+  // Whether the Element Identifier matches the backing UI element.
+  // This is used to locate a UIElement by Element Identifier set
+  // on the browser side and different than node_id().
+  virtual bool FindMatchByElementID(const ui::ElementIdentifier& identifier);
 
   virtual bool DispatchMouseEvent(protocol::DOM::MouseEvent* event);
 

@@ -17,11 +17,11 @@ base::TimeDelta ProfileDuration() {
     case version_info::Channel::CANARY:
     case version_info::Channel::DEV:
     case version_info::Channel::BETA:
-      return base::TimeDelta::FromSeconds(4);
+      return base::Seconds(4);
     case version_info::Channel::STABLE:
     case version_info::Channel::UNKNOWN:
     default:
-      return base::TimeDelta::FromSeconds(2);
+      return base::Seconds(2);
   }
 }
 
@@ -32,11 +32,11 @@ base::TimeDelta PeriodicCollectionInterval() {
     case version_info::Channel::CANARY:
     case version_info::Channel::DEV:
     case version_info::Channel::BETA:
-      return base::TimeDelta::FromMinutes(90);
+      return base::Minutes(90);
     case version_info::Channel::STABLE:
     case version_info::Channel::UNKNOWN:
     default:
-      return base::TimeDelta::FromMinutes(180);
+      return base::Minutes(180);
   }
 }
 
@@ -48,10 +48,10 @@ CollectionParams::CollectionParams() {
   periodic_interval = PeriodicCollectionInterval();
 
   resume_from_suspend.sampling_factor = 10;
-  resume_from_suspend.max_collection_delay = base::TimeDelta::FromSeconds(5);
+  resume_from_suspend.max_collection_delay = base::Seconds(5);
 
   restore_session.sampling_factor = 10;
-  restore_session.max_collection_delay = base::TimeDelta::FromSeconds(10);
+  restore_session.max_collection_delay = base::Seconds(10);
 }
 
 }  // namespace metrics

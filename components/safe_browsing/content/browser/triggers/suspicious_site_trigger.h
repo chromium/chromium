@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_SUSPICIOUS_SITE_TRIGGER_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_SUSPICIOUS_SITE_TRIGGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -27,13 +26,13 @@ class TriggerManager;
 // Metric for tracking what the Suspicious Site trigger does on each event.
 extern const char kSuspiciousSiteTriggerEventMetricName[];
 
-// Metric for tracking how often reports from this trigger are rejected by the
-// trigger manager, and for what reason.
-extern const char kSuspiciousSiteTriggerReportRejectionMetricName[];
+// Local metric for tracking how often reports from this trigger are rejected
+// by the trigger manager, and for what reason.
+extern const char kSuspiciousSiteTriggerReportRejectionTestMetricName[];
 
-// Metric for tracking the state of the trigger when the report delay timer
-// fires.
-extern const char kSuspiciousSiteTriggerReportDelayStateMetricName[];
+// Local metric for tracking the state of the trigger when the report delay
+// timer fires.
+extern const char kSuspiciousSiteTriggerReportDelayStateTestMetricName[];
 
 // Tracks events this trigger listens for or actions it performs. These values
 // are written to logs. New enum values can be added, but existing enums must
@@ -108,6 +107,9 @@ class SuspiciousSiteTrigger
     kMaxValue = MONITOR_MODE
   };
 
+  SuspiciousSiteTrigger(const SuspiciousSiteTrigger&) = delete;
+  SuspiciousSiteTrigger& operator=(const SuspiciousSiteTrigger&) = delete;
+
   ~SuspiciousSiteTrigger() override;
 
   // content::WebContentsObserver implementations.
@@ -177,8 +179,6 @@ class SuspiciousSiteTrigger
   base::WeakPtrFactory<SuspiciousSiteTrigger> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SuspiciousSiteTrigger);
 };
 
 }  // namespace safe_browsing

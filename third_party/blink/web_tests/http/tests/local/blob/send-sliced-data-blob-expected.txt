@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 17: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 Test for slicing blobs created by BlobBuilder sending them via XMLHttpRequest.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

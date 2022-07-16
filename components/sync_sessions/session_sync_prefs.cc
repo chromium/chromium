@@ -26,7 +26,7 @@ SessionSyncPrefs::SessionSyncPrefs(PrefService* pref_service)
   DCHECK(pref_service);
 }
 
-SessionSyncPrefs::~SessionSyncPrefs() {}
+SessionSyncPrefs::~SessionSyncPrefs() = default;
 
 std::string SessionSyncPrefs::GetLegacySyncSessionsGUID() const {
   return pref_service_->GetString(kLegacySyncSessionsGUID);

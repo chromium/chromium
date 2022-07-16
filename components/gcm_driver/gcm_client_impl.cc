@@ -16,9 +16,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
 #include "components/crx_file/id_util.h"
@@ -432,7 +432,7 @@ void GCMClientImpl::OnLoadCompleted(
           FROM_HERE,
           base::BindOnce(&GCMClientImpl::DestroyStoreWhenNotNeeded,
                          destroying_gcm_store_ptr_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kDestroyGCMStoreDelayMS));
+          base::Milliseconds(kDestroyGCMStoreDelayMS));
     }
 
     return;
@@ -757,7 +757,7 @@ void GCMClientImpl::SchedulePeriodicCheckin() {
   periodic_checkin_ptr_factory_.InvalidateWeakPtrs();
 
   base::TimeDelta time_to_next_checkin = GetTimeToNextCheckin();
-  if (time_to_next_checkin < base::TimeDelta())
+  if (time_to_next_checkin.is_negative())
     time_to_next_checkin = base::TimeDelta();
 
   io_task_runner_->PostDelayedTask(

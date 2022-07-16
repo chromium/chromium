@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "base/test/task_environment.h"
-#include "components/performance_manager/embedder/graph_features_helper.h"
+#include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/node_base.h"
@@ -79,15 +79,14 @@ struct TestNodeWrapper<FrameNodeImpl>::Factory {
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,
       FrameNodeImpl* parent_frame_node,
-      int frame_tree_node_id,
       int render_frame_id,
       const blink::LocalFrameToken& frame_token = blink::LocalFrameToken(),
       content::BrowsingInstanceId browsing_instance_id =
           content::BrowsingInstanceId(0),
-      int32_t site_instance_id = 0) {
+      content::SiteInstanceId site_instance_id = content::SiteInstanceId(0)) {
     return std::make_unique<FrameNodeImpl>(
-        process_node, page_node, parent_frame_node, frame_tree_node_id,
-        render_frame_id, frame_token, browsing_instance_id, site_instance_id);
+        process_node, page_node, parent_frame_node, render_frame_id,
+        frame_token, browsing_instance_id, site_instance_id);
   }
 };
 
@@ -159,6 +158,10 @@ class TestNodeWrapper<SystemNodeImpl> {
 
   explicit TestNodeWrapper(SystemNodeImpl* impl) : impl_(impl) {}
   TestNodeWrapper(TestNodeWrapper&& other) : impl_(other.impl_) {}
+
+  TestNodeWrapper(const TestNodeWrapper&) = delete;
+  TestNodeWrapper& operator=(const TestNodeWrapper&) = delete;
+
   ~TestNodeWrapper() { reset(); }
 
   SystemNodeImpl* operator->() const { return impl_; }
@@ -168,8 +171,6 @@ class TestNodeWrapper<SystemNodeImpl> {
 
  private:
   SystemNodeImpl* impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNodeWrapper);
 };
 
 class TestGraphImpl : public GraphImpl {
@@ -185,8 +186,7 @@ class TestGraphImpl : public GraphImpl {
   TestNodeWrapper<FrameNodeImpl> CreateFrameNodeAutoId(
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,
-      FrameNodeImpl* parent_frame_node = nullptr,
-      int frame_tree_node_id = 0);
+      FrameNodeImpl* parent_frame_node = nullptr);
 
  private:
   int next_frame_routing_id_ = 0;
@@ -227,10 +227,9 @@ class GraphTestHarness : public ::testing::Test {
   TestNodeWrapper<FrameNodeImpl> CreateFrameNodeAutoId(
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,
-      FrameNodeImpl* parent_frame_node = nullptr,
-      int frame_tree_node_id = 0) {
-    return graph()->CreateFrameNodeAutoId(
-        process_node, page_node, parent_frame_node, frame_tree_node_id);
+      FrameNodeImpl* parent_frame_node = nullptr) {
+    return graph()->CreateFrameNodeAutoId(process_node, page_node,
+                                          parent_frame_node);
   }
 
   TestNodeWrapper<SystemNodeImpl> GetSystemNode() {
@@ -244,9 +243,7 @@ class GraphTestHarness : public ::testing::Test {
   // Allows configuring which Graph features are initialized during "SetUp".
   // This defaults to initializing no features. Features will be initialized
   // before "OnGraphCreated" is called.
-  GraphFeaturesHelper& GetGraphFeaturesHelper() {
-    return graph_features_helper_;
-  }
+  GraphFeatures& GetGraphFeatures() { return graph_features_; }
 
   // A callback that will be invoked as part of the graph initialization
   // during "SetUp". The same effect can be had by overriding "SetUp" in this
@@ -269,7 +266,7 @@ class GraphTestHarness : public ::testing::Test {
   void TearDownAndDestroyGraph();
 
  private:
-  GraphFeaturesHelper graph_features_helper_;
+  GraphFeatures graph_features_;
   content::BrowserTaskEnvironment task_env_;
   std::unique_ptr<TestGraphImpl> graph_;
 

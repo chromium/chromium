@@ -12,10 +12,11 @@ class Profile;
 
 namespace ui {
 
-class NativeTheme;
+class ColorProvider;
 
 // Create slightly different colors for the dialog prompt bar.
-SkColor GetSigninConfirmationPromptBarColor(NativeTheme* theme, SkAlpha alpha);
+SkColor GetSigninConfirmationPromptBarColor(const ColorProvider* color_provider,
+                                            SkAlpha alpha);
 
 // Determines whether the browser has ever been shutdown since the
 // profile was created.

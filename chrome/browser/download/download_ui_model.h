@@ -10,10 +10,9 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/download/public/common/download_item.h"
@@ -35,6 +34,10 @@ class DownloadUIModel {
       std::unique_ptr<DownloadUIModel, base::OnTaskRunnerDeleter>;
 
   DownloadUIModel();
+
+  DownloadUIModel(const DownloadUIModel&) = delete;
+  DownloadUIModel& operator=(const DownloadUIModel&) = delete;
+
   virtual ~DownloadUIModel();
 
   // Observer for a single DownloadUIModel.
@@ -128,6 +131,11 @@ class DownloadUIModel {
   // Is this download a mixed content download, but not something more severe?
   // Implies IsDangerous() and !IsMalicious().
   virtual bool IsMixedContent() const;
+
+  // Returns true if the item is downloaded in incognito and user has not
+  // accepted the warning yet. Return false if the item is downloaded in regular
+  // mode or user has accepted the warning.
+  virtual bool ShouldShowIncognitoWarning() const;
 
   // Is safe browsing download feedback feature available for this download?
   virtual bool ShouldAllowDownloadFeedback() const;
@@ -358,8 +366,6 @@ class DownloadUIModel {
       offline_items_collection::FailState fail_state) const;
 
   base::WeakPtrFactory<DownloadUIModel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadUIModel);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_UI_MODEL_H_

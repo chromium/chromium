@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/view.h"
 
@@ -35,6 +35,10 @@ class VIEWS_EXPORT NativeViewHost : public View {
   METADATA_HEADER(NativeViewHost);
 
   NativeViewHost();
+
+  NativeViewHost(const NativeViewHost&) = delete;
+  NativeViewHost& operator=(const NativeViewHost&) = delete;
+
   ~NativeViewHost() override;
 
   // Attach a gfx::NativeView to this View. Its bounds will be kept in sync
@@ -98,6 +102,10 @@ class VIEWS_EXPORT NativeViewHost : public View {
 
   void NativeViewDestroyed();
 
+  // Sets the desired background color for repainting when the view is clipped.
+  // Defaults to transparent color if unset.
+  void SetBackgroundColorWhenClipped(absl::optional<SkColor> color);
+
   // Overridden from View:
   void Layout() override;
   void OnPaint(gfx::Canvas* canvas) override;
@@ -106,6 +114,7 @@ class VIEWS_EXPORT NativeViewHost : public View {
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
   void SetVisible(bool visible) override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
 
  protected:
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
@@ -140,7 +149,8 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // in the setter/accessor above.
   bool fast_resize_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHost);
+  // The color to use for repainting the background when the view is clipped.
+  absl::optional<SkColor> background_color_when_clipped_;
 };
 
 }  // namespace views

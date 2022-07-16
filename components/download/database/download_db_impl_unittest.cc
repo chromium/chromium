@@ -42,6 +42,9 @@ class DownloadDBTest : public testing::Test {
  public:
   DownloadDBTest() : db_(nullptr), init_success_(false) {}
 
+  DownloadDBTest(const DownloadDBTest&) = delete;
+  DownloadDBTest& operator=(const DownloadDBTest&) = delete;
+
   ~DownloadDBTest() override = default;
 
   void CreateDatabase() {
@@ -89,7 +92,6 @@ class DownloadDBTest : public testing::Test {
   leveldb_proto::test::FakeDB<download_pb::DownloadDBEntry>* db_;
   std::unique_ptr<DownloadDBImpl> download_db_;
   bool init_success_;
-  DISALLOW_COPY_AND_ASSIGN(DownloadDBTest);
 };
 
 TEST_F(DownloadDBTest, InitializeSucceeded) {
@@ -179,6 +181,10 @@ TEST_F(DownloadDBTest, ReplaceEntry) {
   in_progress_info.current_path =
       base::FilePath(FILE_PATH_LITERAL("/tmp.crdownload"));
   in_progress_info.target_path = base::FilePath(FILE_PATH_LITERAL("/tmp"));
+  in_progress_info.reroute_info = DownloadItemRerouteInfo();
+  in_progress_info.reroute_info.set_service_provider(
+      enterprise_connectors::BOX);
+  in_progress_info.reroute_info.mutable_box()->set_file_id("12345");
   in_progress_info.url_chain.emplace_back("http://foo");
   in_progress_info.url_chain.emplace_back("http://foo2");
   first.download_info->in_progress_info = in_progress_info;

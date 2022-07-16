@@ -19,6 +19,8 @@
 #include "third_party/lss/linux_syscall_support.h"
 #elif defined(CRASHPAD_LSS_SOURCE_EMBEDDED)
 #include "third_party/lss/lss/linux_syscall_support.h"
+#elif defined(CRASHPAD_LSS_SOURCE_FUCHSIA)
+#include "../../../../third_party/lss/linux_syscall_support.h"
 #else
 #error Unknown lss source
 #endif

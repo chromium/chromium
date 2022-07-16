@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* root = web_contents_impl->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents_impl->GetPrimaryFrameTree().root();
 
   // 2) Open DevTools.
   scoped_refptr<DevToolsAgentHost> devtools_agent =

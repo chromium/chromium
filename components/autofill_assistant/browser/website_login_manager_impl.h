@@ -22,6 +22,10 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
  public:
   WebsiteLoginManagerImpl(password_manager::PasswordManagerClient* client,
                           content::WebContents* web_contents);
+
+  WebsiteLoginManagerImpl(const WebsiteLoginManagerImpl&) = delete;
+  WebsiteLoginManagerImpl& operator=(const WebsiteLoginManagerImpl&) = delete;
+
   ~WebsiteLoginManagerImpl() override;
 
   // From WebsiteLoginManager:
@@ -33,6 +37,11 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
       base::OnceCallback<void(bool, std::string)> callback) override;
   void DeletePasswordForLogin(const Login& login,
                               base::OnceCallback<void(bool)> callback) override;
+
+  void GetGetLastTimePasswordUsed(
+      const Login& login,
+      base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
+
   void EditPasswordForLogin(const Login& login,
                             const std::string& new_password,
                             base::OnceCallback<void(bool)> callback) override;
@@ -62,6 +71,7 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
   class UpdatePasswordRequest;
   class PendingDeletePasswordRequest;
   class PendingEditPasswordRequest;
+  class PendingFetchLastTimePasswordUseRequest;
 
   void OnRequestFinished(const PendingRequest* request);
 
@@ -80,8 +90,6 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
 
   // Needs to be the last member.
   base::WeakPtrFactory<WebsiteLoginManagerImpl> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebsiteLoginManagerImpl);
 };
 
 }  // namespace autofill_assistant

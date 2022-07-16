@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "content/public/browser/audio_service.h"
@@ -116,7 +116,8 @@ std::string WebrtcAudioPrivateFunction::CalculateHMAC(
   if (media::AudioDeviceDescription::IsDefaultDevice(raw_id))
     return media::AudioDeviceDescription::kDefaultDeviceId;
 
-  url::Origin security_origin = url::Origin::Create(source_url().GetOrigin());
+  url::Origin security_origin =
+      url::Origin::Create(source_url().DeprecatedGetOriginAsURL());
   return content::GetHMACForMediaDeviceID(device_id_salt(), security_origin,
                                           raw_id);
 }
@@ -169,7 +170,7 @@ WebrtcAudioPrivateGetAssociatedSinkFunction::
 
 ExtensionFunction::ResponseAction
 WebrtcAudioPrivateGetAssociatedSinkFunction::Run() {
-  params_ = wap::GetAssociatedSink::Params::Create(*args_);
+  params_ = wap::GetAssociatedSink::Params::Create(args());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   EXTENSION_FUNCTION_VALIDATE(params_.get());
   InitDeviceIDSalt();

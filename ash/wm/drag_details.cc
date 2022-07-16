@@ -67,13 +67,15 @@ gfx::Rect GetRestoreBoundsInParent(aura::Window* window, int window_component) {
     gfx::Rect* override_bounds = window->GetProperty(kRestoreBoundsOverrideKey);
     if (override_bounds && !override_bounds->IsEmpty()) {
       restore_bounds = *override_bounds;
-      ::wm::ConvertRectFromScreen(window->parent(), &restore_bounds);
+      wm::ConvertRectFromScreen(window->parent(), &restore_bounds);
     }
-  } else if (window_state->IsSnapped() || window_state->IsMaximized()) {
-    DCHECK(window_state->HasRestoreBounds());
-    restore_bounds = window_state->GetRestoreBoundsInParent();
-  } else if (window_state->IsNormalStateType() &&
-             window_state->HasRestoreBounds()) {
+  } else if (window_state->HasRestoreBounds() &&
+             (window_state->IsNormalOrSnapped() ||
+              window_state->IsMaximized())) {
+    // TODO(sammiequon): Snapped and maximized windows should always have
+    // restore bounds. This is currently not the case for lacros browser after
+    // closing and reopening, see https://crbug.com/1238928. DCHECK for restore
+    // bounds if the window is snapped or maximized after the bug is fixed.
     restore_bounds = window_state->GetRestoreBoundsInParent();
   }
   return restore_bounds;
@@ -84,7 +86,7 @@ gfx::Rect GetRestoreBoundsInParent(aura::Window* window, int window_component) {
 DragDetails::DragDetails(aura::Window* window,
                          const gfx::PointF& location,
                          int window_component,
-                         ::wm::WindowMoveSource source)
+                         wm::WindowMoveSource source)
     : initial_state_type(WindowState::Get(window)->GetStateType()),
       initial_bounds_in_parent(GetWindowInitialBoundsInParent(window)),
       restore_bounds_in_parent(

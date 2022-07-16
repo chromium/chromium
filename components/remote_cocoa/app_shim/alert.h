@@ -27,6 +27,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT AlertBridge
   // once its NSAlert goes away.
   AlertBridge(mojo::PendingReceiver<mojom::AlertBridge> bridge_receiver);
 
+  AlertBridge(const AlertBridge&) = delete;
+  AlertBridge& operator=(const AlertBridge&) = delete;
+
   // Send the specified disposition via the Show callback, then destroy |this|.
   void SendResultAndDestroy(mojom::AlertDisposition disposition);
 
@@ -58,7 +61,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT AlertBridge
 
   mojo::Receiver<remote_cocoa::mojom::AlertBridge> mojo_receiver_{this};
   base::WeakPtrFactory<AlertBridge> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(AlertBridge);
 };
 
 }  // namespace remote_cocoa

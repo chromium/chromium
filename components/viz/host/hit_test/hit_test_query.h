@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/host/viz_host_export.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -36,6 +35,10 @@ enum class EventSource {
 class VIZ_HOST_EXPORT HitTestQuery {
  public:
   HitTestQuery();
+
+  HitTestQuery(const HitTestQuery&) = delete;
+  HitTestQuery& operator=(const HitTestQuery&) = delete;
+
   virtual ~HitTestQuery();
 
   // HitTestAggregator has sent the most recent |hit_test_data| for targeting/
@@ -153,8 +156,6 @@ class VIZ_HOST_EXPORT HitTestQuery {
   void RecordSlowPathHitTestReasons(uint32_t) const;
 
   std::vector<AggregatedHitTestRegion> hit_test_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(HitTestQuery);
 };
 
 }  // namespace viz

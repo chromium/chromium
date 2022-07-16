@@ -16,10 +16,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/service_worker/service_worker_disk_cache.h"
@@ -1654,9 +1654,7 @@ void ServiceWorkerStorage::WriteRegistrationInDB(
   ServiceWorkerDatabase::Status status =
       database->WriteRegistration(*registration, resources, &deleted_version);
   original_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                blink::StorageKey(
-                                    url::Origin::Create(registration->script)),
+      FROM_HERE, base::BindOnce(std::move(callback), registration->key,
                                 deleted_version, status));
 }
 

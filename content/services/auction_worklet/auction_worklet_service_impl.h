@@ -31,21 +31,20 @@ class AuctionWorkletServiceImpl : public mojom::AuctionWorkletService {
       delete;
   ~AuctionWorkletServiceImpl() override;
 
+  const scoped_refptr<AuctionV8Helper>& AuctionV8HelperForTesting() {
+    return auction_v8_helper_;
+  }
+
   // mojom::AuctionWorkletService implementation:
-  void LoadBidderWorkletAndGenerateBid(
+  void LoadBidderWorklet(
       mojo::PendingReceiver<mojom::BidderWorklet> bidder_worklet_receiver,
+      bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
-      mojom::BiddingInterestGroupPtr bidding_interest_group,
-      const absl::optional<std::string>& auction_signals_json,
-      const absl::optional<std::string>& per_buyer_signals_json,
-      const url::Origin& top_window_origin,
-      const url::Origin& seller_origin,
-      base::Time auction_start_time,
-      LoadBidderWorkletAndGenerateBidCallback
-          load_bidder_worklet_and_generate_bid_callback) override;
+      mojom::BiddingInterestGroupPtr bidding_interest_group) override;
   void LoadSellerWorklet(
       mojo::PendingReceiver<mojom::SellerWorklet> seller_worklet_receiver,
+      bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
       const GURL& script_source_url,

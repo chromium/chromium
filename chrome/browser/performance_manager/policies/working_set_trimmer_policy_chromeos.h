@@ -44,9 +44,17 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
     // Returns true when ARCVM has been idle for more than
     // |arcvm_inactivity_time| and therefore is safe to reclaim its memory.
     // The function is called only on the UI thread.
+    // If |trim_once_after_arcvm_boot| is true, the function returns true when
+    // the function is called for the first time after ARCVM boot.
     virtual bool IsEligibleForReclaim(
-        const base::TimeDelta& arcvm_inactivity_time) = 0;
+        const base::TimeDelta& arcvm_inactivity_time,
+        bool trim_once_after_arcvm_boot) = 0;
   };
+
+  WorkingSetTrimmerPolicyChromeOS(const WorkingSetTrimmerPolicyChromeOS&) =
+      delete;
+  WorkingSetTrimmerPolicyChromeOS& operator=(
+      const WorkingSetTrimmerPolicyChromeOS&) = delete;
 
   ~WorkingSetTrimmerPolicyChromeOS() override;
   WorkingSetTrimmerPolicyChromeOS();
@@ -158,8 +166,6 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   base::ElapsedTimer time_since_last_arcvm_trim_metric_report_;
 
   base::WeakPtrFactory<WorkingSetTrimmerPolicyChromeOS> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WorkingSetTrimmerPolicyChromeOS);
 };
 
 }  // namespace policies

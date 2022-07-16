@@ -29,6 +29,16 @@ void TestFormActivityTabHelper::FormActivityRegistered(
   }
 }
 
+void TestFormActivityTabHelper::FormRemovalRegistered(
+    web::WebFrame* sender_frame,
+    const FormRemovalParams& params) {
+  autofill::FormActivityTabHelper* form_activity_tab_helper =
+      autofill::FormActivityTabHelper::GetOrCreateForWebState(web_state_);
+  for (auto& observer : form_activity_tab_helper->observers_) {
+    observer.FormRemoved(web_state_, sender_frame, params);
+  }
+}
+
 void TestFormActivityTabHelper::DocumentSubmitted(web::WebFrame* sender_frame,
                                                   const std::string& form_name,
                                                   const std::string& form_data,

@@ -43,6 +43,13 @@ class MediaTrackConstraints;
 
 namespace media_constraints_impl {
 
+// Max lengths of individual strings and string sequences provided as
+// constraints, as a safety check. Currently deviceId and grouId are both 64
+// char strings, so this should provide plenty of headroom while still avoiding
+// abuse.
+const size_t kMaxConstraintStringLength = 500;
+const size_t kMaxConstraintStringSeqLength = 100;
+
 MediaConstraints Create();
 MediaConstraints Create(ExecutionContext*, const Dictionary&, MediaErrorState&);
 MediaConstraints Create(ExecutionContext*,
@@ -55,7 +62,8 @@ MODULES_EXPORT MediaTrackConstraints* ConvertConstraints(
 
 // Exported for testing only.
 MODULES_EXPORT MediaConstraints
-ConvertTrackConstraintsToMediaConstraints(const MediaTrackConstraints*);
+ConvertTrackConstraintsToMediaConstraints(const MediaTrackConstraints*,
+                                          MediaErrorState& error_state);
 }
 
 }  // namespace blink

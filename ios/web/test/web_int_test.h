@@ -17,14 +17,14 @@
 
 class GURL;
 
-namespace base {
-class Value;
-}  // namespace base
-
 namespace web {
 
 // A test fixture for integration tests that need a WebState which loads pages.
 class WebIntTest : public WebTest {
+ public:
+  WebIntTest(const WebIntTest&) = delete;
+  WebIntTest& operator=(const WebIntTest&) = delete;
+
  protected:
   WebIntTest();
   ~WebIntTest() override;
@@ -43,10 +43,6 @@ class WebIntTest : public WebTest {
   NavigationItem* GetLastCommittedItem() {
     return navigation_manager()->GetLastCommittedItem();
   }
-
-  // Synchronously executes |script| on |web_state|'s JS injection receiver and
-  // returns the result.
-  std::unique_ptr<base::Value> ExecuteJavaScript(NSString* script);
 
   // Executes |block| and waits until |url| is successfully loaded in
   // |web_state_|.
@@ -75,8 +71,6 @@ class WebIntTest : public WebTest {
  private:
   // WebState used to load pages.
   std::unique_ptr<WebState> web_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebIntTest);
 };
 
 }  // namespace web

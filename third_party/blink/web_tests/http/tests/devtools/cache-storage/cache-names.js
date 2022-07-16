@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that cache names are correctly loaded and displayed in the inspector.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 

@@ -8,7 +8,6 @@
 #include "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -71,7 +70,7 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _textLabel.adjustsFontForContentSizeCategory = YES;
-    _textLabel.textColor = UIColor.cr_labelColor;
+    _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _textLabel.numberOfLines = 0;
     [self.contentView addSubview:_textLabel];
 
@@ -80,7 +79,7 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
     _detailTextLabel.font =
         [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
     _detailTextLabel.adjustsFontForContentSizeCategory = YES;
-    _detailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
+    _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _detailTextLabel.numberOfLines = 0;
     [self.contentView addSubview:_detailTextLabel];
 
@@ -89,7 +88,7 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
     _statusTextLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _statusTextLabel.adjustsFontForContentSizeCategory = YES;
-    _statusTextLabel.textColor = UIColor.cr_secondaryLabelColor;
+    _statusTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     [self.contentView addSubview:_statusTextLabel];
 
     _trailingButton = [UIButton buttonWithType:UIButtonTypeSystem];

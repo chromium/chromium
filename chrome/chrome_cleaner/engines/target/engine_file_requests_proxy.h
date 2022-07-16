@@ -10,7 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/chrome_cleaner/engines/target/sandbox_request_helper.h"
 #include "chrome/chrome_cleaner/mojom/engine_file_requests.mojom.h"

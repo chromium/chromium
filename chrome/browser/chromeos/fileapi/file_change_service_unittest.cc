@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/fileapi/file_change_service.h"
 
-#include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -28,6 +27,7 @@
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/mock_blob_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace chromeos {
@@ -66,10 +66,8 @@ mojo::ScopedDataPipeConsumerHandle CreateStream(const std::string& contents) {
       std::make_unique<mojo::StringDataSource>(
           contents, mojo::StringDataSource::AsyncWritingMode::
                         STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION),
-      base::BindOnce(
-          base::DoNothing::Once<std::unique_ptr<mojo::DataPipeProducer>,
-                                MojoResult>(),
-          std::move(producer)));
+      base::BindOnce([](std::unique_ptr<mojo::DataPipeProducer>, MojoResult) {},
+                     std::move(producer)));
   return consumer_handle;
 }
 
@@ -132,7 +130,7 @@ class TempFileSystem {
   // Returns a file system URL for the specified path relative to `temp_dir_`.
   storage::FileSystemURL CreateFileSystemURL(const std::string& path) {
     return GetFileSystemContext(profile_)->CreateCrackedFileSystemURL(
-        origin_, storage::kFileSystemTypeLocal,
+        blink::StorageKey(origin_), storage::kFileSystemTypeLocal,
         temp_dir_.GetPath().Append(base::FilePath::FromUTF8Unsafe(path)));
   }
 

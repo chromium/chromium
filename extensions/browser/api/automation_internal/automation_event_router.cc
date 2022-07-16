@@ -53,14 +53,18 @@ AutomationEventRouter::~AutomationEventRouter() {
 void AutomationEventRouter::RegisterListenerForOneTree(
     const ExtensionId& extension_id,
     int listener_process_id,
+    content::WebContents* web_contents,
     ui::AXTreeID source_ax_tree_id) {
-  Register(extension_id, listener_process_id, source_ax_tree_id, false);
+  Register(extension_id, listener_process_id, web_contents, source_ax_tree_id,
+           false);
 }
 
 void AutomationEventRouter::RegisterListenerWithDesktopPermission(
     const ExtensionId& extension_id,
-    int listener_process_id) {
-  Register(extension_id, listener_process_id, ui::AXTreeIDUnknown(), true);
+    int listener_process_id,
+    content::WebContents* web_contents) {
+  Register(extension_id, listener_process_id, web_contents,
+           ui::AXTreeIDUnknown(), true);
 }
 
 void AutomationEventRouter::DispatchAccessibilityEventsInternal(
@@ -76,15 +80,15 @@ void AutomationEventRouter::DispatchAccessibilityEventsInternal(
 
   for (const auto& listener : listeners_) {
     // Skip listeners that don't want to listen to this tree.
-    if (!listener.desktop && listener.tree_ids.find(event_bundle.tree_id) ==
-                                 listener.tree_ids.end()) {
+    if (!listener->desktop && listener->tree_ids.find(event_bundle.tree_id) ==
+                                  listener->tree_ids.end()) {
       continue;
     }
 
     content::RenderProcessHost* rph =
-        content::RenderProcessHost::FromID(listener.process_id);
+        content::RenderProcessHost::FromID(listener->process_id);
     rph->Send(new ExtensionMsg_AccessibilityEventBundle(
-        event_bundle, listener.is_active_context));
+        event_bundle, listener->is_active_context));
   }
 }
 
@@ -92,13 +96,13 @@ void AutomationEventRouter::DispatchAccessibilityLocationChange(
     const ExtensionMsg_AccessibilityLocationChangeParams& params) {
   for (const auto& listener : listeners_) {
     // Skip listeners that don't want to listen to this tree.
-    if (!listener.desktop &&
-        listener.tree_ids.find(params.tree_id) == listener.tree_ids.end()) {
+    if (!listener->desktop &&
+        listener->tree_ids.find(params.tree_id) == listener->tree_ids.end()) {
       continue;
     }
 
     content::RenderProcessHost* rph =
-        content::RenderProcessHost::FromID(listener.process_id);
+        content::RenderProcessHost::FromID(listener->process_id);
     rph->Send(new ExtensionMsg_AccessibilityLocationChange(params));
   }
 }
@@ -173,6 +177,16 @@ void AutomationEventRouter::DispatchGetTextLocationDataResult(
       ->DispatchEventToExtension(data.source_extension_id, std::move(event));
 }
 
+void AutomationEventRouter::NotifyAllAutomationExtensionsGone() {
+  for (AutomationEventRouterObserver& observer : observers_)
+    observer.AllAutomationExtensionsGone();
+}
+
+void AutomationEventRouter::NotifyExtensionListenerAdded() {
+  for (AutomationEventRouterObserver& observer : observers_)
+    observer.ExtensionListenerAdded();
+}
+
 void AutomationEventRouter::AddObserver(
     AutomationEventRouterObserver* observer) {
   observers_.AddObserver(observer);
@@ -191,33 +205,40 @@ void AutomationEventRouter::RegisterRemoteRouter(
   remote_router_ = router;
 }
 
-AutomationEventRouter::AutomationListener::AutomationListener() = default;
-
 AutomationEventRouter::AutomationListener::AutomationListener(
-    const AutomationListener& other) = default;
+    content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents) {}
 
 AutomationEventRouter::AutomationListener::~AutomationListener() = default;
 
+void AutomationEventRouter::AutomationListener::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  router->RemoveAutomationListener(
+      content::RenderProcessHost::FromID(process_id));
+}
+
 void AutomationEventRouter::Register(const ExtensionId& extension_id,
                                      int listener_process_id,
+                                     content::WebContents* web_contents,
                                      ui::AXTreeID ax_tree_id,
                                      bool desktop) {
   DCHECK(desktop || ax_tree_id != ui::AXTreeIDUnknown());
-  auto iter =
+  const auto& iter =
       std::find_if(listeners_.begin(), listeners_.end(),
-                   [listener_process_id](const AutomationListener& item) {
-                     return item.process_id == listener_process_id;
+                   [listener_process_id](const auto& item) {
+                     return item->process_id == listener_process_id;
                    });
 
   // Add a new entry if we don't have one with that process.
   if (iter == listeners_.end()) {
-    AutomationListener listener;
-    listener.extension_id = extension_id;
-    listener.process_id = listener_process_id;
-    listener.desktop = desktop;
+    auto listener = std::make_unique<AutomationListener>(web_contents);
+    listener->router = this;
+    listener->extension_id = extension_id;
+    listener->process_id = listener_process_id;
+    listener->desktop = desktop;
     if (!desktop)
-      listener.tree_ids.insert(ax_tree_id);
-    listeners_.push_back(listener);
+      listener->tree_ids.insert(ax_tree_id);
+    listeners_.emplace_back(std::move(listener));
     rph_observers_.AddObservation(
         content::RenderProcessHost::FromID(listener_process_id));
     UpdateActiveProfile();
@@ -229,9 +250,9 @@ void AutomationEventRouter::Register(const ExtensionId& extension_id,
   // We have an entry with that process so update the set of tree ids it wants
   // to listen to, and update its desktop permission.
   if (desktop)
-    iter->desktop = true;
+    iter->get()->desktop = true;
   else
-    iter->tree_ids.insert(ax_tree_id);
+    iter->get()->tree_ids.insert(ax_tree_id);
 }
 
 void AutomationEventRouter::DispatchAccessibilityEvents(
@@ -257,14 +278,19 @@ void AutomationEventRouter::DispatchAccessibilityEvents(
 void AutomationEventRouter::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
-  RenderProcessHostDestroyed(host);
+  RemoveAutomationListener(host);
 }
 
 void AutomationEventRouter::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
+  RemoveAutomationListener(host);
+}
+
+void AutomationEventRouter::RemoveAutomationListener(
+    content::RenderProcessHost* host) {
   int process_id = host->GetID();
-  base::EraseIf(listeners_, [process_id](const AutomationListener& item) {
-    return item.process_id == process_id;
+  base::EraseIf(listeners_, [process_id](const auto& item) {
+    return item->process_id == process_id;
   });
   rph_observers_.RemoveObservation(host);
   UpdateActiveProfile();
@@ -280,21 +306,21 @@ void AutomationEventRouter::UpdateActiveProfile() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     int extension_id_count = 0;
     for (const auto& listener2 : listeners_) {
-      if (listener2.extension_id == listener.extension_id)
+      if (listener2->extension_id == listener->extension_id)
         extension_id_count++;
     }
     content::RenderProcessHost* rph =
-        content::RenderProcessHost::FromID(listener.process_id);
+        content::RenderProcessHost::FromID(listener->process_id);
 
     // The purpose of is_active_context is to ensure different instances of
     // the same extension running in different profiles don't interfere with
     // one another. If an automation extension is only running in one profile,
     // always mark it as active. If it's running in two or more profiles,
     // only mark one as active.
-    listener.is_active_context = (extension_id_count == 1 ||
-                                  rph->GetBrowserContext() == active_context_);
+    listener->is_active_context = (extension_id_count == 1 ||
+                                   rph->GetBrowserContext() == active_context_);
 #else
-    listener.is_active_context = true;
+    listener->is_active_context = true;
 #endif
   }
 }

@@ -50,7 +50,7 @@ FloatRect FEDropShadow::MapEffect(const FloatSize& std_deviation,
   offset_rect.MoveBy(offset);
   FloatRect blurred_rect =
       FEGaussianBlur::MapEffect(std_deviation, offset_rect);
-  return UnionRect(blurred_rect, rect);
+  return UnionRects(blurred_rect, rect);
 }
 
 FloatRect FEDropShadow::MapEffect(const FloatRect& rect) const {

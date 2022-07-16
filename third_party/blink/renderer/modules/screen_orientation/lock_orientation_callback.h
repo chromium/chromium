@@ -22,6 +22,10 @@ class LockOrientationCallback final : public WebLockOrientationCallback {
 
  public:
   explicit LockOrientationCallback(ScriptPromiseResolver*);
+
+  LockOrientationCallback(const LockOrientationCallback&) = delete;
+  LockOrientationCallback& operator=(const LockOrientationCallback&) = delete;
+
   ~LockOrientationCallback() override;
 
   void OnSuccess() override;
@@ -29,8 +33,6 @@ class LockOrientationCallback final : public WebLockOrientationCallback {
 
  private:
   Persistent<ScriptPromiseResolver> resolver_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockOrientationCallback);
 };
 
 }  // namespace blink

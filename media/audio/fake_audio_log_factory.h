@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "media/audio/audio_logging.h"
 #include "media/base/media_export.h"
 
@@ -18,12 +17,13 @@ namespace media {
 class MEDIA_EXPORT FakeAudioLogFactory : public AudioLogFactory {
  public:
   FakeAudioLogFactory();
+
+  FakeAudioLogFactory(const FakeAudioLogFactory&) = delete;
+  FakeAudioLogFactory& operator=(const FakeAudioLogFactory&) = delete;
+
   ~FakeAudioLogFactory() override;
   std::unique_ptr<AudioLog> CreateAudioLog(AudioComponent component,
                                            int component_id) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioLogFactory);
 };
 
 }  // namespace media

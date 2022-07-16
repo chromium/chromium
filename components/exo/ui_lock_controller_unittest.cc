@@ -128,7 +128,7 @@ class UILockControllerTest : public test::ExoTestBase {
       gfx::AnimationTestApi animation_api(popup->GetAnimationForTesting());
       base::TimeTicks now = base::TimeTicks::Now();
       animation_api.SetStartTime(now);
-      animation_api.Step(now + base::TimeDelta::FromMilliseconds(500));
+      animation_api.Step(now + base::Milliseconds(500));
     }
     return popup && popup->IsVisible();
   }
@@ -146,10 +146,10 @@ TEST_F(UILockControllerTest, HoldingEscapeExitsFullscreen) {
   EXPECT_TRUE(window_state->IsFullscreen());
 
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(window_state->IsFullscreen());  // no change yet
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(window_state->IsFullscreen());
   EXPECT_TRUE(window_state->IsNormalStateType());
 }
@@ -163,7 +163,7 @@ TEST_F(UILockControllerTest, HoldingCtrlEscapeDoesNotExitFullscreen) {
   EXPECT_TRUE(window_state->IsFullscreen());
 
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_CONTROL_DOWN);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
   EXPECT_TRUE(window_state->IsFullscreen());
 }
 
@@ -179,7 +179,7 @@ TEST_F(UILockControllerTest,
   EXPECT_TRUE(window_state->IsFullscreen());
 
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
   EXPECT_TRUE(window_state->IsFullscreen());
 }
 
@@ -195,7 +195,7 @@ TEST_F(UILockControllerTest, HoldingEscapeOnlyExitsFocusedFullscreen) {
   test_surface2.surface->Commit();
 
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
 
   EXPECT_TRUE(test_surface1.GetTopLevelWindowState()->IsFullscreen());
   EXPECT_FALSE(test_surface2.GetTopLevelWindowState()->IsFullscreen());
@@ -211,11 +211,11 @@ TEST_F(UILockControllerTest, DestroyingWindowCancels) {
   EXPECT_TRUE(window_state->IsFullscreen());
 
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
 
   test_surface.reset();  // Destroying the Surface destroys the Window
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_environment()->FastForwardBy(base::Seconds(3));
 
   // The implicit assertion is that the code doesn't crash.
 }
@@ -235,12 +235,12 @@ TEST_F(UILockControllerTest, FocusChangeCancels) {
 
   // Act: Press escape, then toggle focus back and forth
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
 
   wm::ActivateWindow(other_surface.surface->window());
   wm::ActivateWindow(fullscreen_surface.surface->window());
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
 
   // Assert: Fullscreen window was not minimized, despite regaining focus.
   EXPECT_FALSE(fullscreen_surface.GetTopLevelWindowState()->IsMinimized());
@@ -255,9 +255,9 @@ TEST_F(UILockControllerTest, ShortHoldEscapeDoesNotExitFullscreen) {
   auto* window_state = test_surface.GetTopLevelWindowState();
 
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
   GetEventGenerator()->ReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
 
   EXPECT_TRUE(window_state->IsFullscreen());
 }
@@ -273,10 +273,10 @@ TEST_F(UILockControllerTest, HoldingEscapeMinimizesIfPropertySet) {
   EXPECT_TRUE(window_state->IsFullscreen());
 
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(window_state->IsFullscreen());  // no change yet
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(window_state->IsFullscreen());
   EXPECT_TRUE(window_state->IsMinimized());
 }
@@ -290,7 +290,7 @@ TEST_F(UILockControllerTest, HoldingEscapeDoesNotMinimizeIfWindowed) {
   auto* window_state = test_surface.GetTopLevelWindowState();
 
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
 
   EXPECT_FALSE(window_state->IsMinimized());
 }
@@ -312,7 +312,7 @@ TEST_F(UILockControllerTest, EscNotificationClosesAfterDuration) {
   test_surface.surface->Commit();
 
   EXPECT_TRUE(GetEscNotification(&test_surface));
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   EXPECT_FALSE(GetEscNotification(&test_surface));
 }
 
@@ -326,7 +326,7 @@ TEST_F(UILockControllerTest, HoldingEscapeHidesNotification) {
   EXPECT_TRUE(GetEscNotification(&test_surface));
 
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_environment()->FastForwardBy(base::Seconds(3));
 
   EXPECT_FALSE(test_surface.GetTopLevelWindowState()->IsFullscreen());
   EXPECT_FALSE(GetEscNotification(&test_surface));
@@ -372,7 +372,7 @@ TEST_F(UILockControllerTest, EscNotificationIsReshown) {
   EXPECT_TRUE(GetEscNotification(&test_surface));
 
   // After duration, notification should be removed.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   EXPECT_FALSE(GetEscNotification(&test_surface));
 
   // Notification is shown after fullscreen toggle.
@@ -383,7 +383,7 @@ TEST_F(UILockControllerTest, EscNotificationIsReshown) {
 
 TEST_F(UILockControllerTest, EscNotificationShowsOnSecondaryDisplay) {
   // Create surface on secondary display.
-  UpdateDisplay("800x800,600x600");
+  UpdateDisplay("900x800,70x600");
   SurfaceTriplet test_surface = BuildSurface(gfx::Point(900, 100), 200, 200);
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);
@@ -412,7 +412,7 @@ TEST_F(UILockControllerTest, ExitPopup) {
   EXPECT_FALSE(IsExitPopupVisible(window));
 
   // Wait for notification to close, now exit popup should show.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   EXPECT_FALSE(GetEscNotification(&test_surface));
   GetEventGenerator()->MoveMouseTo(1, 2);
   EXPECT_TRUE(IsExitPopupVisible(window));
@@ -426,7 +426,7 @@ TEST_F(UILockControllerTest, ExitPopup) {
   EXPECT_TRUE(IsExitPopupVisible(window));
 
   // Popup should hide after 3s.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   EXPECT_FALSE(IsExitPopupVisible(window));
 
   // Moving mouse to y=100, then above y=3 should still have popup hidden.

@@ -25,9 +25,9 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/process/process_handle.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/nacl/common/nacl_host_messages.h"
@@ -232,6 +232,9 @@ class ManifestServiceProxy : public ManifestServiceChannel::Delegate {
   ManifestServiceProxy(PP_Instance pp_instance, NaClAppProcessType process_type)
       : pp_instance_(pp_instance), process_type_(process_type) {}
 
+  ManifestServiceProxy(const ManifestServiceProxy&) = delete;
+  ManifestServiceProxy& operator=(const ManifestServiceProxy&) = delete;
+
   ~ManifestServiceProxy() override {}
 
   void StartupInitializationComplete() override {
@@ -319,7 +322,6 @@ class ManifestServiceProxy : public ManifestServiceChannel::Delegate {
 
   PP_Instance pp_instance_;
   NaClAppProcessType process_type_;
-  DISALLOW_COPY_AND_ASSIGN(ManifestServiceProxy);
 };
 
 std::unique_ptr<blink::WebAssociatedURLLoader> CreateAssociatedURLLoader(
@@ -1291,7 +1293,7 @@ class ProgressEventRateLimiter {
                       int64_t total_bytes_received,
                       int64_t total_bytes_to_be_received) {
     base::Time now = base::Time::Now();
-    if (now - last_event_ > base::TimeDelta::FromMilliseconds(10)) {
+    if (now - last_event_ > base::Milliseconds(10)) {
       DispatchProgressEvent(instance_,
                             ProgressEvent(PP_NACL_EVENT_PROGRESS,
                                           url,

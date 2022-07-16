@@ -85,15 +85,6 @@ class ManagementTransitionScreenTest
     arc::ExpandPropertyFilesForTesting(arc::ArcSessionManager::Get());
 
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-    // For this test class, the PRE tests just happen to always wait for active
-    // session immediately after logging in, while the main tests do some checks
-    // and then postpone WaitForActiveSession() until later. So wait for active
-    // session immediately if IsPreTest() and postpone the call to
-    // WaitForActiveSession() otherwise.
-    logged_in_user_mixin_.LogInUser(
-        false /*issue_any_scope_token*/,
-        content::IsPreTest() /*wait_for_active_session*/);
-
     // Allow ARC by policy for managed users.
     if (use_managed_account()) {
       logged_in_user_mixin()
@@ -103,11 +94,24 @@ class ManagementTransitionScreenTest
           ->mutable_arcenabled()
           ->set_value(true);
     }
+
+    // For this test class, the PRE tests just happen to always wait for active
+    // session immediately after logging in, while the main tests do some checks
+    // and then postpone WaitForActiveSession() until later. So wait for active
+    // session immediately if IsPreTest() and postpone the call to
+    // WaitForActiveSession() otherwise.
+    logged_in_user_mixin_.LogInUser(
+        false /*issue_any_scope_token*/,
+        content::IsPreTest() /*wait_for_active_session*/);
   }
 
   LoggedInUserMixin::LogInType GetTargetUserType() const {
     return content::IsPreTest() ? GetParam().pre_test_user_type
                                 : GetParam().test_user_type;
+  }
+
+  bool IsChild() const {
+    return GetTargetUserType() == LoggedInUserMixin::LogInType::kChild;
   }
 
   bool use_managed_account() { return GetParam().use_managed_account; }
@@ -140,6 +144,7 @@ IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,
                        PRE_SuccessfulTransition) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   profile->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, true);
+  profile->GetPrefs()->SetBoolean(arc::prefs::kArcIsManaged, IsChild());
   arc::SetArcPlayStoreEnabledForProfile(profile, true);
 }
 
@@ -165,6 +170,7 @@ IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest, SuccessfulTransition) {
 IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest, PRE_TransitionTimeout) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   profile->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, true);
+  profile->GetPrefs()->SetBoolean(arc::prefs::kArcIsManaged, IsChild());
   arc::SetArcPlayStoreEnabledForProfile(profile, true);
 }
 

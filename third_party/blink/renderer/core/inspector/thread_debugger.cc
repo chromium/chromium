@@ -252,10 +252,6 @@ ThreadDebugger::descriptionForValueSubtype(v8::Local<v8::Context> context,
   return nullptr;
 }
 
-bool ThreadDebugger::formatAccessorsAsProperties(v8::Local<v8::Value> value) {
-  return V8DOMWrapper::IsWrapper(isolate_, value);
-}
-
 double ThreadDebugger::currentTimeMS() {
   return base::Time::Now().ToDoubleT() * 1000.0;
 }
@@ -605,7 +601,7 @@ void ThreadDebugger::startRepeatingTimer(
           &ThreadDebugger::OnTimer);
   TaskRunnerTimer<ThreadDebugger>* timer_ptr = timer.get();
   timers_.push_back(std::move(timer));
-  timer_ptr->StartRepeating(base::TimeDelta::FromSecondsD(interval), FROM_HERE);
+  timer_ptr->StartRepeating(base::Seconds(interval), FROM_HERE);
 }
 
 void ThreadDebugger::cancelTimer(void* data) {

@@ -123,6 +123,8 @@ class BASE_EXPORT ThreadGroup {
   // called after an update to CanRunPolicy in TaskTracker.
   virtual void DidUpdateCanRunPolicy() = 0;
 
+  virtual void OnShutdownStarted() = 0;
+
  protected:
   // Derived classes must implement a ScopedCommandsExecutor that derives from
   // this to perform operations at the end of a scope, when all locks have been

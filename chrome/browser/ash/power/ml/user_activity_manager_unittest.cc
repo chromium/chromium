@@ -12,7 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/cancelable_callback.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -88,6 +88,11 @@ void EqualModelPrediction(
 class TestingUserActivityUkmLogger : public UserActivityUkmLogger {
  public:
   TestingUserActivityUkmLogger() = default;
+
+  TestingUserActivityUkmLogger(const TestingUserActivityUkmLogger&) = delete;
+  TestingUserActivityUkmLogger& operator=(const TestingUserActivityUkmLogger&) =
+      delete;
+
   ~TestingUserActivityUkmLogger() override = default;
 
   const std::vector<UserActivityEvent>& events() const { return events_; }
@@ -99,8 +104,6 @@ class TestingUserActivityUkmLogger : public UserActivityUkmLogger {
 
  private:
   std::vector<UserActivityEvent> events_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingUserActivityUkmLogger);
 };
 
 class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
@@ -110,6 +113,9 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
             base::test::TaskEnvironment::MainThreadType::UI,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
+
+  UserActivityManagerTest(const UserActivityManagerTest&) = delete;
+  UserActivityManagerTest& operator=(const UserActivityManagerTest&) = delete;
 
   ~UserActivityManagerTest() override = default;
 
@@ -278,8 +284,6 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<IdleEventNotifier> idle_event_notifier_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<UserActivityManager> activity_logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserActivityManagerTest);
 };
 
 // After an idle event, we have a ui::Event, we should expect one
@@ -291,7 +295,7 @@ TEST_F(UserActivityManagerTest, LogAfterIdleEvent) {
   // Trigger an idle event.
   const IdleEventNotifier::ActivityData data;
   ReportIdleEvent(data);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
   ReportUserActivity(nullptr);
 
   const std::vector<UserActivityEvent>& events = delegate_.events();
@@ -366,20 +370,18 @@ TEST_F(UserActivityManagerTest, LogMultipleEvents) {
   // Trigger the 2nd idle event.
   ReportIdleEvent(data);
   // Second user event.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
   ReportUserActivity(nullptr);
 
   // Trigger the 3rd idle event.
   ReportIdleEvent(data);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
-  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE,
-                base::TimeDelta::FromSeconds(10));
+  task_environment()->FastForwardBy(base::Seconds(3));
+  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE, base::Seconds(10));
 
   // Trigger the 4th idle event.
   ReportIdleEvent(data);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(4));
-  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE,
-                base::TimeDelta::FromSeconds(10));
+  task_environment()->FastForwardBy(base::Seconds(4));
+  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE, base::Seconds(10));
 
   const std::vector<UserActivityEvent>& events = delegate_.events();
   ASSERT_EQ(4U, events.size());
@@ -447,7 +449,7 @@ TEST_F(UserActivityManagerTest, UserCloseLid) {
   const IdleEventNotifier::ActivityData data;
   ReportIdleEvent(data);
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
   ReportLidEvent(chromeos::PowerManagerClient::LidState::CLOSED);
   const std::vector<UserActivityEvent>& events = delegate_.events();
   EXPECT_TRUE(events.empty());
@@ -510,12 +512,11 @@ TEST_F(UserActivityManagerTest, SystemIdleSuspend) {
   // Trigger an idle event.
   const IdleEventNotifier::ActivityData data;
   ReportIdleEvent(data);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(20));
+  task_environment()->FastForwardBy(base::Seconds(20));
   ReportScreenIdleState(true /* screen_dim */, false /* screen_off */);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment()->FastForwardBy(base::Seconds(30));
   ReportScreenIdleState(true /* screen_dim */, true /* screen_off */);
-  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE,
-                base::TimeDelta::FromSeconds(10));
+  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE, base::Seconds(10));
 
   const std::vector<UserActivityEvent>& events = delegate_.events();
   ASSERT_EQ(1U, events.size());
@@ -539,9 +540,9 @@ TEST_F(UserActivityManagerTest, SystemIdleNotSuspend) {
   // Trigger an idle event.
   const IdleEventNotifier::ActivityData data;
   ReportIdleEvent(data);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(20));
+  task_environment()->FastForwardBy(base::Seconds(20));
   ReportScreenIdleState(true /* screen_dim */, false /* screen_off */);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment()->FastForwardBy(base::Seconds(30));
   ReportScreenIdleState(true /* screen_dim */, true /* screen_off */);
   task_environment()->RunUntilIdle();
 
@@ -559,11 +560,11 @@ TEST_F(UserActivityManagerTest, SystemIdleInterrupted) {
   const IdleEventNotifier::ActivityData data;
   ReportIdleEvent(data);
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(20));
+  task_environment()->FastForwardBy(base::Seconds(20));
   ReportScreenIdleState(true /* screen_dim */, false /* screen_off */);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment()->FastForwardBy(base::Seconds(30));
   ReportScreenIdleState(true /* screen_dim */, true /* screen_off */);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
 
   ReportUserActivity(nullptr);
   task_environment()->RunUntilIdle();
@@ -603,8 +604,7 @@ TEST_F(UserActivityManagerTest, ScreenLockWithSuspend) {
   ReportIdleEvent(data);
 
   ReportScreenLocked();
-  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE,
-                base::TimeDelta::FromSeconds(1));
+  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE, base::Seconds(1));
 
   const std::vector<UserActivityEvent>& events = delegate_.events();
   ASSERT_EQ(1U, events.size());
@@ -629,9 +629,8 @@ TEST_F(UserActivityManagerTest, SuspendIdleShortSleepDuration) {
   const IdleEventNotifier::ActivityData data;
   ReportIdleEvent(data);
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(20));
-  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE,
-                base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(20));
+  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE, base::Seconds(1));
   const std::vector<UserActivityEvent>& events = delegate_.events();
   ASSERT_EQ(1U, events.size());
 
@@ -654,7 +653,7 @@ TEST_F(UserActivityManagerTest, SuspendLidClosed) {
   ReportIdleEvent(data);
 
   ReportSuspend(power_manager::SuspendImminent_Reason_LID_CLOSED,
-                base::TimeDelta::FromSeconds(10));
+                base::Seconds(10));
   const std::vector<UserActivityEvent>& events = delegate_.events();
   ASSERT_EQ(1U, events.size());
 
@@ -676,8 +675,7 @@ TEST_F(UserActivityManagerTest, SuspendOther) {
   const IdleEventNotifier::ActivityData data;
   ReportIdleEvent(data);
 
-  ReportSuspend(power_manager::SuspendImminent_Reason_OTHER,
-                base::TimeDelta::FromSeconds(10));
+  ReportSuspend(power_manager::SuspendImminent_Reason_OTHER, base::Seconds(10));
   const std::vector<UserActivityEvent>& events = delegate_.events();
   ASSERT_EQ(1U, events.size());
 
@@ -702,12 +700,12 @@ TEST_F(UserActivityManagerTest, FeatureExtraction) {
 
   IdleEventNotifier::ActivityData data;
   data.last_activity_day = UserActivityEvent_Features_DayOfWeek_MON;
-  data.last_activity_time_of_day = base::TimeDelta::FromSeconds(100);
-  data.recent_time_active = base::TimeDelta::FromSeconds(10);
-  data.time_since_last_mouse = base::TimeDelta::FromSeconds(20);
-  data.time_since_last_touch = base::TimeDelta::FromSeconds(30);
-  data.video_playing_time = base::TimeDelta::FromSeconds(90);
-  data.time_since_video_ended = base::TimeDelta::FromSeconds(2);
+  data.last_activity_time_of_day = base::Seconds(100);
+  data.recent_time_active = base::Seconds(10);
+  data.time_since_last_mouse = base::Seconds(20);
+  data.time_since_last_touch = base::Seconds(30);
+  data.video_playing_time = base::Seconds(90);
+  data.time_since_video_ended = base::Seconds(2);
   data.key_events_in_last_hour = 0;
   data.mouse_events_in_last_hour = 10;
   data.touch_events_in_last_hour = 20;
@@ -763,9 +761,8 @@ TEST_F(UserActivityManagerTest, DimAndOffDelays) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kUserActivityPrediction);
 
-  ReportInactivityDelays(
-      base::TimeDelta::FromMilliseconds(2000) /* screen_dim_delay */,
-      base::TimeDelta::FromMilliseconds(3000) /* screen_off_delay */);
+  ReportInactivityDelays(base::Milliseconds(2000) /* screen_dim_delay */,
+                         base::Milliseconds(3000) /* screen_off_delay */);
   const IdleEventNotifier::ActivityData data;
   ReportIdleEvent(data);
   ReportUserActivity(nullptr);
@@ -782,9 +779,8 @@ TEST_F(UserActivityManagerTest, DimDelays) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kUserActivityPrediction);
 
-  ReportInactivityDelays(
-      base::TimeDelta::FromMilliseconds(2000) /* screen_dim_delay */,
-      base::TimeDelta() /* screen_off_delay */);
+  ReportInactivityDelays(base::Milliseconds(2000) /* screen_dim_delay */,
+                         base::TimeDelta() /* screen_off_delay */);
   const IdleEventNotifier::ActivityData data;
   ReportIdleEvent(data);
   ReportUserActivity(nullptr);
@@ -801,9 +797,8 @@ TEST_F(UserActivityManagerTest, OffDelays) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kUserActivityPrediction);
 
-  ReportInactivityDelays(
-      base::TimeDelta() /* screen_dim_delay */,
-      base::TimeDelta::FromMilliseconds(4000) /* screen_off_delay */);
+  ReportInactivityDelays(base::TimeDelta() /* screen_dim_delay */,
+                         base::Milliseconds(4000) /* screen_off_delay */);
   const IdleEventNotifier::ActivityData data;
   ReportIdleEvent(data);
   ReportUserActivity(nullptr);
@@ -829,7 +824,7 @@ TEST_F(UserActivityManagerTest, InitialScreenOff) {
 
   ReportScreenIdleState(false /* screen_dim */, true /* screen_off */);
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(7));
+  task_environment()->FastForwardBy(base::Seconds(7));
   ReportUserActivity(nullptr);
 
   const std::vector<UserActivityEvent>& events = delegate_.events();
@@ -860,7 +855,7 @@ TEST_F(UserActivityManagerTest, InitialScreenStateFlipped) {
   ReportIdleEvent(data);
 
   ReportScreenIdleState(false /* screen_dim */, false /* screen_off */);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(7));
+  task_environment()->FastForwardBy(base::Seconds(7));
   ReportScreenIdleState(true /* screen_dim */, true /* screen_off */);
 
   ReportUserActivity(nullptr);
@@ -892,7 +887,7 @@ TEST_F(UserActivityManagerTest, ScreenOffStateChanged) {
 
   ReportScreenIdleState(true /* screen_dim */, false /* screen_off */);
   ReportScreenIdleState(true /* screen_dim */, true /* screen_off */);
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(7));
+  task_environment()->FastForwardBy(base::Seconds(7));
   ReportScreenIdleState(false /* screen_dim */, false /* screen_off */);
   ReportUserActivity(nullptr);
 
@@ -1130,15 +1125,14 @@ TEST_F(UserActivityManagerTest, TwoScreenDimImminentWithEventInBetween) {
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(should_defer);
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(6));
-  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE,
-                base::TimeDelta::FromSeconds(3));
+  task_environment()->FastForwardBy(base::Seconds(6));
+  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE, base::Seconds(3));
 
   // 2nd ScreenDimImminent is not deferred despite model score says so.
   // sigmoid(-1.35) * 100 = 20
   fake_service_connection_.SetOutputValue(std::vector<int64_t>{1L},
                                           std::vector<double>{-1.35});
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment()->FastForwardBy(base::Seconds(10));
   ReportIdleEvent(data, &should_defer);
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(should_defer);
@@ -1149,9 +1143,8 @@ TEST_F(UserActivityManagerTest, TwoScreenDimImminentWithEventInBetween) {
                                      2);
 
   // Log when a SuspendImminent is received
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(20));
-  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE,
-                base::TimeDelta::FromSeconds(3));
+  task_environment()->FastForwardBy(base::Seconds(20));
+  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE, base::Seconds(3));
 
   const std::vector<UserActivityEvent>& events = delegate_.events();
   ASSERT_EQ(2U, events.size());
@@ -1215,7 +1208,7 @@ TEST_F(UserActivityManagerTest, TwoScreenDimImminentWithoutEventInBetween) {
   // sigmoid(-1.35) * 100 = 20
   fake_service_connection_.SetOutputValue(std::vector<int64_t>{1L},
                                           std::vector<double>{-1.35});
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment()->FastForwardBy(base::Seconds(10));
   ReportIdleEvent(data, &should_defer);
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(should_defer);
@@ -1226,9 +1219,8 @@ TEST_F(UserActivityManagerTest, TwoScreenDimImminentWithoutEventInBetween) {
                                      2);
 
   // Log when a SuspendImminent is received
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(20));
-  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE,
-                base::TimeDelta::FromSeconds(3));
+  task_environment()->FastForwardBy(base::Seconds(20));
+  ReportSuspend(power_manager::SuspendImminent_Reason_IDLE, base::Seconds(3));
 
   const std::vector<UserActivityEvent>& events = delegate_.events();
   ASSERT_EQ(2U, events.size());

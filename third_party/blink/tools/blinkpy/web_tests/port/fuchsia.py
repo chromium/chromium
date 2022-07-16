@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import logging
+import multiprocessing
 import os
 import select
 import socket
@@ -34,6 +35,7 @@ import subprocess
 import sys
 import threading
 
+from argparse import Namespace
 from blinkpy.common import exit_codes
 from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.path_finder import get_chromium_src_dir
@@ -62,6 +64,8 @@ def _import_fuchsia_runner():
     # pylint: disable=redefined-outer-name
     global aemu_target
     import aemu_target
+    global _GetPathToBuiltinTarget, _LoadTargetClass
+    from common_args import _GetPathToBuiltinTarget, _LoadTargetClass
     global device_target
     import device_target
     global fuchsia_target
@@ -87,13 +91,6 @@ WEB_TESTS_PATH_PREFIX = '/third_party/blink/' + WEB_TESTS_LAST_COMPONENT
 # Paths to the directory where the fonts are copied to. Must match the path in
 # content/shell/app/blink_test_platform_support_fuchsia.cc .
 FONTS_DEVICE_PATH = '/system/fonts'
-
-# Number of CPU cores in qemu.
-CPU_CORES = 4
-
-# Number of content_shell instances to run in parallel.
-# Allow for two CPU cores per instance.
-MAX_WORKERS = CPU_CORES / 2
 
 PROCESS_START_TIMEOUT = 20
 
@@ -130,7 +127,7 @@ class _TargetHost(object):
     def __init__(self, build_path, build_ids_path, ports_to_forward, target,
                  results_directory):
         try:
-            self._amber_repo = None
+            self._pkg_repo = None
             self._target = target
             self._target.Start()
             self._setup_target(build_path, build_ids_path, ports_to_forward,
@@ -156,19 +153,12 @@ class _TargetHost(object):
                                                    stdout=subprocess.PIPE,
                                                    stderr=subprocess.STDOUT)
 
-        self._listener = self._target.RunCommandPiped(['log_listener'],
-                                                      stdout=subprocess.PIPE,
-                                                      stderr=subprocess.STDOUT)
-
-        listener_log_path = os.path.join(results_directory, 'system_log')
-        listener_log = open(listener_log_path, 'w')
-        self.symbolizer = symbolizer.RunSymbolizer(
-            self._listener.stdout, listener_log, [build_ids_path])
-
-        self._amber_repo = self._target.GetAmberRepo()
-        self._amber_repo.__enter__()
-
         package_path = os.path.join(build_path, CONTENT_SHELL_PACKAGE_PATH)
+        self._target.StartSystemLog([package_path])
+
+        self._pkg_repo = self._target.GetPkgRepo()
+        self._pkg_repo.__enter__()
+
         self._target.InstallPackage([package_path])
 
         # Process will be forked for each worker, which may make QemuTarget
@@ -185,16 +175,12 @@ class _TargetHost(object):
             stderr=subprocess.PIPE)
 
     def cleanup(self):
-        if self._amber_repo:
-            self._amber_repo.__exit__(None, None, None)
-        if self._target:
-            # Emulator targets will be shutdown during cleanup.
-            # TODO(sergeyu): Currently __init__() always starts Qemu, so we can
-            # just shutdown it. Update this logic when reusing target devices
-            # for multiple test runs.
-            if not isinstance(self._target, device_target.DeviceTarget):
-                self._target.Shutdown()
-            self._target = None
+        try:
+            if self._pkg_repo:
+                self._pkg_repo.__exit__(None, None, None)
+        finally:
+            if self._target:
+                self._target.Stop()
 
 
 class FuchsiaPort(base.Port):
@@ -214,8 +200,8 @@ class FuchsiaPort(base.Port):
         self._version = 'fuchsia'
         self._target_device = self.get_option('device')
 
-        # TODO(sergeyu): Add support for arm64.
-        self._architecture = 'x86_64'
+        self._architecture = 'x86_64' if self._target_cpu(
+        ) == 'x64' else 'arm64'
 
         self.server_process_constructor = FuchsiaServerProcess
 
@@ -237,42 +223,44 @@ class FuchsiaPort(base.Port):
         if self._zircon_logger:
             self._zircon_logger.close()
 
+    def _target_cpu(self):
+        return self.get_option('fuchsia_target_cpu')
+
+    def _cpu_cores(self):
+        # Revise the processor count on arm64, the trybots on arm64 are in
+        # dockers and cannot use all processors.
+        # For x64, fvdl always assumes hyperthreading is supported by intel
+        # processors, but the cpu_count returns the number regarding if the core
+        # is a physical one or a hyperthreading one, so the number should be
+        # divided by 2 to avoid creating more threads than the processor
+        # supports.
+        if self._target_cpu() == 'x64':
+            return max(int(multiprocessing.cpu_count() / 2) - 1, 4)
+        return 4
+
     def setup_test_run(self):
         super(FuchsiaPort, self).setup_test_run()
         try:
-            target_args = {
-                'out_dir': self._build_path(),
-                'system_log_file': None,
-                'fuchsia_out_dir': self.get_option('fuchsia_out_dir')
-            }
-            if self._target_device == 'device':
-                additional_args = {
-                    'target_cpu': self.get_option('fuchsia_target_cpu'),
-                    'ssh_config': self.get_option('fuchsia_ssh_config'),
-                    'os_check': 'ignore',
-                    'host': self.get_option('fuchsia_host'),
-                    'port': self.get_option('fuchsia_port'),
-                    'node_name': self.get_option('fuchsia_node_name')
-                }
-                target_args.update(additional_args)
-                target = device_target.DeviceTarget(**target_args)
-            else:
-                additional_args = {
-                    'target_cpu': 'x64',
-                    'cpu_cores': CPU_CORES,
-                    'require_kvm': True,
-                    'ram_size_mb': 8192
-                }
-                if self._target_device == 'qemu':
-                    target_args.update(additional_args)
-                    target = qemu_target.QemuTarget(**target_args)
-                else:
-                    additional_args.update({
-                        'enable_graphics': False,
-                        'hardware_gpu': False
-                    })
-                    target_args.update(additional_args)
-                    target = aemu_target.AemuTarget(**target_args)
+            target_args = Namespace(
+                out_dir=self._build_path(),
+                fuchsia_out_dir=self.get_option('fuchsia_out_dir'),
+                target_cpu=self._target_cpu(),
+                ssh_config=self.get_option('fuchsia_ssh_config'),
+                os_check='ignore',
+                host=self.get_option('fuchsia_host'),
+                port=self.get_option('fuchsia_port'),
+                node_name=self.get_option('fuchsia_node_name'),
+                cpu_cores=self._cpu_cores(),
+                require_kvm=True,
+                ram_size_mb=8192,
+                enable_graphics=False,
+                hardware_gpu=False,
+                with_network=False,
+                logs_dir=self.results_directory(),
+                custom_image=None)
+            target = _LoadTargetClass(
+                _GetPathToBuiltinTarget(
+                    self._target_device)).CreateFromArgs(target_args)
             self._target_host = _TargetHost(self._build_path(),
                                             self.get_build_ids_path(),
                                             self.SERVER_PORTS, target,
@@ -297,7 +285,7 @@ class FuchsiaPort(base.Port):
 
     def num_workers(self, requested_num_workers):
         # Run a single qemu instance.
-        return min(MAX_WORKERS, requested_num_workers)
+        return min(self._cpu_cores(), requested_num_workers)
 
     def _default_timeout_ms(self):
         # Use 20s timeout instead of the default 6s. This is necessary because
@@ -429,7 +417,7 @@ class FuchsiaServerProcess(server_process.ServerProcess):
         # os.fdopen().
         stdin_socket, _ = listen_socket.accept()
         fd = stdin_socket.fileno()  # pylint: disable=no-member
-        stdin_pipe = os.fdopen(os.dup(fd), "w", 0)
+        stdin_pipe = os.fdopen(os.dup(fd), "wb", 0)
         stdin_socket.close()
 
         proc.stdin.close()

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/read_later/read_later_test_utils.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -27,15 +28,22 @@
 class ReadLaterButtonBrowserTest : public DialogBrowserTest {
  public:
   ReadLaterButtonBrowserTest() {
-    feature_list_.InitAndEnableFeature(reading_list::switches::kReadLater);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{reading_list::switches::kReadLater},
+        /*disabled_features=*/{features::kSidePanel});
   }
+
+  ReadLaterButtonBrowserTest(const ReadLaterButtonBrowserTest&) = delete;
+  ReadLaterButtonBrowserTest& operator=(const ReadLaterButtonBrowserTest&) =
+      delete;
 
   void SetUpOnMainThread() override {
     DialogBrowserTest::SetUpOnMainThread();
     browser()->profile()->GetPrefs()->SetBoolean(
         bookmarks::prefs::kShowBookmarkBar, true);
     // Navigate to a url that can be added to the reading list.
-    ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                             GURL("https://www.google.com")));
   }
 
   ReadLaterButton* GetReadLaterButton(Browser* browser) {
@@ -58,7 +66,6 @@ class ReadLaterButtonBrowserTest : public DialogBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(ReadLaterButtonBrowserTest);
 };
 
 // TODO(1115950): Flaky on Windows.

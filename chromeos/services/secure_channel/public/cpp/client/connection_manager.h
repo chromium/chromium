@@ -7,8 +7,10 @@
 
 #include <ostream>
 
+#include "base/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
 namespace chromeos {
 namespace secure_channel {
@@ -57,6 +59,19 @@ class ConnectionManager {
   // Sends a message with the specified |payload|.
   virtual void SendMessage(const std::string& payload) = 0;
 
+  // Registers |payload_files| to receive an incoming file transfer with
+  // the given |payload_id|. |registration_result_callback| will return true
+  // if the file was successfully registered, or false if the registration
+  // failed or if this operation is not supported by the connection type.
+  // Callers can listen to progress information about the transfer through the
+  // |file_transfer_update_callback| if the registration was successful.
+  virtual void RegisterPayloadFile(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
+          file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback) = 0;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -75,5 +90,12 @@ std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace secure_channel
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+namespace secure_channel {
+using ::chromeos::secure_channel::ConnectionManager;
+}  // namespace secure_channel
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CONNECTION_MANAGER_H_

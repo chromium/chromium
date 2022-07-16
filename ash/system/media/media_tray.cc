@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/focus_cycler.h"
-#include "ash/public/cpp/media_notification_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -14,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/media/media_notification_provider.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
@@ -206,10 +206,6 @@ MediaTray::MediaTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   auto icon = std::make_unique<views::ImageView>();
   icon->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
-  icon->SetImage(gfx::CreateVectorIcon(
-      kGlobalMediaControlsIcon,
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
-
   tray_container()->SetMargin(kMediaTrayPadding, 0);
   icon_ = tray_container()->AddChildView(std::move(icon));
 }
@@ -419,6 +415,13 @@ void MediaTray::AnchorUpdated() {
 
   bubble_->GetBubbleView()->SetAnchorRect(
       shelf()->GetStatusAreaWidget()->GetMediaTrayAnchorRect());
+}
+
+void MediaTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+  icon_->SetImage(gfx::CreateVectorIcon(
+      kGlobalMediaControlsIcon,
+      TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
 }
 
 }  // namespace ash

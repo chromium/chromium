@@ -47,7 +47,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
 
   // ContentBrowserClient overrides.
   std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(
-      const MainFunctionParams& parameters) override;
+      MainFunctionParams parameters) override;
   bool IsHandledURL(const GURL& url) override;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
@@ -97,6 +97,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   base::DictionaryValue GetNetLogConstants() override;
   base::FilePath GetSandboxedStorageServiceDataDirectory() override;
   std::string GetUserAgent() override;
+  std::string GetReducedUserAgent() override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
   void OverrideURLLoaderFactoryParams(
       BrowserContext* browser_context,
@@ -134,13 +135,20 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   }
 
   // Used for content_browsertests.
+  using SelectClientCertificateCallback = base::OnceCallback<base::OnceClosure(
+      content::WebContents* web_contents,
+      net::SSLCertRequestInfo* cert_request_info,
+      net::ClientCertIdentityList client_certs,
+      std::unique_ptr<content::ClientCertificateDelegate> delegate)>;
+
   void set_select_client_certificate_callback(
-      base::OnceClosure select_client_certificate_callback) {
+      SelectClientCertificateCallback select_client_certificate_callback) {
     select_client_certificate_callback_ =
         std::move(select_client_certificate_callback);
   }
   void set_login_request_callback(
-      base::OnceCallback<void(bool is_main_frame)> login_request_callback) {
+      base::OnceCallback<void(bool is_primary_main_frame)>
+          login_request_callback) {
     login_request_callback_ = std::move(login_request_callback);
   }
   void set_url_loader_factory_params_callback(
@@ -194,7 +202,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
 
   static bool allow_any_cors_exempt_header_for_browser_;
 
-  base::OnceClosure select_client_certificate_callback_;
+  SelectClientCertificateCallback select_client_certificate_callback_;
   base::OnceCallback<void(bool is_main_frame)> login_request_callback_;
   base::RepeatingCallback<void(const network::mojom::URLLoaderFactoryParams*,
                                const url::Origin&,
@@ -218,7 +226,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
 
 // The delay for sending reports when running with --run-web-tests
 constexpr base::TimeDelta kReportingDeliveryIntervalTimeForWebTests =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 
 }  // namespace content
 

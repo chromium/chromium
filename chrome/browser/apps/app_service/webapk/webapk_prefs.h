@@ -16,6 +16,11 @@ class Profile;
 namespace apps {
 namespace webapk_prefs {
 
+extern const char kGeneratedWebApksPref[];
+// Name of the pref for whether the Generated WebAPKs feature is enabled,
+// controlled by the "ArcAppToWebAppSharingEnabled" policy.
+extern const char kGeneratedWebApksEnabled[];
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 void AddWebApk(Profile* profile,
@@ -24,6 +29,9 @@ void AddWebApk(Profile* profile,
 
 absl::optional<std::string> GetWebApkPackageName(Profile* profile,
                                                  const std::string& app_id);
+
+// Returns the package names of all WebAPKs installed in the profile.
+base::flat_set<std::string> GetInstalledWebApkPackageNames(Profile* profile);
 
 // Returns the app IDs of all WebAPKs installed in the profile.
 base::flat_set<std::string> GetWebApkAppIds(Profile* profile);

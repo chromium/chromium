@@ -12,6 +12,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_components/chromeos/quick_unlock/pin_keyboard.html">
+<link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
 <link rel="stylesheet" href="chrome://resources/css/butter_bar.css">
 <link rel="stylesheet" href="chrome://resources/css/list.css">
 <link rel="stylesheet" href="chrome://resources/css/menu_button.css">
@@ -19,13 +20,17 @@
 <link rel="stylesheet" href="chrome://resources/css/spinner.css">
 <link rel="stylesheet" href="chrome://resources/css/throbber.css">
 <link rel="stylesheet" href="chrome://resources/css/widgets.css">
-<link rel="stylesheet" href="md_top_header_bar.css">
 <link rel="stylesheet" href="oobe.css">
 <link rel="stylesheet" href="oobe_popup_overlay.css">
 <link rel="stylesheet" href="oobe_screen.css">
-<link rel="stylesheet" href="components/oobe_flex_layout.css">
-<link rel="stylesheet" href="components/oobe_links.css">
-<link rel="stylesheet" href="md_screen_container.css">
+<link rel="import" href="components/common_styles/oobe_flex_layout_styles.html">
+<!--
+  TODO(crbug.com/1229130) - Refactor styles so that there is a clear separation
+  between the styles used in the top level document and oobe-common-styles.
+-->
+<custom-style>
+  <style include="oobe-flex-layout-styles"></style>
+</custom-style>
 <script src="chrome://resources/js/cr.js"></script>
 <script src="chrome://resources/js/event_tracker.js"></script>
 <script src="chrome://resources/js/cr/event_target.js"></script>
@@ -46,7 +51,6 @@
 <script src="chrome://resources/js/util.js"></script>
 <script defer src="chrome://oobe/debug.js"></script>
 <script defer src="chrome://oobe/test_api.js"></script>
-<link rel="stylesheet" href="api_keys_notice.css">
 
 <script src="chrome://oobe/keyboard_utils.js"></script>
 

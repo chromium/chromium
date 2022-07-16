@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_UI_CONTROLLER_ANDROID_UTILS_H_
 #define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_UI_CONTROLLER_ANDROID_UTILS_H_
 
-#include <map>
 #include <string>
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "base/containers/flat_map.h"
+#include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -20,6 +21,10 @@
 #include "url/gurl.h"
 
 namespace autofill_assistant {
+class Service;
+class ServiceRequestSender;
+class ClientAndroid;
+
 namespace ui_controller_android_utils {
 
 // Returns a 32-bit Integer representing |color_string| in Java, or null if
@@ -69,9 +74,12 @@ ValueProto ToNativeValue(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& jvalue);
 
 // Returns an instance of |AssistantInfoPopup| for |proto|.
+// close_display_str is used to provide a Close button when a button is not
+// configured in proto.
 base::android::ScopedJavaLocalRef<jobject> CreateJavaInfoPopup(
     JNIEnv* env,
-    const InfoPopupProto& proto);
+    const InfoPopupProto& proto,
+    const std::string& close_display_str);
 
 // Shows an instance of |AssistantInfoPopup| on the screen.
 void ShowJavaInfoPopup(JNIEnv* env,
@@ -82,6 +90,12 @@ void ShowJavaInfoPopup(JNIEnv* env,
 std::string SafeConvertJavaStringToNative(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jstring);
+
+// Converts an optional native string to java. Returns null if the optional is
+// not present.
+base::android::ScopedJavaLocalRef<jstring> ConvertNativeOptionalStringToJava(
+    JNIEnv* env,
+    const absl::optional<std::string> optional_string);
 
 // Creates a BottomSheetState from the Android SheetState enum defined in
 // components/browser_ui/bottomsheet/BottomSheetController.java.
@@ -102,8 +116,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChipList(
     JNIEnv* env,
     const std::vector<ChipProto>& chips);
 
-// Creates a std::map from an incoming set of Java string keys and values.
-std::map<std::string, std::string> CreateStringMapFromJava(
+// Creates a base::flat_map from an incoming set of Java string keys and values.
+base::flat_map<std::string, std::string> CreateStringMapFromJava(
     JNIEnv* env,
     const base::android::JavaRef<jobjectArray>& keys,
     const base::android::JavaRef<jobjectArray>& values);
@@ -115,6 +129,8 @@ std::unique_ptr<TriggerContext> CreateTriggerContext(
     const base::android::JavaRef<jstring>& jexperiment_ids,
     const base::android::JavaRef<jobjectArray>& jparameter_names,
     const base::android::JavaRef<jobjectArray>& jparameter_values,
+    const base::android::JavaRef<jobjectArray>& jdevice_only_parameter_names,
+    const base::android::JavaRef<jobjectArray>& jdevice_only_parameter_values,
     jboolean onboarding_shown,
     jboolean is_direct_action,
     const base::android::JavaRef<jstring>& jinitial_url);
@@ -122,6 +138,22 @@ std::unique_ptr<TriggerContext> CreateTriggerContext(
 // Returns true if |web_contents| is owned by a custom tab. Assumes that
 // |web_contents| is valid and currently owned by a tab.
 bool IsCustomTab(content::WebContents* web_contents);
+
+// Returns the service to inject, if any, for |client_android|. This is used for
+// integration tests, which provide a test service to communicate with.
+std::unique_ptr<Service> GetServiceToInject(JNIEnv* env,
+                                            ClientAndroid* client_android);
+
+// Returns the service request sender to inject, if any. This is used for
+// integration tests which provide a test service request sender to communicate
+// with.
+std::unique_ptr<ServiceRequestSender> GetServiceRequestSenderToInject(
+    JNIEnv* env);
+
+// Returns the TTS controller to inject, if any. This is used for integration
+// tests which provide a test TTS controller.
+std::unique_ptr<AutofillAssistantTtsController> GetTtsControllerToInject(
+    JNIEnv* env);
 
 }  // namespace ui_controller_android_utils
 }  //  namespace autofill_assistant

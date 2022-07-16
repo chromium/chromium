@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
@@ -57,16 +57,10 @@ enum class DevToolsOpenedByAction {
 class DevToolsWindow : public DevToolsUIBindings::Delegate,
                        public content::WebContentsDelegate {
  public:
-  class ObserverWithAccessor : public content::WebContentsObserver {
-   public:
-    explicit ObserverWithAccessor(content::WebContents* web_contents);
-    ~ObserverWithAccessor() override;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ObserverWithAccessor);
-  };
-
   static const char kDevToolsApp[];
+
+  DevToolsWindow(const DevToolsWindow&) = delete;
+  DevToolsWindow& operator=(const DevToolsWindow&) = delete;
 
   ~DevToolsWindow() override;
 
@@ -109,6 +103,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // How to get pointer to the created window see comments for
   // ToggleDevToolsWindow().
   static void OpenDevToolsWindow(content::WebContents* inspected_web_contents);
+  static void OpenDevToolsWindow(content::WebContents* inspected_web_contents,
+                                 Profile* profile);
 
   // Open or reveal DevTools window, with no special action. Use |profile| to
   // open client window in, default to |host|'s profile if none given.
@@ -321,16 +317,19 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
                                 bool can_dock,
                                 const std::string& settings,
                                 const std::string& panel,
-                                bool has_other_clients);
+                                bool has_other_clients,
+                                bool browser_connnection);
   static GURL GetDevToolsURL(Profile* profile,
                              FrontendType frontend_type,
                              const std::string& frontend_url,
                              bool can_dock,
                              const std::string& panel,
-                             bool has_other_clients);
+                             bool has_other_clients,
+                             bool browser_connection);
 
   static void ToggleDevToolsWindow(
       content::WebContents* web_contents,
+      Profile* profile,
       bool force_open,
       const DevToolsToggleAction& action,
       const std::string& settings,
@@ -366,6 +365,9 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
       const content::NativeWebKeyboardEvent& event) override;
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(
       content::WebContents* source) override;
+  std::unique_ptr<content::EyeDropper> OpenEyeDropper(
+      content::RenderFrameHost* render_frame_host,
+      content::EyeDropperListener* listener) override;
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
@@ -420,7 +422,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   void OnLocaleChanged();
   void OverrideAndSyncDevToolsRendererPrefs();
 
-  std::unique_ptr<ObserverWithAccessor> inspected_contents_observer_;
+  base::WeakPtr<content::WebContents> inspected_web_contents_;
 
   FrontendType frontend_type_;
   Profile* profile_;
@@ -473,7 +475,6 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   base::ScopedClosureRunner capture_handle_;
 
   friend class DevToolsEventForwarder;
-  DISALLOW_COPY_AND_ASSIGN(DevToolsWindow);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_WINDOW_H_

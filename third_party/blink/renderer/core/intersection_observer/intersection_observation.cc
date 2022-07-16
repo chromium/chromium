@@ -131,7 +131,8 @@ void IntersectionObservation::Trace(Visitor* visitor) const {
 }
 
 bool IntersectionObservation::ShouldCompute(unsigned flags) const {
-  if (!target_ || !observer_->RootIsValid() | !observer_->GetExecutionContext())
+  if (!target_ || !observer_->RootIsValid() ||
+      !observer_->GetExecutionContext())
     return false;
   // If we're processing post-layout deliveries only and we don't have a
   // post-layout delivery observer, then return early. Likewise, return if we
@@ -162,9 +163,9 @@ bool IntersectionObservation::MaybeDelayAndReschedule(
     DOMHighResTimeStamp timestamp) {
   if (timestamp == -1)
     return true;
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(
-      observer_->GetEffectiveDelay() - (timestamp - last_run_time_));
-  if (!(flags & kIgnoreDelay) && delay > base::TimeDelta()) {
+  base::TimeDelta delay = base::Milliseconds(observer_->GetEffectiveDelay() -
+                                             (timestamp - last_run_time_));
+  if (!(flags & kIgnoreDelay) && delay.is_positive()) {
     TrackingDocument(this).View()->ScheduleAnimation(delay);
     return true;
   }

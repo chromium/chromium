@@ -4,12 +4,15 @@
 
 #include "extensions/browser/api/mime_handler_private/mime_handler_private.h"
 
+#include <cmath>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/common/api/mime_handler.mojom.h"
 #include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/http/http_response_headers.h"
@@ -68,6 +71,25 @@ void MimeHandlerServiceImpl::GetStreamInfo(GetStreamInfoCallback callback) {
   }
   std::move(callback).Run(
       mojo::ConvertTo<mime_handler::StreamInfoPtr>(*stream_));
+}
+
+void MimeHandlerServiceImpl::SetPdfPluginAttributes(
+    mime_handler::PdfPluginAttributesPtr pdf_plugin_attributes) {
+  if (!stream_)
+    return;
+
+  // Check the `background_color` is an integer.
+  double whole = 0.0;
+  if (std::modf(pdf_plugin_attributes->background_color, &whole) != 0.0)
+    return;
+
+  // Check the `background_color` is within the range of a uint32_t.
+  if (!base::IsValueInRangeForNumericType<uint32_t>(
+          pdf_plugin_attributes->background_color)) {
+    return;
+  }
+
+  stream_->set_pdf_plugin_attributes(std::move(pdf_plugin_attributes));
 }
 
 }  // namespace extensions

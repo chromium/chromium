@@ -5,8 +5,8 @@
 #include "chrome/browser/printing/printing_service.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/service_sandbox_type.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "content/public/browser/service_process_host.h"
 
 const mojo::Remote<printing::mojom::PrintingService>& GetPrintingService() {
@@ -25,7 +25,7 @@ const mojo::Remote<printing::mojom::PrintingService>& GetPrintingService() {
     // one -- then we will reset |remote|, causing the service process to be
     // terminated if it isn't already.
     remote->reset_on_disconnect();
-    remote->reset_on_idle_timeout(base::TimeDelta::FromSeconds(5));
+    remote->reset_on_idle_timeout(base::Seconds(5));
   }
 
   return *remote;

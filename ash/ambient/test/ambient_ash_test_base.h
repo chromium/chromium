@@ -129,8 +129,8 @@ class AmbientAshTestBase : public AshTestBase {
   int GetNumOfActiveWakeLocks(device::mojom::WakeLockType type);
 
   // Simulate to issue an |access_token|.
-  // If |with_error| is true, will return an empty access token.
-  void IssueAccessToken(const std::string& access_token, bool with_error);
+  // If |is_empty| is true, will return an empty access token.
+  void IssueAccessToken(bool is_empty);
 
   bool IsAccessTokenRequestPending();
 

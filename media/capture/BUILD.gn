@@ -58,10 +58,6 @@ source_set("capture_device_specific") {
     "//media/capture/content/android",
     "//media/capture/video/android",
   ]
-  if (is_win) {
-    # TODO(jschuh): https://crbug.com/167187 fix size_t to int truncations.
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-  }
   defines = [ "CAPTURE_IMPLEMENTATION" ]
   sources = [
     "content/animated_content_sampler.cc",
@@ -102,6 +98,7 @@ source_set("capture_device_specific") {
     "//media",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:image_capture_types",
+    "//media/capture/mojom:video_capture",
     "//media/mojo/mojom",
     "//media/parsers",
     "//skia",
@@ -139,8 +136,6 @@ component("capture_lib") {
     "video/video_frame_receiver.h",
     "video/video_frame_receiver_on_task_runner.cc",
     "video/video_frame_receiver_on_task_runner.h",
-    "video_capturer_source.cc",
-    "video_capturer_source.h",
   ]
 
   public_deps = [
@@ -255,9 +250,6 @@ component("capture_lib") {
       "/DELAYLOAD:mfplat.dll",
       "/DELAYLOAD:mfreadwrite.dll",
     ]
-
-    # TODO(jschuh): https://crbug.com/167187 fix size_t to int truncations.
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
   }
 
   if (is_linux || is_chromeos_lacros) {
@@ -332,6 +324,7 @@ component("capture_lib") {
     public_deps += [ "//media/capture/video/chromeos/public" ]
     deps += [
       "//ash/constants",
+      "//ash/webui/camera_app_ui:document_scanning",
       "//build/config/linux/libdrm",
       "//chromeos/components/sensors:sensors",
       "//chromeos/dbus/power",
@@ -526,9 +519,6 @@ test("capture_unittests") {
       "/DELAYLOAD:mfplat.dll",
       "/DELAYLOAD:mfreadwrite.dll",
     ]
-
-    # TODO(jschuh): https://crbug.com/167187 fix size_t to int truncations.
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
     deps += [ "//media/base/win:media_foundation_util" ]
   }

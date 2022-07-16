@@ -59,6 +59,7 @@ enum MaldocaErrorCode {
   MISSING_PROPERTIES = 1029;
   NOT_IMPLEMENTED_FOR_CHROME = 1030;
   NOT_IMPLEMENTED = 1031;
+  MISSING_ENCODING = 1032;
 }
 
 // This is a proto equivalent of a status, with additional error code.

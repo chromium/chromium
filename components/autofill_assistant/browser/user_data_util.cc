@@ -4,18 +4,18 @@
 
 #include "components/autofill_assistant/browser/user_data_util.h"
 
-#include <map>
 #include <numeric>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/i18n/case_conversion.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/cud_condition.pb.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
+#include "components/autofill_assistant/browser/model.pb.h"
 #include "components/autofill_assistant/browser/url_utils.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -25,51 +25,74 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill_assistant {
+namespace user_data {
 namespace {
 
 constexpr char kDefaultLocale[] = "en-US";
 
 template <typename T>
-ClientStatus ExtractDataAndFormatAutofillValue(
-    const T& autofill_value,
+ClientStatus ExtractDataAndFormatClientValue(
+    const T& client_value,
     const ValueExpression& value_expression,
-    const UserData* user_data,
+    const UserData& user_data,
     bool quote_meta,
+    const std::string& locale,
     std::string* out_value) {
   if (value_expression.chunk().empty()) {
     VLOG(1) << "|value_expression| is empty";
     return ClientStatus(INVALID_ACTION);
   }
 
-  std::map<std::string, std::string> data;
+  base::flat_map<field_formatter::Key, std::string> data;
+  std::string localeOrDefault = locale.empty() ? kDefaultLocale : locale;
 
-  if (autofill_value.has_profile()) {
-    const auto& profile = autofill_value.profile();
+  if (client_value.has_profile()) {
+    const auto& profile = client_value.profile();
     if (profile.identifier().empty()) {
       VLOG(1) << "empty |profile.identifier|";
       return ClientStatus(INVALID_ACTION);
     }
     const autofill::AutofillProfile* address =
-        user_data->selected_address(profile.identifier());
+        user_data.selected_address(profile.identifier());
     if (address == nullptr) {
       VLOG(1) << "Requested unknown address '" << profile.identifier() << "'";
       return ClientStatus(PRECONDITION_FAILED);
     }
 
     auto address_map =
-        field_formatter::CreateAutofillMappings(*address, kDefaultLocale);
+        field_formatter::CreateAutofillMappings(*address, localeOrDefault);
     data.insert(address_map.begin(), address_map.end());
   }
 
-  const autofill::CreditCard* card = user_data->selected_card();
+  const autofill::CreditCard* card = user_data.selected_card();
   if (card != nullptr) {
     auto card_map =
-        field_formatter::CreateAutofillMappings(*card, kDefaultLocale);
+        field_formatter::CreateAutofillMappings(*card, localeOrDefault);
     data.insert(card_map.begin(), card_map.end());
   }
 
-  return field_formatter::FormatExpression(value_expression, data, quote_meta,
-                                           out_value);
+  for (const auto& chunk : value_expression.chunk()) {
+    if (!chunk.has_memory_key() ||
+        !user_data.HasAdditionalValue(chunk.memory_key())) {
+      continue;
+    }
+    const ValueProto* value = user_data.GetAdditionalValue(chunk.memory_key());
+    if (value->strings().values().size() == 1) {
+      data.emplace(field_formatter::Key(chunk.memory_key()),
+                   value->strings().values(0));
+    }
+  }
+
+  const ClientStatus& format_status = field_formatter::FormatExpression(
+      value_expression, data, quote_meta, out_value);
+  if (!format_status.ok()) {
+    return format_status;
+  }
+  if (out_value->empty()) {
+    VLOG(1) << "|value_expression| result is empty";
+    return ClientStatus(EMPTY_VALUE_EXPRESSION_RESULT);
+  }
+  return OkClientStatus();
 }
 
 void OnGetStoredPassword(
@@ -84,13 +107,15 @@ void OnGetStoredPassword(
   std::move(callback).Run(OkClientStatus(), password);
 }
 
-bool EvaluateCondition(const std::map<std::string, std::string>& data,
-                       const RequiredDataPiece::Condition& condition) {
-  auto it = data.find(base::NumberToString(condition.key()));
-  if (it == data.end()) {
-    return false;
+bool EvaluateCondition(
+    const base::flat_map<field_formatter::Key, std::string>& data,
+    const RequiredDataPiece::Condition& condition) {
+  std::string value;
+  auto it = data.find(field_formatter::Key(condition.key()));
+  if (it != data.end()) {
+    value = it->second;
   }
-  auto value = it->second;
+
   switch (condition.condition_case()) {
     case RequiredDataPiece::Condition::kNotEmpty:
       return !value.empty();
@@ -107,8 +132,8 @@ bool EvaluateCondition(const std::map<std::string, std::string>& data,
 }
 
 std::vector<std::string> GetValidationErrors(
-    const std::map<std::string, std::string> data,
-    const std::vector<RequiredDataPiece> required_data_pieces) {
+    const base::flat_map<field_formatter::Key, std::string>& data,
+    const std::vector<RequiredDataPiece>& required_data_pieces) {
   std::vector<std::string> errors;
 
   for (const auto& required_data_piece : required_data_pieces) {
@@ -122,19 +147,16 @@ std::vector<std::string> GetValidationErrors(
 // Helper function that compares instances of AutofillProfile by completeness
 // in regards to the current options. Full profiles should be ordered before
 // empty ones and fall back to compare the profile's last usage.
-bool CompletenessCompareContacts(const CollectUserDataOptions& options,
-                                 const autofill::AutofillProfile& a,
-                                 const autofill::AutofillProfile& b) {
+bool CompletenessCompareContacts(
+    const CollectUserDataOptions& options,
+    const autofill::AutofillProfile& a,
+    const base::flat_map<field_formatter::Key, std::string>& data_a,
+    const autofill::AutofillProfile& b,
+    const base::flat_map<field_formatter::Key, std::string>& data_b) {
   int incomplete_fields_a =
-      GetValidationErrors(
-          field_formatter::CreateAutofillMappings(a, kDefaultLocale),
-          options.required_contact_data_pieces)
-          .size();
+      GetValidationErrors(data_a, options.required_contact_data_pieces).size();
   int incomplete_fields_b =
-      GetValidationErrors(
-          field_formatter::CreateAutofillMappings(b, kDefaultLocale),
-          options.required_contact_data_pieces)
-          .size();
+      GetValidationErrors(data_b, options.required_contact_data_pieces).size();
   if (incomplete_fields_a != incomplete_fields_b) {
     return incomplete_fields_a <= incomplete_fields_b;
   }
@@ -157,7 +179,9 @@ int GetAddressEditorCompletenessRating(
 int CompletenessCompareAddresses(
     const std::vector<RequiredDataPiece>& required_data_pieces,
     const autofill::AutofillProfile& a,
-    const autofill::AutofillProfile& b) {
+    const base::flat_map<field_formatter::Key, std::string>& data_a,
+    const autofill::AutofillProfile& b,
+    const base::flat_map<field_formatter::Key, std::string>& data_b) {
   // Compare by editor completeness first. This is done because the
   // AddressEditor only allows storing addresses it considers complete.
   int incomplete_fields_a = GetAddressEditorCompletenessRating(a);
@@ -167,26 +191,23 @@ int CompletenessCompareAddresses(
   }
 
   incomplete_fields_a =
-      GetValidationErrors(
-          field_formatter::CreateAutofillMappings(a, kDefaultLocale),
-          required_data_pieces)
-          .size();
+      GetValidationErrors(data_a, required_data_pieces).size();
   incomplete_fields_b =
-      GetValidationErrors(
-          field_formatter::CreateAutofillMappings(b, kDefaultLocale),
-          required_data_pieces)
-          .size();
+      GetValidationErrors(data_b, required_data_pieces).size();
   return incomplete_fields_b - incomplete_fields_a;
 }
 
 // Helper function that compares instances of AutofillProfile by completeness
 // in regards to the current options. Full profiles should be ordered before
 // empty ones and fall back to compare the profile's name in case of equality.
-bool CompletenessCompareShippingAddresses(const CollectUserDataOptions& options,
-                                          const autofill::AutofillProfile& a,
-                                          const autofill::AutofillProfile& b) {
+bool CompletenessCompareShippingAddresses(
+    const CollectUserDataOptions& options,
+    const autofill::AutofillProfile& a,
+    const base::flat_map<field_formatter::Key, std::string>& data_a,
+    const autofill::AutofillProfile& b,
+    const base::flat_map<field_formatter::Key, std::string>& data_b) {
   int address_compare = CompletenessCompareAddresses(
-      options.required_shipping_address_data_pieces, a, b);
+      options.required_shipping_address_data_pieces, a, data_a, b, data_b);
   if (address_compare != 0) {
     return address_compare > 0;
   }
@@ -201,18 +222,16 @@ bool CompletenessCompareShippingAddresses(const CollectUserDataOptions& options,
 bool CompletenessComparePaymentInstruments(
     const CollectUserDataOptions& options,
     const PaymentInstrument& a,
-    const PaymentInstrument& b) {
+    const base::flat_map<field_formatter::Key, std::string>& data_a,
+    const PaymentInstrument& b,
+    const base::flat_map<field_formatter::Key, std::string>& data_b) {
   DCHECK(a.card);
   DCHECK(b.card);
   int incomplete_fields_a =
-      GetValidationErrors(
-          field_formatter::CreateAutofillMappings(*a.card, kDefaultLocale),
-          options.required_credit_card_data_pieces)
+      GetValidationErrors(data_a, options.required_credit_card_data_pieces)
           .size();
   int incomplete_fields_b =
-      GetValidationErrors(
-          field_formatter::CreateAutofillMappings(*b.card, kDefaultLocale),
-          options.required_credit_card_data_pieces)
+      GetValidationErrors(data_b, options.required_credit_card_data_pieces)
           .size();
   if (incomplete_fields_a != incomplete_fields_b) {
     return incomplete_fields_a <= incomplete_fields_b;
@@ -246,7 +265,7 @@ bool CompletenessComparePaymentInstruments(
   if (a_has_address && b_has_address) {
     int address_compare = CompletenessCompareAddresses(
         options.required_billing_address_data_pieces, *a.billing_address,
-        *b.billing_address);
+        data_a, *b.billing_address, data_b);
     if (address_compare != 0) {
       return address_compare > 0;
     }
@@ -256,7 +275,6 @@ bool CompletenessComparePaymentInstruments(
 }
 
 }  // namespace
-namespace user_data {
 
 std::vector<std::string> GetContactValidationErrors(
     const autofill::AutofillProfile* profile,
@@ -268,35 +286,42 @@ std::vector<std::string> GetContactValidationErrors(
   return GetValidationErrors(
       profile
           ? field_formatter::CreateAutofillMappings(*profile, kDefaultLocale)
-          : std::map<std::string, std::string>(),
+          : base::flat_map<field_formatter::Key, std::string>(),
       collect_user_data_options.required_contact_data_pieces);
 }
 
 std::vector<int> SortContactsByCompleteness(
     const CollectUserDataOptions& collect_user_data_options,
-    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles) {
-  std::vector<int> profile_indices(profiles.size());
-  std::iota(std::begin(profile_indices), std::end(profile_indices), 0);
-  std::stable_sort(profile_indices.begin(), profile_indices.end(),
-                   [&collect_user_data_options, &profiles](int i, int j) {
-                     return CompletenessCompareContacts(
-                         collect_user_data_options, *profiles[i], *profiles[j]);
-                   });
-  return profile_indices;
+    const std::vector<std::unique_ptr<Contact>>& contacts) {
+  std::vector<base::flat_map<field_formatter::Key, std::string>>
+      mapped_contacts;
+  for (const auto& contact : contacts) {
+    mapped_contacts.push_back(field_formatter::CreateAutofillMappings(
+        *contact->profile, kDefaultLocale));
+  }
+  std::vector<int> indices(contacts.size());
+  std::iota(std::begin(indices), std::end(indices), 0);
+  std::stable_sort(
+      indices.begin(), indices.end(),
+      [&collect_user_data_options, &contacts, &mapped_contacts](int i, int j) {
+        return CompletenessCompareContacts(
+            collect_user_data_options, *contacts[i]->profile,
+            mapped_contacts[i], *contacts[j]->profile, mapped_contacts[j]);
+      });
+  return indices;
 }
 
-int GetDefaultContactProfile(
-    const CollectUserDataOptions& collect_user_data_options,
-    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles) {
-  if (profiles.empty()) {
+int GetDefaultContact(const CollectUserDataOptions& collect_user_data_options,
+                      const std::vector<std::unique_ptr<Contact>>& contacts) {
+  if (contacts.empty()) {
     return -1;
   }
   auto sorted_indices =
-      SortContactsByCompleteness(collect_user_data_options, profiles);
+      SortContactsByCompleteness(collect_user_data_options, contacts);
   if (!collect_user_data_options.default_email.empty()) {
     for (int index : sorted_indices) {
       if (base::UTF16ToUTF8(
-              profiles[index]->GetRawInfo(autofill::EMAIL_ADDRESS)) ==
+              contacts[index]->profile->GetRawInfo(autofill::EMAIL_ADDRESS)) ==
           collect_user_data_options.default_email) {
         return index;
       }
@@ -318,7 +343,7 @@ std::vector<std::string> GetShippingAddressValidationErrors(
     errors = GetValidationErrors(
         profile
             ? field_formatter::CreateAutofillMappings(*profile, kDefaultLocale)
-            : std::map<std::string, std::string>(),
+            : base::flat_map<field_formatter::Key, std::string>(),
         collect_user_data_options.required_shipping_address_data_pieces);
   }
 
@@ -336,25 +361,34 @@ std::vector<std::string> GetShippingAddressValidationErrors(
 
 std::vector<int> SortShippingAddressesByCompleteness(
     const CollectUserDataOptions& collect_user_data_options,
-    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles) {
-  std::vector<int> profile_indices(profiles.size());
-  std::iota(std::begin(profile_indices), std::end(profile_indices), 0);
-  std::stable_sort(profile_indices.begin(), profile_indices.end(),
-                   [&collect_user_data_options, &profiles](int i, int j) {
+    const std::vector<std::unique_ptr<Address>>& addresses) {
+  std::vector<base::flat_map<field_formatter::Key, std::string>>
+      mapped_addresses;
+  for (const auto& address : addresses) {
+    mapped_addresses.push_back(field_formatter::CreateAutofillMappings(
+        *address->profile, kDefaultLocale));
+  }
+  std::vector<int> indices(addresses.size());
+  std::iota(std::begin(indices), std::end(indices), 0);
+  std::stable_sort(indices.begin(), indices.end(),
+                   [&collect_user_data_options, &addresses, &mapped_addresses](
+                       int i, int j) {
                      return CompletenessCompareShippingAddresses(
-                         collect_user_data_options, *profiles[i], *profiles[j]);
+                         collect_user_data_options, *addresses[i]->profile,
+                         mapped_addresses[i], *addresses[j]->profile,
+                         mapped_addresses[j]);
                    });
-  return profile_indices;
+  return indices;
 }
 
-int GetDefaultShippingAddressProfile(
+int GetDefaultShippingAddress(
     const CollectUserDataOptions& collect_user_data_options,
-    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles) {
-  if (profiles.empty()) {
+    const std::vector<std::unique_ptr<Address>>& addresses) {
+  if (addresses.empty()) {
     return -1;
   }
   auto sorted_indices =
-      SortShippingAddressesByCompleteness(collect_user_data_options, profiles);
+      SortShippingAddressesByCompleteness(collect_user_data_options, addresses);
   return sorted_indices[0];
 }
 
@@ -371,7 +405,7 @@ std::vector<std::string> GetPaymentInstrumentValidationErrors(
     const auto& card_errors = GetValidationErrors(
         credit_card ? field_formatter::CreateAutofillMappings(*credit_card,
                                                               kDefaultLocale)
-                    : std::map<std::string, std::string>(),
+                    : base::flat_map<field_formatter::Key, std::string>(),
         collect_user_data_options.required_credit_card_data_pieces);
     errors.insert(errors.end(), card_errors.begin(), card_errors.end());
   }
@@ -383,7 +417,7 @@ std::vector<std::string> GetPaymentInstrumentValidationErrors(
     const auto& address_errors = GetValidationErrors(
         billing_address ? field_formatter::CreateAutofillMappings(
                               *billing_address, kDefaultLocale)
-                        : std::map<std::string, std::string>(),
+                        : base::flat_map<field_formatter::Key, std::string>(),
         collect_user_data_options.required_billing_address_data_pieces);
     errors.insert(errors.end(), address_errors.begin(), address_errors.end());
   }
@@ -401,8 +435,7 @@ std::vector<std::string> GetPaymentInstrumentValidationErrors(
       // incomplete until decrypted.
       errors.push_back(l10n_util::GetStringUTF8(
           IDS_AUTOFILL_ASSISTANT_PAYMENT_INFORMATION_MISSING));
-    } else if (!credit_card || !billing_address ||
-               credit_card->billing_address_id().empty() ||
+    } else if (!billing_address ||
                GetAddressEditorCompletenessRating(*billing_address) != 0) {
       errors.push_back(l10n_util::GetStringUTF8(
           IDS_AUTOFILL_ASSISTANT_PAYMENT_INFORMATION_MISSING));
@@ -416,16 +449,33 @@ std::vector<int> SortPaymentInstrumentsByCompleteness(
     const CollectUserDataOptions& collect_user_data_options,
     const std::vector<std::unique_ptr<PaymentInstrument>>&
         payment_instruments) {
+  std::vector<base::flat_map<field_formatter::Key, std::string>>
+      mapped_payment_instruments;
+  for (const auto& payment_instrument : payment_instruments) {
+    base::flat_map<field_formatter::Key, std::string>
+        mapped_payment_instrument = field_formatter::CreateAutofillMappings(
+            *payment_instrument->card, kDefaultLocale);
+    if (payment_instrument->billing_address != nullptr) {
+      base::flat_map<field_formatter::Key, std::string> mapped_address =
+          field_formatter::CreateAutofillMappings(
+              *payment_instrument->billing_address, kDefaultLocale);
+      mapped_payment_instrument.insert(mapped_address.begin(),
+                                       mapped_address.end());
+    }
+    mapped_payment_instruments.push_back(mapped_payment_instrument);
+  }
   std::vector<int> payment_instrument_indices(payment_instruments.size());
   std::iota(std::begin(payment_instrument_indices),
             std::end(payment_instrument_indices), 0);
-  std::stable_sort(
-      payment_instrument_indices.begin(), payment_instrument_indices.end(),
-      [&collect_user_data_options, &payment_instruments](int a, int b) {
-        return CompletenessComparePaymentInstruments(collect_user_data_options,
-                                                     *payment_instruments[a],
-                                                     *payment_instruments[b]);
-      });
+  std::stable_sort(payment_instrument_indices.begin(),
+                   payment_instrument_indices.end(),
+                   [&collect_user_data_options, &payment_instruments,
+                    &mapped_payment_instruments](int a, int b) {
+                     return CompletenessComparePaymentInstruments(
+                         collect_user_data_options, *payment_instruments[a],
+                         mapped_payment_instruments[a], *payment_instruments[b],
+                         mapped_payment_instruments[b]);
+                   });
   return payment_instrument_indices;
 }
 
@@ -481,23 +531,23 @@ bool CompareContactDetails(
   return true;
 }
 
-ClientStatus GetFormattedAutofillValue(const AutofillValue& autofill_value,
-                                       const UserData* user_data,
-                                       std::string* out_value) {
-  return ExtractDataAndFormatAutofillValue(
+ClientStatus GetFormattedClientValue(const AutofillValue& autofill_value,
+                                     const UserData& user_data,
+                                     std::string* out_value) {
+  return ExtractDataAndFormatClientValue(
       autofill_value, autofill_value.value_expression(), user_data,
-      /* quote_meta= */ false, out_value);
+      /* quote_meta= */ false, autofill_value.locale(), out_value);
 }
 
-ClientStatus GetFormattedAutofillValue(
+ClientStatus GetFormattedClientValue(
     const AutofillValueRegexp& autofill_value_regexp,
-    const UserData* user_data,
+    const UserData& user_data,
     std::string* out_value) {
-  return ExtractDataAndFormatAutofillValue(
+  return ExtractDataAndFormatClientValue(
       autofill_value_regexp,
       autofill_value_regexp.value_expression_re2().value_expression(),
       user_data,
-      /* quote_meta= */ true, out_value);
+      /* quote_meta= */ true, autofill_value_regexp.locale(), out_value);
 }
 
 void GetPasswordManagerValue(
@@ -511,21 +561,23 @@ void GetPasswordManagerValue(
     std::move(callback).Run(ClientStatus(PRECONDITION_FAILED), std::string());
     return;
   }
-  if (!target_element.container_frame_host ||
-      !url_utils::IsSamePublicSuffixDomain(
-          target_element.container_frame_host->GetLastCommittedURL(),
-          user_data->selected_login_->origin)) {
+  if (!target_element.container_frame_host) {
     std::move(callback).Run(ClientStatus(PASSWORD_ORIGIN_MISMATCH),
                             std::string());
     return;
   }
 
   switch (password_manager_value.credential_type()) {
-    case PasswordManagerValue::PASSWORD:
+    case PasswordManagerValue::PASSWORD: {
+      auto login = *user_data->selected_login_;
+      // Origin check is done in PWM based on the
+      // |target_element.container_frame_host->GetLastCommittedURL()|
+      login.origin = target_element.container_frame_host->GetLastCommittedURL()
+                         .DeprecatedGetOriginAsURL();
       website_login_manager->GetPasswordForLogin(
-          *user_data->selected_login_,
-          base::BindOnce(&OnGetStoredPassword, std::move(callback)));
+          login, base::BindOnce(&OnGetStoredPassword, std::move(callback)));
       return;
+    }
     case PasswordManagerValue::USERNAME:
       std::move(callback).Run(OkClientStatus(),
                               user_data->selected_login_->username);
@@ -542,8 +594,8 @@ ClientStatus GetClientMemoryStringValue(const std::string& client_memory_key,
   if (client_memory_key.empty()) {
     return ClientStatus(INVALID_ACTION);
   }
-  if (!user_data->has_additional_value(client_memory_key) ||
-      user_data->additional_value(client_memory_key)
+  if (!user_data->HasAdditionalValue(client_memory_key) ||
+      user_data->GetAdditionalValue(client_memory_key)
               ->strings()
               .values()
               .size() != 1) {
@@ -552,7 +604,7 @@ ClientStatus GetClientMemoryStringValue(const std::string& client_memory_key,
     return ClientStatus(PRECONDITION_FAILED);
   }
   out_value->assign(
-      user_data->additional_value(client_memory_key)->strings().values(0));
+      user_data->GetAdditionalValue(client_memory_key)->strings().values(0));
   return OkClientStatus();
 }
 
@@ -568,8 +620,8 @@ void ResolveTextValue(const TextValue& text_value,
       value = text_value.text();
       break;
     case TextValue::kAutofillValue: {
-      status = GetFormattedAutofillValue(
-          text_value.autofill_value(), action_delegate->GetUserData(), &value);
+      status = GetFormattedClientValue(text_value.autofill_value(),
+                                       *action_delegate->GetUserData(), &value);
       break;
     }
     case TextValue::kPasswordManagerValue: {

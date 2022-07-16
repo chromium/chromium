@@ -19,12 +19,6 @@
 #include "net/socket/client_socket_pool_manager.h"
 #include "net/socket/connect_job.h"
 
-namespace base {
-namespace trace_event {
-class ProcessMemoryDump;
-}
-}
-
 namespace net {
 
 class ProxyServer;
@@ -40,6 +34,11 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManagerImpl
       const CommonConnectJobParams& common_connect_job_params,
       const CommonConnectJobParams& websocket_common_connect_job_params,
       HttpNetworkSession::SocketPoolType pool_type);
+
+  ClientSocketPoolManagerImpl(const ClientSocketPoolManagerImpl&) = delete;
+  ClientSocketPoolManagerImpl& operator=(const ClientSocketPoolManagerImpl&) =
+      delete;
+
   ~ClientSocketPoolManagerImpl() override;
 
   void FlushSocketPoolsWithError(int net_error,
@@ -50,10 +49,6 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManagerImpl
 
   // Creates a Value summary of the state of the socket pools.
   std::unique_ptr<base::Value> SocketPoolInfoToValue() const override;
-
-  void DumpMemoryStats(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const std::string& parent_dump_absolute_name) const override;
 
  private:
   using SocketPoolMap =
@@ -68,8 +63,6 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManagerImpl
   SocketPoolMap socket_pools_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ClientSocketPoolManagerImpl);
 };
 
 }  // namespace net

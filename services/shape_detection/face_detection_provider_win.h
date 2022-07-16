@@ -24,6 +24,10 @@ class FaceDetectionProviderWin
     : public shape_detection::mojom::FaceDetectionProvider {
  public:
   FaceDetectionProviderWin();
+
+  FaceDetectionProviderWin(const FaceDetectionProviderWin&) = delete;
+  FaceDetectionProviderWin& operator=(const FaceDetectionProviderWin&) = delete;
+
   ~FaceDetectionProviderWin() override;
 
   static void Create(
@@ -48,8 +52,6 @@ class FaceDetectionProviderWin
 
   mojo::SelfOwnedReceiverRef<mojom::FaceDetectionProvider> receiver_;
   base::WeakPtrFactory<FaceDetectionProviderWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FaceDetectionProviderWin);
 };
 
 }  // namespace shape_detection

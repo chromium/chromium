@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/gtk/gtk.gni")
 import("//build/lacros/lacros_resource_sizes.gni")
+import("//chromeos/tast_control.gni")
 
 if (is_chromeos_device) {
   import("//build/config/chromeos/rules.gni")
@@ -23,6 +24,7 @@ component("lacros") {
     "//chromeos/crosapi/mojom",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/init",
+    "//chromeos/dbus/missive",
     "//chromeos/dbus/permission_broker",
     "//chromeos/process_proxy",
     "//chromeos/startup",
@@ -31,15 +33,14 @@ component("lacros") {
     "//ui/native_theme",
   ]
   sources = [
-    "lacros_chrome_service_impl.cc",
-    "lacros_chrome_service_impl.h",
-    "lacros_chrome_service_impl_never_blocking_state.cc",
-    "lacros_chrome_service_impl_never_blocking_state.h",
     "lacros_dbus_helper.cc",
     "lacros_dbus_helper.h",
     "lacros_dbus_thread_manager.cc",
     "lacros_dbus_thread_manager.h",
+    "lacros_service.cc",
     "lacros_service.h",
+    "lacros_service_never_blocking_state.cc",
+    "lacros_service_never_blocking_state.h",
     "native_theme_cache.cc",
     "native_theme_cache.h",
     "system_idle_cache.cc",
@@ -70,6 +71,11 @@ if (is_chromeos_device) {
     # below for more details:
     # https://chromium.googlesource.com/chromiumos/platform/tast/+/main/docs/test_attributes.md
     tast_attr_expr = "\"group:mainline\" && \"dep:lacros\" && !informational"
+
+    # To disable a specific test, add it to the
+    # tast_disabled_tests_from_lacros_all list in "tast_control.gni" and cite
+    # a bug.
+    tast_disabled_tests = tast_disabled_tests_from_lacros_all
   }
 
   lacros_tast_tests("lacros_fyi_tast_tests") {

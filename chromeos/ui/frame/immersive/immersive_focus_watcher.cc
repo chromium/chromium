@@ -67,6 +67,10 @@ bool IsWindowTransientChildOf(aura::Window* maybe_transient,
 class ImmersiveFocusWatcher::BubbleObserver : public aura::WindowObserver {
  public:
   explicit BubbleObserver(ImmersiveFullscreenController* controller);
+
+  BubbleObserver(const BubbleObserver&) = delete;
+  BubbleObserver& operator=(const BubbleObserver&) = delete;
+
   ~BubbleObserver() override;
 
   // Start / stop observing changes to |bubble|'s visibility.
@@ -88,8 +92,6 @@ class ImmersiveFocusWatcher::BubbleObserver : public aura::WindowObserver {
   // Lock which keeps the top-of-window views revealed based on whether any of
   // |bubbles_| is visible.
   std::unique_ptr<ImmersiveRevealedLock> revealed_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleObserver);
 };
 
 ImmersiveFocusWatcher::BubbleObserver::BubbleObserver(

@@ -14,9 +14,8 @@
 #include "base/metrics/histogram_delta_serialization.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_restrictions.h"
 #include "content/browser/metrics/histogram_controller.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -26,7 +25,6 @@
 namespace content {
 
 using base::Time;
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace {
@@ -117,18 +115,10 @@ class HistogramSynchronizer::RequestContext {
 
     RequestContext* request = it->second;
     DCHECK_EQ(sequence_number, request->sequence_number_);
-    bool received_process_group_count = request->received_process_group_count_;
-    int unresponsive_processes = request->processes_pending_;
-
     std::move(request->callback_).Run();
 
     delete request;
     outstanding_requests_.Get().erase(it);
-
-    UMA_HISTOGRAM_BOOLEAN("Histogram.ReceivedProcessGroupCount",
-                          received_process_group_count);
-    UMA_HISTOGRAM_COUNTS_1M("Histogram.PendingProcessNotResponding",
-                            unresponsive_processes);
   }
 
   // Delete all the entries in |outstanding_requests_| map.
@@ -200,7 +190,7 @@ void HistogramSynchronizer::FetchHistograms() {
     return;
 
   current_synchronizer->RegisterAndNotifyAllProcesses(
-      HistogramSynchronizer::UNKNOWN, base::TimeDelta::FromMinutes(1));
+      HistogramSynchronizer::UNKNOWN, base::Minutes(1));
 }
 
 void FetchHistogramsAsynchronously(scoped_refptr<base::TaskRunner> task_runner,

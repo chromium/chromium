@@ -7,9 +7,9 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/util/memory_pressure/memory_pressure_voter.h"
-#include "base/util/memory_pressure/system_memory_pressure_evaluator.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
+#include "components/memory_pressure/memory_pressure_voter.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
 namespace chromeos {
 namespace memory {
@@ -21,11 +21,11 @@ namespace memory {
 // MemoryPressureListener of memory fill level changes, so that it can take
 // action to reduce memory resources accordingly.
 class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
-    : public util::SystemMemoryPressureEvaluator,
+    : public memory_pressure::SystemMemoryPressureEvaluator,
       public chromeos::ResourcedClient::Observer {
  public:
   explicit SystemMemoryPressureEvaluator(
-      std::unique_ptr<util::MemoryPressureVoter> voter);
+      std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);
   ~SystemMemoryPressureEvaluator() override;
 
   SystemMemoryPressureEvaluator(const SystemMemoryPressureEvaluator&) = delete;
@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
   // This constructor is only used for testing.
   SystemMemoryPressureEvaluator(
       bool for_testing,
-      std::unique_ptr<util::MemoryPressureVoter> voter);
+      std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);
 
   // Implements ResourcedClient::Observer, protected for testing.
   void OnMemoryPressure(chromeos::ResourcedClient::PressureLevel level,

@@ -226,12 +226,12 @@ TEST_F(ScriptPromiseResolverTest, keepAliveUntilResolved) {
   }
   resolver->KeepAliveWhilePending();
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
   ASSERT_TRUE(ScriptPromiseResolverKeepAlive::IsAlive());
 
   resolver->Resolve("hello");
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
   EXPECT_FALSE(ScriptPromiseResolverKeepAlive::IsAlive());
 }
 
@@ -245,12 +245,12 @@ TEST_F(ScriptPromiseResolverTest, keepAliveUntilRejected) {
   }
   resolver->KeepAliveWhilePending();
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
   ASSERT_TRUE(ScriptPromiseResolverKeepAlive::IsAlive());
 
   resolver->Reject("hello");
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
   EXPECT_FALSE(ScriptPromiseResolverKeepAlive::IsAlive());
 }
 
@@ -268,14 +268,14 @@ TEST_F(ScriptPromiseResolverTest, keepAliveWhileScriptForbidden) {
     resolver->Resolve("hello");
 
     ThreadState::Current()->CollectAllGarbageForTesting(
-        BlinkGC::kNoHeapPointersOnStack);
+        ThreadState::StackState::kNoHeapPointers);
     EXPECT_TRUE(ScriptPromiseResolverKeepAlive::IsAlive());
   }
 
   base::RunLoop().RunUntilIdle();
 
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
   EXPECT_FALSE(ScriptPromiseResolverKeepAlive::IsAlive());
 }
 
@@ -289,12 +289,12 @@ TEST_F(ScriptPromiseResolverTest, keepAliveUntilStopped) {
   }
   resolver->KeepAliveWhilePending();
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
   EXPECT_TRUE(ScriptPromiseResolverKeepAlive::IsAlive());
 
   GetExecutionContext()->NotifyContextDestroyed();
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
   EXPECT_FALSE(ScriptPromiseResolverKeepAlive::IsAlive());
 }
 
@@ -308,18 +308,18 @@ TEST_F(ScriptPromiseResolverTest, suspend) {
   }
   resolver->KeepAliveWhilePending();
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
   ASSERT_TRUE(ScriptPromiseResolverKeepAlive::IsAlive());
 
   page_holder_->GetPage().SetPaused(true);
   resolver->Resolve("hello");
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
   EXPECT_TRUE(ScriptPromiseResolverKeepAlive::IsAlive());
 
   GetExecutionContext()->NotifyContextDestroyed();
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
   EXPECT_FALSE(ScriptPromiseResolverKeepAlive::IsAlive());
 }
 

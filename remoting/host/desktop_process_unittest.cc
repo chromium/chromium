@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -15,7 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
@@ -30,6 +31,8 @@
 #include "remoting/host/fake_mouse_cursor_monitor.h"
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/host_mock_objects.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
+#include "remoting/host/remote_open_url/fake_url_forwarder_configurator.h"
 #include "remoting/host/screen_resolution.h"
 #include "remoting/protocol/fake_desktop_capturer.h"
 #include "remoting/protocol/protocol_mock_objects.h"
@@ -39,6 +42,7 @@
 using testing::_;
 using testing::AnyNumber;
 using testing::AtMost;
+using testing::ByMove;
 using testing::InSequence;
 using testing::Return;
 
@@ -46,47 +50,70 @@ namespace remoting {
 
 namespace {
 
-class MockDaemonListener : public IPC::Listener {
+class MockDaemonListener : public IPC::Listener,
+                           public mojom::DesktopSessionRequestHandler {
  public:
   MockDaemonListener() = default;
+
+  MockDaemonListener(const MockDaemonListener&) = delete;
+  MockDaemonListener& operator=(const MockDaemonListener&) = delete;
+
   ~MockDaemonListener() override = default;
 
   bool OnMessageReceived(const IPC::Message& message) override;
+  void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) override;
 
-  MOCK_METHOD1(OnDesktopAttached, void(const IPC::ChannelHandle&));
-  MOCK_METHOD1(OnChannelConnected, void(int32_t));
-  MOCK_METHOD0(OnChannelError, void());
+  MOCK_METHOD(void,
+              ConnectDesktopChannel,
+              (mojo::ScopedMessagePipeHandle handle),
+              (override));
+  MOCK_METHOD(void, InjectSecureAttentionSequence, (), (override));
+  MOCK_METHOD(void, CrashNetworkProcess, (), (override));
+  MOCK_METHOD(void, OnChannelConnected, (int32_t), (override));
+  MOCK_METHOD(void, OnChannelError, (), (override));
+
+  void Disconnect();
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(MockDaemonListener);
+  mojo::AssociatedReceiver<mojom::DesktopSessionRequestHandler>
+      desktop_session_request_handler_{this};
 };
 
 class MockNetworkListener : public IPC::Listener {
  public:
   MockNetworkListener() = default;
+
+  MockNetworkListener(const MockNetworkListener&) = delete;
+  MockNetworkListener& operator=(const MockNetworkListener&) = delete;
+
   ~MockNetworkListener() override = default;
 
   bool OnMessageReceived(const IPC::Message& message) override;
 
-  MOCK_METHOD1(OnChannelConnected, void(int32_t));
-  MOCK_METHOD0(OnChannelError, void());
+  MOCK_METHOD(void, OnChannelConnected, (int32_t), (override));
+  MOCK_METHOD(void, OnChannelError, (), (override));
 
   MOCK_METHOD0(OnDesktopEnvironmentCreated, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNetworkListener);
 };
 
 bool MockDaemonListener::OnMessageReceived(const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(MockDaemonListener, message)
-    IPC_MESSAGE_HANDLER(ChromotingDesktopDaemonMsg_DesktopAttached,
-                        OnDesktopAttached)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
+  ADD_FAILURE() << "Unexpected call to OnMessageReceived()";
+  return false;
+}
 
-  EXPECT_TRUE(handled);
-  return handled;
+void MockDaemonListener::OnAssociatedInterfaceRequest(
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  EXPECT_EQ(mojom::DesktopSessionRequestHandler::Name_, interface_name);
+  mojo::PendingAssociatedReceiver<mojom::DesktopSessionRequestHandler>
+      pending_receiver(std::move(handle));
+  desktop_session_request_handler_.Bind(std::move(pending_receiver));
+}
+
+void MockDaemonListener::Disconnect() {
+  desktop_session_request_handler_.reset();
 }
 
 bool MockNetworkListener::OnMessageReceived(const IPC::Message& message) {
@@ -105,9 +132,9 @@ class DesktopProcessTest : public testing::Test {
   DesktopProcessTest();
   ~DesktopProcessTest() override;
 
-  // MockDaemonListener mocks
-  void ConnectNetworkChannel(const IPC::ChannelHandle& desktop_process);
-  void OnDesktopAttached(const IPC::ChannelHandle& desktop_process);
+  // Methods invoked when MockDaemonListener::ConnectDesktopChannel is called.
+  void CreateNetworkChannel(mojo::ScopedMessagePipeHandle desktop_pipe);
+  void StoreDesktopHandle(mojo::ScopedMessagePipeHandle desktop_pipe);
 
   // Creates a DesktopEnvironment with a fake webrtc::DesktopCapturer, to mock
   // DesktopEnvironmentFactory::Create().
@@ -156,6 +183,9 @@ class DesktopProcessTest : public testing::Test {
   // Delegate that is passed to |daemon_channel_|.
   MockDaemonListener daemon_listener_;
 
+  mojo::AssociatedRemote<mojom::DesktopSessionRequestHandler>
+      desktop_session_request_handler_;
+
   // Runs the daemon's end of the channel.
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
@@ -168,23 +198,23 @@ class DesktopProcessTest : public testing::Test {
   // Delegate that is passed to |network_channel_|.
   MockNetworkListener network_listener_;
 
-  mojo::ScopedMessagePipeHandle desktop_process_channel_;
+  mojo::ScopedMessagePipeHandle desktop_pipe_handle_;
 };
 
 DesktopProcessTest::DesktopProcessTest() = default;
 
 DesktopProcessTest::~DesktopProcessTest() = default;
 
-void DesktopProcessTest::ConnectNetworkChannel(
-    const IPC::ChannelHandle& channel_handle) {
+void DesktopProcessTest::CreateNetworkChannel(
+    mojo::ScopedMessagePipeHandle desktop_pipe) {
   network_channel_ = IPC::ChannelProxy::Create(
-      channel_handle, IPC::Channel::MODE_CLIENT, &network_listener_,
+      desktop_pipe.release(), IPC::Channel::MODE_CLIENT, &network_listener_,
       io_task_runner_.get(), base::ThreadTaskRunnerHandle::Get());
 }
 
-void DesktopProcessTest::OnDesktopAttached(
-    const IPC::ChannelHandle& desktop_process) {
-  desktop_process_channel_.reset(desktop_process.mojo_handle);
+void DesktopProcessTest::StoreDesktopHandle(
+    mojo::ScopedMessagePipeHandle desktop_pipe) {
+  desktop_pipe_handle_ = std::move(desktop_pipe);
 }
 
 DesktopEnvironment* DesktopProcessTest::CreateDesktopEnvironment() {
@@ -194,6 +224,7 @@ DesktopEnvironment* DesktopProcessTest::CreateDesktopEnvironment() {
   EXPECT_CALL(*desktop_environment, CreateInputInjectorPtr())
       .Times(AtMost(1))
       .WillOnce(Invoke(this, &DesktopProcessTest::CreateInputInjector));
+  EXPECT_CALL(*desktop_environment, CreateActionExecutorPtr()).Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, CreateScreenControlsPtr())
       .Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, CreateVideoCapturerPtr())
@@ -205,6 +236,11 @@ DesktopEnvironment* DesktopProcessTest::CreateDesktopEnvironment() {
   EXPECT_CALL(*desktop_environment, CreateKeyboardLayoutMonitorPtr(_))
       .Times(AtMost(1))
       .WillOnce(Invoke(this, &DesktopProcessTest::CreateKeyboardLayoutMonitor));
+  EXPECT_CALL(*desktop_environment, CreateUrlForwarderConfigurator())
+      .Times(AtMost(1))
+      .WillOnce(
+          Return(ByMove(std::make_unique<FakeUrlForwarderConfigurator>())));
+  EXPECT_CALL(*desktop_environment, CreateFileOperationsPtr()).Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, GetCapabilities())
       .Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, SetCapabilities(_))
@@ -236,6 +272,9 @@ KeyboardLayoutMonitor* DesktopProcessTest::CreateKeyboardLayoutMonitor(
 
 void DesktopProcessTest::DisconnectChannels() {
   daemon_channel_.reset();
+  desktop_pipe_handle_.reset();
+  daemon_listener_.Disconnect();
+
   network_channel_.reset();
   io_task_runner_ = nullptr;
 }
@@ -285,10 +324,11 @@ void DesktopProcessTest::RunDesktopProcess() {
 void DesktopProcessTest::RunDeathTest() {
   InSequence s;
   EXPECT_CALL(daemon_listener_, OnChannelConnected(_));
-  EXPECT_CALL(daemon_listener_, OnDesktopAttached(_))
-      .WillOnce(DoAll(
-          Invoke(this, &DesktopProcessTest::OnDesktopAttached),
-          InvokeWithoutArgs(this, &DesktopProcessTest::SendCrashRequest)));
+  EXPECT_CALL(daemon_listener_, ConnectDesktopChannel(_))
+      .WillOnce([&](mojo::ScopedMessagePipeHandle desktop_pipe) {
+        StoreDesktopHandle(std::move(desktop_pipe));
+        SendCrashRequest();
+      });
 
   RunDesktopProcess();
 }
@@ -305,24 +345,27 @@ void DesktopProcessTest::SendStartSessionAgent() {
       DesktopEnvironmentOptions()));
 }
 
-// Launches the desktop process and waits when it connects back.
+// Launches the desktop process and then disconnects immediately.
 TEST_F(DesktopProcessTest, Basic) {
   InSequence s;
   EXPECT_CALL(daemon_listener_, OnChannelConnected(_));
-  EXPECT_CALL(daemon_listener_, OnDesktopAttached(_))
-      .WillOnce(DoAll(
-          Invoke(this, &DesktopProcessTest::OnDesktopAttached),
-          InvokeWithoutArgs(this, &DesktopProcessTest::DisconnectChannels)));
+  EXPECT_CALL(daemon_listener_, ConnectDesktopChannel(_))
+      .WillOnce([&](mojo::ScopedMessagePipeHandle desktop_pipe) {
+        StoreDesktopHandle(std::move(desktop_pipe));
+        DisconnectChannels();
+      });
 
   RunDesktopProcess();
 }
 
-// Launches the desktop process and waits when it connects back.
-TEST_F(DesktopProcessTest, ConnectNetworkChannel) {
+// Launches the desktop process and waits until the IPC channel is established.
+TEST_F(DesktopProcessTest, CreateNetworkChannel) {
   InSequence s;
   EXPECT_CALL(daemon_listener_, OnChannelConnected(_));
-  EXPECT_CALL(daemon_listener_, OnDesktopAttached(_))
-      .WillOnce(Invoke(this, &DesktopProcessTest::ConnectNetworkChannel));
+  EXPECT_CALL(daemon_listener_, ConnectDesktopChannel(_))
+      .WillOnce([&](mojo::ScopedMessagePipeHandle desktop_pipe) {
+        CreateNetworkChannel(std::move(desktop_pipe));
+      });
   EXPECT_CALL(network_listener_, OnChannelConnected(_))
       .WillOnce(InvokeWithoutArgs(
           this, &DesktopProcessTest::DisconnectChannels));
@@ -330,14 +373,16 @@ TEST_F(DesktopProcessTest, ConnectNetworkChannel) {
   RunDesktopProcess();
 }
 
-// Launches the desktop process, waits when it connects back and starts
-// the desktop session agent.
+// Launches the desktop process, waits until the IPC channel is established,
+// then starts the desktop session agent.
 TEST_F(DesktopProcessTest, StartSessionAgent) {
   {
     InSequence s;
     EXPECT_CALL(daemon_listener_, OnChannelConnected(_));
-    EXPECT_CALL(daemon_listener_, OnDesktopAttached(_))
-        .WillOnce(Invoke(this, &DesktopProcessTest::ConnectNetworkChannel));
+    EXPECT_CALL(daemon_listener_, ConnectDesktopChannel(_))
+        .WillOnce([&](mojo::ScopedMessagePipeHandle desktop_pipe) {
+          CreateNetworkChannel(std::move(desktop_pipe));
+        });
     EXPECT_CALL(network_listener_, OnChannelConnected(_))
         .WillOnce(InvokeWithoutArgs(
             this, &DesktopProcessTest::SendStartSessionAgent));

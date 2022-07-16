@@ -38,16 +38,14 @@ constexpr int kElevation = 1;
 
 // The duration of each of the preview icon bounce animation.
 constexpr base::TimeDelta kBounceAnimationSegmentDuration =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 
 // The delay with which preview icon is dropped into the holding space tray
 // icon.
-constexpr base::TimeDelta kBounceAnimationBaseDelay =
-    base::TimeDelta::FromMilliseconds(150);
+constexpr base::TimeDelta kBounceAnimationBaseDelay = base::Milliseconds(150);
 
 // The duration of shift animation.
-constexpr base::TimeDelta kShiftAnimationDuration =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kShiftAnimationDuration = base::Milliseconds(250);
 
 // Helpers ---------------------------------------------------------------------
 

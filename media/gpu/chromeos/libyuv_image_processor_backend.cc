@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/checked_math.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/video_frame_mapper.h"
@@ -27,41 +28,52 @@ int NV12Rotate(uint8_t* tmp_buffer,
                int src_stride_y,
                const uint8_t* src_uv,
                int src_stride_uv,
-               int src_width,
-               int src_height,
                uint8_t* dst_y,
                int dst_stride_y,
                uint8_t* dst_uv,
                int dst_stride_uv,
-               int dst_width,
-               int dst_height,
+               int width,
+               int height,
                VideoRotation relative_rotation) {
   libyuv::RotationModeEnum rotation = libyuv::kRotate0;
+  int tmp_width = width;
+  int tmp_height = height;
   switch (relative_rotation) {
     case VIDEO_ROTATION_0:
       NOTREACHED() << "Unexpected rotation: " << rotation;
       return -1;
     case VIDEO_ROTATION_90:
       rotation = libyuv::kRotate90;
+      tmp_width = height;
+      tmp_height = width;
       break;
     case VIDEO_ROTATION_180:
       rotation = libyuv::kRotate180;
+      tmp_width = width;
+      tmp_height = height;
       break;
     case VIDEO_ROTATION_270:
       rotation = libyuv::kRotate270;
+      tmp_width = height;
+      tmp_height = width;
       break;
   }
 
   // Rotating.
-  const int tmp_uv_width = (dst_width + 1) / 2;
-  const int tmp_uv_height = (dst_height + 1) / 2;
+  int tmp_uv_width = 0;
+  int tmp_uv_height = 0;
+  if (!(base::CheckAdd<int>(tmp_width, 1) / 2).AssignIfValid(&tmp_uv_width) ||
+      !(base::CheckAdd<int>(tmp_height, 1) / 2).AssignIfValid(&tmp_uv_height)) {
+    VLOGF(1) << "Overflow occurred for " << tmp_width << "x" << tmp_height;
+    return -1;
+  }
   uint8_t* const tmp_u = tmp_buffer;
   uint8_t* const tmp_v = tmp_u + tmp_uv_width * tmp_uv_height;
 
   // Rotate the NV12 planes to I420.
   int ret = libyuv::NV12ToI420Rotate(
       src_y, src_stride_y, src_uv, src_stride_uv, dst_y, dst_stride_y, tmp_u,
-      tmp_uv_width, tmp_v, tmp_uv_width, src_width, src_height, rotation);
+      tmp_uv_width, tmp_v, tmp_uv_width, width, height, rotation);
   if (ret != 0)
     return ret;
 
@@ -73,24 +85,50 @@ int NV12Rotate(uint8_t* tmp_buffer,
 
 enum class SupportResult {
   Supported,
-  SupportedWithPivot,
+  SupportedWithI420Pivot,
+  SupportedWithNV12Pivot,
   Unsupported,
 };
 
-SupportResult IsFormatSupported(Fourcc input_fourcc, Fourcc output_fourcc) {
+enum class Transform {
+  kConversion,
+  kScaling,
+  kRotation,
+};
+
+SupportResult IsConversionSupported(Fourcc input_fourcc,
+                                    Fourcc output_fourcc,
+                                    Transform transform) {
   static constexpr struct {
     uint32_t input;
     uint32_t output;
-    bool need_pivot;
+    Transform transform;
+    SupportResult support_result;
   } kSupportFormatConversionArray[] = {
+#define CONV(in, out, trans, result) \
+  {Fourcc::in, Fourcc::out, Transform::trans, SupportResult::result}
       // Conversion.
-      {Fourcc::AR24, Fourcc::NV12, false},
-      {Fourcc::YU12, Fourcc::NV12, false},
-      {Fourcc::YV12, Fourcc::NV12, false},
-      {Fourcc::AB24, Fourcc::NV12, true},
-      {Fourcc::XB24, Fourcc::NV12, true},
-      // Scaling or Rotating.
-      {Fourcc::NV12, Fourcc::NV12, true},
+      CONV(AB24, NV12, kConversion, SupportedWithI420Pivot),
+      CONV(AR24, NV12, kConversion, Supported),
+      CONV(NV12, NV12, kConversion, Supported),
+      CONV(XB24, NV12, kConversion, SupportedWithI420Pivot),
+      CONV(YM16, NV12, kConversion, Supported),
+      CONV(YM16, YU12, kConversion, Supported),
+      CONV(YU12, NV12, kConversion, Supported),
+      CONV(YU12, YU12, kConversion, Supported),
+      CONV(YUYV, NV12, kConversion, Supported),
+      CONV(YUYV, YU12, kConversion, Supported),
+      CONV(YV12, NV12, kConversion, Supported),
+      // Scaling.
+      CONV(NV12, NV12, kScaling, Supported),
+      CONV(YM16, NV12, kScaling, SupportedWithNV12Pivot),
+      CONV(YM16, YU12, kScaling, SupportedWithI420Pivot),
+      CONV(YU12, YU12, kScaling, Supported),
+      CONV(YUYV, NV12, kScaling, SupportedWithNV12Pivot),
+      CONV(YUYV, YU12, kScaling, SupportedWithI420Pivot),
+      // Rotating.
+      CONV(NV12, NV12, kRotation, SupportedWithI420Pivot),
+#undef CONV
   };
 
   const auto single_input_fourcc = input_fourcc.ToSinglePlanar();
@@ -111,9 +149,9 @@ SupportResult IsFormatSupported(Fourcc input_fourcc, Fourcc output_fourcc) {
       continue;
 
     if (single_input_fourcc == single_conv_input_fourcc &&
-        single_output_fourcc == single_conv_output_fourcc) {
-      return conv.need_pivot ? SupportResult::SupportedWithPivot
-                             : SupportResult::Supported;
+        single_output_fourcc == single_conv_output_fourcc &&
+        transform == conv.transform) {
+      return conv.support_result;
     }
   }
 
@@ -185,11 +223,36 @@ std::unique_ptr<ImageProcessorBackend> LibYUVImageProcessorBackend::Create(
     return nullptr;
   }
 
-  SupportResult res =
-      IsFormatSupported(input_config.fourcc, output_config.fourcc);
+  const gfx::Size& input_size = input_config.visible_rect.size();
+  const gfx::Size& output_size = output_config.visible_rect.size();
+  Transform transform = Transform::kConversion;
+  if (relative_rotation != VIDEO_ROTATION_0) {
+    transform = Transform::kRotation;
+    bool size_mismatch = false;
+    if (relative_rotation == VIDEO_ROTATION_180) {
+      size_mismatch = input_size.width() != output_size.width() ||
+                      input_size.height() != output_size.height();
+    } else {  // For VIDEO_ROTATION_90 and 270.
+      size_mismatch = input_size.width() != output_size.height() ||
+                      input_size.height() != output_size.width();
+    }
+    if (size_mismatch) {
+      VLOGF(1) << "input and output resolution mismatch: "
+               << "input=" << input_size.ToString()
+               << ", output=" << output_size.ToString();
+      return nullptr;
+    }
+  } else if (input_size.width() != output_size.width() ||
+             input_size.height() != output_size.height()) {
+    transform = Transform::kScaling;
+  }
+  SupportResult res = IsConversionSupported(input_config.fourcc,
+                                            output_config.fourcc, transform);
   if (res == SupportResult::Unsupported) {
-    VLOGF(2) << "Conversion from " << input_config.fourcc.ToString() << " to "
-             << output_config.fourcc.ToString() << " is not supported";
+    VLOGF(2) << "Conversion from " << input_size.ToString() << "/"
+             << input_config.fourcc.ToString() << " to "
+             << output_size.ToString() << "/" << output_config.fourcc.ToString()
+             << " with rotation " << relative_rotation << " is not supported";
     return nullptr;
   }
 
@@ -204,9 +267,12 @@ std::unique_ptr<ImageProcessorBackend> LibYUVImageProcessorBackend::Create(
   }
 
   scoped_refptr<VideoFrame> intermediate_frame;
-  if (res == SupportResult::SupportedWithPivot) {
+  if (res == SupportResult::SupportedWithI420Pivot ||
+      res == SupportResult::SupportedWithNV12Pivot) {
     intermediate_frame = VideoFrame::CreateFrame(
-        PIXEL_FORMAT_I420, input_config.visible_rect.size(),
+        res == SupportResult::SupportedWithI420Pivot ? PIXEL_FORMAT_I420
+                                                     : PIXEL_FORMAT_NV12,
+        input_config.visible_rect.size(),
         gfx::Rect(input_config.visible_rect.size()),
         input_config.visible_rect.size(), base::TimeDelta());
     if (!intermediate_frame) {
@@ -315,6 +381,9 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
   fr->visible_data(VideoFrame::kYPlane), fr->stride(VideoFrame::kYPlane), \
       fr->visible_data(VideoFrame::kUVPlane), fr->stride(VideoFrame::kUVPlane)
 
+#define YUY2_DATA(fr) \
+  fr->visible_data(VideoFrame::kYPlane), fr->stride(VideoFrame::kYPlane)
+
 #define RGB_DATA(fr) \
   fr->visible_data(VideoFrame::kARGBPlane), fr->stride(VideoFrame::kARGBPlane)
 
@@ -338,6 +407,7 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
         // There is no libyuv function to convert to RGBA to NV12. Therefore, we
         // convert RGBA to I420 tentatively and thereafter convert the tentative
         // one to NV12.
+        DCHECK_EQ(intermediate_frame_->format(), PIXEL_FORMAT_I420);
         int ret = LIBYUV_FUNC(ABGRToI420, RGB_DATA(input),
                               Y_U_V_DATA(intermediate_frame_));
         if (ret != 0)
@@ -349,15 +419,14 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
         // Rotation mode.
         if (relative_rotation_ != VIDEO_ROTATION_0) {
           // The size of |tmp_buffer| of NV12Rotate() should be
-          // output_visible_rect().GetArea() / 2, which used to store temporary
-          // U and V planes for I420 data. Although
+          // 2 * ceil(|output_visible_rect_.width()| / 2) *
+          // ceil(|output_visible_rect_.height()| / 2), which used to store
+          // temporary U and V planes for I420 data. Although
           // |intermediate_frame_->data(0)| is much larger than the required
           // size, we use the frame to simplify the code.
-          return NV12Rotate(
-              intermediate_frame_->data(0), Y_UV_DATA(input),
-              input->visible_rect().width(), input->visible_rect().height(),
-              Y_UV_DATA(output), output->visible_rect().width(),
-              output->visible_rect().height(), relative_rotation_);
+          return NV12Rotate(intermediate_frame_->data(0), Y_UV_DATA(input),
+                            Y_UV_DATA(output), input->visible_rect().width(),
+                            input->visible_rect().height(), relative_rotation_);
         }
         // Scaling mode.
         return libyuv::NV12Scale(
@@ -365,6 +434,93 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
             input->visible_rect().height(), Y_UV_DATA(output),
             output->visible_rect().width(), output->visible_rect().height(),
             libyuv::kFilterBilinear);
+
+      case PIXEL_FORMAT_YUY2:
+        if (input->visible_rect().size() == output->visible_rect().size()) {
+          return LIBYUV_FUNC(YUY2ToNV12, YUY2_DATA(input), Y_UV_DATA(output));
+        } else {
+          DCHECK_EQ(intermediate_frame_->format(), PIXEL_FORMAT_NV12);
+          int ret = libyuv::YUY2ToNV12(
+              YUY2_DATA(input), Y_UV_DATA(intermediate_frame_),
+              intermediate_frame_->visible_rect().width(),
+              intermediate_frame_->visible_rect().height());
+          if (ret != 0)
+            return ret;
+          return libyuv::NV12Scale(
+              Y_UV_DATA(intermediate_frame_),
+              intermediate_frame_->visible_rect().width(),
+              intermediate_frame_->visible_rect().height(), Y_UV_DATA(output),
+              output->visible_rect().width(), output->visible_rect().height(),
+              libyuv::kFilterBilinear);
+        }
+      case PIXEL_FORMAT_I422:
+        if (input->visible_rect().size() == output->visible_rect().size()) {
+          return LIBYUV_FUNC(I422ToNV21, Y_V_U_DATA(input), Y_UV_DATA(output));
+        } else {
+          DCHECK_EQ(intermediate_frame_->format(), PIXEL_FORMAT_NV12);
+          int ret = libyuv::I422ToNV21(
+              Y_V_U_DATA(input), Y_UV_DATA(intermediate_frame_),
+              intermediate_frame_->visible_rect().width(),
+              intermediate_frame_->visible_rect().height());
+          if (ret != 0)
+            return ret;
+          return libyuv::NV12Scale(
+              Y_UV_DATA(intermediate_frame_),
+              intermediate_frame_->visible_rect().width(),
+              intermediate_frame_->visible_rect().height(), Y_UV_DATA(output),
+              output->visible_rect().width(), output->visible_rect().height(),
+              libyuv::kFilterBilinear);
+        }
+      default:
+        VLOGF(1) << "Unexpected input format: " << input->format();
+        return -1;
+    }
+  }
+
+  if (output->format() == PIXEL_FORMAT_I420) {
+    switch (input->format()) {
+      case PIXEL_FORMAT_I420:
+        return libyuv::I420Scale(
+            Y_U_V_DATA(input), input->visible_rect().width(),
+            input->visible_rect().height(), Y_U_V_DATA(output),
+            output->visible_rect().width(), output->visible_rect().height(),
+            libyuv::kFilterBilinear);
+      case PIXEL_FORMAT_YUY2:
+        if (input->visible_rect().size() == output->visible_rect().size()) {
+          return LIBYUV_FUNC(YUY2ToI420, YUY2_DATA(input), Y_U_V_DATA(output));
+        } else {
+          DCHECK_EQ(intermediate_frame_->format(), PIXEL_FORMAT_I420);
+          int ret = libyuv::YUY2ToI420(
+              YUY2_DATA(input), Y_U_V_DATA(intermediate_frame_),
+              intermediate_frame_->visible_rect().width(),
+              intermediate_frame_->visible_rect().height());
+          if (ret != 0)
+            return ret;
+          return libyuv::I420Scale(
+              Y_U_V_DATA(intermediate_frame_),
+              intermediate_frame_->visible_rect().width(),
+              intermediate_frame_->visible_rect().height(), Y_U_V_DATA(output),
+              output->visible_rect().width(), output->visible_rect().height(),
+              libyuv::kFilterBilinear);
+        }
+      case PIXEL_FORMAT_I422:
+        if (input->visible_rect().size() == output->visible_rect().size()) {
+          return LIBYUV_FUNC(I422ToI420, Y_U_V_DATA(input), Y_U_V_DATA(output));
+        } else {
+          DCHECK_EQ(intermediate_frame_->format(), PIXEL_FORMAT_I420);
+          int ret = libyuv::I422ToI420(
+              Y_U_V_DATA(input), Y_U_V_DATA(intermediate_frame_),
+              intermediate_frame_->visible_rect().width(),
+              intermediate_frame_->visible_rect().height());
+          if (ret != 0)
+            return ret;
+          return libyuv::I420Scale(
+              Y_U_V_DATA(intermediate_frame_),
+              intermediate_frame_->visible_rect().width(),
+              intermediate_frame_->visible_rect().height(), Y_U_V_DATA(output),
+              output->visible_rect().width(), output->visible_rect().height(),
+              libyuv::kFilterBilinear);
+        }
       default:
         VLOGF(1) << "Unexpected input format: " << input->format();
         return -1;

@@ -188,9 +188,9 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
     return profile;
   }
 
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kChild,
-      embedded_test_server(), this};
+  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,
+                                          LoggedInUserMixin::LogInType::kChild,
+                                          embedded_test_server(), this};
 
   ArcAppListPrefs* arc_app_list_prefs_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> arc_app_instance_;
@@ -234,8 +234,7 @@ IN_PROC_BROWSER_TEST_F(AppTimeTest, PerAppTimeLimitsPolicyUpdates) {
   // Set time limit for the app - app should not paused.
   AppTimeLimitsPolicyBuilder time_limit_policy;
   const AppLimit time_limit =
-      AppLimit(AppRestriction::kTimeLimit, base::TimeDelta::FromHours(1),
-               base::Time::Now());
+      AppLimit(AppRestriction::kTimeLimit, base::Hours(1), base::Time::Now());
   time_limit_policy.AddAppLimit(app1, time_limit);
   time_limit_policy.SetResetTime(6, 0);
 
@@ -247,8 +246,7 @@ IN_PROC_BROWSER_TEST_F(AppTimeTest, PerAppTimeLimitsPolicyUpdates) {
   // Set time limit of zero - app should be paused.
   AppTimeLimitsPolicyBuilder zero_time_limit_policy;
   const AppLimit zero_limit =
-      AppLimit(AppRestriction::kTimeLimit, base::TimeDelta::FromHours(0),
-               base::Time::Now());
+      AppLimit(AppRestriction::kTimeLimit, base::Hours(0), base::Time::Now());
   zero_time_limit_policy.AddAppLimit(app1, zero_limit);
   zero_time_limit_policy.SetResetTime(6, 0);
 
@@ -298,12 +296,10 @@ IN_PROC_BROWSER_TEST_F(AppTimeTest, PerAppTimeLimitsPolicyMultipleEntries) {
   policy.SetResetTime(6, 0);
   policy.AddAppLimit(app2, AppLimit(AppRestriction::kBlocked, absl::nullopt,
                                     base::Time::Now()));
-  policy.AddAppLimit(
-      app3, AppLimit(AppRestriction::kTimeLimit,
-                     base::TimeDelta::FromMinutes(15), base::Time::Now()));
-  policy.AddAppLimit(
-      app4, AppLimit(AppRestriction::kTimeLimit, base::TimeDelta::FromHours(1),
-                     base::Time::Now()));
+  policy.AddAppLimit(app3, AppLimit(AppRestriction::kTimeLimit,
+                                    base::Minutes(15), base::Time::Now()));
+  policy.AddAppLimit(app4, AppLimit(AppRestriction::kTimeLimit, base::Hours(1),
+                                    base::Time::Now()));
 
   UpdatePerAppTimeLimitsPolicy(policy.value());
 
@@ -335,9 +331,9 @@ class WebTimeLimitDisabledTest : public AppTimeTest {
 IN_PROC_BROWSER_TEST_F(WebTimeLimitDisabledTest, WebTimeLimitDisabled) {
   AppTimeLimitsPolicyBuilder policy;
   policy.SetResetTime(6, 0);
-  policy.AddAppLimit(GetChromeAppId(), AppLimit(AppRestriction::kTimeLimit,
-                                                base::TimeDelta::FromMinutes(0),
-                                                base::Time::Now()));
+  policy.AddAppLimit(GetChromeAppId(),
+                     AppLimit(AppRestriction::kTimeLimit, base::Minutes(0),
+                              base::Time::Now()));
 
   UpdatePerAppTimeLimitsPolicy(policy.value());
 

@@ -21,30 +21,19 @@ public class PaymentFeatureList {
     public static final String ANDROID_APP_PAYMENT_UPDATE_EVENTS = "AndroidAppPaymentUpdateEvents";
     public static final String ENFORCE_FULL_DELEGATION = "EnforceFullDelegation";
     public static final String GPAY_APP_DYNAMIC_UPDATE = "GPayAppDynamicUpdate";
-    public static final String PAYMENT_REQUEST_SKIP_TO_GPAY = "PaymentRequestSkipToGPay";
-    public static final String PAYMENT_REQUEST_SKIP_TO_GPAY_IF_NO_CARD =
-            "PaymentRequestSkipToGPayIfNoCard";
     public static final String SECURE_PAYMENT_CONFIRMATION = "SecurePaymentConfirmationBrowser";
-    public static final String SECURE_PAYMENT_CONFIRMATION_API_V2 =
-            "SecurePaymentConfirmationAPIV2";
     public static final String SERVICE_WORKER_PAYMENT_APPS = "ServiceWorkerPaymentApps";
-    public static final String STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT =
-            "StrictHasEnrolledAutofillInstrument";
+    public static final String PAYMENT_REQUEST_BASIC_CARD = "PaymentRequestBasicCard";
     public static final String WEB_PAYMENTS = "WebPayments";
-    public static final String WEB_PAYMENTS_ALWAYS_ALLOW_JUST_IN_TIME_PAYMENT_APP =
-            "AlwaysAllowJustInTimePaymentApp";
     public static final String WEB_PAYMENTS_APP_STORE_BILLING = "AppStoreBilling";
     public static final String WEB_PAYMENTS_APP_STORE_BILLING_DEBUG = "AppStoreBillingDebug";
     public static final String WEB_PAYMENTS_EXPERIMENTAL_FEATURES =
             "WebPaymentsExperimentalFeatures";
     public static final String WEB_PAYMENTS_METHOD_SECTION_ORDER_V2 =
             "WebPaymentsMethodSectionOrderV2";
-    public static final String WEB_PAYMENTS_MINIMAL_UI = "WebPaymentsMinimalUI";
     public static final String WEB_PAYMENTS_MODIFIERS = "WebPaymentsModifiers";
     public static final String WEB_PAYMENTS_REDACT_SHIPPING_ADDRESS =
             "WebPaymentsRedactShippingAddress";
-    public static final String WEB_PAYMENTS_RETURN_GOOGLE_PAY_IN_BASIC_CARD =
-            "ReturnGooglePayInBasicCard";
     public static final String WEB_PAYMENTS_SINGLE_APP_UI_SKIP = "WebPaymentsSingleAppUiSkip";
 
     // Do not instantiate this class.

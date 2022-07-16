@@ -47,15 +47,16 @@ const char kVapidFcmToken[] = "vapid_fcm_token";
 const char kSharingFcmToken[] = "sharing_fcm_token";
 const char kDeviceName[] = "other_name";
 const char kAuthorizedEntity[] = "authorized_entity";
-constexpr base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kTimeout = base::Seconds(15);
 
 class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
  public:
   MockInstanceIDDriver() : InstanceIDDriver(/*gcm_driver=*/nullptr) {}
-  ~MockInstanceIDDriver() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInstanceIDDriver);
+  MockInstanceIDDriver(const MockInstanceIDDriver&) = delete;
+  MockInstanceIDDriver& operator=(const MockInstanceIDDriver&) = delete;
+
+  ~MockInstanceIDDriver() override = default;
 };
 
 class MockSharingHandlerRegistry : public SharingHandlerRegistry {
@@ -402,7 +403,7 @@ TEST_F(SharingServiceTest, DeviceRegistrationTransientError) {
       SharingDeviceRegistrationResult::kSuccess);
   EXPECT_CALL(*fcm_handler_, StartListening()).Times(1);
   task_environment_.FastForwardBy(
-      base::TimeDelta::FromMilliseconds(kRetryBackoffPolicy.initial_delay_ms));
+      base::Milliseconds(kRetryBackoffPolicy.initial_delay_ms));
   EXPECT_EQ(2, sharing_device_registration_->registration_attempts());
   EXPECT_EQ(SharingService::State::ACTIVE,
             GetSharingService()->GetStateForTesting());

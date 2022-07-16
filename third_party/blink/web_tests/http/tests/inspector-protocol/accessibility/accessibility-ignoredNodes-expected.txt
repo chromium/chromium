@@ -2,12 +2,15 @@ Tests accessibility values of ignored nodes.
 
 RootWebArea
   *none
+  *none
 {
+    childIds : <object>
     domNode : html
     ignored : true
     ignoredReasons : [
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
@@ -15,9 +18,12 @@ RootWebArea
 }
 
 RootWebArea
-  img
-    *SvgRoot
+  none
+    none
+      img
+        *img
 {
+    childIds : <object>
     domNode : svg
     ignored : false
     name : {
@@ -43,17 +49,22 @@ RootWebArea
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
-        type : internalRole
-        value : SvgRoot
+        type : role
+        value : img
     }
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
+      *none
 {
+    childIds : <object>
     domNode : div
     ignored : true
     ignoredReasons : [
@@ -66,6 +77,7 @@ RootWebArea
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
@@ -73,8 +85,13 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      none
+        *none
+        *none
 {
+    childIds : <object>
     domNode : div
     ignored : true
     ignoredReasons : [
@@ -91,6 +108,7 @@ RootWebArea
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
@@ -98,8 +116,11 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
 {
+    childIds : <object>
     domNode : ol
     ignored : true
     ignoredReasons : [
@@ -112,6 +133,7 @@ RootWebArea
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
@@ -119,8 +141,12 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
+      *none
 {
+    childIds : <object>
     domNode : li
     ignored : true
     ignoredReasons : [
@@ -133,6 +159,7 @@ RootWebArea
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
@@ -140,9 +167,12 @@ RootWebArea
 }
 
 RootWebArea
-  *generic
-    StaticText "Div in list isn't presentational"
+  none
+    none
+      *generic
+        StaticText "Div in list isn't presentational"
 {
+    childIds : <object>
     domNode : div
     ignored : false
     name : {
@@ -164,6 +194,7 @@ RootWebArea
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -173,9 +204,12 @@ RootWebArea
 }
 
 RootWebArea
-  *LabelText
-    StaticText "Content within label refers to label container"
+  none
+    none
+      *LabelText
+        StaticText "Content within label refers to label container"
 {
+    childIds : <object>
     domNode : label
     ignored : false
     name : {
@@ -197,6 +231,7 @@ RootWebArea
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -206,9 +241,12 @@ RootWebArea
 }
 
 RootWebArea
-  LabelText
-    *none
+  none
+    none
+      LabelText
+        *none
 {
+    childIds : <object>
     domNode : span
     ignored : true
     ignoredReasons : [
@@ -221,6 +259,7 @@ RootWebArea
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
@@ -228,8 +267,11 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
 {
+    childIds : <object>
     domNode : div
     ignored : true
     ignoredReasons : [
@@ -242,6 +284,7 @@ RootWebArea
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
@@ -249,8 +292,11 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
 {
+    childIds : <object>
     domNode : span
     ignored : true
     ignoredReasons : [
@@ -263,6 +309,7 @@ RootWebArea
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
@@ -270,8 +317,11 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
 {
+    childIds : <object>
     domNode : canvas
     ignored : true
     ignoredReasons : [
@@ -284,6 +334,7 @@ RootWebArea
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
@@ -291,8 +342,11 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
 {
+    childIds : <object>
     domNode : canvas
     ignored : true
     ignoredReasons : [
@@ -305,6 +359,7 @@ RootWebArea
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
@@ -312,12 +367,15 @@ RootWebArea
 }
 
 RootWebArea
-  *combobox
-    MenuListPopup
-      menuitem "Options should be"
-      menuitem "sent down even though"
-      menuitem "they are grandchildren"
+  none
+    none
+      *combobox
+        MenuListPopup
+          menuitem "Options should be"
+          menuitem "sent down even though"
+          menuitem "they are grandchildren"
 {
+    childIds : <object>
     domNode : select
     ignored : false
     name : {
@@ -343,6 +401,7 @@ RootWebArea
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -359,6 +418,13 @@ RootWebArea
             }
         }
         [2] : {
+            name : hasPopup
+            value : {
+                type : token
+                value : menu
+            }
+        }
+        [3] : {
             name : expanded
             value : {
                 type : booleanOrUndefined
@@ -377,10 +443,13 @@ RootWebArea
 }
 
 RootWebArea
-  combobox
-    MenuListPopup
-      *menuitem "Options should be"
+  none
+    none
+      combobox
+        MenuListPopup
+          *menuitem "Options should be"
 {
+    childIds : <object>
     domNode : option
     ignored : false
     name : {
@@ -405,6 +474,7 @@ RootWebArea
         value : Options should be
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable
@@ -428,8 +498,11 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
 {
+    childIds : <object>
     domNode : button
     ignored : true
     ignoredReasons : [
@@ -442,6 +515,7 @@ RootWebArea
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
@@ -449,8 +523,12 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      none
+        *none
 {
+    childIds : <object>
     domNode : button
     ignored : true
     ignoredReasons : [
@@ -468,6 +546,7 @@ RootWebArea
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
@@ -475,9 +554,12 @@ RootWebArea
 }
 
 RootWebArea
-  *generic "span with ARIA label"
-    StaticText "should not be ignored"
+  none
+    none
+      *generic "span with ARIA label"
+        StaticText "should not be ignored"
 {
+    childIds : <object>
     domNode : span
     ignored : false
     name : {
@@ -508,6 +590,7 @@ RootWebArea
         value : span with ARIA label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -517,8 +600,11 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
 {
+    childIds : <object>
     domNode : div
     ignored : true
     ignoredReasons : [
@@ -531,6 +617,7 @@ RootWebArea
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
@@ -538,9 +625,12 @@ RootWebArea
 }
 
 RootWebArea
-  *generic
-    StaticText "summary element without details parent is ignored"
+  none
+    none
+      *generic
+        StaticText "summary element without details parent is ignored"
 {
+    childIds : <object>
     description : {
         type : computedString
         value : summary element without details parent is ignored
@@ -566,6 +656,7 @@ RootWebArea
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -575,9 +666,12 @@ RootWebArea
 }
 
 RootWebArea
-  *button "Ignored parent shouldn't cause descendant to be missing from the tree"
-    StaticText "Ignored parent shouldn't cause descendant to be missing from the tree"
+  none
+    none
+      *button "Ignored parent shouldn't cause descendant to be missing from the tree"
+        StaticText "Ignored parent shouldn't cause descendant to be missing from the tree"
 {
+    childIds : <object>
     domNode : button
     ignored : false
     name : {
@@ -611,6 +705,7 @@ RootWebArea
         value : Ignored parent shouldn't cause descendant to be missing from the tree
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid

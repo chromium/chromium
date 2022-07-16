@@ -43,6 +43,9 @@ namespace {
 // as a linkage table for libcurl procedures.
 class Libcurl {
  public:
+  Libcurl(const Libcurl&) = delete;
+  Libcurl& operator=(const Libcurl&) = delete;
+
   static bool Initialized() {
     static bool initialized = Get()->Initialize();
     return initialized;
@@ -155,8 +158,6 @@ class Libcurl {
   NoCfiIcall<decltype(curl_slist_free_all)*> curl_slist_free_all_;
   NoCfiIcall<decltype(curl_slist_append)*> curl_slist_append_;
   NoCfiIcall<decltype(curl_version)*> curl_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(Libcurl);
 };
 
 std::string UserAgent() {
@@ -271,6 +272,10 @@ using ScopedCURL = base::ScopedGeneric<CURL*, ScopedCURLTraits>;
 class CurlSList {
  public:
   CurlSList() : list_(nullptr) {}
+
+  CurlSList(const CurlSList&) = delete;
+  CurlSList& operator=(const CurlSList&) = delete;
+
   ~CurlSList() {
     if (list_) {
       Libcurl::CurlSlistFreeAll(list_);
@@ -289,13 +294,14 @@ class CurlSList {
 
  private:
   curl_slist* list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CurlSList);
 };
 
 class ScopedClearString {
  public:
   explicit ScopedClearString(std::string* string) : string_(string) {}
+
+  ScopedClearString(const ScopedClearString&) = delete;
+  ScopedClearString& operator=(const ScopedClearString&) = delete;
 
   ~ScopedClearString() {
     if (string_) {
@@ -307,13 +313,15 @@ class ScopedClearString {
 
  private:
   std::string* string_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedClearString);
 };
 
 class HTTPTransportLibcurl final : public HTTPTransport {
  public:
   HTTPTransportLibcurl();
+
+  HTTPTransportLibcurl(const HTTPTransportLibcurl&) = delete;
+  HTTPTransportLibcurl& operator=(const HTTPTransportLibcurl&) = delete;
+
   ~HTTPTransportLibcurl() override;
 
   // HTTPTransport:
@@ -328,8 +336,6 @@ class HTTPTransportLibcurl final : public HTTPTransport {
                                   size_t size,
                                   size_t nitems,
                                   void* userdata);
-
-  DISALLOW_COPY_AND_ASSIGN(HTTPTransportLibcurl);
 };
 
 HTTPTransportLibcurl::HTTPTransportLibcurl() : HTTPTransport() {}

@@ -23,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/constants.h"
 #include "components/soda/pref_names.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/common/content_switches.h"
@@ -101,7 +102,7 @@ class TestStreamFactory : public audio::FakeStreamFactory {
     if (stream_receiver_.is_bound())
       return;
     base::RepeatingTimer check_timer;
-    check_timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(10), this,
+    check_timer.Start(FROM_HERE, base::Milliseconds(10), this,
                       &TestStreamFactory::OnTimer);
     runner_.Run();
   }
@@ -129,6 +130,11 @@ class SpeechRecognitionServiceTest
     scoped_feature_list_.InitWithFeatures(
         {media::kLiveCaption, media::kUseSodaForLiveCaption}, {});
   }
+
+  SpeechRecognitionServiceTest(const SpeechRecognitionServiceTest&) = delete;
+  SpeechRecognitionServiceTest& operator=(const SpeechRecognitionServiceTest&) =
+      delete;
+
   ~SpeechRecognitionServiceTest() override = default;
 
   // InProcessBrowserTest
@@ -142,11 +148,15 @@ class SpeechRecognitionServiceTest
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override;
 
+  // Disable the sandbox on Windows and MacOS as the sandboxes on those
+  // platforms have not been configured yet.
+#if defined(OS_WIN) || defined(OS_MAC)
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Required for the utility process to access the directory containing the
     // test files.
     command_line->AppendSwitch(sandbox::policy::switches::kNoSandbox);
   }
+#endif
 
  protected:
   void CloseCaptionBubble() {
@@ -177,8 +187,6 @@ class SpeechRecognitionServiceTest
   std::vector<std::string> recognition_results_;
 
   bool is_client_requesting_speech_recognition_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognitionServiceTest);
 };
 
 void SpeechRecognitionServiceTest::SetUp() {
@@ -209,18 +217,20 @@ void SpeechRecognitionServiceTest::OnLanguageIdentificationEvent(
 }
 
 void SpeechRecognitionServiceTest::SetUpPrefs() {
-  g_browser_process->local_state()->SetFilePath(
-      prefs::kSodaBinaryPath,
+  base::FilePath soda_binary_path;
+#if defined(OS_WIN) || defined(OS_MAC)
+  soda_binary_path =
       test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
-          .Append(soda::kSodaTestBinaryRelativePath));
+          .Append(soda::kSodaTestBinaryRelativePath);
+#else
+  soda_binary_path = GetSodaTestBinaryPath();
+#endif
+  g_browser_process->local_state()->SetFilePath(prefs::kSodaBinaryPath,
+                                                soda_binary_path);
   g_browser_process->local_state()->SetFilePath(
       prefs::kSodaEnUsConfigPath,
       test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
           .Append(soda::kSodaLanguagePackRelativePath));
-
-  PrefService* profile_prefs = browser()->profile()->GetPrefs();
-  // TODO(crbug.com/1173135): Disconnect from kLiveCaptionEnabled.
-  profile_prefs->SetBoolean(prefs::kLiveCaptionEnabled, true);
 }
 
 void SpeechRecognitionServiceTest::LaunchService() {
@@ -373,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectUniqueTimeSample(
       SpeechRecognitionRecognizerImpl::kCaptionBubbleVisibleHistogramName,
-      base::TimeDelta::FromMilliseconds(2520), 1);
+      base::Milliseconds(2520), 1);
   histograms.ExpectTotalCount(
       SpeechRecognitionRecognizerImpl::kCaptionBubbleHiddenHistogramName, 0);
 }
@@ -447,10 +457,10 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest,
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectUniqueTimeSample(
       SpeechRecognitionRecognizerImpl::kCaptionBubbleVisibleHistogramName,
-      base::TimeDelta::FromMilliseconds(2520), 1);
+      base::Milliseconds(2520), 1);
   histograms.ExpectUniqueTimeSample(
       SpeechRecognitionRecognizerImpl::kCaptionBubbleHiddenHistogramName,
-      base::TimeDelta::FromMilliseconds(1260), 1);
+      base::Milliseconds(1260), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CreateAudioSourceFetcher) {

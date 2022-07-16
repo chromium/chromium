@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
@@ -68,6 +67,9 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
         expect_gallery_watch_dropped_(false),
         pending_loop_(nullptr) {
   }
+
+  GalleryWatchManagerTest(const GalleryWatchManagerTest&) = delete;
+  GalleryWatchManagerTest& operator=(const GalleryWatchManagerTest&) = delete;
 
   ~GalleryWatchManagerTest() override {}
 
@@ -216,8 +218,6 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
   bool expect_gallery_changed_;
   bool expect_gallery_watch_dropped_;
   base::RunLoop* pending_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(GalleryWatchManagerTest);
 };
 
 // TODO(crbug.com/936065): Flaky on ChromeOS.

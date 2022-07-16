@@ -44,6 +44,9 @@ class ContentHashReader {
     SUCCESS
   };
 
+  ContentHashReader(const ContentHashReader&) = delete;
+  ContentHashReader& operator=(const ContentHashReader&) = delete;
+
   ~ContentHashReader();
 
   // Factory to create ContentHashReader to get expected hashes for the file at
@@ -75,8 +78,6 @@ class ContentHashReader {
   int block_size_ = 0;
 
   std::vector<std::string> hashes_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentHashReader);
 };
 
 }  // namespace extensions

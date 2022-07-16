@@ -20,7 +20,7 @@ import {FakeSystemRoutineController} from './fake_system_routine_controller.js';
  * If true this will replace all providers with fakes.
  * @type {boolean}
  */
-let useFakeProviders = false;
+const useFakeProviders = false;
 
 /**
  * @type {?SystemDataProviderInterface}

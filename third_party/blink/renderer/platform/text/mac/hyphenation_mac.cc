@@ -26,7 +26,7 @@ class HyphenationCF final : public Hyphenation {
     CFIndex result = CFStringGetHyphenationLocationBeforeIndex(
         text.ToString().Impl()->CreateCFString(), before_index,
         CFRangeMake(0, text.length()), 0, locale_cf_, 0);
-    return result == kCFNotFound ? 0 : result;
+    return static_cast<wtf_size_t>(result == kCFNotFound ? 0 : result);
   }
 
   // While Hyphenation::FirstHyphenLocation() works good, it computes all

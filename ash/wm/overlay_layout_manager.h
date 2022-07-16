@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/wm_default_layout_manager.h"
-#include "base/macros.h"
 #include "ui/display/display_observer.h"
 
 namespace aura {
@@ -22,6 +21,10 @@ class ASH_EXPORT OverlayLayoutManager : public WmDefaultLayoutManager,
                                         public display::DisplayObserver {
  public:
   explicit OverlayLayoutManager(aura::Window* overlay_container);
+
+  OverlayLayoutManager(const OverlayLayoutManager&) = delete;
+  OverlayLayoutManager& operator=(const OverlayLayoutManager&) = delete;
+
   ~OverlayLayoutManager() override;
 
   // display::DisplayObserver:
@@ -32,8 +35,6 @@ class ASH_EXPORT OverlayLayoutManager : public WmDefaultLayoutManager,
   aura::Window* overlay_container_;
 
   display::ScopedDisplayObserver display_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayLayoutManager);
 };
 
 }  // namespace ash

@@ -10,7 +10,8 @@ namespace multidevice_setup {
 
 FakeMultiDeviceSetupClient::FakeMultiDeviceSetupClient()
     : host_status_with_device_(GenerateDefaultHostStatusWithDevice()),
-      feature_states_map_(GenerateDefaultFeatureStatesMap()) {}
+      feature_states_map_(GenerateDefaultFeatureStatesMap(
+          multidevice_setup::mojom::FeatureState::kProhibitedByPolicy)) {}
 
 FakeMultiDeviceSetupClient::~FakeMultiDeviceSetupClient() {
   DCHECK(get_eligible_host_devices_callback_queue_.empty());

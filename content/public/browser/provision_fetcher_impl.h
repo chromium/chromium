@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/provision_fetcher_factory.h"
 #include "media/base/provision_fetcher.h"
@@ -32,6 +31,10 @@ class CONTENT_EXPORT ProvisionFetcherImpl
 
   explicit ProvisionFetcherImpl(
       std::unique_ptr<media::ProvisionFetcher> provision_fetcher);
+
+  ProvisionFetcherImpl(const ProvisionFetcherImpl&) = delete;
+  ProvisionFetcherImpl& operator=(const ProvisionFetcherImpl&) = delete;
+
   ~ProvisionFetcherImpl() override;
 
   // media::mojom::ProvisionFetcher implementation.
@@ -48,8 +51,6 @@ class CONTENT_EXPORT ProvisionFetcherImpl
   std::unique_ptr<media::ProvisionFetcher> provision_fetcher_;
 
   base::WeakPtrFactory<ProvisionFetcherImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProvisionFetcherImpl);
 };
 
 }  // namespace content

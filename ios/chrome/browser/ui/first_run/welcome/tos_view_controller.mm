@@ -68,6 +68,8 @@
   self.navigationController.navigationBar.translucent = NO;
   self.navigationController.navigationBar.barTintColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  self.navigationController.view.backgroundColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 
   self.title = l10n_util::GetNSString(IDS_IOS_FIRSTRUN_TERMS_TITLE);
 

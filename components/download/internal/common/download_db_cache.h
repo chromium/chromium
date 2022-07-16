@@ -10,7 +10,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/download/public/common/download_export.h"
@@ -27,6 +26,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadDBCache
     : public DownloadItem::Observer {
  public:
   explicit DownloadDBCache(std::unique_ptr<DownloadDB> download_db);
+
+  DownloadDBCache(const DownloadDBCache&) = delete;
+  DownloadDBCache& operator=(const DownloadDBCache&) = delete;
+
   ~DownloadDBCache() override;
 
   using InitializeCallback =
@@ -81,8 +84,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadDBCache
   base::OneShotTimer update_timer_;
 
   base::WeakPtrFactory<DownloadDBCache> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadDBCache);
 };
 
 }  //  namespace download

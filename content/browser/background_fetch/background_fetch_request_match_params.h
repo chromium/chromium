@@ -17,6 +17,12 @@ class CONTENT_EXPORT BackgroundFetchRequestMatchParams {
       blink::mojom::FetchAPIRequestPtr request_to_match,
       blink::mojom::CacheQueryOptionsPtr cache_query_options,
       bool match_all);
+
+  BackgroundFetchRequestMatchParams(const BackgroundFetchRequestMatchParams&) =
+      delete;
+  BackgroundFetchRequestMatchParams& operator=(
+      const BackgroundFetchRequestMatchParams&) = delete;
+
   ~BackgroundFetchRequestMatchParams();
 
   bool FilterByRequest() const { return !request_to_match_.is_null(); }
@@ -50,8 +56,6 @@ class CONTENT_EXPORT BackgroundFetchRequestMatchParams {
 
   // Whether to return all matching responses from the cache storage.
   bool match_all_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchRequestMatchParams);
 };
 
 }  // namespace content

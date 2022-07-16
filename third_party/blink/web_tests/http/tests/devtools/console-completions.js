@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests completions prototype chain and scope variables.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.evaluateInPagePromise(`
       function A() {
           this.instanceMember = 1;
@@ -43,12 +43,12 @@
   `);
 
   TestRunner.addResult('Completions for objectC.:');
-  let completions = await ObjectUI.javaScriptAutocomplete._completionsForExpression('objectC.', 'e');
+  let completions = await ObjectUI.javaScriptAutocomplete.completionsForExpression('objectC.', 'e');
   for (var completion of completions)
     TestRunner.addObject(completion);
 
   TestRunner.addResult('Completions for prefix:');
-  completions = await ObjectUI.javaScriptAutocomplete._completionsForExpression('', 'prefix');
+  completions = await ObjectUI.javaScriptAutocomplete.completionsForExpression('', 'prefix');
   for (var completion of completions)
     TestRunner.addObject(completion);
 

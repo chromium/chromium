@@ -14,11 +14,10 @@ OnRequestCanvasDrawListener::OnRequestCanvasDrawListener(
 
 OnRequestCanvasDrawListener::~OnRequestCanvasDrawListener() = default;
 
-void OnRequestCanvasDrawListener::SendNewFrame(
-    scoped_refptr<StaticBitmapImage> image,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider) {
+CanvasDrawListener::NewFrameCallback
+OnRequestCanvasDrawListener::GetNewFrameCallback() {
   frame_capture_requested_ = false;
-  AutoCanvasDrawListener::SendNewFrame(image, context_provider);
+  return AutoCanvasDrawListener::GetNewFrameCallback();
 }
 
 void OnRequestCanvasDrawListener::Trace(Visitor* visitor) const {

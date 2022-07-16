@@ -21,13 +21,12 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/favicon_base/favicon_callback.h"
@@ -61,6 +60,10 @@ namespace sync_pb {
 class HistoryDeleteDirectiveSpecifics;
 }
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace history {
 
 class DeleteDirectiveHandler;
@@ -89,6 +92,10 @@ class HistoryService : public KeyedService {
   HistoryService();
   HistoryService(std::unique_ptr<HistoryClient> history_client,
                  std::unique_ptr<VisitDelegate> visit_delegate);
+
+  HistoryService(const HistoryService&) = delete;
+  HistoryService& operator=(const HistoryService&) = delete;
+
   ~HistoryService() override;
 
   // Initializes the history service, returning true on success. On false, do
@@ -221,8 +228,14 @@ class HistoryService : public KeyedService {
   // Updates the history database with the content model annotations for the
   // visit.
   void AddContentModelAnnotationsForVisit(
-      VisitID visit_id,
-      const VisitContentModelAnnotations& model_annotations);
+      const VisitContentModelAnnotations& model_annotations,
+      VisitID visit_id);
+
+  // Updates the history database with the related searches for the Google SRP
+  // visit.
+  void AddRelatedSearchesForVisit(
+      const std::vector<std::string>& related_searches,
+      VisitID visit_id);
 
   // Querying ------------------------------------------------------------------
 
@@ -293,6 +306,8 @@ class HistoryService : public KeyedService {
   using GetVisibleVisitCountToHostCallback =
       base::OnceCallback<void(VisibleVisitCountToHostResult)>;
 
+  // TODO(crbug.com/1229440): Rename this function to use origin instead of
+  // host.
   base::CancelableTaskTracker::TaskId GetVisibleVisitCountToHost(
       const GURL& url,
       GetVisibleVisitCountToHostCallback callback,
@@ -345,7 +360,15 @@ class HistoryService : public KeyedService {
   // visited in the given time range, the callback will be called with a null
   // base::Time.
   base::CancelableTaskTracker::TaskId GetLastVisitToHost(
-      const GURL& host,
+      const std::string& host,
+      base::Time begin_time,
+      base::Time end_time,
+      GetLastVisitCallback callback,
+      base::CancelableTaskTracker* tracker);
+
+  // Same as the above, but for the given origin instead of host.
+  base::CancelableTaskTracker::TaskId GetLastVisitToOrigin(
+      const url::Origin& origin,
       base::Time begin_time,
       base::Time end_time,
       GetLastVisitCallback callback,
@@ -367,6 +390,8 @@ class HistoryService : public KeyedService {
   // Gets counts for total visits and days visited for pages matching `host`'s
   // scheme, port, and host. Counts only user-visible visits (i.e. no redirects
   // or subframes) within the time range [`begin_time`, `end_time`).
+  // TODO(crbug.com/1229440): Rename this function to use origin instead of
+  // host.
   base::CancelableTaskTracker::TaskId GetDailyVisitsToHost(
       const GURL& host,
       base::Time begin_time,
@@ -507,10 +532,7 @@ class HistoryService : public KeyedService {
 
   // Gets a vector of reverse-chronological `AnnotatedVisit` instances based on
   // `options`. Uses the same deduplication and visibility logic as
-  // `HistoryService::QueryHistory()`. Notably, this method EXCLUDES from the
-  // result any visits that lack context annotations. To make a continuation
-  // call, the last item's visit time can be used as the `end_time` constraint
-  // in the next page's `options`.
+  // `HistoryService::QueryHistory()`.
   using GetAnnotatedVisitsCallback =
       base::OnceCallback<void(std::vector<AnnotatedVisit>)>;
   base::CancelableTaskTracker::TaskId GetAnnotatedVisits(
@@ -960,8 +982,6 @@ class HistoryService : public KeyedService {
 
   // All vended weak pointers are invalidated in Cleanup().
   base::WeakPtrFactory<HistoryService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryService);
 };
 
 }  // namespace history

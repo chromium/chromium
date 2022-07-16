@@ -737,11 +737,11 @@
     {
       "id": 105,
       "description": "GPU raster broken on PowerVR SGX even on Lollipop",
-      "cr_bugs": [461456],
+      "cr_bugs": [461456, 1243361],
       "os": {
         "type": "android"
       },
-      "gl_renderer": "PowerVR SGX.*",
+      "gl_renderer": "PowerVR SGX \\d+",
       "features": [
         "accelerated_2d_canvas",
         "gpu_rasterization"
@@ -1294,7 +1294,7 @@
       "cr_bugs": [710273],
       "os": {
         "type": "android",
-	"version": {
+        "version": {
           "op": "<",
           "value": "7.0"
         }
@@ -1540,7 +1540,7 @@
     },
     {
       "id": 167,
-      "description": "8.17.10.* AMD drivers trigger hands in video stack",
+      "description": "8.17.10.* AMD drivers trigger hangs in video stack",
       "cr_bugs": [1160623],
       "os": {
         "type": "win"
@@ -1552,6 +1552,44 @@
       },
       "features": [
         "accelerated_video_decode"
+      ]
+    },
+    {
+      "id": 168,
+      "description": "PowerVR Driver crashes with ANGLE",
+      "cr_bugs": [1203652,1221321],
+      "os": {
+        "type": "android",
+        "version": {
+          "op": "<=",
+          "value": "5.1.1"
+        }
+      },
+      "gl_renderer": "ANGLE \\(Imagination Technologies, PowerVR .*",
+      "features": [
+        "all"
+      ]
+    },
+    {
+      "id": 169,
+      "description": "Many crashes with the old Intel Haswell driver on Windows 8.1.",
+      "driver_update_url": "https://www.intel.com/content/www/us/en/download-center/home.html",
+      "cr_bugs": [620885],
+      "os": {
+        "type": "win",
+        "version": {
+          "op": "=",
+          "value": "8.1"
+        }
+      },
+      "vendor_id": "0x0806",
+      "device_id": ["0x0a16"],
+      "driver_version": {
+        "op": "=",
+        "value": "10.18.10.3496"
+      },
+      "features": [
+        "all"
       ]
     }
   ]

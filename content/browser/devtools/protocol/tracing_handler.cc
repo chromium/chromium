@@ -43,7 +43,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tracing_service.h"
-#include "content/public/common/content_features.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
@@ -195,9 +194,8 @@ void FillFrameData(base::trace_event::TracedValue* data,
   data->SetString("url", url.ReplaceComponents(strip_fragment).spec());
   data->SetString("name", node->frame_name());
   if (node->parent()) {
-    data->SetString(
-        "parent",
-        node->parent()->frame_tree_node()->devtools_frame_token().ToString());
+    data->SetString("parent",
+                    node->parent()->GetDevToolsFrameToken().ToString());
   }
   if (frame_host) {
     RenderProcessHost* process_host = frame_host->GetProcess();
@@ -795,38 +793,14 @@ void TracingHandler::Start(Maybe<std::string> categories,
   did_initiate_recording_ = true;
   trace_config_ = std::move(trace_config);
 
-  // GPU process id can only be retrieved on IO thread. Do some thread hopping.
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? content::GetUIThreadTaskRunner({})
-                         : content::GetIOThreadTaskRunner({});
-  task_runner->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce([]() {
-        GpuProcessHost* gpu_process_host =
-            GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED,
-                                /* force_create */ false);
-        return gpu_process_host ? gpu_process_host->process_id()
-                                : base::kNullProcessId;
-      }),
-      base::BindOnce(&TracingHandler::StartTracingWithGpuPid,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     *backend));
-}
-
-void TracingHandler::StartTracingWithGpuPid(
-    std::unique_ptr<StartCallback> callback,
-    perfetto::BackendType tracing_backend,
-    base::ProcessId gpu_pid) {
-  // Check if tracing was stopped in mid-air.
-  if (!did_initiate_recording_) {
-    callback->sendFailure(Response::ServerError(
-        "Tracing was stopped before start has been completed."));
-    return;
-  }
-
+  GpuProcessHost* gpu_process_host =
+      GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED,
+                          /* force_create */ false);
+  base::ProcessId gpu_pid =
+      gpu_process_host ? gpu_process_host->process_id() : base::kNullProcessId;
   SetupProcessFilter(gpu_pid, nullptr);
 
-  session_ =
-      std::make_unique<PerfettoTracingSession>(proto_format_, tracing_backend);
+  session_ = std::make_unique<PerfettoTracingSession>(proto_format_, *backend);
   session_->EnableTracing(
       trace_config_,
       base::BindOnce(&TracingHandler::OnRecordingEnabled,
@@ -1086,7 +1060,7 @@ void TracingHandler::SetupTimer(double usage_reporting_interval) {
     usage_reporting_interval = kMinimumReportingInterval;
 
   base::TimeDelta interval =
-      base::TimeDelta::FromMilliseconds(std::ceil(usage_reporting_interval));
+      base::Milliseconds(std::ceil(usage_reporting_interval));
   buffer_usage_poll_timer_ = std::make_unique<base::RepeatingTimer>();
   buffer_usage_poll_timer_->Start(
       FROM_HERE, interval,

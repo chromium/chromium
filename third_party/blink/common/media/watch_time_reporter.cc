@@ -485,8 +485,7 @@ void WatchTimeReporter::RecordWatchTime() {
       // purposes these are considered as timeouts. We want a maximum since
       // rebuffer duration is in real time and not media time, which means if
       // the rebuffer spans a suspend/resume the time can be arbitrarily long.
-      constexpr base::TimeDelta kMaximumRebufferDuration =
-          base::TimeDelta::FromMinutes(1);
+      constexpr base::TimeDelta kMaximumRebufferDuration = base::Minutes(1);
       if (ufe.duration != media::kNoTimestamp &&
           ufe.duration <= kMaximumRebufferDuration) {
         ++total_completed_underflow_count_;

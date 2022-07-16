@@ -18,6 +18,10 @@ namespace device {
 class SensorImpl final : public mojom::Sensor, public PlatformSensor::Client {
  public:
   explicit SensorImpl(scoped_refptr<PlatformSensor> sensor);
+
+  SensorImpl(const SensorImpl&) = delete;
+  SensorImpl& operator=(const SensorImpl&) = delete;
+
   ~SensorImpl() override;
 
   mojo::PendingReceiver<mojom::SensorClient> GetClient();
@@ -44,8 +48,6 @@ class SensorImpl final : public mojom::Sensor, public PlatformSensor::Client {
   mojo::Remote<mojom::SensorClient> client_;
   bool reading_notification_enabled_;
   bool suspended_;
-
-  DISALLOW_COPY_AND_ASSIGN(SensorImpl);
 };
 
 }  // namespace device

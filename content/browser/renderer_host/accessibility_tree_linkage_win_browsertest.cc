@@ -34,6 +34,11 @@ class AccessibilityTreeLinkageWinBrowserTest
     dummy_ax_platform_node_ = ui::AXPlatformNode::Create(&dummy_ax_node_);
   }
 
+  AccessibilityTreeLinkageWinBrowserTest(
+      const AccessibilityTreeLinkageWinBrowserTest&) = delete;
+  AccessibilityTreeLinkageWinBrowserTest& operator=(
+      const AccessibilityTreeLinkageWinBrowserTest&) = delete;
+
   ~AccessibilityTreeLinkageWinBrowserTest() override {
     dummy_ax_platform_node_->Destroy();
     dummy_ax_platform_node_ = nullptr;
@@ -62,9 +67,6 @@ class AccessibilityTreeLinkageWinBrowserTest
  protected:
   ui::AXPlatformNodeDelegateBase dummy_ax_node_;
   ui::AXPlatformNode* dummy_ax_platform_node_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityTreeLinkageWinBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(AccessibilityTreeLinkageWinBrowserTest, Linkage) {

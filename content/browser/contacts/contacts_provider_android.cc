@@ -17,7 +17,6 @@
 #include "content/public/android/content_jni_headers/ContactsDialogHost_jni.h"
 #include "content/public/browser/contacts_picker_properties_requested.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/android/window_android.h"
 #include "url/origin.h"
 
 namespace content {
@@ -51,9 +50,9 @@ ContactsProviderAndroid::ContactsProviderAndroid(
       render_frame_host->GetLastCommittedOrigin().GetURL(),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 
-  dialog_.Reset(Java_ContactsDialogHost_create(
-      env, web_contents->GetTopLevelNativeWindow()->GetJavaObject(),
-      reinterpret_cast<intptr_t>(this)));
+  dialog_.Reset(
+      Java_ContactsDialogHost_create(env, web_contents->GetJavaWebContents(),
+                                     reinterpret_cast<intptr_t>(this)));
   DCHECK(!dialog_.is_null());
 }
 

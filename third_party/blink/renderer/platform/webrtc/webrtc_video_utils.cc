@@ -13,20 +13,26 @@ namespace {
 struct ScalabilityModeSpatialLayers {
   const char* name;
   int spatial_layers;
+  int dependent_spatial_layers;
 };
 
 constexpr ScalabilityModeSpatialLayers kSvcSpatialLayers[] = {
-    {"L1T2", 1},           {"L1T3", 1},           {"L2T1", 2},
-    {"L2T2", 2},           {"L2T3", 2},           {"L2T1h", 2},
-    {"L2T2h", 2},          {"L2T3h", 2},          {"S2T1", 2},
-    {"S2T2", 2},           {"S2T3", 2},           {"S2T1h", 2},
-    {"S2T2h", 2},          {"S2T3h", 2},          {"L3T1", 3},
-    {"L3T2", 3},           {"L3T3", 3},           {"S3T1", 3},
-    {"S3T2", 3},           {"S3T3", 3},           {"S3T1h", 3},
-    {"S3T2h", 3},          {"S3T3h", 3},          {"L2T2_KEY", 3},
-    {"L2T2_KEY_SHIFT", 3}, {"L2T3_KEY", 3},       {"L2T3_KEY_SHIFT", 3},
-    {"L3T2_KEY", 3},       {"L3T2_KEY_SHIFT", 3}, {"L3T3_KEY", 3},
-};
+    // See https://www.w3.org/TR/webrtc-svc/ for a list of scalability modes.
+    {"L1T2", 1, 1},           {"L1T3", 1, 1},
+    {"L2T1", 2, 2},           {"L2T2", 2, 2},
+    {"L2T3", 2, 2},           {"L2T1h", 2, 2},
+    {"L2T2h", 2, 2},          {"L2T3h", 2, 2},
+    {"S2T1", 2, 1},           {"S2T2", 2, 1},
+    {"S2T3", 2, 1},           {"S2T1h", 2, 1},
+    {"S2T2h", 2, 1},          {"S2T3h", 2, 1},
+    {"L3T1", 3, 3},           {"L3T2", 3, 3},
+    {"L3T3", 3, 3},           {"S3T1", 3, 1},
+    {"S3T2", 3, 1},           {"S3T3", 3, 1},
+    {"S3T1h", 3, 1},          {"S3T2h", 3, 1},
+    {"S3T3h", 3, 1},          {"L2T2_KEY", 2, 2},
+    {"L2T2_KEY_SHIFT", 2, 2}, {"L2T3_KEY", 2, 2},
+    {"L2T3_KEY_SHIFT", 2, 2}, {"L3T2_KEY", 3, 3},
+    {"L3T2_KEY_SHIFT", 3, 3}, {"L3T3_KEY", 3, 3}};
 
 }  // namespace
 
@@ -48,15 +54,15 @@ media::VideoRotation WebRtcToMediaVideoRotation(
 media::VideoCodec WebRtcToMediaVideoCodec(webrtc::VideoCodecType codec) {
   switch (codec) {
     case webrtc::kVideoCodecAV1:
-      return media::kCodecAV1;
+      return media::VideoCodec::kAV1;
     case webrtc::kVideoCodecVP8:
-      return media::kCodecVP8;
+      return media::VideoCodec::kVP8;
     case webrtc::kVideoCodecVP9:
-      return media::kCodecVP9;
+      return media::VideoCodec::kVP9;
     case webrtc::kVideoCodecH264:
-      return media::kCodecH264;
+      return media::VideoCodec::kH264;
     default:
-      return media::kUnknownVideoCodec;
+      return media::VideoCodec::kUnknown;
   }
 }
 
@@ -271,4 +277,13 @@ absl::optional<int> WebRtcScalabilityModeSpatialLayers(
   return absl::nullopt;
 }
 
+absl::optional<int> WebRtcScalabilityModeDependentSpatialLayers(
+    const std::string& scalability_mode) {
+  for (const auto& entry : kSvcSpatialLayers) {
+    if (entry.name == scalability_mode) {
+      return entry.dependent_spatial_layers;
+    }
+  }
+  return absl::nullopt;
+}
 }  // namespace blink

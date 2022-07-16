@@ -11,7 +11,7 @@
 
     <style name="MaterialCardStyle" parent="Widget.MaterialComponents.CardView">
         <item name="shapeAppearance">@style/MaterialCardShape</item>
-        <item name="cardElevation">@dimen/default_elevation_1</item>
+        <item name="cardElevation">@dimen/card_elevation</item>
     </style>
 
     <style name="MaterialCardShape" parent="ShapeAppearance.MaterialComponents.MediumComponent">
@@ -23,7 +23,7 @@
     </style>
 
     <style name="TextAppearance.ListMenuItem">
-        <item name="android:textColor">@color/default_icon_color_tint_list</item>
+        <item name="android:textColor">@color/default_text_color_list</item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -51,6 +51,10 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_marginStart">@dimen/list_item_default_margin</item>
     </style>
+    <style name="ListItemContainerV2" parent="ListItemContainer">
+        <item name="android:layout_marginTop">@dimen/list_item_v2_margin</item>
+        <item name="android:layout_marginBottom">@dimen/list_item_v2_margin</item>
+    </style>
     <style name="ListItemStartIcon">
         <item name="android:layout_width">@dimen/list_item_start_icon_width</item>
         <item name="android:layout_height">@dimen/list_item_start_icon_width</item>
@@ -58,6 +62,10 @@
         <item name="android:layout_marginEnd">@dimen/list_item_start_icon_right_margin</item>
         <item name="android:scaleType">center</item>
         <item name="android:contentDescription">@null</item>
+    </style>
+    <style name="ListItemStartIconV2" parent="ListItemStartIcon">
+        <item name="android:layout_width">@dimen/list_item_v2_start_icon_width</item>
+        <item name="android:layout_height">@dimen/list_item_v2_start_icon_width</item>
     </style>
     <style name="ListItemEndIcon">
         <item name="android:layout_width">@dimen/list_item_end_icon_width</item>
@@ -98,4 +106,15 @@
         <item name="android:windowEnterAnimation">@anim/chip_in</item>
         <item name="android:windowExitAnimation">@anim/chip_out</item>
     </style>
+
+    <!-- Snooze button -->
+    <style name="TextButton.Inverse.Snooze">
+        <item name="android:paddingStart">@dimen/text_bubble_with_snooze_padding_horizontal</item>
+        <item name="android:paddingEnd">@dimen/text_bubble_with_snooze_padding_horizontal</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+    </style>
+
 </resources>

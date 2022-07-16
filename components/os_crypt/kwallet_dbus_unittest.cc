@@ -103,6 +103,9 @@ class KWalletDBusTest
     testing::Mock::VerifyAndClearExpectations(mock_session_bus_.get());
   }
 
+  KWalletDBusTest(const KWalletDBusTest&) = delete;
+  KWalletDBusTest& operator=(const KWalletDBusTest&) = delete;
+
  protected:
   const base::nix::DesktopEnvironment desktop_env_;
   scoped_refptr<dbus::MockBus> mock_session_bus_;
@@ -113,9 +116,6 @@ class KWalletDBusTest
   std::string dbus_service_name_;
   std::string dbus_path_;
   std::string kwalletd_name_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KWalletDBusTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(

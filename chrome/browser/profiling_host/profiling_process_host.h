@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/timer/timer.h"
 #include "components/services/heap_profiling/public/mojom/heap_profiling_client.mojom-forward.h"
@@ -30,6 +29,9 @@ class ProfilingProcessHost {
  public:
   // Returns a pointer to the current global profiling process host.
   static ProfilingProcessHost* GetInstance();
+
+  ProfilingProcessHost(const ProfilingProcessHost&) = delete;
+  ProfilingProcessHost& operator=(const ProfilingProcessHost&) = delete;
 
   // Starts background profiling and metrics, if appropriate.
   void Start();
@@ -61,8 +63,6 @@ class ProfilingProcessHost {
 
   // Every 24-hours, reports the profiling mode.
   base::RepeatingTimer metrics_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfilingProcessHost);
 };
 
 }  // namespace heap_profiling

@@ -35,6 +35,10 @@ namespace internal {
 class ExceptionSnapshotFuchsia final : public ExceptionSnapshot {
  public:
   ExceptionSnapshotFuchsia();
+
+  ExceptionSnapshotFuchsia(const ExceptionSnapshotFuchsia&) = delete;
+  ExceptionSnapshotFuchsia& operator=(const ExceptionSnapshotFuchsia&) = delete;
+
   ~ExceptionSnapshotFuchsia() override;
 
   //! \brief Initializes the object.
@@ -73,8 +77,6 @@ class ExceptionSnapshotFuchsia final : public ExceptionSnapshot {
   uint32_t exception_;
   uint32_t exception_info_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionSnapshotFuchsia);
 };
 
 }  // namespace internal

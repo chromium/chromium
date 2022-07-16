@@ -39,6 +39,10 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
         kTestGeolocationApiKey);
   }
 
+  PublicIpAddressGeolocatorTest(const PublicIpAddressGeolocatorTest&) = delete;
+  PublicIpAddressGeolocatorTest& operator=(
+      const PublicIpAddressGeolocatorTest&) = delete;
+
   ~PublicIpAddressGeolocatorTest() override {}
 
  protected:
@@ -112,8 +116,6 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
 
   // Test URLLoaderFactory for handling requests to the geolocation API.
   network::TestURLLoaderFactory test_url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(PublicIpAddressGeolocatorTest);
 };
 
 // Basic test of a client invoking QueryNextPosition.

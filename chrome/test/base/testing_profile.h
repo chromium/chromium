@@ -11,8 +11,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -41,9 +41,7 @@ class TestingPrefStore;
 namespace content {
 class MockResourceContext;
 class SSLHostStateDelegate;
-#if !defined(OS_ANDROID)
 class ZoomLevelDelegate;
-#endif  // !defined(OS_ANDROID)
 }  // namespace content
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -61,7 +59,7 @@ class PolicyService;
 class ProfilePolicyConnector;
 class SchemaRegistryService;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class UserCloudPolicyManagerChromeOS;
+class UserCloudPolicyManagerAsh;
 #else
 class UserCloudPolicyManager;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -151,8 +149,8 @@ class TestingProfile : public Profile {
     void SetSupervisedUserId(const std::string& supervised_user_id);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    void SetUserCloudPolicyManagerChromeOS(
-        std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
+    void SetUserCloudPolicyManagerAsh(
+        std::unique_ptr<policy::UserCloudPolicyManagerAsh>
             user_cloud_policy_manager);
 #else
     void SetUserCloudPolicyManager(
@@ -196,7 +194,7 @@ class TestingProfile : public Profile {
     bool is_new_profile_ = false;
     std::string supervised_user_id_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
+    std::unique_ptr<policy::UserCloudPolicyManagerAsh>
         user_cloud_policy_manager_;
 #else
     std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
@@ -235,7 +233,7 @@ class TestingProfile : public Profile {
       bool is_new_profile,
       const std::string& supervised_user_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      std::unique_ptr<policy::UserCloudPolicyManagerChromeOS> policy_manager,
+      std::unique_ptr<policy::UserCloudPolicyManagerAsh> policy_manager,
 #else
       std::unique_ptr<policy::UserCloudPolicyManager> policy_manager,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -249,15 +247,11 @@ class TestingProfile : public Profile {
 
   // !!!!!!!! WARNING: THIS IS GENERALLY NOT SAFE TO CALL! !!!!!!!!
   // This bypasses the BrowserContextDependencyManager, and in particular, it
-  // destroys any previously-created HistoryService. That means any other
-  // KeyedServices that depend on HistoryService may be left with dangling
+  // destroys any previously-created WebDataService. That means any other
+  // KeyedServices that depend on WebDataService may be left with dangling
   // pointers.
   // Instead, use Builder::AddTestingFactory to inject your own factories.
   // !!!!!!!! WARNING: THIS IS GENERALLY NOT SAFE TO CALL! !!!!!!!!
-  // Creates the history service. Returns true on success.
-  // TODO(crbug.com/1106699): Remove this API and adopt the Builder instead.
-  bool CreateHistoryService() WARN_UNUSED_RESULT;
-
   // Creates a WebDataService. If not invoked, the web data service is NULL.
   // TODO(crbug.com/1106699): Remove this API and adopt the Builder instead.
   void CreateWebDataService();
@@ -282,10 +276,8 @@ class TestingProfile : public Profile {
   base::FilePath GetPath() override;
   base::FilePath GetPath() const override;
   base::Time GetCreationTime() const override;
-#if !defined(OS_ANDROID)
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
-#endif  // !defined(OS_ANDROID)
   scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner() override;
   // Do not override IsOffTheRecord to turn a normal profile into an incognito
   // profile dynamically.
@@ -293,12 +285,15 @@ class TestingProfile : public Profile {
   bool IsOffTheRecord() const final;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   bool IsMainProfile() const override;
+  void SetIsMainProfile(bool is_main_profile);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   const OTRProfileID& GetOTRProfileID() const override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::ResourceContext* GetResourceContext() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
+  content::PlatformNotificationService* GetPlatformNotificationService()
+      override;
   content::PushMessagingService* GetPushMessagingService() override;
   content::StorageNotificationService* GetStorageNotificationService() override;
   content::SSLHostStateDelegate* GetSSLHostStateDelegate() override;
@@ -329,27 +324,22 @@ class TestingProfile : public Profile {
   bool AllowsBrowserWindows() const override;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void SetExtensionSpecialStoragePolicy(
-      ExtensionSpecialStoragePolicy* extension_special_storage_policy);
+      scoped_refptr<ExtensionSpecialStoragePolicy>
+          extension_special_storage_policy);
 #endif
   ExtensionSpecialStoragePolicy* GetExtensionSpecialStoragePolicy() override;
 
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
-#if !defined(OS_ANDROID)
   ChromeZoomLevelPrefs* GetZoomLevelPrefs() override;
-#endif  // !defined(OS_ANDROID)
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
-  void set_last_session_exited_cleanly(bool value) {
-    last_session_exited_cleanly_ = value;
-  }
   bool IsSameOrParent(Profile* profile) override;
   base::Time GetStartTime() const override;
   ProfileKey* GetProfileKey() const override;
   policy::SchemaRegistryService* GetPolicySchemaRegistryService() override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::UserCloudPolicyManagerChromeOS* GetUserCloudPolicyManagerChromeOS()
-      override;
+  policy::UserCloudPolicyManagerAsh* GetUserCloudPolicyManagerAsh() override;
   policy::ActiveDirectoryPolicyManager* GetActiveDirectoryPolicyManager()
       override;
 #else
@@ -363,8 +353,6 @@ class TestingProfile : public Profile {
   bool WasCreatedByVersionOrLater(const std::string& version) override;
   bool IsGuestSession() const override;
   bool IsNewProfile() const override;
-  void SetExitType(ExitType exit_type) override {}
-  ExitType GetLastSessionExitType() const override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void ChangeAppLocale(const std::string&, AppLocaleChangedVia) override;
@@ -384,7 +372,7 @@ class TestingProfile : public Profile {
 
   void SetCreationTimeForTesting(base::Time creation_time) override;
 
-  void RecordMainFrameNavigation() override {}
+  void RecordPrimaryMainFrameNavigation() override {}
 
   void set_profile_name(const std::string& profile_name) {
     profile_name_ = profile_name;
@@ -450,10 +438,11 @@ class TestingProfile : public Profile {
 
   bool is_new_profile_ = false;
 
-  std::string supervised_user_id_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool is_main_profile_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  // Whether the last session exited cleanly.
-  bool last_session_exited_cleanly_ = true;
+  std::string supervised_user_id_;
 
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
 
@@ -484,8 +473,7 @@ class TestingProfile : public Profile {
 
   std::unique_ptr<policy::SchemaRegistryService> schema_registry_service_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
-      user_cloud_policy_manager_;
+  std::unique_ptr<policy::UserCloudPolicyManagerAsh> user_cloud_policy_manager_;
 #else
   std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

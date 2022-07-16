@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 class APITypeReferenceMap;
@@ -26,6 +26,12 @@ class DeclarativeContentHooksDelegate : public APIBindingHooksDelegate {
       base::RepeatingCallback<void(const v8::FunctionCallbackInfo<v8::Value>&)>;
 
   DeclarativeContentHooksDelegate();
+
+  DeclarativeContentHooksDelegate(const DeclarativeContentHooksDelegate&) =
+      delete;
+  DeclarativeContentHooksDelegate& operator=(
+      const DeclarativeContentHooksDelegate&) = delete;
+
   ~DeclarativeContentHooksDelegate() override;
 
   void InitializeTemplate(v8::Isolate* isolate,
@@ -42,8 +48,6 @@ class DeclarativeContentHooksDelegate : public APIBindingHooksDelegate {
   // are passed to v8::External, we need to use unique_ptrs rather than just
   // storing the callback directly in a vector.
   std::vector<std::unique_ptr<HandlerCallback>> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentHooksDelegate);
 };
 
 }  // namespace extensions

@@ -5,16 +5,22 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_EXTENSION_APPS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_EXTENSION_APPS_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-class Profile;
+class StandaloneBrowserPublisherTest;
 
 namespace apps {
 
@@ -34,11 +40,16 @@ namespace apps {
 // is almost always running in the background. This is enforced via
 // ScopedKeepAlive. We would like to eventually remove this assumption. This
 // requires caching a copy of installed apps in this class.
+//
+// TODO(crbug.com/1253250):
+// 1. Remove the parent class apps::PublisherBase.
+// 2. Remove all apps::mojom related code.
 class StandaloneBrowserExtensionApps : public KeyedService,
                                        public apps::PublisherBase,
+                                       public AppPublisher,
                                        public crosapi::mojom::AppPublisher {
  public:
-  explicit StandaloneBrowserExtensionApps(Profile* profile);
+  explicit StandaloneBrowserExtensionApps(AppServiceProxy* proxy);
   ~StandaloneBrowserExtensionApps() override;
 
   StandaloneBrowserExtensionApps(const StandaloneBrowserExtensionApps&) =
@@ -51,7 +62,21 @@ class StandaloneBrowserExtensionApps : public KeyedService,
   void RegisterChromeAppsCrosapiHost(
       mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver);
 
+  // Registers the keep alive, as the current implementation relies on the
+  // assumption that Lacros is always running.
+  void RegisterKeepAlive();
+
  private:
+  friend class StandaloneBrowserPublisherTest;
+
+  // apps::AppPublisher overrides.
+  void LoadIcon(const std::string& app_id,
+                const IconKey& icon_key,
+                IconType icon_type,
+                int32_t size_hint_in_dip,
+                bool allow_placeholder_icon,
+                apps::LoadIconCallback callback) override;
+
   // apps::PublisherBase:
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
                apps::mojom::ConnectOptionsPtr opts) override;
@@ -65,10 +90,21 @@ class StandaloneBrowserExtensionApps : public KeyedService,
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
               apps::mojom::WindowInfoPtr window_info) override;
+  void LaunchAppWithIntent(const std::string& app_id,
+                           int32_t event_flags,
+                           apps::mojom::IntentPtr intent,
+                           apps::mojom::LaunchSource launch_source,
+                           apps::mojom::WindowInfoPtr window_info,
+                           LaunchAppWithIntentCallback callback) override;
+  void LaunchAppWithFiles(const std::string& app_id,
+                          int32_t event_flags,
+                          apps::mojom::LaunchSource launch_source,
+                          apps::mojom::FilePathsPtr file_paths) override;
   void GetMenuModel(const std::string& app_id,
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
+  void StopApp(const std::string& app_id) override;
 
   // crosapi::mojom::AppPublisher overrides.
   void OnApps(std::vector<apps::mojom::AppPtr> deltas) override;
@@ -86,11 +122,19 @@ class StandaloneBrowserExtensionApps : public KeyedService,
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
+  // This class stores a copy of the latest app_ptr received for each app_id.
+  // The Lacros sender of OnApps events always sends full objects, not deltas.
+  // Thus, this class can simply keep the latest copy, without doing any
+  // merging.
+  std::map<std::string, apps::mojom::AppPtr> app_ptr_cache_;
+
   // Receives chrome app publisher events from Lacros.
   mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};
 
   // Used to send chrome app publisher actions to Lacros.
   mojo::Remote<crosapi::mojom::AppController> controller_;
+
+  std::unique_ptr<crosapi::BrowserManager::ScopedKeepAlive> keep_alive_;
 
   base::WeakPtrFactory<StandaloneBrowserExtensionApps> weak_factory_{this};
 };

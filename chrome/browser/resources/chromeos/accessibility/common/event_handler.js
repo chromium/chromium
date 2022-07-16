@@ -54,7 +54,7 @@ class EventHandler {
     this.listening_ = false;
 
     /** @private {!function(chrome.automation.AutomationEvent)} */
-    this.handler_ = this.handleEvent_.bind(this);
+    this.handler_ = event => this.handleEvent_(event);
   }
 
   /** Starts listening to events. */

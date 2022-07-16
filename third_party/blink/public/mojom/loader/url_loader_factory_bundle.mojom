@@ -30,10 +30,6 @@ struct URLLoaderFactoryBundle {
   map<url.mojom.Origin, pending_remote<network.mojom.URLLoaderFactory>>
       isolated_world_factories;
 
-  // A special factory that is used for AppCache.
-  // TODO(https://crbug.com/582750): Drop this when AppCache is deprecated.
-  pending_remote<network.mojom.URLLoaderFactory>? appcache_factory;
-
   // Whether redirect checks should be bypassed, since they are happening in the
   // browser.
   bool bypass_redirect_checks = false;

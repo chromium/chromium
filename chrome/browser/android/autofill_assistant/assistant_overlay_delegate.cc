@@ -29,12 +29,6 @@ void AssistantOverlayDelegate::OnUnexpectedTaps(
   ui_controller_->OnUnexpectedTaps();
 }
 
-void AssistantOverlayDelegate::OnUserInteractionInsideTouchableArea(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
-  ui_controller_->OnUserInteractionInsideTouchableArea();
-}
-
 base::android::ScopedJavaGlobalRef<jobject>
 AssistantOverlayDelegate::GetJavaObject() {
   return java_assistant_overlay_delegate_;

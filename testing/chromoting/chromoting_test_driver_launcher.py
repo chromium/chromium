@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+
 """Utility script to run chromoting test driver tests on the Chromoting bot."""
+
+from __future__ import print_function
 
 import argparse
 
@@ -38,7 +41,7 @@ def LaunchCTDCommand(args, command):
 
   if not host_jid:
     # Host-JID not found in log. Let's not attempt to run this test.
-    print 'Host-JID not found in log %s.' % host_log_file_names[-1]
+    print('Host-JID not found in log %s.' % host_log_file_names[-1])
     return '[Command failed]: %s, %s' % (command, host_log_file_names)
 
   retries = 0
@@ -123,9 +126,9 @@ if __name__ == '__main__':
   try:
     failing_tests, host_logs = main(command_line_args)
     if failing_tests:
-      print '++++++++++FAILED TESTS++++++++++'
-      print failing_tests.rstrip('\n')
-      print '++++++++++++++++++++++++++++++++'
+      print('++++++++++FAILED TESTS++++++++++')
+      print(failing_tests.rstrip('\n'))
+      print('++++++++++++++++++++++++++++++++')
       raise Exception('At least one test failed.')
   finally:
     # Stop host and cleanup user-profile-dir.

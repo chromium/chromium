@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -23,6 +22,7 @@ class SharedURLLoaderFactory;
 
 namespace policy {
 
+class ClientDataDelegate;
 class CloudPolicyClient;
 class CloudPolicyClientRegistrationHelper;
 class MachineLevelUserCloudPolicyManager;
@@ -34,6 +34,12 @@ class ChromeBrowserCloudManagementRegistrar {
   ChromeBrowserCloudManagementRegistrar(
       DeviceManagementService* device_management_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  ChromeBrowserCloudManagementRegistrar(
+      const ChromeBrowserCloudManagementRegistrar&) = delete;
+  ChromeBrowserCloudManagementRegistrar& operator=(
+      const ChromeBrowserCloudManagementRegistrar&) = delete;
+
   ~ChromeBrowserCloudManagementRegistrar();
 
   // The callback invoked once policy registration is complete. Passed
@@ -47,6 +53,7 @@ class ChromeBrowserCloudManagementRegistrar {
   void RegisterForCloudManagementWithEnrollmentToken(
       const std::string& enrollment_token,
       const std::string& client_id,
+      const ClientDataDelegate& client_data_delegate,
       CloudManagementRegistrationCallback callback);
 
  private:
@@ -57,8 +64,6 @@ class ChromeBrowserCloudManagementRegistrar {
   std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
   DeviceManagementService* device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserCloudManagementRegistrar);
 };
 
 // A helper class that setup registration and fetch policy.
@@ -69,6 +74,12 @@ class MachineLevelUserCloudPolicyFetcher : public CloudPolicyService::Observer {
       PrefService* local_state,
       DeviceManagementService* device_management_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  MachineLevelUserCloudPolicyFetcher(
+      const MachineLevelUserCloudPolicyFetcher&) = delete;
+  MachineLevelUserCloudPolicyFetcher& operator=(
+      const MachineLevelUserCloudPolicyFetcher&) = delete;
+
   ~MachineLevelUserCloudPolicyFetcher() override;
 
   // Initialize the cloud policy client and policy store then fetch
@@ -97,8 +108,6 @@ class MachineLevelUserCloudPolicyFetcher : public CloudPolicyService::Observer {
   PrefService* local_state_;
   DeviceManagementService* device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachineLevelUserCloudPolicyFetcher);
 };
 
 }  // namespace policy

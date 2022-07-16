@@ -227,14 +227,7 @@ function startTesting() {
     setTimeout(startTesting, 1000);
     return;
   }
-
-  if (window.HTMLImports && window.HTMLImports.whenReady) {
-    /// When there is a HTML Import polyfill wait all imports to finish before
-    // starting the test.
-    window.HTMLImports.whenReady(continueTesting);
-  } else {
-    continueTesting();
-  }
+  continueTesting();
 }
 
 /**

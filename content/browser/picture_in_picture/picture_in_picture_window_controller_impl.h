@@ -52,6 +52,11 @@ class CONTENT_EXPORT PictureInPictureWindowControllerImpl
   static PictureInPictureWindowControllerImpl* GetOrCreateForWebContents(
       WebContents* web_contents);
 
+  PictureInPictureWindowControllerImpl(
+      const PictureInPictureWindowControllerImpl&) = delete;
+  PictureInPictureWindowControllerImpl& operator=(
+      const PictureInPictureWindowControllerImpl&) = delete;
+
   ~PictureInPictureWindowControllerImpl() override;
 
   using PlayerSet = std::set<int>;
@@ -191,8 +196,6 @@ class CONTENT_EXPORT PictureInPictureWindowControllerImpl
   absl::optional<media_session::MediaPosition> media_position_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PictureInPictureWindowControllerImpl);
 };
 
 }  // namespace content

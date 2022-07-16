@@ -21,7 +21,8 @@ MediaStreamAudioTrackUnderlyingSource::MediaStreamAudioTrackUnderlyingSource(
     wtf_size_t max_queue_size)
     : AudioDataQueueUnderlyingSource(script_state, max_queue_size),
       media_stream_track_processor_(media_stream_track_processor),
-      track_(track) {
+      track_(track),
+      buffer_pool_(base::MakeRefCounted<media::AudioBufferMemoryPool>()) {
   DCHECK(track_);
   RecordBreakoutBoxUsage(BreakoutBoxUsage::kReadableAudio);
 }
@@ -69,7 +70,7 @@ void MediaStreamAudioTrackUnderlyingSource::OnData(
 
   auto data_copy = media::AudioBuffer::CopyFrom(
       audio_parameters_.sample_rate(),
-      estimated_capture_time - base::TimeTicks(), &audio_bus);
+      estimated_capture_time - base::TimeTicks(), &audio_bus, buffer_pool_);
 
   QueueFrame(std::move(data_copy));
 }

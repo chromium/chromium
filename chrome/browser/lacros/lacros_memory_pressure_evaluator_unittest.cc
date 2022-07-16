@@ -32,7 +32,7 @@ TEST(LacrosMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   auto listener = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE, base::BindRepeating(&PressureCallback, &pressure_events));
 
-  util::MultiSourceMemoryPressureMonitor monitor;
+  memory_pressure::MultiSourceMemoryPressureMonitor monitor;
   monitor.ResetSystemEvaluatorForTesting();
 
   auto evaluator =

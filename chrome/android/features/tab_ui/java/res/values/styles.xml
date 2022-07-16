@@ -33,9 +33,7 @@
     </style>
 
     <style name="TabGridCardActionButtonStyle.ThemeRefactor">
-        <item name="android:layout_width">@dimen/tab_grid_card_header_height</item>
-        <item name="android:layout_height">@dimen/tab_grid_card_header_height</item>
-        <item name="android:layout_margin">@dimen/tab_grid_card_margin</item>
+        <item name="android:layout_margin">@dimen/tab_list_card_action_button_margin</item>
     </style>
 
     <style name="TabGridCardThumbnailStyle">
@@ -83,7 +81,7 @@
     <style name="ThemeRefactorOverlay.Disabled.TabUi" parent="">
         <item name="tabGridDividerVisible">@integer/view_visible</item>
         <item name="tabGridHeaderHeight">@dimen/tab_list_card_title_height</item>
-        <item name="tabGridBackground">@drawable/popup_bg_tinted</item>
+        <item name="tabGridBackground">@drawable/dialog_bg_tinted</item>
         <item name="tabGridMargin">@dimen/tab_list_card_margin</item>
 
         <item name="tabGridFaviconStyle">@style/TabGridCardTopFaviconStyle</item>
@@ -118,8 +116,14 @@
     </style>
 
     <style name="TabThumbnailPlaceHolderStyle.Selected">
-        <item name="colorTileBase">?attr/colorPrimaryContainer</item>
+        <item name="colorTileBase">?attr/colorOnPrimary</item>
         <item name="elevationTileBase">@dimen/default_elevation_0</item>
+    </style>
+
+    <style name="SearchShortcutChip" parent="Chip">
+        <item name="cornerRadius">@dimen/chip_default_height</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.TextMediumThick.Primary</item>
+        <item name="chipColor">@color/default_text_color_inverse</item>
     </style>
 
 </resources>

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "apps/test/app_window_waiter.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -31,11 +30,14 @@ class LoginFeedbackTest : public LoginManagerTest {
   LoginFeedbackTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(2);
   }
+
+  LoginFeedbackTest(const LoginFeedbackTest&) = delete;
+  LoginFeedbackTest& operator=(const LoginFeedbackTest&) = delete;
+
   ~LoginFeedbackTest() override {}
 
  private:
   LoginManagerMixin login_mixin_{&mixin_host_};
-  DISALLOW_COPY_AND_ASSIGN(LoginFeedbackTest);
 };
 
 void TestFeedback() {

@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "net/cookies/canonical_cookie.h"
 
@@ -22,6 +21,9 @@ namespace browsing_data {
 class MockCookieHelper : public CookieHelper {
  public:
   explicit MockCookieHelper(content::BrowserContext* browser_context);
+
+  MockCookieHelper(const MockCookieHelper&) = delete;
+  MockCookieHelper& operator=(const MockCookieHelper&) = delete;
 
   // CookieHelper methods.
   void StartFetching(FetchCallback callback) override;
@@ -49,8 +51,6 @@ class MockCookieHelper : public CookieHelper {
 
   // Stores which cookies exist.
   std::map<const std::string, bool> cookies_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCookieHelper);
 };
 
 }  // namespace browsing_data

@@ -32,10 +32,10 @@ namespace {
 using ::testing::_;
 using ::testing::Eq;
 
-static constexpr char kNetworkDataBase64[] = "aaaa";
+static constexpr char kChallengeBase64[] = "aaaa";
 static constexpr char kCredentialIdBase64[] = "cccc";
 
-class MockAuthenticator : public autofill::InternalAuthenticator {
+class MockAuthenticator : public webauthn::InternalAuthenticator {
  public:
   explicit MockAuthenticator(bool should_succeed)
       : web_contents_(web_contents_factory_.CreateWebContents(&context_)),
@@ -43,6 +43,7 @@ class MockAuthenticator : public autofill::InternalAuthenticator {
   ~MockAuthenticator() override = default;
 
   MOCK_METHOD1(SetEffectiveOrigin, void(const url::Origin&));
+  MOCK_METHOD1(SetPaymentOptions, void(blink::mojom::PaymentOptionsPtr));
   MOCK_METHOD2(
       MakeCredential,
       void(blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
@@ -57,7 +58,7 @@ class MockAuthenticator : public autofill::InternalAuthenticator {
     return web_contents_->GetMainFrame();
   }
 
-  // Implements an autofill::InternalAuthenticator method to delegate fields of
+  // Implements an webauthn::InternalAuthenticator method to delegate fields of
   // |options| to gmock methods for easier verification.
   void GetAssertion(
       blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
@@ -95,14 +96,14 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
   }
 
   void SetUp() override {
-    ASSERT_TRUE(base::Base64Decode(kNetworkDataBase64, &network_data_bytes_));
+    ASSERT_TRUE(base::Base64Decode(kChallengeBase64, &challenge_bytes_));
     ASSERT_TRUE(base::Base64Decode(kCredentialIdBase64, &credential_id_bytes_));
   }
 
   mojom::SecurePaymentConfirmationRequestPtr MakeRequest() {
     auto request = mojom::SecurePaymentConfirmationRequest::New();
-    request->challenge = std::vector<uint8_t>(network_data_bytes_.begin(),
-                                              network_data_bytes_.end());
+    request->challenge =
+        std::vector<uint8_t>(challenge_bytes_.begin(), challenge_bytes_.end());
     return request;
   }
 
@@ -111,19 +112,7 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
                                 const std::string& stringified_details,
                                 const PayerData& payer_data) override {
     EXPECT_EQ(method_name, methods::kSecurePaymentConfirmation);
-    if (base::FeatureList::IsEnabled(
-            features::kSecurePaymentConfirmationAPIV2)) {
-      EXPECT_EQ(stringified_details, "{}");
-    } else {
-      EXPECT_EQ(
-          stringified_details,
-          "{\"appid_extension\":false,\"challenge\":\"{\\\"merchantData\\\":{"
-          "\\\"merchantOrigin\\\":\\\"https://"
-          "merchant.example\\\",\\\"total\\\":{\\\"currency\\\":\\\"USD\\\","
-          "\\\"value\\\":\\\"1.25\\\"}},\\\"networkData\\\":\\\"aaaa\\\"}\","
-          "\"echo_appid_extension\":false,\"echo_prf\":false,\"info\":{},\"prf_"
-          "not_evaluated\":false,\"prf_results\":{},\"signature\":\"\"}");
-    }
+    EXPECT_EQ(stringified_details, "{}");
     EXPECT_EQ(payer_data.payer_name, "");
     EXPECT_EQ(payer_data.payer_email, "");
     EXPECT_EQ(payer_data.payer_phone, "");
@@ -134,13 +123,16 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
   }
 
   void OnInstrumentDetailsError(const std::string& error_message) override {
-    EXPECT_EQ(error_message, "Authenticator returned NOT_ALLOWED_ERROR.");
+    EXPECT_EQ(error_message,
+              "The operation either timed out or was not allowed. See: "
+              "https://www.w3.org/TR/webauthn-2/"
+              "#sctn-privacy-considerations-client.");
     on_instrument_details_error_called_ = true;
   }
 
   std::u16string label_;
   std::unique_ptr<PaymentRequestSpec> spec_;
-  std::string network_data_bytes_;
+  std::string challenge_bytes_;
   std::string credential_id_bytes_;
   bool on_instrument_details_ready_called_ = false;
   bool on_instrument_details_error_called_ = false;
@@ -164,25 +156,8 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator));
 
-  EXPECT_CALL(*mock_authenticator, SetEffectiveOrigin(Eq(url::Origin::Create(
-                                       GURL("https://effective_rp.example")))));
-
-  std::vector<uint8_t> expected_bytes;
-  if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
-    expected_bytes = std::vector<uint8_t>(network_data_bytes_.begin(),
-                                          network_data_bytes_.end());
-  } else {
-    // This is the SHA-256 hash of the serialized JSON string:
-    // {"merchantData":{"merchantOrigin":"https://merchant.example","total":
-    // {"currency":"USD","value":"1.25"}},"networkData":"aaaa"}
-    //
-    // To update the test expectation, open
-    // components/test/data/payments/secure_payment_confirmation_debug.html in
-    // a browser and follow the instructions.
-    expected_bytes = {240, 123, 37,  51,  16,  34,  244, 220, 166, 179, 139,
-                      85,  229, 152, 242, 133, 88,  44,  222, 133, 49,  97,
-                      146, 20,  207, 119, 43,  142, 171, 239, 125, 250};
-  }
+  std::vector<uint8_t> expected_bytes =
+      std::vector<uint8_t>(challenge_bytes_.begin(), challenge_bytes_.end());
 
   EXPECT_CALL(*mock_authenticator, VerifyChallenge(Eq(expected_bytes)));
   app.InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());

@@ -31,6 +31,9 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
  public:
   BookmarkMenuBridgeTest() {}
 
+  BookmarkMenuBridgeTest(const BookmarkMenuBridgeTest&) = delete;
+  BookmarkMenuBridgeTest& operator=(const BookmarkMenuBridgeTest&) = delete;
+
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
@@ -91,8 +94,6 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
 
  private:
   CocoaTestHelper cocoa_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkMenuBridgeTest);
 };
 
 TEST_F(BookmarkMenuBridgeTest, TestBookmarkMenuAutoSeparator) {

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/version/version_handler.h"
 #include "chromeos/dbus/util/version_loader.h"
@@ -17,6 +16,10 @@
 class VersionHandlerChromeOS : public VersionHandler {
  public:
   VersionHandlerChromeOS();
+
+  VersionHandlerChromeOS(const VersionHandlerChromeOS&) = delete;
+  VersionHandlerChromeOS& operator=(const VersionHandlerChromeOS&) = delete;
+
   ~VersionHandlerChromeOS() override;
 
   // VersionHandler overrides:
@@ -29,8 +32,6 @@ class VersionHandlerChromeOS : public VersionHandler {
 
  private:
   base::WeakPtrFactory<VersionHandlerChromeOS> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VersionHandlerChromeOS);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_HANDLER_CHROMEOS_H_

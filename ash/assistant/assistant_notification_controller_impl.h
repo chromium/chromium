@@ -12,7 +12,6 @@
 #include "ash/assistant/model/assistant_notification_model.h"
 #include "ash/assistant/model/assistant_notification_model_observer.h"
 #include "ash/public/cpp/assistant/controller/assistant_notification_controller.h"
-#include "base/macros.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom.h"
@@ -33,6 +32,12 @@ class ASH_EXPORT AssistantNotificationControllerImpl
   using AssistantNotification = chromeos::assistant::AssistantNotification;
 
   AssistantNotificationControllerImpl();
+
+  AssistantNotificationControllerImpl(
+      const AssistantNotificationControllerImpl&) = delete;
+  AssistantNotificationControllerImpl& operator=(
+      const AssistantNotificationControllerImpl&) = delete;
+
   ~AssistantNotificationControllerImpl() override;
 
   // Returns the underlying model.
@@ -80,8 +85,6 @@ class ASH_EXPORT AssistantNotificationControllerImpl
 
   mojo::Receiver<chromeos::libassistant::mojom::NotificationDelegate> receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantNotificationControllerImpl);
 };
 
 }  // namespace ash

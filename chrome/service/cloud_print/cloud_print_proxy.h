@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "chrome/service/cloud_print/cloud_print_proxy_backend.h"
@@ -38,6 +37,10 @@ class CloudPrintProxy : public CloudPrintProxyFrontend,
     virtual void OnCloudPrintProxyDisabled(bool persist_state) {}
   };
   CloudPrintProxy();
+
+  CloudPrintProxy(const CloudPrintProxy&) = delete;
+  CloudPrintProxy& operator=(const CloudPrintProxy&) = delete;
+
   ~CloudPrintProxy() override;
 
   // Provides a CloudPrintProxy instance, which may be lazily instantiated.
@@ -108,8 +111,6 @@ class CloudPrintProxy : public CloudPrintProxyFrontend,
   std::unique_ptr<CloudPrintWipeout> wipeout_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintProxy);
 };
 
 }  // namespace cloud_print

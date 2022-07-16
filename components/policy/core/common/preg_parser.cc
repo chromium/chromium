@@ -249,9 +249,9 @@ void HandleRecord(const std::u16string& key_name,
   std::string value_name(base::UTF16ToUTF8(value));
   if (!base::StartsWith(value_name, kActionTriggerPrefix,
                         base::CompareCase::SENSITIVE)) {
-    std::unique_ptr<base::Value> value;
-    if (DecodePRegValue(type, data, &value))
-      dict->SetValue(value_name, std::move(value));
+    std::unique_ptr<base::Value> value_ptr;
+    if (DecodePRegValue(type, data, &value_ptr))
+      dict->SetValue(value_name, std::move(value_ptr));
     return;
   }
 
@@ -260,10 +260,10 @@ void HandleRecord(const std::u16string& key_name,
       value_name.substr(base::size(kActionTriggerPrefix) - 1)));
   if (action_trigger == kActionTriggerDeleteValues) {
     if (DecodePRegStringValue(data, &data_utf8)) {
-      for (const std::string& value :
+      for (const std::string& value_str :
            base::SplitString(data_utf8, ";", base::KEEP_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY))
-        dict->RemoveValue(value);
+        dict->RemoveValue(value_str);
     }
   } else if (base::StartsWith(action_trigger, kActionTriggerDeleteKeys,
                               base::CompareCase::SENSITIVE)) {

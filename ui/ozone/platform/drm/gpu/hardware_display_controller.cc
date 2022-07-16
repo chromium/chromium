@@ -7,13 +7,19 @@
 #include <drm.h>
 #include <string.h>
 #include <xf86drm.h>
+#include <ios>
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/syslog_logging.h"
+#include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/traced_value.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -62,6 +68,16 @@ void DrawCursor(DrmDumbBuffer* cursor, const SkBitmap& image) {
   SkCanvas* canvas = cursor->GetCanvas();
   canvas->clear(SK_ColorTRANSPARENT);
   canvas->drawImageRect(image.asImage(), damage, SkSamplingOptions());
+}
+
+template <typename T>
+std::string NumberToHexString(const T value) {
+  static_assert(std::is_unsigned<T>::value,
+                "Can only convert unsigned ints to hex");
+
+  std::stringstream ss;
+  ss << "0x" << std::hex << std::uppercase << value;
+  return ss.str();
 }
 
 }  // namespace
@@ -125,6 +141,16 @@ void HardwareDisplayController::GetDisableProps(CommitRequest* commit_request) {
 
 void HardwareDisplayController::UpdateState(
     const CrtcCommitRequest& crtc_request) {
+  if (crash_gpu_timer_.IsRunning()) {
+    crash_gpu_timer_.AbandonAndStop();
+    SYSLOG(INFO)
+        << "Detected a modeset attempt after " << failed_page_flip_counter_
+        << " failed page flips. Aborting GPU process self-destruct with "
+        << crash_gpu_timer_.desired_run_time() - base::TimeTicks::Now()
+        << " to spare.";
+    failed_page_flip_counter_ = 0;
+  }
+
   // Verify that the current state matches the requested state.
   if (crtc_request.should_enable() && IsEnabled()) {
     DCHECK(!crtc_request.overlays().empty());
@@ -162,10 +188,30 @@ void HardwareDisplayController::SchedulePageFlip(
         return;
       }
     }
+
+    // No outdated buffers detected which makes this a true page flip failure.
+    // Start the GPU self-destruct timer if needed and report the failure.
+    failed_page_flip_counter_++;
+    if (!crash_gpu_timer_.IsRunning()) {
+      DCHECK_EQ(1, failed_page_flip_counter_);
+      LOG(WARNING) << "Initiating GPU process self-destruct in "
+                   << kWaitForModesetTimeout
+                   << " unless a modeset attempt is detected.";
+
+      crash_gpu_timer_.Start(
+          FROM_HERE, kWaitForModesetTimeout, base::BindOnce([] {
+            LOG(FATAL) << "Failed to modeset within " << kWaitForModesetTimeout
+                       << " of the first page flip failure. Crashing GPU "
+                          "process. Goodbye.";
+          }));
+    }
+
+    std::move(submission_callback)
+        .Run(gfx::SwapResult::SWAP_FAILED,
+             /*release_fence=*/gfx::GpuFenceHandle());
+    std::move(presentation_callback).Run(gfx::PresentationFeedback::Failure());
+    return;
   }
-
-  CHECK(status) << "SchedulePageFlip failed";
-
   if (page_flip_request->page_flip_count() == 0) {
     // Apparently, there was nothing to do. This probably should not be
     // able to happen but both CrtcController::AssignOverlayPlanes and
@@ -390,8 +436,7 @@ gfx::Size HardwareDisplayController::GetModeSize() const {
 base::TimeDelta HardwareDisplayController::GetRefreshInterval() const {
   // If there are multiple CRTCs they should all have the same refresh rate.
   float vrefresh = ModeRefreshRate(crtc_controllers_[0]->mode());
-  return vrefresh ? base::TimeDelta::FromSeconds(1) / vrefresh
-                  : base::TimeDelta();
+  return vrefresh ? base::Seconds(1) / vrefresh : base::TimeDelta();
 }
 
 base::TimeTicks HardwareDisplayController::GetTimeOfLastFlip() const {
@@ -424,6 +469,37 @@ void HardwareDisplayController::OnPageFlipComplete(
     }
   }
   page_flip_request_ = nullptr;
+}
+
+void HardwareDisplayController::AsValueInto(
+    base::trace_event::TracedValue* value) const {
+  using base::trace_event::ValueToString;
+
+  value->SetString("origin", ValueToString(origin_));
+  value->SetString("cursor_location", ValueToString(cursor_location_));
+  value->SetInteger("failed_page_flip_counter", failed_page_flip_counter_);
+  value->SetBoolean("is_crash_timer_running", crash_gpu_timer_.IsRunning());
+  value->SetBoolean("has_page_flip_request", page_flip_request_ != nullptr);
+
+  {
+    auto scoped_dict = value->BeginDictionaryScoped("owned_hardware_planes");
+    owned_hardware_planes_.AsValueInto(value);
+  }
+  {
+    auto scoped_array = value->BeginArrayScoped("crtc_controllers");
+    for (const auto& crtc : crtc_controllers_) {
+      auto scoped_dict = value->AppendDictionaryScoped();
+      crtc->AsValueInto(value);
+    }
+  }
+  {
+    auto scoped_array = value->BeginArrayScoped("preferred_format_modifiers");
+    for (const auto& format_modifier : preferred_format_modifier_) {
+      auto scoped_dict = value->AppendDictionaryScoped();
+      value->SetString("format", NumberToHexString(format_modifier.first));
+      value->SetString("modifier", NumberToHexString(format_modifier.second));
+    }
+  }
 }
 
 void HardwareDisplayController::OnModesetComplete(

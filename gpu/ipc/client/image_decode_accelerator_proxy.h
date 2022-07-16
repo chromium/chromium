@@ -50,6 +50,11 @@ class GPU_EXPORT ImageDecodeAcceleratorProxy
     : public ImageDecodeAcceleratorInterface {
  public:
   ImageDecodeAcceleratorProxy(GpuChannelHost* host, int32_t route_id);
+
+  ImageDecodeAcceleratorProxy(const ImageDecodeAcceleratorProxy&) = delete;
+  ImageDecodeAcceleratorProxy& operator=(const ImageDecodeAcceleratorProxy&) =
+      delete;
+
   ~ImageDecodeAcceleratorProxy() override;
 
   // Determines if |image_metadata| corresponds to an image that can be decoded
@@ -94,8 +99,6 @@ class GPU_EXPORT ImageDecodeAcceleratorProxy
 
   base::Lock lock_;
   uint64_t next_release_count_ GUARDED_BY(lock_) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDecodeAcceleratorProxy);
 };
 
 }  // namespace gpu

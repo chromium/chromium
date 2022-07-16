@@ -182,7 +182,7 @@ base::File::Error LocalFileUtil::CopyOrMoveFile(
     FileSystemOperationContext* context,
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     bool copy) {
   base::FilePath src_file_path;
   base::File::Error error = GetLocalFilePath(context, src_url, &src_file_path);
@@ -195,7 +195,7 @@ base::File::Error LocalFileUtil::CopyOrMoveFile(
     return error;
 
   return NativeFileUtil::CopyOrMoveFile(
-      src_file_path, dest_file_path, option,
+      src_file_path, dest_file_path, options,
       NativeFileUtil::CopyOrMoveModeForDestination(dest_url, copy));
 }
 
@@ -212,7 +212,7 @@ base::File::Error LocalFileUtil::CopyInForeignFile(
   if (error != base::File::FILE_OK)
     return error;
   return NativeFileUtil::CopyOrMoveFile(
-      src_file_path, dest_file_path, FileSystemOperation::OPTION_NONE,
+      src_file_path, dest_file_path, FileSystemOperation::CopyOrMoveOptionSet(),
       NativeFileUtil::CopyOrMoveModeForDestination(dest_url, true /* copy */));
 }
 

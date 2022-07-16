@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "chrome/browser/devtools/device/adb/adb_device_provider.h"
 #include "chrome/browser/devtools/device/adb/mock_adb_server.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
@@ -28,17 +27,18 @@ class InspectUITest : public WebUIBrowserTest {
  public:
   InspectUITest() {}
 
+  InspectUITest(const InspectUITest&) = delete;
+  InspectUITest& operator=(const InspectUITest&) = delete;
+
   void SetUpOnMainThread() override {
     WebUIBrowserTest::SetUpOnMainThread();
     AddLibrary(base::FilePath(FILE_PATH_LITERAL("inspect_ui_test.js")));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InspectUITest);
 };
 
 IN_PROC_BROWSER_TEST_F(InspectUITest, InspectUIPage) {
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIInspectURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIInspectURL)));
   ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
       "testTargetListed", base::Value("#pages"),
       base::Value("populateWebContentsTargets"),
@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, InspectUIPage) {
 IN_PROC_BROWSER_TEST_F(InspectUITest, SharedWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(kSharedWorkerTestPage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUIInspectURL),
@@ -75,7 +75,8 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, DISABLED_AndroidTargets) {
 
   StartMockAdbServer(FlushWithSize);
 
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIInspectURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIInspectURL)));
 
   ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest("testAdbTargetsListed"));
 
@@ -84,8 +85,10 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, DISABLED_AndroidTargets) {
 
 IN_PROC_BROWSER_TEST_F(InspectUITest, ReloadCrash) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIInspectURL));
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIInspectURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIInspectURL)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIInspectURL)));
 }
 
 }  // namespace

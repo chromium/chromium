@@ -36,6 +36,16 @@ java_cpp_enum("autofill_core_browser_java_enums") {
   ]
 }
 
+java_cpp_features("java_features_srcjar") {
+  visibility = [ ":*" ]
+  sources = [
+    "//components/autofill/core/common/autofill_features.cc",
+    "//components/autofill/core/common/autofill_payments_features.cc",
+  ]
+  template =
+      "//components/autofill/android/java_templates/AutofillFeatures.java.tmpl"
+}
+
 android_library("full_autofill_java") {
   deps = [
     ":autofill_java_resources",
@@ -46,6 +56,7 @@ android_library("full_autofill_java") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
   sources = [
     "java/src/org/chromium/components/autofill/AutofillDelegate.java",
@@ -56,6 +67,11 @@ android_library("full_autofill_java") {
   ]
   srcjar_deps = [ ":autofill_core_browser_java_enums" ]
   resources_package = "org.chromium.components.autofill"
+}
+
+# A minimal library used to expose autofill features to webview.
+android_library("autofill_features_java") {
+  srcjar_deps = [ ":java_features_srcjar" ]
 }
 
 # A library containing the minimal deps for payments, so that ui_java_resources

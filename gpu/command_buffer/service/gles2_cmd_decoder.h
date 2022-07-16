@@ -106,6 +106,9 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
                               Outputter* outputter,
                               ContextGroup* group);
 
+  GLES2Decoder(const GLES2Decoder&) = delete;
+  GLES2Decoder& operator=(const GLES2Decoder&) = delete;
+
   ~GLES2Decoder() override;
 
   // DecoderContext implementation.
@@ -212,8 +215,6 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
   bool debug_ = false;
   bool log_commands_ = false;
   Outputter* outputter_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(GLES2Decoder);
 };
 
 }  // namespace gles2

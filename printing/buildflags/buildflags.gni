@@ -24,6 +24,12 @@ declare_args() {
     use_cups = (is_chromeos_device || (is_linux || is_chromeos_lacros) ||
                 is_mac) && !is_chromecast && !is_fuchsia
   }
+
+  # Enable out-of-process printing.  While this definition matches
+  # `enable_print_preview`, do not base this definition upon that.  This
+  # feature could still be appropriate for some build configurations which
+  # explicitly disable print preview.
+  enable_oop_printing = enable_basic_printing && !is_android
 }
 
 declare_args() {

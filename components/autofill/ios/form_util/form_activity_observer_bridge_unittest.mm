@@ -31,6 +31,9 @@
   // Arguments passed to
   // |webState:senderFrame:didRegisterFormActivity:inFrame:|.
   std::unique_ptr<autofill::TestFormActivityInfo> _formActivityInfo;
+  // Arguments passed to
+  // |webState:senderFrame:didRegisterFormRemoval:inFrame:|.
+  std::unique_ptr<autofill::TestFormRemovalInfo> _formRemovalInfo;
 }
 
 - (autofill::TestSubmitDocumentInfo*)submitDocumentInfo {
@@ -39,6 +42,10 @@
 
 - (autofill::TestFormActivityInfo*)formActivityInfo {
   return _formActivityInfo.get();
+}
+
+- (autofill::TestFormRemovalInfo*)formRemovalInfo {
+  return _formRemovalInfo.get();
 }
 
 - (void)webState:(web::WebState*)webState
@@ -63,6 +70,15 @@
   _formActivityInfo->web_state = webState;
   _formActivityInfo->sender_frame = frame;
   _formActivityInfo->form_activity = params;
+}
+
+- (void)webState:(web::WebState*)webState
+    didRegisterFormRemoval:(const autofill::FormRemovalParams&)params
+                   inFrame:(web::WebFrame*)frame {
+  _formRemovalInfo = std::make_unique<autofill::TestFormRemovalInfo>();
+  _formRemovalInfo->web_state = webState;
+  _formRemovalInfo->sender_frame = frame;
+  _formRemovalInfo->form_removal_params = params;
 }
 
 @end
@@ -126,4 +142,25 @@ TEST_F(FormActivityObserverBridgeTest, FormActivityRegistered) {
   EXPECT_EQ(params.type, [observer_ formActivityInfo]->form_activity.type);
   EXPECT_EQ(params.value, [observer_ formActivityInfo]->form_activity.value);
   EXPECT_TRUE([observer_ formActivityInfo]->form_activity.input_missing);
+}
+
+// Tests |webState:didRegisterFormRemoval:...| forwarding.
+TEST_F(FormActivityObserverBridgeTest, FormRemovalRegistered) {
+  ASSERT_FALSE([observer_ formRemovalInfo]);
+
+  autofill::FormRemovalParams params;
+  auto sender_frame =
+      web::FakeWebFrame::Create("sender_frame", true, GURL::EmptyGURL());
+  params.form_name = "form-name";
+  params.unique_form_id = autofill::FormRendererId(1);
+  params.input_missing = true;
+  observer_bridge_.FormRemoved(&fake_web_state_, sender_frame.get(), params);
+  ASSERT_TRUE([observer_ formRemovalInfo]);
+  EXPECT_EQ(&fake_web_state_, [observer_ formRemovalInfo]->web_state);
+  EXPECT_EQ(sender_frame.get(), [observer_ formRemovalInfo]->sender_frame);
+  EXPECT_EQ(params.form_name,
+            [observer_ formRemovalInfo]->form_removal_params.form_name);
+  EXPECT_EQ(params.unique_form_id,
+            [observer_ formRemovalInfo]->form_removal_params.unique_form_id);
+  EXPECT_TRUE([observer_ formRemovalInfo]->form_removal_params.input_missing);
 }

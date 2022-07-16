@@ -101,18 +101,16 @@ def SetupWindowsCrossCompileToolchain(target_arch):
   return target_env
 
 
-def CopyConfigsAndCleanup(config_dir, dest_dir):
+def CopyConfigs(src_dir, dest_dir):
   if not os.path.exists(dest_dir):
     os.makedirs(dest_dir)
 
-  shutil.copy(os.path.join(config_dir, 'config.h'), dest_dir)
+  shutil.copy(os.path.join(src_dir, 'config.h'), dest_dir)
 
   # The .asm file will not be present for all configurations.
-  asm_file = os.path.join(config_dir, 'config.asm')
+  asm_file = os.path.join(src_dir, 'config.asm')
   if os.path.exists(asm_file):
     shutil.copy(asm_file, dest_dir)
-
-  shutil.rmtree(config_dir)
 
 
 def GenerateConfig(config_dir, env, special_args=[]):
@@ -146,7 +144,9 @@ def GenerateConfig(config_dir, env, special_args=[]):
         [(r'(%define STACK_ALIGNMENT \d{1,2})',
           r'; \1 -- Stack alignment is controlled by Chromium')])
 
-  CopyConfigsAndCleanup(temp_dir, config_dir)
+  CopyConfigs(temp_dir, config_dir)
+
+  shutil.rmtree(temp_dir)
 
 
 def GenerateWindowsArm64Config(src_dir):
@@ -162,6 +162,30 @@ def GenerateWindowsArm64Config(src_dir):
       [(r'#define ARCH_X86 1', r'#define ARCH_X86 0'),
        (r'#define ARCH_X86_64 1', r'#define ARCH_X86_64 0'),
        (r'#define ARCH_AARCH64 0', r'#define ARCH_AARCH64 1')])
+
+
+def CopyVersions(src_dir, dest_dir):
+  if not os.path.exists(dest_dir):
+    os.makedirs(dest_dir)
+
+  shutil.copy(os.path.join(src_dir, 'include', 'dav1d', 'version.h'), dest_dir)
+  shutil.copy(os.path.join(src_dir, 'include', 'vcs_version.h'), dest_dir)
+
+
+def GenerateVersion(version_dir, env):
+  temp_dir = tempfile.mkdtemp()
+  PrintAndCheckCall(
+      MESON + DEFAULT_BUILD_ARGS + [temp_dir],
+      cwd='libdav1d',
+      env=env)
+  PrintAndCheckCall(
+      ['ninja', '-C', temp_dir, 'include/vcs_version.h'],
+      cwd='libdav1d',
+      env=env)
+
+  CopyVersions(temp_dir, version_dir)
+
+  shutil.rmtree(temp_dir)
 
 
 def main():
@@ -192,6 +216,8 @@ def main():
   # Sadly meson doesn't support arm64 + clang-cl, so we need to create the
   # Windows arm64 config from the Windows x64 config.
   GenerateWindowsArm64Config(win_x64_dir)
+
+  GenerateVersion('version', linux_env)
 
 
 if __name__ == '__main__':

@@ -17,8 +17,8 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -104,13 +104,6 @@ using base::OnceClosure;
 using base::FilePath;
 using base::Time;
 using base::TaskRunner;
-
-// Static function called by base::trace_event::EstimateMemoryUsage() to
-// estimate the memory of SimpleEntryOperation.
-// This needs to be in disk_cache namespace.
-size_t EstimateMemoryUsage(const SimpleEntryOperation& op) {
-  return 0;
-}
 
 // A helper class to insure that RunNextOperationIfNeeded() is called when
 // exiting the current stack frame.
@@ -606,15 +599,6 @@ net::Error SimpleEntryImpl::ReadyForSparseIO(CompletionOnceCallback callback) {
 void SimpleEntryImpl::SetLastUsedTimeForTest(base::Time time) {
   last_used_ = time;
   backend_->index()->SetLastUsedTimeForTest(entry_hash_, time);
-}
-
-size_t SimpleEntryImpl::EstimateMemoryUsage() const {
-  // TODO(xunjieli): crbug.com/669108. It'd be nice to have the rest of |entry|
-  // measured, but the ownership of SimpleSynchronousEntry isn't straightforward
-  return sizeof(SimpleSynchronousEntry) +
-         base::trace_event::EstimateMemoryUsage(pending_operations_) +
-         (stream_0_data_ ? stream_0_data_->capacity() : 0) +
-         (stream_1_prefetch_data_ ? stream_1_prefetch_data_->capacity() : 0);
 }
 
 void SimpleEntryImpl::SetPriority(uint32_t entry_priority) {

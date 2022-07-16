@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/pickle.h"
 #include "base/strings/string_split.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
@@ -29,8 +30,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/transform_util.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -125,7 +126,8 @@ class DragDropOperation::IconSurface final : public SurfaceTreeHost,
 
     std::unique_ptr<viz::CopyOutputRequest> request =
         std::make_unique<viz::CopyOutputRequest>(
-            viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+            viz::CopyOutputRequest::ResultFormat::RGBA,
+            viz::CopyOutputRequest::ResultDestination::kSystemMemory,
             base::BindOnce(&IconSurface::OnCaptured,
                            weak_ptr_factory_.GetWeakPtr()));
     request->set_result_task_runner(base::SequencedTaskRunnerHandle::Get());
@@ -225,6 +227,8 @@ DragDropOperation::DragDropOperation(
                      origin->window()),
       base::BindOnce(&DragDropOperation::OnFileContentsRead,
                      weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&DragDropOperation::OnWebCustomDataRead,
+                     weak_ptr_factory_.GetWeakPtr()),
       counter_);
 }
 
@@ -289,6 +293,17 @@ void DragDropOperation::OnFileContentsRead(const std::string& mime_type,
   counter_.Run();
 }
 
+void DragDropOperation::OnWebCustomDataRead(const std::string& mime_type,
+                                            const std::vector<uint8_t>& data) {
+  DCHECK(os_exchange_data_);
+  base::Pickle pickle(reinterpret_cast<const char*>(data.data()), data.size());
+  os_exchange_data_->SetPickledData(
+      ui::ClipboardFormatType::WebCustomDataType(), pickle);
+
+  mime_type_ = mime_type;
+  counter_.Run();
+}
+
 void DragDropOperation::OnDragIconCaptured(const SkBitmap& icon_bitmap) {
   DCHECK(icon_);
 
@@ -340,6 +355,12 @@ void DragDropOperation::StartDragDropOperation() {
 
   // The instance deleted during StartDragAndDrop's nested RunLoop.
   if (!weak_ptr)
+    return;
+
+  // In tests, drag_drop_controller_ does not create a nested message loop and
+  // so StartDragAndDrop exits before the drag&drop session finishes. In that
+  // case the cleanup process shouldn't be made.
+  if (drag_drop_controller_->IsDragDropInProgress())
     return;
 
   if (op != DragOperation::kNone) {

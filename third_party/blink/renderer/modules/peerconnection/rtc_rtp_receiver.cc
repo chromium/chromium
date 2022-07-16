@@ -50,7 +50,8 @@ RTCRtpReceiver::RTCRtpReceiver(RTCPeerConnection* pc,
                                MediaStreamVector streams,
                                bool force_encoded_audio_insertable_streams,
                                bool force_encoded_video_insertable_streams)
-    : pc_(pc),
+    : ExecutionContextLifecycleObserver(pc->GetExecutionContext()),
+      pc_(pc),
       receiver_(std::move(receiver)),
       track_(track),
       streams_(std::move(streams)),
@@ -289,6 +290,17 @@ void RTCRtpReceiver::UpdateSourcesIfNeeded() {
                 WrapWeakPersistent(this)));
 }
 
+void RTCRtpReceiver::ContextDestroyed() {
+  {
+    WTF::MutexLocker locker(audio_underlying_source_mutex_);
+    audio_from_depacketizer_underlying_source_.Clear();
+  }
+  {
+    WTF::MutexLocker locker(audio_underlying_sink_mutex_);
+    audio_to_decoder_underlying_sink_.Clear();
+  }
+}
+
 void RTCRtpReceiver::SetContributingSourcesNeedsUpdating() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   web_sources_needs_updating_ = true;
@@ -305,6 +317,7 @@ void RTCRtpReceiver::Trace(Visitor* visitor) const {
   visitor->Trace(video_to_decoder_underlying_sink_);
   visitor->Trace(encoded_video_streams_);
   ScriptWrappable::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 RTCRtpCapabilities* RTCRtpReceiver::getCapabilities(ScriptState* state,
@@ -336,7 +349,11 @@ RTCRtpCapabilities* RTCRtpReceiver::getCapabilities(ScriptState* state,
       for (const auto& parameter : rtc_codec.parameters) {
         if (!sdp_fmtp_line.empty())
           sdp_fmtp_line += ";";
-        sdp_fmtp_line += parameter.first + "=" + parameter.second;
+        if (parameter.first.empty()) {
+          sdp_fmtp_line += parameter.second;
+        } else {
+          sdp_fmtp_line += parameter.first + "=" + parameter.second;
+        }
       }
       codec->setSdpFmtpLine(sdp_fmtp_line.c_str());
     }
@@ -359,7 +376,7 @@ RTCRtpCapabilities* RTCRtpReceiver::getCapabilities(ScriptState* state,
     IdentifiableTokenBuilder builder;
     IdentifiabilityAddRTCRtpCapabilitiesToBuilder(builder, *capabilities);
     IdentifiabilityMetricBuilder(ExecutionContext::From(state)->UkmSourceID())
-        .Set(IdentifiableSurface::FromTypeAndToken(
+        .Add(IdentifiableSurface::FromTypeAndToken(
                  IdentifiableSurface::Type::kRtcRtpReceiverGetCapabilities,
                  IdentifiabilityBenignStringToken(kind)),
              builder.GetToken())
@@ -423,6 +440,12 @@ void RTCRtpReceiver::UnregisterEncodedAudioStreamCallback() {
 void RTCRtpReceiver::SetAudioUnderlyingSource(
     RTCEncodedAudioUnderlyingSource* new_underlying_source,
     scoped_refptr<base::SingleThreadTaskRunner> new_source_task_runner) {
+  if (!GetExecutionContext()) {
+    // If our context is destroyed, then the RTCRtpReceiver, underlying
+    // source(s), and transformer are about to be garbage collected, so there's
+    // no reason to continue.
+    return;
+  }
   {
     WTF::MutexLocker locker(audio_underlying_source_mutex_);
     audio_from_depacketizer_underlying_source_->OnSourceTransferStarted();
@@ -435,6 +458,12 @@ void RTCRtpReceiver::SetAudioUnderlyingSource(
 
 void RTCRtpReceiver::SetAudioUnderlyingSink(
     RTCEncodedAudioUnderlyingSink* new_underlying_sink) {
+  if (!GetExecutionContext()) {
+    // If our context is destroyed, then the RTCRtpReceiver and underlying
+    // sink(s) are about to be garbage collected, so there's no reason to
+    // continue.
+    return;
+  }
   WTF::MutexLocker locker(audio_underlying_sink_mutex_);
   audio_to_decoder_underlying_sink_ = new_underlying_sink;
 }
@@ -474,7 +503,6 @@ void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
             absl::make_unique<RtcEncodedAudioReceiverSourceOptimizer>(
                 std::move(set_underlying_source),
                 std::move(disconnect_callback)));
-    encoded_audio_streams_->setReadableStream(readable_stream);
     encoded_audio_streams_->setReadable(readable_stream);
   }
 
@@ -501,7 +529,6 @@ void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
             std::move(set_underlying_sink), encoded_audio_transformer_));
   }
 
-  encoded_audio_streams_->setWritableStream(writable_stream);
   encoded_audio_streams_->setWritable(writable_stream);
 }
 
@@ -556,7 +583,6 @@ void RTCRtpReceiver::InitializeEncodedVideoStreams(ScriptState* script_state) {
       ReadableStream::CreateWithCountQueueingStrategy(
           script_state, video_from_depacketizer_underlying_source_,
           /*high_water_mark=*/0);
-  encoded_video_streams_->setReadableStream(readable_stream);
   encoded_video_streams_->setReadable(readable_stream);
 
   // Set up writable.
@@ -570,14 +596,14 @@ void RTCRtpReceiver::InitializeEncodedVideoStreams(ScriptState* script_state) {
                                       ->GetEncodedVideoStreamTransformer()
                                 : nullptr;
               },
-              WrapWeakPersistent(this)));
+              WrapWeakPersistent(this)),
+          webrtc::TransformableFrameInterface::Direction::kReceiver);
   // The high water mark for the stream is set to 1 so that the stream seems
   // ready to write, but without queuing frames.
   WritableStream* writable_stream =
       WritableStream::CreateWithCountQueueingStrategy(
           script_state, video_to_decoder_underlying_sink_,
           /*high_water_mark=*/1);
-  encoded_video_streams_->setWritableStream(writable_stream);
   encoded_video_streams_->setWritable(writable_stream);
 }
 

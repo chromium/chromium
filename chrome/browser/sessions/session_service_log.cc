@@ -22,6 +22,8 @@ constexpr char kRestoreEventTabCountKey[] = "tab_count";
 constexpr char kRestoreEventErroredReadingKey[] = "errored_reading";
 constexpr char kExitEventWindowCountKey[] = "window_count";
 constexpr char kExitEventTabCountKey[] = "tab_count";
+constexpr char kExitEventIsFirstSessionServiceKey[] = "first_session_service";
+constexpr char kExitEventDidScheduleCommandKey[] = "did_schedule_command";
 constexpr char kWriteErrorEventErrorCountKey[] = "error_count";
 constexpr char kWriteErrorEventUnrecoverableErrorCountKey[] =
     "unrecoverable_error_count";
@@ -54,6 +56,10 @@ base::Value SerializeEvent(const SessionServiceEvent& event) {
                                  event.data.exit.window_count);
       serialized_event.SetIntKey(kExitEventTabCountKey,
                                  event.data.exit.tab_count);
+      serialized_event.SetBoolKey(kExitEventIsFirstSessionServiceKey,
+                                  event.data.exit.is_first_session_service);
+      serialized_event.SetBoolKey(kExitEventDidScheduleCommandKey,
+                                  event.data.exit.did_schedule_command);
       break;
     case SessionServiceEventLogType::kWriteError:
       serialized_event.SetIntKey(kWriteErrorEventErrorCountKey,
@@ -85,7 +91,7 @@ bool DeserializeEvent(const base::Value& serialized_event,
   int64_t time_int;
   if (!base::StringToInt64(*time_value, &time_int))
     return false;
-  event.time = base::Time() + base::TimeDelta::FromMicroseconds(time_int);
+  event.time = base::Time() + base::Microseconds(time_int);
 
   switch (event.type) {
     case SessionServiceEventLogType::kStart: {
@@ -125,6 +131,17 @@ bool DeserializeEvent(const base::Value& serialized_event,
       if (!tab_count)
         return false;
       event.data.exit.tab_count = *tab_count;
+
+      // The remaining values were added later on. Don't error if not found.
+      auto is_first_session_service =
+          serialized_event.FindBoolKey(kExitEventIsFirstSessionServiceKey);
+      event.data.exit.is_first_session_service =
+          !is_first_session_service || *is_first_session_service;
+
+      auto did_schedule_command =
+          serialized_event.FindBoolKey(kExitEventDidScheduleCommandKey);
+      event.data.exit.did_schedule_command =
+          !did_schedule_command || *did_schedule_command;
       break;
     }
     case SessionServiceEventLogType::kWriteError: {
@@ -182,12 +199,16 @@ void LogSessionServiceStartEvent(Profile* profile, bool after_crash) {
 
 void LogSessionServiceExitEvent(Profile* profile,
                                 int window_count,
-                                int tab_count) {
+                                int tab_count,
+                                bool is_first_session_service,
+                                bool did_schedule_command) {
   SessionServiceEvent event;
   event.type = SessionServiceEventLogType::kExit;
   event.time = base::Time::Now();
   event.data.exit.window_count = window_count;
   event.data.exit.tab_count = tab_count;
+  event.data.exit.is_first_session_service = is_first_session_service;
+  event.data.exit.did_schedule_command = did_schedule_command;
   LogSessionServiceEvent(profile, event);
 }
 

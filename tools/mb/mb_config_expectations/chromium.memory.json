@@ -55,7 +55,8 @@
       "is_debug": false,
       "is_msan": true,
       "msan_track_origins": 2,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Linux TSan Builder": {
@@ -65,7 +66,8 @@
       "is_component_build": false,
       "is_debug": false,
       "is_tsan": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Mac ASan 64 Builder": {
@@ -88,7 +90,8 @@
       "is_debug": false,
       "is_lsan": true,
       "proprietary_codecs": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "WebKit Linux Leak": {
@@ -98,7 +101,8 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "WebKit Linux MSAN": {
@@ -110,7 +114,8 @@
       "is_msan": true,
       "msan_track_origins": 2,
       "proprietary_codecs": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "android-asan": {

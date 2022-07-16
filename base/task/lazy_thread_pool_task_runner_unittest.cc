@@ -83,6 +83,12 @@ void ExpectSingleThreadEnvironment(SequenceCheckerImpl* sequence_checker,
 }
 
 class LazyThreadPoolTaskRunnerEnvironmentTest : public testing::Test {
+ public:
+  LazyThreadPoolTaskRunnerEnvironmentTest(
+      const LazyThreadPoolTaskRunnerEnvironmentTest&) = delete;
+  LazyThreadPoolTaskRunnerEnvironmentTest& operator=(
+      const LazyThreadPoolTaskRunnerEnvironmentTest&) = delete;
+
  protected:
   LazyThreadPoolTaskRunnerEnvironmentTest() = default;
 
@@ -119,9 +125,6 @@ class LazyThreadPoolTaskRunnerEnvironmentTest : public testing::Test {
   }
 
   test::TaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LazyThreadPoolTaskRunnerEnvironmentTest);
 };
 
 }  // namespace

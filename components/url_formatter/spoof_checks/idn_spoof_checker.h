@@ -147,6 +147,11 @@ class IDNSpoofChecker {
       const std::string& skeleton,
       SkeletonType skeleton_type = SkeletonType::kFull);
 
+  // Removes diacritics from |hostname| and returns the new string if the input
+  // only contains Latin-Greek-Cyrillic characters. Otherwise, returns the
+  // input string.
+  std::u16string MaybeRemoveDiacritics(const std::u16string& hostname);
+
   // Used for unit tests.
   static void SetTrieParamsForTesting(const HuffmanTrieParams& trie_params);
   static void RestoreTrieParamsForTesting();

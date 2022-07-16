@@ -5,7 +5,6 @@
 #ifndef UI_BASE_IME_DUMMY_INPUT_METHOD_H_
 #define UI_BASE_IME_DUMMY_INPUT_METHOD_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/base/ime/input_method.h"
 
@@ -16,6 +15,10 @@ class InputMethodObserver;
 class DummyInputMethod : public InputMethod {
  public:
   DummyInputMethod();
+
+  DummyInputMethod(const DummyInputMethod&) = delete;
+  DummyInputMethod& operator=(const DummyInputMethod&) = delete;
+
   ~DummyInputMethod() override;
 
   // InputMethod overrides:
@@ -24,7 +27,7 @@ class DummyInputMethod : public InputMethod {
   void OnBlur() override;
 
 #if defined(OS_WIN)
-  bool OnUntranslatedIMEMessage(const MSG event,
+  bool OnUntranslatedIMEMessage(const CHROME_MSG event,
                                 NativeEventResult* result) override;
   void OnInputLocaleChanged() override;
   bool IsInputLocaleCJK() const override;
@@ -45,9 +48,6 @@ class DummyInputMethod : public InputMethod {
   void AddObserver(InputMethodObserver* observer) override;
   void RemoveObserver(InputMethodObserver* observer) override;
   VirtualKeyboardController* GetVirtualKeyboardController() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DummyInputMethod);
 };
 
 }  // namespace ui

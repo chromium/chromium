@@ -1,3 +1,13 @@
 include_rules = [
   "+services/data_decoder/public",
 ]
+
+specific_include_rules = {
+  # TODO(crbug/1251346): Remove.
+  "wallpaper_controller_impl.cc": [
+    "+components/user_manager/user_manager.h",
+  ],
+  "wallpaper_controller_unittest.cc": [
+    "+components/user_manager",
+  ],
+}

@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -52,10 +51,11 @@ class TemplateURLServiceLoader {
     message_loop_runner->Run();
   }
 
+  TemplateURLServiceLoader(const TemplateURLServiceLoader&) = delete;
+  TemplateURLServiceLoader& operator=(const TemplateURLServiceLoader&) = delete;
+
  private:
   TemplateURLService* model_;
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceLoader);
 };
 
 std::unique_ptr<net::test_server::HttpResponse> SendResponse(

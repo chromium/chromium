@@ -12,5 +12,5 @@ import "services/network/public/mojom/referrer_policy.mojom";
 // up being used for URL requests, always use this struct.
 struct Referrer {
   url.mojom.Url url;
-  network.mojom.ReferrerPolicy policy;
+  network.mojom.ReferrerPolicy policy = network.mojom.ReferrerPolicy.kDefault;
 };

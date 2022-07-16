@@ -17,7 +17,7 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "ipc/ipc.mojom-forward.h"
@@ -44,7 +44,7 @@ class Listener;
 
 // Channels are implemented using mojo message pipes on all platforms other
 // than NaCl.
-
+// IPC::Channel()（定义在ipc/ipc_channel.h里）定义了通过管道交流的方法
 class COMPONENT_EXPORT(IPC) Channel : public Sender {
   // Security tests need access to the pipe handle.
   friend class ChannelTest;

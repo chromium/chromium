@@ -5,8 +5,6 @@
 #ifndef BASE_WIN_SCOPED_HANDLE_VERIFIER_H_
 #define BASE_WIN_SCOPED_HANDLE_VERIFIER_H_
 
-#include "base/win/windows_types.h"
-
 #include <memory>
 #include <unordered_map>
 
@@ -15,6 +13,7 @@
 #include "base/hash/hash.h"
 #include "base/synchronization/lock_impl.h"
 #include "base/threading/thread_local.h"
+#include "base/win/windows_types.h"
 
 namespace base {
 namespace win {
@@ -61,6 +60,9 @@ class [[clang::lto_visibility_public]] ScopedHandleVerifier {
  public:
   explicit ScopedHandleVerifier(bool enabled);
 
+  ScopedHandleVerifier(const ScopedHandleVerifier&) = delete;
+  ScopedHandleVerifier& operator=(const ScopedHandleVerifier&) = delete;
+
   // Retrieves the current verifier.
   static ScopedHandleVerifier* Get();
 
@@ -95,7 +97,6 @@ class [[clang::lto_visibility_public]] ScopedHandleVerifier {
   base::ThreadLocalBoolean closing_;
   base::internal::LockImpl* lock_;
   std::unordered_map<HANDLE, ScopedHandleVerifierInfo, HandleHash> map_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedHandleVerifier);
 };
 
 // This testing function returns the module that the HandleVerifier concrete

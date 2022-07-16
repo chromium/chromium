@@ -9,9 +9,6 @@
 // its coordinator.
 @protocol SyncErrorSettingsCommandHandler <NSObject>
 
-// Restarts the authentication flow.
-- (void)restartAuthenticationFlow;
-
 // Opens the reauth sync dialog.
 - (void)openReauthDialogAsSyncIsInAuthError;
 

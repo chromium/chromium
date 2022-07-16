@@ -96,6 +96,32 @@ TEST_F(IOSIntermediateDumpReaderTest, ReadHelloWorld) {
   EXPECT_TRUE(root_map->empty());
 }
 
+TEST_F(IOSIntermediateDumpReaderTest, FuzzTestCases) {
+  constexpr uint8_t fuzz1[] = {0x6,
+                               0x5,
+                               0x0,
+                               0xff,
+                               0xff,
+                               0xfd,
+                               0x1,
+                               0xff,
+                               0xff,
+                               0xff,
+                               0xff,
+                               0xff,
+                               0xfd,
+                               0x1,
+                               0x7,
+                               0x16};
+  EXPECT_TRUE(LoggingWriteFile(fd(), &fuzz1, sizeof(fuzz1)));
+  internal::IOSIntermediateDumpReader reader;
+  EXPECT_TRUE(reader.Initialize(path()));
+  EXPECT_FALSE(IsRegularFile(path()));
+
+  const auto root_map = reader.RootMap();
+  EXPECT_TRUE(root_map->empty());
+}
+
 TEST_F(IOSIntermediateDumpReaderTest, WriteBadPropertyDataLength) {
   internal::IOSIntermediateDumpReader reader;
   IOSIntermediateDumpWriter::CommandType command_type =

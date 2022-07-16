@@ -34,6 +34,10 @@ class PickledStructBlink {
   PickledStructBlink();
   PickledStructBlink(int foo, int bar);
   PickledStructBlink(PickledStructBlink&& other) = default;
+
+  PickledStructBlink(const PickledStructBlink&) = delete;
+  PickledStructBlink& operator=(const PickledStructBlink&) = delete;
+
   ~PickledStructBlink();
 
   PickledStructBlink& operator=(PickledStructBlink&& other) = default;
@@ -58,8 +62,6 @@ class PickledStructBlink {
   int foo_ = 0;
   int bar_ = 0;
   int baz_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PickledStructBlink);
 };
 
 }  // namespace test

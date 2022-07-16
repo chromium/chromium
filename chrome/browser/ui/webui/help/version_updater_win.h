@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/google/google_update_win.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
@@ -23,6 +22,10 @@ class VersionUpdaterWin : public VersionUpdater,
   // will be parented to this widget. |owner_widget| may be given a value of
   // nullptr in which case the UAC prompt will be parented to the desktop.
   explicit VersionUpdaterWin(gfx::AcceleratedWidget owner_widget);
+
+  VersionUpdaterWin(const VersionUpdaterWin&) = delete;
+  VersionUpdaterWin& operator=(const VersionUpdaterWin&) = delete;
+
   ~VersionUpdaterWin() override;
 
   // VersionUpdater:
@@ -52,8 +55,6 @@ class VersionUpdaterWin : public VersionUpdater,
 
   // Used for callbacks.
   base::WeakPtrFactory<VersionUpdaterWin> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VersionUpdaterWin);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_WIN_H_

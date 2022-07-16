@@ -38,6 +38,10 @@ class RemotingLogToServer : public LogToServer {
       ServerLogEntry::Mode mode,
       std::unique_ptr<OAuthTokenGetter> token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  RemotingLogToServer(const RemotingLogToServer&) = delete;
+  RemotingLogToServer& operator=(const RemotingLogToServer&) = delete;
+
   ~RemotingLogToServer() override;
 
   // LogToServer interface.
@@ -76,8 +80,6 @@ class RemotingLogToServer : public LogToServer {
   CreateLogEntryCallback create_log_entry_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RemotingLogToServer);
 };
 
 }  // namespace remoting

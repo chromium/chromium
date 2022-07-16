@@ -12,12 +12,13 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "content/public/browser/device_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
@@ -29,8 +30,7 @@ namespace {
 
 // Delay for notifying Android about screen brightness changes, added in
 // order to prevent spammy brightness updates.
-constexpr base::TimeDelta kNotifyBrightnessDelay =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kNotifyBrightnessDelay = base::Milliseconds(200);
 
 // Singleton factory for ArcPowerBridge.
 class ArcPowerBridgeFactory
@@ -61,6 +61,10 @@ class ArcPowerBridge::WakeLockRequestor {
   WakeLockRequestor(device::mojom::WakeLockType type,
                     device::mojom::WakeLockProvider* provider)
       : type_(type), provider_(provider) {}
+
+  WakeLockRequestor(const WakeLockRequestor&) = delete;
+  WakeLockRequestor& operator=(const WakeLockRequestor&) = delete;
+
   ~WakeLockRequestor() = default;
 
   // Increments the number of outstanding requests from Android and requests a
@@ -111,14 +115,18 @@ class ArcPowerBridge::WakeLockRequestor {
 
   // Lazily initialized in response to first request.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(WakeLockRequestor);
 };
 
 // static
 ArcPowerBridge* ArcPowerBridge::GetForBrowserContext(
     content::BrowserContext* context) {
   return ArcPowerBridgeFactory::GetForBrowserContext(context);
+}
+
+// static
+ArcPowerBridge* ArcPowerBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcPowerBridgeFactory::GetForBrowserContextForTesting(context);
 }
 
 ArcPowerBridge::ArcPowerBridge(content::BrowserContext* context,
@@ -376,6 +384,16 @@ void ArcPowerBridge::OnGetScreenBrightnessPercent(
 void ArcPowerBridge::OnWakefulnessChanged(mojom::WakefulnessMode mode) {
   for (auto& observer : observer_list_)
     observer.OnWakefulnessChanged(mode);
+}
+
+void ArcPowerBridge::OnPreAnr(mojom::AnrType type) {
+  base::UmaHistogramEnumeration("Arc.Anr.PreNotified", type);
+  for (auto& observer : observer_list_)
+    observer.OnPreAnr(type);
+}
+
+void ArcPowerBridge::OnAnrRecoveryFailed(::arc::mojom::AnrType type) {
+  base::UmaHistogramEnumeration("Arc.Anr.RecoveryFailed", type);
 }
 
 void ArcPowerBridge::UpdateAndroidScreenBrightness(double percent) {

@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace views {
 
 class MenuRunner;
@@ -20,6 +18,10 @@ namespace test {
 class MenuRunnerTestAPI {
  public:
   explicit MenuRunnerTestAPI(MenuRunner* menu_runner);
+
+  MenuRunnerTestAPI(const MenuRunnerTestAPI&) = delete;
+  MenuRunnerTestAPI& operator=(const MenuRunnerTestAPI&) = delete;
+
   ~MenuRunnerTestAPI();
 
   // Sets the menu runner handler.
@@ -28,8 +30,6 @@ class MenuRunnerTestAPI {
 
  private:
   MenuRunner* menu_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuRunnerTestAPI);
 };
 
 }  // namespace test

@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   ASSERT_TRUE(extension);
   ASSERT_TRUE(extension->is_theme());
   GURL url = extension->GetResourceURL("manifest.json");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   // Wait for the web contents to stop loading.

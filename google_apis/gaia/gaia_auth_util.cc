@@ -171,10 +171,10 @@ bool ParseListAccountsData(const std::string& data,
           listed_account.signed_out = signed_out != 0;
           listed_account.verified = verified != 0;
           listed_account.raw_email = email;
-          auto* list =
+          auto* accounts_ptr =
               listed_account.signed_out ? signed_out_accounts : accounts;
-          if (list)
-            list->push_back(listed_account);
+          if (accounts_ptr)
+            accounts_ptr->push_back(listed_account);
         }
       }
     }

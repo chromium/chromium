@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_type_pattern.h"
 
@@ -22,6 +21,11 @@ class DeviceState;
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandlerObserver {
  public:
   NetworkStateHandlerObserver();
+
+  NetworkStateHandlerObserver(const NetworkStateHandlerObserver&) = delete;
+  NetworkStateHandlerObserver& operator=(const NetworkStateHandlerObserver&) =
+      delete;
+
   virtual ~NetworkStateHandlerObserver();
 
   // The list of networks changed.
@@ -85,9 +89,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandlerObserver {
   // Called just before NetworkStateHandler is destroyed so that observers
   // can safely stop observing.
   virtual void OnShuttingDown();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateHandlerObserver);
 };
 
 }  // namespace chromeos

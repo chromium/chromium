@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fuchsia/mem/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 
 #include <string>
@@ -10,11 +11,12 @@
 #include "components/safe_search_api/stub_url_checker.h"
 #include "components/safe_search_api/url_checker.h"
 #include "content/public/test/browser_test.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/test/frame_test_util.h"
+#include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/browser/frame_impl_browser_test_base.h"
+#include "fuchsia/engine/test/frame_for_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -79,109 +81,88 @@ class ExplicitSitesFilterTest : public FrameImplTestBaseWithServer {
 };
 
 IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest, FilterDisabled_SiteAllowed) {
-  fuchsia::web::CreateFrameParams params;
-
-  fuchsia::web::FramePtr frame = WebEngineBrowserTest::CreateFrameWithParams(
-      &navigation_listener_, std::move(params));
+  auto frame = cr_fuchsia::FrameForTest::Create(
+      context(), fuchsia::web::CreateFrameParams());
 
   SetPageIsNotExplicit();
 
   fuchsia::web::NavigationControllerPtr controller;
   frame->GetNavigationController(controller.NewRequest());
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(controller.get(), {},
-                                                   GetPage1UrlSpec()));
+  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+      frame.GetNavigationController(), {}, GetPage1UrlSpec()));
 
-  navigation_listener_.RunUntilTitleEquals(kPage1Title);
+  frame.navigation_listener().RunUntilTitleEquals(kPage1Title);
 }
 
 IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest, FilterDisabled_SiteBlocked) {
-  fuchsia::web::CreateFrameParams params;
-
-  fuchsia::web::FramePtr frame = WebEngineBrowserTest::CreateFrameWithParams(
-      &navigation_listener_, std::move(params));
+  auto frame = cr_fuchsia::FrameForTest::Create(
+      context(), fuchsia::web::CreateFrameParams());
 
   SetPageIsExplicit();
 
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(controller.get(), {},
-                                                   GetPage1UrlSpec()));
+  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+      frame.GetNavigationController(), {}, GetPage1UrlSpec()));
 
-  navigation_listener_.RunUntilTitleEquals(kPage1Title);
+  frame.navigation_listener().RunUntilTitleEquals(kPage1Title);
 }
 
 IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest, DefaultErrorPage_SiteAllowed) {
   fuchsia::web::CreateFrameParams params;
   params.set_explicit_sites_filter_error_page(
       fuchsia::mem::Data::WithBytes({}));
-
-  fuchsia::web::FramePtr frame = WebEngineBrowserTest::CreateFrameWithParams(
-      &navigation_listener_, std::move(params));
+  auto frame = cr_fuchsia::FrameForTest::Create(context(), std::move(params));
 
   SetPageIsNotExplicit();
 
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(controller.get(), {},
-                                                   GetPage1UrlSpec()));
+  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+      frame.GetNavigationController(), {}, GetPage1UrlSpec()));
 
-  navigation_listener_.RunUntilTitleEquals(kPage1Title);
+  frame.navigation_listener().RunUntilTitleEquals(kPage1Title);
 }
 
 IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest, DefaultErrorPage_SiteBlocked) {
   fuchsia::web::CreateFrameParams params;
   params.set_explicit_sites_filter_error_page(
       fuchsia::mem::Data::WithBytes({}));
-
-  fuchsia::web::FramePtr frame = WebEngineBrowserTest::CreateFrameWithParams(
-      &navigation_listener_, std::move(params));
+  auto frame = cr_fuchsia::FrameForTest::Create(context(), std::move(params));
 
   SetPageIsExplicit();
 
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(controller.get(), {},
-                                                   GetPage1UrlSpec()));
+  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+      frame.GetNavigationController(), {}, GetPage1UrlSpec()));
 
   // The page title is the URL for which navigation failed without the scheme
   // part ("http://");
   std::string expected_title = GetPage1UrlSpec().erase(0, 7);
-  navigation_listener_.RunUntilErrorPageIsLoadedAndTitleEquals(expected_title);
+  frame.navigation_listener().RunUntilErrorPageIsLoadedAndTitleEquals(
+      expected_title);
 }
 
 IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest, CustomErrorPage_SiteAllowed) {
   fuchsia::web::CreateFrameParams params;
   params.set_explicit_sites_filter_error_page(
       MemDataBytesFromShortString(kCustomExplicitSitesErrorPage));
-
-  fuchsia::web::FramePtr frame = WebEngineBrowserTest::CreateFrameWithParams(
-      &navigation_listener_, std::move(params));
+  auto frame = cr_fuchsia::FrameForTest::Create(context(), std::move(params));
 
   SetPageIsNotExplicit();
 
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(controller.get(), {},
-                                                   GetPage1UrlSpec()));
+  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+      frame.GetNavigationController(), {}, GetPage1UrlSpec()));
 
-  navigation_listener_.RunUntilTitleEquals(kPage1Title);
+  frame.navigation_listener().RunUntilTitleEquals(kPage1Title);
 }
 
 IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest, CustomErrorPage_SiteBlocked) {
   fuchsia::web::CreateFrameParams params;
   params.set_explicit_sites_filter_error_page(
       MemDataBytesFromShortString(kCustomExplicitSitesErrorPage));
-
-  fuchsia::web::FramePtr frame = WebEngineBrowserTest::CreateFrameWithParams(
-      &navigation_listener_, std::move(params));
+  auto frame = cr_fuchsia::FrameForTest::Create(context(), std::move(params));
 
   SetPageIsExplicit();
 
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(controller.get(), {},
-                                                   GetPage1UrlSpec()));
+  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+      frame.GetNavigationController(), {}, GetPage1UrlSpec()));
 
-  navigation_listener_.RunUntilErrorPageIsLoadedAndTitleEquals(
+  frame.navigation_listener().RunUntilErrorPageIsLoadedAndTitleEquals(
       kCustomErrorPageTitle);
 }

@@ -26,7 +26,7 @@ class ViewAXPlatformNodeDelegateAuraLinux : public ViewAXPlatformNodeDelegate,
   void Init() override;
 
   // |ViewAXPlatformNodeDelegate| overrides:
-  gfx::NativeViewAccessible GetParent() override;
+  gfx::NativeViewAccessible GetParent() const override;
   bool IsChildOfLeaf() const override;
 
  private:

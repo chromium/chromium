@@ -34,14 +34,20 @@ void ToolbarSwipeSceneLayer::UpdateLayer(
     jfloat x,
     jfloat y) {
   background_color_ = default_background_color;
-
   ContentLayer* content_layer =
       left_tab ? left_content_layer_.get() : right_content_layer_.get();
   if (!content_layer)
     return;
 
-  content_layer->SetProperties(id, can_use_live_layer, 1.0f, false, 1.0f, 1.0f,
-                               false, gfx::Rect());
+  // Update layer visibility based on whether there is a valid tab ID.
+  content_layer->layer()->SetHideLayerAndSubtree(id < 0);
+
+  if (id < 0)
+    return;
+
+  content_layer->SetProperties(id, can_use_live_layer,
+                               can_use_live_layer ? 0.0f : 1.0f, false, 1.0f,
+                               1.0f, false, gfx::Rect());
   content_layer->layer()->SetPosition(gfx::PointF(x, y));
 }
 

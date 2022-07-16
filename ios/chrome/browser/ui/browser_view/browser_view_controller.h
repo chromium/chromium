@@ -9,14 +9,15 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
-#import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
+#import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
+#import "ios/chrome/browser/ui/print/print_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
-#import "ios/public/provider/chrome/browser/voice/logo_animation_controller.h"
+#import "ios/chrome/browser/web/web_state_container_view_provider.h"
 
 @protocol ActivityServicePositioner;
 class Browser;
@@ -36,16 +37,21 @@ class Browser;
                         IncognitoReauthConsumer,
                         LogoAnimationControllerOwnerOwner,
                         PageInfoPresentation,
+                        PrintControllerDelegate,
                         SyncPresenter,
                         ThumbStripSupporting,
                         ToolbarCoordinatorDelegate,
-                        WebNavigationNTPDelegate>
+                        WebNavigationNTPDelegate,
+                        WebStateContainerViewProvider>
 
-// Initializes a new BVC from its nib. |model| must not be nil. The
-// webUsageSuspended property for this BVC will be based on |model|, and future
-// changes to |model|'s suspension state should be made through this BVC
-// instead of directly on the model.
-// TODO(crbug.com/992582): Remove references to model objects from this class.
+// Initializes a new BVC.
+// |browser| is the browser whose tabs this BVC will display.
+// |factory| is the dependency factory created for this BVC instance.
+// |browserContainerViewController| is the container object this BVC will exist
+// inside.
+// |dispatcher| is the dispatcher instance this BVC will use.
+// TODO(crbug.com/992582): Remove references to model objects -- including
+//   |browser| and |dispatcher| -- from this class.
 - (instancetype)initWithBrowser:(Browser*)browser
                  dependencyFactory:
                      (BrowserViewControllerDependencyFactory*)factory
@@ -93,9 +99,6 @@ class Browser;
 @property(nonatomic, weak) id<DefaultPromoNonModalPresentationDelegate>
     nonModalPromoPresentationDelegate;
 
-// The input view provider for this browser view controller.
-@property(nonatomic, weak) id<CRWResponderInputView> inputViewProvider;
-
 // Whether the receiver is currently the primary BVC.
 - (void)setPrimary:(BOOL)primary;
 
@@ -108,7 +111,7 @@ class Browser;
                     inheritOpener:(BOOL)inheritOpener;
 
 // Adds |tabAddedCompletion| to the completion block (if any) that will be run
-// the next time a tab is added to the TabModel this object was initialized
+// the next time a tab is added to the Browser this object was initialized
 // with.
 - (void)appendTabAddedCompletion:(ProceduralBlock)tabAddedCompletion;
 

@@ -20,8 +20,8 @@ bool InvalidationInterface::LessThanByVersion(const InvalidationInterface& a,
   return a.GetVersion() < b.GetVersion();
 }
 
-InvalidationInterface::InvalidationInterface() {}
+InvalidationInterface::InvalidationInterface() = default;
 
-InvalidationInterface::~InvalidationInterface() {}
+InvalidationInterface::~InvalidationInterface() = default;
 
 }  // namespace syncer

@@ -51,7 +51,7 @@
           Open page in a new Incognito window (⇧⌘N)
         </message>
       </if>
-      <if expr="is_win or is_linux or chromeos">
+      <if expr="is_win or is_linux or is_fuchsia or chromeos">
         <message name="IDS_SAD_TAB_RELOAD_INCOGNITO" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to open the web page in Chrome's Incognito mode.">
           Open page in a new Incognito window (Ctrl-Shift-N)
         </message>
@@ -91,7 +91,7 @@
           Restart Chromium
         </message>
       </if>
-      <if expr="is_win or is_linux or is_macosx or chromeos">
+      <if expr="is_win or is_linux or is_macosx or is_fuchsia or chromeos">
         <message name="IDS_SAD_TAB_RELOAD_RESTART_DEVICE" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to restart their computer.">
           Restart your computer
         </message>
@@ -106,7 +106,7 @@
           Learn more
         </message>
       </if>
-      <if expr="is_win or is_linux or is_macosx or chromeos">
+      <if expr="is_win or is_linux or is_macosx or is_fuchsia or chromeos">
         <message name="IDS_SAD_TAB_ERROR_CODE" desc="The message displayed on the crashed web page indicating the type of the crash.">
           Error code: <ph name="ERROR_CODE">$1<ex>STATUS_ACCESS_VIOLATION</ex></ph>
         </message>
@@ -182,6 +182,37 @@
       </message>
       <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL" desc="A sub-label below the Block 3rd-party cookie checkbox." formatter_data="android_java">
         When on, sites can't use cookies that track you across the web. Features on some sites may break.
+      </message>
+
+      <!-- Revamped Incognito New Tab Page strings -->
+
+      <message name="IDS_REVAMPED_INCOGNITO_NTP_TITLE" desc="Title of the Incognito new tab page." formatter_data="android_java">
+        Incognito
+      </message>
+      <message name="IDS_REVAMPED_INCOGNITO_NTP_DOES_HEADER" desc="Header for the 'Incognito does' section that informs users about what happens while browsing Incognito: browsing activity, search history and information entered in forms are not saved locally." formatter_data="android_java">
+        What Incognito does
+      </message>
+      <message name="IDS_REVAMPED_INCOGNITO_NTP_DOES_DESCRIPTION" desc="Paragraph that informs users about Incognito's functionalities: browsing activity, search history and information entered in forms are not saved locally, they are cleared after closing all Incognito tabs. 'Browsing activity' refers to the browsing history (list of visited websites) and the cookies (data saved by websites on the user's device such as: sign-in state, preferences, etc.). 'Search history from this device' means that searches will not be saved locally or used as search suggestions in the future. 'Information entered in forms' refers to names, addresses, passwords etc. that users enter into forms on the web." formatter_data="android_java">
+        After closing all Incognito tabs, Chrome clears:
+        <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
+          <ph name="LIST_ITEM">&lt;li&gt;</ph>Your browsing activity from this device<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
+          <ph name="LIST_ITEM">&lt;li&gt;</ph>Your search history from this device<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
+          <ph name="LIST_ITEM">&lt;li&gt;</ph>Information entered in forms<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
+        <ph name="END_LIST">&lt;/ul&gt;</ph>
+      </message>
+      <message name="IDS_REVAMPED_INCOGNITO_NTP_DOES_NOT_HEADER" desc="Header for the 'Incognito doesn’t do' section that informs users that they are not invisible online." formatter_data="android_java">
+        What Incognito doesn’t do
+      </message>
+      <message name="IDS_REVAMPED_INCOGNITO_NTP_DOES_NOT_DESCRIPTION" desc="Paragraph that informs users that their online activity is still visible while using Incognito. The bullet points list some examples of entities to which users are not invisible in Incognito and what they can observe. The bullet points elaborate on the fact that Incognito only provides privacy with respect to other users on the same device. Websites you visit still know that you visited them. Employers and schools can still track users' browsing activity and internet service providers can still monitor web traffic, even if it comes from the Incognito mode." formatter_data="android_java">
+        Incognito does not make you invisible online:
+        <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
+          <ph name="LIST_ITEM">&lt;li&gt;</ph>Sites know when you visit them<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
+          <ph name="LIST_ITEM">&lt;li&gt;</ph>Employers or schools can track browsing activity<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
+          <ph name="LIST_ITEM">&lt;li&gt;</ph>Internet service providers may monitor web traffic<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
+        <ph name="END_LIST">&lt;/ul&gt;</ph>
+      </message>
+      <message name="IDS_REVAMPED_INCOGNITO_NTP_LEARN_MORE" desc="The link text displayed on the Incognito new tab page pointing users to the Incognito learn more page." formatter_data="android_java">
+        <ph name="BEGIN_LINK">&lt;a&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph> about Incognito
       </message>
 
 </grit-part>

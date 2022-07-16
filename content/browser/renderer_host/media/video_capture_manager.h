@@ -11,7 +11,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -60,6 +59,9 @@ class CONTENT_EXPORT VideoCaptureManager
       std::unique_ptr<VideoCaptureProvider> video_capture_provider,
       base::RepeatingCallback<void(const std::string&)> emit_log_message_cb,
       ScreenlockMonitor* monitor = nullptr);
+
+  VideoCaptureManager(const VideoCaptureManager&) = delete;
+  VideoCaptureManager& operator=(const VideoCaptureManager&) = delete;
 
   // AddVideoCaptureObserver() can be called only before any devices are opened.
   // RemoveAllVideoCaptureObservers() can be called only after all devices
@@ -325,10 +327,8 @@ class CONTENT_EXPORT VideoCaptureManager
 
   // Closes video device capture sessions after a timeout. Idle timeout value
   // chosen based on UMA metrics. See https://crbug.com/1163105#c28
-  base::TimeDelta idle_close_timeout_ = base::TimeDelta::FromSeconds(15);
+  base::TimeDelta idle_close_timeout_ = base::Seconds(15);
   base::OneShotTimer idle_close_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureManager);
 };
 
 }  // namespace content

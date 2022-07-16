@@ -6,7 +6,7 @@
 #define ASH_WM_DESKS_DESK_NAME_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/wm/overview/overview_highlight_controller.h"
+#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/wm_highlight_item_border.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -18,9 +18,8 @@ class DeskMiniView;
 // corresponding desk. When it's not focused, it looks like a normal label. It
 // can be highlighted and activated by the OverviewHighlightController, and it
 // provides an API to elide long desk names.
-class ASH_EXPORT DeskNameView
-    : public views::Textfield,
-      public OverviewHighlightController::OverviewHighlightableView {
+class ASH_EXPORT DeskNameView : public views::Textfield,
+                                public OverviewHighlightableView {
  public:
   explicit DeskNameView(DeskMiniView* mini_view);
   DeskNameView(const DeskNameView&) = delete;
@@ -51,7 +50,7 @@ class ASH_EXPORT DeskNameView
   void OnThemeChanged() override;
   gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
 
-  // OverviewHighlightController::OverviewHighlightableView:
+  // OverviewHighlightableView:
   views::View* GetView() override;
   void MaybeActivateHighlightedView() override;
   void MaybeCloseHighlightedView() override;

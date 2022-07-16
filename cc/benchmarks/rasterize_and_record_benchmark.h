@@ -13,13 +13,10 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/values.h"
 #include "cc/benchmarks/micro_benchmark_controller.h"
 #include "cc/layers/recording_source.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace cc {
 
@@ -27,7 +24,7 @@ class LayerTreeHost;
 
 class RasterizeAndRecordBenchmark : public MicroBenchmark {
  public:
-  explicit RasterizeAndRecordBenchmark(std::unique_ptr<base::Value> value,
+  explicit RasterizeAndRecordBenchmark(base::Value settings,
                                        MicroBenchmark::DoneCallback callback);
   ~RasterizeAndRecordBenchmark() override;
 
@@ -39,7 +36,7 @@ class RasterizeAndRecordBenchmark : public MicroBenchmark {
       scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner) override;
 
  private:
-  void RecordRasterResults(std::unique_ptr<base::Value> results);
+  void RecordRasterResults(base::Value results);
 
   struct RecordResults {
     int pixels_recorded = 0;
@@ -49,8 +46,8 @@ class RasterizeAndRecordBenchmark : public MicroBenchmark {
 
   RecordResults record_results_;
   int record_repeat_count_;
-  std::unique_ptr<base::Value> settings_;
-  std::unique_ptr<base::DictionaryValue> results_;
+  int rasterize_repeat_count_;
+  base::Value results_;
 
   // The following is used in DCHECKs.
   bool main_thread_benchmark_done_;

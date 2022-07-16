@@ -21,6 +21,9 @@ class ExtensionPrefStore : public ValueMapPrefStore,
   ExtensionPrefStore(ExtensionPrefValueMap* extension_pref_value_map,
                      bool incognito_pref_store);
 
+  ExtensionPrefStore(const ExtensionPrefStore&) = delete;
+  ExtensionPrefStore& operator=(const ExtensionPrefStore&) = delete;
+
   // Overrides for ExtensionPrefValueMap::Observer:
   void OnInitializationCompleted() override;
   void OnPrefValueChanged(const std::string& key) override;
@@ -32,8 +35,6 @@ class ExtensionPrefStore : public ValueMapPrefStore,
  private:
   ExtensionPrefValueMap* extension_pref_value_map_;  // Weak pointer.
   bool incognito_pref_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPrefStore);
 };
 
 #endif  // EXTENSIONS_BROWSER_EXTENSION_PREF_STORE_H_

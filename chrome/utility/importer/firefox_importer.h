@@ -18,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
@@ -37,6 +36,9 @@ class Database;
 class FirefoxImporter : public Importer {
  public:
   FirefoxImporter();
+
+  FirefoxImporter(const FirefoxImporter&) = delete;
+  FirefoxImporter& operator=(const FirefoxImporter&) = delete;
 
   // Importer:
   void StartImport(const importer::SourceProfile& source_profile,
@@ -119,8 +121,6 @@ class FirefoxImporter : public Importer {
   // Stored because we can only access it from the UI thread.
   std::string locale_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(FirefoxImporter);
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_FIREFOX_IMPORTER_H_

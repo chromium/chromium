@@ -24,6 +24,7 @@ static_library("base") {
     "account_consistency_method.h",
     "avatar_icon_util.cc",
     "avatar_icon_util.h",
+    "consent_level.h",
     "device_id_helper.cc",
     "device_id_helper.h",
     "multilogin_parameters.cc",
@@ -66,6 +67,9 @@ if (is_android) {
   java_cpp_enum("signin_metrics_enum_javagen") {
     sources = [ "signin_metrics.h" ]
   }
+  java_cpp_enum("consent_level_enum_javagen") {
+    sources = [ "consent_level.h" ]
+  }
 }
 
 static_library("test_support") {
@@ -79,6 +83,7 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/prefs",
     "//google_apis:test_support",
   ]

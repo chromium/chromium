@@ -6,7 +6,6 @@
 #define UI_OZONE_PLATFORM_WAYLAND_GPU_DRM_RENDER_NODE_PATH_FINDER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace ui {
 
@@ -15,6 +14,10 @@ class DrmRenderNodePathFinder {
  public:
   // Triggers FindDrmRenderNodePath.
   DrmRenderNodePathFinder();
+
+  DrmRenderNodePathFinder(const DrmRenderNodePathFinder&) = delete;
+  DrmRenderNodePathFinder& operator=(const DrmRenderNodePathFinder&) = delete;
+
   ~DrmRenderNodePathFinder();
 
   // Returns a path to a drm render node device.
@@ -24,8 +27,6 @@ class DrmRenderNodePathFinder {
   void FindDrmRenderNodePath();
 
   base::FilePath drm_render_node_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmRenderNodePathFinder);
 };
 
 }  // namespace ui

@@ -45,19 +45,25 @@ struct PreconnectedRequestStats {
 
 struct PreconnectStats {
   explicit PreconnectStats(const GURL& url);
+
+  // Stats must be moved only.
+  PreconnectStats(const PreconnectStats&) = delete;
+  PreconnectStats& operator=(const PreconnectStats&) = delete;
+
   ~PreconnectStats();
 
   GURL url;
   base::TimeTicks start_time;
   std::vector<PreconnectedRequestStats> requests_stats;
-
-  // Stats must be moved only.
-  DISALLOW_COPY_AND_ASSIGN(PreconnectStats);
 };
 
 // Stores the status of all preconnects associated with a given |url|.
 struct PreresolveInfo {
   PreresolveInfo(const GURL& url, size_t count);
+
+  PreresolveInfo(const PreresolveInfo&) = delete;
+  PreresolveInfo& operator=(const PreresolveInfo&) = delete;
+
   ~PreresolveInfo();
 
   bool is_done() const { return queued_count == 0 && inflight_count == 0; }
@@ -67,8 +73,6 @@ struct PreresolveInfo {
   size_t inflight_count = 0;
   bool was_canceled = false;
   std::unique_ptr<PreconnectStats> stats;
-
-  DISALLOW_COPY_AND_ASSIGN(PreresolveInfo);
 };
 
 // Stores all data need for running a preresolve and a subsequent optional
@@ -79,9 +83,15 @@ struct PreresolveJob {
                 bool allow_credentials,
                 net::NetworkIsolationKey network_isolation_key,
                 PreresolveInfo* info);
+
+  PreresolveJob(const PreresolveJob&) = delete;
+  PreresolveJob& operator=(const PreresolveJob&) = delete;
+
   PreresolveJob(PreconnectRequest preconnect_request, PreresolveInfo* info);
   PreresolveJob(PreresolveJob&& other);
+
   ~PreresolveJob();
+
   bool need_preconnect() const {
     return num_sockets > 0 && !(info && info->was_canceled);
   }
@@ -97,8 +107,6 @@ struct PreresolveJob {
   PreresolveInfo* info;
   std::unique_ptr<ResolveHostClientImpl> resolve_host_client;
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client;
-
-  DISALLOW_COPY_AND_ASSIGN(PreresolveJob);
 };
 
 // PreconnectManager is responsible for preresolving and preconnecting to
@@ -149,6 +157,10 @@ class PreconnectManager {
 
   PreconnectManager(base::WeakPtr<Delegate> delegate,
                     content::BrowserContext* browser_context);
+
+  PreconnectManager(const PreconnectManager&) = delete;
+  PreconnectManager& operator=(const PreconnectManager&) = delete;
+
   virtual ~PreconnectManager();
 
   // Starts preconnect and preresolve jobs keyed by |url|.
@@ -224,8 +236,6 @@ class PreconnectManager {
   Observer* observer_ = nullptr;
 
   base::WeakPtrFactory<PreconnectManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PreconnectManager);
 };
 
 }  // namespace predictors

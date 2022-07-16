@@ -30,6 +30,10 @@ class TestNetworkChangeNotifier : public net::NetworkChangeNotifier {
         connection_type_to_return_(
             net::NetworkChangeNotifier::CONNECTION_UNKNOWN) {}
 
+  TestNetworkChangeNotifier(const TestNetworkChangeNotifier&) = delete;
+  TestNetworkChangeNotifier& operator=(const TestNetworkChangeNotifier&) =
+      delete;
+
   // Simulates a change of the connection type to |type|. This will notify any
   // objects that are NetworkChangeNotifiers.
   void SimulateNetworkConnectionChange(
@@ -47,8 +51,6 @@ class TestNetworkChangeNotifier : public net::NetworkChangeNotifier {
   // The currently simulated network connection type. If this is set to
   // CONNECTION_NONE, then NetworkChangeNotifier::IsOffline will return true.
   net::NetworkChangeNotifier::ConnectionType connection_type_to_return_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkChangeNotifier);
 };
 
 class PreloadControllerTest : public PlatformTest {

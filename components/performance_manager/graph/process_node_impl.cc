@@ -234,6 +234,11 @@ void ProcessNodeImpl::set_priority(base::TaskPriority priority) {
   priority_.SetAndMaybeNotify(this, priority);
 }
 
+void ProcessNodeImpl::add_hosted_content_type(ContentType content_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  hosted_content_types_.Put(content_type);
+}
+
 // static
 void ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(
     const std::string& trigger_name,
@@ -347,6 +352,10 @@ const RenderProcessHostProxy& ProcessNodeImpl::GetRenderProcessHostProxy()
 base::TaskPriority ProcessNodeImpl::GetPriority() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return priority();
+}
+
+ProcessNode::ContentTypes ProcessNodeImpl::GetHostedContentTypes() const {
+  return hosted_content_types();
 }
 
 void ProcessNodeImpl::OnAllFramesInProcessFrozen() {

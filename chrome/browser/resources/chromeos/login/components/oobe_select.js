@@ -16,7 +16,7 @@
  *   }>
  * }
  */
-var SelectListType;
+/* #export */ var SelectListType;
 
 /**
  * Sets up given "select" element using the list and adds callback.
@@ -30,7 +30,7 @@ var SelectListType;
  * Note: do not forget to update getSelectedTitle() below if this is
  * updated!
  */
-var setupSelect = function(select, list, callback) {
+/* #export */ var setupSelect = function(select, list, callback) {
   select.innerHTML = '';
   var optgroup = select;
   for (var i = 0; i < list.length; ++i) {
@@ -58,7 +58,7 @@ var setupSelect = function(select, list, callback) {
  * @param {!SelectListType} list The same as in setupSelect() above.
  * @return {string}
  */
-var getSelectedTitle = function(list) {
+/* #export */ var getSelectedTitle = function(list) {
   var firstTitle = '';
   for (var i = 0; i < list.length; ++i) {
     var item = list[i];
@@ -79,7 +79,7 @@ var getSelectedTitle = function(list) {
  * @param {!SelectListType} list The same as in setupSelect() above.
  * @return {?string}
  */
-var getSelectedValue = function(list) {
+/* #export */ var getSelectedValue = function(list) {
   for (var i = 0; i < list.length; ++i) {
     var item = list[i];
     if (item.optionGroupName)

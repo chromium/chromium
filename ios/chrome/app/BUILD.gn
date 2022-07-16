@@ -6,6 +6,7 @@ import("//build/apple/compile_entitlements.gni")
 import("//build/apple/tweak_info_plist.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
+import("//build/ios/extension_bundle_data.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
 import("//ios/chrome/features.gni")
@@ -69,7 +70,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser:browser",
     "//ios/public/provider/chrome/browser:test_support",
-    "//ios/public/provider/chrome/browser/distribution",
+    "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/testing:block_swizzler",
     "//ios/third_party/material_components_ios",
     "//ios/web/public/test:test",
@@ -120,11 +121,6 @@ if (!is_fat_secondary_toolchain) {
       "--branding=$chromium_short_name",
       "--add-gtm-metadata=1",
     ]
-
-    # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
-    if (ios_lock_to_version != "") {
-      args += [ "--lock-to-version=$ios_lock_to_version" ]
-    }
   }
 
   compile_entitlements("entitlements") {
@@ -154,6 +150,27 @@ source_set("content_suggestions_scheduler_app_state_agent") {
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/ntp_snippets",
   ]
+}
+
+if (ios_enable_credential_provider_extension) {
+  source_set("credential_provider_migrator_app_agent") {
+    configs += [ "//build/config/compiler:enable_arc" ]
+    sources = [
+      "credential_provider_migrator_app_agent.h",
+      "credential_provider_migrator_app_agent.mm",
+    ]
+    deps = [
+      "//components/keyed_service/core",
+      "//ios/chrome/app/application_delegate:app_state_header",
+      "//ios/chrome/app/application_delegate:observing_app_state_agent",
+      "//ios/chrome/browser/credential_provider",
+      "//ios/chrome/browser/passwords:store_factory",
+      "//ios/chrome/browser/ui/main:browser_interface_provider",
+      "//ios/chrome/browser/ui/main:scene_state_header",
+      "//ios/chrome/common/app_group",
+      "//ios/chrome/common/credential_provider",
+    ]
+  }
 }
 
 source_set("app_metrics_app_state_agent") {
@@ -236,10 +253,12 @@ source_set("first_run_app_state_agent") {
     "//ios/chrome/browser/ui/commands:commands",
     "//ios/chrome/browser/ui/first_run",
     "//ios/chrome/browser/ui/first_run:field_trial",
+    "//ios/chrome/browser/ui/first_run:first_run_provider",
     "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/main:browser_interface_provider",
     "//ios/chrome/browser/ui/main:observing_scene_agent",
     "//ios/chrome/browser/ui/main:scene",
+    "//ios/chrome/browser/ui/screen:screen_provider",
   ]
 }
 
@@ -301,7 +320,6 @@ source_set("app_internal") {
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/app/application_delegate:url_opener_params",
-    "//ios/chrome/app/intents",
     "//ios/chrome/app/spotlight",
     "//ios/chrome/app/startup",
     "//ios/chrome/app/startup:startup_basic",
@@ -316,6 +334,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/crash_report:crash_report_internal",
     "//ios/chrome/browser/crash_report/breadcrumbs",
     "//ios/chrome/browser/credential_provider:buildflags",
+    "//ios/chrome/browser/credential_provider:feature_flags",
     "//ios/chrome/browser/download",
     "//ios/chrome/browser/external_files",
     "//ios/chrome/browser/favicon",
@@ -368,10 +387,12 @@ source_set("app_internal") {
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:main_app",
+    "//ios/chrome/common/intents",
     "//ios/net",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/distribution",
+    "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/public/provider/chrome/browser/mailto",
+    "//ios/public/provider/chrome/browser/overrides:overrides_api",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/user_feedback",
     "//ios/web/common:features",
@@ -386,7 +407,10 @@ source_set("app_internal") {
   ]
 
   if (ios_enable_credential_provider_extension) {
-    deps += [ "//ios/chrome/browser/credential_provider" ]
+    deps += [
+      ":credential_provider_migrator_app_agent",
+      "//ios/chrome/browser/credential_provider",
+    ]
   }
 
   frameworks = [
@@ -466,7 +490,7 @@ ios_app_bundle("chrome") {
 
   entitlements_target = ":entitlements"
   info_plist_target = ":info_plist"
-  xcode_product_bundle_id = "$chromium_bundle_id"
+  bundle_identifier = "$chromium_bundle_id"
 
   bundle_deps = [ "//ios/chrome/app/resources" ]
   if (!is_chrome_branded || ios_chrome_app_variants == []) {
@@ -506,6 +530,9 @@ ios_app_bundle("chrome") {
     if (ios_enable_widget_kit_extension) {
       deps += [ ":widget_kit_extension_bundle" ]
     }
+    if (ios_enable_intents_extension) {
+      deps += [ ":intents_extension_bundle" ]
+    }
   }
 
   extra_substitutions = [
@@ -542,46 +569,41 @@ ios_app_bundle("chrome") {
 }
 
 if (current_toolchain == default_toolchain) {
-  if (ios_enable_content_widget_extension) {
-    bundle_data("content_widget_extension_bundle") {
-      public_deps = [ "//ios/chrome/content_widget_extension" ]
-      sources = [ "$root_out_dir/content_widget_extension.appex" ]
-      outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
+  if (ios_enable_search_widget_extension) {
+    extension_bundle_data("search_widget_extension_bundle") {
+      extension_target =
+          "//ios/chrome/search_widget_extension(${current_toolchain}_13_0)"
     }
   }
 
-  if (ios_enable_search_widget_extension) {
-    bundle_data("search_widget_extension_bundle") {
-      public_deps = [ "//ios/chrome/search_widget_extension" ]
-      sources = [ "$root_out_dir/search_widget_extension.appex" ]
-      outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
+  if (ios_enable_content_widget_extension) {
+    extension_bundle_data("content_widget_extension_bundle") {
+      extension_target =
+          "//ios/chrome/content_widget_extension(${current_toolchain}_13_0)"
     }
   }
 
   if (ios_enable_share_extension) {
-    bundle_data("share_extension_bundle") {
-      public_deps = [ "//ios/chrome/share_extension" ]
-      sources = [ "$root_out_dir/share_extension.appex" ]
-      outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
+    extension_bundle_data("share_extension_bundle") {
+      extension_target = "//ios/chrome/share_extension"
     }
   }
 
   if (ios_enable_credential_provider_extension) {
-    bundle_data("credential_provider_extension_bundle") {
-      public_deps = [ "//ios/chrome/credential_provider_extension" ]
-      sources = [ "$root_out_dir/credential_provider_extension.appex" ]
-      outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
+    extension_bundle_data("credential_provider_extension_bundle") {
+      extension_target = "//ios/chrome/credential_provider_extension"
     }
   }
 
   if (ios_enable_widget_kit_extension) {
-    bundle_data("widget_kit_extension_bundle") {
-      _widget_extension_target =
-          "//ios/chrome/widget_kit_extension(${current_toolchain}_14_0)"
-      public_deps = [ _widget_extension_target ]
-      sources = [ get_label_info(_widget_extension_target, "root_out_dir") +
-                  "/widget_kit_extension.appex" ]
-      outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
+    extension_bundle_data("widget_kit_extension_bundle") {
+      extension_target = "//ios/chrome/widget_kit_extension"
+    }
+  }
+
+  if (ios_enable_intents_extension) {
+    extension_bundle_data("intents_extension_bundle") {
+      extension_target = "//ios/chrome/intents_extension"
     }
   }
 }

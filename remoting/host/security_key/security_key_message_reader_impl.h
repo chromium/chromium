@@ -26,6 +26,11 @@ namespace remoting {
 class SecurityKeyMessageReaderImpl : public SecurityKeyMessageReader {
  public:
   explicit SecurityKeyMessageReaderImpl(base::File input_file);
+
+  SecurityKeyMessageReaderImpl(const SecurityKeyMessageReaderImpl&) = delete;
+  SecurityKeyMessageReaderImpl& operator=(const SecurityKeyMessageReaderImpl&) =
+      delete;
+
   ~SecurityKeyMessageReaderImpl() override;
 
   // SecurityKeyMessageReader interface.
@@ -62,8 +67,6 @@ class SecurityKeyMessageReaderImpl : public SecurityKeyMessageReader {
 
   base::WeakPtr<SecurityKeyMessageReaderImpl> reader_;
   base::WeakPtrFactory<SecurityKeyMessageReaderImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyMessageReaderImpl);
 };
 
 }  // namespace remoting

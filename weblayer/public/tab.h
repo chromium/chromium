@@ -124,6 +124,24 @@ class Tab {
   virtual std::unique_ptr<FaviconFetcher> CreateFaviconFetcher(
       FaviconFetcherDelegate* delegate) = 0;
 
+  // Sets the target language for translation such that whenever the translate
+  // UI shows in this Tab, the target language will be |targetLanguage|. Notes:
+  // - |targetLanguage| should be specified as the language code (e.g., "de" for
+  //   German).
+  // - Passing an empty string causes behavior to revert to default.
+  // - Specifying a non-empty target language will also result in the following
+  //   behaviors (all of which are intentional as part of the semantics of
+  //   having a target language):
+  //   - Translation is initiated automatically (note that the infobar UI is
+  //      present)
+  //   - Translation occurs even for languages/sites that the user has
+  //     blocklisted
+  //   - Translation occurs even for pages in the user's default locale
+  //   - Translation does *not* occur nor is the infobar UI shown for pages in
+  //     the specified target language
+  virtual void SetTranslateTargetLanguage(
+      const std::string& translate_target_lang) = 0;
+
 #if !defined(OS_ANDROID)
   // TODO: this isn't a stable API, so use it now for expediency in the C++ API,
   // but if we ever want to have backward or forward compatibility in C++ this

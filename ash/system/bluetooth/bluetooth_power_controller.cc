@@ -176,7 +176,7 @@ void BluetoothPowerController::AdapterPresentChanged(
         base::BindOnce(
             &BluetoothPowerController::TriggerRunPendingBluetoothTasks,
             weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kBluetoothInitializationDelay));
+        base::Milliseconds(kBluetoothInitializationDelay));
   }
 }
 

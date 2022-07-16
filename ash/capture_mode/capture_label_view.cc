@@ -7,13 +7,15 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
@@ -21,16 +23,16 @@
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/style/platform_style.h"
 
 namespace ash {
 
@@ -43,25 +45,20 @@ constexpr int kCountDownStartSeconds = 3;
 constexpr int kCountDownEndSeconds = 1;
 
 constexpr base::TimeDelta kCaptureLabelOpacityFadeoutDuration =
-    base::TimeDelta::FromMilliseconds(33);
+    base::Milliseconds(33);
 // Opacity fade in animation duration and scale up animation duration when the
 // timeout label enters 3.
-constexpr base::TimeDelta kCountDownEnter3Duration =
-    base::TimeDelta::FromMilliseconds(267);
+constexpr base::TimeDelta kCountDownEnter3Duration = base::Milliseconds(267);
 // Opacity fade out animation duration and scale down animation duration when
 // the timeout label exits 1.
-constexpr base::TimeDelta kCountDownExit1Duration =
-    base::TimeDelta::FromMilliseconds(333);
+constexpr base::TimeDelta kCountDownExit1Duration = base::Milliseconds(333);
 // For other number enter/exit fade in/out, scale up/down animation duration.
-constexpr base::TimeDelta kCountDownEnterExitDuration =
-    base::TimeDelta::FromMilliseconds(167);
+constexpr base::TimeDelta kCountDownEnterExitDuration = base::Milliseconds(167);
 
 // Delay to enter number 3 to start count down.
-constexpr base::TimeDelta kStartCountDownDelay =
-    base::TimeDelta::FromMilliseconds(233);
+constexpr base::TimeDelta kStartCountDownDelay = base::Milliseconds(233);
 // Delay to exit a number after entering animation is completed.
-constexpr base::TimeDelta kCountDownExitDelay =
-    base::TimeDelta::FromMilliseconds(667);
+constexpr base::TimeDelta kCountDownExitDelay = base::Milliseconds(667);
 
 // Different scales for enter/exiting countdown numbers.
 constexpr float kEnterLabelScaleDown = 0.8f;
@@ -136,7 +133,9 @@ gfx::Transform GetScaleTransform(const gfx::Rect& bounds, float scale) {
 
 }  // namespace
 
-CaptureLabelView::CaptureLabelView(CaptureModeSession* capture_mode_session)
+CaptureLabelView::CaptureLabelView(
+    CaptureModeSession* capture_mode_session,
+    base::RepeatingClosure on_capture_button_pressed)
     : timeout_count_down_(kCountDownStartSeconds),
       capture_mode_session_(capture_mode_session) {
   SetPaintToLayer();
@@ -147,16 +146,13 @@ CaptureLabelView::CaptureLabelView(CaptureModeSession* capture_mode_session)
       AshColorProvider::BaseLayerType::kTransparent80);
   SetBackground(views::CreateSolidBackground(background_color));
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCaptureLabelRadius));
-  layer()->SetBackgroundBlur(
-      static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
-  layer()->SetBackdropFilterQuality(capture_mode::kBlurQuality);
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   SkColor text_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
   label_button_ = AddChildView(std::make_unique<views::LabelButton>(
-      base::BindRepeating(&CaptureLabelView::OnButtonPressed,
-                          base::Unretained(this)),
-      std::u16string()));
+      std::move(on_capture_button_pressed), std::u16string()));
   label_button_->SetPaintToLayer();
   label_button_->layer()->SetFillsBoundsOpaquely(false);
   label_button_->SetEnabledTextColors(text_color);
@@ -165,12 +161,8 @@ CaptureLabelView::CaptureLabelView(CaptureModeSession* capture_mode_session)
 
   views::InkDrop::Get(label_button_)
       ->SetMode(views::InkDropHost::InkDropMode::ON);
-  const auto ripple_attributes =
-      color_provider->GetRippleAttributes(background_color);
-  views::InkDrop::Get(label_button_)
-      ->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
-  views::InkDrop::Get(label_button_)
-      ->SetBaseColor(ripple_attributes.base_color);
+  StyleUtil::ConfigureInkDropAttributes(
+      label_button_, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
   label_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   label_ = AddChildView(std::make_unique<views::Label>(std::u16string()));
@@ -339,7 +331,7 @@ CaptureLabelView::CreatePathGenerator() {
   // the same size as its widget, inset by half the focus ring thickness to
   // ensure the focus ring is drawn inside the widget bounds.
   return std::make_unique<views::RoundRectHighlightPathGenerator>(
-      gfx::Insets(views::PlatformStyle::kFocusHaloThickness / 2),
+      gfx::Insets(views::FocusRing::kDefaultHaloThickness / 2),
       kCaptureLabelRadius);
 }
 
@@ -471,10 +463,6 @@ void CaptureLabelView::StartWidgetLayerAnimationSequences() {
   widget_transform_sequence->AddObserver(animation_observer_.get());
   GetWidget()->GetLayer()->GetAnimator()->StartTogether(
       {widget_opacity_sequence.release(), widget_transform_sequence.release()});
-}
-
-void CaptureLabelView::OnButtonPressed() {
-  CaptureModeController::Get()->PerformCapture();
 }
 
 BEGIN_METADATA(CaptureLabelView, views::View)

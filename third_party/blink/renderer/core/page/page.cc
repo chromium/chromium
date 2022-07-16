@@ -1079,6 +1079,14 @@ bool Page::InsidePortal() const {
   return inside_portal_;
 }
 
+void Page::SetIsMainFrameFencedFrameRoot() {
+  is_fenced_frame_tree_ = true;
+}
+
+bool Page::IsMainFrameFencedFrameRoot() const {
+  return is_fenced_frame_tree_;
+}
+
 void Page::SetMediaFeatureOverride(const AtomicString& media_feature,
                                    const String& value) {
   if (!media_feature_overrides_) {
@@ -1087,7 +1095,8 @@ void Page::SetMediaFeatureOverride(const AtomicString& media_feature,
     media_feature_overrides_ = std::make_unique<MediaFeatureOverrides>();
   }
   media_feature_overrides_->SetOverride(media_feature, value);
-  if (media_feature == "prefers-color-scheme")
+  if (media_feature == "prefers-color-scheme" ||
+      media_feature == "forced-colors")
     SettingsChanged(ChangeType::kColorScheme);
   else
     SettingsChanged(ChangeType::kMediaQuery);

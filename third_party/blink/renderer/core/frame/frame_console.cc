@@ -30,6 +30,7 @@
 
 #include <memory>
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -64,16 +65,17 @@ bool FrameConsole::AddMessageToStorage(ConsoleMessage* console_message,
       frame_->DomWindow(), console_message, discard_duplicates);
 }
 
-void FrameConsole::ReportMessageToClient(mojom::ConsoleMessageSource source,
-                                         mojom::ConsoleMessageLevel level,
-                                         const String& message,
-                                         SourceLocation* location) {
-  if (source == mojom::ConsoleMessageSource::kNetwork)
+void FrameConsole::ReportMessageToClient(
+    mojom::blink::ConsoleMessageSource source,
+    mojom::blink::ConsoleMessageLevel level,
+    const String& message,
+    SourceLocation* location) {
+  if (source == mojom::blink::ConsoleMessageSource::kNetwork)
     return;
 
   String url = location->Url();
   String stack_trace;
-  if (source == mojom::ConsoleMessageSource::kConsoleApi) {
+  if (source == mojom::blink::ConsoleMessageSource::kConsoleApi) {
     if (!frame_->GetPage())
       return;
     if (frame_->GetChromeClient()
@@ -109,9 +111,9 @@ void FrameConsole::ReportResourceResponseReceived(
       String::Number(response.HttpStatusCode()) + " (" +
       response.HttpStatusText() + ')';
   auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-      mojom::ConsoleMessageSource::kNetwork, mojom::ConsoleMessageLevel::kError,
-      message, response.CurrentRequestUrl().GetString(), loader,
-      request_identifier);
+      mojom::blink::ConsoleMessageSource::kNetwork,
+      mojom::blink::ConsoleMessageLevel::kError, message,
+      response.CurrentRequestUrl().GetString(), loader, request_identifier);
   AddMessage(console_message);
 }
 
@@ -122,15 +124,26 @@ void FrameConsole::DidFailLoading(DocumentLoader* loader,
   if (error.IsCancellation() || error.IsUnactionableTrustTokensStatus())
     return;
 
+  if (error.CorsErrorStatus() &&
+      base::FeatureList::IsEnabled(blink::features::kCORSErrorsIssueOnly)) {
+    // CORS issues are reported via network service instrumentation.
+    return;
+  }
+
   StringBuilder message;
   message.Append("Failed to load resource");
   if (!error.LocalizedDescription().IsEmpty()) {
     message.Append(": ");
     message.Append(error.LocalizedDescription());
   }
-  AddMessageToStorage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::ConsoleMessageSource::kNetwork, mojom::ConsoleMessageLevel::kError,
-      message.ToString(), error.FailingURL(), loader, request_identifier));
+  auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kNetwork,
+      mojom::blink::ConsoleMessageLevel::kError, message.ToString(),
+      error.FailingURL(), loader, request_identifier);
+  if (error.CorsErrorStatus()) {
+    console_message->SetCategory(mojom::blink::ConsoleMessageCategory::Cors);
+  }
+  AddMessageToStorage(console_message);
 }
 
 void FrameConsole::Trace(Visitor* visitor) const {

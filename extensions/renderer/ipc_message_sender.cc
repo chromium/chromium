@@ -18,12 +18,14 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/trace_util.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/message_target.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/script_context.h"
+#include "extensions/renderer/trace_util.h"
 #include "extensions/renderer/worker_thread_dispatcher.h"
 #include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -37,6 +39,11 @@ namespace {
 class MainThreadIPCMessageSender : public IPCMessageSender {
  public:
   MainThreadIPCMessageSender() : render_thread_(content::RenderThread::Get()) {}
+
+  MainThreadIPCMessageSender(const MainThreadIPCMessageSender&) = delete;
+  MainThreadIPCMessageSender& operator=(const MainThreadIPCMessageSender&) =
+      delete;
+
   ~MainThreadIPCMessageSender() override {}
 
   void SendRequestIPC(ScriptContext* context,
@@ -54,21 +61,21 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
 
   void SendOnRequestResponseReceivedIPC(int request_id) override {}
 
+  mojom::EventListenerParamPtr GetEventListenerParam(ScriptContext* context) {
+    return !context->GetExtensionID().empty()
+               ? mojom::EventListenerParam::NewExtensionId(
+                     context->GetExtensionID())
+               : mojom::EventListenerParam::NewListenerUrl(context->url());
+  }
+
   void SendAddUnfilteredEventListenerIPC(
       ScriptContext* context,
       const std::string& event_name) override {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    if (!context->GetExtensionID().empty()) {
-      GetEventRouter()->AddListenerForMainThread(
-          mojom::EventListenerParam::NewExtensionId(context->GetExtensionID()),
-          event_name);
-    } else {
-      GetEventRouter()->AddListenerForMainThread(
-          mojom::EventListenerParam::NewListenerUrl(context->url()),
-          event_name);
-    }
+    GetEventRouter()->AddListenerForMainThread(GetEventListenerParam(context),
+                                               event_name);
   }
 
   void SendRemoveUnfilteredEventListenerIPC(
@@ -77,15 +84,8 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    if (!context->GetExtensionID().empty()) {
-      GetEventRouter()->RemoveListenerForMainThread(
-          mojom::EventListenerParam::NewExtensionId(context->GetExtensionID()),
-          event_name);
-    } else {
-      GetEventRouter()->RemoveListenerForMainThread(
-          mojom::EventListenerParam::NewListenerUrl(context->url()),
-          event_name);
-    }
+    GetEventRouter()->RemoveListenerForMainThread(
+        GetEventListenerParam(context), event_name);
   }
 
   void SendAddUnfilteredLazyEventListenerIPC(
@@ -116,7 +116,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
     GetEventRouter()->AddFilteredListenerForMainThread(
-        context->GetExtensionID(), event_name, filter.Clone(), is_lazy);
+        GetEventListenerParam(context), event_name, filter.Clone(), is_lazy);
   }
 
   void SendRemoveFilteredEventListenerIPC(ScriptContext* context,
@@ -127,7 +127,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
     GetEventRouter()->RemoveFilteredListenerForMainThread(
-        context->GetExtensionID(), event_name, filter.Clone(),
+        GetEventListenerParam(context), event_name, filter.Clone(),
         remove_lazy_listener);
   }
 
@@ -155,6 +155,9 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
         info.target_id = *target.extension_id;
         info.source_url = script_context->url();
 
+        TRACE_RENDERER_EXTENSION_EVENT(
+            "MainThreadIPCMessageSender::SendOpenMessageChannel/extension",
+            *target.extension_id);
         render_thread_->Send(new ExtensionHostMsg_OpenChannelToExtension(
             frame_context, info, channel_name, port_id));
         break;
@@ -234,8 +237,6 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
   mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
 
   base::WeakPtrFactory<MainThreadIPCMessageSender> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MainThreadIPCMessageSender);
 };
 
 class WorkerThreadIPCMessageSender : public IPCMessageSender {
@@ -244,6 +245,11 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
                                int64_t service_worker_version_id)
       : dispatcher_(dispatcher),
         service_worker_version_id_(service_worker_version_id) {}
+
+  WorkerThreadIPCMessageSender(const WorkerThreadIPCMessageSender&) = delete;
+  WorkerThreadIPCMessageSender& operator=(const WorkerThreadIPCMessageSender&) =
+      delete;
+
   ~WorkerThreadIPCMessageSender() override {}
 
   void SendRequestIPC(ScriptContext* context,
@@ -370,6 +376,9 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
         }
         info.target_id = *target.extension_id;
         info.source_url = script_context->url();
+        TRACE_RENDERER_EXTENSION_EVENT(
+            "WorkerThreadIPCMessageSender::SendOpenMessageChannel/extension",
+            *target.extension_id);
         dispatcher_->Send(new ExtensionHostMsg_OpenChannelToExtension(
             PortContextForCurrentWorker(), info, channel_name, port_id));
         break;
@@ -445,8 +454,6 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
 
   // request id -> GUID map for each outstanding requests.
   std::map<int, std::string> request_id_to_guid_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerThreadIPCMessageSender);
 };
 
 }  // namespace

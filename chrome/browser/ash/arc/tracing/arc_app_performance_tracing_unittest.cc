@@ -34,8 +34,7 @@ constexpr char kNonFocusAppPackage[] = "nonfocus.app.package";
 constexpr char kNonFocusAppActivity[] = "nonfocus.app.package.Activity";
 
 // For 20 frames.
-constexpr base::TimeDelta kTestPeriod =
-    base::TimeDelta::FromSeconds(1) / (60 / 20);
+constexpr base::TimeDelta kTestPeriod = base::Seconds(1) / (60 / 20);
 
 constexpr int kMillisecondsToFirstFrame = 500;
 
@@ -65,6 +64,11 @@ int64_t ReadFocusStatistics(const std::string& name) {
 class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
  public:
   ArcAppPerformanceTracingTest() = default;
+
+  ArcAppPerformanceTracingTest(const ArcAppPerformanceTracingTest&) = delete;
+  ArcAppPerformanceTracingTest& operator=(const ArcAppPerformanceTracingTest&) =
+      delete;
+
   ~ArcAppPerformanceTracingTest() override = default;
 
   // testing::Test:
@@ -120,8 +124,6 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
  private:
   ArcAppPerformanceTracingTestHelper tracing_helper_;
   ArcAppTest arc_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppPerformanceTracingTest);
 };
 
 TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {
@@ -185,7 +187,7 @@ TEST_F(ArcAppPerformanceTracingTest, TracingNotScheduledForNonFocusApp) {
 
 TEST_F(ArcAppPerformanceTracingTest, TracingStoppedOnIdle) {
   views::Widget* const arc_widget = StartArcFocusAppTracing();
-  const base::TimeDelta normal_interval = base::TimeDelta::FromSeconds(1) / 60;
+  const base::TimeDelta normal_interval = base::Seconds(1) / 60;
   base::Time timestamp = base::Time::Now();
   tracing_helper().GetTracingSession()->OnCommitForTesting(timestamp);
   // Expected updates;
@@ -261,7 +263,7 @@ TEST_F(ArcAppPerformanceTracingTest, TimeToFirstFrameRendered) {
   // Succesful report after launch
   ArcAppListPrefs::Get(profile())->SetLaunchRequestTimeForTesting(app_id,
                                                                   timestamp);
-  timestamp += base::TimeDelta::FromMilliseconds(kMillisecondsToFirstFrame);
+  timestamp += base::Milliseconds(kMillisecondsToFirstFrame);
   tracing_helper().GetTracing()->HandleActiveAppRendered(timestamp);
   histogram = base::StatisticsRecorder::FindHistogram(
       "Arc.Runtime.Performance.Generic.FirstFrameRendered");
@@ -273,7 +275,7 @@ TEST_F(ArcAppPerformanceTracingTest, TimeToFirstFrameRendered) {
   EXPECT_EQ(kMillisecondsToFirstFrame, samples->sum());
 
   // No double report
-  timestamp += base::TimeDelta::FromMilliseconds(kMillisecondsToFirstFrame);
+  timestamp += base::Milliseconds(kMillisecondsToFirstFrame);
   tracing_helper().GetTracing()->HandleActiveAppRendered(timestamp);
 
   samples = histogram->SnapshotDelta();

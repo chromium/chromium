@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/image_fetcher/core/image_data_fetcher.h"
 #include "components/image_fetcher/core/image_decoder.h"
@@ -37,6 +36,10 @@ class ImageFetcherImpl : public ImageFetcher {
   ImageFetcherImpl(
       std::unique_ptr<ImageDecoder> image_decoder,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  ImageFetcherImpl(const ImageFetcherImpl&) = delete;
+  ImageFetcherImpl& operator=(const ImageFetcherImpl&) = delete;
+
   ~ImageFetcherImpl() override;
 
   void FetchImageAndData(const GURL& image_url,
@@ -50,8 +53,13 @@ class ImageFetcherImpl : public ImageFetcher {
   // State related to an image fetch (id, pending callbacks).
   struct ImageRequest {
     ImageRequest();
-    ~ImageRequest();
+
+    ImageRequest(const ImageRequest&) = delete;
+    ImageRequest& operator=(const ImageRequest&) = delete;
+
     ImageRequest(ImageRequest&& other);
+
+    ~ImageRequest();
 
     std::string id;
     // These have the default value if the image data has not yet been fetched.
@@ -61,8 +69,6 @@ class ImageFetcherImpl : public ImageFetcher {
     // flight.
     std::vector<ImageFetcherCallback> image_callbacks;
     std::vector<ImageDataFetcherCallback> image_data_callbacks;
-
-    DISALLOW_COPY_AND_ASSIGN(ImageRequest);
   };
 
   using ImageRequestMap = std::map<GURL, ImageRequest>;
@@ -96,8 +102,6 @@ class ImageFetcherImpl : public ImageFetcher {
   ImageRequestMap pending_net_requests_;
 
   base::WeakPtrFactory<ImageFetcherImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcherImpl);
 };
 
 }  // namespace image_fetcher

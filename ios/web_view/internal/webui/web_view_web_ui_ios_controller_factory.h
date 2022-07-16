@@ -27,6 +27,11 @@ class WebViewWebUIIOSControllerFactory : public web::WebUIIOSControllerFactory {
  public:
   static WebViewWebUIIOSControllerFactory* GetInstance();
 
+  WebViewWebUIIOSControllerFactory(const WebViewWebUIIOSControllerFactory&) =
+      delete;
+  WebViewWebUIIOSControllerFactory& operator=(
+      const WebViewWebUIIOSControllerFactory&) = delete;
+
  protected:
   WebViewWebUIIOSControllerFactory();
   ~WebViewWebUIIOSControllerFactory() override;
@@ -39,8 +44,6 @@ class WebViewWebUIIOSControllerFactory : public web::WebUIIOSControllerFactory {
 
  private:
   friend class base::NoDestructor<WebViewWebUIIOSControllerFactory>;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewWebUIIOSControllerFactory);
 };
 
 }  // namespace ios_web_view

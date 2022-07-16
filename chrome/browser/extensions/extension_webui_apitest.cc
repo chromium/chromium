@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/test_data_source.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -21,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/test.h"
@@ -58,7 +60,7 @@ class ExtensionWebUITest : public ExtensionApiTest {
 
     // Run the test.
     bool actual_result = false;
-    ui_test_utils::NavigateToURL(browser(), page_url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
     content::RenderFrameHost* webui =
         browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
     if (!webui)
@@ -98,8 +100,8 @@ class ExtensionWebUIEmbeddedOptionsTest : public ExtensionWebUITest {
   // Loads |extension|'s options page in an <extensionoptions> and returns the
   // <extensionoptions>'s WebContents.
   content::WebContents* OpenExtensionOptions(const Extension* extension) {
-    ui_test_utils::NavigateToURL(browser(),
-                                 GURL(chrome::kChromeUIExtensionsURL));
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(chrome::kChromeUIExtensionsURL)));
     content::WebContents* webui =
         browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -344,6 +346,48 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, EmbedExtensionWithoutOptionsPage) {
   ExtensionTestMessageListener create_failed_listener("createfailed", false);
   ready_listener.Reply(extension->id());
   ASSERT_TRUE(create_failed_listener.WaitUntilSatisfied());
+}
+
+// Tests crbug.com/1253745 where adding and removing listeners in a WebUI frame
+// causes all listeners to be removed.
+IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, MultipleURLListeners) {
+  content::URLDataSource::Add(profile(),
+                              std::make_unique<TestDataSource>("extensions"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("chrome://test/body1.html")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  EventRouter* event_router = EventRouter::Get(profile());
+  EXPECT_FALSE(event_router->HasEventListener("test.onMessage"));
+  // Register a listener and create a child frame at a different URL.
+  content::TestNavigationObserver observer(web_contents);
+  EXPECT_TRUE(content::ExecuteScript(main_frame, R"(
+      const listener = e => {};
+      chrome.test.onMessage.addListener(listener);
+      const iframe = document.createElement('iframe');
+      iframe.src = 'chrome://test/body2.html';
+      document.body.appendChild(iframe);
+  )"));
+  EXPECT_TRUE(event_router->HasEventListener("test.onMessage"));
+  observer.Wait();
+
+  // Add and remove the listener in the child frame.
+  content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
+  EXPECT_EQ(GURL("chrome://test/body2.html"),
+            child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(content::ExecuteScript(child_frame, R"(
+      const listener = e => {};
+      chrome.test.onMessage.addListener(listener);
+      chrome.test.onMessage.removeListener(listener);
+  )"));
+  EXPECT_TRUE(event_router->HasEventListener("test.onMessage"));
+
+  // Now remove last listener from main frame.
+  EXPECT_TRUE(content::ExecuteScript(main_frame, R"(
+      chrome.test.onMessage.removeListener(listener);
+  )"));
+  EXPECT_FALSE(event_router->HasEventListener("test.onMessage"));
 }
 
 #endif

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that computed styles expand and allow tracing to style rules.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

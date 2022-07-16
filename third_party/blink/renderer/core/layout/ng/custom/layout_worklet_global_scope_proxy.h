@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_CUSTOM_LAYOUT_WORKLET_GLOBAL_SCOPE_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_CUSTOM_LAYOUT_WORKLET_GLOBAL_SCOPE_PROXY_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/main_thread_worklet_reporting_proxy.h"

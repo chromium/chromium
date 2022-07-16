@@ -59,6 +59,7 @@ struct COMPONENT_EXPORT(LATENCY_SHARED_MOJOM_TRAITS)
   static float scroll_update_delta(const ui::LatencyInfo& info);
   static float predicted_scroll_update_delta(const ui::LatencyInfo& info);
   static int64_t gesture_scroll_id(const ui::LatencyInfo& info);
+  static int64_t touch_trace_id(const ui::LatencyInfo& info);
   static bool Read(ui::mojom::LatencyInfoDataView data, ui::LatencyInfo* out);
 };
 

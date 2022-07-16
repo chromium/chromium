@@ -84,7 +84,7 @@ SignatureTestData ReadSignatureTestData(const base::StringPiece& file_name) {
 }
 
 base::Time ConvertUnixTimestampSeconds(uint64_t time) {
-  return base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(time);
+  return base::Time::UnixEpoch() + base::Seconds(time);
 }
 
 std::unique_ptr<net::TrustStoreInMemory> LoadTestCert(

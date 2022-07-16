@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_TEST_SUITE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_TEST_SUITE_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -73,6 +73,7 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   MOCK_CONST_METHOD0(ScrollbarsHiddenIfOverlay, bool());
   MOCK_METHOD0(ScheduleAnimation, bool());
   MOCK_CONST_METHOD0(UsedColorScheme, mojom::blink::ColorScheme());
+  MOCK_CONST_METHOD0(UsesCompositedScrolling, bool());
 
   bool UserInputScrollable(ScrollbarOrientation) const override { return true; }
   bool ScrollbarsCanBeActive() const override { return true; }
@@ -96,12 +97,12 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   bool ScrollAnimatorEnabled() const override { return true; }
   int PageStep(ScrollbarOrientation) const override { return 0; }
   void ScrollControlWasSetNeedsPaintInvalidation() override {}
-  IntPoint ConvertFromRootFrame(const IntPoint& point_in_root_frame) const {
+  gfx::Point ConvertFromRootFrame(const gfx::Point& point_in_root_frame) const {
     return point_in_root_frame;
   }
-  IntPoint ConvertFromContainingEmbeddedContentViewToScrollbar(
+  gfx::Point ConvertFromContainingEmbeddedContentViewToScrollbar(
       const Scrollbar& scrollbar,
-      const IntPoint& parent_point) const {
+      const gfx::Point& parent_point) const {
     return parent_point;
   }
 

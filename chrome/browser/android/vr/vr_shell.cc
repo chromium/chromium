@@ -87,11 +87,9 @@ namespace vr {
 namespace {
 vr::VrShell* g_vr_shell_instance;
 
-constexpr base::TimeDelta kPollCapturingStateInterval =
-    base::TimeDelta::FromSecondsD(0.2);
+constexpr base::TimeDelta kPollCapturingStateInterval = base::Seconds(0.2);
 
-constexpr base::TimeDelta kAssetsComponentWaitDelay =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kAssetsComponentWaitDelay = base::Seconds(2);
 
 static constexpr float kInchesToMeters = 0.0254f;
 // Screen pixel density of the Google Pixel phone in pixels per inch.
@@ -1174,7 +1172,7 @@ std::unique_ptr<PageInfo> VrShell::CreatePageInfo() {
   auto page_info = std::make_unique<PageInfo>(
       std::make_unique<ChromePageInfoDelegate>(web_contents_), web_contents_,
       entry->GetVirtualURL());
-  page_info->InitializeUiState(this);
+  page_info->InitializeUiState(this, base::DoNothing());
   return page_info;
 }
 

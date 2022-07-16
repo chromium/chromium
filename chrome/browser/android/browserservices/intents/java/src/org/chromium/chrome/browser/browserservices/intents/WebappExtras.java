@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.browserservices.intents;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.components.webapps.ShortcutSource;
+import org.chromium.device.mojom.ScreenOrientationLockType;
 
 /**
  * Stores webapp specific information on behalf of {@link BrowserServicesIntentDataProvider}.
@@ -40,12 +42,12 @@ public class WebappExtras {
      */
     public final String shortName;
 
-    public final @WebDisplayMode int displayMode;
+    public final @DisplayMode.EnumType int displayMode;
 
     /**
      * The screen orientation to lock the webapp to.
      */
-    public final int orientation;
+    public final @ScreenOrientationLockType.EnumType int orientation;
 
     /**
      * If the webapp was launched from the home screen or the app list: source where the webapp was
@@ -80,7 +82,7 @@ public class WebappExtras {
     public final boolean shouldForceNavigation;
 
     public WebappExtras(String id, String url, String scopeUrl, @NonNull WebappIcon icon,
-            String name, String shortName, @WebDisplayMode int displayMode, int orientation,
+            String name, String shortName, @DisplayMode.EnumType int displayMode, int orientation,
             int source, Integer backgroundColor, int defaultBackgroundColor,
             boolean isIconGenerated, boolean isIconAdaptive, boolean shouldForceNavigation) {
         this.id = id;

@@ -10,7 +10,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/media_export.h"
 
@@ -19,6 +18,10 @@ namespace media {
 class MEDIA_EXPORT CdmSessionTracker {
  public:
   CdmSessionTracker();
+
+  CdmSessionTracker(const CdmSessionTracker&) = delete;
+  CdmSessionTracker& operator=(const CdmSessionTracker&) = delete;
+
   ~CdmSessionTracker();
 
   // Adds `session_id` to the list of sessions being tracked.
@@ -37,8 +40,6 @@ class MEDIA_EXPORT CdmSessionTracker {
 
  private:
   std::unordered_set<std::string> session_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmSessionTracker);
 };
 
 }  // namespace media

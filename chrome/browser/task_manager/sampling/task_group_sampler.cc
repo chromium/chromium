@@ -135,9 +135,9 @@ int64_t TaskGroupSampler::RefreshSwappedMem() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return process_metrics_->GetVmSwapBytes();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
+#else
   return 0;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 int TaskGroupSampler::RefreshIdleWakeupsPerSecond() {

@@ -17,6 +17,10 @@ class RenderWidgetHostConnector::Observer
       public RenderWidgetHostViewAndroid::DestructionObserver {
  public:
   Observer(WebContents* web_contents, RenderWidgetHostConnector* connector);
+
+  Observer(const Observer&) = delete;
+  Observer& operator=(const Observer&) = delete;
+
   ~Observer() override;
 
   // WebContentsObserver implementation.
@@ -44,8 +48,6 @@ class RenderWidgetHostConnector::Observer
 
   // Active RenderWidgetHostView connected to this instance.
   RenderWidgetHostViewAndroid* active_rwhva_;
-
-  DISALLOW_COPY_AND_ASSIGN(Observer);
 };
 
 RenderWidgetHostConnector::Observer::Observer(

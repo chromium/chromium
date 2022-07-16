@@ -256,7 +256,7 @@ void FtlServicesPlayground::OnReceiveMessagesStreamClosed(
   base::OnceClosure callback = std::move(receive_messages_done_callback_);
   bool is_callback_null = callback.is_null();
   if (is_callback_null) {
-    callback = base::DoNothing::Once();
+    callback = base::DoNothing();
   }
   if (status.error_code() == ProtobufHttpStatus::Code::CANCELLED) {
     printf("ReceiveMessages stream canceled by client.\n");

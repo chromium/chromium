@@ -38,11 +38,11 @@ CacheStorageControlWrapper::CacheStorageControlWrapper(
       {blink::mojom::StorageType::kTemporary});
 
   cache_storage_context_ = base::SequenceBound<CacheStorageContextImpl>(
-      CacheStorageContextImpl::CreateSchedulerTaskRunner());
+      CacheStorageContextImpl::CreateSchedulerTaskRunner(),
+      std::move(quota_manager_proxy));
   cache_storage_context_.AsyncCall(&CacheStorageContextImpl::Init)
       .WithArgs(cache_storage_control_.BindNewPipeAndPassReceiver(),
-                user_data_directory, std::move(quota_manager_proxy),
-                std::move(cache_storage_client_receiver),
+                user_data_directory, std::move(cache_storage_client_receiver),
                 std::move(background_fetch_client_receiver),
                 std::move(blob_storage_context));
 

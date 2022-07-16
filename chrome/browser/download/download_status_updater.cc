@@ -8,7 +8,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -41,9 +40,11 @@ class WasInProgressData : public base::SupportsUserData::Data {
     item->SetUserData(kKey, base::WrapUnique(this));
   }
 
+  WasInProgressData(const WasInProgressData&) = delete;
+  WasInProgressData& operator=(const WasInProgressData&) = delete;
+
  private:
   static const char kKey[];
-  DISALLOW_COPY_AND_ASSIGN(WasInProgressData);
 };
 
 const char WasInProgressData::kKey[] =

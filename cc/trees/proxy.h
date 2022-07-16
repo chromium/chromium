@@ -49,7 +49,6 @@ class CC_EXPORT Proxy {
   virtual void SetNeedsUpdateLayers() = 0;
   virtual void SetNeedsCommit() = 0;
   virtual void SetNeedsRedraw(const gfx::Rect& damage_rect) = 0;
-  virtual void SetNextCommitWaitsForActivation() = 0;
   virtual void SetTargetLocalSurfaceId(
       const viz::LocalSurfaceId& target_local_surface_id) = 0;
 
@@ -106,6 +105,10 @@ class CC_EXPORT Proxy {
 
   virtual void SetEnableFrameRateThrottling(
       bool enable_frame_rate_throttling) = 0;
+
+  // Returns a percentage representing average throughput of last X seconds.
+  // Only implemenented for single threaded proxy.
+  virtual uint32_t GetAverageThroughput() const = 0;
 };
 
 }  // namespace cc

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/default_clock.h"
 #include "chromeos/services/secure_channel/ble_advertiser.h"
@@ -69,6 +68,9 @@ class BleConnectionManagerImpl : public BleConnectionManager,
    private:
     static Factory* test_factory_;
   };
+
+  BleConnectionManagerImpl(const BleConnectionManagerImpl&) = delete;
+  BleConnectionManagerImpl& operator=(const BleConnectionManagerImpl&) = delete;
 
   ~BleConnectionManagerImpl() override;
 
@@ -219,8 +221,6 @@ class BleConnectionManagerImpl : public BleConnectionManager,
   base::flat_map<std::string, std::unique_ptr<ConnectionAttemptTimestamps>>
       remote_device_id_to_timestamps_map_;
   absl::optional<std::string> notifying_remote_device_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(BleConnectionManagerImpl);
 };
 
 }  // namespace secure_channel

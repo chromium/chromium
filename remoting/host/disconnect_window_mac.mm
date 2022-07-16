@@ -49,6 +49,10 @@ namespace remoting {
 class DisconnectWindowMac : public HostWindow {
  public:
   DisconnectWindowMac();
+
+  DisconnectWindowMac(const DisconnectWindowMac&) = delete;
+  DisconnectWindowMac& operator=(const DisconnectWindowMac&) = delete;
+
   ~DisconnectWindowMac() override;
 
   // HostWindow overrides.
@@ -57,8 +61,6 @@ class DisconnectWindowMac : public HostWindow {
 
  private:
   DisconnectWindowController* window_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisconnectWindowMac);
 };
 
 DisconnectWindowMac::DisconnectWindowMac()

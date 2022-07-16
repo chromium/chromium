@@ -50,8 +50,8 @@ class PLATFORM_EXPORT Reverb {
   // not all occur at the same time (very bad when rendering on a real-time
   // thread).
   Reverb(AudioBus* impulse_response_buffer,
-         size_t render_slice_size,
-         size_t max_fft_size,
+         unsigned render_slice_size,
+         unsigned max_fft_size,
          bool use_background_threads,
          bool normalize);
   Reverb(const Reverb&) = delete;
@@ -67,8 +67,8 @@ class PLATFORM_EXPORT Reverb {
 
  private:
   void Initialize(AudioBus* impulse_response_buffer,
-                  size_t render_slice_size,
-                  size_t max_fft_size,
+                  unsigned render_slice_size,
+                  unsigned max_fft_size,
                   bool use_background_threads,
                   float scale);
 

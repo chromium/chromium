@@ -10,14 +10,17 @@ import time
 
 import common
 import remote_cmd
-import runner_logs
+
+from log_manager import LogManager
+from symbolizer import BuildIdsPaths, RunSymbolizer
+
 
 _SHUTDOWN_CMD = ['dm', 'poweroff']
 _ATTACH_RETRY_INTERVAL = 1
 _ATTACH_RETRY_SECONDS = 120
 
-# Amount of time to wait for Amber to complete package installation, as a
-# mitigation against hangs due to amber/network-related failures.
+# Amount of time to wait for a complete package installation, as a
+# mitigation against hangs due to pkg/network-related failures.
 _INSTALL_TIMEOUT_SECS = 10 * 60
 
 
@@ -58,15 +61,21 @@ class FuchsiaTargetException(Exception):
     super(FuchsiaTargetException, self).__init__(message)
 
 
+# TODO(crbug.com/1250803): Factor high level commands out of target.
 class Target(object):
   """Base class representing a Fuchsia deployment target."""
 
-  def __init__(self, out_dir, target_cpu):
+  def __init__(self, out_dir, target_cpu, logs_dir):
     self._out_dir = out_dir
-    self._started = False
-    self._dry_run = False
     self._target_cpu = target_cpu
     self._command_runner = None
+    self._symbolizer_proc = None
+    self._log_listener_proc = None
+    self._dry_run = False
+    self._started = False
+    self._ffx_path = os.path.join(common.SDK_ROOT, 'tools',
+                                  common.GetHostArchFromPlatform(), 'ffx')
+    self._log_manager = LogManager(logs_dir)
 
   @staticmethod
   def CreateFromArgs(args):
@@ -80,7 +89,7 @@ class Target(object):
   def __enter__(self):
     return self
   def __exit__(self, exc_type, exc_val, exc_tb):
-    return
+    self.Stop()
 
   def Start(self):
     """Handles the instantiation and connection process for the Fuchsia
@@ -90,6 +99,14 @@ class Target(object):
     """Returns True if the Fuchsia target instance is ready to accept
     commands."""
     return self._started
+
+  def Stop(self):
+    """Stop all subprocesses and close log streams."""
+    if self._symbolizer_proc:
+      self._symbolizer_proc.kill()
+    if self._log_listener_proc:
+      self._log_listener_proc.kill()
+    self._log_manager.Stop()
 
   def IsNewInstance(self):
     """Returns True if the connected target instance is newly provisioned."""
@@ -106,6 +123,21 @@ class Target(object):
           remote_cmd.CommandRunner(self._GetSshConfigPath(), host, port)
 
     return self._command_runner
+
+  def StartSystemLog(self, package_paths):
+    """Start a system log reader as a long-running SSH task."""
+    system_log = self._log_manager.Open('system_log')
+    if package_paths:
+      self._log_listener_proc = self.RunCommandPiped(['log_listener'],
+                                                     stdout=subprocess.PIPE,
+                                                     stderr=subprocess.STDOUT)
+      self._symbolizer_proc = RunSymbolizer(self._log_listener_proc.stdout,
+                                            system_log,
+                                            BuildIdsPaths(package_paths))
+    else:
+      self._log_listener_proc = self.RunCommandPiped(['log_listener'],
+                                                     stdout=system_log,
+                                                     stderr=subprocess.STDOUT)
 
   def RunCommandPiped(self, command, **kwargs):
     """Starts a remote command and immediately returns a Popen object for the
@@ -231,6 +263,19 @@ class Target(object):
                                           remote_cmd.COPY_FROM_TARGET,
                                           recursive)
 
+  def GetFileAsString(self, source):
+    """Reads a file on the device and returns it as a string.
+
+    source: The remote file path to read.
+    """
+    cat_proc = self.RunCommandPiped(['cat', source],
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.STDOUT)
+    stdout, _ = cat_proc.communicate()
+    if cat_proc.return_code != 0:
+      raise Exception('Could not read file %s on device.', source)
+    return stdout
+
   def _GetEndpoint(self):
     """Returns a (host, port) tuple for the SSH connection to the target."""
     raise NotImplementedError()
@@ -249,7 +294,7 @@ class Target(object):
 
     host, port = self._GetEndpoint()
     end_time = time.time() + _ATTACH_RETRY_SECONDS
-    ssh_diagnostic_log = runner_logs.FileStreamFor('ssh_diagnostic_log')
+    ssh_diagnostic_log = self._log_manager.Open('ssh_diagnostic_log')
     while time.time() < end_time:
       runner = remote_cmd.CommandRunner(self._GetSshConfigPath(), host, port)
       ssh_proc = runner.RunCommandPiped(['true'],
@@ -269,11 +314,11 @@ class Target(object):
   def _GetSshConfigPath(self, path):
     raise NotImplementedError()
 
-  def GetAmberRepo(self):
-    """Returns an AmberRepo instance which serves packages for this Target.
-    Callers should typically call GetAmberRepo() in a |with| statement, and
+  def GetPkgRepo(self):
+    """Returns an PkgRepo instance which serves packages for this Target.
+    Callers should typically call GetPkgRepo() in a |with| statement, and
     install and execute commands inside the |with| block, so that the returned
-    AmberRepo can teardown correctly, if necessary.
+    PkgRepo can teardown correctly, if necessary.
     """
     raise NotImplementedError()
 
@@ -283,15 +328,15 @@ class Target(object):
 
     package_paths: Paths to the .far files to install.
     """
-    with self.GetAmberRepo() as amber_repo:
+    with self.GetPkgRepo() as pkg_repo:
       # Publish all packages to the serving TUF repository under |tuf_root|.
       for package_path in package_paths:
-        amber_repo.PublishPackage(package_path)
+        pkg_repo.PublishPackage(package_path)
 
       # Resolve all packages, to have them pulled into the device/VM cache.
       for package_path in package_paths:
         package_name, package_version = _GetPackageInfo(package_path)
-        logging.info('Resolving %s into cache.', package_name)
+        logging.info('Installing %s...', package_name)
         return_code = self.RunCommand(
             ['pkgctl', 'resolve',
              _GetPackageUri(package_name), '>/dev/null'],
@@ -320,3 +365,14 @@ class Target(object):
         if pkgctl_out != meta_far_merkel:
           raise Exception('Hash mismatch for %s after resolve (%s vs %s).' %
                           (package_name, pkgctl_out, meta_far_merkel))
+
+  def RunFFXCommand(self, ffx_args, **kwargs):
+    """Automatically gets the FFX path and runs FFX based on the
+    arguments provided. Extra args can be added to be used with Popen.
+
+    ffx_args: The arguments for a ffx command.
+    kwargs: A dictionary of parameters to be passed to subprocess.Popen().
+
+    Returns a Popen object for the command."""
+    command = [self._ffx_path] + ffx_args
+    return subprocess.Popen(command, **kwargs)

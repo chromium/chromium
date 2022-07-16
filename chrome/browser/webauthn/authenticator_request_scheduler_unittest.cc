@@ -12,10 +12,13 @@ class AuthenticatorRequestSchedulerTest
     : public ChromeRenderViewHostTestHarness {
  public:
   AuthenticatorRequestSchedulerTest() = default;
-  ~AuthenticatorRequestSchedulerTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestSchedulerTest);
+  AuthenticatorRequestSchedulerTest(const AuthenticatorRequestSchedulerTest&) =
+      delete;
+  AuthenticatorRequestSchedulerTest& operator=(
+      const AuthenticatorRequestSchedulerTest&) = delete;
+
+  ~AuthenticatorRequestSchedulerTest() override = default;
 };
 
 TEST_F(AuthenticatorRequestSchedulerTest,

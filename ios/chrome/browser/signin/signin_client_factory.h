@@ -21,6 +21,9 @@ class SigninClientFactory : public BrowserStateKeyedServiceFactory {
   static SigninClient* GetForBrowserState(ChromeBrowserState* browser_state);
   static SigninClientFactory* GetInstance();
 
+  SigninClientFactory(const SigninClientFactory&) = delete;
+  SigninClientFactory& operator=(const SigninClientFactory&) = delete;
+
  private:
   friend class base::NoDestructor<SigninClientFactory>;
 
@@ -30,8 +33,6 @@ class SigninClientFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninClientFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_SIGNIN_CLIENT_FACTORY_H_

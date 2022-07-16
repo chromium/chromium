@@ -38,24 +38,14 @@ id<GREYMatcher> HttpAuthDialog() {
 
 // Returns matcher for Username text field.
 id<GREYMatcher> UsernameField() {
-  if (@available(iOS 13.0, *)) {
-    return grey_accessibilityValue(l10n_util::GetNSStringWithFixup(
-        IDS_IOS_HTTP_LOGIN_DIALOG_USERNAME_PLACEHOLDER));
-  } else {
-    return chrome_test_util::StaticTextWithAccessibilityLabelId(
-        IDS_IOS_HTTP_LOGIN_DIALOG_USERNAME_PLACEHOLDER);
-  }
+  return grey_accessibilityValue(l10n_util::GetNSStringWithFixup(
+      IDS_IOS_HTTP_LOGIN_DIALOG_USERNAME_PLACEHOLDER));
 }
 
 // Returns matcher for Password text field.
 id<GREYMatcher> PasswordField() {
-  if (@available(iOS 13.0, *)) {
-    return grey_accessibilityValue(l10n_util::GetNSStringWithFixup(
-        IDS_IOS_HTTP_LOGIN_DIALOG_PASSWORD_PLACEHOLDER));
-  } else {
-    return chrome_test_util::StaticTextWithAccessibilityLabelId(
-        IDS_IOS_HTTP_LOGIN_DIALOG_PASSWORD_PLACEHOLDER);
-  }
+  return grey_accessibilityValue(l10n_util::GetNSStringWithFixup(
+      IDS_IOS_HTTP_LOGIN_DIALOG_PASSWORD_PLACEHOLDER));
 }
 
 // Returns matcher for Login button.
@@ -85,7 +75,13 @@ void WaitForHttpAuthDialog() {
 @implementation HTTPAuthTestCase
 
 // Tests Basic HTTP Authentication with correct username and password.
-- (void)testSuccessfullBasicAuth {
+// TODO(crbug.com/1264554): Re-enable for devices.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSuccessfullBasicAuth testSuccessfullBasicAuth
+#else
+#define MAYBE_testSuccessfullBasicAuth DISABLED_testSuccessfullBasicAuth
+#endif
+- (void)MAYBE_testSuccessfullBasicAuth {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // EG does not allow interactions with HTTP Dialog when loading spinner is
     // animated. TODO(crbug.com/680290): Enable this test on iPad when EarlGrey
@@ -146,7 +142,7 @@ void WaitForHttpAuthDialog() {
         performAction:grey_tap()];
 
     // Ensure first dialog is dismissed before waiting for the second one.
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+    base::PlatformThread::Sleep(base::Seconds(1));
     // Verifies that authentication was requested again.
     WaitForHttpAuthDialog();
     [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]

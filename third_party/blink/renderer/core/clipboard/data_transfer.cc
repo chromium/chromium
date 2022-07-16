@@ -113,11 +113,11 @@ class DraggedNodeImageBuilder {
         dragged_layout_object->AbsoluteBoundingBoxRectIncludingDescendants();
     // TODO(chrishtr): consider using the root frame's visible rect instead
     // of the local frame, to avoid over-clipping.
-    IntRect visible_rect(IntPoint(),
+    IntRect visible_rect(gfx::Point(),
                          layer->GetLayoutObject().GetFrameView()->Size());
     // If the absolute bounding box is large enough to be possibly a memory
     // or IPC payload issue, clip it to the visible content rect.
-    if (absolute_bounding_box.Size().Area() > visible_rect.Size().Area()) {
+    if (absolute_bounding_box.size().Area() > visible_rect.size().Area()) {
       absolute_bounding_box.Intersect(visible_rect);
     }
 
@@ -128,23 +128,24 @@ class DraggedNodeImageBuilder {
     absl::optional<OverriddenCullRectScope> cull_rect_scope;
     if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
       FloatRect cull_rect = bounding_box;
-      cull_rect.Move(
+      cull_rect.Offset(
           FloatSize(layer->GetLayoutObject().FirstFragment().PaintOffset()));
-      cull_rect_scope.emplace(*layer, CullRect(EnclosingIntRect(cull_rect)));
+      cull_rect_scope.emplace(*layer,
+                              CullRect(ToGfxRect(EnclosingIntRect(cull_rect))));
     }
     PaintLayerPaintingInfo painting_info(
-        layer, CullRect(EnclosingIntRect(bounding_box)),
+        layer, CullRect(ToGfxRect(EnclosingIntRect(bounding_box))),
         kGlobalPaintFlattenCompositingLayers, PhysicalOffset());
-    PaintRecordBuilder builder;
+    auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
 
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
         DocumentLifecycle::kInPaint);
-    PaintLayerPainter(*layer).Paint(builder.Context(), painting_info,
+    PaintLayerPainter(*layer).Paint(builder->Context(), painting_info,
                                     kPaintLayerNoFlag);
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
         DocumentLifecycle::kPaintClean);
 
-    FloatPoint paint_offset = bounding_box.Location();
+    FloatPoint paint_offset = bounding_box.origin();
     PropertyTreeState border_box_properties = layer->GetLayoutObject()
                                                   .FirstFragment()
                                                   .LocalBorderBoxProperties()
@@ -155,8 +156,8 @@ class DraggedNodeImageBuilder {
         FloatPoint(layer->GetLayoutObject().FirstFragment().PaintOffset());
 
     return DataTransfer::CreateDragImageForFrame(
-        *local_frame_, 1.0f,
-        bounding_box.Size(), paint_offset, builder, border_box_properties);
+        *local_frame_, 1.0f, bounding_box.size(), paint_offset, *builder,
+        border_box_properties);
   }
 
  private:
@@ -354,7 +355,7 @@ void DataTransfer::setDragImage(Element* image, int x, int y) {
   if (!IsForDragAndDrop())
     return;
 
-  IntPoint location(x, y);
+  gfx::Point location(x, y);
   auto* html_image_element = DynamicTo<HTMLImageElement>(image);
   if (html_image_element && !image->isConnected())
     SetDragImageResource(html_image_element->CachedImage(), location);
@@ -363,15 +364,15 @@ void DataTransfer::setDragImage(Element* image, int x, int y) {
 }
 
 void DataTransfer::ClearDragImage() {
-  setDragImage(nullptr, nullptr, IntPoint());
+  setDragImage(nullptr, nullptr, gfx::Point());
 }
 
 void DataTransfer::SetDragImageResource(ImageResourceContent* img,
-                                        const IntPoint& loc) {
+                                        const gfx::Point& loc) {
   setDragImage(img, nullptr, loc);
 }
 
-void DataTransfer::SetDragImageElement(Node* node, const IntPoint& loc) {
+void DataTransfer::SetDragImageElement(Node* node, const gfx::Point& loc) {
   setDragImage(nullptr, node, loc);
 }
 
@@ -381,7 +382,7 @@ FloatRect DataTransfer::ClipByVisualViewport(const FloatRect& absolute_rect,
       EnclosingIntRect(frame.GetPage()->GetVisualViewport().VisibleRect());
   FloatRect absolute_viewport =
       FloatRect(frame.View()->ConvertFromRootFrame(viewport_in_root_frame));
-  return Intersection(absolute_viewport, absolute_rect);
+  return IntersectRects(absolute_viewport, absolute_rect);
 }
 
 // static
@@ -411,15 +412,15 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
   FloatSize device_size = DeviceSpaceSize(css_size, frame);
   AffineTransform transform;
   FloatSize paint_offset_size =
-      DeviceSpaceSize(FloatSize(paint_offset.X(), paint_offset.Y()), frame);
-  transform.Translate(-paint_offset_size.Width(), -paint_offset_size.Height());
+      DeviceSpaceSize(FloatSize(paint_offset.x(), paint_offset.y()), frame);
+  transform.Translate(-paint_offset_size.width(), -paint_offset_size.height());
   transform.Scale(device_scale_factor * page_scale_factor);
 
   // Rasterize upfront, since DragImage::create() is going to do it anyway
   // (SkImage::asLegacyBitmap).
   SkSurfaceProps surface_props(0, kUnknown_SkPixelGeometry);
   sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(
-      device_size.Width(), device_size.Height(), &surface_props);
+      device_size.width(), device_size.height(), &surface_props);
   if (!surface)
     return nullptr;
 
@@ -449,7 +450,7 @@ std::unique_ptr<DragImage> DataTransfer::NodeImage(LocalFrame& frame,
 }
 
 std::unique_ptr<DragImage> DataTransfer::CreateDragImage(
-    IntPoint& loc,
+    gfx::Point& loc,
     LocalFrame* frame) const {
   if (drag_image_element_) {
     loc = drag_loc_;
@@ -486,8 +487,9 @@ static void WriteImageToDataObject(DataObject* data_object,
   if (!image_buffer || !image_buffer->size())
     return;
 
-  data_object->AddSharedBuffer(
-      image_buffer, image_url, image->FilenameExtension(),
+  data_object->AddFileSharedBuffer(
+      image_buffer, cached_image->IsAccessAllowed(), image_url,
+      image->FilenameExtension(),
       cached_image->GetResponse().HttpHeaderFields().Get(
           http_names::kContentDisposition));
 }
@@ -618,7 +620,7 @@ DataTransfer::DataTransfer(DataTransferType type,
 
 void DataTransfer::setDragImage(ImageResourceContent* image,
                                 Node* node,
-                                const IntPoint& loc) {
+                                const gfx::Point& loc) {
   if (!CanSetDragImage())
     return;
 

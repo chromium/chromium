@@ -28,12 +28,7 @@
 #include "ui/views/widget/native_widget_mac.h"
 #endif
 
-#if defined(USE_X11)
-#include "ui/base/x/x11_util.h"
-#endif
-
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_gl_egl_utility.h"
 #endif
@@ -44,14 +39,9 @@ namespace {
 
 bool DoesVisualHaveAlphaForTest() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    const auto* const egl_utility =
-        ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
-    return egl_utility ? egl_utility->X11DoesVisualHaveAlphaForTest() : false;
-  }
-#endif
-#if defined(USE_X11)
-  return ui::DoesVisualHaveAlphaForTest();
+  const auto* const egl_utility =
+      ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
+  return egl_utility ? egl_utility->X11DoesVisualHaveAlphaForTest() : false;
 #else
   return false;
 #endif

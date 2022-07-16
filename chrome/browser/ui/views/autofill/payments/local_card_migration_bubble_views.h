@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_BUBBLE_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_BUBBLE_VIEWS_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/autofill/core/browser/ui/payments/local_card_migration_bubble_controller.h"
@@ -28,6 +27,10 @@ class LocalCardMigrationBubbleViews : public AutofillBubbleBase,
   LocalCardMigrationBubbleViews(views::View* anchor_view,
                                 content::WebContents* web_contents,
                                 LocalCardMigrationBubbleController* controller);
+
+  LocalCardMigrationBubbleViews(const LocalCardMigrationBubbleViews&) = delete;
+  LocalCardMigrationBubbleViews& operator=(
+      const LocalCardMigrationBubbleViews&) = delete;
 
   void Show(DisplayReason reason);
 
@@ -55,8 +58,6 @@ class LocalCardMigrationBubbleViews : public AutofillBubbleBase,
       PaymentsBubbleClosedReason::kUnknown;
 
   LocalCardMigrationBubbleController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationBubbleViews);
 };
 
 }  // namespace autofill

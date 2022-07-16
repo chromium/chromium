@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_BUBBLE_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_BUBBLE_CONTROLLER_IMPL_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+class CouponService;
 
 namespace autofill {
 
@@ -41,10 +42,13 @@ class OfferNotificationBubbleControllerImpl
   // OfferBubbleController:
   std::u16string GetWindowTitle() const override;
   std::u16string GetOkButtonLabel() const override;
+  std::u16string GetPromoCodeButtonTooltip() const override;
   AutofillBubbleBase* GetOfferNotificationBubbleView() const override;
   const CreditCard* GetLinkedCard() const override;
+  const AutofillOfferData* GetOffer() const override;
   bool IsIconVisible() const override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
+  void OnPromoCodeButtonClicked() override;
 
   // Displays an offer notification for the given |offer| on the current page.
   // The information of the |card|, if present, will be displayed in the bubble
@@ -60,14 +64,14 @@ class OfferNotificationBubbleControllerImpl
       content::WebContents* web_contents);
 
   // AutofillBubbleControllerBase:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
 
  private:
   friend class content::WebContentsUserData<
       OfferNotificationBubbleControllerImpl>;
+  friend class OfferNotificationBubbleControllerImplTest;
   friend class OfferNotificationBubbleViewsTestBase;
 
   // Returns whether the web content associated with this controller is active.
@@ -78,6 +82,10 @@ class OfferNotificationBubbleControllerImpl
     observer_for_testing_ = observer;
   }
 
+  // The Autofill offer being displayed as a bubble. Set when the bubble is
+  // requested to be shown via ShowOfferNotificationIfApplicable(~).
+  const AutofillOfferData* offer_;
+
   // Denotes whether the bubble is shown due to user gesture. If this is true,
   // it means the bubble is a reshown bubble.
   bool is_user_gesture_ = false;
@@ -86,10 +94,17 @@ class OfferNotificationBubbleControllerImpl
   // offer types other than card linked offers.
   absl::optional<CreditCard> card_;
 
+  // Denotes whether the promo code label button was clicked yet or not.
+  // Determines the appropriate hover tooltip for the button.
+  bool promo_code_button_clicked_ = false;
+
   // The bubble and icon are sticky over a given set of origins. This is
   // populated when ShowOfferNotificationIfApplicable() is called and is cleared
   // when navigating to a origins outside of this set.
   std::vector<GURL> origins_to_display_bubble_;
+
+  // Used to update coupon last display timestamp.
+  CouponService* coupon_service_;
 
   ObserverForTest* observer_for_testing_ = nullptr;
 

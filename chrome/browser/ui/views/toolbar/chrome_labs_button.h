@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUTTON_H_
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/dot_indicator.h"
 
 namespace base {
 class ElapsedTimer;
@@ -25,6 +27,11 @@ class ChromeLabsButton : public ToolbarButton {
   ChromeLabsButton& operator=(const ChromeLabsButton&) = delete;
   ~ChromeLabsButton() override;
 
+  // ToolbarButton:
+  void Layout() override;
+
+  void HideDotIndicator();
+
   static bool ShouldShowButton(const ChromeLabsBubbleViewModel* model,
                                Profile* profile);
 
@@ -38,8 +45,14 @@ class ChromeLabsButton : public ToolbarButton {
   }
 #endif
 
+  bool GetDotIndicatorVisibilityForTesting() const {
+    return new_experiments_indicator_->GetVisible();
+  }
+
  private:
   void ButtonPressed();
+
+  void UpdateDotIndicator();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Measures elapsed between when IsOwnerAsync is called and the callback
@@ -57,6 +70,8 @@ class ChromeLabsButton : public ToolbarButton {
 #endif
 
   const ChromeLabsBubbleViewModel* model_;
+
+  views::DotIndicator* new_experiments_indicator_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUTTON_H_

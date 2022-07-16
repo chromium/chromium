@@ -11,31 +11,36 @@ namespace remoting {
   case OriginType::x:        \
     return OtherType::x
 
+#define CASE_RETURN_ORIGIN_TO_OTHER(x, y) \
+  case OriginType::x:                     \
+    return OtherType::y
+
 absl::optional<AudioCodec> ToMediaAudioCodec(
     openscreen::cast::AudioDecoderConfig::Codec value) {
   using OriginType = openscreen::cast::AudioDecoderConfig;
   using OtherType = AudioCodec;
   switch (value) {
-    CASE_RETURN_OTHER(kUnknownAudioCodec);
-    CASE_RETURN_OTHER(kCodecAAC);
-    CASE_RETURN_OTHER(kCodecMP3);
-    CASE_RETURN_OTHER(kCodecPCM);
-    CASE_RETURN_OTHER(kCodecVorbis);
-    CASE_RETURN_OTHER(kCodecFLAC);
-    CASE_RETURN_OTHER(kCodecAMR_NB);
-    CASE_RETURN_OTHER(kCodecAMR_WB);
-    CASE_RETURN_OTHER(kCodecPCM_MULAW);
-    CASE_RETURN_OTHER(kCodecGSM_MS);
-    CASE_RETURN_OTHER(kCodecPCM_S16BE);
-    CASE_RETURN_OTHER(kCodecPCM_S24BE);
-    CASE_RETURN_OTHER(kCodecOpus);
-    CASE_RETURN_OTHER(kCodecEAC3);
-    CASE_RETURN_OTHER(kCodecPCM_ALAW);
-    CASE_RETURN_OTHER(kCodecALAC);
-    CASE_RETURN_OTHER(kCodecAC3);
-    CASE_RETURN_OTHER(kCodecMpegHAudio);
+    CASE_RETURN_ORIGIN_TO_OTHER(kUnknownAudioCodec, kUnknown);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecAAC, kAAC);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecMP3, kMP3);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecPCM, kPCM);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecVorbis, kVorbis);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecFLAC, kFLAC);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecAMR_NB, kAMR_NB);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecAMR_WB, kAMR_WB);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecPCM_MULAW, kPCM_MULAW);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecGSM_MS, kGSM_MS);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecPCM_S16BE, kPCM_S16BE);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecPCM_S24BE, kPCM_S24BE);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecOpus, kOpus);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecEAC3, kEAC3);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecPCM_ALAW, kPCM_ALAW);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecALAC, kALAC);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecAC3, kAC3);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecMpegHAudio, kMpegHAudio);
+    default:
+      return absl::nullopt;
   }
-  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 absl::optional<openscreen::cast::AudioDecoderConfig::Codec>
@@ -43,26 +48,27 @@ ToProtoAudioDecoderConfigCodec(AudioCodec value) {
   using OriginType = AudioCodec;
   using OtherType = openscreen::cast::AudioDecoderConfig;
   switch (value) {
-    CASE_RETURN_OTHER(kUnknownAudioCodec);
-    CASE_RETURN_OTHER(kCodecAAC);
-    CASE_RETURN_OTHER(kCodecMP3);
-    CASE_RETURN_OTHER(kCodecPCM);
-    CASE_RETURN_OTHER(kCodecVorbis);
-    CASE_RETURN_OTHER(kCodecFLAC);
-    CASE_RETURN_OTHER(kCodecAMR_NB);
-    CASE_RETURN_OTHER(kCodecAMR_WB);
-    CASE_RETURN_OTHER(kCodecPCM_MULAW);
-    CASE_RETURN_OTHER(kCodecGSM_MS);
-    CASE_RETURN_OTHER(kCodecPCM_S16BE);
-    CASE_RETURN_OTHER(kCodecPCM_S24BE);
-    CASE_RETURN_OTHER(kCodecOpus);
-    CASE_RETURN_OTHER(kCodecEAC3);
-    CASE_RETURN_OTHER(kCodecPCM_ALAW);
-    CASE_RETURN_OTHER(kCodecALAC);
-    CASE_RETURN_OTHER(kCodecAC3);
-    CASE_RETURN_OTHER(kCodecMpegHAudio);
+    CASE_RETURN_ORIGIN_TO_OTHER(kUnknown, kUnknownAudioCodec);
+    CASE_RETURN_ORIGIN_TO_OTHER(kAAC, kCodecAAC);
+    CASE_RETURN_ORIGIN_TO_OTHER(kMP3, kCodecMP3);
+    CASE_RETURN_ORIGIN_TO_OTHER(kPCM, kCodecPCM);
+    CASE_RETURN_ORIGIN_TO_OTHER(kVorbis, kCodecVorbis);
+    CASE_RETURN_ORIGIN_TO_OTHER(kFLAC, kCodecFLAC);
+    CASE_RETURN_ORIGIN_TO_OTHER(kAMR_NB, kCodecAMR_NB);
+    CASE_RETURN_ORIGIN_TO_OTHER(kAMR_WB, kCodecAMR_WB);
+    CASE_RETURN_ORIGIN_TO_OTHER(kPCM_MULAW, kCodecPCM_MULAW);
+    CASE_RETURN_ORIGIN_TO_OTHER(kGSM_MS, kCodecGSM_MS);
+    CASE_RETURN_ORIGIN_TO_OTHER(kPCM_S16BE, kCodecPCM_S16BE);
+    CASE_RETURN_ORIGIN_TO_OTHER(kPCM_S24BE, kCodecPCM_S24BE);
+    CASE_RETURN_ORIGIN_TO_OTHER(kOpus, kCodecOpus);
+    CASE_RETURN_ORIGIN_TO_OTHER(kEAC3, kCodecEAC3);
+    CASE_RETURN_ORIGIN_TO_OTHER(kPCM_ALAW, kCodecPCM_ALAW);
+    CASE_RETURN_ORIGIN_TO_OTHER(kALAC, kCodecALAC);
+    CASE_RETURN_ORIGIN_TO_OTHER(kAC3, kCodecAC3);
+    CASE_RETURN_ORIGIN_TO_OTHER(kMpegHAudio, kCodecMpegHAudio);
+    default:
+      return absl::nullopt;
   }
-  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 absl::optional<SampleFormat> ToMediaSampleFormat(
@@ -75,6 +81,7 @@ absl::optional<SampleFormat> ToMediaSampleFormat(
     CASE_RETURN_OTHER(kSampleFormatS16);
     CASE_RETURN_OTHER(kSampleFormatS32);
     CASE_RETURN_OTHER(kSampleFormatF32);
+    CASE_RETURN_OTHER(kSampleFormatPlanarU8);
     CASE_RETURN_OTHER(kSampleFormatPlanarS16);
     CASE_RETURN_OTHER(kSampleFormatPlanarF32);
     CASE_RETURN_OTHER(kSampleFormatPlanarS32);
@@ -82,8 +89,9 @@ absl::optional<SampleFormat> ToMediaSampleFormat(
     CASE_RETURN_OTHER(kSampleFormatAc3);
     CASE_RETURN_OTHER(kSampleFormatEac3);
     CASE_RETURN_OTHER(kSampleFormatMpegHAudio);
+    default:
+      return absl::nullopt;
   }
-  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 absl::optional<openscreen::cast::AudioDecoderConfig::SampleFormat>
@@ -96,6 +104,7 @@ ToProtoAudioDecoderConfigSampleFormat(SampleFormat value) {
     CASE_RETURN_OTHER(kSampleFormatS16);
     CASE_RETURN_OTHER(kSampleFormatS32);
     CASE_RETURN_OTHER(kSampleFormatF32);
+    CASE_RETURN_OTHER(kSampleFormatPlanarU8);
     CASE_RETURN_OTHER(kSampleFormatPlanarS16);
     CASE_RETURN_OTHER(kSampleFormatPlanarF32);
     CASE_RETURN_OTHER(kSampleFormatPlanarS32);
@@ -103,12 +112,9 @@ ToProtoAudioDecoderConfigSampleFormat(SampleFormat value) {
     CASE_RETURN_OTHER(kSampleFormatAc3);
     CASE_RETURN_OTHER(kSampleFormatEac3);
     CASE_RETURN_OTHER(kSampleFormatMpegHAudio);
-    case kSampleFormatPlanarU8:
-      // TODO(crbug.com/1231734): Update this to return the right format when
-      // it is added to Open Screen.
+    default:
       return absl::nullopt;
   }
-  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 absl::optional<ChannelLayout> ToMediaChannelLayout(
@@ -149,8 +155,9 @@ absl::optional<ChannelLayout> ToMediaChannelLayout(
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC);
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_4_1_QUAD_SIDE);
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_BITSTREAM);
+    default:
+      return absl::nullopt;
   }
-  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 absl::optional<openscreen::cast::AudioDecoderConfig::ChannelLayout>
@@ -191,8 +198,9 @@ ToProtoAudioDecoderConfigChannelLayout(ChannelLayout value) {
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC);
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_4_1_QUAD_SIDE);
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_BITSTREAM);
+    default:
+      return absl::nullopt;
   }
-  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 absl::optional<VideoCodec> ToMediaVideoCodec(
@@ -200,19 +208,20 @@ absl::optional<VideoCodec> ToMediaVideoCodec(
   using OriginType = openscreen::cast::VideoDecoderConfig;
   using OtherType = VideoCodec;
   switch (value) {
-    CASE_RETURN_OTHER(kUnknownVideoCodec);
-    CASE_RETURN_OTHER(kCodecH264);
-    CASE_RETURN_OTHER(kCodecVC1);
-    CASE_RETURN_OTHER(kCodecMPEG2);
-    CASE_RETURN_OTHER(kCodecMPEG4);
-    CASE_RETURN_OTHER(kCodecTheora);
-    CASE_RETURN_OTHER(kCodecVP8);
-    CASE_RETURN_OTHER(kCodecVP9);
-    CASE_RETURN_OTHER(kCodecHEVC);
-    CASE_RETURN_OTHER(kCodecDolbyVision);
-    CASE_RETURN_OTHER(kCodecAV1);
+    CASE_RETURN_ORIGIN_TO_OTHER(kUnknownVideoCodec, kUnknown);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecH264, kH264);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecVC1, kVC1);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecMPEG2, kMPEG2);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecMPEG4, kMPEG4);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecTheora, kTheora);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecVP8, kVP8);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecVP9, kVP9);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecHEVC, kHEVC);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecDolbyVision, kDolbyVision);
+    CASE_RETURN_ORIGIN_TO_OTHER(kCodecAV1, kAV1);
+    default:
+      return absl::nullopt;
   }
-  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 absl::optional<openscreen::cast::VideoDecoderConfig::Codec>
@@ -220,19 +229,20 @@ ToProtoVideoDecoderConfigCodec(VideoCodec value) {
   using OriginType = VideoCodec;
   using OtherType = openscreen::cast::VideoDecoderConfig;
   switch (value) {
-    CASE_RETURN_OTHER(kUnknownVideoCodec);
-    CASE_RETURN_OTHER(kCodecH264);
-    CASE_RETURN_OTHER(kCodecVC1);
-    CASE_RETURN_OTHER(kCodecMPEG2);
-    CASE_RETURN_OTHER(kCodecMPEG4);
-    CASE_RETURN_OTHER(kCodecTheora);
-    CASE_RETURN_OTHER(kCodecVP8);
-    CASE_RETURN_OTHER(kCodecVP9);
-    CASE_RETURN_OTHER(kCodecHEVC);
-    CASE_RETURN_OTHER(kCodecDolbyVision);
-    CASE_RETURN_OTHER(kCodecAV1);
+    CASE_RETURN_ORIGIN_TO_OTHER(kUnknown, kUnknownVideoCodec);
+    CASE_RETURN_ORIGIN_TO_OTHER(kH264, kCodecH264);
+    CASE_RETURN_ORIGIN_TO_OTHER(kVC1, kCodecVC1);
+    CASE_RETURN_ORIGIN_TO_OTHER(kMPEG2, kCodecMPEG2);
+    CASE_RETURN_ORIGIN_TO_OTHER(kMPEG4, kCodecMPEG4);
+    CASE_RETURN_ORIGIN_TO_OTHER(kTheora, kCodecTheora);
+    CASE_RETURN_ORIGIN_TO_OTHER(kVP8, kCodecVP8);
+    CASE_RETURN_ORIGIN_TO_OTHER(kVP9, kCodecVP9);
+    CASE_RETURN_ORIGIN_TO_OTHER(kHEVC, kCodecHEVC);
+    CASE_RETURN_ORIGIN_TO_OTHER(kDolbyVision, kCodecDolbyVision);
+    CASE_RETURN_ORIGIN_TO_OTHER(kAV1, kCodecAV1);
+    default:
+      return absl::nullopt;
   }
-  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 absl::optional<VideoCodecProfile> ToMediaVideoCodecProfile(
@@ -270,8 +280,9 @@ absl::optional<VideoCodecProfile> ToMediaVideoCodecProfile(
     CASE_RETURN_OTHER(AV1PROFILE_PROFILE_MAIN);
     CASE_RETURN_OTHER(AV1PROFILE_PROFILE_HIGH);
     CASE_RETURN_OTHER(AV1PROFILE_PROFILE_PRO);
+    default:
+      return absl::nullopt;
   }
-  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 absl::optional<openscreen::cast::VideoDecoderConfig::Profile>
@@ -309,8 +320,9 @@ ToProtoVideoDecoderConfigProfile(VideoCodecProfile value) {
     CASE_RETURN_OTHER(AV1PROFILE_PROFILE_MAIN);
     CASE_RETURN_OTHER(AV1PROFILE_PROFILE_HIGH);
     CASE_RETURN_OTHER(AV1PROFILE_PROFILE_PRO);
+    default:
+      return absl::nullopt;
   }
-  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 absl::optional<VideoPixelFormat> ToMediaVideoPixelFormat(
@@ -349,8 +361,9 @@ absl::optional<VideoPixelFormat> ToMediaVideoPixelFormat(
     // PIXEL_FORMAT_UYVY, PIXEL_FORMAT_RGB32 and PIXEL_FORMAT_Y8 are deprecated.
     case openscreen::cast::VideoDecoderConfig_Format_PIXEL_FORMAT_RGB32:
       return absl::nullopt;
+    default:
+      return absl::nullopt;
   }
-  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 absl::optional<BufferingState> ToMediaBufferingState(
@@ -360,8 +373,9 @@ absl::optional<BufferingState> ToMediaBufferingState(
   switch (value) {
     CASE_RETURN_OTHER(BUFFERING_HAVE_NOTHING);
     CASE_RETURN_OTHER(BUFFERING_HAVE_ENOUGH);
+    default:
+      return absl::nullopt;
   }
-  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 absl::optional<openscreen::cast::RendererClientOnBufferingStateChange::State>
@@ -371,8 +385,9 @@ ToProtoMediaBufferingState(BufferingState value) {
   switch (value) {
     CASE_RETURN_OTHER(BUFFERING_HAVE_NOTHING);
     CASE_RETURN_OTHER(BUFFERING_HAVE_ENOUGH);
+    default:
+      return absl::nullopt;
   }
-  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 absl::optional<DemuxerStream::Status> ToDemuxerStreamStatus(
@@ -384,8 +399,9 @@ absl::optional<DemuxerStream::Status> ToDemuxerStreamStatus(
     CASE_RETURN_OTHER(kAborted);
     CASE_RETURN_OTHER(kConfigChanged);
     CASE_RETURN_OTHER(kError);
+    default:
+      return absl::nullopt;
   }
-  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 absl::optional<openscreen::cast::DemuxerStreamReadUntilCallback::Status>
@@ -397,8 +413,9 @@ ToProtoDemuxerStreamStatus(DemuxerStream::Status value) {
     CASE_RETURN_OTHER(kAborted);
     CASE_RETURN_OTHER(kConfigChanged);
     CASE_RETURN_OTHER(kError);
+    default:
+      return absl::nullopt;
   }
-  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 }  // namespace remoting

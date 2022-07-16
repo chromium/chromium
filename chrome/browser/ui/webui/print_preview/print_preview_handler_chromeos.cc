@@ -128,34 +128,34 @@ PrintPreviewHandlerChromeOS::PrintPreviewHandlerChromeOS() {
 PrintPreviewHandlerChromeOS::~PrintPreviewHandlerChromeOS() = default;
 
 void PrintPreviewHandlerChromeOS::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setupPrinter",
       base::BindRepeating(&PrintPreviewHandlerChromeOS::HandlePrinterSetup,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAccessToken",
       base::BindRepeating(&PrintPreviewHandlerChromeOS::HandleGetAccessToken,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "grantExtensionPrinterAccess",
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleGrantExtensionPrinterAccess,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getEulaUrl",
       base::BindRepeating(&PrintPreviewHandlerChromeOS::HandleGetEulaUrl,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestPrinterStatus",
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "choosePrintServers",
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleChoosePrintServers,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getPrintServersConfig",
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleGetPrintServersConfig,
@@ -181,11 +181,10 @@ void PrintPreviewHandlerChromeOS::OnJavascriptDisallowed() {
 
 void PrintPreviewHandlerChromeOS::HandleGrantExtensionPrinterAccess(
     const base::ListValue* args) {
-  std::string callback_id;
-  std::string printer_id;
-  bool ok = args->GetString(0, &callback_id) &&
-            args->GetString(1, &printer_id) && !callback_id.empty();
-  DCHECK(ok);
+  DCHECK(args->GetList()[0].is_string() && args->GetList()[1].is_string());
+  std::string callback_id = args->GetList()[0].GetString();
+  std::string printer_id = args->GetList()[1].GetString();
+  DCHECK(!callback_id.empty());
   MaybeAllowJavascript();
 
   PrinterHandler* handler = GetPrinterHandler(mojom::PrinterType::kExtension);
@@ -202,8 +201,12 @@ void PrintPreviewHandlerChromeOS::HandlePrinterSetup(
   std::string callback_id;
   std::string printer_name;
   MaybeAllowJavascript();
-  if (!args->GetString(0, &callback_id) || !args->GetString(1, &printer_name) ||
-      callback_id.empty() || printer_name.empty()) {
+  if (args->GetList()[0].is_string() && args->GetList()[1].is_string()) {
+    callback_id = args->GetList()[0].GetString();
+    printer_name = args->GetList()[1].GetString();
+  }
+
+  if (callback_id.empty() || printer_name.empty()) {
     RejectJavascriptCallback(base::Value(callback_id),
                              base::Value(printer_name));
     return;
@@ -218,10 +221,10 @@ void PrintPreviewHandlerChromeOS::HandlePrinterSetup(
 
 void PrintPreviewHandlerChromeOS::HandleGetAccessToken(
     const base::ListValue* args) {
-  std::string callback_id;
+  DCHECK(args->GetList()[0].is_string());
 
-  bool ok = args->GetString(0, &callback_id) && !callback_id.empty();
-  DCHECK(ok);
+  std::string callback_id = args->GetList()[0].GetString();
+  DCHECK(!callback_id.empty());
   MaybeAllowJavascript();
 
   if (!token_service_)
@@ -233,7 +236,7 @@ void PrintPreviewHandlerChromeOS::HandleGetAccessToken(
 
 void PrintPreviewHandlerChromeOS::HandleGetEulaUrl(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   MaybeAllowJavascript();
 
   const std::string& callback_id = args->GetList()[0].GetString();
@@ -259,37 +262,36 @@ void PrintPreviewHandlerChromeOS::SendEulaUrl(const std::string& callback_id,
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(eula_url));
 }
 
-// Resolves the callback (via ResolveJavascriptCallback) with a
-// PrinterSetupResponse object (defined in
-// chrome/browser/resources/print_preview/native_layer_cros.js).
-// destination_info is a CapabilitiesResponse object (defined in
+// Resolves the callback with a PrinterSetupResponse object (defined in
+// chrome/browser/resources/print_preview/native_layer_cros.js) or rejects it
+// if `destination_info` does not contain a capabilities dictionary.
+// `destination_info` is a CapabilitiesResponse object (defined in
 // chrome/browser/resources/print_preview/native_layer.js).
 void PrintPreviewHandlerChromeOS::SendPrinterSetup(
     const std::string& callback_id,
     const std::string& printer_name,
     base::Value destination_info) {
-  base::Value response(base::Value::Type::DICTIONARY);
   base::Value* caps_value =
       destination_info.is_dict()
           ? destination_info.FindKeyOfType(kSettingCapabilities,
                                            base::Value::Type::DICTIONARY)
           : nullptr;
+  if (!caps_value) {
+    VLOG(1) << "Printer setup failed";
+    RejectJavascriptCallback(base::Value(callback_id), base::Value());
+    return;
+  }
+
+  base::Value response(base::Value::Type::DICTIONARY);
   response.SetKey("printerId", base::Value(printer_name));
-  response.SetKey("success", base::Value(!!caps_value));
-  response.SetKey("capabilities",
-                  caps_value ? std::move(*caps_value)
-                             : base::Value(base::Value::Type::DICTIONARY));
-  if (caps_value) {
-    base::Value* printer =
-        destination_info.FindKeyOfType(kPrinter, base::Value::Type::DICTIONARY);
-    if (printer) {
-      base::Value* policies_value = printer->FindKeyOfType(
-          kSettingPolicies, base::Value::Type::DICTIONARY);
-      if (policies_value)
-        response.SetKey("policies", std::move(*policies_value));
-    }
-  } else {
-    LOG(WARNING) << "Printer setup failed";
+  response.SetKey("capabilities", std::move(*caps_value));
+  base::Value* printer =
+      destination_info.FindKeyOfType(kPrinter, base::Value::Type::DICTIONARY);
+  if (printer) {
+    base::Value* policies_value =
+        printer->FindKeyOfType(kSettingPolicies, base::Value::Type::DICTIONARY);
+    if (policies_value)
+      response.SetKey("policies", std::move(*policies_value));
   }
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
@@ -323,7 +325,7 @@ void PrintPreviewHandlerChromeOS::OnGotExtensionPrinterInfo(
 
 void PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
 
   const std::string& callback_id = args->GetList()[0].GetString();
   const std::string& printer_id = args->GetList()[1].GetString();
@@ -338,7 +340,7 @@ void PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate(
 
 void PrintPreviewHandlerChromeOS::HandleChoosePrintServers(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
 
   const base::Value& val = args->GetList()[0];
   std::vector<std::string> print_server_ids;
@@ -356,8 +358,8 @@ void PrintPreviewHandlerChromeOS::HandleChoosePrintServers(
 
 void PrintPreviewHandlerChromeOS::HandleGetPrintServersConfig(
     const base::ListValue* args) {
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK(args->GetList()[0].is_string());
+  std::string callback_id = args->GetList()[0].GetString();
   CHECK(!callback_id.empty());
   MaybeAllowJavascript();
   if (!local_printer_) {

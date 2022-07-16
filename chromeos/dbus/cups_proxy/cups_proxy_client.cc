@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/cups_proxy/fake_cups_proxy_client.h"
 #include "dbus/bus.h"
@@ -24,6 +23,10 @@ CupsProxyClient* g_instance = nullptr;
 class CupsProxyClientImpl : public CupsProxyClient {
  public:
   CupsProxyClientImpl() = default;
+
+  CupsProxyClientImpl(const CupsProxyClientImpl&) = delete;
+  CupsProxyClientImpl& operator=(const CupsProxyClientImpl&) = delete;
+
   ~CupsProxyClientImpl() override = default;
 
   // CupsProxyClient overrides.
@@ -66,7 +69,6 @@ class CupsProxyClientImpl : public CupsProxyClient {
 
   // Must be last class member.
   base::WeakPtrFactory<CupsProxyClientImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CupsProxyClientImpl);
 };
 
 }  // namespace

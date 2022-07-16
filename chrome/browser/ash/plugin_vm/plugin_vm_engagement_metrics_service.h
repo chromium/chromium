@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_ENGAGEMENT_METRICS_SERVICE_H_
 #define CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_ENGAGEMENT_METRICS_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/guest_os/guest_os_engagement_metrics.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -38,6 +37,12 @@ class PluginVmEngagementMetricsService : public KeyedService {
   };
 
   explicit PluginVmEngagementMetricsService(Profile* profile);
+
+  PluginVmEngagementMetricsService(const PluginVmEngagementMetricsService&) =
+      delete;
+  PluginVmEngagementMetricsService& operator=(
+      const PluginVmEngagementMetricsService&) = delete;
+
   ~PluginVmEngagementMetricsService() override;
 
   // This needs to be called when Plugin Vm starts and stops being active so we
@@ -47,8 +52,6 @@ class PluginVmEngagementMetricsService : public KeyedService {
  private:
   std::unique_ptr<guest_os::GuestOsEngagementMetrics>
       guest_os_engagement_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmEngagementMetricsService);
 };
 
 }  // namespace plugin_vm

@@ -85,16 +85,6 @@ AutofillWalletModelTypeController::GetPreconditionState() const {
           autofill::prefs::kAutofillWalletImportEnabled) &&
       pref_service_->GetBoolean(autofill::prefs::kAutofillCreditCardEnabled) &&
       !sync_service_->GetAuthError().IsPersistentError();
-#if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kWalletRequiresFirstSyncSetupComplete)) {
-    // On Android, it's also required that the initial Sync setup is complete
-    // (i.e. the user has previously opted in to Sync-the-feature, even if it's
-    // not enabled right now).
-    preconditions_met &=
-        sync_service_->GetUserSettings()->IsFirstSetupComplete();
-  }
-#endif
   return preconditions_met ? PreconditionState::kPreconditionsMet
                            : PreconditionState::kMustStopAndClearData;
 }

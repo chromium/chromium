@@ -5,45 +5,35 @@
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/repository/fast_pair/device_metadata_fetcher.h"
+#include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
+#include "ash/services/quick_pair/public/cpp/account_key_filter.h"
+#include "components/image_fetcher/core/image_fetcher.h"
 #include "device/bluetooth/bluetooth_device.h"
 
 namespace ash {
 namespace quick_pair {
 
-FastPairRepository::FastPairRepository() = default;
-FastPairRepository::~FastPairRepository() = default;
+FastPairRepository* g_instance = nullptr;
 
-void FastPairRepository::GetDeviceMetadata(
-    const std::string& hex_model_id,
-    base::OnceCallback<void(absl::optional<nearby::fastpair::Device>)>
-        callback) {
-  QP_LOG(INFO) << __func__;
-  std::move(callback).Run(absl::nullopt);
+// static
+FastPairRepository* FastPairRepository::Get() {
+  DCHECK(g_instance);
+  return g_instance;
 }
 
-void FastPairRepository::IsValidModelId(
-    const std::string& hex_model_id,
-    base::OnceCallback<void(bool)> callback) {
-  QP_LOG(INFO) << __func__;
-  std::move(callback).Run(false);
+// static
+void FastPairRepository::SetInstance(FastPairRepository* instance) {
+  DCHECK(!g_instance || !instance);
+  g_instance = instance;
 }
 
-void FastPairRepository::GetAssociatedAccountKey(
-    const std::string& address,
-    const std::string& account_key_filter,
-    base::OnceCallback<void(absl::optional<std::string>)> callback) {
-  QP_LOG(INFO) << __func__;
-  std::move(callback).Run(absl::nullopt);
+FastPairRepository::FastPairRepository() {
+  SetInstance(this);
 }
 
-void FastPairRepository::AssociateAccountKey(const Device& device,
-                                             const std::string& account_key) {
-  QP_LOG(INFO) << __func__;
-}
-
-void FastPairRepository::DeleteAssociatedDevice(
-    const device::BluetoothDevice* device) {
-  QP_LOG(INFO) << __func__;
+FastPairRepository::~FastPairRepository() {
+  SetInstance(nullptr);
 }
 
 }  // namespace quick_pair

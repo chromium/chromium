@@ -19,6 +19,11 @@ namespace ash {
 class ArcNotificationSurfaceImpl : public ArcNotificationSurface {
  public:
   explicit ArcNotificationSurfaceImpl(exo::NotificationSurface* surface);
+
+  ArcNotificationSurfaceImpl(const ArcNotificationSurfaceImpl&) = delete;
+  ArcNotificationSurfaceImpl& operator=(const ArcNotificationSurfaceImpl&) =
+      delete;
+
   ~ArcNotificationSurfaceImpl() override;
 
   // ArcNotificationSurface overrides:
@@ -41,8 +46,6 @@ class ArcNotificationSurfaceImpl : public ArcNotificationSurface {
   views::NativeViewHost* native_view_host_ = nullptr;
   std::unique_ptr<aura::Window> native_view_;
   ui::AXTreeID ax_tree_id_ = ui::AXTreeIDUnknown();
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationSurfaceImpl);
 };
 
 }  // namespace ash

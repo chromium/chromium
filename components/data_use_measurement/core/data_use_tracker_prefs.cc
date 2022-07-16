@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -73,7 +72,7 @@ void DataUseTrackerPrefs::RemoveExpiredEntriesForPref(
   const base::DictionaryValue* user_pref_dict =
       pref_service_->GetDictionary(pref_name);
   const base::Time current_date = GetCurrentMeasurementDate();
-  const base::Time last_date = current_date - base::TimeDelta::FromDays(60);
+  const base::Time last_date = current_date - base::Days(60);
 
   base::DictionaryValue user_pref_new_dict;
   for (auto it : user_pref_dict->DictItems()) {
@@ -106,12 +105,11 @@ void DataUseTrackerPrefs::UpdateUsagePref(const std::string& pref_name,
     return;
 
   DictionaryPrefUpdate pref_updater(pref_service_, pref_name);
-  double todays_traffic = 0;
   std::string todays_key = GetCurrentMeasurementDateAsString();
 
   const base::DictionaryValue* user_pref_dict =
       pref_service_->GetDictionary(pref_name);
-  user_pref_dict->GetDouble(todays_key, &todays_traffic);
+  double todays_traffic = user_pref_dict->FindDoubleKey(todays_key).value_or(0);
   pref_updater->SetDouble(
       todays_key,
       todays_traffic + (static_cast<double>(message_size_bytes) / 1024.0));

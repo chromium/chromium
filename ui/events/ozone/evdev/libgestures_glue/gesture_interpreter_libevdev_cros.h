@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
 #include "ui/events/ozone/evdev/event_device_util.h"
 #include "ui/events/ozone/evdev/event_dispatch_callback.h"
@@ -46,6 +45,12 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
                                  CursorDelegateEvdev* cursor,
                                  GesturePropertyProvider* property_provider,
                                  DeviceEventDispatcherEvdev* dispatcher);
+
+  GestureInterpreterLibevdevCros(const GestureInterpreterLibevdevCros&) =
+      delete;
+  GestureInterpreterLibevdevCros& operator=(
+      const GestureInterpreterLibevdevCros&) = delete;
+
   ~GestureInterpreterLibevdevCros() override;
 
   // Overriden from ui::EventReaderLibevdevCros::Delegate
@@ -128,8 +133,6 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
 
   // The number of pixels to count as one "tick" on a multitouch mouse.
   static const int kMultitouchMousePixelsPerTick = 50;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureInterpreterLibevdevCros);
 };
 
 }  // namspace ui

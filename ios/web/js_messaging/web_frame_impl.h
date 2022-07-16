@@ -38,6 +38,10 @@ class WebFrameImpl : public WebFrame,
                bool is_main_frame,
                GURL security_origin,
                web::WebState* web_state);
+
+  WebFrameImpl(const WebFrameImpl&) = delete;
+  WebFrameImpl& operator=(const WebFrameImpl&) = delete;
+
   ~WebFrameImpl() override;
 
   // Sets the value to use for the next message ID.
@@ -184,8 +188,6 @@ class WebFrameImpl : public WebFrame,
   base::CallbackListSubscription subscription_;
 
   base::WeakPtrFactory<WebFrameImpl> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebFrameImpl);
 };
 
 }  // namespace web

@@ -71,10 +71,9 @@ std::wstring MakePathToSysWow64(const wchar_t* name, bool is_obj_man_path) {
 }
 
 std::wstring MakePathToSys(const wchar_t* name, bool is_obj_man_path) {
-  return (base::win::OSInfo::GetInstance()->wow64_status() ==
-      base::win::OSInfo::WOW64_ENABLED) ?
-      MakePathToSysWow64(name, is_obj_man_path) :
-      MakePathToSys32(name, is_obj_man_path);
+  return (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64())
+             ? MakePathToSysWow64(name, is_obj_man_path)
+             : MakePathToSys32(name, is_obj_man_path);
 }
 
 BrokerServices* GetBroker() {
@@ -158,8 +157,7 @@ bool TestRunner::AddRuleSys32(TargetPolicy::Semantics semantics,
   if (!AddRule(TargetPolicy::SUBSYS_FILES, semantics, win32_path.c_str()))
     return false;
 
-  if (base::win::OSInfo::GetInstance()->wow64_status() !=
-      base::win::OSInfo::WOW64_ENABLED)
+  if (!base::win::OSInfo::GetInstance()->IsWowX86OnAMD64())
     return true;
 
   win32_path = MakePathToSysWow64(pattern, false);
@@ -273,9 +271,8 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
 }
 
 void TestRunner::SetTimeout(DWORD timeout_ms) {
-  SetTimeout(timeout_ms == INFINITE
-                 ? base::TimeDelta::Max()
-                 : base::TimeDelta::FromMilliseconds(timeout_ms));
+  SetTimeout(timeout_ms == INFINITE ? base::TimeDelta::Max()
+                                    : base::Milliseconds(timeout_ms));
 }
 
 void TestRunner::SetTimeout(base::TimeDelta timeout) {
@@ -283,8 +280,7 @@ void TestRunner::SetTimeout(base::TimeDelta timeout) {
   DCHECK(timeout >= base::TimeDelta());
   // We need millisecond DWORDS but also cannot take exactly INFINITE,
   // for that should supply ::Max().
-  DCHECK(timeout.is_inf() ||
-         timeout < base::TimeDelta::FromMilliseconds(UINT_MAX));
+  DCHECK(timeout.is_inf() || timeout < base::Milliseconds(UINT_MAX));
   timeout_ = timeout;
 }
 

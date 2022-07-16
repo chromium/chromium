@@ -26,6 +26,10 @@ security_state::SecurityLevel LocationBarModelDelegate::GetSecurityLevel()
   return security_state::NONE;
 }
 
+net::CertStatus LocationBarModelDelegate::GetCertStatus() const {
+  return 0;
+}
+
 std::unique_ptr<security_state::VisibleSecurityState>
 LocationBarModelDelegate::GetVisibleSecurityState() const {
   return std::make_unique<security_state::VisibleSecurityState>();
@@ -53,6 +57,10 @@ bool LocationBarModelDelegate::IsNewTabPageURL(const GURL& url) const {
 }
 
 bool LocationBarModelDelegate::IsHomePage(const GURL& url) const {
+  return false;
+}
+
+bool LocationBarModelDelegate::IsShowingAccuracyTip() const {
   return false;
 }
 

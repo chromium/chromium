@@ -29,6 +29,10 @@ class TestBackingClient : public OutputDeviceBacking::Client {
     backing_->ClientResized();
     backing_->GetSharedMemoryRegion(viewport_size_);
   }
+
+  TestBackingClient(const TestBackingClient&) = delete;
+  TestBackingClient& operator=(const TestBackingClient&) = delete;
+
   ~TestBackingClient() override { backing_->UnregisterClient(this); }
 
   const gfx::Size& viewport_size() const { return viewport_size_; }
@@ -44,8 +48,6 @@ class TestBackingClient : public OutputDeviceBacking::Client {
   OutputDeviceBacking* const backing_;
   gfx::Size viewport_size_;
   bool release_canvas_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBackingClient);
 };
 
 }  // namespace

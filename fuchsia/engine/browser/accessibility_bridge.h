@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -29,6 +30,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+class FrameWindowTreeHost;
+
 // This class is the intermediate for accessibility between Chrome and Fuchsia.
 // It handles registration to the Fuchsia Semantics Manager, translating events
 // and data structures between the two services, and forwarding actions and
@@ -38,7 +41,7 @@ class WebContents;
 // caller-supplied ViewRef.
 // If |semantic_tree_| gets disconnected, it will cause the FrameImpl that owns
 // |this| to close, which will also destroy |this|.
-class WEB_ENGINE_EXPORT AccessibilityBridge
+class WEB_ENGINE_EXPORT AccessibilityBridge final
     : public content::WebContentsObserver,
       public fuchsia::accessibility::semantics::SemanticListener,
       public ui::AXTreeObserver {
@@ -49,11 +52,11 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   // |web_contents| is required to exist for the duration of |this|.
   AccessibilityBridge(
       fuchsia::accessibility::semantics::SemanticsManager* semantics_manager,
-      fuchsia::ui::views::ViewRef view_ref,
+      FrameWindowTreeHost* window_tree_host,
       content::WebContents* web_contents,
       base::OnceCallback<void(zx_status_t)> on_error_callback,
       inspect::Node inspect_node);
-  ~AccessibilityBridge() final;
+  ~AccessibilityBridge() override;
 
   AccessibilityBridge(const AccessibilityBridge&) = delete;
   AccessibilityBridge& operator=(const AccessibilityBridge&) = delete;
@@ -186,11 +189,11 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   void OnAccessibilityActionRequested(
       uint32_t node_id,
       fuchsia::accessibility::semantics::Action action,
-      OnAccessibilityActionRequestedCallback callback) final;
+      OnAccessibilityActionRequestedCallback callback) override;
   void HitTest(fuchsia::math::PointF local_point,
-               HitTestCallback callback) final;
+               HitTestCallback callback) override;
   void OnSemanticsModeChanged(bool updates_enabled,
-                              OnSemanticsModeChangedCallback callback) final;
+                              OnSemanticsModeChangedCallback callback) override;
 
   // ui::AXTreeObserver implementation.
   void OnNodeCreated(ui::AXTree* tree, ui::AXNode* node) override;
@@ -206,7 +209,9 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
 
   fuchsia::accessibility::semantics::SemanticTreePtr semantic_tree_;
   fidl::Binding<fuchsia::accessibility::semantics::SemanticListener> binding_;
-  content::WebContents* web_contents_;
+
+  FrameWindowTreeHost* const window_tree_host_;
+  content::WebContents* const web_contents_;
 
   // Holds one semantic tree per iframe.
   base::flat_map<ui::AXTreeID, std::unique_ptr<ui::AXSerializableTree>>

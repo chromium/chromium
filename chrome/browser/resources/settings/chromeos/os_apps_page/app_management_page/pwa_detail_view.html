@@ -1,71 +1,44 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="util.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="browser_proxy.html">
-<link rel="import" href="icons.html">
-<link rel="import" href="permission_item.html">
-<link rel="import" href="pin_to_shelf_item.html">
-<link rel="import" href="shared_style.html">
-<link rel="import" href="store_client.html">
-<link rel="import" href="supported_links_item.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-
-<dom-module id="app-management-pwa-detail-view">
-  <template>
-    <style include="app-management-shared-css">
-    </style>
-    <div class="permission-list">
-      <app-management-pin-to-shelf-item
-        id="pin-to-shelf-setting"
-        class="permission-card-row separated-row header-text"
-        app="[[app_]]">
-      </app-management-pin-to-shelf-item>
-      <app-management-permission-item id="notifications-card"
-        class="permission-card-row separated-row header-text"
-        permission-label="$i18n{appManagementNotificationsLabel}"
-        permission-type="NOTIFICATIONS">
-      </app-management-permission-item>
-      <div id="permissions-card" class="permission-card-row">
-        <div class="permission-section-header">
-          <div class="header-text">$i18n{appManagementPermissionsLabel}</div>
-        </div>
-        <div class="permission-list indented-permission-block">
-          <app-management-permission-item id="location"
-            class="subpermission-row" icon="app-management:location"
-            permission-label="$i18n{appManagementLocationPermissionLabel}"
-            permission-type="GEOLOCATION">
-          </app-management-permission-item>
-          <app-management-permission-item id="camera" class="subpermission-row"
-            icon="app-management:camera"
-            permission-label="$i18n{appManagementCameraPermissionLabel}"
-            permission-type="MEDIASTREAM_CAMERA">
-          </app-management-permission-item>
-          <app-management-permission-item id="microphone"
-            class="subpermission-row" icon="app-management:microphone"
-            permission-label="$i18n{appManagementMicrophonePermissionLabel}"
-            permission-type="MEDIASTREAM_MIC">
-          </app-management-permission-item>
-        </div>
-      </div>
-      <div id="more-settings"
-        class="permission-card-row separated-row header-text clickable"
-        on-click="onClickSiteSettingsButton_">
-        <div id="label" class="header-text" aria-hidden="true">
-          $i18n{appManagementMoreSettingsLabel}
-        </div>
-        <div class="permission-row-controls">
-          <cr-icon-button class="native-settings-icon icon-external" role="link"
-            tabindex="0" aria-labelledby="label">
-          </cr-icon-button>
-        </div>
-      </div>
-      <app-management-supported-links-item
-          id="supportedLinksSetting"
-          class="permission-card-row">
-      </app-management-supported-links-item>
+<style include="app-management-shared-css">
+</style>
+<div class="permission-list">
+  <app-management-pin-to-shelf-item
+      id="pin-to-shelf-setting"
+      class="permission-card-row separated-row header-text"
+      app="[[app_]]">
+  </app-management-pin-to-shelf-item>
+  <app-management-permission-item id="notifications-card"
+      class="permission-card-row separated-row header-text"
+      permission-label="$i18n{appManagementNotificationsLabel}"
+      permission-type="kNotifications">
+  </app-management-permission-item>
+  <div id="permissions-card" class="permission-card-row">
+    <div class="permission-section-header">
+      <div class="header-text">$i18n{appManagementPermissionsLabel}</div>
     </div>
-  </template>
-  <script src="pwa_detail_view.js"></script>
-</dom-module>
+    <div class="permission-list indented-permission-block">
+      <app-management-permission-item id="location"
+          class="subpermission-row" icon="app-management:location"
+          permission-label="$i18n{appManagementLocationPermissionLabel}"
+          permission-type="kLocation">
+      </app-management-permission-item>
+      <app-management-permission-item id="camera" class="subpermission-row"
+          icon="app-management:camera"
+          permission-label="$i18n{appManagementCameraPermissionLabel}"
+          permission-type="kCamera">
+      </app-management-permission-item>
+      <app-management-permission-item id="microphone"
+          class="subpermission-row" icon="app-management:microphone"
+          permission-label="$i18n{appManagementMicrophonePermissionLabel}"
+          permission-type="kMicrophone">
+      </app-management-permission-item>
+    </div>
+  </div>
+  <app-management-more-permissions-item id="more-settings"
+      class="permission-card-row separated-row header-text" app="[[app_]]">
+  </app-management-more-permissions-item>
+  <app-management-supported-links-item
+      id="supportedLinksSetting"
+      class="permission-card-row"
+      app="[[app_]]">
+  </app-management-supported-links-item>
+</div>

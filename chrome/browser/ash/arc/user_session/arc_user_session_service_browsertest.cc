@@ -8,10 +8,10 @@
 
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
-#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
@@ -47,11 +47,16 @@ void RunUntilIdle() {
 class ArcUserSessionServiceTest : public InProcessBrowserTest {
  public:
   ArcUserSessionServiceTest() {
-    // SplitSettingsSync makes an untitled Play Store icon appear in the shelf
-    // due to app pin syncing code. Sync isn't relevant to this test, so skip
-    // pinned app sync. https://crbug.com/1085597
-    SkipPinnedAppsFromSyncForTest();
+    // SyncSettingsCategorization makes an untitled Play Store icon appear in
+    // the shelf due to app pin syncing code. Sync isn't relevant to this test,
+    // so skip pinned app sync. https://crbug.com/1085597
+    ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest();
   }
+
+  ArcUserSessionServiceTest(const ArcUserSessionServiceTest&) = delete;
+  ArcUserSessionServiceTest& operator=(const ArcUserSessionServiceTest&) =
+      delete;
+
   ~ArcUserSessionServiceTest() override = default;
 
   // InProcessBrowserTest:
@@ -81,9 +86,6 @@ class ArcUserSessionServiceTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<FakeIntentHelperInstance> fake_intent_helper_instance_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcUserSessionServiceTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ArcUserSessionServiceTest,

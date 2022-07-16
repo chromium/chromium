@@ -190,7 +190,7 @@ VpnProviderCreateConfigFunction::~VpnProviderCreateConfigFunction() {
 
 ExtensionFunction::ResponseAction VpnProviderCreateConfigFunction::Run() {
   std::unique_ptr<api_vpn::CreateConfig::Params> params(
-      api_vpn::CreateConfig::Params::Create(*args_));
+      api_vpn::CreateConfig::Params::Create(args()));
   if (!params) {
     return RespondNow(Error("Invalid arguments."));
   }
@@ -220,7 +220,7 @@ VpnProviderDestroyConfigFunction::~VpnProviderDestroyConfigFunction() {
 
 ExtensionFunction::ResponseAction VpnProviderDestroyConfigFunction::Run() {
   std::unique_ptr<api_vpn::DestroyConfig::Params> params(
-      api_vpn::DestroyConfig::Params::Create(*args_));
+      api_vpn::DestroyConfig::Params::Create(args()));
   if (!params) {
     return RespondNow(Error("Invalid arguments."));
   }
@@ -247,7 +247,7 @@ VpnProviderSetParametersFunction::~VpnProviderSetParametersFunction() {
 
 ExtensionFunction::ResponseAction VpnProviderSetParametersFunction::Run() {
   std::unique_ptr<api_vpn::SetParameters::Params> params(
-      api_vpn::SetParameters::Params::Create(*args_));
+      api_vpn::SetParameters::Params::Create(args()));
   if (!params) {
     return RespondNow(Error("Invalid arguments."));
   }
@@ -282,7 +282,7 @@ VpnProviderSendPacketFunction::~VpnProviderSendPacketFunction() {
 
 ExtensionFunction::ResponseAction VpnProviderSendPacketFunction::Run() {
   std::unique_ptr<api_vpn::SendPacket::Params> params(
-      api_vpn::SendPacket::Params::Create(*args_));
+      api_vpn::SendPacket::Params::Create(args()));
   if (!params) {
     return RespondNow(Error("Invalid arguments."));
   }
@@ -312,7 +312,7 @@ VpnProviderNotifyConnectionStateChangedFunction::
 ExtensionFunction::ResponseAction
 VpnProviderNotifyConnectionStateChangedFunction::Run() {
   std::unique_ptr<api_vpn::NotifyConnectionStateChanged::Params> params(
-      api_vpn::NotifyConnectionStateChanged::Params::Create(*args_));
+      api_vpn::NotifyConnectionStateChanged::Params::Create(args()));
   if (!params) {
     return RespondNow(Error("Invalid arguments."));
   }

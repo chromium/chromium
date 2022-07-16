@@ -14,12 +14,14 @@ namespace chromeos {
 namespace secure_channel {
 
 class SecureChannelWireMessageTest : public testing::Test {
+ public:
+  SecureChannelWireMessageTest(const SecureChannelWireMessageTest&) = delete;
+  SecureChannelWireMessageTest& operator=(const SecureChannelWireMessageTest&) =
+      delete;
+
  protected:
   SecureChannelWireMessageTest() {}
   ~SecureChannelWireMessageTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelWireMessageTest);
 };
 
 TEST(SecureChannelWireMessageTest, Deserialize_EmptyMessage) {

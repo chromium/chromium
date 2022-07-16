@@ -50,7 +50,7 @@ DocumentScanScanFunction::DocumentScanScanFunction() = default;
 DocumentScanScanFunction::~DocumentScanScanFunction() = default;
 
 ExtensionFunction::ResponseAction DocumentScanScanFunction::Run() {
-  params_ = document_scan::Scan::Params::Create(*args_);
+  params_ = document_scan::Scan::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
   if (!user_gesture())

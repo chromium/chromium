@@ -26,6 +26,9 @@ constexpr int kFailedToDeleteDataFolder = 12;
 // Failed to get versioned updater folder path.
 constexpr int kFailedToGetVersionedUpdaterFolderPath = 13;
 
+// Failed to get the installed app bundle path.
+constexpr int kFailedToGetAppBundlePath = 14;
+
 // Failed to remove the active(unversioned) update service job from Launchd.
 constexpr int kFailedToRemoveActiveUpdateServiceJobFromLaunchd = 20;
 

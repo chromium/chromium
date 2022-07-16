@@ -29,6 +29,12 @@ class GaiaAuthFetcherIOSNSURLSessionBridge : public GaiaAuthFetcherIOSBridge {
   GaiaAuthFetcherIOSNSURLSessionBridge(
       GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate* delegate,
       web::BrowserState* browser_state);
+
+  GaiaAuthFetcherIOSNSURLSessionBridge(
+      const GaiaAuthFetcherIOSNSURLSessionBridge&) = delete;
+  GaiaAuthFetcherIOSNSURLSessionBridge& operator=(
+      const GaiaAuthFetcherIOSNSURLSessionBridge&) = delete;
+
   ~GaiaAuthFetcherIOSNSURLSessionBridge() override;
 
   // GaiaAuthFetcherIOSBridge:
@@ -113,8 +119,6 @@ class GaiaAuthFetcherIOSNSURLSessionBridge : public GaiaAuthFetcherIOSBridge {
 
   // Task to send the NSURLRequest.
   NSURLSessionDataTask* url_session_data_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(GaiaAuthFetcherIOSNSURLSessionBridge);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_GAIA_AUTH_FETCHER_IOS_NS_URL_SESSION_BRIDGE_H_

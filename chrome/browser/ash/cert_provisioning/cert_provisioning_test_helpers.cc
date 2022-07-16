@@ -91,10 +91,8 @@ scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
 scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
     CertScope cert_scope,
     const absl::optional<CertProfileId>& cert_profile_id) {
-  base::Time not_valid_before =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
-  base::Time not_valid_after =
-      base::Time::Now() + base::TimeDelta::FromDays(365);
+  base::Time not_valid_before = base::Time::Now() - base::Days(1);
+  base::Time not_valid_after = base::Time::Now() + base::Days(365);
   return AddCert(cert_scope, cert_profile_id,
                  chromeos::platform_keys::Status::kSuccess, not_valid_before,
                  not_valid_after);
@@ -104,10 +102,8 @@ scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
     CertScope cert_scope,
     const absl::optional<CertProfileId>& cert_profile_id,
     chromeos::platform_keys::Status status) {
-  base::Time not_valid_before =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
-  base::Time not_valid_after =
-      base::Time::Now() + base::TimeDelta::FromDays(365);
+  base::Time not_valid_before = base::Time::Now() - base::Days(1);
+  base::Time not_valid_after = base::Time::Now() + base::Days(365);
   return AddCert(cert_scope, cert_profile_id, status, not_valid_before,
                  not_valid_after);
 }

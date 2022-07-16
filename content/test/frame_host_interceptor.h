@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -31,6 +30,10 @@ class FrameHostInterceptor : public WebContentsObserver {
   // Constructs an instance that will intercept FrameHost calls in any frame of
   // the |web_contents| while the instance is in scope.
   explicit FrameHostInterceptor(WebContents* web_contents);
+
+  FrameHostInterceptor(const FrameHostInterceptor&) = delete;
+  FrameHostInterceptor& operator=(const FrameHostInterceptor&) = delete;
+
   ~FrameHostInterceptor() override;
 
   // Called just before BeginNavigation IPC would be dispatched to
@@ -59,8 +62,6 @@ class FrameHostInterceptor : public WebContentsObserver {
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
 
   std::map<RenderFrameHost*, std::unique_ptr<FrameAgent>> frame_agents_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameHostInterceptor);
 };
 
 }  // namespace content

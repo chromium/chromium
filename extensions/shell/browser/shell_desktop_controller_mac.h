@@ -20,6 +20,11 @@ class AppWindowClient;
 class ShellDesktopControllerMac : public DesktopController {
  public:
   ShellDesktopControllerMac();
+
+  ShellDesktopControllerMac(const ShellDesktopControllerMac&) = delete;
+  ShellDesktopControllerMac& operator=(const ShellDesktopControllerMac&) =
+      delete;
+
   ~ShellDesktopControllerMac() override;
 
   // DesktopController:
@@ -32,8 +37,6 @@ class ShellDesktopControllerMac : public DesktopController {
   // The desktop only supports a single app window.
   // TODO(yoz): Support multiple app windows, as we do in Aura.
   AppWindow* app_window_;  // NativeAppWindow::Close() deletes this.
-
-  DISALLOW_COPY_AND_ASSIGN(ShellDesktopControllerMac);
 };
 
 }  // namespace extensions

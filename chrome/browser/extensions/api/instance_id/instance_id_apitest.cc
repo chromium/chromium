@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/api/instance_id/instance_id_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -29,11 +28,12 @@ class InstanceIDApiTest : public ExtensionApiTest {
  public:
   InstanceIDApiTest();
 
+  InstanceIDApiTest(const InstanceIDApiTest&) = delete;
+  InstanceIDApiTest& operator=(const InstanceIDApiTest&) = delete;
+
  private:
   gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
       scoped_testing_factory_installer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDApiTest);
 };
 
 InstanceIDApiTest::InstanceIDApiTest()

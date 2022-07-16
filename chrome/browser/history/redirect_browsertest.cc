@@ -15,11 +15,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, Server) {
   GURL first_url =
       embedded_test_server()->GetURL("/server-redirect?" + final_url.spec());
 
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   std::vector<GURL> redirects = GetRedirects(first_url);
 
@@ -107,16 +107,20 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, Client) {
   EXPECT_EQ(final_url.spec(), redirects[0].spec());
 
   // The address bar should display the final URL.
-  EXPECT_EQ(final_url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(final_url, browser()
+                           ->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetLastCommittedURL());
 
   // Navigate one more time.
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(), first_url, 2);
 
   // The address bar should still display the final URL.
-  EXPECT_EQ(final_url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(final_url, browser()
+                           ->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetLastCommittedURL());
 }
 
 // http://code.google.com/p/chromium/issues/detail?id=62772
@@ -157,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ClientCancelled) {
   GURL first_url = ui_test_utils::GetTestUrl(
       base::FilePath(),
       base::FilePath().AppendASCII("cancelled_redirect_test.html"));
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -173,11 +177,11 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ClientCancelled) {
 
   std::vector<GURL> redirects = GetRedirects(first_url);
 
-  // There should be 1 redirect from first_url, because the anchor location
-  // change that occurs should be flagged as a redirect but the meta-refresh
+  // There should be no redirect from first_url, because the anchor location
+  // change is not considered as client redirect and the meta-refresh
   // won't have fired yet.
-  ASSERT_EQ(1U, redirects.size());
-  EXPECT_EQ("myanchor", web_contents->GetURL().ref());
+  ASSERT_EQ(0U, redirects.size());
+  EXPECT_EQ("myanchor", web_contents->GetLastCommittedURL().ref());
 }
 
 // Tests a client->server->server redirect
@@ -212,11 +216,13 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ServerReference) {
   GURL initial_url = embedded_test_server()->GetURL(
       "/server-redirect?" + final_url.spec() + "#" + ref);
 
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
-  EXPECT_EQ(ref,
-            browser()->tab_strip_model()->GetActiveWebContents()->
-                GetURL().ref());
+  EXPECT_EQ(ref, browser()
+                     ->tab_strip_model()
+                     ->GetActiveWebContents()
+                     ->GetLastCommittedURL()
+                     .ref());
 }
 
 // Test that redirect from http:// to file:// :
@@ -232,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, NoHttpToFile) {
   GURL initial_url =
       embedded_test_server()->GetURL("/client-redirect?" + file_url.spec());
 
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
   // We make sure the title doesn't match the title from the file, because the
   // nav should not have taken place.
   EXPECT_NE(u"File!",
@@ -245,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ClientFragments) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL first_url = ui_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath().AppendASCII("ref_redirect.html"));
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   std::vector<GURL> redirects = GetRedirects(first_url);
   EXPECT_EQ(1U, redirects.size());
   EXPECT_EQ(first_url.spec() + "#myanchor", redirects[0].spec());

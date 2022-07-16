@@ -106,6 +106,7 @@ GL_EXPORT extern const base::Feature kDefaultANGLEOpenGL;
 GL_EXPORT extern const base::Feature kDefaultANGLEMetal;
 GL_EXPORT extern const base::Feature kDefaultANGLEVulkan;
 GL_EXPORT extern const base::Feature kTrackCurrentShaders;
+GL_EXPORT extern const base::Feature kVulkanFromANGLE;
 
 GL_EXPORT bool IsDefaultANGLEVulkan();
 

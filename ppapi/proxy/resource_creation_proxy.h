@@ -29,6 +29,10 @@ class ResourceCreationProxy : public InterfaceProxy,
                               public thunk::ResourceCreationAPI {
  public:
   explicit ResourceCreationProxy(Dispatcher* dispatcher);
+
+  ResourceCreationProxy(const ResourceCreationProxy&) = delete;
+  ResourceCreationProxy& operator=(const ResourceCreationProxy&) = delete;
+
   ~ResourceCreationProxy() override;
 
   // Factory function used for registration (normal code can just use the
@@ -174,7 +178,6 @@ class ResourceCreationProxy : public InterfaceProxy,
 
  private:
   Connection GetConnection();
-  DISALLOW_COPY_AND_ASSIGN(ResourceCreationProxy);
 };
 
 }  // namespace proxy

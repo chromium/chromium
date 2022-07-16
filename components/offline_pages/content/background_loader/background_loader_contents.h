@@ -34,6 +34,10 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
   // Creates BackgroundLoaderContents with specified |browser_context|. Uses
   // default session storage space.
   explicit BackgroundLoaderContents(content::BrowserContext* browser_context);
+
+  BackgroundLoaderContents(const BackgroundLoaderContents&) = delete;
+  BackgroundLoaderContents& operator=(const BackgroundLoaderContents&) = delete;
+
   ~BackgroundLoaderContents() override;
 
   // Loads the URL in a WebContents. Will call observe on all current observers
@@ -96,8 +100,6 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
   std::unique_ptr<content::WebContents> web_contents_;
   content::BrowserContext* browser_context_;
   Delegate* delegate_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundLoaderContents);
 };
 
 }  // namespace background_loader

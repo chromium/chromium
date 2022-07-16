@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
@@ -78,6 +77,9 @@ class TabRestoreTest : public InProcessBrowserTest {
         base::FilePath().AppendASCII("session_history"),
         base::FilePath().AppendASCII("bot2.html"));
   }
+
+  TabRestoreTest(const TabRestoreTest&) = delete;
+  TabRestoreTest& operator=(const TabRestoreTest&) = delete;
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   void SetMaxSimultaneousLoadsForTesting(TabLoader* tab_loader) {
@@ -293,8 +295,6 @@ class TabRestoreTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
       animation_mode_reset_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabRestoreTest);
 };
 
 // Close the end tab in the current window, then restore it. The tab should be
@@ -369,8 +369,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreToDifferentWindow) {
 // If this becomes flaky, use http://crbug.com/14774
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, DISABLED_BasicRestoreFromClosedWindow) {
   // Navigate to url1 then url2.
-  ui_test_utils::NavigateToURL(browser(), url1_);
-  ui_test_utils::NavigateToURL(browser(), url2_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1_));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2_));
 
   // Create a new browser.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -908,9 +908,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   EXPECT_EQ(++tab_count, browser()->tab_strip_model()->count());
 
   // Navigate to more URLs, then a cross-site URL.
-  ui_test_utils::NavigateToURL(browser(), http_url2);
-  ui_test_utils::NavigateToURL(browser(), http_url1);
-  ui_test_utils::NavigateToURL(browser(), url1_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url2));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url1));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1_));
 
   // Close the tab.
   CloseTab(1);
@@ -934,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
 
   // Navigating to a new URL should clear the forward list, because the max
   // page ID of the renderer should have been updated when we restored the tab.
-  ui_test_utils::NavigateToURL(browser(), http_url2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url2));
   EXPECT_FALSE(chrome::CanGoForward(browser()));
   EXPECT_EQ(http_url2,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
@@ -1042,7 +1042,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, MAYBE_RestoreTabWithSpecialURLOnBack) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Then navigate to a normal URL.
-  ui_test_utils::NavigateToURL(browser(), http_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
 
   // Close the tab.
   CloseTab(1);
@@ -1104,11 +1104,19 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   EXPECT_EQ(4, browser->tab_strip_model()->count());
 }
 
+// Test is flaky on Win. https://crbug.com/1241761.
+#if defined(OS_WIN)
+#define MAYBE_TabsFromRestoredWindowsAreLoadedGradually \
+  DISABLED_TabsFromRestoredWindowsAreLoadedGradually
+#else
+#define MAYBE_TabsFromRestoredWindowsAreLoadedGradually \
+  TabsFromRestoredWindowsAreLoadedGradually
+#endif
 // TabLoader (used here) is available only when browser is built
 // with ENABLE_SESSION_SERVICE.
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 IN_PROC_BROWSER_TEST_F(TabRestoreTest,
-                       TabsFromRestoredWindowsAreLoadedGradually) {
+                       MAYBE_TabsFromRestoredWindowsAreLoadedGradually) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url2_, WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
@@ -1472,7 +1480,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, DoesNotRestoreReaderModePages) {
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 
   // Navigate the tab to a reader mode page.
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome-distiller://any"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome-distiller://any")));
   EXPECT_EQ(GURL("chrome-distiller://any"),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 
@@ -1498,13 +1507,16 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 
   // Navigate to some random page.
-  ui_test_utils::NavigateToURL(browser(), GURL("https://www.example1.com"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://www.example1.com")));
 
   // Navigate the tab to a reader mode page.
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome-distiller://any"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome-distiller://any")));
 
   // Navigate to another random page.
-  ui_test_utils::NavigateToURL(browser(), GURL("https://www.example2.com"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://www.example2.com")));
 
   // Close it. Restoring restores example2 site.
   CloseTab(interesting_tab);
@@ -1538,13 +1550,16 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 
   // Navigate to some random page.
-  ui_test_utils::NavigateToURL(browser(), GURL("https://www.example1.com"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://www.example1.com")));
 
   // Navigate the tab to a reader mode page.
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome-distiller://any"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome-distiller://any")));
 
   // Navigate to another random page.
-  ui_test_utils::NavigateToURL(browser(), GURL("https://www.example2.com"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://www.example2.com")));
 
   // Go back to the example1.
   GoBack(browser());
@@ -1726,7 +1741,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL initial_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
   url::Origin initial_origin = url::Origin::Create(initial_url);
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Open about:blank in a new tab.
   content::WebContents* old_popup = nullptr;
@@ -1827,4 +1842,66 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoredWindowHasNewGroupIds) {
   // The group ID should be new.
   EXPECT_NE(original_group,
             third_browser->tab_strip_model()->GetTabGroupForTab(1));
+}
+
+// Ensures window.tab_groups is kept in sync with the groups referenced
+// in window.tabs
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, WindowTabGroupsMatchesWindowTabs) {
+  sessions::TabRestoreService* service =
+      TabRestoreServiceFactory::GetForProfile(browser()->profile());
+
+  AddSomeTabs(browser(), 3);
+  ASSERT_EQ(4, browser()->tab_strip_model()->count());
+
+  // Create a new browser from which to restore the first.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabURL),
+      WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+  ASSERT_EQ(2u, active_browser_list_->size());
+  Browser* second_browser = GetBrowser(1);
+  ASSERT_NE(browser(), second_browser);
+
+  const auto single_entry_group =
+      browser()->tab_strip_model()->AddToNewGroup({3});
+  const auto double_entry_group =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2});
+  CloseBrowserSynchronously(browser());
+  ASSERT_EQ(1u, active_browser_list_->size());
+
+  // We should have a restore entry for the window.
+  const sessions::TabRestoreService::Entries& entries = service->entries();
+  ASSERT_GE(entries.size(), 1u);
+  ASSERT_EQ(entries.front()->type, sessions::TabRestoreService::WINDOW);
+
+  const auto* const window_entry =
+      static_cast<sessions::TabRestoreService::Window*>(entries.front().get());
+  ASSERT_NE(window_entry->tab_groups.find(single_entry_group),
+            window_entry->tab_groups.end());
+  ASSERT_NE(window_entry->tab_groups.find(double_entry_group),
+            window_entry->tab_groups.end());
+
+  // Restore the first and only tab in the single entry group.
+  service->RestoreEntryById(second_browser->live_tab_context(),
+                            window_entry->tabs[3]->id,
+                            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  // The window should no longer track the single entry group.
+  ASSERT_EQ(window_entry->tab_groups.find(single_entry_group),
+            window_entry->tab_groups.end());
+
+  // Restore one of the tabs in the double entry group.
+  service->RestoreEntryById(second_browser->live_tab_context(),
+                            window_entry->tabs[2]->id,
+                            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  // The window should still track the double entry group.
+  ASSERT_NE(window_entry->tab_groups.find(double_entry_group),
+            window_entry->tab_groups.end());
+
+  // Restore the remaining tab in the double entry group.
+  service->RestoreEntryById(second_browser->live_tab_context(),
+                            window_entry->tabs[1]->id,
+                            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  // The window should no longer track the double entry group.
+  ASSERT_EQ(window_entry->tab_groups.find(double_entry_group),
+            window_entry->tab_groups.end());
 }

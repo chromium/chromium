@@ -16,6 +16,10 @@ class ChromecastGraphicsTestSuite : public base::TestSuite {
   ChromecastGraphicsTestSuite(int argc, char** argv)
       : base::TestSuite(argc, argv) {}
 
+  ChromecastGraphicsTestSuite(const ChromecastGraphicsTestSuite&) = delete;
+  ChromecastGraphicsTestSuite& operator=(const ChromecastGraphicsTestSuite&) =
+      delete;
+
  protected:
   void Initialize() override {
     base::TestSuite::Initialize();
@@ -31,7 +35,6 @@ class ChromecastGraphicsTestSuite : public base::TestSuite {
 
  private:
   std::unique_ptr<aura::Env> env_;
-  DISALLOW_COPY_AND_ASSIGN(ChromecastGraphicsTestSuite);
 };
 
 int main(int argc, char** argv) {

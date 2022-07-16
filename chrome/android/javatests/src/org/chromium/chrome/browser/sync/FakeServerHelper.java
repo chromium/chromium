@@ -180,12 +180,14 @@ public class FakeServerHelper {
      * @param url the URL of the bookmark to inject. This String will be passed to the native GURL
      *            class, so it must be a valid URL under its definition.
      * @param parentId the ID of the desired parent bookmark folder
+     * @param parentGuid the GUID of the desired parent bookmark folder
      */
-    public void injectBookmarkEntity(final String title, final GURL url, final String parentId) {
+    public void injectBookmarkEntity(
+            final String title, final GURL url, final String parentId, final String parentGuid) {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> FakeServerHelperJni.get().injectBookmarkEntity(
-                                mNativeFakeServer, title, url, parentId));
+                                mNativeFakeServer, title, url, parentId, parentGuid));
     }
 
     /**
@@ -193,44 +195,50 @@ public class FakeServerHelper {
      *
      * @param title the title of the bookmark folder to inject
      * @param parentId the ID of the desired parent bookmark folder
+     * @param parentGuid the GUID of the desired parent bookmark folder
      */
-    public void injectBookmarkFolderEntity(final String title, final String parentId) {
+    public void injectBookmarkFolderEntity(
+            final String title, final String parentId, final String parentGuid) {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> FakeServerHelperJni.get().injectBookmarkFolderEntity(
-                                mNativeFakeServer, title, parentId));
+                                mNativeFakeServer, title, parentId, parentGuid));
     }
 
     /**
      * Modifies an existing bookmark on the fake Sync server.
      *
      * @param bookmarkId the ID of the bookmark to modify
+     * @param bookmarkGuid the GUID of the bookmark to modify
      * @param title the new title of the bookmark
      * @param url the new URL of the bookmark. This String will be passed to the native GURL
      *            class, so it must be a valid URL under its definition.
      * @param parentId the ID of the new desired parent bookmark folder
+     * @param parentGuid the GUID of the new desired parent bookmark folder
      */
-    public void modifyBookmarkEntity(
-            final String bookmarkId, final String title, final GURL url, final String parentId) {
+    public void modifyBookmarkEntity(final String bookmarkId, final String bookmarkGuid,
+            final String title, final GURL url, final String parentId, final String parentGuid) {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> FakeServerHelperJni.get().modifyBookmarkEntity(
-                                mNativeFakeServer, bookmarkId, title, url, parentId));
+                        -> FakeServerHelperJni.get().modifyBookmarkEntity(mNativeFakeServer,
+                                bookmarkId, bookmarkGuid, title, url, parentId, parentGuid));
     }
 
     /**
      * Modifies an existing bookmark folder on the fake Sync server.
      *
      * @param folderId the ID of the bookmark folder to modify
+     * @param folderGuid the GUID of the bookmark folder to modify
      * @param title the new title of the bookmark folder
      * @param parentId the ID of the new desired parent bookmark folder
+     * @param parentGuid the GUID of the new desired parent bookmark folder
      */
-    public void modifyBookmarkFolderEntity(
-            final String folderId, final String title, final String parentId) {
+    public void modifyBookmarkFolderEntity(final String folderId, final String folderGuid,
+            final String title, final String parentId, final String parentGuid) {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> FakeServerHelperJni.get().modifyBookmarkFolderEntity(
-                                mNativeFakeServer, folderId, title, parentId));
+                        -> FakeServerHelperJni.get().modifyBookmarkFolderEntity(mNativeFakeServer,
+                                folderId, folderGuid, title, parentId, parentGuid));
     }
 
     /**
@@ -298,12 +306,14 @@ public class FakeServerHelper {
                 byte[] serializedEntitySpecifics);
         void setWalletData(long fakeServer, byte[] serializedEntity);
         void modifyEntitySpecifics(long fakeServer, String id, byte[] serializedEntitySpecifics);
-        void injectBookmarkEntity(long fakeServer, String title, GURL url, String parentId);
-        void injectBookmarkFolderEntity(long fakeServer, String title, String parentId);
-        void modifyBookmarkEntity(
-                long fakeServer, String bookmarkId, String title, GURL url, String parentId);
-        void modifyBookmarkFolderEntity(
-                long fakeServer, String bookmarkId, String title, String parentId);
+        void injectBookmarkEntity(
+                long fakeServer, String title, GURL url, String parentId, String parentGuid);
+        void injectBookmarkFolderEntity(
+                long fakeServer, String title, String parentId, String parentGuid);
+        void modifyBookmarkEntity(long fakeServer, String bookmarkId, String bookmarkGuid,
+                String title, GURL url, String parentId, String parentGuid);
+        void modifyBookmarkFolderEntity(long fakeServer, String bookmarkId, String bookmarkGuid,
+                String title, String parentId, String parentGuid);
         String getBookmarkBarFolderId(long fakeServer);
         void deleteEntity(long fakeServer, String id, String clientDefinedUniqueTag);
         void setTrustedVaultNigori(long fakeServer, byte[] trustedVaultKey);

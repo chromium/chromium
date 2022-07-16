@@ -30,10 +30,11 @@ void IdentityDialogController::ShowInitialPermissionDialog(
   // the RP page.
 
   // TODO(majidvp): Use the provider name/url here
-  auto idp_hostname = base::UTF8ToUTF16(idp_url.GetOrigin().host());
+  auto idp_hostname =
+      base::UTF8ToUTF16(idp_url.DeprecatedGetOriginAsURL().host());
 
-  auto rp_hostname =
-      base::UTF8ToUTF16(rp_web_contents->GetVisibleURL().GetOrigin().host());
+  auto rp_hostname = base::UTF8ToUTF16(
+      rp_web_contents->GetVisibleURL().DeprecatedGetOriginAsURL().host());
 
   GetOrCreateView(rp_web_contents)
       .ShowInitialPermission(idp_hostname, rp_hostname, mode,
@@ -45,14 +46,13 @@ void IdentityDialogController::ShowIdProviderWindow(
     content::WebContents* idp_web_contents,
     const GURL& idp_signin_url,
     IdProviderWindowClosedCallback callback) {
+  view_closed_callback_ = std::move(callback);
+
   GetOrCreateView(rp_web_contents)
-      .ShowSigninPage(idp_web_contents, idp_signin_url, std::move(callback));
+      .ShowSigninPage(idp_web_contents, idp_signin_url);
 }
 
 void IdentityDialogController::CloseIdProviderWindow() {
-  // TODO(majidvp): This may race with user closing the signin window directly.
-  // So we should not really check the signin_window_ instead we should setup
-  // the on_close callback here here and check that to avoid lifetime issues.
   if (!view_)
     return;
 
@@ -60,9 +60,6 @@ void IdentityDialogController::CloseIdProviderWindow() {
   // token exchange permission dialog does not need to be displayed, the
   // identity request will be completed synchronously and this controller will
   // be destroyed.
-  // TODO(kenrb, majidvp): Not knowing whether this object will be destroyed
-  // or not during the callback is problematic. We have to rethink the
-  // lifetimes.
   view_->CloseSigninPage();
 
   // Do not touch local state here since |this| is now destroyed.
@@ -72,10 +69,11 @@ void IdentityDialogController::ShowTokenExchangePermissionDialog(
     content::WebContents* rp_web_contents,
     const GURL& idp_url,
     TokenExchangeApprovalCallback callback) {
-  auto idp_hostname = base::UTF8ToUTF16(idp_url.GetOrigin().host());
+  auto idp_hostname =
+      base::UTF8ToUTF16(idp_url.DeprecatedGetOriginAsURL().host());
 
-  auto rp_hostname =
-      base::UTF8ToUTF16(rp_web_contents->GetVisibleURL().GetOrigin().host());
+  auto rp_hostname = base::UTF8ToUTF16(
+      rp_web_contents->GetVisibleURL().DeprecatedGetOriginAsURL().host());
 
   GetOrCreateView(rp_web_contents)
       .ShowTokenExchangePermission(idp_hostname, rp_hostname,
@@ -85,7 +83,9 @@ void IdentityDialogController::ShowTokenExchangePermissionDialog(
 WebIdDialog& IdentityDialogController::GetOrCreateView(
     content::WebContents* rp_web_contents) {
   if (!view_)
-    view_ = WebIdDialog::Create(rp_web_contents);
+    view_ = WebIdDialog::Create(
+        rp_web_contents, base::BindOnce(&IdentityDialogController::OnViewClosed,
+                                        weak_ptr_factory_.GetWeakPtr()));
 
   // It is expected that we use the same rp_web_contents during the lifetime
   // of this controller.
@@ -99,6 +99,9 @@ void IdentityDialogController::ShowAccountsDialog(
     content::WebContents* idp_web_contents,
     const GURL& idp_url,
     AccountList accounts,
+    const content::IdentityProviderMetadata& idp_metadata,
+    const content::ClientIdData& client_data,
+    content::IdentityRequestAccount::SignInMode sign_in_mode,
     AccountSelectionCallback on_selected) {
   // IDP scheme is expected to always be `https://`.
   CHECK(idp_url.SchemeIs(url::kHttpsScheme));
@@ -112,7 +115,8 @@ void IdentityDialogController::ShowAccountsDialog(
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
 
-  account_view_->Show(rp_url, idp_url, accounts);
+  account_view_->Show(rp_url, idp_url, accounts, idp_metadata, client_data,
+                      sign_in_mode);
 #endif
 }
 
@@ -126,4 +130,11 @@ void IdentityDialogController::OnDismiss() {
 
 gfx::NativeView IdentityDialogController::GetNativeView() {
   return rp_web_contents_->GetNativeView();
+}
+
+void IdentityDialogController::OnViewClosed() {
+  view_ = nullptr;
+  if (view_closed_callback_) {
+    std::move(view_closed_callback_).Run();
+  }
 }

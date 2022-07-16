@@ -21,6 +21,10 @@ class MODULES_EXPORT DeviceMotionEventPump
       public DeviceSensorEventPump {
  public:
   explicit DeviceMotionEventPump(LocalFrame&);
+
+  DeviceMotionEventPump(const DeviceMotionEventPump&) = delete;
+  DeviceMotionEventPump& operator=(const DeviceMotionEventPump&) = delete;
+
   ~DeviceMotionEventPump() override;
 
   void SetController(PlatformEventController*);
@@ -57,8 +61,6 @@ class MODULES_EXPORT DeviceMotionEventPump
 
   Member<DeviceMotionData> data_;
   Member<PlatformEventController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceMotionEventPump);
 };
 
 }  // namespace blink

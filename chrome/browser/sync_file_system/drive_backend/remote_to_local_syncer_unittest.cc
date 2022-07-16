@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/drive_backend/drive_backend_constants.h"
@@ -52,6 +51,10 @@ class RemoteToLocalSyncerTest : public testing::Test {
 
   RemoteToLocalSyncerTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+
+  RemoteToLocalSyncerTest(const RemoteToLocalSyncerTest&) = delete;
+  RemoteToLocalSyncerTest& operator=(const RemoteToLocalSyncerTest&) = delete;
+
   ~RemoteToLocalSyncerTest() override {}
 
   void SetUp() override {
@@ -236,8 +239,6 @@ class RemoteToLocalSyncerTest : public testing::Test {
   std::unique_ptr<SyncTaskManager> sync_task_manager_;
 
   URLToFileChangesMap expected_changes_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteToLocalSyncerTest);
 };
 
 TEST_F(RemoteToLocalSyncerTest, AddNewFile) {

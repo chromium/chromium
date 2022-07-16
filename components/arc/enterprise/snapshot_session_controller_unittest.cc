@@ -79,7 +79,10 @@ class SnapshotSessionControllerTest : public testing::Test {
     user_manager()->AddPublicAccountUser(account_id);
     user_manager()->UserLoggedIn(account_id, account_id.GetUserEmail(), false,
                                  false);
-    session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
+  }
+
+  void SetSessionState(session_manager::SessionState state) {
+    session_manager_.SetSessionState(state);
   }
 
   void LogoutPublicSession() {
@@ -112,6 +115,7 @@ class SnapshotSessionControllerTest : public testing::Test {
 
 TEST_F(SnapshotSessionControllerTest, BasicPreLogin) {
   LoginAsPublicSession();
+  SetSessionState(session_manager::SessionState::ACTIVE);
   auto session_controller =
       SnapshotSessionController::Create(CreateAppsTracker());
 
@@ -133,6 +137,7 @@ TEST_F(SnapshotSessionControllerTest, StartSession) {
   session_controller->AddObserver(observer());
 
   LoginAsPublicSession();
+  SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_TRUE(session_controller->get_timer_for_testing()->IsRunning());
   EXPECT_EQ(1, apps_tracker()->start_tracking_num());
   EXPECT_EQ(1, observer()->session_started_num());
@@ -142,6 +147,7 @@ TEST_F(SnapshotSessionControllerTest, StartSession) {
 
 TEST_F(SnapshotSessionControllerTest, StopSessionFailure) {
   LoginAsPublicSession();
+  SetSessionState(session_manager::SessionState::ACTIVE);
   auto session_controller =
       SnapshotSessionController::Create(CreateAppsTracker());
   session_controller->AddObserver(observer());
@@ -158,6 +164,7 @@ TEST_F(SnapshotSessionControllerTest, StopSessionFailure) {
 
 TEST_F(SnapshotSessionControllerTest, StopSessionSuccess) {
   LoginAsPublicSession();
+  SetSessionState(session_manager::SessionState::ACTIVE);
   auto session_controller =
       SnapshotSessionController::Create(CreateAppsTracker());
   session_controller->AddObserver(observer());
@@ -178,6 +185,7 @@ TEST_F(SnapshotSessionControllerTest, StopSessionSuccess) {
 
 TEST_F(SnapshotSessionControllerTest, OnAppInstalled) {
   LoginAsPublicSession();
+  SetSessionState(session_manager::SessionState::ACTIVE);
   auto session_controller =
       SnapshotSessionController::Create(CreateAppsTracker());
   session_controller->AddObserver(observer());
@@ -194,6 +202,7 @@ TEST_F(SnapshotSessionControllerTest, OnAppInstalled) {
 
 TEST_F(SnapshotSessionControllerTest, StopSessionFailureDuration) {
   LoginAsPublicSession();
+  SetSessionState(session_manager::SessionState::ACTIVE);
   auto session_controller =
       SnapshotSessionController::Create(CreateAppsTracker());
   session_controller->AddObserver(observer());
@@ -201,11 +210,30 @@ TEST_F(SnapshotSessionControllerTest, StopSessionFailureDuration) {
   EXPECT_TRUE(session_controller->get_timer_for_testing()->IsRunning());
   EXPECT_EQ(1, apps_tracker()->start_tracking_num());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(40));
+  task_environment_.FastForwardBy(base::Minutes(40));
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(session_controller->get_timer_for_testing()->IsRunning());
   EXPECT_EQ(1, observer()->session_failed_num());
+
+  session_controller->RemoveObserver(observer());
+}
+
+TEST_F(SnapshotSessionControllerTest, DoubleStartSession) {
+  auto session_controller =
+      SnapshotSessionController::Create(CreateAppsTracker());
+  session_controller->AddObserver(observer());
+
+  LoginAsPublicSession();
+  SetSessionState(session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
+  EXPECT_FALSE(session_controller->get_timer_for_testing()->IsRunning());
+  EXPECT_EQ(0, apps_tracker()->start_tracking_num());
+  EXPECT_EQ(0, observer()->session_started_num());
+
+  SetSessionState(session_manager::SessionState::ACTIVE);
+  EXPECT_TRUE(session_controller->get_timer_for_testing()->IsRunning());
+  EXPECT_EQ(1, apps_tracker()->start_tracking_num());
+  EXPECT_EQ(1, observer()->session_started_num());
 
   session_controller->RemoveObserver(observer());
 }

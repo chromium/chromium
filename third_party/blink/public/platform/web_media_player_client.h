@@ -38,6 +38,7 @@
 #include "ui/gfx/color_space.h"
 
 #include "third_party/blink/public/platform/web_texttrack_metadata.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace cc {
 class Layer;
@@ -139,7 +140,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   virtual WebRemotePlaybackClient* RemotePlaybackClient() { return nullptr; }
 
   // Returns metadata for out-of-band text tracks declared as <track> elements.
-  virtual std::vector<TextTrackMetadata> GetTextTrackMetadata() = 0;
+  virtual Vector<TextTrackMetadata> GetTextTrackMetadata() = 0;
 
   // Returns the color space to render media into if.
   // Rendering media into this color space may avoid some conversions.

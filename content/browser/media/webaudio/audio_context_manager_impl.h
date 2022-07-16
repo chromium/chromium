@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_WEBAUDIO_AUDIO_CONTEXT_MANAGER_IMPL_H_
 
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/webaudio/audio_context_manager.mojom.h"
 
@@ -26,11 +26,15 @@ class RenderFrameHostImpl;
 // We do not expect to see more than 3~4 AudioContexts per render frame, so
 // handling multiple contexts would not be a significant bottle neck.
 class CONTENT_EXPORT AudioContextManagerImpl final
-    : public content::DocumentServiceBase<blink::mojom::AudioContextManager> {
+    : public content::DocumentService<blink::mojom::AudioContextManager> {
  public:
   explicit AudioContextManagerImpl(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver);
+
+  AudioContextManagerImpl(const AudioContextManagerImpl&) = delete;
+  AudioContextManagerImpl& operator=(const AudioContextManagerImpl&) = delete;
+
   ~AudioContextManagerImpl() override;
 
   static void Create(
@@ -58,8 +62,6 @@ class CONTENT_EXPORT AudioContextManagerImpl final
   // by tests.
   // It is not owned by the implementation.
   const base::TickClock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioContextManagerImpl);
 };
 
 }  // namespace content

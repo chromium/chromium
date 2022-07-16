@@ -30,7 +30,7 @@ const char kFCMServerAudience[] = "https://fcm.googleapis.com";
 const char kClaimsKeyExpirationTime[] = "exp";
 // It's 12 hours rather than 24 hours to avoid any issues with clock differences
 // between the sending application and the push service.
-constexpr base::TimeDelta kClaimsValidPeriod = base::TimeDelta::FromHours(12);
+constexpr base::TimeDelta kClaimsValidPeriod = base::Hours(12);
 
 const char kAuthorizationRequestHeaderFormat[] = "vapid t=%s, k=%s";
 

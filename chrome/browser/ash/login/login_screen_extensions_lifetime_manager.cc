@@ -7,8 +7,11 @@
 #include <string>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/location.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -22,11 +25,18 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+void DisableLoginScreenExtension(const extensions::ExtensionId& extension_id) {
+  extensions::ExtensionSystem::Get(ProfileHelper::GetSigninProfile())
+      ->extension_service()
+      ->DisableExtension(extension_id,
+                         extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY);
+}
 
 std::vector<std::string> GetLoginScreenPolicyExtensionIds() {
   DCHECK(ProfileHelper::IsSigninProfileInitialized());
@@ -124,12 +134,12 @@ void LoginScreenExtensionsLifetimeManager::OnExtensionLoaded(
     // The policy extensions should be disabled, however the extension got
     // loaded - due to the policy change or due to some internal reason in the
     // extensions subsystem. Therefore forcibly disable this extension.
-    extensions::ExtensionSystem::Get(ProfileHelper::GetSigninProfile())
-        ->extension_service()
-        ->DisableExtension(
-            extension->id(),
-            extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY);
+    // Doing this in an asynchronous job, in order to avoid confusing other
+    // observers of OnExtensionLoaded().
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DisableLoginScreenExtension, extension->id()));
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

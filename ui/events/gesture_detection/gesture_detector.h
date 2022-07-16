@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/events/gesture_detection/velocity_tracker_state.h"
 
@@ -96,6 +95,10 @@ class GESTURE_DETECTION_EXPORT GestureDetector {
   GestureDetector(const Config& config,
                   GestureListener* listener,
                   DoubleTapListener* optional_double_tap_listener);
+
+  GestureDetector(const GestureDetector&) = delete;
+  GestureDetector& operator=(const GestureDetector&) = delete;
+
   ~GestureDetector();
 
   bool OnTouchEvent(const MotionEvent& ev, bool should_process_double_tap);
@@ -195,8 +198,6 @@ class GESTURE_DETECTION_EXPORT GestureDetector {
 
   // Determines speed during touch scrolling.
   VelocityTrackerState velocity_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureDetector);
 };
 
 }  // namespace ui

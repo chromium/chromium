@@ -26,7 +26,7 @@ group("wpt_tests_isolate") {
     # Include a single file from wpt_internal only to initialize that directory.
     # We don't need to run these tests but still need to create a MANIFEST here.
     # See crbug.com/1018829 for more details.
-    "//third_party/blink/web_tests/wpt_internal/README",
+    "//third_party/blink/web_tests/wpt_internal/README.md",
 
     # Include the results viewer
     "//third_party/blink/web_tests/fast/harness/results.html",
@@ -49,7 +49,9 @@ group("wpt_tests_isolate") {
   if (is_win) {
     data_deps += [ "//build/win:copy_cdb_to_output" ]
   }
-  if (!is_android) {
+  if (is_android) {
+    data += [ "//testing/scripts/wpt_android_lib.py" ]
+  } else {
     data += [ "//testing/scripts/run_wpt_tests.py" ]
   }
 }

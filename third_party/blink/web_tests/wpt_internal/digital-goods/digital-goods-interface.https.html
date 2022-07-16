@@ -4,10 +4,14 @@
   <title>Digital Goods API: Test calls from WebIDL to mojo and back.</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="/common/get-host-info.sub.js"></script>
 </head>
 <body>
 <script type="module">
 import {digital_goods_test} from './resources/mock-digital-goods-service.js';
+
+const { HTTPS_NOTSAMESITE_ORIGIN, REMOTE_ORIGIN } = get_host_info();
+const SAME_SITE_HELPER_PATH = '/wpt_internal/digital-goods/resources/iframe-helper.html';
 
 digital_goods_test(async service => {
   assert_not_equals(service, undefined);
@@ -17,12 +21,68 @@ digital_goods_test(async service => {
   assert_not_equals(service, null);
 }, {title: 'Digital goods service is available.'});
 
-digital_goods_test(async service => {
-  assert_equals(service, null);
-}, {
-  paymentMethod: 'https://not.known/payment/method',
-  title: 'Digital goods service null for unknown payment method.'
-});
+promise_test(async () => {
+  try {
+    await window.getDigitalGoodsService('');
+    assert_unreached();
+  } catch (error) {
+    assert_true(error instanceof TypeError);
+    assert_equals(error.name, 'TypeError');
+    assert_equals(error.message, 'Empty payment method');
+  }
+}, 'Digital goods service rejects for empty payment method.');
+
+promise_test(async () => {
+  try {
+    await window.getDigitalGoodsService('https://not.known/payment/method');
+    assert_unreached();
+  } catch (error) {
+    assert_true(error instanceof DOMException);
+    assert_equals(error.name, 'OperationError');
+    assert_equals(error.message, 'unsupported payment method');
+  }
+}, 'Digital goods service rejects for unknown payment method.');
+
+promise_test(() => {
+  let iframe = document.createElement('iframe');
+  iframe.src = HTTPS_NOTSAMESITE_ORIGIN + SAME_SITE_HELPER_PATH;
+  iframe.allow = 'payment';
+  iframe.onload = () => {
+    iframe.contentWindow.postMessage('Ready', '*');
+  }
+  document.body.appendChild(iframe);
+
+  return new Promise((resolve, reject) => {
+    window.onmessage = message => {
+      if (message.data == 'Failure: NotAllowedError: Access denied from cross-site frames') {
+        resolve();
+      } else {
+        reject(message.data)
+      }
+    }
+  });
+}, 'Digital goods service rejects from within cross-site iframe.');
+
+promise_test(() => {
+  let iframe = document.createElement('iframe');
+  // REMOTE_ORIGIN is a subdomain of the main origin.
+  iframe.src = REMOTE_ORIGIN + SAME_SITE_HELPER_PATH;
+  iframe.allow = 'payment';
+  iframe.onload = () => {
+    iframe.contentWindow.postMessage('Ready', '*');
+  }
+  document.body.appendChild(iframe);
+
+  return new Promise((resolve, reject) => {
+    window.onmessage = message => {
+      if (message.data == 'Success') {
+        resolve();
+      } else {
+        reject(message.data)
+      }
+    }
+  });
+}, 'Digital goods service passes same-site check from within subdomain iframe.');
 
 digital_goods_test(async service => {
   const response = await service.getDetails(['id2']);
@@ -89,39 +149,22 @@ digital_goods_test(async service => {
 }, {title: 'GetDetails internal error.'});
 
 digital_goods_test(async service => {
-  const response = await service.acknowledge('token1', 'repeatable');
+  const response = await service.consume('token1');
   assert_equals(response, undefined);
 }, {
+  // Consume should currently do "acknowledge repeatable" on mojo backend.
   expectedAction: 'acknowledge:token1 true',
-  title: 'Acknowledge repeatable purchase.'
-});
-
-digital_goods_test(async service => {
-  const response = await service.acknowledge('token1', 'onetime');
-  assert_equals(response, undefined);
-}, {
-  expectedAction: 'acknowledge:token1 false',
-  title: 'Acknowledge one-time purchase.'
+  title: 'Consume a purchase token.'
 });
 
 digital_goods_test(async service => {
   try {
-    await service.acknowledge('fail', 'repeatable');
+    await service.consume('fail');
     assert_unreached();
   } catch (error) {
     assert_equals(error, 'error');
   }
-}, {title: 'Acknowledge bad ID should error.'});
-
-digital_goods_test(async service => {
-  try {
-    await service.acknowledge('token1', 'badPurchaseType');
-    assert_unreached();
-  } catch (error) {
-    assert_regexp_match(error.message, /not a valid enum value of type PurchaseType/);
-  }
-}, {title: 'Acknowledge bad purchase type should error.'});
-
+}, {title: 'Consume with bad purchase token should error.'});
 
 digital_goods_test(async service => {
   const response = await service.listPurchases();
@@ -129,22 +172,9 @@ digital_goods_test(async service => {
 
   assert_equals(response[0].itemId, 'id:0');
   assert_equals(response[0].purchaseToken, 'purchaseToken:0');
-  assert_equals(response[0].acknowledged, false);
-  assert_equals(response[0].purchaseState, undefined);
-  // 0 time value passed through as 0.
-  assert_equals(response[0].purchaseTime, 0);
-  assert_equals(response[0].willAutoRenew, false);
 
-  assert_equals(response[1].acknowledged, true);
-  assert_equals(response[1].purchaseState, 'purchased');
-  // Expecting 1 second in ms after Unix epoch.
-  assert_equals(response[1].purchaseTime, 1000);
-  assert_equals(response[1].willAutoRenew, true);
-
-  assert_equals(response[2].purchaseState, 'pending');
-  // Expecting 2 seconds in ms after Unix epoch.
-  assert_equals(response[2].purchaseTime, 2000);
-
+  assert_equals(response[1].itemId, 'id:1');
+  assert_equals(response[1].purchaseToken, 'purchaseToken:1');
 }, {title: 'ListPurchases round trip.'});
 
 digital_goods_test(async service => {

@@ -13,39 +13,28 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 
 namespace views {
 namespace examples {
 
 namespace {
 
-// The id of the only ColumnSet in a stretchy grid (see below).
-const int kStretchyGridColumnSetId = 0;
-
-// Creates a stretchy grid layout: there are |ncols| columns, separated from
+// Creates a stretchy table layout: there are |ncols| columns, separated from
 // each other by padding columns, and all non-padding columns have equal flex
-// weight and will flex in either dimension as needed. The resulting grid layout
-// has only one ColumnSet (numbered kStretchyGridColumnSetId).
-GridLayout* MakeStretchyGridLayout(View* host, int ncols) {
+// weight and will flex in either dimension as needed.
+TableLayout* MakeStretchyTableLayout(View* host, int ncols) {
   const float kPaddingResizesEqually = 1.0;
   const int kPaddingWidth = 30;
-  const GridLayout::Alignment kColumnStretchesHorizontally = GridLayout::FILL;
-  const GridLayout::Alignment kColumnStretchesVertically = GridLayout::FILL;
-  const float kColumnDoesNotResize = 0.0;
-  const GridLayout::ColumnSize kColumnUsesFixedSize =
-      GridLayout::ColumnSize::kFixed;
   const int kColumnWidth = 96;
 
-  GridLayout* layout =
-      host->SetLayoutManager(std::make_unique<views::GridLayout>());
-  ColumnSet* columns = layout->AddColumnSet(kStretchyGridColumnSetId);
+  auto* layout = host->SetLayoutManager(std::make_unique<views::TableLayout>());
   for (int i = 0; i < ncols; ++i) {
     if (i != 0)
-      columns->AddPaddingColumn(kPaddingResizesEqually, kPaddingWidth);
-    columns->AddColumn(kColumnStretchesHorizontally, kColumnStretchesVertically,
-                       kColumnDoesNotResize, kColumnUsesFixedSize, kColumnWidth,
-                       kColumnWidth);
+      layout->AddPaddingColumn(kPaddingResizesEqually, kPaddingWidth);
+    layout->AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch,
+                      TableLayout::kFixedSize, TableLayout::ColumnSize::kFixed,
+                      kColumnWidth, kColumnWidth);
   }
   return layout;
 }
@@ -54,21 +43,14 @@ std::unique_ptr<View> MakePlainLabel(const std::string& text) {
   return std::make_unique<Label>(base::ASCIIToUTF16(text));
 }
 
-// Add a row containing a label whose text is |label_text| and then all the
-// views in |views| to the supplied GridLayout, with padding between rows.
+// Adds a label whose text is |label_text| and then all the views in |views|.
 template <typename T>
-void AddLabeledRowToGridLayout(GridLayout* layout,
-                               const std::string& label_text,
-                               std::vector<std::unique_ptr<T>> views) {
-  const float kRowDoesNotResizeVertically = 0.0;
-  const int kPaddingRowHeight = 8;
-  layout->StartRow(kRowDoesNotResizeVertically, kStretchyGridColumnSetId);
-  layout->AddView(MakePlainLabel(label_text));
+void AddLabeledRow(View* parent,
+                   const std::string& label_text,
+                   std::vector<std::unique_ptr<T>> views) {
+  parent->AddChildView(MakePlainLabel(label_text));
   for (auto& view : views)
-    layout->AddView(std::move(view));
-  // This gets added extraneously after the last row, but it doesn't hurt and
-  // means there's no need to keep track of whether to add it or not.
-  layout->AddPaddingRow(kRowDoesNotResizeVertically, kPaddingRowHeight);
+    parent->AddChildView(std::move(view));
 }
 
 // Constructs a pair of MdTextButtons in the specified |state| with the
@@ -100,24 +82,27 @@ ButtonStickerSheet::ButtonStickerSheet()
 ButtonStickerSheet::~ButtonStickerSheet() = default;
 
 void ButtonStickerSheet::CreateExampleView(View* container) {
-  GridLayout* layout = MakeStretchyGridLayout(container, 3);
+  TableLayout* layout = MakeStretchyTableLayout(container, 3);
+  for (int i = 0; i < 6; ++i) {
+    const int kPaddingRowHeight = 8;
+    layout->AddRows(1, TableLayout::kFixedSize)
+        .AddPaddingRow(TableLayout::kFixedSize, kPaddingRowHeight);
+  }
 
   // The title row has an empty row label.
   std::vector<std::unique_ptr<View>> plainLabel;
   plainLabel.push_back(MakePlainLabel("Primary"));
   plainLabel.push_back(MakePlainLabel("Secondary"));
-  AddLabeledRowToGridLayout(layout, std::string(), std::move(plainLabel));
+  AddLabeledRow(container, std::string(), std::move(plainLabel));
 
-  AddLabeledRowToGridLayout(layout, "Default",
-                            MakeButtonsInState(Button::STATE_NORMAL));
-  AddLabeledRowToGridLayout(layout, "Normal",
-                            MakeButtonsInState(Button::STATE_NORMAL));
-  AddLabeledRowToGridLayout(layout, "Hovered",
-                            MakeButtonsInState(Button::STATE_HOVERED));
-  AddLabeledRowToGridLayout(layout, "Pressed",
-                            MakeButtonsInState(Button::STATE_PRESSED));
-  AddLabeledRowToGridLayout(layout, "Disabled",
-                            MakeButtonsInState(Button::STATE_DISABLED));
+  AddLabeledRow(container, "Default", MakeButtonsInState(Button::STATE_NORMAL));
+  AddLabeledRow(container, "Normal", MakeButtonsInState(Button::STATE_NORMAL));
+  AddLabeledRow(container, "Hovered",
+                MakeButtonsInState(Button::STATE_HOVERED));
+  AddLabeledRow(container, "Pressed",
+                MakeButtonsInState(Button::STATE_PRESSED));
+  AddLabeledRow(container, "Disabled",
+                MakeButtonsInState(Button::STATE_DISABLED));
 }
 
 }  // namespace examples

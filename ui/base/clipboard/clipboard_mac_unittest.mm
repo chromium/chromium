@@ -4,10 +4,11 @@
 
 #import "ui/base/clipboard/clipboard_mac.h"
 
-#include <vector>
-
 #import <AppKit/AppKit.h>
 
+#include <vector>
+
+#include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/free_deleter.h"
@@ -42,7 +43,7 @@ void CreateImageBufferReleaser(void* info, const void* data, size_t size) {
 
 class ClipboardMacTest : public PlatformTest {
  public:
-  ClipboardMacTest() { }
+  ClipboardMacTest() = default;
 
   base::scoped_nsobject<NSImage> CreateImage(int32_t width,
                                              int32_t height,
@@ -72,23 +73,12 @@ class ClipboardMacTest : public PlatformTest {
   }
 };
 
-TEST_F(ClipboardMacTest, ReadImageRetina_Bitmap) {
-  int32_t width = 99;
-  int32_t height = 101;
-  scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
-  base::scoped_nsobject<NSImage> image = CreateImage(width, height, true);
-  [pasteboard->get() writeObjects:@[ image.get() ]];
+TEST_F(ClipboardMacTest, ReadImageRetina) {
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
 
-  Clipboard* clipboard = Clipboard::GetForCurrentThread();
-  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
-
-  SkBitmap bitmap = clipboard_mac->ReadImageInternal(
-      ClipboardBuffer::kCopyPaste, pasteboard->get());
-  EXPECT_EQ(2 * width, bitmap.width());
-  EXPECT_EQ(2 * height, bitmap.height());
-}
-
-TEST_F(ClipboardMacTest, ReadImageRetina_Png) {
   int32_t width = 99;
   int32_t height = 101;
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
@@ -106,23 +96,12 @@ TEST_F(ClipboardMacTest, ReadImageRetina_Png) {
   EXPECT_EQ(2 * height, bitmap.height());
 }
 
-TEST_F(ClipboardMacTest, ReadImageNonRetina_Bitmap) {
-  int32_t width = 99;
-  int32_t height = 101;
-  scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
-  base::scoped_nsobject<NSImage> image = CreateImage(width, height, false);
-  [pasteboard->get() writeObjects:@[ image.get() ]];
+TEST_F(ClipboardMacTest, ReadImageNonRetina) {
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
 
-  Clipboard* clipboard = Clipboard::GetForCurrentThread();
-  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
-
-  SkBitmap bitmap = clipboard_mac->ReadImageInternal(
-      ClipboardBuffer::kCopyPaste, pasteboard->get());
-  EXPECT_EQ(width, bitmap.width());
-  EXPECT_EQ(height, bitmap.height());
-}
-
-TEST_F(ClipboardMacTest, ReadImageNonRetina_Png) {
   int32_t width = 99;
   int32_t height = 101;
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
@@ -140,21 +119,12 @@ TEST_F(ClipboardMacTest, ReadImageNonRetina_Png) {
   EXPECT_EQ(height, bitmap.height());
 }
 
-TEST_F(ClipboardMacTest, EmptyImage_Bitmap) {
-  base::scoped_nsobject<NSImage> image([[NSImage alloc] init]);
-  scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
-  [pasteboard->get() writeObjects:@[ image.get() ]];
+TEST_F(ClipboardMacTest, EmptyImage) {
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
 
-  Clipboard* clipboard = Clipboard::GetForCurrentThread();
-  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
-
-  SkBitmap bitmap = clipboard_mac->ReadImageInternal(
-      ClipboardBuffer::kCopyPaste, pasteboard->get());
-  EXPECT_EQ(0, bitmap.width());
-  EXPECT_EQ(0, bitmap.height());
-}
-
-TEST_F(ClipboardMacTest, EmptyImage_Png) {
   base::scoped_nsobject<NSImage> image([[NSImage alloc] init]);
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
   [pasteboard->get() writeObjects:@[ image.get() ]];
@@ -170,30 +140,12 @@ TEST_F(ClipboardMacTest, EmptyImage_Png) {
   EXPECT_EQ(0, bitmap.height());
 }
 
-TEST_F(ClipboardMacTest, PDFImage_Bitmap) {
-  int32_t width = 99;
-  int32_t height = 101;
-  NSRect frame = NSMakeRect(0, 0, width, height);
+TEST_F(ClipboardMacTest, PDFImage) {
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
 
-  // This seems like a round-about way of getting a NSPDFImageRep to shove into
-  // an NSPasteboard. However, I haven't found any other way of generating a
-  // "PDF" image that makes NSPasteboard happy.
-  base::scoped_nsobject<NSView> v([[RedView alloc] initWithFrame:frame]);
-  NSData* data = [v dataWithPDFInsideRect:frame];
-
-  scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
-  [pasteboard->get() setData:data forType:NSPasteboardTypePDF];
-
-  Clipboard* clipboard = Clipboard::GetForCurrentThread();
-  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
-
-  SkBitmap bitmap = clipboard_mac->ReadImageInternal(
-      ClipboardBuffer::kCopyPaste, pasteboard->get());
-  EXPECT_EQ(width, bitmap.width());
-  EXPECT_EQ(height, bitmap.height());
-}
-
-TEST_F(ClipboardMacTest, PDFImage_Png) {
   int32_t width = 99;
   int32_t height = 101;
   NSRect frame = NSMakeRect(0, 0, width, height);

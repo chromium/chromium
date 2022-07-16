@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "components/os_crypt/key_storage_util_linux.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,6 +26,10 @@ struct Config;
 class COMPONENT_EXPORT(OS_CRYPT) KeyStorageLinux {
  public:
   KeyStorageLinux() = default;
+
+  KeyStorageLinux(const KeyStorageLinux&) = delete;
+  KeyStorageLinux& operator=(const KeyStorageLinux&) = delete;
+
   virtual ~KeyStorageLinux() = default;
 
   // Tries to load the appropriate key storage. Returns null if none succeed.
@@ -75,8 +78,6 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageLinux {
   // Perform the blocking calls to the backend to initialise. Store the
   // initialisation result in |success| and signal completion on |on_inited|.
   void BlockOnInitThenSignal(base::WaitableEvent* on_inited, bool* success);
-
-  DISALLOW_COPY_AND_ASSIGN(KeyStorageLinux);
 };
 
 #endif  // COMPONENTS_OS_CRYPT_KEY_STORAGE_LINUX_H_

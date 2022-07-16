@@ -69,7 +69,8 @@ void VizCompositorThreadRunnerWebView::InitFrameSinkManagerOnViz() {
   server_shared_bitmap_manager_ =
       std::make_unique<viz::ServerSharedBitmapManager>();
   frame_sink_manager_ = std::make_unique<viz::FrameSinkManagerImpl>(
-      server_shared_bitmap_manager_.get());
+      viz::FrameSinkManagerImpl::InitParams(
+          server_shared_bitmap_manager_.get()));
 }
 
 viz::FrameSinkManagerImpl*

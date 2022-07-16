@@ -11,25 +11,27 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/user_metrics.h"
 #include "base/one_shot_event.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
+#include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/chrome_colors/chrome_colors_service.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/increased_contrast_theme_supplier.h"
@@ -39,6 +41,7 @@
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -57,6 +60,7 @@
 #include "extensions/common/extension_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/layout.h"
+#include "ui/color/color_provider.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/scoped_observation.h"
@@ -76,6 +80,49 @@ namespace {
 const int kRemoveUnusedThemesStartupDelay = 30;
 
 bool g_dont_write_theme_pack_for_testing = false;
+
+absl::optional<ui::ColorId> ThemeProviderColorIdToColorId(int color_id) {
+  static constexpr const auto kMap = base::MakeFixedFlatMap<int, ui::ColorId>({
+      {TP::COLOR_DOWNLOAD_SHELF, kColorDownloadShelf},
+      {TP::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND,
+       kColorDownloadShelfButtonBackground},
+      {TP::COLOR_DOWNLOAD_SHELF_BUTTON_TEXT, kColorDownloadShelfButtonText},
+      {TP::COLOR_OMNIBOX_BACKGROUND, kColorOmniboxBackground},
+      {TP::COLOR_OMNIBOX_BACKGROUND_HOVERED, kColorOmniboxBackgroundHovered},
+      {TP::COLOR_OMNIBOX_BUBBLE_OUTLINE, kColorOmniboxBubbleOutline},
+      {TP::COLOR_OMNIBOX_BUBBLE_OUTLINE_EXPERIMENTAL_KEYWORD_MODE,
+       kColorOmniboxBubbleOutlineExperimentalKeywordMode},
+      {TP::COLOR_OMNIBOX_SELECTED_KEYWORD, kColorOmniboxKeywordSelected},
+      {TP::COLOR_OMNIBOX_RESULTS_BG, kColorOmniboxResultsBackground},
+      {TP::COLOR_OMNIBOX_RESULTS_BG_HOVERED,
+       kColorOmniboxResultsBackgroundHovered},
+      {TP::COLOR_OMNIBOX_RESULTS_BG_SELECTED,
+       kColorOmniboxResultsBackgroundSelected},
+      {TP::COLOR_OMNIBOX_RESULTS_ICON, kColorOmniboxResultsIcon},
+      {TP::COLOR_OMNIBOX_RESULTS_ICON_SELECTED,
+       kColorOmniboxResultsIconSelected},
+      {TP::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED, kColorOmniboxResultsTextDimmed},
+      {TP::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED_SELECTED,
+       kColorOmniboxResultsTextDimmedSelected},
+      {TP::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED,
+       kColorOmniboxResultsTextSelected},
+      {TP::COLOR_OMNIBOX_RESULTS_URL, kColorOmniboxResultsUrl},
+      {TP::COLOR_OMNIBOX_RESULTS_URL_SELECTED, kColorOmniboxResultsUrlSelected},
+      {TP::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS,
+       kColorOmniboxSecurityChipDangerous},
+      {TP::COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT,
+       kColorOmniboxSecurityChipDefault},
+      {TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE, kColorOmniboxSecurityChipSecure},
+      {TP::COLOR_OMNIBOX_TEXT, kColorOmniboxText},
+      {TP::COLOR_OMNIBOX_TEXT_DIMMED, kColorOmniboxTextDimmed},
+      {TP::COLOR_TOOLBAR, kColorToolbar},
+  });
+  auto* color_it = kMap.find(color_id);
+  if (color_it != kMap.cend()) {
+    return color_it->second;
+  }
+  return absl::nullopt;
+}
 
 // Writes the theme pack to disk on a separate thread.
 void WritePackToDiskCallback(BrowserThemePack* pack,
@@ -98,6 +145,9 @@ class ThemeService::ThemeObserver
     extension_registry_observation_.Observe(
         extensions::ExtensionRegistry::Get(theme_service_->profile_));
   }
+
+  ThemeObserver(const ThemeObserver&) = delete;
+  ThemeObserver& operator=(const ThemeObserver&) = delete;
 
   ~ThemeObserver() override {
   }
@@ -152,8 +202,6 @@ class ThemeService::ThemeObserver
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeObserver);
 };
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -195,6 +243,9 @@ gfx::ImageSkia* ThemeService::BrowserThemeProvider::GetImageSkiaNamed(
 }
 
 SkColor ThemeService::BrowserThemeProvider::GetColor(int id) const {
+  if (auto color = GetColorProviderColor(id))
+    return color.value();
+
   return theme_helper_.GetColor(id, incognito_, GetThemeSupplier());
 }
 
@@ -233,12 +284,29 @@ bool ThemeService::BrowserThemeProvider::HasCustomColor(int id) const {
 
 base::RefCountedMemory* ThemeService::BrowserThemeProvider::GetRawData(
     int id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ResourceScaleFactor scale_factor) const {
   return theme_helper_.GetRawData(id, GetThemeSupplier(), scale_factor);
 }
 
-const CustomThemeSupplier*
-ThemeService::BrowserThemeProvider::GetThemeSupplier() const {
+absl::optional<SkColor>
+ThemeService::BrowserThemeProvider::GetColorProviderColor(int id) const {
+  if (base::FeatureList::IsEnabled(
+          features::kColorProviderRedirectionForThemeProvider)) {
+    if (auto provider_color_id = ThemeProviderColorIdToColorId(id)) {
+      const auto* const native_theme =
+          incognito_ ? ui::NativeTheme::GetInstanceForDarkUI()
+                     : ui::NativeTheme::GetInstanceForNativeUi();
+      auto* color_provider =
+          ui::ColorProviderManager::Get().GetColorProviderFor(
+              native_theme->GetColorProviderKey(GetThemeSupplier()));
+      return color_provider->GetColor(provider_color_id.value());
+    }
+  }
+  return absl::nullopt;
+}
+
+CustomThemeSupplier* ThemeService::BrowserThemeProvider::GetThemeSupplier()
+    const {
   bool should_ignore_theme_supplier =
       incognito_ && base::FeatureList::IsEnabled(
                         features::kIncognitoBrandConsistencyForDesktop);
@@ -336,7 +404,7 @@ void ThemeService::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   }
 }
 
-const CustomThemeSupplier* ThemeService::GetThemeSupplier() const {
+CustomThemeSupplier* ThemeService::GetThemeSupplier() const {
   return theme_supplier_.get();
 }
 
@@ -468,6 +536,12 @@ const ui::ThemeProvider& ThemeService::GetThemeProviderForProfile(
   ThemeService* service = ThemeServiceFactory::GetForProfile(profile);
   return profile->IsIncognitoProfile() ? service->incognito_theme_provider_
                                        : service->original_theme_provider_;
+}
+
+// static
+CustomThemeSupplier* ThemeService::GetThemeSupplierForProfile(
+    Profile* profile) {
+  return ThemeServiceFactory::GetForProfile(profile)->GetThemeSupplier();
 }
 
 void ThemeService::BuildAutogeneratedThemeFromColor(SkColor color) {
@@ -667,7 +741,7 @@ void ThemeService::OnExtensionServiceReady() {
       FROM_HERE,
       base::BindOnce(&ThemeService::RemoveUnusedThemes,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kRemoveUnusedThemesStartupDelay));
+      base::Seconds(kRemoveUnusedThemesStartupDelay));
 }
 
 void ThemeService::MigrateTheme() {

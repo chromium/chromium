@@ -15,6 +15,10 @@ class SystemMemoryGetInfoFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("system.memory.getInfo", SYSTEM_MEMORY_GETINFO)
   SystemMemoryGetInfoFunction();
 
+  SystemMemoryGetInfoFunction(const SystemMemoryGetInfoFunction&) = delete;
+  SystemMemoryGetInfoFunction& operator=(const SystemMemoryGetInfoFunction&) =
+      delete;
+
  private:
   ~SystemMemoryGetInfoFunction() override;
 
@@ -22,8 +26,6 @@ class SystemMemoryGetInfoFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   void OnGetMemoryInfoCompleted(bool success);
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMemoryGetInfoFunction);
 };
 
 }  // namespace extensions

@@ -22,6 +22,9 @@ class AndroidAutofillManager : public AutofillManager {
       const std::string& app_locale,
       AutofillManager::AutofillDownloadManagerState enable_download_manager);
 
+  AndroidAutofillManager(const AndroidAutofillManager&) = delete;
+  AndroidAutofillManager& operator=(const AndroidAutofillManager&) = delete;
+
   ~AndroidAutofillManager() override;
 
   void OnFocusNoLongerOnForm(bool had_interacted_form) override;
@@ -112,8 +115,6 @@ class AndroidAutofillManager : public AutofillManager {
   bool has_server_prediction_ = false;
   AutofillProvider* autofill_provider_for_testing_ = nullptr;
   base::WeakPtrFactory<AndroidAutofillManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidAutofillManager);
 };
 
 }  // namespace autofill

@@ -5,13 +5,16 @@
 #ifndef CHROME_BROWSER_CHROME_BROWSER_MAIN_POSIX_H_
 #define CHROME_BROWSER_CHROME_BROWSER_MAIN_POSIX_H_
 
-#include "base/macros.h"
 #include "chrome/browser/chrome_browser_main.h"
 
 class ChromeBrowserMainPartsPosix : public ChromeBrowserMainParts {
  public:
-  ChromeBrowserMainPartsPosix(const content::MainFunctionParams& parameters,
+  ChromeBrowserMainPartsPosix(content::MainFunctionParams parameters,
                               StartupData* startup_data);
+
+  ChromeBrowserMainPartsPosix(const ChromeBrowserMainPartsPosix&) = delete;
+  ChromeBrowserMainPartsPosix& operator=(const ChromeBrowserMainPartsPosix&) =
+      delete;
 
   // content::BrowserMainParts overrides.
   int PreEarlyInitialization() override;
@@ -19,9 +22,6 @@ class ChromeBrowserMainPartsPosix : public ChromeBrowserMainParts {
 
   // ChromeBrowserMainParts overrides.
   void ShowMissingLocaleMessageBox() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainPartsPosix);
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_POSIX_H_

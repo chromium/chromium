@@ -55,6 +55,9 @@ class SharedMemIPCServer {
                      ThreadPool* thread_pool,
                      Dispatcher* dispatcher);
 
+  SharedMemIPCServer(const SharedMemIPCServer&) = delete;
+  SharedMemIPCServer& operator=(const SharedMemIPCServer&) = delete;
+
   ~SharedMemIPCServer();
 
   // Initializes the server structures, shared memory structures and
@@ -129,8 +132,6 @@ class SharedMemIPCServer {
 
   // The dispatcher handles 'ready' IPC calls.
   Dispatcher* call_dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedMemIPCServer);
 };
 
 }  // namespace sandbox

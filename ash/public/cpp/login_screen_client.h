@@ -92,6 +92,9 @@ class ASH_PUBLIC_EXPORT LoginScreenClient {
   // Launches guest mode.
   virtual void LoginAsGuest() = 0;
 
+  // Show guest terms of service screen.
+  virtual void ShowGuestTosScreen() = 0;
+
   // User with |account_id| has reached maximum incorrect password attempts.
   virtual void OnMaxIncorrectPasswordAttempted(const AccountId& account_id) = 0;
 

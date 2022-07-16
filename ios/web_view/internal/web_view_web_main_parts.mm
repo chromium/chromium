@@ -100,33 +100,33 @@ void WebViewWebMainParts::LoadNonScalableResources() {
   base::PathService::Get(base::DIR_MODULE, &pak_file);
   pak_file = pak_file.Append(FILE_PATH_LITERAL("web_view_resources.pak"));
   ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
-  resource_bundle.AddDataPackFromPath(pak_file, ui::SCALE_FACTOR_NONE);
+  resource_bundle.AddDataPackFromPath(pak_file, ui::kScaleFactorNone);
 }
 
 void WebViewWebMainParts::LoadScalableResources() {
   ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
-  if (ui::ResourceBundle::IsScaleFactorSupported(ui::SCALE_FACTOR_100P)) {
+  if (ui::ResourceBundle::IsScaleFactorSupported(ui::k100Percent)) {
     base::FilePath pak_file_100;
     base::PathService::Get(base::DIR_MODULE, &pak_file_100);
     pak_file_100 =
         pak_file_100.Append(FILE_PATH_LITERAL("web_view_100_percent.pak"));
-    resource_bundle.AddDataPackFromPath(pak_file_100, ui::SCALE_FACTOR_100P);
+    resource_bundle.AddDataPackFromPath(pak_file_100, ui::k100Percent);
   }
 
-  if (ui::ResourceBundle::IsScaleFactorSupported(ui::SCALE_FACTOR_200P)) {
+  if (ui::ResourceBundle::IsScaleFactorSupported(ui::k200Percent)) {
     base::FilePath pak_file_200;
     base::PathService::Get(base::DIR_MODULE, &pak_file_200);
     pak_file_200 =
         pak_file_200.Append(FILE_PATH_LITERAL("web_view_200_percent.pak"));
-    resource_bundle.AddDataPackFromPath(pak_file_200, ui::SCALE_FACTOR_200P);
+    resource_bundle.AddDataPackFromPath(pak_file_200, ui::k200Percent);
   }
 
-  if (ui::ResourceBundle::IsScaleFactorSupported(ui::SCALE_FACTOR_300P)) {
+  if (ui::ResourceBundle::IsScaleFactorSupported(ui::k300Percent)) {
     base::FilePath pak_file_300;
     base::PathService::Get(base::DIR_MODULE, &pak_file_300);
     pak_file_300 =
         pak_file_300.Append(FILE_PATH_LITERAL("web_view_300_percent.pak"));
-    resource_bundle.AddDataPackFromPath(pak_file_300, ui::SCALE_FACTOR_300P);
+    resource_bundle.AddDataPackFromPath(pak_file_300, ui::k300Percent);
   }
 }
 

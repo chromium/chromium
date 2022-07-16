@@ -40,6 +40,7 @@ preprocess_if_expr("preprocess_src") {
     "focus_grid.js",
     "focus_outline_manager.js",
     "splitter.js",
+    "store.js",
     "tabs.js",
     "tree.js",
   ]
@@ -66,7 +67,6 @@ preprocess_if_expr("preprocess_src") {
       "menu.js",
       "position_util.js",
       "store_client.js",
-      "store.js",
     ]
   }
 }
@@ -85,8 +85,6 @@ preprocess_if_expr("preprocess_generated") {
     "list.m.js",
     "list_selection_controller.m.js",
     "list_selection_model.m.js",
-    "store_client.m.js",
-    "store.m.js",
   ]
 
   if (!is_android) {
@@ -140,8 +138,6 @@ js_type_check("ui_resources") {
     ":menu_button",
     ":menu_item",
     ":position_util",
-    ":store",
-    ":store_client",
   ]
 
   if (is_chromeos_ash) {
@@ -286,17 +282,6 @@ js_library("position_util") {
   deps = [ "../..:cr" ]
 }
 
-js_library("store") {
-  deps = [ "../..:cr" ]
-}
-
-js_library("store_client") {
-  deps = [
-    ":store",
-    "../..:cr",
-  ]
-}
-
 js_modulizer("modulize") {
   input_files = [
     "array_data_model.js",
@@ -318,8 +303,6 @@ js_modulizer("modulize") {
     "menu_button.js",
     "menu_item.js",
     "position_util.js",
-    "store.js",
-    "store_client.js",
   ]
   namespace_rewrites = cr_namespace_rewrites
 }
@@ -349,8 +332,8 @@ js_type_check("ui_resources_modules") {
     ":menu_item.m",
     ":position_util.m",
     ":splitter",
-    ":store.m",
-    ":store_client.m",
+    ":store",
+    ":store_client",
     ":tabs",
     ":tree",
   ]
@@ -567,18 +550,14 @@ js_library("splitter") {
   ]
 }
 
-js_library("store.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/store.m.js" ]
-  extra_deps = [ ":modulize" ]
+js_library("store") {
 }
 
-js_library("store_client.m") {
+js_library("store_client") {
   deps = [
-    ":store.m",
+    ":store",
     "../..:assert.m",
   ]
-  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/store_client.m.js" ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("tabs") {

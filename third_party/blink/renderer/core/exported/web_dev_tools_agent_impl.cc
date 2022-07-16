@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/core/inspector/devtools_session.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_animation_agent.h"
-#include "third_party/blink/renderer/core/inspector/inspector_application_cache_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
@@ -255,9 +254,6 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
 
   session->Append(MakeGarbageCollected<InspectorMemoryAgent>(inspected_frames));
 
-  session->Append(
-      MakeGarbageCollected<InspectorApplicationCacheAgent>(inspected_frames));
-
   auto* page_agent = MakeGarbageCollected<InspectorPageAgent>(
       inspected_frames, this, resource_content_loader_.Get(),
       session->V8Session());
@@ -392,7 +388,7 @@ void WebDevToolsAgentImpl::InspectElement(
                             WebInputEvent::kNoModifiers,
                             base::TimeTicks::Now());
   dummy_event.SetPositionInWidget(point);
-  IntPoint transformed_point = FlooredIntPoint(
+  gfx::Point transformed_point = FlooredIntPoint(
       TransformWebMouseEvent(web_local_frame_impl_->GetFrameView(), dummy_event)
           .PositionInRootFrame());
   HitTestLocation location(

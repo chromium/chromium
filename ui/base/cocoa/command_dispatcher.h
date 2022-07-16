@@ -51,6 +51,9 @@ COMPONENT_EXPORT(UI_BASE)
 // reposted infinitely. Returns YES if the event is handled.
 - (BOOL)preSendEvent:(NSEvent*)event;
 
+// The parent to bubble events to, or nil.
+- (NSWindow<CommandDispatchingWindow>*)bubbleParent;
+
 // Dispatch a -commandDispatch: action either to |handler| or a parent window's
 // handler.
 - (void)dispatch:(id)sender

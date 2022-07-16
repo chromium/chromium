@@ -3,16 +3,25 @@
 // found in the LICENSE file.
 
 #include "content/browser/code_cache/generated_code_cache.h"
+
+#include <iostream>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "content/public/common/url_constants.h"
 #include "crypto/sha2.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
+
+using storage::BigIOBuffer;
 
 namespace content {
 
@@ -28,35 +37,59 @@ constexpr char kSeparator[] = " \n";
 // This function doesn't enforce anything in the production code. It is here
 // to make the assumptions explicit and to catch any errors when DCHECKs are
 // enabled.
-void CheckValidKeys(const GURL& resource_url, const GURL& origin_lock) {
+void CheckValidKeys(const GURL& resource_url,
+                    const GURL& origin_lock,
+                    GeneratedCodeCache::CodeCacheType cache_type) {
   // If the resource url is invalid don't cache the code.
-  DCHECK(resource_url.is_valid() && resource_url.SchemeIsHTTPOrHTTPS());
+  DCHECK(resource_url.is_valid());
+  bool resource_url_is_chrome_or_chrome_untrusted =
+      resource_url.SchemeIs(content::kChromeUIScheme) ||
+      resource_url.SchemeIs(content::kChromeUIUntrustedScheme);
+  DCHECK(resource_url.SchemeIsHTTPOrHTTPS() ||
+         resource_url_is_chrome_or_chrome_untrusted);
 
-  // |origin_lock| should be either empty or should have Http/Https/chrome
-  // schemes and it should not be a URL with opaque origin. Empty origin_locks
-  // are allowed when the renderer is not locked to an origin.
+  // |origin_lock| should be either empty or should have
+  // Http/Https/chrome/chrome-untrusted schemes and it should not be a URL with
+  // opaque origin. Empty origin_locks are allowed when the renderer is not
+  // locked to an origin.
+  bool origin_lock_is_chrome_or_chrome_untrusted =
+      origin_lock.SchemeIs(content::kChromeUIScheme) ||
+      origin_lock.SchemeIs(content::kChromeUIUntrustedScheme);
   DCHECK(origin_lock.is_empty() ||
          ((origin_lock.SchemeIsHTTPOrHTTPS() ||
-           origin_lock.SchemeIs(content::kChromeUIScheme)) &&
+           origin_lock_is_chrome_or_chrome_untrusted) &&
           !url::Origin::Create(origin_lock).opaque()));
+
+  // The chrome and chrome-untrusted schemes are only used with the WebUI
+  // code cache type.
+  DCHECK_EQ(origin_lock_is_chrome_or_chrome_untrusted,
+            cache_type == GeneratedCodeCache::kWebUIJavaScript);
+  DCHECK_EQ(resource_url_is_chrome_or_chrome_untrusted,
+            cache_type == GeneratedCodeCache::kWebUIJavaScript);
 }
 
-// Generates the cache key for the given |resource_url| and the |origin_lock|.
+// Generates the cache key for the given |resource_url|, |origin_lock| and
+// |nik|.
 //   |resource_url| is the url corresponding to the requested resource.
 //   |origin_lock| is the origin that the renderer which requested this
 //   resource is locked to.
+//   |nik| is the network isolation key that consists of top-level-site that
+//   initiated the request.
 // For example, if SitePerProcess is enabled and http://script.com/script1.js is
 // requested by http://example.com, then http://script.com/script.js is the
 // resource_url and http://example.com is the origin_lock.
 //
-// This returns the key by concatenating the serialized url and origin lock
+// This returns the key by concatenating the serialized url, origin lock and nik
 // with a separator in between. |origin_lock| could be empty when renderer is
 // not locked to an origin (ex: SitePerProcess is disabled) and it is safe to
 // use only |resource_url| as the key in such cases.
 // TODO(wjmaclean): Either convert this to use a SiteInfo object, or convert it
 // to something not based on URLs.
-std::string GetCacheKey(const GURL& resource_url, const GURL& origin_lock) {
-  CheckValidKeys(resource_url, origin_lock);
+std::string GetCacheKey(const GURL& resource_url,
+                        const GURL& origin_lock,
+                        const net::NetworkIsolationKey& nik,
+                        GeneratedCodeCache::CodeCacheType cache_type) {
+  CheckValidKeys(resource_url, origin_lock, cache_type);
 
   // Add a prefix _ so it can't be parsed as a valid URL.
   std::string key(kPrefix);
@@ -69,6 +102,12 @@ std::string GetCacheKey(const GURL& resource_url, const GURL& origin_lock) {
 
   if (origin_lock.is_valid())
     key.append(net::SimplifyUrlForRequest(origin_lock).spec());
+
+  if (base::FeatureList::IsEnabled(
+          net::features::kSplitCacheByNetworkIsolationKey)) {
+    key.append(kSeparator);
+    key.append(nik.ToString());
+  }
   return key;
 }
 
@@ -87,7 +126,7 @@ constexpr size_t kSHAKeySizeInBytes = 2 * crypto::kSHA256Length;
 // time stamps with no data, or timestamps with just a tag, and we observe many
 // 8 and 16 byte reads and writes. Make the threshold larger to speed up small
 // code entries too.
-constexpr size_t kSmallDataLimit = 4096;
+constexpr size_t kInlineDataLimit = 4096;
 // This is the maximum size for code that will be stored under the key generated
 // by |GetCacheKey|. Each origin will get its own copy of the generated code for
 // a given resource. Code that is larger than this limit will be stored under a
@@ -95,24 +134,7 @@ constexpr size_t kSmallDataLimit = 4096;
 // gets its own small entry under the key generated by |GetCacheKey| that holds
 // the hash, enabling a two stage lookup. This limit was determined empirically
 // by a Finch experiment.
-constexpr size_t kLargeDataLimit = 16384;
-
-// Checks that the header data in the small buffer is valid. We may read cache
-// entries that were written by a previous version of Chrome which use obsolete
-// formats. These reads should fail and be doomed as soon as possible.
-bool IsValidHeader(scoped_refptr<net::IOBufferWithSize> small_buffer) {
-  size_t buffer_size = small_buffer->size();
-  if (buffer_size < kHeaderSizeInBytes)
-    return false;
-  uint32_t data_size;
-  memcpy(&data_size, small_buffer->data() + kResponseTimeSizeInBytes,
-         kDataSizeInBytes);
-  if (data_size <= kSmallDataLimit)
-    return buffer_size == kHeaderSizeInBytes + data_size;
-  if (data_size <= kLargeDataLimit)
-    return buffer_size == kHeaderSizeInBytes;
-  return buffer_size == kHeaderSizeInBytes + kSHAKeySizeInBytes;
-}
+constexpr size_t kDedicatedDataLimit = 16384;
 
 void WriteCommonDataHeader(scoped_refptr<net::IOBufferWithSize> buffer,
                            const base::Time& response_time,
@@ -133,7 +155,7 @@ void ReadCommonDataHeader(scoped_refptr<net::IOBufferWithSize> buffer,
   int64_t raw_response_time;
   memcpy(&raw_response_time, buffer->data(), kResponseTimeSizeInBytes);
   *response_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(raw_response_time));
+      base::Microseconds(raw_response_time));
   memcpy(data_size, buffer->data() + kResponseTimeSizeInBytes,
          kDataSizeInBytes);
 }
@@ -142,37 +164,35 @@ static_assert(mojo_base::BigBuffer::kMaxInlineBytes <=
                   std::numeric_limits<int>::max(),
               "Buffer size calculations may overflow int");
 
-// A net::IOBufferWithSize backed by a mojo_base::BigBuffer. Using BigBuffer
-// as an IOBuffer allows us to avoid a copy. For large code, this can be slow.
-class BigIOBuffer : public net::IOBufferWithSize {
- public:
-  explicit BigIOBuffer(mojo_base::BigBuffer buffer)
-      : net::IOBufferWithSize(nullptr, buffer.size()),
-        buffer_(std::move(buffer)) {
-    data_ = reinterpret_cast<char*>(buffer_.data());
+net::CacheType CodeCacheTypeToNetCacheType(
+    GeneratedCodeCache::CodeCacheType type) {
+  switch (type) {
+    case GeneratedCodeCache::CodeCacheType::kJavaScript:
+      return net::GENERATED_BYTE_CODE_CACHE;
+    case GeneratedCodeCache::CodeCacheType::kWebAssembly:
+      return net::GENERATED_NATIVE_CODE_CACHE;
+    case GeneratedCodeCache::CodeCacheType::kWebUIJavaScript:
+      return net::GENERATED_WEBUI_BYTE_CODE_CACHE;
   }
-  explicit BigIOBuffer(size_t size) : net::IOBufferWithSize(nullptr, size) {
-    buffer_ = mojo_base::BigBuffer(size);
-    data_ = reinterpret_cast<char*>(buffer_.data());
-    DCHECK(data_);
-  }
-  mojo_base::BigBuffer TakeBuffer() { return std::move(buffer_); }
-
- protected:
-  ~BigIOBuffer() override {
-    // Storage is managed by BigBuffer. We must clear these before the base
-    // class destructor runs.
-    this->data_ = nullptr;
-    this->size_ = 0UL;
-  }
-
- private:
-  mojo_base::BigBuffer buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BigIOBuffer);
-};
+  NOTREACHED();
+}
 
 }  // namespace
+
+bool GeneratedCodeCache::IsValidHeader(
+    scoped_refptr<net::IOBufferWithSize> small_buffer) const {
+  size_t buffer_size = small_buffer->size();
+  if (buffer_size < kHeaderSizeInBytes)
+    return false;
+  uint32_t data_size;
+  memcpy(&data_size, small_buffer->data() + kResponseTimeSizeInBytes,
+         kDataSizeInBytes);
+  if (data_size <= kInlineDataLimit)
+    return buffer_size == kHeaderSizeInBytes + data_size;
+  if (!ShouldDeduplicateEntry(data_size))
+    return buffer_size == kHeaderSizeInBytes;
+  return buffer_size == kHeaderSizeInBytes + kSHAKeySizeInBytes;
+}
 
 std::string GeneratedCodeCache::GetResourceURLFromKey(const std::string& key) {
   constexpr size_t kPrefixStringLen = base::size(kPrefix) - 1;
@@ -192,6 +212,7 @@ void GeneratedCodeCache::CollectStatistics(
     GeneratedCodeCache::CacheEntryStatus status) {
   switch (cache_type_) {
     case GeneratedCodeCache::CodeCacheType::kJavaScript:
+    case GeneratedCodeCache::CodeCacheType::kWebUIJavaScript:
       UMA_HISTOGRAM_ENUMERATION("SiteIsolatedCodeCache.JS.Behaviour", status);
       break;
     case GeneratedCodeCache::CodeCacheType::kWebAssembly:
@@ -331,6 +352,7 @@ void GeneratedCodeCache::GetBackend(GetBackendCallback callback) {
 
 void GeneratedCodeCache::WriteEntry(const GURL& url,
                                     const GURL& origin_lock,
+                                    const net::NetworkIsolationKey& nik,
                                     const base::Time& response_time,
                                     mojo_base::BigBuffer data) {
   if (backend_state_ == kFailed) {
@@ -347,8 +369,8 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
   scoped_refptr<BigIOBuffer> large_buffer;
   uint32_t data_size = static_cast<uint32_t>(data.size());
   // We have three different cache entry layouts, depending on data size.
-  if (data_size <= kSmallDataLimit) {
-    // 1. Small
+  if (data_size <= kInlineDataLimit) {
+    // 1. Inline
     // [stream0] response time, size, data
     // [stream1] <empty>
     small_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
@@ -357,15 +379,15 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
     memcpy(small_buffer->data() + kHeaderSizeInBytes, data.data(), data.size());
     // Write 0 bytes and truncate stream 1 to clear any stale data.
     large_buffer = base::MakeRefCounted<BigIOBuffer>(mojo_base::BigBuffer());
-  } else if (data_size <= kLargeDataLimit) {
-    // 2. Large
+  } else if (!ShouldDeduplicateEntry(data_size)) {
+    // 2. Dedicated
     // [stream0] response time, size
     // [stream1] data
     small_buffer =
         base::MakeRefCounted<net::IOBufferWithSize>(kHeaderSizeInBytes);
     large_buffer = base::MakeRefCounted<BigIOBuffer>(std::move(data));
   } else {
-    // 3. Very Large
+    // 3. Indirect
     // [stream0] response time, size, checksum
     // [stream1] <empty>
     // [stream0 (checksum key entry)] <empty>
@@ -405,7 +427,7 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
   WriteCommonDataHeader(small_buffer, response_time, data_size);
 
   // Create the write operation.
-  std::string key = GetCacheKey(url, origin_lock);
+  std::string key = GetCacheKey(url, origin_lock, nik, cache_type_);
   auto op = std::make_unique<PendingOperation>(Operation::kWrite, key,
                                                small_buffer, large_buffer);
   EnqueueOperation(std::move(op));
@@ -413,6 +435,7 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
 
 void GeneratedCodeCache::FetchEntry(const GURL& url,
                                     const GURL& origin_lock,
+                                    const net::NetworkIsolationKey& nik,
                                     ReadDataCallback read_data_callback) {
   if (backend_state_ == kFailed) {
     CollectStatistics(CacheEntryStatus::kError);
@@ -421,20 +444,22 @@ void GeneratedCodeCache::FetchEntry(const GURL& url,
     return;
   }
 
-  std::string key = GetCacheKey(url, origin_lock);
+  std::string key = GetCacheKey(url, origin_lock, nik, cache_type_);
   auto op = std::make_unique<PendingOperation>(Operation::kFetch, key,
                                                std::move(read_data_callback));
   EnqueueOperation(std::move(op));
 }
 
-void GeneratedCodeCache::DeleteEntry(const GURL& url, const GURL& origin_lock) {
+void GeneratedCodeCache::DeleteEntry(const GURL& url,
+                                     const GURL& origin_lock,
+                                     const net::NetworkIsolationKey& nik) {
   if (backend_state_ == kFailed) {
     // Silently fail.
     CollectStatistics(CacheEntryStatus::kError);
     return;
   }
 
-  std::string key = GetCacheKey(url, origin_lock);
+  std::string key = GetCacheKey(url, origin_lock, nik, cache_type_);
   auto op = std::make_unique<PendingOperation>(Operation::kDelete, key);
   EnqueueOperation(std::move(op));
 }
@@ -452,11 +477,8 @@ void GeneratedCodeCache::CreateBackend() {
   // If the initialization of the existing cache fails, this call would delete
   // all the contents and recreates a new one.
   int rv = disk_cache::CreateCacheBackend(
-      cache_type_ == GeneratedCodeCache::CodeCacheType::kJavaScript
-          ? net::GENERATED_BYTE_CODE_CACHE
-          : net::GENERATED_NATIVE_CODE_CACHE,
-      net::CACHE_BACKEND_SIMPLE, path_, max_size_bytes_,
-      disk_cache::ResetHandling::kResetOnError, nullptr,
+      CodeCacheTypeToNetCacheType(cache_type_), net::CACHE_BACKEND_SIMPLE,
+      path_, max_size_bytes_, disk_cache::ResetHandling::kResetOnError, nullptr,
       &shared_backend_ptr->data, std::move(create_backend_complete));
   if (rv != net::ERR_IO_PENDING) {
     DidCreateBackend(shared_backend_ptr, rv);
@@ -743,15 +765,16 @@ void GeneratedCodeCache::ReadComplete(PendingOperation* op) {
       base::Time response_time;
       uint32_t data_size = 0;
       ReadCommonDataHeader(op->small_buffer(), &response_time, &data_size);
-      if (data_size <= kSmallDataLimit) {
+      if (data_size <= kInlineDataLimit) {
         // Small data. Copy the data from the small buffer.
         DCHECK_EQ(0, op->large_buffer()->size());
         mojo_base::BigBuffer data(data_size);
         memcpy(data.data(), op->small_buffer()->data() + kHeaderSizeInBytes,
                data_size);
         op->TakeReadCallback().Run(response_time, std::move(data));
-      } else if (data_size <= kLargeDataLimit) {
-        // Large data below the merging threshold. Return the large buffer.
+      } else if (!ShouldDeduplicateEntry(data_size)) {
+        // Large data below the merging threshold, or deduplication is disabled.
+        // Return the large buffer.
         op->TakeReadCallback().Run(response_time,
                                    op->large_buffer()->TakeBuffer());
       } else {
@@ -851,9 +874,21 @@ void GeneratedCodeCache::DoPendingGetBackend(PendingOperation* op) {
   }
 }
 
+bool GeneratedCodeCache::IsDeduplicationEnabled() const {
+  // Deduplication is disabled in the WebUI code cache, as an additional defense
+  // against privilege escalation in case there is a bug in the deduplication
+  // logic.
+  return cache_type_ != kWebUIJavaScript;
+}
+
+bool GeneratedCodeCache::ShouldDeduplicateEntry(uint32_t data_size) const {
+  return data_size > kDedicatedDataLimit && IsDeduplicationEnabled();
+}
+
 void GeneratedCodeCache::SetLastUsedTimeForTest(
     const GURL& resource_url,
     const GURL& origin_lock,
+    const net::NetworkIsolationKey& nik,
     base::Time time,
     base::OnceClosure user_callback) {
   // This is used only for tests. So reasonable to assume that backend is
@@ -866,7 +901,7 @@ void GeneratedCodeCache::SetLastUsedTimeForTest(
       &GeneratedCodeCache::OpenCompleteForSetLastUsedForTest,
       weak_ptr_factory_.GetWeakPtr(), time, std::move(split.first));
 
-  std::string key = GetCacheKey(resource_url, origin_lock);
+  std::string key = GetCacheKey(resource_url, origin_lock, nik, cache_type_);
   disk_cache::EntryResult result =
       backend_->OpenEntry(key, net::LOWEST, std::move(callback));
   if (result.net_error() != net::ERR_IO_PENDING) {

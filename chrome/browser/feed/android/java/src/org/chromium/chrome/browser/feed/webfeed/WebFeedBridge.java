@@ -66,20 +66,24 @@ public class WebFeedBridge {
         /** Subscription status */
         public final @WebFeedSubscriptionStatus int subscriptionStatus;
         /** Whether the web feed has content available. */
-        public final boolean isActive;
+        public final @WebFeedAvailabilityStatus int availabilityStatus;
         /** Whether the web feed is recommended. */
         public final boolean isRecommended;
+        /** Favicon URL for the Web Feed, if one is provided. */
+        public final GURL faviconUrl;
 
         @CalledByNative("WebFeedMetadata")
         public WebFeedMetadata(byte[] id, String title, GURL visitUrl,
-                @WebFeedSubscriptionStatus int subscriptionStatus, boolean isActive,
-                boolean isRecommended) {
+                @WebFeedSubscriptionStatus int subscriptionStatus,
+                @WebFeedAvailabilityStatus int availabilityStatus, boolean isRecommended,
+                GURL faviconUrl) {
             this.id = id;
             this.title = title;
             this.visitUrl = visitUrl;
             this.subscriptionStatus = subscriptionStatus;
-            this.isActive = isActive;
+            this.availabilityStatus = availabilityStatus;
             this.isRecommended = isRecommended;
+            this.faviconUrl = faviconUrl;
         }
     }
 
@@ -136,7 +140,7 @@ public class WebFeedBridge {
         public final @Nullable WebFeedMetadata metadata;
 
         @CalledByNative("FollowResults")
-        FollowResults(
+        public FollowResults(
                 @WebFeedSubscriptionRequestStatus int requestStatus, WebFeedMetadata metadata) {
             this.requestStatus = requestStatus;
             this.metadata = metadata;
@@ -146,7 +150,7 @@ public class WebFeedBridge {
     /** Container for results from an Unfollow request. */
     public static class UnfollowResults {
         @CalledByNative("UnfollowResults")
-        UnfollowResults(@WebFeedSubscriptionRequestStatus int requestStatus) {
+        public UnfollowResults(@WebFeedSubscriptionRequestStatus int requestStatus) {
             this.requestStatus = requestStatus;
         }
         // Result of the operation.

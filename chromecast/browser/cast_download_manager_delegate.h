@@ -16,6 +16,11 @@ class CastDownloadManagerDelegate : public content::DownloadManagerDelegate,
                                     public base::SupportsUserData::Data {
  public:
   CastDownloadManagerDelegate();
+
+  CastDownloadManagerDelegate(const CastDownloadManagerDelegate&) = delete;
+  CastDownloadManagerDelegate& operator=(const CastDownloadManagerDelegate&) =
+      delete;
+
   ~CastDownloadManagerDelegate() override;
 
   // content::DownloadManagerDelegate implementation:
@@ -28,9 +33,6 @@ class CastDownloadManagerDelegate : public content::DownloadManagerDelegate,
   bool ShouldOpenDownload(
       download::DownloadItem* item,
       content::DownloadOpenDelayedCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastDownloadManagerDelegate);
 };
 
 }  // namespace shell

@@ -4,6 +4,11 @@
 
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
 
+#include "base/callback.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "chromeos/services/secure_channel/register_payload_file_request.h"
+
 namespace chromeos {
 
 namespace secure_channel {
@@ -23,6 +28,16 @@ void FakeAuthenticatedChannel::PerformSendMessage(
     base::OnceClosure on_sent_callback) {
   sent_messages_.push_back(
       std::make_tuple(feature, payload, std::move(on_sent_callback)));
+}
+
+void FakeAuthenticatedChannel::PerformRegisterPayloadFile(
+    int64_t payload_id,
+    mojom::PayloadFilesPtr payload_files,
+    FileTransferUpdateCallback file_transfer_update_callback,
+    base::OnceCallback<void(bool)> registration_result_callback) {
+  reigster_payload_file_requests_.emplace_back(
+      payload_id, std::move(file_transfer_update_callback));
+  std::move(registration_result_callback).Run(/*success=*/true);
 }
 
 void FakeAuthenticatedChannel::PerformDisconnection() {

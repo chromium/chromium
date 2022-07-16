@@ -11,10 +11,9 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -51,6 +50,10 @@ class FeedbackUploader : public KeyedService,
       bool is_off_the_record,
       const base::FilePath& state_path,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
+
+  FeedbackUploader(const FeedbackUploader&) = delete;
+  FeedbackUploader& operator=(const FeedbackUploader&) = delete;
+
   ~FeedbackUploader() override;
 
   static void SetMinimumRetryDelayForTesting(base::TimeDelta delay);
@@ -169,8 +172,6 @@ class FeedbackUploader : public KeyedService,
   const bool is_off_the_record_ = false;
 
   UrlLoaderList uploads_in_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackUploader);
 };
 
 }  // namespace feedback

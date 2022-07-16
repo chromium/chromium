@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_context_snapshot_impl.h"
 
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_context_snapshot.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_target.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_document.h"
@@ -20,7 +21,25 @@
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
+#if defined(V8_USE_EXTERNAL_STARTUP_DATA)
+#include "gin/public/v8_snapshot_file_type.h"
+#endif
+
 namespace blink {
+namespace {
+
+bool IsUsingContextSnapshot() {
+#if defined(USE_V8_CONTEXT_SNAPSHOT)
+  if (Platform::Current()->IsTakingV8ContextSnapshot() ||
+      gin::GetLoadedSnapshotFileType() ==
+          gin::V8SnapshotFileType::kWithAdditionalContext) {
+    return true;
+  }
+#endif  // USE_V8_CONTEXT_SNAPSHOT
+  return false;
+}
+
+}  // namespace
 
 void V8ContextSnapshotImpl::Init() {
   V8ContextSnapshot::SetCreateContextFromSnapshotFunc(CreateContext);
@@ -30,42 +49,6 @@ void V8ContextSnapshotImpl::Init() {
   V8ContextSnapshot::SetTakeSnapshotFunc(TakeSnapshot);
   V8ContextSnapshot::SetGetReferenceTableFunc(GetReferenceTable);
 }
-
-#if !defined(USE_V8_CONTEXT_SNAPSHOT)
-
-v8::Local<v8::Context> V8ContextSnapshotImpl::CreateContext(
-    v8::Isolate* isolate,
-    const DOMWrapperWorld& world,
-    v8::ExtensionConfiguration* extension_config,
-    v8::Local<v8::Object> global_proxy,
-    Document* document) {
-  DCHECK(document);
-
-  return v8::Local<v8::Context>();
-}
-
-void V8ContextSnapshotImpl::InstallContextIndependentProps(
-    ScriptState* script_state) {}
-
-void V8ContextSnapshotImpl::InstallInterfaceTemplates(v8::Isolate* isolate) {}
-
-v8::StartupData V8ContextSnapshotImpl::TakeSnapshot() {
-  v8::Isolate* isolate = V8PerIsolateData::MainThreadIsolate();
-  CHECK_EQ(isolate, v8::Isolate::GetCurrent());
-  V8PerIsolateData* per_isolate_data = V8PerIsolateData::From(isolate);
-  CHECK_EQ(per_isolate_data->GetV8ContextSnapshotMode(),
-           V8PerIsolateData::V8ContextSnapshotMode::kTakeSnapshot);
-
-  return {nullptr, 0};
-}
-
-const intptr_t* V8ContextSnapshotImpl::GetReferenceTable() {
-  DCHECK(IsMainThread());
-
-  return nullptr;
-}
-
-#else  // !defined(USE_V8_CONTEXT_SNAPSHOT)
 
 namespace {
 
@@ -340,6 +323,8 @@ v8::Local<v8::Context> V8ContextSnapshotImpl::CreateContext(
     v8::Local<v8::Object> global_proxy,
     Document* document) {
   DCHECK(document);
+  if (!IsUsingContextSnapshot())
+    return v8::Local<v8::Context>();
 
   V8PerIsolateData* per_isolate_data = V8PerIsolateData::From(isolate);
   if (per_isolate_data->GetV8ContextSnapshotMode() !=
@@ -370,6 +355,9 @@ v8::Local<v8::Context> V8ContextSnapshotImpl::CreateContext(
 
 void V8ContextSnapshotImpl::InstallContextIndependentProps(
     ScriptState* script_state) {
+  if (!IsUsingContextSnapshot())
+    return;
+
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::Local<v8::Context> context = script_state->GetContext();
   const DOMWrapperWorld& world = script_state->World();
@@ -398,6 +386,9 @@ void V8ContextSnapshotImpl::InstallContextIndependentProps(
 }
 
 void V8ContextSnapshotImpl::InstallInterfaceTemplates(v8::Isolate* isolate) {
+  if (!IsUsingContextSnapshot())
+    return;
+
   V8PerIsolateData* per_isolate_data = V8PerIsolateData::From(isolate);
   if (per_isolate_data->GetV8ContextSnapshotMode() !=
       V8PerIsolateData::V8ContextSnapshotMode::kUseSnapshot) {
@@ -430,6 +421,7 @@ v8::StartupData V8ContextSnapshotImpl::TakeSnapshot() {
   V8PerIsolateData* per_isolate_data = V8PerIsolateData::From(isolate);
   CHECK_EQ(per_isolate_data->GetV8ContextSnapshotMode(),
            V8PerIsolateData::V8ContextSnapshotMode::kTakeSnapshot);
+  DCHECK(IsUsingContextSnapshot());
 
   // Take a snapshot with minimum set-up.  It's easier to add properties than
   // removing ones, so make it no need to remove any property.
@@ -461,6 +453,10 @@ v8::StartupData V8ContextSnapshotImpl::TakeSnapshot() {
 
 const intptr_t* V8ContextSnapshotImpl::GetReferenceTable() {
   DCHECK(IsMainThread());
+
+  if (!IsUsingContextSnapshot())
+    return nullptr;
+
   DEFINE_STATIC_LOCAL(const intptr_t*, reference_table, (nullptr));
   if (reference_table)
     return reference_table;
@@ -494,7 +490,5 @@ const intptr_t* V8ContextSnapshotImpl::GetReferenceTable() {
 
   return reference_table;
 }
-
-#endif  // !defined(USE_V8_CONTEXT_SNAPSHOT)
 
 }  // namespace blink

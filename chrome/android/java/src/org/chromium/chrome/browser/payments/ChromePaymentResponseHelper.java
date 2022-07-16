@@ -28,7 +28,6 @@ public class ChromePaymentResponseHelper
     private final AutofillContact mSelectedContact;
     private final PaymentApp mSelectedPaymentApp;
     private final PaymentOptions mPaymentOptions;
-    private final boolean mSkipToGpay;
     private final PaymentResponse mPaymentResponse;
     private AutofillAddress mSelectedShippingAddress;
     private PaymentResponseResultCallback mResultCallback;
@@ -43,35 +42,29 @@ public class ChromePaymentResponseHelper
      * @param selectedContact         The contact info picked by the user, can be null.
      * @param selectedPaymentApp      The payment app picked by the user.
      * @param paymentOptions          The paymentOptions of the corresponding payment request.
-     * @param skipToGpay              Whether or not Gpay bridge is activated for skip to Gpay.
      */
     public ChromePaymentResponseHelper(EditableOption selectedShippingAddress,
             EditableOption selectedShippingOption, @Nullable AutofillContact selectedContact,
-            PaymentApp selectedPaymentApp, PaymentOptions paymentOptions, boolean skipToGpay) {
+            PaymentApp selectedPaymentApp, PaymentOptions paymentOptions) {
         mPaymentResponse = new PaymentResponse();
         mPaymentResponse.payer = new PayerDetail();
 
         mSelectedPaymentApp = selectedPaymentApp;
         mPaymentOptions = paymentOptions;
-        mSkipToGpay = skipToGpay;
 
         mSelectedContact = selectedContact;
 
-        // Set up the shipping option section of the response when it comes from payment sheet
-        // (Shipping option comes from payment app when the app can handle shipping, or from Gpay
-        // when skipToGpay is true).
-        if (mPaymentOptions.requestShipping && !mSelectedPaymentApp.handlesShippingAddress()
-                && !mSkipToGpay) {
+        // Set up the shipping option section of the response when it comes from payment sheet.
+        // (Shipping option comes from payment app when the app can handle shipping.)
+        if (mPaymentOptions.requestShipping && !mSelectedPaymentApp.handlesShippingAddress()) {
             assert selectedShippingOption != null;
             assert selectedShippingOption.getIdentifier() != null;
             mPaymentResponse.shippingOption = selectedShippingOption.getIdentifier();
         }
 
-        // Set up the shipping address section of the response when it comes from payment sheet
-        // (Shipping address comes from payment app when the app can handle shipping, or from Gpay
-        // when skipToGpay is true).
-        if (mPaymentOptions.requestShipping && !mSelectedPaymentApp.handlesShippingAddress()
-                && !mSkipToGpay) {
+        // Set up the shipping address section of the response when it comes from payment sheet.
+        // (Shipping address comes from payment app when the app can handle shipping.)
+        if (mPaymentOptions.requestShipping && !mSelectedPaymentApp.handlesShippingAddress()) {
             assert selectedShippingAddress != null;
             // Shipping addresses are created in ChromePaymentRequestService.init(). These should
             // all be instances of AutofillAddress.
@@ -145,31 +138,25 @@ public class ChromePaymentResponseHelper
         if (mPaymentOptions.requestPayerName) {
             if (mSelectedPaymentApp.handlesPayerName()) {
                 mPaymentResponse.payer.name = mPayerDataFromPaymentApp.payerName;
-            } else if (!mSkipToGpay) {
+            } else {
                 assert mSelectedContact != null;
                 mPaymentResponse.payer.name = mSelectedContact.getPayerName();
-            } else {
-                // Gpay provides contact info when skip to Gpay is true.
             }
         }
         if (mPaymentOptions.requestPayerPhone) {
             if (mSelectedPaymentApp.handlesPayerPhone()) {
                 mPaymentResponse.payer.phone = mPayerDataFromPaymentApp.payerPhone;
-            } else if (!mSkipToGpay) {
+            } else {
                 assert mSelectedContact != null;
                 mPaymentResponse.payer.phone = mSelectedContact.getPayerPhone();
-            } else {
-                // Gpay provides contact info when skip to Gpay is true.
             }
         }
         if (mPaymentOptions.requestPayerEmail) {
             if (mSelectedPaymentApp.handlesPayerEmail()) {
                 mPaymentResponse.payer.email = mPayerDataFromPaymentApp.payerEmail;
-            } else if (!mSkipToGpay) {
+            } else {
                 assert mSelectedContact != null;
                 mPaymentResponse.payer.email = mSelectedContact.getPayerEmail();
-            } else {
-                // Gpay provides contact info when skip to Gpay is true.
             }
         }
 

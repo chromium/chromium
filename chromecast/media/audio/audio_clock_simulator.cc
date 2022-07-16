@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 
 namespace chromecast {
 namespace media {
@@ -42,7 +43,7 @@ int AudioClockSimulator::sample_rate() const {
 }
 
 double AudioClockSimulator::SetRate(double rate) {
-  rate = std::max(kMinRate, std::min(rate, kMaxRate));
+  rate = base::clamp(rate, kMinRate, kMaxRate);
 
   if (clock_rate_ != rate) {
     clock_rate_ = rate;

@@ -23,7 +23,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_OBJECT_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_OBJECT_ELEMENT_H_
 
-#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/form_associated.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
@@ -65,8 +64,8 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
 
   bool ChildrenCanHaveStyle() const override { return UseFallbackContent(); }
 
-  mojom::blink::FrameOwnerElementType OwnerType() const final {
-    return mojom::blink::FrameOwnerElementType::kObject;
+  FrameOwnerElementType OwnerType() const final {
+    return FrameOwnerElementType::kObject;
   }
 
   // Implementations of constraint validation API.

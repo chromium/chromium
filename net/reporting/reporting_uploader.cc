@@ -81,14 +81,14 @@ struct PendingUpload {
 
   PendingUpload(const url::Origin& report_origin,
                 const GURL& url,
-                const NetworkIsolationKey& network_isolation_key,
+                const IsolationInfo& isolation_info,
                 const std::string& json,
                 int max_depth,
                 ReportingUploader::UploadCallback callback)
       : state(CREATED),
         report_origin(report_origin),
         url(url),
-        network_isolation_key(network_isolation_key),
+        isolation_info(isolation_info),
         payload_reader(UploadOwnedBytesElementReader::CreateWithString(json)),
         max_depth(max_depth),
         callback(std::move(callback)) {}
@@ -100,7 +100,7 @@ struct PendingUpload {
   State state;
   const url::Origin report_origin;
   const GURL url;
-  const NetworkIsolationKey network_isolation_key;
+  const IsolationInfo isolation_info;
   std::unique_ptr<UploadElementReader> payload_reader;
   int max_depth;
   ReportingUploader::UploadCallback callback;
@@ -122,18 +122,19 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
 
   void StartUpload(const url::Origin& report_origin,
                    const GURL& url,
-                   const NetworkIsolationKey& network_isolation_key,
+                   const IsolationInfo& isolation_info,
                    const std::string& json,
                    int max_depth,
+                   bool eligible_for_credentials,
                    UploadCallback callback) override {
-    auto upload = std::make_unique<PendingUpload>(
-        report_origin, url, network_isolation_key, json, max_depth,
-        std::move(callback));
+    auto upload =
+        std::make_unique<PendingUpload>(report_origin, url, isolation_info,
+                                        json, max_depth, std::move(callback));
     auto collector_origin = url::Origin::Create(url);
     if (collector_origin == report_origin) {
       // Skip the preflight check if the reports are being sent to the same
       // origin as the requests they describe.
-      StartPayloadRequest(std::move(upload));
+      StartPayloadRequest(std::move(upload), eligible_for_credentials);
     } else {
       StartPreflightRequest(std::move(upload));
     }
@@ -155,8 +156,7 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
 
     upload->request->SetLoadFlags(LOAD_DISABLE_CACHE);
     upload->request->set_allow_credentials(false);
-    upload->request->set_isolation_info(IsolationInfo::CreatePartial(
-        IsolationInfo::RequestType::kOther, upload->network_isolation_key));
+    upload->request->set_isolation_info(upload->isolation_info);
 
     upload->request->SetExtraRequestHeaderByName(
         HttpRequestHeaders::kOrigin, upload->report_origin.Serialize(), true);
@@ -176,7 +176,8 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     raw_request->Start();
   }
 
-  void StartPayloadRequest(std::unique_ptr<PendingUpload> upload) {
+  void StartPayloadRequest(std::unique_ptr<PendingUpload> upload,
+                           bool eligible_for_credentials) {
     DCHECK(upload->state == PendingUpload::CREATED ||
            upload->state == PendingUpload::SENDING_PREFLIGHT);
 
@@ -186,9 +187,19 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     upload->request->set_method("POST");
 
     upload->request->SetLoadFlags(LOAD_DISABLE_CACHE);
-    upload->request->set_allow_credentials(false);
-    upload->request->set_isolation_info(IsolationInfo::CreatePartial(
-        IsolationInfo::RequestType::kOther, upload->network_isolation_key));
+
+    // Credentials are sent for V1 reports, if the endpoint is same-origin with
+    // the site generating the report (this will be set to false either by the
+    // delivery agent determining that this is a V0 report, or by `StartUpload`
+    // determining that this is a cross-origin case, and taking the CORS
+    // preflight path).
+    upload->request->set_allow_credentials(eligible_for_credentials);
+    // The site for cookies is taken from the reporting source's IsolationInfo,
+    // in the case of V1 reporting endpoints, and will be null for V0 reports.
+    upload->request->set_site_for_cookies(
+        upload->isolation_info.site_for_cookies());
+    upload->request->set_initiator(upload->isolation_info.frame_origin());
+    upload->request->set_isolation_info(upload->isolation_info);
 
     upload->request->SetExtraRequestHeaderByName(
         HttpRequestHeaders::kContentType, kUploadContentType, true);
@@ -286,8 +297,9 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
       upload->RunCallback(ReportingUploader::Outcome::FAILURE);
       return;
     }
-
-    StartPayloadRequest(std::move(upload));
+    // Any upload which required CORS should not receive credentials, as they
+    // are sent to same-origin endpoints only.
+    StartPayloadRequest(std::move(upload), /*eligible_for_credentials=*/false);
   }
 
   void HandlePayloadResponse(std::unique_ptr<PendingUpload> upload,

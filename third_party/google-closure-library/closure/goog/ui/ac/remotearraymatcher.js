@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Class that retrieves autocomplete matches via an ajax call.
@@ -23,6 +15,9 @@ goog.require('goog.Uri');
 goog.require('goog.events');
 goog.require('goog.net.EventType');
 goog.require('goog.net.XhrIo');
+goog.requireType('goog.events.Event');
+goog.requireType('goog.net.XmlHttpFactory');
+goog.requireType('goog.structs.Map');
 
 
 
@@ -41,6 +36,7 @@ goog.require('goog.net.XhrIo');
  */
 goog.ui.ac.RemoteArrayMatcher = function(
     url, opt_noSimilar, opt_xmlHttpFactory) {
+  'use strict';
   goog.Disposable.call(this);
 
   /**
@@ -107,6 +103,7 @@ goog.ui.ac.RemoteArrayMatcher.prototype.lastListenerKey_ = null;
  * @param {string} method The send method; default: GET.
  */
 goog.ui.ac.RemoteArrayMatcher.prototype.setMethod = function(method) {
+  'use strict';
   this.method_ = method;
 };
 
@@ -116,6 +113,7 @@ goog.ui.ac.RemoteArrayMatcher.prototype.setMethod = function(method) {
  * @param {string} content Post data.
  */
 goog.ui.ac.RemoteArrayMatcher.prototype.setContent = function(content) {
+  'use strict';
   this.content_ = content;
 };
 
@@ -126,6 +124,7 @@ goog.ui.ac.RemoteArrayMatcher.prototype.setContent = function(content) {
  *     request.
  */
 goog.ui.ac.RemoteArrayMatcher.prototype.setHeaders = function(headers) {
+  'use strict';
   this.headers_ = headers;
 };
 
@@ -137,6 +136,7 @@ goog.ui.ac.RemoteArrayMatcher.prototype.setHeaders = function(headers) {
  */
 goog.ui.ac.RemoteArrayMatcher.prototype.setTimeoutInterval = function(
     interval) {
+  'use strict';
   this.xhr_.setTimeoutInterval(interval);
 };
 
@@ -156,6 +156,7 @@ goog.ui.ac.RemoteArrayMatcher.prototype.setTimeoutInterval = function(
  */
 goog.ui.ac.RemoteArrayMatcher.prototype.buildUrl = function(
     uri, token, maxMatches, useSimilar, opt_fullString) {
+  'use strict';
   var url = new goog.Uri(uri);
   url.setParameterValue('token', token);
   url.setParameterValue('max_matches', String(maxMatches));
@@ -177,6 +178,7 @@ goog.ui.ac.RemoteArrayMatcher.prototype.buildUrl = function(
  */
 goog.ui.ac.RemoteArrayMatcher.prototype.shouldRequestMatches = function(
     uri, token, maxMatches, useSimilar, opt_fullString) {
+  'use strict';
   return true;
 };
 
@@ -190,7 +192,7 @@ goog.ui.ac.RemoteArrayMatcher.prototype.shouldRequestMatches = function(
  */
 goog.ui.ac.RemoteArrayMatcher.prototype.parseResponseText = function(
     responseText) {
-
+  'use strict';
   var matches = [];
   // If there is no response text, JSON.parse will throw a syntax error.
   if (responseText) {
@@ -213,6 +215,7 @@ goog.ui.ac.RemoteArrayMatcher.prototype.parseResponseText = function(
  */
 goog.ui.ac.RemoteArrayMatcher.prototype.xhrCallback = function(
     token, matchHandler, event) {
+  'use strict';
   var text = event.target.getResponseText();
   matchHandler(token, this.parseResponseText(text));
 };
@@ -231,7 +234,7 @@ goog.ui.ac.RemoteArrayMatcher.prototype.xhrCallback = function(
  */
 goog.ui.ac.RemoteArrayMatcher.prototype.requestMatchingRows = function(
     token, maxMatches, matchHandler, opt_fullString) {
-
+  'use strict';
   if (!this.shouldRequestMatches(
           this.url_, token, maxMatches, this.useSimilar_, opt_fullString)) {
     return;
@@ -267,6 +270,7 @@ goog.ui.ac.RemoteArrayMatcher.prototype.requestMatchingRows = function(
 
 /** @override */
 goog.ui.ac.RemoteArrayMatcher.prototype.disposeInternal = function() {
+  'use strict';
   this.xhr_.dispose();
   goog.ui.ac.RemoteArrayMatcher.superClass_.disposeInternal.call(this);
 };

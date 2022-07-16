@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 218 tests; 124 PASS, 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 218 tests; 125 PASS, 93 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 FAIL URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged. assert_equals: expected "a://example.net" but got "file:///A://example.net"
 FAIL URL: Setting <a://example.net>.protocol = 'b' assert_equals: expected "b://example.net" but got "file:///B:///A://example.net"
@@ -147,7 +147,7 @@ FAIL URL: Setting <sc://test@test/>.hostname = '' assert_equals: expected "test"
 FAIL URL: Setting <sc://test:12/>.hostname = '' assert_equals: expected "test:12" but got ""
 FAIL URL: Setting <non-spec:/.//p>.hostname = 'h' Drop /. from path assert_equals: expected "non-spec://h//p" but got "non-spec:/.//p"
 FAIL URL: Setting <non-spec:/.//p>.hostname = '' assert_equals: expected "non-spec:////p" but got "non-spec:/.//p"
-FAIL URL: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "http://example.com/" but got "http://bad.com/"
+PASS URL: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped
 FAIL URL: Setting <sc://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "sc:///" but got "sc://example.com/"
 PASS URL: Setting <http://example.net>.port = '8080'
 PASS URL: Setting <http://example.net:8080>.port = '' Port number is removed if empty is the new value

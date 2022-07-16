@@ -31,7 +31,6 @@
 #include "base/mac/scoped_authorizationref.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -548,6 +547,11 @@ class ScopedDASessionScheduleWithRunLoop {
     DASessionScheduleWithRunLoop(session_, run_loop_, run_loop_mode_);
   }
 
+  ScopedDASessionScheduleWithRunLoop(
+      const ScopedDASessionScheduleWithRunLoop&) = delete;
+  ScopedDASessionScheduleWithRunLoop& operator=(
+      const ScopedDASessionScheduleWithRunLoop&) = delete;
+
   ~ScopedDASessionScheduleWithRunLoop() {
     DASessionUnscheduleFromRunLoop(session_, run_loop_, run_loop_mode_);
   }
@@ -556,8 +560,6 @@ class ScopedDASessionScheduleWithRunLoop {
   DASessionRef session_;
   CFRunLoopRef run_loop_;
   CFStringRef run_loop_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDASessionScheduleWithRunLoop);
 };
 
 // A small structure used to ferry data between SynchronousDAOperation and
@@ -570,13 +572,14 @@ struct SynchronousDACallbackData {
         can_log(true) {
   }
 
+  SynchronousDACallbackData(const SynchronousDACallbackData&) = delete;
+  SynchronousDACallbackData& operator=(const SynchronousDACallbackData&) =
+      delete;
+
   base::ScopedCFTypeRef<DADissenterRef> dissenter;
   bool callback_called;
   bool run_loop_running;
   bool can_log;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SynchronousDACallbackData);
 };
 
 // The callback target for SynchronousDAOperation. Set the fields in

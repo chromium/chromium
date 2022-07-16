@@ -35,7 +35,7 @@ String CSSElementOffsetValue::CustomCSSText() const {
     result.Append(' ');
     result.Append(threshold_->CssText());
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 bool CSSElementOffsetValue::Equals(const CSSElementOffsetValue& other) const {

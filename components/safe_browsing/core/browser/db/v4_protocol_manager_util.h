@@ -231,7 +231,6 @@ class ListIdentifier {
 std::ostream& operator<<(std::ostream& os, const ListIdentifier& id);
 
 PlatformType GetCurrentPlatformType();
-ListIdentifier GetCertCsdDownloadAllowlistId();
 ListIdentifier GetChromeExtMalwareId();
 ListIdentifier GetChromeUrlApiId();
 ListIdentifier GetChromeUrlClientIncidentId();
@@ -310,6 +309,9 @@ enum V4OperationResult {
 // A class that provides static methods related to the Pver4 protocol.
 class V4ProtocolManagerUtil {
  public:
+  V4ProtocolManagerUtil(const V4ProtocolManagerUtil&) = delete;
+  V4ProtocolManagerUtil& operator=(const V4ProtocolManagerUtil&) = delete;
+
   // Canonicalizes url as per Google Safe Browsing Specification.
   // See: https://developers.google.com/safe-browsing/v4/urls-hashing
   static void CanonicalizeUrl(const GURL& url,
@@ -433,8 +435,6 @@ class V4ProtocolManagerUtil {
 
   static std::string RemoveConsecutiveChars(base::StringPiece str,
                                             const char c);
-
-  DISALLOW_COPY_AND_ASSIGN(V4ProtocolManagerUtil);
 };
 
 using StoresToCheck = std::unordered_set<ListIdentifier>;

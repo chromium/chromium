@@ -14,6 +14,12 @@ class BackgroundFetchCacheEntryHandlerImpl
  public:
   explicit BackgroundFetchCacheEntryHandlerImpl(
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context);
+
+  BackgroundFetchCacheEntryHandlerImpl(
+      const BackgroundFetchCacheEntryHandlerImpl&) = delete;
+  BackgroundFetchCacheEntryHandlerImpl& operator=(
+      const BackgroundFetchCacheEntryHandlerImpl&) = delete;
+
   ~BackgroundFetchCacheEntryHandlerImpl() override;
 
   // CacheStorageCacheEntryHandler implementation:
@@ -31,8 +37,6 @@ class BackgroundFetchCacheEntryHandlerImpl
 
   base::WeakPtrFactory<BackgroundFetchCacheEntryHandlerImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchCacheEntryHandlerImpl);
 };
 
 }  // namespace content

@@ -1,0 +1,9 @@
+{
+  "name": "test",
+  "description": "Event page extension that will be run as SW based extension.",
+  "version": "1.0",
+  "manifest_version": 2,
+  // ldnnhddmnhbkjipkidpdiheffobcpfmf
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8c4fBSPZ6utYoZ8NiWF/DSaimBhihjwgOsskyleFGaurhi3TDClTVSGPxNkgCzrz0wACML7M4aNjpd05qupdbR2d294jkDuI7caxEGUucpP7GJRRHnm8Sx+y0ury28n8jbN0PnInKKWcxpIXXmNQyC19HBuO3QIeUq9Dqc+7YFQIDAQAB",
+  "background": {"persistent": false, "scripts": ["background.js"]}
+}

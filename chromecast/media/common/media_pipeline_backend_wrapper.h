@@ -30,6 +30,11 @@ class MediaPipelineBackendWrapper : public CmaBackend {
   MediaPipelineBackendWrapper(const media::MediaPipelineDeviceParams& params,
                               MediaPipelineBackendManager* backend_manager,
                               MediaResourceTracker* media_resource_tracker);
+
+  MediaPipelineBackendWrapper(const MediaPipelineBackendWrapper&) = delete;
+  MediaPipelineBackendWrapper& operator=(const MediaPipelineBackendWrapper&) =
+      delete;
+
   ~MediaPipelineBackendWrapper() override;
 
   // After revocation, this class releases the media resource on the device,
@@ -58,8 +63,6 @@ class MediaPipelineBackendWrapper : public CmaBackend {
   std::unique_ptr<DecoderCreatorCmaBackend> backend_;
   MediaPipelineBackendManager* const backend_manager_;
   const AudioContentType content_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPipelineBackendWrapper);
 };
 
 }  // namespace media

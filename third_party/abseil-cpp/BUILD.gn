@@ -71,10 +71,12 @@ group("absl_component_deps") {
     "//third_party/abseil-cpp/absl/hash",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/numeric:bits",
     "//third_party/abseil-cpp/absl/numeric:int128",
     "//third_party/abseil-cpp/absl/status",
     "//third_party/abseil-cpp/absl/status:statusor",
     "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:cord",
     "//third_party/abseil-cpp/absl/strings:str_format",
     "//third_party/abseil-cpp/absl/synchronization",
     "//third_party/abseil-cpp/absl/time",
@@ -140,17 +142,9 @@ config("absl_default_cflags_cc") {
       "-Wno-sign-conversion",
       "-Wstring-conversion",
     ]
-    if (!is_nacl && !use_xcode_clang) {
+    if (!is_nacl) {
       cflags_cc += [ "-Wbitfield-enum-conversion" ]
     }
-  }
-  if (is_win) {
-    cflags_cc += [
-      "/wd4005",  # macro-redefinition
-      "/wd4018",  # sign-compare
-      "/wd4068",  # unknown pragma
-      "/wd4702",  # unreachable code
-    ]
   }
 }
 
@@ -186,10 +180,20 @@ if (build_with_chromium) {
         "absl/base:config_test",
         "absl/cleanup:cleanup_test",
         "absl/container:inlined_vector_test",
+        "absl/container:sample_element_size_test",
+        "absl/hash:low_level_hash_test",
         "absl/memory:memory_test",
         "absl/meta:type_traits_test",
+        "absl/profiling:exponential_biased_test",
+        "absl/profiling:periodic_sampler_test",
+        "absl/status:statusor_test",
         "absl/strings:ascii_test",
+        "absl/strings:cord_rep_btree_navigator_test",
+        "absl/strings:cord_rep_btree_reader_test",
+        "absl/strings:cord_rep_btree_test",
+        "absl/strings:cord_rep_concat_test",
         "absl/strings:cord_rep_consume_test",
+        "absl/strings:cord_rep_crc_test",
         "absl/strings:cordz_functions_test",
         "absl/strings:cordz_info_statistics_test",
         "absl/strings:cordz_info_test",

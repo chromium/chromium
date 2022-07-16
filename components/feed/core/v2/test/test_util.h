@@ -13,7 +13,7 @@ namespace feed {
 
 // Although time is mocked through TaskEnvironment, it does drift by small
 // amounts.
-const base::TimeDelta kEpsilon = base::TimeDelta::FromMilliseconds(5);
+const base::TimeDelta kEpsilon = base::Milliseconds(5);
 #define EXPECT_TIME_EQ(WANT, GOT)                    \
   {                                                  \
     base::Time want___ = (WANT), got___ = (GOT);     \

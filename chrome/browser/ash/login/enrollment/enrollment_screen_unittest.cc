@@ -37,6 +37,9 @@ class EnrollmentScreenUnitTest : public testing::Test {
  public:
   EnrollmentScreenUnitTest() = default;
 
+  EnrollmentScreenUnitTest(const EnrollmentScreenUnitTest&) = delete;
+  EnrollmentScreenUnitTest& operator=(const EnrollmentScreenUnitTest&) = delete;
+
   // Creates the EnrollmentScreen and sets required parameters.
   virtual void SetUpEnrollmentScreen() {
     wizard_context_ = std::make_unique<WizardContext>();
@@ -99,13 +102,16 @@ class EnrollmentScreenUnitTest : public testing::Test {
 
   // Objects required by the EnrollmentScreen that can be re-used.
   MockEnrollmentScreenView mock_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentScreenUnitTest);
 };
 
 class ZeroTouchEnrollmentScreenUnitTest : public EnrollmentScreenUnitTest {
  public:
   ZeroTouchEnrollmentScreenUnitTest() = default;
+
+  ZeroTouchEnrollmentScreenUnitTest(const ZeroTouchEnrollmentScreenUnitTest&) =
+      delete;
+  ZeroTouchEnrollmentScreenUnitTest& operator=(
+      const ZeroTouchEnrollmentScreenUnitTest&) = delete;
 
   enum AttestationEnrollmentStatus {
     SUCCESS,
@@ -193,7 +199,7 @@ class ZeroTouchEnrollmentScreenUnitTest : public EnrollmentScreenUnitTest {
     enrollment_screen_->Show(wizard_context_.get());
 
     // Fast forward time by 1 minute.
-    FastForwardTime(base::TimeDelta::FromMinutes(1));
+    FastForwardTime(base::Minutes(1));
 
     // Check that we have retried 4 times.
     EXPECT_EQ(enrollment_screen_->num_retries_, 4);
@@ -226,9 +232,6 @@ class ZeroTouchEnrollmentScreenUnitTest : public EnrollmentScreenUnitTest {
     // Start enrollment.
     enrollment_screen_->Show(wizard_context_.get());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ZeroTouchEnrollmentScreenUnitTest);
 };
 
 TEST_F(ZeroTouchEnrollmentScreenUnitTest, FinishEnrollmentFlow) {
@@ -261,10 +264,10 @@ TEST_F(ZeroTouchEnrollmentScreenUnitTest, DoNotRetryOnTopOfUser) {
       FROM_HERE,
       base::BindOnce(&EnrollmentScreen::OnRetry,
                      enrollment_screen_->weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(30));
+      base::Seconds(30));
 
   // Fast forward time by 1 minute.
-  FastForwardTime(base::TimeDelta::FromMinutes(1));
+  FastForwardTime(base::Minutes(1));
 
   // Check that the number of retries is still 4.
   EXPECT_EQ(enrollment_screen_->num_retries_, 4);
@@ -280,7 +283,7 @@ TEST_F(ZeroTouchEnrollmentScreenUnitTest, DoNotRetryAfterSuccess) {
   enrollment_screen_->Show(wizard_context_.get());
 
   // Fast forward time by 1 minute.
-  FastForwardTime(base::TimeDelta::FromMinutes(1));
+  FastForwardTime(base::Minutes(1));
 
   // Check that we do not retry.
   EXPECT_EQ(enrollment_screen_->num_retries_, 0);
@@ -297,6 +300,11 @@ class AutomaticEnrollmentScreenUnitTest
  public:
   AutomaticEnrollmentScreenUnitTest() = default;
 
+  AutomaticEnrollmentScreenUnitTest(const AutomaticEnrollmentScreenUnitTest&) =
+      delete;
+  AutomaticEnrollmentScreenUnitTest& operator=(
+      const AutomaticEnrollmentScreenUnitTest&) = delete;
+
   void SetUpEnrollmentScreen() override {
     enrollment_config_.mode = GetParam();
     enrollment_config_.auth_mechanism =
@@ -308,9 +316,6 @@ class AutomaticEnrollmentScreenUnitTest
     // Automatic re-enrollment is always setup for fallback.
     SetUpEnrollmentScreen();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutomaticEnrollmentScreenUnitTest);
 };
 
 TEST_P(AutomaticEnrollmentScreenUnitTest, ShowErrorPanel) {

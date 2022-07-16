@@ -23,7 +23,7 @@ using MockCompleteCallback =
 using MockProgressCallback = base::MockCallback<
     base::RepeatingCallback<void(const SavePageRequest&, int64_t)>>;
 
-const base::TimeDelta kOneMinute = base::TimeDelta::FromMinutes(1);
+const base::TimeDelta kOneMinute = base::Minutes(1);
 
 SavePageRequest TestRequest() {
   return SavePageRequest(123, GURL("http://test.com"),

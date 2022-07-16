@@ -25,7 +25,7 @@ bool AreAlmostEqual(base::TimeDelta a, base::TimeDelta b) {
   if (a.is_min() || b.is_min() || a.is_max() || b.is_max())
     return a == b;
 
-  constexpr auto kMaxDelta = base::TimeDelta::FromMillisecondsD(0.5);
+  constexpr auto kMaxDelta = base::Milliseconds(0.5);
   return (a - b).magnitude() < kMaxDelta;
 }
 
@@ -55,7 +55,7 @@ FrameRateDecider::FrameRateDecider(SurfaceManager* surface_manager,
   // 24Hz.
   double interval_in_seconds = 1.0 / 24.0;
   frame_interval_for_sinks_with_no_preference_ =
-      base::TimeDelta::FromSecondsD(interval_in_seconds);
+      base::Seconds(interval_in_seconds);
 
   surface_manager_->AddObserver(this);
 }

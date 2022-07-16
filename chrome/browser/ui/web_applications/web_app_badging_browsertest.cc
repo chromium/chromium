@@ -9,8 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -51,7 +50,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     auto sub_app_info = std::make_unique<WebApplicationInfo>();
     sub_app_info->start_url = sub_start_url;
     sub_app_info->scope = sub_start_url;
-    sub_app_info->open_as_window = true;
+    sub_app_info->user_display_mode = DisplayMode::kStandalone;
     sub_app_id_ = InstallWebApp(std::move(sub_app_info));
 
     content::WebContents* web_contents = OpenApplication(main_app_id_);
@@ -60,7 +59,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     // 2) A frame containing a sub app.
     // 3) A cross site frame, on |cross_site_frame_url|.
     // 4) A sub frame in the app's scope.
-    auto frames = web_contents->GetAllFrames();
+    auto frames = CollectAllRenderFrameHosts(web_contents->GetPrimaryPage());
     ASSERT_EQ(4u, frames.size());
 
     main_frame_ = web_contents->GetMainFrame();

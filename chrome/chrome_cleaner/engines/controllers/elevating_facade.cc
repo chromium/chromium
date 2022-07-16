@@ -32,7 +32,7 @@ namespace chrome_cleaner {
 
 namespace {
 
-constexpr base::TimeDelta kCheckPeriod = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kCheckPeriod = base::Seconds(1);
 
 // Returns true if the class name of |window| begins with the typical Chrome
 // window class prefix.

@@ -12,21 +12,12 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/win/wincrypt_shim.h"
+#include "crypto/scoped_capi_types.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
 
 namespace net {
-
-struct FreeCertContextFunctor {
-  void operator()(PCCERT_CONTEXT context) const {
-    if (context)
-      CertFreeCertificateContext(context);
-  }
-};
-
-using ScopedPCCERT_CONTEXT =
-    std::unique_ptr<const CERT_CONTEXT, FreeCertContextFunctor>;
 
 namespace x509_util {
 
@@ -52,8 +43,8 @@ NET_EXPORT scoped_refptr<X509Certificate> CreateX509CertificateFromCertContexts(
 // multiple threads if no further modifications happen, it is generally
 // preferable for each thread that needs such a context to obtain its own,
 // rather than risk thread-safety issues by sharing.
-NET_EXPORT ScopedPCCERT_CONTEXT
-CreateCertContextWithChain(const X509Certificate* cert);
+NET_EXPORT crypto::ScopedPCCERT_CONTEXT CreateCertContextWithChain(
+    const X509Certificate* cert);
 
 // Specify behavior if an intermediate certificate fails CERT_CONTEXT parsing.
 // kFail means the function should return a failure result immediately. kIgnore
@@ -62,7 +53,7 @@ enum class InvalidIntermediateBehavior { kFail, kIgnore };
 
 // As CreateCertContextWithChain above, but |invalid_intermediate_behavior|
 // specifies behavior if intermediates of |cert| could not be converted.
-NET_EXPORT ScopedPCCERT_CONTEXT CreateCertContextWithChain(
+NET_EXPORT crypto::ScopedPCCERT_CONTEXT CreateCertContextWithChain(
     const X509Certificate* cert,
     InvalidIntermediateBehavior invalid_intermediate_behavior);
 

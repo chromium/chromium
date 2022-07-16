@@ -396,11 +396,11 @@ void MeasureMemoryController::MeasurementComplete(
       isolate_, v8::MicrotasksScope::kDoNotRunMicrotasks);
   MemoryMeasurement* result = ConvertResult(measurement);
   v8::Local<v8::Promise::Resolver> promise_resolver =
-      promise_resolver_.NewLocal(isolate_);
+      promise_resolver_.Get(isolate_);
   v8::MaybeLocal<v8::Value> v8_result =
       ToV8Traits<MemoryMeasurement>::ToV8(script_state, result);
   promise_resolver->Resolve(context, v8_result.ToLocalChecked()).ToChecked();
-  promise_resolver_.Clear();
+  promise_resolver_.Reset();
   RecordWebMemoryUkm(context, measurement);
 }
 

@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/raster/single_thread_task_graph_runner.h"
@@ -167,29 +167,16 @@ void VizProcessTransportFactory::ConnectHostFrameSinkManager() {
       std::move(frame_sink_manager_client_receiver), resize_task_runner_,
       std::move(frame_sink_manager));
 
-  // Hop to the IO thread, then send the other side of interface to viz process.
-  auto connect_on_io_thread =
-      [](mojo::PendingReceiver<viz::mojom::FrameSinkManager> receiver,
-         mojo::PendingRemote<viz::mojom::FrameSinkManagerClient> client,
-         const viz::DebugRendererSettings& debug_renderer_settings) {
-        // There should always be a GpuProcessHost instance, and GPU process,
-        // for running the compositor thread. The exception is during shutdown
-        // the GPU process won't be restarted and GpuProcessHost::Get() can
-        // return null.
-        auto* gpu_process_host = GpuProcessHost::Get();
-        if (gpu_process_host) {
-          gpu_process_host->gpu_host()->ConnectFrameSinkManager(
-              std::move(receiver), std::move(client), debug_renderer_settings);
-        }
-      };
-  auto task = base::BindOnce(
-      connect_on_io_thread, std::move(frame_sink_manager_receiver),
-      std::move(frame_sink_manager_client),
-      GetHostFrameSinkManager()->debug_renderer_settings());
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    std::move(task).Run();
-  } else {
-    GetIOThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
+  // There should always be a GpuProcessHost instance, and GPU process,
+  // for running the compositor thread. The exception is during shutdown
+  // the GPU process won't be restarted and GpuProcessHost::Get() can
+  // return null.
+  auto* gpu_process_host = GpuProcessHost::Get();
+  if (gpu_process_host) {
+    gpu_process_host->gpu_host()->ConnectFrameSinkManager(
+        std::move(frame_sink_manager_receiver),
+        std::move(frame_sink_manager_client),
+        GetHostFrameSinkManager()->debug_renderer_settings());
   }
 }
 

@@ -19,12 +19,17 @@ class EntitySpecifics;
 
 namespace syncer {
 
-struct EntityData;
+// Populates |specifics->bookmark().unique_position()| from the various
+// supported proto fields in |update_entity| and worst-case falls back to a
+// random position. |specifics| must not be null. Returns true if
+// |unique_position| has been changed.
+bool AdaptUniquePositionForBookmark(const sync_pb::SyncEntity& update_entity,
+                                    sync_pb::EntitySpecifics* specifics);
 
-// Populates |data->unique_position| from the various supported proto fields in
-// |update_entity|. |data| must not be null.
-void AdaptUniquePositionForBookmark(const sync_pb::SyncEntity& update_entity,
-                                    EntityData* data);
+// Populates |specifics->bookmark().type()| (i.e. whether a bookmark is a
+// folder) for the cases where the field isn't populated.
+void AdaptTypeForBookmark(const sync_pb::SyncEntity& update_entity,
+                          sync_pb::EntitySpecifics* specifics);
 
 // Populates |specifics->bookmark().legacy_canonicalized_title()| from the
 // various supported sources, or no-op if specifics already have the field set.
@@ -35,9 +40,8 @@ void AdaptTitleForBookmark(const sync_pb::SyncEntity& update_entity,
 
 // Tries to populates |specifics->bookmark().guid()| from the various supported
 // sources, or no-op if a) specifics already have the field set; or b) the GUID
-// cannot be inferred. |specifics| must not be null. Returns true if |specifics|
-// were updated.
-bool AdaptGuidForBookmark(const sync_pb::SyncEntity& update_entity,
+// cannot be inferred. |specifics| must not be null.
+void AdaptGuidForBookmark(const sync_pb::SyncEntity& update_entity,
                           sync_pb::EntitySpecifics* specifics);
 
 // GUID-inferring function exposed for testing.

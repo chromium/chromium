@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
+#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace chromeos {
 
@@ -25,6 +26,7 @@ void DeviceSyncClient::RemoveObserver(Observer* observer) {
 }
 
 void DeviceSyncClient::NotifyReady() {
+  PA_LOG(INFO) << "Device sync is ready. Notifying observers.";
   is_ready_ = true;
 
   for (auto& observer : observer_list_)

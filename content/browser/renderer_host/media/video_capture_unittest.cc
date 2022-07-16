@@ -11,10 +11,9 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/fake_video_capture_provider.h"
@@ -100,6 +99,10 @@ class VideoCaptureTest : public testing::Test,
         audio_system_(
             std::make_unique<media::AudioSystemImpl>(audio_manager_.get())),
         task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+
+  VideoCaptureTest(const VideoCaptureTest&) = delete;
+  VideoCaptureTest& operator=(const VideoCaptureTest&) = delete;
+
   ~VideoCaptureTest() override { audio_manager_->Shutdown(); }
 
   void SetUp() override {
@@ -318,8 +321,6 @@ class VideoCaptureTest : public testing::Test,
 
   std::unique_ptr<VideoCaptureHost> host_;
   mojo::Receiver<media::mojom::VideoCaptureObserver> observer_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureTest);
 };
 
 // Construct and destruct all objects. This is a non trivial sequence.
@@ -348,7 +349,7 @@ TEST_F(VideoCaptureTest, StartAndCaptureAndError) {
   StartCapture();
   WaitForOneCapturedBuffer();
   SimulateError();
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+  base::PlatformThread::Sleep(base::Milliseconds(200));
 }
 
 TEST_F(VideoCaptureTest, StartAndPauseAndResumeAndStop) {

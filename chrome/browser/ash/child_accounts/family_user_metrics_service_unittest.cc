@@ -93,8 +93,7 @@ using DetectingNewDayTest = FamilyUserMetricsServiceTest;
 // Tests OnNewDay() is called after more than one day passes.
 TEST_F(DetectingNewDayTest, MoreThanOneDay) {
   EXPECT_CALL(mock_observer_, OnNewDay()).Times(1);
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1) +
-                                  base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Days(1) + base::Hours(1));
   EXPECT_EQ(FamilyUserMetricsService::GetDayIdForTesting(base::Time::Now()),
             GetDayIdPref());
 }
@@ -102,7 +101,7 @@ TEST_F(DetectingNewDayTest, MoreThanOneDay) {
 // Tests OnNewDay() is called at midnight.
 TEST_F(DetectingNewDayTest, UntilMidnight) {
   EXPECT_CALL(mock_observer_, OnNewDay()).Times(1);
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(3));
+  task_environment_.FastForwardBy(base::Hours(3));
   EXPECT_EQ(FamilyUserMetricsService::GetDayIdForTesting(base::Time::Now()),
             GetDayIdPref());
 }
@@ -110,7 +109,7 @@ TEST_F(DetectingNewDayTest, UntilMidnight) {
 // Tests OnNewDay() is not called before midnight.
 TEST_F(DetectingNewDayTest, LessThanOneDay) {
   EXPECT_CALL(mock_observer_, OnNewDay()).Times(0);
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   EXPECT_EQ(FamilyUserMetricsService::GetDayIdForTesting(base::Time::Now()),
             GetDayIdPref());
 }
@@ -121,7 +120,7 @@ TEST_F(DetectingNewDayTest, MoreThanOneDayDeviceIdle) {
   EXPECT_CALL(mock_observer_, OnNewDay()).Times(1);
   SetScreenOff(true);
   SetSuspendImminent();
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   EXPECT_EQ(FamilyUserMetricsService::GetDayIdForTesting(base::Time::Now()),
             GetDayIdPref());
 }

@@ -64,6 +64,10 @@ class DevToolsFrontendImpl final
   DevToolsFrontendImpl(
       LocalFrame&,
       mojo::PendingAssociatedReceiver<mojom::blink::DevToolsFrontend>);
+
+  DevToolsFrontendImpl(const DevToolsFrontendImpl&) = delete;
+  DevToolsFrontendImpl& operator=(const DevToolsFrontendImpl&) = delete;
+
   ~DevToolsFrontendImpl() override;
   void DidClearWindowObject();
   void Trace(Visitor*) const override;
@@ -91,8 +95,6 @@ class DevToolsFrontendImpl final
   HeapMojoAssociatedReceiver<mojom::blink::DevToolsFrontend,
                              DevToolsFrontendImpl>
       receiver_{this, nullptr};
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsFrontendImpl);
 };
 
 }  // namespace blink

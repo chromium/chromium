@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base_test_util.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
@@ -49,8 +49,8 @@ class DeviceWilcoDtcConfigurationExternalPolicyHandlerTest
 
     policy_change_waiting_run_loop_ = std::make_unique<base::RunLoop>();
 
-    BrowserPolicyConnectorChromeOS* policy_connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    BrowserPolicyConnectorAsh* policy_connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     ASSERT_TRUE(policy_connector);
     policy_service_ = policy_connector->GetPolicyService();
     ASSERT_TRUE(

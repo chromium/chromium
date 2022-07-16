@@ -18,7 +18,7 @@ EVENTS_BASE_EXPORT extern const char kTouchDevices[];
 EVENTS_BASE_EXPORT extern const char kPenDevices[];
 #endif
 
-#if defined(USE_X11) || defined(USE_OZONE)
+#if defined(USE_OZONE)
 EVENTS_BASE_EXPORT extern const char kEdgeTouchFiltering[];
 EVENTS_BASE_EXPORT extern const char kDisableCancelAllTouches[];
 #endif

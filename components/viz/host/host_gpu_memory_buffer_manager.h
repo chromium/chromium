@@ -9,13 +9,12 @@
 #include <unordered_map>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/viz/host/viz_host_export.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
@@ -54,6 +53,11 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
       int client_id,
       std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  HostGpuMemoryBufferManager(const HostGpuMemoryBufferManager&) = delete;
+  HostGpuMemoryBufferManager& operator=(const HostGpuMemoryBufferManager&) =
+      delete;
+
   ~HostGpuMemoryBufferManager() override;
 
   void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
@@ -164,8 +168,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<HostGpuMemoryBufferManager> weak_ptr_;
   base::WeakPtrFactory<HostGpuMemoryBufferManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostGpuMemoryBufferManager);
 };
 
 }  // namespace viz

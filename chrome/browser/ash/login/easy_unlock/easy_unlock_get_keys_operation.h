@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
@@ -26,6 +25,11 @@ class EasyUnlockGetKeysOperation {
                               const EasyUnlockDeviceKeyDataList& data_list)>;
   EasyUnlockGetKeysOperation(const UserContext& user_context,
                              GetKeysCallback callback);
+
+  EasyUnlockGetKeysOperation(const EasyUnlockGetKeysOperation&) = delete;
+  EasyUnlockGetKeysOperation& operator=(const EasyUnlockGetKeysOperation&) =
+      delete;
+
   ~EasyUnlockGetKeysOperation();
 
   // Starts the operation. If the cryptohome service is not yet available, the
@@ -50,8 +54,6 @@ class EasyUnlockGetKeysOperation {
   EasyUnlockDeviceKeyDataList devices_;
 
   base::WeakPtrFactory<EasyUnlockGetKeysOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockGetKeysOperation);
 };
 
 }  // namespace ash

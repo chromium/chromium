@@ -144,7 +144,7 @@ export class FakeSystemRoutineController {
   resolveRoutineForTesting() {
     assert(this.delayTimeMilliseconds_ == -1);
     assert(this.resolver_ != null);
-    var promise = this.resolver_.promise;
+    const promise = this.resolver_.promise;
 
     this.fireRemoteWithResult_();
     return promise;

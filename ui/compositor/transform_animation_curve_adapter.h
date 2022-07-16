@@ -7,14 +7,13 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_operations.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_operations.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace ui {
 
@@ -27,6 +26,9 @@ class COMPOSITOR_EXPORT TransformAnimationCurveAdapter
                                  base::TimeDelta duration);
 
   TransformAnimationCurveAdapter(const TransformAnimationCurveAdapter& other);
+
+  TransformAnimationCurveAdapter& operator=(
+      const TransformAnimationCurveAdapter&) = delete;
 
   ~TransformAnimationCurveAdapter() override;
 
@@ -46,8 +48,6 @@ class COMPOSITOR_EXPORT TransformAnimationCurveAdapter
   gfx::DecomposedTransform decomposed_initial_value_;
   gfx::DecomposedTransform decomposed_target_value_;
   base::TimeDelta duration_;
-
-  DISALLOW_ASSIGN(TransformAnimationCurveAdapter);
 };
 
 }  // namespace ui

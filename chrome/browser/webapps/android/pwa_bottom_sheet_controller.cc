@@ -9,7 +9,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
-#include "chrome/browser/webapps/android/features.h"
 #include "chrome/browser/webapps/android/jni_headers/PwaBottomSheetControllerProvider_jni.h"
 #include "chrome/browser/webapps/android/jni_headers/PwaBottomSheetController_jni.h"
 #include "components/url_formatter/elide_url.h"
@@ -25,11 +24,6 @@ namespace {
 
 bool CanShowBottomSheet(content::WebContents* web_contents,
                         const std::vector<SkBitmap>& screenshots) {
-  if (!base::FeatureList::IsEnabled(
-          webapps::features::kPwaInstallUseBottomSheet)) {
-    return false;
-  }
-
   if (screenshots.size() == 0)
     return false;
 
@@ -132,6 +126,11 @@ void PwaBottomSheetController::UpdateInstallSource(JNIEnv* env,
                                                    int install_source) {
   a2hs_params_->install_source =
       static_cast<WebappInstallSource>(install_source);
+}
+
+void PwaBottomSheetController::OnSheetClosedWithSwipe(JNIEnv* env) {
+  a2hs_event_callback_.Run(AddToHomescreenInstaller::Event::UI_CANCELLED,
+                           *a2hs_params_);
 }
 
 void PwaBottomSheetController::OnSheetExpanded(JNIEnv* env) {

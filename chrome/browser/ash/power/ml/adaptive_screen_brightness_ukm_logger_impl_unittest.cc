@@ -24,6 +24,11 @@ class AdaptiveScreenBrightnessUkmLoggerImplTest
  public:
   AdaptiveScreenBrightnessUkmLoggerImplTest() {}
 
+  AdaptiveScreenBrightnessUkmLoggerImplTest(
+      const AdaptiveScreenBrightnessUkmLoggerImplTest&) = delete;
+  AdaptiveScreenBrightnessUkmLoggerImplTest& operator=(
+      const AdaptiveScreenBrightnessUkmLoggerImplTest&) = delete;
+
   void LogActivity(const ScreenBrightnessEvent& screen_brightness_event,
                    ukm::SourceId tab_id,
                    bool has_form_entry) {
@@ -36,8 +41,6 @@ class AdaptiveScreenBrightnessUkmLoggerImplTest
 
  private:
   AdaptiveScreenBrightnessUkmLoggerImpl screen_brightness_ukm_logger_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(AdaptiveScreenBrightnessUkmLoggerImplTest);
 };
 
 TEST_F(AdaptiveScreenBrightnessUkmLoggerImplTest, Basic) {

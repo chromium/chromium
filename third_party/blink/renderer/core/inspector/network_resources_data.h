@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_NETWORK_RESOURCES_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_NETWORK_RESOURCES_DATA_H_
 
+#include "net/cert/x509_certificate.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
@@ -151,9 +152,9 @@ class NetworkResourcesData final
     int64_t RawHeaderSize() const { return raw_header_size_; }
     void SetRawHeaderSize(int64_t size) { raw_header_size_ = size; }
 
-    Vector<AtomicString> Certificate() { return certificate_; }
-    void SetCertificate(const Vector<AtomicString>& certificate) {
-      certificate_ = certificate;
+    net::X509Certificate* Certificate() { return certificate_.get(); }
+    void SetCertificate(scoped_refptr<net::X509Certificate> certificate) {
+      certificate_ = std::move(certificate);
     }
     int64_t PendingEncodedDataLength() const {
       return pending_encoded_data_length_;
@@ -163,7 +164,7 @@ class NetworkResourcesData final
       pending_encoded_data_length_ += encoded_data_length;
     }
     void SetPostData(scoped_refptr<EncodedFormData> post_data) {
-      post_data_ = post_data;
+      post_data_ = std::move(post_data);
     }
     EncodedFormData* PostData() const { return post_data_.get(); }
 
@@ -204,7 +205,7 @@ class NetworkResourcesData final
     UntracedMember<const Resource> cached_resource_;
 
     scoped_refptr<BlobDataHandle> downloaded_file_blob_;
-    Vector<AtomicString> certificate_;
+    scoped_refptr<net::X509Certificate> certificate_;
     scoped_refptr<EncodedFormData> post_data_;
   };
 
@@ -238,7 +239,7 @@ class NetworkResourcesData final
   void SetXHRReplayData(const String& request_id, XHRReplayData*);
   XHRReplayData* XhrReplayData(const String& request_id);
   void SetCertificate(const String& request_id,
-                      const Vector<AtomicString>& certificate);
+                      scoped_refptr<net::X509Certificate>);
   HeapVector<Member<ResourceData>> Resources();
 
   int64_t GetAndClearPendingEncodedDataLength(const String& request_id);

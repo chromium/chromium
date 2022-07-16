@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_ADD_SUPERVISION_ADD_SUPERVISION_HANDLER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -51,6 +50,10 @@ class AddSupervisionHandler
       content::WebUI* web_ui,
       signin::IdentityManager* identity_manager,
       Delegate* delegate);
+
+  AddSupervisionHandler(const AddSupervisionHandler&) = delete;
+  AddSupervisionHandler& operator=(const AddSupervisionHandler&) = delete;
+
   ~AddSupervisionHandler() override;
 
   // add_supervision::mojom::AddSupervisionHandler overrides:
@@ -78,8 +81,6 @@ class AddSupervisionHandler
   Delegate* delegate_;
 
   base::WeakPtrFactory<AddSupervisionHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AddSupervisionHandler);
 };
 
 }  // namespace chromeos

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>Test window.data.url.navigation</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+
+<script>
+promise_test(async () => {
+  const window_data_key = KEYS["data: URL"];
+
+  const script = `
+    <script src="${location.origin}/wpt_internal/fenced_frame/resources/utils.js"><\/script>
+    <script>
+      writeValueToServer("${window_data_key}", "I loaded", "${location.origin}");
+    <\/script>
+  `;
+
+  attachFencedFrame(`data:text/html,${script}`);
+
+  const actual_result  = await nextValueFromServer(window_data_key);
+  assert_equals(actual_result, "I loaded",
+                "The fenced frame has the right value for `data: URL` upon " +
+                "data URL navigation");
+
+}, "window.data.url.navigation");
+</script>
+
+</body>

@@ -83,13 +83,10 @@ void ScrollLongPageToTop(const GURL& url) {
 
 // Tests that page scroll position of a page is restored upon returning to the
 // page via the back/forward buttons.
-- (void)testScrollPositionRestoring {
-  // grey_scrollInDirection scrolls incorrect distance on iOS 13.
-  // TODO(crbug.com/983144): Enable this test on iOS 13.
-  if (@available(iOS 13, *)) {
-    return;
-  }
+// grey_scrollInDirection scrolls incorrect distance on iOS 13.
+// TODO(crbug.com/983144): Enable this test on iOS 13.
 
+- (void)DISABLED_testScrollPositionRestoring {
   // Scroll the first page and verify the offset.
   ScrollLongPageToTop(_server.GetURL(kLongPage1));
   [[EarlGrey selectElementWithMatcher:web::WebViewScrollView()]

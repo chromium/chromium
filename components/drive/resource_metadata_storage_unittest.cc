@@ -13,8 +13,8 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_split.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/drive/drive.pb.h"
 #include "components/drive/file_system_core_util.h"
@@ -45,6 +45,11 @@ struct DestroyHelperForTests {
 }  // namespace
 
 class ResourceMetadataStorageTest : public testing::Test {
+ public:
+  ResourceMetadataStorageTest(const ResourceMetadataStorageTest&) = delete;
+  ResourceMetadataStorageTest& operator=(const ResourceMetadataStorageTest&) =
+      delete;
+
  protected:
   ResourceMetadataStorageTest() = default;
   ~ResourceMetadataStorageTest() override = default;
@@ -96,8 +101,6 @@ class ResourceMetadataStorageTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ResourceMetadataStorage, DestroyHelperForTests> storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceMetadataStorageTest);
 };
 
 TEST_F(ResourceMetadataStorageTest, LargestChangestamp) {

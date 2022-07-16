@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -118,36 +119,16 @@ void ReadRTFFromClipboard(const ui::DataTransferEndpoint data_dst,
   std::move(callback).Run(base::RefCountedString::TakeString(&text));
 }
 
-scoped_refptr<base::RefCountedMemory> EncodePNGOnWorkerThread(
-    const SkBitmap& sk_bitmap) {
-  SkDynamicMemoryWStream data_stream;
-  if (SkEncodeImage(&data_stream, sk_bitmap.pixmap(),
-                    SkEncodedImageFormat::kPNG, 100)) {
-    std::vector<uint8_t> data(data_stream.bytesWritten());
-    data_stream.copyToAndReset(data.data());
-    return base::RefCountedBytes::TakeVector(&data);
-  } else {
-    LOG(ERROR) << "Couldn't encode image as PNG";
-    return nullptr;
-  }
-}
-
 void OnReceivePNGFromClipboard(DataOffer::SendDataCallback callback,
-                               const SkBitmap& sk_bitmap) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&EncodePNGOnWorkerThread, std::move(sk_bitmap)),
-      base::BindOnce(
-          [](DataOffer::SendDataCallback callback,
-             scoped_refptr<base::RefCountedMemory> data) {
-            std::move(callback).Run(data);
-          },
-          std::move(callback)));
+                               const std::vector<uint8_t>& png) {
+  scoped_refptr<base::RefCountedMemory> rc_mem =
+      base::MakeRefCounted<base::RefCountedBytes>(png);
+  std::move(callback).Run(std::move(rc_mem));
 }
 
 void ReadPNGFromClipboard(const ui::DataTransferEndpoint data_dst,
                           DataOffer::SendDataCallback callback) {
-  ui::Clipboard::GetForCurrentThread()->ReadImage(
+  ui::Clipboard::GetForCurrentThread()->ReadPng(
       ui::ClipboardBuffer::kCopyPaste, &data_dst,
       base::BindOnce(&OnReceivePNGFromClipboard, std::move(callback)));
 }

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <vector>
 
 #include "base/logging.h"
 #include "components/sync/engine/update_handler.h"
@@ -17,7 +18,7 @@ SyncCycle::SyncCycle(SyncCycleContext* context, Delegate* delegate)
   status_controller_ = std::make_unique<StatusController>();
 }
 
-SyncCycle::~SyncCycle() {}
+SyncCycle::~SyncCycle() = default;
 
 SyncCycleSnapshot SyncCycle::TakeSnapshot() const {
   return TakeSnapshotWithOrigin(sync_pb::SyncEnums::UNKNOWN_ORIGIN);

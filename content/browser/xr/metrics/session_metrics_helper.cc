@@ -21,22 +21,23 @@ const void* const kSessionMetricsHelperDataKey = &kSessionMetricsHelperDataKey;
 
 // minimum duration: 7 seconds for video, no minimum for headset/vr modes
 // maximum gap: 7 seconds between videos.  no gap for headset/vr-modes
-constexpr base::TimeDelta kMinimumVideoSessionDuration(
-    base::TimeDelta::FromSecondsD(7));
-constexpr base::TimeDelta kMaximumVideoSessionGap(
-    base::TimeDelta::FromSecondsD(7));
+constexpr base::TimeDelta kMinimumVideoSessionDuration(base::Seconds(7));
+constexpr base::TimeDelta kMaximumVideoSessionGap(base::Seconds(7));
 
-constexpr base::TimeDelta kMinimumHeadsetSessionDuration(
-    base::TimeDelta::FromSecondsD(0));
-constexpr base::TimeDelta kMaximumHeadsetSessionGap(
-    base::TimeDelta::FromSecondsD(0));
+constexpr base::TimeDelta kMinimumHeadsetSessionDuration(base::Seconds(0));
+constexpr base::TimeDelta kMaximumHeadsetSessionGap(base::Seconds(0));
 
 // Handles the lifetime of the helper which is attached to a WebContents.
 class SessionMetricsHelperData : public base::SupportsUserData::Data {
  public:
+  SessionMetricsHelperData() = delete;
+
   explicit SessionMetricsHelperData(
       SessionMetricsHelper* session_metrics_helper)
       : session_metrics_helper_(session_metrics_helper) {}
+
+  SessionMetricsHelperData(const SessionMetricsHelperData&) = delete;
+  SessionMetricsHelperData& operator=(const SessionMetricsHelperData&) = delete;
 
   ~SessionMetricsHelperData() override { delete session_metrics_helper_; }
 
@@ -44,8 +45,6 @@ class SessionMetricsHelperData : public base::SupportsUserData::Data {
 
  private:
   SessionMetricsHelper* session_metrics_helper_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SessionMetricsHelperData);
 };
 
 // Helper method to log out both the mode and the initially requested features

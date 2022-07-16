@@ -32,18 +32,21 @@ def main():
       '--minimal',
       action='store_true',
       help='Create APKs archive with minimal language support.')
+  parser.add_argument('--local-testing',
+                      action='store_true',
+                      help='Create APKs archive with local testing support.')
 
   args = parser.parse_args()
 
-  app_bundle_utils.GenerateBundleApks(
-      args.bundle,
-      args.output,
-      args.aapt2_path,
-      args.keystore_path,
-      args.keystore_password,
-      args.keystore_name,
-      minimal=args.minimal,
-      check_for_noop=False)
+  app_bundle_utils.GenerateBundleApks(args.bundle,
+                                      args.output,
+                                      args.aapt2_path,
+                                      args.keystore_path,
+                                      args.keystore_password,
+                                      args.keystore_name,
+                                      local_testing=args.local_testing,
+                                      minimal=args.minimal,
+                                      check_for_noop=False)
 
 
 if __name__ == '__main__':

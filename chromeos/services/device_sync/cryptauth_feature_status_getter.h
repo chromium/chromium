@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
@@ -57,6 +56,10 @@ class CryptAuthFeatureStatusGetter {
       base::OnceCallback<void(const IdToDeviceSoftwareFeatureInfoMap&,
                               CryptAuthDeviceSyncResult::ResultCode)>;
 
+  CryptAuthFeatureStatusGetter(const CryptAuthFeatureStatusGetter&) = delete;
+  CryptAuthFeatureStatusGetter& operator=(const CryptAuthFeatureStatusGetter&) =
+      delete;
+
   virtual ~CryptAuthFeatureStatusGetter();
 
   // Starts the BatchGetFeatureStatuses portion of the CryptAuth v2 DeviceSync
@@ -83,8 +86,6 @@ class CryptAuthFeatureStatusGetter {
  private:
   GetFeatureStatusesAttemptFinishedCallback callback_;
   bool was_get_feature_statuses_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthFeatureStatusGetter);
 };
 
 }  // namespace device_sync

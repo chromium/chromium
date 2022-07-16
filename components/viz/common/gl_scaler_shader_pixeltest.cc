@@ -11,8 +11,8 @@
 #include "build/build_config.h"
 #include "cc/test/pixel_test.h"
 #include "cc/test/pixel_test_utils.h"
-#include "components/viz/common/gl_scaler_test_util.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/test/gl_scaler_test_util.h"
 #include "gpu/GLES2/gl2chromium.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
@@ -117,7 +117,9 @@ class GLScalerShaderPixelTest
 
     gl_->Viewport(0, 0, size.width(), size.height());
     const GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT0 + 1};
-    gl_->DrawBuffersEXT(dual_outputs ? 2 : 1, buffers);
+    if (dual_outputs) {
+      gl_->DrawBuffersEXT(2, buffers);
+    }
     // Assumption: The |vertex_attributes_buffer_| created in SetUp() is
     // currently bound to GL_ARRAY_BUFFER.
     gl_->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -391,7 +393,7 @@ TEST_P(GLScalerShaderPixelTest, ValidateTestHelpers) {
   // and/or had its color channels swizzled, depending on the testing params.
   SkBitmap image = CreateSMPTETestImage(kBaseSize);
   if (is_converting_rgb_to_yuv()) {
-    ConvertBitmapToYUV(&image);
+    ConvertRGBABitmapToYUV(&image);
   }
   if (is_swizzling_output()) {
     SwizzleBitmap(&image);
@@ -552,7 +554,7 @@ TEST_P(GLScalerShaderPixelTest, Export_Planar) {
   // For each channel, create an expected bitmap and compare it to the result
   // from drawing with the shader program.
   if (is_converting_rgb_to_yuv()) {
-    ConvertBitmapToYUV(&source);
+    ConvertRGBABitmapToYUV(&source);
   }
   for (int channel = 0; channel <= 3; ++channel) {
     SkBitmap expected = CreatePackedPlanarBitmap(source, channel);
@@ -598,7 +600,7 @@ TEST_P(GLScalerShaderPixelTest, Export_I422_NV61) {
   // The following can be considered a reference implementation for what the
   // shader program is supposed to do.
   if (is_converting_rgb_to_yuv()) {
-    ConvertBitmapToYUV(&source);
+    ConvertRGBABitmapToYUV(&source);
   }
   SkBitmap expected_a = CreatePackedPlanarBitmap(source, 0);
   if (is_swizzling_output()) {
@@ -645,6 +647,72 @@ TEST_P(GLScalerShaderPixelTest, Export_I422_NV61) {
   const SkBitmap actual_a = DownloadTexture(textures.first, dst_size);
   ExpectAreTheSameImage(expected_a, actual_a);
   const SkBitmap actual_bc = DownloadTexture(textures.second, dst_size);
+  ExpectAreTheSameImage(expected_bc, actual_bc);
+}
+
+// Tests that the PLANAR_CHANNELS_1_2 formatter shader program produces an
+// interleaved half-width texture from a normal 4-channel interleaved texture.
+// See gl_shader.h for more specifics.
+TEST_P(GLScalerShaderPixelTest, Export_PLANAR_CHANNELS_1_2) {
+  // Use a vertical stripes source image/texture to test that the shader is
+  // sampling the texture at the correct points and performing
+  // downscale-blending in the second texture.
+  const std::vector<SkColor> kCycle = {SkColorSetARGB(0xff, 0xff, 0x00, 0x00),
+                                       SkColorSetARGB(0x80, 0x00, 0x80, 0x00),
+                                       SkColorSetARGB(0x80, 0x00, 0x80, 0x00),
+                                       SkColorSetARGB(0xff, 0x00, 0x00, 0xff)};
+  SkBitmap source =
+      CreateCyclicalTestImage(kBaseSize, VERTICAL_STRIPES, kCycle, 0);
+  const GLuint src_texture = UploadTexture(source);
+
+  // Create the expected output image: it consists of the second and third
+  // color channels (BC) downscaled by half and interleaved.
+  // The following can be considered a reference implementation for what the
+  // shader program is supposed to do.
+  if (is_converting_rgb_to_yuv()) {
+    ConvertRGBABitmapToYUV(&source);
+  }
+
+  // 4x1 pixels get converted to a packed 1x1 pixel.
+  const gfx::Size dst_size(source.width() / 4, source.height());
+  SkBitmap expected_bc = AllocateRGBABitmap(dst_size);
+  for (int y = 0; y < dst_size.height(); ++y) {
+    const uint32_t* const src = source.getAddr32(0, y);
+    uint32_t* const dst_bc = expected_bc.getAddr32(0, y);
+    for (int x = 0; x < dst_size.width(); ++x) {
+      //     (src[0..3])        (dst_bc)
+      // RGBA RGBA rgba rgba --> GBgb     (e.g, two G's blended into one G)
+      const uint32_t g01 = ((((src[x * 4 + 0] >> kGreenShift) & 0xff) +
+                             ((src[x * 4 + 1] >> kGreenShift) & 0xff)) /
+                                2.f +
+                            0.5f);
+      const uint32_t b01 = ((((src[x * 4 + 0] >> kBlueShift) & 0xff) +
+                             ((src[x * 4 + 1] >> kBlueShift) & 0xff)) /
+                                2.f +
+                            0.5f);
+      const uint32_t g23 = ((((src[x * 4 + 2] >> kGreenShift) & 0xff) +
+                             ((src[x * 4 + 3] >> kGreenShift) & 0xff)) /
+                                2.f +
+                            0.5f);
+      const uint32_t b23 = ((((src[x * 4 + 2] >> kBlueShift) & 0xff) +
+                             ((src[x * 4 + 3] >> kBlueShift) & 0xff)) /
+                                2.f +
+                            0.5f);
+      dst_bc[x] = ((g01 << kRedShift) | (b01 << kGreenShift) |
+                   (g23 << kBlueShift) | (b23 << kAlphaShift));
+    }
+  }
+  if (is_swizzling_output()) {
+    SwizzleBitmap(&expected_bc);
+  }
+
+  // Execute the program, and compare the shader program's drawn result with the
+  // expected images.
+  GetShaderProgram(Shader::PLANAR_CHANNELS_1_2)
+      ->UseProgram(kBaseSize, gfx::RectF(gfx::Rect(kBaseSize)), dst_size,
+                   Axis::HORIZONTAL, false);
+  const auto texture = RenderToNewTexture(src_texture, dst_size);
+  const SkBitmap actual_bc = DownloadTexture(texture, dst_size);
   ExpectAreTheSameImage(expected_bc, actual_bc);
 }
 

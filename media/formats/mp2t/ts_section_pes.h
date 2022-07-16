@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "media/base/byte_queue.h"
 #include "media/formats/mp2t/ts_section.h"
 
@@ -24,6 +23,10 @@ class TsSectionPes : public TsSection {
  public:
   TsSectionPes(std::unique_ptr<EsParser> es_parser,
                TimestampUnroller* timestamp_unroller);
+
+  TsSectionPes(const TsSectionPes&) = delete;
+  TsSectionPes& operator=(const TsSectionPes&) = delete;
+
   ~TsSectionPes() override;
 
   // TsSection implementation.
@@ -56,8 +59,6 @@ class TsSectionPes : public TsSection {
 
   // Used to unroll PTS and DTS.
   TimestampUnroller* const timestamp_unroller_;
-
-  DISALLOW_COPY_AND_ASSIGN(TsSectionPes);
 };
 
 }  // namespace mp2t

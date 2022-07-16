@@ -21,8 +21,7 @@ static const int kChannels = 2;
 static const int kBytesPerSample = 2;
 
 // Frame size expected by webrtc::AudioTrackSinkInterface.
-static constexpr base::TimeDelta kAudioFrameDuration =
-    base::TimeDelta::FromMilliseconds(10);
+static constexpr base::TimeDelta kAudioFrameDuration = base::Milliseconds(10);
 
 class WebrtcAudioSourceAdapter::Core {
  public:

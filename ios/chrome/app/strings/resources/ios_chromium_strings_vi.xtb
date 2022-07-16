@@ -22,6 +22,10 @@
 <translation id="2168108852149185974">Một số tiện ích bổ sung khiến Chromium trục trặc. Hãy gỡ cài đặt:</translation>
 <translation id="2178608107313874732">Chromium hiện không thể dùng máy ảnh</translation>
 <translation id="2195025571279539885">Bạn có muốn Chromium đề xuất dịch các trang <ph name="LANGUAGE_NAME" /> của trang web này vào lần tiếp theo không?</translation>
+<translation id="2218146227246548550">Tổ chức của bạn yêu cầu bạn đăng nhập để dùng Chromium. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
+<translation id="2426113998523353159">Tổ chức của bạn yêu cầu bạn đăng nhập để dùng Chromium.</translation>
+<translation id="2450140762465183767">Giờ đây, bạn có thể dùng Chromium mỗi khi nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
+<translation id="2478931088402984578">Chọn <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2567507405773541360">Với Chromium đơn giản, an toàn và nhanh nhất từ trước đến nay, bạn sẽ làm được nhiều việc hơn</translation>
 <translation id="2590893390871230428">Đồng bộ hóa dữ liệu của bạn trên Chromium</translation>
 <translation id="2650312721222849884">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy bật tính năng đồng bộ hóa</translation>
@@ -38,7 +42,6 @@
 <translation id="3805899903892079518">Chromium không có quyền truy cập ảnh hoặc video của bạn. Hãy cho phép truy cập Cài đặt iOS &gt; Bảo mật &gt; Ảnh.</translation>
 <translation id="3946918322491238254">Bạn vẫn có thể xem tất cả dấu trang, danh sách trang web đã truy cập, mật khẩu và các chế độ cài đặt khác trên thiết bị này. Nếu bạn thực hiện thay đổi, các thay đổi đó sẽ không đồng bộ hóa với tài khoản của bạn.</translation>
 <translation id="4099085513035183040">Chưa hỗ trợ trên Chromium phiên bản thử nghiệm</translation>
-<translation id="4166206055865952171">Đặt Chromium làm trình duyệt mặc định</translation>
 <translation id="4555020257205549924">Khi tính năng này được bật, Chromium sẽ đề xuất sử dụng Google Dịch để dịch các trang viết bằng ngôn ngữ khác. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Giờ đây, bạn có thể dùng Chromium bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="4681781466797808448">Bật trình quét của Chromium</translation>
@@ -54,8 +57,6 @@
 <translation id="5521125884468363740">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>
 <translation id="5573014823074921752">Mẹo sử dụng Chromium. Để xem thêm các tùy chọn về thẻ, hãy chạm và giữ nút Hiển thị thẻ trên thanh công cụ ở đầu hoặc cuối màn hình.</translation>
 <translation id="5700709190537129682">Chromium không thể kiểm tra mật khẩu của bạn</translation>
-<translation id="5715349567881822785">Hoàn thành thêm nhiều việc nhờ Chromium</translation>
-<translation id="5742135483959137648">Dùng Chromium để mở các đường liên kết</translation>
 <translation id="5777187867430702742">Trang Chromium</translation>
 <translation id="5862307444128926510">Chào mừng bạn đến với Chromium</translation>
 <translation id="5945387852661427312">Bạn đang đăng nhập bằng tài khoản do <ph name="DOMAIN" /> quản lý và cấp cho quản trị viên quyền kiểm soát dữ liệu Chromium của bạn. Dữ liệu của bạn sẽ được liên kết vĩnh viễn với tài khoản này. Đăng xuất khỏi Chromium sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn được lưu trữ trong Tài khoản Google.</translation>
@@ -65,16 +66,17 @@
 2. Nhấn vào Ứng dụng trình duyệt mặc định
 3. Chọn Chromium.</translation>
 <translation id="6155422572367400359">Đăng nhập vào trang web này, Tài khoản Google của bạn và Chromium. Bạn có thể bật tính năng đồng bộ hóa sau.</translation>
+<translation id="6183442264225539303">Đăng nhập vào trang web này và Chromium. Bạn có thể bật tính năng đồng bộ hóa sau.</translation>
 <translation id="6268381023930128611">Đăng xuất khỏi Chromium?</translation>
 <translation id="632825460376924298">Cho phép đăng nhập vào Chromium</translation>
 <translation id="6337530241089703714">Chọn xem bạn muốn xóa dữ liệu của mình trên Chromium khỏi thiết bị này hay giữ lại dữ liệu đó</translation>
 <translation id="6424492062988593837">Chromium được cải tiến hơn! Đã có phiên bản mới.</translation>
 <translation id="6752854822223394465">Tổ chức của bạn đang thiết lập Chromium...</translation>
 <translation id="6820823224820483452">Chromium không thể kiểm tra một số mật khẩu. Hãy thử lại vào ngày mai.</translation>
-<translation id="6827294685447036764">Nếu bạn cho Chromium biết vị trí của bạn, thì Chromium sẽ gửi thông tin này đến mọi trang web mà bạn cho phép. Các trang web có thể yêu cầu thông tin vị trí khi có thông tin địa phương để hiển thị cho bạn, chẳng hạn như tin tức hoặc cửa hàng ở gần.</translation>
 <translation id="7018284295775193585">Chromium không thể cập nhật</translation>
 <translation id="7045244423563602563">Biến Chromium thành trình duyệt của riêng bạn</translation>
 <translation id="7099326575020694068">Chromium không thể sử dụng máy ảnh của bạn ở Chế độ xem phân tách</translation>
+<translation id="7108914401277488191">Hoàn thành thêm nhiều việc nhờ Chromium</translation>
 <translation id="7118091470949186573">Giờ đây, bạn có thể dùng Chromium bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="7208566199746267865">Chromium giúp bạn tiết kiệm thời gian bằng cách đưa tài khoản của bạn lên web. Bạn có thể thêm hoặc xóa tài khoản trong Cài đặt.</translation>
 <translation id="725427773388857052">Chromium có thể bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác.</translation>
@@ -102,6 +104,7 @@
 <translation id="894437814105052438">Khi bạn đăng xuất, Chromium sẽ không đồng bộ hóa bất cứ dữ liệu mới nào với Tài khoản Google của bạn. Dữ liệu đã đồng bộ hóa trước đó sẽ vẫn có trong tài khoản này.</translation>
 <translation id="9022552996538154597">Đăng nhập vào Chromium</translation>
 <translation id="9089354809943900324">Chromium đã lỗi thời</translation>
+<translation id="9110075932708282655">Sử dụng Chromium theo Mặc định</translation>
 <translation id="921174536258924340">Chromium không thể kiểm tra một số mật khẩu. Hãy thử lại vào ngày mai hoặc <ph name="BEGIN_LINK" />kiểm tra các mật khẩu trong Tài khoản Google của bạn.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Tác giả Chromium</translation>
 </translationbundle>

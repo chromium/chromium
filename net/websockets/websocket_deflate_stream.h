@@ -43,6 +43,10 @@ class NET_EXPORT_PRIVATE WebSocketDeflateStream : public WebSocketStream {
   WebSocketDeflateStream(std::unique_ptr<WebSocketStream> stream,
                          const WebSocketDeflateParameters& params,
                          std::unique_ptr<WebSocketDeflatePredictor> predictor);
+
+  WebSocketDeflateStream(const WebSocketDeflateStream&) = delete;
+  WebSocketDeflateStream& operator=(const WebSocketDeflateStream&) = delete;
+
   ~WebSocketDeflateStream() override;
 
   // WebSocketStream functions.
@@ -106,8 +110,6 @@ class NET_EXPORT_PRIVATE WebSocketDeflateStream : public WebSocketStream {
   std::vector<scoped_refptr<IOBufferWithSize>> deflater_outputs_;
   // References of Inflater outputs kept until next ReadFrames().
   std::vector<scoped_refptr<IOBufferWithSize>> inflater_outputs_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketDeflateStream);
 };
 
 }  // namespace net

@@ -91,7 +91,7 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_WithCache) {
   AwMetricsServiceClient* client = GetClient();
   TestingPrefServiceSimple* prefs = GetPrefs();
 
-  auto one_day_from_now = base::Time::Now() + base::TimeDelta::FromDays(1);
+  auto one_day_from_now = base::Time::Now() + base::Days(1);
   AppPackageNameLoggingRule expected_record(
       base::Version(kTestAllowlistVersion), one_day_from_now);
   prefs->Set(prefs::kMetricsAppPackageNameLoggingRule,
@@ -146,7 +146,7 @@ TEST_F(AwMetricsServiceClientTest,
   scoped_list.InitAndEnableFeature(
       android_webview::features::kWebViewAppsPackageNamesAllowlist);
 
-  auto one_day_from_now = base::Time::Now() + base::TimeDelta::FromDays(1);
+  auto one_day_from_now = base::Time::Now() + base::Days(1);
 
   AwMetricsServiceClient* client = GetClient();
   AppPackageNameLoggingRule expected_record(
@@ -175,7 +175,7 @@ TEST_F(AwMetricsServiceClientTest,
   scoped_list.InitAndEnableFeature(
       android_webview::features::kWebViewAppsPackageNamesAllowlist);
 
-  auto one_day_from_now = base::Time::Now() + base::TimeDelta::FromDays(1);
+  auto one_day_from_now = base::Time::Now() + base::Days(1);
 
   AwMetricsServiceClient* client = GetClient();
   AppPackageNameLoggingRule expected_record(
@@ -229,9 +229,8 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_SameAsCache) {
   AwMetricsServiceClient* client = GetClient();
   TestingPrefServiceSimple* prefs = GetPrefs();
 
-  AppPackageNameLoggingRule record(
-      base::Version(kTestAllowlistVersion),
-      base::Time::Now() + base::TimeDelta::FromDays(1));
+  AppPackageNameLoggingRule record(base::Version(kTestAllowlistVersion),
+                                   base::Time::Now() + base::Days(1));
   prefs->Set(prefs::kMetricsAppPackageNameLoggingRule, record.ToDictionary());
   client->SetAppPackageNameLoggingRule(record);
 

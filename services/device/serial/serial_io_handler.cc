@@ -190,10 +190,17 @@ void SerialIoHandler::Read(base::span<uint8_t> buffer,
                            ReadCompleteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsReadPending());
+
   pending_read_buffer_ = buffer;
   pending_read_callback_ = std::move(callback);
   read_canceled_ = false;
   AddRef();
+
+  if (!file().IsValid()) {
+    ReadCompleted(0, mojom::SerialReceiveError::DISCONNECTED);
+    return;
+  }
+
   ReadImpl();
 }
 
@@ -201,10 +208,17 @@ void SerialIoHandler::Write(base::span<const uint8_t> buffer,
                             WriteCompleteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsWritePending());
+
   pending_write_buffer_ = buffer;
   pending_write_callback_ = std::move(callback);
   write_canceled_ = false;
   AddRef();
+
+  if (!file().IsValid()) {
+    WriteCompleted(0, mojom::SerialSendError::DISCONNECTED);
+    return;
+  }
+
   WriteImpl();
 }
 
@@ -258,20 +272,6 @@ bool SerialIoHandler::ConfigurePort(
     const mojom::SerialConnectionOptions& options) {
   MergeConnectionOptions(options);
   return ConfigurePortImpl();
-}
-
-void SerialIoHandler::QueueReadCompleted(int bytes_read,
-                                         mojom::SerialReceiveError error) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SerialIoHandler::ReadCompleted, this, bytes_read, error));
-}
-
-void SerialIoHandler::QueueWriteCompleted(int bytes_written,
-                                          mojom::SerialSendError error) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&SerialIoHandler::WriteCompleted, this,
-                                bytes_written, error));
 }
 
 }  // namespace device

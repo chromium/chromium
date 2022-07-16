@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
@@ -36,6 +35,10 @@ class LivenessServiceProvider
     : public chromeos::CrosDBusService::ServiceProviderInterface {
  public:
   LivenessServiceProvider();
+
+  LivenessServiceProvider(const LivenessServiceProvider&) = delete;
+  LivenessServiceProvider& operator=(const LivenessServiceProvider&) = delete;
+
   ~LivenessServiceProvider() override;
 
   // chromeos::CrosDBusService::ServiceProviderInterface overrides:
@@ -55,8 +58,6 @@ class LivenessServiceProvider
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
   base::WeakPtrFactory<LivenessServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LivenessServiceProvider);
 };
 
 }  // namespace ash

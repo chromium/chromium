@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 
 #include "base/run_loop.h"
-#include "chrome/browser/chromeos/net/network_portal_detector_test_impl.h"
+#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chromeos/dbus/shill/fake_shill_manager_client.h"
 
-namespace chromeos {
+namespace ash {
 
 NetworkPortalDetectorMixin::NetworkPortalDetectorMixin(
     InProcessBrowserTestMixinHost* host)
@@ -72,4 +72,4 @@ void NetworkPortalDetectorMixin::TearDownInProcessBrowserTestFixture() {
   network_portal_detector::Shutdown();
 }
 
-}  // namespace chromeos
+}  // namespace ash

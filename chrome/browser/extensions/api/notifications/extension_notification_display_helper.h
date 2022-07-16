@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;
@@ -30,6 +29,12 @@ namespace extensions {
 class ExtensionNotificationDisplayHelper : public KeyedService {
  public:
   explicit ExtensionNotificationDisplayHelper(Profile* profile);
+
+  ExtensionNotificationDisplayHelper(
+      const ExtensionNotificationDisplayHelper&) = delete;
+  ExtensionNotificationDisplayHelper& operator=(
+      const ExtensionNotificationDisplayHelper&) = delete;
+
   ~ExtensionNotificationDisplayHelper() override;
 
   // Displays the |notification| using the notification display service.
@@ -68,8 +73,6 @@ class ExtensionNotificationDisplayHelper : public KeyedService {
 
   // Vector of notifications that are being shown for extensions.
   NotificationVector notifications_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionNotificationDisplayHelper);
 };
 
 }  // namespace extensions

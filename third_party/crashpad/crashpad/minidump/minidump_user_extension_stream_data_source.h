@@ -18,7 +18,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "base/macros.h"
 
 #include "minidump/minidump_extensions.h"
 
@@ -54,6 +53,12 @@ class MinidumpUserExtensionStreamDataSource {
   //!
   //! \param[in] stream_type The type of the user extension stream.
   explicit MinidumpUserExtensionStreamDataSource(uint32_t stream_type);
+
+  MinidumpUserExtensionStreamDataSource(
+      const MinidumpUserExtensionStreamDataSource&) = delete;
+  MinidumpUserExtensionStreamDataSource& operator=(
+      const MinidumpUserExtensionStreamDataSource&) = delete;
+
   virtual ~MinidumpUserExtensionStreamDataSource();
 
   MinidumpStreamType stream_type() const { return stream_type_; }
@@ -75,8 +80,6 @@ class MinidumpUserExtensionStreamDataSource {
 
  private:
   MinidumpStreamType stream_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpUserExtensionStreamDataSource);
 };
 
 }  // namespace crashpad

@@ -11,10 +11,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 
 namespace ui {
@@ -33,6 +32,10 @@ using EventTimedWaitCallback =
 class WrappedTask {
  public:
   WrappedTask(base::OnceClosure closure, base::TimeDelta delay);
+
+  WrappedTask(const WrappedTask&) = delete;
+  WrappedTask& operator=(const WrappedTask&) = delete;
+
   ~WrappedTask();
   bool ShouldRunBefore(const WrappedTask& other);
   void Run();
@@ -49,8 +52,6 @@ class WrappedTask {
 
   // Back pointer to the pumpable task runner that this task is enqueued in.
   scoped_refptr<PumpableTaskRunner> pumpable_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrappedTask);
 };
 
 // The PumpableTaskRunner is a task runner that will wrap tasks in an
@@ -63,6 +64,9 @@ class PumpableTaskRunner : public base::SingleThreadTaskRunner {
   PumpableTaskRunner(
       const EventTimedWaitCallback& event_timed_wait_callback,
       const scoped_refptr<base::SingleThreadTaskRunner>& target_task_runner);
+
+  PumpableTaskRunner(const PumpableTaskRunner&) = delete;
+  PumpableTaskRunner& operator=(const PumpableTaskRunner&) = delete;
 
   // Enqueue WrappedTask and post it to |target_task_runner_|.
   bool EnqueueAndPostWrappedTask(const base::Location& from_here,
@@ -104,8 +108,6 @@ class PumpableTaskRunner : public base::SingleThreadTaskRunner {
   EventTimedWaitCallback event_timed_wait_callback_;
 
   scoped_refptr<base::SingleThreadTaskRunner> target_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PumpableTaskRunner);
 };
 
 base::LazyInstance<WindowResizeHelperMac>::Leaky g_window_resize_helper =
@@ -231,7 +233,7 @@ bool PumpableTaskRunner::WaitForSingleWrappedTaskToRun(
     // Calculate how much time we have left before we have to stop waiting or
     // until a currently-enqueued task will be ready to run.
     base::TimeDelta max_sleep_time = next_task_time - current_time;
-    if (max_sleep_time <= base::TimeDelta::FromMilliseconds(0))
+    if (max_sleep_time <= base::Milliseconds(0))
       break;
 
     event_timed_wait_callback_.Run(&event_, max_sleep_time);

@@ -18,11 +18,11 @@
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
 namespace net {
 struct RedirectInfo;
-}
+}  // namespace net
 
 namespace network {
 class SimpleURLLoader;
@@ -48,14 +48,17 @@ class DetachedResourceRequest {
 
   using OnResultCallback = base::OnceCallback<void(int net_error)>;
 
+  DetachedResourceRequest(const DetachedResourceRequest&) = delete;
+  DetachedResourceRequest& operator=(const DetachedResourceRequest&) = delete;
+
   ~DetachedResourceRequest();
 
-  // Creates a detached request to a |url|, with a given initiating URL,
-  // |first_party_for_cookies|. Called on the UI thread.
-  // Optional |cb| to get notified about the fetch result.
+  // Creates a detached request to a `url`, with a given initiating URL,
+  // `site_for_referrer`. Called on the UI thread.
+  // Optional `cb` to get notified about the fetch result.
   static void CreateAndStart(content::BrowserContext* browser_context,
                              const GURL& url,
-                             const GURL& first_party_for_cookies,
+                             const GURL& site_for_referrer,
                              net::ReferrerPolicy referer_policy,
                              Motivation motivation,
                              const std::string& package_name,
@@ -63,7 +66,7 @@ class DetachedResourceRequest {
 
  private:
   DetachedResourceRequest(const GURL& url,
-                          const GURL& site_for_cookies,
+                          const GURL& site_for_referrer,
                           net::ReferrerPolicy referer_policy,
                           Motivation motivation,
                           const std::string& package_name,
@@ -77,15 +80,13 @@ class DetachedResourceRequest {
   void OnResponseCallback(std::unique_ptr<std::string> response_body);
 
   const GURL url_;
-  const GURL site_for_cookies_;
+  const GURL site_for_referrer_;
   base::TimeTicks start_time_;
   Motivation motivation_;
   OnResultCallback cb_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   int redirects_;
   bool is_from_aga_;
-
-  DISALLOW_COPY_AND_ASSIGN(DetachedResourceRequest);
 };
 
 }  // namespace customtabs

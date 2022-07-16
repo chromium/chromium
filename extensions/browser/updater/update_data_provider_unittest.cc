@@ -39,6 +39,12 @@ class UpdateDataProviderExtensionsBrowserClient
   explicit UpdateDataProviderExtensionsBrowserClient(
       content::BrowserContext* context)
       : TestExtensionsBrowserClient(context) {}
+
+  UpdateDataProviderExtensionsBrowserClient(
+      const UpdateDataProviderExtensionsBrowserClient&) = delete;
+  UpdateDataProviderExtensionsBrowserClient& operator=(
+      const UpdateDataProviderExtensionsBrowserClient&) = delete;
+
   ~UpdateDataProviderExtensionsBrowserClient() override = default;
 
   bool IsExtensionEnabled(const std::string& id,
@@ -50,8 +56,6 @@ class UpdateDataProviderExtensionsBrowserClient
 
  private:
   std::set<std::string> enabled_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateDataProviderExtensionsBrowserClient);
 };
 
 class UpdateDataProviderTest : public ExtensionsTest {

@@ -70,8 +70,7 @@ void WaitForWindow(const std::string& id, bool exists) {
 
   // Wait for the window to be available.
   base::RepeatingTimer timer;
-  timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
-              std::move(wait_for_window));
+  timer.Start(FROM_HERE, base::Milliseconds(1), std::move(wait_for_window));
   outer_loop.Run();
 }
 
@@ -96,6 +95,43 @@ void WaitForWindowCreation(const std::string& id) {
 
 void WaitForWindowDestruction(const std::string& id) {
   WaitForWindow(id, /*exists=*/false);
+}
+
+void WaitForShelfItem(const std::string& id, bool exists) {
+  base::RunLoop outer_loop;
+  auto wait_for_shelf_item = base::BindRepeating(
+      [](base::RunLoop* outer_loop, const std::string& id,
+         bool expected_exists) {
+        auto* lacros_service = chromeos::LacrosService::Get();
+        CHECK(lacros_service->IsAvailable<crosapi::mojom::TestController>());
+        int interface_version = lacros_service->GetInterfaceVersion(
+            crosapi::mojom::TestController::Uuid_);
+        int min_version =
+            static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
+                                 kDoesItemExistInShelfMinVersion);
+        CHECK_GE(interface_version, min_version);
+
+        base::RunLoop inner_loop(base::RunLoop::Type::kNestableTasksAllowed);
+        bool exists = false;
+        lacros_service->GetRemote<crosapi::mojom::TestController>()
+            ->DoesItemExistInShelf(
+                id, base::BindOnce(
+                        [](base::RunLoop* loop, bool* out_exist, bool exist) {
+                          *out_exist = std::move(exist);
+                          loop->Quit();
+                        },
+                        &inner_loop, &exists));
+        inner_loop.Run();
+
+        if (exists == expected_exists)
+          outer_loop->Quit();
+      },
+      &outer_loop, id, exists);
+
+  // Wait for the window to be available.
+  base::RepeatingTimer timer;
+  timer.Start(FROM_HERE, base::Milliseconds(1), std::move(wait_for_shelf_item));
+  outer_loop.Run();
 }
 
 // Sends a TestController message to Ash to send a mouse click to this |window|.

@@ -67,7 +67,7 @@ resolution requests, but never complete them until cancellation.
 Used by most browser tests (via [`content::BrowserTestBase`](/content/public/test/browser_test_base.h)),
 `content::TestHostResolver` installs itself on creation globally into all host
 resolvers in the process. By default, only allows resolution of the local host
-and returns `net::ERR_NOT_IMPLEMENTED` for other hostnames. Allows setting rules
+and returns `net::ERR_NAME_NOT_RESOLVED` for other hostnames. Allows setting rules
 for other results using a [net::RuleBasedHostResolverProc](/net/dns/mock_host_resolver.h).
 
 *** note
@@ -219,7 +219,7 @@ Specific sources for a request can be
 specified using `net::HostResolver::ResolveHostParameters::source` and
 [`net::HostResolverSource`](/net/dns/host_resolver_source.h).
 
-The Job will then use *Task objects that implement the behavior specific to the
+The Job will then use \*Task objects that implement the behavior specific to the
 particular resolution sources.
 
 #### SYSTEM
@@ -249,7 +249,7 @@ always be used for **address resolves** when **any** of the following are true:
 Secure DNS requests cannot be made using the system resolver.
 
 `net::HostResolverManager::ProcTask` uses a blocking
-[`base::TaskRunner`](/base/task_runner.h) to make blocking resolution requests.
+[`base::TaskRunner`](/base/task/task_runner.h) to make blocking resolution requests.
 On a timeout, additional attempts are made, but previous attempts are not
 cancelled as there is no cancellation mechanism for `getaddrinfo()`. The first
 attempt to complete is used and any other attempt completions are ignored.

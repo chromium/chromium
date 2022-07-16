@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <deque>
 #include <memory>
 #include <string>
@@ -23,7 +24,46 @@
 
 namespace zucchini {
 
+struct ArmReferencePool {
+  enum : uint8_t {
+    kPoolReloc,
+    kPoolAbs32,
+    kPoolRel32,
+  };
+};
+
+struct AArch32ReferenceType {
+  enum : uint8_t {
+    kReloc,  // kPoolReloc
+
+    kAbs32,  // kPoolAbs32
+
+    kRel32_A24,  // kPoolRel32
+    kRel32_T8,
+    kRel32_T11,
+    kRel32_T20,
+    kRel32_T24,
+
+    kTypeCount
+  };
+};
+
+struct AArch64ReferenceType {
+  enum : uint8_t {
+    kReloc,  // kPoolReloc
+
+    kAbs32,  // kPoolAbs32
+
+    kRel32_Immd14,  // kPoolRel32
+    kRel32_Immd19,
+    kRel32_Immd26,
+
+    kTypeCount
+  };
+};
+
 struct Elf32Traits {
+  static constexpr uint16_t kVersion = 1;
   static constexpr Bitness kBitness = kBit32;
   static constexpr elf::FileClass kIdentificationClass = elf::ELFCLASS32;
   using Elf_Shdr = elf::Elf32_Shdr;
@@ -44,7 +84,18 @@ struct Elf32IntelTraits : public Elf32Traits {
   using Rel32FinderUse = Rel32FinderX86;
 };
 
+struct ElfAArch32Traits : public Elf32Traits {
+  static constexpr ExecutableType kExeType = kExeTypeElfAArch32;
+  static const char kExeTypeString[];
+  static constexpr elf::MachineArchitecture kMachineValue = elf::EM_ARM;
+  static constexpr uint32_t kRelType = elf::R_ARM_RELATIVE;
+  enum : uint32_t { kVAWidth = 4 };
+  using ArmReferenceType = AArch32ReferenceType;
+  using Rel32FinderUse = Rel32FinderAArch32;
+};
+
 struct Elf64Traits {
+  static constexpr uint16_t kVersion = 1;
   static constexpr Bitness kBitness = kBit64;
   static constexpr elf::FileClass kIdentificationClass = elf::ELFCLASS64;
   using Elf_Shdr = elf::Elf64_Shdr;
@@ -64,10 +115,45 @@ struct Elf64IntelTraits : public Elf64Traits {
   using Rel32FinderUse = Rel32FinderX64;
 };
 
+struct ElfAArch64Traits : public Elf64Traits {
+  static constexpr ExecutableType kExeType = kExeTypeElfAArch64;
+  static const char kExeTypeString[];
+  static constexpr elf::MachineArchitecture kMachineValue = elf::EM_AARCH64;
+  // TODO(huangs): See if R_AARCH64_GLOB_DAT and R_AARCH64_JUMP_SLOT should be
+  // used.
+  static constexpr uint32_t kRelType = elf::R_AARCH64_RELATIVE;
+  enum : uint32_t { kVAWidth = 8 };
+  using ArmReferenceType = AArch64ReferenceType;
+  using Rel32FinderUse = Rel32FinderAArch64;
+};
+
+// Decides whether target |offset| is covered by a section in |sorted_headers|.
+template <class ELF_SHDR>
+bool IsTargetOffsetInElfSectionList(
+    const std::vector<const ELF_SHDR*>& sorted_headers,
+    offset_t offset) {
+  // Use binary search to search in a list of intervals, in a fashion similar to
+  // AddressTranslator::OffsetToUnit().
+  auto comp = [](offset_t offset, const ELF_SHDR* header) -> bool {
+    return offset < header->sh_offset;
+  };
+  auto it = std::upper_bound(sorted_headers.begin(), sorted_headers.end(),
+                             offset, comp);
+  if (it == sorted_headers.begin())
+    return false;
+  --it;
+  // Just check offset without worrying about width, since this is a target.
+  // Not using RangeCovers() because |sh_offset| and |sh_size| can be 64-bit.
+  return offset >= (*it)->sh_offset &&
+         offset - (*it)->sh_offset < (*it)->sh_size;
+}
+
 // Disassembler for ELF.
-template <class Traits>
+template <class TRAITS>
 class DisassemblerElf : public Disassembler {
  public:
+  using Traits = TRAITS;
+  static constexpr uint16_t kVersion = Traits::kVersion;
   // Applies quick checks to determine whether |image| *may* point to the start
   // of an executable. Returns true iff the check passes.
   static bool QuickDetect(ConstBufferView image);
@@ -81,7 +167,7 @@ class DisassemblerElf : public Disassembler {
   std::string GetExeTypeString() const override;
   std::vector<ReferenceGroup> MakeReferenceGroups() const override = 0;
 
-  // Find/Receive functions that are common among different architectures.
+  // Read/Write functions that are common among different architectures.
   std::unique_ptr<ReferenceReader> MakeReadRelocs(offset_t lo, offset_t hi);
   std::unique_ptr<ReferenceWriter> MakeWriteRelocs(MutableBufferView image);
 
@@ -155,9 +241,10 @@ class DisassemblerElf : public Disassembler {
 };
 
 // Disassembler for ELF with Intel architectures.
-template <class Traits>
-class DisassemblerElfIntel : public DisassemblerElf<Traits> {
+template <class TRAITS>
+class DisassemblerElfIntel : public DisassemblerElf<TRAITS> {
  public:
+  using Traits = TRAITS;
   enum ReferenceType : uint8_t { kReloc, kAbs32, kRel32, kTypeCount };
 
   DisassemblerElfIntel();
@@ -172,7 +259,7 @@ class DisassemblerElfIntel : public DisassemblerElf<Traits> {
   void ParseExecSection(const typename Traits::Elf_Shdr& section) override;
   void PostProcessRel32() override;
 
-  // Specialized Find/Receive functions.
+  // Specialized Read/Write functions.
   std::unique_ptr<ReferenceReader> MakeReadAbs32(offset_t lo, offset_t hi);
   std::unique_ptr<ReferenceWriter> MakeWriteAbs32(MutableBufferView image);
   std::unique_ptr<ReferenceReader> MakeReadRel32(offset_t lo, offset_t hi);
@@ -186,6 +273,83 @@ class DisassemblerElfIntel : public DisassemblerElf<Traits> {
 
 using DisassemblerElfX86 = DisassemblerElfIntel<Elf32IntelTraits>;
 using DisassemblerElfX64 = DisassemblerElfIntel<Elf64IntelTraits>;
+
+// Disassembler for ELF with ARM architectures.
+template <class TRAITS>
+class DisassemblerElfArm : public DisassemblerElf<TRAITS> {
+ public:
+  using Traits = TRAITS;
+  DisassemblerElfArm();
+  DisassemblerElfArm(const DisassemblerElfArm&) = delete;
+  const DisassemblerElfArm& operator=(const DisassemblerElfArm&) = delete;
+  ~DisassemblerElfArm() override;
+
+  // Determines whether target |offset| is in an executable section.
+  bool IsTargetOffsetInExecSection(offset_t offset) const;
+
+  // Creates an architecture-specific Rel32Finder for ParseExecSection.
+  virtual std::unique_ptr<typename Traits::Rel32FinderUse> MakeRel32Finder(
+      const typename Traits::Elf_Shdr& section) = 0;
+
+  // DisassemblerElf:
+  void ParseExecSection(const typename Traits::Elf_Shdr& section) override;
+  void PostProcessRel32() override;
+
+  // Specialized Read/Write functions.
+  std::unique_ptr<ReferenceReader> MakeReadAbs32(offset_t lo, offset_t hi);
+  std::unique_ptr<ReferenceWriter> MakeWriteAbs32(MutableBufferView image);
+
+  // Specialized Read/Write functions for different rel32 address types.
+  template <class ADDR_TRAITS>
+  std::unique_ptr<ReferenceReader> MakeReadRel32(offset_t lower,
+                                                 offset_t upper);
+  template <class ADDR_TRAITS>
+  std::unique_ptr<ReferenceWriter> MakeWriteRel32(MutableBufferView image);
+
+ protected:
+  // Sorted file offsets of rel32 locations for each rel32 address type.
+  std::deque<offset_t>
+      rel32_locations_table_[Traits::ArmReferenceType::kTypeCount];
+};
+
+// Disassembler for ELF with AArch32 (AKA ARM32).
+class DisassemblerElfAArch32 : public DisassemblerElfArm<ElfAArch32Traits> {
+ public:
+  DisassemblerElfAArch32();
+  DisassemblerElfAArch32(const DisassemblerElfAArch32&) = delete;
+  const DisassemblerElfAArch32& operator=(const DisassemblerElfAArch32&) =
+      delete;
+  ~DisassemblerElfAArch32() override;
+
+  // Disassembler:
+  std::vector<ReferenceGroup> MakeReferenceGroups() const override;
+
+  // DisassemblerElfArm:
+  std::unique_ptr<typename Traits::Rel32FinderUse> MakeRel32Finder(
+      const typename Traits::Elf_Shdr& section) override;
+
+  // Under the naive assumption that an executable section is entirely ARM mode
+  // or THUMB2 mode, this function implements heuristics to distinguish between
+  // the two. Returns true if section is THUMB2 mode; otherwise return false.
+  bool IsExecSectionThumb2(const typename Traits::Elf_Shdr& section) const;
+};
+
+// Disassembler for ELF with AArch64 (AKA ARM64).
+class DisassemblerElfAArch64 : public DisassemblerElfArm<ElfAArch64Traits> {
+ public:
+  DisassemblerElfAArch64();
+  DisassemblerElfAArch64(const DisassemblerElfAArch64&) = delete;
+  const DisassemblerElfAArch64& operator=(const DisassemblerElfAArch64&) =
+      delete;
+  ~DisassemblerElfAArch64() override;
+
+  // Disassembler:
+  std::vector<ReferenceGroup> MakeReferenceGroups() const override;
+
+  // DisassemblerElfArm:
+  std::unique_ptr<typename Traits::Rel32FinderUse> MakeRel32Finder(
+      const typename Traits::Elf_Shdr& section) override;
+};
 
 }  // namespace zucchini
 

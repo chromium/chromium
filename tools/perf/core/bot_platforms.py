@@ -223,9 +223,11 @@ OFFICIAL_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig(b.Name()) for b in OFFICIAL_BENCHMARKS])
 # power.mobile requires special hardware.
 # only run blink_perf.sanitizer-api on linux-perf.
+# speedometer2-chrome-health is only for use with the Chrome Health pipeline
 OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
     'power.mobile',
     'blink_perf.sanitizer-api',
+    'speedometer2-chrome-health',
 ])
 # TODO(crbug.com/965158): Remove OFFICIAL_BENCHMARK_NAMES once sharding
 # scripts are no longer using it.
@@ -376,6 +378,12 @@ _WIN_10_AMD_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('octane'),
     _GetBenchmarkConfig('system_health.common_desktop'),
 ])
+_WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('jetstream'),
+    _GetBenchmarkConfig('jetstream2'),
+    _GetBenchmarkConfig('kraken'),
+    _GetBenchmarkConfig('octane'),
+])
 _WIN_7_BENCHMARK_CONFIGS = PerfSuite([
     'loading.desktop',
 ]).Abridge([
@@ -486,6 +494,7 @@ _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
 _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('blink_perf.shadow_dom'),
+    _GetBenchmarkConfig('system_health.common_desktop'),
 ])
 _ANDROID_PIXEL2_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.common_mobile'),
@@ -514,7 +523,8 @@ MAC_HIGH_END = PerfPlatform(
     'mac-10_13_laptop_high_end-perf',
     'MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55',
     _MAC_HIGH_END_BENCHMARK_CONFIGS,
-    26,
+    # crbug/1267365: reduce as some bots are lost due to OS divergence
+    22,
     'mac',
     executables=_MAC_HIGH_END_EXECUTABLE_CONFIGS)
 MAC_LOW_END = PerfPlatform(
@@ -549,7 +559,10 @@ WIN_10 = PerfPlatform(
     ' Intel Kaby Lake HD Graphics 630', _WIN_10_BENCHMARK_CONFIGS,
     26, 'win', executables=_WIN_10_EXECUTABLE_CONFIGS)
 WIN_10_AMD = PerfPlatform('win-10_amd-perf', 'Windows AMD chipset',
-                          _WIN_10_AMD_BENCHMARK_CONFIGS, 2, 'win')
+                          _WIN_10_AMD_BENCHMARK_CONFIGS, 1, 'win')
+WIN_10_AMD_LAPTOP = PerfPlatform('win-10_amd_laptop-perf',
+                                 'Windows 10 Laptop with AMD chipset.',
+                                 _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS, 2, 'win')
 WIN_7 = PerfPlatform('Win 7 Perf', 'N/A', _WIN_7_BENCHMARK_CONFIGS, 2, 'win')
 WIN_7_GPU = PerfPlatform('Win 7 Nvidia GPU Perf', 'N/A',
                          _WIN_7_GPU_BENCHMARK_CONFIGS, 3, 'win')
@@ -602,7 +615,7 @@ ANDROID_PIXEL4A_POWER = PerfPlatform('android-pixel4a_power-perf',
 
 # Cros/Lacros
 LACROS_EVE_PERF = PerfPlatform('lacros-eve-perf', '',
-                               _LACROS_EVE_BENCHMARK_CONFIGS, 10, 'chromeos')
+                               _LACROS_EVE_BENCHMARK_CONFIGS, 8, 'chromeos')
 
 # FYI bots
 WIN_10_LOW_END_HP_CANDIDATE = PerfPlatform(
@@ -640,28 +653,37 @@ LINUX_PERF_FYI = PerfPlatform('linux-perf-fyi',
                               1,
                               'linux',
                               is_fyi=True)
+# TODO(crbug.com/1268204): Rename to platform-specific name.
 FUCHSIA_PERF_FYI = PerfPlatform('fuchsia-perf-fyi',
                                 '',
                                 _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS,
                                 3,
                                 'fuchsia',
                                 is_fyi=True)
+FUCHSIA_PERF_SHERLOCK_FYI = PerfPlatform('fuchsia-perf-sherlock-fyi',
+                                         '',
+                                         _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS,
+                                         3,
+                                         'fuchsia',
+                                         is_fyi=True)
 
 # Calibration bots
 LINUX_PERF_CALIBRATION = PerfPlatform(
     'linux-perf-calibration',
     'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
-    _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS,
+    _LINUX_BENCHMARK_CONFIGS,
     28,
     'linux',
+    executables=_LINUX_EXECUTABLE_CONFIGS,
     is_calibration=True)
 
 ANDROID_PIXEL2_PERF_CALIBRATION = PerfPlatform(
     'android-pixel2-perf-calibration',
     'Android OPM1.171019.021',
-    _ANDROID_PIXEL2_PERF_CALIBRATION_BENCHMARK_CONFIGS,
+    _ANDROID_PIXEL2_BENCHMARK_CONFIGS,
     42,
     'android',
+    executables=_ANDROID_PIXEL2_EXECUTABLE_CONFIGS,
     is_calibration=True)
 
 ALL_PLATFORMS = {

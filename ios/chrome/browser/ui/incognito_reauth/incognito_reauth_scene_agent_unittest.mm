@@ -73,10 +73,7 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
     return web_state_list;
   }
 
-  void SetUpTestObjects(int tab_count, bool enable_flag, bool enable_pref) {
-    // Mock the feature flag.
-    feature_list_.InitWithFeatureState(kIncognitoAuthentication, enable_flag);
-
+  void SetUpTestObjects(int tab_count, bool enable_pref) {
     // Stub all calls to be able to mock the following:
     // 1. sceneState.interfaceProvider.incognitoInterface
     //            .browser->GetWebStateList()->count()
@@ -122,19 +119,8 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
 
 // Test that when the feature pref is disabled, auth isn't required.
 TEST_F(IncognitoReauthSceneAgentTest, PrefDisabled) {
-  SetUpTestObjects(/*tab_count=*/1, /*enable_flag=*/true,
+  SetUpTestObjects(/*tab_count=*/1,
                    /*enable_pref=*/false);
-
-  // Go foreground.
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-
-  EXPECT_FALSE(agent_.authenticationRequired);
-}
-
-// Test that when the feature flag is disabled, auth isn't required.
-TEST_F(IncognitoReauthSceneAgentTest, FlagDisabled) {
-  SetUpTestObjects(/*tab_count=*/1, /*enable_flag=*/false,
-                   /*enable_pref=*/true);
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -145,7 +131,7 @@ TEST_F(IncognitoReauthSceneAgentTest, FlagDisabled) {
 // Test that when the feature is enabled, we're foregrounded with some incognito
 // content already present, auth is required
 TEST_F(IncognitoReauthSceneAgentTest, NeedsAuth) {
-  SetUpTestObjects(/*tab_count=*/1, /*enable_flag=*/true, /*enable_pref=*/true);
+  SetUpTestObjects(/*tab_count=*/1, /*enable_pref=*/true);
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -156,7 +142,7 @@ TEST_F(IncognitoReauthSceneAgentTest, NeedsAuth) {
 // Test that when auth is required and is successfully performed, it's not
 // required anymore.
 TEST_F(IncognitoReauthSceneAgentTest, SuccessfulAuth) {
-  SetUpTestObjects(/*tab_count=*/1, /*enable_flag=*/true, /*enable_pref=*/true);
+  SetUpTestObjects(/*tab_count=*/1, /*enable_pref=*/true);
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -176,7 +162,7 @@ TEST_F(IncognitoReauthSceneAgentTest, SuccessfulAuth) {
 
 // Tests that authentication is still required if authentication fails.
 TEST_F(IncognitoReauthSceneAgentTest, FailedSkippedAuth) {
-  SetUpTestObjects(/*tab_count=*/1, /*enable_flag=*/true, /*enable_pref=*/true);
+  SetUpTestObjects(/*tab_count=*/1, /*enable_pref=*/true);
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -198,7 +184,7 @@ TEST_F(IncognitoReauthSceneAgentTest, FailedSkippedAuth) {
 // Test that when the feature is enabled, auth isn't required if we foreground
 // without any incognito tabs.
 TEST_F(IncognitoReauthSceneAgentTest, AuthNotRequiredWhenNoIncognitoTabs) {
-  SetUpTestObjects(/*tab_count=*/0, /*enable_flag=*/true, /*enable_pref=*/true);
+  SetUpTestObjects(/*tab_count=*/0, /*enable_pref=*/true);
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -210,7 +196,7 @@ TEST_F(IncognitoReauthSceneAgentTest, AuthNotRequiredWhenNoIncognitoTabs) {
 // content already present, auth is required
 TEST_F(IncognitoReauthSceneAgentTest,
        AuthNotRequiredWhenNoIncognitoTabsOnForeground) {
-  SetUpTestObjects(/*tab_count=*/0, /*enable_flag=*/true, /*enable_pref=*/true);
+  SetUpTestObjects(/*tab_count=*/0, /*enable_pref=*/true);
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;

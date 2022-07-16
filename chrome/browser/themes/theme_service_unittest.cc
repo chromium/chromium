@@ -4,13 +4,15 @@
 
 #include "chrome/browser/themes/theme_service.h"
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -20,6 +22,8 @@
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/color/chrome_color_mixers.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -38,6 +42,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/test_native_theme.h"
+#include "ui/views/views_features.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
@@ -45,6 +50,73 @@
 #endif
 
 namespace {
+
+enum class ContrastMode { kNonHighContrast, kHighContrast };
+
+// Struct to distinguish SkColor (aliased to uint32_t) for printing.
+struct PrintableSkColor {
+  bool operator==(const PrintableSkColor& other) const {
+    return color == other.color;
+  }
+
+  bool operator!=(const PrintableSkColor& other) const {
+    return !operator==(other);
+  }
+
+  const SkColor color;
+};
+
+std::ostream& operator<<(std::ostream& os, PrintableSkColor printable_color) {
+  SkColor color = printable_color.color;
+  return os << base::StringPrintf("SkColorARGB(0x%02x, 0x%02x, 0x%02x, 0x%02x)",
+                                  SkColorGetA(color), SkColorGetR(color),
+                                  SkColorGetG(color), SkColorGetB(color));
+}
+
+std::string ColorIdToString(int id) {
+#define E(color_id, theme_property_id, ...) \
+  {theme_property_id, #theme_property_id},
+
+  static constexpr const auto kMap =
+      base::MakeFixedFlatMap<int, const char*>({CHROME_COLOR_IDS});
+
+#undef E
+  constexpr char kPrefix[] = "ThemeProperties::";
+
+  std::string id_str = kMap.find(id)->second;
+  if (base::StartsWith(id_str, kPrefix))
+    return id_str.substr(strlen(kPrefix));
+  return id_str;
+}
+
+std::pair<PrintableSkColor, PrintableSkColor> GetOriginalAndRedirected(
+    const ui::ThemeProvider& theme_provider,
+    int color_id,
+    ui::NativeTheme::ColorScheme color_scheme,
+    ContrastMode contrast_mode) {
+  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+
+  const bool high_contrast = contrast_mode == ContrastMode::kHighContrast;
+#if defined(OS_WIN)
+  if (high_contrast)
+    color_scheme = ui::NativeTheme::ColorScheme::kPlatformHighContrast;
+  native_theme->set_forced_colors(high_contrast);
+#endif
+  native_theme->set_preferred_contrast(
+      high_contrast ? ui::NativeTheme::PreferredContrast::kMore
+                    : ui::NativeTheme::PreferredContrast::kNoPreference);
+  native_theme->set_use_dark_colors(color_scheme ==
+                                    ui::NativeTheme::ColorScheme::kDark);
+
+  PrintableSkColor original{theme_provider.GetColor(color_id)};
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kColorProviderRedirectionForThemeProvider);
+  PrintableSkColor redirected{theme_provider.GetColor(color_id)};
+
+  return std::make_pair(original, redirected);
+}
 
 // A class that ensures any installed extension is uninstalled before it goes
 // out of scope.  This ensures the temporary directory used to load the
@@ -200,8 +272,16 @@ class IncognitoThemeServiceTest : public ThemeServiceTest,
   IncognitoThemeServiceTest() {
     bool flag_enabled = GetParam();
     if (flag_enabled) {
-      feature_list_.InitAndEnableFeature(
-          features::kIncognitoBrandConsistencyForDesktop);
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kIncognitoBrandConsistencyForDesktop,
+                                views::features::
+                                    kInheritNativeThemeFromParentWidget},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{}, /*disabled_features=*/{
+              features::kIncognitoBrandConsistencyForDesktop,
+              views::features::kInheritNativeThemeFromParentWidget});
     }
   }
 };
@@ -210,6 +290,78 @@ INSTANTIATE_TEST_SUITE_P(
     IncognitoThemeServiceTestWithIncognitoBrandConsistencyFlag,
     IncognitoThemeServiceTest,
     testing::Values(false, true));
+
+class ThemeProviderRedirectedEquivalenceTest
+    : public ThemeServiceTest,
+      public testing::WithParamInterface<
+          std::tuple<ui::NativeTheme::ColorScheme, ContrastMode, int>> {
+ public:
+  ThemeProviderRedirectedEquivalenceTest() = default;
+
+  void SetUp() override {
+    static bool added_initializer = false;
+    if (!added_initializer) {
+      ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+          base::BindRepeating(AddChromeColorMixers));
+      added_initializer = true;
+    }
+
+    ThemeServiceTest::SetUp();
+  }
+
+  static std::string ParamInfoToString(
+      ::testing::TestParamInfo<
+          std::tuple<ui::NativeTheme::ColorScheme, ContrastMode, int>>
+          param_info) {
+    auto param_tuple = param_info.param;
+    return ColorSchemeToString(
+               std::get<ui::NativeTheme::ColorScheme>(param_tuple)) +
+           ContrastModeToString(std::get<ContrastMode>(param_tuple)) +
+           "_With_" + ColorIdToString(std::get<int>(param_tuple));
+  }
+
+ private:
+  static std::string ColorSchemeToString(ui::NativeTheme::ColorScheme scheme) {
+    switch (scheme) {
+      case ui::NativeTheme::ColorScheme::kDefault:
+        NOTREACHED()
+            << "Cannot unit test kDefault as it depends on machine state.";
+        return "InvalidColorScheme";
+      case ui::NativeTheme::ColorScheme::kLight:
+        return "kLight";
+      case ui::NativeTheme::ColorScheme::kDark:
+        return "kDark";
+      case ui::NativeTheme::ColorScheme::kPlatformHighContrast:
+        return "kPlatformHighContrast";
+    }
+  }
+
+  static std::string ContrastModeToString(ContrastMode contrast_mode) {
+    switch (contrast_mode) {
+      case ContrastMode::kNonHighContrast:
+        return "";
+      case ContrastMode::kHighContrast:
+        return "HighContrast";
+      default:
+        NOTREACHED();
+        return "InvalidContrastMode";
+    }
+  }
+};
+
+#define E(color_id, theme_property_id, ...) theme_property_id,
+static constexpr int kTestIdValues[] = {CHROME_COLOR_IDS};
+#undef E
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ThemeProviderRedirectedEquivalenceTest,
+    ::testing::Combine(::testing::Values(ui::NativeTheme::ColorScheme::kLight,
+                                         ui::NativeTheme::ColorScheme::kDark),
+                       ::testing::Values(ContrastMode::kNonHighContrast,
+                                         ContrastMode::kHighContrast),
+                       ::testing::ValuesIn(kTestIdValues)),
+    ThemeProviderRedirectedEquivalenceTest::ParamInfoToString);
 
 // Installs then uninstalls a theme and makes sure that the ThemeService
 // reverts to the default theme after the uninstall.
@@ -774,6 +926,28 @@ TEST_F(ThemeServiceTest, PolicyThemeColorSet) {
   EXPECT_EQ(scoper.extension_id(), theme_service_->GetThemeID());
   EXPECT_TRUE(service_->IsExtensionEnabled(scoper.extension_id()));
   EXPECT_TRUE(registry_->GetInstalledExtension(scoper.extension_id()));
+}
+
+// TODO(crbug.com/1056953): Enable on Mac.
+#if defined(OS_MAC)
+#define MAYBE_GetColor DISABLED_GetColor
+#else
+#define MAYBE_GetColor GetColor
+#endif
+TEST_P(ThemeProviderRedirectedEquivalenceTest, MAYBE_GetColor) {
+  const ui::ThemeProvider& theme_provider =
+      ThemeService::GetThemeProviderForProfile(profile());
+  auto param_tuple = GetParam();
+  auto color_scheme = std::get<ui::NativeTheme::ColorScheme>(param_tuple);
+  auto contrast_mode = std::get<ContrastMode>(param_tuple);
+  auto color_id = std::get<int>(param_tuple);
+
+  // Verifies that colors with and without the ColorProvider are the same.
+  auto pair = GetOriginalAndRedirected(theme_provider, color_id, color_scheme,
+                                       contrast_mode);
+  auto original = pair.first;
+  auto redirected = pair.second;
+  EXPECT_EQ(original, redirected);
 }
 
 }  // namespace theme_service_internal

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_screenshot_job.h"
@@ -24,6 +23,10 @@ namespace policy {
 class ScreenshotDelegate : public DeviceCommandScreenshotJob::Delegate {
  public:
   ScreenshotDelegate();
+
+  ScreenshotDelegate(const ScreenshotDelegate&) = delete;
+  ScreenshotDelegate& operator=(const ScreenshotDelegate&) = delete;
+
   ~ScreenshotDelegate() override;
 
   // DeviceCommandScreenshotJob::Delegate:
@@ -40,8 +43,6 @@ class ScreenshotDelegate : public DeviceCommandScreenshotJob::Delegate {
                        scoped_refptr<base::RefCountedMemory> png_data);
 
   base::WeakPtrFactory<ScreenshotDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenshotDelegate);
 };
 
 }  // namespace policy

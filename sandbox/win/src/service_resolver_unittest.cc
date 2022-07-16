@@ -42,6 +42,9 @@ class ResolverThunkTestImpl : public T, public ResolverThunkTest {
   explicit ResolverThunkTestImpl(bool relaxed)
       : T(::GetCurrentProcess(), relaxed) {}
 
+  ResolverThunkTestImpl(const ResolverThunkTestImpl&) = delete;
+  ResolverThunkTestImpl& operator=(const ResolverThunkTestImpl&) = delete;
+
   sandbox::ServiceResolverThunk* resolver() { return this; }
 
  protected:
@@ -63,8 +66,6 @@ class ResolverThunkTestImpl : public T, public ResolverThunkTest {
 
     return ret;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ResolverThunkTestImpl);
 };
 
 typedef ResolverThunkTestImpl<sandbox::ServiceResolverThunk> WinXpResolverTest;
@@ -152,7 +153,7 @@ std::unique_ptr<ResolverThunkTest> GetTestResolver(bool relaxed) {
   return std::make_unique<WinXpResolverTest>(relaxed);
 #else
   base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
-  if (os_info->wow64_status() == base::win::OSInfo::WOW64_ENABLED) {
+  if (os_info->IsWowX86OnAMD64()) {
     if (os_info->version() >= base::win::Version::WIN10)
       return std::make_unique<Wow64W10ResolverTest>(relaxed);
     if (os_info->version() >= base::win::Version::WIN8)

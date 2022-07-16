@@ -6,8 +6,11 @@
 
 #include <memory>
 
+#include "ash/components/phonehub/notification_access_manager.h"
+#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/phonehub/camera_roll_view.h"
 #include "ash/system/phonehub/notification_opt_in_view.h"
 #include "ash/system/phonehub/phone_hub_recent_apps_view.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
@@ -16,8 +19,6 @@
 #include "ash/system/phonehub/task_continuation_view.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
-#include "chromeos/components/phonehub/notification_access_manager.h"
-#include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -55,9 +56,18 @@ PhoneConnectedView::PhoneConnectedView(
         phone_model, phone_hub_manager->GetUserActionRecorder())));
   }
 
-  if (features::IsEcheSWAEnabled() && features::IsPhoneHubRecentAppsEnabled()) {
-    setup_layered_view(
-        AddChildView(std::make_unique<PhoneHubRecentAppsView>()));
+  auto* recent_apps_handler =
+      phone_hub_manager->GetRecentAppsInteractionHandler();
+  if (features::IsEcheSWAEnabled() && features::IsPhoneHubRecentAppsEnabled() &&
+      recent_apps_handler) {
+    setup_layered_view(AddChildView(
+        std::make_unique<PhoneHubRecentAppsView>(recent_apps_handler)));
+  }
+
+  auto* camera_roll_manager = phone_hub_manager->GetCameraRollManager();
+  if (features::IsPhoneHubCameraRollEnabled() && camera_roll_manager) {
+    setup_layered_view(AddChildView(std::make_unique<CameraRollView>(
+        camera_roll_manager, phone_hub_manager->GetUserActionRecorder())));
   }
 }
 

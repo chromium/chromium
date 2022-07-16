@@ -17,7 +17,7 @@
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -314,14 +314,14 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
                                        bool remove_all) {
       DCHECK(sequence_checker_.CalledOnValidSequence());
 
-      ExtensionToResourceMap::iterator it =
+      ExtensionToResourceMap::iterator extension_it =
           extension_resource_map_.find(extension_id);
-      if (it == extension_resource_map_.end())
+      if (extension_it == extension_resource_map_.end())
         return;
 
       // Remove all resources, or the non persistent ones only if |remove_all|
       // is false.
-      std::unordered_set<int>& resource_ids = it->second;
+      std::unordered_set<int>& resource_ids = extension_it->second;
       for (std::unordered_set<int>::iterator it = resource_ids.begin();
            it != resource_ids.end();) {
         bool erase = false;

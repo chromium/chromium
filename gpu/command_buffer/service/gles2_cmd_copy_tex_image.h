@@ -22,6 +22,11 @@ namespace gles2 {
 class GPU_GLES2_EXPORT CopyTexImageResourceManager {
  public:
   explicit CopyTexImageResourceManager(const gles2::FeatureInfo* feature_info);
+
+  CopyTexImageResourceManager(const CopyTexImageResourceManager&) = delete;
+  CopyTexImageResourceManager& operator=(const CopyTexImageResourceManager&) =
+      delete;
+
   virtual ~CopyTexImageResourceManager();
 
   virtual void Initialize(const DecoderContext* decoder);
@@ -75,8 +80,6 @@ class GPU_GLES2_EXPORT CopyTexImageResourceManager {
   GLuint scratch_fbo_ = 0;
 
   GLuint vao_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CopyTexImageResourceManager);
 };
 
 }  // namespace gles2

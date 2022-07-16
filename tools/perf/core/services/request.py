@@ -4,6 +4,8 @@
 
 import json
 import logging
+
+import six
 import six.moves.urllib.parse  # pylint: disable=import-error
 
 # TODO(crbug.com/996778): Figure out how to get httplib2 hermetically.
@@ -48,7 +50,7 @@ class RequestError(OSError):
     """Attempt to load the content as a json object."""
     try:
       return json.loads(self.content)
-    except StandardError:
+    except Exception:
       return None
 
   @property
@@ -57,9 +59,12 @@ class RequestError(OSError):
     try:
       # Try to find error message within json content.
       return self.json['error']
-    except StandardError:
+    except Exception:
       # Otherwise fall back to entire content itself, converting str to unicode.
-      return self.content.decode('utf-8')
+      rv = self.content
+      if not isinstance(rv, six.text_type):
+        rv = rv.decode('utf-8')
+      return rv
 
 
 class ClientError(RequestError):

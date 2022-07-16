@@ -52,7 +52,8 @@ namespace signedInDevices {
     // device.
     // |callback|: The callback to be invoked with the array of DeviceInfo
     // objects.
-    static void get(optional boolean isLocal, DeviceInfoCallback callback);
+    [supportsPromises] static void get(optional boolean isLocal,
+                                       DeviceInfoCallback callback);
   };
 
   interface Events {

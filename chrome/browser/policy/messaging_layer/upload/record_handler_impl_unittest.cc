@@ -12,15 +12,15 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/reporting/proto/record.pb.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -52,12 +52,12 @@ MATCHER_P(ResponseEquals,
   if (!arg.ok()) {
     return false;
   }
-  if (arg.ValueOrDie().sequencing_information.GetTypeName() !=
-      expected.sequencing_information.GetTypeName()) {
+  if (arg.ValueOrDie().sequence_information.GetTypeName() !=
+      expected.sequence_information.GetTypeName()) {
     return false;
   }
-  if (arg.ValueOrDie().sequencing_information.SerializeAsString() !=
-      expected.sequencing_information.SerializeAsString()) {
+  if (arg.ValueOrDie().sequence_information.SerializeAsString() !=
+      expected.sequence_information.SerializeAsString()) {
     return false;
   }
   return arg.ValueOrDie().force_confirm == expected.force_confirm;
@@ -65,10 +65,10 @@ MATCHER_P(ResponseEquals,
 
 using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 
-// Helper function for retrieving and processing the SequencingInformation from
+// Helper function for retrieving and processing the SequenceInformation from
 // a request.
-void RetrieveFinalSequencingInformation(const base::Value& request,
-                                        base::Value& sequencing_info) {
+void RetrieveFinalSequenceInformation(const base::Value& request,
+                                      base::Value& sequencing_info) {
   ASSERT_TRUE(request.is_dict());
 
   // Retrieve and process sequencing information
@@ -134,7 +134,7 @@ void SucceedResponseFromRequestHelper(const base::Value& request,
                                       bool force_confirm_by_server,
                                       base::Value& response,
                                       base::Value& sequencing_info) {
-  RetrieveFinalSequencingInformation(request, sequencing_info);
+  RetrieveFinalSequenceInformation(request, sequencing_info);
 
   // If force_confirm is true, process that.
   if (force_confirm_by_server) {
@@ -187,7 +187,7 @@ void SucceedResponseFromRequestInvalidPriority(const base::Value& request,
 void FailedResponseFromRequest(const base::Value& request,
                                base::Value& response) {
   base::Value seq_info{base::Value::Type::DICTIONARY};
-  RetrieveFinalSequencingInformation(request, seq_info);
+  RetrieveFinalSequenceInformation(request, seq_info);
 
   response.SetPath("lastSucceedUploadedRecord", seq_info.Clone());
   // The lastSucceedUploadedRecord should be the record before the one indicated
@@ -245,11 +245,11 @@ std::unique_ptr<std::vector<EncryptedRecord>> BuildTestRecordsVector(
     EncryptedRecord encrypted_record;
     encrypted_record.set_encrypted_wrapped_record(
         base::StrCat({"Record Number ", base::NumberToString(i)}));
-    auto* sequencing_information =
-        encrypted_record.mutable_sequencing_information();
-    sequencing_information->set_generation_id(generation_id);
-    sequencing_information->set_sequencing_id(i);
-    sequencing_information->set_priority(Priority::IMMEDIATE);
+    auto* sequence_information =
+        encrypted_record.mutable_sequence_information();
+    sequence_information->set_generation_id(generation_id);
+    sequence_information->set_sequencing_id(i);
+    sequence_information->set_priority(Priority::IMMEDIATE);
     test_records->push_back(std::move(encrypted_record));
   }
   return test_records;
@@ -262,7 +262,7 @@ TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
   const auto force_confirm_by_server = force_confirm();
 
   DmServerUploadService::SuccessfulUploadResponse expected_response{
-      .sequencing_information = test_records->back().sequencing_information(),
+      .sequence_information = test_records->back().sequence_information(),
       .force_confirm = force_confirm()};
 
   EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
@@ -390,8 +390,8 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
   const auto force_confirm_by_server = force_confirm();
 
   const DmServerUploadService::SuccessfulUploadResponse expected_response{
-      .sequencing_information =
-          (*test_records)[kNumTestRecords - 1].sequencing_information(),
+      .sequence_information =
+          (*test_records)[kNumTestRecords - 1].sequence_information(),
       .force_confirm = force_confirm()};
 
   // Once for failure, and once for gap.

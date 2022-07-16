@@ -22,6 +22,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
  public:
   explicit CALayerTreeCoordinator(bool allow_remote_layers,
                                   bool allow_av_sample_buffer_display_layer);
+
+  CALayerTreeCoordinator(const CALayerTreeCoordinator&) = delete;
+  CALayerTreeCoordinator& operator=(const CALayerTreeCoordinator&) = delete;
+
   ~CALayerTreeCoordinator();
 
   // Set the composited frame's size.
@@ -60,8 +64,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
 
   // Frame that is currently being displayed on the screen.
   std::unique_ptr<CARendererLayerTree> current_ca_renderer_layer_tree_;
-
-  DISALLOW_COPY_AND_ASSIGN(CALayerTreeCoordinator);
 };
 
 }  // namespace ui

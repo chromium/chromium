@@ -9,8 +9,9 @@
 
 #include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
+#include "build/build_config.h"
 #include "ui/gfx/image/image.h"
-
+#include "url/gurl.h"
 namespace autofill {
 
 struct Suggestion {
@@ -62,11 +63,20 @@ struct Suggestion {
   std::u16string additional_label;
   // Contains an image to display for the suggestion.
   gfx::Image custom_icon;
+
+#if defined(OS_ANDROID)
+  // The url for the custom icon. This is used by android to fetch the image as
+  // android does not support gfx::Image directly.
+  GURL custom_icon_url;
+#endif  // OS_ANDROID
+
   // TODO(crbug.com/1019660): Identify icons with enum instead of strings.
   // If |custom_icon| is empty, the name of the fallback built-in icon.
   std::string icon;
-  // This icon string shows whether the suggestion originates from local or
-  // account store. If it's empty, no store indication should be shown.
+  // For passwords, this icon string shows whether the suggestion originates
+  // from local or account store. It is also used on the settings entry for
+  // the credit card Autofill popup to indicate if all credit cards are server
+  // cards.
   std::string store_indicator_icon;
   MatchMode match = PREFIX_MATCH;
   // Whether |value| should be displayed as secondary text.

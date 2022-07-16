@@ -145,14 +145,6 @@ This test verifies the position and size of the highlight rectangles overlayed o
         {
           "x": 173,
           "y": 133
-        },
-        {
-          "x": 205.5,
-          "y": 133
-        },
-        {
-          "x": 238,
-          "y": 133
         }
       ],
       "negativeColumnLineNumberPositions": [
@@ -350,14 +342,6 @@ This test verifies the position and size of the highlight rectangles overlayed o
       "negativeRowLineNumberPositions": [
         {
           "x": 108,
-          "y": -92
-        },
-        {
-          "x": 218,
-          "y": -92
-        },
-        {
-          "x": 328,
           "y": -92
         }
       ],

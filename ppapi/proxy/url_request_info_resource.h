@@ -23,6 +23,10 @@ class PPAPI_PROXY_EXPORT URLRequestInfoResource
  public:
   URLRequestInfoResource(Connection connection, PP_Instance instance,
                          const URLRequestInfoData& data);
+
+  URLRequestInfoResource(const URLRequestInfoResource&) = delete;
+  URLRequestInfoResource& operator=(const URLRequestInfoResource&) = delete;
+
   ~URLRequestInfoResource() override;
 
   // Resource overrides.
@@ -46,8 +50,6 @@ class PPAPI_PROXY_EXPORT URLRequestInfoResource
 
  private:
   URLRequestInfoData data_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestInfoResource);
 };
 
 }  // namespace proxy

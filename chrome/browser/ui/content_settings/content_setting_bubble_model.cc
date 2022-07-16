@@ -200,8 +200,8 @@ ContentSettingBubbleModel::ListItem::ListItem(const gfx::VectorIcon* image,
       item_id(item_id) {}
 
 ContentSettingBubbleModel::ListItem::ListItem(const ListItem& other) = default;
-ContentSettingBubbleModel::ListItem& ContentSettingBubbleModel::ListItem::
-operator=(const ListItem& other) = default;
+ContentSettingBubbleModel::ListItem&
+ContentSettingBubbleModel::ListItem::operator=(const ListItem& other) = default;
 
 ContentSettingSimpleBubbleModel::ContentSettingSimpleBubbleModel(
     Delegate* delegate,
@@ -216,7 +216,7 @@ ContentSettingSimpleBubbleModel::ContentSettingSimpleBubbleModel(
 }
 
 ContentSettingSimpleBubbleModel*
-    ContentSettingSimpleBubbleModel::AsSimpleBubbleModel() {
+ContentSettingSimpleBubbleModel::AsSimpleBubbleModel() {
   return this;
 }
 
@@ -329,8 +329,7 @@ void ContentSettingSimpleBubbleModel::SetCustomLink() {
     set_custom_link(l10n_util::GetStringUTF16(custom_link_id));
 }
 
-void ContentSettingSimpleBubbleModel::OnCustomLinkClicked() {
-}
+void ContentSettingSimpleBubbleModel::OnCustomLinkClicked() {}
 
 // ContentSettingMixedScriptBubbleModel ----------------------------------------
 
@@ -340,6 +339,11 @@ class ContentSettingMixedScriptBubbleModel
   ContentSettingMixedScriptBubbleModel(Delegate* delegate,
                                        WebContents* web_contents);
 
+  ContentSettingMixedScriptBubbleModel(
+      const ContentSettingMixedScriptBubbleModel&) = delete;
+  ContentSettingMixedScriptBubbleModel& operator=(
+      const ContentSettingMixedScriptBubbleModel&) = delete;
+
   ~ContentSettingMixedScriptBubbleModel() override {}
 
  private:
@@ -348,8 +352,6 @@ class ContentSettingMixedScriptBubbleModel
   // ContentSettingBubbleModel:
   void OnLearnMoreClicked() override;
   void OnCustomLinkClicked() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingMixedScriptBubbleModel);
 };
 
 ContentSettingMixedScriptBubbleModel::ContentSettingMixedScriptBubbleModel(
@@ -517,9 +519,7 @@ ContentSettingSingleRadioGroup::ContentSettingSingleRadioGroup(
     Delegate* delegate,
     WebContents* web_contents,
     ContentSettingsType content_type)
-    : ContentSettingSimpleBubbleModel(delegate,
-                                      web_contents,
-                                      content_type),
+    : ContentSettingSimpleBubbleModel(delegate, web_contents, content_type),
       block_setting_(CONTENT_SETTING_BLOCK) {
   SetRadioGroup();
 }
@@ -661,6 +661,12 @@ class ContentSettingCookiesBubbleModel : public ContentSettingSingleRadioGroup {
  public:
   ContentSettingCookiesBubbleModel(Delegate* delegate,
                                    WebContents* web_contents);
+
+  ContentSettingCookiesBubbleModel(const ContentSettingCookiesBubbleModel&) =
+      delete;
+  ContentSettingCookiesBubbleModel& operator=(
+      const ContentSettingCookiesBubbleModel&) = delete;
+
   ~ContentSettingCookiesBubbleModel() override;
 
   // ContentSettingBubbleModel:
@@ -668,8 +674,6 @@ class ContentSettingCookiesBubbleModel : public ContentSettingSingleRadioGroup {
 
  private:
   void OnCustomLinkClicked() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingCookiesBubbleModel);
 };
 
 ContentSettingCookiesBubbleModel::ContentSettingCookiesBubbleModel(
@@ -704,6 +708,12 @@ class ContentSettingPopupBubbleModel
       public blocked_content::UrlListManager::Observer {
  public:
   ContentSettingPopupBubbleModel(Delegate* delegate, WebContents* web_contents);
+
+  ContentSettingPopupBubbleModel(const ContentSettingPopupBubbleModel&) =
+      delete;
+  ContentSettingPopupBubbleModel& operator=(
+      const ContentSettingPopupBubbleModel&) = delete;
+
   ~ContentSettingPopupBubbleModel() override;
 
   // ContentSettingBubbleModel:
@@ -722,8 +732,6 @@ class ContentSettingPopupBubbleModel
   base::ScopedObservation<blocked_content::UrlListManager,
                           blocked_content::UrlListManager::Observer>
       url_list_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingPopupBubbleModel);
 };
 
 ContentSettingPopupBubbleModel::ContentSettingPopupBubbleModel(
@@ -1228,25 +1236,22 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
                                      ContentSettingsType::GEOLOCATION) {
   SetCustomLink();
 #if defined(OS_MAC)
-  if (base::FeatureList::IsEnabled(
-          ::features::kMacCoreLocationImplementation)) {
-    PageSpecificContentSettings* content_settings =
-        PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame());
-    if (!content_settings)
-      return;
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame());
+  if (!content_settings)
+    return;
 
-    bool is_allowed =
-        content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
+  bool is_allowed =
+      content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
 
-    device::GeolocationManager* geolocation_manager =
-        g_browser_process->platform_part()->geolocation_manager();
-    LocationSystemPermissionStatus permission =
-        geolocation_manager->GetSystemPermission();
-    if (permission != LocationSystemPermissionStatus::kAllowed && is_allowed) {
-      // If the permission is turned off in MacOS system preferences, overwrite
-      // the bubble to enable the user to trigger the system dialog.
-      InitializeSystemGeolocationPermissionBubble();
-    }
+  device::GeolocationManager* geolocation_manager =
+      g_browser_process->platform_part()->geolocation_manager();
+  LocationSystemPermissionStatus permission =
+      geolocation_manager->GetSystemPermission();
+  if (permission != LocationSystemPermissionStatus::kAllowed && is_allowed) {
+    // If the permission is turned off in MacOS system preferences, overwrite
+    // the bubble to enable the user to trigger the system dialog.
+    InitializeSystemGeolocationPermissionBubble();
   }
 #endif  // defined(OS_MAC)
 }
@@ -1360,9 +1365,9 @@ void ContentSettingSubresourceFilterBubbleModel::OnLearnMoreClicked() {
 
 void ContentSettingSubresourceFilterBubbleModel::CommitChanges() {
   if (is_checked_) {
-    subresource_filter::ContentSubresourceFilterThrottleManager::
-        FromWebContents(web_contents())
-            ->OnReloadRequested();
+    subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
+        web_contents()->GetPrimaryPage())
+        ->OnReloadRequested();
   }
 }
 
@@ -1509,14 +1514,11 @@ void ContentSettingFramebustBlockBubbleModel::BlockedUrlAdded(
   AddListItem(CreateUrlListItem(0 /* id */, blocked_url));
 }
 
-// ContentSettingNotificationsBubbleModel ----------------------------------
-ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
+// ContentSettingQuietRequestBubbleModel ----------------------------------
+ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
     Delegate* delegate,
     WebContents* web_contents)
     : ContentSettingBubbleModel(delegate, web_contents) {
-  set_title(l10n_util::GetStringUTF16(
-      IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_TITLE));
-
   // TODO(crbug.com/1030633): This block is more defensive than it needs to be
   // because ContentSettingImageModelBrowserTest exercises it without setting up
   // the correct PermissionRequestManager state. Fix that.
@@ -1525,8 +1527,25 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
   auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
   if (!quiet_ui_reason)
     return;
+  CHECK_GT(manager->Requests().size(), 0u);
+  DCHECK_EQ(manager->Requests().size(), 1u);
+  const permissions::RequestType request_type =
+      manager->Requests()[0]->request_type();
+  int bubble_title_string_id = 0;
+  switch (request_type) {
+    case permissions::RequestType::kNotifications:
+      bubble_title_string_id = IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_TITLE;
+      break;
+    case permissions::RequestType::kGeolocation:
+      bubble_title_string_id = IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_TITLE;
+      break;
+    default:
+      NOTREACHED();
+  }
+  set_title(l10n_util::GetStringUTF16(bubble_title_string_id));
   switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
+      DCHECK_EQ(request_type, permissions::RequestType::kNotifications);
       set_message(l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_DESCRIPTION));
       set_done_button_text(l10n_util::GetStringUTF16(
@@ -1536,6 +1555,7 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
           base::UserMetricsAction("Notifications.Quiet.AnimatedIconClicked"));
       break;
     case QuietUiReason::kTriggeredByCrowdDeny:
+      DCHECK_EQ(request_type, permissions::RequestType::kNotifications);
       set_message(l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_CROWD_DENY_DESCRIPTION));
       set_done_button_text(l10n_util::GetStringUTF16(
@@ -1546,6 +1566,7 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
       break;
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
     case QuietUiReason::kTriggeredDueToAbusiveContent:
+      DCHECK_EQ(request_type, permissions::RequestType::kNotifications);
       set_message(l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_ABUSIVE_DESCRIPTION));
       // TODO(crbug.com/1082738): It is rather confusing to have the `Cancel`
@@ -1560,10 +1581,27 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
           base::UserMetricsAction("Notifications.Quiet.StaticIconClicked"));
       break;
     case QuietUiReason::kPredictedVeryUnlikelyGrant:
-      set_message(l10n_util::GetStringUTF16(
-          IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_PREDICTION_SERVICE_DESCRIPTION));
-      set_done_button_text(l10n_util::GetStringUTF16(
-          IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_ALLOW_BUTTON));
+      int bubble_message_string_id = 0;
+      int bubble_done_button_string_id = 0;
+      switch (request_type) {
+        case permissions::RequestType::kNotifications:
+          bubble_message_string_id =
+              IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_PREDICTION_SERVICE_DESCRIPTION;
+          bubble_done_button_string_id =
+              IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_ALLOW_BUTTON;
+          break;
+        case permissions::RequestType::kGeolocation:
+          bubble_message_string_id =
+              IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_PREDICTION_SERVICE_DESCRIPTION;
+          bubble_done_button_string_id =
+              IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_ALLOW_BUTTON;
+          break;
+        default:
+          NOTREACHED();
+      }
+      set_message(l10n_util::GetStringUTF16(bubble_message_string_id));
+      set_done_button_text(
+          l10n_util::GetStringUTF16(bubble_done_button_string_id));
       set_show_learn_more(false);
       base::RecordAction(
           base::UserMetricsAction("Notifications.Quiet.AnimatedIconClicked"));
@@ -1571,40 +1609,88 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
   }
 }
 
-ContentSettingNotificationsBubbleModel::
-    ~ContentSettingNotificationsBubbleModel() = default;
+ContentSettingQuietRequestBubbleModel::
+    ~ContentSettingQuietRequestBubbleModel() = default;
 
-ContentSettingNotificationsBubbleModel*
-ContentSettingNotificationsBubbleModel::AsNotificationsBubbleModel() {
+ContentSettingQuietRequestBubbleModel*
+ContentSettingQuietRequestBubbleModel::AsQuietRequestBubbleModel() {
   return this;
 }
 
-void ContentSettingNotificationsBubbleModel::OnManageButtonClicked() {
-  if (delegate())
-    delegate()->ShowContentSettingsPage(ContentSettingsType::NOTIFICATIONS);
-
-  base::RecordAction(
-      base::UserMetricsAction("Notifications.Quiet.ManageClicked"));
-}
-
-void ContentSettingNotificationsBubbleModel::OnLearnMoreClicked() {
-  if (delegate())
-    delegate()->ShowLearnMorePage(ContentSettingsType::NOTIFICATIONS);
-}
-
-void ContentSettingNotificationsBubbleModel::OnDoneButtonClicked() {
+void ContentSettingQuietRequestBubbleModel::OnManageButtonClicked() {
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents());
+  CHECK_GT(manager->Requests().size(), 0u);
+  DCHECK_EQ(manager->Requests().size(), 1u);
+  manager->set_managed_clicked();
+  if (is_UMA_for_test) {
+    // `delegate()->ShowContentSettingsPage` opens a new tab. It is not needed
+    // for UMA tests.
+    return;
+  }
+  const permissions::RequestType request_type =
+      manager->Requests()[0]->request_type();
+  if (delegate()) {
+    switch (request_type) {
+      case permissions::RequestType::kNotifications:
+        delegate()->ShowContentSettingsPage(ContentSettingsType::NOTIFICATIONS);
+        base::RecordAction(base::UserMetricsAction(
+            "Permissions.Prompt.QuietBubble.Notifications.ManageClicked"));
+        break;
+      case permissions::RequestType::kGeolocation:
+        delegate()->ShowContentSettingsPage(ContentSettingsType::GEOLOCATION);
+        base::RecordAction(base::UserMetricsAction(
+            "Permissions.Prompt.QuietBubble.Geolocation.ManageClicked"));
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+}
 
+void ContentSettingQuietRequestBubbleModel::OnLearnMoreClicked() {
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  manager->set_learn_more_clicked();
+  if (is_UMA_for_test) {
+    // `delegate()->ShowLearnMorePage` opens a new tab. It is not needed for UMA
+    // tests.
+    return;
+  }
+
+  if (delegate()) {
+    // We only show learn more button for Notification quiet ui dialog when it
+    // is triggered due to abusive requests or contents. We don't have any learn
+    // more button for the geolocation quiet ui dialogs.
+    DCHECK_EQ(
+        permissions::PermissionRequestManager::FromWebContents(web_contents())
+            ->Requests()[0]
+            ->request_type(),
+        permissions::RequestType::kNotifications);
+    delegate()->ShowLearnMorePage(ContentSettingsType::NOTIFICATIONS);
+  }
+}
+
+void ContentSettingQuietRequestBubbleModel::OnDoneButtonClicked() {
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  CHECK_GT(manager->Requests().size(), 0u);
+  DCHECK_EQ(manager->Requests().size(), 1u);
   auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
+  const permissions::RequestType request_type =
+      manager->Requests()[0]->request_type();
   DCHECK(quiet_ui_reason);
+  DCHECK(request_type == permissions::RequestType::kNotifications ||
+         request_type == permissions::RequestType::kGeolocation);
   switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
     case QuietUiReason::kTriggeredByCrowdDeny:
     case QuietUiReason::kPredictedVeryUnlikelyGrant:
       manager->Accept();
-      base::RecordAction(
-          base::UserMetricsAction("Notifications.Quiet.ShowForSiteClicked"));
+      base::RecordAction(base::UserMetricsAction(
+          request_type == permissions::RequestType::kNotifications
+              ? "Permissions.Prompt.QuietBubble.Notifications.AllowClicked"
+              : "Permissions.Prompt.QuietBubble.Geolocation.AllowClicked"));
       break;
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
     case QuietUiReason::kTriggeredDueToAbusiveContent:
@@ -1615,7 +1701,7 @@ void ContentSettingNotificationsBubbleModel::OnDoneButtonClicked() {
   }
 }
 
-void ContentSettingNotificationsBubbleModel::OnCancelButtonClicked() {
+void ContentSettingQuietRequestBubbleModel::OnCancelButtonClicked() {
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents());
 
@@ -1634,6 +1720,12 @@ void ContentSettingNotificationsBubbleModel::OnCancelButtonClicked() {
       base::RecordAction(
           base::UserMetricsAction("Notifications.Quiet.ShowForSiteClicked"));
       break;
+  }
+}
+
+void ContentSettingQuietRequestBubbleModel::OnBubbleDismissedByUser() {
+  if (on_bubble_dismissed_by_user_callback_) {
+    std::move(on_bubble_dismissed_by_user_callback_).Run();
   }
 }
 
@@ -1699,8 +1791,7 @@ ContentSettingBubbleModel::ContentSettingBubbleModel(Delegate* delegate,
   DCHECK(web_contents_);
 }
 
-ContentSettingBubbleModel::~ContentSettingBubbleModel() {
-}
+ContentSettingBubbleModel::~ContentSettingBubbleModel() {}
 
 ContentSettingBubbleModel::RadioGroup::RadioGroup() : default_item(0) {}
 
@@ -1725,19 +1816,19 @@ ContentSettingBubbleModel::BubbleContent::BubbleContent() {}
 ContentSettingBubbleModel::BubbleContent::~BubbleContent() {}
 
 ContentSettingSimpleBubbleModel*
-    ContentSettingBubbleModel::AsSimpleBubbleModel() {
+ContentSettingBubbleModel::AsSimpleBubbleModel() {
   // In general, bubble models might not inherit from the simple bubble model.
   return nullptr;
 }
 
 ContentSettingMediaStreamBubbleModel*
-    ContentSettingBubbleModel::AsMediaStreamBubbleModel() {
+ContentSettingBubbleModel::AsMediaStreamBubbleModel() {
   // In general, bubble models might not inherit from the media bubble model.
   return nullptr;
 }
 
-ContentSettingNotificationsBubbleModel*
-ContentSettingBubbleModel::AsNotificationsBubbleModel() {
+ContentSettingQuietRequestBubbleModel*
+ContentSettingBubbleModel::AsQuietRequestBubbleModel() {
   return nullptr;
 }
 

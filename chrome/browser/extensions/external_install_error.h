@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/webstore_data_fetcher_delegate.h"
@@ -55,6 +54,10 @@ class ExternalInstallError : public WebstoreDataFetcherDelegate {
                        const std::string& extension_id,
                        AlertType error_type,
                        ExternalInstallManager* manager);
+
+  ExternalInstallError(const ExternalInstallError&) = delete;
+  ExternalInstallError& operator=(const ExternalInstallError&) = delete;
+
   ~ExternalInstallError() override;
 
   void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
@@ -138,8 +141,6 @@ class ExternalInstallError : public WebstoreDataFetcherDelegate {
   std::unique_ptr<WebstoreDataFetcher> webstore_data_fetcher_;
 
   base::WeakPtrFactory<ExternalInstallError> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalInstallError);
 };
 
 }  // namespace extensions

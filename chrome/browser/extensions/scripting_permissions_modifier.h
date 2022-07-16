@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 class GURL;
@@ -46,6 +45,11 @@ class ScriptingPermissionsModifier {
 
   ScriptingPermissionsModifier(content::BrowserContext* browser_context,
                                const scoped_refptr<const Extension>& extension);
+
+  ScriptingPermissionsModifier(const ScriptingPermissionsModifier&) = delete;
+  ScriptingPermissionsModifier& operator=(const ScriptingPermissionsModifier&) =
+      delete;
+
   ~ScriptingPermissionsModifier();
 
   // Sets whether Chrome should withhold host permissions from the extension.
@@ -132,8 +136,6 @@ class ScriptingPermissionsModifier {
   scoped_refptr<const Extension> extension_;
 
   ExtensionPrefs* extension_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptingPermissionsModifier);
 };
 
 }  // namespace extensions

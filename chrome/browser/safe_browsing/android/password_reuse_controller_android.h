@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
@@ -36,6 +35,12 @@ class PasswordReuseControllerAndroid
                                  ChromePasswordProtectionService* service,
                                  ReusedPasswordAccountType password_type,
                                  OnWarningDone done_callback);
+
+  PasswordReuseControllerAndroid(const PasswordReuseControllerAndroid&) =
+      delete;
+  PasswordReuseControllerAndroid& operator=(
+      const PasswordReuseControllerAndroid&) = delete;
+
   ~PasswordReuseControllerAndroid() override;
 
   // Called by |ChromePasswordProtectionService| when modal dialog needs to be
@@ -60,13 +65,8 @@ class PasswordReuseControllerAndroid
   std::u16string GetSecondaryButtonText() const;
 
   // Get the detailed warning text that should show in the modal warning dialog.
-  // |placeholder_offsets| are the start points/indices of the placeholders that
-  // are passed into the resource string.
-  std::u16string GetWarningDetailText(
-      std::vector<size_t>* placeholder_offsets) const;
+  std::u16string GetWarningDetailText() const;
   std::u16string GetTitle() const;
-  const std::vector<std::u16string> GetPlaceholdersForSavedPasswordWarningText()
-      const;
 
   // ChromePasswordProtectionService::Observer:
   void OnGaiaPasswordChanged() override;
@@ -77,18 +77,19 @@ class PasswordReuseControllerAndroid
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
 
+  void SetReusedPasswordAccountTypeForTesting(
+      ReusedPasswordAccountType password_type);
+
  private:
   std::unique_ptr<PasswordReuseDialogViewAndroid> dialog_view_;
   ChromePasswordProtectionService* service_;
   const GURL url_;
-  const ReusedPasswordAccountType password_type_;
+  ReusedPasswordAccountType password_type_;
   ui::WindowAndroid* window_android_;
   OnWarningDone done_callback_;
 
   // Records the start time when modal warning is constructed.
   base::TimeTicks modal_construction_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordReuseControllerAndroid);
 };
 
 }  // namespace safe_browsing

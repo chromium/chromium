@@ -11,7 +11,7 @@
 namespace blink {
 
 // Returns whether provided string is a URL of a known search engine.
-PLATFORM_EXPORT bool IsKnownSearchEngine(const AtomicString&);
+PLATFORM_EXPORT bool IsKnownSearchEngine(const String&);
 
 }  // namespace blink
 

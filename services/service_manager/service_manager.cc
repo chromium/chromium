@@ -20,7 +20,7 @@
 #include "base/token.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/constants.h"
 #include "services/service_manager/public/cpp/manifest_builder.h"
@@ -75,19 +75,23 @@ class DefaultServiceProcessHost : public ServiceProcessHost {
   {
   }
 
+  DefaultServiceProcessHost(const DefaultServiceProcessHost&) = delete;
+  DefaultServiceProcessHost& operator=(const DefaultServiceProcessHost&) =
+      delete;
+
   ~DefaultServiceProcessHost() override = default;
 
   mojo::PendingRemote<mojom::Service> Launch(
       const Identity& identity,
-      sandbox::policy::SandboxType sandbox_type,
+      sandbox::mojom::Sandbox sandbox_type,
       const std::u16string& display_name,
       LaunchCallback callback) override {
 #if defined(OS_IOS)
     return mojo::NullRemote();
 #else
     // TODO(https://crbug.com/781334): Support sandboxing.
-    CHECK_EQ(sandbox_type, sandbox::policy::SandboxType::kNoSandbox);
-    return launcher_.Start(identity, sandbox::policy::SandboxType::kNoSandbox,
+    CHECK_EQ(sandbox_type, sandbox::mojom::Sandbox::kNoSandbox);
+    return launcher_.Start(identity, sandbox::mojom::Sandbox::kNoSandbox,
                            std::move(callback));
 #endif  // defined(OS_IOS)
   }
@@ -96,8 +100,6 @@ class DefaultServiceProcessHost : public ServiceProcessHost {
 #if !defined(OS_IOS)
   ServiceProcessLauncher launcher_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultServiceProcessHost);
 };
 
 // Default ServiceManager::Delegate implementation. This supports launching only
@@ -110,6 +112,11 @@ class DefaultServiceManagerDelegate : public ServiceManager::Delegate {
   explicit DefaultServiceManagerDelegate(
       ServiceManager::ServiceExecutablePolicy service_executable_policy)
       : service_executable_policy_(service_executable_policy) {}
+
+  DefaultServiceManagerDelegate(const DefaultServiceManagerDelegate&) = delete;
+  DefaultServiceManagerDelegate& operator=(
+      const DefaultServiceManagerDelegate&) = delete;
+
   ~DefaultServiceManagerDelegate() override = default;
 
   bool RunBuiltinServiceInstanceInCurrentProcess(
@@ -138,8 +145,6 @@ class DefaultServiceManagerDelegate : public ServiceManager::Delegate {
 
  private:
   const ServiceManager::ServiceExecutablePolicy service_executable_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultServiceManagerDelegate);
 };
 
 }  // namespace

@@ -15,7 +15,6 @@
 #include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
 #include "storage/browser/file_system/async_file_util.h"
@@ -56,6 +55,9 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
     // storage contents, e.g. "s10001".
     const std::wstring storage_object_id;
   };
+
+  MTPDeviceDelegateImplWin(const MTPDeviceDelegateImplWin&) = delete;
+  MTPDeviceDelegateImplWin& operator=(const MTPDeviceDelegateImplWin&) = delete;
 
  private:
   friend void OnGetStorageInfoCreateDelegate(
@@ -254,8 +256,6 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
 
   // For callbacks that may run after destruction.
   base::WeakPtrFactory<MTPDeviceDelegateImplWin> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MTPDeviceDelegateImplWin);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_WIN_MTP_DEVICE_DELEGATE_IMPL_WIN_H_

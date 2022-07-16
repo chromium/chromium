@@ -6,19 +6,19 @@
 
 #include <stdint.h>
 #include <algorithm>
-#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_database.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetch_throttler.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/android_affiliation/facet_manager.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -65,7 +65,7 @@ void AffiliationBackend::Initialize(
 void AffiliationBackend::GetAffiliationsAndBranding(
     const FacetURI& facet_uri,
     StrategyOnCacheMiss cache_miss_strategy,
-    AndroidAffiliationService::ResultCallback callback,
+    AffiliationService::ResultCallback callback,
     const scoped_refptr<base::TaskRunner>& callback_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -279,12 +279,12 @@ void AffiliationBackend::ReportStatistics(size_t requested_facet_uri_count) {
     base::TimeDelta delay = clock_->Now() - construction_time_;
     UMA_HISTOGRAM_CUSTOM_TIMES(
         "PasswordManager.AffiliationBackend.FirstFetchDelay", delay,
-        base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(3), 50);
+        base::Seconds(1), base::Days(3), 50);
   } else {
     base::TimeDelta delay = clock_->Now() - last_request_time_;
     UMA_HISTOGRAM_CUSTOM_TIMES(
         "PasswordManager.AffiliationBackend.SubsequentFetchDelay", delay,
-        base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(3), 50);
+        base::Seconds(1), base::Days(3), 50);
   }
   last_request_time_ = clock_->Now();
 }

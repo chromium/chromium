@@ -7,7 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/persisted_state_db/persisted_state_db_content.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -49,6 +49,14 @@ class PersistedStateDB {
   void Delete(JNIEnv* env,
               const base::android::JavaParamRef<jstring>& jkey,
               const base::android::JavaRef<jobject>& jcallback);
+
+  // Delete entries which have keys which match jsubstring_to_match
+  // except for those in jkeys_to_keep.
+  void PerformMaintenance(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobjectArray>& jkeys_to_keep,
+      const base::android::JavaParamRef<jstring>& jsubstring_to_match,
+      const base::android::JavaRef<jobject>& joncomplete_for_testing);
 
   // Destroy PersistedStateDB object.
   void Destroy(JNIEnv* env);

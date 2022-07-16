@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -26,6 +25,9 @@ class PPAPITestMessageHandler : public content::TestMessageHandler {
  public:
   PPAPITestMessageHandler();
 
+  PPAPITestMessageHandler(const PPAPITestMessageHandler&) = delete;
+  PPAPITestMessageHandler& operator=(const PPAPITestMessageHandler&) = delete;
+
   MessageResponse HandleMessage(const std::string& json) override;
   void Reset() override;
 
@@ -35,8 +37,6 @@ class PPAPITestMessageHandler : public content::TestMessageHandler {
 
  private:
   std::string message_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPAPITestMessageHandler);
 };
 
 class PPAPITestBase : public InProcessBrowserTest {

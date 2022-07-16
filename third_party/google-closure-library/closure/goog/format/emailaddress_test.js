@@ -1,23 +1,21 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.format.EmailAddressTest');
 goog.setTestOnly();
 
 const EmailAddress = goog.require('goog.format.EmailAddress');
+const Format = goog.require('goog.i18n.bidi.Format');
 const googArray = goog.require('goog.array');
 const testSuite = goog.require('goog.testing.testSuite');
+const LRM = Format.LRM;
+const RLM = Format.RLM;
+const LRE = Format.LRE;
+const RLE = Format.RLE;
+const PDF = Format.PDF;
 
 function doIsValidTest(testFunc, valid, invalid) {
   googArray.forEach(valid, (str) => {
@@ -35,6 +33,7 @@ function doIsValidTest(testFunc, valid, invalid) {
  * @param {Array<string>} expectedList The expected results.
  * @param {string=} opt_message An assertion message.
  * @return {string} the resulting email address objects.
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function assertParsedList(inputString, expectedList, opt_message) {
   const message = opt_message || 'Should parse address correctly';
@@ -148,6 +147,18 @@ testSuite({
         'Failed to parse pre-OS X Mac newlines');
   },
 
+  testparseListBidiMarks() {
+    // These bidi marks can be copy pasted from an RTL formatted email
+    assertParsedList(
+        `ab ${LRE}${PDF}${RLM}<${LRE}a@b.com${PDF}${RLM}>` +
+            `${PDF}${RLM},c@d.com${PDF}${RLM} `,
+        ['a@b.com', 'c@d.com']);
+    assertParsedList(
+        `${PDF}ab ${RLE}${PDF}${LRM}<${RLE}a@b.com${PDF}${LRM}>` +
+            `${PDF}${LRM},c@d.com${PDF}${LRM} `,
+        ['a@b.com', 'c@d.com']);
+  },
+
   testToString() {
     const f = (str) => EmailAddress.parse(str).toString();
 
@@ -205,17 +216,11 @@ testSuite({
 
   testIsValid() {
     const valid = [
-      'e@b.eu',
-      '<a.b+foo@c.com>',
-      'eric <e@b.com>',
-      '"e" <e@b.com>',
-      'a@FOO.MUSEUM',
-      'bla@b.co.ac.uk',
-      'bla@a.b.com',
-      'o\'hara@gm.com',
-      'plus+is+allowed@gmail.com',
-      '!/#$%&\'*+-=~|`{}?^_@expample.com',
+      'e@b.eu', '<a.b+foo@c.com>', 'eric <e@b.com>', '"e" <e@b.com>',
+      'a@FOO.MUSEUM', 'bla@b.co.ac.uk', 'bla@a.b.com', 'o\'hara@gm.com',
+      'plus+is+allowed@gmail.com', '!/#$%&\'*+-=~|`{}?^_@expample.com',
       'confirm-bhk=modulo.org@yahoogroups.com',
+      `blah blahson ${LRE}${PDF}${RLM}<${LRE}blah@blah.com${PDF}${RLM}>`
     ];
     const invalid = [
       'e',

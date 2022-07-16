@@ -64,9 +64,9 @@ TEST(FloatRoundedRectTest, zeroRadii) {
   EXPECT_EQ(FloatRect(4, 6, 0, 0), r.BottomRightCorner());
   EXPECT_EQ(FloatRect(1, 6, 0, 0), r.BottomLeftCorner());
 
-  TEST_INTERCEPTS(r, 2, r.Rect().X(), r.Rect().MaxX());
-  TEST_INTERCEPTS(r, 4, r.Rect().X(), r.Rect().MaxX());
-  TEST_INTERCEPTS(r, 6, r.Rect().X(), r.Rect().MaxX());
+  TEST_INTERCEPTS(r, 2, r.Rect().x(), r.Rect().right());
+  TEST_INTERCEPTS(r, 4, r.Rect().x(), r.Rect().right());
+  TEST_INTERCEPTS(r, 6, r.Rect().x(), r.Rect().right());
 
   float min_x_intercept;
   float max_x_intercept;

@@ -147,6 +147,7 @@ size_t dyld_all_image_infos<Traits>::ExpectedSizeForVersion(
       std::numeric_limits<size_t>::max(),  // 15, see below
       offsetof(dyld_all_image_infos<Traits>, end_v16),  // 16
       sizeof(dyld_all_image_infos<Traits>),  // 17
+      sizeof(dyld_all_image_infos<Traits>),  // 18
   };
 
   if (version >= base::size(kSizeForVersion)) {

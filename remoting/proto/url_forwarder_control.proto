@@ -41,7 +41,7 @@ message UrlForwarderControl {
       COMPLETE = 1;
 
       // The setup process has failed.
-      ERROR = 2;
+      FAILED = 2;
 
       // The setup process requires user intervention. The host will send
       // another SetUpUrlForwarderResponse once the setup process becomes

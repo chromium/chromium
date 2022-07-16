@@ -191,6 +191,10 @@ class PasswordCheckManager
   // in the account if the quota limit was reached.
   bool CanUseAccountCheck() const;
 
+  // Returns true if there is auto change button for given credential.
+  bool IsEligibleForAutoChange(
+      const password_manager::CredentialWithPassword& credenital) const;
+
   // Returns true if the password scripts fetching (kPasswordScriptsFetching) is
   // enabled. To have precise metrics about user actions on credentials with
   // scripts, scripts are fetched only for the users who can start a script,
@@ -224,7 +228,7 @@ class PasswordCheckManager
 
   // Handle to the password store, powering both `saved_passwords_presenter_`
   // and `insecure_credentials_manager_`.
-  scoped_refptr<password_manager::PasswordStore> password_store_ =
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store_ =
       PasswordStoreFactory::GetForProfile(profile_,
                                           ServiceAccessType::EXPLICIT_ACCESS);
 

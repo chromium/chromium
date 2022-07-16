@@ -155,7 +155,7 @@ ExtensionDialog::ExtensionDialog(
   bool can_resize = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Prevent dialog resize mouse cursor in tablet mode, crbug.com/453634.
-  if (ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode())
+  if (ash::TabletMode::IsInTabletMode())
     can_resize = false;
 #endif
   SetCanResize(can_resize);

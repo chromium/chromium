@@ -20,14 +20,16 @@ namespace metrics {
 class AccessibilityMetricsProvider : public metrics::MetricsProvider {
  public:
   AccessibilityMetricsProvider();
+
+  AccessibilityMetricsProvider(const AccessibilityMetricsProvider&) = delete;
+  AccessibilityMetricsProvider& operator=(const AccessibilityMetricsProvider&) =
+      delete;
+
   ~AccessibilityMetricsProvider() override;
 
   // MetricsProvider:
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityMetricsProvider);
 };
 
 }  // namespace metrics

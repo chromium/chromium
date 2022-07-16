@@ -120,4 +120,14 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAds) {
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
+TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdComponents) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ad_components.emplace();
+  interest_group.ad_components->emplace_back(
+      InterestGroup::Ad(GURL(kUrl1), /*metadata=*/absl::nullopt));
+  interest_group.ad_components->emplace_back(
+      InterestGroup::Ad(GURL(kUrl2), /*metadata=*/"[]"));
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
 }  // namespace blink

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -29,6 +28,9 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
   TabRestoreServiceImpl(std::unique_ptr<TabRestoreServiceClient> client,
                         PrefService* pref_service,
                         TimeFactory* time_factory);
+
+  TabRestoreServiceImpl(const TabRestoreServiceImpl&) = delete;
+  TabRestoreServiceImpl& operator=(const TabRestoreServiceImpl&) = delete;
 
   ~TabRestoreServiceImpl() override;
 
@@ -73,8 +75,6 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
   std::unique_ptr<PersistenceDelegate> persistence_delegate_;
   TabRestoreServiceHelper helper_;
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabRestoreServiceImpl);
 };
 
 }  // namespace sessions

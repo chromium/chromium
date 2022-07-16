@@ -17,6 +17,10 @@ namespace audio {
 class MockGroupMember : public LoopbackGroupMember {
  public:
   MockGroupMember();
+
+  MockGroupMember(const MockGroupMember&) = delete;
+  MockGroupMember& operator=(const MockGroupMember&) = delete;
+
   ~MockGroupMember() override;
 
   MOCK_CONST_METHOD0(GetAudioParameters, const media::AudioParameters&());
@@ -25,8 +29,6 @@ class MockGroupMember : public LoopbackGroupMember {
   MOCK_METHOD0(StartMuting, void());
   MOCK_METHOD0(StopMuting, void());
   MOCK_METHOD0(IsMuting, bool());
-
-  DISALLOW_COPY_AND_ASSIGN(MockGroupMember);
 };
 
 }  // namespace audio

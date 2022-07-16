@@ -77,7 +77,7 @@ def CompareSimpleHistograms(test_ctx, config, v2_histograms, v3_histograms):
       message = (
           'Error comparing TBMv2 histogram %s with TBMv3 histogram %s: %s' %
           (v2_hist.name, v3_hist.name, err.message))
-      raise AssertionError, message, sys.exc_info()[2]
+      raise AssertionError(message, sys.exc_info()[2])
 
 
 def CompareHistograms(test_ctx):

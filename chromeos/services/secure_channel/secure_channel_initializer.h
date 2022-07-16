@@ -9,7 +9,6 @@
 #include <queue>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -49,6 +48,9 @@ class SecureChannelInitializer : public SecureChannelBase {
    private:
     static Factory* test_factory_;
   };
+
+  SecureChannelInitializer(const SecureChannelInitializer&) = delete;
+  SecureChannelInitializer& operator=(const SecureChannelInitializer&) = delete;
 
   ~SecureChannelInitializer() override;
 
@@ -102,12 +104,18 @@ class SecureChannelInitializer : public SecureChannelBase {
   std::unique_ptr<mojom::SecureChannel> secure_channel_impl_;
 
   base::WeakPtrFactory<SecureChannelInitializer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelInitializer);
 };
 
 }  // namespace secure_channel
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace secure_channel {
+using ::chromeos::secure_channel::SecureChannelInitializer;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_INITIALIZER_H_

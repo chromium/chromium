@@ -158,8 +158,7 @@ class Test(object):
     long_timeout = 60  # seconds
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
-                 timeout=None, path=None, protocol="http", subdomain=False,
-                 quic=False):
+                 timeout=None, path=None, protocol="http", subdomain=False):
         self.url_base = url_base
         self.tests_root = tests_root
         self.url = url
@@ -170,8 +169,7 @@ class Test(object):
         self.subdomain = subdomain
         self.environment = {"url_base": url_base,
                             "protocol": protocol,
-                            "prefs": self.prefs,
-                            "quic": quic}
+                            "prefs": self.prefs}
 
     def __eq__(self, other):
         if not isinstance(other, Test):
@@ -403,9 +401,9 @@ class TestharnessTest(Test):
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
                  timeout=None, path=None, protocol="http", testdriver=False,
-                 jsshell=False, scripts=None, subdomain=False, quic=False):
+                 jsshell=False, scripts=None, subdomain=False):
         Test.__init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, timeout,
-                      path, protocol, subdomain, quic)
+                      path, protocol, subdomain)
 
         self.testdriver = testdriver
         self.jsshell = jsshell
@@ -416,7 +414,6 @@ class TestharnessTest(Test):
         timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
         testdriver = manifest_item.testdriver if hasattr(manifest_item, "testdriver") else False
         jsshell = manifest_item.jsshell if hasattr(manifest_item, "jsshell") else False
-        quic = manifest_item.quic if hasattr(manifest_item, "quic") else False
         script_metadata = manifest_item.script_metadata or []
         scripts = [v for (k, v) in script_metadata
                    if k == "script"]
@@ -431,8 +428,7 @@ class TestharnessTest(Test):
                    testdriver=testdriver,
                    jsshell=jsshell,
                    scripts=scripts,
-                   subdomain=manifest_item.subdomain,
-                   quic=quic)
+                   subdomain=manifest_item.subdomain)
 
     @property
     def id(self):
@@ -464,9 +460,9 @@ class ReftestTest(Test):
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, references,
                  timeout=None, path=None, viewport_size=None, dpi=None, fuzzy=None,
-                 protocol="http", subdomain=False, quic=False):
+                 protocol="http", subdomain=False):
         Test.__init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, timeout,
-                      path, protocol, subdomain, quic)
+                      path, protocol, subdomain)
 
         for _, ref_type in references:
             if ref_type not in ("==", "!="):
@@ -492,7 +488,6 @@ class ReftestTest(Test):
                       test_metadata):
 
         timeout = cls.long_timeout if manifest_test.timeout == "long" else cls.default_timeout
-        quic = manifest_test.quic if hasattr(manifest_test, "quic") else False
 
         url = manifest_test.url
 
@@ -505,7 +500,6 @@ class ReftestTest(Test):
                    timeout=timeout,
                    path=manifest_test.path,
                    subdomain=manifest_test.subdomain,
-                   quic=quic,
                    **cls.cls_kwargs(manifest_test))
 
         refs_by_type = defaultdict(list)
@@ -623,10 +617,10 @@ class PrintReftestTest(ReftestTest):
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, references,
                  timeout=None, path=None, viewport_size=None, dpi=None, fuzzy=None,
-                 page_ranges=None, protocol="http", subdomain=False, quic=False):
+                 page_ranges=None, protocol="http", subdomain=False):
         super(PrintReftestTest, self).__init__(url_base, tests_root, url, inherit_metadata, test_metadata,
                                                references, timeout, path, viewport_size, dpi,
-                                               fuzzy, protocol, subdomain=subdomain, quic=quic)
+                                               fuzzy, protocol, subdomain=subdomain)
         self._page_ranges = page_ranges
 
     @classmethod

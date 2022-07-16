@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/win/icon_reader_service.h"
 #include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
@@ -39,6 +40,9 @@ class IconLoaderHelper {
                    float scale,
                    gfx::Image default_icon);
 
+  IconLoaderHelper(const IconLoaderHelper&) = delete;
+  IconLoaderHelper& operator=(const IconLoaderHelper&) = delete;
+
  private:
   void StartReadIconRequest();
   void OnConnectionError();
@@ -62,8 +66,6 @@ class IconLoaderHelper {
   gfx::Image default_icon_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IconLoaderHelper);
 };
 
 void IconLoaderHelper::ExecuteLoadIcon(
@@ -153,6 +155,12 @@ gfx::Image GetIconForFileExtension(const std::wstring& group,
   }
 
   gfx::Image image;
+
+  // Not only is GetFileInfo a blocking call, it's also known to hang
+  // (crbug.com/1249943), add a ScopedBlockingCall to let the scheduler know
+  // when this hangs and to explicitly label this call in tracing.
+  base::ScopedBlockingCall blocking_call(FROM_HERE,
+                                         base::BlockingType::MAY_BLOCK);
 
   SHFILEINFO file_info = {0};
   if (SHGetFileInfo(group.c_str(), FILE_ATTRIBUTE_NORMAL, &file_info,

@@ -9,11 +9,14 @@
 #include <string>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chromeos/components/proximity_auth/public/mojom/auth_type.mojom.h"
 #include "components/account_id/account_id.h"
+
+namespace ash {
+enum class SmartLockState;
+}  // namespace ash
 
 namespace proximity_auth {
 
@@ -106,6 +109,17 @@ class ScreenlockBridge {
     // Hides the custom icon in user pod for a user.
     virtual void HideUserPodCustomIcon(const AccountId& account_id) = 0;
 
+    // Update the status of Smart Lock for |account_id|.
+    virtual void SetSmartLockState(const AccountId& account_id,
+                                   ash::SmartLockState state) = 0;
+
+    // Called after a Smart Lock authentication attempt has been made. If
+    // |successful| is true, then the Smart Lock authentication attempt was
+    // successful and the device should be unlocked. If false, an error message
+    // should be shown to the user.
+    virtual void NotifySmartLockAuthResult(const AccountId& account_id,
+                                           bool successful) = 0;
+
     // (Re)enable lock screen UI.
     virtual void EnableInput() = 0;
 
@@ -150,6 +164,9 @@ class ScreenlockBridge {
 
   static ScreenlockBridge* Get();
 
+  ScreenlockBridge(const ScreenlockBridge&) = delete;
+  ScreenlockBridge& operator=(const ScreenlockBridge&) = delete;
+
   void SetLockHandler(LockHandler* lock_handler);
   void SetFocusedUser(const AccountId& account_id);
 
@@ -178,8 +195,6 @@ class ScreenlockBridge {
   // The last focused user's id.
   AccountId focused_account_id_;
   base::ObserverList<Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenlockBridge);
 };
 
 }  // namespace proximity_auth

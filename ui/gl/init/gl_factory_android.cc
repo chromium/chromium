@@ -30,12 +30,15 @@ class GLNonOwnedContext : public GLContextReal {
  public:
   explicit GLNonOwnedContext(GLShareGroup* share_group);
 
+  GLNonOwnedContext(const GLNonOwnedContext&) = delete;
+  GLNonOwnedContext& operator=(const GLNonOwnedContext&) = delete;
+
   // Implement GLContext.
   bool Initialize(GLSurface* compatible_surface,
                   const GLContextAttribs& attribs) override;
   bool MakeCurrentImpl(GLSurface* surface) override;
   void ReleaseCurrent(GLSurface* surface) override {}
-  bool IsCurrent(GLSurface* surface) override { return true; }
+  bool IsCurrent(GLSurface* surface) override;
   void* GetHandle() override { return nullptr; }
 
  protected:
@@ -43,8 +46,6 @@ class GLNonOwnedContext : public GLContextReal {
 
  private:
   EGLDisplay display_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLNonOwnedContext);
 };
 
 GLNonOwnedContext::GLNonOwnedContext(GLShareGroup* share_group)
@@ -61,6 +62,10 @@ bool GLNonOwnedContext::MakeCurrentImpl(GLSurface* surface) {
   SetCurrent(surface);
   InitializeDynamicBindings();
   return true;
+}
+
+bool GLNonOwnedContext::IsCurrent(GLSurface* surface) {
+  return GetRealCurrent() == this;
 }
 
 }  // namespace

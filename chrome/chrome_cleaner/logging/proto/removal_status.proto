@@ -17,9 +17,9 @@ enum RemovalStatus {
   REMOVAL_STATUS_UNSPECIFIED = 0;
   // File or folder matched and no removal attempt has been made.
   REMOVAL_STATUS_MATCHED_ONLY = 1;
-  // File or folder blacklisted for removal and the cleaner didn't try to
+  // File or folder blocklisted for removal and the cleaner didn't try to
   // delete it. Example: the file is part of the cleaner itself.
-  REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL = 2;
+  REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL = 2;
   // File or folder removed immediately.
   REMOVAL_STATUS_REMOVED = 3;
   // File or folder couldn't be removed.

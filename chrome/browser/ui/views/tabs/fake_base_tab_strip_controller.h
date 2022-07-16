@@ -61,7 +61,6 @@ class FakeBaseTabStripController : public TabStripController {
   void OnDropIndexUpdate(int index, bool drop_before) override;
   void CreateNewTab() override;
   void CreateNewTabWithLocation(const std::u16string& loc) override;
-  void StackedLayoutMaybeChanged() override;
   void OnStartedDragging(bool dragging_window) override;
   void OnStoppedDragging() override;
   void OnKeyboardFocusedTabChanged(absl::optional<int> index) override;

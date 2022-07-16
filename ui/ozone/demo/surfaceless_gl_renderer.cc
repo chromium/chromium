@@ -11,12 +11,13 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
@@ -174,7 +175,7 @@ bool SurfacelessGlRenderer::Initialize() {
     base::StringToInt(
         command_line->GetSwitchValueASCII("enable-overlay").c_str(),
         &requested_overlay_cnt);
-    overlay_cnt_ = std::max(1, std::min(kMaxLayers, requested_overlay_cnt));
+    overlay_cnt_ = base::clamp(requested_overlay_cnt, 1, kMaxLayers);
 
     const gfx::Size overlay_size =
         gfx::Size(size_.width() / 8, size_.height() / 8);
@@ -265,17 +266,24 @@ void SurfacelessGlRenderer::RenderFrame() {
         use_gpu_fences_ ? gl::GLFence::CreateForGpuFence() : nullptr;
 
     gl_surface_->ScheduleOverlayPlane(
-        0, gfx::OVERLAY_TRANSFORM_NONE, buffers_[back_buffer_]->image(),
-        primary_plane_rect_, unity_rect, false,
-        gl_fence ? gl_fence->GetGpuFence() : nullptr);
+        buffers_[back_buffer_]->image(),
+        gl_fence ? gl_fence->GetGpuFence() : nullptr,
+        gfx::OverlayPlaneData(0, gfx::OVERLAY_TRANSFORM_NONE,
+                              primary_plane_rect_, unity_rect, false,
+                              gfx::Rect(buffers_[back_buffer_]->size()), 1.0f,
+                              gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
+                              gfx::ColorSpace::CreateSRGB(), absl::nullopt));
   }
 
   for (size_t i = 0; i < overlay_cnt_; ++i) {
     if (overlay_list.back().overlay_handled) {
       gl_surface_->ScheduleOverlayPlane(
-          1, gfx::OVERLAY_TRANSFORM_NONE,
-          overlay_buffers_[i][back_buffer_]->image(), overlay_rect[i],
-          unity_rect, false, /* gpu_fence */ nullptr);
+          overlay_buffers_[i][back_buffer_]->image(), /* gpu_fence */ nullptr,
+          gfx::OverlayPlaneData(
+              1, gfx::OVERLAY_TRANSFORM_NONE, overlay_rect[i], unity_rect,
+              false, gfx::Rect(overlay_buffers_[i][back_buffer_]->size()), 1.0f,
+              gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
+              gfx::ColorSpace::CreateSRGB(), absl::nullopt));
     }
   }
 

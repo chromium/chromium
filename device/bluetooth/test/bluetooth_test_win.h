@@ -163,6 +163,10 @@ class BluetoothTestWinrt
       public ::testing::WithParamInterface<BluetoothTestWinrtParam> {
  public:
   BluetoothTestWinrt();
+
+  BluetoothTestWinrt(const BluetoothTestWinrt&) = delete;
+  BluetoothTestWinrt& operator=(const BluetoothTestWinrt&) = delete;
+
   ~BluetoothTestWinrt() override;
 
   bool UsesNewBleImplementation() const;
@@ -263,8 +267,6 @@ class BluetoothTestWinrt
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   absl::optional<base::win::ScopedWinrtInitializer> scoped_winrt_initializer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothTestWinrt);
 };
 
 using BluetoothTestWinrtOnly = BluetoothTestWinrt;

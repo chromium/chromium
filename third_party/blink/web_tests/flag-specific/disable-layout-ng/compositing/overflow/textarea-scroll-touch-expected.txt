@@ -2,30 +2,26 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutTextControl TEXTAREA",
-      "bounds": [206, 126],
+      "position": [1, 1],
+      "bounds": [189, 124],
+      "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
-      "position": [190, 1],
-      "bounds": [15, 109],
-      "transform": 1
+      "name": "Scroll corner of LayoutTextControl TEXTAREA",
+      "position": [193, 18],
+      "bounds": [261, 126],
+      "contentsOpaqueForText": true
     },
     {
-      "name": "Scroll Corner Layer",
-      "position": [190, 110],
-      "bounds": [15, 15],
-      "transform": 1
-    },
-    {
-      "name": "Scrolling Contents Layer",
+      "name": "LayoutTextControl TEXTAREA",
       "position": [1, 1],
       "bounds": [189, 328],
       "contentsOpaque": true,
@@ -33,29 +29,38 @@
       "transform": 2
     },
     {
-      "name": "LayoutTextControl TEXTAREA",
-      "bounds": [206, 126],
-      "transform": 3
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [190, 1],
       "bounds": [15, 109],
+      "transform": 1
+    },
+    {
+      "name": "LayoutTextControl TEXTAREA",
+      "position": [1, 1],
+      "bounds": [189, 124],
+      "drawsContent": false,
       "transform": 3
     },
     {
-      "name": "Scroll Corner Layer",
-      "position": [190, 110],
-      "bounds": [15, 15],
+      "name": "Scroll corner of LayoutTextControl TEXTAREA",
+      "position": [175, 95],
+      "bounds": [30, 30],
+      "contentsOpaqueForText": true,
       "transform": 3
     },
     {
-      "name": "Scrolling Contents Layer",
+      "name": "LayoutTextControl TEXTAREA",
       "position": [1, 1],
       "bounds": [189, 328],
       "contentsOpaque": true,
       "backgroundColor": "#CCCCCC",
       "transform": 4
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [190, 1],
+      "bounds": [15, 109],
+      "transform": 3
     }
   ],
   "transforms": [

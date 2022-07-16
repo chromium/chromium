@@ -9,7 +9,7 @@
 #include "cc/paint/paint_flags.h"
 #include "chromeos/assistant/internal/logo_view/logo_model/mic.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace ash {
 

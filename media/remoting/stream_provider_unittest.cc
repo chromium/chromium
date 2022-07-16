@@ -16,6 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using openscreen::cast::RpcMessenger;
 using testing::NiceMock;
 
 namespace {
@@ -41,19 +42,21 @@ class StreamProviderTest : public testing::Test {
     stream_provider_ = std::make_unique<StreamProvider>(
         mock_controller_, base::ThreadTaskRunnerHandle::Get());
 
-    rpc_broker_ = mock_controller_->rpc_broker();
-    sender_audio_demuxer_stream_handle_ = rpc_broker_->GetUniqueHandle();
-    sender_video_demuxer_stream_handle_ = rpc_broker_->GetUniqueHandle();
-    rpc_broker_->RegisterMessageReceiverCallback(
+    rpc_messenger_ = mock_controller_->rpc_messenger();
+    sender_audio_demuxer_stream_handle_ = rpc_messenger_->GetUniqueHandle();
+    sender_video_demuxer_stream_handle_ = rpc_messenger_->GetUniqueHandle();
+    rpc_messenger_->RegisterMessageReceiverCallback(
         sender_audio_demuxer_stream_handle_,
-        base::BindRepeating(&StreamProviderTest::OnDemuxerStreamReceivedRpc,
-                            base::Unretained(this),
-                            DemuxerStream::Type::AUDIO));
-    rpc_broker_->RegisterMessageReceiverCallback(
+        [this](std::unique_ptr<openscreen::cast::RpcMessage> message) {
+          OnDemuxerStreamReceivedRpc(DemuxerStream::Type::AUDIO,
+                                     std::move(message));
+        });
+    rpc_messenger_->RegisterMessageReceiverCallback(
         sender_video_demuxer_stream_handle_,
-        base::BindRepeating(&StreamProviderTest::OnDemuxerStreamReceivedRpc,
-                            base::Unretained(this),
-                            DemuxerStream::Type::VIDEO));
+        [this](std::unique_ptr<openscreen::cast::RpcMessage> message) {
+          OnDemuxerStreamReceivedRpc(DemuxerStream::Type::VIDEO,
+                                     std::move(message));
+        });
   }
 
   void TearDown() override {
@@ -116,7 +119,7 @@ class StreamProviderTest : public testing::Test {
         NOTREACHED();
     }
 
-    rpc_broker_->SendMessageToRemote(std::move(rpc));
+    rpc_messenger_->SendMessageToRemote(*rpc);
   }
 
   void ReadUntil(DemuxerStream::Type type) {
@@ -134,13 +137,13 @@ class StreamProviderTest : public testing::Test {
 
   void SendRpcAcquireDemuxer() {
     auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
-    rpc->set_handle(RpcBroker::kAcquireDemuxerHandle);
+    rpc->set_handle(RpcMessenger::kAcquireDemuxerHandle);
     rpc->set_proc(openscreen::cast::RpcMessage::RPC_ACQUIRE_DEMUXER);
     openscreen::cast::AcquireDemuxer* message =
         rpc->mutable_acquire_demuxer_rpc();
     message->set_audio_demuxer_handle(sender_audio_demuxer_stream_handle_);
     message->set_video_demuxer_handle(sender_video_demuxer_stream_handle_);
-    rpc_broker_->SendMessageToRemote(std::move(rpc));
+    rpc_messenger_->SendMessageToRemote(*rpc);
   }
 
   void OnStreamProviderInitialized(PipelineStatus status) {
@@ -175,16 +178,16 @@ class StreamProviderTest : public testing::Test {
 
   void SendRpcReadUntilCallback(DemuxerStream::Type type) {
     // Issues RPC_DS_READUNTIL_CALLBACK RPC message.
-    auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
-    rpc->set_handle(type == DemuxerStream::Type::AUDIO
-                        ? receiver_audio_demuxer_stream_handle_
-                        : receiver_video_demuxer_stream_handle_);
-    rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
-    auto* message = rpc->mutable_demuxerstream_readuntilcb_rpc();
+    openscreen::cast::RpcMessage rpc;
+    rpc.set_handle(type == DemuxerStream::Type::AUDIO
+                       ? receiver_audio_demuxer_stream_handle_
+                       : receiver_video_demuxer_stream_handle_);
+    rpc.set_proc(openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+    auto* message = rpc.mutable_demuxerstream_readuntilcb_rpc();
     message->set_count(0);
     message->set_status(
         ToProtoDemuxerStreamStatus(DemuxerStream::Status::kOk).value());
-    rpc_broker_->SendMessageToRemote(std::move(rpc));
+    rpc_messenger_->SendMessageToRemote(rpc);
   }
 
   void FlushUntil(uint32_t flush_audio_count, uint32_t flush_video_count) {
@@ -230,12 +233,12 @@ class StreamProviderTest : public testing::Test {
   scoped_refptr<DecoderBuffer> received_audio_buffer_;
   scoped_refptr<DecoderBuffer> received_video_buffer_;
 
-  int sender_audio_demuxer_stream_handle_ = RpcBroker::kInvalidHandle;
-  int sender_video_demuxer_stream_handle_ = RpcBroker::kInvalidHandle;
-  int receiver_audio_demuxer_stream_handle_ = RpcBroker::kInvalidHandle;
-  int receiver_video_demuxer_stream_handle_ = RpcBroker::kInvalidHandle;
+  int sender_audio_demuxer_stream_handle_ = RpcMessenger::kInvalidHandle;
+  int sender_video_demuxer_stream_handle_ = RpcMessenger::kInvalidHandle;
+  int receiver_audio_demuxer_stream_handle_ = RpcMessenger::kInvalidHandle;
+  int receiver_video_demuxer_stream_handle_ = RpcMessenger::kInvalidHandle;
 
-  RpcBroker* rpc_broker_;
+  RpcMessenger* rpc_messenger_;
   MockReceiverController* mock_controller_;
   MockRemotee* mock_remotee_;
   std::unique_ptr<StreamProvider> stream_provider_;

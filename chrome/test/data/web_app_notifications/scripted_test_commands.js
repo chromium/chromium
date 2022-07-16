@@ -12,6 +12,14 @@ async function displayPersistentNotification() {
       {type: 'showNotification', useBadge: false, title: 'Notification Title'});
 }
 
+async function displayPersistentNotificationWithBadge() {
+  return await postRequestAwaitResponse({
+    type: 'showNotification',
+    useBadge: true,
+    title: 'Notification With Badge'
+  });
+}
+
 async function closeAllPersistentNotifications() {
   return await postRequestAwaitResponse({type: 'closeAllNotifications'});
 }

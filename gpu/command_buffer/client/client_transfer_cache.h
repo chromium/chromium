@@ -72,6 +72,10 @@ class GLES2_IMPL_EXPORT ClientTransferCache {
   };
 
   explicit ClientTransferCache(Client* client);
+
+  ClientTransferCache(const ClientTransferCache&) = delete;
+  ClientTransferCache& operator=(const ClientTransferCache&) = delete;
+
   ~ClientTransferCache();
 
   // Adds a transfer cache entry with previously written memory.
@@ -119,8 +123,6 @@ class GLES2_IMPL_EXPORT ClientTransferCache {
   base::Lock lock_;
   ClientDiscardableManager discardable_manager_;
   std::map<EntryKey, ClientDiscardableHandle::Id> discardable_handle_id_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientTransferCache);
 };
 
 }  // namespace gpu

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/h264_decoder.h"
 #include "media/gpu/h264_dpb.h"
@@ -27,6 +26,12 @@ class V4L2VideoDecoderDelegateH264Legacy : public H264Decoder::H264Accelerator {
   explicit V4L2VideoDecoderDelegateH264Legacy(
       V4L2DecodeSurfaceHandler* surface_handler,
       V4L2Device* device);
+
+  V4L2VideoDecoderDelegateH264Legacy(
+      const V4L2VideoDecoderDelegateH264Legacy&) = delete;
+  V4L2VideoDecoderDelegateH264Legacy& operator=(
+      const V4L2VideoDecoderDelegateH264Legacy&) = delete;
+
   ~V4L2VideoDecoderDelegateH264Legacy() override;
 
   // H264Decoder::H264Accelerator implementation.
@@ -69,8 +74,6 @@ class V4L2VideoDecoderDelegateH264Legacy : public H264Decoder::H264Accelerator {
   // Contains the kernel-specific structures that we don't want to expose
   // outside of the compilation unit.
   const std::unique_ptr<V4L2VideoDecoderDelegateH264LegacyPrivate> priv_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2VideoDecoderDelegateH264Legacy);
 };
 
 }  // namespace media

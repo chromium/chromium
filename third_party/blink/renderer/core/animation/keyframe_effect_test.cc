@@ -14,8 +14,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeeffectoptions_unrestricteddouble.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
@@ -234,7 +234,7 @@ TEST_F(AnimationKeyframeEffectV8Test, CanSetDuration) {
   KeyframeEffect* animation = CreateAnimationFromTiming(
       script_state, element.Get(), js_keyframes, duration);
 
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromMillisecondsD(duration),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(duration),
                    animation->SpecifiedTiming().iteration_duration.value());
 }
 
@@ -365,16 +365,16 @@ TEST_F(AnimationKeyframeEffectV8Test, SetKeyframesAdditiveCompositeOperation) {
 
 TEST_F(KeyframeEffectTest, TimeToEffectChange) {
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(100);
-  timing.start_delay = AnimationTimeDelta::FromSecondsD(100);
-  timing.end_delay = AnimationTimeDelta::FromSecondsD(100);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(100);
+  timing.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(100);
+  timing.end_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(100);
   timing.fill_mode = Timing::FillMode::NONE;
   auto* keyframe_effect = MakeGarbageCollected<KeyframeEffect>(
       nullptr, CreateEmptyEffectModel(), timing);
   Animation* animation = GetDocument().Timeline().Play(keyframe_effect);
 
   // Beginning of the animation.
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(100),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(100),
                    keyframe_effect->TimeToForwardsEffectChange());
   EXPECT_EQ(AnimationTimeDelta::Max(),
             keyframe_effect->TimeToReverseEffectChange());
@@ -382,7 +382,7 @@ TEST_F(KeyframeEffectTest, TimeToEffectChange) {
   // End of the before phase.
   animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(100000),
                             ASSERT_NO_EXCEPTION);
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(100),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(100),
                    keyframe_effect->TimeToForwardsEffectChange());
   EXPECT_TIMEDELTA(AnimationTimeDelta(),
                    keyframe_effect->TimeToReverseEffectChange());
@@ -390,7 +390,7 @@ TEST_F(KeyframeEffectTest, TimeToEffectChange) {
   // Nearing the end of the active phase.
   animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(199000),
                             ASSERT_NO_EXCEPTION);
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(1),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(1),
                    keyframe_effect->TimeToForwardsEffectChange());
   EXPECT_TIMEDELTA(AnimationTimeDelta(),
                    keyframe_effect->TimeToReverseEffectChange());
@@ -398,7 +398,7 @@ TEST_F(KeyframeEffectTest, TimeToEffectChange) {
   // End of the active phase.
   animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(200000),
                             ASSERT_NO_EXCEPTION);
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(100),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(100),
                    keyframe_effect->TimeToForwardsEffectChange());
   EXPECT_TIMEDELTA(AnimationTimeDelta(),
                    keyframe_effect->TimeToReverseEffectChange());
@@ -408,7 +408,7 @@ TEST_F(KeyframeEffectTest, TimeToEffectChange) {
                             ASSERT_NO_EXCEPTION);
   EXPECT_EQ(AnimationTimeDelta::Max(),
             keyframe_effect->TimeToForwardsEffectChange());
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(100),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(100),
                    keyframe_effect->TimeToReverseEffectChange());
 }
 

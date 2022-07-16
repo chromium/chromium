@@ -117,13 +117,13 @@ class TestTimestampDelegate : public TimestampDelegate {
     // same day. This test time is hard coded to prevent DST flakiness, see
     // crbug.com/1066576.
     return base::Time::FromDoubleT(1609459199).LocalMidnight() -
-           base::TimeDelta::FromSeconds(1);
+           base::Seconds(1);
   }
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   base::Time FetchChromeCleanerScanCompletionTimestamp() override {
     // 2 seconds before midnight Dec 31st 2020.
     return base::Time::FromDoubleT(1609459199).LocalMidnight() -
-           base::TimeDelta::FromSeconds(2);
+           base::Seconds(2);
   }
 #endif
 };
@@ -132,7 +132,9 @@ bool TestDestructionVersionUpdater::destructor_invoked_ = false;
 
 class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
  public:
-  TestPasswordsDelegate() { store_->Init(/*prefs=*/nullptr); }
+  TestPasswordsDelegate() {
+    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  }
 
   void TearDown() {
     store_->ShutdownOnUIThread();
@@ -174,19 +176,11 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
         "test" + base::NumberToString(test_credential_counter_++));
     form.password_value = u"password";
     form.username_element = u"username_element";
-    // TODO(crbug.com/1223022): Once all places that operate changes on forms
-    // via UpdateLogin properly set |password_issues|, setting them to an empty
-    // map should be part of the default constructor.
-    form.password_issues =
-        base::flat_map<password_manager::InsecureType,
-                       password_manager::InsecurityMetadata>();
     store_->AddLogin(form);
-    base::RunLoop().RunUntilIdle();
-
-    store_->AddInsecureCredential(password_manager::InsecureCredential(
-        form.signon_realm, form.username_value, base::Time(),
-        password_manager::InsecureType::kLeaked,
-        password_manager::IsMuted(false)));
+    form.password_issues = {
+        {password_manager::InsecureType::kLeaked,
+         password_manager::InsecurityMetadata(
+             base::Time(), password_manager::IsMuted(false))}};
     base::RunLoop().RunUntilIdle();
   }
 
@@ -331,8 +325,6 @@ class SafetyCheckHandlerTest : public testing::Test {
 };
 
 void SafetyCheckHandlerTest::SetUp() {
-  feature_list_.InitWithFeatures({features::kSafetyCheckWeakPasswords}, {});
-
   TestingProfile::Builder builder;
   profile_ = builder.Build();
 
@@ -387,11 +379,9 @@ SafetyCheckHandlerTest::GetSafetyCheckStatusChangedWithDataIfExists(
     if (!data.arg2()->GetAsDictionary(&dictionary)) {
       continue;
     }
-    int cur_new_state;
-    if (dictionary->GetInteger("newState", &cur_new_state) &&
-        cur_new_state == new_state) {
+    absl::optional<int> cur_new_state = dictionary->FindIntKey("newState");
+    if (cur_new_state == new_state)
       return dictionary;
-    }
   }
   return nullptr;
 }
@@ -1668,8 +1658,7 @@ TEST_F(SafetyCheckHandlerTest, CheckParentRanDisplayString) {
   // same day. This test time is hard coded to prevent DST flakiness, see
   // crbug.com/1066576.
   const base::Time system_time =
-      base::Time::FromDoubleT(1609459199).LocalMidnight() -
-      base::TimeDelta::FromSeconds(1);
+      base::Time::FromDoubleT(1609459199).LocalMidnight() - base::Seconds(1);
   // Display strings for given time deltas in seconds.
   std::vector<std::tuple<std::u16string, int>> tuples{
       std::make_tuple(u"a moment ago", 1),
@@ -1688,8 +1677,7 @@ TEST_F(SafetyCheckHandlerTest, CheckParentRanDisplayString) {
       std::make_tuple(u"3 days ago", 60 * 60 * 24 * 4 - 1)};
   // Test that above time deltas produce the corresponding display strings.
   for (auto tuple : tuples) {
-    const base::Time time =
-        system_time - base::TimeDelta::FromSeconds(std::get<1>(tuple));
+    const base::Time time = system_time - base::Seconds(std::get<1>(tuple));
     const std::u16string display_string =
         safety_check_->GetStringForParentRan(time, system_time);
     EXPECT_EQ(base::StrCat({u"Safety check ran ", std::get<0>(tuple)}),
@@ -1711,8 +1699,7 @@ TEST_F(SafetyCheckHandlerTest, CheckChromeCleanerRanDisplayString) {
   // same day. This test time is hard coded to prevent DST flakiness, see
   // crbug.com/1066576.
   const base::Time system_time =
-      base::Time::FromDoubleT(1609459199).LocalMidnight() -
-      base::TimeDelta::FromSeconds(1);
+      base::Time::FromDoubleT(1609459199).LocalMidnight() - base::Seconds(1);
   // Display strings for given time deltas in seconds.
   std::vector<std::tuple<std::u16string, int>> tuples{
       std::make_tuple(u"just now", 1),
@@ -1731,8 +1718,7 @@ TEST_F(SafetyCheckHandlerTest, CheckChromeCleanerRanDisplayString) {
       std::make_tuple(u"3 days ago", 60 * 60 * 24 * 4 - 1)};
   // Test that above time deltas produce the corresponding display strings.
   for (auto tuple : tuples) {
-    const base::Time time =
-        system_time - base::TimeDelta::FromSeconds(std::get<1>(tuple));
+    const base::Time time = system_time - base::Seconds(std::get<1>(tuple));
     display_string =
         safety_check_->GetStringForChromeCleanerRan(time, system_time);
     ReplaceBrowserName(&display_string);

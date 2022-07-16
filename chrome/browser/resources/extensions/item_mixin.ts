@@ -37,7 +37,7 @@ export const ItemMixin = dedupingMixin(
          * @return The a11y association descriptor, e.g. "Related to <ext>".
          */
         a11yAssociation(name: string): string {
-          // Don't use I18nBehavior.i18n because of additional checks it
+          // Don't use I18nMixin.i18n because of additional checks it
           // performs. Polymer ensures that this string is not stamped into
           // arbitrary HTML. `name` can contain any data including html tags,
           // e.g. "My <video> download extension!"

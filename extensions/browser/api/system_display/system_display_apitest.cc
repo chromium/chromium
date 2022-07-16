@@ -33,6 +33,9 @@ class SystemDisplayApiTest : public ShellApiTest {
   SystemDisplayApiTest()
       : provider_(new MockDisplayInfoProvider), screen_(new MockScreen) {}
 
+  SystemDisplayApiTest(const SystemDisplayApiTest&) = delete;
+  SystemDisplayApiTest& operator=(const SystemDisplayApiTest&) = delete;
+
   ~SystemDisplayApiTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -58,9 +61,6 @@ class SystemDisplayApiTest : public ShellApiTest {
   std::unique_ptr<MockDisplayInfoProvider> provider_;
   std::unique_ptr<Screen> screen_;
   std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemDisplayApiTest);
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

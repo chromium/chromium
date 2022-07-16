@@ -48,7 +48,7 @@
     // Whether or not a scrollbar appeared is out of scope for this test.
     // The only thing we care about is that no transition was triggered.
     // Therefore we allow both 'green' and 'blue', but not any other values.
-    let has_scrollbar = target.offsetWidth == 100;
+    let has_scrollbar = target.offsetWidth < 100;
     let expected = has_scrollbar ? 'rgb(0, 128, 0)' : 'rgb(0, 0, 255)';
     assert_equals(getComputedStyle(target).backgroundColor, expected);
   }, 'Scrollbars do not cause a transition of background-color');

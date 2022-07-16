@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 static_library("metrics_services_manager") {
   sources = [
     "metrics_services_manager.cc",
@@ -11,10 +13,15 @@ static_library("metrics_services_manager") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/metrics",
     "//components/ukm",
     "//components/variations",
     "//components/variations/service",
     "//services/network/public/cpp:cpp",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//components/metrics/structured:neutrino_logging" ]
+  }
 }

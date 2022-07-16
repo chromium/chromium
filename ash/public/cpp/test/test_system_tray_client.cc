@@ -16,11 +16,15 @@ void TestSystemTrayClient::ShowBluetoothSettings() {
   show_bluetooth_settings_count_++;
 }
 
+void TestSystemTrayClient::ShowBluetoothSettings(const std::string& device_id) {
+  show_bluetooth_settings_count_++;
+  last_bluetooth_settings_device_id_ = device_id;
+}
+
 void TestSystemTrayClient::ShowBluetoothPairingDialog(
-    const std::string& address,
-    const std::u16string& name_for_display,
-    bool paired,
-    bool connected) {}
+    absl::optional<base::StringPiece> device_address) {
+  show_bluetooth_pairing_dialog_count_++;
+}
 
 void TestSystemTrayClient::ShowDateSettings() {}
 

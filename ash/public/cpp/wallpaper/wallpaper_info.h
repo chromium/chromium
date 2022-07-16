@@ -5,9 +5,11 @@
 #ifndef ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_INFO_H_
 #define ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_INFO_H_
 
+#include <ostream>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/time/time.h"
 #include "ui/gfx/image/image_skia.h"
@@ -16,6 +18,8 @@ namespace ash {
 
 struct ASH_PUBLIC_EXPORT WallpaperInfo {
   WallpaperInfo();
+
+  explicit WallpaperInfo(const OnlineWallpaperParams& online_wallpaper_params);
 
   WallpaperInfo(const std::string& in_location,
                 const absl::optional<uint64_t>& in_asset_id,
@@ -30,8 +34,10 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
                 const base::Time& in_date);
 
   WallpaperInfo(const WallpaperInfo& other);
-
   WallpaperInfo& operator=(const WallpaperInfo& other);
+
+  WallpaperInfo(WallpaperInfo&& other);
+  WallpaperInfo& operator=(WallpaperInfo&& other);
 
   bool operator==(const WallpaperInfo& other) const;
 
@@ -48,11 +54,15 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   WallpaperType type;
   base::Time date;
 
-  // Not empty if type == WallpaperType::ONE_SHOT.
+  // Not empty if type == WallpaperType::kOneShot.
   // This field is filled in by ShowWallpaperImage when image is already
   // decoded.
   gfx::ImageSkia one_shot_wallpaper;
 };
+
+// For logging use only. Prints out text representation of the `WallpaperInfo`.
+ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& os,
+                                           const WallpaperInfo& info);
 
 }  // namespace ash
 

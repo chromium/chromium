@@ -14,6 +14,9 @@ namespace extensions {
 
 class MemoryInfoProvider : public SystemInfoProvider {
  public:
+  MemoryInfoProvider(const MemoryInfoProvider&) = delete;
+  MemoryInfoProvider& operator=(const MemoryInfoProvider&) = delete;
+
   static MemoryInfoProvider* Get();
 
   const api::system_memory::MemoryInfo& memory_info() const { return info_; }
@@ -40,8 +43,6 @@ class MemoryInfoProvider : public SystemInfoProvider {
 
   static base::LazyInstance<scoped_refptr<MemoryInfoProvider>>::DestructorAtExit
       provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryInfoProvider);
 };
 
 }  // namespace extensions

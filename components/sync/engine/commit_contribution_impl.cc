@@ -15,7 +15,10 @@
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/model_type_worker.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
+#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 namespace syncer {
 
@@ -202,11 +205,15 @@ void CommitContributionImpl::PopulateCommitProto(
     const CommitRequestData& commit_entity,
     sync_pb::SyncEntity* commit_proto) {
   const EntityData& entity_data = *commit_entity.entity;
+  DCHECK(!entity_data.specifics.has_encrypted());
+
   commit_proto->set_id_string(entity_data.id);
-  // Populate client_defined_unique_tag only for non-bookmark and non-Nigori
-  // data types.
+
   if (type == NIGORI) {
-    // Client tags are irrelevant for NIGORI (it uses the root node).
+    // Client tags are irrelevant for NIGORI since it uses the root node. For
+    // historical reasons (although it's unclear if this continues to be
+    // needed), the root node is considered a folder.
+    commit_proto->set_folder(true);
   } else if (type != BOOKMARKS ||
              !entity_data.client_tag_hash.value().empty()) {
     // The client tag is mandatory for all datatypes except bookmarks, and
@@ -214,20 +221,32 @@ void CommitContributionImpl::PopulateCommitProto(
     commit_proto->set_client_defined_unique_tag(
         entity_data.client_tag_hash.value());
   }
+
   commit_proto->set_version(commit_entity.base_version);
   commit_proto->set_deleted(entity_data.is_deleted());
-  commit_proto->set_folder(entity_data.is_folder);
   commit_proto->set_name(entity_data.name);
 
   if (!entity_data.is_deleted()) {
     // Handle bookmarks separately.
     if (type == BOOKMARKS) {
+      // Populate SyncEntity.folder for backward-compatibility.
+      switch (entity_data.specifics.bookmark().type()) {
+        case sync_pb::BookmarkSpecifics::UNSPECIFIED:
+          NOTREACHED();
+          break;
+        case sync_pb::BookmarkSpecifics::URL:
+          commit_proto->set_folder(false);
+          break;
+        case sync_pb::BookmarkSpecifics::FOLDER:
+          commit_proto->set_folder(true);
+          break;
+      }
       // position_in_parent field is set only for legacy reasons.  See comments
       // in sync.proto for more information.
-      const UniquePosition& unique_position = entity_data.unique_position;
-      if (unique_position.IsValid()) {
-        commit_proto->set_position_in_parent(unique_position.ToInt64());
-      }
+      const UniquePosition unique_position = UniquePosition::FromProto(
+          entity_data.specifics.bookmark().unique_position());
+      DCHECK(unique_position.IsValid());
+      commit_proto->set_position_in_parent(unique_position.ToInt64());
       *commit_proto->mutable_unique_position() = unique_position.ToProto();
       if (!entity_data.parent_id.empty()) {
         commit_proto->set_parent_id_string(entity_data.parent_id);

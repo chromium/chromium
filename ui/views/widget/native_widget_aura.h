@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -46,6 +45,9 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
                                       public aura::client::DragDropDelegate {
  public:
   explicit NativeWidgetAura(internal::NativeWidgetDelegate* delegate);
+
+  NativeWidgetAura(const NativeWidgetAura&) = delete;
+  NativeWidgetAura& operator=(const NativeWidgetAura&) = delete;
 
   // Called internally by NativeWidgetAura and DesktopNativeWidgetAura to
   // associate |native_widget| with |window|.
@@ -128,7 +130,7 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   bool IsMaximized() const override;
   bool IsMinimized() const override;
   void Restore() override;
-  void SetFullscreen(bool fullscreen, bool delay) override;
+  void SetFullscreen(bool fullscreen, const base::TimeDelta& delay) override;
   bool IsFullscreen() const override;
   void SetCanAppearInExistingFullscreenSpaces(
       bool can_appear_in_existing_fullscreen_spaces) override;
@@ -260,8 +262,6 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   // The following factory is used for calls to close the NativeWidgetAura
   // instance.
   base::WeakPtrFactory<NativeWidgetAura> close_widget_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeWidgetAura);
 };
 
 }  // namespace views

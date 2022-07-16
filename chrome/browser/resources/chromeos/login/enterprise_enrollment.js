@@ -31,6 +31,7 @@ var ENROLLMENT_STEP = {
   ERROR: 'error',
   SUCCESS: 'success',
   CHECKING: 'checking',
+  TPM_CHECKING: 'tpm-checking',
 
   /* TODO(dzhioev): define this step on C++ side.
    */
@@ -60,8 +61,10 @@ Polymer({
     'setAdJoinConfiguration',
     'setAdJoinParams',
     'setEnterpriseDomainInfo',
+    'setIsBrandedBuild',
     'showAttributePromptStep',
     'showError',
+    'showOSNotInstalledError',
     'showStep',
   ],
 
@@ -165,6 +168,11 @@ Polymer({
       },
       readOnly: true,
     },
+
+    isBranded: {
+      type: Boolean,
+      value: true,
+    },
   },
 
   defaultUIStep() {
@@ -253,6 +261,10 @@ Polymer({
    * URL.
    */
   onBeforeShow(data) {
+    if (data == undefined) {
+      return;
+    }
+
     if (Oobe.getInstance().forceKeyboardFlow) {
       // We run the tab remapping logic inside of the webview so that the
       // simulated tab events will use the webview tab-stops. Simulated tab
@@ -369,7 +381,8 @@ Polymer({
     this.isCancelDisabled =
         (step === ENROLLMENT_STEP.SIGNIN && !this.isManualEnrollment_) ||
         step === ENROLLMENT_STEP.AD_JOIN || step === ENROLLMENT_STEP.WORKING ||
-        step === ENROLLMENT_STEP.CHECKING || step === ENROLLMENT_STEP.SUCCESS;
+        step === ENROLLMENT_STEP.CHECKING || step === ENROLLMENT_STEP.SUCCESS ||
+        step == ENROLLMENT_STEP.TPM_CHECKING;
     if (this.isCancelDisabled) {
       Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.ENROLLMENT);
     } else {
@@ -523,6 +536,15 @@ Polymer({
     }
   },
 
+  showOSNotInstalledError() {
+    this.canRetryAfterError_ = false;
+    this.errorText_ = this.i18nDynamic(
+        this.locale, 'oauthOSNotInstalledError',
+        this.isBranded ? loadTimeData.getString('osInstallCloudReadyOS') :
+                         loadTimeData.getString('osInstallChromiumOS'));
+    this.showStep(ENROLLMENT_STEP.ERROR);
+  },
+
   /**
    *  Provides the label for the generic cancel button (Skip / Enroll Manually)
    *
@@ -574,6 +596,20 @@ Polymer({
    */
   isSaml_(authFlow) {
     return authFlow === cr.login.Authenticator.AuthFlow.SAML;
+  },
+
+  /*
+   * Called when we cancel TPM check early.
+   */
+  onTPMCheckCanceled_() {
+    this.userActed('cancel-tpm-check');
+  },
+
+  /**
+   * @param {boolean} is_branded
+   */
+  setIsBrandedBuild(is_branded) {
+    this.isBranded = is_branded;
   },
 });
 })();

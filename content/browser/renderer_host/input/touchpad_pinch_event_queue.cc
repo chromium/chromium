@@ -83,13 +83,13 @@ class QueuedTouchpadPinchEvent : public GestureEventWithLatencyInfo {
                              this);
   }
 
+  QueuedTouchpadPinchEvent(const QueuedTouchpadPinchEvent&) = delete;
+  QueuedTouchpadPinchEvent& operator=(const QueuedTouchpadPinchEvent&) = delete;
+
   ~QueuedTouchpadPinchEvent() {
     TRACE_EVENT_ASYNC_END0("input", "TouchpadPinchEventQueue::QueueEvent",
                            this);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QueuedTouchpadPinchEvent);
 };
 
 TouchpadPinchEventQueue::TouchpadPinchEventQueue(

@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chrome/installer/util/shell_util.h"
@@ -66,6 +65,10 @@ class Beacon {
   };
 
   Beacon(base::WStringPiece name, BeaconType type, BeaconScope scope);
+
+  Beacon(const Beacon&) = delete;
+  Beacon& operator=(const Beacon&) = delete;
+
   ~Beacon();
 
   // Updates the beacon. For a type LAST beacon, the current time is written
@@ -97,8 +100,6 @@ class Beacon {
 
   // The name of the registry value holding the beacon.
   std::wstring value_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(Beacon);
 };
 
 }  // namespace installer_util

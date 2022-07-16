@@ -18,6 +18,10 @@ class MediaHistoryContentsObserver
       public content::WebContentsUserData<MediaHistoryContentsObserver>,
       public media_session::mojom::MediaSessionObserver {
  public:
+  MediaHistoryContentsObserver(const MediaHistoryContentsObserver&) = delete;
+  MediaHistoryContentsObserver& operator=(const MediaHistoryContentsObserver&) =
+      delete;
+
   ~MediaHistoryContentsObserver() override;
 
   // content::WebContentsObserver:
@@ -75,8 +79,6 @@ class MediaHistoryContentsObserver
       this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(MediaHistoryContentsObserver);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_CONTENTS_OBSERVER_H_

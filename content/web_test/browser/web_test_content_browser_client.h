@@ -36,7 +36,6 @@ class FakeBluetoothChooserFactory;
 class FakeBluetoothDelegate;
 class MockBadgeService;
 class MockClipboardHost;
-class MockPlatformNotificationService;
 class WebTestBrowserContext;
 
 class WebTestContentBrowserClient : public ShellContentBrowserClient {
@@ -67,12 +66,10 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
   std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(
-      const MainFunctionParams& parameters) override;
+      MainFunctionParams parameters) override;
   std::vector<url::Origin> GetOriginsRequiringDedicatedProcess() override;
   std::unique_ptr<OverlayWindow> CreateWindowForPictureInPicture(
       PictureInPictureWindowController* controller) override;
-  PlatformNotificationService* GetPlatformNotificationService(
-      content::BrowserContext* browser_context) override;
   bool CanCreateWindow(content::RenderFrameHost* opener,
                        const GURL& opener_url,
                        const GURL& opener_top_level_frame_url,
@@ -97,17 +94,20 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
       const content::GlobalRequestID& request_id,
-      bool is_main_frame,
+      bool is_request_for_primary_main_frame,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
       LoginAuthRequiredCallback auth_required_callback) override;
 #if defined(OS_WIN)
   bool PreSpawnChild(sandbox::TargetPolicy* policy,
-                     sandbox::policy::SandboxType sandbox_type,
+                     sandbox::mojom::Sandbox sandbox_type,
                      ChildSpawnFlags flags) override;
 #endif
   std::string GetAcceptLangs(BrowserContext* context) override;
+  bool IsInterestGroupAPIAllowed(content::BrowserContext* browser_context,
+                                 const url::Origin& top_frame_origin,
+                                 const GURL& api_url) override;
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>) override;
 
@@ -146,8 +146,6 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       int render_process_id,
       mojo::PendingAssociatedReceiver<mojom::WebTestControlHost> receiver);
 
-  std::unique_ptr<MockPlatformNotificationService>
-      mock_platform_notification_service_;
   bool block_popups_ = true;
   bool screen_orientation_changed_ = false;
 

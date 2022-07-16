@@ -20,7 +20,7 @@ class DevToolsThrottleHandle : public base::RefCounted<DevToolsThrottleHandle> {
   DevToolsThrottleHandle& operator=(const DevToolsThrottleHandle&) = delete;
 
  private:
-  friend class RefCounted<DevToolsThrottleHandle>;
+  friend class base::RefCounted<DevToolsThrottleHandle>;
 
   ~DevToolsThrottleHandle();
 

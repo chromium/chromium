@@ -1,0 +1,4 @@
+monorail {
+  component: "Internals>Permissions>Model"
+}
+team_email: "permissions-dev@chromium.org"

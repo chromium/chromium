@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -125,6 +124,10 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
         processes_;
   };
 
+  SharedWorkerServiceImplTest(const SharedWorkerServiceImplTest&) = delete;
+  SharedWorkerServiceImplTest& operator=(const SharedWorkerServiceImplTest&) =
+      delete;
+
   mojo::Remote<blink::mojom::SharedWorkerConnector> MakeSharedWorkerConnector(
       GlobalRenderFrameHostId render_frame_host_id) {
     mojo::Remote<blink::mojom::SharedWorkerConnector> connector;
@@ -214,9 +217,6 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<FakeNetworkURLLoaderFactory> fake_url_loader_factory_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       url_loader_factory_wrapper_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerServiceImplTest);
 };
 
 TEST_F(SharedWorkerServiceImplTest, BasicTest) {
@@ -274,8 +274,10 @@ TEST_F(SharedWorkerServiceImplTest, BasicTest) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(
-      client.CheckReceivedOnConnected(std::set<blink::mojom::WebFeature>()));
+  auto feature3 = blink::mojom::WebFeature::kCoepNoneSharedWorker;
+  worker_host->OnFeatureUsed(feature3);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(client.CheckReceivedOnFeatureUsed(feature3));
 
   // Verify that |port| corresponds to |connector->local_port()|.
   std::string expected_message("test1");
@@ -400,8 +402,10 @@ TEST_F(SharedWorkerServiceImplTest, TwoRendererTest) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(
-      client0.CheckReceivedOnConnected(std::set<blink::mojom::WebFeature>()));
+  auto feature4 = blink::mojom::WebFeature::kCoepNoneSharedWorker;
+  worker_host->OnFeatureUsed(feature4);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(client0.CheckReceivedOnFeatureUsed(feature4));
 
   // Verify that |port0| corresponds to |connector0->local_port()|.
   std::string expected_message0("test1");
@@ -422,7 +426,7 @@ TEST_F(SharedWorkerServiceImplTest, TwoRendererTest) {
   EXPECT_TRUE(client0.CheckReceivedOnFeatureUsed(feature2));
 
   // Only a single worker instance in process 0.
-  EXPECT_EQ(1u, renderer_host0->GetKeepAliveRefCount());
+  EXPECT_EQ(1u, renderer_host0->GetWorkerRefCount());
 
   // The second renderer host.
   std::unique_ptr<TestWebContents> web_contents1 =
@@ -448,14 +452,16 @@ TEST_F(SharedWorkerServiceImplTest, TwoRendererTest) {
   EXPECT_TRUE(client1.CheckReceivedOnCreated());
 
   // Only a single worker instance in process 0.
-  EXPECT_EQ(1u, renderer_host0->GetKeepAliveRefCount());
+  EXPECT_EQ(1u, renderer_host0->GetWorkerRefCount());
+  EXPECT_EQ(0u, renderer_host0->GetKeepAliveRefCount());
+  EXPECT_EQ(0u, renderer_host1->GetWorkerRefCount());
   EXPECT_EQ(0u, renderer_host1->GetKeepAliveRefCount());
 
   worker_host->OnConnected(connection_request_id1);
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(client1.CheckReceivedOnConnected({feature1, feature2}));
+  EXPECT_TRUE(client1.CheckReceivedOnConnected({feature1, feature2, feature4}));
 
   // Verify that |worker_msg_port2| corresponds to |connector1->local_port()|.
   std::string expected_message1("test2");
@@ -1206,6 +1212,12 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest3) {
 class TestSharedWorkerServiceObserver : public SharedWorkerService::Observer {
  public:
   TestSharedWorkerServiceObserver() = default;
+
+  TestSharedWorkerServiceObserver(const TestSharedWorkerServiceObserver&) =
+      delete;
+  TestSharedWorkerServiceObserver& operator=(
+      const TestSharedWorkerServiceObserver&) = delete;
+
   ~TestSharedWorkerServiceObserver() override = default;
 
   // SharedWorkerService::Observer:
@@ -1253,8 +1265,6 @@ class TestSharedWorkerServiceObserver : public SharedWorkerService::Observer {
  private:
   base::flat_map<blink::SharedWorkerToken, std::set<GlobalRenderFrameHostId>>
       shared_workers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSharedWorkerServiceObserver);
 };
 
 TEST_F(SharedWorkerServiceImplTest, Observer) {

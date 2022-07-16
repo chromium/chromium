@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">ამ მოქმედებით გასუფთავდება საიტების ან აპების მიერ თქვენს მთავარ ეკრანზე შენახული მონაცემებისა და ქუქი-ჩანაწერების <ph name="DATASIZE" />.</translation>
 <translation id="1178581264944972037">პაუზა</translation>
 <translation id="1181037720776840403">ამოშლა</translation>
-<translation id="1195941046451948919">ნამდვილად გსურთ, ამ ვებსაიტის ყველა ნებართვის გადაყენება?</translation>
 <translation id="1201402288615127009">შემდეგი</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-ში ჩაშენებული</translation>
 <translation id="1272079795634619415">შეწყვეტა</translation>
@@ -19,7 +18,6 @@
 <translation id="1384959399684842514">ჩამოტვირთვა დაპაუზებულია</translation>
 <translation id="1415402041810619267">URL შემოკლებულია</translation>
 <translation id="1446450296470737166">MIDI მოწყ. სრული კონტ. დაშვება</translation>
-<translation id="1509960214886564027">მრავალი საიტის ფუნქციებმა შეიძლება არასათანადოდ იმუშაოს</translation>
 <translation id="1620510694547887537">კამერა</translation>
 <translation id="1644574205037202324">ისტორია</translation>
 <translation id="1647582022260550163">ნამდვილად გსურთ, გადააყენოთ ნებართვები, ასევე, გაასუფთაოთ ქუქი-ჩანაწერები და საიტების მონაცემები?</translation>
@@ -31,6 +29,7 @@
 <translation id="1743802530341753419">შეკითხვა საიტებისთვის მოწყობილობასთან დაკავშირების დაშვებამდე (რეკომენდებული)</translation>
 <translation id="1779089405699405702">სურათების დეკოდერი</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />-მა AR რომ გამოიყენოს, გაააქტიურეთ კამერაზე წვდომის ნებართვაც <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">წყარო: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">მდებარეობაზე წვდომა გამორთულია ამ მოწყობილობისთვის. ჩართეთ ის <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">რეკლამა</translation>
 <translation id="1919950603503897840">კონტაქტების არჩევა</translation>
@@ -38,6 +37,7 @@
 <translation id="1984937141057606926">ნებადართულია, მესამე მხარის გარდა</translation>
 <translation id="1989112275319619282">დათვალიერება</translation>
 <translation id="1994173015038366702">საიტის URL</translation>
+<translation id="2004697686368036666">ფუნქციებმა, შესაძლოა, არ იმუშაოს ზოგიერთ საიტზე</translation>
 <translation id="2025115093177348061">აუგმენტური რეალობა</translation>
 <translation id="2030769033451695672">შეეხეთ <ph name="URL_OF_THE_CURRENT_TAB" />-ზე დასაბრუნებლად</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
@@ -52,6 +52,7 @@
 <translation id="2289270750774289114">საიტების მიერ ახლომდებარე Bluetooth მოწყობილობების აღმოჩენის მოთხოვნა (რეკომენდებული)</translation>
 <translation id="2315043854645842844">კლიენტის სერტიფიკატების არჩევა არ არის მხარდაჭერილი ოპერაციული სისტემის მიერ.</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
+<translation id="2379925928934107488">საიტებზე მუქი თემის გამოყენება, როცა Chrome მუქ თემას იყენებს (შეძლებისდაგვარად)</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> მბაიტი</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაშვებულია}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაშვებულია}}</translation>
 <translation id="2434158240863470628">ჩამოტვირთვა დასრულდა: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -64,12 +65,14 @@
 <translation id="2570922361219980984">მდებარეობაზე წვდომა გამორთულია ამ მოწყობილობისთვისაც. ჩართეთ ის <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">გაშლილია — დააწკაპუნეთ ჩასაკეცად.</translation>
 <translation id="2586657967955657006">გაცვლის ბუფერი</translation>
+<translation id="2597457036804169544">არ მსურს საიტებზე მუქი თემის გამოყენება</translation>
 <translation id="2621115761605608342">კონკრეტულ საიტზე JavaScript-ის დაშვება.</translation>
 <translation id="2653659639078652383">გაგზავნა</translation>
 <translation id="2677748264148917807">დატოვება</translation>
 <translation id="2687403674020088961">ყველა ქუქი-ჩანაწერის დაბლოკვა (არარეკომენდებული)</translation>
 <translation id="2704606927547763573">დაკოპირდა</translation>
 <translation id="2717722538473713889">ელფოსტის მისამართები</translation>
+<translation id="2785051990912111074">ეს არჩევანი გაასუფთავებს ქუქი-ჩანაწერებს <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="2822354292072154809">ნამდვილად გსურთ, საიტის ყველა ნებართვის გადაყენება <ph name="CHOSEN_OBJECT_NAME" />-ისთვის?</translation>
 <translation id="2870560284913253234">საიტი</translation>
 <translation id="2874939134665556319">წინა ჩანაწერი</translation>
@@ -101,6 +104,7 @@
 <translation id="3600792891314830896">ხმის დაკვრის მხარდაჭერის მქონე საიტების დადუმება</translation>
 <translation id="3744111561329211289">ფონური სინქრონიზაცია</translation>
 <translation id="3763247130972274048">10 წამის გამოსატოვებლად ორმაგად შეეხეთ ვიდეოს მარცხნივ ან მარჯვნივ</translation>
+<translation id="3797520601150691162">არ მსურს მუქი თემის გამოყენება კონკრეტულ საიტზე</translation>
 <translation id="381841723434055211">ტელეფონის ნომრები</translation>
 <translation id="3835233591525155343">თქვენი მოწყობილობის გამოყენება</translation>
 <translation id="385051799172605136">უკან</translation>
@@ -130,7 +134,6 @@
 <translation id="4570913071927164677">დეტალები</translation>
 <translation id="4645575059429386691">იმართება თქვენი მშობლის მიერ</translation>
 <translation id="4670064810192446073">ვირტუალური რეალობა</translation>
-<translation id="4708011789095599544">ნამდვილად გსურთ ამ ვებსაიტის ქუქი-ჩანაწერებისა და სხვა მონაცემების გასუფთავება?</translation>
 <translation id="4751476147751820511">მოძრაობის ან განათების სენსორები</translation>
 <translation id="4836046166855586901">შეკითხვა, როცა საიტებს სურთ ამ მოწყობილობის აქტიურად გამოყენების შესახებ ინფორმაციის მიღება</translation>
 <translation id="4883854917563148705">მართული პარამეტრების გადაყენება ვერ მოხერხდება</translation>
@@ -140,12 +143,15 @@
 <translation id="4976702386844183910">ბოლო ვიზიტი: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">კონტაქტები ვერ მოიძებნა</translation>
 <translation id="4996978546172906250">გაზიარების პროგრამა</translation>
+<translation id="5014906230196386306">გსურთ ქუქი-ჩანაწერების გასუფთავება?</translation>
 <translation id="5039804452771397117">დაშვება</translation>
 <translation id="5048398596102334565">საიტებისთვის მოძრაობის სენსორებზე წვდომის დაშვება (რეკომენდებული)</translation>
 <translation id="5050380848339752099">ეს საიტი აპირებს, ინკოგნიტო რეჟიმის გარეთ გაუზიაროს ინფორმაცია აპს.</translation>
 <translation id="5063480226653192405">გამოყენება</translation>
+<translation id="509133520954049755">დესკტოპის ხედის მოთხოვნა</translation>
 <translation id="5100237604440890931">ჩაკეცილია — დააწკაპუნეთ გასაშლელად.</translation>
 <translation id="5123685120097942451">ინკოგნიტო ჩანართი</translation>
+<translation id="5134599672855298214">მობილურის ხედის მოთხოვნა (რეკომენდებული)</translation>
 <translation id="5186036860380548585">ვარიანტი ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
 <translation id="5197729504361054390">თქვენ მიერ არჩეული კონტაქტები გაზიარდება <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-თან.</translation>
 <translation id="5216942107514965959">ბოლო ვიზიტი იყო დღეს</translation>
@@ -157,15 +163,16 @@
 <translation id="5335288049665977812">საიტებისთვის JavaScript-ის გაშვების დაშვება (რეკომენდებული)</translation>
 <translation id="534295439873310000">NFC მოწყობილობები</translation>
 <translation id="5354152178998424783">ამ მოქმედებით გასუფთავდება საიტების მიერ შენახული მონაცემებისა და ქუქი-ჩანაწერების <ph name="DATASIZE" />.</translation>
-<translation id="5391532827096253100">თქვენი კავშირი ამ საიტთან არ არის დაცული. საიტის ინფორმაცია.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 სხვა)}other{(+ # სხვა)}}</translation>
 <translation id="5403592356182871684">სახელები</translation>
+<translation id="5438097262470833822">ეს არჩევანი გადააყენებს ნებართვებს <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="5489227211564503167">გავიდა <ph name="ELAPSED_TIME" /> / <ph name="TOTAL_TIME" />-დან.</translation>
 <translation id="5494752089476963479">რეკლამის დაბლოკვა იმ საიტებზე, რომლებიც აჩვენებს მომაბეზრებელ ან შეცდომაში შემყვან რეკლამას</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> დაშვებულია, <ph name="PERMISSION_2" /> დაბლოკილია</translation>
 <translation id="5505264765875738116">საიტები ვერ გთხოვთ შეტყობინებების გამოგზავნას</translation>
 <translation id="5516455585884385570">შეტყობინების პარამეტრების გახსნა</translation>
 <translation id="5527111080432883924">შეკითხვა საიტებისთვის გაცვლის ბუფერში არსებულ ტექსტსა და სურათებზე წვდომის დაშვებამდე (რეკომენდებული)</translation>
+<translation id="5553374991681107062">უახლესი</translation>
 <translation id="5556459405103347317">ხელახლა ჩატვირთვა</translation>
 <translation id="5596627076506792578">დამატებითი ვარიანტები</translation>
 <translation id="5649053991847567735">ავტომატური ჩამოტვირთვები</translation>
@@ -190,10 +197,10 @@
 <translation id="6064125863973209585">დასრულებული ჩამოტვირთვები</translation>
 <translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
 <translation id="6177111841848151710">დაბლოკილია ამჟამინდელი საძიებო სისტემისთვის</translation>
+<translation id="6177128806592000436">თქვენი კავშირი ამ საიტთან დაცული არ არის</translation>
 <translation id="6181444274883918285">გამონაკლისი საიტის დამატება</translation>
 <translation id="6192792657125177640">გამონაკლისები</translation>
 <translation id="6196640612572343990">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა</translation>
-<translation id="6206551242102657620">კავშირი დაცულია. საიტის ინფორმაცია.</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> — ვარიანტები</translation>
 <translation id="6231752747840485235">გსურთ <ph name="APP_NAME" />-ის დეინსტალაცია?</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> და <ph name="PERMISSION_2" /> დაბლოკილია</translation>
@@ -202,7 +209,6 @@
 <translation id="6320088164292336938">ვიბრაცია</translation>
 <translation id="6388207532828177975">გასუფთავება &amp; აღდგენა</translation>
 <translation id="6398765197997659313">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
-<translation id="6423924377271166037">ქუქი-ჩანაწერების გასუფთავება</translation>
 <translation id="6439114592976064011">საიტებისთვის თქვენი ვირტუალური რეალობის მოწყობილობების/მონაცემების გამოყენების დაბლოკვა</translation>
 <translation id="6447842834002726250">ქუქი ფაილები</translation>
 <translation id="6527303717912515753">გაზიარება</translation>
@@ -210,6 +216,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაბლოკილია}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაბლოკილია}}</translation>
 <translation id="6554732001434021288">ბოლო ვიზიტი იყო <ph name="NUM_DAYS" /> დღის წინ</translation>
 <translation id="6561560012278703671">ჩუმი შეტყობინების გამოყენება (დაბლოკავს შეტყობინებებთან დაკავშირებულ ხელისშემშლელ მოთხოვნებს)</translation>
+<translation id="6593061639179217415">დესკტოპის საიტი</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> გბაიტი</translation>
 <translation id="6612358246767739896">დაცული შიგთავსი</translation>
 <translation id="662080504995468778">დარჩენა</translation>
@@ -217,6 +224,7 @@
 <translation id="6689172468748959065">პროფილის ფოტოები</translation>
 <translation id="6697925417670533197">მიმდინარე ჩამოტვირთვები</translation>
 <translation id="6746124502594467657">გადაადგილება ქვემოთ</translation>
+<translation id="6749077623962119521">გსურთ ნებართვების გადაყენება?</translation>
 <translation id="6766622839693428701">დასახურად გადაფურცლეთ ქვემოთ.</translation>
 <translation id="6790428901817661496">დაკვრა</translation>
 <translation id="6818926723028410516">აირჩიეთ ერთეულები</translation>
@@ -224,15 +232,14 @@
 <translation id="6910211073230771657">წაშლილი</translation>
 <translation id="6912998170423641340">საიტებისთვის გაცვლის ბუფერში არსებულ ტექსტსა და სურათებზე წვდომის დაბლოკვა</translation>
 <translation id="6945221475159498467">არჩევა</translation>
-<translation id="6963642900430330478">ეს გვერდი სახიფათოა. საიტის ინფორმაცია.</translation>
 <translation id="6965382102122355670">კარგი</translation>
 <translation id="6992289844737586249">შეკითხვა საიტებისთვის თქვენი მიკროფონის გამოყენების დაშვებამდე (რეკომენდებული)</translation>
 <translation id="7000754031042624318">გამორთულია Android-ის პარამეტრებიდან</translation>
 <translation id="7016516562562142042">დაშვებულია ამჟამინდელი საძიებო სისტემისთვის</translation>
 <translation id="7053983685419859001">დაბლოკვა</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{არჩეულია 1}other{არჩეულია #}}</translation>
+<translation id="7070090581017165256">ამ საიტის შესახებ</translation>
 <translation id="7087918508125750058">არჩეულია <ph name="ITEM_COUNT" />. ვარიანტები ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
-<translation id="7128222689758636196">ამჟამინდელი საძიებო სისტემისთვის დაშვება</translation>
 <translation id="7141896414559753902">საიტებისთვის გადამისამართებისა და ამომხტარი ფანჯრების ჩვენების დაბლოკვა (რეკომენდებული)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> კბაიტი</translation>
 <translation id="723171743924126238">აირჩიეთ სურათები</translation>
@@ -242,12 +249,12 @@
 <translation id="7302486331832100261">როგორც წესი, თქვენ ბლოკავთ შეტყობინებებს. დასაშვებად შეხებით აირჩიეთ „დეტალები“.</translation>
 <translation id="7423098979219808738">წინასწარი შეკითხვა</translation>
 <translation id="7423538860840206698">გაცვლის ბუფერზე წვდომა დაბლოკილია</translation>
+<translation id="7425915948813553151">მუქი თემა საიტებისთვის</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">ეს საიტი იყენებს თქვენს მიკროფონს</translation>
 <translation id="7561196759112975576">ყოველთვის</translation>
 <translation id="7572498721684305250">NFC მოწყობილობაზე შეხებისას ინფორმაციის გაგზავნისა და მიღების დაბლოკვა საიტებისთვის</translation>
 <translation id="757524316907819857">საიტებისთვის დაცული კონტენტის დაკვრის დაბლოკვა</translation>
-<translation id="7589445247086920869">ამჟამინდელი საძიებო სისტემისთვის დაბლოკვა</translation>
 <translation id="7649070708921625228">დახმარება</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7781829728241885113">გუშინ</translation>
@@ -261,19 +268,23 @@
 <translation id="7846076177841592234">შერჩევის გაუქმება</translation>
 <translation id="7846621471902887024">თქვენ გამოხვალთ ყველა საიტიდან.</translation>
 <translation id="7882806643839505685">ხმის დაშვება კონკრეტული საიტისთვის.</translation>
+<translation id="7940722705963108451">შემახსენეთ</translation>
 <translation id="7986741934819883144">აირჩიეთ კონტაქტი</translation>
-<translation id="7993619969781047893">ზოგიერთი საიტის ფუნქციებმა შეიძლება არასათანადოდ იმუშაოს</translation>
 <translation id="7999064672810608036">დარწმუნებული ხართ, რომ გსურთ ყველა ადგილობრივი მონაცემების წაშლა, მათ შორის ქუქი ფაილების, და ამ გვერდისათვის ყველა ნებართვების აღდგენა?</translation>
 <translation id="8007176423574883786">გამორთულია ამ მოწყობილობისთვის</translation>
 <translation id="802154636333426148">ჩამოტვირთვა ვერ მოხერხდა</translation>
+<translation id="8042586301629853791">დალაგება კრიტერიუმით:</translation>
 <translation id="8067883171444229417">ვიდეოს დაკვრა</translation>
 <translation id="8068648041423924542">სერტიფიკატის არჩევა შეუძლებელია.</translation>
 <translation id="8087000398470557479">კონტენტის წყაროა: <ph name="DOMAIN_NAME" />. მიღებულია Google-ის მეშვეობით.</translation>
 <translation id="8116925261070264013">დადუმებული</translation>
+<translation id="813082847718468539">საიტის ინფორმაციის ნახვა</translation>
 <translation id="8131740175452115882">დაადასტურება</translation>
+<translation id="8154912474061769055">ფუნქციებმა, შესაძლოა, არ იმუშაოს მრავალ საიტზე</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> დაშვებულია</translation>
 <translation id="8200772114523450471">გაგრძელება</translation>
 <translation id="8206354486702514201">ეს პარამეტრი იძულებითაა დაყენებული თქვენი ადმინისტრატორის მიერ.</translation>
+<translation id="8211406090763984747">კავშირი დაცულია</translation>
 <translation id="8249310407154411074">თავში გადატანა</translation>
 <translation id="8261506727792406068">წაშლა</translation>
 <translation id="8300705686683892304">იმართება აპის მიერ</translation>
@@ -296,6 +307,7 @@
 <translation id="8676374126336081632">შეყვანილი ტექსტის გასუფთავება</translation>
 <translation id="868929229000858085">თქვენს კონტაქტებში ძიება</translation>
 <translation id="8702612070107455751">გასუფთავდება ხაზგარეშე მონაცემები.</translation>
+<translation id="8712637175834984815">კარგი</translation>
 <translation id="8719283222052720129"><ph name="APP_NAME" />-ისთვის ნებართვის გააქტიურება <ph name="BEGIN_LINK" />Android-ის პარამეტრებში<ph name="END_LINK" /> შეგიძლიათ.</translation>
 <translation id="8725066075913043281">ხელახლა სცადეთ</translation>
 <translation id="8730621377337864115">მზადაა</translation>
@@ -315,7 +327,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" />-ისთვის ნებართვების გააქტიურება <ph name="BEGIN_LINK" />Android-ის პარამეტრებში<ph name="END_LINK" /> შეგიძლიათ.</translation>
+<translation id="9162462602695099906">ეს გვერდი სახიფათოა</translation>
 <translation id="930525582205581608">გსურთ ამ საიტის დავიწყება?</translation>
-<translation id="965817943346481315">დაბლოკვა, თუ საიტი აჩვენებს მომაბეზრებელ ან შეცდომაში შემყვან რეკლამას (რეკომენდებული)</translation>
 <translation id="967624055006145463">შენახული მონაცემები</translation>
 </translationbundle>

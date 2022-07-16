@@ -10,9 +10,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/base/bind_to_current_loop.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,6 +30,10 @@ class AudioDeviceListenerMacTest : public testing::Test {
                        base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
   }
+
+  AudioDeviceListenerMacTest(const AudioDeviceListenerMacTest&) = delete;
+  AudioDeviceListenerMacTest& operator=(const AudioDeviceListenerMacTest&) =
+      delete;
 
   virtual ~AudioDeviceListenerMacTest() {
     // It's important to destroy the device listener from the message loop in
@@ -100,8 +103,6 @@ class AudioDeviceListenerMacTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<AudioDeviceListenerMac> device_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceListenerMacTest);
 };
 
 // Simulate a device change event and ensure we get the right callback.

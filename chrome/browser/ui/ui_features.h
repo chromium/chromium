@@ -29,6 +29,7 @@ extern const base::Feature kChromeTipsInMainMenuNewBadge;
 #endif
 
 extern const base::Feature kChromeWhatsNewUI;
+extern const base::FeatureParam<bool> kChromeWhatsNewUIFeedbackButton;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const base::Feature kChromeWhatsNewInMainMenuNewBadge;
@@ -36,11 +37,13 @@ extern const base::Feature kChromeWhatsNewInMainMenuNewBadge;
 
 extern const base::Feature kCommander;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !defined(ANDROID)
 extern const base::Feature kEnterpriseCastingUI;
 #endif
 
 extern const base::Feature kEvDetailsInPageInfo;
+
+extern const base::Feature kExtensionsMenuAccessControl;
 
 extern const base::Feature kExtensionsSidePanel;
 
@@ -48,8 +51,6 @@ extern const base::Feature kExtensionsSidePanel;
 extern const base::FeatureParam<std::string> kExtensionsSidePanelId;
 
 extern const base::Feature kForceSignInReauth;
-
-extern const base::Feature kNewTabstripAnimation;
 
 extern const base::Feature kProminentDarkModeActiveTabTitle;
 
@@ -62,6 +63,8 @@ extern const char kMinimumTabWidthFeatureParameterName[];
 
 extern const base::Feature kScrollableTabStripButtons;
 
+extern const base::Feature kForceDisableStackedTabs;
+
 #if !defined(ANDROID)
 extern const base::Feature kSettingsLandingPageRedesign;
 #endif
@@ -69,12 +72,16 @@ extern const base::Feature kSettingsLandingPageRedesign;
 // TODO(pbos): Once kReadLater is cleaned up on Desktop, move definition into
 // ui_features.cc. This is currently temporarily in reading_list_switches.h.
 extern const base::Feature kSidePanel;
+extern const base::Feature kSidePanelBorder;
+extern const base::Feature kSidePanelDragAndDrop;
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+extern const base::Feature kSideSearch;
+extern const base::Feature kSideSearchClearCacheWhenClosed;
+extern const base::Feature kSideSearchStatePerTab;
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 extern const base::Feature kSyncConfirmationUpdatedText;
-
-extern const base::Feature kSignInProfileCreation;
-
-extern const base::Feature kSignInProfileCreationEnterprise;
 
 extern const base::Feature kTabGroupsAutoCreate;
 
@@ -85,26 +92,46 @@ extern const base::Feature kTabGroupsFeedback;
 extern const base::Feature kTabGroupsNewBadgePromo;
 
 extern const base::Feature kTabGroupsSave;
+extern const char kTabGroupsSaveUIVariationsParameterName[];
 
 extern const base::Feature kTabHoverCardImages;
+
+// These parameters control how long the hover card system waits before
+// requesting a preview image from a tab where no preview image is available.
+// Values are in ms.
 extern const char kTabHoverCardImagesNotReadyDelayParameterName[];
 extern const char kTabHoverCardImagesLoadingDelayParameterName[];
 extern const char kTabHoverCardImagesLoadedDelayParameterName[];
+
+// Determines how long to wait during a hover card slide transition before a
+// placeholder image is displayed via crossfade.
+// -1: disable crossfade entirely
+//  0: show placeholder immediately
+//  1: show placeholder when the card lands on the new tab
+//  between 0 and 1: show at a percentage of transition
+//
+// Note: crossfade is automatically disabled if animations are disabled at the
+// OS level (e.g. for accessibility).
 extern const char kTabHoverCardImagesCrossfadePreviewAtParameterName[];
+
+// Adds an amount of time (in ms) to the show delay when tabs are max width -
+// typically when there are less than 5 or 6 tabs in a browser window.
 extern const char kTabHoverCardAdditionalMaxWidthDelay[];
+
+// When set to 1, reverses the order of elements in the hover card, so that
+// the title and site are on bottom and the tab status and preview image are
+// on top. 0 is the default layout.
 extern const char kTabHoverCardAlternateFormat[];
 
 extern const base::Feature kTabOutlinesInLowContrastThemes;
 
-extern const base::Feature kTabRestoreSubMenus;
-
 extern const base::Feature kTabSearchChevronIcon;
-
-extern const base::Feature kTabSearchFuzzySearch;
 
 extern const base::Feature kTabSearchFeedback;
 
-extern const base::Feature kTabSearchRecentlyClosed;
+extern const base::Feature kTabSearchFuzzySearch;
+
+extern const char kTabSearchSearchThresholdName[];
 
 // Setting this to true will ignore the distance parameter when finding matches.
 // This means that it will not matter where in the string the pattern occurs.
@@ -140,6 +167,8 @@ extern const base::FeatureParam<double> kTabSearchGroupTitleWeight;
 // Whether to move the active tab to the bottom of the list.
 extern const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom;
 
+extern const base::Feature kTabSearchRecentlyClosed;
+
 // Default number of recently closed entries to display by default when no
 // search text is provided.
 extern const base::FeatureParam<int>
@@ -154,10 +183,6 @@ extern const base::FeatureParam<int> kTabSearchRecentlyClosedTabCountThreshold;
 // Works on Android 10+.
 extern const base::Feature kToolbarUseHardwareBitmapDraw;
 
-// Whether to label the update menu item as "Relaunch to update Chrome", rather
-// than "Update Google Chrome".
-extern const base::Feature kUseRelaunchToUpdateString;
-
 extern const base::Feature kWebUIBubblePerProfilePersistence;
 
 #if !defined(ANDROID)
@@ -168,7 +193,9 @@ extern const base::Feature kWebUIDownloadShelf;
 
 extern const base::Feature kWebUITabStrip;
 
-extern const base::Feature kWebUITabStripNewTabButtonInTabStrip;
+// Controls whether the context menu is shown on a touch press or a touch
+// tap gesture on the WebUI Tab Strip.
+extern const base::Feature kWebUITabStripContextMenuAfterTap;
 
 extern const base::Feature kWebUIFeedback;
 

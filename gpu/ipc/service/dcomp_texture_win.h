@@ -58,7 +58,8 @@ class DCOMPTexture : public gl::GLImageDCOMPSurface,
   void StartListening(
       mojo::PendingAssociatedRemote<mojom::DCOMPTextureClient> client) override;
   void SetTextureSize(const gfx::Size& size) override;
-  void SetSurfaceHandle(const base::UnguessableToken& token) override;
+  void SetDCOMPSurfaceHandle(const base::UnguessableToken& token,
+                             SetDCOMPSurfaceHandleCallback callback) override;
 
   gpu::Mailbox CreateSharedImage();
   gfx::Rect GetParentWindowRect();

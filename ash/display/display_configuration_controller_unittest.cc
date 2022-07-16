@@ -10,7 +10,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "ui/display/manager/display_manager.h"
 
 namespace ash {
@@ -26,6 +25,12 @@ display::Display::Rotation GetDisplayRotation(int64_t display_id) {
 class DisplayConfigurationControllerSmoothRotationTest : public AshTestBase {
  public:
   DisplayConfigurationControllerSmoothRotationTest() = default;
+
+  DisplayConfigurationControllerSmoothRotationTest(
+      const DisplayConfigurationControllerSmoothRotationTest&) = delete;
+  DisplayConfigurationControllerSmoothRotationTest& operator=(
+      const DisplayConfigurationControllerSmoothRotationTest&) = delete;
+
   ~DisplayConfigurationControllerSmoothRotationTest() override = default;
 
   void SetUp() override {
@@ -34,9 +39,6 @@ class DisplayConfigurationControllerSmoothRotationTest : public AshTestBase {
     Shell::Get()->wallpaper_controller()->set_bypass_decode_for_testing();
     Shell::Get()->wallpaper_controller()->ShowDefaultWallpaperForTesting();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayConfigurationControllerSmoothRotationTest);
 };
 
 }  // namespace

@@ -7,6 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
@@ -15,21 +16,19 @@
 namespace blink {
 
 class ConsoleLogger;
+class ImportMapError;
 class JSONObject;
-class Modulator;
 class ParsedSpecifier;
-class ScriptValue;
 
 // Import maps.
 // https://wicg.github.io/import-maps/
 // https://github.com/WICG/import-maps/blob/master/spec.md
 class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
  public:
-  static ImportMap* Parse(const Modulator&,
-                          const String& text,
+  static ImportMap* Parse(const String& text,
                           const KURL& base_url,
                           ConsoleLogger& logger,
-                          ScriptValue* error_to_rethrow);
+                          absl::optional<ImportMapError>* error_to_rethrow);
 
   // <spec href="https://wicg.github.io/import-maps/#specifier-map">A specifier
   // map is an ordered map from strings to resolution results.</spec>

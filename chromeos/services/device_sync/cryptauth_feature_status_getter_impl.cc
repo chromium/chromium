@@ -32,7 +32,7 @@ namespace {
 constexpr base::TimeDelta kWaitingForBatchGetFeatureStatusesResponseTimeout =
     kMaxAsyncExecutionTime;
 
-constexpr std::array<multidevice::SoftwareFeature, 14> kAllSoftwareFeatures = {
+constexpr std::array<multidevice::SoftwareFeature, 16> kAllSoftwareFeatures = {
     multidevice::SoftwareFeature::kBetterTogetherHost,
     multidevice::SoftwareFeature::kBetterTogetherClient,
     multidevice::SoftwareFeature::kSmartLockHost,
@@ -46,7 +46,9 @@ constexpr std::array<multidevice::SoftwareFeature, 14> kAllSoftwareFeatures = {
     multidevice::SoftwareFeature::kWifiSyncHost,
     multidevice::SoftwareFeature::kWifiSyncClient,
     multidevice::SoftwareFeature::kEcheHost,
-    multidevice::SoftwareFeature::kEcheClient};
+    multidevice::SoftwareFeature::kEcheClient,
+    multidevice::SoftwareFeature::kPhoneHubCameraRollHost,
+    multidevice::SoftwareFeature::kPhoneHubCameraRollClient};
 
 CryptAuthDeviceSyncResult::ResultCode
 BatchGetFeatureStatusesNetworkRequestErrorToResultCode(

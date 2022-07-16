@@ -39,6 +39,22 @@ ExtensionWebContentsObserver* ExtensionWebContentsObserver::GetForWebContents(
       web_contents);
 }
 
+// static
+void ExtensionWebContentsObserver::BindLocalFrameHost(
+    mojo::PendingAssociatedReceiver<mojom::LocalFrameHost> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* observer = GetForWebContents(web_contents);
+  if (!observer)
+    return;
+  auto* efh = observer->extension_frame_host_.get();
+  if (!efh)
+    return;
+  efh->BindLocalFrameHost(std::move(receiver), rfh);
+}
+
 std::unique_ptr<ExtensionFrameHost>
 ExtensionWebContentsObserver::CreateExtensionFrameHost(
     content::WebContents* web_contents) {
@@ -53,14 +69,15 @@ void ExtensionWebContentsObserver::Initialize() {
 
   extension_frame_host_ = CreateExtensionFrameHost(web_contents());
 
-  for (content::RenderFrameHost* rfh : web_contents()->GetAllFrames()) {
-    // We only initialize the frame if the renderer counterpart is live;
-    // otherwise we wait for the RenderFrameCreated notification.
-    if (!rfh->IsRenderFrameLive())
-      continue;
-
-    InitializeRenderFrame(rfh);
-  }
+  web_contents()->ForEachRenderFrameHost(base::BindRepeating(
+      [](ExtensionWebContentsObserver* observer,
+         content::RenderFrameHost* render_frame_host) {
+        // We only initialize the frame if the renderer counterpart is live;
+        // otherwise we wait for the RenderFrameCreated notification.
+        if (render_frame_host->IsRenderFrameLive())
+          observer->InitializeRenderFrame(render_frame_host);
+      },
+      this));
 }
 
 ExtensionWebContentsObserver::ExtensionWebContentsObserver(

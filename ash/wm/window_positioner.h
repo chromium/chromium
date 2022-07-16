@@ -6,7 +6,6 @@
 #define ASH_WM_WINDOW_POSITIONER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/base/ui_base_types.h"
 
 namespace aura {
@@ -47,14 +46,16 @@ class ASH_EXPORT WindowPositioner {
   static void RearrangeVisibleWindowOnShow(aura::Window* added_window);
 
   WindowPositioner();
+
+  WindowPositioner(const WindowPositioner&) = delete;
+  WindowPositioner& operator=(const WindowPositioner&) = delete;
+
   ~WindowPositioner();
 
  protected:
   friend class WindowPositionerTest;
 
   static constexpr int kWindowOffset = 32;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowPositioner);
 };
 
 }  // namespace ash

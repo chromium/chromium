@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "ui/ozone/public/gl_ozone.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
@@ -18,6 +17,10 @@ namespace ui {
 class HeadlessSurfaceFactory : public SurfaceFactoryOzone {
  public:
   explicit HeadlessSurfaceFactory(base::FilePath base_path);
+
+  HeadlessSurfaceFactory(const HeadlessSurfaceFactory&) = delete;
+  HeadlessSurfaceFactory& operator=(const HeadlessSurfaceFactory&) = delete;
+
   ~HeadlessSurfaceFactory() override;
 
   // SurfaceFactoryOzone:
@@ -40,8 +43,6 @@ class HeadlessSurfaceFactory : public SurfaceFactoryOzone {
   base::FilePath base_path_;
 
   std::unique_ptr<GLOzone> swiftshader_implementation_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessSurfaceFactory);
 };
 
 }  // namespace ui

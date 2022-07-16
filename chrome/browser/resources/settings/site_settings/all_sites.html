@@ -1,4 +1,8 @@
     <style include="settings-shared md-select clear-storage-dialog-shared">
+      cr-dialog div[slot=title] {
+          line-height: 20px;
+      }
+
       #sort {
         align-items: center;
         display: flex;
@@ -42,7 +46,7 @@
         </option>
       </select>
     </div>
-    <div id="clearAllContainer" hidden$="[[!storagePressureFlagEnabled_]]">
+    <div id="clearAllContainer">
       <div id="clearLabel">
         $i18n{siteSettingsClearAllStorageDescription} [[totalUsage_]]
       </div>
@@ -121,32 +125,7 @@
             $i18n{siteSettingsSiteGroupDeleteDialogTitle}
           </div>
           <div slot="body">
-            [[getClearDataLabel_(
-                actionMenuModel_, storagePressureFlagEnabled_)]]
-          </div>
-          <div slot="button-container">
-            <cr-button class="cancel-button" on-click="onCloseDialog_">
-              $i18n{cancel}
-            </cr-button>
-            <cr-button class="action-button" on-click="onClearData_">
-              $i18n{siteSettingsSiteClearStorage}
-            </cr-button>
-          </div>
-        </cr-dialog>
-      </template>
-    </cr-lazy-render>
-
-    <!-- New version of confirm clear data dialog to show if storage
-         pressure UI flag is enabled. -->
-    <cr-lazy-render id="confirmClearDataNew">
-      <template>
-        <cr-dialog close-text="$i18n{close}">
-          <div slot="title">
-            $i18n{siteSettingsSiteGroupDeleteDialogTitle}
-          </div>
-          <div slot="body">
-            [[getClearDataLabel_(
-                actionMenuModel_, storagePressureFlagEnabled_)]]
+            [[getClearDataLabel_(actionMenuModel_)]]
             <div class="detail-list">
               <div class="detail">
                 <iron-icon icon="all-sites:logout"></iron-icon>
@@ -164,6 +143,40 @@
             </cr-button>
             <cr-button class="action-button" on-click="onClearData_">
               $i18n{siteSettingsSiteClearStorage}
+            </cr-button>
+          </div>
+        </cr-dialog>
+      </template>
+    </cr-lazy-render>
+
+    <!-- Confirm remove site dialog. -->
+    <cr-lazy-render id="confirmRemoveSite">
+      <template>
+        <cr-dialog close-text="$i18n{close}">
+          <div id="removeSiteTitle" slot="title">
+            [[getRemoveSiteTitle_(actionMenuModel_)]]
+          </div>
+          <div slot="body">
+            <div id="logoutBulletPoint" class="detail">
+              <iron-icon icon="all-sites:logout"></iron-icon>
+              [[getRemoveSiteLogoutBulletPoint_(actionMenuModel_)]]
+            </div>
+            <div class="detail">
+              <iron-icon icon="all-sites:offline"></iron-icon>
+              $i18n{siteSettingsRemoveSiteOfflineData}
+            </div>
+            <div id="permissionsBulletPoint" class="detail"
+              hidden$="[[!showPermissionsBulletPoint_(actionMenuModel_)]]">
+              <iron-icon icon="settings:permissions"></iron-icon>
+              $i18n{siteSettingsRemoveSitePermissions}
+            </div>
+          </div>
+          <div slot="button-container">
+            <cr-button class="cancel-button" on-click="onCloseDialog_">
+              $i18n{cancel}
+            </cr-button>
+            <cr-button class="action-button" on-click="onConfirmRemoveSite_">
+              $i18n{siteSettingsRemoveSiteConfirm}
             </cr-button>
           </div>
         </cr-dialog>

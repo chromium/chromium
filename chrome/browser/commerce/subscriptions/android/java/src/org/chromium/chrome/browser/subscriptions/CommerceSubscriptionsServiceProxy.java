@@ -12,6 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.Locale;
 /**
  * Wrapper around CommerceSubscriptions Web APIs.
  */
-public final class CommerceSubscriptionsServiceProxy {
+public class CommerceSubscriptionsServiceProxy {
     private static final String TAG = "CSSP";
     private static final long HTTPS_REQUEST_TIMEOUT_MS = 1000L;
     private static final String GET_HTTPS_METHOD = "GET";
@@ -56,6 +57,11 @@ public final class CommerceSubscriptionsServiceProxy {
      * @param callback indicates whether or not the operation succeeded on the backend.
      */
     public void create(List<CommerceSubscription> subscriptions, Callback<Boolean> callback) {
+        if (subscriptions.isEmpty()) {
+            callback.onResult(true);
+            return;
+        }
+
         manageSubscriptions(getCreateSubscriptionsRequestParams(subscriptions), callback);
     }
 
@@ -65,6 +71,11 @@ public final class CommerceSubscriptionsServiceProxy {
      * @param callback indicates whether or not the operation succeeded on the backend.
      */
     public void delete(List<CommerceSubscription> subscriptions, Callback<Boolean> callback) {
+        if (subscriptions.isEmpty()) {
+            callback.onResult(true);
+            return;
+        }
+
         manageSubscriptions(getRemoveSubscriptionsRequestParams(subscriptions), callback);
     }
 
@@ -75,29 +86,32 @@ public final class CommerceSubscriptionsServiceProxy {
      */
     public void get(@CommerceSubscription.CommerceSubscriptionType String type,
             Callback<List<CommerceSubscription>> callback) {
+        // TODO(crbug.com/995852): Replace MISSING_TRAFFIC_ANNOTATION with a real traffic
+        // annotation.
         EndpointFetcher.fetchUsingOAuth(
                 (response)
                         -> {
                     callback.onResult(createCommerceSubscriptions(response.getResponseString()));
                 },
                 mProfile, OAUTH_NAME,
-                CommerceSubscriptionsServiceConfig.SUBSCRIPTIONS_SERVICE_BASE_URL.getValue()
+                CommerceSubscriptionsServiceConfig.getDefaultServiceUrl()
                         + String.format(GET_SUBSCRIPTIONS_QUERY_PARAMS_TEMPLATE, type),
                 GET_HTTPS_METHOD, CONTENT_TYPE, OAUTH_SCOPE, EMPTY_POST_DATA,
-                HTTPS_REQUEST_TIMEOUT_MS);
+                HTTPS_REQUEST_TIMEOUT_MS, NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
     }
 
     private void manageSubscriptions(JSONObject requestPayload, Callback<Boolean> callback) {
+        // TODO(crbug.com/995852): Replace MISSING_TRAFFIC_ANNOTATION with a real traffic
+        // annotation.
         EndpointFetcher.fetchUsingOAuth(
                 (response)
                         -> {
                     callback.onResult(
                             didManageSubscriptionCallSucceed(response.getResponseString()));
                 },
-                mProfile, OAUTH_NAME,
-                CommerceSubscriptionsServiceConfig.SUBSCRIPTIONS_SERVICE_BASE_URL.getValue(),
+                mProfile, OAUTH_NAME, CommerceSubscriptionsServiceConfig.getDefaultServiceUrl(),
                 POST_HTTPS_METHOD, CONTENT_TYPE, OAUTH_SCOPE, requestPayload.toString(),
-                HTTPS_REQUEST_TIMEOUT_MS);
+                HTTPS_REQUEST_TIMEOUT_MS, NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
     }
 
     private boolean didManageSubscriptionCallSucceed(String responseString) {

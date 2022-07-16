@@ -166,10 +166,8 @@ TEST_F(SharedGpuContextTest, Canvas2DLayerBridgeAutoRecovery) {
   gl_.SetIsContextLost(true);
   EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
   IntSize size(10, 10);
-  CanvasColorParams color_params;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      std::make_unique<Canvas2DLayerBridge>(size, RasterMode::kGPU,
-                                            color_params);
+      std::make_unique<Canvas2DLayerBridge>(size, RasterMode::kGPU, kNonOpaque);
   EXPECT_TRUE(bridge->IsAccelerated());
   EXPECT_TRUE(SharedGpuContext::IsValidWithoutRestoring());
 }
@@ -190,10 +188,10 @@ TEST_F(BadSharedGpuContextTest, AllowSoftwareToAcceleratedCanvasUpgrade) {
 TEST_F(BadSharedGpuContextTest, AccelerateImageBufferSurfaceCreationFails) {
   // With a bad shared context, AccelerateImageBufferSurface should fail and
   // return a nullptr provider
-  IntSize size(10, 10);
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          size, cc::PaintFlags::FilterQuality::kLow, CanvasResourceParams(),
+          SkImageInfo::MakeN32Premul(10, 10),
+          cc::PaintFlags::FilterQuality::kLow,
           CanvasResourceProvider::ShouldInitialize::kNo,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
           true /*is_origin_top_left*/, 0u /*shared_image_usage_flags*/);
@@ -217,10 +215,10 @@ TEST_F(SharedGpuContextTestViz, AccelerateImageBufferSurfaceAutoRecovery) {
   // AcceleratedImageBufferSurface will restore the context and succeed
   test_context_provider_->TestContextGL()->set_context_lost(true);
   EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
-  IntSize size(10, 10);
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          size, cc::PaintFlags::FilterQuality::kLow, CanvasResourceParams(),
+          SkImageInfo::MakeN32Premul(10, 10),
+          cc::PaintFlags::FilterQuality::kLow,
           CanvasResourceProvider::ShouldInitialize::kNo,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
           true /*is_origin_top_left*/, 0u /*shared_image_usage_flags*/);

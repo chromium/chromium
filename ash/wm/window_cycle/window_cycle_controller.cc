@@ -6,7 +6,6 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/metrics/task_switch_metrics_recorder.h"
@@ -29,6 +28,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -134,30 +134,6 @@ void WindowCycleController::HandleCycleWindow(
   Step(direction, /*starting_alt_tab_or_switching_mode=*/should_start_alt_tab);
 }
 
-bool WindowCycleController::IsValidKeyboardNavigation(
-    KeyboardNavDirection direction) {
-  // Only allow Left and Right arrow keys if interactive alt-tab mode is not
-  // in use.
-  if (!IsInteractiveAltTabModeAllowed()) {
-    return direction == KeyboardNavDirection::kLeft ||
-           direction == KeyboardNavDirection::kRight;
-  }
-
-  // If the focus is on the window cycle list, the user can navigate up to
-  // focus the mode buttons, or left and right to change the window selection.
-  if (!IsTabSliderFocused())
-    return direction != KeyboardNavDirection::kDown;
-
-  // If the focus is on the tab slider button, the user can navigate down to
-  // focus the non-empty list, determined by non-null target window. The user
-  // can only navigate left while focusing the right button and vice versa.
-  const bool per_desk = IsAltTabPerActiveDesk();
-  return (direction == KeyboardNavDirection::kDown &&
-          window_cycle_list_->GetTargetWindow()) ||
-         (per_desk && direction == KeyboardNavDirection::kLeft) ||
-         (!per_desk && direction == KeyboardNavDirection::kRight);
-}
-
 void WindowCycleController::HandleKeyboardNavigation(
     KeyboardNavDirection direction) {
   if (!CanCycle() || !IsCycling() || !IsValidKeyboardNavigation(direction))
@@ -259,6 +235,7 @@ void WindowCycleController::StartCycling() {
 }
 
 void WindowCycleController::CompleteCycling() {
+  DCHECK(window_cycle_list_);
   window_cycle_list_->set_user_did_accept(true);
   StopCycling();
 }
@@ -296,6 +273,12 @@ aura::Window* WindowCycleController::GetWindowAtPoint(
                             : nullptr;
 }
 
+bool WindowCycleController::IsEventInTabSliderContainer(
+    const ui::LocatedEvent* event) {
+  return window_cycle_list_ &&
+         window_cycle_list_->IsEventInTabSliderContainer(event);
+}
+
 bool WindowCycleController::IsWindowListVisible() {
   return window_cycle_list_ && window_cycle_list_->ShouldShowUi();
 }
@@ -305,9 +288,8 @@ bool WindowCycleController::IsInteractiveAltTabModeAllowed() {
 }
 
 bool WindowCycleController::IsAltTabPerActiveDesk() {
-  return IsInteractiveAltTabModeAllowed() && active_user_pref_service_
-             ? active_user_pref_service_->GetBoolean(prefs::kAltTabPerDesk)
-             : features::IsAltTabLimitedToActiveDesk();
+  return IsInteractiveAltTabModeAllowed() && active_user_pref_service_ &&
+         active_user_pref_service_->GetBoolean(prefs::kAltTabPerDesk);
 }
 
 bool WindowCycleController::IsSwitchingMode() {
@@ -421,8 +403,18 @@ void WindowCycleController::Step(WindowCyclingDirection direction,
 }
 
 void WindowCycleController::StopCycling() {
-  desks_observation_.Reset();
+  // There's an edge case where `StopCycling()` is already triggered via an alt
+  // release event, but user doesn't release the tap on the
+  // `window_cycle_list_`. If we reset `window_cycle_list_` first,
+  // `WindowEventDispatcher::DispatchSyntheticTouchEvent` will be triggered
+  // because of the availability changed for the `window_cycle_list_`. Thus
+  // `event_filter_` will still receive the event and try to handle the event
+  // even though it's in the process of stopping cycling. To avoid this, we
+  // should remove our event filter first. Please check
+  // https://crbug.com/1228381 for more details.
+  event_filter_.reset();
 
+  desks_observation_.Reset();
   window_cycle_list_.reset();
 
   // We can't use the MRU window list here to get the active window, since
@@ -431,9 +423,6 @@ void WindowCycleController::StopCycling() {
   // will always be for the current active desk, not the target active desk.
   aura::Window* active_window_after_window_cycle =
       window_util::GetActiveWindow();
-
-  // Remove our key event filter.
-  event_filter_.reset();
 
   if (active_window_after_window_cycle != nullptr &&
       active_window_before_window_cycle_ != active_window_after_window_cycle) {
@@ -482,6 +471,30 @@ void WindowCycleController::OnAltTabModePrefChanged() {
   window_cycle_list_->OnModePrefsChanged();
 
   is_switching_mode_ = false;
+}
+
+bool WindowCycleController::IsValidKeyboardNavigation(
+    KeyboardNavDirection direction) {
+  // Only allow Left and Right arrow keys if interactive alt-tab mode is not
+  // in use.
+  if (!IsInteractiveAltTabModeAllowed()) {
+    return direction == KeyboardNavDirection::kLeft ||
+           direction == KeyboardNavDirection::kRight;
+  }
+
+  // If the focus is on the window cycle list, the user can navigate up to
+  // focus the mode buttons, or left and right to change the window selection.
+  if (!IsTabSliderFocused())
+    return direction != KeyboardNavDirection::kDown;
+
+  // If the focus is on the tab slider button, the user can navigate down to
+  // focus the non-empty list, determined by non-null target window. The user
+  // can only navigate left while focusing the right button and vice versa.
+  const bool per_desk = IsAltTabPerActiveDesk();
+  return (direction == KeyboardNavDirection::kDown &&
+          window_cycle_list_->GetTargetWindow()) ||
+         (per_desk && direction == KeyboardNavDirection::kLeft) ||
+         (!per_desk && direction == KeyboardNavDirection::kRight);
 }
 
 }  // namespace ash

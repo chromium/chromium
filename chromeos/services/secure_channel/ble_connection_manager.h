@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/ble_initiator_failure_type.h"
 #include "chromeos/services/secure_channel/ble_listener_failure_type.h"
 #include "chromeos/services/secure_channel/connection_attempt_details.h"
@@ -38,6 +37,9 @@ class AuthenticatedChannel;
 // scanning/advertising.
 class BleConnectionManager {
  public:
+  BleConnectionManager(const BleConnectionManager&) = delete;
+  BleConnectionManager& operator=(const BleConnectionManager&) = delete;
+
   virtual ~BleConnectionManager();
 
   using ConnectionSuccessCallback =
@@ -147,8 +149,6 @@ class BleConnectionManager {
   base::flat_map<DeviceIdPair,
                  std::unique_ptr<ListenerConnectionAttemptMetadata>>
       id_pair_to_listener_metadata_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(BleConnectionManager);
 };
 
 }  // namespace secure_channel

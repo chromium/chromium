@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
@@ -50,11 +51,9 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
  public:
   // Delay before a resource is considered expired.
-  static constexpr base::TimeDelta kDefaultExpirationDelay =
-      base::TimeDelta::FromSeconds(5);
+  static constexpr base::TimeDelta kDefaultExpirationDelay = base::Seconds(5);
   // Max delay before an evicted resource is flushed.
-  static constexpr base::TimeDelta kDefaultMaxFlushDelay =
-      base::TimeDelta::FromSeconds(1);
+  static constexpr base::TimeDelta kDefaultMaxFlushDelay = base::Seconds(1);
 
   // A base class to hold ownership of gpu backed PoolResources. Allows the
   // client to define destruction semantics.

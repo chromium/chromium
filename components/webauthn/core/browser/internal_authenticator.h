@@ -12,7 +12,7 @@ namespace content {
 class RenderFrameHost;
 }  // namespace content
 
-namespace autofill {
+namespace webauthn {
 
 // Interface similar to blink::mojom::Authenticator meant only for internal
 // components in Chrome to use in order to direct authenticators to create or
@@ -25,6 +25,11 @@ class InternalAuthenticator {
   // Sets the effective origin of the caller. Since this may be a browser
   // process, the Relying Party ID may be different from the renderer's origin.
   virtual void SetEffectiveOrigin(const url::Origin& origin) = 0;
+
+  // Sets the payment information to be added to the "clientDataJson". Should be
+  // used only if the user has confirmed the payment information that was
+  // displayed to the user.
+  virtual void SetPaymentOptions(blink::mojom::PaymentOptionsPtr payment) = 0;
 
   // Gets the credential info for a new public key credential created by an
   // authenticator for the given |options|. Invokes |callback| with credentials
@@ -57,6 +62,6 @@ class InternalAuthenticator {
   virtual content::RenderFrameHost* GetRenderFrameHost() = 0;
 };
 
-}  // namespace autofill
+}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_INTERNAL_AUTHENTICATOR_H_

@@ -12,10 +12,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -105,14 +104,11 @@ struct CreativeOriginTestWithThrottling {
 enum class ResourceCached { kNotCached = 0, kCachedHttp, kCachedMemory };
 enum class FrameType { AD = 0, NON_AD };
 
-const base::TimeDelta kParseStartTime = base::TimeDelta::FromMilliseconds(3);
-const base::TimeDelta kCreativeEligibleToPaintTime =
-    base::TimeDelta::FromMilliseconds(4);
-const base::TimeDelta kCreativeFCPTime = base::TimeDelta::FromMilliseconds(5);
-const base::TimeDelta kOtherFrameEligibleToPaintTime =
-    base::TimeDelta::FromMilliseconds(9);
-const base::TimeDelta kOtherFrameFCPTime =
-    base::TimeDelta::FromMilliseconds(10);
+const base::TimeDelta kParseStartTime = base::Milliseconds(3);
+const base::TimeDelta kCreativeEligibleToPaintTime = base::Milliseconds(4);
+const base::TimeDelta kCreativeFCPTime = base::Milliseconds(5);
+const base::TimeDelta kOtherFrameEligibleToPaintTime = base::Milliseconds(9);
+const base::TimeDelta kOtherFrameFCPTime = base::Milliseconds(10);
 const char kAdUrl[] = "https://ads.com/ad/disallowed.html";
 const char kOtherAdUrl[] = "https://other-ads.com/ad/disallowed.html";
 const char kNonAdUrl[] = "https://foo.com/";
@@ -179,6 +175,11 @@ class ResourceLoadingCancellingThrottle
                 TestNavigationThrottle::ASYNCHRONOUS, CANCEL);
   }
 
+  ResourceLoadingCancellingThrottle(const ResourceLoadingCancellingThrottle&) =
+      delete;
+  ResourceLoadingCancellingThrottle& operator=(
+      const ResourceLoadingCancellingThrottle&) = delete;
+
  private:
   // content::TestNavigationThrottle:
   void OnWillRespond(NavigationThrottle::ThrottleCheckResult result) {
@@ -211,8 +212,6 @@ class ResourceLoadingCancellingThrottle
         mojom::DeferredResourceCountsPtr(base::in_place),
         mojom::InputTimingPtr(base::in_place), blink::MobileFriendliness());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceLoadingCancellingThrottle);
 };
 
 // Mock noise provider which always gives a supplied value of noise for the
@@ -242,7 +241,6 @@ void TestHistograms(const base::HistogramTester& histograms,
                     const std::vector<ExpectedFrameBytes>& ad_frames,
                     size_t non_ad_cached_kb,
                     size_t non_ad_uncached_kb) {
-  size_t total_ad_cached_kb = 0;
   size_t total_ad_uncached_kb = 0;
   size_t total_ad_kb = 0;
   size_t ad_frame_count = 0;
@@ -257,7 +255,6 @@ void TestHistograms(const base::HistogramTester& histograms,
   // Perform some initial calculations on the number of bytes, of each type,
   // in each ad frame.
   for (const ExpectedFrameBytes& bytes : ad_frames) {
-    total_ad_cached_kb += bytes.cached_kb;
     total_ad_uncached_kb += bytes.uncached_kb;
     total_ad_kb += bytes.cached_kb + bytes.uncached_kb;
 
@@ -449,6 +446,11 @@ class AdsPageLoadMetricsObserverTest
                 base::DefaultClock::GetInstance(),
                 this)) {}
 
+  AdsPageLoadMetricsObserverTest(const AdsPageLoadMetricsObserverTest&) =
+      delete;
+  AdsPageLoadMetricsObserverTest& operator=(
+      const AdsPageLoadMetricsObserverTest&) = delete;
+
   void SetUp() override {
     SubresourceFilterTestHarness::SetUp();
     tester_ = std::make_unique<PageLoadMetricsObserverTester>(
@@ -490,11 +492,11 @@ class AdsPageLoadMetricsObserverTest
   // intervention.
   void UseCpuTimeUnderThreshold(RenderFrameHost* render_frame_host,
                                 base::TimeDelta total_time) {
-    const base::TimeDelta peak_threshold = base::TimeDelta::FromMilliseconds(
+    const base::TimeDelta peak_threshold = base::Milliseconds(
         heavy_ad_thresholds::kMaxPeakWindowedPercent * 30000 / 100 - 1);
     for (; total_time > peak_threshold; total_time -= peak_threshold) {
       OnCpuTimingUpdate(render_frame_host, peak_threshold);
-      AdvancePageDuration(base::TimeDelta::FromSeconds(31));
+      AdvancePageDuration(base::Seconds(31));
     }
     OnCpuTimingUpdate(render_frame_host, total_time);
   }
@@ -840,8 +842,6 @@ class AdsPageLoadMetricsObserverTest
 
   // A pointer to the AdsPageLoadMetricsObserver used by the tests.
   AdsPageLoadMetricsObserver* ads_observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AdsPageLoadMetricsObserverTest);
 };
 
 TEST_F(AdsPageLoadMetricsObserverTest, PageWithNoAds) {
@@ -1518,8 +1518,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, AdPageLoadUKM) {
   mojom::PageLoadTiming timing;
   InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::Now();
-  timing.parse_timing->parse_start = base::TimeDelta::FromMilliseconds(10);
-  timing.response_start = base::TimeDelta::FromSeconds(0);
+  timing.parse_timing->parse_start = base::Milliseconds(10);
+  timing.response_start = base::Seconds(0);
   PopulateRequiredTimingFields(&timing);
   tester()->SimulateTimingUpdate(timing);
   ResourceDataUpdate(
@@ -1533,8 +1533,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, AdPageLoadUKM) {
                      "video/webm" /* mime_type */, true /* is_ad_resource */);
 
   // Update cpu timings.
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(500));
-  OnCpuTimingUpdate(main_rfh(), base::TimeDelta::FromMilliseconds(500));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(500));
+  OnCpuTimingUpdate(main_rfh(), base::Milliseconds(500));
   NavigateMainFrame(kNonAdUrl);
 
   auto entries = test_ukm_recorder().GetEntriesByName(
@@ -1581,7 +1581,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, ZeroBytesNonZeroCpuFrame_Recorded) {
   ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
 
   // Use CPU but maintain zero bytes in the ad frame
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(1000));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(1000));
 
   NavigateFrame(kNonAdUrl, main_frame);
 
@@ -1602,32 +1602,32 @@ TEST_F(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsWindowUnactivated) {
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
 
   // Perform some updates on ad and non-ad frames. Usage 1%.
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(500));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(500));
 
   // Advance time by twelve seconds.
-  AdvancePageDuration(base::TimeDelta::FromSeconds(12));
+  AdvancePageDuration(base::Seconds(12));
 
   // Do some more work on the ad frame. Usage 5%.
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(1000));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(1000));
 
   // Advance time by twelve more seconds.
-  AdvancePageDuration(base::TimeDelta::FromSeconds(12));
+  AdvancePageDuration(base::Seconds(12));
 
   // Do some more work on the ad frame. Usage 8%.
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(1000));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(1000));
 
   // Advance time by twelve more seconds.
-  AdvancePageDuration(base::TimeDelta::FromSeconds(12));
+  AdvancePageDuration(base::Seconds(12));
 
   // Perform some updates on ad and non-ad frames. Usage 10%/13%.
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(1000));
-  OnCpuTimingUpdate(main_frame, base::TimeDelta::FromMilliseconds(1000));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(1000));
+  OnCpuTimingUpdate(main_frame, base::Milliseconds(1000));
 
   // Advance time by twelve more seconds.
-  AdvancePageDuration(base::TimeDelta::FromSeconds(12));
+  AdvancePageDuration(base::Seconds(12));
 
   // Perform some updates on ad and non-ad frames. Usage 8%/11%.
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(500));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(500));
 
   // Navigate away and check the peak windowed cpu usage.
   NavigateFrame(kNonAdUrl, main_frame);
@@ -1653,33 +1653,33 @@ TEST_F(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsWindowedActivated) {
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
 
   // Perform some updates on ad and non-ad frames. Usage 1%.
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(500));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(500));
 
   // Advance time by twelve seconds.
-  AdvancePageDuration(base::TimeDelta::FromSeconds(12));
+  AdvancePageDuration(base::Seconds(12));
 
   // Do some more work on the ad frame. Usage 8%.
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(2000));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(2000));
 
   // Advance time by twelve more seconds.
-  AdvancePageDuration(base::TimeDelta::FromSeconds(12));
+  AdvancePageDuration(base::Seconds(12));
 
   // Do some more work on the ad frame. Usage 11%.
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(1000));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(1000));
 
   // Set the page activation and advance time by twelve more seconds.
   tester()->SimulateFrameReceivedUserActivation(ad_frame);
-  AdvancePageDuration(base::TimeDelta::FromSeconds(12));
+  AdvancePageDuration(base::Seconds(12));
 
   // Perform some updates on ad and main frames. Usage 13%/16%.
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(1000));
-  OnCpuTimingUpdate(main_frame, base::TimeDelta::FromMilliseconds(1000));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(1000));
+  OnCpuTimingUpdate(main_frame, base::Milliseconds(1000));
 
   // Advance time by twelve more seconds.
-  AdvancePageDuration(base::TimeDelta::FromSeconds(12));
+  AdvancePageDuration(base::Seconds(12));
 
   // Perform some updates on ad and non-ad frames. Usage 8%/11%.
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(500));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(500));
 
   // Navigate away and check the peak windowed cpu usage.
   NavigateFrame(kNonAdUrl, main_frame);
@@ -1704,23 +1704,23 @@ TEST_F(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsNoActivation) {
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
 
   // Perform some updates on ad and non-ad frames.
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(500));
-  OnCpuTimingUpdate(non_ad_frame, base::TimeDelta::FromMilliseconds(500));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(500));
+  OnCpuTimingUpdate(non_ad_frame, base::Milliseconds(500));
 
   // Hide the page, and ensure we keep recording information.
   web_contents()->WasHidden();
 
   // Do some more work on the ad frame.
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(1000));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(1000));
 
   // Show the page, nothing should change.
   web_contents()->WasShown();
 
   // Do some more work on the main frame.
-  OnCpuTimingUpdate(main_frame, base::TimeDelta::FromMilliseconds(500));
+  OnCpuTimingUpdate(main_frame, base::Milliseconds(500));
 
   // Navigate away after 4 seconds.
-  AdvancePageDuration(base::TimeDelta::FromMilliseconds(4000));
+  AdvancePageDuration(base::Milliseconds(4000));
   NavigateFrame(kNonAdUrl, main_frame);
 
   // Check the cpu histograms.
@@ -1755,21 +1755,21 @@ TEST_F(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsOnActivation) {
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
 
   // Perform some updates on ad and non-ad frames.
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(1000));
-  OnCpuTimingUpdate(non_ad_frame, base::TimeDelta::FromMilliseconds(500));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(1000));
+  OnCpuTimingUpdate(non_ad_frame, base::Milliseconds(500));
 
   // Set the frame as activated after 2.5 seconds
-  AdvancePageDuration(base::TimeDelta::FromMilliseconds(2500));
+  AdvancePageDuration(base::Milliseconds(2500));
   tester()->SimulateFrameReceivedUserActivation(ad_frame);
 
   // Do some more work on the main frame.
-  OnCpuTimingUpdate(main_frame, base::TimeDelta::FromMilliseconds(500));
+  OnCpuTimingUpdate(main_frame, base::Milliseconds(500));
 
   // Do some more work on the ad frame.
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(500));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(500));
 
   // Navigate away after 4 seconds.
-  AdvancePageDuration(base::TimeDelta::FromMilliseconds(1500));
+  AdvancePageDuration(base::Milliseconds(1500));
   NavigateFrame(kNonAdUrl, main_frame);
 
   // Check the cpu histograms.
@@ -2013,11 +2013,10 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdFeatureOff_UMARecorded) {
                      (heavy_ad_thresholds::kMaxNetworkBytes / 1024));
   OnCpuTimingUpdate(
       ad_frame_cpu,
-      base::TimeDelta::FromMilliseconds(
-          heavy_ad_thresholds::kMaxPeakWindowedPercent * 30000 / 100));
+      base::Milliseconds(heavy_ad_thresholds::kMaxPeakWindowedPercent * 30000 /
+                         100));
   UseCpuTimeUnderThreshold(
-      ad_frame_total_cpu,
-      base::TimeDelta::FromMilliseconds(heavy_ad_thresholds::kMaxCpuTime));
+      ad_frame_total_cpu, base::Milliseconds(heavy_ad_thresholds::kMaxCpuTime));
 
   // Check the intervention issues
   EXPECT_EQ(rfh_tester_net->GetHeavyAdIssueCount(
@@ -2135,7 +2134,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdCpuInterventionInBackground) {
   // Use just under the peak threshold amount of CPU.
   OnCpuTimingUpdate(
       ad_frame,
-      base::TimeDelta::FromMilliseconds(
+      base::Milliseconds(
           heavy_ad_thresholds::kMaxPeakWindowedPercent * 30000 / 100 - 1));
 
   // Verify we did not trigger the intervention.
@@ -2154,8 +2153,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdCpuInterventionInBackground) {
 
   // Use enough CPU to trigger the intervention.
   ErrorPageWaiter waiter(web_contents());
-  AdvancePageDuration(base::TimeDelta::FromSeconds(10));
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(1));
+  AdvancePageDuration(base::Seconds(10));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(1));
 
   // Wait for an error page and then check there's an intervention on the frame.
   waiter.WaitForError();
@@ -2322,8 +2321,8 @@ TEST_F(AdsPageLoadMetricsObserverTest,
             0);
 
   // Verify the frame can still trip the CPU threshold.
-  UseCpuTimeUnderThreshold(ad_frame, base::TimeDelta::FromMilliseconds(
-                                         heavy_ad_thresholds::kMaxCpuTime + 1));
+  UseCpuTimeUnderThreshold(
+      ad_frame, base::Milliseconds(heavy_ad_thresholds::kMaxCpuTime + 1));
 
   // Verify we did trigger the intervention and that the message matches the
   // intervention type with noise.
@@ -2369,18 +2368,18 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdTotalCpuUsage_InterventionFired) {
 
   // Use just under the threshold amount of CPU.Needs to spread across enough
   // windows to not trigger peak threshold.
-  AdvancePageDuration(base::TimeDelta::FromSeconds(30));
-  UseCpuTimeUnderThreshold(ad_frame, base::TimeDelta::FromMilliseconds(
-                                         heavy_ad_thresholds::kMaxCpuTime - 1));
+  AdvancePageDuration(base::Seconds(30));
+  UseCpuTimeUnderThreshold(
+      ad_frame, base::Milliseconds(heavy_ad_thresholds::kMaxCpuTime - 1));
 
   // Verify we did not trigger the intervention.
   EXPECT_FALSE(HasInterventionReportsAfterFlush(ad_frame));
 
-  AdvancePageDuration(base::TimeDelta::FromSeconds(30));
+  AdvancePageDuration(base::Seconds(30));
 
   // Use enough CPU to trigger the intervention.
   ErrorPageWaiter waiter(web_contents());
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(1));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(1));
 
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
   waiter.WaitForError();
@@ -2412,7 +2411,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdPeakCpuUsage_InterventionFired) {
   // Use just under the peak threshold amount of CPU.
   OnCpuTimingUpdate(
       ad_frame,
-      base::TimeDelta::FromMilliseconds(
+      base::Milliseconds(
           heavy_ad_thresholds::kMaxPeakWindowedPercent * 30000 / 100 - 1));
 
   // Verify we did not trigger the intervention.
@@ -2420,8 +2419,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdPeakCpuUsage_InterventionFired) {
 
   // Use enough CPU to trigger the intervention.
   ErrorPageWaiter waiter(web_contents());
-  AdvancePageDuration(base::TimeDelta::FromSeconds(10));
-  OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(1));
+  AdvancePageDuration(base::Seconds(10));
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(1));
 
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
   waiter.WaitForError();
@@ -2542,8 +2541,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdPolicyProvided) {
                          (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
     }
     if (test_case.exceed_cpu) {
-      OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(
-                                      heavy_ad_thresholds::kMaxCpuTime + 1));
+      OnCpuTimingUpdate(
+          ad_frame, base::Milliseconds(heavy_ad_thresholds::kMaxCpuTime + 1));
     }
 
     // We should either see an error page if the intervention happened, or not
@@ -2870,8 +2869,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, FirstContentfulPaint_Recorded) {
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
 
   // Set FirstContentfulPaint.
-  SimulateFirstContentfulPaint(ad_frame,
-                               base::TimeDelta::FromMilliseconds(100));
+  SimulateFirstContentfulPaint(ad_frame, base::Milliseconds(100));
 
   // Navigate away and check the histogram.
   NavigateFrame(kNonAdUrl, main_frame);
@@ -2898,12 +2896,10 @@ TEST_F(AdsPageLoadMetricsObserverTest,
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
 
   // Set FirstContentfulPaint for nested subframe. Assume that it paints first.
-  SimulateFirstContentfulPaint(sub_frame,
-                               base::TimeDelta::FromMilliseconds(90));
+  SimulateFirstContentfulPaint(sub_frame, base::Milliseconds(90));
 
   // Set FirstContentfulPaint for root ad frame.
-  SimulateFirstContentfulPaint(ad_frame,
-                               base::TimeDelta::FromMilliseconds(100));
+  SimulateFirstContentfulPaint(ad_frame, base::Milliseconds(100));
 
   // Navigate away and check the histogram.
   NavigateFrame(kNonAdUrl, main_frame);
@@ -2931,13 +2927,11 @@ TEST_F(AdsPageLoadMetricsObserverTest,
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
 
   // Set FirstContentfulPaint for root ad frame.
-  SimulateFirstContentfulPaint(ad_frame,
-                               base::TimeDelta::FromMilliseconds(100));
+  SimulateFirstContentfulPaint(ad_frame, base::Milliseconds(100));
 
   // Set FirstContentfulPaint for inner subframe. Simulate the nested
   // frame painting first but having its IPCs received second.
-  SimulateFirstContentfulPaint(sub_frame,
-                               base::TimeDelta::FromMilliseconds(90));
+  SimulateFirstContentfulPaint(sub_frame, base::Milliseconds(90));
 
   // Navigate away and check the histogram.
   NavigateFrame(kNonAdUrl, main_frame);
@@ -2965,8 +2959,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
 
   // Set FirstContentfulPaint for nested subframe. It is the only frame painted.
-  SimulateFirstContentfulPaint(sub_frame,
-                               base::TimeDelta::FromMilliseconds(90));
+  SimulateFirstContentfulPaint(sub_frame, base::Milliseconds(90));
 
   // Navigate away and check the histogram.
   NavigateFrame(kNonAdUrl, main_frame);

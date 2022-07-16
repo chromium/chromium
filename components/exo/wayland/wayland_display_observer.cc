@@ -5,6 +5,7 @@
 #include "components/exo/wayland/wayland_display_observer.h"
 
 #include <wayland-server-core.h>
+#include <xdg-output-unstable-v1-server-protocol.h>
 
 #include <string>
 
@@ -19,14 +20,16 @@ namespace wayland {
 WaylandDisplayHandler::WaylandDisplayHandler(WaylandDisplayOutput* output,
                                              wl_resource* output_resource)
     : output_(output), output_resource_(output_resource) {
-  output_->RegisterOutput(output_resource_);
-
-  // Adding itself as an observer will send the initial display metrics.
-  AddObserver(this);
 }
 
 WaylandDisplayHandler::~WaylandDisplayHandler() {
   output_->UnregisterOutput(output_resource_);
+}
+
+void WaylandDisplayHandler::Initialize() {
+  // Adding itself as an observer will send the initial display metrics.
+  AddObserver(this);
+  output_->RegisterOutput(output_resource_);
 }
 
 void WaylandDisplayHandler::AddObserver(WaylandDisplayObserver* observer) {
@@ -78,6 +81,25 @@ void WaylandDisplayHandler::OnDisplayMetricsChanged(
     wl_client_flush(wl_resource_get_client(output_resource_));
   }
 }
+
+void WaylandDisplayHandler::OnXdgOutputCreated(
+    wl_resource* xdg_output_resource) {
+  DCHECK(!xdg_output_resource_);
+  xdg_output_resource_ = xdg_output_resource;
+
+  display::Display display;
+  if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(output_->id(),
+                                                             &display)) {
+    return;
+  }
+  OnDisplayMetricsChanged(display, 0xFFFFFFFF);
+}
+
+void WaylandDisplayHandler::UnsetXdgOutputResource() {
+  DCHECK(xdg_output_resource_);
+  xdg_output_resource_ = nullptr;
+}
+
 bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
                                                uint32_t changed_metrics) {
   if (!output_resource_)
@@ -137,19 +159,26 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
                           model.empty() ? kUnknown : model.c_str(),
                           OutputTransform(display.panel_rotation()));
 
-  if (wl_resource_get_version(output_resource_) >=
-      WL_OUTPUT_SCALE_SINCE_VERSION) {
-    // wl_output only supports integer scaling, so if device scale factor is
-    // fractional we need to round it up to the closest integer.
-    wl_output_send_scale(output_resource_,
-                         std::ceil(display.device_scale_factor()));
-  }
-
   // TODO(reveman): Send real list of modes.
   wl_output_send_mode(output_resource_,
                       WL_OUTPUT_MODE_CURRENT | WL_OUTPUT_MODE_PREFERRED,
                       physical_size_px.width(), physical_size_px.height(),
                       static_cast<int>(60000));
+
+  if (xdg_output_resource_) {
+    const gfx::Size logical_size = ScaleToRoundedSize(
+        physical_size_px, 1.0f / display.device_scale_factor());
+    zxdg_output_v1_send_logical_size(xdg_output_resource_, logical_size.width(),
+                                     logical_size.height());
+  } else {
+    if (wl_resource_get_version(output_resource_) >=
+        WL_OUTPUT_SCALE_SINCE_VERSION) {
+      // wl_output only supports integer scaling, so if device scale factor is
+      // fractional we need to round it up to the closest integer.
+      wl_output_send_scale(output_resource_,
+                           std::ceil(display.device_scale_factor()));
+    }
+  }
 
   return true;
 }

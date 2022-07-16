@@ -22,6 +22,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/tab_footprint_aggregator.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/metrics/metrics_data_validation.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
@@ -213,9 +214,21 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"malloc/allocated_objects", "Malloc.AllocatedObjects", MetricSize::kLarge,
      kEffectiveSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetMalloc_AllocatedObjects},
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+    // TODO(keishi): Add brp_quarantined metrics for the Blink partitions.
+    {"malloc/partitions/allocator", "Malloc.BRPQuarantined", MetricSize::kSmall,
+     "brp_quarantined_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions/allocator", "Malloc.BRPQuarantinedCount",
+     MetricSize::kTiny, "brp_quarantined_count", EmitTo::kSizeInUmaOnly,
+     nullptr},
+#endif
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"malloc/partitions/allocator/thread_cache", "Malloc.ThreadCache",
      MetricSize::kSmall, kSize, EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions/allocator", "Malloc.MaxAllocatedSize",
+     MetricSize::kLarge, "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions/allocator", "Malloc.MaxCommittedSize",
+     MetricSize::kLarge, "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
 #endif
     {"mojo", "NumberOfMojoHandles", MetricSize::kSmall,
      MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
@@ -235,11 +248,6 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"media/webmediaplayer", "WebMediaPlayer.Instances", MetricSize::kTiny,
      MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
      &Memory_Experimental::SetNumberOfWebMediaPlayers},
-    {"net", "Net", MetricSize::kSmall, kEffectiveSize, EmitTo::kSizeInUkmAndUma,
-     &Memory_Experimental::SetNet},
-    {"net/url_request_context", "Net.UrlRequestContext", MetricSize::kSmall,
-     kEffectiveSize, EmitTo::kSizeInUkmAndUma,
-     &Memory_Experimental::SetNet_UrlRequestContext},
     {"omnibox", "OmniboxSuggestions", MetricSize::kSmall, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetOmniboxSuggestions},
     {"parkable_images", "ParkableImage.OnDiskSize", MetricSize::kSmall,
@@ -257,13 +265,31 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      "PartitionAlloc.Partitions.ArrayBuffer", MetricSize::kLarge, kSize,
      EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetPartitionAlloc_Partitions_ArrayBuffer},
+    {"partition_alloc/partitions/array_buffer",
+     "PartitionAlloc.MaxCommittedSize.ArrayBuffer", MetricSize::kLarge,
+     "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"partition_alloc/partitions/array_buffer",
+     "PartitionAlloc.MaxAllocatedSize.ArrayBuffer", MetricSize::kLarge,
+     "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"partition_alloc/partitions/buffer", "PartitionAlloc.Partitions.Buffer",
      MetricSize::kLarge, kSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetPartitionAlloc_Partitions_Buffer},
+    {"partition_alloc/partitions/buffer",
+     "PartitionAlloc.MaxCommittedSize.Buffer", MetricSize::kLarge,
+     "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"partition_alloc/partitions/buffer",
+     "PartitionAlloc.MaxAllocatedSize.Buffer", MetricSize::kLarge,
+     "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"partition_alloc/partitions/fast_malloc",
      "PartitionAlloc.Partitions.FastMalloc", MetricSize::kLarge, kSize,
      EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetPartitionAlloc_Partitions_FastMalloc},
+    {"partition_alloc/partitions/fast_malloc",
+     "PartitionAlloc.MaxCommittedSize.FastMalloc", MetricSize::kLarge,
+     "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"partition_alloc/partitions/fast_malloc",
+     "PartitionAlloc.MaxAllocatedSize.FastMalloc", MetricSize::kLarge,
+     "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"partition_alloc/partitions/fast_malloc/thread_cache",
      "PartitionAlloc.Partitions.FastMalloc.ThreadCache", MetricSize::kSmall,
@@ -272,6 +298,12 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"partition_alloc/partitions/layout", "PartitionAlloc.Partitions.Layout",
      MetricSize::kLarge, kSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetPartitionAlloc_Partitions_Layout},
+    {"partition_alloc/partitions/layout",
+     "PartitionAlloc.MaxCommittedSize.Layout", MetricSize::kLarge,
+     "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"partition_alloc/partitions/layout",
+     "PartitionAlloc.MaxAllocatedSize.Layout", MetricSize::kLarge,
+     "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"passwords", "ManualFillingCache", MetricSize::kSmall, kEffectiveSize,
      EmitTo::kSizeInUmaOnly, nullptr},
     {"site_storage", "SiteStorage", MetricSize::kLarge, kEffectiveSize,
@@ -959,6 +991,12 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
 #endif
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.PrivateMemoryFootprint",
                                   private_footprint_total_kb / kKiB);
+    // The pseudo metric of Memory.Total.PrivateMemoryFootprint. Only used to
+    // assess field trial data quality.
+    UMA_HISTOGRAM_MEMORY_LARGE_MB(
+        "UMA.Pseudo.Memory.Total.PrivateMemoryFootprint",
+        metrics::GetPseudoMetricsSample(
+            static_cast<double>(private_footprint_total_kb) / kKiB));
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.RendererPrivateMemoryFootprint",
                                   renderer_private_footprint_total_kb / kKiB);
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.SharedMemoryFootprint",

@@ -22,7 +22,6 @@ using ::testing::_;
 
 using sync_pb::ClientToServerMessage;
 using sync_pb::CommitResponse_EntryResponse;
-using sync_pb::SyncEntity;
 
 namespace syncer {
 
@@ -69,7 +68,7 @@ class SyncerProtoUtilTest : public testing::Test {
         /*cache_guid=*/"",
         /*birthday=*/"",
         /*bag_of_chips=*/"",
-        /*poll_internal=*/base::TimeDelta::FromSeconds(1));
+        /*poll_internal=*/base::Seconds(1));
   }
 
   SyncCycleContext* context() { return context_.get(); }

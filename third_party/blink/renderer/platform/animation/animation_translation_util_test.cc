@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/platform/animation/animation_translation_util.h"
 
 #include <memory>
-#include "cc/test/geometry_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/animation/compositor_transform_operations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -34,6 +33,7 @@
 #include "third_party/blink/renderer/platform/transforms/scale_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 #include "third_party/blink/renderer/platform/transforms/translate_transform_operation.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace blink {
 
@@ -110,8 +110,7 @@ TEST(AnimationTranslationUtilTest, RelativeInterpolated) {
   gfx::TransformOperations ops_expected;
   ops_expected.AppendTranslate(25, 0, 0);
   EXPECT_EQ(gfx::TransformOperation::TRANSFORM_OPERATION_MATRIX, op0.type);
-  gfx::ExpectTransformationMatrixNear(op0.matrix, ops_expected.at(0).matrix,
-                                      1e-6f);
+  EXPECT_TRANSFORM_NEAR(op0.matrix, ops_expected.at(0).matrix, 1e-6f);
 }
 
 }  // namespace blink

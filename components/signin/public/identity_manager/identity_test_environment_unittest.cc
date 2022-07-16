@@ -18,11 +18,14 @@ class IdentityTestEnvironmentTest : public testing::Test {
             base::test::TaskEnvironment::MainThreadType::DEFAULT,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
 
+  IdentityTestEnvironmentTest(const IdentityTestEnvironmentTest&) = delete;
+  IdentityTestEnvironmentTest& operator=(const IdentityTestEnvironmentTest&) =
+      delete;
+
   ~IdentityTestEnvironmentTest() override { task_environment_.RunUntilIdle(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(IdentityTestEnvironmentTest);
 };
 
 TEST_F(IdentityTestEnvironmentTest,

@@ -10,7 +10,7 @@
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -79,6 +79,9 @@ class AutoclickRingHandler::AutoclickRingView : public views::View {
   AutoclickRingView(views::Widget* ring_widget, int radius)
       : views::View(), widget_(ring_widget), radius_(radius) {}
 
+  AutoclickRingView(const AutoclickRingView&) = delete;
+  AutoclickRingView& operator=(const AutoclickRingView&) = delete;
+
   ~AutoclickRingView() override = default;
 
   static AutoclickRingView* Create(const gfx::Point& event_location,
@@ -129,8 +132,6 @@ class AutoclickRingHandler::AutoclickRingView : public views::View {
   views::Widget* widget_;
   int radius_;
   int current_angle_ = kAutoclickRingAngleStartValue;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoclickRingView);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

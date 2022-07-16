@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -47,8 +48,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
  public:
   using ReadAvailableTypesCallback =
       base::OnceCallback<void(std::vector<std::u16string> result)>;
-  using ReadAvailablePlatformSpecificFormatNamesCallback =
-      base::OnceCallback<void(std::vector<std::u16string> result)>;
   using ReadTextCallback = base::OnceCallback<void(std::u16string result)>;
   using ReadAsciiTextCallback = base::OnceCallback<void(std::string result)>;
   using ReadHtmlCallback = base::OnceCallback<void(std::u16string markup,
@@ -59,7 +58,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   using ReadRTFCallback = base::OnceCallback<void(std::string result)>;
   using ReadPngCallback =
       base::OnceCallback<void(const std::vector<uint8_t>& result)>;
-  using ReadImageCallback = base::OnceCallback<void(const SkBitmap& result)>;
   using ReadCustomDataCallback =
       base::OnceCallback<void(std::u16string result)>;
   using ReadFilenamesCallback =
@@ -124,6 +122,18 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual const ClipboardSequenceNumberToken& GetSequenceNumber(
       ClipboardBuffer buffer) const = 0;
 
+  // Returns all the standard MIME types that are present on the clipboard.
+  // The standard MIME types are the formats that are well defined by the
+  // Clipboard API
+  // spec(https://w3c.github.io/clipboard-apis/#mandatory-data-types-x).
+  // Currently we support text/html, text/plain, text/rtf, image/png &
+  // text/uri-list.
+  // TODO(snianu): Create a more generalized function for standard formats that
+  // can be shared by all platforms.
+  virtual std::vector<std::u16string> GetStandardFormats(
+      ClipboardBuffer buffer,
+      const DataTransferEndpoint* data_dst) const = 0;
+
   // Tests whether the clipboard contains a certain format.
   virtual bool IsFormatAvailable(
       const ClipboardFormatType& format,
@@ -150,13 +160,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void ReadAvailableTypes(ClipboardBuffer buffer,
                                   const DataTransferEndpoint* data_dst,
                                   ReadAvailableTypesCallback callback) const;
-  // Includes all types, including unsanitized types.
-  // Omits formats held within pickles, as they're different from what a native
-  // application would see.
-  virtual void ReadAvailablePlatformSpecificFormatNames(
-      ClipboardBuffer buffer,
-      const DataTransferEndpoint* data_dst,
-      ReadAvailablePlatformSpecificFormatNamesCallback callback) const;
 
   // Reads Unicode text from the clipboard, if available.
   virtual void ReadText(ClipboardBuffer buffer,
@@ -192,11 +195,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
                        const DataTransferEndpoint* data_dst,
                        ReadPngCallback callback) const = 0;
 
-  // Reads an image from the clipboard, if available.
-  virtual void ReadImage(ClipboardBuffer buffer,
-                         const DataTransferEndpoint* data_dst,
-                         ReadImageCallback callback) const = 0;
-
   virtual void ReadCustomData(ClipboardBuffer buffer,
                               const std::u16string& type,
                               const DataTransferEndpoint* data_dst,
@@ -223,9 +221,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void ReadAvailableTypes(ClipboardBuffer buffer,
                                   const DataTransferEndpoint* data_dst,
                                   std::vector<std::u16string>* types) const = 0;
-  virtual std::vector<std::u16string> ReadAvailablePlatformSpecificFormatNames(
-      ClipboardBuffer buffer,
-      const DataTransferEndpoint* data_dst) const = 0;
   virtual void ReadText(ClipboardBuffer buffer,
                         const DataTransferEndpoint* data_dst,
                         std::u16string* result) const = 0;
@@ -265,6 +260,19 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // Resets the clipboard last modified time to Time::Time().
   virtual void ClearLastModifiedTime();
 
+  // Reads the web custom format map (which is in JSON format) from the
+  // clipboard if it's available. Parses the JSON string that has the mapping of
+  // MIME type to custom format name and fetches the list of custom MIME types.
+  // e.g. on Windows, the mapping is represented as "text/html":"Web Custom
+  // Format(0-99)".
+  std::map<std::string, std::string> ExtractCustomPlatformNames(
+      ClipboardBuffer buffer,
+      const DataTransferEndpoint* data_dst) const;
+
+  std::vector<std::u16string> ReadAvailableStandardAndCustomFormatNames(
+      ClipboardBuffer buffer,
+      const DataTransferEndpoint* data_dst) const;
+
  protected:
   // PortableFormat designates the type of data to be stored in the clipboard.
   // This designation is shared across all OSes. The system-specific designation
@@ -291,6 +299,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
     kData,  // Arbitrary block of bytes.
     kSvg,
     kFilenames,
+    kWebCustomFormatMap,
   };
 
   // TODO (https://crbug.com/994928): Rename ObjectMap-related types.
@@ -314,6 +323,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // kWebkit    none          empty vector
   // kData      format        char array
   //            data          byte array
+  // kWebCustomFormatMap      char array
   using ObjectMapParam = std::vector<char>;
   using ObjectMapParams = std::vector<ObjectMapParam>;
   using ObjectMap = base::flat_map<PortableFormat, ObjectMapParams>;

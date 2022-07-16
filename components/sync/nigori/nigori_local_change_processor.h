@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -23,14 +22,16 @@ struct EntityData;
 
 struct NigoriMetadataBatch {
   NigoriMetadataBatch();
+
+  NigoriMetadataBatch(const NigoriMetadataBatch&) = delete;
+  NigoriMetadataBatch& operator=(const NigoriMetadataBatch&) = delete;
+
   NigoriMetadataBatch(NigoriMetadataBatch&& other);
+
   ~NigoriMetadataBatch();
 
   sync_pb::ModelTypeState model_type_state;
   absl::optional<sync_pb::EntityMetadata> entity_metadata;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NigoriMetadataBatch);
 };
 
 // Interface analogous to ModelTypeChangeProcessor for Nigori, used to propagate
@@ -38,6 +39,10 @@ struct NigoriMetadataBatch {
 class NigoriLocalChangeProcessor {
  public:
   NigoriLocalChangeProcessor() = default;
+
+  NigoriLocalChangeProcessor(const NigoriLocalChangeProcessor&) = delete;
+  NigoriLocalChangeProcessor& operator=(const NigoriLocalChangeProcessor&) =
+      delete;
 
   virtual ~NigoriLocalChangeProcessor() = default;
 
@@ -74,9 +79,6 @@ class NigoriLocalChangeProcessor {
   // false, and ModelReadyToSync() has already been called, then Put and Delete
   // will no-op and can be omitted by bridge.
   virtual bool IsTrackingMetadata() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NigoriLocalChangeProcessor);
 };
 
 }  // namespace syncer

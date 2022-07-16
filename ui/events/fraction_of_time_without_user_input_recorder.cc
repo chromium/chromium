@@ -10,10 +10,8 @@
 
 namespace {
 
-constexpr base::TimeDelta DEFAULT_WINDOW_SIZE =
-    base::TimeDelta::FromSecondsD(10);
-constexpr base::TimeDelta DEFAULT_IDLE_TIMEOUT =
-    base::TimeDelta::FromSecondsD(0.05);
+constexpr base::TimeDelta DEFAULT_WINDOW_SIZE = base::Seconds(10);
+constexpr base::TimeDelta DEFAULT_IDLE_TIMEOUT = base::Seconds(0.05);
 
 }  // namespace
 

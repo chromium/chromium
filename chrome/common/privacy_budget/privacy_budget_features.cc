@@ -4,6 +4,10 @@
 
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 
+#include <string>
+
+#include "base/metrics/field_trial_params.h"
+
 namespace features {
 
 const base::Feature kIdentifiabilityStudy = {"IdentifiabilityStudy",
@@ -18,17 +22,11 @@ const base::FeatureParam<std::string> kIdentifiabilityStudyBlockedMetrics = {
 const base::FeatureParam<std::string> kIdentifiabilityStudyBlockedTypes = {
     &kIdentifiabilityStudy, "BlockedTypes", ""};
 
-const base::FeatureParam<int> kIdentifiabilityStudySurfaceSelectionRate = {
+const base::FeatureParam<int> kIdentifiabilityStudyExpectedSurfaceCount = {
     &kIdentifiabilityStudy, "Rho", 0};
 
-const base::FeatureParam<int> kIdentifiabilityStudyMaxSurfaces = {
-    &kIdentifiabilityStudy, "Max", kMaxIdentifiabilityStudyMaxSurfaces};
-
-const base::FeatureParam<std::string> kIdentifiabilityStudyPerSurfaceSettings =
-    {&kIdentifiabilityStudy, "HashRate", ""};
-
-const base::FeatureParam<std::string> kIdentifiabilityStudyPerTypeSettings = {
-    &kIdentifiabilityStudy, "TypeRate", ""};
+const base::FeatureParam<int> kIdentifiabilityStudyActiveSurfaceBudget = {
+    &kIdentifiabilityStudy, "Max", kMaxIdentifiabilityStudyActiveSurfaceBudget};
 
 const base::FeatureParam<std::string> kIdentifiabilityStudyPerHashCost = {
     &kIdentifiabilityStudy, "HashCost", ""};
@@ -39,5 +37,11 @@ const base::FeatureParam<std::string> kIdentifiabilityStudyPerTypeCost = {
 const base::FeatureParam<std::string>
     kIdentifiabilityStudySurfaceEquivalenceClasses = {&kIdentifiabilityStudy,
                                                       "Classes", ""};
+
+const base::FeatureParam<std::string> kIdentifiabilityStudyBlocks = {
+    &kIdentifiabilityStudy, "Blocks", ""};
+
+const base::FeatureParam<std::string> kIdentifiabilityStudyBlockWeights = {
+    &kIdentifiabilityStudy, "BlockWeights", ""};
 
 }  // namespace features

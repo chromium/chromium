@@ -18,7 +18,10 @@ python_library("binary_size_trybot_py") {
 python_library("sizes_py") {
   testonly = true
   pydeps_file = "sizes.pydeps"
-  data_deps = [ "//third_party/catapult/tracing:convert_chart_json" ]
+  data_deps = [
+    "//build/util:test_results",
+    "//third_party/catapult/tracing:convert_chart_json",
+  ]
 }
 
 if (is_linux) {

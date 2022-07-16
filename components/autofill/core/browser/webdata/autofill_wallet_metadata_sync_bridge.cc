@@ -142,7 +142,7 @@ AutofillMetadata CreateAutofillMetadataFromWalletMetadataSpecifics(
   metadata.id = GetMetadataIdForSpecificsId(specifics.id());
   metadata.use_count = specifics.use_count();
   metadata.use_date = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(specifics.use_date()));
+      base::Microseconds(specifics.use_date()));
 
   switch (specifics.type()) {
     case WalletMetadataSpecifics::ADDRESS:

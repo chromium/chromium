@@ -87,7 +87,7 @@ std::set<base::FilePath> GetPrefsCandidateFilesFromFolder(
       base::FileEnumerator::FILES);
 #if defined(OS_WIN)
   base::FilePath::StringType extension = base::UTF8ToWide(".json");
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   base::FilePath::StringType extension(".json");
 #endif
   do {
@@ -123,6 +123,9 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
     DCHECK(profile_);
   }
 
+  PrioritySyncReadyWaiter(const PrioritySyncReadyWaiter&) = delete;
+  PrioritySyncReadyWaiter& operator=(const PrioritySyncReadyWaiter&) = delete;
+
   ~PrioritySyncReadyWaiter() override = default;
 
   void Start(base::OnceClosure done_closure) {
@@ -133,8 +136,8 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
     }
     DCHECK(!done_closure_);
     done_closure_ = std::move(done_closure);
-    if (chromeos::features::IsSplitSettingsSyncEnabled()) {
-      // SplitSettingsSync lets users opt-out of sync during OOBE.
+    if (chromeos::features::IsSyncConsentOptionalEnabled()) {
+      // SyncConsentOptional lets users opt-out of sync during OOBE.
       PrefService* prefs = profile_->GetPrefs();
       if (!prefs->GetBoolean(chromeos::prefs::kSyncOobeCompleted)) {
         // Need to wait for OOBE completion before checking if sync is enabled.
@@ -153,7 +156,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
 
  private:
   void OnSyncOobeCompleted() {
-    DCHECK(chromeos::features::IsSplitSettingsSyncEnabled());
+    DCHECK(chromeos::features::IsSyncConsentOptionalEnabled());
     DCHECK(
         profile_->GetPrefs()->GetBoolean(chromeos::prefs::kSyncOobeCompleted));
     pref_change_registrar_.reset();
@@ -203,9 +206,9 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
     sync_preferences::PrefServiceSyncable* prefs =
         PrefServiceSyncableFromProfile(profile_);
     DCHECK(prefs);
-    // SplitSettingsSync moves prefs like language and keyboard/mouse config to
-    // OS priority prefs.
-    return chromeos::features::IsSplitSettingsSyncEnabled()
+    // SyncSettingsCategorization moves prefs like language and keyboard/mouse
+    // config to OS priority prefs.
+    return chromeos::features::IsSyncSettingsCategorizationEnabled()
                ? prefs->AreOsPriorityPrefsSyncing()
                : prefs->IsPrioritySyncing();
   }
@@ -226,7 +229,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
 
   base::OnceClosure done_closure_;
 
-  // Used with SplitSettingsSync to wait for OOBE sync dialog completion.
+  // Used with SyncConsentOptional to wait for OOBE sync dialog completion.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Used for registering observer for sync_preferences::PrefServiceSyncable.
@@ -235,8 +238,6 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
       syncable_pref_observation_{this};
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrioritySyncReadyWaiter);
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -415,7 +416,7 @@ void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
 #if defined(OS_WIN)
         base::WideToASCII(
             extension_candidate_path.RemoveExtension().BaseName().value());
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
         extension_candidate_path.RemoveExtension().BaseName().value();
 #endif
 

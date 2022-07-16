@@ -14,9 +14,10 @@
 
   const serviceWorkerSession = session.createChild(attachedToTarget.params.sessionId);
   const swdp = serviceWorkerSession.protocol;
-  await swdp.Network.enable();
 
-  await swdp.Runtime.runIfWaitingForDebugger();
+  const networkPromise = swdp.Network.enable();
+  swdp.Runtime.runIfWaitingForDebugger();
+  await networkPromise;
 
   // Wait for the main request to complete before going offline.
   await swdp.Network.onceLoadingFinished();

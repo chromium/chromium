@@ -15,10 +15,6 @@ namespace signin {
 class IdentityManager;
 }
 
-namespace ntp_snippets {
-class ContentSuggestionsService;
-}
-
 namespace web {
 class WebState;
 }
@@ -27,13 +23,12 @@ class WebState;
 class AuthenticationService;
 class Browser;
 @protocol BrowserCommands;
+class ChromeAccountManagerService;
 @protocol ContentSuggestionsCollectionControlling;
 @class ContentSuggestionsHeaderSynchronizer;
 @class ContentSuggestionsMediator;
-@class ContentSuggestionsMetricsRecorder;
 @class ContentSuggestionsViewController;
 @protocol LogoVendor;
-@protocol NewTabPageFeedDelegate;
 @class NewTabPageViewController;
 @protocol NTPHomeConsumer;
 @class NTPHomeMetrics;
@@ -51,14 +46,15 @@ class VoiceSearchAvailability;
                ContentSuggestionsGestureCommands,
                ContentSuggestionsHeaderViewControllerDelegate>
 
-- (instancetype)initWithWebState:(web::WebState*)webState
-              templateURLService:(TemplateURLService*)templateURLService
-                       URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                     authService:(AuthenticationService*)authService
-                 identityManager:(signin::IdentityManager*)identityManager
-                      logoVendor:(id<LogoVendor>)logoVendor
-         voiceSearchAvailability:
-             (VoiceSearchAvailability*)voiceSearchAvailability
+- (instancetype)
+           initWithWebState:(web::WebState*)webState
+         templateURLService:(TemplateURLService*)templateURLService
+                  URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                authService:(AuthenticationService*)authService
+            identityManager:(signin::IdentityManager*)identityManager
+      accountManagerService:(ChromeAccountManagerService*)accountManagerService
+                 logoVendor:(id<LogoVendor>)logoVendor
+    voiceSearchAvailability:(VoiceSearchAvailability*)voiceSearchAvailability
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -67,11 +63,6 @@ class VoiceSearchAvailability;
 @property(nonatomic, weak)
     id<ApplicationCommands, BrowserCommands, OmniboxCommands, SnackbarCommands>
         dispatcher;
-// Suggestions service used to get the suggestions.
-@property(nonatomic, assign)
-    ntp_snippets::ContentSuggestionsService* suggestionsService;
-// Recorder for the metrics related to ContentSuggestions.
-@property(nonatomic, strong) ContentSuggestionsMetricsRecorder* metricsRecorder;
 // Recorder for the metrics related to the NTP.
 @property(nonatomic, strong) NTPHomeMetrics* NTPMetrics;
 // Recorder for the metrics related to the Discover feed.
@@ -103,9 +94,8 @@ class VoiceSearchAvailability;
 @property(nonatomic, weak) id<NTPHomeConsumer> consumer;
 // The browser.
 @property(nonatomic, assign) Browser* browser;
-
-// Delegate for providing information relating to the feed.
-@property(nonatomic, weak) id<NewTabPageFeedDelegate> ntpFeedDelegate;
+// The web state associated with this NTP.
+@property(nonatomic, assign) web::WebState* webState;
 
 // Inits the mediator.
 - (void)setUp;

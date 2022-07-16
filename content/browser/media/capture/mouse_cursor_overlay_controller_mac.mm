@@ -84,6 +84,9 @@ class MouseCursorOverlayController::Observer {
                  andView:view_.get()]);
   }
 
+  Observer(const Observer&) = delete;
+  Observer& operator=(const Observer&) = delete;
+
   ~Observer() { StopTracking(); }
 
   void StopTracking() {
@@ -117,8 +120,6 @@ class MouseCursorOverlayController::Observer {
   MouseCursorOverlayController* const controller_;
   base::scoped_nsobject<NSView> view_;
   base::scoped_nsobject<MouseCursorOverlayTracker> mouse_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(Observer);
 };
 
 MouseCursorOverlayController::MouseCursorOverlayController()

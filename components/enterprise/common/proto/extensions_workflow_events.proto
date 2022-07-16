@@ -33,4 +33,7 @@ message ExtensionsWorkflowEvent {
 
   // From which client type the request was sent.
   optional ClientType client_type = 4;
+
+  // User justification describing why the extension is being requested.
+  optional string justification = 5;
 }

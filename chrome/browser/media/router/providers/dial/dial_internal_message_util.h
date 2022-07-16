@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_app_info.h"
@@ -58,14 +57,16 @@ struct DialInternalMessage {
                       absl::optional<base::Value> body,
                       const std::string& client_id,
                       int sequence_number);
+
+  DialInternalMessage(const DialInternalMessage&) = delete;
+  DialInternalMessage& operator=(const DialInternalMessage&) = delete;
+
   ~DialInternalMessage();
 
   DialInternalMessageType type;
   absl::optional<base::Value> body;
   std::string client_id;
   int sequence_number;
-
-  DISALLOW_COPY_AND_ASSIGN(DialInternalMessage);
 };
 
 // Parsed CUSTOM_DIAL_LAUNCH response from the Cast SDK client.
@@ -94,6 +95,10 @@ class DialInternalMessageUtil final {
  public:
   // |hash_token|: A per-profile value used to hash sink IDs.
   explicit DialInternalMessageUtil(const std::string& hash_token);
+
+  DialInternalMessageUtil(const DialInternalMessageUtil&) = delete;
+  DialInternalMessageUtil& operator=(const DialInternalMessageUtil&) = delete;
+
   ~DialInternalMessageUtil();
 
   // Returns |true| if |message| is a valid STOP_SESSION message.
@@ -162,7 +167,6 @@ class DialInternalMessageUtil final {
                                       int sequence_number = -1) const;
 
   std::string hash_token_;
-  DISALLOW_COPY_AND_ASSIGN(DialInternalMessageUtil);
 };
 
 }  // namespace media_router

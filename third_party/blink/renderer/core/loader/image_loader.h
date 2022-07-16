@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -55,7 +56,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   explicit ImageLoader(Element*);
   ~ImageLoader() override;
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   enum UpdateFromElementBehavior {
     // This should be the update behavior when the element is attached to a

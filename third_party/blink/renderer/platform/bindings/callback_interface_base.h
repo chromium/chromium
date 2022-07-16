@@ -26,7 +26,7 @@ class PLATFORM_EXPORT CallbackInterfaceBase
  public:
   // Whether the callback interface is a "single operation callback interface"
   // or not.
-  // https://heycam.github.io/webidl/#dfn-single-operation-callback-interface
+  // https://webidl.spec.whatwg.org/#dfn-single-operation-callback-interface
   enum SingleOperationOrNot {
     kNotSingleOperation,
     kSingleOperation,
@@ -44,7 +44,7 @@ class PLATFORM_EXPORT CallbackInterfaceBase
   }
 
   v8::Local<v8::Object> CallbackObject() {
-    return callback_object_.NewLocal(GetIsolate());
+    return callback_object_.Get(GetIsolate());
   }
 
   // Returns true iff the callback interface is a single operation callback
@@ -96,7 +96,7 @@ class PLATFORM_EXPORT CallbackInterfaceBase
   Member<ScriptState> callback_relevant_script_state_;
   // The callback context, i.e. the incumbent Realm when an ECMAScript value is
   // converted to an IDL value.
-  // https://heycam.github.io/webidl/#dfn-callback-context
+  // https://webidl.spec.whatwg.org/#dfn-callback-context
   Member<ScriptState> incumbent_script_state_;
 };
 

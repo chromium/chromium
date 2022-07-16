@@ -17,6 +17,11 @@ function initializeOobe() {
   // TODO(crbug.com/1082670): Remove excessive logging after investigation.
   console.warn('1082670 : initializing OOBE');
 
+  // Initialize the on-screen debugger if present.
+  if (cr.ui.login.debug) {
+    cr.ui.login.debug.DebuggerUI.getInstance().register(document.body);
+  }
+
   try {
     cr.ui.Oobe.initialize();
   } finally {

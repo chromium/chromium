@@ -198,6 +198,9 @@ class CC_EXPORT LayerTreeSettings {
   // LayerTreeHostSingleThreadClient::FrameSinksToThrottleUpdated() will be
   // called with candidates.
   bool enable_compositing_based_throttling = false;
+
+  // Whether it is a LayerTree for ui.
+  bool is_layer_tree_for_ui = false;
 };
 
 class CC_EXPORT LayerListSettings : public LayerTreeSettings {

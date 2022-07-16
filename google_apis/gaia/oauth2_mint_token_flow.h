@@ -126,6 +126,10 @@ class OAuth2MintTokenFlow : public OAuth2ApiCallFlow {
   };
 
   OAuth2MintTokenFlow(Delegate* delegate, const Parameters& parameters);
+
+  OAuth2MintTokenFlow(const OAuth2MintTokenFlow&) = delete;
+  OAuth2MintTokenFlow& operator=(const OAuth2MintTokenFlow&) = delete;
+
   ~OAuth2MintTokenFlow() override;
 
  protected:
@@ -198,8 +202,6 @@ class OAuth2MintTokenFlow : public OAuth2ApiCallFlow {
   Delegate* delegate_;
   Parameters parameters_;
   base::WeakPtrFactory<OAuth2MintTokenFlow> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2MintTokenFlow);
 };
 
 #endif  // GOOGLE_APIS_GAIA_OAUTH2_MINT_TOKEN_FLOW_H_

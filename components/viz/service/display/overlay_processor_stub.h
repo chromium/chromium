@@ -16,6 +16,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStub
     : public OverlayProcessorInterface {
  public:
   OverlayProcessorStub() : OverlayProcessorInterface() {}
+
+  OverlayProcessorStub(const OverlayProcessorStub&) = delete;
+  OverlayProcessorStub& operator=(const OverlayProcessorStub&) = delete;
+
   ~OverlayProcessorStub() override {}
 
   // Overrides OverlayProcessorInterface's pure virtual functions.
@@ -38,9 +42,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStub
       absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) final {}
   void SetDisplayTransformHint(gfx::OverlayTransform transform) final {}
   void SetViewportSize(const gfx::Size& size) final {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverlayProcessorStub);
 };
 
 }  // namespace viz

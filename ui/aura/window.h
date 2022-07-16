@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -156,6 +155,10 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
 
   explicit Window(WindowDelegate* delegate,
                   client::WindowType type = client::WINDOW_TYPE_UNKNOWN);
+
+  Window(const Window&) = delete;
+  Window& operator=(const Window&) = delete;
+
   ~Window() override;
 
   // Initializes the window. This creates the window's layer.
@@ -815,8 +818,6 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
 
   // Used when this is embedding external content.
   base::WeakPtr<cc::LayerTreeFrameSink> frame_sink_;
-
-  DISALLOW_COPY_AND_ASSIGN(Window);
 };
 
 }  // namespace aura

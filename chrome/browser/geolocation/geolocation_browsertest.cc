@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -68,6 +67,10 @@ std::string RunScript(content::RenderFrameHost* render_frame_host,
 class IFrameLoader : public content::NotificationObserver {
  public:
   IFrameLoader(Browser* browser, int iframe_id, const GURL& url);
+
+  IFrameLoader(const IFrameLoader&) = delete;
+  IFrameLoader& operator=(const IFrameLoader&) = delete;
+
   ~IFrameLoader() override;
 
   // content::NotificationObserver:
@@ -90,8 +93,6 @@ class IFrameLoader : public content::NotificationObserver {
 
   // The URL for the iframe we just loaded.
   GURL iframe_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(IFrameLoader);
 };
 
 IFrameLoader::IFrameLoader(Browser* browser, int iframe_id, const GURL& url)
@@ -165,6 +166,10 @@ class GeolocationBrowserTest : public InProcessBrowserTest {
   };
 
   GeolocationBrowserTest();
+
+  GeolocationBrowserTest(const GeolocationBrowserTest&) = delete;
+  GeolocationBrowserTest& operator=(const GeolocationBrowserTest&) = delete;
+
   ~GeolocationBrowserTest() override = default;
 
   // InProcessBrowserTest:
@@ -254,8 +259,6 @@ class GeolocationBrowserTest : public InProcessBrowserTest {
 
   // The urls for the iframes loaded by LoadIFrames.
   std::vector<GURL> iframe_urls_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationBrowserTest);
 };
 
 // WebContentImpl tries to connect Device Service earlier than
@@ -284,7 +287,7 @@ void GeolocationBrowserTest::Initialize(InitializationOptions options) {
   }
   ASSERT_TRUE(current_browser_);
   if (options != INITIALIZATION_OFFTHERECORD)
-    ui_test_utils::NavigateToURL(current_browser_, GetTestURL());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(current_browser_, GetTestURL()));
 
   // By default the main frame is used for JavaScript execution.
   SetFrameForScriptExecution("");
@@ -307,7 +310,7 @@ void GeolocationBrowserTest::SetFrameForScriptExecution(
     render_frame_host_ = web_contents()->GetMainFrame();
   } else {
     render_frame_host_ = content::FrameMatchingPredicate(
-        web_contents(),
+        web_contents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameMatchesName, frame_name));
   }
   DCHECK(render_frame_host_);
@@ -615,12 +618,14 @@ class GeolocationPrerenderBrowserTest : public GeolocationBrowserTest {
                                 base::Unretained(this))) {}
   ~GeolocationPrerenderBrowserTest() override = default;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    GeolocationBrowserTest::SetUp();
+  }
+
   // GeolocationBrowserTest:
   void SetUpOnMainThread() override {
     current_browser_ = browser();
-
-    // embedded_test_server is started on MainThread for the prerender helper.
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     GeolocationBrowserTest::SetUpOnMainThread();
   }
@@ -632,8 +637,8 @@ class GeolocationPrerenderBrowserTest : public GeolocationBrowserTest {
 IN_PROC_BROWSER_TEST_F(GeolocationPrerenderBrowserTest,
                        DeferredBeforePrerenderActivation) {
   // Navigate to an initial page.
-  ui_test_utils::NavigateToURL(current_browser(),
-                               embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      current_browser(), embedded_test_server()->GetURL("/empty.html")));
 
   // Start a prerender with the geolocation test URL.
   int host_id = prerender_helper_.AddPrerender(GetTestURL());

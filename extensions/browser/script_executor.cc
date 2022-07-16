@@ -86,10 +86,11 @@ class Handler : public content::WebContentsObserver {
     if (frame_ids.size() == 1 && pending_render_frames_.size() == 1)
       root_rfh_id_ = *frame_ids.begin();
 
-    // If we are to include subframes, iterate over all frames in the
-    // WebContents and add them iff they are a child of an included frame.
+    // If we are to include subframes, iterate over all descendants of frames in
+    // `pending_render_frames_` and add them if they are alive (and not already
+    // contained in `pending_frames`).
     if (scope == ScriptExecutor::INCLUDE_SUB_FRAMES) {
-      auto check_frame =
+      auto append_frame =
           [](std::vector<content::RenderFrameHost*>* pending_frames,
              content::RenderFrameHost* frame) {
             if (!frame->IsRenderFrameLive() ||
@@ -97,15 +98,17 @@ class Handler : public content::WebContentsObserver {
               return;
             }
 
-            for (auto* pending_frame : *pending_frames) {
-              if (frame->IsDescendantOf(pending_frame)) {
-                pending_frames->push_back(frame);
-                break;
-              }
-            }
+            pending_frames->push_back(frame);
           };
-      web_contents->ForEachFrame(
-          base::BindRepeating(check_frame, &pending_render_frames_));
+
+      // We iterate over the requested frames. Note we can't use an iterator
+      // as the for loop will mutate `pending_render_frames_`.
+      size_t requested_frame_count = pending_render_frames_.size();
+      for (size_t i = 0; i < requested_frame_count; ++i) {
+        auto* frame = pending_render_frames_.at(i);
+        frame->ForEachRenderFrameHost(
+            base::BindRepeating(append_frame, &pending_render_frames_));
+      }
     }
 
     for (content::RenderFrameHost* frame : pending_render_frames_)
@@ -114,6 +117,9 @@ class Handler : public content::WebContentsObserver {
     if (pending_render_frames_.empty())
       Finish();
   }
+
+  Handler(const Handler&) = delete;
+  Handler& operator=(const Handler&) = delete;
 
  private:
   // This class manages its own lifetime.
@@ -257,8 +263,6 @@ class Handler : public content::WebContentsObserver {
   ScriptExecutor::ScriptFinishedCallback callback_;
 
   base::WeakPtrFactory<Handler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Handler);
 };
 
 }  // namespace

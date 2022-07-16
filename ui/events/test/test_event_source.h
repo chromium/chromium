@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_TEST_TEST_EVENT_SOURCE_H_
 #define UI_EVENTS_TEST_TEST_EVENT_SOURCE_H_
 
-#include "base/macros.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_source.h"
 

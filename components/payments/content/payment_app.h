@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -63,6 +62,9 @@ class PaymentApp {
     virtual void OnInstrumentDetailsError(const std::string& error_message) = 0;
   };
 
+  PaymentApp(const PaymentApp&) = delete;
+  PaymentApp& operator=(const PaymentApp&) = delete;
+
   virtual ~PaymentApp();
 
   // Will call into the |delegate| (can't be null) on success or error.
@@ -109,15 +111,6 @@ class PaymentApp {
   // "com.bobpay.beta"].
   virtual std::set<std::string> GetApplicationIdentifiersThatHideThisApp()
       const;
-
-  // Whether the payment app is ready for minimal UI flow.
-  virtual bool IsReadyForMinimalUI() const;
-
-  // The account balance of the payment app that is ready for a minimal UI flow.
-  virtual std::string GetAccountBalance() const;
-
-  // Disable opening a window for this payment app. Used in minimal UI flow.
-  virtual void DisableShowingOwnUI();
 
   // Returns true if this payment app can be used to fulfill a request
   // specifying |method| as supported method of payment. The parsed basic-card
@@ -205,8 +198,6 @@ class PaymentApp {
   bool operator<(const PaymentApp& other) const;
   int icon_resource_id_;
   Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentApp);
 };
 
 }  // namespace payments

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/numerics/math_constants.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -201,6 +200,10 @@ class SinusoidalLinearChirpSource {
     k_ = (max_frequency_ - kMinFrequency) / duration;
   }
 
+  SinusoidalLinearChirpSource(const SinusoidalLinearChirpSource&) = delete;
+  SinusoidalLinearChirpSource& operator=(const SinusoidalLinearChirpSource&) =
+      delete;
+
   virtual ~SinusoidalLinearChirpSource() = default;
 
   void ProvideInput(int frames, float* destination) {
@@ -234,8 +237,6 @@ class SinusoidalLinearChirpSource {
   double max_frequency_;
   double k_;
   int current_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(SinusoidalLinearChirpSource);
 };
 
 typedef std::tuple<int, int, double, double> SincResamplerTestData;

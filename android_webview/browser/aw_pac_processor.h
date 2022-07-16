@@ -8,7 +8,7 @@
 #include <android/multinetwork.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "net/log/net_log_with_source.h"
 #include "services/proxy_resolver/proxy_host_resolver.h"

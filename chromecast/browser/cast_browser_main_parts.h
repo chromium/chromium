@@ -9,11 +9,11 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chromecast/browser/display_configurator_observer.h"
 #include "chromecast/chromecast_buildflags.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/main_function_params.h"
@@ -71,12 +71,16 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   // Creates an implementation of CastBrowserMainParts. Platform should
   // link in an implementation as needed.
   static std::unique_ptr<CastBrowserMainParts> Create(
-      const content::MainFunctionParams& parameters,
+      content::MainFunctionParams parameters,
       CastContentBrowserClient* cast_content_browser_client);
 
   // This class does not take ownership of |url_request_content_factory|.
-  CastBrowserMainParts(const content::MainFunctionParams& parameters,
+  CastBrowserMainParts(content::MainFunctionParams parameters,
                        CastContentBrowserClient* cast_content_browser_client);
+
+  CastBrowserMainParts(const CastBrowserMainParts&) = delete;
+  CastBrowserMainParts& operator=(const CastBrowserMainParts&) = delete;
+
   ~CastBrowserMainParts() override;
 
   media::MediaPipelineBackendManager* media_pipeline_backend_manager();
@@ -98,7 +102,7 @@ class CastBrowserMainParts : public content::BrowserMainParts {
 
  private:
   std::unique_ptr<CastBrowserProcess> cast_browser_process_;
-  const content::MainFunctionParams parameters_;  // For running browser tests.
+  content::MainFunctionParams parameters_;  // For running browser tests.
   // Caches a pointer of the CastContentBrowserClient.
   CastContentBrowserClient* const cast_content_browser_client_ = nullptr;
   std::unique_ptr<ServiceManagerContext> service_manager_context_;
@@ -128,7 +132,7 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<media::MediaPipelineBackendManager>
       media_pipeline_backend_manager_;
 #if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
-  std::unique_ptr<util::MultiSourceMemoryPressureMonitor>
+  std::unique_ptr<memory_pressure::MultiSourceMemoryPressureMonitor>
       memory_pressure_monitor_;
 #endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
   CastSystemMemoryPressureEvaluatorAdjuster*
@@ -150,10 +154,6 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   // Only used when running with --enable-ui-devtools.
   std::unique_ptr<CastUIDevTools> ui_devtools_;
 #endif  // defined(USE_AURA) && !defined(OS_FUCHSIA)
-
-  bool run_message_loop_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(CastBrowserMainParts);
 };
 
 }  // namespace shell

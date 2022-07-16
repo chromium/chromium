@@ -4,11 +4,11 @@
 
 #include "ui/views/touchui/touch_selection_menu_runner_views.h"
 
-#include "base/macros.h"
 #include "ui/events/event_utils.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/touchui/touch_selection_menu_views.h"
 
 namespace views {
 namespace {
@@ -26,6 +26,12 @@ class TouchSelectionMenuRunnerViewsTest : public ViewsTestBase,
                                           public ui::TouchSelectionMenuClient {
  public:
   TouchSelectionMenuRunnerViewsTest() = default;
+
+  TouchSelectionMenuRunnerViewsTest(const TouchSelectionMenuRunnerViewsTest&) =
+      delete;
+  TouchSelectionMenuRunnerViewsTest& operator=(
+      const TouchSelectionMenuRunnerViewsTest&) = delete;
+
   ~TouchSelectionMenuRunnerViewsTest() override = default;
 
  protected:
@@ -43,8 +49,6 @@ class TouchSelectionMenuRunnerViewsTest : public ViewsTestBase,
 
  private:
   // ui::TouchSelectionMenuClient:
-  const char* GetType() override { return ""; }
-
   bool IsCommandIdEnabled(int command_id) const override {
     return !no_command_available_;
   }
@@ -64,8 +68,6 @@ class TouchSelectionMenuRunnerViewsTest : public ViewsTestBase,
   bool no_command_available_ = false;
 
   int last_executed_command_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuRunnerViewsTest);
 };
 
 // Tests that the default touch selection menu runner is installed and opening
@@ -182,6 +184,32 @@ TEST_F(TouchSelectionMenuRunnerViewsTest, ClosingWidgetClosesProperly) {
   widget->Close();
   RunPendingMessages();
   EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+}
+
+// Regression test for shutdown crash. https://crbug.com/1146270
+TEST_F(TouchSelectionMenuRunnerViewsTest, ShowMenuTwiceOpensOneMenu) {
+  gfx::Rect menu_anchor(0, 0, 10, 10);
+  gfx::Size handle_size(10, 10);
+  auto* menu_runner = static_cast<TouchSelectionMenuRunnerViews*>(
+      ui::TouchSelectionMenuRunner::GetInstance());
+  TouchSelectionMenuRunnerViews::TestApi test_api(menu_runner);
+
+  // Call ShowMenu() twice in a row. The menus manage their own lifetimes.
+  auto* menu1 = new TouchSelectionMenuViews(menu_runner, this, GetContext());
+  test_api.ShowMenu(menu1, menu_anchor, handle_size);
+  auto* widget1 = test_api.GetWidget();
+
+  auto* menu2 = new TouchSelectionMenuViews(menu_runner, this, GetContext());
+  test_api.ShowMenu(menu2, menu_anchor, handle_size);
+  auto* widget2 = test_api.GetWidget();
+
+  // Showing the second menu triggers a close of the first menu.
+  EXPECT_TRUE(widget1->IsClosed());
+  EXPECT_FALSE(widget2->IsClosed());
+
+  // Closing the second menu does not crash or CHECK.
+  widget2->Close();
+  RunPendingMessages();
 }
 
 }  // namespace views

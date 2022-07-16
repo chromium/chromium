@@ -103,10 +103,8 @@ TEST_F(SceneUtilTest, SessionIdentifierForScene) {
   id scene = FakeSceneWithIdentifier(identifier);
 
   NSString* expected = @"{SyntheticIdentifier}";
-  if (@available(ios 13, *)) {
-    if (base::ios::IsMultipleScenesSupported())
-      expected = identifier;
-  }
+  if (base::ios::IsMultipleScenesSupported())
+    expected = identifier;
 
   EXPECT_NSEQ(expected, SessionIdentifierForScene(scene));
 }

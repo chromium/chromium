@@ -9,13 +9,14 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/chromeos/extensions/users_private/users_private_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/users_private.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -38,7 +38,7 @@ namespace {
 
 bool IsDeviceEnterpriseManaged() {
   return g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->IsDeviceEnterpriseManaged();
 }
 
@@ -65,7 +65,7 @@ bool CanModifyUserList(content::BrowserContext* browser_context) {
 
 bool IsExistingUser(const std::string& username) {
   return ash::CrosSettings::Get()->FindEmailInList(
-      chromeos::kAccountsPrefUsers, username, /*wildcard_match=*/nullptr);
+      ash::kAccountsPrefUsers, username, /*wildcard_match=*/nullptr);
 }
 
 // Creates User object for the exising user_manager::User .
@@ -110,7 +110,7 @@ std::unique_ptr<base::ListValue> GetUsersList(
   PrefsUtil* prefs_util = delegate->GetPrefsUtil();
 
   std::unique_ptr<api::settings_private::PrefObject> users_pref_object =
-      prefs_util->GetPref(chromeos::kAccountsPrefUsers);
+      prefs_util->GetPref(ash::kAccountsPrefUsers);
   if (users_pref_object->value && users_pref_object->value->is_list()) {
     email_list = users_pref_object->value->Clone();
   }
@@ -141,7 +141,7 @@ std::unique_ptr<base::ListValue> GetUsersList(
   if (ash::OwnerSettingsServiceAsh* service =
           ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
               browser_context)) {
-    service->Set(chromeos::kAccountsPrefUsers, email_list);
+    service->Set(ash::kAccountsPrefUsers, email_list);
   }
 
   // Now populate the list of User objects for returning to the JS.
@@ -181,7 +181,7 @@ UsersPrivateIsUserInListFunction::~UsersPrivateIsUserInListFunction() = default;
 
 ExtensionFunction::ResponseAction UsersPrivateIsUserInListFunction::Run() {
   std::unique_ptr<api::users_private::IsUserInList::Params> parameters =
-      api::users_private::IsUserInList::Params::Create(*args_);
+      api::users_private::IsUserInList::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   std::string username = gaia::CanonicalizeEmail(parameters->email);
@@ -200,7 +200,7 @@ UsersPrivateAddUserFunction::~UsersPrivateAddUserFunction() = default;
 
 ExtensionFunction::ResponseAction UsersPrivateAddUserFunction::Run() {
   std::unique_ptr<api::users_private::AddUser::Params> parameters =
-      api::users_private::AddUser::Params::Create(*args_);
+      api::users_private::AddUser::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   // Non-owners should not be able to add users.
@@ -218,7 +218,7 @@ ExtensionFunction::ResponseAction UsersPrivateAddUserFunction::Run() {
   UsersPrivateDelegate* delegate =
       UsersPrivateDelegateFactory::GetForBrowserContext(browser_context());
   PrefsUtil* prefs_util = delegate->GetPrefsUtil();
-  bool added = prefs_util->AppendToListCrosSetting(chromeos::kAccountsPrefUsers,
+  bool added = prefs_util->AppendToListCrosSetting(ash::kAccountsPrefUsers,
                                                    username_value);
   return RespondNow(OneArgument(base::Value(added)));
 }
@@ -232,7 +232,7 @@ UsersPrivateRemoveUserFunction::~UsersPrivateRemoveUserFunction() = default;
 
 ExtensionFunction::ResponseAction UsersPrivateRemoveUserFunction::Run() {
   std::unique_ptr<api::users_private::RemoveUser::Params> parameters =
-      api::users_private::RemoveUser::Params::Create(*args_);
+      api::users_private::RemoveUser::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   // Non-owners should not be able to remove users.
@@ -245,10 +245,12 @@ ExtensionFunction::ResponseAction UsersPrivateRemoveUserFunction::Run() {
   UsersPrivateDelegate* delegate =
       UsersPrivateDelegateFactory::GetForBrowserContext(browser_context());
   PrefsUtil* prefs_util = delegate->GetPrefsUtil();
-  bool removed = prefs_util->RemoveFromListCrosSetting(
-      chromeos::kAccountsPrefUsers, canonical_email);
+  bool removed = prefs_util->RemoveFromListCrosSetting(ash::kAccountsPrefUsers,
+                                                       canonical_email);
   user_manager::UserManager::Get()->RemoveUser(
-      AccountId::FromUserEmail(parameters->email), NULL);
+      AccountId::FromUserEmail(parameters->email),
+      user_manager::UserRemovalReason::LOCAL_USER_INITIATED,
+      /*delegate=*/nullptr);
   return RespondNow(OneArgument(base::Value(removed)));
 }
 

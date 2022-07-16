@@ -34,6 +34,7 @@ constexpr char kTextRTF[] = "text/rtf";
 constexpr char kTextHTML[] = "text/html";
 constexpr char kTextUriList[] = "text/uri-list";
 constexpr char kApplicationOctetStream[] = "application/octet-stream";
+constexpr char kWebCustomData[] = "chromium/x-web-custom-data";
 
 constexpr char kUtfPrefix[] = "UTF";
 constexpr char kEncoding16[] = "16";
@@ -259,6 +260,7 @@ void DataSource::GetDataForPreferredMimeTypes(
     ReadDataCallback image_reader,
     ReadDataCallback filenames_reader,
     ReadFileContentsDataCallback file_contents_reader,
+    ReadDataCallback web_custom_data_reader,
     base::RepeatingClosure failure_callback) {
   std::string text_mime;
   std::string rtf_mime;
@@ -266,6 +268,7 @@ void DataSource::GetDataForPreferredMimeTypes(
   std::string image_mime;
   std::string filenames_mime;
   std::string file_contents_mime;
+  std::string web_custom_data_mime;
 
   int text_rank = std::numeric_limits<int>::max();
   int html_rank = std::numeric_limits<int>::max();
@@ -317,6 +320,8 @@ void DataSource::GetDataForPreferredMimeTypes(
       filenames_mime = mime_type;
     } else if (!GetApplicationOctetStreamName(mime_type).empty()) {
       file_contents_mime = mime_type;
+    } else if (net::MatchesMimeType(std::string(kWebCustomData), mime_type)) {
+      web_custom_data_mime = mime_type;
     }
   }
 
@@ -337,6 +342,8 @@ void DataSource::GetDataForPreferredMimeTypes(
            base::BindOnce(&DataSource::OnFileContentsRead,
                           read_data_weak_ptr_factory_.GetWeakPtr(),
                           std::move(file_contents_reader)),
+           failure_callback);
+  ReadData(web_custom_data_mime, std::move(web_custom_data_reader),
            failure_callback);
 }
 

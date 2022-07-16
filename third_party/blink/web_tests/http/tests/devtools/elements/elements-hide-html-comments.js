@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies show/hide HTML comments setting.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   // Add the full html so that comments can be inserted between head and body
   await TestRunner.loadHTML(`

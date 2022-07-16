@@ -16,12 +16,13 @@ namespace policy {
 class SANDBOX_POLICY_EXPORT CrosAmdGpuProcessPolicy : public GpuProcessPolicy {
  public:
   CrosAmdGpuProcessPolicy();
+
+  CrosAmdGpuProcessPolicy(const CrosAmdGpuProcessPolicy&) = delete;
+  CrosAmdGpuProcessPolicy& operator=(const CrosAmdGpuProcessPolicy&) = delete;
+
   ~CrosAmdGpuProcessPolicy() override;
 
   bpf_dsl::ResultExpr EvaluateSyscall(int system_call_number) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrosAmdGpuProcessPolicy);
 };
 
 }  // namespace policy

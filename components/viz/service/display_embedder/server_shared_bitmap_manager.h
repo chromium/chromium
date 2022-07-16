@@ -29,6 +29,11 @@ class VIZ_SERVICE_EXPORT ServerSharedBitmapManager
       public base::trace_event::MemoryDumpProvider {
  public:
   ServerSharedBitmapManager();
+
+  ServerSharedBitmapManager(const ServerSharedBitmapManager&) = delete;
+  ServerSharedBitmapManager& operator=(const ServerSharedBitmapManager&) =
+      delete;
+
   ~ServerSharedBitmapManager() override;
 
   // SharedBitmapManager implementation.
@@ -55,8 +60,6 @@ class VIZ_SERVICE_EXPORT ServerSharedBitmapManager
                      scoped_refptr<BitmapData>,
                      SharedBitmapIdHash>
       handle_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServerSharedBitmapManager);
 };
 
 }  // namespace viz

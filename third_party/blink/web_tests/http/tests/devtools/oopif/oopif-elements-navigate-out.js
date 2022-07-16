@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that oopif iframes are rendered inline.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
 
   // Save time on style updates.
@@ -18,7 +18,7 @@
 
   SDK.targetManager.observeTargets({
     targetAdded: async function(target) {
-      target.model(SDK.ResourceTreeModel)._agent.setLifecycleEventsEnabled(true);
+      target.model(SDK.ResourceTreeModel).agent.setLifecycleEventsEnabled(true);
       let loadedModels = 0;
       target.model(SDK.ResourceTreeModel).addEventListener(SDK.ResourceTreeModel.Events.LifecycleEvent, async (event) => {
         if (event.data.name === 'load') {

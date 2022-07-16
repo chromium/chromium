@@ -65,6 +65,14 @@ bool HasNoSniffHeader(const network::mojom::URLResponseHead& response) {
   return base::LowerCaseEqualsASCII(content_type_options, kNoSniffHeaderValue);
 }
 
+bool IsValidUuidInPackageURL(const GURL& url) {
+  std::string spec = url.spec();
+  return base::StartsWith(
+             spec, "uuid-in-package:", base::CompareCase::INSENSITIVE_ASCII) &&
+         base::GUID::ParseCaseInsensitive(base::StringPiece(spec).substr(16))
+             .is_valid();
+}
+
 bool IsValidUrnUuidURL(const GURL& url) {
   std::string spec = url.spec();
   return base::StartsWith(spec,

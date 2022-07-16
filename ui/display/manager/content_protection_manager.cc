@@ -21,7 +21,7 @@ namespace display {
 namespace {
 
 // HDCP requires suppressing content within 2 seconds when authentication drops.
-constexpr auto kDisplaySecurityPollingPeriod = base::TimeDelta::FromSeconds(2);
+constexpr auto kDisplaySecurityPollingPeriod = base::Seconds(2);
 
 }  // namespace
 

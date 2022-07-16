@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -28,7 +29,7 @@ class CONTROLLER_EXPORT OomInterventionImpl
     : public mojom::blink::OomIntervention,
       public MemoryUsageMonitor::Observer {
  public:
-  static void Bind(
+  static void BindReceiver(
       mojo::PendingReceiver<mojom::blink::OomIntervention> receiver);
 
   OomInterventionImpl();
@@ -53,9 +54,12 @@ class CONTROLLER_EXPORT OomInterventionImpl
   FRIEND_TEST_ALL_PREFIXES(OomInterventionImplTest,
                            ContinueWatchingWithoutDetection);
   FRIEND_TEST_ALL_PREFIXES(OomInterventionImplTest, V1DetectionAdsNavigation);
+  FRIEND_TEST_ALL_PREFIXES(OomInterventionImplTest, MojoDisconnection);
 
   // Overridden by test.
   virtual MemoryUsageMonitor& MemoryUsageMonitorInstance();
+
+  void Bind(mojo::PendingReceiver<mojom::blink::OomIntervention> receiver);
 
   void Check(MemoryUsage);
 

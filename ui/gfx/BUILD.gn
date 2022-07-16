@@ -37,33 +37,18 @@ component("color_utils") {
   ]
 }
 
-component("geometry_skia") {
+component("gfx_skia") {
   sources = [
-    "geometry_skia_export.h",
-    "mask_filter_info.cc",
-    "mask_filter_info.h",
-    "rrect_f.cc",
-    "rrect_f.h",
-    "rrect_f_builder.cc",
-    "rrect_f_builder.h",
+    "gfx_skia_export.h",
     "skia_util.cc",
     "skia_util.h",
-    "transform.cc",
-    "transform.h",
-    "transform_operation.cc",
-    "transform_operation.h",
-    "transform_operations.cc",
-    "transform_operations.h",
-    "transform_util.cc",
-    "transform_util.h",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [
     "//base",
     "//skia",
-    "//ui/gfx/geometry",
   ]
-  defines = [ "GEOMETRY_SKIA_IMPLEMENTATION" ]
+  defines = [ "GFX_SKIA_IMPLEMENTATION" ]
 }
 
 component("gfx") {
@@ -122,6 +107,8 @@ component("gfx") {
     "interpolated_transform.h",
     "nine_image_painter.cc",
     "nine_image_painter.h",
+    "overlay_plane_data.cc",
+    "overlay_plane_data.h",
     "overlay_transform_utils.cc",
     "overlay_transform_utils.h",
     "platform_font.h",
@@ -278,9 +265,6 @@ component("gfx") {
       "shadow_util.h",
       "skia_paint_util.cc",
       "skia_paint_util.h",
-      "skia_vector_animation.cc",
-      "skia_vector_animation.h",
-      "skia_vector_animation_observer.h",
     ]
   }
 
@@ -296,7 +280,7 @@ component("gfx") {
   public_deps = [
     ":color_space",
     ":color_utils",
-    ":geometry_skia",
+    ":gfx_skia",
     ":gfx_switches",
     ":memory_buffer_sources",
     ":native_widget_types",
@@ -309,6 +293,7 @@ component("gfx") {
     "//ui/gfx/animation",
     "//ui/gfx/codec",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
     "//ui/gfx/range",
   ]
   deps = [
@@ -428,10 +413,6 @@ component("gfx") {
   if (use_ozone) {
     deps += [ "//ui/ozone:buildflags" ]
   }
-
-  if (ozone_platform_x11 || use_x11) {
-    deps += [ "//ui/gfx/x" ]
-  }
 }
 
 component("color_space") {
@@ -472,9 +453,6 @@ component("color_space") {
       "CoreFoundation.framework",
       "CoreGraphics.framework",
     ]
-  }
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
   }
   defines = [ "COLOR_SPACE_IMPLEMENTATION" ]
 }
@@ -570,6 +548,7 @@ source_set("memory_buffer_sources") {
     "hdr_metadata.cc",
     "hdr_metadata.h",
     "native_pixmap.h",
+    "overlay_priority_hint.h",
     "overlay_transform.h",
     "surface_origin.h",
   ]
@@ -655,19 +634,17 @@ static_library("test_support") {
     "animation/keyframe/test/animation_utils.cc",
     "animation/keyframe/test/animation_utils.h",
     "animation/test_animation_delegate.h",
-    "geometry/test/rect_test_util.cc",
-    "geometry/test/rect_test_util.h",
-    "geometry/test/size_test_util.h",
-    "geometry/test/transform_test_util.cc",
-    "geometry/test/transform_test_util.h",
+    "geometry/test/geometry_util.cc",
+    "geometry/test/geometry_util.h",
     "image/image_unittest_util.cc",
     "image/image_unittest_util.h",
     "test/font_fallback_test_data.cc",
     "test/font_fallback_test_data.h",
-    "test/gfx_util.cc",
-    "test/gfx_util.h",
     "test/icc_profiles.cc",
     "test/icc_profiles.h",
+    "test/scoped_default_font_description.h",
+    "test/sk_color_eq.cc",
+    "test/sk_color_eq.h",
   ]
   if (is_ios) {
     sources += [ "image/image_unittest_util_ios.mm" ]
@@ -723,17 +700,17 @@ test("gfx_unittests") {
     "font_names_testing.cc",
     "font_names_testing.h",
     "font_unittest.cc",
+    "geometry/rrect_f_unittest.cc",
+    "geometry/transform_operations_unittest.cc",
+    "geometry/transform_unittest.cc",
     "image/buffer_w_stream_unittest.cc",
     "image/image_family_unittest.cc",
     "image/image_skia_unittest.cc",
     "image/image_unittest.cc",
     "interpolated_transform_unittest.cc",
-    "rrect_f_unittest.cc",
     "test/run_all_unittests.cc",
     "text_elider_unittest.cc",
     "text_utils_unittest.cc",
-    "transform_operations_unittest.cc",
-    "transform_unittest.cc",
   ]
   if (is_linux || is_chromeos) {
     sources += [
@@ -788,6 +765,7 @@ test("gfx_unittests") {
       "color_space_unittest.cc",
       "color_transform_unittest.cc",
       "color_utils_unittest.cc",
+      "delegated_ink_unittest.cc",
       "font_fallback_unittest.cc",
       "font_list_unittest.cc",
       "geometry/axis_transform2d_unittest.cc",
@@ -799,11 +777,15 @@ test("gfx_unittests") {
       "geometry/point_unittest.cc",
       "geometry/quad_unittest.cc",
       "geometry/quaternion_unittest.cc",
+      "geometry/rect_conversions_unittest.cc",
+      "geometry/rect_f_unittest.cc",
       "geometry/rect_unittest.cc",
       "geometry/resize_utils_unittest.cc",
       "geometry/rounded_corners_f_unittest.cc",
-      "geometry/scroll_offset_unittest.cc",
       "geometry/size_unittest.cc",
+      "geometry/skia_conversions_unittest.cc",
+      "geometry/transform_util_unittest.cc",
+      "geometry/vector2d_f_unittest.cc",
       "geometry/vector2d_unittest.cc",
       "geometry/vector3d_unittest.cc",
       "half_float_unittest.cc",
@@ -821,9 +803,6 @@ test("gfx_unittests") {
       "shadow_value_unittest.cc",
       "skbitmap_operations_unittest.cc",
       "skia_util_unittest.cc",
-      "skia_vector_animation_unittest.cc",
-      "skrect_conversion_unittest.cc",
-      "transform_util_unittest.cc",
       "utf16_indexing_unittest.cc",
     ]
   }

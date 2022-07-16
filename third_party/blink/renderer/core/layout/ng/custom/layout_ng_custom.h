@@ -35,6 +35,11 @@ class LayoutNGCustom final : public LayoutNGBlockFlow {
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
+  PaginationBreakability GetPaginationBreakability(
+      FragmentationEngine) const final {
+    return kForbidBreaks;
+  }
+
  private:
   bool IsOfType(LayoutObjectType type) const override {
     return type == kLayoutObjectNGCustom || LayoutNGBlockFlow::IsOfType(type);

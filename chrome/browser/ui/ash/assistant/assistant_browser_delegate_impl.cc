@@ -12,15 +12,13 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/service_sandbox_type.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/assistant/assistant_context_util.h"
 #include "chrome/browser/ui/ash/assistant/assistant_setup.h"
-#include "chrome/browser/ui/ash/assistant/assistant_web_view_factory_impl.h"
-#include "chrome/browser/ui/ash/assistant/conversation_starters_client_impl.h"
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate_impl.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_context.h"
@@ -82,13 +80,6 @@ void AssistantBrowserDelegateImpl::MaybeInit(Profile* profile) {
   service_->Init();
 
   assistant_setup_ = std::make_unique<AssistantSetup>();
-  assistant_web_view_factory_ =
-      std::make_unique<AssistantWebViewFactoryImpl>(profile_);
-
-  if (chromeos::assistant::features::IsConversationStartersV2Enabled()) {
-    conversation_starters_client_ =
-        std::make_unique<ConversationStartersClientImpl>(profile_);
-  }
 }
 
 void AssistantBrowserDelegateImpl::MaybeStartAssistantOptInFlow() {
@@ -208,9 +199,7 @@ void AssistantBrowserDelegateImpl::OnUserSessionStarted(bool is_primary_user) {
 
 void AssistantBrowserDelegateImpl::OnAssistantFeatureAllowedChanged(
     chromeos::assistant::AssistantAllowedState allowed_state) {
-  if (allowed_state != chromeos::assistant::AssistantAllowedState::ALLOWED)
-    return;
-
   Profile* profile = ProfileManager::GetActiveUserProfile();
+
   MaybeInit(profile);
 }

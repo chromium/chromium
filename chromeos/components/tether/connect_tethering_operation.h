@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -92,6 +91,10 @@ class ConnectTetheringOperation : public MessageTransferOperation {
         HostResponseErrorCode error_code) = 0;
   };
 
+  ConnectTetheringOperation(const ConnectTetheringOperation&) = delete;
+  ConnectTetheringOperation& operator=(const ConnectTetheringOperation&) =
+      delete;
+
   ~ConnectTetheringOperation() override;
 
   void AddObserver(Observer* observer);
@@ -159,8 +162,6 @@ class ConnectTetheringOperation : public MessageTransferOperation {
   base::Time connect_tethering_request_start_time_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectTetheringOperation);
 };
 
 }  // namespace tether

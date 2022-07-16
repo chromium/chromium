@@ -94,12 +94,6 @@ AsyncMatch TestSafeBrowsingDatabaseManager::CheckCsdAllowlistUrl(
   return AsyncMatch::MATCH;
 }
 
-bool TestSafeBrowsingDatabaseManager::MatchDownloadAllowlistString(
-    const std::string& str) {
-  NOTIMPLEMENTED();
-  return true;
-}
-
 bool TestSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
     const GURL& url) {
   NOTIMPLEMENTED();

@@ -11,11 +11,10 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "base/win/windows_version.h"
@@ -31,6 +30,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
@@ -66,6 +66,9 @@ class ExitLoopOnRelease : public View {
     DCHECK(quit_closure_);
   }
 
+  ExitLoopOnRelease(const ExitLoopOnRelease&) = delete;
+  ExitLoopOnRelease& operator=(const ExitLoopOnRelease&) = delete;
+
   ~ExitLoopOnRelease() override = default;
 
  private:
@@ -76,14 +79,16 @@ class ExitLoopOnRelease : public View {
   }
 
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExitLoopOnRelease);
 };
 
 // A view that does a capture on ui::ET_GESTURE_TAP_DOWN events.
 class GestureCaptureView : public View {
  public:
   GestureCaptureView() = default;
+
+  GestureCaptureView(const GestureCaptureView&) = delete;
+  GestureCaptureView& operator=(const GestureCaptureView&) = delete;
+
   ~GestureCaptureView() override = default;
 
  private:
@@ -94,14 +99,16 @@ class GestureCaptureView : public View {
       event->StopPropagation();
     }
   }
-
-  DISALLOW_COPY_AND_ASSIGN(GestureCaptureView);
 };
 
 // A view that always processes all mouse events.
 class MouseView : public View {
  public:
   MouseView() = default;
+
+  MouseView(const MouseView&) = delete;
+  MouseView& operator=(const MouseView&) = delete;
+
   ~MouseView() override = default;
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
@@ -134,8 +141,6 @@ class MouseView : public View {
   int exited_ = 0;
 
   int pressed_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseView);
 };
 
 // A View that shows a different widget, sets capture on that widget, and
@@ -145,6 +150,10 @@ class NestedLoopCaptureView : public View {
   explicit NestedLoopCaptureView(Widget* widget)
       : run_loop_(base::RunLoop::Type::kNestableTasksAllowed),
         widget_(widget) {}
+
+  NestedLoopCaptureView(const NestedLoopCaptureView&) = delete;
+  NestedLoopCaptureView& operator=(const NestedLoopCaptureView&) = delete;
+
   ~NestedLoopCaptureView() override = default;
 
   base::OnceClosure GetQuitClosure() { return run_loop_.QuitClosure(); }
@@ -164,8 +173,6 @@ class NestedLoopCaptureView : public View {
   base::RunLoop run_loop_;
 
   Widget* widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(NestedLoopCaptureView);
 };
 
 ui::WindowShowState GetWidgetShowState(const Widget* widget) {
@@ -272,7 +279,7 @@ class PropertyWaiter {
     }
   }
 
-  const base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kTimeout = base::Seconds(1);
   base::RepeatingCallback<bool(void)> callback_;
   const bool expected_value_;
   bool success_ = false;
@@ -280,6 +287,17 @@ class PropertyWaiter {
   base::RunLoop run_loop_;
   base::RepeatingTimer timer_;
 };
+
+// TODO(pbos): Rewrite this to return unique_ptr.
+views::Textfield* CreateTextfield() {
+  auto textfield = std::make_unique<Textfield>();
+  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+  // able to submit accessibility checks, but this focusable View needs to
+  // add a name so that the screen reader knows what to announce. Consider
+  // adding bogus placeholder text here.
+  textfield->SetProperty(views::kSkipAccessibilityPaintChecks, true);
+  return textfield.release();
+}
 
 }  // namespace
 
@@ -383,6 +401,9 @@ class TouchEventHandler : public ui::EventHandler {
     widget_->GetNativeWindow()->GetHost()->window()->AddPreTargetHandler(this);
   }
 
+  TouchEventHandler(const TouchEventHandler&) = delete;
+  TouchEventHandler& operator=(const TouchEventHandler&) = delete;
+
   ~TouchEventHandler() override {
     widget_->GetNativeWindow()->GetHost()->window()->RemovePreTargetHandler(
         this);
@@ -418,7 +439,6 @@ class TouchEventHandler : public ui::EventHandler {
 
   Widget* widget_;
   base::OnceClosure quit_closure_;
-  DISALLOW_COPY_AND_ASSIGN(TouchEventHandler);
 };
 
 // TODO(dtapuska): Disabled due to it being flaky crbug.com/817531
@@ -658,6 +678,9 @@ class WidgetActivationTest : public Widget {
  public:
   WidgetActivationTest() = default;
 
+  WidgetActivationTest(const WidgetActivationTest&) = delete;
+  WidgetActivationTest& operator=(const WidgetActivationTest&) = delete;
+
   ~WidgetActivationTest() override = default;
 
   bool OnNativeWidgetActivationChanged(bool active) override {
@@ -669,8 +692,6 @@ class WidgetActivationTest : public Widget {
 
  private:
   bool active_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetActivationTest);
 };
 
 // Tests whether the widget only becomes active when the underlying window
@@ -911,7 +932,7 @@ TEST_F(DesktopWidgetTestInteractive,
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
   widget->SetBounds(gfx::Rect(0, 0, 200, 200));
 
-  Textfield* textfield = new Textfield;
+  Textfield* textfield = CreateTextfield();
   textfield->SetBounds(0, 0, 200, 20);
   textfield->SetText(u"some text");
   widget->GetRootView()->AddChildView(textfield);
@@ -1261,7 +1282,7 @@ TEST_F(DesktopWidgetTestInteractive,
   // Create a top level desktop native widget.
   WidgetAutoclosePtr top_level(CreateTopLevelNativeWidget());
 
-  Textfield* textfield = new Textfield;
+  Textfield* textfield = CreateTextfield();
   textfield->SetBounds(0, 0, 200, 20);
   top_level->GetRootView()->AddChildView(textfield);
   ShowSync(top_level.get());
@@ -1275,7 +1296,7 @@ TEST_F(DesktopWidgetTestInteractive,
   Widget* modal_dialog_widget = DialogDelegate::CreateDialogWidget(
       dialog_delegate.release(), nullptr, top_level->GetNativeView());
   modal_dialog_widget->SetBounds(gfx::Rect(0, 0, 100, 10));
-  Textfield* dialog_textfield = new Textfield;
+  Textfield* dialog_textfield = CreateTextfield();
   dialog_textfield->SetBounds(0, 0, 50, 5);
   modal_dialog_widget->GetRootView()->AddChildView(dialog_textfield);
   // Dialog widget doesn't need a ShowSync as it gains active status
@@ -1306,6 +1327,9 @@ class CaptureLostState {
  public:
   CaptureLostState() = default;
 
+  CaptureLostState(const CaptureLostState&) = delete;
+  CaptureLostState& operator=(const CaptureLostState&) = delete;
+
   bool GetAndClearGotCaptureLost() {
     bool value = got_capture_lost_;
     got_capture_lost_ = false;
@@ -1316,8 +1340,6 @@ class CaptureLostState {
 
  private:
   bool got_capture_lost_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureLostState);
 };
 
 // Used to verify OnMouseCaptureLost() has been invoked.
@@ -1325,6 +1347,10 @@ class CaptureLostTrackingWidget : public Widget {
  public:
   explicit CaptureLostTrackingWidget(CaptureLostState* capture_lost_state)
       : capture_lost_state_(capture_lost_state) {}
+
+  CaptureLostTrackingWidget(const CaptureLostTrackingWidget&) = delete;
+  CaptureLostTrackingWidget& operator=(const CaptureLostTrackingWidget&) =
+      delete;
 
   // Widget:
   void OnMouseCaptureLost() override {
@@ -1335,8 +1361,6 @@ class CaptureLostTrackingWidget : public Widget {
  private:
   // Weak. Stores whether OnMouseCaptureLost has been invoked for this widget.
   CaptureLostState* capture_lost_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureLostTrackingWidget);
 };
 
 }  // namespace
@@ -1344,6 +1368,10 @@ class CaptureLostTrackingWidget : public Widget {
 class WidgetCaptureTest : public DesktopWidgetTestInteractive {
  public:
   WidgetCaptureTest() = default;
+
+  WidgetCaptureTest(const WidgetCaptureTest&) = delete;
+  WidgetCaptureTest& operator=(const WidgetCaptureTest&) = delete;
+
   ~WidgetCaptureTest() override = default;
 
   // Verifies Widget::SetCapture() results in updating native capture along with
@@ -1392,9 +1420,6 @@ class WidgetCaptureTest : public DesktopWidgetTestInteractive {
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     widget->Init(std::move(params));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WidgetCaptureTest);
 };
 
 // See description in TestCapture().
@@ -1783,6 +1808,11 @@ namespace {
 class CaptureOnActivationObserver : public WidgetObserver {
  public:
   CaptureOnActivationObserver() = default;
+
+  CaptureOnActivationObserver(const CaptureOnActivationObserver&) = delete;
+  CaptureOnActivationObserver& operator=(const CaptureOnActivationObserver&) =
+      delete;
+
   ~CaptureOnActivationObserver() override = default;
 
   // WidgetObserver:
@@ -1797,8 +1827,6 @@ class CaptureOnActivationObserver : public WidgetObserver {
 
  private:
   bool activation_observed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureOnActivationObserver);
 };
 
 }  // namespace
@@ -1845,6 +1873,10 @@ namespace {
 class MouseEventTrackingWidget : public Widget {
  public:
   MouseEventTrackingWidget() = default;
+
+  MouseEventTrackingWidget(const MouseEventTrackingWidget&) = delete;
+  MouseEventTrackingWidget& operator=(const MouseEventTrackingWidget&) = delete;
+
   ~MouseEventTrackingWidget() override = default;
 
   bool GetAndClearGotMouseEvent() {
@@ -1861,8 +1893,6 @@ class MouseEventTrackingWidget : public Widget {
 
  private:
   bool got_mouse_event_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseEventTrackingWidget);
 };
 
 }  // namespace
@@ -1911,6 +1941,11 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
  public:
   WidgetInputMethodInteractiveTest() = default;
 
+  WidgetInputMethodInteractiveTest(const WidgetInputMethodInteractiveTest&) =
+      delete;
+  WidgetInputMethodInteractiveTest& operator=(
+      const WidgetInputMethodInteractiveTest&) = delete;
+
   // testing::Test:
   void SetUp() override {
     DesktopWidgetTestInteractive::SetUp();
@@ -1931,8 +1966,6 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
 
  private:
   Widget* deactivate_widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetInputMethodInteractiveTest);
 };
 
 #if defined(OS_MAC)
@@ -1943,7 +1976,7 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
 // Test input method focus changes affected by top window activaction.
 TEST_F(WidgetInputMethodInteractiveTest, MAYBE_Activation) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield = new Textfield;
+  Textfield* textfield = CreateTextfield();
   widget->GetRootView()->AddChildView(textfield);
   textfield->RequestFocus();
 
@@ -1961,8 +1994,8 @@ TEST_F(WidgetInputMethodInteractiveTest, MAYBE_Activation) {
 // Test input method focus changes affected by focus changes within 1 window.
 TEST_F(WidgetInputMethodInteractiveTest, OneWindow) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield1 = new Textfield;
-  Textfield* textfield2 = new Textfield;
+  Textfield* textfield1 = CreateTextfield();
+  Textfield* textfield2 = CreateTextfield();
   textfield2->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   widget->GetRootView()->AddChildView(textfield1);
   widget->GetRootView()->AddChildView(textfield2);
@@ -2008,8 +2041,8 @@ TEST_F(WidgetInputMethodInteractiveTest, TwoWindows) {
   child->SetBounds(gfx::Rect(0, 0, 50, 50));
   child->Show();
 
-  Textfield* textfield_parent = new Textfield;
-  Textfield* textfield_child = new Textfield;
+  Textfield* textfield_parent = CreateTextfield();
+  Textfield* textfield_child = CreateTextfield();
   textfield_parent->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   parent->GetRootView()->AddChildView(textfield_parent);
   child->GetRootView()->AddChildView(textfield_child);
@@ -2051,7 +2084,7 @@ TEST_F(WidgetInputMethodInteractiveTest, TwoWindows) {
 // Test input method focus changes affected by textfield's state changes.
 TEST_F(WidgetInputMethodInteractiveTest, TextField) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield = new Textfield;
+  Textfield* textfield = CreateTextfield();
   widget->GetRootView()->AddChildView(textfield);
   ShowSync(widget.get());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
@@ -2077,7 +2110,7 @@ TEST_F(WidgetInputMethodInteractiveTest, TextField) {
 // Test input method should not work for accelerator.
 TEST_F(WidgetInputMethodInteractiveTest, AcceleratorInTextfield) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield = new Textfield;
+  Textfield* textfield = CreateTextfield();
   widget->GetRootView()->AddChildView(textfield);
   ShowSync(widget.get());
   textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);

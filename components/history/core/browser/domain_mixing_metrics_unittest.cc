@@ -5,7 +5,6 @@
 #include "components/history/core/browser/domain_mixing_metrics.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,8 +18,7 @@ class DomainMixingMetricsTest : public testing::Test {
 };
 
 TEST_F(DomainMixingMetricsTest, NoVisits) {
-  base::Time now =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1523432317);
+  base::Time now = base::Time::UnixEpoch() + base::Seconds(1523432317);
   EmitDomainMixingMetrics({}, now);
 
   // Check that no metrics were emitted.
@@ -42,16 +40,15 @@ TEST_F(DomainMixingMetricsTest, WithVisits) {
   // DomainMixing.OneWeek 33% (2 on .ch, 1 on .fr, day 1 is out of range)
   // DomainMixing.TwoWeeks 50% (2 on .ch, 2 on other domains - 1.fr and 1 .com)
   // DomainMixing.OneMonth 50% (ditto)
-  base::Time day1 =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1523432317);
-  base::Time day2 = day1 + base::TimeDelta::FromDays(1);
-  base::Time day8 = day1 + base::TimeDelta::FromDays(7);
+  base::Time day1 = base::Time::UnixEpoch() + base::Seconds(1523432317);
+  base::Time day2 = day1 + base::Days(1);
+  base::Time day8 = day1 + base::Days(7);
   EmitDomainMixingMetrics(
       {
-          DomainVisit("www.google.com", day1 + base::TimeDelta::FromHours(1)),
-          DomainVisit("www.google.ch", day2 + base::TimeDelta::FromHours(23)),
-          DomainVisit("www.google.ch", day8 + base::TimeDelta::FromHours(2)),
-          DomainVisit("www.google.fr", day8 + base::TimeDelta::FromHours(22)),
+          DomainVisit("www.google.com", day1 + base::Hours(1)),
+          DomainVisit("www.google.ch", day2 + base::Hours(23)),
+          DomainVisit("www.google.ch", day8 + base::Hours(2)),
+          DomainVisit("www.google.fr", day8 + base::Hours(22)),
       },
       day8);
 
@@ -62,9 +59,8 @@ TEST_F(DomainMixingMetricsTest, WithVisits) {
 }
 
 TEST_F(DomainMixingMetricsTest, WithInactiveDays) {
-  base::Time day1 =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1523432317);
-  base::Time day3 = day1 + base::TimeDelta::FromDays(2);
+  base::Time day1 = base::Time::UnixEpoch() + base::Seconds(1523432317);
+  base::Time day3 = day1 + base::Days(2);
   EmitDomainMixingMetrics(
       {
           DomainVisit("www.google.com", day1),

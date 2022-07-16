@@ -29,6 +29,7 @@ class CC_PAINT_EXPORT PaintWorkletInput
  public:
   enum class NativePropertyType {
     kBackgroundColor,
+    kClipPath,
     kInvalid,
   };
   // Uniquely identifies a property from the animation system, so that a
@@ -89,6 +90,10 @@ class CC_PAINT_EXPORT PaintWorkletInput
   virtual const PropertyKeys& GetPropertyKeys() const = 0;
 
   virtual bool IsCSSPaintWorkletInput() const = 0;
+
+  // True if all the animated frames are opaque. Can be false only if animated
+  // frames are colors.
+  virtual bool KnownToBeOpaque() const;
 
  protected:
   friend class base::RefCountedThreadSafe<PaintWorkletInput>;

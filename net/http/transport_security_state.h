@@ -367,6 +367,9 @@ class NET_EXPORT TransportSecurityState {
   explicit TransportSecurityState(
       std::vector<std::string> hsts_host_bypass_list);
 
+  TransportSecurityState(const TransportSecurityState&) = delete;
+  TransportSecurityState& operator=(const TransportSecurityState&) = delete;
+
   ~TransportSecurityState();
 
   // These functions search for static and dynamic STS and PKP states, and
@@ -584,7 +587,7 @@ class NET_EXPORT TransportSecurityState {
   bool has_dynamic_pkp_state() const { return !enabled_pkp_hosts_.empty(); }
 
   // The number of cached ExpectCTState entries.
-  size_t num_expect_ct_entries() const;
+  size_t num_expect_ct_entries_for_testing() const;
 
   // The number of cached STSState entries.
   size_t num_sts_entries() const;
@@ -745,8 +748,6 @@ class NET_EXPORT TransportSecurityState {
   base::Time ct_log_list_last_update_time_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TransportSecurityState);
 };
 
 }  // namespace net

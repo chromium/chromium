@@ -7,7 +7,6 @@
 
 #include <utility>
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/tick_clock.h"
@@ -27,6 +26,11 @@ class CONTENT_EXPORT SignedExchangePrefetchMetricRecorder final
  public:
   explicit SignedExchangePrefetchMetricRecorder(
       const base::TickClock* tick_clock);
+
+  SignedExchangePrefetchMetricRecorder(
+      const SignedExchangePrefetchMetricRecorder&) = delete;
+  SignedExchangePrefetchMetricRecorder& operator=(
+      const SignedExchangePrefetchMetricRecorder&) = delete;
 
   void OnSignedExchangeNonPrefetch(const GURL& outer_url,
                                    base::Time response_time);
@@ -51,7 +55,6 @@ class CONTENT_EXPORT SignedExchangePrefetchMetricRecorder final
   std::unique_ptr<base::OneShotTimer> flush_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangePrefetchMetricRecorder);
 };
 
 }  // namespace content

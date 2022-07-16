@@ -4,7 +4,7 @@
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
-import {BrowserTabsModel, FeatureStatus, FindMyDeviceStatus, Notification, PhoneStatusModel, TetherStatus} from './types.js';
+import {BrowserTabsModel, CameraRollManager, FeatureStatus, FindMyDeviceStatus, Notification, PhoneStatusModel, TetherStatus} from './types.js';
 
 /**
  * JavaScript hooks into the native WebUI handler for Phonehub tab.
@@ -113,6 +113,15 @@ export class MultidevicePhoneHubBrowserProxy {
    */
   resetHasNotificationSetupUiBeenDismissed() {
     chrome.send('resetHasNotificationSetupUiBeenDismissed');
+  }
+
+  /**
+   * Sets the camera roll manager.
+   * @param {!CameraRollManager} cameraRollManager The camera roll with fake
+   *     values.
+   */
+  setCameraRoll(cameraRollManager) {
+    chrome.send('setCameraRoll', [cameraRollManager]);
   }
 }
 

@@ -23,6 +23,11 @@ class ManualFillFormObserverHelperiOSTest : public PlatformTest {
   ManualFillFormObserverHelperiOSTest()
       : web_state_list_(&web_state_list_delegate_) {}
 
+  ManualFillFormObserverHelperiOSTest(
+      const ManualFillFormObserverHelperiOSTest&) = delete;
+  ManualFillFormObserverHelperiOSTest& operator=(
+      const ManualFillFormObserverHelperiOSTest&) = delete;
+
   ~ManualFillFormObserverHelperiOSTest() override {}
 
   void SetUp() override {
@@ -60,9 +65,6 @@ class ManualFillFormObserverHelperiOSTest : public PlatformTest {
                                    CreateWebState(url),
                                    WebStateList::INSERT_NO_FLAGS, opener);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ManualFillFormObserverHelperiOSTest);
 };
 
 // Tests that an observer is correctly created and set up.

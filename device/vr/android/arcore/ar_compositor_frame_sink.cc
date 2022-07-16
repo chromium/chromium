@@ -5,8 +5,8 @@
 #include "device/vr/android/arcore/ar_compositor_frame_sink.h"
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/logging.h"
+#include "base/task/bind_post_task.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/host/host_display_client.h"
 #include "components/viz/host/renderer_settings_creation.h"

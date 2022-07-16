@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
@@ -53,8 +52,6 @@ public final class BaseSuggestionViewBinder<T extends View>
 
         if (BaseSuggestionViewProperties.ICON == propertyKey) {
             updateSuggestionIcon(model, view);
-            updateContentViewPadding(model, view.getDecoratedSuggestionView());
-        } else if (BaseSuggestionViewProperties.DENSITY == propertyKey) {
             updateContentViewPadding(model, view.getDecoratedSuggestionView());
         } else if (SuggestionCommonProperties.LAYOUT_DIRECTION == propertyKey) {
             ViewCompat.setLayoutDirection(
@@ -156,7 +153,7 @@ public final class BaseSuggestionViewBinder<T extends View>
     /** Update attributes of decorated suggestion icon. */
     private static <T extends View> void updateSuggestionIcon(
             PropertyModel model, BaseSuggestionView<T> baseView) {
-        final RoundedCornerImageView rciv = baseView.getSuggestionImageView();
+        final ImageView rciv = baseView.getSuggestionImageView();
         final SuggestionDrawableState sds = model.get(BaseSuggestionViewProperties.ICON);
 
         if (sds != null) {
@@ -173,13 +170,7 @@ public final class BaseSuggestionViewBinder<T extends View>
 
             rciv.setPadding(paddingStart, 0, paddingEnd, 0);
             rciv.setMinimumHeight(edgeSize);
-
-            // TODO(ender): move logic applying corner rounding to updateIcon when action images use
-            // RoundedCornerImageView too.
-            int radius = sds.useRoundedCorners
-                    ? res.getDimensionPixelSize(R.dimen.default_rounded_corner_radius)
-                    : 0;
-            rciv.setRoundedCorners(radius, radius, radius, radius);
+            rciv.setClipToOutline(sds.useRoundedCorners);
         }
 
         updateIcon(rciv, sds, ChromeColors.getSecondaryIconTintRes(!useDarkColors(model)));
@@ -202,33 +193,6 @@ public final class BaseSuggestionViewBinder<T extends View>
         final int endSpace = view.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_refine_view_modern_end_padding);
         view.setPaddingRelative(startSpace, 0, endSpace, 0);
-
-        // Compact suggestion handling: apply additional padding to the suggestion content.
-        final @BaseSuggestionViewProperties.Density int density =
-                model.get(BaseSuggestionViewProperties.DENSITY);
-
-        int minimumHeightRes;
-        int verticalPadRes;
-        switch (density) {
-            case BaseSuggestionViewProperties.Density.COMPACT:
-                verticalPadRes = R.dimen.omnibox_suggestion_compact_padding;
-                minimumHeightRes = R.dimen.omnibox_suggestion_compact_height;
-                break;
-            case BaseSuggestionViewProperties.Density.SEMICOMPACT:
-                verticalPadRes = R.dimen.omnibox_suggestion_semicompact_padding;
-                minimumHeightRes = R.dimen.omnibox_suggestion_semicompact_height;
-                break;
-            case BaseSuggestionViewProperties.Density.COMFORTABLE:
-            default:
-                verticalPadRes = R.dimen.omnibox_suggestion_comfortable_padding;
-                minimumHeightRes = R.dimen.omnibox_suggestion_comfortable_height;
-                break;
-        }
-        final int verticalPad = view.getResources().getDimensionPixelSize(verticalPadRes);
-        view.getContentView().setPaddingRelative(0, verticalPad, 0, verticalPad);
-
-        final int minimumHeight = view.getResources().getDimensionPixelSize(minimumHeightRes);
-        view.getContentView().setMinimumHeight(minimumHeight);
     }
 
     /**

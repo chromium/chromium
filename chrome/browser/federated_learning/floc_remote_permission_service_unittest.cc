@@ -8,9 +8,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -35,6 +34,12 @@ class TestingFlocRemotePermissionService : public FlocRemotePermissionService {
       : FlocRemotePermissionService(url_loader_factory),
         expected_url_(GURL()),
         expected_floc_permission_(false) {}
+
+  TestingFlocRemotePermissionService(
+      const TestingFlocRemotePermissionService&) = delete;
+  TestingFlocRemotePermissionService& operator=(
+      const TestingFlocRemotePermissionService&) = delete;
+
   ~TestingFlocRemotePermissionService() override = default;
 
   std::unique_ptr<FlocRemotePermissionService::Request> CreateRequest(
@@ -69,8 +74,6 @@ class TestingFlocRemotePermissionService : public FlocRemotePermissionService {
   bool expected_floc_permission_;
   absl::optional<int> response_code_override_;
   absl::optional<std::string> response_body_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingFlocRemotePermissionService);
 };
 
 // A testing request class that allows expected values to be filled in.
@@ -84,6 +87,9 @@ class TestRequest : public FlocRemotePermissionService::Request {
         callback_(std::move(callback)),
         response_code_(response_code),
         response_body_(response_body) {}
+
+  TestRequest(const TestRequest&) = delete;
+  TestRequest& operator=(const TestRequest&) = delete;
 
   ~TestRequest() override = default;
 
@@ -114,8 +120,6 @@ class TestRequest : public FlocRemotePermissionService::Request {
   FlocRemotePermissionService::CreateRequestCallback callback_;
   int response_code_;
   std::string response_body_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRequest);
 };
 
 std::unique_ptr<FlocRemotePermissionService::Request>
@@ -154,6 +158,11 @@ class FlocRemotePermissionServiceTest : public testing::Test {
                 &test_url_loader_factory_)),
         floc_remote_permission_service_(test_shared_loader_factory_) {}
 
+  FlocRemotePermissionServiceTest(const FlocRemotePermissionServiceTest&) =
+      delete;
+  FlocRemotePermissionServiceTest& operator=(
+      const FlocRemotePermissionServiceTest&) = delete;
+
   ~FlocRemotePermissionServiceTest() override = default;
 
   void TearDown() override {
@@ -172,8 +181,6 @@ class FlocRemotePermissionServiceTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   TestingFlocRemotePermissionService floc_remote_permission_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlocRemotePermissionServiceTest);
 };
 
 TEST_F(FlocRemotePermissionServiceTest, QueryFlocPermission) {

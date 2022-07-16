@@ -4,7 +4,7 @@
 
 #include "components/services/language_detection/public/cpp/language_detection_service.h"
 
-#include "components/services/service_sandbox_type.h"
+#include "components/services/language_detection/public/mojom/language_detection.mojom.h"
 #include "content/public/browser/service_process_host.h"
 
 namespace language_detection {

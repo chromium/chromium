@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -81,6 +80,10 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
                                public content::NotificationObserver {
  public:
   explicit AutomaticRebootManager(const base::TickClock* clock);
+
+  AutomaticRebootManager(const AutomaticRebootManager&) = delete;
+  AutomaticRebootManager& operator=(const AutomaticRebootManager&) = delete;
+
   ~AutomaticRebootManager() override;
 
   AutomaticRebootManagerObserver::Reason reboot_reason() const {
@@ -179,8 +182,6 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
       session_manager_observation_{this};
 
   base::WeakPtrFactory<AutomaticRebootManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutomaticRebootManager);
 };
 
 }  // namespace system

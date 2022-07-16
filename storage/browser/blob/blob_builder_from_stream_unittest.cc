@@ -494,10 +494,8 @@ TEST_F(BlobBuilderFromStreamTestWithDelayedLimits, LargeStream) {
       std::make_unique<mojo::StringDataSource>(
           kData, mojo::StringDataSource::AsyncWritingMode::
                      STRING_STAYS_VALID_UNTIL_COMPLETION),
-      base::BindOnce(
-          base::DoNothing::Once<std::unique_ptr<mojo::DataPipeProducer>,
-                                MojoResult>(),
-          std::move(data_producer)));
+      base::BindOnce([](std::unique_ptr<mojo::DataPipeProducer>, MojoResult) {},
+                     std::move(data_producer)));
   loop.Run();
 
   ASSERT_TRUE(result);

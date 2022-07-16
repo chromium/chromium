@@ -498,7 +498,7 @@ VisibleSelection SelectionForParagraphIteration(
 
 const String& NonBreakingSpaceString() {
   DEFINE_STATIC_LOCAL(String, non_breaking_space_string,
-                      (&kNoBreakSpaceCharacter, 1));
+                      (&kNoBreakSpaceCharacter, 1u));
   return non_breaking_space_string;
 }
 

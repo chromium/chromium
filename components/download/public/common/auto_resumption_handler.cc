@@ -27,23 +27,19 @@ static download::AutoResumptionHandler* g_auto_resumption_handler = nullptr;
 
 // The delay to wait for after a chrome restart before resuming all pending
 // downloads so that tab loading doesn't get impacted.
-const base::TimeDelta kAutoResumeStartupDelay =
-    base::TimeDelta::FromSeconds(10);
+const base::TimeDelta kAutoResumeStartupDelay = base::Seconds(10);
 
 // The interval at which various download updates are grouped together for
 // computing the params for the task scheduler.
-const base::TimeDelta kBatchDownloadUpdatesInterval =
-    base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kBatchDownloadUpdatesInterval = base::Seconds(1);
 
 // The delay to wait for before immediately retrying a download after it got
 // interrupted due to network reasons.
-const base::TimeDelta kDownloadImmediateRetryDelay =
-    base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kDownloadImmediateRetryDelay = base::Seconds(1);
 
 // Any downloads started before this interval will be ignored. User scheduled
 // download will not be affected.
-const base::TimeDelta kAutoResumptionExpireInterval =
-    base::TimeDelta::FromDays(7);
+const base::TimeDelta kAutoResumptionExpireInterval = base::Days(7);
 
 // The task type to use for scheduling a task.
 const download::DownloadTaskType kResumptionTaskType =

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"
@@ -19,7 +18,6 @@ class GURL;
 
 namespace autofill {
 class AutofillProfile;
-class InternalAuthenticator;
 }  // namespace autofill
 
 namespace content {
@@ -31,7 +29,20 @@ namespace url {
 class Origin;
 }  // namespace url
 
+namespace webauthn {
+class InternalAuthenticator;
+}  // namespace webauthn
+
 namespace payments {
+
+// Known reasons why an app may fail to be created. Passed to a
+// PaymentAppFactory Delegate to allow it to better handle the lack of creation
+// of an app, if appropriate.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.payments
+enum class AppCreationFailureReason {
+  UNKNOWN,
+  ICON_DOWNLOAD_FAILED,
+};
 
 class ContentPaymentRequestDelegate;
 class PaymentManifestWebDataService;
@@ -63,7 +74,7 @@ class PaymentAppFactory {
 
     virtual const std::vector<mojom::PaymentMethodDataPtr>& GetMethodData()
         const = 0;
-    virtual std::unique_ptr<autofill::InternalAuthenticator>
+    virtual std::unique_ptr<webauthn::InternalAuthenticator>
     CreateInternalAuthenticator() const = 0;
     virtual scoped_refptr<PaymentManifestWebDataService>
     GetPaymentManifestWebDataService() const = 0;
@@ -86,8 +97,8 @@ class PaymentAppFactory {
     virtual const std::vector<autofill::AutofillProfile*>&
     GetBillingProfiles() = 0;
     virtual bool IsRequestedAutofillDataAvailable() = 0;
-    virtual ContentPaymentRequestDelegate* GetPaymentRequestDelegate()
-        const = 0;
+    virtual base::WeakPtr<ContentPaymentRequestDelegate>
+    GetPaymentRequestDelegate() const = 0;
 
     // Called when an app is created.
     virtual void OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) = 0;
@@ -95,7 +106,9 @@ class PaymentAppFactory {
     // Called when there is an error creating a payment app. Called when unable
     // to download a web app manifest, for example.
     virtual void OnPaymentAppCreationError(
-        const std::string& error_message) = 0;
+        const std::string& error_message,
+        AppCreationFailureReason failure_reason =
+            AppCreationFailureReason::UNKNOWN) = 0;
 
     // Whether the factory should early exit before creating platform-specific
     // PaymentApp objects. This is used by PaymentAppServiceBridge to skip
@@ -116,6 +129,10 @@ class PaymentAppFactory {
   };
 
   explicit PaymentAppFactory(PaymentApp::Type type);
+
+  PaymentAppFactory(const PaymentAppFactory&) = delete;
+  PaymentAppFactory& operator=(const PaymentAppFactory&) = delete;
+
   virtual ~PaymentAppFactory();
 
   PaymentApp::Type type() const { return type_; }
@@ -124,8 +141,6 @@ class PaymentAppFactory {
 
  private:
   const PaymentApp::Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppFactory);
 };
 
 }  // namespace payments

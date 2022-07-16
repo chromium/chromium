@@ -21,6 +21,7 @@
 #include "base/version.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/common/features.h"
 
 using component_updater::ComponentUpdateService;
 
@@ -61,7 +62,7 @@ namespace component_updater {
 
 bool FileTypePoliciesComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool FileTypePoliciesComponentInstallerPolicy::RequiresNetworkEncryption()
@@ -71,7 +72,7 @@ bool FileTypePoliciesComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 FileTypePoliciesComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -86,7 +87,7 @@ base::FilePath FileTypePoliciesComponentInstallerPolicy::GetInstalledPath(
 void FileTypePoliciesComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
@@ -97,7 +98,7 @@ void FileTypePoliciesComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool FileTypePoliciesComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   // No need to actually validate the proto here, since we'll do the checking
   // in PopulateFromDynamicUpdate().
@@ -122,7 +123,9 @@ std::string FileTypePoliciesComponentInstallerPolicy::GetName() const {
 
 update_client::InstallerAttributes
 FileTypePoliciesComponentInstallerPolicy::GetInstallerAttributes() const {
-  return update_client::InstallerAttributes();
+  update_client::InstallerAttributes attributes;
+  attributes["tag"] = safe_browsing::GetFileTypePoliciesTag();
+  return attributes;
 }
 
 void RegisterFileTypePoliciesComponent(ComponentUpdateService* cus) {

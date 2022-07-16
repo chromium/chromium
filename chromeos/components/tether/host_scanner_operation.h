@@ -8,7 +8,7 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
@@ -91,6 +91,9 @@ class HostScannerOperation : public MessageTransferOperation {
         bool is_final_scan_result) = 0;
   };
 
+  HostScannerOperation(const HostScannerOperation&) = delete;
+  HostScannerOperation& operator=(const HostScannerOperation&) = delete;
+
   ~HostScannerOperation() override;
 
   void AddObserver(Observer* observer);
@@ -148,8 +151,6 @@ class HostScannerOperation : public MessageTransferOperation {
       device_id_to_tether_availability_request_start_time_map_;
 
   base::WeakPtrFactory<HostScannerOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostScannerOperation);
 };
 
 }  // namespace tether

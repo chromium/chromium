@@ -23,6 +23,11 @@ class WebViewPasswordManagerDriver
  public:
   explicit WebViewPasswordManagerDriver(
       password_manager::PasswordManager* password_manager);
+
+  WebViewPasswordManagerDriver(const WebViewPasswordManagerDriver&) = delete;
+  WebViewPasswordManagerDriver& operator=(const WebViewPasswordManagerDriver&) =
+      delete;
+
   ~WebViewPasswordManagerDriver() override;
 
   // password_manager::PasswordManagerDriver implementation.
@@ -44,7 +49,7 @@ class WebViewPasswordManagerDriver
   password_manager::PasswordManager* GetPasswordManager() override;
   password_manager::PasswordAutofillManager* GetPasswordAutofillManager()
       override;
-  bool IsMainFrame() const override;
+  bool IsInPrimaryMainFrame() const override;
   bool CanShowAutofillUi() const override;
   ::ui::AXTreeID GetAxTreeId() const override;
   const GURL& GetLastCommittedURL() const override;
@@ -55,8 +60,6 @@ class WebViewPasswordManagerDriver
   __weak id<PasswordManagerDriverBridge> bridge_;
 
   password_manager::PasswordManager* password_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewPasswordManagerDriver);
 };
 }  // namespace ios_web_view
 

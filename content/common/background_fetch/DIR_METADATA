@@ -1,5 +1,2 @@
-monorail {
-  component: "Blink>BackgroundFetch"
-}
+mixins: "//content/browser/background_fetch/COMMON_METADATA"
 
-team_email: "platform-capabilities@chromium.org"

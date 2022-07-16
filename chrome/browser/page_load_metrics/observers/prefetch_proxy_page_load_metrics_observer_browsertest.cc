@@ -15,6 +15,7 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -45,18 +46,19 @@ class PrefetchProxyPageLoadMetricsObserverBrowserTest
   }
 
   void NavigateTo(const GURL& url) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     base::RunLoop().RunUntilIdle();
   }
 
   void NavigateToOriginPath(const std::string& path) {
-    ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("origin.com", path));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("origin.com", path)));
     base::RunLoop().RunUntilIdle();
   }
 
   void NavigateAway() {
-    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -150,4 +152,68 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyPageLoadMetricsObserverBrowserTest,
       "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 0);
   histogram_tester.ExpectTotalCount(
       "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 0);
+}
+
+class PrefetchProxyPageLoadMetricsObserverPrerenderBrowserTest
+    : public PrefetchProxyPageLoadMetricsObserverBrowserTest {
+ public:
+  PrefetchProxyPageLoadMetricsObserverPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &PrefetchProxyPageLoadMetricsObserverPrerenderBrowserTest::
+                GetWebContents,
+            base::Unretained(this))) {}
+  ~PrefetchProxyPageLoadMetricsObserverPrerenderBrowserTest() override =
+      default;
+  PrefetchProxyPageLoadMetricsObserverPrerenderBrowserTest(
+      const PrefetchProxyPageLoadMetricsObserverPrerenderBrowserTest&) = delete;
+
+  PrefetchProxyPageLoadMetricsObserverPrerenderBrowserTest& operator=(
+      const PrefetchProxyPageLoadMetricsObserverPrerenderBrowserTest&) = delete;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    PrefetchProxyPageLoadMetricsObserverBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    PrefetchProxyPageLoadMetricsObserverBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrefetchProxyPageLoadMetricsObserverPrerenderBrowserTest,
+                       PrerenderingShouldNotRecordMetrics) {
+  base::HistogramTester histogram_tester;
+
+  GURL initial_url = embedded_test_server()->GetURL("/redirect_to_index.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Load a prerender page and prerendering should not increase the total count.
+  GURL prerender_url = embedded_test_server()->GetURL("/index.html");
+  int host_id = prerender_test_helper().AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+  histogram_tester.ExpectTotalCount(
+      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 0);
+  histogram_tester.ExpectTotalCount(
+      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 0);
+
+  // Activate the prerender page.
+  prerender_test_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
+  histogram_tester.ExpectTotalCount(
+      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 1);
+  histogram_tester.ExpectTotalCount(
+      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 1);
 }

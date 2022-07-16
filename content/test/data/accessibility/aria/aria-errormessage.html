@@ -1,4 +1,5 @@
 <!--
+@AURALINUX-DENY:selectable-text*
 @BLINK-ALLOW:error*
 @WIN-ALLOW:n_relations*
 -->
@@ -6,8 +7,12 @@
 <html>
   <body>
     <div>
-      <input aria-invalid="true" aria-errormessage="error">
+      <input aria-label="Invalid is true" aria-invalid="true" aria-errormessage="error1">
+      <input aria-label="Invalid is false" aria-invalid="false" aria-errormessage="error2">
+      <input aria-label="Invalid is not set" aria-errormessage="error3">
     </div>
-    <p id="error">Error</p>
+    <p id="error1">Error for invalid input</p>
+    <p id="error2">Error for input which is not invalid</p>
+    <p id="error3">Error for input with invalid not set</p>
   </body>
 </html>

@@ -35,12 +35,13 @@ struct GradientData;
 class LayoutSVGResourceGradient : public LayoutSVGResourcePaintServer {
  public:
   explicit LayoutSVGResourceGradient(SVGGradientElement*);
+  void Trace(Visitor*) const override;
 
   void RemoveAllClientsFromCache() final;
   bool RemoveClientFromCache(SVGResourceClient&) final;
 
   bool ApplyShader(const SVGResourceClient&,
-                   const FloatRect& reference_box,
+                   const gfx::RectF& reference_box,
                    const AffineTransform* additional_transform,
                    PaintFlags&) final;
 
@@ -57,12 +58,12 @@ class LayoutSVGResourceGradient : public LayoutSVGResourcePaintServer {
 
  private:
   std::unique_ptr<GradientData> BuildGradientData(
-      const FloatRect& object_bounding_box);
+      const gfx::RectF& object_bounding_box);
 
   bool should_collect_gradient_attributes_ : 1;
   using GradientMap = HeapHashMap<Member<const SVGResourceClient>,
                                   std::unique_ptr<GradientData>>;
-  Persistent<GradientMap> gradient_map_;
+  Member<GradientMap> gradient_map_;
 };
 
 }  // namespace blink

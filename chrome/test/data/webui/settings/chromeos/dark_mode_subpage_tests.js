@@ -9,7 +9,7 @@
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 let darkModePage = null;
@@ -121,17 +121,14 @@ suite('DarkModeHandler', function() {
   });
 
   test('Deep link to dark mode toggle button', async () => {
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
     const params = new URLSearchParams;
     params.append('settingId', '505');
     settings.Router.getInstance().navigateTo(settings.routes.DARK_MODE, params);
 
     Polymer.dom.flush();
 
-    const deepLinkElement =
-        darkModePage.$$('#darkModeToggleButton').$$('cr-toggle');
+    const deepLinkElement = darkModePage.$$('#darkModeToggleButton')
+                                .shadowRoot.querySelector('cr-toggle');
 
     await test_util.waitAfterNextRender(deepLinkElement);
 
@@ -145,8 +142,6 @@ suite('DarkModeHandler', function() {
     const darkModeThemedRadioGroup =
         darkModePage.$$('#darkModeThemedRadioGroup');
     assertTrue(!!darkModeThemedRadioGroup);
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
 
     const getPrefValue = () => {
       return darkModePage.getPref('ash.dark_mode.color_mode_themed').value;

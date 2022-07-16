@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/buildflag.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_factory.h"

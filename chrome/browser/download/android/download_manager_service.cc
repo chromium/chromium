@@ -13,8 +13,8 @@
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -172,13 +172,12 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
       env, ConvertUTF8ToJavaString(env, item->GetGuid()),
       ConvertUTF8ToJavaString(env, item->GetFileNameToReportUser().value()),
       ConvertUTF8ToJavaString(env, item->GetTargetFilePath().value()),
-      ConvertUTF8ToJavaString(env, item->GetTabUrl().spec()),
+      ConvertUTF8ToJavaString(env, item->GetURL().spec()),
       ConvertUTF8ToJavaString(env, item->GetMimeType()),
-      item->GetReceivedBytes(), item->GetTotalBytes(),
-      otr_profile_id, item->GetState(), item->PercentComplete(),
-      item->IsPaused(), DownloadUtils::IsDownloadUserInitiated(item),
-      item->CanResume(), item->IsParallelDownload(),
-      ConvertUTF8ToJavaString(env, original_url),
+      item->GetReceivedBytes(), item->GetTotalBytes(), otr_profile_id,
+      item->GetState(), item->PercentComplete(), item->IsPaused(),
+      DownloadUtils::IsDownloadUserInitiated(item), item->CanResume(),
+      item->IsParallelDownload(), ConvertUTF8ToJavaString(env, original_url),
       ConvertUTF8ToJavaString(env, item->GetReferrerUrl().spec()),
       time_remaining_known ? time_delta.InMilliseconds()
                            : kUnknownRemainingTime,
@@ -840,6 +839,7 @@ void DownloadManagerService::CreateInterruptedDownloadForTest(
           download::DOWNLOAD_INTERRUPT_REASON_CRASH, false, false, false,
           base::Time(), false,
           std::vector<download::DownloadItem::ReceivedSlice>(),
+          download::DownloadItemRerouteInfo(),
           absl::nullopt /*download_schedule*/, nullptr));
 }
 

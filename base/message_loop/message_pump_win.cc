@@ -37,6 +37,9 @@ enum MessageLoopProblems {
 // Returns the number of milliseconds before |next_task_time|, clamped between
 // zero and the biggest DWORD value (or INFINITE if |next_task_time.is_max()|).
 // Optionally, a recent value of Now() may be passed in to avoid resampling it.
+// 返回 |next_task_time| 之前的毫秒数，介于零和最大 DWORD 值之间（如果
+// |next_task_time.is_max()| 则为 INFINITE）。 可选地，可以传入 Now() 的最近值以避免
+// 重新采样。
 DWORD GetSleepTimeoutMs(TimeTicks next_task_time,
                         TimeTicks recent_now = TimeTicks()) {
   // Shouldn't need to sleep or install a timer when there's pending immediate
@@ -44,7 +47,7 @@ DWORD GetSleepTimeoutMs(TimeTicks next_task_time,
   DCHECK(!next_task_time.is_null());
 
   if (next_task_time.is_max())
-    return INFINITE;
+    return INFINITE; // 无限休眠等待
 
   auto now = recent_now.is_null() ? TimeTicks::Now() : recent_now;
   auto timeout_ms = (next_task_time - now).InMillisecondsRoundedUp();
@@ -59,6 +62,7 @@ DWORD GetSleepTimeoutMs(TimeTicks next_task_time,
 
 // Message sent to get an additional time slice for pumping (processing) another
 // task (a series of such messages creates a continuous task pump).
+// 自定义消息id，用于给隐藏的不可见输入窗口发送消息，唤醒callback函数
 static const int kMsgHaveWork = WM_USER + 1;
 
 //-----------------------------------------------------------------------------
@@ -89,13 +93,19 @@ void MessagePumpWin::Quit() {
 // MessagePumpForUI public:
 
 MessagePumpForUI::MessagePumpForUI() {
-  bool succeeded = message_window_.Create(
-      BindRepeating(&MessagePumpForUI::MessageCallback, Unretained(this)));
+  // 创建Windows的输入窗口描述符和输入窗口，并设置消息callback函数到消息窗口中，
+  // 在隐式窗口的回调函数中，再调用这个回调函数到消息泵这里。
+  bool succeeded = message_window_.Create(BindRepeating(
+      &MessagePumpForUI::MessageCallback, Unretained(this)));
   DCHECK(succeeded);
 }
 
 MessagePumpForUI::~MessagePumpForUI() = default;
 
+/**
+ * @brief 向隐藏不可见窗口(message_window_)发送了一个自定义的消息(kMsgHaveWork),
+ * 然后 消息处理回调函数MessageCallback()中会根据 kMsgHaveWork 处理该消息。
+ */
 void MessagePumpForUI::ScheduleWork() {
   // This is the only MessagePumpForUI method which can be called outside of
   // |bound_thread_|.
@@ -105,6 +115,7 @@ void MessagePumpForUI::ScheduleWork() {
     return;  // Someone else continued the pumping.
 
   // Make sure the MessagePump does some work for us.
+  // 向 隐藏不可见窗口(message_window_.hwnd()) 发送了一个自定义的消息(kMsgHaveWork)，
   const BOOL ret = ::PostMessage(message_window_.hwnd(), kMsgHaveWork, 0, 0);
   if (ret)
     return;  // There was room in the Window Message queue.
@@ -169,17 +180,21 @@ void MessagePumpForUI::RemoveObserver(Observer* observer) {
 
 //-----------------------------------------------------------------------------
 // MessagePumpForUI private:
+// 窗口消息的回调函数（间接被窗口回调）
+bool MessagePumpForUI::MessageCallback(UINT message,
+                                       WPARAM wparam,
+                                       LPARAM lparam,
+                                       LRESULT* result) {
 
-bool MessagePumpForUI::MessageCallback(
-    UINT message, WPARAM wparam, LPARAM lparam, LRESULT* result) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
   switch (message) {
     case kMsgHaveWork:
+      // 处理窗口返回的自定义消息
       HandleWorkMessage();
       break;
     case WM_TIMER:
       if (wparam == reinterpret_cast<UINT_PTR>(this))
-        HandleTimerMessage();
+        HandleTimerMessage(); // 处理定时器任务
       break;
   }
   return false;
@@ -307,6 +322,8 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
   }
 }
 
+// 处理自定义消息：即调用delegate执行（队列中的）任务，执行完后，
+// 再根据需要是立即触发调度，还是延时触发调度
 void MessagePumpForUI::HandleWorkMessage() {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
@@ -326,6 +343,8 @@ void MessagePumpForUI::HandleWorkMessage() {
   // Let whatever would have run had we not been putting messages in the queue
   // run now.  This is an attempt to make our dummy message not starve other
   // messages that may be in the Windows message queue.
+  // 让如果我们没有将消息放入队列中运行的任何东西现在运行。这是为了使我们的
+  // 虚拟消息不会饿死可能在 Windows 消息队列中的其他消息。
   ProcessPumpReplacementMessage();
 
   Delegate::NextWorkInfo next_work_info = run_state_->delegate->DoWork();
@@ -337,6 +356,9 @@ void MessagePumpForUI::HandleWorkMessage() {
   }
 }
 
+/**
+ * @brief 处理定时器任务
+ */
 void MessagePumpForUI::HandleTimerMessage() {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
@@ -419,6 +441,7 @@ void MessagePumpForUI::ScheduleNativeTimer(
 
     // Tell the optimizer to retain the delay to simplify analyzing hangs.
     base::debug::Alias(&delay_msec);
+    // 设置定时器
     const UINT_PTR ret =
         ::SetTimer(message_window_.hwnd(), reinterpret_cast<UINT_PTR>(this),
                    delay_msec, nullptr);
@@ -475,6 +498,8 @@ bool MessagePumpForUI::ProcessNextWindowsMessage() {
       TRACE_EVENT0(
           TRACE_DISABLED_BY_DEFAULT("base"),
           "MessagePumpForUI::ProcessNextWindowsMessage GetQueueStatus");
+
+      // 执行::GetQueueStatus(QS_SENDMESSAGE)获取windows消息队列状态，
       DWORD queue_status = ::GetQueueStatus(QS_SENDMESSAGE);
 
       // If there are sent messages in the queue then PeekMessage internally
@@ -497,6 +522,7 @@ bool MessagePumpForUI::ProcessNextWindowsMessage() {
                 ctx.event()->set_chrome_message_pump();
             msg_pump_data->set_sent_messages_in_queue(more_work_is_plausible);
           });
+      // ::PeekMessage()获取队列头部消息
       has_msg = ::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != FALSE;
     }
   }
@@ -569,11 +595,13 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("base"),
                  "MessagePumpForUI::ProcessPumpReplacementMessage PeekMessage");
     auto scoped_do_work_item = run_state_->delegate->BeginWorkItem();
+    // 从窗口消息队列的队头取出（get && delete）消息到msg中
     have_message = ::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != FALSE;
   }
 
   // Expect no message or a message different than kMsgHaveWork.
-  DCHECK(!have_message || kMsgHaveWork != msg.message ||
+  DCHECK(!have_message ||
+         kMsgHaveWork != msg.message ||
          msg.hwnd != message_window_.hwnd());
 
   // Since we discarded a kMsgHaveWork message, we must update the flag.
@@ -584,7 +612,7 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
   if (!have_message)
     return false;
 
-  if (msg.message == WM_QUIT) {
+  if (msg.message == WM_QUIT) { // 窗口退出消息
     // If we're in a nested ::GetMessage() loop then we must let that loop see
     // the WM_QUIT in order for it to exit. If we're in DoRunLoop then the re-
     // posted WM_QUIT will be either ignored, or handled, by
@@ -603,7 +631,7 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
     // The return value is mostly irrelevant but return true like we would after
     // processing a QuitClosure() task.
     return true;
-  } else if (msg.message == WM_TIMER &&
+  } else if (msg.message == WM_TIMER && // 定时消息
              msg.wParam == reinterpret_cast<UINT_PTR>(this)) {
     // This happens when a native nested loop invokes HandleWorkMessage() =>
     // ProcessPumpReplacementMessage() which finds the WM_TIMER message
@@ -640,6 +668,7 @@ MessagePumpForIO::IOHandler::IOHandler(const Location& from_here)
 MessagePumpForIO::IOHandler::~IOHandler() = default;
 
 MessagePumpForIO::MessagePumpForIO() {
+  // 创建一个IO完成端口，
   port_.Set(::CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr,
                                      reinterpret_cast<ULONG_PTR>(nullptr), 1));
   DCHECK(port_.IsValid());
@@ -656,6 +685,7 @@ void MessagePumpForIO::ScheduleWork() {
     return;  // Someone else continued the pumping.
 
   // Make sure the MessagePump does some work for us.
+  // 将完成数据包放在 I/O 完成端口的队列中
   const BOOL ret = ::PostQueuedCompletionStatus(
       port_.Get(), 0, reinterpret_cast<ULONG_PTR>(this),
       reinterpret_cast<OVERLAPPED*>(this));
@@ -683,7 +713,7 @@ void MessagePumpForIO::ScheduleDelayedWork(const TimeTicks& delayed_work_time) {
 HRESULT MessagePumpForIO::RegisterIOHandler(HANDLE file_handle,
                                             IOHandler* handler) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
-
+  // 创建IOCP
   HANDLE port = ::CreateIoCompletionPort(
       file_handle, port_.Get(), reinterpret_cast<ULONG_PTR>(handler), 1);
   return (port != nullptr) ? S_OK : HRESULT_FROM_WIN32(GetLastError());
@@ -744,6 +774,7 @@ void MessagePumpForIO::DoRunLoop() {
 
 // Wait until IO completes, up to the time needed by the timer manager to fire
 // the next set of timers.
+// 等到IO完成，直到计时器管理器触发下一组计时器所需的时间。
 void MessagePumpForIO::WaitForWork(Delegate::NextWorkInfo next_work_info) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
@@ -763,6 +794,8 @@ bool MessagePumpForIO::WaitForIOCompletion(DWORD timeout) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
   IOItem item;
+  // 使用::GetQueuedCompletionStatus()等待完成数据包排队到 I/O 完成端口，
+  // (而不是直接等待异步 I/O 完成)，
   if (!GetIOItem(timeout, &item))
     return false;
 

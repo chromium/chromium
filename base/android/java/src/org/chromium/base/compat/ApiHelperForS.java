@@ -4,6 +4,7 @@
 
 package org.chromium.base.compat;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.PictureInPictureParams;
 import android.content.ClipData;
@@ -11,7 +12,9 @@ import android.content.ClipDescription;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Process;
+import android.view.textclassifier.TextClassification;
 import android.view.textclassifier.TextLinks;
+import android.view.textclassifier.TextSelection;
 
 import androidx.annotation.NonNull;
 
@@ -47,6 +50,14 @@ public final class ApiHelperForS {
     }
 
     /**
+     * Return true if {@link ClipDescription#getClassificationStatus()} returns
+     * ClipDescription.CLASSIFICATION_COMPLETE.
+     */
+    public static boolean isGetClassificationStatusIsComplete(ClipDescription clipDescription) {
+        return clipDescription.getClassificationStatus() == ClipDescription.CLASSIFICATION_COMPLETE;
+    }
+
+    /**
      * See {@link ClipData.Item#getTextLinks()}.
      */
     public static TextLinks getTextLinks(ClipData.Item item) {
@@ -54,10 +65,8 @@ public final class ApiHelperForS {
     }
 
     public static boolean hasBluetoothConnectPermission() {
-        // TODO(b/183501112): Replace the permission string with the actual Manfifest constant once
-        // Chrome starts compiling against the S SDK.
         return ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
-                       "android.permission.BLUETOOTH_CONNECT", Process.myPid(), Process.myUid())
+                       Manifest.permission.BLUETOOTH_CONNECT, Process.myPid(), Process.myUid())
                 == PackageManager.PERMISSION_GRANTED;
     }
 
@@ -67,5 +76,21 @@ public final class ApiHelperForS {
     public static void setAutoEnterEnabled(
             PictureInPictureParams.Builder builder, boolean enabled) {
         builder.setAutoEnterEnabled(enabled);
+    }
+
+    /**
+     * See {@link android.view.textclassifier.TextSelection.Request.
+     * Builder#setIncludeTextClassification(boolean)}
+     */
+    public static TextSelection.Request.Builder setIncludeTextClassification(
+            TextSelection.Request.Builder builder, boolean includeTextClassification) {
+        return builder.setIncludeTextClassification(includeTextClassification);
+    }
+
+    /**
+     * See {@link android.view.textclassifier.TextSelection#getTextClassification()}
+     */
+    public static TextClassification getTextClassification(TextSelection textSelection) {
+        return textSelection.getTextClassification();
     }
 }

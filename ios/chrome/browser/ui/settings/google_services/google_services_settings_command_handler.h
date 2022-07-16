@@ -11,23 +11,11 @@
 // Protocol to communicate user actions from the mediator to its coordinator.
 @protocol GoogleServicesSettingsCommandHandler <NSObject>
 
-// Presents the sign-in dialog to the user.
-- (void)showSignIn;
-
 // Presents the sign-out dialog to the user.
 // |targetRect| rect in table view system coordinate to display the signout
 // popover dialog.
 - (void)showSignOutFromTargetRect:(CGRect)targetRect
                        completion:(signin_ui::CompletionCallback)completion;
-
-// Opens the account setting view.
-- (void)openAccountSettings;
-
-// Opens the manage sync settings view.
-- (void)openManageSyncSettings;
-
-// Opens the "Manage Your Google Account" view.
-- (void)openManageGoogleAccount;
 
 @end
 

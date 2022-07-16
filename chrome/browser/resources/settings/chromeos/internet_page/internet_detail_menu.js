@@ -15,12 +15,14 @@ import '../../settings_shared_css.js';
 import {ESimManagerListenerBehavior} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_listener_behavior.m.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
 import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -48,14 +50,6 @@ Polymer({
     eSimNetworkState_: {
       type: Object,
       value: null,
-    },
-
-    /** @private */
-    isUpdatedCellularUiEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('updatedCellularActivationUi');
-      }
     },
 
     /** @private */
@@ -128,7 +122,7 @@ Polymer({
   currentRouteChanged(route, oldRoute) {
     this.eSimNetworkState_ = null;
     this.guid_ = '';
-    if (route !== routes.NETWORK_DETAIL || !this.isUpdatedCellularUiEnabled_) {
+    if (route !== routes.NETWORK_DETAIL) {
       return;
     }
 
@@ -191,11 +185,6 @@ Polymer({
    * @private
    */
   shouldShowDotsMenuButton_() {
-    // Only shown if the flag is enabled.
-    if (!this.isUpdatedCellularUiEnabled_) {
-      return false;
-    }
-
     // Not shown in guest mode.
     if (this.isGuest_) {
       return false;
@@ -211,7 +200,14 @@ Polymer({
    * @private
    */
   isDotsMenuButtonDisabled_() {
-    if (!this.deviceState || !this.isUpdatedCellularUiEnabled_) {
+    // Managed eSIM networks cannot be renamed or removed by user.
+    if (this.eSimNetworkState_ &&
+        this.eSimNetworkState_.source ===
+            chromeos.networkConfig.mojom.OncSource.kDevicePolicy) {
+      return true;
+    }
+
+    if (!this.deviceState) {
       return false;
     }
     return OncMojo.deviceIsInhibited(this.deviceState);

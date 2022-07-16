@@ -26,6 +26,10 @@ class MockExternalProvider : public ExternalProviderInterface {
  public:
   MockExternalProvider(VisitorInterface* visitor,
                        mojom::ManifestLocation location);
+
+  MockExternalProvider(const MockExternalProvider&) = delete;
+  MockExternalProvider& operator=(const MockExternalProvider&) = delete;
+
   ~MockExternalProvider() override;
 
   void UpdateOrAddExtension(const ExtensionId& id,
@@ -42,6 +46,7 @@ class MockExternalProvider : public ExternalProviderInterface {
       const std::string& id,
       mojom::ManifestLocation* location,
       std::unique_ptr<base::Version>* version) const override;
+  void TriggerOnExternalExtensionFound() override;
   bool IsReady() const override;
   void ServiceShutdown() override {}
 
@@ -63,8 +68,6 @@ class MockExternalProvider : public ExternalProviderInterface {
   // VisitRegisteredExtension(), which must be a const method to inherit
   // from the class being mocked.
   mutable int visit_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockExternalProvider);
 };
 
 }  // namespace extensions

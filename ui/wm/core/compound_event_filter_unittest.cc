@@ -4,7 +4,6 @@
 
 #include "ui/wm/core/compound_event_filter.h"
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/aura/client/cursor_client.h"
@@ -37,13 +36,16 @@ namespace {
 class ConsumeGestureEventFilter : public ui::EventHandler {
  public:
   ConsumeGestureEventFilter() {}
+
+  ConsumeGestureEventFilter(const ConsumeGestureEventFilter&) = delete;
+  ConsumeGestureEventFilter& operator=(const ConsumeGestureEventFilter&) =
+      delete;
+
   ~ConsumeGestureEventFilter() override {}
 
  private:
   // Overridden from ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* e) override { e->StopPropagation(); }
-
-  DISALLOW_COPY_AND_ASSIGN(ConsumeGestureEventFilter);
 };
 
 }  // namespace

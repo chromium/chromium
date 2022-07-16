@@ -108,7 +108,7 @@ bool IsInvalidExtension(base::FilePath::StringType& extension) {
          IsShellIntegratedExtension(GetLastExtension(extension));
 }
 
-// Converts the accepted mime types and extensions from |option| into a list
+// Converts the accepted mime types and extensions from `option` into a list
 // of just extensions to be passed to the file dialog implementation.
 // The returned list will start with all the explicit website provided
 // extensions in order, followed by (for each mime type) the preferred
@@ -256,7 +256,7 @@ base::FilePath FileSystemChooser::Options::ResolveSuggestedNameExtension(
     }
   }
 
-  // Suggested extension not found in non-empty |accepts|.
+  // Suggested extension not found in non-empty `accepts`.
   file_types.include_all_files = true;
   return suggested_name;
 }

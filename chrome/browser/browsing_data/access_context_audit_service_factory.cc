@@ -47,8 +47,8 @@ KeyedService* AccessContextAuditServiceFactory::BuildServiceInstanceFor(
   // cookies.
   DCHECK(profile->ShouldPersistSessionCookies());
 
-  std::unique_ptr<AccessContextAuditService> context_audit_service(
-      new AccessContextAuditService(profile));
+  auto context_audit_service =
+      std::make_unique<AccessContextAuditService>(profile);
   if (!context_audit_service->Init(
           context->GetPath(),
           context->GetDefaultStoragePartition()

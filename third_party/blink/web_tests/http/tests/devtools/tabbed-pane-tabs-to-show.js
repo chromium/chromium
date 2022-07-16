@@ -23,7 +23,7 @@
 
   var dropDownButtonMeasuredWidth = 10;
   function getTabsToShowAndDumpResults(tabsOrdered, tabsHistory, totalWidth) {
-    var tabsToShowIndexes = UI.TabbedPane.prototype._tabsToShowIndexes.call(
+    var tabsToShowIndexes = UI.TabbedPane.prototype.tabsToShowIndexes.call(
         tabbedPane, tabsOrdered, tabsHistory, totalWidth, dropDownButtonMeasuredWidth);
     TestRunner.addResult('    tabsToShowIndexes = [' + String(tabsToShowIndexes) + ']');
   }

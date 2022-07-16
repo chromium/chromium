@@ -6,7 +6,6 @@
 #define COMPONENTS_MIRRORING_SERVICE_MEDIA_REMOTER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "media/cast/cast_config.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/mojo/mojom/remoting_common.mojom.h"
@@ -64,6 +63,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   MediaRemoter(Client* client,
                const media::mojom::RemotingSinkMetadata& sink_metadata,
                MessageDispatcher* message_dispatcher);
+
+  MediaRemoter(const MediaRemoter&) = delete;
+  MediaRemoter& operator=(const MediaRemoter&) = delete;
 
   ~MediaRemoter() override;
 
@@ -144,8 +146,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   } state_;
 
   base::WeakPtrFactory<MediaRemoter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRemoter);
 };
 
 }  // namespace mirroring

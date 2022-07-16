@@ -127,6 +127,9 @@ class TestRenderFrameObserver : public RenderFrameObserver {
   TestRenderFrameObserver(RenderFrame* frame, TestRunner* test_runner)
       : RenderFrameObserver(frame), test_runner_(test_runner) {}
 
+  TestRenderFrameObserver(const TestRenderFrameObserver&) = delete;
+  TestRenderFrameObserver& operator=(const TestRenderFrameObserver&) = delete;
+
   ~TestRenderFrameObserver() override {}
 
  private:
@@ -185,7 +188,7 @@ class TestRenderFrameObserver : public RenderFrameObserver {
     }
   }
 
-  void DidFinishDocumentLoad() override {
+  void DidDispatchDOMContentLoadedEvent() override {
     if (test_runner_->ShouldDumpFrameLoadCallbacks()) {
       std::string description = frame_proxy()->GetFrameDescriptionForWebTests();
       test_runner_->PrintMessage(description +
@@ -221,7 +224,6 @@ class TestRenderFrameObserver : public RenderFrameObserver {
   }
 
   TestRunner* const test_runner_;
-  DISALLOW_COPY_AND_ASSIGN(TestRenderFrameObserver);
 };
 
 }  // namespace
@@ -347,12 +349,6 @@ void WebFrameTestProxy::DidAddMessageToConsole(
       level = "MESSAGE";
   }
   std::string console_message(std::string("CONSOLE ") + level + ": ");
-  // Do not print line numbers if there is no associated source file name.
-  // TODO(crbug.com/896194): Figure out why the source line is flaky for empty
-  // source names.
-  if (!source_name.IsEmpty() && source_line) {
-    console_message += base::StringPrintf("line %d: ", source_line);
-  }
   // Console messages shouldn't be included in the expected output for
   // web-platform-tests because they may create non-determinism not
   // intended by the test author. They are still included in the stderr
@@ -719,7 +715,7 @@ void WebFrameTestProxy::DidClearWindowObject() {
     test_runner()->Install(this, spell_check_.get());
     accessibility_controller_.Install(frame);
     text_input_controller_.Install(frame);
-    GetLocalRootFrameWidgetTestHelper()->GetEventSender()->Install(frame);
+    GetLocalRootFrameWidgetTestHelper()->GetEventSender()->Install(this);
     blink::WebTestingSupport::InjectInternalsObject(frame);
   }
   RenderFrameImpl::DidClearWindowObject();

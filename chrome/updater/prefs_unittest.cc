@@ -39,15 +39,15 @@ TEST(PrefsTest, AcquireGlobalPrefsLock_LockThenTryLockInThreadFail) {
   base::test::TaskEnvironment task_environment(
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
 
-  std::unique_ptr<ScopedPrefsLock> lock = AcquireGlobalPrefsLock(
-      GetUpdaterScope(), base::TimeDelta::FromSeconds(0));
+  std::unique_ptr<ScopedPrefsLock> lock =
+      AcquireGlobalPrefsLock(GetUpdaterScope(), base::Seconds(0));
   EXPECT_TRUE(lock);
 
   base::RunLoop run_loop;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce([]() {
-        std::unique_ptr<ScopedPrefsLock> lock = AcquireGlobalPrefsLock(
-            GetUpdaterScope(), base::TimeDelta::FromSeconds(0));
+        std::unique_ptr<ScopedPrefsLock> lock =
+            AcquireGlobalPrefsLock(GetUpdaterScope(), base::Seconds(0));
         return lock.get() != nullptr;
       }),
       base::OnceCallback<void(bool)>(
@@ -65,8 +65,8 @@ TEST(PrefsTest, AcquireGlobalPrefsLock_TryLockInThreadSuccess) {
   base::RunLoop run_loop;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce([]() {
-        std::unique_ptr<ScopedPrefsLock> lock = AcquireGlobalPrefsLock(
-            GetUpdaterScope(), base::TimeDelta::FromSeconds(0));
+        std::unique_ptr<ScopedPrefsLock> lock =
+            AcquireGlobalPrefsLock(GetUpdaterScope(), base::Seconds(0));
         return lock.get() != nullptr;
       }),
       base::OnceCallback<void(bool)>(
@@ -76,8 +76,7 @@ TEST(PrefsTest, AcquireGlobalPrefsLock_TryLockInThreadSuccess) {
           })));
   run_loop.Run();
 
-  auto lock = AcquireGlobalPrefsLock(GetUpdaterScope(),
-                                     base::TimeDelta::FromSeconds(0));
+  auto lock = AcquireGlobalPrefsLock(GetUpdaterScope(), base::Seconds(0));
   EXPECT_TRUE(lock);
 }
 

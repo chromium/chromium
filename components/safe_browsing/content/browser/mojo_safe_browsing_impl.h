@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_MOJO_SAFE_BROWSING_IMPL_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_MOJO_SAFE_BROWSING_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
@@ -27,6 +26,9 @@ namespace safe_browsing {
 // disconnected or |resource_context_| is destructed.
 class MojoSafeBrowsingImpl : public mojom::SafeBrowsing {
  public:
+  MojoSafeBrowsingImpl(const MojoSafeBrowsingImpl&) = delete;
+  MojoSafeBrowsingImpl& operator=(const MojoSafeBrowsingImpl&) = delete;
+
   ~MojoSafeBrowsingImpl() override;
 
   static void MaybeCreate(
@@ -68,8 +70,6 @@ class MojoSafeBrowsingImpl : public mojom::SafeBrowsing {
   // Not owned by this object. It is always valid during the lifetime of this
   // object.
   content::ResourceContext* resource_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoSafeBrowsingImpl);
 };
 
 }  // namespace safe_browsing

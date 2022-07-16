@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -58,7 +60,7 @@ class WebContentsCanGoBackObserverTest : public InProcessBrowserTest {
         },
         &outer_loop, window_id, expected_value);
     base::RepeatingTimer timer;
-    timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
+    timer.Start(FROM_HERE, base::Milliseconds(1),
                 std::move(look_for_property_value));
     outer_loop.Run();
   }
@@ -66,7 +68,14 @@ class WebContentsCanGoBackObserverTest : public InProcessBrowserTest {
   ~WebContentsCanGoBackObserverTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest, CanGoBack_ServerSide) {
+// crbug.com/1240655: flaky on Lacros
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_CanGoBack_ServerSide DISABLED_CanGoBack_ServerSide
+#else
+#define MAYBE_CanGoBack_ServerSide CanGoBack_ServerSide
+#endif
+IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
+                       MAYBE_CanGoBack_ServerSide) {
   auto* lacros_service = chromeos::LacrosService::Get();
   ASSERT_TRUE(lacros_service);
   ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::TestController>());

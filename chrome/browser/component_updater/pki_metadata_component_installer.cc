@@ -73,7 +73,7 @@ PKIMetadataComponentInstallerPolicy::~PKIMetadataComponentInstallerPolicy() =
 
 bool PKIMetadataComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool PKIMetadataComponentInstallerPolicy::RequiresNetworkEncryption() const {
@@ -82,7 +82,7 @@ bool PKIMetadataComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 PKIMetadataComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& /* manifest */,
+    const base::Value& /* manifest */,
     const base::FilePath& /* install_dir */) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -92,7 +92,7 @@ void PKIMetadataComponentInstallerPolicy::OnCustomUninstall() {}
 void PKIMetadataComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> /* manifest */) {
+    base::Value /* manifest */) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&LoadCTBinaryProtoFromDisk, install_dir),
@@ -103,7 +103,7 @@ void PKIMetadataComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool PKIMetadataComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& /* manifest */,
+    const base::Value& /* manifest */,
     const base::FilePath& install_dir) const {
   if (!base::PathExists(install_dir)) {
     return false;
@@ -182,10 +182,8 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
         // need to be checked, because once RETIRED, the state will never
         // change.
         base::TimeDelta retired_since =
-            base::TimeDelta::FromSeconds(
-                log.state()[0].state_start().seconds()) +
-            base::TimeDelta::FromNanoseconds(
-                log.state()[0].state_start().nanos());
+            base::Seconds(log.state()[0].state_start().seconds()) +
+            base::Nanoseconds(log.state()[0].state_start().nanos());
         log_ptr->disqualified_at = retired_since;
       }
     }
@@ -194,8 +192,8 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
 
   base::Time update_time =
       base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(proto->log_list().timestamp().seconds()) +
-      base::TimeDelta::FromNanoseconds(proto->log_list().timestamp().nanos());
+      base::Seconds(proto->log_list().timestamp().seconds()) +
+      base::Nanoseconds(proto->log_list().timestamp().nanos());
   network_service->UpdateCtLogList(std::move(log_list_mojo), update_time);
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 }

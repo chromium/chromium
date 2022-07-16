@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/renderer_configuration.mojom.h"
+#include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -48,6 +48,9 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
         mojo::PendingReceiver<chrome::mojom::ChromeOSListener>
             chromeos_listener_receiver);
 
+    ChromeOSListener(const ChromeOSListener&) = delete;
+    ChromeOSListener& operator=(const ChromeOSListener&) = delete;
+
     // Is the merge session still running?
     bool IsMergeSessionRunning() const;
 
@@ -72,12 +75,15 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
     bool merge_session_running_ GUARDED_BY(lock_);
     mutable base::Lock lock_;
     mojo::Receiver<chrome::mojom::ChromeOSListener> receiver_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(ChromeOSListener);
   };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ChromeRenderThreadObserver();
+
+  ChromeRenderThreadObserver(const ChromeRenderThreadObserver&) = delete;
+  ChromeRenderThreadObserver& operator=(const ChromeRenderThreadObserver&) =
+      delete;
+
   ~ChromeRenderThreadObserver() override;
 
   static bool is_incognito_process() { return is_incognito_process_; }
@@ -100,6 +106,12 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  content_settings::mojom::ContentSettingsManager* content_settings_manager() {
+    if (content_settings_manager_)
+      return content_settings_manager_.get();
+    return nullptr;
+  }
+
  private:
   // content::RenderThreadObserver:
   void RegisterMojoInterfaces(
@@ -111,7 +123,9 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
   void SetInitialConfiguration(
       bool is_incognito_process,
       mojo::PendingReceiver<chrome::mojom::ChromeOSListener>
-          chromeos_listener_receiver) override;
+          chromeos_listener_receiver,
+      mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
+          content_settings_manager) override;
   void SetConfiguration(chrome::mojom::DynamicParamsPtr params) override;
   void SetContentSettingRules(
       const RendererContentSettingRules& rules) override;
@@ -123,6 +137,8 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
   std::unique_ptr<blink::WebResourceRequestSenderDelegate>
       resource_request_sender_delegate_;
   RendererContentSettingRules content_setting_rules_;
+  mojo::Remote<content_settings::mojom::ContentSettingsManager>
+      content_settings_manager_;
 
   std::unique_ptr<visitedlink::VisitedLinkReader> visited_link_reader_;
 
@@ -134,8 +150,6 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
   // was started.
   scoped_refptr<ChromeOSListener> chromeos_listener_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeRenderThreadObserver);
 };
 
 #endif  // CHROME_RENDERER_CHROME_RENDER_THREAD_OBSERVER_H_

@@ -4,14 +4,11 @@
 ++++++[static] name='Header 1'
 ++++[list]
 ++++++[list item]
-++++++++[panel]
-++++++++++[static] name='%E2%80%A2 '
+++++++++[static] name='%E2%80%A2 '
 ++++++++[static] name='List element 1'
 ++++++[list item]
-++++++++[panel]
-++++++++++[static] name='%E2%80%A2 '
+++++++++[static] name='%E2%80%A2 '
 ++++++++[static] name='List element 2'
 ++++++[list item]
-++++++++[panel]
-++++++++++[static] name='%E2%80%A2 '
+++++++++[static] name='%E2%80%A2 '
 ++++++++[static] name='List element 3'

@@ -133,8 +133,8 @@ class NetworkingAttributesAshTest : public testing::Test {
         kWifiIPConfigV6Path, ipconfig_v6_dictionary);
 
     base::ListValue ip_configs;
-    ip_configs.AppendString(kWifiIPConfigV4Path);
-    ip_configs.AppendString(kWifiIPConfigV6Path);
+    ip_configs.Append(kWifiIPConfigV4Path);
+    ip_configs.Append(kWifiIPConfigV6Path);
 
     network_handler_test_helper_.device_test()->AddDevice(
         kWifiDevicePath, shill::kTypeWifi, "stub_wifi_device");

@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">අනපේක්ෂිත දෝෂයක් හට ගැනිණි. කරුණාකර මෙම ගැටලුව සංවර්ධකයන් වෙත වාර්තා කරන්න.</translation>
 <translation id="1697532407822776718">ඔබ මුළුමනින් සුදානම්ය!</translation>
 <translation id="1742469581923031760">සම්බන්ධ වෙමින්…</translation>
+<translation id="177040763384871009">සේවාලාභී බ්‍රව්සරයේ දුරස්ථ උපාංගයේ ක්ලික් කළ සබැඳි විවෘත කිරීමට ඉඩ දීම සඳහා, ඔබ පද්ධතියේ වෙබ් බ්‍රව්සරය "<ph name="URL_FORWARDER_NAME" />" ලෙස වෙනස් කිරීම අවශ්‍යය.</translation>
 <translation id="177096447311351977">සේවාදායකයා සඳහා නාලිකාl IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">මකන්න</translation>
 <translation id="2009755455353575666">සම්බන්ධතාව අසාර්ථක</translation>
@@ -56,6 +57,7 @@
 <translation id="369442766917958684">නොබැඳි</translation>
 <translation id="3695446226812920698">කෙසේදැයි දැන ගන්න</translation>
 <translation id="3776024066357219166">ඔබේ  Chrome දුරස්ථ වැඩබිම් වාරය අවසන් විය.</translation>
+<translation id="3858860766373142691">නම</translation>
 <translation id="3897092660631435901">මෙනුව</translation>
 <translation id="3905196214175737742">අවලංගු සත්කාරක හිමිකරු වසම.</translation>
 <translation id="3931191050278863510">ධාරකය නතර කළා.</translation>
@@ -77,6 +79,7 @@
 <translation id="4512952200932940229">ප්‍රකාශන හිමිකම 2021 Chromium කර්තෘවරුන්. සියලු හිමිකම් ඇවිරිණි.</translation>
 <translation id="4513946894732546136">ප්‍රතිපෝෂණ</translation>
 <translation id="4563926062592110512">සේවාලාභියා විසන්ධි විය: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> නිවැරදිව සකසා නොමැත. කරුණාකර වෙනත් පෙරනිමි වෙබ් බ්‍රව්සරයක් තෝරා අනතුරුව URL ප්‍රතියොමු කිරීම සබල කරන්න.</translation>
 <translation id="4635770493235256822">දුරස්ථ උපාංග</translation>
 <translation id="4660011489602794167">යතුරු පුවරුව පෙන්වන්න</translation>
 <translation id="4703799847237267011">ඔබේ Chromoting සැසියේ කල්ඉකුත්ව තිබේ.</translation>
@@ -97,7 +100,6 @@
 <translation id="5222676887888702881">පිටවීම</translation>
 <translation id="5234764350956374838">ඉවත් කරන්න</translation>
 <translation id="5308380583665731573">සම්බන්ධ කරන්න</translation>
-<translation id="5327248766486351172">නම</translation>
 <translation id="533625276787323658">සම්බන්ධ වීමට දෙයක් නොමැත</translation>
 <translation id="5397086374758643919">Chrome දුරස්ථ වැඩබිම් සේවාදායකය</translation>
 <translation id="5419418238395129586">අවසානයට සබැඳිව සිටියේ: <ph name="DATE" /></translation>
@@ -108,6 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> ලෙස පුරනය වී ඇත.</translation>
 <translation id="579702532610384533">නැවත සම්බන්ධ කරන්න</translation>
 <translation id="5810269635982033450">තිරය ​​ට්‍රැක්පැඩයක් මෙන් ක්‍රියා කරයි</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ඔබගේ තිරය දැකීමට සහ ඔබගේ යතුරුපුවරුව සහ මූසිකය පාලනය කිරීමට ප්‍රවේශය ඉල්ලා ඇත. ඔබ මෙම ඉල්ලීම බලාපොරොත්තු නොවන්නේ නම් ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ඔබන්න. එසේ නැතිනම් සූදානම් විට සම්බන්ධතාව ඉඩ දීමට ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' තෝරන්න.</translation>
 <translation id="5823658491130719298">ඔබට දුරස්ථව ප්‍රවේශ වීමට අවශ්‍ය පරිගණකයෙහි, Chrome විවෘත කර <ph name="INSTALLATION_LINK" /> කරා පිවිසෙන්න</translation>
 <translation id="5841343754884244200">සංදර්ශක විකල්ප</translation>
 <translation id="6033507038939587647">යතුරු පුවරු විකල්ප</translation>
@@ -142,6 +145,7 @@
 <translation id="7434397035092923453">සෙවාලාභියා සඳහා ප්‍රවේශය ප්‍රතික්ෂේප විය: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">සේවාලාභියා සබඳවී ඇත: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">ගිණුම වෙනස් කරන්න</translation>
+<translation id="7535110896613603182">පෙරනිමි යෙදුම් සැකසීම් විවෘත කරන්න</translation>
 <translation id="7628469622942688817">මෙම උපාංගයෙහි මගේ PIN අංකය මතක තබා ගන්න.</translation>
 <translation id="7649070708921625228">උදවු</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
@@ -166,6 +170,7 @@
 මෙම අවසරය දීමට, 'ප්‍රවේශ්‍යතා' මනාප කවුළුව විවෘත කරන පහත '<ph name="BUTTON_NAME" />' ක්ලික් කරන්න, පසුව '<ph name="SERVICE_SCRIPT_NAME" />' ළඟ ඇති කොටුව ලකුණු කරන්න.
 
 '<ph name="SERVICE_SCRIPT_NAME" />' දැනටමත් ලකුණු කර තිබේ නම්, එය ලකුණු නොකර නැවත ලකුණු කරන්න.</translation>
+<translation id="8305209735512572429">අන්තර්ජාල සත්‍යාපන දුරස්ථකරණ ක්‍රියාවලිය</translation>
 <translation id="8383794970363966105">Chromoting භාවිතා කිරීම, ඔබ ඔබේ උපාංගයට Google Account එක් කළ යුතුය.</translation>
 <translation id="8386846956409881180">සත්කාරක අවලංගු OAuth අක්තපත්‍ර සමග වින්‍යාස කරනු ලබයි.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> වෙත අවසර දෙන්න</translation>

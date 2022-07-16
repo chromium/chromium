@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_SCOPED_TARGET_HANDLER_H_
 #define UI_EVENTS_SCOPED_TARGET_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/events/event_handler.h"
@@ -23,6 +22,10 @@ class EventTarget;
 class EVENTS_EXPORT ScopedTargetHandler : public EventHandler {
  public:
   ScopedTargetHandler(EventTarget* target, EventHandler* new_handler);
+
+  ScopedTargetHandler(const ScopedTargetHandler&) = delete;
+  ScopedTargetHandler& operator=(const ScopedTargetHandler&) = delete;
+
   ~ScopedTargetHandler() override;
 
   // EventHandler:
@@ -44,8 +47,6 @@ class EVENTS_EXPORT ScopedTargetHandler : public EventHandler {
   // Used to detect if handling an event has caused |this| to be deleted. Must
   // be last.
   base::WeakPtrFactory<ScopedTargetHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTargetHandler);
 };
 
 }  // namespace ui

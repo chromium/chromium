@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -14,8 +13,22 @@
 
 namespace {
 
-TEST(BarrierCallbackTest, ChecksImmediatelyForZeroCallbacks) {
-  EXPECT_CHECK_DEATH(base::BarrierCallback<bool>(0, base::DoNothing()));
+TEST(BarrierCallbackTest, RunsImmediatelyForZeroCallbacks) {
+  bool done = true;
+  auto barrier_callback = base::BarrierCallback<int>(
+      0, base::BindLambdaForTesting([&done](std::vector<int> results) {
+        EXPECT_THAT(results, testing::IsEmpty());
+        done = true;
+      }));
+  EXPECT_TRUE(done);
+}
+
+TEST(BarrierCallbackTest, ErrorToCallCallbackWithZeroCallbacks) {
+  auto barrier_callback =
+      base::BarrierCallback<int>(0, base::BindOnce([](std::vector<int>) {}));
+  EXPECT_FALSE(barrier_callback.is_null());
+
+  EXPECT_CHECK_DEATH(barrier_callback.Run(3));
 }
 
 TEST(BarrierCallbackTest, RunAfterNumCallbacks) {
@@ -55,7 +68,7 @@ class DestructionIndicator {
 
 TEST(BarrierCallbackTest, ReleasesDoneCallbackWhenDone) {
   bool done_destructed = false;
-  auto barrier_callback = base::BarrierCallback(
+  auto barrier_callback = base::BarrierCallback<bool>(
       1,
       base::BindOnce(&DestructionIndicator<std::vector<bool>>::DoNothing,
                      std::make_unique<DestructionIndicator<std::vector<bool>>>(
@@ -94,8 +107,37 @@ TEST(BarrierCallbackTest, SupportsMoveonlyTypes) {
 
   // No need to assert anything here, since if BarrierCallback didn't work with
   // move-only types, this wouldn't compile.
-  auto barrier_callback = base::BarrierCallback<MoveOnly>(1, base::DoNothing());
+  auto barrier_callback = base::BarrierCallback<MoveOnly>(
+      1, base::BindOnce([](std::vector<MoveOnly>) {}));
   barrier_callback.Run(MoveOnly());
+
+  auto barrier_callback2 = base::BarrierCallback<MoveOnly>(
+      1, base::BindOnce([](const std::vector<MoveOnly>&) {}));
+  barrier_callback2.Run(MoveOnly());
+}
+
+TEST(BarrierCallbackTest, SupportsConstRefResults) {
+  auto barrier_callback = base::BarrierCallback<int>(
+      1, base::BindOnce([](const std::vector<int>&) {}));
+
+  barrier_callback.Run(1);
+}
+
+TEST(BarrierCallbackTest, SupportsReferenceTypes) {
+  class Referenceable {
+    // Must be copyable.
+  };
+  Referenceable ref;
+
+  // No need to assert anything here, since if BarrierCallback didn't work with
+  // by-reference args, this wouldn't compile.
+  auto barrier_callback = base::BarrierCallback<const Referenceable&>(
+      1, base::BindOnce([](std::vector<Referenceable>) {}));
+  barrier_callback.Run(ref);
+
+  auto barrier_callback2 = base::BarrierCallback<const Referenceable&>(
+      1, base::BindOnce([](const std::vector<Referenceable>&) {}));
+  barrier_callback2.Run(ref);
 }
 
 }  // namespace

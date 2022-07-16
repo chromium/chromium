@@ -52,7 +52,7 @@ SyncWebSocket::StatusCode LogReplaySocket::ReceiveNextMessage(
     std::string* message,
     const Timeout& timeout) {
   if (socket_id_ == "") {
-    return SyncWebSocket::kDisconnected;
+    return SyncWebSocket::StatusCode::kDisconnected;
   }
   std::unique_ptr<LogEntry> next = GetNextSocketEntry(false);
   if (next->event_type == LogEntry::kResponse) {
@@ -60,12 +60,12 @@ SyncWebSocket::StatusCode LogReplaySocket::ReceiveNextMessage(
     // in the actual WebSocket.
     *message = "{\"id\":" + std::to_string(next->id) +
                ",\"result\":" + next->payload + "}";
-    return SyncWebSocket::kOk;
+    return SyncWebSocket::StatusCode::kOk;
   }
   // it's an event
   *message = "{\"method\":\"" + next->command_name +
              "\",\"params\":" + next->payload + "}";
-  return SyncWebSocket::kOk;
+  return SyncWebSocket::StatusCode::kOk;
 }
 
 // Ensures that we are not getting ahead of Chromedriver.

@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -78,6 +77,10 @@ class PowerHandlerTest : public InProcessBrowserTest {
   };
 
   PowerHandlerTest() = default;
+
+  PowerHandlerTest(const PowerHandlerTest&) = delete;
+  PowerHandlerTest& operator=(const PowerHandlerTest&) = delete;
+
   ~PowerHandlerTest() override = default;
 
   // InProcessBrowserTest:
@@ -189,9 +192,6 @@ class PowerHandlerTest : public InProcessBrowserTest {
   content::TestWebUI web_ui_;
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerHandlerTest);
 };
 
 // Verifies that settings are sent to WebUI when requested.

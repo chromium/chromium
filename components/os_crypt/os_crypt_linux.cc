@@ -13,10 +13,10 @@
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/os_crypt/key_storage_config_linux.h"
 #include "components/os_crypt/key_storage_linux.h"
 #include "crypto/encryptor.h"
@@ -139,14 +139,12 @@ std::unique_ptr<crypto::SymmetricKey> GetEncryptionKey(Version version) {
 }  // namespace
 
 // static
-bool OSCrypt::EncryptString16(const std::u16string& plaintext,
-                              std::string* ciphertext) {
+bool OSCrypt::EncryptString16(const std::u16string& plaintext, std::string* ciphertext) {
   return EncryptString(base::UTF16ToUTF8(plaintext), ciphertext);
 }
 
 // static
-bool OSCrypt::DecryptString16(const std::string& ciphertext,
-                              std::u16string* plaintext) {
+bool OSCrypt::DecryptString16(const std::string& ciphertext, std::u16string* plaintext) {
   std::string utf8;
   if (!DecryptString(ciphertext, &utf8))
     return false;

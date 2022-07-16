@@ -14,7 +14,6 @@
 
 #include "util/linux/socket.h"
 
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "gtest/gtest.h"
 #include "util/linux/socket.h"

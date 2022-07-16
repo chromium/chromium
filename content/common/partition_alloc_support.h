@@ -68,7 +68,7 @@ class PartitionAllocSupport {
 #if defined(PA_THREAD_CACHE_SUPPORTED) && \
     BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   size_t largest_cached_size_ =
-      base::internal::ThreadCache::kDefaultSizeThreshold;
+      base::internal::ThreadCacheLimits::kDefaultSizeThreshold;
 #endif
 };
 

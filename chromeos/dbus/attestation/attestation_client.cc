@@ -32,8 +32,7 @@ const char kAttestationServerDefault[] = "default";
 const char kAttestationServerTest[] = "test";
 
 // An arbitrary timeout for getting a certificate.
-constexpr base::TimeDelta kGetCertificateTimeout =
-    base::TimeDelta::FromSeconds(80);
+constexpr base::TimeDelta kGetCertificateTimeout = base::Seconds(80);
 
 AttestationClient* g_instance = nullptr;
 

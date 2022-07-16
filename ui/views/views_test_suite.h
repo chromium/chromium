@@ -22,6 +22,10 @@ namespace views {
 class ViewsTestSuite : public base::TestSuite {
  public:
   ViewsTestSuite(int argc, char** argv);
+
+  ViewsTestSuite(const ViewsTestSuite&) = delete;
+  ViewsTestSuite& operator=(const ViewsTestSuite&) = delete;
+
   ~ViewsTestSuite() override;
 
   int RunTests();
@@ -45,8 +49,6 @@ class ViewsTestSuite : public base::TestSuite {
 
   int argc_;
   char** argv_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsTestSuite);
 };
 
 }  // namespace views

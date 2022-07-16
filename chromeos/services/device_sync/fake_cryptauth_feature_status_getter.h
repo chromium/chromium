@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
 #include "chromeos/services/device_sync/cryptauth_feature_status_getter.h"
@@ -27,6 +26,12 @@ class CryptAuthClientFactory;
 class FakeCryptAuthFeatureStatusGetter : public CryptAuthFeatureStatusGetter {
  public:
   FakeCryptAuthFeatureStatusGetter();
+
+  FakeCryptAuthFeatureStatusGetter(const FakeCryptAuthFeatureStatusGetter&) =
+      delete;
+  FakeCryptAuthFeatureStatusGetter& operator=(
+      const FakeCryptAuthFeatureStatusGetter&) = delete;
+
   ~FakeCryptAuthFeatureStatusGetter() override;
 
   // The RequestContext passed to GetFeatureStatuses(). Returns null if
@@ -54,14 +59,18 @@ class FakeCryptAuthFeatureStatusGetter : public CryptAuthFeatureStatusGetter {
 
   absl::optional<cryptauthv2::RequestContext> request_context_;
   absl::optional<base::flat_set<std::string>> device_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthFeatureStatusGetter);
 };
 
 class FakeCryptAuthFeatureStatusGetterFactory
     : public CryptAuthFeatureStatusGetterImpl::Factory {
  public:
   FakeCryptAuthFeatureStatusGetterFactory();
+
+  FakeCryptAuthFeatureStatusGetterFactory(
+      const FakeCryptAuthFeatureStatusGetterFactory&) = delete;
+  FakeCryptAuthFeatureStatusGetterFactory& operator=(
+      const FakeCryptAuthFeatureStatusGetterFactory&) = delete;
+
   ~FakeCryptAuthFeatureStatusGetterFactory() override;
 
   // Returns a vector of all FakeCryptAuthFeatureStatusGetter instances created
@@ -83,8 +92,6 @@ class FakeCryptAuthFeatureStatusGetterFactory
 
   std::vector<FakeCryptAuthFeatureStatusGetter*> instances_;
   CryptAuthClientFactory* last_client_factory_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthFeatureStatusGetterFactory);
 };
 
 }  // namespace device_sync

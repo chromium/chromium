@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.terminalPrivate.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
 /** @fileoverview Externs generated from namespace: terminalPrivate */
 
@@ -84,10 +84,11 @@ chrome.terminalPrivate.ackOutput = function(id) {};
 
 /**
  * Open the Terminal tabbed window.
- * @param {function(): void} callback Callback that will be called when
- *     complete.
+ * @param {{
+ *   url: (string|undefined)
+ * }=} data
  */
-chrome.terminalPrivate.openWindow = function(callback) {};
+chrome.terminalPrivate.openWindow = function(data) {};
 
 /**
  * Open the Terminal Settings page.

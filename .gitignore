@@ -73,6 +73,13 @@ vs-chromium-project.txt
 /_out
 /android_emulator_sdk
 /ash/ash_unittests_run.xml
+/ash/webui/eche_app_ui/resources/app
+/ash/webui/eche_app_ui/resources/prod
+/ash/webui/help_app_ui/resources/prod
+/ash/webui/media_app_ui/resources/prod
+/ash/webui/media_app_ui/resources/app
+/ash/webui/media_app_ui/resources/pkg
+/ash/webui/projector_app/resources/prod
 /base/base_unittests_run.xml
 # See build/.gitignore for entries covering src/build.
 
@@ -95,6 +102,7 @@ vs-chromium-project.txt
 /chrome/app/theme/google_chrome
 /chrome/browser/chromeos/arc/voice_interaction/internal
 /chrome/browser/chromeos/assistant/internal
+/chrome/browser/enterprise/connectors/internal
 /chrome/browser/extensions/api/ledger/
 /chrome/browser/extensions/default_extensions/chromeos
 /chrome/browser/google/linkdoctor_internal
@@ -171,13 +179,8 @@ vs-chromium-project.txt
 /chrome/web_ui_mojo_bindings.xml
 /chromecast/internal
 /chromeos/assistant/internal
-/chromeos/components/eche_app_ui/resources/app
-/chromeos/components/eche_app_ui/resources/prod
 /chromeos/components/help_app_ui/resources/app
 /chromeos/components/help_app_ui/resources/prod
-/chromeos/components/media_app_ui/resources/prod
-/chromeos/components/media_app_ui/resources/app
-/chromeos/components/media_app_ui/resources/pkg
 /chromeos/profiles/chromeos.orderfile.txt
 /chromeos/profiles/*.local.txt
 /chromeos/profiles/*.afdo.prof
@@ -299,13 +302,12 @@ vs-chromium-project.txt
 /tools/json_schema_compiler/test/json_schema_compiler_tests.xml
 /tools/metrics/actions/actions.old.xml
 /tools/metrics/histograms/histograms.before.pretty-print.xml
-/tools/metrics/histograms/histograms_xml/*.before.pretty-print.xml
-/tools/metrics/histograms/histograms_xml/*/*.before.pretty-print.xml
+/tools/metrics/histograms/metadata/*.before.pretty-print.xml
+/tools/metrics/histograms/metadata/*/*.before.pretty-print.xml
 /tools/metrics/histograms/enums.before.pretty-print.xml
 /tools/page_cycler/acid3
 /tools/reclient
 /tools/skia_goldctl/
-/tools/swarming_client
 /tools/tryserver
 /tools/win/link_limiter/build
 /ui/file_manager/internal

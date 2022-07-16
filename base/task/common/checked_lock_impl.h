@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 
 namespace base {
@@ -30,6 +29,10 @@ class BASE_EXPORT CheckedLockImpl {
   explicit CheckedLockImpl(const CheckedLockImpl* predecessor);
   explicit CheckedLockImpl(UniversalPredecessor);
   explicit CheckedLockImpl(UniversalSuccessor);
+
+  CheckedLockImpl(const CheckedLockImpl&) = delete;
+  CheckedLockImpl& operator=(const CheckedLockImpl&) = delete;
+
   ~CheckedLockImpl();
 
   static void AssertNoLockHeldOnCurrentThread();
@@ -48,8 +51,6 @@ class BASE_EXPORT CheckedLockImpl {
   Lock lock_;
   const bool is_universal_predecessor_ = false;
   const bool is_universal_successor_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckedLockImpl);
 };
 
 }  // namespace internal

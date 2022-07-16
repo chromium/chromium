@@ -26,6 +26,11 @@
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 
+namespace gfx {
+class SizeF;
+class Vector2dF;
+}
+
 namespace blink {
 
 class ComputedStyle;
@@ -65,9 +70,9 @@ class CORE_EXPORT SVGLengthContext {
   static float ResolveLength(const SVGElement*,
                              SVGUnitTypes::SVGUnitType,
                              const SVGLength&);
-  FloatPoint ResolveLengthPair(const Length& x_length,
-                               const Length& y_length,
-                               const ComputedStyle&) const;
+  gfx::Vector2dF ResolveLengthPair(const Length& x_length,
+                                   const Length& y_length,
+                                   const ComputedStyle&) const;
 
   float ConvertValueToUserUnits(float,
                                 SVGLengthMode,
@@ -85,7 +90,7 @@ class CORE_EXPORT SVGLengthContext {
                               const ComputedStyle&,
                               float dimension);
 
-  bool DetermineViewport(FloatSize&) const;
+  bool DetermineViewport(gfx::SizeF&) const;
   float ResolveValue(const CSSPrimitiveValue&, SVGLengthMode) const;
 
  private:

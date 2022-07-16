@@ -49,17 +49,16 @@
             "$ref": "Filter",
             "name": "filter",
             "optional": true
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "sessions", "type": "array", "items": { "$ref": "Session" }, "description": "The list of closed entries in reverse order that they were closed (the most recently closed tab or window will be at index <code>0</code>). The entries may contain either tabs or windows."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "sessions", "type": "array", "items": { "$ref": "Session" }, "description": "The list of closed entries in reverse order that they were closed (the most recently closed tab or window will be at index <code>0</code>). The entries may contain either tabs or windows."
+            }
+          ]
+        }
       },
       {
         "name": "getDevices",
@@ -70,17 +69,16 @@
             "$ref": "Filter",
             "name": "filter",
             "optional": true
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "devices", "type": "array", "items": { "$ref": "Device" }, "description": "The list of $(ref:sessions.Device) objects for each synced session, sorted in order from device with most recently modified session to device with least recently modified session. $(ref:tabs.Tab) objects are sorted by recency in the $(ref:windows.Window) of the $(ref:sessions.Session) objects."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "devices", "type": "array", "items": { "$ref": "Device" }, "description": "The list of $(ref:sessions.Device) objects for each synced session, sorted in order from device with most recently modified session to device with least recently modified session. $(ref:tabs.Tab) objects are sorted by recency in the $(ref:windows.Window) of the $(ref:sessions.Session) objects."
+            }
+          ]
+        }
       },
       {
         "name": "restore",
@@ -92,20 +90,19 @@
             "name": "sessionId",
             "optional": true,
             "description": "The $(ref:windows.Window.sessionId), or $(ref:tabs.Tab.sessionId) to restore. If this parameter is not specified, the most recently closed session is restored."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "$ref": "Session",
-                "name": "restoredSession",
-                "description": "A $(ref:sessions.Session) containing the restored $(ref:windows.Window) or $(ref:tabs.Tab) object."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "$ref": "Session",
+              "name": "restoredSession",
+              "description": "A $(ref:sessions.Session) containing the restored $(ref:windows.Window) or $(ref:tabs.Tab) object."
+            }
+          ]
+        }
       }
     ],
     "events": [

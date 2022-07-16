@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -28,10 +27,17 @@ void DispatchVolumeListChangeEvent(content::BrowserContext* browser_context);
 class ChromeFileSystemDelegate : public FileSystemDelegate {
  public:
   ChromeFileSystemDelegate();
+
+  ChromeFileSystemDelegate(const ChromeFileSystemDelegate&) = delete;
+  ChromeFileSystemDelegate& operator=(const ChromeFileSystemDelegate&) = delete;
+
   ~ChromeFileSystemDelegate() override;
 
   // FileSystemDelegate:
   base::FilePath GetDefaultDirectory() override;
+  base::FilePath GetManagedSaveAsDirectory(
+      content::BrowserContext* browser_context,
+      const Extension& extension) override;
   bool ShowSelectFileDialog(
       scoped_refptr<ExtensionFunction> extension_function,
       ui::SelectFileDialog::Type type,
@@ -64,9 +70,6 @@ class ChromeFileSystemDelegate : public FileSystemDelegate {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   SavedFilesServiceInterface* GetSavedFilesService(
       content::BrowserContext* browser_context) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeFileSystemDelegate);
 };
 
 }  // namespace extensions

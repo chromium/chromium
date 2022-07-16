@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_APPS_SHAPED_APP_WINDOW_TARGETER_H_
 #define CHROME_BROWSER_UI_VIEWS_APPS_SHAPED_APP_WINDOW_TARGETER_H_
 
-#include "base/macros.h"
 #include "ui/aura/window_targeter.h"
 
 class ChromeNativeAppWindowViews;
@@ -13,6 +12,10 @@ class ChromeNativeAppWindowViews;
 class ShapedAppWindowTargeter : public aura::WindowTargeter {
  public:
   explicit ShapedAppWindowTargeter(ChromeNativeAppWindowViews* app_window);
+
+  ShapedAppWindowTargeter(const ShapedAppWindowTargeter&) = delete;
+  ShapedAppWindowTargeter& operator=(const ShapedAppWindowTargeter&) = delete;
+
   ~ShapedAppWindowTargeter() override;
 
  private:
@@ -21,8 +24,6 @@ class ShapedAppWindowTargeter : public aura::WindowTargeter {
       aura::Window* target) const override;
 
   ChromeNativeAppWindowViews* app_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShapedAppWindowTargeter);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_SHAPED_APP_WINDOW_TARGETER_H_

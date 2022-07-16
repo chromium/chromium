@@ -37,6 +37,10 @@ class CancelCastingDialog : public views::DialogDelegateView {
     SetCancelCallback(base::BindOnce(&CancelCastingDialog::OnDialogCancelled,
                                      base::Unretained(this)));
   }
+
+  CancelCastingDialog(const CancelCastingDialog&) = delete;
+  CancelCastingDialog& operator=(const CancelCastingDialog&) = delete;
+
   ~CancelCastingDialog() override = default;
 
   void OnDialogCancelled() { std::move(callback_).Run(false); }
@@ -53,8 +57,6 @@ class CancelCastingDialog : public views::DialogDelegateView {
 
  private:
   base::OnceCallback<void(bool)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CancelCastingDialog);
 };
 
 }  // namespace

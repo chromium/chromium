@@ -70,7 +70,7 @@ class DMTokenStorage : public DMTokenStorageBase {
   };
 
   // Callback for SystemSaltRetrieveter.
-  void OnSystemSaltRecevied(const std::string& system_salt);
+  void OnSystemSaltReceived(const std::string& system_salt);
 
   // Encrypts DM token using system salt and stores it into the local state.
   void EncryptAndStoreToken();

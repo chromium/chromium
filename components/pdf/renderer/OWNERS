@@ -1,3 +1,2 @@
-per-file pdf_accessibility_tree*=dmazzoni@chromium.org
 per-file pepper_pdf_host.*=bbudge@chromium.org
 per-file pepper_pdf_host.*=raymes@chromium.org

@@ -1,0 +1,37 @@
+<style>
+  .after-screen-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  span {
+    color: var(--cr-primary-text-color);
+    padding-top: 16px;
+  }
+
+  .title {
+    font-family: 'Google Sans', Roboto, sans-serif;
+    font-size: 22px;
+  }
+
+  .subtitle {
+    color: var(--cr-secondary-text-color);
+    font-size: 14px;
+  }
+
+  .details {
+    font-size: 13px;
+  }
+</style>
+
+<div class="after-screen-content">
+  <span class="title">$i18n{localWebApprovalsAfterTitle}</span>
+  <!-- TODO(b/199753545): Replace the hardcoded content when it's
+    available. -->
+  <span class="subtitle">
+    [[i18n('localWebApprovalsAfterSubtitle', 'Child')]]
+  </span>
+  <span class="details">
+    [[i18n('localWebApprovalsAfterDetails', 'google.com')]]
+  </span>
+</div>

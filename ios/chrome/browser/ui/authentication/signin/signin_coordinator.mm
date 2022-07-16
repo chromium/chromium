@@ -7,7 +7,6 @@
 #include "base/notreached.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/base/account_consistency_method.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/pref_names.h"
@@ -15,15 +14,16 @@
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/forced_signin/forced_signin_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_screen_provider.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/upgrade_signin_logger.h"
+#import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_coordinator.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -32,22 +32,10 @@
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
-namespace {
-
-// Parameter for web signin dismissal count.
-// This parameter is releated to kMICEWebSignIn feature.
-const char* kConsecutiveActiveDismissalLimitParam =
-    "consecutive_active_dismissal_limit";
-// Default web sign-in dismissal count.
-constexpr int kDefaultSignInWebSignInDismissalCount = 3;
-
-}  // namespace
-
 @implementation SigninCoordinator
 
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   // ConsistencyPromoSigninCoordinator.
-  registry->RegisterIntegerPref(prefs::kSigninBottomSheetShownCount, 0);
   registry->RegisterIntegerPref(prefs::kSigninWebSignDismissalCount, 0);
 }
 
@@ -69,6 +57,16 @@ constexpr int kDefaultSignInWebSignInDismissalCount = 3;
                         identity:identity
                     signinIntent:UserSigninIntentSignin
                           logger:logger];
+}
+
++ (instancetype)forcedSigninCoordinatorWithBaseViewController:
+                    (UIViewController*)viewController
+                                                      browser:
+                                                          (Browser*)browser {
+  return [[ForcedSigninCoordinator alloc]
+      initWithBaseViewController:viewController
+                         browser:browser
+                  screenProvider:[[SigninScreenProvider alloc] init]];
 }
 
 + (instancetype)firstRunCoordinatorWithBaseNavigationController:
@@ -183,11 +181,9 @@ constexpr int kDefaultSignInWebSignInDismissalCount = 3;
             SUPPRESSED_SIGNIN_NOT_ALLOWED);
     return nil;
   }
-  const int maxDismissalCount = base::GetFieldTrialParamByFeatureAsInt(
-      signin::kMICEWebSignIn, kConsecutiveActiveDismissalLimitParam,
-      kDefaultSignInWebSignInDismissalCount);
-  if (userPrefService->GetInteger(prefs::kSigninWebSignDismissalCount) >=
-      maxDismissalCount) {
+  const int currentDismissalCount =
+      userPrefService->GetInteger(prefs::kSigninWebSignDismissalCount);
+  if (currentDismissalCount >= kDefaultWebSignInDismissalCount) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
             SUPPRESSED_CONSECUTIVE_DISMISSALS);
@@ -228,12 +224,6 @@ constexpr int kDefaultSignInWebSignInDismissalCount = 3;
   // has to be called by the subclass before
   // -[SigninCoordinator stop] is called.
   DCHECK(!self.signinCompletion);
-}
-
-#pragma mark - Properties
-
-- (BOOL)isSettingsViewPresented {
-  return NO;
 }
 
 #pragma mark - Private

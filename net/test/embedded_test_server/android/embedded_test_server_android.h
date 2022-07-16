@@ -24,6 +24,11 @@ class EmbeddedTestServerAndroid {
   EmbeddedTestServerAndroid(JNIEnv* env,
                             const base::android::JavaRef<jobject>& obj,
                             jboolean jhttps);
+
+  EmbeddedTestServerAndroid(const EmbeddedTestServerAndroid&) = delete;
+  EmbeddedTestServerAndroid& operator=(const EmbeddedTestServerAndroid&) =
+      delete;
+
   ~EmbeddedTestServerAndroid();
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
@@ -94,8 +99,6 @@ class EmbeddedTestServerAndroid {
 
   EmbeddedTestServer test_server_;
   ConnectionListener connection_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedTestServerAndroid);
 };
 
 }  // namespace test_server

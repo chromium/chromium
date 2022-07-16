@@ -42,6 +42,11 @@ class ReceiverPresentationServiceDelegateImpl
   static void CreateForWebContents(content::WebContents* web_contents,
                                    const std::string& presentation_id);
 
+  ReceiverPresentationServiceDelegateImpl(
+      const ReceiverPresentationServiceDelegateImpl&) = delete;
+  ReceiverPresentationServiceDelegateImpl& operator=(
+      const ReceiverPresentationServiceDelegateImpl&) = delete;
+
   // content::ReceiverPresentationServiceDelegate implementation.
   void AddObserver(
       int render_process_id,
@@ -71,8 +76,6 @@ class ReceiverPresentationServiceDelegateImpl
   PresentationServiceDelegateObservers observers_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ReceiverPresentationServiceDelegateImpl);
 };
 
 }  // namespace media_router

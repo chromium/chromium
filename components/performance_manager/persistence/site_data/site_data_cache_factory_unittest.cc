@@ -8,11 +8,10 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/threading/sequence_bound.h"
 #include "components/performance_manager/performance_manager_impl.h"
@@ -37,7 +36,6 @@ TEST(SiteDataCacheFactoryTest, EndToEnd) {
   {
     base::RunLoop run_loop;
     cache_factory.PostTaskWithThisObject(
-        FROM_HERE,
         base::BindOnce(
             [](const std::string& browser_context_id,
                base::OnceClosure quit_closure, SiteDataCacheFactory* factory) {
@@ -57,7 +55,6 @@ TEST(SiteDataCacheFactoryTest, EndToEnd) {
   {
     base::RunLoop run_loop;
     cache_factory.PostTaskWithThisObject(
-        FROM_HERE,
         base::BindOnce(
             [](const std::string& browser_context_id,
                base::OnceClosure quit_closure, SiteDataCacheFactory* factory) {

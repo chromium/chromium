@@ -7,12 +7,12 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
+#include "components/value_store/value_store.h"
 #include "extensions/browser/api/storage/session_storage_manager.h"
+#include "extensions/browser/api/storage/settings_namespace.h"
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/extension_function.h"
-#include "extensions/browser/value_store/settings_namespace.h"
-#include "extensions/browser/value_store/value_store.h"
 
 namespace extensions {
 
@@ -28,7 +28,7 @@ class SettingsFunction : public ExtensionFunction {
 
   // Extension settings function implementations should do their work here.
   // The StorageFrontend makes sure this is posted to the appropriate thread.
-  virtual ResponseValue RunWithStorage(ValueStore* storage) = 0;
+  virtual ResponseValue RunWithStorage(value_store::ValueStore* storage) = 0;
 
   // Extension settings function implementations in `session` namespace should
   // do their work here.
@@ -37,22 +37,25 @@ class SettingsFunction : public ExtensionFunction {
   // Convert the |result| of a read function to the appropriate response value.
   // - If the |result| succeeded this will return a response object argument.
   // - If the |result| failed will return an error object.
-  ResponseValue UseReadResult(ValueStore::ReadResult result);
+  ResponseValue UseReadResult(value_store::ValueStore::ReadResult result);
 
   // Handles the |result| of a write function.
   // - If the |result| succeeded this will send out change notification(s), if
   //   appropriate, and return no arguments.
   // - If the |result| failed will return an error object.
-  ResponseValue UseWriteResult(ValueStore::WriteResult result);
+  ResponseValue UseWriteResult(value_store::ValueStore::WriteResult result);
 
   // Notifies the given `changes`, if non empty, to the observer.
   void OnSessionSettingsChanged(
       std::vector<SessionStorageManager::ValueChange> changes);
 
+  // Returns whether the caller's context has access to the storage or not.
+  bool IsAccessToStorageAllowed();
+
  private:
   // Called via PostTask from Run. Calls RunWithStorage and then
   // SendResponse with its success value.
-  void AsyncRunWithStorage(ValueStore* storage);
+  void AsyncRunWithStorage(value_store::ValueStore* storage);
 
   // The Storage Area the call was for. For example: kLocal if the API call was
   // chrome.storage.local, kSync if the API call was chrome.storage.sync, etc.
@@ -75,7 +78,7 @@ class StorageStorageAreaGetFunction : public SettingsFunction {
   ~StorageStorageAreaGetFunction() override {}
 
   // SettingsFunction:
-  ResponseValue RunWithStorage(ValueStore* storage) override;
+  ResponseValue RunWithStorage(value_store::ValueStore* storage) override;
   ResponseValue RunInSession() override;
 };
 
@@ -87,7 +90,7 @@ class StorageStorageAreaSetFunction : public SettingsFunction {
   ~StorageStorageAreaSetFunction() override {}
 
   // SettingsFunction:
-  ResponseValue RunWithStorage(ValueStore* storage) override;
+  ResponseValue RunWithStorage(value_store::ValueStore* storage) override;
   ResponseValue RunInSession() override;
 
   // ExtensionFunction:
@@ -102,7 +105,7 @@ class StorageStorageAreaRemoveFunction : public SettingsFunction {
   ~StorageStorageAreaRemoveFunction() override {}
 
   // SettingsFunction:
-  ResponseValue RunWithStorage(ValueStore* storage) override;
+  ResponseValue RunWithStorage(value_store::ValueStore* storage) override;
   ResponseValue RunInSession() override;
 
   // ExtensionFunction:
@@ -117,7 +120,7 @@ class StorageStorageAreaClearFunction : public SettingsFunction {
   ~StorageStorageAreaClearFunction() override {}
 
   // SettingsFunction:
-  ResponseValue RunWithStorage(ValueStore* storage) override;
+  ResponseValue RunWithStorage(value_store::ValueStore* storage) override;
   ResponseValue RunInSession() override;
 
   // ExtensionFunction:
@@ -132,7 +135,24 @@ class StorageStorageAreaGetBytesInUseFunction : public SettingsFunction {
   ~StorageStorageAreaGetBytesInUseFunction() override {}
 
   // SettingsFunction:
-  ResponseValue RunWithStorage(ValueStore* storage) override;
+  ResponseValue RunWithStorage(value_store::ValueStore* storage) override;
+  ResponseValue RunInSession() override;
+};
+
+class StorageStorageAreaSetAccessLevelFunction : public SettingsFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("storage.setAccessLevel", STORAGE_SETACCESSLEVEL)
+  StorageStorageAreaSetAccessLevelFunction() = default;
+  StorageStorageAreaSetAccessLevelFunction(
+      const StorageStorageAreaSetAccessLevelFunction&) = delete;
+  StorageStorageAreaSetAccessLevelFunction& operator=(
+      const StorageStorageAreaSetAccessLevelFunction&) = delete;
+
+ protected:
+  ~StorageStorageAreaSetAccessLevelFunction() override = default;
+
+  // SettingsFunction:
+  ResponseValue RunWithStorage(value_store::ValueStore* storage) override;
   ResponseValue RunInSession() override;
 };
 

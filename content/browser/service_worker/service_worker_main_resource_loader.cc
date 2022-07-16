@@ -58,6 +58,9 @@ class ServiceWorkerMainResourceLoader::StreamWaiter
         base::BindOnce(&StreamWaiter::OnAborted, base::Unretained(this)));
   }
 
+  StreamWaiter(const StreamWaiter&) = delete;
+  StreamWaiter& operator=(const StreamWaiter&) = delete;
+
   // Implements mojom::ServiceWorkerStreamCallback.
   void OnCompleted() override {
     // Destroys |this|.
@@ -71,15 +74,15 @@ class ServiceWorkerMainResourceLoader::StreamWaiter
  private:
   ServiceWorkerMainResourceLoader* owner_;
   mojo::Receiver<blink::mojom::ServiceWorkerStreamCallback> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamWaiter);
 };
 
 ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
     NavigationLoaderInterceptor::FallbackCallback fallback_callback,
-    base::WeakPtr<ServiceWorkerContainerHost> container_host)
+    base::WeakPtr<ServiceWorkerContainerHost> container_host,
+    int frame_tree_node_id)
     : fallback_callback_(std::move(fallback_callback)),
-      container_host_(std::move(container_host)) {
+      container_host_(std::move(container_host)),
+      frame_tree_node_id_(frame_tree_node_id) {
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
       "ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader", this,
@@ -119,7 +122,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                          "url", resource_request.url.spec());
   DCHECK(ServiceWorkerUtils::IsMainRequestDestination(
       resource_request.destination));
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   resource_request_ = resource_request;
   if (container_host_ && container_host_->fetch_request_window_id()) {
@@ -173,8 +176,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
 
   if (container_host_->IsContainerForWindowClient()) {
     did_navigation_preload_ = fetch_dispatcher_->MaybeStartNavigationPreload(
-        resource_request_, std::move(context),
-        container_host_->frame_tree_node_id());
+        resource_request_, std::move(context), frame_tree_node_id_);
   }
 
   // Record worker start time here as |fetch_dispatcher_| will start a service
@@ -254,7 +256,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
     blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
     scoped_refptr<ServiceWorkerVersion> version) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(status_, Status::kStarted);
 
   TRACE_EVENT_WITH_FLOW2(
@@ -334,7 +336,7 @@ void ServiceWorkerMainResourceLoader::StartResponse(
     blink::mojom::FetchAPIResponsePtr response,
     scoped_refptr<ServiceWorkerVersion> version,
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(status_, Status::kStarted);
 
   blink::ServiceWorkerLoaderHelpers::SaveResponseInfo(*response,

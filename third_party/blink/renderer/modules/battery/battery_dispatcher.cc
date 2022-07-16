@@ -31,9 +31,9 @@ void BatteryDispatcher::OnDidChange(
 
   DCHECK(battery_status);
 
-  UpdateBatteryStatus(
-      BatteryStatus(battery_status->charging, battery_status->charging_time,
-                    battery_status->discharging_time, battery_status->level));
+  UpdateBatteryStatus(BatteryStatus(
+      battery_status->charging, base::Seconds(battery_status->charging_time),
+      base::Seconds(battery_status->discharging_time), battery_status->level));
 }
 
 void BatteryDispatcher::UpdateBatteryStatus(

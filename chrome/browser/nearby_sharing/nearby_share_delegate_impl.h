@@ -12,7 +12,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
-#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ash {
@@ -29,7 +28,6 @@ class TimeTicks;
 class NearbyShareDelegateImpl
     : public ash::NearbyShareDelegate,
       public ash::SessionObserver,
-      public nearby_share::mojom::NearbyShareSettingsObserver,
       public ::NearbySharingService::Observer {
  public:
   // For testing. Allows overriding |ShowSettingsPage|.
@@ -66,15 +64,6 @@ class NearbyShareDelegateImpl
   void OnLockStateChanged(bool locked) override;
   void OnFirstSessionStarted() override;
 
-  // nearby_share::mojom::NearbyShareSettingsObserver
-  void OnEnabledChanged(bool enabled) override;
-  void OnDeviceNameChanged(const std::string& device_name) override {}
-  void OnDataUsageChanged(nearby_share::mojom::DataUsage data_usage) override {}
-  void OnVisibilityChanged(
-      nearby_share::mojom::Visibility visibility) override {}
-  void OnAllowedContactsChanged(
-      const std::vector<std::string>& visible_contact_ids) override {}
-
   // NearbyShareService::Observer
   void OnHighVisibilityChangeRequested() override;
   void OnHighVisibilityChanged(bool high_visibility_on) override;
@@ -102,17 +91,8 @@ class NearbyShareDelegateImpl
   // timeout.
   base::RetainingOneShotTimer shutoff_timer_;
 
-  // If Nearby Share is not enabled when |EnableHighVisibility| is called, then
-  // onboarding will be opened instead. If Nearby Share is enabled within a
-  // time window after |EnableHighVisibility| is called, then high visibility
-  // will be enabled. This tracks whether we are currently in that window.
-  base::RetainingOneShotTimer onboarding_wait_timer_;
-
   // The time when high visibility is scheduled to be shut off.
   base::TimeTicks shutoff_time_;
-
-  mojo::Receiver<nearby_share::mojom::NearbyShareSettingsObserver>
-      settings_receiver_{this};
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_DELEGATE_IMPL_H_

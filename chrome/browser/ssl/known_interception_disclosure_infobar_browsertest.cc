@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
 
   // Trigger the disclosure infobar by navigating to a page served by a root
   // marked as known interception.
-  ui_test_utils::NavigateToURL(browser(), kInterceptedUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInterceptedUrl));
   EXPECT_EQ(1u, GetInfobarCount(tab1));
 
   // Test that the infobar is shown on new tabs after it has been triggered
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
                                       TabStripModel::CLOSE_USER_GESTURE);
 
   // Reload the first page -- infobar should still show.
-  ui_test_utils::NavigateToURL(browser(), kInterceptedUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInterceptedUrl));
   EXPECT_EQ(1u, GetInfobarCount(tab1));
 
   // Dismiss the infobar.
@@ -126,14 +126,14 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
   EXPECT_EQ(0u, GetInfobarCount(tab1));
 
   // Try to trigger again by reloading the page -- infobar should not show.
-  ui_test_utils::NavigateToURL(browser(), kInterceptedUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInterceptedUrl));
   EXPECT_EQ(0u, GetInfobarCount(tab1));
 
   // Move clock ahead 8 days.
-  clock->Advance(base::TimeDelta::FromDays(8));
+  clock->Advance(base::Days(8));
 
   // Trigger the infobar again -- infobar should show again.
-  ui_test_utils::NavigateToURL(browser(), kInterceptedUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInterceptedUrl));
   EXPECT_EQ(1u, GetInfobarCount(tab1));
 }
 
@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
   // Trigger the disclosure infobar.
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(browser(), kInterceptedUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInterceptedUrl));
   EXPECT_EQ(1u, GetInfobarCount(tab));
 
   // Dismiss the infobar.
@@ -163,6 +163,6 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
 
   // Triggering the disclosure infobar again after browser restart should show
   // the infobar (the cooldown period should no longer apply on Desktop).
-  ui_test_utils::NavigateToURL(browser(), kInterceptedUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInterceptedUrl));
   EXPECT_EQ(1u, GetInfobarCount(tab));
 }

@@ -19,9 +19,9 @@
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/safe_strerror.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/sha2.h"
@@ -822,10 +822,10 @@ void MidiManagerAlsa::SendMidiData(MidiManagerClient* client,
     int result = snd_midi_event_encode_byte(encoder.get(), datum, &event);
     if (result == 1) {
       // Full event, send it.
-      base::AutoLock lock(out_ports_lock_);
+      base::AutoLock ports_lock(out_ports_lock_);
       auto it = out_ports_.find(port_index);
       if (it != out_ports_.end()) {
-        base::AutoLock lock(out_client_lock_);
+        base::AutoLock client_lock(out_client_lock_);
         if (!out_client_)
           return;
         snd_seq_ev_set_source(&event, it->second);
@@ -1113,9 +1113,9 @@ void MidiManagerAlsa::AddCard(udev_device* dev) {
   snd_ctl_close(handle);
 
   if (midi_count > 0) {
-    std::unique_ptr<AlsaCard> card(
-        new AlsaCard(dev, name, longname, driver, midi_count));
-    alsa_cards_.insert(std::make_pair(number, std::move(card)));
+    auto alsa_card =
+        std::make_unique<AlsaCard>(dev, name, longname, driver, midi_count);
+    alsa_cards_.insert(std::make_pair(number, std::move(alsa_card)));
     alsa_card_midi_count_ += midi_count;
   }
 }

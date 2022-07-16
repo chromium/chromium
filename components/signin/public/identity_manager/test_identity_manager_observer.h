@@ -24,6 +24,11 @@ class TestIdentityManagerObserver : IdentityManager::Observer {
       base::OnceCallback<void(PrimaryAccountChangeEvent)>;
 
   explicit TestIdentityManagerObserver(IdentityManager* identity_manager);
+
+  TestIdentityManagerObserver(const TestIdentityManagerObserver&) = delete;
+  TestIdentityManagerObserver& operator=(const TestIdentityManagerObserver&) =
+      delete;
+
   ~TestIdentityManagerObserver() override;
 
   void SetOnPrimaryAccountChangedCallback(
@@ -113,8 +118,6 @@ class TestIdentityManagerObserver : IdentityManager::Observer {
   bool is_inside_batch_ = false;
   bool was_called_account_removed_with_info_callback_ = false;
   std::vector<std::vector<CoreAccountId>> batch_change_records_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestIdentityManagerObserver);
 };
 
 }  // namespace signin

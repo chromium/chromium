@@ -4,3 +4,11 @@ include_rules = [
   "+net",
   "+ui/android",
 ]
+
+specific_include_rules = {
+  "ssl_client_certificate_request_browsertest.cc" : [
+    "+content/public/common",
+    "+content/public/test",
+    "+content/shell",
+  ]
+}

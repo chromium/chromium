@@ -13,14 +13,14 @@ CompositorTransformKeyframe::CompositorTransformKeyframe(
     CompositorTransformOperations value,
     const TimingFunction& timing_function)
     : transform_keyframe_(
-          gfx::TransformKeyframe::Create(base::TimeDelta::FromSecondsD(time),
+          gfx::TransformKeyframe::Create(base::Seconds(time),
                                          value.ReleaseGfxTransformOperations(),
                                          timing_function.CloneToCC())) {}
 
 CompositorTransformKeyframe::~CompositorTransformKeyframe() = default;
 
-double CompositorTransformKeyframe::Time() const {
-  return transform_keyframe_->Time().InSecondsF();
+base::TimeDelta CompositorTransformKeyframe::Time() const {
+  return transform_keyframe_->Time();
 }
 
 const gfx::TimingFunction* CompositorTransformKeyframe::CcTimingFunction()

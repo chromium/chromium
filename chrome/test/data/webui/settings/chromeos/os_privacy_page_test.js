@@ -5,15 +5,15 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/lazy_load.js';
 
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {Router, routes, PeripheralDataAccessBrowserProxyImpl, DataAccessPolicyState} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {SecureDnsMode, SecureDnsUiManagementMode, Router, routes, PeripheralDataAccessBrowserProxyImpl, DataAccessPolicyState} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {FakeQuickUnlockPrivate} from './fake_quick_unlock_private.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 const crosSettingPrefName = 'cros.device.peripheral_data_access_enabled';
@@ -99,7 +99,6 @@ suite('PrivacyPageTests', function() {
   test('Suggested content, pref disabled', async () => {
     privacyPage = document.createElement('os-settings-privacy-page');
     document.body.appendChild(privacyPage);
-
     Polymer.dom.flush();
 
     // The default state of the pref is disabled.
@@ -122,6 +121,14 @@ suite('PrivacyPageTests', function() {
           }
         }
       },
+      'dns_over_https': {
+        'mode': {
+          value: SecureDnsMode.AUTOMATIC
+        },
+        'templates': {
+          value: ''
+        }
+      }
     };
 
     Polymer.dom.flush();
@@ -132,10 +139,6 @@ suite('PrivacyPageTests', function() {
   });
 
   test('Deep link to verified access', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
-
     const params = new URLSearchParams;
     params.append('settingId', '1101');
     settings.Router.getInstance().navigateTo(
@@ -143,12 +146,45 @@ suite('PrivacyPageTests', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement =
-        privacyPage.$$('#enableVerifiedAccess').$$('cr-toggle');
+    const deepLinkElement = privacyPage.$$('#enableVerifiedAccess')
+                                .shadowRoot.querySelector('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Verified access toggle should be focused for settingId=1101.');
+  });
+
+  test('Deep link to guest browsing on users page', async () => {
+    const params = new URLSearchParams;
+    params.append('settingId', '1104');
+    settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement = privacyPage.$$('settings-users-page')
+                                .shadowRoot.querySelector('#allowGuestBrowsing')
+                                .shadowRoot.querySelector('cr-toggle');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Allow guest browsing should be focused for settingId=1104.');
+  });
+
+  test('Deep link to show usernames on sign in on users page', async () => {
+    const params = new URLSearchParams;
+    params.append('settingId', '1105');
+    settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement =
+        privacyPage.$$('settings-users-page')
+            .shadowRoot.querySelector('#showUserNamesOnSignIn')
+            .shadowRoot.querySelector('cr-toggle');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Allow guest browsing should be focused for settingId=1105.');
   });
 
   test('Fingerprint dialog closes when token expires', async () => {
@@ -158,11 +194,8 @@ suite('PrivacyPageTests', function() {
 
     privacyPage = document.createElement('os-settings-privacy-page');
     document.body.appendChild(privacyPage);
-    await test_util.waitAfterNextRender(privacyPage);
 
-    if (!privacyPage.isAccountManagementFlowsV2Enabled_) {
-      return;
-    }
+    await test_util.waitAfterNextRender(privacyPage);
 
     const quickUnlockPrivateApi = new settings.FakeQuickUnlockPrivate();
     privacyPage.authToken_ = quickUnlockPrivateApi.getFakeToken();
@@ -221,7 +254,7 @@ suite('PrivacePageTest_OfficialBuild', async () => {
         }
       }
     },
-  };
+   };
 
   /** @type {?TestPeripheralDataAccessBrowserProxy} */
   let browserProxy = null;
@@ -247,10 +280,6 @@ suite('PrivacePageTest_OfficialBuild', async () => {
   });
 
   test('Deep link to send usage stats', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
-
     const params = new URLSearchParams;
     params.append('settingId', '1103');
     settings.Router.getInstance().navigateTo(
@@ -258,7 +287,8 @@ suite('PrivacePageTest_OfficialBuild', async () => {
 
     Polymer.dom.flush();
 
-    const deepLinkElement = privacyPage.$$('#enable-logging').$$('cr-toggle');
+    const deepLinkElement =
+        privacyPage.$$('#enable-logging').shadowRoot.querySelector('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -280,7 +310,15 @@ suite('PeripheralDataAccessTest', function() {
       }
     },
     'settings': {'local_state_device_pci_data_access_enabled': {value: false}},
-  };
+    'dns_over_https': {
+      'mode': {
+        value: SecureDnsMode.AUTOMATIC
+      },
+      'templates': {
+        value: ''
+      }
+     },
+   };
 
   /** @type {?TestPeripheralDataAccessBrowserProxy} */
   let browserProxy = null;

@@ -7,14 +7,14 @@ package org.chromium.base;
 import dalvik.system.BaseDexClassLoader;
 
 /**
- * This class wraps two given BaseDexClassLoader's and delegates findClass() and findLibrary() calls
+ * This class wraps two given ClassLoader objects and delegates findClass() and findLibrary() calls
  * to the first one that returns a match.
  */
 public class WrappedClassLoader extends ClassLoader {
-    private BaseDexClassLoader mPrimaryClassLoader;
-    private BaseDexClassLoader mSecondaryClassLoader;
+    private ClassLoader mPrimaryClassLoader;
+    private ClassLoader mSecondaryClassLoader;
 
-    public WrappedClassLoader(BaseDexClassLoader primary, BaseDexClassLoader secondary) {
+    public WrappedClassLoader(ClassLoader primary, ClassLoader secondary) {
         this.mPrimaryClassLoader = primary;
         this.mSecondaryClassLoader = secondary;
     }
@@ -30,9 +30,17 @@ public class WrappedClassLoader extends ClassLoader {
 
     @Override
     public String findLibrary(String name) {
-        String path = mPrimaryClassLoader.findLibrary(name);
-        if (path != null) return path;
-
-        return mSecondaryClassLoader.findLibrary(name);
+        String path = null;
+        // BaseDexClassLoader has a public findLibrary method, but ClassLoader's is protected
+        // so we can only do this for classloaders that actually do extend BaseDexClassLoader.
+        // findLibrary is rarely used so it's fine to just check this each time.
+        if (mPrimaryClassLoader instanceof BaseDexClassLoader) {
+            path = ((BaseDexClassLoader) mPrimaryClassLoader).findLibrary(name);
+            if (path != null) return path;
+        }
+        if (mSecondaryClassLoader instanceof BaseDexClassLoader) {
+            path = ((BaseDexClassLoader) mSecondaryClassLoader).findLibrary(name);
+        }
+        return path;
     }
 }

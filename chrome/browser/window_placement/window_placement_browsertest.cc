@@ -13,6 +13,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/display/screen_base.h"
@@ -30,6 +32,54 @@ class WindowPlacementTest : public InProcessBrowserTest {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnableBlinkFeatures, "WindowPlacement");
   }
+
+  void SetUpOnMainThread() override {
+    // Support multiple sites on the test server.
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    // Window placement features are only available on secure contexts, and so
+    // we need to create an HTTPS test server here to serve those pages rather
+    // than using the default https_test_server_.
+    https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    // Support sites like a.test, b.test, c.test etc
+    https_test_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_test_server_->ServeFilesFromSourceDirectory("chrome/test/data");
+    net::test_server::RegisterDefaultHandlers(https_test_server_.get());
+    content::SetupCrossSiteRedirector(https_test_server_.get());
+    ASSERT_TRUE(https_test_server_->Start());
+  }
+
+  void SetupTwoIframes() {
+    const GURL url(
+        https_test_server_->GetURL("a.test", "/two_iframes_blank.html"));
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+    EXPECT_TRUE(ExecJs(tab, R"(
+      const frame1 = document.getElementById('iframe1');
+      frame1.setAttribute('allow', 'window-placement');
+      const frame2 = document.getElementById('iframe2');
+      frame2.setAttribute('allow', 'window-placement');)",
+                       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+    GURL subframe_url1(https_test_server_->GetURL("a.test", "/title1.html"));
+    GURL subframe_url2(https_test_server_->GetURL("b.test", "/title1.html"));
+    content::NavigateIframeToURL(tab, /*iframe_id=*/"iframe1", subframe_url1);
+    content::NavigateIframeToURL(tab, /*iframe_id=*/"iframe2", subframe_url2);
+
+    // TODO(crbug.com/1119974): this test could be in content_browsertests
+    // and not browser_tests if permission controls were supported.
+
+    // Auto-accept the Window Placement permission request.
+    permissions::PermissionRequestManager* permission_request_manager_tab =
+        permissions::PermissionRequestManager::FromWebContents(tab);
+    permission_request_manager_tab->set_auto_response_for_test(
+        permissions::PermissionRequestManager::ACCEPT_ALL);
+  }
+
+ protected:
+  std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
 };
 
 // TODO(crbug.com/1183791): Disabled on non-ChromeOS because of races with
@@ -52,24 +102,15 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnScreensChangeEvent) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL url(embedded_test_server()->GetURL("/simple.html"));
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  SetupTwoIframes();
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-
-  // TODO(crbug.com/1119974): this test could be in content_browsertests
-  // and not browser_tests if permission controls were supported.
-
-  // Auto-accept the Window Placement permission request.
-  permissions::PermissionRequestManager* permission_request_manager =
-      permissions::PermissionRequestManager::FromWebContents(tab);
-  permission_request_manager->set_auto_response_for_test(
-      permissions::PermissionRequestManager::ACCEPT_ALL);
+  content::RenderFrameHost* local_child = ChildFrameAt(tab->GetMainFrame(), 0);
+  content::RenderFrameHost* remote_child = ChildFrameAt(tab->GetMainFrame(), 1);
 
   auto initial_result = std::vector<base::Value>();
   initial_result.emplace_back(801);
-  ASSERT_EQ(initial_result, EvalJs(tab, R"(
-      var screensInterface;
+  auto* initial_script = R"(
+      var screenDetails;
       var promiseForEvent = (target, evt) => {
         return new Promise((resolve) => {
           const handler = (e) => {
@@ -80,21 +121,28 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnScreensChangeEvent) {
         });
       }
       var makeScreensChangePromise = () => {
-        return promiseForEvent(screensInterface, 'screenschange');
+        return promiseForEvent(screenDetails, 'screenschange');
       };
       var getScreenWidths = () => {
-        return screensInterface.screens.map((d) => d.width).sort();
+        return screenDetails.screens.map((d) => d.width).sort();
       };
 
       (async () => {
-          screensInterface = await self.getScreens();
+          screenDetails = await self.getScreenDetails();
           return getScreenWidths();
       })();
-  )"));
+  )";
+
+  ASSERT_EQ(initial_result, EvalJs(tab, initial_script));
+  ASSERT_EQ(initial_result, EvalJs(local_child, initial_script));
+  ASSERT_EQ(initial_result, EvalJs(remote_child, initial_script));
 
   // Add a second display.
-  EXPECT_TRUE(
-      ExecJs(tab, R"(var screensChange = makeScreensChangePromise();)"));
+  auto* add_screens_change_promise =
+      R"(var screensChange = makeScreensChangePromise();)";
+  EXPECT_TRUE(ExecJs(tab, add_screens_change_promise));
+  EXPECT_TRUE(ExecJs(local_child, add_screens_change_promise));
+  EXPECT_TRUE(ExecJs(remote_child, add_screens_change_promise));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-802x802");
@@ -104,22 +152,27 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnScreensChangeEvent) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 
+  auto* await_screens_change = R"(
+      (async () => {
+          await screensChange;
+          return getScreenWidths();
+      })();
+  )";
+
   {
     auto result = std::vector<base::Value>();
     result.emplace_back(801);
     result.emplace_back(802);
 
-    EXPECT_EQ(result, EvalJs(tab, R"(
-      (async () => {
-          await screensChange;
-          return getScreenWidths();
-      })();
-    )"));
+    EXPECT_EQ(result, EvalJs(tab, await_screens_change));
+    EXPECT_EQ(result, EvalJs(local_child, await_screens_change));
+    EXPECT_EQ(result, EvalJs(remote_child, await_screens_change));
   }
 
   // Remove the first display.
-  EXPECT_TRUE(
-      ExecJs(tab, R"(var screensChange = makeScreensChangePromise();)"));
+  EXPECT_TRUE(ExecJs(tab, add_screens_change_promise));
+  EXPECT_TRUE(ExecJs(local_child, add_screens_change_promise));
+  EXPECT_TRUE(ExecJs(remote_child, add_screens_change_promise));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("901+100-802x802");
@@ -135,20 +188,18 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnScreensChangeEvent) {
     auto result = std::vector<base::Value>();
     result.emplace_back(802);
 
-    EXPECT_EQ(result, EvalJs(tab, R"(
-      (async () => {
-          await screensChange;
-          return getScreenWidths();
-      })();
-    )"));
+    EXPECT_EQ(result, EvalJs(tab, await_screens_change));
+    EXPECT_EQ(result, EvalJs(local_child, await_screens_change));
+    EXPECT_EQ(result, EvalJs(remote_child, await_screens_change));
   }
 
   // Remove one display, add two displays.
   // TODO(enne): we add two displays here because DisplayManagerTestApi
   // would consider remove+add to just be an update (with the same id).
   // An alternative is to modify DisplayManagerTestApi to let us set ids.
-  EXPECT_TRUE(
-      ExecJs(tab, R"(var screensChange = makeScreensChangePromise();)"));
+  EXPECT_TRUE(ExecJs(tab, add_screens_change_promise));
+  EXPECT_TRUE(ExecJs(local_child, add_screens_change_promise));
+  EXPECT_TRUE(ExecJs(remote_child, add_screens_change_promise));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("0+0-803x600,1000+0-804x600");
@@ -166,12 +217,9 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnScreensChangeEvent) {
     result.emplace_back(803);
     result.emplace_back(804);
 
-    EXPECT_EQ(result, EvalJs(tab, R"(
-      (async () => {
-          await screensChange;
-          return getScreenWidths();
-      })();
-    )"));
+    EXPECT_EQ(result, EvalJs(tab, await_screens_change));
+    EXPECT_EQ(result, EvalJs(local_child, await_screens_change));
+    EXPECT_EQ(result, EvalJs(remote_child, await_screens_change));
   }
 }
 
@@ -184,7 +232,9 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnScreensChangeEvent) {
 #define MAYBE_OnCurrentScreenChangeEvent OnCurrentScreenChangeEvent
 #endif
 // Test that the oncurrentscreenchange handler fires correctly for screen
-// changes and property updates.
+// changes and property updates.  It also verifies that window.screen.onchange
+// also fires in the same scenarios.  (This is not true in all cases, e.g.
+// isInternal changing, but is true for width/height tests here.)
 IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnCurrentScreenChangeEvent) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
@@ -199,22 +249,13 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnCurrentScreenChangeEvent) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL url(embedded_test_server()->GetURL("/simple.html"));
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  SetupTwoIframes();
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* local_child = ChildFrameAt(tab->GetMainFrame(), 0);
+  content::RenderFrameHost* remote_child = ChildFrameAt(tab->GetMainFrame(), 1);
 
-  // TODO(crbug.com/1119974): this test could be in content_browsertests
-  // and not browser_tests if permission controls were supported.
-
-  // Auto-accept the Window Placement permission request.
-  permissions::PermissionRequestManager* permission_request_manager =
-      permissions::PermissionRequestManager::FromWebContents(tab);
-  permission_request_manager->set_auto_response_for_test(
-      permissions::PermissionRequestManager::ACCEPT_ALL);
-
-  EXPECT_EQ(801, EvalJs(tab, R"(
-      var screensInterface;
+  auto* initial_script = R"(
+      var screenDetails;
       var promiseForEvent = (target, evt) => {
         return new Promise((resolve) => {
           const handler = (e) => {
@@ -225,30 +266,52 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnCurrentScreenChangeEvent) {
         });
       }
       var makeCurrentScreenChangePromise = () => {
-        return promiseForEvent(screensInterface, 'currentscreenchange');
+        return promiseForEvent(screenDetails, 'currentscreenchange');
+      };
+      var makeWindowScreenChangePromise = () => {
+        return promiseForEvent(window.screen, 'change');
       };
       (async () => {
-          screensInterface = await self.getScreens();
-          return screensInterface.currentScreen.width;
+          screenDetails = await self.getScreenDetails();
+          if (screenDetails.currentScreen.width != window.screen.width)
+            return -1;
+          return screenDetails.currentScreen.width;
       })();
-  )"));
+  )";
+  EXPECT_EQ(801, EvalJs(tab, initial_script));
+  EXPECT_EQ(801, EvalJs(local_child, initial_script));
+  EXPECT_EQ(801, EvalJs(remote_child, initial_script));
 
   // Switch to a second display.  This should fire an event.
-  EXPECT_TRUE(ExecJs(tab, R"(var change = makeCurrentScreenChangePromise();)"));
+  auto* add_current_screen_change_promise = R"(
+      var currentScreenChange = makeCurrentScreenChangePromise();
+      var windowScreenChange = makeWindowScreenChangePromise();
+  )";
+  EXPECT_TRUE(ExecJs(tab, add_current_screen_change_promise));
+  EXPECT_TRUE(ExecJs(local_child, add_current_screen_change_promise));
+  EXPECT_TRUE(ExecJs(remote_child, add_current_screen_change_promise));
 
   const gfx::Rect new_bounds(1000, 150, 600, 500);
   browser()->window()->SetBounds(new_bounds);
 
-  EXPECT_EQ(802, EvalJs(tab, R"(
+  auto* await_change_width = R"(
       (async () => {
-          await change;
-          return screensInterface.currentScreen.width;
+          await currentScreenChange;
+          await windowScreenChange;
+          if (screenDetails.currentScreen.width != window.screen.width)
+            return -1;
+          return screenDetails.currentScreen.width;
       })();
-    )"));
+  )";
+  EXPECT_EQ(802, EvalJs(tab, await_change_width));
+  EXPECT_EQ(802, EvalJs(local_child, await_change_width));
+  EXPECT_EQ(802, EvalJs(remote_child, await_change_width));
 
   // Update the second display to have a height of 300.  Validate that a change
   // event is fired when attributes of the current screen change.
-  EXPECT_TRUE(ExecJs(tab, R"(var change = makeCurrentScreenChangePromise();)"));
+  EXPECT_TRUE(ExecJs(tab, add_current_screen_change_promise));
+  EXPECT_TRUE(ExecJs(local_child, add_current_screen_change_promise));
+  EXPECT_TRUE(ExecJs(remote_child, add_current_screen_change_promise));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
@@ -258,25 +321,31 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnCurrentScreenChangeEvent) {
                                       display::DisplayList::Type::NOT_PRIMARY);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  EXPECT_EQ(300, EvalJs(tab, R"(
+  auto* await_change_height = R"(
       (async () => {
-          await change;
-          return screensInterface.currentScreen.height;
+          await currentScreenChange;
+          await windowScreenChange;
+          if (screenDetails.currentScreen.height != window.screen.height)
+            return -1;
+          return screenDetails.currentScreen.height;
       })();
-    )"));
+  )";
+  EXPECT_EQ(300, EvalJs(tab, await_change_height));
+  EXPECT_EQ(300, EvalJs(local_child, await_change_height));
+  EXPECT_EQ(300, EvalJs(remote_child, await_change_height));
 }
 
 // TODO(crbug.com/1183791): Disabled on non-ChromeOS because of races with
 // SetScreenInstance and observers not being notified.
 // TODO(crbug.com/1194700): Disabled on Mac because of GetScreenInfos staleness.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_ScreenAdvancedOnChange DISABLED_ScreenAdvancedOnChange
+#define MAYBE_ScreenDetailedOnChange DISABLED_ScreenDetailedOnChange
 #else
-#define MAYBE_ScreenAdvancedOnChange ScreenAdvancedOnChange
+#define MAYBE_ScreenDetailedOnChange ScreenDetailedOnChange
 #endif
 // Test that onchange events for individual screens in the screen list are
 // supported.
-IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
+IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenDetailedOnChange) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-802x802");
@@ -290,22 +359,13 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL url(embedded_test_server()->GetURL("/simple.html"));
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  SetupTwoIframes();
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* local_child = ChildFrameAt(tab->GetMainFrame(), 0);
+  content::RenderFrameHost* remote_child = ChildFrameAt(tab->GetMainFrame(), 1);
 
-  // TODO(crbug.com/1119974): this test could be in content_browsertests
-  // and not browser_tests if permission controls were supported.
-
-  // Auto-accept the Window Placement permission request.
-  permissions::PermissionRequestManager* permission_request_manager =
-      permissions::PermissionRequestManager::FromWebContents(tab);
-  permission_request_manager->set_auto_response_for_test(
-      permissions::PermissionRequestManager::ACCEPT_ALL);
-
-  EXPECT_EQ(true, EvalJs(tab, R"(
-      var screensInterface;
+  auto* initial_script = R"(
+      var screenDetails;
       var promiseForEvent = (target, evt) => {
         return new Promise((resolve) => {
           const handler = (e) => {
@@ -318,25 +378,30 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
       var screenChanges0 = 0;
       var screenChanges1 = 0;
       (async () => {
-        screensInterface = await self.getScreens();
-        if (screensInterface.screens.length !== 2)
+        screenDetails = await self.getScreenDetails();
+        if (screenDetails.screens.length !== 2)
           return false;
         // Add some event listeners for individual screens.
-        screensInterface.screens[0].addEventListener('change', () => {
+        screenDetails.screens[0].addEventListener('change', () => {
           screenChanges0++;
         });
-        screensInterface.screens[1].addEventListener('change', () => {
+        screenDetails.screens[1].addEventListener('change', () => {
           screenChanges1++;
         });
         return true;
       })();
-  )"));
+  )";
+  EXPECT_EQ(true, EvalJs(tab, initial_script));
+  EXPECT_EQ(true, EvalJs(local_child, initial_script));
+  EXPECT_EQ(true, EvalJs(remote_child, initial_script));
 
   // Update only the first display to have a different height.
-  EXPECT_TRUE(ExecJs(tab,
-                     R"(
-    var change0 = promiseForEvent(screensInterface.screens[0], 'change');
-    )"));
+  auto* add_change0 = R"(
+    var change0 = promiseForEvent(screenDetails.screens[0], 'change');
+  )";
+  EXPECT_TRUE(ExecJs(tab, add_change0));
+  EXPECT_TRUE(ExecJs(local_child, add_change0));
+  EXPECT_TRUE(ExecJs(remote_child, add_change0));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
@@ -346,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
                                       display::DisplayList::Type::PRIMARY);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  EXPECT_EQ(301, EvalJs(tab, R"(
+  auto* await_change0_height = R"(
       (async () => {
           await change0;
           // Only screen[0] should have changed.
@@ -354,15 +419,20 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
             return -1;
           if (screenChanges1 !== 0)
             return -2;
-          return screensInterface.screens[0].height;
+          return screenDetails.screens[0].height;
       })();
-    )"));
+  )";
+  EXPECT_EQ(301, EvalJs(tab, await_change0_height));
+  EXPECT_EQ(301, EvalJs(local_child, await_change0_height));
+  EXPECT_EQ(301, EvalJs(remote_child, await_change0_height));
 
   // Update only the second display to have a different height.
-  EXPECT_TRUE(ExecJs(tab,
-                     R"(
-    var change1 = promiseForEvent(screensInterface.screens[1], 'change');
-    )"));
+  auto* add_change1 = R"(
+    var change1 = promiseForEvent(screenDetails.screens[1], 'change');
+  )";
+  EXPECT_TRUE(ExecJs(tab, add_change1));
+  EXPECT_TRUE(ExecJs(local_child, add_change1));
+  EXPECT_TRUE(ExecJs(remote_child, add_change1));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
@@ -372,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
                                       display::DisplayList::Type::NOT_PRIMARY);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  EXPECT_EQ(302, EvalJs(tab, R"(
+  auto* await_change1_height = R"(
       (async () => {
           await change1;
           // Both screens have one change.
@@ -380,16 +450,21 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
             return -1;
           if (screenChanges1 !== 1)
             return -2;
-          return screensInterface.screens[1].height;
+          return screenDetails.screens[1].height;
       })();
-    )"));
+  )";
+  EXPECT_EQ(302, EvalJs(tab, await_change1_height));
+  EXPECT_EQ(302, EvalJs(local_child, await_change1_height));
+  EXPECT_EQ(302, EvalJs(remote_child, await_change1_height));
 
   // Change the width of both displays at the same time.
-  EXPECT_TRUE(ExecJs(tab,
-                     R"(
-    var change0 = promiseForEvent(screensInterface.screens[0], 'change');
-    var change1 = promiseForEvent(screensInterface.screens[1], 'change');
-    )"));
+  auto* add_both_changes = R"(
+    var change0 = promiseForEvent(screenDetails.screens[0], 'change');
+    var change1 = promiseForEvent(screenDetails.screens[1], 'change');
+  )";
+  EXPECT_TRUE(ExecJs(tab, add_both_changes));
+  EXPECT_TRUE(ExecJs(local_child, add_both_changes));
+  EXPECT_TRUE(ExecJs(remote_child, add_both_changes));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
@@ -401,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
                                       display::DisplayList::Type::NOT_PRIMARY);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  EXPECT_EQ(true, EvalJs(tab, R"(
+  auto* await_both_changes_width = R"(
       (async () => {
           await change0;
           await change1;
@@ -410,11 +485,14 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
             return false;
           if (screenChanges1 !== 2)
             return false;
-          if (screensInterface.screens[0].width !== 401)
+          if (screenDetails.screens[0].width !== 401)
             return false;
-          if (screensInterface.screens[1].width !== 402)
+          if (screenDetails.screens[1].width !== 402)
             return false;
           return true;
       })();
-    )"));
+  )";
+  EXPECT_EQ(true, EvalJs(tab, await_both_changes_width));
+  EXPECT_EQ(true, EvalJs(local_child, await_both_changes_width));
+  EXPECT_EQ(true, EvalJs(remote_child, await_both_changes_width));
 }

@@ -40,13 +40,14 @@ if (is_fuchsia) {
       "bindings_manager_fuchsia.cc",
       "bindings_manager_fuchsia.h",
     ]
-    deps = [
+    public_deps = [
       ":bindings_manager",
+      "//fuchsia/runners/cast/fidl",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
+    ]
+    deps = [
       "//base",
       "//components/cast/message_port",
-      "//fuchsia:cast_fidl",
-      "//fuchsia/base",
-      "//fuchsia/base:message_port",
     ]
   }
 }
@@ -64,7 +65,6 @@ if (is_linux || is_chromeos || is_android) {
       "//chromecast/bindings/public/mojom",
       "//components/cast/api_bindings:manager",
       "//components/cast/message_port:message_port_cast",
-      "//components/on_load_script_injector/browser",
       "//mojo/public/cpp/bindings",
       "//third_party/blink/public/common",
     ]
@@ -86,6 +86,7 @@ if (is_linux || is_chromeos || is_android) {
       "//chromecast/base:chromecast_switches",
       "//chromecast/bindings:bindings_manager_cast",
       "//chromecast/browser:browser",
+      "//chromecast/browser:client",
       "//chromecast/browser:public",
       "//components/cast/message_port:test_message_port_receiver",
       "//components/cast/named_message_port_connector:resources",

@@ -58,6 +58,10 @@ mojom::ClipDataPtr CreateClipData(const std::string& mime_type,
 class ArcClipboardBridgeTest : public testing::Test {
  public:
   ArcClipboardBridgeTest() = default;
+
+  ArcClipboardBridgeTest(const ArcClipboardBridgeTest&) = delete;
+  ArcClipboardBridgeTest& operator=(const ArcClipboardBridgeTest&) = delete;
+
   ~ArcClipboardBridgeTest() override = default;
 
   void SetUp() override {
@@ -81,8 +85,6 @@ class ArcClipboardBridgeTest : public testing::Test {
   std::unique_ptr<ArcBridgeService> arc_bridge_service_;
   std::unique_ptr<ArcClipboardBridge> clipboard_bridge_;
   std::unique_ptr<FakeClipboardInstance> clipboard_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcClipboardBridgeTest);
 };
 
 TEST_F(ArcClipboardBridgeTest, GetClipContent_PlainText) {

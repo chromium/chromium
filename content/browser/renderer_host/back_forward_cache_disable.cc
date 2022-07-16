@@ -12,9 +12,6 @@ std::string ReasonIdToString(
   switch (reason_id) {
     case BackForwardCacheDisable::DisabledReasonId::kUnknown:
       return "Unknown";
-    case BackForwardCacheDisable::DisabledReasonId::
-        kMediaSessionImplOnServiceCreated:
-      return "MediaSessionImpl::OnServiceCreated";
     case BackForwardCacheDisable::DisabledReasonId::kSecurityHandler:
       return "content::protocol::SecurityHandler";
     case BackForwardCacheDisable::DisabledReasonId::kWebAuthenticationAPI:
@@ -33,6 +30,8 @@ std::string ReasonIdToString(
       return "WebUSB";
     case BackForwardCacheDisable::DisabledReasonId::kMediaSession:
       return "MediaSession";
+    case BackForwardCacheDisable::DisabledReasonId::kMediaSessionService:
+      return "MediaSessionService";
   }
 }
 

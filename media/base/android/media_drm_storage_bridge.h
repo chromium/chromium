@@ -30,6 +30,10 @@ class MediaDrmStorageBridge {
   using InitCB = base::OnceCallback<void(bool)>;
 
   MediaDrmStorageBridge();
+
+  MediaDrmStorageBridge(const MediaDrmStorageBridge&) = delete;
+  MediaDrmStorageBridge& operator=(const MediaDrmStorageBridge&) = delete;
+
   ~MediaDrmStorageBridge();
 
   // Once storage is initialized, |init_cb| will be called and it will have a
@@ -90,8 +94,6 @@ class MediaDrmStorageBridge {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<MediaDrmStorageBridge> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaDrmStorageBridge);
 };
 
 }  // namespace media

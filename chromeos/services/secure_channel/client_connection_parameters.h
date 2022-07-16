@@ -8,7 +8,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
@@ -30,6 +29,11 @@ class ClientConnectionParameters {
   };
 
   explicit ClientConnectionParameters(const std::string& feature);
+
+  ClientConnectionParameters(const ClientConnectionParameters&) = delete;
+  ClientConnectionParameters& operator=(const ClientConnectionParameters&) =
+      delete;
+
   virtual ~ClientConnectionParameters();
 
   const base::UnguessableToken& id() const { return id_; }
@@ -80,8 +84,6 @@ class ClientConnectionParameters {
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   bool has_invoked_delegate_function_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientConnectionParameters);
 };
 
 std::ostream& operator<<(std::ostream& stream,

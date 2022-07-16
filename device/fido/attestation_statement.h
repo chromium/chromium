@@ -24,6 +24,9 @@ namespace device {
 // https://www.w3.org/TR/2017/WD-webauthn-20170505/#cred-attestation.
 class COMPONENT_EXPORT(DEVICE_FIDO) AttestationStatement {
  public:
+  AttestationStatement(const AttestationStatement&) = delete;
+  AttestationStatement& operator=(const AttestationStatement&) = delete;
+
   virtual ~AttestationStatement();
 
   // The CBOR map data to be added to the attestation object, structured
@@ -52,9 +55,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestationStatement {
  protected:
   explicit AttestationStatement(std::string format);
   const std::string format_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AttestationStatement);
 };
 
 // NoneAttestationStatement represents a “none” attestation, which is used when
@@ -64,15 +64,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) NoneAttestationStatement
     : public AttestationStatement {
  public:
   NoneAttestationStatement();
+
+  NoneAttestationStatement(const NoneAttestationStatement&) = delete;
+  NoneAttestationStatement& operator=(const NoneAttestationStatement&) = delete;
+
   ~NoneAttestationStatement() override;
 
   cbor::Value AsCBOR() const override;
   bool IsSelfAttestation() const override;
   bool IsAttestationCertificateInappropriatelyIdentifying() const override;
   absl::optional<base::span<const uint8_t>> GetLeafCertificate() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoneAttestationStatement);
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)

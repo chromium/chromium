@@ -41,9 +41,6 @@ class MockMojoMediaRouter : public MockMediaRouter, public mojom::MediaRouter {
                     const std::vector<MediaRoute>& routes,
                     const std::string& media_source,
                     const std::vector<std::string>& joinable_route_ids));
-  MOCK_METHOD2(OnSinkAvailabilityUpdated,
-               void(mojom::MediaRouteProviderId provider_id,
-                    mojom::MediaRouter::SinkAvailability availability));
   MOCK_METHOD2(OnPresentationConnectionStateChanged,
                void(const std::string& route_id,
                     blink::mojom::PresentationConnectionState state));

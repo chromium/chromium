@@ -12,12 +12,11 @@
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
@@ -171,6 +170,10 @@ class PortForwardingHostResolver : public network::ResolveHostClientBase {
                        net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
   }
 
+  PortForwardingHostResolver(const PortForwardingHostResolver&) = delete;
+  PortForwardingHostResolver& operator=(const PortForwardingHostResolver&) =
+      delete;
+
  private:
   ~PortForwardingHostResolver() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -195,8 +198,6 @@ class PortForwardingHostResolver : public network::ResolveHostClientBase {
 
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
   ResolveHostCallback resolve_host_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PortForwardingHostResolver);
 };
 
 static void ResolveHost(Profile* profile,
@@ -220,6 +221,9 @@ class SocketTunnel {
     if (result == net::OK)
       new SocketTunnel(profile, std::move(socket), host, port);
   }
+
+  SocketTunnel(const SocketTunnel&) = delete;
+  SocketTunnel& operator=(const SocketTunnel&) = delete;
 
   ~SocketTunnel() { DCHECK_CALLED_ON_VALID_THREAD(thread_checker_); }
 
@@ -368,8 +372,6 @@ class SocketTunnel {
   scoped_refptr<base::SingleThreadTaskRunner> adb_thread_runner_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SocketTunnel);
 };
 
 }  // namespace
@@ -382,6 +384,10 @@ class PortForwardingController::Connection
              scoped_refptr<AndroidDeviceManager::Device> device,
              scoped_refptr<DevToolsAndroidBridge::RemoteBrowser> browser,
              const ForwardingMap& forwarding_map);
+
+  Connection(const Connection&) = delete;
+  Connection& operator=(const Connection&) = delete;
+
   ~Connection() override;
 
   const PortStatusMap& GetPortStatusMap();
@@ -426,8 +432,6 @@ class PortForwardingController::Connection
   ForwardingMap forwarding_map_;
   CommandCallbackMap pending_responses_;
   PortStatusMap port_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(Connection);
 };
 
 PortForwardingController::Connection::Connection(

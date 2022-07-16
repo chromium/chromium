@@ -247,9 +247,9 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest, CanReSnooze) {
   // Simulate the user snoozing the IPH.
-  base::TimeDelta snooze_duration = base::TimeDelta::FromHours(26);
+  base::TimeDelta snooze_duration = base::Hours(26);
   base::Time snooze_time = base::Time::Now() - snooze_duration;
-  base::Time show_time = snooze_time - base::TimeDelta::FromSeconds(1);
+  base::Time show_time = snooze_time - base::Seconds(1);
   SetSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
                  /* is_dismiss */ false,
                  /* show_count */ 1,
@@ -296,9 +296,9 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
 IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
                        DoesNotShowBeforeSnoozeDuration) {
   // Simulate a very recent snooze.
-  base::TimeDelta snooze_duration = base::TimeDelta::FromHours(26);
+  base::TimeDelta snooze_duration = base::Hours(26);
   base::Time snooze_time = base::Time::Now();
-  base::Time show_time = snooze_time - base::TimeDelta::FromSeconds(1);
+  base::Time show_time = snooze_time - base::Seconds(1);
   SetSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
                  /* is_dismiss */ false,
                  /* show_count */ 1,
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
                        WorkWithoutNonClickerData) {
   // Non-clicker policy shipped pref entries that don't exist before.
   // Make sure empty entries are properly handled.
-  base::TimeDelta snooze_duration = base::TimeDelta::FromHours(26);
+  base::TimeDelta snooze_duration = base::Hours(26);
   base::Time snooze_time = base::Time::Now() - snooze_duration;
   SetSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
                  /* is_dismiss */ false,

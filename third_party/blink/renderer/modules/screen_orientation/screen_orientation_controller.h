@@ -32,6 +32,11 @@ class MODULES_EXPORT ScreenOrientationController final
       public Supplement<LocalDOMWindow> {
  public:
   explicit ScreenOrientationController(LocalDOMWindow&);
+
+  ScreenOrientationController(const ScreenOrientationController&) = delete;
+  ScreenOrientationController& operator=(const ScreenOrientationController&) =
+      delete;
+
   ~ScreenOrientationController() override;
 
   void SetOrientation(ScreenOrientation*);
@@ -84,8 +89,6 @@ class MODULES_EXPORT ScreenOrientationController final
       screen_orientation_service_;
   std::unique_ptr<WebLockOrientationCallback> pending_callback_;
   int request_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationController);
 };
 
 }  // namespace blink

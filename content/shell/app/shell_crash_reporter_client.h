@@ -6,7 +6,6 @@
 #define CONTENT_SHELL_APP_SHELL_CRASH_REPORTER_CLIENT_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
@@ -15,6 +14,10 @@ namespace content {
 class ShellCrashReporterClient : public crash_reporter::CrashReporterClient {
  public:
   ShellCrashReporterClient();
+
+  ShellCrashReporterClient(const ShellCrashReporterClient&) = delete;
+  ShellCrashReporterClient& operator=(const ShellCrashReporterClient&) = delete;
+
   ~ShellCrashReporterClient() override;
 
 #if defined(OS_WIN)
@@ -52,9 +55,6 @@ class ShellCrashReporterClient : public crash_reporter::CrashReporterClient {
 #endif
 
   bool EnableBreakpadForProcess(const std::string& process_type) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellCrashReporterClient);
 };
 
 }  // namespace content

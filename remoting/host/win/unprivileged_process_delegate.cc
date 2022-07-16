@@ -19,11 +19,11 @@
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/win/scoped_handle.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -331,6 +331,11 @@ void UnprivilegedProcessDelegate::Send(IPC::Message* message) {
   }
 }
 
+void UnprivilegedProcessDelegate::GetRemoteAssociatedInterface(
+    mojo::GenericPendingAssociatedReceiver receiver) {
+  channel_->GetRemoteAssociatedInterface(std::move(receiver));
+}
+
 void UnprivilegedProcessDelegate::CloseChannel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   channel_.reset();
@@ -374,6 +379,15 @@ void UnprivilegedProcessDelegate::OnChannelError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   event_handler_->OnChannelError();
+}
+
+void UnprivilegedProcessDelegate::OnAssociatedInterfaceRequest(
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  event_handler_->OnAssociatedInterfaceRequest(interface_name,
+                                               std::move(handle));
 }
 
 void UnprivilegedProcessDelegate::ReportFatalError() {

@@ -9,9 +9,9 @@
 
 namespace syncer {
 
-StatusController::StatusController() {}
+StatusController::StatusController() = default;
 
-StatusController::~StatusController() {}
+StatusController::~StatusController() = default;
 
 const ModelTypeSet StatusController::get_updates_request_types() const {
   return model_neutral_.get_updates_request_types;

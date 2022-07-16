@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/com/google/android/gms/play-services-fido/19.0.0-beta/play-services-fido-19.0.0-beta.aar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-fido/19.0.0-beta/play-services-fido-19.0.0-beta.aar'
 _FILE_NAME = 'play-services-fido-19.0.0-beta.aar'
 _FILE_VERSION = '19.0.0-beta'
 

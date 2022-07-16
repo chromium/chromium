@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
@@ -32,6 +33,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -45,6 +48,7 @@
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/dot_indicator.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
 
 namespace {
@@ -64,13 +68,16 @@ void RecordBookmarkBarState(Browser* browser) {
       browser->tab_strip_model()->GetActiveWebContents();
   BookmarkBarPrefAndState state = BookmarkBarPrefAndState::kVisibleAndNotOnNTP;
   if (web_contents) {
-    const GURL site_origin = web_contents->GetLastCommittedURL().GetOrigin();
+    const GURL site_origin =
+        web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
     // These are also the NTP urls checked for showing the bookmark bar on the
     // NTP.
-    if (site_origin == GURL(chrome::kChromeUINewTabURL).GetOrigin() ||
-        site_origin == GURL(chrome::kChromeUINewTabPageURL).GetOrigin() ||
+    if (site_origin ==
+            GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL() ||
         site_origin ==
-            GURL(chrome::kChromeUINewTabPageThirdPartyURL).GetOrigin()) {
+            GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL() ||
+        site_origin == GURL(chrome::kChromeUINewTabPageThirdPartyURL)
+                           .DeprecatedGetOriginAsURL()) {
       if (browser->profile()->GetPrefs()->GetBoolean(
               bookmarks::prefs::kShowBookmarkBar)) {
         state = BookmarkBarPrefAndState::kVisibleAndOnNTP;
@@ -85,12 +92,9 @@ void RecordBookmarkBarState(Browser* browser) {
 
 // Note this matches the background base layer alpha used in ToolbarButton.
 constexpr SkAlpha kBackgroundBaseLayerAlpha = 204;
-constexpr base::TimeDelta kHighlightShowDuration =
-    base::TimeDelta::FromMilliseconds(150);
-constexpr base::TimeDelta kHighlightHideDuration =
-    base::TimeDelta::FromMilliseconds(650);
-constexpr base::TimeDelta kHighlightDuration =
-    base::TimeDelta::FromMilliseconds(2250);
+constexpr base::TimeDelta kHighlightShowDuration = base::Milliseconds(150);
+constexpr base::TimeDelta kHighlightHideDuration = base::Milliseconds(650);
+constexpr base::TimeDelta kHighlightDuration = base::Milliseconds(2250);
 
 }  // namespace
 
@@ -134,6 +138,7 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
 
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
+  SetProperty(views::kElementIdentifierKey, kReadLaterButtonElementId);
 }
 
 ReadLaterButton::~ReadLaterButton() = default;
@@ -156,8 +161,7 @@ void ReadLaterButton::OnThemeChanged() {
           gfx::kGoogleBlue050, gfx::kGoogleBlue900));
 
   dot_indicator_->SetColor(
-      /*dot_color=*/GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_AlertSeverityHigh),
+      /*dot_color=*/GetColorProvider()->GetColor(ui::kColorAlertHighSeverity),
       /*border_color=*/theme_provider->GetColor(
           ThemeProperties::COLOR_TOOLBAR));
 }

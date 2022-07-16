@@ -10,12 +10,15 @@
 
 using ui::AXPropertyNode;
 
+#if !defined(MAC_OS_VERSION_12_0) || \
+    MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_VERSION_12_0
+using AXTextMarkerRangeRef = CFTypeRef;
+using AXTextMarkerRef = CFTypeRef;
 extern "C" {
-
-CFTypeRef AXTextMarkerRangeCopyStartMarker(CFTypeRef);
-
-CFTypeRef AXTextMarkerRangeCopyEndMarker(CFTypeRef);
+AXTextMarkerRef AXTextMarkerRangeCopyStartMarker(AXTextMarkerRangeRef);
+AXTextMarkerRef AXTextMarkerRangeCopyEndMarker(AXTextMarkerRangeRef);
 }  // extern "C"
+#endif
 
 namespace content {
 namespace a11y {
@@ -24,31 +27,26 @@ namespace {
 
 #define INT_FAIL(property_node, msg)                              \
   LOG(ERROR) << "Failed to parse " << property_node.name_or_value \
-             << " to Int: " << msg;                               \
-  return nil;
+             << " to Int: " << msg;
 
 #define INTARRAY_FAIL(property_node, msg)                         \
   LOG(ERROR) << "Failed to parse " << property_node.name_or_value \
-             << " to IntArray: " << msg;                          \
-  return nil;
+             << " to IntArray: " << msg;
 
 #define NSRANGE_FAIL(property_node, msg)                          \
   LOG(ERROR) << "Failed to parse " << property_node.name_or_value \
-             << " to NSRange: " << msg;                           \
-  return nil;
+             << " to NSRange: " << msg;
 
 #define UIELEMENT_FAIL(property_node, msg)                        \
   LOG(ERROR) << "Failed to parse " << property_node.name_or_value \
-             << " to UIElement: " << msg;                         \
-  return nil;
+             << " to UIElement: " << msg;
 
 #define TEXTMARKER_FAIL(property_node, msg)                                    \
   LOG(ERROR) << "Failed to parse " << property_node.name_or_value              \
              << " to AXTextMarker: " << msg                                    \
              << ". Expected format: {anchor, offset, affinity}, where anchor " \
                 "is :line_num, offset is integer, affinity is either down, "   \
-                "up or none";                                                  \
-  return nil;
+                "up or none";
 
 }  // namespace
 
@@ -57,6 +55,8 @@ namespace {
 std::string OptionalNSObject::ToString() const {
   if (IsNotApplicable()) {
     return "<n/a>";
+  } else if (IsUnsupported()) {
+    return "<unsupported>";
   } else if (IsError()) {
     return "<error>";
   } else if (value == nil) {
@@ -76,8 +76,8 @@ AttributeInvoker::AttributeInvoker(const id node,
                                    const LineIndexer* line_indexer)
     : node(node), line_indexer(line_indexer), storage_(nullptr) {}
 
-OptionalNSObject AttributeInvoker::Invoke(
-    const AXPropertyNode& property_node) const {
+OptionalNSObject AttributeInvoker::Invoke(const AXPropertyNode& property_node,
+                                          bool no_object_parse) const {
   // TODO(alexs): failing the tests when filters are incorrect is a good idea,
   // however crashing ax_dump tools on wrong input might be not. Figure out
   // a working solution that works nicely in both cases. Use LOG(ERROR) for now
@@ -107,11 +107,8 @@ OptionalNSObject AttributeInvoker::Invoke(
     auto storage_iterator = storage_->find(property_node.name_or_value);
     if (storage_iterator != storage_->end()) {
       target = storage_iterator->second;
-      if (!target) {
-        LOG(ERROR) << "Stored " << property_node.name_or_value
-                   << " target is null.";
-        return OptionalNSObject::Error();
-      }
+      if (!target)
+        return OptionalNSObject(target);
     }
   }
   // Case 2: try to get target from the tree indexer. The target may refer to
@@ -121,19 +118,32 @@ OptionalNSObject AttributeInvoker::Invoke(
   if (!target)
     target = line_indexer->NodeBy(property_node.name_or_value);
 
-  // Case 3: no target either indicates an error or the property node is a
-  // scalar value (for example, `0` in `AXChildren[0]`) and thus nothing to
-  // invoke or, if default target is given, i.e. |node| is not null, then
-  // the target is deemed and we use the default target. The latter case is
-  // about ax tree dumping where a scripting instruction with no target can be
-  // used. For example, `AXRole` property filter means it is applied to all
-  // nodes and `AXRole` attribute should be called for all nodes in the tree.
+  // Case 3: no target either indicates an error or default target (if
+  // applicable) or the property node is an object or a scalar value (for
+  // example, `0` in `AXChildren[0]` or [3, 4] integer array).
   if (!target) {
-    if (property_node.IsTarget())
-      return OptionalNSObject::Error();
-
-    if (!node)
+    // If default target is given, i.e. |node| is not null, then the target is
+    // deemed and we use the default target. This case is about ax tree dumping
+    // where a scripting instruction with no target are used. For example,
+    // `AXRole` property filter means it is applied to all nodes and `AXRole`
+    // attribute should be called for all nodes in the tree.
+    if (IsDumpingTree()) {
+      if (property_node.IsTarget()) {
+        LOG(ERROR) << "Failed to parse '" << property_node.name_or_value
+                   << "' target in '" << property_node.ToFlatString() << "'";
+        return OptionalNSObject::Error();
+      }
+    } else if (no_object_parse) {
       return OptionalNSObject::NotApplicable();
+    } else {
+      // Object or scalar case.
+      target = PropertyNodeToNSObject(property_node);
+      if (!target) {
+        LOG(ERROR) << "Failed to parse '" << property_node.ToFlatString()
+                   << "' to NSObject";
+        return OptionalNSObject::Error();
+      }
+    }
   }
 
   // If target is deemed, then start from the given property node. Otherwise the
@@ -149,10 +159,10 @@ OptionalNSObject AttributeInvoker::Invoke(
   // Invoke the call chain.
   while (current_node) {
     auto target_optional = InvokeFor(target, *current_node);
-    // Result of the current step is either null or error. Don't go any further.
-    if (!target_optional.IsNotNil()) {
+    // Result of the current step is state. Don't go any further.
+    if (!target_optional.HasValue())
       return target_optional;
-    }
+
     target = *target_optional;
     current_node = current_node->next.get();
   }
@@ -177,6 +187,9 @@ OptionalNSObject AttributeInvoker::InvokeFor(
   if ([target isKindOfClass:[NSArray class]])
     return InvokeForArray(target, property_node);
 
+  if ([target isKindOfClass:[NSDictionary class]])
+    return InvokeForDictionary(target, property_node);
+
   LOG(ERROR) << "Unexpected target type for " << property_node.ToFlatString();
   return OptionalNSObject::Error();
 }
@@ -192,7 +205,7 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
     OptionalNSObject param = ParamByPropertyNode(property_node);
     if (param.IsNotNil()) {
       PerformAction(target, *param);
-      return OptionalNSObject::NotApplicable();
+      return OptionalNSObject::Unsupported();
     }
     return OptionalNSObject::Error();
   }
@@ -205,13 +218,14 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
         OptionalNSObject rvalue = Invoke(*property_node.rvalue);
         if (rvalue.IsNotNil()) {
           SetAttributeValueOf(target, attribute, *rvalue);
-          return OptionalNSObject::NotApplicable();
+          return {rvalue};
         }
         return rvalue;
       }
-      // Getter
-      return OptionalNSObject::NotNullOrNotApplicable(
-          AttributeValueOf(target, attribute));
+      // Getter. Make sure to expose null values in ax scripts.
+      id value = AttributeValueOf(target, attribute);
+      return IsDumpingTree() ? OptionalNSObject::NotNullOrNotApplicable(value)
+                             : OptionalNSObject(value);
     }
   }
 
@@ -227,11 +241,27 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
     }
   }
 
-  // Unmatched attribute. No error for a tree dump calls because the tree dump
-  // sets generic property filters not depending on a node, so we can be called
-  // for an attribute not supported by the node.
-  if (node)
+  // Invoke any methods that are declared in the NSAccessibility protocol. Note
+  // that they all start with the prefix "accessibility...", ignore all
+  // other selectors the object may respond.
+  if (base::StartsWith(property_node.name_or_value, "accessibility")) {
+    auto optional_id = PerformSelector(target, property_node.name_or_value);
+    if (optional_id) {
+      return OptionalNSObject(*optional_id);
+    }
+  }
+
+  // Unmatched attribute.
+  // * We choose not to return an error when dumping the accessibility tree,
+  // because during this process the same set of NSAccessibility attributes
+  // listed in property filters are queried on all nodes and, naturally, not all
+  // nodes support all attributes.
+  // * We also explicitly choose not to return an error if the NSAccessibility
+  // attribute is valid and is in the list of attributes that our tree formatter
+  // supports, but is not exposed on a given node.
+  if (IsDumpingTree() || IsValidAttribute(property_node.name_or_value)) {
     return OptionalNSObject::NotApplicable();
+  }
 
   LOG(ERROR) << "Unrecognized '" << property_node.name_or_value
              << "' attribute called on AXElement in '"
@@ -243,18 +273,19 @@ OptionalNSObject AttributeInvoker::InvokeForAXTextMarkerRange(
     const id target,
     const AXPropertyNode& property_node) const {
   if (property_node.name_or_value == "anchor")
-    return OptionalNSObject(static_cast<id>(
-        AXTextMarkerRangeCopyStartMarker(static_cast<CFTypeRef>(target))));
+    return OptionalNSObject(static_cast<id>(AXTextMarkerRangeCopyStartMarker(
+        static_cast<AXTextMarkerRangeRef>(target))));
 
   if (property_node.name_or_value == "focus")
-    return OptionalNSObject(static_cast<id>(
-        AXTextMarkerRangeCopyEndMarker(static_cast<CFTypeRef>(target))));
+    return OptionalNSObject(static_cast<id>(AXTextMarkerRangeCopyEndMarker(
+        static_cast<AXTextMarkerRangeRef>(target))));
 
-  // Unmatched attribute. No error for a tree dump calls because the tree dump
-  // sets generic property filters not depending on a node, so we can be called
-  // for an attribute not supported by the node.
-  if (node)
-    return OptionalNSObject::NotApplicable();
+  // Unmatched attribute. We choose not to return an error when dumping the
+  // accessibility tree, because during this process the same set of
+  // NSAccessibility attributes listed in property filters are queried on all
+  // nodes and, naturally, not all nodes support all attributes.
+  if (IsDumpingTree())
+    return OptionalNSObject::Unsupported();
 
   LOG(ERROR) << "Unrecognized '" << property_node.name_or_value
              << "' attribute called on AXTextMarkerRange in '"
@@ -265,6 +296,13 @@ OptionalNSObject AttributeInvoker::InvokeForAXTextMarkerRange(
 OptionalNSObject AttributeInvoker::InvokeForArray(
     const id target,
     const AXPropertyNode& property_node) const {
+  if (property_node.name_or_value == "count") {
+    if (property_node.arguments.size()) {
+      LOG(ERROR) << "count attribute is called as a method";
+      return OptionalNSObject::Error();
+    }
+    return OptionalNSObject([NSNumber numberWithInt:[target count]]);
+  }
   if (!property_node.IsArray() || property_node.arguments.size() != 1) {
     LOG(ERROR) << "Array operator[] is expected, got: "
                << property_node.ToString();
@@ -288,41 +326,18 @@ OptionalNSObject AttributeInvoker::InvokeForArray(
   return OptionalNSObject(target[*maybe_index]);
 }
 
-OptionalNSObject AttributeInvoker::GetValue(
-    const std::string& property_name,
-    const OptionalNSObject& param) const {
-  NSString* attribute = base::SysUTF8ToNSString(property_name);
-  NSArray* attributes = ParameterizedAttributeNamesOf(node);
-  if ([attributes containsObject:attribute]) {
-    if (param.IsNotNil()) {
-      return OptionalNSObject(
-          ParameterizedAttributeValueOf(node, attribute, *param));
-    } else {
-      return param;
-    }
+OptionalNSObject AttributeInvoker::InvokeForDictionary(
+    const id target,
+    const AXPropertyNode& property_node) const {
+  if (property_node.arguments.size() > 0) {
+    LOG(ERROR) << "dictionary key is expected, got: "
+               << property_node.ToString();
+    return OptionalNSObject::Error();
   }
-  return OptionalNSObject::NotApplicable();
-}
 
-OptionalNSObject AttributeInvoker::GetValue(
-    const std::string& property_name) const {
-  NSString* attribute = base::SysUTF8ToNSString(property_name);
-  NSArray* parameterized_attributes = AttributeNamesOf(node);
-  if ([parameterized_attributes containsObject:attribute]) {
-    return OptionalNSObject::NotNullOrNotApplicable(
-        AttributeValueOf(node, attribute));
-  }
-  return OptionalNSObject::NotApplicable();
-}
-
-void AttributeInvoker::SetValue(const std::string& property_name,
-                                const OptionalNSObject& value) const {
-  NSString* attribute = base::SysUTF8ToNSString(property_name);
-  NSArray* attributes = AttributeNamesOf(node);
-  if ([attributes containsObject:attribute] &&
-      IsAttributeSettable(node, attribute)) {
-    SetAttributeValueOf(node, attribute, *value);
-  }
+  NSString* key = PropertyNodeToString(property_node);
+  NSDictionary* dictionary = target;
+  return OptionalNSObject::NotNilOrError(dictionary[key]);
 }
 
 OptionalNSObject AttributeInvoker::ParamByPropertyNode(
@@ -336,7 +351,7 @@ OptionalNSObject AttributeInvoker::ParamByPropertyNode(
 
   // Nested attribute case: attempt to invoke an attribute for an argument node.
   const AXPropertyNode& arg_node = property_node.arguments[0];
-  OptionalNSObject subvalue = Invoke(arg_node);
+  OptionalNSObject subvalue = Invoke(arg_node, /* no_object_parse= */ true);
   if (!subvalue.IsNotApplicable()) {
     return subvalue;
   }
@@ -380,27 +395,58 @@ OptionalNSObject AttributeInvoker::ParamByPropertyNode(
   return OptionalNSObject::NotApplicable();
 }
 
+id AttributeInvoker::PropertyNodeToNSObject(
+    const AXPropertyNode& property_node) const {
+  // Integer array
+  id value = PropertyNodeToIntArray(property_node, false);
+  if (value)
+    return value;
+
+  // NSRange
+  value = PropertyNodeToRange(property_node, false);
+  if (value)
+    return value;
+
+  // TextMarker
+  value = PropertyNodeToTextMarker(property_node, true);
+  if (value)
+    return value;
+
+  // TextMarker array
+  value = PropertyNodeToTextMarkerArray(property_node, false);
+  if (value)
+    return value;
+
+  // TextMarkerRange
+  return PropertyNodeToTextMarkerRange(property_node, false);
+}
+
 // NSNumber. Format: integer.
-NSNumber* AttributeInvoker::PropertyNodeToInt(
-    const AXPropertyNode& intnode) const {
+NSNumber* AttributeInvoker::PropertyNodeToInt(const AXPropertyNode& intnode,
+                                              bool log_failure) const {
   absl::optional<int> param = intnode.AsInt();
   if (!param) {
-    INT_FAIL(intnode, "not a number")
+    if (log_failure)
+      INT_FAIL(intnode, "not a number")
+    return nil;
   }
   return [NSNumber numberWithInt:*param];
 }
 
-NSString* AttributeInvoker::PropertyNodeToString(
-    const AXPropertyNode& strnode) const {
+NSString* AttributeInvoker::PropertyNodeToString(const AXPropertyNode& strnode,
+                                                 bool log_failure) const {
   std::string str = strnode.AsString();
   return base::SysUTF8ToNSString(str);
 }
 
 // NSArray of two NSNumber. Format: [integer, integer].
 NSArray* AttributeInvoker::PropertyNodeToIntArray(
-    const AXPropertyNode& arraynode) const {
+    const AXPropertyNode& arraynode,
+    bool log_failure) const {
   if (!arraynode.IsArray()) {
-    INTARRAY_FAIL(arraynode, "not array")
+    if (log_failure)
+      INTARRAY_FAIL(arraynode, "not array")
+    return nil;
   }
 
   NSMutableArray* array =
@@ -408,7 +454,9 @@ NSArray* AttributeInvoker::PropertyNodeToIntArray(
   for (const auto& paramnode : arraynode.arguments) {
     absl::optional<int> param = paramnode.AsInt();
     if (!param) {
-      INTARRAY_FAIL(arraynode, paramnode.name_or_value + " is not a number")
+      if (log_failure)
+        INTARRAY_FAIL(arraynode, paramnode.name_or_value + " is not a number")
+      return nil;
     }
     [array addObject:@(*param)];
   }
@@ -417,9 +465,12 @@ NSArray* AttributeInvoker::PropertyNodeToIntArray(
 
 // NSArray of AXTextMarker objects.
 NSArray* AttributeInvoker::PropertyNodeToTextMarkerArray(
-    const AXPropertyNode& arraynode) const {
+    const AXPropertyNode& arraynode,
+    bool log_failure) const {
   if (!arraynode.IsArray()) {
-    INTARRAY_FAIL(arraynode, "not array")
+    if (log_failure)
+      INTARRAY_FAIL(arraynode, "not array")
+    return nil;
   }
 
   NSMutableArray* array =
@@ -427,8 +478,10 @@ NSArray* AttributeInvoker::PropertyNodeToTextMarkerArray(
   for (const auto& paramnode : arraynode.arguments) {
     OptionalNSObject text_marker = Invoke(paramnode);
     if (!text_marker.IsNotNil()) {
-      INTARRAY_FAIL(arraynode,
-                    paramnode.ToFlatString() + "is not a text marker")
+      if (log_failure)
+        INTARRAY_FAIL(arraynode,
+                      paramnode.ToFlatString() + "is not a text marker")
+      return nil;
     }
     [array addObject:(*text_marker)];
   }
@@ -436,20 +489,26 @@ NSArray* AttributeInvoker::PropertyNodeToTextMarkerArray(
 }
 
 // NSRange. Format: {loc: integer, len: integer}.
-NSValue* AttributeInvoker::PropertyNodeToRange(
-    const AXPropertyNode& dictnode) const {
+NSValue* AttributeInvoker::PropertyNodeToRange(const AXPropertyNode& dictnode,
+                                               bool log_failure) const {
   if (!dictnode.IsDict()) {
-    NSRANGE_FAIL(dictnode, "dictionary is expected")
+    if (log_failure)
+      NSRANGE_FAIL(dictnode, "dictionary is expected")
+    return nil;
   }
 
   absl::optional<int> loc = dictnode.FindIntKey("loc");
   if (!loc) {
-    NSRANGE_FAIL(dictnode, "no loc or loc is not a number")
+    if (log_failure)
+      NSRANGE_FAIL(dictnode, "no loc or loc is not a number")
+    return nil;
   }
 
   absl::optional<int> len = dictnode.FindIntKey("len");
   if (!len) {
-    NSRANGE_FAIL(dictnode, "no len or len is not a number")
+    if (log_failure)
+      NSRANGE_FAIL(dictnode, "no len or len is not a number")
+    return nil;
   }
 
   return [NSValue valueWithRange:NSMakeRange(*loc, *len)];
@@ -457,34 +516,45 @@ NSValue* AttributeInvoker::PropertyNodeToRange(
 
 // UIElement. Format: :line_num.
 gfx::NativeViewAccessible AttributeInvoker::PropertyNodeToUIElement(
-    const AXPropertyNode& uielement_node) const {
+    const AXPropertyNode& uielement_node,
+    bool log_failure) const {
   gfx::NativeViewAccessible uielement =
       line_indexer->NodeBy(uielement_node.name_or_value);
   if (!uielement) {
-    UIELEMENT_FAIL(uielement_node,
-                   "no corresponding UIElement was found in the tree")
+    if (log_failure)
+      UIELEMENT_FAIL(uielement_node,
+                     "no corresponding UIElement was found in the tree")
+    return nil;
   }
   return uielement;
 }
 
-id AttributeInvoker::DictNodeToTextMarker(
-    const AXPropertyNode& dictnode) const {
+id AttributeInvoker::DictNodeToTextMarker(const AXPropertyNode& dictnode,
+                                          bool log_failure) const {
   if (!dictnode.IsDict()) {
-    TEXTMARKER_FAIL(dictnode, "dictionary is expected")
+    if (log_failure)
+      TEXTMARKER_FAIL(dictnode, "dictionary is expected")
+    return nil;
   }
   if (dictnode.arguments.size() != 3) {
-    TEXTMARKER_FAIL(dictnode, "wrong number of dictionary elements")
+    if (log_failure)
+      TEXTMARKER_FAIL(dictnode, "wrong number of dictionary elements")
+    return nil;
   }
 
   BrowserAccessibilityCocoa* anchor_cocoa =
       line_indexer->NodeBy(dictnode.arguments[0].name_or_value);
   if (!anchor_cocoa) {
-    TEXTMARKER_FAIL(dictnode, "1st argument: wrong anchor")
+    if (log_failure)
+      TEXTMARKER_FAIL(dictnode, "1st argument: wrong anchor")
+    return nil;
   }
 
   absl::optional<int> offset = dictnode.arguments[1].AsInt();
   if (!offset) {
-    TEXTMARKER_FAIL(dictnode, "2nd argument: wrong offset")
+    if (log_failure)
+      TEXTMARKER_FAIL(dictnode, "2nd argument: wrong offset")
+    return nil;
   }
 
   ax::mojom::TextAffinity affinity;
@@ -496,91 +566,57 @@ id AttributeInvoker::DictNodeToTextMarker(
   } else if (affinity_str == "up") {
     affinity = ax::mojom::TextAffinity::kUpstream;
   } else {
-    TEXTMARKER_FAIL(dictnode, "3rd argument: wrong affinity")
+    if (log_failure)
+      TEXTMARKER_FAIL(dictnode, "3rd argument: wrong affinity")
+    return nil;
   }
 
   return content::AXTextMarkerFrom(anchor_cocoa, *offset, affinity);
 }
 
-id AttributeInvoker::PropertyNodeToTextMarker(
-    const AXPropertyNode& dictnode) const {
-  return DictNodeToTextMarker(dictnode);
+id AttributeInvoker::PropertyNodeToTextMarker(const AXPropertyNode& dictnode,
+                                              bool log_failure) const {
+  return DictNodeToTextMarker(dictnode, log_failure);
 }
 
 id AttributeInvoker::PropertyNodeToTextMarkerRange(
-    const AXPropertyNode& rangenode) const {
+    const AXPropertyNode& rangenode,
+    bool log_failure) const {
   if (!rangenode.IsDict()) {
-    TEXTMARKER_FAIL(rangenode, "dictionary is expected")
+    if (log_failure)
+      TEXTMARKER_FAIL(rangenode, "dictionary is expected")
+    return nil;
   }
 
   const AXPropertyNode* anchornode = rangenode.FindKey("anchor");
   if (!anchornode) {
-    TEXTMARKER_FAIL(rangenode, "no anchor")
+    if (log_failure)
+      TEXTMARKER_FAIL(rangenode, "no anchor")
+    return nil;
   }
 
   id anchor_textmarker = DictNodeToTextMarker(*anchornode);
   if (!anchor_textmarker) {
-    TEXTMARKER_FAIL(rangenode, "failed to parse anchor")
+    if (log_failure)
+      TEXTMARKER_FAIL(rangenode, "failed to parse anchor")
+    return nil;
   }
 
   const AXPropertyNode* focusnode = rangenode.FindKey("focus");
   if (!focusnode) {
-    TEXTMARKER_FAIL(rangenode, "no focus")
+    if (log_failure)
+      TEXTMARKER_FAIL(rangenode, "no focus")
+    return nil;
   }
 
   id focus_textmarker = DictNodeToTextMarker(*focusnode);
   if (!focus_textmarker) {
-    TEXTMARKER_FAIL(rangenode, "failed to parse focus")
+    if (log_failure)
+      TEXTMARKER_FAIL(rangenode, "failed to parse focus")
+    return nil;
   }
 
   return content::AXTextMarkerRangeFrom(anchor_textmarker, focus_textmarker);
-}
-
-OptionalNSObject TextMarkerRangeGetStartMarker(const OptionalNSObject& obj) {
-  if (!IsAXTextMarkerRange(*obj))
-    return OptionalNSObject::NotApplicable();
-
-  const BrowserAccessibility::AXRange range = AXTextMarkerRangeToAXRange(*obj);
-  if (range.IsNull())
-    return OptionalNSObject::Error();
-
-  auto* manager =
-      BrowserAccessibilityManager::FromID(range.anchor()->tree_id());
-  DCHECK(manager) << "A non-null range should have an associated AX tree.";
-  const BrowserAccessibility* node =
-      manager->GetFromID(range.anchor()->anchor_id());
-  DCHECK(node) << "A non-null range should have a non-null anchor node.";
-  const BrowserAccessibilityCocoa* cocoa_node =
-      ToBrowserAccessibilityCocoa(node);
-  return OptionalNSObject::NotNilOrError(content::AXTextMarkerFrom(
-      cocoa_node, range.anchor()->text_offset(), range.anchor()->affinity()));
-}
-
-OptionalNSObject TextMarkerRangeGetEndMarker(const OptionalNSObject& obj) {
-  if (!IsAXTextMarkerRange(*obj))
-    return OptionalNSObject::NotApplicable();
-
-  const BrowserAccessibility::AXRange range = AXTextMarkerRangeToAXRange(*obj);
-  if (range.IsNull())
-    return OptionalNSObject::Error();
-
-  auto* manager = BrowserAccessibilityManager::FromID(range.focus()->tree_id());
-  DCHECK(manager) << "A non-null range should have an associated AX tree.";
-  const BrowserAccessibility* node =
-      manager->GetFromID(range.focus()->anchor_id());
-  DCHECK(node) << "A non-null range should have a non-null focus node.";
-  const BrowserAccessibilityCocoa* cocoa_node =
-      ToBrowserAccessibilityCocoa(node);
-  return OptionalNSObject::NotNilOrError(content::AXTextMarkerFrom(
-      cocoa_node, range.focus()->text_offset(), range.focus()->affinity()));
-}
-
-OptionalNSObject MakePairArray(const OptionalNSObject& obj1,
-                               const OptionalNSObject& obj2) {
-  if (!obj1.IsNotNil() || !obj2.IsNotNil())
-    return OptionalNSObject::Error();
-  return OptionalNSObject::NotNilOrError(
-      [NSArray arrayWithObjects:*obj1, *obj2, nil]);
 }
 
 }  // namespace a11y

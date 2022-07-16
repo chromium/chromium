@@ -42,6 +42,7 @@ class Platform {
     HANDSHAKE_COMPLETE = 2,
     REQUEST_RECEIVED = 3,
     CTAP_ERROR = 4,
+    FIRST_TRANSACTION_DONE = 5,
   };
 
   enum class Error {
@@ -60,6 +61,9 @@ class Platform {
     SERVER_LINK_WRONG_LENGTH = 108,
     SERVER_LINK_NOT_ON_CURVE = 109,
     NO_SCREENLOCK = 110,
+    NO_BLUETOOTH_PERMISSION = 111,
+    QR_URI_ERROR = 112,
+    EOF_WHILE_PROCESSING = 113,
   };
 
   using MakeCredentialCallback =

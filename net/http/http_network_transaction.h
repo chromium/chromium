@@ -53,6 +53,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   HttpNetworkTransaction(RequestPriority priority,
                          HttpNetworkSession* session);
 
+  HttpNetworkTransaction(const HttpNetworkTransaction&) = delete;
+  HttpNetworkTransaction& operator=(const HttpNetworkTransaction&) = delete;
+
   ~HttpNetworkTransaction() override;
 
   // HttpTransaction methods:
@@ -204,11 +207,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   int BuildRequestHeaders(bool using_http_proxy_without_tunnel);
 
 #if BUILDFLAG(ENABLE_REPORTING)
-  // Processes the Reporting-Endpoints header specified in document reporting
-  // spec, if one exists. This header configures where the Reporting API (in
-  // net/reporting) will send reports for the document.
-  void ProcessReportingEndpointsHeader();
-
   // Processes the Report-To header, if one exists. This header configures where
   // the Reporting API (in //net/reporting) will send reports for the origin.
   void ProcessReportToHeader();
@@ -448,8 +446,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   size_t num_restarts_;
 
   bool close_connection_on_destruction_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpNetworkTransaction);
 };
 
 }  // namespace net

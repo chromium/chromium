@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
@@ -31,6 +30,9 @@ class TestCertificateSelector : public chrome::CertificateSelector {
   TestCertificateSelector(net::ClientCertIdentityList certificates,
                           content::WebContents* web_contents)
       : CertificateSelector(std::move(certificates), web_contents) {}
+
+  TestCertificateSelector(const TestCertificateSelector&) = delete;
+  TestCertificateSelector& operator=(const TestCertificateSelector&) = delete;
 
   ~TestCertificateSelector() override {
     if (!on_destroy_.is_null())
@@ -68,8 +70,6 @@ class TestCertificateSelector : public chrome::CertificateSelector {
   bool* accepted_ = nullptr;
   bool* canceled_ = nullptr;
   base::OnceClosure on_destroy_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCertificateSelector);
 };
 
 class CertificateSelectorTest : public InProcessBrowserTest {

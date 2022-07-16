@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/ble_initiator_failure_type.h"
 #include "chromeos/services/secure_channel/connection_attempt_base.h"
 
@@ -41,6 +40,10 @@ class BleInitiatorConnectionAttempt
     static Factory* test_factory_;
   };
 
+  BleInitiatorConnectionAttempt(const BleInitiatorConnectionAttempt&) = delete;
+  BleInitiatorConnectionAttempt& operator=(
+      const BleInitiatorConnectionAttempt&) = delete;
+
   ~BleInitiatorConnectionAttempt() override;
 
  private:
@@ -59,8 +62,6 @@ class BleInitiatorConnectionAttempt
           ConnectionFailedCallback& failure_callback) override;
 
   BleConnectionManager* ble_connection_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(BleInitiatorConnectionAttempt);
 };
 
 }  // namespace secure_channel

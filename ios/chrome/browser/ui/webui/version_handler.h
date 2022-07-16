@@ -16,6 +16,10 @@ class ListValue;
 class VersionHandler : public web::WebUIIOSMessageHandler {
  public:
   VersionHandler();
+
+  VersionHandler(const VersionHandler&) = delete;
+  VersionHandler& operator=(const VersionHandler&) = delete;
+
   ~VersionHandler() override;
 
   // content::WebUIMessageHandler implementation.
@@ -24,9 +28,6 @@ class VersionHandler : public web::WebUIIOSMessageHandler {
   // Callback for the "requestVariationInfo" message. This responds immediately
   // with the list of variations.
   void HandleRequestVariationInfo(const base::ListValue* args);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VersionHandler);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_VERSION_HANDLER_H_

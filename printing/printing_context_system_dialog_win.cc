@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "printing/backend/win_helper.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_settings_initializer_win.h"
 #include "skia/ext/skia_utils_win.h"
 
@@ -69,7 +70,7 @@ void PrintingContextSystemDialogWin::AskUserForSettings(
 
   if (ShowPrintDialog(&dialog_options) != S_OK) {
     ResetSettings();
-    std::move(callback).Run(FAILED);
+    std::move(callback).Run(mojom::ResultCode::kFailed);
     return;
   }
 
@@ -142,7 +143,7 @@ bool PrintingContextSystemDialogWin::InitializeSettingsWithRanges(
   return true;
 }
 
-PrintingContext::Result PrintingContextSystemDialogWin::ParseDialogResultEx(
+mojom::ResultCode PrintingContextSystemDialogWin::ParseDialogResultEx(
     const PRINTDLGEX& dialog_options) {
   // If the user clicked OK or Apply then Cancel, but not only Cancel.
   if (dialog_options.dwResultAction != PD_RESULT_CANCEL) {
@@ -211,13 +212,15 @@ PrintingContext::Result PrintingContextSystemDialogWin::ParseDialogResultEx(
 
   switch (dialog_options.dwResultAction) {
     case PD_RESULT_PRINT:
-      return context() ? OK : FAILED;
+      return context() ? mojom::ResultCode::kSuccess
+                       : mojom::ResultCode::kFailed;
     case PD_RESULT_APPLY:
-      return context() ? CANCEL : FAILED;
+      return context() ? mojom::ResultCode::kCanceled
+                       : mojom::ResultCode::kFailed;
     case PD_RESULT_CANCEL:
-      return CANCEL;
+      return mojom::ResultCode::kCanceled;
     default:
-      return FAILED;
+      return mojom::ResultCode::kFailed;
   }
 }
 

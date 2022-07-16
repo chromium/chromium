@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_SYSTEM_STORAGE_SYSTEM_STORAGE_API_H_
 #define EXTENSIONS_BROWSER_API_SYSTEM_STORAGE_SYSTEM_STORAGE_API_H_
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "extensions/browser/api/system_storage/storage_info_provider.h"
 #include "extensions/browser/extension_function.h"

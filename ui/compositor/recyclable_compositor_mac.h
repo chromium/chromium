@@ -26,6 +26,10 @@ class COMPOSITOR_EXPORT RecyclableCompositorMac
     : public ui::CompositorObserver {
  public:
   explicit RecyclableCompositorMac(ui::ContextFactory* context_factory);
+
+  RecyclableCompositorMac(const RecyclableCompositorMac&) = delete;
+  RecyclableCompositorMac& operator=(const RecyclableCompositorMac&) = delete;
+
   ~RecyclableCompositorMac() override;
 
   ui::Compositor* compositor() { return &compositor_; }
@@ -63,8 +67,6 @@ class COMPOSITOR_EXPORT RecyclableCompositorMac
   std::unique_ptr<ui::AcceleratedWidgetMac> accelerated_widget_mac_;
   ui::Compositor compositor_;
   std::unique_ptr<ui::CompositorLock> compositor_suspended_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecyclableCompositorMac);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

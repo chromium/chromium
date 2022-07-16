@@ -20,6 +20,10 @@ class LoadCompletionObserver : public NavigationObserver {
   // Creates an instance that begins waiting for a load within |shell| to
   // complete.
   explicit LoadCompletionObserver(Shell* shell);
+
+  LoadCompletionObserver(const LoadCompletionObserver&) = delete;
+  LoadCompletionObserver& operator=(const LoadCompletionObserver&) = delete;
+
   ~LoadCompletionObserver() override;
 
   // Spins a RunLoop until the next load completes.
@@ -31,8 +35,6 @@ class LoadCompletionObserver : public NavigationObserver {
 
   Tab* tab_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadCompletionObserver);
 };
 
 }  // namespace weblayer

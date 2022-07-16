@@ -50,6 +50,10 @@ class ExceptionHandlerServerRun : public UniversalMachExcServer::Interface,
     composite_mach_message_server_.AddHandler(&notify_server_);
   }
 
+  ExceptionHandlerServerRun(const ExceptionHandlerServerRun&) = delete;
+  ExceptionHandlerServerRun& operator=(const ExceptionHandlerServerRun&) =
+      delete;
+
   ~ExceptionHandlerServerRun() {
   }
 
@@ -183,8 +187,6 @@ class ExceptionHandlerServerRun : public UniversalMachExcServer::Interface,
   mach_port_t notify_port_;  // weak
   bool running_;
   bool launchd_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionHandlerServerRun);
 };
 
 }  // namespace

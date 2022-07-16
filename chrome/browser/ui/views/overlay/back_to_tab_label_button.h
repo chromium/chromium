@@ -19,14 +19,8 @@ class BackToTabLabelButton : public views::LabelButton {
   BackToTabLabelButton& operator=(const BackToTabLabelButton&) = delete;
   ~BackToTabLabelButton() override;
 
-  // views::LabelButton:
-  void SetText(const std::u16string& text) override;
-
   // Updates the position of this button within the new bounds of the window.
   void SetWindowSize(const gfx::Size& window_size);
-
-  // Returns true if the underlying label has elided text.
-  bool IsTextElidedForTesting();
 
  private:
   void UpdateSizingAndPosition();

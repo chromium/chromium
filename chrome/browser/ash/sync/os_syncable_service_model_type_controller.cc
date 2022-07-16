@@ -15,14 +15,9 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/driver/sync_service.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/driver/syncable_service_based_model_type_controller.h"
 #include "components/sync/model/forwarding_model_type_controller_delegate.h"
 #include "components/sync/model/model_type_controller_delegate.h"
-#include "components/sync/model/syncable_service_based_bridge.h"
-
-using syncer::ClientTagBasedModelTypeProcessor;
-using syncer::ForwardingModelTypeControllerDelegate;
-using syncer::SyncableServiceBasedBridge;
 
 OsSyncableServiceModelTypeController::OsSyncableServiceModelTypeController(
     syncer::ModelType type,
@@ -31,27 +26,19 @@ OsSyncableServiceModelTypeController::OsSyncableServiceModelTypeController(
     const base::RepeatingClosure& dump_stack,
     PrefService* pref_service,
     syncer::SyncService* sync_service)
-    : ModelTypeController(type),
-      bridge_(std::make_unique<SyncableServiceBasedBridge>(
+    : syncer::SyncableServiceBasedModelTypeController(
           type,
           std::move(store_factory),
-          std::make_unique<ClientTagBasedModelTypeProcessor>(type, dump_stack),
-          syncable_service.get())),
+          std::move(syncable_service),
+          dump_stack,
+          DelegateMode::kTransportModeWithSingleModel),
       pref_service_(pref_service),
       sync_service_(sync_service) {
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled());
+  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   DCHECK(type == syncer::APP_LIST || type == syncer::OS_PREFERENCES ||
          type == syncer::OS_PRIORITY_PREFERENCES);
   DCHECK(pref_service_);
   DCHECK(sync_service_);
-  syncer::ModelTypeControllerDelegate* delegate =
-      bridge_->change_processor()->GetControllerDelegate().get();
-  // Runs in transport-mode and full-sync mode, sharing the bridge's delegate.
-  InitModelTypeController(
-      /*delegate_for_full_sync_mode=*/
-      std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
-      /*delegate_for_transport_mode=*/
-      std::make_unique<ForwardingModelTypeControllerDelegate>(delegate));
 
   pref_registrar_.Init(pref_service_);
   pref_registrar_.Add(

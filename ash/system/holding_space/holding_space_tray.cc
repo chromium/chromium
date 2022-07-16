@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/drag_drop/scoped_drag_drop_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -17,7 +18,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/shell_observer.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/holding_space/holding_space_progress_ring.h"
@@ -34,13 +34,12 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/pickle.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "ui/aura/client/drag_drop_client.h"
-#include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -56,8 +55,7 @@ namespace {
 using ::ui::mojom::DragOperation;
 
 // Animation.
-constexpr base::TimeDelta kAnimationDuration =
-    base::TimeDelta::FromMilliseconds(167);
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(167);
 
 // Helpers ---------------------------------------------------------------------
 
@@ -197,47 +195,6 @@ std::unique_ptr<views::View> CreateDropTargetOverlay() {
   drop_target_overlay->layer()->SetFillsBoundsOpaquely(false);
   return drop_target_overlay;
 }
-
-// ScopedDragDropObserver ------------------------------------------------------
-
-// A class which observes an `aura::client::DragDropClient` for the scope of its
-// existence. Drag events are passed to a callback supplied in the constructor.
-class ScopedDragDropObserver : public aura::client::DragDropClientObserver,
-                               public ShellObserver {
- public:
-  ScopedDragDropObserver(
-      aura::client::DragDropClient* client,
-      base::RepeatingCallback<void(const ui::DropTargetEvent*)> event_callback)
-      : event_callback_(std::move(event_callback)) {
-    drag_drop_client_observer_.Observe(client);
-    shell_observer_.Observe(Shell::Get());
-  }
-
-  ScopedDragDropObserver(const ScopedDragDropObserver&) = delete;
-  ScopedDragDropObserver& operator=(const ScopedDragDropObserver&) = delete;
-  ~ScopedDragDropObserver() override = default;
-
- private:
-  // aura::client::DragDropClientObserver:
-  void OnDragUpdated(const ui::DropTargetEvent& event) override {
-    event_callback_.Run(&event);
-  }
-
-  void OnDragEnded() override { event_callback_.Run(/*event=*/nullptr); }
-
-  // ShellObserver:
-  void OnShellDestroying() override { drag_drop_client_observer_.Reset(); }
-
-  base::RepeatingCallback<void(const ui::DropTargetEvent*)> event_callback_;
-  base::ScopedObservation<aura::client::DragDropClient,
-                          aura::client::DragDropClientObserver>
-      drag_drop_client_observer_{this};
-  base::ScopedObservation<Shell,
-                          ShellObserver,
-                          &Shell::AddShellObserver,
-                          &Shell::RemoveShellObserver>
-      shell_observer_{this};
-};
 
 }  // namespace
 
@@ -560,14 +517,14 @@ HoldingSpaceTray::CreateContextMenuModel() {
         static_cast<int>(HoldingSpaceCommandId::kHidePreviews),
         l10n_util::GetStringUTF16(
             IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_HIDE_PREVIEWS),
-        ui::ImageModel::FromVectorIcon(kVisibilityOffIcon, /*color_id=*/-1,
+        ui::ImageModel::FromVectorIcon(kVisibilityOffIcon, ui::kColorMenuIcon,
                                        kHoldingSpaceIconSize));
   } else {
     context_menu_model->AddItemWithIcon(
         static_cast<int>(HoldingSpaceCommandId::kShowPreviews),
         l10n_util::GetStringUTF16(
             IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_PREVIEWS),
-        ui::ImageModel::FromVectorIcon(kVisibilityIcon, /*color_id=*/-1,
+        ui::ImageModel::FromVectorIcon(kVisibilityIcon, ui::kColorMenuIcon,
                                        kHoldingSpaceIconSize));
   }
 
@@ -723,7 +680,7 @@ void HoldingSpaceTray::SchedulePreviewsIconUpdate() {
   // previews so items added in quick succession are handled together.
   base::TimeDelta delay = use_zero_previews_update_delay_
                               ? base::TimeDelta()
-                              : base::TimeDelta::FromMilliseconds(50);
+                              : base::Milliseconds(50);
   previews_update_.Start(FROM_HERE, delay,
                          base::BindOnce(&HoldingSpaceTray::UpdatePreviewsIcon,
                                         base::Unretained(this)));

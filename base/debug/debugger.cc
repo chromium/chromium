@@ -3,9 +3,15 @@
 // found in the LICENSE file.
 
 #include "base/debug/debugger.h"
+
+#include "base/clang_profiling_buildflags.h"
 #include "base/logging.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(CLANG_PROFILING)
+#include "base/test/clang_profiling.h"
+#endif
 
 namespace base {
 namespace debug {
@@ -25,9 +31,17 @@ bool WaitForDebugger(int wait_seconds, bool silent) {
         BreakDebugger();
       return true;
     }
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
+    PlatformThread::Sleep(Milliseconds(100));
   }
   return false;
+}
+
+void BreakDebugger() {
+#if BUILDFLAG(CLANG_PROFILING)
+  WriteClangProfilingProfile();
+#endif
+
+  BreakDebuggerAsyncSafe();
 }
 
 void SetSuppressDebugUI(bool suppress) {

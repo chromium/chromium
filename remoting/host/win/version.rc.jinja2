@@ -89,6 +89,10 @@ BEGIN
             replace('"', '""') }}"
       VALUE "InternalName", "remote_open_url.exe"
       VALUE "OriginalFilename", "remote_open_url.exe"
+#elif (REMOTING_HOST_BINARY == BINARY_REMOTE_WEBAUTHN)
+      VALUE "FileDescription", "{% trans %}REMOTING_REMOTE_WEBAUTHN_DESCRIPTION{% endtrans %}"
+      VALUE "InternalName", "remote_webauthn.exe"
+      VALUE "OriginalFilename", "remote_webauthn.exe"
 #else
 #error REMOTING_HOST_BINARY must be set to one of BINARY_XXX values.
 #endif

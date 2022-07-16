@@ -88,7 +88,7 @@ class VIEWS_EXPORT TextfieldController {
   virtual ui::mojom::DragOperation OnDrop(const ui::DropTargetEvent& event);
 
   // Called to get async drop callback to be run later.
-  virtual views::View::DropCallback GetDropCallback(
+  virtual views::View::DropCallback CreateDropCallback(
       const ui::DropTargetEvent& event);
 
   // Gives the controller a chance to modify the context menu contents.

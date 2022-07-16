@@ -26,6 +26,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
+#include "ash/webui/file_manager/untrusted_resources/grit/file_manager_untrusted_resources_map.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/file_manager/file_manager_string_util.h"
 #include "chrome/browser/browser_process.h"
@@ -110,6 +111,19 @@ ChromeComponentExtensionResourceManager::Data::Data() {
   AddComponentResourceEntries(kFileManagerResources, kFileManagerResourcesSize);
   AddComponentResourceEntries(kFileManagerGenResources,
                               kFileManagerGenResourcesSize);
+
+  // Add Files app resources to display untrusted content in <webview> frames.
+  // Files app extension's resource paths need to be prefixed by
+  // "file_manager/".
+  for (size_t i = 0; i < kFileManagerUntrustedResourcesSize; ++i) {
+    base::FilePath resource_path =
+        base::FilePath("file_manager")
+            .AppendASCII(kFileManagerUntrustedResources[i].path);
+    resource_path = resource_path.NormalizePathSeparators();
+
+    DCHECK(!base::Contains(path_to_resource_id_, resource_path));
+    path_to_resource_id_[resource_path] = kFileManagerUntrustedResources[i].id;
+  }
 
   // ResourceBundle and g_browser_process are not always initialized in unit
   // tests.

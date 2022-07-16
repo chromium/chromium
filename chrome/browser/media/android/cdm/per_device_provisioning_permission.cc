@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/android_theme_resources.h"
@@ -27,7 +26,7 @@
 namespace {
 
 // Only keep track of the last response for a short period of time.
-constexpr base::TimeDelta kLastRequestDelta = base::TimeDelta::FromMinutes(15);
+constexpr base::TimeDelta kLastRequestDelta = base::Minutes(15);
 
 // Keep track of the last response. This is only kept in memory, so once Chrome
 // quits it is forgotten.
@@ -71,7 +70,7 @@ LastResponse& GetLastResponse() {
 
 // A permissions::PermissionRequest to allow MediaDrmBridge to use per-device
 // provisioning.
-class PerDeviceProvisioningPermissionRequest
+class PerDeviceProvisioningPermissionRequest final
     : public permissions::PermissionRequest {
  public:
   PerDeviceProvisioningPermissionRequest(
@@ -89,6 +88,11 @@ class PerDeviceProvisioningPermissionRequest
                 base::Unretained(this))),
         origin_(origin),
         callback_(std::move(callback)) {}
+
+  PerDeviceProvisioningPermissionRequest(
+      const PerDeviceProvisioningPermissionRequest&) = delete;
+  PerDeviceProvisioningPermissionRequest& operator=(
+      const PerDeviceProvisioningPermissionRequest&) = delete;
 
   void PermissionDecided(ContentSetting result, bool is_one_time) {
     DCHECK(!is_one_time);
@@ -109,7 +113,7 @@ class PerDeviceProvisioningPermissionRequest
 
  private:
   // Can only be self-destructed. See DeleteRequest().
-  ~PerDeviceProvisioningPermissionRequest() final = default;
+  ~PerDeviceProvisioningPermissionRequest() override = default;
 
   void UpdateLastResponse(bool allowed) {
     GetLastResponse().Update(origin_, allowed);
@@ -117,8 +121,6 @@ class PerDeviceProvisioningPermissionRequest
 
   const url::Origin origin_;
   base::OnceCallback<void(bool)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerDeviceProvisioningPermissionRequest);
 };
 
 }  // namespace

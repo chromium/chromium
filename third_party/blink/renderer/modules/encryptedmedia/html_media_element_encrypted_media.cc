@@ -35,6 +35,10 @@ class SetMediaKeysHandler : public ScriptPromiseResolver {
   static ScriptPromise Create(ScriptState*, HTMLMediaElement&, MediaKeys*);
 
   SetMediaKeysHandler(ScriptState*, HTMLMediaElement&, MediaKeys*);
+
+  SetMediaKeysHandler(const SetMediaKeysHandler&) = delete;
+  SetMediaKeysHandler& operator=(const SetMediaKeysHandler&) = delete;
+
   ~SetMediaKeysHandler() override;
 
   void Trace(Visitor*) const override;
@@ -56,8 +60,6 @@ class SetMediaKeysHandler : public ScriptPromiseResolver {
   Member<MediaKeys> new_media_keys_;
   bool made_reservation_;
   HeapTaskRunnerTimer<SetMediaKeysHandler> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetMediaKeysHandler);
 };
 
 typedef base::OnceCallback<void()> SuccessCallback;

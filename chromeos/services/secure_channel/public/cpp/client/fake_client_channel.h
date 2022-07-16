@@ -6,11 +6,12 @@
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_CLIENT_CHANNEL_H_
 
 #include <queue>
+#include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/public/cpp/client/client_channel.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
 namespace chromeos {
 
@@ -20,6 +21,10 @@ namespace secure_channel {
 class FakeClientChannel : public ClientChannel {
  public:
   FakeClientChannel();
+
+  FakeClientChannel(const FakeClientChannel&) = delete;
+  FakeClientChannel& operator=(const FakeClientChannel&) = delete;
+
   ~FakeClientChannel() override;
 
   using ClientChannel::NotifyDisconnected;
@@ -30,6 +35,10 @@ class FakeClientChannel : public ClientChannel {
 
   std::vector<std::pair<std::string, base::OnceClosure>>& sent_messages() {
     return sent_messages_;
+  }
+
+  const std::vector<int64_t>& registered_file_payloads() const {
+    return registered_file_payloads_;
   }
 
   void set_destructor_callback(base::OnceClosure callback) {
@@ -44,15 +53,20 @@ class FakeClientChannel : public ClientChannel {
       base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) override;
   void PerformSendMessage(const std::string& payload,
                           base::OnceClosure on_sent_callback) override;
+  void PerformRegisterPayloadFile(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
+          file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback) override;
 
   // Queues up callbacks passed into PerformGetConnectionMetadata(), to be
   // invoked later.
   std::queue<base::OnceCallback<void(mojom::ConnectionMetadataPtr)>>
       get_connection_metadata_callback_queue_;
   std::vector<std::pair<std::string, base::OnceClosure>> sent_messages_;
+  std::vector<int64_t> registered_file_payloads_;
   base::OnceClosure destructor_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClientChannel);
 };
 
 }  // namespace secure_channel

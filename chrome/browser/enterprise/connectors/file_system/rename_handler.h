@@ -28,6 +28,17 @@ class AccessTokenFetcher;
 class BoxUploader;
 class SigninExperienceTestObserver;
 
+using InterruptReason = download::DownloadInterruptReason;
+constexpr auto kSuccess = download::DOWNLOAD_INTERRUPT_REASON_NONE;
+constexpr auto kServiceProviderUnknownError =
+    download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED;
+constexpr auto kServiceProviderDown =
+    download::DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN;
+constexpr auto kBrowserFailure = download::DOWNLOAD_INTERRUPT_REASON_CRASH;
+constexpr auto kCredentialUpdateFailure = kBrowserFailure;
+constexpr auto kSignInCancellation =
+    download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED;
+
 // An implementation of download::DownloadItemRenameHandler that sends a
 // download item file to a cloud-based storage provider as specified in the
 // SendDownloadToCloudEnterpriseConnector policy.
@@ -43,6 +54,7 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
 
     enum Status { kNotStarted, kInProgress, kSucceeded, kFailed };
 
+    virtual void OnStart() {}
     virtual void OnFetchAccessTokenStart() {}
     virtual void OnAccessTokenFetched(const GoogleServiceAuthError& status) {}
     virtual void OnDestruction();
@@ -120,6 +132,21 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
   base::ObserverList<TestObserver> observers_;
   SigninExperienceTestObserver* signin_observer_ = nullptr;
   base::WeakPtrFactory<FileSystemRenameHandler> weak_factory_{this};
+};
+
+class RenameStartObserver : public FileSystemRenameHandler::TestObserver {
+ public:
+  explicit RenameStartObserver(FileSystemRenameHandler* rename_handler);
+  ~RenameStartObserver() override = default;
+
+  // RenameHandlerObserver methods
+  void OnStart() override;
+
+  void WaitForStart();
+
+ private:
+  bool started_ = false;
+  base::RunLoop run_loop_;
 };
 
 class BoxFetchAccessTokenTestObserver

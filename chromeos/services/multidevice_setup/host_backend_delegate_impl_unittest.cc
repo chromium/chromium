@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "base/unguessable_token.h"
@@ -39,6 +38,12 @@ const size_t kNumTestDevices = 4;
 
 class MultiDeviceSetupHostBackendDelegateImplTest
     : public ::testing::TestWithParam<bool> {
+ public:
+  MultiDeviceSetupHostBackendDelegateImplTest(
+      const MultiDeviceSetupHostBackendDelegateImplTest&) = delete;
+  MultiDeviceSetupHostBackendDelegateImplTest& operator=(
+      const MultiDeviceSetupHostBackendDelegateImplTest&) = delete;
+
  protected:
   MultiDeviceSetupHostBackendDelegateImplTest()
       : test_devices_(
@@ -316,8 +321,6 @@ class MultiDeviceSetupHostBackendDelegateImplTest
   std::unique_ptr<HostBackendDelegate> delegate_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupHostBackendDelegateImplTest);
 };
 
 TEST_P(MultiDeviceSetupHostBackendDelegateImplTest, Success) {

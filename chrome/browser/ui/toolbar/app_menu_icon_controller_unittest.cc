@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 
-#include "base/macros.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -41,6 +40,9 @@ class FakeUpgradeDetector : public UpgradeDetector {
       : UpgradeDetector(base::DefaultClock::GetInstance(),
                         base::DefaultTickClock::GetInstance()) {}
 
+  FakeUpgradeDetector(const FakeUpgradeDetector&) = delete;
+  FakeUpgradeDetector& operator=(const FakeUpgradeDetector&) = delete;
+
   void BroadcastLevel(UpgradeNotificationAnnoyanceLevel level) {
     set_upgrade_notification_stage(level);
     NotifyUpgrade();
@@ -49,10 +51,6 @@ class FakeUpgradeDetector : public UpgradeDetector {
   // UpgradeDetector:
   base::Time GetAnnoyanceLevelDeadline(
       UpgradeNotificationAnnoyanceLevel level) override;
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUpgradeDetector);
 };
 
 base::Time FakeUpgradeDetector::GetAnnoyanceLevelDeadline(
@@ -81,6 +79,11 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
 #endif
   {
   }
+
+  AppMenuIconControllerTest(const AppMenuIconControllerTest&) = delete;
+  AppMenuIconControllerTest& operator=(const AppMenuIconControllerTest&) =
+      delete;
+
   UpgradeDetector* upgrade_detector() { return &upgrade_detector_; }
   Profile* profile() { return &profile_; }
 
@@ -112,8 +115,6 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
   FakeUpgradeDetector upgrade_detector_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppMenuIconControllerTest);
 };
 
 // Tests that the controller's delegate is notified with the proper icon type

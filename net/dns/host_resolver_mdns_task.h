@@ -32,6 +32,10 @@ class HostResolverMdnsTask {
   HostResolverMdnsTask(MDnsClient* mdns_client,
                        std::string hostname,
                        const std::vector<DnsQueryType>& query_types);
+
+  HostResolverMdnsTask(const HostResolverMdnsTask&) = delete;
+  HostResolverMdnsTask& operator=(const HostResolverMdnsTask&) = delete;
+
   ~HostResolverMdnsTask();
 
   // Starts the task. |completion_closure| will be called asynchronously.
@@ -64,8 +68,6 @@ class HostResolverMdnsTask {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<HostResolverMdnsTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostResolverMdnsTask);
 };
 
 }  // namespace net

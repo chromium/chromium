@@ -8,8 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/containers/mru_cache.h"
-#include "base/macros.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
@@ -38,6 +37,10 @@ class HintCache {
   // stored in-memory.
   explicit HintCache(OptimizationGuideStore* optimization_guide_store,
                      int max_host_keyed_memory_cache_size);
+
+  HintCache(const HintCache&) = delete;
+  HintCache& operator=(const HintCache&) = delete;
+
   ~HintCache();
 
   // Initializes the backing store contained within the hint cache, if provided,
@@ -160,10 +163,10 @@ class HintCache {
 
  private:
   using HostKeyedHintCache =
-      base::HashingMRUCache<std::string, std::unique_ptr<MemoryHint>>;
+      base::HashingLRUCache<std::string, std::unique_ptr<MemoryHint>>;
 
   using URLKeyedHintCache =
-      base::HashingMRUCache<std::string, std::unique_ptr<MemoryHint>>;
+      base::HashingLRUCache<std::string, std::unique_ptr<MemoryHint>>;
 
   // The callback run after the store finishes initialization. This then runs
   // the callback initially provided by the Initialize() call.
@@ -203,8 +206,6 @@ class HintCache {
 
   // Weak ptr factory to get weak pointer of |this|.
   base::WeakPtrFactory<HintCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HintCache);
 };
 
 }  // namespace optimization_guide

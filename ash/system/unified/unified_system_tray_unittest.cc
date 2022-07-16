@@ -4,10 +4,15 @@
 
 #include "ash/system/unified/unified_system_tray.h"
 
+#include "ash/ime/ime_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
+#include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/time/time_tray_item_view.h"
+#include "ash/system/time/time_view.h"
+#include "ash/system/unified/ime_mode_view.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
@@ -19,12 +24,20 @@ namespace ash {
 class UnifiedSystemTrayTest : public AshTestBase {
  public:
   UnifiedSystemTrayTest() = default;
+
+  UnifiedSystemTrayTest(const UnifiedSystemTrayTest&) = delete;
+  UnifiedSystemTrayTest& operator=(const UnifiedSystemTrayTest&) = delete;
+
   ~UnifiedSystemTrayTest() override = default;
 
  protected:
   bool IsSliderBubbleShown() {
     return GetPrimaryUnifiedSystemTray()
         ->slider_bubble_controller_->bubble_widget_;
+  }
+
+  bool MoreThanOneVisibleTrayItem() const {
+    return GetPrimaryUnifiedSystemTray()->MoreThanOneVisibleTrayItem();
   }
 
   UnifiedSliderBubbleController::SliderType GetSliderBubbleType() {
@@ -46,8 +59,21 @@ class UnifiedSystemTrayTest : public AshTestBase {
     return bubble ? bubble->GetBoundsInScreen() : gfx::Rect();
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTrayTest);
+  tray::TimeTrayItemView* time_view() {
+    return GetPrimaryUnifiedSystemTray()->time_view_;
+  }
+
+  ImeModeView* ime_mode_view() {
+    return GetPrimaryUnifiedSystemTray()->ime_mode_view_;
+  }
+
+  std::list<TrayItemView*> tray_items() {
+    return GetPrimaryUnifiedSystemTray()->tray_items_;
+  }
+
+  views::View* vertical_clock_padding() {
+    return GetPrimaryUnifiedSystemTray()->vertical_clock_padding_;
+  }
 };
 
 TEST_F(UnifiedSystemTrayTest, ShowVolumeSliderBubble) {
@@ -144,7 +170,7 @@ TEST_F(UnifiedSystemTrayTest, SliderBubbleMovesOnShelfAutohide) {
 }
 
 TEST_F(UnifiedSystemTrayTest, ShowBubble_MultipleDisplays_OpenedOnSameDisplay) {
-  // Initialize two displays with 800x800 resolution.
+  // Initialize two displays with 800x700 resolution.
   UpdateDisplay("400+400-800x600,1220+400-800x600");
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(2, screen->GetNumDisplays());
@@ -163,6 +189,56 @@ TEST_F(UnifiedSystemTrayTest, ShowBubble_MultipleDisplays_OpenedOnSameDisplay) {
 
     SwapPrimaryDisplay();
   }
+}
+
+TEST_F(UnifiedSystemTrayTest, HorizontalImeAndTimeLabelAlignment) {
+  ime_mode_view()->label()->SetText(u"US");
+  ime_mode_view()->SetVisible(true);
+
+  gfx::Rect time_bounds = time_view()
+                              ->time_view()
+                              ->horizontal_label_for_test()
+                              ->GetBoundsInScreen();
+  gfx::Rect ime_bounds = ime_mode_view()->label()->GetBoundsInScreen();
+
+  EXPECT_EQ(time_bounds.y(), ime_bounds.y());
+  EXPECT_EQ(time_bounds.height(), ime_bounds.height());
+}
+
+TEST_F(UnifiedSystemTrayTest, VerticalClockPadding) {
+  // Padding can only be visible if shelf is vertically aligned.
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
+
+  // Sets all tray items' visibility to false except TimeView.
+  for (TrayItemView* item : tray_items()) {
+    item->SetVisible(item->GetClassName() == time_view()->GetClassName());
+  }
+
+  // Only one visible tray item, padding should not be visible.
+  EXPECT_FALSE(vertical_clock_padding()->GetVisible());
+
+  // Sets another tray item visibility to true.
+  ime_mode_view()->SetVisible(true);
+
+  // Two visible tray items, padding should be visible.
+  EXPECT_TRUE(vertical_clock_padding()->GetVisible());
+}
+
+TEST_F(UnifiedSystemTrayTest, VerticalClockPaddingAfterAlignmentChange) {
+  auto* shelf = GetPrimaryShelf();
+
+  // Padding can only be visible if shelf is vertically aligned.
+  shelf->SetAlignment(ShelfAlignment::kLeft);
+
+  // Ensure two tray items are visible, padding should be visible.
+  time_view()->SetVisible(true);
+  ime_mode_view()->SetVisible(true);
+
+  EXPECT_TRUE(vertical_clock_padding()->GetVisible());
+
+  // Padding should not be visible when shelf is horizontal.
+  shelf->SetAlignment(ShelfAlignment::kBottom);
+  EXPECT_FALSE(vertical_clock_padding()->GetVisible());
 }
 
 }  // namespace ash

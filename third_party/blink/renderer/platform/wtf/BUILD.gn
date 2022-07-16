@@ -10,13 +10,6 @@ import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/config.gni")
 
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  header_dir = "third_party/blink/renderer/platform/wtf"
-
-  flags = [ "USE_V8_OILPAN=$enable_blink_heap_use_v8_oilpan" ]
-}
-
 visibility = [
   ":*",
   "//:gn_all",
@@ -74,6 +67,7 @@ component("wtf") {
     "dynamic_annotations.h",
     "forward.h",
     "functional.h",
+    "gc_plugin_ignore.h",
     "get_ptr.h",
     "hash_counted_set.h",
     "hash_functions.h",
@@ -86,7 +80,6 @@ component("wtf") {
     "hash_traits.h",
     "leak_annotations.h",
     "linked_hash_set.h",
-    "list_hash_set.h",
     "lru_cache.h",
     "math_extras.h",
     "pod_arena.h",
@@ -208,14 +201,10 @@ component("wtf") {
 
   public_configs = [
     ":wtf_config",
-
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//third_party/blink/renderer:features",
   ]
 
   deps = [
-    ":buildflags",
     "//base/allocator:buildflags",
     "//build:chromeos_buildflags",
 
@@ -230,9 +219,7 @@ component("wtf") {
     "//third_party/icu",
   ]
 
-  if (enable_blink_heap_use_v8_oilpan) {
-    public_deps += [ "//v8:cppgc_headers" ]
-  }
+  public_deps += [ "//v8:cppgc_headers" ]
 
   # Rules changing the |sources| list are temporarily commented out, until
   # those files are actually moved to here.
@@ -307,7 +294,6 @@ source_set("wtf_unittests_sources") {
     "hash_map_test.cc",
     "hash_set_test.cc",
     "linked_hash_set_test.cc",
-    "list_hash_set_test.cc",
     "lru_cache_test.cc",
     "math_extras_test.cc",
     "pod_arena_test.cc",
@@ -345,9 +331,6 @@ source_set("wtf_unittests_sources") {
     "vector_backed_linked_list_test.cc",
     "vector_test.cc",
   ]
-
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
   if (is_win) {
     cflags = [ "/wd4068" ]  # Unknown pragma.

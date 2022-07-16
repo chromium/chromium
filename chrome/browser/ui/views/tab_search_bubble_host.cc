@@ -9,9 +9,11 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
@@ -98,6 +100,12 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
     bool triggered_by_keyboard_shortcut) {
   if (webui_bubble_manager_.GetBubbleWidget())
     return false;
+
+  // Close the Tab Search IPH if it is showing.
+  FeaturePromoControllerViews* controller =
+      FeaturePromoControllerViews::GetForView(button_);
+  if (controller)
+    controller->CloseBubble(feature_engagement::kIPHTabSearchFeature);
 
   bubble_created_time_ = base::TimeTicks::Now();
   webui_bubble_manager_.ShowBubble();

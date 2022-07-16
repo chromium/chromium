@@ -4,11 +4,11 @@
 
 #include "fuchsia/engine/context_provider_impl.h"
 
-#include <chromium/internal/cpp/fidl.h>
 #include <lib/sys/cpp/service_directory.h>
 #include <utility>
 
 #include "base/logging.h"
+#include "fuchsia/engine/fidl/chromium/internal/cpp/fidl.h"
 
 ContextProviderImpl::ContextProviderImpl() = default;
 

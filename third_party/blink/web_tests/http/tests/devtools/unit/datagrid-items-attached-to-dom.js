@@ -1,5 +1,5 @@
 (async function() {
-  await TestRunner.loadModule('data_grid');
+  await TestRunner.loadLegacyModule('data_grid');
 
   TestRunner.addResult("This tests viewport datagrid.");
 

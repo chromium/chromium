@@ -137,12 +137,12 @@ std::u16string FileSystemAccessPermissionView::GetWindowTitle() const {
       } else {
         return l10n_util::GetStringFUTF16(
             IDS_FILE_SYSTEM_ACCESS_READ_FILE_PERMISSION_TITLE,
-            request_.path.BaseName().LossyDisplayName());
+            file_system_access_ui_helper::GetPathForDisplay(request_.path));
       }
     case AccessType::kWrite:
       return l10n_util::GetStringFUTF16(
           IDS_FILE_SYSTEM_ACCESS_WRITE_PERMISSION_TITLE,
-          request_.path.BaseName().LossyDisplayName());
+          file_system_access_ui_helper::GetPathForDisplay(request_.path));
     case AccessType::kReadWrite:
       if (request_.handle_type == HandleType::kDirectory) {
         return l10n_util::GetStringUTF16(
@@ -150,7 +150,7 @@ std::u16string FileSystemAccessPermissionView::GetWindowTitle() const {
       } else {
         return l10n_util::GetStringFUTF16(
             IDS_FILE_SYSTEM_ACCESS_EDIT_FILE_PERMISSION_TITLE,
-            request_.path.BaseName().LossyDisplayName());
+            file_system_access_ui_helper::GetPathForDisplay(request_.path));
       }
   }
   NOTREACHED();

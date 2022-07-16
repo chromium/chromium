@@ -4,9 +4,13 @@
 
 // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/EyeDropper/explainer.md
 
-[Exposed=Window, RuntimeEnabled=EyeDropperAPI]
-interface EyeDropper {
+[
+  Exposed=Window,
+  SecureContext,
+  RuntimeEnabled=EyeDropperAPI
+] interface EyeDropper {
   [CallWith=ExecutionContext] constructor();
 
-  [CallWith=ScriptState, RaisesException] Promise<ColorSelectionResult> open();
+  [CallWith=ScriptState, RaisesException] Promise<ColorSelectionResult> open(
+      optional ColorSelectionOptions options = {});
 };

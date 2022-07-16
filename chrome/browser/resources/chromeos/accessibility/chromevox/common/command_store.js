@@ -337,6 +337,18 @@ CommandStore.CMD_ALLOWLIST = {
     msgId: 'next_similar_item',
     category: 'navigation'
   },
+  'previousInvalidItem': {
+    backward: true,
+    announce: true,
+    msgId: 'previous_invalid_item',
+    category: 'navigation'
+  },
+  'nextInvalidItem': {
+    forward: true,
+    announce: true,
+    msgId: 'next_invalid_item',
+    category: 'navigation'
+  },
 
   'jumpToTop': {
     forward: true,

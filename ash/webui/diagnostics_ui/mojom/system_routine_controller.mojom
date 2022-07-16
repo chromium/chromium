@@ -23,6 +23,9 @@ enum RoutineType {
   kHttpFirewall,
   kHttpsFirewall,
   kHttpsLatency,
+  kArcHttp,
+  kArcPing,
+  kArcDnsResolution
 };
 
 enum StandardRoutineResult {

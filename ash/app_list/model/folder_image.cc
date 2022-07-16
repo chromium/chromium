@@ -13,7 +13,6 @@
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
@@ -48,6 +47,10 @@ class FolderImageSource : public gfx::CanvasImageSource {
   FolderImageSource(const AppListConfig& app_list_config,
                     const Icons& icons,
                     const gfx::Size& size);
+
+  FolderImageSource(const FolderImageSource&) = delete;
+  FolderImageSource& operator=(const FolderImageSource&) = delete;
+
   ~FolderImageSource() override;
 
  private:
@@ -63,8 +66,6 @@ class FolderImageSource : public gfx::CanvasImageSource {
   const AppListConfig& app_list_config_;
   Icons icons_;
   gfx::Size size_;
-
-  DISALLOW_COPY_AND_ASSIGN(FolderImageSource);
 };
 
 FolderImageSource::FolderImageSource(const AppListConfig& app_list_config,
@@ -115,9 +116,6 @@ void FolderImageSource::DrawIcon(gfx::Canvas* canvas,
 }
 
 void FolderImageSource::Draw(gfx::Canvas* canvas) {
-  gfx::PointF bubble_center(size().width() / 2, size().height() / 2);
-  bubble_center.Offset(0, -app_list_config_.folder_bubble_y_offset());
-
   // Draw circle for folder bubble.
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -125,6 +123,7 @@ void FolderImageSource::Draw(gfx::Canvas* canvas) {
   flags.setColor(AppListColorProvider::Get()
                      ? AppListColorProvider::Get()->GetFolderBubbleColor()
                      : kDefaultBubbleColor);
+  const gfx::PointF bubble_center(size().width() / 2, size().height() / 2);
   canvas->DrawCircle(bubble_center, app_list_config_.folder_bubble_radius(),
                      flags);
 

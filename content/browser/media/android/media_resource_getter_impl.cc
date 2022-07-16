@@ -5,9 +5,8 @@
 #include "content/browser/media/android/media_resource_getter_impl.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -28,6 +27,7 @@
 #include "net/http/http_auth.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -35,8 +35,8 @@ namespace content {
 
 namespace {
 
-// Returns the cookie manager for the |browser_context| at the client end of the
-// mojo pipe. This will be restricted to the origin of |url|, and will apply
+// Returns the cookie manager for the `browser_context` at the client end of the
+// mojo pipe. This will be restricted to the origin of `url`, and will apply
 // policies from user and ContentBrowserClient to cookie operations.
 mojo::PendingRemote<network::mojom::RestrictedCookieManager>
 GetRestrictedCookieManagerForContext(
@@ -114,7 +114,10 @@ void RequestPlatformPathFromFileSystemURL(
     media::MediaResourceGetter::GetPlatformPathCB callback) {
   DCHECK(file_system_context->default_file_task_runner()
              ->RunsTasksInCurrentSequence());
+  // TODO (https://crbug.com/1258029): determine how to pipe in the correct
+  // third-party StorageKey and replace the in-line conversion below.
   SyncGetPlatformPath(file_system_context.get(), render_process_id, url,
+                      blink::StorageKey(url::Origin::Create(url)),
                       base::BindOnce(&OnSyncGetPlatformPathDone,
                                      file_system_context, std::move(callback)));
 }
@@ -161,13 +164,12 @@ void MediaResourceGetterImpl::GetAuthCredentials(
                          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void MediaResourceGetterImpl::GetCookies(const GURL& url,
-                                         const GURL& site_for_cookies_url,
-                                         const url::Origin& top_frame_origin,
-                                         GetCookieCB callback) {
+void MediaResourceGetterImpl::GetCookies(
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_frame_origin,
+    GetCookieCB callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  net::SiteForCookies site_for_cookies =
-      net::SiteForCookies::FromUrl(site_for_cookies_url);
 
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();

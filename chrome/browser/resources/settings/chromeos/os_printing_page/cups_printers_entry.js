@@ -37,7 +37,18 @@ Polymer({
      */
     subtext: {type: String, value: ''},
 
+    /**
+     * This value is set to true if the printer is in saving mode.
+     */
     savingPrinter: Boolean,
+
+    /**
+     * This value is set to true if UserPrintersAllowed policy is enabled.
+     */
+    userPrintersAllowed: {
+      type: Boolean,
+      value: false,
+    }
   },
 
   /**
@@ -97,6 +108,14 @@ Polymer({
    */
   isPrintServerPrinter_() {
     return this.printerEntry.printerType === PrinterType.PRINTSERVER;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isConfigureDisabled_() {
+    return !this.userPrintersAllowed || this.savingPrinter;
   },
 
   getSaveButtonAria_() {

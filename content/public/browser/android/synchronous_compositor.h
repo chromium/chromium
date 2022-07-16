@@ -25,7 +25,6 @@ class SkCanvas;
 
 namespace gfx {
 class Point;
-class ScrollOffset;
 class Transform;
 }  // namespace gfx
 
@@ -50,6 +49,10 @@ class CONTENT_EXPORT SynchronousCompositor {
 
   struct Frame {
     Frame();
+
+    Frame(const Frame&) = delete;
+    Frame& operator=(const Frame&) = delete;
+
     ~Frame();
 
     // Movable type.
@@ -61,9 +64,6 @@ class CONTENT_EXPORT SynchronousCompositor {
     // Invalid if |frame| is nullptr.
     viz::LocalSurfaceId local_surface_id;
     absl::optional<viz::HitTestRegionList> hit_test_region_list;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Frame);
   };
 
   class FrameFuture : public base::RefCountedThreadSafe<FrameFuture> {
@@ -119,7 +119,7 @@ class CONTENT_EXPORT SynchronousCompositor {
   // scroll offset of the root layer. |root_offset| must be in physical pixel
   // scale if --use-zoom-for-dsf is enabled. Otherwise, it must be in DIP scale.
   virtual void DidChangeRootLayerScrollOffset(
-      const gfx::ScrollOffset& root_offset) = 0;
+      const gfx::Vector2dF& root_offset) = 0;
 
   // Allows embedder to synchronously update the zoom level, ie page scale
   // factor, around the anchor point.

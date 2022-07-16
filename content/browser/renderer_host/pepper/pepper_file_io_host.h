@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/files/file.h"
 #include "base/files/file_proxy.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
@@ -43,6 +42,10 @@ class PepperFileIOHost : public ppapi::host::ResourceHost,
   PepperFileIOHost(BrowserPpapiHostImpl* host,
                    PP_Instance instance,
                    PP_Resource resource);
+
+  PepperFileIOHost(const PepperFileIOHost&) = delete;
+  PepperFileIOHost& operator=(const PepperFileIOHost&) = delete;
+
   ~PepperFileIOHost() override;
 
   // ppapi::host::ResourceHost override.
@@ -147,8 +150,6 @@ class PepperFileIOHost : public ppapi::host::ResourceHost,
   bool check_quota_;
 
   ppapi::FileIOStateManager state_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperFileIOHost);
 };
 
 }  // namespace content

@@ -6,9 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_NOTIFICATION_CONTROLLER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/time/time.h"
-#include "base/util/timer/wall_clock_timer.h"
+#include "base/timer/wall_clock_timer.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
@@ -54,14 +53,19 @@ class RelaunchNotificationController : public UpgradeObserver {
   // |upgrade_detector| is expected to be the process-wide detector, and must
   // outlive the controller.
   explicit RelaunchNotificationController(UpgradeDetector* upgrade_detector);
+
+  RelaunchNotificationController(const RelaunchNotificationController&) =
+      delete;
+  RelaunchNotificationController& operator=(
+      const RelaunchNotificationController&) = delete;
+
   ~RelaunchNotificationController() override;
 
  protected:
   // The length of the final countdown given to the user before the browser is
   // summarily relaunched on Chrome desktop, or the device is rebooted on
   // Chrome OS.
-  static constexpr base::TimeDelta kRelaunchGracePeriod =
-      base::TimeDelta::FromHours(1);
+  static constexpr base::TimeDelta kRelaunchGracePeriod = base::Hours(1);
 
   RelaunchNotificationController(UpgradeDetector* upgrade_detector,
                                  const base::Clock* clock,
@@ -194,14 +198,12 @@ class RelaunchNotificationController : public UpgradeObserver {
   // A timer used either to repeatedly reshow the relaunch recommended bubble
   // once the high annoyance level has been reached, or to trigger browser
   // relaunch once the relaunch required dialog's deadline is reached.
-  util::WallClockTimer timer_;
+  base::WallClockTimer timer_;
 
   // A flag to denote that the relaunch notification type policy value has been
   // overridden to required. Changes to the policy value will not affect the
   // notification type.
   bool notification_type_required_overridden_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RelaunchNotificationController);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_NOTIFICATION_CONTROLLER_H_

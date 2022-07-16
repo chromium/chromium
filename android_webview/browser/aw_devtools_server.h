@@ -13,6 +13,10 @@ namespace android_webview {
 class AwDevToolsServer {
  public:
   AwDevToolsServer();
+
+  AwDevToolsServer(const AwDevToolsServer&) = delete;
+  AwDevToolsServer& operator=(const AwDevToolsServer&) = delete;
+
   ~AwDevToolsServer();
 
   // Opens linux abstract socket to be ready for remote debugging.
@@ -25,7 +29,6 @@ class AwDevToolsServer {
 
  private:
   bool is_started_;
-  DISALLOW_COPY_AND_ASSIGN(AwDevToolsServer);
 };
 
 }  // namespace android_webview

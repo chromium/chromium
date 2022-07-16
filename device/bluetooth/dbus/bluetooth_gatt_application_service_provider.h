@@ -26,6 +26,11 @@ class BluetoothLocalGattServiceBlueZ;
 // hierarchies.
 class DEVICE_BLUETOOTH_EXPORT BluetoothGattApplicationServiceProvider {
  public:
+  BluetoothGattApplicationServiceProvider(
+      const BluetoothGattApplicationServiceProvider&) = delete;
+  BluetoothGattApplicationServiceProvider& operator=(
+      const BluetoothGattApplicationServiceProvider&) = delete;
+
   virtual ~BluetoothGattApplicationServiceProvider();
 
   // Creates individual service providers for all the attributes managed by the
@@ -63,9 +68,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattApplicationServiceProvider {
   // List of GATT Descriptor service providers managed by this object manager.
   std::vector<std::unique_ptr<BluetoothGattDescriptorServiceProvider>>
       descriptor_providers_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattApplicationServiceProvider);
 };
 
 }  // namespace bluez

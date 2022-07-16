@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -28,6 +27,10 @@ class OneGoogleBarLoaderImpl : public OneGoogleBarLoader {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& application_locale,
       bool account_consistency_mirror_required);
+
+  OneGoogleBarLoaderImpl(const OneGoogleBarLoaderImpl&) = delete;
+  OneGoogleBarLoaderImpl& operator=(const OneGoogleBarLoaderImpl&) = delete;
+
   ~OneGoogleBarLoaderImpl() override;
 
   void Load(OneGoogleCallback callback) override;
@@ -57,8 +60,6 @@ class OneGoogleBarLoaderImpl : public OneGoogleBarLoader {
   std::string additional_query_params_;
 
   base::WeakPtrFactory<OneGoogleBarLoaderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OneGoogleBarLoaderImpl);
 };
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_LOADER_IMPL_H_

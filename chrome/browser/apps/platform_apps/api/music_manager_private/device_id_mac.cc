@@ -170,9 +170,9 @@ std::string GetMacAddress(IsValidMacAddressCallback is_valid_mac_address) {
                                                 base::BlockingType::MAY_BLOCK);
 
   mach_port_t port;
-  kern_return_t kr = IOMasterPort(MACH_PORT_NULL, &port);
+  kern_return_t kr = IOMasterPort(MACH_PORT_NULL, &port);  // nocheck
   if (kr != KERN_SUCCESS) {
-    LOG(ERROR) << "IOMasterPort failed: " << kr;
+    LOG(ERROR) << "IOMasterPort failed: " << kr;  // nocheck
     return "";
   }
 

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -55,10 +54,13 @@ enum ModelTypeEntityChange {
 class TwoClientAutofillProfileSyncTest : public SyncTest {
  public:
   TwoClientAutofillProfileSyncTest() : SyncTest(TWO_CLIENT) {}
-  ~TwoClientAutofillProfileSyncTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientAutofillProfileSyncTest);
+  TwoClientAutofillProfileSyncTest(const TwoClientAutofillProfileSyncTest&) =
+      delete;
+  TwoClientAutofillProfileSyncTest& operator=(
+      const TwoClientAutofillProfileSyncTest&) = delete;
+
+  ~TwoClientAutofillProfileSyncTest() override {}
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,

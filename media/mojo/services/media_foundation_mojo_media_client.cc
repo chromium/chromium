@@ -11,9 +11,7 @@
 
 namespace media {
 
-MediaFoundationMojoMediaClient::MediaFoundationMojoMediaClient(
-    const base::FilePath& user_data_dir)
-    : user_data_dir_(user_data_dir) {
+MediaFoundationMojoMediaClient::MediaFoundationMojoMediaClient() {
   DVLOG_FUNC(1);
 }
 
@@ -25,11 +23,12 @@ std::unique_ptr<Renderer>
 MediaFoundationMojoMediaClient::CreateMediaFoundationRenderer(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojom::FrameInterfaceFactory* frame_interfaces,
+    mojo::PendingRemote<mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
         renderer_extension_receiver) {
   DVLOG_FUNC(1);
   return std::make_unique<MediaFoundationRendererWrapper>(
-      std::move(task_runner), frame_interfaces,
+      std::move(task_runner), frame_interfaces, std::move(media_log_remote),
       std::move(renderer_extension_receiver));
 }
 
@@ -37,7 +36,7 @@ std::unique_ptr<CdmFactory> MediaFoundationMojoMediaClient::CreateCdmFactory(
     mojom::FrameInterfaceFactory* frame_interfaces) {
   DVLOG_FUNC(1);
   return std::make_unique<MediaFoundationCdmFactory>(
-      std::make_unique<MojoCdmHelper>(frame_interfaces), user_data_dir_);
+      std::make_unique<MojoCdmHelper>(frame_interfaces));
 }
 
 }  // namespace media

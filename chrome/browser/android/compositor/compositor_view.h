@@ -9,7 +9,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/resources/ui_resource_client.h"
@@ -46,6 +45,9 @@ class CompositorView : public content::CompositorClient,
                  jboolean low_mem_device,
                  ui::WindowAndroid* window_android,
                  TabContentManager* tab_content_manager);
+
+  CompositorView(const CompositorView&) = delete;
+  CompositorView& operator=(const CompositorView&) = delete;
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& object);
 
@@ -115,6 +117,7 @@ class CompositorView : public content::CompositorClient,
   void PreserveChildSurfaceControls(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& object);
+  void SetDidSwapBuffersCallbackEnabled(JNIEnv* env, jboolean enable);
 
   // CompositorClient implementation:
   void RecreateSurface() override;
@@ -149,8 +152,6 @@ class CompositorView : public content::CompositorClient,
   bool overlay_immersive_ar_mode_;
 
   base::WeakPtrFactory<CompositorView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorView);
 };
 
 }  // namespace android

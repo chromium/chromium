@@ -25,11 +25,11 @@ GestureDetector::Config BuildGestureDetectorConfig(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   GestureDetector::Config config;
   config.longpress_timeout =
-      base::TimeDelta::FromMilliseconds(gesture_config.long_press_time_in_ms());
-  config.showpress_timeout = base::TimeDelta::FromMilliseconds(
-      gesture_config.show_press_delay_in_ms());
-  config.double_tap_timeout = base::TimeDelta::FromMilliseconds(
-      gesture_config.double_tap_timeout_in_ms());
+      base::Milliseconds(gesture_config.long_press_time_in_ms());
+  config.showpress_timeout =
+      base::Milliseconds(gesture_config.show_press_delay_in_ms());
+  config.double_tap_timeout =
+      base::Milliseconds(gesture_config.double_tap_timeout_in_ms());
   config.touch_slop = gesture_config.max_touch_move_in_pixels_for_click();
   config.double_tap_slop =
       gesture_config.max_distance_between_taps_for_double_tap();
@@ -42,7 +42,7 @@ GestureDetector::Config BuildGestureDetectorConfig(
   config.two_finger_tap_enabled = gesture_config.two_finger_tap_enabled();
   config.two_finger_tap_max_separation =
       gesture_config.max_distance_for_two_finger_tap_in_pixels();
-  config.two_finger_tap_timeout = base::TimeDelta::FromMilliseconds(
+  config.two_finger_tap_timeout = base::Milliseconds(
       gesture_config.max_touch_down_duration_for_click_in_ms());
   config.single_tap_repeat_interval = gesture_config.max_tap_count();
   config.velocity_tracker_strategy = gesture_config.velocity_tracker_strategy();

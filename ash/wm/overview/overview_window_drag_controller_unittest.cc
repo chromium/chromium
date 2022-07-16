@@ -69,6 +69,9 @@ class WindowCloseWaiter : public aura::WindowObserver {
     window_->AddObserver(this);
   }
 
+  WindowCloseWaiter(const WindowCloseWaiter&) = delete;
+  WindowCloseWaiter& operator=(const WindowCloseWaiter&) = delete;
+
   ~WindowCloseWaiter() override {
     if (window_)
       window_->RemoveObserver(this);
@@ -91,8 +94,6 @@ class WindowCloseWaiter : public aura::WindowObserver {
  private:
   aura::Window* window_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowCloseWaiter);
 };
 
 }  // namespace
@@ -187,7 +188,7 @@ TEST_F(OverviewWindowDragControllerTest,
   EXPECT_TRUE(overview_grid->empty());
   const Desk* desk_2 = controller->desks()[1].get();
   EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
-  EXPECT_TRUE(overview_session->no_windows_widget_for_testing());
+  EXPECT_TRUE(const_cast<OverviewGrid*>(overview_grid)->no_windows_widget());
 }
 
 // Test that if window is destroyed during dragging, no crash should happen and
@@ -221,6 +222,12 @@ TEST_F(OverviewWindowDragControllerTest, WindowDestroyedDuringDragging) {
 class OverviewWindowDragControllerDesksPortraitTabletTest : public AshTestBase {
  public:
   OverviewWindowDragControllerDesksPortraitTabletTest() = default;
+
+  OverviewWindowDragControllerDesksPortraitTabletTest(
+      const OverviewWindowDragControllerDesksPortraitTabletTest&) = delete;
+  OverviewWindowDragControllerDesksPortraitTabletTest& operator=(
+      const OverviewWindowDragControllerDesksPortraitTabletTest&) = delete;
+
   ~OverviewWindowDragControllerDesksPortraitTabletTest() override = default;
 
   OverviewController* overview_controller() {
@@ -270,7 +277,7 @@ class OverviewWindowDragControllerDesksPortraitTabletTest : public AshTestBase {
     test_api.SetDisplayRotation(display::Display::ROTATE_270,
                                 display::Display::RotationSource::ACTIVE);
     EXPECT_EQ(test_api.GetCurrentOrientation(),
-              OrientationLockType::kPortraitPrimary);
+              chromeos::OrientationType::kPortraitPrimary);
     // Enter tablet mode. Avoid TabletModeController::OnGetSwitchStates() from
     // disabling tablet mode.
     base::RunLoop().RunUntilIdle();
@@ -311,9 +318,6 @@ class OverviewWindowDragControllerDesksPortraitTabletTest : public AshTestBase {
     EXPECT_EQ(GetExpectedDesksBarShiftAmount(),
               desks_bar_widget()->GetWindowBoundsInScreen().y());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverviewWindowDragControllerDesksPortraitTabletTest);
 };
 
 TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,

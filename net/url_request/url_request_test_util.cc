@@ -11,8 +11,8 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/supports_user_data.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/host_port_pair.h"
@@ -87,7 +87,10 @@ void TestURLRequestContext::Init() {
 
   if (!host_resolver())
     context_storage_.set_host_resolver(
-        std::unique_ptr<HostResolver>(new MockCachingHostResolver()));
+        std::unique_ptr<HostResolver>(new MockCachingHostResolver(
+            /*cache_invalidation_num=*/0,
+            /*default_result=*/net::MockHostResolverBase::RuleResolver::
+                GetLocalhostResult())));
   if (!proxy_resolution_service())
     context_storage_.set_proxy_resolution_service(
         ConfiguredProxyResolutionService::CreateDirect());
@@ -451,8 +454,8 @@ int TestNetworkDelegate::OnBeforeURLRequest(URLRequest* request,
 
 int TestNetworkDelegate::OnBeforeStartTransaction(
     URLRequest* request,
-    CompletionOnceCallback callback,
-    HttpRequestHeaders* headers) {
+    const HttpRequestHeaders& headers,
+    OnBeforeStartTransactionCallback callback) {
   if (before_start_transaction_fails_)
     return ERR_FAILED;
 
@@ -461,7 +464,8 @@ int TestNetworkDelegate::OnBeforeStartTransaction(
   event_order_[req_id] += "OnBeforeStartTransaction\n";
   EXPECT_TRUE(next_states_[req_id] & kStageBeforeStartTransaction)
       << event_order_[req_id];
-  next_states_[req_id] = kStageHeadersReceived | kStageCompletedError;
+  next_states_[req_id] =
+      kStageHeadersReceived | kStageCompletedError | kStageBeforeRedirect;
   before_start_transaction_count_++;
   return OK;
 }

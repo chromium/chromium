@@ -33,9 +33,12 @@ class Deobfuscator(object):
     self._proc = None
     # Start process eagerly to hide start-up latency.
     self._proc_start_time = time.time()
-    self._proc = subprocess.Popen(
-        cmd, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-        close_fds=True)
+    self._proc = subprocess.Popen(cmd,
+                                  bufsize=1,
+                                  stdin=subprocess.PIPE,
+                                  stdout=subprocess.PIPE,
+                                  universal_newlines=True,
+                                  close_fds=True)
 
   def IsClosed(self):
     return self._closed_called or self._proc.returncode is not None

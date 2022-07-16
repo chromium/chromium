@@ -9,8 +9,8 @@
 
 #include "base/callback.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/idle_detector.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chrome/browser/chromeos/idle_detector.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/offline_login_screen_handler.h"
@@ -41,7 +41,7 @@ class OfflineLoginScreen
   // Unbind() on the associated View if this class is destroyed before that.
   void OnViewDestroyed(OfflineLoginView* view);
 
-  void LoadOffline(std::string email);
+  void LoadOffline();
 
   void HandleCompleteAuth(const std::string& username,
                           const std::string& password);

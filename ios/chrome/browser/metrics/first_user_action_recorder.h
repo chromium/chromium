@@ -47,6 +47,10 @@ class FirstUserActionRecorder {
   };
 
   explicit FirstUserActionRecorder(base::TimeDelta background_duration);
+
+  FirstUserActionRecorder(const FirstUserActionRecorder&) = delete;
+  FirstUserActionRecorder& operator=(const FirstUserActionRecorder&) = delete;
+
   virtual ~FirstUserActionRecorder();
 
   // Records that no applicable user action occurred.
@@ -95,8 +99,6 @@ class FirstUserActionRecorder {
   // A potential action that needs to be confirmed if there is no other relevant
   // action.
   base::CancelableOnceClosure rethrow_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FirstUserActionRecorder);
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_FIRST_USER_ACTION_RECORDER_H_

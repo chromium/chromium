@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_MEDIA_URL_PROVISION_FETCHER_H_
 #define CONTENT_BROWSER_MEDIA_URL_PROVISION_FETCHER_H_
 
-#include "base/macros.h"
 #include "media/base/provision_fetcher.h"
 
 namespace network {
@@ -21,6 +20,10 @@ class URLProvisionFetcher : public media::ProvisionFetcher {
  public:
   explicit URLProvisionFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  URLProvisionFetcher(const URLProvisionFetcher&) = delete;
+  URLProvisionFetcher& operator=(const URLProvisionFetcher&) = delete;
+
   ~URLProvisionFetcher() override;
 
   // media::ProvisionFetcher implementation.
@@ -34,8 +37,6 @@ class URLProvisionFetcher : public media::ProvisionFetcher {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   media::ProvisionFetcher::ResponseCB response_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLProvisionFetcher);
 };
 
 }  // namespace content

@@ -19,13 +19,14 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
+#include "base/macros.h"
 #include "base/notreached.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -269,7 +270,7 @@ class MockFileSystemAccessContext
   }
 
   void DeserializeHandle(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const std::vector<uint8_t>& bits,
       mojo::PendingReceiver<::blink::mojom::FileSystemAccessTransferToken>
           token) override {
@@ -295,6 +296,10 @@ class IndexedDBBackingStoreTest : public testing::Test {
             base::MakeRefCounted<storage::MockQuotaManagerProxy>(
                 nullptr,
                 base::ThreadTaskRunnerHandle::Get())) {}
+
+  IndexedDBBackingStoreTest(const IndexedDBBackingStoreTest&) = delete;
+  IndexedDBBackingStoreTest& operator=(const IndexedDBBackingStoreTest&) =
+      delete;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -464,9 +469,6 @@ class IndexedDBBackingStoreTest : public testing::Test {
   IndexedDBKey key2_;
   IndexedDBValue value1_;
   IndexedDBValue value2_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBBackingStoreTest);
 };
 
 enum class ExternalObjectTestType {
@@ -480,6 +482,11 @@ class IndexedDBBackingStoreTestWithExternalObjects
       public IndexedDBBackingStoreTest {
  public:
   IndexedDBBackingStoreTestWithExternalObjects() = default;
+
+  IndexedDBBackingStoreTestWithExternalObjects(
+      const IndexedDBBackingStoreTestWithExternalObjects&) = delete;
+  IndexedDBBackingStoreTestWithExternalObjects& operator=(
+      const IndexedDBBackingStoreTestWithExternalObjects&) = delete;
 
   virtual ExternalObjectTestType TestType() { return GetParam(); }
 
@@ -499,16 +506,14 @@ class IndexedDBBackingStoreTestWithExternalObjects
     // useful keys and values during tests
     if (IncludesBlobs()) {
       external_objects_.push_back(CreateBlobInfo(u"blob type", 1));
-      external_objects_.push_back(
-          CreateBlobInfo(u"file name", u"file type",
-                         base::Time::FromDeltaSinceWindowsEpoch(
-                             base::TimeDelta::FromMicroseconds(kTime1)),
-                         kBlobFileData1.size()));
-      external_objects_.push_back(
-          CreateBlobInfo(u"file name", u"file type",
-                         base::Time::FromDeltaSinceWindowsEpoch(
-                             base::TimeDelta::FromMicroseconds(kTime2)),
-                         kBlobFileData2.size()));
+      external_objects_.push_back(CreateBlobInfo(
+          u"file name", u"file type",
+          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(kTime1)),
+          kBlobFileData1.size()));
+      external_objects_.push_back(CreateBlobInfo(
+          u"file name", u"file type",
+          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(kTime2)),
+          kBlobFileData2.size()));
     }
     if (IncludesFileSystemAccessHandles()) {
       external_objects_.push_back(CreateFileSystemAccessHandle());
@@ -758,8 +763,6 @@ class IndexedDBBackingStoreTestWithExternalObjects
   std::vector<IndexedDBExternalObject> external_objects_;
 
   std::vector<std::string> blob_remote_uuids_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBBackingStoreTestWithExternalObjects);
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1037,10 +1040,10 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRange) {
             blink::mojom::IDBTransactionMode::ReadWrite);
     transaction1->Begin(CreateDummyLock());
     IndexedDBBackingStore::RecordIdentifier record;
-    for (size_t i = 0; i < values.size(); ++i) {
+    for (size_t j = 0; j < values.size(); ++j) {
       EXPECT_TRUE(backing_store()
                       ->PutRecord(transaction1.get(), database_id,
-                                  object_store_id, keys[i], &values[i], &record)
+                                  object_store_id, keys[j], &values[j], &record)
                       .ok());
     }
 
@@ -1133,10 +1136,10 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
     transaction1->Begin(CreateDummyLock());
 
     IndexedDBBackingStore::RecordIdentifier record;
-    for (size_t i = 0; i < values.size(); ++i) {
+    for (size_t j = 0; j < values.size(); ++j) {
       EXPECT_TRUE(backing_store()
                       ->PutRecord(transaction1.get(), database_id,
-                                  object_store_id, keys[i], &values[i], &record)
+                                  object_store_id, keys[j], &values[j], &record)
                       .ok());
     }
     // Start committing transaction1.
@@ -2257,10 +2260,10 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
             blink::mojom::IDBTransactionMode::ReadWrite);
     transaction1->Begin(CreateDummyLock());
     IndexedDBBackingStore::RecordIdentifier record;
-    for (size_t i = 0; i < values.size(); ++i) {
+    for (size_t j = 0; j < values.size(); ++j) {
       EXPECT_TRUE(backing_store()
                       ->PutRecord(transaction1.get(), database_id,
-                                  write_object_store_id, keys[i], &values[i],
+                                  write_object_store_id, keys[j], &values[j],
                                   &record)
                       .ok());
     }

@@ -7,6 +7,7 @@ module recording.mojom;
 import "media/mojo/mojom/audio_stream_factory.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
@@ -58,6 +59,8 @@ interface RecordingServiceClient {
 // video frames, and writes the WebM muxed video chunks to directly to a file
 // whose path was given to the Record*() functions.
 // Note that a maximum of one screen recording can be done at any time.
+// TODO(https://crbug.com/1147991) Explore alternative sandboxing.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
 interface RecordingService {
   // All the below Record*() interfaces, take a pending remote to a client (e.g.
   // Ash) which will be notified when recording finishes and all the webm

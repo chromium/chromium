@@ -27,6 +27,9 @@ class LocalMuter final : public media::mojom::LocalMuter,
   LocalMuter(LoopbackCoordinator* coordinator,
              const base::UnguessableToken& group_id);
 
+  LocalMuter(const LocalMuter&) = delete;
+  LocalMuter& operator=(const LocalMuter&) = delete;
+
   ~LocalMuter() final;
 
   const base::UnguessableToken& group_id() const { return group_id_; }
@@ -52,8 +55,6 @@ class LocalMuter final : public media::mojom::LocalMuter,
   base::OnceClosure all_bindings_lost_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalMuter);
 };
 
 }  // namespace audio

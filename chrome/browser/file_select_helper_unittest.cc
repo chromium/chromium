@@ -79,6 +79,9 @@ class FileSelectHelperTest : public testing::Test {
  public:
   FileSelectHelperTest() {}
 
+  FileSelectHelperTest(const FileSelectHelperTest&) = delete;
+  FileSelectHelperTest& operator=(const FileSelectHelperTest&) = delete;
+
  protected:
   void SetUp() override {
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &data_dir_));
@@ -88,9 +91,6 @@ class FileSelectHelperTest : public testing::Test {
 
   // The path to input data used in tests.
   base::FilePath data_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileSelectHelperTest);
 };
 
 TEST_F(FileSelectHelperTest, IsAcceptTypeValid) {

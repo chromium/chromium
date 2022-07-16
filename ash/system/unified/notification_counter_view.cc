@@ -71,6 +71,9 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
     DCHECK_LE(count_, kTrayNotificationMaxCount + 1);
   }
 
+  NumberIconImageSource(const NumberIconImageSource&) = delete;
+  NumberIconImageSource& operator=(const NumberIconImageSource&) = delete;
+
   void Draw(gfx::Canvas* canvas) override {
     SkColor tray_icon_color =
         TrayIconColor(Shell::Get()->session_controller()->GetSessionState());
@@ -97,8 +100,6 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
 
  private:
   size_t count_;
-
-  DISALLOW_COPY_AND_ASSIGN(NumberIconImageSource);
 };
 
 }  // namespace
@@ -159,6 +160,13 @@ void NotificationCounterView::HandleLocaleChange() {
   Update();
 }
 
+void NotificationCounterView::OnThemeChanged() {
+  TrayItemView::OnThemeChanged();
+  image_view()->SetImage(
+      gfx::CanvasImageSource::MakeImageSkia<NumberIconImageSource>(
+          count_for_display_));
+}
+
 const char* NotificationCounterView::GetClassName() const {
   return "NotificationCounterView";
 }
@@ -190,6 +198,11 @@ void QuietModeView::Update() {
 void QuietModeView::HandleLocaleChange() {
   image_view()->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_QUIET_MODE_TOOLTIP));
+}
+
+void QuietModeView::OnThemeChanged() {
+  TrayItemView::OnThemeChanged();
+  Update();
 }
 
 const char* QuietModeView::GetClassName() const {

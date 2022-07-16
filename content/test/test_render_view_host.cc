@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -26,16 +27,18 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/drop_data.h"
+#include "content/public/common/page_visibility_state.h"
 #include "content/test/test_page_broadcast.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/mojom/page/drag.mojom.h"
+#include "third_party/blink/public/mojom/drag/drag.mojom.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer_type.h"
@@ -109,7 +112,10 @@ bool TestRenderWidgetHostView::HasFocus() {
   return true;
 }
 
-void TestRenderWidgetHostView::Show() {
+void TestRenderWidgetHostView::ShowWithVisibility(
+    PageVisibilityState page_visibility) {
+  page_visibility_ = page_visibility;
+  OnShowWithPageVisibility(page_visibility_);
   is_showing_ = true;
   is_occluded_ = false;
 }
@@ -123,6 +129,9 @@ bool TestRenderWidgetHostView::IsShowing() {
 }
 
 void TestRenderWidgetHostView::WasUnOccluded() {
+  // Can't be unoccluded unless the page is visible.
+  page_visibility_ = PageVisibilityState::kVisible;
+  OnShowWithPageVisibility(page_visibility_);
   is_occluded_ = false;
 }
 
@@ -229,6 +238,40 @@ void TestRenderWidgetHostView::SetDisplayFeatureForTesting(
     display_feature_ = *display_feature;
   else
     display_feature_ = absl::nullopt;
+}
+
+void TestRenderWidgetHostView::NotifyHostAndDelegateOnWasShown(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+  // Should only be called if the view was not already shown.
+  EXPECT_TRUE(!is_showing_ || is_occluded_);
+  switch (page_visibility_) {
+    case PageVisibilityState::kVisible:
+      // May or may not include a visible_time_request.
+      break;
+    case PageVisibilityState::kHiddenButPainting:
+      EXPECT_FALSE(visible_time_request);
+      break;
+    case PageVisibilityState::kHidden:
+      ADD_FAILURE();
+      break;
+  }
+}
+
+void TestRenderWidgetHostView::RequestPresentationTimeFromHostOrDelegate(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+  // Should only be called if the view was already shown.
+  EXPECT_TRUE(is_showing_);
+  EXPECT_FALSE(is_occluded_);
+  EXPECT_EQ(page_visibility_, PageVisibilityState::kVisible);
+  EXPECT_TRUE(visible_time_request);
+}
+
+void TestRenderWidgetHostView::
+    CancelPresentationTimeRequestForHostAndDelegate() {
+  // Should only be called if the view was already shown.
+  EXPECT_TRUE(is_showing_);
+  EXPECT_FALSE(is_occluded_);
+  EXPECT_EQ(page_visibility_, PageVisibilityState::kHiddenButPainting);
 }
 
 absl::optional<DisplayFeature> TestRenderWidgetHostView::GetDisplayFeature() {
@@ -373,14 +416,14 @@ void TestRenderViewHost::TestOnUpdateStateWithFile(
     const base::FilePath& file_path) {
   auto state = blink::PageState::CreateForTesting(GURL("http://www.google.com"),
                                                   false, "data", &file_path);
-  static_cast<RenderFrameHostImpl*>(GetMainFrame())->UpdateState(state);
+  GetMainRenderFrameHost()->UpdateState(state);
 }
 
 RenderViewHostImplTestHarness::RenderViewHostImplTestHarness()
     : RenderViewHostTestHarness(
           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
   std::vector<ui::ResourceScaleFactor> scale_factors;
-  scale_factors.push_back(ui::SCALE_FACTOR_100P);
+  scale_factors.push_back(ui::k100Percent);
   scoped_set_supported_scale_factors_ =
       std::make_unique<ui::test::ScopedSetSupportedResourceScaleFactors>(
           scale_factors);

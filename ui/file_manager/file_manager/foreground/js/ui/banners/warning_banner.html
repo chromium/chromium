@@ -1,0 +1,73 @@
+<style>
+  :host {
+    width: 100%;
+  }
+
+  .warning-banner {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-height: 32px;
+    width: 100%;
+  }
+
+  #warning-text-group {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .warning-icon {
+    background-image: url(../../../images/files/ui/warning_banner_icon.svg);
+    background-size: 32px 32px;
+    flex: none;
+    height: 32px;
+    margin-inline-end: 20px;
+    margin-inline-start: 16px;
+    width: 32px;
+  }
+
+  .warning-message {
+    color: var(--cros-text-color-primary);
+  }
+
+  .button-group {
+    align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+    height: 32px;
+    margin-inline-start: auto;
+    padding-inline-start: 40px;
+  }
+
+  ::slotted(cr-button),
+  #dismiss-button {
+    border: 1px solid transparent;
+    box-shadow: none;
+    height: 32px;
+    padding-inline: 16px;
+    position: relative;
+  }
+
+  ::slotted(cr-button:focus),
+  #dismiss-button:focus {
+    border: 1px solid var(--cros-focus-ring-color);
+  }
+</style>
+<div class="warning-banner">
+  <div id="warning-text-group">
+    <div class="warning-icon"></div>
+    <div class="warning-message body2-primary">
+      <slot name="text"></slot>
+    </div>
+  </div>
+  <div class="button-group">
+    <slot name="extra-button"></slot>
+    <slot name="dismiss-button">
+      <cr-button id="dismiss-button">
+        $i18n{DRIVE_WELCOME_DISMISS}
+      </cr-button>
+    </slot>
+  </div>
+</div>

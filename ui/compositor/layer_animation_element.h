@@ -10,7 +10,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/animation/keyframe_model.h"
@@ -20,7 +19,7 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 
@@ -72,6 +71,8 @@ class COMPOSITOR_EXPORT LayerAnimationElement {
 
   LayerAnimationElement(AnimatableProperties properties,
                         base::TimeDelta duration);
+
+  LayerAnimationElement& operator=(const LayerAnimationElement&) = delete;
 
   virtual ~LayerAnimationElement();
 
@@ -254,8 +255,6 @@ class COMPOSITOR_EXPORT LayerAnimationElement {
   double last_progressed_fraction_;
 
   base::WeakPtrFactory<LayerAnimationElement> weak_ptr_factory_{this};
-
-  DISALLOW_ASSIGN(LayerAnimationElement);
 };
 
 }  // namespace ui

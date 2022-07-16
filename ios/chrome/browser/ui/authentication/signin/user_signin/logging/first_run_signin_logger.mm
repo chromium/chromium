@@ -32,7 +32,12 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
   if (!self.hasRecordedSigninStarted) {
     self.hasRecordedSigninStarted = YES;
     LogSigninAccessPointStarted(self.accessPoint, self.promoAction);
-    RecordSigninUserActionForAccessPoint(self.accessPoint, self.promoAction);
+    if (self.accessPoint != AccessPoint::ACCESS_POINT_FORCED_SIGNIN) {
+      // Don't record a sign-in user action when the access point forces the
+      // user to sign-in. Signing in in that case isn't really an action but
+      // rather something required by the policy.
+      RecordSigninUserActionForAccessPoint(self.accessPoint, self.promoAction);
+    }
   }
   if (self.accountManagerService)
     signin::RecordVersionSeen(self.accountManagerService,

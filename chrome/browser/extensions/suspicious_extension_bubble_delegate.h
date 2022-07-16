@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 
 namespace extensions {
@@ -16,6 +15,12 @@ class SuspiciousExtensionBubbleDelegate
     : public ExtensionMessageBubbleController::Delegate {
  public:
   explicit SuspiciousExtensionBubbleDelegate(Profile* profile);
+
+  SuspiciousExtensionBubbleDelegate(const SuspiciousExtensionBubbleDelegate&) =
+      delete;
+  SuspiciousExtensionBubbleDelegate& operator=(
+      const SuspiciousExtensionBubbleDelegate&) = delete;
+
   ~SuspiciousExtensionBubbleDelegate() override;
 
   // ExtensionMessageBubbleController::Delegate methods.
@@ -43,8 +48,6 @@ class SuspiciousExtensionBubbleDelegate
 
  private:
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(SuspiciousExtensionBubbleDelegate);
 };
 
 }  // namespace extensions

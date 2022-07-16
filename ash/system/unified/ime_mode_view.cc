@@ -72,6 +72,12 @@ void ImeModeView::HandleLocaleChange() {
   Update();
 }
 
+void ImeModeView::OnThemeChanged() {
+  TrayItemView::OnThemeChanged();
+  label()->SetEnabledColor(
+      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
+}
+
 void ImeModeView::Update() {
   // Hide the IME mode icon when the locale is shown, because showing locale and
   // IME together is confusing.

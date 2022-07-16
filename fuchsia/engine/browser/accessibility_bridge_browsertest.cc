@@ -6,10 +6,10 @@
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <zircon/types.h>
 
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "content/public/test/browser_test.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/test/frame_test_util.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/browser/accessibility_bridge.h"
@@ -1060,7 +1060,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
   // src to be |out_of_process_url|.
   frame_->AddBeforeLoadJavaScript(
       kBindingsId, {"*"},
-      cr_fuchsia::MemBufferFromString(
+      base::MemBufferFromString(
           base::StringPrintf("iframeSrc = '%s'",
                              out_of_process_url.spec().c_str()),
           "test"),
@@ -1076,7 +1076,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
       kPage1Title);
 
   // Two frames should be present.
-  int num_frames = frame_impl_->web_contents_for_test()->GetAllFrames().size();
+  int num_frames = CollectAllRenderFrameHosts(
+                       frame_impl_->web_contents_for_test()->GetPrimaryPage())
+                       .size();
+
   EXPECT_EQ(num_frames, 2);
 
   // Check that the iframe node has been loaded.
@@ -1094,7 +1097,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
                          out_of_process_url_2.spec().c_str());
 
   frame_->ExecuteJavaScript(
-      {"*"}, cr_fuchsia::MemBufferFromString(script, "test2"),
+      {"*"}, base::MemBufferFromString(script, "test2"),
       [](fuchsia::web::Frame_ExecuteJavaScript_Result result) {
         CHECK(result.is_response());
       });
@@ -1122,7 +1125,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
 
   // We've navigated to a different page that has no iframes. Only one frame
   // should be present.
-  num_frames = frame_impl_->web_contents_for_test()->GetAllFrames().size();
+  num_frames = CollectAllRenderFrameHosts(
+                   frame_impl_->web_contents_for_test()->GetPrimaryPage())
+                   .size();
+
   EXPECT_EQ(num_frames, 1);
 }
 

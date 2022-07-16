@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//v8/gni/v8.gni")
 
 source_set("lib") {
@@ -26,6 +27,7 @@ source_set("lib") {
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//v8:external_startup_data",
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
   ]
 
   deps = [
@@ -75,7 +77,12 @@ source_set("tests") {
   }
 
   if (is_android) {
-    deps += [ "//v8:v8_external_startup_data_assets" ]
+    if (use_v8_context_snapshot) {
+      deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
+    }
+    if (!use_v8_context_snapshot || include_both_v8_snapshots) {
+      deps += [ "//v8:v8_external_startup_data_assets" ]
+    }
   }
 
   configs += [ "//v8:external_startup_data" ]

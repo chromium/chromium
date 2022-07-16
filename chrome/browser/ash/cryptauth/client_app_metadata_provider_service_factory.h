@@ -1,0 +1,48 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_ASH_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_FACTORY_H_
+
+#include "base/memory/singleton.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+
+class Profile;
+
+namespace ash {
+
+class ClientAppMetadataProviderService;
+
+// Factory which creates one ClientAppMetadataProviderService per profile.
+class ClientAppMetadataProviderServiceFactory
+    : public BrowserContextKeyedServiceFactory {
+ public:
+  static ClientAppMetadataProviderService* GetForProfile(Profile* profile);
+  static ClientAppMetadataProviderServiceFactory* GetInstance();
+
+  ClientAppMetadataProviderServiceFactory(
+      const ClientAppMetadataProviderServiceFactory&) = delete;
+  ClientAppMetadataProviderServiceFactory& operator=(
+      const ClientAppMetadataProviderServiceFactory&) = delete;
+
+ private:
+  friend struct base::DefaultSingletonTraits<
+      ClientAppMetadataProviderServiceFactory>;
+
+  ClientAppMetadataProviderServiceFactory();
+  ~ClientAppMetadataProviderServiceFactory() override;
+
+  // BrowserContextKeyedServiceFactory:
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* browser_context) const override;
+};
+
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+using ::ash::ClientAppMetadataProviderServiceFactory;
+}
+
+#endif  // CHROME_BROWSER_ASH_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_FACTORY_H_

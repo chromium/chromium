@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FilesAppState} from '../../common/js/files_app_state.js';
+
 import {BackgroundBase} from './background_base.js';
 import {Crostini} from './crostini.js';
 import {DriveSyncHandler} from './drive_sync_handler.js';
@@ -86,9 +88,9 @@ export class FileBrowserBackgroundFull extends BackgroundBase {
   /**
    * Launches a new File Manager window.
    *
-   * @param {Object=} opt_appState App state.
+   * @param {!FilesAppState=} appState App state.
    * @return {!Promise<chrome.app.window.AppWindow|string>} Resolved with the
    *     App ID.
    */
-  async launchFileManager(opt_appState) {}
+  async launchFileManager(appState = {}) {}
 }

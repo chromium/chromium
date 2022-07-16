@@ -69,6 +69,10 @@ class UserActivityUkmLoggerTest : public testing::Test {
     user_activity_logger_delegate_ukm_.ukm_recorder_ = &recorder_;
   }
 
+  UserActivityUkmLoggerTest(const UserActivityUkmLoggerTest&) = delete;
+  UserActivityUkmLoggerTest& operator=(const UserActivityUkmLoggerTest&) =
+      delete;
+
  protected:
   void LogActivity(const UserActivityEvent& event) {
     user_activity_logger_delegate_ukm_.LogActivity(event);
@@ -146,7 +150,6 @@ class UserActivityUkmLoggerTest : public testing::Test {
 
  private:
   UserActivityUkmLoggerImpl user_activity_logger_delegate_ukm_;
-  DISALLOW_COPY_AND_ASSIGN(UserActivityUkmLoggerTest);
 };
 
 TEST_F(UserActivityUkmLoggerTest, BasicLogging) {

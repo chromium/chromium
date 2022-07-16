@@ -25,6 +25,10 @@ namespace viz {
 class FuzzerBrowserProcess {
  public:
   explicit FuzzerBrowserProcess(absl::optional<base::FilePath> png_dir_path);
+
+  FuzzerBrowserProcess(const FuzzerBrowserProcess&) = delete;
+  FuzzerBrowserProcess& operator=(const FuzzerBrowserProcess&) = delete;
+
   ~FuzzerBrowserProcess();
 
   // Fuzz target mimicking the process of submitting a rendered CompositorFrame
@@ -63,8 +67,6 @@ class FuzzerBrowserProcess {
   ParentLocalSurfaceIdAllocator lsi_allocator_;
 
   FrameTokenGenerator next_frame_token_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuzzerBrowserProcess);
 };
 
 }  // namespace viz

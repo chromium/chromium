@@ -37,24 +37,25 @@ class BASE_EXPORT CPU final {
   CPU();
   CPU(CPU&&);
   CPU(const CPU&) = delete;
-  // Construction path used in very early application startup. The difference
-  // between this and CPU::CPU() is that this doesn't allocate any memory, the
-  // catch is that no CPU model information is available (only features).
-#if defined(ARCH_CPU_ARM_FAMILY)
-  static CPU CreateNoAllocation() { return CPU(false); }
-#endif
+
+  // Get a preallocated instance of CPU.
+  // This can be used in very early application startup. The instance of CPU is
+  // created without branding, see CPU(bool requires_branding) for details and
+  // implications.
+  static const CPU& GetInstanceNoAllocation();
 
   enum IntelMicroArchitecture {
-    PENTIUM,
-    SSE,
-    SSE2,
-    SSE3,
-    SSSE3,
-    SSE41,
-    SSE42,
-    AVX,
-    AVX2,
-    MAX_INTEL_MICRO_ARCHITECTURE
+    PENTIUM = 0,
+    SSE = 1,
+    SSE2 = 2,
+    SSE3 = 3,
+    SSSE3 = 4,
+    SSE41 = 5,
+    SSE42 = 6,
+    AVX = 7,
+    AVX2 = 8,
+    FMA3 = 9,
+    MAX_INTEL_MICRO_ARCHITECTURE = 10
   };
 
   // Accessors for CPU information.
@@ -75,6 +76,7 @@ class BASE_EXPORT CPU final {
   bool has_sse42() const { return has_sse42_; }
   bool has_popcnt() const { return has_popcnt_; }
   bool has_avx() const { return has_avx_; }
+  bool has_fma3() const { return has_fma3_; }
   bool has_avx2() const { return has_avx2_; }
   bool has_aesni() const { return has_aesni_; }
   bool has_non_stop_time_stamp_counter() const {
@@ -90,8 +92,13 @@ class BASE_EXPORT CPU final {
   uint32_t part_number() const { return part_number_; }
 
   // Armv8.5-A extensions for control flow and memory safety.
+#if defined(ARCH_CPU_ARM_FAMILY)
   bool has_mte() const { return has_mte_; }
   bool has_bti() const { return has_bti_; }
+#else
+  constexpr bool has_mte() const { return false; }
+  constexpr bool has_bti() const { return false; }
+#endif
 
   IntelMicroArchitecture GetIntelMicroArchitecture() const;
   const std::string& cpu_brand() const { return cpu_brand_; }
@@ -173,10 +180,13 @@ class BASE_EXPORT CPU final {
   bool has_sse42_ = false;
   bool has_popcnt_ = false;
   bool has_avx_ = false;
+  bool has_fma3_ = false;
   bool has_avx2_ = false;
   bool has_aesni_ = false;
+#if defined(ARCH_CPU_ARM_FAMILY)
   bool has_mte_ = false;  // Armv8.5-A MTE (Memory Taggging Extension)
   bool has_bti_ = false;  // Armv8.5-A BTI (Branch Target Identification)
+#endif
   bool has_non_stop_time_stamp_counter_ = false;
   bool is_running_in_vm_ = false;
   std::string cpu_vendor_ = "unknown";

@@ -29,6 +29,11 @@ class GFX_EXPORT SingletonHwndHotKeyObserver {
       const SingletonHwndObserver::WndProc& wnd_proc,
       UINT key_code,
       int modifiers);
+
+  SingletonHwndHotKeyObserver(const SingletonHwndHotKeyObserver&) = delete;
+  SingletonHwndHotKeyObserver& operator=(const SingletonHwndHotKeyObserver&) =
+      delete;
+
   ~SingletonHwndHotKeyObserver();
 
  private:
@@ -41,8 +46,6 @@ class GFX_EXPORT SingletonHwndHotKeyObserver {
   SingletonHwndObserver observer_;
   SingletonHwndObserver::WndProc wnd_proc_;
   const int hot_key_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingletonHwndHotKeyObserver);
 };
 
 }  // namespace gfx

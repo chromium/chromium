@@ -22,10 +22,6 @@
 #include "ui/events/win/system_event_state_lookup.h"
 #endif
 
-#if defined(USE_X11)
-#include "ui/events/x/events_x_utils.h"  // nogncheck
-#endif
-
 #if defined(USE_OZONE)
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
@@ -50,24 +46,16 @@ void FireFocusAfterMenuClose(base::WeakPtr<Widget> widget) {
   }
 }
 
-#if defined(USE_X11) || defined(USE_OZONE)
-bool IsAltPressed() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    const auto* const platorm_menu_utils =
-        ui::OzonePlatform::GetInstance()->GetPlatformMenuUtils();
-    if (platorm_menu_utils)
-      return (platorm_menu_utils->GetCurrentKeyModifiers() & ui::EF_ALT_DOWN) !=
-             0;
+bool IsAltPressed() {
+  if (const auto* const platorm_menu_utils =
+          ui::OzonePlatform::GetInstance()->GetPlatformMenuUtils()) {
+    return (platorm_menu_utils->GetCurrentKeyModifiers() & ui::EF_ALT_DOWN) !=
+           0;
   }
-#endif
-#if defined(USE_X11)
-  return ui::IsAltPressed();
-#else
   return false;
-#endif
 }
-#endif  // defined(USE_X11) || degined(USE_OZONE)
+#endif  // defined(USE_OZONE)
 
 }  // namespace
 
@@ -268,7 +256,7 @@ bool MenuRunnerImpl::ShouldShowMnemonics(int32_t run_types) {
   // Show mnemonics if the button has focus or alt is pressed.
 #if defined(OS_WIN)
   show_mnemonics |= ui::win::IsAltPressed();
-#elif defined(USE_X11) || defined(USE_OZONE)
+#elif defined(USE_OZONE)
   show_mnemonics |= IsAltPressed();
 #elif defined(OS_MAC)
   show_mnemonics = false;

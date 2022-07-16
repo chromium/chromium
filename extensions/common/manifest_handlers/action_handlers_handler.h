@@ -36,14 +36,16 @@ struct ActionHandlersInfo : public Extension::ManifestData {
 class ActionHandlersHandler : public ManifestHandler {
  public:
   ActionHandlersHandler();
+
+  ActionHandlersHandler(const ActionHandlersHandler&) = delete;
+  ActionHandlersHandler& operator=(const ActionHandlersHandler&) = delete;
+
   ~ActionHandlersHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ActionHandlersHandler);
 };
 
 }  // namespace extensions

@@ -38,6 +38,9 @@ class TestListItem : public PaymentRequestItemList::Item {
     Init();
   }
 
+  TestListItem(const TestListItem&) = delete;
+  TestListItem& operator=(const TestListItem&) = delete;
+
   int selected_state_changed_calls_count() {
     return selected_state_changed_calls_count_;
   }
@@ -61,8 +64,6 @@ class TestListItem : public PaymentRequestItemList::Item {
   }
 
   int selected_state_changed_calls_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestListItem);
 };
 
 }  // namespace

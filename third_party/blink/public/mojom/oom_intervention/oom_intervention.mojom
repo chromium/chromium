@@ -41,6 +41,8 @@ struct DetectionArgs {
 // Renderer side interface for OOM intervention. An instance of this interface
 // will be created when the browser gets a high memory pressure signal.
 // It monitors memory usage in renderer side to detect near-OOM situation.
+// This is disconnected when the user close the dialog without activating the
+// OOM intervention.
 interface OomIntervention {
   // Starts monitoring memory usage in renderer side. When the renderer's
   // memory usage exceeds |detection_args| memory thresholds (pmf, swap, virtual

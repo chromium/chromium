@@ -25,8 +25,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool/initialization_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -43,7 +42,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_v8_features.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-initialization.h"
 
 #if defined(OS_WIN)
 #include "base/win/win_util.h"
@@ -51,6 +50,11 @@
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
 #include "v8/include/v8-wasm-trap-handler-posix.h"
 #endif
+
+#if defined(OS_ANDROID)
+#include "content/common/android/cpu_affinity_setter.h"
+#endif
+
 namespace {
 
 void SetV8FlagIfFeature(const base::Feature& feature, const char* v8_flag) {
@@ -171,7 +175,13 @@ RenderProcessImpl::RenderProcessImpl()
   bool enable_shared_array_buffer_unconditionally =
       base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
 
-#if (!defined(OS_ANDROID))
+#if defined(OS_ANDROID)
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          features::kBigLittleScheduling,
+          features::kBigLittleSchedulingRenderMainBigParam, false)) {
+    SetCpuAffinityForCurrentThread(base::CpuAffinityMode::kBigCoresOnly);
+  }
+#else
   // Bypass the SAB restriction for the Finch "kill switch".
   enable_shared_array_buffer_unconditionally =
       enable_shared_array_buffer_unconditionally ||
@@ -205,14 +215,28 @@ RenderProcessImpl::RenderProcessImpl()
 
   // The cross-origin-webassembly-module-sharing-allowed flag is used to pass
   // the kCrossOriginWebAssemblyModuleSharingEnabled enterprise policy from the
-  // browser process to the renderer process. This switch should be enabled by
-  // default for now, but once cross origin module sharing is deprecated, this
-  // switch will only get enabled by the enterprise policy.
+  // browser process to the renderer process. The feature flag
+  // features::kCrossOriginWebAssemblyModuleSharingEnabled exists to allow a
+  // potential finch trial to roll back the deprecation if necessary.
   if (command_line->HasSwitch(
-          switches::kCrossOriginWebAssemblyModuleSharingAllowed)) {
+          switches::kCrossOriginWebAssemblyModuleSharingAllowed) ||
+      base::FeatureList::IsEnabled(
+          features::kCrossOriginWebAssemblyModuleSharingEnabled)) {
     blink::WebRuntimeFeatures::EnableCrossOriginWebAssemblyModuleSharingAllowed(
         true);
   }
+
+  // The display-capture-permissions-policy-allowed flag is used to pass
+  // the kDisplayCapturePermissionsPolicyEnabled Enterprise policy from the
+  // browser process to the renderer process. This switch should be enabled by
+  // default for now, but after a few milestones that allow enterprises to fix
+  // broken applications, this flag will be removed.
+  // This switch will only be enabled by the Enterprise policy.
+  if (command_line->HasSwitch(
+          switches::kDisplayCapturePermissionsPolicyAllowed)) {
+    blink::WebRuntimeFeatures::EnableDisplayCapturePermissionsPolicy(true);
+  }
+
   SetV8FlagIfFeature(features::kWebAssemblyTiering, "--wasm-tier-up");
   SetV8FlagIfNotFeature(features::kWebAssemblyTiering, "--no-wasm-tier-up");
 
@@ -257,22 +281,6 @@ RenderProcessImpl::RenderProcessImpl()
     v8::V8::EnableWebAssemblyTrapHandler(use_v8_signal_handler);
   }
 #endif  // defined(OS_MAC) && defined(ARCH_CPU_X86_64)
-
-  if (command_line->HasSwitch(switches::kNoV8UntrustedCodeMitigations)) {
-    const char* disable_mitigations = "--no-untrusted-code-mitigations";
-    v8::V8::SetFlagsFromString(disable_mitigations,
-                               strlen(disable_mitigations));
-  }
-
-  if (command_line->HasSwitch(switches::kJavaScriptFlags)) {
-    std::string js_flags =
-        command_line->GetSwitchValueASCII(switches::kJavaScriptFlags);
-    std::vector<base::StringPiece> flag_list = base::SplitStringPiece(
-        js_flags, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    for (const auto& flag : flag_list) {
-      v8::V8::SetFlagsFromString(std::string(flag).c_str(), flag.size());
-    }
-  }
 }
 
 RenderProcessImpl::~RenderProcessImpl() {

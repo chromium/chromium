@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PREDICTORS_PREDICTOR_DATABASE_FACTORY_H_
 #define CHROME_BROWSER_PREDICTORS_PREDICTOR_DATABASE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -23,6 +22,9 @@ class PredictorDatabaseFactory : public BrowserContextKeyedServiceFactory {
 
   static PredictorDatabaseFactory* GetInstance();
 
+  PredictorDatabaseFactory(const PredictorDatabaseFactory&) = delete;
+  PredictorDatabaseFactory& operator=(const PredictorDatabaseFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<PredictorDatabaseFactory>;
 
@@ -32,8 +34,6 @@ class PredictorDatabaseFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PredictorDatabaseFactory);
 };
 
 }  // namespace predictors

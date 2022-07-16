@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 struct AVDictionary;
@@ -35,6 +34,11 @@ class MEDIA_EXPORT AudioVideoMetadataExtractor {
   typedef std::vector<StreamInfo> StreamInfoVector;
 
   AudioVideoMetadataExtractor();
+
+  AudioVideoMetadataExtractor(const AudioVideoMetadataExtractor&) = delete;
+  AudioVideoMetadataExtractor& operator=(const AudioVideoMetadataExtractor&) =
+      delete;
+
   ~AudioVideoMetadataExtractor();
 
   // Returns whether or not the fields were successfully extracted. Should only
@@ -104,8 +108,6 @@ class MEDIA_EXPORT AudioVideoMetadataExtractor {
   StreamInfoVector stream_infos_;
 
   std::vector<std::string> attached_images_bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioVideoMetadataExtractor);
 };
 
 }  // namespace media

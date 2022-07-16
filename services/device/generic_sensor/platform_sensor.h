@@ -15,11 +15,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/mojom/sensor.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -40,6 +42,9 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
    protected:
     virtual ~Client() {}
   };
+
+  PlatformSensor(const PlatformSensor&) = delete;
+  PlatformSensor& operator=(const PlatformSensor&) = delete;
 
   virtual mojom::ReportingMode GetReportingMode() = 0;
   virtual PlatformSensorConfiguration GetDefaultConfiguration() = 0;
@@ -105,10 +110,6 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   // Note: this method is thread-safe.
   void UpdateSharedBufferAndNotifyClients(const SensorReading& reading);
 
-  // Updates shared buffer with provided SensorReading
-  // Note: this method is thread-safe.
-  void UpdateSharedBuffer(const SensorReading& reading);
-
   void NotifySensorReadingChanged();
   void NotifySensorError();
 
@@ -126,6 +127,10 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
  private:
   friend class base::RefCountedThreadSafe<PlatformSensor>;
 
+  // Updates shared buffer with provided SensorReading
+  // Note: this method is thread-safe.
+  void UpdateSharedBuffer(const SensorReading& reading);
+
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   SensorReadingSharedBuffer* reading_buffer_;  // NOTE: Owned by |provider_|.
@@ -133,11 +138,9 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   ConfigMap config_map_;
   PlatformSensorProvider* provider_;
   bool is_active_ = false;
-  SensorReading last_raw_reading_;
-  mutable base::Lock lock_;  // Protect have_raw_reading_ and last_raw_reading_.
-  bool have_raw_reading_;
+  absl::optional<SensorReading> last_raw_reading_ GUARDED_BY(lock_);
+  mutable base::Lock lock_;  // Protect last_raw_reading_.
   base::WeakPtrFactory<PlatformSensor> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensor);
 };
 
 }  // namespace device

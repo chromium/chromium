@@ -14,8 +14,7 @@ int64_t StructTraits<mojo_base::mojom::TimeDataView,
 bool StructTraits<mojo_base::mojom::TimeDataView, base::Time>::Read(
     mojo_base::mojom::TimeDataView data,
     base::Time* time) {
-  *time =
-      base::Time() + base::TimeDelta::FromMicroseconds(data.internal_value());
+  *time = base::Time() + base::Microseconds(data.internal_value());
   return true;
 }
 
@@ -28,7 +27,7 @@ StructTraits<mojo_base::mojom::TimeDeltaDataView,
 bool StructTraits<mojo_base::mojom::TimeDeltaDataView, base::TimeDelta>::Read(
     mojo_base::mojom::TimeDeltaDataView data,
     base::TimeDelta* delta) {
-  *delta = base::TimeDelta::FromMicroseconds(data.microseconds());
+  *delta = base::Microseconds(data.microseconds());
   return true;
 }
 
@@ -41,8 +40,7 @@ StructTraits<mojo_base::mojom::TimeTicksDataView,
 bool StructTraits<mojo_base::mojom::TimeTicksDataView, base::TimeTicks>::Read(
     mojo_base::mojom::TimeTicksDataView data,
     base::TimeTicks* time) {
-  *time = base::TimeTicks() +
-          base::TimeDelta::FromMicroseconds(data.internal_value());
+  *time = base::TimeTicks() + base::Microseconds(data.internal_value());
   return true;
 }
 

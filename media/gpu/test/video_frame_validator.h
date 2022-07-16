@@ -48,6 +48,9 @@ class VideoFrameValidator : public VideoFrameProcessor {
   using GetModelFrameCB =
       base::RepeatingCallback<scoped_refptr<const VideoFrame>(size_t)>;
 
+  VideoFrameValidator(const VideoFrameValidator&) = delete;
+  VideoFrameValidator& operator=(const VideoFrameValidator&) = delete;
+
   ~VideoFrameValidator() override;
 
   // Prints information of frames on which the validation failed. This function
@@ -83,6 +86,8 @@ class VideoFrameValidator : public VideoFrameProcessor {
   SEQUENCE_CHECKER(validator_thread_sequence_checker_);
 
  private:
+  void CleanUpOnValidatorThread();
+
   // Stop the frame validation thread.
   void Destroy();
 
@@ -101,7 +106,7 @@ class VideoFrameValidator : public VideoFrameProcessor {
 
   // An optional video frame processor that all corrupted frames will be
   // forwarded to. This can be used to e.g. write corrupted frames to disk.
-  const std::unique_ptr<VideoFrameProcessor> corrupt_frame_processor_;
+  std::unique_ptr<VideoFrameProcessor> corrupt_frame_processor_;
 
   // The number of frames currently queued for validation.
   size_t num_frames_validating_ GUARDED_BY(frame_validator_lock_);
@@ -115,8 +120,6 @@ class VideoFrameValidator : public VideoFrameProcessor {
   mutable base::ConditionVariable frame_validator_cv_;
 
   SEQUENCE_CHECKER(validator_sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameValidator);
 };
 
 // Validate by converting the frame to be validated to |validation_format| to

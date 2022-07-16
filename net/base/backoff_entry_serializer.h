@@ -19,36 +19,44 @@ class TickClock;
 
 namespace net {
 
+enum SerializationFormatVersion {
+  kVersion1 = 1,
+  kVersion2,
+};
+
 // Serialize or deserialize a BackoffEntry, so it can persist beyond the
 // lifetime of the browser.
 class NET_EXPORT BackoffEntrySerializer {
  public:
+  BackoffEntrySerializer() = delete;
+  BackoffEntrySerializer(const BackoffEntrySerializer&) = delete;
+  BackoffEntrySerializer& operator=(const BackoffEntrySerializer&) = delete;
+
   // Serializes the release time and failure count into a ListValue that can
-  // later be passed to Deserialize to re-create the given BackoffEntry. The
-  // Policy is not serialized, instead callers must pass an identical Policy*
-  // when deserializing. |time_now| should be base::Time::Now(), except for
-  // tests that want to simulate time changes. The release time TimeTicks will
-  // be converted to an absolute timestamp, thus the time will continue counting
+  // later be passed to Deserialize to re-create the given BackoffEntry. It
+  // always serializes using the latest format version. The Policy is not
+  // serialized, instead callers must pass an identical Policy* when
+  // deserializing. |time_now| should be base::Time::Now(), except for tests
+  // that want to simulate time changes. The release time TimeTicks will be
+  // converted to an absolute timestamp, thus the time will continue counting
   // down even whilst the device is powered off, and will be partially
   // vulnerable to changes in the system clock time.
   static base::Value SerializeToValue(const BackoffEntry& entry,
                                       base::Time time_now);
 
-  // Deserializes a ListValue back to a BackoffEntry. |policy| MUST be the same
-  // Policy as the serialized entry had. |clock| may be NULL. Both |policy| and
-  // |clock| (if not NULL) must enclose lifetime of the returned BackoffEntry.
-  // |time_now| should be base::Time::Now(), except for tests that want to
-  // simulate time changes. The absolute timestamp that was serialized will be
-  // converted back to TimeTicks as best as possible. Returns NULL if
-  // deserialization was unsuccessful.
+  // Deserializes a ListValue back to a BackoffEntry. It supports all
+  // serialization format versions. |policy| MUST be the same Policy as the
+  // serialized entry had. |clock| may be NULL. Both |policy| and |clock| (if
+  // not NULL) must enclose lifetime of the returned BackoffEntry. |time_now|
+  // should be base::Time::Now(), except for tests that want to simulate time
+  // changes. The absolute timestamp that was serialized will be converted back
+  // to TimeTicks as best as possible. Returns NULL if deserialization was
+  // unsuccessful.
   static std::unique_ptr<BackoffEntry> DeserializeFromValue(
       const base::Value& serialized,
       const BackoffEntry::Policy* policy,
       const base::TickClock* clock,
       base::Time time_now);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BackoffEntrySerializer);
 };
 
 }  // namespace net

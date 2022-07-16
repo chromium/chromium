@@ -4,6 +4,7 @@
 
 #include "weblayer/test/weblayer_browser_test.h"
 
+#include "build/build_config.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
 namespace weblayer {

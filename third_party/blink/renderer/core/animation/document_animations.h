@@ -90,39 +90,19 @@ class CORE_EXPORT DocumentAnimations final
   // https://github.com/w3c/csswg-drafts/issues/5261
   void ValidateTimelines();
 
-  // By default, animation updates are *implicitly* disallowed. This object
-  // can be used to allow or disallow animation updates as follows:
-  //
-  // AllowAnimationUpdatesScope(..., true): Allow animation updates, unless
-  // updates are currently *explicitly* disallowed.
-  //
-  // AllowAnimationUpdatesScope(..., false): Explicitly disallow animation
-  // updates.
-  class CORE_EXPORT AllowAnimationUpdatesScope {
-    STACK_ALLOCATED();
-
-   public:
-    AllowAnimationUpdatesScope(DocumentAnimations&, bool);
-
-   private:
-    base::AutoReset<absl::optional<bool>> allow_;
-  };
-
   // Add an element to the set of elements with a pending animation update.
   // The elements in the set can be applied later using,
   // ApplyPendingElementUpdates.
   //
-  // It's invalid to call this function during if animation updates are not
-  // allowed (see AnimationUpdatesAllowed).
+  // It's invalid to call this function if there is no current
+  // CSSAnimationUpdateScope.
   void AddElementWithPendingAnimationUpdate(Element&);
 
   // Apply pending updates for any elements previously added during AddElement-
-  // WithPendingAnimationUpdate
+  // WithPendingAnimationUpdate.
   void ApplyPendingElementUpdates();
 
-  bool AnimationUpdatesAllowed() const {
-    return allow_animation_updates_.value_or(false);
-  }
+  void AddPendingOldStyleForElement(Element&);
 
   const HeapHashSet<WeakMember<AnimationTimeline>>& GetTimelinesForTesting()
       const {
@@ -135,29 +115,18 @@ class CORE_EXPORT DocumentAnimations final
   uint64_t current_transition_generation_;
   void Trace(Visitor*) const;
 
-#if DCHECK_IS_ON()
-  void AssertNoPendingUpdates() {
-    DCHECK(elements_with_pending_updates_.IsEmpty());
-  }
-#endif
-
  protected:
   using ReplaceableAnimationsMap =
       HeapHashMap<Member<Element>, Member<HeapVector<Member<Animation>>>>;
   void RemoveReplacedAnimations(ReplaceableAnimationsMap*);
 
  private:
-  friend class AllowAnimationUpdatesScope;
-  friend class AnimationUpdateScope;
-
   void MarkPendingIfCompositorPropertyAnimationChanges(
       const PaintArtifactCompositor*);
 
   Member<Document> document_;
   HeapHashSet<WeakMember<AnimationTimeline>> timelines_;
   HeapHashSet<WeakMember<AnimationTimeline>> unvalidated_timelines_;
-  HeapHashSet<WeakMember<Element>> elements_with_pending_updates_;
-  absl::optional<bool> allow_animation_updates_;
 };
 
 }  // namespace blink

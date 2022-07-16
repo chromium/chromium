@@ -8,13 +8,17 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
+#include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -142,6 +146,13 @@ void PaintFocusBar(gfx::Canvas* canvas,
   gfx::Point top_point = content_origin;
   gfx::Point bottom_point = content_origin + gfx::Vector2d(0, height);
   canvas->DrawLine(top_point, bottom_point, flags);
+}
+
+void SetViewIgnoredForAccessibility(views::View* view, bool ignored) {
+  auto& view_accessibility = view->GetViewAccessibility();
+  view_accessibility.OverrideIsLeaf(ignored);
+  view_accessibility.OverrideIsIgnored(ignored);
+  view->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
 }
 
 }  // namespace ash

@@ -17,6 +17,10 @@ class WaylandPopup : public WaylandWindow {
   WaylandPopup(PlatformWindowDelegate* delegate,
                WaylandConnection* connection,
                WaylandWindow* parent);
+
+  WaylandPopup(const WaylandPopup&) = delete;
+  WaylandPopup& operator=(const WaylandPopup&) = delete;
+
   ~WaylandPopup() override;
 
   ShellPopupWrapper* shell_popup() const { return shell_popup_.get(); }
@@ -25,6 +29,7 @@ class WaylandPopup : public WaylandWindow {
   void Show(bool inactive) override;
   void Hide() override;
   bool IsVisible() const override;
+  void SetBounds(const gfx::Rect& bounds) override;
 
  private:
   // WaylandWindow overrides:
@@ -34,6 +39,10 @@ class WaylandPopup : public WaylandWindow {
   bool OnInitialize(PlatformWindowInitProperties properties) override;
   WaylandPopup* AsWaylandPopup() override;
   bool IsSurfaceConfigured() override;
+  void SetWindowGeometry(gfx::Rect bounds) override;
+  void AckConfigure(uint32_t serial) override;
+  void UpdateVisualSize(const gfx::Size& size_px, float scale_factor) override;
+  void ApplyPendingBounds() override;
 
   // Creates a popup window, which is visible as a menu window.
   bool CreateShellPopup();
@@ -53,9 +62,14 @@ class WaylandPopup : public WaylandWindow {
 
   PlatformWindowShadowType shadow_type_ = PlatformWindowShadowType::kNone;
 
-  gfx::Rect pending_initial_bounds_px_;
+  // Helps to avoid reposition itself if HandlePopupConfigure was called, which
+  // resulted in calling SetBounds.
+  bool wayland_sets_bounds_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(WaylandPopup);
+  // If WaylandPopup has been moved, schedule redraw as the client of the
+  // Ozone/Wayland may not do so. Otherwise, a new state (if bounds has been
+  // changed) won't be applied.
+  bool schedule_redraw_ = false;
 };
 
 }  // namespace ui

@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace gpu {
 
@@ -27,12 +28,12 @@ bool IsImageFromGpuMemoryBufferFormatSupported(
 }
 
 bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
-                                              gfx::BufferFormat format,
-                                              gfx::BufferPlane plane) {
-  switch (GetPlaneBufferFormat(plane, format)) {
+                                              gfx::BufferFormat format) {
+  switch (format) {
     case gfx::BufferFormat::R_8:
     case gfx::BufferFormat::R_16:
     case gfx::BufferFormat::RG_88:
+    case gfx::BufferFormat::RG_1616:
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::RGBA_8888:
@@ -98,14 +99,10 @@ gfx::BufferFormat GetPlaneBufferFormat(gfx::BufferPlane plane,
       NOTREACHED();
       break;
     case gfx::BufferPlane::UV:
-      if (format == gfx::BufferFormat::YUV_420_BIPLANAR) {
+      if (format == gfx::BufferFormat::YUV_420_BIPLANAR)
         return gfx::BufferFormat::RG_88;
-      }
-      if (format == gfx::BufferFormat::P010) {
-        // There does not yet exist a gfx::BufferFormat::RG_16, which would be
-        // required for P010.
-        NOTIMPLEMENTED();
-      }
+      if (format == gfx::BufferFormat::P010)
+        return gfx::BufferFormat::RG_1616;
       break;
     case gfx::BufferPlane::U:
       if (format == gfx::BufferFormat::YVU_420)
@@ -119,6 +116,18 @@ gfx::BufferFormat GetPlaneBufferFormat(gfx::BufferPlane plane,
 
   NOTREACHED();
   return format;
+}
+
+gfx::Size GetPlaneSize(gfx::BufferPlane plane, const gfx::Size& size) {
+  switch (plane) {
+    case gfx::BufferPlane::DEFAULT:
+    case gfx::BufferPlane::Y:
+      return size;
+    case gfx::BufferPlane::U:
+    case gfx::BufferPlane::V:
+    case gfx::BufferPlane::UV:
+      return gfx::ScaleToCeiledSize(size, 0.5);
+  }
 }
 
 uint32_t GetPlatformSpecificTextureTarget() {
@@ -154,7 +163,8 @@ GPU_EXPORT uint32_t GetBufferTextureTarget(gfx::BufferUsage usage,
 }
 
 GPU_EXPORT bool NativeBufferNeedsPlatformSpecificTextureTarget(
-    gfx::BufferFormat format) {
+    gfx::BufferFormat format,
+    gfx::BufferPlane plane) {
 #if defined(USE_OZONE) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_WIN)
   // Always use GL_TEXTURE_2D as the target for RGB textures.
@@ -168,6 +178,15 @@ GPU_EXPORT bool NativeBufferNeedsPlatformSpecificTextureTarget(
       format == gfx::BufferFormat::BGRA_1010102) {
     return false;
   }
+#if defined(OS_CHROMEOS)
+  // Use GL_TEXTURE_2D when importing the NV12 DMA-buf as two GL textures, Y
+  // plane as gfx::BufferFormat::R_8, UV plane as gfx::BufferFormat::RG_88, then
+  // we can sample and write to NV12 DMA-buf through the two GL textures.
+  if (format == gfx::BufferFormat::YUV_420_BIPLANAR &&
+      (plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV)) {
+    return false;
+  }
+#endif
 #elif defined(OS_ANDROID)
   if (format == gfx::BufferFormat::BGR_565 ||
       format == gfx::BufferFormat::RGBA_8888) {

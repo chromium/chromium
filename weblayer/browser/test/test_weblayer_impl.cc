@@ -7,11 +7,16 @@
 #include <utility>
 
 #include "base/android/callback_android.h"
+#include "base/android/jni_string.h"
 #include "base/no_destructor.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/download/public/background_service/features.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/test/browser_test_utils.h"
+#include "weblayer/browser/browser_context_impl.h"
+#include "weblayer/browser/host_content_settings_map_factory.h"
+#include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/tab_impl.h"
 
 using base::android::AttachCurrentThread;
@@ -63,6 +68,18 @@ static void JNI_TestWebLayerImpl_ExpediteDownloadService(JNIEnv* env) {
   static base::NoDestructor<base::test::ScopedFeatureList> feature_list;
   feature_list->InitAndEnableFeatureWithParameters(
       download::kDownloadServiceFeature, {{"start_up_delay_ms", "0"}});
+}
+
+static void JNI_TestWebLayerImpl_GrantLocationPermission(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& jurl) {
+  GURL url(base::android::ConvertJavaStringToUTF8(env, jurl));
+  for (auto* profile : ProfileImpl::GetAllProfiles()) {
+    HostContentSettingsMapFactory::GetForBrowserContext(
+        profile->GetBrowserContext())
+        ->SetContentSettingDefaultScope(
+            url, url, ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
+  }
 }
 
 }  // namespace weblayer

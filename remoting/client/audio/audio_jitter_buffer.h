@@ -31,6 +31,10 @@ class AudioJitterBuffer : public AsyncAudioDataSupplier {
   // Pending get-data requests will be dropped when the stream format is
   // changed.
   explicit AudioJitterBuffer(OnFormatChangedCallback on_format_changed);
+
+  AudioJitterBuffer(const AudioJitterBuffer&) = delete;
+  AudioJitterBuffer& operator=(const AudioJitterBuffer&) = delete;
+
   ~AudioJitterBuffer() override;
 
   void AddAudioPacket(std::unique_ptr<AudioPacket> packet);
@@ -85,8 +89,6 @@ class AudioJitterBuffer : public AsyncAudioDataSupplier {
   bool underrun_protection_mode_ = true;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioJitterBuffer);
 };
 
 }  // namespace remoting

@@ -5,7 +5,7 @@
 #include "chrome/browser/sync_file_system/local/root_delete_helper.h"
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_status.h"
 #include "chrome/browser/sync_file_system/local/sync_file_system_backend.h"
@@ -61,7 +61,7 @@ void RootDeleteHelper::Run() {
             "%s", url_.DebugString().c_str());
 
   file_system_context_->DeleteFileSystem(
-      url_.origin(), url_.type(),
+      url_.storage_key(), url_.type(),
       base::BindOnce(&RootDeleteHelper::DidDeleteFileSystem,
                      weak_factory_.GetWeakPtr()));
 }
@@ -90,7 +90,7 @@ void RootDeleteHelper::DidResetFileChangeTracker() {
 
   // Reopening the filesystem.
   file_system_context_->sandbox_delegate()->OpenFileSystem(
-      url_.origin(), url_.type(),
+      url_.storage_key(), url_.type(),
       storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
       base::BindOnce(&RootDeleteHelper::DidOpenFileSystem,
                      weak_factory_.GetWeakPtr()),

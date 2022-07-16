@@ -151,7 +151,7 @@ void WriteImageNodeToClipboard(SystemClipboard&, const Node&, const String&);
 // Returns true for nodes that either have no content, or have content that is
 // ignored (skipped over) while editing. There are no VisiblePositions inside
 // these nodes.
-bool EditingIgnoresContent(const Node&);
+CORE_EXPORT bool EditingIgnoresContent(const Node&);
 
 inline bool CanHaveChildrenForEditing(const Node* node) {
   return !node->IsTextNode() && node->CanContainRangeEndPoint();

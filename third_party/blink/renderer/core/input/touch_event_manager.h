@@ -68,7 +68,6 @@ class CORE_EXPORT TouchEventManager final
     // unless more new events arrives for this touch point.
     Vector<WebPointerEvent> coalesced_events_;
     Member<Node> target_;  // The target of each active touch point.
-    String region_;        //  // The region of each active touch point.
     bool stale_;
   };
 

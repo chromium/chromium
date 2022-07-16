@@ -16,9 +16,6 @@ class BackgroundFetchDelegateImpl;
 class BackgroundFetchDelegateFactory
     : public BrowserContextKeyedServiceFactory {
  public:
-  // Returns whether the Background Fetch API should be enabled.
-  static bool IsEnabled();
-
   static BackgroundFetchDelegateImpl* GetForBrowserContext(
       content::BrowserContext* context);
   static BackgroundFetchDelegateFactory* GetInstance();

@@ -16,7 +16,7 @@ TestModelTypeStoreService::TestModelTypeStoreService()
   DCHECK(sync_data_path_.CreateUniqueTempDir());
 }
 
-TestModelTypeStoreService::~TestModelTypeStoreService() {}
+TestModelTypeStoreService::~TestModelTypeStoreService() = default;
 
 const base::FilePath& TestModelTypeStoreService::GetSyncDataPath() const {
   return sync_data_path_.GetPath();

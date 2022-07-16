@@ -28,6 +28,11 @@ class ClientSideDetectionServiceFactory
   // Get the singleton instance.
   static ClientSideDetectionServiceFactory* GetInstance();
 
+  ClientSideDetectionServiceFactory(const ClientSideDetectionServiceFactory&) =
+      delete;
+  ClientSideDetectionServiceFactory& operator=(
+      const ClientSideDetectionServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<ClientSideDetectionServiceFactory>;
 
@@ -39,8 +44,6 @@ class ClientSideDetectionServiceFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionServiceFactory);
 };
 
 }  // namespace safe_browsing

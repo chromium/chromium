@@ -5,8 +5,8 @@
 #include "content/browser/android/java/java_bridge_thread.h"
 
 #include "base/lazy_instance.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "build/build_config.h"
 
 #if !defined(OS_ANDROID)

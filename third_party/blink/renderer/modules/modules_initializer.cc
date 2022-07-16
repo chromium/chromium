@@ -43,9 +43,10 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_rendering_context.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
-#include "third_party/blink/renderer/modules/csspaint/background_color_paint_image_generator_impl.h"
-#include "third_party/blink/renderer/modules/csspaint/clip_path_paint_image_generator_impl.h"
+#include "third_party/blink/renderer/modules/closewatcher/close_watcher.h"
 #include "third_party/blink/renderer/modules/csspaint/css_paint_image_generator_impl.h"
+#include "third_party/blink/renderer/modules/csspaint/nativepaint/background_color_paint_image_generator_impl.h"
+#include "third_party/blink/renderer/modules/csspaint/nativepaint/clip_path_paint_image_generator_impl.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_controller.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_absolute_controller.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_controller.h"
@@ -78,10 +79,11 @@
 #include "third_party/blink/renderer/modules/push_messaging/push_messaging_client.h"
 #include "third_party/blink/renderer/modules/remoteplayback/html_media_element_remote_playback.h"
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback.h"
-#include "third_party/blink/renderer/modules/screen_enumeration/screens.h"
+#include "third_party/blink/renderer/modules/screen_enumeration/screen_details.h"
 #include "third_party/blink/renderer/modules/screen_enumeration/window_screens.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller.h"
 #include "third_party/blink/renderer/modules/service_worker/navigator_service_worker.h"
+#include "third_party/blink/renderer/modules/storage/dom_window_storage.h"
 #include "third_party/blink/renderer/modules/storage/dom_window_storage_controller.h"
 #include "third_party/blink/renderer/modules/storage/inspector_dom_storage_agent.h"
 #include "third_party/blink/renderer/modules/storage/storage_namespace.h"
@@ -243,6 +245,7 @@ void ModulesInitializer::InstallSupplements(LocalFrame& frame) const {
   InspectorAccessibilityAgent::ProvideTo(&frame);
   ImageDownloaderImpl::ProvideTo(frame);
   AudioRendererSinkCache::InstallWindowObserver(*frame.DomWindow());
+  CloseWatcher::InstallUserActivationObserver(*frame.DomWindow());
 }
 
 MediaControls* ModulesInitializer::CreateMediaControls(
@@ -387,11 +390,29 @@ void ModulesInitializer::DidUpdateScreens(
   auto* window = frame.DomWindow();
   if (auto* supplement =
           Supplement<LocalDOMWindow>::From<WindowScreens>(window)) {
-    // screens() may be null if permission has not been granted.
-    if (auto* screens = supplement->screens()) {
-      screens->UpdateScreenInfos(window, screen_infos);
+    // screen_details() may be null if permission has not been granted.
+    if (auto* screen_details = supplement->screen_details()) {
+      screen_details->UpdateScreenInfos(window, screen_infos);
     }
   }
+}
+
+void ModulesInitializer::SetLocalStorageArea(
+    LocalFrame& frame,
+    mojo::PendingRemote<mojom::blink::StorageArea> local_storage_area) {
+  if (!frame.DomWindow())
+    return;
+  DOMWindowStorage::From(*frame.DomWindow())
+      .InitLocalStorage(std::move(local_storage_area));
+}
+
+void ModulesInitializer::SetSessionStorageArea(
+    LocalFrame& frame,
+    mojo::PendingRemote<mojom::blink::StorageArea> session_storage_area) {
+  if (!frame.DomWindow())
+    return;
+  DOMWindowStorage::From(*frame.DomWindow())
+      .InitSessionStorage(std::move(session_storage_area));
 }
 
 void ModulesInitializer::RegisterInterfaces(mojo::BinderMap& binders) {

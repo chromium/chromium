@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_GESTURE_DETECTION_SCALE_GESTURE_DETECTOR_H_
 #define UI_EVENTS_GESTURE_DETECTION_SCALE_GESTURE_DETECTOR_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 
@@ -43,6 +42,10 @@ class GESTURE_DETECTION_EXPORT ScaleGestureDetector {
   };
 
   ScaleGestureDetector(const Config& config, ScaleGestureListener* listener);
+
+  ScaleGestureDetector(const ScaleGestureDetector&) = delete;
+  ScaleGestureDetector& operator=(const ScaleGestureDetector&) = delete;
+
   virtual ~ScaleGestureDetector();
 
   // Accepts MotionEvents and dispatches events to a |ScaleGestureListener|
@@ -111,8 +114,6 @@ class GESTURE_DETECTION_EXPORT ScaleGestureDetector {
   AnchoredScaleMode anchored_scale_mode_;
 
   bool event_before_or_above_starting_gesture_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScaleGestureDetector);
 };
 
 }  // namespace ui

@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -56,6 +55,10 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
     : public NetworkStateHandlerObserver {
  public:
+  NetworkConfigurationHandler(const NetworkConfigurationHandler&) = delete;
+  NetworkConfigurationHandler& operator=(const NetworkConfigurationHandler&) =
+      delete;
+
   ~NetworkConfigurationHandler() override;
 
   // Manages the observer list.
@@ -70,7 +73,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
   // given properties will be merged with the existing settings, and it won't
   // clear any existing properties.
   void SetShillProperties(const std::string& service_path,
-                          const base::DictionaryValue& shill_properties,
+                          const base::Value& shill_properties,
                           base::OnceClosure callback,
                           network_handler::ErrorCallback error_callback);
 
@@ -94,7 +97,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
   // Manager.ConfigureServiceForProfile. NOTE: Normally
   // ManagedNetworkConfigurationHandler should be used to call
   // CreateConfiguration. This will set GUID if not provided.
-  void CreateShillConfiguration(const base::DictionaryValue& shill_properties,
+  void CreateShillConfiguration(const base::Value& shill_properties,
                                 network_handler::ServiceResultCallback callback,
                                 network_handler::ErrorCallback error_callback);
 
@@ -132,7 +135,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
   void OnShuttingDown() override;
 
   // Construct and initialize an instance for testing.
-  static NetworkConfigurationHandler* InitializeForTest(
+  static std::unique_ptr<NetworkConfigurationHandler> InitializeForTest(
       NetworkStateHandler* network_state_handler,
       NetworkDeviceHandler* network_device_handler);
 
@@ -149,12 +152,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
 
   // Called when a configuration completes. This will wait for the cached
   // state (NetworkStateHandler) to update before triggering the callback.
-  void ConfigurationCompleted(
-      const std::string& profile_path,
-      const std::string& guid,
-      std::unique_ptr<base::DictionaryValue> configure_properties,
-      network_handler::ServiceResultCallback callback,
-      const dbus::ObjectPath& service_path);
+  void ConfigurationCompleted(const std::string& profile_path,
+                              const std::string& guid,
+                              base::Value configure_properties,
+                              network_handler::ServiceResultCallback callback,
+                              const dbus::ObjectPath& service_path);
 
   void ConfigurationFailed(network_handler::ErrorCallback error_callback,
                            const std::string& dbus_error_name,
@@ -181,10 +183,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
 
   // Invoke |callback| and inform NetworkStateHandler to request an update
   // for the service after setting properties.
-  void SetPropertiesSuccessCallback(
-      const std::string& service_path,
-      std::unique_ptr<base::DictionaryValue> set_properties,
-      base::OnceClosure callback);
+  void SetPropertiesSuccessCallback(const std::string& service_path,
+                                    base::Value set_properties,
+                                    base::OnceClosure callback);
   void SetPropertiesErrorCallback(const std::string& service_path,
                                   network_handler::ErrorCallback error_callback,
                                   const std::string& dbus_error_name,
@@ -231,8 +232,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
   base::ObserverList<NetworkConfigurationObserver, true>::Unchecked observers_;
 
   base::WeakPtrFactory<NetworkConfigurationHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConfigurationHandler);
 };
 
 }  // namespace chromeos

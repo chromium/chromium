@@ -147,7 +147,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInternalsWebUIBrowserTest,
           browser()->profile());
   ASSERT_TRUE(log_router);
   log_router->ProcessLog("<script> text for testing");
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIVersionURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIVersionURL)));
 }
 
 // Test that the description is correct in a non-Incognito tab.

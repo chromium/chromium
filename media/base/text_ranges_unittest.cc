@@ -13,9 +13,7 @@ namespace media {
 
 class TextRangesTest : public ::testing::Test {
  protected:
-  bool AddCue(int seconds) {
-    return ranges_.AddCue(base::TimeDelta::FromSeconds(seconds));
-  }
+  bool AddCue(int seconds) { return ranges_.AddCue(base::Seconds(seconds)); }
 
   void Reset() {
     ranges_.Reset();

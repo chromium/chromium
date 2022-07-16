@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -32,6 +31,11 @@ class ThirdPartyMetricsObserver
   };
 
   ThirdPartyMetricsObserver();
+
+  ThirdPartyMetricsObserver(const ThirdPartyMetricsObserver&) = delete;
+  ThirdPartyMetricsObserver& operator=(const ThirdPartyMetricsObserver&) =
+      delete;
+
   ~ThirdPartyMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
@@ -116,8 +120,6 @@ class ThirdPartyMetricsObserver
 
   // True if this page loaded a third-party font.
   bool third_party_font_loaded_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_THIRD_PARTY_METRICS_OBSERVER_H_

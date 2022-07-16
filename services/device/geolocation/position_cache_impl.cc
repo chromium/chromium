@@ -15,8 +15,7 @@ namespace device {
 // static
 const size_t PositionCacheImpl::kMaximumSize = 10;
 // static
-const base::TimeDelta PositionCacheImpl::kMaximumLifetime =
-    base::TimeDelta::FromDays(1);
+const base::TimeDelta PositionCacheImpl::kMaximumLifetime = base::Days(1);
 
 PositionCacheImpl::CacheEntry::CacheEntry(
     const Hash& hash,

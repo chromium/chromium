@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -36,9 +36,9 @@ class DevicePostureProviderImpl : public mojom::DevicePostureProvider {
 
  private:
   // DevicePostureProvider implementation.
-  void SetListener(
+  void AddListenerAndGetCurrentPosture(
       mojo::PendingRemote<mojom::DevicePostureProviderClient> client,
-      SetListenerCallback callback) override;
+      AddListenerAndGetCurrentPostureCallback callback) override;
   void OnReceiverConnectionError();
 
   std::unique_ptr<DevicePosturePlatformProvider> platform_provider_;

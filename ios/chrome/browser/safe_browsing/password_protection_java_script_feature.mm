@@ -34,11 +34,7 @@ PasswordProtectionJavaScriptFeature::PasswordProtectionJavaScriptFeature()
                             FeatureScript::TargetFrames::kAllFrames,
                             FeatureScript::ReinjectionBehavior::
                                 kReinjectOnDocumentRecreation)},
-                        {}) {
-  // This feature depends on JavaScript isolated worlds for security, so must
-  // only be used on iOS 14+.
-  DCHECK(base::ios::IsRunningOnIOS14OrLater());
-}
+                        {}) {}
 
 PasswordProtectionJavaScriptFeature::~PasswordProtectionJavaScriptFeature() =
     default;

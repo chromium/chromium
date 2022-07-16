@@ -34,6 +34,19 @@ class D3D11Texture2DMock
   MOCK_STDCALL_METHOD1(GetDesc, void(D3D11_TEXTURE2D_DESC*));
 };
 
+class D3D11MultithreadMock
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          ID3D11Multithread> {
+ public:
+  D3D11MultithreadMock();
+  ~D3D11MultithreadMock() override;
+  MOCK_STDCALL_METHOD0(Enter, void());
+  MOCK_STDCALL_METHOD0(GetMultithreadProtected, BOOL());
+  MOCK_STDCALL_METHOD0(Leave, void());
+  MOCK_STDCALL_METHOD1(SetMultithreadProtected, BOOL(BOOL));
+};
+
 class D3D11BufferMock
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,

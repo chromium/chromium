@@ -95,7 +95,7 @@ ShellWebContentsViewDelegate::~ShellWebContentsViewDelegate() {
 }
 
 void ShellWebContentsViewDelegate::ShowContextMenu(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     const ContextMenuParams& params) {
   if (switches::IsRunWebTestsSwitchPresent())
     return;
@@ -208,7 +208,7 @@ void ShellWebContentsViewDelegate::ShowContextMenu(
   NSTimeInterval eventTime = [currentEvent timestamp];
   NSEvent* clickEvent = [NSEvent mouseEventWithType:NSRightMouseDown
                                            location:position
-                                      modifierFlags:NSRightMouseDownMask
+                                      modifierFlags:0
                                           timestamp:eventTime
                                        windowNumber:[window windowNumber]
                                             context:nil

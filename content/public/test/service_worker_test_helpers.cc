@@ -25,6 +25,9 @@ namespace {
 
 class StoppedObserver : public base::RefCountedThreadSafe<StoppedObserver> {
  public:
+  StoppedObserver(const StoppedObserver&) = delete;
+  StoppedObserver& operator=(const StoppedObserver&) = delete;
+
   static void StartObserving(ServiceWorkerContextWrapper* context,
                              int64_t service_worker_version_id,
                              base::OnceClosure completion_callback_ui) {
@@ -57,7 +60,7 @@ class StoppedObserver : public base::RefCountedThreadSafe<StoppedObserver> {
 
     // ServiceWorkerContextCoreObserver:
     void OnStopped(int64_t version_id) override {
-      DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+      DCHECK_CURRENTLY_ON(BrowserThread::UI);
       if (version_id != version_id_)
         return;
       std::move(stopped_callback_).Run();
@@ -81,8 +84,6 @@ class StoppedObserver : public base::RefCountedThreadSafe<StoppedObserver> {
 
   std::unique_ptr<Observer> inner_observer_;
   base::OnceClosure completion_callback_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(StoppedObserver);
 };
 
 void StopServiceWorkerForRegistration(
@@ -90,7 +91,7 @@ void StopServiceWorkerForRegistration(
     base::OnceClosure completion_callback_ui,
     blink::ServiceWorkerStatusCode service_worker_status,
     scoped_refptr<ServiceWorkerRegistration> service_worker_registration) {
-  DCHECK(BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId()));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(blink::ServiceWorkerStatusCode::kOk, service_worker_status);
   int64_t version_id =
       service_worker_registration->active_version()->version_id();
@@ -103,7 +104,7 @@ void DispatchNotificationClickForRegistration(
     const blink::PlatformNotificationData& notification_data,
     blink::ServiceWorkerStatusCode service_worker_status,
     scoped_refptr<ServiceWorkerRegistration> service_worker_registration) {
-  DCHECK(BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId()));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(blink::ServiceWorkerStatusCode::kOk, service_worker_status);
   scoped_refptr<ServiceWorkerVersion> version =
       service_worker_registration->active_version();
@@ -118,25 +119,6 @@ void DispatchNotificationClickForRegistration(
       }));
 }
 
-void FindReadyRegistrationForScope(
-    scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
-    const GURL& scope,
-    base::OnceCallback<void(blink::ServiceWorkerStatusCode,
-                            scoped_refptr<ServiceWorkerRegistration>)>
-        callback) {
-  if (!BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId())) {
-    BrowserThread::GetTaskRunnerForThread(
-        ServiceWorkerContext::GetCoreThreadId())
-        ->PostTask(FROM_HERE, base::BindOnce(&FindReadyRegistrationForScope,
-                                             std::move(context_wrapper), scope,
-                                             std::move(callback)));
-    return;
-  }
-  context_wrapper->FindReadyRegistrationForScope(
-      scope, blink::StorageKey(url::Origin::Create(scope)),
-      std::move(callback));
-}
-
 }  // namespace
 
 void StopServiceWorkerForScope(ServiceWorkerContext* context,
@@ -146,8 +128,8 @@ void StopServiceWorkerForScope(ServiceWorkerContext* context,
   scoped_refptr<ServiceWorkerContextWrapper> context_wrapper(
       static_cast<ServiceWorkerContextWrapper*>(context));
 
-  FindReadyRegistrationForScope(
-      context_wrapper, scope,
+  context_wrapper->FindReadyRegistrationForScope(
+      scope, blink::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&StopServiceWorkerForRegistration, context_wrapper,
                      std::move(completion_callback_ui)));
 }
@@ -160,8 +142,8 @@ void DispatchServiceWorkerNotificationClick(
   scoped_refptr<ServiceWorkerContextWrapper> context_wrapper(
       static_cast<ServiceWorkerContextWrapper*>(context));
 
-  FindReadyRegistrationForScope(
-      std::move(context_wrapper), scope,
+  context_wrapper->FindReadyRegistrationForScope(
+      scope, blink::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&DispatchNotificationClickForRegistration,
                      notification_data));
 }

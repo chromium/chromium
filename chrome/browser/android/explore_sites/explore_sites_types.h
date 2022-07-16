@@ -25,7 +25,11 @@ struct ExploreSitesSite {
                    GURL url,
                    std::string title,
                    bool is_blocked);
+  ExploreSitesSite(const ExploreSitesSite&) = delete;
+  ExploreSitesSite& operator=(const ExploreSitesSite&) = delete;
+
   ExploreSitesSite(ExploreSitesSite&& other);
+
   virtual ~ExploreSitesSite();
 
   int site_id;
@@ -33,8 +37,6 @@ struct ExploreSitesSite {
   GURL url;
   std::string title;
   bool is_blocked;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesSite);
 };
 
 // The in-memory representation of a category in the ExploreSitesStore.
@@ -48,7 +50,12 @@ struct ExploreSitesCategory {
                        std::string label,
                        int ntp_shown_count,
                        int interaction_count);
+
+  ExploreSitesCategory(const ExploreSitesCategory&) = delete;
+  ExploreSitesCategory& operator=(const ExploreSitesCategory&) = delete;
+
   ExploreSitesCategory(ExploreSitesCategory&& other);
+
   virtual ~ExploreSitesCategory();
 
   int category_id;
@@ -60,8 +67,6 @@ struct ExploreSitesCategory {
   int interaction_count;
 
   std::vector<ExploreSitesSite> sites;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesCategory);
 };
 
 enum class GetCatalogStatus { kFailed, kNoCatalog, kSuccess };

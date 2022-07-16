@@ -14,6 +14,10 @@ namespace test {
 class BlackHoleLogSink : public LogSink {
  public:
   BlackHoleLogSink() = default;
+
+  BlackHoleLogSink(const BlackHoleLogSink&) = delete;
+  BlackHoleLogSink& operator=(const BlackHoleLogSink&) = delete;
+
   ~BlackHoleLogSink() override = default;
 
   // LogSink implementation.
@@ -25,9 +29,6 @@ class BlackHoleLogSink : public LogSink {
   void OnServiceRequestMade(DownloadClient client,
                             const std::string& guid,
                             DownloadParams::StartResult start_result) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BlackHoleLogSink);
 };
 
 }  // namespace test

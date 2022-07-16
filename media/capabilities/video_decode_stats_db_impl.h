@@ -47,6 +47,9 @@ class MEDIA_EXPORT VideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
       base::FilePath db_dir,
       leveldb_proto::ProtoDatabaseProvider* db_provider);
 
+  VideoDecodeStatsDBImpl(const VideoDecodeStatsDBImpl&) = delete;
+  VideoDecodeStatsDBImpl& operator=(const VideoDecodeStatsDBImpl&) = delete;
+
   ~VideoDecodeStatsDBImpl() override;
 
   // Implement VideoDecodeStatsDB.
@@ -209,8 +212,6 @@ class MEDIA_EXPORT VideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<VideoDecodeStatsDBImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecodeStatsDBImpl);
 };
 
 }  // namespace media

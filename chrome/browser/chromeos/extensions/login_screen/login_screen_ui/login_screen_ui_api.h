@@ -13,6 +13,10 @@ class LoginScreenUiShowFunction : public ExtensionFunction {
  public:
   LoginScreenUiShowFunction();
 
+  LoginScreenUiShowFunction(const LoginScreenUiShowFunction&) = delete;
+  LoginScreenUiShowFunction& operator=(const LoginScreenUiShowFunction&) =
+      delete;
+
   DECLARE_EXTENSION_FUNCTION("loginScreenUi.show", LOGINSCREENUI_SHOW)
 
  protected:
@@ -20,14 +24,15 @@ class LoginScreenUiShowFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenUiShowFunction);
 };
 
 class LoginScreenUiCloseFunction : public ExtensionFunction {
  public:
   LoginScreenUiCloseFunction();
+
+  LoginScreenUiCloseFunction(const LoginScreenUiCloseFunction&) = delete;
+  LoginScreenUiCloseFunction& operator=(const LoginScreenUiCloseFunction&) =
+      delete;
 
   DECLARE_EXTENSION_FUNCTION("loginScreenUi.close", LOGINSCREENUI_CLOSE)
 
@@ -40,8 +45,6 @@ class LoginScreenUiCloseFunction : public ExtensionFunction {
  private:
   // Callback upon completion of window closing.
   void OnClosed(bool success, const absl::optional<std::string>& error);
-
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenUiCloseFunction);
 };
 
 }  // namespace extensions

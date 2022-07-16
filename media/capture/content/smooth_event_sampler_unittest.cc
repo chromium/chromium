@@ -40,7 +40,7 @@ void SteadyStateNoSampleAndAdvance(base::TimeDelta vsync,
 }
 
 base::TimeTicks InitialTestTimeTicks() {
-  return base::TimeTicks() + base::TimeDelta::FromSeconds(1);
+  return base::TimeTicks() + base::Seconds(1);
 }
 
 
@@ -49,8 +49,8 @@ base::TimeTicks InitialTestTimeTicks() {
 // 60Hz sampled at 30Hz should produce 30Hz.  In addition, this test contains
 // much more comprehensive before/after/edge-case scenarios than the others.
 TEST(SmoothEventSamplerTest, Sample60HertzAt30Hertz) {
-  const base::TimeDelta capture_period = base::TimeDelta::FromSeconds(1) / 30;
-  const base::TimeDelta vsync = base::TimeDelta::FromSeconds(1) / 60;
+  const base::TimeDelta capture_period = base::Seconds(1) / 30;
+  const base::TimeDelta vsync = base::Seconds(1) / 60;
 
   SmoothEventSampler sampler(capture_period);
   base::TimeTicks t = InitialTestTimeTicks();
@@ -82,8 +82,8 @@ TEST(SmoothEventSamplerTest, Sample60HertzAt30Hertz) {
 
 // 50Hz sampled at 30Hz should produce a sequence where some frames are skipped.
 TEST(SmoothEventSamplerTest, Sample50HertzAt30Hertz) {
-  const base::TimeDelta capture_period = base::TimeDelta::FromSeconds(1) / 30;
-  const base::TimeDelta vsync = base::TimeDelta::FromSeconds(1) / 50;
+  const base::TimeDelta capture_period = base::Seconds(1) / 30;
+  const base::TimeDelta vsync = base::Seconds(1) / 50;
 
   SmoothEventSampler sampler(capture_period);
   base::TimeTicks t = InitialTestTimeTicks();
@@ -121,8 +121,8 @@ TEST(SmoothEventSamplerTest, Sample50HertzAt30Hertz) {
 
 // 75Hz sampled at 30Hz should produce a sequence where some frames are skipped.
 TEST(SmoothEventSamplerTest, Sample75HertzAt30Hertz) {
-  const base::TimeDelta capture_period = base::TimeDelta::FromSeconds(1) / 30;
-  const base::TimeDelta vsync = base::TimeDelta::FromSeconds(1) / 75;
+  const base::TimeDelta capture_period = base::Seconds(1) / 30;
+  const base::TimeDelta vsync = base::Seconds(1) / 75;
 
   SmoothEventSampler sampler(capture_period);
   base::TimeTicks t = InitialTestTimeTicks();
@@ -164,8 +164,8 @@ TEST(SmoothEventSamplerTest, Sample75HertzAt30Hertz) {
 
 // 30Hz sampled at 30Hz should produce 30Hz.
 TEST(SmoothEventSamplerTest, Sample30HertzAt30Hertz) {
-  const base::TimeDelta capture_period = base::TimeDelta::FromSeconds(1) / 30;
-  const base::TimeDelta vsync = base::TimeDelta::FromSeconds(1) / 30;
+  const base::TimeDelta capture_period = base::Seconds(1) / 30;
+  const base::TimeDelta vsync = base::Seconds(1) / 30;
 
   SmoothEventSampler sampler(capture_period);
   base::TimeTicks t = InitialTestTimeTicks();
@@ -193,8 +193,8 @@ TEST(SmoothEventSamplerTest, Sample30HertzAt30Hertz) {
 
 // 24Hz sampled at 30Hz should produce 24Hz.
 TEST(SmoothEventSamplerTest, Sample24HertzAt30Hertz) {
-  const base::TimeDelta capture_period = base::TimeDelta::FromSeconds(1) / 30;
-  const base::TimeDelta vsync = base::TimeDelta::FromSeconds(1) / 24;
+  const base::TimeDelta capture_period = base::Seconds(1) / 30;
+  const base::TimeDelta vsync = base::Seconds(1) / 24;
 
   SmoothEventSampler sampler(capture_period);
   base::TimeTicks t = InitialTestTimeTicks();
@@ -223,11 +223,10 @@ TEST(SmoothEventSamplerTest, Sample24HertzAt30Hertz) {
 // Tests that changing the minimum capture period during usage results in the
 // desired behavior.
 TEST(SmoothEventSamplerTest, Sample60HertzWithVariedCapturePeriods) {
-  const base::TimeDelta vsync = base::TimeDelta::FromSeconds(1) / 60;
+  const base::TimeDelta vsync = base::Seconds(1) / 60;
   const base::TimeDelta one_to_one_period = vsync;
   const base::TimeDelta two_to_one_period = vsync * 2;
-  const base::TimeDelta two_and_three_to_one_period =
-      base::TimeDelta::FromSeconds(1) / 24;
+  const base::TimeDelta two_and_three_to_one_period = base::Seconds(1) / 24;
 
   SmoothEventSampler sampler(one_to_one_period);
   base::TimeTicks t = InitialTestTimeTicks();
@@ -280,7 +279,7 @@ void ReplayCheckingSamplerDecisions(const DataPoint* data_points,
                                     SmoothEventSampler* sampler) {
   base::TimeTicks t = InitialTestTimeTicks();
   for (size_t i = 0; i < num_data_points; ++i) {
-    t += base::TimeDelta::FromMicroseconds(
+    t += base::Microseconds(
         static_cast<int64_t>(data_points[i].increment_ms * 1000));
     ASSERT_EQ(data_points[i].should_capture,
               AddEventAndConsiderSampling(sampler, t))
@@ -368,7 +367,7 @@ TEST(SmoothEventSamplerTest, DrawingAt24FpsWith60HzVsyncSampledAt30Hertz) {
                                           {true, 33.44},
                                           {false, 0}};
 
-  SmoothEventSampler sampler(base::TimeDelta::FromSeconds(1) / 30);
+  SmoothEventSampler sampler(base::Seconds(1) / 30);
   ReplayCheckingSamplerDecisions(data_points, base::size(data_points),
                                  &sampler);
 }
@@ -478,7 +477,7 @@ TEST(SmoothEventSamplerTest, DrawingAt30FpsWith60HzVsyncSampledAt30Hertz) {
                                           {true, 33.44},
                                           {true, 33.44}};
 
-  SmoothEventSampler sampler(base::TimeDelta::FromSeconds(1) / 30);
+  SmoothEventSampler sampler(base::Seconds(1) / 30);
   ReplayCheckingSamplerDecisions(data_points, base::size(data_points),
                                  &sampler);
 }
@@ -612,7 +611,7 @@ TEST(SmoothEventSamplerTest, DrawingAt60FpsWith60HzVsyncSampledAt30Hertz) {
                                           {true, 16.72},
                                           {true, 50.16}};
 
-  SmoothEventSampler sampler(base::TimeDelta::FromSeconds(1) / 30);
+  SmoothEventSampler sampler(base::Seconds(1) / 30);
   ReplayCheckingSamplerDecisions(data_points, base::size(data_points),
                                  &sampler);
 }

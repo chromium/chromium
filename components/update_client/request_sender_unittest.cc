@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -43,6 +42,10 @@ class RequestSenderTest : public testing::Test,
                           public ::testing::WithParamInterface<bool> {
  public:
   RequestSenderTest();
+
+  RequestSenderTest(const RequestSenderTest&) = delete;
+  RequestSenderTest& operator=(const RequestSenderTest&) = delete;
+
   ~RequestSenderTest() override;
 
   // Overrides from testing::Test.
@@ -69,8 +72,6 @@ class RequestSenderTest : public testing::Test,
 
  private:
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestSenderTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(IsForeground, RequestSenderTest, ::testing::Bool());

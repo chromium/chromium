@@ -68,6 +68,9 @@ class Log {
   // Constructor - |log_type| indicates what LogType this instance holds.
   explicit Log(LogType log_type) : log_type_(log_type) {}
 
+  Log(const Log&) = delete;
+  Log& operator=(const Log&) = delete;
+
   // Returns the size in bytes of the full log, in terms of LogEntry structs.
   // I.e. how many bytes would a provided buffer need to be to DrainLog().
   uint32_t GetFullLogSize() const {
@@ -177,10 +180,6 @@ class Log {
 
   LogType log_type_;
   std::vector<LogEntryInternal> entries_;
-
-  // DISALLOW_COPY_AND_ASSIGN(Log);
-  Log(const Log&) = delete;
-  Log& operator=(const Log&) = delete;
 };
 
 //------------------------------------------------------------------------------

@@ -19,9 +19,11 @@
 #include "base/debug/activity_tracker.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_id_name_manager.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 
 #if !defined(OS_APPLE) && !defined(OS_FUCHSIA) && !defined(OS_NACL)
@@ -69,7 +71,7 @@ void* ThreadFunc(void* params) {
 
     delegate = thread_params->delegate;
     if (!thread_params->joinable)
-      base::ThreadRestrictions::SetSingletonAllowed(false);
+      base::DisallowSingleton();
 
 #if !defined(OS_NACL)
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -250,7 +252,7 @@ void PlatformThread::Sleep(TimeDelta duration) {
   // NOTE: TimeDelta's microseconds are int64s while timespec's
   // nanoseconds are longs, so this unpacking must prevent overflow.
   sleep_time.tv_sec = duration.InSeconds();
-  duration -= TimeDelta::FromSeconds(sleep_time.tv_sec);
+  duration -= Seconds(sleep_time.tv_sec);
   sleep_time.tv_nsec = duration.InMicroseconds() * 1000;  // nanoseconds
 
   while (nanosleep(&sleep_time, &remaining) == -1 && errno == EINTR)
@@ -263,7 +265,8 @@ const char* PlatformThread::GetName() {
 }
 
 // static
-bool PlatformThread::CreateWithPriority(size_t stack_size, Delegate* delegate,
+bool PlatformThread::CreateWithPriority(size_t stack_size,
+                                        Delegate* delegate,
                                         PlatformThreadHandle* thread_handle,
                                         ThreadPriority priority) {
   return CreateThread(stack_size, true /* joinable thread */, delegate,
@@ -310,17 +313,20 @@ void PlatformThread::Detach(PlatformThreadHandle thread_handle) {
 #if !defined(OS_APPLE) && !defined(OS_FUCHSIA)
 
 // static
-bool PlatformThread::CanIncreaseThreadPriority(ThreadPriority priority) {
+bool PlatformThread::CanChangeThreadPriority(ThreadPriority from,
+                                             ThreadPriority to) {
 #if defined(OS_NACL)
   return false;
 #else
-  auto platform_specific_ability =
-      internal::CanIncreaseCurrentThreadPriorityForPlatform(priority);
-  if (platform_specific_ability)
-    return platform_specific_ability.value();
+  if (from >= to) {
+    // Decreasing thread priority on POSIX is always allowed.
+    return true;
+  }
+  if (to == ThreadPriority::REALTIME_AUDIO) {
+    return internal::CanSetThreadPriorityToRealtimeAudio();
+  }
 
-  return internal::CanLowerNiceTo(
-      internal::ThreadPriorityToNiceValue(priority));
+  return internal::CanLowerNiceTo(internal::ThreadPriorityToNiceValue(to));
 #endif  // defined(OS_NACL)
 }
 

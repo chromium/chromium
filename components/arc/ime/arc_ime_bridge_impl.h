@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/arc/ime/arc_ime_bridge.h"
 #include "components/arc/mojom/ime.mojom.h"
 #include "ui/base/ime/text_input_type.h"
@@ -26,6 +25,10 @@ class ArcBridgeService;
 class ArcImeBridgeImpl : public ArcImeBridge, public mojom::ImeHost {
  public:
   ArcImeBridgeImpl(Delegate* delegate, ArcBridgeService* bridge_service);
+
+  ArcImeBridgeImpl(const ArcImeBridgeImpl&) = delete;
+  ArcImeBridgeImpl& operator=(const ArcImeBridgeImpl&) = delete;
+
   ~ArcImeBridgeImpl() override;
 
   // ArcImeBridge overrides:
@@ -53,16 +56,12 @@ class ArcImeBridgeImpl : public ArcImeBridge, public mojom::ImeHost {
                                               const gfx::Range& selection_range,
                                               bool screen_coordinates) override;
   void RequestHideImeDeprecated() override;
-  void ShouldEnableKeyEventForwarding(
-      ShouldEnableKeyEventForwardingCallback callback) override;
   void SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
                     SendKeyEventCallback callback) override;
 
  private:
   Delegate* const delegate_;
   ArcBridgeService* const bridge_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcImeBridgeImpl);
 };
 
 }  // namespace arc

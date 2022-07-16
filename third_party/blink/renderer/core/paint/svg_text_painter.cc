@@ -28,6 +28,7 @@ void SVGTextPainter::Paint(const PaintInfo& paint_info) {
 
   if (block_info.phase == PaintPhase::kForeground)
     SVGModelObjectPainter::RecordHitTestData(layout_svg_text_, block_info);
+  SVGModelObjectPainter::RecordRegionCaptureData(layout_svg_text_, block_info);
 
   BlockPainter(layout_svg_text_).Paint(block_info);
 

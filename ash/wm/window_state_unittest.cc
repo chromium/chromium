@@ -17,6 +17,8 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
@@ -37,6 +39,10 @@ class AlwaysMaximizeTestState : public WindowState::State {
  public:
   explicit AlwaysMaximizeTestState(WindowStateType initial_state_type)
       : state_type_(initial_state_type) {}
+
+  AlwaysMaximizeTestState(const AlwaysMaximizeTestState&) = delete;
+  AlwaysMaximizeTestState& operator=(const AlwaysMaximizeTestState&) = delete;
+
   ~AlwaysMaximizeTestState() override = default;
 
   // WindowState::State overrides:
@@ -56,8 +62,6 @@ class AlwaysMaximizeTestState : public WindowState::State {
 
  private:
   WindowStateType state_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlwaysMaximizeTestState);
 };
 
 using WindowStateTest = AshTestBase;
@@ -104,10 +108,10 @@ TEST_F(WindowStateTest, SnapWindowBasic) {
   EXPECT_EQ(expected.ToString(), window->GetBoundsInScreen().ToString());
 }
 
-// Test how the minimum and maximum size specified by the aura::WindowDelegate
-// affect snapping.
-TEST_F(WindowStateTest, SnapWindowMinimumSize) {
-  UpdateDisplay("0+0-600x900");
+// Test how the minimum width and maximize behavior specified by the
+// aura::WindowDelegate affect snapping in landscape display layout.
+TEST_F(WindowStateTest, SnapWindowMinimumSizeLandscape) {
+  UpdateDisplay("900x600");
   const gfx::Rect kWorkAreaBounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
 
@@ -116,26 +120,27 @@ TEST_F(WindowStateTest, SnapWindowMinimumSize) {
       &delegate, -1, gfx::Rect(0, 100, kWorkAreaBounds.width() - 1, 100)));
 
   // It should be possible to snap a window with a minimum size.
-  delegate.set_minimum_size(gfx::Size(kWorkAreaBounds.width() - 1, 0));
+  const int kMinimumWidth = 700;
+  delegate.set_minimum_size(gfx::Size(kMinimumWidth, 0));
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->CanSnap());
   const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_right);
-  gfx::Rect expected =
-      gfx::Rect(kWorkAreaBounds.x() + 1, kWorkAreaBounds.y(),
-                kWorkAreaBounds.width() - 1, kWorkAreaBounds.height());
-  EXPECT_EQ(expected.ToString(), window->GetBoundsInScreen().ToString());
+  // Expect right snap with the minimum width.
+  const gfx::Rect expected_right_snap(kWorkAreaBounds.width() - kMinimumWidth,
+                                      kWorkAreaBounds.y(), kMinimumWidth,
+                                      kWorkAreaBounds.height());
+  EXPECT_EQ(expected_right_snap, window->GetBoundsInScreen());
 
-  // It should not be possible to snap a window with a maximum size defined.
-  delegate.set_maximum_size(gfx::Size(kWorkAreaBounds.width() - 1, 0));
-  EXPECT_FALSE(window_state->CanSnap());
-  delegate.set_maximum_size(gfx::Size(0, kWorkAreaBounds.height() - 1));
-  EXPECT_FALSE(window_state->CanSnap());
-  delegate.set_maximum_size(gfx::Size());
+  // It should not be possible to snap a window if not maximizable.
   window->SetProperty(aura::client::kResizeBehaviorKey,
-                      aura::client::kResizeBehaviorCanResize);
-  // It should be possible to snap a window with a maximum size, if it
-  // can be maximized.
+                      window->GetProperty(aura::client::kResizeBehaviorKey) ^
+                          aura::client::kResizeBehaviorCanMaximize);
+  EXPECT_FALSE(window_state->CanSnap());
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      window->GetProperty(aura::client::kResizeBehaviorKey) |
+                          aura::client::kResizeBehaviorCanMaximize);
+  // It should be possible to snap a window if it can be maximized.
   EXPECT_TRUE(window_state->CanSnap());
 }
 
@@ -267,7 +272,7 @@ TEST_F(WindowStateTest, AndroidPipWindowUmaMetricsCountsExitOnDestroy) {
 }
 
 // Test that modal window dialogs can be snapped.
-TEST_F(WindowStateTest, SnapModalWindowWithoutMaximumSizeLimit) {
+TEST_F(WindowStateTest, SnapModalWindow) {
   UpdateDisplay("0+0-600x900");
   const gfx::Rect kWorkAreaBounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
@@ -284,30 +289,15 @@ TEST_F(WindowStateTest, SnapModalWindowWithoutMaximumSizeLimit) {
       &delegate, -1, gfx::Rect(100, 100, 400, 500)));
 
   delegate.set_minimum_size(gfx::Size(200, 300));
-  WindowState* window_state = WindowState::Get(window.get());
-  EXPECT_TRUE(window_state->CanSnap());
 
-  window->SetProperty(aura::client::kResizeBehaviorKey,
-                      aura::client::kResizeBehaviorCanResize |
-                          aura::client::kResizeBehaviorCanMaximize);
-  delegate.set_maximum_size(gfx::Size());
+  WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->CanSnap());
 
   ::wm::AddTransientChild(parent_window.get(), window.get());
   EXPECT_TRUE(window_state->CanSnap());
 
-  delegate.set_maximum_size(gfx::Size());
-  EXPECT_TRUE(window_state->CanSnap());
-
   window->SetProperty(aura::client::kResizeBehaviorKey,
                       aura::client::kResizeBehaviorCanResize);
-  EXPECT_TRUE(window_state->CanSnap());
-
-  // It should be possible to snap a modal window without maximum size.
-  window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
-  EXPECT_TRUE(window_state->CanSnap());
-
-  delegate.set_maximum_size(gfx::Size(300, 400));
   EXPECT_FALSE(window_state->CanSnap());
 
   ::wm::RemoveTransientChild(parent_window.get(), window.get());
@@ -368,7 +358,7 @@ TEST_F(WindowStateTest, TestIgnoreTooBigMinimumSize) {
   EXPECT_EQ(work_area_size.ToString(), window->bounds().size().ToString());
 }
 
-// Tests UpdateSnappedWidthRatio. (1) It should have ratio reset when window
+// Tests UpdateSnapRatio. (1) It should have ratio reset when window
 // enters snapped state; (2) it should update ratio on bounds event when
 // snapped.
 TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
@@ -387,7 +377,7 @@ TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
       gfx::Rect(kWorkAreaBounds.x(), kWorkAreaBounds.y(),
                 kWorkAreaBounds.width() / 2, kWorkAreaBounds.height());
   EXPECT_EQ(expected, window->GetBoundsInScreen());
-  EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(0.5f, *window_state->snap_ratio());
 
   // Drag to change snapped window width.
   const int kIncreasedWidth = 225;
@@ -400,18 +390,18 @@ TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
   expected.set_width(expected.width() + kIncreasedWidth);
   EXPECT_EQ(expected, window->GetBoundsInScreen());
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
-  EXPECT_EQ(0.75f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(0.75f, *window_state->snap_ratio());
 
   // Another cycle snap left event will restore window state to normal.
   window_state->OnWMEvent(&cycle_snap_left);
   EXPECT_EQ(WindowStateType::kNormal, window_state->GetStateType());
-  EXPECT_FALSE(window_state->snapped_width_ratio());
+  EXPECT_FALSE(window_state->snap_ratio());
 
   // Another cycle snap left event will snap window and reset snapped width
   // ratio.
   window_state->OnWMEvent(&cycle_snap_left);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
-  EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(0.5f, *window_state->snap_ratio());
 }
 
 // Tests that dragging and snapping the snapped window update the width ratio
@@ -443,9 +433,9 @@ TEST_F(WindowStateTest, SnapSnappedWindow) {
   // Wait for the snapped animation to complete and test that the window bound
   // is primary-snapped and the snap width ratio is updated.
   window->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
-                                       base::TimeDelta::FromSeconds(1));
+                                       base::Seconds(1));
   EXPECT_EQ(expected, window->GetBoundsInScreen());
-  EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(0.5f, *window_state->snap_ratio());
 
   // Drag the window to unsnap but do not release.
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -454,7 +444,7 @@ TEST_F(WindowStateTest, SnapSnappedWindow) {
   generator->MoveMouseBy(5, 0);
   // While dragged, the window size should restore to its normal bound.
   EXPECT_EQ(window_normal_size, window->bounds().size());
-  EXPECT_EQ(1.0f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(1.0f, *window_state->snap_ratio());
 
   // Continue dragging the window and snap it back to the same position.
   generator->MoveMouseBy(-405, 0);
@@ -462,7 +452,7 @@ TEST_F(WindowStateTest, SnapSnappedWindow) {
 
   // The snapped ratio should be correct regardless of whether the animation
   // is finished or not.
-  EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(0.5f, *window_state->snap_ratio());
 }
 
 // Test that snapping left/right preserves the restore bounds.
@@ -895,6 +885,77 @@ TEST_F(WindowStateTest, OpacityChange) {
   window_state->OnWMEvent(&snap_left);
   EXPECT_FALSE(window->GetTransparent());
 }
+
+// Test WindowStateTest functionalities with portrait display. This test is
+// parameterized to enable vertical layout or horizontal layout snap in
+// portrait display.
+class PortraitDisplayWindowStateTest
+    : public AshTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  PortraitDisplayWindowStateTest() = default;
+  PortraitDisplayWindowStateTest(const PortraitDisplayWindowStateTest&) =
+      delete;
+  PortraitDisplayWindowStateTest& operator=(
+      const PortraitDisplayWindowStateTest&) = delete;
+  ~PortraitDisplayWindowStateTest() override = default;
+
+  bool IsVerticalSnapEnabled() const { return GetParam(); }
+
+  // WindowStateTest:
+  void SetUp() override {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          chromeos::wm::features::kVerticalSnap);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          chromeos::wm::features::kVerticalSnap);
+    }
+    AshTestBase::SetUp();
+    UpdateDisplay("600x900");
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test how the minimum height specified by the aura::WindowDelegate affects
+// snapping in portrait display layout.
+TEST_P(PortraitDisplayWindowStateTest, SnapWindowMinimumSizePortrait) {
+  const gfx::Rect kWorkAreaBounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+
+  aura::test::TestWindowDelegate delegate;
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
+      &delegate, -1, gfx::Rect(0, 100, kWorkAreaBounds.width() - 1, 100)));
+
+  // It should be possible to snap a window with a minimum width that is larger
+  // a half screen width in horizontal snap layout and snap a window with a
+  // minimum height that is longer than a half screen height in vertical snap
+  // layout.
+  const gfx::Size kMinimumSize =
+      IsVerticalSnapEnabled() ? gfx::Size(0, 500) : gfx::Size(400, 0);
+  delegate.set_minimum_size(kMinimumSize);
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_TRUE(window_state->CanSnap());
+  const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
+  window_state->OnWMEvent(&snap_right);
+  // Expect right snap for horizontal snap layout with the minimum width and
+  // bottom snap for vertical snap layout with the minimum height.
+  const gfx::Rect expected_snap =
+      IsVerticalSnapEnabled()
+          ? gfx::Rect(kWorkAreaBounds.x(),
+                      kWorkAreaBounds.height() - kMinimumSize.height(),
+                      kWorkAreaBounds.width(), kMinimumSize.height())
+          : gfx::Rect(kWorkAreaBounds.width() - kMinimumSize.width(),
+                      kWorkAreaBounds.y(), kMinimumSize.width(),
+                      kWorkAreaBounds.height());
+  EXPECT_EQ(expected_snap, window->GetBoundsInScreen());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PortraitDisplayWindowStateTest,
+                         ::testing::Bool());
 
 // TODO(skuhne): Add more unit test to verify the correctness for the restore
 // operation.

@@ -18,6 +18,10 @@ class ShapeDetectionService : public mojom::ShapeDetectionService {
  public:
   explicit ShapeDetectionService(
       mojo::PendingReceiver<mojom::ShapeDetectionService> receiver);
+
+  ShapeDetectionService(const ShapeDetectionService&) = delete;
+  ShapeDetectionService& operator=(const ShapeDetectionService&) = delete;
+
   ~ShapeDetectionService() override;
 
   // mojom::ShapeDetectionService implementation:
@@ -30,8 +34,6 @@ class ShapeDetectionService : public mojom::ShapeDetectionService {
 
  private:
   mojo::Receiver<mojom::ShapeDetectionService> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShapeDetectionService);
 };
 
 }  // namespace shape_detection

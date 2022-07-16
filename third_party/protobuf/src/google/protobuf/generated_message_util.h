@@ -87,6 +87,10 @@ inline To DownCast(From& f) {
 
 PROTOBUF_EXPORT void InitProtobufDefaults();
 
+using InitSCCCallback = void (*)();
+PROTOBUF_EXPORT void RegisterInitSCCHooks(InitSCCCallback enter,
+                                          InitSCCCallback leave);
+
 // This used by proto1
 PROTOBUF_EXPORT const ::std::string& GetEmptyString();
 

@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -29,6 +30,7 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/intranet_redirector_state.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/tab_matcher.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url_service.h"
@@ -67,25 +69,35 @@ struct MatchGURLHash {
 // static
 size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
 #if (defined(OS_ANDROID))
-  constexpr size_t kDefaultMaxAutocompleteMatches = 5;
+  constexpr size_t kDefaultMaxAutocompleteMatches = 8;
+  constexpr size_t kDefaultMaxZeroSuggestMatches = 15;
 #elif defined(OS_IOS)  // !defined(OS_ANDROID)
   constexpr size_t kDefaultMaxAutocompleteMatches = 6;
+  constexpr size_t kDefaultMaxZeroSuggestMatches = 6;
 #else                  // !defined(OS_ANDROID) && !defined(OS_IOS)
   constexpr size_t kDefaultMaxAutocompleteMatches = 8;
+  constexpr size_t kDefaultMaxZeroSuggestMatches = 8;
 #endif
   static_assert(kMaxAutocompletePositionValue > kDefaultMaxAutocompleteMatches,
                 "kMaxAutocompletePositionValue must be larger than the largest "
                 "possible autocomplete result size.");
+  static_assert(kMaxAutocompletePositionValue > kDefaultMaxZeroSuggestMatches,
+                "kMaxAutocompletePositionValue must be larger than the largest "
+                "possible zero suggest autocomplete result size.");
+  static_assert(kDefaultMaxAutocompleteMatches != 0,
+                "Default number of suggestions must be non-zero");
+  static_assert(kDefaultMaxZeroSuggestMatches != 0,
+                "Default number of zero-prefix suggestions must be non-zero");
 
   // If we're interested in the zero suggest match limit, and one has been
   // specified, return it.
   if (is_zero_suggest) {
     size_t field_trial_value = base::GetFieldTrialParamByFeatureAsInt(
         omnibox::kMaxZeroSuggestMatches,
-        OmniboxFieldTrial::kMaxZeroSuggestMatchesParam, 0);
+        OmniboxFieldTrial::kMaxZeroSuggestMatchesParam,
+        kDefaultMaxZeroSuggestMatches);
     DCHECK(kMaxAutocompletePositionValue > field_trial_value);
-    if (field_trial_value > 0)
-      return field_trial_value;
+    return field_trial_value;
   }
 
   //  Otherwise, i.e. if no zero suggest specific limit has been specified or
@@ -470,21 +482,43 @@ void AutocompleteResult::ConvertOpenTabMatches(
     AutocompleteProviderClient* client,
     const AutocompleteInput* input) {
   base::TimeTicks start_time = base::TimeTicks::Now();
+
+  // URL matching on Android is expensive, because it triggers a volume of JNI
+  // calls. We improve this situation by batching the lookup.
+  TabMatcher::GURLToTabInfoMap batch_lookup_map;
   for (auto& match : matches_) {
     // If already converted this match, don't re-search through open tabs and
     // possibly re-change the description.
-    if (match.has_tab_match)
+    // Note: explicitly check for value rather than deferring to implicit
+    // boolean conversion of absl::optional.
+    if (match.has_tab_match.has_value())
       continue;
-    // If URL is in a tab, remember that.
-    if (client->IsTabOpenWithURL(match.destination_url, input)) {
-      match.has_tab_match = true;
+    batch_lookup_map.insert({match.destination_url, {}});
+  }
+
+  if (!batch_lookup_map.empty()) {
+    client->GetTabMatcher().FindMatchingTabs(&batch_lookup_map, input);
+
+    for (auto& match : matches_) {
+      if (match.has_tab_match.has_value())
+        continue;
+
+      auto tab_info = batch_lookup_map.find(match.destination_url);
+      DCHECK(tab_info != batch_lookup_map.end());
+      if (tab_info == batch_lookup_map.end())
+        continue;
+
+      match.has_tab_match = tab_info->second.has_matching_tab;
+#if defined(OS_ANDROID)
+      match.UpdateMatchingJavaTab(tab_info->second.android_tab);
+#endif
     }
   }
 
   base::TimeDelta time_delta = base::TimeTicks::Now() - start_time;
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Omnibox.TabMatchTime", time_delta, base::TimeDelta::FromMicroseconds(1),
-      base::TimeDelta::FromMilliseconds(5), 50);
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("Omnibox.TabMatchTime", time_delta,
+                                          base::Microseconds(1),
+                                          base::Milliseconds(5), 50);
 }
 
 bool AutocompleteResult::HasCopiedMatches() const {
@@ -643,7 +677,7 @@ size_t AutocompleteResult::CalculateNumMatchesPerUrlCount(
   size_t url_cutoff = base::GetFieldTrialParamByFeatureAsInt(
       omnibox::kDynamicMaxAutocomplete,
       OmniboxFieldTrial::kDynamicMaxAutocompleteUrlCutoffParam, 0);
-  DCHECK(increased_limit > base_limit);
+  DCHECK(increased_limit >= base_limit);
 
   size_t num_matches = 0;
   size_t num_url_matches = 0;
@@ -708,6 +742,10 @@ GURL AutocompleteResult::ComputeAlternateNavUrl(
                                 DISABLE_INTERCEPTION_CHECKS_ENABLE_INFOBARS ||
        redirector_policy == omnibox::IntranetRedirectorBehavior::
                                 ENABLE_INTERCEPTION_CHECKS_AND_INFOBARS);
+  TRACE_EVENT_INSTANT("omnibox", "AutocompleteResult::ComputeAlternateNavURL",
+                      "input", input, "match", match,
+                      "policy_allows_alternate_navs",
+                      policy_allows_alternate_navs);
   if (!policy_allows_alternate_navs)
     return GURL();
 
@@ -1000,10 +1038,10 @@ void AutocompleteResult::MergeMatchesByProvider(ACMatches* old_matches,
   // "overwrite" the initial matches from that provider's previous results,
   // minimally disturbing the rest of the matches.
   size_t delta = old_matches->size() - new_matches.size();
-  for (auto i = old_matches->rbegin(); i != old_matches->rend() && delta > 0;
-       ++i) {
-    if (!HasMatchByDestination(*i, new_matches)) {
-      matches_.push_back(std::move(*i));
+  for (auto j = old_matches->rbegin(); j != old_matches->rend() && delta > 0;
+       ++j) {
+    if (!HasMatchByDestination(*j, new_matches)) {
+      matches_.push_back(std::move(*j));
       matches_.back().relevance =
           std::min(max_relevance, matches_.back().relevance);
       matches_.back().from_previous = true;

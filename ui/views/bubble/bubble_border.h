@@ -6,7 +6,6 @@
 #define UI_VIEWS_BUBBLE_BUBBLE_BORDER_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -23,7 +22,7 @@ class Canvas;
 }
 
 namespace ui {
-class NativeTheme;
+class ColorProvider;
 }
 
 namespace views {
@@ -90,21 +89,24 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   static constexpr int kShadowVerticalOffset = 2;
 
   // Space between the anchor view and a visible arrow if one is present.
-  static constexpr int kVisibleArrowGap = 1;
+  static constexpr int kVisibleArrowGap = 4;
 
   // Length of the visible arrow (distance from the bubble to the tip of the
   // arrow) if one is present.
   static constexpr int kVisibleArrowLength = 8;
 
   // Radius (half-width) of the visible arrow, when one is present.
-  static constexpr int kVisibleArrowRadius = 8;
+  static constexpr int kVisibleArrowRadius = 9;
 
-  // Distances between the edge of the bubble widget and the edge of the visible
+  // Distance between the edge of the bubble widget and the edge of the visible
   // arrow if one is present.
-  static constexpr int kVisibleArrowHorizontalBuffer = 16;
-  static constexpr int kVisibleArrowVerticalBuffer = 12;
+  static constexpr int kVisibleArrowBuffer = 12;
 
   BubbleBorder(Arrow arrow, Shadow shadow, SkColor color);
+
+  BubbleBorder(const BubbleBorder&) = delete;
+  BubbleBorder& operator=(const BubbleBorder&) = delete;
+
   ~BubbleBorder() override;
 
   static bool has_arrow(Arrow a) { return a < NONE; }
@@ -143,11 +145,11 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   static gfx::Insets GetBorderAndShadowInsets(
       absl::optional<int> shadow_elevation = absl::nullopt);
 
-  // Draws a border and shadow outside the |rect| on |canvas|. |theme| is passed
-  // into GetBorderAndShadowFlags to obtain the shadow color.
+  // Draws a border and shadow outside the |rect| on |canvas|. |color_provider|
+  // is passed into GetBorderAndShadowFlags to obtain the shadow color.
   static void DrawBorderAndShadow(SkRect rect,
                                   gfx::Canvas* canvas,
-                                  const ui::NativeTheme* theme);
+                                  const ui::ColorProvider* color_provider);
 
   // Set the corner radius, enables Material Design.
   void SetCornerRadius(int radius);
@@ -167,7 +169,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   SkColor background_color() const { return background_color_; }
 
   // If true, the background color should be determined by the host's
-  // NativeTheme.
+  // ColorProvider.
   void set_use_theme_background_color(bool use_theme_background_color) {
     use_theme_background_color_ = use_theme_background_color;
   }
@@ -206,16 +208,64 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   gfx::Insets GetInsets() const override;
   gfx::Size GetMinimumSize() const override;
 
+  // Sets and activates the visible |arrow|. The position of the visible arrow
+  // on the edge of the |bubble_bounds| is determined using the
+  // |anchor_rect|. While the side of the arrow is already determined by
+  // |arrow|, the placement along the side is chosen to point towards the
+  // |anchor_rect|. For a horizontal bubble with an arrow on either the left
+  // or right side, the arrow is placed to point towards the vertical center of
+  // |anchor_rect|. For a vertical arrow that is either on top of below the
+  // bubble, the placement depends on the specifics of |arrow|:
+  //
+  //  * A right-aligned arrow (TOP_RIGHT, BOTTOM_RIGHT) optimizes the arrow
+  //  position to point at the right edge of the |element_bounds|.
+  //  * A center-aligned arrow (TOP_CENTER, BOTTOM_CENTER) points towards the
+  //  horizontal center of |element_bounds|.
+  //  * Otherwise, the arrow points towards the left edge of |element_bounds|.
+  //
+  // If it is not possible for the arrow to point towards the targeted point
+  // because there is no overlap between the bubble and the element in the
+  // significant direction, the arrow is placed at the most extreme allowed
+  // position that is closest to the targeted point.
+  //
+  // If |move_bubble_to_add_arrow| is true, the |bubble_bounds| are displaced to
+  // account for the size of the arrow.
+  void AddArrowToBubbleCornerAndPointTowardsAnchor(
+      const gfx::Rect& anchor_rect,
+      bool move_bubble_to_add_arrow,
+      gfx::Rect& bubble_bounds);
+
+  // Returns a constant reference to the |visible_arrow_rect_| for teseting
+  // purposes.
+  const gfx::Rect& GetVisibibleArrowRectForTesting() {
+    return visible_arrow_rect_;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(BubbleBorderTest, GetSizeForContentsSizeTest);
   FRIEND_TEST_ALL_PREFIXES(BubbleBorderTest, GetBoundsOriginTest);
   FRIEND_TEST_ALL_PREFIXES(BubbleBorderTest, ShadowTypes);
   FRIEND_TEST_ALL_PREFIXES(BubbleBorderTest, VisibleArrowSizesAreConsistent);
+  FRIEND_TEST_ALL_PREFIXES(BubbleBorderTest,
+                           MoveContentsBoundsToPlaceVisibleArrow);
+
+  // Returns the translation vector for a bubble to make space for
+  // inserting the visible arrow at the right position for |arrow_|.
+  // |include_gap| controls if the displacement accounts for the
+  // kVisibleArrowGap.
+  static gfx::Vector2d GetContentsBoundsOffsetToPlaceVisibleArrow(
+      BubbleBorder::Arrow arrow,
+      bool include_gap = true);
 
   // The border and arrow stroke size used in image assets, in pixels.
   static constexpr int kStroke = 1;
 
   gfx::Size GetSizeForContentsSize(const gfx::Size& contents_size) const;
+
+  // Calculates and assigns the |visible_arrow_rect_| for the given
+  // |contents_bounds| and the |anchor_point| in which the arrow is rendered to.
+  void CalculateVisibleArrowRect(const gfx::Rect& contents_bounds,
+                                 const gfx::Point& anchor_point) const;
 
   // Returns the region within |view| representing the client area. This can be
   // set as a canvas clip to ensure any fill or shadow from the border does not
@@ -251,8 +301,6 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   bool use_theme_background_color_;
   bool avoid_shadow_overlap_ = false;
   absl::optional<gfx::Insets> insets_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleBorder);
 };
 
 // A Background that clips itself to the specified BubbleBorder and uses
@@ -261,13 +309,14 @@ class VIEWS_EXPORT BubbleBackground : public Background {
  public:
   explicit BubbleBackground(BubbleBorder* border) : border_(border) {}
 
+  BubbleBackground(const BubbleBackground&) = delete;
+  BubbleBackground& operator=(const BubbleBackground&) = delete;
+
   // Overridden from Background:
   void Paint(gfx::Canvas* canvas, View* view) const override;
 
  private:
   BubbleBorder* border_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleBackground);
 };
 
 }  // namespace views

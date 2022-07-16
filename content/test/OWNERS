@@ -20,7 +20,7 @@ per-file mock_platform_notification_service.*=file://content/browser/notificatio
 per-file mock_badge_service.*=file://chrome/browser/badging/OWNERS
 
 # Fuchsia related files.
-per-file *fuchsia*=file://build/fuchsia/OWNERS
+per-file ...fuchsia*=file://build/fuchsia/OWNERS
 
 # WebContents-related test code.
 per-file *web_contents*=file://content/browser/web_contents/OWNERS

@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -22,7 +21,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
-#include "chrome/browser/ui/views/passwords/password_save_update_with_account_store_view.h"
+#include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -54,8 +53,8 @@ bool IsBubbleShowing() {
 }
 
 views::View* GetUsernameTextfield(const PasswordBubbleViewBase* bubble) {
-  const PasswordSaveUpdateWithAccountStoreView* save_bubble =
-      static_cast<const PasswordSaveUpdateWithAccountStoreView*>(bubble);
+  const PasswordSaveUpdateView* save_bubble =
+      static_cast<const PasswordSaveUpdateView*>(bubble);
   return save_bubble->GetUsernameTextfieldForTest();
 }
 
@@ -66,6 +65,12 @@ namespace metrics_util = password_manager::metrics_util;
 class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
  public:
   PasswordBubbleInteractiveUiTest() {}
+
+  PasswordBubbleInteractiveUiTest(const PasswordBubbleInteractiveUiTest&) =
+      delete;
+  PasswordBubbleInteractiveUiTest& operator=(
+      const PasswordBubbleInteractiveUiTest&) = delete;
+
   ~PasswordBubbleInteractiveUiTest() override {}
 
   MOCK_METHOD0(OnIconRequestDone, void());
@@ -78,9 +83,6 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
     }
     return std::move(response);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordBubbleInteractiveUiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {
@@ -239,9 +241,9 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnKey) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::FocusChangedObserver focus_observer(web_contents);
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GURL("data:text/html;charset=utf-8,<input type=\"text\" autofocus>"));
+      GURL("data:text/html;charset=utf-8,<input type=\"text\" autofocus>")));
   focus_observer.Wait();
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
@@ -258,8 +260,8 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnKey) {
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnNavigation) {
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
-  ui_test_utils::NavigateToURL(
-      browser(), GURL("data:text/html;charset=utf-8,<body>Welcome!</body>"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html;charset=utf-8,<body>Welcome!</body>")));
   EXPECT_TRUE(IsBubbleShowing());
 }
 

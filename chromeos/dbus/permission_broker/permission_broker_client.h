@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 
 namespace dbus {
 class Bus;
@@ -52,6 +51,9 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) PermissionBrokerClient {
 
   // Returns the global instance if initialized. May return null.
   static PermissionBrokerClient* Get();
+
+  PermissionBrokerClient(const PermissionBrokerClient&) = delete;
+  PermissionBrokerClient& operator=(const PermissionBrokerClient&) = delete;
 
   // CheckPathAccess requests a hint from the permission broker about whether
   // a later call to RequestPathAccess will be successful. It presumes that
@@ -167,9 +169,6 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) PermissionBrokerClient {
   // Initialize/Shutdown should be used instead.
   PermissionBrokerClient();
   virtual ~PermissionBrokerClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PermissionBrokerClient);
 };
 
 }  // namespace chromeos

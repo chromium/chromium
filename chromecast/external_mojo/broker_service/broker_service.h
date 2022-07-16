@@ -56,6 +56,10 @@ class BrokerService : public ::service_manager::Service {
   static const service_manager::Manifest& GetManifest();
 
   explicit BrokerService(service_manager::Connector* connector);
+
+  BrokerService(const BrokerService&) = delete;
+  BrokerService& operator=(const BrokerService&) = delete;
+
   ~BrokerService() override;
 
   // ::service_manager::Service implementation:
@@ -81,8 +85,6 @@ class BrokerService : public ::service_manager::Service {
   InterfaceBundle bundle_;
 
   base::SequenceBound<ExternalMojoBroker> broker_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrokerService);
 };
 
 }  // namespace external_mojo

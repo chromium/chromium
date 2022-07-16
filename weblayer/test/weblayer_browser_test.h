@@ -20,6 +20,10 @@ class Shell;
 class WebLayerBrowserTest : public content::BrowserTestBase {
  public:
   WebLayerBrowserTest();
+
+  WebLayerBrowserTest(const WebLayerBrowserTest&) = delete;
+  WebLayerBrowserTest& operator=(const WebLayerBrowserTest&) = delete;
+
   ~WebLayerBrowserTest() override;
 
   // content::BrowserTestBase implementation.
@@ -40,8 +44,6 @@ class WebLayerBrowserTest : public content::BrowserTestBase {
  private:
   Shell* shell_ = nullptr;
   bool start_in_incognito_mode_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebLayerBrowserTest);
 };
 
 }  // namespace weblayer

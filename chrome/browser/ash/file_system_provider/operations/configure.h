@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/file_system_provider/operations/operation.h"
 #include "storage/browser/file_system/async_file_util.h"
 
@@ -30,6 +29,10 @@ class Configure : public Operation {
   Configure(extensions::EventRouter* event_router,
             const ProvidedFileSystemInfo& file_system_info,
             storage::AsyncFileUtil::StatusCallback callback);
+
+  Configure(const Configure&) = delete;
+  Configure& operator=(const Configure&) = delete;
+
   ~Configure() override;
 
   // Operation overrides.
@@ -43,8 +46,6 @@ class Configure : public Operation {
 
  private:
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Configure);
 };
 
 }  // namespace operations

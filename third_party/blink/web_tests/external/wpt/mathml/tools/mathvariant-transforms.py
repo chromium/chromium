@@ -1,6 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
-from __future__ import print_function
 from lxml import etree
 from utils.misc import downloadWithProgressBar, UnicodeXMLURL
 from utils import mathfont

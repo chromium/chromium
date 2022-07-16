@@ -35,6 +35,9 @@ class NET_EXPORT_PRIVATE BackendCleanupTracker
       const base::FilePath& path,
       base::OnceClosure retry_closure);
 
+  BackendCleanupTracker(const BackendCleanupTracker&) = delete;
+  BackendCleanupTracker& operator=(const BackendCleanupTracker&) = delete;
+
   // Register a callback to be posted after all the work of associated
   // context is complete (which will result in destruction of this context).
   // Should only be called by owner, on its I/O-thread-like execution context,
@@ -60,8 +63,6 @@ class NET_EXPORT_PRIVATE BackendCleanupTracker
   // We expect only TryMakeContext to be multithreaded, everything
   // else should be sequenced.
   SEQUENCE_CHECKER(seq_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BackendCleanupTracker);
 };
 
 }  // namespace disk_cache

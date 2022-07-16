@@ -10,15 +10,18 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/wm/desks/close_desk_button.h"
+#include "ash/style/button_style.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_highlight_controller.h"
 #include "base/bind.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -81,9 +84,10 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
                           base::Unretained(this)),
       this));
   desk_name_view_ = AddChildView(std::move(desk_name_view));
-  close_desk_button_ =
-      AddChildView(std::make_unique<CloseDeskButton>(base::BindRepeating(
-          &DeskMiniView::OnCloseButtonPressed, base::Unretained(this))));
+  close_desk_button_ = AddChildView(std::make_unique<CloseButton>(
+      base::BindRepeating(&DeskMiniView::OnCloseButtonPressed,
+                          base::Unretained(this)),
+      CloseButton::Type::kSmall));
 
   UpdateCloseButtonVisibility();
   UpdateBorderColor();
@@ -145,7 +149,8 @@ void DeskMiniView::UpdateBorderColor() {
       IsViewHighlighted()) {
     desk_preview_->SetBorderColor(color_provider->GetControlsLayerColor(
         AshColorProvider::ControlsLayerType::kFocusRingColor));
-  } else if (!desk_->is_active()) {
+  } else if (!desk_->is_active() ||
+             owner_bar_->overview_grid()->IsShowingDesksTemplatesGrid()) {
     desk_preview_->SetBorderColor(SK_ColorTRANSPARENT);
   } else {
     desk_preview_->SetBorderColor(color_provider->GetContentLayerColor(
@@ -154,7 +159,7 @@ void DeskMiniView::UpdateBorderColor() {
 }
 
 gfx::Insets DeskMiniView::GetPreviewBorderInsets() const {
-  return desk_preview_->border()->GetInsets();
+  return desk_preview_->GetInsets();
 }
 
 const char* DeskMiniView::GetClassName() const {
@@ -166,11 +171,10 @@ void DeskMiniView::Layout() {
   desk_preview_->SetBoundsRect(preview_bounds);
 
   LayoutDeskNameView(preview_bounds);
+  const int close_button_size = close_desk_button_->GetPreferredSize().width();
   close_desk_button_->SetBounds(
-      preview_bounds.right() - CloseDeskButton::kCloseButtonSize -
-          kCloseButtonMargin,
-      kCloseButtonMargin, CloseDeskButton::kCloseButtonSize,
-      CloseDeskButton::kCloseButtonSize);
+      preview_bounds.right() - close_button_size - kCloseButtonMargin,
+      kCloseButtonMargin, close_button_size, close_button_size);
 }
 
 gfx::Size DeskMiniView::CalculatePreferredSize() const {
@@ -392,6 +396,14 @@ void DeskMiniView::OnViewFocused(views::View* observed_view) {
   // be able to change it.
   desk_name_view_->SetText(desk_->name());
 
+  // Set the Overview highlight to move focus with the DeskNameView.
+  auto* highlight_controller = Shell::Get()
+                                   ->overview_controller()
+                                   ->overview_session()
+                                   ->highlight_controller();
+  if (highlight_controller->IsFocusHighlightVisible())
+    highlight_controller->MoveHighlightToView(desk_name_view_);
+
   if (!defer_select_all_)
     desk_name_view_->SelectAll(false);
 }
@@ -448,11 +460,13 @@ void DeskMiniView::OnDeskPreviewPressed() {
 void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
   const int previous_width = desk_name_view_->width();
   const gfx::Size desk_name_view_size = desk_name_view_->GetPreferredSize();
-
+  // Desk preview's width is supposed to be larger than kMinDeskNameViewWidth,
+  // but it might be not the truth for tests with extreme abnormal size of
+  // display.
+  const int min_width = std::min(preview_bounds.width(), kMinDeskNameViewWidth);
+  const int max_width = std::max(preview_bounds.width(), kMinDeskNameViewWidth);
   const int text_width =
-      base::ClampToRange(desk_name_view_size.width(), kMinDeskNameViewWidth,
-                         preview_bounds.width());
-
+      base::clamp(desk_name_view_size.width(), min_width, max_width);
   const int desk_name_view_x =
       preview_bounds.x() + (preview_bounds.width() - text_width) / 2;
   gfx::Rect desk_name_view_bounds{desk_name_view_x,

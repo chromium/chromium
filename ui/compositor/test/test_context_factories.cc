@@ -26,8 +26,8 @@ TestContextFactories::TestContextFactories(bool enable_pixel_output,
   if (enable_pixel_output)
     disable_null_draw_ = std::make_unique<gl::DisableNullDrawGLBindings>();
   shared_bitmap_manager_ = std::make_unique<viz::ServerSharedBitmapManager>();
-  frame_sink_manager_ =
-      std::make_unique<viz::FrameSinkManagerImpl>(shared_bitmap_manager_.get());
+  frame_sink_manager_ = std::make_unique<viz::FrameSinkManagerImpl>(
+      viz::FrameSinkManagerImpl::InitParams(shared_bitmap_manager_.get()));
   host_frame_sink_manager_ = std::make_unique<viz::HostFrameSinkManager>();
   implicit_factory_ = std::make_unique<InProcessContextFactory>(
       host_frame_sink_manager_.get(), frame_sink_manager_.get(),

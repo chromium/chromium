@@ -209,9 +209,9 @@ double TraceEvent::GetAbsTimeToOtherEvent() const {
   return fabs(other_event->timestamp - timestamp);
 }
 
-bool TraceEvent::GetArgAsString(const std::string& name,
+bool TraceEvent::GetArgAsString(const std::string& arg_name,
                                 std::string* arg) const {
-  const auto it = arg_strings.find(name);
+  const auto it = arg_strings.find(arg_name);
   if (it != arg_strings.end()) {
     *arg = it->second;
     return true;
@@ -219,9 +219,9 @@ bool TraceEvent::GetArgAsString(const std::string& name,
   return false;
 }
 
-bool TraceEvent::GetArgAsNumber(const std::string& name,
+bool TraceEvent::GetArgAsNumber(const std::string& arg_name,
                                 double* arg) const {
-  const auto it = arg_numbers.find(name);
+  const auto it = arg_numbers.find(arg_name);
   if (it != arg_numbers.end()) {
     *arg = it->second;
     return true;
@@ -229,9 +229,9 @@ bool TraceEvent::GetArgAsNumber(const std::string& name,
   return false;
 }
 
-bool TraceEvent::GetArgAsValue(const std::string& name,
+bool TraceEvent::GetArgAsValue(const std::string& arg_name,
                                base::Value* arg) const {
-  const auto it = arg_values.find(name);
+  const auto it = arg_values.find(arg_name);
   if (it != arg_values.end()) {
     *arg = it->second.Clone();
     return true;
@@ -239,49 +239,49 @@ bool TraceEvent::GetArgAsValue(const std::string& name,
   return false;
 }
 
-bool TraceEvent::HasStringArg(const std::string& name) const {
-  return (arg_strings.find(name) != arg_strings.end());
+bool TraceEvent::HasStringArg(const std::string& arg_name) const {
+  return (arg_strings.find(arg_name) != arg_strings.end());
 }
 
-bool TraceEvent::HasNumberArg(const std::string& name) const {
-  return (arg_numbers.find(name) != arg_numbers.end());
+bool TraceEvent::HasNumberArg(const std::string& arg_name) const {
+  return (arg_numbers.find(arg_name) != arg_numbers.end());
 }
 
-bool TraceEvent::HasArg(const std::string& name) const {
-  return (arg_values.find(name) != arg_values.end());
+bool TraceEvent::HasArg(const std::string& arg_name) const {
+  return (arg_values.find(arg_name) != arg_values.end());
 }
 
-std::string TraceEvent::GetKnownArgAsString(const std::string& name) const {
+std::string TraceEvent::GetKnownArgAsString(const std::string& arg_name) const {
   std::string arg_string;
-  bool result = GetArgAsString(name, &arg_string);
+  bool result = GetArgAsString(arg_name, &arg_string);
   DCHECK(result);
   return arg_string;
 }
 
-double TraceEvent::GetKnownArgAsDouble(const std::string& name) const {
+double TraceEvent::GetKnownArgAsDouble(const std::string& arg_name) const {
   double arg_double = 0;
-  bool result = GetArgAsNumber(name, &arg_double);
+  bool result = GetArgAsNumber(arg_name, &arg_double);
   DCHECK(result);
   return arg_double;
 }
 
-int TraceEvent::GetKnownArgAsInt(const std::string& name) const {
+int TraceEvent::GetKnownArgAsInt(const std::string& arg_name) const {
   double arg_double = 0;
-  bool result = GetArgAsNumber(name, &arg_double);
+  bool result = GetArgAsNumber(arg_name, &arg_double);
   DCHECK(result);
   return static_cast<int>(arg_double);
 }
 
-bool TraceEvent::GetKnownArgAsBool(const std::string& name) const {
+bool TraceEvent::GetKnownArgAsBool(const std::string& arg_name) const {
   double arg_double = 0;
-  bool result = GetArgAsNumber(name, &arg_double);
+  bool result = GetArgAsNumber(arg_name, &arg_double);
   DCHECK(result);
   return (arg_double != 0.0);
 }
 
-base::Value TraceEvent::GetKnownArgAsValue(const std::string& name) const {
+base::Value TraceEvent::GetKnownArgAsValue(const std::string& arg_name) const {
   base::Value arg_value;
-  bool result = GetArgAsValue(name, &arg_value);
+  bool result = GetArgAsValue(arg_name, &arg_value);
   DCHECK(result);
   return arg_value;
 }

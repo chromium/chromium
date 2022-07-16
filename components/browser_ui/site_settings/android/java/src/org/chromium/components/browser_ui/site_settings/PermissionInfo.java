@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.io.Serializable;
 
@@ -60,7 +60,7 @@ public class PermissionInfo implements Serializable {
      */
     public @ContentSettingValues @Nullable Integer getContentSetting(
             BrowserContextHandle browserContextHandle) {
-        return WebsitePreferenceBridgeJni.get().getSettingForOrigin(
+        return WebsitePreferenceBridgeJni.get().getPermissionSettingForOrigin(
                 browserContextHandle, mContentSettingsType, mOrigin, getEmbedderSafe());
     }
 
@@ -69,7 +69,7 @@ public class PermissionInfo implements Serializable {
      */
     public void setContentSetting(
             BrowserContextHandle browserContextHandle, @ContentSettingValues int value) {
-        WebsitePreferenceBridgeJni.get().setSettingForOrigin(
+        WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(
                 browserContextHandle, mContentSettingsType, mOrigin, getEmbedderSafe(), value);
     }
 }

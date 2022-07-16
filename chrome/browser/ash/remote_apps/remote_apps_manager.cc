@@ -12,6 +12,7 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -122,7 +123,9 @@ class RemoteAppsPlaceholderIcon : public gfx::CanvasImageSource {
 
 RemoteAppsManager::RemoteAppsManager(Profile* profile)
     : profile_(profile),
-      remote_apps_(std::make_unique<apps::RemoteApps>(profile_, this)),
+      remote_apps_(std::make_unique<apps::RemoteApps>(
+          apps::AppServiceProxyFactory::GetForProfile(profile_),
+          this)),
       model_(std::make_unique<RemoteAppsModel>()),
       image_downloader_(std::make_unique<ImageDownloaderImpl>()) {
   app_list_syncable_service_ =
@@ -197,7 +200,7 @@ RemoteAppsError RemoteAppsManager::DeleteFolder(const std::string& folder_id) {
   // Move all items out of the folder. Empty folders are automatically deleted.
   RemoteAppsModel::FolderInfo& folder_info = model_->GetFolderInfo(folder_id);
   for (const auto& app : folder_info.items)
-    model_updater_->MoveItemToFolder(app, std::string());
+    model_updater_->SetItemFolderId(app, std::string());
   model_->DeleteFolder(folder_id);
   return RemoteAppsError::kNone;
 }
@@ -290,11 +293,6 @@ void RemoteAppsManager::OnAppListItemAdded(ChromeAppListItem* item) {
   HandleOnAppAdded(std::string(item->id()));
 }
 
-void RemoteAppsManager::SetRemoteAppsForTesting(
-    std::unique_ptr<apps::RemoteApps> remote_apps) {
-  remote_apps_ = std::move(remote_apps);
-}
-
 void RemoteAppsManager::SetImageDownloaderForTesting(
     std::unique_ptr<ImageDownloader> image_downloader) {
   image_downloader_ = std::move(image_downloader);
@@ -318,21 +316,21 @@ void RemoteAppsManager::HandleOnAppAdded(const std::string& id) {
   // we don't have to check if it was deleted.
   if (!folder_id.empty()) {
     bool folder_already_exists = model_updater_->FindFolderItem(folder_id);
-    model_updater_->MoveItemToFolder(id, folder_id);
+    model_updater_->SetItemFolderId(id, folder_id);
     RemoteAppsModel::FolderInfo& folder_info = model_->GetFolderInfo(folder_id);
 
     if (!folder_already_exists) {
       // Update metadata for newly created folder.
       ChromeAppListItem* item = model_updater_->FindFolderItem(folder_id);
       DCHECK(item) << "Missing folder item for folder_id: " << folder_id;
-      item->SetName(folder_info.name);
+      model_updater_->SetItemName(item->id(), folder_info.name);
       item->SetIsPersistent(true);
 
-      if (folder_info.add_to_front) {
-        item->SetPosition(model_updater_->GetPositionBeforeFirstItem());
-      } else {
-        item->SetPosition(model_updater_->GetFirstAvailablePosition());
-      }
+      syncer::StringOrdinal item_position =
+          folder_info.add_to_front
+              ? model_updater_->GetPositionBeforeFirstItem()
+              : model_updater_->CalculatePositionForNewItem(*item);
+      model_updater_->SetItemPosition(item->id(), item_position);
     }
   }
 

@@ -36,6 +36,9 @@ class V2Authenticator : public Authenticator {
       const std::string& shared_secret,
       State initial_state);
 
+  V2Authenticator(const V2Authenticator&) = delete;
+  V2Authenticator& operator=(const V2Authenticator&) = delete;
+
   ~V2Authenticator() override;
 
   // Authenticator interface.
@@ -75,8 +78,6 @@ class V2Authenticator : public Authenticator {
   RejectionReason rejection_reason_;
   base::queue<std::string> pending_messages_;
   std::string auth_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(V2Authenticator);
 };
 
 }  // namespace protocol

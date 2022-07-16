@@ -29,6 +29,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -308,6 +309,7 @@ public class InfoBarContainerTest {
     @Test
     @MediumTest
     @Feature({"Browser"})
+    @RequiresRestart("crbug.com/1242720")
     public void testAddAndDismissSurfaceFlingerOverlays() throws Exception {
         final ViewGroup decorView =
                 (ViewGroup) sActivityTestRule.getActivity().getWindow().getDecorView();

@@ -92,6 +92,11 @@ class MediaTransferProtocolDaemonClient {
       base::RepeatingCallback<void(bool is_attach,
                                    const std::string& storage_name)>;
 
+  MediaTransferProtocolDaemonClient(const MediaTransferProtocolDaemonClient&) =
+      delete;
+  MediaTransferProtocolDaemonClient& operator=(
+      const MediaTransferProtocolDaemonClient&) = delete;
+
   virtual ~MediaTransferProtocolDaemonClient();
 
   // Calls EnumerateStorages method. |callback| is called after the
@@ -206,9 +211,6 @@ class MediaTransferProtocolDaemonClient {
  protected:
   // Create() should be used instead.
   MediaTransferProtocolDaemonClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaTransferProtocolDaemonClient);
 };
 
 }  // namespace device

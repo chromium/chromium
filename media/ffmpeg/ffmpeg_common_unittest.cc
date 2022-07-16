@@ -143,7 +143,7 @@ TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfig_OpusAmbisonics_4ch) {
   AudioDecoderConfig audio_config;
   ASSERT_TRUE(AVStreamToAudioDecoderConfig(stream, &audio_config));
 
-  EXPECT_EQ(kCodecOpus, audio_config.codec());
+  EXPECT_EQ(AudioCodec::kOpus, audio_config.codec());
   EXPECT_EQ(CHANNEL_LAYOUT_QUAD, audio_config.channel_layout());
   EXPECT_EQ(4, audio_config.channels());
 }
@@ -166,7 +166,7 @@ TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfig_OpusAmbisonics_11ch) {
   AudioDecoderConfig audio_config;
   ASSERT_TRUE(AVStreamToAudioDecoderConfig(stream, &audio_config));
 
-  EXPECT_EQ(kCodecOpus, audio_config.codec());
+  EXPECT_EQ(AudioCodec::kOpus, audio_config.codec());
   EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, audio_config.channel_layout());
   EXPECT_EQ(11, audio_config.channels());
 }
@@ -188,7 +188,7 @@ TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfig_9ch_wav) {
   AudioDecoderConfig audio_config;
   ASSERT_TRUE(AVStreamToAudioDecoderConfig(stream, &audio_config));
 
-  EXPECT_EQ(kCodecPCM, audio_config.codec());
+  EXPECT_EQ(AudioCodec::kPCM, audio_config.codec());
   EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, audio_config.channel_layout());
   EXPECT_EQ(9, audio_config.channels());
 }

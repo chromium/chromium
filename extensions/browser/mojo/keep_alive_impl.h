@@ -31,6 +31,9 @@ class KeepAliveImpl : public KeepAlive,
                       public ExtensionRegistryObserver,
                       public ProcessManagerObserver {
  public:
+  KeepAliveImpl(const KeepAliveImpl&) = delete;
+  KeepAliveImpl& operator=(const KeepAliveImpl&) = delete;
+
   // Create a keep alive for |extension| running in |context| and connect it to
   // |receiver|. When the receiver closes its pipe, the keep alive ends.
   static void Create(content::BrowserContext* browser_context,
@@ -63,8 +66,6 @@ class KeepAliveImpl : public KeepAlive,
   base::ScopedObservation<ProcessManager, ProcessManagerObserver>
       process_manager_observation_{this};
   mojo::Receiver<KeepAlive> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveImpl);
 };
 
 }  // namespace extensions

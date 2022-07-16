@@ -29,8 +29,10 @@ import static org.chromium.ui.test.util.ViewUtils.hasBackgroundColor;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
+import android.text.format.DateUtils;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -42,6 +44,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterProvider;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -59,13 +65,14 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.browser_ui.util.date.CalendarUtils;
+import org.chromium.components.browser_ui.util.date.StringUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -73,6 +80,8 @@ import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -80,20 +89,25 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.url.GURL;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for PageInfoView. Uses pixel tests to ensure the UI handles different
  * configurations correctly.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_STARTUP_PROMOS,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
 @Batch(PER_CLASS)
-@Batch.SplitByFeature
 public class PageInfoViewTest {
     private static final String TAG = "PageInfoViewTest";
 
@@ -102,6 +116,53 @@ public class PageInfoViewTest {
 
     private static String[] sCookieDataTypes = {"Cookie", "LocalStorage", "ServiceWorker",
             "CacheStorage", "IndexedDb", "FileSystem", "WebSql"};
+
+    // June 4, 2021 12:00:00 GMT+00:00
+    private static long sTimestampJune4 = 1622808000000L;
+    // April 4, 2021 12:00:00 GMT+00:00
+    private static long sTimestampApril4 = 1617537600000L;
+
+    /**
+     * Parameter provider for testing the different timestamps for the history section's "last
+     * visited" text.
+     */
+    public static class HistorySummaryTestParams implements ParameterProvider {
+        @Override
+        public Iterable<ParameterSet> getParameters() {
+            Resources res = InstrumentationRegistry.getTargetContext().getResources();
+            Random random = new Random();
+            long timestamp;
+
+            List<ParameterSet> parameters = new ArrayList<>();
+            // ParameterSet = {timestamp, string}
+            timestamp = CalendarUtils.getStartOfDay(sTimestampJune4).getTime().getTime();
+            parameters.add(
+                    new ParameterSet()
+                            .value(timestamp,
+                                    res.getString(R.string.page_info_history_last_visit_today))
+                            .name("Today"));
+            timestamp = sTimestampJune4 - 1 * DateUtils.DAY_IN_MILLIS;
+            parameters.add(
+                    new ParameterSet()
+                            .value(timestamp,
+                                    res.getString(R.string.page_info_history_last_visit_yesterday))
+                            .name("Yesterday"));
+            int offset = random.nextInt(6) + 2;
+            timestamp = sTimestampJune4 - offset * DateUtils.DAY_IN_MILLIS;
+            parameters.add(new ParameterSet()
+                                   .value(timestamp,
+                                           res.getString(R.string.page_info_history_last_visit_days,
+                                                   offset))
+                                   .name("XDaysAgo"));
+            parameters.add(new ParameterSet()
+                                   .value(sTimestampApril4,
+                                           res.getString(R.string.page_info_history_last_visit_date,
+                                                   StringUtils.dateToHeaderString(
+                                                           new Date(sTimestampApril4))))
+                                   .name("ExactDay"));
+            return parameters;
+        }
+    }
 
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
@@ -146,8 +207,8 @@ public class PageInfoViewTest {
         Tab tab = activity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             new ChromePageInfo(activity.getModalDialogManagerSupplier(), null,
-                    PageInfoController.OpenedFromSource.TOOLBAR)
-                    .show(tab, highlightedPermission);
+                    PageInfoController.OpenedFromSource.TOOLBAR, null)
+                    .show(tab, highlightedPermission, /*fromStoreIcon=*/false);
         });
         onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
     }
@@ -184,12 +245,15 @@ public class PageInfoViewTest {
         }
     }
 
-    private void addSomePermissions(String url) {
+    private void addSomePermissions(String urlString) {
+        GURL url = new GURL(urlString);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebsitePreferenceBridge.setContentSettingForPattern(Profile.getLastUsedRegularProfile(),
-                    ContentSettingsType.GEOLOCATION, url, "*", ContentSettingValues.ALLOW);
-            WebsitePreferenceBridge.setContentSettingForPattern(Profile.getLastUsedRegularProfile(),
-                    ContentSettingsType.NOTIFICATIONS, url, "*", ContentSettingValues.BLOCK);
+            WebsitePreferenceBridge.setContentSettingDefaultScope(
+                    Profile.getLastUsedRegularProfile(), ContentSettingsType.GEOLOCATION, url, url,
+                    ContentSettingValues.ALLOW);
+            WebsitePreferenceBridge.setContentSettingDefaultScope(
+                    Profile.getLastUsedRegularProfile(), ContentSettingsType.NOTIFICATIONS, url,
+                    url, ContentSettingValues.BLOCK);
         });
     }
 
@@ -201,22 +265,25 @@ public class PageInfoViewTest {
         int expectBlock = hasPermissions ? ContentSettingValues.BLOCK : ContentSettingValues.ASK;
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertEquals(expectBlock,
-                    WebsitePreferenceBridgeJni.get().getSettingForOrigin(
+                    WebsitePreferenceBridgeJni.get().getPermissionSettingForOrigin(
                             Profile.getLastUsedRegularProfile(), ContentSettingsType.NOTIFICATIONS,
                             url, url));
             assertEquals(expectAllow,
-                    WebsitePreferenceBridgeJni.get().getSettingForOrigin(
+                    WebsitePreferenceBridgeJni.get().getPermissionSettingForOrigin(
                             Profile.getLastUsedRegularProfile(), ContentSettingsType.GEOLOCATION,
                             url, "*"));
         });
     }
 
-    private void addDefaultSettingPermissions(String url) {
+    private void addDefaultSettingPermissions(String urlString) {
+        GURL url = new GURL(urlString);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebsitePreferenceBridge.setContentSettingForPattern(Profile.getLastUsedRegularProfile(),
-                    ContentSettingsType.MEDIASTREAM_MIC, url, "*", ContentSettingValues.DEFAULT);
-            WebsitePreferenceBridge.setContentSettingForPattern(Profile.getLastUsedRegularProfile(),
-                    ContentSettingsType.MEDIASTREAM_CAMERA, url, "*", ContentSettingValues.ASK);
+            WebsitePreferenceBridge.setContentSettingDefaultScope(
+                    Profile.getLastUsedRegularProfile(), ContentSettingsType.MEDIASTREAM_MIC, url,
+                    url, ContentSettingValues.DEFAULT);
+            WebsitePreferenceBridge.setContentSettingDefaultScope(
+                    Profile.getLastUsedRegularProfile(), ContentSettingsType.MEDIASTREAM_CAMERA,
+                    url, url, ContentSettingValues.ASK);
         });
     }
 
@@ -227,6 +294,15 @@ public class PageInfoViewTest {
                     new int[] {BrowsingDataType.SITE_SETTINGS}, TimePeriod.ALL_TIME);
         });
         helper.waitForCallback(0);
+    }
+
+    private void addSomeHistoryEntries() {
+        StubbedHistoryProvider historyProvider = new StubbedHistoryProvider();
+        // Need to always have the same dates for render tests.
+        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, sTimestampApril4));
+        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, sTimestampJune4));
+        HistoryContentManager.setProviderForTests(historyProvider);
+        PageInfoHistoryController.setProviderForTests(historyProvider);
     }
 
     @Before
@@ -242,8 +318,6 @@ public class PageInfoViewTest {
     @After
     public void tearDown() throws TimeoutException {
         LocationUtils.setFactory(null);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(null); });
         // Notification channels don't get cleaned up automatically.
         // TODO(crbug.com/951402): Find a general solution to avoid leaking channels between tests.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -256,6 +330,7 @@ public class PageInfoViewTest {
         setThirdPartyCookieBlocking(CookieControlsMode.INCOGNITO_ONLY);
         clearPermissions();
         HistoryContentManager.setProviderForTests(null);
+        PageInfoHistoryController.setProviderForTests(null);
     }
 
     /**
@@ -360,6 +435,18 @@ public class PageInfoViewTest {
     }
 
     /**
+     * Tests PageInfo on a website with previous history entries.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowWithHistory() throws IOException {
+        addSomeHistoryEntries();
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_History");
+    }
+
+    /**
      * Tests the connection info page of the PageInfo UI - insecure website.
      */
     @Test
@@ -369,9 +456,9 @@ public class PageInfoViewTest {
         mTestServerRule.setServerUsesHttps(false);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_connection_row)).perform(click());
-        onViewWaiting(allOf(
-                withText(containsString("The identity of this website has not been verified.")),
-                isDisplayed()));
+        onViewWaiting(
+                allOf(withText(containsString("The identity of this website isn't verified.")),
+                        isDisplayed()));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_ConnectionInfoSubpageInsecure");
     }
 
@@ -420,19 +507,21 @@ public class PageInfoViewTest {
     }
 
     /**
-     * Tests the permissions page of the PageInfo UI with permissions and actionable flag
-     * enabled.
+     * Tests the permissions page of the PageInfo UI with sound permissions.
      */
     @Test
     @MediumTest
-    @Feature({"RenderTest"})
-    @Features.EnableFeatures(SiteSettingsFeatureList.ACTIONABLE_CONTENT_SETTINGS)
-    public void testShowPermissionsActionableSubpage() throws IOException {
-        addSomePermissions(mTestServerRule.getServer().getURL("/"));
+    public void testShowPermissionsSubpageWithSound() throws IOException {
+        GURL url = new GURL(mTestServerRule.getServer().getURL("/"));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            WebsitePreferenceBridge.setContentSettingDefaultScope(
+                    Profile.getLastUsedRegularProfile(), ContentSettingsType.SOUND, url, url,
+                    ContentSettingValues.BLOCK);
+        });
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row)).perform(click());
         onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_PermissionsSubpage_Actionable");
+        onView(allOf(withText(containsString("Sound")), isDisplayed()));
     }
 
     /**
@@ -458,19 +547,11 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_HISTORY_NAME)
     public void testShowHistorySubpage() throws IOException {
-        StubbedHistoryProvider historyProvider = new StubbedHistoryProvider();
-        // Need to always have the same dates for render tests.
-        // April 4, 2021 12:00:00 GMT+00:00
-        long timestamp1 = 1617537600000L;
-        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, timestamp1));
-        // June 4, 2021 12:00:00 GMT+00:00
-        long timestamp2 = 1622808000000L;
-        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, timestamp2));
-        HistoryContentManager.setProviderForTests(historyProvider);
-
+        addSomeHistoryEntries();
         loadUrlAndOpenPageInfo(
                 mTestServerRule.getServer().getURLWithHostName("www.example.com", "/"));
-        onView(withId(R.id.page_info_history_row)).perform(click());
+        onViewWaiting(allOf(withText(containsString("Last visited")), isDisplayed()));
+        onView(withId(PageInfoHistoryController.HISTORY_ROW_ID)).perform(click());
         onViewWaiting(allOf(withText(containsString("Jun 4, 2021")), isDisplayed()));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_HistorySubpage");
     }
@@ -549,7 +630,8 @@ public class PageInfoViewTest {
             ChromePageInfoControllerDelegate pageInfoControllerDelegate =
                     new ChromePageInfoControllerDelegate(activity, tab.getWebContents(),
                             activity::getModalDialogManager,
-                            new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)) {
+                            new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab), null,
+                            /*pageInfoOpenedFromStoreIcon=*/false) {
                         @Override
                         public boolean isShowingPaintPreviewPage() {
                             return true;
@@ -567,7 +649,6 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME)
     public void testShowWithPermissionsAndWithoutHighlight() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfoWithPermission(mTestServerRule.getServer().getURL(sSimpleHtml),
@@ -582,7 +663,6 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME)
     public void testShowWithPermissionsAndHighlight() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfoWithPermission(
@@ -597,10 +677,7 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    @Features.EnableFeatures({PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME,
-            SiteSettingsFeatureList.ACTIONABLE_CONTENT_SETTINGS})
-    public void
-    testShowPermissionsSubpageWithHighlight() throws IOException {
+    public void testShowPermissionsSubpageWithHighlight() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfoWithPermission(
                 mTestServerRule.getServer().getURL(sSimpleHtml), ContentSettingsType.GEOLOCATION);
@@ -627,6 +704,59 @@ public class PageInfoViewTest {
         assertTrue(controller.isDialogShowingForTesting());
         onView(withId(R.id.page_info_close)).perform(click());
         assertFalse(controller.isDialogShowingForTesting());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(null); });
+    }
+
+    /**
+     * Tests the summary string of the history page of the PageInfo UI.
+     */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_HISTORY_NAME)
+    @ParameterAnnotations.UseMethodParameter(HistorySummaryTestParams.class)
+    public void testHistorySummaryText(long timestamp, String expectedSummary) throws IOException {
+        StubbedHistoryProvider historyProvider = new StubbedHistoryProvider();
+        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, timestamp));
+        PageInfoHistoryController.setProviderForTests(historyProvider);
+        PageInfoHistoryController.setClockForTesting(() -> { return sTimestampJune4; });
+
+        loadUrlAndOpenPageInfo(
+                mTestServerRule.getServer().getURLWithHostName("www.example.com", "/"));
+        onViewWaiting(allOf(withText(containsString(expectedSummary)), isDisplayed()));
+    }
+
+    /**
+     * Tests clicking on a history item from the history page of the PageInfo UI.
+     */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_HISTORY_NAME)
+    public void testHistorySubpageItemClick() throws Exception {
+        StubbedHistoryProvider historyProvider = new StubbedHistoryProvider();
+        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, sTimestampJune4));
+        HistoryContentManager.setProviderForTests(historyProvider);
+        PageInfoHistoryController.setProviderForTests(historyProvider);
+        loadUrlAndOpenPageInfo(
+                mTestServerRule.getServer().getURLWithHostName("www.example.com", "/"));
+
+        final CallbackHelper onDidStartNavigationHelper = new CallbackHelper();
+        final WebContentsObserver observer = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            return new WebContentsObserver(sActivityTestRule.getWebContents()) {
+                @Override
+                public void didStartNavigation(NavigationHandle navigationHandle) {
+                    if (navigationHandle.getUrl().getHost().equals("www.example.com")) {
+                        onDidStartNavigationHelper.notifyCalled();
+                    }
+                }
+            };
+        });
+        onViewWaiting(allOf(withText(containsString("Last visited")), isDisplayed()));
+        onView(withId(PageInfoHistoryController.HISTORY_ROW_ID)).perform(click());
+        onViewWaiting(allOf(withText(containsString("Jun 4, 2021")), isDisplayed()));
+        int callCount = onDidStartNavigationHelper.getCallCount();
+        onView(withText("www.example.com")).perform(click());
+        onDidStartNavigationHelper.waitForCallback(callCount);
     }
 
     // TODO(1071762): Add tests for preview pages, offline pages, offline state and other states.

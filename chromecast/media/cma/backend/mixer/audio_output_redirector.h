@@ -58,6 +58,10 @@ class AudioOutputRedirector {
   AudioOutputRedirector(StreamMixer* mixer,
                         std::unique_ptr<mixer_service::MixerSocket> socket,
                         const mixer_service::Generic& message);
+
+  AudioOutputRedirector(const AudioOutputRedirector&) = delete;
+  AudioOutputRedirector& operator=(const AudioOutputRedirector&) = delete;
+
   ~AudioOutputRedirector();
 
   int order() const { return config_.order; }
@@ -134,8 +138,6 @@ class AudioOutputRedirector {
   base::flat_set<MixerInput*> non_redirected_inputs_;
 
   base::WeakPtrFactory<AudioOutputRedirector> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputRedirector);
 };
 
 }  // namespace media

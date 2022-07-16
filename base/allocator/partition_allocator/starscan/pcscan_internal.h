@@ -6,8 +6,12 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_PCSCAN_INTERNAL_H_
 
 #include <array>
+#include <functional>
+#include <memory>
 #include <mutex>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
@@ -17,6 +21,8 @@
 #include "base/no_destructor.h"
 
 namespace base {
+
+class StatsReporter;
 
 namespace internal {
 
@@ -50,7 +56,7 @@ class PCScanInternal final {
 
   ~PCScanInternal();
 
-  void Initialize(PCScan::WantedWriteProtectionMode);
+  void Initialize(PCScan::InitConfig);
   bool is_initialized() const { return is_initialized_; }
 
   void PerformScan(PCScan::InvocationMode);
@@ -98,8 +104,11 @@ class PCScanInternal final {
   void UnprotectPages(uintptr_t begin, size_t size);
 
   void ClearRootsForTesting();                               // IN-TEST
-  void ReinitForTesting(PCScan::WantedWriteProtectionMode);  // IN-TEST
+  void ReinitForTesting(PCScan::InitConfig);                 // IN-TEST
   void FinishScanForTesting();                               // IN-TEST
+
+  void RegisterStatsReporter(StatsReporter* reporter);
+  StatsReporter& GetReporter();
 
  private:
   friend base::NoDestructor<PCScanInternal>;
@@ -133,6 +142,7 @@ class PCScanInternal final {
   const SimdSupport simd_support_;
 
   std::unique_ptr<WriteProtector> write_protector_;
+  StatsReporter* stats_reporter_ = nullptr;
 
   bool is_initialized_ = false;
 };

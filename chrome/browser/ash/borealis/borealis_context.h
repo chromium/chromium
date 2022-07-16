@@ -21,6 +21,7 @@ class BorealisDiskManager;
 class BorealisEngagementMetrics;
 class BorealisGameModeController;
 class BorealisLifetimeObserver;
+class BorealisPowerController;
 class SelfActivationPermissionGranter;
 
 // An object to track information about the state of the Borealis VM.
@@ -77,6 +78,8 @@ class BorealisContext {
   std::unique_ptr<BorealisEngagementMetrics> engagement_metrics_;
 
   std::unique_ptr<BorealisDiskManager> disk_manager_;
+
+  std::unique_ptr<BorealisPowerController> power_controller_;
 
   std::unique_ptr<SelfActivationPermissionGranter> self_activation_granter_;
 };

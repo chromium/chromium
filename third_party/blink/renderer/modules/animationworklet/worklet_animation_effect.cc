@@ -38,7 +38,8 @@ ComputedEffectTiming* WorkletAnimationEffect::getComputedTiming() const {
       local_time = AnimationTimeDelta(local_time_.value());
     }
     calculated_ = specified_timing_.CalculateTimings(
-        local_time, absl::nullopt, normalized_timing_,
+        local_time, /*timeline_phase*/ absl::nullopt,
+        /*at_progress_timeline_boundary*/ false, normalized_timing_,
         Timing::AnimationDirection::kForwards, false, playback_rate);
   }
 
@@ -68,7 +69,7 @@ void WorkletAnimationEffect::setLocalTime(absl::optional<double> time_ms) {
   // value back provides the actual value we use in further computation which
   // is the least surprising path.
   // [1] https://drafts.csswg.org/web-animations/#precision-of-time-values
-  local_time_ = base::TimeDelta::FromMillisecondsD(time_ms.value());
+  local_time_ = base::Milliseconds(time_ms.value());
 }
 
 absl::optional<base::TimeDelta> WorkletAnimationEffect::local_time() const {

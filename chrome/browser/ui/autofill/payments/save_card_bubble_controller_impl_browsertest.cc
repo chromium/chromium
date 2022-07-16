@@ -8,7 +8,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/browser.h"
@@ -26,7 +25,11 @@ namespace autofill {
 
 class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
  public:
-  SaveCardBubbleControllerImplTest() {}
+  SaveCardBubbleControllerImplTest() = default;
+  SaveCardBubbleControllerImplTest(const SaveCardBubbleControllerImplTest&) =
+      delete;
+  SaveCardBubbleControllerImplTest& operator=(
+      const SaveCardBubbleControllerImplTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DialogBrowserTest::SetUpCommandLine(command_line);
@@ -112,8 +115,6 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
 
  private:
   SaveCardBubbleControllerImpl* controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveCardBubbleControllerImplTest);
 };
 
 // Invokes a bubble asking the user if they want to save a credit card locally.

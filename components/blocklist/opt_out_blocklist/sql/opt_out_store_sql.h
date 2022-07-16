@@ -9,10 +9,8 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_store.h"
@@ -36,6 +34,10 @@ class OptOutStoreSQL : public OptOutStore {
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const base::FilePath& database_dir);
+
+  OptOutStoreSQL(const OptOutStoreSQL&) = delete;
+  OptOutStoreSQL& operator=(const OptOutStoreSQL&) = delete;
+
   ~OptOutStoreSQL() override;
 
   // OptOutStore implementation:
@@ -59,8 +61,6 @@ class OptOutStoreSQL : public OptOutStore {
 
   // SQL connection to the SQLite database.
   std::unique_ptr<sql::Database> db_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptOutStoreSQL);
 };
 
 }  // namespace blocklist

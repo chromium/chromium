@@ -24,6 +24,10 @@ class GlobalWebStateEventTracker : public WebStateObserver {
   // Returns the instance of GlobalWebStateEventTracker.
   static GlobalWebStateEventTracker* GetInstance();
 
+  GlobalWebStateEventTracker(const GlobalWebStateEventTracker&) = delete;
+  GlobalWebStateEventTracker& operator=(const GlobalWebStateEventTracker&) =
+      delete;
+
   // Adds/removes observers.
   void AddObserver(GlobalWebStateObserver* observer);
   void RemoveObserver(GlobalWebStateObserver* observer);
@@ -53,8 +57,6 @@ class GlobalWebStateEventTracker : public WebStateObserver {
 
   // List of observers currently registered with the tracker.
   base::ObserverList<GlobalWebStateObserver, true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalWebStateEventTracker);
 };
 
 }  // namespace web

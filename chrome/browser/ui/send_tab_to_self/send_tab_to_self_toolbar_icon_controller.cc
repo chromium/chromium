@@ -31,18 +31,34 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
   if (new_entries.empty())
     return;
 
-  Browser* browser = chrome::FindBrowserWithProfile(profile_);
-  if (platform_util::IsWindowActive(browser->window()->GetNativeWindow())) {
+  if (GetActiveDelegate()) {
     ShowToolbarButton(*new_entries.at(0));
-  } else {
-    entry_ = std::make_unique<SendTabToSelfEntry>(
-        new_entries.at(0)->GetGUID(), new_entries.at(0)->GetURL(),
-        new_entries.at(0)->GetTitle(), new_entries.at(0)->GetSharedTime(),
-        new_entries.at(0)->GetOriginalNavigationTime(),
-        new_entries.at(0)->GetDeviceName(),
-        new_entries.at(0)->GetTargetDeviceSyncCacheGuid());
-    BrowserList::AddObserver(this);
+    return;
   }
+
+  const bool had_entry_pending_notification = entry_ != nullptr;
+
+  // Select semi-randomly the first new entry from the list because there is no
+  // UI to show multiple entries.
+  const SendTabToSelfEntry* new_entry_pending_notification =
+      new_entries.front();
+
+  // |entry_| might already be set, but it's better to overwrite it with a
+  // fresher value.
+  entry_ = std::make_unique<SendTabToSelfEntry>(
+      new_entry_pending_notification->GetGUID(),
+      new_entry_pending_notification->GetURL(),
+      new_entry_pending_notification->GetTitle(),
+      new_entry_pending_notification->GetSharedTime(),
+      new_entry_pending_notification->GetOriginalNavigationTime(),
+      new_entry_pending_notification->GetDeviceName(),
+      new_entry_pending_notification->GetTargetDeviceSyncCacheGuid());
+
+  // Prevent adding the observer several times. This might happen when the
+  // window is inactive and this method is called more than once (i.e. the
+  // server sends multiple entry batches).
+  if (!had_entry_pending_notification)
+    BrowserList::AddObserver(this);
 }
 
 void SendTabToSelfToolbarIconController::DismissEntries(
@@ -56,28 +72,60 @@ void SendTabToSelfToolbarIconController::DismissEntries(
 
 void SendTabToSelfToolbarIconController::OnBrowserSetLastActive(
     Browser* browser) {
+  if (!GetActiveDelegate())
+    return;
   BrowserList::RemoveObserver(this);
 
-  if (!profile_ || !entry_)
+  // Reset |entry_| because it's used to determine if the BrowserListObserver is
+  // added in DisplayNewEntries().
+  std::unique_ptr<SendTabToSelfEntry> entry = std::move(entry_);
+
+  if (!profile_ || !entry)
     return;
   if (browser == chrome::FindBrowserWithProfile(profile_)) {
-    ShowToolbarButton(*entry_);
+    ShowToolbarButton(*entry);
     entry_ = nullptr;
   }
 }
 
 void SendTabToSelfToolbarIconController::ShowToolbarButton(
     const SendTabToSelfEntry& entry) {
-  if (!delegate_)
+  auto* active_delegate = GetActiveDelegate();
+  if (!active_delegate) {
     return;
+  }
 
   send_tab_to_self::RecordNotificationShown();
-  delegate_->Show(entry);
+  active_delegate->Show(entry);
 }
 
-void SendTabToSelfToolbarIconController::SetDelegate(
+void SendTabToSelfToolbarIconController::AddDelegate(
     SendTabToSelfToolbarIconControllerDelegate* delegate) {
-  delegate_ = delegate;
+  delegate_list_.push_back(delegate);
+}
+
+void SendTabToSelfToolbarIconController::RemoveDelegate(
+    SendTabToSelfToolbarIconControllerDelegate* delegate) {
+  for (unsigned int i = 0; i < delegate_list_.size(); i++) {
+    if (delegate_list_[i] == delegate) {
+      delegate_list_.erase(delegate_list_.begin() + i);
+      return;
+    }
+  }
+}
+
+SendTabToSelfToolbarIconControllerDelegate*
+SendTabToSelfToolbarIconController::GetActiveDelegate() {
+  for (auto* delegate : delegate_list_) {
+    if (delegate->IsActive()) {
+      return delegate;
+    }
+  }
+  return nullptr;
+}
+
+const Profile* SendTabToSelfToolbarIconController::profile() const {
+  return profile_;
 }
 
 void SendTabToSelfToolbarIconController::LogNotificationOpened() {

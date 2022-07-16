@@ -13,6 +13,10 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//third_party/webrtc/webrtc.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 # See //content/BUILD.gn for how this works.
 group("common") {
   if (is_component_build) {
@@ -68,27 +72,22 @@ source_set("static_switches") {
   ]
 }
 
-# This target allows you to use the content_features constants and statically
-# link to it, without depending on the rest of content. This is only for use
-# without content, or you will get multiply defined symbols.
-source_set("static_features") {
-  public = [ "content_features.h" ]
+# This target allows you to use the content MainFunctionParams struct and
+# statically link to it, without depending on the rest of content. This is only
+# for use without content, or you will get multiply defined symbols.
+source_set("static_main_function_params") {
+  public = [ "main_function_params.h" ]
   sources = [
     "//content/common/content_export.h",
-    "content_features.cc",
+    "main_function_params.cc",
+    "startup_data.h",
   ]
   public_deps = [ "//base" ]
 
-  deps = [
-    "//build:chromeos_buildflags",
-    "//content/common:buildflags",
+  public_configs = [
+    ":static_switches_defines",
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
   ]
-
-  public_configs = [ ":static_switches_defines" ]
-
-  if (is_chromeos_ash) {
-    public_deps += [ "//media/capture/video/chromeos/public" ]
-  }
 }
 
 source_set("common_sources") {
@@ -100,6 +99,7 @@ source_set("common_sources") {
     "cdm_info.h",
     "child_process_host.h",
     "child_process_host_delegate.h",
+    "color_parser.h",
     "common_param_traits.cc",
     "common_param_traits.h",
     "common_param_traits_macros.h",
@@ -117,11 +117,14 @@ source_set("common_sources") {
     "content_switch_dependent_feature_overrides.h",
     "content_switches.cc",
     "content_switches.h",
+    "custom_handlers/protocol_handler.cc",
+    "custom_handlers/protocol_handler.h",
     "drop_data.cc",
     "drop_data.h",
     "input_event_ack_state.h",
     "isolated_world_ids.h",
     "javascript_dialog_type.h",
+    "main_function_params.cc",
     "main_function_params.h",
     "mhtml_generation_params.cc",
     "mhtml_generation_params.h",
@@ -137,6 +140,8 @@ source_set("common_sources") {
     "process_type.h",
     "profiling.cc",
     "profiling.h",
+    "pseudonymization_util.cc",
+    "pseudonymization_util.h",
     "referrer.cc",
     "referrer.h",
     "referrer_type_converters.cc",
@@ -149,6 +154,7 @@ source_set("common_sources") {
     "sandboxed_process_launcher_delegate.cc",
     "sandboxed_process_launcher_delegate.h",
     "socket_permission_request.h",
+    "startup_data.h",
     "stop_find_action.h",
     "storage_quota_params.h",
     "three_d_api_types.h",
@@ -181,7 +187,10 @@ source_set("common_sources") {
     "//content:content_implementation",
   ]
 
-  public_configs = [ "//v8:external_startup_data" ]
+  public_configs = [
+    "//v8:external_startup_data",
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
+  ]
 
   public_deps = [
     ":interfaces",
@@ -380,4 +389,19 @@ mojom("trust_tokens_mojo_bindings") {
 
 mojom("renderer_type") {
   sources = [ "media_playback_renderer_type.mojom" ]
+}
+
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":common_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "//content/public/common/content_features.cc" ]
+    template = "//content/public/common/android/java_templates/ContentFeatures.java.tmpl"
+  }
+
+  android_library("common_java") {
+    # Right now, this only includes the Java features. But if we need more Java
+    # files, they should be added here as necessary.
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
 }

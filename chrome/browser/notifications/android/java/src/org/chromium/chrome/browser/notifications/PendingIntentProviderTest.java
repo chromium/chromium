@@ -8,7 +8,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -63,22 +62,6 @@ public class PendingIntentProviderTest {
         Assert.assertEquals(msg, 0, pendingIntentProvider.getFlags());
         pendingIntentProvider =
                 PendingIntentProvider.getService(mContext, 0, contentIntent, 0, /*mutable=*/true);
-        Assert.assertEquals(msg, 0, pendingIntentProvider.getFlags());
-    }
-
-    @Test
-    @Config(sdk = VERSION_CODES.LOLLIPOP)
-    public void testPendingIntentFlags_AndroidL() {
-        Intent contentIntent = new Intent(TEST_ACTION);
-        PendingIntentProvider pendingIntentProvider = PendingIntentProvider.getBroadcast(
-                mContext, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // FLAG_IMMUTABLE is introduced on M, on L, no additional flags are added.
-        String msg = "Pre M, all pending intent is mutable.";
-        Assert.assertEquals(
-                msg, PendingIntent.FLAG_UPDATE_CURRENT, pendingIntentProvider.getFlags());
-        pendingIntentProvider =
-                PendingIntentProvider.getBroadcast(mContext, 0, contentIntent, 0, /*mutable=*/true);
         Assert.assertEquals(msg, 0, pendingIntentProvider.getFlags());
     }
 

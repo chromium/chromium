@@ -14,8 +14,8 @@
 #include "components/version_info/version_info.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/quaternion.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace device {
 

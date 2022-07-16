@@ -5,7 +5,6 @@
 #ifndef UI_AURA_EVENT_INJECTOR_H_
 #define UI_AURA_EVENT_INJECTOR_H_
 
-#include "base/macros.h"
 #include "ui/aura/aura_export.h"
 
 namespace ui {
@@ -21,14 +20,15 @@ class WindowTreeHost;
 class AURA_EXPORT EventInjector {
  public:
   EventInjector();
+
+  EventInjector(const EventInjector&) = delete;
+  EventInjector& operator=(const EventInjector&) = delete;
+
   ~EventInjector();
 
   // Inject |event| to |host|. If |event| is a LocatedEvent, then coordinates
   // are relative to host and in DIPs.
   ui::EventDispatchDetails Inject(WindowTreeHost* host, ui::Event* event);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventInjector);
 };
 
 }  // namespace aura

@@ -172,8 +172,7 @@ bool SerialIoHandlerWin::PostOpen() {
   COMMTIMEOUTS timeouts = {0};
   timeouts.ReadIntervalTimeout = MAXDWORD;
   timeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
-  timeouts.ReadTotalTimeoutConstant =
-      base::TimeDelta::FromMinutes(5).InMilliseconds();
+  timeouts.ReadTotalTimeoutConstant = base::Minutes(5).InMilliseconds();
   if (!::SetCommTimeouts(file().GetPlatformFile(), &timeouts)) {
     SERIAL_PLOG(DEBUG) << "Failed to set serial timeouts";
     return false;
@@ -185,11 +184,6 @@ bool SerialIoHandlerWin::PostOpen() {
 void SerialIoHandlerWin::ReadImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsReadPending());
-
-  if (!file().IsValid()) {
-    QueueReadCompleted(0, mojom::SerialReceiveError::DISCONNECTED);
-    return;
-  }
 
   ClearPendingError();
   if (!IsReadPending())
@@ -206,11 +200,6 @@ void SerialIoHandlerWin::ReadImpl() {
 void SerialIoHandlerWin::WriteImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsWritePending());
-
-  if (!file().IsValid()) {
-    QueueWriteCompleted(0, mojom::SerialSendError::DISCONNECTED);
-    return;
-  }
 
   if (!WriteFile(file().GetPlatformFile(), pending_write_buffer().data(),
                  pending_write_buffer().size(), nullptr,
@@ -318,7 +307,6 @@ void SerialIoHandlerWin::OnIOCompleted(
     } else {
       SERIAL_LOG(DEBUG) << "Write failed: "
                         << logging::SystemErrorCodeToString(error);
-      WriteCompleted(0, mojom::SerialSendError::SYSTEM_ERROR);
       if (error == ERROR_GEN_FAILURE && IsReadPending()) {
         // For devices using drivers such as FTDI, CP2xxx, when device is
         // disconnected, the context is |read_context_| and the error is
@@ -331,6 +319,7 @@ void SerialIoHandlerWin::OnIOCompleted(
         // disconnection.
         CancelRead(mojom::SerialReceiveError::SYSTEM_ERROR);
       }
+      WriteCompleted(0, mojom::SerialSendError::SYSTEM_ERROR);
     }
   } else {
     NOTREACHED() << "Invalid IOContext";

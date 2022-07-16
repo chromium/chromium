@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
-<translation id="102360288709523007">Aiutaci a migliorare Chromium inviando a Google statistiche sull'utilizzo e rapporti sugli arresti anomali.</translation>
+<translation id="102360288709523007">Aiutaci a migliorare Chromium inviando a Google statistiche sull'utilizzo e report sugli arresti anomali.</translation>
 <translation id="1185134272377778587">Informazioni su Chromium</translation>
 <translation id="1257458525759135959">Per salvare le immagini, tocca Impostazioni e consenti a Chromium di aggiungere le tue foto</translation>
 <translation id="1289216811211435351">Passa a Chromium</translation>
@@ -22,6 +22,10 @@
 <translation id="2168108852149185974">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chromium. Disinstalla:</translation>
 <translation id="2178608107313874732">Chromium non può utilizzare la videocamera al momento</translation>
 <translation id="2195025571279539885">Vuoi che Chromium ti proponga di tradurre le pagine di questo sito in <ph name="LANGUAGE_NAME" /> al prossimo accesso?</translation>
+<translation id="2218146227246548550">La tua organizzazione richiede l'accesso per usare Chromium. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
+<translation id="2426113998523353159">La tua organizzazione richiede l'accesso per usare Chromium.</translation>
+<translation id="2450140762465183767">Ora puoi usare Chromium ogni volta che tocchi i link in messaggi, documenti e altre app.</translation>
+<translation id="2478931088402984578">Seleziona <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
 <translation id="2567507405773541360">Aumenta la tua produttività grazie a Chromium, che ti offre semplicità, sicurezza e velocità senza precedenti</translation>
 <translation id="2590893390871230428">Sincronizza i tuoi dati di Chromium</translation>
 <translation id="2650312721222849884">Per visualizzare le tue schede su tutti i dispositivi su cui utilizzi Chromium, attiva la sincronizzazione</translation>
@@ -38,12 +42,11 @@
 <translation id="3805899903892079518">Chromium non ha accesso alle tue foto o ai tuoi video. Attiva l'accesso in Impostazioni iOS &gt; Privacy &gt; Foto.</translation>
 <translation id="3946918322491238254">Puoi trovare ancora tutti i tuoi preferiti, la cronologia, le password e altre impostazioni su questo dispositivo. Le eventuali modifiche apportate non verranno sincronizzate con il tuo account.</translation>
 <translation id="4099085513035183040">Non supportata su Chromium beta</translation>
-<translation id="4166206055865952171">Imposta Chromium come browser predefinito</translation>
 <translation id="4555020257205549924">Quando questa funzione è attiva, Chromium si offre di tradurre le pagine scritte in altre lingue utilizzando Google Traduttore. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Ora puoi usare Chromium ogni volta che tocchi link in messaggi, documenti e altre app.</translation>
 <translation id="4681781466797808448">Attiva lo scanner di Chromium</translation>
 <translation id="4736424910885271643">Il tuo account è gestito da <ph name="HOSTED_DOMAIN" />, pertanto i tuoi dati di Chromium verranno cancellati da questo dispositivo</translation>
-<translation id="4806326830773390517">Contribuisci a migliorare Chromium inviando a Google statistiche sull'utilizzo e rapporti sugli arresti anomali</translation>
+<translation id="4806326830773390517">Contribuisci a migliorare Chromium inviando a Google statistiche sull'utilizzo e report sugli arresti anomali</translation>
 <translation id="4828317641996116749">Chromium non ha potuto controllare tutte le password. Riprova più tardi.</translation>
 <translation id="4985291216379576555">Offline. Chromium non può controllare la disponibilità di aggiornamenti.</translation>
 <translation id="4999538639245140991">Dal momento che stai per uscire da un account gestito da <ph name="SIGNOUT_MANAGED_DOMAIN" />, i dati di Chromium verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
@@ -54,8 +57,6 @@
 <translation id="5521125884468363740">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chromium e attiva la sincronizzazione per visualizzare le tue schede</translation>
 <translation id="5573014823074921752">Suggerimento per Chromium. Per vedere più opzioni sulla scheda, tocca e tieni premuto il pulsante Mostra schede della barra degli strumenti, che si trova nella parte inferiore o superiore della schermata.</translation>
 <translation id="5700709190537129682">Chromium non può controllare le tue password</translation>
-<translation id="5715349567881822785">Aumenta la tua produttività con Chromium</translation>
-<translation id="5742135483959137648">Usa Chromium per aprire i link</translation>
 <translation id="5777187867430702742">Pagina di Chromium</translation>
 <translation id="5862307444128926510">Benvenuto in Chromium</translation>
 <translation id="5945387852661427312">Stai per eseguire l'accesso con un account gestito da <ph name="DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chromium. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chromium, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
@@ -65,16 +66,17 @@
 2. Tocca App browser predefinita.
 3. Seleziona Chromium.</translation>
 <translation id="6155422572367400359">Accedi a questo sito, al tuo Account Google e a Chromium. Puoi attivare la sincronizzazione in un secondo momento.</translation>
+<translation id="6183442264225539303">Accedi a questo sito e a Chromium. Puoi attivare la sincronizzazione in un secondo momento.</translation>
 <translation id="6268381023930128611">Uscire da Chromium?</translation>
 <translation id="632825460376924298">Consenti l'accesso a Chromium</translation>
 <translation id="6337530241089703714">Scegli se cancellare i tuoi dati di Chromium da questo dispositivo o se conservarli</translation>
 <translation id="6424492062988593837">Chromium è stato migliorato. È disponibile una nuova versione.</translation>
 <translation id="6752854822223394465">La tua organizzazione sta configurando Chromium…</translation>
 <translation id="6820823224820483452">Chromium non ha potuto controllare tutte le password. Riprova domani.</translation>
-<translation id="6827294685447036764">Se consenti a Chromium di conoscere la tua posizione, Chromium la invia ai siti autorizzati. I siti possono chiederti la posizione in presenza di informazioni locali da mostrarti, ad esempio notizie o negozi nelle vicinanze.</translation>
 <translation id="7018284295775193585">Impossibile aggiornare Chromium</translation>
 <translation id="7045244423563602563">Personalizza Chromium</translation>
 <translation id="7099326575020694068">Chromium non può utilizzare la videocamera in modalità Visualizzazione divisa</translation>
+<translation id="7108914401277488191">Aumenta la tua produttività con Chromium</translation>
 <translation id="7118091470949186573">Ora puoi usare Chromium ogni volta che tocchi link in messaggi, documenti e altre app.</translation>
 <translation id="7208566199746267865">Chromium ti fa risparmiare tempo portando i tuoi account sul Web. Puoi aggiungere o rimuovere account nelle impostazioni.</translation>
 <translation id="725427773388857052">Chromium può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo.</translation>
@@ -102,6 +104,7 @@
 <translation id="894437814105052438">Se esci, Chromium non sincronizzerà gli eventuali nuovi dati con il tuo Account Google. I dati sincronizzati in precedenza rimangono memorizzati nell'account.</translation>
 <translation id="9022552996538154597">Accedi a Chromium</translation>
 <translation id="9089354809943900324">Chromium non è aggiornato</translation>
+<translation id="9110075932708282655">Usa Chromium per impostazione predefinita</translation>
 <translation id="921174536258924340">Chromium non ha potuto controllare tutte le password. Riprova domani oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

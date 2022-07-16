@@ -30,7 +30,7 @@ AppSettingsModelTypeController::AppSettingsModelTypeController(
           /*allow_transport_mode=*/true),
       profile_(profile),
       sync_service_(sync_service) {
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled());
+  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   DCHECK(profile_);
   DCHECK(sync_service_);
   pref_registrar_.Init(profile_->GetPrefs());

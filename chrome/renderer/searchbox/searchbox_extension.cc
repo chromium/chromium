@@ -13,7 +13,6 @@
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,10 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/common/search/generated_colors_info.h"
 #include "chrome/common/search/instant_types.h"
-#include "chrome/common/search/ntp_logging_events.h"
-#include "chrome/common/search/selected_colors_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/renderer_resources.h"
 #include "chrome/renderer/searchbox/searchbox.h"
@@ -109,9 +105,9 @@ v8::Local<v8::Object> GenerateMostVisitedItem(
 
 // Populates a Javascript MostVisitedItem object appropriate for returning from
 // newTabPage.getMostVisitedItemData.
-// NOTE: Includes private data such as "url", "title", and "domain", so this
-// should not be returned to the host page (via newTabPage.mostVisited). It is
-// only accessible to most-visited iframes via getMostVisitedItemData.
+// NOTE: Includes private data such as "url" and "title", so this should not be
+// returned to the host page (via newTabPage.mostVisited). It is only accessible
+// to most-visited iframes via getMostVisitedItemData.
 v8::Local<v8::Object> GenerateMostVisitedItemData(
     v8::Isolate* isolate,
     int render_view_id,
@@ -141,12 +137,7 @@ v8::Local<v8::Object> GenerateMostVisitedItemData(
     title = mv_item.url.spec();
 
   gin::DataObjectBuilder builder(isolate);
-  builder.Set("renderViewId", render_view_id)
-      .Set("rid", restricted_id)
-      .Set("tileTitleSource", static_cast<int>(mv_item.title_source))
-      .Set("tileSource", static_cast<int>(mv_item.source))
-      .Set("title", title)
-      .Set("domain", mv_item.url.host())
+  builder.Set("title", title)
       .Set("direction", base::StringPiece(direction))
       .Set("url", mv_item.url.spec());
 
@@ -188,41 +179,6 @@ v8::Local<v8::Value> SkColorToArray(v8::Isolate* isolate,
                            v8::Int32::New(isolate, SkColorGetA(color)))
       .Check();
   return color_array;
-}
-
-// Converts given array to SkColor and returns whether the conversion is
-// successful.
-bool ArrayToSkColor(v8::Isolate* isolate,
-                    v8::Local<v8::Array> color,
-                    SkColor* color_result) {
-  if (color->Length() != 4)
-    return false;
-
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  v8::Local<v8::Value> r_value;
-  v8::Local<v8::Value> g_value;
-  v8::Local<v8::Value> b_value;
-  v8::Local<v8::Value> a_value;
-
-  if (!color->Get(context, 0).ToLocal(&r_value) ||
-      !color->Get(context, 1).ToLocal(&g_value) ||
-      !color->Get(context, 2).ToLocal(&b_value) ||
-      !color->Get(context, 3).ToLocal(&a_value))
-    return false;
-
-  absl::optional<int> r = CoerceToInt(isolate, *r_value);
-  absl::optional<int> g = CoerceToInt(isolate, *g_value);
-  absl::optional<int> b = CoerceToInt(isolate, *b_value);
-  absl::optional<int> a = CoerceToInt(isolate, *a_value);
-
-  if (!r.has_value() || !g.has_value() || !b.has_value() || !a.has_value())
-    return false;
-
-  if (*a > 255 || *r > 255 || *g > 255 || *b > 255)
-    return false;
-
-  *color_result = SkColorSetARGB(*a, *r, *g, *b);
-  return true;
 }
 
 v8::Local<v8::Object> GenerateNtpTheme(v8::Isolate* isolate,
@@ -318,77 +274,6 @@ v8::Local<v8::Object> GenerateNtpTheme(v8::Isolate* isolate,
     }
   }
 
-  builder.Set("themeId", theme.theme_id);
-  builder.Set("themeName", theme.theme_name);
-
-  builder.Set("customBackgroundDisabledByPolicy",
-              theme.custom_background_disabled_by_policy);
-  builder.Set("customBackgroundConfigured",
-              !theme.custom_background_url.is_empty());
-
-  // If a custom background has been set provide the relevant information to the
-  // page.
-  if (!theme.custom_background_url.is_empty()) {
-    builder.Set("imageUrl", theme.custom_background_url.spec());
-    builder.Set("attributionActionUrl",
-                theme.custom_background_attribution_action_url.spec());
-    builder.Set("attribution1", theme.custom_background_attribution_line_1);
-    builder.Set("attribution2", theme.custom_background_attribution_line_2);
-    builder.Set("collectionId", theme.collection_id);
-    // Clear the theme attribution url, as it shouldn't be shown when
-    // a custom background is set.
-    builder.Set("attributionUrl", std::string());
-  }
-
-  // Set fields for themeing NTP elements.
-  builder.Set("isNtpBackgroundDark", !color_utils::IsDark(theme.text_color));
-  builder.Set("useTitleContainer", theme.has_theme_image);
-
-  // TODO(gayane): Rename icon color to shortcut color in JS for consitancy.
-  builder.Set("iconBackgroundColor",
-              SkColorToArray(isolate, theme.shortcut_color));
-  builder.Set("useWhiteAddIcon", color_utils::IsDark(theme.shortcut_color));
-
-  builder.Set("logoColor", SkColorToArray(isolate, theme.logo_color));
-
-  builder.Set("colorId", theme.color_id);
-  if (theme.color_id != -1) {
-    builder.Set("colorDark", SkColorToArray(isolate, theme.color_dark));
-    builder.Set("colorLight", SkColorToArray(isolate, theme.color_light));
-    builder.Set("colorPicked", SkColorToArray(isolate, theme.color_picked));
-  }
-
-  gin::DataObjectBuilder search_box(isolate);
-  search_box.Set("bg", SkColorToArray(isolate, theme.search_box.bg));
-  search_box.Set("icon", SkColorToArray(isolate, theme.search_box.icon));
-  search_box.Set("iconSelected",
-                 SkColorToArray(isolate, theme.search_box.icon_selected));
-  search_box.Set("placeholder",
-                 SkColorToArray(isolate, theme.search_box.placeholder));
-  search_box.Set("resultsBg",
-                 SkColorToArray(isolate, theme.search_box.results_bg));
-  search_box.Set("resultsBgHovered",
-                 SkColorToArray(isolate, theme.search_box.results_bg_hovered));
-  search_box.Set("resultsBgSelected",
-                 SkColorToArray(isolate, theme.search_box.results_bg_selected));
-  search_box.Set("resultsDim",
-                 SkColorToArray(isolate, theme.search_box.results_dim));
-  search_box.Set(
-      "resultsDimSelected",
-      SkColorToArray(isolate, theme.search_box.results_dim_selected));
-  search_box.Set("resultsText",
-                 SkColorToArray(isolate, theme.search_box.results_text));
-  search_box.Set(
-      "resultsTextSelected",
-      SkColorToArray(isolate, theme.search_box.results_text_selected));
-  search_box.Set("resultsUrl",
-                 SkColorToArray(isolate, theme.search_box.results_url));
-  search_box.Set(
-      "resultsUrlSelected",
-      SkColorToArray(isolate, theme.search_box.results_url_selected));
-  search_box.Set("text", SkColorToArray(isolate, theme.search_box.text));
-  builder.Set("searchBox", search_box.Build());
-
   return builder.Build();
 }
 
@@ -476,20 +361,6 @@ static const char kDispatchThemeChangeEventScript[] =
     "  true;"
     "}";
 
-static const char kDispatchLocalBackgroundSelectedScript[] =
-    "if (window.chrome &&"
-    "    window.chrome.embeddedSearch &&"
-    "    window.chrome.embeddedSearch.newTabPage &&"
-    "    window.chrome.embeddedSearch.newTabPage.onlocalbackgroundselected &&"
-    "    typeof "
-    "window.chrome.embeddedSearch.newTabPage.onlocalbackgroundselected =="
-    "        'function') {"
-    "  "
-    "window.chrome.embeddedSearch.newTabPage."
-    "onlocalbackgroundselected();"
-    "  true;"
-    "}";
-
 // ----------------------------------------------------------------------------
 
 class SearchBoxBindings : public gin::Wrappable<SearchBoxBindings> {
@@ -497,6 +368,10 @@ class SearchBoxBindings : public gin::Wrappable<SearchBoxBindings> {
   static gin::WrapperInfo kWrapperInfo;
 
   SearchBoxBindings();
+
+  SearchBoxBindings(const SearchBoxBindings&) = delete;
+  SearchBoxBindings& operator=(const SearchBoxBindings&) = delete;
+
   ~SearchBoxBindings() override;
 
  private:
@@ -511,8 +386,6 @@ class SearchBoxBindings : public gin::Wrappable<SearchBoxBindings> {
   // Handlers for JS functions.
   static void StartCapturingKeyStrokes();
   static void StopCapturingKeyStrokes();
-
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxBindings);
 };
 
 gin::WrapperInfo SearchBoxBindings::kWrapperInfo = {gin::kEmbedderNativeGin};
@@ -571,6 +444,10 @@ class NewTabPageBindings : public gin::Wrappable<NewTabPageBindings> {
   static gin::WrapperInfo kWrapperInfo;
 
   NewTabPageBindings();
+
+  NewTabPageBindings(const NewTabPageBindings&) = delete;
+  NewTabPageBindings& operator=(const NewTabPageBindings&) = delete;
+
   ~NewTabPageBindings() override;
 
  private:
@@ -597,42 +474,6 @@ class NewTabPageBindings : public gin::Wrappable<NewTabPageBindings> {
   // custom links iframe, and/or the local NTP.
   static v8::Local<v8::Value> GetMostVisitedItemData(v8::Isolate* isolate,
                                                      int rid);
-  static void LogEvent(int event);
-  static void LogSuggestionEventWithValue(int event, int data);
-  static void LogMostVisitedImpression(int position,
-                                       int tile_title_source,
-                                       int tile_source,
-                                       int tile_type);
-  static void LogMostVisitedNavigation(int position,
-                                       int tile_title_source,
-                                       int tile_source,
-                                       int tile_type);
-  static void ResetCustomBackgroundInfo();
-  static void SetCustomBackgroundInfo(const std::string& background_url,
-                                      const std::string& attribution_line_1,
-                                      const std::string& attribution_line_2,
-                                      const std::string& attributionActionUrl,
-                                      const std::string& collection_id);
-  static void SelectLocalBackgroundImage();
-  static void BlocklistSearchSuggestion(int task_version, int task_id);
-  static void BlocklistSearchSuggestionWithHash(int task_version,
-                                                int task_id,
-                                                const std::string& hash);
-  static void SearchSuggestionSelected(int task_version,
-                                       int task_id,
-                                       const std::string& hash);
-  static void OptOutOfSearchSuggestions();
-  static void UseDefaultTheme();
-  static void ApplyDefaultTheme();
-  static void ApplyAutogeneratedTheme(v8::Isolate* isolate,
-                                      int id,
-                                      v8::Local<v8::Value> color);
-  static void RevertThemeChanges();
-  static void ConfirmThemeChanges();
-  static void BlocklistPromo(const std::string& promo_id);
-  static v8::Local<v8::Value> GetColorsInfo(v8::Isolate* isolate);
-
-  DISALLOW_COPY_AND_ASSIGN(NewTabPageBindings);
 };
 
 gin::WrapperInfo NewTabPageBindings::kWrapperInfo = {gin::kEmbedderNativeGin};
@@ -659,44 +500,7 @@ gin::ObjectTemplateBuilder NewTabPageBindings::GetObjectTemplateBuilder(
       .SetMethod("undoMostVisitedDeletion",
                  &NewTabPageBindings::UndoMostVisitedDeletion)
       .SetMethod("getMostVisitedItemData",
-                 &NewTabPageBindings::GetMostVisitedItemData)
-      .SetMethod("logEvent", &NewTabPageBindings::LogEvent)
-      .SetMethod("logSuggestionEventWithValue",
-                 &NewTabPageBindings::LogSuggestionEventWithValue)
-      .SetMethod("logMostVisitedImpression",
-                 &NewTabPageBindings::LogMostVisitedImpression)
-      .SetMethod("logMostVisitedNavigation",
-                 &NewTabPageBindings::LogMostVisitedNavigation)
-      .SetMethod("resetBackgroundInfo",
-                 &NewTabPageBindings::ResetCustomBackgroundInfo)
-      .SetMethod("setBackgroundInfo",
-                 &NewTabPageBindings::SetCustomBackgroundInfo)
-      .SetMethod("selectLocalBackgroundImage",
-                 &NewTabPageBindings::SelectLocalBackgroundImage)
-      // These methods have been renamed to match BlocklistSearchSuggestion*
-      // below, but are kept until JavaScript calls can be migrated.
-      // TODO: Remove the following two additions per guidance in b/179534247
-      .SetMethod("blacklistSearchSuggestion",
-                 &NewTabPageBindings::BlocklistSearchSuggestion)
-      .SetMethod("blacklistSearchSuggestionWithHash",
-                 &NewTabPageBindings::BlocklistSearchSuggestionWithHash)
-      .SetMethod("blocklistSearchSuggestion",
-                 &NewTabPageBindings::BlocklistSearchSuggestion)
-      .SetMethod("blocklistSearchSuggestionWithHash",
-                 &NewTabPageBindings::BlocklistSearchSuggestionWithHash)
-      .SetMethod("searchSuggestionSelected",
-                 &NewTabPageBindings::SearchSuggestionSelected)
-      .SetMethod("optOutOfSearchSuggestions",
-                 &NewTabPageBindings::OptOutOfSearchSuggestions)
-      .SetMethod("useDefaultTheme", &NewTabPageBindings::UseDefaultTheme)
-      .SetMethod("applyDefaultTheme", &NewTabPageBindings::ApplyDefaultTheme)
-      .SetMethod("applyAutogeneratedTheme",
-                 &NewTabPageBindings::ApplyAutogeneratedTheme)
-      .SetMethod("revertThemeChanges", &NewTabPageBindings::RevertThemeChanges)
-      .SetMethod("confirmThemeChanges",
-                 &NewTabPageBindings::ConfirmThemeChanges)
-      .SetMethod("getColorsInfo", &NewTabPageBindings::GetColorsInfo)
-      .SetMethod("blocklistPromo", &NewTabPageBindings::BlocklistPromo);
+                 &NewTabPageBindings::GetMostVisitedItemData);
 }
 
 // static
@@ -705,7 +509,7 @@ bool NewTabPageBindings::HasOrigin(const GURL& origin) {
   if (!frame)
     return false;
   GURL url(frame->GetDocument().Url());
-  return url.GetOrigin() == origin.GetOrigin();
+  return url.DeprecatedGetOriginAsURL() == origin.DeprecatedGetOriginAsURL();
 }
 
 // static
@@ -821,231 +625,6 @@ v8::Local<v8::Value> NewTabPageBindings::GetMostVisitedItemData(
   return GenerateMostVisitedItemData(isolate, render_frame_id, rid, item);
 }
 
-// static
-void NewTabPageBindings::LogEvent(int event) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box) {
-    return;
-  }
-  if (event <= NTP_EVENT_TYPE_LAST)
-    search_box->LogEvent(static_cast<NTPLoggingEventType>(event));
-}
-
-// static
-void NewTabPageBindings::LogSuggestionEventWithValue(int event, int data) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box) {
-    return;
-  }
-  if (event <= static_cast<int>(NTPSuggestionsLoggingEventType::kMaxValue)) {
-    search_box->LogSuggestionEventWithValue(
-        static_cast<NTPSuggestionsLoggingEventType>(event), data);
-  }
-}
-
-// static
-void NewTabPageBindings::LogMostVisitedImpression(int position,
-                                                  int tile_title_source,
-                                                  int tile_source,
-                                                  int tile_type) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box || !HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl)))
-    return;
-
-  if (tile_title_source <= static_cast<int>(ntp_tiles::TileTitleSource::LAST) &&
-      tile_source <= static_cast<int>(ntp_tiles::TileSource::LAST) &&
-      tile_type <= ntp_tiles::TileVisualType::TILE_TYPE_MAX) {
-    const ntp_tiles::NTPTileImpression impression(
-        position, static_cast<ntp_tiles::TileSource>(tile_source),
-        static_cast<ntp_tiles::TileTitleSource>(tile_title_source),
-        static_cast<ntp_tiles::TileVisualType>(tile_type),
-        favicon_base::IconType::kInvalid,
-        /*url_for_rappor=*/GURL());
-    search_box->LogMostVisitedImpression(impression);
-  }
-}
-
-// static
-void NewTabPageBindings::LogMostVisitedNavigation(int position,
-                                                  int tile_title_source,
-                                                  int tile_source,
-                                                  int tile_type) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box || !HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl)))
-    return;
-
-  if (tile_title_source <= static_cast<int>(ntp_tiles::TileTitleSource::LAST) &&
-      tile_source <= static_cast<int>(ntp_tiles::TileSource::LAST) &&
-      tile_type <= ntp_tiles::TileVisualType::TILE_TYPE_MAX) {
-    const ntp_tiles::NTPTileImpression impression(
-        position, static_cast<ntp_tiles::TileSource>(tile_source),
-        static_cast<ntp_tiles::TileTitleSource>(tile_title_source),
-        static_cast<ntp_tiles::TileVisualType>(tile_type),
-        favicon_base::IconType::kInvalid,
-        /*url_for_rappor=*/GURL());
-    search_box->LogMostVisitedNavigation(impression);
-  }
-}
-
-// static
-void NewTabPageBindings::ResetCustomBackgroundInfo() {
-  SetCustomBackgroundInfo(std::string(), std::string(), std::string(),
-                          std::string(), std::string());
-}
-
-// static
-void NewTabPageBindings::SetCustomBackgroundInfo(
-    const std::string& background_url,
-    const std::string& attribution_line_1,
-    const std::string& attribution_line_2,
-    const std::string& attribution_action_url,
-    const std::string& collection_id) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  search_box->SetCustomBackgroundInfo(
-      GURL(background_url), attribution_line_1, attribution_line_2,
-      GURL(attribution_action_url), collection_id);
-  // Captures different events that occur when a background selection is made
-  // and 'Done' is clicked on the dialog.
-  if (!collection_id.empty()) {
-    search_box->LogEvent(
-        NTPLoggingEventType::NTP_BACKGROUND_DAILY_REFRESH_ENABLED);
-  } else if (background_url.empty()) {
-    search_box->LogEvent(
-        NTPLoggingEventType::NTP_CUSTOMIZE_RESTORE_BACKGROUND_CLICKED);
-    search_box->LogEvent(NTPLoggingEventType::NTP_BACKGROUND_IMAGE_RESET);
-  } else {
-    search_box->LogEvent(
-        NTPLoggingEventType::NTP_CUSTOMIZE_CHROME_BACKGROUND_DONE);
-    search_box->LogEvent(NTPLoggingEventType::NTP_BACKGROUND_IMAGE_SET);
-  }
-}
-
-// static
-void NewTabPageBindings::SelectLocalBackgroundImage() {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  search_box->SelectLocalBackgroundImage();
-}
-
-// static
-void NewTabPageBindings::BlocklistSearchSuggestion(const int task_version,
-                                                   const int task_id) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->BlocklistSearchSuggestion(task_version, task_id);
-}
-
-// static
-void NewTabPageBindings::BlocklistSearchSuggestionWithHash(
-    int task_version,
-    int task_id,
-    const std::string& hash) {
-  if (hash.length() != 4) {
-    return;
-  }
-
-  std::vector<uint8_t> data(hash.begin(), hash.end());
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->BlocklistSearchSuggestionWithHash(task_version, task_id, data);
-}
-
-// static
-void NewTabPageBindings::SearchSuggestionSelected(int task_version,
-                                                  int task_id,
-                                                  const std::string& hash) {
-  if (hash.length() > 4) {
-    return;
-  }
-
-  std::vector<uint8_t> data(hash.begin(), hash.end());
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->SearchSuggestionSelected(task_version, task_id, data);
-}
-
-// static
-void NewTabPageBindings::OptOutOfSearchSuggestions() {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->OptOutOfSearchSuggestions();
-}
-
-// static
-void NewTabPageBindings::ApplyDefaultTheme() {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->ApplyDefaultTheme();
-}
-
-// static
-void NewTabPageBindings::UseDefaultTheme() {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->ApplyDefaultTheme();
-  search_box->ConfirmThemeChanges();
-}
-
-// static
-void NewTabPageBindings::ApplyAutogeneratedTheme(v8::Isolate* isolate,
-                                                 int id,
-                                                 v8::Local<v8::Value> value) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box || !value->IsArray())
-    return;
-  SkColor color;
-  if (!ArrayToSkColor(isolate, value.As<v8::Array>(), &color))
-    return;
-  search_box->ApplyAutogeneratedTheme(color);
-}
-
-// static
-void NewTabPageBindings::RevertThemeChanges() {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->RevertThemeChanges();
-}
-
-// static
-void NewTabPageBindings::ConfirmThemeChanges() {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->ConfirmThemeChanges();
-}
-
-v8::Local<v8::Value> NewTabPageBindings::GetColorsInfo(v8::Isolate* isolate) {
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  v8::Local<v8::Object> v8_colors =
-      v8::Array::New(isolate, chrome_colors::kNumColorsInfo);
-  int i = 0;
-  for (chrome_colors::ColorInfo color_info :
-       chrome_colors::kGeneratedColorsInfo) {
-    v8::Local<v8::Object> v8_color_info =
-        gin::DataObjectBuilder(isolate)
-            .Set("id", color_info.id)
-            .Set("color", SkColorToArray(isolate, color_info.color))
-            .Set("label", l10n_util::GetStringUTF16(color_info.label_id))
-            .Set("icon", std::string(color_info.icon_data))
-            .Build();
-    v8_colors->CreateDataProperty(context, i++, v8_color_info).Check();
-  }
-  return v8_colors;
-}
-
-void NewTabPageBindings::BlocklistPromo(const std::string& promo_id) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->BlocklistPromo(promo_id);
-}
-
 }  // namespace
 
 // static
@@ -1114,10 +693,4 @@ void SearchBoxExtension::DispatchMostVisitedChanged(
 // static
 void SearchBoxExtension::DispatchThemeChange(blink::WebLocalFrame* frame) {
   Dispatch(frame, kDispatchThemeChangeEventScript);
-}
-
-// static
-void SearchBoxExtension::DispatchLocalBackgroundSelected(
-    blink::WebLocalFrame* frame) {
-  Dispatch(frame, kDispatchLocalBackgroundSelectedScript);
 }

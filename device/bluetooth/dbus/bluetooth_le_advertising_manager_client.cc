@@ -26,6 +26,11 @@ class BluetoothAdvertisementManagerClientImpl
  public:
   BluetoothAdvertisementManagerClientImpl() : object_manager_(nullptr) {}
 
+  BluetoothAdvertisementManagerClientImpl(
+      const BluetoothAdvertisementManagerClientImpl&) = delete;
+  BluetoothAdvertisementManagerClientImpl& operator=(
+      const BluetoothAdvertisementManagerClientImpl&) = delete;
+
   ~BluetoothAdvertisementManagerClientImpl() override {
     if (object_manager_) {
       object_manager_->UnregisterInterface(
@@ -211,8 +216,6 @@ class BluetoothAdvertisementManagerClientImpl
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdvertisementManagerClientImpl>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdvertisementManagerClientImpl);
 };
 
 BluetoothLEAdvertisingManagerClient::BluetoothLEAdvertisingManagerClient() =

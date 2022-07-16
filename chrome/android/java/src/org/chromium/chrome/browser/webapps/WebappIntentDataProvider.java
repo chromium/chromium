@@ -19,14 +19,15 @@ import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
 import androidx.browser.trusted.sharing.ShareData;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
+import org.chromium.device.mojom.ScreenOrientationLockType;
 
 /**
  * Stores info about a web app.
@@ -55,7 +56,7 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
         mColorProvider = new ColorProviderImpl(toolbarColor, hasCustomToolbarColor);
         mCloseButtonIcon = TintedDrawable.constructTintedDrawable(
                 ContextUtils.getApplicationContext(), R.drawable.btn_close);
-        mTwaDisplayMode = (webappExtras.displayMode == WebDisplayMode.FULLSCREEN)
+        mTwaDisplayMode = (webappExtras.displayMode == DisplayMode.FULLSCREEN)
                 ? new ImmersiveMode(false /* sticky */, LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT)
                 : new DefaultMode();
         mShareData = shareData;
@@ -151,7 +152,7 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    public int getDefaultOrientation() {
+    public @ScreenOrientationLockType.EnumType int getDefaultOrientation() {
         return mWebappExtras.orientation;
     }
 

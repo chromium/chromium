@@ -6,11 +6,12 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/language/core/browser/language_prefs.h"
+
 #include "components/infobars/core/infobar.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_prefs.h"
@@ -54,6 +55,9 @@ class TranslateUIDelegateTest : public ::testing::Test {
  public:
   TranslateUIDelegateTest() = default;
 
+  TranslateUIDelegateTest(const TranslateUIDelegateTest&) = delete;
+  TranslateUIDelegateTest& operator=(const TranslateUIDelegateTest&) = delete;
+
   void SetUp() override {
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -80,6 +84,38 @@ class TranslateUIDelegateTest : public ::testing::Test {
                                                       "ar", "fr");
   }
 
+  void testContentLanguages(bool disableObservers) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        language::kContentLanguagesInLanguagePicker,
+        {{language::kContentLanguagesDisableObserversParam,
+          disableObservers ? "true" : "false"}});
+    TranslateDownloadManager::GetInstance()->set_application_locale("en");
+    std::unique_ptr<TranslatePrefs> prefs(client_->GetTranslatePrefs());
+    prefs->AddToLanguageList("de", /*force_blocked=*/false);
+    prefs->AddToLanguageList("pl", /*force_blocked=*/false);
+
+    std::unique_ptr<TranslateUIDelegate> delegate =
+        std::make_unique<TranslateUIDelegate>(manager_->GetWeakPtr(), "en",
+                                              "fr");
+
+    std::vector<std::string> expected_codes = {"de", "pl"};
+    std::vector<std::string> actual_codes;
+
+    delegate->GetContentLanguagesCodes(&actual_codes);
+
+    EXPECT_THAT(expected_codes, ::testing::ContainerEq(actual_codes));
+
+    prefs->AddToLanguageList("it", /*force_blocked=*/false);
+
+    delegate->GetContentLanguagesCodes(&actual_codes);
+
+    if (disableObservers) {
+      expected_codes = {"de", "pl"};
+    } else {
+      expected_codes = {"de", "pl", "it"};
+    }
+    EXPECT_THAT(expected_codes, ::testing::ContainerEq(actual_codes));
+  }
   // Do not reorder. These are ordered for dependency on creation/destruction.
   MockTranslateDriver driver_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -91,9 +127,6 @@ class TranslateUIDelegateTest : public ::testing::Test {
   std::unique_ptr<TranslateManager> manager_;
   std::unique_ptr<TranslateUIDelegate> delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TranslateUIDelegateTest);
 };
 
 TEST_F(TranslateUIDelegateTest, CheckDeclinedFalse) {
@@ -164,7 +197,7 @@ TEST_F(TranslateUIDelegateTest, SetShouldAlwaysTranslateUnblocksSite) {
   // Add example.com to the translate site blocklist.
   const GURL url("https://www.example.com/hello/world?fg=1");
   driver_.SetLastCommittedURL(url);
-  delegate_->SetNeverPrompt(true);
+  delegate_->SetNeverPromptSite(true);
   EXPECT_TRUE(prefs->IsSiteOnNeverPromptList("www.example.com"));
 
   // Setting always translate should remove the site from the blocklist.
@@ -231,30 +264,13 @@ TEST_F(TranslateUIDelegateTest, LanguageCodes) {
   EXPECT_EQ("fr", delegate_->GetTargetLanguageCode());
 }
 
-TEST_F(TranslateUIDelegateTest, ContentLanguagesWhenEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(
-      language::kContentLanguagesInLanguagePicker);
-  TranslateDownloadManager::GetInstance()->set_application_locale("en");
-  std::unique_ptr<TranslatePrefs> prefs(client_->GetTranslatePrefs());
-  prefs->AddToLanguageList("de", /*force_blocked=*/false);
-  prefs->AddToLanguageList("pl", /*force_blocked=*/false);
+TEST_F(TranslateUIDelegateTest, ContentLanguagesWhenPrefChangeObserverEnabled) {
+  testContentLanguages(/*disableObservers=*/false);
+}
 
-  std::unique_ptr<TranslateUIDelegate> delegate =
-      std::make_unique<TranslateUIDelegate>(manager_->GetWeakPtr(), "en", "fr");
-  std::vector<std::string> expected_codes = {"de", "pl"};
-
-  std::vector<std::string> actual_codes;
-
-  delegate->GetContentLanguagesCodes(&actual_codes);
-
-  EXPECT_THAT(expected_codes, ::testing::ContainerEq(actual_codes));
-
-  // Mimic an update.
-  prefs->AddToLanguageList("it", /*force_blocked=*/false);
-  delegate->MaybeSetContentLanguages();
-  delegate->GetContentLanguagesCodes(&actual_codes);
-  expected_codes = {"de", "pl", "it"};
-  EXPECT_THAT(expected_codes, ::testing::ContainerEq(actual_codes));
+TEST_F(TranslateUIDelegateTest,
+       ContentLanguagesWhenPrefChangeObserverDisabled) {
+  testContentLanguages(/*disableObservers=*/true);
 }
 
 TEST_F(TranslateUIDelegateTest, ContentLanguagesWhenDisabled) {

@@ -28,6 +28,10 @@ namespace {
 class TestOverlayWindow : public OverlayWindow {
  public:
   TestOverlayWindow() = default;
+
+  TestOverlayWindow(const TestOverlayWindow&) = delete;
+  TestOverlayWindow& operator=(const TestOverlayWindow&) = delete;
+
   ~TestOverlayWindow() override = default;
 
   bool IsActive() override { return false; }
@@ -99,8 +103,6 @@ class TestOverlayWindow : public OverlayWindow {
 
   absl::optional<bool> play_pause_button_visible_;
   absl::optional<bool> next_track_button_visible_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverlayWindow);
 };
 
 class TestContentBrowserClient : public ContentBrowserClient {
@@ -544,8 +546,15 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
 // Tests Media Session action availability upon reaching the end of stream by
 // verifying that the "nexttrack" action can be invoked after playing through
 // to the end of media.
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_ActionAvailableAfterEndOfStreamAndSrcUpdate \
+  DISABLED_ActionAvailableAfterEndOfStreamAndSrcUpdate
+#else
+#define MAYBE_ActionAvailableAfterEndOfStreamAndSrcUpdate \
+  ActionAvailableAfterEndOfStreamAndSrcUpdate
+#endif
 IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
-                       ActionAvailableAfterEndOfStreamAndSrcUpdate) {
+                       MAYBE_ActionAvailableAfterEndOfStreamAndSrcUpdate) {
   ASSERT_TRUE(NavigateToURL(
       shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
 

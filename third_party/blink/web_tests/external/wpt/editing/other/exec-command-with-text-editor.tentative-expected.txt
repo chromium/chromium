@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
-Found 1552 tests; 1426 PASS, 126 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL In <input>, execCommand("getHTML", false, null), a[b]c): The command should be supported assert_equals: expected true but got false
-FAIL In <input>, execCommand("getHTML", false, null), a[b]c): The command should be enabled assert_equals: expected true but got false
+Found 1552 tests; 1462 PASS, 90 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS In <input>, execCommand("getHTML", false, null), a[b]c): The command should not be supported
+PASS In <input>, execCommand("getHTML", false, null), a[b]c): The command should not be enabled
 PASS In <input>, execCommand("bold", false, bold), a[b]c): The command should be supported
 PASS In <input>, execCommand("bold", false, bold), a[b]c): The command should not be enabled
 PASS In <input>, execCommand("bold", false, bold), a[b]c): execCommand() should return false
@@ -210,9 +210,9 @@ PASS In <input>, execCommand("fontsize", false, 5), a[b]c): beforeinput.inputTyp
 PASS In <input>, execCommand("fontsize", false, 5), a[b]c): beforeinput.target should be undefined
 PASS In <input>, execCommand("fontsize", false, 5), a[b]c): input.inputType should be undefined
 PASS In <input>, execCommand("fontsize", false, 5), a[b]c): input.target should be undefined
-FAIL In <input>, execCommand("increasefontsize", false, null), a[b]c): The command should be supported assert_equals: expected true but got false
+PASS In <input>, execCommand("increasefontsize", false, null), a[b]c): The command should not be supported
 PASS In <input>, execCommand("increasefontsize", false, null), a[b]c): The command should not be enabled
-FAIL In <input>, execCommand("decreasefontsize", false, null), a[b]c): The command should be supported assert_equals: expected true but got false
+PASS In <input>, execCommand("decreasefontsize", false, null), a[b]c): The command should not be supported
 PASS In <input>, execCommand("decreasefontsize", false, null), a[b]c): The command should not be enabled
 PASS In <input>, execCommand("inserthorizontalrule", false, null), a[b]c): The command should be supported
 PASS In <input>, execCommand("inserthorizontalrule", false, null), a[b]c): The command should not be enabled
@@ -342,7 +342,7 @@ PASS In <input>, execCommand("formatblock", false, div), a[b]c): beforeinput.inp
 PASS In <input>, execCommand("formatblock", false, div), a[b]c): beforeinput.target should be undefined
 PASS In <input>, execCommand("formatblock", false, div), a[b]c): input.inputType should be undefined
 PASS In <input>, execCommand("formatblock", false, div), a[b]c): input.target should be undefined
-FAIL In <input>, execCommand("heading", false, h1), a[b]c): The command should be supported assert_equals: expected true but got false
+PASS In <input>, execCommand("heading", false, h1), a[b]c): The command should not be supported
 PASS In <input>, execCommand("heading", false, h1), a[b]c): The command should not be enabled
 PASS In <input>, execCommand("styleWithCSS", false, true), a[b]c): The command should be supported
 FAIL In <input>, execCommand("styleWithCSS", false, true), a[b]c): The command should not be enabled assert_equals: expected false but got true
@@ -364,10 +364,10 @@ PASS In <input>, execCommand("styleWithCSS", false, false), a[b]c): input.inputT
 PASS In <input>, execCommand("styleWithCSS", false, false), a[b]c): input.target should be undefined
 PASS In <input>, execCommand("styleWithCSS", false, false), a[b]c): styleWithCSS state should be false when <input> has focus
 PASS In <input>, execCommand("styleWithCSS", false, false), a[b]c): styleWithCSS state should be false when <input> does not have focus
-FAIL In <input>, execCommand("contentReadOnly", false, true), a[b]c): The command should be supported assert_equals: expected true but got false
-FAIL In <input>, execCommand("contentReadOnly", false, true), a[b]c): The command should be enabled assert_equals: expected true but got false
-FAIL In <input>, execCommand("contentReadOnly", false, false), a[b]c): The command should be supported assert_equals: expected true but got false
-FAIL In <input>, execCommand("contentReadOnly", false, false), a[b]c): The command should be enabled assert_equals: expected true but got false
+PASS In <input>, execCommand("contentReadOnly", false, true), a[b]c): The command should not be supported
+PASS In <input>, execCommand("contentReadOnly", false, true), a[b]c): The command should not be enabled
+PASS In <input>, execCommand("contentReadOnly", false, false), a[b]c): The command should not be supported
+PASS In <input>, execCommand("contentReadOnly", false, false), a[b]c): The command should not be enabled
 PASS In <input>, execCommand("defaultParagraphSeparator", false, p), a[b]c): The command should be supported
 FAIL In <input>, execCommand("defaultParagraphSeparator", false, p), a[b]c): The command should not be enabled assert_equals: expected false but got true
 FAIL In <input>, execCommand("defaultParagraphSeparator", false, p), a[b]c): execCommand() should return false assert_equals: expected false but got true
@@ -388,8 +388,8 @@ PASS In <input>, execCommand("defaultParagraphSeparator", false, div), a[b]c): i
 PASS In <input>, execCommand("defaultParagraphSeparator", false, div), a[b]c): input.target should be undefined
 PASS In <input>, execCommand("defaultParagraphSeparator", false, div), a[b]c): defaultParagraphSeparator value should be "div" when <input> has focus
 PASS In <input>, execCommand("defaultParagraphSeparator", false, div), a[b]c): defaultParagraphSeparator value should be "div" when <input> does not have focus
-FAIL In <textarea>, execCommand("getHTML", false, null), a[b]c): The command should be supported assert_equals: expected true but got false
-FAIL In <textarea>, execCommand("getHTML", false, null), a[b]c): The command should be enabled assert_equals: expected true but got false
+PASS In <textarea>, execCommand("getHTML", false, null), a[b]c): The command should not be supported
+PASS In <textarea>, execCommand("getHTML", false, null), a[b]c): The command should not be enabled
 PASS In <textarea>, execCommand("bold", false, bold), a[b]c): The command should be supported
 PASS In <textarea>, execCommand("bold", false, bold), a[b]c): The command should not be enabled
 PASS In <textarea>, execCommand("bold", false, bold), a[b]c): execCommand() should return false
@@ -598,9 +598,9 @@ PASS In <textarea>, execCommand("fontsize", false, 5), a[b]c): beforeinput.input
 PASS In <textarea>, execCommand("fontsize", false, 5), a[b]c): beforeinput.target should be undefined
 PASS In <textarea>, execCommand("fontsize", false, 5), a[b]c): input.inputType should be undefined
 PASS In <textarea>, execCommand("fontsize", false, 5), a[b]c): input.target should be undefined
-FAIL In <textarea>, execCommand("increasefontsize", false, null), a[b]c): The command should be supported assert_equals: expected true but got false
+PASS In <textarea>, execCommand("increasefontsize", false, null), a[b]c): The command should not be supported
 PASS In <textarea>, execCommand("increasefontsize", false, null), a[b]c): The command should not be enabled
-FAIL In <textarea>, execCommand("decreasefontsize", false, null), a[b]c): The command should be supported assert_equals: expected true but got false
+PASS In <textarea>, execCommand("decreasefontsize", false, null), a[b]c): The command should not be supported
 PASS In <textarea>, execCommand("decreasefontsize", false, null), a[b]c): The command should not be enabled
 PASS In <textarea>, execCommand("inserthorizontalrule", false, null), a[b]c): The command should be supported
 PASS In <textarea>, execCommand("inserthorizontalrule", false, null), a[b]c): The command should not be enabled
@@ -732,7 +732,7 @@ PASS In <textarea>, execCommand("formatblock", false, div), a[b]c): beforeinput.
 PASS In <textarea>, execCommand("formatblock", false, div), a[b]c): beforeinput.target should be undefined
 PASS In <textarea>, execCommand("formatblock", false, div), a[b]c): input.inputType should be undefined
 PASS In <textarea>, execCommand("formatblock", false, div), a[b]c): input.target should be undefined
-FAIL In <textarea>, execCommand("heading", false, h1), a[b]c): The command should be supported assert_equals: expected true but got false
+PASS In <textarea>, execCommand("heading", false, h1), a[b]c): The command should not be supported
 PASS In <textarea>, execCommand("heading", false, h1), a[b]c): The command should not be enabled
 PASS In <textarea>, execCommand("styleWithCSS", false, true), a[b]c): The command should be supported
 FAIL In <textarea>, execCommand("styleWithCSS", false, true), a[b]c): The command should not be enabled assert_equals: expected false but got true
@@ -754,10 +754,10 @@ PASS In <textarea>, execCommand("styleWithCSS", false, false), a[b]c): input.inp
 PASS In <textarea>, execCommand("styleWithCSS", false, false), a[b]c): input.target should be undefined
 PASS In <textarea>, execCommand("styleWithCSS", false, false), a[b]c): styleWithCSS state should be false when <textarea> has focus
 PASS In <textarea>, execCommand("styleWithCSS", false, false), a[b]c): styleWithCSS state should be false when <textarea> does not have focus
-FAIL In <textarea>, execCommand("contentReadOnly", false, true), a[b]c): The command should be supported assert_equals: expected true but got false
-FAIL In <textarea>, execCommand("contentReadOnly", false, true), a[b]c): The command should be enabled assert_equals: expected true but got false
-FAIL In <textarea>, execCommand("contentReadOnly", false, false), a[b]c): The command should be supported assert_equals: expected true but got false
-FAIL In <textarea>, execCommand("contentReadOnly", false, false), a[b]c): The command should be enabled assert_equals: expected true but got false
+PASS In <textarea>, execCommand("contentReadOnly", false, true), a[b]c): The command should not be supported
+PASS In <textarea>, execCommand("contentReadOnly", false, true), a[b]c): The command should not be enabled
+PASS In <textarea>, execCommand("contentReadOnly", false, false), a[b]c): The command should not be supported
+PASS In <textarea>, execCommand("contentReadOnly", false, false), a[b]c): The command should not be enabled
 PASS In <textarea>, execCommand("defaultParagraphSeparator", false, p), a[b]c): The command should be supported
 FAIL In <textarea>, execCommand("defaultParagraphSeparator", false, p), a[b]c): The command should not be enabled assert_equals: expected false but got true
 FAIL In <textarea>, execCommand("defaultParagraphSeparator", false, p), a[b]c): execCommand() should return false assert_equals: expected false but got true
@@ -778,8 +778,8 @@ PASS In <textarea>, execCommand("defaultParagraphSeparator", false, div), a[b]c)
 PASS In <textarea>, execCommand("defaultParagraphSeparator", false, div), a[b]c): input.target should be undefined
 PASS In <textarea>, execCommand("defaultParagraphSeparator", false, div), a[b]c): defaultParagraphSeparator value should be "div" when <textarea> has focus
 PASS In <textarea>, execCommand("defaultParagraphSeparator", false, div), a[b]c): defaultParagraphSeparator value should be "div" when <textarea> does not have focus
-FAIL In <input> in contenteditable, execCommand("getHTML", false, null), a[b]c): The command should be supported assert_equals: expected true but got false
-FAIL In <input> in contenteditable, execCommand("getHTML", false, null), a[b]c): The command should be enabled assert_equals: expected true but got false
+PASS In <input> in contenteditable, execCommand("getHTML", false, null), a[b]c): The command should not be supported
+PASS In <input> in contenteditable, execCommand("getHTML", false, null), a[b]c): The command should not be enabled
 PASS In <input> in contenteditable, execCommand("bold", false, bold), a[b]c): The command should be supported
 PASS In <input> in contenteditable, execCommand("bold", false, bold), a[b]c): The command should not be enabled
 PASS In <input> in contenteditable, execCommand("bold", false, bold), a[b]c): execCommand() should return false
@@ -988,9 +988,9 @@ PASS In <input> in contenteditable, execCommand("fontsize", false, 5), a[b]c): b
 PASS In <input> in contenteditable, execCommand("fontsize", false, 5), a[b]c): beforeinput.target should be undefined
 PASS In <input> in contenteditable, execCommand("fontsize", false, 5), a[b]c): input.inputType should be undefined
 PASS In <input> in contenteditable, execCommand("fontsize", false, 5), a[b]c): input.target should be undefined
-FAIL In <input> in contenteditable, execCommand("increasefontsize", false, null), a[b]c): The command should be supported assert_equals: expected true but got false
+PASS In <input> in contenteditable, execCommand("increasefontsize", false, null), a[b]c): The command should not be supported
 PASS In <input> in contenteditable, execCommand("increasefontsize", false, null), a[b]c): The command should not be enabled
-FAIL In <input> in contenteditable, execCommand("decreasefontsize", false, null), a[b]c): The command should be supported assert_equals: expected true but got false
+PASS In <input> in contenteditable, execCommand("decreasefontsize", false, null), a[b]c): The command should not be supported
 PASS In <input> in contenteditable, execCommand("decreasefontsize", false, null), a[b]c): The command should not be enabled
 PASS In <input> in contenteditable, execCommand("inserthorizontalrule", false, null), a[b]c): The command should be supported
 PASS In <input> in contenteditable, execCommand("inserthorizontalrule", false, null), a[b]c): The command should not be enabled
@@ -1120,7 +1120,7 @@ PASS In <input> in contenteditable, execCommand("formatblock", false, div), a[b]
 PASS In <input> in contenteditable, execCommand("formatblock", false, div), a[b]c): beforeinput.target should be undefined
 PASS In <input> in contenteditable, execCommand("formatblock", false, div), a[b]c): input.inputType should be undefined
 PASS In <input> in contenteditable, execCommand("formatblock", false, div), a[b]c): input.target should be undefined
-FAIL In <input> in contenteditable, execCommand("heading", false, h1), a[b]c): The command should be supported assert_equals: expected true but got false
+PASS In <input> in contenteditable, execCommand("heading", false, h1), a[b]c): The command should not be supported
 PASS In <input> in contenteditable, execCommand("heading", false, h1), a[b]c): The command should not be enabled
 PASS In <input> in contenteditable, execCommand("styleWithCSS", false, true), a[b]c): The command should be supported
 PASS In <input> in contenteditable, execCommand("styleWithCSS", false, true), a[b]c): The command should be enabled
@@ -1142,10 +1142,10 @@ PASS In <input> in contenteditable, execCommand("styleWithCSS", false, false), a
 PASS In <input> in contenteditable, execCommand("styleWithCSS", false, false), a[b]c): input.target should be undefined
 PASS In <input> in contenteditable, execCommand("styleWithCSS", false, false), a[b]c): styleWithCSS state should be false when <input> has focus
 PASS In <input> in contenteditable, execCommand("styleWithCSS", false, false), a[b]c): styleWithCSS state should be false when <input> does not have focus
-FAIL In <input> in contenteditable, execCommand("contentReadOnly", false, true), a[b]c): The command should be supported assert_equals: expected true but got false
-FAIL In <input> in contenteditable, execCommand("contentReadOnly", false, true), a[b]c): The command should be enabled assert_equals: expected true but got false
-FAIL In <input> in contenteditable, execCommand("contentReadOnly", false, false), a[b]c): The command should be supported assert_equals: expected true but got false
-FAIL In <input> in contenteditable, execCommand("contentReadOnly", false, false), a[b]c): The command should be enabled assert_equals: expected true but got false
+PASS In <input> in contenteditable, execCommand("contentReadOnly", false, true), a[b]c): The command should not be supported
+PASS In <input> in contenteditable, execCommand("contentReadOnly", false, true), a[b]c): The command should not be enabled
+PASS In <input> in contenteditable, execCommand("contentReadOnly", false, false), a[b]c): The command should not be supported
+PASS In <input> in contenteditable, execCommand("contentReadOnly", false, false), a[b]c): The command should not be enabled
 PASS In <input> in contenteditable, execCommand("defaultParagraphSeparator", false, p), a[b]c): The command should be supported
 PASS In <input> in contenteditable, execCommand("defaultParagraphSeparator", false, p), a[b]c): The command should be enabled
 PASS In <input> in contenteditable, execCommand("defaultParagraphSeparator", false, p), a[b]c): execCommand() should return true
@@ -1166,8 +1166,8 @@ PASS In <input> in contenteditable, execCommand("defaultParagraphSeparator", fal
 PASS In <input> in contenteditable, execCommand("defaultParagraphSeparator", false, div), a[b]c): input.target should be undefined
 PASS In <input> in contenteditable, execCommand("defaultParagraphSeparator", false, div), a[b]c): defaultParagraphSeparator value should be "div" when <input> has focus
 PASS In <input> in contenteditable, execCommand("defaultParagraphSeparator", false, div), a[b]c): defaultParagraphSeparator value should be "div" when <input> does not have focus
-FAIL In <textarea> in contenteditable, execCommand("getHTML", false, null), a[b]c): The command should be supported assert_equals: expected true but got false
-FAIL In <textarea> in contenteditable, execCommand("getHTML", false, null), a[b]c): The command should be enabled assert_equals: expected true but got false
+PASS In <textarea> in contenteditable, execCommand("getHTML", false, null), a[b]c): The command should not be supported
+PASS In <textarea> in contenteditable, execCommand("getHTML", false, null), a[b]c): The command should not be enabled
 PASS In <textarea> in contenteditable, execCommand("bold", false, bold), a[b]c): The command should be supported
 PASS In <textarea> in contenteditable, execCommand("bold", false, bold), a[b]c): The command should not be enabled
 PASS In <textarea> in contenteditable, execCommand("bold", false, bold), a[b]c): execCommand() should return false
@@ -1376,9 +1376,9 @@ PASS In <textarea> in contenteditable, execCommand("fontsize", false, 5), a[b]c)
 PASS In <textarea> in contenteditable, execCommand("fontsize", false, 5), a[b]c): beforeinput.target should be undefined
 PASS In <textarea> in contenteditable, execCommand("fontsize", false, 5), a[b]c): input.inputType should be undefined
 PASS In <textarea> in contenteditable, execCommand("fontsize", false, 5), a[b]c): input.target should be undefined
-FAIL In <textarea> in contenteditable, execCommand("increasefontsize", false, null), a[b]c): The command should be supported assert_equals: expected true but got false
+PASS In <textarea> in contenteditable, execCommand("increasefontsize", false, null), a[b]c): The command should not be supported
 PASS In <textarea> in contenteditable, execCommand("increasefontsize", false, null), a[b]c): The command should not be enabled
-FAIL In <textarea> in contenteditable, execCommand("decreasefontsize", false, null), a[b]c): The command should be supported assert_equals: expected true but got false
+PASS In <textarea> in contenteditable, execCommand("decreasefontsize", false, null), a[b]c): The command should not be supported
 PASS In <textarea> in contenteditable, execCommand("decreasefontsize", false, null), a[b]c): The command should not be enabled
 PASS In <textarea> in contenteditable, execCommand("inserthorizontalrule", false, null), a[b]c): The command should be supported
 PASS In <textarea> in contenteditable, execCommand("inserthorizontalrule", false, null), a[b]c): The command should not be enabled
@@ -1510,7 +1510,7 @@ PASS In <textarea> in contenteditable, execCommand("formatblock", false, div), a
 PASS In <textarea> in contenteditable, execCommand("formatblock", false, div), a[b]c): beforeinput.target should be undefined
 PASS In <textarea> in contenteditable, execCommand("formatblock", false, div), a[b]c): input.inputType should be undefined
 PASS In <textarea> in contenteditable, execCommand("formatblock", false, div), a[b]c): input.target should be undefined
-FAIL In <textarea> in contenteditable, execCommand("heading", false, h1), a[b]c): The command should be supported assert_equals: expected true but got false
+PASS In <textarea> in contenteditable, execCommand("heading", false, h1), a[b]c): The command should not be supported
 PASS In <textarea> in contenteditable, execCommand("heading", false, h1), a[b]c): The command should not be enabled
 PASS In <textarea> in contenteditable, execCommand("styleWithCSS", false, true), a[b]c): The command should be supported
 PASS In <textarea> in contenteditable, execCommand("styleWithCSS", false, true), a[b]c): The command should be enabled
@@ -1532,10 +1532,10 @@ PASS In <textarea> in contenteditable, execCommand("styleWithCSS", false, false)
 PASS In <textarea> in contenteditable, execCommand("styleWithCSS", false, false), a[b]c): input.target should be undefined
 PASS In <textarea> in contenteditable, execCommand("styleWithCSS", false, false), a[b]c): styleWithCSS state should be false when <textarea> has focus
 PASS In <textarea> in contenteditable, execCommand("styleWithCSS", false, false), a[b]c): styleWithCSS state should be false when <textarea> does not have focus
-FAIL In <textarea> in contenteditable, execCommand("contentReadOnly", false, true), a[b]c): The command should be supported assert_equals: expected true but got false
-FAIL In <textarea> in contenteditable, execCommand("contentReadOnly", false, true), a[b]c): The command should be enabled assert_equals: expected true but got false
-FAIL In <textarea> in contenteditable, execCommand("contentReadOnly", false, false), a[b]c): The command should be supported assert_equals: expected true but got false
-FAIL In <textarea> in contenteditable, execCommand("contentReadOnly", false, false), a[b]c): The command should be enabled assert_equals: expected true but got false
+PASS In <textarea> in contenteditable, execCommand("contentReadOnly", false, true), a[b]c): The command should not be supported
+PASS In <textarea> in contenteditable, execCommand("contentReadOnly", false, true), a[b]c): The command should not be enabled
+PASS In <textarea> in contenteditable, execCommand("contentReadOnly", false, false), a[b]c): The command should not be supported
+PASS In <textarea> in contenteditable, execCommand("contentReadOnly", false, false), a[b]c): The command should not be enabled
 PASS In <textarea> in contenteditable, execCommand("defaultParagraphSeparator", false, p), a[b]c): The command should be supported
 PASS In <textarea> in contenteditable, execCommand("defaultParagraphSeparator", false, p), a[b]c): The command should be enabled
 PASS In <textarea> in contenteditable, execCommand("defaultParagraphSeparator", false, p), a[b]c): execCommand() should return true

@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -24,8 +23,7 @@
 #include "components/rlz/rlz_tracker.h"
 #endif
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kTestBrand[] = "TEST";
@@ -46,6 +44,10 @@ class LoginUtilsTest : public LoginManagerTest {
     scoped_fake_statistics_provider_.SetMachineStatistic(
         system::kRlzBrandCodeKey, kTestBrand);
   }
+
+  LoginUtilsTest(const LoginUtilsTest&) = delete;
+  LoginUtilsTest& operator=(const LoginUtilsTest&) = delete;
+
   ~LoginUtilsTest() override = default;
 
   PrefService* local_state() { return g_browser_process->local_state(); }
@@ -54,8 +56,6 @@ class LoginUtilsTest : public LoginManagerTest {
 
  private:
   system::ScopedFakeStatisticsProvider scoped_fake_statistics_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginUtilsTest);
 };
 
 #if BUILDFLAG(ENABLE_RLZ)
@@ -67,8 +67,8 @@ IN_PROC_BROWSER_TEST_F(LoginUtilsTest, RlzInitialized) {
   {
     base::RunLoop loop;
     WizardController::SkipPostLoginScreensForTesting();
-    EXPECT_FALSE(ash::UserSessionInitializer::Get()->get_inited_for_testing());
-    ash::UserSessionInitializer::Get()->set_init_rlz_impl_closure_for_testing(
+    EXPECT_FALSE(UserSessionInitializer::Get()->get_inited_for_testing());
+    UserSessionInitializer::Get()->set_init_rlz_impl_closure_for_testing(
         loop.QuitClosure());
 
     login_manager_.LoginAsNewRegularUser();
@@ -97,4 +97,4 @@ IN_PROC_BROWSER_TEST_F(LoginUtilsTest, RlzInitialized) {
 }
 #endif
 
-}  // namespace chromeos
+}  // namespace ash

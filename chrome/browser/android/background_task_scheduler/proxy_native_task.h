@@ -17,6 +17,10 @@ class ProxyNativeTask {
       std::unique_ptr<background_task::BackgroundTask> background_task,
       const background_task::TaskParameters& task_params,
       background_task::TaskFinishedCallback finish_callback);
+
+  ProxyNativeTask(const ProxyNativeTask&) = delete;
+  ProxyNativeTask& operator=(const ProxyNativeTask&) = delete;
+
   ~ProxyNativeTask();
 
   void StartBackgroundTaskInReducedMode(JNIEnv* env,
@@ -41,8 +45,6 @@ class ProxyNativeTask {
   std::unique_ptr<background_task::BackgroundTask> background_task_;
   background_task::TaskParameters task_params_;
   background_task::TaskFinishedCallback finish_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyNativeTask);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_BACKGROUND_TASK_SCHEDULER_PROXY_NATIVE_TASK_H_

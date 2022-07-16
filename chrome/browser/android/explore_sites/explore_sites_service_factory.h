@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_EXPLORE_SITES_EXPLORE_SITES_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_EXPLORE_SITES_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "chrome/browser/android/explore_sites/explore_sites_service.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -25,6 +24,10 @@ class ExploreSitesServiceFactory : public BrowserContextKeyedServiceFactory {
   static ExploreSitesService* GetForBrowserContext(
       content::BrowserContext* context);
 
+  ExploreSitesServiceFactory(const ExploreSitesServiceFactory&) = delete;
+  ExploreSitesServiceFactory& operator=(const ExploreSitesServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<ExploreSitesServiceFactory>;
 
@@ -36,8 +39,6 @@ class ExploreSitesServiceFactory : public BrowserContextKeyedServiceFactory {
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesServiceFactory);
 };
 
 }  // namespace explore_sites

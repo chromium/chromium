@@ -42,7 +42,7 @@ const CTRequiredPolicies& GetCTRequiredPolicies() {
       {
           kSymantecRoots, kSymantecRootsLength,
           // 1 June 2016, 00:00:00 GMT.
-          base::TimeDelta::FromSeconds(1464739200),
+          base::Seconds(1464739200),
           kSymantecExceptions, kSymantecExceptionsLength,
       },
       {

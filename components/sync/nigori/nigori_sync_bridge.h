@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/model_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -22,6 +21,9 @@ struct EntityData;
 class NigoriSyncBridge {
  public:
   NigoriSyncBridge() = default;
+
+  NigoriSyncBridge(const NigoriSyncBridge&) = delete;
+  NigoriSyncBridge& operator=(const NigoriSyncBridge&) = delete;
 
   virtual ~NigoriSyncBridge() = default;
 
@@ -39,9 +41,6 @@ class NigoriSyncBridge {
   // Informs the bridge that sync has been disabed. The bridge is responsible
   // for deleting all data and metadata upon disabling sync.
   virtual void ApplyDisableSyncChanges() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NigoriSyncBridge);
 };
 
 }  // namespace syncer

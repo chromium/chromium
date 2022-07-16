@@ -39,7 +39,7 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
  public:
   PictureLayerImplPerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
   PictureLayerImplPerfTest(const PictureLayerImplPerfTest&) = delete;
@@ -98,7 +98,7 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
         ->property_trees()
         ->scroll_tree.UpdateScrollOffsetBaseForTesting(
             pending_layer_->element_id(),
-            gfx::ScrollOffset(viewport.x(), viewport.y()));
+            gfx::Vector2dF(viewport.x(), viewport.y()));
     host_impl()->pending_tree()->UpdateDrawProperties();
 
     timer_.Reset();
@@ -146,7 +146,7 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
         ->property_trees()
         ->scroll_tree.UpdateScrollOffsetBaseForTesting(
             pending_layer_->element_id(),
-            gfx::ScrollOffset(viewport.x(), viewport.y()));
+            gfx::Vector2dF(viewport.x(), viewport.y()));
     host_impl()->pending_tree()->UpdateDrawProperties();
 
     timer_.Reset();

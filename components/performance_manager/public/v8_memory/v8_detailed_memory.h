@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -100,7 +100,7 @@ namespace v8_memory {
 //       // Creating a V8DetailedMemoryRequest with the |graph| parameter
 //       // automatically starts measurements.
 //       request_ = std::make_unique<V8DetailedMemoryRequest>(
-//           base::TimeDelta::FromSeconds(30), graph);
+//           base::Seconds(30), graph);
 //       observer_ = std::make_unique<Observer>();
 //       request_->AddObserver(observer_.get());
 //     }

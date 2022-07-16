@@ -103,7 +103,7 @@ class IndexedDBTestTransaction : public IndexedDBTransaction {
   // Browser tests run under memory/address sanitizers (etc) may trip the
   // default 60s timeout, so relax it during tests.
   base::TimeDelta GetInactivityTimeout() const override {
-    return base::TimeDelta::FromSeconds(60 * 60);
+    return base::Seconds(60 * 60);
   }
 };
 

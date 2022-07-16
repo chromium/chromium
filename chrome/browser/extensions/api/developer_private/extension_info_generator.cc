@@ -14,8 +14,8 @@
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
@@ -552,10 +552,10 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
             ->GetDependentExtensions(&extension);
     for (const scoped_refptr<const Extension>& dependent :
              *dependent_extensions) {
-      developer::DependentExtension extension;
-      extension.id = dependent->id();
-      extension.name = dependent->name();
-      info->dependent_extensions.push_back(std::move(extension));
+      developer::DependentExtension dependent_extension;
+      dependent_extension.id = dependent->id();
+      dependent_extension.name = dependent->name();
+      info->dependent_extensions.push_back(std::move(dependent_extension));
     }
   }
 

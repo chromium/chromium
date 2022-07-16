@@ -28,6 +28,10 @@ namespace synced_sessions {
 // Data holder that contains the data of the distant tabs to show in the UI.
 struct DistantTab {
   DistantTab();
+
+  DistantTab(const DistantTab&) = delete;
+  DistantTab& operator=(const DistantTab&) = delete;
+
   // Uniquely identifies the distant session this DistantTab belongs to.
   std::string session_tag;
   // Uniquely identifies this tab in its distant session.
@@ -40,8 +44,6 @@ struct DistantTab {
   // By design, two tabs in the same distant session can have the same
   // |hashOfUserVisibleProperties|.
   size_t hashOfUserVisibleProperties();
-
-  DISALLOW_COPY_AND_ASSIGN(DistantTab);
 };
 
 // Data holder that contains the data of the distant sessions and their tabs to
@@ -54,16 +56,21 @@ class DistantSession {
   // |sync_service|. |sync_service| must not be null.
   DistantSession(sync_sessions::SessionSyncService* sync_service,
                  const std::string& tag);
+
+  DistantSession(const DistantSession&) = delete;
+  DistantSession& operator=(const DistantSession&) = delete;
+
   ~DistantSession();
-  void InitWithSyncedSession(const sync_sessions::SyncedSession* synced_session,
-                             sync_sessions::OpenTabsUIDelegate* open_tabs);
+
+  void InitWithSyncedSession(
+      const sync_sessions::SyncedSession* synced_session,
+      sync_sessions::OpenTabsUIDelegate* open_tabs_delegate);
+
   std::string tag;
   std::string name;
   base::Time modified_time;
   sync_pb::SyncEnums::DeviceType device_type;
   std::vector<std::unique_ptr<DistantTab>> tabs;
-
-  DISALLOW_COPY_AND_ASSIGN(DistantSession);
 };
 
 // Class containing distant sessions.
@@ -76,6 +83,10 @@ class SyncedSessions {
   explicit SyncedSessions(sync_sessions::SessionSyncService* sync_service);
   SyncedSessions(sync_sessions::SessionSyncService* sync_service,
                  const std::string& tag);
+
+  SyncedSessions(const SyncedSessions&) = delete;
+  SyncedSessions& operator=(const SyncedSessions&) = delete;
+
   ~SyncedSessions();
   DistantSession const* GetSession(size_t index) const;
   DistantSession const* GetSessionWithTag(const std::string& tag) const;
@@ -88,8 +99,6 @@ class SyncedSessions {
 
  private:
   std::vector<std::unique_ptr<const DistantSession>> sessions_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedSessions);
 };
 
 }  // namespace synced_sessions

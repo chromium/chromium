@@ -23,6 +23,10 @@ namespace test {
 class Image {
  public:
   explicit Image(const base::FilePath& file_path);
+
+  Image(const Image&) = delete;
+  Image& operator=(const Image&) = delete;
+
   ~Image();
 
   // Load the image file and accompanying metadata from disk.
@@ -69,8 +73,6 @@ class Image {
   VideoRotation rotation_;
   // The image md5 checksum.
   std::string checksum_;
-
-  DISALLOW_COPY_AND_ASSIGN(Image);
 };
 
 }  // namespace test

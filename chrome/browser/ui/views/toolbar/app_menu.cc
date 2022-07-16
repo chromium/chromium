@@ -12,6 +12,7 @@
 #include <set>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -55,12 +56,14 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -240,25 +243,18 @@ class InMenuButton : public LabelButton {
   // views::LabelButton
   void OnThemeChanged() override {
     LabelButton::OnThemeChanged();
-    ui::NativeTheme* theme = GetNativeTheme();
-    if (theme) {
-      SetTextColor(
-          views::Button::STATE_DISABLED,
-          theme->GetSystemColor(
-              ui::NativeTheme::kColorId_DisabledMenuItemForegroundColor));
-      SetTextColor(
-          views::Button::STATE_HOVERED,
-          theme->GetSystemColor(
-              ui::NativeTheme::kColorId_SelectedMenuItemForegroundColor));
-      SetTextColor(
-          views::Button::STATE_PRESSED,
-          theme->GetSystemColor(
-              ui::NativeTheme::kColorId_SelectedMenuItemForegroundColor));
-      SetTextColor(
-          views::Button::STATE_NORMAL,
-          theme->GetSystemColor(
-              ui::NativeTheme::kColorId_EnabledMenuItemForegroundColor));
-    }
+    const ui::ColorProvider* color_provider = GetColorProvider();
+    SetTextColor(
+        views::Button::STATE_DISABLED,
+        color_provider->GetColor(ui::kColorMenuItemForegroundDisabled));
+    SetTextColor(
+        views::Button::STATE_HOVERED,
+        color_provider->GetColor(ui::kColorMenuItemForegroundSelected));
+    SetTextColor(
+        views::Button::STATE_PRESSED,
+        color_provider->GetColor(ui::kColorMenuItemForegroundSelected));
+    SetTextColor(views::Button::STATE_NORMAL,
+                 color_provider->GetColor(ui::kColorMenuItemForeground));
   }
 };
 
@@ -374,10 +370,8 @@ class FullscreenButton : public ImageButton {
   // Overridden from ImageButton.
   gfx::Size CalculatePreferredSize() const override {
     gfx::Size pref = ImageButton::CalculatePreferredSize();
-    if (border()) {
-      gfx::Insets insets = border()->GetInsets();
-      pref.Enlarge(insets.width(), insets.height());
-    }
+    const gfx::Insets insets = GetInsets();
+    pref.Enlarge(insets.width(), insets.height());
     return pref;
   }
 
@@ -581,20 +575,18 @@ class AppMenu::ZoomView : public AppMenuView {
   void OnThemeChanged() override {
     AppMenuView::OnThemeChanged();
 
-    ui::NativeTheme* theme = GetNativeTheme();
-    zoom_label_->SetEnabledColor(theme->GetSystemColor(
-        ui::NativeTheme::kColorId_EnabledMenuItemForegroundColor));
+    const ui::ColorProvider* color_provider = GetColorProvider();
+    zoom_label_->SetEnabledColor(
+        color_provider->GetColor(ui::kColorMenuItemForeground));
 
     fullscreen_button_->SetImage(
         ImageButton::STATE_NORMAL,
         gfx::CreateVectorIcon(
             kFullscreenIcon,
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_EnabledMenuItemForegroundColor)));
+            color_provider->GetColor(ui::kColorMenuItemForeground)));
     gfx::ImageSkia hovered_fullscreen_image = gfx::CreateVectorIcon(
         kFullscreenIcon,
-        theme->GetSystemColor(
-            ui::NativeTheme::kColorId_SelectedMenuItemForegroundColor));
+        color_provider->GetColor(ui::kColorMenuItemForegroundSelected));
     fullscreen_button_->SetImage(ImageButton::STATE_HOVERED,
                                  hovered_fullscreen_image);
     fullscreen_button_->SetImage(ImageButton::STATE_PRESSED,
@@ -637,9 +629,7 @@ class AppMenu::ZoomView : public AppMenuView {
   int GetZoomLabelMaxWidth() const {
     if (!zoom_label_max_width_valid_) {
       const gfx::FontList& font_list = zoom_label_->font_list();
-      int border_width = zoom_label_->border()
-                             ? zoom_label_->border()->GetInsets().width()
-                             : 0;
+      const int border_width = zoom_label_->GetInsets().width();
 
       int max_w = 0;
 
@@ -866,11 +856,15 @@ const gfx::FontList* AppMenu::GetLabelFontList(int command_id) const {
 absl::optional<SkColor> AppMenu::GetLabelColor(int command_id) const {
   // Only return a color if there's a font list - otherwise this method will
   // return a color for every recent tab item, not just the header.
-  // TODO(ellyjones): Use CONTEXT_MENU instead of CONTEXT_LABEL.
+  // Ensure that we call GetColor() using the `root_`'s SubmenuView as this is
+  // the content view for the menu's widget. The root MenuItemView itself is not
+  // a member of a Widget hierarchy and thus does not have the necessary context
+  // to correctly determine the label color as this requires querying the View's
+  // hosting widget (crbug.com/1233392).
   return GetLabelFontList(command_id)
-             ? absl::optional<SkColor>(
-                   views::style::GetColor(*root_, views::style::CONTEXT_LABEL,
-                                          views::style::STYLE_PRIMARY))
+             ? absl::optional<SkColor>(views::style::GetColor(
+                   *root_->GetSubmenu(), views::style::CONTEXT_MENU,
+                   views::style::STYLE_PRIMARY))
              : absl::nullopt;
 }
 
@@ -921,10 +915,20 @@ ui::mojom::DragOperation AppMenu::OnPerformDrop(
     MenuItemView* menu,
     DropPosition position,
     const ui::DropTargetEvent& event) {
-  if (!IsBookmarkCommand(menu->GetCommand()))
-    return ui::mojom::DragOperation::kNone;
+  auto drop_cb = GetDropCallback(menu, position, event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, output_drag_op);
+  return output_drag_op;
+}
 
-  return bookmark_menu_delegate_->OnPerformDrop(menu, position, event);
+views::View::DropCallback AppMenu::GetDropCallback(
+    views::MenuItemView* menu,
+    DropPosition position,
+    const ui::DropTargetEvent& event) {
+  if (!IsBookmarkCommand(menu->GetCommand()))
+    return base::DoNothing();
+
+  return bookmark_menu_delegate_->GetDropCallback(menu, position, event);
 }
 
 bool AppMenu::ShowContextMenu(MenuItemView* source,
@@ -980,11 +984,8 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
   if (command_id == IDC_MORE_TOOLS_MENU)
     return true;
 
-  if (command_id == IDC_SHARING_HUB_MENU) {
-    DCHECK(
-        base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopAppMenu));
+  if (command_id == IDC_SHARING_HUB_MENU)
     return true;
-  }
 
   // The items representing the cut menu (cut/copy/paste), zoom menu
   // (increment/decrement/reset) and extension toolbar view are always enabled.

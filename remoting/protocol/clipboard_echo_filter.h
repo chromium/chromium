@@ -20,6 +20,10 @@ namespace protocol {
 class ClipboardEchoFilter {
  public:
   ClipboardEchoFilter();
+
+  ClipboardEchoFilter(const ClipboardEchoFilter&) = delete;
+  ClipboardEchoFilter& operator=(const ClipboardEchoFilter&) = delete;
+
   ~ClipboardEchoFilter();
 
   // Sets the ClipboardStub that sends events to the client.
@@ -66,8 +70,6 @@ class ClipboardEchoFilter {
   // The latest item received from the client.
   std::string client_latest_mime_type_;
   std::string client_latest_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardEchoFilter);
 };
 
 }  // namespace protocol

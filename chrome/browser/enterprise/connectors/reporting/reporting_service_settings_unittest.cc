@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -79,7 +80,7 @@ class ReportingServiceSettingsTest : public testing::TestWithParam<TestParam> {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // This is necessary so the URL flag code works on CrOS. If it's absent, a
   // CrOS DCHECK fails when trying to access the
-  // BrowserPolicyConnectorChromeOS as it is not completely initialized.
+  // BrowserPolicyConnectorAsh as it is not completely initialized.
   ash::ScopedCrosSettingsTestHelper cros_settings_;
 #endif
 };

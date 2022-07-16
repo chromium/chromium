@@ -13,6 +13,7 @@
 #include "content/public/common/content_switches.h"
 
 #include "content/public/android/content_jni_headers/SmsProviderGms_jni.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
@@ -57,6 +58,15 @@ SmsProviderGms::~SmsProviderGms() {
 
 void SmsProviderGms::Retrieve(RenderFrameHost* render_frame_host,
                               SmsFetchType fetch_type) {
+  // This function cannot get called during prerendering because
+  // SmsFetcherImpl::Subscribe calls this, and that is deferred during
+  // prerendering by MojoBinderPolicyApplier. This DCHECK proves we don't have
+  // to worry about prerendering when using WebContents::FromRenderFrameHost()
+  // below (see function comments for WebContents::FromRenderFrameHost() for
+  // more details).
+  DCHECK(!render_frame_host ||
+         (render_frame_host->GetLifecycleState() !=
+          RenderFrameHost::LifecycleState::kPrerendering));
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(render_frame_host);
   base::android::ScopedJavaLocalRef<jobject> j_window = nullptr;

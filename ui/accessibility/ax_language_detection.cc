@@ -264,7 +264,7 @@ void AXLanguageDetectionManager::DetectLanguagesForSubtree(
   //
   // Since kInlineTextBox(es) contain text from their parent, any detection on
   // them is redundant. Instead they can inherit the detected language.
-  if (subtree_root->data().role == ax::mojom::Role::kStaticText) {
+  if (subtree_root->GetRole() == ax::mojom::Role::kStaticText) {
     DetectLanguagesForNode(subtree_root);
   } else {
     // Otherwise, recurse into children for detection.
@@ -508,13 +508,13 @@ void AXLanguageDetectionObserver::OnAtomicUpdateFinished(
   // are later used by Label in order to make more accurate decisions.
 
   for (auto& change : changes) {
-    if (change.node->data().role == ax::mojom::Role::kStaticText) {
+    if (change.node->GetRole() == ax::mojom::Role::kStaticText) {
       tree->language_detection_manager->DetectLanguagesForNode(change.node);
     }
   }
 
   for (auto& change : changes) {
-    if (change.node->data().role == ax::mojom::Role::kStaticText) {
+    if (change.node->GetRole() == ax::mojom::Role::kStaticText) {
       tree->language_detection_manager->LabelLanguagesForNode(change.node);
     }
   }

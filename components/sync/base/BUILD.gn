@@ -72,8 +72,8 @@ static_library("base") {
     "//third_party/metrics_proto",
   ]
   deps = [
+    "//base",
     "//base:i18n",
-    "//base/util/enum_set",
     "//build:chromeos_buildflags",
     "//components/pref_registry",
     "//components/prefs",

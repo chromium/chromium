@@ -23,6 +23,10 @@ namespace content {
 class TestViewAndroidDelegate {
  public:
   TestViewAndroidDelegate();
+
+  TestViewAndroidDelegate(const TestViewAndroidDelegate&) = delete;
+  TestViewAndroidDelegate& operator=(const TestViewAndroidDelegate&) = delete;
+
   ~TestViewAndroidDelegate();
   // Sets up the test delegate.
   // |view_android| is the ViewAndroid to use.
@@ -36,8 +40,6 @@ class TestViewAndroidDelegate {
 
  private:
   base::android::ScopedJavaLocalRef<jobject> j_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestViewAndroidDelegate);
 };
 
 }  // namespace content

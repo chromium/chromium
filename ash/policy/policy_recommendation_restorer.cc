@@ -19,8 +19,7 @@ namespace ash {
 namespace {
 
 // The amount of idle time after which recommended values are restored.
-constexpr base::TimeDelta kRestoreDelayInMinutes =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kRestoreDelayInMinutes = base::Minutes(1);
 
 }  // namespace
 

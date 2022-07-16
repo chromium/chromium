@@ -10,13 +10,13 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
-
 namespace ui {
 
 const char kEnrollmentStepSignin[] = "signin";
 const char kEnrollmentStepWorking[] = "working";
+const char kEnrollmentStepTPMChecking[] = "tpm-checking";
 const char kEnrollmentStepSuccess[] = "success";
 const char kEnrollmentStepDeviceAttributes[] = "attribute-prompt";
 const char kEnrollmentStepADJoin[] = "ad-join";
@@ -38,26 +38,24 @@ namespace {
 const char kEnrollmentUI[] = "enterprise-enrollment";
 
 const char* const kAllSteps[] = {
-    ui::kEnrollmentStepSignin,           ui::kEnrollmentStepWorking,
-    ui::kEnrollmentStepDeviceAttributes, ui::kEnrollmentStepSuccess,
-    ui::kEnrollmentStepADJoin,           ui::kEnrollmentStepError};
+    ui::kEnrollmentStepSignin,      ui::kEnrollmentStepWorking,
+    ui::kEnrollmentStepTPMChecking, ui::kEnrollmentStepDeviceAttributes,
+    ui::kEnrollmentStepSuccess,     ui::kEnrollmentStepADJoin,
+    ui::kEnrollmentStepError};
 
 std::string StepElementID(const std::string& step) {
   return "step-" + step;
 }
 
-const test::UIPath kEnrollmentErrorMsg = {kEnrollmentUI, "errorMsg"};
-const test::UIPath kEnrollmentErrorButtonPath = {kEnrollmentUI,
-                                                 "errorRetryButton"};
-const test::UIPath kEnrollmentSuccessButtonPath = {kEnrollmentUI,
-                                                   "successDoneButton"};
-const test::UIPath kEnrollmentAttributeErrorButtonPath = {
-    kEnrollmentUI, "attributeErrorButton"};
-const test::UIPath kEnrollmentAssetId = {kEnrollmentUI, "assetId"};
-const test::UIPath kEnrollmentLocation = {kEnrollmentUI, "location"};
-const test::UIPath kEnrollmentAttributesSubmit = {kEnrollmentUI,
-                                                  "attributesSubmit"};
-
+const UIPath kEnrollmentErrorMsg = {kEnrollmentUI, "errorMsg"};
+const UIPath kEnrollmentErrorButtonPath = {kEnrollmentUI, "errorRetryButton"};
+const UIPath kEnrollmentSuccessButtonPath = {kEnrollmentUI,
+                                             "successDoneButton"};
+const UIPath kEnrollmentAttributeErrorButtonPath = {kEnrollmentUI,
+                                                    "attributeErrorButton"};
+const UIPath kEnrollmentAssetId = {kEnrollmentUI, "assetId"};
+const UIPath kEnrollmentLocation = {kEnrollmentUI, "location"};
+const UIPath kEnrollmentAttributesSubmit = {kEnrollmentUI, "attributesSubmit"};
 }  // namespace
 
 EnrollmentUIMixin::EnrollmentUIMixin(InProcessBrowserTestMixinHost* host)
@@ -148,4 +146,4 @@ void EnrollmentUIMixin::HandleScreenExit(EnrollmentScreen::Result result) {
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

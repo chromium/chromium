@@ -4,27 +4,26 @@
 
 #include "cc/benchmarks/unittest_only_benchmark.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "cc/benchmarks/unittest_only_benchmark_impl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
-UnittestOnlyBenchmark::UnittestOnlyBenchmark(std::unique_ptr<base::Value> value,
+UnittestOnlyBenchmark::UnittestOnlyBenchmark(base::Value settings,
                                              DoneCallback callback)
     : MicroBenchmark(std::move(callback)), create_impl_benchmark_(false) {
-  if (!value)
+  if (!settings.is_dict())
     return;
 
-  base::DictionaryValue* settings = nullptr;
-  value->GetAsDictionary(&settings);
-  if (!settings)
-    return;
-
-  if (settings->HasKey("run_benchmark_impl"))
-    settings->GetBoolean("run_benchmark_impl", &create_impl_benchmark_);
+  auto run_benchmark_impl = settings.FindBoolKey("run_benchmark_impl");
+  if (run_benchmark_impl.has_value())
+    create_impl_benchmark_ = *run_benchmark_impl;
 }
 
 UnittestOnlyBenchmark::~UnittestOnlyBenchmark() {
@@ -32,23 +31,18 @@ UnittestOnlyBenchmark::~UnittestOnlyBenchmark() {
 }
 
 void UnittestOnlyBenchmark::DidUpdateLayers(LayerTreeHost* layer_tree_host) {
-  NotifyDone(nullptr);
+  NotifyDone(base::Value());
 }
 
-bool UnittestOnlyBenchmark::ProcessMessage(std::unique_ptr<base::Value> value) {
-  base::DictionaryValue* message = nullptr;
-  value->GetAsDictionary(&message);
-  bool can_handle;
-  if (message->HasKey("can_handle")) {
-    message->GetBoolean("can_handle", &can_handle);
-    if (can_handle)
-      return true;
+bool UnittestOnlyBenchmark::ProcessMessage(base::Value message) {
+  auto can_handle = message.FindBoolKey("can_handle");
+  if (can_handle.has_value() && *can_handle) {
+    return true;
   }
   return false;
 }
 
-void UnittestOnlyBenchmark::RecordImplResults(
-    std::unique_ptr<base::Value> results) {
+void UnittestOnlyBenchmark::RecordImplResults(base::Value results) {
   NotifyDone(std::move(results));
 }
 
@@ -58,7 +52,7 @@ std::unique_ptr<MicroBenchmarkImpl> UnittestOnlyBenchmark::CreateBenchmarkImpl(
     return base::WrapUnique<MicroBenchmarkImpl>(nullptr);
 
   return base::WrapUnique(new UnittestOnlyBenchmarkImpl(
-      origin_task_runner, nullptr,
+      origin_task_runner,
       base::BindOnce(&UnittestOnlyBenchmark::RecordImplResults,
                      weak_ptr_factory_.GetWeakPtr())));
 }

@@ -61,7 +61,7 @@ struct OwnedRenderPipelineDescriptor {
   OwnedRenderPipelineDescriptor& operator=(
       OwnedRenderPipelineDescriptor&& desc) = delete;
 
-  WGPURenderPipelineDescriptor2 dawn_desc = {};
+  WGPURenderPipelineDescriptor dawn_desc = {};
   std::string label;
   std::string vertex_entry_point;
   Vector<WGPUVertexBufferLayout> buffers;
@@ -88,10 +88,10 @@ class GPURenderPipeline : public DawnObject<WGPURenderPipeline> {
   explicit GPURenderPipeline(GPUDevice* device,
                              WGPURenderPipeline render_pipeline);
 
-  GPUBindGroupLayout* getBindGroupLayout(uint32_t index);
+  GPURenderPipeline(const GPURenderPipeline&) = delete;
+  GPURenderPipeline& operator=(const GPURenderPipeline&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPURenderPipeline);
+  GPUBindGroupLayout* getBindGroupLayout(uint32_t index);
 };
 
 }  // namespace blink

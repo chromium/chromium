@@ -33,7 +33,7 @@ class ScriptState;
 //
 // Promise-returning DOM operations are required to always return a promise
 // and to never throw an exception.
-// See also http://heycam.github.io/webidl/#es-operations
+// See also https://webidl.spec.whatwg.org/#es-operations
 class CORE_EXPORT ExceptionToRejectPromiseScope final {
   STACK_ALLOCATED();
 
@@ -66,20 +66,6 @@ CORE_EXPORT bool IsCallbackFunctionRunnableIgnoringPause(
     const ScriptState* callback_relevant_script_state,
     const ScriptState* incumbent_script_state);
 
-using InstallTemplateFunction =
-    void (*)(v8::Isolate* isolate,
-             const DOMWrapperWorld& world,
-             v8::Local<v8::FunctionTemplate> interface_template);
-
-using InstallRuntimeEnabledFeaturesFunction =
-    void (*)(v8::Isolate*,
-             const DOMWrapperWorld&,
-             v8::Local<v8::Object> instance_object,
-             v8::Local<v8::Object> prototype_object,
-             v8::Local<v8::Function> interface_object);
-
-using InstallRuntimeEnabledFeaturesOnTemplateFunction = InstallTemplateFunction;
-
 namespace bindings {
 
 CORE_EXPORT void SetupIDLInterfaceTemplate(
@@ -98,6 +84,12 @@ CORE_EXPORT void SetupIDLNamespaceTemplate(
 CORE_EXPORT void SetupIDLCallbackInterfaceTemplate(
     v8::Isolate* isolate,
     const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::FunctionTemplate> interface_template);
+
+CORE_EXPORT void SetupIDLObservableArrayBackingListTemplate(
+    v8::Isolate* isolate,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::ObjectTemplate> instance_template,
     v8::Local<v8::FunctionTemplate> interface_template);
 
 // Returns the length of arguments ignoring the undefined values at the end.

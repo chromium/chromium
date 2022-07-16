@@ -292,8 +292,8 @@ bool SearchTable(const CursorData* table,
   DCHECK_NE(scale_factor, 0);
 
   bool resource_2x_available =
-      ResourceBundle::GetSharedInstance().GetMaxScaleFactor() ==
-      SCALE_FACTOR_200P;
+      ResourceBundle::GetSharedInstance().GetMaxResourceScaleFactor() ==
+      k200Percent;
   for (size_t i = 0; i < table_length; ++i) {
     if (table[i].id == id) {
       *resource_id = table[i].resource_id;

@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/constants/ash_features.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
@@ -138,6 +137,9 @@ class NetworkStateListDetailedView::InfoBubble
     AddChildView(content);
   }
 
+  InfoBubble(const InfoBubble&) = delete;
+  InfoBubble& operator=(const InfoBubble&) = delete;
+
   ~InfoBubble() override {
     // The detailed view can be destructed before info bubble is destructed.
     // Call OnInfoBubbleDestroyed only if the detailed view is live.
@@ -174,8 +176,6 @@ class NetworkStateListDetailedView::InfoBubble
 
   // Not owned.
   NetworkStateListDetailedView* detailed_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBubble);
 };
 
 //------------------------------------------------------------------------------
@@ -184,6 +184,10 @@ class NetworkStateListDetailedView::InfoBubble
 class InfoThrobberLayout : public views::LayoutManager {
  public:
   InfoThrobberLayout() = default;
+
+  InfoThrobberLayout(const InfoThrobberLayout&) = delete;
+  InfoThrobberLayout& operator=(const InfoThrobberLayout&) = delete;
+
   ~InfoThrobberLayout() override = default;
 
   // views::LayoutManager
@@ -219,8 +223,6 @@ class InfoThrobberLayout : public views::LayoutManager {
     }
     return max_size;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(InfoThrobberLayout);
 };
 
 //------------------------------------------------------------------------------
@@ -300,8 +302,6 @@ void NetworkStateListDetailedView::HandleViewClickedImpl(
     // If the network is locked and is cellular show SIM unlock dialog in OS
     // Settings.
     if (network->type == NetworkType::kCellular &&
-        base::FeatureList::IsEnabled(
-            chromeos::features::kUpdatedCellularActivationUi) &&
         network->type_state->get_cellular()->sim_locked) {
       if (!Shell::Get()->session_controller()->ShouldEnableSettings()) {
         return;
@@ -499,7 +499,7 @@ views::View* NetworkStateListDetailedView::CreateNetworkInfoView() {
 void NetworkStateListDetailedView::ScanAndStartTimer() {
   CallRequestScan();
   network_scan_repeating_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kRequestScanDelaySeconds), this,
+      FROM_HERE, base::Seconds(kRequestScanDelaySeconds), this,
       &NetworkStateListDetailedView::CallRequestScan);
 }
 

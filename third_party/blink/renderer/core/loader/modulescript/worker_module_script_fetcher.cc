@@ -115,6 +115,9 @@ void WorkerModuleScriptFetcher::NotifyClient(
     const ResourceResponse& response,
     SingleCachedMetadataHandler* cache_handler) {
   HeapVector<Member<ConsoleMessage>> error_messages;
+
+  const KURL response_url = response.ResponseUrl();
+
   if (level_ == ModuleGraphLevel::kTopLevelModuleFetch) {
     // TODO(nhiroki, hiroshige): Access to WorkerGlobalScope in module loaders
     // is a layering violation. Also, updating WorkerGlobalScope ('module map
@@ -124,7 +127,6 @@ void WorkerModuleScriptFetcher::NotifyClient(
     // (https://crbug.com/845285)
 
     // Ensure redirects don't affect SecurityOrigin.
-    const KURL response_url = response.CurrentRequestUrl();
     DCHECK(fetch_client_settings_object_fetcher_->GetProperties()
                .GetFetchClientSettingsObject()
                .GetSecurityOrigin()
@@ -172,17 +174,15 @@ void WorkerModuleScriptFetcher::NotifyClient(
         response_url, response_referrer_policy, response.AddressSpace(),
         ParseContentSecurityPolicyHeaders(
             ContentSecurityPolicyResponseHeaders(response)),
-        response_origin_trial_tokens.get(), response.AppCacheID());
+        response_origin_trial_tokens.get());
   }
-
 
   // <spec step="12.7">Asynchronously complete the perform the fetch steps with
   // response.</spec>
-  const KURL& url = response.CurrentRequestUrl();
   // Create an external module script where base_url == source_url.
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
   client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
-      /*source_url=*/url, /*base_url=*/url,
+      /*source_url=*/response_url, /*base_url=*/response_url,
       ScriptSourceLocationType::kExternalFile, module_type, source_text,
       cache_handler));
 }
@@ -212,8 +212,7 @@ void WorkerModuleScriptFetcher::OnStartLoadingBody(
     error_messages.push_back(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kError, message,
-        resource_response.CurrentRequestUrl().GetString(), /*loader=*/nullptr,
-        -1));
+        resource_response.ResponseUrl().GetString(), /*loader=*/nullptr, -1));
     worker_main_script_loader_->Cancel();
     client_->NotifyFetchFinishedError(error_messages);
     return;

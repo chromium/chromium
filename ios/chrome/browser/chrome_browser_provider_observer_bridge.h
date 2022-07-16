@@ -27,6 +27,12 @@ class ChromeBrowserProviderObserverBridge
  public:
   explicit ChromeBrowserProviderObserverBridge(
       id<ChromeBrowserProviderObserver> observer);
+
+  ChromeBrowserProviderObserverBridge(
+      const ChromeBrowserProviderObserverBridge&) = delete;
+  ChromeBrowserProviderObserverBridge& operator=(
+      const ChromeBrowserProviderObserverBridge&) = delete;
+
   ~ChromeBrowserProviderObserverBridge() override;
 
  private:
@@ -39,8 +45,6 @@ class ChromeBrowserProviderObserverBridge
   base::ScopedObservation<ios::ChromeBrowserProvider,
                           ios::ChromeBrowserProvider::Observer>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserProviderObserverBridge);
 };
 
 #endif  // IOS_CHROME_BROWSER_CHROME_BROWSER_PROVIDER_OBSERVER_BRIDGE_H_

@@ -440,16 +440,15 @@ TEST_F(FCMNetworkHandlerTest, ShouldScheduleTokenValidationAndActOnNewToken) {
 
   // Adjust timers and check that validation will happen in time.
   // The old token was invalid, so token listener should be informed.
-  const base::TimeDelta time_to_validation = base::TimeDelta::FromHours(24);
-  task_runner->FastForwardBy(time_to_validation -
-                             base::TimeDelta::FromSeconds(1));
+  const base::TimeDelta time_to_validation = base::Hours(24);
+  task_runner->FastForwardBy(time_to_validation - base::Seconds(1));
   // But when it is time, validation happens.
   EXPECT_CALL(*mock_instance_id(), GetToken)
       .WillOnce(WithArg<4>(Invoke([](InstanceID::GetTokenCallback callback) {
         std::move(callback).Run("token_new", InstanceID::Result::SUCCESS);
       })));
   EXPECT_CALL(mock_on_token_callback, Run("token_new")).Times(1);
-  task_runner->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_runner->FastForwardBy(base::Seconds(1));
 }
 
 TEST_F(FCMNetworkHandlerTest,
@@ -473,9 +472,8 @@ TEST_F(FCMNetworkHandlerTest,
 
   // Adjust timers and check that validation will happen in time.
   // The old token is valid, so no token listener should be informed.
-  const base::TimeDelta time_to_validation = base::TimeDelta::FromHours(24);
-  task_runner->FastForwardBy(time_to_validation -
-                             base::TimeDelta::FromSeconds(1));
+  const base::TimeDelta time_to_validation = base::Hours(24);
+  task_runner->FastForwardBy(time_to_validation - base::Seconds(1));
 
   // But when it is time, validation happens.
   EXPECT_CALL(*mock_instance_id(), GetToken)
@@ -483,22 +481,18 @@ TEST_F(FCMNetworkHandlerTest,
         std::move(callback).Run("token", InstanceID::Result::SUCCESS);
       })));
   EXPECT_CALL(mock_on_token_callback, Run).Times(0);
-  task_runner->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_runner->FastForwardBy(base::Seconds(1));
 }
 
 TEST_F(FCMNetworkHandlerTestWithTTL, ShouldProvideTTLWithSyncSenderID) {
-  EXPECT_CALL(
-      *mock_instance_id(),
-      GetToken(_, _, Eq(base::TimeDelta::FromSeconds(kTimeToLiveInSeconds)), _,
-               _));
+  EXPECT_CALL(*mock_instance_id(),
+              GetToken(_, _, Eq(base::Seconds(kTimeToLiveInSeconds)), _, _));
   MakeHandler(/*sender_id=*/"8181035976")->StartListening();
 }
 
 TEST_F(FCMNetworkHandlerTestWithTTL, ShouldProvideTTLWithPolicySenderID) {
-  EXPECT_CALL(
-      *mock_instance_id(),
-      GetToken(_, _, Eq(base::TimeDelta::FromSeconds(kTimeToLiveInSeconds)), _,
-               _));
+  EXPECT_CALL(*mock_instance_id(),
+              GetToken(_, _, Eq(base::Seconds(kTimeToLiveInSeconds)), _, _));
   MakeHandler(/*sender_id=*/"1013309121859")->StartListening();
 }
 

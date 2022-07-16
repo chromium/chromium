@@ -29,7 +29,7 @@ js_library("account_migration_welcome_test") {
 
 js_library("test_account_manager_browser_proxy") {
   deps = [
-    "../..:test_browser_proxy.m",
+    "../..:test_browser_proxy",
     "//chrome/browser/resources/chromeos/account_manager:account_manager_browser_proxy",
   ]
 }

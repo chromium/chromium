@@ -152,7 +152,7 @@ void BlinkLeakDetector::ReportResult() {
       InstanceCounters::CounterValue(InstanceCounters::kResourceFetcherCounter);
 
 #ifndef NDEBUG
-  showLiveDocumentInstances();
+  ShowLiveDocumentInstances();
 #endif
 
   std::move(callback_).Run(std::move(result));

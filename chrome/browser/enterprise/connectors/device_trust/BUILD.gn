@@ -2,40 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/protobuf/proto_library.gni")
+source_set("features") {
+  sources = [ "device_trust_features.cc" ]
 
-proto_library("keystore_proto") {
-  proto_in_dir =
-      "//chrome/browser/enterprise/connectors/device_trust/attestation_protos"
-  proto_out_dir = "chrome/browser/enterprise/connectors/device_trust/"
-  sources = [ "${proto_in_dir}/device_trust_keystore.proto" ]
-  generate_python = false
+  public = [ "device_trust_features.h" ]
+
+  public_deps = [ "//base" ]
 }
 
-proto_library("attestation_ca_proto") {
-  proto_in_dir =
-      "//chrome/browser/enterprise/connectors/device_trust/attestation_protos"
-  proto_out_dir = "chrome/browser/enterprise/connectors/device_trust/"
-  sources = [ "${proto_in_dir}/device_trust_attestation_ca.proto" ]
-  generate_python = false
-}
+source_set("test_support") {
+  testonly = true
+  sources = [ "mock_device_trust_service.cc" ]
 
-proto_library("interface_proto") {
-  proto_in_dir =
-      "//chrome/browser/enterprise/connectors/device_trust/attestation_protos"
-  proto_out_dir = "chrome/browser/enterprise/connectors/device_trust/"
-  sources = [ "${proto_in_dir}/device_trust_interface.proto" ]
-  deps = [
-    ":attestation_ca_proto",
-    ":keystore_proto",
+  public = [ "mock_device_trust_service.h" ]
+
+  public_deps = [
+    "//chrome/browser",
+    "//testing/gmock",
   ]
-  generate_python = false
-}
-
-proto_library("google_key_proto") {
-  proto_in_dir =
-      "//chrome/browser/enterprise/connectors/device_trust/attestation_protos"
-  proto_out_dir = "chrome/browser/enterprise/connectors/device_trust/"
-  sources = [ "${proto_in_dir}/device_trust_google_key.proto" ]
-  generate_python = false
 }

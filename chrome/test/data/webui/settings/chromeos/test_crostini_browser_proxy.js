@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // clang-format on
 
 /** @implements {settings.CrostiniBrowserProxy} */
@@ -33,11 +33,16 @@
       'requestCrostiniInstallerStatus',
       'requestArcAdbSideloadStatus',
       'getCanChangeArcAdbSideloading',
+      'createContainer',
+      'deleteContainer',
+      'requestContainerInfo',
+      'stopContainer',
     ]);
     this.crostiniMicSharingEnabled = false;
     this.crostiniIsRunning = true;
     this.methodCalls_ = {};
     this.portOperationSuccess = true;
+    this.containerInfo = [];
   }
 
   getNewPromiseFor(name) {
@@ -204,5 +209,26 @@
   getCrostiniMicSharingEnabled() {
     this.methodCalled('getCrostiniMicSharingEnabled');
     return Promise.resolve(this.CrostiniMicSharingEnabled);
+  }
+
+  /** @override */
+  createContainer(containerId, imageServer, imageAlias) {
+    this.methodCalled('createContainer');
+  }
+
+  /** @override */
+  deleteContainer(containerId) {
+    this.methodCalled('deleteContainer');
+  }
+
+  /** @override */
+  requestContainerInfo() {
+    this.methodCalled('requestContainerInfo');
+    cr.webUIListenerCallback('crostini-container-info', this.containerInfo);
+  }
+
+  /** @override */
+  stopContainer(containerId) {
+    this.methodCalled('stopContainer');
   }
 }

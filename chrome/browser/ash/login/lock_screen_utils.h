@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_LOCK_SCREEN_UTILS_H_
 
 #include "ash/public/cpp/login_types.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
 
@@ -14,21 +14,21 @@ namespace base {
 class ListValue;
 }
 
-namespace chromeos {
+namespace ash {
 namespace lock_screen_utils {
 
-// Update current input method (namely keyboard layout) in the given IME state
-// to last input method used by this user.
+// Update current input method in the given IME state to last input method used
+// by this user.
 void SetUserInputMethod(const AccountId& account_id,
                         input_method::InputMethodManager::State* ime_state,
                         bool honor_device_policy);
 
-// Get user's last input method.
-std::string GetUserLastInputMethod(const AccountId& account_id);
+// Get user's last input method ID.
+std::string GetUserLastInputMethodId(const AccountId& account_id);
 
-// Sets the currently allowed input method, including those that are enforced
+// Sets the currently allowed input method ID, including those that are enforced
 // by device policy.
-void EnforceDevicePolicyInputMethods(std::string user_input_method);
+void EnforceDevicePolicyInputMethods(std::string user_input_method_id);
 
 // Remove any policy limitations on allowed IMEs.
 void StopEnforcingPolicyInputMethods();
@@ -37,21 +37,9 @@ void StopEnforcingPolicyInputMethods();
 void SetKeyboardSettings(const AccountId& account_id);
 
 // Covert a ListValue of locale info to a list of ash struct LocaleItem.
-std::vector<ash::LocaleItem> FromListValueToLocaleItem(
+std::vector<LocaleItem> FromListValueToLocaleItem(
     std::unique_ptr<base::ListValue> locales);
 
-}  // namespace lock_screen_utils
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace lock_screen_utils {
-using ::chromeos::lock_screen_utils::EnforceDevicePolicyInputMethods;
-using ::chromeos::lock_screen_utils::FromListValueToLocaleItem;
-using ::chromeos::lock_screen_utils::GetUserLastInputMethod;
-using ::chromeos::lock_screen_utils::SetKeyboardSettings;
-using ::chromeos::lock_screen_utils::SetUserInputMethod;
 }  // namespace lock_screen_utils
 }  // namespace ash
 

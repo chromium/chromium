@@ -5,12 +5,12 @@
 #ifndef CONTENT_RENDERER_PEPPER_PEPPER_TRY_CATCH_H_
 #define CONTENT_RENDERER_PEPPER_PEPPER_TRY_CATCH_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/shared_impl/scoped_pp_var.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-forward.h"
 
 namespace content {
 
@@ -56,6 +56,10 @@ class PepperTryCatchV8 : public PepperTryCatch {
   PepperTryCatchV8(PepperPluginInstanceImpl* instance,
                    V8VarConverter* var_converter,
                    v8::Isolate* isolate);
+
+  PepperTryCatchV8(const PepperTryCatchV8&) = delete;
+  PepperTryCatchV8& operator=(const PepperTryCatchV8&) = delete;
+
   ~PepperTryCatchV8() override;
 
   bool ThrowException();
@@ -69,8 +73,6 @@ class PepperTryCatchV8 : public PepperTryCatch {
 
  private:
   PP_Var exception_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperTryCatchV8);
 };
 
 // Catches v8 exceptions and emits a var exception.
@@ -82,6 +84,10 @@ class PepperTryCatchVar : public PepperTryCatch {
   PepperTryCatchVar(PepperPluginInstanceImpl* instance,
                     V8VarConverter* var_converter,
                     PP_Var* exception);
+
+  PepperTryCatchVar(const PepperTryCatchVar&) = delete;
+  PepperTryCatchVar& operator=(const PepperTryCatchVar&) = delete;
+
   ~PepperTryCatchVar() override;
 
   // PepperTryCatch
@@ -100,8 +106,6 @@ class PepperTryCatchVar : public PepperTryCatch {
 
   PP_Var* exception_;
   bool exception_is_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperTryCatchVar);
 };
 
 }  // namespace content

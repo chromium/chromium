@@ -97,7 +97,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
     // Constants defined in the N SDK. (API Level 24+25, Android 7)
     public static final int ACTION_SET_PROGRESS = 0x0102003d;
-    private static final String ACTION_ARGUMENT_PROGRESS_VALUE =
+    public static final String ACTION_ARGUMENT_PROGRESS_VALUE =
             "android.view.accessibility.action.ARGUMENT_PROGRESS_VALUE";
 
     // Constants defined in the O SDK. (API Level 26+27, Android 8)
@@ -117,6 +117,22 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     public static final int ACTION_IME_ENTER = 0x01020054;
     public static final int ACTION_PRESS_AND_HOLD = 0x0102004a;
 
+    // Constants defined for AccessibilityNodeInfo Bundle extras keys.
+    public static final String EXTRAS_KEY_CHROME_ROLE = "AccessibilityNodeInfo.chromeRole";
+    public static final String EXTRA_KEY_CLICKABLE_SCORE = "AccessibilityNodeInfo.clickableScore";
+    public static final String EXTRAS_KEY_HAS_IMAGE = "AccessibilityNodeInfo.hasImage";
+    public static final String EXTRAS_KEY_HINT = "AccessibilityNodeInfo.hint";
+    public static final String EXTRAS_KEY_OFFSCREEN = "AccessibilityNodeInfo.offscreen";
+    public static final String EXTRAS_KEY_ROLE_DESCRIPTION =
+            "AccessibilityNodeInfo.roleDescription";
+    public static final String EXTRAS_KEY_SUPPORTED_ELEMENTS =
+            "ACTION_ARGUMENT_HTML_ELEMENT_STRING_VALUES";
+    public static final String EXTRAS_KEY_TARGET_URL = "AccessibilityNodeInfo.targetUrl";
+    public static final String EXTRAS_KEY_UNCLIPPED_TOP = "AccessibilityNodeInfo.unclippedTop";
+    public static final String EXTRAS_KEY_UNCLIPPED_BOTTOM =
+            "AccessibilityNodeInfo.unclippedBottom";
+    public static final String EXTRAS_KEY_URL = "url";
+
     // Constant for no granularity selected.
     private static final int NO_GRANULARITY_SELECTED = 0;
 
@@ -129,10 +145,15 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     private static final int CONTENT_INVALID_THROTTLE_DELAY = 4500;
 
     // These are constant names of UMA histograms, and values for custom count histogram.
-    private static final String PERCENTAGE_DROPPED_HISTOGRAM =
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String PERCENTAGE_DROPPED_HISTOGRAM =
             "Accessibility.Android.OnDemand.PercentageDropped";
-    private static final String EVENTS_DROPPED_HISTOGRAM =
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String EVENTS_DROPPED_HISTOGRAM =
             "Accessibility.Android.OnDemand.EventsDropped";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String ONE_HUNDRED_PERCENT_HISTOGRAM =
+            "Accessibility.Android.OnDemand.OneHundredPercentEventsDropped";
     private static final int EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET = 1;
     private static final int EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET = 10000;
     private static final int EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT = 100;
@@ -180,6 +201,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     // This is desirable behavior for a browser window, but not for an embedded
     // WebView.
     private boolean mShouldFocusOnPageLoad;
+
+    // Whether the image descriptions feature is allowed for this instance.
+    private boolean mAllowImageDescriptions;
 
     // If true, the web contents are obscured by another view and we shouldn't
     // return an AccessibilityNodeProvider or process touch exploration events.
@@ -377,6 +401,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
     @VisibleForTesting
     @Override
+    public void setBrowserAccessibilityStateForTesting() {
+        BrowserAccessibilityState.setEventTypeMaskForTesting();
+    }
+
+    @VisibleForTesting
+    @Override
     public void addSpellingErrorForTesting(int virtualViewId, int startOffset, int endOffset) {
         WebContentsAccessibilityImplJni.get().addSpellingErrorForTesting(mNativeObj,
                 WebContentsAccessibilityImpl.this, virtualViewId, startOffset, endOffset);
@@ -409,6 +439,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         recordUMAHistograms();
     }
 
+    @VisibleForTesting
+    public void setEventTypeMaskEmptyForTesting() {
+        BrowserAccessibilityState.setEventTypeMaskEmptyForTesting();
+    }
+
     @CalledByNative
     public void handleEndOfTestSignal() {
         // We have received a signal that we have reached the end of a unit test. If we have a
@@ -438,14 +473,24 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         // If we did not enqueue any events, we can ignore the data as a trivial case.
         if (mTotalEnqueuedEvents > 0) {
             // Log the percentage dropped (dispatching 0 events should be 100% dropped).
-            RecordHistogram.recordPercentageHistogram(PERCENTAGE_DROPPED_HISTOGRAM,
-                    100 - (int) (mTotalDispatchedEvents * 1.0 / mTotalEnqueuedEvents * 100.0));
+            int percentSent = (int) (mTotalDispatchedEvents * 1.0 / mTotalEnqueuedEvents * 100.0);
+            RecordHistogram.recordPercentageHistogram(
+                    PERCENTAGE_DROPPED_HISTOGRAM, 100 - percentSent);
 
             // Log the total number of dropped events.
             RecordHistogram.recordCustomCountHistogram(EVENTS_DROPPED_HISTOGRAM,
                     mTotalEnqueuedEvents - mTotalDispatchedEvents,
                     EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET, EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET,
                     EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT);
+
+            // If 100% of events were dropped, also track the number of dropped events in a
+            // separate bucket.
+            if (percentSent == 0) {
+                RecordHistogram.recordCustomCountHistogram(ONE_HUNDRED_PERCENT_HISTOGRAM,
+                        mTotalEnqueuedEvents - mTotalDispatchedEvents,
+                        EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET, EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET,
+                        EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT);
+            }
         }
 
         // Reset counters.
@@ -699,6 +744,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     @Override
     public void setShouldFocusOnPageLoad(boolean on) {
         mShouldFocusOnPageLoad = on;
+
+        // If focus on page load is true, we will allow the image descriptions feature.
+        mAllowImageDescriptions = on;
+    }
+
+    @Override
+    public void setAllowImageDescriptions(boolean allowImageDescriptions) {
+        mAllowImageDescriptions = allowImageDescriptions;
     }
 
     @Override
@@ -730,7 +783,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         WebContents webContents = mDelegate.getWebContents();
         if (webContents != null && !webContents.isDestroyed()) {
             Bundle extras = viewRoot.getExtras();
-            extras.putCharSequence("url", webContents.getVisibleUrl().getSpec());
+            extras.putCharSequence(EXTRAS_KEY_URL, webContents.getVisibleUrl().getSpec());
         }
 
         mDelegate.requestAccessibilitySnapshot(viewRoot, new Runnable() {
@@ -815,8 +868,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                     return false;
                 }
                 if (arguments == null) return false;
-                String newText = arguments.getString(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE);
-                if (newText == null) return false;
+                CharSequence bundleText =
+                        arguments.getCharSequence(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE);
+                if (bundleText == null) return false;
+                String newText = bundleText.toString();
                 WebContentsAccessibilityImplJni.get().setTextFieldValue(
                         mNativeObj, WebContentsAccessibilityImpl.this, virtualViewId, newText);
                 // Match Android framework and set the cursor to the end of the text field.
@@ -922,10 +977,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                         action == ACTION_PAGE_RIGHT);
             case ACTION_SET_PROGRESS:
                 if (arguments == null) return false;
-                float value = arguments.getFloat(ACTION_ARGUMENT_PROGRESS_VALUE, -1);
-                if (value == -1) return false;
-                return WebContentsAccessibilityImplJni.get().setRangeValue(
-                        mNativeObj, WebContentsAccessibilityImpl.this, virtualViewId, value);
+                if (!arguments.containsKey(ACTION_ARGUMENT_PROGRESS_VALUE)) return false;
+                return WebContentsAccessibilityImplJni.get().setRangeValue(mNativeObj,
+                        WebContentsAccessibilityImpl.this, virtualViewId,
+                        arguments.getFloat(ACTION_ARGUMENT_PROGRESS_VALUE));
             case ACTION_IME_ENTER:
                 if (mDelegate.getWebContents() != null) {
                     if (ImeAdapterImpl.fromWebContents(mDelegate.getWebContents()) != null) {
@@ -1346,15 +1401,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         return event;
     }
 
-    private Bundle getOrCreateBundleForAccessibilityEvent(AccessibilityEvent event) {
-        Bundle bundle = (Bundle) event.getParcelableData();
-        if (bundle == null) {
-            bundle = new Bundle();
-            event.setParcelableData(bundle);
-        }
-        return bundle;
-    }
-
     @Override
     public boolean isAccessibilityEnabled() {
         return isNativeInitialized()
@@ -1415,13 +1461,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
     @CalledByNative
     private void handlePageLoaded(int id) {
-        // If |mShouldFocusOnPageLoad| is false, that means this is a WebView and we should disable
-        // the image descriptions alt-text hints.
-        if (!mShouldFocusOnPageLoad) {
-            WebContentsAccessibilityImplJni.get().setIsRunningAsWebView(
-                    mNativeObj, WebContentsAccessibilityImpl.this, true);
-            return;
-        }
+        // Set whether image descriptions should be enabled for this instance. We do not want
+        // the feature to run in certain cases (e.g. WebView or Chrome Custom Tab).
+        WebContentsAccessibilityImplJni.get().setAllowImageDescriptions(
+                mNativeObj, WebContentsAccessibilityImpl.this, mAllowImageDescriptions);
+
+        if (!mShouldFocusOnPageLoad) return;
         if (mUserHasTouchExplored) return;
         moveAccessibilityFocusToIdAndRefocusIfNeeded(id);
     }
@@ -1587,7 +1632,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
         if (hasImage) {
             Bundle bundle = node.getExtras();
-            bundle.putCharSequence("AccessibilityNodeInfo.hasImage", "true");
+            bundle.putCharSequence(EXTRAS_KEY_HAS_IMAGE, "true");
         }
 
         node.setMovementGranularities(AccessibilityNodeInfo.MOVEMENT_GRANULARITY_CHARACTER
@@ -1715,19 +1760,18 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     private void setAccessibilityNodeInfoBaseAttributes(AccessibilityNodeInfo node, boolean isRoot,
             String className, String role, String roleDescription, String hint, String targetUrl,
             boolean canOpenPopup, boolean dismissable, boolean multiLine, int inputType,
-            int liveRegion, String errorMessage) {
+            int liveRegion, String errorMessage, int clickableScore) {
         node.setClassName(className);
 
         Bundle bundle = node.getExtras();
-        bundle.putCharSequence("AccessibilityNodeInfo.chromeRole", role);
-        bundle.putCharSequence("AccessibilityNodeInfo.roleDescription", roleDescription);
-        bundle.putCharSequence("AccessibilityNodeInfo.hint", hint);
+        bundle.putCharSequence(EXTRAS_KEY_CHROME_ROLE, role);
+        bundle.putCharSequence(EXTRAS_KEY_ROLE_DESCRIPTION, roleDescription);
+        bundle.putCharSequence(EXTRAS_KEY_HINT, hint);
         if (!targetUrl.isEmpty()) {
-            bundle.putCharSequence("AccessibilityNodeInfo.targetUrl", targetUrl);
+            bundle.putCharSequence(EXTRAS_KEY_TARGET_URL, targetUrl);
         }
         if (isRoot) {
-            bundle.putCharSequence(
-                    "ACTION_ARGUMENT_HTML_ELEMENT_STRING_VALUES", mSupportedHtmlElementTypes);
+            bundle.putCharSequence(EXTRAS_KEY_SUPPORTED_ELEMENTS, mSupportedHtmlElementTypes);
         }
 
         node.setCanOpenPopup(canOpenPopup);
@@ -1744,6 +1788,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         // set |contentInvalid| to true based on throttle delay.
         if (node.isContentInvalid()) {
             node.setError(errorMessage);
+        }
+
+        // For non-zero clickable scores, add to the Bundle extras.
+        if (clickableScore > 0) {
+            bundle.putInt(EXTRA_KEY_CLICKABLE_SCORE, clickableScore);
         }
     }
 
@@ -1865,11 +1914,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         int viewportRectTop = viewLocation[1] + (int) ac.getContentOffsetYPix();
         int viewportRectBottom = viewportRectTop + ac.getLastFrameViewportHeightPixInt();
         if (rect.top < viewportRectTop) {
-            extras.putInt("AccessibilityNodeInfo.unclippedTop", rect.top);
+            extras.putInt(EXTRAS_KEY_UNCLIPPED_TOP, rect.top);
             rect.top = viewportRectTop;
         }
         if (rect.bottom > viewportRectBottom) {
-            extras.putInt("AccessibilityNodeInfo.unclippedBottom", rect.bottom);
+            extras.putInt(EXTRAS_KEY_UNCLIPPED_BOTTOM, rect.bottom);
             rect.bottom = viewportRectBottom;
         }
     }
@@ -1902,7 +1951,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     @CalledByNative
     protected void setAccessibilityNodeInfoLocation(AccessibilityNodeInfo node,
             final int virtualViewId, int absoluteLeft, int absoluteTop, int parentRelativeLeft,
-            int parentRelativeTop, int width, int height, boolean isRootNode) {
+            int parentRelativeTop, int width, int height, boolean isRootNode, boolean isOffscreen) {
         // First set the bounds in parent.
         Rect boundsInParent = new Rect(parentRelativeLeft, parentRelativeTop,
                 parentRelativeLeft + width, parentRelativeTop + height);
@@ -1917,6 +1966,18 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         convertWebRectToAndroidCoordinates(rect, node.getExtras());
 
         node.setBoundsInScreen(rect);
+
+        // For nodes that are considered visible to the user, but are offscreen (because they are
+        // scrolled offscreen or obscured from view but not programmatically hidden, e.g. through
+        // CSS), add to the extras Bundle to inform interested accessibility services.
+        if (isOffscreen) {
+            node.getExtras().putBoolean(EXTRAS_KEY_OFFSCREEN, true);
+        } else {
+            // In case of a cached node, remove the offscreen extra if it is there.
+            if (node.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN)) {
+                node.getExtras().remove(EXTRAS_KEY_OFFSCREEN);
+            }
+        }
 
         // Work around a bug in the Android framework where if the object with accessibility
         // focus moves, the accessibility focus rect is not updated - both the visual highlight,
@@ -2170,8 +2231,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                 WebContentsAccessibilityImpl caller, int maxEvents);
         int getMaxContentChangedEventsToFireForTesting(long nativeWebContentsAccessibilityAndroid);
         void signalEndOfTestForTesting(long nativeWebContentsAccessibilityAndroid);
-        void setIsRunningAsWebView(long nativeWebContentsAccessibilityAndroid,
-                WebContentsAccessibilityImpl caller, boolean isWebView);
+        void setAllowImageDescriptions(long nativeWebContentsAccessibilityAndroid,
+                WebContentsAccessibilityImpl caller, boolean allowImageDescriptions);
         boolean onHoverEventNoRenderer(long nativeWebContentsAccessibilityAndroid,
                 WebContentsAccessibilityImpl caller, float x, float y);
     }

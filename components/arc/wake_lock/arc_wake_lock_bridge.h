@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/arc/mojom/wake_lock.mojom.h"
 #include "components/arc/session/connection_observer.h"
@@ -46,6 +45,10 @@ class ArcWakeLockBridge : public KeyedService,
 
   ArcWakeLockBridge(content::BrowserContext* context,
                     ArcBridgeService* bridge_service);
+
+  ArcWakeLockBridge(const ArcWakeLockBridge&) = delete;
+  ArcWakeLockBridge& operator=(const ArcWakeLockBridge&) = delete;
+
   ~ArcWakeLockBridge() override;
 
   void SetWakeLockProviderForTesting(
@@ -82,8 +85,6 @@ class ArcWakeLockBridge : public KeyedService,
   mojo::Receiver<mojom::WakeLockHost> receiver_{this};
 
   base::WeakPtrFactory<ArcWakeLockBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcWakeLockBridge);
 };
 
 }  // namespace arc

@@ -84,11 +84,6 @@ void PreviewsUKMObserver::RecordPreviewsTypes() {
   builder.Record(ukm::UkmRecorder::Get());
 }
 
-void PreviewsUKMObserver::OnEventOccurred(
-    page_load_metrics::PageLoadMetricsEvent event) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
 bool PreviewsUKMObserver::IsDataSaverEnabled(
     content::NavigationHandle* navigation_handle) const {
   Profile* profile = Profile::FromBrowserContext(

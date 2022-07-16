@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 
@@ -25,6 +24,11 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantNotificationModel {
   using AssistantNotification = chromeos::assistant::AssistantNotification;
 
   AssistantNotificationModel();
+
+  AssistantNotificationModel(const AssistantNotificationModel&) = delete;
+  AssistantNotificationModel& operator=(const AssistantNotificationModel&) =
+      delete;
+
   ~AssistantNotificationModel();
 
   // Adds/removes the specified notification model |observer|.
@@ -70,8 +74,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantNotificationModel {
   std::map<std::string, AssistantNotification> notifications_;
 
   mutable base::ObserverList<AssistantNotificationModelObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantNotificationModel);
 };
 
 }  // namespace ash

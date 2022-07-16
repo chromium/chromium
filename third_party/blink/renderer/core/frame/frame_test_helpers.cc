@@ -255,13 +255,13 @@ void FillNavigationParamsResponse(WebNavigationParams* params) {
 
 WebMouseEvent CreateMouseEvent(WebInputEvent::Type type,
                                WebMouseEvent::Button button,
-                               const IntPoint& point,
+                               const gfx::Point& point,
                                int modifiers) {
   WebMouseEvent result(type, modifiers,
                        WebInputEvent::GetStaticTimeStampForTests());
   result.pointer_type = WebPointerProperties::PointerType::kMouse;
-  result.SetPositionInWidget(point.X(), point.Y());
-  result.SetPositionInScreen(point.X(), point.Y());
+  result.SetPositionInWidget(point.x(), point.y());
+  result.SetPositionInScreen(point.x(), point.y());
   result.button = button;
   result.click_count = 1;
   return result;
@@ -621,6 +621,7 @@ void WebViewHelper::InitializeWebView(TestWebViewClient* web_view_client,
                       /*is_hidden=*/false,
                       /*is_prerendering=*/false,
                       /*is_inside_portal=*/false,
+                      /*is_fenced_frame=*/false,
                       /*compositing_enabled=*/true,
                       /*widgets_never_composited=*/false,
                       /*opener=*/opener, mojo::NullAssociatedReceiver(),
@@ -678,7 +679,7 @@ WebLocalFrame* TestWebFrameClient::CreateChildFrame(
     const WebString& fallback_name,
     const FramePolicy& frame_policy,
     const WebFrameOwnerProperties&,
-    mojom::blink::FrameOwnerElementType,
+    FrameOwnerElementType,
     WebPolicyContainerBindParams policy_container_bind_params) {
   MockPolicyContainerHost mock_policy_container_host;
   mock_policy_container_host.BindWithNewEndpoint(
@@ -716,7 +717,7 @@ void TestWebFrameClient::BeginNavigation(
     std::unique_ptr<WebNavigationInfo> info) {
   navigation_callback_.Cancel();
   if (DocumentLoader::WillLoadUrlAsEmpty(info->url_request.Url()) &&
-      !frame_->HasCommittedFirstRealLoad()) {
+      frame_->IsOnInitialEmptyDocument()) {
     CommitNavigation(std::move(info));
     return;
   }
@@ -866,6 +867,8 @@ void TestWebFrameWidgetHost::UpdateTooltipFromKeyboard(
     const String& tooltip_text,
     base::i18n::TextDirection text_direction_hint,
     const gfx::Rect& bounds) {}
+
+void TestWebFrameWidgetHost::ClearKeyboardTriggeredTooltip() {}
 
 void TestWebFrameWidgetHost::TextInputStateChanged(
     ui::mojom::blink::TextInputStatePtr state) {

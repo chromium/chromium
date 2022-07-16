@@ -7,6 +7,7 @@
 #include "components/cast_channel/cast_message_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
 using cast_channel::CastDeviceCapability;
 using cast_channel::ReceiverAppType;
@@ -66,14 +67,13 @@ TEST(CastMediaSourceTest, FromCastURL) {
   EXPECT_EQ("namespace", broadcast_request->broadcast_namespace);
   EXPECT_EQ("message%", broadcast_request->message);
   EXPECT_EQ("12345", source->client_id());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(30000), source->launch_timeout());
+  EXPECT_EQ(base::Milliseconds(30000), source->launch_timeout());
   EXPECT_EQ(AutoJoinPolicy::kTabAndOriginScoped, source->auto_join_policy());
   EXPECT_EQ(DefaultActionPolicy::kCastThisTab, source->default_action_policy());
   EXPECT_EQ(ReceiverAppType::kAndroidTv, source->supported_app_types()[0]);
   EXPECT_EQ(ReceiverAppType::kWeb, source->supported_app_types()[1]);
   EXPECT_EQ("appParams", source->app_params());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(42),
-            source->target_playout_delay());
+  EXPECT_EQ(base::Milliseconds(42), source->target_playout_delay());
   EXPECT_EQ(false, source->site_requested_audio_capture());
   EXPECT_EQ(cast_channel::VirtualConnectionType::kInvisible,
             source->connection_type());
@@ -106,7 +106,7 @@ TEST(CastMediaSourceTest, FromLegacyCastURL) {
   EXPECT_EQ("namespace", broadcast_request->broadcast_namespace);
   EXPECT_EQ("message%", broadcast_request->message);
   EXPECT_EQ("12345", source->client_id());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(30000), source->launch_timeout());
+  EXPECT_EQ(base::Milliseconds(30000), source->launch_timeout());
   EXPECT_EQ(AutoJoinPolicy::kOriginScoped, source->auto_join_policy());
   EXPECT_EQ(DefaultActionPolicy::kCastThisTab, source->default_action_policy());
   EXPECT_EQ(ReceiverAppType::kWeb, source->supported_app_types()[0]);
@@ -119,8 +119,10 @@ TEST(CastMediaSourceTest, FromPresentationURL) {
   ASSERT_TRUE(source);
   EXPECT_EQ(source_id, source->source_id());
   ASSERT_EQ(2u, source->app_infos().size());
-  EXPECT_EQ(kCastStreamingAppId, source->app_infos()[0].app_id);
-  EXPECT_EQ(kCastStreamingAudioAppId, source->app_infos()[1].app_id);
+  EXPECT_EQ(openscreen::cast::GetCastStreamingAudioVideoAppId(),
+            source->app_infos()[0].app_id);
+  EXPECT_EQ(openscreen::cast::GetCastStreamingAudioOnlyAppId(),
+            source->app_infos()[1].app_id);
   EXPECT_TRUE(source->client_id().empty());
   EXPECT_EQ(kDefaultLaunchTimeout, source->launch_timeout());
   EXPECT_EQ(AutoJoinPolicy::kPageScoped, source->auto_join_policy());
@@ -136,8 +138,10 @@ TEST(CastMediaSourceTest, FromMirroringURN) {
   ASSERT_TRUE(source);
   EXPECT_EQ(source_id, source->source_id());
   ASSERT_EQ(2u, source->app_infos().size());
-  EXPECT_EQ(kCastStreamingAppId, source->app_infos()[0].app_id);
-  EXPECT_EQ(kCastStreamingAudioAppId, source->app_infos()[1].app_id);
+  EXPECT_EQ(openscreen::cast::GetCastStreamingAudioVideoAppId(),
+            source->app_infos()[0].app_id);
+  EXPECT_EQ(openscreen::cast::GetCastStreamingAudioOnlyAppId(),
+            source->app_infos()[1].app_id);
   EXPECT_TRUE(source->client_id().empty());
   EXPECT_EQ(kDefaultLaunchTimeout, source->launch_timeout());
   EXPECT_EQ(AutoJoinPolicy::kPageScoped, source->auto_join_policy());
@@ -153,7 +157,8 @@ TEST(CastMediaSourceTest, FromDesktopUrn) {
   ASSERT_TRUE(source);
   EXPECT_EQ(source_id, source->source_id());
   ASSERT_EQ(1u, source->app_infos().size());
-  EXPECT_EQ(kCastStreamingAppId, source->app_infos()[0].app_id);
+  EXPECT_EQ(openscreen::cast::GetCastStreamingAudioVideoAppId(),
+            source->app_infos()[0].app_id);
   EXPECT_TRUE(source->client_id().empty());
   EXPECT_EQ(kDefaultLaunchTimeout, source->launch_timeout());
   EXPECT_EQ(AutoJoinPolicy::kPageScoped, source->auto_join_policy());

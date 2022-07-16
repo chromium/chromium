@@ -29,6 +29,10 @@ namespace android {
 // the Android runtime, can be killed at any time, which is not an issue here.
 class BASE_EXPORT NativeLibraryPrefetcher {
  public:
+  NativeLibraryPrefetcher() = delete;
+  NativeLibraryPrefetcher(const NativeLibraryPrefetcher&) = delete;
+  NativeLibraryPrefetcher& operator=(const NativeLibraryPrefetcher&) = delete;
+
   // Finds the executable code range, forks a low priority process pre-fetching
   // it wait()s for the process to exit or die. If ordered_only is true, only
   // the ordered section is prefetched. See GetOrdrderedTextRange() in
@@ -58,8 +62,6 @@ class BASE_EXPORT NativeLibraryPrefetcher {
 
   FRIEND_TEST_ALL_PREFIXES(NativeLibraryPrefetcherTest,
                            TestPercentageOfResidentCode);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(NativeLibraryPrefetcher);
 };
 
 }  // namespace android

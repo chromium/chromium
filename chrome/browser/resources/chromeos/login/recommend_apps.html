@@ -23,21 +23,12 @@
         padding-inline-end: 6px;
       }
 
-      :host-context(html:not([new-layout])) #app-list-view-container {
-        height: 308px;
-        margin-top: 23px;
-      }
-
-      :host-context(html[new-layout]) #app-list-view-container {
+      #app-list-view-container {
         display: flex;
         flex-direction: column;
       }
 
       #selectAllButton {
-        display: none;
-      }
-
-      :host-context(html[new-layout]) #selectAllButton {
         display: flex;
         justify-content: flex-end;
         margin-bottom: 16px;

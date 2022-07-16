@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -43,6 +42,10 @@ class ProfileListDesktopBrowserTest : public InProcessBrowserTest {
  public:
   ProfileListDesktopBrowserTest() {}
 
+  ProfileListDesktopBrowserTest(const ProfileListDesktopBrowserTest&) = delete;
+  ProfileListDesktopBrowserTest& operator=(
+      const ProfileListDesktopBrowserTest&) = delete;
+
   std::unique_ptr<AvatarMenu> CreateAvatarMenu(
       ProfileAttributesStorage* storage) {
     return std::unique_ptr<AvatarMenu>(
@@ -51,8 +54,6 @@ class ProfileListDesktopBrowserTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<AvatarMenu> avatar_menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileListDesktopBrowserTest);
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

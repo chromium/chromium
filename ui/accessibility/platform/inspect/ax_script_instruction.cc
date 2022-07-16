@@ -7,6 +7,7 @@
 #include <cstring>
 
 #include "base/check.h"
+#include "base/strings/string_util.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 
@@ -19,10 +20,13 @@ AXScriptInstruction::AXScriptInstruction(const std::string& instruction)
     : instruction_(instruction) {}
 
 bool AXScriptInstruction::IsEvent() const {
-  return EventNameStartIndex() != std::string::npos;
+  return !IsComment() && EventNameStartIndex() != std::string::npos;
 }
 bool AXScriptInstruction::IsScript() const {
-  return !IsEvent();
+  return !IsComment() && !IsEvent();
+}
+bool AXScriptInstruction::IsComment() const {
+  return base::StartsWith(instruction_, "//");
 }
 
 AXPropertyNode AXScriptInstruction::AsScript() const {
@@ -33,6 +37,11 @@ AXPropertyNode AXScriptInstruction::AsScript() const {
 std::string AXScriptInstruction::AsEvent() const {
   DCHECK(IsEvent());
   return instruction_.substr(kWaitForLength);
+}
+
+std::string AXScriptInstruction::AsComment() const {
+  DCHECK(IsComment());
+  return instruction_;
 }
 
 size_t AXScriptInstruction::EventNameStartIndex() const {

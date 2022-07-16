@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -34,23 +33,12 @@ class LanguagePrefs {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   explicit LanguagePrefs(PrefService* user_prefs);
+
+  LanguagePrefs(const LanguagePrefs&) = delete;
+  LanguagePrefs& operator=(const LanguagePrefs&) = delete;
+
   ~LanguagePrefs();
 
-  // Return true iff the user is fluent in the given |language|.
-  bool IsFluent(base::StringPiece language) const;
-  // Mark that the user is fluent in the given |language|.
-  void SetFluent(base::StringPiece language);
-  // Remove the given |language| from the user's fluent languages.
-  void ClearFluent(base::StringPiece language);
-  // Reset the fluent languages to their defaults.
-  void ResetFluentLanguagesToDefaults();
-  // Get the default fluent languages for the user.
-  static base::Value GetDefaultFluentLanguages();
-  // Get the current list of fluent languages for the user formatted as Chrome
-  // language codes.
-  std::vector<std::string> GetFluentLanguages() const;
-  // If the list of fluent languages is empty, reset it to defaults.
-  void ResetEmptyFluentLanguagesToDefault();
   // Gets the language settings list containing combination of policy-forced and
   // user-selected languages. Language settings list follows the Chrome internal
   // format.
@@ -79,15 +67,11 @@ class LanguagePrefs {
   // compatibility.
   void InitializeSelectedLanguagesPref();
 
-  size_t NumFluentLanguages() const;
-
   // Used for deduplication and reordering of languages.
   std::set<std::string> forced_languages_set_;
 
   PrefService* prefs_;  // Weak.
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguagePrefs);
 };
 
 void ResetLanguagePrefs(PrefService* prefs);

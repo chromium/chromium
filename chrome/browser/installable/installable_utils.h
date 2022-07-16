@@ -18,8 +18,8 @@ class GURL;
 // is contained within the origin https://example.com.
 //
 // |origin| is a GURL type for convenience; this method will DCHECK if
-// |origin| != |origin.GetOrigin()|. Prefer using IsWebAppInstalledForUrl if a
-// more specific URL is available.
+// |origin| != |origin.DeprecatedGetOriginAsURL()|. Prefer using
+// IsWebAppInstalledForUrl if a more specific URL is available.
 bool DoesOriginContainAnyInstalledWebApp(
     content::BrowserContext* browser_context,
     const GURL& origin);

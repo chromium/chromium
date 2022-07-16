@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_METRICS_PRINT_JOB_FINISHED_EVENT_DISPATCHER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_METRICS_PRINT_JOB_FINISHED_EVENT_DISPATCHER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/chromeos/printing/history/print_job_history_service.h"
-#include "chrome/browser/chromeos/printing/history/print_job_history_service_factory.h"
+#include "chrome/browser/ash/printing/history/print_job_history_service.h"
+#include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router_factory.h"
 
@@ -25,10 +24,16 @@ class EventRouter;
 // printingMetrics.onPrintJobFinished() event.
 class PrintJobFinishedEventDispatcher
     : public BrowserContextKeyedAPI,
-      public chromeos::PrintJobHistoryService::Observer {
+      public ash::PrintJobHistoryService::Observer {
  public:
   explicit PrintJobFinishedEventDispatcher(
       content::BrowserContext* browser_context);
+
+  PrintJobFinishedEventDispatcher(const PrintJobFinishedEventDispatcher&) =
+      delete;
+  PrintJobFinishedEventDispatcher& operator=(
+      const PrintJobFinishedEventDispatcher&) = delete;
+
   ~PrintJobFinishedEventDispatcher() override;
 
   // BrowserContextKeyedAPI:
@@ -51,11 +56,9 @@ class PrintJobFinishedEventDispatcher
 
   content::BrowserContext* browser_context_;
   EventRouter* event_router_;
-  base::ScopedObservation<chromeos::PrintJobHistoryService,
-                          chromeos::PrintJobHistoryService::Observer>
+  base::ScopedObservation<ash::PrintJobHistoryService,
+                          ash::PrintJobHistoryService::Observer>
       print_job_history_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJobFinishedEventDispatcher);
 };
 
 template <>
@@ -63,7 +66,7 @@ struct BrowserContextFactoryDependencies<PrintJobFinishedEventDispatcher> {
   static void DeclareFactoryDependencies(
       BrowserContextKeyedAPIFactory<PrintJobFinishedEventDispatcher>* factory) {
     factory->DependsOn(EventRouterFactory::GetInstance());
-    factory->DependsOn(chromeos::PrintJobHistoryServiceFactory::GetInstance());
+    factory->DependsOn(ash::PrintJobHistoryServiceFactory::GetInstance());
   }
 };
 

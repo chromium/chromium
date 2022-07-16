@@ -86,7 +86,7 @@ final class ReflectiveThreadStrictModeInterceptor implements ThreadStrictModeInt
                 StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
                 Violation violation =
                         new Violation(violationType, Arrays.copyOf(stackTrace, stackTrace.length));
-                if (violationType != Violation.DETECT_UNKNOWN
+                if (violationType != Violation.DETECT_FAILED
                         && violation.isInWhitelist(mWhitelistEntries)) {
                     return true;
                 }
@@ -117,12 +117,16 @@ final class ReflectiveThreadStrictModeInterceptor implements ThreadStrictModeInt
                 getViolationBitMethod.setAccessible(true);
                 int violationType = (Integer) getViolationBitMethod.invoke(violationInfo);
                 return violationType & Violation.DETECT_ALL_KNOWN;
-            } else if (Build.VERSION.SDK_INT >= 29) {
+            } else if (Build.VERSION.SDK_INT == 29) {
                 Method getViolationClassMethod =
                         violationInfoClass.getDeclaredMethod("getViolationClass");
                 getViolationClassMethod.setAccessible(true);
                 return computeViolationTypeAndroid10(
                         (Class<?>) getViolationClassMethod.invoke(violationInfo));
+            } else if (Build.VERSION.SDK_INT >= 30) {
+                // ViolationInfo#getViolationClass() is inaccessible via reflection.
+                // crbug.com/1240777 Ignore violation type when checking white list.
+                return Violation.DETECT_ALL_KNOWN;
             }
             Field crashInfoField = violationInfoClass.getDeclaredField("crashInfo");
             crashInfoField.setAccessible(true);
@@ -136,7 +140,7 @@ final class ReflectiveThreadStrictModeInterceptor implements ThreadStrictModeInt
             return mask & Violation.DETECT_ALL_KNOWN;
         } catch (Exception e) {
             Log.e(TAG, "Unable to get violation.", e);
-            return Violation.DETECT_UNKNOWN;
+            return Violation.DETECT_FAILED;
         }
     }
 
@@ -152,6 +156,6 @@ final class ReflectiveThreadStrictModeInterceptor implements ThreadStrictModeInt
         } else if (ResourceMismatchViolation.class.isAssignableFrom(violationClass)) {
             return Violation.DETECT_RESOURCE_MISMATCH;
         }
-        return Violation.DETECT_UNKNOWN;
+        return Violation.DETECT_FAILED;
     }
 }

@@ -13,7 +13,6 @@
 #include "ash/tray_action/tray_action.h"
 #include "ash/tray_action/tray_action_observer.h"
 #include "ash/wm/lock_layout_manager.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 
 namespace ash {
@@ -44,6 +43,12 @@ class ASH_EXPORT LockActionHandlerLayoutManager
       aura::Window* window,
       Shelf* shelf,
       LockScreenActionBackgroundController* action_background_controller);
+
+  LockActionHandlerLayoutManager(const LockActionHandlerLayoutManager&) =
+      delete;
+  LockActionHandlerLayoutManager& operator=(
+      const LockActionHandlerLayoutManager&) = delete;
+
   ~LockActionHandlerLayoutManager() override;
 
   // WmDefaultLayoutManager:
@@ -71,8 +76,6 @@ class ASH_EXPORT LockActionHandlerLayoutManager
   base::ScopedObservation<LockScreenActionBackgroundController,
                           LockScreenActionBackgroundObserver>
       action_background_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockActionHandlerLayoutManager);
 };
 
 }  // namespace ash

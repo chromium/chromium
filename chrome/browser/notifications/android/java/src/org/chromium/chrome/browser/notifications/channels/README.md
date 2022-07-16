@@ -75,7 +75,7 @@ for newly created channels, where appropriate. See [the setDescription documenta
  pass on an Android O device locally.
 
 
-    ninja -C out/AndroidDebug -j2000 -l20 chrome_public_test_apk
+    autoninja -C out/AndroidDebug chrome_public_test_apk
 
     out/AndroidDebug/bin/run_chrome_public_test_apk --test-filter "*Channel*"
 

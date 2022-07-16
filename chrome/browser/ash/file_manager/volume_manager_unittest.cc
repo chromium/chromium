@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_running_on_chromeos.h"
@@ -83,6 +82,10 @@ class LoggingObserver : public VolumeManagerObserver {
   };
 
   LoggingObserver() = default;
+
+  LoggingObserver(const LoggingObserver&) = delete;
+  LoggingObserver& operator=(const LoggingObserver&) = delete;
+
   ~LoggingObserver() override = default;
 
   const std::vector<Event>& events() const { return events_; }
@@ -203,8 +206,6 @@ class LoggingObserver : public VolumeManagerObserver {
 
  private:
   std::vector<Event> events_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggingObserver);
 };
 
 class FakeUser : public user_manager::User {

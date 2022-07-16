@@ -17,9 +17,9 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -112,6 +112,9 @@ class MockOfflinePageModel : public StubOfflinePageModel {
  public:
   explicit MockOfflinePageModel(base::TestMockTimeTaskRunner* task_runner)
       : observer_(nullptr), task_runner_(task_runner) {}
+
+  MockOfflinePageModel(const MockOfflinePageModel&) = delete;
+  MockOfflinePageModel& operator=(const MockOfflinePageModel&) = delete;
 
   ~MockOfflinePageModel() override {}
 
@@ -207,8 +210,6 @@ class MockOfflinePageModel : public StubOfflinePageModel {
  private:
   OfflinePageModel::Observer* observer_;
   base::TestMockTimeTaskRunner* task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockOfflinePageModel);
 };
 
 // Creates mock versions for OfflinePageModel, RequestCoordinator and their

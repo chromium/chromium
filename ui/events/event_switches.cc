@@ -26,7 +26,7 @@ const char kTouchDevices[] = "touch-devices";
 const char kPenDevices[] = "pen-devices";
 #endif
 
-#if defined(USE_X11) || defined(USE_OZONE)
+#if defined(USE_OZONE)
 // Tells Chrome to do edge touch filtering. Useful for convertible tablet.
 const char kEdgeTouchFiltering[] = "edge-touch-filtering";
 

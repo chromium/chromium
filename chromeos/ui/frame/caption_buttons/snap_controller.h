@@ -16,9 +16,16 @@ namespace chromeos {
 // The previewed snap state for a window, corresponding to the use of a
 // PhantomWindowController.
 enum class SnapDirection {
-  kNone,   // No snap preview.
-  kLeft,   // The phantom window controller is previewing a snap to the left.
-  kRight,  // The phantom window controller is previewing a snap to the right.
+  kNone,       // No snap preview.
+  kPrimary,    // The phantom window controller is previewing a snap to the
+               // primary position, translated into left for landscape display
+               // (or right for secondary display layout) and top (or bottom)
+               // for portrait display. For more details, see
+               // description for `SplitViewController::IsLayoutHorizontal()`.
+  kSecondary,  // The phantom window controller is previewing a snap to the
+               // secondary position, the opposite position of the primary. For
+               // example, in primary portrait display, primary position is the
+               // top and secondary position is the bottom.
 };
 
 // This interface handles snap actions to be performed on a top level window.

@@ -27,6 +27,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "url/android/gurl_android.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -111,7 +112,8 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
     Java_AutofillPopupBridge_addToAutofillSuggestionArray(
         env, data_array, i, value, label, item_tag, android_icon_id,
         /*icon_at_start=*/false, suggestion.frontend_id, is_deletable,
-        is_label_multiline, /*isLabelBold*/ false);
+        is_label_multiline, /*isLabelBold*/ false,
+        url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));
   }
 
   Java_AutofillPopupBridge_show(env, java_object_, data_array,

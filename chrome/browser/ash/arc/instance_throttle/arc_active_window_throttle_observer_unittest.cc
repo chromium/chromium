@@ -20,6 +20,11 @@ class ArcActiveWindowThrottleObserverTest : public testing::Test {
   ArcActiveWindowThrottleObserverTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
+  ArcActiveWindowThrottleObserverTest(
+      const ArcActiveWindowThrottleObserverTest&) = delete;
+  ArcActiveWindowThrottleObserverTest& operator=(
+      const ArcActiveWindowThrottleObserverTest&) = delete;
+
  protected:
   ArcActiveWindowThrottleObserver* window_observer() {
     return &window_observer_;
@@ -28,8 +33,6 @@ class ArcActiveWindowThrottleObserverTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   ArcActiveWindowThrottleObserver window_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcActiveWindowThrottleObserverTest);
 };
 
 TEST_F(ArcActiveWindowThrottleObserverTest, TestConstructDestruct) {}

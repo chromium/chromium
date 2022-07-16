@@ -29,6 +29,10 @@ std::string GetAdjustedBounds(const gfx::Rect& visible,
 class FakeWindowState : public WindowState::State {
  public:
   explicit FakeWindowState() = default;
+
+  FakeWindowState(const FakeWindowState&) = delete;
+  FakeWindowState& operator=(const FakeWindowState&) = delete;
+
   ~FakeWindowState() override = default;
 
   // WindowState::State overrides:
@@ -47,8 +51,6 @@ class FakeWindowState : public WindowState::State {
 
  private:
   bool was_visible_on_minimize_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWindowState);
 };
 
 }  // namespace

@@ -42,21 +42,21 @@ GuestOsHandler::GuestOsHandler(Profile* profile) : profile_(profile) {}
 GuestOsHandler::~GuestOsHandler() = default;
 
 void GuestOsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getGuestOsSharedPathsDisplayText",
       base::BindRepeating(
           &GuestOsHandler::HandleGetGuestOsSharedPathsDisplayText,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "removeGuestOsSharedPath",
       base::BindRepeating(&GuestOsHandler::HandleRemoveGuestOsSharedPath,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "notifyGuestOsSharedUsbDevicesPageReady",
       base::BindRepeating(
           &GuestOsHandler::HandleNotifyGuestOsSharedUsbDevicesPageReady,
           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setGuestOsUsbDeviceShared",
       base::BindRepeating(&GuestOsHandler::HandleSetGuestOsUsbDeviceShared,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -75,7 +75,7 @@ void GuestOsHandler::OnJavascriptDisallowed() {
 void GuestOsHandler::HandleGetGuestOsSharedPathsDisplayText(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   std::string callback_id = args->GetList()[0].GetString();
 
   base::Value texts(base::Value::Type::LIST);

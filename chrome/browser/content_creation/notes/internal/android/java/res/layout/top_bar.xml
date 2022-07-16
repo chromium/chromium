@@ -33,7 +33,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:contentDescription="@string/close"
-                android:gravity="center_vertical|start"/>
+                android:gravity="center_vertical|start"
+                app:tint="@color/default_icon_color_tint_list"/>
         </LinearLayout>
 
         <LinearLayout
@@ -66,6 +67,9 @@
                 android:id="@+id/next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minWidth="0dp"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
                 android:layout_marginEnd="24dp"
                 android:ellipsize="end"
                 android:gravity="center_vertical|end"

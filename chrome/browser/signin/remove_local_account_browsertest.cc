@@ -6,8 +6,8 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -80,7 +80,7 @@ class RemoveLocalAccountTest : public MixinBasedInProcessBrowserTest {
     embedded_test_server_.StartAcceptingConnections();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // ChromeSigninClient uses chromeos::DelayNetworkCall() which requires
+    // ChromeSigninClient uses `ash::DelayNetworkCall()` which requires
     // simulating being online.
     network_portal_detector_.SimulateDefaultNetworkState(
         ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
@@ -119,7 +119,6 @@ IN_PROC_BROWSER_TEST_F(RemoveLocalAccountTest, ShouldNotifyObservers) {
 
   // Open a FakeGaia page that issues the desired HTTP response header with
   // Google-Accounts-RemoveLocalAccount.
-  base::HistogramTester histogram_tester;
   chrome::AddTabAt(browser(),
                    fake_gaia_.GetDummyRemoveLocalAccountURL(kTestGaiaId),
                    /*index=*/0,
@@ -139,9 +138,6 @@ IN_PROC_BROWSER_TEST_F(RemoveLocalAccountTest, ShouldNotifyObservers) {
   EXPECT_TRUE(updated_cookie_jar_info.accounts_are_fresh);
   EXPECT_THAT(updated_cookie_jar_info.signed_out_accounts,
               Not(Contains(ListedAccountMatchesGaiaId(kTestGaiaId))));
-
-  histogram_tester.ExpectUniqueSample("Signin.RemoveLocalAccountOutcome",
-                                      0 /* kSuccess*/, 1);
 }
 
 }  // namespace

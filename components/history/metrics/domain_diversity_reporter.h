@@ -25,6 +25,10 @@ class DomainDiversityReporter : public KeyedService,
   DomainDiversityReporter(history::HistoryService* history_service,
                           PrefService* prefs,
                           base::Clock* clock);
+
+  DomainDiversityReporter(const DomainDiversityReporter&) = delete;
+  DomainDiversityReporter& operator=(const DomainDiversityReporter&) = delete;
+
   ~DomainDiversityReporter() override;
 
   // Registers Profile preferences in `registry`.
@@ -65,8 +69,6 @@ class DomainDiversityReporter : public KeyedService,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DomainDiversityReporter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DomainDiversityReporter);
 };
 
 #endif  // COMPONENTS_HISTORY_METRICS_DOMAIN_DIVERSITY_REPORTER_H_

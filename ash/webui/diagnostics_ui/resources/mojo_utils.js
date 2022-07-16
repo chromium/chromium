@@ -12,8 +12,8 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
  * @return {!mojoBase.mojom.String16}
  */
 export function stringToMojoString16(str) {
-  let arr = [];
-  for (var i = 0; i < str.length; i++) {
+  const arr = [];
+  for (let i = 0; i < str.length; i++) {
     arr[i] = str.charCodeAt(i);
   }
   return {data: arr};

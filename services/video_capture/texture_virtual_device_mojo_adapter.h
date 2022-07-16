@@ -22,6 +22,12 @@ class TextureVirtualDeviceMojoAdapter : public mojom::TextureVirtualDevice,
                                         public mojom::Device {
  public:
   TextureVirtualDeviceMojoAdapter();
+
+  TextureVirtualDeviceMojoAdapter(const TextureVirtualDeviceMojoAdapter&) =
+      delete;
+  TextureVirtualDeviceMojoAdapter& operator=(
+      const TextureVirtualDeviceMojoAdapter&) = delete;
+
   ~TextureVirtualDeviceMojoAdapter() override;
 
   void SetReceiverDisconnectedCallback(base::OnceClosure callback);
@@ -66,8 +72,6 @@ class TextureVirtualDeviceMojoAdapter : public mojom::TextureVirtualDevice,
   scoped_refptr<VideoFrameAccessHandlerRemote> frame_access_handler_remote_;
   bool video_frame_handler_has_forwarder_ = false;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TextureVirtualDeviceMojoAdapter);
 };
 
 }  // namespace video_capture

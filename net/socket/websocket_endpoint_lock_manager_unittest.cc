@@ -266,7 +266,7 @@ TEST_F(WebSocketEndpointLockManagerTest, UnlockEndpointIsDelayed) {
   // applied. Instead it just verifies that the whole thing took >=1ms. 1ms is
   // easily enough for normal compiles even on Android, so the fact that there
   // is a delay is still checked on every platform.
-  const base::TimeDelta unlock_delay = base::TimeDelta::FromMilliseconds(1);
+  const base::TimeDelta unlock_delay = base::Milliseconds(1);
   websocket_endpoint_lock_manager_.SetUnlockDelayForTesting(unlock_delay);
   FakeWaiter fake_waiter;
   BlockingWaiter blocking_waiter;

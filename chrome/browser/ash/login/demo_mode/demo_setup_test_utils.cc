@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 

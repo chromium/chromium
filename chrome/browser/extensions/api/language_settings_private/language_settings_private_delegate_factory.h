@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_LANGUAGE_SETTINGS_PRIVATE_LANGUAGE_SETTINGS_PRIVATE_DELEGATE_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_API_LANGUAGE_SETTINGS_PRIVATE_LANGUAGE_SETTINGS_PRIVATE_DELEGATE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -20,6 +19,11 @@ class LanguageSettingsPrivateDelegate;
 class LanguageSettingsPrivateDelegateFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  LanguageSettingsPrivateDelegateFactory(
+      const LanguageSettingsPrivateDelegateFactory&) = delete;
+  LanguageSettingsPrivateDelegateFactory& operator=(
+      const LanguageSettingsPrivateDelegateFactory&) = delete;
+
   // Returns the LanguageSettingsPrivateDelegate for |context|, creating it
   // if it is not yet created.
   static LanguageSettingsPrivateDelegate* GetForBrowserContext(
@@ -44,8 +48,6 @@ class LanguageSettingsPrivateDelegateFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateDelegateFactory);
 };
 
 }  // namespace extensions

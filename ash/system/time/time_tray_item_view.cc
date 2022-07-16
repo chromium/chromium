@@ -18,27 +18,19 @@ namespace ash {
 
 namespace tray {
 
-namespace {
-
-// The top padding of time tray item view so that the time is aligned properly
-// in status area.
-constexpr int kTimeTrayItemTopPadding = 1;
-
-}  // namespace
-
-TimeTrayItemView::TimeTrayItemView(Shelf* shelf, UnifiedSystemTrayModel* model)
+TimeTrayItemView::TimeTrayItemView(
+    Shelf* shelf,
+    UnifiedSystemTrayModel* model,
+    absl::optional<TimeView::OnTimeViewActionPerformedCallback> callback)
     : TrayItemView(shelf), model_(model), session_observer_(this) {
   system_tray_model_observation_.Observe(model_);
 
   TimeView::ClockLayout clock_layout =
       shelf->IsHorizontalAlignment() ? TimeView::ClockLayout::HORIZONTAL_CLOCK
                                      : TimeView::ClockLayout::VERTICAL_CLOCK;
-  time_view_ =
-      new TimeView(clock_layout, Shell::Get()->system_tray_model()->clock());
-  int top_padding =
-      shelf->IsHorizontalAlignment() ? kTimeTrayItemTopPadding : 0;
-  time_view_->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(0, 0, top_padding, 0)));
+  time_view_ = new TimeView(
+      clock_layout, Shell::Get()->system_tray_model()->clock(), callback);
+
   AddChildView(time_view_);
 
   OnSystemTrayButtonSizeChanged(model_->GetSystemTrayButtonSize());
@@ -51,10 +43,6 @@ void TimeTrayItemView::UpdateAlignmentForShelf(Shelf* shelf) {
       shelf->IsHorizontalAlignment() ? TimeView::ClockLayout::HORIZONTAL_CLOCK
                                      : TimeView::ClockLayout::VERTICAL_CLOCK;
   time_view_->UpdateClockLayout(clock_layout);
-  int top_padding =
-      shelf->IsHorizontalAlignment() ? kTimeTrayItemTopPadding : 0;
-  time_view_->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(0, 0, top_padding, 0)));
 }
 
 void TimeTrayItemView::HandleLocaleChange() {
@@ -68,8 +56,8 @@ void TimeTrayItemView::OnSessionStateChanged(
 
 void TimeTrayItemView::OnSystemTrayButtonSizeChanged(
     UnifiedSystemTrayModel::SystemTrayButtonSize system_tray_size) {
-  time_view_->SetShowDateWhenHorizontal(
-      features::IsShowDateInTrayButtonEnabled() &&
+  time_view_->SetShowDate(
+      features::IsCalendarViewEnabled() &&
       system_tray_size == UnifiedSystemTrayModel::SystemTrayButtonSize::kLarge);
 }
 

@@ -19,7 +19,7 @@ bool IsNearbyShareCertificateExpired(base::Time current_time,
   base::TimeDelta tolerance =
       use_public_certificate_tolerance
           ? kNearbySharePublicCertificateValidityBoundOffsetTolerance
-          : base::TimeDelta::FromSeconds(0);
+          : base::Seconds(0);
 
   return current_time >= not_after + tolerance;
 }
@@ -32,7 +32,7 @@ bool IsNearbyShareCertificateWithinValidityPeriod(
   base::TimeDelta tolerance =
       use_public_certificate_tolerance
           ? kNearbySharePublicCertificateValidityBoundOffsetTolerance
-          : base::TimeDelta::FromSeconds(0);
+          : base::Seconds(0);
 
   return current_time >= not_before - tolerance &&
          !IsNearbyShareCertificateExpired(current_time, not_after,

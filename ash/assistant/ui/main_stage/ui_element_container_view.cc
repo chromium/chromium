@@ -12,16 +12,22 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/assistant/ui/colors/assistant_colors_util.h"
 #include "ash/assistant/ui/main_stage/animated_container_view.h"
 #include "ash/assistant/ui/main_stage/assistant_ui_element_view.h"
 #include "ash/assistant/ui/main_stage/assistant_ui_element_view_factory.h"
 #include "ash/assistant/ui/main_stage/element_animator.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "cc/base/math_util.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -35,13 +41,54 @@ namespace {
 constexpr int kPaddingBottomDip = 8;
 constexpr int kScrollIndicatorHeightDip = 1;
 
+// ObservableOverflowIndicator allows a caller to observe visibility change of
+// an overflow indicator. Note that we are using this view with setting
+// thickness to 0 with ScrollView::SetCustomOverflowIndicator. This view is not
+// visible.
+class ObservableOverflowIndicator : public views::View {
+ public:
+  METADATA_HEADER(ObservableOverflowIndicator);
+
+  explicit ObservableOverflowIndicator(
+      UiElementContainerView* ui_element_container_view)
+      : ui_element_container_view_(ui_element_container_view) {}
+
+ protected:
+  void VisibilityChanged(views::View* starting_from, bool is_visible) override {
+    if (starting_from != this)
+      return;
+
+    ui_element_container_view_->OnOverflowIndicatorVisibilityChanged(
+        is_visible);
+  }
+
+ private:
+  UiElementContainerView* ui_element_container_view_ = nullptr;
+};
+
+BEGIN_METADATA(ObservableOverflowIndicator, views::View)
+END_METADATA
+
+// This is views::View. We define InvisibleOverflowIndicator as we can add
+// METADATA to this view. We set thickness of this view to 0 with
+// ScrollView::SetCustomOverflowIndicator. The background of this view is NOT
+// transparent, i.e. it becomes visible if you set thickness larger than 0.
+class InvisibleOverflowIndicator : public views::View {
+ public:
+  METADATA_HEADER(InvisibleOverflowIndicator);
+};
+
+BEGIN_METADATA(InvisibleOverflowIndicator, views::View)
+END_METADATA
+
 }  // namespace
 
 // UiElementContainerView ------------------------------------------------------
 
 UiElementContainerView::UiElementContainerView(AssistantViewDelegate* delegate)
     : AnimatedContainerView(delegate),
-      view_factory_(std::make_unique<AssistantUiElementViewFactory>(delegate)) {
+      view_factory_(std::make_unique<AssistantUiElementViewFactory>(delegate)),
+      use_dark_light_mode_colors_(assistant::UseDarkLightModeColors()) {
   SetID(AssistantViewID::kUiElementContainer);
   InitLayout();
 }
@@ -89,16 +136,17 @@ void UiElementContainerView::OnContentsPreferredSizeChanged(
 
 void UiElementContainerView::InitLayout() {
   // Content.
+  const int horizontal_margin = assistant::ui::GetHorizontalMargin();
   content_view()->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(0, kHorizontalMarginDip, kPaddingBottomDip,
-                  kHorizontalMarginDip),
+      gfx::Insets(0, horizontal_margin, kPaddingBottomDip, horizontal_margin),
       kSpacingDip));
 
   // Scroll indicator.
   scroll_indicator_ = AddChildView(std::make_unique<views::View>());
+  scroll_indicator_->SetID(kOverflowIndicator);
   scroll_indicator_->SetBackground(
-      views::CreateSolidBackground(gfx::kGoogleGrey300));
+      views::CreateSolidBackground(GetOverflowIndicatorBackgroundColor()));
 
   // The scroll indicator paints to its own layer which is animated in/out using
   // implicit animation settings.
@@ -115,6 +163,26 @@ void UiElementContainerView::InitLayout() {
   // of margin to the bottom of the content. Otherwise, |scroll_indicator_| will
   // occupy this space.
   SetBorder(views::CreateEmptyBorder(0, 0, kScrollIndicatorHeightDip, 0));
+
+  // We set invisible overflow indicators with thickness=0. But we observe
+  // visibility change of the bottom indicator.
+  SetDrawOverflowIndicator(true);
+  SetCustomOverflowIndicator(
+      views::OverflowIndicatorAlignment::kBottom,
+      std::make_unique<ObservableOverflowIndicator>(this),
+      /*thickness=*/0, /*fills_opaquely=*/true);
+  SetCustomOverflowIndicator(views::OverflowIndicatorAlignment::kTop,
+                             std::make_unique<InvisibleOverflowIndicator>(),
+                             /*thickness=*/0,
+                             /*fills_opaquely=*/true);
+  SetCustomOverflowIndicator(views::OverflowIndicatorAlignment::kLeft,
+                             std::make_unique<InvisibleOverflowIndicator>(),
+                             /*thickness=*/0,
+                             /*fills_opaquely=*/true);
+  SetCustomOverflowIndicator(views::OverflowIndicatorAlignment::kRight,
+                             std::make_unique<InvisibleOverflowIndicator>(),
+                             /*thickness=*/0,
+                             /*fills_opaquely=*/true);
 }
 
 void UiElementContainerView::OnCommittedQueryChanged(
@@ -122,6 +190,16 @@ void UiElementContainerView::OnCommittedQueryChanged(
   // Scroll to the top to play nice with the transition animation.
   ScrollToPosition(vertical_scroll_bar(), 0);
   AnimatedContainerView::OnCommittedQueryChanged(query);
+}
+
+void UiElementContainerView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  scroll_indicator_->background()->SetNativeControlColor(
+      GetOverflowIndicatorBackgroundColor());
+
+  // SetNativeControlColor doesn't trigger a repaint.
+  scroll_indicator_->SchedulePaint();
 }
 
 std::unique_ptr<ElementAnimator> UiElementContainerView::HandleUiElement(
@@ -157,34 +235,22 @@ void UiElementContainerView::OnAllViewsAnimatedIn() {
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 }
 
-void UiElementContainerView::OnScrollBarUpdated(views::ScrollBar* scroll_bar,
-                                                int viewport_size,
-                                                int content_size,
-                                                int content_scroll_offset) {
-  if (scroll_bar != vertical_scroll_bar())
-    return;
-
-  // When the vertical scroll bar is updated, we update our |scroll_indicator_|.
-  bool can_scroll = content_size > (content_scroll_offset + viewport_size);
-  UpdateScrollIndicator(can_scroll);
-}
-
-void UiElementContainerView::OnScrollBarVisibilityChanged(
-    views::ScrollBar* scroll_bar,
+void UiElementContainerView::OnOverflowIndicatorVisibilityChanged(
     bool is_visible) {
-  // When the vertical scroll bar is hidden, we need to update our
-  // |scroll_indicator_|. This may occur during a layout pass when the new
-  // content no longer requires a vertical scroll bar while the old content did.
-  if (scroll_bar == vertical_scroll_bar() && !is_visible)
-    UpdateScrollIndicator(/*can_scroll=*/false);
-}
-
-void UiElementContainerView::UpdateScrollIndicator(bool can_scroll) {
-  const float target_opacity = can_scroll ? 1.f : 0.f;
+  const float target_opacity = is_visible ? 1.f : 0.f;
 
   ui::Layer* layer = scroll_indicator_->layer();
   if (!cc::MathUtil::IsWithinEpsilon(layer->GetTargetOpacity(), target_opacity))
     layer->SetOpacity(target_opacity);
+}
+
+SkColor UiElementContainerView::GetOverflowIndicatorBackgroundColor() const {
+  if (use_dark_light_mode_colors_) {
+    return ColorProvider::Get()->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kSeparatorColor);
+  }
+
+  return gfx::kGoogleGrey300;
 }
 
 }  // namespace ash

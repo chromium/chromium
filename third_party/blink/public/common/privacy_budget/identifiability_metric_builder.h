@@ -112,14 +112,14 @@ class BLINK_COMMON_EXPORT IdentifiabilityMetricBuilder {
   ~IdentifiabilityMetricBuilder();
 
   // Set the metric using a previously constructed |IdentifiableSurface|.
-  IdentifiabilityMetricBuilder& Set(IdentifiableSurface surface,
+  IdentifiabilityMetricBuilder& Add(IdentifiableSurface surface,
                                     IdentifiableToken sample);
 
   // Convenience method for recording the result of invoking a simple API
   // surface with a |UseCounter|.
-  IdentifiabilityMetricBuilder& SetWebfeature(mojom::WebFeature feature,
+  IdentifiabilityMetricBuilder& AddWebFeature(mojom::WebFeature feature,
                                               IdentifiableToken sample) {
-    return Set(IdentifiableSurface::FromTypeAndToken(
+    return Add(IdentifiableSurface::FromTypeAndToken(
                    IdentifiableSurface::Type::kWebFeature, feature),
                sample);
   }

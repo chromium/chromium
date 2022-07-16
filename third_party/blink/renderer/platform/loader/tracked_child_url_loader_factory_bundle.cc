@@ -19,8 +19,6 @@ TrackedChildPendingURLLoaderFactoryBundle::
     TrackedChildPendingURLLoaderFactoryBundle(
         mojo::PendingRemote<network::mojom::URLLoaderFactory>
             pending_default_factory,
-        mojo::PendingRemote<network::mojom::URLLoaderFactory>
-            pending_appcache_factory,
         SchemeMap pending_scheme_specific_factories,
         OriginMap pending_isolated_world_factories,
         mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -29,7 +27,6 @@ TrackedChildPendingURLLoaderFactoryBundle::
         bool bypass_redirect_checks)
     : ChildPendingURLLoaderFactoryBundle(
           std::move(pending_default_factory),
-          std::move(pending_appcache_factory),
           std::move(pending_scheme_specific_factories),
           std::move(pending_isolated_world_factories),
           std::move(pending_prefetch_loader_factory),
@@ -48,7 +45,6 @@ scoped_refptr<network::SharedURLLoaderFactory>
 TrackedChildPendingURLLoaderFactoryBundle::CreateFactory() {
   auto other = std::make_unique<TrackedChildPendingURLLoaderFactoryBundle>();
   other->pending_default_factory_ = std::move(pending_default_factory_);
-  other->pending_appcache_factory_ = std::move(pending_appcache_factory_);
   other->pending_scheme_specific_factories_ =
       std::move(pending_scheme_specific_factories_);
   other->pending_isolated_world_factories_ =
@@ -91,7 +87,6 @@ TrackedChildURLLoaderFactoryBundle::Clone() {
 
   return std::make_unique<TrackedChildPendingURLLoaderFactoryBundle>(
       std::move(pending_factories->pending_default_factory()),
-      std::move(pending_factories->pending_appcache_factory()),
       std::move(pending_factories->pending_scheme_specific_factories()),
       std::move(pending_factories->pending_isolated_world_factories()),
       std::move(pending_factories->pending_prefetch_loader_factory()),
@@ -156,29 +151,6 @@ HostChildURLLoaderFactoryBundle::Clone() {
 
   return std::make_unique<TrackedChildPendingURLLoaderFactoryBundle>(
       std::move(pending_factories->pending_default_factory()),
-      std::move(pending_factories->pending_appcache_factory()),
-      std::move(pending_factories->pending_scheme_specific_factories()),
-      std::move(pending_factories->pending_isolated_world_factories()),
-      std::move(pending_factories->pending_prefetch_loader_factory()),
-      std::move(main_thread_host_bundle_clone),
-      pending_factories->bypass_redirect_checks());
-}
-
-std::unique_ptr<network::PendingSharedURLLoaderFactory>
-HostChildURLLoaderFactoryBundle::CloneWithoutAppCacheFactory() {
-  auto pending_factories =
-      base::WrapUnique(static_cast<ChildPendingURLLoaderFactoryBundle*>(
-          ChildURLLoaderFactoryBundle::CloneWithoutAppCacheFactory()
-              .release()));
-
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-  auto main_thread_host_bundle_clone = std::make_unique<
-      TrackedChildURLLoaderFactoryBundle::HostPtrAndTaskRunner>(AsWeakPtr(),
-                                                                task_runner_);
-
-  return std::make_unique<TrackedChildPendingURLLoaderFactoryBundle>(
-      std::move(pending_factories->pending_default_factory()),
-      std::move(pending_factories->pending_appcache_factory()),
       std::move(pending_factories->pending_scheme_specific_factories()),
       std::move(pending_factories->pending_isolated_world_factories()),
       std::move(pending_factories->pending_prefetch_loader_factory()),

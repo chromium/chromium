@@ -24,7 +24,8 @@
 #include "net/base/url_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/native_theme/native_theme.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/controls/webview/webview.h"
 
 namespace {
@@ -44,16 +45,14 @@ class ExtensionsSidePanelButton : public ToolbarButton {
 
  protected:
   SkColor GetForegroundColor(ButtonState state) const override {
-    const ui::NativeTheme* native_theme = GetNativeTheme();
-    DCHECK(native_theme);
     // Highlight the activatable state of extension button to increase
     // visibility.
     switch (state) {
       case ButtonState::STATE_HOVERED:
       case ButtonState::STATE_PRESSED:
       case ButtonState::STATE_NORMAL:
-        return native_theme->GetSystemColor(
-            ui::NativeTheme::kColorId_ProminentButtonColor);
+        return GetColorProvider()->GetColor(
+            ui::kColorButtonBackgroundProminent);
       default:
         return ToolbarButton::GetForegroundColor(state);
     }

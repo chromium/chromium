@@ -105,7 +105,6 @@ enum CookieSameSiteContextMetadataDowngradeType {
 
 // Keep defaults here in sync with net/cookies/cookie_options.h.
 struct CookieSameSiteContextMetadata {
-  bool affected_by_bugfix_1166211 = false;
   CookieSameSiteContextMetadataDowngradeType cross_site_redirect_downgrade = kNoDowngrade;
 };
 
@@ -150,6 +149,19 @@ struct CookieOptions {
   bool is_in_nontrivial_first_party_set = false;
 };
 
+struct CookiePartitionKey {
+  SchemefulSite site;
+  // Indicates the CookiePartitionKey is a placeholder indicating that the
+  // cookie should be partitioned, but it was created in the renderer so we
+  // don't know what its partition key is yet.
+  bool from_script = false;
+};
+
+struct CookiePartitionKeychain {
+  bool contains_all_partitions = false;
+  array<CookiePartitionKey> keys;
+};
+
 // See net/cookies/canonical_cookie.{h,cc} for documentation.
 // Keep defaults here in sync with those files.
 struct CanonicalCookie {
@@ -166,7 +178,7 @@ struct CanonicalCookie {
   CookiePriority priority = MEDIUM;
   CookieSourceScheme source_scheme = kUnset;
   bool same_party = false;
-  SchemefulSite? partition_key;
+  CookiePartitionKey? partition_key;
   // -1 because of url::PORT_UNSPECIFIED
   // url/third_party/mozilla/url_parse.h
   int32 source_port = -1;
@@ -342,12 +354,16 @@ interface CookieManager {
           array<CookieAccessSemantics> access_semantics_list);
 
   // Get all cookies for the specified URL and cookie options.
+  // Will also return any partitioned cookies whose partition key are in
+  // |cookie_partition_keychain|.
   // Returned cookie list is sorted first by path length (longest first)
   // and second by creation time. If the |return_excluded_cookies| option is set
   // in the options, |excluded_cookies| with be a list of cookies that were
   // blocked from being sent along with the reason each cookie was blocked. By
   // default, that option is not set and |excluded_cookies| is an empty list.
-  GetCookieList(url.mojom.Url url, CookieOptions cookie_options)
+  GetCookieList(url.mojom.Url url,
+                CookieOptions cookie_options,
+                CookiePartitionKeychain cookie_partition_keychain)
       => (array<CookieWithAccessResult> cookies,
           array<CookieWithAccessResult> excluded_cookies);
 

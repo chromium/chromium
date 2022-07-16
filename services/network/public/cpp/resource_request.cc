@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
+#include "net/log/net_log_source.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/url_request.mojom.h"
@@ -79,6 +80,13 @@ bool OptionalWebBundleTokenParamsEqualsForTesting(  // IN-TEST
          (lhs && rhs && lhs->EqualsForTesting(*rhs));  // IN-TEST
 }
 
+bool OptionalNetLogInfoEqualsForTesting(
+    const absl::optional<net::NetLogSource>& lhs,
+    const absl::optional<net::NetLogSource>& rhs) {
+  bool equal_members = lhs && rhs && lhs.value() == rhs.value();
+  return (!lhs && !rhs) || equal_members;
+}
+
 base::debug::CrashKeyString* GetRequestUrlCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
       "request_url", base::debug::CrashKeySize::Size256);
@@ -128,11 +136,11 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
 }
 
 bool ResourceRequest::TrustedParams::EqualsForTesting(
-    const TrustedParams& trusted_params) const {
-  return isolation_info.IsEqualForTesting(trusted_params.isolation_info) &&
-         disable_secure_dns == trusted_params.disable_secure_dns &&
-         has_user_activation == trusted_params.has_user_activation &&
-         client_security_state == trusted_params.client_security_state;
+    const TrustedParams& other) const {
+  return isolation_info.IsEqualForTesting(other.isolation_info) &&
+         disable_secure_dns == other.disable_secure_dns &&
+         has_user_activation == other.has_user_activation &&
+         client_security_state == other.client_security_state;
 }
 
 ResourceRequest::WebBundleTokenParams::WebBundleTokenParams() = default;
@@ -188,9 +196,9 @@ ResourceRequest::WebBundleTokenParams::CloneHandle() const {
   return new_remote;
 }
 
-ResourceRequest::ResourceRequest() {}
+ResourceRequest::ResourceRequest() = default;
 ResourceRequest::ResourceRequest(const ResourceRequest& request) = default;
-ResourceRequest::~ResourceRequest() {}
+ResourceRequest::~ResourceRequest() = default;
 
 bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
   return method == request.method && url == request.url &&
@@ -227,7 +235,6 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          do_not_prompt_for_login == request.do_not_prompt_for_login &&
          is_main_frame == request.is_main_frame &&
          transition_type == request.transition_type &&
-         report_raw_headers == request.report_raw_headers &&
          previews_state == request.previews_state &&
          upgrade_if_insecure == request.upgrade_if_insecure &&
          is_revalidating == request.is_revalidating &&
@@ -250,7 +257,12 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
              request.devtools_accepted_stream_types &&
          trust_token_params == request.trust_token_params &&
          OptionalWebBundleTokenParamsEqualsForTesting(  // IN-TEST
-             web_bundle_token_params, request.web_bundle_token_params);
+             web_bundle_token_params, request.web_bundle_token_params) &&
+         OptionalNetLogInfoEqualsForTesting(net_log_create_info,
+                                            request.net_log_create_info) &&
+         OptionalNetLogInfoEqualsForTesting(net_log_reference_info,
+                                            request.net_log_reference_info) &&
+         target_ip_address_space == request.target_ip_address_space;
 }
 
 bool ResourceRequest::SendsCookies() const {

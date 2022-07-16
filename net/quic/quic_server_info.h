@@ -41,6 +41,10 @@ class QUIC_EXPORT_PRIVATE QuicServerInfo {
   };
 
   explicit QuicServerInfo(const quic::QuicServerId& server_id);
+
+  QuicServerInfo(const QuicServerInfo&) = delete;
+  QuicServerInfo& operator=(const QuicServerInfo&) = delete;
+
   virtual ~QuicServerInfo();
 
   // Fetches the server config from the backing store, and returns true
@@ -50,11 +54,12 @@ class QUIC_EXPORT_PRIVATE QuicServerInfo {
   // Persist allows for the server information to be updated for future uses.
   virtual void Persist() = 0;
 
-  // Returns the size of dynamically allocated memory in bytes.
-  virtual size_t EstimateMemoryUsage() const = 0;
-
   struct State {
     State();
+
+    State(const State&) = delete;
+    State& operator=(const State&) = delete;
+
     ~State();
 
     void Clear();
@@ -67,9 +72,6 @@ class QUIC_EXPORT_PRIVATE QuicServerInfo {
     std::vector<std::string> certs;    // A list of certificates in leaf-first
                                        // order.
     std::string server_config_sig;     // A signature of |server_config_|.
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(State);
   };
 
   // Once the data is ready, it can be read using the following members. These
@@ -96,8 +98,6 @@ class QUIC_EXPORT_PRIVATE QuicServerInfo {
 
   // SerializeInner is a helper function for Serialize.
   std::string SerializeInner() const;
-
-  DISALLOW_COPY_AND_ASSIGN(QuicServerInfo);
 };
 
 }  // namespace net

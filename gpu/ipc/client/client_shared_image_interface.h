@@ -71,6 +71,8 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
       uint32_t usage) override;
+  void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
+                             const Mailbox& mailbox) override;
 #endif
 #if defined(OS_ANDROID)
   Mailbox CreateSharedImageWithAHB(const Mailbox& mailbox,

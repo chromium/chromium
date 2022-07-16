@@ -16,9 +16,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Intent;
 
+import androidx.test.espresso.action.GeneralClickAction;
+import androidx.test.espresso.action.GeneralLocation;
+import androidx.test.espresso.action.Press;
+import androidx.test.espresso.action.Tap;
+import androidx.test.espresso.action.ViewActions;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -32,6 +39,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -43,6 +51,7 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
@@ -109,10 +118,11 @@ public class StartSurfaceNoTabsTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"StartSurface"})
     // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/tab_count_button_on_start_surface/true"})
+    @DisabledTest(message = "https://crbug.com/1263910")
     public void testShow_SingleAsHomepage_NoTabs() throws TimeoutException {
         // clang-format on
         CriteriaHelper.pollUiThread(
@@ -132,8 +142,14 @@ public class StartSurfaceNoTabsTest {
                 .check(matches(withEffectiveVisibility(GONE)));
         onView(withId(org.chromium.chrome.tab_ui.R.id.tasks_surface_body))
                 .check(matches(isDisplayed()));
+        onView(withId(R.id.start_tab_switcher_button)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.logo)).check(matches(isDisplayed()));
+
         onView(withId(R.id.start_tab_switcher_button))
-                .check(matches(withEffectiveVisibility(GONE)));
+                .perform(clickAndPressBackIfAccidentallyLongClicked());
+        onViewWaiting(withId(R.id.secondary_tasks_surface_view));
+        pressBack();
+        onViewWaiting(withId(R.id.primary_tasks_surface_view));
     }
 
     @Test
@@ -142,6 +158,7 @@ public class StartSurfaceNoTabsTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/true" +
         "/show_last_active_tab_only/true/open_ntp_instead_of_start/true"})
+    @DisabledTest(message = "https://crbug.com/1263910")
     public void testShow_SingleAsHomepage_SingleTabSwitcher_NoTabs() {
         // clang-format on
         CriteriaHelper.pollUiThread(
@@ -163,5 +180,19 @@ public class StartSurfaceNoTabsTest {
                 .check(matches(withEffectiveVisibility(GONE)));
         onView(withId(org.chromium.chrome.tab_ui.R.id.tasks_surface_body))
                 .check(matches(isDisplayed()));
+    }
+
+    private void pressBack() {
+        // ChromeTabbedActivity expects the native libraries to be loaded when back is pressed.
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().onBackPressed());
+    }
+
+    private static GeneralClickAction clickAndPressBackIfAccidentallyLongClicked() {
+        // If the click is misinterpreted as a long press, do a pressBack() to dismiss a context
+        // menu.
+        return new GeneralClickAction(
+                Tap.SINGLE, GeneralLocation.CENTER, Press.FINGER, ViewActions.pressBack());
     }
 }

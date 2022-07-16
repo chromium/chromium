@@ -105,4 +105,30 @@ struct ErrorInfo {
   ErrorType error_type;
 };
 
+// Represents a custom background on the new tab page.
+struct CustomBackground {
+  CustomBackground();
+  CustomBackground(const CustomBackground&);
+  CustomBackground(CustomBackground&&);
+  ~CustomBackground();
+
+  CustomBackground& operator=(const CustomBackground&);
+  CustomBackground& operator=(CustomBackground&&);
+
+  // Url of the custom background selected by the user.
+  GURL custom_background_url;
+
+  // First attribution string for custom background.
+  std::string custom_background_attribution_line_1;
+
+  // Second attribution string for custom background.
+  std::string custom_background_attribution_line_2;
+
+  // Url to learn more info about the custom background.
+  GURL custom_background_attribution_action_url;
+
+  // Id of the collection being used for "daily refresh".
+  std::string collection_id;
+};
+
 #endif  // CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_DATA_H_

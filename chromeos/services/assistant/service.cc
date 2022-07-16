@@ -20,7 +20,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -33,9 +33,9 @@
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/service_context.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/user_manager/known_user.h"
@@ -52,10 +52,8 @@ namespace {
 constexpr char kScopeAssistant[] =
     "https://www.googleapis.com/auth/assistant-sdk-prototype";
 
-constexpr base::TimeDelta kMinTokenRefreshDelay =
-    base::TimeDelta::FromMilliseconds(1000);
-constexpr base::TimeDelta kMaxTokenRefreshDelay =
-    base::TimeDelta::FromMilliseconds(60 * 1000);
+constexpr base::TimeDelta kMinTokenRefreshDelay = base::Milliseconds(1000);
+constexpr base::TimeDelta kMaxTokenRefreshDelay = base::Milliseconds(60 * 1000);
 
 // Testing override for the URI used to contact the s3 server.
 const char* g_s3_server_uri_override = nullptr;
@@ -130,6 +128,10 @@ class ScopedAshSessionObserver {
 class Service::Context : public ServiceContext {
  public:
   explicit Context(Service* parent) : parent_(parent) {}
+
+  Context(const Context&) = delete;
+  Context& operator=(const Context&) = delete;
+
   ~Context() override = default;
 
   // ServiceContext:
@@ -176,8 +178,6 @@ class Service::Context : public ServiceContext {
 
  private:
   Service* const parent_;  // |this| is owned by |parent_|.
-
-  DISALLOW_COPY_AND_ASSIGN(Context);
 };
 
 Service::Service(std::unique_ptr<network::PendingSharedURLLoaderFactory>

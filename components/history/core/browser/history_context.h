@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_CONTEXT_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_CONTEXT_H_
 
-#include "base/macros.h"
-
 namespace history {
 
 // Context is an empty struct that is used to scope the lifetime of
@@ -14,12 +12,13 @@ namespace history {
 // lifetime is controlled by the embedder, thus they don't need a
 // virtual destructor.
 struct Context {
+ public:
+  Context(const Context&) = delete;
+  Context& operator=(const Context&) = delete;
+
  protected:
   Context() {}
   ~Context() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Context);
 };
 
 // Identifier for a context to scope the lifetime of navigation entry

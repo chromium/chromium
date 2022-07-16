@@ -10,7 +10,26 @@
 struct wl_client;
 
 namespace exo {
+class Display;
+
 namespace wayland {
+
+// Tracks button and mouse states for testing.
+struct WestonTestState {
+  WestonTestState() {}
+
+  WestonTestState(const WestonTestState&) = delete;
+  WestonTestState& operator=(const WestonTestState&) = delete;
+
+  bool left_button_pressed = false;
+  bool middle_button_pressed = false;
+  bool right_button_pressed = false;
+
+  bool control_pressed = false;
+  bool alt_pressed = false;
+  bool shift_pressed = false;
+  bool command_pressed = false;
+};
 
 constexpr uint32_t kWestonTestVersion = 1;
 

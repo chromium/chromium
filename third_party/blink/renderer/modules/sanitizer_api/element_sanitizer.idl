@@ -5,9 +5,16 @@
 // https://github.com/WICG/sanitizer-api
 
 [
+  RuntimeEnabled=SanitizerAPI
+] dictionary ElementSetHTMLOptions {
+  Sanitizer sanitizer;
+};
+
+[
   RuntimeEnabled=SanitizerAPI,
   ImplementedAs=ElementSanitizer
 ] partial interface Element {
-    [CEReactions, RaisesException, CallWith=ScriptState, MeasureAs=SanitizerAPIElementSetSanitized] void setHTML(DOMString markup, Sanitizer sanitizer);
+    [CEReactions, RaisesException, CallWith=ScriptState, MeasureAs=SanitizerAPIElementSetSanitized] void setHTML(DOMString markup, optional ElementSetHTMLOptions options = {});
+
 };
 

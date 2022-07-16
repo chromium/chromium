@@ -32,6 +32,9 @@ class ProxySettingsApiTest : public ExtensionApiTest {
  public:
   ProxySettingsApiTest() {}
 
+  ProxySettingsApiTest(const ProxySettingsApiTest&) = delete;
+  ProxySettingsApiTest& operator=(const ProxySettingsApiTest&) = delete;
+
  protected:
   void ValidateSettings(int expected_mode,
                         const std::string& expected_server,
@@ -94,9 +97,6 @@ class ProxySettingsApiTest : public ExtensionApiTest {
   extensions::ManagementPolicy* GetManagementPolicy() {
     return ExtensionSystem::Get(profile())->management_policy();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxySettingsApiTest);
 };
 
 // Tests direct connection settings.

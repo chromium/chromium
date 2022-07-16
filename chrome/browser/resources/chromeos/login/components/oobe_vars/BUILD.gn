@@ -9,7 +9,6 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":oobe_custom_vars_css.m",
-    ":oobe_custom_vars_old_css.m",
     ":oobe_custom_vars_remora_css.m",
     ":oobe_shared_vars_css.m",
   ]
@@ -18,7 +17,6 @@ js_type_check("closure_compile_module") {
 group("polymer3_elements") {
   public_deps = [
     ":oobe_custom_vars_css_module",
-    ":oobe_custom_vars_old_css_module",
     ":oobe_custom_vars_remora_css_module",
     ":oobe_shared_vars_css_module",
   ]
@@ -28,12 +26,6 @@ js_library("oobe_custom_vars_css.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_vars/oobe_custom_vars_css.m.js" ]
   deps = []
   extra_deps = [ ":oobe_custom_vars_css_module" ]
-}
-
-js_library("oobe_custom_vars_old_css.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_vars/oobe_custom_vars_old_css.m.js" ]
-  deps = []
-  extra_deps = [ ":oobe_custom_vars_old_css_module" ]
 }
 
 js_library("oobe_custom_vars_remora_css.m") {
@@ -51,12 +43,6 @@ js_library("oobe_shared_vars_css.m") {
 polymer_modulizer("oobe_custom_vars_css") {
   js_file = "oobe_custom_vars_css.m.js"
   html_file = "oobe_custom_vars_css.html"
-  html_type = "custom-style"
-}
-
-polymer_modulizer("oobe_custom_vars_old_css") {
-  js_file = "oobe_custom_vars_old_css.m.js"
-  html_file = "oobe_custom_vars_old_css.html"
   html_type = "custom-style"
 }
 

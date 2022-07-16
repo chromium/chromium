@@ -1,6 +1,6 @@
 {
   "name": "Manifest test app with id specified",
-  "id": "testid",
+  "id": "some_id",
   "icons": [
     {
       "src": "launcher-icon-1x.png",

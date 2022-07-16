@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -21,6 +20,7 @@
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "url/gurl.h"
 
@@ -49,13 +49,21 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       base::WeakPtr<ServiceWorkerContainerHost> container_host,
       network::mojom::RequestDestination destination,
       bool skip_service_worker,
+      int frame_tree_node_id,
       ServiceWorkerAccessedCallback service_worker_accessed_callback);
+
+  ServiceWorkerControlleeRequestHandler(
+      const ServiceWorkerControlleeRequestHandler&) = delete;
+  ServiceWorkerControlleeRequestHandler& operator=(
+      const ServiceWorkerControlleeRequestHandler&) = delete;
+
   ~ServiceWorkerControlleeRequestHandler();
 
   // This is called only once. On redirects, a new instance of this
   // class is created.
   void MaybeCreateLoader(
       const network::ResourceRequest& tentative_request,
+      const blink::StorageKey& storage_key,
       BrowserContext* browser_context,
       NavigationLoaderInterceptor::LoaderCallback loader_callback,
       NavigationLoaderInterceptor::FallbackCallback fallback_callback);
@@ -71,7 +79,8 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
 
   // Does all initialization of |container_host_| for a request.
   void InitializeContainerHost(
-      const network::ResourceRequest& tentative_request);
+      const network::ResourceRequest& tentative_request,
+      const blink::StorageKey& storage_key);
 
   void ContinueWithRegistration(
       blink::ServiceWorkerStatusCode status,
@@ -106,8 +115,9 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   std::unique_ptr<ServiceWorkerMainResourceLoaderWrapper> loader_wrapper_;
   BrowserContext* browser_context_;
   GURL stripped_url_;
+  blink::StorageKey storage_key_;
   bool force_update_started_;
-  base::TimeTicks registration_lookup_start_time_;
+  const int frame_tree_node_id_;
 
   NavigationLoaderInterceptor::LoaderCallback loader_callback_;
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
@@ -116,8 +126,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
 
   base::WeakPtrFactory<ServiceWorkerControlleeRequestHandler> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerControlleeRequestHandler);
 };
 
 }  // namespace content

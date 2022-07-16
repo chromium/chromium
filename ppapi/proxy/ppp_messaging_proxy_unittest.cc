@@ -23,24 +23,24 @@ namespace {
 
 // This is an ad-hoc mock of PPP_Messaging using global variables. Eventually,
 // generalize making PPAPI interface mocks by using IDL or macro/template magic.
-PP_Instance received_instance;
-PP_Var received_var;
+PP_Instance g_received_instance;
+PP_Var g_received_var;
 base::WaitableEvent handle_message_called(
     base::WaitableEvent::ResetPolicy::AUTOMATIC,
     base::WaitableEvent::InitialState::NOT_SIGNALED);
 
 void HandleMessage(PP_Instance instance, PP_Var message_data) {
-  received_instance = instance;
-  received_var = message_data;
+  g_received_instance = instance;
+  g_received_var = message_data;
   handle_message_called.Signal();
 }
 
 // Clear all the 'received' values for our mock.  Call this before you expect
 // one of the functions to be invoked.
 void ResetReceived() {
-  received_instance = 0;
-  received_var.type = PP_VARTYPE_UNDEFINED;
-  received_var.value.as_id = 0;
+  g_received_instance = 0;
+  g_received_var.type = PP_VARTYPE_UNDEFINED;
+  g_received_var.value.as_id = 0;
 }
 
 PPP_Messaging ppp_messaging_mock = {
@@ -90,39 +90,39 @@ TEST_F(PPP_Messaging_ProxyTest, SendMessages) {
   Dispatcher* host_dispatcher = host().GetDispatcher();
   CallHandleMessage(host_dispatcher, expected_instance, expected_var);
   handle_message_called.Wait();
-  EXPECT_EQ(expected_instance, received_instance);
-  EXPECT_EQ(expected_var.type, received_var.type);
+  EXPECT_EQ(expected_instance, g_received_instance);
+  EXPECT_EQ(expected_var.type, g_received_var.type);
 
   expected_var = PP_MakeNull();
   ResetReceived();
   CallHandleMessage(host_dispatcher, expected_instance, expected_var);
   handle_message_called.Wait();
-  EXPECT_EQ(expected_instance, received_instance);
-  EXPECT_EQ(expected_var.type, received_var.type);
+  EXPECT_EQ(expected_instance, g_received_instance);
+  EXPECT_EQ(expected_var.type, g_received_var.type);
 
   expected_var = PP_MakeBool(PP_TRUE);
   ResetReceived();
   CallHandleMessage(host_dispatcher, expected_instance, expected_var);
   handle_message_called.Wait();
-  EXPECT_EQ(expected_instance, received_instance);
-  EXPECT_EQ(expected_var.type, received_var.type);
-  EXPECT_EQ(expected_var.value.as_bool, received_var.value.as_bool);
+  EXPECT_EQ(expected_instance, g_received_instance);
+  EXPECT_EQ(expected_var.type, g_received_var.type);
+  EXPECT_EQ(expected_var.value.as_bool, g_received_var.value.as_bool);
 
   expected_var = PP_MakeInt32(12345);
   ResetReceived();
   CallHandleMessage(host_dispatcher, expected_instance, expected_var);
   handle_message_called.Wait();
-  EXPECT_EQ(expected_instance, received_instance);
-  EXPECT_EQ(expected_var.type, received_var.type);
-  EXPECT_EQ(expected_var.value.as_int, received_var.value.as_int);
+  EXPECT_EQ(expected_instance, g_received_instance);
+  EXPECT_EQ(expected_var.type, g_received_var.type);
+  EXPECT_EQ(expected_var.value.as_int, g_received_var.value.as_int);
 
   expected_var = PP_MakeDouble(3.1415);
   ResetReceived();
   CallHandleMessage(host_dispatcher, expected_instance, expected_var);
   handle_message_called.Wait();
-  EXPECT_EQ(expected_instance, received_instance);
-  EXPECT_EQ(expected_var.type, received_var.type);
-  EXPECT_EQ(expected_var.value.as_double, received_var.value.as_double);
+  EXPECT_EQ(expected_instance, g_received_instance);
+  EXPECT_EQ(expected_var.type, g_received_var.type);
+  EXPECT_EQ(expected_var.value.as_double, g_received_var.value.as_double);
 
   const std::string kTestString("Hello world!");
   expected_var = StringVar::StringToPPVar(kTestString);
@@ -134,10 +134,10 @@ TEST_F(PPP_Messaging_ProxyTest, SendMessages) {
   EXPECT_FALSE(StringVar::FromPPVar(expected_var));
 
   handle_message_called.Wait();
-  EXPECT_EQ(expected_instance, received_instance);
-  EXPECT_EQ(expected_var.type, received_var.type);
+  EXPECT_EQ(expected_instance, g_received_instance);
+  EXPECT_EQ(expected_var.type, g_received_var.type);
   PostTaskOnRemoteHarness(base::BindOnce(CompareAndReleaseStringVar, &plugin(),
-                                         received_var, kTestString));
+                                         g_received_var, kTestString));
 }
 
 }  // namespace proxy

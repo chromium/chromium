@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "build/build_config.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_filter.h"
 #include "components/prefs/segregated_pref_store.h"

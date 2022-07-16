@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -54,6 +53,10 @@ class MarketingOptInScreen : public BaseScreen {
 
   MarketingOptInScreen(MarketingOptInScreenView* view,
                        const ScreenExitCallback& exit_callback);
+
+  MarketingOptInScreen(const MarketingOptInScreen&) = delete;
+  MarketingOptInScreen& operator=(const MarketingOptInScreen&) = delete;
+
   ~MarketingOptInScreen() override;
 
   // On "Get Started" button pressed.
@@ -138,7 +141,6 @@ class MarketingOptInScreen : public BaseScreen {
   const base::flat_set<base::StringPiece> countries_with_legal_footer{"ca"};
 
   base::WeakPtrFactory<MarketingOptInScreen> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MarketingOptInScreen);
 };
 
 }  // namespace ash

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 1
+// Next min version: 2
 
 // NOTE: This mojom exists in two places and must be kept in sync:
 //       Chromium:  //chromeos/components/sensors/mojom/
@@ -20,6 +20,16 @@ const string kLocation = "location";
 
 // The attribute name to get the device name in SensorDevice::GetAttributes.
 const string kDeviceName = "name";
+
+// The attribute name to get the device's syspath in
+// SensorDevice::GetAttributes, which can be used to match up iio devices and
+// external devices, like external tablets.
+// For example, if device 0 has the iio path to the syspath with symbolic link:
+// /sys/bus/iio/devices/iio:device0 ->
+// ../../../devices/pci0000:00/0000:00:13.0/.../HID-SENSOR-200083.20.auto/iio:device0
+// , /sys/devices/pci0000:00/0000:00:13.0/.../HID-SENSOR-200083.20.auto/iio:device0
+// will be returned.
+const string kSysPath = "syspath";
 
 const string kLocationBase = "base";
 const string kLocationLid = "lid";
@@ -67,6 +77,19 @@ enum ObserverErrorType {
   READ_TIMEOUT = 6,
 };
 
+[Stable, Extensible]
+enum SensorServiceDisconnectReason {
+  // iioservice has crashed. The clients should reset all current usages and
+  // wait for its reconnection.
+  [Default] IIOSERVICE_CRASHED = 0,
+
+  // iioservice is shutting down.
+  IIOSERVICE_SHUTDOWN = 1,
+
+  // iioservice is resetting because chrome has stopped.
+  CHROME_STOPPED = 2,
+};
+
 // SensorService, an interface to search and get SensorDevices. A User can get
 // multiple isolated SensorDevices for one physical device, if it wants
 // different frequencies of that device's samples.
@@ -96,6 +119,19 @@ interface SensorService {
   // notified when new devices are added and visible to iioservice.
   RegisterNewDevicesObserver
       @3(pending_remote<SensorServiceNewDevicesObserver> observer);
+};
+
+// The disconnect reasons of SensorDevice and SensorDeviceSamplesObserver.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+[Stable, Extensible]
+enum SensorDeviceDisconnectReason {
+  // iioservice has crashed. The clients should reset all current usages and
+  // wait for its reconnection.
+  [Default] IIOSERVICE_CRASHED = 0,
+  // The sensor device is removed from iioservice. This should only happen on
+  // the hot pluggable device.
+  DEVICE_REMOVED = 1,
 };
 
 // SensorDevice, an interface sending requests for a physical device

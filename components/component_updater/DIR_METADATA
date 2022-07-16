@@ -1,5 +1,2 @@
-monorail {
-  component: "Internals>Installer>Components"
-}
+mixins: "//components/component_updater/COMMON_METADATA"
 
-team_email: "chrome-updates-dev@chromium.org"

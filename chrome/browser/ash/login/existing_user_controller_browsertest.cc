@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/settings/cros_settings_provider.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
@@ -13,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -45,7 +46,7 @@
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -68,8 +69,6 @@
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "chromeos/login/auth/user_context.h"
 #include "chromeos/network/network_state_test_helper.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/cros_settings_provider.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
@@ -99,20 +98,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace ash {
+namespace {
+
+namespace em = ::enterprise_management;
+
 using ::testing::_;
 using ::testing::AnyNumber;
-using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 using ::testing::Return;
-using ::testing::ReturnNull;
-using ::testing::WithArg;
-
-namespace em = enterprise_management;
-
-namespace chromeos {
-
-namespace {
 
 const char kObjectGuid[] = "12345";
 const char kAdUsername[] = "test_user@ad-domain.com";
@@ -217,6 +212,10 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
  protected:
   ExistingUserControllerTest() = default;
 
+  ExistingUserControllerTest(const ExistingUserControllerTest&) = delete;
+  ExistingUserControllerTest& operator=(const ExistingUserControllerTest&) =
+      delete;
+
   ExistingUserController* existing_user_controller() {
     return ExistingUserController::current_controller();
   }
@@ -254,6 +253,11 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
     ASSERT_EQ(existing_user_controller(), existing_user_controller_.get());
 
     existing_user_controller_->Init(user_manager::UserList());
+
+    // Prevent browser start in user session so that we do not need to wait
+    // for its initialization.
+    ash::test::UserSessionManagerTestApi(ash::UserSessionManager::GetInstance())
+        .SetShouldLaunchBrowserInTests(false);
   }
 
   void TearDownOnMainThread() override {
@@ -324,9 +328,6 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
       AccountId::FromUserEmailGaiaId(kExistingUser, kExistingGaiaID)};
 
   LoginManagerMixin login_manager_{&mixin_host_, {existing_user_}};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExistingUserControllerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerTest, ExistingUserLogin) {
@@ -347,14 +348,16 @@ class ExistingUserControllerUntrustedTest : public ExistingUserControllerTest {
  public:
   ExistingUserControllerUntrustedTest() = default;
 
+  ExistingUserControllerUntrustedTest(
+      const ExistingUserControllerUntrustedTest&) = delete;
+  ExistingUserControllerUntrustedTest& operator=(
+      const ExistingUserControllerUntrustedTest&) = delete;
+
   void SetUpOnMainThread() override {
     ExistingUserControllerTest::SetUpOnMainThread();
     MakeCrosSettingsPermanentlyUntrusted();
     ExpectLoginFailure();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExistingUserControllerUntrustedTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerUntrustedTest,
@@ -385,6 +388,12 @@ MATCHER_P(HasDetails, expected, "") {
 class ExistingUserControllerPublicSessionTest
     : public ExistingUserControllerTest,
       public user_manager::UserManager::Observer {
+ public:
+  ExistingUserControllerPublicSessionTest(
+      const ExistingUserControllerPublicSessionTest&) = delete;
+  ExistingUserControllerPublicSessionTest& operator=(
+      const ExistingUserControllerPublicSessionTest&) = delete;
+
  protected:
   ExistingUserControllerPublicSessionTest() {}
 
@@ -412,7 +421,7 @@ class ExistingUserControllerPublicSessionTest
     policy::CloudPolicyStore* store =
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
-            ->browser_policy_connector_chromeos()
+            ->browser_policy_connector_ash()
             ->GetDeviceLocalAccountPolicyService()
             ->GetBrokerForUser(public_session_account_id_.GetUserEmail())
             ->core()
@@ -511,8 +520,8 @@ class ExistingUserControllerPublicSessionTest
         !proto.device_local_accounts().has_auto_login_id() ||
         proto.device_local_accounts().auto_login_id() != user_email) {
       runner1 = new content::MessageLoopRunner;
-      subscription1 = chromeos::CrosSettings::Get()->AddSettingsObserver(
-          chromeos::kAccountsPrefDeviceLocalAccountAutoLoginId,
+      subscription1 = CrosSettings::Get()->AddSettingsObserver(
+          kAccountsPrefDeviceLocalAccountAutoLoginId,
           base::BindLambdaForTesting([&]() { runner1->Quit(); }));
     }
     scoped_refptr<content::MessageLoopRunner> runner2;
@@ -521,8 +530,8 @@ class ExistingUserControllerPublicSessionTest
         !proto.device_local_accounts().has_auto_login_delay() ||
         proto.device_local_accounts().auto_login_delay() != delay) {
       runner2 = new content::MessageLoopRunner;
-      subscription2 = chromeos::CrosSettings::Get()->AddSettingsObserver(
-          chromeos::kAccountsPrefDeviceLocalAccountAutoLoginDelay,
+      subscription2 = CrosSettings::Get()->AddSettingsObserver(
+          kAccountsPrefDeviceLocalAccountAutoLoginDelay,
           base::BindLambdaForTesting([&]() { runner2->Quit(); }));
     }
 
@@ -553,8 +562,6 @@ class ExistingUserControllerPublicSessionTest
 
  private:
   std::unique_ptr<base::RunLoop> local_state_changed_run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExistingUserControllerPublicSessionTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
@@ -613,8 +620,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
   // Wait for the timer to fire.
   base::RunLoop runner;
   base::OneShotTimer timer;
-  timer.Start(FROM_HERE,
-              base::TimeDelta::FromMilliseconds(kAutoLoginShortDelay + 1),
+  timer.Start(FROM_HERE, base::Milliseconds(kAutoLoginShortDelay + 1),
               runner.QuitClosure());
   runner.Run();
 
@@ -1019,6 +1025,7 @@ class ExistingUserControllerActiveDirectoryUserAllowlistTest
     em::ChromeDeviceSettingsProto device_policy;
     device_policy.mutable_user_allowlist()->add_user_allowlist()->assign(
         kUserAllowlist);
+    device_policy.mutable_allow_new_users()->set_allow_new_users(false);
     FakeAuthPolicyClient::Get()->set_device_policy(device_policy);
   }
 
@@ -1205,8 +1212,8 @@ class ExistingUserControllerAuthFailureTest : public OobeBaseTest {
     // login, the login attempt cannot be shortcut by login manager mixin API -
     // it has to go through login UI.
     const std::string& password = user_context.GetKey()->GetSecret();
-    ash::LoginScreenTestApi::SubmitPassword(test_user_.account_id, password,
-                                            true /*check_if_submittable*/);
+    LoginScreenTestApi::SubmitPassword(test_user_.account_id, password,
+                                       true /*check_if_submittable*/);
   }
 
   void SetUpStubAuthenticatorAndAttemptLoginWithWrongPassword() {
@@ -1217,18 +1224,18 @@ class ExistingUserControllerAuthFailureTest : public OobeBaseTest {
     test::UserSessionManagerTestApi(UserSessionManager::GetInstance())
         .InjectAuthenticatorBuilder(std::move(authenticator_builder));
 
-    ash::LoginScreenTestApi::SubmitPassword(test_user_.account_id, "wrong!!!!!",
-                                            true /*check_if_submittable*/);
+    LoginScreenTestApi::SubmitPassword(test_user_.account_id, "wrong!!!!!",
+                                       true /*check_if_submittable*/);
   }
 
   // Waits for auth error message to be shown in login UI.
   void WaitForAuthErrorMessage() {
     base::RunLoop().RunUntilIdle();
-    EXPECT_TRUE(ash::LoginScreenTestApi::IsAuthErrorBubbleShown());
+    EXPECT_TRUE(LoginScreenTestApi::IsAuthErrorBubbleShown());
   }
 
  protected:
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   const LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId("user@gmail.com", "user")};
   LoginManagerMixin login_manager_{&mixin_host_, {test_user_}};
@@ -1239,7 +1246,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
   SetUpStubAuthenticatorAndAttemptLogin(AuthFailure::MISSING_CRYPTOHOME);
 
   WaitForGaiaPageLoad();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
             test_user_.account_id.GetUserEmail());
 
@@ -1254,7 +1261,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
   SetUpStubAuthenticatorAndAttemptLogin(AuthFailure::UNRECOVERABLE_CRYPTOHOME);
 
   WaitForGaiaPageLoad();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
             test_user_.account_id.GetUserEmail());
 
@@ -1268,7 +1275,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest, TpmError) {
   SetUpStubAuthenticatorAndAttemptLogin(AuthFailure::TPM_ERROR);
 
   OobeScreenWaiter(TpmErrorView::kScreenId).Wait();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 
   EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
 
@@ -1289,7 +1296,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest, WrongPassword) {
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
                        WrongPasswordWhileOffline) {
-  chromeos::NetworkStateTestHelper network_state_test_helper(
+  NetworkStateTestHelper network_state_test_helper(
       false /*use_default_devices_and_services*/);
   network_state_test_helper.ClearServices();
 
@@ -1373,13 +1380,13 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest,
   // Set the lock screen so that the managed warning can be queried.
   ScreenLockerTester().Lock();
 
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInDialogShown(
+  EXPECT_TRUE(LoginScreenTestApi::IsManagedMessageInDialogShown(
       managed_user_.account_id));
 
   // Verify that the lock screen text uses the prefs value for its construction.
-  EXPECT_EQ(ash::LoginScreenTestApi::GetManagementDisclosureText(
-                managed_user_.account_id),
-            ConstructManagedSessionUserWarning(kManager));
+  EXPECT_EQ(
+      LoginScreenTestApi::GetManagementDisclosureText(managed_user_.account_id),
+      ConstructManagedSessionUserWarning(kManager));
 }
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, ManagedUserDomain) {
@@ -1397,13 +1404,13 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, ManagedUserDomain) {
   // Set the lock screen so that the managed warning can be queried.
   ScreenLockerTester().Lock();
 
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInDialogShown(
+  EXPECT_TRUE(LoginScreenTestApi::IsManagedMessageInDialogShown(
       managed_user_.account_id));
 
   // Verify that the lock screen text uses the prefs value for its construction.
-  EXPECT_EQ(ash::LoginScreenTestApi::GetManagementDisclosureText(
-                managed_user_.account_id),
-            ConstructManagedSessionUserWarning(kManagedDomain));
+  EXPECT_EQ(
+      LoginScreenTestApi::GetManagementDisclosureText(managed_user_.account_id),
+      ConstructManagedSessionUserWarning(kManagedDomain));
 }
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, NotManagedUserLogin) {
@@ -1419,8 +1426,8 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, NotManagedUserLogin) {
   ScreenLockerTester().Lock();
 
   // Verify that no managed warning is shown for an unmanaged user.
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInDialogShown(
+  EXPECT_FALSE(LoginScreenTestApi::IsManagedMessageInDialogShown(
       not_managed_user_.account_id));
 }
 
-}  // namespace chromeos
+}  // namespace ash

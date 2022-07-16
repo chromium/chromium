@@ -20,6 +20,11 @@ class FidoAuthenticator;
 class MockFidoDiscoveryObserver : public FidoDiscoveryBase::Observer {
  public:
   MockFidoDiscoveryObserver();
+
+  MockFidoDiscoveryObserver(const MockFidoDiscoveryObserver&) = delete;
+  MockFidoDiscoveryObserver& operator=(const MockFidoDiscoveryObserver&) =
+      delete;
+
   ~MockFidoDiscoveryObserver() override;
 
   MOCK_METHOD3(DiscoveryStarted,
@@ -33,9 +38,6 @@ class MockFidoDiscoveryObserver : public FidoDiscoveryBase::Observer {
                void(FidoDiscoveryBase*, const std::string&, std::string));
   MOCK_METHOD3(AuthenticatorPairingModeChanged,
                void(FidoDiscoveryBase*, const std::string&, bool));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockFidoDiscoveryObserver);
 };
 
 }  // namespace device

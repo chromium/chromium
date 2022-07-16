@@ -16,19 +16,19 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/third_party/skcms/skcms.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/skia_color_space_util.h"
-#include "ui/gfx/transform.h"
 
 using std::abs;
 using std::copysign;
+using std::endl;
 using std::exp;
 using std::log;
 using std::max;
 using std::min;
 using std::pow;
 using std::sqrt;
-using std::endl;
 
 namespace gfx {
 
@@ -173,6 +173,10 @@ class ColorTransformNull;
 class ColorTransformStep {
  public:
   ColorTransformStep() {}
+
+  ColorTransformStep(const ColorTransformStep&) = delete;
+  ColorTransformStep& operator=(const ColorTransformStep&) = delete;
+
   virtual ~ColorTransformStep() {}
   virtual ColorTransformFromLinear* GetFromLinear() { return nullptr; }
   virtual ColorTransformFromBT2020CL* GetFromBT2020CL() { return nullptr; }
@@ -196,9 +200,6 @@ class ColorTransformStep {
                                   std::stringstream* src,
                                   size_t step_index) const = 0;
   virtual void AppendSkShaderSource(std::stringstream* src) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ColorTransformStep);
 };
 
 class ColorTransformInternal : public ColorTransform {
@@ -266,7 +267,6 @@ class ColorTransformMatrix : public ColorTransformStep {
     for (size_t i = 0; i < num; i++)
       matrix_.TransformPoint(colors + i);
   }
-
 
   void AppendShaderSource(std::stringstream* hdr,
                           std::stringstream* src,

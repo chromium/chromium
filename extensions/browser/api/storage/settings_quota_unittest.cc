@@ -10,18 +10,19 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
+#include "components/value_store/testing_value_store.h"
 #include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
-#include "extensions/browser/value_store/testing_value_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::DictionaryValue;
 
 namespace extensions {
 
-// To save typing ValueStore::DEFAULTS/IGNORE_QUOTA everywhere.
-const ValueStore::WriteOptions DEFAULTS = ValueStore::DEFAULTS;
-const ValueStore::WriteOptions IGNORE_QUOTA =
-    ValueStore::IGNORE_QUOTA;
+// To save typing value_store::ValueStore::DEFAULTS/IGNORE_QUOTA everywhere.
+const value_store::ValueStore::WriteOptions DEFAULTS =
+    value_store::ValueStore::DEFAULTS;
+const value_store::ValueStore::WriteOptions IGNORE_QUOTA =
+    value_store::ValueStore::IGNORE_QUOTA;
 
 class ExtensionSettingsQuotaTest : public testing::Test {
  public:
@@ -29,7 +30,7 @@ class ExtensionSettingsQuotaTest : public testing::Test {
       : byte_value_1_(1),
         byte_value_16_("sixteen bytes."),
         byte_value_256_(base::Value(base::Value::Type::LIST)),
-        delegate_(new TestingValueStore()) {
+        delegate_(new value_store::TestingValueStore()) {
     for (int i = 1; i < 89; ++i) {
       byte_value_256_.Append(i);
     }
@@ -75,7 +76,7 @@ class ExtensionSettingsQuotaTest : public testing::Test {
   std::unique_ptr<SettingsStorageQuotaEnforcer> storage_;
 
   // In-memory storage area being delegated to.  Always owned by |storage_|.
-  TestingValueStore* delegate_;
+  value_store::TestingValueStore* delegate_;
 };
 
 TEST_F(ExtensionSettingsQuotaTest, ZeroQuotaBytes) {

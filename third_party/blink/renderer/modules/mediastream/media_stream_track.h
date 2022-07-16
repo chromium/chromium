@@ -28,6 +28,7 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h"
@@ -123,9 +124,25 @@ class MODULES_EXPORT MediaStreamTrack
 
   ImageCapture* GetImageCapture() { return image_capture_; }
 
+#if !defined(OS_ANDROID)
+  // Only relevant for focusable streams (FocusableMediaStreamTrack).
+  // When called on one of these, it signals that Conditional Focus
+  // no longer applies - the browser will now decide whether
+  // the captured display surface should be captured. Later calls to
+  // FocusableMediaStreamTrack.focus() will now raise an exception.
+  virtual void CloseFocusWindowOfOpportunity();
+#endif
+
   void AddObserver(Observer*);
 
   void Trace(Visitor*) const override;
+
+ protected:
+  // Given a partially built MediaStreamTrack, finishes the job of making it
+  // into a clone of |this|.
+  // Useful for sub-classes, as they need to clone both state from
+  // this class as well as of their own class.
+  void CloneInternal(MediaStreamTrack*);
 
  private:
   friend class CanvasCaptureMediaStreamTrack;

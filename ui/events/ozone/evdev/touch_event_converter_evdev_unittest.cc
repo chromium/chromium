@@ -47,7 +47,7 @@ const char kTestDevicePath[] = "/dev/input/test-device";
 
 // Returns a fake TimeTicks based on the given microsecond offset.
 base::TimeTicks ToTestTimeTicks(int64_t micros) {
-  return base::TimeTicks() + base::TimeDelta::FromMicroseconds(micros);
+  return base::TimeTicks() + base::Microseconds(micros);
 }
 
 void InitPixelTouchscreen(TouchEventConverterEvdev* device) {
@@ -101,6 +101,11 @@ class MockTouchEventConverterEvdev : public TouchEventConverterEvdev {
       const EventDeviceInfo& devinfo,
       SharedPalmDetectionFilterState* shared_palm_state,
       DeviceEventDispatcherEvdev* dispatcher);
+
+  MockTouchEventConverterEvdev(const MockTouchEventConverterEvdev&) = delete;
+  MockTouchEventConverterEvdev& operator=(const MockTouchEventConverterEvdev&) =
+      delete;
+
   ~MockTouchEventConverterEvdev() override;
 
   void ConfigureReadMock(struct input_event* queue,
@@ -124,8 +129,6 @@ class MockTouchEventConverterEvdev : public TouchEventConverterEvdev {
  private:
   int read_pipe_;
   int write_pipe_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTouchEventConverterEvdev);
 };
 
 class MockDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
@@ -235,6 +238,10 @@ class TouchEventConverterEvdevTest : public testing::Test {
  public:
   TouchEventConverterEvdevTest() {}
 
+  TouchEventConverterEvdevTest(const TouchEventConverterEvdevTest&) = delete;
+  TouchEventConverterEvdevTest& operator=(const TouchEventConverterEvdevTest&) =
+      delete;
+
   // Overridden from testing::Test:
   void SetUp() override {
     // By default, tests disable single-cancel and enable palm on touch_major ==
@@ -309,9 +316,8 @@ class TouchEventConverterEvdevTest : public testing::Test {
   void DestroyDevice() { device_.reset(); }
 
   void SetTestNowTime(timeval time) {
-    base::TimeTicks ticks = base::TimeTicks() +
-                            base::TimeDelta::FromSeconds(time.tv_sec) +
-                            base::TimeDelta::FromMicroseconds(time.tv_usec);
+    base::TimeTicks ticks = base::TimeTicks() + base::Seconds(time.tv_sec) +
+                            base::Microseconds(time.tv_usec);
     test_clock_->SetNowTicks(ticks);
   }
 
@@ -332,7 +338,6 @@ class TouchEventConverterEvdevTest : public testing::Test {
     dispatched_events_.push_back(params);
   }
   std::vector<GenericEventParams> dispatched_events_;
-  DISALLOW_COPY_AND_ASSIGN(TouchEventConverterEvdevTest);
 };
 
 TEST_F(TouchEventConverterEvdevTest, NoEvents) {
@@ -1642,6 +1647,11 @@ class EventTypeTouchNoiseFilter : public TouchFilter {
  public:
   explicit EventTypeTouchNoiseFilter(EventType noise_event_type)
       : noise_event_type_(noise_event_type) {}
+
+  EventTypeTouchNoiseFilter(const EventTypeTouchNoiseFilter&) = delete;
+  EventTypeTouchNoiseFilter& operator=(const EventTypeTouchNoiseFilter&) =
+      delete;
+
   ~EventTypeTouchNoiseFilter() override {}
 
   // TouchFilter:
@@ -1671,8 +1681,6 @@ class EventTypeTouchNoiseFilter : public TouchFilter {
 
   EventType noise_event_type_;
   std::map<EventType, size_t> counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventTypeTouchNoiseFilter);
 };
 
 }  // namespace
@@ -1681,6 +1689,12 @@ class TouchEventConverterEvdevTouchNoiseTest
     : public TouchEventConverterEvdevTest {
  public:
   TouchEventConverterEvdevTouchNoiseTest() {}
+
+  TouchEventConverterEvdevTouchNoiseTest(
+      const TouchEventConverterEvdevTouchNoiseTest&) = delete;
+  TouchEventConverterEvdevTouchNoiseTest& operator=(
+      const TouchEventConverterEvdevTouchNoiseTest&) = delete;
+
   ~TouchEventConverterEvdevTouchNoiseTest() override {}
 
   // TouchEventConverterEvdevTest:
@@ -1689,9 +1703,6 @@ class TouchEventConverterEvdevTouchNoiseTest
         switches::kEdgeTouchFiltering);
     TouchEventConverterEvdevTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TouchEventConverterEvdevTouchNoiseTest);
 };
 
 TEST_F(TouchEventConverterEvdevTest, ActiveStylusTouchAndRelease) {
@@ -1998,13 +2009,12 @@ TEST_F(TouchEventConverterEvdevTest, HeldEventNotSent) {
   device()->ReadNow();
   EXPECT_EQ(4u, size());
   const base::TimeTicks base_ticks =
-      base::TimeTicks() + base::TimeDelta::FromSeconds(time.tv_sec);
+      base::TimeTicks() + base::Seconds(time.tv_sec);
 
   for (unsigned i = 0; i < size(); ++i) {
     ui::TouchEventParams event = dispatched_touch_event(i);
     EXPECT_EQ(1795 + i, event.location.x());
-    EXPECT_EQ(base::TimeDelta::FromMicroseconds(8000 * i),
-              (event.timestamp - base_ticks));
+    EXPECT_EQ(base::Microseconds(8000 * i), (event.timestamp - base_ticks));
   }
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   TouchEventConverterEvdev::kHoldCountAtReleaseEventName),
@@ -2129,7 +2139,7 @@ TEST_F(TouchEventConverterEvdevTest, SentHeldThenPalm) {
   // We expect the first 3 items to have been emitted, and then a cancel.
   EXPECT_EQ(4u, size());
   const base::TimeTicks base_ticks =
-      base::TimeTicks() + base::TimeDelta::FromSeconds(time.tv_sec);
+      base::TimeTicks() + base::Seconds(time.tv_sec);
   for (unsigned i = 0; i < size(); ++i) {
     ui::TouchEventParams event = dispatched_touch_event(i);
     EventType expected_touch_type;
@@ -2144,8 +2154,7 @@ TEST_F(TouchEventConverterEvdevTest, SentHeldThenPalm) {
     EXPECT_EQ(expected_touch_type, event.type);
     if (i != size() - 1) {
       EXPECT_EQ(1795 + i, event.location.x());
-      EXPECT_EQ(base::TimeDelta::FromMicroseconds(8000 * i),
-                (event.timestamp - base_ticks));
+      EXPECT_EQ(base::Microseconds(8000 * i), (event.timestamp - base_ticks));
     }
   }
   EXPECT_THAT(histogram_tester_.GetAllSamples(

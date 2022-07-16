@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <array>
+#include <bitset>
 #include <cmath>
 #include <cstring>
 #include <deque>
@@ -42,14 +43,14 @@
 #include "absl/base/internal/unaligned_access.h"
 #include "absl/base/port.h"
 #include "absl/container/fixed_array.h"
-#include "absl/hash/internal/wyhash.h"
+#include "absl/hash/internal/city.h"
+#include "absl/hash/internal/low_level_hash.h"
 #include "absl/meta/type_traits.h"
 #include "absl/numeric/int128.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 #include "absl/types/variant.h"
 #include "absl/utility/utility.h"
-#include "absl/hash/internal/city.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -489,8 +490,9 @@ typename std::enable_if<is_hashable<T>::value, H>::type AbslHashValue(
 
 // AbslHashValue for hashing std::vector
 //
-// Do not use this for vector<bool>. It does not have a .data(), and a fallback
-// for std::hash<> is most likely faster.
+// Do not use this for vector<bool> on platforms that have a working
+// implementation of std::hash. It does not have a .data(), and a fallback for
+// std::hash<> is most likely faster.
 template <typename H, typename T, typename Allocator>
 typename std::enable_if<is_hashable<T>::value && !std::is_same<T, bool>::value,
                         H>::type
@@ -499,6 +501,27 @@ AbslHashValue(H hash_state, const std::vector<T, Allocator>& vector) {
                                           vector.size()),
                     vector.size());
 }
+
+#if defined(ABSL_IS_BIG_ENDIAN) && \
+    (defined(__GLIBCXX__) || defined(__GLIBCPP__))
+// AbslHashValue for hashing std::vector<bool>
+//
+// std::hash in libstdc++ does not work correctly with vector<bool> on Big
+// Endian platforms therefore we need to implement a custom AbslHashValue for
+// it. More details on the bug:
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102531
+template <typename H, typename T, typename Allocator>
+typename std::enable_if<is_hashable<T>::value && std::is_same<T, bool>::value,
+                        H>::type
+AbslHashValue(H hash_state, const std::vector<T, Allocator>& vector) {
+  typename H::AbslInternalPiecewiseCombiner combiner;
+  for (const auto& i : vector) {
+    unsigned char c = static_cast<unsigned char>(i);
+    hash_state = combiner.add_buffer(std::move(hash_state), &c, sizeof(c));
+  }
+  return H::combine(combiner.finalize(std::move(hash_state)), vector.size());
+}
+#endif
 
 // -----------------------------------------------------------------------------
 // AbslHashValue for Ordered Associative Containers
@@ -592,9 +615,28 @@ AbslHashValue(H hash_state, const absl::variant<T...>& v) {
 // AbslHashValue for Other Types
 // -----------------------------------------------------------------------------
 
-// AbslHashValue for hashing std::bitset is not defined, for the same reason as
-// for vector<bool> (see std::vector above): It does not expose the raw bytes,
-// and a fallback to std::hash<> is most likely faster.
+// AbslHashValue for hashing std::bitset is not defined on Little Endian
+// platforms, for the same reason as for vector<bool> (see std::vector above):
+// It does not expose the raw bytes, and a fallback to std::hash<> is most
+// likely faster.
+
+#if defined(ABSL_IS_BIG_ENDIAN) && \
+    (defined(__GLIBCXX__) || defined(__GLIBCPP__))
+// AbslHashValue for hashing std::bitset
+//
+// std::hash in libstdc++ does not work correctly with std::bitset on Big Endian
+// platforms therefore we need to implement a custom AbslHashValue for it. More
+// details on the bug: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102531
+template <typename H, size_t N>
+H AbslHashValue(H hash_state, const std::bitset<N>& set) {
+  typename H::AbslInternalPiecewiseCombiner combiner;
+  for (int i = 0; i < N; i++) {
+    unsigned char c = static_cast<unsigned char>(set[i]);
+    hash_state = combiner.add_buffer(std::move(hash_state), &c, sizeof(c));
+  }
+  return H::combine(combiner.finalize(std::move(hash_state)), N);
+}
+#endif
 
 // -----------------------------------------------------------------------------
 
@@ -874,16 +916,16 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
     return static_cast<uint64_t>(m ^ (m >> (sizeof(m) * 8 / 2)));
   }
 
-  // An extern to avoid bloat on a direct call to Wyhash() with fixed values for
-  // both the seed and salt parameters.
-  static uint64_t WyhashImpl(const unsigned char* data, size_t len);
+  // An extern to avoid bloat on a direct call to LowLevelHash() with fixed
+  // values for both the seed and salt parameters.
+  static uint64_t LowLevelHashImpl(const unsigned char* data, size_t len);
 
   ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t Hash64(const unsigned char* data,
                                                       size_t len) {
 #ifdef ABSL_HAVE_INTRINSIC_INT128
-    return WyhashImpl(data, len);
+    return LowLevelHashImpl(data, len);
 #else
-    return absl::hash_internal::CityHash64(reinterpret_cast<const char*>(data), len);
+    return hash_internal::CityHash64(reinterpret_cast<const char*>(data), len);
 #endif
   }
 
@@ -929,7 +971,7 @@ inline uint64_t MixingHashState::CombineContiguousImpl(
     if (ABSL_PREDICT_FALSE(len > PiecewiseChunkSize())) {
       return CombineLargeContiguousImpl32(state, first, len);
     }
-    v = absl::hash_internal::CityHash32(reinterpret_cast<const char*>(first), len);
+    v = hash_internal::CityHash32(reinterpret_cast<const char*>(first), len);
   } else if (len >= 4) {
     v = Read4To8(first, len);
   } else if (len > 0) {
@@ -945,8 +987,8 @@ inline uint64_t MixingHashState::CombineContiguousImpl(
 inline uint64_t MixingHashState::CombineContiguousImpl(
     uint64_t state, const unsigned char* first, size_t len,
     std::integral_constant<int, 8> /* sizeof_size_t */) {
-  // For large values we use Wyhash or CityHash depending on the platform, for
-  // small ones we just use a multiplicative hash.
+  // For large values we use LowLevelHash or CityHash depending on the platform,
+  // for small ones we just use a multiplicative hash.
   uint64_t v;
   if (len > 16) {
     if (ABSL_PREDICT_FALSE(len > PiecewiseChunkSize())) {

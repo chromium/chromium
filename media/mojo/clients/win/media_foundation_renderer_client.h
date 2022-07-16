@@ -6,52 +6,58 @@
 #define MEDIA_MOJO_CLIENTS_WIN_MEDIA_FOUNDATION_RENDERER_CLIENT_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/media_resource.h"
 #include "media/base/renderer.h"
 #include "media/base/renderer_client.h"
 #include "media/base/video_renderer_sink.h"
+#include "media/base/win/dcomp_texture_wrapper.h"
 #include "media/mojo/clients/mojo_renderer.h"
+#include "media/mojo/mojom/dcomp_surface_registry.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace media {
 
-// MediaFoundationRendererClient lives in Renderer process and mirrors a
-// MediaFoundationRenderer living in the MF_CDM LPAC Utility process.
+class MediaLog;
+
+// MediaFoundationRendererClient lives in Renderer process talks to the
+// MediaFoundationRenderer living in the MediaFoundationService (utility)
+// process, using `mojo_renderer_` and `renderer_extension_`.
 //
-// It is responsible for forwarding media::Renderer calls from WMPI to the
-// MediaFoundationRenderer, using |mojo_renderer|. It also manages a
-// DCOMPTexture, (via |dcomp_texture_wrapper_|) and notifies the
-// VideoRendererSink when new frames are available.
-//
-// This class handles all calls on |media_task_runner_|, except for
-// OnFrameAvailable(), which is called on |compositor_task_runner_|.
-//
-// N.B: This class implements media::RendererClient, in order to intercept
-// OnVideoNaturalSizeChange() events, to update DCOMPTextureWrapper. All events
-// (including OnVideoNaturalSizeChange()) are bubbled up to |client_|.
-//
-class MediaFoundationRendererClient
-    : public media::Renderer,
-      public media::RendererClient,
-      public media::VideoRendererSink::RenderCallback {
+// It also manages a DCOMPTexture (via `dcomp_texture_wrapper_`) living in the
+// GPU process for direct composition support. The initialization of the
+// compositing path is summarized as follows:
+// ```
+// OnVideoNaturalSizeChange() -> CreateVideoFrame(natural_size) ->
+// PaintSingleFrame() -> SwapChainPresenter::PresentDCOMPSurface() ->
+// DCOMPTexture::OnUpdateParentWindowRect() -> DCOMPTexture::SendOutputRect() ->
+// OnOutputRectChange() -> SetOutputRect() -> OnSetOutputRectDone()
+// a) -> UpdateTextureSize(output_size), and
+// b) -> renderer_extension_->GetDCOMPSurface() -> OnDCOMPSurfaceReceived() ->
+//    SetDCOMPSurfaceHandle() -> OnDCOMPSurfaceHandleSet()
+// ```
+class MediaFoundationRendererClient : public Renderer, public RendererClient {
  public:
-  using RendererExtension = media::mojom::MediaFoundationRendererExtension;
+  using RendererExtension = mojom::MediaFoundationRendererExtension;
 
   MediaFoundationRendererClient(
-      mojo::PendingRemote<RendererExtension> renderer_extension_remote,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-      std::unique_ptr<media::MojoRenderer> mojo_renderer,
-      media::VideoRendererSink* sink);
+      std::unique_ptr<MediaLog> media_log,
+      std::unique_ptr<MojoRenderer> mojo_renderer,
+      mojo::PendingRemote<RendererExtension> pending_renderer_extension,
+      std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
+      VideoRendererSink* sink);
+
+  MediaFoundationRendererClient(const MediaFoundationRendererClient&) = delete;
+  MediaFoundationRendererClient& operator=(
+      const MediaFoundationRendererClient&) = delete;
 
   ~MediaFoundationRendererClient() override;
 
-  // media::Renderer implementation.
+  // Renderer implementation.
   void Initialize(MediaResource* media_resource,
                   RendererClient* client,
                   PipelineStatusCallback init_cb) override;
@@ -63,89 +69,61 @@ class MediaFoundationRendererClient
   void SetVolume(float volume) override;
   base::TimeDelta GetMediaTime() override;
   void OnSelectedVideoTracksChanged(
-      const std::vector<media::DemuxerStream*>& enabled_tracks,
+      const std::vector<DemuxerStream*>& enabled_tracks,
       base::OnceClosure change_completed_cb) override;
 
-  // media::RendererClient implementation.
+  // RendererClient implementation.
   void OnError(PipelineStatus status) override;
   void OnEnded() override;
-  void OnStatisticsUpdate(const media::PipelineStatistics& stats) override;
-  void OnBufferingStateChange(media::BufferingState state,
-                              media::BufferingStateChangeReason) override;
-  void OnWaiting(media::WaitingReason reason) override;
-  void OnAudioConfigChange(const media::AudioDecoderConfig& config) override;
-  void OnVideoConfigChange(const media::VideoDecoderConfig& config) override;
+  void OnStatisticsUpdate(const PipelineStatistics& stats) override;
+  void OnBufferingStateChange(BufferingState state,
+                              BufferingStateChangeReason) override;
+  void OnWaiting(WaitingReason reason) override;
+  void OnAudioConfigChange(const AudioDecoderConfig& config) override;
+  void OnVideoConfigChange(const VideoDecoderConfig& config) override;
   void OnVideoNaturalSizeChange(const gfx::Size& size) override;
   void OnVideoOpacityChange(bool opaque) override;
   void OnVideoFrameRateChange(absl::optional<int>) override;
 
-  // media::VideoRendererSink::RenderCallback implementation.
-  scoped_refptr<media::VideoFrame> Render(
-      base::TimeTicks deadline_min,
-      base::TimeTicks deadline_max,
-      RenderingMode rendering_mode) override;
-  void OnFrameDropped() override;
-  base::TimeDelta GetPreferredRenderInterval() override;
-
  private:
-  void OnConnectionError();
-  void OnRemoteRendererInitialized(media::PipelineStatus status);
-  void OnVideoFrameCreated(scoped_refptr<media::VideoFrame> video_frame);
-  void OnDCOMPStreamTextureInitialized(bool success);
-  void OnDCOMPSurfaceTextureReleased();
-  void OnDCOMPSurfaceHandleCreated(bool success);
-  void OnReceivedRemoteDCOMPSurface(mojo::ScopedHandle surface_handle);
-  void OnDCOMPSurfaceRegisteredInGPUProcess(
-      const base::UnguessableToken& token);
-  void OnCompositionParamsReceived(gfx::Rect output_rect);
-
-  void InitializeDCOMPRendering();
-  void RegisterDCOMPSurfaceHandleInGPUProcess(
-      base::win::ScopedHandle surface_handle);
+  void OnRemoteRendererInitialized(PipelineStatus status);
+  void OnOutputRectChange(gfx::Rect output_rect);
+  void OnSetOutputRectDone(const gfx::Size& output_size, bool success);
+  void InitializeDCOMPRenderingIfNeeded();
+  void OnDCOMPSurfaceReceived(
+      const absl::optional<base::UnguessableToken>& token);
+  void OnDCOMPSurfaceHandleSet(bool success);
+  void OnVideoFrameCreated(scoped_refptr<VideoFrame> video_frame);
   void OnCdmAttached(bool success);
-  void InitializeMojoCdmTelemetryPtrServer();
-  void OnCDMTelemetryPtrConnectionError();
+  void OnConnectionError();
 
-  bool MojoSetDCOMPMode(bool enabled);
-  void MojoGetDCOMPSurface();
+  // This class is constructed on the main thread and used exclusively on the
+  // media thread. Hence we store PendingRemotes so we can bind the Remotes
+  // on the media task runner during/after Initialize().
+  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  std::unique_ptr<MediaLog> media_log_;
+  std::unique_ptr<MojoRenderer> mojo_renderer_;
+  mojo::PendingRemote<RendererExtension> pending_renderer_extension_;
+  std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper_;
+  VideoRendererSink* sink_ = nullptr;
 
-  // Used to forward calls to the MediaFoundationRenderer living in the MF_CDM
-  // LPAC Utility process.
-  std::unique_ptr<media::MojoRenderer> mojo_renderer_;
+  mojo::Remote<RendererExtension> renderer_extension_;
 
   RendererClient* client_ = nullptr;
-
-  VideoRendererSink* sink_;
-  bool video_rendering_started_ = false;
   bool dcomp_rendering_initialized_ = false;
-  // video's native size.
-  gfx::Size natural_size_;
+  gfx::Size natural_size_;  // video's native size.
+  gfx::Size output_size_;   // video's output size (the on-screen video size).
+  bool output_size_updated_ = false;
 
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
-  scoped_refptr<media::VideoFrame> dcomp_frame_;
-  bool dcomp_surface_handle_bound_ = false;
   bool has_video_ = false;
+  scoped_refptr<VideoFrame> dcomp_video_frame_;
 
   PipelineStatusCallback init_cb_;
   CdmContext* cdm_context_ = nullptr;
   CdmAttachedCB cdm_attached_cb_;
 
-  // Used temporarily, to delay binding to |renderer_extension_remote_| until we
-  // are on the right sequence, when Initialize() is called.
-  mojo::PendingRemote<RendererExtension>
-      delayed_bind_renderer_extension_remote_;
-
-  // Used to call methods on the MediaFoundationRenderer in the MF_CMD LPAC
-  // Utility process.
-  mojo::Remote<RendererExtension> renderer_extension_remote_;
-
-  bool waiting_for_dcomp_surface_handle_ = false;
-
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaFoundationRendererClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFoundationRendererClient);
 };
 
 }  // namespace media

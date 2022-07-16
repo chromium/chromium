@@ -45,7 +45,7 @@ class CORE_EXPORT ContentCaptureTaskHistogramReporter
   // Invoked on a capturing session ends, at that time, all captured changes
   // which include the new, changed and removed content has been sent.
   void OnAllCapturedContentSent();
-  void RecordsSentContentCountPerDocument(size_t sent_content_count);
+  void RecordsSentContentCountPerDocument(int sent_content_count);
 
  private:
   void MayRecordTaskRunsPerCapture();
@@ -65,7 +65,7 @@ class CORE_EXPORT ContentCaptureTaskHistogramReporter
   base::TimeTicks task_scheduled_time_;
   // Counts the task run times to complete a capture which includes capturing
   // and sending the content.
-  size_t task_runs_per_capture_ = 0;
+  int task_runs_per_capture_ = 0;
 
   // Records time to capture the content, its range is from 0 to 50,000
   // microseconds.

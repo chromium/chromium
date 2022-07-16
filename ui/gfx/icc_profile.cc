@@ -8,7 +8,7 @@
 #include <set>
 
 #include "base/command_line.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
@@ -22,9 +22,9 @@ namespace {
 
 static const size_t kMaxCachedICCProfiles = 16;
 
-// An MRU cache mapping data to ICCProfile objects, to avoid re-parsing
+// An LRU cache mapping data to ICCProfile objects, to avoid re-parsing
 // profiles every time they are read.
-using DataToProfileCacheBase = base::MRUCache<std::vector<char>, ICCProfile>;
+using DataToProfileCacheBase = base::LRUCache<std::vector<char>, ICCProfile>;
 class DataToProfileCache : public DataToProfileCacheBase {
  public:
   DataToProfileCache() : DataToProfileCacheBase(kMaxCachedICCProfiles) {}

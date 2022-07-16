@@ -9,18 +9,15 @@
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/device_account_initializer.h"
-#include "components/policy/core/common/features.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
 
-namespace {
-
 // A helper class to make the appropriate calls into the device account
 // initializer and manage the ChromeBrowserCloudManagementRegistrar callback's
 // lifetime.
-class MachineLevelDeviceAccountInitializerHelper
+class CBCMInvalidationsInitializer::MachineLevelDeviceAccountInitializerHelper
     : public DeviceAccountInitializer::Delegate {
  public:
   using Callback = base::OnceCallback<void(bool)>;
@@ -35,9 +32,6 @@ class MachineLevelDeviceAccountInitializerHelper
         policy_client_(policy_client),
         callback_(std::move(callback)),
         url_loader_factory_(url_loader_factory) {
-    DCHECK(base::FeatureList::IsEnabled(
-        policy::features::kCBCMPolicyInvalidations));
-
     DCHECK(url_loader_factory_);
 
     device_account_initializer_ =
@@ -56,10 +50,6 @@ class MachineLevelDeviceAccountInitializerHelper
 
   // DeviceAccountInitializer::Delegate:
   void OnDeviceAccountTokenFetched(bool empty_token) override {
-    DCHECK(base::FeatureList::IsEnabled(
-        policy::features::kCBCMPolicyInvalidations))
-        << "DeviceAccountInitializer is active but CBCM service accounts "
-           "are not enabled.";
     if (empty_token) {
       // Not being able to obtain a token isn't a showstopper for machine
       // level policies: the browser will fallback to fetching policies on a
@@ -73,10 +63,6 @@ class MachineLevelDeviceAccountInitializerHelper
   }
 
   void OnDeviceAccountTokenStored() override {
-    DCHECK(base::FeatureList::IsEnabled(
-        policy::features::kCBCMPolicyInvalidations))
-        << "DeviceAccountInitializer is active but CBCM service accounts "
-           "are not enabled.";
     // When the token is stored, the account init procedure is complete and
     // it's now time to save the associated email address.
     DeviceOAuth2TokenServiceFactory::Get()->SetServiceAccountEmail(
@@ -85,18 +71,10 @@ class MachineLevelDeviceAccountInitializerHelper
   }
 
   void OnDeviceAccountTokenError(EnrollmentStatus status) override {
-    DCHECK(base::FeatureList::IsEnabled(
-        policy::features::kCBCMPolicyInvalidations))
-        << "DeviceAccountInitializer is active but CBCM service accounts "
-           "are not enabled.";
     std::move(callback_).Run(false);
   }
 
   void OnDeviceAccountClientError(DeviceManagementStatus status) override {
-    DCHECK(base::FeatureList::IsEnabled(
-        policy::features::kCBCMPolicyInvalidations))
-        << "DeviceAccountInitializer is active but CBCM service accounts "
-           "are not enabled.";
     std::move(callback_).Run(false);
   }
 
@@ -124,8 +102,6 @@ class MachineLevelDeviceAccountInitializerHelper
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
-}  // namespace
-
 CBCMInvalidationsInitializer::CBCMInvalidationsInitializer(Delegate* delegate)
     : delegate_(delegate) {}
 
@@ -134,17 +110,20 @@ CBCMInvalidationsInitializer::~CBCMInvalidationsInitializer() = default;
 void CBCMInvalidationsInitializer::OnServiceAccountSet(
     CloudPolicyClient* client,
     const std::string& account_email) {
-  if (!base::FeatureList::IsEnabled(
-          policy::features::kCBCMPolicyInvalidations)) {
-    return;
-  }
+  // If there's no invalidations service active yet, now's the time to start it.
+  // It will be notified when the service account for is ready to be used.
+  if (!delegate_->IsInvalidationsServiceStarted())
+    delegate_->StartInvalidations();
 
-  // No need to get a refresh token if there is one present already.
-  if (!DeviceOAuth2TokenServiceFactory::Get()->RefreshTokenIsAvailable()) {
-    // If this feature is enabled, we need to ensure the device service
-    // account is initialized and fetch auth codes to exchange for a refresh
-    // token. Creating this object starts that process and the callback will
-    // be called from it whether it succeeds or not.
+  // If there's no refresh token when a policy has a service account, or the
+  // service account in the policy doesn't match the one in the token service,
+  // the service account has to be initialized to the one in the policy.
+  if (!DeviceOAuth2TokenServiceFactory::Get()->RefreshTokenIsAvailable() ||
+      DeviceOAuth2TokenServiceFactory::Get()->GetRobotAccountId() !=
+          CoreAccountId::FromEmail(account_email)) {
+    // Initialize the device service account and fetch auth codes to exchange
+    // for a refresh token. Creating this object starts that process and the
+    // callback will be called from it whether it succeeds or not.
     account_initializer_helper_ =
         std::make_unique<MachineLevelDeviceAccountInitializerHelper>(
             account_email, client,
@@ -154,11 +133,6 @@ void CBCMInvalidationsInitializer::OnServiceAccountSet(
                 ? delegate_->GetURLLoaderFactory()
                 : g_browser_process->system_network_context_manager()
                       ->GetSharedURLLoaderFactory());
-  } else if (!delegate_->IsInvalidationsServiceStarted()) {
-    // There's already a refresh token available but invalidations aren't
-    // running yet which means this is browser startup and the refresh token was
-    // retrieved from local storage. It's OK to start invalidations now.
-    delegate_->StartInvalidations();
   }
 }
 
@@ -166,8 +140,11 @@ void CBCMInvalidationsInitializer::AccountInitCallback(
     const std::string& account_email,
     bool success) {
   account_initializer_helper_.reset();
-  if (success)
-    delegate_->StartInvalidations();
+  if (!success) {
+    DVLOG(1)
+        << "There was an error initializing the service account with email: "
+        << account_email;
+  }
 }
 
 }  // namespace policy

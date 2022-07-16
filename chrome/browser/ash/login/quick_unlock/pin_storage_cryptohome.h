@@ -31,6 +31,10 @@ class PinStorageCryptohome {
                                           const Key& key);
 
   PinStorageCryptohome();
+
+  PinStorageCryptohome(const PinStorageCryptohome&) = delete;
+  PinStorageCryptohome& operator=(const PinStorageCryptohome&) = delete;
+
   ~PinStorageCryptohome();
 
   void IsPinSetInCryptohome(const AccountId& account_id,
@@ -55,8 +59,6 @@ class PinStorageCryptohome {
   std::vector<base::OnceClosure> system_salt_callbacks_;
 
   base::WeakPtrFactory<PinStorageCryptohome> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PinStorageCryptohome);
 };
 
 }  // namespace quick_unlock

@@ -27,6 +27,9 @@
 // The detail text string.
 @property(nonatomic, copy) NSString* detailText;
 
+// The color of the detail text.
+@property(nonatomic, strong) UIColor* detailTextColor;
+
 // The status text string.
 @property(nonatomic, copy) NSString* statusText;
 

@@ -32,7 +32,7 @@ INSTANTIATE_PAINT_TEST_SUITE_P(PaintPropertyTreePrinterTest);
 TEST_P(PaintPropertyTreePrinterTest, SimpleTransformTree) {
   SetBodyInnerHTML("hello world");
   String transform_tree_as_string =
-      transformPropertyTreeAsString(*GetDocument().View());
+      TransformPropertyTreeAsString(*GetDocument().View());
   EXPECT_THAT(transform_tree_as_string.Ascii(),
               testing::MatchesRegex("root .*"
                                     "  .*Translation \\(.*\\) .*"));
@@ -40,7 +40,7 @@ TEST_P(PaintPropertyTreePrinterTest, SimpleTransformTree) {
 
 TEST_P(PaintPropertyTreePrinterTest, SimpleClipTree) {
   SetBodyInnerHTML("hello world");
-  String clip_tree_as_string = clipPropertyTreeAsString(*GetDocument().View());
+  String clip_tree_as_string = ClipPropertyTreeAsString(*GetDocument().View());
   EXPECT_THAT(clip_tree_as_string.Ascii().c_str(),
               testing::MatchesRegex("root .*"
                                     "  .*Clip \\(.*\\) .*"));
@@ -49,7 +49,7 @@ TEST_P(PaintPropertyTreePrinterTest, SimpleClipTree) {
 TEST_P(PaintPropertyTreePrinterTest, SimpleEffectTree) {
   SetBodyInnerHTML("<div style='opacity: 0.9;'>hello world</div>");
   String effect_tree_as_string =
-      effectPropertyTreeAsString(*GetDocument().View());
+      EffectPropertyTreeAsString(*GetDocument().View());
   EXPECT_THAT(
       effect_tree_as_string.Ascii().c_str(),
       testing::MatchesRegex("root .*"
@@ -59,7 +59,7 @@ TEST_P(PaintPropertyTreePrinterTest, SimpleEffectTree) {
 TEST_P(PaintPropertyTreePrinterTest, SimpleScrollTree) {
   SetBodyInnerHTML("<div style='height: 4000px;'>hello world</div>");
   String scroll_tree_as_string =
-      scrollPropertyTreeAsString(*GetDocument().View());
+      ScrollPropertyTreeAsString(*GetDocument().View());
   EXPECT_THAT(scroll_tree_as_string.Ascii().c_str(),
               testing::MatchesRegex("root .*"
                                     "  Scroll \\(.*\\) .*"));

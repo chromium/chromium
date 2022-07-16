@@ -31,7 +31,7 @@ TestPaymentsClient::TestPaymentsClient(
                      identity_manager,
                      personal_data_manager) {
   // Default value should be CVC.
-  unmask_details_.unmask_auth_method = AutofillClient::UnmaskAuthMethod::CVC;
+  unmask_details_.unmask_auth_method = AutofillClient::UnmaskAuthMethod::kCvc;
 }
 
 TestPaymentsClient::~TestPaymentsClient() {}
@@ -41,7 +41,8 @@ void TestPaymentsClient::GetUnmaskDetails(
                             PaymentsClient::UnmaskDetails&)> callback,
     const std::string& app_locale) {
   if (should_return_unmask_details_)
-    std::move(callback).Run(AutofillClient::SUCCESS, unmask_details_);
+    std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
+                            unmask_details_);
 }
 
 void TestPaymentsClient::UnmaskCard(
@@ -68,8 +69,9 @@ void TestPaymentsClient::GetUploadDetails(
   billable_service_number_ = billable_service_number;
   upload_card_source_ = upload_card_source;
   std::move(callback).Run(
-      app_locale == "en-US" ? AutofillClient::SUCCESS
-                            : AutofillClient::PERMANENT_FAILURE,
+      app_locale == "en-US"
+          ? AutofillClient::PaymentsRpcResult::kSuccess
+          : AutofillClient::PaymentsRpcResult::kPermanentFailure,
       u"this is a context token", TestPaymentsClient::LegalMessage(),
       supported_card_bin_ranges_);
 }
@@ -80,15 +82,32 @@ void TestPaymentsClient::UploadCard(
                             const std::string&)> callback) {
   upload_card_addresses_ = request_details.profiles;
   active_experiments_ = request_details.active_experiments;
-  std::move(callback).Run(AutofillClient::SUCCESS, server_id_);
+  std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
+                          server_id_);
 }
 
 void TestPaymentsClient::MigrateCards(
     const MigrationRequestDetails& details,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     MigrateCardsCallback callback) {
-  std::move(callback).Run(AutofillClient::SUCCESS, std::move(save_result_),
-                          "this is display text");
+  std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
+                          std::move(save_result_), "this is display text");
+}
+
+void TestPaymentsClient::SelectChallengeOption(
+    const SelectChallengeOptionRequestDetails& details,
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                            const std::string&)> callback) {
+  select_challenge_option_request_ = details;
+  // If select_challenge_option_result_ is set, use the provided result.
+  // Otherwise, always return success with fake context token.
+  if (select_challenge_option_result_) {
+    std::move(callback).Run(select_challenge_option_result_.value(),
+                            /*context_token=*/"");
+    return;
+  }
+  std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
+                          "context_token from SelectChallengeOption");
 }
 
 void TestPaymentsClient::ShouldReturnUnmaskDetailsImmediately(
@@ -106,7 +125,7 @@ void TestPaymentsClient::AddFidoEligibleCard(std::string server_id,
                                              std::string relying_party_id) {
   should_return_unmask_details_ = true;
   unmask_details_.offer_fido_opt_in = false;
-  unmask_details_.unmask_auth_method = AutofillClient::UnmaskAuthMethod::FIDO;
+  unmask_details_.unmask_auth_method = AutofillClient::UnmaskAuthMethod::kFido;
   unmask_details_.fido_eligible_card_ids.insert(server_id);
   unmask_details_.fido_request_options =
       base::Value(base::Value::Type::DICTIONARY);

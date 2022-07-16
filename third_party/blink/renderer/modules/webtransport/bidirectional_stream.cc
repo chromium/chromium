@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "third_party/blink/renderer/modules/webtransport/web_transport.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -21,76 +20,29 @@ BidirectionalStream::BidirectionalStream(
     uint32_t stream_id,
     mojo::ScopedDataPipeProducerHandle outgoing_producer,
     mojo::ScopedDataPipeConsumerHandle incoming_consumer)
-    : outgoing_stream_(
-          MakeGarbageCollected<OutgoingStream>(script_state,
-                                               this,
-                                               std::move(outgoing_producer))),
-      incoming_stream_(MakeGarbageCollected<IncomingStream>(
-          script_state,
-          WTF::Bind(&BidirectionalStream::OnIncomingStreamAbort,
-                    WrapWeakPersistent(this)),
-          std::move(incoming_consumer))),
-      web_transport_(web_transport),
-      stream_id_(stream_id) {}
+    : send_stream_(
+          MakeGarbageCollected<SendStream>(script_state,
+                                           web_transport,
+                                           stream_id,
+                                           std::move(outgoing_producer))),
+      receive_stream_(
+          MakeGarbageCollected<ReceiveStream>(script_state,
+                                              web_transport,
+                                              stream_id,
+                                              std::move(incoming_consumer))) {}
 
 void BidirectionalStream::Init(ExceptionState& exception_state) {
-  outgoing_stream_->Init(exception_state);
+  send_stream_->Init(exception_state);
   if (exception_state.HadException())
     return;
 
-  incoming_stream_->Init(exception_state);
-}
-
-void BidirectionalStream::OnIncomingStreamClosed(bool fin_received) {
-  incoming_stream_->OnIncomingStreamClosed(fin_received);
-  if (outgoing_stream_->GetState() == OutgoingStream::State::kSentFin) {
-    return;
-  }
-
-  ScriptState::Scope scope(outgoing_stream_->GetScriptState());
-  outgoing_stream_->Reset();
-}
-
-void BidirectionalStream::Reset() {
-  ScriptState::Scope scope(outgoing_stream_->GetScriptState());
-  outgoing_stream_->Reset();
-  incoming_stream_->Reset();
-}
-
-void BidirectionalStream::ContextDestroyed() {
-  outgoing_stream_->ContextDestroyed();
-  incoming_stream_->ContextDestroyed();
-}
-
-void BidirectionalStream::SendFin() {
-  web_transport_->SendFin(stream_id_);
-  // The IncomingStream will be closed on the network service side.
-}
-
-void BidirectionalStream::OnOutgoingStreamAbort() {
-  web_transport_->AbortStream(stream_id_);
-  web_transport_->ForgetStream(stream_id_);
-  if (incoming_stream_->GetState() == IncomingStream::State::kOpen) {
-    incoming_stream_->Reset();
-  }
+  receive_stream_->Init(exception_state);
 }
 
 void BidirectionalStream::Trace(Visitor* visitor) const {
-  visitor->Trace(outgoing_stream_);
-  visitor->Trace(incoming_stream_);
-  visitor->Trace(web_transport_);
+  visitor->Trace(send_stream_);
+  visitor->Trace(receive_stream_);
   ScriptWrappable::Trace(visitor);
-  WebTransportStream::Trace(visitor);
-  OutgoingStream::Client::Trace(visitor);
-}
-
-void BidirectionalStream::OnIncomingStreamAbort() {
-  web_transport_->ForgetStream(stream_id_);
-  if (outgoing_stream_->GetState() == OutgoingStream::State::kAborted) {
-    return;
-  }
-  ScriptState::Scope scope(outgoing_stream_->GetScriptState());
-  outgoing_stream_->Reset();
 }
 
 }  // namespace blink

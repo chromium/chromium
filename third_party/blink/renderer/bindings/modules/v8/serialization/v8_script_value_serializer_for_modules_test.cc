@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_read_only.h"
@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
@@ -1086,7 +1087,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
   const unsigned kChannels = 2;
   const unsigned kSampleRate = 8000;
   const unsigned kFrames = 500;
-  constexpr base::TimeDelta kTimestamp = base::TimeDelta::FromMilliseconds(314);
+  constexpr base::TimeDelta kTimestamp = base::Milliseconds(314);
 
   auto audio_bus = media::AudioBus::Create(kChannels, kFrames);
 
@@ -1117,8 +1118,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
   ASSERT_TRUE(V8AudioData::HasInstance(result, scope.GetIsolate()));
 
   AudioData* new_data = V8AudioData::ToImpl(result.As<v8::Object>());
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(new_data->timestamp()),
-            kTimestamp);
+  EXPECT_EQ(base::Microseconds(new_data->timestamp()), kTimestamp);
   EXPECT_EQ(new_data->numberOfChannels(), kChannels);
   EXPECT_EQ(new_data->numberOfFrames(), kFrames);
   EXPECT_EQ(new_data->sampleRate(), kSampleRate);
@@ -1126,7 +1126,8 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
   // Copy out the frames to make sure they haven't been changed during the
   // transfer.
   DOMArrayBuffer* copy_dest = DOMArrayBuffer::Create(kFrames, sizeof(float));
-  V8BufferSource* dest = MakeGarbageCollected<V8BufferSource>(copy_dest);
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(copy_dest);
   AudioDataCopyToOptions* options =
       MakeGarbageCollected<AudioDataCopyToOptions>();
 
@@ -1156,7 +1157,7 @@ TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioDataThrows) {
       media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
       /*channel_count=*/2,
       /*sample_rate=*/8000,
-      /*frame_count=*/500, base::TimeDelta::FromMilliseconds(314));
+      /*frame_count=*/500, base::Milliseconds(314));
 
   // Create and close the frame.
   auto* audio_data = MakeGarbageCollected<AudioData>(std::move(audio_buffer));

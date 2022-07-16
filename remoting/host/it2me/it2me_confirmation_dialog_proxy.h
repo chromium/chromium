@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 
 namespace remoting {
@@ -23,6 +23,10 @@ class It2MeConfirmationDialogProxy : public It2MeConfirmationDialog {
   It2MeConfirmationDialogProxy(
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       std::unique_ptr<It2MeConfirmationDialog> dialog);
+
+  It2MeConfirmationDialogProxy(const It2MeConfirmationDialogProxy&) = delete;
+  It2MeConfirmationDialogProxy& operator=(const It2MeConfirmationDialogProxy&) =
+      delete;
 
   ~It2MeConfirmationDialogProxy() override;
 
@@ -38,8 +42,6 @@ class It2MeConfirmationDialogProxy : public It2MeConfirmationDialog {
   std::unique_ptr<Core> core_;
   It2MeConfirmationDialog::ResultCallback callback_;
   base::WeakPtrFactory<It2MeConfirmationDialogProxy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(It2MeConfirmationDialogProxy);
 };
 
 }  // namespace remoting

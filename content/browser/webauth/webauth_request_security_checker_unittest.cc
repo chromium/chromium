@@ -63,6 +63,10 @@ std::ostream& operator<<(std::ostream& out, const TestCase& test_case) {
     case WebAuthRequestSecurityChecker::RequestType::kGetAssertion:
       out << "Get Assertion";
       break;
+    case WebAuthRequestSecurityChecker::RequestType::
+        kGetPaymentCredentialAssertion:
+      out << "Get Payment Credential Assertion";
+      break;
     case WebAuthRequestSecurityChecker::RequestType::kMakePaymentCredential:
       out << "Make Payment Credential";
       break;

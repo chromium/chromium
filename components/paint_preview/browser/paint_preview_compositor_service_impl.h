@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/unguessable_token.h"
 #include "components/paint_preview/public/paint_preview_compositor_service.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
@@ -36,6 +37,8 @@ class PaintPreviewCompositorServiceImpl : public PaintPreviewCompositorService {
   // PaintPreviewCompositorService Implementation.
   std::unique_ptr<PaintPreviewCompositorClient, base::OnTaskRunnerDeleter>
   CreateCompositor(base::OnceClosure connected_closure) override;
+  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
+                            memory_pressure_level) override;
 
   bool HasActiveClients() const override;
   // NOTE: this is set by the constructor. However, in some cases it may need to

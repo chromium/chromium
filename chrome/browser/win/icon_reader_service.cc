@@ -4,8 +4,8 @@
 
 #include "chrome/browser/win/icon_reader_service.h"
 
-#include "chrome/browser/service_sandbox_type.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
 #include "content/public/browser/service_process_host.h"
 
 mojo::Remote<chrome::mojom::UtilReadIcon> LaunchIconReaderInstance() {

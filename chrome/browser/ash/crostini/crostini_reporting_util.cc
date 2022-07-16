@@ -56,8 +56,8 @@ void WriteTerminaVmKernelVersionToPrefsForReporting(
 
 base::Time GetThreeDayWindowStart(const base::Time& actual_time) {
   const base::Time actual_time_midnight = actual_time.UTCMidnight();
-  const base::TimeDelta delta = base::TimeDelta::FromDays(
-      (actual_time_midnight - base::Time::UnixEpoch()).InDays() % 3);
+  const base::TimeDelta delta =
+      base::Days((actual_time_midnight - base::Time::UnixEpoch()).InDays() % 3);
   return actual_time_midnight - delta;
 }
 

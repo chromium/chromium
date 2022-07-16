@@ -12,6 +12,10 @@ namespace message_center {
 class FakeLockScreenController : public LockScreenController {
  public:
   FakeLockScreenController();
+
+  FakeLockScreenController(const FakeLockScreenController&) = delete;
+  FakeLockScreenController& operator=(const FakeLockScreenController&) = delete;
+
   ~FakeLockScreenController() override;
 
   void DismissLockScreenThenExecute(base::OnceClosure pending_callback,
@@ -29,8 +33,6 @@ class FakeLockScreenController : public LockScreenController {
   bool is_screen_locked_ = false;
   base::OnceClosure pending_callback_;
   base::OnceClosure cancel_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeLockScreenController);
 };
 
 }  // namespace message_center

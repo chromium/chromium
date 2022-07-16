@@ -5,23 +5,15 @@
 #include "extensions/test/result_catcher.h"
 
 #include "base/run_loop.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/notification_types.h"
 
 namespace extensions {
 
 ResultCatcher::ResultCatcher() : browser_context_restriction_(nullptr) {
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_TEST_PASSED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_TEST_FAILED,
-                 content::NotificationService::AllSources());
+  test_api_observation_.Observe(TestApiObserverRegistry::GetInstance());
 }
 
-ResultCatcher::~ResultCatcher() {
-}
+ResultCatcher::~ResultCatcher() = default;
 
 bool ResultCatcher::GetNextResult() {
   // Depending on the tests, multiple results can come in from a single call
@@ -46,35 +38,31 @@ bool ResultCatcher::GetNextResult() {
   return false;
 }
 
-void ResultCatcher::Observe(int type,
-                            const content::NotificationSource& source,
-                            const content::NotificationDetails& details) {
+void ResultCatcher::OnTestPassed(content::BrowserContext* browser_context) {
   if (browser_context_restriction_ &&
-      content::Source<content::BrowserContext>(source).ptr() !=
-          browser_context_restriction_) {
+      browser_context != browser_context_restriction_) {
     return;
   }
 
-  switch (type) {
-    case extensions::NOTIFICATION_EXTENSION_TEST_PASSED:
-      VLOG(1) << "Got EXTENSION_TEST_PASSED notification.";
-      results_.push_back(true);
-      messages_.push_back(std::string());
-      if (!quit_closure_.is_null())
-        std::move(quit_closure_).Run();
-      break;
+  VLOG(1) << "Got chrome.test.notifyPass notification.";
+  results_.push_back(true);
+  messages_.push_back(std::string());
+  if (!quit_closure_.is_null())
+    std::move(quit_closure_).Run();
+}
 
-    case extensions::NOTIFICATION_EXTENSION_TEST_FAILED:
-      VLOG(1) << "Got EXTENSION_TEST_FAILED notification.";
-      results_.push_back(false);
-      messages_.push_back(*(content::Details<std::string>(details).ptr()));
-      if (!quit_closure_.is_null())
-        std::move(quit_closure_).Run();
-      break;
-
-    default:
-      NOTREACHED();
+void ResultCatcher::OnTestFailed(content::BrowserContext* browser_context,
+                                 const std::string& message) {
+  if (browser_context_restriction_ &&
+      browser_context != browser_context_restriction_) {
+    return;
   }
+
+  VLOG(1) << "Got chrome.test.notifyFail notification.";
+  results_.push_back(false);
+  messages_.push_back(message);
+  if (!quit_closure_.is_null())
+    std::move(quit_closure_).Run();
 }
 
 }  // namespace extensions

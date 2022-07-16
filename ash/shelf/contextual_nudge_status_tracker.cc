@@ -67,9 +67,8 @@ void ContextualNudgeStatusTracker::HandleGesturePerformed(
 
   base::TimeDelta time_since_show = hide_time - nudge_shown_time_;
   base::UmaHistogramCustomTimes(
-      GetTimeDeltaHistogramName(type_), time_since_show,
-      base::TimeDelta::FromSeconds(1),
-      base::TimeDelta::FromSeconds(kMaxHistogramTime), kMaxHistogramTime);
+      GetTimeDeltaHistogramName(type_), time_since_show, base::Seconds(1),
+      base::Seconds(kMaxHistogramTime), kMaxHistogramTime);
   gesture_time_recorded_ = true;
 }
 

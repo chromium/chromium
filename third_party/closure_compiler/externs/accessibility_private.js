@@ -34,6 +34,15 @@ chrome.accessibilityPrivate.AlertInfo;
 chrome.accessibilityPrivate.ScreenRect;
 
 /**
+ * Point in global screen coordinates.
+ * @typedef {{
+ *   x: number,
+ *   y: number
+ * }}
+ */
+chrome.accessibilityPrivate.ScreenPoint;
+
+/**
  * @enum {string}
  */
 chrome.accessibilityPrivate.Gesture = {
@@ -136,6 +145,45 @@ chrome.accessibilityPrivate.SwitchAccessMenuAction = {
   SELECT: 'select',
   SETTINGS: 'settings',
   START_TEXT_SELECTION: 'startTextSelection',
+  SHORTCUTS: 'shortcuts',
+  LEAVE_GROUP: 'leaveGroup',
+  WEB_MENU: 'webMenu',
+  WEB_BOOKMARK: 'webBookmark',
+  WEB_BOTTOM_OF_PAGE: 'webBottomOfPage',
+  WEB_TOP_OF_PAGE: 'webTopOfPage',
+  WEB_FIND_IN_PAGE: 'webFindInPage',
+  WEB_DOWNLOADS: 'webDownloads',
+  WEB_CLEAR_HISTORY: 'webClearHistory',
+  SYSTEM_MENU: 'systemMenu',
+  SYSTEM_STATUS_BAR: 'systemStatusBar',
+  SYSTEM_LAUNCHER: 'systemLauncher',
+  SYSTEM_TASK_MANAGER: 'systemTaskManager',
+  SYSTEM_DIAGNOSTICS: 'systemDiagnostics',
+  SYSTEM_SCREENSHOT: 'systemScreenshot',
+  SYSTEM_HELP: 'systemHelp',
+  MEDIA_MENU: 'mediaMenu',
+  MEDIA_MUTE: 'mediaMute',
+  MEDIA_VOLUME_DOWN: 'mediaVolumeDown',
+  MEDIA_VOLUME_UP: 'mediaVolumeUp',
+  MEDIA_REWIND: 'mediaRewind',
+  MEDIA_PLAY_PAUSE: 'mediaPlayPause',
+  MEDIA_FASTFORWARD: 'mediaFastforward',
+  DISPLAY_MENU: 'displayMenu',
+  DISPLAY_MIRROR: 'displayMirror',
+  DISPLAY_BRIGHTNESS_DOWN: 'displayBrightnessDown',
+  DISPLAY_BRIGHTNESS_UP: 'displayBrightnessUp',
+  DISPLAY_ROTATE: 'displayRotate',
+  DISPLAY_ZOOM_OUT: 'displayZoomOut',
+  DISPLAY_ZOOM_IN: 'displayZoomIn',
+  USER_MENU: 'userMenu',
+  USER_LOCK: 'userLock',
+  USER_PREVIOUS_USER: 'userPreviousUser',
+  USER_NEXT_USER: 'userNextUser',
+  USER_SIGN_OUT: 'userSignOut',
+  ACTION_RECORDER: 'actionRecorder',
+  START_RECORDING: 'startRecording',
+  STOP_RECORDING: 'stopRecording',
+  EXECUTE_MACRO: 'executeMacro',
 };
 
 /**
@@ -250,8 +298,8 @@ chrome.accessibilityPrivate.AcceleratorAction = {
  * @enum {string}
  */
 chrome.accessibilityPrivate.AccessibilityFeature = {
-  SELECT_TO_SPEAK_NAVIGATION_CONTROL: 'selectToSpeakNavigationControl',
   ENHANCED_NETWORK_VOICES: 'enhancedNetworkVoices',
+  DICTATION_COMMANDS: 'dictationCommands',
 };
 
 /**
@@ -414,6 +462,12 @@ chrome.accessibilityPrivate.handleScrollableBoundsForPointFound = function(rect)
  *     in the magnified viewport.
  */
 chrome.accessibilityPrivate.moveMagnifierToRect = function(rect) {};
+
+/**
+ * Called by the Accessibility Common extension to center magnifier at |point|.
+ * @param {!chrome.accessibilityPrivate.ScreenPoint} point
+ */
+chrome.accessibilityPrivate.magnifierCenterOnPoint = function(point) {};
 
 /**
  * Toggles dictation between active and inactive states.

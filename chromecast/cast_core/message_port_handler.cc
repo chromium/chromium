@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "chromecast/cast_core/message_port_service.h"
+#include "components/cast/message_port/platform_message_port.h"
 
 namespace chromecast {
 namespace {
@@ -15,7 +16,7 @@ namespace {
 // This is used as a timeout for both sending cast::web::Message requests and
 // awaiting responses.  Reaching this timeout without a response from the peer
 // will close the connection and Blink message port.
-constexpr base::TimeDelta kMessageTimeout = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kMessageTimeout = base::Seconds(10);
 
 }  // namespace
 
@@ -72,7 +73,7 @@ bool MessagePortHandler::HandleMessage(const cast::web::Message& message) {
       for (const auto& port : message.request().ports()) {
         std::unique_ptr<cast_api_bindings::MessagePort> client;
         std::unique_ptr<cast_api_bindings::MessagePort> server;
-        message_port_service_->CreatePair(&client, &server);
+        cast_api_bindings::CreatePlatformMessagePortPair(&client, &server);
         message_port_service_->RegisterIncomingPort(port.channel().channel_id(),
                                                     std::move(client));
         ports.push_back(std::move(server));

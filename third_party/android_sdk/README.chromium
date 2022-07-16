@@ -1,13 +1,14 @@
 Name: Android SDK
 URL: http://developer.android.com/sdk/index.html
 Version: 31
-  Android SDK Build-tools 31.0.0
-  Android SDK Command-line Tools 4.0
+  Android SDK Build-Tools 31.0.0
+  Android SDK Command-line Tools 5.0
   Android SDK Emulator 30.7.5
-  Android SDK Platform-tools 31.0.2
+  Android SDK Patch Applier v4
+  Android SDK Platform-Tools 31.0.3
   Android SDK Platform API 31
   Android SDK Sources 30
-  SDK Patch Applier v4
+  Google Cloud Messaging for Android Library, rev 3
 Security Critical: no
 License: Apache Version 2.0
 
@@ -27,8 +28,12 @@ Update Instructions:
   * Find the latest build on the android-sdk-packager builder. Get the CIPD
     instance id from its logs and update //DEPS:
     https://ci.chromium.org/p/chromium/builders/ci/android-sdk-packager
-  * Use `public/cmdline-tools/latest/bin/sdkmanager platform-tools` to make
-    sure that it is the latest version.
+  * Run `gclient sync` to fetch the updated files for the new instances in
+    //DEPS.
+  * Run `public/cmdline-tools/latest/bin/sdkmanager --list_installed` and make
+    sure that the packages are the new version.
+  * Run `cat public/cmdline-tools/latest/source.properties` to check the
+    version of cmdline-tools (this is not included in --list_installed).
   * Update this file with the new version.
 * Adding new sdk packages:
   * Prepare the CIPD yaml files for packages in the cipd/ directory.

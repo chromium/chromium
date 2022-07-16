@@ -16,6 +16,10 @@ class DEVICE_VR_EXPORT FakeVRServiceClient : public mojom::VRServiceClient {
  public:
   explicit FakeVRServiceClient(
       mojo::PendingReceiver<mojom::VRServiceClient> receiver);
+
+  FakeVRServiceClient(const FakeVRServiceClient&) = delete;
+  FakeVRServiceClient& operator=(const FakeVRServiceClient&) = delete;
+
   ~FakeVRServiceClient() override;
 
   void OnDeviceChanged() override {}
@@ -25,8 +29,6 @@ class DEVICE_VR_EXPORT FakeVRServiceClient : public mojom::VRServiceClient {
  private:
   mojom::XRDeviceId last_device_id_ = static_cast<mojom::XRDeviceId>(0);
   mojo::Receiver<mojom::VRServiceClient> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVRServiceClient);
 };
 
 }  // namespace device

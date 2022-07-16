@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "ash/grit/ash_print_management_resources.h"
+#include "ash/webui/print_management/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chromeos/components/print_management/url_constants.h"
-#include "chromeos/grit/chromeos_print_management_resources.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -17,8 +17,8 @@
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForPrintManagementApp() {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
-  info->start_url = GURL(chromeos::kChromeUIPrintManagementAppUrl);
-  info->scope = GURL(chromeos::kChromeUIPrintManagementAppUrl);
+  info->start_url = GURL(ash::kChromeUIPrintManagementAppUrl);
+  info->scope = GURL(ash::kChromeUIPrintManagementAppUrl);
   info->title = l10n_util::GetStringUTF16(IDS_PRINT_MANAGEMENT_TITLE);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
@@ -26,7 +26,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForPrintManagementApp() {
   info->theme_color = 0xFFFFFFFF;
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->open_as_window = true;
+  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
   return info;
 }

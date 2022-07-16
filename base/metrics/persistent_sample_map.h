@@ -35,6 +35,9 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
                       PersistentHistogramAllocator* allocator,
                       Metadata* meta);
 
+  PersistentSampleMap(const PersistentSampleMap&) = delete;
+  PersistentSampleMap& operator=(const PersistentSampleMap&) = delete;
+
   ~PersistentSampleMap() override;
 
   // HistogramSamples:
@@ -100,8 +103,6 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
   // live beyond the life of this object. This value is lazily-initialized on
   // first use via the GetRecords() accessor method.
   PersistentSampleMapRecords* records_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentSampleMap);
 };
 
 }  // namespace base

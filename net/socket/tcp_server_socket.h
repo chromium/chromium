@@ -28,6 +28,9 @@ class NET_EXPORT TCPServerSocket : public ServerSocket {
   // Adopts the provided socket, which must not be a connected socket.
   explicit TCPServerSocket(std::unique_ptr<TCPSocket> socket);
 
+  TCPServerSocket(const TCPServerSocket&) = delete;
+  TCPServerSocket& operator=(const TCPServerSocket&) = delete;
+
   ~TCPServerSocket() override;
 
   // Takes ownership of |socket|, which has been opened, but may or may not be
@@ -70,8 +73,6 @@ class NET_EXPORT TCPServerSocket : public ServerSocket {
   std::unique_ptr<TCPSocket> accepted_socket_;
   IPEndPoint accepted_address_;
   bool pending_accept_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPServerSocket);
 };
 
 }  // namespace net

@@ -11,6 +11,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/test/trace_test_utils.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -72,10 +74,15 @@ class CoordinatorImplTest : public testing::Test {
   CoordinatorImplTest() = default;
 
   void SetUp() override {
+    TracingObserverProto::RegisterForTesting();
     coordinator_ = std::make_unique<NiceMock<FakeCoordinatorImpl>>();
+    tracing::PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
+        base::ThreadTaskRunnerHandle::Get());
   }
 
-  void TearDown() override { coordinator_.reset(); }
+  void TearDown() override {
+    coordinator_.reset();
+  }
 
   void RegisterClientProcess(
       mojo::PendingReceiver<mojom::Coordinator> receiver,
@@ -126,15 +133,17 @@ class CoordinatorImplTest : public testing::Test {
   }
 
   void ReduceCoordinatorClientProcessTimeout() {
-    coordinator_->set_client_process_timeout(
-        base::TimeDelta::FromMilliseconds(5));
+    coordinator_->set_client_process_timeout(base::Milliseconds(5));
   }
 
  protected:
+  // Note that |coordinator_| must outlive |task_environment_|, because
+  // otherwise a worker thread owned by the task environment may try to access
+  // the coordinator after it has been destroyed.
   std::unique_ptr<NiceMock<FakeCoordinatorImpl>> coordinator_;
-
   base::test::TaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::TracingEnvironment tracing_environment_;
 };
 
 class MockClientProcess : public mojom::ClientProcess {
@@ -319,8 +328,7 @@ TEST_F(CoordinatorImplTest, QueuedRequest) {
              MockClientProcess::RequestChromeMemoryDumpCallback& callback) {
             // Skip the wall clock time-ticks forward to make sure start_time
             // is strictly increasing.
-            task_environment->FastForwardBy(
-                base::TimeDelta::FromMilliseconds(10));
+            task_environment->FastForwardBy(base::Milliseconds(10));
             MemoryDumpArgs dump_args{MemoryDumpLevelOfDetail::DETAILED};
             auto pmd = std::make_unique<ProcessMemoryDump>(dump_args);
             std::move(callback).Run(true, args.dump_guid, std::move(pmd));
@@ -782,7 +790,7 @@ TEST_F(CoordinatorImplTest, VmRegionsForHeapProfiler) {
 TEST_F(CoordinatorImplTest, DumpsArentAddedToTraceUnlessRequested) {
   CoordinatorImpl* coordinator = CoordinatorImpl::GetInstance();
   ASSERT_TRUE(coordinator->use_proto_writer_);
-  tracing::DataSourceTester trace_data_tester(
+  tracing::DataSourceTester data_source_tester(
       reinterpret_cast<TracingObserverProto*>(
           coordinator->tracing_observer_.get()));
 
@@ -807,26 +815,34 @@ TEST_F(CoordinatorImplTest, DumpsArentAddedToTraceUnlessRequested) {
                                  IsEmpty()))))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
-  auto* trace_log = base::trace_event::TraceLog::GetInstance();
-  trace_log->SetEnabled(
-      base::trace_event::TraceConfig(MemoryDumpManager::kTraceCategory,
-                                     base::trace_event::RECORD_UNTIL_FULL),
-      TraceLog::RECORDING_MODE);
-  trace_data_tester.BeginTrace();
+  base::trace_event::TraceConfig trace_config(
+      std::string(MemoryDumpManager::kTraceCategory) + ",-*",
+      base::trace_event::RECORD_UNTIL_FULL);
+  data_source_tester.BeginTrace(trace_config);
   RequestGlobalMemoryDump(MemoryDumpType::EXPLICITLY_TRIGGERED,
                           MemoryDumpLevelOfDetail::DETAILED,
                           MemoryDumpDeterminism::NONE, {}, callback.Get());
   run_loop.Run();
-  trace_data_tester.EndTracing();
-  trace_log->SetDisabled();
+  data_source_tester.EndTracing();
 
-  EXPECT_EQ(trace_data_tester.producer()->GetFinalizedPacketCount(), 0u);
+  for (size_t i = 0; i < data_source_tester.GetFinalizedPacketCount(); i++) {
+    EXPECT_FALSE(data_source_tester.GetFinalizedPacket(i)
+                     ->has_memory_tracker_snapshot());
+  }
 }
 
-TEST_F(CoordinatorImplTest, DumpsAreAddedToTraceWhenRequested) {
+// crbug.com: 1238428: flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_DumpsAreAddedToTraceWhenRequested \
+  DISABLED_DumpsAreAddedToTraceWhenRequested
+#else
+#define MAYBE_DumpsAreAddedToTraceWhenRequested \
+  DumpsAreAddedToTraceWhenRequested
+#endif
+TEST_F(CoordinatorImplTest, MAYBE_DumpsAreAddedToTraceWhenRequested) {
   CoordinatorImpl* coordinator = CoordinatorImpl::GetInstance();
   ASSERT_TRUE(coordinator->use_proto_writer_);
-  tracing::DataSourceTester trace_data_tester(
+  tracing::DataSourceTester data_source_tester(
       reinterpret_cast<TracingObserverProto*>(
           coordinator->tracing_observer_.get()));
 
@@ -847,19 +863,16 @@ TEST_F(CoordinatorImplTest, DumpsAreAddedToTraceWhenRequested) {
   EXPECT_CALL(callback, OnCall(true, Ne(0ul)))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
-  auto* trace_log = base::trace_event::TraceLog::GetInstance();
-  trace_log->SetEnabled(
-      base::trace_event::TraceConfig(MemoryDumpManager::kTraceCategory,
-                                     base::trace_event::RECORD_UNTIL_FULL),
-      TraceLog::RECORDING_MODE);
-  trace_data_tester.BeginTrace();
+  base::trace_event::TraceConfig trace_config(
+      std::string(MemoryDumpManager::kTraceCategory) + ",-*",
+      base::trace_event::RECORD_UNTIL_FULL);
+  data_source_tester.BeginTrace(trace_config);
   RequestGlobalMemoryDumpAndAppendToTrace(callback.Get());
   run_loop.Run();
-  trace_data_tester.EndTracing();
-  trace_log->SetDisabled();
+  data_source_tester.EndTracing();
 
-  EXPECT_EQ(trace_data_tester.producer()->GetFinalizedPacketCount(), 1u);
-  const auto* packet = trace_data_tester.producer()->GetFinalizedPacket();
+  EXPECT_GE(data_source_tester.GetFinalizedPacketCount(), 1u);
+  const auto* packet = data_source_tester.GetFinalizedPacket();
   EXPECT_EQ(packet->memory_tracker_snapshot().level_of_detail(),
             perfetto::protos::MemoryTrackerSnapshot::DETAIL_FULL);
 }
@@ -966,6 +979,97 @@ TEST_F(CoordinatorImplTest, DumpByPidFailure) {
 
   RequestGlobalMemoryDumpForPid(2, {}, callback.Get());
   run_loop.Run();
+}
+
+TEST_F(CoordinatorImplTest, GlobalDumpWithSubTrees) {
+  base::RunLoop run_loop;
+
+  static constexpr base::ProcessId kBrowserPid = 1;
+  MockClientProcess browser_client(this, kBrowserPid,
+                                   mojom::ProcessType::BROWSER);
+
+  EXPECT_CALL(browser_client, RequestChromeMemoryDumpMock(_, _))
+      .WillOnce(Invoke(
+          [](const MemoryDumpRequestArgs& args,
+             MockClientProcess::RequestChromeMemoryDumpCallback& callback) {
+            MemoryDumpArgs dump_args{MemoryDumpLevelOfDetail::DETAILED};
+            auto pmd = std::make_unique<ProcessMemoryDump>(dump_args);
+            auto* size = MemoryAllocatorDump::kNameSize;
+            auto* bytes = MemoryAllocatorDump::kUnitsBytes;
+            const uint32_t kB = 1024;
+
+            // None of these dumps should appear in the output.
+            pmd->CreateAllocatorDump(
+                   "malloc", base::trace_event::MemoryAllocatorDumpGuid(1))
+                ->AddScalar(size, bytes, 1 * kB);
+            pmd->CreateAllocatorDump("v8/foo")->AddScalar(size, bytes, 1 * kB);
+            pmd->CreateAllocatorDump("v8/bar")->AddScalar(size, bytes, 2 * kB);
+            pmd->CreateAllocatorDump("v8")->AddScalar(size, bytes, 99 * kB);
+
+            // This "tree" of dumps should be included.
+            pmd->CreateAllocatorDump("partition_alloc")
+                ->AddScalar(size, bytes, 99 * kB);
+            pmd->CreateAllocatorDump("partition_alloc/allocated_objects")
+                ->AddScalar(size, bytes, 99 * kB);
+            pmd->CreateAllocatorDump("partition_alloc/partitions")
+                ->AddScalar(size, bytes, 99 * kB);
+            pmd->CreateAllocatorDump("partition_alloc/partitions/1")
+                ->AddScalar(size, bytes, 2 * kB);
+            pmd->CreateAllocatorDump("partition_alloc/partitions/2")
+                ->AddScalar(size, bytes, 2 * kB);
+
+            std::move(callback).Run(true, args.dump_guid, std::move(pmd));
+          }));
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, Contains(1), _))
+      .WillOnce(Invoke(
+          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
+             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+            base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
+            results[1] = mojom::RawOSMemDump::New();
+            results[1]->resident_set_kb = 1;
+            results[1]->platform_private_footprint =
+                mojom::PlatformPrivateFootprint::New();
+            std::move(callback).Run(true, std::move(results));
+          }));
+#else
+  EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, Contains(0), _))
+      .WillOnce(Invoke(
+          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
+             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+            base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
+            results[0] = mojom::RawOSMemDump::New();
+            results[0]->platform_private_footprint =
+                mojom::PlatformPrivateFootprint::New();
+            results[0]->resident_set_kb = 1;
+            std::move(callback).Run(true, std::move(results));
+          }));
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
+  base::test::TestFuture<bool,
+                         memory_instrumentation::mojom::GlobalMemoryDumpPtr>
+      result;
+  RequestGlobalMemoryDump(
+      MemoryDumpType::SUMMARY_ONLY, MemoryDumpLevelOfDetail::BACKGROUND,
+      MemoryDumpDeterminism::NONE, {"partition_alloc/*"}, result.GetCallback());
+
+  // Expect that the dump request succeeds.
+  ASSERT_TRUE(std::get<bool>(result.Get()));
+
+  // Verify that the dump has a single "partition_alloc" top-level node, and
+  // that the top level dump has children.
+  const auto& global_dump =
+      std::get<memory_instrumentation::mojom::GlobalMemoryDumpPtr>(
+          result.Get());
+  ASSERT_EQ(global_dump->process_dumps.size(), 1u);
+
+  const auto& process_dump = *global_dump->process_dumps.begin();
+  EXPECT_EQ(process_dump->pid, kBrowserPid);
+
+  const auto& allocator_dumps = process_dump->chrome_allocator_dumps;
+  ASSERT_EQ(allocator_dumps.size(), 1u);
+  EXPECT_EQ(allocator_dumps.begin()->first, "partition_alloc");
+  EXPECT_EQ(allocator_dumps.begin()->second->children.size(), 2u);
 }
 
 }  // namespace memory_instrumentation

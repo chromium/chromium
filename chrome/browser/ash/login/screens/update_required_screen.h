@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
@@ -39,6 +38,10 @@ class UpdateRequiredScreen : public BaseScreen,
   UpdateRequiredScreen(UpdateRequiredView* view,
                        ErrorScreen* error_screen,
                        base::RepeatingClosure exit_callback);
+
+  UpdateRequiredScreen(const UpdateRequiredScreen&) = delete;
+  UpdateRequiredScreen& operator=(const UpdateRequiredScreen&) = delete;
+
   ~UpdateRequiredScreen() override;
 
   // Called when the being destroyed. This should call Unbind() on the
@@ -149,8 +152,6 @@ class UpdateRequiredScreen : public BaseScreen,
   base::CallbackListSubscription connect_request_subscription_;
 
   base::WeakPtrFactory<UpdateRequiredScreen> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateRequiredScreen);
 };
 
 }  // namespace ash

@@ -29,9 +29,11 @@ TEST(PlatformAcceleratorCocoaTest,
        // into U+232B.
        @"\x08",
        NSEventModifierFlagCommand | NSEventModifierFlagShift},
-      {{ui::VKEY_F, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN},
+      {{ui::VKEY_F,
+        ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN | ui::EF_FUNCTION_DOWN},
        @"f",
-       NSEventModifierFlagCommand | NSEventModifierFlagControl},
+       NSEventModifierFlagCommand | NSEventModifierFlagControl |
+           NSEventModifierFlagFunction},
   };
 
   for (const auto& test : kTestCases) {

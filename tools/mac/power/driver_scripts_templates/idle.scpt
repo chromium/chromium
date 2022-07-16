@@ -4,6 +4,6 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
--- This script simply waits for |delay| seconds before quiting.
+-- This script simply waits for 3600 seconds before quiting.
 
-delay {{ delay }}
+delay 3600 

@@ -38,6 +38,6 @@ class ASH_EXPORT DefaultWindowResizer : public WindowResizer {
   bool did_move_or_resize_ = false;
 };
 
-}  // namespace aura
+}  // namespace ash
 
 #endif  // ASH_WM_DEFAULT_WINDOW_RESIZER_H_

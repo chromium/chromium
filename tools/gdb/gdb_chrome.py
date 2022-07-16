@@ -297,7 +297,7 @@ class FlatTreePrinter(object):
     # Python is much more complicated and this output is reasonable.
     # (Without this printer, a flat_map will output 7 lines of internal
     # template goop before the vector contents.)
-    return 'base::flat_tree with ' + str(self.val['impl_']['body_'])
+    return 'base::flat_tree with ' + str(self.val['body_'])
 
 
 pp_set.add_printer('base::flat_map', '^base::flat_map<.*>$', FlatTreePrinter)

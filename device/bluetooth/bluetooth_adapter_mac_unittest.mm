@@ -14,7 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -278,6 +278,7 @@ TEST_F(BluetoothAdapterMacTest, AddDiscoverySessionWithLowEnergyFilter) {
 
   adapter_mac_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter),
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
                      base::Unretained(this)),
       base::BindOnce(&BluetoothAdapterMacTest::ErrorCallback,
@@ -309,6 +310,7 @@ TEST_F(BluetoothAdapterMacTest, AddSecondDiscoverySessionWithLowEnergyFilter) {
   discovery_filter->AddDeviceFilter(device_filter);
   adapter_mac_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter),
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
                      base::Unretained(this)),
       base::BindOnce(&BluetoothAdapterMacTest::ErrorCallback,
@@ -325,6 +327,7 @@ TEST_F(BluetoothAdapterMacTest, AddSecondDiscoverySessionWithLowEnergyFilter) {
 
   adapter_mac_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter2),
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
                      base::Unretained(this)),
       base::BindOnce(&BluetoothAdapterMacTest::ErrorCallback,
@@ -346,6 +349,7 @@ TEST_F(BluetoothAdapterMacTest, RemoveDiscoverySessionWithLowEnergyFilter) {
       new BluetoothDiscoveryFilter(BLUETOOTH_TRANSPORT_LE));
   adapter_mac_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter),
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
                      base::Unretained(this)),
       base::BindOnce(&BluetoothAdapterMacTest::ErrorCallback,

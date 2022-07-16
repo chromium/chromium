@@ -25,8 +25,7 @@ TestSigninClient::TestSigninClient(
       pref_service_(pref_service),
       are_signin_cookies_allowed_(true),
       network_calls_delayed_(false),
-      is_signout_allowed_(true),
-      is_dice_migration_completed_(false) {}
+      is_signout_allowed_(true) {}
 
 TestSigninClient::~TestSigninClient() {}
 
@@ -111,10 +110,6 @@ std::unique_ptr<GaiaAuthFetcher> TestSigninClient::CreateGaiaAuthFetcher(
     gaia::GaiaSource source) {
   return std::make_unique<GaiaAuthFetcher>(consumer, source,
                                            GetURLLoaderFactory());
-}
-
-void TestSigninClient::SetDiceMigrationCompleted() {
-  is_dice_migration_completed_ = true;
 }
 
 bool TestSigninClient::IsNonEnterpriseUser(const std::string& email) {

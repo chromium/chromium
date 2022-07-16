@@ -94,13 +94,11 @@ std::unique_ptr<APISignature> BuildAddRulesSignature(
     rules->set_list_element_type(std::move(ref));
     params.push_back(std::move(rules));
   }
-  {
-    auto callback = std::make_unique<ArgumentSpec>(ArgumentType::FUNCTION);
-    callback->set_optional(true);
-    params.push_back(std::move(callback));
-  }
+  auto returns_async = std::make_unique<APISignature::ReturnsAsync>();
+  returns_async->optional = true;
 
-  return std::make_unique<APISignature>(std::move(params));
+  return std::make_unique<APISignature>(
+      std::move(params), std::move(returns_async), nullptr /*access_checker*/);
 }
 
 }  // namespace
@@ -200,9 +198,13 @@ void DeclarativeEvent::HandleFunction(const std::string& signature_name,
     return;
   }
 
-  request_handler_->StartRequest(
-      context, request_name, std::move(parse_result.arguments_list),
-      parse_result.callback, v8::Local<v8::Function>());
+  // We don't currently support promise based requests through DeclarativeEvent.
+  DCHECK_NE(binding::AsyncResponseType::kPromise, parse_result.async_type);
+
+  request_handler_->StartRequest(context, request_name,
+                                 std::move(parse_result.arguments_list),
+                                 parse_result.async_type, parse_result.callback,
+                                 v8::Local<v8::Function>());
 }
 
 }  // namespace extensions

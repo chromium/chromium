@@ -35,10 +35,16 @@ void IOSProfileSessionDurationsService::Shutdown() {
 
 void IOSProfileSessionDurationsService::OnSessionStarted(
     base::TimeTicks session_start) {
+  is_session_active_ = true;
   metrics_recorder_->OnSessionStarted(session_start);
 }
 
 void IOSProfileSessionDurationsService::OnSessionEnded(
     base::TimeDelta session_length) {
   metrics_recorder_->OnSessionEnded(session_length);
+  is_session_active_ = false;
+}
+
+bool IOSProfileSessionDurationsService::IsSessionActive() {
+  return is_session_active_;
 }

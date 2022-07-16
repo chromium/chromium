@@ -21,7 +21,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/window_animations.h"
@@ -43,6 +43,9 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
     view->SetPaintToLayer();
   }
 
+  WallpaperWidgetDelegate(const WallpaperWidgetDelegate&) = delete;
+  WallpaperWidgetDelegate& operator=(const WallpaperWidgetDelegate&) = delete;
+
   // Overrides views::View.
   void Layout() override {
     aura::Window* window = GetWidget()->GetNativeWindow();
@@ -63,9 +66,6 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
       child->SetTransform(transform);
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WallpaperWidgetDelegate);
 };
 
 }  // namespace

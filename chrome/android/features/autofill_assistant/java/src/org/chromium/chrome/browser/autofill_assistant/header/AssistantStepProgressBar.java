@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -20,6 +21,7 @@ import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.chrome.browser.autofill_assistant.drawable.AssistantDrawableIcon;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantDrawable;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -355,8 +357,10 @@ public class AssistantStepProgressBar {
         }
 
         void setError(boolean error) {
-            int colorId = error ? R.color.default_red : R.color.default_icon_color_blue;
-            mLineForeground.setBackgroundColor(ContextCompat.getColor(mContext, colorId));
+            final @ColorInt int color = error
+                    ? ContextCompat.getColor(mContext, R.color.default_red)
+                    : SemanticColorUtils.getDefaultIconColorAccent1(mContext);
+            mLineForeground.setBackgroundColor(color);
         }
     }
 

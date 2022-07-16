@@ -20,6 +20,9 @@ class DummyMinidumpGenerator : public MinidumpGenerator {
   // directly.
   explicit DummyMinidumpGenerator(const std::string& existing_minidump_path);
 
+  DummyMinidumpGenerator(const DummyMinidumpGenerator&) = delete;
+  DummyMinidumpGenerator& operator=(const DummyMinidumpGenerator&) = delete;
+
   // MinidumpGenerator implementation:
   // Moves the minidump located at |existing_minidump_path_| to |minidump_path|.
   // Returns true if successful, false otherwise. Note that this function MUST
@@ -28,8 +31,6 @@ class DummyMinidumpGenerator : public MinidumpGenerator {
 
  private:
   const std::string existing_minidump_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyMinidumpGenerator);
 };
 
 }  // namespace chromecast

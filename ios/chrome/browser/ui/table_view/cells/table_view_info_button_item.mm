@@ -31,6 +31,9 @@
   }
   if (self.detailText) {
     cell.detailTextLabel.text = self.detailText;
+    if (self.detailTextColor) {
+      cell.detailTextLabel.textColor = self.detailTextColor;
+    }
     [cell updatePaddingForDetailText:YES];
   } else {
     [cell updatePaddingForDetailText:NO];

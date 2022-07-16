@@ -28,6 +28,10 @@ class TextDetectionImplWin : public mojom::TextDetection {
       Microsoft::WRL::ComPtr<
           ABI::Windows::Graphics::Imaging::ISoftwareBitmapStatics>
           bitmap_factory);
+
+  TextDetectionImplWin(const TextDetectionImplWin&) = delete;
+  TextDetectionImplWin& operator=(const TextDetectionImplWin&) = delete;
+
   ~TextDetectionImplWin() override;
 
   // mojom::TextDetection implementation.
@@ -55,8 +59,6 @@ class TextDetectionImplWin : public mojom::TextDetection {
       Microsoft::WRL::ComPtr<ABI::Windows::Media::Ocr::IOcrResult> ocr_result);
 
   base::WeakPtrFactory<TextDetectionImplWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TextDetectionImplWin);
 };
 
 }  // namespace shape_detection

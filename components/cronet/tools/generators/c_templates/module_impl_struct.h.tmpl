@@ -34,7 +34,11 @@ struct {{struct_name}} {
  public:
   {{struct_name}}();
   explicit {{struct_name}}(const {{struct_name}}&from);
+
+  {{struct_name}}& operator=(const {{struct_name}}&) = delete;
+
   explicit {{struct_name}}({{struct_name}}&&from);
+
   ~{{struct_name}}();
 
 {% for packed_field in struct.packed.packed_fields_in_ordinal_order %}
@@ -49,8 +53,6 @@ absl::optional<{{kind|cpp_wrapper_type}}> {{packed_field.field.name}};
 {%-    if packed_field.field.kind|is_any_interface_kind %} = nullptr {%- endif %};
 {%- endif %}
 {%- endfor %}
- private:
-  DISALLOW_ASSIGN({{struct_name}});
 };
 {%- endfor %}
 

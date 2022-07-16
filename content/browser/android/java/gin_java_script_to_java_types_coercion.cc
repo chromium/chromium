@@ -459,7 +459,7 @@ jobject CoerceJavaScriptListToArray(JNIEnv* env,
   const base::ListValue* list_value;
   value->GetAsList(&list_value);
   // Create the Java array.
-  jsize length = static_cast<jsize>(list_value->GetSize());
+  jsize length = static_cast<jsize>(list_value->GetList().size());
   jobject result = CreateJavaArray(env, target_inner_type, length);
   if (!result) {
     return NULL;

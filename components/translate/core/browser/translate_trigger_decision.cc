@@ -17,6 +17,7 @@ void TranslateTriggerDecision::PreventAllTriggering() {
   can_auto_href_translate_ = false;
   can_show_href_translate_ui_ = false;
   can_show_predefined_language_translate_ui_ = false;
+  can_auto_translate_for_predefined_language_ = false;
 }
 
 void TranslateTriggerDecision::PreventAutoTranslate() {

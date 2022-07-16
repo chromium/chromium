@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL inert isn't hit-testable, but that isn't expose in the computed style assert_equals: inert node is transparent to events (as pointer-events: none) expected Element node <div id="non-inert"></div> but got Element node <div id="inert" inert=""></div>
+Harness: the test ran to completion.
+

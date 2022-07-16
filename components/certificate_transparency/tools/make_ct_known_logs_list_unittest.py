@@ -188,7 +188,7 @@ class DisqualifiedLogsHandlingTest(unittest.TestCase):
         '\\x7a\\x9c\\xb4\\x10\\xff\\x61\\xf2\\x00\\x15\\xad",\n    {"\\x61'
         '\\x62\\x63",\n     3,\n     "Test Description"'
         '},\n     '
-        "base::TimeDelta::FromSeconds(1551083574)}")
+        "base::Seconds(1551083574)}")
 
     self.assertEqual(
         make_ct_known_logs_list._to_disqualified_loginfo_struct(log),
@@ -240,6 +240,19 @@ class DisqualifiedLogsHandlingTest(unittest.TestCase):
     self.assertEqual(b64e("a"), disqualified_logs[0]["log_id"])
     self.assertEqual(b64e("c"), disqualified_logs[1]["log_id"])
     self.assertEqual(b64e("d"), disqualified_logs[2]["log_id"])
+
+class LogListTimestampGenerationTest(unittest.TestCase):
+
+  def testGenerateLogListTimestamp(self):
+    iso_timestamp = "2021-08-09T00:00:00Z"
+    expected_generated_timestamp = (
+        '// The time at which this log list was last updated.\n'
+        'const base::TimeDelta kLogListTimestamp = '
+        'base::Seconds(1628467200);\n\n')
+
+    self.assertEqual(
+        make_ct_known_logs_list._generate_log_list_timestamp(iso_timestamp),
+        expected_generated_timestamp)
 
 
 if __name__ == "__main__":

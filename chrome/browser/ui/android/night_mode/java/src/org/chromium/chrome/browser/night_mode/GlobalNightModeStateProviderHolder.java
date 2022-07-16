@@ -68,7 +68,7 @@ public class GlobalNightModeStateProviderHolder {
     }
 
     @VisibleForTesting
-    static void resetInstanceForTesting() {
-        sInstance = null;
+    static void setInstanceForTesting(NightModeStateProvider instance) {
+        sInstance = instance;
     }
 }

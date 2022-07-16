@@ -47,6 +47,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ScopedFile {
     return *this;
   }
 
+  ScopedFile(const ScopedFile&) = delete;
+  ScopedFile& operator=(const ScopedFile&) = delete;
+
   ~ScopedFile();
 
   // The |callback| is fired on |callback_runner| when the final reference
@@ -80,8 +83,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ScopedFile {
   scoped_refptr<base::TaskRunner> file_task_runner_;
   std::vector<std::pair<ScopeOutCallback, scoped_refptr<base::TaskRunner>>>
       scope_out_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFile);
 };
 
 }  // namespace storage

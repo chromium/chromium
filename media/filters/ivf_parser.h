@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
-
 namespace media {
 
 const char kIvfHeaderSignature[] = "DKIF";
@@ -56,6 +54,9 @@ class IvfParser {
  public:
   IvfParser();
 
+  IvfParser(const IvfParser&) = delete;
+  IvfParser& operator=(const IvfParser&) = delete;
+
   // Initializes the parser for IVF |stream| with size |size| and parses the
   // file header. Returns true on success.
   bool Initialize(const uint8_t* stream,
@@ -76,8 +77,6 @@ class IvfParser {
 
   // The end position of input stream.
   const uint8_t* end_;
-
-  DISALLOW_COPY_AND_ASSIGN(IvfParser);
 };
 
 }  // namespace media

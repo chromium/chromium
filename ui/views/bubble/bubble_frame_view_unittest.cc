@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -98,6 +97,10 @@ class TestBubbleFrameView : public BubbleFrameView {
     params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     widget_->Init(std::move(params));
   }
+
+  TestBubbleFrameView(const TestBubbleFrameView&) = delete;
+  TestBubbleFrameView& operator=(const TestBubbleFrameView&) = delete;
+
   ~TestBubbleFrameView() override = default;
 
   void SetAvailableAnchorWindowBounds(gfx::Rect bounds) {
@@ -139,8 +142,6 @@ class TestBubbleFrameView : public BubbleFrameView {
 
   std::unique_ptr<TestBubbleFrameViewWidgetDelegate> widget_delegate_;
   std::unique_ptr<Widget> widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBubbleFrameView);
 };
 
 }  // namespace
@@ -918,6 +919,11 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
     SetAnchorRect(gfx::Rect());
     DialogDelegate::SetButtons(ui::DIALOG_BUTTON_OK);
   }
+
+  TestBubbleDialogDelegateView(const TestBubbleDialogDelegateView&) = delete;
+  TestBubbleDialogDelegateView& operator=(const TestBubbleDialogDelegateView&) =
+      delete;
+
   ~TestBubbleDialogDelegateView() override = default;
 
   void ChangeTitle(const std::u16string& title) {
@@ -951,8 +957,6 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
  private:
   std::u16string title_;
   bool should_show_close_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBubbleDialogDelegateView);
 };
 
 class TestAnchor {
@@ -963,12 +967,13 @@ class TestAnchor {
     widget_.Show();
   }
 
+  TestAnchor(const TestAnchor&) = delete;
+  TestAnchor& operator=(const TestAnchor&) = delete;
+
   Widget& widget() { return widget_; }
 
  private:
   Widget widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAnchor);
 };
 
 // BubbleDialogDelegate with no margins to test width snapping.
@@ -983,8 +988,8 @@ class TestWidthSnapDelegate : public TestBubbleDialogDelegateView {
     GetWidget()->Show();
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWidthSnapDelegate);
+  TestWidthSnapDelegate(const TestWidthSnapDelegate&) = delete;
+  TestWidthSnapDelegate& operator=(const TestWidthSnapDelegate&) = delete;
 };
 
 }  // namespace
@@ -1266,8 +1271,7 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksClose) {
   test::ButtonTestApi(frame->close_)
       .NotifyClick(ui::MouseEvent(
           ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-          ui::EventTimeForNow() +
-              base::TimeDelta::FromMilliseconds(GetDoubleClickInterval()),
+          ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
           ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(bubble->IsClosed());
 }
@@ -1293,8 +1297,7 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksMinimize) {
   test::ButtonTestApi(frame->minimize_)
       .NotifyClick(ui::MouseEvent(
           ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-          ui::EventTimeForNow() +
-              base::TimeDelta::FromMilliseconds(GetDoubleClickInterval()),
+          ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
           ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(bubble->IsMinimized());
 }

@@ -42,6 +42,9 @@ class NET_EXPORT_PRIVATE SOCKSClientSocket : public StreamSocket {
                     SecureDnsPolicy secure_dns_policy,
                     const NetworkTrafficAnnotationTag& traffic_annotation);
 
+  SOCKSClientSocket(const SOCKSClientSocket&) = delete;
+  SOCKSClientSocket& operator=(const SOCKSClientSocket&) = delete;
+
   // On destruction Disconnect() is called.
   ~SOCKSClientSocket() override;
 
@@ -155,8 +158,6 @@ class NET_EXPORT_PRIVATE SOCKSClientSocket : public StreamSocket {
 
   // Traffic annotation for socket control.
   NetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SOCKSClientSocket);
 };
 
 }  // namespace net

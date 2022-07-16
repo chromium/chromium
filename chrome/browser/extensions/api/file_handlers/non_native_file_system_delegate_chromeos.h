@@ -22,6 +22,12 @@ class NonNativeFileSystemDelegateChromeOS
     : public extensions::NonNativeFileSystemDelegate {
  public:
   NonNativeFileSystemDelegateChromeOS();
+
+  NonNativeFileSystemDelegateChromeOS(
+      const NonNativeFileSystemDelegateChromeOS&) = delete;
+  NonNativeFileSystemDelegateChromeOS& operator=(
+      const NonNativeFileSystemDelegateChromeOS&) = delete;
+
   ~NonNativeFileSystemDelegateChromeOS() override;
 
   // extensions::NonNativeFileSystemDelegate:
@@ -42,9 +48,6 @@ class NonNativeFileSystemDelegateChromeOS
       content::BrowserContext* context,
       const base::FilePath& path,
       base::OnceCallback<void(bool)> callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NonNativeFileSystemDelegateChromeOS);
 };
 
 }  // namespace extensions

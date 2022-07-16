@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_SEGMENTATION_PLATFORM_SEGMENTATION_PLATFORM_CONFIG_H_
 
 #include <memory>
+#include <vector>
 
 namespace segmentation_platform {
 struct Config;
 
 // Returns a Config created from the finch feature params.
-std::unique_ptr<Config> GetSegmentationPlatformConfig();
+std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig();
 
 }  // namespace segmentation_platform
 

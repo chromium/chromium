@@ -1,0 +1,3 @@
+Verifies that WebSocket does not open connections when emulating offline network.
+onerror onclose 
+

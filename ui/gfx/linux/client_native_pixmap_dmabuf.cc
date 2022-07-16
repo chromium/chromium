@@ -262,6 +262,10 @@ void ClientNativePixmapDmaBuf::Unmap() {
     PrimeSyncEnd(pixmap_handle_.planes[i].fd.get());
 }
 
+size_t ClientNativePixmapDmaBuf::GetNumberOfPlanes() const {
+  return pixmap_handle_.planes.size();
+}
+
 void* ClientNativePixmapDmaBuf::GetMemoryAddress(size_t plane) const {
   DCHECK_LT(plane, pixmap_handle_.planes.size());
   return static_cast<uint8_t*>(plane_info_[plane].data) +
@@ -270,7 +274,10 @@ void* ClientNativePixmapDmaBuf::GetMemoryAddress(size_t plane) const {
 
 int ClientNativePixmapDmaBuf::GetStride(size_t plane) const {
   DCHECK_LT(plane, pixmap_handle_.planes.size());
-  return pixmap_handle_.planes[plane].stride;
+  return base::checked_cast<int>(pixmap_handle_.planes[plane].stride);
 }
 
+NativePixmapHandle ClientNativePixmapDmaBuf::CloneHandleForIPC() const {
+  return gfx::CloneHandleForIPC(pixmap_handle_);
+}
 }  // namespace gfx

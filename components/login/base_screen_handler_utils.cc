@@ -16,8 +16,8 @@ bool ParseStringList(const base::Value* value, StringListType* out_value) {
   const base::ListValue* list = nullptr;
   if (!value->GetAsList(&list))
     return false;
-  out_value->resize(list->GetSize());
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  out_value->resize(list->GetList().size());
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     if (!list->GetString(i, &((*out_value)[i])))
       return false;
   }

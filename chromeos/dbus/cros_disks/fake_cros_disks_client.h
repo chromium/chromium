@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
@@ -27,6 +26,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) FakeCrosDisksClient
       base::RepeatingCallback<base::FilePath(const std::string&,
                                              const std::vector<std::string>&)>;
   FakeCrosDisksClient();
+
+  FakeCrosDisksClient(const FakeCrosDisksClient&) = delete;
+  FakeCrosDisksClient& operator=(const FakeCrosDisksClient&) = delete;
+
   ~FakeCrosDisksClient() override;
 
   // CrosDisksClient overrides
@@ -195,8 +198,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) FakeCrosDisksClient
   bool block_mount_ = false;
 
   base::WeakPtrFactory<FakeCrosDisksClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCrosDisksClient);
 };
 
 }  // namespace chromeos

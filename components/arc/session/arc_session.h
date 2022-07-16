@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/arc/session/adb_sideloading_availability_delegate.h"
 #include "components/arc/session/arc_client_adapter.h"
@@ -64,6 +63,9 @@ class ArcSession {
       AdbSideloadingAvailabilityDelegate*
           adb_sideloading_availability_delegate);
 
+  ArcSession(const ArcSession&) = delete;
+  ArcSession& operator=(const ArcSession&) = delete;
+
   virtual ~ArcSession();
 
   // Sends D-Bus message to start a mini-container.
@@ -113,9 +115,6 @@ class ArcSession {
   ArcSession();
 
   base::ObserverList<Observer>::Unchecked observer_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcSession);
 };
 
 }  // namespace arc

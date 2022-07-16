@@ -1,13 +1,11 @@
 include_rules = [
   "+components/crash/core/common",
   "+components/discardable_memory/service",
-  "+components/prefs",
   "+components/services/print_compositor/public",
   "+components/site_isolation",
   "+components/strings/grit",
   "+content/public/browser",
   "+mojo/public",
-  "+sandbox/policy/sandbox_type.h",
   "+ui/base/l10n",
 ]
 

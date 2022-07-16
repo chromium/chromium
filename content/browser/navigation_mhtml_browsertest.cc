@@ -8,7 +8,6 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -48,7 +47,7 @@ class NavigationMhtmlBrowserTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* main_frame_host() {
-    return web_contents()->GetFrameTree()->root()->current_frame_host();
+    return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
  protected:
@@ -62,6 +61,10 @@ class NavigationMhtmlBrowserTest : public ContentBrowserTest {
 class MhtmlArchive {
  public:
   MhtmlArchive() = default;
+
+  MhtmlArchive(const MhtmlArchive&) = delete;
+  MhtmlArchive& operator=(const MhtmlArchive&) = delete;
+
   ~MhtmlArchive() {
     base::ScopedAllowBlockingForTesting allow_blocking_;
     EXPECT_TRUE(file_directory_.Delete());
@@ -127,8 +130,6 @@ class MhtmlArchive {
  private:
   base::ScopedTempDir file_directory_;
   std::string content_;
-
-  DISALLOW_COPY_AND_ASSIGN(MhtmlArchive);
 };
 
 }  // namespace
@@ -569,15 +570,15 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, CSPEmbeddedEnforcement) {
   RenderFrameHostImpl* rfh_3 = main_document->child_at(0)->current_frame_host();
 
   // Same-origin without Allow-CSP-From:* => response allowed.
-  EXPECT_FALSE(rfh_1->is_error_page());
+  EXPECT_FALSE(rfh_1->IsErrorDocument());
 
   // Cross-origin without Allow-CSP-From:* => response blocked;
   // TODO(https://crbug.com/1112965) Add support for CSPEE in MHTML documents.
   // An error page should be displayed here.
-  EXPECT_FALSE(rfh_2->is_error_page());
+  EXPECT_FALSE(rfh_2->IsErrorDocument());
 
   // Cross-origin with Allow-CSP-From:* => response allowed.
-  EXPECT_FALSE(rfh_3->is_error_page());
+  EXPECT_FALSE(rfh_3->IsErrorDocument());
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
@@ -746,10 +747,12 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, DataIframe) {
   EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
 
   // All MHTML frames should have an opaque origin.
-  for (RenderFrameHost* frame : shell()->web_contents()->GetAllFrames()) {
-    EXPECT_TRUE(frame->GetLastCommittedOrigin().opaque())
-        << "frame->GetLastCommittedURL() = " << frame->GetLastCommittedURL();
-  }
+  shell()->web_contents()->GetMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating([](RenderFrameHost* frame) {
+        EXPECT_TRUE(frame->GetLastCommittedOrigin().opaque())
+            << "frame->GetLastCommittedURL() = "
+            << frame->GetLastCommittedURL();
+      }));
 }
 
 // Regression test for https://crbug.com/1168249.
@@ -783,8 +786,9 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, PreloadedTextTrack) {
 // treated as an error page.
 IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, ErrorBaseURL) {
   NavigationController& controller = web_contents()->GetController();
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Prepare an MHTML document with the base URL set to the error page URL.
   MhtmlArchive mhtml_archive;
@@ -799,7 +803,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, ErrorBaseURL) {
   // Check that the RenderFrameHost, NavigationRequest and NavigationEntry all
   // agree that the document is not an error page.
   RenderFrameHostImpl* main_document = main_frame_host();
-  EXPECT_FALSE(main_document->is_error_page());
+  EXPECT_FALSE(main_document->IsErrorDocument());
   EXPECT_FALSE(params_capturer.is_error_page());
   EXPECT_NE(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
 }

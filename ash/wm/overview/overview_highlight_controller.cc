@@ -6,14 +6,19 @@
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
+#include "ash/accessibility/magnifier/magnifier_utils.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/desks/expanded_state_new_desk_button.h"
+#include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/templates/desks_templates_grid_view.h"
+#include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
@@ -24,32 +29,6 @@
 namespace ash {
 
 // -----------------------------------------------------------------------------
-// OverviewHighlightController::OverviewHighlightableView
-
-bool OverviewHighlightController::OverviewHighlightableView::
-    MaybeActivateHighlightedViewOnOverviewExit(
-        OverviewSession* overview_session) {
-  return false;
-}
-
-void OverviewHighlightController::OverviewHighlightableView::
-    SetHighlightVisibility(bool visible) {
-  if (visible == is_highlighted_)
-    return;
-
-  is_highlighted_ = visible;
-  if (is_highlighted_)
-    OnViewHighlighted();
-  else
-    OnViewUnhighlighted();
-}
-
-gfx::Point OverviewHighlightController::OverviewHighlightableView::
-    GetMagnifierFocusPointInScreen() {
-  return GetView()->GetBoundsInScreen().CenterPoint();
-}
-
-// -----------------------------------------------------------------------------
 // OverviewHighlightController::TestApi
 
 OverviewHighlightController::TestApi::TestApi(
@@ -58,7 +37,7 @@ OverviewHighlightController::TestApi::TestApi(
 
 OverviewHighlightController::TestApi::~TestApi() = default;
 
-OverviewHighlightController::OverviewHighlightableView*
+OverviewHighlightableView*
 OverviewHighlightController::TestApi::GetHighlightView() const {
   return highlight_controller_->highlighted_view_;
 }
@@ -217,15 +196,27 @@ bool OverviewHighlightController::IsTabDragHighlightVisible() const {
   return !!tab_dragged_view_;
 }
 
-std::vector<OverviewHighlightController::OverviewHighlightableView*>
+std::vector<OverviewHighlightableView*>
 OverviewHighlightController::GetTraversableViews() const {
   std::vector<OverviewHighlightableView*> traversable_views;
-  traversable_views.reserve(overview_session_->num_items() +
-                            (desks_util::kMaxNumberOfDesks + 1) *
-                                Shell::Get()->GetAllRootWindows().size());
+  traversable_views.reserve(32);  // Conservative default.
+
   for (auto& grid : overview_session_->grid_list()) {
-    for (auto& item : grid->window_list())
-      traversable_views.push_back(item->overview_item_view());
+    // If the grid is visible, we shouldn't try to add any overview items.
+    if (grid->IsShowingDesksTemplatesGrid()) {
+      views::Widget* templates_grid_widget =
+          grid->desks_templates_grid_widget();
+      DCHECK(templates_grid_widget);
+      auto* templates_grid_view = static_cast<DesksTemplatesGridView*>(
+          templates_grid_widget->GetContentsView());
+      for (DesksTemplatesItemView* template_item :
+           templates_grid_view->grid_items()) {
+        traversable_views.push_back(template_item);
+      }
+    } else {
+      for (auto& item : grid->window_list())
+        traversable_views.push_back(item->overview_item_view());
+    }
 
     if (auto* bar_view = grid->desks_bar_view()) {
       const bool is_zero_state = bar_view->IsZeroState();
@@ -234,17 +225,30 @@ OverviewHighlightController::GetTraversableViews() const {
       if (is_zero_state) {
         traversable_views.push_back(bar_view->zero_state_default_desk_button());
         traversable_views.push_back(bar_view->zero_state_new_desk_button());
+        // Desks templates buttons are only present if the feature is enabled.
+        if (auto* desks_templates_button =
+                bar_view->zero_state_desks_templates_button()) {
+          traversable_views.push_back(desks_templates_button);
+        }
       } else {
         for (auto* mini_view : bar_view->mini_views()) {
           traversable_views.push_back(mini_view);
           traversable_views.push_back(mini_view->desk_name_view());
         }
-      }
 
-      auto* new_desk_button =
-          bar_view->expanded_state_new_desk_button()->new_desk_button();
-      if (!is_zero_state && new_desk_button->GetEnabled())
-        traversable_views.push_back(new_desk_button);
+        auto* new_desk_button =
+            bar_view->expanded_state_new_desk_button()->inner_button();
+        if (new_desk_button->GetEnabled())
+          traversable_views.push_back(new_desk_button);
+
+        if (auto* desks_templates_button =
+                bar_view->expanded_state_desks_templates_button()) {
+          auto* inner_desks_templates_button =
+              desks_templates_button->inner_button();
+          if (inner_desks_templates_button->GetEnabled())
+            traversable_views.push_back(inner_desks_templates_button);
+        }
+      }
     }
   }
   return traversable_views;
@@ -266,19 +270,10 @@ void OverviewHighlightController::UpdateHighlight(
     highlighted_view_->GetView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kSelection, true);
   }
-  // Note that both magnifiers are mutually exclusive. The overview "focus"
-  // works differently from regular focusing so we need to update the magnifier
-  // manually here.
-  DockedMagnifierController* docked_magnifier =
-      Shell::Get()->docked_magnifier_controller();
-  FullscreenMagnifierController* fullscreen_magnifier =
-      Shell::Get()->fullscreen_magnifier_controller();
-  const gfx::Point point_of_interest =
-      highlighted_view_->GetMagnifierFocusPointInScreen();
-  if (docked_magnifier->GetEnabled())
-    docked_magnifier->CenterOnPoint(point_of_interest);
-  else if (fullscreen_magnifier->IsEnabled())
-    fullscreen_magnifier->CenterOnPoint(point_of_interest);
+  // The overview "focus" works differently from regular focusing so we need to
+  // update the magnifier manually here.
+  magnifier_utils::MaybeUpdateActiveMagnifierFocus(
+      highlighted_view_->GetMagnifierFocusPointInScreen());
 
   if (previous_view)
     previous_view->SetHighlightVisibility(false);

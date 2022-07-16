@@ -21,16 +21,16 @@
 #include "base/location.h"
 #include "base/memory/singleton.h"
 #include "base/numerics/math_constants.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner.h"
-#include "base/task_runner_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -95,16 +95,14 @@ constexpr size_t kDataSize = 2;
 constexpr int kSizeOfReading = kDataSize * kNumberOfAxes;
 
 // The time to wait between reading the accelerometer.
-constexpr base::TimeDelta kDelayBetweenReads =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kDelayBetweenReads = base::Milliseconds(100);
 
 // The TimeDelta before giving up on initialization. This is needed because the
 // sensor hub might not be online when the Initialize function is called.
-constexpr base::TimeDelta kInitializeTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kInitializeTimeout = base::Seconds(5);
 
 // The time between initialization checks.
-constexpr base::TimeDelta kDelayBetweenInitChecks =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kDelayBetweenInitChecks = base::Milliseconds(500);
 
 // Reads |path| to the unsigned int pointed to by |value|. Returns true on
 // success or false on failure.

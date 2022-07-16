@@ -18,10 +18,10 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/third_party/libevent/event.h"
@@ -39,6 +39,7 @@ class MessagePumpLibeventTest : public testing::Test {
       : task_environment_(std::make_unique<test::SingleThreadTaskEnvironment>(
             test::SingleThreadTaskEnvironment::MainThreadType::UI)),
         io_thread_("MessagePumpLibeventTestIOThread") {}
+
   ~MessagePumpLibeventTest() override = default;
 
   void SetUp() override {

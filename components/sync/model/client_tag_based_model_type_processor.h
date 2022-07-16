@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 #include <unordered_set>
-#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -27,8 +26,11 @@
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/processor_entity_tracker.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/protocol/sync.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace sync_pb {
+class ModelTypeState;
+}
 
 namespace syncer {
 
@@ -52,6 +54,12 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   ClientTagBasedModelTypeProcessor(ModelType type,
                                    const base::RepeatingClosure& dump_stack,
                                    bool commit_only);
+
+  ClientTagBasedModelTypeProcessor(const ClientTagBasedModelTypeProcessor&) =
+      delete;
+  ClientTagBasedModelTypeProcessor& operator=(
+      const ClientTagBasedModelTypeProcessor&) = delete;
+
   ~ClientTagBasedModelTypeProcessor() override;
 
   // Returns true if the handshake with sync thread is complete.
@@ -297,8 +305,6 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   // WeakPtrFactory for this processor which will be sent to sync thread.
   base::WeakPtrFactory<ClientTagBasedModelTypeProcessor>
       weak_ptr_factory_for_worker_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClientTagBasedModelTypeProcessor);
 };
 
 }  // namespace syncer

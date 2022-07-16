@@ -8,7 +8,7 @@
 // video_encoder.cc.
 dictionary VideoEncoderConfig {
   required DOMString codec;
-  HardwarePreference hardwareAcceleration = "allow";
+  HardwarePreference hardwareAcceleration = "no-preference";
   AlphaOption alpha = "discard";
 
   [EnforceRange] unsigned long long bitrate;
@@ -22,9 +22,6 @@ dictionary VideoEncoderConfig {
   // Hint about the pixel aspect ratio of the content.
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
-
-  // Color space for metadata (in-band or output VideoDecoderConfig).
-  VideoColorSpaceInit colorSpace;
 
   AvcEncoderConfig avc;
 

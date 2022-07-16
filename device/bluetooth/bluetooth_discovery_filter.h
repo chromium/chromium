@@ -51,6 +51,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDiscoveryFilter {
  public:
   BluetoothDiscoveryFilter();
   BluetoothDiscoveryFilter(BluetoothTransport transport);
+
+  BluetoothDiscoveryFilter(const BluetoothDiscoveryFilter&) = delete;
+  BluetoothDiscoveryFilter& operator=(const BluetoothDiscoveryFilter&) = delete;
+
   ~BluetoothDiscoveryFilter();
 
   struct DEVICE_BLUETOOTH_EXPORT DeviceInfoFilter {
@@ -106,8 +110,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDiscoveryFilter {
   absl::optional<uint16_t> pathloss_;
   BluetoothTransport transport_;
   base::flat_set<DeviceInfoFilter> device_filters_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDiscoveryFilter);
 };
 
 }  // namespace device

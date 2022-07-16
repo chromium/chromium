@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -41,13 +42,6 @@ using extensions::mojom::ManifestLocation;
 using metrics::ExtensionInstallProto;
 
 namespace {
-
-void StoreNoClientInfoBackup(const metrics::ClientInfo& /* client_info */) {
-}
-
-std::unique_ptr<metrics::ClientInfo> ReturnNoBackup() {
-  return nullptr;
-}
 
 class TestExtensionsMetricsProvider : public ExtensionsMetricsProvider {
  public:
@@ -132,10 +126,10 @@ TEST(ExtensionsMetricsProvider, SystemProtoEncoding) {
   metrics::TestEnabledStateProvider enabled_state_provider(true, true);
   metrics::MetricsService::RegisterPrefs(local_state.registry());
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager(
-      metrics::MetricsStateManager::Create(
-          &local_state, &enabled_state_provider, std::wstring(),
-          base::BindRepeating(&StoreNoClientInfoBackup),
-          base::BindRepeating(&ReturnNoBackup)));
+      metrics::MetricsStateManager::Create(&local_state,
+                                           &enabled_state_provider,
+                                           std::wstring(), base::FilePath()));
+  metrics_state_manager->InstantiateFieldTrialList();
   TestExtensionsMetricsProvider extension_metrics(metrics_state_manager.get());
   extension_metrics.ProvideSystemProfileMetrics(&system_profile);
   ASSERT_EQ(2, system_profile.occupied_extension_bucket_size());
@@ -147,6 +141,12 @@ class ExtensionMetricsProviderInstallsTest
     : public extensions::ExtensionServiceTestBase {
  public:
   ExtensionMetricsProviderInstallsTest() {}
+
+  ExtensionMetricsProviderInstallsTest(
+      const ExtensionMetricsProviderInstallsTest&) = delete;
+  ExtensionMetricsProviderInstallsTest& operator=(
+      const ExtensionMetricsProviderInstallsTest&) = delete;
+
   ~ExtensionMetricsProviderInstallsTest() override {}
 
   void SetUp() override {
@@ -154,7 +154,7 @@ class ExtensionMetricsProviderInstallsTest
     InitializeEmptyExtensionService();
     prefs_ = extensions::ExtensionPrefs::Get(profile());
 
-    last_sample_time_ = base::Time::Now() - base::TimeDelta::FromMinutes(30);
+    last_sample_time_ = base::Time::Now() - base::Minutes(30);
   }
 
   ExtensionInstallProto ConstructProto(const Extension& extension) {
@@ -174,8 +174,6 @@ class ExtensionMetricsProviderInstallsTest
  private:
   extensions::ExtensionPrefs* prefs_ = nullptr;
   base::Time last_sample_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMetricsProviderInstallsTest);
 };
 
 // Tests the various aspects of constructing a relevant proto for a given
@@ -321,17 +319,6 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
       EXPECT_EQ(ExtensionInstallProto::CORRUPTED,
                 install.disable_reasons().Get(1));
     }
-    // Adding additional disable reasons should result in all reasons being
-    // reported.
-    prefs()->AddDisableReason(
-        extension->id(),
-        extensions::disable_reason::DISABLE_REMOTELY_FOR_MALWARE);
-    {
-      ExtensionInstallProto install = ConstructProto(*extension);
-      ASSERT_EQ(3, install.disable_reasons_size());
-      EXPECT_EQ(ExtensionInstallProto::DISABLE_REMOTELY_FOR_MALWARE,
-                install.disable_reasons().Get(2));
-    }
   }
 
   {
@@ -406,7 +393,7 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
             .SetLocation(ManifestLocation::kInternal)
             .Build();
     add_extension(extension.get());
-    set_last_sample_time(base::Time::Now() + base::TimeDelta::FromMinutes(60));
+    set_last_sample_time(base::Time::Now() + base::Minutes(60));
     ExtensionInstallProto install = ConstructProto(*extension);
     EXPECT_FALSE(install.installed_in_this_sample_period());
   }

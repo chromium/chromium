@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -53,6 +52,9 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
                HistoryService* history_service,
                const PrepopulatedPageList& prepopulated_pages,
                const CanAddURLToHistoryFn& can_add_url_to_history);
+
+  TopSitesImpl(const TopSitesImpl&) = delete;
+  TopSitesImpl& operator=(const TopSitesImpl&) = delete;
 
   // Initializes TopSitesImpl.
   void Init(const base::FilePath& db_name);
@@ -211,8 +213,6 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
 
   base::ScopedObservation<HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TopSitesImpl);
 };
 
 }  // namespace history

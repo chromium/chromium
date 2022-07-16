@@ -59,6 +59,9 @@ class TestCookie {
   // SetUp() called on it.
   explicit TestCookie() : address_(&cookie_), cookie_(0) {}
 
+  TestCookie(const TestCookie&) = delete;
+  TestCookie& operator=(const TestCookie&) = delete;
+
   ~TestCookie() {}
 
   void SetUp(uint64_t* address) {
@@ -78,8 +81,6 @@ class TestCookie {
  private:
   uint64_t* address_;
   uint64_t cookie_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCookie);
 };
 
 TEST(ScopedMmap, Mmap) {

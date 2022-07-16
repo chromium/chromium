@@ -20,6 +20,11 @@ namespace gles2 {
 class GPU_GLES2_EXPORT FramebufferCompletenessCache {
  public:
   FramebufferCompletenessCache();
+
+  FramebufferCompletenessCache(const FramebufferCompletenessCache&) = delete;
+  FramebufferCompletenessCache& operator=(const FramebufferCompletenessCache&) =
+      delete;
+
   ~FramebufferCompletenessCache();
 
   bool IsComplete(const std::string& signature) const;
@@ -29,8 +34,6 @@ class GPU_GLES2_EXPORT FramebufferCompletenessCache {
   typedef std::unordered_set<std::string> Map;
 
   Map cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(FramebufferCompletenessCache);
 };
 
 }  // namespace gles2

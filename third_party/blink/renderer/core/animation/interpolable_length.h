@@ -39,11 +39,11 @@ class CORE_EXPORT InterpolableLength final : public InterpolableValue {
       std::unique_ptr<InterpolableValue> end);
 
   Length CreateLength(const CSSToLengthConversionData& conversion_data,
-                      ValueRange range) const;
+                      Length::ValueRange range) const;
 
   // Unlike CreateLength() this preserves all specified unit types via calc()
   // expressions.
-  const CSSPrimitiveValue* CreateCSSValue(ValueRange range) const;
+  const CSSPrimitiveValue* CreateCSSValue(Length::ValueRange range) const;
 
   void SetHasPercentage();
   bool HasPercentage() const;

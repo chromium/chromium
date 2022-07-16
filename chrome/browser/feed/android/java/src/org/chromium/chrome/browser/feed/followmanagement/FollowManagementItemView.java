@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.feed.followmanagement;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.CheckBox;
@@ -13,7 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.chromium.chrome.browser.feed.webfeed.R;
+import org.chromium.chrome.browser.feed.R;
 
 /**
  * View class for the individual line items in the following management activity.
@@ -32,6 +33,7 @@ public class FollowManagementItemView extends LinearLayout {
 
     public void setTitle(String title) {
         mTitle.setText(title);
+        mSubscribedCheckbox.setContentDescription(title);
     }
 
     public void setUrl(String url) {
@@ -40,32 +42,29 @@ public class FollowManagementItemView extends LinearLayout {
 
     public void setStatus(String status) {
         mStatus.setText(status);
-        if (status != null && status.isEmpty()) mStatus.setVisibility(View.GONE);
+        if (TextUtils.isEmpty(status)) {
+            mStatus.setVisibility(View.GONE);
+        } else {
+            mStatus.setVisibility(View.VISIBLE);
+        }
     }
 
     public void setFavicon(Bitmap favicon) {
         mFavicon.setImageBitmap(favicon);
     }
 
-    /** Gets the current subscription state based on the checkbox status. */
-    public boolean isSubscribed() {
-        return mSubscribedCheckbox.isChecked();
-    }
-
     /** Updates the checkbox state, enable it and starts listenint to clicks.  */
     public void setSubscribed(boolean subscribed) {
         mSubscribedCheckbox.setChecked(subscribed);
-        mSubscribedCheckbox.setClickable(true);
-        mSubscribedCheckbox.setEnabled(true);
     }
 
-    /* Present the checkbox as disabled and checked while transitioning. And
-     * stop listening for clicks to prevent duplicate events.
-     */
-    public void setTransitioning() {
-        mSubscribedCheckbox.setChecked(true);
-        mSubscribedCheckbox.setClickable(false);
-        mSubscribedCheckbox.setEnabled(false);
+    public void setCheckboxEnabled(boolean checkboxEnabled) {
+        mSubscribedCheckbox.setClickable(checkboxEnabled);
+        mSubscribedCheckbox.setEnabled(checkboxEnabled);
+    }
+
+    public void setCheckboxClickListener(Runnable onClick) {
+        mSubscribedCheckbox.setOnClickListener((v) -> onClick.run());
     }
 
     @Override

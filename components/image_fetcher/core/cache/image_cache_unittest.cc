@@ -45,6 +45,11 @@ class CachedImageFetcherImageCacheTest : public testing::Test {
  public:
   CachedImageFetcherImageCacheTest() {}
 
+  CachedImageFetcherImageCacheTest(const CachedImageFetcherImageCacheTest&) =
+      delete;
+  CachedImageFetcherImageCacheTest& operator=(
+      const CachedImageFetcherImageCacheTest&) = delete;
+
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   void CreateImageCache() {
@@ -187,8 +192,6 @@ class CachedImageFetcherImageCacheTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedImageFetcherImageCacheTest);
 };
 
 TEST_F(CachedImageFetcherImageCacheTest, HashUrlToKeyTest) {
@@ -245,7 +248,7 @@ TEST_F(CachedImageFetcherImageCacheTest, Load) {
   PrepareImageCache(false);
   auto metadata_before = GetMetadata(kImageUrlHashed);
 
-  clock()->SetNow(clock()->Now() + base::TimeDelta::FromHours(1));
+  clock()->SetNow(clock()->Now() + base::Hours(1));
   LoadImage(kImageUrl, kImageData);
   db()->LoadCallback(true);
   db()->UpdateCallback(true);
@@ -259,7 +262,7 @@ TEST_F(CachedImageFetcherImageCacheTest, LoadReadOnly) {
   PrepareImageCache(false);
   auto metadata_before = GetMetadata(kImageUrlHashed);
 
-  clock()->SetNow(clock()->Now() + base::TimeDelta::FromHours(1));
+  clock()->SetNow(clock()->Now() + base::Hours(1));
   LoadImage(kImageUrl, kImageData);
 
   auto metadata_after = GetMetadata(kImageUrlHashed);
@@ -279,7 +282,7 @@ TEST_F(CachedImageFetcherImageCacheTest, Delete) {
 TEST_F(CachedImageFetcherImageCacheTest, Eviction) {
   PrepareImageCache(false);
 
-  clock()->SetNow(clock()->Now() + base::TimeDelta::FromDays(7));
+  clock()->SetNow(clock()->Now() + base::Days(7));
   RunEvictionOnStartup(/* success */ true);
   ASSERT_EQ(clock()->Now(), prefs()->GetTime(kPrefLastStartupEviction));
 
@@ -295,17 +298,16 @@ TEST_F(CachedImageFetcherImageCacheTest, Eviction) {
 // Verifies eviction for CacheStrategy::HOLD_UNTIL_EXPIRED.
 TEST_F(CachedImageFetcherImageCacheTest, EvictionHoldUtilExpires) {
   PrepareImageCache(false);
-  clock()->SetNow(clock()->Now() + base::TimeDelta::FromDays(2));
+  clock()->SetNow(clock()->Now() + base::Days(2));
 
-  image_cache()->SaveImage(kImageUrl, "image_data", false,
-                           base::TimeDelta::FromDays(10));
+  image_cache()->SaveImage(kImageUrl, "image_data", false, base::Days(10));
 
   image_cache()->SaveImage(kOtherImageUrl, "other_image_data", false,
-                           base::TimeDelta::FromHours(1));
+                           base::Hours(1));
   RunUntilIdle();
 
   // Forward the clock to make image with |kOtherImageUrl| expired.
-  clock()->SetNow(clock()->Now() + base::TimeDelta::FromHours(3));
+  clock()->SetNow(clock()->Now() + base::Hours(3));
   RunEvictionOnStartup(/* success */ true);
   LoadImage(kImageUrl, "image_data");
   LoadImage(kOtherImageUrl, "");
@@ -314,7 +316,7 @@ TEST_F(CachedImageFetcherImageCacheTest, EvictionHoldUtilExpires) {
 TEST_F(CachedImageFetcherImageCacheTest, EvictionWhenFull) {
   PrepareImageCache(false);
   InjectMetadata(kImageUrl, kOverMaxCacheSize, /* needs_transcoding */ false);
-  clock()->SetNow(clock()->Now() + base::TimeDelta::FromDays(6));
+  clock()->SetNow(clock()->Now() + base::Days(6));
   RunEvictionWhenFull(/* success */ true);
 
   // The data should be removed because it's over the allowed limit.
@@ -324,7 +326,7 @@ TEST_F(CachedImageFetcherImageCacheTest, EvictionWhenFull) {
 TEST_F(CachedImageFetcherImageCacheTest, EvictionTooSoon) {
   PrepareImageCache(false);
 
-  clock()->SetNow(clock()->Now() + base::TimeDelta::FromDays(6));
+  clock()->SetNow(clock()->Now() + base::Days(6));
   RunEvictionOnStartup(/* success */ true);
 
   LoadImage(kImageUrl, kImageData);
@@ -335,7 +337,7 @@ TEST_F(CachedImageFetcherImageCacheTest, EvictionWhenEvictionAlreadyPerformed) {
 
   prefs()->SetTime("cached_image_fetcher_last_startup_eviction_time",
                    clock()->Now());
-  clock()->SetNow(clock()->Now() + base::TimeDelta::FromHours(23));
+  clock()->SetNow(clock()->Now() + base::Hours(23));
   RunEvictionOnStartup(/* success */ false);
   LoadImage(kImageUrl, kImageData);
 }

@@ -36,6 +36,10 @@ class DemoHost : public viz::HostFrameSinkClient {
       mojo::PendingReceiver<viz::mojom::FrameSinkManagerClient> client_receiver,
       mojo::PendingRemote<viz::mojom::FrameSinkManager>
           frame_sink_manager_remote);
+
+  DemoHost(const DemoHost&) = delete;
+  DemoHost& operator=(const DemoHost&) = delete;
+
   ~DemoHost() override;
 
   void Resize(const gfx::Size& size);
@@ -69,8 +73,6 @@ class DemoHost : public viz::HostFrameSinkClient {
   // and clients over mojo. The host does not need to have its own thread
   // though.
   base::Thread thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoHost);
 };
 
 }  // namespace demo

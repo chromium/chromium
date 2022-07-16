@@ -18,9 +18,9 @@
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/arc_features.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_file_system_instance.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -254,6 +254,11 @@ std::unique_ptr<KeyedService> CreateFileSystemOperationRunnerForTesting(
 class ArcDocumentsProviderRootTest : public testing::Test {
  public:
   ArcDocumentsProviderRootTest() = default;
+
+  ArcDocumentsProviderRootTest(const ArcDocumentsProviderRootTest&) = delete;
+  ArcDocumentsProviderRootTest& operator=(const ArcDocumentsProviderRootTest&) =
+      delete;
+
   ~ArcDocumentsProviderRootTest() override = default;
 
   void SetUp() override {
@@ -316,16 +321,13 @@ class ArcDocumentsProviderRootTest : public testing::Test {
   FakeFileSystemInstance fake_file_system_;
 
   // Use the same initialization/destruction order as
-  // ChromeBrowserMainPartsChromeos.
+  // `ChromeBrowserMainPartsAsh`.
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcDocumentsProviderRoot> root_;
   std::unique_ptr<ArcDocumentsProviderRoot> no_capacity_root_;
   std::unique_ptr<ArcDocumentsProviderRoot> no_available_root_;
   std::unique_ptr<ArcDocumentsProviderRoot> read_only_root_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderRootTest);
 };
 
 }  // namespace

@@ -28,6 +28,10 @@ GURL GetMockUrl(const std::string& scheme, const std::string& hostname) {
 class MockJobInterceptor : public URLRequestInterceptor {
  public:
   MockJobInterceptor() = default;
+
+  MockJobInterceptor(const MockJobInterceptor&) = delete;
+  MockJobInterceptor& operator=(const MockJobInterceptor&) = delete;
+
   ~MockJobInterceptor() override = default;
 
   // URLRequestInterceptor implementation
@@ -35,9 +39,6 @@ class MockJobInterceptor : public URLRequestInterceptor {
       URLRequest* request) const override {
     return std::make_unique<URLRequestHangingReadJob>(request);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockJobInterceptor);
 };
 
 }  // namespace

@@ -17,7 +17,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 
 namespace crashpad {
 namespace test {
@@ -56,6 +55,10 @@ namespace test {
 class ExceptionSwallower {
  public:
   ExceptionSwallower();
+
+  ExceptionSwallower(const ExceptionSwallower&) = delete;
+  ExceptionSwallower& operator=(const ExceptionSwallower&) = delete;
+
   ~ExceptionSwallower();
 
   //! \brief In a test child process, arranges to swallow `EXC_CRASH` and
@@ -76,8 +79,6 @@ class ExceptionSwallower {
   class ExceptionSwallowerThread;
 
   std::unique_ptr<ExceptionSwallowerThread> exception_swallower_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionSwallower);
 };
 
 }  // namespace test

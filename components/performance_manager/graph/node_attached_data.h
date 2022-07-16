@@ -6,7 +6,6 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_ATTACHED_DATA_H_
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 
@@ -23,6 +22,11 @@ class InternalNodeAttachedDataStorage {
   static constexpr size_t kDataSize = DataSize;
 
   InternalNodeAttachedDataStorage() {}
+
+  InternalNodeAttachedDataStorage(const InternalNodeAttachedDataStorage&) =
+      delete;
+  InternalNodeAttachedDataStorage& operator=(
+      const InternalNodeAttachedDataStorage&) = delete;
 
   ~InternalNodeAttachedDataStorage() { Reset(); }
 
@@ -57,7 +61,6 @@ class InternalNodeAttachedDataStorage {
  private:
   NodeAttachedData* data_ = nullptr;
   uint8_t buffer_[kDataSize];
-  DISALLOW_COPY_AND_ASSIGN(InternalNodeAttachedDataStorage);
 };
 
 }  // namespace performance_manager

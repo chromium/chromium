@@ -1081,6 +1081,10 @@ TEST_F(RlzLibTest, LockAcquistionSucceedsButStoreFileCannotBeCreated) {
 class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
  public:
   TestDebugDaemonClient() = default;
+
+  TestDebugDaemonClient(const TestDebugDaemonClient&) = delete;
+  TestDebugDaemonClient& operator=(const TestDebugDaemonClient&) = delete;
+
   ~TestDebugDaemonClient() override = default;
 
   int num_set_rlz_ping_sent() const { return num_set_rlz_ping_sent_; }
@@ -1099,7 +1103,6 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
  private:
   int num_set_rlz_ping_sent_ = 0;
   bool default_result_ = false;
-  DISALLOW_COPY_AND_ASSIGN(TestDebugDaemonClient);
 };
 
 TEST_F(RlzLibTest, SetRlzPingSent) {

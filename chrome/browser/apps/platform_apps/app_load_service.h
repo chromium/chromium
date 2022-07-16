@@ -10,9 +10,9 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
 
@@ -25,8 +25,8 @@ namespace apps {
 // Monitors apps being reloaded and performs app specific actions (like launch
 // or restart) on them. Also provides an interface to schedule these actions.
 class AppLoadService : public KeyedService,
-                       public content::NotificationObserver,
-                       public extensions::ExtensionRegistryObserver {
+                       public extensions::ExtensionRegistryObserver,
+                       public extensions::ExtensionHostRegistry::Observer {
  public:
   enum PostReloadActionType {
     LAUNCH_FOR_RELOAD,
@@ -72,10 +72,10 @@ class AppLoadService : public KeyedService,
   static AppLoadService* Get(content::BrowserContext* context);
 
  private:
-  // content::NotificationObserver.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // extensions::ExtensionHostRegistry::Observer:
+  void OnExtensionHostCompletedFirstLoad(
+      content::BrowserContext* browser_context,
+      extensions::ExtensionHost* host) override;
 
   // extensions::ExtensionRegistryObserver.
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -89,8 +89,11 @@ class AppLoadService : public KeyedService,
   // Map of extension id to reload action. Absence from the map implies
   // no action.
   std::map<std::string, PostReloadAction> post_reload_actions_;
-  content::NotificationRegistrar registrar_;
   content::BrowserContext* context_;
+
+  base::ScopedObservation<extensions::ExtensionHostRegistry,
+                          extensions::ExtensionHostRegistry::Observer>
+      host_registry_observation_{this};
 };
 
 }  // namespace apps

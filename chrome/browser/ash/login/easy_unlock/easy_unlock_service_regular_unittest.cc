@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
@@ -63,15 +62,18 @@ class MockEasyUnlockNotificationController
  public:
   MockEasyUnlockNotificationController()
       : EasyUnlockNotificationController(nullptr) {}
+
+  MockEasyUnlockNotificationController(
+      const MockEasyUnlockNotificationController&) = delete;
+  MockEasyUnlockNotificationController& operator=(
+      const MockEasyUnlockNotificationController&) = delete;
+
   ~MockEasyUnlockNotificationController() override {}
 
   // EasyUnlockNotificationController:
   MOCK_METHOD0(ShowChromebookAddedNotification, void());
   MOCK_METHOD0(ShowPairingChangeNotification, void());
   MOCK_METHOD1(ShowPairingChangeAppliedNotification, void(const std::string&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockEasyUnlockNotificationController);
 };
 
 // Define a stub MultiDeviceSetupDialog because the base class has a protected
@@ -85,6 +87,11 @@ class FakeMultiDeviceSetupDialog
 }  // namespace
 
 class EasyUnlockServiceRegularTest : public testing::Test {
+ public:
+  EasyUnlockServiceRegularTest(const EasyUnlockServiceRegularTest&) = delete;
+  EasyUnlockServiceRegularTest& operator=(const EasyUnlockServiceRegularTest&) =
+      delete;
+
  protected:
   EasyUnlockServiceRegularTest()
       : test_local_device_(
@@ -223,7 +230,7 @@ class EasyUnlockServiceRegularTest : public testing::Test {
             ->GetRemoteDevices();
     if (are_local_and_remote_devices_expected)
       // 2 devices are expected: the local device and the remote device.
-      EXPECT_EQ(2u, remote_devices->GetSize());
+      EXPECT_EQ(2u, remote_devices->GetList().size());
     else
       EXPECT_FALSE(remote_devices);
   }
@@ -280,8 +287,6 @@ class EasyUnlockServiceRegularTest : public testing::Test {
                                             false /* browser_restart */,
                                             false /* is_child */);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockServiceRegularTest);
 };
 
 TEST_F(EasyUnlockServiceRegularTest, NotAllowedWhenProhibited) {
@@ -441,6 +446,8 @@ TEST_F(EasyUnlockServiceRegularTest, GetRemoteDevices_SmartLockHostChanged) {
 // Test through the core flow of unlocking the screen with Smart Lock.
 // Unfortunately, the only observable side effect we have available is verifying
 // that the success metric is emitted.
+// The "SmartLock.AuthResult" Failure bucket is incorrectly emitted to during
+// this test. See crbug.com/1255964 for more info.
 TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlock) {
   InitializeService(true /* should_initialize_all_dependencies */);
   SetScreenLockState(true /* is_locked */);
@@ -452,13 +459,21 @@ TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlock) {
   service->FinalizeUnlock(true);
 
   histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 0);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.SmartLock",
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 0);
 
   SetScreenLockState(false /* is_locked */);
 
   histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.SmartLock",
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
 }
 
 // Regression test for crbug.com/974410.
+// The "SmartLock.AuthResult" Failure bucket is incorrectly emitted to during
+// this test. See crbug.com/1255964 for more info.
 TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlockMultipleTimes) {
   InitializeService(true /* should_initialize_all_dependencies */);
   SetScreenLockState(true /* is_locked */);
@@ -474,10 +489,16 @@ TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlockMultipleTimes) {
   EXPECT_FALSE(service->AttemptAuth(account_id_));
 
   histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 0);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.SmartLock",
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 0);
 
   SetScreenLockState(false /* is_locked */);
 
   histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.SmartLock",
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
 }
 
 }  // namespace ash

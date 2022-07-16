@@ -126,6 +126,12 @@ void WindowCycleEventFilter::OnScrollEvent(ui::ScrollEvent* event) {
 }
 
 void WindowCycleEventFilter::OnGestureEvent(ui::GestureEvent* event) {
+  if (Shell::Get()->window_cycle_controller()->IsEventInTabSliderContainer(
+          event)) {
+    // Return immediately if the event is on the tab slider container. Pass
+    // the event to the tab slider buttons to handle it.
+    return;
+  }
   ProcessGestureEvent(event);
 }
 
@@ -135,7 +141,7 @@ void WindowCycleEventFilter::HandleTriggerKey(ui::KeyEvent* event) {
     repeat_timer_.Stop();
   } else if (ShouldRepeatKey(event)) {
     repeat_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(180),
+        FROM_HERE, base::Milliseconds(180),
         base::BindRepeating(
             &WindowCycleController::HandleCycleWindow,
             base::Unretained(Shell::Get()->window_cycle_controller()),

@@ -22,13 +22,14 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "chrome/browser/supervised_user/web_approvals_manager.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -191,7 +192,7 @@ bool ChildAccountService::SetActive(bool active) {
 
     SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile_);
-    service->AddPermissionRequestCreator(
+    service->web_approvals_manager().AddRemoteApprovalRequestCreator(
         PermissionRequestCreatorApiary::CreateWithProfile(profile_));
   } else {
     SupervisedUserSettingsService* settings_service =
@@ -316,8 +317,7 @@ void ChildAccountService::OnGetFamilyMembersSuccess(
 
   family_fetch_backoff_.InformOfRequest(true);
 
-  ScheduleNextFamilyInfoUpdate(
-      base::TimeDelta::FromSeconds(kUpdateIntervalSeconds));
+  ScheduleNextFamilyInfoUpdate(base::Seconds(kUpdateIntervalSeconds));
 }
 
 void ChildAccountService::OnFailure(FamilyInfoFetcher::ErrorCode error) {

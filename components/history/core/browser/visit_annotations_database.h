@@ -120,6 +120,22 @@ class VisitAnnotationsDatabase {
   // url_id (redundant); and renames 1 column:
   // cluster_visit_context_signal_bitmask to context_annotation_flags.
   bool MigrateReplaceClusterVisitsTable();
+
+  // Called by the derived classes to migrate the older content_annotations
+  // table which don't have entities column yet.
+  bool MigrateContentAnnotationsWithoutEntitiesColumn();
+
+  // Called by the derived classes to migrate the older content_annotations
+  // table by adding a related searches column.
+  bool MigrateContentAnnotationsAddRelatedSearchesColumn();
+
+  // Called by the drived classes to migrate the older content_annotations
+  // table by adding a visibility score column.
+  bool MigrateContentAnnotationsAddVisibilityScore();
+
+  // Called by the drived classes to migrate the older context_annotations
+  // table by adding a total foreground duration column.
+  bool MigrateContextAnnotationsAddTotalForegroundDuration();
 };
 
 }  // namespace history

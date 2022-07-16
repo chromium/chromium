@@ -44,6 +44,10 @@ class CmaAudioOutputStream : public CmaBackend::Decoder::Delegate {
                        base::TimeDelta buffer_duration,
                        const std::string& device_id,
                        CmaBackendFactory* cma_backend_factory);
+
+  CmaAudioOutputStream(const CmaAudioOutputStream&) = delete;
+  CmaAudioOutputStream& operator=(const CmaAudioOutputStream&) = delete;
+
   ~CmaAudioOutputStream() override;
 
   void SetRunning(bool running);
@@ -97,8 +101,6 @@ class CmaAudioOutputStream : public CmaBackend::Decoder::Delegate {
   ::media::AudioOutputStream::AudioSourceCallback* source_callback_ = nullptr;
 
   THREAD_CHECKER(media_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CmaAudioOutputStream);
 };
 
 }  // namespace media

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_ANDROID_URLS_SQL_HANDLER_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_ANDROID_URLS_SQL_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/history/core/browser/android/sql_handler.h"
 
 namespace history {
@@ -16,6 +15,10 @@ class AndroidURLsDatabase;
 class AndroidURLsSQLHandler : public SQLHandler {
  public:
   explicit AndroidURLsSQLHandler(AndroidURLsDatabase* android_urls_db);
+
+  AndroidURLsSQLHandler(const AndroidURLsSQLHandler&) = delete;
+  AndroidURLsSQLHandler& operator=(const AndroidURLsSQLHandler&) = delete;
+
   ~AndroidURLsSQLHandler() override;
 
   bool Update(const HistoryAndBookmarkRow& row,
@@ -27,8 +30,6 @@ class AndroidURLsSQLHandler : public SQLHandler {
 
  private:
   AndroidURLsDatabase* android_urls_db_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidURLsSQLHandler);
 };
 
 }  // namespace history.

@@ -26,6 +26,10 @@ namespace {
 class DraggableView : public views::View {
  public:
   DraggableView() = default;
+
+  DraggableView(const DraggableView&) = delete;
+  DraggableView& operator=(const DraggableView&) = delete;
+
   ~DraggableView() override = default;
 
   // views::View overrides:
@@ -36,14 +40,15 @@ class DraggableView : public views::View {
                      OSExchangeData* data) override {
     data->SetString(u"test");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DraggableView);
 };
 
 class TargetView : public views::View {
  public:
   TargetView() : dropped_(false) {}
+
+  TargetView(const TargetView&) = delete;
+  TargetView& operator=(const TargetView&) = delete;
+
   ~TargetView() override = default;
 
   // views::View overrides:
@@ -60,16 +65,25 @@ class TargetView : public views::View {
   }
   ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event) override {
-    dropped_ = true;
-    return ui::mojom::DragOperation::kMove;
+    ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+    PerformDrop(event, output_drag_op);
+    return output_drag_op;
+  }
+
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
+    return base::BindOnce(&TargetView::PerformDrop, base::Unretained(this));
   }
 
   bool dropped() const { return dropped_; }
 
  private:
-  bool dropped_;
+  void PerformDrop(const ui::DropTargetEvent& event,
+                   ui::mojom::DragOperation& output_drag_op) {
+    dropped_ = true;
+    output_drag_op = ui::mojom::DragOperation::kMove;
+  }
 
-  DISALLOW_COPY_AND_ASSIGN(TargetView);
+  bool dropped_;
 };
 
 views::Widget* CreateWidget(std::unique_ptr<views::View> contents_view,
@@ -124,7 +138,7 @@ using DragDropTest = AshTestBase;
 TEST_F(DragDropTest, DragDropAcrossMultiDisplay) {
   ui_controls::InstallUIControlsAura(test::CreateAshUIControls());
 
-  UpdateDisplay("400x400,400x400");
+  UpdateDisplay("400x300,400x300");
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   auto draggable_view = std::make_unique<DraggableView>();
   draggable_view->set_drag_controller(NULL);

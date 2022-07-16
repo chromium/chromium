@@ -16,6 +16,10 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) EmptyPredictor
     : public InputPredictor {
  public:
   EmptyPredictor();
+
+  EmptyPredictor(const EmptyPredictor&) = delete;
+  EmptyPredictor& operator=(const EmptyPredictor&) = delete;
+
   ~EmptyPredictor() override;
 
   const char* GetName() const override;
@@ -39,8 +43,6 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) EmptyPredictor
  private:
   // store the last_input_ point for testing
   absl::optional<InputData> last_input_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmptyPredictor);
 };
 
 }  // namespace ui

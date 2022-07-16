@@ -23,6 +23,9 @@ class AutoLock {
     pthread_mutex_lock(lock_);
   }
 
+  AutoLock(const AutoLock&) = delete;
+  AutoLock& operator=(const AutoLock&) = delete;
+
   ~AutoLock() {
     Unlock();
   }
@@ -34,8 +37,6 @@ class AutoLock {
 
  private:
   pthread_mutex_t* lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoLock);
 };
 
 }  // namespace sdk_util

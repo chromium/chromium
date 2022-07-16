@@ -28,7 +28,8 @@ public interface StartSurface {
     void destroy();
 
     /**
-     * Called when the Start surface is hidden.
+     * Called when the Start surface is hidden. It hides TasksSurfaces which are created when the
+     * Start surface is enabled.
      */
     void onHide();
 
@@ -216,9 +217,11 @@ public interface StartSurface {
     Supplier<Boolean> getTabGridDialogVisibilitySupplier();
 
     /**
-     * Called after the Chrome activity is launched. This is only called if the StartSurface is
-     * shown when Chrome is launched from cold start.
+     * Called after the Chrome activity is launched.
+     * @param isOverviewShownOnStartup Whether the StartSurace is shown when Chrome is launched from
+     *                                 cold start.
      * @param activityCreationTimeMs {@link SystemClock#elapsedRealtime} at activity creation.
      */
-    void onOverviewShownAtLaunch(final long activityCreationTimeMs);
+    void onOverviewShownAtLaunch(
+            boolean isOverviewShownOnStartup, final long activityCreationTimeMs);
 }

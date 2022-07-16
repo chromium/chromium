@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 
 namespace content {
@@ -19,6 +19,11 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
  public:
   BrowserAccessibilityManagerAuraLinux(const ui::AXTreeUpdate& initial_tree,
                                        BrowserAccessibilityDelegate* delegate);
+
+  BrowserAccessibilityManagerAuraLinux(
+      const BrowserAccessibilityManagerAuraLinux&) = delete;
+  BrowserAccessibilityManagerAuraLinux& operator=(
+      const BrowserAccessibilityManagerAuraLinux&) = delete;
 
   ~BrowserAccessibilityManagerAuraLinux() override;
 
@@ -77,8 +82,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
 
   // Give BrowserAccessibilityManager::Create access to our constructor.
   friend class BrowserAccessibilityManager;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerAuraLinux);
 };
 
 }  // namespace content

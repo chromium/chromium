@@ -4,15 +4,15 @@
 
 #include "chromecast/bindings/bindings_manager_fuchsia.h"
 
+#include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
-#include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/strings/string_piece.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
-#include "fuchsia/base/mem_buffer_util.h"
-#include "fuchsia/base/message_port.h"
 
 namespace chromecast {
 namespace bindings {
@@ -23,18 +23,26 @@ BindingsManagerFuchsia::~BindingsManagerFuchsia() = default;
 
 void BindingsManagerFuchsia::AddBinding(base::StringPiece binding_name,
                                         base::StringPiece binding_script) {
-  bindings_[std::string(binding_name)] =
-      cr_fuchsia::MemBufferFromString(binding_script, "cast-binding-script");
+  std::pair<std::string, fuchsia::mem::Buffer> new_entry = {
+      std::string(binding_name),
+      base::MemBufferFromString(binding_script, "cast-binding-script")};
+  for (auto it = bindings_.begin(); it != bindings_.end(); ++it) {
+    if (it->first == new_entry.first) {
+      *it = std::move(new_entry);
+      return;
+    }
+  }
+
+  bindings_.emplace_back(std::move(new_entry));
 }
 
 void BindingsManagerFuchsia::GetAll(GetAllCallback callback) {
   // Build a list of binding scripts and send it to the client.
   std::vector<chromium::cast::ApiBinding> bindings_vector;
-  for (auto& bindings_name_and_buffer : bindings_) {
+  for (auto& entry : bindings_) {
     chromium::cast::ApiBinding binding_cloned;
     zx_status_t status;
-    status = bindings_name_and_buffer.second.Clone(
-        binding_cloned.mutable_before_load_script());
+    status = entry.second.Clone(binding_cloned.mutable_before_load_script());
     ZX_CHECK(status == ZX_OK, status) << "vmo::clone";
     bindings_vector.emplace_back(std::move(binding_cloned));
   }

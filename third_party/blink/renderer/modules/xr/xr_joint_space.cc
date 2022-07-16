@@ -10,12 +10,14 @@
 namespace blink {
 
 XRJointSpace::XRJointSpace(
+    XRHand* hand,
     XRSession* session,
     std::unique_ptr<TransformationMatrix> mojo_from_joint,
     device::mojom::blink::XRHandJoint joint,
     float radius,
     device::mojom::blink::XRHandedness handedness)
     : XRSpace(session),
+      hand_(hand),
       mojo_from_joint_space_(std::move(mojo_from_joint)),
       joint_(joint),
       radius_(radius),
@@ -23,10 +25,6 @@ XRJointSpace::XRJointSpace(
 
 absl::optional<TransformationMatrix> XRJointSpace::MojoFromNative() {
   return *mojo_from_joint_space_.get();
-}
-
-bool XRJointSpace::EmulatedPosition() const {
-  return false;
 }
 
 device::mojom::blink::XRNativeOriginInformationPtr XRJointSpace::NativeOrigin()
@@ -37,6 +35,22 @@ device::mojom::blink::XRNativeOriginInformationPtr XRJointSpace::NativeOrigin()
   joint_space_info->joint = this->joint();
   return device::mojom::blink::XRNativeOriginInformation::NewHandJointSpaceInfo(
       std::move(joint_space_info));
+}
+
+bool XRJointSpace::EmulatedPosition() const {
+  return false;
+}
+
+XRPose* XRJointSpace::getPose(XRSpace* other_space) {
+  // If any of the spaces belonging to the same XRHand return null when
+  // populating the pose, all the spaces of that XRHand must also return
+  // null when populating the pose.
+  if (handHasMissingPoses()) {
+    return nullptr;
+  }
+
+  // Return the base class' value if we are tracked.
+  return XRSpace::getPose(other_space);
 }
 
 void XRJointSpace::UpdateTracking(
@@ -58,7 +72,12 @@ std::string XRJointSpace::ToString() const {
   return "XRJointSpace";
 }
 
+bool XRJointSpace::handHasMissingPoses() const {
+  return hand_->hasMissingPoses();
+}
+
 void XRJointSpace::Trace(Visitor* visitor) const {
+  visitor->Trace(hand_);
   XRSpace::Trace(visitor);
 }
 

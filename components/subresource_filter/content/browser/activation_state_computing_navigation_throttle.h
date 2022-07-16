@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -48,6 +47,11 @@ class ActivationStateComputingNavigationThrottle
   CreateForSubframe(content::NavigationHandle* navigation_handle,
                     VerifiedRuleset::Handle* ruleset_handle,
                     const mojom::ActivationState& parent_activation_state);
+
+  ActivationStateComputingNavigationThrottle(
+      const ActivationStateComputingNavigationThrottle&) = delete;
+  ActivationStateComputingNavigationThrottle& operator=(
+      const ActivationStateComputingNavigationThrottle&) = delete;
 
   ~ActivationStateComputingNavigationThrottle() override;
 
@@ -120,8 +124,6 @@ class ActivationStateComputingNavigationThrottle
 
   base::WeakPtrFactory<ActivationStateComputingNavigationThrottle>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ActivationStateComputingNavigationThrottle);
 };
 
 }  // namespace subresource_filter

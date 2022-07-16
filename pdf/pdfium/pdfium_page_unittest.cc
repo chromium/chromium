@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/gtest_util.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/accessibility_structs.h"
@@ -28,8 +27,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/range/range.h"
-#include "ui/gfx/test/gfx_util.h"
 
 namespace chrome_pdf {
 
@@ -40,15 +39,6 @@ TEST(PDFiumPageHelperTest, ToPDFiumRotation) {
   EXPECT_EQ(ToPDFiumRotation(PageOrientation::kClockwise90), 1);
   EXPECT_EQ(ToPDFiumRotation(PageOrientation::kClockwise180), 2);
   EXPECT_EQ(ToPDFiumRotation(PageOrientation::kClockwise270), 3);
-}
-
-TEST(PDFiumPageHelperDeathTest, ToPDFiumRotation) {
-  PageOrientation invalid_orientation = static_cast<PageOrientation>(-1);
-#if DCHECK_IS_ON()
-  EXPECT_DCHECK_DEATH(ToPDFiumRotation(invalid_orientation));
-#else
-  EXPECT_EQ(ToPDFiumRotation(invalid_orientation), 0);
-#endif
 }
 
 void CompareTextRuns(const AccessibilityTextRunInfo& expected_text_run,

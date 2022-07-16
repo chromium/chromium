@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -14,6 +15,7 @@
 #include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
@@ -26,6 +28,7 @@
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -43,12 +46,15 @@ std::string GetStringNameForRequestContext(
     proto::RequestContext request_context) {
   switch (request_context) {
     case proto::RequestContext::CONTEXT_UNSPECIFIED:
+    case proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS:
       NOTREACHED();
       return "Unknown";
-    case proto::RequestContext::CONTEXT_BATCH_UPDATE:
-      return "BatchUpdate";
     case proto::RequestContext::CONTEXT_PAGE_NAVIGATION:
       return "PageNavigation";
+    case proto::RequestContext::CONTEXT_BATCH_UPDATE_GOOGLE_SRP:
+      return "BatchUpdateGoogleSRP";
+    case proto::RequestContext::CONTEXT_BATCH_UPDATE_ACTIVE_TABS:
+      return "BatchUpdateActiveTabs";
   }
   NOTREACHED();
   return std::string();
@@ -92,7 +98,13 @@ HintsFetcher::HintsFetcher(
       network_connection_tracker_(network_connection_tracker),
       time_clock_(base::DefaultClock::GetInstance()) {
   url_loader_factory_ = std::move(url_loader_factory);
-  CHECK(optimization_guide_service_url_.SchemeIs(url::kHttpsScheme));
+  // Allow non-https scheme only when it is overridden in command line. This is
+  // needed for iOS EG2 tests which don't support HTTPS embedded test servers
+  // due to ssl certificate validation. So, the EG2 tests use HTTP hints
+  // servers.
+  CHECK(optimization_guide_service_url_.SchemeIs(url::kHttpsScheme) ||
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kOptimizationGuideServiceGetHintsURL));
   DCHECK(features::IsRemoteFetchingEnabled());
 }
 
@@ -142,8 +154,8 @@ bool HintsFetcher::WasHostCoveredByFetch(PrefService* pref_service,
   if (!value)
     return false;
 
-  base::Time host_valid_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromSecondsD(*value));
+  base::Time host_valid_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(*value));
   return host_valid_time > time_clock->Now();
 }
 
@@ -342,8 +354,8 @@ void HintsFetcher::HandleResponse(const std::string& get_hints_response_data,
     base::TimeDelta valid_duration =
         features::StoredFetchedHintsFreshnessDuration();
     if (get_hints_response->has_max_cache_duration()) {
-      valid_duration = base::TimeDelta::FromSeconds(
-          get_hints_response->max_cache_duration().seconds());
+      valid_duration =
+          base::Seconds(get_hints_response->max_cache_duration().seconds());
     }
     UpdateHostsSuccessfullyFetched(valid_duration);
     RecordRequestStatusHistogram(request_context_,
@@ -370,8 +382,8 @@ void HintsFetcher::UpdateHostsSuccessfullyFetched(
   // Remove any expired hosts.
   std::vector<std::string> entries_to_remove;
   for (auto it : hosts_fetched_list->DictItems()) {
-    if (base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromSecondsD(
-            it.second.GetDouble())) < time_clock_->Now()) {
+    if (base::Time::FromDeltaSinceWindowsEpoch(
+            base::Seconds(it.second.GetDouble())) < time_clock_->Now()) {
       entries_to_remove.emplace_back(it.first);
     }
   }
@@ -457,8 +469,8 @@ std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
     absl::optional<double> value =
         hosts_fetched->FindDoubleKey(HashHostForDictionary(host));
     if (value && optimization_guide::features::ShouldPersistHintsToDisk()) {
-      base::Time host_valid_time = base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromSecondsD(*value));
+      base::Time host_valid_time =
+          base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(*value));
       host_hints_due_for_refresh =
           (host_valid_time - features::GetHostHintsFetchRefreshDuration() <=
            time_clock_->Now());

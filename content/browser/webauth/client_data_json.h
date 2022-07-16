@@ -25,7 +25,6 @@ enum class ClientDataRequestType {
   kU2fSign,
   kWebAuthnCreate,
   kWebAuthnGet,
-  kPaymentCreate,
   kPaymentGet,
 };
 

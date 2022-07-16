@@ -22,6 +22,12 @@ class DesktopAndCursorComposerNotifier : public protocol::InputFilter {
 
   DesktopAndCursorComposerNotifier(InputStub* input_stub,
                                    EventHandler* event_handler_);
+
+  DesktopAndCursorComposerNotifier(const DesktopAndCursorComposerNotifier&) =
+      delete;
+  DesktopAndCursorComposerNotifier& operator=(
+      const DesktopAndCursorComposerNotifier&) = delete;
+
   ~DesktopAndCursorComposerNotifier() override;
 
   // InputStub overrides.
@@ -35,8 +41,6 @@ class DesktopAndCursorComposerNotifier : public protocol::InputFilter {
   EventHandler* event_handler_;
   bool has_triggered_ = false;
   bool is_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopAndCursorComposerNotifier);
 };
 
 }  // namespace remoting

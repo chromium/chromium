@@ -5,7 +5,6 @@
 #include "media/mojo/services/mojo_cdm_helper.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -77,7 +76,9 @@ class TestFrameInterfaceFactory : public mojom::FrameInterfaceFactory {
   }
 #if defined(OS_WIN)
   void RegisterMuteStateObserver(
-      mojo::PendingRemote<media::mojom::MuteStateObserver> observer) override {}
+      mojo::PendingRemote<mojom::MuteStateObserver> observer) override {}
+  void CreateDCOMPSurfaceRegistry(
+      mojo::PendingReceiver<mojom::DCOMPSurfaceRegistry> receiver) override {}
 #endif  // defined(OS_WIN)
   void GetCdmOrigin(GetCdmOriginCallback callback) override {}
   void BindEmbedderReceiver(mojo::GenericPendingReceiver) override {}

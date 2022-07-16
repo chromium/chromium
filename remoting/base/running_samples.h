@@ -23,6 +23,10 @@ class RunningSamples {
   // Constructs a running sample helper that stores |window_size| most
   // recent samples.
   explicit RunningSamples(int window_size);
+
+  RunningSamples(const RunningSamples&) = delete;
+  RunningSamples& operator=(const RunningSamples&) = delete;
+
   virtual ~RunningSamples();
 
   // Records a point sample.
@@ -52,8 +56,6 @@ class RunningSamples {
   int64_t sum_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RunningSamples);
 };
 
 }  // namespace remoting

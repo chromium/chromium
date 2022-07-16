@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/devtools_pipe_handler.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 
 #if defined(OS_WIN)
 #include <io.h>
@@ -22,10 +23,10 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -415,6 +416,10 @@ void DevToolsPipeHandler::AgentHostClosed(DevToolsAgentHost* agent_host) {}
 
 bool DevToolsPipeHandler::UsesBinaryProtocol() {
   return mode_ == ProtocolMode::kCBOR;
+}
+
+bool DevToolsPipeHandler::AllowUnsafeOperations() {
+  return true;
 }
 
 }  // namespace content

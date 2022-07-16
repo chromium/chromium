@@ -26,6 +26,9 @@ class ShaderDiskCacheTest : public testing::Test {
  public:
   ShaderDiskCacheTest() = default;
 
+  ShaderDiskCacheTest(const ShaderDiskCacheTest&) = delete;
+  ShaderDiskCacheTest& operator=(const ShaderDiskCacheTest&) = delete;
+
   ~ShaderDiskCacheTest() override = default;
 
   const base::FilePath& cache_path() { return temp_dir_.GetPath(); }
@@ -50,8 +53,6 @@ class ShaderDiskCacheTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   ShaderCacheFactory factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShaderDiskCacheTest);
 };
 
 TEST_F(ShaderDiskCacheTest, ClearsCache) {

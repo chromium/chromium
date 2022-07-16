@@ -4,7 +4,6 @@
 
 #include "components/browsing_data/content/browsing_data_helper.h"
 
-#include "base/macros.h"
 #include "content/public/common/url_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -16,15 +15,16 @@ namespace {
 class BrowsingDataHelperTest : public testing::Test {
  public:
   BrowsingDataHelperTest() {}
+
+  BrowsingDataHelperTest(const BrowsingDataHelperTest&) = delete;
+  BrowsingDataHelperTest& operator=(const BrowsingDataHelperTest&) = delete;
+
   ~BrowsingDataHelperTest() override {}
 
   bool IsWebScheme(const std::string& scheme) {
     GURL test(scheme + "://example.com");
     return (HasWebScheme(test) && browsing_data::IsWebScheme(scheme));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataHelperTest);
 };
 
 TEST_F(BrowsingDataHelperTest, WebStorageSchemesAreWebSchemes) {

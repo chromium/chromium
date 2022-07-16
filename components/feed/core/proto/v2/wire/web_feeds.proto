@@ -16,7 +16,7 @@ message WebFeed {
     STATE_UNSPECIFIED = 0;
     INACTIVE = 1;
     ACTIVE = 2;
-    SUSPENDED = 3;
+    WAITING_FOR_CONTENT = 4;
   }
   string name = 1;
   string title = 2;

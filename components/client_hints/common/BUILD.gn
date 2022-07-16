@@ -6,11 +6,12 @@ source_set("common") {
   sources = [
     "client_hints.cc",
     "client_hints.h",
+    "switches.cc",
+    "switches.h",
   ]
   deps = [
     "//components/content_settings/core/common",
-    "//third_party/blink/public:blink_headers",
-    "//third_party/blink/public/common",
+    "//third_party/blink/public/common:headers",
     "//url",
   ]
 }

@@ -24,16 +24,14 @@ TEST(NetworkQualityStoreTest, TestCaching) {
   // Cached network quality for network with NetworkID (2G, "test1").
   const nqe::internal::CachedNetworkQuality cached_network_quality_2g_test1(
       tick_clock.NowTicks(),
-      nqe::internal::NetworkQuality(base::TimeDelta::FromSeconds(1),
-                                    base::TimeDelta::FromSeconds(1), 1),
+      nqe::internal::NetworkQuality(base::Seconds(1), base::Seconds(1), 1),
       EFFECTIVE_CONNECTION_TYPE_2G);
 
   {
     // When ECT is UNKNOWN, then the network quality is not cached.
     nqe::internal::CachedNetworkQuality cached_network_quality_unknown(
         tick_clock.NowTicks(),
-        nqe::internal::NetworkQuality(base::TimeDelta::FromSeconds(1),
-                                      base::TimeDelta::FromSeconds(1), 1),
+        nqe::internal::NetworkQuality(base::Seconds(1), base::Seconds(1), 1),
         EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
 
     // Entry should not be added.
@@ -64,8 +62,7 @@ TEST(NetworkQualityStoreTest, TestCaching) {
     nqe::internal::CachedNetworkQuality read_network_quality;
     nqe::internal::CachedNetworkQuality cached_network_quality(
         tick_clock.NowTicks(),
-        nqe::internal::NetworkQuality(base::TimeDelta::FromSeconds(2),
-                                      base::TimeDelta::FromSeconds(2), 2),
+        nqe::internal::NetworkQuality(base::Seconds(2), base::Seconds(2), 2),
         EFFECTIVE_CONNECTION_TYPE_2G);
     network_quality_store.Add(network_id, cached_network_quality);
     EXPECT_TRUE(
@@ -81,8 +78,7 @@ TEST(NetworkQualityStoreTest, TestCaching) {
     nqe::internal::CachedNetworkQuality read_network_quality;
     nqe::internal::CachedNetworkQuality cached_network_quality(
         tick_clock.NowTicks(),
-        nqe::internal::NetworkQuality(base::TimeDelta::FromSeconds(3),
-                                      base::TimeDelta::FromSeconds(3), 3),
+        nqe::internal::NetworkQuality(base::Seconds(3), base::Seconds(3), 3),
         EFFECTIVE_CONNECTION_TYPE_3G);
     network_quality_store.Add(network_id, cached_network_quality);
     EXPECT_TRUE(
@@ -98,8 +94,7 @@ TEST(NetworkQualityStoreTest, TestCaching) {
     nqe::internal::CachedNetworkQuality read_network_quality;
     nqe::internal::CachedNetworkQuality set_network_quality(
         tick_clock.NowTicks(),
-        nqe::internal::NetworkQuality(base::TimeDelta::FromSeconds(4),
-                                      base::TimeDelta::FromSeconds(4), 4),
+        nqe::internal::NetworkQuality(base::Seconds(4), base::Seconds(4), 4),
         EFFECTIVE_CONNECTION_TYPE_4G);
     network_quality_store.Add(network_id, set_network_quality);
     EXPECT_TRUE(
@@ -124,8 +119,7 @@ TEST(NetworkQualityStoreTest, TestCaching) {
     nqe::internal::CachedNetworkQuality read_network_quality;
     const nqe::internal::CachedNetworkQuality cached_network_quality(
         tick_clock.NowTicks(),
-        nqe::internal::NetworkQuality(base::TimeDelta::FromSeconds(5),
-                                      base::TimeDelta::FromSeconds(5), 5),
+        nqe::internal::NetworkQuality(base::Seconds(5), base::Seconds(5), 5),
         EFFECTIVE_CONNECTION_TYPE_4G);
     network_quality_store.Add(network_id, cached_network_quality);
     EXPECT_TRUE(
@@ -151,14 +145,12 @@ TEST(NetworkQualityStoreTest, TestCachingClosestSignalStrength) {
   // Cached network quality for network with NetworkID (2G, "test1").
   const nqe::internal::CachedNetworkQuality cached_network_quality_strength_1(
       tick_clock.NowTicks(),
-      nqe::internal::NetworkQuality(base::TimeDelta::FromSeconds(1),
-                                    base::TimeDelta::FromSeconds(1), 1),
+      nqe::internal::NetworkQuality(base::Seconds(1), base::Seconds(1), 1),
       EFFECTIVE_CONNECTION_TYPE_2G);
 
   const nqe::internal::CachedNetworkQuality cached_network_quality_strength_3(
       tick_clock.NowTicks(),
-      nqe::internal::NetworkQuality(base::TimeDelta::FromSeconds(3),
-                                    base::TimeDelta::FromSeconds(3), 3),
+      nqe::internal::NetworkQuality(base::Seconds(3), base::Seconds(3), 3),
       EFFECTIVE_CONNECTION_TYPE_2G);
 
   {
@@ -237,14 +229,12 @@ TEST(NetworkQualityStoreTest, TestCachingUnknownSignalStrength) {
   const nqe::internal::CachedNetworkQuality
       cached_network_quality_strength_unknown(
           tick_clock.NowTicks(),
-          nqe::internal::NetworkQuality(base::TimeDelta::FromSeconds(1),
-                                        base::TimeDelta::FromSeconds(1), 1),
+          nqe::internal::NetworkQuality(base::Seconds(1), base::Seconds(1), 1),
           EFFECTIVE_CONNECTION_TYPE_2G);
 
   const nqe::internal::CachedNetworkQuality cached_network_quality_strength_3(
       tick_clock.NowTicks(),
-      nqe::internal::NetworkQuality(base::TimeDelta::FromSeconds(3),
-                                    base::TimeDelta::FromSeconds(3), 3),
+      nqe::internal::NetworkQuality(base::Seconds(3), base::Seconds(3), 3),
       EFFECTIVE_CONNECTION_TYPE_2G);
 
   {
@@ -318,8 +308,7 @@ TEST(NetworkQualityStoreTest, TestLRUCacheMaximumSize) {
 
   nqe::internal::CachedNetworkQuality read_network_quality(
       tick_clock.NowTicks(),
-      nqe::internal::NetworkQuality(base::TimeDelta::FromSeconds(0),
-                                    base::TimeDelta::FromSeconds(0), 0),
+      nqe::internal::NetworkQuality(base::Seconds(0), base::Seconds(0), 0),
       EFFECTIVE_CONNECTION_TYPE_2G);
 
   for (size_t i = 0; i < network_count; ++i) {
@@ -328,11 +317,10 @@ TEST(NetworkQualityStoreTest, TestLRUCacheMaximumSize) {
 
     const nqe::internal::CachedNetworkQuality network_quality(
         tick_clock.NowTicks(),
-        nqe::internal::NetworkQuality(base::TimeDelta::FromSeconds(1),
-                                      base::TimeDelta::FromSeconds(1), 1),
+        nqe::internal::NetworkQuality(base::Seconds(1), base::Seconds(1), 1),
         EFFECTIVE_CONNECTION_TYPE_2G);
     network_quality_store.Add(network_id, network_quality);
-    tick_clock.Advance(base::TimeDelta::FromSeconds(1));
+    tick_clock.Advance(base::Seconds(1));
   }
 
   base::TimeTicks earliest_last_update_time = tick_clock.NowTicks();
@@ -341,15 +329,14 @@ TEST(NetworkQualityStoreTest, TestLRUCacheMaximumSize) {
     nqe::internal::NetworkID network_id(NetworkChangeNotifier::CONNECTION_2G,
                                         "test" + base::NumberToString(i), 0);
 
-    nqe::internal::CachedNetworkQuality read_network_quality(
+    nqe::internal::CachedNetworkQuality network_quality(
         tick_clock.NowTicks(),
-        nqe::internal::NetworkQuality(base::TimeDelta::FromSeconds(0),
-                                      base::TimeDelta::FromSeconds(0), 0),
+        nqe::internal::NetworkQuality(base::Seconds(0), base::Seconds(0), 0),
         EFFECTIVE_CONNECTION_TYPE_2G);
-    if (network_quality_store.GetById(network_id, &read_network_quality)) {
+    if (network_quality_store.GetById(network_id, &network_quality)) {
       cache_match_count++;
-      earliest_last_update_time = std::min(
-          earliest_last_update_time, read_network_quality.last_update_time());
+      earliest_last_update_time = std::min(earliest_last_update_time,
+                                           network_quality.last_update_time());
     }
   }
 
@@ -359,9 +346,8 @@ TEST(NetworkQualityStoreTest, TestLRUCacheMaximumSize) {
 
   // Ensure that only LRU entries are cached by comparing the
   // |earliest_last_update_time|.
-  EXPECT_EQ(
-      tick_clock.NowTicks() - base::TimeDelta::FromSeconds(cache_match_count),
-      earliest_last_update_time);
+  EXPECT_EQ(tick_clock.NowTicks() - base::Seconds(cache_match_count),
+            earliest_last_update_time);
 }
 
 }  // namespace

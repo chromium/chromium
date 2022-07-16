@@ -25,9 +25,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
@@ -35,6 +33,7 @@
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/entry_info.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -172,11 +171,8 @@ void OnArcIconLoaded(
     Verb handler_verb = Verb::VERB_NONE;
     if (action == arc::kIntentActionSend ||
         action == arc::kIntentActionSendMultiple) {
-      // Use app service to get send tasks when the flag is on, so skip
-      // the send tasks here.
-      if (base::FeatureList::IsEnabled(features::kIntentHandlingSharing))
-        continue;
-      handler_verb = Verb::VERB_SHARE_WITH;
+      // Use app service to get send tasks.
+      continue;
     }
     auto it = icons->find(arc::ArcIntentHelperBridge::ActivityName(
         handler->package_name, handler->activity_name));
@@ -326,7 +322,8 @@ void FindArcTasks(Profile* profile,
 
   std::vector<storage::FileSystemURL> file_system_urls;
   for (const GURL& file_url : file_urls) {
-    file_system_urls.push_back(file_system_context->CrackURL(file_url));
+    file_system_urls.push_back(
+        file_system_context->CrackURLInFirstPartyContext(file_url));
   }
 
   // Using base::Unretained(profile) is safe because callback will be invoked on

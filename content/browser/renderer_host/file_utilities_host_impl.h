@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_FILE_UTILITIES_HOST_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_FILE_UTILITIES_HOST_IMPL_H_
 
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/file/file_utilities.mojom.h"
 
@@ -23,6 +24,12 @@ class FileUtilitiesHostImpl : public blink::mojom::FileUtilitiesHost {
   // blink::mojom::FileUtilitiesHost implementation.
   void GetFileInfo(const base::FilePath& path,
                    GetFileInfoCallback callback) override;
+
+#if defined(OS_MAC)
+  void SetLength(base::File file,
+                 const int64_t length,
+                 SetLengthCallback callback) override;
+#endif  // defined(OS_MAC)
 
   const int process_id_;
 };

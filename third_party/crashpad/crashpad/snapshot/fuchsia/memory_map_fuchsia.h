@@ -28,6 +28,10 @@ namespace crashpad {
 class MemoryMapFuchsia {
  public:
   MemoryMapFuchsia();
+
+  MemoryMapFuchsia(const MemoryMapFuchsia&) = delete;
+  MemoryMapFuchsia& operator=(const MemoryMapFuchsia&) = delete;
+
   ~MemoryMapFuchsia();
 
   //! \brief Initializes this object with information about the mapped memory
@@ -53,8 +57,6 @@ class MemoryMapFuchsia {
  private:
   std::vector<zx_info_maps_t> map_entries_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryMapFuchsia);
 };
 
 }  // namespace crashpad

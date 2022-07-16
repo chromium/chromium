@@ -29,6 +29,11 @@ class IOSPasswordRequirementsServiceFactory
 
   static IOSPasswordRequirementsServiceFactory* GetInstance();
 
+  IOSPasswordRequirementsServiceFactory(
+      const IOSPasswordRequirementsServiceFactory&) = delete;
+  IOSPasswordRequirementsServiceFactory& operator=(
+      const IOSPasswordRequirementsServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<IOSPasswordRequirementsServiceFactory>;
 
@@ -39,8 +44,6 @@ class IOSPasswordRequirementsServiceFactory
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSPasswordRequirementsServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_IOS_PASSWORD_REQUIREMENTS_SERVICE_FACTORY_H_

@@ -150,7 +150,7 @@ bool AomContentAxTree::GetBoolAttributeForAXNode(
   }
 
   ax::mojom::BoolAttribute ax_attr = GetCorrespondingAXAttribute(attr);
-  return node->data().GetBoolAttribute(ax_attr, out_param);
+  return node->GetBoolAttribute(ax_attr, out_param);
 }
 
 bool AomContentAxTree::GetCheckedStateForAXNode(int32_t ax_id,
@@ -159,7 +159,7 @@ bool AomContentAxTree::GetCheckedStateForAXNode(int32_t ax_id,
   if (!node)
     return false;
   ax::mojom::CheckedState checked_state = static_cast<ax::mojom::CheckedState>(
-      node->data().GetIntAttribute(ax::mojom::IntAttribute::kCheckedState));
+      node->GetIntAttribute(ax::mojom::IntAttribute::kCheckedState));
   *out_param = blink::WebString::FromUTF8(ui::ToString(checked_state));
   return true;
 }
@@ -171,7 +171,7 @@ bool AomContentAxTree::GetIntAttributeForAXNode(int32_t ax_id,
   if (!node)
     return false;
   ax::mojom::IntAttribute ax_attr = GetCorrespondingAXAttribute(attr);
-  return node->data().GetIntAttribute(ax_attr, out_param);
+  return node->GetIntAttribute(ax_attr, out_param);
 }
 
 bool AomContentAxTree::GetRestrictionAttributeForAXNode(
@@ -185,7 +185,7 @@ bool AomContentAxTree::GetRestrictionAttributeForAXNode(
   // Disabled and readOnly are stored on the node data as an int attribute,
   // which indicates which type of kRestriction applies.
   ax::mojom::Restriction restriction = static_cast<ax::mojom::Restriction>(
-      node->data().GetIntAttribute(ax::mojom::IntAttribute::kRestriction));
+      node->GetIntAttribute(ax::mojom::IntAttribute::kRestriction));
   ax::mojom::Restriction ax_attr = GetCorrespondingRestrictionFlag(attr);
   *out_param = (restriction == ax_attr);
   return true;
@@ -199,7 +199,7 @@ bool AomContentAxTree::GetFloatAttributeForAXNode(
   if (!node)
     return false;
   ax::mojom::FloatAttribute ax_attr = GetCorrespondingAXAttribute(attr);
-  return node->data().GetFloatAttribute(ax_attr, out_param);
+  return node->GetFloatAttribute(ax_attr, out_param);
 }
 
 bool AomContentAxTree::GetStateAttributeForAXNode(
@@ -210,7 +210,7 @@ bool AomContentAxTree::GetStateAttributeForAXNode(
   if (!node)
     return false;
 
-  *out_param = node->data().HasState(GetCorrespondingStateFlag(attr));
+  *out_param = node->HasState(GetCorrespondingStateFlag(attr));
   return true;
 }
 
@@ -221,8 +221,8 @@ bool AomContentAxTree::GetStringAttributeForAXNode(
   ui::AXNode* node = tree_.GetFromId(ax_id);
   std::string out_string;
 
-  if (node && node->data().GetStringAttribute(GetCorrespondingAXAttribute(attr),
-                                              &out_string)) {
+  if (node && node->GetStringAttribute(GetCorrespondingAXAttribute(attr),
+                                       &out_string)) {
     *out_param = blink::WebString::FromUTF8(out_string.c_str());
     return true;
   }
@@ -235,7 +235,7 @@ bool AomContentAxTree::GetRoleForAXNode(int32_t ax_id,
   ui::AXNode* node = tree_.GetFromId(ax_id);
   if (!node)
     return false;
-  *out_param = blink::WebString::FromUTF8(ui::ToString(node->data().role));
+  *out_param = blink::WebString::FromUTF8(ui::ToString(node->GetRole()));
   return true;
 }
 

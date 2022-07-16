@@ -190,13 +190,13 @@ TEST_F(ChromeIdentityServiceTest, CanOfferExtendedSyncPromos_Histogram) {
   base::HistogramTester histogramTester;
   base::ScopedMockClockOverride clock;
   service_.CanOfferExtendedSyncPromos(identity_, /*callback=*/nil);
-  clock.Advance(base::TimeDelta::FromMinutes(1));
+  clock.Advance(base::Minutes(1));
   service_.RunFinishCapabilitiesCompletion(
       @{@(kCanOfferExtendedChromeSyncPromosCapabilityName) : @0},
       /*error=*/nil);
   histogramTester.ExpectUniqueTimeSample(
       "Signin.AccountCapabilities.GetFromSystemLibraryDuration",
-      base::TimeDelta::FromMinutes(1),
+      base::Minutes(1),
       /*expected_bucket_count=*/1);
 }
 

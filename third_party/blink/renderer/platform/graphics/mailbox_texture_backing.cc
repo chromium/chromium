@@ -73,8 +73,8 @@ sk_sp<SkImage> MailboxTextureBacking::GetSkImageViaReadback() {
     gpu::raster::RasterInterface* ri =
         context_provider_wrapper_->ContextProvider()->RasterInterface();
     ri->ReadbackImagePixels(mailbox_, sk_image_info_,
-                            sk_image_info_.minRowBytes(), 0, 0,
-                            writable_pixels);
+                            static_cast<GLuint>(sk_image_info_.minRowBytes()),
+                            0, 0, writable_pixels);
 
     return SkImage::MakeRasterData(sk_image_info_, std::move(image_pixels),
                                    sk_image_info_.minRowBytes());
@@ -96,7 +96,8 @@ bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
 
     gpu::raster::RasterInterface* ri =
         context_provider_wrapper_->ContextProvider()->RasterInterface();
-    ri->ReadbackImagePixels(mailbox_, dst_info, dst_info.minRowBytes(), src_x,
+    ri->ReadbackImagePixels(mailbox_, dst_info,
+                            static_cast<GLuint>(dst_info.minRowBytes()), src_x,
                             src_y, dst_pixels);
     return true;
   } else if (sk_image_) {

@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/search_engines/template_url_id.h"
 #include "components/webdata/common/web_database_table.h"
 
@@ -69,6 +68,8 @@ class Statement;
 //                          version 69.
 //   created_from_play_api  See TemplateURLData::created_from_play_api. This was
 //                          added in version 82.
+//   is_active              See TemplateURLData::is_active. This was added
+//                          in version 97.
 //
 // This class also manages some fields in the |meta| table:
 //
@@ -92,6 +93,10 @@ class KeywordTable : public WebDatabaseTable {
   static const char kDefaultSearchProviderKey[];
 
   KeywordTable();
+
+  KeywordTable(const KeywordTable&) = delete;
+  KeywordTable& operator=(const KeywordTable&) = delete;
+
   ~KeywordTable() override;
 
   // Retrieves the KeywordTable* owned by |database|.
@@ -133,6 +138,7 @@ class KeywordTable : public WebDatabaseTable {
   bool MigrateToVersion76RemoveInstantColumns();
   bool MigrateToVersion77IncreaseTimePrecision();
   bool MigrateToVersion82AddCreatedFromPlayApiColumn();
+  bool MigrateToVersion97AddIsActiveColumn();
 
  private:
   friend class KeywordTableTest;
@@ -165,8 +171,6 @@ class KeywordTable : public WebDatabaseTable {
   bool GetKeywordAsString(TemplateURLID id,
                           const std::string& table_name,
                           std::string* result);
-
-  DISALLOW_COPY_AND_ASSIGN(KeywordTable);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_KEYWORD_TABLE_H_

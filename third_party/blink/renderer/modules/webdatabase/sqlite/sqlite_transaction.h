@@ -38,6 +38,10 @@ class SQLiteTransaction {
 
  public:
   SQLiteTransaction(SQLiteDatabase& db, bool read_only = false);
+
+  SQLiteTransaction(const SQLiteTransaction&) = delete;
+  SQLiteTransaction& operator=(const SQLiteTransaction&) = delete;
+
   ~SQLiteTransaction();
 
   void begin();
@@ -52,8 +56,6 @@ class SQLiteTransaction {
   SQLiteDatabase& db_;
   bool in_progress_;
   bool read_only_;
-
-  DISALLOW_COPY_AND_ASSIGN(SQLiteTransaction);
 };
 
 }  // namespace blink

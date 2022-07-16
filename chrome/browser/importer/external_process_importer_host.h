@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/importer/importer_progress_observer.h"
@@ -34,6 +33,10 @@ class ExternalProcessImporterHost
     : public bookmarks::BaseBookmarkModelObserver {
  public:
   ExternalProcessImporterHost();
+
+  ExternalProcessImporterHost(const ExternalProcessImporterHost&) = delete;
+  ExternalProcessImporterHost& operator=(const ExternalProcessImporterHost&) =
+      delete;
 
   void Cancel();
 
@@ -158,8 +161,6 @@ class ExternalProcessImporterHost
 
   // Vends weak pointers for the importer to call us back.
   base::WeakPtrFactory<ExternalProcessImporterHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalProcessImporterHost);
 };
 
 #endif  // CHROME_BROWSER_IMPORTER_EXTERNAL_PROCESS_IMPORTER_HOST_H_

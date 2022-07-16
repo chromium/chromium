@@ -2,25 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("../../settings.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = settings_closure_flags
-  deps = [ ":privacy_review_page" ]
-}
-
-js_library("privacy_review_page") {
-  deps = [
-    "../..:route",
-    "../..:router",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
 
 html_to_js("web_components") {
-  js_files = [ "privacy_review_page.js" ]
+  js_files = [
+    "privacy_review_clear_on_exit_fragment.ts",
+    "privacy_review_completion_fragment.ts",
+    "privacy_review_cookies_fragment.ts",
+    "privacy_review_description_item.ts",
+    "privacy_review_fragment_shared_css.ts",
+    "privacy_review_history_sync_fragment.ts",
+    "privacy_review_msbb_fragment.ts",
+    "privacy_review_page.ts",
+    "privacy_review_safe_browsing_fragment.ts",
+    "privacy_review_welcome_fragment.ts",
+    "step_indicator.ts",
+  ]
 }

@@ -36,6 +36,10 @@ class MODULES_EXPORT AbortPaymentEvent final : public ExtendableEvent {
                     const ExtendableEventInit*,
                     RespondWithObserver*,
                     WaitUntilObserver*);
+
+  AbortPaymentEvent(const AbortPaymentEvent&) = delete;
+  AbortPaymentEvent& operator=(const AbortPaymentEvent&) = delete;
+
   ~AbortPaymentEvent() override;
 
   const AtomicString& InterfaceName() const override;
@@ -46,8 +50,6 @@ class MODULES_EXPORT AbortPaymentEvent final : public ExtendableEvent {
 
  private:
   Member<RespondWithObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AbortPaymentEvent);
 };
 
 }  // namespace blink

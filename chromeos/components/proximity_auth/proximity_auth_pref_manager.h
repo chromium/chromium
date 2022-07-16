@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-
 namespace proximity_auth {
 
 // Interface for setting and getting persistent user preferences. There is an
@@ -17,6 +15,10 @@ namespace proximity_auth {
 class ProximityAuthPrefManager {
  public:
   ProximityAuthPrefManager() {}
+
+  ProximityAuthPrefManager(const ProximityAuthPrefManager&) = delete;
+  ProximityAuthPrefManager& operator=(const ProximityAuthPrefManager&) = delete;
+
   virtual ~ProximityAuthPrefManager() {}
 
   // Returns true if EasyUnlock is allowed. Note: there is no corresponding
@@ -36,6 +38,10 @@ class ProximityAuthPrefManager {
   // which flags the latter case.
   virtual void SetEasyUnlockEnabledStateSet() const = 0;
   virtual bool IsEasyUnlockEnabledStateSet() const = 0;
+
+  // Returns true if SmartLock is eligible, which is required for use within the
+  // Standard Feature Usage Logging (SFUL) framework.
+  virtual bool IsSmartLockEligible() const = 0;
 
   // Setter and getter for the timestamp of the last time the promotion was
   // shown to the user.
@@ -60,9 +66,6 @@ class ProximityAuthPrefManager {
   // message on the login screen has been shown.
   virtual void SetHasShownLoginDisabledMessage(bool has_shown) = 0;
   virtual bool HasShownLoginDisabledMessage() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthPrefManager);
 };
 
 }  // namespace proximity_auth

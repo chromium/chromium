@@ -6,7 +6,6 @@
 
 #include "base/strings/string_piece.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_view.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -20,13 +19,11 @@
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/extension_system.h"
-#include "extensions/browser/runtime_data.h"
+#include "extensions/browser/process_util.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -133,12 +130,12 @@ void ExtensionViewHost::OnDidStopFirstLoad() {
 }
 
 void ExtensionViewHost::LoadInitialURL() {
-  if (!ExtensionSystem::Get(browser_context())->
-          runtime_data()->IsBackgroundPageReady(extension())) {
+  if (process_util::GetPersistentBackgroundPageState(*extension(),
+                                                     browser_context()) ==
+      process_util::PersistentBackgroundPageState::kNotReady) {
     // Make sure the background page loads before any others.
-    registrar_.Add(this,
-                   extensions::NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-                   content::Source<Extension>(extension()));
+    host_registry_observation_.Observe(
+        ExtensionHostRegistry::Get(browser_context()));
     return;
   }
 
@@ -225,6 +222,12 @@ void ExtensionViewHost::RunFileChooser(
                                    params);
 }
 
+std::unique_ptr<content::EyeDropper> ExtensionViewHost::OpenEyeDropper(
+    content::RenderFrameHost* frame,
+    content::EyeDropperListener* listener) {
+  return browser_ ? browser_->OpenEyeDropper(frame, listener) : nullptr;
+}
+
 void ExtensionViewHost::ResizeDueToAutoResize(content::WebContents* source,
                                               const gfx::Size& new_size) {
   view_->ResizeDueToAutoResize(source, new_size);
@@ -286,13 +289,22 @@ content::WebContents* ExtensionViewHost::GetVisibleWebContents() const {
              : nullptr;
 }
 
-void ExtensionViewHost::Observe(int type,
-                                const content::NotificationSource& source,
-                                const content::NotificationDetails& details) {
-  DCHECK_EQ(type, extensions::NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY);
-  DCHECK(ExtensionSystem::Get(browser_context())
-             ->runtime_data()
-             ->IsBackgroundPageReady(extension()));
+void ExtensionViewHost::OnExtensionHostDocumentElementAvailable(
+    content::BrowserContext* host_browser_context,
+    ExtensionHost* extension_host) {
+  DCHECK(extension_host->extension());
+  if (host_browser_context != browser_context() ||
+      extension_host->extension() != extension() ||
+      extension_host->extension_host_type() !=
+          mojom::ViewType::kExtensionBackgroundPage) {
+    return;
+  }
+
+  DCHECK_EQ(process_util::PersistentBackgroundPageState::kReady,
+            process_util::GetPersistentBackgroundPageState(*extension(),
+                                                           browser_context()));
+  // We only needed to wait for the background page to load, so stop observing.
+  host_registry_observation_.Reset();
   LoadInitialURL();
 }
 

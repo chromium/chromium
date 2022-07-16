@@ -15,17 +15,21 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/input/browser_controls_state.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/mhtml_generation_result.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/save_page_type.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/stop_find_action.h"
@@ -77,6 +81,7 @@ class InterfaceProvider;
 namespace ui {
 struct AXPropertyFilter;
 struct AXTreeUpdate;
+class ColorProviderSource;
 }
 
 namespace content {
@@ -118,10 +123,14 @@ class WebContents : public PageNavigator,
                     public base::SupportsUserData {
  public:
   struct CONTENT_EXPORT CreateParams {
-    explicit CreateParams(BrowserContext* context);
+    explicit CreateParams(
+        BrowserContext* context,
+        base::Location creator_location = base::Location::Current());
     CreateParams(const CreateParams& other);
     ~CreateParams();
-    CreateParams(BrowserContext* context, scoped_refptr<SiteInstance> site);
+    CreateParams(BrowserContext* context,
+                 scoped_refptr<SiteInstance> site,
+                 base::Location creator_location = base::Location::Current());
 
     BrowserContext* browser_context;
 
@@ -140,11 +149,11 @@ class WebContents : public PageNavigator,
     // reference to its opener.
     bool opener_suppressed;
 
-    // Indicates whether this WebContents was created with a window.opener.
+    // Indicates whether this WebContents was created by another window.
     // This is used when determining whether the WebContents is allowed to be
     // closed via window.close(). This may be true even with a null |opener|
-    // (e.g., for blocked popups).
-    bool created_with_opener;
+    // (e.g., for blocked popups), or when the window is opened with "noopener".
+    bool opened_by_another_window;
 
     // The name of the top-level frame of the new window. It is non-empty
     // when creating a named window (e.g. <a target="foo"> or
@@ -232,6 +241,15 @@ class WebContents : public PageNavigator,
     // Setting this to true will invoke the WebContents delayed initialization
     // that doesn't require visibility.
     bool is_never_visible;
+
+    // Code location responsible for creating the CreateParams.  This is used
+    // mostly for debugging (e.g. to help attribute specific scenarios or
+    // invariant violations to a particular flavor of WebContents).
+    base::Location creator_location;
+
+    // Enables contents to hold wake locks, for example, to keep the screen on
+    // while playing video.
+    bool enable_wake_locks;
   };
 
   // Creates a new WebContents.
@@ -252,16 +270,28 @@ class WebContents : public PageNavigator,
       const CreateParams& params,
       const SessionStorageNamespaceMap& session_storage_namespace_map);
 
-  // Returns the WebContents that owns the RenderViewHost, or nullptr if the
-  // render view host's delegate isn't a WebContents.
+  // Returns the WebContents that owns the RenderViewHost.
+  //
+  // WARNING: `rvh` may belong to a prerendered page, a page in the back/forward
+  // cache, or a pending deletion page, so it might be inappropriate for it to
+  // to trigger changes to the WebContents. See also the below comments for
+  // FromRenderFrameHost().
   CONTENT_EXPORT static WebContents* FromRenderViewHost(RenderViewHost* rvh);
 
   // Returns the WebContents for the RenderFrameHost. It is unsafe to call this
   // function with an invalid (e.g. destructed) `rfh`.
-  // Warning: Be careful when `rfh->IsCurrent()` is false, since this implies
-  // that `rfh` may not be visible to the user (in bfcache or pending deletion),
-  // so it should not be triggering state changes that affect the whole
-  // WebContents.
+  //
+  // WARNING: It might be inappropriate for `rfh` to trigger changes to the
+  // WebContents, so be careful when calling this. Some cases to be aware of
+  // are:
+  // * Pages/documents which are not active are not observable by the user
+  //   and therefore should not show UI elements (e.g., a colour picker). These
+  //   features should use `rfh->IsActive()` to determine whether `rfh` is
+  //   active. See the comments there for more information.
+  // * Pages/documents which are not primary generally should not update
+  //   per-WebContents state (e.g., theme colour). Use
+  //   `rfh->GetPage().IsPrimary()` to check for primary. Fenced frames are
+  //   one case where a RenderFrameHost can be active but not primary.
   CONTENT_EXPORT static WebContents* FromRenderFrameHost(RenderFrameHost* rfh);
 
   // Returns the WebContents associated with the |frame_tree_node_id|. This may
@@ -299,6 +329,9 @@ class WebContents : public PageNavigator,
   // Returns the user browser context associated with this WebContents (via the
   // NavigationController).
   virtual content::BrowserContext* GetBrowserContext() = 0;
+
+  // Returns a weak pointer.
+  virtual base::WeakPtr<WebContents> GetWeakPtr() = 0;
 
   // Gets the URL that is currently being displayed, if there is one.
   // This method is deprecated. DO NOT USE! Pick either |GetVisibleURL| or
@@ -361,13 +394,19 @@ class WebContents : public PageNavigator,
   // if nothing is focused.
   virtual RenderFrameHost* GetFocusedFrame() = 0;
 
+  // Returns true if |frame_tree_node_id| refers to a frame in a prerendered
+  // page.
+  // TODO(1196715, 1232528): This will be extended to also return true if it is
+  // in an inner page of a prerendered page.
+  virtual bool IsPrerenderedFrame(int frame_tree_node_id) = 0;
+
   // NOTE: This is generally unsafe to use. A frame's RenderFrameHost may
   // change over its lifetime, such as during cross-process navigation (and
   // thus privilege change). Use RenderFrameHost::FromID instead wherever
   // possible.
   //
-  // Returns the current RenderFrameHost for a given FrameTreeNode ID if it is
-  // part of this frame tree, not including frames in any inner WebContents.
+  // Given a FrameTreeNode ID that belongs to this WebContents, returns the
+  // current RenderFrameHost regardless of which FrameTree it is in.
   //
   // See RenderFrameHost::GetFrameTreeNodeId for documentation on this ID.
   virtual RenderFrameHost* UnsafeFindFrameByFrameTreeNodeId(
@@ -381,11 +420,6 @@ class WebContents : public PageNavigator,
   // silently.
   virtual void ForEachFrame(
       const base::RepeatingCallback<void(RenderFrameHost*)>& on_frame) = 0;
-
-  // TODO(1208438): Migrate to |ForEachRenderFrameHost|.
-  // Returns a vector of all RenderFrameHosts in the currently active view in
-  // breadth-first traversal order.
-  virtual std::vector<RenderFrameHost*> GetAllFrames() = 0;
 
   // TODO(1208438): Migrate to |ForEachRenderFrameHost|.
   // Sends the given IPC to all live frames in this WebContents and returns the
@@ -454,6 +488,12 @@ class WebContents : public PageNavigator,
   // functionality here, which will be more consistent and simpler to
   // understand.
   virtual void SetPageBaseBackgroundColor(absl::optional<SkColor> color) = 0;
+
+  // Sets the ColorProviderSource for the WebContents. The WebContents will
+  // maintain an observation of `source` until a new source is set or the
+  // current source is destroyed. WebContents will receive updates when the
+  // source's ColorProvider changes.
+  virtual void SetColorProviderSource(ui::ColorProviderSource* source) = 0;
 
   // Returns the committed WebUI if one exists.
   virtual WebUI* GetWebUI() = 0;
@@ -611,10 +651,14 @@ class WebContents : public PageNavigator,
   // are user-visible while being captured.
   //
   // |stay_awake| will cause a WakeLock to be held which prevents system sleep.
+  //
+  // |is_activity| means the capture will cause the last active time to be
+  // updated.
   virtual base::ScopedClosureRunner IncrementCapturerCount(
       const gfx::Size& capture_size,
       bool stay_hidden,
-      bool stay_awake) WARN_UNUSED_RESULT = 0;
+      bool stay_awake,
+      bool is_activity = true) WARN_UNUSED_RESULT = 0;
 
   // Getter for the capture handle, which allows a captured application to
   // opt-in to exposing information to its capturer(s).
@@ -1046,15 +1090,15 @@ class WebContents : public PageNavigator,
   // is the only result. A |max_bitmap_size| of 0 means unlimited.
   // For vector images, |preferred_size| will serve as a viewport into which
   // the image will be rendered. This would usually be the dimensions of the
-  // square where the bitmap will be rendered. If |preferred_size| is 0, any
-  // existing intrinsic dimensions of the image will be used. If
+  // rectangle where the bitmap will be rendered. If |preferred_size| is empty,
+  // any existing intrinsic dimensions of the image will be used. If
   // |max_bitmap_size| is non-zero it will also impose an upper bound on the
-  // preferred size.
+  // longest edge of |preferred_size| (|preferred_size| will be scaled down).
   // If |bypass_cache| is true, |url| is requested from the server even if it
   // is present in the browser cache.
   virtual int DownloadImage(const GURL& url,
                             bool is_favicon,
-                            uint32_t preferred_size,
+                            const gfx::Size& preferred_size,
                             uint32_t max_bitmap_size,
                             bool bypass_cache,
                             ImageDownloadCallback callback) = 0;
@@ -1065,7 +1109,7 @@ class WebContents : public PageNavigator,
       const GlobalRenderFrameHostId& initiator_frame_routing_id,
       const GURL& url,
       bool is_favicon,
-      uint32_t preferred_size,
+      const gfx::Size& preferred_size,
       uint32_t max_bitmap_size,
       bool bypass_cache,
       ImageDownloadCallback callback) = 0;
@@ -1256,6 +1300,41 @@ class WebContents : public PageNavigator,
 
   // Serialise this object into a trace.
   virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
+
+  // Disallows navigations that activate a prerendered page or a back/forward
+  // cached page in this WebContents. Such pages will be ignored and normal
+  // navigation will occur instead.
+  // TODO(https://crbug.com/1234857): Remove this. This is a temporary
+  // workaround to avoid breaking features that must be taught to deal with
+  // activation navigations.
+  virtual void DisallowActivationNavigationsForBug1234857() = 0;
+
+  // Returns the value from CreateParams::creator_location.
+  virtual const base::Location& GetCreatorLocation() = 0;
+
+  // Hide or show the browser controls for the given WebContents, based on
+  // allowed states, desired state and whether the transition should be animated
+  // or not.
+  virtual void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                          cc::BrowserControlsState current,
+                                          bool animate) = 0;
+
+  // Sets the last time a tab switch made this WebContents visible.
+  // `start_time` is the timestamp of the input event that triggered the tab
+  // switch. `destination_is_loaded` is true when
+  // ResourceCoordinatorTabHelper::IsLoaded() is true for the new tab contents.
+  // These will be used to record metrics with the latency between the input
+  // event and the time when the WebContents is painted.
+  virtual void SetTabSwitchStartTime(base::TimeTicks start_time,
+                                     bool destination_is_loaded) = 0;
+
+  // Starts an embedder triggered (browser-initiated) prerendering page and
+  // returns the unique_ptr<PrerenderHandle>, which cancels prerendering on its
+  // destruction. If the prerendering failed to start (e.g. if prerendering is
+  // disabled, failure happened or because this URL is already being
+  // prerendered), this function returns a nullptr.
+  virtual std::unique_ptr<PrerenderHandle> StartPrerendering(
+      const GURL& prerendering_url) = 0;
 
  private:
   // This interface should only be implemented inside content.

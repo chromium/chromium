@@ -1,5 +1,6 @@
 set noparent
 agl@chromium.org
+bashi@chromium.org
 davidben@chromium.org
 dschinazi@chromium.org
 ericorth@chromium.org
@@ -10,7 +11,9 @@ morlovich@chromium.org
 nharper@chromium.org
 pauljensen@chromium.org
 rch@chromium.org
+ricea@chromium.org
 rsleevi@chromium.org
+yhirano@chromium.org
 
 file://net/quic/OWNERS # For QUICHE rolls only.
 

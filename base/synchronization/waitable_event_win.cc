@@ -95,7 +95,7 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
   const TimeTicks end_time =
       wait_delta.is_max() ? TimeTicks::Max()
                           : subtle::TimeTicksNowIgnoringOverride() + wait_delta;
-  for (TimeDelta remaining = wait_delta; remaining > TimeDelta();
+  for (TimeDelta remaining = wait_delta; remaining.is_positive();
        remaining = end_time - subtle::TimeTicksNowIgnoringOverride()) {
     // Truncate the timeout to milliseconds, rounded up to avoid spinning
     // (either by returning too early or because a < 1ms timeout on Windows

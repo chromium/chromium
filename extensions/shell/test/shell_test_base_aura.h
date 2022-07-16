@@ -19,6 +19,10 @@ class ShellTestHelperAura;
 class ShellTestBaseAura : public ExtensionsTest {
  public:
   ShellTestBaseAura();
+
+  ShellTestBaseAura(const ShellTestBaseAura&) = delete;
+  ShellTestBaseAura& operator=(const ShellTestBaseAura&) = delete;
+
   ~ShellTestBaseAura() override;
 
   // ExtensionsTest:
@@ -30,8 +34,6 @@ class ShellTestBaseAura : public ExtensionsTest {
 
  private:
   std::unique_ptr<ShellTestHelperAura> helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellTestBaseAura);
 };
 
 }  // namespace extensions

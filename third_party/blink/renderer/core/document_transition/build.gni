@@ -5,6 +5,10 @@
 blink_core_sources_document_transition = [
   "document_transition.cc",
   "document_transition.h",
+  "document_transition_container_element.cc",
+  "document_transition_container_element.h",
+  "document_transition_content_element.cc",
+  "document_transition_content_element.h",
   "document_transition_supplement.cc",
   "document_transition_supplement.h",
 ]

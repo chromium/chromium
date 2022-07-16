@@ -12,8 +12,8 @@
 #include "chrome/browser/vr/test/constants.h"
 #include "chrome/browser/vr/ui_scene.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/transform_operation.h"
-#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/geometry/transform_operation.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace vr {
 

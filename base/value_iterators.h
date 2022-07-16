@@ -133,6 +133,8 @@ class BASE_EXPORT dict_iterator_proxy {
 
   explicit dict_iterator_proxy(DictStorage* storage);
 
+  size_type size() const;
+
   iterator begin();
   const_iterator begin() const;
   iterator end();
@@ -171,6 +173,8 @@ class BASE_EXPORT const_dict_iterator_proxy {
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
   explicit const_dict_iterator_proxy(const DictStorage* storage);
+
+  size_type size() const;
 
   const_iterator begin() const;
   const_iterator end() const;

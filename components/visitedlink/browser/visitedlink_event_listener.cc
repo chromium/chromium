@@ -16,7 +16,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 using base::Time;
-using base::TimeDelta;
 using content::RenderWidgetHost;
 
 namespace {
@@ -159,7 +158,7 @@ void VisitedLinkEventListener::Add(VisitedLinkWriter::Fingerprint fingerprint) {
 
   if (!coalesce_timer_->IsRunning()) {
     coalesce_timer_->Start(
-        FROM_HERE, TimeDelta::FromMilliseconds(kCommitIntervalMs),
+        FROM_HERE, base::Milliseconds(kCommitIntervalMs),
         base::BindOnce(&VisitedLinkEventListener::CommitVisitedLinks,
                        base::Unretained(this)));
   }

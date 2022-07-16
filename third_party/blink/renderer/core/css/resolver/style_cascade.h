@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_CASCADE_H_
 
 #include "third_party/blink/renderer/core/animation/interpolation.h"
-#include "third_party/blink/renderer/core/css/css_property_id_templates.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
@@ -288,6 +287,7 @@ class CORE_EXPORT StyleCascade {
 
   const CSSValue* Resolve(const CSSProperty&,
                           const CSSValue&,
+                          CascadePriority,
                           CascadeOrigin&,
                           CascadeResolver&);
   const CSSValue* ResolveCustomProperty(const CSSProperty&,
@@ -303,6 +303,11 @@ class CORE_EXPORT StyleCascade {
                                 const CSSValue&,
                                 CascadeOrigin&,
                                 CascadeResolver&);
+  const CSSValue* ResolveRevertLayer(const CSSProperty&,
+                                     const CSSValue&,
+                                     CascadePriority,
+                                     CascadeOrigin&,
+                                     CascadeResolver&);
 
   scoped_refptr<CSSVariableData> ResolveVariableData(CSSVariableData*,
                                                      CascadeResolver&);
@@ -320,7 +325,8 @@ class CORE_EXPORT StyleCascade {
   bool ResolveEnvInto(CSSParserTokenRange, CascadeResolver&, TokenSequence&);
 
   CSSVariableData* GetVariableData(const CustomProperty&) const;
-  CSSVariableData* GetEnvironmentVariable(const AtomicString&) const;
+  CSSVariableData* GetEnvironmentVariable(const AtomicString&,
+                                          WTF::Vector<unsigned>) const;
   const CSSParserContext* GetParserContext(const CSSVariableReferenceValue&);
 
   // Detects if the given property/data depends on the font-size property

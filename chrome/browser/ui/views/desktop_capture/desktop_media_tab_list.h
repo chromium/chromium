@@ -29,13 +29,6 @@ class TabListViewObserver;
 //   observes the DesktopMediaList to update the TableModel.
 // * TabListViewObserver, which is a TableViewObserver that notifies the
 //   controller when the user takes an action on the TableView.
-//
-// Since TableView really wants to be the child of a ScrollView, this class's
-// internal view hierarchy actually looks like:
-//   DesktopMediaTabList
-//     ScrollView
-//       [ScrollView internal helper Views]
-//         TableView
 class DesktopMediaTabList : public DesktopMediaListController::ListView {
  public:
   METADATA_HEADER(DesktopMediaTabList);
@@ -54,13 +47,34 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
   DesktopMediaListController::SourceListListener* GetSourceListListener()
       override;
 
+  // Called to indicate the preview image of the source indicated by index has
+  // been updated.
+  void OnPreviewUpdated(size_t index);
+
  private:
+  std::unique_ptr<views::View> BuildUI(std::unique_ptr<views::TableView> list);
+  void OnSelectionChanged();
+  void ClearPreview();
+  void ClearPreviewImageIfUnchanged(size_t previous_preview_set_count);
+
   friend class DesktopMediaPickerViewsTestApi;
+  friend class DesktopMediaTabListTest;
 
   DesktopMediaListController* controller_;
   std::unique_ptr<TabListModel> model_;
   std::unique_ptr<TabListViewObserver> view_observer_;
-  views::TableView* child_ = nullptr;
+
+  // These members are owned in the tree of views under this ListView's children
+  // so it's safe to store raw pointers to them.
+  views::TableView* list_;
+  views::ImageView* preview_;
+  views::View* empty_preview_;
+  views::Label* preview_label_;
+
+  // Counts the number of times preview_ has been set to an image.
+  size_t preview_set_count_ = 0;
+
+  base::WeakPtrFactory<DesktopMediaTabList> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_TAB_LIST_H_

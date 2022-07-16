@@ -19,6 +19,9 @@ class SSLCertificateErrorJob : public URLRequestJob {
  public:
   explicit SSLCertificateErrorJob(URLRequest* request);
 
+  SSLCertificateErrorJob(const SSLCertificateErrorJob&) = delete;
+  SSLCertificateErrorJob& operator=(const SSLCertificateErrorJob&) = delete;
+
   ~SSLCertificateErrorJob() override;
 
   // URLRequestJob implementation:
@@ -33,8 +36,6 @@ class SSLCertificateErrorJob : public URLRequestJob {
   void NotifyError();
 
   base::WeakPtrFactory<SSLCertificateErrorJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SSLCertificateErrorJob);
 };
 
 }  // namespace net

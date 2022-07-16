@@ -56,6 +56,9 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   // Called to handle the "listenPoliciesUpdates" WebUI message.
   void HandleListenPoliciesUpdates(const base::ListValue* args);
 
+  // Called to handle the "copyPoliciesJSON" WebUI message.
+  void HandleCopyPoliciesJson(const base::ListValue* args);
+
   // Called to handle the "reloadPolicies" WebUI message.
   void HandleReloadPolicies(const base::ListValue* args);
 
@@ -64,10 +67,19 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   // metadata are sent.
   void SendPolicies();
 
+  // Get a value dictionary of cloud policies' status information for each scope
+  // that has cloud policy enabled (device and/or user). If
+  // |include_box_legend_key| is true, legend values needed for each status
+  // boxes will be added to the Value.
+  base::Value GetStatusValue(bool include_box_legend_key) const;
+
   void SendStatus();
 
   // The callback invoked by PolicyService::RefreshPolicies().
   void OnRefreshPoliciesDone();
+
+  // Build a JSON string of all the policies.
+  std::string GetPoliciesAsJson();
 
   // Returns the PolicyService associated with this WebUI's BrowserState.
   policy::PolicyService* GetPolicyService() const;

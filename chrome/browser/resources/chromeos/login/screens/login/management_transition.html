@@ -2,14 +2,20 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="/components/behaviors/login_screen_behavior.html">
-<link rel="import" href="/components/behaviors/multi_step_behavior.html">
-<link rel="import" href="/components/buttons/oobe_text_button.html">
-<link rel="import" href="/components/common_styles/common_styles.html">
-<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="/components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
+
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_text_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
 
 <dom-module id="management-transition-element">
   <template>
@@ -59,8 +65,8 @@
         [[i18nDynamic(locale, 'managementTransitionErrorMessage')]]
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
-        <img class="oobe-illustration" srcset="../../images/1x/error.svg 1x,
-            ../../images/2x/error.svg 2x" aria-hidden="true">
+        <img src="../../images/error.svg"
+            class="oobe-illustration" aria-hidden="true">
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button id="accept-button" on-click="onAcceptAndContinue_"
@@ -70,4 +76,5 @@
       </div>
     </oobe-adaptive-dialog>
   </template>
+  <script src="management_transition.js"></script>
 </dom-module>

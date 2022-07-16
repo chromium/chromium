@@ -116,9 +116,6 @@ CreateSimpleURLLoaderWithVariationsHeaderUnknownSignedIn(
     InIncognito incognito,
     const net::NetworkTrafficAnnotationTag& annotation_tag);
 
-// Checks if |header_name| is one for the variations header.
-bool IsVariationsHeader(const std::string& header_name);
-
 // Checks if |request| contains the variations header.
 bool HasVariationsHeader(const network::ResourceRequest& request);
 

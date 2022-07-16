@@ -5,7 +5,9 @@
 #include "base/barrier_closure.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -15,7 +17,14 @@ TEST(BarrierClosureTest, RunImmediatelyForZeroClosures) {
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
       0, base::BindLambdaForTesting([&count]() { ++count; }));
   EXPECT_EQ(1, count);
+}
+
+TEST(BarrierClosureTest, ChecksIfCalledForZeroClosures) {
+  base::RepeatingClosure barrier_closure =
+      base::BarrierClosure(0, base::DoNothing());
   EXPECT_FALSE(barrier_closure.is_null());
+
+  EXPECT_CHECK_DEATH(barrier_closure.Run());
 }
 
 TEST(BarrierClosureTest, RunAfterNumClosures) {

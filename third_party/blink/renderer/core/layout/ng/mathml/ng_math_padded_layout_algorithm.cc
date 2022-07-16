@@ -72,18 +72,17 @@ scoped_refptr<const NGLayoutResult> NGMathPaddedLayoutAlgorithm::Layout() {
   GatherChildren(&content, &container_builder_);
   LayoutUnit content_ascent, content_descent;
   NGBoxStrut content_margins;
-  scoped_refptr<const NGPhysicalBoxFragment> content_fragment;
+  scoped_refptr<const NGLayoutResult> content_layout_result;
   if (content) {
     NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), ConstraintSpace(), content);
-    scoped_refptr<const NGLayoutResult> content_layout_result =
-        content.Layout(constraint_space);
-    content_fragment =
-        &To<NGPhysicalBoxFragment>(content_layout_result->PhysicalFragment());
+    content_layout_result = content.Layout(constraint_space);
+    const auto& content_fragment =
+        To<NGPhysicalBoxFragment>(content_layout_result->PhysicalFragment());
     content_margins =
         ComputeMarginsFor(constraint_space, content.Style(), ConstraintSpace());
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                           *content_fragment);
+                           content_fragment);
     content_ascent = content_margins.block_start +
                      fragment.Baseline().value_or(fragment.BlockSize());
     content_descent =
@@ -94,12 +93,12 @@ scoped_refptr<const NGLayoutResult> NGMathPaddedLayoutAlgorithm::Layout() {
                       RequestedAscent(content_ascent).value_or(content_ascent);
   LayoutUnit descent =
       RequestedDescent(content_descent).value_or(content_descent);
-  if (content_fragment) {
+  if (content_layout_result) {
     // Need to take into account border/padding, lspace and voffset.
     LogicalOffset content_offset = {
         BorderScrollbarPadding().inline_start + RequestedLSpace(),
         (ascent - content_ascent) - RequestedVOffset()};
-    container_builder_.AddChild(*content_fragment, content_offset);
+    container_builder_.AddResult(*content_layout_result, content_offset);
     content.StoreMargins(ConstraintSpace(), content_margins);
   }
 
@@ -115,7 +114,7 @@ scoped_refptr<const NGLayoutResult> NGMathPaddedLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGMathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) const {
+    const MinMaxSizesFloatInput&) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;

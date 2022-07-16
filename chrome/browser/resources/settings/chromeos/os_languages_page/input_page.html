@@ -1,5 +1,6 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_components/chromeos/localized_link/localized_link.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/html/assert.html">
@@ -17,11 +18,13 @@
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../keyboard_shortcut_banner/keyboard_shortcut_banner.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
-<link rel="import" href="../../prefs/prefs_behavior.html">
+<link rel="import" href="../prefs_behavior.html">
 <link rel="import" href="../../i18n_setup.html">
 <link rel="import" href="../../router.html">
+<link rel="import" href="../route_observer_behavior.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="../../settings_page/settings_animated_pages.html">
+<link rel="import" href="languages_types.html">
 
 <dom-module id="os-settings-input-page">
   <template>
@@ -62,12 +65,12 @@
       }
 
       .name-with-error div {
-        color: var(--settings-error-color);
+        color: var(--cros-text-color-alert);
         margin-top: 8px;
       }
 
       iron-icon[icon='cr:error'] {
-        --iron-icon-fill-color: var(--settings-error-color);
+        --iron-icon-fill-color: var(--cros-icon-color-alert);
         height: var(--cr-icon-size);
         margin-inline-end: 4px;
         width: var(--cr-icon-size);
@@ -128,11 +131,18 @@
       }
 
       cr-button[disabled] iron-icon {
-        --iron-icon-fill-color: var(--google-grey-600);
+        --iron-icon-fill-color: var(--cros-button-icon-color-primary-disabled);
       }
     </style>
 
     <div route-path="default">
+      <template is="dom-if" if="[[shouldShowLanguagePacksNotice_]]">
+        <localized-link id="languagePacksNotice"
+            class="cr-row first bottom-margin cr-secondary-text"
+            localized-string="$i18n{languagePacksNotice}"
+            on-link-clicked="onLanguagePackNoticeLinkClick_">
+        </localized-link>
+      </template>
       <settings-toggle-button
           class="first" id="showImeMenu"
           pref="{{prefs.settings.language.ime_menu_activated}}"

@@ -14,7 +14,7 @@ namespace blink {
 namespace {
 
 SpeculationRule* ParseSpeculationRule(JSONObject* input, const KURL& base_url) {
-  // https://jeremyroman.github.io/alternate-loading-modes/#parse-a-speculation-rule
+  // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-a-speculation-rule
 
   // If input has any key other than "source", "urls" and "requires", then
   // return null.
@@ -88,7 +88,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input, const KURL& base_url) {
 SpeculationRuleSet* SpeculationRuleSet::ParseInline(const String& source_text,
                                                     const KURL& base_url,
                                                     String* out_error) {
-  // https://jeremyroman.github.io/alternate-loading-modes/#parse-speculation-rules
+  // https://wicg.github.io/nav-speculation/prerendering.html#parse-speculation-rules
 
   // Let parsed be the result of parsing a JSON string to an Infra value given
   // input.

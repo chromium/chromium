@@ -18,8 +18,9 @@
 namespace payments {
 
 PaymentAppService::PaymentAppService(content::BrowserContext* context) {
-  factories_.emplace_back(std::make_unique<AutofillPaymentAppFactory>());
-
+  if (base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard)) {
+    factories_.emplace_back(std::make_unique<AutofillPaymentAppFactory>());
+  }
   if (base::FeatureList::IsEnabled(::features::kServiceWorkerPaymentApps)) {
     factories_.push_back(std::make_unique<ServiceWorkerPaymentAppFactory>());
   }

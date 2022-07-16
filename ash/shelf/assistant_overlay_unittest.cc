@@ -44,8 +44,7 @@
 namespace ash {
 namespace {
 
-constexpr base::TimeDelta kAssistantAnimationDelay =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kAssistantAnimationDelay = base::Milliseconds(200);
 constexpr char kAssistantOverlayClassName[] = "AssistantOverlay";
 
 enum TestVariant { kClamshell, kTablet, kTabletWithBackButton };

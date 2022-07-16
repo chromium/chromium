@@ -36,6 +36,10 @@ class AudioOutputResource : public PluginResource,
                             public base::DelegateSimpleThread::Delegate {
  public:
   AudioOutputResource(Connection connection, PP_Instance instance);
+
+  AudioOutputResource(const AudioOutputResource&) = delete;
+  AudioOutputResource& operator=(const AudioOutputResource&) = delete;
+
   ~AudioOutputResource() override;
 
   // Resource overrides.
@@ -138,8 +142,6 @@ class AudioOutputResource : public PluginResource,
   // Internal buffer for client's integer audio data.
   int client_buffer_size_bytes_;
   std::unique_ptr<uint8_t[]> client_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputResource);
 };
 
 }  // namespace proxy

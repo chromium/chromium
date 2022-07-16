@@ -1,3 +1,1 @@
-monorail: {
-  component: "Services>CloudPrint"
-}
+mixins: "//cloud_print/COMMON_METADATA"

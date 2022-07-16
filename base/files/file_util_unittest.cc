@@ -25,18 +25,19 @@
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/files/platform_file.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
-#include "base/test/scoped_environment_variable_override.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -65,6 +66,10 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <unistd.h>
+#endif
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#include <sys/socket.h>
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -1049,7 +1054,7 @@ TEST_F(FileUtilTest, ExecutableExistsInPath) {
   ASSERT_TRUE(CreateDirectory(dir1));
   ASSERT_TRUE(CreateDirectory(dir2));
 
-  test::ScopedEnvironmentVariableOverride scoped_env(
+  ScopedEnvironmentVariableOverride scoped_env(
       "PATH", dir1.value() + ":" + dir2.value());
   ASSERT_TRUE(scoped_env.IsOverridden());
 
@@ -2588,7 +2593,8 @@ TEST_F(FileUtilTest, CreateAndOpenTemporaryFileInDir) {
   EXPECT_FALSE(path.empty());
 
   // Try to open another handle to it.
-  File file2(path, File::FLAG_OPEN | File::FLAG_READ | File::FLAG_SHARE_DELETE);
+  File file2(path,
+             File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WIN_SHARE_DELETE);
 #if defined(OS_WIN)
   // The file cannot be opened again on account of the exclusive access.
   EXPECT_FALSE(file2.IsValid());
@@ -4189,14 +4195,13 @@ TEST_F(FileUtilTest, PreReadFile_InexistentFile) {
 // Test that temp files obtained racily are all unique (no interference between
 // threads). Mimics file operations in DoLaunchChildTestProcess() to rule out
 // thread-safety issues @ https://crbug.com/826408#c17.
+TEST(FileUtilMultiThreadedTest, MultiThreadedTempFiles) {
 #if defined(OS_FUCHSIA)
-// TODO(crbug.com/844416): Too slow to run on infra due to QEMU overloads.
-#define MAYBE_MultiThreadedTempFiles DISABLED_MultiThreadedTempFiles
+  // TODO(crbug.com/844416): Too slow to run on infra due to QEMU overhead.
+  constexpr int kNumThreads = 8;
 #else
-#define MAYBE_MultiThreadedTempFiles MultiThreadedTempFiles
-#endif
-TEST(FileUtilMultiThreadedTest, MAYBE_MultiThreadedTempFiles) {
   constexpr int kNumThreads = 64;
+#endif
   constexpr int kNumWritesPerThread = 32;
 
   std::unique_ptr<Thread> threads[kNumThreads];
@@ -4329,6 +4334,129 @@ TEST_F(FileUtilTest, CopyFileContentsWithSendfile) {
   // file positions when we copied the file contents were at 1.
   EXPECT_EQ(L"G123456789ABCDEF", ReadTextFile(file_name_to));
 }
+
+TEST_F(FileUtilTest, CopyFileContentsWithSendfileEmpty) {
+  FilePath file_name_from = temp_dir_.GetPath().Append(
+      FILE_PATH_LITERAL("copy_contents_file_in.txt"));
+  FilePath file_name_to = temp_dir_.GetPath().Append(
+      FILE_PATH_LITERAL("copy_contents_file_out.txt"));
+
+  const std::wstring from_contents(L"");
+  CreateTextFile(file_name_from, from_contents);
+  ASSERT_TRUE(PathExists(file_name_from));
+
+  const std::wstring to_contents(L"");
+  CreateTextFile(file_name_to, to_contents);
+  ASSERT_TRUE(PathExists(file_name_to));
+
+  File from(file_name_from, File::FLAG_OPEN | File::FLAG_READ);
+  ASSERT_TRUE(from.IsValid());
+
+  File to(file_name_to, File::FLAG_OPEN | File::FLAG_WRITE);
+  ASSERT_TRUE(to.IsValid());
+
+  bool retry_slow = false;
+
+  ASSERT_FALSE(internal::CopyFileContentsWithSendfile(from, to, retry_slow));
+  ASSERT_TRUE(retry_slow);
+
+  from.Close();
+  to.Close();
+
+  EXPECT_EQ(L"", ReadTextFile(file_name_to));
+}
+
+TEST_F(FileUtilTest, CopyFileContentsWithSendfilePipe) {
+  FilePath file_name_to = temp_dir_.GetPath().Append(
+      FILE_PATH_LITERAL("copy_contents_file_out.txt"));
+
+  File to(file_name_to,
+          File::FLAG_OPEN | File::FLAG_WRITE | File::FLAG_CREATE_ALWAYS);
+  ASSERT_TRUE(to.IsValid());
+
+  // This test validates that CopyFileContentsWithSendfile fails with a pipe and
+  // retry_slow is set.
+  int fd[2];
+  ASSERT_EQ(pipe2(fd, O_CLOEXEC), 0);
+
+  // For good measure write some data into the pipe.
+  const char* buf = "hello world";
+  ASSERT_EQ(write(fd[1], buf, sizeof(buf)), static_cast<int>(sizeof(buf)));
+
+  // fd[0] refers to the read end of the pipe.
+  bool retry_slow = false;
+  base::PlatformFile pipe_read_end(fd[0]);
+  base::File pipe_read(pipe_read_end);
+  ASSERT_FALSE(
+      internal::CopyFileContentsWithSendfile(pipe_read, to, retry_slow));
+  ASSERT_TRUE(retry_slow);
+}
+
+TEST_F(FileUtilTest, CopyFileContentsWithSendfileSocket) {
+  // This test validates that CopyFileContentsWithSendfile fails with a socket
+  // and retry_slow is set.
+  int sock[2];
+  ASSERT_EQ(socketpair(AF_UNIX, SOCK_STREAM, 0, sock), 0);
+
+  FilePath file_name_from = temp_dir_.GetPath().Append(
+      FILE_PATH_LITERAL("copy_contents_file_in.txt"));
+  FilePath file_name_to = temp_dir_.GetPath().Append(
+      FILE_PATH_LITERAL("copy_contents_file_out.txt"));
+  const std::wstring from_contents(L"0123456789ABCDEF");
+  CreateTextFile(file_name_from, from_contents);
+  ASSERT_TRUE(PathExists(file_name_from));
+
+  File from(file_name_from, File::FLAG_OPEN | File::FLAG_READ);
+  ASSERT_TRUE(from.IsValid());
+
+  base::PlatformFile to_file(sock[0]);
+  base::File to_sock(to_file);
+
+  // Copying from a file to a socket will work.
+  bool retry_slow = false;
+  ASSERT_TRUE(
+      internal::CopyFileContentsWithSendfile(from, to_sock, retry_slow));
+
+  // But copying for a socket to a file will not.
+  base::PlatformFile from_sock_file(sock[1]);
+  base::File from_sock(from_sock_file);
+
+  File to(file_name_to,
+          File::FLAG_OPEN | File::FLAG_WRITE | File::FLAG_CREATE_ALWAYS);
+  ASSERT_TRUE(to.IsValid());
+  ASSERT_FALSE(
+      internal::CopyFileContentsWithSendfile(from_sock, to, retry_slow));
+  ASSERT_TRUE(retry_slow);
+}
+
+TEST_F(FileUtilTest, CopyFileContentsWithSendfileSeqFile) {
+  // This test verifies the special case where we have a regular file with zero
+  // length that might actually have contents (such as a seq_file).
+  for (auto* const file : {"/proc/meminfo", "/proc/self/cmdline",
+                           "/proc/self/environ", "/proc/self/auxv"}) {
+    FilePath proc_file_from(file);
+    File from(proc_file_from, File::FLAG_OPEN | File::FLAG_READ);
+    ASSERT_TRUE(from.IsValid()) << "could not open " << file;
+
+    FilePath file_name_to = temp_dir_.GetPath().Append(
+        FILE_PATH_LITERAL("copy_contents_file_out.txt"));
+    File to(file_name_to,
+            File::FLAG_OPEN | File::FLAG_WRITE | File::FLAG_CREATE_ALWAYS);
+    ASSERT_TRUE(to.IsValid());
+
+    bool retry_slow = false;
+    ASSERT_FALSE(internal::CopyFileContentsWithSendfile(from, to, retry_slow))
+        << proc_file_from << " should have failed";
+    ASSERT_TRUE(retry_slow)
+        << "retry slow for " << proc_file_from << " should be set";
+
+    // Now let's make sure we can copy it the "slow" way.
+    ASSERT_TRUE(base::CopyFileContents(from, to));
+    ASSERT_GT(to.GetLength(), 0);
+    ASSERT_TRUE(base::DeleteFile(file_name_to));
+  }
+}
+
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 
 }  // namespace

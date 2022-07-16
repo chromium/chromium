@@ -2,7 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+import '//resources/polymer/v3_0/iron-selector/iron-selector.js';
+import '../../settings_shared_css.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, ChannelInfo, isTargetChannelMoreStable, RegulatoryInfo, TPMFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent, VersionInfo} from './about_page_browser_proxy.js';
+
 
 /**
  */
@@ -20,6 +32,7 @@ const WarningMessage = {
  * release channel to notify parents of this dialog.
  */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-channel-switcher-dialog',
 
   properties: {
@@ -45,12 +58,12 @@ Polymer({
     },
   },
 
-  /** @private {?settings.AboutPageBrowserProxy} */
+  /** @private {?AboutPageBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   ready() {
-    this.browserProxy_ = settings.AboutPageBrowserProxyImpl.getInstance();
+    this.browserProxy_ = AboutPageBrowserProxyImpl.getInstance();
     this.browserProxy_.getChannelInfo().then(info => {
       this.currentChannel_ = info.currentChannel;
       this.targetChannel_ = info.targetChannel;
@@ -125,8 +138,7 @@ Polymer({
       return;
     }
 
-    if (settings.isTargetChannelMoreStable(
-            this.currentChannel_, selectedChannel)) {
+    if (isTargetChannelMoreStable(this.currentChannel_, selectedChannel)) {
       // More stable channel selected. For non managed devices, notify the user
       // about powerwash.
       if (loadTimeData.getBoolean('aboutEnterpriseManaged')) {
@@ -157,4 +169,3 @@ Polymer({
     return loadTimeData.substituteString(format, replacement);
   },
 });
-})();

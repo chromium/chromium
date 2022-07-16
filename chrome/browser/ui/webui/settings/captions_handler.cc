@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -17,35 +18,47 @@
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if defined(OS_WIN) || defined(OS_MAC)
 #include "chrome/browser/accessibility/caption_settings_dialog.h"
 #endif
 
 namespace settings {
 
-CaptionsHandler::CaptionsHandler(PrefService* prefs) : prefs_(prefs) {}
+CaptionsHandler::CaptionsHandler(PrefService* prefs) : prefs_(prefs) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  soda_available_ =
+      base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 CaptionsHandler::~CaptionsHandler() {
-  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  if (soda_available_)
+    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
 }
 
 void CaptionsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "openSystemCaptionsDialog",
       base::BindRepeating(&CaptionsHandler::HandleOpenSystemCaptionsDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "liveCaptionSectionReady",
       base::BindRepeating(&CaptionsHandler::HandleLiveCaptionSectionReady,
                           base::Unretained(this)));
 }
 
 void CaptionsHandler::OnJavascriptAllowed() {
-  speech::SodaInstaller::GetInstance()->AddObserver(this);
+  if (soda_available_)
+    speech::SodaInstaller::GetInstance()->AddObserver(this);
 }
 
 void CaptionsHandler::OnJavascriptDisallowed() {
-  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  if (soda_available_)
+    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
 }
 
 void CaptionsHandler::HandleLiveCaptionSectionReady(
@@ -61,7 +74,8 @@ void CaptionsHandler::HandleOpenSystemCaptionsDialog(
 }
 
 void CaptionsHandler::OnSodaInstalled() {
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
+      soda_available_) {
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   }
 
@@ -72,6 +86,9 @@ void CaptionsHandler::OnSodaInstalled() {
 
 void CaptionsHandler::OnSodaLanguagePackInstalled(
     speech::LanguageCode language_code) {
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage))
+    return;
+
   FireWebUIListener("soda-download-progress-changed",
                     base::Value(l10n_util::GetStringUTF16(
                         IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_COMPLETE)),
@@ -91,10 +108,10 @@ void CaptionsHandler::OnSodaError() {
 
 void CaptionsHandler::OnSodaLanguagePackError(
     speech::LanguageCode language_code) {
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    prefs_->SetBoolean(prefs::kLiveCaptionEnabled, false);
-  }
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage))
+    return;
 
+  prefs_->SetBoolean(prefs::kLiveCaptionEnabled, false);
   FireWebUIListener("soda-download-progress-changed",
                     base::Value(l10n_util::GetStringUTF16(
                         IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_ERROR)),
@@ -112,6 +129,9 @@ void CaptionsHandler::OnSodaProgress(int combined_progress) {
 void CaptionsHandler::OnSodaLanguagePackProgress(
     int language_progress,
     speech::LanguageCode language_code) {
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage))
+    return;
+
   FireWebUIListener("soda-download-progress-changed",
                     base::Value(l10n_util::GetStringFUTF16Int(
                         IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_PROGRESS,

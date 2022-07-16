@@ -1,0 +1,66 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("persistence") {
+  public = [
+    "key_persistence_delegate.h",
+    "key_persistence_delegate_factory.h",
+  ]
+
+  sources = [ "key_persistence_delegate_factory.cc" ]
+
+  deps = [ "//base" ]
+
+  public_deps = [
+    "//components/policy/proto",
+    "//crypto",
+  ]
+
+  if (is_win) {
+    sources += [
+      "win_key_persistence_delegate.cc",
+      "win_key_persistence_delegate.h",
+    ]
+    deps += [ "//chrome/installer/util:with_no_strings" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "mac_key_persistence_delegate.cc",
+      "mac_key_persistence_delegate.h",
+    ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "linux_key_persistence_delegate.cc",
+      "linux_key_persistence_delegate.h",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  public = [
+    "mock_key_persistence_delegate.h",
+    "scoped_key_persistence_delegate_factory.h",
+  ]
+
+  sources = [
+    "mock_key_persistence_delegate.cc",
+    "scoped_key_persistence_delegate_factory.cc",
+  ]
+
+  public_deps = [
+    ":persistence",
+    "//crypto:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  deps = [
+    "//base",
+    "//crypto",
+  ]
+}

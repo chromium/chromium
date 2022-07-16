@@ -20,6 +20,12 @@ class TextSuggestionHostMojoImplAndroid final
   TextSuggestionHostMojoImplAndroid(
       TextSuggestionHostAndroid*,
       mojo::PendingReceiver<blink::mojom::TextSuggestionHost> receiver);
+
+  TextSuggestionHostMojoImplAndroid(const TextSuggestionHostMojoImplAndroid&) =
+      delete;
+  TextSuggestionHostMojoImplAndroid& operator=(
+      const TextSuggestionHostMojoImplAndroid&) = delete;
+
   ~TextSuggestionHostMojoImplAndroid() override;
 
   static std::unique_ptr<TextSuggestionHostMojoImplAndroid> Create(
@@ -42,8 +48,6 @@ class TextSuggestionHostMojoImplAndroid final
  private:
   TextSuggestionHostAndroid* const text_suggestion_host_;
   mojo::Receiver<blink::mojom::TextSuggestionHost> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextSuggestionHostMojoImplAndroid);
 };
 
 }  // namespace content

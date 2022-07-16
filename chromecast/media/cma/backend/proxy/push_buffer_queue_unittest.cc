@@ -13,7 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_channel_service.grpc.pb.h"
+#include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.grpc.pb.h"
 
 namespace chromecast {
 namespace media {

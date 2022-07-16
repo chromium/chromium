@@ -34,6 +34,9 @@ class BluetoothInputClientImpl : public BluetoothInputClient,
  public:
   BluetoothInputClientImpl() : object_manager_(nullptr) {}
 
+  BluetoothInputClientImpl(const BluetoothInputClientImpl&) = delete;
+  BluetoothInputClientImpl& operator=(const BluetoothInputClientImpl&) = delete;
+
   ~BluetoothInputClientImpl() override {
     object_manager_->UnregisterInterface(
         bluetooth_input::kBluetoothInputInterface);
@@ -115,8 +118,6 @@ class BluetoothInputClientImpl : public BluetoothInputClient,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothInputClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothInputClientImpl);
 };
 
 BluetoothInputClient::BluetoothInputClient() = default;

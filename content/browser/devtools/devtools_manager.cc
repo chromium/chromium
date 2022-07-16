@@ -4,49 +4,10 @@
 
 #include "content/browser/devtools/devtools_manager.h"
 
-#include "base/bind.h"
-#include "content/browser/devtools/devtools_agent_host_impl.h"
-#include "content/browser/devtools/devtools_http_handler.h"
-#include "content/browser/devtools/devtools_pipe_handler.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/common/content_client.h"
 
 namespace content {
-
-// static
-void DevToolsAgentHost::StartRemoteDebuggingServer(
-    std::unique_ptr<DevToolsSocketFactory> server_socket_factory,
-    const base::FilePath& active_port_output_directory,
-    const base::FilePath& debug_frontend_dir) {
-  DevToolsManager* manager = DevToolsManager::GetInstance();
-  if (!manager->delegate())
-    return;
-  manager->SetHttpHandler(std::make_unique<DevToolsHttpHandler>(
-      manager->delegate(), std::move(server_socket_factory),
-      active_port_output_directory, debug_frontend_dir));
-}
-
-// static
-void DevToolsAgentHost::StartRemoteDebuggingPipeHandler(
-    base::OnceClosure on_disconnect) {
-  DevToolsManager* manager = DevToolsManager::GetInstance();
-  manager->SetPipeHandler(
-      std::make_unique<DevToolsPipeHandler>(std::move(on_disconnect)));
-}
-
-// static
-void DevToolsAgentHost::StopRemoteDebuggingServer() {
-  DevToolsManager* manager = DevToolsManager::GetInstance();
-  manager->SetHttpHandler(nullptr);
-}
-
-// static
-void DevToolsAgentHost::StopRemoteDebuggingPipeHandler() {
-  DevToolsManager* manager = DevToolsManager::GetInstance();
-  manager->SetPipeHandler(nullptr);
-}
 
 // static
 DevToolsManager* DevToolsManager::GetInstance() {
@@ -58,15 +19,5 @@ DevToolsManager::DevToolsManager()
           GetContentClient()->browser()->CreateDevToolsManagerDelegate()) {}
 
 DevToolsManager::~DevToolsManager() = default;
-
-void DevToolsManager::SetHttpHandler(
-    std::unique_ptr<DevToolsHttpHandler> http_handler) {
-  http_handler_ = std::move(http_handler);
-}
-
-void DevToolsManager::SetPipeHandler(
-    std::unique_ptr<DevToolsPipeHandler> pipe_handler) {
-  pipe_handler_ = std::move(pipe_handler);
-}
 
 }  // namespace content

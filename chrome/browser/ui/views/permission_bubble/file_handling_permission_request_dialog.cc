@@ -5,15 +5,18 @@
 #include "chrome/browser/ui/views/permission_bubble/file_handling_permission_request_dialog.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
@@ -21,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
@@ -36,6 +40,10 @@ FileHandlingPermissionRequestDialog::FileHandlingPermissionRequestDialog(
     base::OnceCallback<void(bool, bool)> result_callback)
     : result_callback_(std::move(result_callback)) {
   g_instance_for_testing = this;
+
+  DCHECK(!base::FeatureList::IsEnabled(
+      features::kDesktopPWAsFileHandlingSettingsGated));
+
   SetModalType(ui::MODAL_TYPE_CHILD);
   SetShowCloseButton(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
@@ -55,8 +63,8 @@ FileHandlingPermissionRequestDialog::FileHandlingPermissionRequestDialog(
           views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
 
   // Description of permission.
-  // TODO(estade): use GetLastCommittedOrigin(). See crbug.com/698985
-  const GURL app_url = web_contents->GetMainFrame()->GetLastCommittedURL();
+  const GURL app_url =
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
   auto* description_label =
       AddChildView(std::make_unique<views::Label>(l10n_util::GetStringFUTF16(
           plural ? IDS_WEB_APP_FILE_HANDLING_PERMISSION_DESCRIPTION_MULTIPLE
@@ -77,8 +85,7 @@ FileHandlingPermissionRequestDialog::FileHandlingPermissionRequestDialog(
   constexpr int kIconSize = 16;
   auto* icon = files_view->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kDescriptionIcon,
-          ui::NativeTheme::kColorId_DefaultIconColor, kIconSize)));
+          vector_icons::kDescriptionIcon, ui::kColorIcon, kIconSize)));
   const int icon_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   icon->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, 0, icon_margin));
@@ -135,8 +142,7 @@ FileHandlingPermissionRequestDialog::FileHandlingPermissionRequestDialog(
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                 l10n_util::GetStringUTF16(
-                     IDS_WEB_APP_FILE_HANDLING_PERMISSION_DONT_ALLOW));
+                 l10n_util::GetStringUTF16(IDS_WEB_APP_PERMISSION_DONT_ALLOW));
   SetDefaultButton(ui::DIALOG_BUTTON_NONE);
   SetAcceptCallback(
       base::BindOnce(&FileHandlingPermissionRequestDialog::OnDialogAccepted,

@@ -29,6 +29,11 @@ class ScriptCustomElementDefinitionData {
  public:
   ScriptCustomElementDefinitionData() {}
 
+  ScriptCustomElementDefinitionData(const ScriptCustomElementDefinitionData&) =
+      delete;
+  ScriptCustomElementDefinitionData& operator=(
+      const ScriptCustomElementDefinitionData&) = delete;
+
   ScriptState* script_state_ = nullptr;
   CustomElementRegistry* registry_ = nullptr;
   V8CustomElementConstructor* constructor_ = nullptr;
@@ -45,8 +50,6 @@ class ScriptCustomElementDefinitionData {
   HashSet<AtomicString> observed_attributes_;
   Vector<String> disabled_features_;
   bool is_form_associated_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptCustomElementDefinitionData);
 };
 
 }  // namespace blink

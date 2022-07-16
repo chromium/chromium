@@ -6,7 +6,6 @@
 #define CHROMEOS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 // TODO(https://crbug.com/1164001): forward declare NetworkState when moved to
 // chrome/browser/ash/.
@@ -49,6 +48,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetector {
    protected:
     virtual ~Observer() {}
   };
+
+  NetworkPortalDetector(const NetworkPortalDetector&) = delete;
+  NetworkPortalDetector& operator=(const NetworkPortalDetector&) = delete;
 
   virtual ~NetworkPortalDetector() {}
 
@@ -97,9 +99,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetector {
 
  protected:
   NetworkPortalDetector() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkPortalDetector);
 };
 
 // Manages a global NetworkPortalDetector instance that can be accessed across
@@ -140,6 +139,7 @@ namespace network_portal_detector {
 using ::chromeos::network_portal_detector::GetInstance;
 using ::chromeos::network_portal_detector::InitializeForTesting;
 using ::chromeos::network_portal_detector::IsInitialized;
+using ::chromeos::network_portal_detector::SetForTesting;
 using ::chromeos::network_portal_detector::SetNetworkPortalDetector;
 using ::chromeos::network_portal_detector::Shutdown;
 }  // namespace network_portal_detector

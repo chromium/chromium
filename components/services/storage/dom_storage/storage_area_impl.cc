@@ -72,10 +72,8 @@ StorageAreaImpl::StorageAreaImpl(AsyncDomStorageDatabase* database,
       memory_used_(0),
       start_time_(base::TimeTicks::Now()),
       default_commit_delay_(options.default_commit_delay),
-      data_rate_limiter_(options.max_bytes_per_hour,
-                         base::TimeDelta::FromHours(1)),
-      commit_rate_limiter_(options.max_commits_per_hour,
-                           base::TimeDelta::FromHours(1)) {
+      data_rate_limiter_(options.max_bytes_per_hour, base::Hours(1)),
+      commit_rate_limiter_(options.max_commits_per_hour, base::Hours(1)) {
   receivers_.set_disconnect_handler(base::BindRepeating(
       &StorageAreaImpl::OnConnectionError, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -700,7 +698,7 @@ void StorageAreaImpl::StartCommitTimer() {
 
 base::TimeDelta StorageAreaImpl::ComputeCommitDelay() const {
   if (s_aggressive_flushing_enabled_)
-    return base::TimeDelta::FromSeconds(1);
+    return base::Seconds(1);
 
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time_;
   base::TimeDelta delay =

@@ -17,6 +17,10 @@ namespace sync_sessions {
 class SessionsGlobalIdMapper : public syncer::GlobalIdMapper {
  public:
   SessionsGlobalIdMapper();
+
+  SessionsGlobalIdMapper(const SessionsGlobalIdMapper&) = delete;
+  SessionsGlobalIdMapper& operator=(const SessionsGlobalIdMapper&) = delete;
+
   ~SessionsGlobalIdMapper();
 
   // GlobalIdMapper implementation.
@@ -31,8 +35,6 @@ class SessionsGlobalIdMapper : public syncer::GlobalIdMapper {
   std::map<int64_t, int> global_to_unique_;
   std::map<int, int64_t> unique_to_current_global_;
   std::vector<syncer::GlobalIdChange> global_id_change_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionsGlobalIdMapper);
 };
 
 }  // namespace sync_sessions

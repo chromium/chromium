@@ -41,7 +41,9 @@ namespace blink {
 
 class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
  public:
-  WEBPImageDecoder(AlphaOption, const ColorBehavior&, size_t max_decoded_bytes);
+  WEBPImageDecoder(AlphaOption,
+                   const ColorBehavior&,
+                   wtf_size_t max_decoded_bytes);
   WEBPImageDecoder(const WEBPImageDecoder&) = delete;
   WEBPImageDecoder& operator=(const WEBPImageDecoder&) = delete;
   ~WEBPImageDecoder() override;
@@ -51,15 +53,15 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
   void OnSetData(SegmentReader* data) override;
   cc::YUVSubsampling GetYUVSubsampling() const override;
   int RepetitionCount() const override;
-  bool FrameIsReceivedAtIndex(size_t) const override;
-  base::TimeDelta FrameDurationAtIndex(size_t) const override;
+  bool FrameIsReceivedAtIndex(wtf_size_t) const override;
+  base::TimeDelta FrameDurationAtIndex(wtf_size_t) const override;
 
  private:
   // ImageDecoder:
   void DecodeSize() override { UpdateDemuxer(); }
-  size_t DecodeFrameCount() override;
-  void InitializeNewFrame(size_t) override;
-  void Decode(size_t) override;
+  wtf_size_t DecodeFrameCount() override;
+  void InitializeNewFrame(wtf_size_t) override;
+  void Decode(wtf_size_t) override;
   void DecodeToYUV() override;
   SkYUVColorSpace GetYUVColorSpace() const override;
   cc::ImageHeaderMetadata MakeMetadataForDecodeAcceleration() const override;
@@ -70,10 +72,10 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
   // planes.
   bool CanAllowYUVDecodingForWebP();
   bool HasImagePlanes() const { return image_planes_.get(); }
-  bool DecodeSingleFrameToYUV(const uint8_t* data_bytes, size_t data_size);
+  bool DecodeSingleFrameToYUV(const uint8_t* data_bytes, wtf_size_t data_size);
   bool DecodeSingleFrame(const uint8_t* data_bytes,
-                         size_t data_size,
-                         size_t frame_index);
+                         wtf_size_t data_size,
+                         wtf_size_t frame_index);
 
   // For WebP images, the frame status needs to be FrameComplete to decode
   // subsequent frames that depend on frame |index|. The reason for this is that
@@ -103,23 +105,23 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
   IntSize DecodedYUVSize(cc::YUVIndex) const override;
 
   // Returns the width of each row of the memory allocation.
-  size_t DecodedYUVWidthBytes(cc::YUVIndex) const override;
+  wtf_size_t DecodedYUVWidthBytes(cc::YUVIndex) const override;
 
   void ReadColorProfile();
   bool UpdateDemuxer();
 
   // Set |frame_background_has_alpha_| based on this frame's characteristics.
   // Before calling this method, the caller must verify that the frame exists.
-  void OnInitFrameBuffer(size_t frame_index) override;
+  void OnInitFrameBuffer(wtf_size_t frame_index) override;
 
   // When the blending method of this frame is BlendAtopPreviousFrame, the
   // previous frame's buffer is necessary to decode this frame in
   // ApplyPostProcessing, so we can't take over the data. Before calling this
   // method, the caller must verify that the frame exists.
-  bool CanReusePreviousFrameBuffer(size_t frame_index) const override;
+  bool CanReusePreviousFrameBuffer(wtf_size_t frame_index) const override;
 
-  void ApplyPostProcessing(size_t frame_index);
-  void ClearFrameBuffer(size_t frame_index) override;
+  void ApplyPostProcessing(wtf_size_t frame_index);
+  void ClearFrameBuffer(wtf_size_t frame_index) override;
 
   WebPDemuxer* demux_;
   WebPDemuxState demux_state_;

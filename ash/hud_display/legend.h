@@ -38,7 +38,7 @@ class Legend : public views::View {
     Formatter formatter;  // formatting function
   };
 
-  Legend(const std::vector<Entry>& contents);
+  explicit Legend(const std::vector<Entry>& contents);
 
   Legend(const Legend&) = delete;
   Legend& operator=(const Legend&) = delete;

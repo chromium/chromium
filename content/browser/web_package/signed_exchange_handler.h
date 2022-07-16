@@ -103,6 +103,10 @@ class CONTENT_EXPORT SignedExchangeHandler {
       std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy,
       SignedExchangeReporter* reporter,
       int frame_tree_node_id);
+
+  SignedExchangeHandler(const SignedExchangeHandler&) = delete;
+  SignedExchangeHandler& operator=(const SignedExchangeHandler&) = delete;
+
   virtual ~SignedExchangeHandler();
 
   int64_t GetExchangeHeaderLength() const { return exchange_header_length_; }
@@ -189,8 +193,6 @@ class CONTENT_EXPORT SignedExchangeHandler {
   net::IPAddress cert_server_ip_address_;
 
   base::WeakPtrFactory<SignedExchangeHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeHandler);
 };
 
 // Used only for testing.

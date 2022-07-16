@@ -32,19 +32,13 @@ class DISPLAY_EXPORT DisplayList {
   DisplayList();
   ~DisplayList();
 
-  // WARNING: The copy constructor and assignment operator do not copy nor move
-  // observers; also, the comparison operator does not compare observers.
-  DisplayList(const Displays& displays, int64_t primary_id, int64_t current_id);
-  DisplayList(const DisplayList& other);
-  DisplayList& operator=(const DisplayList& other);
-  bool operator==(const DisplayList& other) const;
+  DisplayList(const DisplayList&) = delete;
+  DisplayList& operator=(const DisplayList&) = delete;
 
   void AddObserver(DisplayObserver* observer);
   void RemoveObserver(DisplayObserver* observer);
 
   const Displays& displays() const { return displays_; }
-  int64_t primary_id() const { return primary_id_; }
-  int64_t current_id() const { return current_id_; }
 
   Displays::const_iterator FindDisplayById(int64_t id) const;
 
@@ -52,11 +46,6 @@ class DISPLAY_EXPORT DisplayList {
   // if no such display is available. Callers must check the returned value
   // against `displays().end()` before dereferencing.
   Displays::const_iterator GetPrimaryDisplayIterator() const;
-
-  // Get a reference to the primary or current display. This will CHECK if no
-  // such display is available. Callers must know that the display is available.
-  const Display& GetPrimaryDisplay() const;
-  const Display& GetCurrentDisplay() const;
 
   void AddOrUpdateDisplay(const Display& display, Type type);
 
@@ -76,34 +65,21 @@ class DISPLAY_EXPORT DisplayList {
   // Removes the Display with the specified id.
   void RemoveDisplay(int64_t id);
 
-  // Checks for general struct validity. This permits empty lists, and the
-  // current display may be unspecified, but non-empty lists must specify a
-  // primary display and the displays must not use repeated id values.
-  bool IsValidOrEmpty() const;
-
-  // Checks for validity, and for the presence of primary and current displays.
-  // This is a stronger check than IsValid, which allows the list to be empty.
-  bool IsValidAndHasPrimaryAndCurrentDisplays() const;
+  // Checks for general struct validity. This permits empty lists, but non-empty
+  // lists must specify a primary display and the displays must not use repeated
+  // or invalid ids.
+  bool IsValid() const;
 
   base::ObserverList<DisplayObserver>* observers() { return &observers_; }
 
  private:
-  Type GetTypeByDisplayId(int64_t display_id) const;
-
+  // A non-const version of FindDisplayById.
   Displays::iterator FindDisplayByIdInternal(int64_t id);
 
   // The list of displays tracked by the display::Screen or other client.
   std::vector<Display> displays_;
   // The id of the primary Display in `displays_` for the display::Screen.
   int64_t primary_id_ = kInvalidDisplayId;
-  // The id of the current Display in `displays_`, for some client's context.
-  // This is used when DisplayList needs to track which display a client is on,
-  // typically for a cached DisplayList owned by the client window itself. This
-  // should be kInvalidDisplayId for the DisplayList owned by display::Screen,
-  // which represents the system-wide state and needs to work for all clients.
-  // This member is included in this structure to maintain consistency with some
-  // list of cached displays, perhaps that's not ideal. See crbug.com/1207996.
-  int64_t current_id_ = kInvalidDisplayId;
   base::ObserverList<DisplayObserver> observers_;
 };
 

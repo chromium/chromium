@@ -8,7 +8,7 @@
   <button id="button">Button</button>
   <button id="labeled-button" aria-label="Label">Button</button>
   <button id="button-with-title" title="Title">Button</button>
-  <div id="switch" role="switch">Switch</div>
+  <div id="switch" role="switch" onclick="function() {}">Switch</div>
   <details><summary id="disclosure-triangle">Summary</summary>Details</details>
   <input id="text" type="text" value="Value">
   <input id="search-box" role="searchbox" type="text" value="Value">
@@ -24,14 +24,14 @@
   <div id="content-editable" contenteditable="true">Content editable</div>
   <div id="focusable" tabindex="0">Focusable</div>
   <h5 id="heading" tabindex="0">Heading</h5>
-  <div id="aria-button" tabindex="0" role="button">ARIA button</div>
-  <div id="aria-link" tabindex="0" role="link">ARIA link</div>
+  <div id="aria-button" tabindex="0" role="button" onclick="function() {}">ARIA button</div>
+  <div id="aria-link" tabindex="0" role="link" onclick="function() {}">ARIA link</div>
   <div id="div">Div</div>
   <div id="onclick" onclick="foo()">Onclick</div>
   <div id="keydown-listener">Key down listener</div>
   <div id="click-listener">Click listener</div>
   <div id="mousedown-listener">Mouse down listener</div>
-  <div id="ancestor-with-click-listener">
+  <div id="ancestor-with-click-listener" onclick="function() {}">
     <div id="click-listener-on-ancestor">Click listener on ancestor</div>
   </div>
   <div>

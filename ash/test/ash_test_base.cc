@@ -73,6 +73,11 @@ class AshEventGeneratorDelegate
     : public aura::test::EventGeneratorDelegateAura {
  public:
   AshEventGeneratorDelegate() = default;
+
+  AshEventGeneratorDelegate(const AshEventGeneratorDelegate&) = delete;
+  AshEventGeneratorDelegate& operator=(const AshEventGeneratorDelegate&) =
+      delete;
+
   ~AshEventGeneratorDelegate() override = default;
 
   // aura::test::EventGeneratorDelegateAura overrides:
@@ -81,9 +86,6 @@ class AshEventGeneratorDelegate
     display::Display display = screen->GetDisplayNearestPoint(point_in_screen);
     return Shell::GetRootWindowForDisplayId(display.id())->GetHost()->window();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AshEventGeneratorDelegate);
 };
 
 }  // namespace
@@ -313,6 +315,10 @@ AppListTestHelper* AshTestBase::GetAppListTestHelper() {
   return ash_test_helper_->app_list_test_helper();
 }
 
+TestAppListClient* AshTestBase::GetTestAppListClient() {
+  return GetAppListTestHelper()->app_list_client();
+}
+
 AmbientAshTestHelper* AshTestBase::GetAmbientAshTestHelper() {
   return ash_test_helper_->ambient_ash_test_helper();
 }
@@ -326,6 +332,14 @@ void AshTestBase::SimulateUserLogin(const std::string& user_email,
   TestSessionControllerClient* session = GetSessionControllerClient();
   session->AddUserSession(user_email, user_type);
   session->SwitchActiveUser(AccountId::FromUserEmail(user_email));
+  session->SetSessionState(SessionState::ACTIVE);
+}
+
+void AshTestBase::SimulateUserLogin(const AccountId& account_id,
+                                    user_manager::UserType user_type) {
+  TestSessionControllerClient* session = GetSessionControllerClient();
+  session->AddUserSession(account_id, account_id.GetUserEmail(), user_type);
+  session->SwitchActiveUser(account_id);
   session->SetSessionState(SessionState::ACTIVE);
 }
 

@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 1: Uncaught SyntaxError: Invalid or unexpected token
+CONSOLE ERROR: Uncaught SyntaxError: Invalid or unexpected token
 KDE JS Test
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

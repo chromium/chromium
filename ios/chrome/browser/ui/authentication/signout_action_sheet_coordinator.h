@@ -41,6 +41,9 @@ class Browser;
 // The title displayed for the sign-out alert.
 @property(nonatomic, strong, readonly) NSString* title;
 
+// The message displayed for the sign-out alert.
+@property(nonatomic, strong, readonly) NSString* message;
+
 // Required callback to be used after sign-out is completed.
 @property(nonatomic, copy) signin_ui::CompletionCallback completion;
 

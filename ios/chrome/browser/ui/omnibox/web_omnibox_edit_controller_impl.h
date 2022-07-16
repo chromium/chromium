@@ -37,7 +37,10 @@ class WebOmniboxEditControllerImpl : public WebOmniboxEditController {
       ui::PageTransition transition,
       AutocompleteMatchType::Type match_type,
       base::TimeTicks match_selection_timestamp,
-      bool destination_url_entered_without_scheme) override;
+      bool destination_url_entered_without_scheme,
+      const std::u16string& text,
+      const AutocompleteMatch& match,
+      const AutocompleteMatch& alternative_nav_match) override;
   void OnChanged() override;
   LocationBarModel* GetLocationBarModel() override;
   const LocationBarModel* GetLocationBarModel() const override;

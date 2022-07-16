@@ -71,9 +71,9 @@ TEST_F(FeaturePromoSnoozeServiceTest, BlockSnoozedIPH) {
 TEST_F(FeaturePromoSnoozeServiceTest, ReleaseSnoozedIPH) {
   service_.Reset(kTestIPHFeature);
   service_.OnPromoShown(kTestIPHFeature);
-  service_.OnUserSnooze(kTestIPHFeature, base::TimeDelta::FromHours(1));
+  service_.OnUserSnooze(kTestIPHFeature, base::Hours(1));
   EXPECT_TRUE(service_.IsBlocked(kTestIPHFeature));
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(2));
+  task_environment_.FastForwardBy(base::Hours(2));
   EXPECT_FALSE(service_.IsBlocked(kTestIPHFeature));
 }
 
@@ -81,15 +81,15 @@ TEST_F(FeaturePromoSnoozeServiceTest, MultipleIPH) {
   service_.Reset(kTestIPHFeature);
   service_.Reset(kTestIPHFeature2);
   service_.OnPromoShown(kTestIPHFeature);
-  service_.OnUserSnooze(kTestIPHFeature, base::TimeDelta::FromHours(1));
+  service_.OnUserSnooze(kTestIPHFeature, base::Hours(1));
   service_.OnPromoShown(kTestIPHFeature2);
-  service_.OnUserSnooze(kTestIPHFeature2, base::TimeDelta::FromHours(3));
+  service_.OnUserSnooze(kTestIPHFeature2, base::Hours(3));
   EXPECT_TRUE(service_.IsBlocked(kTestIPHFeature));
   EXPECT_TRUE(service_.IsBlocked(kTestIPHFeature2));
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(2));
+  task_environment_.FastForwardBy(base::Hours(2));
   EXPECT_FALSE(service_.IsBlocked(kTestIPHFeature));
   EXPECT_TRUE(service_.IsBlocked(kTestIPHFeature2));
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(2));
+  task_environment_.FastForwardBy(base::Hours(2));
   EXPECT_FALSE(service_.IsBlocked(kTestIPHFeature));
   EXPECT_FALSE(service_.IsBlocked(kTestIPHFeature2));
 }
@@ -101,7 +101,7 @@ TEST_F(FeaturePromoSnoozeServiceTest, SnoozeNonClicker) {
   service_.Reset(kTestIPHFeature);
   service_.OnPromoShown(kTestIPHFeature);
   EXPECT_TRUE(service_.IsBlocked(kTestIPHFeature));
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(15));
+  task_environment_.FastForwardBy(base::Days(15));
   EXPECT_FALSE(service_.IsBlocked(kTestIPHFeature));
 }
 
@@ -112,6 +112,6 @@ TEST_F(FeaturePromoSnoozeServiceTest, DismissNonClicker) {
   service_.Reset(kTestIPHFeature);
   service_.OnPromoShown(kTestIPHFeature);
   EXPECT_TRUE(service_.IsBlocked(kTestIPHFeature));
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(15));
+  task_environment_.FastForwardBy(base::Days(15));
   EXPECT_TRUE(service_.IsBlocked(kTestIPHFeature));
 }

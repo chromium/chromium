@@ -113,6 +113,8 @@ class CORE_EXPORT SpaceSplitString {
   scoped_refptr<Data> data_;
 };
 
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const SpaceSplitString&);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SPACE_SPLIT_STRING_H_

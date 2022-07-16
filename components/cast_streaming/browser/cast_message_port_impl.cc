@@ -15,6 +15,42 @@
 
 namespace cast_streaming {
 
+namespace {
+
+const char kKeyMediaSessionId[] = "mediaSessionId";
+const char kKeyPlaybackRate[] = "playbackRate";
+const char kKeyPlayerState[] = "playerState";
+const char kKeyCurrentTime[] = "currentTime";
+const char kKeySupportedMediaCommands[] = "supportedMediaCommands";
+const char kKeyDisableStreamGrouping[] = "disableStreamGrouping";
+const char kKeyMedia[] = "media";
+const char kKeyContentId[] = "contentId";
+const char kKeyStreamType[] = "streamType";
+const char kKeyContentType[] = "contentType";
+const char kValuePlaying[] = "PLAYING";
+const char kValueLive[] = "LIVE";
+const char kValueVideoWebm[] = "video/webm";
+
+base::Value GetMediaCurrentStatusValue() {
+  base::Value media(base::Value::Type::DICTIONARY);
+  media.SetKey(kKeyContentId, base::Value(""));
+  media.SetKey(kKeyStreamType, base::Value(kValueLive));
+  media.SetKey(kKeyContentType, base::Value(kValueVideoWebm));
+
+  base::Value media_current_status(base::Value::Type::DICTIONARY);
+  media_current_status.SetKey(kKeyMediaSessionId, base::Value(0));
+  media_current_status.SetKey(kKeyPlaybackRate, base::Value(1.0));
+  media_current_status.SetKey(kKeyPlayerState, base::Value(kValuePlaying));
+  media_current_status.SetKey(kKeyCurrentTime, base::Value(0));
+  media_current_status.SetKey(kKeySupportedMediaCommands, base::Value(0));
+  media_current_status.SetKey(kKeyDisableStreamGrouping, base::Value(true));
+  media_current_status.SetKey(kKeyMedia, std::move(media));
+
+  return media_current_status;
+}
+
+}  // namespace
+
 CastMessagePortImpl::CastMessagePortImpl(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     base::OnceClosure on_close)
@@ -104,6 +140,59 @@ void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
   PostMessage(sender_id, kInjectNamespace, json_message);
 }
 
+void CastMessagePortImpl::HandleMediaMessage(const std::string& sender_id,
+                                             const std::string& message) {
+  absl::optional<base::Value> value = base::JSONReader::Read(message);
+  if (!value) {
+    LOG(ERROR) << "Malformed message from sender " << sender_id
+               << ": not a json payload: " << message;
+    return;
+  }
+
+  if (!value->is_dict()) {
+    LOG(ERROR) << "Malformed message from sender " << sender_id
+               << ": non-dictionary json payload: " << message;
+    return;
+  }
+
+  const std::string* type = value->FindStringKey(kKeyType);
+  if (!type) {
+    LOG(ERROR) << "Malformed message from sender " << sender_id
+               << ": no message type: " << message;
+    return;
+  }
+
+  if (*type == kValueMediaPlay || *type == kValueMediaPause) {
+    // Not supported. Just ignore.
+    return;
+  }
+
+  if (*type != kValueMediaGetStatus) {
+    LOG(ERROR) << "Malformed message from sender " << sender_id
+               << ": unknown message type: " << *type;
+    return;
+  }
+
+  absl::optional<int> request_id = value->FindIntKey(kKeyRequestId);
+  if (!request_id.has_value()) {
+    LOG(ERROR) << "Malformed message from sender " << sender_id
+               << ": no request id: " << message;
+    return;
+  }
+
+  base::Value message_status_list(base::Value::Type::LIST);
+  message_status_list.Append(GetMediaCurrentStatusValue());
+
+  base::Value response_value(base::Value::Type::DICTIONARY);
+  response_value.SetKey(kKeyRequestId, base::Value(request_id.value()));
+  response_value.SetKey(kKeyType, base::Value(kValueMediaStatus));
+  response_value.SetKey(kKeyStatus, std::move(message_status_list));
+
+  std::string json_message;
+  CHECK(base::JSONWriter::Write(response_value, &json_message));
+  PostMessage(sender_id, kMediaNamespace, json_message);
+}
+
 void CastMessagePortImpl::PostMessage(const std::string& sender_id,
                                       const std::string& message_namespace,
                                       const std::string& message) {
@@ -151,6 +240,8 @@ bool CastMessagePortImpl::OnMessage(
     client_->OnMessage(sender_id, message_namespace, str_message);
   } else if (message_namespace == kInjectNamespace) {
     SendInjectResponse(sender_id, str_message);
+  } else if (message_namespace == kMediaNamespace) {
+    HandleMediaMessage(sender_id, str_message);
   } else if (message_namespace != kSystemNamespace) {
     // System messages are ignored, log messages from unknown namespaces.
     DVLOG(2) << "Unknown message from " << sender_id

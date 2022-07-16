@@ -13,18 +13,18 @@ namespace {
 constexpr uint32_t kVersion = 2u;
 }  // namespace
 
-UserAgentBrandVersion::UserAgentBrandVersion(
-    const std::string& ua_brand,
-    const std::string& ua_major_version) {
+UserAgentBrandVersion::UserAgentBrandVersion(const std::string& ua_brand,
+                                             const std::string& ua_version) {
   brand = ua_brand;
-  major_version = ua_major_version;
+  version = ua_version;
 }
 
-const std::string UserAgentMetadata::SerializeBrandVersionList() {
+const std::string UserAgentMetadata::SerializeBrandVersionList(
+    const blink::UserAgentBrandList& ua_brand_version_list) {
   net::structured_headers::List brand_version_header =
       net::structured_headers::List();
-  for (const UserAgentBrandVersion& brand_version : brand_version_list) {
-    if (brand_version.major_version.empty()) {
+  for (const UserAgentBrandVersion& brand_version : ua_brand_version_list) {
+    if (brand_version.version.empty()) {
       brand_version_header.push_back(
           net::structured_headers::ParameterizedMember(
               net::structured_headers::Item(brand_version.brand), {}));
@@ -32,13 +32,21 @@ const std::string UserAgentMetadata::SerializeBrandVersionList() {
       brand_version_header.push_back(
           net::structured_headers::ParameterizedMember(
               net::structured_headers::Item(brand_version.brand),
-              {std::make_pair("v", net::structured_headers::Item(
-                                       brand_version.major_version))}));
+              {std::make_pair(
+                  "v", net::structured_headers::Item(brand_version.version))}));
     }
   }
 
   return net::structured_headers::SerializeList(brand_version_header)
       .value_or("");
+}
+
+const std::string UserAgentMetadata::SerializeBrandFullVersionList() {
+  return SerializeBrandVersionList(brand_full_version_list);
+}
+
+const std::string UserAgentMetadata::SerializeBrandMajorVersionList() {
+  return SerializeBrandVersionList(brand_version_list);
 }
 
 // static
@@ -52,7 +60,13 @@ absl::optional<std::string> UserAgentMetadata::Marshal(
   out.WriteUInt32(in->brand_version_list.size());
   for (const auto& brand_version : in->brand_version_list) {
     out.WriteString(brand_version.brand);
-    out.WriteString(brand_version.major_version);
+    out.WriteString(brand_version.version);
+  }
+
+  out.WriteUInt32(in->brand_full_version_list.size());
+  for (const auto& brand_version : in->brand_full_version_list) {
+    out.WriteString(brand_version.brand);
+    out.WriteString(brand_version.version);
   }
 
   out.WriteString(in->full_version);
@@ -86,9 +100,21 @@ absl::optional<UserAgentMetadata> UserAgentMetadata::Demarshal(
     UserAgentBrandVersion brand_version;
     if (!in.ReadString(&brand_version.brand))
       return absl::nullopt;
-    if (!in.ReadString(&brand_version.major_version))
+    if (!in.ReadString(&brand_version.version))
       return absl::nullopt;
     out.brand_version_list.push_back(std::move(brand_version));
+  }
+
+  uint32_t brand_full_version_size;
+  if (!in.ReadUInt32(&brand_full_version_size))
+    return absl::nullopt;
+  for (uint32_t i = 0; i < brand_full_version_size; i++) {
+    UserAgentBrandVersion brand_version;
+    if (!in.ReadString(&brand_version.brand))
+      return absl::nullopt;
+    if (!in.ReadString(&brand_version.version))
+      return absl::nullopt;
+    out.brand_full_version_list.push_back(std::move(brand_version));
   }
 
   if (!in.ReadString(&out.full_version))
@@ -109,11 +135,12 @@ absl::optional<UserAgentMetadata> UserAgentMetadata::Demarshal(
 }
 
 bool UserAgentBrandVersion::operator==(const UserAgentBrandVersion& a) const {
-  return a.brand == brand && a.major_version == major_version;
+  return a.brand == brand && a.version == version;
 }
 
 bool operator==(const UserAgentMetadata& a, const UserAgentMetadata& b) {
   return a.brand_version_list == b.brand_version_list &&
+         a.brand_full_version_list == b.brand_full_version_list &&
          a.full_version == b.full_version && a.platform == b.platform &&
          a.platform_version == b.platform_version &&
          a.architecture == b.architecture && a.model == b.model &&

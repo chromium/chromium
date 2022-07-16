@@ -13,8 +13,9 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
@@ -116,16 +117,26 @@ BluetoothAdapter::RetrieveGattConnectedDevicesWithDiscoveryFilter(
   return std::unordered_map<BluetoothDevice*, BluetoothDevice::UUIDSet>();
 }
 
-void BluetoothAdapter::StartDiscoverySession(DiscoverySessionCallback callback,
+void BluetoothAdapter::StartDiscoverySession(const std::string& client_name,
+                                             DiscoverySessionCallback callback,
                                              ErrorCallback error_callback) {
-  StartDiscoverySessionWithFilter(nullptr, std::move(callback),
+  StartDiscoverySessionWithFilter(nullptr, client_name, std::move(callback),
                                   std::move(error_callback));
 }
 
 void BluetoothAdapter::StartDiscoverySessionWithFilter(
     std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
+    const std::string& client_name,
     DiscoverySessionCallback callback,
     ErrorCallback error_callback) {
+  if (!client_name.empty()) {
+    BLUETOOTH_LOG(EVENT) << client_name
+                         << " initiating Bluetooth discovery session";
+  } else {
+    BLUETOOTH_LOG(EVENT)
+        << "Unknown client initiating Bluetooth discovery session";
+  }
+
   std::unique_ptr<BluetoothDiscoverySession> new_session(
       new BluetoothDiscoverySession(this, std::move(discovery_filter)));
   discovery_sessions_.insert(new_session.get());
@@ -315,10 +326,13 @@ void BluetoothAdapter::NotifyDevicePairedChanged(BluetoothDevice* device,
 #endif
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
-void BluetoothAdapter::NotifyDeviceBatteryChanged(BluetoothDevice* device) {
+void BluetoothAdapter::NotifyDeviceBatteryChanged(
+    BluetoothDevice* device,
+    BluetoothDevice::BatteryType type) {
   DCHECK_EQ(device->GetAdapter(), this);
+
   for (auto& observer : observers_) {
-    observer.DeviceBatteryChanged(this, device, device->battery_percentage());
+    observer.DeviceBatteryChanged(this, device, type);
   }
 }
 #endif
@@ -660,7 +674,6 @@ void BluetoothAdapter::RemoveTimedOutDevices() {
 }
 
 // static
-constexpr base::TimeDelta BluetoothAdapter::timeoutSec =
-    base::TimeDelta::FromSeconds(180);
+constexpr base::TimeDelta BluetoothAdapter::timeoutSec = base::Seconds(180);
 
 }  // namespace device

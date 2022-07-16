@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_FAKE_CROSTINI_FEATURES_H_
 #define CHROME_BROWSER_ASH_CROSTINI_FAKE_CROSTINI_FEATURES_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -33,6 +32,7 @@ class FakeCrostiniFeatures : public CrostiniFeatures {
       Profile* profile,
       CanChangeAdbSideloadingCallback callback) override;
   bool IsPortForwardingAllowed(Profile* profile) override;
+  bool IsMultiContainerAllowed(Profile* profile) override;
 
   void SetAll(bool flag);
   void ClearAll();
@@ -56,6 +56,10 @@ class FakeCrostiniFeatures : public CrostiniFeatures {
     port_forwarding_allowed_ = allowed;
   }
 
+  void set_multi_container_allowed(bool allowed) {
+    multi_container_allowed_ = allowed;
+  }
+
  private:
   // Original global static when this instance is created. It is captured when
   // FakeCrostiniFeatures is created and replaced at destruction.
@@ -69,6 +73,7 @@ class FakeCrostiniFeatures : public CrostiniFeatures {
   absl::optional<bool> container_upgrade_ui_allowed_;
   absl::optional<bool> can_change_adb_sideloading_;
   absl::optional<bool> port_forwarding_allowed_;
+  absl::optional<bool> multi_container_allowed_;
 };
 
 }  // namespace crostini

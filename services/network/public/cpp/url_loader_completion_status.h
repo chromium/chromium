@@ -18,6 +18,7 @@
 #include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace network {
 
@@ -103,6 +104,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) URLLoaderCompletionStatus {
 
   // Whether the initiator of this request should be collapsed.
   bool should_collapse_initiator = false;
+
+  // Write a representation of this struct into a trace.
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 };
 
 }  // namespace network

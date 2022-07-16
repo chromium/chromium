@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 
@@ -22,6 +21,10 @@ namespace media_router {
 class BufferedMessageSender {
  public:
   explicit BufferedMessageSender(mojom::MediaRouter* media_router);
+
+  BufferedMessageSender(const BufferedMessageSender&) = delete;
+  BufferedMessageSender& operator=(const BufferedMessageSender&) = delete;
+
   ~BufferedMessageSender();
 
   // Sends |messages| for route given by |route_id|. The messages are buffered
@@ -46,8 +49,6 @@ class BufferedMessageSender {
 
   // Non-owned pointer provided by DialMediaRouteProvider.
   mojom::MediaRouter* const media_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferedMessageSender);
 };
 
 }  // namespace media_router

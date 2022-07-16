@@ -15,10 +15,6 @@ const WebUI = {
     chrome.send('clearLogBuffer');
   },
 
-  findEligibleUnlockDevices: function() {
-    chrome.send('findEligibleUnlockDevices');
-  },
-
   forceDeviceSync: function() {
     chrome.send('forceDeviceSync');
   },
@@ -41,14 +37,6 @@ const WebUI = {
 
   onWebContentsInitialized: function() {
     chrome.send('onWebContentsInitialized');
-  },
-
-  toggleConnection: function(publicKey) {
-    chrome.send('toggleConnection', [publicKey]);
-  },
-
-  toggleUnlockKey: function(publicKey, makeUnlockKey) {
-    chrome.send('toggleUnlockKey', [publicKey, makeUnlockKey]);
   },
 };
 

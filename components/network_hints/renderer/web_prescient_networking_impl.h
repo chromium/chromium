@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_NETWORK_HINTS_RENDERER_WEB_PRESCIENT_NETWORKING_IMPL_H_
 #define COMPONENTS_NETWORK_HINTS_RENDERER_WEB_PRESCIENT_NETWORKING_IMPL_H_
 
-#include "base/macros.h"
 #include "components/network_hints/common/network_hints.mojom.h"
 #include "components/network_hints/renderer/renderer_dns_prefetch.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -22,6 +21,11 @@ namespace network_hints {
 class WebPrescientNetworkingImpl : public blink::WebPrescientNetworking {
  public:
   explicit WebPrescientNetworkingImpl(content::RenderFrame* render_frame);
+
+  WebPrescientNetworkingImpl(const WebPrescientNetworkingImpl&) = delete;
+  WebPrescientNetworkingImpl& operator=(const WebPrescientNetworkingImpl&) =
+      delete;
+
   ~WebPrescientNetworkingImpl() override;
 
   // blink::WebPrescientNetworking methods:
@@ -31,8 +35,6 @@ class WebPrescientNetworkingImpl : public blink::WebPrescientNetworking {
  private:
   mojo::Remote<mojom::NetworkHintsHandler> handler_;
   RendererDnsPrefetch dns_prefetch_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebPrescientNetworkingImpl);
 };
 
 }  // namespace network_hints

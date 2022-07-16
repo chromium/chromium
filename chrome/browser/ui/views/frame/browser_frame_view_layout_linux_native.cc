@@ -7,8 +7,10 @@
 #include "ui/views/linux_ui/nav_button_provider.h"
 
 BrowserFrameViewLayoutLinuxNative::BrowserFrameViewLayoutLinuxNative(
-    views::NavButtonProvider* nav_button_provider)
-    : nav_button_provider_(nav_button_provider) {}
+    views::NavButtonProvider* nav_button_provider,
+    views::WindowFrameProvider* window_frame_provider)
+    : nav_button_provider_(nav_button_provider),
+      window_frame_provider_(window_frame_provider) {}
 
 BrowserFrameViewLayoutLinuxNative::~BrowserFrameViewLayoutLinuxNative() =
     default;
@@ -19,6 +21,11 @@ int BrowserFrameViewLayoutLinuxNative::CaptionButtonY(
   auto button_type = GetButtonDisplayType(button_id);
   gfx::Insets insets = nav_button_provider_->GetNavButtonMargin(button_type);
   return insets.top() + FrameEdgeInsets(false).top();
+}
+
+gfx::Insets BrowserFrameViewLayoutLinuxNative::RestoredFrameBorderInsets()
+    const {
+  return window_frame_provider_->GetFrameThicknessDip();
 }
 
 OpaqueBrowserFrameViewLayout::TopAreaPadding

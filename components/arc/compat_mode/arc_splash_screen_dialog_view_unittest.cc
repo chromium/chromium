@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/widget/widget.h"
 
 namespace arc {
 
@@ -40,9 +41,12 @@ class ArcSplashScreenDialogViewTest : public CompatModeTestBase {
   }
 
  protected:
-  void ShowAsBubble(std::unique_ptr<ArcSplashScreenDialogView> dialog_view) {
-    views::BubbleDialogDelegateView::CreateBubble(std::move(dialog_view))
-        ->Show();
+  views::Widget* ShowAsBubble(
+      std::unique_ptr<ArcSplashScreenDialogView> dialog_view) {
+    auto* const widget =
+        views::BubbleDialogDelegateView::CreateBubble(std::move(dialog_view));
+    widget->Show();
+    return widget;
   }
 
   views::View* anchor() { return anchor_; }
@@ -97,6 +101,25 @@ TEST_F(ArcSplashScreenDialogViewTest,
       EXPECT_TRUE(on_close_callback_called);
     }
   }
+}
+
+// Test that the activation is forwarded to the bubble when the parent window is
+// activated.
+TEST_F(ArcSplashScreenDialogViewTest, TestForwardActivation) {
+  auto* const bubble = ShowAsBubble(std::make_unique<ArcSplashScreenDialogView>(
+      base::DoNothing(), parent_window(), anchor(),
+      /*is_for_unresizable=*/false));
+
+  EXPECT_TRUE(bubble->IsActive());
+  EXPECT_FALSE(parent_widget()->IsActive());
+
+  parent_widget()->Activate();
+  EXPECT_FALSE(bubble->IsActive());
+  EXPECT_TRUE(parent_widget()->IsActive());
+
+  RunPendingMessages();
+  EXPECT_TRUE(bubble->IsActive());
+  EXPECT_FALSE(parent_widget()->IsActive());
 }
 
 }  // namespace arc

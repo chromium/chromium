@@ -8,8 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace gfx {
 class Rect;
 }
@@ -29,6 +27,10 @@ class LocationBarLayout {
   };
 
   LocationBarLayout(Position position, int item_edit_padding);
+
+  LocationBarLayout(const LocationBarLayout&) = delete;
+  LocationBarLayout& operator=(const LocationBarLayout&) = delete;
+
   virtual ~LocationBarLayout();
 
   // Add a decoration, specifying:
@@ -76,8 +78,6 @@ class LocationBarLayout {
 
   // The list of decorations to layout.
   std::vector<std::unique_ptr<DecorationInfo>> decorations_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocationBarLayout);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_BAR_LAYOUT_H_

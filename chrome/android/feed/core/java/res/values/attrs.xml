@@ -4,14 +4,6 @@
      found in the LICENSE file. -->
 
 <resources>
-  <declare-styleable name="FeedSharedStream">
-    <!-- Sets which drawable to use for the text ripple pre-v21. -->
-    <attr name="feedTextRippleDrawable" format="reference" />
-    <!-- Sets the color of the no content card title text. -->
-    <attr name="feedPrimaryTextColor" format="reference" />
-    <!--Sets the color of the no content card subtitle text. -->
-    <attr name="feedSecondaryTextColor" format="reference" />
     <!-- Sets the color of the spinner. -->
     <attr name="feedSpinnerColor" format="reference" />
-  </declare-styleable>
 </resources>

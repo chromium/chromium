@@ -23,6 +23,9 @@ class CrostiniBrowserTestBase : public InProcessBrowserTest {
  public:
   explicit CrostiniBrowserTestBase(bool register_termina);
 
+  CrostiniBrowserTestBase(const CrostiniBrowserTestBase&) = delete;
+  CrostiniBrowserTestBase& operator=(const CrostiniBrowserTestBase&) = delete;
+
   // BrowserTestBase:
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override;
@@ -51,8 +54,6 @@ class CrostiniBrowserTestBase : public InProcessBrowserTest {
 
   // Owned by chromeos::disks::DiskMountManager;
   chromeos::disks::MockDiskMountManager* dmgr_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniBrowserTestBase);
 };
 
 #endif  // CHROME_BROWSER_ASH_CROSTINI_CROSTINI_BROWSER_TEST_UTIL_H_

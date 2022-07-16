@@ -128,6 +128,7 @@ Polymer({
    * @param {OobeTypes.PinSetupScreenParameters} data
    */
   onBeforeShow(data) {
+    this.$.pinKeyboard.resetState();
     this.authToken_ = data.auth_token;
     this.isChildAccount_ = data.is_child_account;
   },

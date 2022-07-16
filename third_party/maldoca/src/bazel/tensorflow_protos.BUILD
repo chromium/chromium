@@ -24,8 +24,8 @@ proto_library(
         "tensorflow/core/example/example.proto",
     ],
     deps = [
-        ":tf_feature",
         "@com_google_protobuf//:wrappers_proto",
+        ":tf_feature"
     ],
 )
 

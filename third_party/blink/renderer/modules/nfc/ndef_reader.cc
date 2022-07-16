@@ -236,7 +236,7 @@ ScriptPromise NDEFReader::write(ScriptState* script_state,
   // Step 11.2: Run "create NDEF message", if this throws an exception,
   // reject p with that exception and abort these steps.
   NDEFMessage* ndef_message =
-      NDEFMessage::Create(DomWindow(), write_message, exception_state);
+      NDEFMessage::Create(script_state, write_message, exception_state);
   if (exception_state.HadException()) {
     return ScriptPromise();
   }

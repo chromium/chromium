@@ -130,6 +130,11 @@ class MockAppInstallEventLoggerDelegate
  public:
   MockAppInstallEventLoggerDelegate() = default;
 
+  MockAppInstallEventLoggerDelegate(const MockAppInstallEventLoggerDelegate&) =
+      delete;
+  MockAppInstallEventLoggerDelegate& operator=(
+      const MockAppInstallEventLoggerDelegate&) = delete;
+
   void GetAndroidId(AndroidIdCallback callback) const override {
     GetAndroidId_(&callback);
   }
@@ -138,9 +143,6 @@ class MockAppInstallEventLoggerDelegate
                void(const std::set<std::string>& packages,
                     const em::AppInstallReportLogEvent& event));
   MOCK_CONST_METHOD1(GetAndroidId_, void(AndroidIdCallback*));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAppInstallEventLoggerDelegate);
 };
 
 void SetPolicy(policy::PolicyMap* map, const char* name, base::Value value) {
@@ -156,6 +158,10 @@ class AppInstallEventLoggerTest : public testing::Test {
       : task_environment_(
             base::test::TaskEnvironment::MainThreadType::UI,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
+
+  AppInstallEventLoggerTest(const AppInstallEventLoggerTest&) = delete;
+  AppInstallEventLoggerTest& operator=(const AppInstallEventLoggerTest&) =
+      delete;
 
   void SetUp() override {
     RegisterLocalState(pref_service_.registry());
@@ -226,9 +232,6 @@ class AppInstallEventLoggerTest : public testing::Test {
   em::AppInstallReportLogEvent event_;
 
   std::unique_ptr<ArcAppInstallEventLogger> logger_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppInstallEventLoggerTest);
 };
 
 // Store lists of apps for which push-install has been requested and is still
@@ -236,7 +239,7 @@ class AppInstallEventLoggerTest : public testing::Test {
 // that the lists are cleared.
 TEST_F(AppInstallEventLoggerTest, Clear) {
   base::ListValue list;
-  list.AppendString("test");
+  list.Append("test");
   profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsRequested, list);
   profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsPending, list);
   ArcAppInstallEventLogger::Clear(&profile_);

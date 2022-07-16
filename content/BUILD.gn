@@ -97,10 +97,12 @@ if (is_component_build) {
       "//base",
       "//build:chromeos_buildflags",
       "//media:media_buildflags",
+      "//ppapi/buildflags:buildflags",
       "//printing/buildflags",
       "//sandbox:sandbox_buildflags",
       "//sandbox/linux:sandbox",
       "//sandbox/policy",
+      "//sandbox/policy/mojom",
     ]
   }
 } else {
@@ -120,7 +122,9 @@ grit("content_resources") {
   ]
   deps = [
     "//gpu/ipc/common:vulkan_interface_webui_js",
+    "//ui/base/mojom:mojom_js",
     "//ui/gfx/geometry/mojom:mojom_js",
+    "//ui/gfx/range/mojom:mojom_js",
     "//url/mojom:url_mojom_origin_js",
     "//url/mojom:url_mojom_origin_webui_js",
   ]
@@ -134,7 +138,8 @@ grit("dev_ui_content_resources") {
     "dev_ui_content_resources.pak",
   ]
   deps = [
-    "//content/browser/conversions:mojo_bindings_webui_js",
+    "//content/browser/attribution_reporting:mojo_bindings_webui_js",
+    "//content/browser/prerender:mojo_bindings_webui_js",
     "//content/browser/process_internals:mojo_bindings_webui_js",
   ]
 }

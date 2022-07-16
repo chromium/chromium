@@ -16,14 +16,12 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
-#include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/common/printing/printer_capabilities.h"
-#include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_features.h"
 
@@ -33,6 +31,12 @@
 
 #if defined(OS_WIN)
 #include "base/threading/thread_restrictions.h"
+#endif
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/browser/printing/print_backend_service_manager.h"
+#include "chrome/browser/ui/webui/print_preview/printer_handler.h"
+#include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #endif
 
 namespace printing {
@@ -59,6 +63,8 @@ scoped_refptr<base::TaskRunner> CreatePrinterHandlerTaskRunner() {
   return base::ThreadPool::CreateSingleThreadTaskRunner(kTraits);
 #endif
 }
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
 
 void OnDidGetDefaultPrinterName(
     PrinterHandler::DefaultPrinterCallback callback,
@@ -111,8 +117,7 @@ void OnDidFetchCapabilities(
 
       // Retry the operation which should now happen at a higher privilege
       // level.
-      auto& service = service_mgr.GetService(device_name);
-      service->FetchCapabilities(
+      service_mgr.FetchCapabilities(
           device_name,
           base::BindOnce(&OnDidFetchCapabilities, device_name,
                          /*elevated_privileges=*/true, has_secure_protocol,
@@ -134,6 +139,8 @@ void OnDidFetchCapabilities(
       &caps_and_info->printer_caps);
   std::move(callback).Run(std::move(settings));
 }
+
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 }  // namespace
 
@@ -226,20 +233,23 @@ void LocalPrinterHandlerDefault::Reset() {}
 void LocalPrinterHandlerDefault::GetDefaultPrinter(DefaultPrinterCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     VLOG(1) << "Getting default printer via service";
     PrintBackendServiceManager& service_mgr =
         PrintBackendServiceManager::GetInstance();
     service_mgr.GetDefaultPrinterName(
         base::BindOnce(&OnDidGetDefaultPrinterName, std::move(cb)));
-  } else {
-    VLOG(1) << "Getting default printer in-process";
-    base::PostTaskAndReplyWithResult(
-        task_runner_.get(), FROM_HERE,
-        base::BindOnce(&GetDefaultPrinterAsync,
-                       g_browser_process->GetApplicationLocale()),
-        std::move(cb));
+    return;
   }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
+
+  VLOG(1) << "Getting default printer in-process";
+  base::PostTaskAndReplyWithResult(
+      task_runner_.get(), FROM_HERE,
+      base::BindOnce(&GetDefaultPrinterAsync,
+                     g_browser_process->GetApplicationLocale()),
+      std::move(cb));
 }
 
 void LocalPrinterHandlerDefault::StartGetPrinters(
@@ -247,6 +257,7 @@ void LocalPrinterHandlerDefault::StartGetPrinters(
     GetPrintersDoneCallback done_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     VLOG(1) << "Enumerate printers start via service";
     PrintBackendServiceManager& service_mgr =
@@ -254,15 +265,17 @@ void LocalPrinterHandlerDefault::StartGetPrinters(
     service_mgr.EnumeratePrinters(
         base::BindOnce(&OnDidEnumeratePrinters, std::move(callback),
                        std::move(done_callback)));
-  } else {
-    VLOG(1) << "Enumerate printers start in-process";
-    base::PostTaskAndReplyWithResult(
-        task_runner_.get(), FROM_HERE,
-        base::BindOnce(&EnumeratePrintersAsync,
-                       g_browser_process->GetApplicationLocale()),
-        base::BindOnce(&ConvertPrinterListForCallback, std::move(callback),
-                       std::move(done_callback)));
+    return;
   }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
+
+  VLOG(1) << "Enumerate printers start in-process";
+  base::PostTaskAndReplyWithResult(
+      task_runner_.get(), FROM_HERE,
+      base::BindOnce(&EnumeratePrintersAsync,
+                     g_browser_process->GetApplicationLocale()),
+      base::BindOnce(&ConvertPrinterListForCallback, std::move(callback),
+                     std::move(done_callback)));
 }
 
 void LocalPrinterHandlerDefault::StartGetCapability(
@@ -270,6 +283,7 @@ void LocalPrinterHandlerDefault::StartGetCapability(
     GetCapabilityCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     VLOG(1) << "Getting printer capabilities via service for " << device_name;
     PrintBackendServiceManager& service_mgr =
@@ -280,14 +294,16 @@ void LocalPrinterHandlerDefault::StartGetCapability(
             &OnDidFetchCapabilities, device_name,
             service_mgr.PrinterDriverRequiresElevatedPrivilege(device_name),
             /*has_secure_protocol=*/false, std::move(cb)));
-  } else {
-    VLOG(1) << "Getting printer capabilities in-process for " << device_name;
-    base::PostTaskAndReplyWithResult(
-        task_runner_.get(), FROM_HERE,
-        base::BindOnce(&FetchCapabilitiesAsync, device_name,
-                       g_browser_process->GetApplicationLocale()),
-        std::move(cb));
+    return;
   }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
+
+  VLOG(1) << "Getting printer capabilities in-process for " << device_name;
+  base::PostTaskAndReplyWithResult(
+      task_runner_.get(), FROM_HERE,
+      base::BindOnce(&FetchCapabilitiesAsync, device_name,
+                     g_browser_process->GetApplicationLocale()),
+      std::move(cb));
 }
 
 void LocalPrinterHandlerDefault::StartPrint(

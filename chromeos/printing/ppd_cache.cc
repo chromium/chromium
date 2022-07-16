@@ -15,8 +15,8 @@
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -140,6 +140,9 @@ class PpdCacheImpl : public PpdCache {
         fetch_task_runner_(std::move(fetch_task_runner)),
         store_task_runner_(std::move(store_task_runner)) {}
 
+  PpdCacheImpl(const PpdCacheImpl&) = delete;
+  PpdCacheImpl& operator=(const PpdCacheImpl&) = delete;
+
   // Public API functions.
   void Find(const std::string& key, FindCallback cb) override {
     base::PostTaskAndReplyWithResult(
@@ -169,8 +172,6 @@ class PpdCacheImpl : public PpdCache {
   base::FilePath cache_base_dir_;
   scoped_refptr<base::SequencedTaskRunner> fetch_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> store_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PpdCacheImpl);
 };
 
 }  // namespace

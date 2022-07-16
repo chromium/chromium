@@ -27,7 +27,7 @@ TabNodePool::TabNodePool() : max_used_tab_node_id_(kInvalidTabNodeID) {}
 // We start vending tab node IDs at 0.
 const int TabNodePool::kInvalidTabNodeID = -1;
 
-TabNodePool::~TabNodePool() {}
+TabNodePool::~TabNodePool() = default;
 
 void TabNodePool::AddTabNode(int tab_node_id) {
   DCHECK_GT(tab_node_id, kInvalidTabNodeID);

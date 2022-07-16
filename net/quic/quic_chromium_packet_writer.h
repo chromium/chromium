@@ -69,6 +69,10 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
   // |socket| and |task_runner| must outlive writer.
   QuicChromiumPacketWriter(DatagramClientSocket* socket,
                            base::SequencedTaskRunner* task_runner);
+
+  QuicChromiumPacketWriter(const QuicChromiumPacketWriter&) = delete;
+  QuicChromiumPacketWriter& operator=(const QuicChromiumPacketWriter&) = delete;
+
   ~QuicChromiumPacketWriter() override;
 
   // |delegate| must outlive writer.
@@ -127,8 +131,6 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
 
   CompletionRepeatingCallback write_callback_;
   base::WeakPtrFactory<QuicChromiumPacketWriter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicChromiumPacketWriter);
 };
 
 }  // namespace net

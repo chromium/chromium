@@ -5,7 +5,6 @@
 #ifndef UI_WM_CORE_EASY_RESIZE_WINDOW_TARGETER_H_
 #define UI_WM_CORE_EASY_RESIZE_WINDOW_TARGETER_H_
 
-#include "base/macros.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/wm/core/wm_core_export.h"
 
@@ -26,6 +25,9 @@ class WM_CORE_EXPORT EasyResizeWindowTargeter : public aura::WindowTargeter {
   EasyResizeWindowTargeter(const gfx::Insets& mouse_extend,
                            const gfx::Insets& touch_extend);
 
+  EasyResizeWindowTargeter(const EasyResizeWindowTargeter&) = delete;
+  EasyResizeWindowTargeter& operator=(const EasyResizeWindowTargeter&) = delete;
+
   ~EasyResizeWindowTargeter() override;
 
  private:
@@ -37,8 +39,6 @@ class WM_CORE_EXPORT EasyResizeWindowTargeter : public aura::WindowTargeter {
   // Returns true if the hit testing (GetHitTestRects()) should use the
   // extended bounds.
   bool ShouldUseExtendedBounds(const aura::Window* w) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(EasyResizeWindowTargeter);
 };
 
 }  // namespace wm

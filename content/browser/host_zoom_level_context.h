@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/browser/host_zoom_map_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/zoom_level_delegate.h"
@@ -22,6 +21,9 @@ class HostZoomLevelContext {
  public:
   explicit HostZoomLevelContext(
       std::unique_ptr<ZoomLevelDelegate> zoom_level_delegate);
+
+  HostZoomLevelContext(const HostZoomLevelContext&) = delete;
+  HostZoomLevelContext& operator=(const HostZoomLevelContext&) = delete;
 
   HostZoomMap* GetHostZoomMap() const { return host_zoom_map_impl_.get(); }
   ZoomLevelDelegate* GetZoomLevelDelegate() const {
@@ -38,8 +40,6 @@ class HostZoomLevelContext {
   // Release the delegate before the HostZoomMap, in case it is carrying
   // any HostZoomMap::Subscription pointers.
   std::unique_ptr<ZoomLevelDelegate> zoom_level_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostZoomLevelContext);
 };
 
 }  // namespace content

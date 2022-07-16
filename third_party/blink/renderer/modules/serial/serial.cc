@@ -246,11 +246,13 @@ void Serial::OnServiceConnectionError() {
 }
 
 SerialPort* Serial::GetOrCreatePort(mojom::blink::SerialPortInfoPtr info) {
-  SerialPort* port = port_cache_.at(TokenToString(info->token));
-  if (!port) {
-    port = MakeGarbageCollected<SerialPort>(this, std::move(info));
-    port_cache_.insert(TokenToString(port->token()), port);
+  auto it = port_cache_.find(TokenToString(info->token));
+  if (it != port_cache_.end()) {
+    return it->value;
   }
+
+  SerialPort* port = MakeGarbageCollected<SerialPort>(this, std::move(info));
+  port_cache_.insert(TokenToString(port->token()), port);
   return port;
 }
 

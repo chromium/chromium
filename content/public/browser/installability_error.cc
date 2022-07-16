@@ -36,4 +36,13 @@ bool InstallabilityError::operator==(const InstallabilityError& other) const {
 
 InstallabilityError::~InstallabilityError() = default;
 
+std::ostream& operator<<(std::ostream& os, const InstallabilityError& error) {
+  os << "[" << error.error_id;
+  for (const auto& arg : error.installability_error_arguments)
+    os << ", " << arg.name << "=" << arg.value;
+  os << "]";
+
+  return os;
+}
+
 }  // namespace content

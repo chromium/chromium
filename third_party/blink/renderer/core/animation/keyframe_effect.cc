@@ -341,8 +341,8 @@ KeyframeEffect::CheckCanStartAnimationOnCompositor(
       reasons |= CompositorAnimations::kTargetHasMultipleTransformProperties;
 
     reasons |= CompositorAnimations::CheckCanStartAnimationOnCompositor(
-        SpecifiedTiming(), *effect_target_, GetAnimation(), *Model(),
-        paint_artifact_compositor, animation_playback_rate,
+        SpecifiedTiming(), NormalizedTiming(), *effect_target_, GetAnimation(),
+        *Model(), paint_artifact_compositor, animation_playback_rate,
         unsupported_properties);
   }
 
@@ -368,7 +368,7 @@ void KeyframeEffect::StartAnimationOnCompositor(
 
   CompositorAnimations::StartAnimationOnCompositor(
       *effect_target_, group, start_time, time_offset, SpecifiedTiming(),
-      GetAnimation(), *compositor_animation, *Model(),
+      NormalizedTiming(), GetAnimation(), *compositor_animation, *Model(),
       compositor_keyframe_model_ids_, animation_playback_rate);
   DCHECK(!compositor_keyframe_model_ids_.IsEmpty());
 }
@@ -504,10 +504,10 @@ bool KeyframeEffect::UpdateBoxSizeAndCheckTransformAxisAlignment(
   if (HasAnimation()) {
     if (effect_target_size_) {
       if ((size_dependencies & TransformOperation::kDependsWidth) &&
-          (effect_target_size_->Width() != box_size.Width()))
+          (effect_target_size_->width() != box_size.width()))
         RestartRunningAnimationOnCompositor();
       else if ((size_dependencies & TransformOperation::kDependsHeight) &&
-               (effect_target_size_->Height() != box_size.Height()))
+               (effect_target_size_->height() != box_size.height()))
         RestartRunningAnimationOnCompositor();
     }
   }
@@ -570,12 +570,12 @@ void KeyframeEffect::ApplyEffects() {
   bool changed = false;
   if (sampled_effect_) {
     changed =
-        model_->Sample(clampTo<int>(iteration.value(), 0), Progress().value(),
+        model_->Sample(ClampTo<int>(iteration.value(), 0), Progress().value(),
                        NormalizedTiming().iteration_duration,
                        sampled_effect_->MutableInterpolations());
   } else {
     HeapVector<Member<Interpolation>> interpolations;
-    model_->Sample(clampTo<int>(iteration.value(), 0), Progress().value(),
+    model_->Sample(ClampTo<int>(iteration.value(), 0), Progress().value(),
                    NormalizedTiming().iteration_duration, interpolations);
     if (!interpolations.IsEmpty()) {
       auto* sampled_effect =
@@ -654,6 +654,14 @@ void KeyframeEffect::DetachTarget(Animation* animation) {
   ClearEffects();
 }
 
+AnimationTimeDelta KeyframeEffect::IntrinsicIterationDuration() const {
+  if (GetAnimation() && GetAnimation()->timeline()) {
+    return GetAnimation()->timeline()->CalculateIntrinsicIterationDuration(
+        timing_);
+  }
+  return AnimationTimeDelta();
+}
+
 AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
     bool forwards,
     absl::optional<AnimationTimeDelta> local_time,
@@ -704,6 +712,13 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
       NOTREACHED();
       return AnimationTimeDelta::Max();
   }
+}
+
+absl::optional<AnimationTimeDelta> KeyframeEffect::TimelineDuration() const {
+  if (GetAnimation() && GetAnimation()->timeline()) {
+    return GetAnimation()->timeline()->GetDuration();
+  }
+  return absl::nullopt;
 }
 
 // Returns true if transform, translate, rotate or scale is composited

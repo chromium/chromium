@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_SCHEDULER_BATTERY_STATUS_LISTENER_IMPL_H_
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_SCHEDULER_BATTERY_STATUS_LISTENER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/timer/timer.h"
 #include "components/download/internal/background_service/scheduler/battery_status_listener.h"
@@ -18,6 +17,11 @@ class BatteryStatusListenerImpl : public BatteryStatusListener,
  public:
   explicit BatteryStatusListenerImpl(
       const base::TimeDelta& battery_query_interval);
+
+  BatteryStatusListenerImpl(const BatteryStatusListenerImpl&) = delete;
+  BatteryStatusListenerImpl& operator=(const BatteryStatusListenerImpl&) =
+      delete;
+
   ~BatteryStatusListenerImpl() override;
 
  protected:
@@ -49,8 +53,6 @@ class BatteryStatusListenerImpl : public BatteryStatusListener,
   base::Time last_battery_query_;
 
   Observer* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusListenerImpl);
 };
 
 }  // namespace download

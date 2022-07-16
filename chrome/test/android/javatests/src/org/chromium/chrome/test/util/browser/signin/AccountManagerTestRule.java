@@ -21,9 +21,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.R;
@@ -53,7 +55,12 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     public AccountManagerTestRule(@NonNull FakeAccountInfoService fakeAccountInfoService) {
-        mFakeAccountManagerFacade = new FakeAccountManagerFacade();
+        this(new FakeAccountManagerFacade(), fakeAccountInfoService);
+    }
+
+    public AccountManagerTestRule(@NonNull FakeAccountManagerFacade fakeAccountManagerFacade,
+            @NonNull FakeAccountInfoService fakeAccountInfoService) {
+        mFakeAccountManagerFacade = fakeAccountManagerFacade;
         mFakeAccountInfoService = fakeAccountInfoService;
     }
 
@@ -77,7 +84,9 @@ public class AccountManagerTestRule implements TestRule {
      */
     public void setUpRule() {
         if (mFakeAccountInfoService != null) {
-            AccountInfoServiceProvider.setInstanceForTests(mFakeAccountInfoService);
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                AccountInfoServiceProvider.setInstanceForTests(mFakeAccountInfoService);
+            });
         }
         AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
     }
@@ -86,7 +95,7 @@ public class AccountManagerTestRule implements TestRule {
      * Tears down the AccountManagerFacade mock and signs out if user is signed in.
      */
     public void tearDownRule() {
-        if (mIsSignedIn && getCurrentSignedInAccount() != null) {
+        if (mIsSignedIn && getPrimaryAccount(ConsentLevel.SIGNIN) != null) {
             // For android_browsertests that sign out during the test body, like
             // UkmBrowserTest.SingleSyncSignoutCheck, we should sign out during tear-down test stage
             // only if an account is signed in. Otherwise, tearDownRule() ultimately results a crash
@@ -221,12 +230,11 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Returns the currently signed in account.
-     *
+     * @return The primary account of the requested {@link ConsentLevel}.
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      */
-    public CoreAccountInfo getCurrentSignedInAccount() {
-        return SigninTestUtil.getCurrentAccount();
+    public CoreAccountInfo getPrimaryAccount(@ConsentLevel int consentLevel) {
+        return SigninTestUtil.getPrimaryAccount(consentLevel);
     }
 
     /**
@@ -245,6 +253,16 @@ public class AccountManagerTestRule implements TestRule {
     public void signOut() {
         SigninTestUtil.signOut();
         mIsSignedIn = false;
+    }
+
+    /**
+     * Creates a child account.
+     * A child-specific prefix will be appended to the base name so that the created account
+     * will be considered as {@link ChildAccountStatus#REGULAR_CHILD} in
+     * {@link FakeAccountManagerFacade}.
+     */
+    public static Account createChildAccount(String baseName) {
+        return FakeAccountManagerFacade.createChildAccount(baseName);
     }
 
     /**

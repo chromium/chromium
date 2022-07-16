@@ -7,8 +7,6 @@
 
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -18,6 +16,10 @@ class ContentsView;
 class ASH_EXPORT AppListPage : public views::View {
  public:
   AppListPage();
+
+  AppListPage(const AppListPage&) = delete;
+  AppListPage& operator=(const AppListPage&) = delete;
+
   ~AppListPage() override;
 
   // Triggered when the page is about to be shown.
@@ -49,21 +51,6 @@ class ASH_EXPORT AppListPage : public views::View {
   // the default search box size.
   // Default implementation returns an empty size.
   virtual gfx::Size GetPreferredSearchBoxSize() const;
-
-  // Returns the preferred search box origin's y coordinate within the app list
-  // contents view bounds for the provided app list view state. Used by
-  // ContentsView to calculate the search box widget bounds that
-  // should be used on this page.
-  //
-  // If this returns absl::nullopt, the ContentsView will use default
-  // y value for the search box origin.
-  // The default implementation return absl::nullopt.
-  //
-  // NOTE: The search box will be horizontally centered in the app list contents
-  // bounds, if a different behavior is required, this method should be changed
-  // to return an origin point instead of just Y coordinate.
-  virtual absl::optional<int> GetSearchBoxTop(
-      AppListViewState view_state) const;
 
   // Should update the app list page opacity for the current state. Called when
   // the selected page changes without animation - if the page implements this,
@@ -102,10 +89,10 @@ class ASH_EXPORT AppListPage : public views::View {
   }
 
   // Returns the first focusable view in this page.
-  virtual views::View* GetFirstFocusableView();
+  views::View* GetFirstFocusableView();
 
   // Returns the last focusable view in this page.
-  virtual views::View* GetLastFocusableView();
+  views::View* GetLastFocusableView();
 
   // Called when the app list view state changes to |target_view_state| to
   // animate the app list page opacity.
@@ -151,8 +138,6 @@ class ASH_EXPORT AppListPage : public views::View {
 
  private:
   ContentsView* contents_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListPage);
 };
 
 }  // namespace ash

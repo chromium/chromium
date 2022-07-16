@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_matcher_export.h"
 
@@ -21,6 +20,10 @@ namespace url_matcher {
 
 class URL_MATCHER_EXPORT URLMatcherFactory {
  public:
+  URLMatcherFactory() = delete;
+  URLMatcherFactory(const URLMatcherFactory&) = delete;
+  URLMatcherFactory& operator=(const URLMatcherFactory&) = delete;
+
   // Creates a URLMatcherConditionSet from a UrlFilter dictionary as defined in
   // the declarative API. |url_fetcher_dict| contains the dictionary passed
   // by the extension, |id| is the identifier assigned to the created
@@ -57,8 +60,6 @@ class URL_MATCHER_EXPORT URLMatcherFactory {
   static std::unique_ptr<URLMatcherPortFilter> CreateURLMatcherPorts(
       const base::Value* value,
       std::string* error);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(URLMatcherFactory);
 };
 
 }  // namespace url_matcher

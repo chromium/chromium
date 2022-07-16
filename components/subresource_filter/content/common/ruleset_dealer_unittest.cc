@@ -30,6 +30,11 @@ class SubresourceFilterRulesetDealerTest : public ::testing::Test {
  public:
   SubresourceFilterRulesetDealerTest() {}
 
+  SubresourceFilterRulesetDealerTest(
+      const SubresourceFilterRulesetDealerTest&) = delete;
+  SubresourceFilterRulesetDealerTest& operator=(
+      const SubresourceFilterRulesetDealerTest&) = delete;
+
  protected:
   void SetUp() override {
     ResetRulesetDealer();
@@ -64,8 +69,6 @@ class SubresourceFilterRulesetDealerTest : public ::testing::Test {
   testing::TestRulesetPair test_ruleset_pair_1_;
   testing::TestRulesetPair test_ruleset_pair_2_;
   std::unique_ptr<RulesetDealer> ruleset_dealer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterRulesetDealerTest);
 };
 
 TEST_F(SubresourceFilterRulesetDealerTest, NoRuleset) {

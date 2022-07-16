@@ -97,6 +97,10 @@ class TestSecureDnsHandler : public SecureDnsHandler {
 };
 
 class SecureDnsHandlerTest : public InProcessBrowserTest {
+ public:
+  SecureDnsHandlerTest(const SecureDnsHandlerTest&) = delete;
+  SecureDnsHandlerTest& operator=(const SecureDnsHandlerTest&) = delete;
+
  protected:
 #if defined(OS_WIN)
   SecureDnsHandlerTest()
@@ -190,8 +194,6 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
 #if defined(OS_WIN)
   base::win::ScopedDomainStateForTesting scoped_domain_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(SecureDnsHandlerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsModes) {

@@ -25,7 +25,6 @@ import android.os.Build;
 import android.os.ParcelUuid;
 import android.util.SparseArray;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -115,27 +114,17 @@ class Wrappers {
          */
         @CalledByNative("BluetoothAdapterWrapper")
         public static BluetoothAdapterWrapper createWithDefaultAdapter() {
-            final boolean hasMinAPI = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
-            if (!hasMinAPI) {
-                Log.i(TAG, "BluetoothAdapterWrapper.create failed: SDK version (%d) too low.",
-                        Build.VERSION.SDK_INT);
-                return null;
-            }
-
             // In Android Q and earlier the BLUETOOTH and BLUETOOTH_ADMIN permissions must be
             // granted in the manifest. In Android S and later the BLUETOOTH_SCAN and
             // BLUETOOTH_CONNECT permissions can be requested at runtime after fetching the default
             // adapter.
-            //
-            // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts compiling
-            // against the S SDK.
-            if (!BuildInfo.targetsAtLeastS() || !BuildInfo.isAtLeastS()) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
                 final boolean hasPermission =
                         ContextUtils.getApplicationContext().checkCallingOrSelfPermission(
-                                "android.permission.BLUETOOTH")
+                                Manifest.permission.BLUETOOTH)
                                 == PackageManager.PERMISSION_GRANTED
                         && ContextUtils.getApplicationContext().checkCallingOrSelfPermission(
-                                   "android.permission.BLUETOOTH_ADMIN")
+                                   Manifest.permission.BLUETOOTH_ADMIN)
                                 == PackageManager.PERMISSION_GRANTED;
 
                 if (!hasPermission) {

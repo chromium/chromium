@@ -60,12 +60,11 @@ constexpr int kSpacingBetweenPinPadAndFingerprintIcon = 24;
 constexpr int kSpacingBetweenFingerprintIconAndLabelDp = 15;
 constexpr int kFingerprintViewWidthDp = 204;
 constexpr int kFingerprintFailedAnimationNumFrames = 45;
-constexpr base::TimeDelta kResetToDefaultIconDelay =
-    base::TimeDelta::FromMilliseconds(1300);
+constexpr base::TimeDelta kResetToDefaultIconDelay = base::Milliseconds(1300);
 constexpr base::TimeDelta kResetToDefaultMessageDelay =
-    base::TimeDelta::FromMilliseconds(3000);
+    base::Milliseconds(3000);
 constexpr base::TimeDelta kFingerprintFailedAnimationDuration =
-    base::TimeDelta::FromMilliseconds(700);
+    base::Milliseconds(700);
 
 // 38% opacity.
 constexpr SkColor kDisabledFingerprintIconColor =

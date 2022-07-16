@@ -43,6 +43,10 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
                            std::unique_ptr<PolicyWatcher> policy_watcher,
                            std::unique_ptr<ChromotingHostContext> host_context,
                            std::unique_ptr<It2MeHostFactory> host_factory);
+
+  It2MeNativeMessagingHost(const It2MeNativeMessagingHost&) = delete;
+  It2MeNativeMessagingHost& operator=(const It2MeNativeMessagingHost&) = delete;
+
   ~It2MeNativeMessagingHost() override;
 
   // extensions::NativeMessageHost implementation.
@@ -153,8 +157,6 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
 
   base::WeakPtr<It2MeNativeMessagingHost> weak_ptr_;
   base::WeakPtrFactory<It2MeNativeMessagingHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(It2MeNativeMessagingHost);
 };
 
 }  // namespace remoting

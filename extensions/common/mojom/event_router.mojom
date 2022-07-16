@@ -41,9 +41,12 @@ interface EventRouter {
                                   url.mojom.Url worker_scope_url,
                                   string event_name);
 
-  // Notifies the browser that the given extension added a listener to instances
-  // of the named event that satisfy the filter.
-  AddFilteredListenerForMainThread(string extension_id,
+  // Notifies the browser that the given |extension_id| or |listener_url| added
+  // a listener to instances of the named event that satisfy the filter. If it
+  // has |extension_id| in |param|, the listener is added for the extension.
+  // Otherwise, it has a |listener_url| in |param|  and the listener is added
+  // for the URL.
+  AddFilteredListenerForMainThread(EventListenerParam param,
                                    string event_name,
                                    mojo_base.mojom.DictionaryValue filter,
                                    bool add_lazy_listener);
@@ -84,9 +87,12 @@ interface EventRouter {
                                      url.mojom.Url worker_scope_url,
                                      string event_name);
 
-  // Notifies the browser that the given extension is no longer interested in
-  // instances of the named event that satisfy the filter.
-  RemoveFilteredListenerForMainThread(string extension_id,
+  // Notifies the browser that the given |extension_id| or |listener_url| is no
+  // longer interested in instances of the named event that satisfy the filter.
+  // If it has |extension_id| in |param|, the listener is removed for the
+  // extension. Otherwise, it has a |listener_url| in |param| and the listener
+  // is removed for the URL.
+  RemoveFilteredListenerForMainThread(EventListenerParam param,
                                       string event_name,
                                       mojo_base.mojom.DictionaryValue filter,
                                       bool remove_lazy_listener);

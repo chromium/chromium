@@ -8,11 +8,12 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "services/device/generic_sensor/linux/sensor_data_linux.h"
 #include "services/device/generic_sensor/platform_sensor_linux.h"
 #include "services/device/generic_sensor/platform_sensor_reader_linux.h"
@@ -27,9 +28,7 @@ constexpr base::TaskTraits kBlockingTaskRunnerTraits = {
 }  // namespace
 
 PlatformSensorProviderLinux::PlatformSensorProviderLinux()
-    : sensor_nodes_enumerated_(false),
-      sensor_nodes_enumeration_started_(false),
-      blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+    : blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           kBlockingTaskRunnerTraits)),
       sensor_device_manager_(nullptr,
                              base::OnTaskRunnerDeleter(blocking_task_runner_)) {
@@ -45,32 +44,39 @@ void PlatformSensorProviderLinux::CreateSensorInternal(
     CreateSensorCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!sensor_nodes_enumerated_) {
-    if (!sensor_nodes_enumeration_started_) {
+  switch (enumeration_status_) {
+    case SensorEnumerationState::kNotEnumerated: {
       // Unretained() is safe because the deletion of |sensor_device_manager_|
       // is scheduled on |blocking_task_runner_| when
       // PlatformSensorProviderLinux is deleted.
-      sensor_nodes_enumeration_started_ = blocking_task_runner_->PostTask(
+      const bool will_run = blocking_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&SensorDeviceManager::Start,
                          base::Unretained(sensor_device_manager_.get())));
+      if (will_run)
+        enumeration_status_ = SensorEnumerationState::kEnumerationStarted;
+
+      FALLTHROUGH;
     }
-    return;
-  }
+    case SensorEnumerationState::kEnumerationStarted:
+      return;
+    case SensorEnumerationState::kEnumerationFinished:
+      if (IsFusionSensorType(type)) {
+        CreateFusionSensor(type, reading_buffer, std::move(callback));
+        return;
+      }
 
-  if (IsFusionSensorType(type)) {
-    CreateFusionSensor(type, reading_buffer, std::move(callback));
-    return;
-  }
+      SensorInfoLinux* sensor_device = GetSensorDevice(type);
+      if (!sensor_device) {
+        std::move(callback).Run(nullptr);
+        return;
+      }
 
-  SensorInfoLinux* sensor_device = GetSensorDevice(type);
-  if (!sensor_device) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
+      std::move(callback).Run(base::MakeRefCounted<PlatformSensorLinux>(
+          type, reading_buffer, this, sensor_device));
 
-  std::move(callback).Run(base::MakeRefCounted<PlatformSensorLinux>(
-      type, reading_buffer, this, sensor_device));
+      break;
+  }
 }
 
 void PlatformSensorProviderLinux::FreeResources() {
@@ -138,8 +144,8 @@ void PlatformSensorProviderLinux::CreateSensorAndNotify(
 
 void PlatformSensorProviderLinux::OnSensorNodesEnumerated() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!sensor_nodes_enumerated_);
-  sensor_nodes_enumerated_ = true;
+  DCHECK_EQ(enumeration_status_, SensorEnumerationState::kEnumerationStarted);
+  enumeration_status_ = SensorEnumerationState::kEnumerationFinished;
   ProcessStoredRequests();
 }
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -19,6 +18,10 @@ class OneGoogleBarServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static OneGoogleBarServiceFactory* GetInstance();
 
+  OneGoogleBarServiceFactory(const OneGoogleBarServiceFactory&) = delete;
+  OneGoogleBarServiceFactory& operator=(const OneGoogleBarServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<OneGoogleBarServiceFactory>;
 
@@ -28,8 +31,6 @@ class OneGoogleBarServiceFactory : public BrowserContextKeyedServiceFactory {
   // Overridden from BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(OneGoogleBarServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_SERVICE_FACTORY_H_

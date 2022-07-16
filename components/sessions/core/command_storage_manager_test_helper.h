@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 
 namespace sessions {
 class SessionCommand;
@@ -20,6 +19,12 @@ class CommandStorageManagerTestHelper {
  public:
   explicit CommandStorageManagerTestHelper(
       CommandStorageManager* command_storage_manager);
+
+  CommandStorageManagerTestHelper(const CommandStorageManagerTestHelper&) =
+      delete;
+  CommandStorageManagerTestHelper& operator=(
+      const CommandStorageManagerTestHelper&) = delete;
+
   ~CommandStorageManagerTestHelper() = default;
 
   // This posts the task to the SequencedWorkerPool, or run immediately
@@ -42,8 +47,6 @@ class CommandStorageManagerTestHelper {
 
  private:
   CommandStorageManager* command_storage_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommandStorageManagerTestHelper);
 };
 
 }  // namespace sessions

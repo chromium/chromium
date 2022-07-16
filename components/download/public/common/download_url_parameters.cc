@@ -19,6 +19,7 @@ DownloadUrlParameters::DownloadUrlParameters(
     : content_initiated_(false),
       use_if_range_(true),
       method_("GET"),
+      credentials_mode_(::network::mojom::CredentialsMode::kInclude),
       post_id_(-1),
       prefer_cache_(false),
       referrer_policy_(
@@ -32,7 +33,8 @@ DownloadUrlParameters::DownloadUrlParameters(
       transient_(false),
       traffic_annotation_(traffic_annotation),
       download_source_(DownloadSource::UNKNOWN),
-      require_safety_checks_(true) {}
+      require_safety_checks_(true),
+      has_user_gesture_(false) {}
 
 DownloadUrlParameters::~DownloadUrlParameters() = default;
 

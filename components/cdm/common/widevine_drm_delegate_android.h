@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/base/android/media_drm_bridge_delegate.h"
 
 namespace cdm {
@@ -15,6 +14,11 @@ namespace cdm {
 class WidevineDrmDelegateAndroid : public media::MediaDrmBridgeDelegate {
  public:
   WidevineDrmDelegateAndroid();
+
+  WidevineDrmDelegateAndroid(const WidevineDrmDelegateAndroid&) = delete;
+  WidevineDrmDelegateAndroid& operator=(const WidevineDrmDelegateAndroid&) =
+      delete;
+
   ~WidevineDrmDelegateAndroid() override;
 
   // media::MediaDrmBridgeDelegate implementation:
@@ -24,9 +28,6 @@ class WidevineDrmDelegateAndroid : public media::MediaDrmBridgeDelegate {
       const std::vector<uint8_t>& init_data,
       std::vector<uint8_t>* init_data_out,
       std::vector<std::string>* optional_parameters_out) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WidevineDrmDelegateAndroid);
 };
 
 }  // namespace cdm

@@ -205,7 +205,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
 
   if (info_parser.duration() > 0) {
     int64_t duration_in_us = info_parser.duration() * timecode_scale_in_us;
-    params.duration = base::TimeDelta::FromMicroseconds(duration_in_us);
+    params.duration = base::Microseconds(duration_in_us);
   }
 
   params.timeline_offset = info_parser.date_utc();

@@ -318,9 +318,9 @@ Decryptor::Status ToMediaDecryptorStatus(cdm::Status status) {
 
 cdm::AudioCodec ToCdmAudioCodec(AudioCodec codec) {
   switch (codec) {
-    case kCodecVorbis:
+    case AudioCodec::kVorbis:
       return cdm::kCodecVorbis;
-    case kCodecAAC:
+    case AudioCodec::kAAC:
       return cdm::kCodecAac;
     default:
       DVLOG(1) << "Unsupported AudioCodec " << codec;
@@ -354,13 +354,13 @@ SampleFormat ToMediaSampleFormat(cdm::AudioFormat format) {
 
 cdm::VideoCodec ToCdmVideoCodec(VideoCodec codec) {
   switch (codec) {
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       return cdm::kCodecVp8;
-    case kCodecH264:
+    case VideoCodec::kH264:
       return cdm::kCodecH264;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       return cdm::kCodecVp9;
-    case kCodecAV1:
+    case VideoCodec::kAV1:
       return cdm::kCodecAv1;
     default:
       DVLOG(1) << "Unsupported VideoCodec " << codec;
@@ -371,19 +371,19 @@ cdm::VideoCodec ToCdmVideoCodec(VideoCodec codec) {
 VideoCodec ToMediaVideoCodec(cdm::VideoCodec codec) {
   switch (codec) {
     case cdm::kUnknownVideoCodec:
-      return kUnknownVideoCodec;
+      return VideoCodec::kUnknown;
     case cdm::kCodecVp8:
-      return kCodecVP8;
+      return VideoCodec::kVP8;
     case cdm::kCodecH264:
-      return kCodecH264;
+      return VideoCodec::kH264;
     case cdm::kCodecVp9:
-      return kCodecVP9;
+      return VideoCodec::kVP9;
     case cdm::kCodecAv1:
-      return kCodecAV1;
+      return VideoCodec::kAV1;
   }
 
   NOTREACHED() << "Unexpected cdm::VideoCodec " << codec;
-  return kUnknownVideoCodec;
+  return VideoCodec::kUnknown;
 }
 
 cdm::VideoCodecProfile ToCdmVideoCodecProfile(VideoCodecProfile profile) {

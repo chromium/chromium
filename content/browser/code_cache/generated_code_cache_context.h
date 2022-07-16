@@ -36,6 +36,10 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
 
   GeneratedCodeCacheContext();
 
+  GeneratedCodeCacheContext(const GeneratedCodeCacheContext&) = delete;
+  GeneratedCodeCacheContext& operator=(const GeneratedCodeCacheContext&) =
+      delete;
+
   // Initialize is called on the UI thread when the StoragePartition is
   // being setup.
   void Initialize(const base::FilePath& path, int max_bytes);
@@ -45,6 +49,7 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   // Call on the code cache thread to get the code cache instances.
   GeneratedCodeCache* generated_js_code_cache() const;
   GeneratedCodeCache* generated_wasm_code_cache() const;
+  GeneratedCodeCache* generated_webui_js_code_cache() const;
 
  private:
   friend class base::RefCountedThreadSafe<GeneratedCodeCacheContext>;
@@ -57,11 +62,12 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
       generated_js_code_cache_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
   std::unique_ptr<GeneratedCodeCache, base::OnTaskRunnerDeleter>
       generated_wasm_code_cache_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
+  std::unique_ptr<GeneratedCodeCache, base::OnTaskRunnerDeleter>
+      generated_webui_js_code_cache_{nullptr,
+                                     base::OnTaskRunnerDeleter(nullptr)};
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(GeneratedCodeCacheContext);
 };
 
 }  // namespace content

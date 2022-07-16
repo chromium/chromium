@@ -30,24 +30,23 @@ import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 /**
  * View tests for the keyboard accessory tab layout component.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class KeyboardAccessoryTabLayoutViewTest extends DummyUiChromeActivityTestCase {
+public class KeyboardAccessoryTabLayoutViewTest extends DummyUiActivityTestCase {
     private PropertyModel mModel;
     private KeyboardAccessoryTabLayoutView mView;
 
     private KeyboardAccessoryData.Tab createTestTab(String contentDescription) {
         return new KeyboardAccessoryData.Tab("Passwords",
-                getActivity().getResources().getDrawable(android.R.drawable.ic_lock_lock),
-                contentDescription,
+                getActivity().getDrawable(android.R.drawable.ic_lock_lock), contentDescription,
                 R.layout.empty_accessory_sheet, // Unused.
                 AccessoryTabType.ALL,
                 null); // Unused.

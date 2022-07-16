@@ -52,12 +52,9 @@ InputCancelListEntry::InputCancelListEntry(InputCancelListEntry&& other) =
 InputCancelListEntry::~InputCancelListEntry() = default;
 
 // The default timeout values came from W3C spec.
-const base::TimeDelta Session::kDefaultImplicitWaitTimeout =
-    base::TimeDelta::FromSeconds(0);
-const base::TimeDelta Session::kDefaultPageLoadTimeout =
-    base::TimeDelta::FromSeconds(300);
-const base::TimeDelta Session::kDefaultScriptTimeout =
-    base::TimeDelta::FromSeconds(30);
+const base::TimeDelta Session::kDefaultImplicitWaitTimeout = base::Seconds(0);
+const base::TimeDelta Session::kDefaultPageLoadTimeout = base::Seconds(300);
+const base::TimeDelta Session::kDefaultScriptTimeout = base::Seconds(30);
 
 Session::Session(const std::string& id)
     : id(id),

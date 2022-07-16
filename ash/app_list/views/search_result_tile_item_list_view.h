@@ -9,7 +9,6 @@
 
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_tile_item_view.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 
 namespace views {

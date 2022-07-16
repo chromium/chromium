@@ -126,7 +126,7 @@ class ImportNotifier(object):
                 changed baselines.
             gerrit_url_with_ps: Gerrit URL of this CL with the patchset number.
         """
-        for test_name, changed_baselines in changed_test_baselines.iteritems():
+        for test_name, changed_baselines in changed_test_baselines.items():
             directory = self.find_owned_directory(test_name)
             if not directory:
                 _log.warning('Cannot find OWNERS of %s', test_name)
@@ -174,7 +174,7 @@ class ImportNotifier(object):
             test_expectations: A dictionary mapping names of tests that cannot
                 be rebaselined to a list of new test expectation lines.
         """
-        for test_name, expectation_lines in test_expectations.iteritems():
+        for test_name, expectation_lines in test_expectations.items():
             directory = self.find_owned_directory(test_name)
             if not directory:
                 _log.warning('Cannot find OWNERS of %s', test_name)
@@ -250,7 +250,7 @@ class ImportNotifier(object):
         imported_commits = self.local_wpt.commits_in_range(
             wpt_revision_start, wpt_revision_end)
         bugs = []
-        for directory, failures in self.new_failures_by_directory.iteritems():
+        for directory, failures in self.new_failures_by_directory.items():
             summary = '[WPT] New failures introduced in {} by import {}'.format(
                 directory, gerrit_url)
 
@@ -258,9 +258,17 @@ class ImportNotifier(object):
                 self.finder.web_tests_dir(), directory)
             owners_file = self.host.filesystem.join(full_directory, 'OWNERS')
             metadata_file = self.host.filesystem.join(full_directory,
-                                                      'WPT_METADATA')
-            is_wpt_notify_enabled = self.owners_extractor.is_wpt_notify_enabled(
-                metadata_file)
+                                                      'DIR_METADATA')
+            is_wpt_notify_enabled = False
+            try:
+                is_wpt_notify_enabled = self.owners_extractor.is_wpt_notify_enabled(
+                    metadata_file)
+            except KeyError:
+                _log.info('KeyError when parsing %s' % metadata_file)
+
+            if not is_wpt_notify_enabled:
+                _log.info("WPT-NOTIFY disabled in %s." % full_directory)
+                continue
 
             owners = self.owners_extractor.extract_owners(owners_file)
             # owners may be empty but not None.
@@ -297,17 +305,9 @@ class ImportNotifier(object):
                                                    cc,
                                                    components,
                                                    labels=['Test-WebTest'])
-            _log.info(unicode(bug))
-
-            if is_wpt_notify_enabled:
-                _log.info(
-                    "WPT-NOTIFY enabled in this directory; adding the bug to the pending list."
-                )
-                bugs.append(bug)
-            else:
-                _log.info(
-                    "WPT-NOTIFY disabled in this directory; discarding the bug."
-                )
+            _log.info(bug)
+            _log.info("WPT-NOTIFY enabled in %s; adding the bug to the pending list." % full_directory)
+            bugs.append(bug)
         return bugs
 
     def format_commit_list(self, imported_commits, directory):

@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/one_shot_event.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -18,35 +21,6 @@
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-namespace {
-constexpr char kEchoSystemExtensionManifest[] =
-    R"({
-          "name": "Sample System Web Extension",
-          "short_name": "Sample SWX",
-          "companion_web_app_url": "https://example.com",
-          "service_worker_url": "/sw.js",
-          "id": "1234",
-          "type": "echo"
-    })";
-
-constexpr char kSystemExtensionEchoPrefix[] = "system-extension-echo-";
-
-GURL GetBaseURL(const std::string& id, SystemExtensionType type) {
-  // The host is made of up a System Extension prefix based on the type and
-  // the System Extension Id.
-  base::StringPiece host_prefix;
-  switch (type) {
-    case SystemExtensionType::kEcho:
-      host_prefix = kSystemExtensionEchoPrefix;
-      break;
-  }
-  const std::string host = base::StrCat({host_prefix, id});
-  return GURL(base::StrCat({content::kChromeUIUntrustedScheme,
-                            url::kStandardSchemeSeparator, host}));
-}
-
-}  // namespace
 
 SystemExtensionsInstallManager::SystemExtensionsInstallManager() {
   InstallFromCommandLineIfNecessary();
@@ -68,37 +42,37 @@ const SystemExtension* SystemExtensionsInstallManager::GetSystemExtensionById(
   const auto it = system_extensions_.find(id);
   if (it == system_extensions_.end())
     return nullptr;
-  return &(it->second);
+  return &it->second;
 }
 
 void SystemExtensionsInstallManager::InstallFromCommandLineIfNecessary() {
-  base::FilePath user_data_directory;
-  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_directory);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(chromeos::switches::kInstallSystemExtension)) {
+    return;
+  }
+  base::FilePath system_extension_dir = command_line->GetSwitchValuePath(
+      chromeos::switches::kInstallSystemExtension);
 
-  // For now just use a hardcoded System Extension manifest. Future CLs will
-  // change this to take a command line argument to a CRX.
-  absl::optional<base::Value> value =
-      base::JSONReader::Read(kEchoSystemExtensionManifest);
-  if (base::CompareCaseInsensitiveASCII("echo",
-                                        *value->FindStringKey("type")) != 0) {
-    LOG(ERROR) << "System Extension type is not supported.";
+  sandboxed_unpacker_.GetSystemExtensionFromDir(
+      system_extension_dir,
+      base::BindOnce(
+          &SystemExtensionsInstallManager::OnGetSystemExtensionFromDir,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SystemExtensionsInstallManager::OnGetSystemExtensionFromDir(
+    StatusOrSystemExtension<SystemExtensionsSandboxedUnpacker::Status> result) {
+  if (!result.ok()) {
+    LOG(ERROR) << "Failed to install extension from command line: "
+               << static_cast<int32_t>(result.status());
+    on_command_line_install_finished_.Signal();
     return;
   }
 
-  SystemExtension system_extension;
-  std::string id = *value->FindStringKey("id");
-  system_extension.id = {1, 2, 3, 4};
-  system_extension.type = SystemExtensionType::kEcho;
-  system_extension.name = *value->FindStringKey("name");
-  system_extension.short_name = *value->FindStringKey("short_name");
-  system_extension.companion_web_app_url =
-      GURL(*value->FindStringKey("companion_web_app_url"));
-
-  system_extension.base_url = GetBaseURL(id, system_extension.type);
-  system_extension.service_worker_url = system_extension.base_url.Resolve(
-      *value->FindStringKey("service_worker_url"));
-
+  // TODO(ortuno): Move resources from the specified directory into the user
+  // profile.
   SystemExtensionsWebUIConfigMap::GetInstance().AddForSystemExtension(
-      system_extension);
-  system_extensions_[{1, 2, 3, 4}] = std::move(system_extension);
+      result.value());
+  system_extensions_[{1, 2, 3, 4}] = std::move(result).value();
+  on_command_line_install_finished_.Signal();
 }

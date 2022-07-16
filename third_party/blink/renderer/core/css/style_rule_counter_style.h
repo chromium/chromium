@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class CascadeLayer;
+
 class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
  public:
   StyleRuleCounterStyle(const AtomicString&, CSSPropertyValueSet*);
@@ -53,6 +55,9 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
     return MakeGarbageCollected<StyleRuleCounterStyle>(*this);
   }
 
+  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
+  const CascadeLayer* GetCascadeLayer() const { return layer_; }
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
@@ -69,6 +74,8 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
   Member<const CSSValue> symbols_;
   Member<const CSSValue> additive_symbols_;
   Member<const CSSValue> speak_as_;
+
+  Member<const CascadeLayer> layer_;
 
   // Tracks mutations due to setter functions.
   int version_ = 0;

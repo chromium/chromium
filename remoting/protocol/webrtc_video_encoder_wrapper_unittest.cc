@@ -13,7 +13,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 
-using base::TimeDelta;
 using testing::_;
 using testing::Field;
 using testing::InSequence;
@@ -111,12 +110,10 @@ class MockVideoChannelStateObserver : public VideoChannelStateObserver {
   MOCK_METHOD(void, OnEncoderReady, (), (override));
   MOCK_METHOD(void, OnKeyFrameRequested, (), (override));
   MOCK_METHOD(void, OnTargetBitrateChanged, (int bitrate_kbps), (override));
-  MOCK_METHOD(void, OnRttUpdate, (base::TimeDelta rtt), (override));
-  MOCK_METHOD(void, OnTopOffActive, (bool active), (override));
   MOCK_METHOD(void,
               OnFrameEncoded,
               (WebrtcVideoEncoder::EncodeResult encode_result,
-               WebrtcVideoEncoder::EncodedFrame* frame),
+               const WebrtcVideoEncoder::EncodedFrame* frame),
               (override));
   MOCK_METHOD(void,
               OnEncodedFrameSent,
@@ -237,14 +234,6 @@ TEST_F(WebrtcVideoEncoderWrapperTest, NotifiesOnBitrateChanged) {
   PostQuitAndRun();
 }
 
-TEST_F(WebrtcVideoEncoderWrapperTest, NotifiesOnRttUpdate) {
-  EXPECT_CALL(observer_, OnRttUpdate(base::TimeDelta::FromMilliseconds(123)));
-
-  auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
-  encoder->OnRttUpdate(123);
-  PostQuitAndRun();
-}
-
 TEST_F(WebrtcVideoEncoderWrapperTest, NotifiesFrameEncodedAndReturned) {
   EXPECT_CALL(callback_, OnEncodedImage(_, Field(&CodecSpecificInfo::codecType,
                                                  kVideoCodecVP9)))
@@ -330,7 +319,7 @@ TEST_F(WebrtcVideoEncoderWrapperTest, EmptyFrameDropped) {
 
   // Need to fast-forward a little bit, so the frame is not dropped
   // because of the busy encoder.
-  task_environment_.FastForwardBy(TimeDelta::FromMilliseconds(500));
+  task_environment_.FastForwardBy(base::Milliseconds(500));
   encoder->Encode(frame2, &frame_types);
 
   PostQuitAndRun();
@@ -347,7 +336,7 @@ TEST_F(WebrtcVideoEncoderWrapperTest, EmptyFrameNotDroppedAfter2Seconds) {
   std::vector<VideoFrameType> frame_types;
   frame_types.push_back(VideoFrameType::kVideoFrameKey);
   encoder->Encode(frame1, &frame_types);
-  task_environment_.FastForwardBy(TimeDelta::FromMilliseconds(2500));
+  task_environment_.FastForwardBy(base::Milliseconds(2500));
   encoder->Encode(frame2, &frame_types);
 
   PostQuitAndRun();

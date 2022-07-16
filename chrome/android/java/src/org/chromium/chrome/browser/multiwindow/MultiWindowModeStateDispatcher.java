@@ -56,6 +56,11 @@ public interface MultiWindowModeStateDispatcher {
     boolean isMultiInstanceRunning();
 
     /**
+     * @return Whether a Chrome task is running foreground in the adjacent window.
+     */
+    boolean isChromeRunningInAdjacentWindow();
+
+    /**
      * See {@link MultiWindowUtils#isOpenInOtherWindowSupported(Activity)}.
      * @return Whether open in other window is supported for the activity associated with this
      *         state dispatcher.
@@ -89,4 +94,9 @@ public interface MultiWindowModeStateDispatcher {
      * @return The ActivityOptions needed to open the content in another display.
      */
     Bundle getOpenInOtherWindowActivityOptions();
+
+    /**
+     * @return The number of Chrome instances that can switch to or launch.
+     */
+    int getInstanceCount();
 }

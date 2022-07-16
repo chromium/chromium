@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_file_ref_renderer_host.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
@@ -24,6 +25,7 @@
 #include "ppapi/shared_impl/url_request_info_data.h"
 #include "ppapi/shared_impl/var.h"
 #include "ppapi/thunk/enter.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
@@ -51,10 +53,14 @@ namespace content {
 
 namespace {
 
-mojo::Remote<blink::mojom::FileSystemManager> GetFileSystemManager() {
+mojo::Remote<blink::mojom::FileSystemManager> GetFileSystemManager(
+    RendererPpapiHost* renderer_ppapi_host,
+    PP_Instance instance) {
   mojo::Remote<blink::mojom::FileSystemManager> file_system_manager;
-  ChildThreadImpl::current()->BindHostReceiver(
-      file_system_manager.BindNewPipeAndPassReceiver());
+  RenderFrame* frame = renderer_ppapi_host->GetRenderFrameForInstance(instance);
+  if (frame)
+    frame->GetBrowserInterfaceBroker()->GetInterface(
+        file_system_manager.BindNewPipeAndPassReceiver());
   return file_system_manager;
 }
 
@@ -80,6 +86,12 @@ bool AppendFileRefToBody(PP_Instance instance,
       renderer_ppapi_host->GetPpapiHost()->GetResourceHost(resource);
   if (!resource_host || !resource_host->IsFileRefHost())
     return false;
+
+  mojo::Remote<blink::mojom::FileSystemManager> file_system_manager =
+      GetFileSystemManager(renderer_ppapi_host, instance);
+  CHECK(file_system_manager)
+      << "No FileSystemManager exists for this PepperPluginInstance";
+
   PepperFileRefRendererHost* file_ref_host =
       static_cast<PepperFileRefRendererHost*>(resource_host);
   switch (file_ref_host->GetFileSystemType()) {
@@ -87,8 +99,8 @@ bool AppendFileRefToBody(PP_Instance instance,
     case PP_FILESYSTEMTYPE_LOCALPERSISTENT:
       // TODO(kinuko): remove this sync IPC when we fully support
       // AppendURLRange for FileSystem URL.
-      GetFileSystemManager()->GetPlatformPath(file_ref_host->GetFileSystemURL(),
-                                              &platform_path);
+      file_system_manager->GetPlatformPath(file_ref_host->GetFileSystemURL(),
+                                           &platform_path);
       break;
     case PP_FILESYSTEMTYPE_EXTERNAL:
       platform_path = file_ref_host->GetExternalFilePath();

@@ -39,10 +39,11 @@ class OmahaAttributesHandlerUnitTest : public ExtensionServiceTestBase {
 
 TEST_F(OmahaAttributesHandlerUnitTest, LogPolicyViolationUWSMetrics) {
   base::HistogramTester histograms;
+  InitializeGoodInstalledExtensionService();
+  service()->Init();
   base::Value attributes(base::Value::Type::DICTIONARY);
   attributes.SetBoolKey("_policy_violation", true);
   attributes.SetBoolKey("_potentially_uws", true);
-  InitializeEmptyExtensionService();
 
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
@@ -62,6 +63,42 @@ TEST_F(OmahaAttributesHandlerUnitTest, LogPolicyViolationUWSMetrics) {
       "Extensions.ExtensionAddDisabledRemotelyReason2",
       /*sample=*/ExtensionUpdateCheckDataKey::kPolicyViolation,
       /*expected_count=*/1);
+}
+
+TEST_F(OmahaAttributesHandlerUnitTest, LogMalwareMetrics) {
+  base::HistogramTester histograms;
+  InitializeGoodInstalledExtensionService();
+  service()->Init();
+  base::Value attributes(base::Value::Type::DICTIONARY);
+
+  attributes.SetBoolKey("_malware", false);
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
+  // The re-enabled metric should not be logged if the extension is not disabled
+  // previously.
+  histograms.ExpectBucketCount("Extensions.ExtensionReenabledRemotely",
+                               /*sample=*/ExtensionUpdateCheckDataKey::kMalware,
+                               /*expected_count=*/0);
+  histograms.ExpectBucketCount("Extensions.ExtensionDisabledRemotely2",
+                               /*sample=*/ExtensionUpdateCheckDataKey::kNoKey,
+                               /*expected_count=*/1);
+
+  attributes.SetBoolKey("_malware", true);
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
+  histograms.ExpectBucketCount("Extensions.ExtensionDisabledRemotely2",
+                               /*sample=*/ExtensionUpdateCheckDataKey::kMalware,
+                               /*expected_count=*/1);
+  histograms.ExpectBucketCount("Extensions.ExtensionAddDisabledRemotelyReason2",
+                               /*sample=*/ExtensionUpdateCheckDataKey::kMalware,
+                               /*expected_count=*/1);
+
+  attributes.SetBoolKey("_malware", false);
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
+  histograms.ExpectBucketCount("Extensions.ExtensionReenabledRemotely",
+                               /*sample=*/ExtensionUpdateCheckDataKey::kMalware,
+                               /*expected_count=*/1);
+  histograms.ExpectBucketCount("Extensions.ExtensionDisabledRemotely2",
+                               /*sample=*/ExtensionUpdateCheckDataKey::kNoKey,
+                               /*expected_count=*/2);
 }
 
 TEST_F(OmahaAttributesHandlerUnitTest, DisableRemotelyForPolicyViolation) {
@@ -210,8 +247,9 @@ TEST_F(OmahaAttributesHandlerUnitTest, KeepDisabledWhenMalwareRemoved) {
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   EXPECT_TRUE(state_tester.ExpectBlocklisted(kTestExtensionId));
-  EXPECT_EQ(disable_reason::DISABLE_REMOTELY_FOR_MALWARE |
-                disable_reason::DISABLE_GREYLIST,
+  EXPECT_TRUE(blocklist_prefs::HasOmahaBlocklistState(
+      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs));
+  EXPECT_EQ(disable_reason::DISABLE_GREYLIST,
             prefs->GetDisableReasons(kTestExtensionId));
 
   // Remove malware.

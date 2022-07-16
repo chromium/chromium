@@ -21,6 +21,8 @@ namespace ui {
 class OSExchangeData;
 class XOSExchangeDataProvider;
 
+extern const char kXdndDirectSave0[];
+
 // Converts the current set of X masks into the set of ui::EventFlags.
 COMPONENT_EXPORT(UI_BASE_X) int XGetMaskAsEventFlags();
 

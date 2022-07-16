@@ -31,7 +31,7 @@
 namespace {
 
 // Delay for RecordCurrentState execution.
-constexpr base::TimeDelta kRecordStateDelay = base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kRecordStateDelay = base::Seconds(15);
 
 // Returns the plugin preferences corresponding for this user, if available.
 // If multiple user profiles are loaded, returns the preferences corresponding

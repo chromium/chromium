@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_cloud_external_data_policy_handler.h"
 
 namespace policy {
@@ -23,6 +22,12 @@ class DeviceWilcoDtcConfigurationExternalDataHandler final
  public:
   explicit DeviceWilcoDtcConfigurationExternalDataHandler(
       PolicyService* policy_service);
+
+  DeviceWilcoDtcConfigurationExternalDataHandler(
+      const DeviceWilcoDtcConfigurationExternalDataHandler&) = delete;
+  DeviceWilcoDtcConfigurationExternalDataHandler& operator=(
+      const DeviceWilcoDtcConfigurationExternalDataHandler&) = delete;
+
   ~DeviceWilcoDtcConfigurationExternalDataHandler() override;
 
   // DeviceCloudExternalDataPolicyHandler:
@@ -35,8 +40,6 @@ class DeviceWilcoDtcConfigurationExternalDataHandler final
  private:
   std::unique_ptr<DeviceCloudExternalDataPolicyObserver>
       device_wilco_dtc_configuration_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceWilcoDtcConfigurationExternalDataHandler);
 };
 
 }  // namespace policy

@@ -19,7 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_function_histogram_value.h"
@@ -28,6 +28,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "ipc/ipc_message.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
@@ -107,12 +108,13 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     BAD_MESSAGE
   };
 
-  // TODO(crbug.com/1196205): Convert the type of |results| to a base::Value.
-  using ResponseCallback = base::OnceCallback<void(ResponseType type,
-                                                   const base::Value& results,
-                                                   const std::string& error)>;
+  using ResponseCallback = base::OnceCallback<
+      void(ResponseType type, base::Value results, const std::string& error)>;
 
   ExtensionFunction();
+
+  ExtensionFunction(const ExtensionFunction&) = delete;
+  ExtensionFunction& operator=(const ExtensionFunction&) = delete;
 
   static void EnsureShutdownNotifierFactoryBuilt();
 
@@ -353,6 +355,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // only for when you want to test functionality that doesn't exercise the
   // Run() aspect of an extension function.
   void ignore_did_respond_for_testing() { did_respond_ = true; }
+
+  void preserve_results_for_testing() { preserve_results_for_testing_ = true; }
+
   // Same as above, but global. Yuck. Do not add any more uses of this.
   static bool ignore_all_did_respond_for_testing_do_not_use;
 
@@ -464,6 +469,13 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // additional work or cleanup.
   virtual void OnResponded();
 
+  // Called when the `browser_context_` associated with this ExtensionFunction
+  // is shutting down. Immediately after this call, `browser_context_` will be
+  // set to null. Subclasses should override this method to perform any cleanup
+  // that needs to happen before the context shuts down, such as removing
+  // observers of KeyedServices.
+  virtual void OnBrowserContextShutdown() {}
+
   // Return true if the argument to this function at |index| was provided and
   // is non-null.
   bool HasOptionalArgument(size_t index);
@@ -475,11 +487,20 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Sets the Blob UUIDs whose ownership is being transferred to the renderer.
   void SetTransferredBlobUUIDs(const std::vector<std::string>& blob_uuids);
 
+  bool has_args() const { return args_.has_value(); }
+
+  const std::vector<base::Value>& args() const {
+    DCHECK(args_);
+    return *args_;
+  }
+
+  std::vector<base::Value>& mutable_args() {
+    DCHECK(args_);
+    return *args_;
+  }
+
   // The extension that called this function.
   scoped_refptr<const extensions::Extension> extension_;
-
-  // The arguments to the API. Only non-null if argument were specified.
-  std::unique_ptr<base::ListValue> args_;
 
  private:
   friend struct content::BrowserThread::DeleteOnThread<
@@ -498,6 +519,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // The callback for mojom::Renderer::TransferBlobs().
   void OnTransferBlobsAck(int process_id,
                           const std::vector<std::string>& blob_uuids);
+
+  // The arguments to the API. Only non-null if arguments were specified.
+  absl::optional<std::vector<base::Value>> args_;
 
   base::ElapsedTimer timer_;
 
@@ -573,6 +597,18 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // TODO(devlin): Replace this with response_type_ != null.
   bool did_respond_ = false;
 
+  // If set to true, preserves |results_|, even after SendResponseImpl() was
+  // called.
+  //
+  // SendResponseImpl() moves the results out of |this| through
+  // ResponseCallback, and calling this method avoids that. This is nececessary
+  // for tests that use test_utils::RunFunction*(), as those tests typically
+  // retrieve the result afterwards through GetResultList().
+  // TODO(https://crbug.com/1268112): Remove this once GetResultList() is
+  // removed after ensuring consumers only use RunFunctionAndReturnResult() to
+  // retrieve the results.
+  bool preserve_results_for_testing_ = false;
+
   // The dispatcher that will service this extension function call.
   base::WeakPtr<extensions::ExtensionFunctionDispatcher> dispatcher_;
 
@@ -594,8 +630,6 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   std::vector<std::string> transferred_blob_uuids_;
 
   int worker_thread_id_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionFunction);
 };
 
 #endif  // EXTENSIONS_BROWSER_EXTENSION_FUNCTION_H_

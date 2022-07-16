@@ -28,6 +28,10 @@ class GetVisualsInfoTask : public Task {
   GetVisualsInfoTask(PrefetchStore* store,
                      int64_t offline_id,
                      ResultCallback callback);
+
+  GetVisualsInfoTask(const GetVisualsInfoTask&) = delete;
+  GetVisualsInfoTask& operator=(const GetVisualsInfoTask&) = delete;
+
   ~GetVisualsInfoTask() override;
 
  private:
@@ -39,8 +43,6 @@ class GetVisualsInfoTask : public Task {
   ResultCallback callback_;
 
   base::WeakPtrFactory<GetVisualsInfoTask> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GetVisualsInfoTask);
 };
 
 }  // namespace offline_pages

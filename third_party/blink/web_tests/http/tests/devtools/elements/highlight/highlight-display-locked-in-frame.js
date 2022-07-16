@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests highlights for display locking in a frame.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <iframe id="container" style="content-visibility: hidden; contain-intrinsic-size: 10px;"

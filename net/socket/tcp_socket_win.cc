@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -107,6 +108,9 @@ class TCPSocketWin::Core : public base::RefCounted<Core> {
  public:
   explicit Core(TCPSocketWin* socket);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   // Start watching for the end of a read or write operation.
   void WatchForRead();
   void WatchForWrite();
@@ -175,8 +179,6 @@ class TCPSocketWin::Core : public base::RefCounted<Core> {
   base::win::ObjectWatcher read_watcher_;
   // |write_watcher_| watches for events from Write();
   base::win::ObjectWatcher write_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 TCPSocketWin::Core::Core(TCPSocketWin* socket)
@@ -563,8 +565,6 @@ int TCPSocketWin::Write(
   write_buffer.len = buf_len;
   write_buffer.buf = buf->data();
 
-  // TODO(wtc): Remove the assertion after enough testing.
-  AssertEventNotSignaled(core_->write_overlapped_.hEvent);
   DWORD num;
   int rv = WSASend(socket_, &write_buffer, 1, &num, 0,
                    &core_->write_overlapped_, nullptr);
@@ -849,15 +849,6 @@ int TCPSocketWin::DoConnect() {
   SockaddrStorage storage;
   if (!peer_address_->ToSockAddr(storage.addr, &storage.addr_len))
     return ERR_ADDRESS_INVALID;
-
-  // Set option to choose a random port, if the socket is not already bound.
-  // Ignore failures, which may happen if the socket was already bound.
-  // Microsoft's documentation claims this is a uint16, but experimentally, this
-  // fails if passed a 16-bit value.
-  std::uint32_t randomize_port_value = 1;
-  setsockopt(socket_, SOL_SOCKET, SO_RANDOMIZE_PORT,
-             reinterpret_cast<const char*>(&randomize_port_value),
-             sizeof(randomize_port_value));
 
   if (!connect(socket_, storage.addr, storage.addr_len)) {
     // Connected without waiting!

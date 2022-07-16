@@ -13,6 +13,10 @@ namespace web {
 class SerializableUserDataImpl : public SerializableUserData {
  public:
   SerializableUserDataImpl();
+
+  SerializableUserDataImpl(const SerializableUserDataImpl&) = delete;
+  SerializableUserDataImpl& operator=(const SerializableUserDataImpl&) = delete;
+
   ~SerializableUserDataImpl() override;
 
   // Constructor taking the NSDictionary holding the serializable data.
@@ -30,13 +34,17 @@ class SerializableUserDataImpl : public SerializableUserData {
   // The dictionary passed on initialization.  After calling Decode(), this will
   // contain the data that is decoded from the NSCoder.
   NSDictionary<NSString*, id<NSCoding>>* data_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerializableUserDataImpl);
 };
 
 class SerializableUserDataManagerImpl : public SerializableUserDataManager {
  public:
   SerializableUserDataManagerImpl();
+
+  SerializableUserDataManagerImpl(const SerializableUserDataManagerImpl&) =
+      delete;
+  SerializableUserDataManagerImpl& operator=(
+      const SerializableUserDataManagerImpl&) = delete;
+
   ~SerializableUserDataManagerImpl();
 
   // SerializableUserDataManager:
@@ -49,8 +57,6 @@ class SerializableUserDataManagerImpl : public SerializableUserDataManager {
  private:
   // The dictionary that stores serializable user data.
   NSMutableDictionary<NSString*, id<NSCoding>>* data_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerializableUserDataManagerImpl);
 };
 
 }  // namespace web

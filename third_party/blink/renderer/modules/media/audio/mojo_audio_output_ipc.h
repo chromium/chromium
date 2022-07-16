@@ -10,7 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/audio/audio_output_ipc.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom-blink.h"
@@ -40,6 +40,9 @@ class MODULES_EXPORT MojoAudioOutputIPC
   MojoAudioOutputIPC(
       FactoryAccessorCB factory_accessor,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+  MojoAudioOutputIPC(const MojoAudioOutputIPC&) = delete;
+  MojoAudioOutputIPC& operator=(const MojoAudioOutputIPC&) = delete;
 
   ~MojoAudioOutputIPC() override;
 
@@ -107,8 +110,6 @@ class MODULES_EXPORT MojoAudioOutputIPC
   // To make sure we don't send an "authorization completed" callback for a
   // stream after it's closed, we use this weak factory.
   base::WeakPtrFactory<MojoAudioOutputIPC> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAudioOutputIPC);
 };
 
 }  // namespace blink

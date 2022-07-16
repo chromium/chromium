@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -616,8 +617,7 @@ TEST_F(FidoGetAssertionHandlerTest,
   platform_device->SetDeviceTransport(FidoTransportProtocol::kInternal);
   platform_device->ExpectCtap2CommandAndRespondWithError(
       CtapRequestCommand::kAuthenticatorGetAssertion,
-      CtapDeviceResponseCode::kCtap2ErrOperationDenied,
-      base::TimeDelta::FromMicroseconds(10));
+      CtapDeviceResponseCode::kCtap2ErrOperationDenied, base::Microseconds(10));
   platform_discovery()->WaitForCallToStartAndSimulateSuccess();
   platform_discovery()->AddDevice(std::move(platform_device));
 

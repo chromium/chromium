@@ -66,6 +66,7 @@
 <translation id="133801305381959373">Nessun campo di testo modificabile successivo</translation>
 <translation id="1342835525016946179">articolo</translation>
 <translation id="1346059596910821859">Suggerimento</translation>
+<translation id="1354356357730355833">copia</translation>
 <translation id="135978014023467274">È stato effettuato l'aggiornamento a ChromeVox 63!</translation>
 <translation id="1360699455582016846">Fai clic sull'elemento sotto la chiave di routing <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1377925789329510816">Questa è l'ultima intestazione. Premi tasto per la ricerca + H per passare alla prima intestazione oppure tasto per la ricerca + MAIUSC + H per passare alla seconda intestazione in questa pagina.</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">aggiorna</translation>
 <translation id="2675533876313964202">Verde pallido</translation>
 <translation id="2684412629217766642">Chiudi tutorial di ChromeVox</translation>
+<translation id="2692503699962701720">Modifica il tono quando vengono letti tipi di elementi e testi formattati</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">Candidato per la conversione del testo</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{parentesi tonda di apertura}other{# parentesi tonde di apertura}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">verticale</translation>
 <translation id="3286390186030710347">Dispositivo di scorrimento</translation>
 <translation id="3300348286427369683">Supporto per RTF. Adesso ChromeVox supporta campi in formato Rich text (RTF), inclusi i comandi di spostamento, lo spostamento del puntatore nel display braille, la selezione e altro ancora.</translation>
+<translation id="3300733168898541351">annulla</translation>
 <translation id="3307886118343381874">Vai alla fine della tabella</translation>
 <translation id="3312997241656799641">Link visitato successivo</translation>
 <translation id="3313245066383501820">Tasto di modifica di ChromeVox</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">Mostra elenco moduli</translation>
 <translation id="3414400929511680526">Blu alice</translation>
 <translation id="3418936350470374046">Nessuna cella sotto</translation>
+<translation id="3419269701801640163">incolla</translation>
 <translation id="3435494200763325275">Tab navigazione (continua)</translation>
 <translation id="344800400831402066">Perù</translation>
 <translation id="3457000393508828486">Parzialmente premuto</translation>
@@ -425,6 +429,7 @@
 <translation id="3813387282697781382">Corallo chiaro</translation>
 <translation id="3816633764618089385">Elemento multimediale successivo</translation>
 <translation id="3840823741487267909">Abbreviazione</translation>
+<translation id="3841319830220785495">Voce naturale predefinita</translation>
 <translation id="385383972552776628">Apri pagina di opzioni</translation>
 <translation id="3856075812838139784">Sola lettura</translation>
 <translation id="3857141338659865495">Turchese medio</translation>
@@ -451,7 +456,9 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">Scorri verso il basso</translation>
 <translation id="4035381225449278841">Primavera</translation>
+<translation id="4038098586530338813">ripeti</translation>
 <translation id="4047216625641135770">Contrassegno</translation>
+<translation id="4047910800766704982">Quando il tuo dispositivo è online, puoi usare una voce umana e naturale. Il testo verrà inviato a Google per essere elaborato. Puoi disattivare questa funzione in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="4053520724192563562">Verde limetta</translation>
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">Un caricamento di pagina in corso</translation>
@@ -605,6 +612,7 @@
 <translation id="5170206230005240598">Sottotitoli braille attivati</translation>
 <translation id="5183440668879371625">Braille riga precedente</translation>
 <translation id="5189244881767082992">Riga</translation>
+<translation id="5234747236692380506">digita <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">Polvere di seta</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Fine</translation>
@@ -687,6 +695,7 @@
 <translation id="5748623122140342504">Intestazione livello 5 precedente</translation>
 <translation id="5760594853119905566">Appendice</translation>
 <translation id="5761219715606611783">Ben fatto! Hai imparato le basi del tocco con ChromeVox. Puoi uscire da questo tutorial o ripeterlo ricorrendo ai pulsanti sottostanti.</translation>
+<translation id="5776001898637896684">Estensione di sintesi vocale Google Enhanced Network</translation>
 <translation id="5805940204952508776">Tocca con due dita</translation>
 <translation id="5819072574982403430">Elemento albero</translation>
 <translation id="5822819874379903994">Turchese scuro</translation>
@@ -731,6 +740,7 @@
 <translation id="6034000775414344507">Grigio chiaro</translation>
 <translation id="6036135911048686884">Esplora al tocco</translation>
 <translation id="6037602951055904232">Panoramica avanti</translation>
+<translation id="604240746417122825">Errore grammaticale</translation>
 <translation id="6082768461603900813">Navigazione di base</translation>
 <translation id="609281021724813947">Nessun dispositivo di scorrimento precedente</translation>
 <translation id="6100239002225743044">Sposta in alto di una riga</translation>
@@ -787,6 +797,7 @@
 <translation id="6544923685317771506">Conchiglia marina</translation>
 <translation id="6551185905438378412">Avorio</translation>
 <translation id="6561818612645211875">Vai all'inizio della riga corrente</translation>
+<translation id="6563126228219321999">Nessun elemento non valido</translation>
 <translation id="6579990219486187401">Rosa chiaro</translation>
 <translation id="6583174818554398774">Vai al livello di dettaglio successivo</translation>
 <translation id="6584162722998608255">Nella prossima lezione imparerai come muoverti sullo schermo. Puoi scorrere con un dito da sinistra verso destra per passare all'elemento successivo. Provalo ora per andare al passaggio successivo.</translation>
@@ -817,6 +828,7 @@
 <translation id="6815255864998354418">Limone crema</translation>
 <translation id="6816066673340002913">Ocra dorato pallido</translation>
 <translation id="6826226459053491773">Scorri verso il basso con due dita</translation>
+<translation id="6826669432862053130">Elemento non valido successivo</translation>
 <translation id="6833103209700200188">Piè di pagina</translation>
 <translation id="6837853484260746864">Seleziona una voce:</translation>
 <translation id="6858047746862060282">Prologo</translation>
@@ -830,6 +842,7 @@
 <translation id="6910211073230771657">Eliminato</translation>
 <translation id="6910969481785184048">Attivare, disattivare e interrompere</translation>
 <translation id="6919104639734799681">Mostra elenco tabelle</translation>
+<translation id="692135145298539227">elimina</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6949846980769640811">Acquamarina medio</translation>
 <translation id="6951482098621102657">Nessuna intestazione di livello 5 successiva</translation>
@@ -909,7 +922,7 @@
 <translation id="743783356331413498">Esempio</translation>
 <translation id="7439060726180460871">Directory</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7484805699335881122">Modifica il tono quando vengono letti tipi di elementi e testi tra virgolette, eliminati, in grassetto, tra parentesi o in maiuscolo.</translation>
+<translation id="7465123027577412805">Vuoi usare una voce naturale?</translation>
 <translation id="7491962110804786152">Tab</translation>
 <translation id="7492497529767769458">Passa alla sezione successiva. Alcuni esempi includono la barra di stato e Avvio app.</translation>
 <translation id="7505149250476994901">Di' "maiuscola" dopo la lettera</translation>
@@ -979,6 +992,7 @@
 <translation id="7968340748835037139">Verde scuro</translation>
 <translation id="7972507042926081808">Cioccolato</translation>
 <translation id="7974390230414479278">Voce di menu</translation>
+<translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Voce <ph name="COUNT" /></translation>
 <translation id="8004507136466386272">Parole</translation>
 <translation id="8004512796067398576">Aumenta</translation>
 <translation id="8007540374018858731">h3</translation>
@@ -1004,8 +1018,10 @@
 <translation id="8126386426083591964">Nessuna intestazione di livello 5 precedente</translation>
 <translation id="812886159861361726">Download di <ph name="FILE_NAME" /> interrotto</translation>
 <translation id="8129445297241948503">Nessuna cella sopra</translation>
+<translation id="8132248161074464367">Elemento non valido precedente</translation>
 <translation id="8138880386467279117">Touch</translation>
 <translation id="8146613869421949343">Dopodiché, imparerai a utilizzare il tasto per la ricerca. Il tasto per la ricerca viene utilizzato insieme ad altri tasti per i comandi di ChromeVox. Si trova immediatamente sopra al tasto Maiusc di sinistra. Per continuare, premi il tasto per la ricerca.</translation>
+<translation id="8158033275290782295">seleziona tutto</translation>
 <translation id="816818801578874684">Questa è la prima intestazione. Premi il tasto per la ricerca + H per passare a quella successiva.</translation>
 <translation id="8173092779156526980">Scorri verso sinistra con quattro dita</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{carattere di sottolineatura}other{# caratteri di sottolineatura}}</translation>
@@ -1121,6 +1137,7 @@
 <translation id="9077305471618729969">Verde mare chiaro</translation>
 <translation id="9080299285199342830">Vai alla fine</translation>
 <translation id="9089864840575085222">Imposta eco digitazione a rotazione</translation>
+<translation id="9099429023611373837">taglia</translation>
 <translation id="9108370397979208512">elemento matematico</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{percentuale}other{# simboli percentuale}}</translation>

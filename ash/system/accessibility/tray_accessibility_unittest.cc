@@ -8,22 +8,31 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
+#include "media/base/media_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 
 namespace ash {
 namespace {
+
+const std::u16string kInitialDictationViewSubtitleText = u"This is a test";
+const std::u16string kSodaDownloaded = u"Speech files downloaded";
+const std::u16string kSodaInProgress =
+    u"Downloading speech recognition files… 50%";
+const std::u16string kSodaFailed =
+    u"Can't download speech files. Try again later.";
 
 void SetScreenMagnifierEnabled(bool enabled) {
   Shell::Get()->accessibility_delegate()->SetMagnifierEnabled(enabled);
@@ -45,9 +54,6 @@ void EnableSelectToSpeak(bool enabled) {
 }
 
 void EnableDictation(bool enabled) {
-  if (enabled) {
-    Shell::Get()->accessibility_controller()->dictation().SetDialogAccepted();
-  }
   Shell::Get()->accessibility_controller()->dictation().SetEnabled(enabled);
 }
 
@@ -66,6 +72,10 @@ void EnableVirtualKeyboard(bool enabled) {
 
 void EnableLargeCursor(bool enabled) {
   Shell::Get()->accessibility_controller()->large_cursor().SetEnabled(enabled);
+}
+
+void EnableLiveCaption(bool enabled) {
+  Shell::Get()->accessibility_controller()->live_caption().SetEnabled(enabled);
 }
 
 void EnableMonoAudio(bool enabled) {
@@ -98,27 +108,24 @@ void EnableSwitchAccess(bool enabled) {
 }  // namespace
 
 class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
+ public:
+  TrayAccessibilityTest(const TrayAccessibilityTest&) = delete;
+  TrayAccessibilityTest& operator=(const TrayAccessibilityTest&) = delete;
+
  protected:
   TrayAccessibilityTest() = default;
   ~TrayAccessibilityTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
+         ash::features::kOnDeviceSpeechRecognition},
+        {});
     AshTestBase::SetUp();
     Shell::Get()->accessibility_controller()->AddObserver(this);
-    // Since this test suite is part of ash unit tests, the
-    // SodaInstallerImplChromeOS is never created (it's normally created when
-    // ChromeBrowserMainPartsChromeos initializes). Create it here so that
-    // calling speech::SodaInstaller::GetInstance() returns a valid instance.
-    soda_installer_impl_ =
-        std::make_unique<speech::SodaInstallerImplChromeOS>();
-    speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kExperimentalAccessibilityDictationOffline);
   }
 
   void TearDown() override {
-    speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
-    soda_installer_impl_.reset();
     Shell::Get()->accessibility_controller()->RemoveObserver(this);
     AshTestBase::TearDown();
   }
@@ -166,6 +173,10 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
 
   void ClickLargeMouseCursorOnDetailMenu() {
     ClickView(detailed_menu_->large_cursor_view_);
+  }
+
+  void ClickLiveCaptionOnDetailMenu() {
+    ClickView(detailed_menu_->live_caption_view_);
   }
 
   void ClickMonoAudioOnDetailMenu() {
@@ -226,6 +237,10 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
 
   bool IsLargeCursorMenuShownOnDetailMenu() const {
     return detailed_menu_->large_cursor_view_;
+  }
+
+  bool IsLiveCaptionShownOnDetailMenu() const {
+    return detailed_menu_->live_caption_view_;
   }
 
   bool IsAutoclickMenuShownOnDetailMenu() const {
@@ -322,6 +337,11 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
                                  detailed_menu_->large_cursor_view_);
   }
 
+  bool IsLiveCaptionEnabledOnDetailMenu() const {
+    return IsEnabledOnDetailMenu(detailed_menu_->live_caption_enabled_,
+                                 detailed_menu_->live_caption_view_);
+  }
+
   bool IsAutoclickEnabledOnDetailMenu() const {
     return IsEnabledOnDetailMenu(detailed_menu_->autoclick_enabled_,
                                  detailed_menu_->autoclick_view_);
@@ -374,20 +394,8 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
     return detailed_menu_->GetClassName();
   }
 
-  void OnSodaInstalled() { detailed_menu_->OnSodaInstalled(); }
-
-  void OnSodaError() { detailed_menu_->OnSodaError(); }
-
-  void OnSodaProgress(int progress) {
-    detailed_menu_->OnSodaProgress(progress);
-  }
-
-  void SetDictationViewSubtitleText(std::u16string text) {
-    detailed_menu_->SetDictationViewSubtitleTextForTesting(text);
-  }
-
-  std::u16string GetDictationViewSubtitleText() {
-    return detailed_menu_->GetDictationViewSubtitleTextForTesting();
+  tray::AccessibilityDetailedView* detailed_menu() {
+    return detailed_menu_.get();
   }
 
  private:
@@ -402,10 +410,7 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
 
   std::unique_ptr<DetailedViewDelegate> delegate_;
   std::unique_ptr<tray::AccessibilityDetailedView> detailed_menu_;
-  std::unique_ptr<speech::SodaInstallerImplChromeOS> soda_installer_impl_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrayAccessibilityTest);
 };
 
 TEST_F(TrayAccessibilityTest, CheckMenuVisibilityOnDetailMenu) {
@@ -423,6 +428,7 @@ TEST_F(TrayAccessibilityTest, CheckMenuVisibilityOnDetailMenu) {
   EXPECT_TRUE(IsHelpAvailableOnDetailMenu());
   EXPECT_TRUE(IsSettingsAvailableOnDetailMenu());
   EXPECT_TRUE(IsLargeCursorMenuShownOnDetailMenu());
+  EXPECT_TRUE(IsLiveCaptionShownOnDetailMenu());
   EXPECT_TRUE(IsMonoAudioMenuShownOnDetailMenu());
   EXPECT_TRUE(IsCaretHighlightMenuShownOnDetailMenu());
   EXPECT_TRUE(IsHighlightMouseCursorMenuShownOnDetailMenu());
@@ -445,6 +451,7 @@ TEST_F(TrayAccessibilityTest, CheckMenuVisibilityOnDetailMenu) {
   EXPECT_FALSE(IsHelpAvailableOnDetailMenu());
   EXPECT_FALSE(IsSettingsAvailableOnDetailMenu());
   EXPECT_TRUE(IsLargeCursorMenuShownOnDetailMenu());
+  EXPECT_TRUE(IsLiveCaptionShownOnDetailMenu());
   EXPECT_TRUE(IsMonoAudioMenuShownOnDetailMenu());
   EXPECT_TRUE(IsCaretHighlightMenuShownOnDetailMenu());
   EXPECT_TRUE(IsHighlightMouseCursorMenuShownOnDetailMenu());
@@ -468,6 +475,7 @@ TEST_F(TrayAccessibilityTest, CheckMenuVisibilityOnDetailMenu) {
   EXPECT_FALSE(IsHelpAvailableOnDetailMenu());
   EXPECT_FALSE(IsSettingsAvailableOnDetailMenu());
   EXPECT_TRUE(IsLargeCursorMenuShownOnDetailMenu());
+  EXPECT_TRUE(IsLiveCaptionShownOnDetailMenu());
   EXPECT_TRUE(IsMonoAudioMenuShownOnDetailMenu());
   EXPECT_TRUE(IsCaretHighlightMenuShownOnDetailMenu());
   EXPECT_TRUE(IsHighlightMouseCursorMenuShownOnDetailMenu());
@@ -558,6 +566,17 @@ TEST_F(TrayAccessibilityTest, ClickDetailMenu) {
   ClickLargeMouseCursorOnDetailMenu();
   EXPECT_FALSE(accessibility_controller->large_cursor().enabled());
 
+  // Confirms that the check item toggles Live Caption.
+  EXPECT_FALSE(accessibility_controller->live_caption().enabled());
+
+  CreateDetailedMenu();
+  ClickLiveCaptionOnDetailMenu();
+  EXPECT_TRUE(accessibility_controller->live_caption().enabled());
+
+  CreateDetailedMenu();
+  ClickLiveCaptionOnDetailMenu();
+  EXPECT_FALSE(accessibility_controller->live_caption().enabled());
+
   // Confirms that the check item toggles mono audio.
   EXPECT_FALSE(accessibility_controller->mono_audio().enabled());
 
@@ -637,7 +656,6 @@ TEST_F(TrayAccessibilityTest, ClickDetailMenu) {
 
   // Confirms that the check item toggles dictation.
   EXPECT_FALSE(accessibility_controller->dictation().enabled());
-  Shell::Get()->accessibility_controller()->dictation().SetDialogAccepted();
 
   CreateDetailedMenu();
   ClickDictationOnDetailMenu();
@@ -655,68 +673,128 @@ TEST_F(TrayAccessibilityTest, GetClassName) {
             GetDetailedViewClassName());
 }
 
-// Ensures that the dictation subtitle text is changed to the correct value
-// when calling various methods.
-TEST_F(TrayAccessibilityTest, SodaDownloadUnitTest) {
-  CreateDetailedMenu();
-  // We need to set the subtitle text before we try to retrieve it.
-  SetDictationViewSubtitleText(u"This is a test");
-  EXPECT_EQ(u"This is a test", GetDictationViewSubtitleText());
-  OnSodaInstalled();
-  EXPECT_EQ(u"Speech files downloaded", GetDictationViewSubtitleText());
+class TrayAccessibilitySodaTest : public TrayAccessibilityTest {
+ protected:
+  TrayAccessibilitySodaTest() { set_start_session(false); }
+  ~TrayAccessibilitySodaTest() override = default;
+  TrayAccessibilitySodaTest(const TrayAccessibilitySodaTest&) = delete;
+  TrayAccessibilitySodaTest& operator=(const TrayAccessibilitySodaTest&) =
+      delete;
 
-  SetDictationViewSubtitleText(u"This is a test");
-  EXPECT_EQ(u"This is a test", GetDictationViewSubtitleText());
-  OnSodaError();
-  EXPECT_EQ(u"Can't download speech files. Try again later.",
-            GetDictationViewSubtitleText());
+  void SetUp() override {
+    TrayAccessibilityTest::SetUp();
+    // Since this test suite is part of ash unit tests, the
+    // SodaInstallerImplChromeOS is never created (it's normally created when
+    // `ChromeBrowserMainPartsAsh` initializes). Create it here so that
+    // calling speech::SodaInstaller::GetInstance() returns a valid instance.
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kExperimentalAccessibilityDictationOffline,
+         ash::features::kOnDeviceSpeechRecognition},
+        {});
+    soda_installer_impl_ =
+        std::make_unique<speech::SodaInstallerImplChromeOS>();
+    soda_installer()->UninstallSodaForTesting();
 
-  SetDictationViewSubtitleText(u"This is a test");
-  EXPECT_EQ(u"This is a test", GetDictationViewSubtitleText());
-  OnSodaProgress(50);
-  EXPECT_EQ(u"Downloading speech recognition files… 50%",
-            GetDictationViewSubtitleText());
+    CreateDetailedMenu();
+    EnableDictation(true);
+    SetDictationViewSubtitleText(kInitialDictationViewSubtitleText);
+    SetDictationLocale("en-US");
+  }
+
+  void TearDown() override {
+    soda_installer()->UninstallSodaForTesting();
+    soda_installer_impl_.reset();
+    TrayAccessibilityTest::TearDown();
+  }
+
+  void SetDictationLocale(const std::string& locale) {
+    Shell::Get()->session_controller()->GetActivePrefService()->SetString(
+        prefs::kAccessibilityDictationLocale, locale);
+  }
+
+  speech::SodaInstaller* soda_installer() {
+    return speech::SodaInstaller::GetInstance();
+  }
+
+  speech::LanguageCode en_us() { return speech::LanguageCode::kEnUs; }
+
+  void SetDictationViewSubtitleText(std::u16string text) {
+    detailed_menu()->SetDictationViewSubtitleTextForTesting(text);
+  }
+
+  std::u16string GetDictationViewSubtitleText() {
+    return detailed_menu()->GetDictationViewSubtitleTextForTesting();
+  }
+
+ private:
+  std::unique_ptr<speech::SodaInstallerImplChromeOS> soda_installer_impl_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Ensures that the Dictation subtitle changes when SODA AND the language pack
+// matching the Dictation locale are installed.
+TEST_F(TrayAccessibilitySodaTest, OnSodaInstalledNotification) {
+  SetDictationLocale("fr-FR");
+
+  // Pretend that the SODA binary was installed. We still need to wait for the
+  // correct language pack before doing anything.
+  soda_installer()->NotifySodaInstalledForTesting();
+  EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
+  soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(en_us());
+  EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
+  soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(
+      speech::LanguageCode::kFrFr);
+  EXPECT_EQ(kSodaDownloaded, GetDictationViewSubtitleText());
 }
 
-// Ensures that we don't respond to soda download updates when dictation is off.
-TEST_F(TrayAccessibilityTest, SodaDownloadDictationDisabled) {
-  CreateDetailedMenu();
+// Ensures we only notify the user of progress for the language pack matching
+// the Dictation locale.
+TEST_F(TrayAccessibilitySodaTest, OnSodaProgressNotification) {
+  // Do not give updates for the SODA binary.
+  soda_installer()->NotifySodaDownloadProgressForTesting(50);
+  EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
+  soda_installer()->NotifyOnSodaLanguagePackProgressForTesting(
+      50, speech::LanguageCode::kFrFr);
+  EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
+  soda_installer()->NotifyOnSodaLanguagePackProgressForTesting(50, en_us());
+  EXPECT_EQ(kSodaInProgress, GetDictationViewSubtitleText());
+}
+
+// Ensures we only notify the user of an error when the SODA binary fails to
+// download.
+TEST_F(TrayAccessibilitySodaTest, SodaBinaryErrorNotification) {
+  soda_installer()->NotifySodaErrorForTesting();
+  EXPECT_EQ(kSodaFailed, GetDictationViewSubtitleText());
+}
+
+TEST_F(TrayAccessibilitySodaTest, SodaLanguageErrorNotification) {
+  // Do nothing if the failed language pack is different than the Dictation
+  // locale.
+  soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(
+      speech::LanguageCode::kFrFr);
+  EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
+  soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(en_us());
+  EXPECT_EQ(kSodaFailed, GetDictationViewSubtitleText());
+}
+
+// Ensures that we don't respond to SODA download updates when dictation is off.
+TEST_F(TrayAccessibilitySodaTest, SodaDownloadDictationDisabled) {
   EnableDictation(false);
-  SetDictationViewSubtitleText(u"This is a test");
-  EXPECT_EQ(u"This is a test", GetDictationViewSubtitleText());
-  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-  EXPECT_EQ(u"This is a test", GetDictationViewSubtitleText());
-}
-
-// Ensures that we respond to soda download updates when dictation is on.
-// For this test, we enable dictation before the menu is created.
-TEST_F(TrayAccessibilityTest, SodaDownloadDictationEnabledBeforeMenuCreated) {
-  EnableDictation(true);
-  CreateDetailedMenu();
-  SetDictationViewSubtitleText(u"This is a test");
-  EXPECT_EQ(u"This is a test", GetDictationViewSubtitleText());
-  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-  EXPECT_EQ(u"Speech files downloaded", GetDictationViewSubtitleText());
-}
-
-// Ensures that we respond to soda download updates when dictation is on.
-// For this test, we enable dictation after the menu is created.
-TEST_F(TrayAccessibilityTest, SodaDownloadDictationEnabledAfterMenuCreated) {
-  CreateDetailedMenu();
-  EnableDictation(true);
-  SetDictationViewSubtitleText(u"This is a test");
-  EXPECT_EQ(u"This is a test", GetDictationViewSubtitleText());
-  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-  EXPECT_EQ(u"Speech files downloaded", GetDictationViewSubtitleText());
+  EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
+  soda_installer()->NotifySodaErrorForTesting();
+  EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
 }
 
 class TrayAccessibilityLoginScreenTest : public TrayAccessibilityTest {
+ public:
+  TrayAccessibilityLoginScreenTest(const TrayAccessibilityLoginScreenTest&) =
+      delete;
+  TrayAccessibilityLoginScreenTest& operator=(
+      const TrayAccessibilityLoginScreenTest&) = delete;
+
  protected:
   TrayAccessibilityLoginScreenTest() { set_start_session(false); }
   ~TrayAccessibilityLoginScreenTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TrayAccessibilityLoginScreenTest);
 };
 
 TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
@@ -729,6 +807,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -751,6 +830,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -773,6 +853,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -795,6 +876,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -817,6 +899,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -839,6 +922,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -861,6 +945,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -883,6 +968,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -905,6 +991,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -927,6 +1014,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_TRUE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -949,6 +1037,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -971,6 +1060,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_TRUE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -993,6 +1083,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1015,6 +1106,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_TRUE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1037,6 +1129,53 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
+  EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
+  EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
+  EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
+  EXPECT_FALSE(IsCaretHighlightEnabledOnDetailMenu());
+  EXPECT_FALSE(IsHighlightMouseCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
+  EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
+  // Switch Access is currently cannot be enabled from the login screen.
+  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
+  CloseDetailMenu();
+
+  // Enabling Live Caption.
+  EnableLiveCaption(true);
+  CreateDetailedMenu();
+  EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
+  EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
+  EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
+  EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
+  EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_TRUE(IsLiveCaptionEnabledOnDetailMenu());
+  EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
+  EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
+  EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
+  EXPECT_FALSE(IsCaretHighlightEnabledOnDetailMenu());
+  EXPECT_FALSE(IsHighlightMouseCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
+  EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
+  // Switch Access is currently cannot be enabled from the login screen.
+  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
+  CloseDetailMenu();
+
+  // Disabling Live Caption.
+  EnableLiveCaption(false);
+  CreateDetailedMenu();
+  EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
+  EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
+  EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
+  EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
+  EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1059,6 +1198,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_TRUE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1081,6 +1221,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1103,6 +1244,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_TRUE(IsMonoAudioEnabledOnDetailMenu());
@@ -1125,6 +1267,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1147,6 +1290,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1169,6 +1313,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1191,6 +1336,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1213,6 +1359,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1235,6 +1382,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1257,6 +1405,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1279,6 +1428,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1301,6 +1451,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1325,6 +1476,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1345,6 +1497,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1364,6 +1517,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   SetScreenMagnifierEnabled(true);
   SetDockedMagnifierEnabled(true);
   EnableLargeCursor(true);
+  EnableLiveCaption(true);
   EnableVirtualKeyboard(true);
   EnableAutoclick(true);
   EnableMonoAudio(true);
@@ -1380,6 +1534,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_TRUE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_TRUE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_TRUE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_TRUE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_TRUE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_TRUE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_TRUE(IsMonoAudioEnabledOnDetailMenu());
@@ -1399,6 +1554,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   SetScreenMagnifierEnabled(false);
   SetDockedMagnifierEnabled(false);
   EnableLargeCursor(false);
+  EnableLiveCaption(false);
   EnableVirtualKeyboard(false);
   EnableAutoclick(false);
   EnableMonoAudio(false);
@@ -1415,6 +1571,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1437,6 +1594,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_TRUE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
@@ -1459,6 +1617,7 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
   EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
   EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());

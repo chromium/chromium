@@ -5,11 +5,6 @@
     platformBuildVersionCode="31"
     platformBuildVersionName="12"
     android:isolatedSplits="true">
-  <queries>  # DIFF-ANCHOR: 0c3a615d
-    <intent>  # DIFF-ANCHOR: 28c960ba
-      <action android:name="android.media.browse.MediaBrowserService"/>
-    </intent>  # DIFF-ANCHOR: 28c960ba
-  </queries>  # DIFF-ANCHOR: 0c3a615d
   <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
   <uses-feature android:name="android.software.leanback" android:required="false"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -146,6 +141,12 @@
         android:process=":webview_service"
         android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: eecf2fee
+    <service  # DIFF-ANCHOR: bda8b561
+        android:name="org.chromium.android_webview.services.MetricsUploadService"
+        android:exported="true"
+        android:process=":webview_service"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: bda8b561
     <service  # DIFF-ANCHOR: 47046f1b
         android:name="org.chromium.android_webview.services.SafeModeService"
         android:exported="true"

@@ -15,9 +15,9 @@
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/overlay_transform.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/transform.h"
 #include "ui/gl/gl_bindings.h"
 
 // Define this for extra GL error debugging (slower).

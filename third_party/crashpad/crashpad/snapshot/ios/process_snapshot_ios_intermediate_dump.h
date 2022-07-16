@@ -39,6 +39,11 @@ class ProcessSnapshotIOSIntermediateDump final : public ProcessSnapshot {
  public:
   ProcessSnapshotIOSIntermediateDump() = default;
 
+  ProcessSnapshotIOSIntermediateDump(
+      const ProcessSnapshotIOSIntermediateDump&) = delete;
+  ProcessSnapshotIOSIntermediateDump& operator=(
+      const ProcessSnapshotIOSIntermediateDump&) = delete;
+
   //! \brief Initializes the object.
   //!
   //! \param[in] dump_path A class containing various system data points.
@@ -103,8 +108,6 @@ class ProcessSnapshotIOSIntermediateDump final : public ProcessSnapshot {
   std::map<std::string, std::string> annotations_simple_map_;
   timeval snapshot_time_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessSnapshotIOSIntermediateDump);
 };
 
 }  // namespace internal

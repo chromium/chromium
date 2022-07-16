@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
+#include "chrome/updater/win/net/network_fetcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {

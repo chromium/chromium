@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_presentation_controller.h"
 
 #import "base/check_op.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/util/accessibility_close_menu_button.h"
@@ -62,7 +63,7 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
       CGFloat width = availableWidth / 2.;
       CGFloat height = MIN(
           [self.navigationController layoutFittingSizeForWidth:width].height,
-          availableHeight / 2.);
+          availableHeight * kMaxBottomSheetHeightRatioWithWindow);
 
       presentedViewFrame.origin.x += (availableWidth - width) / 2.;
       presentedViewFrame.origin.y += (availableHeight - height) / 2.;

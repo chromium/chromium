@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/url_pattern_index/closed_hash_map.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
@@ -85,7 +84,7 @@ int CompareDomains(base::StringPiece lhs_domain, base::StringPiece rhs_domain);
 // Increase this value when introducing an incompatible change to the
 // UrlPatternIndex schema (flat/url_pattern_index.fbs). url_pattern_index
 // clients can use this as a signal to rebuild rulesets.
-constexpr int kUrlPatternIndexFormatVersion = 10;
+constexpr int kUrlPatternIndexFormatVersion = 13;
 
 // The class used to construct an index over the URL patterns of a set of URL
 // rules. The rules themselves need to be converted to FlatBuffers format by the
@@ -94,6 +93,10 @@ constexpr int kUrlPatternIndexFormatVersion = 10;
 class UrlPatternIndexBuilder {
  public:
   explicit UrlPatternIndexBuilder(flatbuffers::FlatBufferBuilder* flat_builder);
+
+  UrlPatternIndexBuilder(const UrlPatternIndexBuilder&) = delete;
+  UrlPatternIndexBuilder& operator=(const UrlPatternIndexBuilder&) = delete;
+
   ~UrlPatternIndexBuilder();
 
   // Adds a UrlRule to the index. The caller should have already persisted the
@@ -126,8 +129,6 @@ class UrlPatternIndexBuilder {
 
   // Must outlive this instance.
   flatbuffers::FlatBufferBuilder* flat_builder_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlPatternIndexBuilder);
 };
 
 // Encapsulates a read-only index built over the URL patterns of a set of URL
@@ -154,6 +155,10 @@ class UrlPatternIndexMatcher {
   // Creates an instance to access the given |flat_index|. If |flat_index| is
   // nullptr, then all requests return no match.
   explicit UrlPatternIndexMatcher(const flat::UrlPatternIndex* flat_index);
+
+  UrlPatternIndexMatcher(const UrlPatternIndexMatcher&) = delete;
+  UrlPatternIndexMatcher& operator=(const UrlPatternIndexMatcher&) = delete;
+
   ~UrlPatternIndexMatcher();
   UrlPatternIndexMatcher(UrlPatternIndexMatcher&&);
   UrlPatternIndexMatcher& operator=(UrlPatternIndexMatcher&&);
@@ -240,8 +245,6 @@ class UrlPatternIndexMatcher {
 
   // The number of rules in this index. Mutable since this is lazily computed.
   mutable absl::optional<size_t> rules_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlPatternIndexMatcher);
 };
 
 // Returns whether the |origin| matches the domain list of the |rule|. A match

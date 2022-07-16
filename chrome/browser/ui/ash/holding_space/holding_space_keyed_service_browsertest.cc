@@ -46,7 +46,10 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace ash {
 namespace {
@@ -590,7 +593,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   const GURL url =
       holding_space_util::ResolveFileSystemUrl(browser()->profile(), file_path);
   storage::FileSystemURL file_system_url =
-      storage::ExternalMountPoints::GetSystemInstance()->CrackURL(url);
+      storage::ExternalMountPoints::GetSystemInstance()->CrackURL(
+          url, blink::StorageKey(url::Origin::Create(url)));
   ASSERT_TRUE(file_system_url.is_valid());
   ASSERT_EQ(storage::kFileSystemTypeDriveFs, file_system_url.type());
 
@@ -794,19 +798,47 @@ class HoldingSpaceKeyedServiceLacrosBrowserTest
     : public HoldingSpaceKeyedServiceBrowserTest,
       public ::testing::WithParamInterface<
           std::tuple<FileSystemType,
-                     bool /* from_incognito_profile */,
-                     bool /* incognito_downloads_enabled */>> {
+                     /*from_incognito_profile=*/bool,
+                     /*incognito_downloads_enabled=*/bool,
+                     /*in_progress_downloads_enabled=*/bool,
+                     /*in_progress_downloads_eligible_client=*/bool>> {
  public:
   HoldingSpaceKeyedServiceLacrosBrowserTest()
       : HoldingSpaceKeyedServiceBrowserTest(std::get<0>(GetParam())) {
-    scoped_feature_list.InitWithFeatureState(
-        features::kHoldingSpaceIncognitoProfileIntegration,
-        IncognitoDownloadsEnabled());
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+
+    if (IncognitoDownloadsEnabled()) {
+      enabled_features.push_back(
+          features::kHoldingSpaceIncognitoProfileIntegration);
+    } else {
+      disabled_features.push_back(
+          features::kHoldingSpaceIncognitoProfileIntegration);
+    }
+
+    if (InProgressDownloadsEnabled()) {
+      enabled_features.push_back(
+          features::kHoldingSpaceInProgressDownloadsIntegration);
+    } else {
+      disabled_features.push_back(
+          features::kHoldingSpaceInProgressDownloadsIntegration);
+    }
+
+    scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
   }
 
   bool FromIncognitoProfile() const { return std::get<1>(GetParam()); }
-
   bool IncognitoDownloadsEnabled() const { return std::get<2>(GetParam()); }
+  bool InProgressDownloadsEnabled() const { return std::get<3>(GetParam()); }
+  bool InProgressDownloadsEligibleClient() const {
+    return std::get<4>(GetParam());
+  }
+
+  crosapi::DownloadControllerAsh* download_controller() {
+    return crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->download_controller_ash();
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list;
@@ -815,10 +847,12 @@ class HoldingSpaceKeyedServiceLacrosBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     FileSystem,
     HoldingSpaceKeyedServiceLacrosBrowserTest,
-    ::testing::Combine(::testing::Values(FileSystemType::kDownloads,
-                                         FileSystemType::kDriveFs),
-                       /*from_incognito_profile=*/::testing::Bool(),
-                       /*incognito_downloads_enabled=*/::testing::Bool()));
+    ::testing::Combine(
+        ::testing::Values(FileSystemType::kDownloads, FileSystemType::kDriveFs),
+        /*from_incognito_profile=*/::testing::Bool(),
+        /*incognito_downloads_enabled=*/::testing::Bool(),
+        /*in_progress_downloads_enabled=*/::testing::Bool(),
+        /*in_progress_downloads_eligible_client=*/::testing::Bool()));
 
 // Tests -----------------------------------------------------------------------
 
@@ -828,44 +862,60 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceLacrosBrowserTest,
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
   ASSERT_EQ(0u, model->items().size());
 
-  // Create a test downloaded file.
-  auto file_path = CreateTextFile(GetTestMountPoint(), "foo.txt");
+  // Create a `crosapi::mojom::DownloadItem`.
+  auto download = crosapi::mojom::DownloadItem::New();
+  download->guid = base::GUID::GenerateRandomV4().AsLowercaseString();
+  download->received_bytes = 0;
+  download->has_received_bytes = true;
+  download->total_bytes = -1;
+  download->has_total_bytes = true;
+  download->is_from_incognito_profile = FromIncognitoProfile();
 
-  // Create a corresponding `crosapi::mojom::DownloadEvent`.
-  crosapi::mojom::DownloadEventPtr dle = crosapi::mojom::DownloadEvent::New();
-  dle->target_file_path = file_path;
-  dle->is_from_incognito_profile = FromIncognitoProfile();
+  // Lacros clients which are eligible for in-progress downloads integration
+  // have `has_is_mixed_content` present. This field was the last field to be
+  // implemented in Lacros. Its presence indicates that other required metadata
+  // and APIs (e.g. pause, resume, cancel, etc.) are also implemented and is
+  // therefore used to gate eligibility.
+  if (InProgressDownloadsEligibleClient())
+    download->has_is_mixed_content = true;
 
-  auto* download_controller =
-      crosapi::CrosapiManager::Get()->crosapi_ash()->download_controller_ash();
+  // Notify observers of `download` creation.
+  download->state = crosapi::mojom::DownloadState::kInProgress;
+  download_controller()->OnDownloadCreated(download.Clone());
 
-  // Only `crosapi::mojom::DownloadState::kComplete` events should currently do
-  // anything. The rest should all be ignored.
-  using DownloadState = crosapi::mojom::DownloadState;
-  for (int state = static_cast<int>(DownloadState::kMinValue);
-       state <= static_cast<int>(DownloadState::kMaxValue); ++state) {
-    if (state == static_cast<int>(crosapi::mojom::DownloadState::kComplete))
-      continue;
-    dle->state = static_cast<DownloadState>(state);
-    download_controller->OnDownloadUpdated(dle.Clone());
+  // Simulate a target file path being chosen and notify observers.
+  download->full_path = CreateTextFile(GetTestMountPoint(), "file.crdownload");
+  download->target_file_path = CreateTextFile(GetTestMountPoint(), "file.txt");
+  download_controller()->OnDownloadUpdated(download.Clone());
+
+  // In-progress downloads should only be added to holding space if the feature
+  // is enabled and the Lacros client owning the download is supported. If the
+  // download is from an incognito profile, that feature must be enabled too.
+  if (InProgressDownloadsEnabled() && InProgressDownloadsEligibleClient() &&
+      (!FromIncognitoProfile() || IncognitoDownloadsEnabled())) {
+    ASSERT_EQ(1u, model->items().size());
+    const auto& download_item = model->items().front();
+    EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kLacrosDownload);
+    EXPECT_EQ(download_item->file_path(), download->full_path);
+  } else {
     ASSERT_EQ(0u, model->items().size());
   }
 
-  dle->state = crosapi::mojom::DownloadState::kComplete;
-  download_controller->OnDownloadUpdated(dle.Clone());
-  // Holding space should ignore a completed download from an incognito profile
-  // if the feature flag is not enabled.
-  if (FromIncognitoProfile() && !IncognitoDownloadsEnabled()) {
-    ASSERT_EQ(0u, model->items().size());
-    return;
-  }
+  // Complete `download` and notify observers.
+  download->state = crosapi::mojom::DownloadState::kComplete;
+  download->full_path = download->target_file_path;
+  download_controller()->OnDownloadUpdated(download.Clone());
 
-  // If the download was not ignored, verify that an item of type
-  // `kLacrosDownload` with the correct path was added to holding space.
-  ASSERT_EQ(1u, model->items().size());
-  const HoldingSpaceItem* download_item = model->items()[0].get();
-  EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kLacrosDownload);
-  EXPECT_EQ(download_item->file_path(), file_path);
+  // Completed downloads should always be added to holding space unless the
+  // download is from an incognito profile and that feature flag is disabled.
+  if (!FromIncognitoProfile() || IncognitoDownloadsEnabled()) {
+    ASSERT_EQ(1u, model->items().size());
+    const auto& download_item = model->items().front();
+    EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kLacrosDownload);
+    EXPECT_EQ(download_item->file_path(), download->full_path);
+  } else {
+    ASSERT_EQ(0u, model->items().size());
+  }
 }
 
 }  // namespace ash

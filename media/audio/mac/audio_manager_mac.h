@@ -15,7 +15,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/mac/audio_device_listener_mac.h"
@@ -32,6 +31,10 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase {
  public:
   AudioManagerMac(std::unique_ptr<AudioThread> audio_thread,
                   AudioLogFactory* audio_log_factory);
+
+  AudioManagerMac(const AudioManagerMac&) = delete;
+  AudioManagerMac& operator=(const AudioManagerMac&) = delete;
+
   ~AudioManagerMac() override;
 
   // Implementation of AudioManager.
@@ -198,8 +201,6 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase {
   bool in_shutdown_;
 
   base::WeakPtrFactory<AudioManagerMac> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerMac);
 };
 
 }  // namespace media

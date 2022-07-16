@@ -19,7 +19,7 @@ using ::testing::StrictMock;
 
 class Base {
  public:
-  Base() {}
+  Base() = default;
 
   WeakHandle<Base> AsWeakHandle() {
     return MakeWeakHandle(weak_ptr_factory_.GetWeakPtr());

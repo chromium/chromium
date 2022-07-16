@@ -11,6 +11,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_message_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
@@ -82,7 +83,6 @@ content::WebUIDataSource* CreateBookmarksUIHTMLSource(Profile* profile) {
       {"menuAddFolder", IDS_BOOKMARK_MANAGER_MENU_ADD_FOLDER},
       {"menuCut", IDS_BOOKMARK_MANAGER_MENU_CUT},
       {"menuCopy", IDS_BOOKMARK_MANAGER_MENU_COPY},
-      {"menuCopyURL", IDS_BOOKMARK_MANAGER_MENU_COPY_URL},
       {"menuPaste", IDS_BOOKMARK_MANAGER_MENU_PASTE},
       {"menuDelete", IDS_DELETE},
       {"menuEdit", IDS_EDIT},
@@ -123,11 +123,15 @@ content::WebUIDataSource* CreateBookmarksUIHTMLSource(Profile* profile) {
       {"toastFolderSorted", IDS_BOOKMARK_MANAGER_TOAST_FOLDER_SORTED},
       {"toastItemCopied", IDS_BOOKMARK_MANAGER_TOAST_ITEM_COPIED},
       {"toastItemDeleted", IDS_BOOKMARK_MANAGER_TOAST_ITEM_DELETED},
-      {"toastUrlCopied", IDS_BOOKMARK_MANAGER_TOAST_URL_COPIED},
       {"undo", IDS_BOOKMARK_BAR_UNDO},
   };
   for (const auto& str : kStrings)
     AddLocalizedString(source, str.name, str.id);
+
+  source->AddString("enableBrandingUpdateAttribute",
+                    base::FeatureList::IsEnabled(features::kWebUIBrandingUpdate)
+                        ? "enable-branding-update"
+                        : "");
 
   return source;
 }

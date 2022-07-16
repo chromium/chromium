@@ -7,11 +7,7 @@
 
 #include <stdint.h>
 
-#include <memory>
-#include <vector>
-
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
@@ -34,7 +30,7 @@ class ChromeOriginTrialsComponentInstallerPolicy
  private:
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      std::unique_ptr<base::DictionaryValue> manifest) override;
+                      base::Value manifest) override;
 };
 
 // Call once during startup to make the component update service aware of

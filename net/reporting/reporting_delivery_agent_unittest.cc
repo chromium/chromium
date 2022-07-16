@@ -7,14 +7,17 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/features.h"
+#include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/reporting/reporting_cache.h"
@@ -22,11 +25,15 @@
 #include "net/reporting/reporting_test_util.h"
 #include "net/reporting/reporting_uploader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace net {
 namespace {
+
+constexpr char kReportingUploadHeaderTypeHistogram[] =
+    "Net.Reporting.UploadHeaderType";
 
 class ReportingDeliveryAgentTest : public ReportingTestBase {
  protected:
@@ -49,13 +56,14 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
     report_body_.SetStringKey("key", "value");
   }
 
-  void AddReport(const NetworkIsolationKey& network_isolation_key,
+  void AddReport(const absl::optional<base::UnguessableToken>& reporting_source,
+                 const NetworkIsolationKey& network_isolation_key,
                  const GURL& url,
                  const std::string& group) {
-    cache()->AddReport(network_isolation_key, url, kUserAgent_, group, kType_,
-                       std::make_unique<base::Value>(report_body_.Clone()),
-                       0 /* depth */, tick_clock()->NowTicks() /* queued */,
-                       0 /* attempts */);
+    cache()->AddReport(
+        reporting_source, network_isolation_key, url, kUserAgent_, group,
+        kType_, std::make_unique<base::Value>(report_body_.Clone()),
+        0 /* depth */, tick_clock()->NowTicks() /* queued */, 0 /* attempts */);
   }
 
   // The first report added to the cache is uploaded immediately, and a timer is
@@ -68,13 +76,34 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
         "dummy");
     ASSERT_TRUE(SetEndpointInCache(
         dummy_group, GURL("https://dummy.test/upload"), kExpires_));
-    AddReport(dummy_group.network_isolation_key, dummy_group.origin.GetURL(),
-              dummy_group.group_name);
+    AddReport(absl::nullopt, dummy_group.network_isolation_key,
+              dummy_group.origin.GetURL(), dummy_group.group_name);
 
     ASSERT_EQ(1u, pending_uploads().size());
     pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
     EXPECT_EQ(0u, pending_uploads().size());
     EXPECT_TRUE(delivery_timer()->IsRunning());
+  }
+
+  // Prime delivery timer with a document report with a endpoint group that
+  // has matching reporting_source.
+  void UploadFirstDocumentReportAndStartTimer() {
+    ReportingEndpointGroupKey dummy_group(
+        kNik_, kDocumentReportingSource_,
+        url::Origin::Create(GURL("https://dummy.test")), "dummy");
+    SetV1EndpointInCache(dummy_group, kDocumentReportingSource_,
+                         kIsolationInfo_, GURL("https://dummy.test/upload"));
+    AddReport(kDocumentReportingSource_, dummy_group.network_isolation_key,
+              dummy_group.origin.GetURL(), dummy_group.group_name);
+
+    ASSERT_EQ(1u, pending_uploads().size());
+    pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
+    EXPECT_EQ(0u, pending_uploads().size());
+    EXPECT_TRUE(delivery_timer()->IsRunning());
+  }
+
+  void SendReportsForSource(base::UnguessableToken reporting_source) {
+    delivery_agent()->SendReportsForSource(reporting_source);
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -86,23 +115,40 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   const url::Origin kOrigin_ = url::Origin::Create(GURL("https://origin/"));
   const url::Origin kOtherOrigin_ =
       url::Origin::Create(GURL("https://other-origin/"));
+  const absl::optional<base::UnguessableToken> kEmptyReportingSource_ =
+      absl::nullopt;
+  const base::UnguessableToken kDocumentReportingSource_ =
+      base::UnguessableToken::Create();
   const NetworkIsolationKey kNik_ =
       NetworkIsolationKey(SchemefulSite(kOrigin_), SchemefulSite(kOrigin_));
   const NetworkIsolationKey kOtherNik_ =
       NetworkIsolationKey(SchemefulSite(kOtherOrigin_),
                           SchemefulSite(kOtherOrigin_));
+  const IsolationInfo kIsolationInfo_ =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther,
+                            kOrigin_,
+                            kOrigin_,
+                            SiteForCookies::FromOrigin(kOrigin_));
+  const IsolationInfo kOtherIsolationInfo_ =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther,
+                            kOtherOrigin_,
+                            kOtherOrigin_,
+                            SiteForCookies::FromOrigin(kOtherOrigin_));
   const GURL kEndpoint_ = GURL("https://endpoint/");
   const std::string kUserAgent_ = "Mozilla/1.0";
   const std::string kGroup_ = "group";
   const std::string kType_ = "type";
-  const base::Time kExpires_ = base::Time::Now() + base::TimeDelta::FromDays(7);
+  const base::Time kExpires_ = base::Time::Now() + base::Days(7);
   const ReportingEndpointGroupKey kGroupKey_ =
       ReportingEndpointGroupKey(kNik_, kOrigin_, kGroup_);
+  const ReportingEndpointGroupKey kDocumentGroupKey_ =
+      ReportingEndpointGroupKey(kGroupKey_, kDocumentReportingSource_);
 };
 
 TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
+  base::HistogramTester histograms;
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kUrl_, kGroup_);
 
   // Upload is automatically started when cache is modified.
 
@@ -111,19 +157,18 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
   {
     auto value = pending_uploads()[0]->GetValue();
 
-    base::ListValue* list;
-    ASSERT_TRUE(value->GetAsList(&list));
-    EXPECT_EQ(1u, list->GetSize());
+    ASSERT_TRUE(value->is_list());
+    ASSERT_EQ(1u, value->GetList().size());
 
-    base::DictionaryValue* report;
-    ASSERT_TRUE(list->GetDictionary(0, &report));
-    EXPECT_EQ(5u, report->DictSize());
+    base::Value& report = value->GetList()[0];
+    ASSERT_TRUE(report.is_dict());
+    EXPECT_EQ(5u, report.DictSize());
 
-    ExpectDictIntegerValue(0, *report, "age");
-    ExpectDictStringValue(kType_, *report, "type");
-    ExpectDictStringValue(kUrl_.spec(), *report, "url");
-    ExpectDictStringValue(kUserAgent_, *report, "user_agent");
-    base::Value* body = report->FindDictKey("body");
+    ExpectDictIntegerValue(0, report, "age");
+    ExpectDictStringValue(kType_, report, "type");
+    ExpectDictStringValue(kUrl_.spec(), report, "url");
+    ExpectDictStringValue(kUserAgent_, report, "user_agent");
+    base::Value* body = report.FindDictKey("body");
     EXPECT_EQ("value", *body->FindStringKey("key"));
   }
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
@@ -132,6 +177,13 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
   std::vector<const ReportingReport*> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
+  histograms.ExpectBucketCount(
+      kReportingUploadHeaderTypeHistogram,
+      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportTo, 1);
+  histograms.ExpectBucketCount(
+      kReportingUploadHeaderTypeHistogram,
+      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportingEndpoints,
+      0);
 
   {
     ReportingEndpoint::Statistics stats =
@@ -145,10 +197,112 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
   // TODO(dcreager): Check that BackoffEntry was informed of success.
 }
 
+TEST_F(ReportingDeliveryAgentTest, ReportToHeaderCountedCorrectly) {
+  base::HistogramTester histograms;
+
+  // Set an endpoint with no reporting source (as if configured with the
+  // Report-To header).
+  ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
+
+  // Add and upload a report with an associated source.
+  AddReport(kDocumentReportingSource_, kNik_, kUrl_, kGroup_);
+  pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
+
+  // Successful upload should count this as a Report-To delivery, even though
+  // the report itself had a reporting source.
+  histograms.ExpectBucketCount(
+      kReportingUploadHeaderTypeHistogram,
+      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportTo, 1);
+  histograms.ExpectBucketCount(
+      kReportingUploadHeaderTypeHistogram,
+      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportingEndpoints,
+      0);
+}
+
+TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUploadDocumentReport) {
+  base::HistogramTester histograms;
+
+  SetV1EndpointInCache(kDocumentGroupKey_, kDocumentReportingSource_,
+                       kIsolationInfo_, kEndpoint_);
+  AddReport(kDocumentReportingSource_, kNik_, kUrl_, kGroup_);
+
+  // Upload is automatically started when cache is modified.
+
+  ASSERT_EQ(1u, pending_uploads().size());
+  EXPECT_EQ(kEndpoint_, pending_uploads()[0]->url());
+  {
+    const auto value = pending_uploads()[0]->GetValue();
+
+    ASSERT_TRUE(value->is_list());
+    ASSERT_EQ(1u, value->GetList().size());
+
+    const base::Value& report = value->GetList()[0];
+    ASSERT_TRUE(report.is_dict());
+
+    ExpectDictIntegerValue(0, report, "age");
+    ExpectDictStringValue(kType_, report, "type");
+    ExpectDictStringValue(kUrl_.spec(), report, "url");
+    ExpectDictStringValue(kUserAgent_, report, "user_agent");
+    const base::Value* body = report.FindDictKey("body");
+    EXPECT_EQ("value", *body->FindStringKey("key"));
+  }
+  pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
+
+  // Successful upload should remove delivered reports.
+  std::vector<const ReportingReport*> reports;
+  cache()->GetReports(&reports);
+  EXPECT_TRUE(reports.empty());
+  histograms.ExpectBucketCount(
+      kReportingUploadHeaderTypeHistogram,
+      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportingEndpoints,
+      1);
+  histograms.ExpectBucketCount(
+      kReportingUploadHeaderTypeHistogram,
+      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportTo, 0);
+
+  {
+    ReportingEndpoint::Statistics stats =
+        GetEndpointStatistics(kDocumentGroupKey_, kEndpoint_);
+    EXPECT_EQ(1, stats.attempted_uploads);
+    EXPECT_EQ(1, stats.successful_uploads);
+    EXPECT_EQ(1, stats.attempted_reports);
+    EXPECT_EQ(1, stats.successful_reports);
+  }
+}
+
+TEST_F(ReportingDeliveryAgentTest, UploadHeaderTypeEnumCountPerReport) {
+  UploadFirstDocumentReportAndStartTimer();
+  base::HistogramTester histograms;
+
+  SetV1EndpointInCache(kDocumentGroupKey_, kDocumentReportingSource_,
+                       kIsolationInfo_, kEndpoint_);
+  AddReport(kDocumentReportingSource_, kNik_, kUrl_, kGroup_);
+  AddReport(kDocumentReportingSource_, kNik_, kUrl_, kGroup_);
+
+  // There should be one upload per (NIK, origin, reporting source).
+  EXPECT_TRUE(delivery_timer()->IsRunning());
+  delivery_timer()->Fire();
+
+  ASSERT_EQ(1u, pending_uploads().size());
+  pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
+
+  // Successful upload should remove delivered reports.
+  std::vector<const ReportingReport*> reports;
+  cache()->GetReports(&reports);
+  EXPECT_TRUE(reports.empty());
+  histograms.ExpectBucketCount(
+      kReportingUploadHeaderTypeHistogram,
+      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportingEndpoints,
+      2);
+  histograms.ExpectBucketCount(
+      kReportingUploadHeaderTypeHistogram,
+      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportTo, 0);
+}
+
 TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateSubdomainUpload) {
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_,
                                  OriginSubdomains::INCLUDE));
-  AddReport(kNik_, kSubdomainUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kSubdomainUrl_, kGroup_);
 
   // Upload is automatically started when cache is modified.
 
@@ -157,19 +311,18 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateSubdomainUpload) {
   {
     auto value = pending_uploads()[0]->GetValue();
 
-    base::ListValue* list;
-    ASSERT_TRUE(value->GetAsList(&list));
-    EXPECT_EQ(1u, list->GetSize());
+    ASSERT_TRUE(value->is_list());
+    ASSERT_EQ(1u, value->GetList().size());
 
-    base::DictionaryValue* report;
-    ASSERT_TRUE(list->GetDictionary(0, &report));
-    EXPECT_EQ(5u, report->DictSize());
+    base::Value& report = value->GetList()[0];
+    ASSERT_TRUE(report.is_dict());
+    EXPECT_EQ(5u, report.DictSize());
 
-    ExpectDictIntegerValue(0, *report, "age");
-    ExpectDictStringValue(kType_, *report, "type");
-    ExpectDictStringValue(kSubdomainUrl_.spec(), *report, "url");
-    ExpectDictStringValue(kUserAgent_, *report, "user_agent");
-    base::Value* body = report->FindDictKey("body");
+    ExpectDictIntegerValue(0, report, "age");
+    ExpectDictStringValue(kType_, report, "type");
+    ExpectDictStringValue(kSubdomainUrl_.spec(), report, "url");
+    ExpectDictStringValue(kUserAgent_, report, "user_agent");
+    base::Value* body = report.FindDictKey("body");
     EXPECT_EQ("value", *body->FindStringKey("key"));
   }
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
@@ -195,7 +348,7 @@ TEST_F(ReportingDeliveryAgentTest,
        SuccessfulImmediateSubdomainUploadWithOverwrittenEndpoint) {
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_,
                                  OriginSubdomains::INCLUDE));
-  AddReport(kNik_, kSubdomainUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kSubdomainUrl_, kGroup_);
 
   // Upload is automatically started when cache is modified.
 
@@ -223,11 +376,11 @@ TEST_F(ReportingDeliveryAgentTest,
 TEST_F(ReportingDeliveryAgentTest, SuccessfulDelayedUpload) {
   // Trigger and complete an upload to start the delivery timer.
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kUrl_, kGroup_);
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
   // Add another report to upload after a delay.
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kUrl_, kGroup_);
 
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
@@ -237,19 +390,18 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulDelayedUpload) {
   {
     auto value = pending_uploads()[0]->GetValue();
 
-    base::ListValue* list;
-    ASSERT_TRUE(value->GetAsList(&list));
-    EXPECT_EQ(1u, list->GetSize());
+    ASSERT_TRUE(value->is_list());
+    ASSERT_EQ(1u, value->GetList().size());
 
-    base::DictionaryValue* report;
-    ASSERT_TRUE(list->GetDictionary(0, &report));
-    EXPECT_EQ(5u, report->DictSize());
+    base::Value& report = value->GetList()[0];
+    ASSERT_TRUE(report.is_dict());
+    EXPECT_EQ(5u, report.DictSize());
 
-    ExpectDictIntegerValue(0, *report, "age");
-    ExpectDictStringValue(kType_, *report, "type");
-    ExpectDictStringValue(kUrl_.spec(), *report, "url");
-    ExpectDictStringValue(kUserAgent_, *report, "user_agent");
-    base::Value* body = report->FindDictKey("body");
+    ExpectDictIntegerValue(0, report, "age");
+    ExpectDictStringValue(kType_, report, "type");
+    ExpectDictStringValue(kUrl_.spec(), report, "url");
+    ExpectDictStringValue(kUserAgent_, report, "user_agent");
+    base::Value* body = report.FindDictKey("body");
     EXPECT_EQ("value", *body->FindStringKey("key"));
   }
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
@@ -273,7 +425,7 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulDelayedUpload) {
 
 TEST_F(ReportingDeliveryAgentTest, FailedUpload) {
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kUrl_, kGroup_);
 
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
@@ -324,9 +476,9 @@ TEST_F(ReportingDeliveryAgentTest, DisallowedUpload) {
   body.SetString("key", "value");
 
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kUrl_, kGroup_);
 
-  tick_clock()->Advance(base::TimeDelta::FromMilliseconds(kAgeMillis));
+  tick_clock()->Advance(base::Milliseconds(kAgeMillis));
 
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
@@ -357,7 +509,7 @@ TEST_F(ReportingDeliveryAgentTest, RemoveEndpointUpload) {
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
   ASSERT_TRUE(SetEndpointInCache(kOtherGroupKey, kEndpoint_, kExpires_));
 
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kUrl_, kGroup_);
 
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
@@ -384,7 +536,7 @@ TEST_F(ReportingDeliveryAgentTest, RemoveEndpointUpload) {
 
 TEST_F(ReportingDeliveryAgentTest, ConcurrentRemove) {
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kUrl_, kGroup_);
 
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
@@ -418,7 +570,7 @@ TEST_F(ReportingDeliveryAgentTest, ConcurrentRemoveDuringPermissionsCheck) {
   context()->test_delegate()->set_pause_permissions_check(true);
 
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kUrl_, kGroup_);
 
   ASSERT_TRUE(context()->test_delegate()->PermissionsCheckPaused());
 
@@ -464,16 +616,16 @@ TEST_F(ReportingDeliveryAgentTest, OnlyBatchSameNikAndOrigin) {
 
   // Now that the delivery timer is running, these reports won't be immediately
   // uploaded.
-  AddReport(kNik_, kUrl_, kGroup_);
-  AddReport(kNik_, kOtherUrl_, kGroup_);
-  AddReport(kNik_, kOtherUrl_, kGroup_);
-  AddReport(kOtherNik_, kUrl_, kGroup_);
-  AddReport(kOtherNik_, kUrl_, kGroup_);
-  AddReport(kOtherNik_, kUrl_, kGroup_);
-  AddReport(kOtherNik_, kOtherUrl_, kGroup_);
-  AddReport(kOtherNik_, kOtherUrl_, kGroup_);
-  AddReport(kOtherNik_, kOtherUrl_, kGroup_);
-  AddReport(kOtherNik_, kOtherUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kOtherUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kOtherUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kOtherNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kOtherNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kOtherNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kOtherNik_, kOtherUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kOtherNik_, kOtherUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kOtherNik_, kOtherUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kOtherNik_, kOtherUrl_, kGroup_);
   EXPECT_EQ(0u, pending_uploads().size());
 
   // There should be one upload per (NIK, origin).
@@ -511,14 +663,14 @@ TEST_F(ReportingDeliveryAgentTest, SerializeUploadsToGroup) {
   UploadFirstReportAndStartTimer();
 
   // First upload causes this group key to become pending.
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kUrl_, kGroup_);
   EXPECT_EQ(0u, pending_uploads().size());
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
   EXPECT_EQ(1u, pending_uploads().size());
 
   // Second upload isn't started because the group is pending.
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kUrl_, kGroup_);
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
   ASSERT_EQ(1u, pending_uploads().size());
@@ -562,8 +714,8 @@ TEST_F(ReportingDeliveryAgentTest, ParallelizeUploadsAcrossGroups) {
   // Trigger and complete an upload to start the delivery timer.
   UploadFirstReportAndStartTimer();
 
-  AddReport(kNik_, kUrl_, kGroup_);
-  AddReport(kNik_, kUrl_, kDifferentGroup);
+  AddReport(kEmptyReportingSource_, kNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kUrl_, kDifferentGroup);
 
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
@@ -604,8 +756,8 @@ TEST_F(ReportingDeliveryAgentTest, BatchReportsAcrossGroups) {
 
   UploadFirstReportAndStartTimer();
 
-  AddReport(kNik_, kUrl_, kGroup_);
-  AddReport(kNik_, kUrl_, kDifferentGroup);
+  AddReport(kEmptyReportingSource_, kNik_, kUrl_, kGroup_);
+  AddReport(kEmptyReportingSource_, kNik_, kUrl_, kDifferentGroup);
 
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
@@ -629,6 +781,150 @@ TEST_F(ReportingDeliveryAgentTest, BatchReportsAcrossGroups) {
     EXPECT_EQ(1, stats.attempted_reports);
     EXPECT_EQ(1, stats.successful_reports);
   }
+}
+
+// Tests that the agent can send all outstanding reports for a single source
+// when necessary. This test queues two reports for the same reporting source,
+// for different endpoints, another for a different source at the same URL, and
+// another for a different source on a different origin.
+TEST_F(ReportingDeliveryAgentTest, SendReportsForSource) {
+  static const std::string kGroup2("group2");
+
+  // Two other reporting sources; kReportingSource2 will enqueue reports for the
+  // same URL as kReportingSource_, while kReportingSource3 will be a separate
+  // origin.
+  const base::UnguessableToken kReportingSource1 =
+      base::UnguessableToken::Create();
+  const base::UnguessableToken kReportingSource2 =
+      base::UnguessableToken::Create();
+  const base::UnguessableToken kReportingSource3 =
+      base::UnguessableToken::Create();
+
+  const IsolationInfo kIsolationInfo1 =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther, kOrigin_,
+                            kOrigin_, SiteForCookies::FromOrigin(kOrigin_));
+  const IsolationInfo kIsolationInfo2 =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther, kOrigin_,
+                            kOrigin_, SiteForCookies::FromOrigin(kOrigin_));
+  const IsolationInfo kIsolationInfo3 = IsolationInfo::Create(
+      IsolationInfo::RequestType::kOther, kOtherOrigin_, kOtherOrigin_,
+      SiteForCookies::FromOrigin(kOtherOrigin_));
+
+  // Set up identical endpoint configuration for kReportingSource1 and
+  // kReportingSource2. kReportingSource3 is independent.
+  const ReportingEndpointGroupKey kGroup1Key1(kNik_, kReportingSource1,
+                                              kOrigin_, kGroup_);
+  const ReportingEndpointGroupKey kGroup2Key1(kNik_, kReportingSource1,
+                                              kOrigin_, kGroup2);
+  const ReportingEndpointGroupKey kGroup1Key2(kNik_, kReportingSource2,
+                                              kOrigin_, kGroup_);
+  const ReportingEndpointGroupKey kGroup2Key2(kNik_, kReportingSource2,
+                                              kOrigin_, kGroup2);
+  const ReportingEndpointGroupKey kOtherGroupKey(kOtherNik_, kReportingSource3,
+                                                 kOtherOrigin_, kGroup_);
+
+  SetV1EndpointInCache(kGroup1Key1, kReportingSource1, kIsolationInfo1, kUrl_);
+  SetV1EndpointInCache(kGroup2Key1, kReportingSource1, kIsolationInfo1, kUrl_);
+  SetV1EndpointInCache(kGroup1Key2, kReportingSource2, kIsolationInfo2, kUrl_);
+  SetV1EndpointInCache(kGroup2Key2, kReportingSource2, kIsolationInfo2, kUrl_);
+  SetV1EndpointInCache(kOtherGroupKey, kReportingSource3, kIsolationInfo3,
+                       kOtherUrl_);
+
+  UploadFirstReportAndStartTimer();
+
+  AddReport(kReportingSource1, kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource1, kNik_, kUrl_, kGroup2);
+  AddReport(kReportingSource2, kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource3, kOtherNik_, kUrl_, kGroup_);
+
+  // There should be four queued reports at this point.
+  EXPECT_EQ(4u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(0u, pending_uploads().size());
+  SendReportsForSource(kReportingSource1);
+  // Sending all reports for the source should only queue two, despite the fact
+  // that there are other reports queued for the same origin and endpoint.
+  EXPECT_EQ(2u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(2u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  // All pending reports for the same source should be batched into a single
+  // upload.
+  ASSERT_EQ(1u, pending_uploads().size());
+  pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
+  EXPECT_EQ(0u, pending_uploads().size());
+}
+
+// Tests that the agent can send all outstanding V1 reports for multiple sources
+// and that these are not batched together.
+TEST_F(ReportingDeliveryAgentTest, SendReportsForMultipleSources) {
+  static const std::string kGroup2("group2");
+
+  // Two other reporting sources; kReportingSource2 will enqueue reports for the
+  // same URL as kReportingSource_, while kReportingSource3 will be a separate
+  // origin.
+  const base::UnguessableToken kReportingSource1 =
+      base::UnguessableToken::Create();
+  const base::UnguessableToken kReportingSource2 =
+      base::UnguessableToken::Create();
+  const base::UnguessableToken kReportingSource3 =
+      base::UnguessableToken::Create();
+
+  const IsolationInfo kIsolationInfo1 =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther, kOrigin_,
+                            kOrigin_, SiteForCookies::FromOrigin(kOrigin_));
+  const IsolationInfo kIsolationInfo2 =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther, kOrigin_,
+                            kOrigin_, SiteForCookies::FromOrigin(kOrigin_));
+  const IsolationInfo kIsolationInfo3 = IsolationInfo::Create(
+      IsolationInfo::RequestType::kOther, kOtherOrigin_, kOtherOrigin_,
+      SiteForCookies::FromOrigin(kOtherOrigin_));
+
+  // Set up identical endpoint configuration for kReportingSource1 and
+  // kReportingSource2. kReportingSource3 is independent.
+  const ReportingEndpointGroupKey kGroup1Key1(kNik_, kReportingSource1,
+                                              kOrigin_, kGroup_);
+  const ReportingEndpointGroupKey kGroup2Key1(kNik_, kReportingSource1,
+                                              kOrigin_, kGroup2);
+  const ReportingEndpointGroupKey kGroup1Key2(kNik_, kReportingSource2,
+                                              kOrigin_, kGroup_);
+  const ReportingEndpointGroupKey kGroup2Key2(kNik_, kReportingSource2,
+                                              kOrigin_, kGroup2);
+  const ReportingEndpointGroupKey kOtherGroupKey(kOtherNik_, kReportingSource3,
+                                                 kOtherOrigin_, kGroup_);
+
+  SetV1EndpointInCache(kGroup1Key1, kReportingSource1, kIsolationInfo1, kUrl_);
+  SetV1EndpointInCache(kGroup2Key1, kReportingSource1, kIsolationInfo1, kUrl_);
+  SetV1EndpointInCache(kGroup1Key2, kReportingSource2, kIsolationInfo2, kUrl_);
+  SetV1EndpointInCache(kGroup2Key2, kReportingSource2, kIsolationInfo2, kUrl_);
+  SetV1EndpointInCache(kOtherGroupKey, kReportingSource3, kIsolationInfo3,
+                       kOtherUrl_);
+
+  UploadFirstReportAndStartTimer();
+
+  AddReport(kReportingSource1, kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource1, kNik_, kUrl_, kGroup2);
+  AddReport(kReportingSource2, kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource3, kOtherNik_, kUrl_, kGroup_);
+
+  // There should be four queued reports at this point.
+  EXPECT_EQ(4u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(0u, pending_uploads().size());
+
+  // Send reports for both ReportingSource 1 and 2 at the same time. These
+  // should be sent to the same endpoint, but should still not be batched
+  // together.
+  SendReportsForSource(kReportingSource1);
+  SendReportsForSource(kReportingSource2);
+
+  // We expect to see three pending reports, and one still queued. The pending
+  // reports should be divided into two uploads.
+  EXPECT_EQ(1u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(3u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  ASSERT_EQ(2u, pending_uploads().size());
 }
 
 }  // namespace

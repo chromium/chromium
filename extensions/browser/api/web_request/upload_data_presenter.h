@@ -54,6 +54,9 @@ FORWARD_DECLARE_TEST(WebRequestUploadDataPresenterTest, RawData);
 // 3. If that check passed then retrieve object->Result().
 class UploadDataPresenter {
  public:
+  UploadDataPresenter(const UploadDataPresenter&) = delete;
+  UploadDataPresenter& operator=(const UploadDataPresenter&) = delete;
+
   virtual ~UploadDataPresenter();
   virtual void FeedBytes(base::StringPiece bytes) = 0;
   virtual void FeedFile(const base::FilePath& path) = 0;
@@ -62,9 +65,6 @@ class UploadDataPresenter {
 
  protected:
   UploadDataPresenter() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UploadDataPresenter);
 };
 
 // This class passes all the bytes from bytes elements as a BinaryValue for each
@@ -73,6 +73,10 @@ class UploadDataPresenter {
 class RawDataPresenter : public UploadDataPresenter {
  public:
   RawDataPresenter();
+
+  RawDataPresenter(const RawDataPresenter&) = delete;
+  RawDataPresenter& operator=(const RawDataPresenter&) = delete;
+
   ~RawDataPresenter() override;
 
   // Implementation of UploadDataPresenter.
@@ -88,8 +92,6 @@ class RawDataPresenter : public UploadDataPresenter {
 
   const bool success_;
   std::unique_ptr<base::ListValue> list_;
-
-  DISALLOW_COPY_AND_ASSIGN(RawDataPresenter);
 };
 
 // This class inspects the contents of bytes elements. It uses the
@@ -104,6 +106,10 @@ class RawDataPresenter : public UploadDataPresenter {
 class ParsedDataPresenter : public UploadDataPresenter {
  public:
   explicit ParsedDataPresenter(const net::HttpRequestHeaders& request_headers);
+
+  ParsedDataPresenter(const ParsedDataPresenter&) = delete;
+  ParsedDataPresenter& operator=(const ParsedDataPresenter&) = delete;
+
   ~ParsedDataPresenter() override;
 
   // Implementation of UploadDataPresenter.
@@ -127,8 +133,6 @@ class ParsedDataPresenter : public UploadDataPresenter {
   std::unique_ptr<FormDataParser> parser_;
   bool success_;
   std::unique_ptr<base::DictionaryValue> dictionary_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParsedDataPresenter);
 };
 
 }  // namespace extensions

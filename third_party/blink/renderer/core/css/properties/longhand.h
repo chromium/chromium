@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -18,7 +19,6 @@ class CSSValue;
 class CSSParserContext;
 class CSSParserLocalContext;
 class CSSParserTokenRange;
-class StyleResolverState;
 
 class Longhand : public CSSProperty {
  public:
@@ -41,7 +41,7 @@ class Longhand : public CSSProperty {
     NOTREACHED();
   }
   void ApplyUnset(StyleResolverState& state) const {
-    if (IsInherited())
+    if (state.IsInheritedForUnset(*this))
       ApplyInherit(state);
     else
       ApplyInitial(state);

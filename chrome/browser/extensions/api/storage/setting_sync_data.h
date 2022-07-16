@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/sync/model/sync_change.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,6 +33,9 @@ class SettingSyncData {
                   const std::string& extension_id,
                   const std::string& key,
                   std::unique_ptr<base::Value> value);
+
+  SettingSyncData(const SettingSyncData&) = delete;
+  SettingSyncData& operator=(const SettingSyncData&) = delete;
 
   ~SettingSyncData();
 
@@ -61,8 +63,6 @@ class SettingSyncData {
   std::string extension_id_;
   std::string key_;
   std::unique_ptr<base::Value> value_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingSyncData);
 };
 
 using SettingSyncDataList = std::vector<std::unique_ptr<SettingSyncData>>;

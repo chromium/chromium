@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
@@ -54,6 +53,10 @@ class DeviceSyncClient {
                               multidevice::RemoteDeviceRefList)>;
 
   DeviceSyncClient();
+
+  DeviceSyncClient(const DeviceSyncClient&) = delete;
+  DeviceSyncClient& operator=(const DeviceSyncClient&) = delete;
+
   virtual ~DeviceSyncClient();
 
   // Completes initialization. Must be called after connecting the DeviceSync
@@ -114,8 +117,6 @@ class DeviceSyncClient {
  private:
   bool is_ready_ = false;
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncClient);
 };
 
 }  // namespace device_sync

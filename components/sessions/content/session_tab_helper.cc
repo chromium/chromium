@@ -120,6 +120,6 @@ SessionTabHelperDelegate* SessionTabHelper::GetDelegate() {
   return delegate_lookup_ ? delegate_lookup_.Run(web_contents()) : nullptr;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SessionTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SessionTabHelper);
 
 }  // namespace sessions

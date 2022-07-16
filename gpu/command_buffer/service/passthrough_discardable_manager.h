@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_PASSTHROUGH_DISCARDABLE_MANAGER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_PASSTHROUGH_DISCARDABLE_MANAGER_H_
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/gpu_gles2_export.h"
@@ -20,6 +20,11 @@ class ContextGroup;
 class GPU_GLES2_EXPORT PassthroughDiscardableManager {
  public:
   explicit PassthroughDiscardableManager(const GpuPreferences& preferences);
+
+  PassthroughDiscardableManager(const PassthroughDiscardableManager&) = delete;
+  PassthroughDiscardableManager& operator=(
+      const PassthroughDiscardableManager&) = delete;
+
   ~PassthroughDiscardableManager();
 
   void InitializeTexture(uint32_t client_id,
@@ -90,7 +95,7 @@ class GPU_GLES2_EXPORT PassthroughDiscardableManager {
                       bool has_context);
 
   using DiscardableCache =
-      base::MRUCache<DiscardableCacheKey, DiscardableCacheValue>;
+      base::LRUCache<DiscardableCacheKey, DiscardableCacheValue>;
   DiscardableCache cache_;
 
   // Total size of all entries in the cache. The same as summing
@@ -99,8 +104,6 @@ class GPU_GLES2_EXPORT PassthroughDiscardableManager {
 
   // The limit above which the cache will start evicting resources.
   size_t cache_size_limit_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PassthroughDiscardableManager);
 };
 
 }  // namespace gpu

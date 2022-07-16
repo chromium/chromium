@@ -20,6 +20,15 @@
 
 namespace printing {
 
+using ::testing::Pointwise;
+
+// Matches the name field to a string.
+MATCHER(AdvancedCapabilityName, "") {
+  *result_listener << "Expected: " << std::get<1>(arg)
+                   << " vs Actual: " << std::get<0>(arg).name;
+  return std::get<0>(arg).name == std::get<1>(arg);
+}
+
 class MockCupsOptionProvider : public CupsOptionProvider {
  public:
   ~MockCupsOptionProvider() override = default;
@@ -369,6 +378,23 @@ TEST_F(PrintBackendCupsIppHelperTest, AdvancedCaps) {
             caps.advanced_capabilities[5].type);
   EXPECT_EQ(3u, caps.advanced_capabilities[5].values.size());
   histograms.ExpectUniqueSample("Printing.CUPS.IppAttributesCount", 5, 1);
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, MediaSource) {
+  printer_->SetSupportedOptions(
+      "media-source",
+      MakeStringCollection(ipp_, {"top", "main", "auto", "tray-3", "tray-4"}));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  ASSERT_EQ(1u, caps.advanced_capabilities.size());
+  const AdvancedCapability& cap = caps.advanced_capabilities[0];
+  EXPECT_EQ("media-source", cap.name);
+  EXPECT_EQ(AdvancedCapability::Type::kString, cap.type);
+  EXPECT_THAT(cap.values,
+              Pointwise(AdvancedCapabilityName(),
+                        {"top", "main", "auto", "tray-3", "tray-4"}));
 }
 #endif  // defined(OS_CHROMEOS)
 

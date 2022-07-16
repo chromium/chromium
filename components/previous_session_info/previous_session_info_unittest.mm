@@ -570,8 +570,7 @@ TEST_F(PreviousSessionInfoTest, MemoryFootprintRecording) {
 
   [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
   [[PreviousSessionInfo sharedInstance]
-      startRecordingMemoryFootprintWithInterval:base::TimeDelta::
-                                                    FromMilliseconds(1)];
+      startRecordingMemoryFootprintWithInterval:base::Milliseconds(1)];
 
   // Memory footprint should be updated after timeout.
   EXPECT_FALSE([NSUserDefaults.standardUserDefaults

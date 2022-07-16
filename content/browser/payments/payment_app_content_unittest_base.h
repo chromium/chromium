@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/payments/payment_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,6 +27,11 @@ class StoragePartitionImpl;
 class BrowserTaskEnvironment;
 
 class PaymentAppContentUnitTestBase : public testing::Test {
+ public:
+  PaymentAppContentUnitTestBase(const PaymentAppContentUnitTestBase&) = delete;
+  PaymentAppContentUnitTestBase& operator=(
+      const PaymentAppContentUnitTestBase&) = delete;
+
  protected:
   PaymentAppContentUnitTestBase();
   ~PaymentAppContentUnitTestBase() override;
@@ -54,8 +58,6 @@ class PaymentAppContentUnitTestBase : public testing::Test {
   std::unique_ptr<BrowserTaskEnvironment> task_environment_;
   std::unique_ptr<PaymentAppForWorkerTestHelper> worker_helper_;
   std::vector<mojo::Remote<payments::mojom::PaymentManager>> payment_managers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppContentUnitTestBase);
 };
 
 }  // namespace content

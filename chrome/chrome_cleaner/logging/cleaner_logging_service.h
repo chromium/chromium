@@ -50,6 +50,9 @@ class CleanerLoggingService : public LoggingServiceAPI {
   // Return the singleton instance which will get destroyed by the AtExitMgr.
   static CleanerLoggingService* GetInstance();
 
+  CleanerLoggingService(const CleanerLoggingService&) = delete;
+  CleanerLoggingService& operator=(const CleanerLoggingService&) = delete;
+
   // LoggingServiceAPI:
   void Initialize(RegistryLogger* registry_logger) override;
   void Terminate() override;
@@ -198,8 +201,6 @@ class CleanerLoggingService : public LoggingServiceAPI {
 
   // Sampler to choose which files to log detailed info for.
   DetailedInfoSampler sampler_;
-
-  DISALLOW_COPY_AND_ASSIGN(CleanerLoggingService);
 };
 
 }  // namespace chrome_cleaner

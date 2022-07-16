@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,6 +20,12 @@ class TestUsageTimeStateNotifierObserver
     : public UsageTimeStateNotifier::Observer {
  public:
   TestUsageTimeStateNotifierObserver() = default;
+
+  TestUsageTimeStateNotifierObserver(
+      const TestUsageTimeStateNotifierObserver&) = delete;
+  TestUsageTimeStateNotifierObserver& operator=(
+      const TestUsageTimeStateNotifierObserver&) = delete;
+
   ~TestUsageTimeStateNotifierObserver() override = default;
 
   const std::vector<UsageTimeStateNotifier::UsageTimeState>& events() const {
@@ -34,8 +39,6 @@ class TestUsageTimeStateNotifierObserver
   }
 
   std::vector<UsageTimeStateNotifier::UsageTimeState> usage_time_state_changes_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUsageTimeStateNotifierObserver);
 };
 
 }  // namespace
@@ -43,6 +46,11 @@ class TestUsageTimeStateNotifierObserver
 class UsageTimeStateNotifierTest : public testing::Test {
  protected:
   UsageTimeStateNotifierTest() = default;
+
+  UsageTimeStateNotifierTest(const UsageTimeStateNotifierTest&) = delete;
+  UsageTimeStateNotifierTest& operator=(const UsageTimeStateNotifierTest&) =
+      delete;
+
   ~UsageTimeStateNotifierTest() override = default;
 
   void SetUp() override {
@@ -69,8 +77,6 @@ class UsageTimeStateNotifierTest : public testing::Test {
 
  private:
   session_manager::SessionManager session_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsageTimeStateNotifierTest);
 };
 
 TEST_F(UsageTimeStateNotifierTest, CallObserverWhenSessionIsActive) {

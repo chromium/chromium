@@ -41,6 +41,11 @@ class HistoryUiFaviconRequestHandlerImpl
       FaviconService* favicon_service,
       LargeIconService* large_icon_service);
 
+  HistoryUiFaviconRequestHandlerImpl(
+      const HistoryUiFaviconRequestHandlerImpl&) = delete;
+  HistoryUiFaviconRequestHandlerImpl& operator=(
+      const HistoryUiFaviconRequestHandlerImpl&) = delete;
+
   ~HistoryUiFaviconRequestHandlerImpl() override;
 
   void GetRawFaviconForPageURL(
@@ -104,8 +109,6 @@ class HistoryUiFaviconRequestHandlerImpl
 
   base::WeakPtrFactory<HistoryUiFaviconRequestHandlerImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryUiFaviconRequestHandlerImpl);
 };
 
 }  // namespace favicon

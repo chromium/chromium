@@ -55,14 +55,10 @@ bool BackgroundSyncBaseBrowserTest::RegistrationPending(
       base::Unretained(this), run_loop.QuitClosure(),
       base::ThreadTaskRunnerHandle::Get(), &is_pending);
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(
-          &BackgroundSyncBaseBrowserTest::RegistrationPendingOnCoreThread,
-          base::Unretained(this), base::WrapRefCounted(sync_context),
-          base::WrapRefCounted(service_worker_context), tag,
-          https_server_->GetURL(kDefaultTestURL), std::move(callback)));
-
+  RegistrationPendingOnCoreThread(base::WrapRefCounted(sync_context),
+                                  base::WrapRefCounted(service_worker_context),
+                                  tag, https_server_->GetURL(kDefaultTestURL),
+                                  std::move(callback));
   run_loop.Run();
 
   return is_pending;

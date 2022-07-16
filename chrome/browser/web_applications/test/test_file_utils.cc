@@ -7,25 +7,20 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace web_app {
 
-std::unique_ptr<TestFileUtils> TestFileUtils::Create(
+scoped_refptr<TestFileUtils> TestFileUtils::Create(
     std::map<base::FilePath, base::FilePath> read_file_rerouting) {
-  return std::make_unique<TestFileUtils>(read_file_rerouting);
+  return base::MakeRefCounted<TestFileUtils>(read_file_rerouting);
 }
 
 TestFileUtils::TestFileUtils(
     std::map<base::FilePath, base::FilePath> read_file_rerouting)
     : read_file_rerouting_(read_file_rerouting) {}
 
-TestFileUtils::TestFileUtils(const TestFileUtils&) = default;
-
 TestFileUtils::~TestFileUtils() = default;
-
-std::unique_ptr<FileUtilsWrapper> TestFileUtils::Clone() const {
-  return std::make_unique<TestFileUtils>(*this);
-}
 
 void TestFileUtils::SetRemainingDiskSpaceSize(int remaining_disk_space) {
   remaining_disk_space_ = remaining_disk_space;

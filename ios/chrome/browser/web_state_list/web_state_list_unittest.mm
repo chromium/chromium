@@ -31,6 +31,9 @@ class WebStateListTestObserver : public WebStateListObserver {
  public:
   WebStateListTestObserver() = default;
 
+  WebStateListTestObserver(const WebStateListTestObserver&) = delete;
+  WebStateListTestObserver& operator=(const WebStateListTestObserver&) = delete;
+
   // Reset statistics whether events have been called.
   void ResetStatistics() {
     web_state_inserted_called_ = false;
@@ -120,8 +123,6 @@ class WebStateListTestObserver : public WebStateListObserver {
   bool web_state_activated_called_ = false;
   bool batch_operation_started_ = false;
   bool batch_operation_ended_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateListTestObserver);
 };
 
 // A fake NavigationManager used to test opener-opened relationship in the
@@ -129,6 +130,9 @@ class WebStateListTestObserver : public WebStateListObserver {
 class FakeNavigationManager : public web::FakeNavigationManager {
  public:
   FakeNavigationManager() = default;
+
+  FakeNavigationManager(const FakeNavigationManager&) = delete;
+  FakeNavigationManager& operator=(const FakeNavigationManager&) = delete;
 
   // web::NavigationManager implementation.
   int GetLastCommittedItemIndex() const override {
@@ -154,8 +158,6 @@ class FakeNavigationManager : public web::FakeNavigationManager {
   void GoToIndex(int index) override { last_committed_item_index = index; }
 
   int last_committed_item_index = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNavigationManager);
 };
 
 }  // namespace
@@ -165,6 +167,9 @@ class WebStateListTest : public PlatformTest {
   WebStateListTest() : web_state_list_(&web_state_list_delegate_) {
     web_state_list_.AddObserver(&observer_);
   }
+
+  WebStateListTest(const WebStateListTest&) = delete;
+  WebStateListTest& operator=(const WebStateListTest&) = delete;
 
   ~WebStateListTest() override { web_state_list_.RemoveObserver(&observer_); }
 
@@ -196,9 +201,6 @@ class WebStateListTest : public PlatformTest {
         WebStateList::kInvalidIndex, std::move(web_state),
         WebStateList::INSERT_NO_FLAGS, WebStateOpener());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateListTest);
 };
 
 // Tests that empty() matches count() != 0.

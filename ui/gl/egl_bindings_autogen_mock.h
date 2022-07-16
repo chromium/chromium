@@ -186,6 +186,10 @@ static EGLBoolean GL_BINDING_CALL Mock_eglQueryContext(EGLDisplay dpy,
                                                        EGLint* value);
 static EGLBoolean GL_BINDING_CALL Mock_eglQueryDebugKHR(EGLint attribute,
                                                         EGLAttrib* value);
+static EGLBoolean GL_BINDING_CALL
+Mock_eglQueryDeviceAttribEXT(EGLDeviceEXT device,
+                             EGLint attribute,
+                             EGLAttrib* value);
 static const char* GL_BINDING_CALL
 Mock_eglQueryDeviceStringEXT(EGLDeviceEXT device, EGLint name);
 static EGLBoolean GL_BINDING_CALL Mock_eglQueryDevicesEXT(EGLint max_devices,
@@ -195,6 +199,10 @@ static EGLBoolean GL_BINDING_CALL
 Mock_eglQueryDisplayAttribANGLE(EGLDisplay dpy,
                                 EGLint attribute,
                                 EGLAttrib* value);
+static EGLBoolean GL_BINDING_CALL
+Mock_eglQueryDisplayAttribEXT(EGLDisplay dpy,
+                              EGLint attribute,
+                              EGLAttrib* value);
 static EGLBoolean GL_BINDING_CALL Mock_eglQueryStreamKHR(EGLDisplay dpy,
                                                          EGLStreamKHR stream,
                                                          EGLenum attribute,

@@ -19,6 +19,10 @@ class FakeConnectionHandler;
 class FakeConnectionFactory : public ConnectionFactory {
  public:
   FakeConnectionFactory();
+
+  FakeConnectionFactory(const FakeConnectionFactory&) = delete;
+  FakeConnectionFactory& operator=(const FakeConnectionFactory&) = delete;
+
   ~FakeConnectionFactory() override;
 
   // ConnectionFactory implementation.
@@ -53,8 +57,6 @@ class FakeConnectionFactory : public ConnectionFactory {
   bool delay_reconnect_;
 
   ConnectionListener* connection_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectionFactory);
 };
 
 }  // namespace gcm

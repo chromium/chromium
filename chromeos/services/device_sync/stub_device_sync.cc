@@ -49,6 +49,7 @@ void SetDeviceSoftwareFeatureState(
           multidevice::SoftwareFeature::kPhoneHubHost,
           multidevice::SoftwareFeature::kWifiSyncHost,
           multidevice::SoftwareFeature::kEcheHost,
+          multidevice::SoftwareFeature::kPhoneHubCameraRollHost,
       };
 
   // Special case: when the Chrome OS device changes the value of the phone's
@@ -150,11 +151,11 @@ class StubDeviceSync : public DeviceSyncBase {
     std::move(callback).Run(mojom::DebugInfo::New(
         /*last_enrollment_time=*/base::Time::Now(),
         /*time_to_next_enrollment_attempt=*/
-        base::TimeDelta::FromMilliseconds(10),
+        base::Milliseconds(10),
         /*is_recovering_from_enrollment_failure=*/false,
         /*is_enrollment_in_progress=*/false,
         /*last_sync_time=*/base::Time::Now(),
-        /*time_to_next_sync_attempt=*/base::TimeDelta::FromMilliseconds(10),
+        /*time_to_next_sync_attempt=*/base::Milliseconds(10),
         /*is_recovering_from_sync_failure=*/false,
         /*is_sync_in_progress=*/false));
   }

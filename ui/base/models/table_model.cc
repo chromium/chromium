@@ -43,7 +43,7 @@ TableColumn& TableColumn::operator=(const TableColumn& other) = default;
 // TableModel -----------------------------------------------------------------
 
 // Used for sorting.
-static icu::Collator* collator = NULL;
+static icu::Collator* g_collator = NULL;
 
 ui::ImageModel TableModel::GetIcon(int row) {
   return ui::ImageModel();
@@ -68,20 +68,20 @@ int TableModel::CompareValues(int row1, int row2, int column_id) {
 }
 
 void TableModel::ClearCollator() {
-  delete collator;
-  collator = NULL;
+  delete g_collator;
+  g_collator = NULL;
 }
 
 icu::Collator* TableModel::GetCollator() {
-  if (!collator) {
+  if (!g_collator) {
     UErrorCode create_status = U_ZERO_ERROR;
-    collator = icu::Collator::createInstance(create_status);
+    g_collator = icu::Collator::createInstance(create_status);
     if (!U_SUCCESS(create_status)) {
-      collator = NULL;
+      g_collator = NULL;
       NOTREACHED();
     }
   }
-  return collator;
+  return g_collator;
 }
 
 }  // namespace ui

@@ -143,8 +143,6 @@ mediaImport.MediaImportHandlerImpl = class {
         item.progressValue = task.processedBytes;
         item.state = ProgressItemState.PROGRESSING;
         this.speedometer_.update(item.progressValue);
-        item.currentSpeed = this.speedometer_.getCurrentSpeed();
-        item.averageSpeed = this.speedometer_.getAverageSpeed();
         item.remainingTime = this.speedometer_.getRemainingTime();
         break;
 

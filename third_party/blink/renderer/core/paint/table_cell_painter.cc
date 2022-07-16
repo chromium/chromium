@@ -83,9 +83,9 @@ void TableCellPainter::PaintBoxDecorationBackground(
 
   const DisplayItemClient* client = nullptr;
   PhysicalRect paint_rect;
-  IntRect visual_rect;
+  gfx::Rect visual_rect;
   absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
-  if (box_decoration_data.IsPaintingScrollingBackground()) {
+  if (box_decoration_data.IsPaintingBackgroundInContentsSpace()) {
     // See BoxPainter::PaintBoxDecorationBackground() for explanations.
     // TODO(wangxianzhu): Perhaps we can merge them for CompositeAfterPaint.
     paint_rect = layout_table_cell_.PhysicalLayoutOverflowRect();
@@ -94,7 +94,7 @@ void TableCellPainter::PaintBoxDecorationBackground(
     paint_rect.Expand(layout_table_cell_.BorderBoxOutsets());
     client = &layout_table_cell_.GetScrollableArea()
                   ->GetScrollingBackgroundDisplayItemClient();
-    visual_rect = EnclosingIntRect(paint_rect);
+    visual_rect = ToGfxRect(EnclosingIntRect(paint_rect));
   } else {
     paint_rect = PaintRectNotIncludingVisualOverflow(paint_offset);
     visual_rect = BoxPainter(layout_table_cell_).VisualRect(paint_offset);
@@ -134,6 +134,8 @@ void TableCellPainter::PaintBoxDecorationBackground(
 
   BoxPainter(layout_table_cell_)
       .RecordHitTestData(paint_info, paint_rect, *client);
+  BoxPainter(layout_table_cell_)
+      .RecordRegionCaptureData(paint_info, paint_rect, *client);
 }
 
 void TableCellPainter::PaintMask(const PaintInfo& paint_info,

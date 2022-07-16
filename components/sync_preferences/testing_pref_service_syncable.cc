@@ -76,7 +76,7 @@ TestingPrefServiceSyncable::TestingPrefServiceSyncable(
           pref_registry,
           pref_notifier) {}
 
-TestingPrefServiceSyncable::~TestingPrefServiceSyncable() {}
+TestingPrefServiceSyncable::~TestingPrefServiceSyncable() = default;
 
 user_prefs::PrefRegistrySyncable* TestingPrefServiceSyncable::registry() {
   return static_cast<user_prefs::PrefRegistrySyncable*>(

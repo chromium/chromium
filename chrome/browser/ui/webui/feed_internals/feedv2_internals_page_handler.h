@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_FEED_INTERNALS_FEEDV2_INTERNALS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_FEED_INTERNALS_FEEDV2_INTERNALS_PAGE_HANDLER_H_
 
+#include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
+#include "components/feed/core/v2/public/common_enums.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -34,13 +35,10 @@ class FeedV2InternalsPageHandler : public feed_internals::mojom::PageHandler {
 
   // feed_internals::mojom::PageHandler
   void GetGeneralProperties(GetGeneralPropertiesCallback) override;
-  void GetUserClassifierProperties(
-      GetUserClassifierPropertiesCallback) override;
-  void ClearUserClassifierProperties() override;
   void GetLastFetchProperties(GetLastFetchPropertiesCallback) override;
-  void ClearCachedDataAndRefreshFeed() override;
-  void RefreshFeed() override;
-  void GetCurrentContent(GetCurrentContentCallback) override;
+  void RefreshForYouFeed() override;
+  void RefreshFollowingFeed() override;
+  void RefreshWebFeedSuggestions() override;
   void GetFeedProcessScopeDump(GetFeedProcessScopeDumpCallback) override;
   void GetFeedHistograms(GetFeedHistogramsCallback) override;
   void OverrideFeedHost(const GURL& host) override;
@@ -48,11 +46,14 @@ class FeedV2InternalsPageHandler : public feed_internals::mojom::PageHandler {
   void OverrideFeedStreamData(const std::vector<uint8_t>& data) override;
   void SetWebFeedFollowIntroDebugEnabled(const bool enabled) override;
   void SetUseFeedQueryRequestsForWebFeeds(const bool use_legacy) override;
+  void SetFollowingFeedOrder(
+      const feed_internals::mojom::FeedOrder new_order) override;
 
  private:
   bool IsFeedAllowed();
   bool IsWebFeedFollowIntroDebugEnabled();
   bool ShouldUseFeedQueryRequestsForWebFeeds();
+  feed_internals::mojom::FeedOrder GetFollowingFeedOrder();
 
   mojo::Receiver<feed_internals::mojom::PageHandler> receiver_;
 

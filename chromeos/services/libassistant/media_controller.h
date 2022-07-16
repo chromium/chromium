@@ -5,15 +5,11 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_MEDIA_CONTROLLER_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_MEDIA_CONTROLLER_H_
 
-#include "chromeos/services/libassistant/assistant_client_observer.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
+#include "chromeos/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-namespace assistant_client {
-class AssistantManager;
-class MediaManager;
-}  // namespace assistant_client
 
 namespace chromeos {
 namespace libassistant {
@@ -37,19 +33,17 @@ class MediaController : public mojom::MediaController,
   // AssistantClientObserver implementation:
   void OnAssistantClientRunning(AssistantClient* assistant_client) override;
   void OnDestroyingAssistantClient(AssistantClient* assistant_client) override;
-  void OnAssistantManagerDestroyed() override;
+  void OnAssistantClientDestroyed() override;
 
  private:
-  class LibassistantMediaManagerListener;
+  class DeviceStateEventObserver;
   class LibassistantMediaHandler;
 
-  assistant_client::MediaManager* media_manager();
-
-  assistant_client::AssistantManager* assistant_manager_ = nullptr;
+  AssistantClient* assistant_client_ = nullptr;
 
   mojo::Receiver<mojom::MediaController> receiver_{this};
   mojo::Remote<mojom::MediaDelegate> delegate_;
-  std::unique_ptr<LibassistantMediaManagerListener> listener_;
+  std::unique_ptr<DeviceStateEventObserver> device_state_event_observer_;
   std::unique_ptr<LibassistantMediaHandler> handler_;
 };
 

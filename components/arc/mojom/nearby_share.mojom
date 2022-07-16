@@ -51,7 +51,7 @@ interface NearbyShareSessionInstance {
 interface NearbyShareHost {
   // Used to create a NearbyShare session.
   StartNearbyShare@0(
-      int32 task_id,
+      uint32 task_id,
       ShareIntentInfo info,
       pending_remote<NearbyShareSessionInstance> instance)
       => (pending_remote<NearbyShareSessionHost> host);

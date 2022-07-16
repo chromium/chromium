@@ -10,10 +10,11 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/version_info/channel.h"
 
-namespace em = ::enterprise_management;
+namespace enterprise_management {
+class BrowserReport;
+}  // namespace enterprise_management
 
 namespace enterprise_reporting {
 
@@ -33,13 +34,14 @@ class BrowserReportGeneratorIOS : public BrowserReportGenerator::Delegate {
   // BrowserReportGenerator::Delegate implementation.
   std::string GetExecutablePath() override;
   version_info::Channel GetChannel() override;
+  std::vector<BrowserReportGenerator::ReportedProfileData> GetReportedProfiles()
+      override;
   bool IsExtendedStableChannel() override;
-  void GenerateBuildStateInfo(em::BrowserReport* report) override;
-  void GenerateProfileInfo(ReportType report_type,
-                           em::BrowserReport* report) override;
+  void GenerateBuildStateInfo(
+      enterprise_management::BrowserReport* report) override;
   void GeneratePluginsIfNeeded(
       ReportCallback callback,
-      std::unique_ptr<em::BrowserReport> report) override;
+      std::unique_ptr<enterprise_management::BrowserReport> report) override;
 };
 
 }  // namespace enterprise_reporting

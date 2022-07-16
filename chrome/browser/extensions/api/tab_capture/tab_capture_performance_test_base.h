@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_feature_list.h"
@@ -41,6 +40,11 @@ class HttpResponse;
 class TabCapturePerformanceTestBase : public InProcessBrowserTest {
  public:
   TabCapturePerformanceTestBase();
+
+  TabCapturePerformanceTestBase(const TabCapturePerformanceTestBase&) = delete;
+  TabCapturePerformanceTestBase& operator=(
+      const TabCapturePerformanceTestBase&) = delete;
+
   ~TabCapturePerformanceTestBase() override;
 
   // SetUp overrides to enable pixel output, configure the embedded test server,
@@ -106,14 +110,14 @@ class TabCapturePerformanceTestBase : public InProcessBrowserTest {
   // These are how long the browser is run with trace event recording taking
   // place.
   static constexpr base::TimeDelta kFullRunObservationPeriod =
-      base::TimeDelta::FromSeconds(15);
+      base::Seconds(15);
   static constexpr base::TimeDelta kQuickRunObservationPeriod =
-      base::TimeDelta::FromSeconds(4);
+      base::Seconds(4);
 
   // If sending a message to the extension fails, because the extension has not
   // started its message listener yet, how long before the next retry?
   static constexpr base::TimeDelta kSendMessageRetryPeriod =
-      base::TimeDelta::FromMilliseconds(250);
+      base::Milliseconds(250);
 
   // Note: The hostname must match the pattern found in the Extension's manifest
   // file, or it will not be able to send/receive messaging from the test web
@@ -150,8 +154,6 @@ class TabCapturePerformanceTestBase : public InProcessBrowserTest {
 
   // Manages the Audio Service feature set, enabled for these performance tests.
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabCapturePerformanceTestBase);
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_TAB_CAPTURE_TAB_CAPTURE_PERFORMANCE_TEST_BASE_H_

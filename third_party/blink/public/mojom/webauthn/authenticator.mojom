@@ -7,12 +7,19 @@ module blink.mojom;
 import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/payments/payment_credential.mojom";
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 // This file describes the communication between the WebAuthentication renderer
 // implementation and browser-side implementations to create public key
 // credentials and use already-created credentials to get assertions.
 // See https://w3c.github.io/webauthn/.
+
+// The maximum allowable list size for vectors of
+// `PublicKeyCredentialDescriptor` (i.e.
+// `PublicKeyCredentialCreationOptions.exclude_credentials` and
+// `PublicKeyCredentialRequestOptions.allow_credentials`).
+const uint32 kPublicKeyCredentialDescriptorListMaxSize = 64;
 
 enum AuthenticatorStatus {
   SUCCESS,
@@ -21,11 +28,6 @@ enum AuthenticatorStatus {
   INVALID_DOMAIN,
   INVALID_ICON_URL,
   CREDENTIAL_EXCLUDED,
-
-  // TODO(crbug/964439): Unused in Desktop, but kept around for Android. Delete
-  // once it's fully obsolete.
-  CREDENTIAL_NOT_RECOGNIZED,
-
   NOT_IMPLEMENTED,
   NOT_FOCUSED,
   RESIDENT_CREDENTIALS_UNSUPPORTED,
@@ -40,6 +42,7 @@ enum AuthenticatorStatus {
   BAD_RELYING_PARTY_ID,
   CANNOT_READ_AND_WRITE_LARGE_BLOB,
   INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB,
+  FAILED_TO_SAVE_CREDENTIAL_ID_FOR_PAYMENT_EXTENSION,
   UNKNOWN_ERROR,
 };
 
@@ -84,6 +87,12 @@ struct UvmEntry {
 // The public key and attestation returned by Authenticator::MakeCredential.
 struct MakeCredentialAuthenticatorResponse {
   CommonCredentialInfo info;
+
+  // True if transport exists. False if transport does not exist, e.g. on old
+  // Windows.
+  bool has_transport;
+  // The transport method used to authenticate.
+  AuthenticatorTransport transport;
 
   // A blob of data returned by the authenticator after creating a credential.
   array<uint8> attestation_object;
@@ -146,6 +155,12 @@ struct MakeCredentialAuthenticatorResponse {
 
 struct GetAssertionAuthenticatorResponse {
   CommonCredentialInfo info;
+
+  // True if transport exists. False if transport does not exist, e.g. on old
+  // Windows.
+  bool has_transport;
+  // The transport method used to authenticate.
+  AuthenticatorTransport transport;
 
   // Cryptographic signature proving possession of the credential private key.
   array<uint8> signature;
@@ -292,9 +307,23 @@ struct PRFValues {
 
 // Payment parameters passed into calls to GetAssertion for Secure Payment
 // Confirmation.
+// TODO(https://crbug.com/1239249): Convert to a non-mojo struct, because this
+// is not used in any mojo interfaces.
 struct PaymentOptions {
   payments.mojom.PaymentCurrencyAmount total;
-  payments.mojom.PaymentCredentialInstrument instrument;
+  PaymentCredentialInstrument instrument;
+  url.mojom.Origin payee_origin;
+};
+
+// TODO(https://crbug.com/1239249): Move to payment_request.mojom after this
+// struct is no longer used in here.
+struct PaymentCredentialInstrument {
+  // Friendly name for displaying this instrument to the user.
+  string display_name;
+
+  // URL for an icon to display alongside the display_name. The URL is secure,
+  // not required to share the same origin with the current page.
+  url.mojom.Url icon;
 };
 
 // Parameters passed into calls to GetAssertion.
@@ -361,9 +390,6 @@ struct PublicKeyCredentialRequestOptions {
   // If true, attempt to read a credblob.
   // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
   bool get_cred_blob;
-
-  // If present, put the payment information into clientDataJSON.
-  PaymentOptions? payment;
 };
 
 // See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference

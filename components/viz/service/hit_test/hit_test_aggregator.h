@@ -35,6 +35,10 @@ class VIZ_SERVICE_EXPORT HitTestAggregator {
       const FrameSinkId& frame_sink_id,
       uint32_t initial_region_size = 100,
       uint32_t max_region_size = 100 * 100);
+
+  HitTestAggregator(const HitTestAggregator&) = delete;
+  HitTestAggregator& operator=(const HitTestAggregator&) = delete;
+
   ~HitTestAggregator();
 
   // Called after surfaces have been aggregated into the DisplayFrame.
@@ -111,8 +115,6 @@ class VIZ_SERVICE_EXPORT HitTestAggregator {
   // Handles the case when this object is deleted after
   // the PostTaskAggregation call is scheduled but before invocation.
   base::WeakPtrFactory<HitTestAggregator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HitTestAggregator);
 };
 
 }  // namespace viz

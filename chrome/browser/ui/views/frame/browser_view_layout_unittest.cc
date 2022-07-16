@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
@@ -30,6 +29,11 @@ constexpr int kToolbarHeight = 30 - views::Separator::kThickness;
 class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
  public:
   MockBrowserViewLayoutDelegate() = default;
+
+  MockBrowserViewLayoutDelegate(const MockBrowserViewLayoutDelegate&) = delete;
+  MockBrowserViewLayoutDelegate& operator=(
+      const MockBrowserViewLayoutDelegate&) = delete;
+
   ~MockBrowserViewLayoutDelegate() override = default;
 
   void set_tab_strip_visible(bool visible) {
@@ -84,6 +88,9 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
     return base::Contains(*supported_features, feature);
   }
   gfx::NativeView GetHostView() const override { return nullptr; }
+  bool BrowserIsSystemWebApp() const override { return false; }
+  bool BrowserIsWebApp() const override { return false; }
+  bool BrowserIsTypeApp() const override { return false; }
   bool BrowserIsTypeNormal() const override { return true; }
   bool HasFindBarController() const override { return false; }
   void MoveWindowForFindBarIfNecessary() const override {}
@@ -95,8 +102,6 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   bool content_separator_enabled_ = true;
   bool top_controls_slide_enabled_ = false;
   float top_controls_shown_ratio_ = 1.f;
-
-  DISALLOW_COPY_AND_ASSIGN(MockBrowserViewLayoutDelegate);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -147,6 +152,10 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         contents_container_(nullptr),
         contents_web_view_(nullptr),
         devtools_web_view_(nullptr) {}
+
+  BrowserViewLayoutTest(const BrowserViewLayoutTest&) = delete;
+  BrowserViewLayoutTest& operator=(const BrowserViewLayoutTest&) = delete;
+
   ~BrowserViewLayoutTest() override {}
 
   BrowserViewLayout* layout() { return layout_.get(); }
@@ -208,8 +217,9 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         /*left_aligned_side_panel=*/nullptr,
         /*left_aligned_side_panel_separator=*/nullptr,
         /*right_aligned_side_panel=*/nullptr,
-        /*left_aligned_side_panel_separator=*/nullptr,
-        immersive_mode_controller_.get(), separator_);
+        /*right_aligned_side_panel_separator=*/nullptr,
+        /*lens_side_panel=*/nullptr, immersive_mode_controller_.get(),
+        separator_);
     layout_->set_webui_tab_strip(webui_tab_strip());
   }
 
@@ -230,8 +240,6 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   views::View* devtools_web_view_;
 
   std::unique_ptr<MockImmersiveModeController> immersive_mode_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewLayoutTest);
 };
 
 // Test basic construction and initialization.

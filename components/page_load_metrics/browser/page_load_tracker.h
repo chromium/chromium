@@ -8,10 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
-#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_update_dispatcher.h"
@@ -189,12 +187,19 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
                   UserInitiatedInfo user_initiated_info,
                   int aborted_chain_size,
                   int aborted_chain_size_same_url);
+
+  PageLoadTracker(const PageLoadTracker&) = delete;
+  PageLoadTracker& operator=(const PageLoadTracker&) = delete;
+
   ~PageLoadTracker() override;
 
   // PageLoadMetricsUpdateDispatcher::Client implementation:
   void OnTimingChanged() override;
   void OnSubFrameTimingChanged(content::RenderFrameHost* rfh,
                                const mojom::PageLoadTiming& timing) override;
+  void OnSubFrameInputTimingChanged(
+      content::RenderFrameHost* rfh,
+      const mojom::InputTiming& input_timing_delta) override;
   void OnSubFrameRenderDataChanged(
       content::RenderFrameHost* rfh,
       const mojom::FrameRenderDataUpdate& render_data) override;
@@ -222,10 +227,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // PageLoadMetricsObserverDelegate implementation:
   content::WebContents* GetWebContents() const override;
   base::TimeTicks GetNavigationStart() const override;
-  const absl::optional<base::TimeDelta>& GetFirstBackgroundTime()
-      const override;
-  const absl::optional<base::TimeDelta>& GetFirstForegroundTime()
-      const override;
+  absl::optional<base::TimeDelta> GetTimeToFirstBackground() const override;
+  absl::optional<base::TimeDelta> GetTimeToFirstForeground() const override;
   const BackForwardCacheRestore& GetBackForwardCacheRestore(
       size_t index) const override;
   bool StartedInForeground() const override;
@@ -236,14 +239,18 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   bool DidCommit() const override;
   PageEndReason GetPageEndReason() const override;
   const UserInitiatedInfo& GetPageEndUserInitiatedInfo() const override;
-  absl::optional<base::TimeDelta> GetPageEndTime() const override;
+  absl::optional<base::TimeDelta> GetTimeToPageEnd() const override;
+  const base::TimeTicks& GetPageEndTime() const override;
   const mojom::FrameMetadata& GetMainFrameMetadata() const override;
   const mojom::FrameMetadata& GetSubframeMetadata() const override;
   const PageRenderData& GetPageRenderData() const override;
   const NormalizedCLSData& GetNormalizedCLSData(
       BfcacheStrategy bfcache_strategy) const override;
+  const NormalizedResponsivenessMetrics& GetNormalizedResponsivenessMetrics()
+      const override;
   const mojom::InputTiming& GetPageInputTiming() const override;
-  const blink::MobileFriendliness& GetMobileFriendliness() const override;
+  const absl::optional<blink::MobileFriendliness>& GetMobileFriendliness()
+      const override;
   const PageRenderData& GetMainFrameRenderData() const override;
   const ui::ScopedVisibilityTracker& GetVisibilityTracker() const override;
   const ResourceTracker& GetResourceTracker() const override;
@@ -269,7 +276,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void PageHidden();
   void PageShown();
   void RenderFrameDeleted(content::RenderFrameHost* rfh);
-  void FrameDeleted(int frame_tree_node_id);
+  void SubFrameDeleted(int frame_tree_node_id);
 
   void OnInputEvent(const blink::WebInputEvent& event);
 
@@ -375,8 +382,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       const content::WebContentsObserver::MediaPlayerInfo& video_type,
       content::RenderFrameHost* render_frame_host);
 
-  // Informs the observers that |event| has occurred.
-  void BroadcastEventToObservers(PageLoadMetricsEvent event);
+  void OnPrefetchLikely();
 
   void OnEnterBackForwardCache();
   void OnRestoreFromBackForwardCache(
@@ -410,6 +416,12 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // committed load.
   void LogAbortChainHistograms(content::NavigationHandle* final_navigation);
 
+  // Given a |time|, returns the duration between |navigation_start_| and
+  // |time|. |time| must be greater than or equal to |navigation_start_|.
+  // Returns nullopt if and only if the |time| passed is nullopt.
+  absl::optional<base::TimeDelta> DurationSinceNavigationStartForTime(
+      const absl::optional<base::TimeTicks>& time) const;
+
   // Whether we stopped tracking this navigation after it was initiated. We may
   // stop tracking a navigation if it doesn't meet the criteria for tracking
   // metrics in DidFinishNavigation.
@@ -421,10 +433,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   // The navigation start in TimeTicks, not the wall time reported by Blink.
   const base::TimeTicks navigation_start_;
-
-  // The navigation start after the last time when back-forward cache is
-  // restored.
-  base::TimeTicks navigation_start_after_back_forward_cache_restore_;
 
   // The most recent URL of this page load. Updated at navigation start, upon
   // redirection, and at commit time.
@@ -459,8 +467,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // We record separate metrics for events that occur after a background,
   // because metrics like layout/paint are delayed artificially
   // when they occur in the background.
-  absl::optional<base::TimeDelta> first_background_time_;
-  absl::optional<base::TimeDelta> first_foreground_time_;
+  absl::optional<base::TimeTicks> first_background_time_;
+  absl::optional<base::TimeTicks> first_foreground_time_;
   std::vector<BackForwardCacheRestore> back_forward_cache_restores_;
   const bool started_in_foreground_;
   bool was_prerendered_then_activated_in_foreground_ = false;
@@ -495,7 +503,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   PageLoadMetricsUpdateDispatcher metrics_update_dispatcher_;
 
-  const ukm::SourceId source_id_;
+  ukm::SourceId source_id_ = ukm::kInvalidSourceId;
 
   content::WebContents* const web_contents_;
 
@@ -505,8 +513,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       largest_contentful_paint_handler_;
   page_load_metrics::LargestContentfulPaintHandler
       experimental_largest_contentful_paint_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageLoadTracker);
 };
 
 }  // namespace page_load_metrics

@@ -15,36 +15,35 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
 class PaintArtifact;
-class IntRect;
 
 class PLATFORM_EXPORT RasterInvalidator {
   USING_FAST_MALLOC(RasterInvalidator);
 
  public:
   using RasterInvalidationFunction =
-      base::RepeatingCallback<void(const IntRect&)>;
+      base::RepeatingCallback<void(const gfx::Rect&)>;
 
   RasterInvalidator() = default;
 
   void SetTracksRasterInvalidations(bool);
-  RasterInvalidationTracking* GetTracking() const {
-    return tracking_info_ ? &tracking_info_->tracking : nullptr;
-  }
+  RasterInvalidationTracking* GetTracking() const { return tracking_.get(); }
 
   RasterInvalidationTracking& EnsureTracking();
 
   // Generate raster invalidations for a subset of the paint chunks in the
   // paint artifact.
-  void Generate(RasterInvalidationFunction,
-                const PaintChunkSubset&,
-                const FloatPoint& layer_offset,
-                const IntSize& layer_bounds,
-                const PropertyTreeState& layer_state,
-                const DisplayItemClient* layer_client = nullptr);
+  void Generate(
+      RasterInvalidationFunction,
+      const PaintChunkSubset&,
+      const gfx::Vector2dF& layer_offset,
+      const gfx::Size& layer_bounds,
+      const PropertyTreeState& layer_state,
+      DisplayItemClientId layer_client_id = kInvalidDisplayItemClientId);
 
   // Called when we repainted PaintArtifact but a ContentLayerClientImpl doesn't
   // have anything changed. We just need to let |old_paint_artifact_| point to
@@ -53,7 +52,7 @@ class PLATFORM_EXPORT RasterInvalidator {
   // PaintArtifactCompositor and pass it in Generate().
   void SetOldPaintArtifact(scoped_refptr<const PaintArtifact>);
 
-  const IntSize& LayerBounds() const { return layer_bounds_; }
+  const gfx::Size& LayerBounds() const { return layer_bounds_; }
 
   size_t ApproximateUnsharedMemoryUsage() const;
 
@@ -62,8 +61,6 @@ class PLATFORM_EXPORT RasterInvalidator {
  private:
   friend class DisplayItemRasterInvalidator;
   friend class RasterInvalidatorTest;
-
-  void UpdateClientDebugNames();
 
   struct PaintChunkInfo {
     PaintChunkInfo(const RasterInvalidator& invalidator,
@@ -79,6 +76,20 @@ class PLATFORM_EXPORT RasterInvalidator {
           chunk_to_layer_transform(mapper.Transform()) {
     }
 
+    PaintChunkInfo(const PaintChunkInfo& old_chunk_info,
+                   const PaintChunkIterator& chunk_it)
+        : index_in_paint_artifact(chunk_it.IndexInPaintArtifact()),
+#if DCHECK_IS_ON()
+          id(chunk_it->id),
+#endif
+          bounds_in_layer(old_chunk_info.bounds_in_layer),
+          chunk_to_layer_clip(old_chunk_info.chunk_to_layer_clip),
+          chunk_to_layer_transform(old_chunk_info.chunk_to_layer_transform) {
+#if DCHECK_IS_ON()
+      DCHECK_EQ(id, old_chunk_info.id);
+#endif
+    }
+
     // The index of the chunk in the PaintArtifact. It may be different from
     // the index of this PaintChunkInfo in paint_chunks_info_ when a subset of
     // the paint chunks is handled by the RasterInvalidator.
@@ -88,7 +99,7 @@ class PLATFORM_EXPORT RasterInvalidator {
     PaintChunk::Id id;
 #endif
 
-    IntRect bounds_in_layer;
+    gfx::Rect bounds_in_layer;
     FloatClipRect chunk_to_layer_clip;
     SkMatrix chunk_to_layer_transform;
   };
@@ -96,6 +107,7 @@ class PLATFORM_EXPORT RasterInvalidator {
   void GenerateRasterInvalidations(RasterInvalidationFunction,
                                    const PaintChunkSubset&,
                                    const PropertyTreeState& layer_state,
+                                   bool layer_offset_changed,
                                    Vector<PaintChunkInfo>& new_chunks_info);
 
   ALWAYS_INLINE const PaintChunk& GetOldChunk(wtf_size_t index) const;
@@ -106,25 +118,24 @@ class PLATFORM_EXPORT RasterInvalidator {
       RasterInvalidationFunction,
       const PaintChunkInfo& old_chunk_info,
       const PaintChunkInfo& new_chunk_info,
-      const DisplayItemClient&);
+      DisplayItemClientId);
 
-  // |old_or_new| indicates if |client| is known to be new (alive) and we can
-  // get DebugName() directly or should get from |tracking_info_
-  // ->old_client_debug_names|.
+  // |old_or_new| indicates whether |client| is from the old or new
+  // PaintArtifact, so we know which one can provide the client's debug name.
   enum ClientIsOldOrNew { kClientIsOld, kClientIsNew };
   void AddRasterInvalidation(RasterInvalidationFunction function,
-                             const IntRect& rect,
-                             const DisplayItemClient& client,
+                             const gfx::Rect& rect,
+                             DisplayItemClientId client_id,
                              PaintInvalidationReason reason,
                              ClientIsOldOrNew old_or_new) {
     if (rect.IsEmpty())
       return;
     function.Run(rect);
-    if (tracking_info_)
-      TrackRasterInvalidation(rect, client, reason, old_or_new);
+    if (tracking_)
+      TrackRasterInvalidation(rect, client_id, reason, old_or_new);
   }
-  void TrackRasterInvalidation(const IntRect&,
-                               const DisplayItemClient&,
+  void TrackRasterInvalidation(const gfx::Rect&,
+                               DisplayItemClientId,
                                PaintInvalidationReason,
                                ClientIsOldOrNew);
 
@@ -138,21 +149,16 @@ class PLATFORM_EXPORT RasterInvalidator {
   // Clip a rect in the layer space by the layer bounds.
   template <typename Rect>
   Rect ClipByLayerBounds(const Rect& r) const {
-    return Intersection(
-        r, Rect(0, 0, layer_bounds_.Width(), layer_bounds_.Height()));
+    return IntersectRects(r, Rect(gfx::Rect(layer_bounds_)));
   }
 
-  FloatPoint layer_offset_;
-  IntSize layer_bounds_;
+  gfx::Vector2dF layer_offset_;
+  gfx::Size layer_bounds_;
   Vector<PaintChunkInfo> old_paint_chunks_info_;
+  scoped_refptr<const PaintArtifact> current_paint_artifact_;
   scoped_refptr<const PaintArtifact> old_paint_artifact_;
 
-  struct RasterInvalidationTrackingInfo {
-    using ClientDebugNamesMap = HashMap<const DisplayItemClient*, String>;
-    ClientDebugNamesMap old_client_debug_names;
-    RasterInvalidationTracking tracking;
-  };
-  std::unique_ptr<RasterInvalidationTrackingInfo> tracking_info_;
+  std::unique_ptr<RasterInvalidationTracking> tracking_;
 };
 
 }  // namespace blink

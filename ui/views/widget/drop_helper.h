@@ -5,9 +5,9 @@
 #ifndef UI_VIEWS_WIDGET_DROP_HELPER_H_
 #define UI_VIEWS_WIDGET_DROP_HELPER_H_
 
+#include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
@@ -32,7 +32,16 @@ class RootView;
 // then either OnDragExit or OnDrop when the drop is done.
 class VIEWS_EXPORT DropHelper {
  public:
+  using DropCallback =
+      base::OnceCallback<void(const ui::DropTargetEvent& event,
+                              std::unique_ptr<ui::OSExchangeData> data,
+                              ui::mojom::DragOperation& output_drag_op)>;
+
   explicit DropHelper(View* root_view);
+
+  DropHelper(const DropHelper&) = delete;
+  DropHelper& operator=(const DropHelper&) = delete;
+
   ~DropHelper();
 
   // Sets a callback that is run any time a drag enters |view|.  Only exposed
@@ -76,9 +85,9 @@ class VIEWS_EXPORT DropHelper {
 
   // Invoked when the user drops data on the root view during a drag and drop
   // operation, but the drop is held because of DataTransferPolicController.
-  View::DropCallback GetDropCallback(const OSExchangeData& data,
-                                     const gfx::Point& root_view_location,
-                                     int drag_operation);
+  DropCallback GetDropCallback(const OSExchangeData& data,
+                               const gfx::Point& root_view_location,
+                               int drag_operation);
 
   // Calculates the target view for a drop given the specified location in
   // the coordinate system of the rootview. This tries to avoid continually
@@ -115,8 +124,6 @@ class VIEWS_EXPORT DropHelper {
 
   // The deepest view under the current drop coordinate.
   View* deepest_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(DropHelper);
 };
 
 }  // namespace views

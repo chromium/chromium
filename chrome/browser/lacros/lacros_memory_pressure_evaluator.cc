@@ -16,13 +16,13 @@ LacrosMemoryPressureEvaluator* g_lacros_evaluator = nullptr;
 // We try not to re-notify on moderate too frequently, this time
 // controls how frequently we will notify after our first notification.
 constexpr base::TimeDelta kModerateMemoryPressureCooldownTime =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 }  // namespace
 
 LacrosMemoryPressureEvaluator::LacrosMemoryPressureEvaluator(
-    std::unique_ptr<util::MemoryPressureVoter> voter)
-    : util::SystemMemoryPressureEvaluator(std::move(voter)) {
+    std::unique_ptr<memory_pressure::MemoryPressureVoter> voter)
+    : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)) {
   DCHECK(g_lacros_evaluator == nullptr);
   g_lacros_evaluator = this;
 

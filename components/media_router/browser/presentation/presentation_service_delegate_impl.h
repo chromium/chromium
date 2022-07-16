@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -62,6 +61,11 @@ class PresentationServiceDelegateImpl
   // and attaches it to the specified WebContents.
   static PresentationServiceDelegateImpl* GetOrCreateForWebContents(
       content::WebContents* web_contents);
+
+  PresentationServiceDelegateImpl(const PresentationServiceDelegateImpl&) =
+      delete;
+  PresentationServiceDelegateImpl& operator=(
+      const PresentationServiceDelegateImpl&) = delete;
 
   ~PresentationServiceDelegateImpl() override;
 
@@ -261,8 +265,6 @@ class PresentationServiceDelegateImpl
   base::WeakPtrFactory<PresentationServiceDelegateImpl> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationServiceDelegateImpl);
 };
 
 }  // namespace media_router

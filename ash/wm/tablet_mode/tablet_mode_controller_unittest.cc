@@ -37,6 +37,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
+#include "base/macros.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -106,6 +107,10 @@ extern const size_t kAccelerometerVerticalHingeUnstableAnglesTestDataLength;
 class TabletModeControllerTest : public AshTestBase {
  public:
   TabletModeControllerTest() = default;
+
+  TabletModeControllerTest(const TabletModeControllerTest&) = delete;
+  TabletModeControllerTest& operator=(const TabletModeControllerTest&) = delete;
+
   ~TabletModeControllerTest() override = default;
 
   void SetUp() override {
@@ -162,7 +167,7 @@ class TabletModeControllerTest : public AshTestBase {
   // Attaches a SimpleTestTickClock to the TabletModeController with a non
   // null value initial value.
   void AttachTickClockForTest() {
-    test_tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
+    test_tick_clock_.Advance(base::Seconds(1));
     test_api_->set_tick_clock(&test_tick_clock_);
   }
 
@@ -229,7 +234,7 @@ class TabletModeControllerTest : public AshTestBase {
   void WaitForSmoothnessMetrics() {
     ignore_result(ui::WaitForNextFrameToBePresented(
         Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-        base::TimeDelta::FromMilliseconds(100)));
+        base::Milliseconds(100)));
   }
 
  private:
@@ -239,8 +244,6 @@ class TabletModeControllerTest : public AshTestBase {
 
   // Tracks user action counts.
   base::UserActionTester user_action_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerTest);
 };
 
 // Verify TabletMode enabled/disabled user action metrics are recorded.
@@ -453,13 +456,13 @@ TEST_F(TabletModeControllerTest, EnterTabletModeWithUnstableLidAngle) {
   EXPECT_FALSE(IsTabletModeStarted());
 
   // 1 second after entering unstable angle zone.
-  AdvanceTickClock(base::TimeDelta::FromSeconds(1));
+  AdvanceTickClock(base::Seconds(1));
   EXPECT_FALSE(CanUseUnstableLidAngle());
   OpenLidToAngle(355.0f);
   EXPECT_FALSE(IsTabletModeStarted());
 
   // 2 seconds after entering unstable angle zone.
-  AdvanceTickClock(base::TimeDelta::FromSeconds(1));
+  AdvanceTickClock(base::Seconds(1));
   EXPECT_TRUE(CanUseUnstableLidAngle());
   OpenLidToAngle(355.0f);
   EXPECT_TRUE(IsTabletModeStarted());
@@ -481,13 +484,13 @@ TEST_F(TabletModeControllerTest, NotExitTabletModeWithUnstableLidAngle) {
   EXPECT_TRUE(IsTabletModeStarted());
 
   // 1 second after entering unstable angle zone.
-  AdvanceTickClock(base::TimeDelta::FromSeconds(1));
+  AdvanceTickClock(base::Seconds(1));
   EXPECT_FALSE(CanUseUnstableLidAngle());
   OpenLidToAngle(5.0f);
   EXPECT_TRUE(IsTabletModeStarted());
 
   // 2 seconds after entering unstable angle zone.
-  AdvanceTickClock(base::TimeDelta::FromSeconds(1));
+  AdvanceTickClock(base::Seconds(1));
   EXPECT_TRUE(CanUseUnstableLidAngle());
   OpenLidToAngle(5.0f);
   EXPECT_TRUE(IsTabletModeStarted());
@@ -630,7 +633,7 @@ TEST_F(TabletModeControllerTest, DisplayDisconnectionDuringOverview) {
 // Test that the disabling of the internal display exits tablet mode, and that
 // while disabled we do not re-enter tablet mode.
 TEST_F(TabletModeControllerTest, NoTabletModeWithDisabledInternalDisplay) {
-  UpdateDisplay("200x200, 200x200");
+  UpdateDisplay("300x200, 300x200");
   const int64_t internal_display_id =
       display::test::DisplayManagerTestApi(display_manager())
           .SetFirstDisplayAsInternalDisplay();
@@ -667,7 +670,7 @@ TEST_F(TabletModeControllerTest, NoTabletModeWithDisabledInternalDisplay) {
 // Tests that is a tablet mode signal is received while docked, that maximize
 // mode is enabled upon exiting docked mode.
 TEST_F(TabletModeControllerTest, TabletModeAfterExitingDockedMode) {
-  UpdateDisplay("200x200, 200x200");
+  UpdateDisplay("300x200, 300x200");
   const int64_t internal_display_id =
       display::test::DisplayManagerTestApi(display_manager())
           .SetFirstDisplayAsInternalDisplay();
@@ -1086,6 +1089,12 @@ class TabletModeControllerForceTabletModeTest
     : public TabletModeControllerTest {
  public:
   TabletModeControllerForceTabletModeTest() = default;
+
+  TabletModeControllerForceTabletModeTest(
+      const TabletModeControllerForceTabletModeTest&) = delete;
+  TabletModeControllerForceTabletModeTest& operator=(
+      const TabletModeControllerForceTabletModeTest&) = delete;
+
   ~TabletModeControllerForceTabletModeTest() override = default;
 
   // AshTestBase:
@@ -1094,9 +1103,6 @@ class TabletModeControllerForceTabletModeTest
         switches::kAshUiMode, switches::kAshUiModeTablet);
     TabletModeControllerTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerForceTabletModeTest);
 };
 
 // Verify when the force touch view mode flag is turned on, tablet mode is on
@@ -1142,6 +1148,12 @@ class TabletModeControllerForceClamshellModeTest
     : public TabletModeControllerTest {
  public:
   TabletModeControllerForceClamshellModeTest() = default;
+
+  TabletModeControllerForceClamshellModeTest(
+      const TabletModeControllerForceClamshellModeTest&) = delete;
+  TabletModeControllerForceClamshellModeTest& operator=(
+      const TabletModeControllerForceClamshellModeTest&) = delete;
+
   ~TabletModeControllerForceClamshellModeTest() override = default;
 
   // AshTestBase:
@@ -1150,9 +1162,6 @@ class TabletModeControllerForceClamshellModeTest
         switches::kAshUiMode, switches::kAshUiModeClamshell);
     TabletModeControllerTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerForceClamshellModeTest);
 };
 
 // Tests that when the force touch view mode flag is set to clamshell, clamshell
@@ -1704,6 +1713,12 @@ TEST_F(TabletModeControllerOnDeviceTest, DoNotEnterClamshellWithNoInputDevice) {
 class TabletModeControllerScreenshotTest : public TabletModeControllerTest {
  public:
   TabletModeControllerScreenshotTest() = default;
+
+  TabletModeControllerScreenshotTest(
+      const TabletModeControllerScreenshotTest&) = delete;
+  TabletModeControllerScreenshotTest& operator=(
+      const TabletModeControllerScreenshotTest&) = delete;
+
   ~TabletModeControllerScreenshotTest() override = default;
 
   void SetUp() override {
@@ -1736,8 +1751,6 @@ class TabletModeControllerScreenshotTest : public TabletModeControllerTest {
  private:
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode>
       scoped_animation_duration_scale_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerScreenshotTest);
 };
 
 // Tests that when there are no animations, no screenshot is taken.

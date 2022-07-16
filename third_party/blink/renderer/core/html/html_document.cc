@@ -20,7 +20,7 @@
  * Boston, MA 02110-1301, USA.
  *
  * Portions are Copyright (C) 2002 Netscape Communications Corporation.
- * Other contributors: David Baron <dbaron@fas.harvard.edu>
+ * Other contributors: David Baron <dbaron@dbaron.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

@@ -8,15 +8,16 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/syslog_logging.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_metrics.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_serializer.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -35,25 +36,21 @@ namespace {
 
 constexpr unsigned int kNonVaKeyModulusLengthBits = 2048;
 
-constexpr base::TimeDelta kMinumumTryAgainLaterDelay =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kMinumumTryAgainLaterDelay = base::Seconds(10);
 
 // The delay after which a StartCsr request can be resent after a 412 Pending
 // Approval has been returned by the DM server.
-constexpr base::TimeDelta kRetryStartCsrRequestDelay =
-    base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kRetryStartCsrRequestDelay = base::Hours(1);
 // The delay after which a FinishCsr request can be resent after a 412 Pending
 // Approval has been returned by the DM server.
-constexpr base::TimeDelta kRetryFinishCsrRequestDelay =
-    base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kRetryFinishCsrRequestDelay = base::Hours(1);
 // The delay after which a DownloadCsr request can be resent after a 412 Pending
 // Approval has been returned by the DM server.
 // Note: This request retry delay is more than other delays as a DownloadCsr
 // request may not only fail because of a DM server or a CES server problem but
 // also because of a problem with the Google Certificate Connecter which may
 // take more time to solve.
-constexpr base::TimeDelta kRetryDownloadCsrRequestDelay =
-    base::TimeDelta::FromHours(8);
+constexpr base::TimeDelta kRetryDownloadCsrRequestDelay = base::Hours(8);
 
 constexpr net::BackoffEntry::Policy kBackoffPolicy{
     /*num_errors_to_ignore=*/0,
@@ -387,6 +384,7 @@ void CertProvisioningWorkerImpl::GenerateKey() {
 void CertProvisioningWorkerImpl::GenerateRegularKey() {
   platform_keys_service_->GenerateRSAKey(
       GetPlatformKeysTokenId(cert_scope_), kNonVaKeyModulusLengthBits,
+      /*sw_backed=*/false,
       base::BindOnce(&CertProvisioningWorkerImpl::OnGenerateRegularKeyDone,
                      weak_factory_.GetWeakPtr()));
 }
@@ -417,7 +415,8 @@ void CertProvisioningWorkerImpl::GenerateKeyForVa() {
       /*will_register_key=*/true, GetKeyName(cert_profile_.profile_id),
       profile_,
       base::BindOnce(&CertProvisioningWorkerImpl::OnGenerateKeyForVaDone,
-                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+      /*signals=*/absl::nullopt);
 }
 
 void CertProvisioningWorkerImpl::OnGenerateKeyForVaDone(
@@ -738,7 +737,10 @@ bool CertProvisioningWorkerImpl::ProcessResponseErrors(
        policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE) ||
       (status == policy::DeviceManagementStatus::DM_STATUS_REQUEST_FAILED) ||
       (status == policy::DeviceManagementStatus::DM_STATUS_HTTP_STATUS_ERROR)) {
-    LOG(WARNING) << "Connection to DM Server failed, error: " << status;
+    LOG(WARNING) << "Connection to DM Server failed, error: " << status
+                 << " for profile ID: " << cert_profile_.profile_id
+                 << " in state: "
+                 << CertificateProvisioningWorkerStateToString(state_);
     request_backoff_.InformOfRequest(false);
     ScheduleNextStep(request_backoff_.GetTimeUntilRelease());
     return false;
@@ -757,7 +759,10 @@ bool CertProvisioningWorkerImpl::ProcessResponseErrors(
   }
 
   if (status != policy::DeviceManagementStatus::DM_STATUS_SUCCESS) {
-    LOG(ERROR) << "DM Server returned error: " << status;
+    LOG(ERROR) << "DM Server returned error: " << status
+               << " for profile ID: " << cert_profile_.profile_id
+               << " in state: "
+               << CertificateProvisioningWorkerStateToString(state_);
     UpdateState(CertProvisioningWorkerState::kFailed);
     return false;
   }
@@ -766,19 +771,25 @@ bool CertProvisioningWorkerImpl::ProcessResponseErrors(
 
   if (error.has_value() &&
       (error.value() == CertProvisioningResponseError::INCONSISTENT_DATA)) {
-    LOG(ERROR) << "Server response contains error: " << error.value();
+    LOG(ERROR) << "Server response contains error: " << error.value()
+               << " for profile ID: " << cert_profile_.profile_id
+               << " in state: "
+               << CertificateProvisioningWorkerStateToString(state_);
     UpdateState(CertProvisioningWorkerState::kInconsistentDataError);
     return false;
   }
 
   if (error.has_value()) {
-    LOG(ERROR) << "Server response contains error: " << error.value();
+    LOG(ERROR) << "Server response contains error: " << error.value()
+               << " for profile ID: " << cert_profile_.profile_id
+               << " in state: "
+               << CertificateProvisioningWorkerStateToString(state_);
     UpdateState(CertProvisioningWorkerState::kFailed);
     return false;
   }
 
   if (try_later.has_value()) {
-    ScheduleNextStep(base::TimeDelta::FromMilliseconds(try_later.value()));
+    ScheduleNextStep(base::Milliseconds(try_later.value()));
     return false;
   }
 

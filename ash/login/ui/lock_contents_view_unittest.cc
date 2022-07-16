@@ -77,7 +77,7 @@ void PressAndReleasePowerButton() {
   base::SimpleTestTickClock tick_clock;
   auto dispatch_power_button_event_after_delay =
       [&](const base::TimeDelta& delta, bool down) {
-        tick_clock.Advance(delta + base::TimeDelta::FromMilliseconds(1));
+        tick_clock.Advance(delta + base::Milliseconds(1));
         Shell::Get()->power_button_controller()->OnPowerButtonEvent(
             down, tick_clock.NowTicks());
         base::RunLoop().RunUntilIdle();
@@ -109,15 +109,68 @@ void SimulateMediaSessionChanged(
 // important.
 AuthDisabledData GetTestDisabledAuthData() {
   return AuthDisabledData(ash::AuthDisabledReason::kTimeWindowLimit,
-                          base::Time::Now() + base::TimeDelta::FromHours(8),
-                          base::TimeDelta::FromHours(1),
+                          base::Time::Now() + base::Hours(8), base::Hours(1),
                           true /*disable_lock_screen_media*/);
 }
 
 }  // namespace
 
-using LockContentsViewUnitTest = LoginTestBase;
 using LockContentsViewKeyboardUnitTest = LoginKeyboardTestBase;
+
+class LockContentsViewUnitTest : public LoginTestBase {
+ protected:
+  LockContentsViewUnitTest() = default;
+  LockContentsViewUnitTest(LockContentsViewUnitTest&) = delete;
+  LockContentsViewUnitTest& operator=(LockContentsViewUnitTest&) = delete;
+  ~LockContentsViewUnitTest() override = default;
+
+  // Returns true if the easy unlock icon is displayed for |view|.
+  bool IsEasyUnlockIconShowing(LoginBigUserView* view) {
+    if (!view->auth_user())
+      return false;
+
+    views::View* icon =
+        LoginPasswordView::TestApi(
+            LoginAuthUserView::TestApi(view->auth_user()).password_view())
+            .easy_unlock_icon();
+    return icon->GetVisible();
+  }
+
+  // Enables easy unlock icon for user associated with |view|. If |view| is
+  // null, then use the primary user.
+  void EnableEasyUnlockIcon(LoginBigUserView* view,
+                            bool autoshow_tooltip = false) {
+    EasyUnlockIconInfo icon_info;
+    icon_info.icon_state = EasyUnlockIconState::LOCKED;
+    icon_info.autoshow_tooltip = autoshow_tooltip;
+    AccountId account_id =
+        view ? view->GetCurrentUser().basic_user_info.account_id
+             : users()[0].basic_user_info.account_id;
+    DataDispatcher()->ShowEasyUnlockIcon(account_id, icon_info);
+  }
+
+  // Disables easy unlock icon for user associated with |view|. If |view| is
+  // null, then use the primary user.
+  void DisableEasyUnlockIcon(LoginBigUserView* view,
+                             bool autoshow_tooltip = false) {
+    EasyUnlockIconInfo icon_info;
+    icon_info.icon_state = EasyUnlockIconState::NONE;
+    icon_info.autoshow_tooltip = autoshow_tooltip;
+    AccountId account_id =
+        view ? view->GetCurrentUser().basic_user_info.account_id
+             : users()[0].basic_user_info.account_id;
+    DataDispatcher()->ShowEasyUnlockIcon(account_id, icon_info);
+  }
+
+  // Change the active LoginBigUserView by sending a mouse click event.
+  void MakeAuthViewActive(LoginBigUserView* view) {
+    ui::test::EventGenerator* generator = GetEventGenerator();
+    // Send event to swap users.
+    LoginUserView* user_view = view->GetUserView();
+    generator->MoveMouseTo(user_view->GetBoundsInScreen().CenterPoint());
+    generator->ClickLeftButton();
+  }
+};
 
 TEST_F(LockContentsViewUnitTest, DisplayMode) {
   // Build lock screen with 1 user.
@@ -748,13 +801,13 @@ TEST_F(LockContentsViewUnitTest, AltVTogglesHiddenSystemInfo) {
   EXPECT_FALSE(test_api.system_info()->GetVisible());
 
   // Alt-V shows hidden system info.
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_V, ui::EF_ALT_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_V, ui::EF_ALT_DOWN);
   EXPECT_TRUE(test_api.system_info()->GetVisible());
   // System info is not empty, ie, it is actually being displayed.
   EXPECT_FALSE(test_api.system_info()->bounds().IsEmpty());
 
   // Alt-V again hides the system info.
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_V, ui::EF_ALT_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_V, ui::EF_ALT_DOWN);
   EXPECT_FALSE(test_api.system_info()->GetVisible());
 }
 
@@ -938,17 +991,11 @@ TEST_F(LockContentsViewUnitTest, EasyUnlockForceTooltipCreatesTooltipWidget) {
 
   // Show an icon with |autoshow_tooltip| is false. Tooltip bubble is not
   // activated.
-  EasyUnlockIconInfo icon_info;
-  icon_info.icon_state = EasyUnlockIconState::LOCKED;
-  icon_info.autoshow_tooltip = false;
-  DataDispatcher()->ShowEasyUnlockIcon(users()[0].basic_user_info.account_id,
-                                       icon_info);
+  EnableEasyUnlockIcon(nullptr, /*autoshow_tooltip=*/false);
   EXPECT_FALSE(test_api.tooltip_bubble()->GetVisible());
 
   // Show icon with |autoshow_tooltip| set to true. Tooltip bubble is shown.
-  icon_info.autoshow_tooltip = true;
-  DataDispatcher()->ShowEasyUnlockIcon(users()[0].basic_user_info.account_id,
-                                       icon_info);
+  EnableEasyUnlockIcon(nullptr, /*autoshow_tooltip=*/true);
   EXPECT_TRUE(test_api.tooltip_bubble()->GetVisible());
 }
 
@@ -966,82 +1013,105 @@ TEST_F(LockContentsViewUnitTest, EasyUnlockIconUpdatedDuringUserSwap) {
   LoginBigUserView* primary = test_api.primary_big_view();
   LoginBigUserView* secondary = test_api.opt_secondary_big_view();
 
-  // Returns true if the easy unlock icon is displayed for |view|.
-  auto showing_easy_unlock_icon = [&](LoginBigUserView* view) {
-    if (!view->auth_user())
-      return false;
+  // NOTE: we cannot assert on non-active auth views because the easy unlock
+  // icon is lazily updated, ie, if we're not showing the view we will not
+  // update icon state.
 
-    views::View* icon =
-        LoginPasswordView::TestApi(
-            LoginAuthUserView::TestApi(view->auth_user()).password_view())
-            .easy_unlock_icon();
-    return icon->GetVisible();
-  };
+  // No easy unlock icons are shown.
+  MakeAuthViewActive(primary);
+  EXPECT_FALSE(IsEasyUnlockIconShowing(primary));
 
-  // Enables easy unlock icon for |view|.
-  auto enable_icon = [&](LoginBigUserView* view) {
-    EasyUnlockIconInfo icon_info;
-    icon_info.icon_state = EasyUnlockIconState::LOCKED;
-    DataDispatcher()->ShowEasyUnlockIcon(
-        view->GetCurrentUser().basic_user_info.account_id, icon_info);
-  };
+  // Activate icon for primary.
+  EnableEasyUnlockIcon(primary);
+  EXPECT_TRUE(IsEasyUnlockIconShowing(primary));
 
-  // Disables easy unlock icon for |view|.
-  auto disable_icon = [&](LoginBigUserView* view) {
-    EasyUnlockIconInfo icon_info;
-    icon_info.icon_state = EasyUnlockIconState::NONE;
-    DataDispatcher()->ShowEasyUnlockIcon(
-        view->GetCurrentUser().basic_user_info.account_id, icon_info);
-  };
+  // Secondary does not have easy unlock enabled; swapping auth hides the icon.
+  MakeAuthViewActive(secondary);
+  EXPECT_FALSE(IsEasyUnlockIconShowing(secondary));
 
-  // Makes |view| the active auth view so it will can show auth methods.
-  auto make_active_auth_view = [&](LoginBigUserView* view) {
-    // Send event to swap users.
-    ui::test::EventGenerator* generator = GetEventGenerator();
-    LoginUserView* user_view = view->GetUserView();
-    generator->MoveMouseTo(user_view->GetBoundsInScreen().CenterPoint());
-    generator->ClickLeftButton();
-  };
+  // Switching back enables the icon again.
+  MakeAuthViewActive(primary);
+  EXPECT_TRUE(IsEasyUnlockIconShowing(primary));
+
+  // Activate icon for secondary. Primary visibility does not change.
+  EnableEasyUnlockIcon(secondary);
+  EXPECT_TRUE(IsEasyUnlockIconShowing(primary));
+
+  // Swap to secondary, icon still visible.
+  MakeAuthViewActive(secondary);
+  EXPECT_TRUE(IsEasyUnlockIconShowing(secondary));
+
+  // Deactivate secondary, icon hides.
+  DisableEasyUnlockIcon(secondary, DataDispatcher());
+  EXPECT_FALSE(IsEasyUnlockIconShowing(secondary));
+
+  // Deactivate primary, icon still hidden.
+  DisableEasyUnlockIcon(primary, DataDispatcher());
+  EXPECT_FALSE(IsEasyUnlockIconShowing(secondary));
+
+  // Enable primary, icon still hidden.
+  EnableEasyUnlockIcon(primary);
+  EXPECT_FALSE(IsEasyUnlockIconShowing(secondary));
+}
+
+// Verifies the easy unlock tooltip is hidden if Smart Lock revamp is enabled.
+TEST_F(LockContentsViewUnitTest, SmartLockRevampHidesTooltip) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSmartLockUIRevamp);
+
+  auto* lock = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+
+  SetUserCount(1);
+  SetWidget(CreateWidgetWithContent(lock));
+
+  LockContentsView::TestApi test_api(lock);
+  // Creating lock screen does not show tooltip bubble.
+  EXPECT_FALSE(test_api.tooltip_bubble()->GetVisible());
+
+  // Show icon with |autoshow_tooltip| set to true. Tooltip bubble is not shown
+  // since kSmartLockUIRevamp is enabled.
+  EnableEasyUnlockIcon(nullptr, /*autoshow_tooltip=*/true);
+  EXPECT_FALSE(test_api.tooltip_bubble()->GetVisible());
+}
+
+// Verifies that easy unlock icon is not shown when auth users are swapped if
+// Smart Lock revamp is enabled.
+TEST_F(LockContentsViewUnitTest, SmartLockRevampHidesIconDuringUserSwap) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSmartLockUIRevamp);
+
+  // Build lock screen with two users.
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetUserCount(2);
+  SetWidget(CreateWidgetWithContent(contents));
+
+  LockContentsView::TestApi test_api(contents);
+  LoginBigUserView* primary = test_api.primary_big_view();
+  LoginBigUserView* secondary = test_api.opt_secondary_big_view();
 
   // NOTE: we cannot assert on non-active auth views because the easy unlock
   // icon is lazily updated, ie, if we're not showing the view we will not
   // update icon state.
 
   // No easy unlock icons are shown.
-  make_active_auth_view(primary);
-  EXPECT_FALSE(showing_easy_unlock_icon(primary));
+  MakeAuthViewActive(primary);
+  EXPECT_FALSE(IsEasyUnlockIconShowing(primary));
 
-  // Activate icon for primary.
-  enable_icon(primary);
-  EXPECT_TRUE(showing_easy_unlock_icon(primary));
+  // Activate icon for primary. Icon not shown because kSmartLockUIRevamp is
+  // disabled.
+  EnableEasyUnlockIcon(primary);
+  EXPECT_FALSE(IsEasyUnlockIconShowing(primary));
 
-  // Secondary does not have easy unlock enabled; swapping auth hides the icon.
-  make_active_auth_view(secondary);
-  EXPECT_FALSE(showing_easy_unlock_icon(secondary));
-
-  // Switching back enables the icon again.
-  make_active_auth_view(primary);
-  EXPECT_TRUE(showing_easy_unlock_icon(primary));
-
-  // Activate icon for secondary. Primary visibility does not change.
-  enable_icon(secondary);
-  EXPECT_TRUE(showing_easy_unlock_icon(primary));
-
-  // Swap to secondary, icon still visible.
-  make_active_auth_view(secondary);
-  EXPECT_TRUE(showing_easy_unlock_icon(secondary));
-
-  // Deactivate secondary, icon hides.
-  disable_icon(secondary);
-  EXPECT_FALSE(showing_easy_unlock_icon(secondary));
-
-  // Deactivate primary, icon still hidden.
-  disable_icon(primary);
-  EXPECT_FALSE(showing_easy_unlock_icon(secondary));
-
-  // Enable primary, icon still hidden.
-  enable_icon(primary);
-  EXPECT_FALSE(showing_easy_unlock_icon(secondary));
+  // Swap to secondary, icon still not visible.
+  EnableEasyUnlockIcon(secondary);
+  MakeAuthViewActive(secondary);
+  EXPECT_FALSE(IsEasyUnlockIconShowing(secondary));
 }
 
 TEST_F(LockContentsViewUnitTest, ShowErrorBubbleOnAuthFailure) {
@@ -1062,16 +1132,15 @@ TEST_F(LockContentsViewUnitTest, ShowErrorBubbleOnAuthFailure) {
                            users()[0].basic_user_info.account_id, _, false, _));
 
   // Submit password.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
 
   // The error bubble is expected to close on a user action - e.g. if they start
   // typing the password again.
-  generator->PressKey(ui::KeyboardCode::VKEY_B, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_B);
   EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
 }
 
@@ -1097,9 +1166,8 @@ TEST_F(LockContentsViewUnitTest, AuthErrorButtonClickable) {
   EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
 
   // Submit password.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   // Auth Error button should be visible as an incorrect password was given.
@@ -1115,6 +1183,7 @@ TEST_F(LockContentsViewUnitTest, AuthErrorButtonClickable) {
 
   // Move mouse to AuthError's ShowAccountAccessHelp button and click it.
   // Should result in ShowAccountAccessHelpApp().
+  ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
   generator->ClickLeftButton();
 
@@ -1136,9 +1205,8 @@ TEST_F(LockContentsViewUnitTest, GaiaNeverShownOnLockAfterFailedAuth) {
   client->set_authenticate_user_callback_result(false);
 
   auto submit_password = [&]() {
-    ui::test::EventGenerator* generator = GetEventGenerator();
-    generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-    generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
     base::RunLoop().RunUntilIdle();
   };
 
@@ -1162,9 +1230,8 @@ TEST_F(LockContentsViewUnitTest, ShowGaiaAuthAfterManyFailedLoginAttempts) {
   client->set_authenticate_user_callback_result(false);
 
   auto submit_password = [&]() {
-    ui::test::EventGenerator* generator = GetEventGenerator();
-    generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-    generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
     base::RunLoop().RunUntilIdle();
   };
 
@@ -1215,7 +1282,7 @@ TEST_F(LockContentsViewUnitTest, ErrorBubbleOnUntrustedDetachableBase) {
   EXPECT_TRUE(test_api.detachable_base_error_bubble()->GetVisible());
 
   // Verify that the bubble is not hidden if the user starts typing.
-  generator->PressKey(ui::KeyboardCode::VKEY_B, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_B);
   EXPECT_TRUE(test_api.detachable_base_error_bubble()->GetVisible());
 
   // Switching to the user that doesn't have previously used detachable base
@@ -1252,8 +1319,8 @@ TEST_F(LockContentsViewUnitTest, ErrorBubbleOnUntrustedDetachableBase) {
 
   // Submit password.
   primary_test_api.password_view()->RequestFocus();
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ("5678",
@@ -1291,7 +1358,7 @@ TEST_F(LockContentsViewUnitTest, ErrorBubbleForUnauthenticatedDetachableBase) {
   EXPECT_TRUE(test_api.detachable_base_error_bubble()->GetVisible());
 
   // Verify that the bubble is not hidden if the user starts typing.
-  generator->PressKey(ui::KeyboardCode::VKEY_B, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_B);
   EXPECT_TRUE(test_api.detachable_base_error_bubble()->GetVisible());
 
   // Switching to another user should not hide the error bubble.
@@ -1313,8 +1380,8 @@ TEST_F(LockContentsViewUnitTest, ErrorBubbleForUnauthenticatedDetachableBase) {
 
   // Submit password.
   secondary_test_api.password_view()->RequestFocus();
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ("", detachable_base_model->GetLastUsedBase(kFirstUserAccountId));
@@ -1381,7 +1448,6 @@ TEST_F(LockContentsViewUnitTest, DetachableBaseErrorClearsAuthError) {
   SetWidget(CreateWidgetWithContent(contents));
 
   LockContentsView::TestApi test_api(contents);
-  ui::test::EventGenerator* generator = GetEventGenerator();
 
   EXPECT_FALSE(test_api.detachable_base_error_bubble()->GetVisible());
 
@@ -1392,8 +1458,8 @@ TEST_F(LockContentsViewUnitTest, DetachableBaseErrorClearsAuthError) {
               AuthenticateUserWithPasswordOrPin_(kUserAccountId, _, false, _));
 
   // Submit password.
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
@@ -1432,7 +1498,6 @@ TEST_F(LockContentsViewUnitTest, AuthErrorDoesNotRemoveDetachableBaseError) {
       DetachableBasePairingStatus::kAuthenticated, "1234");
 
   LockContentsView::TestApi test_api(contents);
-  ui::test::EventGenerator* generator = GetEventGenerator();
 
   EXPECT_FALSE(test_api.detachable_base_error_bubble()->GetVisible());
 
@@ -1455,8 +1520,8 @@ TEST_F(LockContentsViewUnitTest, AuthErrorDoesNotRemoveDetachableBaseError) {
   LoginAuthUserView::TestApi(test_api.primary_big_view()->auth_user())
       .password_view()
       ->RequestFocus();
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
@@ -1464,7 +1529,7 @@ TEST_F(LockContentsViewUnitTest, AuthErrorDoesNotRemoveDetachableBaseError) {
 
   // User action, like pressing a key should close the auth error bubble, but
   // not the detachable base error bubble.
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
 
   EXPECT_TRUE(test_api.detachable_base_error_bubble()->GetVisible());
   EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
@@ -1479,6 +1544,10 @@ TEST_F(LockContentsViewKeyboardUnitTest, SwitchPinAndVirtualKeyboard) {
   // Add user who can use pin authentication.
   const std::string email = "user@domain.com";
   AddUserByEmail(email);
+  // When the user gets added, the password textfield is shown by default and
+  // automatically gets focused, resulting in the virtual keyboard being shown
+  // if enabled.
+  ASSERT_NO_FATAL_FAILURE(HideKeyboard());
   contents->OnPinEnabledForUserChanged(AccountId::FromUserEmail(email), true);
   LoginBigUserView* big_view =
       LockContentsView::TestApi(contents).primary_big_view();
@@ -1607,6 +1676,10 @@ TEST_F(LockContentsViewKeyboardUnitTest, PinSubmitWithVirtualKeyboardShown) {
   // Add user who can use pin authentication.
   const std::string email = "user@domain.com";
   AddUserByEmail(email);
+  // When the user gets added, the password textfield is shown by default and
+  // automatically gets focused, resulting in the virtual keyboard being shown
+  // if enabled.
+  ASSERT_NO_FATAL_FAILURE(HideKeyboard());
   contents->OnPinEnabledForUserChanged(AccountId::FromUserEmail(email), true);
   LoginBigUserView* big_view =
       LockContentsView::TestApi(contents).primary_big_view();
@@ -1617,9 +1690,9 @@ TEST_F(LockContentsViewKeyboardUnitTest, PinSubmitWithVirtualKeyboardShown) {
   EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
                            _, "1111", true /*authenticated_by_pin*/, _));
 
-  // Hide the PIN keyboard.
   LoginPinView* pin_view =
       LoginAuthUserView::TestApi(big_view->auth_user()).pin_view();
+  // Hide the PIN keyboard when the virtual keyboard is shown.
   EXPECT_TRUE(pin_view->GetVisible());
   ASSERT_NO_FATAL_FAILURE(ShowKeyboard());
   EXPECT_FALSE(pin_view->GetVisible());
@@ -1628,12 +1701,11 @@ TEST_F(LockContentsViewKeyboardUnitTest, PinSubmitWithVirtualKeyboardShown) {
   LoginAuthUserView::TestApi(big_view->auth_user())
       .password_view()
       ->RequestFocus();
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_1, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_1, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_1, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_1, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_1, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_1, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_1, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_1, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, 0);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1842,7 +1914,7 @@ TEST_F(LockContentsViewUnitTest, AuthUserSwapFocusesPassword) {
     // user, which shows and focuses the password.
     test_api.user_view()->RequestFocus();
     EXPECT_FALSE(HasFocusInAnyChildView(password));
-    GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
     EXPECT_TRUE(HasFocusInAnyChildView(password));
   };
 
@@ -1871,10 +1943,10 @@ TEST_F(LockContentsViewUnitTest, TapOnAuthUserFocusesPassword) {
 
     // Activate |auth_target|.
     auth_user_test_api.user_view()->RequestFocus();
-    GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
     // Move focus off of |auth_target|'s password.
     ASSERT_TRUE(HasFocusInAnyChildView(password));
-    GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_TAB, 0);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
     EXPECT_FALSE(HasFocusInAnyChildView(password));
 
     // Click the user view, verify the password was focused.
@@ -1915,7 +1987,7 @@ TEST_F(LockContentsViewUnitTest, UserListUserSwapFocusesPassword) {
   // user view, verify the password now has focus.
   user_view->RequestFocus();
   EXPECT_FALSE(HasFocusInAnyChildView(password_view));
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   EXPECT_TRUE(HasFocusInAnyChildView(password_view));
 }
 
@@ -1945,7 +2017,7 @@ TEST_F(LockContentsViewUnitTest, BadDetachableBaseUnfocusesPasswordView) {
   // Swapping to another user should still not focus password view.
   LoginUserView* first_list_user = test_api.users_list()->user_view_at(0);
   first_list_user->RequestFocus();
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   EXPECT_FALSE(
       login_views_utils::HasFocusInAnyChildView(primary_password_view));
 }
@@ -1973,7 +2045,7 @@ TEST_F(LockContentsViewUnitTest, ExpandedPublicSessionView) {
 
   // Open the expanded public session view.
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
 
   EXPECT_FALSE(main_view->GetVisible());
   EXPECT_TRUE(expanded_view->GetVisible());
@@ -2065,10 +2137,9 @@ TEST_F(LockContentsViewUnitTest, ShowReasonOnAuthDisabled) {
   // Setting auth disabled due to time window limit.
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
-      AuthDisabledData(
-          ash::AuthDisabledReason::kTimeWindowLimit,
-          base::Time::Now().LocalMidnight() + base::TimeDelta::FromHours(8),
-          base::TimeDelta::FromHours(1), true /*disable_lock_screen_media*/));
+      AuthDisabledData(ash::AuthDisabledReason::kTimeWindowLimit,
+                       base::Time::Now().LocalMidnight() + base::Hours(8),
+                       base::Hours(1), true /*disable_lock_screen_media*/));
   EXPECT_FALSE(password_view->GetVisible());
   EXPECT_FALSE(pin_view->GetVisible());
   EXPECT_EQ(
@@ -2078,7 +2149,7 @@ TEST_F(LockContentsViewUnitTest, ShowReasonOnAuthDisabled) {
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
       AuthDisabledData(ash::AuthDisabledReason::kTimeUsageLimit,
-                       base::Time::Now(), base::TimeDelta::FromMinutes(30),
+                       base::Time::Now(), base::Minutes(30),
                        true /*disable_lock_screen_media*/));
   EXPECT_FALSE(password_view->GetVisible());
   EXPECT_FALSE(pin_view->GetVisible());
@@ -2089,7 +2160,7 @@ TEST_F(LockContentsViewUnitTest, ShowReasonOnAuthDisabled) {
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
       AuthDisabledData(ash::AuthDisabledReason::kTimeLimitOverride,
-                       base::Time::Now(), base::TimeDelta::FromMinutes(30),
+                       base::Time::Now(), base::Minutes(30),
                        true /*disable_lock_screen_media*/));
   EXPECT_FALSE(password_view->GetVisible());
   EXPECT_FALSE(pin_view->GetVisible());
@@ -2198,8 +2269,7 @@ TEST_F(LockContentsViewUnitTest, DisableAuthAfterMediaSessionChanged) {
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
       AuthDisabledData(AuthDisabledReason::kTimeWindowLimit,
-                       base::Time::Now() + base::TimeDelta::FromHours(8),
-                       base::TimeDelta::FromHours(1),
+                       base::Time::Now() + base::Hours(8), base::Hours(1),
                        true /*disable_lock_screen_media*/));
   EXPECT_FALSE(lock_contents.media_controls_view()->IsDrawn());
 }
@@ -2224,8 +2294,7 @@ TEST_F(LockContentsViewUnitTest, DisableAuthBeforeMediaSessionChanged) {
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
       AuthDisabledData(AuthDisabledReason::kTimeWindowLimit,
-                       base::Time::Now() + base::TimeDelta::FromHours(8),
-                       base::TimeDelta::FromHours(1),
+                       base::Time::Now() + base::Hours(8), base::Hours(1),
                        true /*disable_lock_screen_media*/));
   EXPECT_FALSE(lock_contents.media_controls_view()->IsDrawn());
 
@@ -2260,8 +2329,7 @@ TEST_F(LockContentsViewUnitTest, DisableAuthAllowMediaControls) {
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
       AuthDisabledData(AuthDisabledReason::kTimeWindowLimit,
-                       base::Time::Now() + base::TimeDelta::FromHours(8),
-                       base::TimeDelta::FromHours(1),
+                       base::Time::Now() + base::Hours(8), base::Hours(1),
                        false /*disable_lock_screen_media*/));
   EXPECT_TRUE(lock_contents.media_controls_view()->IsDrawn());
 }
@@ -2389,11 +2457,10 @@ TEST_F(LockContentsViewUnitTest, ArrowNavSingleUser) {
       LockContentsView::TestApi(lock_contents).primary_big_view();
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_big_view));
 
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_RIGHT, 0);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_big_view));
 
-  generator->PressKey(ui::VKEY_LEFT, 0);
+  PressAndReleaseKey(ui::VKEY_LEFT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_big_view));
 }
 
@@ -2413,17 +2480,16 @@ TEST_F(LockContentsViewUnitTest, ArrowNavTwoUsers) {
   ASSERT_NE(nullptr, secondary_user_view);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_RIGHT, 0);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(secondary_user_view));
 
-  generator->PressKey(ui::VKEY_RIGHT, 0);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 
-  generator->PressKey(ui::VKEY_LEFT, 0);
+  PressAndReleaseKey(ui::VKEY_LEFT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(secondary_user_view));
 
-  generator->PressKey(ui::VKEY_LEFT, 0);
+  PressAndReleaseKey(ui::VKEY_LEFT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 }
 
@@ -2440,23 +2506,22 @@ TEST_F(LockContentsViewUnitTest, ArrowNavThreeUsers) {
   LoginUserView* second_list_user = lock_contents.users_list()->user_view_at(1);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_RIGHT, 0);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(first_list_user));
 
-  generator->PressKey(ui::VKEY_RIGHT, 0);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(second_list_user));
 
-  generator->PressKey(ui::VKEY_RIGHT, 0);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 
-  generator->PressKey(ui::VKEY_LEFT, 0);
+  PressAndReleaseKey(ui::VKEY_LEFT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(second_list_user));
 
-  generator->PressKey(ui::VKEY_LEFT, 0);
+  PressAndReleaseKey(ui::VKEY_LEFT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(first_list_user));
 
-  generator->PressKey(ui::VKEY_LEFT, 0);
+  PressAndReleaseKey(ui::VKEY_LEFT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 }
 
@@ -2472,8 +2537,7 @@ TEST_F(LockContentsViewUnitTest, UserSwapFocusesBigView) {
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 
   lock_contents.users_list()->user_view_at(0)->RequestFocus();
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 }
 
@@ -2489,10 +2553,8 @@ TEST_F(LockContentsViewUnitTest, PowerwashShortcutSendsMojoCall) {
   EXPECT_CALL(*client,
               HandleAccelerator(ash::LoginAcceleratorAction::kShowResetScreen));
 
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_R, ui::EF_CONTROL_DOWN |
-                                                    ui::EF_ALT_DOWN |
-                                                    ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_R,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -2531,7 +2593,6 @@ TEST_F(LockContentsViewUnitTest, ShowHideWarningBannerBubble) {
   const AccountId& kUserAccountId = users()[0].basic_user_info.account_id;
 
   LockContentsView::TestApi test_api(lock);
-  ui::test::EventGenerator* generator = GetEventGenerator();
 
   // Creating lock screen does not show warning banner bubble.
   EXPECT_FALSE(test_api.warning_banner_bubble()->GetVisible());
@@ -2559,8 +2620,8 @@ TEST_F(LockContentsViewUnitTest, ShowHideWarningBannerBubble) {
   LoginAuthUserView::TestApi(test_api.primary_big_view()->auth_user())
       .password_view()
       ->RequestFocus();
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
@@ -2588,17 +2649,15 @@ TEST_F(LockContentsViewUnitTest, RemoveUserFocusMovesBackToPrimaryUser) {
       test_api.opt_secondary_big_view()->auth_user());
   LoginUserView::TestApi user_test_api(secondary_test_api.user_view());
 
-  // Remove the user.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  // Focus the dropdown to raise the bubble.
+  // Remove the user. First, focus the dropdown to raise the bubble.
   user_test_api.dropdown()->RequestFocus();
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
   // Focus the remove user bubble, tap twice to remove the user.
   user_test_api.remove_account_dialog()->RequestFocus();
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   // Secondary user was removed.

@@ -43,7 +43,7 @@ void TestMimeHandlerViewGuest::CreateWebContents(
     WebContentsCreatedCallback callback) {
   // Delay the creation of the guest's WebContents if |delay_| is set.
   if (delay_) {
-    auto delta = base::TimeDelta::FromMilliseconds(delay_);
+    auto delta = base::Milliseconds(delay_);
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&TestMimeHandlerViewGuest::CallBaseCreateWebContents,

@@ -7,6 +7,8 @@
 
 #include "ui/webui/webui_config.h"
 
+namespace ash {
+
 class HelpAppUntrustedUIConfig : public ui::WebUIConfig {
  public:
   HelpAppUntrustedUIConfig();
@@ -17,5 +19,7 @@ class HelpAppUntrustedUIConfig : public ui::WebUIConfig {
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui) override;
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_UNTRUSTED_UI_CONFIG_H_

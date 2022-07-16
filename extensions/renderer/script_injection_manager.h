@@ -36,6 +36,10 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
  public:
   explicit ScriptInjectionManager(
       UserScriptSetManager* user_script_set_manager);
+
+  ScriptInjectionManager(const ScriptInjectionManager&) = delete;
+  ScriptInjectionManager& operator=(const ScriptInjectionManager&) = delete;
+
   virtual ~ScriptInjectionManager();
 
   // Notifies that a new render view has been created.
@@ -127,8 +131,6 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
 
   base::ScopedObservation<UserScriptSetManager, UserScriptSetManager::Observer>
       user_script_set_manager_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptInjectionManager);
 };
 
 }  // namespace extensions

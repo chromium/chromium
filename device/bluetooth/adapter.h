@@ -31,6 +31,10 @@ class Adapter : public mojom::Adapter,
                 public device::BluetoothAdapter::Observer {
  public:
   explicit Adapter(scoped_refptr<device::BluetoothAdapter> adapter);
+
+  Adapter(const Adapter&) = delete;
+  Adapter& operator=(const Adapter&) = delete;
+
   ~Adapter() override;
 
   // mojom::Adapter overrides:
@@ -47,7 +51,8 @@ class Adapter : public mojom::Adapter,
   void SetDiscoverable(bool discoverable,
                        SetDiscoverableCallback callback) override;
   void SetName(const std::string& name, SetNameCallback callback) override;
-  void StartDiscoverySession(StartDiscoverySessionCallback callback) override;
+  void StartDiscoverySession(const std::string& client_name,
+                             StartDiscoverySessionCallback callback) override;
   void ConnectToServiceInsecurely(
       const std::string& address,
       const device::BluetoothUUID& service_uuid,
@@ -163,8 +168,6 @@ class Adapter : public mojom::Adapter,
   int next_request_id_ = 0;
 
   base::WeakPtrFactory<Adapter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Adapter);
 };
 
 }  // namespace bluetooth

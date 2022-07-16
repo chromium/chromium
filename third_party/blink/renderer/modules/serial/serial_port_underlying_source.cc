@@ -21,23 +21,20 @@ SerialPortUnderlyingSource::SerialPortUnderlyingSource(
       data_pipe_(std::move(handle)),
       watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
       serial_port_(serial_port) {
-  watcher_.Watch(data_pipe_.get(),
-                 MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+  watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
                  MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
                  WTF::BindRepeating(&SerialPortUnderlyingSource::OnHandleReady,
                                     WrapWeakPersistent(this)));
 }
 
 ScriptPromise SerialPortUnderlyingSource::pull(ScriptState* script_state) {
+  DCHECK(data_pipe_);
+  ReadDataOrArmWatcher();
+
   // pull() signals that the stream wants more data. By resolving immediately
   // we allow the stream to be canceled before that data is received. pull()
   // will not be called again until a chunk is enqueued or if an error has been
   // signaled to the controller.
-  DCHECK(data_pipe_);
-
-  if (!ReadData())
-    ArmWatcher();
-
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -83,7 +80,7 @@ void SerialPortUnderlyingSource::Trace(Visitor* visitor) const {
   UnderlyingSourceBase::Trace(visitor);
 }
 
-bool SerialPortUnderlyingSource::ReadData() {
+void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
   const void* buffer = nullptr;
   uint32_t available = 0;
   MojoResult result =
@@ -95,32 +92,17 @@ bool SerialPortUnderlyingSource::ReadData() {
       result = data_pipe_->EndReadData(available);
       DCHECK_EQ(result, MOJO_RESULT_OK);
       Controller()->Enqueue(array);
-      return true;
+      break;
     }
     case MOJO_RESULT_FAILED_PRECONDITION:
       PipeClosed();
-      return true;
+      break;
     case MOJO_RESULT_SHOULD_WAIT:
-      return false;
+      watcher_.ArmOrNotify();
+      break;
     default:
       NOTREACHED();
-      return false;
-  }
-}
-
-void SerialPortUnderlyingSource::ArmWatcher() {
-  MojoResult ready_result;
-  mojo::HandleSignalsState ready_state;
-  MojoResult result = watcher_.Arm(&ready_result, &ready_state);
-  if (result == MOJO_RESULT_OK)
-    return;
-
-  DCHECK_EQ(ready_result, MOJO_RESULT_OK);
-  if (ready_state.readable()) {
-    bool read_result = ReadData();
-    DCHECK(read_result);
-  } else if (ready_state.peer_closed()) {
-    PipeClosed();
+      break;
   }
 }
 
@@ -128,11 +110,9 @@ void SerialPortUnderlyingSource::OnHandleReady(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
   switch (result) {
-    case MOJO_RESULT_OK: {
-      bool read_result = ReadData();
-      DCHECK(read_result);
+    case MOJO_RESULT_OK:
+      ReadDataOrArmWatcher();
       break;
-    }
     case MOJO_RESULT_SHOULD_WAIT:
       watcher_.ArmOrNotify();
       break;

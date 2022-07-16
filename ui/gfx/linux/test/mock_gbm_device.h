@@ -15,6 +15,10 @@ namespace ui {
 class MockGbmDevice : public GbmDevice {
  public:
   MockGbmDevice();
+
+  MockGbmDevice(const MockGbmDevice&) = delete;
+  MockGbmDevice& operator=(const MockGbmDevice&) = delete;
+
   ~MockGbmDevice() override;
 
   void set_allocation_failure(bool should_fail_allocations);
@@ -42,8 +46,6 @@ class MockGbmDevice : public GbmDevice {
   const std::vector<uint64_t> supported_modifiers_ = {
       DRM_FORMAT_MOD_LINEAR, I915_FORMAT_MOD_X_TILED, I915_FORMAT_MOD_Y_TILED,
       I915_FORMAT_MOD_Yf_TILED_CCS};
-
-  DISALLOW_COPY_AND_ASSIGN(MockGbmDevice);
 };
 
 }  // namespace ui

@@ -21,9 +21,9 @@
 namespace {
 
 constexpr base::TimeDelta kPictureInPictureStyleChangeTransitionDuration =
-    base::TimeDelta::FromMilliseconds(200);
+    base::Milliseconds(200);
 constexpr base::TimeDelta kPictureInPictureHiddenAnimationSeconds =
-    base::TimeDelta::FromMilliseconds(300);
+    base::Milliseconds(300);
 
 }  // namespace
 

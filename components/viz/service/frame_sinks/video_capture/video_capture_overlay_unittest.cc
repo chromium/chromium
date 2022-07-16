@@ -62,6 +62,9 @@ class VideoCaptureOverlayTest : public testing::Test {
  public:
   VideoCaptureOverlayTest() = default;
 
+  VideoCaptureOverlayTest(const VideoCaptureOverlayTest&) = delete;
+  VideoCaptureOverlayTest& operator=(const VideoCaptureOverlayTest&) = delete;
+
   NiceMock<MockFrameSource>* frame_source() { return &frame_source_; }
 
   std::unique_ptr<VideoCaptureOverlay> CreateOverlay() {
@@ -131,8 +134,6 @@ class VideoCaptureOverlayTest : public testing::Test {
 
  private:
   NiceMock<MockFrameSource> frame_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureOverlayTest);
 };
 
 // Tests that, when the VideoCaptureOverlay binds to a mojo pending receiver, it
@@ -233,6 +234,10 @@ class VideoCaptureOverlayRenderTest
  public:
   VideoCaptureOverlayRenderTest()
       : trace_(__FILE__, __LINE__, VideoPixelFormatToString(pixel_format())) {}
+
+  VideoCaptureOverlayRenderTest(const VideoCaptureOverlayRenderTest&) = delete;
+  VideoCaptureOverlayRenderTest& operator=(
+      const VideoCaptureOverlayRenderTest&) = delete;
 
   VideoPixelFormat pixel_format() const { return GetParam(); }
 
@@ -397,8 +402,6 @@ class VideoCaptureOverlayRenderTest
 
  private:
   testing::ScopedTrace trace_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureOverlayRenderTest);
 };
 
 // static

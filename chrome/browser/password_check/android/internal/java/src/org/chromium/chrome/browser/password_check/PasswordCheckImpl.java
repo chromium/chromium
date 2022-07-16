@@ -48,11 +48,6 @@ class PasswordCheckImpl implements PasswordCheck, PasswordCheckObserver {
     }
 
     @Override
-    public void onCompromisedCredentialFound(CompromisedCredential credential) {
-        for (Observer obs : mObserverList) obs.onCompromisedCredentialFound(credential);
-    }
-
-    @Override
     public void onCompromisedCredentialsFetched(int count) {
         mCompromisedCredentialsFetched = true;
         for (Observer obs : mObserverList) {

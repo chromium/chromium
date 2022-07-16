@@ -80,8 +80,8 @@ VolumeManagerCommon.RootType = {
   PROVIDED: 'provided',
 
   // Root for entries that is not located under RootType.DRIVE. e.g. shared
-  // files.
-  DRIVE_OTHER: 'drive_other',
+  // files. Deprecated, applied to pre-drivefs.
+  DEPRECATED_DRIVE_OTHER: 'drive_other',
 
   // Fake root for offline available files on the drive.
   DRIVE_OFFLINE: 'drive_offline',
@@ -161,7 +161,7 @@ VolumeManagerCommon.RootTypesForUMA = [
   VolumeManagerCommon.RootType.SHARED_DRIVE,                      // 5
   VolumeManagerCommon.RootType.MTP,                               // 6
   VolumeManagerCommon.RootType.PROVIDED,                          // 7
-  VolumeManagerCommon.RootType.DRIVE_OTHER,                       // 8
+  VolumeManagerCommon.RootType.DEPRECATED_DRIVE_OTHER,            // 8
   VolumeManagerCommon.RootType.DRIVE_OFFLINE,                     // 9
   VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME,              // 10
   VolumeManagerCommon.RootType.DRIVE_RECENT,                      // 11
@@ -284,7 +284,7 @@ VolumeManagerCommon.getVolumeTypeFromRootType = rootType => {
     case VolumeManagerCommon.RootType.DRIVE:
     case VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT:
     case VolumeManagerCommon.RootType.SHARED_DRIVE:
-    case VolumeManagerCommon.RootType.DRIVE_OTHER:
+    case VolumeManagerCommon.RootType.DEPRECATED_DRIVE_OTHER:
     case VolumeManagerCommon.RootType.DRIVE_OFFLINE:
     case VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME:
     case VolumeManagerCommon.RootType.DRIVE_RECENT:

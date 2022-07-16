@@ -8,7 +8,7 @@ namespace mojo {
 
 namespace {
 
-constexpr base::TimeDelta kZeroTime = base::TimeDelta::FromSeconds(0);
+constexpr base::TimeDelta kZeroTime = base::Seconds(0);
 
 }  // namespace
 
@@ -52,7 +52,7 @@ bool StructTraits<media::mojom::TimingInformationDataView,
     base::TimeDelta max_offset = audio_end_time - audio_start_time;
     for (const auto& part : *hypothesis_parts) {
       if (part.hypothesis_part_offset < prev_offset ||
-          part.hypothesis_part_offset >= max_offset) {
+          part.hypothesis_part_offset > max_offset) {
         return false;
       }
       prev_offset = part.hypothesis_part_offset;

@@ -41,7 +41,6 @@ struct Badge {
 struct Badges {
   Badge top_left;
   Badge center;
-  Badge center_left;
   Badge bottom_left;
   Badge bottom_right;
 };
@@ -52,6 +51,10 @@ class ASH_PUBLIC_EXPORT NetworkIconImageSource : public gfx::CanvasImageSource {
   NetworkIconImageSource(const gfx::Size& size,
                          const gfx::ImageSkia& icon,
                          const Badges& badges);
+
+  NetworkIconImageSource(const NetworkIconImageSource&) = delete;
+  NetworkIconImageSource& operator=(const NetworkIconImageSource&) = delete;
+
   ~NetworkIconImageSource() override;
 
   // gfx::CanvasImageSource:
@@ -61,8 +64,6 @@ class ASH_PUBLIC_EXPORT NetworkIconImageSource : public gfx::CanvasImageSource {
  private:
   const gfx::ImageSkia icon_;
   const Badges badges_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkIconImageSource);
 };
 
 // Provides an image source for wireless signal strength icons.
@@ -74,6 +75,10 @@ class ASH_PUBLIC_EXPORT SignalStrengthImageSource
                             const gfx::Size& size,
                             int signal_strength,
                             int padding = 2);
+
+  SignalStrengthImageSource(const SignalStrengthImageSource&) = delete;
+  SignalStrengthImageSource& operator=(const SignalStrengthImageSource&) =
+      delete;
 
   ~SignalStrengthImageSource() override;
 
@@ -94,8 +99,6 @@ class ASH_PUBLIC_EXPORT SignalStrengthImageSource
   // Padding between outside of icon and edge of the canvas, in dp. This value
   // stays the same regardless of the canvas size.
   const int padding_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignalStrengthImageSource);
 };
 
 // Returns the sized full strength unbadged image for a Wi-Fi network. Used

@@ -24,11 +24,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libusb/src/libusb/libusb.h"
 
-#if defined(OS_WIN)
-#include "base/scoped_observation.h"
-#include "device/base/device_monitor_win.h"
-#endif  // OS_WIN
-
 struct libusb_context;
 
 namespace device {
@@ -37,26 +32,18 @@ typedef struct libusb_context* PlatformUsbContext;
 
 class UsbDeviceImpl;
 
-class UsbServiceImpl final :
-#if defined(OS_WIN)
-    public DeviceMonitorWin::Observer,
-#endif  // OS_WIN
-    public UsbService {
+class UsbServiceImpl final : public UsbService {
  public:
   UsbServiceImpl();
+
+  UsbServiceImpl(const UsbServiceImpl&) = delete;
+  UsbServiceImpl& operator=(const UsbServiceImpl&) = delete;
+
   ~UsbServiceImpl() override;
 
  private:
   // device::UsbService implementation
   void GetDevices(GetDevicesCallback callback) override;
-
-#if defined(OS_WIN)
-  // device::DeviceMonitorWin::Observer implementation
-  void OnDeviceAdded(const GUID& class_guid,
-                     const std::wstring& device_path) override;
-  void OnDeviceRemoved(const GUID& class_guid,
-                       const std::wstring& device_path) override;
-#endif  // OS_WIN
 
   void OnUsbContext(scoped_refptr<UsbContext> context);
 
@@ -94,14 +81,11 @@ class UsbServiceImpl final :
 
   // When available the device list will be updated when new devices are
   // connected instead of only when a full enumeration is requested.
-  // TODO(reillyg): Support this on all platforms. crbug.com/411715
-  bool hotplug_enabled_ = false;
   libusb_hotplug_callback_handle hotplug_handle_;
 
   // Enumeration callbacks are queued until an enumeration completes.
   bool enumeration_ready_ = false;
   bool enumeration_in_progress_ = false;
-  base::queue<std::wstring> pending_path_enumerations_;
   std::vector<GetDevicesCallback> pending_enumeration_callbacks_;
 
   // The map from libusb_device to UsbDeviceImpl. The key is a weak pointer to
@@ -119,18 +103,11 @@ class UsbServiceImpl final :
   // UsbDeviceImpl.
   std::set<libusb_device*> devices_being_enumerated_;
 
-#if defined(OS_WIN)
-  base::ScopedObservation<DeviceMonitorWin, DeviceMonitorWin::Observer>
-      device_observation_{this};
-#endif  // OS_WIN
-
   // This WeakPtr is used to safely post hotplug events back to the thread this
   // object lives on.
   base::WeakPtr<UsbServiceImpl> weak_self_;
 
   base::WeakPtrFactory<UsbServiceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UsbServiceImpl);
 };
 
 }  // namespace device

@@ -1,6 +1,7 @@
 /**
- * Copyright 2009 The Closure Library Authors. All Rights Reserved.
- * Author: arv@google.com (Erik Arvidsson)
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 goog.module('goog.async.deferredTest');
@@ -13,12 +14,12 @@ const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
 const recordFunction = goog.require('goog.testing.recordFunction');
 const testSuite = goog.require('goog.testing.testSuite');
 
-var AlreadyCalledError = Deferred.AlreadyCalledError;
-var CanceledError = Deferred.CanceledError;
+const AlreadyCalledError = Deferred.AlreadyCalledError;
+const CanceledError = Deferred.CanceledError;
 
 // Unhandled errors may be sent to the browser on a timeout.
-var mockClock = new MockClock();
-var stubs = new PropertyReplacer();
+const mockClock = new MockClock();
+const stubs = new PropertyReplacer();
 
 /**
  * @param {string} msg Message to show upon failure.
@@ -88,7 +89,7 @@ testSuite({
   },
 
   testNormal() {
-    var d = new Deferred();
+    const d = new Deferred();
     d.addCallback(assertEqualsCallback('pre-deferred callback', 1));
     d.callback(1);
     d.addCallback(increment);
@@ -104,7 +105,7 @@ testSuite({
   },
 
   testCancel() {
-    var count = 0;
+    let count = 0;
     function canceled(d) {
       count++;
     }
@@ -113,7 +114,7 @@ testSuite({
       assertTrue(res instanceof CanceledError);
     }
 
-    var d = new Deferred(canceled);
+    const d = new Deferred(canceled);
     d.addCallback(neverHappen);
     d.addErrback(canceledError);
     d.cancel();
@@ -122,11 +123,12 @@ testSuite({
   },
 
   testSucceedFail() {
-    var count = 0;
+    let count = 0;
 
-    var d = Deferred.succeed(1).addCallback(assertEqualsCallback('succeed', 1));
+    let d = Deferred.succeed(1).addCallback(assertEqualsCallback('succeed', 1));
 
     // default error
+    /** @suppress {checkTypes} suppression added to enable type checking */
     d = Deferred.fail().addCallback(neverHappen);
     d = d.addErrback(function(res) {
       count++;
@@ -150,12 +152,12 @@ testSuite({
 
   testDeferredDependencies() {
     function deferredIncrement(res) {
-      var rval = Deferred.succeed(res);
+      const rval = Deferred.succeed(res);
       rval.addCallback(increment);
       return rval;
     }
 
-    var d = Deferred.succeed(1).addCallback(deferredIncrement);
+    let d = Deferred.succeed(1).addCallback(deferredIncrement);
     d = d.addCallback(assertEqualsCallback('dependent deferred succeed', 2));
 
     function deferredFailure(res) {
@@ -170,41 +172,54 @@ testSuite({
 
   // Test double-calling, double-failing, etc.
   testDoubleCalling() {
-    var ex = assertThrows(function() {
-      Deferred.succeed(1).callback(2);
-      neverHappen();
-    });
+    const ex = assertThrows(/**
+                             @suppress {checkTypes} suppression added to enable
+                             type checking
+                           */
+                            function() {
+                              Deferred.succeed(1).callback(2);
+                              neverHappen();
+                            });
     assertTrue('double call', ex instanceof AlreadyCalledError);
   },
 
   testDoubleCalling2() {
-    var ex = assertThrows(function() {
-      Deferred.fail(1).errback(2);
-      neverHappen();
-    });
+    const ex = assertThrows(/**
+                             @suppress {checkTypes} suppression added to enable
+                             type checking
+                           */
+                            function() {
+                              Deferred.fail(1).errback(2);
+                              neverHappen();
+                            });
     assertTrue('double-fail', ex instanceof AlreadyCalledError);
   },
 
   testDoubleCalling3() {
-    var ex = assertThrows(function() {
-      var d = Deferred.succeed(1);
-      d.cancel();
-      d = d.callback(2);
-      assertTrue('swallowed one callback, no canceler', true);
-      d.callback(3);
-      neverHappen();
-    });
+    const ex =
+        assertThrows(/**
+                        @suppress {checkTypes} suppression added to enable type
+                        checking
+                      */
+                     function() {
+                       let d = Deferred.succeed(1);
+                       d.cancel();
+                       d = d.callback(2);
+                       assertTrue('swallowed one callback, no canceler', true);
+                       d.callback(3);
+                       neverHappen();
+                     });
     assertTrue('swallow cancel', ex instanceof AlreadyCalledError);
   },
 
   testDoubleCalling4() {
-    var count = 0;
+    let count = 0;
     function canceled(d) {
       count++;
     }
 
-    var ex = assertThrows(function() {
-      var d = new Deferred(canceled);
+    const ex = assertThrows(function() {
+      let d = new Deferred(canceled);
       d.cancel();
       d = d.callback(1);
     });
@@ -215,47 +230,61 @@ testSuite({
 
   // Test incorrect Deferred usage
   testIncorrectUsage() {
-    var d = new Deferred();
+    const d = new Deferred();
 
-    var ex = assertThrows(function() {
-      d.callback(new Deferred());
-      neverHappen();
-    });
+    const ex = assertThrows(/**
+                             @suppress {checkTypes} suppression added to enable
+                             type checking
+                           */
+                            function() {
+                              d.callback(new Deferred());
+                              neverHappen();
+                            });
     assertTrue('deferred not allowed for callback', ex instanceof Error);
   },
 
   testIncorrectUsage2() {
-    var d = new Deferred();
+    const d = new Deferred();
 
-    var ex = assertThrows(function() {
-      d.errback(new Deferred());
-      neverHappen();
-    });
+    const ex = assertThrows(/**
+                             @suppress {checkTypes} suppression added to enable
+                             type checking
+                           */
+                            function() {
+                              d.errback(new Deferred());
+                              neverHappen();
+                            });
     assertTrue('deferred not allowed for errback', ex instanceof Error);
   },
 
   testIncorrectUsage3() {
-    var d = new Deferred();
+    const d = new Deferred();
     (new Deferred())
         .addCallback(function() {
           return d;
         })
         .callback(1);
 
-    var ex = assertThrows(function() {
-      d.addCallback(function() {});
-      neverHappen();
-    });
+    const ex = assertThrows(/**
+                             @suppress {checkTypes} suppression added to enable
+                             type checking
+                           */
+                            function() {
+                              d.addCallback(function() {});
+                              neverHappen();
+                            });
     assertTrue(
         'chained deferred not allowed to be re-used', ex instanceof Error);
   },
 
   testCallbackScope1() {
-    var c1 = {}, c2 = {};
-    var callbackScope = null;
-    var errbackScope = null;
+    const c1 = {};
+    const c2 = {};
 
-    var d = new Deferred();
+    let callbackScope = null;
+    let errbackScope = null;
+
+    const d = new Deferred();
     d.addCallback(function() {
       callbackScope = this;
       throw Error('Foo');
@@ -269,11 +298,11 @@ testSuite({
   },
 
   testCallbackScope2() {
-    var c = {};
-    var callbackScope = null;
-    var errbackScope = null;
+    const c = {};
+    let callbackScope = null;
+    let errbackScope = null;
 
-    var d = new Deferred(null, c);
+    const d = new Deferred(null, c);
     d.addCallback(function() {
       callbackScope = this;
       throw Error('Foo');
@@ -287,9 +316,9 @@ testSuite({
   },
 
   testChainedDeferred1() {
-    var calls = [];
+    const calls = [];
 
-    var d2 = new Deferred();
+    const d2 = new Deferred();
     d2.addCallback(function() {
       calls.push('B1');
     });
@@ -297,7 +326,7 @@ testSuite({
       calls.push('B2');
     });
 
-    var d1 = new Deferred();
+    const d1 = new Deferred();
     d1.addCallback(function() {
       calls.push('A1');
     });
@@ -314,9 +343,9 @@ testSuite({
   },
 
   testChainedDeferred2() {
-    var calls = [];
+    const calls = [];
 
-    var d2 = new Deferred();
+    const d2 = new Deferred();
     d2.addCallback(function() {
       calls.push('B1');
     });
@@ -325,7 +354,7 @@ testSuite({
       throw Error('x');
     });
 
-    var d1 = new Deferred();
+    const d1 = new Deferred();
     d1.addCallback(function(err) {
       throw Error('foo');
     });
@@ -340,16 +369,20 @@ testSuite({
     d1.callback();
     assertEquals('B2,A2', calls.join(','));
 
-    var ex = assertThrows(function() {
-      mockClock.tick();
-      neverHappen();
-    });
+    const ex = assertThrows(/**
+                             @suppress {checkTypes} suppression added to enable
+                             type checking
+                           */
+                            function() {
+                              mockClock.tick();
+                              neverHappen();
+                            });
     assertTrue('Should catch unhandled throw from d2.', ex.message == 'x');
   },
 
   testUndefinedResultAndCallbackSequence() {
-    var results = [];
-    var d = new Deferred();
+    const results = [];
+    const d = new Deferred();
     d.addCallback(function(res) {
       return 'foo';
     });
@@ -368,8 +401,8 @@ testSuite({
   },
 
   testUndefinedResultAndErrbackSequence() {
-    var results = [];
-    var d = new Deferred();
+    const results = [];
+    const d = new Deferred();
     d.addCallback(function(res) {
       throw Error('uh oh');
     });
@@ -387,8 +420,8 @@ testSuite({
   },
 
   testHasFired() {
-    var d1 = new Deferred();
-    var d2 = new Deferred();
+    const d1 = new Deferred();
+    const d2 = new Deferred();
 
     assertFalse(d1.hasFired());
     assertFalse(d2.hasFired());
@@ -400,14 +433,18 @@ testSuite({
   },
 
   testUnhandledErrors() {
-    var d = new Deferred();
+    const d = new Deferred();
     d.addCallback(throwStuff);
 
-    var ex = assertThrows(function() {
-      d.callback(123);
-      mockClock.tick();
-      neverHappen();
-    });
+    const ex = assertThrows(/**
+                             @suppress {checkTypes} suppression added to enable
+                             type checking
+                           */
+                            function() {
+                              d.callback(123);
+                              mockClock.tick();
+                              neverHappen();
+                            });
     assertEquals('Unhandled throws should hit the browser.', 123, ex);
 
     assertNotThrows(
@@ -420,18 +457,32 @@ testSuite({
     mockClock.tick();
   },
 
+  testUnhandledErrorsWithHandler() {
+    stubs.replace(Deferred, 'STRICT_ERRORS', true);
+    const unhandledErrorHandler = recordFunction();
+    Deferred.setUnhandledErrorHandler(unhandledErrorHandler);
+    const d = new Deferred();
+    const error = new Error('Error!');
+
+    d.errback(error);
+    mockClock.tick();
+
+    assertEquals(1, unhandledErrorHandler.getCallCount());
+    assertEquals(error, unhandledErrorHandler.getCalls()[0].getArgument(0));
+  },
+
   testStrictUnhandledErrors() {
     stubs.replace(Deferred, 'STRICT_ERRORS', true);
-    var err = Error('never handled');
+    const err = Error('never handled');
 
     // The registered errback exists, but doesn't modify the error value.
-    var d = Deferred.succeed();
+    const d = Deferred.succeed();
     d.addCallback(function(res) {
       throw err;
     });
     d.addErrback(function(unhandledErr) {});
 
-    var caught = assertThrows(
+    const caught = assertThrows(
         'The error should be rethrown at the next clock tick.', function() {
           mockClock.tick();
         });
@@ -442,7 +493,7 @@ testSuite({
     stubs.replace(Deferred, 'STRICT_ERRORS', true);
 
     // The registered errback returns a non-error value.
-    var d = Deferred.succeed();
+    const d = Deferred.succeed();
     d.addCallback(function(res) {
       throw Error('eventually handled');
     });
@@ -462,8 +513,8 @@ testSuite({
   testStrictBlockedErrors() {
     stubs.replace(Deferred, 'STRICT_ERRORS', true);
 
-    var d1 = Deferred.fail(Error('blocked failure'));
-    var d2 = new Deferred();
+    const d1 = Deferred.fail(Error('blocked failure'));
+    const d2 = new Deferred();
 
     d1.addBoth(function() {
       return d2;
@@ -489,7 +540,7 @@ testSuite({
   },
 
   testSynchronousErrorCanceling() {
-    var d = new Deferred();
+    const d = new Deferred();
     d.addCallback(throwStuff);
 
     assertNotThrows(
@@ -505,9 +556,9 @@ testSuite({
   },
 
   testThrowNonError() {
-    var results = [];
+    const results = [];
 
-    var d = new Deferred();
+    const d = new Deferred();
     d.addCallback(function(res) {
       throw res;
     });
@@ -526,7 +577,7 @@ testSuite({
   },
 
   testThrownErrorWithNoErrbacks() {
-    var d = new Deferred();
+    const d = new Deferred();
     d.addCallback(function() {
       throw Error('foo');
     });
@@ -544,7 +595,7 @@ testSuite({
   },
 
   testThrownErrorCallbacksDoNotCancel() {
-    var d = new Deferred();
+    const d = new Deferred();
     d.addCallback(function() {
       throw Error('foo');
     });
@@ -563,7 +614,7 @@ testSuite({
   },
 
   testAwaitDeferred() {
-    var results = [];
+    const results = [];
 
     function fn(x) {
       return function() {
@@ -571,11 +622,11 @@ testSuite({
       };
     }
 
-    var d2 = new Deferred();
+    const d2 = new Deferred();
     d2.addCallback(fn('b'));
 
     // d1 -> a -> (wait for d2) -> c
-    var d1 = new Deferred();
+    const d1 = new Deferred();
     d1.addCallback(fn('a'));
     d1.awaitDeferred(d2);
     d1.addCallback(fn('c'));
@@ -589,7 +640,7 @@ testSuite({
     assertEquals('a', results.join(''));
 
     // d3 -> w -> (wait for d2) -> x
-    var d3 = new Deferred();
+    const d3 = new Deferred();
     d3.addCallback(fn('w'));
     d3.awaitDeferred(d2);
     d3.addCallback(fn('x'));
@@ -615,7 +666,7 @@ testSuite({
   },
 
   testAwaitDeferred_withPromise() {
-    var results = [];
+    const results = [];
 
     function fn(x) {
       return function() {
@@ -623,11 +674,12 @@ testSuite({
       };
     }
 
-    var resolver = new GoogPromise.withResolver();
+    /** @suppress {checkTypes} suppression added to enable type checking */
+    const resolver = new GoogPromise.withResolver();
     resolver.promise.then(fn('b'));
 
     // d1 -> a -> (wait for promise) -> c
-    var d1 = new Deferred();
+    const d1 = new Deferred();
     d1.addCallback(fn('a'));
     d1.awaitDeferred(resolver.promise);
     d1.addCallback(fn('c'));
@@ -641,7 +693,7 @@ testSuite({
     assertEquals('a', results.join(''));
 
     // d3 -> w -> (wait for promise) -> x
-    var d3 = new Deferred();
+    const d3 = new Deferred();
     d3.addCallback(fn('w'));
     d3.awaitDeferred(resolver.promise);
     d3.addCallback(fn('x'));
@@ -668,7 +720,7 @@ testSuite({
   },
 
   testAwaitDeferredWithErrors() {
-    var results = [];
+    const results = [];
 
     function fn(x) {
       return function(e) {
@@ -676,10 +728,10 @@ testSuite({
       };
     }
 
-    var d2 = new Deferred();
+    const d2 = new Deferred();
     d2.addErrback(fn('a'));
 
-    var d1 = new Deferred();
+    const d1 = new Deferred();
     d1.awaitDeferred(d2);
     d1.addCallback(fn('x'));
     d1.addErrback(fn('b'));
@@ -698,7 +750,7 @@ testSuite({
   },
 
   testNonErrorErrback() {
-    var results = [];
+    const results = [];
 
     function fn(x) {
       return function(e) {
@@ -706,7 +758,7 @@ testSuite({
       };
     }
 
-    var d = new Deferred();
+    const d = new Deferred();
     d.addCallback(fn('a'));
     d.addErrback(fn('b'));
 
@@ -719,7 +771,7 @@ testSuite({
   },
 
   testUnequalReturnValueForErrback() {
-    var results = [];
+    const results = [];
 
     function fn(x) {
       return function(e) {
@@ -727,7 +779,7 @@ testSuite({
       };
     }
 
-    var d = new Deferred();
+    const d = new Deferred();
     d.addCallback(fn('a'));
     d.addErrback(function() {
       results.push('b');
@@ -749,10 +801,10 @@ testSuite({
       };
     }
 
-    var d = new Deferred();
+    const d = new Deferred();
     d.addCallback(fn(1));
     d.addCallback(fn(2));
-    var d2 = d.branch();
+    const d2 = d.branch();
     d.addCallback(fn(3));
     d2.addCallback(fn(4));
 
@@ -775,10 +827,10 @@ testSuite({
       };
     }
 
-    var d = new Deferred();
+    const d = new Deferred();
     d.addCallback(fn(1));
 
-    var d2 = d.branch();
+    const d2 = d.branch();
     d2.addCallback(fn(2));
 
     // Chain the branch back to the original. There is no good reason to do this
@@ -795,7 +847,7 @@ testSuite({
   },
 
   testRepeatedBranch() {
-    var d = new Deferred().addCallback(increment);
+    const d = new Deferred().addCallback(increment);
 
     d.branch()
         .addCallback(
@@ -809,12 +861,12 @@ testSuite({
   },
 
   testCancelThroughBranch() {
-    var wasCanceled = false;
-    var d = new Deferred(function() {
+    let wasCanceled = false;
+    const d = new Deferred(function() {
       wasCanceled = true;
     });
-    var branch1 = d.branch(true);
-    var branch2 = d.branch(true);
+    const branch1 = d.branch(true);
+    const branch2 = d.branch(true);
 
     branch1.cancel();
     assertFalse(wasCanceled);
@@ -823,30 +875,30 @@ testSuite({
   },
 
   testCancelThroughSeveralBranches() {
-    var wasCanceled = false;
-    var d = new Deferred(function() {
+    let wasCanceled = false;
+    const d = new Deferred(function() {
       wasCanceled = true;
     });
-    var branch = d.branch(true).branch(true).branch(true);
+    const branch = d.branch(true).branch(true).branch(true);
 
     branch.cancel();
     assertTrue(wasCanceled);
   },
 
   testBranchCancelThenCallback() {
-    var wasCanceled = false;
-    var d = new Deferred(function() {
+    let wasCanceled = false;
+    const d = new Deferred(function() {
       wasCanceled = true;
     });
-    var wasCalled = false;
+    let wasCalled = false;
     d.addCallback(function() {
       wasCalled = true;
     });
-    var branch1 = d.branch();
-    var branch2 = d.branch();
+    const branch1 = d.branch();
+    const branch2 = d.branch();
 
-    var branch1WasCalled = false;
-    var branch2WasCalled = false;
+    let branch1WasCalled = false;
+    let branch2WasCalled = false;
     branch1.addCallback(function() {
       branch1WasCalled = true;
     });
@@ -854,8 +906,8 @@ testSuite({
       branch2WasCalled = true;
     });
 
-    var branch1HadErrback = false;
-    var branch2HadErrback = false;
+    let branch1HadErrback = false;
+    let branch2HadErrback = false;
     branch1.addErrback(function() {
       branch1HadErrback = true;
     });
@@ -875,15 +927,15 @@ testSuite({
   },
 
   testDeepCancelOnBranch() {
-    var wasCanceled = false;
-    var d = new Deferred(function() {
+    let wasCanceled = false;
+    const d = new Deferred(function() {
       wasCanceled = true;
     });
-    var branch1 = d.branch(true);
-    var branch2 = d.branch(true).branch(true).branch(true);
+    const branch1 = d.branch(true);
+    const branch2 = d.branch(true).branch(true).branch(true);
 
-    var branch1HadErrback = false;
-    var branch2HadErrback = false;
+    let branch1HadErrback = false;
+    let branch2HadErrback = false;
     branch1.addErrback(function() {
       branch1HadErrback = true;
     });
@@ -898,8 +950,8 @@ testSuite({
   },
 
   testCancelOnRoot() {
-    var wasCanceled = false;
-    var d = new Deferred(function() {
+    let wasCanceled = false;
+    const d = new Deferred(function() {
       wasCanceled = true;
     });
     d.branch(true).branch(true).branch(true);
@@ -909,12 +961,12 @@ testSuite({
   },
 
   testCancelOnLeafBranch() {
-    var wasCanceled = false;
-    var branchWasCanceled = false;
-    var d = new Deferred(function() {
+    let wasCanceled = false;
+    let branchWasCanceled = false;
+    const d = new Deferred(function() {
       wasCanceled = true;
     });
-    var branch = d.branch(true).branch(true).branch(true);
+    const branch = d.branch(true).branch(true).branch(true);
     branch.addErrback(function() {
       branchWasCanceled = true;
     });
@@ -925,15 +977,15 @@ testSuite({
   },
 
   testCancelOnIntermediateBranch() {
-    var rootWasCanceled = false;
+    let rootWasCanceled = false;
 
-    var d = new Deferred(function() {
+    const d = new Deferred(function() {
       rootWasCanceled = true;
     });
-    var branch = d.branch(true).branch(true).branch(true);
+    const branch = d.branch(true).branch(true).branch(true);
 
-    var deepBranch1 = branch.branch(true);
-    var deepBranch2 = branch.branch(true);
+    const deepBranch1 = branch.branch(true);
+    const deepBranch2 = branch.branch(true);
 
     branch.cancel();
     assertTrue(rootWasCanceled);
@@ -942,11 +994,11 @@ testSuite({
   },
 
   testCancelWithSomeCompletedBranches() {
-    var d = new Deferred();
-    var branch1 = d.branch(true);
+    const d = new Deferred();
+    const branch1 = d.branch(true);
 
-    var branch1HadCallback = false;
-    var branch1HadErrback = false;
+    let branch1HadCallback = false;
+    let branch1HadErrback = false;
     branch1
         .addCallback(function() {
           branch1HadCallback = true;
@@ -959,8 +1011,8 @@ testSuite({
     assertTrue(branch1HadCallback);
     assertFalse(branch1HadErrback);
 
-    var rootHadCallback = false;
-    var rootHadErrback = false;
+    let rootHadCallback = false;
+    let rootHadErrback = false;
     // Block the root on a new Deferred indefinitely.
     d.addCallback(function() {
        rootHadCallback = true;
@@ -971,7 +1023,7 @@ testSuite({
         .addErrback(function() {
           rootHadErrback = true;
         });
-    var branch2 = d.branch(true);
+    const branch2 = d.branch(true);
 
     assertTrue(rootHadCallback);
     assertFalse(rootHadErrback);
@@ -984,10 +1036,10 @@ testSuite({
   },
 
   testStaticCanceled() {
-    var callbackCalled = false;
-    var errbackResult = null;
+    let callbackCalled = false;
+    let errbackResult = null;
 
-    var d = Deferred.canceled();
+    const d = Deferred.canceled();
     d.addCallback(function() {
       callbackCalled = true;
     });
@@ -1002,7 +1054,7 @@ testSuite({
   },
 
   testWhenWithValues() {
-    var called = false;
+    let called = false;
     Deferred.when(4, function(obj) {
       called = true;
       assertEquals(4, obj);
@@ -1011,9 +1063,9 @@ testSuite({
   },
 
   testWhenWithDeferred() {
-    var called = false;
+    let called = false;
 
-    var d = new Deferred();
+    const d = new Deferred();
     Deferred.when(d, function(obj) {
       called = true;
       assertEquals(6, obj);
@@ -1024,10 +1076,10 @@ testSuite({
   },
 
   testWhenDoesntAlterOriginalChain() {
-    var calls = 0;
+    let calls = 0;
 
-    var d1 = new Deferred();
-    var d2 = Deferred.when(d1, function(obj) {
+    const d1 = new Deferred();
+    const d2 = Deferred.when(d1, function(obj) {
       calls++;
       return obj * 2;
     });
@@ -1046,16 +1098,20 @@ testSuite({
   },
 
   testAssertNoErrors() {
-    var d = new Deferred();
+    const d = new Deferred();
     d.addCallback(function() {
       throw new Error('Foo');
     });
     d.callback(1);
 
-    var ex = assertThrows(function() {
-      Deferred.assertNoErrors();
-      neverHappen();
-    });
+    const ex = assertThrows(/**
+                             @suppress {checkTypes} suppression added to enable
+                             type checking
+                           */
+                            function() {
+                              Deferred.assertNoErrors();
+                              neverHappen();
+                            });
     assertEquals('Expected to get thrown error', 'Foo', ex.message);
 
     assertNotThrows(
@@ -1067,9 +1123,9 @@ testSuite({
   },
 
   testThen() {
-    var result;
-    var result2;
-    var d = new Deferred();
+    let result;
+    let result2;
+    const d = new Deferred();
     assertEquals(d.then, d['then']);
     d.then(function(r) {
        return result = r;
@@ -1083,9 +1139,15 @@ testSuite({
     assertEquals('done', result2);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testThen_reject() {
-    var result, error;
-    var d = new Deferred();
+    let error;
+    let result;
+
+    const d = new Deferred();
     assertEquals(d.then, d['then']);
     d.then(
         function(r) {
@@ -1102,8 +1164,8 @@ testSuite({
   },
 
   testPromiseAll() {
-    var d = new Deferred();
-    var p = new GoogPromise(function(resolve) {
+    const d = new Deferred();
+    const p = new GoogPromise(function(resolve) {
       resolve('promise');
     });
     GoogPromise.all([d, p]).then(function(values) {
@@ -1116,9 +1178,9 @@ testSuite({
   },
 
   testGoogPromiseBlocksDeferred() {
-    var result;
-    var d = new Deferred();
-    var p = new GoogPromise(function(resolve) {
+    let result;
+    const d = new Deferred();
+    const p = new GoogPromise(function(resolve) {
       resolve('promise');
     });
     d.callback();
@@ -1144,10 +1206,10 @@ testSuite({
     // it just complicates things in this case.
     mockClock.uninstall();
 
-    var blockedOnPromise = true;
+    let blockedOnPromise = true;
 
-    var resolver;
-    var d = Deferred.succeed();
+    let resolver;
+    const d = Deferred.succeed();
     d.addCallback(function() {
       return new Promise(function(resolve) {
         resolver = resolve;
@@ -1169,11 +1231,11 @@ testSuite({
   },
 
   testFromPromiseWithGoogPromise() {
-    var result;
-    var p = new GoogPromise(function(resolve) {
+    let result;
+    const p = new GoogPromise(function(resolve) {
       resolve('promise');
     });
-    var d = Deferred.fromPromise(p);
+    const d = Deferred.fromPromise(p);
     d.addCallback(function(value) {
       result = value;
     });
@@ -1183,13 +1245,14 @@ testSuite({
   },
 
   testFromPromiseWithThenable() {
-    var result;
-    var p = {
+    let result;
+    const p = {
       'then': function(callback) {
         callback('promise');
       }
     };
-    var d = Deferred.fromPromise(p);
+    /** @suppress {checkTypes} suppression added to enable type checking */
+    const d = Deferred.fromPromise(p);
     d.addCallback(function(value) {
       result = value;
     });
@@ -1197,9 +1260,9 @@ testSuite({
   },
 
   testPromiseBlocksDeferredAndRejects() {
-    var result;
-    var d = new Deferred();
-    var p = new GoogPromise(function(resolve, reject) {
+    let result;
+    const d = new Deferred();
+    const p = new GoogPromise(function(resolve, reject) {
       reject(new Error('error'));
     });
     d.callback();
@@ -1216,8 +1279,8 @@ testSuite({
   },
 
   testPromiseFromCanceledDeferred() {
-    var result;
-    var d = new Deferred();
+    let result;
+    const d = new Deferred();
     d.cancel();
 
     d.then(neverHappen, function(reason) {
@@ -1229,13 +1292,13 @@ testSuite({
   },
 
   testThenableInterface() {
-    var d = new Deferred();
+    const d = new Deferred();
     assertTrue(GoogThenable.isImplementedBy(d));
   },
 
   testAddBothPropagatesToErrback() {
-    var log = [];
-    var deferred = new Deferred();
+    const log = [];
+    const deferred = new Deferred();
     deferred.addBoth(goog.nullFunction);
     deferred.addErrback(function() {
       log.push('errback');
@@ -1247,16 +1310,16 @@ testSuite({
   },
 
   testAddBothDoesNotPropagateUncaughtExceptions() {
-    var deferred = new Deferred();
+    const deferred = new Deferred();
     deferred.addBoth(goog.nullFunction);
     deferred.errback(new Error('my error'));
     mockClock.tick(1);
   },
 
   testAddFinally() {
-    var deferred = new Deferred();
-    var callback = recordFunction();
-    var thisArg = {};
+    const deferred = new Deferred();
+    const callback = recordFunction();
+    const thisArg = {};
     deferred.addFinally(callback, thisArg);
     deferred.errback(new Error('my error'));
 
@@ -1266,5 +1329,57 @@ testSuite({
       assertEquals('my error', e.message);
     }
     assertEquals(thisArg, callback.getCalls()[0].getThis());
-  }
+  },
+
+  testGetLastValueForMigration_beforeCallback() {
+    const deferred = new Deferred();
+
+    assertEquals(undefined, deferred.getLastValueForMigration());
+  },
+
+  testGetLastValueForMigration_afterCallback() {
+    const deferred = new Deferred();
+
+    deferred.callback(1);
+
+    assertEquals(1, deferred.getLastValueForMigration());
+  },
+
+  testGetLastValueForMigration_afterErrback() {
+    const deferred = new Deferred();
+
+    deferred.errback(new Error());
+
+    assertEquals(undefined, deferred.getLastValueForMigration());
+  },
+
+  testGetLastValueForMigration_duringCallback() {
+    const deferred = new Deferred();
+
+    deferred.addCallback((x) => 1)
+        .addCallback((x) => {
+          assertEquals(1, x);
+          assertEquals(1, deferred.getLastValueForMigration());
+          return 2;
+        })
+        .addCallback((x) => assertEquals(2, x));
+
+    deferred.callback(0);
+  },
+
+  testGetLastValueForMigration_afterCallbackThrowsError() {
+    const deferred = new Deferred();
+
+    deferred
+        .addCallback((x) => {
+          throw new Error();
+        })
+        .addErrback(
+            () => {
+                // Stop propagation.
+            });
+    deferred.callback(0);
+
+    assertEquals(undefined, deferred.getLastValueForMigration());
+  },
 });

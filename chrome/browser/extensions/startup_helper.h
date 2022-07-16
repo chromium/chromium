@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_STARTUP_HELPER_H_
 #define CHROME_BROWSER_EXTENSIONS_STARTUP_HELPER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/pack_extension_job.h"
 
@@ -19,6 +18,10 @@ namespace extensions {
 class StartupHelper : public PackExtensionJob::Client {
  public:
   StartupHelper();
+
+  StartupHelper(const StartupHelper&) = delete;
+  StartupHelper& operator=(const StartupHelper&) = delete;
+
   ~StartupHelper() override;
 
   void OnPackSuccess(const base::FilePath& crx_path,
@@ -38,8 +41,6 @@ class StartupHelper : public PackExtensionJob::Client {
 
  private:
   bool pack_job_succeeded_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartupHelper);
 };
 
 }  // namespace extensions

@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "ash/public/mojom/cros_display_config.mojom.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -25,6 +24,11 @@ class DisplayInfoProviderChromeOS
   explicit DisplayInfoProviderChromeOS(
       mojo::PendingRemote<ash::mojom::CrosDisplayConfigController>
           display_config);
+
+  DisplayInfoProviderChromeOS(const DisplayInfoProviderChromeOS&) = delete;
+  DisplayInfoProviderChromeOS& operator=(const DisplayInfoProviderChromeOS&) =
+      delete;
+
   ~DisplayInfoProviderChromeOS() override;
 
   // DisplayInfoProvider implementation.
@@ -83,8 +87,6 @@ class DisplayInfoProviderChromeOS
       cros_display_config_observer_receiver_{this};
   std::string touch_calibration_target_id_;
   base::WeakPtrFactory<DisplayInfoProviderChromeOS> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayInfoProviderChromeOS);
 };
 
 }  // namespace extensions

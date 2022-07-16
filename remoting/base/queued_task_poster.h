@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace remoting {
 
@@ -24,6 +24,10 @@ class QueuedTaskPoster {
  public:
   QueuedTaskPoster(
       scoped_refptr<base::SingleThreadTaskRunner> target_task_runner);
+
+  QueuedTaskPoster(const QueuedTaskPoster&) = delete;
+  QueuedTaskPoster& operator=(const QueuedTaskPoster&) = delete;
+
   ~QueuedTaskPoster();
 
   void AddTask(base::OnceClosure closure);
@@ -39,8 +43,6 @@ class QueuedTaskPoster {
   bool transfer_task_scheduled_ = false;
 
   base::WeakPtrFactory<QueuedTaskPoster> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QueuedTaskPoster);
 };
 
 }  // namespace remoting

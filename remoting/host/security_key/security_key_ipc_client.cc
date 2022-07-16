@@ -19,6 +19,10 @@
 #include "remoting/host/chromoting_messages.h"
 #include "remoting/host/security_key/security_key_ipc_constants.h"
 
+#if defined(OS_WIN)
+#include <Windows.h>
+#endif
+
 namespace remoting {
 
 SecurityKeyIpcClient::SecurityKeyIpcClient()

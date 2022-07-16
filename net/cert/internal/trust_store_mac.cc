@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
@@ -231,6 +231,7 @@ TrustStatus IsSecCertificateTrustedForPolicyInDomain(
   }
   if (err) {
     OSSTATUS_LOG(ERROR, err) << "SecTrustSettingsCopyTrustSettings error";
+    *debug_info |= TrustStoreMac::COPY_TRUST_SETTINGS_ERROR;
     return TrustStatus::UNSPECIFIED;
   }
   TrustStatus trust = IsTrustSettingsTrustedForPolicy(
@@ -239,7 +240,7 @@ TrustStatus IsSecCertificateTrustedForPolicyInDomain(
 }
 
 TrustStatus IsCertificateTrustedForPolicyInDomain(
-    const scoped_refptr<ParsedCertificate>& cert,
+    const ParsedCertificate* cert,
     const CFStringRef policy_oid,
     SecTrustSettingsDomain trust_domain,
     int* debug_info) {
@@ -326,6 +327,7 @@ TrustStatus IsCertificateTrustedForPolicy(const ParsedCertificate* cert,
         continue;
       }
       OSSTATUS_LOG(ERROR, err) << "SecTrustSettingsCopyTrustSettings error";
+      *debug_info |= TrustStoreMac::COPY_TRUST_SETTINGS_ERROR;
       continue;
     }
     if (out_is_known_root && trust_domain == kSecTrustSettingsDomainSystem) {
@@ -368,6 +370,9 @@ class TrustDomainCache {
     DCHECK(policy_oid_);
   }
 
+  TrustDomainCache(const TrustDomainCache&) = delete;
+  TrustDomainCache& operator=(const TrustDomainCache&) = delete;
+
   // (Re-)Initializes the cache with the certs in |domain_| set to UNKNOWN trust
   // status.
   void Initialize() {
@@ -398,7 +403,7 @@ class TrustDomainCache {
   }
 
   // Returns the trust status for |cert| in |domain_|.
-  TrustStatus IsCertTrusted(const scoped_refptr<ParsedCertificate>& cert,
+  TrustStatus IsCertTrusted(const ParsedCertificate* cert,
                             const SHA256HashValue& cert_hash,
                             base::SupportsUserData* debug_data) {
     auto cache_iter = trust_status_cache_.find(cert_hash);
@@ -435,8 +440,6 @@ class TrustDomainCache {
   const SecTrustSettingsDomain domain_;
   const CFStringRef policy_oid_;
   base::flat_map<SHA256HashValue, TrustStatusDetails> trust_status_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrustDomainCache);
 };
 
 SHA256HashValue CalculateFingerprint256(const der::Input& buffer) {
@@ -452,6 +455,11 @@ SHA256HashValue CalculateFingerprint256(const der::Input& buffer) {
 // function pointer and different contexts.
 class KeychainTrustSettingsChangedNotifier {
  public:
+  KeychainTrustSettingsChangedNotifier(
+      const KeychainTrustSettingsChangedNotifier&) = delete;
+  KeychainTrustSettingsChangedNotifier& operator=(
+      const KeychainTrustSettingsChangedNotifier&) = delete;
+
   // Registers |callback| to be run when the keychain trust settings change.
   // Must be called on the network notification thread.  |callback| will be run
   // on the network notification thread. The returned subscription must be
@@ -491,8 +499,6 @@ class KeychainTrustSettingsChangedNotifier {
   }
 
   base::RepeatingClosureList callback_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeychainTrustSettingsChangedNotifier);
 };
 
 // Observes keychain events and increments the value returned by Iteration()
@@ -506,6 +512,9 @@ class KeychainTrustObserver {
             &KeychainTrustObserver::RegisterCallbackOnNotificationThread,
             base::Unretained(this)));
   }
+
+  KeychainTrustObserver(const KeychainTrustObserver&) = delete;
+  KeychainTrustObserver& operator=(const KeychainTrustObserver&) = delete;
 
   // Destroying the observer unregisters the callback. Must be destroyed on the
   // notification thread in order to safely release |subscription_|.
@@ -531,8 +540,6 @@ class KeychainTrustObserver {
   base::CallbackListSubscription subscription_;
 
   base::subtle::Atomic64 iteration_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(KeychainTrustObserver);
 };
 
 }  // namespace
@@ -578,9 +585,8 @@ class TrustStoreMac::TrustImpl {
   virtual ~TrustImpl() = default;
 
   virtual bool IsKnownRoot(const ParsedCertificate* cert) = 0;
-  virtual TrustStatus IsCertTrusted(
-      const scoped_refptr<ParsedCertificate>& cert,
-      base::SupportsUserData* debug_data) = 0;
+  virtual TrustStatus IsCertTrusted(const ParsedCertificate* cert,
+                                    base::SupportsUserData* debug_data) = 0;
   virtual void InitializeTrustCache() = 0;
 };
 
@@ -597,6 +603,9 @@ class TrustStoreMac::TrustImplDomainCache : public TrustStoreMac::TrustImpl {
     keychain_observer_ = std::make_unique<KeychainTrustObserver>();
   }
 
+  TrustImplDomainCache(const TrustImplDomainCache&) = delete;
+  TrustImplDomainCache& operator=(const TrustImplDomainCache&) = delete;
+
   ~TrustImplDomainCache() override {
     GetNetworkNotificationThreadMac()->DeleteSoon(
         FROM_HERE, std::move(keychain_observer_));
@@ -612,7 +621,7 @@ class TrustStoreMac::TrustImplDomainCache : public TrustStoreMac::TrustImpl {
   }
 
   // Returns the trust status for |cert|.
-  TrustStatus IsCertTrusted(const scoped_refptr<ParsedCertificate>& cert,
+  TrustStatus IsCertTrusted(const ParsedCertificate* cert,
                             base::SupportsUserData* debug_data) override {
     SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
 
@@ -670,8 +679,6 @@ class TrustStoreMac::TrustImplDomainCache : public TrustStoreMac::TrustImpl {
   TrustDomainCache system_domain_cache_;
   TrustDomainCache admin_domain_cache_;
   TrustDomainCache user_domain_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrustImplDomainCache);
 };
 
 // TrustImplNoCache is the simplest approach which calls
@@ -679,6 +686,9 @@ class TrustStoreMac::TrustImplDomainCache : public TrustStoreMac::TrustImpl {
 class TrustStoreMac::TrustImplNoCache : public TrustStoreMac::TrustImpl {
  public:
   explicit TrustImplNoCache(CFStringRef policy_oid) : policy_oid_(policy_oid) {}
+
+  TrustImplNoCache(const TrustImplNoCache&) = delete;
+  TrustImplNoCache& operator=(const TrustImplNoCache&) = delete;
 
   ~TrustImplNoCache() override = default;
 
@@ -690,11 +700,11 @@ class TrustStoreMac::TrustImplNoCache : public TrustStoreMac::TrustImpl {
   }
 
   // Returns the trust status for |cert|.
-  TrustStatus IsCertTrusted(const scoped_refptr<ParsedCertificate>& cert,
+  TrustStatus IsCertTrusted(const ParsedCertificate* cert,
                             base::SupportsUserData* debug_data) override {
     int debug_info = 0;
     TrustStatus result = IsCertificateTrustedForPolicy(
-        cert.get(), policy_oid_, &debug_info, /*out_is_known_root=*/nullptr);
+        cert, policy_oid_, &debug_info, /*out_is_known_root=*/nullptr);
     UpdateUserData(debug_info, debug_data,
                    TrustStoreMac::TrustImplType::kSimple);
     return result;
@@ -706,21 +716,22 @@ class TrustStoreMac::TrustImplNoCache : public TrustStoreMac::TrustImpl {
 
  private:
   const CFStringRef policy_oid_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrustImplNoCache);
 };
 
-// TrustImplMRUCache is calls SecTrustSettingsCopyTrustSettings on every cert
-// checked, but caches the results in an MRU cache. The cache is cleared on
+// TrustImplLRUCache is calls SecTrustSettingsCopyTrustSettings on every cert
+// checked, but caches the results in an LRU cache. The cache is cleared on
 // keychain updates.
-class TrustStoreMac::TrustImplMRUCache : public TrustStoreMac::TrustImpl {
+class TrustStoreMac::TrustImplLRUCache : public TrustStoreMac::TrustImpl {
  public:
-  TrustImplMRUCache(CFStringRef policy_oid, size_t cache_size)
+  TrustImplLRUCache(CFStringRef policy_oid, size_t cache_size)
       : policy_oid_(policy_oid), trust_status_cache_(cache_size) {
     keychain_observer_ = std::make_unique<KeychainTrustObserver>();
   }
 
-  ~TrustImplMRUCache() override {
+  TrustImplLRUCache(const TrustImplLRUCache&) = delete;
+  TrustImplLRUCache& operator=(const TrustImplLRUCache&) = delete;
+
+  ~TrustImplLRUCache() override {
     GetNetworkNotificationThreadMac()->DeleteSoon(
         FROM_HERE, std::move(keychain_observer_));
   }
@@ -731,11 +742,11 @@ class TrustStoreMac::TrustImplMRUCache : public TrustStoreMac::TrustImpl {
   }
 
   // Returns the trust status for |cert|.
-  TrustStatus IsCertTrusted(const scoped_refptr<ParsedCertificate>& cert,
+  TrustStatus IsCertTrusted(const ParsedCertificate* cert,
                             base::SupportsUserData* debug_data) override {
-    TrustStatusDetails trust_details = GetTrustStatus(cert.get());
+    TrustStatusDetails trust_details = GetTrustStatus(cert);
     UpdateUserData(trust_details.debug_info, debug_data,
-                   TrustStoreMac::TrustImplType::kMruCache);
+                   TrustStoreMac::TrustImplType::kLruCache);
     return trust_details.trust_status;
   }
 
@@ -834,7 +845,7 @@ class TrustStoreMac::TrustImplMRUCache : public TrustStoreMac::TrustImpl {
 
   base::Lock cache_lock_;
   // |cache_lock_| must be held while accessing any following members.
-  base::MRUCache<SHA256HashValue, TrustStatusDetails> trust_status_cache_;
+  base::LRUCache<SHA256HashValue, TrustStatusDetails> trust_status_cache_;
   // Tracks the number of keychain changes that have been observed. If the
   // keychain observer has noted a change, MaybeResetCache will update
   // |iteration_| and the cache will be cleared. Any in-flight trust
@@ -842,8 +853,6 @@ class TrustStoreMac::TrustImplMRUCache : public TrustStoreMac::TrustImpl {
   // not cache their results, as it isn't clear whether the calculated result
   // applies to the new or old trust settings.
   int64_t iteration_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(TrustImplMRUCache);
 };
 
 TrustStoreMac::TrustStoreMac(CFStringRef policy_oid,
@@ -859,9 +868,9 @@ TrustStoreMac::TrustStoreMac(CFStringRef policy_oid,
     case TrustImplType::kSimple:
       trust_cache_ = std::make_unique<TrustImplNoCache>(policy_oid);
       break;
-    case TrustImplType::kMruCache:
+    case TrustImplType::kLruCache:
       trust_cache_ =
-          std::make_unique<TrustImplMRUCache>(policy_oid, cache_size);
+          std::make_unique<TrustImplLRUCache>(policy_oid, cache_size);
       break;
   }
 }
@@ -918,20 +927,17 @@ void TrustStoreMac::SyncGetIssuersOf(const ParsedCertificate* cert,
   }
 }
 
-void TrustStoreMac::GetTrust(const scoped_refptr<ParsedCertificate>& cert,
-                             CertificateTrust* trust,
-                             base::SupportsUserData* debug_data) const {
+CertificateTrust TrustStoreMac::GetTrust(
+    const ParsedCertificate* cert,
+    base::SupportsUserData* debug_data) const {
   TrustStatus trust_status = trust_cache_->IsCertTrusted(cert, debug_data);
   switch (trust_status) {
     case TrustStatus::TRUSTED:
-      *trust = CertificateTrust::ForTrustAnchor();
-      return;
+      return CertificateTrust::ForTrustAnchor();
     case TrustStatus::DISTRUSTED:
-      *trust = CertificateTrust::ForDistrusted();
-      return;
+      return CertificateTrust::ForDistrusted();
     case TrustStatus::UNSPECIFIED:
-      *trust = CertificateTrust::ForUnspecified();
-      return;
+      return CertificateTrust::ForUnspecified();
     case TrustStatus::UNKNOWN:
       // UNKNOWN is an implementation detail of TrustImpl and should never be
       // returned.
@@ -939,8 +945,7 @@ void TrustStoreMac::GetTrust(const scoped_refptr<ParsedCertificate>& cert,
       break;
   }
 
-  *trust = CertificateTrust::ForUnspecified();
-  return;
+  return CertificateTrust::ForUnspecified();
 }
 
 // static

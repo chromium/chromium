@@ -35,6 +35,7 @@ source_set("component_autofill_provider_native_test_support") {
     ":jni_headers",
     "//base",
     "//components/android_autofill/browser:android",
+    "//components/autofill/content/browser:test_support",
     "//components/autofill/core/browser:test_support",
     "//content/public/browser",
   ]

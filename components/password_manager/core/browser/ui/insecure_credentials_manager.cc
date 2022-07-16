@@ -81,13 +81,13 @@ InsecureCredentialTypeFlags ConvertInsecureType(InsecureType type) {
 }
 
 bool IsPasswordFormLeaked(const PasswordForm& form) {
-  return form.password_issues->find(InsecureType::kLeaked) !=
-         form.password_issues->end();
+  return form.password_issues.find(InsecureType::kLeaked) !=
+         form.password_issues.end();
 }
 
 bool IsPasswordFormPhished(const PasswordForm& form) {
-  return form.password_issues->find(InsecureType::kPhished) !=
-         form.password_issues->end();
+  return form.password_issues.find(InsecureType::kPhished) !=
+         form.password_issues.end();
 }
 
 // This function takes two lists: weak passwords and saved passwords and joins
@@ -116,11 +116,10 @@ CredentialPasswordsMap GetInsecureCredentialsFromPasswords(
   }
 
   for (const auto& form : saved_passwords) {
-    DCHECK(form.password_issues.has_value());
     if (IsPasswordFormLeaked(form) || IsPasswordFormPhished(form)) {
       CredentialView insecure_credential(form);
       auto& credential_to_form = credentials_to_forms[insecure_credential];
-      for (const auto& pair : form.password_issues.value()) {
+      for (const auto& pair : form.password_issues) {
         credential_to_form.type |= ConvertInsecureType(pair.first);
         credential_to_form.latest_time =
             std::max(credential_to_form.latest_time, pair.second.create_time);
@@ -166,12 +165,8 @@ std::vector<CredentialWithPassword> ExtractInsecureCredentials(
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
 base::flat_set<std::u16string> ExtractPasswords(
     SavedPasswordsPresenter::SavedPasswordsView password_forms) {
-  std::vector<std::u16string> passwords;
-  passwords.reserve(password_forms.size());
-  for (const auto& form : password_forms) {
-    passwords.push_back(form.password_value);
-  }
-  return base::flat_set<std::u16string>(std::move(passwords));
+  return base::MakeFlatSet<std::u16string>(password_forms, {},
+                                           &PasswordForm::password_value);
 }
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
@@ -180,17 +175,20 @@ base::flat_set<std::u16string> ExtractPasswords(
 CredentialView::CredentialView(std::string signon_realm,
                                GURL url,
                                std::u16string username,
-                               std::u16string password)
+                               std::u16string password,
+                               base::Time last_used_time)
     : signon_realm(std::move(signon_realm)),
       url(std::move(url)),
       username(std::move(username)),
-      password(std::move(password)) {}
+      password(std::move(password)),
+      last_used_time(last_used_time) {}
 
 CredentialView::CredentialView(const PasswordForm& form)
     : signon_realm(form.signon_realm),
       url(form.url),
       username(form.username_value),
-      password(form.password_value) {}
+      password(form.password_value),
+      last_used_time(form.date_last_used) {}
 
 CredentialView::CredentialView(const CredentialView& credential) = default;
 CredentialView::CredentialView(CredentialView&& credential) = default;
@@ -213,7 +211,8 @@ CredentialWithPassword::CredentialWithPassword(
     : CredentialView(credential.signon_realm,
                      GURL(credential.signon_realm),
                      credential.username,
-                     /*password=*/{}),
+                     /*password=*/{},
+                     /*last_used_time=*/base::Time()),
       create_time(credential.create_time),
       insecure_type(ConvertInsecureType(credential.insecure_type)) {}
 
@@ -224,8 +223,8 @@ CredentialWithPassword& CredentialWithPassword::operator=(
 
 InsecureCredentialsManager::InsecureCredentialsManager(
     SavedPasswordsPresenter* presenter,
-    scoped_refptr<PasswordStore> profile_store,
-    scoped_refptr<PasswordStore> account_store)
+    scoped_refptr<PasswordStoreInterface> profile_store,
+    scoped_refptr<PasswordStoreInterface> account_store)
     : presenter_(presenter),
       profile_store_(std::move(profile_store)),
       account_store_(std::move(account_store)) {
@@ -259,9 +258,8 @@ void InsecureCredentialsManager::SaveInsecureCredential(
     if (saved_password.password_value == credential.password() &&
         CanonicalizeUsername(saved_password.username_value) ==
             canonicalized_username) {
-      DCHECK(saved_password.password_issues.has_value());
       PasswordForm form_to_update = saved_password;
-      form_to_update.password_issues->insert_or_assign(
+      form_to_update.password_issues.insert_or_assign(
           InsecureType::kLeaked,
           InsecurityMetadata(base::Time::Now(), IsMuted(false)));
       GetStoreFor(saved_password).UpdateLogin(form_to_update);
@@ -396,7 +394,7 @@ void InsecureCredentialsManager::NotifyWeakCredentialsChanged() {
   }
 }
 
-PasswordStore& InsecureCredentialsManager::GetStoreFor(
+PasswordStoreInterface& InsecureCredentialsManager::GetStoreFor(
     const PasswordForm& form) {
   return form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
 }

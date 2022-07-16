@@ -27,6 +27,11 @@ class CheckedThreadLocalOwnedPointer {
  public:
   CheckedThreadLocalOwnedPointer() = default;
 
+  CheckedThreadLocalOwnedPointer<T>(const CheckedThreadLocalOwnedPointer<T>&) =
+      delete;
+  CheckedThreadLocalOwnedPointer<T>& operator=(
+      const CheckedThreadLocalOwnedPointer<T>&) = delete;
+
   ~CheckedThreadLocalOwnedPointer() {
     Set(nullptr);
 
@@ -79,8 +84,6 @@ class CheckedThreadLocalOwnedPointer {
   ThreadLocalStorage::Slot slot_{&DeleteTlsPtr};
 
   std::atomic_int num_assigned_threads_{0};
-
-  DISALLOW_COPY_AND_ASSIGN(CheckedThreadLocalOwnedPointer<T>);
 };
 
 }  // namespace internal

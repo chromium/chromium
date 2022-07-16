@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/ssl_status.h"
@@ -209,7 +208,8 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
         ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
         std::string() /* extra_headers */, nullptr /* frame_entry */,
         nullptr /* entry */, nullptr /* post_body */,
-        nullptr /* navigation_ui_data */, absl::nullopt /* impression */);
+        nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
+        false /* is_pdf */);
     main_test_rfh()->frame_tree_node()->CreatedNavigationRequest(
         std::move(request));
     GetNavigationRequest()->StartNavigation();
@@ -459,6 +459,12 @@ class GetRenderFrameHostOnFailureNavigationThrottle
   explicit GetRenderFrameHostOnFailureNavigationThrottle(
       NavigationHandle* handle)
       : NavigationThrottle(handle) {}
+
+  GetRenderFrameHostOnFailureNavigationThrottle(
+      const GetRenderFrameHostOnFailureNavigationThrottle&) = delete;
+  GetRenderFrameHostOnFailureNavigationThrottle& operator=(
+      const GetRenderFrameHostOnFailureNavigationThrottle&) = delete;
+
   ~GetRenderFrameHostOnFailureNavigationThrottle() override = default;
 
   NavigationThrottle::ThrottleCheckResult WillFailRequest() override {
@@ -469,9 +475,6 @@ class GetRenderFrameHostOnFailureNavigationThrottle
   const char* GetNameForLogging() override {
     return "GetRenderFrameHostOnFailureNavigationThrottle";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GetRenderFrameHostOnFailureNavigationThrottle);
 };
 
 class ThrottleTestContentBrowserClient : public ContentBrowserClient {
@@ -544,7 +547,7 @@ TEST_F(NavigationRequestTest, PolicyContainerInheritance) {
     // - If navigating to a non-local scheme, the target frame should have a new
     //   policy container (hence referrer policy set to "default").
     const GURL kUrl = GURL(test.url);
-    auto navigation =
+    navigation =
         NavigationSimulatorImpl::CreateRendererInitiated(kUrl, child_frame);
     static_cast<blink::mojom::PolicyContainerHost*>(
         child_frame->policy_container_host())
@@ -612,6 +615,56 @@ TEST_F(NavigationRequestTest, NoDnsAliases) {
 
   // Verify that there are no aliases in the NavigationRequest.
   EXPECT_TRUE(navigation->GetNavigationHandle()->GetDnsAliases().empty());
+}
+
+TEST_F(NavigationRequestTest, StorageKeyToCommit) {
+  TestRenderFrameHost* child_document = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild(""));
+  child_document->frame_tree_node()->set_anonymous(true);
+
+  const GURL kUrl = GURL("http://chromium.org");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, child_document);
+  navigation->ReadyToCommit();
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+  EXPECT_TRUE(request->commit_params().storage_key.nonce().has_value());
+  EXPECT_EQ(child_document->GetMainFrame()->GetPage().anonymous_iframes_nonce(),
+            request->commit_params().storage_key.nonce().value());
+
+  navigation->Commit();
+  child_document =
+      static_cast<TestRenderFrameHost*>(navigation->GetFinalRenderFrameHost());
+  EXPECT_TRUE(child_document->anonymous());
+  EXPECT_EQ(
+      blink::StorageKey::CreateWithNonce(
+          url::Origin::Create(kUrl),
+          child_document->GetMainFrame()->GetPage().anonymous_iframes_nonce()),
+      child_document->storage_key());
+}
+
+TEST_F(NavigationRequestTest,
+       NavigationToAnonymousDocumentNetworkIsolationInfo) {
+  auto* child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_test_rfh())
+          ->AppendChild("child"));
+  child_frame->frame_tree_node()->set_anonymous(true);
+
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateRendererInitiated(
+          GURL("https://example.com/navigation.html"), child_frame);
+  navigation->ReadyToCommit();
+
+  EXPECT_EQ(main_test_rfh()->GetPage().anonymous_iframes_nonce(),
+            static_cast<NavigationRequest*>(navigation->GetNavigationHandle())
+                ->isolation_info_for_subresources()
+                .network_isolation_key()
+                .GetNonce());
+  EXPECT_EQ(main_test_rfh()->GetPage().anonymous_iframes_nonce(),
+            static_cast<NavigationRequest*>(navigation->GetNavigationHandle())
+                ->GetIsolationInfo()
+                .network_isolation_key()
+                .GetNonce());
 }
 
 // Test that the required CSP of every frame is computed/inherited correctly and

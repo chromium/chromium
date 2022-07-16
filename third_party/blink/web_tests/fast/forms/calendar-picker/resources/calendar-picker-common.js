@@ -203,10 +203,9 @@ function clickTodayButton() {
   eventSender.mouseUp();
 }
 
-function skipAnimationAndGetPositionOfThisMonthButton() {
+function skipAnimationAndGetPositionOfGlobalPickerButton(selector) {
   skipAnimation();
-  const button =
-      popupWindow.global.picker.querySelector('.today-button');
+  const button = popupWindow.global.picker.querySelector(selector);
   var offset = cumulativeOffset(button);
   return {
     x: offset[0] + button.offsetWidth / 2,
@@ -214,8 +213,21 @@ function skipAnimationAndGetPositionOfThisMonthButton() {
   };
 }
 
+function hoverOverClearMonthButton() {
+  var position =
+      skipAnimationAndGetPositionOfGlobalPickerButton('.clear-button');
+  eventSender.mouseMoveTo(position.x, position.y);
+}
+
+function clickClearMonthButton() {
+  hoverOverClearMonthButton();
+  eventSender.mouseDown();
+  eventSender.mouseUp();
+}
+
 function hoverOverThisMonthButton() {
-  var position = skipAnimationAndGetPositionOfThisMonthButton();
+  var position =
+      skipAnimationAndGetPositionOfGlobalPickerButton('.today-button');
   eventSender.mouseMoveTo(position.x, position.y);
 }
 

@@ -31,6 +31,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattDescriptorServiceProvider
       const std::string& uuid,
       const std::vector<std::string>& flags,
       const dbus::ObjectPath& characteristic_path);
+
+  FakeBluetoothGattDescriptorServiceProvider(
+      const FakeBluetoothGattDescriptorServiceProvider&) = delete;
+  FakeBluetoothGattDescriptorServiceProvider& operator=(
+      const FakeBluetoothGattDescriptorServiceProvider&) = delete;
+
   ~FakeBluetoothGattDescriptorServiceProvider() override;
 
   // BluetoothGattDescriptorServiceProvider override.
@@ -69,8 +75,6 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattDescriptorServiceProvider
 
   // The delegate that method calls are passed on to.
   std::unique_ptr<BluetoothGattAttributeValueDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothGattDescriptorServiceProvider);
 };
 
 }  // namespace bluez

@@ -34,8 +34,8 @@ WGPUColor AsDawnType(const GPUColorDict*);
 WGPUColor AsDawnType(const V8GPUColor* webgpu_color);
 WGPUExtent3D AsDawnType(const V8GPUExtent3D* webgpu_extent);
 WGPUOrigin3D AsDawnType(const V8GPUOrigin3D* webgpu_extent);
-WGPUTextureCopyView AsDawnType(const GPUImageCopyTexture* webgpu_view,
-                               GPUDevice* device);
+WGPUImageCopyTexture AsDawnType(const GPUImageCopyTexture* webgpu_view,
+                                GPUDevice* device);
 WGPUTextureFormat AsDawnType(SkColorType color_type);
 
 const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,

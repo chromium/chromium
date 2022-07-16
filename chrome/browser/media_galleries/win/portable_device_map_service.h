@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 
 // PortableDeviceMapService keeps track of initialized portable device
@@ -20,6 +19,9 @@
 class PortableDeviceMapService {
  public:
   static PortableDeviceMapService* GetInstance();
+
+  PortableDeviceMapService(const PortableDeviceMapService&) = delete;
+  PortableDeviceMapService& operator=(const PortableDeviceMapService&) = delete;
 
   // Adds the portable |device| interface to the map service for the device
   // specified by the |device_location|. Called on a blocking pool thread.
@@ -72,8 +74,6 @@ class PortableDeviceMapService {
   // Mapping of |device_location| and IPortableDevice* object.
   PortableDeviceMap device_map_;
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PortableDeviceMapService);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_WIN_PORTABLE_DEVICE_MAP_SERVICE_H_

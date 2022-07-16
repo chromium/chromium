@@ -17,7 +17,6 @@
 #endif
 
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -59,14 +58,12 @@ VideoTestEnvironment::VideoTestEnvironment(
 #if defined(USE_OZONE)
   // Initialize Ozone. This is necessary to gain access to the GPU for hardware
   // video decode acceleration.
-  if (features::IsUsingOzonePlatform()) {
-    LOG(WARNING) << "Initializing Ozone Platform...\n"
-                    "If this hangs indefinitely please call 'stop ui' first!";
-    ui::OzonePlatform::InitParams params;
-    params.single_process = true;
-    ui::OzonePlatform::InitializeForUI(params);
-    ui::OzonePlatform::InitializeForGPU(params);
-  }
+  LOG(WARNING) << "Initializing Ozone Platform...\n"
+                  "If this hangs indefinitely please call 'stop ui' first!";
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
+  ui::OzonePlatform::InitializeForUI(params);
+  ui::OzonePlatform::InitializeForGPU(params);
 #endif
 }
 

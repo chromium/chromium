@@ -3,13 +3,13 @@ Tests that expressions have thrown objects.
 setTimeout(throwError, 0); undefined
 undefined
 foo.js:12 Uncaught Error: error_text
-    at throwError (foo.js:12)
+    at throwError (foo.js:12:17)
 throwError @ foo.js:12
 setTimeout (async)
 (anonymous) @ VM:1
 throwError();
 foo.js:12 Uncaught Error: error_text
-    at throwError (foo.js:12)
+    at throwError (foo.js:12:17)
     at <anonymous>:1:1
 throwError @ foo.js:12
 (anonymous) @ VM:1
@@ -36,14 +36,14 @@ throwNumber @ foo.js:22
 setTimeout(rejectWithError, 0); undefined
 undefined
 foo.js:27 Uncaught (in promise) Error: promise_error
-    at rejectWithError (foo.js:27)
+    at rejectWithError (foo.js:27:26)
 rejectWithError @ foo.js:27
 setTimeout (async)
 (anonymous) @ VM:1
 rejectWithError();
 undefined
 foo.js:27 Uncaught (in promise) Error: promise_error
-    at rejectWithError (foo.js:27)
+    at rejectWithError (foo.js:27:26)
     at <anonymous>:1:1
 rejectWithError @ foo.js:27
 (anonymous) @ VM:1

@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/updater/extension_update_client_command_line_config_policy.h"
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

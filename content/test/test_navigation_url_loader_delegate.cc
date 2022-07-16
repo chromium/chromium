@@ -84,9 +84,8 @@ void TestNavigationURLLoaderDelegate::OnRequestFailed(
     request_failed_->Quit();
 }
 
-absl::optional<url::Origin>
-TestNavigationURLLoaderDelegate::CreateURLLoaderFactoryForEarlyHintsPreload(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
+absl::optional<NavigationEarlyHintsManagerParams>
+TestNavigationURLLoaderDelegate::CreateNavigationEarlyHintsManagerParams(
     const network::mojom::EarlyHints& early_hints) {
   NOTREACHED();
   return absl::nullopt;

@@ -8,22 +8,23 @@
 #include <list>
 #include <memory>
 #include <set>
-#include <unordered_map>
 #include <unordered_set>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
+#include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
+#include "content/browser/renderer_host/stored_page.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "net/cookies/canonical_cookie.h"
@@ -35,7 +36,6 @@
 namespace content {
 
 class RenderFrameHostImpl;
-class RenderFrameProxyHost;
 class RenderViewHostImpl;
 class SiteInstance;
 
@@ -53,18 +53,18 @@ constexpr base::Feature kBackForwardCacheNoTimeEviction{
     "BackForwardCacheNoTimeEviction", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Allows pages with cache-control:no-store to enter the back/forward cache.
+// Feature params can specify whether pages with cache-control:no-store can be
+// restored if cookies change / if HTTPOnly cookies change.
 // TODO(crbug.com/1228611): Enable this feature.
 const base::Feature kCacheControlNoStoreEnterBackForwardCache{
     "CacheControlNoStoreEnterBackForwardCache",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Restore pages with cache-control:no-store from back/forward cache if there is
-// no cookie change while the page is in cache.
-// TODO(crbug.com/1228611): Enable this feature.
-const base::Feature
-    kCacheControlNoStoreRestoreFromBackForwardCacheUnlessCookieChange{
-        "CacheControlNoStoreRestoreFromBackForwardCache",
-        base::FEATURE_DISABLED_BY_DEFAULT};
+// Allows pages with MediaSession's playback state change to stay eligible for
+// the back/forward cache.
+const base::Feature kBackForwardCacheMediaSessionPlaybackStateChange{
+    "BackForwardCacheMediaSessionPlaybackStateChange",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // BackForwardCache:
 //
@@ -85,81 +85,66 @@ class CONTENT_EXPORT BackForwardCacheImpl
   static MessageHandlingPolicyWhenCached
   GetChannelAssociatedMessageHandlingPolicy();
 
-  // For each BackForwardCacheImpl::Entry, |CookieMonitor| monitors cookie
-  // changes on the entry and records them. Owned by the entry.
-  class CookieMonitor : public ::network::mojom::CookieChangeListener {
+  // BackForwardCache entry, consisting of the page and associated metadata.
+  class Entry : public ::network::mojom::CookieChangeListener {
    public:
-    CookieMonitor(RenderFrameHostImpl* rfh);
-    ~CookieMonitor() override;
-    // Returns whether or not any cookie on the bfcache entry has been modified
-    // while the page is in bfcache.
-    bool CookieModified();
-    // Returns whether or not HTTPOnly cookie on the bfcache entry has been
-    // modified while the page is in bfcache.
-    bool HTTPOnlyCookieModified();
+    explicit Entry(std::unique_ptr<StoredPage> stored_page);
+    ~Entry() override;
+
+    void WriteIntoTrace(perfetto::TracedValue context);
+
+    // Starts monitoring the cookie change in this entry.
+    void StartMonitoringCookieChange();
+
+    // Indicates whether or not all the |render_view_hosts| in this entry have
+    // received the acknowledgement from renderer that it finished running
+    // handlers.
+    bool AllRenderViewHostsReceivedAckFromRenderer();
+
+    std::unique_ptr<StoredPage> TakeStoredPage() {
+      return std::move(stored_page_);
+    }
+    void SetPageRestoreParams(
+        blink::mojom::PageRestoreParamsPtr page_restore_params) {
+      stored_page_->page_restore_params = std::move(page_restore_params);
+    }
+
+    // The main document being stored.
+    RenderFrameHostImpl* render_frame_host() {
+      return stored_page_->render_frame_host.get();
+    }
+
+    std::set<RenderViewHostImpl*> render_view_hosts() {
+      return stored_page_->render_view_hosts;
+    }
+
+    const StoredPage::RenderFrameProxyHostMap& proxy_hosts() const {
+      return stored_page_->proxy_hosts;
+    }
+
+    size_t proxy_hosts_size() { return stored_page_->proxy_hosts.size(); }
 
    private:
+    friend class BackForwardCacheImpl;
+
     // ::network::mojom::CookieChangeListener
     void OnCookieChange(const net::CookieChangeInfo& change) override;
 
     mojo::Receiver<::network::mojom::CookieChangeListener>
         cookie_listener_receiver_{this};
 
-    // Indicates whether or not cookie on the bfcache entry has been modified
-    // while the entry is in bfcache.
-    bool cookie_modified_ = false;
-    // Indicates whether or not HTTPOnly cookie on the bfcache entry has been
-    // modified while the entry is in bfcache.
-    bool http_only_cookie_modified_ = false;
-  };
+    struct CookieModified {
+      // Indicates whether or not cookie on the bfcache entry has been modified
+      // while the entry is in bfcache.
+      bool cookie_modified = false;
+      // Indicates whether or not HTTPOnly cookie on the bfcache entry
+      // has been modified while the entry is in bfcache.
+      bool http_only_cookie_modified = false;
+    };
+    // Only populated when |AllowStoringPagesWithCacheControlNoStore()| is true.
+    absl::optional<CookieModified> cookie_modified_;
 
-  struct CONTENT_EXPORT Entry {
-    using RenderFrameProxyHostMap =
-        std::unordered_map<int32_t /* SiteInstance ID */,
-                           std::unique_ptr<RenderFrameProxyHost>>;
-
-    Entry(std::unique_ptr<RenderFrameHostImpl> rfh,
-          RenderFrameProxyHostMap proxy_hosts,
-          std::set<RenderViewHostImpl*> render_view_hosts);
-    ~Entry();
-
-    void WriteIntoTrace(perfetto::TracedValue context);
-    // Indicates whether or not all the |render_view_hosts| in this entry have
-    // received the acknowledgement from renderer that it finished running
-    // handlers.
-    bool AllRenderViewHostsReceivedAckFromRenderer();
-
-    // Starts monitoring the cookie change in this entry.
-    void StartMonitoringCookieChange();
-
-    // The main document being stored.
-    std::unique_ptr<RenderFrameHostImpl> render_frame_host;
-
-    // Proxies of the main document as seen by other processes.
-    // Currently, we only store proxies for SiteInstances of all subframes on
-    // the page, because pages using window.open and nested WebContents are not
-    // cached.
-    RenderFrameProxyHostMap proxy_hosts;
-
-    // RenderViewHosts belonging to the main frame, and its proxies (if any).
-    //
-    // While RenderViewHostImpl(s) are in the BackForwardCache, they aren't
-    // reused for pages outside the cache. This prevents us from having two main
-    // frames, (one in the cache, one live), associated with a single
-    // RenderViewHost.
-    //
-    // Keeping these here also prevents RenderFrameHostManager code from
-    // unwittingly iterating over RenderViewHostImpls that are in the cache.
-    std::set<RenderViewHostImpl*> render_view_hosts;
-
-    // Additional parameters to send with SetPageLifecycleState calls when we're
-    // restoring a page from the back-forward cache.
-    blink::mojom::PageRestoreParamsPtr page_restore_params;
-
-    // Only populated if we are monitoring cookies for this entry.
-    std::unique_ptr<CookieMonitor> cookie_monitor;
-
-    DISALLOW_COPY_AND_ASSIGN(Entry);
+    std::unique_ptr<StoredPage> stored_page_;
   };
 
   // UnloadSupportStrategy is possible actions to take against pages with
@@ -168,20 +153,29 @@ class CONTENT_EXPORT BackForwardCacheImpl
   enum class UnloadSupportStrategy {
     kAlways,
     kOptInHeaderRequired,
+    kNo,
   };
 
-  // Returns whether MediaSessionImpl::OnServiceCreated is allowed for the
-  // BackForwardCache.
-  static bool IsMediaSessionImplOnServiceCreatedAllowed();
-
   BackForwardCacheImpl();
+
+  BackForwardCacheImpl(const BackForwardCacheImpl&) = delete;
+  BackForwardCacheImpl& operator=(const BackForwardCacheImpl&) = delete;
+
   ~BackForwardCacheImpl() override;
+
+  // Returns whether MediaSession's playback state change is allowed for the
+  // BackForwardCache.
+  static bool IsMediaSessionPlaybackStateChangedAllowed();
+
+  // Returns whether MediaSession's service is allowed for the BackForwardCache.
+  static bool IsMediaSessionServiceAllowed();
 
   // Returns whether a RenderFrameHost can be stored into the BackForwardCache
   // right now. Depends on the |render_frame_host| and its children's state.
   // Should only be called after we've navigated away from |render_frame_host|,
   // which means nothing about the page can change (usage of blocklisted
   // features, pending navigations, load state, etc.) anymore.
+  // Note that criteria for storing and restoring can be different.
   BackForwardCacheCanStoreDocumentResult CanStorePageNow(
       RenderFrameHostImpl* render_frame_host);
 
@@ -267,14 +261,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // URL escaping.
   bool IsQueryAllowed(const GURL& current_url);
 
-  // This is a wrapper around the flag that indicates whether or not the
-  // feature usage should be checked only after receiving an ack from the
-  // renderer process to ensure that the features cleaned up in pagehide and
-  // other event handlers are acoounted for.
-  // TODO(crbug.com/1129331): Remove this when we implement the logic to
-  // consider cache size limit.
-  bool CheckFeatureUsageOnlyAfterAck();
-
   // Called just before commit for a navigation that's served out of the back
   // forward cache. This method will disable eviction in renderers and invoke
   // |done_callback| when they are ready for the navigation to be committed.
@@ -306,6 +292,20 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // background limits (if finch parameter "foreground_cache_size" > 0).
   static bool UsingForegroundBackgroundCacheSizeLimit();
 
+  // Used only for testing. This will include cache-control:no-store reasons if
+  // there are any.
+  BackForwardCacheCanStoreDocumentResult CanRestorePageNowForTesting(
+      RenderFrameHostImpl* render_frame_host);
+
+  // Returns true if one of the BFCache entries has a matching
+  // BrowsingInstanceId/SiteInstanceId/RenderFrameProxyHost.
+  // TODO(https://crbug.com/1243541): Remove these once the bug is fixed.
+  bool IsBrowsingInstanceInBackForwardCacheForDebugging(
+      BrowsingInstanceId browsing_instance_id);
+  bool IsSiteInstanceInBackForwardCacheForDebugging(
+      SiteInstanceId site_instance_id);
+  bool IsProxyInBackForwardCacheForDebugging(RenderFrameProxyHost* proxy);
+
  private:
   // Destroys all evicted frames in the BackForwardCache.
   void DestroyEvictedFrames();
@@ -319,6 +319,14 @@ class CONTENT_EXPORT BackForwardCacheImpl
   void CanStoreRenderFrameHostLater(
       BackForwardCacheCanStoreDocumentResult* result,
       RenderFrameHostImpl* render_frame_host);
+
+  // Update the result to include CacheControlNoStore reasons if the flag is on.
+  void UpdateCanStoreToIncludeCacheControlNoStore(
+      BackForwardCacheCanStoreDocumentResult* result,
+      RenderFrameHostImpl* render_frame_host);
+
+  // Return the matching entry which has |page|.
+  BackForwardCacheImpl::Entry* FindMatchingEntry(PageImpl& page);
 
   // If non-zero, the cache may contain at most this many entries with involving
   // foregrounded processes and the remaining space can only be used by entries
@@ -338,17 +346,9 @@ class CONTENT_EXPORT BackForwardCacheImpl
   void AddProcessesForEntry(Entry& entry);
   void RemoveProcessesForEntry(Entry& entry);
 
-  // Maybe evict the entry before restoring it. Evict if an entry had
-  // cache-control:no-store header.
-  void MaybeEvictDueToCacheControlNoStoreBeforeRestore(Entry* rfh);
-
   // Returns true if the flag is on for pages with cache-control:no-store to
   // get restored from back/forward cache unless cookies change.
-  bool AllowStoringPagesWithCacheControlNoStore();
-
-  // Returns true if the flag is on for pages with cache-control:no-store to
-  // temporarily enter back/forward cache.
-  bool AllowRestoringPagesWithCacheControlNoStore();
+  static bool AllowStoringPagesWithCacheControlNoStore();
 
   // Contains the set of stored Entries.
   // Invariant:
@@ -397,8 +397,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   const UnloadSupportStrategy unload_strategy_;
 
   base::WeakPtrFactory<BackForwardCacheImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackForwardCacheImpl);
 };
 
 // Allow external code to be notified when back-forward cache is disabled for a

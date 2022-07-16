@@ -43,14 +43,11 @@ void PlatformSensorProviderBase::CreateSensor(mojom::SensorType type,
     return;
   }
 
-  auto it = requests_map_.find(type);
-  if (it != requests_map_.end()) {
-    it->second.push_back(std::move(callback));
-  } else {  // This is the first CreateSensor call.
-    auto& requests = requests_map_[type];
-    requests.clear();
-    requests.push_back(std::move(callback));
-
+  auto& requests = requests_map_[type];
+  const bool callback_queue_was_empty = requests.empty();
+  requests.push_back(std::move(callback));
+  if (callback_queue_was_empty) {
+    // This is the first CreateSensor call.
     CreateSensorInternal(
         type, reading_buffer,
         base::BindOnce(&PlatformSensorProviderBase::NotifySensorCreated,

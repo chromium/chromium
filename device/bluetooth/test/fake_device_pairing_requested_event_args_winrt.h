@@ -24,6 +24,12 @@ class FakeDevicePairingRequestedEventArgsWinrt
   explicit FakeDevicePairingRequestedEventArgsWinrt(
       Microsoft::WRL::ComPtr<FakeDeviceInformationCustomPairingWinrt>
           custom_pairing);
+
+  FakeDevicePairingRequestedEventArgsWinrt(
+      const FakeDevicePairingRequestedEventArgsWinrt&) = delete;
+  FakeDevicePairingRequestedEventArgsWinrt& operator=(
+      const FakeDevicePairingRequestedEventArgsWinrt&) = delete;
+
   ~FakeDevicePairingRequestedEventArgsWinrt() override;
 
   // IDevicePairingRequestedEventArgs:
@@ -42,8 +48,6 @@ class FakeDevicePairingRequestedEventArgsWinrt
  private:
   Microsoft::WRL::ComPtr<FakeDeviceInformationCustomPairingWinrt>
       custom_pairing_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDevicePairingRequestedEventArgsWinrt);
 };
 
 }  // namespace device

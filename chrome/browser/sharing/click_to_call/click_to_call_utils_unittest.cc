@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
 #include "chrome/browser/sharing/sharing_fcm_handler.h"
@@ -44,6 +43,9 @@ class ClickToCallUtilsTest : public testing::Test {
  public:
   ClickToCallUtilsTest() = default;
 
+  ClickToCallUtilsTest(const ClickToCallUtilsTest&) = delete;
+  ClickToCallUtilsTest& operator=(const ClickToCallUtilsTest&) = delete;
+
   ~ClickToCallUtilsTest() override = default;
 
   void SetUp() override {
@@ -75,8 +77,6 @@ class ClickToCallUtilsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   bool create_service_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(ClickToCallUtilsTest);
 };
 
 }  // namespace

@@ -11,6 +11,7 @@
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
@@ -23,6 +24,80 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
+
+namespace {
+
+void DecodeAndResizeImage(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<SegmentReader> data,
+    gfx::Size resize_dimensions,
+    CrossThreadOnceFunction<void(SkBitmap, double)> done_callback) {
+  auto notify_complete = [&](SkBitmap icon, double resize_scale) {
+    // This is needed so it can be moved cross-thread.
+    icon.setImmutable();
+    PostCrossThreadTask(*task_runner, FROM_HERE,
+                        CrossThreadBindOnce(std::move(done_callback),
+                                            std::move(icon), resize_scale));
+  };
+
+  std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
+      std::move(data), /* data_complete= */ true,
+      ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
+      ColorBehavior::TransformToSRGB());
+
+  if (!decoder) {
+    notify_complete(SkBitmap(), -1.0);
+    return;
+  }
+
+  ImageFrame* image_frame = decoder->DecodeFrameBufferAtIndex(0);
+
+  if (!image_frame) {
+    notify_complete(SkBitmap(), -1.0);
+    return;
+  }
+
+  SkBitmap decoded_icon = image_frame->Bitmap();
+  if (resize_dimensions.IsEmpty()) {
+    notify_complete(std::move(decoded_icon), 1.0);
+    return;
+  }
+
+  // If the icon is larger than |resize_dimensions| permits, we need to
+  // resize it as well. This can be done synchronously given that we're on a
+  // background thread already.
+  double scale = std::min(
+      static_cast<double>(resize_dimensions.width()) / decoded_icon.width(),
+      static_cast<double>(resize_dimensions.height()) / decoded_icon.height());
+
+  if (scale >= 1.0) {
+    notify_complete(std::move(decoded_icon), 1.0);
+    return;
+  }
+
+  int resized_width =
+      base::clamp(static_cast<int>(scale * decoded_icon.width()), 1,
+                  resize_dimensions.width());
+  int resized_height =
+      base::clamp(static_cast<int>(scale * decoded_icon.height()), 1,
+                  resize_dimensions.height());
+
+  // Use the RESIZE_GOOD quality allowing the implementation to pick an
+  // appropriate method for the resize. Can be increased to RESIZE_BETTER
+  // or RESIZE_BEST if the quality looks poor.
+  SkBitmap resized_icon = skia::ImageOperations::Resize(
+      decoded_icon, skia::ImageOperations::RESIZE_GOOD, resized_width,
+      resized_height);
+
+  if (resized_icon.isNull()) {
+    notify_complete(std::move(decoded_icon), 1.0);
+    return;
+  }
+
+  notify_complete(std::move(resized_icon), scale);
+}
+
+}  // namespace
 
 void ThreadedIconLoader::Start(
     ExecutionContext* execution_context,
@@ -83,87 +158,18 @@ void ThreadedIconLoader::DidFinishLoading(uint64_t resource_identifier) {
   worker_pool::PostTask(
       FROM_HERE,
       CrossThreadBindOnce(
-          &ThreadedIconLoader::DecodeAndResizeImageOnBackgroundThread,
-          WrapCrossThreadPersistent(this), std::move(task_runner),
-          SegmentReader::CreateFromSharedBuffer(std::move(data_))));
+          &DecodeAndResizeImage, std::move(task_runner),
+          SegmentReader::CreateFromSharedBuffer(std::move(data_)),
+          resize_dimensions_ ? *resize_dimensions_ : gfx::Size(),
+          CrossThreadBindOnce(&ThreadedIconLoader::OnBackgroundTaskComplete,
+                              WrapCrossThreadWeakPersistent(this))));
 }
 
-void ThreadedIconLoader::DecodeAndResizeImageOnBackgroundThread(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    scoped_refptr<SegmentReader> data) {
-  DCHECK(task_runner);
-  DCHECK(data);
-
-  auto notify_complete = [&](double refactor_scale) {
-    PostCrossThreadTask(
-        *task_runner, FROM_HERE,
-        CrossThreadBindOnce(&ThreadedIconLoader::OnBackgroundTaskComplete,
-                            WrapCrossThreadPersistent(this), refactor_scale));
-  };
-
-  std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
-      std::move(data), /* data_complete= */ true,
-      ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::TransformToSRGB());
-
-  if (!decoder) {
-    notify_complete(-1.0);
-    return;
-  }
-
-  ImageFrame* image_frame = decoder->DecodeFrameBufferAtIndex(0);
-
-  if (!image_frame) {
-    notify_complete(-1.0);
-    return;
-  }
-
-  decoded_icon_ = image_frame->Bitmap();
-  if (!resize_dimensions_ || resize_dimensions_->IsEmpty()) {
-    notify_complete(1.0);
-    return;
-  }
-
-  // If the icon is larger than |resize_dimensions_| permits, we need to resize
-  // it as well. This can be done synchronously given that we're on a
-  // background thread already.
-  double scale = std::min(
-      static_cast<double>(resize_dimensions_->width()) / decoded_icon_.width(),
-      static_cast<double>(resize_dimensions_->height()) /
-          decoded_icon_.height());
-
-  if (scale >= 1.0) {
-    notify_complete(1.0);
-    return;
-  }
-
-  int resized_width =
-      base::clamp(static_cast<int>(scale * decoded_icon_.width()), 1,
-                  resize_dimensions_->width());
-  int resized_height =
-      base::clamp(static_cast<int>(scale * decoded_icon_.height()), 1,
-                  resize_dimensions_->height());
-
-  // Use the RESIZE_GOOD quality allowing the implementation to pick an
-  // appropriate method for the resize. Can be increased to RESIZE_BETTER
-  // or RESIZE_BEST if the quality looks poor.
-  SkBitmap resized_icon = skia::ImageOperations::Resize(
-      decoded_icon_, skia::ImageOperations::RESIZE_GOOD, resized_width,
-      resized_height);
-
-  if (resized_icon.isNull()) {
-    notify_complete(1.0);
-    return;
-  }
-
-  decoded_icon_ = std::move(resized_icon);
-  notify_complete(scale);
-}
-
-void ThreadedIconLoader::OnBackgroundTaskComplete(double resize_scale) {
+void ThreadedIconLoader::OnBackgroundTaskComplete(SkBitmap icon,
+                                                  double resize_scale) {
   if (stopped_)
     return;
-  std::move(icon_callback_).Run(std::move(decoded_icon_), resize_scale);
+  std::move(icon_callback_).Run(std::move(icon), resize_scale);
 }
 
 void ThreadedIconLoader::DidFail(uint64_t, const ResourceError& error) {

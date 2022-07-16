@@ -11,13 +11,17 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace tracing {
 namespace mojom {
@@ -90,6 +94,10 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
 
   CONTENT_EXPORT static BackgroundTracingManagerImpl* GetInstance();
 
+  BackgroundTracingManagerImpl(const BackgroundTracingManagerImpl&) = delete;
+  BackgroundTracingManagerImpl& operator=(const BackgroundTracingManagerImpl&) =
+      delete;
+
   // Callable from any thread.
   static void ActivateForProcess(int child_process_id,
                                  mojom::ChildProcess* child_process);
@@ -99,8 +107,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   bool SetActiveScenarioWithReceiveCallback(
       std::unique_ptr<BackgroundTracingConfig>,
       ReceiveCallback receive_callback,
-      DataFiltering data_filtering,
-      bool local_output = false) override;
+      DataFiltering data_filtering) override;
   void AbortScenario();
   bool HasActiveScenario() override;
 
@@ -158,7 +165,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   ~BackgroundTracingManagerImpl() override;
 
   bool IsSupportedConfig(BackgroundTracingConfigImpl* config);
-  std::unique_ptr<base::DictionaryValue> GenerateMetadataDict();
+  absl::optional<base::Value> GenerateMetadataDict();
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata,
       bool privacy_filtering_enabled);
@@ -194,8 +201,6 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
 
   // Callback to override the background tracing config for testing.
   ConfigTextFilterForTesting config_text_filter_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTracingManagerImpl);
 };
 
 }  // namespace content

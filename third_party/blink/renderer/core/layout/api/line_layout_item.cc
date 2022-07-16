@@ -12,7 +12,8 @@
 namespace blink {
 
 Node* LineLayoutItem::GetNodeForOwnerNodeId() const {
-  auto* layout_text_fragment = DynamicTo<LayoutTextFragment>(layout_object_);
+  auto* layout_text_fragment =
+      DynamicTo<LayoutTextFragment>(layout_object_.Get());
   if (layout_text_fragment)
     return layout_text_fragment->AssociatedTextNode();
   return layout_object_->GetNode();
@@ -27,7 +28,7 @@ const ComputedStyle& LineLayoutItem::StyleRef(bool first_line) const {
 }
 
 bool LineLayoutItem::IsEmptyText() const {
-  return IsText() && To<LayoutText>(layout_object_)->GetText().IsEmpty();
+  return IsText() && To<LayoutText>(layout_object_.Get())->GetText().IsEmpty();
 }
 
 int LineLayoutItem::CaretMaxOffset() const {

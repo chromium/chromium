@@ -6,9 +6,8 @@
 #define CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_AUTH_PAGE_WAITER_H_
 
 #include <string>
-#include "base/macros.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 // Utility class for tests that allows waiting for different page events on
@@ -22,6 +21,9 @@ class OobeAuthPageWaiter {
   // Gaia Login and Enrollment screens use different authenticators.
   // `auth_page_type` specifies which authenticator to wait for.
   explicit OobeAuthPageWaiter(AuthPageType auth_page_type);
+
+  OobeAuthPageWaiter& operator=(const OobeAuthPageWaiter&) = delete;
+
   ~OobeAuthPageWaiter();
 
   // Waits for the "ready" event be triggered by the page authenticator.
@@ -34,8 +36,6 @@ class OobeAuthPageWaiter {
   const char* GetAuthenticator();
 
   const AuthPageType auth_page_type_;
-
-  DISALLOW_ASSIGN(OobeAuthPageWaiter);
 };
 
 // Helper that creates an OobeAuthPageWaiter that listens for Gaia page JS
@@ -47,6 +47,6 @@ OobeAuthPageWaiter OobeGaiaPageWaiter();
 OobeAuthPageWaiter OobeEnrollmentPageWaiter();
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_AUTH_PAGE_WAITER_H_

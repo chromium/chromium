@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-      <include name="IDR_EMOJI_PICKER_EMOJI_13_1_ORDERING_JSON" compress="gzip" file="${root_gen_dir}/chrome/browser/resources/chromeos/emoji_picker/emoji_13_1_ordering.json" resource_path="emoji_13_1_ordering.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_EMOJI_14_0_ORDERING_JSON" compress="gzip" file="${root_gen_dir}/chrome/browser/resources/chromeos/emoji_picker/emoji_14_0_ordering.json" resource_path="emoji_14_0_ordering.json" use_base_dir="false" type="chrome_html" />
       <include name="IDR_EMOJI_PICKER_EMOJI_TEST_ORDERING_JSON" compress="gzip" file="${root_gen_dir}/chrome/browser/resources/chromeos/emoji_picker/emoji_test_ordering.json" resource_path="emoji_test_ordering.json" use_base_dir="false" type="chrome_html" />
 </grit-part>

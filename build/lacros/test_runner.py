@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -39,9 +39,15 @@
 
   The above command starts ash-chrome with xvfb instead of an X11 window, and
   it's useful when running tests without a display attached, such as sshing.
+
+  For version skew testing when passing --ash-chrome-path-override, the runner
+  will try to find the ash major version and Lacros major version. If ash is
+  newer(major version larger), the runner will not run any tests and just
+  returns success.
 """
 
 import argparse
+import json
 import os
 import logging
 import re
@@ -71,7 +77,8 @@ _PREBUILT_ASH_CHROME_DIR = os.path.join(os.path.dirname(__file__),
                                         'prebuilt_ash_chrome')
 
 # Number of seconds to wait for ash-chrome to start.
-ASH_CHROME_TIMEOUT_SECONDS = 10
+ASH_CHROME_TIMEOUT_SECONDS = (
+    300 if os.environ.get('ASH_WRAPPER', None) else 10)
 
 # List of targets that require ash-chrome as a Wayland server in order to run.
 _TARGETS_REQUIRE_ASH_CHROME = [
@@ -228,7 +235,7 @@ def _GetLatestVersionOfAshChrome():
 
 
 def _WaitForAshChromeToStart(tmp_xdg_dir, lacros_mojo_socket_file,
-                             enable_mojo_crosapi):
+                             enable_mojo_crosapi, ash_ready_file):
   """Waits for Ash-Chrome to be up and running and returns a boolean indicator.
 
   Determine whether ash-chrome is up and running by checking whether two files
@@ -242,27 +249,105 @@ def _WaitForAshChromeToStart(tmp_xdg_dir, lacros_mojo_socket_file,
     lacros_mojo_socket_file (str): Path to the lacros mojo socket file.
     enable_mojo_crosapi (bool): Whether to bootstrap the crosapi mojo interface
         between ash and the lacros test binary.
+    ash_ready_file (str): Path to a non-existing file. After ash is ready for
+        testing, the file will be created.
 
   Returns:
     A boolean indicating whether Ash-chrome is up and running.
   """
 
   def IsAshChromeReady(tmp_xdg_dir, lacros_mojo_socket_file,
-                       enable_mojo_crosapi):
-    return (len(os.listdir(tmp_xdg_dir)) >= 2
-            and (not enable_mojo_crosapi
-                 or os.path.exists(lacros_mojo_socket_file)))
+                       enable_mojo_crosapi, ash_ready_file):
+    # There should be 2 wayland files.
+    if len(os.listdir(tmp_xdg_dir)) < 2:
+      return False
+    if enable_mojo_crosapi and not os.path.exists(lacros_mojo_socket_file):
+      return False
+    return os.path.exists(ash_ready_file)
 
   time_counter = 0
   while not IsAshChromeReady(tmp_xdg_dir, lacros_mojo_socket_file,
-                             enable_mojo_crosapi):
+                             enable_mojo_crosapi, ash_ready_file):
     time.sleep(0.5)
     time_counter += 0.5
     if time_counter > ASH_CHROME_TIMEOUT_SECONDS:
       break
 
   return IsAshChromeReady(tmp_xdg_dir, lacros_mojo_socket_file,
-                          enable_mojo_crosapi)
+                          enable_mojo_crosapi, ash_ready_file)
+
+
+def _ExtractAshMajorVersion(file_path):
+  """Extract major version from file_path.
+
+  File path like this:
+  ../../lacros_version_skew_tests_v94.0.4588.0/test_ash_chrome
+
+  Returns:
+    int representing the major version. Or 0 if it can't extract
+        major version.
+  """
+  m = re.search(
+      'lacros_version_skew_tests_v(?P<version>[0-9]+).[0-9]+.[0-9]+.[0-9]+/',
+      file_path)
+  if (m and 'version' in m.groupdict().keys()):
+    return int(m.group('version'))
+  logging.warning('Can not find the ash version in %s.' % file_path)
+  # Returns ash major version as 0, so we can still run tests.
+  # This is likely happen because user is running in local environments.
+  return 0
+
+
+def _FindLacrosMajorVersionFromMetadata():
+  # This handles the logic on bots. When running on bots,
+  # we don't copy source files to test machines. So we build a
+  # metadata.json file which contains version information.
+  if not os.path.exists('metadata.json'):
+    logging.error('Can not determine current version.')
+    # Returns 0 so it can't run any tests.
+    return 0
+  version = ''
+  with open('metadata.json', 'r') as file:
+    content = json.load(file)
+    version = content['content']['version']
+  return int(version[:version.find('.')])
+
+
+def _FindLacrosMajorVersion():
+  """Returns the major version in the current checkout.
+
+  It would try to read src/chrome/VERSION. If it's not available,
+  then try to read metadata.json.
+
+  Returns:
+    int representing the major version. Or 0 if it fails to
+    determine the version.
+  """
+  version_file = os.path.abspath(
+      os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                   '../../chrome/VERSION'))
+  # This is mostly happens for local development where
+  # src/chrome/VERSION exists.
+  if os.path.exists(version_file):
+    lines = open(version_file, 'r').readlines()
+    return int(lines[0][lines[0].find('=') + 1:-1])
+  return _FindLacrosMajorVersionFromMetadata()
+
+
+def _ParseSummaryOutput(forward_args):
+  """Find the summary output file path.
+
+  Args:
+    forward_args (list): Args to be forwarded to the test command.
+
+  Returns:
+    None if not found, or str representing the output file path.
+  """
+  logging.warning(forward_args)
+  for arg in forward_args:
+    if arg.startswith('--test-launcher-summary-output='):
+      return arg[len('--test-launcher-summary-output='):]
+  return None
 
 
 def _RunTestWithAshChrome(args, forward_args):
@@ -270,10 +355,39 @@ def _RunTestWithAshChrome(args, forward_args):
 
   Args:
     args (dict): Args for this script.
-    forward_args (dict): Args to be forwarded to the test command.
+    forward_args (list): Args to be forwarded to the test command.
   """
   if args.ash_chrome_path_override:
     ash_chrome_file = args.ash_chrome_path_override
+    ash_major_version = _ExtractAshMajorVersion(ash_chrome_file)
+    lacros_major_version = _FindLacrosMajorVersion()
+    if ash_major_version > lacros_major_version:
+      logging.warning('''Not running any tests, because we do not \
+support version skew testing for Lacros M%s against ash M%s''' %
+                      (lacros_major_version, ash_major_version))
+      # Create an empty output.json file so result adapter can read
+      # the file. Or else result adapter will report no file found
+      # and result infra failure.
+      output_json = _ParseSummaryOutput(forward_args)
+      if output_json:
+        with open(output_json, 'w') as f:
+          f.write("""{"all_tests":[],"disabled_tests":[],"global_tags":[],
+"per_iteration_data":[],"test_locations":{}}""")
+      # Although we don't run any tests, this is considered as success.
+      return 0
+    if not os.path.exists(ash_chrome_file):
+      logging.error("""Can not find ash chrome at %s. Did you download \
+the ash from CIPD? If you don't plan to build your own ash, you need \
+to download first. Example commandlines:
+ $ cipd auth-login
+ $ echo "chromium/testing/linux-ash-chromium/x86_64/ash.zip \
+version:92.0.4515.130" > /tmp/ensure-file.txt
+ $ cipd ensure -ensure-file /tmp/ensure-file.txt \
+-root lacros_version_skew_tests_v92.0.4515.130
+ Then you can use --ash-chrome-path-override=\
+lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
+""" % ash_chrome_file)
+      return 1
   elif args.ash_chrome_path:
     ash_chrome_file = args.ash_chrome_path
   else:
@@ -294,6 +408,7 @@ def _RunTestWithAshChrome(args, forward_args):
     lacros_mojo_socket_file = '%s/lacros.sock' % tmp_ash_data_dir_name
     lacros_mojo_socket_arg = ('--lacros-mojo-socket-for-testing=%s' %
                               lacros_mojo_socket_file)
+    ash_ready_file = '%s/ash_ready.txt' % tmp_ash_data_dir_name
     enable_mojo_crosapi = any(t == os.path.basename(args.command)
                               for t in _TARGETS_REQUIRE_MOJO_CROSAPI)
 
@@ -305,9 +420,19 @@ def _RunTestWithAshChrome(args, forward_args):
         '--user-data-dir=%s' % tmp_ash_data_dir_name,
         '--enable-wayland-server',
         '--no-startup-window',
+        '--ash-ready-file-path=%s' % ash_ready_file,
     ]
     if enable_mojo_crosapi:
       ash_cmd.append(lacros_mojo_socket_arg)
+
+    # Users can specify a wrapper for the ash binary to do things like
+    # attaching debuggers. For example, this will open a new terminal window
+    # and run GDB.
+    #   $ export ASH_WRAPPER="gnome-terminal -- gdb --ex=r --args"
+    ash_wrapper = os.environ.get('ASH_WRAPPER', None)
+    if ash_wrapper:
+      logging.info('Running ash with "ASH_WRAPPER": %s', ash_wrapper)
+      ash_cmd = list(ash_wrapper.split()) + ash_cmd
 
     ash_process_has_started = False
     total_tries = 3
@@ -316,12 +441,14 @@ def _RunTestWithAshChrome(args, forward_args):
       num_tries += 1
       ash_process = subprocess.Popen(ash_cmd, env=ash_env)
       ash_process_has_started = _WaitForAshChromeToStart(
-          tmp_xdg_dir_name, lacros_mojo_socket_file, enable_mojo_crosapi)
+          tmp_xdg_dir_name, lacros_mojo_socket_file, enable_mojo_crosapi,
+          ash_ready_file)
       if ash_process_has_started:
         break
 
       logging.warning('Starting ash-chrome timed out after %ds',
                       ASH_CHROME_TIMEOUT_SECONDS)
+      logging.warning('Are you using test_ash_chrome?')
       logging.warning('Printing the output of "ps aux" for debugging:')
       subprocess.call(['ps', 'aux'])
       if ash_process and ash_process.poll() is None:
@@ -355,7 +482,7 @@ def _RunTestDirectly(args, forward_args):
   """Runs tests by invoking the test command directly.
 
   args (dict): Args for this script.
-  forward_args (dict): Args to be forwarded to the test command.
+  forward_args (list): Args to be forwarded to the test command.
   """
   try:
     p = None
@@ -388,7 +515,7 @@ def _RunTest(args, forward_args):
   """Runs tests with given args.
 
   args (dict): Args for this script.
-  forward_args (dict): Args to be forwarded to the test command.
+  forward_args (list): Args to be forwarded to the test command.
 
   Raises:
       RuntimeError: If the given test binary doesn't exist or the test runner

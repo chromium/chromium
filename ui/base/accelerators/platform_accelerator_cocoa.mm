@@ -24,6 +24,8 @@ void GetKeyEquivalentAndModifierMaskFromAccelerator(
     cocoa_modifiers |= NSEventModifierFlagOption;
   if (accelerator.IsCmdDown())
     cocoa_modifiers |= NSEventModifierFlagCommand;
+  if (accelerator.IsFunctionDown())
+    cocoa_modifiers |= NSEventModifierFlagFunction;
 
   unichar shifted_character;
   unichar character;

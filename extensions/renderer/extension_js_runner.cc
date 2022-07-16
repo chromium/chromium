@@ -9,6 +9,9 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_injection_callback.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-microtask-queue.h"
 
 namespace extensions {
 

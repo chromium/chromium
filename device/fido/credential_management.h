@@ -35,6 +35,7 @@ enum class CredentialManagementRequestKey : uint8_t {
 enum class CredentialManagementRequestParamKey : uint8_t {
   kRPIDHash = 0x01,
   kCredentialID = 0x02,
+  kUser = 0x03,
 };
 
 enum class CredentialManagementResponseKey : uint8_t {
@@ -57,6 +58,7 @@ enum class CredentialManagementSubCommand : uint8_t {
   kEnumerateCredentialsBegin = 0x04,
   kEnumerateCredentialsGetNextCredential = 0x05,
   kDeleteCredential = 0x06,
+  kUpdateUserInformation = 0x07,
 };
 
 // CredentialManagementPreviewRequestAdapter wraps any credential management
@@ -112,6 +114,11 @@ struct CredentialManagementRequest {
       Version version,
       const pin::TokenResponse& token,
       const PublicKeyCredentialDescriptor& credential_id);
+  static CredentialManagementRequest ForUpdateUserInformation(
+      Version version,
+      const pin::TokenResponse& token,
+      const PublicKeyCredentialDescriptor& credential_id,
+      const PublicKeyCredentialUserEntity& updated_user);
 
   CredentialManagementRequest(Version version,
                               CredentialManagementSubCommand subcommand,
@@ -216,6 +223,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AggregatedEnumerateCredentialsResponse {
 };
 
 using DeleteCredentialResponse = pin::EmptyResponse;
+using UpdateUserInformationResponse = pin::EmptyResponse;
 
 std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
 AsCTAPRequestValuePair(const CredentialManagementRequest&);

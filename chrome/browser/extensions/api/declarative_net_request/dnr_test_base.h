@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,15 +22,15 @@ class DNRTestBase : public ExtensionServiceTestBase,
  public:
   DNRTestBase();
 
+  DNRTestBase(const DNRTestBase&) = delete;
+  DNRTestBase& operator=(const DNRTestBase&) = delete;
+
   // ExtensionServiceTestBase override.
   void SetUp() override;
 
  protected:
   // Returns an extension loader for the current ExtensionLoadType.
   std::unique_ptr<ChromeTestExtensionLoader> CreateExtensionLoader();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DNRTestBase);
 };
 
 }  // namespace declarative_net_request

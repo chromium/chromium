@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/notifications/idle_app_name_notification_view.h"
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -16,14 +15,23 @@
 #include "extensions/common/manifest_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace ash {
+
 namespace {
+
 const char kTestAppName[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+
 }  // namespace
 
 class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
  public:
   IdleAppNameNotificationViewTest()
       : BrowserWithTestWindowTest(Browser::TYPE_NORMAL) {}
+
+  IdleAppNameNotificationViewTest(const IdleAppNameNotificationViewTest&) =
+      delete;
+  IdleAppNameNotificationViewTest& operator=(
+      const IdleAppNameNotificationViewTest&) = delete;
 
   ~IdleAppNameNotificationViewTest() override {}
 
@@ -72,23 +80,20 @@ class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
   // Extensions to test with.
   scoped_refptr<extensions::Extension> correct_extension_;
   scoped_refptr<extensions::Extension> incorrect_extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleAppNameNotificationViewTest);
 };
 
 // Check that creating and immediate destroying does not crash (and closes the
 // message).
 TEST_F(IdleAppNameNotificationViewTest, CheckTooEarlyDestruction) {
   // Create a message which is visible for 10ms and fades in/out for 5ms.
-  std::unique_ptr<ash::IdleAppNameNotificationView> message(
-      new ash::IdleAppNameNotificationView(10, 5, correct_extension()));
+  std::make_unique<IdleAppNameNotificationView>(10, 5, correct_extension());
 }
 
 // Check that the message gets created and it destroys itself after time.
 TEST_F(IdleAppNameNotificationViewTest, CheckSelfDestruction) {
   // Create a message which is visible for 10ms and fades in/out for 5ms.
-  std::unique_ptr<ash::IdleAppNameNotificationView> message(
-      new ash::IdleAppNameNotificationView(10, 5, correct_extension()));
+  auto message =
+      std::make_unique<IdleAppNameNotificationView>(10, 5, correct_extension());
   EXPECT_TRUE(message->IsVisible());
 
   // Wait now for some time and see that it closes itself again.
@@ -102,8 +107,8 @@ TEST_F(IdleAppNameNotificationViewTest, CheckSelfDestruction) {
 // Check that the shown text for a correct application is correct.
 TEST_F(IdleAppNameNotificationViewTest, CheckCorrectApp) {
   // Create a message which is visible for 10ms and fades in/out for 5ms.
-  std::unique_ptr<ash::IdleAppNameNotificationView> message(
-      new ash::IdleAppNameNotificationView(10, 5, correct_extension()));
+  auto message =
+      std::make_unique<IdleAppNameNotificationView>(10, 5, correct_extension());
   std::u16string text = message->GetShownTextForTest();
   // Check that the string is the application name.
   std::u16string name = u"Test";
@@ -113,10 +118,11 @@ TEST_F(IdleAppNameNotificationViewTest, CheckCorrectApp) {
 // Check that an invalid app gets shown accordingly.
 TEST_F(IdleAppNameNotificationViewTest, CheckInvalidApp) {
   // Create a message which is visible for 10ms and fades in/out for 5ms.
-  std::unique_ptr<ash::IdleAppNameNotificationView> message(
-      new ash::IdleAppNameNotificationView(10, 5, NULL));
+  auto message = std::make_unique<IdleAppNameNotificationView>(10, 5, nullptr);
   std::u16string text = message->GetShownTextForTest();
   std::u16string error = l10n_util::GetStringUTF16(
       IDS_IDLE_APP_NAME_UNKNOWN_APPLICATION_NOTIFICATION);
   EXPECT_EQ(error, text);
 }
+
+}  // namespace ash

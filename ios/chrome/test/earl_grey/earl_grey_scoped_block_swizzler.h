@@ -16,6 +16,10 @@ class EarlGreyScopedBlockSwizzler {
   // EarlGreyScopedBlockSwizzlerAppInterface interface.
   EarlGreyScopedBlockSwizzler(NSString* target, NSString* selector, id block);
 
+  EarlGreyScopedBlockSwizzler(const EarlGreyScopedBlockSwizzler&) = delete;
+  EarlGreyScopedBlockSwizzler& operator=(const EarlGreyScopedBlockSwizzler&) =
+      delete;
+
   // Destroys the ScopedBlockSwizzler object via the
   // EarlGreyScopedBlockSwizzlerAppInterface interface.
   virtual ~EarlGreyScopedBlockSwizzler();
@@ -23,8 +27,6 @@ class EarlGreyScopedBlockSwizzler {
  private:
   // id used to track creation and destruction of swizzled block.
   int unique_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(EarlGreyScopedBlockSwizzler);
 };
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_EARL_GREY_SCOPED_BLOCK_SWIZZLER_H_

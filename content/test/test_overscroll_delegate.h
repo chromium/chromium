@@ -17,6 +17,10 @@ namespace content {
 class TestOverscrollDelegate : public OverscrollControllerDelegate {
  public:
   explicit TestOverscrollDelegate(const gfx::Size& display_size);
+
+  TestOverscrollDelegate(const TestOverscrollDelegate&) = delete;
+  TestOverscrollDelegate& operator=(const TestOverscrollDelegate&) = delete;
+
   ~TestOverscrollDelegate() override;
 
   void set_delta_cap(float delta_cap) { delta_cap_ = delta_cap; }
@@ -51,8 +55,6 @@ class TestOverscrollDelegate : public OverscrollControllerDelegate {
 
   float delta_x_;
   float delta_y_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverscrollDelegate);
 };
 
 }  // namespace content

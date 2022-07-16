@@ -11,8 +11,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -40,6 +40,10 @@ namespace {
 class SessionServiceTest : public PlatformTest {
  public:
   SessionServiceTest() = default;
+
+  SessionServiceTest(const SessionServiceTest&) = delete;
+  SessionServiceTest& operator=(const SessionServiceTest&) = delete;
+
   ~SessionServiceTest() override = default;
 
  protected:
@@ -103,8 +107,6 @@ class SessionServiceTest : public PlatformTest {
   SessionServiceIOS* session_service_ = nil;
   FakeWebStateListDelegate web_state_list_delegate_;
   base::FilePath directory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionServiceTest);
 };
 
 TEST_F(SessionServiceTest, SessionPathForDirectory) {
@@ -185,7 +187,7 @@ TEST_F(SessionServiceTest, SaveExpiredSession) {
   factory = nil;
   // Make sure that the delay for saving a session has passed (at least 2.5
   // seconds)
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(2.5));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2.5));
   base::RunLoop().RunUntilIdle();
 
   SessionIOS* session =

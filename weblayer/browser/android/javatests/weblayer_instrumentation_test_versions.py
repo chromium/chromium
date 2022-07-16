@@ -59,6 +59,9 @@ def tag_matches(tag, impl_version='trunk', client_version='trunk'):
   Raises:
     AssertionError if the tag is invalid.
   """
+  # 'All' is special cased to match anything.
+  if tag == 'all':
+    return True
   # Extract the three components from the tag.
   match = re.match(r'(client|impl)_([gl]te)_([0-9]+)', tag)
   assert match is not None, (

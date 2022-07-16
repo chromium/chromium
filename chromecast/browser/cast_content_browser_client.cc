@@ -51,8 +51,8 @@
 #include "chromecast/browser/service_connector.h"
 #include "chromecast/browser/service_manager_connection.h"
 #include "chromecast/browser/service_manager_context.h"
-#include "chromecast/common/cast_content_client.h"
 #include "chromecast/common/global_descriptors.h"
+#include "chromecast/common/user_agent.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
 #include "chromecast/media/cdm/cast_cdm_factory.h"
 #include "chromecast/media/cdm/cast_cdm_origin_provider.h"
@@ -84,7 +84,9 @@
 #include "media/gpu/buildflags.h"
 #include "media/mojo/services/mojo_renderer_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "net/ssl/ssl_private_key.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -133,7 +135,7 @@
 #endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromecast/media/service/video_geometry_setter_service.h"
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
@@ -160,9 +162,6 @@ CastContentBrowserClient::CastContentBrowserClient(
       cast_feature_list_creator_(cast_feature_list_creator) {
   cast_feature_list_creator_->SetExtraEnableFeatures({
     ::media::kInternalMediaSession, features::kNetworkServiceInProcess,
-        // TODO(b/161486194): Can be removed when it's enabled by default in
-        // Chrome.
-        features::kWebAssemblySimd,
 #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_VIDEO_CAPTURE_SERVICE)
         features::kMojoVideoCapture,
 #endif
@@ -195,6 +194,7 @@ void CastContentBrowserClient::InitializeExternalConnector() {
       std::make_unique<external_mojo::BrokerService>(service_manager_connector);
   connector_ = external_service_support::ExternalConnector::Create(
       broker_service_->CreateConnector());
+  media_connector_ = connector_->Clone();
 }
 
 std::unique_ptr<ServiceConnector>
@@ -357,10 +357,10 @@ std::vector<std::string> CastContentBrowserClient::GetStartupServices() {
 
 std::unique_ptr<content::BrowserMainParts>
 CastContentBrowserClient::CreateBrowserMainParts(
-    const content::MainFunctionParams& parameters) {
+    content::MainFunctionParams parameters) {
   DCHECK(!cast_browser_main_parts_);
 
-  auto main_parts = CastBrowserMainParts::Create(parameters, this);
+  auto main_parts = CastBrowserMainParts::Create(std::move(parameters), this);
 
   cast_browser_main_parts_ = main_parts.get();
   CastBrowserProcess::GetInstance()->SetCastContentBrowserClient(this);
@@ -956,7 +956,7 @@ bool CastContentBrowserClient::DoesSiteRequireDedicatedProcess(
 }
 
 std::string CastContentBrowserClient::GetUserAgent() {
-  return chromecast::shell::GetUserAgent();
+  return chromecast::GetUserAgent();
 }
 
 void CastContentBrowserClient::CreateGeneralAudienceBrowsingService() {

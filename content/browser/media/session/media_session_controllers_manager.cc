@@ -104,6 +104,16 @@ void MediaSessionControllersManager::WebContentsMutedStateChanged(bool muted) {
     entry.second->WebContentsMutedStateChanged(muted);
 }
 
+void MediaSessionControllersManager::OnMediaMutedStatusChanged(
+    const MediaPlayerId& id,
+    bool mute) {
+  if (!IsMediaSessionEnabled())
+    return;
+
+  MediaSessionController* const controller = FindOrCreateController(id);
+  controller->OnMediaMutedStatusChanged(mute);
+}
+
 void MediaSessionControllersManager::OnPictureInPictureAvailabilityChanged(
     const MediaPlayerId& id,
     bool available) {

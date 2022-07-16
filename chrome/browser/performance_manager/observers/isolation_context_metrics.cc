@@ -60,11 +60,15 @@ struct IsolationContextMetricsProcessDataImpl
           IsolationContextMetricsProcessDataImpl> {
   explicit IsolationContextMetricsProcessDataImpl(
       const ProcessNode* process_node) {}
+
+  IsolationContextMetricsProcessDataImpl(
+      const IsolationContextMetricsProcessDataImpl&) = delete;
+  IsolationContextMetricsProcessDataImpl& operator=(
+      const IsolationContextMetricsProcessDataImpl&) = delete;
+
   ~IsolationContextMetricsProcessDataImpl() override = default;
 
   IsolationContextMetrics::ProcessData process_data;
-
-  DISALLOW_COPY_AND_ASSIGN(IsolationContextMetricsProcessDataImpl);
 };
 
 // static

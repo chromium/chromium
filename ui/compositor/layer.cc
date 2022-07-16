@@ -27,6 +27,7 @@
 #include "cc/trees/layer_tree_settings.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_delegate.h"
@@ -40,8 +41,8 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/interpolated_transform.h"
-#include "ui/gfx/transform.h"
 
 namespace ui {
 namespace {
@@ -1275,8 +1276,8 @@ void Layer::OnDeviceScaleFactorChanged(float device_scale_factor) {
 }
 
 void Layer::SetDidScrollCallback(
-    base::RepeatingCallback<void(const gfx::ScrollOffset&,
-                                 const cc::ElementId&)> callback) {
+    base::RepeatingCallback<void(const gfx::Vector2dF&, const cc::ElementId&)>
+        callback) {
   cc_layer_->SetDidScrollCallback(std::move(callback));
 }
 
@@ -1285,16 +1286,16 @@ void Layer::SetScrollable(const gfx::Size& container_bounds) {
   cc_layer_->SetUserScrollable(true, true);
 }
 
-gfx::ScrollOffset Layer::CurrentScrollOffset() const {
+gfx::Vector2dF Layer::CurrentScrollOffset() const {
   const Compositor* compositor = GetCompositor();
-  gfx::ScrollOffset offset;
+  gfx::Vector2dF offset;
   if (compositor &&
       compositor->GetScrollOffsetForLayer(cc_layer_->element_id(), &offset))
     return offset;
   return cc_layer_->scroll_offset();
 }
 
-void Layer::SetScrollOffset(const gfx::ScrollOffset& offset) {
+void Layer::SetScrollOffset(const gfx::Vector2dF& offset) {
   Compositor* compositor = GetCompositor();
   bool scrolled_on_impl_side =
       compositor && compositor->ScrollLayerTo(cc_layer_->element_id(), offset);

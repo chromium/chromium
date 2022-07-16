@@ -5,17 +5,15 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//printing/buildflags/buildflags.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
 
 assert(enable_print_preview, "enable_print_preview check failed")
 
 preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 preprocess_pdf_manifest = "preprocessed_pdf_manifest.json"
 preprocess_pdf_gen_manifest = "preprocessed_pdf_gen_manifest.json"
 
@@ -24,14 +22,13 @@ if (optimize_webui) {
 
   optimize_webui("build") {
     host = "print"
-    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
     js_out_files = [ "print_preview.rollup.js" ]
     js_module_in_files = [ "print_preview.js" ]
     out_manifest = "$target_gen_dir/$build_manifest"
 
     deps = [
-      ":preprocess",
-      ":preprocess_generated",
+      ":build_ts",
       "../../../../ui/webui/resources:preprocess",
     ]
     excludes = [
@@ -64,14 +61,8 @@ generate_grd("build_grd") {
     resource_path_rewrites += [ "print_preview.rollup.js|print_preview.js" ]
     manifest_files += [ "$target_gen_dir/$build_manifest" ]
   } else {
-    deps += [
-      ":preprocess",
-      ":preprocess_generated",
-    ]
-    manifest_files += [
-      "$target_gen_dir/$preprocess_manifest",
-      "$target_gen_dir/$preprocess_gen_manifest",
-    ]
+    deps += [ ":build_ts" ]
+    manifest_files += [ "$target_gen_dir/tsconfig.manifest" ]
   }
   grd_prefix = "print_preview"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
@@ -80,44 +71,42 @@ generate_grd("build_grd") {
 preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
-    "cloud_print_interface.js",
-    "cloud_print_interface_impl.js",
-    "dark_mode_behavior.js",
-    "metrics.js",
-    "native_layer.js",
-    "print_preview.js",
-    "print_preview_utils.js",
-    "data/cdd.js",
-    "data/cloud_parsers.js",
-    "data/coordinate2d.js",
-    "data/destination.js",
-    "data/destination_match.js",
-    "data/destination_policies.js",
-    "data/destination_store.js",
-    "data/document_info.js",
-    "data/local_parsers.js",
-    "data/margins.js",
-    "data/measurement_system.js",
-    "data/model.js",
-    "data/printable_area.js",
-    "data/scaling.js",
-    "data/size.js",
-    "data/state.js",
-    "data/user_manager.js",
-    "ui/highlight_utils.js",
-    "ui/input_behavior.js",
-    "ui/plugin_proxy.js",
-    "ui/select_behavior.js",
-    "ui/settings_behavior.js",
+    "cloud_print_interface.ts",
+    "cloud_print_interface_impl.ts",
+    "dark_mode_mixin.ts",
+    "metrics.ts",
+    "native_layer.ts",
+    "print_preview.ts",
+    "print_preview_utils.ts",
+    "data/cdd.ts",
+    "data/cloud_parsers.ts",
+    "data/coordinate2d.ts",
+    "data/destination.ts",
+    "data/destination_match.ts",
+    "data/destination_store.ts",
+    "data/document_info.ts",
+    "data/local_parsers.ts",
+    "data/margins.ts",
+    "data/measurement_system.ts",
+    "data/model.ts",
+    "data/printable_area.ts",
+    "data/scaling.ts",
+    "data/size.ts",
+    "data/state.ts",
+    "data/user_manager.ts",
+    "ui/highlight_utils.ts",
+    "ui/input_mixin.ts",
+    "ui/plugin_proxy.ts",
+    "ui/select_mixin.ts",
+    "ui/settings_mixin.ts",
   ]
 
   if (is_chromeos) {
     in_files += [
-      "data/print_server_store.js",
-      "data/printer_status_cros.js",
-      "native_layer_cros.js",
+      "data/print_server_store.ts",
+      "data/printer_status_cros.ts",
+      "native_layer_cros.ts",
     ]
   }
 }
@@ -126,58 +115,57 @@ preprocess_if_expr("preprocess_generated") {
   deps = [ "ui:web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
-    "ui/advanced_options_settings.js",
-    "ui/advanced_settings_dialog.js",
-    "ui/advanced_settings_item.js",
-    "ui/app.js",
-    "ui/button_strip.js",
-    "ui/color_settings.js",
-    "ui/copies_settings.js",
-    "ui/destination_dialog_css.js",
-    "ui/destination_list.js",
-    "ui/destination_list_item.js",
-    "ui/destination_select_css.js",
-    "ui/destination_settings.js",
-    "ui/dpi_settings.js",
-    "ui/duplex_settings.js",
-    "ui/header.js",
-    "ui/icons.js",
-    "ui/layout_settings.js",
-    "ui/margin_control.js",
-    "ui/margin_control_container.js",
-    "ui/margins_settings.js",
-    "ui/media_size_settings.js",
-    "ui/more_settings.js",
-    "ui/number_settings_section.js",
-    "ui/other_options_settings.js",
-    "ui/pages_per_sheet_settings.js",
-    "ui/pages_settings.js",
-    "ui/preview_area.js",
-    "ui/print_preview_search_box.js",
-    "ui/print_preview_shared_css.js",
-    "ui/print_preview_vars_css.js",
-    "ui/scaling_settings.js",
-    "ui/settings_section.js",
-    "ui/settings_select.js",
-    "ui/sidebar.js",
-    "ui/throbber_css.js",
+    "ui/advanced_options_settings.ts",
+    "ui/advanced_settings_dialog.ts",
+    "ui/advanced_settings_item.ts",
+    "ui/app.ts",
+    "ui/button_strip.ts",
+    "ui/color_settings.ts",
+    "ui/copies_settings.ts",
+    "ui/destination_dialog_css.ts",
+    "ui/destination_list.ts",
+    "ui/destination_list_item.ts",
+    "ui/destination_select_css.ts",
+    "ui/destination_settings.ts",
+    "ui/dpi_settings.ts",
+    "ui/duplex_settings.ts",
+    "ui/header.ts",
+    "ui/icons.ts",
+    "ui/layout_settings.ts",
+    "ui/margin_control.ts",
+    "ui/margin_control_container.ts",
+    "ui/margins_settings.ts",
+    "ui/media_size_settings.ts",
+    "ui/more_settings.ts",
+    "ui/number_settings_section.ts",
+    "ui/other_options_settings.ts",
+    "ui/pages_per_sheet_settings.ts",
+    "ui/pages_settings.ts",
+    "ui/preview_area.ts",
+    "ui/print_preview_search_box.ts",
+    "ui/print_preview_shared_css.ts",
+    "ui/print_preview_vars_css.ts",
+    "ui/scaling_settings.ts",
+    "ui/settings_section.ts",
+    "ui/settings_select.ts",
+    "ui/sidebar.ts",
+    "ui/throbber_css.ts",
   ]
 
   if (is_chromeos) {
     in_files += [
-      "ui/destination_dropdown_cros.js",
-      "ui/destination_select_cros.js",
-      "ui/pin_settings.js",
-      "ui/provisional_destination_resolver.js",
-      "ui/destination_dialog_cros.js",
+      "ui/destination_dropdown_cros.ts",
+      "ui/destination_select_cros.ts",
+      "ui/pin_settings.ts",
+      "ui/provisional_destination_resolver.ts",
+      "ui/destination_dialog_cros.ts",
     ]
   } else {
     in_files += [
-      "ui/destination_select.js",
-      "ui/link_container.js",
-      "ui/destination_dialog.js",
+      "ui/destination_select.ts",
+      "ui/link_container.ts",
+      "ui/destination_dialog.ts",
     ]
   }
 }
@@ -193,6 +181,7 @@ preprocess_if_expr("preprocess_pdf") {
     "pdf/gesture_detector.js",
     "pdf/index.css",
     "pdf/index_pp.html",
+    "pdf/internal_plugin.js",
     "pdf/main.js",
     "pdf/metrics.js",
     "pdf/open_pdf_params_parser.js",
@@ -240,100 +229,115 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-group("closure_compile") {
-  deps = [
-    ":print_preview_module_resources",
-    "data:closure_compile_module",
-    "ui:closure_compile_module",
-  ]
+copy("copy_pdf_definitions") {
+  sources = [ "../pdf/pdf_scripting_api.d.ts" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/pdf/{{source_file_part}}" ]
 }
 
-js_type_check("print_preview_module_resources") {
-  is_polymer3 = true
-  deps = [
-    ":cloud_print_interface",
-    ":cloud_print_interface_impl",
-    ":dark_mode_behavior",
-    ":metrics",
-    ":native_layer",
-    ":native_layer_cros",
-    ":print_preview",
-    ":print_preview_utils",
-  ]
-}
-
-js_library("print_preview") {
-  deps = [
-    ":cloud_print_interface",
-    ":native_layer",
-    ":native_layer_cros",
-    "data:destination",
-    "data:destination_store",
-    "data:local_parsers",
-    "data:measurement_system",
-    "ui:app",
-    "ui:settings_select",
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "cloud_print_interface.ts",
+    "cloud_print_interface_impl.ts",
+    "dark_mode_mixin.ts",
+    "metrics.ts",
+    "native_layer.ts",
+    "print_preview.ts",
+    "print_preview_utils.ts",
+    "data/cdd.ts",
+    "data/cloud_parsers.ts",
+    "data/coordinate2d.ts",
+    "data/destination.ts",
+    "data/destination_match.ts",
+    "data/destination_store.ts",
+    "data/document_info.ts",
+    "data/local_parsers.ts",
+    "data/margins.ts",
+    "data/measurement_system.ts",
+    "data/model.ts",
+    "data/printable_area.ts",
+    "data/scaling.ts",
+    "data/size.ts",
+    "data/state.ts",
+    "data/user_manager.ts",
+    "ui/advanced_options_settings.ts",
+    "ui/advanced_settings_dialog.ts",
+    "ui/advanced_settings_item.ts",
+    "ui/app.ts",
+    "ui/button_strip.ts",
+    "ui/color_settings.ts",
+    "ui/copies_settings.ts",
+    "ui/destination_dialog_css.ts",
+    "ui/destination_list.ts",
+    "ui/destination_list_item.ts",
+    "ui/destination_select_css.ts",
+    "ui/destination_settings.ts",
+    "ui/dpi_settings.ts",
+    "ui/duplex_settings.ts",
+    "ui/header.ts",
+    "ui/highlight_utils.ts",
+    "ui/icons.ts",
+    "ui/input_mixin.ts",
+    "ui/layout_settings.ts",
+    "ui/margin_control.ts",
+    "ui/margin_control_container.ts",
+    "ui/margins_settings.ts",
+    "ui/media_size_settings.ts",
+    "ui/more_settings.ts",
+    "ui/number_settings_section.ts",
+    "ui/other_options_settings.ts",
+    "ui/pages_per_sheet_settings.ts",
+    "ui/pages_settings.ts",
+    "ui/plugin_proxy.ts",
+    "ui/preview_area.ts",
+    "ui/print_preview_search_box.ts",
+    "ui/print_preview_shared_css.ts",
+    "ui/print_preview_vars_css.ts",
+    "ui/scaling_settings.ts",
+    "ui/select_mixin.ts",
+    "ui/settings_mixin.ts",
+    "ui/settings_section.ts",
+    "ui/settings_select.ts",
+    "ui/sidebar.ts",
+    "ui/throbber_css.ts",
   ]
 
   if (is_chromeos) {
-    deps += [ "data:print_server_store" ]
+    in_files += [
+      "data/print_server_store.ts",
+      "data/printer_status_cros.ts",
+      "native_layer_cros.ts",
+      "ui/destination_dialog_cros.ts",
+      "ui/destination_dropdown_cros.ts",
+      "ui/destination_select_cros.ts",
+      "ui/pin_settings.ts",
+      "ui/provisional_destination_resolver.ts",
+    ]
+  } else {
+    in_files += [
+      "ui/destination_dialog.ts",
+      "ui/destination_select.ts",
+      "ui/link_container.ts",
+    ]
   }
-}
 
-js_library("print_preview_utils") {
   deps = [
-    ":dark_mode_behavior",
-    "//third_party/polymer/v3_0/components-chromium/iron-iconset-svg:iron-iconset-svg",
-    "//ui/webui/resources/js:util.m",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
   ]
-}
 
-js_library("metrics") {
-  deps = [ ":native_layer" ]
-}
-
-js_library("cloud_print_interface") {
-  deps = [
-    ":metrics",
-    ":native_layer",
-    "data:destination",
-    "data:destination_match",
-    "//ui/webui/resources/js/cr:event_target.m",
+  definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "$target_gen_dir/$preprocess_folder/pdf/pdf_scripting_api.d.ts",
   ]
-}
 
-js_library("cloud_print_interface_impl") {
-  deps = [
-    ":cloud_print_interface",
-    ":native_layer_cros",
-    "data:cloud_parsers",
-    "data:destination",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+  extra_deps = [
+    ":copy_pdf_definitions",
+    ":preprocess",
+    ":preprocess_generated",
+    ":preprocess_pdf",
   ]
-}
-
-js_library("native_layer") {
-  deps = [
-    "data:cdd",
-    "data:destination",
-    "data:destination_match",
-    "data:measurement_system",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("native_layer_cros") {
-  deps = [
-    "data:destination_policies",
-    "data:printer_status_cros",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("dark_mode_behavior") {
-  deps = [ "//ui/webui/resources/js:assert.m" ]
 }

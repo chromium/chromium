@@ -45,6 +45,10 @@ class DrmCursorProxy {
 class DrmCursor : public CursorDelegateEvdev {
  public:
   explicit DrmCursor(DrmWindowHostManager* window_manager);
+
+  DrmCursor(const DrmCursor&) = delete;
+  DrmCursor& operator=(const DrmCursor&) = delete;
+
   ~DrmCursor() override;
 
   // Sets or the DrmProxy |proxy|. If |proxy| is set, the DrmCursor uses
@@ -119,8 +123,6 @@ class DrmCursor : public CursorDelegateEvdev {
   DrmWindowHostManager* const window_manager_;  // Not owned.
 
   std::unique_ptr<DrmCursorProxy> proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmCursor);
 };
 
 }  // namespace ui

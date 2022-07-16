@@ -18,27 +18,38 @@
 namespace media {
 
 namespace {
-std::vector<uint32_t> GetSpatialLayerFrameSize(
-    const DecoderBuffer& decoder_buffer) {
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+bool GetSpatialLayerFrameSize(const DecoderBuffer& decoder_buffer,
+                              std::vector<uint32_t>& frame_sizes) {
+  frame_sizes.clear();
+
   const uint32_t* cue_data =
       reinterpret_cast<const uint32_t*>(decoder_buffer.side_data());
-  if (!cue_data) {
-    return {};
+  if (!cue_data)
+    return true;
+
+// On windows, currently only d3d11 supports decoding VP9 kSVC stream, we
+// shouldn't combine the switch kD3D11Vp9kSVCHWDecoding to kVp9kSVCHWDecoding
+// due to we want keep returning false to MediaCapability.
+#if defined(OS_WIN)
+  if (!base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding)) {
+    DLOG(ERROR) << "Vp9 k-SVC hardware decoding is disabled";
+    return false;
   }
-  if (!base::FeatureList::IsEnabled(media::kVaapiVp9kSVCHWDecoding)) {
-    DLOG(ERROR) << "Vp9Parser doesn't support parsing SVC stream";
-    return {};
+#else
+  if (!base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding)) {
+    DLOG(ERROR) << "Vp9 k-SVC hardware decoding is disabled";
+    return false;
   }
+#endif
 
   size_t num_of_layers = decoder_buffer.side_data_size() / sizeof(uint32_t);
   if (num_of_layers > 3u) {
     DLOG(WARNING) << "The maximum number of spatial layers in VP9 is three";
-    return {};
+    return false;
   }
-  return std::vector<uint32_t>(cue_data, cue_data + num_of_layers);
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
-  return {};
+
+  frame_sizes = std::vector<uint32_t>(cue_data, cue_data + num_of_layers);
+  return true;
 }
 
 VideoCodecProfile VP9ProfileToVideoCodecProfile(uint8_t profile) {
@@ -103,13 +114,14 @@ void VP9Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
   DVLOG(4) << "New input stream id: " << id << " at: " << (void*)ptr
            << " size: " << size;
   stream_id_ = id;
-  if (decrypt_config) {
-    parser_.SetStream(ptr, size, GetSpatialLayerFrameSize(decoder_buffer),
-                      decrypt_config->Clone());
-  } else {
-    parser_.SetStream(ptr, size, GetSpatialLayerFrameSize(decoder_buffer),
-                      nullptr);
+  std::vector<uint32_t> frame_sizes;
+  if (!GetSpatialLayerFrameSize(decoder_buffer, frame_sizes)) {
+    SetError();
+    return;
   }
+
+  parser_.SetStream(ptr, size, frame_sizes,
+                    decrypt_config ? decrypt_config->Clone() : nullptr);
 }
 
 bool VP9Decoder::Flush() {
@@ -134,6 +146,9 @@ void VP9Decoder::Reset() {
 
 VP9Decoder::DecodeResult VP9Decoder::Decode() {
   while (true) {
+    if (state_ == kError)
+      return kDecodeError;
+
     // If we have a pending picture to decode, try that first.
     if (pending_pic_) {
       VP9Accelerator::Status status =

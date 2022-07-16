@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/services/device_sync/cryptauth_key.h"
 #include "chromeos/services/device_sync/cryptauth_key_proof_computer.h"
 #include "chromeos/services/device_sync/cryptauth_key_proof_computer_impl.h"

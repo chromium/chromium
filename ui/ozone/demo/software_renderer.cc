@@ -31,8 +31,7 @@ SoftwareRenderer::SoftwareRenderer(
     const gfx::Size& size)
     : RendererBase(widget, size),
       window_surface_(std::move(window_surface)),
-      vsync_period_(
-          base::TimeDelta::FromMilliseconds(kFrameDelayMilliseconds)) {}
+      vsync_period_(base::Milliseconds(kFrameDelayMilliseconds)) {}
 
 SoftwareRenderer::~SoftwareRenderer() = default;
 

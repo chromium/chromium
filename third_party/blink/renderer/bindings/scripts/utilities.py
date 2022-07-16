@@ -370,7 +370,7 @@ def is_non_legacy_callback_interface_from_idl(file_contents):
     """Returns True if the specified IDL is a non-legacy callback interface."""
     match = re.search(r'callback\s+interface\s+\w+\s*{', file_contents)
     # Having constants means it's a legacy callback interface.
-    # https://heycam.github.io/webidl/#legacy-callback-interface-object
+    # https://webidl.spec.whatwg.org/#legacy-callback-interface-object
     return bool(match) and not re.search(r'\s+const\b', file_contents)
 
 

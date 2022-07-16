@@ -187,7 +187,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     username = info.email;
 
     // Install the Settings App.
-    web_app::WebAppProvider::Get(browser()->profile())
+    web_app::WebAppProvider::GetForTest(browser()->profile())
         ->system_web_app_manager()
         .InstallSystemAppsForTesting();
 #endif
@@ -335,10 +335,10 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   void NavigateTo(const std::string& file_path) {
     if (file_path.find("data:") == 0U) {
-      ui_test_utils::NavigateToURL(browser(), GURL(file_path));
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(file_path)));
     } else {
-      ui_test_utils::NavigateToURL(browser(),
-                                   embedded_test_server()->GetURL(file_path));
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(
+          browser(), embedded_test_server()->GetURL(file_path)));
     }
   }
 
@@ -769,8 +769,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     GetSaveCardIconView()->ReduceAnimationTimeForTesting();
     auto* const animating_layout = GetAnimatingLayoutManager();
     if (animating_layout) {
-      animating_layout->SetAnimationDuration(
-          base::TimeDelta::FromMilliseconds(1));
+      animating_layout->SetAnimationDuration(base::Milliseconds(1));
     }
   }
 
@@ -997,10 +996,9 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
   }
 
   void SetUpForSyncTransportModeTest() {
-    // Signing in (without making the account Chrome's primary one or explicitly
-    // setting up Sync) causes the Sync machinery to start up in standalone
-    // transport mode.
-    secondary_account_helper::SignInSecondaryAccount(
+    // Signing in (without granting sync consent or explicitly setting up Sync)
+    // should trigger starting the Sync machinery in standalone transport mode.
+    secondary_account_helper::SignInUnconsentedAccount(
         browser()->profile(), test_url_loader_factory(), "user@gmail.com");
     ASSERT_NE(syncer::SyncService::TransportState::DISABLED,
               harness_->service()->GetTransportState());
@@ -1051,8 +1049,19 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
 
 // Tests the implicit sync state. Ensures that the (i) info icon does not appear
 // for local save offers.
+// TODO(crbug.com/1245213)
+// This test is not applicable for explicit address save dialogs.
+// The test relies on the following sequence of events: First a credit card is
+// imported first, but the upload fails. Subsequently, an address profile is
+// imported which is than used to complement the information needed to offer a
+// local save prompt. With explicit address save prompts, the storage of a new
+// address is omitted if a credit card can be stored to avoid showing two
+// dialogs at the same time.
+// To make test work one need to inject an existing address into the
+// PersonalDataManager. Alternatively, the import logic should try to get an
+// address candidate from the form even though no address was imported yet.
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
-                       Local_TransportMode_InfoTextIconDoesNotExist) {
+                       DISABLED_Local_TransportMode_InfoTextIconDoesNotExist) {
   SetUpForSyncTransportModeTest();
   FillForm();
 
@@ -1078,10 +1087,9 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
     Upload_TransportMode_RequestedCardholderNameTextfieldIsPrefilledWithFocusName) {
-  // Signing in (without making the account Chrome's primary one or explicitly
-  // setting up Sync) causes the Sync machinery to start up in standalone
-  // transport mode.
-  secondary_account_helper::SignInSecondaryAccount(
+  // Signing in (without granting sync consent or explicitly setting up Sync)
+  // should trigger starting the Sync machinery in standalone transport mode.
+  secondary_account_helper::SignInUnconsentedAccount(
       browser()->profile(), test_url_loader_factory(), "user@gmail.com");
   SetAccountFullName("John Smith");
 
@@ -1191,9 +1199,20 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that the bubble surfaces a textfield
 // requesting cardholder name if cardholder name is conflicting.
+// TODO(crbug.com/1245213)
+// This test is not applicable for explicit address save dialogs.
+// The test relies on the following sequence of events: First a credit card is
+// imported first, but the upload fails. Subsequently, an address profile is
+// imported which is than used to complement the information needed to offer a
+// local save prompt. With explicit address save prompts, the storage of a new
+// address is omitted if a credit card can be stored to avoid showing two
+// dialogs at the same time.
+// To make test work one need to inject an existing address into the
+// PersonalDataManager. Alternatively, the import logic should try to get an
+// address candidate from the form even though no address was imported yet.
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    Upload_SubmittingFormWithConflictingNamesRequestsCardholderNameIfExpOn) {
+    DISABLED_Upload_SubmittingFormWithConflictingNamesRequestsCardholderNameIfExpOn) {
   // Start sync.
   harness_->SetupSync();
 
@@ -1392,9 +1411,20 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save logic. Ensures that Chrome offers a local save when the
 // data is complete, even if Payments rejects the data.
+// TODO(crbug.com/1245213)
+// This test is not applicable for explicit address save dialogs.
+// The test relies on the following sequence of events: First a credit card is
+// imported first, but the upload fails. Subsequently, an address profile is
+// imported which is than used to complement the information needed to offer a
+// local save prompt. With explicit address save prompts, the storage of a new
+// address is omitted if a credit card can be stored to avoid showing two
+// dialogs at the same time.
+// To make test work one need to inject an existing address into the
+// PersonalDataManager. Alternatively, the import logic should try to get an
+// address candidate from the form even though no address was imported yet.
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    Logic_ShouldOfferLocalSaveIfPaymentsDeclines) {
+    DISABLED_Logic_ShouldOfferLocalSaveIfPaymentsDeclines) {
   // Start sync.
   harness_->SetupSync();
 
@@ -1418,9 +1448,20 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save logic. Ensures that Chrome offers a local save when the
 // data is complete, even if the Payments upload fails unexpectedly.
+// TODO(crbug.com/1245213)
+// This test is not applicable for explicit address save dialogs.
+// The test relies on the following sequence of events: First a credit card is
+// imported first, but the upload fails. Subsequently, an address profile is
+// imported which is than used to complement the information needed to offer a
+// local save prompt. With explicit address save prompts, the storage of a new
+// address is omitted if a credit card can be stored to avoid showing two
+// dialogs at the same time.
+// To make test work one need to inject an existing address into the
+// PersonalDataManager. Alternatively, the import logic should try to get an
+// address candidate from the form even though no address was imported yet.
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    Logic_ShouldOfferLocalSaveIfPaymentsFails) {
+    DISABLED_Logic_ShouldOfferLocalSaveIfPaymentsFails) {
   // Start sync.
   harness_->SetupSync();
 
@@ -1733,7 +1774,7 @@ IN_PROC_BROWSER_TEST_F(
   // be selected, so selecting the current January will always be expired.
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(base::Time::Now());
-  test_clock.Advance(base::TimeDelta::FromDays(40));
+  test_clock.Advance(base::Days(40));
   // Selecting expired date will disable [Save] button.
   month_input()->SetSelectedRow(1);
   year_input()->SetSelectedRow(1);

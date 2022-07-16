@@ -9,9 +9,9 @@
 #             sierra
 #         win win7 win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-9
-#             android-pixel-2 android-pixel-4 android-shield-android-tv
-#         chromeos-board-amd64-generic chromeos-board-kevin
+# tags: [ android-nexus-5 android-nexus-5x android-nexus-9 android-pixel-2
+#             android-pixel-4 android-shield-android-tv
+#         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
 #         fuchsia-board-astro fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop
@@ -55,15 +55,36 @@
 # tags: [ asan no-asan ]
 # Display Server
 # tags: [ display-server-wayland display-server-x ]
+# OOP-Canvas
+# tags: [ oop-c no-oop-c ]
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
+###############################
+# Permanent Skip Expectations #
+###############################
+# The "Skip" expectations in this section are expected to never be removed.
+# This is for things like tests that will never be supported on a particular
+# platform/configuration.
+
+###############################
+# Temporary Skip Expectations #
+###############################
+# The "Skip" expectations in this section are expected to be removable at some
+# point. This is for things like tests that fail in a way that negatively and
+# significantly impacts other tests, e.g. killing the test device.
+
+###################
+# Failures/Flakes #
+###################
+# Non-"Skip" expectations go here to suppress regular flakes/failures.
+
 # These tests fail consistently on Win10 FYI x64 Exp Release (Intel HD 630).
-crbug.com/1074402 [ win10 intel-0x5912 ] Basic [ Skip ]
-crbug.com/1074402 [ win10 intel-0x5912 ] Video_720_MP4 [ Skip ]
-crbug.com/1074402 [ win10 intel-0x5912 ] Video_720_MP4_Underlay [ Skip ]
-crbug.com/1074402 [ win10 intel-0x5912 ] Video_720_MP4_Fullscreen [ Skip ]
-crbug.com/1074402 [ win10 intel-0x5912 ] Video_720_MP4_Underlay_Fullscreen [ Skip ]
+crbug.com/1074402 [ win10 intel-0x5912 ] Basic [ Failure ]
+crbug.com/1074402 [ win10 intel-0x5912 ] Video_720_MP4 [ Failure ]
+crbug.com/1074402 [ win10 intel-0x5912 ] Video_720_MP4_Underlay [ Failure ]
+crbug.com/1074402 [ win10 intel-0x5912 ] Video_720_MP4_Fullscreen [ Failure ]
+crbug.com/1074402 [ win10 intel-0x5912 ] Video_720_MP4_Underlay_Fullscreen [ Failure ]
 # These tests were previously flaky, due to crbug.com/941163, so when the above
 # consistent failures are fixed, these expectations may need to be restored.
 #crbug.com/941163 [ win10 intel-0x5912 ] Video_720_MP4 [ RetryOnFailure ]

@@ -37,8 +37,8 @@ namespace policy {
 
 namespace {
 
-constexpr base::TimeDelta kMinRetryBackoff = base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kMaxRetryBackoff = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kMinRetryBackoff = base::Seconds(10);
+constexpr base::TimeDelta kMaxRetryBackoff = base::Days(1);
 
 static const char kDmToken[] = "token";
 static const char kPackageName[] = "package";
@@ -63,20 +63,28 @@ class MockArcAppInstallEventLogUploaderDelegate
  public:
   MockArcAppInstallEventLogUploaderDelegate() {}
 
+  MockArcAppInstallEventLogUploaderDelegate(
+      const MockArcAppInstallEventLogUploaderDelegate&) = delete;
+  MockArcAppInstallEventLogUploaderDelegate& operator=(
+      const MockArcAppInstallEventLogUploaderDelegate&) = delete;
+
   void SerializeForUpload(SerializationCallback callback) override {
     SerializeForUpload_(callback);
   }
 
   MOCK_METHOD1(SerializeForUpload_, void(SerializationCallback&));
   MOCK_METHOD0(OnUploadSuccess, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockArcAppInstallEventLogUploaderDelegate);
 };
 
 }  // namespace
 
 class ArcAppInstallEventLogUploaderTest : public testing::Test {
+ public:
+  ArcAppInstallEventLogUploaderTest(const ArcAppInstallEventLogUploaderTest&) =
+      delete;
+  ArcAppInstallEventLogUploaderTest& operator=(
+      const ArcAppInstallEventLogUploaderTest&) = delete;
+
  protected:
   ArcAppInstallEventLogUploaderTest() = default;
 
@@ -172,9 +180,6 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
 
   chromeos::system::ScopedFakeStatisticsProvider
       scoped_fake_statistics_provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppInstallEventLogUploaderTest);
 };
 
 // Make a log upload request. Have serialization and log upload succeed. Verify

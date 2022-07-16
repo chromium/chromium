@@ -74,8 +74,7 @@ void DemoModeDetectorTest::SetTimeOnOobePref(base::TimeDelta time_on_oobe) {
 }
 
 base::TimeDelta DemoModeDetectorTest::GetTimeOnOobePref() {
-  return base::TimeDelta::FromSeconds(
-      local_state_.GetInt64(prefs::kTimeOnOobe));
+  return base::Seconds(local_state_.GetInt64(prefs::kTimeOnOobe));
 }
 
 void DemoModeDetectorTest::SimulateUserActivity() {
@@ -102,7 +101,7 @@ TEST_F(DemoModeDetectorTest,
   runner_->FastForwardBy(DemoModeDetector::kDerelictDetectionTimeout);
   // Run for 1 minute less than the idle threshold.
   runner_->FastForwardBy(DemoModeDetector::kDerelictIdleTimeout -
-                         base::TimeDelta::FromMinutes(1));
+                         base::Minutes(1));
 }
 
 // Test to ensure that Demo mode isn't launched after the detector
@@ -116,13 +115,13 @@ TEST_F(DemoModeDetectorTest,
   runner_->FastForwardBy(DemoModeDetector::kDerelictIdleTimeout);
 
   // Run for 2 more minutes (less than the idle threshold).
-  runner_->FastForwardBy(base::TimeDelta::FromMinutes(2));
+  runner_->FastForwardBy(base::Minutes(2));
 
   // Simulate a user activity event.
   SimulateUserActivity();
 
   // Run for 3 more minutes (more than the idle threshold).
-  runner_->FastForwardBy(base::TimeDelta::FromMinutes(3));
+  runner_->FastForwardBy(base::Minutes(3));
 
   // Simulate a user activity event.
   SimulateUserActivity();
@@ -185,15 +184,15 @@ TEST_F(DemoModeDetectorTest, DemoModeWillNotLaunchWhenTestimageInLsbRelease) {
 TEST_F(DemoModeDetectorTest,
        DemoModeWillLaunchAfterResumedAndDerelictAndIdleTimeout) {
   // Simulate 1 hour less than the threshold elapsed by setting pref.
-  const auto elapsed_time = DemoModeDetector::kDerelictDetectionTimeout -
-                            base::TimeDelta::FromHours(1);
+  const auto elapsed_time =
+      DemoModeDetector::kDerelictDetectionTimeout - base::Hours(1);
   SetTimeOnOobePref(elapsed_time);
   EXPECT_EQ(GetTimeOnOobePref(), elapsed_time);
 
   StartDemoModeDetection();
 
   // Run another hour to hit the threshold.
-  runner_->FastForwardBy(base::TimeDelta::FromHours(1));
+  runner_->FastForwardBy(base::Hours(1));
 
   // Run through the idle timeout.
   runner_->FastForwardBy(DemoModeDetector::kDerelictIdleTimeout);

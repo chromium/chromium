@@ -187,14 +187,15 @@ class ShillClientUnittestBase : public testing::Test {
       const dbus::ObjectProxy::SignalCallback& signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback);
 
-  // Checks the content of the method call and returns the response.
+  // These check the content of the method call and returns the response.
   // Used to implement the mock proxy.
   void OnCallMethod(dbus::MethodCall* method_call,
                     int timeout_ms,
                     dbus::ObjectProxy::ResponseCallback* response_callback);
-
-  // Checks the content of the method call and returns the response.
-  // Used to implement the mock proxy.
+  void OnCallMethodWithErrorResponse(
+      dbus::MethodCall* method_call,
+      int timeout_ms,
+      dbus::ObjectProxy::ResponseOrErrorCallback* response_callback);
   void OnCallMethodWithErrorCallback(
       dbus::MethodCall* method_call,
       int timeout_ms,

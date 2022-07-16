@@ -9,6 +9,7 @@
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/largest_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
+#include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
@@ -93,6 +94,11 @@ QuadList::Iterator QuadList::InsertCopyBeforeDrawQuad(Iterator at,
       const auto copy = *YUVVideoDrawQuad::MaterialCast(*at);
       return InsertBeforeAndInvalidateAllPointers<YUVVideoDrawQuad>(at, count,
                                                                     copy);
+    }
+    case DrawQuad::Material::kSharedElement: {
+      const auto copy = *SharedElementDrawQuad::MaterialCast(*at);
+      return InsertBeforeAndInvalidateAllPointers<SharedElementDrawQuad>(
+          at, count, copy);
     }
     // RenderPass quads should not be copied.
     case DrawQuad::Material::kAggregatedRenderPass:

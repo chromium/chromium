@@ -18,7 +18,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #else  // Non-ChromeOS.
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -55,10 +55,10 @@ CreateProfilePolicyConnectorForBrowserContext(
 
   // On ChromeOS, we always pass nullptr for the |user_cloud_policy_manager|.
   // This is because the |policy_provider| could be either a
-  // UserCloudPolicyManagerChromeOS or a ActiveDirectoryPolicyManager, both of
+  // UserCloudPolicyManagerAsh or a ActiveDirectoryPolicyManager, both of
   // which should be obtained via UserPolicyManagerFactoryChromeOS APIs.
   CloudPolicyManager* cloud_policy_manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
+      profile->GetUserCloudPolicyManagerAsh();
   ActiveDirectoryPolicyManager* active_directory_manager =
       profile->GetActiveDirectoryPolicyManager();
   if (cloud_policy_manager) {

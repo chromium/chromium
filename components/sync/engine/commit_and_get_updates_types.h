@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/entity_data.h"
@@ -30,6 +29,10 @@ enum class SyncCommitError {
 
 struct CommitRequestData {
   CommitRequestData();
+
+  CommitRequestData(const CommitRequestData&) = delete;
+  CommitRequestData& operator=(const CommitRequestData&) = delete;
+
   ~CommitRequestData();
 
   // Fields sent to the sync server.
@@ -45,9 +48,6 @@ struct CommitRequestData {
   int64_t sequence_number = 0;
   std::string specifics_hash;
   base::Time unsynced_time;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CommitRequestData);
 };
 
 // Represents a successfully committed item.

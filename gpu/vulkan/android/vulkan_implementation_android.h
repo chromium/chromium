@@ -19,6 +19,11 @@ class COMPONENT_EXPORT(VULKAN_ANDROID) VulkanImplementationAndroid
     : public VulkanImplementation {
  public:
   VulkanImplementationAndroid();
+
+  VulkanImplementationAndroid(const VulkanImplementationAndroid&) = delete;
+  VulkanImplementationAndroid& operator=(const VulkanImplementationAndroid&) =
+      delete;
+
   ~VulkanImplementationAndroid() override;
 
   // VulkanImplementation:
@@ -56,8 +61,6 @@ class COMPONENT_EXPORT(VULKAN_ANDROID) VulkanImplementationAndroid
 
  private:
   VulkanInstance vulkan_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanImplementationAndroid);
 };
 
 }  // namespace gpu

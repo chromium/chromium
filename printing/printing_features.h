@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "printing/buildflags/buildflags.h"
 
 namespace printing {
 namespace features {
@@ -22,6 +23,8 @@ extern const base::Feature kCupsIppPrintingBackend;
 #endif  // defined(OS_MAC)
 
 #if defined(OS_WIN)
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const base::Feature kPrintWithPostScriptType42Fonts;
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const base::Feature kPrintWithReducedRasterization;
 COMPONENT_EXPORT(PRINTING_BASE)
@@ -39,12 +42,12 @@ COMPONENT_EXPORT(PRINTING_BASE)
 bool ShouldPrintUsingXps(bool source_is_pdf);
 #endif  // defined(OS_WIN)
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const base::Feature kEnableOopPrintDrivers;
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const base::FeatureParam<bool> kEnableOopPrintDriversJobPrint;
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 }  // namespace features
 }  // namespace printing

@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
@@ -21,13 +20,16 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
-#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
-#error "This file should only be included if DICE support is enabled"
+#if !BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(ENABLE_MIRROR)
+#error "This file should only be included if DICE support / mirror is enabled"
 #endif
 
 class Browser;
-class DiceSignedInProfileCreator;
 class SigninUIError;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class DiceSignedInProfileCreator;
+#endif
 
 namespace signin {
 class IdentityManager;
@@ -40,6 +42,8 @@ class SyncSetupInProgressHandle;
 
 // Handles details of setting the primary account with IdentityManager and
 // turning on sync for an account for which there is already a refresh token.
+// TODO(crbug.com/1248047): Rename this to TurnSyncOnHelper to reflect this can
+// also be used with mirror.
 class DiceTurnSyncOnHelper
     : public SyncStartupTracker::Observer,
       public policy::PolicyService::ProviderUpdateObserver {
@@ -162,6 +166,9 @@ class DiceTurnSyncOnHelper
                        const CoreAccountId& account_id,
                        SigninAbortedMode signin_aborted_mode);
 
+  DiceTurnSyncOnHelper(const DiceTurnSyncOnHelper&) = delete;
+  DiceTurnSyncOnHelper& operator=(const DiceTurnSyncOnHelper&) = delete;
+
   // SyncStartupTracker::Observer:
   void SyncStartupCompleted() override;
   void SyncStartupFailed() override;
@@ -276,12 +283,13 @@ class DiceTurnSyncOnHelper
   base::ScopedClosureRunner scoped_callback_runner_;
 
   std::unique_ptr<SyncStartupTracker> sync_startup_tracker_;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<DiceSignedInProfileCreator> dice_signed_in_profile_creator_;
+#endif
   base::CallbackListSubscription shutdown_subscription_;
   bool enterprise_account_confirmed_ = false;
 
   base::WeakPtrFactory<DiceTurnSyncOnHelper> weak_pointer_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DiceTurnSyncOnHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_TURN_SYNC_ON_HELPER_H_

@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/update_client/crx_update_item.h"
+#include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -81,8 +82,11 @@ void UpdateService::SendUninstallPing(const std::string& id,
                                       int reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(update_client_);
+  update_client::CrxComponent crx;
+  crx.app_id = id;
+  crx.version = version;
   update_client_->SendUninstallPing(
-      id, version, reason, base::BindOnce(&SendUninstallPingCompleteCallback));
+      crx, reason, base::BindOnce(&SendUninstallPingCompleteCallback));
 }
 
 void UpdateService::OnEvent(Events event, const std::string& extension_id) {

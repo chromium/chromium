@@ -22,7 +22,7 @@ interface AutofillDriver {
 
   // Notification that forms have been seen that are candidates for
   // filling/submitting by the AutofillManager.
-  FormsSeen(array<FormData> forms);
+  FormsSeen(array<FormData> updated_forms, array<FormRendererId> removed_forms);
 
   // Notification that a form has been submitted. The |known_success| indicates
   // whether the submission succeeded or not. Currently, we assume submission

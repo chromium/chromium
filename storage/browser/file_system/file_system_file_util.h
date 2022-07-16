@@ -31,7 +31,7 @@ class FileSystemURL;
 // See http://crbug.com/128136 if you need it.
 class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemFileUtil {
  public:
-  using CopyOrMoveOption = FileSystemOperation::CopyOrMoveOption;
+  using CopyOrMoveOptionSet = FileSystemOperation::CopyOrMoveOptionSet;
 
   // It will be implemented by each subclass such as FileSystemFileEnumerator.
   class COMPONENT_EXPORT(STORAGE_BROWSER) AbstractFileEnumerator {
@@ -144,7 +144,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemFileUtil {
   virtual base::File::Error CopyOrMoveFile(FileSystemOperationContext* context,
                                            const FileSystemURL& src_url,
                                            const FileSystemURL& dest_url,
-                                           CopyOrMoveOption option,
+                                           CopyOrMoveOptionSet options,
                                            bool copy) = 0;
 
   // Copies in a single file from a different filesystem.

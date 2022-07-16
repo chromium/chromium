@@ -143,7 +143,8 @@ bool ChromeConnectedHeaderHelper::IsUrlEligibleToIncludeGaiaId(
   // usage:
   // * Avoid sending it in the cookie as not needed on iOS.
   // * Only send it in the header to Drive URLs.
-  return is_header_request ? IsDriveOrigin(url.GetOrigin()) : false;
+  return is_header_request ? IsDriveOrigin(url.DeprecatedGetOriginAsURL())
+                           : false;
 }
 
 bool ChromeConnectedHeaderHelper::IsDriveOrigin(const GURL& url) {
@@ -168,7 +169,7 @@ bool ChromeConnectedHeaderHelper::IsUrlEligibleForRequestHeader(
       // Google Drive uses the sync account ID present in the X-Chrome-Connected
       // header to automatically turn on offline mode. So Chrome needs to send
       // this header to Google Drive when Dice is enabled.
-      return IsDriveOrigin(url.GetOrigin());
+      return IsDriveOrigin(url.DeprecatedGetOriginAsURL());
     case AccountConsistencyMethod::kMirror: {
       // Set the X-Chrome-Connected header for all Google web properties if
       // Mirror account consistency is enabled. Vasquette, which is integrated
@@ -180,7 +181,7 @@ bool ChromeConnectedHeaderHelper::IsUrlEligibleForRequestHeader(
              google_util::IsYoutubeDomainUrl(
                  url, google_util::ALLOW_SUBDOMAIN,
                  google_util::DISALLOW_NON_STANDARD_PORTS) ||
-             gaia::IsGaiaSignonRealm(url.GetOrigin());
+             gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL());
     }
   }
 }
@@ -211,7 +212,7 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
 
   if (!force_account_consistency && gaia_id.empty()) {
 #if defined(OS_ANDROID)
-    if (gaia::IsGaiaSignonRealm(url.GetOrigin())) {
+    if (gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL())) {
       parts.push_back(
           base::StringPrintf("%s=%s", kEligibleForConsistency, "true"));
       return base::JoinString(parts, is_header_request ? "," : ":");

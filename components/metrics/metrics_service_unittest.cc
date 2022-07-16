@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/files/file_path.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -21,6 +21,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/metrics/client_info.h"
 #include "components/metrics/environment_recorder.h"
 #include "components/metrics/log_decoder.h"
@@ -31,6 +32,7 @@
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/metrics/test/test_metrics_provider.h"
 #include "components/metrics/test/test_metrics_service_client.h"
+#include "components/metrics/unsent_log_store_metrics_impl.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/active_field_trials.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,19 +41,34 @@
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace metrics {
-
 namespace {
+
+const char kTestPrefName[] = "TestPref";
+
+class TestUnsentLogStore : public UnsentLogStore {
+ public:
+  explicit TestUnsentLogStore(PrefService* service)
+      : UnsentLogStore(std::make_unique<UnsentLogStoreMetricsImpl>(),
+                       service,
+                       kTestPrefName,
+                       nullptr,
+                       /* min_log_count= */ 3,
+                       /* min_log_bytes= */ 1,
+                       /* max_log_size= */ 0,
+                       std::string()) {}
+  ~TestUnsentLogStore() override = default;
+
+  TestUnsentLogStore(const TestUnsentLogStore&) = delete;
+  TestUnsentLogStore& operator=(const TestUnsentLogStore&) = delete;
+
+  static void RegisterPrefs(PrefRegistrySimple* registry) {
+    registry->RegisterListPref(kTestPrefName);
+  }
+};
 
 void YieldUntil(base::Time when) {
   while (base::Time::Now() <= when)
     base::PlatformThread::YieldCurrentThread();
-}
-
-void StoreNoClientInfoBackup(const ClientInfo& /* client_info */) {
-}
-
-std::unique_ptr<ClientInfo> ReturnNoBackup() {
-  return nullptr;
 }
 
 // Returns true if |id| is present in |proto|'s collection of FieldTrials.
@@ -74,6 +91,10 @@ class TestMetricsService : public MetricsService {
                      MetricsServiceClient* client,
                      PrefService* local_state)
       : MetricsService(state_manager, client, local_state) {}
+
+  TestMetricsService(const TestMetricsService&) = delete;
+  TestMetricsService& operator=(const TestMetricsService&) = delete;
+
   ~TestMetricsService() override = default;
 
   using MetricsService::INIT_TASK_SCHEDULED;
@@ -98,8 +119,6 @@ class TestMetricsService : public MetricsService {
  private:
   bool persistent_system_profile_provided_ = false;
   bool persistent_system_profile_complete_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMetricsService);
 };
 
 class TestMetricsLog : public MetricsLog {
@@ -109,10 +128,10 @@ class TestMetricsLog : public MetricsLog {
                  MetricsServiceClient* client)
       : MetricsLog(client_id, session_id, MetricsLog::ONGOING_LOG, client) {}
 
-  ~TestMetricsLog() override {}
+  TestMetricsLog(const TestMetricsLog&) = delete;
+  TestMetricsLog& operator=(const TestMetricsLog&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestMetricsLog);
+  ~TestMetricsLog() override {}
 };
 
 const char kOnDidCreateMetricsLogHistogramName[] = "Test.OnDidCreateMetricsLog";
@@ -137,18 +156,27 @@ class MetricsServiceTest : public testing::Test {
     MetricsService::RegisterPrefs(testing_local_state_.registry());
   }
 
+  MetricsServiceTest(const MetricsServiceTest&) = delete;
+  MetricsServiceTest& operator=(const MetricsServiceTest&) = delete;
+
   ~MetricsServiceTest() override {}
 
-  MetricsStateManager* GetMetricsStateManager() {
+  MetricsStateManager* GetMetricsStateManager(
+      StartupVisibility startup_visibility = StartupVisibility::kUnknown) {
     // Lazy-initialize the metrics_state_manager so that it correctly reads the
     // stability state from prefs after tests have a chance to initialize it.
     if (!metrics_state_manager_) {
       metrics_state_manager_ = MetricsStateManager::Create(
           GetLocalState(), enabled_state_provider_.get(), std::wstring(),
-          base::BindRepeating(&StoreNoClientInfoBackup),
-          base::BindRepeating(&ReturnNoBackup));
+          base::FilePath(), startup_visibility);
+      metrics_state_manager_->InstantiateFieldTrialList();
     }
     return metrics_state_manager_.get();
+  }
+
+  std::unique_ptr<TestUnsentLogStore> InitializeTestLogStoreAndGet() {
+    TestUnsentLogStore::RegisterPrefs(testing_local_state_.registry());
+    return std::make_unique<TestUnsentLogStore>(GetLocalState());
   }
 
   PrefService* GetLocalState() { return &testing_local_state_; }
@@ -224,9 +252,17 @@ class MetricsServiceTest : public testing::Test {
   std::unique_ptr<TestEnabledStateProvider> enabled_state_provider_;
   TestingPrefServiceSimple testing_local_state_;
   std::unique_ptr<MetricsStateManager> metrics_state_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceTest);
 };
+
+struct StartupVisibilityTestParams {
+  const std::string test_name;
+  metrics::StartupVisibility startup_visibility;
+  bool expected_beacon_value;
+};
+
+class MetricsServiceTestWithStartupVisibility
+    : public MetricsServiceTest,
+      public ::testing::WithParamInterface<StartupVisibilityTestParams> {};
 
 class ExperimentTestMetricsProvider : public TestMetricsProvider {
  public:
@@ -259,11 +295,11 @@ class ExperimentTestMetricsProvider : public TestMetricsProvider {
 
 TEST_F(MetricsServiceTest, InitialStabilityLogAfterCleanShutDown) {
   EnableMetricsReporting();
-  GetLocalState()->SetBoolean(prefs::kStabilityExitedCleanly, true);
+  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(GetLocalState(), true);
 
   TestMetricsServiceClient client;
-  TestMetricsService service(
-      GetMetricsStateManager(), &client, GetLocalState());
+  TestMetricsService service(GetMetricsStateManager(), &client,
+                             GetLocalState());
 
   TestMetricsProvider* test_provider = new TestMetricsProvider();
   service.RegisterMetricsProvider(
@@ -303,10 +339,10 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAtProviderRequest) {
 
   // Set the clean exit flag, as that will otherwise cause a stabilty
   // log to be produced, irrespective provider requests.
-  GetLocalState()->SetBoolean(prefs::kStabilityExitedCleanly, true);
+  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(GetLocalState(), true);
 
-  TestMetricsService service(
-      GetMetricsStateManager(), &client, GetLocalState());
+  TestMetricsService service(GetMetricsStateManager(), &client,
+                             GetLocalState());
   // Add a metrics provider that requests a stability log.
   TestMetricsProvider* test_provider = new TestMetricsProvider();
   test_provider->set_has_initial_stability_metrics(true);
@@ -348,35 +384,69 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAtProviderRequest) {
   EXPECT_EQ(0, uma_log.system_profile().stability().crash_count());
 }
 
-TEST_F(MetricsServiceTest, InitialStabilityLogAfterCrash) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MetricsServiceTestWithStartupVisibility,
+    ::testing::Values(
+        StartupVisibilityTestParams{
+            .test_name = "UnknownVisibility",
+            .startup_visibility = StartupVisibility::kUnknown,
+            .expected_beacon_value = true},
+        StartupVisibilityTestParams{
+            .test_name = "BackgroundVisibility",
+            .startup_visibility = StartupVisibility::kBackground,
+            .expected_beacon_value = true},
+        StartupVisibilityTestParams{
+            .test_name = "ForegroundVisibility",
+            .startup_visibility = StartupVisibility::kForeground,
+            .expected_beacon_value = false}),
+    [](const ::testing::TestParamInfo<StartupVisibilityTestParams>& params) {
+      return params.param.test_name;
+    });
+
+TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
+  PrefService* local_state = GetLocalState();
   EnableMetricsReporting();
-  GetLocalState()->ClearPref(prefs::kStabilityExitedCleanly);
+  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(local_state, false);
 
   // Set up prefs to simulate restarting after a crash.
 
   // Save an existing system profile to prefs, to correspond to what would be
   // saved from a previous session.
   TestMetricsServiceClient client;
+  const std::string kCrashedVersion = "4.0.321.0-64-devel";
+  client.set_version_string(kCrashedVersion);
   TestMetricsLog log("client", 1, &client);
   DelegatingProvider delegating_provider;
-  TestMetricsService::RecordCurrentEnvironmentHelper(&log, GetLocalState(),
+  TestMetricsService::RecordCurrentEnvironmentHelper(&log, local_state,
                                                      &delegating_provider);
 
   // Record stability build time and version from previous session, so that
   // stability metrics (including exited cleanly flag) won't be cleared.
-  EnvironmentRecorder(GetLocalState())
+  EnvironmentRecorder(local_state)
       .SetBuildtimeAndVersion(MetricsLog::GetBuildTime(),
                               client.GetVersionString());
 
-  GetLocalState()->SetBoolean(prefs::kStabilityExitedCleanly, false);
+  const std::string kCurrentVersion = "5.0.322.0-64-devel";
+  client.set_version_string(kCurrentVersion);
 
-  TestMetricsService service(
-      GetMetricsStateManager(), &client, GetLocalState());
+  StartupVisibilityTestParams params = GetParam();
+  TestMetricsService service(GetMetricsStateManager(params.startup_visibility),
+                             &client, local_state);
   // Add a provider.
   TestMetricsProvider* test_provider = new TestMetricsProvider();
   service.RegisterMetricsProvider(
       std::unique_ptr<MetricsProvider>(test_provider));
   service.InitializeMetricsRecordingState();
+
+  // Verify that Chrome is (or is not) watching for crashes by checking the
+  // beacon value.
+#if defined(OS_ANDROID)
+  EXPECT_EQ(local_state->GetBoolean(prefs::kStabilityExitedCleanly),
+            params.expected_beacon_value);
+#else
+  EXPECT_FALSE(local_state->GetBoolean(prefs::kStabilityExitedCleanly));
+#endif  // defined(OS_ANDROID)
 
   // The initial stability log should be generated and persisted in unsent logs.
   MetricsLogStore* test_log_store = service.LogStoreForTest();
@@ -406,6 +476,10 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAfterCrash) {
   EXPECT_EQ(0, uma_log.omnibox_event_size());
   EXPECT_EQ(0, uma_log.perf_data_size());
   CheckForNonStabilityHistograms(uma_log);
+
+  EXPECT_EQ(kCrashedVersion, uma_log.system_profile().app_version());
+  EXPECT_EQ(kCurrentVersion,
+            uma_log.system_profile().log_written_by_app_version());
 
   EXPECT_EQ(1, uma_log.system_profile().stability().crash_count());
 }
@@ -486,8 +560,8 @@ TEST_F(MetricsServiceTest, FirstLogCreatedBeforeUnsentLogsSent) {
 TEST_F(MetricsServiceTest,
        MetricsProviderOnRecordingDisabledCalledOnInitialStop) {
   TestMetricsServiceClient client;
-  TestMetricsService service(
-      GetMetricsStateManager(), &client, GetLocalState());
+  TestMetricsService service(GetMetricsStateManager(), &client,
+                             GetLocalState());
 
   TestMetricsProvider* test_provider = new TestMetricsProvider();
   service.RegisterMetricsProvider(
@@ -501,8 +575,8 @@ TEST_F(MetricsServiceTest,
 
 TEST_F(MetricsServiceTest, MetricsProvidersInitialized) {
   TestMetricsServiceClient client;
-  TestMetricsService service(
-      GetMetricsStateManager(), &client, GetLocalState());
+  TestMetricsService service(GetMetricsStateManager(), &client,
+                             GetLocalState());
 
   TestMetricsProvider* test_provider = new TestMetricsProvider();
   service.RegisterMetricsProvider(
@@ -642,7 +716,7 @@ TEST_F(MetricsServiceTest, LastLiveTimestamp) {
   EXPECT_EQ(num_pending_tasks + 1, task_runner_->NumPendingTasks());
 
   // To avoid flakiness, yield until we're over a microsecond threshold.
-  YieldUntil(initial_last_live_time + base::TimeDelta::FromMicroseconds(2));
+  YieldUntil(initial_last_live_time + base::Microseconds(2));
 
   task_runner_->RunPendingTasks();
 
@@ -652,12 +726,84 @@ TEST_F(MetricsServiceTest, LastLiveTimestamp) {
   EXPECT_LT(initial_last_live_time, updated_last_live_time);
 
   // Double check that an update schedules again...
-  YieldUntil(updated_last_live_time + base::TimeDelta::FromMicroseconds(2));
+  YieldUntil(updated_last_live_time + base::Microseconds(2));
 
   task_runner_->RunPendingTasks();
   EXPECT_LT(
       updated_last_live_time,
       GetLocalState()->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(MetricsServiceTest,
+       OngoingLogNotFlushedBeforeInitialLogWhenUserLogStoreSet) {
+  EnableMetricsReporting();
+  TestMetricsServiceClient client;
+  TestMetricsService service(GetMetricsStateManager(), &client,
+                             GetLocalState());
+
+  service.InitializeMetricsRecordingState();
+  // Start() will create the first ongoing log.
+  service.Start();
+
+  MetricsLogStore* test_log_store = service.LogStoreForTest();
+  std::unique_ptr<TestUnsentLogStore> alternate_ongoing_log_store =
+      InitializeTestLogStoreAndGet();
+  TestUnsentLogStore* alternate_ongoing_log_store_ptr =
+      alternate_ongoing_log_store.get();
+
+  ASSERT_EQ(0u, test_log_store->initial_log_count());
+  ASSERT_EQ(0u, test_log_store->ongoing_log_count());
+
+  service.SetUserLogStore(std::move(alternate_ongoing_log_store));
+
+  // Initial logs should not have been collected so the ongoing log being
+  // recorded should not be flushed when a user log store is mounted.
+  ASSERT_EQ(0u, test_log_store->initial_log_count());
+  ASSERT_EQ(0u, test_log_store->ongoing_log_count());
+
+  // Run pending tasks to finish init task and complete the first ongoing log.
+  task_runner_->RunPendingTasks();
+  ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
+  // When the init task is complete, the first ongoing log should be created
+  // in the alternate ongoing log store.
+  EXPECT_EQ(0u, test_log_store->initial_log_count());
+  EXPECT_EQ(0u, test_log_store->ongoing_log_count());
+  EXPECT_EQ(1u, alternate_ongoing_log_store_ptr->size());
+}
+
+TEST_F(MetricsServiceTest,
+       OngoingLogFlushedAfterInitialLogWhenUserLogStoreSet) {
+  EnableMetricsReporting();
+  TestMetricsServiceClient client;
+  TestMetricsService service(GetMetricsStateManager(), &client,
+                             GetLocalState());
+
+  service.InitializeMetricsRecordingState();
+  // Start() will create the first ongoing log.
+  service.Start();
+
+  MetricsLogStore* test_log_store = service.LogStoreForTest();
+  std::unique_ptr<TestUnsentLogStore> alternate_ongoing_log_store =
+      InitializeTestLogStoreAndGet();
+
+  // Init state.
+  ASSERT_EQ(0u, test_log_store->initial_log_count());
+  ASSERT_EQ(0u, test_log_store->ongoing_log_count());
+
+  // Run pending tasks to finish init task and complete the first ongoing log.
+  task_runner_->RunPendingTasks();
+  ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
+  ASSERT_EQ(0u, test_log_store->initial_log_count());
+  ASSERT_EQ(1u, test_log_store->ongoing_log_count());
+
+  // User log store set post-init.
+  service.SetUserLogStore(std::move(alternate_ongoing_log_store));
+
+  // Another log should have been flushed from setting the user log store.
+  ASSERT_EQ(0u, test_log_store->initial_log_count());
+  ASSERT_EQ(2u, test_log_store->ongoing_log_count());
+}
+#endif
 
 }  // namespace metrics

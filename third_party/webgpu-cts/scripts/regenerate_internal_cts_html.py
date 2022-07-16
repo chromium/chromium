@@ -77,7 +77,7 @@ def generate_internal_cts_html(check):
         finally:
             sys.path = old_sys_path
 
-        logging.info('WebGPU CTS: Generating cts.html...')
+        logging.info('WebGPU CTS: Generating cts.https.html...')
         cmd = [
             os.path.join(js_out_dir,
                          'common/tools/gen_wpt_cts_html.js'), cts_html_fname,
@@ -85,7 +85,7 @@ def generate_internal_cts_html(check):
                          'ctshtml-template.txt'),
             os.path.join(third_party_dir, 'blink', 'web_tests', 'webgpu',
                          'argsprefixes.txt'), split_list_fname,
-            'wpt_internal/webgpu/cts.html', 'webgpu'
+            'wpt_internal/webgpu/cts.https.html', 'webgpu'
         ]
         logging.info(RunNode(cmd))
 
@@ -98,7 +98,7 @@ def generate_internal_cts_html(check):
         shutil.rmtree(js_out_dir)
 
     out_cts_html = os.path.join(third_party_dir, 'blink', 'web_tests',
-                                'wpt_internal', 'webgpu', 'cts.html')
+                                'wpt_internal', 'webgpu', 'cts.https.html')
 
     if not contents:
         raise RuntimeError('Failed to generate %s' % out_cts_html)

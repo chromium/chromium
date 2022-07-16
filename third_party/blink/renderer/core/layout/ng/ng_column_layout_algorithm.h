@@ -26,8 +26,7 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
 
   scoped_refptr<const NGLayoutResult> Layout() override;
 
-  MinMaxSizesResult ComputeMinMaxSizes(
-      const MinMaxSizesFloatInput&) const override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
  private:
   MinMaxSizesResult ComputeSpannersMinMaxSizes(
@@ -78,12 +77,6 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
       const LogicalSize& column_size,
       LayoutUnit row_offset,
       const NGBlockBreakToken* child_break_token);
-
-  // Stretch the column length. We do this during column balancing, when we
-  // discover that the current length isn't large enough to fit all content.
-  LayoutUnit StretchColumnBlockSize(LayoutUnit minimal_space_shortage,
-                                    LayoutUnit current_column_size,
-                                    LayoutUnit row_offset) const;
 
   LayoutUnit ConstrainColumnBlockSize(LayoutUnit size,
                                       LayoutUnit row_offset) const;

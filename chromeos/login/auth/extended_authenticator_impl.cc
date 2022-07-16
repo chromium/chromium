@@ -251,17 +251,6 @@ void ExtendedAuthenticatorImpl::OnOperationComplete(
   LOG(ERROR) << "Extended authenticator cryptohome error, code: "
              << return_code;
 
-  AuthState state = FAILED_MOUNT;
-
-  if (return_code == cryptohome::MOUNT_ERROR_TPM_COMM_ERROR ||
-      return_code == cryptohome::MOUNT_ERROR_TPM_DEFEND_LOCK ||
-      return_code == cryptohome::MOUNT_ERROR_TPM_NEEDS_REBOOT) {
-    state = FAILED_TPM;
-  }
-
-  if (return_code == cryptohome::MOUNT_ERROR_USER_DOES_NOT_EXIST)
-    state = NO_MOUNT;
-
   if (consumer_) {
     AuthFailure failure(AuthFailure::UNLOCK_FAILED);
     consumer_->OnAuthFailure(failure);

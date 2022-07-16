@@ -33,8 +33,7 @@ namespace payments {
 class PaymentHandlerHost;
 
 // Represents a service worker based payment app.
-class ServiceWorkerPaymentApp : public PaymentApp,
-                                public content::WebContentsObserver {
+class ServiceWorkerPaymentApp : public PaymentApp {
  public:
   // This constructor is used for a payment app that has been installed in
   // Chrome. The `spec` parameter should not be null.
@@ -59,6 +58,10 @@ class ServiceWorkerPaymentApp : public PaymentApp,
       const std::string& enabled_method,
       bool is_incognito,
       const base::RepeatingClosure& show_processing_spinner);
+
+  ServiceWorkerPaymentApp(const ServiceWorkerPaymentApp&) = delete;
+  ServiceWorkerPaymentApp& operator=(const ServiceWorkerPaymentApp&) = delete;
+
   ~ServiceWorkerPaymentApp() override;
 
   // The callback for ValidateCanMakePayment.
@@ -96,9 +99,6 @@ class ServiceWorkerPaymentApp : public PaymentApp,
   const SkBitmap* icon_bitmap() const override;
   std::set<std::string> GetApplicationIdentifiersThatHideThisApp()
       const override;
-  bool IsReadyForMinimalUI() const override;
-  std::string GetAccountBalance() const override;
-  void DisableShowingOwnUI() override;
   bool HandlesShippingAddress() const override;
   bool HandlesPayerName() const override;
   bool HandlesPayerEmail() const override;
@@ -162,16 +162,11 @@ class ServiceWorkerPaymentApp : public PaymentApp,
   std::unique_ptr<WebAppInstallationInfo> installable_web_app_info_;
   std::string installable_enabled_method_;
 
-  // Minimal UI fields.
-  bool is_ready_for_minimal_ui_ = false;
-  std::string account_balance_;
-  bool can_show_own_ui_ = true;
-
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
-  base::WeakPtrFactory<ServiceWorkerPaymentApp> weak_ptr_factory_{this};
+  base::WeakPtr<content::WebContents> web_contents_;
 
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerPaymentApp);
+  base::WeakPtrFactory<ServiceWorkerPaymentApp> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

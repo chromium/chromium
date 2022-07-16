@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_SENT_GET_OPERATION_CLEANUP_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_SENT_GET_OPERATION_CLEANUP_TASK_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 
@@ -22,6 +21,11 @@ class SentGetOperationCleanupTask : public Task {
 
   SentGetOperationCleanupTask(PrefetchStore* prefetch_store,
                               PrefetchNetworkRequestFactory* request_factory);
+
+  SentGetOperationCleanupTask(const SentGetOperationCleanupTask&) = delete;
+  SentGetOperationCleanupTask& operator=(const SentGetOperationCleanupTask&) =
+      delete;
+
   ~SentGetOperationCleanupTask() override;
 
  private:
@@ -32,8 +36,6 @@ class SentGetOperationCleanupTask : public Task {
   PrefetchNetworkRequestFactory* request_factory_;  // Outlives this class.
 
   base::WeakPtrFactory<SentGetOperationCleanupTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SentGetOperationCleanupTask);
 };
 
 }  // namespace offline_pages

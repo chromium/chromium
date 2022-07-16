@@ -213,7 +213,7 @@ TEST_F(ManagedSessionServiceTest, OnProfileWillBeDestroyedPrimary) {
 TEST_F(ManagedSessionServiceTest, SuspendDone) {
   managed_session_service()->AddObserver(this);
   test_clock()->SetNow(base::Time::Now());
-  base::TimeDelta sleep_duration = base::TimeDelta::FromHours(2);
+  base::TimeDelta sleep_duration = base::Hours(2);
 
   power_manager_client()->SendSuspendDone(sleep_duration);
 

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace gfx {
 class Insets;
@@ -26,6 +25,10 @@ class RootWindowTransformer;
 class ASH_EXPORT TransformerHelper {
  public:
   explicit TransformerHelper(AshWindowTreeHost* ash_host);
+
+  TransformerHelper(const TransformerHelper&) = delete;
+  TransformerHelper& operator=(const TransformerHelper&) = delete;
+
   ~TransformerHelper();
 
   // Initializes the transformer with identity transform.
@@ -53,8 +56,6 @@ class ASH_EXPORT TransformerHelper {
  private:
   AshWindowTreeHost* ash_host_;
   std::unique_ptr<RootWindowTransformer> transformer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransformerHelper);
 };
 
 }  // namespace ash

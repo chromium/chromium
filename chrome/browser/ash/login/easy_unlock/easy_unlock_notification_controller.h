@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -21,6 +20,12 @@ namespace ash {
 class EasyUnlockNotificationController {
  public:
   explicit EasyUnlockNotificationController(Profile* profile);
+
+  EasyUnlockNotificationController(const EasyUnlockNotificationController&) =
+      delete;
+  EasyUnlockNotificationController& operator=(
+      const EasyUnlockNotificationController&) = delete;
+
   virtual ~EasyUnlockNotificationController();
 
   // Shows the notification when EasyUnlock is synced to a new Chromebook.
@@ -48,6 +53,9 @@ class EasyUnlockNotificationController {
                          const base::WeakPtr<EasyUnlockNotificationController>&
                              notification_controller);
 
+    NotificationDelegate(const NotificationDelegate&) = delete;
+    NotificationDelegate& operator=(const NotificationDelegate&) = delete;
+
     // message_center::NotificationDelegate:
     void Click(const absl::optional<int>& button_index,
                const absl::optional<std::u16string>& reply) override;
@@ -57,8 +65,6 @@ class EasyUnlockNotificationController {
 
     std::string notification_id_;
     base::WeakPtr<EasyUnlockNotificationController> notification_controller_;
-
-    DISALLOW_COPY_AND_ASSIGN(NotificationDelegate);
   };
 
   // Displays the notification to the user.
@@ -69,8 +75,6 @@ class EasyUnlockNotificationController {
 
   base::WeakPtrFactory<EasyUnlockNotificationController> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockNotificationController);
 };
 
 }  // namespace ash

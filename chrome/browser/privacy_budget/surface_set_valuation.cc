@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
@@ -23,15 +24,25 @@
 #include "chrome/common/privacy_budget/types.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
+namespace {
+
+IdentifiableSurfaceCostMap GetPerSurfaceCostsFromFieldTrial() {
+  return DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceCostMap>(
+      features::kIdentifiabilityStudyPerHashCost.Get());
+}
+
+IdentifiableSurfaceTypeCostMap GetPerTypeCostsFromFieldTrial() {
+  return DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceTypeCostMap>(
+      features::kIdentifiabilityStudyPerTypeCost.Get());
+}
+
+}  // namespace
+
 SurfaceSetValuation::SurfaceSetValuation(
     const SurfaceSetEquivalence& surface_set_equivalence)
     : equivalence_sets_(surface_set_equivalence),
-      per_surface_costs_(
-          DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceCostMap>(
-              features::kIdentifiabilityStudyPerHashCost.Get())),
-      per_type_costs_(
-          DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceTypeCostMap>(
-              features::kIdentifiabilityStudyPerTypeCost.Get())) {}
+      per_surface_costs_(GetPerSurfaceCostsFromFieldTrial()),
+      per_type_costs_(GetPerTypeCostsFromFieldTrial()) {}
 
 SurfaceSetValuation::~SurfaceSetValuation() = default;
 
@@ -76,4 +87,9 @@ double SurfaceSetValuation::IncrementalCost(
   if (base::Contains(prior, new_addition))
     return 0.0;
   return Cost(new_addition);
+}
+
+size_t SurfaceSetValuation::ExpectedSurfaceCountForCost(double cost) {
+  // The units are already in expected surface counts.
+  return base::ClampCeil<size_t>(cost);
 }

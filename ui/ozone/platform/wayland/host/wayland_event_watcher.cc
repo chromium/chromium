@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_event_watcher.h"
 
+#include <wayland-client-core.h>
 #include <cstring>
 #include <memory>
 
@@ -11,10 +12,11 @@
 #include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/crash/core/common/crash_key.h"
 #include "ui/events/event.h"
 #include "ui/ozone/platform/wayland/common/wayland.h"
 
@@ -24,6 +26,10 @@ namespace {
 
 void DispatchPending(wl_display* display, wl_event_queue* event_queue) {
   wl_display_dispatch_queue_pending(display, event_queue);
+}
+
+void wayland_log(const char* fmt, va_list argp) {
+  LOG(WARNING) << "libwayland: " << base::StringPrintV(fmt, argp);
 }
 
 }  // namespace
@@ -49,7 +55,9 @@ class WaylandEventWatcherThread : public base::Thread {
   explicit WaylandEventWatcherThread(
       base::OnceClosure start_processing_events_cb)
       : base::Thread("wayland-fd"),
-        start_processing_events_cb_(std::move(start_processing_events_cb)) {}
+        start_processing_events_cb_(std::move(start_processing_events_cb)) {
+    wl_log_set_handler_client(wayland_log);
+  }
   ~WaylandEventWatcherThread() override { Stop(); }
 
   void Init() override {
@@ -234,24 +242,44 @@ bool WaylandEventWatcher::CheckForErrors() {
     // When |err| is EPROTO, we can still use the |display_| to retrieve the
     // protocol error. Otherwise, get the error string from strerror and
     // shutdown the browser.
+    std::string error_string;
     if (err == EPROTO) {
       uint32_t ec, id;
       const struct wl_interface* intf;
       ec = wl_display_get_protocol_error(display_, &intf, &id);
       if (intf) {
-        LOG(ERROR) << "Fatal Wayland protocol error " << ec << " on interface "
-                   << intf->name << " (object " << id << "). Shutting down..";
+        error_string = base::StringPrintf(
+            "Fatal Wayland protocol error %u on interface %s (object %u). "
+            "Shutting down..",
+            ec, intf->name, id);
+        LOG(ERROR) << error_string;
       } else {
-        LOG(ERROR) << "Fatal Wayland protocol error " << ec
-                   << ". Shutting down..";
+        error_string = base::StringPrintf(
+            "Fatal Wayland protocol error %u. Shutting down..", ec);
+        LOG(ERROR) << error_string;
       }
     } else {
-      LOG(ERROR) << "Fatal Wayland communication error: " << std::strerror(err);
+      error_string = base::StringPrintf("Fatal Wayland communication error %s.",
+                                        std::strerror(err));
+      LOG(ERROR) << error_string;
     }
 
+    // Add a crash key so we can figure out why this is happening.
+    static crash_reporter::CrashKeyString<256> wayland_error("wayland_error");
+    wayland_error.Set(error_string);
+
     // This can be null in tests.
-    if (!shutdown_cb_.is_null())
-      std::move(shutdown_cb_).Run();
+    if (!shutdown_cb_.is_null()) {
+      // Force a crash so that a crash report is generated.
+      CHECK(err == EPIPE || err == ECONNRESET) << "Wayland protocol error.";
+      if (ui_thread_task_runner_->BelongsToCurrentThread()) {
+        DCHECK(!use_dedicated_polling_thread_);
+        std::move(shutdown_cb_).Run();
+      } else {
+        DCHECK(use_dedicated_polling_thread_);
+        ui_thread_task_runner_->PostTask(FROM_HERE, std::move(shutdown_cb_));
+      }
+    }
     return false;
   }
 

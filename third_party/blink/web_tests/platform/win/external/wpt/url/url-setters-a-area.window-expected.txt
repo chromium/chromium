@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 435 tests; 243 PASS, 192 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 435 tests; 245 PASS, 190 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 FAIL <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged. assert_equals: expected "a://example.net" but got "file:///A://example.net"
 FAIL <area>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged. assert_equals: expected "a://example.net" but got "file:///A://example.net"
@@ -151,8 +151,8 @@ PASS <a>: Setting <http://example.net>.host = '' The empty host is not valid for
 PASS <area>: Setting <http://example.net>.host = '' The empty host is not valid for special schemes
 FAIL <a>: Setting <view-source+http://example.net/foo>.host = '' The empty host is OK for non-special schemes assert_equals: expected "view-source+http:///foo" but got "view-source+http://example.net/foo"
 FAIL <area>: Setting <view-source+http://example.net/foo>.host = '' The empty host is OK for non-special schemes assert_equals: expected "view-source+http:///foo" but got "view-source+http://example.net/foo"
-FAIL <a>: Setting <a:/foo>.host = 'example.net' Path-only URLs can gain a host assert_equals: expected "a://example.net/foo" but got "file:///A:/foo"
-FAIL <area>: Setting <a:/foo>.host = 'example.net' Path-only URLs can gain a host assert_equals: expected "a://example.net/foo" but got "file:///A:/foo"
+FAIL <a>: Setting <a:/foo>.host = 'example.net' Path-only URLs can gain a host assert_equals: expected "a://example.net/foo" but got "file://example.net/A:/foo"
+FAIL <area>: Setting <a:/foo>.host = 'example.net' Path-only URLs can gain a host assert_equals: expected "a://example.net/foo" but got "file://example.net/A:/foo"
 PASS <a>: Setting <http://example.net>.host = '0x7F000001:8080' IPv4 address syntax is normalized
 PASS <area>: Setting <http://example.net>.host = '0x7F000001:8080' IPv4 address syntax is normalized
 PASS <a>: Setting <http://example.net>.host = '[::0:01]:2' IPv6 address syntax is normalized
@@ -249,8 +249,8 @@ PASS <a>: Setting <http://example.net>.hostname = '' The empty host is not valid
 PASS <area>: Setting <http://example.net>.hostname = '' The empty host is not valid for special schemes
 FAIL <a>: Setting <view-source+http://example.net/foo>.hostname = '' The empty host is OK for non-special schemes assert_equals: expected "view-source+http:///foo" but got "view-source+http://example.net/foo"
 FAIL <area>: Setting <view-source+http://example.net/foo>.hostname = '' The empty host is OK for non-special schemes assert_equals: expected "view-source+http:///foo" but got "view-source+http://example.net/foo"
-FAIL <a>: Setting <a:/foo>.hostname = 'example.net' Path-only URLs can gain a host assert_equals: expected "a://example.net/foo" but got "file:///A:/foo"
-FAIL <area>: Setting <a:/foo>.hostname = 'example.net' Path-only URLs can gain a host assert_equals: expected "a://example.net/foo" but got "file:///A:/foo"
+FAIL <a>: Setting <a:/foo>.hostname = 'example.net' Path-only URLs can gain a host assert_equals: expected "a://example.net/foo" but got "file://example.net/A:/foo"
+FAIL <area>: Setting <a:/foo>.hostname = 'example.net' Path-only URLs can gain a host assert_equals: expected "a://example.net/foo" but got "file://example.net/A:/foo"
 PASS <a>: Setting <http://example.net:8080>.hostname = '0x7F000001' IPv4 address syntax is normalized
 PASS <area>: Setting <http://example.net:8080>.hostname = '0x7F000001' IPv4 address syntax is normalized
 PASS <a>: Setting <http://example.net>.hostname = '[::0:01]' IPv6 address syntax is normalized
@@ -293,8 +293,8 @@ FAIL <a>: Setting <non-spec:/.//p>.hostname = 'h' Drop /. from path assert_equal
 FAIL <area>: Setting <non-spec:/.//p>.hostname = 'h' Drop /. from path assert_equals: expected "non-spec://h//p" but got "non-spec:/.//p"
 FAIL <a>: Setting <non-spec:/.//p>.hostname = '' assert_equals: expected "non-spec:////p" but got "non-spec:/.//p"
 FAIL <area>: Setting <non-spec:/.//p>.hostname = '' assert_equals: expected "non-spec:////p" but got "non-spec:/.//p"
-FAIL <a>: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "http://example.com/" but got "http://bad.com/"
-FAIL <area>: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "http://example.com/" but got "http://bad.com/"
+PASS <a>: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped
+PASS <area>: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped
 FAIL <a>: Setting <sc://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "sc:///" but got "sc://example.com/"
 FAIL <area>: Setting <sc://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "sc:///" but got "sc://example.com/"
 PASS <a>: Setting <http://example.net>.port = '8080'

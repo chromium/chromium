@@ -15,6 +15,10 @@ class ShellNativeAppWindowAura : public ShellNativeAppWindow {
  public:
   ShellNativeAppWindowAura(extensions::AppWindow* app_window,
                            const AppWindow::CreateParams& params);
+
+  ShellNativeAppWindowAura(const ShellNativeAppWindowAura&) = delete;
+  ShellNativeAppWindowAura& operator=(const ShellNativeAppWindowAura&) = delete;
+
   ~ShellNativeAppWindowAura() override;
 
   // ui::BaseWindow:
@@ -31,9 +35,6 @@ class ShellNativeAppWindowAura : public ShellNativeAppWindow {
   // NativeAppWindow:
   gfx::Size GetContentMinimumSize() const override;
   gfx::Size GetContentMaximumSize() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellNativeAppWindowAura);
 };
 
 }  // namespace extensions

@@ -29,6 +29,9 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
                      uint64_t size,
                      WGPUBuffer buffer);
 
+  GPUBuffer(const GPUBuffer&) = delete;
+  GPUBuffer& operator=(const GPUBuffer&) = delete;
+
   void Trace(Visitor* visitor) const override;
 
   // gpu_buffer.idl
@@ -81,8 +84,6 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
 
   // List of ranges currently returned by getMappedRange, to avoid overlaps.
   Vector<std::pair<size_t, size_t>> mapped_ranges_;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUBuffer);
 };
 
 }  // namespace blink

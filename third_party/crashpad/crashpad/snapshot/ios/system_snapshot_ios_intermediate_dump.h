@@ -19,7 +19,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "snapshot/system_snapshot.h"
 #include "util/ios/ios_intermediate_dump_map.h"
 #include "util/ios/ios_system_data_collector.h"
@@ -33,6 +32,12 @@ namespace internal {
 class SystemSnapshotIOSIntermediateDump final : public SystemSnapshot {
  public:
   SystemSnapshotIOSIntermediateDump();
+
+  SystemSnapshotIOSIntermediateDump(const SystemSnapshotIOSIntermediateDump&) =
+      delete;
+  SystemSnapshotIOSIntermediateDump& operator=(
+      const SystemSnapshotIOSIntermediateDump&) = delete;
+
   ~SystemSnapshotIOSIntermediateDump() override;
 
   //! \brief Initializes the object.
@@ -87,8 +92,6 @@ class SystemSnapshotIOSIntermediateDump final : public SystemSnapshot {
   std::string standard_name_;
   std::string daylight_name_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemSnapshotIOSIntermediateDump);
 };
 
 }  // namespace internal

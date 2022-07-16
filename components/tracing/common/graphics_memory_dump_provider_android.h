@@ -11,7 +11,6 @@
 #include <unordered_set>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/tracing/tracing_export.h"
@@ -27,6 +26,10 @@ class TRACING_EXPORT GraphicsMemoryDumpProvider
     : public base::trace_event::MemoryDumpProvider {
  public:
   static GraphicsMemoryDumpProvider* GetInstance();
+
+  GraphicsMemoryDumpProvider(const GraphicsMemoryDumpProvider&) = delete;
+  GraphicsMemoryDumpProvider& operator=(const GraphicsMemoryDumpProvider&) =
+      delete;
 
   // MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
@@ -48,8 +51,6 @@ class TRACING_EXPORT GraphicsMemoryDumpProvider
   // Stores key names coming from the memtrack helper in long-lived storage.
   // This is to allow using cheap char* strings in tracing without copies.
   std::unordered_set<std::string> key_names_;
-
-  DISALLOW_COPY_AND_ASSIGN(GraphicsMemoryDumpProvider);
 };
 
 }  // namespace tracing

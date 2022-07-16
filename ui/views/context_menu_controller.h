@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTEXT_MENU_CONTROLLER_H_
 #define UI_VIEWS_CONTEXT_MENU_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/views_export.h"
@@ -32,6 +31,9 @@ class VIEWS_EXPORT ContextMenuController {
  public:
   ContextMenuController();
 
+  ContextMenuController(const ContextMenuController&) = delete;
+  ContextMenuController& operator=(const ContextMenuController&) = delete;
+
   // Invoked to show the context menu for |source|. |point| is in screen
   // coordinates. This method also prevents reentrant calls.
   void ShowContextMenuForView(View* source,
@@ -54,8 +56,6 @@ class VIEWS_EXPORT ContextMenuController {
   bool is_opening_ = false;
 
   base::WeakPtrFactory<ContextMenuController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuController);
 };
 
 }  // namespace views

@@ -32,7 +32,10 @@ if (optimize_webui) {
 }
 
 generate_grd("build_grd") {
-  input_files = [ "bookmarks.html" ]
+  input_files = [
+    "bookmarks.html",
+    "images/folder_open.svg",
+  ]
   input_files_base_dir = rebase_path(".", "//")
 
   if (optimize_webui) {
@@ -61,7 +64,7 @@ preprocess_if_expr("preprocess") {
     "dnd_manager.ts",
     "mouse_focus_behavior.ts",
     "reducers.ts",
-    "store_client.ts",
+    "store_client_mixin.ts",
     "store.ts",
     "types.ts",
     "util.ts",
@@ -121,6 +124,7 @@ grit("resources") {
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/$tsc_folder"
+  composite = true
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "actions.ts",
@@ -143,7 +147,7 @@ ts_library("build_ts") {
     "shared_vars.ts",
     "shared_style.ts",
     "store.ts",
-    "store_client.ts",
+    "store_client_mixin.ts",
     "toolbar.ts",
     "types.ts",
     "util.ts",

@@ -2,6 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * The multidevice setup animation for light mode.
+ * @type {string}
+ */
+const MULTIDEVICE_ANIMATION_DARK_URL = 'multidevice_setup_dark.json';
+
+/**
+ * The multidevice setup animation for dark mode.
+ * @type {string}
+ */
+const MULTIDEVICE_ANIMATION_LIGHT_URL = 'multidevice_setup_light.json';
+
 Polymer({
   is: 'start-setup-page',
 
@@ -61,17 +73,22 @@ Polymer({
       },
     },
 
-    /**
-     * Whether new OOBE layout is enabled.
-     *
-     * @type {boolean}
-     */
-    newLayoutEnabled_: {
+    /** @private */
+    phoneHubCameraRollEnabled_: {
       type: Boolean,
       value() {
-        return loadTimeData.valueExists('newLayoutEnabled') &&
-            loadTimeData.getBoolean('newLayoutEnabled');
-      }
+        return loadTimeData.valueExists('phoneHubCameraRollEnabled') &&
+            loadTimeData.getBoolean('phoneHubCameraRollEnabled');
+      },
+    },
+
+    /**
+     * Whether the multidevice setup page is being rendered in dark mode.
+     * @private {boolean}
+     */
+    isDarkModeActive_: {
+      type: Boolean,
+      value: false,
     },
   },
 
@@ -84,7 +101,7 @@ Polymer({
   attached() {
     this.addWebUIListener(
         'multidevice_setup.initializeSetupFlow',
-        this.initializeSetupFlow_.bind(this));
+        () => this.initializeSetupFlow_());
   },
 
   /**
@@ -230,5 +247,16 @@ Polymer({
    */
   i18nAdvancedDynamic_(locale, textId) {
     return this.i18nAdvanced(textId);
+  },
+
+  /**
+   * Returns the URL for the asset that defines the multidevice setup page's
+   * animation
+   * @return {string}
+   * @private
+   */
+  getAnimationUrl_() {
+    return this.isDarkModeActive_ ? MULTIDEVICE_ANIMATION_DARK_URL :
+                                    MULTIDEVICE_ANIMATION_LIGHT_URL;
   },
 });

@@ -1262,11 +1262,15 @@ const CertificateNameVerifyTestData kNameVerifyTestData[] = {
     {true, "FE80::200:f8ff:fe21:67cf", "",
      "x00000000000000000000000006070808,xfe800000000000000200f8fffe2167cf,"
      "xff0000000000000000000000060708ff,10.0.0.1"},
-    // Numeric only hostnames (none of these are considered valid IP addresses).
+    // Invalid hostnames with final numeric component.
     {false, "121.2.3.512", "1*1.2.3.512,*1.2.3.512,1*.2.3.512,*.2.3.512",
      "121.2.3.0"},
     {false, "1.2.3.4.5.6", "*.2.3.4.5.6"},
-    {true, "1.2.3.4.5", "1.2.3.4.5"},
+    {false, "1.2.3.4.5", "1.2.3.4.5"},
+    {false, "a.0.0.1", "*.0.0.1"},
+    // IP addresses in dNSName should not match commonName
+    {false, "127.0.0.1", "127.0.0.1"},
+    {false, "127.0.0.1", "*.0.0.1"},
     // Invalid host names.
     {false, ".", ""},
     {false, ".", "."},

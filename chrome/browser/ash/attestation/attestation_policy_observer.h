@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ATTESTATION_ATTESTATION_POLICY_OBSERVER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
@@ -25,6 +24,10 @@ class AttestationPolicyObserver {
   explicit AttestationPolicyObserver(
       MachineCertificateUploader* certificate_uploader);
 
+  AttestationPolicyObserver(const AttestationPolicyObserver&) = delete;
+  AttestationPolicyObserver& operator=(const AttestationPolicyObserver&) =
+      delete;
+
   ~AttestationPolicyObserver();
 
  private:
@@ -38,8 +41,6 @@ class AttestationPolicyObserver {
   MachineCertificateUploader* certificate_uploader_;
 
   base::CallbackListSubscription attestation_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(AttestationPolicyObserver);
 };
 
 }  // namespace attestation

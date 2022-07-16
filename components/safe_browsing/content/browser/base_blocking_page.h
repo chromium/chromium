@@ -9,13 +9,16 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "url/gurl.h"
+
+namespace content {
+class NavigationHandle;
+}
 
 namespace security_interstitials {
 class SettingsPageHelper;
@@ -33,6 +36,9 @@ class BaseBlockingPage
   typedef std::vector<UnsafeResource> UnsafeResourceList;
   typedef std::unordered_map<content::WebContents*, UnsafeResourceList>
       UnsafeResourceMap;
+
+  BaseBlockingPage(const BaseBlockingPage&) = delete;
+  BaseBlockingPage& operator=(const BaseBlockingPage&) = delete;
 
   ~BaseBlockingPage() override;
 
@@ -52,6 +58,23 @@ class BaseBlockingPage
   // Populates the report details for |unsafe_resources|.
   static security_interstitials::MetricsHelper::ReportDetails GetReportingInfo(
       const UnsafeResourceList& unsafe_resources);
+
+  // Can be used by implementations of SafeBrowsingBlockingPageFactory.
+  static std::unique_ptr<
+      security_interstitials::SecurityInterstitialControllerClient>
+  CreateControllerClient(
+      content::WebContents* web_contents,
+      const UnsafeResourceList& unsafe_resources,
+      BaseUIManager* ui_manager,
+      PrefService* pref_service,
+      std::unique_ptr<security_interstitials::SettingsPageHelper>
+          settings_page_helper);
+
+  // If `this` was created for a post commit error page,
+  // `error_page_navigation_handle` is the navigation created for this blocking
+  // page.
+  virtual void CreatedPostCommitErrorPageNavigation(
+      content::NavigationHandle* error_page_navigation_handle) {}
 
  protected:
   // Don't instantiate this class directly, use ShowBlockingPage instead.
@@ -108,16 +131,6 @@ class BaseBlockingPage
 
   void SetThreatDetailsProceedDelayForTesting(int64_t delay);
 
-  static std::unique_ptr<
-      security_interstitials::SecurityInterstitialControllerClient>
-  CreateControllerClient(
-      content::WebContents* web_contents,
-      const UnsafeResourceList& unsafe_resources,
-      BaseUIManager* ui_manager,
-      PrefService* pref_service,
-      std::unique_ptr<security_interstitials::SettingsPageHelper>
-          settings_page_helper);
-
   int GetHTMLTemplateId() override;
 
   void set_sb_error_ui(std::unique_ptr<BaseSafeBrowsingErrorUI> sb_error_ui);
@@ -149,8 +162,6 @@ class BaseBlockingPage
 
   // For displaying safe browsing interstitial.
   std::unique_ptr<BaseSafeBrowsingErrorUI> sb_error_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseBlockingPage);
 };
 
 }  // namespace safe_browsing

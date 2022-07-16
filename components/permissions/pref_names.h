@@ -10,6 +10,7 @@
 namespace permissions {
 namespace prefs {
 
+extern const char kPermissionActions[];
 #if defined(OS_ANDROID)
 extern const char kLocationSettingsBackoffLevelDSE[];
 extern const char kLocationSettingsBackoffLevelDefault[];

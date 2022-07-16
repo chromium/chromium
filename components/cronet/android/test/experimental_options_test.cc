@@ -48,10 +48,8 @@ void WriteToHostCacheOnNetworkThread(jlong jcontext_adapter,
       net::AddressList::CreateFromIPAddress(address, 0);
   net::HostCache::Entry entry(net::OK, address_list,
                               net::HostCache::Entry::SOURCE_UNKNOWN);
-  cache->Set(key1, entry, base::TimeTicks::Now(),
-             base::TimeDelta::FromSeconds(1));
-  cache->Set(key2, entry, base::TimeTicks::Now(),
-             base::TimeDelta::FromSeconds(1));
+  cache->Set(key1, entry, base::TimeTicks::Now(), base::Seconds(1));
+  cache->Set(key2, entry, base::TimeTicks::Now(), base::Seconds(1));
 }
 }  // namespace
 

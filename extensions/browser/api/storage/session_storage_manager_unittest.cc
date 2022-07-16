@@ -7,8 +7,8 @@
 #include "base/containers/contains.h"
 #include "base/values.h"
 #include "extensions/browser/api/storage/session_storage_manager.h"
+#include "extensions/browser/extensions_test.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
@@ -26,11 +26,17 @@ using testing::AllOf;
 using testing::Ge;
 using testing::Le;
 
+std::unique_ptr<KeyedService> SetTestingSessionStorageManager(
+    content::BrowserContext* browser_context) {
+  return std::make_unique<extensions::SessionStorageManager>(
+      kQuotaBytesPerExtension, browser_context);
+}
+
 }  // namespace
 
 namespace extensions {
 
-class SessionStorageManagerUnittest : public testing::Test {
+class SessionStorageManagerUnittest : public ExtensionsTest {
  public:
   SessionStorageManagerUnittest()
       : value_int_(123),
@@ -41,11 +47,12 @@ class SessionStorageManagerUnittest : public testing::Test {
     value_list_.Append(2);
     value_dict_.SetIntKey("int", 123);
     value_dict_.SetStringKey("string", "abc");
-
-    manager_ = std::make_unique<SessionStorageManager>(kQuotaBytesPerExtension);
   }
 
  protected:
+  // ExtensionsTest:
+  void SetUp() override;
+
   // Values with different types.
   base::Value value_int_;
   base::Value value_string_;
@@ -53,8 +60,16 @@ class SessionStorageManagerUnittest : public testing::Test {
   base::Value value_dict_;
 
   // Session storage manager being tested.
-  std::unique_ptr<SessionStorageManager> manager_;
+  SessionStorageManager* manager_;
 };
+
+void SessionStorageManagerUnittest::SetUp() {
+  ExtensionsTest::SetUp();
+  manager_ = static_cast<SessionStorageManager*>(
+      SessionStorageManager::GetFactory()->SetTestingFactoryAndUse(
+          browser_context(),
+          base::BindRepeating(&SetTestingSessionStorageManager)));
+}
 
 TEST_F(SessionStorageManagerUnittest, SetGetAndRemoveOneExtensionSuccessful) {
   {

@@ -21,7 +21,7 @@
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {NetworkList} from 'chrome://resources/cr_components/chromeos/network/network_list_types.m.js';
 // #import {keyDownOn, move} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {eventToPromise} from 'chrome://test/test_util.m.js';
+// #import {eventToPromise} from 'chrome://test/test_util.js';
 // #import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
 // clang-format on
 
@@ -44,17 +44,7 @@ suite('NetworkListItemTest', function() {
     setESimManagerRemoteForTesting(eSimManagerRemote);
   });
 
-  /** @param {boolean=} opt_cellularFlagValue */
-  function init(opt_cellularFlagValue) {
-    let cellularFlagValue = true;
-    if (opt_cellularFlagValue === false) {
-      cellularFlagValue = opt_cellularFlagValue;
-    }
-
-    loadTimeData.overrideValues({
-      updatedCellularActivationUi: cellularFlagValue,
-    });
-
+  function init() {
     listItem = document.createElement('network-list-item');
     listItem.showButtons = true;
     setEventListeners();
@@ -469,41 +459,6 @@ suite('NetworkListItemTest', function() {
         assertTrue(!!spinner);
       });
 
-  test('Only active SIMs should show scanning subtext', async () => {
-    init(/*opt_cellularFlagValue=*/ false);
-
-    const kTestIccid1 = '00000000000000000000';
-    const kTestIccid2 = '11111111111111111111';
-    const kTestEid = '1';
-    const networkStateText = listItem.$$('#networkStateText');
-
-    eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
-    const cellularNetwork1 = initCellularNetwork(kTestIccid1, kTestEid);
-    const cellularNetwork2 = initCellularNetwork(kTestIccid2, /*eid=*/ '');
-
-    // Assert that state text is hidden for inactive SIM.
-    listItem.deviceState = {
-      type: mojom.NetworkType.kCellular,
-      deviceState: mojom.DeviceStateType.kEnabled,
-      simInfos: [
-        {slot_id: 1, eid: kTestEid, iccid: kTestIccid1, isPrimary: false},
-        {slot_id: 2, eid: '', iccid: kTestIccid2, isPrimary: true}
-      ],
-      scanning: true
-    };
-    listItem.item = cellularNetwork1;
-    await flushAsync();
-    assertTrue(networkStateText.hidden);
-
-    // Assert that scanning subtext is shown for active SIM.
-    listItem.item = cellularNetwork2;
-    await flushAsync();
-    assertFalse(networkStateText.hidden);
-    assertEquals(
-        networkStateText.textContent.trim(),
-        listItem.i18n('networkListItemScanning'));
-  });
-
   test('Show sim lock dialog when cellular network is locked', async () => {
     init();
 
@@ -672,8 +627,6 @@ suite('NetworkListItemTest', function() {
         eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
         const networkStateLockedText =
             listItem.i18n('networkListItemUpdatedCellularSimCardLocked');
-        const networkStateScanningText =
-            listItem.i18n('networkListItemScanning');
 
         listItem.item = initCellularNetwork(iccid, eid, /*simlocked=*/ true);
         listItem.deviceState = {scanning: true};
@@ -683,7 +636,35 @@ suite('NetworkListItemTest', function() {
         assertTrue(!!networkStateText);
         assertEquals(
             networkStateLockedText, networkStateText.textContent.trim());
-        assertNotEquals(
-            networkStateScanningText, networkStateText.textContent.trim());
+      });
+
+  test(
+      'Show detail page when clicking on blocked cellular network item',
+      async () => {
+        init();
+
+        // Set item to a policy blocked cellular network.
+        const managedProperties = OncMojo.getDefaultManagedProperties(
+            mojom.NetworkType.kCellular, 'cellular');
+        managedProperties.connectionState =
+            mojom.ConnectionStateType.kNotConnected;
+        managedProperties.source = mojom.OncSource.kNone;
+        mojoApi_.setManagedPropertiesForTest(managedProperties);
+
+        const networkState =
+            OncMojo.managedPropertiesToNetworkState(managedProperties);
+        listItem.item = networkState;
+        // Set global policy to restrict managed cellular networks.
+        listItem.globalPolicy = {
+          allowOnlyPolicyCellularNetworks: true,
+        };
+        await flushAsync();
+
+        // Selecting the row should fire the show-detail event.
+        const showDetailPromise =
+            test_util.eventToPromise('show-detail', listItem);
+        listItem.$.divOuter.click();
+        const showDetailEvent = await showDetailPromise;
+        assertEquals(showDetailEvent.detail, networkState);
       });
 });

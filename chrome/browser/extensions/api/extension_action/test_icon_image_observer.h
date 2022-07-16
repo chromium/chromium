@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_EXTENSION_ACTION_TEST_ICON_IMAGE_OBSERVER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_EXTENSION_ACTION_TEST_ICON_IMAGE_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_icon_image.h"
@@ -19,6 +18,10 @@ class Extension;
 class TestIconImageObserver : public IconImage::Observer {
  public:
   TestIconImageObserver();
+
+  TestIconImageObserver(const TestIconImageObserver&) = delete;
+  TestIconImageObserver& operator=(const TestIconImageObserver&) = delete;
+
   ~TestIconImageObserver() override;
 
   void Wait(IconImage* icon);
@@ -33,8 +36,6 @@ class TestIconImageObserver : public IconImage::Observer {
 
   base::RunLoop run_loop_;
   base::ScopedObservation<IconImage, IconImage::Observer> observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestIconImageObserver);
 };
 }  // namespace extensions
 

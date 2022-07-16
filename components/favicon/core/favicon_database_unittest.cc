@@ -317,7 +317,7 @@ TEST_F(FaviconDatabaseTest, GetFaviconLastUpdatedTimeReturnsMaxTime) {
   base::Time add_time1;
   ASSERT_TRUE(
       base::Time::FromUTCExploded({2017, 5, 0, 1, 0, 0, 0, 0}, &add_time1));
-  base::Time add_time2 = add_time1 - base::TimeDelta::FromSeconds(1);
+  base::Time add_time2 = add_time1 - base::Seconds(1);
   std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
@@ -356,8 +356,7 @@ TEST_F(FaviconDatabaseTest, TouchUpdatesOnDemandFavicons) {
       icon, favicon, FaviconBitmapType::ON_DEMAND, start, gfx::Size());
   ASSERT_NE(0, bitmap);
 
-  base::Time end =
-      start + base::TimeDelta::FromDays(kFaviconUpdateLastRequestedAfterDays);
+  base::Time end = start + base::Days(kFaviconUpdateLastRequestedAfterDays);
   EXPECT_TRUE(db.TouchOnDemandFavicon(url, end));
 
   base::Time last_updated;
@@ -388,7 +387,7 @@ TEST_F(FaviconDatabaseTest, TouchUpdatesOnlyInfrequently) {
       icon, favicon, FaviconBitmapType::ON_DEMAND, start, gfx::Size());
   ASSERT_NE(0, bitmap);
 
-  base::Time end = start + base::TimeDelta::FromMinutes(1);
+  base::Time end = start + base::Minutes(1);
   EXPECT_TRUE(db.TouchOnDemandFavicon(url, end));
 
   base::Time last_requested;
@@ -416,8 +415,7 @@ TEST_F(FaviconDatabaseTest, TouchDoesNotUpdateStandardFavicons) {
       icon, favicon, FaviconBitmapType::ON_VISIT, start, gfx::Size());
   EXPECT_NE(0, bitmap);
 
-  base::Time end =
-      start + base::TimeDelta::FromDays(kFaviconUpdateLastRequestedAfterDays);
+  base::Time end = start + base::Days(kFaviconUpdateLastRequestedAfterDays);
   db.TouchOnDemandFavicon(url, end);
 
   base::Time last_updated;
@@ -451,7 +449,7 @@ TEST_F(FaviconDatabaseTest, GetOldOnDemandFaviconsReturnsOld) {
   GURL page_url2("http://google.com/2");
   ASSERT_NE(0, db.AddIconMapping(page_url2, icon));
 
-  base::Time get_older_than = start + base::TimeDelta::FromSeconds(1);
+  base::Time get_older_than = start + base::Seconds(1);
   auto map = db.GetOldOnDemandFavicons(get_older_than);
 
   // The icon is returned.
@@ -484,7 +482,7 @@ TEST_F(FaviconDatabaseTest, GetOldOnDemandFaviconsDoesNotReturnExpired) {
   ASSERT_NE(0, db.AddIconMapping(page_url, icon));
   ASSERT_TRUE(db.SetFaviconOutOfDate(icon));
 
-  base::Time get_older_than = start + base::TimeDelta::FromSeconds(1);
+  base::Time get_older_than = start + base::Seconds(1);
   auto map = db.GetOldOnDemandFavicons(get_older_than);
 
   // No icon is returned.
@@ -511,10 +509,10 @@ TEST_F(FaviconDatabaseTest, GetOldOnDemandFaviconsDoesNotReturnFresh) {
   ASSERT_NE(0, db.AddIconMapping(GURL("http://google.com/"), icon));
 
   // Touch the icon 3 weeks later.
-  base::Time now = start + base::TimeDelta::FromDays(21);
+  base::Time now = start + base::Days(21);
   EXPECT_TRUE(db.TouchOnDemandFavicon(url, now));
 
-  base::Time get_older_than = start + base::TimeDelta::FromSeconds(1);
+  base::Time get_older_than = start + base::Seconds(1);
   auto map = db.GetOldOnDemandFavicons(get_older_than);
 
   // No icon is returned.
@@ -539,7 +537,7 @@ TEST_F(FaviconDatabaseTest, GetOldOnDemandFaviconsDoesNotDeleteStandard) {
   ASSERT_NE(0, icon);
   ASSERT_NE(0, db.AddIconMapping(GURL("http://google.com/"), icon));
 
-  base::Time get_older_than = start + base::TimeDelta::FromSeconds(1);
+  base::Time get_older_than = start + base::Seconds(1);
   auto map = db.GetOldOnDemandFavicons(get_older_than);
 
   // No icon is returned.
@@ -1375,7 +1373,7 @@ TEST_F(FaviconDatabaseTest, GetFaviconsLastUpdatedBefore) {
                     FaviconBitmapType::ON_VISIT, time1, gfx::Size());
   EXPECT_NE(0u, id1);
 
-  const base::Time time2 = time1 - base::TimeDelta::FromSeconds(10);
+  const base::Time time2 = time1 - base::Seconds(10);
   favicon_base::FaviconID id2 =
       db.AddFavicon(url, favicon_base::IconType::kTouchIcon, favicon,
                     FaviconBitmapType::ON_VISIT, time2, gfx::Size());
@@ -1383,27 +1381,23 @@ TEST_F(FaviconDatabaseTest, GetFaviconsLastUpdatedBefore) {
   EXPECT_NE(id1, id2);
 
   // There should be no favicons before |time2|.
-  EXPECT_TRUE(db.GetFaviconsLastUpdatedBefore(
-                    time2 - base::TimeDelta::FromSeconds(1), 10)
-                  .empty());
+  EXPECT_TRUE(
+      db.GetFaviconsLastUpdatedBefore(time2 - base::Seconds(1), 10).empty());
 
   // Requesting a time after |time2| should return |id2|.
-  auto ids = db.GetFaviconsLastUpdatedBefore(
-      time2 + base::TimeDelta::FromSeconds(1), 10);
+  auto ids = db.GetFaviconsLastUpdatedBefore(time2 + base::Seconds(1), 10);
   ASSERT_EQ(1u, ids.size());
   EXPECT_EQ(id2, ids[0]);
 
   // There should two favicons when using a time after |time1|.
-  ids = db.GetFaviconsLastUpdatedBefore(time1 + base::TimeDelta::FromSeconds(1),
-                                        10);
+  ids = db.GetFaviconsLastUpdatedBefore(time1 + base::Seconds(1), 10);
   ASSERT_EQ(2u, ids.size());
   // |id2| is before |id1|, so it should be returned first.
   EXPECT_EQ(id2, ids[0]);
   EXPECT_EQ(id1, ids[1]);
 
   // Repeat previous, but cap the max at 1.
-  ids = db.GetFaviconsLastUpdatedBefore(time1 + base::TimeDelta::FromSeconds(1),
-                                        1);
+  ids = db.GetFaviconsLastUpdatedBefore(time1 + base::Seconds(1), 1);
   ASSERT_EQ(1u, ids.size());
   // |id2| is before |id1|, so it should be returned first.
   EXPECT_EQ(id2, ids[0]);
@@ -1414,9 +1408,9 @@ TEST_F(FaviconDatabaseTest, SetFaviconsOutOfDateBetween) {
   ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
   db.BeginTransaction();
 
-  base::Time t1 = base::Time::Now() - base::TimeDelta::FromMinutes(3);
-  base::Time t2 = base::Time::Now() - base::TimeDelta::FromMinutes(2);
-  base::Time t3 = base::Time::Now() - base::TimeDelta::FromMinutes(1);
+  base::Time t1 = base::Time::Now() - base::Minutes(3);
+  base::Time t2 = base::Time::Now() - base::Minutes(2);
+  base::Time t3 = base::Time::Now() - base::Minutes(1);
 
   std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));

@@ -59,12 +59,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadSchedulerImpl {
 
   // ThreadSchedulerImpl:
   scoped_refptr<base::SingleThreadTaskRunner> ControlTaskRunner() override;
-  void RegisterTimeDomain(
-      base::sequence_manager::TimeDomain* time_domain) override;
-  void UnregisterTimeDomain(
-      base::sequence_manager::TimeDomain* time_domain) override;
-  base::sequence_manager::TimeDomain* GetActiveTimeDomain() override;
-  const base::TickClock* GetTickClock() override;
+  const base::TickClock* GetTickClock() const override;
 
   // ThreadScheduler implementation.
   // TODO(yutak): Some functions are only meaningful in main thread. Move them
@@ -108,18 +103,24 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadSchedulerImpl {
  protected:
   static void RunIdleTask(Thread::IdleTask task, base::TimeTicks deadline);
 
+  // ThreadSchedulerImpl:
+  WTF::Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() override;
+
   // |sequence_manager| must remain valid for the entire lifetime of
   // this object.
   explicit NonMainThreadSchedulerImpl(
       base::sequence_manager::SequenceManager* sequence_manager,
       TaskType default_task_type);
 
-  friend class WorkerScheduler;
+  friend class WorkerSchedulerImpl;
 
   NonMainThreadSchedulerHelper* helper() { return &helper_; }
 
  private:
   NonMainThreadSchedulerHelper helper_;
+
+  // List of callbacks to execute after the current task.
+  WTF::Vector<base::OnceClosure> on_task_completion_callbacks_;
 };
 
 }  // namespace scheduler

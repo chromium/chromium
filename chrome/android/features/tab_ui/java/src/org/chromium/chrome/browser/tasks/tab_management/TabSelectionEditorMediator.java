@@ -10,9 +10,7 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -22,7 +20,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider;
-import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -119,31 +117,11 @@ class TabSelectionEditorMediator
                 // Incognito in both light/dark theme is the same as non-incognito mode in dark
                 // theme. Non-incognito mode and incognito in both light/dark themes in dark theme
                 // all look dark.
-                boolean isIncognito = newModel.isIncognito();
-                @ColorInt
-                int primaryColor = ApiCompatibilityUtils.getColor(mContext.getResources(),
-                        isIncognito ? R.color.default_bg_color_dark : R.color.default_bg_color);
-                // TODO(995876): Update color modern_blue_300 to active_color_dark when the
-                // associated bug is landed.
-                @ColorInt
-                int toolbarBackgroundColor = ApiCompatibilityUtils.getColor(mContext.getResources(),
-                        isIncognito ? R.color.modern_blue_300
-                                    : R.color.default_control_color_active);
-                ColorStateList toolbarTintColorList = AppCompatResources.getColorStateList(mContext,
-                        isIncognito ? R.color.dark_text_color_list
-                                    : R.color.default_text_color_inverse_list);
-                int textAppearance = isIncognito ? R.style.TextAppearance_Headline_Primary_Dark
-                                                 : R.style.TextAppearance_Headline_Primary_Inverse;
-
-                mModel.set(TabSelectionEditorProperties.PRIMARY_COLOR, primaryColor);
-                mModel.set(TabSelectionEditorProperties.TOOLBAR_BACKGROUND_COLOR,
-                        toolbarBackgroundColor);
-                mModel.set(TabSelectionEditorProperties.TOOLBAR_GROUP_BUTTON_TINT,
-                        toolbarTintColorList);
-                mModel.set(TabSelectionEditorProperties.TOOLBAR_TEXT_APPEARANCE, textAppearance);
+                updateColors(newModel.isIncognito());
             }
         };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
+        updateColors(mTabModelSelector.isIncognitoSelected());
 
         // Default action for action button is to group selected tabs.
         mActionProvider = new TabSelectionEditorActionProvider(
@@ -155,6 +133,21 @@ class TabSelectionEditorMediator
 
     private boolean isEditorVisible() {
         return mModel.get(TabSelectionEditorProperties.IS_VISIBLE);
+    }
+
+    private void updateColors(boolean isIncognito) {
+        @ColorInt
+        int primaryColor = ChromeColors.getPrimaryBackgroundColor(mContext, isIncognito);
+        @ColorInt
+        int toolbarBackgroundColor =
+                TabUiThemeProvider.getTabSelectionToolbarBackground(mContext, isIncognito);
+        ColorStateList toolbarTintColorList =
+                TabUiThemeProvider.getTabSelectionToolbarIconTintList(mContext, isIncognito);
+
+        mModel.set(TabSelectionEditorProperties.PRIMARY_COLOR, primaryColor);
+        mModel.set(TabSelectionEditorProperties.TOOLBAR_BACKGROUND_COLOR, toolbarBackgroundColor);
+        mModel.set(TabSelectionEditorProperties.TOOLBAR_GROUP_TEXT_TINT, toolbarTintColorList);
+        mModel.set(TabSelectionEditorProperties.TOOLBAR_GROUP_BUTTON_TINT, toolbarTintColorList);
     }
 
     /**

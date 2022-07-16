@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -47,6 +46,9 @@ class AutofillWebDataService : public WebDataServiceBase {
       scoped_refptr<WebDatabaseService> wdbs,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> db_task_runner);
+
+  AutofillWebDataService(const AutofillWebDataService&) = delete;
+  AutofillWebDataService& operator=(const AutofillWebDataService&) = delete;
 
   // WebDataServiceBase implementation.
   void ShutdownOnUISequence() override;
@@ -244,8 +246,6 @@ class AutofillWebDataService : public WebDataServiceBase {
   // This factory is used on the UI sequence. All vended weak pointers are
   // invalidated in ShutdownOnUISequence().
   base::WeakPtrFactory<AutofillWebDataService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillWebDataService);
 };
 
 }  // namespace autofill

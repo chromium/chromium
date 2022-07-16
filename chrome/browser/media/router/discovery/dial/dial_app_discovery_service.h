@@ -71,6 +71,9 @@ class DialAppDiscoveryService {
 
   DialAppDiscoveryService();
 
+  DialAppDiscoveryService(const DialAppDiscoveryService&) = delete;
+  DialAppDiscoveryService& operator=(const DialAppDiscoveryService&) = delete;
+
   virtual ~DialAppDiscoveryService();
 
   // Queries |app_name|'s availability on |sink| by issuing a HTTP GET request.
@@ -91,6 +94,10 @@ class DialAppDiscoveryService {
                    const std::string& app_name,
                    DialAppInfoCallback app_info_cb,
                    DialAppDiscoveryService* const service);
+
+    PendingRequest(const PendingRequest&) = delete;
+    PendingRequest& operator=(const PendingRequest&) = delete;
+
     ~PendingRequest();
 
     // Starts fetching the app info on |app_url_|.
@@ -126,7 +133,6 @@ class DialAppDiscoveryService {
 
     SEQUENCE_CHECKER(sequence_checker_);
     base::WeakPtrFactory<PendingRequest> weak_ptr_factory_{this};
-    DISALLOW_COPY_AND_ASSIGN(PendingRequest);
   };
 
   friend class PendingRequest;
@@ -144,7 +150,6 @@ class DialAppDiscoveryService {
   std::unique_ptr<SafeDialAppInfoParser> parser_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(DialAppDiscoveryService);
 };
 
 }  // namespace media_router

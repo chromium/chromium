@@ -58,6 +58,8 @@ class CORE_EXPORT AbstractInlineTextBox
 
   enum Direction { kLeftToRight, kRightToLeft, kTopToBottom, kBottomToTop };
 
+  static void GetWordBoundariesForText(Vector<WordBoundaries>&, const String&);
+
   virtual ~AbstractInlineTextBox();
 
   LineLayoutText GetLineLayoutItem() const { return line_layout_item_; }
@@ -132,12 +134,7 @@ class CORE_EXPORT LegacyAbstractInlineTextBox final
   bool IsLineBreak() const final;
   bool NeedsTrailingSpace() const final;
 
-  InlineTextBox* inline_text_box_;
-
-  typedef HashMap<InlineTextBox*, scoped_refptr<AbstractInlineTextBox>>
-      InlineToLegacyAbstractInlineTextBoxHashMap;
-  static InlineToLegacyAbstractInlineTextBoxHashMap*
-      g_abstract_inline_text_box_map_;
+  Persistent<InlineTextBox> inline_text_box_;
 };
 
 }  // namespace blink

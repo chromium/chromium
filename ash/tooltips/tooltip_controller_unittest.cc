@@ -80,6 +80,10 @@ TooltipController* GetController() {
 class TooltipControllerTest : public AshTestBase {
  public:
   TooltipControllerTest() = default;
+
+  TooltipControllerTest(const TooltipControllerTest&) = delete;
+  TooltipControllerTest& operator=(const TooltipControllerTest&) = delete;
+
   ~TooltipControllerTest() override = default;
 
   void SetUp() override {
@@ -89,9 +93,6 @@ class TooltipControllerTest : public AshTestBase {
 
  protected:
   std::unique_ptr<TooltipControllerTestHelper> helper_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TooltipControllerTest);
 };
 
 TEST_F(TooltipControllerTest, NonNullTooltipClient) {

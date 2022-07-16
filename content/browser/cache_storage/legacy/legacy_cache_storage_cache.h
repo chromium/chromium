@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/containers/id_map.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/blob_storage_context_wrapper.h"
@@ -146,6 +145,9 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
                             CacheEntriesCallback callback) override;
 
   InitState GetInitState() const override;
+
+  LegacyCacheStorageCache(const LegacyCacheStorageCache&) = delete;
+  LegacyCacheStorageCache& operator=(const LegacyCacheStorageCache&) = delete;
 
   // Async operations in progress will cancel and not run their callbacks.
   ~LegacyCacheStorageCache() override;
@@ -552,8 +554,6 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<LegacyCacheStorageCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LegacyCacheStorageCache);
 };
 
 }  // namespace content

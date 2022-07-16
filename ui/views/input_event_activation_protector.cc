@@ -30,7 +30,7 @@ bool InputEventActivationProtector::IsPossiblyUnintendedInteraction(
     return false;
 
   const base::TimeDelta kShortInterval =
-      base::TimeDelta::FromMilliseconds(GetDoubleClickInterval());
+      base::Milliseconds(GetDoubleClickInterval());
   const bool short_event_after_last_event =
       event.time_stamp() < last_event_timestamp_ + kShortInterval;
   last_event_timestamp_ = event.time_stamp();

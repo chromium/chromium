@@ -553,6 +553,9 @@
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_MANAGED_BY" desc="Subtitle of the enteprise profile welcome screen, informing that the account is managed by an administrator.">
       This account is managed by <ph name="PROFILE_NAME">$1<ex>example.com</ex></ph>
     </message>
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY" desc="Subtitle of the enteprise profile welcome screen for a signin interception, informing that the account is managed by an administrator.">
+      This account (<ph name="USER_EMAIL_ADDRESS">$1<ex>john.doe@example.com</ex></ph>) is managed by <ph name="PROFILE_NAME">$2<ex>example.com</ex></ph>
+    </message>
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_DEVICE_MANAGED_BY" desc="Subtitle of the enteprise profile welcome screen, informing that the device is managed by an administrator.">
       Your device is managed by <ph name="PROFILE_NAME">$1<ex>example.com</ex></ph>
     </message>
@@ -636,9 +639,6 @@
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_CALCULATING" desc="This is shown next to the loading statistics in the remove action menu. All occurrences of '...' will be eventually replaced by numbers when the statistics are loaded.">
       ...
     </message>
-    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL" desc="Label for a button that prompts user to sign in">
-      Sign in
-    </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL" desc="Label for a button to decline a prompt to sign in">
       Continue without an account
     </message>
@@ -693,5 +693,27 @@
     <message name="IDS_PROFILE_PICKER_PROFILE_SWITCH_SWITCH_BUTTON_LABEL" desc="Label of a button that switches user browsing to existing profile">
       Switch
     </message>
+
+    <if expr="not lacros">
+      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL" desc="Label for a button that prompts user to sign in">
+        Sign in
+      </message>
+    </if>
+
+    <if expr="lacros">
+      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL_LACROS" desc="Label for a button that prompts user to sign in">
+        Next
+      </message>
+      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_TITLE" desc="Profile picker, account selection screen title">
+        Choose an account
+      </message>
+      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_OTHER_ACCOUNT_BUTTON_LABEL" desc="Label for a button to use another account for the new profile">
+        Use another account
+      </message>
+      <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_LACROS" desc="Profile picker main view title">
+        Choose a profile
+      </message>
+    </if>
+
   </if>
 </grit-part>

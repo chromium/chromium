@@ -24,6 +24,10 @@ namespace shell {
 class CastTestLauncherDelegate : public content::TestLauncherDelegate {
  public:
   CastTestLauncherDelegate() {}
+
+  CastTestLauncherDelegate(const CastTestLauncherDelegate&) = delete;
+  CastTestLauncherDelegate& operator=(const CastTestLauncherDelegate&) = delete;
+
   ~CastTestLauncherDelegate() override {}
 
   int RunTestSuite(int argc, char** argv) override {
@@ -39,9 +43,6 @@ class CastTestLauncherDelegate : public content::TestLauncherDelegate {
     return new CastMainDelegate();
   }
 #endif  // defined(OS_ANDROID)
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastTestLauncherDelegate);
 };
 
 }  // namespace shell

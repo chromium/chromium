@@ -12,8 +12,7 @@ namespace media {
 
 // Minimum time that we require after a failed overlay attempt before we'll try
 // again for an overlay.
-constexpr base::TimeDelta MinimumDelayAfterFailedOverlay =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta MinimumDelayAfterFailedOverlay = base::Seconds(5);
 
 AndroidVideoSurfaceChooserImpl::AndroidVideoSurfaceChooserImpl(
     bool allow_dynamic,

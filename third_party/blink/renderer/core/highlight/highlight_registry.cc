@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -43,6 +44,21 @@ void HighlightRegistry::ValidateHighlightMarkers() {
   if (!document)
     return;
 
+  // Markers are still valid if there were no changes in DOM or style and there
+  // were no calls to |HighlightRegistry::ScheduleRepaint|, so we can avoid
+  // rebuilding them.
+  if (dom_tree_version_for_validate_highlight_markers_ ==
+          document->DomTreeVersion() &&
+      style_version_for_validate_highlight_markers_ ==
+          document->StyleVersion() &&
+      !force_markers_validation_) {
+    return;
+  }
+
+  dom_tree_version_for_validate_highlight_markers_ = document->DomTreeVersion();
+  style_version_for_validate_highlight_markers_ = document->StyleVersion();
+  force_markers_validation_ = false;
+
   document->Markers().RemoveMarkersOfTypes(
       DocumentMarker::MarkerTypes::Highlight());
 
@@ -65,7 +81,8 @@ void HighlightRegistry::ValidateHighlightMarkers() {
   }
 }
 
-void HighlightRegistry::ScheduleRepaint() const {
+void HighlightRegistry::ScheduleRepaint() {
+  force_markers_validation_ = true;
   if (LocalFrameView* local_frame_view = frame_->View()) {
     local_frame_view->ScheduleVisualUpdateForPaintInvalidationIfNeeded();
   }
@@ -76,6 +93,8 @@ HighlightRegistry* HighlightRegistry::setForBinding(
     AtomicString highlight_name,
     Member<Highlight> highlight,
     ExceptionState& exception_state) {
+  UseCounter::Count(ExecutionContext::From(script_state),
+                    WebFeature::kHighlightAPIRegisterHighlight);
   auto highlights_iterator = GetMapIterator(highlight_name);
   if (highlights_iterator != highlights_.end()) {
     highlights_iterator->Get()->highlight->DeregisterFrom(this);

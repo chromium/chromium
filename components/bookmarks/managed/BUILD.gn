@@ -36,8 +36,6 @@ source_set("unit_tests") {
     "managed_bookmarks_tracker_unittest.cc",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     ":managed",
     "//base",

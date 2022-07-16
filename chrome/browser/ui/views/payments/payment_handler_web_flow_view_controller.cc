@@ -26,6 +26,7 @@
 #include "components/payments/core/payments_experimental_features.h"
 #include "components/payments/core/url_util.h"
 #include "components/security_state/core/security_state.h"
+#include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
@@ -49,6 +50,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "url/origin.h"
 
 namespace payments {
 namespace {
@@ -73,10 +75,9 @@ class ReadOnlyOriginView : public views::View {
  public:
   METADATA_HEADER(ReadOnlyOriginView);
   ReadOnlyOriginView(const std::u16string& page_title,
-                     const GURL& origin,
+                     const url::Origin& origin,
                      const SkBitmap* icon_bitmap,
                      Profile* profile,
-                     security_state::SecurityLevel security_level,
                      SkColor background_color) {
     auto title_origin_container = std::make_unique<views::View>();
     SkColor foreground = color_utils::GetColorWithMaxContrast(background_color);
@@ -110,27 +111,12 @@ class ReadOnlyOriginView : public views::View {
     columns = origin_layout->AddColumnSet(0);
     columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
                        1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    if (PaymentsExperimentalFeatures::IsEnabled(
-            features::kPaymentHandlerSecurityIcon))
-      columns->AddPaddingColumn(views::GridLayout::kFixedSize, 4);
     columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
                        1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
     origin_layout->StartRow(views::GridLayout::kFixedSize, 0);
-    if (PaymentsExperimentalFeatures::IsEnabled(
-            features::kPaymentHandlerSecurityIcon)) {
-      auto security_icon = std::make_unique<views::ImageView>();
-      const ui::ThemeProvider& theme_provider =
-          ThemeService::GetThemeProviderForProfile(profile);
-      security_icon->SetImage(gfx::CreateVectorIcon(
-          location_bar_model::GetSecurityVectorIcon(
-              security_level,
-              /* use_updated_connection_security_indicators=*/false),
-          16, GetOmniboxSecurityChipColor(&theme_provider, security_level)));
-      security_icon->SetID(static_cast<int>(DialogViewID::SECURITY_ICON_VIEW));
-      origin_layout->AddView(std::move(security_icon));
-    }
-    auto* origin_label = origin_layout->AddView(
-        std::make_unique<views::Label>(base::UTF8ToUTF16(origin.host())));
+    auto* origin_label = origin_layout->AddView(std::make_unique<views::Label>(
+        url_formatter::FormatOriginForSecurityDisplay(
+            origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));
     origin_label->SetElideBehavior(gfx::ELIDE_HEAD);
     if (!title_is_valid) {
       // Set the origin as title when the page title is invalid.
@@ -282,16 +268,14 @@ bool PaymentHandlerWebFlowViewController::ShouldShowSecondaryButton() {
 std::unique_ptr<views::View>
 PaymentHandlerWebFlowViewController::CreateHeaderContentView(
     views::View* header_view) {
-  const GURL origin = web_contents()
-                          ? web_contents()->GetVisibleURL().GetOrigin()
-                          : target_.GetOrigin();
+  const url::Origin origin =
+      web_contents() ? web_contents()->GetMainFrame()->GetLastCommittedOrigin()
+                     : url::Origin::Create(target_);
   std::unique_ptr<views::Background> background =
       GetHeaderBackground(header_view);
   return std::make_unique<ReadOnlyOriginView>(
       GetPaymentHandlerDialogTitle(web_contents()), origin,
       state()->selected_app()->icon_bitmap(), profile_,
-      web_contents() ? SslValidityChecker::GetSecurityLevel(web_contents())
-                     : security_state::NONE,
       background->get_color());
 }
 

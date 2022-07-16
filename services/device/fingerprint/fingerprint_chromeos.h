@@ -37,6 +37,10 @@ class SERVICES_DEVICE_FINGERPRINT_EXPORT FingerprintChromeOS
   };
 
   explicit FingerprintChromeOS();
+
+  FingerprintChromeOS(const FingerprintChromeOS&) = delete;
+  FingerprintChromeOS& operator=(const FingerprintChromeOS&) = delete;
+
   ~FingerprintChromeOS() override;
 
   // mojom::Fingerprint:
@@ -112,8 +116,6 @@ class SERVICES_DEVICE_FINGERPRINT_EXPORT FingerprintChromeOS
   FingerprintSession opened_session_ = FingerprintSession::NONE;
 
   base::WeakPtrFactory<FingerprintChromeOS> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FingerprintChromeOS);
 };
 
 }  // namespace device

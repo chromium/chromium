@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_CHROME_PROCESS_MANAGER_DELEGATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -27,6 +26,11 @@ class ChromeProcessManagerDelegate : public ProcessManagerDelegate,
                                      public ProfileObserver {
  public:
   ChromeProcessManagerDelegate();
+
+  ChromeProcessManagerDelegate(const ChromeProcessManagerDelegate&) = delete;
+  ChromeProcessManagerDelegate& operator=(const ChromeProcessManagerDelegate&) =
+      delete;
+
   ~ChromeProcessManagerDelegate() override;
 
   // ProcessManagerDelegate:
@@ -51,8 +55,6 @@ class ChromeProcessManagerDelegate : public ProcessManagerDelegate,
  private:
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeProcessManagerDelegate);
 };
 
 }  // namespace extensions

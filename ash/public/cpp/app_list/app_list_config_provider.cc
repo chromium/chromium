@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/no_destructor.h"
 #include "ui/gfx/geometry/insets.h"
@@ -22,6 +23,14 @@ constexpr float kMinimumTileHeightAfterConfigScale = 48.;
 // size.
 ash::AppListConfigType GetConfigTypeForDisplaySize(
     const gfx::Size& display_size) {
+  if (features::IsProductivityLauncherEnabled()) {
+    // Values from go/cros-launcher-spec
+    if (display_size.height() <= 675 || display_size.width() <= 675)
+      return AppListConfigType::kDense;
+
+    return AppListConfigType::kRegular;
+  }
+
   // Landscape:
   if (display_size.width() > display_size.height()) {
     if (display_size.width() >= 1200)
@@ -78,9 +87,12 @@ AppListConfig* AppListConfigProvider::GetConfigForType(AppListConfigType type,
   return result;
 }
 
-std::unique_ptr<AppListConfig> AppListConfigProvider::CreateForAppListWidget(
+std::unique_ptr<AppListConfig>
+AppListConfigProvider::CreateForFullscreenAppList(
     const gfx::Size& display_work_area_size,
-    const gfx::Insets& shelf_insets,
+    int grid_rows,
+    int grid_columns,
+    const gfx::Size& available_size,
     const AppListConfig* current_config) {
   const AppListConfig& base_config =
       GetBaseConfigForDisplaySize(display_work_area_size);
@@ -92,36 +104,17 @@ std::unique_ptr<AppListConfig> AppListConfigProvider::CreateForAppListWidget(
   const float min_config_scale =
       kMinimumTileHeightAfterConfigScale / base_config.grid_tile_height();
 
-  const int min_grid_height =
-      (display_work_area_size.width() < display_work_area_size.height()
-           ? base_config.preferred_cols()
-           : base_config.preferred_rows()) *
-      base_config.grid_tile_height();
-  const int min_grid_width =
-      (display_work_area_size.width() < display_work_area_size.height()
-           ? base_config.preferred_rows()
-           : base_config.preferred_cols()) *
-      base_config.grid_tile_width();
+  const int min_grid_height = grid_rows * base_config.grid_tile_height();
+  const int min_grid_width = grid_columns * base_config.grid_tile_width();
 
-  // Note that minimum top margin matches the grid fadeout zone height.
-  int non_grid_height = base_config.grid_fadeout_zone_height() +
-                        base_config.suggestion_chip_container_top_margin() +
-                        base_config.suggestion_chip_container_height();
-  // Add search box height.
-  non_grid_height +=
-      display_work_area_size.height() - shelf_insets.height() >= 600
-          ? base_config.search_box_height()
-          : base_config.search_box_height_for_dense_layout();
+  // `scale_y` does not change when productivity launcher is enabled. Instead,
+  // the number of rows will be reduced to fit the grid vertically.
+  if (available_size.height() < min_grid_height &&
+      !features::IsProductivityLauncherEnabled()) {
+    scale_y =
+        std::max(min_config_scale,
+                 static_cast<float>(available_size.height()) / min_grid_height);
 
-  const int available_grid_height =
-      display_work_area_size.height() - shelf_insets.height() - non_grid_height;
-
-  if (available_grid_height < min_grid_height) {
-    scale_y = std::max(
-        min_config_scale,
-        static_cast<float>(available_grid_height -
-                           2 * base_config.grid_fadeout_zone_height()) /
-            min_grid_height);
     // Adjust scale to reflect the fact the app list item title height does not
     // get scaled. The adjustment is derived from:
     // s * x + c = S * (x + c) and t = x + c
@@ -137,13 +130,10 @@ std::unique_ptr<AppListConfig> AppListConfigProvider::CreateForAppListWidget(
         total_title_padding;
   }
 
-  const int available_grid_width =
-      display_work_area_size.width() - shelf_insets.width() -
-      2 * base_config.GetMinGridHorizontalPadding();
-  if (available_grid_width < min_grid_width) {
+  if (available_size.width() < min_grid_width) {
     scale_x =
         std::max(min_config_scale,
-                 static_cast<float>(available_grid_width) / min_grid_width);
+                 static_cast<float>(available_size.width()) / min_grid_width);
   }
 
   if (current_config && current_config->type() == base_config.type() &&

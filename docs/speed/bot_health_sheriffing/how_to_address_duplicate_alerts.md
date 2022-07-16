@@ -1,5 +1,7 @@
 # How to address a new alert with the same root cause as an existing alert
 
+**Important**: When making changes to this document, also update duplicate files under the [internal docs](http://goto.google.com/perf-bot-health-sheriffs).
+
 It's common when large problems arise for multiple alerts to fire due to the same underlying problem. Sheriff-o-matic does its best to automatically group these problems into a single alert, but sometimes it's unable to and we have to group the alerts together manually. This is important because it helps future sheriffs see at a glance the number of distinct problems.
 
 Unfortunately, there's no way to distinguish these duplicate alerts from new alerts without knowing the contents of those other alerts. If you're unsure about two particular alerts, don't hesitate to ask for help [on chat](https://hangouts.google.com/group/2GmiXjz55R2ixTXi1).

@@ -8,7 +8,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/variations/variations.mojom.h"

@@ -36,6 +36,7 @@
 #include "ios/chrome/browser/language/url_language_histogram_factory.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
 #include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
+#include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/policy/policy_features.h"
@@ -45,6 +46,7 @@
 #import "ios/chrome/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "ios/chrome/browser/screen_time/screen_time_buildflags.h"
+#include "ios/chrome/browser/search/search_service_factory.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/signin/about_signin_internals_factory.h"
 #include "ios/chrome/browser/signin/account_consistency_service_factory.h"
@@ -136,6 +138,8 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   LanguageModelManagerFactory::GetInstance();
   ManagedBookmarkServiceFactory::GetInstance();
   ModelTypeStoreServiceFactory::GetInstance();
+  OptimizationGuideServiceFactory::GetInstance();
+  SearchServiceFactory::GetInstance();
   SyncServiceFactory::GetInstance();
   ReadingListModelFactory::GetInstance();
   RealTimeUrlLookupServiceFactory::GetInstance();
@@ -158,9 +162,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
 
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
   if (IsScreenTimeIntegrationEnabled()) {
-    if (@available(iOS 14, *)) {
-      ScreenTimeHistoryDeleterFactory::GetInstance();
-    }
+    ScreenTimeHistoryDeleterFactory::GetInstance();
   }
 #endif
 }

@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
@@ -62,6 +61,10 @@ class DeviceDescriptionService {
   DeviceDescriptionService(
       const DeviceDescriptionParseSuccessCallback& success_cb,
       const DeviceDescriptionParseErrorCallback& error_cb);
+
+  DeviceDescriptionService(const DeviceDescriptionService&) = delete;
+  DeviceDescriptionService& operator=(const DeviceDescriptionService&) = delete;
+
   virtual ~DeviceDescriptionService();
 
   // For each device in |devices|, if there is a valid cache entry for it, call
@@ -160,8 +163,6 @@ class DeviceDescriptionService {
   SafeDialDeviceDescriptionParser device_description_parser_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDescriptionService);
 };
 
 }  // namespace media_router

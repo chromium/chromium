@@ -27,8 +27,10 @@ struct FrameAvailableEvent
 };
 
 CodecBufferWaitCoordinator::CodecBufferWaitCoordinator(
-    scoped_refptr<gpu::TextureOwner> texture_owner)
-    : texture_owner_(std::move(texture_owner)),
+    scoped_refptr<gpu::TextureOwner> texture_owner,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock)
+    : RefCountedLockHelperDrDc(std::move(drdc_lock)),
+      texture_owner_(std::move(texture_owner)),
       frame_available_event_(new FrameAvailableEvent()),
       task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   DCHECK(texture_owner_);
@@ -41,14 +43,17 @@ CodecBufferWaitCoordinator::~CodecBufferWaitCoordinator() {
 }
 
 void CodecBufferWaitCoordinator::SetReleaseTimeToNow() {
+  AssertAcquiredDrDcLock();
   release_time_ = base::TimeTicks::Now();
 }
 
 bool CodecBufferWaitCoordinator::IsExpectingFrameAvailable() {
+  AssertAcquiredDrDcLock();
   return !release_time_.is_null();
 }
 
 void CodecBufferWaitCoordinator::WaitForFrameAvailable() {
+  AssertAcquiredDrDcLock();
   DCHECK(!release_time_.is_null());
 
   const base::TimeTicks call_time = base::TimeTicks::Now();

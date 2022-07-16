@@ -1,0 +1,31 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+promise_test(async t => {
+  return promise_rejects_dom(t, "DataError", sharedStorage.worklet.addModule("https://"));
+}, 'addModule with invalid url');
+
+promise_test(async t => {
+  return promise_rejects_dom(t, "DataError", sharedStorage.worklet.addModule("https://foo.com"));
+}, 'addModule with cross-origin url');
+
+promise_test(async t => {
+  return promise_rejects_dom(t, "DataError", sharedStorage.runURLSelectionOperation("operation1", ["foo1", "foo2", "foo3", "foo4", "foo5", "foo6"]));
+}, 'runURLSelectionOperation with urls size exceeds limit');
+
+promise_test(async t => {
+  return promise_rejects_dom(t, "DataError", sharedStorage.runURLSelectionOperation("operation1", ["foo1", "foo2", "foo3", "foo4", "https://"]));
+}, 'runURLSelectionOperation with invalid urls');
+
+promise_test(() => {
+  return sharedStorage.runOperation("operation1");
+}, 'runOperation');
+
+promise_test(() => {
+  return sharedStorage.runOperation("operation1", {data: {'custom-key': 'custom-value'}});
+}, 'runOperation with custom data');
+
+</script>

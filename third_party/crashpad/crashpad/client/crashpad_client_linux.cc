@@ -129,6 +129,9 @@ std::vector<std::string> BuildArgsToLaunchWithLinker(
 // A base class for Crashpad signal handler implementations.
 class SignalHandler {
  public:
+  SignalHandler(const SignalHandler&) = delete;
+  SignalHandler& operator=(const SignalHandler&) = delete;
+
   // Returns the currently installed signal hander. May be `nullptr` if no
   // handler has been installed.
   static SignalHandler* Get() { return handler_; }
@@ -208,8 +211,6 @@ class SignalHandler {
   static SignalHandler* handler_;
 
   static thread_local bool disabled_for_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignalHandler);
 };
 SignalHandler* SignalHandler::handler_ = nullptr;
 thread_local bool SignalHandler::disabled_for_thread_ = false;
@@ -217,6 +218,9 @@ thread_local bool SignalHandler::disabled_for_thread_ = false;
 // Launches a single use handler to snapshot this process.
 class LaunchAtCrashHandler : public SignalHandler {
  public:
+  LaunchAtCrashHandler(const LaunchAtCrashHandler&) = delete;
+  LaunchAtCrashHandler& operator=(const LaunchAtCrashHandler&) = delete;
+
   static LaunchAtCrashHandler* Get() {
     static LaunchAtCrashHandler* instance = new LaunchAtCrashHandler();
     return instance;
@@ -272,12 +276,13 @@ class LaunchAtCrashHandler : public SignalHandler {
   std::vector<std::string> envp_strings_;
   std::vector<const char*> envp_;
   bool set_envp_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LaunchAtCrashHandler);
 };
 
 class RequestCrashDumpHandler : public SignalHandler {
  public:
+  RequestCrashDumpHandler(const RequestCrashDumpHandler&) = delete;
+  RequestCrashDumpHandler& operator=(const RequestCrashDumpHandler&) = delete;
+
   static RequestCrashDumpHandler* Get() {
     static RequestCrashDumpHandler* instance = new RequestCrashDumpHandler();
     return instance;
@@ -365,8 +370,6 @@ class RequestCrashDumpHandler : public SignalHandler {
   // don't anything with it except pass it along).
   uint64_t crash_loop_before_time_ = 0;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(RequestCrashDumpHandler);
 };
 
 }  // namespace

@@ -16,6 +16,10 @@ class Canvas;
 class Drawable {
  public:
   Drawable() {}
+
+  Drawable(const Drawable&) = delete;
+  Drawable& operator=(const Drawable&) = delete;
+
   virtual ~Drawable() {}
 
   // Sets the canvas on which the object will be drawn.
@@ -39,9 +43,6 @@ class Drawable {
   // A higher Z Index shiould be draw ontop of a lower z index. Elements with
   // the same Z Index should draw in order inserted into the renderer.
   virtual int GetZIndex() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Drawable);
 };
 
 }  // namespace remoting

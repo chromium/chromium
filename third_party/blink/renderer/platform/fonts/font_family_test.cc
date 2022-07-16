@@ -10,9 +10,11 @@ namespace blink {
 
 namespace {
 
-FontFamily* CreateAndAppendFamily(FontFamily& parent, const char* name) {
+FontFamily* CreateAndAppendFamily(FontFamily& parent,
+                                  const char* family_name,
+                                  FontFamily::Type family_type) {
   scoped_refptr<SharedFontFamily> family = SharedFontFamily::Create();
-  family->SetFamily(name);
+  family->SetFamily(family_name, family_type);
   parent.AppendFamily(family);
   return family.get();
 }
@@ -26,16 +28,17 @@ TEST(FontFamilyTest, ToString) {
   }
   {
     FontFamily family;
-    family.SetFamily("A");
-    CreateAndAppendFamily(family, "B");
-    EXPECT_EQ("A,B", family.ToString());
+    family.SetFamily("A", FontFamily::Type::kFamilyName);
+    CreateAndAppendFamily(family, "B", FontFamily::Type::kFamilyName);
+    EXPECT_EQ("A, B", family.ToString());
   }
   {
     FontFamily family;
-    family.SetFamily("A");
-    FontFamily* b_family = CreateAndAppendFamily(family, "B");
-    CreateAndAppendFamily(*b_family, "C");
-    EXPECT_EQ("A,B,C", family.ToString());
+    family.SetFamily("A", FontFamily::Type::kFamilyName);
+    FontFamily* b_family =
+        CreateAndAppendFamily(family, "B", FontFamily::Type::kFamilyName);
+    CreateAndAppendFamily(*b_family, "C", FontFamily::Type::kFamilyName);
+    EXPECT_EQ("A, B, C", family.ToString());
   }
 }
 

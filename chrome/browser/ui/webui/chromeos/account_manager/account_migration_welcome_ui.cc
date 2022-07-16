@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -20,6 +19,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "net/base/url_util.h"
@@ -37,16 +37,20 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
  public:
   explicit MigrationMessageHandler(base::RepeatingClosure close_dialog_closure)
       : close_dialog_closure_(close_dialog_closure) {}
+
+  MigrationMessageHandler(const MigrationMessageHandler&) = delete;
+  MigrationMessageHandler& operator=(const MigrationMessageHandler&) = delete;
+
   ~MigrationMessageHandler() override = default;
 
  private:
   void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "reauthenticateAccount",
         base::BindRepeating(
             &MigrationMessageHandler::HandleReauthenticateAccount,
             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "closeDialog",
         base::BindRepeating(&MigrationMessageHandler::HandleCloseDialog,
                             base::Unretained(this)));
@@ -75,8 +79,6 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
   }
 
   base::RepeatingClosure close_dialog_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(MigrationMessageHandler);
 };
 
 }  // namespace

@@ -17,6 +17,9 @@ namespace weblayer {
 
 class PageImpl : public Page, public content::PageUserData<PageImpl> {
  public:
+  PageImpl(const PageImpl&) = delete;
+  PageImpl& operator=(const PageImpl&) = delete;
+
   ~PageImpl() override;
 
 #if defined(OS_ANDROID)
@@ -34,8 +37,6 @@ class PageImpl : public Page, public content::PageUserData<PageImpl> {
 #if defined(OS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_page_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(PageImpl);
 };
 
 }  // namespace weblayer

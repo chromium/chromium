@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_METRICS_LOGGER_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_METRICS_LOGGER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/resource_coordinator/tab_metrics_event.pb.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -54,6 +53,10 @@ class TabMetricsLogger {
   };
 
   TabMetricsLogger();
+
+  TabMetricsLogger(const TabMetricsLogger&) = delete;
+  TabMetricsLogger& operator=(const TabMetricsLogger&) = delete;
+
   ~TabMetricsLogger();
 
   // Logs metrics for the tab with the given |tab_features|. Does nothing if
@@ -95,8 +98,6 @@ class TabMetricsLogger {
   // query_id should be set whenever a new tabRanker query happens, so all logs
   // that happened within the same query will have same query_id_.
   int64_t query_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TabMetricsLogger);
 };
 
 #endif  // CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_METRICS_LOGGER_H_

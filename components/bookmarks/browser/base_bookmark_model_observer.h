@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_BOOKMARKS_BROWSER_BASE_BOOKMARK_MODEL_OBSERVER_H_
 #define COMPONENTS_BOOKMARKS_BROWSER_BASE_BOOKMARK_MODEL_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 
 namespace bookmarks {
@@ -15,6 +14,10 @@ namespace bookmarks {
 class BaseBookmarkModelObserver : public BookmarkModelObserver {
  public:
   BaseBookmarkModelObserver() {}
+
+  BaseBookmarkModelObserver(const BaseBookmarkModelObserver&) = delete;
+  BaseBookmarkModelObserver& operator=(const BaseBookmarkModelObserver&) =
+      delete;
 
   virtual void BookmarkModelChanged() = 0;
 
@@ -45,9 +48,6 @@ class BaseBookmarkModelObserver : public BookmarkModelObserver {
 
  protected:
   ~BaseBookmarkModelObserver() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BaseBookmarkModelObserver);
 };
 
 }  // namespace bookmarks

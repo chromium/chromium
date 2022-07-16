@@ -18,16 +18,15 @@ void HttpsOnlyModeTabHelper::ReadyToCommitNavigation(
         blocking_page = factory_->CreateHttpsOnlyModeBlockingPage(
             navigation_handle->GetWebContents(), fallback_url());
     security_interstitials::SecurityInterstitialTabHelper::
-        AssociateBlockingPage(navigation_handle->GetWebContents(),
-                              navigation_handle->GetNavigationId(),
-                              std::move(blocking_page));
+        AssociateBlockingPage(navigation_handle, std::move(blocking_page));
   }
 }
 
 HttpsOnlyModeTabHelper::HttpsOnlyModeTabHelper(
     content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {
+    : WebContentsObserver(web_contents),
+      content::WebContentsUserData<HttpsOnlyModeTabHelper>(*web_contents) {
   factory_ = std::make_unique<ChromeSecurityBlockingPageFactory>();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(HttpsOnlyModeTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(HttpsOnlyModeTabHelper);

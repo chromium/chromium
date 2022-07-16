@@ -238,10 +238,19 @@ display::PanelOrientation GetPanelOrientation(int fd,
   return static_cast<display::PanelOrientation>(connector->prop_values[index]);
 }
 
-int ConnectorIndex(int device_index, int display_index) {
+int ConnectorIndex8(int device_index, int display_index) {
   DCHECK_LT(device_index, 16);
   DCHECK_LT(display_index, 16);
   return ((device_index << 4) + display_index) & 0xFF;
+}
+
+// A connector's index is a combination of:
+// 1) |display_index| the display's index in DRM       bits 0-7
+// 2) |device_index| the display's DRM's index         bits 8-15
+// e.g. - A 3rd display in a 2nd DRM would produce a connector index == 0x0102
+//        (since display index == 2 and DRM index == 1)
+uint16_t ConnectorIndex16(uint8_t device_index, uint8_t display_index) {
+  return ((device_index << 8) + display_index) & 0xFFFF;
 }
 
 bool HasPerPlaneColorCorrectionMatrix(const int fd, drmModeCrtc* crtc) {
@@ -315,7 +324,7 @@ gfx::Size GetMaximumCursorSize(int fd) {
 HardwareDisplayControllerInfo::HardwareDisplayControllerInfo(
     ScopedDrmConnectorPtr connector,
     ScopedDrmCrtcPtr crtc,
-    size_t index)
+    uint8_t index)
     : connector_(std::move(connector)), crtc_(std::move(crtc)), index_(index) {}
 
 HardwareDisplayControllerInfo::~HardwareDisplayControllerInfo() = default;
@@ -329,6 +338,14 @@ GetAvailableDisplayControllerInfos(int fd) {
   std::vector<ScopedDrmConnectorPtr> connectors;
   std::vector<drmModeConnector*> available_connectors;
   for (int i = 0; i < resources->count_connectors; ++i) {
+    if (i >= kMaxDrmConnectors) {
+      LOG(WARNING) << "Reached the current limit of " << kMaxDrmConnectors
+                   << " connectors per DRM. Ignoring the remaining "
+                   << resources->count_connectors - kMaxDrmConnectors
+                   << " connectors.";
+      break;
+    }
+
     ScopedDrmConnectorPtr connector(
         drmModeGetConnector(fd, resources->connectors[i]));
     if (!connector)
@@ -377,7 +394,8 @@ GetAvailableDisplayControllerInfos(int fd) {
                                return connector.get() == c;
                              });
     DCHECK(iter != connectors.end());
-    const size_t index = iter - connectors.begin();
+    // |connectors.size()| <= 256, so |index| should be between 0-255.
+    const uint8_t index = iter - connectors.begin();
     DCHECK_LT(index, connectors.size());
     displays.push_back(std::make_unique<HardwareDisplayControllerInfo>(
         std::move(*iter), std::move(crtc), index));
@@ -454,9 +472,11 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     HardwareDisplayControllerInfo* info,
     int fd,
     const base::FilePath& sys_path,
-    size_t device_index,
+    uint8_t device_index,
     const gfx::Point& origin) {
-  const uint8_t display_index = ConnectorIndex(device_index, info->index());
+  const uint8_t display_index = ConnectorIndex8(device_index, info->index());
+  const uint16_t connector_index =
+      ConnectorIndex16(device_index, info->index());
   const gfx::Size physical_size =
       gfx::Size(info->connector()->mmWidth, info->connector()->mmHeight);
   const display::DisplayConnectionType type = GetDisplayType(info->connector());
@@ -484,7 +504,8 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
 
   std::string display_name;
   // Make sure the ID contains non index part.
-  int64_t display_id = display_index | 0x100;
+  int64_t port_display_id = display_index | 0x100;
+  int64_t edid_display_id = display::kInvalidDisplayId;
   int64_t product_code = display::DisplaySnapshot::kInvalidProductCode;
   int32_t year_of_manufacture = display::kInvalidYearOfManufacture;
   bool has_overscan = false;
@@ -508,7 +529,8 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     display_name = edid_parser.display_name();
     active_pixel_size = edid_parser.active_pixel_size();
     product_code = edid_parser.GetProductCode();
-    display_id = edid_parser.GetDisplayId(display_index);
+    port_display_id = edid_parser.GetIndexBasedDisplayId(display_index);
+    edid_display_id = edid_parser.GetEdidBasedDisplayId();
     year_of_manufacture = edid_parser.year_of_manufacture();
     has_overscan =
         edid_parser.has_overscan_flag() && edid_parser.overscan_flag();
@@ -530,7 +552,8 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       ExtractDisplayModes(info, active_pixel_size, &current_mode, &native_mode);
 
   return std::make_unique<display::DisplaySnapshot>(
-      display_id, origin, physical_size, type, base_connector_id, path_topology,
+      port_display_id, port_display_id, edid_display_id, connector_index,
+      origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_color_correction_matrix, color_correction_in_linear_space,
       display_color_space, bits_per_channel, hdr_static_metadata, display_name,

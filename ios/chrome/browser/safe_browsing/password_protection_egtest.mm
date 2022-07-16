@@ -123,9 +123,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // TODO(crbug.com/1221635) This fails on iPad 14.4 and iPhone 14.5+
 - (void)DISABLED_testPasswordReuseDetectionWarning {
   // PhishGuard is only available on iOS 14.0 or above.
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   [ChromeEarlGrey loadURL:_phishingURL];
   [ChromeEarlGrey waitForWebStateContainingText:kInputPage];
@@ -141,9 +138,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // TODO(crbug.com/1213616) Test is flaky.
 - (void)DISABLED_testPasswordProtectionNotShownForAllowListedURL {
   // PhishGuard is only available on iOS 14.0 or above.
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
 
   [ChromeEarlGrey loadURL:_allowlistedURL];
   [ChromeEarlGrey waitForWebStateContainingText:kInputPage];

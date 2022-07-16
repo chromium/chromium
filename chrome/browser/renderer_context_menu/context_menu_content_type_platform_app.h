@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_PLATFORM_APP_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_PLATFORM_APP_H_
 
-#include "base/macros.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 
 namespace extensions {
@@ -14,6 +13,11 @@ class Extension;
 
 class ContextMenuContentTypePlatformApp : public ContextMenuContentType {
  public:
+  ContextMenuContentTypePlatformApp(const ContextMenuContentTypePlatformApp&) =
+      delete;
+  ContextMenuContentTypePlatformApp& operator=(
+      const ContextMenuContentTypePlatformApp&) = delete;
+
   ~ContextMenuContentTypePlatformApp() override;
 
   // ContextMenuContentType overrides.
@@ -27,8 +31,6 @@ class ContextMenuContentTypePlatformApp : public ContextMenuContentType {
   friend class ContextMenuContentTypeFactory;
 
   const extensions::Extension* GetExtension();
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuContentTypePlatformApp);
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_PLATFORM_APP_H_

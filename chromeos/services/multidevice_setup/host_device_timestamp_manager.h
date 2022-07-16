@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_DEVICE_TIMESTAMP_MANAGER_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_DEVICE_TIMESTAMP_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -17,6 +16,10 @@ namespace multidevice_setup {
 // on this device.
 class HostDeviceTimestampManager {
  public:
+  HostDeviceTimestampManager(const HostDeviceTimestampManager&) = delete;
+  HostDeviceTimestampManager& operator=(const HostDeviceTimestampManager&) =
+      delete;
+
   virtual ~HostDeviceTimestampManager() = default;
 
   // Returns true when there is a host set (not necessarily verified) for the
@@ -37,9 +40,6 @@ class HostDeviceTimestampManager {
 
  protected:
   HostDeviceTimestampManager() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostDeviceTimestampManager);
 };
 
 }  // namespace multidevice_setup

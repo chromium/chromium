@@ -4,7 +4,7 @@
 
 import '../shared_vars_css.m.js';
 
-import {dom, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dom, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert} from '../../js/assert.m.js';
 import {isMac, isWindows} from '../../js/cr.m.js';
@@ -135,66 +135,83 @@ function getDefaultShowConfig() {
   };
 }
 
-Polymer({
-  is: 'cr-action-menu',
+/** @polymer */
+export class CrActionMenuElement extends PolymerElement {
+  static get is() {
+    return 'cr-action-menu';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /**
-   * The element which the action menu will be anchored to. Also the element
-   * where focus will be returned after the menu is closed. Only populated if
-   * menu is opened with showAt().
-   * @private {?Element}
-   */
-  anchorElement_: null,
+  static get properties() {
+    return {
+      // Setting this flag will make the menu listen for content size changes
+      // and reposition to its anchor accordingly.
+      autoReposition: {
+        type: Boolean,
+        value: false,
+      },
 
-  /**
-   * Bound reference to an event listener function such that it can be removed
-   * on detach.
-   * @private {?Function}
-   */
-  boundClose_: null,
+      open: {
+        type: Boolean,
+        notify: true,
+        value: false,
+      },
 
-  /** @private {boolean} */
-  hasMousemoveListener_: false,
+      // Descriptor of the menu. Should be something along the lines of "menu"
+      roleDescription: String,
+    };
+  }
 
-  /** @private {?PolymerDomApi.ObserveHandle} */
-  contentObserver_: null,
+  constructor() {
+    super();
 
-  /** @private {?ResizeObserver} */
-  resizeObserver_: null,
+    /** @private {?Function} */
+    this.boundClose_ = null;
 
-  /** @private {?ShowAtPositionConfig} */
-  lastConfig_: null,
+    /** @private {?PolymerDomApi.ObserveHandle} */
+    this.contentObserver_ = null;
 
-  properties: {
-    // Setting this flag will make the menu listen for content size changes and
-    // reposition to its anchor accordingly.
-    autoReposition: {
-      type: Boolean,
-      value: false,
-    },
+    /** @private {?ResizeObserver} */
+    this.resizeObserver_ = null;
 
-    open: {
-      type: Boolean,
-      notify: true,
-      value: false,
-    },
+    /** @private {boolean} */
+    this.hasMousemoveListener_ = false;
 
-    /* Descriptor of the menu. Should be something along the lines of "menu" */
-    roleDescription: String,
-  },
+    /** @private {?Element} */
+    this.anchorElement_ = null;
 
-  listeners: {
-    'keydown': 'onKeyDown_',
-    'mouseover': 'onMouseover_',
-    'click': 'onClick_',
-  },
+    /** @private {?ShowAtPositionConfig} */
+    this.lastConfig_ = null;
+  }
+
+  ready() {
+    super.ready();
+
+    this.addEventListener(
+        'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
+    this.addEventListener('mouseover', this.onMouseover_);
+    this.addEventListener('click', this.onClick_);
+  }
 
   /** override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.removeListeners_();
-  },
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   /**
    * Exposing internal <dialog> elements for tests.
@@ -202,7 +219,7 @@ Polymer({
    */
   getDialog() {
     return /** @type {!HTMLDialogElement} */ (this.$.dialog);
-  },
+  }
 
   /** @private */
   removeListeners_() {
@@ -217,7 +234,7 @@ Polymer({
       this.resizeObserver_.disconnect();
       this.resizeObserver_ = null;
     }
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -231,8 +248,8 @@ Polymer({
 
     // Catch and re-fire the 'close' event such that it bubbles across Shadow
     // DOM v1.
-    this.fire('close');
-  },
+    this.fire_('close');
+  }
 
   /**
    * @param {!Event} e
@@ -243,7 +260,7 @@ Polymer({
       this.close();
       e.stopPropagation();
     }
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e
@@ -255,7 +272,7 @@ Polymer({
     if (e.key === 'Tab' || e.key === 'Escape') {
       this.close();
       if (e.key === 'Tab') {
-        this.fire('tabkeyclose', {shiftKey: e.shiftKey});
+        this.fire_('tabkeyclose', {shiftKey: e.shiftKey});
       }
       e.preventDefault();
       return;
@@ -298,7 +315,7 @@ Polymer({
         this.hasMousemoveListener_ = false;
       }, {once: true});
     }
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -308,7 +325,7 @@ Polymer({
     const item = e.composedPath().find(
         el => el.matches && el.matches(SELECTABLE_DROPDOWN_ITEM_QUERY));
     (item || this.$.wrapper).focus();
-  },
+  }
 
   /**
    * @param {!Array<!HTMLElement>} options
@@ -327,7 +344,7 @@ Polymer({
       index = (numOptions + focusedIndex + delta) % numOptions;
     }
     options[index].focus();
-  },
+  }
 
   close() {
     // Removing 'resize' and 'popstate' listeners when dialog is closed.
@@ -341,7 +358,7 @@ Polymer({
     if (this.lastConfig_) {
       this.lastConfig_ = null;
     }
-  },
+  }
 
   /**
    * Shows the menu anchored to the given element.
@@ -377,7 +394,7 @@ Polymer({
         },
         opt_config)));
     this.$.wrapper.focus();
-  },
+  }
 
   /**
    * Shows the menu anchored to the given box. The anchor alignment is
@@ -448,14 +465,14 @@ Polymer({
         });
       }
     }
-  },
+  }
 
   /** @private */
   resetStyle_() {
     this.$.dialog.style.left = '';
     this.$.dialog.style.right = '';
     this.$.dialog.style.top = '0';
-  },
+  }
 
   /**
    * Position the dialog using the coordinates in config. Coordinates are
@@ -494,11 +511,9 @@ Polymer({
         top, bottom, this.$.dialog.offsetHeight, c.anchorAlignmentY, c.minY,
         c.maxY);
     this.$.dialog.style.top = menuTop + 'px';
-  },
+  }
 
-  /**
-   * @private
-   */
+  /** @private */
   addListeners_() {
     this.boundClose_ = this.boundClose_ || function() {
       if (this.$.dialog.open) {
@@ -523,11 +538,13 @@ Polymer({
       this.resizeObserver_ = new ResizeObserver(() => {
         if (this.lastConfig_) {
           this.positionDialog_(this.lastConfig_);
-          this.fire('cr-action-menu-repositioned');  // For easier testing.
+          this.fire_('cr-action-menu-repositioned');  // For easier testing.
         }
       });
 
       this.resizeObserver_.observe(this.$.dialog);
     }
-  },
-});
+  }
+}
+
+customElements.define(CrActionMenuElement.is, CrActionMenuElement);

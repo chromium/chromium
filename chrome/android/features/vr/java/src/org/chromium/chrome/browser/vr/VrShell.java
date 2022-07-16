@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.compositor.CompositorView;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
@@ -63,7 +64,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
-import org.chromium.chrome.browser.util.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.vr.keyboard.VrInputMethodManagerWrapper;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.external_intents.RedirectHandler;
@@ -77,7 +77,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
-import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.display.VirtualDisplayAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -436,33 +435,30 @@ public class VrShell extends GvrLayout
         // Start with content rendering paused if the renderer-drawn controls are visible, as this
         // would cause the in-content omnibox to be shown to users.
         boolean pauseContent = mBrowserControlsManager.getContentOffset() > 0;
+        DisplayAndroid display = tab.getWindowAndroid().getDisplay();
+        int widthPixels = display.getDisplayWidth();
+        int heightPixels = display.getDisplayHeight();
+        float densityDpi = mActivity.getResources().getConfiguration().densityDpi;
 
-        // Get physical and pixel size of the display, which is needed by native
-        // to dynamically calculate the content's resolution and window size.
-        DisplayMetrics dm = new DisplayMetrics();
-        DisplayAndroidManager.getDefaultDisplayForContext(mActivity).getRealMetrics(dm);
         // We're supposed to be in landscape at this point, but it's possible for us to get here
         // before the change has fully propagated. In this case, the width and height are swapped,
         // which causes an incorrect display size to be used, and the page to appear zoomed in.
-        if (dm.widthPixels < dm.heightPixels) {
-            int tempWidth = dm.heightPixels;
-            dm.heightPixels = dm.widthPixels;
-            dm.widthPixels = tempWidth;
-            float tempXDpi = dm.ydpi;
-            dm.xdpi = dm.ydpi;
-            dm.ydpi = tempXDpi;
+        if (widthPixels < heightPixels) {
+            int tempWidth = heightPixels;
+            heightPixels = widthPixels;
+            widthPixels = tempWidth;
             // In the case where we're still in portrait, keep the black overlay visible until the
             // GvrLayout is in the correct orientation.
         } else {
             VrModuleProvider.getDelegate().removeBlackOverlayView(mActivity, false /* animate */);
         }
-        float displayWidthMeters = (dm.widthPixels / dm.xdpi) * INCHES_TO_METERS;
-        float displayHeightMeters = (dm.heightPixels / dm.ydpi) * INCHES_TO_METERS;
+        float displayWidthMeters = (widthPixels / densityDpi) * INCHES_TO_METERS;
+        float displayHeightMeters = (heightPixels / densityDpi) * INCHES_TO_METERS;
 
         // Semi-arbitrary resolution cutoff that determines how much we scale our default buffer
         // size in VR. This is so we can make the right performance/quality tradeoff for both the
         // relatively low-res Pixel, and higher-res Pixel XL and other devices.
-        boolean lowDensity = dm.densityDpi <= DisplayMetrics.DENSITY_XXHIGH;
+        boolean lowDensity = densityDpi <= DisplayMetrics.DENSITY_XXHIGH;
 
         boolean hasOrCanRequestRecordAudioPermission =
                 hasRecordAudioPermission() || canRequestRecordAudioPermission();
@@ -470,7 +466,7 @@ public class VrShell extends GvrLayout
         mNativeVrShell = VrShellJni.get().init(VrShell.this, mDelegate, forWebVr,
                 !mVrBrowsingEnabled, hasOrCanRequestRecordAudioPermission && supportsRecognition,
                 getGvrApi().getNativeGvrContext(), mReprojectedRendering, displayWidthMeters,
-                displayHeightMeters, dm.widthPixels, dm.heightPixels, pauseContent, lowDensity,
+                displayHeightMeters, widthPixels, heightPixels, pauseContent, lowDensity,
                 isStandaloneVrDevice);
 
         swapToTab(tab);
@@ -606,8 +602,9 @@ public class VrShell extends GvrLayout
     public void showPageInfo() {
         Tab tab = mCurrentTabSupplier.get();
         if (tab == null) return;
-        new ChromePageInfo(mModalDialogManagerSupplier, null, OpenedFromSource.VR)
-                .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+        new ChromePageInfo(mModalDialogManagerSupplier, null, OpenedFromSource.VR,
+                /*storeInfoActionHandlerSupplier=*/null)
+                .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION, /*fromStoreIcon=*/false);
     }
 
     // Called because showing audio permission dialog isn't supported in VR. This happens when

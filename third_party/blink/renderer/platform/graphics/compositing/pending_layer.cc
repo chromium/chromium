@@ -8,6 +8,9 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace blink {
 
@@ -25,18 +28,13 @@ const ClipPaintPropertyNode* HighestOutputClipBetween(
   return result;
 }
 
-void ClipToVisibilityLimit(const PropertyTreeState& state, FloatRect& rect) {
-  // Clip the bounds to remove the parts that will be never visible.
-  if (&state.Clip().LocalTransformSpace() == &state.Transform()) {
-    // Limit the layer bounds to hide the areas that will be never visible
-    // because of the clip.
-    rect.Intersect(state.Clip().PixelSnappedClipRect().Rect());
-  } else if (const auto* scroll = state.Transform().ScrollNode()) {
-    // Limit the bounds to the scroll range to hide the areas that will never be
-    // scrolled into the visible area.
-    rect.Intersect(FloatRect(
-        IntRect(scroll->ContainerRect().Location(), scroll->ContentsSize())));
-  }
+// When possible, provides a clip rect that limits the visibility.
+absl::optional<gfx::RectF> VisibilityLimit(const PropertyTreeState& state) {
+  if (&state.Clip().LocalTransformSpace() == &state.Transform())
+    return ToGfxRectF(state.Clip().PaintClipRect().Rect());
+  if (const auto* scroll = state.Transform().ScrollNode())
+    return gfx::RectF(scroll->ContentsRect());
+  return absl::nullopt;
 }
 
 bool IsCompositedScrollHitTest(const PaintChunk& chunk) {
@@ -56,29 +54,55 @@ bool IsCompositedScrollbar(const DisplayItem& item) {
   return false;
 }
 
+// Snap |bounds| if within floating-point numeric limits of an integral rect.
+void PreserveNearIntegralBounds(gfx::RectF& bounds) {
+  if (std::abs(std::round(bounds.x()) - bounds.x()) <=
+          std::numeric_limits<float>::epsilon() &&
+      std::abs(std::round(bounds.y()) - bounds.y()) <=
+          std::numeric_limits<float>::epsilon() &&
+      std::abs(std::round(bounds.right()) - bounds.right()) <=
+          std::numeric_limits<float>::epsilon() &&
+      std::abs(std::round(bounds.bottom()) - bounds.bottom()) <=
+          std::numeric_limits<float>::epsilon()) {
+    bounds = gfx::RectF(gfx::ToRoundedRect(bounds));
+  }
+}
+
 }  // anonymous namespace
+
+void PreCompositedLayerInfo::Trace(Visitor* visitor) const {
+  visitor->Trace(graphics_layer);
+}
 
 PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
                            const PaintChunkIterator& first_chunk)
-    : bounds_(first_chunk->bounds),
-      rect_known_to_be_opaque_(first_chunk->rect_known_to_be_opaque),
-      has_text_(first_chunk->has_text),
+    : PendingLayer(chunks, *first_chunk, first_chunk.IndexInPaintArtifact()) {}
+
+PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
+                           const PaintChunk& first_chunk,
+                           wtf_size_t first_chunk_index_in_paint_artifact)
+    : bounds_(first_chunk.bounds),
+      rect_known_to_be_opaque_(first_chunk.rect_known_to_be_opaque),
+      has_text_(first_chunk.has_text),
       text_known_to_be_on_opaque_background_(
-          first_chunk->text_known_to_be_on_opaque_background),
-      chunks_(&chunks.GetPaintArtifact(), first_chunk.IndexInPaintArtifact()),
+          first_chunk.text_known_to_be_on_opaque_background),
+      chunks_(&chunks.GetPaintArtifact(), first_chunk_index_in_paint_artifact),
       property_tree_state_(
-          first_chunk->properties.GetPropertyTreeState().Unalias()),
+          first_chunk.properties.GetPropertyTreeState().Unalias()),
       compositing_type_(kOther) {
-  DCHECK(!RequiresOwnLayer() || first_chunk->size() <= 1u);
+  DCHECK(!RequiresOwnLayer() || first_chunk.size() <= 1u);
   // Though text_known_to_be_on_opaque_background is only meaningful when
   // has_text is true, we expect text_known_to_be_on_opaque_background to be
   // true when !has_text to simplify code.
   DCHECK(has_text_ || text_known_to_be_on_opaque_background_);
-  ClipToVisibilityLimit(property_tree_state_, bounds_);
+  if (const absl::optional<gfx::RectF>& visibility_limit =
+          VisibilityLimit(property_tree_state_)) {
+    bounds_.Intersect(*visibility_limit);
+  }
 
-  if (IsCompositedScrollHitTest(*first_chunk)) {
+  if (IsCompositedScrollHitTest(first_chunk)) {
     compositing_type_ = kScrollHitTestLayer;
-  } else if (first_chunk->size()) {
+  } else if (first_chunk.size()) {
     const auto& first_display_item = FirstDisplayItem();
     if (first_display_item.IsForeignLayer())
       compositing_type_ = kForeignLayer;
@@ -98,33 +122,33 @@ PendingLayer::PendingLayer(const PreCompositedLayerInfo& pre_composited_layer)
   DCHECK(!graphics_layer_->ShouldCreateLayersAfterPaint());
 }
 
-FloatPoint PendingLayer::LayerOffset() const {
+gfx::Vector2dF PendingLayer::LayerOffset() const {
   // The solid color layer optimization is important for performance. Snapping
   // the location could make the solid color drawings not cover the entire
   // cc::Layer which would make the layer non-solid-color.
   if (IsSolidColor())
-    return bounds_.Location();
+    return bounds_.OffsetFromOrigin();
   // Otherwise return integral offset to reduce chance of additional blurriness.
-  return FloatPoint(FlooredIntPoint(bounds_.Location()));
+  return gfx::Vector2dF(gfx::ToFlooredVector2d(bounds_.OffsetFromOrigin()));
 }
 
-IntSize PendingLayer::LayerBounds() const {
+gfx::Size PendingLayer::LayerBounds() const {
   // Because solid color layers do not adjust their location (see:
   // |PendingLayer::LayerOffset()|), we only expand their size here.
   if (IsSolidColor())
-    return ExpandedIntSize(bounds_.Size());
-  return EnclosingIntRect(bounds_).Size();
+    return gfx::ToCeiledSize(bounds_.size());
+  return gfx::ToEnclosingRect(bounds_).size();
 }
 
-FloatRect PendingLayer::MapRectKnownToBeOpaque(
+gfx::RectF PendingLayer::MapRectKnownToBeOpaque(
     const PropertyTreeState& new_state) const {
   if (rect_known_to_be_opaque_.IsEmpty())
-    return FloatRect();
+    return gfx::RectF();
 
   FloatClipRect float_clip_rect(rect_known_to_be_opaque_);
   GeometryMapper::LocalToAncestorVisualRect(property_tree_state_, new_state,
                                             float_clip_rect);
-  return float_clip_rect.IsTight() ? float_clip_rect.Rect() : FloatRect();
+  return float_clip_rect.IsTight() ? float_clip_rect.Rect() : gfx::RectF();
 }
 
 std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
@@ -134,21 +158,21 @@ std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
                    RectAsJSONArray(rect_known_to_be_opaque_));
   result->SetObject("property_tree_state", property_tree_state_.ToJSON());
   result->SetArray("offset_of_decomposited_transforms",
-                   PointAsJSONArray(offset_of_decomposited_transforms_));
+                   VectorAsJSONArray(offset_of_decomposited_transforms_));
   std::unique_ptr<JSONArray> json_chunks = std::make_unique<JSONArray>();
   for (auto it = chunks_.begin(); it != chunks_.end(); ++it) {
     StringBuilder sb;
     sb.Append("index=");
     sb.AppendNumber(it.IndexInPaintArtifact());
     sb.Append(" ");
-    sb.Append(it->ToString());
+    sb.Append(it->ToString(chunks_.GetPaintArtifact()));
     json_chunks->PushString(sb.ToString());
   }
   result->SetArray("paint_chunks", std::move(json_chunks));
   return result;
 }
 
-FloatRect PendingLayer::VisualRectForOverlapTesting(
+gfx::RectF PendingLayer::VisualRectForOverlapTesting(
     const PropertyTreeState& ancestor_state) const {
   FloatClipRect visual_rect(bounds_);
   GeometryMapper::LocalToAncestorVisualRect(
@@ -212,25 +236,50 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
   if (!merged_state)
     return false;
 
+  const absl::optional<gfx::RectF>& merged_visibility_limit =
+      VisibilityLimit(*merged_state);
+
+  // If the current bounds and known-to-be-opaque area already cover the entire
+  // visible area of the merged state, and the current state is already equal
+  // to the merged state, we can merge the guest immediately without needing to
+  // update any bounds at all. This simple merge fast-path avoids the cost of
+  // mapping the visual rects, below.
+  if (merged_visibility_limit && *merged_visibility_limit == bounds_ &&
+      merged_state == property_tree_state_ &&
+      rect_known_to_be_opaque_.Contains(bounds_)) {
+    if (!dry_run) {
+      chunks_.Merge(guest.Chunks());
+      text_known_to_be_on_opaque_background_ = true;
+      has_text_ |= guest.has_text_;
+      change_of_decomposited_transforms_ =
+          std::max(ChangeOfDecompositedTransforms(),
+                   guest.ChangeOfDecompositedTransforms());
+    }
+    return true;
+  }
+
   FloatClipRect new_home_bounds(bounds_);
   GeometryMapper::LocalToAncestorVisualRect(GetPropertyTreeState(),
                                             *merged_state, new_home_bounds);
-  ClipToVisibilityLimit(*merged_state, new_home_bounds.Rect());
+  if (merged_visibility_limit)
+    new_home_bounds.Rect().Intersect(*merged_visibility_limit);
+
   FloatClipRect new_guest_bounds(guest.bounds_);
   GeometryMapper::LocalToAncestorVisualRect(guest_state, *merged_state,
                                             new_guest_bounds);
-  ClipToVisibilityLimit(*merged_state, new_guest_bounds.Rect());
+  if (merged_visibility_limit)
+    new_guest_bounds.Rect().Intersect(*merged_visibility_limit);
 
-  FloatRect merged_bounds =
-      UnionRect(new_home_bounds.Rect(), new_guest_bounds.Rect());
-  float sum_area = new_home_bounds.Rect().Size().Area() +
-                   new_guest_bounds.Rect().Size().Area();
-  if (merged_bounds.Size().Area() - sum_area > kMergeSparsityAreaTolerance)
+  gfx::RectF merged_bounds =
+      gfx::UnionRects(new_home_bounds.Rect(), new_guest_bounds.Rect());
+  float sum_area = new_home_bounds.Rect().size().GetArea() +
+                   new_guest_bounds.Rect().size().GetArea();
+  if (merged_bounds.size().GetArea() - sum_area > kMergeSparsityAreaTolerance)
     return false;
 
-  FloatRect merged_rect_known_to_be_opaque =
-      MaximumCoveredRect(MapRectKnownToBeOpaque(*merged_state),
-                         guest.MapRectKnownToBeOpaque(*merged_state));
+  gfx::RectF merged_rect_known_to_be_opaque =
+      gfx::MaximumCoveredRect(MapRectKnownToBeOpaque(*merged_state),
+                              guest.MapRectKnownToBeOpaque(*merged_state));
   bool merged_text_known_to_be_on_opaque_background =
       text_known_to_be_on_opaque_background_;
   if (text_known_to_be_on_opaque_background_ !=
@@ -261,6 +310,11 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
     change_of_decomposited_transforms_ =
         std::max(ChangeOfDecompositedTransforms(),
                  guest.ChangeOfDecompositedTransforms());
+    // GeometryMapper::LocalToAncestorVisualRect can introduce floating-point
+    // error to the bounds. Integral bounds are important for reducing
+    // blurriness (see: PendingLayer::LayerOffset) so preserve that here.
+    PreserveNearIntegralBounds(bounds_);
+    PreserveNearIntegralBounds(rect_known_to_be_opaque_);
   }
   return true;
 }
@@ -407,9 +461,9 @@ void PendingLayer::DecompositeTransforms(Vector<PendingLayer>& pending_layers) {
       transform = &transform->Parent()->Unalias();
     }
     pending_layer.property_tree_state_.SetTransform(*transform);
-    pending_layer.bounds_.MoveBy(
+    pending_layer.bounds_.Offset(
         pending_layer.OffsetOfDecompositedTransforms());
-    pending_layer.rect_known_to_be_opaque_.MoveBy(
+    pending_layer.rect_known_to_be_opaque_.Offset(
         pending_layer.OffsetOfDecompositedTransforms());
   }
 }

@@ -52,7 +52,7 @@ FloatRect BoxReflection::MapRect(const FloatRect& rect) const {
   SkRect reflection(rect);
   ReflectionMatrix().mapRect(&reflection);
   FloatRect result = rect;
-  result.Unite(reflection);
+  result.Union(reflection);
   return result;
 }
 

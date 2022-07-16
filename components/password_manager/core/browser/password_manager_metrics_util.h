@@ -63,7 +63,7 @@ enum UIDismissalReason {
 };
 
 // Enum representing the different leak detection dialogs shown to the user.
-// Corresponds to LeakDetectionDialogType suffix in histograms.xml.
+// Corresponds to LeakDetectionDialogType suffix in histogram_suffixes_list.xml.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class LeakDialogType {
@@ -74,7 +74,10 @@ enum class LeakDialogType {
   // The user is asked to visit the Password Checkup and change the password for
   // the current site.
   kCheckupAndChange = 2,
-  kMaxValue = kCheckupAndChange,
+  // The user is asked to let Chrome automatically change their password for the
+  // current site.
+  kChangeAutomatically = 3,
+  kMaxValue = kChangeAutomatically,
 };
 
 // Enum recording the dismissal reason of the data breach dialog which is shown
@@ -88,7 +91,8 @@ enum class LeakDialogDismissalReason {
   kClickedClose = 1,
   kClickedCheckPasswords = 2,
   kClickedOk = 3,
-  kMaxValue = kClickedOk,
+  kClickedChangePasswordAutomatically = 4,
+  kMaxValue = kClickedChangePasswordAutomatically,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -390,7 +394,9 @@ enum class PasswordDropdownSelectedOption {
   kUnlockAccountStoreGeneration = 4,
   // Previoulsy opted-in user decided to log-in again to access their passwords.
   kResigninToUnlockAccountStore = 5,
-  kMaxValue = kResigninToUnlockAccountStore
+  // User selected a WebAuthn credential.
+  kWebAuthn = 6,
+  kMaxValue = kWebAuthn
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -457,7 +463,10 @@ enum class MoveToAccountStoreTrigger {
   kExplicitlyTriggeredInSettings = 1,
   // The user explicitly asked to move multiple passwords at once in Settings.
   kExplicitlyTriggeredForMultiplePasswordsInSettings = 2,
-  kMaxValue = kExplicitlyTriggeredForMultiplePasswordsInSettings,
+  // After saving a password locally, the user opted in to saving this and
+  // future passwords in the account.
+  kUserOptedInAfterSavingLocally = 3,
+  kMaxValue = kUserOptedInAfterSavingLocally,
 };
 
 // Used to record metrics for the usage and timing of the GetChangePasswordUrl
@@ -517,17 +526,24 @@ void LogGeneralUIDismissalReason(UIDismissalReason reason);
 
 // Log the |reason| a user dismissed the save password bubble. If
 // |user_state| is set, the |reason| is also logged to a separate
-// user-state-specific histogram.
+// user-state-specific histogram. If the submission is detected on a cleared
+// change password form, dismissal reason is also recorded in a histogram
+// specific for this type of submission.
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
+    autofill::mojom::SubmissionIndicatorEvent submission_event,
     absl::optional<PasswordAccountStorageUserState> user_state);
 
 // Log the |reason| a user dismissed the save password prompt after previously
 // having unblocklisted the origin while on the page.
 void LogSaveUIDismissalReasonAfterUnblocklisting(UIDismissalReason reason);
 
-// Log the |reason| a user dismissed the update password bubble.
-void LogUpdateUIDismissalReason(UIDismissalReason reason);
+// Log the |reason| a user dismissed the update password bubble. If the
+// submission is detected on a cleared change password form, dismissal reason is
+// also recorded in a histogram specific for this type of submission.
+void LogUpdateUIDismissalReason(
+    UIDismissalReason reason,
+    autofill::mojom::SubmissionIndicatorEvent submission_event);
 
 // Log the |reason| a user dismissed the move password bubble.
 void LogMoveUIDismissalReason(UIDismissalReason reason,
@@ -572,8 +588,7 @@ void LogCredentialManagerGetResult(CredentialManagerGetResult result,
                                    CredentialMediationRequirement mediation);
 
 // Log the password reuse.
-void LogPasswordReuse(int password_length,
-                      int saved_passwords,
+void LogPasswordReuse(int saved_passwords,
                       int number_matches,
                       bool password_field_detected,
                       PasswordType reused_password_type);
@@ -643,7 +658,6 @@ void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state,
 // Log the number of Gaia password hashes saved, and the number of enterprise
 // password hashes saved. Currently only called on profile start up.
 void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
-                                    size_t enterprise_hash_count,
                                     bool does_primary_account_exists,
                                     bool is_signed_in);
 

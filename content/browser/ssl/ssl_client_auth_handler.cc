@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
@@ -25,6 +24,10 @@ class SSLClientAuthHandler::ClientCertificateDelegateImpl
   explicit ClientCertificateDelegateImpl(
       base::WeakPtr<SSLClientAuthHandler> handler)
       : handler_(std::move(handler)) {}
+
+  ClientCertificateDelegateImpl(const ClientCertificateDelegateImpl&) = delete;
+  ClientCertificateDelegateImpl& operator=(
+      const ClientCertificateDelegateImpl&) = delete;
 
   ~ClientCertificateDelegateImpl() override {
     if (!continue_called_ && handler_) {
@@ -46,8 +49,6 @@ class SSLClientAuthHandler::ClientCertificateDelegateImpl
  private:
   base::WeakPtr<SSLClientAuthHandler> handler_;
   bool continue_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientCertificateDelegateImpl);
 };
 
 // A reference-counted core to allow the ClientCertStore and SSLCertRequestInfo

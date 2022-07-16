@@ -26,6 +26,12 @@ class FakeProfileSessionDurationsService
  public:
   FakeProfileSessionDurationsService()
       : IOSProfileSessionDurationsService(nullptr, nullptr) {}
+
+  FakeProfileSessionDurationsService(
+      const FakeProfileSessionDurationsService&) = delete;
+  FakeProfileSessionDurationsService& operator=(
+      const FakeProfileSessionDurationsService&) = delete;
+
   ~FakeProfileSessionDurationsService() override = default;
 
   static std::unique_ptr<KeyedService> Create(
@@ -40,6 +46,10 @@ class FakeProfileSessionDurationsService
     ++session_ended_count_;
   }
 
+  bool IsSessionActive() override {
+    return session_started_count_ > session_ended_count_;
+  }
+
   // IOSProfileSessionDurationsService:
   int session_started_count() const { return session_started_count_; }
   int session_ended_count() const { return session_ended_count_; }
@@ -47,8 +57,6 @@ class FakeProfileSessionDurationsService
  private:
   int session_started_count_ = 0;
   int session_ended_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeProfileSessionDurationsService);
 };
 }  // namespace
 

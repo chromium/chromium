@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "url/gurl.h"
 
@@ -38,6 +37,10 @@ class LocalizedError {
     bool auto_fetch_allowed = false;
   };
 
+  LocalizedError() = delete;
+  LocalizedError(const LocalizedError&) = delete;
+  LocalizedError& operator=(const LocalizedError&) = delete;
+
   // Returns a |PageState| that describes the elements that should be shown on
   // on HTTP errors, like 404 or connection reset.
   static PageState GetPageState(
@@ -64,9 +67,6 @@ class LocalizedError {
 
   // Returns true if an error page exists for the specified parameters.
   static bool HasStrings(const std::string& error_domain, int error_code);
- private:
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LocalizedError);
 };
 
 }  // namespace error_page

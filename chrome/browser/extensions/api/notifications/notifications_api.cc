@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -43,11 +42,11 @@
 #include "extensions/common/extension.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/layout.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -556,7 +555,7 @@ NotificationsCreateFunction::~NotificationsCreateFunction() {
 
 ExtensionFunction::ResponseAction
 NotificationsCreateFunction::RunNotificationsApi() {
-  params_ = api::notifications::Create::Params::Create(*args_);
+  params_ = api::notifications::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
   const std::string extension_id(extension_->id());
@@ -590,7 +589,7 @@ NotificationsUpdateFunction::~NotificationsUpdateFunction() {
 
 ExtensionFunction::ResponseAction
 NotificationsUpdateFunction::RunNotificationsApi() {
-  params_ = api::notifications::Update::Params::Create(*args_);
+  params_ = api::notifications::Update::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
   // We are in update.  If the ID doesn't exist, succeed but call the callback
@@ -631,7 +630,7 @@ NotificationsClearFunction::~NotificationsClearFunction() {
 
 ExtensionFunction::ResponseAction
 NotificationsClearFunction::RunNotificationsApi() {
-  params_ = api::notifications::Clear::Params::Create(*args_);
+  params_ = api::notifications::Clear::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
   bool cancel_result = GetDisplayHelper()->Close(

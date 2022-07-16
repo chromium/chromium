@@ -31,7 +31,7 @@ class OneTimeRuleIterator : public content_settings::RuleIterator {
         begin_iterator_->first, ContentSettingsPattern::Wildcard(),
         base::Value::FromUniquePtrValue(
             content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
-        begin_iterator_->second + base::TimeDelta::FromDays(1),
+        begin_iterator_->second + base::Days(1),
         content_settings::SessionModel::OneTime);
     begin_iterator_++;
     return rule;
@@ -102,8 +102,7 @@ base::Time OneTimeGeolocationPermissionProvider::GetWebsiteSettingLastModified(
       matching_iterator = grants_with_open_tabs_.find(primary_pattern);
   if (matching_iterator == grants_with_open_tabs_.end())
     return base::Time();
-  if (matching_iterator->second + base::TimeDelta::FromDays(1) <
-      base::Time::Now()) {
+  if (matching_iterator->second + base::Days(1) < base::Time::Now()) {
     return base::Time();
   }
   return matching_iterator->second;

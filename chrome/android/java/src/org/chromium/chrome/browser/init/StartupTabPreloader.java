@@ -146,7 +146,7 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
      */
     @VisibleForTesting
     boolean shouldLoadTab() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)) {
             return false;
         }
 

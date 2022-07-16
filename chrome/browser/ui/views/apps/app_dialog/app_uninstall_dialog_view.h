@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h"
@@ -37,6 +36,10 @@ class AppUninstallDialogView : public apps::UninstallDialog::UiBase,
                          const std::string& app_name,
                          gfx::ImageSkia image,
                          apps::UninstallDialog* uninstall_dialog);
+
+  AppUninstallDialogView(const AppUninstallDialogView&) = delete;
+  AppUninstallDialogView& operator=(const AppUninstallDialogView&) = delete;
+
   ~AppUninstallDialogView() override;
 
   static AppUninstallDialogView* GetActiveViewForTesting();
@@ -63,8 +66,6 @@ class AppUninstallDialogView : public apps::UninstallDialog::UiBase,
 
   views::Checkbox* report_abuse_checkbox_ = nullptr;
   views::Checkbox* clear_site_data_checkbox_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AppUninstallDialogView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_DIALOG_APP_UNINSTALL_DIALOG_VIEW_H_

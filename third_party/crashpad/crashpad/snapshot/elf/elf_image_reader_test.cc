@@ -127,20 +127,21 @@ void ReadThisExecutableInTarget(ProcessType process,
   constexpr bool am_64_bit = false;
 #endif  // ARCH_CPU_64_BITS
 
-  ProcessMemoryNative memory;
-  ASSERT_TRUE(memory.Initialize(process));
-  ProcessMemoryRange range;
-  ASSERT_TRUE(range.Initialize(&memory, am_64_bit));
-
   VMAddress elf_address;
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   FakePtraceConnection connection;
   ASSERT_TRUE(connection.Initialize(process));
+  ProcessMemoryLinux memory(&connection);
   LocateExecutable(&connection, &memory, &elf_address);
 #elif defined(OS_FUCHSIA)
+  ProcessMemoryFuchsia memory;
+  ASSERT_TRUE(memory.Initialize(process));
   LocateExecutable(process, &memory, &elf_address);
 #endif
   ASSERT_NO_FATAL_FAILURE();
+
+  ProcessMemoryRange range;
+  ASSERT_TRUE(range.Initialize(&memory, am_64_bit));
 
   ElfImageReader reader;
   ASSERT_TRUE(reader.Initialize(range, elf_address));
@@ -191,8 +192,15 @@ void ReadLibcInTarget(ProcessType process,
   constexpr bool am_64_bit = false;
 #endif  // ARCH_CPU_64_BITS
 
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+  FakePtraceConnection connection;
+  ASSERT_TRUE(connection.Initialize(process));
+  ProcessMemoryLinux memory(&connection);
+#else
   ProcessMemoryNative memory;
   ASSERT_TRUE(memory.Initialize(process));
+#endif
+
   ProcessMemoryRange range;
   ASSERT_TRUE(range.Initialize(&memory, am_64_bit));
 

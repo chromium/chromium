@@ -10,7 +10,7 @@
     SecureContext,
     Exposed=Window
 ] interface NDEFReadingEvent : Event {
-    [RaisesException] constructor(DOMString type, NDEFReadingEventInit eventInitDict);
+    [CallWith=ScriptState, RaisesException] constructor(DOMString type, NDEFReadingEventInit eventInitDict);
     readonly attribute DOMString serialNumber;
     [SameObject] readonly attribute NDEFMessage message;
 };

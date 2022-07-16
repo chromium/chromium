@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
+#include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
 
 namespace blink {
@@ -115,39 +116,9 @@ bool DummyModulator::HasValidContext() {
 }
 
 void DummyModulator::ResolveDynamically(const ModuleRequest& module_request,
-                                        const KURL&,
                                         const ReferrerScriptInfo&,
                                         ScriptPromiseResolver*) {
   NOTREACHED();
-}
-
-ScriptValue DummyModulator::CreateTypeError(const String& message) const {
-  NOTREACHED();
-  return ScriptValue();
-}
-ScriptValue DummyModulator::CreateSyntaxError(const String& message) const {
-  NOTREACHED();
-  return ScriptValue();
-}
-
-void DummyModulator::RegisterImportMap(const ImportMap*,
-                                       ScriptValue error_to_rethrow) {
-  NOTREACHED();
-}
-
-Modulator::AcquiringImportMapsState
-DummyModulator::GetAcquiringImportMapsState() const {
-  NOTREACHED();
-  return AcquiringImportMapsState::kAcquiring;
-}
-
-void DummyModulator::SetAcquiringImportMapsState(AcquiringImportMapsState) {
-  NOTREACHED();
-}
-
-const ImportMap* DummyModulator::GetImportMapForTest() const {
-  NOTREACHED();
-  return nullptr;
 }
 
 ModuleImportMeta DummyModulator::HostGetImportMetaProperties(

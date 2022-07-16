@@ -15,6 +15,9 @@ class MixerOutputStreamDummy : public MixerOutputStream {
  public:
   MixerOutputStreamDummy() = default;
 
+  MixerOutputStreamDummy(const MixerOutputStreamDummy&) = delete;
+  MixerOutputStreamDummy& operator=(const MixerOutputStreamDummy&) = delete;
+
   // MixerOutputStream implementation:
   bool Start(int requested_sample_rate, int channels) override { return true; }
 
@@ -36,9 +39,6 @@ class MixerOutputStreamDummy : public MixerOutputStream {
   }
 
   void Stop() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MixerOutputStreamDummy);
 };
 
 // static

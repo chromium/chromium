@@ -72,10 +72,10 @@ TEST_F(DragControllerTest, DragImageForSelectionUsesPageScaleFactor) {
   const std::unique_ptr<DragImage> image2(
       DragController::DragImageForSelection(GetFrame(), 0.75f));
 
-  EXPECT_GT(image1->Size().Width(), 0);
-  EXPECT_GT(image1->Size().Height(), 0);
-  EXPECT_EQ(image1->Size().Width() * 2, image2->Size().Width());
-  EXPECT_EQ(image1->Size().Height() * 2, image2->Size().Height());
+  EXPECT_GT(image1->Size().width(), 0);
+  EXPECT_GT(image1->Size().height(), 0);
+  EXPECT_EQ(image1->Size().width() * 2, image2->Size().width());
+  EXPECT_EQ(image1->Size().height() * 2, image2->Size().height());
 }
 
 class DragControllerSimTest : public SimTest {};
@@ -194,7 +194,7 @@ TEST_F(DragControllerTest, DragImageForSelectionClipsToViewport) {
                                viewport_height_css - node_margin_top);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(GetFrame()));
   auto selection_image(DragController::DragImageForSelection(GetFrame(), 1));
-  IntSize expected_image_size(RoundedIntSize(expected_selection.Size()));
+  IntSize expected_image_size(RoundedIntSize(expected_selection.size()));
   expected_image_size.Scale(page_scale_factor);
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
@@ -209,7 +209,7 @@ TEST_F(DragControllerTest, DragImageForSelectionClipsToViewport) {
   expected_selection = FloatRect(0, 0, node_width, viewport_height_css);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(GetFrame()));
   selection_image = DragController::DragImageForSelection(GetFrame(), 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
+  expected_image_size = IntSize(RoundedIntSize(expected_selection.size()));
   expected_image_size.Scale(page_scale_factor);
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
@@ -222,7 +222,7 @@ TEST_F(DragControllerTest, DragImageForSelectionClipsToViewport) {
                                  node_height + node_margin_top - scroll_offset);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(GetFrame()));
   selection_image = DragController::DragImageForSelection(GetFrame(), 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
+  expected_image_size = IntSize(RoundedIntSize(expected_selection.size()));
   expected_image_size.Scale(page_scale_factor);
   EXPECT_EQ(expected_image_size, selection_image->Size());
 }
@@ -265,7 +265,7 @@ TEST_F(DragControllerTest, DragImageForSelectionClipsChildFrameToViewport) {
   FloatRect expected_selection(0, 5, 30, 20);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   auto selection_image(DragController::DragImageForSelection(child_frame, 1));
-  IntSize expected_image_size(RoundedIntSize(expected_selection.Size()));
+  IntSize expected_image_size(RoundedIntSize(expected_selection.size()));
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
   // The iframe's selection rect is in the frame's local coordinates and should
@@ -277,7 +277,7 @@ TEST_F(DragControllerTest, DragImageForSelectionClipsChildFrameToViewport) {
   expected_selection = FloatRect(0, 5, 30, 20);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   selection_image = DragController::DragImageForSelection(child_frame, 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
+  expected_image_size = IntSize(RoundedIntSize(expected_selection.size()));
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
   // The parent frame's scroll offset of 210 should cause the iframe content to
@@ -289,7 +289,7 @@ TEST_F(DragControllerTest, DragImageForSelectionClipsChildFrameToViewport) {
   expected_selection = FloatRect(0, 10, 30, 15);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   selection_image = DragController::DragImageForSelection(child_frame, 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
+  expected_image_size = IntSize(RoundedIntSize(expected_selection.size()));
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
   // Scrolling the iframe should shift the content so it is further under the
@@ -301,7 +301,7 @@ TEST_F(DragControllerTest, DragImageForSelectionClipsChildFrameToViewport) {
   expected_selection = FloatRect(0, 10, 30, 8);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   selection_image = DragController::DragImageForSelection(child_frame, 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
+  expected_image_size = IntSize(RoundedIntSize(expected_selection.size()));
   EXPECT_EQ(expected_image_size, selection_image->Size());
 }
 
@@ -346,7 +346,7 @@ TEST_F(DragControllerTest,
   FloatRect expected_selection(0, 5, 30, 20);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   auto selection_image(DragController::DragImageForSelection(child_frame, 1));
-  IntSize expected_image_size(RoundedIntSize(expected_selection.Size()));
+  IntSize expected_image_size(RoundedIntSize(expected_selection.size()));
   expected_image_size.Scale(page_scale_factor);
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
@@ -359,7 +359,7 @@ TEST_F(DragControllerTest,
   expected_selection = FloatRect(0, 5, 30, 20);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   selection_image = DragController::DragImageForSelection(child_frame, 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
+  expected_image_size = IntSize(RoundedIntSize(expected_selection.size()));
   expected_image_size.Scale(page_scale_factor);
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
@@ -372,7 +372,7 @@ TEST_F(DragControllerTest,
   expected_selection = FloatRect(0, 10, 30, 15);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   selection_image = DragController::DragImageForSelection(child_frame, 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
+  expected_image_size = IntSize(RoundedIntSize(expected_selection.size()));
   expected_image_size.Scale(page_scale_factor);
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
@@ -385,7 +385,7 @@ TEST_F(DragControllerTest,
   expected_selection = FloatRect(0, 10, 30, 8);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   selection_image = DragController::DragImageForSelection(child_frame, 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
+  expected_image_size = IntSize(RoundedIntSize(expected_selection.size()));
   expected_image_size.Scale(page_scale_factor);
   EXPECT_EQ(expected_image_size, selection_image->Size());
 }
@@ -421,7 +421,7 @@ TEST_F(DragControllerTest, DragImageOffsetWithPageScaleFactor) {
       DataTransfer::kDragAndDrop, DataTransferAccessPolicy::kWritable,
       DataObject::Create());
   GetFrame().GetPage()->GetDragController().StartDrag(
-      &GetFrame(), drag_state, mouse_event, IntPoint(5, 10));
+      &GetFrame(), drag_state, mouse_event, gfx::Point(5, 10));
 
   IntSize expected_image_size = IntSize(50, 40);
   expected_image_size.Scale(page_scale_factor);
@@ -429,10 +429,9 @@ TEST_F(DragControllerTest, DragImageOffsetWithPageScaleFactor) {
             IntSize(GetChromeClient().last_drag_image_size));
   // The drag image has a margin of 2px which should offset the selection
   // image by 2px from the dragged location of (5, 10).
-  IntPoint expected_offset = IntPoint(5, 10 - 2);
-  expected_offset.Scale(page_scale_factor, page_scale_factor);
-  EXPECT_EQ(expected_offset,
-            IntPoint(GetChromeClient().last_drag_image_offset));
+  gfx::Point expected_offset(5 * page_scale_factor,
+                             (10 - 2) * page_scale_factor);
+  EXPECT_EQ(expected_offset, GetChromeClient().last_drag_image_offset);
 }
 
 TEST_F(DragControllerTest, DragLinkWithPageScaleFactor) {
@@ -467,7 +466,7 @@ TEST_F(DragControllerTest, DragLinkWithPageScaleFactor) {
       DataTransfer::kDragAndDrop, DataTransferAccessPolicy::kWritable,
       DataObject::Create());
   GetFrame().GetPage()->GetDragController().StartDrag(
-      &GetFrame(), drag_state, mouse_event, IntPoint(5, 10));
+      &GetFrame(), drag_state, mouse_event, gfx::Point(5, 10));
 
   IntSize link_image_size = IntSize(GetChromeClient().last_drag_image_size);
   // The drag link image should be a textual representation of the drag url in a
@@ -478,13 +477,13 @@ TEST_F(DragControllerTest, DragLinkWithPageScaleFactor) {
   // image is not offset by margin because the link image is not based on the
   // link's painting but instead is a generated image of the link's url. Because
   // link_image_size is already scaled, no additional scaling is expected.
-  IntPoint expected_offset = IntPoint(link_image_size.Width() / 2, 2);
+  gfx::Point expected_offset = gfx::Point(link_image_size.width() / 2, 2);
   // The offset is mapped using integers which can introduce rounding errors
   // (see TODO in DragController::DoSystemDrag) so we accept values near our
   // expectation until more precise offset mapping is available.
-  EXPECT_NEAR(expected_offset.X(), GetChromeClient().last_drag_image_offset.x(),
+  EXPECT_NEAR(expected_offset.x(), GetChromeClient().last_drag_image_offset.x(),
               1);
-  EXPECT_NEAR(expected_offset.Y(), GetChromeClient().last_drag_image_offset.y(),
+  EXPECT_NEAR(expected_offset.y(), GetChromeClient().last_drag_image_offset.y(),
               1);
 }
 

@@ -17,6 +17,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) DataPipeToSourceStream final
     : public net::SourceStream {
  public:
   explicit DataPipeToSourceStream(mojo::ScopedDataPipeConsumerHandle body);
+
+  DataPipeToSourceStream(const DataPipeToSourceStream&) = delete;
+  DataPipeToSourceStream& operator=(const DataPipeToSourceStream&) = delete;
+
   ~DataPipeToSourceStream() override;
 
   // net::SourceStream implementation.
@@ -39,8 +43,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) DataPipeToSourceStream final
   scoped_refptr<net::IOBuffer> output_buf_;
   int output_buf_size_ = 0;
   net::CompletionOnceCallback pending_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeToSourceStream);
 };
 
 }  // namespace network

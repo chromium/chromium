@@ -7,47 +7,36 @@
 
 #include <map>
 
-#include "content/browser/child_process_security_policy_impl.h"
+#include "base/memory/weak_ptr.h"
+#include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
-#include "url/origin.h"
 
 namespace content {
 
 class CONTENT_EXPORT BroadcastChannelProvider
     : public blink::mojom::BroadcastChannelProvider {
  public:
-  BroadcastChannelProvider();
+  BroadcastChannelProvider(BroadcastChannelService* broadcast_channel_service,
+                           const blink::StorageKey& storage_key);
+
+  BroadcastChannelProvider() = delete;
   ~BroadcastChannelProvider() override;
 
-  using SecurityPolicyHandle = ChildProcessSecurityPolicyImpl::Handle;
-  mojo::ReceiverId Connect(
-      SecurityPolicyHandle security_policy_handle,
-      mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver);
-
   void ConnectToChannel(
-      const url::Origin& origin,
       const std::string& name,
       mojo::PendingAssociatedRemote<blink::mojom::BroadcastChannelClient>
           client,
       mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelClient>
           connection) override;
 
-  auto& receivers_for_testing() { return receivers_; }
-
  private:
-  class Connection;
-
-  void UnregisterConnection(Connection*);
-  void ReceivedMessageOnConnection(Connection*,
-                                   const blink::CloneableMessage& message);
-
-  mojo::ReceiverSet<blink::mojom::BroadcastChannelProvider,
-                    std::unique_ptr<SecurityPolicyHandle>>
-      receivers_;
-  std::map<url::Origin, std::multimap<std::string, std::unique_ptr<Connection>>>
-      connections_;
+  const blink::StorageKey storage_key_;
+  // Note: We store a raw pointer to the BroadcastChannelService since it's
+  // owned by the StoragePartitionImpl and should outlive any created
+  // BroadcastChannelProvider instance.
+  BroadcastChannelService* broadcast_channel_service_;
 };
 
 }  // namespace content

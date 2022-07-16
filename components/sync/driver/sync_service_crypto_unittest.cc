@@ -19,7 +19,7 @@
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/trusted_vault_client.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
-#include "components/sync/nigori/nigori.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/test/engine/mock_sync_engine.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -780,6 +780,10 @@ TEST_F(
 }
 
 TEST_F(SyncServiceCryptoTest, ShouldNotGetRecoverabilityIfFeatureDisabled) {
+  base::test::ScopedFeatureList override_features;
+  override_features.InitAndDisableFeature(
+      switches::kSyncTrustedVaultPassphraseRecovery);
+
   trusted_vault_client_.SetIsRecoverabilityDegraded(true);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
                                   base::Time::Now());

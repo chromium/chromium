@@ -20,6 +20,10 @@ namespace blink {
 class XrExitFullscreenObserver : public NativeEventListener {
  public:
   XrExitFullscreenObserver();
+
+  XrExitFullscreenObserver(const XrExitFullscreenObserver&) = delete;
+  XrExitFullscreenObserver& operator=(const XrExitFullscreenObserver&) = delete;
+
   ~XrExitFullscreenObserver() override;
 
   // NativeEventListener
@@ -32,7 +36,6 @@ class XrExitFullscreenObserver : public NativeEventListener {
  private:
   Member<Document> document_;
   base::OnceClosure on_exited_;
-  DISALLOW_COPY_AND_ASSIGN(XrExitFullscreenObserver);
 };
 
 }  // namespace blink

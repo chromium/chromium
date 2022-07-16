@@ -39,14 +39,11 @@ void PluginsLoaded(base::OnceClosure callback,
 
 class FakePluginServiceFilter : public content::PluginServiceFilter {
  public:
-  FakePluginServiceFilter() {}
-  ~FakePluginServiceFilter() override {}
+  FakePluginServiceFilter() = default;
+  ~FakePluginServiceFilter() override = default;
 
   bool IsPluginAvailable(int render_process_id,
-                         int render_view_id,
-                         const GURL& url,
-                         const url::Origin& main_frame_origin,
-                         content::WebPluginInfo* plugin) override;
+                         const content::WebPluginInfo& plugin) override;
 
   bool CanLoadPlugin(int render_process_id,
                      const base::FilePath& path) override;
@@ -61,13 +58,10 @@ class FakePluginServiceFilter : public content::PluginServiceFilter {
 
 bool FakePluginServiceFilter::IsPluginAvailable(
     int render_process_id,
-    int render_view_id,
-    const GURL& url,
-    const url::Origin& main_frame_origin,
-    content::WebPluginInfo* plugin) {
-  auto it = plugin_state_.find(plugin->path);
+    const content::WebPluginInfo& plugin) {
+  auto it = plugin_state_.find(plugin.path);
   if (it == plugin_state_.end()) {
-    ADD_FAILURE() << "No plugin state for '" << plugin->path.value() << "'";
+    ADD_FAILURE() << "No plugin state for '" << plugin.path.value() << "'";
     return false;
   }
   return it->second;
@@ -85,7 +79,6 @@ class PluginInfoHostImplTest : public ::testing::Test {
   PluginInfoHostImplTest()
       : foo_plugin_path_(FILE_PATH_LITERAL("/path/to/foo")),
         bar_plugin_path_(FILE_PATH_LITERAL("/path/to/bar")),
-        fake_flash_path_(FILE_PATH_LITERAL("/path/to/fake/flash")),
         context_(0, &profile_),
         host_content_settings_map_(
             HostContentSettingsMapFactory::GetForProfile(&profile_)) {}
@@ -107,14 +100,6 @@ class PluginInfoHostImplTest : public ::testing::Test {
     bar_plugin.mime_types.push_back(mime_type);
     bar_plugin.type = content::WebPluginInfo::PLUGIN_TYPE_PEPPER_IN_PROCESS;
     PluginService::GetInstance()->RegisterInternalPlugin(bar_plugin, false);
-
-    content::WebPluginInfo fake_flash(
-        base::ASCIIToUTF16(content::kFlashPluginName), fake_flash_path_,
-        u"100.0", u"Fake Flash Description.");
-    mime_type.mime_type = "application/x-shockwave-flash";
-    fake_flash.mime_types.push_back(mime_type);
-    fake_flash.type = content::WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS;
-    PluginService::GetInstance()->RegisterInternalPlugin(fake_flash, false);
 
     PluginService::GetInstance()->SetFilter(&filter_);
 
@@ -142,7 +127,6 @@ class PluginInfoHostImplTest : public ::testing::Test {
 
   base::FilePath foo_plugin_path_;
   base::FilePath bar_plugin_path_;
-  base::FilePath fake_flash_path_;
   FakePluginServiceFilter filter_;
 
  private:
@@ -162,7 +146,7 @@ TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
     std::string actual_mime_type;
     EXPECT_TRUE(context()->FindEnabledPlugin(0, GURL(), url::Origin(),
                                              "foo/bar", &status, &plugin,
-                                             &actual_mime_type, NULL));
+                                             &actual_mime_type, nullptr));
     EXPECT_EQ(chrome::mojom::PluginStatus::kAllowed, status);
     EXPECT_EQ(foo_plugin_path_.value(), plugin.path.value());
   }
@@ -174,7 +158,7 @@ TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
     std::string actual_mime_type;
     EXPECT_TRUE(context()->FindEnabledPlugin(0, GURL(), url::Origin(),
                                              "foo/bar", &status, &plugin,
-                                             &actual_mime_type, NULL));
+                                             &actual_mime_type, nullptr));
     EXPECT_EQ(chrome::mojom::PluginStatus::kAllowed, status);
     EXPECT_EQ(bar_plugin_path_.value(), plugin.path.value());
   }
@@ -188,7 +172,7 @@ TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
     std::u16string plugin_name;
     EXPECT_FALSE(context()->FindEnabledPlugin(0, GURL(), url::Origin(),
                                               "foo/bar", &status, &plugin,
-                                              &actual_mime_type, NULL));
+                                              &actual_mime_type, nullptr));
     EXPECT_EQ(chrome::mojom::PluginStatus::kDisabled, status);
     EXPECT_EQ(foo_plugin_path_.value(), plugin.path.value());
   }
@@ -198,7 +182,7 @@ TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
     std::string actual_mime_type;
     EXPECT_FALSE(context()->FindEnabledPlugin(0, GURL(), url::Origin(),
                                               "baz/blurp", &status, &plugin,
-                                              &actual_mime_type, NULL));
+                                              &actual_mime_type, nullptr));
     EXPECT_EQ(chrome::mojom::PluginStatus::kNotFound, status);
     EXPECT_EQ(FILE_PATH_LITERAL(""), plugin.path.value());
   }

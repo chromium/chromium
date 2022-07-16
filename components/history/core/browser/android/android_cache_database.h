@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/android/android_history_types.h"
 #include "sql/database.h"
@@ -21,6 +20,10 @@ namespace history {
 class AndroidCacheDatabase {
  public:
   AndroidCacheDatabase();
+
+  AndroidCacheDatabase(const AndroidCacheDatabase&) = delete;
+  AndroidCacheDatabase& operator=(const AndroidCacheDatabase&) = delete;
+
   virtual ~AndroidCacheDatabase();
 
   // Creates the database, deletes existing one if any; also attach it to the
@@ -112,8 +115,6 @@ class AndroidCacheDatabase {
   bool DoAttach();
 
   base::FilePath db_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidCacheDatabase);
 };
 
 }  // namespace history

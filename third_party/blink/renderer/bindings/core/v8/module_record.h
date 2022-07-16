@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -44,7 +44,7 @@ class CORE_EXPORT ModuleRecordProduceCacheData final
     return produce_cache_options_;
   }
   v8::Local<v8::UnboundModuleScript> UnboundScript(v8::Isolate* isolate) const {
-    return unbound_script_.NewLocal(isolate);
+    return unbound_script_.Get(isolate);
   }
 
  private:
@@ -59,7 +59,7 @@ class CORE_EXPORT ModuleRecord final {
 
  public:
   static v8::Local<v8::Module> Compile(
-      v8::Isolate*,
+      ScriptState*,
       const ModuleScriptCreationParams& params,
       const ScriptFetchOptions&,
       const TextPosition&,

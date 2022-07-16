@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 struct ArcAppIconDescriptor {
   ArcAppIconDescriptor(int dip_size, ui::ResourceScaleFactor scale_factor);

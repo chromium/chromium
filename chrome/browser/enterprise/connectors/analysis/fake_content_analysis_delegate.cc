@@ -16,7 +16,7 @@ namespace enterprise_connectors {
 
 namespace {
 
-base::TimeDelta response_delay = base::TimeDelta::FromSeconds(0);
+base::TimeDelta response_delay = base::Seconds(0);
 
 }  // namespace
 

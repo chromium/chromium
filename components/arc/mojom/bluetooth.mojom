@@ -539,11 +539,6 @@ interface BluetoothInstance {
                                               bool connected);
 
   // Bluetooth Gatt Client callbacks
-  // TODO(b/111367421): Remove this when no active device running Android N.
-  [MinVersion=1] OnLEDeviceFoundForN@7(
-      BluetoothAddress addr,
-      int32 rssi,
-      array<BluetoothAdvertisingData> adv_data);
   [MinVersion=13] OnLEDeviceFound@21(BluetoothAddress addr,
                                      int32 rssi,
                                      array<uint8> eir);

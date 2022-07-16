@@ -27,8 +27,11 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/css_font_face.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
+#include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
@@ -98,11 +101,9 @@ scoped_refptr<FontData> CSSSegmentedFontFace::GetFontData(
   if (!IsValid())
     return nullptr;
 
-  const FontSelectionRequest& font_selection_request =
-      font_description.GetFontSelectionRequest();
   bool is_unique_match = false;
-  FontCacheKey key = font_description.CacheKey(
-      FontFaceCreationParams(), is_unique_match, font_selection_request);
+  FontCacheKey key =
+      font_description.CacheKey(FontFaceCreationParams(), is_unique_match);
 
   // font_data_table_ caches FontData and SegmentedFontData instances, which
   // provide SimpleFontData objects containing FontPlatformData objects. In the
@@ -126,14 +127,16 @@ scoped_refptr<FontData> CSSSegmentedFontFace::GetFontData(
       SegmentedFontData::Create();
 
   FontDescription requested_font_description(font_description);
-  if (!font_selection_capabilities_.HasRange()) {
-    requested_font_description.SetSyntheticBold(
-        font_selection_capabilities_.weight.maximum < BoldThreshold() &&
-        font_selection_request.weight >= BoldThreshold());
-    requested_font_description.SetSyntheticItalic(
-        font_selection_capabilities_.slope.maximum == NormalSlopeValue() &&
-        font_selection_request.slope == ItalicSlopeValue());
-  }
+  const FontSelectionRequest& font_selection_request =
+      font_description.GetFontSelectionRequest();
+  requested_font_description.SetSyntheticBold(
+      font_selection_capabilities_.weight.maximum < BoldThreshold() &&
+      font_selection_request.weight >= BoldThreshold() &&
+      font_description.SyntheticBoldAllowed());
+  requested_font_description.SetSyntheticItalic(
+      font_selection_capabilities_.slope.maximum < ItalicSlopeValue() &&
+      font_selection_request.slope >= ItalicSlopeValue() &&
+      font_description.SyntheticItalicAllowed());
 
   font_faces_->ForEachReverse(WTF::BindRepeating(
       [](const FontDescription& requested_font_description,
@@ -236,12 +239,59 @@ bool FontFaceList::IsEmpty() const {
   return css_connected_face_.IsEmpty() && non_css_connected_face_.IsEmpty();
 }
 
-void FontFaceList::Insert(FontFace* font_face, bool css_connected) {
-  if (css_connected) {
-    css_connected_face_.insert(font_face);
-  } else {
-    non_css_connected_face_.insert(font_face);
+namespace {
+
+bool CascadePriorityHigherThan(const FontFace& new_font_face,
+                               const FontFace& existing_font_face) {
+  // We should reach here only for CSS-connected font faces, which must have an
+  // owner document. However, there are cases where we don't have a document
+  // here, possibly caused by ExecutionContext or Document lifecycle issues.
+  // TODO(crbug.com/1250831): Find out the root cause and fix it.
+  if (!new_font_face.GetDocument() || !existing_font_face.GetDocument()) {
+    NOTREACHED();
+    // In the buggy case, to ensure a stable ordering, font faces without a
+    // document are considered higher priority.
+    return !new_font_face.GetDocument();
   }
+  DCHECK_EQ(new_font_face.GetDocument(), existing_font_face.GetDocument());
+  DCHECK(new_font_face.GetStyleRule());
+  DCHECK(existing_font_face.GetStyleRule());
+  if (new_font_face.IsUserStyle() != existing_font_face.IsUserStyle())
+    return existing_font_face.IsUserStyle();
+  const CascadeLayerMap* map = nullptr;
+  if (new_font_face.IsUserStyle()) {
+    map =
+        new_font_face.GetDocument()->GetStyleEngine().GetUserCascadeLayerMap();
+  } else if (new_font_face.GetDocument()->GetScopedStyleResolver()) {
+    map = new_font_face.GetDocument()
+              ->GetScopedStyleResolver()
+              ->GetCascadeLayerMap();
+  }
+  if (!map)
+    return true;
+  return map->CompareLayerOrder(
+             existing_font_face.GetStyleRule()->GetCascadeLayer(),
+             new_font_face.GetStyleRule()->GetCascadeLayer()) <= 0;
+}
+
+}  // namespace
+
+void FontFaceList::Insert(FontFace* font_face, bool css_connected) {
+  if (!css_connected) {
+    non_css_connected_face_.insert(font_face);
+    return;
+  }
+
+  auto it = css_connected_face_.end();
+  while (it != css_connected_face_.begin()) {
+    auto prev = it;
+    --prev;
+    if (CascadePriorityHigherThan(*font_face, **prev))
+      break;
+    it = prev;
+  }
+
+  css_connected_face_.InsertBefore(it, font_face);
 }
 
 bool FontFaceList::Erase(FontFace* font_face) {

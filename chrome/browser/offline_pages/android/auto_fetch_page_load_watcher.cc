@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher.h"
@@ -88,6 +87,9 @@ class AutoFetchPageLoadWatcher::NavigationObserver
     DCHECK(page_load_watcher_);
   }
 
+  NavigationObserver(const NavigationObserver&) = delete;
+  NavigationObserver& operator=(const NavigationObserver&) = delete;
+
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
@@ -101,12 +103,10 @@ class AutoFetchPageLoadWatcher::NavigationObserver
   friend class content::WebContentsUserData<
       AutoFetchPageLoadWatcher::NavigationObserver>;
   AutoFetchPageLoadWatcher* page_load_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationObserver);
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AutoFetchPageLoadWatcher::NavigationObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AutoFetchPageLoadWatcher::NavigationObserver);
 
 // static
 void AutoFetchPageLoadWatcher::CreateForWebContents(

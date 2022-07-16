@@ -29,6 +29,7 @@ class PolicyStatus {
 
   PolicyStatus() = default;
   PolicyStatus(const PolicyStatus&) = default;
+  PolicyStatus& operator=(const PolicyStatus&) = default;
 
   void AddPolicyIfNeeded(bool is_managed,
                          const std::string& source,

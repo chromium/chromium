@@ -175,12 +175,6 @@ class SigninHeaderHelperTest : public testing::Test {
 // Tests that Mirror request is returned on Chrome OS for Public Sessions (no
 // account id).
 TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdChromeOS) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosService::Get()->init_params();
-  if (!init_params->use_new_account_manager)
-    return;
-#endif
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckMirrorHeaderRequest(
       GURL("https://docs.google.com"), /*gaia_id=*/"",

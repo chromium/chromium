@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -83,13 +84,9 @@ void UnacceleratedStaticBitmapImage::Draw(
     const cc::PaintFlags& flags,
     const FloatRect& dst_rect,
     const FloatRect& src_rect,
-    const SkSamplingOptions& sampling,
-    RespectImageOrientationEnum should_respect_image_orientation,
-    ImageClampingMode clamp_mode,
-    ImageDecodingMode) {
+    const ImageDrawOptions& draw_options) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  StaticBitmapImage::DrawHelper(canvas, flags, dst_rect, src_rect, sampling,
-                                clamp_mode, should_respect_image_orientation,
+  StaticBitmapImage::DrawHelper(canvas, flags, dst_rect, src_rect, draw_options,
                                 PaintImageForCurrentFrame());
 }
 
@@ -150,6 +147,10 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
 
   return resource_provider->WritePixels(pixmap.info(), pixels, row_bytes,
                                         /*x=*/0, /*y=*/0);
+}
+
+SkColorType UnacceleratedStaticBitmapImage::GetSkColorType() const {
+  return paint_image_.GetSkImageInfo().colorType();
 }
 
 }  // namespace blink

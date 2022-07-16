@@ -5,6 +5,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 
 #include <array>
+#include <cstdint>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -29,6 +30,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace device {
+
+using BatteryInfo = BluetoothDevice::BatteryInfo;
+using BatteryType = BluetoothDevice::BatteryType;
 
 BluetoothDevice::DeviceUUIDs::DeviceUUIDs() = default;
 
@@ -108,6 +112,34 @@ BluetoothDevice::ConnectionInfo::ConnectionInfo(int rssi,
       max_transmit_power(max_transmit_power) {}
 
 BluetoothDevice::ConnectionInfo::~ConnectionInfo() = default;
+
+BatteryInfo::BatteryInfo()
+    : BatteryInfo(BatteryType::kDefault, absl::nullopt) {}
+
+BatteryInfo::BatteryInfo(BatteryType type, absl::optional<uint8_t> percentage)
+    : BatteryInfo(type, percentage, BatteryInfo::ChargeState::kUnknown) {}
+
+BatteryInfo::BatteryInfo(BatteryType type,
+                         absl::optional<uint8_t> percentage,
+                         ChargeState charge_state)
+    : type(type),
+      percentage(std::move(percentage)),
+      charge_state(charge_state) {}
+
+BatteryInfo::BatteryInfo(const BatteryInfo&) = default;
+
+BatteryInfo& BatteryInfo::operator=(const BatteryInfo&) = default;
+
+BatteryInfo::BatteryInfo(BatteryInfo&&) = default;
+
+BatteryInfo& BatteryInfo::operator=(BatteryInfo&&) = default;
+
+bool BatteryInfo::operator==(const BatteryInfo& other) {
+  return type == other.type && percentage == other.percentage &&
+         charge_state == other.charge_state;
+}
+
+BatteryInfo::~BatteryInfo() = default;
 
 std::u16string BluetoothDevice::GetNameForDisplay() const {
   absl::optional<std::string> name = GetName();
@@ -467,16 +499,58 @@ BluetoothDevice::GetPrimaryServicesByUUID(const BluetoothUUID& service_uuid) {
 }
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
-void BluetoothDevice::SetBatteryPercentage(
-    absl::optional<uint8_t> battery_percentage) {
-  if (battery_percentage)
-    DCHECK_LE(battery_percentage.value(), 100);
+void BluetoothDevice::SetBatteryInfo(const BatteryInfo& info) {
+  if (info.percentage) {
+    DCHECK_GE(info.percentage.value(), 0);
+    DCHECK_LE(info.percentage.value(), 100);
+  }
 
-  if (battery_percentage_ == battery_percentage)
+  auto result = battery_info_map_.emplace(info.type, info);
+
+  // New info was inserted.
+  if (result.second) {
+    GetAdapter()->NotifyDeviceBatteryChanged(this, info.type);
+    return;
+  }
+
+  DCHECK_EQ(result.first->first, info.type);
+
+  // Existing item is the same as the item we are inserting, return early.
+  if (result.first->second == info)
     return;
 
-  battery_percentage_ = battery_percentage;
-  GetAdapter()->NotifyDeviceBatteryChanged(this);
+  // Otherwise override existing element.
+  result.first->second = info;
+  GetAdapter()->NotifyDeviceBatteryChanged(this, info.type);
+}
+
+bool BluetoothDevice::RemoveBatteryInfo(const BatteryType& type) {
+  if (battery_info_map_.erase(type)) {
+    GetAdapter()->NotifyDeviceBatteryChanged(this, type);
+    return true;
+  }
+
+  return false;
+}
+
+absl::optional<BatteryInfo> BluetoothDevice::GetBatteryInfo(
+    const BatteryType& type) const {
+  auto it = battery_info_map_.find(type);
+
+  if (it == battery_info_map_.end())
+    return absl::nullopt;
+
+  return it->second;
+}
+
+std::vector<BatteryType> BluetoothDevice::GetAvailableBatteryTypes() {
+  std::vector<BatteryType> types;
+
+  for (auto& key_value : battery_info_map_) {
+    types.push_back(key_value.first);
+  }
+
+  return types;
 }
 #endif
 
@@ -547,9 +621,8 @@ void BluetoothDevice::RemoveGattConnection(
 }
 
 void BluetoothDevice::SetAsExpiredForTesting() {
-  last_update_time_ =
-      base::Time::NowFromSystemTime() -
-      (BluetoothAdapter::timeoutSec + base::TimeDelta::FromSeconds(1));
+  last_update_time_ = base::Time::NowFromSystemTime() -
+                      (BluetoothAdapter::timeoutSec + base::Seconds(1));
 }
 
 void BluetoothDevice::Pair(PairingDelegate* pairing_delegate,

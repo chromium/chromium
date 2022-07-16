@@ -47,6 +47,9 @@ constexpr exception_behavior_t kMachExceptionCodes = MACH_EXCEPTION_CODES;
 //! \brief An exception type to use for simulated exceptions.
 constexpr exception_type_t kMachExceptionSimulated = 'CPsx';
 
+//! \brief An exception type to use for uncaught NSExceptions.
+constexpr exception_type_t kMachExceptionFromNSException = 'CPnx';
+
 //! \brief A const version of `thread_state_t`.
 //!
 //! This is useful as the \a old_state parameter to exception handler functions.

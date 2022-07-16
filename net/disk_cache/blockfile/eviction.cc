@@ -38,8 +38,8 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -221,7 +221,7 @@ void Eviction::PostDelayedTrim() {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&Eviction::DelayedTrim, ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(1000));
+      base::Milliseconds(1000));
 }
 
 void Eviction::DelayedTrim() {

@@ -64,6 +64,11 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
       CommitDeferringCondition::NavigationType navigation_type,
       absl::optional<int> candidate_prerender_frame_tree_node_id);
 
+  CommitDeferringConditionRunner(const CommitDeferringConditionRunner&) =
+      delete;
+  CommitDeferringConditionRunner& operator=(
+      const CommitDeferringConditionRunner&) = delete;
+
   ~CommitDeferringConditionRunner();
 
   // Call to start iterating through registered CommitDeferringConditions. This
@@ -131,13 +136,12 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
   // This is needed as PrerenderHost hasn't been reserved and
   // prerender_frame_tree_node_id() on NavigationRequest is not available yet
   // while CommitDeferringCondition is running.
-  absl::optional<int> candidate_prerender_frame_tree_node_id_;
+  const absl::optional<int> candidate_prerender_frame_tree_node_id_;
 
   // True when we're blocked waiting on a call to ResumeProcessing.
   bool is_deferred_ = false;
 
   base::WeakPtrFactory<CommitDeferringConditionRunner> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CommitDeferringConditionRunner);
 };
 
 }  // namespace content

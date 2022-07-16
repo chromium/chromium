@@ -8,9 +8,9 @@
 
 namespace syncer {
 
-FakeModelTypeConnector::FakeModelTypeConnector() {}
+FakeModelTypeConnector::FakeModelTypeConnector() = default;
 
-FakeModelTypeConnector::~FakeModelTypeConnector() {}
+FakeModelTypeConnector::~FakeModelTypeConnector() = default;
 
 void FakeModelTypeConnector::ConnectDataType(
     ModelType type,

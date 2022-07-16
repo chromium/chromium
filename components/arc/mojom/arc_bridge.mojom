@@ -29,6 +29,7 @@ import "components/arc/mojom/iio_sensor.mojom";
 import "components/arc/mojom/ime.mojom";
 import "components/arc/mojom/input_method_manager.mojom";
 import "components/arc/mojom/intent_helper.mojom";
+import "components/arc/mojom/keyboard_shortcut.mojom";
 import "components/arc/mojom/keymaster.mojom";
 import "components/arc/mojom/kiosk.mojom";
 import "components/arc/mojom/lock_screen.mojom";
@@ -63,9 +64,9 @@ import "components/arc/mojom/wake_lock.mojom";
 import "components/arc/mojom/wallpaper.mojom";
 import "components/arc/mojom/webapk.mojom";
 
-// Next MinVersion: 60
+// Next MinVersion: 61
 // Deprecated method IDs: 101, 105, 121
-// Next method ID: 165
+// Next method ID: 166
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
   // compatibility with the ARC instance, explicitly assign each interface a
@@ -169,6 +170,10 @@ interface ArcBridgeHost {
   // Notifies Chrome that the IntentHelperInstance interface is ready.
   [MinVersion=4] OnIntentHelperInstanceReady@111(
       pending_remote<IntentHelperInstance> instance_remote);
+
+  // Notifies Chrome that the KeyboardShortcutInstance interface is ready.
+  [MinVersion=60] OnKeyboardShortcutInstanceReady@165(
+      pending_remote<KeyboardShortcutInstance> instance_remote);
 
   // Notifies Chrome that the KeymasterInstance interface is ready.
   [MinVersion=47] OnKeymasterInstanceReady@152(

@@ -4,7 +4,6 @@
 <translation id="1096883626080133124">Bëj më shumë me një Google Chrome të thjeshtë, të sigurt dhe më të shpejtë se kurrë</translation>
 <translation id="1282031177488366470">Ndihmo në përmirësimin e veçorive dhe cilësisë së funksionimit të Chrome</translation>
 <translation id="1314663809820920746">Mund të shikosh ende të gjithë faqeshënuesit, historikun, fjalëkalimet dhe cilësime të tjera në këtë pajisjet. Nëse bën ndryshime, ato nuk do të sinkronizohen me "Llogarinë tënde të Google".</translation>
-<translation id="139135165841384604">Realizo më shumë me Chrome</translation>
 <translation id="1479202195792305274">Chrome mund t'i kontrollojë fjalëkalimet e tua kur të identifikohesh me "Llogarinë tënde të Google".</translation>
 <translation id="1493827051843127077">Caktoje Chrome si parazgjedhje për të sinkronizuar skedat, fjalëkalimet dhe informacionet e pagesës në të gjitha pajisjet e tua</translation>
 <translation id="1504372625950710826">Chrome nuk mund të kontrollonte për përditësime. Provo të kontrollosh lidhjen e internetit.</translation>
@@ -12,13 +11,13 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">Ndihmo në përmirësimin e Chrome duke i dërguar statistikat e përdorimit dhe raportet e ndërprerjeve aksidentale te Google</translation>
 <translation id="1917964099031477364">Kjo llogari dhe të dhënat e paruajtura do të hiqen nga Chrome dhe nga aplikacionet e tjera në këtë pajisje.</translation>
+<translation id="1968388653333775699">Realizo më shumë me Chrome</translation>
 <translation id="2009224836393115614">Chrome nuk mund t'i kontrollonte fjalëkalimet e tua. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="2147651015520127414">Chrome verifikoi që <ph name="ISSUER" /> ka lëshuar certifikatën e këtij sajti të uebit.</translation>
 <translation id="2199719347983604670">Të dhënat nga "Sinkronizimi i Chrome"</translation>
 <translation id="2313070403598893276">Google Chrome është i thjeshtë, i sigurt dhe më i shpejtë se kurrë</translation>
 <translation id="2342919707875585281">Chrome e ndan vendndodhjen tënde me sajtet që lejon ti.</translation>
 <translation id="2347208864470321755">Kur ky funksion është i aktivizuar, Chrome do të ofrojë që të përkthejë faqet e shkruara në gjuhë të tjera duke përdorur "Përkthe me Google". <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
-<translation id="2415682770504543561">Bëje Chrome shfletuesin tënd të parazgjedhur</translation>
 <translation id="2427791862912929107">Chrome ka funksione që të ndihmojnë të menaxhosh të dhënat e internetit dhe sa shpejt je në gjendje të ngarkosh faqet e uebit.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">Përdor Chrome si shfletuesin tënd të parazgjedhur për të qenë i mbrojtur nga sajtet e rrezikshme dhe për t'i mbajtur fjalëkalimet e tua të sigurta</translation>
@@ -27,9 +26,9 @@
 <translation id="257708665678654955">Dëshiron që Google Chrome të ofrojë përkthimin e faqeve në <ph name="LANGUAGE_NAME" /> nga ky sajt herën tjetër?</translation>
 <translation id="2695886661449553974">Chrome nuk mund të kontrollonte për përditësime. Provo përsëri më vonë.</translation>
 <translation id="2732745070297234559">Chrome nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish nesër.</translation>
-<translation id="2740105938841089077">Përdorni Chrome për të hapur lidhjet</translation>
 <translation id="2869959624320573933">Identifikohu në Chrome</translation>
 <translation id="2919738076569633423">Duke përdorur Chrome, ti pranon <ph name="BEGIN_LINK_TOS" />Kushtet e shërbimit<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Zgjidh <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Duke qenë se po del nga një llogari e menaxhuar nga <ph name="SIGNOUT_MANAGED_DOMAIN" />, të dhënat e tua të Chrome do të fshihen nga kjo pajisje. Të dhënat e tua do të mbeten në "Llogarinë tënde të Google".</translation>
 <translation id="3167189358072330585">Llogaria jote nuk punon në Google Chrome. Kontakto me administratorin e domenit ose përdor një llogari të rregullt të Google për t'u identifikuar.</translation>
 <translation id="3173834708294760622">Faqe e Google Chrome</translation>
@@ -47,6 +46,7 @@
 <translation id="3988789688219830639">Google Chrome nuk ka qasje te fotografitë apo videot e tua. Aktivizo qasjen te Cilësimet e iOS &gt; Privatësia &gt; Fotografitë.</translation>
 <translation id="4099578267706723511">Ndihmo në përmirësimin e Chrome duke dërguar automatikisht te Google statistika përdorimi dhe raporte të ndërprerjeve aksidentale.</translation>
 <translation id="417201473131094001">Nuk mbështetet në Chrome Canary</translation>
+<translation id="4214277427269650960">Identifikohu në këtë sajt dhe në Chrome. Mund ta aktivizosh sinkronizmin më vonë.</translation>
 <translation id="424864128008805179">Do të dalësh nga Chrome?</translation>
 <translation id="4249068189593983585">Këshillë për Chrome. Për më shumë opsione për skedat, shtyp dhe mbaj shtypur butonin "Shfaq skedat" në shiritin e veglave që ndodhet në fund ose në krye të ekranit tënd.</translation>
 <translation id="4523886039239821078">Disa komponentë shtesë i shkaktojnë Chrome ndërprerje aksidentale. Çinstalo:</translation>
@@ -62,7 +62,8 @@
 <translation id="571296537125272375">Jashtë linje. Chrome nuk mund të kontrollojë për përditësime</translation>
 <translation id="5716154293141027663">Hap gjithmonë Chrome kur troket te lidhjet në aplikacionet e tjera</translation>
 <translation id="5854621639439811139">Këshillë për Chrome. Disa butona ndodhen tani në fund të ekranit tënd, si p.sh. "Prapa", "Përpara" dhe "Kërko".</translation>
-<translation id="5876773482963502140">Nëse lejon që Chrome të dijë vendndodhjen tënde, Chrome e dërgon atë te çdo sajt që ti lejon. Sajtet mund të kërkojnë për vendndodhjen tënde kur ato kanë informacione lokale për të të shfaqur, si dyqanet në afërsi ose lajme.</translation>
+<translation id="5998675059699164418">Organizata jote kërkon që të identifikohesh për të përdorur Chrome.</translation>
+<translation id="6054613632208573261">Përdor Chrome me parazgjedhje</translation>
 <translation id="6063091872902370735">Lejo identifikimin në Chrome</translation>
 <translation id="6181930887571472871">Kalo te Chrome</translation>
 <translation id="6238746320622508509">Lejo që Chrome t'i kyçë skedat "e fshehta".</translation>
@@ -88,6 +89,7 @@
 <translation id="7626032353295482388">Mirë se vjen në Chrome</translation>
 <translation id="7662994914830945754">Për të parë skedat e tua nga çdo vend ku përdor Chrome, identifikohu dhe aktivizo sinkronizimin</translation>
 <translation id="766361182512894255">Fjalëkalimi yt është ekspozuar në një nxjerrje të paautorizuar të të dhënave. Chrome rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
+<translation id="7693590760643069321">Tani mund të përdorësh Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="7698568245838009292">Chrome dëshiron të ketë qasje te kamera</translation>
 <translation id="7855730255114109580">Google Chrome është i përditësuar</translation>
 <translation id="8022947259858476807">Përdor Chrome si parazgjedhje për të hapur lidhjet, për të kërkuar nga miniaplikacionet dhe për të plotësuar automatikisht fjalëkalimet në aplikacione të tjera</translation>
@@ -96,6 +98,7 @@
 <translation id="8357607116237445042">Zgjidh nëse do t'i pastrosh të dhënat e Chrome nga kjo pajisje apo do t'i mbash ato</translation>
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="840168496893712993">Disa shtesa bëjnë që Chrome të ndërpritet aksidentalisht. Provo t'i çinstalosh ato.</translation>
+<translation id="8414886616817913619">Organizata jote kërkon që të identifikohesh për të përdorur Chrome. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8459495907675268833">Të dhënat e zgjedhura janë hequr nga Chrome dhe nga pajisjet e sinkronizuara. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit, si kërkimet dhe aktivitetet nga shërbimet e tjera të Google, në history.google.com.</translation>
 <translation id="850555388806794946">Për ta bërë Chrome shfletuesin e parazgjedhur:
   1. Hap "Cilësimet"

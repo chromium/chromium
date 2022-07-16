@@ -15,7 +15,6 @@
 #ifndef CRASHPAD_UTIL_LINUX_SCOPED_PR_SET_DUMPABLE_H_
 #define CRASHPAD_UTIL_LINUX_SCOPED_PR_SET_DUMPABLE_H_
 
-#include "base/macros.h"
 
 namespace crashpad {
 
@@ -30,13 +29,14 @@ class ScopedPrSetDumpable {
   //! \param[in] may_log `true` if this object may log error messages.
   explicit ScopedPrSetDumpable(bool may_log);
 
+  ScopedPrSetDumpable(const ScopedPrSetDumpable&) = delete;
+  ScopedPrSetDumpable& operator=(const ScopedPrSetDumpable&) = delete;
+
   ~ScopedPrSetDumpable();
 
  private:
   bool was_dumpable_;
   bool may_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPrSetDumpable);
 };
 
 }  // namespace crashpad

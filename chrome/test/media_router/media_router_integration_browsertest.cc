@@ -25,6 +25,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/media_router/media_router_cast_ui_for_test.h"
+#include "chrome/test/media_router/media_router_gmc_ui_for_test.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/common/issue.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -35,6 +37,7 @@
 #include "content/public/test/test_utils.h"
 #include "media/base/test_data_util.h"
 #include "net/base/filename_util.h"
+#include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using content::WebContents;
@@ -86,8 +89,10 @@ std::string GetDefaultRequestSessionId(WebContents* web_contents) {
 
 }  // namespace
 
-MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest() =
-    default;
+MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest() {
+  // TODO(crbug.com/1229305): Implement testing with the feature enabled.
+  feature_list_.InitAndDisableFeature(kGlobalMediaControlsCastStartStop);
+}
 
 MediaRouterIntegrationBrowserTest::~MediaRouterIntegrationBrowserTest() =
     default;
@@ -101,8 +106,22 @@ void MediaRouterIntegrationBrowserTest::SetUp() {
   InProcessBrowserTest::SetUp();
 }
 
+void MediaRouterIntegrationBrowserTest::InitTestUi() {
+  switch (GetParam()) {
+    case UiForBrowserTest::kCast:
+      test_ui_ = MediaRouterCastUiForTest::GetOrCreateForWebContents(
+          GetActiveWebContents());
+      break;
+    case UiForBrowserTest::kGmc:
+      test_ui_ = MediaRouterGmcUiForTest::GetOrCreateForWebContents(
+          GetActiveWebContents());
+      break;
+  }
+}
+
 void MediaRouterIntegrationBrowserTest::TearDownOnMainThread() {
   test_ui_->TearDown();
+  test_provider_->TearDown();
   InProcessBrowserTest::TearDownOnMainThread();
   test_navigation_observer_.reset();
 }
@@ -129,8 +148,7 @@ void MediaRouterIntegrationBrowserTest::SetUpOnMainThread() {
   router->RegisterMediaRouteProvider(mojom::MediaRouteProviderId::TEST,
                                      std::move(provider_remote));
 
-  test_ui_ =
-      MediaRouterUiForTest::GetOrCreateForWebContents(GetActiveWebContents());
+  InitTestUi();
 }
 
 bool MediaRouterIntegrationBrowserTest::ConditionalWait(
@@ -189,12 +207,8 @@ void MediaRouterIntegrationBrowserTest::StartSessionAndAssertNotFoundError() {
   ExecuteJavaScriptAPI(web_contents, kStartSessionScript);
 
   // Wait to simulate the user waiting for any sinks to be displayed.
-  Wait(base::TimeDelta::FromSeconds(1));
-  if (GlobalMediaControlsCastStartStopEnabled()) {
-    test_ui_->HideGMCDialog();
-  } else {
-    test_ui_->HideCastDialog();
-  }
+  Wait(base::Seconds(1));
+  test_ui_->HideDialog();
   CheckStartFailed(web_contents, "NotFoundError", "No screens found.");
 }
 
@@ -205,11 +219,7 @@ MediaRouterIntegrationBrowserTest::StartSessionWithTestPageAndSink() {
   CHECK(web_contents);
   ExecuteJavaScriptAPI(web_contents, kWaitSinkScript);
   ExecuteJavaScriptAPI(web_contents, kStartSessionScript);
-  if (GlobalMediaControlsCastStartStopEnabled()) {
-    test_ui_->WaitForGMCDialogShown();
-  } else {
-    test_ui_->WaitForCastDialogShown();
-  }
+  test_ui_->WaitForDialogShown();
   return web_contents;
 }
 
@@ -217,37 +227,31 @@ WebContents*
 MediaRouterIntegrationBrowserTest::StartSessionWithTestPageAndChooseSink() {
   WebContents* web_contents = StartSessionWithTestPageAndSink();
   test_ui_->WaitForSinkAvailable(receiver_);
-  if (GlobalMediaControlsCastStartStopEnabled()) {
-    test_ui_->StartCastingFromGMCDialog(receiver_);
-  } else {
-    test_ui_->StartCastingFromCastDialog(receiver_);
-  }
-  // TODO(takumif): Remove the HideCastDialog() call once the dialog can close
+  test_ui_->StartCasting(receiver_);
+  // TODO(takumif): Remove the HideDialog() call once the dialog can close
   // itself automatically after casting.
-  if (!GlobalMediaControlsCastStartStopEnabled()) {
-    test_ui_->HideCastDialog();
-  }
+  test_ui_->HideDialog();
   return web_contents;
 }
 
 void MediaRouterIntegrationBrowserTest::OpenDialogAndCastFile() {
   GURL file_url = net::FilePathToFileURL(
       media::GetTestDataFilePath(kButterflyVideoFileName));
-  test_ui_->ShowCastDialog();
+  test_ui_->ShowDialog();
   // Mock out file dialog operations, as those can't be simulated.
   test_ui_->SetLocalFile(file_url);
   test_ui_->WaitForSink(receiver_);
   test_ui_->ChooseSourceType(CastDialogView::kLocalFile);
   ASSERT_EQ(CastDialogView::kLocalFile, test_ui_->GetChosenSourceType());
   test_ui_->WaitForSinkAvailable(receiver_);
-  test_ui_->StartCastingFromCastDialog(receiver_);
+  test_ui_->StartCasting(receiver_);
   ASSERT_EQ(file_url, GetActiveWebContents()->GetURL());
 }
 
 void MediaRouterIntegrationBrowserTest::OpenDialogAndCastFileFails() {
   GURL file_url =
       net::FilePathToFileURL(media::GetTestDataFilePath("easy.webm"));
-  test_ui_->ShowCastDialog();
+  test_ui_->ShowDialog();
   // Mock out file dialog operations, as those can't be simulated.
   test_ui_->SetLocalFileSelectionIssue(IssueInfo());
   test_ui_->WaitForSink(receiver_);
@@ -258,7 +262,8 @@ void MediaRouterIntegrationBrowserTest::OpenDialogAndCastFileFails() {
 void MediaRouterIntegrationBrowserTest::OpenTestPage(
     base::FilePath::StringPieceType file_name) {
   base::FilePath full_path = GetResourceFile(file_name);
-  ui_test_utils::NavigateToURL(browser(), GetTestPageUrl(full_path));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetTestPageUrl(full_path)));
 }
 
 void MediaRouterIntegrationBrowserTest::OpenTestPageInNewTab(
@@ -270,8 +275,7 @@ void MediaRouterIntegrationBrowserTest::OpenTestPageInNewTab(
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   // Opening a new tab creates new WebContents, so we must re-configure the
   // test UI for it.
-  test_ui_ =
-      MediaRouterUiForTest::GetOrCreateForWebContents(GetActiveWebContents());
+  InitTestUi();
 }
 
 GURL MediaRouterIntegrationBrowserTest::GetTestPageUrl(
@@ -346,8 +350,8 @@ bool MediaRouterIntegrationBrowserTest::IsRouteClosedOnUI() {
   // After execute js script to close route on UI, the dialog will dispear
   // after 3s. But sometimes it takes more than 3s to close the route, so
   // we need to re-open the dialog if it is closed.
-  if (!test_ui_->IsCastDialogShown())
-    test_ui_->ShowCastDialog();
+  if (!test_ui_->IsDialogShown())
+    test_ui_->ShowDialog();
   test_ui_->WaitForSink(receiver_);
   return test_ui_->GetRouteIdForSink(receiver_).empty();
 }
@@ -463,7 +467,14 @@ void MediaRouterIntegrationBrowserTest::RunReconnectSessionSameTabTest() {
   ASSERT_EQ(session_id, reconnected_session_id);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, Basic) {
+// TODO(crbug.com/1238758): Test is flaky on Windows and Linux.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_Basic MANUAL_Basic
+#else
+#define MAYBE_Basic Basic
+#endif
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, MAYBE_Basic) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   RunBasicTest();
 }
 
@@ -474,10 +485,12 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, Basic) {
 // without deadlocking the test.
 // This test passed locally when running with native test provider, so it
 // is updated to MANUAL and is allowed to run on private waterfall.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        MANUAL_OpenLocalMediaFileInCurrentTab) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   // Start at a new tab, the file should open in the same tab.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   // Make sure there is 1 tab.
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -488,8 +501,8 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
 
   // The dialog will close from navigating to the local file within the tab, so
   // open it again after it closes.
-  test_ui_->WaitForCastDialogHidden();
-  test_ui_->ShowCastDialog();
+  test_ui_->WaitForDialogHidden();
+  test_ui_->ShowDialog();
 
   // Wait for a route to be created.
   test_ui_->WaitForAnyRoute();
@@ -497,16 +510,18 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
 
 // TODO(http://crbug.com/1095068): There maybe a crash on Linux and ChromeOS.
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_OpenLocalMediaFileInNewTab DISABLED_OpenLocalMediaFileInNewTab
+#define MAYBE_OpenLocalMediaFileInNewTab MANUAL_OpenLocalMediaFileInNewTab
 #else
 #define MAYBE_OpenLocalMediaFileInNewTab OpenLocalMediaFileInNewTab
 #endif
 
 // Tests that creating a route with a local file opens the file in a new tab.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        MAYBE_OpenLocalMediaFileInNewTab) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   // Start at a tab with content in it, the file will open in a new tab.
-  ui_test_utils::NavigateToURL(browser(), GURL("https://google.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://google.com")));
   // Make sure there is 1 tab.
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -515,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
   // Expect that a new tab has been opened.
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
-  test_ui_->ShowCastDialog();
+  test_ui_->ShowDialog();
 
   // Wait for a route to be created.
   test_ui_->WaitForAnyRoute();
@@ -523,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
 
 // Tests that failing to create a route with a local file shows an issue.
 // TODO(https://crbug.com/907539): Make the Views dialog show the issue.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        DISABLED_OpenLocalMediaFileFailsAndShowsIssue) {
   OpenDialogAndCastFileFails();
   // Expect that the issue is showing.
@@ -531,13 +546,13 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
 }
 
 // Tests that creating a route with a local file opens in fullscreen.
-// TODO(https://crbug.com/903016) Could be flaky in entering fullscreen.
-// This test passed locally when running with native test provider, so it
-// is updated to MANUAL and is allowed to run on private waterfall.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
-                       MANUAL_OpenLocalMediaFileFullscreen) {
+// TODO(https://crbug.com/903016) Disabled for being flaky in entering
+// fullscreen.
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
+                       DISABLED_OpenLocalMediaFileFullscreen) {
   // Start at a new tab, the file should open in the same tab.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   // Make sure there is 1 tab.
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -551,10 +566,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
                                            /*stay_awake=*/true);
 
   // Wait for capture poll timer to pick up change.
-  Wait(base::TimeDelta::FromSeconds(3));
-
-  // Enter full screen
-  ExecuteScript(web_contents, "document.body.requestFullscreen();");
+  Wait(base::Seconds(3));
 
   // Expect that fullscreen was entered.
   ASSERT_TRUE(
@@ -564,24 +576,26 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
 // Flaky on MSan bots: http://crbug.com/879885
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_OpenLocalMediaFileCastFailNoFullscreen \
-  DISABLED_OpenLocalMediaFileCastFailNoFullscreen
+  MANUAL_OpenLocalMediaFileCastFailNoFullscreen
 #else
 #define MAYBE_OpenLocalMediaFileCastFailNoFullscreen \
   OpenLocalMediaFileCastFailNoFullscreen
 #endif
 // Tests that failed route creation of local file does not enter fullscreen.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        MAYBE_OpenLocalMediaFileCastFailNoFullscreen) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   test_provider_->set_route_error_message("Unknown error");
   // Start at a new tab, the file should open in the same tab.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   // Make sure there is 1 tab.
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   OpenDialogAndCastFile();
 
   // Wait for file to start playing (but not being captured).
-  Wait(base::TimeDelta::FromSeconds(3));
+  Wait(base::Seconds(3));
 
   // Expect no capture is ongoing.
   content::WebContents* web_contents = GetActiveWebContents();
@@ -592,11 +606,20 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
       web_contents->GetDelegate()->IsFullscreenForTabOrPending(web_contents));
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, SendAndOnMessage) {
+// TODO(crbug.com/1238728): Test is flaky on Windows and Linux.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_SendAndOnMessage MANUAL_SendAndOnMessage
+#else
+#define MAYBE_SendAndOnMessage SendAndOnMessage
+#endif
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
+                       MAYBE_SendAndOnMessage) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   RunSendMessageTest("foo");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, CloseOnError) {
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, CloseOnError) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   test_provider_->set_close_route_error_on_send();
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
   CheckSessionValidity(web_contents);
@@ -604,43 +627,53 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, CloseOnError) {
                        kSendMessageAndExpectConnectionCloseOnErrorScript);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, Fail_SendMessage) {
+// TODO(crbug.com/1238688): Test is flaky on Windows and Linux.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_Fail_SendMessage MANUAL_Fail_SendMessage
+#else
+#define MAYBE_Fail_SendMessage Fail_SendMessage
+#endif
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
+                       MAYBE_Fail_SendMessage) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   RunFailToSendMessageTest();
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, Fail_CreateRoute) {
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, Fail_CreateRoute) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   test_provider_->set_route_error_message("Unknown sink");
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
   CheckStartFailed(web_contents, "UnknownError", "Unknown sink");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, ReconnectSession) {
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, ReconnectSession) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   RunReconnectSessionTest();
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        Fail_ReconnectSession) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   RunFailedReconnectSessionTest();
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, Fail_StartCancelled) {
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, Fail_StartCancelled) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   WebContents* web_contents = StartSessionWithTestPageAndSink();
-  if (GlobalMediaControlsCastStartStopEnabled()) {
-    test_ui_->HideGMCDialog();
-  } else {
-    test_ui_->HideCastDialog();
-  }
+  test_ui_->HideDialog();
   CheckStartFailed(web_contents, "NotAllowedError", "Dialog closed.");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        Fail_StartCancelledNoSinks) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   test_provider_->set_empty_sink_list();
   StartSessionAndAssertNotFoundError();
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        Fail_StartCancelledNoSupportedSinks) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   test_provider_->set_unsupported_media_sources_list();
   StartSessionAndAssertNotFoundError();
 }
@@ -651,7 +684,8 @@ Browser* MediaRouterIntegrationIncognitoBrowserTest::browser() {
   return incognito_browser_;
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationIncognitoBrowserTest, Basic) {
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationIncognitoBrowserTest, Basic) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   RunBasicTest();
   // If we tear down before route observers are notified of route termination,
   // MediaRouter will create another TerminateRoute() request which will have a
@@ -659,13 +693,19 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationIncognitoBrowserTest, Basic) {
   test_ui_->WaitUntilNoRoutes();
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationIncognitoBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationIncognitoBrowserTest,
                        ReconnectSession) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   RunReconnectSessionTest();
   // If we tear down before route observers are notified of route termination,
   // MediaRouter will create another TerminateRoute() request which will have a
   // dangling Mojo callback at shutdown. So we must wait for the update.
   test_ui_->WaitUntilNoRoutes();
 }
+
+INSTANTIATE_MEDIA_ROUTER_INTEGRATION_BROWER_TEST_SUITE(
+    MediaRouterIntegrationBrowserTest);
+INSTANTIATE_MEDIA_ROUTER_INTEGRATION_BROWER_TEST_SUITE(
+    MediaRouterIntegrationIncognitoBrowserTest);
 
 }  // namespace media_router

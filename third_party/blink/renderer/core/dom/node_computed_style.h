@@ -49,17 +49,6 @@ inline const ComputedStyle* Node::GetComputedStyle() const {
   return nullptr;
 }
 
-inline const ComputedStyle* Node::ParentComputedStyle() const {
-  DCHECK(IsElementNode() || IsTextNode());
-  ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(*this);
-  if (parent && parent->ChildrenCanHaveStyle()) {
-    const ComputedStyle* parent_style = parent->GetComputedStyle();
-    if (parent_style && !parent_style->IsEnsuredInDisplayNone())
-      return parent_style;
-  }
-  return nullptr;
-}
-
 inline const ComputedStyle& Node::ComputedStyleRef() const {
   const ComputedStyle* style = GetComputedStyle();
   DCHECK(style);

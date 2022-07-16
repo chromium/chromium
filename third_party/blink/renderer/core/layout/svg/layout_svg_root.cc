@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
@@ -69,6 +68,11 @@ LayoutSVGRoot::LayoutSVGRoot(SVGElement* node)
 
 LayoutSVGRoot::~LayoutSVGRoot() = default;
 
+void LayoutSVGRoot::Trace(Visitor* visitor) const {
+  visitor->Trace(content_);
+  LayoutReplaced::Trace(visitor);
+}
+
 void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
     IntrinsicSizingInfo& intrinsic_sizing_info) const {
   NOT_DESTROYED();
@@ -87,10 +91,10 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
   if (!intrinsic_sizing_info.size.IsEmpty()) {
     intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
   } else {
-    FloatSize view_box_size = svg->viewBox()->CurrentValue()->Value().Size();
+    gfx::SizeF view_box_size = svg->viewBox()->CurrentValue()->Rect().size();
     if (!view_box_size.IsEmpty()) {
       // The viewBox can only yield an intrinsic ratio, not an intrinsic size.
-      intrinsic_sizing_info.aspect_ratio = view_box_size;
+      intrinsic_sizing_info.aspect_ratio = FloatSize(view_box_size);
     }
   }
   EAspectRatioType ar_type = StyleRef().AspectRatio().GetType();
@@ -98,8 +102,8 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
       (ar_type == EAspectRatioType::kAutoAndRatio &&
        intrinsic_sizing_info.aspect_ratio.IsEmpty())) {
     FloatSize aspect_ratio = StyleRef().AspectRatio().GetRatio();
-    intrinsic_sizing_info.aspect_ratio.SetWidth(aspect_ratio.Width());
-    intrinsic_sizing_info.aspect_ratio.SetHeight(aspect_ratio.Height());
+    intrinsic_sizing_info.aspect_ratio.set_width(aspect_ratio.width());
+    intrinsic_sizing_info.aspect_ratio.set_height(aspect_ratio.height());
   }
 
   if (!IsHorizontalWritingMode())
@@ -200,7 +204,6 @@ double LayoutSVGRoot::LogicalSizeScaleFactorForPercentageLengths() const {
 void LayoutSVGRoot::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
-  LayoutAnalyzer::Scope analyzer(*this);
 
   LayoutSize old_size = Size();
   UpdateLogicalWidth();
@@ -296,7 +299,7 @@ void LayoutSVGRoot::RecalcVisualOverflow() {
 
 LayoutRect LayoutSVGRoot::ComputeContentsVisualOverflow() const {
   NOT_DESTROYED();
-  FloatRect content_visual_rect = VisualRectInLocalSVGCoordinates();
+  gfx::RectF content_visual_rect = VisualRectInLocalSVGCoordinates();
   content_visual_rect =
       local_to_border_box_transform_.MapRect(content_visual_rect);
   // Condition the visual overflow rect to avoid being clipped/culled
@@ -455,7 +458,7 @@ void LayoutSVGRoot::WillBeRemovedFromTree() {
 PositionWithAffinity LayoutSVGRoot::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
-  FloatPoint absolute_point = FloatPoint(point);
+  gfx::PointF absolute_point(point);
   absolute_point =
       local_to_border_box_transform_.Inverse().MapPoint(absolute_point);
   LayoutObject* closest_descendant =
@@ -478,7 +481,7 @@ PositionWithAffinity LayoutSVGRoot::PositionForPoint(
   absolute_point = transform.Inverse().MapPoint(absolute_point);
 
   return closest_descendant->PositionForPoint(
-      PhysicalOffset::FromFloatPointRound(absolute_point));
+      PhysicalOffset::FromPointFRound(absolute_point));
 }
 
 // LayoutBox methods will expect coordinates w/o any transforms in coordinates
@@ -489,15 +492,15 @@ SVGTransformChange LayoutSVGRoot::BuildLocalToBorderBoxTransform() {
   auto* svg = To<SVGSVGElement>(GetNode());
   DCHECK(svg);
   float scale = StyleRef().EffectiveZoom();
-  FloatSize content_size(ContentWidth() / scale, ContentHeight() / scale);
+  gfx::SizeF content_size(ContentWidth() / scale, ContentHeight() / scale);
   local_to_border_box_transform_ = svg->ViewBoxToViewTransform(content_size);
 
-  FloatPoint translate = svg->CurrentTranslate();
+  gfx::Vector2dF translate = svg->CurrentTranslate();
   LayoutSize border_and_padding(BorderLeft() + PaddingLeft(),
                                 BorderTop() + PaddingTop());
   AffineTransform view_to_border_box_transform(
-      scale, 0, 0, scale, border_and_padding.Width() + translate.X(),
-      border_and_padding.Height() + translate.Y());
+      scale, 0, 0, scale, border_and_padding.Width() + translate.x(),
+      border_and_padding.Height() + translate.y());
   view_to_border_box_transform.Scale(svg->currentScale());
   local_to_border_box_transform_.PreMultiply(view_to_border_box_transform);
   return change_detector.ComputeChange(local_to_border_box_transform_);

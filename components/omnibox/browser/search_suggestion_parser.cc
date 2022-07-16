@@ -494,19 +494,22 @@ bool SearchSuggestionParser::ParseSuggestResults(
         relevances_value->GetList().size() == results_list.size()) {
       relevances = relevances_value->GetList();
     }
-    extras->GetInteger("google:verbatimrelevance",
-                       &results->verbatim_relevance);
+    if (absl::optional<int> relevance =
+            extras->FindIntKey("google:verbatimrelevance")) {
+      results->verbatim_relevance = *relevance;
+    }
 
     // Check if the active suggest field trial (if any) has triggered either
     // for the default provider or keyword provider.
-    results->field_trial_triggered = false;
-    extras->GetBoolean("google:fieldtrialtriggered",
-                       &results->field_trial_triggered);
+    absl::optional<bool> field_trial_triggered =
+        extras->FindBoolKey("google:fieldtrialtriggered");
+    results->field_trial_triggered = field_trial_triggered.value_or(false);
 
     results->experiment_stats.clear();
     if (extras->GetList("google:experimentstats", &experiment_stats) &&
         experiment_stats) {
-      for (size_t index = 0; index < experiment_stats->GetSize(); index++) {
+      for (size_t index = 0; index < experiment_stats->GetList().size();
+           index++) {
         const base::Value* experiment_stat = nullptr;
         if (experiment_stats->Get(index, &experiment_stat) && experiment_stat) {
           results->experiment_stats.push_back(experiment_stat->Clone());
@@ -537,11 +540,14 @@ bool SearchSuggestionParser::ParseSuggestResults(
     }
 
     const base::DictionaryValue* client_data = nullptr;
-    if (extras->GetDictionary("google:clientdata", &client_data) && client_data)
-      client_data->GetInteger("phi", &prefetch_index);
+    if (extras->GetDictionary("google:clientdata", &client_data) &&
+        client_data) {
+      if (absl::optional<int> phi = client_data->FindIntKey("phi"))
+        prefetch_index = *phi;
+    }
 
     if (extras->GetList("google:suggestdetail", &suggestion_details) &&
-        suggestion_details->GetSize() != results_list.size())
+        suggestion_details->GetList().size() != results_list.size())
       suggestion_details = nullptr;
 
     // Legacy code: Get subtype identifiers.

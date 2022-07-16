@@ -1,16 +1,8 @@
-// Copyright 2016 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview A base64 stream decoder.
@@ -32,6 +24,7 @@ goog.require('goog.crypt.base64');
 goog.scope(function() {
 
 
+'use strict';
 /**
  * Base64 stream decoder.
  *
@@ -41,6 +34,7 @@ goog.scope(function() {
  * @package
  */
 goog.net.streams.Base64StreamDecoder = function() {
+  'use strict';
   /**
    * If the input stream is still valid.
    * @private {boolean}
@@ -62,7 +56,7 @@ goog.net.streams.Base64StreamDecoder = function() {
 };
 
 
-var Decoder = goog.net.streams.Base64StreamDecoder;
+const Decoder = goog.net.streams.Base64StreamDecoder;
 
 
 /**
@@ -71,6 +65,7 @@ var Decoder = goog.net.streams.Base64StreamDecoder;
  * @return {boolean} true if the input is still valid.
  */
 Decoder.prototype.isInputValid = function() {
+  'use strict';
   return this.isInputValid_;
 };
 
@@ -82,6 +77,7 @@ Decoder.prototype.isInputValid = function() {
  * @private
  */
 Decoder.prototype.error_ = function(input, errorMsg) {
+  'use strict';
   this.isInputValid_ = false;
   throw new Error(
       'The stream is broken @' + this.streamPos_ + '. Error: ' + errorMsg +
@@ -98,6 +94,7 @@ Decoder.prototype.error_ = function(input, errorMsg) {
  * @throws {!Error} Throws an error message if the input is invalid
  */
 Decoder.prototype.decode = function(input) {
+  'use strict';
   goog.asserts.assertString(input);
 
   if (!this.isInputValid_) {
@@ -106,13 +103,14 @@ Decoder.prototype.decode = function(input) {
 
   this.leftoverInput_ += input;
 
-  var groups = Math.floor(this.leftoverInput_.length / 4);
+  const groups = Math.floor(this.leftoverInput_.length / 4);
   if (groups == 0) {
     return null;
   }
 
+  let result;
   try {
-    var result = goog.crypt.base64.decodeStringToByteArray(
+    result = goog.crypt.base64.decodeStringToByteArray(
         this.leftoverInput_.substr(0, groups * 4));
   } catch (e) {
     this.error_(this.leftoverInput_, e.message);
@@ -122,6 +120,4 @@ Decoder.prototype.decode = function(input) {
   this.leftoverInput_ = this.leftoverInput_.substr(groups * 4);
   return result;
 };
-
-
 });  // goog.scope

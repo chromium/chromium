@@ -40,6 +40,10 @@ class ValidatingAuthenticator : public Authenticator {
   ValidatingAuthenticator(const std::string& remote_jid,
                           const ValidationCallback& validation_callback,
                           std::unique_ptr<Authenticator> current_authenticator);
+
+  ValidatingAuthenticator(const ValidatingAuthenticator&) = delete;
+  ValidatingAuthenticator& operator=(const ValidatingAuthenticator&) = delete;
+
   ~ValidatingAuthenticator() override;
 
   // Authenticator interface.
@@ -79,8 +83,6 @@ class ValidatingAuthenticator : public Authenticator {
   std::unique_ptr<jingle_xmpp::XmlElement> pending_auth_message_;
 
   base::WeakPtrFactory<ValidatingAuthenticator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ValidatingAuthenticator);
 };
 
 }  // namespace protocol

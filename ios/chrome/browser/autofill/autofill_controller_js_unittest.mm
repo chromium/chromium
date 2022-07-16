@@ -14,7 +14,6 @@
 #include "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
-#import "ios/web/public/test/web_js_test.h"
 #import "ios/web/public/web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -815,10 +814,10 @@ NSString* GenerateTestItemVerifyingJavaScripts(NSString* results,
 }
 
 // Test fixture to test autofill controller.
-class AutofillControllerJsTest : public web::WebJsTest<ChromeWebTest> {
+class AutofillControllerJsTest : public ChromeWebTest {
  public:
   AutofillControllerJsTest()
-      : web::WebJsTest<ChromeWebTest>(std::make_unique<ChromeWebClient>()) {}
+      : ChromeWebTest(std::make_unique<ChromeWebClient>()) {}
 
  protected:
   web::WebFrame* WaitForMainFrame() {
@@ -870,6 +869,23 @@ class AutofillControllerJsTest : public web::WebJsTest<ChromeWebTest> {
   void TestExtractNewForms(NSString* html,
                            BOOL is_origin_window_location,
                            NSArray* expected_items);
+
+  // Helper method that EXPECTs the |java_script| evaluation results on each
+  // element obtained by JavaScripts in |get_element_java_scripts|. The
+  // expected results are boolean and are true only for elements in
+  // |get_element_java_scripts_expecting_true| which is subset of
+  // |get_element_java_scripts|.
+  void ExecuteBooleanJavaScriptOnElementsAndCheck(
+      NSString* java_script,
+      NSArray* get_element_java_scripts,
+      NSArray* get_element_java_scripts_expecting_true);
+
+  // Helper method that EXPECTs the |java_script| evaluation results on each
+  // element obtained by scripts in |get_element_javas_cripts|; the expected
+  // result is the corresponding entry in |expected_results|.
+  void ExecuteJavaScriptOnElementsAndCheck(NSString* java_script,
+                                           NSArray* get_element_java_scripts,
+                                           NSArray* expected_results);
 };
 
 void AutofillControllerJsTest::TestExecutingBooleanJavaScriptOnElement(
@@ -918,6 +934,32 @@ void AutofillControllerJsTest::TestExecutingBooleanJavaScriptOnElement(
                                    size_elements_with_true_expected));
 }
 
+void AutofillControllerJsTest::ExecuteBooleanJavaScriptOnElementsAndCheck(
+    NSString* java_script,
+    NSArray* get_element_java_scripts,
+    NSArray* get_element_java_scripts_expecting_true) {
+  for (NSString* get_element_java_script in get_element_java_scripts) {
+    NSString* js_to_execute =
+        [NSString stringWithFormat:java_script, get_element_java_script];
+    BOOL expected = [get_element_java_scripts_expecting_true
+        containsObject:get_element_java_script];
+    EXPECT_NSEQ(@(expected), ExecuteJavaScript(js_to_execute))
+        << [NSString stringWithFormat:@"%@ on %@ should return %d", java_script,
+                                      get_element_java_script, expected];
+  }
+}
+
+void AutofillControllerJsTest::ExecuteJavaScriptOnElementsAndCheck(
+    NSString* java_script,
+    NSArray* get_element_java_scripts,
+    NSArray* expected_results) {
+  for (NSUInteger i = 0; i < get_element_java_scripts.count; ++i) {
+    NSString* js_to_execute =
+        [NSString stringWithFormat:java_script, get_element_java_scripts[i]];
+    EXPECT_NSEQ(expected_results[i], ExecuteJavaScript(js_to_execute));
+  }
+}
+
 TEST_F(AutofillControllerJsTest, HasTagName) {
   const ElementByName elements_expecting_true[] = {
       {"hl", 0, -1},
@@ -945,46 +987,77 @@ TEST_F(AutofillControllerJsTest, HasTagName) {
 TEST_F(AutofillControllerJsTest, CombineAndCollapseWhitespace) {
   LoadHtml(@"<html><body></body></html>");
 
-  EXPECT_NSEQ(
-      @"foobar",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace('"
-                           @"foo', 'bar', false)"]));
-  EXPECT_NSEQ(
-      @"foo bar",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace("
-                           @"'foo', 'bar', true)"]));
-  EXPECT_NSEQ(
-      @"foo bar",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace("
-                            "'foo ', 'bar', false)"]));
-  EXPECT_NSEQ(
-      @"foo bar",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace("
-                            "'foo', ' bar', false)"]));
-  EXPECT_NSEQ(
-      @"foo bar",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace("
-                            "'foo', ' bar', true)"]));
-  EXPECT_NSEQ(
-      @"foo bar",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace("
-                            "'foo  ', '  bar', false)"]));
-  EXPECT_NSEQ(
-      @"foobar ",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace("
-                            "'foo', 'bar ', false)"]));
-  EXPECT_NSEQ(
-      @" foo bar",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace("
-                            "' foo', 'bar', true)"]));
+  std::vector<base::Value> params;
+  params.push_back(base::Value("foo"));
+  params.push_back(base::Value("bar"));
+  params.push_back(base::Value(false));
+  auto result =
+      CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foobar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo"));
+  params.push_back(base::Value("bar"));
+  params.push_back(base::Value(true));
+  result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foo bar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo "));
+  params.push_back(base::Value("bar"));
+  params.push_back(base::Value(false));
+  result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foo bar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo"));
+  params.push_back(base::Value(" bar"));
+  params.push_back(base::Value(false));
+  result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foo bar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo"));
+  params.push_back(base::Value(" bar"));
+  params.push_back(base::Value(true));
+  result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foo bar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo  "));
+  params.push_back(base::Value("  bar"));
+  params.push_back(base::Value(false));
+  result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foo bar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo"));
+  params.push_back(base::Value("bar "));
+  params.push_back(base::Value(false));
+  result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foobar ", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value(" foo"));
+  params.push_back(base::Value("bar"));
+  params.push_back(base::Value(true));
+  result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ(" foo bar", result->GetString());
 }
 
 void AutofillControllerJsTest::TestInputElementDataEvaluation(

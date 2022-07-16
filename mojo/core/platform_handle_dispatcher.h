@@ -20,6 +20,9 @@ class MOJO_SYSTEM_IMPL_EXPORT PlatformHandleDispatcher : public Dispatcher {
   static scoped_refptr<PlatformHandleDispatcher> Create(
       PlatformHandle platform_handle);
 
+  PlatformHandleDispatcher(const PlatformHandleDispatcher&) = delete;
+  PlatformHandleDispatcher& operator=(const PlatformHandleDispatcher&) = delete;
+
   PlatformHandle TakePlatformHandle();
 
   // Dispatcher:
@@ -51,8 +54,6 @@ class MOJO_SYSTEM_IMPL_EXPORT PlatformHandleDispatcher : public Dispatcher {
   bool in_transit_ = false;
   bool is_closed_ = false;
   PlatformHandle platform_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformHandleDispatcher);
 };
 
 }  // namespace core

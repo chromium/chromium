@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -84,9 +84,9 @@ class ReproduceTest(unittest.TestCase):
         }]),
         ['gl_unittests'])
 
-  @mock.patch('__builtin__.print')
+  @mock.patch('builtins.print')
   @mock.patch('reproduce.guess_host_dimensions')
-  @mock.patch('__builtin__.raw_input')
+  @mock.patch('builtins.input')
   @mock.patch('reproduce.run_command')
   def test_run_suite_gtest(self, run_mock, input_mock, guess_mock, print_mock):
     # Just want to mock this so if something weird happens with the test it
@@ -121,9 +121,9 @@ class ReproduceTest(unittest.TestCase):
           'gl_unittests', '--', '--gtest_filter=test.1:test.2'
       ])
 
-  @mock.patch('__builtin__.print')
+  @mock.patch('builtins.print')
   @mock.patch('reproduce.guess_host_dimensions')
-  @mock.patch('__builtin__.raw_input')
+  @mock.patch('builtins.input')
   @mock.patch('reproduce.run_command')
   def test_run_suite_isolated_script(self, run_mock, input_mock, guess_mock,
                                       print_mock):
@@ -157,8 +157,8 @@ class ReproduceTest(unittest.TestCase):
             # The script tries to close the file handler to the temp file when
             # it creates it. Mock that out.
             with mock.patch('reproduce.os.close'):
-                temp_mock.side_effect = [(5, fake_tempfile_name)]
-                b.run_suite('blink_web_tests', '//out/Default')
+              temp_mock.side_effect = [(5, fake_tempfile_name)]
+              b.run_suite('blink_web_tests', '//out/Default')
 
         unlink_mock.assert_called_with(fake_tempfile_name)
         run_mock.assert_called_with([
@@ -169,9 +169,9 @@ class ReproduceTest(unittest.TestCase):
             '--isolated-script-test-output', fake_tempfile_name,
         ])
 
-  @mock.patch('__builtin__.print')
+  @mock.patch('builtins.print')
   @mock.patch('reproduce.guess_host_dimensions')
-  @mock.patch('__builtin__.raw_input')
+  @mock.patch('builtins.input')
   @mock.patch('reproduce.run_command')
   def test_run_suite_dimension_prompt(self, run_mock, input_mock, guess_mock,
                                       print_mock):
@@ -199,9 +199,9 @@ class ReproduceTest(unittest.TestCase):
         self.assertEqual(print_mock.call_count, 2)
     run_mock.assert_not_called()
 
-  @mock.patch('__builtin__.print')
+  @mock.patch('builtins.print')
   @mock.patch('reproduce.guess_host_dimensions')
-  @mock.patch('__builtin__.raw_input')
+  @mock.patch('builtins.input')
   @mock.patch('reproduce.run_command')
   def test_run_suite_already_prompted(self, run_mock, input_mock, guess_mock,
                                       print_mock):

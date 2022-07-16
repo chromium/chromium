@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SCROLL_TIMELINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SCROLL_TIMELINE_H_
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_offset.h"
@@ -16,7 +17,7 @@
 namespace blink {
 
 class ScrollTimelineOptions;
-class V8UnionDoubleOrScrollTimelineAutoKeyword;
+class WorkletAnimationBase;
 
 // Implements the ScrollTimeline concept from the Scroll-linked Animations spec.
 //
@@ -43,17 +44,12 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
                                 ExceptionState&);
 
   ScrollTimeline(Document*,
-                 absl::optional<Element*> scroll_source,
+                 absl::optional<Element*> source,
                  ScrollDirection,
-                 HeapVector<Member<ScrollTimelineOffset>>,
-                 absl::optional<double>);
+                 HeapVector<Member<ScrollTimelineOffset>>);
 
   bool IsScrollTimeline() const override { return true; }
-  // TODO (crbug.com/1216655): Time range should be removed from ScrollTimeline
-  // at which point this function becomes redundant as all scroll timelines will
-  // then be progress based timelines.
-  bool IsProgressBasedTimeline() const override { return !time_range_; }
-  // ScrollTimeline is not active if scrollSource is null, does not currently
+  // ScrollTimeline is not active if source is null, does not currently
   // have a CSS layout box, or if its layout box is not a scroll container.
   // https://github.com/WICG/scroll-animations/issues/31
   bool IsActive() const override;
@@ -66,20 +62,19 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   void ScheduleNextService() override;
 
   // IDL API implementation.
-  Element* scrollSource() const;
+  Element* source() const;
   String orientation();
   const HeapVector<Member<V8ScrollTimelineOffset>> scrollOffsets() const;
 
   V8CSSNumberish* currentTime() override;
   V8CSSNumberish* duration() override;
-  V8UnionDoubleOrScrollTimelineAutoKeyword* timeRange() const;
   V8CSSNumberish* ConvertTimeToProgress(AnimationTimeDelta time) const;
 
   // Returns the Node that should actually have the ScrollableArea (if one
-  // exists). This can differ from |scrollSource| when |scroll_source_| is the
+  // exists). This can differ from |source| when |source_| is the
   // Document's scrollingElement, and it may be null if the document was
   // removed before the ScrollTimeline was created.
-  Node* ResolvedScrollSource() const { return resolved_scroll_source_; }
+  Node* ResolvedSource() const { return resolved_source_; }
 
   // Return the latest resolved scroll offsets. This will be empty when
   // timeline is inactive.
@@ -104,38 +99,35 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   CompositorAnimationTimeline* EnsureCompositorTimeline() override;
   void UpdateCompositorTimeline() override;
 
-  // TODO(crbug.com/896249): These methods are temporary and currently required
+  // TODO(crbug.com/896249): This method is temporary and currently required
   // to support worklet animations. Once worklet animations become animations
   // these methods will not be longer needed. They are used to keep track of
-  // number of worklet animations attached to the scroll timeline for updating
+  // the of worklet animations attached to the scroll timeline for updating
   // compositing state.
-  void WorkletAnimationAttached();
-  void WorkletAnimationDetached();
+  void WorkletAnimationAttached(WorkletAnimationBase*);
 
   void AnimationAttached(Animation*) override;
   void AnimationDetached(Animation*) override;
 
   void Trace(Visitor*) const override;
 
-  static bool HasActiveScrollTimeline(Node* node);
   // Invalidates scroll timelines with a given scroller node.
   // Called when scroller properties, affecting scroll timeline state, change.
   // These properties are scroller offset, content size, viewport size,
   // overflow, adding and removal of scrollable area.
   static void Invalidate(Node* node);
 
-  // TODO (crbug.com/1216655): Time range should be removed from ScrollTimeline.
-  // Currently still left in for the sake of backwards compatibility with
-  // existing tests.
-  double GetTimeRange() const { return time_range_ ? time_range_.value() : 0; }
+  // A change in the compositing state of a ScrollTimeline's scroll source
+  // can cause the compositor's view of the scroll source to become out of
+  // date. We inform the WorkletAnimationController about any such changes
+  // so that it can schedule a compositing animations update.
+  static void InvalidateCompositingState(Node* node);
 
   // Duration is the maximum value a timeline may generate for current time.
   // Used to convert time values to proportional values.
   absl::optional<AnimationTimeDelta> GetDuration() const override {
-    return time_range_
-               ? absl::nullopt
-               // Any arbitrary value should be able to be used here.
-               : absl::make_optional(AnimationTimeDelta::FromSecondsD(100));
+    // Any arbitrary value should be able to be used here.
+    return absl::make_optional(ANIMATION_TIME_DELTA_FROM_SECONDS(100));
   }
 
  protected:
@@ -181,20 +173,17 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // false - regardless of time change.
   void ScheduleNextServiceInternal(bool time_check);
 
-  // Use |scroll_source_| only to implement the web-exposed API but use
-  // resolved_scroll_source_ to actually access the scroll related properties.
-  Member<Element> scroll_source_;
-  Member<Node> resolved_scroll_source_;
+  // Use |source_| only to implement the web-exposed API but use
+  // resolved_source_ to actually access the scroll related properties.
+  Member<Element> source_;
+  Member<Node> resolved_source_;
   ScrollDirection orientation_;
   HeapVector<Member<ScrollTimelineOffset>> scroll_offsets_;
 
-  // TODO (crbug.com/1216655): Time range should be removed from ScrollTimeline.
-  // Currently still left in for the sake of backwards compatibility with
-  // existing tests.
-  absl::optional<double> time_range_;
-
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;
+
+  HeapHashSet<WeakMember<WorkletAnimationBase>> attached_worklet_animations_;
 };
 
 template <>

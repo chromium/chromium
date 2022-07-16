@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/i18n/rtl.h"
 #include "pdf/draw_utils/coordinates.h"
 #include "pdf/page_orientation.h"
 #include "ui/gfx/geometry/rect.h"
@@ -46,8 +47,9 @@ class DocumentLayout final {
     ~Options();
 
     friend bool operator==(const Options& lhs, const Options& rhs) {
-      return lhs.page_spread() == rhs.page_spread() &&
-             lhs.default_page_orientation() == rhs.default_page_orientation();
+      return lhs.direction() == rhs.direction() &&
+             lhs.default_page_orientation() == rhs.default_page_orientation() &&
+             lhs.page_spread() == rhs.page_spread();
     }
 
     friend bool operator!=(const Options& lhs, const Options& rhs) {
@@ -59,6 +61,14 @@ class DocumentLayout final {
 
     // Deserializes layout options from a base::Value.
     void FromValue(const base::Value& value);
+
+    // Page layout direction. This is tied to the direction of the user's UI,
+    // rather than the direction of individual pages.
+    base::i18n::TextDirection direction() const { return direction_; }
+
+    void set_direction(base::i18n::TextDirection direction) {
+      direction_ = direction;
+    }
 
     PageOrientation default_page_orientation() const {
       return default_page_orientation_;
@@ -76,6 +86,7 @@ class DocumentLayout final {
     void set_page_spread(PageSpread spread) { page_spread_ = spread; }
 
    private:
+    base::i18n::TextDirection direction_ = base::i18n::UNKNOWN_DIRECTION;
     PageOrientation default_page_orientation_ = PageOrientation::kOriginal;
     PageSpread page_spread_ = PageSpread::kOneUp;
   };

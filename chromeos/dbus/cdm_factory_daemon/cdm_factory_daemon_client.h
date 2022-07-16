@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 
 namespace dbus {
 class Bus;
@@ -33,6 +32,9 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) CdmFactoryDaemonClient {
   // Returns the global instance which may be null if not initialized.
   static CdmFactoryDaemonClient* Get();
 
+  CdmFactoryDaemonClient(const CdmFactoryDaemonClient&) = delete;
+  CdmFactoryDaemonClient& operator=(const CdmFactoryDaemonClient&) = delete;
+
   // CdmFactoryDaemon D-Bus method calls. See org.chromium.CdmFactoryDaemon.xml
   // in Chromium OS code for the documentation of the methods and
   // request/response messages.
@@ -44,9 +46,6 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) CdmFactoryDaemonClient {
   // Initialize/Shutdown should be used instead.
   CdmFactoryDaemonClient();
   virtual ~CdmFactoryDaemonClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CdmFactoryDaemonClient);
 };
 
 }  // namespace chromeos

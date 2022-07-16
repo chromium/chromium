@@ -42,13 +42,13 @@ class PLATFORM_EXPORT PushPullFIFO {
 
  public:
   // Maximum FIFO length. (512 render quanta)
-  static const size_t kMaxFIFOLength;
+  static const uint32_t kMaxFIFOLength;
 
   // |fifo_length| cannot exceed |kMaxFIFOLength|. Otherwise it crashes.
   // ||render_quantum_frames| is the render size used by the audio graph.  It
   // |defaults to 128, the original and default render size.
   explicit PushPullFIFO(unsigned number_of_channels,
-                        size_t fifo_length,
+                        uint32_t fifo_length,
                         unsigned render_quantum_frames = 128);
   PushPullFIFO(const PushPullFIFO&) = delete;
   PushPullFIFO& operator=(const PushPullFIFO&) = delete;
@@ -71,12 +71,12 @@ class PLATFORM_EXPORT PushPullFIFO {
   //  - In case of underflow (FIFO empty while pull), the remaining space in the
   //    requested output bus will be filled with silence. Thus it will fulfill
   //    the request from the consumer without causing error, but with a glitch.
-  size_t Pull(AudioBus* output_bus, size_t frames_requested);
+  size_t Pull(AudioBus* output_bus, uint32_t frames_requested);
 
   // Pull and update |ear_mark_frames_| to make the dual thread rendering mode
   // (i.e. AudioWorklet) more smooth. The single thread rendering does not need
   // this treatment.
-  size_t PullAndUpdateEarmark(AudioBus* output_bus, size_t frames_requested);
+  size_t PullAndUpdateEarmark(AudioBus* output_bus, uint32_t frames_requested);
 
   void SetEarmarkFrames(size_t earmark_frames) {
     DCHECK(IsMainThread());
@@ -84,7 +84,7 @@ class PLATFORM_EXPORT PushPullFIFO {
     earmark_frames_ = earmark_frames;
   }
 
-  size_t length() const { return fifo_length_; }
+  uint32_t length() const { return fifo_length_; }
   unsigned NumberOfChannels() const {
     lock_.AssertAcquired();
     return fifo_bus_->NumberOfChannels();
@@ -107,7 +107,7 @@ class PLATFORM_EXPORT PushPullFIFO {
 
  private:
   // The size of the FIFO.
-  const size_t fifo_length_ = 0;
+  const uint32_t fifo_length_ = 0;
 
   // The render size used by the audio graph.
   const unsigned render_quantum_frames_;
@@ -124,7 +124,7 @@ class PLATFORM_EXPORT PushPullFIFO {
   size_t earmark_frames_ GUARDED_BY(lock_) = 0;
 
   // The number of frames in the FIFO actually available for pulling.
-  size_t frames_available_ GUARDED_BY(lock_) = 0;
+  uint32_t frames_available_ GUARDED_BY(lock_) = 0;
   size_t index_read_ GUARDED_BY(lock_) = 0;
   size_t index_write_ GUARDED_BY(lock_) = 0;
   scoped_refptr<AudioBus> fifo_bus_ GUARDED_BY(lock_);

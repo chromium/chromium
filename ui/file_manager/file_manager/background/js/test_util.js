@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FilesAppState} from '../../common/js/files_app_state.js';
 import {ProgressCenterItem} from '../../common/js/progress_center_common.js';
 import {util} from '../../common/js/util.js';
 
@@ -14,18 +15,12 @@ export {test};
 /**
  * Opens the main Files app's window and waits until it is ready.
  *
- * @param {Object} appState App state.
+ * @param {!FilesAppState} appState App state.
  * @param {function(string)} callback Completion callback with the new window's
  *     App ID.
  */
 test.util.async.openMainWindow = (appState, callback) => {
-  launcher
-      .launchFileManager(
-          appState,
-          undefined,  // opt_type
-          undefined,  // opt_id
-          )
-      .then(callback);
+  launcher.launchFileManager(appState).then(callback);
 };
 
 /**

@@ -10,15 +10,16 @@ import android.text.TextUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.device.mojom.ScreenOrientationLockType;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.webapk.lib.common.splash.SplashLayout;
 
 /**
@@ -66,8 +67,8 @@ public class WebappIntentDataProviderFactory {
             return null;
         }
 
-        long themeColor = IntentUtils.safeGetLongExtra(intent, WebappConstants.EXTRA_THEME_COLOR,
-                WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING);
+        long themeColor = IntentUtils.safeGetLongExtra(
+                intent, WebappConstants.EXTRA_THEME_COLOR, ColorUtils.INVALID_COLOR);
         boolean hasValidToolbarColor = WebappIntentUtils.isLongColorValid(themeColor);
         int toolbarColor = hasValidToolbarColor ? (int) themeColor
                                                 : WebappIntentDataProvider.getDefaultToolbarColor();
@@ -79,15 +80,14 @@ public class WebappIntentDataProviderFactory {
             scope = ShortcutHelper.getScopeFromUrl(url);
         }
 
-        @WebDisplayMode
+        @DisplayMode.EnumType
         int displayMode = IntentUtils.safeGetIntExtra(
-                intent, WebappConstants.EXTRA_DISPLAY_MODE, WebDisplayMode.STANDALONE);
+                intent, WebappConstants.EXTRA_DISPLAY_MODE, DisplayMode.STANDALONE);
         int orientation = IntentUtils.safeGetIntExtra(
                 intent, WebappConstants.EXTRA_ORIENTATION, ScreenOrientationLockType.DEFAULT);
         int source = sourceFromIntent(intent);
-        Integer backgroundColor = WebappIntentUtils.colorFromLongColor(
-                IntentUtils.safeGetLongExtra(intent, WebappConstants.EXTRA_BACKGROUND_COLOR,
-                        WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING));
+        Integer backgroundColor = WebappIntentUtils.colorFromLongColor(IntentUtils.safeGetLongExtra(
+                intent, WebappConstants.EXTRA_BACKGROUND_COLOR, ColorUtils.INVALID_COLOR));
         boolean isIconGenerated = IntentUtils.safeGetBooleanExtra(
                 intent, WebappConstants.EXTRA_IS_ICON_GENERATED, false);
         boolean isIconAdaptive = IntentUtils.safeGetBooleanExtra(

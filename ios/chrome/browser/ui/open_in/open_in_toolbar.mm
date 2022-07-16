@@ -111,7 +111,7 @@ const CGFloat kTopBorderHeight = 0.5f;
 }
 
 // Helper to update constraints.
-- (void)updateViewConstraints {
+- (void)updateToolbarConstraints {
   if (!self.superview)
     return;
   NamedGuide* guide = [NamedGuide guideWithName:kSecondaryToolbarGuide
@@ -131,19 +131,19 @@ const CGFloat kTopBorderHeight = 0.5f;
         constraintEqualToAnchor:self.superview.safeAreaLayoutGuide
                                     .bottomAnchor];
   }
-  self.self.openButtonBottomConstraint.active = YES;
+  self.openButtonBottomConstraint.active = YES;
 }
 
 #pragma mark UIView
 
 - (void)didMoveToSuperview {
   [super didMoveToSuperview];
-  [self updateViewConstraints];
+  [self updateToolbarConstraints];
 }
 
 - (void)didMoveToWindow {
   [super didMoveToWindow];
-  [self updateViewConstraints];
+  [self updateToolbarConstraints];
 }
 
 @end

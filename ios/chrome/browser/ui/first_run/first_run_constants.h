@@ -22,6 +22,10 @@ extern NSString* const kFirstRunSignInScreenAccessibilityIdentifier;
 // The accessibility identifier for the Sync screen shown in first run.
 extern NSString* const kFirstRunSyncScreenAccessibilityIdentifier;
 
+// The accessibility identifier for the Default browser screen shown in first
+// run.
+extern NSString* const kFirstRunDefaultBrowserScreenAccessibilityIdentifier;
+
 }  // first_run
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_CONSTANTS_H_

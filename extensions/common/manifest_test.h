@@ -28,6 +28,10 @@ namespace extensions {
 class ManifestTest : public testing::Test {
  public:
   ManifestTest();
+
+  ManifestTest(const ManifestTest&) = delete;
+  ManifestTest& operator=(const ManifestTest&) = delete;
+
   ~ManifestTest() override;
 
  protected:
@@ -152,9 +156,6 @@ class ManifestTest : public testing::Test {
   void RunTestcase(const Testcase& testcase, ExpectType type);
 
   bool enable_apps_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ManifestTest);
 };
 
 }  // namespace extensions

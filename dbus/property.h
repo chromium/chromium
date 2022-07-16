@@ -137,6 +137,10 @@ class PropertySet;
 class CHROME_DBUS_EXPORT PropertyBase {
  public:
   PropertyBase();
+
+  PropertyBase(const PropertyBase&) = delete;
+  PropertyBase& operator=(const PropertyBase&) = delete;
+
   virtual ~PropertyBase();
 
   // Initializes the |property_set| and property |name| so that method
@@ -194,8 +198,6 @@ class CHROME_DBUS_EXPORT PropertyBase {
 
   // Name of the property.
   std::string name_;
-
-  DISALLOW_COPY_AND_ASSIGN(PropertyBase);
 };
 
 // PropertySet groups a collection of properties for a remote object
@@ -224,6 +226,9 @@ class CHROME_DBUS_EXPORT PropertySet {
   // are changed, this may be a NULL callback.
   PropertySet(ObjectProxy* object_proxy, const std::string& interface,
               const PropertyChangedCallback& property_changed_callback);
+
+  PropertySet(const PropertySet&) = delete;
+  PropertySet& operator=(const PropertySet&) = delete;
 
   // Destructor; we don't hold on to any references or memory that needs
   // explicit clean-up, but clang thinks we might.
@@ -348,8 +353,6 @@ class CHROME_DBUS_EXPORT PropertySet {
   // Weak pointer factory as D-Bus callbacks may last longer than these
   // objects.
   base::WeakPtrFactory<PropertySet> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PropertySet);
 };
 
 // Property template, this defines the type-specific and type-safe methods

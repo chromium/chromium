@@ -40,6 +40,10 @@ class UsageStatsBridge : public history::HistoryServiceObserver {
       std::unique_ptr<UsageStatsDatabase> usage_stats_database,
       Profile* profile,
       const JavaRef<jobject>& j_this);
+
+  UsageStatsBridge(const UsageStatsBridge&) = delete;
+  UsageStatsBridge& operator=(const UsageStatsBridge&) = delete;
+
   ~UsageStatsBridge() override;
 
   void Destroy(JNIEnv* j_env, const JavaRef<jobject>& j_this);
@@ -128,8 +132,6 @@ class UsageStatsBridge : public history::HistoryServiceObserver {
       scoped_history_service_observer_{this};
 
   base::WeakPtrFactory<UsageStatsBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UsageStatsBridge);
 };
 
 }  // namespace usage_stats

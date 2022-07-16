@@ -135,6 +135,22 @@ enum class WebFeedRefreshStatus {
 };
 std::ostream& operator<<(std::ostream& out, WebFeedRefreshStatus value);
 
+// Tells how the notice acknowledgement is reached. These values are also used
+// in histograms. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class NoticeAcknowledgementPath {
+  // The acknowledgment is reached after the user views the notice for a
+  // required number of times (currently it is 3).
+  kViaViewing = 0,
+  // The acknowledgment is reached after the user taps the notice to perform
+  // an open action for a required number of times (currently it is 1).
+  kViaOpenAction = 1,
+  // The acknowledgement is reached after the user taps X button to close
+  // the notice.
+  kViaDismissal = 2,
+  kMaxValue = kViaDismissal,
+};
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_CORE_V2_ENUMS_H_

@@ -4,11 +4,9 @@
 
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 
 using autofill::password_generation::PasswordGenerationType;
 
@@ -60,6 +58,7 @@ void LogGeneralUIDismissalReason(UIDismissalReason reason) {
 
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
+    autofill::mojom::SubmissionIndicatorEvent submission_event,
     absl::optional<PasswordAccountStorageUserState> user_state) {
   base::UmaHistogramEnumeration("PasswordManager.SaveUIDismissalReason", reason,
                                 NUM_UI_RESPONSES);
@@ -71,6 +70,13 @@ void LogSaveUIDismissalReason(
         "PasswordManager.SaveUIDismissalReason." + suffix, reason,
         NUM_UI_RESPONSES);
   }
+
+  if (submission_event ==
+      autofill::mojom::SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED) {
+    base::UmaHistogramEnumeration(
+        "PasswordManager.SaveUIOnClearedPasswordChangeFormDismissalReason",
+        reason, NUM_UI_RESPONSES);
+  }
 }
 
 void LogSaveUIDismissalReasonAfterUnblocklisting(UIDismissalReason reason) {
@@ -79,16 +85,22 @@ void LogSaveUIDismissalReasonAfterUnblocklisting(UIDismissalReason reason) {
       NUM_UI_RESPONSES);
 }
 
-void LogUpdateUIDismissalReason(UIDismissalReason reason) {
+void LogUpdateUIDismissalReason(
+    UIDismissalReason reason,
+    autofill::mojom::SubmissionIndicatorEvent submission_event) {
   base::UmaHistogramEnumeration("PasswordManager.UpdateUIDismissalReason",
                                 reason, NUM_UI_RESPONSES);
+
+  if (submission_event ==
+      autofill::mojom::SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED) {
+    base::UmaHistogramEnumeration(
+        "PasswordManager.UpdateUIOnClearedPasswordChangeFormDismissalReason",
+        reason, NUM_UI_RESPONSES);
+  }
 }
 
 void LogMoveUIDismissalReason(UIDismissalReason reason,
                               PasswordAccountStorageUserState user_state) {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kEnablePasswordsAccountStorage));
-
   base::UmaHistogramEnumeration("PasswordManager.MoveUIDismissalReason", reason,
                                 NUM_UI_RESPONSES);
 
@@ -111,6 +123,8 @@ void LogLeakDialogTypeAndDismissalReason(LeakDialogType type,
         return "Change";
       case LeakDialogType::kCheckupAndChange:
         return "CheckupAndChange";
+      case LeakDialogType::kChangeAutomatically:
+        return "ChangeAutomatically";
     }
   };
 
@@ -188,13 +202,10 @@ void LogCredentialManagerGetResult(CredentialManagerGetResult result,
   }
 }
 
-void LogPasswordReuse(int password_length,
-                      int saved_passwords,
+void LogPasswordReuse(int saved_passwords,
                       int number_matches,
                       bool password_field_detected,
                       PasswordType reused_password_type) {
-  base::UmaHistogramCounts100("PasswordManager.PasswordReuse.PasswordLength",
-                              password_length);
   base::UmaHistogramCounts1000("PasswordManager.PasswordReuse.TotalPasswords",
                                saved_passwords);
   base::UmaHistogramCounts1000("PasswordManager.PasswordReuse.NumberOfMatches",
@@ -321,14 +332,10 @@ void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state,
 }
 
 void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
-                                    size_t enterprise_hash_count,
                                     bool does_primary_account_exists,
                                     bool is_signed_in) {
   base::UmaHistogramCounts100("PasswordManager.SavedGaiaPasswordHashCount",
                               static_cast<int>(gaia_hash_count));
-  base::UmaHistogramCounts100(
-      "PasswordManager.SavedEnterprisePasswordHashCount",
-      static_cast<int>(enterprise_hash_count));
 
   // Log parallel metrics for sync and signed-in non-sync accounts in addition
   // to above to be able to tell what fraction of signed-in non-sync users we

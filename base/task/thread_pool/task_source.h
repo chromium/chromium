@@ -9,10 +9,10 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/containers/intrusive_heap.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_token.h"
 #include "base/task/common/checked_lock.h"
-#include "base/task/common/intrusive_heap.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/task.h"
 #include "base/task/thread_pool/task_source_sort_key.h"

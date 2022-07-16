@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -28,6 +27,10 @@ namespace extensions {
 class ManifestV3BrowserTest : public ExtensionBrowserTest {
  public:
   ManifestV3BrowserTest() {}
+
+  ManifestV3BrowserTest(const ManifestV3BrowserTest&) = delete;
+  ManifestV3BrowserTest& operator=(const ManifestV3BrowserTest&) = delete;
+
   ~ManifestV3BrowserTest() override {}
 
   void SetUpOnMainThread() override {
@@ -38,8 +41,6 @@ class ManifestV3BrowserTest : public ExtensionBrowserTest {
 
  private:
   ScopedCurrentChannel channel_override_{version_info::Channel::UNKNOWN};
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestV3BrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
@@ -96,8 +97,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("example.com", "/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
   EXPECT_EQ(u"My New Title",

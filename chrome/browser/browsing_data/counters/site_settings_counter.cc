@@ -102,10 +102,10 @@ void SiteSettingsCounter::Count() {
   for (const ProtocolHandler& handler : handlers)
     hosts.insert(handler.url().host());
 
-  std::vector<std::string> blacklisted_sites =
+  std::vector<std::string> never_prompt_sites =
       ChromeTranslateClient::CreateTranslatePrefs(pref_service_)
           ->GetNeverPromptSitesBetween(period_start, period_end);
-  for (const auto& site : blacklisted_sites)
+  for (const auto& site : never_prompt_sites)
     hosts.insert(site);
 
   ReportResult(hosts.size() + empty_host_pattern);

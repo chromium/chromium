@@ -10,9 +10,9 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
@@ -49,6 +49,11 @@ int64_t ReadSingleStatistics(Mode mode) {
 class ArcUiAvailabilityReporterTest : public testing::Test {
  public:
   ArcUiAvailabilityReporterTest() {}
+
+  ArcUiAvailabilityReporterTest(const ArcUiAvailabilityReporterTest&) = delete;
+  ArcUiAvailabilityReporterTest& operator=(
+      const ArcUiAvailabilityReporterTest&) = delete;
+
   ~ArcUiAvailabilityReporterTest() override = default;
 
   void SetUp() override {
@@ -98,8 +103,6 @@ class ArcUiAvailabilityReporterTest : public testing::Test {
   std::unique_ptr<ArcIntentHelperBridge> arc_intent_helper_bridge_;
   std::unique_ptr<FakeAppInstance> app_instance_;
   std::unique_ptr<FakeIntentHelperInstance> intent_helper_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcUiAvailabilityReporterTest);
 };
 
 // Reporting is triggered in case both instances are connected.

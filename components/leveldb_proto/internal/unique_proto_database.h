@@ -77,6 +77,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) UniqueProtoDatabase {
       const std::string& start,
       const std::string& end,
       typename Callbacks::LoadKeysAndEntriesCallback callback);
+  virtual void LoadKeysAndEntriesWhile(
+      const std::string& start,
+      const KeyIteratorController& controller,
+      typename Callbacks::LoadKeysAndEntriesCallback callback);
 
   virtual void LoadKeys(Callbacks::LoadKeysCallback callback);
   virtual void LoadKeys(const std::string& target_prefix,

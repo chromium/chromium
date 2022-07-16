@@ -358,14 +358,7 @@
     "platforms": ["chromeos"],
     "allowlist": [
       "74E2D32A61B08D29521A8C4E360F581DE78F5CA5",  // Image loader
-      "A948368FC53BE437A55FEB414106E207925482F5",  // Files app
-      "A13373C881097323F4DEF392474BE2E28DA6D4ED",  // Gallery
-      "8C726564C6DBE7380BAB388DE6CC7EC93EB44B06",  // Video player
-      "5065C83E84321221675D20FBE4DC43C655CC8C6F",  // Files app tests
-      "397F221E63F86BE34C30165613E95B6CC8D22A52",  // http://crbug.com/415846
-      "A3E3DE9E9F16B41D4A2FAD106BD6CA76B94A0C94",  // http://crbug.com/854551
-      "C2ABD68C33A5B485971C9638B80D6A2E9CBA78C4",  // http://crbug.com/854551
-      "B41E7F08E1179CC03CBD1F49E57CF353A40ADE07"   // http://crbug.com/854551
+      "A948368FC53BE437A55FEB414106E207925482F5"   // Files app
     ]
   },
   "fileSystemProvider": [{
@@ -446,7 +439,7 @@
     "channel": "stable",
     "component_extensions_auto_granted": false,
     "extension_types": ["extension"],
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "6A4A0389E8D47118E96E6221B0B7221CA3715801",  // Apitest extension
       "EC8EA268128FECE14CEC68B90686D87755D87083",  // Assessment Assistant
@@ -507,15 +500,17 @@
   "loginState": [{
     "channel": "stable",
     "extension_types": ["extension"],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   }, {
-    // https://crbug.com/1194693
     "channel": "stable",
     "component_extensions_auto_granted": false,
     "extension_types": ["login_screen_extension"],
     "location": "policy",
     "platforms": ["chromeos"],
     "allowlist": [
+      // https://crbug.com/1233881
+      "EC3DE21E048B67319893889529354DFBFA96FD23",   // Smart Card Connector
+      // https://crbug.com/1194693
       "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // CSSI Smart Card Middleware
       "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"    // Beta CSSI Smart Card Middleware
     ]
@@ -672,7 +667,7 @@
   },
   "printing": {
     "channel": "stable",
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "extension_types": ["extension"]
   },
   "printingMetrics": {
@@ -805,6 +800,14 @@
     "channel": "dev",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
   },
+  "speechRecognitionPrivate": {
+    "channel": "dev",
+    "extension_types": ["extension"],
+    "platforms": ["chromeos"],
+    "allowlist": [
+      "371AC6869D2138CE58123741E69F67469206909F" // AccessibilityCommon extension. https://crbug.com/1220107
+    ]
+  },
   "systemPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
@@ -843,7 +846,8 @@
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B",  // Secure Shell App (dev)
       "3BC1ED0B3E6EFDC7BD4D3D1D75D44B52DEE0A226",  // Secure Shell Ext (stable)
       "38C361D4A0726CE45D3572D65071B6BDB3092371"   // Secure Shell Ext (dev)
-    ]
+    ],
+    "disallow_for_service_workers": true
   },
   "topSites": {
     "channel": "stable",
@@ -882,6 +886,11 @@
     "extension_types": ["platform_app"],
     "location": "component",
     "platforms": ["chromeos"]
+  },
+  "webAuthenticationProxy": {
+    "channel": "trunk",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3
   },
   "webNavigation": {
     "channel": "stable",

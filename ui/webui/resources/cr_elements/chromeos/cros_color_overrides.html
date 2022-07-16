@@ -3,7 +3,7 @@
 <!--
 Style Module that defines color overrides for cr-elements on Chrome OS.
 
-This file plumbs semantic colors from cros_colors.css into cr-elements.
+This file plumbs semantic colors from cros_styles.css into cr-elements.
 
 To get Chrome OS System Colors, an element must:
 - be beneath a <html> element with a "cros" attribute
@@ -12,6 +12,10 @@ To get Chrome OS System Colors, an element must:
 <dom-module id="cros-color-overrides">
   <template>
     <style>
+      :host-context([cros]) a:not(.item)[href] {
+        color: var(--cros-link-color);
+      }
+
       :host-context([cros]) cr-radio-button {
         --cr-radio-button-checked-color: var(--cros-radio-button-color);
         --cr-radio-button-checked-ripple-color:
@@ -20,6 +24,17 @@ To get Chrome OS System Colors, an element must:
             var(--cros-radio-button-color-unchecked);
         --cr-radio-button-unchecked-ripple-color:
             var(--cros-radio-button-ripple-color-unchecked);
+      }
+
+      :host-context([cros]) cr-toast {
+        --cr-toast-background-color: var(--cros-toast-background-color);
+        --cr-toast-background: var(--cros-toast-background-color);
+        --cr-toast-text-color: var(--cros-toast-text-color);
+        --iron-icon-fill-color: var(--cros-toast-icon-color);
+      }
+
+      :host-context([cros]) cr-toast .error-message {
+        color: var(--cros-toast-text-color);
       }
 
       :host-context([cros]) cr-toggle {
@@ -31,6 +46,18 @@ To get Chrome OS System Colors, an element must:
             var(--cros-toggle-button-color-inactive);
         --cr-toggle-unchecked-ripple-color:
             var(--cros-toggle-ripple-color-inactive);
+      }
+
+      :host-context([cros]) .primary-toggle {
+        color: var(--cros-text-color-secondary);
+      }
+
+      :host-context([cros]) .primary-toggle[checked] {
+        color: var(--cros-text-color-prominent);
+      }
+
+      :host-context([cros]) paper-spinner-lite {
+        --paper-spinner-color: var(--cros-icon-color-prominent);
       }
     </style>
   </template>

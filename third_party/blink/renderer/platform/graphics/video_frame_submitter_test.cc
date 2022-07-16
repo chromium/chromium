@@ -183,7 +183,8 @@ class VideoFrameSubmitterTest : public testing::Test {
     // By setting the submission state before we set the sink, we can make
     // testing easier without having to worry about the first sent frame.
     submitter_->SetIsSurfaceVisible(true);
-    submitter_->compositor_frame_sink_.Bind(std::move(submitter_sink));
+    submitter_->remote_frame_sink_.Bind(std::move(submitter_sink));
+    submitter_->compositor_frame_sink_ = submitter_->remote_frame_sink_.get();
     mojo::Remote<mojom::blink::SurfaceEmbedder> embedder;
     ignore_result(embedder.BindNewPipeAndPassReceiver());
     submitter_->surface_embedder_ = std::move(embedder);
@@ -930,7 +931,7 @@ TEST_F(VideoFrameSubmitterTest, PageVisibilityControlsSubmission) {
 }
 
 TEST_F(VideoFrameSubmitterTest, PreferredInterval) {
-  video_frame_provider_->preferred_interval = base::TimeDelta::FromSeconds(1);
+  video_frame_provider_->preferred_interval = base::Seconds(1);
 
   EXPECT_CALL(*sink_, SetNeedsBeginFrame(true));
 
@@ -1021,7 +1022,7 @@ TEST_F(VideoFrameSubmitterTest, ZeroSizedFramesAreNotSubmitted) {
 TEST_F(VideoFrameSubmitterTest, ProcessTimingDetails) {
   int fps = 24;
   int reports = 0;
-  base::TimeDelta frame_duration = base::TimeDelta::FromSecondsD(1.0 / fps);
+  base::TimeDelta frame_duration = base::Seconds(1.0 / fps);
   int frames_to_run =
       fps * (cc::VideoPlaybackRoughnessReporter::kMinWindowsBeforeSubmit + 1);
   WTF::HashMap<uint32_t, viz::FrameTimingDetails> timing_details;

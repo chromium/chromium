@@ -10,7 +10,6 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,6 +33,10 @@ namespace ash {
 class StickyKeysBrowserTest : public InProcessBrowserTest {
  protected:
   StickyKeysBrowserTest() = default;
+
+  StickyKeysBrowserTest(const StickyKeysBrowserTest&) = delete;
+  StickyKeysBrowserTest& operator=(const StickyKeysBrowserTest&) = delete;
+
   ~StickyKeysBrowserTest() override = default;
 
   void SetStickyKeysEnabled(bool enabled) {
@@ -64,8 +67,6 @@ class StickyKeysBrowserTest : public InProcessBrowserTest {
   }
 
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(StickyKeysBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OpenTrayMenu) {

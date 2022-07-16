@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
@@ -95,7 +95,7 @@ void PollingDeviceMonitorImpl::StartMonitoring() {
         FROM_HERE,
         base::BindOnce(&PollingDeviceMonitorImpl::PollDeviceProvider,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(kPollingIntervalSeconds));
+        base::Seconds(kPollingIntervalSeconds));
   }
 }
 
@@ -142,7 +142,7 @@ void PollingDeviceMonitorImpl::OnDeviceDescriptionsRecieved(
       FROM_HERE,
       base::BindOnce(&PollingDeviceMonitorImpl::PollDeviceProvider,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kPollingIntervalSeconds));
+      base::Seconds(kPollingIntervalSeconds));
 }
 
 void PollingDeviceMonitorImpl::NotifyObservers() {

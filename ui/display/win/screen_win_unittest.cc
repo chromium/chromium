@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
@@ -38,6 +37,9 @@ class TestScreenWin : public ScreenWin {
       : ScreenWin(false), monitor_infos_(monitor_infos), hwnd_map_(hwnd_map) {
     UpdateFromDisplayInfos(display_infos);
   }
+
+  TestScreenWin(const TestScreenWin&) = delete;
+  TestScreenWin& operator=(const TestScreenWin&) = delete;
 
   ~TestScreenWin() override { Screen::SetScreenInstance(old_screen_); }
 
@@ -125,8 +127,6 @@ class TestScreenWin : public ScreenWin {
   Screen* old_screen_ = Screen::SetScreenInstance(this);
   std::vector<MONITORINFOEX> monitor_infos_;
   std::unordered_map<HWND, gfx::Rect> hwnd_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestScreenWin);
 };
 
 Screen* GetScreen() {
@@ -149,6 +149,10 @@ class TestScreenWinInitializer {
 class TestScreenWinManager final : public TestScreenWinInitializer {
  public:
   TestScreenWinManager() = default;
+
+  TestScreenWinManager(const TestScreenWinManager&) = delete;
+  TestScreenWinManager& operator=(const TestScreenWinManager&) = delete;
+
   ~TestScreenWinManager() = default;
 
   void AddMonitor(const gfx::Rect& pixel_bounds,
@@ -187,11 +191,13 @@ class TestScreenWinManager final : public TestScreenWinInitializer {
   std::vector<MONITORINFOEX> monitor_infos_;
   std::vector<DisplayInfo> display_infos_;
   std::unordered_map<HWND, gfx::Rect> hwnd_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestScreenWinManager);
 };
 
 class ScreenWinTest : public testing::Test {
+ public:
+  ScreenWinTest(const ScreenWinTest&) = delete;
+  ScreenWinTest& operator=(const ScreenWinTest&) = delete;
+
  protected:
   ScreenWinTest() = default;
 
@@ -216,14 +222,16 @@ class ScreenWinTest : public testing::Test {
 
  private:
   std::unique_ptr<TestScreenWinManager> screen_win_initializer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinTest);
 };
 
 // Single Display of 1.0 Device Scale Factor.
 class ScreenWinTestSingleDisplay1x : public ScreenWinTest {
  public:
   ScreenWinTestSingleDisplay1x() = default;
+
+  ScreenWinTestSingleDisplay1x(const ScreenWinTestSingleDisplay1x&) = delete;
+  ScreenWinTestSingleDisplay1x& operator=(const ScreenWinTestSingleDisplay1x&) =
+      delete;
 
   void SetUpScreen(TestScreenWinInitializer* initializer) override {
     initializer->AddMonitor(gfx::Rect(0, 0, 1920, 1200),
@@ -239,8 +247,6 @@ class ScreenWinTestSingleDisplay1x : public ScreenWinTest {
 
  private:
   HWND fake_hwnd_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinTestSingleDisplay1x);
 };
 
 void expect_point_f_eq(gfx::PointF val1, gfx::PointF val2) {
@@ -400,6 +406,11 @@ class ScreenWinTestSingleDisplay1_25x : public ScreenWinTest {
  public:
   ScreenWinTestSingleDisplay1_25x() = default;
 
+  ScreenWinTestSingleDisplay1_25x(const ScreenWinTestSingleDisplay1_25x&) =
+      delete;
+  ScreenWinTestSingleDisplay1_25x& operator=(
+      const ScreenWinTestSingleDisplay1_25x&) = delete;
+
   void SetUpScreen(TestScreenWinInitializer* initializer) override {
     initializer->AddMonitor(gfx::Rect(0, 0, 1920, 1200),
                             gfx::Rect(0, 0, 1920, 1100),
@@ -414,8 +425,6 @@ class ScreenWinTestSingleDisplay1_25x : public ScreenWinTest {
 
  private:
   HWND fake_hwnd_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinTestSingleDisplay1_25x);
 };
 
 }  // namespace
@@ -556,6 +565,11 @@ class ScreenWinTestSingleDisplay1_5x : public ScreenWinTest {
  public:
   ScreenWinTestSingleDisplay1_5x() = default;
 
+  ScreenWinTestSingleDisplay1_5x(const ScreenWinTestSingleDisplay1_5x&) =
+      delete;
+  ScreenWinTestSingleDisplay1_5x& operator=(
+      const ScreenWinTestSingleDisplay1_5x&) = delete;
+
   void SetUpScreen(TestScreenWinInitializer* initializer) override {
     initializer->AddMonitor(gfx::Rect(0, 0, 1920, 1200),
                             gfx::Rect(0, 0, 1920, 1100),
@@ -570,8 +584,6 @@ class ScreenWinTestSingleDisplay1_5x : public ScreenWinTest {
 
  private:
   HWND fake_hwnd_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinTestSingleDisplay1_5x);
 };
 
 }  // namespace
@@ -712,6 +724,10 @@ class ScreenWinTestSingleDisplay2x : public ScreenWinTest {
  public:
   ScreenWinTestSingleDisplay2x() = default;
 
+  ScreenWinTestSingleDisplay2x(const ScreenWinTestSingleDisplay2x&) = delete;
+  ScreenWinTestSingleDisplay2x& operator=(const ScreenWinTestSingleDisplay2x&) =
+      delete;
+
   void SetUpScreen(TestScreenWinInitializer* initializer) override {
     initializer->AddMonitor(gfx::Rect(0, 0, 1920, 1200),
                             gfx::Rect(0, 0, 1920, 1100),
@@ -726,8 +742,6 @@ class ScreenWinTestSingleDisplay2x : public ScreenWinTest {
 
  private:
   HWND fake_hwnd_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinTestSingleDisplay2x);
 };
 
 }  // namespace
@@ -863,6 +877,10 @@ class ScreenWinTestTwoDisplays1x : public ScreenWinTest {
  public:
   ScreenWinTestTwoDisplays1x() = default;
 
+  ScreenWinTestTwoDisplays1x(const ScreenWinTestTwoDisplays1x&) = delete;
+  ScreenWinTestTwoDisplays1x& operator=(const ScreenWinTestTwoDisplays1x&) =
+      delete;
+
   void SetUpScreen(TestScreenWinInitializer* initializer) override {
     initializer->AddMonitor(gfx::Rect(0, 0, 1920, 1200),
                             gfx::Rect(0, 0, 1920, 1100),
@@ -888,8 +906,6 @@ class ScreenWinTestTwoDisplays1x : public ScreenWinTest {
  private:
   HWND fake_hwnd_left_ = nullptr;
   HWND fake_hwnd_right_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinTestTwoDisplays1x);
 };
 
 }  // namespace
@@ -1136,6 +1152,10 @@ class ScreenWinTestTwoDisplays2x : public ScreenWinTest {
  public:
   ScreenWinTestTwoDisplays2x() = default;
 
+  ScreenWinTestTwoDisplays2x(const ScreenWinTestTwoDisplays2x&) = delete;
+  ScreenWinTestTwoDisplays2x& operator=(const ScreenWinTestTwoDisplays2x&) =
+      delete;
+
   void SetUpScreen(TestScreenWinInitializer* initializer) override {
     initializer->AddMonitor(gfx::Rect(0, 0, 1920, 1200),
                             gfx::Rect(0, 0, 1920, 1100),
@@ -1161,8 +1181,6 @@ class ScreenWinTestTwoDisplays2x : public ScreenWinTest {
  private:
   HWND fake_hwnd_left_ = nullptr;
   HWND fake_hwnd_right_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinTestTwoDisplays2x);
 };
 
 }  // namespace
@@ -1436,6 +1454,10 @@ class ScreenWinTestManyDisplays1x : public ScreenWinTest {
  public:
   ScreenWinTestManyDisplays1x() = default;
 
+  ScreenWinTestManyDisplays1x(const ScreenWinTestManyDisplays1x&) = delete;
+  ScreenWinTestManyDisplays1x& operator=(const ScreenWinTestManyDisplays1x&) =
+      delete;
+
   void SetUpScreen(TestScreenWinInitializer* initializer) override {
     initializer->AddMonitor(gfx::Rect(0, 0, 640, 480),
                             gfx::Rect(0, 0, 640, 380),
@@ -1476,8 +1498,6 @@ class ScreenWinTestManyDisplays1x : public ScreenWinTest {
 
  private:
   std::vector<HWND> fake_hwnds_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinTestManyDisplays1x);
 };
 
 }  // namespace
@@ -1870,6 +1890,10 @@ class ScreenWinTestManyDisplays2x : public ScreenWinTest {
  public:
   ScreenWinTestManyDisplays2x() = default;
 
+  ScreenWinTestManyDisplays2x(const ScreenWinTestManyDisplays2x&) = delete;
+  ScreenWinTestManyDisplays2x& operator=(const ScreenWinTestManyDisplays2x&) =
+      delete;
+
   void SetUpScreen(TestScreenWinInitializer* initializer) override {
     initializer->AddMonitor(gfx::Rect(0, 0, 640, 480),
                             gfx::Rect(0, 0, 640, 380),
@@ -1910,8 +1934,6 @@ class ScreenWinTestManyDisplays2x : public ScreenWinTest {
 
  private:
   std::vector<HWND> fake_hwnds_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinTestManyDisplays2x);
 };
 
 }  // namespace
@@ -2318,6 +2340,10 @@ class ScreenWinTestTwoDisplays1x2x : public ScreenWinTest {
  public:
   ScreenWinTestTwoDisplays1x2x() = default;
 
+  ScreenWinTestTwoDisplays1x2x(const ScreenWinTestTwoDisplays1x2x&) = delete;
+  ScreenWinTestTwoDisplays1x2x& operator=(const ScreenWinTestTwoDisplays1x2x&) =
+      delete;
+
   void SetUpScreen(TestScreenWinInitializer* initializer) override {
     initializer->AddMonitor(gfx::Rect(0, 0, 1920, 1200),
                             gfx::Rect(0, 0, 1920, 1100),
@@ -2343,8 +2369,6 @@ class ScreenWinTestTwoDisplays1x2x : public ScreenWinTest {
  private:
   HWND fake_hwnd_left_ = nullptr;
   HWND fake_hwnd_right_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinTestTwoDisplays1x2x);
 };
 
 }  // namespace
@@ -2610,6 +2634,11 @@ class ScreenWinTestTwoDisplays1_5x1x : public ScreenWinTest {
  public:
   ScreenWinTestTwoDisplays1_5x1x() = default;
 
+  ScreenWinTestTwoDisplays1_5x1x(const ScreenWinTestTwoDisplays1_5x1x&) =
+      delete;
+  ScreenWinTestTwoDisplays1_5x1x& operator=(
+      const ScreenWinTestTwoDisplays1_5x1x&) = delete;
+
   void SetUpScreen(TestScreenWinInitializer* initializer) override {
     initializer->AddMonitor(gfx::Rect(0, 0, 800, 600),
                             gfx::Rect(0, 0, 800, 550),
@@ -2635,8 +2664,6 @@ class ScreenWinTestTwoDisplays1_5x1x : public ScreenWinTest {
  private:
   HWND fake_hwnd_left_ = nullptr;
   HWND fake_hwnd_right_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinTestTwoDisplays1_5x1x);
 };
 
 }  // namespace
@@ -2897,6 +2924,10 @@ class ScreenWinTestTwoDisplays2x1x : public ScreenWinTest {
  public:
   ScreenWinTestTwoDisplays2x1x() = default;
 
+  ScreenWinTestTwoDisplays2x1x(const ScreenWinTestTwoDisplays2x1x&) = delete;
+  ScreenWinTestTwoDisplays2x1x& operator=(const ScreenWinTestTwoDisplays2x1x&) =
+      delete;
+
   void SetUpScreen(TestScreenWinInitializer* initializer) override {
     initializer->AddMonitor(gfx::Rect(0, 0, 1920, 1200),
                             gfx::Rect(0, 0, 1920, 1100),
@@ -2922,8 +2953,6 @@ class ScreenWinTestTwoDisplays2x1x : public ScreenWinTest {
  private:
   HWND fake_hwnd_left_ = nullptr;
   HWND fake_hwnd_right_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinTestTwoDisplays2x1x);
 };
 
 }  // namespace
@@ -3189,6 +3218,11 @@ class ScreenWinTestTwoDisplays2x1xVirtualized : public ScreenWinTest {
  public:
   ScreenWinTestTwoDisplays2x1xVirtualized() = default;
 
+  ScreenWinTestTwoDisplays2x1xVirtualized(
+      const ScreenWinTestTwoDisplays2x1xVirtualized&) = delete;
+  ScreenWinTestTwoDisplays2x1xVirtualized& operator=(
+      const ScreenWinTestTwoDisplays2x1xVirtualized&) = delete;
+
   void SetUpScreen(TestScreenWinInitializer* initializer) override {
     initializer->AddMonitor(gfx::Rect(0, 0, 3200, 1600),
                             gfx::Rect(0, 0, 3200, 1500),
@@ -3214,8 +3248,6 @@ class ScreenWinTestTwoDisplays2x1xVirtualized : public ScreenWinTest {
  private:
   HWND fake_hwnd_left_ = nullptr;
   HWND fake_hwnd_right_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinTestTwoDisplays2x1xVirtualized);
 };
 
 }  // namespace
@@ -3479,6 +3511,11 @@ class ScreenWinUninitializedForced1x : public testing::Test {
  public:
   ScreenWinUninitializedForced1x() = default;
 
+  ScreenWinUninitializedForced1x(const ScreenWinUninitializedForced1x&) =
+      delete;
+  ScreenWinUninitializedForced1x& operator=(
+      const ScreenWinUninitializedForced1x&) = delete;
+
   void SetUp() override {
     testing::Test::SetUp();
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -3489,9 +3526,6 @@ class ScreenWinUninitializedForced1x : public testing::Test {
     Display::ResetForceDeviceScaleFactorForTesting();
     testing::Test::TearDown();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinUninitializedForced1x);
 };
 
 }  // namespace
@@ -3587,6 +3621,11 @@ class ScreenWinUninitializedForced2x : public testing::Test {
  public:
   ScreenWinUninitializedForced2x() = default;
 
+  ScreenWinUninitializedForced2x(const ScreenWinUninitializedForced2x&) =
+      delete;
+  ScreenWinUninitializedForced2x& operator=(
+      const ScreenWinUninitializedForced2x&) = delete;
+
   void SetUp() override {
     testing::Test::SetUp();
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -3597,9 +3636,6 @@ class ScreenWinUninitializedForced2x : public testing::Test {
     Display::ResetForceDeviceScaleFactorForTesting();
     testing::Test::TearDown();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinUninitializedForced2x);
 };
 
 }  // namespace
@@ -3694,6 +3730,11 @@ class ScreenWinTestTwoDisplaysOneInternal : public ScreenWinTest {
  public:
   ScreenWinTestTwoDisplaysOneInternal() = default;
 
+  ScreenWinTestTwoDisplaysOneInternal(
+      const ScreenWinTestTwoDisplaysOneInternal&) = delete;
+  ScreenWinTestTwoDisplaysOneInternal& operator=(
+      const ScreenWinTestTwoDisplaysOneInternal&) = delete;
+
   void SetUpScreen(TestScreenWinInitializer* initializer) override {
     initializer->AddMonitor(gfx::Rect(0, 0, 1920, 1200),
                             gfx::Rect(0, 0, 1920, 1100), L"primary", 1.0,
@@ -3701,9 +3742,6 @@ class ScreenWinTestTwoDisplaysOneInternal : public ScreenWinTest {
     initializer->AddMonitor(gfx::Rect(1920, 0, 800, 600),
                             gfx::Rect(1920, 0, 800, 600), L"secondary", 1.0);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenWinTestTwoDisplaysOneInternal);
 };
 
 }  // namespace

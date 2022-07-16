@@ -67,7 +67,7 @@ BeginFrameArgs GpuVSyncBeginFrameSource::GetMissedBeginFrameArgs(
 
 void GpuVSyncBeginFrameSource::SetPreferredInterval(base::TimeDelta interval) {
   auto interval_for_half_refresh_rate = vsync_interval_ * 2;
-  constexpr auto kMaxDelta = base::TimeDelta::FromMillisecondsD(0.5);
+  constexpr auto kMaxDelta = base::Milliseconds(0.5);
   bool run_at_half_refresh_rate =
       interval > (interval_for_half_refresh_rate - kMaxDelta);
   if (run_at_half_refresh_rate_ == run_at_half_refresh_rate)
@@ -77,6 +77,13 @@ void GpuVSyncBeginFrameSource::SetPreferredInterval(base::TimeDelta interval) {
                "run_at_half_refresh_rate", run_at_half_refresh_rate);
   run_at_half_refresh_rate_ = run_at_half_refresh_rate;
   skip_next_vsync_ = false;
+}
+
+void GpuVSyncBeginFrameSource::SetDynamicBeginFrameDeadlineOffsetSource(
+    DynamicBeginFrameDeadlineOffsetSource*
+        dynamic_begin_frame_deadline_offset_source) {
+  begin_frame_args_generator_.set_dynamic_begin_frame_deadline_offset_source(
+      dynamic_begin_frame_deadline_offset_source);
 }
 
 void GpuVSyncBeginFrameSource::OnNeedsBeginFrames(bool needs_begin_frames) {

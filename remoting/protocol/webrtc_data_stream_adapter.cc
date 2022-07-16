@@ -34,10 +34,10 @@ WebrtcDataStreamAdapter::~WebrtcDataStreamAdapter() {
     channel_->Close();
 
     // Destroy |channel_| asynchronously as it may be on stack.
+    // TODO(dcheng): This could probably be ReleaseSoon.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(base::DoNothing::Once<
-                           rtc::scoped_refptr<webrtc::DataChannelInterface>>(),
+        base::BindOnce([](rtc::scoped_refptr<webrtc::DataChannelInterface>) {},
                        std::move(channel_)));
   }
 }

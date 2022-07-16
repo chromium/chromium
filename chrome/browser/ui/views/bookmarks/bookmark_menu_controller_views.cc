@@ -131,6 +131,16 @@ ui::mojom::DragOperation BookmarkMenuController::OnPerformDrop(
   return result;
 }
 
+views::View::DropCallback BookmarkMenuController::GetDropCallback(
+    views::MenuItemView* menu,
+    DropPosition position,
+    const ui::DropTargetEvent& event) {
+  auto drop_cb = menu_delegate_->GetDropCallback(menu, position, event);
+  if (for_drop_)
+    delete this;
+  return drop_cb;
+}
+
 bool BookmarkMenuController::ShowContextMenu(MenuItemView* source,
                                              int id,
                                              const gfx::Point& p,

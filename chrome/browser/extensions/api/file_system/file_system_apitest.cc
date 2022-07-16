@@ -5,7 +5,6 @@
 #include "apps/saved_files_service.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_restrictions.h"
@@ -41,6 +40,9 @@ class AppLoadObserver : public ExtensionRegistryObserver {
         ExtensionRegistry::Get(browser_context));
   }
 
+  AppLoadObserver(const AppLoadObserver&) = delete;
+  AppLoadObserver& operator=(const AppLoadObserver&) = delete;
+
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override {
     callback_.Run(extension);
@@ -50,7 +52,6 @@ class AppLoadObserver : public ExtensionRegistryObserver {
   base::RepeatingCallback<void(const Extension*)> callback_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-  DISALLOW_COPY_AND_ASSIGN(AppLoadObserver);
 };
 
 void SetLastChooseEntryDirectory(const base::FilePath& choose_entry_directory,

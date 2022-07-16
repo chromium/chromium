@@ -16,7 +16,7 @@
 // autoscroll velocity = delta / 0.05 sec = delta x 20
 static constexpr float kAutoscrollMultiplier = 20.f;
 static constexpr base::TimeDelta kInitialAutoscrollTimerDelay =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 
 // Constants used to figure the how far out in the non-scrolling direction
 // should trigger the thumb to snap back to its origin.  These calculations are

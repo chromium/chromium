@@ -55,6 +55,9 @@ class ResetPasswordHandlerImpl : public mojom::ResetPasswordHandler {
     DCHECK(web_contents);
   }
 
+  ResetPasswordHandlerImpl(const ResetPasswordHandlerImpl&) = delete;
+  ResetPasswordHandlerImpl& operator=(const ResetPasswordHandlerImpl&) = delete;
+
   ~ResetPasswordHandlerImpl() override {}
 
   // mojom::ResetPasswordHandler overrides:
@@ -77,8 +80,6 @@ class ResetPasswordHandlerImpl : public mojom::ResetPasswordHandler {
  private:
   content::WebContents* web_contents_;
   mojo::Receiver<mojom::ResetPasswordHandler> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResetPasswordHandlerImpl);
 };
 
 // Gets the reused password type from post data, or returns

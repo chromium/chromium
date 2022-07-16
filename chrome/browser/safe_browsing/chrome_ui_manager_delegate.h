@@ -22,7 +22,7 @@ class ChromeSafeBrowsingUIManagerDelegate
       const ChromeSafeBrowsingUIManagerDelegate&) = delete;
 
   // SafeBrowsingUIManager::Delegate:
-  const std::string& GetApplicationLocale() override;
+  std::string GetApplicationLocale() override;
   void TriggerSecurityInterstitialShownExtensionEventIfDesired(
       content::WebContents* web_contents,
       const GURL& page_url,
@@ -43,6 +43,7 @@ class ChromeSafeBrowsingUIManagerDelegate
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* browser_context) override;
   bool IsMetricsAndCrashReportingEnabled() override;
+  bool IsSendingOfHitReportsEnabled() override;
 };
 
 }  // namespace safe_browsing

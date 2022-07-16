@@ -67,6 +67,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
       CtapGetAssertionOptions request_options,
       bool allow_skipping_pin_touch,
       CompletionCallback completion_callback);
+
+  GetAssertionRequestHandler(const GetAssertionRequestHandler&) = delete;
+  GetAssertionRequestHandler& operator=(const GetAssertionRequestHandler&) =
+      delete;
+
   ~GetAssertionRequestHandler() override;
 
  private:
@@ -163,8 +168,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
 
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<GetAssertionRequestHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GetAssertionRequestHandler);
 };
 
 }  // namespace device

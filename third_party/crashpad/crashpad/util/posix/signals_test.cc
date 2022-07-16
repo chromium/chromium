@@ -17,7 +17,6 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
 
@@ -43,17 +42,21 @@ constexpr int kUnexpectedExitStatus = 3;
 
 // Keep synchronized with CauseSignal().
 bool CanCauseSignal(int sig) {
-  return sig == SIGABRT ||
-         sig == SIGALRM ||
-         sig == SIGBUS ||
-#if !defined(ARCH_CPU_ARM64)
+  return sig == SIGABRT || sig == SIGALRM || sig == SIGBUS ||
+/* According to DDI0487D (Armv8 Architecture Reference Manual) the expected
+ * behavior for division by zero (Section 3.4.8) is: "... results in a
+ * zero being written to the destination register, without any
+ * indication that the division by zero occurred.".
+ * This applies to Armv8 (and not earlier) for both 32bit and 64bit app code.
+ */
+#if defined(ARCH_CPU_X86_FAMILY)
          sig == SIGFPE ||
-#endif  // !defined(ARCH_CPU_ARM64)
+#endif
+
 #if defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
          sig == SIGILL ||
 #endif  // defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
-         sig == SIGPIPE ||
-         sig == SIGSEGV ||
+         sig == SIGPIPE || sig == SIGSEGV ||
 #if defined(OS_APPLE)
          sig == SIGSYS ||
 #endif  // OS_APPLE
@@ -68,7 +71,6 @@ void CauseSignal(int sig) {
   switch (sig) {
     case SIGABRT: {
       abort();
-      break;
     }
 
     case SIGALRM: {
@@ -114,36 +116,26 @@ void CauseSignal(int sig) {
       *mapped_file.addr_as<char*>() = 0;
 
       _exit(kUnexpectedExitStatus);
-      break;
     }
 
-#if !defined(ARCH_CPU_ARM64)
-    // ARM64 has hardware integer division instructions that don’t generate a
-    // trap for divide-by-zero, so this doesn’t produce SIGFPE.
     case SIGFPE: {
-      // Optimization makes this tricky, so get zero from a system call likely
-      // to succeed, and try to do something with the result.
-      struct stat stat_buf;
-      int zero = stat("/", &stat_buf);
-      if (zero == -1) {
-        // It’s important to check |== -1| and not |!= 0|. An optimizer is free
-        // to discard an |== 0| branch entirely, because division by zero is
-        // undefined behavior.
-        PLOG(ERROR) << "stat";
-        _exit(kUnexpectedExitStatus);
-      }
-
-      int quotient = 2 / zero;
-      fstat(quotient, &stat_buf);
+/* Enabled only for x86, since a division by zero won't raise a signal
+ * on Armv8, please see comment at the top of file concerning the
+ * Arm architecture.
+ */
+#if defined(ARCH_CPU_X86_FAMILY)
+      volatile int a = 42;
+      volatile int b = 0;
+      a /= b;
+      ALLOW_UNUSED_LOCAL(a);
+#endif
       break;
     }
-#endif  // ARCH_CPU_ARM64
 
 #if defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
     case SIGILL: {
       // __builtin_trap() causes SIGTRAP on arm64 on Android.
       __builtin_trap();
-      break;
     }
 #endif  // defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
 
@@ -208,7 +200,6 @@ void CauseSignal(int sig) {
     default: {
       LOG(ERROR) << "unexpected signal " << sig;
       _exit(kUnexpectedExitStatus);
-      break;
     }
   }
 }
@@ -232,6 +223,10 @@ class SignalsTest : public Multiprocess {
         sig_(sig),
         test_type_(test_type),
         signal_source_(signal_source) {}
+
+  SignalsTest(const SignalsTest&) = delete;
+  SignalsTest& operator=(const SignalsTest&) = delete;
+
   ~SignalsTest() {}
 
  private:
@@ -318,8 +313,6 @@ class SignalsTest : public Multiprocess {
   TestType test_type_;
   SignalSource signal_source_;
   static Signals::OldActions old_actions_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignalsTest);
 };
 
 Signals::OldActions SignalsTest::old_actions_;

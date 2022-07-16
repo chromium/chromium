@@ -12,12 +12,18 @@
 #endif
 
 namespace web {
-TestDidChangeVisibleSecurityStateInfo::TestDidChangeVisibleSecurityStateInfo() {
-}
+TestDidChangeVisibleSecurityStateInfo::TestDidChangeVisibleSecurityStateInfo() =
+    default;
 TestDidChangeVisibleSecurityStateInfo::
-    ~TestDidChangeVisibleSecurityStateInfo() {}
-TestDidStartNavigationInfo::TestDidStartNavigationInfo() {}
+    ~TestDidChangeVisibleSecurityStateInfo() = default;
+TestDidStartNavigationInfo::TestDidStartNavigationInfo() = default;
 TestDidStartNavigationInfo::~TestDidStartNavigationInfo() = default;
-TestDidFinishNavigationInfo::TestDidFinishNavigationInfo() {}
+TestDidRedirectNavigationInfo::TestDidRedirectNavigationInfo() = default;
+TestDidRedirectNavigationInfo::~TestDidRedirectNavigationInfo() = default;
+TestDidFinishNavigationInfo::TestDidFinishNavigationInfo() = default;
 TestDidFinishNavigationInfo::~TestDidFinishNavigationInfo() = default;
+TestUpdateFaviconUrlCandidatesInfo::TestUpdateFaviconUrlCandidatesInfo() =
+    default;
+TestUpdateFaviconUrlCandidatesInfo::~TestUpdateFaviconUrlCandidatesInfo() =
+    default;
 }  // namespace web

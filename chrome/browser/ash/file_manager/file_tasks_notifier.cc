@@ -26,6 +26,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 namespace file_manager {
@@ -91,7 +92,7 @@ void FileTasksNotifier::QueryFileAvailability(
       continue;
     }
     auto url = mount_points->CreateCrackedFileSystemURL(
-        url::Origin(), storage::kFileSystemTypeExternal, virtual_path);
+        blink::StorageKey(), storage::kFileSystemTypeExternal, virtual_path);
     if (!url.is_valid() || !IsSupportedFileSystemType(url.type())) {
       results[i] = FileAvailability::kGone;
       continue;

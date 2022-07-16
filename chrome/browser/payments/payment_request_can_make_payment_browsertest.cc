@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -28,6 +27,12 @@ namespace payments {
 
 class PaymentRequestCanMakePaymentTestBase
     : public PaymentRequestPlatformBrowserTestBase {
+ public:
+  PaymentRequestCanMakePaymentTestBase(
+      const PaymentRequestCanMakePaymentTestBase&) = delete;
+  PaymentRequestCanMakePaymentTestBase& operator=(
+      const PaymentRequestCanMakePaymentTestBase&) = delete;
+
  protected:
   PaymentRequestCanMakePaymentTestBase() = default;
 
@@ -46,14 +51,17 @@ class PaymentRequestCanMakePaymentTestBase
 
  private:
   syncer::TestSyncService sync_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestCanMakePaymentTestBase);
 };
 
 class PaymentRequestCanMakePaymentQueryTest
     : public PaymentRequestCanMakePaymentTestBase {
  protected:
   PaymentRequestCanMakePaymentQueryTest() = default;
+
+  PaymentRequestCanMakePaymentQueryTest(
+      const PaymentRequestCanMakePaymentQueryTest&) = delete;
+  PaymentRequestCanMakePaymentQueryTest& operator=(
+      const PaymentRequestCanMakePaymentQueryTest&) = delete;
 
   void CallCanMakePayment() {
     ResetEventWaiterForEventSequence(
@@ -70,9 +78,6 @@ class PaymentRequestCanMakePaymentQueryTest
                                        "hasEnrolledInstrument();"));
     WaitForObservedEvent();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestCanMakePaymentQueryTest);
 };
 
 // Visa is required, and user has a visa instrument.
@@ -103,71 +108,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
 
   CallHasEnrolledInstrument();
   ExpectBodyContains("false");
-}
-
-class PaymentRequestCanMakePaymentQueryTestWithGooglePayCardsDisabled
-    : public PaymentRequestCanMakePaymentQueryTest {
- public:
-  PaymentRequestCanMakePaymentQueryTestWithGooglePayCardsDisabled() {
-    feature_list_.InitAndDisableFeature(
-        payments::features::kReturnGooglePayInBasicCard);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Visa is required, and user has a masked visa instrument, and Google Pay cards
-// in basic-card is disabled.
-IN_PROC_BROWSER_TEST_F(
-    PaymentRequestCanMakePaymentQueryTestWithGooglePayCardsDisabled,
-    CanMakePayment_Supported) {
-  NavigateTo("/payment_request_can_make_payment_query_test.html");
-  autofill::AutofillProfile billing_address = CreateAndAddAutofillProfile();
-  autofill::CreditCard card = autofill::test::GetMaskedServerCard();
-  card.SetNumber(u"4111111111111111");  // We need a visa.
-  card.SetNetworkForMaskedCard(autofill::kVisaCard);
-  card.set_billing_address_id(billing_address.guid());
-  AddCreditCard(card);
-
-  CallCanMakePayment();
-  ExpectBodyContains("true");
-
-  CallHasEnrolledInstrument();
-  ExpectBodyContains("false");
-}
-
-class PaymentRequestCanMakePaymentQueryTestWithGooglePayCardsEnabled
-    : public PaymentRequestCanMakePaymentQueryTest {
- public:
-  PaymentRequestCanMakePaymentQueryTestWithGooglePayCardsEnabled() {
-    feature_list_.InitAndEnableFeature(
-        payments::features::kReturnGooglePayInBasicCard);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Visa is required, and user has a masked visa instrument, and Google Pay cards
-// in basic-card is enabled.
-IN_PROC_BROWSER_TEST_F(
-    PaymentRequestCanMakePaymentQueryTestWithGooglePayCardsEnabled,
-    CanMakePayment_Supported) {
-  NavigateTo("/payment_request_can_make_payment_query_test.html");
-  autofill::CreditCard card = autofill::test::GetMaskedServerCard();
-  card.SetNumber(u"4111111111111111");  // We need a visa.
-  card.SetNetworkForMaskedCard(autofill::kVisaCard);
-  autofill::AutofillProfile billing_address = autofill::test::GetFullProfile();
-  AddAutofillProfile(billing_address);
-  card.set_billing_address_id(billing_address.guid());
-  AddCreditCard(card);
-
-  CallCanMakePayment();
-  ExpectBodyContains("true");
-
-  CallHasEnrolledInstrument();
-  ExpectBodyContains("true");
 }
 
 // Pages without a valid SSL certificate always get "false" from
@@ -269,6 +209,12 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
 
 class PaymentRequestCanMakePaymentQueryCCTest
     : public PaymentRequestCanMakePaymentTestBase {
+ public:
+  PaymentRequestCanMakePaymentQueryCCTest(
+      const PaymentRequestCanMakePaymentQueryCCTest&) = delete;
+  PaymentRequestCanMakePaymentQueryCCTest& operator=(
+      const PaymentRequestCanMakePaymentQueryCCTest&) = delete;
+
  protected:
   PaymentRequestCanMakePaymentQueryCCTest() = default;
 
@@ -296,9 +242,6 @@ class PaymentRequestCanMakePaymentQueryCCTest
                                      : "hasEnrolledInstrument('mastercard');"));
     WaitForObservedEvent();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestCanMakePaymentQueryCCTest);
 };
 
 // Test that repeated canMakePayment and hasEnrolledInstrument queries are
@@ -431,6 +374,11 @@ class PaymentRequestCanMakePaymentQueryPMITest
     script_[CheckFor::BOB_PAY_AND_VISA] = "[bobPayMethod, basicVisaMethod]";
   }
 
+  PaymentRequestCanMakePaymentQueryPMITest(
+      const PaymentRequestCanMakePaymentQueryPMITest&) = delete;
+  PaymentRequestCanMakePaymentQueryPMITest& operator=(
+      const PaymentRequestCanMakePaymentQueryPMITest&) = delete;
+
   void CallCanMakePayment(CheckFor check_for) {
     ResetEventWaiterForEventSequence(
         {TestEvent::kCanMakePaymentCalled, TestEvent::kCanMakePaymentReturned});
@@ -452,8 +400,6 @@ class PaymentRequestCanMakePaymentQueryPMITest
 
  private:
   base::flat_map<CheckFor, std::string> script_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestCanMakePaymentQueryPMITest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryPMITest,
@@ -526,8 +472,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryPMITest,
 // If the device does not have any payment apps installed,
 // hasEnrolledInstrument() queries for both payment apps and basic-card depend
 // only on what cards the user has on file.
+// TODO(https://crbug.com/1233940): The test is flaky.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryPMITest,
-                       QueryQuotaForPaymentAppsAndCards) {
+                       DISABLED_QueryQuotaForPaymentAppsAndCards) {
   NavigateTo("/payment_request_payment_method_identifier_test.html");
 
   CallCanMakePayment(CheckFor::BOB_PAY_AND_VISA);

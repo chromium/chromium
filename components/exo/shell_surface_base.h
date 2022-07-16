@@ -11,7 +11,8 @@
 
 #include "ash/display/window_tree_host_manager.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "chromeos/ui/base/display_util.h"
+#include "chromeos/ui/base/window_pin_type.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -59,6 +60,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
                    const gfx::Point& origin,
                    bool can_minimize,
                    int container);
+
+  ShellSurfaceBase(const ShellSurfaceBase&) = delete;
+  ShellSurfaceBase& operator=(const ShellSurfaceBase&) = delete;
+
   ~ShellSurfaceBase() override;
 
   // Set the callback to run when the user wants the shell surface to be closed.
@@ -126,11 +131,16 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Set the flag if the surface can maximize or not.
   void SetCanMinimize(bool can_minimize);
 
+  // Set normal shadow bounds, |shadow_bounds_|, to |bounds| to be used and
+  // applied via `UpdateShadow()`. Set and update resize shadow bounds with
+  // |widget_|'s origin and |bounds| via `UpdateResizeShadowBoundsOfWindow()`.
+  void SetBoundsForShadows(const absl::optional<gfx::Rect>& bounds);
+
   // Prevents shell surface from being moved.
   void DisableMovement();
 
   // Update the resizability for the surface.
-  virtual void UpdateCanResize();
+  virtual void UpdateResizability();
 
   // Rebind a surface as the root surface of the shell surface.
   void RebindRootSurface(Surface* root_surface,
@@ -165,6 +175,12 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   bool HasOverlay() const { return !!overlay_widget_; }
 
+  // Set specific orientation lock for this surface. When this surface is in
+  // foreground and the display can be rotated (e.g. tablet mode), apply the
+  // behavior defined by |orientation_lock|. See more details in
+  // //ash/display/screen_orientation_controller.h.
+  void SetOrientationLock(chromeos::OrientationType orientation_lock);
+
   // SurfaceDelegate:
   void OnSurfaceCommit() override;
   bool IsInputEnabled(Surface* surface) const override;
@@ -173,11 +189,11 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void OnSetStartupId(const char* startup_id) override;
   void OnSetApplicationId(const char* application_id) override;
   void SetUseImmersiveForFullscreen(bool value) override;
-  void ShowSnapPreviewToLeft() override;
-  void ShowSnapPreviewToRight() override;
+  void ShowSnapPreviewToPrimary() override;
+  void ShowSnapPreviewToSecondary() override;
   void HideSnapPreview() override;
-  void SetSnappedToLeft() override;
-  void SetSnappedToRight() override;
+  void SetSnappedToPrimary() override;
+  void SetSnappedToSecondary() override;
   void UnsetSnap() override;
   void OnActivationRequested() override;
   void OnSetServerStartResize() override;
@@ -186,11 +202,17 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void SetPip() override;
   void UnsetPip() override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
+  void MoveToDesk(int desk_index) override;
+  void SetVisibleOnAllWorkspaces() override;
+  void SetInitialWorkspace(const char* initial_workspace) override;
+  void Pin(bool trusted) override;
+  void Unpin() override;
 
   // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
   void OnContentSizeChanged(Surface*) override {}
   void OnFrameLockingChanged(Surface*, bool) override {}
+  void OnDeskChanged(Surface*, int) override {}
 
   // CaptureClientObserver:
   void OnCaptureChanged(aura::Window* lost_capture,
@@ -223,6 +245,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
                                const void* key,
                                intptr_t old_value) override;
   void OnWindowAddedToRootWindow(aura::Window* window) override;
+  void OnWindowParentChanged(aura::Window* window,
+                             aura::Window* parent) override;
 
   // wm::ActivationChangeObserver:
   void OnWindowActivated(ActivationReason reason,
@@ -330,6 +354,12 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool has_grab_ = false;
   bool server_side_resize_ = false;
 
+  // The orientation to be applied when widget is being created. Only set when
+  // widget is not created yet orientation lock is being set. This is currently
+  // only used by ClientControlledShellSurface.
+  chromeos::OrientationType initial_orientation_lock_ =
+      chromeos::OrientationType::kAny;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ShellSurfaceTest,
                            HostWindowBoundsUpdatedAfterCommitWidget);
@@ -353,6 +383,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   bool IsFrameDecorationSupported(SurfaceFrameType frame_type);
 
+  void UpdatePinned();
+
   aura::Window* parent_ = nullptr;
   bool activatable_ = true;
   bool can_minimize_ = true;
@@ -374,6 +406,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   gfx::Size pending_maximum_size_;
   gfx::SizeF pending_aspect_ratio_;
   bool pending_pip_ = false;
+  absl::optional<std::string> initial_workspace_;
 
   // Overlay members.
   std::unique_ptr<views::Widget> overlay_widget_;
@@ -381,7 +414,11 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool overlay_overlaps_frame_ = true;
   absl::optional<bool> overlay_can_resize_;
 
-  DISALLOW_COPY_AND_ASSIGN(ShellSurfaceBase);
+  // Pin members.
+  chromeos::WindowPinType current_pinned_state_ =
+      chromeos::WindowPinType::kNone;
+  chromeos::WindowPinType pending_pinned_state_ =
+      chromeos::WindowPinType::kNone;
 };
 
 }  // namespace exo

@@ -120,7 +120,7 @@ void LongPressDragSelector::OnLongPressEvent(base::TimeTicks event_time,
   if (state_ == LONGPRESS_PENDING &&
       // Ensure the down event occurs *before* the longpress event. Use a
       // small time epsilon to account for floating point time conversion.
-      (touch_down_time_ < event_time + base::TimeDelta::FromMicroseconds(10)) &&
+      (touch_down_time_ < event_time + base::Microseconds(10)) &&
       client_->IsWithinTapSlop(touch_down_position_ - position)) {
     SetState(SELECTION_PENDING);
   }

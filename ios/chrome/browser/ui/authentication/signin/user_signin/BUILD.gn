@@ -9,10 +9,6 @@ source_set("user_signin") {
   sources = [
     "gradient_view.h",
     "gradient_view.mm",
-    "user_policy_signout_coordinator.h",
-    "user_policy_signout_coordinator.mm",
-    "user_policy_signout_view_controller.h",
-    "user_policy_signout_view_controller.mm",
     "user_signin_constants.h",
     "user_signin_constants.mm",
     "user_signin_coordinator.h",
@@ -29,6 +25,7 @@ source_set("user_signin") {
     "//components/unified_consent",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/browser:utils",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/policy/resources:enterprise_icon_blue_large",
     "//ios/chrome/browser/signin",
@@ -41,8 +38,11 @@ source_set("user_signin") {
     "//ios/chrome/browser/ui/authentication/unified_consent",
     "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/settings/sync/utils",
+    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/unified_consent",
+    "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert:confirmation_alert",
     "//ios/chrome/common/ui/util",
@@ -83,6 +83,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
     "//ios/chrome/browser/unified_consent",
+    "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/public/provider/chrome/browser/signin:test_support",
@@ -94,7 +95,6 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -106,10 +106,10 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/signin/internal/identity_manager",
     "//components/signin/ios/browser:features",
-    "//components/signin/public/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser:utils",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/authentication/unified_consent:constants",
     "//ios/chrome/browser/ui/authentication/views:views_constants",
     "//ios/chrome/browser/ui/settings:constants",

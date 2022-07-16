@@ -71,7 +71,7 @@ TEST_F(ShillProfileClientTest, PropertyChanged) {
 
   // Set expectations.
   base::ListValue value;
-  value.AppendString(kExampleEntryPath);
+  value.Append(kExampleEntryPath);
   MockPropertyChangeObserver observer;
   EXPECT_CALL(observer,
               OnPropertyChanged(shill::kEntriesProperty, ValueEq(value)))

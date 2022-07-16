@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest, NoInputEvent) {
 
   StartTracing({"loading"});
 
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Check UKM.
   ExpectUKMPageLoadMetric(PageLoad::kInteractiveTiming_NumInputEventsName, 0);
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest,
   content::SimulateMouseClick(web_contents(), 0,
                               blink::WebMouseEvent::Button::kLeft);
 
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Get all input delay recorded by UKM.
   std::vector<int64_t> input_delay_list = GetAllInputDelay();

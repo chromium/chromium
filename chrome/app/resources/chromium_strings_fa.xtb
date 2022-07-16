@@ -18,6 +18,7 @@
 <translation id="1774152462503052664">‏اجازه به Chromium برای اجرا در پس‌زمینه</translation>
 <translation id="1779356040007214683">‏برای ایمن‌تر کردن Chromium، برخی از افزونه‌هایی را که در <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فهرست شده‌اند و ممکن است بدون اطلاع شما اضافه شده باشند، غیرفعال کردیم.</translation>
 <translation id="1808667845054772817">‏نصب مجدد Chromium</translation>
+<translation id="185970820835152459">‏می‌توانید «حساب‌های Google» خودتان را که به سیستم آن‌ها وارد شده‌اید مدیریت کنید. از «حساب‌های Google» شما در مرورگر Chromium، «فروشگاه Play»، ‏Gmail، و محصولات دیگر استفاده می‌شود. اگر می‌خواهید حساب فرد دیگری را اضافه کنید (مثلاً یکی از اعضای خانواده)، به‌جای این کار، شخص جدیدی را به <ph name="DEVICE_TYPE" /> خود اضافه کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="1881322772814446296">‏شما با حساب مدیریت‌شده وارد سیستم می‌شوید و به سرپرست آن اجازه کنترل بر نمایه Chromium خود را می‌دهید. داده‌های Chromium شما شامل برنامه‌ها، نشانک‌ها، سابقه، گذرواژه‌ها و سایر تنظیمات برای همیشه به <ph name="USER_NAME" /> مرتبط خواهد شد. می‌توانید این داده‌ها را از طریق داشبورد حساب‌های Google حذف کنید اما نمی‌توانید این داده‌ها را به حساب دیگری مرتبط سازید. در صورت تمایل برای ذخیره داده‌های Chromium موجود به صورت جداگانه می‌توانید نمایه جدیدی ایجاد کنید. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">‏با خاموش کردن این گزینه، می‌توانید بدون ورود به سیستم Chromium به سیستم سایت‌های Google مانند Gmail وارد شوید</translation>
 <translation id="1929939181775079593">‏Chromium پاسخ نمی‌دهد. مجدداً راه‌اندازی شود؟</translation>
@@ -29,18 +30,20 @@
 <translation id="2185166961232948079">‏Chromium - ورود به سیستم شبکه - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">‏اگر رایانه‌ای را به صورت مشترک استفاده می‌کنید، دوستان و خانواده می‌توانند به صورت جداگانه مرور کنند و Chromium را به صورتی که مایلند تنظیم کنند.</translation>
 <translation id="2294245788148774212">‏اختیاری: با ارسال خودکار داده‌های استفاده و عیب‌یابی به Google، به بهبود ویژگی‌ها و عملکرد سیستم‌عامل Chromium کمک کنید.</translation>
+<translation id="2313870531055795960">‏نشانی‌های وب را با فهرست سایت‌های ناامنی که در Chromium ذخیره شده است مقایسه می‌کند. اگر سایتی تلاش کند گذرواژه شما را به‌سرقت ببرد، یا وقتی فایل مخربی بارگیری می‌کنید، Chromium ممکن است نشانی‌های وب را نیز به‌همراه بخش‌های کوچکی از محتوای صفحه به «مرور ایمن» ارسال کند.</translation>
 <translation id="2343156876103232566">‏برای ارسال شماره از اینجا به تلفن Android خود، در هر دو دستگاه به سیستم Chromium وارد شوید.</translation>
 <translation id="2347108572062610441">‏این افزونه، صفحه‌ای را تغییر داده است که هنگام راه‌اندازی Chromium نشان داده می‌شود.</translation>
 <translation id="2396765026452590966">‏افزونه «<ph name="EXTENSION_NAME" />»، صفحه‌ای را تغییر داده است که هنگام راه‌اندازی Chromium نشان داده می‌شود.</translation>
+<translation id="2401032172288869980">‏Chromium برای این سایت به اجازه دوربین و میکروفون نیاز دارد</translation>
 <translation id="2483889755041906834">‏در Chromium</translation>
 <translation id="2485422356828889247">حذف نصب</translation>
 <translation id="2535480412977113886">‏سیستم‌عامل Chromium قادر به همگام‌سازی داده‌های شما نبود زیرا جزئیات ورود به حساب شما به‌روز نیست.</translation>
 <translation id="2560420686485554789">‏Chromium برای بارگیری فایل‌ها باید به حافظه دسترسی داشته باشد</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">‏برای دسترسی به چیزهای Chromium در همه دستگاه‌هایتان، به سیستم وارد شوید تا بتوانید همگام‌سازی را روشن کنید.</translation>
-<translation id="2580426763510374355">‏نصب Chromium OS</translation>
 <translation id="2583187216237139145">‏سرپرست نمایه کاری می‌تواند داده‌های Chromium را که درطول استفاده از این نمایه ایجاد شده‌اند (مثل ایجاد سابقه نشانک‌ها، گذرواژه‌ها، و دیگر تنظیمات) بردارد. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">‏برای اعمال به‌روزرسانی، Chromium OS باید راه‌اندازی مجدد شود.</translation>
+<translation id="2614883797045469742">‏تنظیمات پیش‌فرض برای اکثر افراد کافی هستند، اما می‌توانید آن‌ها را متناسب با نحوه استفاده‌تان از Chromium سفارشی کنید</translation>
 <translation id="2648074677641340862">‏یک خطای سیستم‌عامل در طول نصب روی داد. لطفاً Chromium را دوباره نصب کنید.</translation>
 <translation id="2661879430930417727">‏اگر از دستگاهی به‌صورت مشترک استفاده می‌کنید، دوستان و اعضای خانواده می‌توانند جداگانه مرور کنند و Chromium را به‌شیوه خودشان تنظیم کنند</translation>
 <translation id="2711502716910134313">‏برگه Chromium</translation>
@@ -49,9 +52,11 @@
 <translation id="2799223571221894425">راه‌اندازی مجدد</translation>
 <translation id="2837693172913560447">‏با این کار، نمایه Chromium جدیدی برای <ph name="USER_EMAIL_ADDRESS" /> ایجاد خواهد شد</translation>
 <translation id="2847479871509788944">‏حذف از Chromium...</translation>
+<translation id="2850691299438350830">‏وقتی به سیستم وارد شده باشید، امنیت شما را در Chromium حفظ می‌کند و ممکن است برای بهبود امنیت شما در برنامه‌های دیگر Google استفاده شود</translation>
 <translation id="2885378588091291677">مدیر فعالیت‌ها</translation>
 <translation id="2910007522516064972">‏درباره &amp;Chromium</translation>
 <translation id="2977470724722393594">‏Chromium به‌روز است</translation>
+<translation id="2977506796191543575">‏اگر سایتی تلاش کند گذرواژه شما را به‌سرقت ببرد، یا وقتی فایل مخربی بارگیری می‌کنید، Chromium ممکن است نشانی‌های وب را نیز به‌همراه بخش‌های کوچکی از محتوای صفحه به «مرور ایمن» ارسال کند</translation>
 <translation id="2983934633046890458">‏Chromium می‌خواهد گذرواژه‌ها را ویرایش کند.</translation>
 <translation id="3032706164202344641">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="3032787606318309379">‏افزودن به Chromium…</translation>
@@ -73,13 +78,11 @@
 <translation id="3350761136195634146">‏درحال‌حاضر یک نمایه Chromium با این حساب وجود دارد</translation>
 <translation id="3406848076815591792">‏به نمایه Chromium موجود می‌روید؟</translation>
 <translation id="3430503420100763906">‏با نمایه‌های Chromium می‌توانید همه چیزتان را در Chromium جدا کنید. برای دوستان و اعضای خانواده‌تان نمایه ایجاد کنید، یا کار و سرگرمی را ازهم جدا کنید.</translation>
-<translation id="3433271666494956603">‏نصب Chromium OS درحال انجام است</translation>
 <translation id="347328004046849135">‏وقتی با گذرواژه‌ای لورفته به سیستم وارد می‌شوید، Chromium شما را مطلع می‌کند</translation>
 <translation id="3474745554856756813">‏این کار <ph name="ITEMS_COUNT" /> مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> به سیستم Chromium وارد شوید.</translation>
 <translation id="3497319089134299931">‏با <ph name="SHORTCUT" /> می‌توانید بین نمایه‌های Chromium جابه‌جا شوید</translation>
 <translation id="3509308970982693815">‏لطفاً همه پنجره‌های Chromium را ببندید و دوباره سعی کنید.</translation>
 <translation id="3575459661164320785">‏نرم‌افزار مضری در رایانه‌تان وجود دارد. Chromium می‌تواند آن را بردارد، تنظیمات را بازیابی کند و افزونه‌ها را غیرفعال کند تا عملکرد مرورگرتان دوباره عادی شود.</translation>
-<translation id="3610776674893128619">‏پاک کردن دیسک سخت و نصب کردن Chromium OS</translation>
 <translation id="3639635944603682591">‏داده‌های محصول مرور این کاربر از این دستگاه حذف می‌شود. برای بازیابی داده‌ها، با نام <ph name="USER_EMAIL" /> به سیستم Chromium وارد شوید.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{‏به‌روزرسانی جدیدی برای Chromium در دسترس است و به‌محض راه‌اندازی مجدد اعمال خواهد شد.}=1{‏به‌روزرسانی جدیدی برای Chromium در دسترس است و به‌محض راه‌اندازی مجدد اعمال خواهد شد. پنجره ناشناس بازگشایی نمی‌شود.}one{‏به‌روزرسانی جدیدی برای Chromium در دسترس است و به‌محض راه‌اندازی مجدد اعمال خواهد شد. # پنجره ناشناس بازگشایی نمی‌شود.}other{‏به‌روزرسانی جدیدی برای Chromium در دسترس است و به‌محض راه‌اندازی مجدد اعمال خواهد شد. # پنجره ناشناس بازگشایی نمی‌شود.}}</translation>
 <translation id="3651803019964686660">‏برای ارسال شماره از <ph name="ORIGIN" /> به تلفن Android خود، در هر دو دستگاه به سیستم Chromium وارد شوید.</translation>
@@ -102,7 +105,6 @@
 <translation id="4264410486868823224">‏<ph name="MANAGER" /> لازم می‌داند که شما شرایط خدمات زیر را قبل‌از استفاده از دستگاه بخوانید و بپذیرید. این شرایط بسط داده نمی‌شوند، اصلاح نمی‌شوند، و شرایط Chromium OS را محدود نمی‌کنند.</translation>
 <translation id="4271805377592243930">‏دریافت کمک برای Chromium</translation>
 <translation id="4285930937574705105">‏به دلیل خطای نامشخص نصب ناموفق بود. اگر Chromium در حال اجرا است، لطفاً آن را ببندید و دوباره سعی کنید.</translation>
-<translation id="429583012151745428">نصب درحال انجام است. دستگاه را خاموش نکنید. نصب نباید بیشتر از بیست دقیقه طول بکشد. بعداز نصب، ماشین به‌طور خودکار خاموش می‌شود.</translation>
 <translation id="4407044323746248786">‏درهرصورت از Chromium خارج می‌شوید؟</translation>
 <translation id="4415566066719264597">‏اجازه به Chromium برای اجرا در پس‌زمینه</translation>
 <translation id="4423735387467980091">‏سفارشی کردن و کنترل Chromium</translation>
@@ -132,7 +134,6 @@
 <translation id="5386450000063123300">‏درحال به‌روزرسانی Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">‏مجاز کردن ورود به سیستم Chromium</translation>
 <translation id="5398878173008909840">‏نسخه جدیدی از Chromium موجود است.</translation>
-<translation id="5416696090975899932">‏وقتی نمایشگر داخلی PDF وجود نداشته باشد، Chromium نمی‌تواند پیش‌نمای چاپ را نشان دهد.</translation>
 <translation id="5427571867875391349">‏تنظیم Chromium به عنوان مرورگر پیش‌فرضتان</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5479196819031988440">‏Chromium OS نمی‌تواند این صفحه را باز کند.</translation>
@@ -147,6 +148,7 @@
 <translation id="5820394555380036790">‏سیستم‌عامل Chromium </translation>
 <translation id="5854740544000584380">‏ساخت Chromium OS به‌وسیله <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزار متن‌باز<ph name="END_LINK_CROS_OSS" /> دیگری که <ph name="BEGIN_LINK_LINUX_OSS" />محیط توسعه نرم‌افزار Linux<ph name="END_LINK_LINUX_OSS" /> است، امکان‌پذیر شده است.</translation>
 <translation id="5862307444128926510">‏به Chromium خوش آمدید</translation>
+<translation id="5883558403894052917">‏Chromium متوجه شده است که این موارد حاوی بدافزار هستند:</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ورود به سیستم شبکه</translation>
 <translation id="5987687638152509985">‏به‌روزرسانی Chromium برای شروع همگام‌سازی</translation>
@@ -161,18 +163,11 @@
 <translation id="6129621093834146363">‏<ph name="FILE_NAME" /> خطرناک است، بنابراین Chromium آن را مسدود کرده است.</translation>
 <translation id="6134968993075716475">‏«مرور ایمن» خاموش است. Chromium توصیه می‌کند آن را روشن کنید.</translation>
 <translation id="6145820983052037069">‏می‌توانید در اینجا بین نمایه‌های Chromium جابه‌جا شوید</translation>
-<translation id="61577490437262925">‏<ph name="BEGIN_PARAGRAPH1" />آماده‌ایم Chromium OS را نصب کنیم! اگر ادامه دهید:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />فایل‌ها، داده‌ها، و سیستم‌عامل کنونی پاک خواهد شد.
-          <ph name="LIST_ITEM" />Chromium OS نصب خواهد شد.
-          <ph name="LIST_ITEM" />وقتی نصب تکمیل شود، دستگاهتان خاموش خواهد شد.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />آخرین یادآوری: درصورت نصب کردن، کل دیسک سخت پاک خواهد شد. لطفاً مطمئن شوید همه داده‌های مهمتان را پشتیبان‌گیری کرده باشید.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />وقتی نصب شروع شود، نمی‌توان آن را لغو کرد.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">‏مطمئن شوید در <ph name="TARGET_DEVICE_NAME" /> به سیستم Chromium وارد شده باشید و سپس دوباره ارسال کنید.</translation>
 <translation id="6212496753309875659">‏این رایانه در حال حاضر دارای یک نسخه جدیدتر از Chromium است. درصورتی‌که نرم‌افزار کار نمی‌کند، لطفاً Chromium را حذف نصب کنید و دوباره سعی کنید.</translation>
 <translation id="6219195342503754812">{0,plural, =0{‏Chromium هم‌اکنون راه‌اندازی مجدد می‌شود}=1{‏Chromium ‏۱ ثانیه دیگر راه‌اندازی مجدد می‌شود}one{‏Chromium ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}other{‏Chromium ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}}</translation>
+<translation id="6241367896540709610">‏Chromium برای بارگیری فایل‌ها به اجازه دسترسی به فضای ذخیره‌سازی نیاز دارد</translation>
+<translation id="6245734527075554892">‏نشانی‌های وب را با فهرست سایت‌های ناامنی که در Chromium ذخیره شده است مقایسه می‌کند</translation>
 <translation id="6248213926982192922">‏Chromium  مرورگر پیش‌فرض شود</translation>
 <translation id="6266342355635466082">‏Chromium نمی‌تواند به‌روزرسانی‌ها را بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
 <translation id="6268381023930128611">‏از Chromium خارج می‌شوید؟</translation>
@@ -187,25 +182,25 @@
 <translation id="6434250628340475518">‏سیستم سیستم‌عامل Chromium</translation>
 <translation id="6455857529632101747">‏به نمایه‌های Chromium خوش‌آمدید</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{‏Chromium بعد از ۱ ثانیه بازراه‌اندازی می‌شود}one{‏Chromium بعد از # ثانیه بازراه‌اندازی می‌شود}other{‏Chromium بعد از # ثانیه بازراه‌اندازی می‌شود}}</translation>
-<translation id="646620589868199210">‏آماده برای نصب Chromium OS</translation>
 <translation id="6475912303565314141">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chromium نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="6510925080656968729">‏حذف نصب Chromium </translation>
 <translation id="6542839706527980775">‏هرکدام از نمایه‌ها دارای اطلاعات Chromium مختص خودش است (مثلاً نشانک‌ها، سابقه، گذرواژه‌ها، و غیره)</translation>
 <translation id="6570579332384693436">‏برای رفع خطاهای املائی، Chromium نوشتاری را که در فیلد نوشتار تایپ می‌کنید، برای Google ارسال می‌کند</translation>
 <translation id="6598877126913850652">‏رفتن به تنظیمات اعلان Chromium</translation>
 <translation id="6613594504749178791">‏دفعه بعدی که Chromium را مجدداً راه‌اندازی می‌کنید، این تغییرات اعمال می‌شوند.</translation>
+<translation id="665732753414869868">‏Chromium برای ایجاد نقشه سه‌بعدی از محیط اطراف شما به اجازه دوربین نیاز دارد</translation>
 <translation id="6676384891291319759">دسترسی به اینترنت</translation>
+<translation id="6709350901466051922">‏Chromium برای این سایت به اجازه میکروفون نیاز دارد</translation>
 <translation id="6717134281241384636">‏از نمایهٔ شما نمی‌توان استفاده کرد زیرا دارای نسخه جدیدتری از Chromium است.
 
 برخی از ویژگی‌ها ممکن است موجود نباشند. لطفاً یک فهرست راهنمای نمایه دیگری را مشخص کنید یا از نسخه جدیدتری از Chromium استفاده کنید.</translation>
-<translation id="6734080038664603509">‏به‌روزرسانی &amp;Chromium</translation>
 <translation id="6734291798041940871">‏Chromium از قبل برای همه کاربران این رایانه نصب شده است.</translation>
 <translation id="673636774878526923">‏برای دسترسی به چیزهای Chromium در همه دستگاه‌هایتان، به سیستم وارد شوید، سپس همگام‌سازی را روشن کنید.</translation>
 <translation id="6774082503108938489">‏ولی‌تان «اجازه‌های مربوط به سایت‌ها، برنامه‌ها، و افزونه‌ها» را برای Chromium خاموش کرده است. فعال کردن این <ph name="EXTENSION_TYPE_PARAMETER" /> مجاز نیست.</translation>
-<translation id="6827182711503025204">‏با نصب Chromium OS، همه داده‌های موجود در دستگاه رونویسی خواهد شد.</translation>
 <translation id="6847869444787758381">‏Chromium می‌تواند، اگر گذرواژه‌هایتان در معرض خطر باشد، مطلعتان کند</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">‏Google Pay (در Chromium کپی شد)</translation>
+<translation id="6873893289264747459">‏Chromium متوجه شده است که «<ph name="EXTENSION_NAME" />» حاوی بدافزار است</translation>
 <translation id="6893813176749746474">‏Chromium به‌روز شده است اما حداقل ۳۰ روز از آن استفاده نکرده‌اید.</translation>
 <translation id="691026815377248078">‏Chromium باید برای ادامه مرتبط‌سازی به بلوتوث
 دسترسی داشته باشد. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -214,10 +209,12 @@
 <translation id="6990124437352146030">‏Chromium برای این سایت به مجوز دسترسی به میکروفون نیاز دارد</translation>
 <translation id="705851970750939768">‏به‌روزرسانی Chromium</translation>
 <translation id="7067091210845072982">‏اگر تصویری توضیح مفیدی نداشته باشد، Chromium توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود.</translation>
+<translation id="7147279922647361552">‏سفارشی کردن بعضی‌از مهم‌ترین انتخاب‌های حریم‌خصوصی Chromium</translation>
+<translation id="718435575166326686">‏Chromium برای این سایت به اجازه دوربین نیاز دارد</translation>
 <translation id="7196312274710523067">‏Chromium راه‌اندازی نشد. دوباره امتحان کنید.</translation>
 <translation id="7197677400338048821">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعد از ۲۴ ساعت دوباره امتحان کنید.</translation>
+<translation id="7218568399872925918">‏تا زمانی‌که Chromium بسته نشود، سایت‌هایی که بازدید می‌کنید اطلاعاتتان را به‌خاطر می‌سپارند</translation>
 <translation id="7223968959479464213">‏مدیر فعالیت‌ها - Chromium</translation>
-<translation id="731644333568559921">‏به‌روزرسانی &amp;سیستم عامل Chromium</translation>
 <translation id="731795002583552498">‏در حال به‌روزرسانی Chromium</translation>
 <translation id="7318036098707714271">‏فایل اولویت‌های شما خراب یا نامعتبر است. 
 Chromium قادر به بازیابی تنظیمات شما نیست.</translation>
@@ -236,10 +233,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
       تنظیمات مرورگر Chromium<ph name="LINK_END" /> آن را کنید</translation>
 <translation id="761356813943268536">‏Chromium درحال استفاده از دوربین و میکروفون شما است.</translation>
 <translation id="7617377681829253106">‏Chromium اکنون بهتر شده است</translation>
-<translation id="7627575518938382525">‏<ph name="BEGIN_PARAGRAPH1" />قبل‌از شروع کار، لطفاً مطمئن شوید که نسخه پشتیبان به‌روزی از داده‌هایتان داشته باشید. با نصب Chromium OS، همه داده‌های موجود در دیسک سخت رونویسی خواهد شد.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google مسئولیت ازدست رفتن داده‌ها را برعهده نمی‌گیرد و تضمین نمی‌کند که Chromium OS در مدل‌های تأییدنشده کار کند. لطفاً برای دریافت اطلاعات بیشتر درباره مدل‌های تأییدشده، به [TBD] مراجعه کنید.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />درباره نصب Chromium OS و پاک شدن داده‌ها بیشتر بدانید: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />اگر آماده‌اید ادامه دهید، روی «نصب Chromium OS» کلیک کنید تا تنها در چند مرحله ساده درطول فرایند نصب شما را راهنمایی کنیم. قبل‌از اینکه تغییری در رایانه‌تان ایجاد کنیم، فرصت دیگری برای تأیید خواهید داشت.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">‏Chromium مرورگر پیش‌فرض شما نیست</translation>
 <translation id="7689606757190482937">‏Chromium را در همه دستگاه‌هایتان همگام‌سازی و شخصی‌سازی کنید</translation>
 <translation id="7729447699958282447">‏Chromium قادر به همگام‌سازی داده‌های شما نبود زیرا همگام‌سازی برای دامنه شما قابل دسترسی نیست.</translation>
@@ -253,6 +246,8 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7937630085815544518">‏شما بعنوان <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم Chromium شده‌اید. لطفاً برای ورود به سیستم مجدد از همان حساب استفاده کنید.</translation>
 <translation id="7975919845073681630">‏این نصب ثانویه Chromium است و نمی‌تواند مرورگر پیش‌فرضتان شود.</translation>
 <translation id="8013436988911883588">‏وقتی Chromium دسترسی داشته باشد، وب‌سایت‌ها می‌توانند مجوز دسترسی درخواست کنند.</translation>
+<translation id="8045118833343856403">‏حساب‌های زیر به سیستم هیچ‌کدام از نمایه‌های Chromium وارد نشده‌اند. اگر می‌خواهید از حسابی در نمایه‌ای دیگر استفاده کنید،ابتدا آن نمایه را بردارید.</translation>
+<translation id="8105840573057009683">‏Chromium برای این سایت به اجازه مکان نیاز دارد</translation>
 <translation id="81770708095080097">‏این فایل خطرناک است، بنابراین Chromium آن را مسدود کرده است.</translation>
 <translation id="8248265253516264921">‏اگر تصویری توضیح مفیدی نداشته باشد، Chromium توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود. هروقت خواستید می‌توانید این گزینه را در تنظیمات خاموش کنید.</translation>
 <translation id="8266560134891435528">‏چون به سیستم وارد نشده‌اید، Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند</translation>
@@ -271,6 +266,8 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8621669128220841554">‏به دلیل خطای نامشخص، نصب ناموفق بود. لطفاً دوباره Chromium را بارگیری کنید.</translation>
 <translation id="8697124171261953979">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chromium یا جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="8704119203788522458">‏این Chromium شماست</translation>
+<translation id="8713679423359107094">‏با بستن همه پنجره‌های Chromium، کوکی‌ها و داده‌های سایت به‌طور خودکار پاک می‌شوند.</translation>
+<translation id="8796443464227412154">‏وقتی Chromium را می‌بندید، <ph name="BEGIN_BOLD" />از سیستم اکثر سایت‌ها خارج می‌شوید<ph name="END_BOLD" />. اگر همگام‌سازی خاموش باشد، از <ph name="BEGIN_BOLD" />از سیستم Chromium و سرویس‌های Google نیز خارج می‌شوید<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">‏Chromium به مجوز دسترسی به دوربین و میکروفون برای این سایت نیاز دارد</translation>
 <translation id="8803635938069941624">‏شرایط Chromium OS</translation>
 <translation id="8821041990367117597">‏Chromium قادر به همگام‌سازی داده‌های شما نبود زیرا جزئیات ورود به حساب شما به‌روز نیست.</translation>

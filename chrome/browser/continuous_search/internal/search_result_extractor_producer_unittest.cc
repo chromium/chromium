@@ -36,8 +36,7 @@ mojom::CategoryResultsPtr GenerateValidResults(const GURL& document_url) {
   expected_results->category_type = mojom::Category::kOrganic;
   {
     mojom::ResultGroupPtr result_group = mojom::ResultGroup::New();
-    result_group->label = "Group 1";
-    result_group->is_ad_group = false;
+    result_group->type = mojom::ResultType::kSearchResults;
     {
       mojom::SearchResultPtr result = mojom::SearchResult::New();
       result->link = GURL("https://www.bar.com/");
@@ -68,8 +67,7 @@ class MockSearchResultExtractorProducerInterface
                const base::android::JavaRef<jobject>& url,
                const base::android::JavaRef<jstring>& query,
                jint result_type,
-               const base::android::JavaRef<jobjectArray>& group_label,
-               const base::android::JavaRef<jbooleanArray>& is_ad_group,
+               const base::android::JavaRef<jintArray>& group_type,
                const base::android::JavaRef<jintArray>& group_size,
                const base::android::JavaRef<jobjectArray>& titles,
                const base::android::JavaRef<jobjectArray>& urls),
@@ -180,8 +178,7 @@ TEST_F(SearchResultExtractorProducerRenderViewHostTest, FetchSuccess) {
                   ::testing::_, ::testing::_, EqualsJavaGURL(GURL(kUrl)),
                   EqualsJavaString(kQuery),
                   static_cast<jint>(PageCategory::kOrganicSrp),
-                  EqualsJavaStringArray(std::vector<std::string>({"Group 1"})),
-                  EqualsJavaBooleanArray(std::vector<bool>({false})),
+                  EqualsJavaIntArray(std::vector<int>({0})),
                   EqualsJavaIntArray(std::vector<int>({1})),
                   EqualsJavaStringArray(std::vector<std::string>({"Bar"})),
                   EqualsJavaGURLArray(

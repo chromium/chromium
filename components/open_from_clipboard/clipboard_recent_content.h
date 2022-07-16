@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
@@ -24,6 +23,10 @@ enum class ClipboardContentType { URL, Text, Image };
 class ClipboardRecentContent {
  public:
   ClipboardRecentContent();
+
+  ClipboardRecentContent(const ClipboardRecentContent&) = delete;
+  ClipboardRecentContent& operator=(const ClipboardRecentContent&) = delete;
+
   virtual ~ClipboardRecentContent();
 
   // Returns the global instance of the ClipboardRecentContent singleton. This
@@ -93,9 +96,6 @@ class ClipboardRecentContent {
   // GetRecentURLFromClipboard() should never return a URL from a clipboard
   // older than this.
   static base::TimeDelta MaximumAgeOfClipboard();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClipboardRecentContent);
 };
 
 #endif  // COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_H_

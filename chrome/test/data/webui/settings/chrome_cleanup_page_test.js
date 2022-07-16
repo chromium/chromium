@@ -6,67 +6,8 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW, ChromeCleanupIdleReason,ChromeCleanupProxyImpl} from 'chrome://settings/lazy_load.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestChromeCleanupProxy} from './test_chrome_cleanup_proxy.js';
 // clang-format on
-
-/** @implements {ChromeCleanupProxy} */
-class TestChromeCleanupProxy extends TestBrowserProxy {
-  constructor() {
-    super([
-      'registerChromeCleanerObserver',
-      'restartComputer',
-      'startCleanup',
-      'startScanning',
-      'notifyShowDetails',
-      'notifyLearnMoreClicked',
-      'getMoreItemsPluralString',
-      'getItemsToRemovePluralString',
-    ]);
-  }
-
-  /** @override */
-  registerChromeCleanerObserver() {
-    this.methodCalled('registerChromeCleanerObserver');
-  }
-
-  /** @override */
-  restartComputer() {
-    this.methodCalled('restartComputer');
-  }
-
-  /** @override */
-  startCleanup(logsUploadEnabled) {
-    this.methodCalled('startCleanup', logsUploadEnabled);
-  }
-
-  /** @override */
-  startScanning(logsUploadEnabled, notificationEnabled) {
-    this.methodCalled(
-        'startScanning', [logsUploadEnabled, notificationEnabled]);
-  }
-
-  /** @override */
-  notifyShowDetails(enabled) {
-    this.methodCalled('notifyShowDetails', enabled);
-  }
-
-  /** @override */
-  notifyLearnMoreClicked() {
-    this.methodCalled('notifyLearnMoreClicked');
-  }
-
-  /** @override */
-  getMoreItemsPluralString(numHiddenItems) {
-    this.methodCalled('getMoreItemsPluralString', numHiddenItems);
-    return Promise.resolve('');
-  }
-
-  /** @override */
-  getItemsToRemovePluralString(numItems) {
-    this.methodCalled('getItemsToRemovePluralString', numItems);
-    return Promise.resolve('');
-  }
-}
 
 let chromeCleanupPage = null;
 
@@ -271,7 +212,7 @@ function testPartnerLogoShown(onInfected, isPoweredByPartner) {
 suite('ChromeCleanupHandler', function() {
   setup(function() {
     chromeCleanupProxy = new TestChromeCleanupProxy();
-    ChromeCleanupProxyImpl.instance_ = chromeCleanupProxy;
+    ChromeCleanupProxyImpl.setInstance(chromeCleanupProxy);
 
     PolymerTest.clearBody();
 
@@ -367,47 +308,26 @@ suite('ChromeCleanupHandler', function() {
     assertFalse(!!actionButton);
   });
 
-  /**
-   * @param {boolean} clickNotification Whether to test the case
-   *     where the user clicks on the completion notification option.
-   * @return {!Promise}
-   */
-  async function startScanFromIdle(clickNotification) {
+  test('startScanFromIdle', function() {
     updateReportingEnabledPref(false);
     webUIListenerCallback(
         'chrome-cleanup-on-idle', ChromeCleanupIdleReason.INITIAL);
     flush();
 
-    if (clickNotification) {
-      const notificationControl = chromeCleanupPage.shadowRoot.querySelector(
-          '#chromeCleanupShowNotificationControl');
-      assertTrue(!!notificationControl);
-      notificationControl.$.checkbox.click();
-    }
-
     const actionButton =
         chromeCleanupPage.shadowRoot.querySelector('#action-button');
     assertTrue(!!actionButton);
     actionButton.click();
-    const [logsUploadEnabled, notificationEnabled] =
-        await chromeCleanupProxy.whenCalled('startScanning');
-    assertFalse(logsUploadEnabled);
-    // Notification is disabled by default, hence a click enables it.
-    assertEquals(clickNotification, notificationEnabled);
-    webUIListenerCallback('chrome-cleanup-on-scanning', false);
-    flush();
+    return chromeCleanupProxy.whenCalled('startScanning')
+        .then(function(logsUploadEnabled) {
+          assertFalse(logsUploadEnabled);
+          webUIListenerCallback('chrome-cleanup-on-scanning', false);
+          flush();
 
-    const spinner =
-        chromeCleanupPage.shadowRoot.querySelector('#waiting-spinner');
-    assertTrue(spinner.active);
-  }
-
-  test('startScanFromIdle_NotificationDisabled', function() {
-    return startScanFromIdle(false);
-  });
-
-  test('startScanFromIdle_NotificationEnabled', function() {
-    return startScanFromIdle(true);
+          const spinner =
+              chromeCleanupPage.shadowRoot.querySelector('#waiting-spinner');
+          assertTrue(spinner.active);
+        });
   });
 
   test('scanFoundNothing', function() {

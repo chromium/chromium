@@ -16,12 +16,21 @@ struct Memory {
   url.mojom.Url item_url;
   // The URL of the cover of the Memory.
   url.mojom.Url cover_url;
-  // Whether the memory has been viewed already.
-  bool viewed;
 };
 
 // Browser-side handler for requests from NTP Module UI.
 interface PhotosHandler {
   // Fetches memories from Google Photos API.
   GetMemories() => (array<Memory> memories);
+  // Dismissed module for fixed amount of time.
+  DismissModule();
+  // Restores the module immediately.
+  RestoreModule();
+  // Returns whether to show opt-in surface in the module.
+  ShouldShowOptInScreen() => (bool show_opt_in_screen);
+  // Stores in profile prefs whether the user has opt-in
+  // see the module content.
+  OnUserOptIn(bool accept);
+  // Stores the last time the user opened a memory.
+  OnMemoryOpen();
 };

@@ -9,7 +9,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/ash/policy/login/login_policy_test_base.h"
 #include "chrome/browser/browser_process.h"
@@ -28,7 +28,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
@@ -37,7 +37,7 @@ namespace policy {
 
 IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, PRE_AllowedLanguages) {
   SkipToLoginScreen();
-  LogIn(kAccountId, kAccountPassword, kEmptyServices);
+  LogIn();
 
   Profile* const profile = GetProfileForActiveUser();
   PrefService* prefs = profile->GetPrefs();
@@ -50,14 +50,15 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, PRE_AllowedLanguages) {
   std::unique_ptr<base::DictionaryValue> policy =
       std::make_unique<base::DictionaryValue>();
   base::ListValue allowed_languages;
-  allowed_languages.AppendString("fr");
+  allowed_languages.Append("fr");
   policy->SetKey(key::kAllowedLanguages, std::move(allowed_languages));
+
   user_policy_helper()->SetPolicyAndWait(*policy, base::DictionaryValue(),
                                          profile);
 }
 
 IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedLanguages) {
-  LogIn(kAccountId, kAccountPassword, kEmptyServices);
+  LogIn();
 
   Profile* const profile = GetProfileForActiveUser();
   const PrefService* prefs = profile->GetPrefs();
@@ -66,7 +67,8 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedLanguages) {
   // (see |GetMandatoryPoliciesValue|)
   Browser* browser = CreateBrowser(profile);
   EXPECT_EQ("fr", prefs->GetString(language::prefs::kApplicationLocale));
-  ui_test_utils::NavigateToURL(browser, GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser, GURL(chrome::kChromeUINewTabURL)));
   std::u16string french_title = l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
   std::u16string title;
   EXPECT_TRUE(ui_test_utils::GetCurrentTabTitle(browser, &title));
@@ -87,14 +89,13 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedLanguages) {
 
 IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
   SkipToLoginScreen();
-  LogIn(kAccountId, kAccountPassword, kEmptyServices);
+  LogIn();
 
   Profile* const profile = GetProfileForActiveUser();
 
-  chromeos::input_method::InputMethodManager* imm =
-      chromeos::input_method::InputMethodManager::Get();
+  auto* imm = ash::input_method::InputMethodManager::Get();
   ASSERT_TRUE(imm);
-  scoped_refptr<chromeos::input_method::InputMethodManager::State> ime_state =
+  scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
       imm->GetActiveIMEState();
   ASSERT_TRUE(ime_state.get());
 
@@ -105,19 +106,19 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
   EXPECT_TRUE(imm->MigrateInputMethods(&input_methods));
 
   // No restrictions and current input method should be "xkb:us::eng" (default).
-  EXPECT_EQ(0U, ime_state->GetAllowedInputMethods().size());
+  EXPECT_EQ(0U, ime_state->GetAllowedInputMethodIds().size());
   EXPECT_EQ(input_methods[0], ime_state->GetCurrentInputMethod().id());
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[1]));
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[2]));
 
-  // Set policy to only allow "xkb:fr::fra", "xkb:de::ger" an an invalid value
+  // Set policy to only allow "xkb:fr::fra", "xkb:de::ger" and an invalid value
   // as input method.
   std::unique_ptr<base::DictionaryValue> policy =
       std::make_unique<base::DictionaryValue>();
   base::ListValue allowed_input_methods;
-  allowed_input_methods.AppendString("xkb:fr::fra");
-  allowed_input_methods.AppendString("xkb:de::ger");
-  allowed_input_methods.AppendString("invalid_value_will_be_ignored");
+  allowed_input_methods.Append("xkb:fr::fra");
+  allowed_input_methods.Append("xkb:de::ger");
+  allowed_input_methods.Append("invalid_value_will_be_ignored");
   policy->SetKey(key::kAllowedInputMethods, std::move(allowed_input_methods));
   user_policy_helper()->SetPolicyAndWait(*policy, base::DictionaryValue(),
                                          profile);
@@ -125,8 +126,8 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
   // Only "xkb:fr::fra", "xkb:de::ger" should be allowed, current input method
   // should be "xkb:fr::fra", enabling "xkb:us::eng" should not be possible,
   // enabling "xkb:de::ger" should be possible.
-  EXPECT_EQ(2U, ime_state->GetAllowedInputMethods().size());
-  EXPECT_EQ(2U, ime_state->GetActiveInputMethods()->size());
+  EXPECT_EQ(2U, ime_state->GetAllowedInputMethodIds().size());
+  EXPECT_EQ(2U, ime_state->GetEnabledInputMethods()->size());
   EXPECT_EQ(input_methods[1], ime_state->GetCurrentInputMethod().id());
   EXPECT_FALSE(ime_state->EnableInputMethod(input_methods[0]));
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[2]));
@@ -135,14 +136,14 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
   std::unique_ptr<base::DictionaryValue> policy_invalid =
       std::make_unique<base::DictionaryValue>();
   base::ListValue invalid_input_methods;
-  invalid_input_methods.AppendString("invalid_value_will_be_ignored");
+  invalid_input_methods.Append("invalid_value_will_be_ignored");
   policy_invalid->SetKey(key::kAllowedInputMethods,
                          std::move(invalid_input_methods));
   user_policy_helper()->SetPolicyAndWait(*policy_invalid,
                                          base::DictionaryValue(), profile);
 
   // No restrictions and current input method should still be "xkb:fr::fra".
-  EXPECT_EQ(0U, ime_state->GetAllowedInputMethods().size());
+  EXPECT_EQ(0U, ime_state->GetAllowedInputMethodIds().size());
   EXPECT_EQ(input_methods[1], ime_state->GetCurrentInputMethod().id());
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[0]));
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[2]));
@@ -152,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
                                          base::DictionaryValue(), profile);
 
   // No restrictions and current input method should still be "xkb:fr::fra".
-  EXPECT_EQ(0U, ime_state->GetAllowedInputMethods().size());
+  EXPECT_EQ(0U, ime_state->GetAllowedInputMethodIds().size());
   EXPECT_EQ(input_methods[1], ime_state->GetCurrentInputMethod().id());
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[0]));
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[2]));
@@ -178,7 +179,7 @@ class StartupBrowserWindowLaunchSuppressedTest : public LoginPolicyTestBase {
 
   void CheckLaunchedBrowserCount(unsigned int count) {
     SkipToLoginScreen();
-    LogIn(kAccountId, kAccountPassword, kEmptyServices);
+    LogIn();
 
     Profile* const profile = GetProfileForActiveUser();
 
@@ -215,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(PrimaryUserPoliciesProxiedTest,
                        AvailableInLocalStateEarly) {
   PolicyService* const device_wide_policy_service =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetPolicyService();
 
   // Sanity check default state without a policy active.
@@ -236,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(PrimaryUserPoliciesProxiedTest,
   SkipToLoginScreen();
 
   ProfileWaiter profile_waiter;
-  TriggerLogIn(kAccountId, kAccountPassword, kEmptyServices);
+  TriggerLogIn();
   profile_waiter.WaitForProfileAdded();
 
   const base::Value* policy_value =
@@ -253,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(PrimaryUserPoliciesProxiedTest,
   // Make sure that session startup finishes before letting chrome exit.
   // Rationale: We've seen CHECK-failures when exiting chrome right after
   // a new profile is created, see e.g. https://crbug.com/1002066.
-  chromeos::test::WaitForPrimaryUserSessionStart();
+  ash::test::WaitForPrimaryUserSessionStart();
 }
 
 }  // namespace policy

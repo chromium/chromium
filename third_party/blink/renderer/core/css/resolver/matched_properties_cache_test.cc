@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -224,6 +225,24 @@ TEST_F(MatchedPropertiesCacheTest, DirectionDependency) {
   auto style_b = CreateStyle();
   parent_a->SetDirection(TextDirection::kLtr);
   parent_b->SetDirection(TextDirection::kRtl);
+
+  TestKey key("display:block", 1, GetDocument());
+
+  cache.Add(key, *style_a, *parent_a);
+  EXPECT_TRUE(cache.Find(key, *style_a, *parent_a));
+  EXPECT_TRUE(cache.Find(key, *style_b, *parent_a));
+  EXPECT_FALSE(cache.Find(key, *style_b, *parent_b));
+}
+
+TEST_F(MatchedPropertiesCacheTest, ColorSchemeDependency) {
+  TestCache cache(GetDocument());
+
+  auto parent_a = CreateStyle();
+  auto parent_b = CreateStyle();
+  auto style_a = CreateStyle();
+  auto style_b = CreateStyle();
+  parent_a->SetDarkColorScheme(false);
+  parent_b->SetDarkColorScheme(true);
 
   TestKey key("display:block", 1, GetDocument());
 

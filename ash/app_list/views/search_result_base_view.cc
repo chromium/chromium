@@ -85,9 +85,6 @@ std::u16string SearchResultBaseView::ComputeAccessibleName() const {
   if (!result())
     return std::u16string();
 
-  if (!result()->accessible_name().empty())
-    return result()->accessible_name();
-
   std::u16string accessible_name = result()->title();
   if (!result()->title().empty() && !result()->details().empty())
     accessible_name += u", ";

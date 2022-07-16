@@ -6,12 +6,18 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_STORAGE_KEY_STORAGE_KEY_MOJOM_TRAITS_H_
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/storage_key/storage_key.mojom.h"
 
 namespace base {
 class UnguessableToken;
 }  // namespace base
+
+namespace net {
+class SchemefulSite;
+}  // namespace net
 
 namespace url {
 class Origin;
@@ -25,6 +31,11 @@ class BLINK_COMMON_EXPORT
  public:
   static const url::Origin& origin(const blink::StorageKey& key) {
     return key.origin();
+  }
+
+  static const net::SchemefulSite& top_level_site(
+      const blink::StorageKey& key) {
+    return key.top_level_site();
   }
 
   static const absl::optional<base::UnguessableToken>& nonce(

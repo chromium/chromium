@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/components/url_handler_manager.h"
+#include "chrome/browser/web_applications/url_handler_manager.h"
 
 #include <utility>
 

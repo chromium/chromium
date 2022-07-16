@@ -34,6 +34,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OriginPolicyFetcher {
       mojom::URLLoaderFactory* factory,
       mojom::OriginPolicyManager::RetrieveOriginPolicyCallback callback);
 
+  OriginPolicyFetcher(const OriginPolicyFetcher&) = delete;
+  OriginPolicyFetcher& operator=(const OriginPolicyFetcher&) = delete;
+
   ~OriginPolicyFetcher();
 
   static GURL GetPolicyURL(const url::Origin& origin);
@@ -59,8 +62,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OriginPolicyFetcher {
 
   // Called back with policy fetch result.
   mojom::OriginPolicyManager::RetrieveOriginPolicyCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginPolicyFetcher);
 };
 
 }  // namespace network

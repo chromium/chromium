@@ -259,7 +259,7 @@ export class FileTapHandler {
 /**
  * The minimum duration of a tap to be recognized as long press and long tap.
  * This should be consistent with the Views of Android.
- * https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/view/ViewConfiguration.java
+ * https://android.googlesource.com/platform/frameworks/base/+/HEAD/core/java/android/view/ViewConfiguration.java
  * Also this should also be consistent with Chrome's behavior for issuing
  * drag-and-drop events by touchscreen.
  * @type {number}

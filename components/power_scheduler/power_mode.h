@@ -49,6 +49,10 @@ enum class PowerMode {
   // takes a long time to produce a new frame.
   kMainThreadAnimation,
 
+  // The process is executing a script at the browser's request. Mainly relevant
+  // for background work in WebView/WebLayer.
+  kScriptExecution,
+
   // A page or tab associated with the process is loading.
   kLoading,
 

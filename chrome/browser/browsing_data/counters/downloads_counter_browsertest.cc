@@ -128,7 +128,8 @@ class DownloadsCounterTest : public InProcessBrowserTest,
         GURL(), GURL(), GURL(), url::Origin(), mime_type, std::string(), time_,
         time_, std::string(), std::string(), 1, 1, std::string(), state, danger,
         reason, false, time_, false,
-        std::vector<download::DownloadItem::ReceivedSlice>());
+        std::vector<download::DownloadItem::ReceivedSlice>(),
+        download::DownloadItemRerouteInfo());
 
     return guid;
   }
@@ -151,9 +152,7 @@ class DownloadsCounterTest : public InProcessBrowserTest,
         browsing_data::prefs::kDeleteTimePeriod, static_cast<int>(period));
   }
 
-  void RevertTimeInHours(int days) {
-    time_ -= base::TimeDelta::FromHours(days);
-  }
+  void RevertTimeInHours(int days) { time_ -= base::Hours(days); }
 
   // Waiting for downloads to be stored. ---------------------------------------
 

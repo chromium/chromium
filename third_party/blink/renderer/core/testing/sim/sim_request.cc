@@ -20,6 +20,7 @@ SimRequestBase::SimRequestBase(KURL url,
       redirect_url_(params.redirect_url),
       mime_type_(std::move(mime_type)),
       referrer_(params.referrer),
+      requestor_origin_(params.requestor_origin),
       start_immediately_(start_immediately),
       started_(false),
       client_(nullptr),
@@ -82,7 +83,7 @@ void SimRequestBase::WriteInternal(base::span<const char> data) {
   if (navigation_body_loader_)
     navigation_body_loader_->Write(data.data(), data.size());
   else
-    client_->DidReceiveData(data.data(), data.size());
+    client_->DidReceiveData(data.data(), base::checked_cast<int>(data.size()));
 }
 
 void SimRequestBase::Finish(bool body_loader_finished) {

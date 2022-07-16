@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
@@ -10,11 +11,10 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash {
 namespace {
@@ -30,7 +30,7 @@ class LockScreenBaseTest : public LoginManagerTest {
 
   void SetUpOnMainThread() override {
     LoginManagerTest::SetUpOnMainThread();
-    chromeos::input_method::InputMethodManager::Get()->MigrateInputMethods(
+    input_method::InputMethodManager::Get()->MigrateInputMethods(
         &user_input_methods_);
   }
 
@@ -147,18 +147,18 @@ IN_PROC_BROWSER_TEST_F(LockScreenFilterInputTest, Basic) {
   // lock_screen_utils::SetUserInputMethod
   user_ime_state->ChangeInputMethod(valid_lock_screen_method_, false);
 
-  EXPECT_EQ(user_ime_state->GetNumActiveInputMethods(), 3u);
+  EXPECT_EQ(user_ime_state->GetNumEnabledInputMethods(), 3u);
 
   ScreenLockerTester locker_tester;
   locker_tester.Lock();
   auto lock_screen_ime_state = input_manager->GetActiveIMEState();
   EXPECT_NE(user_ime_state, lock_screen_ime_state);
   // Not valid method should be filtered out.
-  EXPECT_EQ(lock_screen_ime_state->GetNumActiveInputMethods(), 2u);
+  EXPECT_EQ(lock_screen_ime_state->GetNumEnabledInputMethods(), 2u);
 
-  EXPECT_TRUE(base::Contains(lock_screen_ime_state->GetActiveInputMethodIds(),
+  EXPECT_TRUE(base::Contains(lock_screen_ime_state->GetEnabledInputMethodIds(),
                              valid_lock_screen_method_));
-  EXPECT_FALSE(base::Contains(lock_screen_ime_state->GetActiveInputMethodIds(),
+  EXPECT_FALSE(base::Contains(lock_screen_ime_state->GetEnabledInputMethodIds(),
                               not_valid_lock_screen_method_));
 
   // Check that input methods are restored in the session.
@@ -166,10 +166,10 @@ IN_PROC_BROWSER_TEST_F(LockScreenFilterInputTest, Basic) {
   locker_tester.WaitForUnlock();
   EXPECT_EQ(input_manager->GetActiveIMEState(), user_ime_state);
 
-  EXPECT_EQ(user_ime_state->GetNumActiveInputMethods(), 3u);
-  EXPECT_TRUE(base::Contains(user_ime_state->GetActiveInputMethodIds(),
+  EXPECT_EQ(user_ime_state->GetNumEnabledInputMethods(), 3u);
+  EXPECT_TRUE(base::Contains(user_ime_state->GetEnabledInputMethodIds(),
                              valid_lock_screen_method_));
-  EXPECT_TRUE(base::Contains(user_ime_state->GetActiveInputMethodIds(),
+  EXPECT_TRUE(base::Contains(user_ime_state->GetEnabledInputMethodIds(),
                              not_valid_lock_screen_method_));
 }
 
@@ -193,9 +193,9 @@ class LockScreenDevicePolicyInputsTest : public LockScreenBaseTest {
     proto.mutable_login_screen_input_methods()->add_login_screen_input_methods(
         allowed_input_method.front());
     policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
-        {chromeos::kDeviceLoginScreenInputMethods});
+        {kDeviceLoginScreenInputMethods});
 
-    chromeos::input_method::InputMethodManager::Get()->MigrateInputMethods(
+    input_method::InputMethodManager::Get()->MigrateInputMethods(
         &allowed_input_method);
   }
 
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(LockScreenDevicePolicyInputsTest, PolicyNotHonored) {
   input_method::InputMethodManager* input_manager =
       input_method::InputMethodManager::Get();
   // Check that policy applies on the login screen.
-  EXPECT_EQ(input_manager->GetActiveIMEState()->GetActiveInputMethodIds(),
+  EXPECT_EQ(input_manager->GetActiveIMEState()->GetEnabledInputMethodIds(),
             allowed_input_method);
 
   LoginUser(test_account_id);
@@ -226,11 +226,12 @@ IN_PROC_BROWSER_TEST_F(LockScreenDevicePolicyInputsTest, PolicyNotHonored) {
   locker_tester.Lock();
 
   // Inputs should stay the same as inside the session.
-  EXPECT_EQ(input_manager->GetActiveIMEState()->GetActiveInputMethodIds(),
-            user_ime_state->GetActiveInputMethodIds());
+  EXPECT_EQ(input_manager->GetActiveIMEState()->GetEnabledInputMethodIds(),
+            user_ime_state->GetEnabledInputMethodIds());
 
-  EXPECT_EQ(input_manager->GetActiveIMEState()->GetAllowedInputMethods().size(),
-            0u);
+  EXPECT_EQ(
+      input_manager->GetActiveIMEState()->GetAllowedInputMethodIds().size(),
+      0u);
 }
 
 }  // namespace

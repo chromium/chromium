@@ -35,24 +35,22 @@ inline NET_EXPORT_PRIVATE quic::ParsedQuicVersionVector ObsoleteQuicVersions() {
 }
 
 // When a connection is idle for 30 seconds it will be closed.
-constexpr base::TimeDelta kIdleConnectionTimeout =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kIdleConnectionTimeout = base::Seconds(30);
 
 // Sessions can migrate if they have been idle for less than this period.
 constexpr base::TimeDelta kDefaultIdleSessionMigrationPeriod =
-    base::TimeDelta::FromSeconds(30);
+    base::Seconds(30);
 
 // The default maximum time allowed to have no retransmittable packets on the
 // wire (after sending the first retransmittable packet) if
 // |migrate_session_early_v2_| is true. PING frames will be sent as needed to
 // enforce this.
 constexpr base::TimeDelta kDefaultRetransmittableOnWireTimeout =
-    base::TimeDelta::FromMilliseconds(200);
+    base::Milliseconds(200);
 
 // The default maximum time QUIC session could be on non-default network before
 // migrate back to default network.
-constexpr base::TimeDelta kMaxTimeOnNonDefaultNetwork =
-    base::TimeDelta::FromSeconds(128);
+constexpr base::TimeDelta kMaxTimeOnNonDefaultNetwork = base::Seconds(128);
 
 // The default maximum number of migrations to non default network on write
 // error per network.
@@ -110,8 +108,7 @@ struct NET_EXPORT QuicParams {
   base::TimeDelta idle_connection_timeout = kIdleConnectionTimeout;
   // Specifies the reduced ping timeout subsequent connections should use when
   // a connection was timed out with open streams.
-  base::TimeDelta reduced_ping_timeout =
-      base::TimeDelta::FromSeconds(quic::kPingTimeoutSecs);
+  base::TimeDelta reduced_ping_timeout = base::Seconds(quic::kPingTimeoutSecs);
   // Maximum time that a session can have no retransmittable packets on the
   // wire. Set to zero if not specified and no retransmittable PING will be
   // sent to peer when the wire has no retransmittable packets.
@@ -119,10 +116,10 @@ struct NET_EXPORT QuicParams {
   // Maximum time the session can be alive before crypto handshake is
   // finished.
   base::TimeDelta max_time_before_crypto_handshake =
-      base::TimeDelta::FromSeconds(quic::kMaxTimeForCryptoHandshakeSecs);
+      base::Seconds(quic::kMaxTimeForCryptoHandshakeSecs);
   // Maximum idle time before the crypto handshake has completed.
   base::TimeDelta max_idle_time_before_crypto_handshake =
-      base::TimeDelta::FromSeconds(quic::kInitialIdleTimeoutSecs);
+      base::Seconds(quic::kInitialIdleTimeoutSecs);
   // If true, connection migration v2 will be used to migrate existing
   // sessions to network when the platform indicates that the default network
   // is changing.
@@ -176,7 +173,7 @@ struct NET_EXPORT QuicParams {
   // smoothed rtt is present.
   base::TimeDelta initial_rtt_for_handshake;
   // If true, QUIC with TLS will not try 0-RTT connection.
-  bool disable_tls_zero_rtt = true;
+  bool disable_tls_zero_rtt = false;
   // If true, gQUIC requests will always require confirmation.
   bool disable_gquic_zero_rtt = false;
   // Network Service Type of the socket for iOS. Default is NET_SERVICE_TYPE_BE

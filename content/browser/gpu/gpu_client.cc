@@ -8,7 +8,6 @@
 #include "content/common/child_process_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_features.h"
 
 namespace content {
 
@@ -18,9 +17,7 @@ std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter> CreateGpuClient(
   const int client_id = ChildProcessHostImpl::GenerateChildProcessUniqueId();
   const uint64_t client_tracing_id =
       ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(client_id);
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? GetUIThreadTaskRunner({})
-                         : GetIOThreadTaskRunner({});
+  auto task_runner = GetUIThreadTaskRunner({});
   std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter> gpu_client(
       new viz::GpuClient(
           std::make_unique<BrowserGpuClientDelegate>(), client_id,

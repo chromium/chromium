@@ -29,10 +29,9 @@ SubmittableExecutor::~SubmittableExecutor() {
   // Block until all pending tasks are finished.
   last_task_completed_.Wait();
 
-#if DCHECK_IS_ON()
+  // Grab the lock to ensure that RunTask() has returned.
   base::AutoLock al(lock_);
-  DCHECK_EQ(num_incomplete_tasks_, 0);
-#endif  // DCHECK_IS_ON()
+  CHECK_EQ(num_incomplete_tasks_, 0);
 }
 
 // Once called, this method will prevent any future calls to Submit() or
@@ -41,12 +40,6 @@ SubmittableExecutor::~SubmittableExecutor() {
 void SubmittableExecutor::Shutdown() {
   base::AutoLock al(lock_);
   is_shut_down_ = true;
-}
-
-int SubmittableExecutor::GetTid(int index) const {
-  // SubmittableExecutor does not own a thread pool directly nor manages
-  // threads, thus cannot support this debug feature.
-  return 0;
 }
 
 // Posts the given |runnable| and returns true immediately. If Shutdown() has
@@ -95,7 +88,7 @@ void SubmittableExecutor::RunTask(Runnable&& runnable) {
   }
 
   base::AutoLock al(lock_);
-  DCHECK_GE(num_incomplete_tasks_, 1);
+  CHECK_GE(num_incomplete_tasks_, 1);
   if (--num_incomplete_tasks_ == 0 && is_shut_down_)
     last_task_completed_.Signal();
 }

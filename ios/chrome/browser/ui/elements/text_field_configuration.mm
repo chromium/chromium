@@ -13,12 +13,15 @@
 - (instancetype)initWithText:(NSString*)text
                  placeholder:(NSString*)placeholder
      accessibilityIdentifier:(NSString*)accessibilityIdentifier
+      autocapitalizationType:
+          (UITextAutocapitalizationType)autocapitalizationType
              secureTextEntry:(BOOL)secureTextEntry {
   self = [super init];
   if (self) {
     _text = [text copy];
     _placeholder = [placeholder copy];
     _accessibilityIdentifier = [accessibilityIdentifier copy];
+    _autocapitalizationType = autocapitalizationType;
     _secureTextEntry = secureTextEntry;
   }
   return self;

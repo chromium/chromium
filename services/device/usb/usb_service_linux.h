@@ -12,7 +12,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "services/device/usb/usb_service.h"
 
@@ -24,6 +24,10 @@ class UsbDeviceLinux;
 class UsbServiceLinux final : public UsbService {
  public:
   UsbServiceLinux();
+
+  UsbServiceLinux(const UsbServiceLinux&) = delete;
+  UsbServiceLinux& operator=(const UsbServiceLinux&) = delete;
+
   ~UsbServiceLinux() override;
 
   // device::UsbService implementation
@@ -59,8 +63,6 @@ class UsbServiceLinux final : public UsbService {
   DeviceMap devices_by_path_;
 
   base::WeakPtrFactory<UsbServiceLinux> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UsbServiceLinux);
 };
 
 }  // namespace device

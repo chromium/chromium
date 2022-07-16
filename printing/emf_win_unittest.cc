@@ -91,7 +91,7 @@ TEST_F(EmfPrintingTest, Enumerate) {
 
   // Initialize it.
   PrintingContextWin context(this);
-  EXPECT_EQ(PrintingContext::OK,
+  EXPECT_EQ(mojom::ResultCode::kSuccess,
             context.InitWithSettingsForTest(std::move(settings)));
 
   base::FilePath emf_file;

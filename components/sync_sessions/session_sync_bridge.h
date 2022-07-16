@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/model/model_error.h"
@@ -42,6 +41,10 @@ class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
       const base::RepeatingClosure& notify_foreign_session_updated_cb,
       SyncSessionsClient* sessions_client,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+
+  SessionSyncBridge(const SessionSyncBridge&) = delete;
+  SessionSyncBridge& operator=(const SessionSyncBridge&) = delete;
+
   ~SessionSyncBridge() override;
 
   SessionsGlobalIdMapper* GetGlobalIdMapper();
@@ -114,8 +117,6 @@ class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
   absl::optional<SyncingState> syncing_;
 
   base::WeakPtrFactory<SessionSyncBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionSyncBridge);
 };
 
 }  // namespace sync_sessions

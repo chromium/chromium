@@ -23,8 +23,8 @@
 #include "content/public/common/content_features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/cpp/session_mode.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 #if defined(OS_WIN)
 #include "base/win/windows_types.h"
@@ -32,8 +32,7 @@
 
 namespace content {
 namespace {
-bool IsValidTransform(const gfx::Transform& transform,
-                      float max_translate_meters) {
+bool IsValidTransform(const gfx::Transform& transform) {
   if (!transform.IsInvertible() || transform.HasPerspective())
     return false;
 
@@ -55,8 +54,6 @@ bool IsValidTransform(const gfx::Transform& transform,
     if (abs(decomp.skew[i]) > kEpsilon)
       return false;
     if (abs(decomp.perspective[i]) > kEpsilon)
-      return false;
-    if (abs(decomp.translate[i]) > max_translate_meters)
       return false;
   }
 
@@ -96,12 +93,10 @@ device::mojom::XRViewPtr ValidateXRView(const device::mojom::XRView* view) {
     ret->field_of_view->right_degrees = kDefaultFOV;
   }
 
-  // Head-from-Eye Transform
-  // Maximum 10m translation.
-  if (IsValidTransform(view->head_from_eye, 10)) {
-    ret->head_from_eye = view->head_from_eye;
+  if (IsValidTransform(view->mojo_from_view)) {
+    ret->mojo_from_view = view->mojo_from_view;
   }
-  // else, ret->head_from_eye remains the identity transform
+  // else, ret->mojo_from_view remains the identity transform
 
   // Renderwidth/height
   int kMaxSize = 16384;
@@ -295,9 +290,9 @@ void BrowserXRRuntimeImpl::OnServiceRemoved(VRServiceImpl* service) {
     // may still need to be notified to terminate its session. ExitPresent may
     // be called when the service *is* still valid and would need to be notified
     // of this shutdown.
-    runtime_->ShutdownSession(base::BindOnce(
-        &BrowserXRRuntimeImpl::StopImmersiveSession,
-        weak_ptr_factory_.GetWeakPtr(), base::DoNothing::Once()));
+    runtime_->ShutdownSession(
+        base::BindOnce(&BrowserXRRuntimeImpl::StopImmersiveSession,
+                       weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
   }
 }
 

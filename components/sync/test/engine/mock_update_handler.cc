@@ -15,7 +15,7 @@ MockUpdateHandler::MockUpdateHandler(ModelType type) {
   progress_marker_.set_token(token_str);
 }
 
-MockUpdateHandler::~MockUpdateHandler() {}
+MockUpdateHandler::~MockUpdateHandler() = default;
 
 bool MockUpdateHandler::IsInitialSyncEnded() const {
   return false;

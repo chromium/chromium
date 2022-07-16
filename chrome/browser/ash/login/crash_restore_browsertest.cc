@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
@@ -43,8 +42,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // Use consumer.example.com to keep policy code out of the tests.
@@ -110,6 +108,11 @@ class UserSessionRestoreObserver : public UserSessionStateObserver {
     if (!user_sessions_restored_)
       UserSessionManager::GetInstance()->AddSessionStateObserver(this);
   }
+
+  UserSessionRestoreObserver(const UserSessionRestoreObserver&) = delete;
+  UserSessionRestoreObserver& operator=(const UserSessionRestoreObserver&) =
+      delete;
+
   ~UserSessionRestoreObserver() override {}
 
   void PendingUserSessionsRestoreFinished() override {
@@ -138,8 +141,6 @@ class UserSessionRestoreObserver : public UserSessionStateObserver {
   bool running_loop_;
   bool user_sessions_restored_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserSessionRestoreObserver);
 };
 
 class CrashRestoreComplexTest : public CrashRestoreSimpleTest {
@@ -168,7 +169,7 @@ class CrashRestoreComplexTest : public CrashRestoreSimpleTest {
 
     auto users_list = std::make_unique<base::ListValue>();
     for (auto* user_id : kTestUserIds)
-      users_list->AppendString(user_id);
+      users_list->Append(user_id);
 
     local_state.SetList("LoggedInUsers", std::move(users_list));
     local_state.SetString("LastActiveUser", kUserId3);
@@ -296,4 +297,4 @@ IN_PROC_BROWSER_TEST_F(CrashRestoreChildUserTest, SessionRestore) {
   // Verify that there is no crash on chrome restart.
 }
 
-}  // namespace chromeos
+}  // namespace ash

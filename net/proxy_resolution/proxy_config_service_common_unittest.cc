@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_config.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,7 +49,7 @@ void MatchesProxyServerHelper(const char* failure_message,
   ProxyServer actual_proxy = actual_proxies.Get();
   std::string actual_proxy_string;
   if (actual_proxy.is_valid())
-    actual_proxy_string = actual_proxy.ToURI();
+    actual_proxy_string = ProxyServerToProxyUri(actual_proxy);
 
   if (std::string(expected_proxy) != actual_proxy_string) {
     *failure_details

@@ -9,45 +9,18 @@
 #include "base/time/time.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_features.h"
 #include "media/mojo/buildflags.h"
+#include "media/mojo/mojom/media_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
 #include "content/browser/gpu/gpu_process_host.h"
 #elif BUILDFLAG(ENABLE_MOJO_MEDIA_IN_BROWSER_PROCESS)
 #include "media/mojo/services/media_service_factory.h"
-#elif BUILDFLAG(ENABLE_MOJO_MEDIA_IN_UTILITY_PROCESS)
-#include "content/public/browser/service_process_host.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #endif
 
 namespace content {
-
-namespace {
-
-#if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
-void BindReceiverInGpuProcess(
-    mojo::PendingReceiver<media::mojom::MediaService> receiver) {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? BrowserThread::UI
-                          : BrowserThread::IO);
-  auto* process_host = GpuProcessHost::Get();
-  if (!process_host) {
-    DLOG(ERROR) << "GPU process host not available";
-    return;
-  }
-
-  process_host->RunService(std::move(receiver));
-}
-#endif
-
-#if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_UTILITY_PROCESS)
-// When running in an isolated service process, we reset the connection and tear
-// down the process once it's been idle for at least this long.
-constexpr base::TimeDelta kIdleTimeout = base::TimeDelta::FromSeconds(5);
-#endif
-
-}  // namespace
 
 media::mojom::MediaService& GetMediaService() {
   // NOTE: We use sequence-local storage to limit the lifetime of this Remote to
@@ -63,23 +36,18 @@ media::mojom::MediaService& GetMediaService() {
     remote.reset_on_disconnect();
 
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      BindReceiverInGpuProcess(std::move(receiver));
+    auto* process_host = GpuProcessHost::Get();
+    if (process_host) {
+      process_host->RunService(std::move(receiver));
     } else {
-      GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&BindReceiverInGpuProcess, std::move(receiver)));
+      DLOG(ERROR) << "GPU process host not available";
     }
 #elif BUILDFLAG(ENABLE_MOJO_MEDIA_IN_BROWSER_PROCESS)
+    static_assert(media::mojom::MediaService::kServiceSandbox ==
+                      sandbox::mojom::Sandbox::kNoSandbox,
+                  "MediaService requested in-browser but not with kNoSandbox");
     static base::NoDestructor<std::unique_ptr<media::MediaService>> service;
     *service = media::CreateMediaService(std::move(receiver));
-#elif BUILDFLAG(ENABLE_MOJO_MEDIA_IN_UTILITY_PROCESS)
-    ServiceProcessHost::Launch(
-        std::move(receiver),
-        ServiceProcessHost::Options()
-            .WithDisplayName("Media Service")
-            .Pass());
-    remote.reset_on_idle_timeout(kIdleTimeout);
 #endif
   }
 

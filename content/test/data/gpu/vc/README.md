@@ -58,7 +58,7 @@ webgpu_videos_mxn.html?ui=none
 
 For webgpu_videos_mxn.html only:
 To disable Import Texture API and force the video texture copy through
-createImageBitmap() and then copyImageBitmapToTexture(),
+createImageBitmap() and then copyExternalImageToTexture(),
 use `import_texture_api=0`.
 ```
 webgpu_videos_mxn.html?import_texture_api=0

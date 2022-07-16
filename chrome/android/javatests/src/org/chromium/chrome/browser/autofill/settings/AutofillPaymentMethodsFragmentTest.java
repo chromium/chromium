@@ -34,7 +34,6 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@Batch.SplitByFeature
 public class AutofillPaymentMethodsFragmentTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();

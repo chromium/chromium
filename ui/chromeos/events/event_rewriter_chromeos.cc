@@ -19,8 +19,8 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "device/udev_linux/scoped_udev.h"
-#include "ui/base/ime/chromeos/ime_keyboard.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/chromeos/events/modifier_key.h"
 #include "ui/chromeos/events/pref_names.h"
@@ -190,8 +190,7 @@ bool IsISOLevel5ShiftUsedByCurrentInputMethod() {
   // it's not possible to make both features work. For now, we don't remap
   // Mod3Mask when Neo2 is in use.
   // TODO(yusukes): Remove the restriction.
-  ::chromeos::input_method::InputMethodManager* manager =
-      ::chromeos::input_method::InputMethodManager::Get();
+  auto* manager = ash::input_method::InputMethodManager::Get();
   return manager->IsISOLevel5ShiftUsedByCurrentInputMethod();
 }
 
@@ -714,17 +713,17 @@ EventRewriterChromeOS::EventRewriterChromeOS(
     Delegate* delegate,
     EventRewriter* sticky_keys_controller,
     bool privacy_screen_supported)
-    : EventRewriterChromeOS(delegate,
-                            sticky_keys_controller,
-                            privacy_screen_supported,
-                            ::chromeos::input_method::InputMethodManager::Get()
-                                ->GetImeKeyboard()) {}
+    : EventRewriterChromeOS(
+          delegate,
+          sticky_keys_controller,
+          privacy_screen_supported,
+          ash::input_method::InputMethodManager::Get()->GetImeKeyboard()) {}
 
 EventRewriterChromeOS::EventRewriterChromeOS(
     Delegate* delegate,
     EventRewriter* sticky_keys_controller,
     bool privacy_screen_supported,
-    ::chromeos::input_method::ImeKeyboard* ime_keyboard)
+    ash::input_method::ImeKeyboard* ime_keyboard)
     : last_keyboard_device_id_(ED_UNKNOWN_DEVICE),
       delegate_(delegate),
       sticky_keys_controller_(sticky_keys_controller),

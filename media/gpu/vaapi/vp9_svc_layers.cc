@@ -388,9 +388,10 @@ void VP9SVCLayers::FillVp9MetadataForEncoding(
                                          temporal_pattern_size_]
           .layer_index();
   // If |frame_num_| is zero, it refers only lower spatial layer.
-  // |has_reference| is true if a frame in the same spatial layer is referred.
+  // |inter_pic_predicted| is true if a frame in the same spatial layer is
+  // referred.
   if (frame_num_ != 0)
-    metadata->has_reference = !reference_frame_indices.empty();
+    metadata->inter_pic_predicted = !reference_frame_indices.empty();
   metadata->reference_lower_spatial_layers =
       frame_num_ == 0 && (spatial_idx_ != 0);
   metadata->temporal_idx = temp_temporal_layers_id;

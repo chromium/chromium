@@ -16,9 +16,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results_win.h"
@@ -144,10 +144,9 @@ ChromeCleanerRunner::ChromeCleanerRunner(
     cleaner_command_line_.AppendSwitchASCII(
         chrome_cleaner::kSRTPromptFieldTrialGroupNameSwitch, group_name);
   }
-
-  if (base::FeatureList::IsEnabled(kResetShortcutsFeature)) {
-    cleaner_command_line_.AppendSwitch(chrome_cleaner::kResetShortcutsSwitch);
-  }
+  // Older versions of the Chrome Cleanup Tool needs this switch to ensure
+  // resetting of shortcuts.
+  cleaner_command_line_.AppendSwitch(chrome_cleaner::kResetShortcutsSwitch);
 }
 
 ChromeCleanerRunner::ProcessStatus

@@ -21,7 +21,7 @@ namespace {
 
 // Request timeout of 5 seconds to not interrupt the completion of Safety check.
 // The user can always start a new Safety check if a request times out.
-constexpr base::TimeDelta kConnectionTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kConnectionTimeout = base::Seconds(5);
 
 // Maximum number of retries for sending the request.
 constexpr int kMaxRetries = 2;

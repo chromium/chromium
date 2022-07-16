@@ -101,14 +101,14 @@ constexpr absl::optional<ParsedDecimal> ConsumeDurationNumber(
 // https://cs.chromium.org/chromium/src/third_party/abseil-cpp/absl/time/duration.cc?l=841&rcl=2c22e9135f107a4319582ae52e2e3e6b201b6b7c
 absl::optional<TimeDelta> ConsumeDurationUnit(StringPiece& unit_string) {
   for (const auto& str_delta : {
-           std::make_pair("ns", TimeDelta::FromNanoseconds(1)),
-           std::make_pair("us", TimeDelta::FromMicroseconds(1)),
+           std::make_pair("ns", Nanoseconds(1)),
+           std::make_pair("us", Microseconds(1)),
            // Note: "ms" MUST be checked before "m" to ensure that milliseconds
            // are not parsed as minutes.
-           std::make_pair("ms", TimeDelta::FromMilliseconds(1)),
-           std::make_pair("s", TimeDelta::FromSeconds(1)),
-           std::make_pair("m", TimeDelta::FromMinutes(1)),
-           std::make_pair("h", TimeDelta::FromHours(1)),
+           std::make_pair("ms", Milliseconds(1)),
+           std::make_pair("s", Seconds(1)),
+           std::make_pair("m", Minutes(1)),
+           std::make_pair("h", Hours(1)),
        }) {
     if (ConsumePrefix(unit_string, str_delta.first))
       return str_delta.second;

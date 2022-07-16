@@ -17,10 +17,9 @@ extern const char kPushMessagingForcedNotificationTag[];
 // https://w3c.github.io/push-api/#dfn-subscription-expiration-time it is
 // optional and set by the browser.
 constexpr base::TimeDelta kPushSubscriptionExpirationPeriodTimeDelta =
-    base::TimeDelta::FromDays(90);
+    base::Days(90);
 
 // TimeDelta for subscription refreshes to keep old subscriptions alive
-constexpr base::TimeDelta kPushSubscriptionRefreshTimeDelta =
-    base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kPushSubscriptionRefreshTimeDelta = base::Minutes(2);
 
 #endif  // CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_CONSTANTS_H_

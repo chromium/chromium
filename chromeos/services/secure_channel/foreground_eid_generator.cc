@@ -25,8 +25,8 @@ namespace secure_channel {
 namespace {
 constexpr int64_t kNoTimestamp = 0;
 constexpr int64_t kMaxPositiveInt64TValue = 0x7FFFFFFF;
-constexpr base::TimeDelta kEidPeriod = base::TimeDelta::FromHours(8);
-constexpr base::TimeDelta kBeginningOfEidPeriod = base::TimeDelta::FromHours(2);
+constexpr base::TimeDelta kEidPeriod = base::Hours(8);
+constexpr base::TimeDelta kBeginningOfEidPeriod = base::Hours(2);
 }  // namespace
 
 const int8_t ForegroundEidGenerator::kBluetooth4Flag = 0x01;

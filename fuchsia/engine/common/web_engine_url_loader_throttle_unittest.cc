@@ -40,7 +40,7 @@ class WebEngineURLLoaderThrottleTest : public testing::Test {
 TEST_F(WebEngineURLLoaderThrottleTest, WildcardHosts) {
   mojom::UrlRequestRewriteAddHeadersPtr add_headers =
       mojom::UrlRequestRewriteAddHeaders::New();
-  add_headers->headers.SetHeader("Header", "Value");
+  add_headers->headers.push_back(mojom::UrlHeader::New("Header", "Value"));
   mojom::UrlRequestActionPtr rewrite =
       mojom::UrlRequestAction::NewAddHeaders(std::move(add_headers));
   std::vector<mojom::UrlRequestActionPtr> actions;
@@ -49,11 +49,11 @@ TEST_F(WebEngineURLLoaderThrottleTest, WildcardHosts) {
   rule->hosts_filter = absl::optional<std::vector<std::string>>({"*.test.net"});
   rule->actions = std::move(actions);
 
-  std::vector<mojom::UrlRequestRulePtr> rules;
-  rules.push_back(std::move(rule));
+  mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
+  rules->rules.push_back(std::move(rule));
 
   WebEngineURLLoaderThrottle throttle(
-      base::MakeRefCounted<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>(
+      base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
           std::move(rules)));
   bool defer = false;
 
@@ -88,12 +88,15 @@ TEST_F(WebEngineURLLoaderThrottleTest, CorsAwareHeaders) {
 
   mojom::UrlRequestRewriteAddHeadersPtr add_headers =
       mojom::UrlRequestRewriteAddHeaders::New();
-  add_headers->headers.SetHeader(kRequiresCorsHeader, "Value");
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New(kRequiresCorsHeader, "Value"));
 
   // Inject the uppercased form for CORS exempt header #1, and the mixed case
   // form of header #2.
-  add_headers->headers.SetHeader(kUpperCaseCorsExemptHeader, "Value");
-  add_headers->headers.SetHeader(kMixedCaseCorsExemptHeader2, "Value");
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New(kUpperCaseCorsExemptHeader, "Value"));
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New(kMixedCaseCorsExemptHeader2, "Value"));
 
   mojom::UrlRequestActionPtr rewrite =
       mojom::UrlRequestAction::NewAddHeaders(std::move(add_headers));
@@ -103,11 +106,11 @@ TEST_F(WebEngineURLLoaderThrottleTest, CorsAwareHeaders) {
   rule->hosts_filter = absl::optional<std::vector<std::string>>({"*.test.net"});
   rule->actions = std::move(actions);
 
-  std::vector<mojom::UrlRequestRulePtr> rules;
-  rules.push_back(std::move(rule));
+  mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
+  rules->rules.push_back(std::move(rule));
 
   WebEngineURLLoaderThrottle throttle(
-      base::MakeRefCounted<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>(
+      base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
           std::move(rules)));
 
   network::ResourceRequest request;
@@ -147,11 +150,11 @@ TEST_F(WebEngineURLLoaderThrottleTest, DataReplacementUrl) {
   rule->hosts_filter = absl::optional<std::vector<std::string>>({"*.test.net"});
   rule->actions = std::move(actions);
 
-  std::vector<mojom::UrlRequestRulePtr> rules;
-  rules.push_back(std::move(rule));
+  mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
+  rules->rules.push_back(std::move(rule));
 
   WebEngineURLLoaderThrottle throttle(
-      base::MakeRefCounted<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>(
+      base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
           std::move(rules)));
   bool defer = false;
 
@@ -190,24 +193,24 @@ class TestThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
 // Tests that resource loads can be allowed or blocked based on the
 // UrlRequestAction policy.
 TEST_F(WebEngineURLLoaderThrottleTest, AllowAndDeny) {
-  std::vector<mojom::UrlRequestRulePtr> rules;
+  mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
 
   {
     mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
     rule->hosts_filter = absl::optional<std::vector<std::string>>({"test.net"});
     rule->actions.push_back(mojom::UrlRequestAction::NewPolicy(
         mojom::UrlRequestAccessPolicy::kAllow));
-    rules.push_back(std::move(rule));
+    rules->rules.push_back(std::move(rule));
   }
   {
     mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
     rule->actions.push_back(mojom::UrlRequestAction::NewPolicy(
         mojom::UrlRequestAccessPolicy::kDeny));
-    rules.push_back(std::move(rule));
+    rules->rules.push_back(std::move(rule));
   }
 
   WebEngineURLLoaderThrottle throttle(
-      base::MakeRefCounted<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>(
+      base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
           std::move(rules)));
   bool defer = false;
 

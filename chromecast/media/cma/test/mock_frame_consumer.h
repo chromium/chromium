@@ -27,6 +27,10 @@ class FrameGeneratorForTest;
 class MockFrameConsumer {
  public:
   explicit MockFrameConsumer(CodedFrameProvider* coded_frame_provider);
+
+  MockFrameConsumer(const MockFrameConsumer&) = delete;
+  MockFrameConsumer& operator=(const MockFrameConsumer&) = delete;
+
   ~MockFrameConsumer();
 
   void Configure(const std::vector<bool>& delayed_task_pattern,
@@ -62,8 +66,6 @@ class MockFrameConsumer {
 
   // Expected results.
   std::unique_ptr<FrameGeneratorForTest> frame_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFrameConsumer);
 };
 
 }  // namespace media

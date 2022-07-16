@@ -48,7 +48,7 @@ class AX_EXPORT AXTreeIndexer final {
   gfx::NativeViewAccessible NodeBy(const std::string& identifier) const {
     for (auto& item : node_to_identifier_) {
       if (item.second.line_index == identifier ||
-          item.second.DOMid == identifier) {
+          item.second.id == identifier) {
         return item.first;
       }
     }
@@ -57,11 +57,11 @@ class AX_EXPORT AXTreeIndexer final {
 
  private:
   void Build(const gfx::NativeViewAccessible node, int* counter) {
+    const std::string id = *counter == 0 ? "document" : GetDOMId(node);
     const std::string line_index =
         std::string(1, ':') + base::NumberToString(++(*counter));
-    const std::string domid = GetDOMId(node);
 
-    node_to_identifier_.insert({node, {line_index, domid}});
+    node_to_identifier_.insert({node, {line_index, id}});
 
     auto children = GetChildren(node);
     for (gfx::NativeViewAccessible child in children) {
@@ -70,8 +70,12 @@ class AX_EXPORT AXTreeIndexer final {
   }
 
   struct NodeIdentifier {
+    // A line index of a node in the formatted tree.
     std::string line_index;
-    std::string DOMid;
+
+    // The ID that a node can be identified by, for example DOM id, or
+    // the "document" keyword pointing to a root node.
+    std::string id;
   };
 
   // Map between accessible objects and their identificators which can be a line

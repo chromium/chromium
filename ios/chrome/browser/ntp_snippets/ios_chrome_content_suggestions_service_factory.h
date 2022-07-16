@@ -31,6 +31,11 @@ class IOSChromeContentSuggestionsServiceFactory
   // be registered with SetTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
+  IOSChromeContentSuggestionsServiceFactory(
+      const IOSChromeContentSuggestionsServiceFactory&) = delete;
+  IOSChromeContentSuggestionsServiceFactory& operator=(
+      const IOSChromeContentSuggestionsServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<IOSChromeContentSuggestionsServiceFactory>;
 
@@ -42,8 +47,6 @@ class IOSChromeContentSuggestionsServiceFactory
       web::BrowserState* context) const override;
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeContentSuggestionsServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_NTP_SNIPPETS_IOS_CHROME_CONTENT_SUGGESTIONS_SERVICE_FACTORY_H_

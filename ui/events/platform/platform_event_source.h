@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/events/events_export.h"
 #include "ui/events/platform_event.h"
@@ -31,6 +30,9 @@ class PlatformEventSourceTestAPI;
 // to the appropriate dispatchers.
 class EVENTS_EXPORT PlatformEventSource {
  public:
+  PlatformEventSource(const PlatformEventSource&) = delete;
+  PlatformEventSource& operator=(const PlatformEventSource&) = delete;
+
   virtual ~PlatformEventSource();
 
   // Returns the thread-local singleton.
@@ -114,8 +116,6 @@ class EVENTS_EXPORT PlatformEventSource {
   static bool ignore_native_platform_events_;
 
   PlatformEventObserverList observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformEventSource);
 };
 
 }  // namespace ui

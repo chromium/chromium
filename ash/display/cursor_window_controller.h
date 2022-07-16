@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/constants/ash_constants.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/aura/window.h"
@@ -44,6 +43,10 @@ class ASH_EXPORT CursorWindowController {
   };
 
   CursorWindowController();
+
+  CursorWindowController(const CursorWindowController&) = delete;
+  CursorWindowController& operator=(const CursorWindowController&) = delete;
+
   ~CursorWindowController();
 
   bool is_cursor_compositing_enabled() const {
@@ -137,8 +140,6 @@ class ASH_EXPORT CursorWindowController {
   views::UniqueWidgetPtr cursor_view_widget_;
 
   const bool is_cursor_motion_blur_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(CursorWindowController);
 };
 
 }  // namespace ash

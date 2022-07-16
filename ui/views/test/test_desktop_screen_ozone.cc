@@ -11,8 +11,16 @@
 namespace views {
 namespace test {
 
+namespace {
+TestDesktopScreenOzone* g_instance = nullptr;
+}
+
 TestDesktopScreenOzone* TestDesktopScreenOzone::GetInstance() {
-  return base::Singleton<TestDesktopScreenOzone>::get();
+  if (!g_instance) {
+    g_instance = base::Singleton<TestDesktopScreenOzone>::get();
+    g_instance->Initialize();
+  }
+  return g_instance;
 }
 
 gfx::Point TestDesktopScreenOzone::GetCursorScreenPoint() {

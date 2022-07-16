@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that breakpoints are successfully restored after debugger disabling.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -23,7 +23,7 @@
     TestRunner.addResult('Main resource was shown.');
     await SourcesTestRunner.setBreakpoint(sourceFrame, 11, '', true);
     TestRunner.debuggerModel.addEventListener(SDK.DebuggerModel.Events.DebuggerWasDisabled, step3, this);
-    TestRunner.debuggerModel._disableDebugger();
+    TestRunner.debuggerModel.disableDebugger();
   }
 
   function step3() {
@@ -36,7 +36,7 @@
   function step4() {
     TestRunner.addResult('function evaluated without a pause on the breakpoint.');
     TestRunner.debuggerModel.addEventListener(SDK.DebuggerModel.Events.DebuggerWasEnabled, step5, this);
-    TestRunner.debuggerModel._enableDebugger();
+    TestRunner.debuggerModel.enableDebugger();
   }
 
   function step5() {

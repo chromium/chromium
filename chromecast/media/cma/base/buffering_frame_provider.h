@@ -44,6 +44,10 @@ class BufferingFrameProvider : public CodedFrameProvider {
       size_t max_buffer_size,
       size_t max_frame_size,
       const FrameBufferedCB& frame_buffered_cb);
+
+  BufferingFrameProvider(const BufferingFrameProvider&) = delete;
+  BufferingFrameProvider& operator=(const BufferingFrameProvider&) = delete;
+
   ~BufferingFrameProvider() override;
 
   // CodedFrameProvider implementation.
@@ -112,8 +116,6 @@ class BufferingFrameProvider : public CodedFrameProvider {
 
   base::WeakPtr<BufferingFrameProvider> weak_this_;
   base::WeakPtrFactory<BufferingFrameProvider> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferingFrameProvider);
 };
 
 }  // namespace media

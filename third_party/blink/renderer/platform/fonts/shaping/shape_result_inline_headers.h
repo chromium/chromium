@@ -83,6 +83,8 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
                                        unsigned start_index,
                                        unsigned num_glyphs,
                                        unsigned num_characters) {
+    CHECK_GT(num_glyphs, 0u);
+    CHECK_GT(num_characters, 0u);
     return base::AdoptRef(new RunInfo(font, dir, canvas_rotation, script,
                                       start_index, num_glyphs, num_characters));
   }
@@ -377,7 +379,7 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
       DCHECK_NE(delta, 0.0f);
       if (!storage_)
         AllocateStorage();
-      storage_[index].SetHeight(storage_[index].Height() + delta);
+      storage_[index].set_height(storage_[index].height() + delta);
     }
 
     void AddWidthAt(unsigned index, float delta) {
@@ -385,13 +387,13 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
       DCHECK_NE(delta, 0.0f);
       if (!storage_)
         AllocateStorage();
-      storage_[index].SetWidth(storage_[index].Width() + delta);
+      storage_[index].set_width(storage_[index].width() + delta);
     }
 
     void SetAt(unsigned index, GlyphOffset offset) {
       DCHECK_LT(index, size());
       if (!storage_) {
-        if (offset.Width() == 0 && offset.Height() == 0)
+        if (offset.width() == 0 && offset.height() == 0)
           return;
         AllocateStorage();
       }

@@ -19,11 +19,23 @@
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE" desc="A message for the child user when they attempt to visit a site that is not permitted by their parent.">
         You need permission to visit this site
       </message>
+      <message name="IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_SAFE_SITES_BLOCKED" desc="Message to be shown when a site was blocked due to the SafeSites safety check.">
+        You need permission to visit this site. It may have inappropriate content.
+      </message>
       <message name="IDS_BLOCK_INTERSTITIAL_MESSAGE_SUPERVISED_USERS_DEPRECATED" desc="Message to be shown to a supervised user directing them to the supervisor.">
         Questions? Contact the person who supervises your profile.
       </message>
       <message name="IDS_BACK_BUTTON" desc="A button for going back to the last safe url after being blocked.">
         Go back
+      </message>
+      <message name="IDS_REQUEST_SENT_OK" desc="A button acknowledging that the request has been sent for accessing a blocked site.">
+        OK
+      </message>
+      <message name="IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_BUTTON" desc="A button to show a dialog to request access to blocked sites.">
+        Ask in person
+      </message>
+      <message name="IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON" desc="A button to send a message to request access to blocked sites.">
+        Send a message
       </message>
       <message name="IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON" desc="A button for requesting access to blocked sites.">
         Ask permission
@@ -39,6 +51,15 @@
       </message>
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_MULTI_PARENT" desc="The text that tells the child user that a request has been sent to their parents.">
         You asked your parents if it's OK to visit this site
+      </message>
+      <message name="IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_MESSAGE" desc="The text that tells the child that a request has been sent to their parents.">
+        Waiting for parent approval
+      </message>
+      <message name="IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_SINGLE_PARENT" desc="The text that explains to a child the request sent to their parent.">
+        An approval request has been sent to your parent on their Google Family Link app and at families.google.com. You will get a notification if your parent approves the request.
+      </message>
+      <message name="IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_MULTI_PARENT" desc="The text that explains to a child the request sent to their parents.">
+        An approval request has been sent to your parents on their Google Family Link app and at families.google.com. You will get a notification if one of your parents approves the request.
       </message>
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT" desc="The text that tells the child user that a request to their parent failed.">
         We could not reach your parent at the moment. Please try again.

@@ -4,8 +4,6 @@
 
 #include "chrome/browser/renderer_context_menu/link_to_text_menu_observer.h"
 
-#include "base/macros.h"
-
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -81,6 +79,10 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest,
 
   bool ShouldPreemptivelyGenerateLink() { return GetParam(); }
 
+  LinkToTextMenuObserverTest(const LinkToTextMenuObserverTest&) = delete;
+  LinkToTextMenuObserverTest& operator=(const LinkToTextMenuObserverTest&) =
+      delete;
+
   ~LinkToTextMenuObserverTest() override;
   MockRenderViewContextMenu* menu() { return menu_.get(); }
   LinkToTextMenuObserver* observer() { return observer_.get(); }
@@ -93,7 +95,6 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest,
  private:
   std::unique_ptr<LinkToTextMenuObserver> observer_;
   std::unique_ptr<MockRenderViewContextMenu> menu_;
-  DISALLOW_COPY_AND_ASSIGN(LinkToTextMenuObserverTest);
 };
 
 LinkToTextMenuObserverTest::LinkToTextMenuObserverTest() = default;
@@ -206,7 +207,7 @@ IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest,
   GURL main_url(
       embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
 
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -238,8 +239,8 @@ IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest,
 IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, HiddenForExtensions) {
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
-  ui_test_utils::NavigateToURL(browser(),
-                               extension->GetResourceURL("file.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("file.html")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   menu()->set_web_contents(web_contents);

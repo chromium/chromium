@@ -8,9 +8,9 @@
 // #import {TtsSubpageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals} from '../../chai_assert.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // clang-format on
 
 /**
@@ -56,14 +56,14 @@ suite('TextToSpeechSubpageTests', function() {
 
   function getDefaultPrefs() {
     return {
-      settings: {
-        language: {
-          preferred_languages: {
-            key: 'settings.language.preferred_languages',
-            type: chrome.settingsPrivate.PrefType.STRING,
-            value: '',
-          },
+      intl: {
+        accept_languages: {
+          key: 'intl.accept_languages',
+          type: chrome.settingsPrivate.PrefType.STRING,
+          value: '',
         },
+      },
+      settings: {
         tts: {
           lang_to_voice_name: {
             key: 'prefs.settings.tts.lang_to_voice_name',
@@ -92,10 +92,6 @@ suite('TextToSpeechSubpageTests', function() {
   });
 
   test('Deep link to text to speech rate', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
-
     const params = new URLSearchParams;
     params.append('settingId', '1503');
     settings.Router.getInstance().navigateTo(
@@ -103,7 +99,8 @@ suite('TextToSpeechSubpageTests', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement = ttsPage.$$('#textToSpeechRate').$$('cr-slider');
+    const deepLinkElement =
+        ttsPage.$$('#textToSpeechRate').shadowRoot.querySelector('cr-slider');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -111,9 +108,6 @@ suite('TextToSpeechSubpageTests', function() {
   });
 
   test('Deep link to text to speech engines', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
     ttsPage.extensions = [{
       name: 'extension1',
       extensionId: 'extension1_id',

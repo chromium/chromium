@@ -38,7 +38,7 @@ namespace blink {
 
 SVGPoint::SVGPoint() = default;
 
-SVGPoint::SVGPoint(const FloatPoint& point) : value_(point) {}
+SVGPoint::SVGPoint(const gfx::PointF& point) : value_(point) {}
 
 SVGPoint* SVGPoint::Clone() const {
   return MakeGarbageCollected<SVGPoint>(value_);

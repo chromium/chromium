@@ -54,13 +54,11 @@ void PageLoadStatistics::OnDidFinishLoad() {
     UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
         "SubresourceFilter.PageLoad.SubresourceEvaluation.TotalWallDuration",
         aggregated_document_statistics_.evaluation_total_wall_duration,
-        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
-        50);
+        base::Microseconds(1), base::Seconds(10), 50);
     UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
         "SubresourceFilter.PageLoad.SubresourceEvaluation.TotalCPUDuration",
         aggregated_document_statistics_.evaluation_total_cpu_duration,
-        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
-        50);
+        base::Microseconds(1), base::Seconds(10), 50);
   } else {
     DCHECK(aggregated_document_statistics_.evaluation_total_wall_duration
                .is_zero());

@@ -39,19 +39,13 @@ Polymer({
     },
 
     /**
-     * The active set of default user images.
+     * The current set of the default user images.
      * @private {?Array<!settings.DefaultImage>}
      */
-    defaultImages_: {
+    currentDefaultImages_: {
       type: Object,
       value: null,
     },
-
-    /**
-     * The index of the first default image to use in the selection list.
-     * @private
-     */
-    firstDefaultImageIndex_: Number,
 
     /**
      * True when camera video mode is enabled.
@@ -64,6 +58,18 @@ Polymer({
       },
       readOnly: true,
     },
+
+    /**
+     * Author info of the default image.
+     * @private {string}
+     */
+    authorInfo_: String,
+
+    /**
+     * Website info of the default image.
+     * @private {string}
+     */
+    websiteInfo_: String,
 
     /** @private */
     oldImageLabel_: String,
@@ -112,6 +118,9 @@ Polymer({
     this.addWebUIListener(
         'old-image-changed', this.receiveOldImage_.bind(this));
     this.addWebUIListener(
+        'preview-deprecated-image',
+        this.receivePreviewDeprecatedImage_.bind(this));
+    this.addWebUIListener(
         'profile-image-changed', this.receiveProfileImage_.bind(this));
     this.addWebUIListener(
         'camera-presence-changed', this.receiveCameraPresence_.bind(this));
@@ -150,12 +159,11 @@ Polymer({
 
   /**
    * Handler for the 'default-images-changed' event.
-   * @param {{first: number, images: !Array<!settings.DefaultImage>}} info
+   * @param {{current_default_images: !Array<!settings.DefaultImage>}} info
    * @private
    */
   receiveDefaultImages_(info) {
-    this.defaultImages_ = info.images;
-    this.firstDefaultImageIndex_ = info.first;
+    this.currentDefaultImages_ = info.current_default_images;
   },
 
   /**
@@ -170,18 +178,43 @@ Polymer({
 
   /**
    * Handler for the 'old-image-changed' event. The Old image is any selected
-   * non-profile and non-default image. It can be from the camera, a file, or a
-   * deprecated default image. When this method is called, the Old image
-   * becomes the selected image.
-   * @param {!{url: string, index: number}} imageInfo
+   * non-profile and non-default image. It can be from the camera or a file.
+   * When this method is called, the Old image becomes the selected image.
+   * @param {string} imageUrl
    * @private
    */
-  receiveOldImage_(imageInfo) {
+  receiveOldImage_(imageUrl) {
     this.oldImageLabel_ = this.i18n(
-        cr.png.isEncodedPngDataUrlAnimated(imageInfo.url) ? 'oldVideo' :
-                                                            'oldPhoto');
+        cr.png.isEncodedPngDataUrlAnimated(imageUrl) ? 'oldVideo' : 'oldPhoto');
     this.oldImagePending_ = false;
-    this.pictureList_.setOldImageUrl(imageInfo.url, imageInfo.index);
+    this.pictureList_.setOldImageUrl(imageUrl);
+  },
+
+  /**
+   * Handler for the 'preview-deprecated-image' event.
+   * When this method is called, preview the deprecated default image in
+   * picturePane while do not show in the pictureList.
+   * Also set the source info for the deprecated image.
+   * @param {!{url: string, author: string, website: string}} imageInfo
+   * @private
+   */
+  receivePreviewDeprecatedImage_(imageInfo) {
+    this.$.picturePane.previewDeprecatedImage(imageInfo.url);
+    this.authorInfo_ =
+        imageInfo.author ? this.i18n('authorCreditText', imageInfo.author) : '';
+    this.websiteInfo_ = imageInfo.website;
+    this.selectedItem_ = null;
+  },
+
+  /**
+   * Whether the source info should be shown.
+   * @param {CrPicture.ImageElement} selectedItem
+   * @param {string} authorInfo
+   * @param {string} websiteInfo
+   * @private
+   */
+  shouldShowSourceInfo_(selectedItem, authorInfo, websiteInfo) {
+    return !selectedItem && (authorInfo || websiteInfo);
   },
 
   /**
@@ -222,12 +255,7 @@ Polymer({
         settings.recordSettingChange();
         break;
       case CrPicture.SelectionTypes.OLD:
-        const imageIndex = image.dataset.imageIndex;
-        if (imageIndex !== undefined && imageIndex >= 0 && image.src) {
-          this.browserProxy_.selectDefaultImage(image.dataset.url);
-        } else {
-          this.browserProxy_.selectOldImage();
-        }
+        this.browserProxy_.selectOldImage();
         settings.recordSettingChange();
         break;
       case CrPicture.SelectionTypes.DEFAULT:
@@ -319,58 +347,5 @@ Polymer({
   getImageType_(selectedItem) {
     return (selectedItem && selectedItem.dataset.type) ||
         CrPicture.SelectionTypes.NONE;
-  },
-
-  /**
-   * @param {!Array<!settings.DefaultImage>} defaultImages
-   * @param {number} firstDefaultImageIndex
-   * @return {!Array<!settings.DefaultImage>}
-   * @private
-   */
-  getDefaultImages_(defaultImages, firstDefaultImageIndex) {
-    return defaultImages ? defaultImages.slice(firstDefaultImageIndex) : [];
-  },
-
-  /**
-   * @param {CrPicture.ImageElement} selectedItem
-   * @return {boolean} True if the author credit text is shown.
-   * @private
-   */
-  isAuthorCreditShown_(selectedItem) {
-    return !!selectedItem &&
-        (selectedItem.dataset.type === CrPicture.SelectionTypes.DEFAULT ||
-         (selectedItem.dataset.imageIndex !== undefined &&
-          selectedItem.dataset.imageIndex >= 0));
-  },
-
-  /**
-   * @param {!CrPicture.ImageElement} selectedItem
-   * @param {!Array<!settings.DefaultImage>} defaultImages
-   * @return {string} The author name for the selected default image. An empty
-   *     string is returned if there is no valid author name.
-   * @private
-   */
-  getAuthorCredit_(selectedItem, defaultImages) {
-    const index = selectedItem ? selectedItem.dataset.imageIndex : undefined;
-    if (index === undefined || index < 0 || index >= defaultImages.length) {
-      return '';
-    }
-    const author = defaultImages[index].author;
-    return author ? this.i18n('authorCreditText', author) : '';
-  },
-
-  /**
-   * @param {!CrPicture.ImageElement} selectedItem
-   * @param {!Array<!settings.DefaultImage>} defaultImages
-   * @return {string} The author name for the selected default image. An empty
-   *     string is returned if there is no valid author name.
-   * @private
-   */
-  getAuthorWebsite_(selectedItem, defaultImages) {
-    const index = selectedItem ? selectedItem.dataset.imageIndex : undefined;
-    if (index === undefined || index < 0 || index >= defaultImages.length) {
-      return '';
-    }
-    return defaultImages[index].website || '';
   },
 });

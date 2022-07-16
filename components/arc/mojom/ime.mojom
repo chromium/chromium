@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 18
+// Next MinVersion: 19
 
 module arc.mojom;
 
@@ -33,6 +33,13 @@ const int32 TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS = 128;  // 1 << 7
 const int32 TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS = 256;       // 1 << 8
 const int32 TEXT_INPUT_FLAG_AUTOCAPITALIZE_SENTENCES = 512;   // 1 << 9
 
+[Extensible]
+enum SegmentStyle {
+  DEFAULT,
+  EMPHASIZED,
+  NONE,
+};
+
 // Represents a single segment of text currently composed by IME.
 struct CompositionSegment {
   // Start offset of the segment in UTF-16 index.
@@ -40,7 +47,10 @@ struct CompositionSegment {
   // End offset of the segment in UTF-16 index.
   uint32 end_offset;
   // Indicates that this segment should be emphasized.
+  // This field is deprecated, use |style| instead.
   bool emphasized;
+  // Visual style of this segment.
+  [MinVersion=18] SegmentStyle style;
 };
 
 // Represents the information of a key event.
@@ -109,9 +119,6 @@ interface ImeHost {
   // Requests Chrome to hide the virtual keyboard.
   // However, hiding can be canceled if a text field gets focus.
   [MinVersion=9] RequestHideImeDeprecated@5();
-
-  // Asks Chrome whether the proxy IME should send a key event to the host IME.
-  [MinVersion=13] ShouldEnableKeyEventForwarding@6() => (bool should_forward);
 
   // Sends a key event to Chrome to pass it to the Chrome OS IME.
   [MinVersion=14] SendKeyEvent@7(KeyEventData key_event_data)

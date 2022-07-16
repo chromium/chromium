@@ -44,7 +44,7 @@ public class MojoPaymentRequestGateKeeper implements PaymentRequest {
     // Implement PaymentRequest:
     @Override
     public void init(PaymentRequestClient client, PaymentMethodData[] methodData,
-            PaymentDetails details, PaymentOptions options, boolean googlePayBridgeEligible) {
+            PaymentDetails details, PaymentOptions options) {
         if (mPaymentRequestService != null) {
             mPaymentRequestService.abortForInvalidDataFromRenderer(
                     ErrorStrings.ATTEMPTED_INITIALIZATION_TWICE);
@@ -54,7 +54,7 @@ public class MojoPaymentRequestGateKeeper implements PaymentRequest {
 
         PaymentRequestService service =
                 mDelegate.createPaymentRequestService(client, this::onPaymentRequestServiceClosed);
-        if (!service.init(methodData, details, options, googlePayBridgeEligible)) return;
+        if (!service.init(methodData, details, options)) return;
         mPaymentRequestService = service;
     }
 

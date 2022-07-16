@@ -32,13 +32,10 @@ cr.define('settings.input_method_util', function() {
     ETEN26: 'Eten 26',
     SET2: '2 Set / 두벌식',
     SET2Y: '2 Set (Old Hangul) / 두벌식 (옛글)',
-    SET32: '3 Set (2 set) / 세벌식 (두벌)',
     SET390: '3 Set (390) / 세벌식 (390)',
     SET3_FINAL: '3 Set (Final) / 세벌식 (최종)',
     SET3_SUN: '3 Set (No Shift) / 세벌식 (순아래)',
     SET3_YET: '3 Set (Old Hangul) / 세벌식 (옛글)',
-    ROMAJA: 'Romaja / 로마자',
-    AHN: 'Ahnmatae / 안마태',
     XKB_US: 'US',
     XKB_DVORAK: 'Dvorak',
     XKB_COLEMAK: 'Colemak'
@@ -68,7 +65,6 @@ cr.define('settings.input_method_util', function() {
     // Options for Korean input method.
     KOREAN_ENABLE_SYLLABLE_INPUT: 'koreanEnableSyllableInput',
     KOREAN_KEYBOARD_LAYOUT: 'koreanKeyboardLayout',
-    KOREAN_SHOW_HANGUL_CANDIDATE: 'koreanShowHangulCandidate',
     // Options for pinyin input method.
     PINYIN_CHINESE_PUNCTUATION: 'pinyinChinesePunctuation',
     PINYIN_DEFAULT_CHINESE: 'pinyinDefaultChinese',
@@ -117,7 +113,6 @@ cr.define('settings.input_method_util', function() {
     // Options for Korean input method.
     [OptionType.KOREAN_ENABLE_SYLLABLE_INPUT]: true,
     [OptionType.KOREAN_KEYBOARD_LAYOUT]: KeyboardLayout.SET2,
-    [OptionType.KOREAN_SHOW_HANGUL_CANDIDATE]: false,
     // Options for pinyin input method.
     [OptionType.PINYIN_CHINESE_PUNCTUATION]: true,
     [OptionType.PINYIN_DEFAULT_CHINESE]: true,
@@ -187,12 +182,8 @@ cr.define('settings.input_method_util', function() {
     },
     [SettingsType.KOREAN_SETTINGS]: {
       basic: [
-        {name: OptionType.KOREAN_KEYBOARD_LAYOUT}, {
-          name: OptionType.KOREAN_ENABLE_SYLLABLE_INPUT,
-          dependentOptions: [
-            OptionType.KOREAN_SHOW_HANGUL_CANDIDATE,
-          ]
-        }
+        {name: OptionType.KOREAN_KEYBOARD_LAYOUT},
+        {name: OptionType.KOREAN_ENABLE_SYLLABLE_INPUT},
       ],
       virtualKeyboard: [],
       advanced: [],
@@ -237,6 +228,15 @@ cr.define('settings.input_method_util', function() {
       physicalKeyboard: [],
       virtualKeyboard: [
         {name: OptionType.ENABLE_SOUND_ON_KEYPRESS},
+      ],
+      basic: [],
+      advanced: [],
+    },
+    [SettingsType.ENGLISH_SOUTH_AFRICA_SETTINGS]: {
+      physicalKeyboard: [],
+      virtualKeyboard: [
+        {name: OptionType.ENABLE_SOUND_ON_KEYPRESS},
+        {name: OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION},
       ],
       basic: [],
       advanced: [],
@@ -320,7 +320,6 @@ cr.define('settings.input_method_util', function() {
       case OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION:
       case OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION:
       case OptionType.KOREAN_ENABLE_SYLLABLE_INPUT:
-      case OptionType.KOREAN_SHOW_HANGUL_CANDIDATE:
       case OptionType.PINYIN_CHINESE_PUNCTUATION:
       case OptionType.PINYIN_DEFAULT_CHINESE:
       case OptionType.PINYIN_ENABLE_FUZZY:
@@ -421,8 +420,6 @@ cr.define('settings.input_method_util', function() {
         return 'inputMethodOptionsKoreanLayout';
       case OptionType.KOREAN_ENABLE_SYLLABLE_INPUT:
         return 'inputMethodOptionsKoreanSyllableInput';
-      case OptionType.KOREAN_SHOW_HANGUL_CANDIDATE:
-        return 'inputMethodOptionsKoreanShowHangulCandidate';
       default:
         assertNotReached();
     }
@@ -509,11 +506,8 @@ cr.define('settings.input_method_util', function() {
           {value: '3 Set (390) / 세벌식 (390)'},
           {value: '3 Set (Final) / 세벌식 (최종)'},
           {value: '3 Set (No Shift) / 세벌식 (순아래)'},
-          {value: 'Romaja / 로마자'},
-          {value: 'Ahnmatae / 안마태'},
           {value: '2 Set (Old Hangul) / 두벌식 (옛글)'},
           {value: '3 Set (Old Hangul) / 세벌식 (옛글)'},
-          {value: '3 Set (2 set) / 세벌식 (두벌)'},
         ];
       default:
         return [];

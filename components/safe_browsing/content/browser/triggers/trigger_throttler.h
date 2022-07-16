@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/clock.h"
 
 class PrefService;
@@ -66,6 +65,10 @@ using TriggerTypeAndQuotaItem = std::pair<TriggerType, int>;
 class TriggerThrottler {
  public:
   TriggerThrottler(PrefService* local_state_prefs);
+
+  TriggerThrottler(const TriggerThrottler&) = delete;
+  TriggerThrottler& operator=(const TriggerThrottler&) = delete;
+
   virtual ~TriggerThrottler();
 
   // Check if the the specified |trigger_type| has quota available and is
@@ -113,8 +116,6 @@ class TriggerThrottler {
   // List of trigger types and their quotas, controlled by Finch feature
   // |kTriggerThrottlerDailyQuotaFeature|.
   std::vector<TriggerTypeAndQuotaItem> trigger_type_and_quota_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TriggerThrottler);
 };
 
 }  // namespace safe_browsing

@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 
 namespace {
-constexpr char kWebContentsCaptureScheme[] = "web-contents-media-stream://";
 constexpr char kDisableLocalEchoFlag[] = "local_echo=false";
 constexpr char kOptionStart = '?';
 constexpr char kOptionSeparator = '&';
@@ -19,7 +18,7 @@ constexpr char kOptionSeparator = '&';
 bool ExtractTabCaptureTarget(const std::string& device_id_param,
                              int* render_process_id,
                              int* main_render_frame_id) {
-  const std::string device_scheme = kWebContentsCaptureScheme;
+  const std::string device_scheme = content::kWebContentsCaptureScheme;
   if (!base::StartsWith(device_id_param, device_scheme,
                         base::CompareCase::SENSITIVE))
     return false;
@@ -74,6 +73,8 @@ bool ExtractOptions(const std::string& device_id,
 }  // namespace
 
 namespace content {
+
+const char kWebContentsCaptureScheme[] = "web-contents-media-stream://";
 
 bool WebContentsMediaCaptureId::operator<(
     const WebContentsMediaCaptureId& other) const {

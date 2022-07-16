@@ -11,7 +11,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/metrics/task_switch_source.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -23,6 +22,11 @@ class TaskSwitchTimeTracker;
 class ASH_EXPORT TaskSwitchMetricsRecorder {
  public:
   TaskSwitchMetricsRecorder();
+
+  TaskSwitchMetricsRecorder(const TaskSwitchMetricsRecorder&) = delete;
+  TaskSwitchMetricsRecorder& operator=(const TaskSwitchMetricsRecorder&) =
+      delete;
+
   virtual ~TaskSwitchMetricsRecorder();
 
   // Notifies |this| that a "navigate to" task switch has occurred from the
@@ -64,8 +68,6 @@ class ASH_EXPORT TaskSwitchMetricsRecorder {
   // TaskSwitchTimeTracker is needed for a given source.
   std::unordered_map<int, std::unique_ptr<TaskSwitchTimeTracker>>
       histogram_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskSwitchMetricsRecorder);
 };
 
 }  // namespace ash

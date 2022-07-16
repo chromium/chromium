@@ -50,7 +50,7 @@ TEST_F(BorealisLaunchWatcherTest, VmStartsCallbackRan) {
 TEST_F(BorealisLaunchWatcherTest, VmTimesOutCallbackRan) {
   CallbackFactory callback_expectation;
   BorealisLaunchWatcher watcher(profile_, "FooVm");
-  watcher.SetTimeoutForTesting(base::TimeDelta::FromMilliseconds(0));
+  watcher.SetTimeoutForTesting(base::Milliseconds(0));
 
   EXPECT_CALL(callback_expectation,
               Call(absl::optional<std::string>(absl::nullopt)));
@@ -98,7 +98,7 @@ TEST_F(BorealisLaunchWatcherTest, VmStartsMultipleCallbacksRan) {
 TEST_F(BorealisLaunchWatcherTest, VmTimesOutMultipleCallbacksRan) {
   CallbackFactory callback_expectation;
   BorealisLaunchWatcher watcher(profile_, "FooVm");
-  watcher.SetTimeoutForTesting(base::TimeDelta::FromMilliseconds(0));
+  watcher.SetTimeoutForTesting(base::Milliseconds(0));
 
   EXPECT_CALL(callback_expectation,
               Call(absl::optional<std::string>(absl::nullopt)))
@@ -112,7 +112,7 @@ TEST_F(BorealisLaunchWatcherTest, VmTimesOutMultipleCallbacksRan) {
 TEST_F(BorealisLaunchWatcherTest, OtherVmsStartBorealisTimesOutCallbackRan) {
   CallbackFactory callback_expectation;
   BorealisLaunchWatcher watcher(profile_, "FooVm");
-  watcher.SetTimeoutForTesting(base::TimeDelta::FromMilliseconds(0));
+  watcher.SetTimeoutForTesting(base::Milliseconds(0));
   vm_tools::cicerone::ContainerStartedSignal signal1;
   signal1.set_owner_id("not-the-owner");
   signal1.set_vm_name("FooVm");

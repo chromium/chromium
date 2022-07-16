@@ -15,6 +15,8 @@ class SendTabToSelfToolbarIconControllerDelegate {
  public:
   virtual void Show(const SendTabToSelfEntry& entry) = 0;
 
+  virtual bool IsActive() = 0;
+
  protected:
   virtual ~SendTabToSelfToolbarIconControllerDelegate() = default;
 };

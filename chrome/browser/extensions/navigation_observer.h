@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -34,6 +33,10 @@ class NavigationObserver : public content::NotificationObserver,
                            public ExtensionRegistryObserver {
  public:
   explicit NavigationObserver(Profile* profile);
+
+  NavigationObserver(const NavigationObserver&) = delete;
+  NavigationObserver& operator=(const NavigationObserver&) = delete;
+
   ~NavigationObserver() override;
 
   // content::NotificationObserver
@@ -80,8 +83,6 @@ class NavigationObserver : public content::NotificationObserver,
       extension_registry_observation_{this};
 
   base::WeakPtrFactory<NavigationObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationObserver);
 };
 
 }  // namespace extensions

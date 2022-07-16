@@ -26,6 +26,7 @@ import "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_inf
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -87,10 +88,6 @@ struct BeginNavigationParams {
   // Indicates the request context type.
   blink.mojom.RequestContextType request_context_type =
       blink.mojom.RequestContextType.UNSPECIFIED;
-
-  // Indicates the request destination.
-  network.mojom.RequestDestination request_destination =
-      network.mojom.RequestDestination.kEmpty;
 
   // The mixed content context type for potential mixed content checks.
   blink.mojom.MixedContentContextType mixed_content_context_type =
@@ -173,10 +170,6 @@ struct CommonNavigationParams {
   // Is only used with data: URLs.
   url.mojom.Url base_url_for_data_url;
 
-  // History URL for use in Blink's SubstituteData.
-  // Is only used with data: URLs.
-  url.mojom.Url history_url_for_data_url;
-
   // Bitmask that has whether or not to request a Preview version of the
   // document for various preview types or let the browser decide.
   // Defined in third_party/blink/public/common/loader/previews_state.h.
@@ -240,6 +233,10 @@ struct CommonNavigationParams {
   // not always be set; it depends on the creator of the CommonNavigationParams
   // setting it.
   mojo_base.mojom.TimeTicks input_start;
+
+  // Indicates the request destination.
+  network.mojom.RequestDestination request_destination =
+      network.mojom.RequestDestination.kEmpty;
 };
 
 // Provided by the browser -----------------------------------------------------
@@ -290,6 +287,14 @@ struct CommitNavigationParams {
   // It is specified for session history navigations, for which the origin is
   // known and saved in the FrameNavigationEntry.
   url.mojom.Origin? origin_to_commit;
+
+  // The storage key of the document that will be created by the navigation.
+  // This is compatible with the `origin_to_commit`. Until the browser will be
+  // able to compute the `origin_to_commit` in all cases
+  // (https://crbug.com/888079), this is actually just a provisional
+  // `storage_key`. The final storage key is computed by the document loader
+  // taking into account the origin computed by the renderer.
+  blink.mojom.StorageKey storage_key;
 
   // The sandbox flags to apply to the new document. This is the union of:
   // - the frame's current sandbox, taken when the navigation started.
@@ -376,9 +381,6 @@ struct CommitNavigationParams {
 
   // Timing of navigation events.
   NavigationTiming navigation_timing;
-
-  // The AppCache host id to be used to identify this navigation.
-  mojo_base.mojom.UnguessableToken? appcache_host_id;
 
   // Set to |kYes| if a navigation is following the rules of user activation
   // propagation. This is different from |has_user_gesture|
@@ -471,4 +473,17 @@ struct CommitNavigationParams {
   array<AppHistoryEntry> app_history_forward_entries;
 
   array<url.mojom.Url> early_hints_preloaded_resources;
+
+  // If this is a navigation to the result of an InterestGroup auction, this
+  // is a list of URNs that map to auction component URLs. Null, otherwise.
+  // When non-null, always contains exactly kMaxAdAuctionAdComponents=20 URNs
+  // to avoid use as a data sidechannel between auction worklets and the
+  // fenced frames their results are loaded in.
+  //
+  // Mojo doesn't allow using symbolic constants as array lengths, so hard-code
+  // the length here directly.
+  array<url.mojom.Url, 20>? ad_auction_components;
+
+  // The time the commit was sent from the browser.
+  mojo_base.mojom.TimeTicks commit_sent;
 };

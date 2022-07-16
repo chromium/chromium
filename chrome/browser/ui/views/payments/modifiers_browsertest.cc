@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
@@ -19,6 +18,11 @@
 namespace payments {
 
 class PaymentRequestModifiersTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestModifiersTest(const PaymentRequestModifiersTest&) = delete;
+  PaymentRequestModifiersTest& operator=(const PaymentRequestModifiersTest&) =
+      delete;
+
  protected:
   PaymentRequestModifiersTest() {}
 
@@ -31,12 +35,7 @@ class PaymentRequestModifiersTest : public PaymentRequestBrowserTestBase {
   void SetUpInProcessBrowserTestFixture() override {
     PaymentRequestBrowserTestBase::SetUpInProcessBrowserTestFixture();
 
-    feature_list_.InitWithFeatures(
-        {
-            features::kWebPaymentsModifiers,
-            features::kReturnGooglePayInBasicCard,
-        },
-        {});
+    feature_list_.InitAndEnableFeature(features::kWebPaymentsModifiers);
   }
 
   size_t GetLineCount() {
@@ -48,8 +47,6 @@ class PaymentRequestModifiersTest : public PaymentRequestBrowserTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestModifiersTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestModifiersTest,
@@ -62,58 +59,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestModifiersTest,
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
   // There's only the total line.
   EXPECT_EQ(1u, GetLineCount());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PaymentRequestModifiersTest,
-    ModifierAppliedIfApplicableSelectedInstrumentWithoutNetwork) {
-  NavigateTo("/payment_request_bobpay_and_basic_card_with_modifiers_test.html");
-  autofill::AutofillProfile profile(autofill::test::GetFullProfile());
-  AddAutofillProfile(profile);
-  autofill::CreditCard card(
-      autofill::test::GetMaskedServerCard());  // Mastercard card.
-  card.set_billing_address_id(profile.guid());
-  AddCreditCard(card);
-
-  InvokePaymentRequestUI();
-  OpenOrderSummaryScreen();
-
-  EXPECT_EQ(u"$4.00",
-            GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
-  // A line for the discount and one for the total.
-  EXPECT_EQ(2u, GetLineCount());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PaymentRequestModifiersTest,
-    ModifierAppliedIfApplicableSelectedInstrumentWithMatchingNetwork) {
-  NavigateTo("/payment_request_bobpay_and_basic_card_with_modifiers_test.html");
-  autofill::AutofillProfile profile(autofill::test::GetFullProfile());
-  AddAutofillProfile(profile);
-  autofill::CreditCard card(
-      autofill::test::GetMaskedServerCard());  // Mastercard card.
-  card.set_billing_address_id(profile.guid());
-  AddCreditCard(card);
-
-  ResetEventWaiterForDialogOpened();
-  content::WebContents* web_contents = GetActiveWebContents();
-  const std::string click_buy_button_js =
-      "(function() { "
-      "document.getElementById('mastercard_supported_network'"
-      ").click(); })();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_buy_button_js));
-  WaitForObservedEvent();
-  // The web-modal dialog should be open.
-  web_modal::WebContentsModalDialogManager* web_contents_modal_dialog_manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
-  EXPECT_TRUE(web_contents_modal_dialog_manager->IsDialogActive());
-
-  OpenOrderSummaryScreen();
-
-  EXPECT_EQ(u"$4.00",
-            GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
-  // A line for the discount and one for the total.
-  EXPECT_EQ(2u, GetLineCount());
 }
 
 IN_PROC_BROWSER_TEST_F(

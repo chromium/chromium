@@ -25,6 +25,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_IMAGE_DOCUMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_IMAGE_DOCUMENT_H_
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 
 namespace blink {

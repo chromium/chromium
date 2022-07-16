@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_FILE_SYSTEM_DRIVE_BACKEND_DRIVE_UPLOADER_WRAPPER_H_
 #define CHROME_BROWSER_SYNC_FILE_SYSTEM_DRIVE_BACKEND_DRIVE_UPLOADER_WRAPPER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/drive/drive_uploader.h"
@@ -21,6 +20,9 @@ class DriveUploaderWrapper
     : public base::SupportsWeakPtr<DriveUploaderWrapper> {
  public:
   explicit DriveUploaderWrapper(drive::DriveUploaderInterface* drive_uploader);
+
+  DriveUploaderWrapper(const DriveUploaderWrapper&) = delete;
+  DriveUploaderWrapper& operator=(const DriveUploaderWrapper&) = delete;
 
   void UploadExistingFile(const std::string& resource_id,
                           const base::FilePath& local_file_path,
@@ -38,8 +40,6 @@ class DriveUploaderWrapper
  private:
   drive::DriveUploaderInterface* drive_uploader_;
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveUploaderWrapper);
 };
 
 }  // namespace drive_backend

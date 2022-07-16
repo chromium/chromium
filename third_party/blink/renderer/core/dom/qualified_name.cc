@@ -65,8 +65,8 @@ struct QNameComponentsTranslator {
                         unsigned) {
     const QualifiedNameComponents& components = data.components_;
     auto name = QualifiedName::QualifiedNameImpl::Create(
-        AtomicString(components.prefix_), AtomicString(components.local_name_),
-        AtomicString(components.namespace_), data.is_static_);
+        components.prefix_, components.local_name_, components.namespace_,
+        data.is_static_);
     name->AddRef();
     location = name.get();
   }

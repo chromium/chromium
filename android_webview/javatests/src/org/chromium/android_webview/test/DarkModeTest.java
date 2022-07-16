@@ -84,13 +84,13 @@ public class DarkModeTest {
     @SmallTest
     public void testPreferWebThemeDarkening() throws Throwable {
         // If WebView prefers web theme darkening over UA darkening prefer-color-scheme is set
-        // according to whether web page supports dark-theme
+        // to 'dark'
         mRule.loadUrlSync(mContents, mContentsClient.getOnPageFinishedHelper(), "about:blank");
         mSettings.setForceDarkMode(ForceDarkMode.FORCE_DARK_ON);
         mSettings.setForceDarkBehavior(ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK);
 
-        // If web page does not support dark theme prefer-color-scheme should be set to 'light'
-        assertNotDarkScheme(mContents);
+        // If web page does not support dark theme prefer-color-scheme should be still be 'dark'
+        assertDarkScheme(mContents);
 
         final String supportsDarkScheme =
                 "<html><head><meta name=\"color-scheme\" content=\"dark light\"></head>"
@@ -133,9 +133,9 @@ public class DarkModeTest {
         mSettings.setForceDarkBehavior(ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK);
 
         // Load a web-page without dark theme support and check that preferred-color-scheme is set
-        // to no-preferences
+        // to 'dark'
         mRule.loadUrlSync(mContents, mContentsClient.getOnPageFinishedHelper(), "about:blank");
-        assertNotDarkScheme(mContents);
+        assertDarkScheme(mContents);
 
         // Load a web-page with dark theme support in them same WebView and check that
         // preferred-color-scheme is set to dark, so media query is applied
@@ -147,9 +147,9 @@ public class DarkModeTest {
         assertDarkScheme(mContents);
 
         // Load a web-page with no dark theme support in them same WebView and check that
-        // preferred-color-scheme is set back to no-preferences
+        // preferred-color-scheme is still 'dark'
         mRule.loadUrlSync(mContents, mContentsClient.getOnPageFinishedHelper(), "about:blank");
-        assertNotDarkScheme(mContents);
+        assertDarkScheme(mContents);
     }
 
     private boolean prefersDarkTheme(AwContents contents) throws Exception {

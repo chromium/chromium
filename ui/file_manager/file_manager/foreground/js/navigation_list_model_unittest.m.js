@@ -412,13 +412,6 @@ export function testOrderAndNestItems() {
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
       VolumeManagerCommon.VolumeType.SMB, 'smb:file-share'));
 
-  // ZipArchiver mounts zip files as a PROVIDED volume type.
-  const zipVolumeId = 'provided:dmboannefpncccogfdikhmhpmdnddgoe:' +
-      '~%2FDownloads%2Fazip_file%2Ezip:' +
-      '096eaa592ea7e8ffb9a27435e50dabd6c809c125';
-  volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.PROVIDED, zipVolumeId));
-
   const androidAppListModelWithApps =
       createFakeAndroidAppListModel(['android:app1', 'android:app2']);
 
@@ -442,10 +435,9 @@ export function testOrderAndNestItems() {
   // 13.  removable:fuga
   // 14.  archive:a-rar  - mounted as archive
   // 15.  mtp:a-phone
-  // 16.  provided:"zip" - mounted as provided: $zipVolumeId
   //
-  // 17.  android:app1
-  // 18.  android:app2
+  // 16.  android:app1
+  // 17.  android:app2
 
   // Constructor already calls orderAndNestItems_.
   const model = new NavigationListModel(
@@ -454,7 +446,7 @@ export function testOrderAndNestItems() {
 
   // Check items order and that MTP/Archive/Removable respect the original
   // order.
-  assertEquals(18, model.length);
+  assertEquals(17, model.length);
   assertEquals('recent-label', model.item(0).label);
 
   assertEquals('MEDIA_VIEW_AUDIO_ROOT_LABEL', model.item(1).label);
@@ -480,10 +472,9 @@ export function testOrderAndNestItems() {
 
   assertEquals('archive:a-rar', model.item(13).label);
   assertEquals('mtp:a-phone', model.item(14).label);
-  assertEquals(zipVolumeId, model.item(15).label);
 
-  assertEquals('android:app1', model.item(16).label);
-  assertEquals('android:app2', model.item(17).label);
+  assertEquals('android:app1', model.item(15).label);
+  assertEquals('android:app2', model.item(16).label);
 
   // Check NavigationSection, which defaults to TOP.
   // recent-label.
@@ -522,13 +513,11 @@ export function testOrderAndNestItems() {
   assertEquals(NavigationSection.REMOVABLE, model.item(13).section);
   // mtp:a-phone.
   assertEquals(NavigationSection.REMOVABLE, model.item(14).section);
-  // archive:"zip" - $zipVolumeId
-  assertEquals(NavigationSection.REMOVABLE, model.item(15).section);
 
   // android:app1
-  assertEquals(NavigationSection.ANDROID_APPS, model.item(16).section);
+  assertEquals(NavigationSection.ANDROID_APPS, model.item(15).section);
   // android:app2
-  assertEquals(NavigationSection.ANDROID_APPS, model.item(17).section);
+  assertEquals(NavigationSection.ANDROID_APPS, model.item(16).section);
 
   const myFilesModel = model.item(6);
   // Re-order again: cast to allow calling this private model function.

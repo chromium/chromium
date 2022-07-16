@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/public/web/web_performance.h"
-#include "third_party/blink/public/web/web_swap_result.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/paint_event.h"
@@ -30,7 +30,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
                                       public Supplement<Document> {
   friend class FirstMeaningfulPaintDetector;
   using ReportTimeCallback =
-      WTF::CrossThreadOnceFunction<void(WebSwapResult, base::TimeTicks)>;
+      WTF::CrossThreadOnceFunction<void(base::TimeTicks)>;
   using RequestAnimationFrameTimesAfterBackForwardCacheRestore = std::array<
       base::TimeTicks,
       WebPerformance::
@@ -143,11 +143,9 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   void RegisterNotifyPresentationTime(ReportTimeCallback);
   void ReportPresentationTime(PaintEvent,
-                              WebSwapResult,
                               base::TimeTicks timestamp);
   void ReportFirstPaintAfterBackForwardCacheRestorePresentationTime(
-      size_t index,
-      WebSwapResult,
+      wtf_size_t index,
       base::TimeTicks timestamp);
 
   // The caller owns the |clock| which must outlive the PaintTiming.
@@ -189,13 +187,13 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   // index to avoid confusing the data from different navigations.
   void SetFirstPaintAfterBackForwardCacheRestorePresentation(
       base::TimeTicks stamp,
-      size_t index);
-  void SetRequestAnimationFrameAfterBackForwardCacheRestore(size_t index,
+      wtf_size_t index);
+  void SetRequestAnimationFrameAfterBackForwardCacheRestore(wtf_size_t index,
                                                             size_t count);
 
   void RegisterNotifyPresentationTime(PaintEvent);
   void RegisterNotifyFirstPaintAfterBackForwardCacheRestorePresentationTime(
-      size_t index);
+      wtf_size_t index);
 
   base::TimeTicks FirstPaintRendered() const { return first_paint_; }
 

@@ -26,6 +26,12 @@ using UkmEntry = ukm::builders::PageForegroundSession;
 class ForegroundDurationUKMObserverBrowserTest : public InProcessBrowserTest {
  public:
   ForegroundDurationUKMObserverBrowserTest() {}
+
+  ForegroundDurationUKMObserverBrowserTest(
+      const ForegroundDurationUKMObserverBrowserTest&) = delete;
+  ForegroundDurationUKMObserverBrowserTest& operator=(
+      const ForegroundDurationUKMObserverBrowserTest&) = delete;
+
   ~ForegroundDurationUKMObserverBrowserTest() override {}
 
   void PreRunTestOnMainThread() override {
@@ -71,14 +77,12 @@ class ForegroundDurationUKMObserverBrowserTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForegroundDurationUKMObserverBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest, RecordSimple) {
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
   GURL url = https_test_server()->GetURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   CloseAllTabs();
   ExpectMetricCountForUrl(url, "ForegroundDuration", 1);
   ExpectMetricCountForUrl(url, "ForegroundNumInputEvents", 1);
@@ -90,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest, TabSwitching) {
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
   GURL url1 = https_test_server()->GetURL("/simple.html");
   GURL url2 = https_test_server()->GetURL("/form.html");
-  ui_test_utils::NavigateToURL(browser(), url1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);

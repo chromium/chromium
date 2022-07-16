@@ -52,11 +52,14 @@ using CloseCallback =
 class WebIdDialogViewsTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
+    auto on_close = base::BindLambdaForTesting([&]() { did_close_ = true; });
+
     ChromeViewsTestBase::SetUp();
     test_contents_ = CreateTestWebContents(GURL{kRpUrl});
     parent_widget_ = CreateTestWidget();
     dialog_ = new WebIdDialogViews(test_contents_.get(),
-                                   parent_widget_->GetNativeView());
+                                   parent_widget_->GetNativeView(),
+                                   std::move(on_close));
     dialog_observer_ = std::make_unique<DialogObserver>();
   }
 
@@ -79,11 +82,14 @@ class WebIdDialogViewsTest : public ChromeViewsTestBase {
   WebIdDialogViews* dialog() const { return dialog_; }
   content::WebContents* web_contents() const { return test_contents_.get(); }
   DialogObserver* observer() const { return dialog_observer_.get(); }
+  bool did_close() const { return did_close_; }
 
  private:
   std::unique_ptr<views::Widget> parent_widget_;
   WebIdDialogViews* dialog_{nullptr};
   std::unique_ptr<DialogObserver> dialog_observer_;
+
+  bool did_close_ = false;
 
   // Following are all that we need to create a test web contents.
   content::RenderViewHostTestEnabler test_render_host_enabler_;
@@ -103,8 +109,7 @@ TEST_F(WebIdDialogViewsTest, DialogButtonsState) {
 
   // SignIn page should not show any buttons for OK and Cancel.
   auto idp_contents = CreateTestWebContents(GURL{kIdpUrl});
-  dialog()->ShowSigninPage(idp_contents.get(), GURL{kIdpUrl},
-                           base::DoNothing());
+  dialog()->ShowSigninPage(idp_contents.get(), GURL{kIdpUrl});
   EXPECT_EQ(dialog()->GetDialogButtons(), ui::DIALOG_BUTTON_NONE);
 
   // Token exchange should show two dialog buttons for OK and Cancel.
@@ -117,25 +122,19 @@ TEST_F(WebIdDialogViewsTest, DialogButtonsState) {
 }
 
 TEST_F(WebIdDialogViewsTest, ExplicitlyClosingSigninInvokesCallback) {
-  bool did_close = false;
-  auto on_close = base::BindLambdaForTesting([&]() { did_close = true; });
   auto idp_contents = CreateTestWebContents(GURL{kIdpUrl});
-  dialog()->ShowSigninPage(idp_contents.get(), GURL{kIdpUrl},
-                           std::move(on_close));
-  EXPECT_FALSE(did_close);
+  dialog()->ShowSigninPage(idp_contents.get(), GURL{kIdpUrl});
+  EXPECT_FALSE(did_close());
   dialog()->CloseSigninPage();
-  EXPECT_TRUE(did_close);
+  EXPECT_TRUE(did_close());
 }
 
 TEST_F(WebIdDialogViewsTest, ClosingDialogOnSigninInvokesCallback) {
-  bool did_close = false;
-  auto on_close = base::BindLambdaForTesting([&]() { did_close = true; });
   auto idp_contents = CreateTestWebContents(GURL{kIdpUrl});
-  dialog()->ShowSigninPage(idp_contents.get(), GURL{kIdpUrl},
-                           std::move(on_close));
-  EXPECT_FALSE(did_close);
+  dialog()->ShowSigninPage(idp_contents.get(), GURL{kIdpUrl});
+  EXPECT_FALSE(did_close());
   dialog()->Close();
-  EXPECT_TRUE(did_close);
+  EXPECT_TRUE(did_close());
 }
 
 TEST_F(WebIdDialogViewsTest, ClosingDialogOnInitialPermissionsRejectsCallback) {

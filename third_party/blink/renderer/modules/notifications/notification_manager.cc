@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom-blink.h"
@@ -59,6 +60,8 @@ mojom::blink::PermissionStatus NotificationManager::GetPermissionStatus() {
   if (GetSupplementable()->IsContextDestroyed())
     return mojom::blink::PermissionStatus::DENIED;
 
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Blink.NotificationManager.GetPermissionStatusTime");
   mojom::blink::PermissionStatus permission_status;
   if (!GetNotificationService()->GetPermissionStatus(&permission_status)) {
     NOTREACHED();

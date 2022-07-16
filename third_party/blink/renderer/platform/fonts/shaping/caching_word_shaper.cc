@@ -59,8 +59,8 @@ float CachingWordShaper::Width(const TextRun& run,
         FloatRect adjusted_bounds = word_result->DeprecatedInkBounds();
         // Translate glyph bounds to the current glyph position which
         // is the total width before this glyph.
-        adjusted_bounds.SetX(adjusted_bounds.X() + width);
-        glyph_bounds->Unite(adjusted_bounds);
+        adjusted_bounds.set_x(adjusted_bounds.x() + width);
+        glyph_bounds->Union(adjusted_bounds);
       }
       if (!run.Rtl())
         width += word_result->Width();
@@ -73,7 +73,7 @@ float CachingWordShaper::Width(const TextRun& run,
     // Finally, convert width back to positive if run is RTL.
     width = -width;
     if (glyph_bounds) {
-      glyph_bounds->SetX(glyph_bounds->X() + width);
+      glyph_bounds->set_x(glyph_bounds->x() + width);
     }
   }
 

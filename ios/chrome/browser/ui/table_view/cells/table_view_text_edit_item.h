@@ -51,6 +51,10 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 // validation purposes.
 @property(nonatomic, getter=isRequired) BOOL required;
 
+// Boolean value that indicates whether the text entered by the user in the text
+// field is hidden.
+@property(nonatomic, assign) BOOL textFieldSecureTextEntry;
+
 // Whether the text field is enabled for editing.
 @property(nonatomic, getter=isTextFieldEnabled) BOOL textFieldEnabled;
 

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/mojom/cros_display_config.mojom.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -51,6 +50,9 @@ class DisplaySettingsHandler : public ash::mojom::CrosDisplayConfigObserver {
  public:
   // This class must be constructed after CrosSettings is initialized.
   DisplaySettingsHandler();
+
+  DisplaySettingsHandler(const DisplaySettingsHandler&) = delete;
+  DisplaySettingsHandler& operator=(const DisplaySettingsHandler&) = delete;
 
   ~DisplaySettingsHandler() override;
 
@@ -101,8 +103,6 @@ class DisplaySettingsHandler : public ash::mojom::CrosDisplayConfigObserver {
 
   // Must be the last member.
   base::WeakPtrFactory<DisplaySettingsHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplaySettingsHandler);
 };
 
 }  // namespace policy

@@ -5,7 +5,6 @@
 #ifndef MEDIA_AUDIO_ALSA_MOCK_ALSA_WRAPPER_H_
 #define MEDIA_AUDIO_ALSA_MOCK_ALSA_WRAPPER_H_
 
-#include "base/macros.h"
 #include "media/audio/alsa/alsa_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -14,6 +13,9 @@ namespace media {
 class MockAlsaWrapper : public AlsaWrapper {
  public:
   MockAlsaWrapper();
+
+  MockAlsaWrapper(const MockAlsaWrapper&) = delete;
+  MockAlsaWrapper& operator=(const MockAlsaWrapper&) = delete;
 
   ~MockAlsaWrapper() override;
 
@@ -181,9 +183,6 @@ class MockAlsaWrapper : public AlsaWrapper {
   MOCK_METHOD1(MixerSelemIdMalloc, int(snd_mixer_selem_id_t** ptr));
   MOCK_METHOD1(MixerSelemIdFree, void(snd_mixer_selem_id_t* obj));
   MOCK_METHOD1(StrError, const char*(int errnum));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAlsaWrapper);
 };
 
 }  // namespace media

@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/host/transformer_helper.h"
+#include "base/gtest_prod_util.h"
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/ozone/public/input_controller.h"
 
@@ -27,6 +28,10 @@ class ASH_EXPORT AshWindowTreeHostPlatform
  public:
   explicit AshWindowTreeHostPlatform(
       ui::PlatformWindowInitProperties properties);
+
+  AshWindowTreeHostPlatform(const AshWindowTreeHostPlatform&) = delete;
+  AshWindowTreeHostPlatform& operator=(const AshWindowTreeHostPlatform&) =
+      delete;
 
   ~AshWindowTreeHostPlatform() override;
 
@@ -76,8 +81,6 @@ class ASH_EXPORT AshWindowTreeHostPlatform
   ui::InputController* input_controller_;
 
   gfx::Rect last_cursor_confine_bounds_in_pixels_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshWindowTreeHostPlatform);
 };
 
 }  // namespace ash

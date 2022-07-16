@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -30,8 +29,6 @@ class SingleThreadTaskRunner;
 
 namespace discardable_memory {
 
-DISCARDABLE_MEMORY_EXPORT extern const base::Feature kSchedulePeriodicPurge;
-
 // Implementation of DiscardableMemoryAllocator that allocates
 // discardable memory segments through the browser process.
 class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
@@ -43,6 +40,11 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   ClientDiscardableSharedMemoryManager(
       mojo::PendingRemote<mojom::DiscardableSharedMemoryManager> manager,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+  ClientDiscardableSharedMemoryManager(
+      const ClientDiscardableSharedMemoryManager&) = delete;
+  ClientDiscardableSharedMemoryManager& operator=(
+      const ClientDiscardableSharedMemoryManager&) = delete;
 
   // Overridden from base::DiscardableMemoryAllocator:
   std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
@@ -76,15 +78,13 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
     bytes_allocated_limit_for_testing_ = limit;
   }
 
-  static constexpr base::TimeDelta kMinAgeForScheduledPurge =
-      base::TimeDelta::FromMinutes(5);
+  static constexpr base::TimeDelta kMinAgeForScheduledPurge = base::Minutes(5);
 
   // The expected cost of purging should be very small (< 1ms), so it can be
   // scheduled frequently. However, we don't purge memory that has been touched
   // recently (see: |BackgroundPurge()| and |kMinAgeForScheduledPurge|), so
   // there is no benefit to scheduling this more than once per minute.
-  static constexpr base::TimeDelta kScheduledPurgeInterval =
-      base::TimeDelta::FromMinutes(1);
+  static constexpr base::TimeDelta kScheduledPurgeInterval = base::Minutes(1);
 
   // These fields are only protected for testing, they would otherwise be
   // private. Everything else should be either public or private.
@@ -204,11 +204,7 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   // RenderThreadImpl.
   bool foregrounded_ = false;
 
-  // Whether the scheduled purge feature is enabled.
-  const bool may_schedule_periodic_purge_;
-
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(ClientDiscardableSharedMemoryManager);
 };
 
 }  // namespace discardable_memory

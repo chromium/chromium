@@ -20,6 +20,9 @@ def _CommonChecks(input_api, output_api):
 
   if any(f for f in files if f.startswith('svgo_presubmit')):
     tests = [path.join(cwd, 'svgo_presubmit_test.py')]
-    return input_api.canned_checks.RunUnitTests(input_api, output_api, tests)
+    return input_api.canned_checks.RunUnitTests(input_api,
+                                                output_api,
+                                                tests,
+                                                skip_shebang_check=True)
 
   return []

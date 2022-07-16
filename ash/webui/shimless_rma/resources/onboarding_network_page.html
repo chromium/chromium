@@ -8,10 +8,10 @@
   }
 
   iron-icon {
-    width: 20px;
-    height: 20px;
     /* TODO(joonbug): Update with chrome color */
     color: blue;
+    height: 20px;
+    width: 20px;
   }
 
   .error {
@@ -21,10 +21,11 @@
   }
 
   #networkList {
+    --cros-icon-color-primary: grey;
     flex: 1;
   }
 
-  .dialogFooter {
+  .dialog-footer {
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -37,39 +38,36 @@
 
 <base-page orientation="column">
   <div slot="header">
-    <iron-icon icon="shimless-icon:wifi"></iron-icon>
-    <!-- TODO(joonbug): Update for i18n -->
-    <h1>Get connected</h1>
-    <p>Connecting to Wi-Fi is recommended to make the repair process easier. Your network will be saved.</p>
+    <h1>[[i18n('connectNetworkTitleText')]]</h1>
+    <div>[[i18n('connectNetworkDescriptionText')]]</div>
   </div>
   <div slot="body" id="container">
-    <network-list id="networkList" show-buttons
-        show-technology-badge="true"
-        networks="[[networks_]]"
-        on-selected="onNetworkSelected_">
+    <network-list id="networkList" show-technology-badge
+        networks="[[networks_]]" on-selected="onNetworkSelected_">
     </network-list>
   </div>
 </base-page>
 
-<!-- TODO(joonbug): Update for i18n -->
 <cr-dialog id="dialog" close-text="close">
   <div slot="title">
     [[getDialogTitle_(networkName_, networkType_, networkShowConnect_)]]
   </div>
   <div slot="body">
-    <network-config id="networkConfig" enable-connect="{{enableConnect_}}" error="{{error_}}"
-      on-close="onConfigClose_" on-properties-set="onPropertiesSet_" connect-on-enter="[[networkShowConnect_]]"
-      type="{{networkType_}}" name="{{networkName_}}" guid="[[guid_]]">
+    <network-config id="networkConfig" enable-connect="{{enableConnect_}}"
+      error="{{error_}}" on-close="onConfigClose_" name="{{networkName_}}"
+      on-properties-set="onPropertiesSet_" type="{{networkType_}}"
+      connect-on-enter="[[networkShowConnect_]]" guid="[[guid_]]">
     </network-config>
-    <div class="dialogFooter" slot="button-container">
+    <div class="dialog-footer" slot="button-container">
       <template is="dom-if" if="[[error_]]" restamp>
         <div class="flex error">[[getError_(error_)]]</div>
       </template>
-      <!-- TODO(joonbug): Update for i18n -->
-      <cr-button id="cancelButton" on-click="closeConfig_">Cancel</cr-button>
+      <cr-button id="cancelButton" on-click="closeConfig_">
+          [[i18n('connectNetworkDialogCancelButtonText')]]
+      </cr-button>
       <cr-button id="connectButton" on-click="connectNetwork_"
         disabled="[[!enableConnect_]]">
-          Connect
+          [[i18n('connectNetworkDialogConnectButtonText')]]
       </cr-button>
     </div>
   </div>

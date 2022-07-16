@@ -45,6 +45,10 @@ class ProcessMemoryMetricsEmitter
   // Use this constructor to emit UKM from only a specified renderer's.
   explicit ProcessMemoryMetricsEmitter(base::ProcessId pid_scope);
 
+  ProcessMemoryMetricsEmitter(const ProcessMemoryMetricsEmitter&) = delete;
+  ProcessMemoryMetricsEmitter& operator=(const ProcessMemoryMetricsEmitter&) =
+      delete;
+
   // This must be called on the main thread of the browser process.
   void FetchAndEmitProcessMemoryMetrics();
 
@@ -103,8 +107,6 @@ class ProcessMemoryMetricsEmitter
   base::ProcessId pid_scope_ = base::kNullProcessId;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryMetricsEmitter);
 };
 
 // A |PageInfo| describes some metrics about a particular page with respect to

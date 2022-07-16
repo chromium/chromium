@@ -5,14 +5,15 @@
 #include "ash/webui/file_manager/file_manager_ui.h"
 
 #include "ash/webui/file_manager/file_manager_page_handler.h"
+#include "ash/webui/file_manager/resource_loader.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources_map.h"
 #include "ash/webui/file_manager/url_constants.h"
-#include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/file_manager/grit/file_manager_gen_resources_map.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
@@ -21,27 +22,15 @@
 namespace ash {
 namespace file_manager {
 
-void AddFilesAppResources(content::WebUIDataSource* source,
-                          const webui::ResourcePath* entries,
-                          size_t size) {
-  for (size_t i = 0; i < size; ++i) {
-    std::string path(entries[i].path);
-    // Only load resources for Files app.
-    if (base::StartsWith(path, "file_manager/")) {
-      // Files app UI has all paths relative to //ui/file_manager/file_manager/
-      // so we remove the leading file_manager/ to match the existing paths.
-      base::ReplaceFirstSubstringAfterOffset(&path, 0, "file_manager/", "");
-      source->AddResourcePath(path, entries[i].id);
-    }
-  }
-}
-
 FileManagerUI::FileManagerUI(content::WebUI* web_ui,
                              std::unique_ptr<FileManagerUIDelegate> delegate)
-    : MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
+    : MojoWebDialogUI(web_ui), delegate_(std::move(delegate)) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   auto* trusted_source = CreateTrustedAppDataSource();
   content::WebUIDataSource::Add(browser_context, trusted_source);
+
+  // Add ability to request chrome-untrusted: URLs
+  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 }
 
 content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
@@ -68,16 +57,19 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
   // Script security policy.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
-      "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp "
+      "script-src chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp "
       "chrome://resources "
       "'self' ;");
 
   // Metadata Shared Worker security policy.
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::WorkerSrc,
-      "worker-src chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
-      "'self' ;");
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src 'self' ;");
+
+  // Allow using the chrome-untrusted:// scheme in the host.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc,
+      "frame-src chrome-untrusted://file-manager "
+      "'self';");
 
   // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
   source->DisableTrustedTypesCSP();

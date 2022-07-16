@@ -17,7 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -369,7 +369,7 @@ TEST_F(WASAPIAudioOutputStreamTest, ValidPacketSize) {
   EXPECT_TRUE(aos->Open());
 
   // Derive the expected duration of each packet.
-  base::TimeDelta packet_duration = base::TimeDelta::FromSecondsD(
+  base::TimeDelta packet_duration = base::Seconds(
       static_cast<double>(aosw.samples_per_packet()) / aosw.sample_rate());
 
   // Wait for the first callback and verify its parameters.  Ignore any
@@ -510,7 +510,7 @@ TEST_F(WASAPIAudioOutputStreamTest,
   EXPECT_TRUE(aos->Open());
 
   // Derive the expected size in bytes of each packet.
-  base::TimeDelta packet_duration = base::TimeDelta::FromSecondsD(
+  base::TimeDelta packet_duration = base::Seconds(
       static_cast<double>(aosw.samples_per_packet()) / aosw.sample_rate());
 
   // Wait for the first callback and verify its parameters.
@@ -544,7 +544,7 @@ TEST_F(WASAPIAudioOutputStreamTest,
   EXPECT_TRUE(aos->Open());
 
   // Derive the expected size in bytes of each packet.
-  base::TimeDelta packet_duration = base::TimeDelta::FromSecondsD(
+  base::TimeDelta packet_duration = base::Seconds(
       static_cast<double>(aosw.samples_per_packet()) / aosw.sample_rate());
 
   // Wait for the first callback and verify its parameters.

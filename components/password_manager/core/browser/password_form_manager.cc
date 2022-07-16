@@ -52,7 +52,6 @@ using autofill::GaiaIdHash;
 using autofill::NOT_USERNAME;
 using autofill::SINGLE_USERNAME;
 using autofill::password_generation::PasswordGenerationType;
-using base::TimeDelta;
 using base::TimeTicks;
 
 using Logger = autofill::SavePasswordProgressLogger;
@@ -62,9 +61,6 @@ namespace password_manager {
 bool PasswordFormManager::wait_for_server_predictions_for_filling_ = true;
 
 namespace {
-
-constexpr TimeDelta kMaxFillingDelayForServerPredictions =
-    TimeDelta::FromMilliseconds(500);
 
 // Returns bit masks with differences in forms attributes which are important
 // for parsing. Bits are set according to enum FormDataDifferences.
@@ -358,6 +354,7 @@ void PasswordFormManager::UpdateSubmissionIndicatorEvent(
     autofill::mojom::SubmissionIndicatorEvent event) {
   parsed_submitted_form_->form_data.submission_event = event;
   parsed_submitted_form_->submission_event = event;
+  password_save_manager_->UpdateSubmissionIndicatorEvent(event);
 }
 
 void PasswordFormManager::OnNopeUpdateClicked() {
@@ -628,6 +625,17 @@ PasswordFormManager::PasswordFormManager(
   owned_form_fetcher_->Fetch();
 }
 
+void PasswordFormManager::DelayFillForServerSidePredictions() {
+  waiting_for_server_predictions_ = true;
+
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PasswordFormManager::Fill,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kMaxFillingDelayForServerPredictions);
+}
+
 void PasswordFormManager::OnFetchCompleted() {
   received_stored_credentials_time_ = TimeTicks::Now();
 
@@ -655,12 +663,7 @@ void PasswordFormManager::OnFetchCompleted() {
     ReportTimeBetweenStoreAndServerUMA();
     Fill();
   } else if (!waiting_for_server_predictions_) {
-    waiting_for_server_predictions_ = true;
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&PasswordFormManager::Fill,
-                       weak_ptr_factory_.GetWeakPtr()),
-        kMaxFillingDelayForServerPredictions);
+    DelayFillForServerSidePredictions();
   }
 }
 
@@ -709,25 +712,36 @@ bool PasswordFormManager::ProvisionallySave(
   metrics_recorder_->set_possible_username_used(false);
   votes_uploader_.clear_single_username_vote_data();
 
+  // TODO(crbug.com/959776): Reset possible username after it's used.
   if (IsUsernameFirstFlowFeatureEnabled() &&
-      parsed_submitted_form_->username_value.empty() && possible_username &&
-      IsPossibleSingleUsernameAvailable(possible_username)) {
-    // Suggest the possible username value in a prompt if the server confirmed
-    // it is a single username field. Otherwise, |possible_username| is used
-    // only for voting.
-    if (possible_username->HasSingleUsernameServerPrediction()) {
-      parsed_submitted_form_->username_value = possible_username->value;
-      LogUsingPossibleUsername(client_, /*is_used*/ true,
-                               "Valid possible username, populated in prompt");
-    } else {
-      LogUsingPossibleUsername(
-          client_, /*is_used*/ true,
-          "Valid possible username, not populated in prompt");
+      parsed_submitted_form_->username_value.empty() &&
+      !parsed_submitted_form_->password_value.empty()) {
+    if (IsPossibleSingleUsernameAvailable(possible_username)) {
+      // Suggest the possible username value in a prompt if the server confirmed
+      // it is a single username field. Otherwise, |possible_username| is used
+      // only for voting.
+      if (possible_username->HasSingleUsernameServerPrediction()) {
+        parsed_submitted_form_->username_value = possible_username->value;
+        metrics_recorder_->set_possible_username_used(true);
+        LogUsingPossibleUsername(
+            client_, /*is_used*/ true,
+            "Valid possible username, populated in prompt");
+      } else {
+        LogUsingPossibleUsername(
+            client_, /*is_used*/ true,
+            "Valid possible username, not populated in prompt");
+      }
+      votes_uploader_.set_single_username_vote_data(
+          possible_username->renderer_id, possible_username->value,
+          possible_username->form_predictions.value_or(FormPredictions()),
+          form_fetcher_->GetBestMatches());
+    } else {  // !IsPossibleSingleUsernameAvailable(possible_username)
+      // If no single username typing preceded single password typing, set
+      // empty single username vote data for the fallback classifier.
+      votes_uploader_.set_single_username_vote_data(
+          FieldRendererId(), std::u16string(), FormPredictions(),
+          form_fetcher_->GetBestMatches());
     }
-    metrics_recorder_->set_possible_username_used(true);
-    votes_uploader_.set_single_username_vote_data(
-        possible_username->renderer_id, possible_username->value,
-        possible_username->form_predictions.value_or(FormPredictions()));
   }
   CreatePendingCredentials();
   return true;
@@ -880,7 +894,7 @@ PasswordFormManager::PasswordFormManager(
       metrics_recorder_(metrics_recorder),
       owned_form_fetcher_(form_fetcher
                               ? nullptr
-                              : FormFetcherImpl::CreateFormFetcherImpl(
+                              : std::make_unique<FormFetcherImpl>(
                                     observed_digest()
                                         ? *observed_digest()
                                         : PasswordFormDigest(*observed_form()),
@@ -1060,6 +1074,8 @@ void PasswordFormManager::UpdateFormManagerWithFormChanges(
   autofills_left_ = kMaxTimesAutofill;
   parser_.reset_predictions();
   UpdatePredictionsForObservedForm(predictions);
+
+  DelayFillForServerSidePredictions();
 }
 
 }  // namespace password_manager

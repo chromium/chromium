@@ -50,7 +50,7 @@ class MockBrowsingDataCounter : public BrowsingDataCounter {
                            &MockBrowsingDataCounter::ReportResult),
                        base::Unretained(this),
                        static_cast<BrowsingDataCounter::ResultInt>(0)),
-        base::TimeDelta::FromMilliseconds(delay_ms_));
+        base::Milliseconds(delay_ms_));
   }
 
   void OnInitialized() override {}

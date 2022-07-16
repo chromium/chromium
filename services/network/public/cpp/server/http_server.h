@@ -60,6 +60,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) HttpServer {
   // callbacks yet.
   HttpServer(mojo::PendingRemote<mojom::TCPServerSocket> server_socket,
              HttpServer::Delegate* delegate);
+
+  HttpServer(const HttpServer&) = delete;
+  HttpServer& operator=(const HttpServer&) = delete;
+
   ~HttpServer();
 
   void AcceptWebSocket(int connection_id,
@@ -145,8 +149,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) HttpServer {
   std::map<int, std::unique_ptr<HttpConnection>> id_to_connection_;
 
   base::WeakPtrFactory<HttpServer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HttpServer);
 };
 
 }  // namespace server

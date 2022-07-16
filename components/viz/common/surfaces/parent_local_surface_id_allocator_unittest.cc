@@ -23,6 +23,11 @@ class ParentLocalSurfaceIdAllocatorTest : public testing::Test {
  public:
   ParentLocalSurfaceIdAllocatorTest() = default;
 
+  ParentLocalSurfaceIdAllocatorTest(const ParentLocalSurfaceIdAllocatorTest&) =
+      delete;
+  ParentLocalSurfaceIdAllocatorTest& operator=(
+      const ParentLocalSurfaceIdAllocatorTest&) = delete;
+
   ~ParentLocalSurfaceIdAllocatorTest() override = default;
 
   ParentLocalSurfaceIdAllocator& allocator() { return *allocator_.get(); }
@@ -48,8 +53,6 @@ class ParentLocalSurfaceIdAllocatorTest : public testing::Test {
 
  private:
   std::unique_ptr<ParentLocalSurfaceIdAllocator> allocator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParentLocalSurfaceIdAllocatorTest);
 };
 
 // UpdateFromChild() on a parent allocator should accept the child's sequence

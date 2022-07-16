@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Closure Benchmarks - goog.string.StringBuffer</title>
+<script src="../base.js"></script>
+<script>
+  goog.require('goog.string.StringBuffer');
+  goog.require('goog.testing.benchmark');
+</script>
+<link rel="stylesheet" href="../testing/performancetable.css">
+</head>
+<body>
+<script>
+
+  var junkstring1 = 'try{goog$module$ModuleManager.getInstance().beforeLoadMo' +
+                    'duleCode("sy177");var pi... (length: 212208)\n';
+  var junkstring2 = 'try{goog$module$ModuleManager.getInstance().beforeLoadMo' +
+                    'duleCode("sy48");var ppl... (length: 538942)\n';
+
+  function benchmarkAppend() {
+    var sb = new goog.string.StringBuffer();
+    for (var i = 0; i < 1000; i++) {
+      sb.append(junkstring1);
+      sb.append(i);
+    }
+    sb.toString();
+  }
+
+  function benchmarkVarArgsAppend() {
+    var sb = new goog.string.StringBuffer();
+    for (var i = 0; i < 1000; i++) {
+      sb.append(junkstring1, i, junkstring2);
+      sb.append(i);
+    }
+    sb.toString();
+  }
+</script>
+</body>
+</html>

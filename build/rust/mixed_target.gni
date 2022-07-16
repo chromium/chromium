@@ -1,0 +1,218 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/rust.gni")
+import("//build/rust/rust_cxx.gni")
+import("//build/rust/rust_source_set.gni")
+import("//build/rust/rust_target.gni")
+
+# Defines a target containing both Rust and C++ code, with
+# bidirectional calls. It's rare to use this target
+# directly - instead please use mixed_source_set or,
+# less commonly, mixed_component.
+#
+# This intent of this template is to make it  as easy as
+# possible to replace an existing C++ target in situ,
+# to add some Rust code. It intentionally hides a lot
+# of complexity, and in unusually nuanced situations you may
+# need to work directly with //build/rust/rust_source_set.gni
+# instead.
+#
+# Important: downstream Rust targets should NOT depend upon this
+# type of target. Instead they should append the suffix "_rs"
+# when adding this to their deps:
+#
+#   deps += [ "//example:foo_bar_rs" ]
+#
+# Downstream C++ targets should depend on this target directly.
+#
+# Parameters
+#
+#   sources
+#   configs
+#   deps
+#   etc. etc. etc.
+#     Parameters for C++ target. All parameters not starting with
+#     'rs_' are passed directly to the underlying C++ target
+#     (source_set, component etc.)
+#
+#   rs_sources
+#   rs_epoch
+#   rs_edition
+#   rs_configs
+#   rs_deps
+#   rs_test_deps
+#   rs_skip_unit_tests
+#   rs_unit_test_target
+#   rs_crate_root
+#   rs_features
+#   rs_cxx_bindings
+#     Rust parameters. Same meaning as in 'rust_source_set' without the
+#     'rs_' prefix, e.g. rs_configs here means the same as 'configs' in
+#     rust_source_set.
+#   rs_visibility
+#     A special note on visibility. By default, the Rust parts of this
+#     mixed target are _only_ visible to the C++ parts. That's different
+#     from the normal visibility default which is "*", but is more
+#     commonly what you want. If you want visibility of "*" you should
+#     override this.
+#
+# In the event that Rust is not enabled in the build, this will produce a
+# plain C/C++ target.
+#
+# If Rust is enabled, a #define ENABLE_RUST will be applied to the C/C++
+# code.
+#
+# Implementation note: this target generally leans heavily on the
+# rust_source_set.gni template to build its Rust code (which in turn is
+# just a rust_target.gni in slightly fancy clothes). However, the exception
+# is for the C++ side of any cxx bindings. These are built and managed directly
+# by this template instead of deferring to the facilities in rust_target.gni,
+# because we want the resulting bindings to be built as part of the pre-existing
+# C++ source_set. This is partly to reduce target proliferation, partly to avoid
+# having to use 'allow_circular_includes' and deal with layering violations,
+# and partly because other targets elsewhere in the codebase might have
+# visibility rules which refer to this source_set by name, and wouldn't allow
+# a C++/Rust bindings source_set to have visibility into the same headers.
+
+template("mixed_target") {
+  _target_name = target_name
+
+  known_rs_variables = [
+    "rs_epoch",
+    "rs_edition",
+    "rs_configs",
+    "rs_deps",
+    "rs_test_deps",
+    "rs_sources",
+    "rs_features",
+    "rs_cxx_bindings",
+    "rs_crate_root",
+    "rs_skip_unit_tests",
+    "rs_unit_test_target",
+    "rs_visibility",
+  ]
+
+  _rs_enable = enable_rust
+
+  # Conceivably, conditional statements in the template invocation
+  # might result in no rs_sources files. If so, don't build any Rust.
+  if (!defined(invoker.rs_sources) || invoker.rs_sources == []) {
+    _rs_enable = false
+  }
+
+  if (_rs_enable) {
+    rust_source_set("${_target_name}_rs") {
+      mutually_dependent_target = ":${_target_name}"
+      if (defined(invoker.rs_epoch)) {
+        epoch = invoker.rs_epoch
+      }
+      if (defined(invoker.rs_edition)) {
+        edition = invoker.rs_edition
+      }
+      if (defined(invoker.rs_configs)) {
+        configs = invoker.rs_configs
+      }
+      if (defined(invoker.rs_test_deps)) {
+        test_deps = invoker.rs_test_deps
+      }
+      if (defined(invoker.rs_sources)) {
+        sources = invoker.rs_sources
+      }
+      if (defined(invoker.rs_features)) {
+        features = invoker.rs_features
+      }
+      if (defined(invoker.rs_deps)) {
+        deps = invoker.rs_deps
+      }
+      if (defined(invoker.rs_crate_root)) {
+        crate_root = invoker.rs_crate_root
+      }
+      if (defined(invoker.rs_skip_unit_tests)) {
+        skip_unit_tests = invoker.rs_skip_unit_tests
+      }
+      if (defined(invoker.rs_unit_test_target)) {
+        unit_test_target = invoker.rs_unit_test_target
+      }
+      visibility = [ ":${_target_name}" ]
+      if (defined(invoker.rs_visibility)) {
+        visibility += invoker.rs_visibility
+      }
+      if (defined(invoker.rs_cxx_bindings)) {
+        if (!defined(deps)) {
+          deps = []
+        }
+        deps += [ "//build/rust:cxx_rustdeps" ]
+      }
+    }
+  } else {
+    not_needed(invoker, known_rs_variables)
+  }
+
+  target(invoker.target_type, _target_name) {
+    forward_variables_from(invoker, "*", known_rs_variables + [ "target_type" ])
+    if (_rs_enable) {
+      if (!defined(deps)) {
+        deps = []
+      }
+
+      # C++ source set depends on the Rust source set
+      # plus any other things it required C++ targets
+      # to depend upon (likely the Rust stdlib). This
+      # does not include cxx bindings, which we create
+      # below.
+      deps += [ ":${_target_name}_rs_cpp_bindings" ]
+      if (!defined(configs)) {
+        configs = []
+      }
+      configs += [ "//build/rust:rust_enabled" ]
+      if (defined(invoker.rs_cxx_bindings)) {
+        deps += [
+          # Generate the C++ side of any Rust bindings.
+          # We will use the generated source code just below.
+          ":${_target_name}_rs_cxx_gen",
+
+          # Also, depend on the cxx 'standard library',
+          # i.e. utilities which any user of cxx needs to
+          # have.
+          "//build/rust:cxx_cppdeps",
+        ]
+        if (!defined(sources)) {
+          sources = []
+        }
+
+        # Depend on the generated sources which are the C++
+        # side of the cxx bindings.
+        sources += process_file_template(
+                invoker.rs_cxx_bindings,
+                [
+                  "{{source_gen_dir}}/{{source_file_part}}.h",
+                  "{{source_gen_dir}}/{{source_file_part}}.cc",
+                ])
+      }
+      if (defined(visibility)) {
+        visibility += [ ":${_target_name}_rs" ]
+        if (!defined(invoker.rs_skip_unit_tests) ||
+            !invoker.rs_skip_unit_tests) {
+          _unit_test_target = "${_target_name}_rs_unittests"
+          if (defined(invoker.rs_unit_test_target)) {
+            _unit_test_target = invoker.rs_unit_test_target
+          }
+          visibility += [ ":${_unit_test_target}" ]
+        }
+      }
+    }
+  }
+
+  if (_rs_enable && defined(invoker.rs_cxx_bindings)) {
+    rust_cxx("${_target_name}_rs_cxx") {
+      inputs = invoker.rs_cxx_bindings
+      generate_source_set = false
+    }
+  }
+}
+
+set_defaults("mixed_source_set") {
+  configs = default_compiler_configs
+}

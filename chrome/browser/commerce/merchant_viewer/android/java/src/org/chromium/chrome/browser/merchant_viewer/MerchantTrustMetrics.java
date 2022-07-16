@@ -20,20 +20,42 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class MerchantTrustMetrics {
     /**
-     * The reason why we clear the message in the queue of {@link MessageDispatcher}.
+     * The reason why we clear the prepared message.
      *
      * Needs to stay in sync with MerchantTrustMessageClearReason in enums.xml. These values are
      * persisted to logs. Entries should not be renumbered and numeric values should never be
      * reused.
      */
     @IntDef({MessageClearReason.UNKNOWN, MessageClearReason.NAVIGATE_TO_SAME_DOMAIN,
-            MessageClearReason.NAVIGATE_TO_DIFFERENT_DOMAIN})
+            MessageClearReason.NAVIGATE_TO_DIFFERENT_DOMAIN,
+            MessageClearReason.MESSAGE_CONTEXT_NO_LONGER_VALID,
+            MessageClearReason.SWITCH_TO_DIFFERENT_WEBCONTENTS})
     @Retention(RetentionPolicy.SOURCE)
     public @interface MessageClearReason {
         int UNKNOWN = 0;
         int NAVIGATE_TO_SAME_DOMAIN = 1;
         int NAVIGATE_TO_DIFFERENT_DOMAIN = 2;
+        int MESSAGE_CONTEXT_NO_LONGER_VALID = 3;
+        int SWITCH_TO_DIFFERENT_WEBCONTENTS = 4;
         // Always update MAX_VALUE to match the last reason in the list.
+        int MAX_VALUE = 4;
+    }
+
+    /**
+     * Which ui the bottom sheet is opened from.
+     *
+     * Needs to stay in sync with MerchantTrustBottomSheetOpenedSource in enums.xml. These values
+     * are persisted to logs. Entries should not be renumbered and numeric values should never be
+     * reused.
+     */
+    @IntDef({BottomSheetOpenedSource.UNKNOWN, BottomSheetOpenedSource.FROM_MESSAGE,
+            BottomSheetOpenedSource.FROM_PAGE_INFO})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BottomSheetOpenedSource {
+        int UNKNOWN = 0;
+        int FROM_MESSAGE = 1;
+        int FROM_PAGE_INFO = 2;
+        // Always update MAX_VALUE to match the last item in the list.
         int MAX_VALUE = 2;
     }
 
@@ -235,5 +257,17 @@ public class MerchantTrustMetrics {
             RecordHistogram.recordMediumTimesHistogram(
                     "MerchantTrust.BottomSheet.DurationFullyOpened", durationOpened);
         }
+    }
+
+    /** Records metrics when the page info is opened. */
+    public void recordMetricsForStoreInfoRowVisible(boolean visible) {
+        RecordHistogram.recordBooleanHistogram(
+                "MerchantTrust.PageInfo.IsStoreInfoVisible", visible);
+    }
+
+    /** Records metrics for the bottom sheet opened source. */
+    public void recordMetricsForBottomSheetOpenedSource(@BottomSheetOpenedSource int source) {
+        RecordHistogram.recordEnumeratedHistogram("MerchantTrust.BottomSheet.OpenSource", source,
+                BottomSheetOpenedSource.MAX_VALUE + 1);
     }
 }

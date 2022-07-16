@@ -14,7 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -39,6 +39,10 @@ namespace device {
 class MtpDeviceManager : public mojom::MtpManager {
  public:
   MtpDeviceManager();
+
+  MtpDeviceManager(const MtpDeviceManager&) = delete;
+  MtpDeviceManager& operator=(const MtpDeviceManager&) = delete;
+
   ~MtpDeviceManager() override;
 
   void AddReceiver(mojo::PendingReceiver<mojom::MtpManager> receiver);
@@ -204,8 +208,6 @@ class MtpDeviceManager : public mojom::MtpManager {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<MtpDeviceManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MtpDeviceManager);
 };
 
 }  // namespace device

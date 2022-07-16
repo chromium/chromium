@@ -1,0 +1,3 @@
+table.AXColumnHeaderUIElements=[:4]
+cell.AXColumnHeaderUIElements=[:4]
+columnheader.AXColumnHeaderUIElements=n/a

@@ -19,8 +19,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/images/branded_image_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -146,26 +144,6 @@
   return stopButton;
 }
 
-- (ToolbarButton*)bookmarkButton {
-  ToolbarButton* bookmarkButton = [ToolbarButton
-      toolbarButtonWithImage:[UIImage imageNamed:@"toolbar_bookmark"]];
-  [bookmarkButton setImage:[UIImage imageNamed:@"toolbar_bookmark_active"]
-                  forState:kControlStateSpotlighted];
-  [self configureButton:bookmarkButton width:kAdaptiveToolbarButtonWidth];
-  bookmarkButton.adjustsImageWhenHighlighted = NO;
-  [bookmarkButton
-      setImage:[bookmarkButton imageForState:UIControlStateHighlighted]
-      forState:UIControlStateSelected];
-  bookmarkButton.accessibilityLabel = l10n_util::GetNSString(IDS_TOOLTIP_STAR);
-  [bookmarkButton addTarget:self.actionHandler
-                     action:@selector(bookmarkAction)
-           forControlEvents:UIControlEventTouchUpInside];
-
-  bookmarkButton.visibilityMask =
-      self.visibilityConfiguration.bookmarkButtonVisibility;
-  return bookmarkButton;
-}
-
 - (ToolbarButton*)openNewTabButton {
   ToolbarNewTabButton* newTabButton = [ToolbarNewTabButton
       toolbarButtonWithImage:[UIImage imageNamed:@"toolbar_new_tab_page"]];
@@ -224,18 +202,16 @@
   constraint.active = YES;
   button.toolbarConfiguration = self.toolbarConfiguration;
   button.exclusiveTouch = YES;
-  if (@available(iOS 13.4, *)) {
-      button.pointerInteractionEnabled = YES;
-      button.pointerStyleProvider =
-          ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
-                           UIPointerShape* proposedShape) {
-        // This gets rid of a thin border on a spotlighted bookmarks button.
-        // This is applied to all toolbar buttons for consistency.
-        CGRect rect = CGRectInset(button.frame, 1, 1);
-        UIPointerShape* shape = [UIPointerShape shapeWithRoundedRect:rect];
-        return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
-      };
-  }
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider =
+      ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
+                       UIPointerShape* proposedShape) {
+    // This gets rid of a thin border on a spotlighted bookmarks button.
+    // This is applied to all toolbar buttons for consistency.
+    CGRect rect = CGRectInset(button.frame, 1, 1);
+    UIPointerShape* shape = [UIPointerShape shapeWithRoundedRect:rect];
+    return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
+  };
 }
 
 @end

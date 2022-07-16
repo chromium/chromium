@@ -54,4 +54,8 @@ interface INavigation {
 
   // @since 92
   int getNavigationEntryOffset() = 22;
+
+  // @since 97
+  void disableIntentProcessing() = 23;
+
 }

@@ -24,6 +24,11 @@ class ChromeBrowsingDataRemoverDelegateFactory
   // Returns the ChromeBrowsingDataRemoverDelegate associated with |profile|.
   static ChromeBrowsingDataRemoverDelegate* GetForProfile(Profile* profile);
 
+  ChromeBrowsingDataRemoverDelegateFactory(
+      const ChromeBrowsingDataRemoverDelegateFactory&) = delete;
+  ChromeBrowsingDataRemoverDelegateFactory& operator=(
+      const ChromeBrowsingDataRemoverDelegateFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       ChromeBrowsingDataRemoverDelegateFactory>;
@@ -36,8 +41,6 @@ class ChromeBrowsingDataRemoverDelegateFactory
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowsingDataRemoverDelegateFactory);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_CHROME_BROWSING_DATA_REMOVER_DELEGATE_FACTORY_H_

@@ -138,10 +138,10 @@ void GridBaselineAlignment::UpdateBaselineAlignmentContext(
 
   // Looking for a compatible baseline-sharing group.
   if (add_result.is_new_entry) {
-    add_result.stored_value->value =
-        std::make_unique<BaselineContext>(child, preference, ascent, descent);
+    add_result.stored_value->value = MakeGarbageCollected<BaselineContext>(
+        child, preference, ascent, descent);
   } else {
-    auto* context = add_result.stored_value->value.get();
+    BaselineContext* context = add_result.stored_value->value;
     context->UpdateSharedGroup(child, preference, ascent, descent);
   }
 }

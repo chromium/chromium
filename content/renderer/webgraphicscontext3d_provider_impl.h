@@ -35,6 +35,12 @@ class CONTENT_EXPORT WebGraphicsContext3DProviderImpl
  public:
   WebGraphicsContext3DProviderImpl(
       scoped_refptr<viz::ContextProviderCommandBuffer> provider);
+
+  WebGraphicsContext3DProviderImpl(const WebGraphicsContext3DProviderImpl&) =
+      delete;
+  WebGraphicsContext3DProviderImpl& operator=(
+      const WebGraphicsContext3DProviderImpl&) = delete;
+
   ~WebGraphicsContext3DProviderImpl() override;
 
   // WebGraphicsContext3DProvider implementation.
@@ -68,8 +74,6 @@ class CONTENT_EXPORT WebGraphicsContext3DProviderImpl
   base::RepeatingClosure context_lost_callback_;
   base::flat_map<SkColorType, std::unique_ptr<cc::ImageDecodeCache>>
       image_decode_cache_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebGraphicsContext3DProviderImpl);
 };
 
 }  // namespace content

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/search_box/search_box_view_base.h"
-#include "base/macros.h"
 
 namespace ash {
 class SearchBoxViewDelegate;
@@ -20,6 +19,10 @@ namespace keyboard_shortcut_viewer {
 class KSVSearchBoxView : public ash::SearchBoxViewBase {
  public:
   explicit KSVSearchBoxView(ash::SearchBoxViewDelegate* delegate);
+
+  KSVSearchBoxView(const KSVSearchBoxView&) = delete;
+  KSVSearchBoxView& operator=(const KSVSearchBoxView&) = delete;
+
   ~KSVSearchBoxView() override = default;
 
   // views::View:
@@ -40,8 +43,6 @@ class KSVSearchBoxView : public ash::SearchBoxViewBase {
 
   // Accessibility data value. Used to pronounce the number of search results.
   std::u16string accessible_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(KSVSearchBoxView);
 };
 
 }  // namespace keyboard_shortcut_viewer

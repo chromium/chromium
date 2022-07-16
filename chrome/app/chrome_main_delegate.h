@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,7 +20,7 @@ class CommandLine;
 }
 
 namespace chromeos {
-class LacrosChromeServiceImpl;
+class LacrosService;
 }
 
 namespace tracing {
@@ -42,6 +41,10 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   // |exe_entry_point_ticks| is the time at which the main function of the
   // executable was entered, or null if not available.
   explicit ChromeMainDelegate(base::TimeTicks exe_entry_point_ticks);
+
+  ChromeMainDelegate(const ChromeMainDelegate&) = delete;
+  ChromeMainDelegate& operator=(const ChromeMainDelegate&) = delete;
+
   ~ChromeMainDelegate() override;
 
  protected:
@@ -49,9 +52,9 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   bool BasicStartupComplete(int* exit_code) override;
   void PreSandboxStartup() override;
   void SandboxInitialized(const std::string& process_type) override;
-  int RunProcess(
+  absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
-      const content::MainFunctionParams& main_function_params) override;
+      content::MainFunctionParams main_function_params) override;
   void ProcessExiting(const std::string& process_type) override;
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   void ZygoteStarting(std::vector<std::unique_ptr<content::ZygoteForkDelegate>>*
@@ -89,10 +92,8 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   std::unique_ptr<HeapProfilerController> heap_profiler_controller_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::LacrosChromeServiceImpl> lacros_chrome_service_;
+  std::unique_ptr<chromeos::LacrosService> lacros_service_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeMainDelegate);
 };
 
 #endif  // CHROME_APP_CHROME_MAIN_DELEGATE_H_

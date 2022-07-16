@@ -170,8 +170,7 @@ void TopLevelHostScanCache::StartTimer(const std::string& tether_network_guid) {
       << kNumMinutesBeforeCacheEntryExpires << " minutes.";
 
   found_iter->second->Start(
-      FROM_HERE,
-      base::TimeDelta::FromMinutes(kNumMinutesBeforeCacheEntryExpires),
+      FROM_HERE, base::Minutes(kNumMinutesBeforeCacheEntryExpires),
       base::BindOnce(&TopLevelHostScanCache::OnTimerFired,
                      weak_ptr_factory_.GetWeakPtr(), tether_network_guid));
 }

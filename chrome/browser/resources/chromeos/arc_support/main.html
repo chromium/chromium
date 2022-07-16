@@ -9,10 +9,8 @@
   <link rel="stylesheet" href="controlled_indicator.css">
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="progressbar.css">
-  <link rel="stylesheet" href="../login/components/oobe_flex_layout.css">
-  <custom-style>
-    <style include="cr-hidden-style"></style>
-  </custom-style>
+  <!-- TODO(crbug.com/1248474) - Remove during clean up -->
+  <link rel="stylesheet" href="layout_style.css">
   <script src="chrome://resources/js/load_time_data.js"></script>
   <script src="chrome://resources/js/assert.js"></script>
   <script src="chrome://resources/js/util.js"></script>
@@ -30,6 +28,9 @@
   <script src="progressbar.js"></script>
 </head>
 <body>
+  <custom-style>
+    <style include="cr-hidden-style"></style>
+  </custom-style>
   <div id="terms" class="section">
     <div class="header">
       <img class="icon-header" src="icon/playstore.svg" aria-hidden="true">

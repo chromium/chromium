@@ -43,18 +43,16 @@ constexpr float kHomeScalingThresholdDisplayHeightRatio = 0.5f;
 
 // The amount of time the drag has to remain bellow velocity threshold before
 // the transition to the overview starts.
-constexpr base::TimeDelta kOverviewTransitionDelay =
-    base::TimeDelta::FromMilliseconds(150);
+constexpr base::TimeDelta kOverviewTransitionDelay = base::Milliseconds(150);
 
 // The duration of transition from the home screen current scaled state to the
 // initial (unscaled) state when the gesture is canceled.
-constexpr base::TimeDelta kGestureCancelationDuration =
-    base::TimeDelta::FromMilliseconds(350);
+constexpr base::TimeDelta kGestureCancelationDuration = base::Milliseconds(350);
 
 // The duration of transition from the home screen current scaled state to the
 // initial (unscaled) state when the gesture is canceled due to a back gesture.
 constexpr base::TimeDelta kGestureCancelationForBackDuration =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 
 void UpdateHomeAnimationForGestureCancel(
     bool going_back,

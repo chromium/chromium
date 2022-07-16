@@ -1,0 +1,29 @@
+video_frame {
+  data {length: 129600}
+  init {
+    format: I420,
+    layout: [
+      {offset: 0, stride: 360},
+      {offset: 86400, stride: 180},
+      {offset: 108000, stride: 180}
+    ],
+    timestamp: 0,
+    duration: 100000,
+    coded_width: 360,
+    coded_height: 240,
+    visible_rect {x: 0, y: 0, width: 360, height: 240}
+    display_width: 360,
+    display_height: 240
+  }
+}
+copy_to {
+  destination {length: 129600}
+  options {
+    rect {x: 0, y: 0, width: 360, height: 240}
+    layout: [
+      {offset: 0, stride: 360},
+      {offset: 86400, stride: 180},
+      {offset: 108000, stride: 180}
+    ]
+  }
+}

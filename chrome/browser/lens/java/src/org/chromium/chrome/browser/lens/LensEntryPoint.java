@@ -8,7 +8,7 @@ import androidx.annotation.IntDef;
 
 @IntDef({LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, LensEntryPoint.CONTEXT_MENU_SHOP_MENU_ITEM,
         LensEntryPoint.CONTEXT_MENU_CHIP, LensEntryPoint.OMNIBOX, LensEntryPoint.NEW_TAB_PAGE,
-        LensEntryPoint.TASKS_SURFACE})
+        LensEntryPoint.TASKS_SURFACE, LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET})
 public @interface LensEntryPoint {
     int CONTEXT_MENU_SEARCH_MENU_ITEM = 0;
     int CONTEXT_MENU_SHOP_MENU_ITEM = 1;
@@ -16,4 +16,5 @@ public @interface LensEntryPoint {
     int OMNIBOX = 3;
     int NEW_TAB_PAGE = 4;
     int TASKS_SURFACE = 5;
+    int QUICK_ACTION_SEARCH_WIDGET = 6;
 }

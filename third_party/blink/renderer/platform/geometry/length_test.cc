@@ -62,7 +62,7 @@ class LengthTest : public ::testing::Test {
 
   Length CreateLength(Pointer expression) {
     return Length(CalculationValue::CreateSimplified(std::move(expression),
-                                                     kValueRangeAll));
+                                                     Length::ValueRange::kAll));
   }
 };
 
@@ -235,7 +235,7 @@ TEST_F(LengthTest, BlendExpressions) {
 
   Length from_length = CreateLength(Min(Leaf(ten_px), Leaf(twenty_percent)));
   Length to_length = CreateLength(Max(Leaf(twenty_px), Leaf(ten_percent)));
-  Length blended = to_length.Blend(from_length, 0.25, kValueRangeAll);
+  Length blended = to_length.Blend(from_length, 0.25, Length::ValueRange::kAll);
 
   EXPECT_EQ(8.75f, blended.GetCalculationValue().Evaluate(25));
   EXPECT_EQ(12.5f, blended.GetCalculationValue().Evaluate(50));

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_WRONG_HWID_SCREEN_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace ash {
@@ -40,6 +39,10 @@ class WrongHWIDScreenHandler : public WrongHWIDScreenView,
   using TView = WrongHWIDScreenView;
 
   explicit WrongHWIDScreenHandler(JSCallsContainer* js_calls_container);
+
+  WrongHWIDScreenHandler(const WrongHWIDScreenHandler&) = delete;
+  WrongHWIDScreenHandler& operator=(const WrongHWIDScreenHandler&) = delete;
+
   ~WrongHWIDScreenHandler() override;
 
  private:
@@ -58,8 +61,6 @@ class WrongHWIDScreenHandler : public WrongHWIDScreenView,
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WrongHWIDScreenHandler);
 };
 
 }  // namespace chromeos

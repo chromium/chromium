@@ -84,7 +84,8 @@ class CC_EXPORT FrameSequenceTrackerCollection {
   void NotifyBeginMainFrame(const viz::BeginFrameArgs& args);
   void NotifyMainFrameProcessed(const viz::BeginFrameArgs& args);
   void NotifyImplFrameCausedNoDamage(const viz::BeginFrameAck& ack);
-  void NotifyMainFrameCausedNoDamage(const viz::BeginFrameArgs& args);
+  void NotifyMainFrameCausedNoDamage(const viz::BeginFrameArgs& args,
+                                     bool aborted);
   void NotifyPauseFrameProduction();
   void NotifySubmitFrame(uint32_t frame_token,
                          bool has_missing_content,

@@ -5,6 +5,7 @@
 syntax = "proto2";
 
 import "components/sync/protocol/web_app_specifics.proto";
+import "chrome/browser/web_applications/proto/web_app_launch_handler.proto";
 import "chrome/browser/web_applications/proto/web_app_share_target.proto";
 import "chrome/browser/web_applications/system_web_apps/system_web_app_data.proto";
 
@@ -26,6 +27,8 @@ message WebAppFileHandlerAcceptProto {
 message WebAppFileHandlerProto {
   required string action = 1;
   repeated WebAppFileHandlerAcceptProto accept = 2;
+  repeated sync_pb.WebAppIconInfo downloaded_icons = 3;
+  optional string display_name = 4;
 }
 
 message WebAppProtocolHandler {
@@ -46,6 +49,7 @@ message SourcesProto {
   required bool web_app_store = 3;
   required bool sync = 4;
   required bool default = 5;
+  optional bool sub_app = 6;
 }
 
 // Properties for integrating with Chrome OS UI surfaces.
@@ -65,9 +69,9 @@ message ClientDataProto {
 message WebAppShortcutsMenuItemInfoProto {
   required string name = 1;
   required string url = 2;
-  repeated sync_pb.WebAppIconInfo shortcut_icon_infos = 3;
-  repeated sync_pb.WebAppIconInfo shortcut_icon_infos_maskable = 4;
-  repeated sync_pb.WebAppIconInfo shortcut_icon_infos_monochrome = 5;
+  repeated sync_pb.WebAppIconInfo shortcut_manifest_icons = 3;
+  repeated sync_pb.WebAppIconInfo shortcut_manifest_icons_maskable = 4;
+  repeated sync_pb.WebAppIconInfo shortcut_manifest_icons_monochrome = 5;
 }
 
 // List of icon sizes downloaded to disk for a shortcuts menu item.
@@ -112,13 +116,16 @@ message WebAppProto {
   optional string scope = 6;
   required SourcesProto sources = 7;
   required bool is_locally_installed = 8;
+
+  // Installation state:
+  // Specifies if this web app is from sync and has not completed installation.
+  // If true, this entity will be re-installed on startup.
   optional bool is_from_sync_and_pending_installation = 9;
-  // A list of icon infos.
-  repeated sync_pb.WebAppIconInfo icon_infos = 10;
+
+  repeated sync_pb.WebAppIconInfo manifest_icons = 10;
 
   // A list of icon sizes we successfully downloaded to store on disk, for icons
   // that are suitable for any purpose (ie. IconPurpose::ANY). See also:
-  // |downloaded_icon_sizes_purpose_maskable|,
   // |downloaded_icon_sizes_purpose_monochrome|.
   repeated int32 downloaded_icon_sizes_purpose_any = 11;
 
@@ -164,7 +171,7 @@ message WebAppProto {
   repeated int32 downloaded_icon_sizes_purpose_maskable = 23;
 
   // Run on OS Login modes for web app.
-  // See chrome/browser/web_applications/components/web_app_constants.h
+  // See chrome/browser/web_applications/web_app_constants.h
   // for web_app::RunOnOsLoginMode definition, which this enum should be in sync
   // with.
   enum RunOnOsLoginMode {
@@ -218,8 +225,42 @@ message WebAppProto {
   // Whether the app should be loaded in a dedicated storage partition.
   optional bool is_storage_isolated = 36;
 
-  // A list of approved launch protocols when launching the app with a protocol
+  // A list of allowed launch protocols when launching the app with a protocol
   // url. This list is checked to see if we can bypass the permission dialog
   // when launching the web app.
-  repeated string approved_launch_protocols = 37;
+  repeated string allowed_launch_protocols = 37;
+
+  optional LaunchHandlerProto launch_handler = 38;
+
+  // Time the app is updated.
+  // ms since the Unix epoch. See sync/base/time.h.
+  optional int64 manifest_update_time = 39;
+
+  // A list of disallowed launch protocols. The user has elected to never
+  // allow these protocols be launched in the web app.
+  repeated string disallowed_launch_protocols = 40;
+
+  // A theme color to be used when the app is opened in dark mode.
+  optional uint32 dark_mode_theme_color = 41;
+
+  // Should be kept in sync with `ApiApprovalState` in web_app_constants.h.
+  enum ApiApprovalState {
+    REQUIRES_PROMPT = 0;
+    ALLOWED = 1;
+    DISALLOWED = 2;
+  }
+
+  optional ApiApprovalState file_handler_approval_state = 42;
+
+  // For apps installed via the SubApp API, ID of the parent app that installed
+  // the Sub-app.
+  optional string parent_app_id = 43;
+  
+  // A background color to be used when the app is opened in dark mode.
+  optional uint32 dark_mode_background_color = 44;
+
+  // Specifies if this web app is currently being uninstalled. If true on
+  // startup, it's assumed there was a crash or other error during
+  // uninstallation, and the uninstallation will be tried again.
+  optional bool is_uninstalling = 45;
 }

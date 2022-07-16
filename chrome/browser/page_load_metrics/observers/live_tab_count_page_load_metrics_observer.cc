@@ -29,10 +29,9 @@
 
 // These are the same histogram parameters used for the core page load paint
 // timing metrics (see PAGE_LOAD_HISTOGRAM).
-#define LIVE_TAB_COUNT_PAINT_PAGE_LOAD_HISTOGRAM(prefix, bucket, sample) \
-  LIVE_TAB_COUNT_HISTOGRAM(prefix, bucket, sample,                       \
-                           base::TimeDelta::FromMilliseconds(10),        \
-                           base::TimeDelta::FromMinutes(10), 100)
+#define LIVE_TAB_COUNT_PAINT_PAGE_LOAD_HISTOGRAM(prefix, bucket, sample)   \
+  LIVE_TAB_COUNT_HISTOGRAM(prefix, bucket, sample, base::Milliseconds(10), \
+                           base::Minutes(10), 100)
 
 namespace internal {
 
@@ -76,8 +75,7 @@ void LiveTabCountPageLoadMetricsObserver::OnFirstInputInPage(
       std::string(internal::kHistogramPrefixLiveTabCount)
           .append(internal::kHistogramFirstInputDelaySuffix),
       bucket, timing.interactive_timing->first_input_delay.value(),
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-      50);
+      base::Milliseconds(1), base::Seconds(60), 50);
 }
 
 size_t LiveTabCountPageLoadMetricsObserver::GetLiveTabCount() const {

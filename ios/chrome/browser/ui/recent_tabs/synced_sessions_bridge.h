@@ -32,6 +32,11 @@ class SyncedSessionsObserverBridge : public signin::IdentityManager::Observer {
  public:
   SyncedSessionsObserverBridge(id<SyncedSessionsObserver> owner,
                                ChromeBrowserState* browserState);
+
+  SyncedSessionsObserverBridge(const SyncedSessionsObserverBridge&) = delete;
+  SyncedSessionsObserverBridge& operator=(const SyncedSessionsObserverBridge&) =
+      delete;
+
   ~SyncedSessionsObserverBridge() override;
   // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(
@@ -49,8 +54,6 @@ class SyncedSessionsObserverBridge : public signin::IdentityManager::Observer {
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
   base::CallbackListSubscription foreign_session_updated_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedSessionsObserverBridge);
 };
 
 }  // namespace synced_sessions

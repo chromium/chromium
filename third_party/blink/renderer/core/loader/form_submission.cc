@@ -281,6 +281,11 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
                                            ? document.BaseTarget()
                                            : copied_attributes.Target();
 
+  if (copied_attributes.Method() != FormSubmission::kPostMethod &&
+      !action_url.ProtocolIsJavaScript()) {
+    action_url.SetQuery(form_data->FlattenToString());
+  }
+
   std::unique_ptr<ResourceRequest> resource_request =
       std::make_unique<ResourceRequest>(action_url);
   ClientNavigationReason reason = ClientNavigationReason::kFormSubmissionGet;
@@ -353,13 +358,6 @@ void FormSubmission::Trace(Visitor* visitor) const {
 }
 
 void FormSubmission::Navigate() {
-  KURL request_url = action_;
-  if (method_ != FormSubmission::kPostMethod &&
-      !action_.ProtocolIsJavaScript()) {
-    request_url.SetQuery(form_data_->FlattenToString());
-  }
-  resource_request_->SetUrl(request_url);
-
   FrameLoadRequest frame_request(origin_window_.Get(), *resource_request_);
   frame_request.SetNavigationPolicy(navigation_policy_);
   frame_request.SetClientRedirectReason(reason_);

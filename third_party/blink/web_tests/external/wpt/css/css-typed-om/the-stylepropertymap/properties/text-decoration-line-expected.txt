@@ -6,8 +6,8 @@ PASS Can set 'text-decoration-line' to the 'underline' keyword
 PASS Can set 'text-decoration-line' to the 'overline' keyword
 PASS Can set 'text-decoration-line' to the 'line-through' keyword
 FAIL Can set 'text-decoration-line' to the 'blink' keyword assert_equals: expected "blink" but got "none"
-FAIL Can set 'text-decoration-line' to the 'spelling-error' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'text-decoration-line' to the 'grammar-error' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'text-decoration-line' to the 'spelling-error' keyword
+PASS Can set 'text-decoration-line' to the 'grammar-error' keyword
 PASS Setting 'text-decoration-line' to a length throws TypeError
 PASS Setting 'text-decoration-line' to a percent throws TypeError
 PASS Setting 'text-decoration-line' to a time throws TypeError

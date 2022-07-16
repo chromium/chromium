@@ -7,6 +7,11 @@
 #include "media/base/cdm_context.h"
 #include "media/cdm/cdm_helpers.h"
 
+#if defined(OS_WIN)
+#include "media/cdm/media_foundation_cdm_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif  // defined(OS_WIN)
+
 namespace media {
 
 CdmAuxiliaryHelper::CdmAuxiliaryHelper() = default;
@@ -50,9 +55,14 @@ void CdmAuxiliaryHelper::GetStorageId(uint32_t version, StorageIdCB callback) {
 }
 
 #if defined(OS_WIN)
-void CdmAuxiliaryHelper::GetCdmOriginId(GetCdmOriginIdCB callback) {
-  std::move(callback).Run(base::UnguessableToken::Null());
+void CdmAuxiliaryHelper::GetMediaFoundationCdmData(
+    GetMediaFoundationCdmDataCB callback) {
+  std::move(callback).Run(std::make_unique<MediaFoundationCdmData>(
+      base::UnguessableToken::Null(), absl::nullopt, base::FilePath()));
 }
+
+void CdmAuxiliaryHelper::SetCdmClientToken(
+    const std::vector<uint8_t>& client_token) {}
 #endif  // defined(OS_WIN)
 
 }  // namespace media

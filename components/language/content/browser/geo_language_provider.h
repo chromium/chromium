@@ -7,10 +7,9 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/language/content/browser/language_code_locator.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
@@ -36,6 +35,9 @@ class GeoLanguageProvider {
   static const char kCachedGeoLanguagesPref[];
 
   static GeoLanguageProvider* GetInstance();
+
+  GeoLanguageProvider(const GeoLanguageProvider&) = delete;
+  GeoLanguageProvider& operator=(const GeoLanguageProvider&) = delete;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
@@ -120,8 +122,6 @@ class GeoLanguageProvider {
   // The pref service used to cached the latest latitude/longitude pair
   // obtained.
   PrefService* prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeoLanguageProvider);
 };
 
 }  // namespace language

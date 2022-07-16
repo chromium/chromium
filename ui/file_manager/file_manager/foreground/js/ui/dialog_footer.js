@@ -6,9 +6,9 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
+import {DialogType} from '../../../common/js/dialog_type.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {str, util} from '../../../common/js/util.js';
-import {DialogType} from '../dialog_type.js';
 import {FileListModel} from '../file_list_model.js';
 
 /**

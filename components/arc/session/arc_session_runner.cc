@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "components/arc/arc_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -17,8 +17,7 @@ namespace arc {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultRestartDelay =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kDefaultRestartDelay = base::Seconds(5);
 
 void RecordInstanceCrashUma(ArcContainerLifetimeEvent sample) {
   UMA_HISTOGRAM_ENUMERATION("Arc.ContainerLifetimeEvent", sample,

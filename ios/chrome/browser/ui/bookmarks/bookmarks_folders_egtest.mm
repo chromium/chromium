@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
-#import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -37,6 +36,7 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
 using chrome_test_util::OmniboxText;
 using chrome_test_util::ScrollToTop;
+using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Bookmark folders integration tests for Chrome.
@@ -183,7 +183,9 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Swipe action to try to delete the newly created folder while its name its
   // being edited.
   [[EarlGrey
-      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"New Folder")]
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"New Folder"),
+                                          grey_minimumVisiblePercent(0.7),
+                                          nil)]
       performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
 
   // Verify the delete confirmation button doesn't show up.
@@ -266,10 +268,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 - (void)testSwipeDownToDismissFromEditFolder {
-  if (!IsCollectionsCardPresentationStyleEnabled()) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
-  }
-
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -977,7 +975,11 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Tap on the snackbar.
   NSString* snackbarLabel =
       l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON);
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbarLabel)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(snackbarLabel),
+                                   grey_userInteractionEnabled(),
+                                   grey_not(TabGridEditButton()), nil)]
       performAction:grey_tap()];
 
   // Verify that the newly-created bookmark is in the BookmarkModel.

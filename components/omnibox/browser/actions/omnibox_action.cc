@@ -47,6 +47,20 @@ size_t EstimateMemoryUsage(const OmniboxAction::LabelStrings& self) {
 
 // =============================================================================
 
+OmniboxAction::ExecutionContext::ExecutionContext(
+    Client& client,
+    OpenUrlCallback callback,
+    base::TimeTicks match_selection_timestamp,
+    WindowOpenDisposition disposition)
+    : client_(client),
+      open_url_callback_(std::move(callback)),
+      match_selection_timestamp_(match_selection_timestamp),
+      disposition_(disposition) {}
+
+OmniboxAction::ExecutionContext::~ExecutionContext() = default;
+
+// =============================================================================
+
 OmniboxAction::OmniboxAction(LabelStrings strings, GURL url)
     : strings_(strings), url_(url) {}
 
@@ -74,6 +88,10 @@ const gfx::VectorIcon& OmniboxAction::GetVectorIcon() const {
 }
 #endif
 
+SkColor OmniboxAction::GetVectorIconColor() const {
+  return SK_ColorTRANSPARENT;
+}
+
 size_t OmniboxAction::EstimateMemoryUsage() const {
   size_t total = 0;
   total += base::trace_event::EstimateMemoryUsage(url_);
@@ -92,10 +110,10 @@ void OmniboxAction::OpenURL(OmniboxAction::ExecutionContext& context,
   // navigations typed without a scheme and upgraded to HTTPS should fall back
   // to HTTP. The URL might have been entered without a scheme, but Action
   // destination URLs don't need a fallback so it's fine to pass false here.
-  context.controller_.OnAutocompleteAccept(
-      url, nullptr, WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_GENERATED,
-      /*match_type=*/AutocompleteMatchType::URL_WHAT_YOU_TYPED,
-      context.match_selection_timestamp_,
-      /*destination_url_entered_without_scheme=*/false);
+  std::move(context.open_url_callback_)
+      .Run(url, nullptr, context.disposition_, ui::PAGE_TRANSITION_GENERATED,
+           /*match_type=*/AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+           context.match_selection_timestamp_,
+           /*destination_url_entered_without_scheme=*/false, u"",
+           AutocompleteMatch(), AutocompleteMatch());
 }

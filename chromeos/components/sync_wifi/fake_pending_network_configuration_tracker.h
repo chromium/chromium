@@ -19,6 +19,12 @@ class FakePendingNetworkConfigurationTracker
     : public PendingNetworkConfigurationTracker {
  public:
   FakePendingNetworkConfigurationTracker();
+
+  FakePendingNetworkConfigurationTracker(
+      const FakePendingNetworkConfigurationTracker&) = delete;
+  FakePendingNetworkConfigurationTracker& operator=(
+      const FakePendingNetworkConfigurationTracker&) = delete;
+
   ~FakePendingNetworkConfigurationTracker() override;
 
   // sync_wifi::PendingNetworkConfigurationtracker::
@@ -51,8 +57,6 @@ class FakePendingNetworkConfigurationTracker
   // This map is not cleared when MarkComplete is called to allow tests to
   // verify that the expected number of retries were performed before removal.
   std::map<NetworkIdentifier, int> id_to_completed_attempts_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePendingNetworkConfigurationTracker);
 };
 
 }  // namespace sync_wifi

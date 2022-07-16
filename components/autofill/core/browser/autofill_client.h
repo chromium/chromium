@@ -70,11 +70,15 @@ class FormDataImporter;
 class FormStructure;
 class LogManager;
 class MigratableCreditCard;
+class OtpUnmaskDelegate;
+enum class OtpUnmaskResult;
 class PersonalDataManager;
+class SingleFieldFormFillRouter;
 class StrikeDatabase;
 enum class WebauthnDialogCallbackType;
 enum class WebauthnDialogState;
 struct AutofillOfferData;
+struct CardUnmaskChallengeOption;
 struct Suggestion;
 
 namespace payments {
@@ -90,68 +94,68 @@ class PaymentsClient;
 // with" (e.g. for the tab the BrowserAutofillManager is attached to).
 class AutofillClient : public RiskDataLoader {
  public:
-  enum PaymentsRpcResult {
+  enum class PaymentsRpcResult {
     // Empty result. Used for initializing variables and should generally
     // not be returned nor passed as arguments unless explicitly allowed by
     // the API.
-    NONE,
+    kNone,
 
     // Request succeeded.
-    SUCCESS,
+    kSuccess,
 
     // Request failed; try again.
-    TRY_AGAIN_FAILURE,
+    kTryAgainFailure,
 
     // Request failed; don't try again.
-    PERMANENT_FAILURE,
+    kPermanentFailure,
 
     // Unable to connect to Payments servers. Prompt user to check internet
     // connection.
-    NETWORK_ERROR,
+    kNetworkError,
 
     // Request failed in retrieving virtual card information; try again.
-    VCN_RETRIEVAL_TRY_AGAIN_FAILURE,
+    kVcnRetrievalTryAgainFailure,
 
     // Request failed in retrieving virtual card information; don't try again.
-    VCN_RETRIEVAL_PERMANENT_FAILURE,
+    kVcnRetrievalPermanentFailure,
   };
 
   // The type of the credit card the Payments RPC fetches.
-  enum PaymentsRpcCardType {
+  enum class PaymentsRpcCardType {
     // Unknown type.
-    UNKNOWN_TYPE = 0,
+    kUnknown = 0,
     // Server card.
-    SERVER_CARD = 1,
+    kServerCard = 1,
     // Virtual card.
-    VIRTUAL_CARD = 2,
+    kVirtualCard = 2,
   };
 
-  enum SaveCardOfferUserDecision {
+  enum class SaveCardOfferUserDecision {
     // The user accepted credit card save.
-    ACCEPTED,
+    kAccepted,
 
     // The user explicitly declined credit card save.
-    DECLINED,
+    kDeclined,
 
     // The user ignored the credit card save prompt.
-    IGNORED,
+    kIgnored,
   };
 
-  enum UnmaskCardReason {
+  enum class UnmaskCardReason {
     // The card is being unmasked for PaymentRequest.
-    UNMASK_FOR_PAYMENT_REQUEST,
+    kPaymentRequest,
 
     // The card is being unmasked for Autofill.
-    UNMASK_FOR_AUTOFILL,
+    kAutofill,
   };
 
   // Authentication methods for card unmasking.
-  enum UnmaskAuthMethod {
-    UNKNOWN = 0,
+  enum class UnmaskAuthMethod {
+    kUnknown = 0,
     // Require user to unmask via CVC.
-    CVC = 1,
+    kCvc = 1,
     // Suggest use of FIDO authenticator for card unmasking.
-    FIDO = 2,
+    kFido = 2,
   };
 
   enum class SaveAddressProfileOfferUserDecision {
@@ -307,6 +311,10 @@ class AutofillClient : public RiskDataLoader {
   // Gets the AutocompleteHistoryManager instance associate with the client.
   virtual AutocompleteHistoryManager* GetAutocompleteHistoryManager() = 0;
 
+  // Creates and returns a SingleFieldFormFillRouter using the
+  // AutocompleteHistoryManager instance associated with the client.
+  std::unique_ptr<SingleFieldFormFillRouter> GetSingleFieldFormFillRouter();
+
   // Gets the preferences associated with the client.
   virtual PrefService* GetPrefs() = 0;
   virtual const PrefService* GetPrefs() const = 0;
@@ -365,7 +373,7 @@ class AutofillClient : public RiskDataLoader {
   // Creates the appropriate implementation of InternalAuthenticator. May be
   // null for platforms that don't support this, in which case standard CVC
   // authentication will be used instead.
-  virtual std::unique_ptr<InternalAuthenticator>
+  virtual std::unique_ptr<webauthn::InternalAuthenticator>
   CreateCreditCardInternalAuthenticator(content::RenderFrameHost* rfh);
 #endif
 
@@ -373,12 +381,35 @@ class AutofillClient : public RiskDataLoader {
   // is true, will show the credit card specific subpage.
   virtual void ShowAutofillSettings(bool show_credit_card_settings) = 0;
 
+  // Show the OTP unmask dialog to accept user-input OTP value.
+  virtual void ShowCardUnmaskOtpInputDialog(
+      const size_t& otp_length,
+      base::WeakPtr<OtpUnmaskDelegate> delegate);
+
+  // Invoked when we receive the server response of the OTP unmask request.
+  virtual void OnUnmaskOtpVerificationResult(OtpUnmaskResult unmask_result);
+
   // A user has attempted to use a masked card. Prompt them for further
   // information to proceed.
   virtual void ShowUnmaskPrompt(const CreditCard& card,
                                 UnmaskCardReason reason,
                                 base::WeakPtr<CardUnmaskDelegate> delegate) = 0;
   virtual void OnUnmaskVerificationResult(PaymentsRpcResult result) = 0;
+
+  // Shows a dialog for the user to choose/confirm the authentication
+  // to use in card unmasking.
+  virtual void ShowUnmaskAuthenticatorSelectionDialog(
+      const std::vector<CardUnmaskChallengeOption>& challenge_options,
+      base::OnceCallback<void(const std::string&)>
+          confirm_unmask_challenge_option_callback,
+      base::OnceClosure cancel_unmasking_closure);
+  // This should be invoked upon server accepting the authentication method, in
+  // which case, we dismiss the selection dialog to open the authentication
+  // dialog. |server_success| dictates whether we received a success response
+  // from the server, with true representing success and false representing
+  // failure. A successful server response means that the issuer has sent an OTP
+  // and we can move on to the next portion of this flow.
+  virtual void DismissUnmaskAuthenticatorSelectionDialog(bool server_success);
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
   // Returns the list of allowed merchants and BIN ranges for virtual cards.
@@ -564,10 +595,13 @@ class AutofillClient : public RiskDataLoader {
       const AutofillOfferData* offer);
 
   // Called when the virtual card has been fetched successfully.
+  // |masked_card_identifier_string| is the network + last four digits of
+  // the card number of the corresponding masked server card.
   // |credit_card| and |cvc| include the information that allow the user to
   // manually fill payment form. |card_image| is used for manual fallback
   // bubble.
   virtual void OnVirtualCardDataAvailable(
+      const std::u16string& masked_card_identifier_string,
       const CreditCard* credit_card,
       const std::u16string& cvc,
       const gfx::Image& card_image = gfx::Image());
@@ -575,6 +609,12 @@ class AutofillClient : public RiskDataLoader {
   // Called when some virtual card retrieval errors happened. Will show the
   // error dialog with virtual card related messages.
   virtual void ShowVirtualCardErrorDialog(bool is_permanent_error);
+
+  // Show/dismiss the progress dialog which contains a throbber and a text
+  // message indicating that something is in progress.
+  virtual void ShowAutofillProgressDialog(base::OnceClosure cancel_callback);
+  virtual void CloseAutofillProgressDialog(
+      bool show_confirmation_before_closing);
 
   // Returns true if the Autofill Assistant UI is currently being shown.
   virtual bool IsAutofillAssistantShowing();

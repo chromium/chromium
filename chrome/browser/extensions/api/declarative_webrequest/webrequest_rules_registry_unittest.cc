@@ -110,14 +110,14 @@ class WebRequestRulesRegistryTest : public testing::Test {
   // https://www.example.com and cancels it
   api::events::Rule CreateRule1() {
     auto scheme_http = std::make_unique<base::ListValue>();
-    scheme_http->AppendString("http");
+    scheme_http->Append("http");
     auto http_condition_dict = std::make_unique<base::DictionaryValue>();
     http_condition_dict->SetString(keys2::kHostSuffixKey, "example.com");
     base::DictionaryValue http_condition_url_filter;
     http_condition_url_filter.SetString(keys::kInstanceTypeKey,
                                         keys::kRequestMatcherType);
 
-    scheme_http->AppendString("https");
+    scheme_http->Append("https");
     auto https_condition_dict = std::make_unique<base::DictionaryValue>();
     https_condition_dict->Set(keys2::kSchemesKey,
                               std::make_unique<base::ListValue>());

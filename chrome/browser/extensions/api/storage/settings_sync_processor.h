@@ -8,9 +8,8 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "components/sync/base/model_type.h"
-#include "extensions/browser/value_store/value_store_change.h"
+#include "components/value_store/value_store_change.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
@@ -31,18 +30,22 @@ class SettingsSyncProcessor {
   SettingsSyncProcessor(const std::string& extension_id,
                         syncer::ModelType type,
                         syncer::SyncChangeProcessor* sync_processor);
+
+  SettingsSyncProcessor(const SettingsSyncProcessor&) = delete;
+  SettingsSyncProcessor& operator=(const SettingsSyncProcessor&) = delete;
+
   ~SettingsSyncProcessor();
 
   // Initializes this with the initial state of sync.
-  void Init(const base::DictionaryValue& initial_state);
+  void Init(const base::Value& initial_state);
 
   // Sends |changes| to sync.
   absl::optional<syncer::ModelError> SendChanges(
-      const ValueStoreChangeList& changes);
+      const value_store::ValueStoreChangeList& changes);
 
   // Informs this that |changes| have been receieved from sync. No action will
   // be taken, but this must be notified for internal bookkeeping.
-  void NotifyChanges(const ValueStoreChangeList& changes);
+  void NotifyChanges(const value_store::ValueStoreChangeList& changes);
 
   syncer::ModelType type() { return type_; }
 
@@ -62,8 +65,6 @@ class SettingsSyncProcessor {
   // Keys of the settings that are currently being synced. Used to decide what
   // kind of action (ADD, UPDATE, REMOVE) to send to sync.
   std::set<std::string> synced_keys_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsSyncProcessor);
 };
 
 }  // namespace extensions

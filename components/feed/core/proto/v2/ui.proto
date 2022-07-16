@@ -34,6 +34,9 @@ message StreamUpdate {
   // Additional shared states to be used. Usually just one, and sent only on the
   // first update.
   repeated SharedState new_shared_states = 2;
+  // Time of the last full server fetch. Populated only after the stream data is
+  // loaded. Not updated on NextPage requests.
+  int64 fetch_time_ms = 3;
 }
 
 // A horizontal slice of UI to be presented in the vertical-scrolling feed.

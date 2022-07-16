@@ -19,7 +19,7 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/user_consent_specifics.pb.h"
 
 namespace consent_auditor {
 

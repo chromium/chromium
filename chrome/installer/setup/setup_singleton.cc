@@ -110,8 +110,7 @@ bool SetupSingleton::ScopedHoldMutex::Acquire(HANDLE mutex) {
   DCHECK_EQ(INVALID_HANDLE_VALUE, mutex_);
 
   const DWORD wait_return_value = ::WaitForSingleObject(
-      mutex,
-      static_cast<DWORD>(base::TimeDelta::FromSeconds(5).InMilliseconds()));
+      mutex, static_cast<DWORD>(base::Seconds(5).InMilliseconds()));
   if (wait_return_value == WAIT_ABANDONED ||
       wait_return_value == WAIT_OBJECT_0) {
     mutex_ = mutex;

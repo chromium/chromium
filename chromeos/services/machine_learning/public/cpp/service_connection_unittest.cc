@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -35,6 +35,9 @@ class ServiceConnectionTest : public testing::Test {
  public:
   ServiceConnectionTest() = default;
 
+  ServiceConnectionTest(const ServiceConnectionTest&) = delete;
+  ServiceConnectionTest& operator=(const ServiceConnectionTest&) = delete;
+
   void SetUp() override { MachineLearningClient::InitializeFake(); }
 
   void TearDown() override { MachineLearningClient::Shutdown(); }
@@ -60,8 +63,6 @@ class ServiceConnectionTest : public testing::Test {
 
  private:
   static base::test::TaskEnvironment* task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceConnectionTest);
 };
 
 base::test::TaskEnvironment* ServiceConnectionTest::task_environment_;
@@ -844,6 +845,58 @@ TEST_F(ServiceConnectionTest, FakeTextSuggester) {
             EXPECT_EQ(
                 result->candidates.at(0)->get_multi_word()->normalized_score,
                 0.5f);
+          },
+          &infer_callback_done)
+          .Then(run_loop->QuitClosure()));
+  run_loop->Run();
+  ASSERT_TRUE(infer_callback_done);
+}
+
+// Tests the fake ML service for document scanner.
+TEST_F(ServiceConnectionTest, FakeDocumentScanner) {
+  mojo::Remote<mojom::DocumentScanner> scanner;
+  bool callback_done = false;
+  FakeServiceConnectionImpl fake_service_connection;
+  ServiceConnection::UseFakeServiceConnectionForTesting(
+      &fake_service_connection);
+  ServiceConnection::GetInstance()->Initialize();
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  ServiceConnection::GetInstance()
+      ->GetMachineLearningService()
+      .LoadDocumentScanner(
+          scanner.BindNewPipeAndPassReceiver(),
+          base::BindOnce(
+              [](bool* callback_done, mojom::LoadModelResult result) {
+                EXPECT_EQ(result, mojom::LoadModelResult::OK);
+                *callback_done = true;
+              },
+              &callback_done)
+              .Then(run_loop->QuitClosure()));
+  run_loop->Run();
+  ASSERT_TRUE(callback_done);
+  ASSERT_TRUE(scanner.is_bound());
+
+  constexpr int kNv12ImageSize = 256 * 256;
+  std::vector<uint8_t> fake_nv12_data(kNv12ImageSize, 0);
+  base::MappedReadOnlyRegion memory =
+      base::ReadOnlySharedMemoryRegion::Create(fake_nv12_data.size());
+  memcpy(memory.mapping.memory(), fake_nv12_data.data(), fake_nv12_data.size());
+
+  mojom::DetectCornersResultPtr result = mojom::DetectCornersResult::New();
+  result->status = mojom::DocumentScannerResultStatus::OK;
+  result->corners = {};
+  fake_service_connection.SetOutputDetectCornersResult(std::move(result));
+
+  bool infer_callback_done = false;
+  run_loop.reset(new base::RunLoop);
+  scanner->DetectCornersFromNV12Image(
+      std::move(memory.region),
+      base::BindOnce(
+          [](bool* infer_callback_done, mojom::DetectCornersResultPtr result) {
+            *infer_callback_done = true;
+            ASSERT_EQ(result->status, mojom::DocumentScannerResultStatus::OK);
+            ASSERT_TRUE(result->corners.size() == 0);
           },
           &infer_callback_done)
           .Then(run_loop->QuitClosure()));

@@ -8,13 +8,15 @@
 #include "base/containers/flat_map.h"
 #include "base/rand_util.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/notes/core/note_prefs.h"
+#include "components/content_creation/notes/core/templates/note_template.h"
 #include "components/content_creation/notes/core/templates/template_constants.h"
 #include "components/content_creation/notes/core/templates/template_types.h"
+#include "components/prefs/pref_service.h"
 
 namespace content_creation {
 

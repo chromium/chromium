@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/shelf_model_observer.h"
-#include "base/macros.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 class AppWindowShelfItemController;
@@ -26,6 +25,9 @@ class ActivationClient;
 class AppWindowShelfController : public wm::ActivationChangeObserver,
                                  public ash::ShelfModelObserver {
  public:
+  AppWindowShelfController(const AppWindowShelfController&) = delete;
+  AppWindowShelfController& operator=(const AppWindowShelfController&) = delete;
+
   ~AppWindowShelfController() override;
 
   // Called by ChromeShelfController when the active user changed and the
@@ -62,8 +64,6 @@ class AppWindowShelfController : public wm::ActivationChangeObserver,
   void ShelfItemDelegateChanged(const ash::ShelfID& id,
                                 ash::ShelfItemDelegate* old_delegate,
                                 ash::ShelfItemDelegate* delegate) override;
-
-  DISALLOW_COPY_AND_ASSIGN(AppWindowShelfController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_APP_WINDOW_SHELF_CONTROLLER_H_

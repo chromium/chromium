@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/test/data/webui/web_ui_test.mojom-forward.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -25,6 +24,10 @@ class RenderFrameHost;
 class WebUITestHandler {
  public:
   WebUITestHandler();
+
+  WebUITestHandler(const WebUITestHandler&) = delete;
+  WebUITestHandler& operator=(const WebUITestHandler&) = delete;
+
   virtual ~WebUITestHandler();
 
   // Sends a message through |preload_frame| with the |js_text| to preload at
@@ -76,8 +79,6 @@ class WebUITestHandler {
 
   // Quits the currently running RunLoop.
   base::RepeatingClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUITestHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEB_UI_TEST_HANDLER_H_

@@ -13,6 +13,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
 #include "extensions/renderer/bindings/api_event_handler.h"
@@ -29,6 +30,15 @@
 #include "gin/handle.h"
 #include "gin/per_context_data.h"
 #include "ipc/ipc_message.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-external.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-persistent-handle.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 
@@ -159,15 +169,16 @@ bool OneTimeMessageHandler::HasPort(ScriptContext* script_context,
                            : base::Contains(data->receivers, port_id);
 }
 
-void OneTimeMessageHandler::SendMessage(
+v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
     ScriptContext* script_context,
     const PortId& new_port_id,
     const MessageTarget& target,
     const std::string& method_name,
     const Message& message,
+    binding::AsyncResponseType async_type,
     v8::Local<v8::Function> response_callback) {
   v8::Isolate* isolate = script_context->isolate();
-  v8::HandleScope handle_scope(isolate);
+  v8::EscapableHandleScope handle_scope(isolate);
 
   DCHECK(new_port_id.is_opener);
   DCHECK_EQ(script_context->context_id(), new_port_id.context_id);
@@ -177,15 +188,24 @@ void OneTimeMessageHandler::SendMessage(
                                                    kCreateIfMissing);
   DCHECK(data);
 
-  bool wants_response = !response_callback.IsEmpty();
+  v8::Local<v8::Promise> promise;
+  bool wants_response = async_type != binding::AsyncResponseType::kNone;
   int routing_id = RoutingIdForScriptContext(script_context);
   if (wants_response) {
-    int request_id =
+    // If this is a promise based request no callback should have been passed
+    // in.
+    if (async_type == binding::AsyncResponseType::kPromise)
+      DCHECK(response_callback.IsEmpty());
+
+    APIRequestHandler::RequestDetails details =
         bindings_system_->api_system()->request_handler()->AddPendingRequest(
-            script_context->v8_context(), response_callback);
+            script_context->v8_context(), async_type, response_callback);
     OneTimeOpener& port = data->openers[new_port_id];
-    port.request_id = request_id;
+    port.request_id = details.request_id;
     port.routing_id = routing_id;
+    promise = details.promise;
+    DCHECK_EQ(async_type == binding::AsyncResponseType::kPromise,
+              !promise.IsEmpty());
   }
 
   IPCMessageSender* ipc_sender = bindings_system_->GetIPCMessageSender();
@@ -203,6 +223,8 @@ void OneTimeMessageHandler::SendMessage(
     bool close_channel = true;
     ipc_sender->SendCloseMessagePort(routing_id, new_port_id, close_channel);
   }
+
+  return handle_scope.Escape(promise);
 }
 
 void OneTimeMessageHandler::AddReceiver(ScriptContext* script_context,
@@ -274,11 +296,12 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
   OneTimeReceiver& port = iter->second;
 
   // This port is a receiver, so we invoke the onMessage event and provide a
-  // callback through which the port can respond. The port stays open until
-  // we receive a response.
+  // callback through which the port can respond. The port stays open until we
+  // receive a response.
   // TODO(devlin): With chrome.runtime.sendMessage, we actually require that a
   // listener return `true` if they intend to respond asynchronously; otherwise
   // we close the port.
+
   auto callback = std::make_unique<OneTimeMessageCallback>(
       base::BindOnce(&OneTimeMessageHandler::OnOneTimeMessageResponse,
                      weak_factory_.GetWeakPtr(), target_port_id));
@@ -462,8 +485,8 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
     value = v8::Undefined(isolate);
 
   std::string error;
-  std::unique_ptr<Message> message =
-      messaging_util::MessageFromV8(context, value, &error);
+  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+      context, value, port_id.serialization_format, &error);
   if (!message) {
     arguments->ThrowTypeError(error);
     return;

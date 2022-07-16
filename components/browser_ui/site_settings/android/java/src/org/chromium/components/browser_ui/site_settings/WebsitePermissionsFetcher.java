@@ -13,7 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.common.ContentSwitches;
 
@@ -57,10 +57,12 @@ public class WebsitePermissionsFetcher {
             @ContentSettingsType int contentSettingsType) {
         switch (contentSettingsType) {
             case ContentSettingsType.ADS:
+            case ContentSettingsType.AUTO_DARK_WEB_CONTENT:
             case ContentSettingsType.AUTOMATIC_DOWNLOADS:
             case ContentSettingsType.BACKGROUND_SYNC:
             case ContentSettingsType.BLUETOOTH_SCANNING:
             case ContentSettingsType.COOKIES:
+            case ContentSettingsType.REQUEST_DESKTOP_SITE:
             case ContentSettingsType.JAVASCRIPT:
             case ContentSettingsType.JAVASCRIPT_JIT:
             case ContentSettingsType.POPUPS:

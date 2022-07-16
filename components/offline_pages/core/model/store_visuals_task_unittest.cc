@@ -77,7 +77,7 @@ TEST_F(StoreVisualsTaskTest, AlreadyExists) {
 
   EXPECT_EQ(visuals, MustReadVisuals(visuals.offline_id));
 
-  test_clock.Advance(base::TimeDelta::FromDays(1));
+  test_clock.Advance(base::Days(1));
   visuals.thumbnail += "_extradata";
   visuals.expiration = OfflineTimeNow() + kVisualsExpirationDelta;
   EXPECT_CALL(callback, Run(true, visuals.thumbnail));

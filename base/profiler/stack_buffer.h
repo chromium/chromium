@@ -27,6 +27,10 @@ class BASE_EXPORT StackBuffer {
   static constexpr size_t kPlatformStackAlignment = 2 * sizeof(uintptr_t);
 
   StackBuffer(size_t buffer_size);
+
+  StackBuffer(const StackBuffer&) = delete;
+  StackBuffer& operator=(const StackBuffer&) = delete;
+
   ~StackBuffer();
 
   // Returns a kPlatformStackAlignment-aligned pointer to the stack buffer.
@@ -50,8 +54,6 @@ class BASE_EXPORT StackBuffer {
   // The size in bytes of the requested buffer allocation. The actual allocation
   // is larger to accommodate alignment requirements.
   const size_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(StackBuffer);
 };
 
 }  // namespace base

@@ -50,6 +50,7 @@ class ChromeBrowserCloudManagementControllerIOS
                                    url_loader_factory) override;
   bool ReadyToCreatePolicyManager() override;
   bool ReadyToInit() override;
+  std::unique_ptr<ClientDataDelegate> CreateClientDataDelegate() override;
 };
 
 }  // namespace policy

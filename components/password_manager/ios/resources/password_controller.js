@@ -347,8 +347,7 @@ function fillUsernameAndPassword_(inputs, formData, username, password) {
   let usernameInput = null;
   if (usernameIdentifier !== Number(__gCrWeb.fill.RENDERER_ID_NOT_SET)) {
     usernameInput = findInputByUniqueFieldId(inputs, usernameIdentifier);
-    if (!usernameInput || !__gCrWeb.common.isTextField(usernameInput) ||
-        usernameInput.disabled) {
+    if (!usernameInput || !__gCrWeb.common.isTextField(usernameInput)) {
       return false;
     }
   }
@@ -358,19 +357,13 @@ function fillUsernameAndPassword_(inputs, formData, username, password) {
       passwordInput.readOnly || passwordInput.disabled) {
     return false;
   }
-  // If username was provided on a read-only field and it matches the
-  // requested username, fill the form.
-  if (usernameInput && usernameInput.readOnly) {
-    if (usernameInput.value === username) {
-      __gCrWeb.fill.setInputElementValue(password, passwordInput);
-      return true;
-    }
-  } else {
+  // If username was provided on a read-only or disabled field, fill the form.
+  if (!(usernameInput && (usernameInput.readOnly || usernameInput.disabled))) {
     __gCrWeb.fill.setInputElementValue(username, usernameInput);
-    __gCrWeb.fill.setInputElementValue(password, passwordInput);
-    return true;
   }
-  return false;
+
+  __gCrWeb.fill.setInputElementValue(password, passwordInput);
+  return true;
 }
 
 /**

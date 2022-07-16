@@ -135,6 +135,7 @@ void HitTestResult::PopulateFromCachedResult(const HitTestResult& other) {
 }
 
 void HitTestResult::Trace(Visitor* visitor) const {
+  visitor->Trace(hit_test_request_);
   visitor->Trace(inner_node_);
   visitor->Trace(inert_node_);
   visitor->Trace(inner_element_);
@@ -174,7 +175,7 @@ PositionWithAffinity HitTestResult::GetPosition() const {
     return PositionWithAffinity();
 
   // We should never have a layout object that is within a locked subtree.
-  CHECK(!DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object));
+  CHECK(!DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object));
 
   // If the layout object is blocked by display lock, we return the beginning of
   // the node as the position. This is because we don't paint contents of the
@@ -205,7 +206,7 @@ PositionWithAffinity HitTestResult::GetPositionForInnerNodeOrImageMapImage()
   if (!layout_object)
     return PositionWithAffinity();
   // We should never have a layout object that is within a locked subtree.
-  CHECK(!DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object));
+  CHECK(!DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object));
 
   // If the layout object is blocked by display lock, we return the beginning of
   // the node as the position. This is because we don't paint contents of the

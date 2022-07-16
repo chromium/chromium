@@ -41,6 +41,10 @@ NetLogSource::NetLogSource(NetLogSourceType type,
                            base::TimeTicks start_time)
     : type(type), id(id), start_time(start_time) {}
 
+bool NetLogSource::operator==(const NetLogSource& rhs) const {
+  return type == rhs.type && id == rhs.id && start_time == rhs.start_time;
+}
+
 bool NetLogSource::IsValid() const {
   return id != kInvalidId;
 }

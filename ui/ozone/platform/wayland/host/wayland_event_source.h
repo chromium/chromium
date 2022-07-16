@@ -78,9 +78,6 @@ class WaylandEventSource : public PlatformEventSource,
   // Stops polling for events from input devices.
   void StopProcessingEvents();
 
-  // Tells if pointer |button| is currently pressed.
-  bool IsPointerButtonPressed(EventFlags button) const;
-
   // Allow to explicitly reset pointer flags. Required in cases where the
   // pointer state is modified by a button pressed event, but the respective
   // button released event is not delivered (e.g: window moving, drag and drop).
@@ -113,6 +110,7 @@ class WaylandEventSource : public PlatformEventSource,
   void OnPointerAxisStopEvent(uint32_t axis) override;
   void OnResetPointerFlags() override;
   const gfx::PointF& GetPointerLocation() const override;
+  bool IsPointerButtonPressed(EventFlags button) const override;
 
   // WaylandTouch::Delegate
   void OnTouchPressEvent(WaylandWindow* window,
@@ -124,6 +122,7 @@ class WaylandEventSource : public PlatformEventSource,
                           base::TimeTicks timestamp,
                           PointerId id) override;
   void OnTouchCancelEvent() override;
+  void OnTouchFocusChanged(WaylandWindow* window) override;
   std::vector<PointerId> GetActiveTouchPointIds() override;
 
   // WaylandZwpPointerGesture::Delegate:
@@ -159,7 +158,7 @@ class WaylandEventSource : public PlatformEventSource,
   // PlatformEventSource:
   void OnDispatcherListChanged() override;
 
-  // WaylandWindowObserver
+  // WaylandWindowObserver:
   void OnWindowRemoved(WaylandWindow* window) override;
 
   void UpdateKeyboardModifiers(int modifier, bool down);
@@ -171,6 +170,7 @@ class WaylandEventSource : public PlatformEventSource,
   // Computes initial velocity of fling scroll based on recent frames.
   gfx::Vector2dF ComputeFlingVelocity();
 
+  bool SurfaceSubmissionInPixelCoordinates() const;
   WaylandWindowManager* const window_manager_;
 
   WaylandConnection* const connection_;

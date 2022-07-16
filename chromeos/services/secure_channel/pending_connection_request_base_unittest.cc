@@ -62,6 +62,12 @@ class TestPendingConnectionRequest
 }  // namespace
 
 class SecureChannelPendingConnectionRequestBaseTest : public testing::Test {
+ public:
+  SecureChannelPendingConnectionRequestBaseTest(
+      const SecureChannelPendingConnectionRequestBaseTest&) = delete;
+  SecureChannelPendingConnectionRequestBaseTest& operator=(
+      const SecureChannelPendingConnectionRequestBaseTest&) = delete;
+
  protected:
   SecureChannelPendingConnectionRequestBaseTest() = default;
   ~SecureChannelPendingConnectionRequestBaseTest() override = default;
@@ -124,8 +130,6 @@ class SecureChannelPendingConnectionRequestBaseTest : public testing::Test {
 
   std::unique_ptr<TestPendingConnectionRequest>
       test_pending_connection_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelPendingConnectionRequestBaseTest);
 };
 
 TEST_F(SecureChannelPendingConnectionRequestBaseTest,

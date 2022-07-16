@@ -68,6 +68,7 @@
 #include "net/ssl/ssl_info.h"
 #include "net/ssl/ssl_private_key.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/scheme_host_port.h"
 #include "url/url_canon.h"
 
@@ -1399,7 +1400,7 @@ void HttpNetworkTransaction::ProcessReportToHeader() {
   if (IsCertStatusError(response_.ssl_info.cert_status))
     return;
 
-  reporting_service->ProcessReportToHeader(url_.GetOrigin(),
+  reporting_service->ProcessReportToHeader(url::Origin::Create(url_),
                                            network_isolation_key_, value);
 }
 

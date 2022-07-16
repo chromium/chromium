@@ -38,6 +38,10 @@ class MonitoredVideoStub : public VideoStub {
       VideoStub* video_stub,
       base::TimeDelta connectivity_check_delay,
       const ChannelStateCallback& callback);
+
+  MonitoredVideoStub(const MonitoredVideoStub&) = delete;
+  MonitoredVideoStub& operator=(const MonitoredVideoStub&) = delete;
+
   ~MonitoredVideoStub() override;
 
   // VideoStub implementation.
@@ -53,8 +57,6 @@ class MonitoredVideoStub : public VideoStub {
   base::ThreadChecker thread_checker_;
   bool is_connected_;
   base::DelayTimer connectivity_check_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MonitoredVideoStub);
 };
 
 }  // namespace protocol

@@ -5,8 +5,6 @@
 #ifndef UI_VIEWS_TEST_BUTTON_TEST_API_H_
 #define UI_VIEWS_TEST_BUTTON_TEST_API_H_
 
-#include "base/macros.h"
-
 namespace ui {
 class Event;
 }
@@ -21,12 +19,13 @@ class ButtonTestApi {
  public:
   explicit ButtonTestApi(Button* button) : button_(button) {}
 
+  ButtonTestApi(const ButtonTestApi&) = delete;
+  ButtonTestApi& operator=(const ButtonTestApi&) = delete;
+
   void NotifyClick(const ui::Event& event);
 
  private:
   Button* button_;
-
-  DISALLOW_COPY_AND_ASSIGN(ButtonTestApi);
 };
 
 }  // namespace test

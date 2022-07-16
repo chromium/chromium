@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_suite.h"
@@ -28,6 +27,9 @@ class GlTestSuite : public base::TestSuite {
   GlTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {
   }
 
+  GlTestSuite(const GlTestSuite&) = delete;
+  GlTestSuite& operator=(const GlTestSuite&) = delete;
+
  protected:
   void Initialize() override {
     base::TestSuite::Initialize();
@@ -46,14 +48,12 @@ class GlTestSuite : public base::TestSuite {
     // process and it spawns and starts its own DRM thread. Note that this mode
     // still requires a mojo pipe for in-process communication between the host
     // and GPU components.
-    if (features::IsUsingOzonePlatform()) {
-      ui::OzonePlatform::InitParams params;
-      params.single_process = true;
+    ui::OzonePlatform::InitParams params;
+    params.single_process = true;
 
-      // This initialization must be done after TaskEnvironment has
-      // initialized the UI thread.
-      ui::OzonePlatform::InitializeForUI(params);
-    }
+    // This initialization must be done after TaskEnvironment has
+    // initialized the UI thread.
+    ui::OzonePlatform::InitializeForUI(params);
 #endif
   }
 
@@ -63,16 +63,13 @@ class GlTestSuite : public base::TestSuite {
 
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlTestSuite);
 };
 
 }  // namespace
 
 int main(int argc, char** argv) {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform())
-    mojo::core::Init();
+  mojo::core::Init();
 #endif
 
   GlTestSuite test_suite(argc, argv);

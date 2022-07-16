@@ -61,20 +61,18 @@ class SMILTime {
 
   static constexpr SMILTime Unresolved() { return base::TimeDelta::Max(); }
   static constexpr SMILTime Indefinite() {
-    return base::TimeDelta::Max() - base::TimeDelta::FromMicroseconds(1);
+    return base::TimeDelta::Max() - base::Microseconds(1);
   }
   static constexpr SMILTime Latest() {
-    return base::TimeDelta::Max() - base::TimeDelta::FromMicroseconds(2);
+    return base::TimeDelta::Max() - base::Microseconds(2);
   }
   static constexpr SMILTime Earliest() { return base::TimeDelta::Min(); }
-  static constexpr SMILTime Epsilon() {
-    return base::TimeDelta::FromMicroseconds(1);
-  }
+  static constexpr SMILTime Epsilon() { return base::Microseconds(1); }
   static constexpr SMILTime FromSecondsD(double seconds) {
-    return std::min(SMILTime(base::TimeDelta::FromSecondsD(seconds)), Latest());
+    return std::min(SMILTime(base::Seconds(seconds)), Latest());
   }
   static constexpr SMILTime FromMicroseconds(int64_t us) {
-    return std::min(SMILTime(base::TimeDelta::FromMicroseconds(us)), Latest());
+    return std::min(SMILTime(base::Microseconds(us)), Latest());
   }
 
   // Used for computing progress. Don't use for anything else.

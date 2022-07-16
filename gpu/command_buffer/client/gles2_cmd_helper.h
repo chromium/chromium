@@ -19,6 +19,10 @@ namespace gles2 {
 class GPU_GLES2_EXPORT GLES2CmdHelper : public CommandBufferHelper {
  public:
   explicit GLES2CmdHelper(CommandBuffer* command_buffer);
+
+  GLES2CmdHelper(const GLES2CmdHelper&) = delete;
+  GLES2CmdHelper& operator=(const GLES2CmdHelper&) = delete;
+
   ~GLES2CmdHelper() override;
 
   // Include the auto-generated part of this class. We split this because it
@@ -27,9 +31,6 @@ class GPU_GLES2_EXPORT GLES2CmdHelper : public CommandBufferHelper {
   #include "gpu/command_buffer/client/gles2_cmd_helper_autogen.h"
 
   // Helpers that could not be auto-generated.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GLES2CmdHelper);
 };
 
 }  // namespace gles2

@@ -4,11 +4,10 @@
 
 #import "ios/chrome/credential_provider_extension/password_util.h"
 
-#import <Security/Security.h>
-
 #import "base/logging.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
+#import "ios/components/credential_provider_extension/password_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,22 +19,31 @@ NSString* PasswordWithKeychainIdentifier(NSString* identifier) {
         app_group::kCredentialExtensionFetchPasswordNilArgumentCount);
     return @"";
   }
-  NSDictionary* query = @{
-    (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
-    (__bridge id)kSecAttrAccount : identifier,
-    (__bridge id)kSecReturnData : @YES
-  };
 
-  // Get the keychain item containing the password.
-  CFDataRef secDataRef;
-  OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query,
-                                        (CFTypeRef*)&secDataRef);
-  NSData* data = (__bridge_transfer NSData*)secDataRef;
-  if (status == errSecSuccess) {
-    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  NSString* password =
+      credential_provider_extension::PasswordWithKeychainIdentifier(identifier);
+  if (password) {
+    return password;
   }
+
   UpdateUMACountForKey(
       app_group::kCredentialExtensionFetchPasswordFailureCount);
-  DLOG(ERROR) << "Error retrieving password, OSStatus: " << status;
   return @"";
+}
+
+BOOL StorePasswordInKeychain(NSString* password, NSString* identifier) {
+  if (!identifier || identifier.length == 0) {
+    return NO;
+  }
+
+  BOOL stored_successfully =
+      credential_provider_extension::StorePasswordInKeychain(password,
+                                                             identifier);
+
+  if (!stored_successfully) {
+    UpdateUMACountForKey(
+        app_group::kCredentialExtensionKeychainSavePasswordFailureCount);
+  }
+
+  return stored_successfully;
 }

@@ -35,6 +35,9 @@ class DummyTaskObserver : public TaskObserver {
         num_tasks_processed_(0),
         num_tasks_(num_tasks) {}
 
+  DummyTaskObserver(const DummyTaskObserver&) = delete;
+  DummyTaskObserver& operator=(const DummyTaskObserver&) = delete;
+
   ~DummyTaskObserver() override = default;
 
   void WillProcessTask(const PendingTask& /* pending_task */,
@@ -57,8 +60,6 @@ class DummyTaskObserver : public TaskObserver {
   int num_tasks_started_;
   int num_tasks_processed_;
   const int num_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyTaskObserver);
 };
 
 void PostNTasks(int posts_remaining) {
@@ -88,8 +89,8 @@ void RunTest_AbortDontRunMoreTasks(bool delayed, bool init_java_first) {
       BindOnce(&android::JavaHandlerThreadHelpers::ThrowExceptionAndAbort,
                &test_done_event);
   if (delayed) {
-    java_thread->task_runner()->PostDelayedTask(
-        FROM_HERE, std::move(target), TimeDelta::FromMilliseconds(10));
+    java_thread->task_runner()->PostDelayedTask(FROM_HERE, std::move(target),
+                                                Milliseconds(10));
   } else {
     java_thread->task_runner()->PostTask(FROM_HERE, std::move(target));
     java_thread->task_runner()->PostTask(FROM_HERE,
@@ -136,8 +137,7 @@ TEST_F(JavaHandlerThreadTest, RunTasksWhileShuttingDownJavaThread) {
       FROM_HERE, BindLambdaForTesting([&]() {
         sequence_manager->AddTaskObserver(&observer);
         ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-            FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE),
-            TimeDelta::FromDays(1));
+            FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), Days(1));
         java_thread->StopSequenceManagerForTesting();
         PostNTasks(kNumPosts);
       }));

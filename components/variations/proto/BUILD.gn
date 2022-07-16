@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
@@ -19,7 +21,7 @@ if (is_android) {
   }
 }
 
-proto_library("proto") {
+fuzzable_proto_library("proto") {
   sources = [
     "client_variations.proto",
     "layer.proto",
@@ -30,13 +32,15 @@ proto_library("proto") {
   # The generated JavaScript bindings are used to build a small, self-contained
   # parser for ClientVariations in Dev Tools. This parser is used to decode the
   # X-Client-Data header.
+  # Note: This doesn't do anything when use_libfuzzer is true.
   generate_javascript = true
 }
 
 # Some of the Windows builders do not support Java, which is a required
-# dependency for this build target. This target is only built manually, so it's
-# fine to limit it to Linux.
-if (is_linux) {
+# dependency for this build target. The fuzzable_proto_library doesn't support
+# building JS protos when use_libfuzzer is true.This target is only built
+# manually, so it's fine to limit it to Linux non-fuzzer builds.
+if (is_linux && !use_libfuzzer) {
   group("devtools") {
     deps = [ "devtools" ]
   }

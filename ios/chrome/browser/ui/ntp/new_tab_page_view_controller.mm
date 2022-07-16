@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_omnibox_positioning.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
@@ -38,6 +39,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
 }
 
 @interface NewTabPageViewController () <NewTabPageOmniboxPositioning,
+                                        UICollectionViewDelegate,
                                         UIGestureRecognizerDelegate>
 
 // The overscroll actions controller managing accelerators over the toolbar.
@@ -99,6 +101,10 @@ const CGFloat kOffsetToPinOmnibox = 100;
   DCHECK(self.discoverFeedWrapperViewController);
   DCHECK(self.contentSuggestionsViewController);
 
+  // TODO(crbug.com/1262536): Remove this when bug is fixed.
+  [self.discoverFeedWrapperViewController loadViewIfNeeded];
+  [self.contentSuggestionsViewController loadViewIfNeeded];
+
   // Prevent the NTP from spilling behind the toolbar and tab strip.
   self.view.clipsToBounds = YES;
 
@@ -114,17 +120,19 @@ const CGFloat kOffsetToPinOmnibox = 100;
   discoverFeedView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(discoverFeedView, self.view);
 
+  UIViewController* parentViewController =
+      self.isFeedVisible ? self.discoverFeedWrapperViewController.discoverFeed
+                         : self.discoverFeedWrapperViewController;
+
   [self.contentSuggestionsViewController
-      willMoveToParentViewController:self.discoverFeedWrapperViewController
-                                         .discoverFeed];
-  [self.discoverFeedWrapperViewController.discoverFeed
+      willMoveToParentViewController:parentViewController];
+  [parentViewController
       addChildViewController:self.contentSuggestionsViewController];
   [self.collectionView addSubview:self.contentSuggestionsViewController.view];
   [self.contentSuggestionsViewController
-      didMoveToParentViewController:self.discoverFeedWrapperViewController
-                                        .discoverFeed];
+      didMoveToParentViewController:parentViewController];
 
-  // TODO(crbug.com/1170995): The feedCollectionView width might be narrower
+  // TODO(crbug.com/1170995): The contentCollectionView width might be narrower
   // than the ContentSuggestions view. This causes elements to be hidden. As a
   // temporary workaround set clipsToBounds to NO to display these elements, and
   // add a gesture recognizer to interact with them.
@@ -151,6 +159,14 @@ const CGFloat kOffsetToPinOmnibox = 100;
           .collectionViewLayout);
   _contentSuggestionsLayout.isScrolledIntoFeed = self.isScrolledIntoFeed;
   _contentSuggestionsLayout.omniboxPositioner = self;
+  _contentSuggestionsLayout.parentCollectionView = self.collectionView;
+
+  // If the feed is not visible, we control the delegate ourself (since it is
+  // otherwise controlled by the DiscoverProvider).
+  if (!self.isFeedVisible) {
+    self.discoverFeedWrapperViewController.contentCollectionView.delegate =
+        self;
+  }
 
   [self registerNotifications];
 }
@@ -174,25 +190,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
   // ContentSuggestions View will look broken for a second before its properly
   // laid out.
   if (!self.contentSuggestionsHeightConstraint) {
-    UIView* containerView =
-        self.discoverFeedWrapperViewController.discoverFeed.view;
-    UIView* contentSuggestionsView = self.contentSuggestionsViewController.view;
-    contentSuggestionsView.translatesAutoresizingMaskIntoConstraints = NO;
-
-    self.contentSuggestionsHeightConstraint =
-        [contentSuggestionsView.heightAnchor
-            constraintEqualToConstant:self.contentSuggestionsViewController
-                                          .collectionView.contentSize.height];
-
-    [NSLayoutConstraint activateConstraints:@[
-      [self.collectionView.topAnchor
-          constraintEqualToAnchor:contentSuggestionsView.bottomAnchor],
-      [containerView.safeAreaLayoutGuide.leadingAnchor
-          constraintEqualToAnchor:contentSuggestionsView.leadingAnchor],
-      [containerView.safeAreaLayoutGuide.trailingAnchor
-          constraintEqualToAnchor:contentSuggestionsView.trailingAnchor],
-      self.contentSuggestionsHeightConstraint,
-    ]];
+    [self applyCollectionViewConstraints];
   }
 
   [self updateContentSuggestionForCurrentLayout];
@@ -208,6 +206,10 @@ const CGFloat kOffsetToPinOmnibox = 100;
   if (self.shouldFocusFakebox && [self collectionViewHasLoaded]) {
     [self.headerController focusFakebox];
     self.shouldFocusFakebox = NO;
+  }
+
+  if (!self.isFeedVisible) {
+    [self setMinimumHeight];
   }
 
   self.viewDidAppear = YES;
@@ -238,22 +240,30 @@ const CGFloat kOffsetToPinOmnibox = 100;
   __weak NewTabPageViewController* weakSelf = self;
 
   CGFloat yOffsetBeforeRotation = self.collectionView.contentOffset.y;
-  BOOL isScrolledToTop =
-      [self adjustedContentSuggestionsHeight] <= (-yOffsetBeforeRotation) + 1;
+  CGFloat heightAboveFeedBeforeRotation =
+      [self adjustedContentSuggestionsHeight];
 
   void (^alongsideBlock)(id<UIViewControllerTransitionCoordinatorContext>) = ^(
       id<UIViewControllerTransitionCoordinatorContext> context) {
     [weakSelf handleFakeOmniboxForScrollPosition:weakSelf.collectionView
                                                      .contentOffset.y
                                            force:YES];
-    // Rotating the device can change the content suggestions height. This
-    // ensures that it is adjusted if necessary.
+
+    // Redraw the ContentSuggestionsViewController to properly caclculate the
+    // new adjustedContentSuggestionsHeight value.
     // TODO(crbug.com/1170995): Remove once the Feed supports a custom
     // header.
-    if (isScrolledToTop &&
-        -yOffsetBeforeRotation < [weakSelf adjustedContentSuggestionsHeight]) {
+    [self.contentSuggestionsViewController.view setNeedsLayout];
+    [self.contentSuggestionsViewController.view layoutIfNeeded];
+
+    CGFloat heightAboveFeedDifference =
+        [self adjustedContentSuggestionsHeight] - heightAboveFeedBeforeRotation;
+
+    // Rotating the device can change the content suggestions height. This
+    // ensures that it is adjusted if necessary.
+    if (yOffsetBeforeRotation < 0) {
       weakSelf.collectionView.contentOffset =
-          CGPointMake(0, -[weakSelf adjustedContentSuggestionsHeight]);
+          CGPointMake(0, yOffsetBeforeRotation - heightAboveFeedDifference);
       [weakSelf updateContentSuggestionForCurrentLayout];
     } else {
       [weakSelf.contentSuggestionsViewController.collectionView
@@ -268,6 +278,9 @@ const CGFloat kOffsetToPinOmnibox = 100;
     if ([weakSelf.headerSynchronizer isOmniboxFocused] &&
         weakSelf.collectionView.contentOffset.y < pinnedOffsetY) {
       weakSelf.collectionView.contentOffset = CGPointMake(0, pinnedOffsetY);
+    }
+    if (!self.isFeedVisible) {
+      [self setMinimumHeight];
     }
   };
   [coordinator
@@ -317,6 +330,12 @@ const CGFloat kOffsetToPinOmnibox = 100;
 
 - (void)setContentOffsetToTop {
   [self setContentOffset:-[self adjustedContentSuggestionsHeight]];
+  [self resetFakeOmnibox];
+}
+
+- (BOOL)isNTPScrolledToTop {
+  return self.collectionView.contentOffset.y <=
+         -[self adjustedContentSuggestionsHeight];
 }
 
 - (void)updateContentSuggestionForCurrentLayout {
@@ -332,7 +351,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
   // Ensure initial fake omnibox layout.
   [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
   if (!self.viewDidAppear && ![self isInitialOffsetFromSavedState]) {
-    [self setContentOffset:-[self adjustedContentSuggestionsHeight]];
+    [self setContentOffsetToTop];
   }
 }
 
@@ -436,7 +455,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
 #pragma mark - ContentSuggestionsCollectionControlling
 
 - (UICollectionView*)collectionView {
-  return self.discoverFeedWrapperViewController.feedCollectionView;
+  return self.discoverFeedWrapperViewController.contentCollectionView;
 }
 
 #pragma mark - NewTabPageOmniboxPositioning
@@ -616,6 +635,13 @@ const CGFloat kOffsetToPinOmnibox = 100;
              scrollPosition <= -kOffsetToPinOmnibox) {
     [self resetFakeOmnibox];
   }
+
+  // Content suggestions header will sometimes glitch when swiping quickly from
+  // inside the feed to the top of the NTP. This check safeguards this action to
+  // make sure the header is properly positioned. (crbug.com/1261458)
+  if (scrollPosition <= -[self adjustedContentSuggestionsHeight]) {
+    [self resetFakeOmnibox];
+  }
 }
 
 // Registers notifications for certain actions on the NTP.
@@ -635,6 +661,46 @@ const CGFloat kOffsetToPinOmnibox = 100;
   }
 }
 
+// Applies constraints to the NTP collection view, along with the constraints
+// for the content suggestions within it.
+- (void)applyCollectionViewConstraints {
+  UIView* containerView;
+  if (self.isFeedVisible) {
+    // TODO(crbug.com/1262536): Remove this when the bug is fixed.
+    if (IsNTPViewHierarchyRepairEnabled()) {
+      [self verifyNTPViewHierarchy];
+    }
+    containerView = self.discoverFeedWrapperViewController.discoverFeed.view;
+  } else {
+    containerView = self.view;
+  }
+  UIView* contentSuggestionsView = self.contentSuggestionsViewController.view;
+  contentSuggestionsView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  self.contentSuggestionsHeightConstraint = [contentSuggestionsView.heightAnchor
+      constraintEqualToConstant:self.contentSuggestionsViewController
+                                    .collectionView.contentSize.height];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [self.collectionView.topAnchor
+        constraintEqualToAnchor:contentSuggestionsView.bottomAnchor],
+    [containerView.safeAreaLayoutGuide.leadingAnchor
+        constraintEqualToAnchor:contentSuggestionsView.leadingAnchor],
+    [containerView.safeAreaLayoutGuide.trailingAnchor
+        constraintEqualToAnchor:contentSuggestionsView.trailingAnchor],
+    self.contentSuggestionsHeightConstraint,
+  ]];
+}
+
+// Sets minimum height for the NTP collection view, allowing it to scroll enough
+// to focus the omnibox.
+- (void)setMinimumHeight {
+  self.collectionView.contentSize =
+      CGSizeMake(self.view.frame.size.width,
+                 [self.contentSuggestionsLayout minimumNTPHeight] -
+                     [self adjustedContentSuggestionsHeight]);
+}
+
 #pragma mark - Helpers
 
 // Content suggestions height adjusted with the safe area top insets.
@@ -651,6 +717,35 @@ const CGFloat kOffsetToPinOmnibox = 100;
 // omnibox, so they would both show.
 - (BOOL)collectionViewHasLoaded {
   return self.collectionView.contentSize.height > 0;
+}
+
+// TODO(crbug.com/1262536): Temporary fix to compensate for the view hierarchy
+// sometimes breaking. Use DCHECKs to investigate what exactly is broken and
+// find a fix.
+- (void)verifyNTPViewHierarchy {
+  // The view hierarchy with the feed enabled should be: self.view ->
+  // self.discoverFeedWrapperViewController.view ->
+  // self.discoverFeedWrapperViewController.discoverFeed.view ->
+  // self.collectionView -> self.contentSuggestionsViewController.view.
+  [self ensureView:self.contentSuggestionsViewController.view
+       isSubviewOf:self.collectionView];
+  [self ensureView:self.collectionView
+       isSubviewOf:self.discoverFeedWrapperViewController.discoverFeed.view];
+  [self ensureView:self.discoverFeedWrapperViewController.discoverFeed.view
+       isSubviewOf:self.discoverFeedWrapperViewController.view];
+  [self ensureView:self.discoverFeedWrapperViewController.view
+       isSubviewOf:self.view];
+}
+
+// Ensures that |subView| is a descendent of |parentView|. If not, logs a DCHECK
+// and adds the subview.
+// TODO(crbug.com/1262536): Remove this once bug is fixed.
+- (void)ensureView:(UIView*)subView isSubviewOf:(UIView*)parentView {
+  if (![parentView.subviews containsObject:subView]) {
+    DCHECK([parentView.subviews containsObject:subView]);
+    [subView removeFromSuperview];
+    [parentView addSubview:subView];
+  }
 }
 
 #pragma mark - Setters

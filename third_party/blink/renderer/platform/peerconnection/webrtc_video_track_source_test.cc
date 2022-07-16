@@ -5,8 +5,8 @@
 #include <algorithm>
 
 #include "base/callback_helpers.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/strcat.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"

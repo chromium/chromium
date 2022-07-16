@@ -6,6 +6,9 @@
 
 #include <algorithm>
 
+#include "base/ranges/algorithm.h"
+#include "components/autofill/core/common/autofill_clock.h"
+
 namespace autofill {
 
 AutofillOfferData::AutofillOfferData() = default;
@@ -93,14 +96,33 @@ int AutofillOfferData::Compare(
   return 0;
 }
 
-bool AutofillOfferData::IsCardLinkedOffer() const {
+AutofillOfferData::OfferType AutofillOfferData::GetOfferType() const {
   // Card-linked offers have at least one |eligible_instrument_id|.
-  return !eligible_instrument_id.empty();
+  if (!eligible_instrument_id.empty())
+    return OfferType::GPAY_CARD_LINKED_OFFER;
+
+  // Promo code offers have the promo code field populated.
+  // TODO(crbug.com/1203811): When GPay-activated promo codes become available,
+  //     save this OfferType as a class member variable (so as to differentiate
+  //     GPay and FLC promo codes) and simply return that value for this
+  //     function instead.
+  if (!promo_code.empty())
+    return OfferType::FREE_LISTING_COUPON_OFFER;
+
+  return OfferType::UNKNOWN;
+}
+
+bool AutofillOfferData::IsCardLinkedOffer() const {
+  return GetOfferType() == OfferType::GPAY_CARD_LINKED_OFFER;
 }
 
 bool AutofillOfferData::IsPromoCodeOffer() const {
-  // Promo code offers have the promo code field populated.
-  return !promo_code.empty();
+  return GetOfferType() == OfferType::FREE_LISTING_COUPON_OFFER;
+}
+
+bool AutofillOfferData::IsActiveAndEligibleForOrigin(const GURL& origin) const {
+  return expiry > AutofillClock::Now() &&
+         base::ranges::count(merchant_origins, origin) > 0;
 }
 
 }  // namespace autofill

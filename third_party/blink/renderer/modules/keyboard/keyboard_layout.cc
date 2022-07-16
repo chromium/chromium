@@ -28,8 +28,9 @@ namespace {
 constexpr char kKeyboardMapFrameDetachedErrorMsg[] =
     "Current frame is detached.";
 
-constexpr char kKeyboardMapChildFrameErrorMsg[] =
-    "getLayoutMap() must be called from a top-level browsing context.";
+constexpr char kFeaturePolicyBlocked[] =
+    "getLayoutMap() must be called from a top-level browsing context or "
+    "allowed by the permission policy.";
 
 constexpr char kKeyboardMapRequestFailedErrorMsg[] =
     "getLayoutMap() request could not be completed.";
@@ -55,7 +56,7 @@ void RecordGetLayoutMapResult(ExecutionContext* context,
     return;
 
   IdentifiabilityMetricBuilder(context->UkmSourceID())
-      .Set(kGetKeyboardLayoutMapSurface, value)
+      .Add(kGetKeyboardLayoutMapSurface, value)
       .Record(context->UkmRecorder());
 }
 
@@ -76,12 +77,6 @@ ScriptPromise KeyboardLayout::GetKeyboardLayoutMap(
   if (!IsLocalFrameAttached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardMapFrameDetachedErrorMsg);
-    return ScriptPromise();
-  }
-
-  if (!CalledFromSupportedContext(ExecutionContext::From(script_state))) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kKeyboardMapChildFrameErrorMsg);
     return ScriptPromise();
   }
 
@@ -121,13 +116,6 @@ bool KeyboardLayout::EnsureServiceConnected() {
   return true;
 }
 
-bool KeyboardLayout::CalledFromSupportedContext(ExecutionContext* context) {
-  DCHECK(context);
-  // This API is only accessible from a top level, secure browsing context.
-  return DomWindow() && DomWindow()->GetFrame()->IsMainFrame() &&
-         context->IsSecureContext();
-}
-
 void KeyboardLayout::GotKeyboardLayoutMap(
     ScriptPromiseResolver* resolver,
     mojom::blink::GetKeyboardLayoutMapResultPtr result) {
@@ -152,6 +140,10 @@ void KeyboardLayout::GotKeyboardLayoutMap(
       script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kInvalidStateError,
           kKeyboardMapRequestFailedErrorMsg));
+      break;
+    case mojom::blink::GetKeyboardLayoutMapStatus::kDenied:
+      script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kSecurityError, kFeaturePolicyBlocked));
       break;
   }
 

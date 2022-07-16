@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/events/pointer_details.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -28,6 +27,10 @@ class WaylandTouch {
   WaylandTouch(wl_touch* touch,
                WaylandConnection* connection,
                Delegate* delegate);
+
+  WaylandTouch(const WaylandTouch&) = delete;
+  WaylandTouch& operator=(const WaylandTouch&) = delete;
+
   ~WaylandTouch();
 
  private:
@@ -57,8 +60,6 @@ class WaylandTouch {
   wl::Object<wl_touch> obj_;
   WaylandConnection* const connection_;
   Delegate* const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandTouch);
 };
 
 class WaylandTouch::Delegate {
@@ -72,6 +73,7 @@ class WaylandTouch::Delegate {
                                   base::TimeTicks timestamp,
                                   PointerId id) = 0;
   virtual void OnTouchCancelEvent() = 0;
+  virtual void OnTouchFocusChanged(WaylandWindow* window) = 0;
   virtual std::vector<PointerId> GetActiveTouchPointIds() = 0;
 };
 

@@ -108,4 +108,57 @@ public class ChromeLocalizationUtilsTest {
         status = ChromeLocalizationUtils.getOverrideUiCorrectStatus(false, true);
         Assert.assertEquals(status, ChromeLocalizationUtils.UiCorrectTypes.INCORRECT);
     }
+
+    /**
+     * Test the return value for getLocaleUpdateStatus
+     */
+    @Test
+    public void testGetLocaleUpdateStatus() {
+        // First run checks
+        @ChromeLocalizationUtils.LocaleUpdateStatus
+        int status = ChromeLocalizationUtils.getLocaleUpdateStatus(null, "en-US,en,es", true);
+        Assert.assertEquals(status, ChromeLocalizationUtils.LocaleUpdateStatus.FIRST_RUN);
+
+        status = ChromeLocalizationUtils.getLocaleUpdateStatus("", "en-US,en,es", false);
+        Assert.assertEquals(status, ChromeLocalizationUtils.LocaleUpdateStatus.FIRST_RUN);
+
+        status = ChromeLocalizationUtils.getLocaleUpdateStatus("en-US,en", null, false);
+        Assert.assertEquals(status, ChromeLocalizationUtils.LocaleUpdateStatus.FIRST_RUN);
+
+        status = ChromeLocalizationUtils.getLocaleUpdateStatus("en-US,en", "", true);
+        Assert.assertEquals(status, ChromeLocalizationUtils.LocaleUpdateStatus.FIRST_RUN);
+
+        // Override true checks
+        status = ChromeLocalizationUtils.getLocaleUpdateStatus("en-US,af,zu", "en-US,zu,af", true);
+        Assert.assertEquals(
+                status, ChromeLocalizationUtils.LocaleUpdateStatus.OVERRIDDEN_OTHERS_CHANGED);
+
+        status = ChromeLocalizationUtils.getLocaleUpdateStatus("en-US,af,zu", "en-US", true);
+        Assert.assertEquals(
+                status, ChromeLocalizationUtils.LocaleUpdateStatus.OVERRIDDEN_OTHERS_CHANGED);
+
+        status = ChromeLocalizationUtils.getLocaleUpdateStatus(
+                "af,en-US,af,zu", "en-US,af,zu", true);
+        Assert.assertEquals(
+                status, ChromeLocalizationUtils.LocaleUpdateStatus.OVERRIDDEN_TOP_CHANGED);
+
+        status = ChromeLocalizationUtils.getLocaleUpdateStatus("af", "en", true);
+        Assert.assertEquals(
+                status, ChromeLocalizationUtils.LocaleUpdateStatus.OVERRIDDEN_TOP_CHANGED);
+
+        status = ChromeLocalizationUtils.getLocaleUpdateStatus("af,en,zu", "af,en,zu", true);
+        Assert.assertEquals(status, ChromeLocalizationUtils.LocaleUpdateStatus.NO_CHANGE);
+
+        // Override false checks
+        status = ChromeLocalizationUtils.getLocaleUpdateStatus("af,en,zu", "af,en,zu", false);
+        Assert.assertEquals(status, ChromeLocalizationUtils.LocaleUpdateStatus.NO_CHANGE);
+
+        status = ChromeLocalizationUtils.getLocaleUpdateStatus("af,en,zu", "af,zu", false);
+        Assert.assertEquals(
+                status, ChromeLocalizationUtils.LocaleUpdateStatus.NO_OVERRIDE_OTHERS_CHANGED);
+
+        status = ChromeLocalizationUtils.getLocaleUpdateStatus("as,en,zu", "af,en,zu", false);
+        Assert.assertEquals(
+                status, ChromeLocalizationUtils.LocaleUpdateStatus.NO_OVERRIDE_TOP_CHANGED);
+    }
 }

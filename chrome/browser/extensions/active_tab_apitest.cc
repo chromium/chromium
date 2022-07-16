@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -43,6 +42,9 @@ class ExtensionActiveTabTest : public ExtensionApiTest {
  public:
   ExtensionActiveTabTest() = default;
 
+  ExtensionActiveTabTest(const ExtensionActiveTabTest&) = delete;
+  ExtensionActiveTabTest& operator=(const ExtensionActiveTabTest&) = delete;
+
   // ExtensionApiTest override:
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -50,9 +52,6 @@ class ExtensionActiveTabTest : public ExtensionApiTest {
     // Map all hosts to localhost.
     host_resolver()->AddRule("*", "127.0.0.1");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActiveTabTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
@@ -70,10 +69,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
     ExtensionTestMessageListener navigation_count_listener(
         "1", false /*will_reply*/);
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         embedded_test_server()->GetURL(
-            "google.com", "/extensions/api_test/active_tab/page.html"));
+            "google.com", "/extensions/api_test/active_tab/page.html")));
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
     EXPECT_TRUE(navigation_count_listener.WaitUntilSatisfied());
   }
@@ -112,7 +111,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
         browser()->tab_strip_model()->GetActiveWebContents())
         ->RunAction(extension, true);
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
-    EXPECT_EQ(GURL(listener.message()).GetOrigin().spec(), listener.message());
+    EXPECT_EQ(GURL(listener.message()).DeprecatedGetOriginAsURL().spec(),
+              listener.message());
 
     // Clean up.
     ExtensionTabUtil::SetPlatformDelegate(nullptr);
@@ -125,10 +125,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
     ExtensionTestMessageListener navigation_count_listener(
         "2", false /*will_reply*/);
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         embedded_test_server()->GetURL(
-            "google.com", "/extensions/api_test/active_tab/final_page.html"));
+            "google.com", "/extensions/api_test/active_tab/final_page.html")));
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
     EXPECT_TRUE(navigation_count_listener.WaitUntilSatisfied());
   }
@@ -139,10 +139,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
     ExtensionTestMessageListener navigation_count_listener(
         "3", false /*will_reply*/);
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         embedded_test_server()->GetURL(
-            "example.com", "/extensions/api_test/active_tab/final_page.html"));
+            "example.com", "/extensions/api_test/active_tab/final_page.html")));
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
     EXPECT_TRUE(navigation_count_listener.WaitUntilSatisfied());
   }
@@ -159,10 +159,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTabCors) {
   ASSERT_TRUE(background_page_ready.WaitUntilSatisfied());
 
   {
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         embedded_test_server()->GetURL(
-            "google.com", "/extensions/api_test/active_tab_cors/page.html"));
+            "google.com", "/extensions/api_test/active_tab_cors/page.html")));
     std::u16string title = u"page";
     content::TitleWatcher watcher(
         browser()->tab_strip_model()->GetActiveWebContents(), title);
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
 
     // Sanity check the last committed url on the |file_iframe|.
     content::RenderFrameHost* file_iframe = content::FrameMatchingPredicate(
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->tab_strip_model()->GetActiveWebContents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameMatchesName, "file_iframe"));
     bool is_file_url = file_iframe->GetLastCommittedURL() == GURL("file:///");
     EXPECT_EQ(allowed, is_file_url)
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
   // in this case).
   GURL file_url_1 =
       net::FilePathToFileURL(extension->path().AppendASCII("manifest.json"));
-  ui_test_utils::NavigateToURL(browser(), file_url_1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), file_url_1));
 
   // Assigned to |inactive_tab_id| since we open another foreground tab
   // subsequently.

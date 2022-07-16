@@ -85,7 +85,7 @@ class PrefetchProxyURLLoaderInterceptorTest
         prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
             profile());
 
-    return no_state_prefetch_manager->AddPrerenderFromNavigationPredictor(
+    return no_state_prefetch_manager->StartPrefetchingFromNavigationPredictor(
         url,
         web_contents()->GetController().GetDefaultSessionStorageNamespace(),
         kSize);

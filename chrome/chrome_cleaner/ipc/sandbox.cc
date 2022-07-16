@@ -222,7 +222,7 @@ ResultCode StartSandboxTarget(const base::CommandLine& sandbox_command_line,
   if (g_target_processes->erase(type))
     DCHECK_EQ(SandboxType::kTest, type);
 
-  base::ScopedClosureRunner notify_hooks_on_failure(base::DoNothing::Once());
+  base::ScopedClosureRunner notify_hooks_on_failure;
 
   if (hooks) {
     // Unretained is safe because |hooks| lives for the entire enclosing scope.
@@ -356,8 +356,8 @@ ResultCode StartSandboxTarget(const base::CommandLine& sandbox_command_line,
   // global that will be cleaned up by the OS on exit, so that it can be polled
   // in |IsSandboxTargetRunning|.
   g_target_processes->emplace(type, base::Process(std::move(process_handle)));
-  terminate_process_on_failure.ReplaceClosure(base::DoNothing::Once());
-  notify_hooks_on_failure.ReplaceClosure(base::DoNothing::Once());
+  terminate_process_on_failure.ReplaceClosure(base::NullCallback());
+  notify_hooks_on_failure.ReplaceClosure(base::NullCallback());
 
   return RESULT_CODE_SUCCESS;
 }

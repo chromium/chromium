@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -41,7 +41,7 @@ TEST_F(SettingsImageDetailTextItemTest, ConfigureCell) {
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
   EXPECT_NSEQ(text, imageDetailCell.textLabel.text);
   EXPECT_NSEQ(detailText, imageDetailCell.detailTextLabel.text);
-  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor,
+  EXPECT_NSEQ([UIColor colorNamed:kTextSecondaryColor],
               imageDetailCell.detailTextLabel.textColor);
   EXPECT_NSEQ(image, imageDetailCell.image);
 }
@@ -126,6 +126,6 @@ TEST_F(SettingsImageDetailTextItemTest, ConfigureCellTwice) {
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
   EXPECT_NSEQ(text, imageDetailCell.textLabel.text);
   EXPECT_NSEQ(detailText, imageDetailCell.detailTextLabel.text);
-  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor,
+  EXPECT_NSEQ([UIColor colorNamed:kTextSecondaryColor],
               imageDetailCell.detailTextLabel.textColor);
 }

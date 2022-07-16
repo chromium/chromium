@@ -27,6 +27,9 @@ class InMemoryURLIndexFactory : public BrowserStateKeyedServiceFactory {
   // registered with SetTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
+  InMemoryURLIndexFactory(const InMemoryURLIndexFactory&) = delete;
+  InMemoryURLIndexFactory& operator=(const InMemoryURLIndexFactory&) = delete;
+
  private:
   friend class base::NoDestructor<InMemoryURLIndexFactory>;
 
@@ -39,8 +42,6 @@ class InMemoryURLIndexFactory : public BrowserStateKeyedServiceFactory {
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryURLIndexFactory);
 };
 
 }  // namespace ios

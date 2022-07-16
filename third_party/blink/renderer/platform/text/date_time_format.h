@@ -35,7 +35,7 @@ namespace blink {
 
 // DateTimeFormat parses date time format defined in Unicode Technical
 // standard 35, Locale Data Markup Language (LDML)[1].
-// [1] LDML http://unicode.org/reports/tr35/tr35-6.html#Date_Format_Patterns
+// [1] https://unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns
 class PLATFORM_EXPORT DateTimeFormat {
   STATIC_ONLY(DateTimeFormat);
 
@@ -51,6 +51,8 @@ class PLATFORM_EXPORT DateTimeFormat {
     kFieldTypeYear = 'y',
     kFieldTypeYearOfWeekOfYear = 'Y',
     kFieldTypeExtendedYear = 'u',
+    kFieldTypeYearCyclicName = 'U',
+    kFieldTypeYearRelatedGregorian = 'r',
 
     // Quater: Q2
     kFieldTypeQuater = 'Q',
@@ -77,6 +79,8 @@ class PLATFORM_EXPORT DateTimeFormat {
 
     // Period: AM or PM
     kFieldTypePeriod = 'a',
+    kFieldTypePeriodAmPmNoonMidnight = 'b',
+    kFieldTypePeriodFlexible = 'B',
 
     // Hour: 7
     kFieldTypeHour12 = 'h',
@@ -94,8 +98,12 @@ class PLATFORM_EXPORT DateTimeFormat {
 
     // Zone: PDT
     kFieldTypeZone = 'z',
-    kFieldTypeRFC822Zone = 'Z',
+    kFieldTypeZoneLocalized = 'O',
     kFieldTypeNonLocationZone = 'v',
+    kFieldTypeZoneId = 'V',
+    kFieldTypeRFC822Zone = 'Z',
+    kFieldTypeZoneIso8601Z = 'X',
+    kFieldTypeZoneIso8601 = 'x',
   };
 
   class TokenHandler {

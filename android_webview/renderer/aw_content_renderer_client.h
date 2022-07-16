@@ -32,6 +32,10 @@ class AwContentRendererClient : public content::ContentRendererClient,
                                 public service_manager::LocalInterfaceProvider {
  public:
   AwContentRendererClient();
+
+  AwContentRendererClient(const AwContentRendererClient&) = delete;
+  AwContentRendererClient& operator=(const AwContentRendererClient&) = delete;
+
   ~AwContentRendererClient() override;
 
   // ContentRendererClient implementation.
@@ -84,8 +88,6 @@ class AwContentRendererClient : public content::ContentRendererClient,
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   std::unique_ptr<SpellCheck> spellcheck_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(AwContentRendererClient);
 };
 
 }  // namespace android_webview

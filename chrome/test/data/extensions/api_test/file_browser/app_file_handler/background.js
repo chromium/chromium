@@ -108,6 +108,8 @@ function launchedListener(launchData) {
                                  'This is some test content.');
     });
     testPreRunStatus.gotTiffAction = true;
+    window.domAutomationController.send(
+        `Received ${launchData.id} with: ${launchData.items[0].entry.name}`);
   } else {
     onError('Invalid handler id: \'' + launchData.id +'\'.');
     return;

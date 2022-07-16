@@ -25,6 +25,10 @@ class PersonalDataManagerFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state);
   static PersonalDataManagerFactory* GetInstance();
 
+  PersonalDataManagerFactory(const PersonalDataManagerFactory&) = delete;
+  PersonalDataManagerFactory& operator=(const PersonalDataManagerFactory&) =
+      delete;
+
  private:
   friend class base::NoDestructor<PersonalDataManagerFactory>;
 
@@ -34,8 +38,6 @@ class PersonalDataManagerFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PersonalDataManagerFactory);
 };
 
 }  // namespace autofill

@@ -110,7 +110,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // |AccountManager| does not persist any data to disk.
   // |request_context| is a non-owning pointer.
   // |delay_network_call_runner| is basically a wrapper for
-  // |chromeos::DelayNetworkCall|. Cannot use |chromeos::DelayNetworkCall| due
+  // |ash::DelayNetworkCall|. Cannot use |ash::DelayNetworkCall| due
   // to linking/dependency constraints.
   // This method MUST be called at least once in the lifetime of AccountManager.
   void Initialize(
@@ -391,8 +391,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // All tokens, if channel bound, are bound to |url_loader_factory_|.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  // An indirect way to access |chromeos::DelayNetworkCall|. We cannot use
-  // |chromeos::DelayNetworkCall| directly here due to linking/dependency
+  // An indirect way to access `ash::DelayNetworkCall`. We cannot use
+  // `ash::DelayNetworkCall` directly here due to linking/dependency
   // issues.
   DelayNetworkCallRunner delay_network_call_runner_;
 

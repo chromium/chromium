@@ -32,6 +32,10 @@ class ConcreteFidoDiscovery : public FidoDeviceDiscovery {
  public:
   explicit ConcreteFidoDiscovery(FidoTransportProtocol transport)
       : FidoDeviceDiscovery(transport) {}
+
+  ConcreteFidoDiscovery(const ConcreteFidoDiscovery&) = delete;
+  ConcreteFidoDiscovery& operator=(const ConcreteFidoDiscovery&) = delete;
+
   ~ConcreteFidoDiscovery() override = default;
 
   MOCK_METHOD0(StartInternal, void());
@@ -39,9 +43,6 @@ class ConcreteFidoDiscovery : public FidoDeviceDiscovery {
   using FidoDeviceDiscovery::AddDevice;
   using FidoDeviceDiscovery::NotifyDiscoveryStarted;
   using FidoDeviceDiscovery::RemoveDevice;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConcreteFidoDiscovery);
 };
 
 }  // namespace

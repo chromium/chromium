@@ -20,6 +20,10 @@ namespace sandbox {
 class NamedPipeDispatcher : public Dispatcher {
  public:
   explicit NamedPipeDispatcher(PolicyBase* policy_base);
+
+  NamedPipeDispatcher(const NamedPipeDispatcher&) = delete;
+  NamedPipeDispatcher& operator=(const NamedPipeDispatcher&) = delete;
+
   ~NamedPipeDispatcher() override {}
 
   // Dispatcher interface.
@@ -38,7 +42,6 @@ class NamedPipeDispatcher : public Dispatcher {
                        uint32_t default_timeout);
 
   PolicyBase* policy_base_;
-  DISALLOW_COPY_AND_ASSIGN(NamedPipeDispatcher);
 };
 
 }  // namespace sandbox

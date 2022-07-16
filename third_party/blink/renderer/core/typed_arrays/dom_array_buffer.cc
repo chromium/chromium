@@ -91,8 +91,9 @@ bool DOMArrayBuffer::TransferDetachable(v8::Isolate* isolate,
     result = ArrayBufferContents(Content()->BackingStore());
   } else {
     Content()->Transfer(result);
-    Detach();
   }
+  // For consistency, the source is detached even if it was empty.
+  Detach();
 
   Vector<v8::Local<v8::ArrayBuffer>, 4> buffer_handles;
   v8::HandleScope handle_scope(isolate);
@@ -113,6 +114,17 @@ DOMArrayBuffer* DOMArrayBuffer::CreateOrNull(size_t num_elements,
     return nullptr;
   }
   return Create(std::move(contents));
+}
+
+DOMArrayBuffer* DOMArrayBuffer::CreateOrNull(const void* source,
+                                             size_t byte_length) {
+  DOMArrayBuffer* buffer = CreateUninitializedOrNull(byte_length, 1);
+  if (!buffer) {
+    return nullptr;
+  }
+
+  memcpy(buffer->Data(), source, byte_length);
+  return buffer;
 }
 
 DOMArrayBuffer* DOMArrayBuffer::CreateUninitializedOrNull(

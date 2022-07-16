@@ -70,6 +70,9 @@ class AudioDebugFileWriterTest
       : AudioDebugFileWriterTest(
             base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC) {}
 
+  AudioDebugFileWriterTest(const AudioDebugFileWriterTest&) = delete;
+  AudioDebugFileWriterTest& operator=(const AudioDebugFileWriterTest&) = delete;
+
  protected:
   virtual ~AudioDebugFileWriterTest() = default;
 
@@ -222,9 +225,6 @@ class AudioDebugFileWriterTest
 
   // Source data.
   std::unique_ptr<int16_t[]> source_interleaved_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioDebugFileWriterTest);
 };
 
 class AudioDebugFileWriterBehavioralTest : public AudioDebugFileWriterTest {};

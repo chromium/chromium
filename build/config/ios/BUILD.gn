@@ -2,27 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO(crbug.com/1259122): Remove //build/config/sanitizers/sanitizers.gni when
+# Chromium Clang ship with a catalyst version of the compiler runtime.
+
 import("//build/config/ios/ios_sdk.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
-
-declare_args() {
-  # Enabling this option makes clang compile to an intermediate
-  # representation ("bitcode"), and not to native code. This is preferred
-  # when including WebRTC in the apps that will be sent to Apple's App Store
-  # and mandatory for the apps that run on watchOS or tvOS.
-  # The option only works when building with Xcode (use_xcode_clang = true).
-  # Mimicking how Xcode handles it, the production builds (is_debug = false)
-  # get real bitcode sections added, while the debug builds (is_debug = true)
-  # only get bitcode-section "markers" added in them.
-  # NOTE: This option is ignored when building versions for the iOS simulator,
-  # where a part of libvpx is compiled from the assembly code written using
-  # Intel assembly syntax; Yasm / Nasm do not support emitting bitcode parts.
-  # That is not a limitation for now as Xcode mandates the presence of bitcode
-  # only when building bitcode-enabled projects for real devices (ARM CPUs).
-  enable_ios_bitcode = false
-}
 
 # This is included by reference in the //build/config/compiler config that
 # is applied to all targets. It is here to separate out the logic.
@@ -94,7 +82,7 @@ config("runtime_library") {
   # Rebase the value in that case since gn does not convert paths in compiler
   # flags (since it is not aware they are paths).
   _sdk_root = ios_sdk_path
-  if (use_system_xcode && use_goma) {
+  if (use_system_xcode && (use_goma || use_remoteexec)) {
     _sdk_root = rebase_path(ios_sdk_path, root_build_dir)
   }
 
@@ -114,9 +102,16 @@ config("runtime_library") {
       "-iframework",
       "$_sdk_root/System/iOSSupport/System/Library/Frameworks",
     ]
+
+    swiftflags += [
+      "-isystem",
+      "$_sdk_root/System/iOSSupport/usr/include",
+      "-Fsystem",
+      "$_sdk_root/System/iOSSupport/System/Library/Frameworks",
+    ]
   }
 
-  if (use_xcode_clang && enable_ios_bitcode && target_environment == "device") {
+  if (enable_ios_bitcode) {
     if (is_debug) {
       common_flags += [ "-fembed-bitcode-marker" ]
     } else {
@@ -127,6 +122,41 @@ config("runtime_library") {
   asmflags = common_flags
   cflags = common_flags
   ldflags = common_flags
+
+  # TODO(crbug.com/1223481): Temporarily use a different
+  # libclang_rt.iossim.a for arm64 simulator builds. This can be
+  # removed when an arm64 slice is added to upstream Clang.
+  if (target_environment == "simulator" && current_cpu == "arm64") {
+    assert(xcode_version_int == 1300)
+    ldflags += [
+      "-lSystem",
+      rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
+                      "lib/darwin/libclang_rt.iossim.a",
+                  root_build_dir),
+      "-nodefaultlibs",
+    ]
+  }
+
+  # TODO(crbug.com/1259122): Temporarily use a different libclang_rt.osx.a
+  # for catalyst build. This can be removed when a catalyst slice is added
+  # to upstream Clang.
+  if (target_environment == "catalyst") {
+    assert(xcode_version_int == 1300)
+    ldflags += [
+      "-lSystem",
+      rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
+                      "lib/darwin/libclang_rt.osx.a",
+                  root_build_dir),
+      "-nodefaultlibs",
+    ]
+
+    # UBSAn runtime library is also required when using libfuzzer.
+    if (use_libfuzzer) {
+      ldflags += [ rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
+                                   "lib/darwin/libclang_rt.ubsan_osx.a",
+                               root_build_dir) ]
+    }
+  }
 }
 
 config("ios_executable_flags") {
@@ -234,7 +264,7 @@ _xctrunner_path =
 #
 # To workaround this, add a target that pretends to create those files
 # (but does nothing). See https://crbug.com/1061487 for why this is needed.
-if (use_system_xcode && use_goma) {
+if (use_system_xcode && (use_goma || use_remoteexec)) {
   action("copy_xctrunner_app") {
     testonly = true
     script = "//build/noop.py"
@@ -263,7 +293,7 @@ action("xctest_runner_without_arm64e") {
     xcode_version,
   ]
 
-  if (use_system_xcode && use_goma) {
+  if (use_system_xcode && (use_goma || use_remoteexec)) {
     deps = [ ":copy_xctrunner_app" ]
   }
 }

@@ -9,7 +9,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/android/scoped_java_surface.h"
@@ -66,6 +66,9 @@ class GPU_GLES2_EXPORT TextureOwner
       Mode mode,
       scoped_refptr<SharedContextState> context_state);
 
+  TextureOwner(const TextureOwner&) = delete;
+  TextureOwner& operator=(const TextureOwner&) = delete;
+
   // Create a texture that's appropriate for a TextureOwner.
   static std::unique_ptr<gles2::AbstractTexture> CreateTexture(
       scoped_refptr<SharedContextState> context_state);
@@ -120,7 +123,8 @@ class GPU_GLES2_EXPORT TextureOwner
       const base::RepeatingClosure& frame_available_cb) = 0;
 
   // Runs callback when the free buffer is available to render to front buffer.
-  // Can be run before returning from the function.
+  // Can be run before returning from the function. Callback is run on a caller
+  // thread.
   virtual void RunWhenBufferIsAvailable(base::OnceClosure callback) = 0;
 
   bool binds_texture_on_update() const { return binds_texture_on_update_; }
@@ -131,6 +135,20 @@ class GPU_GLES2_EXPORT TextureOwner
  protected:
   friend class base::RefCountedDeleteOnSequence<TextureOwner>;
   friend class base::DeleteHelper<TextureOwner>;
+
+  // Used to restore texture binding to GL_TEXTURE_EXTERNAL_OES target.
+  class ScopedRestoreTextureBinding {
+   public:
+    ScopedRestoreTextureBinding() {
+      glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &bound_service_id_);
+    }
+    ~ScopedRestoreTextureBinding() {
+      glBindTexture(GL_TEXTURE_EXTERNAL_OES, bound_service_id_);
+    }
+
+   private:
+    GLint bound_service_id_;
+  };
 
   // |texture| is the texture that we'll own.
   TextureOwner(bool binds_texture_on_update,
@@ -157,8 +175,6 @@ class GPU_GLES2_EXPORT TextureOwner
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<gles2::AbstractTexture> texture_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextureOwner);
 };
 
 }  // namespace gpu

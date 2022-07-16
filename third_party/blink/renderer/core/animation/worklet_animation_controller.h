@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_WORKLET_ANIMATION_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutators_state.h"
@@ -20,7 +20,6 @@ namespace blink {
 class AnimationWorkletMutatorDispatcherImpl;
 class Document;
 class MainThreadMutatorClient;
-class Node;
 class WorkletAnimationBase;
 
 // Handles AnimationWorklet animations on the main-thread.
@@ -46,12 +45,6 @@ class CORE_EXPORT WorkletAnimationController
 
   void UpdateAnimationStates();
   void UpdateAnimationTimings(TimingUpdateReason);
-
-  // Should be called whenever the compositing state changes for a Node which is
-  // the scroll source of an active ScrollTimeline. When the compositing state
-  // changes we have to schedule an update to make sure the compositor has the
-  // correct ElementId for the scroll source.
-  void ScrollSourceCompositingStateChanged(Node*);
 
   base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>
   EnsureMainThreadMutatorDispatcher(

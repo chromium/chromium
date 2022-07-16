@@ -25,12 +25,14 @@ class MockDeviceListener : public mojom::DeviceListener {
   explicit MockDeviceListener(
       mojo::PendingReceiver<audio::mojom::DeviceListener> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  MockDeviceListener(const MockDeviceListener&) = delete;
+  MockDeviceListener& operator=(const MockDeviceListener&) = delete;
+
   MOCK_METHOD0(DevicesChanged, void());
 
  private:
   mojo::Receiver<audio::mojom::DeviceListener> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDeviceListener);
 };
 
 }  // namespace
@@ -39,6 +41,9 @@ class DeviceNotifierTest : public ::testing::Test {
  public:
   DeviceNotifierTest()
       : system_monitor_(std::make_unique<base::SystemMonitor>()) {}
+
+  DeviceNotifierTest(const DeviceNotifierTest&) = delete;
+  DeviceNotifierTest& operator=(const DeviceNotifierTest&) = delete;
 
  protected:
   void CreateDeviceNotifier() {
@@ -58,8 +63,6 @@ class DeviceNotifierTest : public ::testing::Test {
  private:
   std::unique_ptr<base::SystemMonitor> system_monitor_;
   std::unique_ptr<DeviceNotifier> device_notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceNotifierTest);
 };
 
 TEST_F(DeviceNotifierTest, DeviceNotifierNotifies) {

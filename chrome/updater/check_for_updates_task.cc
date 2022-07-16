@@ -19,19 +19,59 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
+#include "chrome/updater/policy/manager.h"
+#include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service_impl.h"
 #include "chrome/updater/util.h"
 #include "components/prefs/pref_service.h"
-#include "components/update_client/configurator.h"
 #include "components/update_client/update_client.h"
 
 namespace updater {
+namespace {
+
+bool ShouldSkipCheck(scoped_refptr<Configurator> config) {
+  // Skip if periodic updates are disabled altogether.
+  const int check_delay_seconds = config->NextCheckDelay();
+  if (check_delay_seconds == 0) {
+    VLOG(0) << "Skipping checking for updates: NextCheckDelay is 0.";
+    return true;
+  }
+
+  // Skip if the most recent check was too recent (and not in the future).
+  const base::TimeDelta time_since_update =
+      base::Time::NowFromSystemTime() -
+      config->GetPrefService()->GetTime(kPrefUpdateTime);
+  if (base::TimeDelta() < time_since_update &&
+      time_since_update < base::Seconds(check_delay_seconds)) {
+    VLOG(0) << "Skipping checking for updates: last update was "
+            << time_since_update.InMinutes() << " minutes ago.";
+    return true;
+  }
+
+  // Skip if the updater is in the update suppression period.
+  UpdatesSuppressedTimes suppression;
+  if (config->GetPolicyService()->GetUpdatesSuppressedTimes(nullptr,
+                                                            &suppression) &&
+      suppression.valid()) {
+    base::Time::Exploded now;
+    base::Time::Now().LocalExplode(&now);
+    if (suppression.contains(now.hour, now.minute)) {
+      VLOG(0) << "Skipping checking for updates: in update suppression period.";
+      return true;
+    }
+  }
+
+  return false;
+}
+
+}  // namespace
 
 CheckForUpdatesTask::CheckForUpdatesTask(
-    scoped_refptr<update_client::Configurator> config,
+    scoped_refptr<Configurator> config,
     base::OnceCallback<void(UpdateService::Callback)> update_checker,
     base::OnceClosure callback)
     : config_(config),
@@ -69,16 +109,8 @@ bool CheckForUpdatesTask::WaitingOnUninstallPings() const {
 
 void CheckForUpdatesTask::MaybeCheckForUpdates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Time lastUpdateTime =
-      config_->GetPrefService()->GetTime(kPrefUpdateTime);
 
-  const base::TimeDelta timeSinceUpdate =
-      base::Time::NowFromSystemTime() - lastUpdateTime;
-  if (base::TimeDelta() < timeSinceUpdate &&
-      timeSinceUpdate <
-          base::TimeDelta::FromSeconds(config_->NextCheckDelay())) {
-    VLOG(0) << "Skipping checking for updates:  "
-            << timeSinceUpdate.InMinutes();
+  if (ShouldSkipCheck(config_)) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&CheckForUpdatesTask::MaybeCheckForUpdatesDone, this));
@@ -90,8 +122,7 @@ void CheckForUpdatesTask::MaybeCheckForUpdates() {
       base::BindOnce(
           std::move(update_checker_),
           base::BindOnce(
-              [](base::OnceClosure closure,
-                 scoped_refptr<update_client::Configurator> config,
+              [](base::OnceClosure closure, scoped_refptr<Configurator> config,
                  UpdateService::Result result) {
                 const int exit_code = static_cast<int>(result);
                 VLOG(0) << "Check for update task complete: exit_code = "
@@ -105,7 +136,7 @@ void CheckForUpdatesTask::MaybeCheckForUpdates() {
               base::BindOnce(&CheckForUpdatesTask::MaybeCheckForUpdatesDone,
                              this),
               config_)),
-      base::TimeDelta::FromSecondsD(config_->InitialDelay()));
+      base::Seconds(config_->InitialDelay()));
 }
 
 void CheckForUpdatesTask::MaybeCheckForUpdatesDone() {
@@ -172,8 +203,12 @@ void CheckForUpdatesTask::RemoveAppIDsAndSendUninstallPings(
       VLOG(1) << "Uninstall ping for app id: " << app_id
               << ". Ping reason: " << ping_reason;
       ++number_of_pings_remaining_;
+      update_client::CrxComponent crx_component;
+      crx_component.app_id = app_id;
+      crx_component.version = app_version;
+      crx_component.requires_network_encryption = false;
       update_client_->SendUninstallPing(
-          app_id, app_version, ping_reason,
+          crx_component, ping_reason,
           base::BindOnce(&CheckForUpdatesTask::UninstallPingSent, this));
     } else {
       VLOG(0) << "Could not remove registration of app " << app_id;

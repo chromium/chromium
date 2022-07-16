@@ -42,8 +42,6 @@ if (is_chromeos_ash) {
     testonly = true
     sources = [ "owner_key_util_impl_unittest.cc" ]
 
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
     deps = [
       ":ownership",
       "//base",

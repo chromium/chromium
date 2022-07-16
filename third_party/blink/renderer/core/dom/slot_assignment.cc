@@ -24,18 +24,6 @@
 
 namespace blink {
 
-namespace {
-bool ShouldAssignToCustomSlot(const Node& node) {
-  if (IsA<HTMLDetailsElement>(node.parentElement()))
-    return HTMLDetailsElement::IsFirstSummary(node);
-  if (IsA<HTMLSelectElement>(node.parentElement()))
-    return HTMLSelectElement::CanAssignToSelectSlot(node);
-  if (IsA<HTMLOptGroupElement>(node.parentElement()))
-    return HTMLOptGroupElement::CanAssignToOptGroupSlot(node);
-  return false;
-}
-}  // anonymous namespace
-
 void SlotAssignment::DidAddSlot(HTMLSlotElement& slot) {
   // Relevant DOM Standard:
   // https://dom.spec.whatwg.org/#concept-node-insert
@@ -272,22 +260,13 @@ void SlotAssignment::RecalcAssignment() {
     FlatTreeTraversalForbiddenScope forbid_flat_tree_traversal(
         owner_->GetDocument());
 
+    if (owner_->IsUserAgent() && owner_->IsManualSlotting()) {
+      owner_->host().ManuallyAssignSlots();
+    }
     needs_assignment_recalc_ = false;
 
     for (Member<HTMLSlotElement> slot : Slots())
       slot->WillRecalcAssignedNodes();
-
-    const bool supports_name_based_slot_assignment =
-        owner_->SupportsNameBasedSlotAssignment();
-
-    HTMLSlotElement* user_agent_default_slot = nullptr;
-    HTMLSlotElement* user_agent_custom_assign_slot = nullptr;
-    if (!supports_name_based_slot_assignment) {
-      user_agent_default_slot =
-          FindSlotByName(HTMLSlotElement::UserAgentDefaultSlotName());
-      user_agent_custom_assign_slot =
-          FindSlotByName(HTMLSlotElement::UserAgentCustomAssignSlotName());
-    }
 
     if (owner_->IsManualSlotting()) {
       // |children_to_clear| starts with the list of all light-dom children of
@@ -323,19 +302,7 @@ void SlotAssignment::RecalcAssignment() {
         if (!child.IsSlotable())
           continue;
 
-        HTMLSlotElement* slot = nullptr;
-        if (supports_name_based_slot_assignment) {
-          slot = FindSlotByName(child.SlotName());
-        } else {
-          if (user_agent_custom_assign_slot &&
-              ShouldAssignToCustomSlot(child)) {
-            slot = user_agent_custom_assign_slot;
-          } else {
-            slot = user_agent_default_slot;
-          }
-        }
-
-        if (slot) {
+        if (HTMLSlotElement* slot = FindSlotByName(child.SlotName())) {
           slot->AppendAssignedNode(child);
         } else {
           child.ClearFlatTreeNodeData();
@@ -353,10 +320,15 @@ void SlotAssignment::RecalcAssignment() {
     for (auto& slot : Slots()) {
       // TODO(crbug.com/1208573): Consider if we really need to be using
       // IsInLockedSubtreeCrossingFrames, or if
-      // NearestLockedInclusiveAncestorWithinTreeScope is good enough as-is.
+      // LockedInclusiveAncestorPreventingStyleWithinTreeScope is good enough
+      // as-is.
+      //
+      // If we have an ancestor that blocks style recalc, we should let
+      // DidRecalcAssignNodes know this, since we may need to do work that
+      // would otherwise be done in layout tree building.
       slot->DidRecalcAssignedNodes(
-          DisplayLockUtilities::NearestLockedInclusiveAncestorWithinTreeScope(
-              *slot));
+          !!DisplayLockUtilities::
+               LockedInclusiveAncestorPreventingStyleWithinTreeScope(*slot));
     }
   }
 
@@ -385,8 +357,6 @@ const HeapVector<Member<HTMLSlotElement>>& SlotAssignment::Slots() {
 HTMLSlotElement* SlotAssignment::FindSlot(const Node& node) {
   if (!node.IsSlotable())
     return nullptr;
-  if (!owner_->SupportsNameBasedSlotAssignment())
-    return FindSlotInUserAgentShadow(node);
   return owner_->IsManualSlotting()
              ? FindSlotInManualSlotting(const_cast<Node&>(node))
              : FindSlotByName(node.SlotName());
@@ -395,18 +365,6 @@ HTMLSlotElement* SlotAssignment::FindSlot(const Node& node) {
 HTMLSlotElement* SlotAssignment::FindSlotByName(
     const AtomicString& slot_name) const {
   return slot_map_->GetSlotByName(slot_name, *owner_);
-}
-
-HTMLSlotElement* SlotAssignment::FindSlotInUserAgentShadow(
-    const Node& node) const {
-  DCHECK(!owner_->SupportsNameBasedSlotAssignment());
-  HTMLSlotElement* user_agent_custom_assign_slot =
-      FindSlotByName(HTMLSlotElement::UserAgentCustomAssignSlotName());
-  if (user_agent_custom_assign_slot && ShouldAssignToCustomSlot(node))
-    return user_agent_custom_assign_slot;
-  HTMLSlotElement* user_agent_default_slot =
-      FindSlotByName(HTMLSlotElement::UserAgentDefaultSlotName());
-  return user_agent_default_slot;
 }
 
 HTMLSlotElement* SlotAssignment::FindSlotInManualSlotting(Node& node) {

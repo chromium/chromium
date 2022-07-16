@@ -13,7 +13,6 @@
 #include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -31,11 +30,14 @@ class WebViewPermissionHelperDelegate;
 // class is owned by WebViewGuest. Its purpose is to request permission for
 // various operations from the <webview> embedder, and reply back via callbacks
 // to the callers on a response from the embedder.
-class WebViewPermissionHelper
-      : public content::WebContentsObserver {
+class WebViewPermissionHelper {
  public:
   explicit WebViewPermissionHelper(WebViewGuest* guest);
-  ~WebViewPermissionHelper() override;
+
+  WebViewPermissionHelper(const WebViewPermissionHelper&) = delete;
+  WebViewPermissionHelper& operator=(const WebViewPermissionHelper&) = delete;
+
+  ~WebViewPermissionHelper();
   using PermissionResponseCallback =
       base::OnceCallback<void(bool /* allow */,
                               const std::string& /* user_input */)>;
@@ -105,6 +107,10 @@ class WebViewPermissionHelper
 
   WebViewGuest* web_view_guest() { return web_view_guest_; }
 
+  WebViewPermissionHelperDelegate* delegate() {
+    return web_view_permission_helper_delegate_.get();
+  }
+
   void set_default_media_access_permission(bool allow_media_access) {
     default_media_access_permission_ = allow_media_access;
   }
@@ -114,12 +120,6 @@ class WebViewPermissionHelper
                                  content::MediaResponseCallback callback,
                                  bool allow,
                                  const std::string& user_input);
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // content::WebContentsObserver implementation.
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override;
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
   // A counter to generate a unique request id for a permission request.
   // We only need the ids to be unique for a given WebViewGuest.
@@ -135,8 +135,6 @@ class WebViewPermissionHelper
   bool default_media_access_permission_;
 
   base::WeakPtrFactory<WebViewPermissionHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewPermissionHelper);
 };
 
 }  // namespace extensions

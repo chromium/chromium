@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/default_tick_clock.h"
 #include "base/unguessable_token.h"
 #include "media/base/demuxer_stream.h"
@@ -49,6 +48,10 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
                std::unique_ptr<VideoOverlayFactory> video_overlay_factory,
                VideoRendererSink* video_renderer_sink,
                mojo::PendingRemote<mojom::Renderer> remote_renderer);
+
+  MojoRenderer(const MojoRenderer&) = delete;
+  MojoRenderer& operator=(const MojoRenderer&) = delete;
+
   ~MojoRenderer() override;
 
   // Renderer implementation.
@@ -64,8 +67,7 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
   base::TimeDelta GetMediaTime() override;
 
  private:
-  // mojom::RendererClient implementation, dispatched on the
-  // |task_runner_|.
+  // mojom::RendererClient implementation, dispatched on the |task_runner_|.
   void OnTimeUpdate(base::TimeDelta time,
                     base::TimeDelta max_time,
                     base::TimeTicks capture_time) override;
@@ -152,15 +154,13 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
   base::OnceClosure flush_cb_;
   CdmAttachedCB cdm_attached_cb_;
 
-  bool volume_ = 1.0f;
+  float volume_ = 1.0f;
 
   // Lock used to serialize access for |time_interpolator_|.
   mutable base::Lock lock_;
   media::TimeDeltaInterpolator media_time_interpolator_;
 
   absl::optional<PipelineStatistics> pending_stats_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoRenderer);
 };
 
 }  // namespace media

@@ -289,6 +289,7 @@ void MojoJpegEncodeAcceleratorService::EncodeWithDmaBuf(
     uint32_t exif_buffer_size,
     int32_t coded_size_width,
     int32_t coded_size_height,
+    int32_t quality,
     EncodeWithDmaBufCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -346,8 +347,8 @@ void MojoJpegEncodeAcceleratorService::EncodeWithDmaBuf(
   encode_cb_map_.emplace(task_id, std::move(callback));
 
   DCHECK(accelerator_);
-  accelerator_->EncodeWithDmaBuf(input_video_frame, output_video_frame,
-                                 kJpegQuality, task_id, exif_buffer.get());
+  accelerator_->EncodeWithDmaBuf(input_video_frame, output_video_frame, quality,
+                                 task_id, exif_buffer.get());
 }
 
 void MojoJpegEncodeAcceleratorService::NotifyEncodeStatus(

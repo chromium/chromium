@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management.suggestions;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
@@ -115,21 +116,21 @@ public class TabSuggestionsServerFetcherUnitTest {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                Callback callback = (Callback) invocation.getArguments()[7];
+                Callback callback = (Callback) invocation.getArguments()[8];
                 callback.onResult(new EndpointResponse(response));
                 return null;
             }
         })
                 .when(mEndpointFetcherJniMock)
                 .nativeFetchChromeAPIKey(any(Profile.class), anyString(), anyString(), anyString(),
-                        anyString(), anyLong(), any(String[].class), any(Callback.class));
+                        anyString(), anyLong(), any(String[].class), anyInt(), any(Callback.class));
     }
 
     private void verifyEndpointArguments() {
         verify(mEndpointFetcherJniMock)
                 .nativeFetchChromeAPIKey(eq(mProfile), eq(EXPECTED_ENDPOINT_URL),
                         eq(EXPECTED_METHOD), eq(EXPECTED_CONTENT_TYPE), any(String.class),
-                        eq(EXPECTED_TIMEOUT), any(String[].class), any(Callback.class));
+                        eq(EXPECTED_TIMEOUT), any(String[].class), anyInt(), any(Callback.class));
     }
 
     @Test

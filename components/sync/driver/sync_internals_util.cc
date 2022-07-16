@@ -22,7 +22,6 @@
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/sync_status.h"
 #include "components/sync/engine/sync_string_conversions.h"
-#include "components/sync/model/time.h"
 #include "components/sync/protocol/proto_enum_conversions.h"
 #include "components/version_info/version_info.h"
 #include "url/gurl.h"
@@ -290,7 +289,7 @@ std::string GetLastSyncedTimeString(base::Time last_synced_time) {
 
   base::TimeDelta time_since_last_sync = base::Time::Now() - last_synced_time;
 
-  if (time_since_last_sync < base::TimeDelta::FromMinutes(1))
+  if (time_since_last_sync < base::Minutes(1))
     return "Just now";
 
   return GetTimeDeltaDebugString(time_since_last_sync) + " ago";
@@ -360,7 +359,7 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   Stat<std::string>* invalidator_id =
       section_identity->AddStringStat("Invalidator Client ID");
   Stat<std::string>* username = section_identity->AddStringStat("Username");
-  Stat<bool>* user_is_primary = section_identity->AddBoolStat("Is Primary");
+  Stat<bool>* user_has_consent = section_identity->AddBoolStat("Sync Consent");
 
   Section* section_credentials =
       section_list.AddSection("Credentials", /*is_sensitive=*/false);
@@ -482,12 +481,16 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   transport_state->Set(GetTransportStateString(service->GetTransportState()));
   disable_reasons->Set(GetDisableReasonsString(service->GetDisableReasons()));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!chromeos::features::IsSplitSettingsSyncEnabled())
+  if (!chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     os_feature_state->Set("Flag disabled");
-  else if (service->GetUserSettings()->IsOsSyncFeatureEnabled())
+  } else if (!chromeos::features::IsSyncConsentOptionalEnabled()) {
+    DCHECK(service->GetUserSettings()->IsOsSyncFeatureEnabled());
+    os_feature_state->Set("Enforced Enabled");
+  } else if (service->GetUserSettings()->IsOsSyncFeatureEnabled()) {
     os_feature_state->Set("Enabled");
-  else
+  } else {
     os_feature_state->Set("Disabled");
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   feature_enabled->Set(service->IsSyncFeatureEnabled());
   setup_in_progress->Set(service->IsSetupInProgress());
@@ -519,8 +522,8 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   if (is_status_valid && !full_status.invalidator_client_id.empty())
     invalidator_id->Set(full_status.invalidator_client_id);
   if (!is_local_sync_enabled_state) {
-    username->Set(service->GetAuthenticatedAccountInfo().email);
-    user_is_primary->Set(service->IsAuthenticatedAccountPrimary());
+    username->Set(service->GetAccountInfo().email);
+    user_has_consent->Set(service->HasSyncConsent());
   }
 
   // Credentials.

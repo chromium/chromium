@@ -25,6 +25,7 @@ include_rules = [
   # as autofill or extensions, and chrome implementation details such as
   # settings, packaging details, installation or crash reporting.
 
+  "+components/memory_pressure",
   "+components/power_scheduler",
   "+components/services/filesystem",
   "+components/services/font/public",
@@ -82,6 +83,7 @@ include_rules = [
   # Aura is analogous to Win32 or a Gtk, so it is allowed.
   "+ui/aura",
   "+ui/base",
+  "+ui/color",
   "+ui/compositor",
   "+ui/display",
   "+ui/events",

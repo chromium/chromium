@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/sequence_checker.h"
@@ -103,12 +104,16 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  void Initialize(PrefService* pref_service);
+  // Initializes, but does not necessarily start, the MetricsService. See the
+  // documentation at the top of the file for more details.
+  //
+  // |user_data_dir| is the path to the client's user data directory. If empty,
+  // a separate file will not be used for Variations Safe Mode prefs.
+  void Initialize(const base::FilePath& user_data_dir,
+                  PrefService* pref_service);
   void SetHaveMetricsConsent(bool user_consent, bool app_consent);
   void SetFastStartupForTesting(bool fast_startup_for_testing);
   void SetUploadIntervalForTesting(const base::TimeDelta& upload_interval);
-  std::unique_ptr<const base::FieldTrial::EntropyProvider>
-  CreateLowEntropyProvider();
 
   // Updates the state of whether UKM is enabled or not by calling back into
   // IsUkmAllowedForAllProfiles(). If |must_purge| is true then currently
@@ -137,6 +142,7 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   ukm::UkmService* GetUkmService() override;
   void SetMetricsClientId(const std::string& client_id) override;
   std::string GetApplicationLocale() override;
+  const network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   bool GetBrand(std::string* brand_code) override;
   SystemProfileProto::Channel GetChannel() override;
   bool IsExtendedStableChannel() override;

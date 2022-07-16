@@ -16,6 +16,8 @@
         android:id="@+id/clear_browsing_data_tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:tabPaddingStart="5dp"
+        app:tabPaddingEnd="5dp"
         style="@style/TabLayoutStyle" />
 
     <androidx.viewpager2.widget.ViewPager2

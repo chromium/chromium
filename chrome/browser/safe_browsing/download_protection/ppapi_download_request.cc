@@ -71,6 +71,8 @@ PPAPIDownloadRequest::PPAPIDownloadRequest(
     return;
   }
 
+  Observe(web_contents);
+
   SafeBrowsingNavigationObserverManager* observer_manager =
       service->GetNavigationObserverManager(web_contents);
   if (observer_manager) {
@@ -118,8 +120,7 @@ void PPAPIDownloadRequest::Start() {
       FROM_HERE,
       base::BindOnce(&PPAPIDownloadRequest::OnRequestTimedOut,
                      weakptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(
-          service_->download_request_timeout_ms()));
+      base::Milliseconds(service_->download_request_timeout_ms()));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -136,6 +137,10 @@ GURL PPAPIDownloadRequest::GetDownloadRequestUrl() {
     url = url.Resolve("?key=" + net::EscapeQueryParamValue(api_key, true));
 
   return url;
+}
+
+void PPAPIDownloadRequest::WebContentsDestroyed() {
+  Finish(RequestOutcome::REQUEST_DESTROYED, DownloadCheckResult::UNKNOWN);
 }
 
 // Allowlist checking needs to the done on the IO thread.

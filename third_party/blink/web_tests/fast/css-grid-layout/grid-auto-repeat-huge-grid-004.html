@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<title>Test for auto-fit and auto-fill with huge grids (lots of tracks)</title>
+<link href="resources/grid.css" rel="stylesheet">
+<link href="../css-intrinsic-dimensions/resources/width-keyword-classes.css" rel="stylesheet">
+<link href="../css-intrinsic-dimensions/resources/height-keyword-classes.css" rel="stylesheet">
+<link href="resources/huge-grids.css" rel="stylesheet">
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/grid-definitions-parsing-utils.js"></script>
+<script src="resources/grid-tracks-length.js"></script>
+
+<div id="wideAutoFillGridFewRepetitionsMinSize" class="grid lotsOfAutoRepeatWithAutoFillCols minSizeWideGrid min-content"></div>
+<div id="wideAutoFitGridFewRepetitionsMinSize" class="grid lotsOfAutoRepeatWithAutoFitCols minSizeWideGrid min-content">
+    <div>Item1</div>
+    <div>Item2</div>
+    <div class="lastColumn">Item3</div>
+</div>
+
+<div id="tallAutoFillGridFewRepetitionsMinSize" class="grid lotsOfAutoRepeatWithAutoFillRows minSizeTallGrid min-content"></div>
+<div id="tallAutoFitGridFewRepetitionsMinSize" class="grid lotsOfAutoRepeatWithAutoFitRows minSizeTallGrid min-content">
+    <div>Item1</div>
+    <div>Item2</div>
+    <div class="lastRow">Item3</div>
+</div>
+
+<script>
+
+test(function() {
+     var autoFillCols = testElement("wideAutoFillGridFewRepetitionsMinSize", "grid-template-columns", 100000);
+     var autoFitCols = testElement("wideAutoFitGridFewRepetitionsMinSize", "grid-template-columns", 100000);
+
+     /* Check that clamping auto repetitions does not reduce the amount of the other tracks. */
+     assert_equals(autoFillCols[100000 - 1], "20px");
+     assert_equals(autoFillCols[100000 - 2], "7px");
+     assert_equals(autoFitCols[100000 - 1], "10px");
+     assert_equals(autoFitCols[100000 - 2], "0px");
+}, "Test that we don't get more than kGridMaxTracks repetitions even on very wide grids with gaps and min-width.");
+
+test(function() {
+     var autoFillRows = testElement("tallAutoFillGridFewRepetitionsMinSize", "grid-template-rows", 100000);
+     var autoFitRows = testElement("tallAutoFitGridFewRepetitionsMinSize", "grid-template-rows", 100000);
+
+     assert_equals(autoFillRows[100000 - 1], "20px");
+     assert_equals(autoFillRows[100000 - 2], "7px");
+     assert_equals(autoFitRows[100000 - 1], "10px");
+     assert_equals(autoFitRows[100000 - 2], "0px");
+}, "Test that we don't get more than kGridMaxTracks repetitions even on very tall grids with gaps and min-height.");
+
+</script>

@@ -87,11 +87,11 @@ enum AccessibilityOptionalBool {
   kOptionalBoolFalse
 };
 
-// The potential native HTML-based text (name, description or placeholder)
-// sources for an element.  See
-// http://rawgit.com/w3c/aria/master/html-aam/html-aam.html#accessible-name-and-description-calculation
-enum AXTextFromNativeHTML {
-  kAXTextFromNativeHTMLUninitialized = -1,
+// The potential native host-language-based text (name, description or
+// placeholder) sources for an element.  See
+// https://w3c.github.io/html-aam/#accessible-name-and-description-computation
+enum AXTextSource {
+  kAXTextFromNativeSourceUninitialized = -1,
   kAXTextFromNativeHTMLFigcaption,
   kAXTextFromNativeHTMLLabel,
   kAXTextFromNativeHTMLLabelFor,
@@ -99,7 +99,8 @@ enum AXTextFromNativeHTML {
   kAXTextFromNativeHTMLLegend,
   kAXTextFromNativeHTMLRubyAnnotation,
   kAXTextFromNativeHTMLTableCaption,
-  kAXTextFromNativeHTMLTitleElement,
+  kAXTextFromNativeSVGDescElement,
+  kAXTextFromNativeTitleElement,  // HTML and SVG
 };
 
 enum AXIgnoredReason {

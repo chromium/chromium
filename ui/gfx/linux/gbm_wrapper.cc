@@ -155,6 +155,9 @@ class Buffer final : public ui::GbmBuffer {
         size_(size),
         handle_(std::move(handle)) {}
 
+  Buffer(const Buffer&) = delete;
+  Buffer& operator=(const Buffer&) = delete;
+
   ~Buffer() override {
     DCHECK(!mmap_data_);
     gbm_bo_destroy(bo_);
@@ -246,8 +249,6 @@ class Buffer final : public ui::GbmBuffer {
   const gfx::Size size_;
 
   const gfx::NativePixmapHandle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(Buffer);
 };
 
 std::unique_ptr<Buffer> CreateBufferForBO(struct gbm_bo* bo,
@@ -289,6 +290,10 @@ std::unique_ptr<Buffer> CreateBufferForBO(struct gbm_bo* bo,
 class Device final : public ui::GbmDevice {
  public:
   Device(gbm_device* device) : device_(device) {}
+
+  Device(const Device&) = delete;
+  Device& operator=(const Device&) = delete;
+
   ~Device() override { gbm_device_destroy(device_); }
 
   std::unique_ptr<ui::GbmBuffer> CreateBuffer(uint32_t format,
@@ -378,8 +383,6 @@ class Device final : public ui::GbmDevice {
 
  private:
   gbm_device* const device_;
-
-  DISALLOW_COPY_AND_ASSIGN(Device);
 };
 
 }  // namespace gbm_wrapper

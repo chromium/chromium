@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {PluginVmBrowserProxyImpl, PluginVmPermissionType, createPermission, PermissionValueType, Bool, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {PluginVmBrowserProxyImpl, PermissionType, createBoolPermission, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {TestPluginVmBrowserProxy} from './test_plugin_vm_browser_proxy.m.js';
 // #import {setupFakeHandler, replaceStore, replaceBody, getPermissionCrToggleByType, getPermissionToggleByType} from './test_util.m.js';
 // clang-format on
@@ -117,15 +117,14 @@ suite('<app-management-plugin-vm-detail-view>', function() {
     });
 
     const permissions = {};
-    const permissionIds = [
-      PluginVmPermissionType.PRINTING,
-      PluginVmPermissionType.CAMERA,
-      PluginVmPermissionType.MICROPHONE,
+    const permissionTypes = [
+      PermissionType.kPrinting,
+      PermissionType.kCamera,
+      PermissionType.kMicrophone,
     ];
-    for (const permissionId of permissionIds) {
-      permissions[permissionId] = app_management.util.createPermission(
-          permissionId, PermissionValueType.kBool, Bool.kTrue,
-          false /*is_managed*/);
+    for (const permissionType of permissionTypes) {
+      permissions[permissionType] =
+          createBoolPermission(permissionType, true, false /*is_managed*/);
     }
 
     pluginVmBrowserProxy.pluginVmRunning = false;
@@ -155,7 +154,7 @@ suite('<app-management-plugin-vm-detail-view>', function() {
   // The testing browser proxy return false by default in
   // `isRelaunchNeededForNewPermissions()`, so camera and microphone toggles
   // will not trigger the dialog.
-  ['CAMERA', 'MICROPHONE', 'PRINTING'].forEach(
+  ['kCamera', 'kMicrophone', 'kPrinting'].forEach(
       (permissionType) =>
           test(`Toggle ${permissionType} without dialogs`, async function() {
             assertTrue(getPermissionBoolByType(permissionType));
@@ -174,8 +173,8 @@ suite('<app-management-plugin-vm-detail-view>', function() {
             assertTrue(isCrToggleChecked(permissionType));
           }));
 
-  [['CAMERA', 'pluginVmPermissionDialogCameraLabel'],
-   ['MICROPHONE', 'pluginVmPermissionDialogMicrophoneLabel']]
+  [['kCamera', 'pluginVmPermissionDialogCameraLabel'],
+   ['kMicrophone', 'pluginVmPermissionDialogMicrophoneLabel']]
       .forEach(
           ([permissionType, dialogTextId]) => [true, false].forEach(
               (cancelByEsc) => test(

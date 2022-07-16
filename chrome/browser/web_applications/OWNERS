@@ -5,6 +5,7 @@ cmp@chromium.org
 dmurph@chromium.org
 dominickn@chromium.org
 ericwilligers@chromium.org
+estade@chromium.org
 glenrob@chromium.org
 loyso@chromium.org
 mgiuca@chromium.org
@@ -15,3 +16,8 @@ tapted@chromium.org
 
 per-file web_app_file_handler*=davidbienvenu@chromium.org
 per-file web_app_file_handler*=jessemckenna@google.com
+per-file web_app_id_constants.*=dominickn@chromium.org
+per-file web_app_id_constants.*=jshikaram@chromium.org
+per-file web_app_id_constants.*=tsergeant@chromium.org
+per-file web_app_shortcut_win*=davidbienvenu@chromium.org
+per-file web_app_shortcut_win*=jessemckenna@google.com

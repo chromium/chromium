@@ -65,6 +65,11 @@ class InspectorMediaEventHandlerTest : public testing::Test {
         std::make_unique<InspectorMediaEventHandler>(mock_context_.get());
   }
 
+  InspectorMediaEventHandlerTest(const InspectorMediaEventHandlerTest&) =
+      delete;
+  InspectorMediaEventHandlerTest& operator=(
+      const InspectorMediaEventHandlerTest&) = delete;
+
  protected:
   std::unique_ptr<InspectorMediaEventHandler> handler_;
   std::unique_ptr<MockMediaInspectorContext> mock_context_;
@@ -109,8 +114,6 @@ class InspectorMediaEventHandlerTest : public testing::Test {
     error.params.SetIntPath(media::MediaLog::kStatusText, errorcode);
     return error;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(InspectorMediaEventHandlerTest);
 };
 
 bool operator==(const blink::InspectorPlayerProperty& lhs,

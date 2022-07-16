@@ -9,31 +9,33 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "media/base/media_log.h"
 #include "media/base/win/mf_helpers.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace media {
 
 MediaFoundationRendererClient::MediaFoundationRendererClient(
-    mojo::PendingRemote<RendererExtension> renderer_extension_remote,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-    std::unique_ptr<media::MojoRenderer> mojo_renderer,
-    media::VideoRendererSink* sink)
-    : mojo_renderer_(std::move(mojo_renderer)),
-      sink_(sink),
-      media_task_runner_(std::move(media_task_runner)),
-      compositor_task_runner_(std::move(compositor_task_runner)),
-      delayed_bind_renderer_extension_remote_(
-          std::move(renderer_extension_remote)) {
+    std::unique_ptr<MediaLog> media_log,
+    std::unique_ptr<MojoRenderer> mojo_renderer,
+    mojo::PendingRemote<RendererExtension> pending_renderer_extension,
+    std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
+    VideoRendererSink* sink)
+    : media_task_runner_(std::move(media_task_runner)),
+      media_log_(std::move(media_log)),
+      mojo_renderer_(std::move(mojo_renderer)),
+      pending_renderer_extension_(std::move(pending_renderer_extension)),
+      dcomp_texture_wrapper_(std::move(dcomp_texture_wrapper)),
+      sink_(sink) {
   DVLOG_FUNC(1);
 }
 
 MediaFoundationRendererClient::~MediaFoundationRendererClient() {
   DVLOG_FUNC(1);
-  if (video_rendering_started_) {
-    sink_->Stop();
-  }
 }
+
+// Renderer implementation.
 
 void MediaFoundationRendererClient::Initialize(MediaResource* media_resource,
                                                RendererClient* client,
@@ -44,22 +46,21 @@ void MediaFoundationRendererClient::Initialize(MediaResource* media_resource,
 
   // Consume and bind the delayed PendingRemote now that we
   // are on |media_task_runner_|.
-  renderer_extension_remote_.Bind(
-      std::move(delayed_bind_renderer_extension_remote_), media_task_runner_);
+  renderer_extension_.Bind(std::move(pending_renderer_extension_),
+                           media_task_runner_);
 
   // Handle unexpected mojo pipe disconnection such as "mf_cdm" utility process
   // crashed or killed in Browser task manager.
-  renderer_extension_remote_.set_disconnect_handler(
+  renderer_extension_.set_disconnect_handler(
       base::BindOnce(&MediaFoundationRendererClient::OnConnectionError,
                      base::Unretained(this)));
 
   client_ = client;
   init_cb_ = std::move(init_cb);
 
-  const std::vector<media::DemuxerStream*> media_streams =
-      media_resource->GetAllStreams();
-  for (const media::DemuxerStream* stream : media_streams) {
-    if (stream->type() == media::DemuxerStream::Type::VIDEO) {
+  auto media_streams = media_resource->GetAllStreams();
+  for (const DemuxerStream* stream : media_streams) {
+    if (stream->type() == DemuxerStream::Type::VIDEO) {
       has_video_ = true;
       break;
     }
@@ -72,202 +73,13 @@ void MediaFoundationRendererClient::Initialize(MediaResource* media_resource,
           weak_factory_.GetWeakPtr()));
 }
 
-void MediaFoundationRendererClient::OnConnectionError() {
-  DVLOG_FUNC(1);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-
-  if (waiting_for_dcomp_surface_handle_) {
-    OnReceivedRemoteDCOMPSurface(mojo::ScopedHandle());
-  }
-}
-
-void MediaFoundationRendererClient::OnRemoteRendererInitialized(
-    PipelineStatus status) {
-  DVLOG_FUNC(1) << "status=" << status;
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(!init_cb_.is_null());
-
-  if (status != media::PipelineStatus::PIPELINE_OK) {
-    std::move(init_cb_).Run(status);
-    return;
-  }
-
-  if (has_video_) {
-    // TODO(frankli): Add code to init DCOMPTextureWrapper.
-    NOTIMPLEMENTED() << "Video compositing not implemented yet";
-  }
-
-  std::move(init_cb_).Run(status);
-}
-
-void MediaFoundationRendererClient::OnDCOMPSurfaceHandleCreated(bool success) {
-  if (!media_task_runner_->BelongsToCurrentThread()) {
-    media_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &MediaFoundationRendererClient::OnDCOMPSurfaceHandleCreated,
-            weak_factory_.GetWeakPtr(), success));
-    return;
-  }
-
-  DVLOG_FUNC(1);
-  DCHECK(has_video_);
-
-  dcomp_surface_handle_bound_ = true;
-  return;
-}
-
-void MediaFoundationRendererClient::OnReceivedRemoteDCOMPSurface(
-    mojo::ScopedHandle surface_handle) {
-  DVLOG_FUNC(1);
-  DCHECK(has_video_);
-  DCHECK(surface_handle.is_valid());
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-
-  waiting_for_dcomp_surface_handle_ = false;
-  base::win::ScopedHandle local_handle =
-      mojo::UnwrapPlatformHandle(std::move(surface_handle)).TakeHandle();
-  RegisterDCOMPSurfaceHandleInGPUProcess(std::move(local_handle));
-}
-
-void MediaFoundationRendererClient::RegisterDCOMPSurfaceHandleInGPUProcess(
-    base::win::ScopedHandle surface_handle) {
-  if (!media_task_runner_->BelongsToCurrentThread()) {
-    media_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MediaFoundationRendererClient::
-                           RegisterDCOMPSurfaceHandleInGPUProcess,
-                       weak_factory_.GetWeakPtr(), std::move(surface_handle)));
-    return;
-  }
-
-  DVLOG_FUNC(1) << "surface_handle=" << surface_handle.Get();
-  DCHECK(has_video_);
-
-  mojo::ScopedHandle mojo_surface_handle =
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(surface_handle)));
-
-  // TODO(frankli): Pass the |mojo_surface_handle| to Gpu process.
-}
-
-void MediaFoundationRendererClient::OnDCOMPSurfaceRegisteredInGPUProcess(
-    const base::UnguessableToken& token) {
-  DVLOG_FUNC(1);
-  DCHECK(has_video_);
-
-  return;
-}
-
-void MediaFoundationRendererClient::OnDCOMPSurfaceTextureReleased() {
-  DCHECK(has_video_);
-  return;
-}
-
-void MediaFoundationRendererClient::OnDCOMPStreamTextureInitialized(
-    bool success) {
-  DVLOG_FUNC(1) << "success=" << success;
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(!init_cb_.is_null());
-  DCHECK(has_video_);
-
-  media::PipelineStatus status = media::PipelineStatus::PIPELINE_OK;
-  if (!success) {
-    status = media::PipelineStatus::PIPELINE_ERROR_INITIALIZATION_FAILED;
-  }
-  if (natural_size_.width() != 0 || natural_size_.height() != 0) {
-    InitializeDCOMPRendering();
-  }
-  std::move(init_cb_).Run(status);
-}
-
-void MediaFoundationRendererClient::OnVideoFrameCreated(
-    scoped_refptr<media::VideoFrame> video_frame) {
-  if (!media_task_runner_->BelongsToCurrentThread()) {
-    media_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MediaFoundationRendererClient::OnVideoFrameCreated,
-                       weak_factory_.GetWeakPtr(), video_frame));
-    return;
-  }
-
-  DVLOG_FUNC(1);
-  DCHECK(has_video_);
-
-  video_frame->metadata().protected_video = true;
-  video_frame->metadata().allow_overlay = true;
-
-  dcomp_frame_ = video_frame;
-
-  sink_->PaintSingleFrame(dcomp_frame_, true);
-}
-
-void MediaFoundationRendererClient::OnCompositionParamsReceived(
-    gfx::Rect output_rect) {
-  DVLOG_FUNC(1) << "output_rect=" << output_rect.ToString();
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(has_video_);
-
-  renderer_extension_remote_->SetOutputParams(output_rect);
-  return;
-}
-
-bool MediaFoundationRendererClient::MojoSetDCOMPMode(bool enabled) {
-  DVLOG_FUNC(1) << "enabled=" << enabled;
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(renderer_extension_remote_.is_bound());
-
-  bool success = false;
-  if (!renderer_extension_remote_->SetDCOMPMode(enabled, &success)) {
-    return false;
-  }
-  return success;
-}
-
-void MediaFoundationRendererClient::MojoGetDCOMPSurface() {
-  DVLOG_FUNC(1);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(renderer_extension_remote_.is_bound());
-
-  if (!renderer_extension_remote_.is_connected()) {
-    media_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &MediaFoundationRendererClient::OnReceivedRemoteDCOMPSurface,
-            weak_factory_.GetWeakPtr(), mojo::ScopedHandle()));
-    return;
-  }
-  waiting_for_dcomp_surface_handle_ = true;
-  renderer_extension_remote_->GetDCOMPSurface(base::BindOnce(
-      &MediaFoundationRendererClient::OnReceivedRemoteDCOMPSurface,
-      weak_factory_.GetWeakPtr()));
-}
-
-void MediaFoundationRendererClient::InitializeDCOMPRendering() {
-  DVLOG_FUNC(1);
-  DCHECK(has_video_);
-
-  if (dcomp_rendering_initialized_) {
-    return;
-  }
-
-  if (!MojoSetDCOMPMode(true)) {
-    DLOG(ERROR) << "Failed to initialize DCOMP mode on remote renderer. this="
-                << this;
-    return;
-  }
-  MojoGetDCOMPSurface();
-
-  dcomp_rendering_initialized_ = true;
-  return;
-}
-
 void MediaFoundationRendererClient::SetCdm(CdmContext* cdm_context,
                                            CdmAttachedCB cdm_attached_cb) {
   DVLOG_FUNC(1) << "cdm_context=" << cdm_context;
   DCHECK(cdm_context);
 
   if (cdm_context_) {
-    DLOG(ERROR) << "Switching CDM not supported. this=" << this;
+    DLOG(ERROR) << "Switching CDM not supported";
     std::move(cdm_attached_cb).Run(false);
     return;
   }
@@ -283,12 +95,7 @@ void MediaFoundationRendererClient::SetCdm(CdmContext* cdm_context,
 
 void MediaFoundationRendererClient::SetLatencyHint(
     absl::optional<base::TimeDelta> /*latency_hint*/) {
-  // We do not use the latency hint today
-}
-
-void MediaFoundationRendererClient::OnCdmAttached(bool success) {
-  DCHECK(cdm_attached_cb_);
-  std::move(cdm_attached_cb_).Run(success);
+  NOTIMPLEMENTED() << "Latency hint not supported in MediaFoundationRenderer";
 }
 
 void MediaFoundationRendererClient::Flush(base::OnceClosure flush_cb) {
@@ -312,13 +119,15 @@ base::TimeDelta MediaFoundationRendererClient::GetMediaTime() {
 }
 
 void MediaFoundationRendererClient::OnSelectedVideoTracksChanged(
-    const std::vector<media::DemuxerStream*>& enabled_tracks,
+    const std::vector<DemuxerStream*>& enabled_tracks,
     base::OnceClosure change_completed_cb) {
   bool video_track_selected = (enabled_tracks.size() > 0);
   DVLOG_FUNC(1) << "video_track_selected=" << video_track_selected;
-  renderer_extension_remote_->SetVideoStreamEnabled(video_track_selected);
+  renderer_extension_->SetVideoStreamEnabled(video_track_selected);
   std::move(change_completed_cb).Run();
 }
+
+// RendererClient implementation.
 
 void MediaFoundationRendererClient::OnError(PipelineStatus status) {
   DVLOG_FUNC(1) << "status=" << status;
@@ -330,13 +139,13 @@ void MediaFoundationRendererClient::OnEnded() {
 }
 
 void MediaFoundationRendererClient::OnStatisticsUpdate(
-    const media::PipelineStatistics& stats) {
+    const PipelineStatistics& stats) {
   client_->OnStatisticsUpdate(stats);
 }
 
 void MediaFoundationRendererClient::OnBufferingStateChange(
-    media::BufferingState state,
-    media::BufferingStateChangeReason reason) {
+    BufferingState state,
+    BufferingStateChangeReason reason) {
   client_->OnBufferingStateChange(state, reason);
 }
 
@@ -345,11 +154,11 @@ void MediaFoundationRendererClient::OnWaiting(WaitingReason reason) {
 }
 
 void MediaFoundationRendererClient::OnAudioConfigChange(
-    const media::AudioDecoderConfig& config) {
+    const AudioDecoderConfig& config) {
   client_->OnAudioConfigChange(config);
 }
 void MediaFoundationRendererClient::OnVideoConfigChange(
-    const media::VideoDecoderConfig& config) {
+    const VideoDecoderConfig& config) {
   client_->OnVideoConfigChange(config);
 }
 
@@ -360,13 +169,11 @@ void MediaFoundationRendererClient::OnVideoNaturalSizeChange(
   DCHECK(has_video_);
 
   natural_size_ = size;
-  // Skip creation of a new video frame if the DCOMP surface has not yet been
-  // bound to the DCOMP texture as we will create a new frame after binding has
-  // completed.
-  if (dcomp_surface_handle_bound_) {
-    // TODO(frankli): Add code to call DCOMPTextureWrapper::CreateVideoFrame().
-  }
-  InitializeDCOMPRendering();
+  dcomp_texture_wrapper_->CreateVideoFrame(
+      natural_size_,
+      base::BindOnce(&MediaFoundationRendererClient::OnVideoFrameCreated,
+                     weak_factory_.GetWeakPtr()));
+
   client_->OnVideoNaturalSizeChange(natural_size_);
 }
 
@@ -383,22 +190,160 @@ void MediaFoundationRendererClient::OnVideoFrameRateChange(
   client_->OnVideoFrameRateChange(fps);
 }
 
-scoped_refptr<media::VideoFrame> MediaFoundationRendererClient::Render(
-    base::TimeTicks deadline_min,
-    base::TimeTicks deadline_max,
-    RenderingMode mode) {
-  // Returns no video frame as it is rendered independently by Windows Direct
-  // Composition.
-  return nullptr;
+// private
+
+void MediaFoundationRendererClient::OnRemoteRendererInitialized(
+    PipelineStatus status) {
+  DVLOG_FUNC(1) << "status=" << status;
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(!init_cb_.is_null());
+
+  if (status != PipelineStatus::PIPELINE_OK) {
+    std::move(init_cb_).Run(status);
+    return;
+  }
+
+  if (!has_video_) {
+    std::move(init_cb_).Run(PipelineStatus::PIPELINE_OK);
+    return;
+  }
+
+  // For playback with video, initialize `dcomp_texture_wrapper_` for direct
+  // composition.
+  bool success = dcomp_texture_wrapper_->Initialize(
+      gfx::Size(1, 1),
+      base::BindRepeating(&MediaFoundationRendererClient::OnOutputRectChange,
+                          weak_factory_.GetWeakPtr()));
+  if (!success) {
+    std::move(init_cb_).Run(PIPELINE_ERROR_INITIALIZATION_FAILED);
+    return;
+  }
+
+  // Initialize DCOMP texture size to {1, 1} to signify to SwapChainPresenter
+  // that the video output size is not yet known.
+  if (output_size_.IsEmpty())
+    dcomp_texture_wrapper_->UpdateTextureSize(gfx::Size(1, 1));
+
+  std::move(init_cb_).Run(PIPELINE_OK);
 }
 
-void MediaFoundationRendererClient::OnFrameDropped() {
-  return;
+void MediaFoundationRendererClient::OnOutputRectChange(gfx::Rect output_rect) {
+  DVLOG_FUNC(1) << "output_rect=" << output_rect.ToString();
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(has_video_);
+
+  renderer_extension_->SetOutputRect(
+      output_rect,
+      base::BindOnce(&MediaFoundationRendererClient::OnSetOutputRectDone,
+                     weak_factory_.GetWeakPtr(), output_rect.size()));
 }
 
-base::TimeDelta MediaFoundationRendererClient::GetPreferredRenderInterval() {
-  // TODO(frankli): use 'viz::BeginFrameArgs::MinInterval()'.
-  return base::TimeDelta::FromSeconds(0);
+void MediaFoundationRendererClient::OnSetOutputRectDone(
+    const gfx::Size& output_size,
+    bool success) {
+  DVLOG_FUNC(1) << "output_size=" << output_size.ToString();
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(has_video_);
+
+  if (!success) {
+    DLOG(ERROR) << "Failed to SetOutputRect";
+    MEDIA_LOG(WARNING, media_log_) << "Failed to SetOutputRect";
+    // Ignore this error as video can possibly be seen but displayed incorrectly
+    // against the video output area.
+    return;
+  }
+
+  output_size_ = output_size;
+  if (output_size_updated_)
+    return;
+
+  // Call UpdateTextureSize() only 1 time to indicate DCOMP rendering is ready.
+  // The actual size does not matter as long as it is not empty and not (1x1).
+  if (!output_size_.IsEmpty() && output_size_ != gfx::Size(1, 1)) {
+    dcomp_texture_wrapper_->UpdateTextureSize(output_size_);
+    output_size_updated_ = true;
+  }
+
+  InitializeDCOMPRenderingIfNeeded();
+
+  // Ensures `SwapChainPresenter::PresentDCOMPSurface()` is invoked to add video
+  // into DCOMP visual tree if needed.
+  if (dcomp_video_frame_)
+    sink_->PaintSingleFrame(dcomp_video_frame_, true);
+}
+
+void MediaFoundationRendererClient::InitializeDCOMPRenderingIfNeeded() {
+  DVLOG_FUNC(1);
+  DCHECK(has_video_);
+
+  if (dcomp_rendering_initialized_)
+    return;
+
+  dcomp_rendering_initialized_ = true;
+
+  // Set DirectComposition mode and get DirectComposition surface from
+  // MediaFoundationRenderer.
+  renderer_extension_->GetDCOMPSurface(
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&MediaFoundationRendererClient::OnDCOMPSurfaceReceived,
+                         weak_factory_.GetWeakPtr()),
+          absl::nullopt));
+}
+
+void MediaFoundationRendererClient::OnDCOMPSurfaceReceived(
+    const absl::optional<base::UnguessableToken>& token) {
+  DVLOG_FUNC(1);
+  DCHECK(has_video_);
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+
+  if (!token) {
+    MEDIA_LOG(ERROR, media_log_)
+        << "Failed to initialize DCOMP mode or failed to get or "
+           "register DCOMP surface handle on remote renderer";
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
+    return;
+  }
+
+  dcomp_texture_wrapper_->SetDCOMPSurfaceHandle(
+      token.value(),
+      base::BindOnce(&MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet(bool success) {
+  DVLOG_FUNC(1);
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(has_video_);
+
+  if (!success) {
+    MEDIA_LOG(ERROR, media_log_) << "Failed to set DCOMP surface handle";
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
+  }
+}
+
+void MediaFoundationRendererClient::OnVideoFrameCreated(
+    scoped_refptr<VideoFrame> video_frame) {
+  DVLOG_FUNC(1);
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(has_video_);
+
+  video_frame->metadata().protected_video = true;
+  video_frame->metadata().allow_overlay = true;
+
+  dcomp_video_frame_ = video_frame;
+  sink_->PaintSingleFrame(dcomp_video_frame_, true);
+}
+
+void MediaFoundationRendererClient::OnCdmAttached(bool success) {
+  DCHECK(cdm_attached_cb_);
+  std::move(cdm_attached_cb_).Run(success);
+}
+
+void MediaFoundationRendererClient::OnConnectionError() {
+  DVLOG_FUNC(1);
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  MEDIA_LOG(ERROR, media_log_) << "MediaFoundationRendererClient disconnected";
+  OnError(PIPELINE_ERROR_DECODE);
 }
 
 }  // namespace media

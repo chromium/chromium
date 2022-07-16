@@ -14,8 +14,8 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/rrect_f.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -148,8 +148,7 @@ void FrameCaptionButton::SetImage(CaptionButtonIcon icon,
 
   if (animate == Animate::kYes) {
     swap_images_animation_->Reset(0);
-    swap_images_animation_->SetSlideDuration(
-        base::TimeDelta::FromMilliseconds(200));
+    swap_images_animation_->SetSlideDuration(base::Milliseconds(200));
     swap_images_animation_->Show();
   } else {
     swap_images_animation_->Reset(1);
@@ -371,10 +370,10 @@ DEFINE_ENUM_CONVERTERS(
      u"CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE"},
     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_CLOSE,
      u"CAPTION_BUTTON_ICON_CLOSE"},
-    {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_LEFT_SNAPPED,
-     u"CAPTION_BUTTON_ICON_LEFT_SNAPPED"},
-    {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_RIGHT_SNAPPED,
-     u"CAPTION_BUTTON_ICON_RIGHT_SNAPPED"},
+    {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
+     u"CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED"},
+    {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
+     u"CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED"},
     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_BACK,
      u"CAPTION_BUTTON_ICON_BACK"},
     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_LOCATION,

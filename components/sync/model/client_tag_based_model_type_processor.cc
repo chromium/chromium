@@ -21,12 +21,15 @@
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/engine/entity_data.h"
 #include "components/sync/engine/model_type_processor_metrics.h"
 #include "components/sync/engine/model_type_processor_proxy.h"
 #include "components/sync/model/client_tag_based_remote_update_handler.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/type_entities_count.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 
 namespace syncer {
@@ -760,8 +763,8 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
                 : "Persistent",
             ModelTypeToHistogramSuffix(type_)),
         configuration_duration,
-        /*min=*/base::TimeDelta::FromMilliseconds(1),
-        /*min=*/base::TimeDelta::FromSeconds(60),
+        /*min=*/base::Milliseconds(1),
+        /*min=*/base::Seconds(60),
         /*buckets=*/50);
   }
 

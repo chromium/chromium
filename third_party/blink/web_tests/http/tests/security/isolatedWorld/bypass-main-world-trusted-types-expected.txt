@@ -1,5 +1,5 @@
 ALERT: Running test #2
-CONSOLE ERROR: line 29: This document requires 'TrustedScript' assignment.
+CONSOLE ERROR: This document requires 'TrustedScript' assignment.
 ALERT: message: blocked
 ALERT: Running test #1
 ALERT: message: pass

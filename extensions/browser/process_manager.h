@@ -62,6 +62,10 @@ class ProcessManager : public KeyedService,
   using ExtensionHostSet = std::set<extensions::ExtensionHost*>;
 
   static ProcessManager* Get(content::BrowserContext* context);
+
+  ProcessManager(const ProcessManager&) = delete;
+  ProcessManager& operator=(const ProcessManager&) = delete;
+
   ~ProcessManager() override;
 
   // KeyedService support:
@@ -404,8 +408,6 @@ class ProcessManager : public KeyedService,
 
   // Must be last member, see doc on WeakPtrFactory.
   base::WeakPtrFactory<ProcessManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessManager);
 };
 
 }  // namespace extensions

@@ -14,13 +14,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_stream_abort_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
-#include "third_party/blink/renderer/modules/webtransport/web_transport_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -64,22 +64,30 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
     DVLOG(1) << "OutgoingStream::UnderlingSink::close() outgoing_stream_="
              << outgoing_stream_;
 
-    // The specification guarantees that this will only be called after all
-    // pending writes have been completed.
+    // The streams specification guarantees that this will only be called after
+    // all pending writes have been completed.
     DCHECK(!outgoing_stream_->write_promise_resolver_);
 
-    if (outgoing_stream_->client_) {
-      outgoing_stream_->state_ = State::kSentFin;
-      outgoing_stream_->client_->SendFin();
-      outgoing_stream_->client_ = nullptr;
-    }
+    DCHECK(!outgoing_stream_->close_promise_resolver_);
 
-    outgoing_stream_->AbortAndReset();
+    outgoing_stream_->close_promise_resolver_ =
+        MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
-    // TODO(ricea): close() should wait for data to be flushed before resolving.
-    // Since DataPipeProducerHandle doesn't have an API to observe the remote
-    // side closing, this will have to be done out-of-band.
-    return ScriptPromise::CastUndefined(script_state);
+    // In some cases (when the stream is aborted by a network error for
+    // example), there may not be a call to OnOutgoingStreamClose. In that case
+    // we will not be able to resolve the promise, but that will be taken care
+    // by streams so we don't care.
+    outgoing_stream_->close_promise_resolver_->SuppressDetachCheck();
+
+    DCHECK_EQ(outgoing_stream_->state_, State::kOpen);
+    outgoing_stream_->state_ = State::kSentFin;
+    outgoing_stream_->client_->SendFin();
+
+    // Close the data pipe to signal to the network service that no more data
+    // will be sent.
+    outgoing_stream_->ResetPipe();
+
+    return outgoing_stream_->close_promise_resolver_->Promise();
   }
 
   ScriptPromise abort(ScriptState* script_state,
@@ -87,8 +95,18 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
                       ExceptionState& exception_state) override {
     DVLOG(1) << "OutgoingStream::UnderlyingSink::abort() outgoing_stream_="
              << outgoing_stream_;
+    DCHECK(!reason.IsEmpty());
 
-    return close(script_state, exception_state);
+    uint8_t code = 0;
+    WebTransportError* exception = V8WebTransportError::ToImplWithTypeCheck(
+        script_state->GetIsolate(), reason.V8Value());
+    if (exception) {
+      code = exception->streamErrorCode().value_or(0);
+    }
+    outgoing_stream_->client_->Reset(code);
+    outgoing_stream_->AbortAndReset();
+
+    return ScriptPromise::CastUndefined(script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -150,27 +168,24 @@ void OutgoingStream::InitWithExistingWritableStream(
                        WTF::BindRepeating(&OutgoingStream::OnPeerClosed,
                                           WrapWeakPersistent(this)));
 
-  // TODO(ricea): How do we make sure this promise is settled or detached before
-  // it is destroyed?
-  writing_aborted_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
-  writing_aborted_ = writing_aborted_resolver_->Promise();
   writable_ = stream;
   stream->InitWithCountQueueingStrategy(
       script_state_, MakeGarbageCollected<UnderlyingSink>(this), 1,
       /*optimizer=*/nullptr, exception_state);
 }
 
-void OutgoingStream::AbortWriting(StreamAbortInfo* stream_abort_info) {
-  DVLOG(1) << "OutgoingStream::abortWriting() this=" << this;
+void OutgoingStream::OnOutgoingStreamClosed() {
+  DVLOG(1) << "OutgoingStream::OnOutgoingStreamClosed() this=" << this;
 
-  ErrorStreamAbortAndReset(IsLocalAbort(true));
+  DCHECK(close_promise_resolver_);
+  close_promise_resolver_->Resolve();
+  close_promise_resolver_ = nullptr;
 }
 
-void OutgoingStream::Reset() {
-  DVLOG(1) << "OutgoingStream::Reset() this=" << this;
+void OutgoingStream::Error(ScriptValue reason) {
+  DVLOG(1) << "OutgoingStream::Error() this=" << this;
 
-  ErrorStreamAbortAndReset(IsLocalAbort(false));
+  ErrorStreamAbortAndReset(reason);
 }
 
 void OutgoingStream::ContextDestroyed() {
@@ -184,9 +199,8 @@ void OutgoingStream::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
   visitor->Trace(writable_);
   visitor->Trace(controller_);
-  visitor->Trace(writing_aborted_);
-  visitor->Trace(writing_aborted_resolver_);
   visitor->Trace(write_promise_resolver_);
+  visitor->Trace(close_promise_resolver_);
 }
 
 void OutgoingStream::OnHandleReady(MojoResult result,
@@ -224,7 +238,7 @@ void OutgoingStream::HandlePipeClosed() {
   DVLOG(1) << "OutgoingStream::HandlePipeClosed() this=" << this;
 
   ScriptState::Scope scope(script_state_);
-  ErrorStreamAbortAndReset(IsLocalAbort(false));
+  ErrorStreamAbortAndReset(CreateAbortException(IsLocalAbort(false)));
 }
 
 ScriptPromise OutgoingStream::SinkWrite(ScriptState* script_state,
@@ -356,17 +370,15 @@ ScriptValue OutgoingStream::CreateAbortException(IsLocalAbort is_local_abort) {
                          script_state_->GetIsolate(), code, message));
 }
 
-void OutgoingStream::ErrorStreamAbortAndReset(IsLocalAbort is_local_abort) {
+void OutgoingStream::ErrorStreamAbortAndReset(ScriptValue reason) {
   DVLOG(1) << "OutgoingStream::ErrorStreamAbortAndReset() this=" << this;
 
-  ScriptValue exception = CreateAbortException(is_local_abort);
-
   if (write_promise_resolver_) {
-    write_promise_resolver_->Reject(exception);
+    write_promise_resolver_->Reject(reason);
     write_promise_resolver_ = nullptr;
     controller_ = nullptr;
   } else if (controller_) {
-    controller_->error(script_state_, exception);
+    controller_->error(script_state_, reason);
     controller_ = nullptr;
   }
 
@@ -376,18 +388,9 @@ void OutgoingStream::ErrorStreamAbortAndReset(IsLocalAbort is_local_abort) {
 void OutgoingStream::AbortAndReset() {
   DVLOG(1) << "OutgoingStream::AbortAndReset() this=" << this;
 
-  if (writing_aborted_resolver_) {
-    // TODO(ricea): Set errorCode on the StreamAbortInfo.
-    writing_aborted_resolver_->Resolve(StreamAbortInfo::Create());
-    writing_aborted_resolver_ = nullptr;
-  }
-
-  if (client_) {
-    DCHECK_EQ(state_, State::kOpen);
-    state_ = State::kAborted;
-    client_->OnOutgoingStreamAbort();
-    client_ = nullptr;
-  }
+  DCHECK(state_ == State::kOpen || state_ == State::kSentFin);
+  state_ = State::kAborted;
+  client_->ForgetStream();
 
   ResetPipe();
 }

@@ -36,7 +36,7 @@ if (concurrent_links == -1) {
       # a little padding to account for future growth.
       _args += [ "--mem_per_link_gb=45" ]
     } else {
-      _args += [ "--mem_per_link_gb=10" ]
+      _args += [ "--mem_per_link_gb=16" ]
     }
   } else if ((use_clang_coverage &&
               # When coverage_instrumentation_input_file is not empty it means
@@ -71,6 +71,8 @@ if (concurrent_links == -1) {
   } else if ((is_linux || is_chromeos_lacros) && symbol_level == 0) {
     # Memory consumption on link without debug symbols is low on linux.
     _args = [ "--mem_per_link_gb=3" ]
+  } else if (current_os == "zos") {
+    _args = [ "--mem_per_link_gb=1" ]
   } else {
     _args = []
   }

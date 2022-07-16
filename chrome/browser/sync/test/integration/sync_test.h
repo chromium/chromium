@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -132,6 +131,10 @@ class SyncTest : public PlatformBrowserTest {
    public:
     explicit FakeInstanceID(const std::string& app_id,
                             gcm::GCMDriver* gcm_driver);
+
+    FakeInstanceID(const FakeInstanceID&) = delete;
+    FakeInstanceID& operator=(const FakeInstanceID&) = delete;
+
     ~FakeInstanceID() override = default;
 
     void GetID(GetIDCallback callback) override {}
@@ -164,12 +167,15 @@ class SyncTest : public PlatformBrowserTest {
     static std::string GenerateNextToken();
 
     std::string token_;
-    DISALLOW_COPY_AND_ASSIGN(FakeInstanceID);
   };
 
   class FakeInstanceIDDriver : public instance_id::InstanceIDDriver {
    public:
     explicit FakeInstanceIDDriver(gcm::GCMDriver* gcm_driver);
+
+    FakeInstanceIDDriver(const FakeInstanceIDDriver&) = delete;
+    FakeInstanceIDDriver& operator=(const FakeInstanceIDDriver&) = delete;
+
     ~FakeInstanceIDDriver() override;
     instance_id::InstanceID* GetInstanceID(const std::string& app_id) override;
     void RemoveInstanceID(const std::string& app_id) override {}
@@ -178,11 +184,13 @@ class SyncTest : public PlatformBrowserTest {
    private:
     gcm::GCMDriver* gcm_driver_;
     std::map<std::string, std::unique_ptr<FakeInstanceID>> fake_instance_ids_;
-    DISALLOW_COPY_AND_ASSIGN(FakeInstanceIDDriver);
   };
 
   // A SyncTest must be associated with a particular test type.
   explicit SyncTest(TestType test_type);
+
+  SyncTest(const SyncTest&) = delete;
+  SyncTest& operator=(const SyncTest&) = delete;
 
   ~SyncTest() override;
 
@@ -550,8 +558,6 @@ class SyncTest : public PlatformBrowserTest {
   std::vector<syncer::FCMHandler*> sync_invalidations_fcm_handlers_;
   std::unique_ptr<fake_server::FakeServerSyncInvalidationSender>
       fake_server_sync_invalidation_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncTest);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_TEST_H_

@@ -7,9 +7,9 @@
 
 /*
  * Styles used by goog.ui.TabBarRenderer.
- *
- * @provide {goog.css.tabbar}
  */
+
+@provide 'goog.css.tabbar';
 
 .goog-tab-bar {
   margin: 0;

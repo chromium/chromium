@@ -29,10 +29,8 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_BLOCKING_PAGE_H_
 
 #include <map>
-#include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 
@@ -42,6 +40,10 @@ class HistoryService;
 
 namespace network {
 class SharedURLLoaderFactory;
+}
+
+namespace weblayer {
+class WebLayerSafeBrowsingBlockingPageFactory;
 }
 
 namespace safe_browsing {
@@ -59,6 +61,9 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   static const security_interstitials::SecurityInterstitialPage::TypeID
       kTypeForTesting;
 
+  SafeBrowsingBlockingPage(const SafeBrowsingBlockingPage&) = delete;
+  SafeBrowsingBlockingPage& operator=(const SafeBrowsingBlockingPage&) = delete;
+
   ~SafeBrowsingBlockingPage() override;
 
   // SecurityInterstitialPage method:
@@ -67,6 +72,7 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
 
  protected:
   friend class ChromeSafeBrowsingBlockingPageFactory;
+  friend class weblayer::WebLayerSafeBrowsingBlockingPageFactory;
   friend class SafeBrowsingBlockingPageTestBase;
   friend class SafeBrowsingBlockingPageBrowserTest;
   friend class SafeBrowsingBlockingQuietPageFactoryImpl;
@@ -133,8 +139,6 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   SafeBrowsingNavigationObserverManager* navigation_observer_manager_ = nullptr;
   SafeBrowsingMetricsCollector* metrics_collector_ = nullptr;
   TriggerManager* trigger_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingBlockingPage);
 };
 
 }  // namespace safe_browsing

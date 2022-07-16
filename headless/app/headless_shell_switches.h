@@ -20,7 +20,6 @@ HEADLESS_EXPORT extern const char kDiskCacheDir[];
 HEADLESS_EXPORT extern const char kDumpDom[];
 HEADLESS_EXPORT extern const char kEnableBeginFrameControl[];
 HEADLESS_EXPORT extern const char kEnableCrashReporter[];
-HEADLESS_EXPORT extern const char kExportTaggedPDF[];
 HEADLESS_EXPORT extern const char kHideScrollbars[];
 HEADLESS_EXPORT extern const char kPasswordStore[];
 HEADLESS_EXPORT extern const char kPrintToPDF[];
@@ -40,9 +39,9 @@ HEADLESS_EXPORT extern const char kUserDataDir[];
 HEADLESS_EXPORT extern const char kVirtualTimeBudget[];
 HEADLESS_EXPORT extern const char kWindowSize[];
 HEADLESS_EXPORT extern const char kAuthServerAllowlist[];
-HEADLESS_EXPORT extern const char kAuthServerAllowlistDeprecated[];
 HEADLESS_EXPORT extern const char kFontRenderHinting[];
 HEADLESS_EXPORT extern const char kBlockNewWebContents[];
+HEADLESS_EXPORT extern const char kExplicitlyAllowedPorts[];
 
 // Switches which are replicated from content.
 using ::switches::kRemoteDebuggingPort;

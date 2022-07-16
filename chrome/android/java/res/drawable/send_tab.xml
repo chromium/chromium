@@ -15,7 +15,7 @@
             android:pathData="m5,6h16v-2h-16c-1.1,0 -2,0.9 -2,2v11h-2v3h11v-3h-7zM21,8h-6c-0.55,0 -1,0.45 -1,1v10c0,0.55 0.45,1 1,1h6c0.55,0 1,-0.45 1,-1v-10c0,-0.55 -0.45,-1 -1,-1zM20,17h-4v-7h4z"/>
         <path
             android:pathData="m0,0h24v24h-24z"
-            android:fillColor="@color/default_icon_color"
+            android:fillColor="?attr/default_icon_color"
             android:fillType="evenOdd"/>
     </group>
 </vector>

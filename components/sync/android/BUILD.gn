@@ -16,7 +16,6 @@ android_library("sync_java") {
   srcjar_deps = [ ":java_enums" ]
   sources = [
     "java/src/org/chromium/components/sync/Passphrase.java",
-    "java/src/org/chromium/components/sync/SyncConstants.java",
   ]
 }
 

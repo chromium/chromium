@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/error_tolerant_ble_advertisement.h"
@@ -44,6 +43,11 @@ class ErrorTolerantBleAdvertisementImpl
    private:
     static Factory* test_factory_;
   };
+
+  ErrorTolerantBleAdvertisementImpl(const ErrorTolerantBleAdvertisementImpl&) =
+      delete;
+  ErrorTolerantBleAdvertisementImpl& operator=(
+      const ErrorTolerantBleAdvertisementImpl&) = delete;
 
   ~ErrorTolerantBleAdvertisementImpl() override;
 
@@ -98,8 +102,6 @@ class ErrorTolerantBleAdvertisementImpl
 
   base::WeakPtrFactory<ErrorTolerantBleAdvertisementImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorTolerantBleAdvertisementImpl);
 };
 
 }  // namespace secure_channel

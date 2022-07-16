@@ -24,8 +24,8 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/transport_security_state.h"
 #include "net/log/net_log_event_type.h"
-#include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
 #include "net/quic/crypto/proof_source_chromium.h"
 #include "net/quic/quic_context.h"
@@ -44,6 +44,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -141,7 +142,7 @@ class URLRequestQuicTest
     context_->set_host_resolver(host_resolver_.get());
     context_->set_http_network_session_params(std::move(params));
     context_->set_cert_verifier(&cert_verifier_);
-    context_->set_net_log(&net_log_);
+    context_->set_net_log(NetLog::Get());
     transport_security_state_.SetExpectCTReporter(&expect_ct_reporter_);
     context_->set_transport_security_state(&transport_security_state_);
   }
@@ -183,7 +184,6 @@ class URLRequestQuicTest
   static const NetLogSource FindPushUrlSource(
       const std::vector<NetLogEntry>& entries,
       const std::string& push_url) {
-    std::string entry_push_url;
     for (const auto& entry : entries) {
       if (entry.phase == NetLogEventPhase::BEGIN &&
           entry.source.type ==
@@ -223,8 +223,6 @@ class URLRequestQuicTest
     return std::string("https://") + std::string(kTestServerHost) +
            std::string(path);
   }
-
-  RecordingTestNetLog net_log_;
 
  private:
   void StartQuicServer(quic::ParsedQuicVersion version) {
@@ -299,6 +297,10 @@ class CheckLoadTimingDelegate : public TestDelegate {
  public:
   CheckLoadTimingDelegate(bool session_reused)
       : session_reused_(session_reused) {}
+
+  CheckLoadTimingDelegate(const CheckLoadTimingDelegate&) = delete;
+  CheckLoadTimingDelegate& operator=(const CheckLoadTimingDelegate&) = delete;
+
   void OnResponseStarted(URLRequest* request, int error) override {
     TestDelegate::OnResponseStarted(request, error);
     LoadTimingInfo load_timing_info;
@@ -332,8 +334,6 @@ class CheckLoadTimingDelegate : public TestDelegate {
   }
 
   bool session_reused_;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckLoadTimingDelegate);
 };
 
 // A TestNetworkDelegate that invokes |all_requests_completed_callback| when
@@ -347,6 +347,11 @@ class WaitForCompletionNetworkDelegate : public net::TestNetworkDelegate {
             std::move(all_requests_completed_callback)),
         num_expected_requests_(num_expected_requests) {}
 
+  WaitForCompletionNetworkDelegate(const WaitForCompletionNetworkDelegate&) =
+      delete;
+  WaitForCompletionNetworkDelegate& operator=(
+      const WaitForCompletionNetworkDelegate&) = delete;
+
   void OnCompleted(URLRequest* request, bool started, int net_error) override {
     net::TestNetworkDelegate::OnCompleted(request, started, net_error);
     num_expected_requests_--;
@@ -357,7 +362,6 @@ class WaitForCompletionNetworkDelegate : public net::TestNetworkDelegate {
  private:
   base::OnceClosure all_requests_completed_callback_;
   size_t num_expected_requests_;
-  DISALLOW_COPY_AND_ASSIGN(WaitForCompletionNetworkDelegate);
 };
 
 }  // namespace
@@ -395,15 +399,23 @@ TEST_P(URLRequestQuicTest, TestTwoRequests) {
       run_loop.QuitClosure(), /*num_expected_requests=*/2);
   SetNetworkDelegate(&network_delegate);
   Init();
+
+  GURL url = GURL(UrlFromPath(kHelloPath));
+  auto isolation_info =
+      IsolationInfo::CreateForInternalRequest(url::Origin::Create(url));
+
   CheckLoadTimingDelegate delegate(false);
   delegate.set_on_complete(base::DoNothing());
   std::unique_ptr<URLRequest> request =
-      CreateRequest(GURL(UrlFromPath(kHelloPath)), DEFAULT_PRIORITY, &delegate);
+      CreateRequest(url, DEFAULT_PRIORITY, &delegate);
+  request->set_isolation_info(isolation_info);
 
   CheckLoadTimingDelegate delegate2(true);
   delegate2.set_on_complete(base::DoNothing());
-  std::unique_ptr<URLRequest> request2 = CreateRequest(
-      GURL(UrlFromPath(kHelloPath)), DEFAULT_PRIORITY, &delegate2);
+  std::unique_ptr<URLRequest> request2 =
+      CreateRequest(url, DEFAULT_PRIORITY, &delegate2);
+  request2->set_isolation_info(isolation_info);
+
   request->Start();
   request2->Start();
   ASSERT_TRUE(request->is_pending());
@@ -473,8 +485,8 @@ TEST_P(URLRequestQuicTest, ExpectCT) {
   GURL report_uri("https://report.test/");
   IsolationInfo isolation_info = IsolationInfo::CreateTransient();
   transport_security_state()->AddExpectCT(
-      kTestServerHost, base::Time::Now() + base::TimeDelta::FromDays(1),
-      true /* enforce */, report_uri, isolation_info.network_isolation_key());
+      kTestServerHost, base::Time::Now() + base::Days(1), true /* enforce */,
+      report_uri, isolation_info.network_isolation_key());
 
   base::RunLoop run_loop;
   TestDelegate delegate;

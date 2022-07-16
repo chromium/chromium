@@ -1,0 +1,11 @@
+import("//tools/grit/grit_rule.gni")
+
+grit("resources") {
+  source = "input_overlay_resources.grd"
+  output_name = "input_overlay_resources"
+  output_dir = "$root_gen_dir/components/arc"
+  outputs = [
+    "grit/input_overlay_resources.h",
+    "input_overlay_resources.pak",
+  ]
+}

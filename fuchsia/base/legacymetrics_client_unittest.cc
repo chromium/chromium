@@ -14,11 +14,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "fuchsia/base/legacymetrics_client.h"
 #include "fuchsia/base/legacymetrics_histogram_flattener.h"
-#include "fuchsia/base/test/result_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,8 +28,8 @@ namespace {
 using ::testing::Property;
 using ::testing::UnorderedElementsAreArray;
 
-constexpr base::TimeDelta kReportInterval = base::TimeDelta::FromMinutes(1);
-constexpr base::TimeDelta kShortDuration = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kReportInterval = base::Minutes(1);
+constexpr base::TimeDelta kShortDuration = base::Seconds(1);
 
 class TestMetricsRecorder
     : public fuchsia::legacymetrics::testing::MetricsRecorder_TestBase {
@@ -158,11 +158,10 @@ class LegacyMetricsClientTest : public testing::Test {
 TEST_F(LegacyMetricsClientTest, ReportIntervalBoundary) {
   client_.Start(kReportInterval);
 
-  task_environment_.FastForwardBy(kReportInterval -
-                                  base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(kReportInterval - base::Seconds(1));
   EXPECT_FALSE(test_recorder_.IsRecordInFlight());
   UMA_HISTOGRAM_COUNTS_1M("foo", 20);
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(test_recorder_.IsRecordInFlight());
 }
 
@@ -508,8 +507,8 @@ TEST_F(LegacyMetricsClientTest, FlushWithOutstandingAck) {
 }
 
 TEST_F(LegacyMetricsClientTest, ExternalFlushSignal) {
-  ResultReceiver<base::OnceClosure> flush_receiver;
-  client_.SetNotifyFlushCallback(flush_receiver.GetReceiveCallback());
+  base::test::TestFuture<base::OnceClosure> flush_receiver;
+  client_.SetNotifyFlushCallback(flush_receiver.GetCallback());
   client_.Start(kReportInterval);
   base::RunLoop().RunUntilIdle();
 
@@ -523,8 +522,8 @@ TEST_F(LegacyMetricsClientTest, ExternalFlushSignal) {
   EXPECT_FALSE(test_recorder_.IsRecordInFlight());
 
   // Verify that invoking the completion callback unblocks reporting.
-  EXPECT_TRUE(flush_receiver.has_value());
-  std::move(*flush_receiver).Run();
+  EXPECT_TRUE(flush_receiver.IsReady());
+  flush_receiver.Take().Run();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(test_recorder_.IsRecordInFlight());
 }
@@ -586,7 +585,7 @@ TEST_F(LegacyMetricsClientTest, ExplicitFlushMultipleBatches) {
   for (size_t i = 0; i < kSizeForMultipleBatches; ++i)
     base::RecordComputedAction("bar");
 
-  client_.FlushAndDisconnect(base::DoNothing::Once());
+  client_.FlushAndDisconnect(base::DoNothing());
   base::RunLoop().RunUntilIdle();
   test_recorder_.SendAck();
   base::RunLoop().RunUntilIdle();

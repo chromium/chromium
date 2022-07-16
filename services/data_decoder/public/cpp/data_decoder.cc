@@ -33,8 +33,7 @@ namespace {
 // (if any) may be killed and only restarted once needed again.
 // On platforms (like iOS) or environments (like some unit tests) where
 // out-of-process services are not used, this has no effect.
-constexpr base::TimeDelta kServiceProcessIdleTimeoutDefault{
-    base::TimeDelta::FromSeconds(5)};
+constexpr base::TimeDelta kServiceProcessIdleTimeoutDefault{base::Seconds(5)};
 
 // Encapsulates an in-process data decoder parsing request. This provides shared
 // ownership of the caller's callback so that it may be invoked exactly once by
@@ -46,6 +45,9 @@ class ValueParseRequest : public base::RefCounted<ValueParseRequest<T, V>> {
  public:
   explicit ValueParseRequest(DataDecoder::ResultCallback<V> callback)
       : callback_(std::move(callback)) {}
+
+  ValueParseRequest(const ValueParseRequest&) = delete;
+  ValueParseRequest& operator=(const ValueParseRequest&) = delete;
 
   mojo::Remote<T>& remote() { return remote_; }
   DataDecoder::ResultCallback<V>& callback() { return callback_; }
@@ -103,8 +105,6 @@ class ValueParseRequest : public base::RefCounted<ValueParseRequest<T, V>> {
 
   mojo::Remote<T> remote_;
   DataDecoder::ResultCallback<V> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValueParseRequest);
 };
 
 #if defined(OS_IOS)

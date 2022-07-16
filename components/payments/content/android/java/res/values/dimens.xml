@@ -29,21 +29,4 @@
     <dimen name="secure_payment_confirmation_ui_icon_height">32dp</dimen>
     <dimen name="secure_payment_confirmation_authn_ui_label_size">60dp</dimen>
     <dimen name="secure_payment_confirmation_authn_ui_amount_currency_spacing">4dp</dimen>
-
-    <!-- Payment minimal UI spacing -->
-    <dimen name="payment_minimal_ui_amount_currency_spacing">4dp</dimen>
-    <dimen name="payment_minimal_ui_app_icon_bottom_spacing">20dp</dimen>
-    <dimen name="payment_minimal_ui_app_icon_horizontal_spacing">10dp</dimen>
-    <dimen name="payment_minimal_ui_content_bottom_spacing">26dp</dimen>
-    <dimen name="payment_minimal_ui_content_icon_spacing">8dp</dimen>
-    <dimen name="payment_minimal_ui_content_top_spacing">78dp</dimen>
-    <dimen name="payment_minimal_ui_drag_handle_spacing">8dp</dimen>
-    <dimen name="payment_minimal_ui_large_text_vertical_spacing">8dp</dimen>
-    <dimen name="payment_minimal_ui_spacing">16dp</dimen>
-    <dimen name="payment_minimal_ui_toolbar_small_status_text_top_spacing">2dp</dimen>
-
-    <!-- Payment minimal UI element sizes -->
-    <dimen name="payment_minimal_ui_content_icon_size">56dp</dimen>
-    <dimen name="payment_minimal_ui_separator_width">0.5dp</dimen>
-    <dimen name="payment_minimal_ui_toolbar_icon_size">36dp</dimen>
 </resources>

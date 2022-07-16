@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_USER_ADDING_SCREEN_UTILS_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_USER_ADDING_SCREEN_UTILS_H_
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 // Utility function for user adding screen that waits for the user adding screen
@@ -13,14 +13,14 @@ namespace test {
 void ShowUserAddingScreen();
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
+namespace chromeos {
 namespace test {
-using ::chromeos::test::ShowUserAddingScreen;
+using ::ash::test::ShowUserAddingScreen;
 }
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_USER_ADDING_SCREEN_UTILS_H_

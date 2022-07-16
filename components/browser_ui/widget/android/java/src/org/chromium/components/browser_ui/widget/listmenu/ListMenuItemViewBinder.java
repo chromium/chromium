@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.R;
@@ -54,10 +53,10 @@ public class ListMenuItemViewBinder {
             }
         } else if (propertyKey == ListMenuItemProperties.TINT_COLOR_ID) {
             ApiCompatibilityUtils.setImageTintList(startIcon,
-                    ContextCompat.getColorStateList(
+                    AppCompatResources.getColorStateList(
                             view.getContext(), model.get(ListMenuItemProperties.TINT_COLOR_ID)));
             ApiCompatibilityUtils.setImageTintList(endIcon,
-                    ContextCompat.getColorStateList(
+                    AppCompatResources.getColorStateList(
                             view.getContext(), model.get(ListMenuItemProperties.TINT_COLOR_ID)));
         } else if (propertyKey == ListMenuItemProperties.ENABLED) {
             textView.setEnabled(model.get(ListMenuItemProperties.ENABLED));

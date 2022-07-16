@@ -6,8 +6,8 @@
 
 namespace syncer {
 
-DataTypeActivationResponse::DataTypeActivationResponse() {}
+DataTypeActivationResponse::DataTypeActivationResponse() = default;
 
-DataTypeActivationResponse::~DataTypeActivationResponse() {}
+DataTypeActivationResponse::~DataTypeActivationResponse() = default;
 
 }  // namespace syncer

@@ -6,7 +6,6 @@
 #define UI_BASE_IME_INPUT_METHOD_MINIMAL_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/ime/input_method_base.h"
 
 namespace ui {
@@ -17,6 +16,10 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodMinimal
     : public InputMethodBase {
  public:
   explicit InputMethodMinimal(internal::InputMethodDelegate* delegate);
+
+  InputMethodMinimal(const InputMethodMinimal&) = delete;
+  InputMethodMinimal& operator=(const InputMethodMinimal&) = delete;
+
   ~InputMethodMinimal() override;
 
   // Overriden from InputMethod.
@@ -24,9 +27,6 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodMinimal
   void OnCaretBoundsChanged(const TextInputClient* client) override;
   void CancelComposition(const TextInputClient* client) override;
   bool IsCandidatePopupOpen() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputMethodMinimal);
 };
 
 }  // namespace ui

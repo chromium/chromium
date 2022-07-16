@@ -37,12 +37,11 @@ class SignalDatabase {
   virtual void WriteSample(proto::SignalType signal_type,
                            uint64_t name_hash,
                            absl::optional<int32_t> value,
-                           base::Time timestamp,
                            SuccessCallback callback) = 0;
 
-  // Called to get signals collected between any two timestamps. The samples are
-  // returned in the |callback| as a list of pairs containing signal timestamp
-  // and and an optional value.
+  // Called to get signals collected between any two timestamps (including both
+  // ends). The samples are returned in the |callback| as a list of pairs
+  // containing signal timestamp and and an optional value.
   virtual void GetSamples(proto::SignalType signal_type,
                           uint64_t name_hash,
                           base::Time start_time,

@@ -22,6 +22,12 @@ namespace {
 class AuraWindowSettingsTitleTracker : public aura::WindowTracker {
  public:
   AuraWindowSettingsTitleTracker() {}
+
+  AuraWindowSettingsTitleTracker(const AuraWindowSettingsTitleTracker&) =
+      delete;
+  AuraWindowSettingsTitleTracker& operator=(
+      const AuraWindowSettingsTitleTracker&) = delete;
+
   ~AuraWindowSettingsTitleTracker() override {}
 
   // aura::WindowTracker:
@@ -29,9 +35,6 @@ class AuraWindowSettingsTitleTracker : public aura::WindowTracker {
     // Name the window "Settings" instead of "Google Chrome - Settings".
     window->SetTitle(l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuraWindowSettingsTitleTracker);
 };
 
 }  // namespace

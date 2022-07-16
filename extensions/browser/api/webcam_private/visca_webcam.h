@@ -25,6 +25,9 @@ class ViscaWebcam : public Webcam {
  public:
   ViscaWebcam();
 
+  ViscaWebcam(const ViscaWebcam&) = delete;
+  ViscaWebcam& operator=(const ViscaWebcam&) = delete;
+
   using OpenCompleteCallback = base::RepeatingCallback<void(bool)>;
 
   // Open and initialize the web camera. This is done by the following three
@@ -143,8 +146,6 @@ class ViscaWebcam : public Webcam {
   // store the current value of pan and tilt positions.
   int pan_ = 0;
   int tilt_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ViscaWebcam);
 };
 
 }  // namespace extensions

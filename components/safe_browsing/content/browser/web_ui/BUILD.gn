@@ -19,6 +19,7 @@ static_library("web_ui") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser:safe_browsing_service",
     "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser:download_check_result",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/browser/db:v4_local_database_manager",
     "//components/safe_browsing/core/common",

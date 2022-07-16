@@ -16,34 +16,47 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/message_loop/timer_slack.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+
+// Chromium的无锁线程模型: https://zhuanlan.zhihu.com/p/104205774
+
+// Chromium的线程模型是：
+// Chromium是一个极其多线程的产品。我们努力让UI尽可能快速响应，这意味着任何阻塞I/O
+// 或者其他昂贵操作不能阻塞UI线程。我们的做法是在线程间传递消息作为交流的方式。我们
+// 不鼓励锁和线程安全对象。相反的，对象仅存在与单个线程中，我们只为通信而在线程间传
+// 递消息，我们会在大多数跨进程请求间使用回调接口（由消息传递实现）。
+// 每个线程有一个消息泵（查看base/message_loop/message_pump.h），消息泵处理这
+// 个线程的消息。你可以使用message_pump_factory函数获取一个线程对应的消息泵。
 
 namespace base {
 
 class MessagePump;
 class RunLoop;
-namespace sequence_manager {
-class TimeDomain;
-}
 
 // IMPORTANT: Instead of creating a base::Thread, consider using
 // base::Create(Sequenced|SingleThread)TaskRunner().
+// 考虑使用 base::Create(Sequenced|SingleThread)TaskRunner()，而不是创建
+// base::Thread。
 //
 // A simple thread abstraction that establishes a MessageLoop on a new thread.
 // The consumer uses the MessageLoop of the thread to cause code to execute on
 // the thread.  When this object is destroyed the thread is terminated.  All
 // pending tasks queued on the thread's message loop will run to completion
 // before the thread is terminated.
+// 在新线程上建立 MessageLoop 的简单线程抽象。消费者使用线程的 MessageLoop 使代码
+// 在线程上执行。当这个对象被销毁时，线程被终止。在线程的消息循环中排队的所有未决任务
+// 将在线程终止之前运行到完成。
 //
 // WARNING! SUBCLASSES MUST CALL Stop() IN THEIR DESTRUCTORS!  See ~Thread().
+// 警告！子类必须在其析构函数中调用 Stop()！ 请参阅 ~Thread()。
 //
 // After the thread is stopped, the destruction sequence is:
-//
+// 线程停止后，销毁顺序为：
 //  (1) Thread::CleanUp()
 //  (2) MessageLoop::~MessageLoop
 //  (3.b) CurrentThread::DestructionObserver::WillDestroyCurrentMessageLoop
@@ -51,6 +64,8 @@ class TimeDomain;
 // This API is not thread-safe: unless indicated otherwise its methods are only
 // valid from the owning sequence (which is the one from which Start() is
 // invoked -- should it differ from the one on which it was constructed).
+// 此 API 不是线程安全的：除非另有说明，否则它的方法仅在拥有序列中有效（这是调用
+// Start() 的序列——如果它与构造它的序列不同）。
 //
 // Sometimes it's useful to kick things off on the initial sequence (e.g.
 // construction, Start(), task_runner()), but to then hand the Thread over to a
@@ -59,6 +74,10 @@ class TimeDomain;
 // ownership. The caller is then responsible to ensure a happens-after
 // relationship between the DetachFromSequence() call and the next use of that
 // Thread object (including ~Thread()).
+// 有时在初始序列上开始（例如构造、Start()、task_runner()）很有用，但随后将线程移
+// 交给用户池，供最后一个用户在完成后销毁它。对于该用例，Thread::DetachFromSequence()
+// 允许拥有序列放弃所有权。 然后调用者负责确保 DetachFromSequence() 调用和该
+// Thread 对象的下一次使用（包括 ~Thread()）之间的发生后关系。
 class BASE_EXPORT Thread : PlatformThread::Delegate {
  public:
   class BASE_EXPORT Delegate {
@@ -70,6 +89,8 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     // Binds a RunLoop::Delegate and TaskRunnerHandle to the thread. The
     // underlying MessagePump will have its |timer_slack| set to the specified
     // amount.
+    // 将 RunLoop::Delegate 和 TaskRunnerHandle 绑定到线程。 底层 MessagePump
+    // 将有它的 |timer_slack| 设置为指定的数量。
     virtual void BindToCurrentThread(TimerSlack timer_slack) = 0;
   };
 
@@ -94,15 +115,16 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     // Specifies timer slack for thread message loop.
     TimerSlack timer_slack = TIMER_SLACK_NONE;
 
-    // The time domain to be used by the task queue. This is not compatible with
-    // a non-null |delegate|.
-    sequence_manager::TimeDomain* task_queue_time_domain = nullptr;
-
     // Used to create the MessagePump for the MessageLoop. The callback is Run()
     // on the thread. If message_pump_factory.is_null(), then a MessagePump
     // appropriate for |message_pump_type| is created. Setting this forces the
     // MessagePumpType to TYPE_CUSTOM. This is not compatible with a non-null
     // |delegate|.
+    // 用于为 MessageLoop 创建 MessagePump。回调是线程上的 Run()。如果
+    // message_pump_factory.is_null()，那么适合 |message_pump_type| 的
+    // MessagePump 被建造。设置此项会强制 MessagePumpType 为 TYPE_CUSTOM。
+    // 这与非空 |delegate| 不兼容。
+    // MessagePumpFactory的真实类型是std::unique_ptr<MessagePump>()
     MessagePumpFactory message_pump_factory;
 
     // Specifies the maximum stack size that the thread is allowed to use.
@@ -121,17 +143,22 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     // user-after-frees (proposal @ https://crbug.com/629139#c14)
     bool joinable = true;
 
-    bool IsValid() const { return !moved_from; }
+    bool IsValid() const {
+      return !moved_from;
+    }
 
    private:
-    // Set to true when the object is moved into another. Use to prevent reuse
-    // of a moved-from object.
+    // Set to true when the object is moved into another. Use to prevent
+    // reuse of a moved-from object.
     bool moved_from = false;
   };
 
   // Constructor.
   // name is a display string to identify the thread.
   explicit Thread(const std::string& name);
+
+  Thread(const Thread&) = delete;
+  Thread& operator=(const Thread&) = delete;
 
   // Destroys the thread, stopping it if necessary.
   //
@@ -339,8 +366,6 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
   // This class is not thread-safe, use this to verify access from the owning
   // sequence of the Thread.
   SequenceChecker owning_sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(Thread);
 };
 
 }  // namespace base

@@ -34,33 +34,17 @@ struct JsonSignedTreeHead {
 };
 
 bool ConvertSHA256RootHash(base::StringPiece s, std::string* result) {
-  if (!base::Base64Decode(s, result)) {
-    DVLOG(1) << "Failed decoding sha256_root_hash";
-    return false;
-  }
-
-  if (result->length() != kSthRootHashLength) {
-    DVLOG(1) << "sha256_root_hash is expected to be 32 bytes, but is "
-             << result->length() << " bytes.";
-    return false;
-  }
-
-  return true;
+  return base::Base64Decode(s, result) && result->size() == kSthRootHashLength;
 }
 
 bool ConvertTreeHeadSignature(base::StringPiece s, DigitallySigned* result) {
   std::string tree_head_signature;
   if (!base::Base64Decode(s, &tree_head_signature)) {
-    DVLOG(1) << "Failed decoding tree_head_signature";
     return false;
   }
 
   base::StringPiece sp(tree_head_signature);
-  if (!DecodeDigitallySigned(&sp, result)) {
-    DVLOG(1) << "Failed decoding signature to DigitallySigned";
-    return false;
-  }
-  return true;
+  return DecodeDigitallySigned(&sp, result);
 }
 
 void JsonSignedTreeHead::RegisterJSONConverter(
@@ -77,29 +61,8 @@ void JsonSignedTreeHead::RegisterJSONConverter(
 }
 
 bool IsJsonSTHStructurallyValid(const JsonSignedTreeHead& sth) {
-  if (sth.tree_size < 0) {
-    DVLOG(1) << "Tree size in Signed Tree Head JSON is negative: "
-             << sth.tree_size;
-    return false;
-  }
-
-  if (sth.timestamp < 0) {
-    DVLOG(1) << "Timestamp in Signed Tree Head JSON is negative: "
-             << sth.timestamp;
-    return false;
-  }
-
-  if (sth.sha256_root_hash.empty()) {
-    DVLOG(1) << "Missing SHA256 root hash from Signed Tree Head JSON.";
-    return false;
-  }
-
-  if (sth.signature.signature_data.empty()) {
-    DVLOG(1) << "Missing signature from Signed Tree Head JSON.";
-    return false;
-  }
-
-  return true;
+  return sth.tree_size >= 0 && sth.timestamp >= 0 &&
+         !sth.sha256_root_hash.empty() && !sth.signature.signature_data.empty();
 }
 
 // Structure for making JSON decoding easier. The string fields
@@ -112,14 +75,8 @@ struct JsonConsistencyProof {
 };
 
 bool ConvertIndividualProofNode(const base::Value* value, std::string* result) {
-  std::string b64_encoded_node;
-  if (!value->GetAsString(&b64_encoded_node))
-    return false;
-
-  if (!ConvertSHA256RootHash(b64_encoded_node, result))
-    return false;
-
-  return true;
+  const std::string* b64_encoded_node = value->GetIfString();
+  return b64_encoded_node && ConvertSHA256RootHash(*b64_encoded_node, result);
 }
 
 void JsonConsistencyProof::RegisterJSONConverter(
@@ -135,13 +92,10 @@ bool FillSignedTreeHead(const base::Value& json_signed_tree_head,
                         SignedTreeHead* signed_tree_head) {
   JsonSignedTreeHead parsed_sth;
   base::JSONValueConverter<JsonSignedTreeHead> converter;
-  if (!converter.Convert(json_signed_tree_head, &parsed_sth)) {
-    DVLOG(1) << "Invalid Signed Tree Head JSON.";
+  if (!converter.Convert(json_signed_tree_head, &parsed_sth) ||
+      !IsJsonSTHStructurallyValid(parsed_sth)) {
     return false;
   }
-
-  if (!IsJsonSTHStructurallyValid(parsed_sth))
-    return false;
 
   signed_tree_head->version = SignedTreeHead::V1;
   signed_tree_head->tree_size = parsed_sth.tree_size;
@@ -158,14 +112,12 @@ bool FillConsistencyProof(const base::Value& json_consistency_proof,
   JsonConsistencyProof parsed_proof;
   base::JSONValueConverter<JsonConsistencyProof> converter;
   if (!converter.Convert(json_consistency_proof, &parsed_proof)) {
-    DVLOG(1) << "Invalid consistency proof.";
     return false;
   }
 
   const base::DictionaryValue* dict_value = nullptr;
   if (!json_consistency_proof.GetAsDictionary(&dict_value) ||
-      !dict_value->HasKey("consistency")) {
-    DVLOG(1) << "Missing consistency field.";
+      !dict_value->FindKey("consistency")) {
     return false;
   }
 

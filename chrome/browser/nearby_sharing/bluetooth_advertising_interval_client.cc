@@ -13,14 +13,12 @@
 
 namespace {
 
-constexpr base::TimeDelta kIntervalMin = base::TimeDelta::FromMilliseconds(100);
-constexpr base::TimeDelta kIntervalMax = base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kIntervalMin = base::Milliseconds(100);
+constexpr base::TimeDelta kIntervalMax = base::Milliseconds(100);
 
 // A value of 0 will restore the interval to the system default.
-constexpr base::TimeDelta kDefaultIntervalMin =
-    base::TimeDelta::FromMilliseconds(0);
-constexpr base::TimeDelta kDefaultIntervalMax =
-    base::TimeDelta::FromMilliseconds(0);
+constexpr base::TimeDelta kDefaultIntervalMin = base::Milliseconds(0);
+constexpr base::TimeDelta kDefaultIntervalMax = base::Milliseconds(0);
 
 }  // namespace
 

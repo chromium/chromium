@@ -107,6 +107,7 @@
             <EditText
                 tools:ignore="Autofill"
                 android:id="@+id/card_unmask_input"
+                android:importantForAutofill="no"
                 android:inputType="number"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"

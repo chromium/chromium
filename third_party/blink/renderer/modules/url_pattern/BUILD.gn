@@ -31,5 +31,6 @@ if (use_libfuzzer) {
       "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     ]
     seed_corpus = "fuzzer_seed_corpus"
+    libfuzzer_options = [ "max_len=4096" ]
   }
 }

@@ -10,18 +10,21 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
+#include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 
 namespace blink {
 
-class LayoutSVGRootTest : public RenderingTest {
+class LayoutSVGRootTest : public RenderingTest, public PaintTestConfigurations {
   void SetUp() override {
     EnableCompositing();
     RenderingTest::SetUp();
   }
 };
 
-TEST_F(LayoutSVGRootTest, VisualRectMappingWithoutViewportClipWithBorder) {
+INSTANTIATE_PAINT_TEST_SUITE_P(LayoutSVGRootTest);
+
+TEST_P(LayoutSVGRootTest, VisualRectMappingWithoutViewportClipWithBorder) {
   SetBodyInnerHTML(R"HTML(
     <svg id='root' style='border: 10px solid red; width: 200px; height:
     100px; overflow: visible' viewBox='0 0 200 100'>
@@ -47,7 +50,7 @@ TEST_F(LayoutSVGRootTest, VisualRectMappingWithoutViewportClipWithBorder) {
   EXPECT_EQ(PhysicalRect(0, 0, 220, 120), root_visual_rect);
 }
 
-TEST_F(LayoutSVGRootTest, VisualOverflowExpandsLayer) {
+TEST_P(LayoutSVGRootTest, VisualOverflowExpandsLayer) {
   SetBodyInnerHTML(R"HTML(
     <svg id='root' style='width: 100px; will-change: transform; height:
     100px; overflow: visible; position: absolute;'>
@@ -55,20 +58,17 @@ TEST_F(LayoutSVGRootTest, VisualOverflowExpandsLayer) {
     </svg>
   )HTML");
 
-  const auto& root = *To<LayoutSVGRoot>(GetLayoutObjectByElementId("root"));
-  auto* paint_layer = root.Layer();
-  ASSERT_TRUE(paint_layer);
-  auto* graphics_layer = paint_layer->GraphicsLayerBacking(&root);
-  ASSERT_TRUE(graphics_layer);
-  EXPECT_EQ(graphics_layer->Size(), gfx::Size(100, 100));
+  auto* layer =
+      CcLayersByDOMElementId(GetDocument().View()->RootCcLayer(), "root")[0];
+  EXPECT_EQ(gfx::Size(100, 100), layer->bounds());
 
   GetDocument().getElementById("rect")->setAttribute("height", "200");
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(graphics_layer->Size(), gfx::Size(100, 200));
+  EXPECT_EQ(gfx::Size(100, 200), layer->bounds());
 }
 
-TEST_F(LayoutSVGRootTest, VisualRectMappingWithViewportClipAndBorder) {
+TEST_P(LayoutSVGRootTest, VisualRectMappingWithViewportClipAndBorder) {
   SetBodyInnerHTML(R"HTML(
     <svg id='root' style='border: 10px solid red; width: 200px; height:
     100px; overflow: hidden' viewBox='0 0 200 100'>
@@ -94,7 +94,7 @@ TEST_F(LayoutSVGRootTest, VisualRectMappingWithViewportClipAndBorder) {
   EXPECT_EQ(PhysicalRect(0, 0, 220, 120), root_visual_rect);
 }
 
-TEST_F(LayoutSVGRootTest, RectBasedHitTestPartialOverlap) {
+TEST_P(LayoutSVGRootTest, RectBasedHitTestPartialOverlap) {
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0 }</style>
     <svg id='svg' style='width: 300px; height: 300px; position: relative;
@@ -127,7 +127,7 @@ TEST_F(LayoutSVGRootTest, RectBasedHitTestPartialOverlap) {
 // CompositeSVG to SVG subtrees. This PaintLayer will not be needed with
 // CompositeAfterPaint. If compositing is needed for descendants, the paint
 // layer should be self-painting. Otherwise, it should be non-self-painting.
-TEST_F(LayoutSVGRootTest, PaintLayerType) {
+TEST_P(LayoutSVGRootTest, PaintLayerType) {
   SetBodyInnerHTML(R"HTML(
     <svg id="root" style="width: 200px; height: 200px;">
       <rect id="rect" width="100" height="100" fill="green"/>
@@ -142,7 +142,10 @@ TEST_F(LayoutSVGRootTest, PaintLayerType) {
                                                      "will-change: transform");
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(root.Layer());
-  EXPECT_TRUE(root.Layer()->IsSelfPaintingLayer());
+  // In pre-CAP we force the SVG root to be self-painting layer to ensure
+  // correct compositing of descendants, which is not needed in CAP.
+  EXPECT_EQ(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled(),
+            root.Layer()->IsSelfPaintingLayer());
 
   GetDocument().getElementById("rect")->removeAttribute("style");
   UpdateAllLifecyclePhasesForTest();
@@ -150,7 +153,11 @@ TEST_F(LayoutSVGRootTest, PaintLayerType) {
   EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());
 }
 
-TEST_F(LayoutSVGRootTest, HasDescendantCompositingReasons) {
+TEST_P(LayoutSVGRootTest, HasDescendantCompositingReasons) {
+  // The tested code is not used in CompositeAfterPaint.
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <svg id="root" style="width: 200px; height: 200px;">
       <rect id="rect" width="100" height="100" fill="green"/>
@@ -205,7 +212,11 @@ TEST_F(LayoutSVGRootTest, HasDescendantCompositingReasons) {
   EXPECT_FALSE(root.HasDescendantCompositingReasons());
 }
 
-TEST_F(LayoutSVGRootTest, CompositedSVGMetric) {
+TEST_P(LayoutSVGRootTest, CompositedSVGMetric) {
+  // The tested code is not used in CompositeAfterPaint.
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .anim { animation: anim 5s infinite; }

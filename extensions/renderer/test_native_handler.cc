@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "extensions/renderer/wake_event_page.h"
+#include "v8/include/v8-function.h"
 
 namespace extensions {
 

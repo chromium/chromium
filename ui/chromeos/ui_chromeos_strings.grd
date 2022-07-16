@@ -349,6 +349,51 @@
       <message name="IDS_LOGIN_DEFAULT_USER_DESC_82" desc="Tooltip shown when the 'watermelon' avatar is hovered in the 'Choose device account image' section of the settings page. A watermelon is a large fruit of a plant of the gourd family, with smooth green skin, red pulp, and watery juice. Popular fruit in summer.">
         Watermelon
       </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_83" desc="Description of the default user icon with a picture of a person watering plants">
+        Person watering plants
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_84" desc="Description of the default user icon with a picture of a person daydreaming">
+        Person daydreaming
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_85" desc="Description of the default user icon with a picture of a person with flowers">
+        Person with flowers
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_86" desc="Description of the default user icon with a picture of a person with cats">
+        Person with cats
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_87" desc="Description of the default user icon with a picture of an artist">
+        Artist
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_88" desc="Description of the default user icon with a picture of a person doing tai chi">
+        Person doing tai chi
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_89" desc="Description of the default user icon with a picture of a person signing thank you">
+        Signing thank you
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_90" desc="Description of the default user icon with a picture of a person with coffee">
+        Person with coffee
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_91" desc="Description of the default user icon with a picture of a dog wagging tail">
+        Dog wagging tail
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_92" desc="Description of the default user icon with a picture of a nurse">
+        Nurse
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_93" desc="Description of the default user icon with a picture of a gamer">
+        Gamer
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_94" desc="Description of the default user icon with a picture of a bookworm">
+        Bookworm
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_95" desc="Description of the default user icon with a picture of a person biking">
+        Biking
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_96" desc="Description of the default user icon with a picture of a person in snow">
+        Person in snow
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_97" desc="Description of the default user icon with a picture of a person with megaphone">
+        Person with megaphone
+      </message>
 
 
       <!-- Attribution strings for stock user images, not translateable. -->
@@ -963,6 +1008,9 @@
       <message name="IDS_IME_NAME_KEYBOARD_UK" desc="Input method name, shown in system tray menu, settings page, etc. following this template: “|language| (|variant|) |IME| with |layout| keyboard” which means “an input method that supports typing in the |variant| of |language|, using |IME| and a keyboard with |layout|. When a part in this template is unambiguous, it’s dropped for brevity. Translations should strive for similar consistency in structure among input method names. Note: On Chrome OS, an “input method” is a suite of all input functionalities. |IME| in the template refers to an optional aspect of an “input method” on Chrome OS, i.e. sophisticated transforms into text in |language| when using a keyboard layout not designed for |language|." meaning="Input method name">
         English (UK)
       </message>
+      <message name="IDS_IME_NAME_KEYBOARD_ENGLISH_SOUTH_AFRICA" desc="Input method name, shown in system tray menu, settings page, etc. following this template: “|language| (|variant|) |IME| with |layout| keyboard” which means “an input method that supports typing in the |variant| of |language|, using |IME| and a keyboard with |layout|. When a part in this template is unambiguous, it’s dropped for brevity. Translations should strive for similar consistency in structure among input method names. Note: On Chrome OS, an “input method” is a suite of all input functionalities. |IME| in the template refers to an optional aspect of an “input method” on Chrome OS, i.e. sophisticated transforms into text in |language| when using a keyboard layout not designed for |language|." meaning="Input method name">
+        English (South Africa)
+      </message>
       <message name="IDS_IME_NAME_KEYBOARD_UKRAINIAN" desc="Input method name, shown in system tray menu, settings page, etc. following this template: “|language| (|variant|) |IME| with |layout| keyboard” which means “an input method that supports typing in the |variant| of |language|, using |IME| and a keyboard with |layout|. When a part in this template is unambiguous, it’s dropped for brevity. Translations should strive for similar consistency in structure among input method names. Note: On Chrome OS, an “input method” is a suite of all input functionalities. |IME| in the template refers to an optional aspect of an “input method” on Chrome OS, i.e. sophisticated transforms into text in |language| when using a keyboard layout not designed for |language|." meaning="Input method name">
         Ukrainian
       </message>
@@ -1297,9 +1345,6 @@
       <message name="IDS_NETWORK_LIST_INITIALIZING" desc="Text in the network list element when a Cellular network is initiailizing.">
         Initializing...
       </message>
-      <message name="IDS_NETWORK_LIST_NOT_AVAILABLE" desc="Text in the network list element when a network is not available to be selected but is still present in the list (e.g., if cellular activation is not allowed in the current context, this message is displayed next to unactivated cellular networks).">
-        Not available
-      </message>
       <message name="IDS_NETWORK_LIST_UPDATED_CELLULAR_SIM_CARD_LOCKED" desc="Text in the network list element when a Cellular network's SIM card is locked. Used when updated cellular activation flag in on.">
         Locked
       </message>
@@ -1407,6 +1452,12 @@
       </message>
       <message name="IDS_NETWORK_LIST_ITEM_ACTIVATING" desc="Loading text indicating that the SIM network is currently being set up so that the user can connect to it to access the Internet.">
         Activating...
+      </message>
+      <message name="IDS_NETWORK_LIST_ITEM_CELLULAR_BLOCKED_A11Y_LABEL" desc="A11y label for a cellular network in a list in settings and oobe that is blocked by the administrator. Clicking the network navigates to the details page.">
+        Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$4<ex>80</ex></ph>%, Blocked by your Administrator, Details
+      </message>
+      <message name="IDS_NETWORK_LIST_ITEM_CELLULAR_BLOCKED_WITH_CONNECTION_STATUS_A11Y_LABEL" desc="A11y label for a cellular network in a list in settings and oobe that is blocked by the administrator. Includes connection status. Clicking the network navigates to the details page.">
+        Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, <ph name="CONNECTION_STATUS">$4<ex>Connecting...</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$5<ex>80</ex></ph>%, Blocked by your Administrator, Details
       </message>
       <message name="IDS_NETWORK_LIST_ITEM_UNAVAILABLE_SIM_NETWORK" desc="Text for label displayed for SIM networks that are not available to be setup.">
         Not activated. Contact your carrier.
@@ -1724,6 +1775,12 @@
       </message>
       <message name="IDS_NETWORK_ERROR_UNKNOWN" desc="Network error message shown for an unknown or unexpected network configuration error">
         Error configuring network
+      </message>
+      <message name="IDS_NETWORK_INVALID_DSM_VALUE" desc="Network error message shown when the Domain Suffix Match list configured for an EAP network contains a value with non-RFC characters or an empty value">
+        Invalid domain suffix match value
+      </message>
+      <message name="IDS_NETWORK_INVALID_SAN_ENTRY" desc="Network error message shown when the Subject Alternative Name Match list configured for an EAP network contains a malformed entry">
+        Invalid subject alternative name match entry
       </message>
 
       <!-- Settings strings -->

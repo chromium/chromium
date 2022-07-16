@@ -186,6 +186,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   ExternalInstallOptions options(GURL(), DisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalDefault);
   options.require_manifest = true;
+  options.force_reinstall = false;
 
   if (app_config.type() != base::Value::Type::DICTIONARY) {
     return base::StrCat(

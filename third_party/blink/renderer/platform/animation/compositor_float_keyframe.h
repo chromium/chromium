@@ -22,7 +22,7 @@ class PLATFORM_EXPORT CompositorFloatKeyframe : public CompositorKeyframe {
   ~CompositorFloatKeyframe() override;
 
   // CompositorKeyframe implementation.
-  double Time() const override;
+  base::TimeDelta Time() const override;
   const gfx::TimingFunction* CcTimingFunction() const override;
 
   float Value() { return float_keyframe_->Value(); }

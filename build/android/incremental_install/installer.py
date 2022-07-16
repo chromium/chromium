@@ -228,7 +228,11 @@ def Install(device, install_json, apk=None, enable_device_cache=False,
     do_push_dex()
 
   def check_device_configured():
-    target_sdk_version = int(apk.GetTargetSdkVersion())
+    if apk.GetTargetSdkVersion().isalpha():
+      # Assume pre-release SDK is always really new.
+      target_sdk_version = 99
+    else:
+      target_sdk_version = int(apk.GetTargetSdkVersion())
     # Beta Q builds apply allowlist to targetSdk=28 as well.
     if target_sdk_version >= 28 and device.build_version_sdk >= 28:
       # In P, there are two settings:

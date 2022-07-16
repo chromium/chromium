@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/value_validation/onc_user_policy_value_validator.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -32,8 +32,7 @@ DeviceLocalAccountPolicyStore::DeviceLocalAccountPolicyStore(
     ash::DeviceSettingsService* device_settings_service,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : UserCloudPolicyStoreBase(background_task_runner,
-                               PolicyScope::POLICY_SCOPE_USER,
-                               PolicySource::POLICY_SOURCE_CLOUD),
+                               PolicyScope::POLICY_SCOPE_USER),
       account_id_(account_id),
       session_manager_client_(session_manager_client),
       device_settings_service_(device_settings_service) {}
@@ -126,19 +125,26 @@ void DeviceLocalAccountPolicyStore::ValidateLoadedPolicyBlob(
 void DeviceLocalAccountPolicyStore::UpdatePolicy(
     const std::string& signature_validation_public_key,
     UserCloudPolicyValidator* validator) {
-  DCHECK(!signature_validation_public_key.empty());
+  // Validator is not created when device ownership is not set up yet. Do not
+  // propagate the error in such case since it is recoverable.
+  if (!validator) {
+    status_ = CloudPolicyStore::STATUS_BAD_STATE;
+    NotifyStoreLoaded();
+    return;
+  }
 
+  DCHECK(!signature_validation_public_key.empty());
   validation_result_ = validator->GetValidationResult();
+
   if (!validator->success()) {
     status_ = STATUS_VALIDATION_ERROR;
     NotifyStoreError();
     return;
   }
 
-  policy_fetch_response_ = std::move(validator->policy());
-  InstallPolicy(std::move(validator->policy_data()),
-                std::move(validator->payload()),
-                signature_validation_public_key);
+  InstallPolicy(
+      std::move(validator->policy()), std::move(validator->policy_data()),
+      std::move(validator->payload()), signature_validation_public_key);
   status_ = STATUS_OK;
   NotifyStoreLoaded();
 }
@@ -146,6 +152,14 @@ void DeviceLocalAccountPolicyStore::UpdatePolicy(
 void DeviceLocalAccountPolicyStore::OnPolicyToStoreValidated(
     const std::string& signature_validation_public_key_unused,
     UserCloudPolicyValidator* validator) {
+  // Validator is not created when device ownership is not set up yet. Do not
+  // propagate the error in such case since it is recoverable.
+  if (!validator) {
+    status_ = CloudPolicyStore::STATUS_BAD_STATE;
+    NotifyStoreLoaded();
+    return;
+  }
+
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
     status_ = STATUS_VALIDATION_ERROR;
@@ -211,8 +225,8 @@ void DeviceLocalAccountPolicyStore::Validate(
     LOG(ERROR) << "Failed policy validation, key: " << (key.get() != nullptr)
                << ", is_loaded: " << (key.get() ? key->is_loaded() : false)
                << ", device_policy_data: " << (device_policy_data != nullptr);
-    status_ = CloudPolicyStore::STATUS_BAD_STATE;
-    NotifyStoreLoaded();
+    std::move(callback).Run(/*signature_validation_public_key=*/std::string(),
+                            /*validator=*/nullptr);
     return;
   }
 
@@ -248,8 +262,9 @@ void DeviceLocalAccountPolicyStore::Validate(
         base::BindOnce(std::move(callback), key->as_string()));
   } else {
     validator->RunValidation();
-
-    UpdatePolicy(key->as_string(), validator.get());
+    std::move(callback).Run(
+        /*signature_validation_public_key=*/key->as_string(),
+        /*validator=*/validator.get());
   }
 }
 

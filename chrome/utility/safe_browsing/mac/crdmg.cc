@@ -17,7 +17,6 @@
 
 #include "base/files/file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,6 +39,10 @@ namespace {
 class SafeDMG {
  public:
   SafeDMG();
+
+  SafeDMG(const SafeDMG&) = delete;
+  SafeDMG& operator=(const SafeDMG&) = delete;
+
   ~SafeDMG();
 
   int Main(int argc, const char* argv[]);
@@ -60,8 +63,6 @@ class SafeDMG {
   // If this is running an unpack, rather than just a list operation, this is
   // a directory FD under which all the contents are written.
   base::ScopedFD unpack_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeDMG);
 };
 
 SafeDMG::SafeDMG() : dmg_file_(), unpack_dir_() {}

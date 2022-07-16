@@ -73,7 +73,7 @@ bool GetAs(const base::Value& in, std::vector<std::u16string>* out) {
   const base::ListValue* list = NULL;
   if (!in.GetAsList(&list))
     return false;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     std::u16string element;
     if (!list->GetString(i, &element)) {
       out->clear();

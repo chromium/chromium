@@ -45,17 +45,23 @@ class NetworkingPrivateDelegate : public KeyedService {
   class UIDelegate {
    public:
     UIDelegate();
+
+    UIDelegate(const UIDelegate&) = delete;
+    UIDelegate& operator=(const UIDelegate&) = delete;
+
     virtual ~UIDelegate();
 
     // Navigate to the acoount details page for the cellular network associated
     // with |guid|.
     virtual void ShowAccountDetails(const std::string& guid) const = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(UIDelegate);
   };
 
   NetworkingPrivateDelegate();
+
+  NetworkingPrivateDelegate(const NetworkingPrivateDelegate&) = delete;
+  NetworkingPrivateDelegate& operator=(const NetworkingPrivateDelegate&) =
+      delete;
+
   ~NetworkingPrivateDelegate() override;
 
   void set_ui_delegate(std::unique_ptr<UIDelegate> ui_delegate) {
@@ -159,8 +165,6 @@ class NetworkingPrivateDelegate : public KeyedService {
  private:
   // Interface for UI methods. May be null.
   std::unique_ptr<UIDelegate> ui_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateDelegate);
 };
 
 }  // namespace extensions

@@ -16,7 +16,8 @@
 #include "content/services/auction_worklet/auction_downloader.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "url/gurl.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-forward.h"
 
 namespace auction_worklet {
 
@@ -48,9 +49,11 @@ WorkletLoader::WorkletLoader(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& script_source_url,
     scoped_refptr<AuctionV8Helper> v8_helper,
+    int debug_context_group_id,
     LoadWorkletCallback load_worklet_callback)
     : script_source_url_(script_source_url),
       v8_helper_(v8_helper),
+      debug_context_group_id_(debug_context_group_id),
       load_worklet_callback_(std::move(load_worklet_callback)) {
   DCHECK(load_worklet_callback_);
 
@@ -69,17 +72,19 @@ void WorkletLoader::OnDownloadComplete(std::unique_ptr<std::string> body,
 
   auction_downloader_.reset();
   v8_helper_->v8_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&WorkletLoader::HandleDownloadResultOnV8Thread,
-                                script_source_url_, v8_helper_, std::move(body),
-                                std::move(error_msg),
-                                base::SequencedTaskRunnerHandle::Get(),
-                                weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&WorkletLoader::HandleDownloadResultOnV8Thread,
+                     script_source_url_, v8_helper_, debug_context_group_id_,
+                     std::move(body), std::move(error_msg),
+                     base::SequencedTaskRunnerHandle::Get(),
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 // static
 void WorkletLoader::HandleDownloadResultOnV8Thread(
     GURL script_source_url,
     scoped_refptr<AuctionV8Helper> v8_helper,
+    int debug_context_group_id,
     std::unique_ptr<std::string> body,
     absl::optional<std::string> error_msg,
     scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
@@ -100,7 +105,8 @@ void WorkletLoader::HandleDownloadResultOnV8Thread(
   v8::Context::Scope context_scope(v8_helper->scratch_context());
 
   v8::Local<v8::UnboundScript> local_script;
-  if (v8_helper->Compile(*body, script_source_url, error_msg)
+  if (v8_helper
+          ->Compile(*body, script_source_url, debug_context_group_id, error_msg)
           .ToLocal(&local_script)) {
     global_script = Result(v8_helper, v8::Global<v8::UnboundScript>(
                                           v8_helper->isolate(), local_script));

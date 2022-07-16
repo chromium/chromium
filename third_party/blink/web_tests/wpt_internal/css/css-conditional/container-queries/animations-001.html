@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<title>Container Queries - Animating container size</title>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/6398">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  @keyframes anim {
+    from { width: 200px; }
+    to { width: 100px; }
+  }
+  #container {
+    container-type: inline-size;
+    animation: anim 1s linear paused;
+  }
+  #target {
+    background-color: green;
+  }
+
+  @container (width: 200px) {
+    #target {
+      background-color: blue;
+    }
+  }
+</style>
+<div id=container>
+  <div id=target>
+    Test
+  </div>
+</div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(target).backgroundColor, 'rgb(0, 0, 255)');
+
+    assert_equals(container.getAnimations().length, 1);
+    let animation = container.getAnimations()[0];
+    animation.currentTime = 500;
+
+    assert_equals(getComputedStyle(target).backgroundColor, 'rgb(0, 128, 0)');
+  }, 'Animation effects container query evaluation');
+</script>

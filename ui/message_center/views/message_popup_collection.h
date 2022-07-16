@@ -11,8 +11,11 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/message_center_observer.h"
+#include "ui/message_center/notification_view_controller.h"
+#include "ui/message_center/views/message_view.h"
 #include "ui/views/widget/widget.h"
 
 namespace base {
@@ -37,9 +40,13 @@ class PopupAlignmentDelegate;
 // screen. Manages animation state and updates these popup widgets.
 class MESSAGE_CENTER_EXPORT MessagePopupCollection
     : public MessageCenterObserver,
+      public NotificationViewController,
       public gfx::AnimationDelegate {
  public:
   MessagePopupCollection();
+  MessagePopupCollection(const MessagePopupCollection& other) = delete;
+  MessagePopupCollection& operator=(const MessagePopupCollection& other) =
+      delete;
   ~MessagePopupCollection() override;
 
   // Update popups based on current |state_|.
@@ -54,6 +61,16 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
 
   // Notify the popup is closed. Called from MessagePopupView.
   virtual void NotifyPopupClosed(MessagePopupView* popup);
+
+  // NotificationViewController:
+  MessageView* GetMessageViewForNotificationId(
+      const std::string& notification_id) override;
+  void ConvertNotificationViewToGroupedNotificationView(
+      const std::string& ungrouped_notification_id,
+      const std::string& new_grouped_notification_id) override;
+  void ConvertGroupedNotificationViewToNotificationView(
+      const std::string& grouped_notification_id,
+      const std::string& new_single_notification_id) override;
 
   // MessageCenterObserver:
   void OnNotificationAdded(const std::string& notification_id) override;
@@ -130,8 +147,11 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   virtual void AnimationStarted() {}
   virtual void AnimationFinished() {}
 
-  // virtual for testing.
+  // TODO(crbug/1241602): std::unique_ptr can be used here and multiple other
+  // places.
   virtual MessagePopupView* CreatePopup(const Notification& notification);
+
+  // virtual for testing.
   virtual void RestartPopupTimers();
   virtual void PausePopupTimers();
 
@@ -213,8 +233,6 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // HasAddedPopup() return true by the lack of work area to show popup.
   bool AddPopup();
 
-  bool AddInExistingGroup(Notification* notification);
-
   // Mark |is_animating| flag of removed popup to true for FADE_OUT animation.
   void MarkRemovedPopup();
 
@@ -258,8 +276,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
 
   // Return true if any popup is hovered by mouse.
   bool IsAnyPopupHovered() const;
-  // Return true if any popup is activated.
-  bool IsAnyPopupActive() const;
+  // Return true if any popup is focused.
+  bool IsAnyPopupFocused() const;
 
   // Returns the popup which is visually |index_from_top|-th from the top.
   // When |inverse_| is false, it's same as popup_items_[i].
@@ -322,9 +340,10 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   //   * a notification comes out: FADE_OUT
   bool inverse_ = false;
 
-  base::WeakPtrFactory<MessagePopupCollection> weak_ptr_factory_{this};
+  base::ScopedObservation<MessageCenter, MessageCenterObserver>
+      message_center_observation_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(MessagePopupCollection);
+  base::WeakPtrFactory<MessagePopupCollection> weak_ptr_factory_{this};
 };
 
 }  // namespace message_center

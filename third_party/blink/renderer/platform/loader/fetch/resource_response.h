@@ -33,6 +33,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
+#include "net/ssl/ssl_info.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
@@ -45,13 +46,11 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class ResourceLoadTiming;
-struct ResourceLoadInfo;
 
 // A ResourceResponse is a "response" object used in blink. Conceptually
 // it is https://fetch.spec.whatwg.org/#concept-response, but it contains
@@ -75,91 +74,6 @@ class PLATFORM_EXPORT ResourceResponse final {
     kCTPolicyComplianceDetailsNotAvailable,
     kCTPolicyComplies,
     kCTPolicyDoesNotComply
-  };
-
-  class PLATFORM_EXPORT SignedCertificateTimestamp final {
-    DISALLOW_NEW();
-
-   public:
-    SignedCertificateTimestamp(String status,
-                               String origin,
-                               String log_description,
-                               String log_id,
-                               int64_t timestamp,
-                               String hash_algorithm,
-                               String signature_algorithm,
-                               String signature_data)
-        : status_(status),
-          origin_(origin),
-          log_description_(log_description),
-          log_id_(log_id),
-          timestamp_(timestamp),
-          hash_algorithm_(hash_algorithm),
-          signature_algorithm_(signature_algorithm),
-          signature_data_(signature_data) {}
-    explicit SignedCertificateTimestamp(
-        const struct blink::WebURLResponse::SignedCertificateTimestamp&);
-    SignedCertificateTimestamp IsolatedCopy() const;
-
-    String status_;
-    String origin_;
-    String log_description_;
-    String log_id_;
-    int64_t timestamp_;
-    String hash_algorithm_;
-    String signature_algorithm_;
-    String signature_data_;
-  };
-
-  using SignedCertificateTimestampList =
-      WTF::Vector<SignedCertificateTimestamp>;
-
-  struct SecurityDetails {
-    DISALLOW_NEW();
-    SecurityDetails(const String& protocol,
-                    const String& key_exchange,
-                    const String& key_exchange_group,
-                    const String& cipher,
-                    const String& mac,
-                    const String& subject_name,
-                    const Vector<String>& san_list,
-                    const String& issuer,
-                    time_t valid_from,
-                    time_t valid_to,
-                    const Vector<AtomicString>& certificate,
-                    const SignedCertificateTimestampList& sct_list)
-        : protocol(protocol),
-          key_exchange(key_exchange),
-          key_exchange_group(key_exchange_group),
-          cipher(cipher),
-          mac(mac),
-          subject_name(subject_name),
-          san_list(san_list),
-          issuer(issuer),
-          valid_from(valid_from),
-          valid_to(valid_to),
-          certificate(certificate),
-          sct_list(sct_list) {}
-    // All strings are human-readable values.
-    String protocol;
-    // keyExchange is the empty string if not applicable for the connection's
-    // protocol.
-    String key_exchange;
-    // keyExchangeGroup is the empty string if not applicable for the
-    // connection's key exchange.
-    String key_exchange_group;
-    String cipher;
-    // mac is the empty string when the connection cipher suite does not
-    // have a separate MAC value (i.e. if the cipher suite is AEAD).
-    String mac;
-    String subject_name;
-    Vector<String> san_list;
-    String issuer;
-    time_t valid_from;
-    time_t valid_to;
-    // DER-encoded X509Certificate certificate chain.
-    Vector<AtomicString> certificate;
-    SignedCertificateTimestampList sct_list;
   };
 
   ResourceResponse();
@@ -269,9 +183,6 @@ class PLATFORM_EXPORT ResourceResponse final {
   ResourceLoadTiming* GetResourceLoadTiming() const;
   void SetResourceLoadTiming(scoped_refptr<ResourceLoadTiming>);
 
-  scoped_refptr<ResourceLoadInfo> GetResourceLoadInfo() const;
-  void SetResourceLoadInfo(scoped_refptr<ResourceLoadInfo>);
-
   HTTPVersion HttpVersion() const { return http_version_; }
   void SetHttpVersion(HTTPVersion version) { http_version_ = version; }
 
@@ -304,32 +215,16 @@ class PLATFORM_EXPORT ResourceResponse final {
     security_style_ = security_style;
   }
 
-  const absl::optional<SecurityDetails>& GetSecurityDetails() const {
-    return security_details_;
-  }
-  void SetSecurityDetails(const String& protocol,
-                          const String& key_exchange,
-                          const String& key_exchange_group,
-                          const String& cipher,
-                          const String& mac,
-                          const String& subject_name,
-                          const Vector<String>& san_list,
-                          const String& issuer,
-                          time_t valid_from,
-                          time_t valid_to,
-                          const Vector<AtomicString>& certificate,
-                          const SignedCertificateTimestampList& sct_list);
-
-  int64_t AppCacheID() const { return app_cache_id_; }
-  void SetAppCacheID(int64_t id) { app_cache_id_ = id; }
-
-  const KURL& AppCacheManifestURL() const { return app_cache_manifest_url_; }
-  void SetAppCacheManifestURL(const KURL& url) {
-    app_cache_manifest_url_ = url;
-  }
+  const absl::optional<net::SSLInfo>& GetSSLInfo() const { return ssl_info_; }
+  void SetSSLInfo(const net::SSLInfo& ssl_info);
 
   const KURL& WebBundleURL() const { return web_bundle_url_; }
   void SetWebBundleURL(const KURL& url) { web_bundle_url_ = url; }
+
+  bool EmittedExtraInfo() const { return emitted_extra_info_; }
+  void SetEmittedExtraInfo(bool emitted_extra_info) {
+    emitted_extra_info_ = emitted_extra_info;
+  }
 
   bool WasFetchedViaSPDY() const { return was_fetched_via_spdy_; }
   void SetWasFetchedViaSPDY(bool value) { was_fetched_via_spdy_ = value; }
@@ -660,10 +555,9 @@ class PLATFORM_EXPORT ResourceResponse final {
   SecurityStyle security_style_ = SecurityStyle::kUnknown;
 
   // Security details of this request's connection.
-  absl::optional<SecurityDetails> security_details_;
+  absl::optional<net::SSLInfo> ssl_info_;
 
   scoped_refptr<ResourceLoadTiming> resource_load_timing_;
-  scoped_refptr<ResourceLoadInfo> resource_load_info_;
 
   mutable CacheControlHeader cache_control_header_;
 
@@ -671,14 +565,6 @@ class PLATFORM_EXPORT ResourceResponse final {
   mutable absl::optional<base::Time> date_;
   mutable absl::optional<base::Time> expires_;
   mutable absl::optional<base::Time> last_modified_;
-
-  // The id of the appcache this response was retrieved from, or zero if
-  // the response was not retrieved from an appcache.
-  int64_t app_cache_id_ = 0;
-
-  // The manifest url of the appcache this response was retrieved from, if any.
-  // Note: only valid for main resource responses.
-  KURL app_cache_manifest_url_;
 
   // The URL list of the response which was fetched by the ServiceWorker.
   // This is empty if the response was created inside the ServiceWorker.
@@ -728,6 +614,8 @@ class PLATFORM_EXPORT ResourceResponse final {
   KURL web_bundle_url_;
 
   absl::optional<net::AuthChallengeInfo> auth_challenge_info_;
+
+  bool emitted_extra_info_ = false;
 };
 
 }  // namespace blink

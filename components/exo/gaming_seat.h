@@ -8,10 +8,9 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/exo/gamepad.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/client/focus_change_observer.h"
@@ -29,6 +28,9 @@ class GamingSeat : public aura::client::FocusChangeObserver,
  public:
   // This class will monitor gamepad connection changes and manage gamepads.
   GamingSeat(GamingSeatDelegate* gaming_seat_delegate);
+
+  GamingSeat(const GamingSeat&) = delete;
+  GamingSeat& operator=(const GamingSeat&) = delete;
 
   ~GamingSeat() override;
 
@@ -50,8 +52,6 @@ class GamingSeat : public aura::client::FocusChangeObserver,
   // The flag if a valid target for gaming seat is focused. In other words, if
   // it's true, this class is observing gamepad events.
   bool focused_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GamingSeat);
 };
 
 }  // namespace exo

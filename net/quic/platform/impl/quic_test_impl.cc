@@ -7,18 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 
-QuicFlagSaverImpl::QuicFlagSaverImpl() {
-#define QUIC_FLAG(flag, value) saved_##flag##_ = flag;
-#include "net/third_party/quiche/src/quic/core/quic_flags_list.h"
-#undef QUIC_FLAG
-}
-
-QuicFlagSaverImpl::~QuicFlagSaverImpl() {
-#define QUIC_FLAG(flag, value) flag = saved_##flag##_;
-#include "net/third_party/quiche/src/quic/core/quic_flags_list.h"
-#undef QUIC_FLAG
-}
-
 std::string QuicGetTestMemoryCachePathImpl() {
   base::FilePath path;
   base::PathService::Get(base::DIR_SOURCE_ROOT, &path);

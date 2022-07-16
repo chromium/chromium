@@ -32,7 +32,7 @@ TEST_F(CWVAutofillFormTest, Initialization) {
   base::PathService::Get(base::DIR_MODULE, &pak_path);
   pak_path = pak_path.AppendASCII("web_view_resources.pak");
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      pak_path, ui::SCALE_FACTOR_NONE);
+      pak_path, ui::kScaleFactorNone);
 
   autofill::FormData form_data;
   autofill::test::CreateTestAddressFormData(&form_data);

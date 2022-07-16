@@ -126,6 +126,10 @@ class NET_EXPORT_PRIVATE ConnectJob {
   class NET_EXPORT_PRIVATE Delegate {
    public:
     Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate() {}
 
     // Alerts the delegate that the connection completed. |job| must be
@@ -147,9 +151,6 @@ class NET_EXPORT_PRIVATE ConnectJob {
                                   HttpAuthController* auth_controller,
                                   base::OnceClosure restart_with_auth_callback,
                                   ConnectJob* job) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // A |timeout_duration| of 0 corresponds to no timeout.
@@ -167,6 +168,10 @@ class NET_EXPORT_PRIVATE ConnectJob {
              const NetLogWithSource* net_log,
              NetLogSourceType net_log_source_type,
              NetLogEventType net_log_connect_event_type);
+
+  ConnectJob(const ConnectJob&) = delete;
+  ConnectJob& operator=(const ConnectJob&) = delete;
+
   virtual ~ConnectJob();
 
   // Accessors
@@ -308,8 +313,6 @@ class NET_EXPORT_PRIVATE ConnectJob {
   const bool top_level_job_;
   NetLogWithSource net_log_;
   const NetLogEventType net_log_connect_event_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectJob);
 };
 
 }  // namespace net

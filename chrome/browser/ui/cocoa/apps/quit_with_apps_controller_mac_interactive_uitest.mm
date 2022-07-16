@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #import "base/mac/foundation_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -36,6 +35,12 @@ namespace {
 // will use NativeAppWindowCocoa.
 class QuitWithAppsControllerInteractiveTest
     : public extensions::PlatformAppBrowserTest {
+ public:
+  QuitWithAppsControllerInteractiveTest(
+      const QuitWithAppsControllerInteractiveTest&) = delete;
+  QuitWithAppsControllerInteractiveTest& operator=(
+      const QuitWithAppsControllerInteractiveTest&) = delete;
+
  protected:
   QuitWithAppsControllerInteractiveTest() : app_(NULL) {}
 
@@ -45,9 +50,6 @@ class QuitWithAppsControllerInteractiveTest
   }
 
   const extensions::Extension* app_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QuitWithAppsControllerInteractiveTest);
 };
 
 }  // namespace

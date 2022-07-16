@@ -13,10 +13,10 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
@@ -240,7 +240,7 @@ void FakeShillServiceClient::ClearProperties(
   base::ListValue result;
   for (const auto& name : names) {
     // Note: Shill does not send notifications when properties are cleared.
-    result.AppendBoolean(dict->RemoveKey(name));
+    result.Append(dict->RemoveKey(name));
   }
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
@@ -304,7 +304,7 @@ void FakeShillServiceClient::Disconnect(const dbus::ObjectPath& service_path,
       base::BindOnce(&FakeShillServiceClient::SetProperty,
                      weak_ptr_factory_.GetWeakPtr(), service_path,
                      shill::kStateProperty, base::Value(shill::kStateIdle),
-                     base::DoNothing::Once(), std::move(error_callback)),
+                     base::DoNothing(), std::move(error_callback)),
       GetInteractiveDelay());
   std::move(callback).Run();
 }
@@ -380,16 +380,15 @@ void FakeShillServiceClient::GetEapPassphrase(
 
 void FakeShillServiceClient::RequestTrafficCounters(
     const dbus::ObjectPath& service_path,
-    ListValueCallback callback,
-    ErrorCallback error_callback) {
-  std::move(callback).Run(
-      base::Value::AsListValue(fake_traffic_counters_.Clone()));
+    DBusMethodCallback<base::Value> callback) {
+  std::move(callback).Run(fake_traffic_counters_.Clone());
 }
 
 void FakeShillServiceClient::ResetTrafficCounters(
     const dbus::ObjectPath& service_path,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
+  fake_traffic_counters_.ClearList();
   base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
 }
 

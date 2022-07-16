@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -26,6 +25,12 @@
 
 class BackgroundSyncPermissionContextTest
     : public content::RenderViewHostTestHarness {
+ public:
+  BackgroundSyncPermissionContextTest(
+      const BackgroundSyncPermissionContextTest&) = delete;
+  BackgroundSyncPermissionContextTest& operator=(
+      const BackgroundSyncPermissionContextTest&) = delete;
+
  protected:
   BackgroundSyncPermissionContextTest() = default;
   ~BackgroundSyncPermissionContextTest() override = default;
@@ -63,8 +68,6 @@ class BackgroundSyncPermissionContextTest
 
  private:
   bool permission_granted_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncPermissionContextTest);
 };
 
 // Background sync permission should be allowed by default for a secure origin.

@@ -11,10 +11,9 @@
 #include "base/debug/profiler.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "content/public/common/content_switches.h"
 
@@ -66,12 +65,15 @@ void FlushProfilingData(base::Thread* thread) {
   }
   thread->task_runner()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&FlushProfilingData, thread),
-      base::TimeDelta::FromSeconds(flush_seconds));
+      base::Seconds(flush_seconds));
 }
 
 class ProfilingThreadControl {
  public:
   ProfilingThreadControl() : thread_(nullptr) {}
+
+  ProfilingThreadControl(const ProfilingThreadControl&) = delete;
+  ProfilingThreadControl& operator=(const ProfilingThreadControl&) = delete;
 
   void Start() {
     base::AutoLock locked(lock_);
@@ -97,8 +99,6 @@ class ProfilingThreadControl {
  private:
   base::Thread* thread_;
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfilingThreadControl);
 };
 
 base::LazyInstance<ProfilingThreadControl>::Leaky g_flush_thread_control =

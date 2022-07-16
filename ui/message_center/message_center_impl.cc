@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -152,16 +151,21 @@ bool MessageCenterImpl::IsSpokenFeedbackEnabled() const {
   return spoken_feedback_enabled_;
 }
 
-Notification* MessageCenterImpl::FindOldestNotificationByNotiferId(
-    const NotifierId& notifier_id) {
-  auto notifier_id_match = [&notifier_id](Notification* notification) {
-    return notifier_id == notification->notifier_id();
-  };
-  auto notifications = GetVisibleNotifications();
-  auto notification = std::find_if(notifications.rbegin(), notifications.rend(),
-                                   notifier_id_match);
+Notification* MessageCenterImpl::FindNotificationById(const std::string& id) {
+  return notification_list_->GetNotificationById(id);
+}
 
-  return notification == notifications.rend() ? nullptr : *notification;
+Notification* MessageCenterImpl::FindParentNotificationForOriginUrl(
+    const GURL& origin_url) {
+  if (origin_url.is_empty())
+    return nullptr;
+
+  NotificationList::Notifications notifications =
+      notification_list_->GetNotificationsByOriginUrl(origin_url);
+
+  if (notifications.size())
+    return *std::prev(notifications.end());
+  return nullptr;
 }
 
 Notification* MessageCenterImpl::FindPopupNotificationById(
@@ -207,7 +211,7 @@ MessageCenterImpl::GetVisibleNotifications() {
 }
 
 NotificationList::PopupNotifications
-    MessageCenterImpl::GetPopupNotifications() {
+MessageCenterImpl::GetPopupNotifications() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return notification_list_->GetPopupNotifications(blockers_, nullptr);
 }
@@ -232,6 +236,12 @@ void MessageCenterImpl::AddNotification(
   if (already_exists) {
     UpdateNotification(id, std::move(notification));
     return;
+  }
+
+  auto* parent = FindParentNotificationForOriginUrl(notification->origin_url());
+  if (notification->allow_group() && parent) {
+    parent->SetGroupParent();
+    notification->SetGroupChild();
   }
 
   notification_list_->AddNotification(std::move(notification));
@@ -472,6 +482,9 @@ void MessageCenterImpl::MarkSinglePopupAsShown(const std::string& id,
 
 void MessageCenterImpl::ResetSinglePopup(const std::string& id) {
   notification_list_->ResetSinglePopup(id);
+  for (MessageCenterObserver& observer : observer_list_) {
+    observer.OnNotificationUpdated(id);
+  }
 }
 
 void MessageCenterImpl::DisplayedNotification(

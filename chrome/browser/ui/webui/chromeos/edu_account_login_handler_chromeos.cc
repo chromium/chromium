@@ -119,15 +119,15 @@ void EduAccountLoginHandler::ProfileImageFetcher::OnImageFetched(
 }
 
 void EduAccountLoginHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "isNetworkReady",
       base::BindRepeating(&EduAccountLoginHandler::HandleIsNetworkReady,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getParents",
       base::BindRepeating(&EduAccountLoginHandler::HandleGetParents,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "parentSignin",
       base::BindRepeating(&EduAccountLoginHandler::HandleParentSignin,
                           base::Unretained(this)));
@@ -185,10 +185,8 @@ void EduAccountLoginHandler::HandleParentSignin(const base::ListValue* args) {
   DCHECK(obfuscated_gaia_id_value);
   std::string obfuscated_gaia_id = obfuscated_gaia_id_value->GetString();
 
-  std::string password;
-  args_list[2].GetAsString(&password);
-
-  FetchAccessToken(obfuscated_gaia_id, password);
+  const std::string* password = args_list[2].GetIfString();
+  FetchAccessToken(obfuscated_gaia_id, password ? *password : std::string());
 }
 
 void EduAccountLoginHandler::FetchFamilyMembers() {

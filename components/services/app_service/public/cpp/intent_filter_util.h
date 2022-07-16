@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "url/gurl.h"
 
@@ -61,9 +60,7 @@ void AddSingleValueCondition(apps::mojom::ConditionType condition_type,
 
 // TODO(crbug.com/1092784): Update/add all related unit tests to test with
 // action view.
-apps::mojom::IntentFilterPtr CreateIntentFilterForUrlScope(
-    const GURL& url,
-    bool with_action_view = false);
+apps::mojom::IntentFilterPtr CreateIntentFilterForUrlScope(const GURL& url);
 
 // Get the |intent_filter| match level. The higher the return value, the better
 // the match is. For example, an filter with scheme, host and path is better
@@ -91,9 +88,10 @@ bool IsBrowserFilter(const apps::mojom::IntentFilterPtr& filter);
 std::set<std::string> AppManagementGetSupportedLinks(
     const apps::mojom::IntentFilterPtr& intent_filter);
 
-// Given an intent filter, decide if the filter matches the required
-// parameters that determine whether the filter has a supported link.
-bool IsSupportedLink(const apps::mojom::IntentFilterPtr& intent_filter);
+// Check if the |intent_filter| is a supported link for |app_id|, i.e. it has
+// the "view" action, a http or https scheme, and at least one host and pattern.
+bool IsSupportedLinkForApp(const std::string& app_id,
+                           const apps::mojom::IntentFilterPtr& intent_filter);
 
 }  // namespace apps_util
 

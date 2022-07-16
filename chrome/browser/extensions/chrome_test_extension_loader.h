@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -35,6 +34,11 @@ class ExtensionSystem;
 class ChromeTestExtensionLoader {
  public:
   explicit ChromeTestExtensionLoader(content::BrowserContext* browser_context);
+
+  ChromeTestExtensionLoader(const ChromeTestExtensionLoader&) = delete;
+  ChromeTestExtensionLoader& operator=(const ChromeTestExtensionLoader&) =
+      delete;
+
   ~ChromeTestExtensionLoader();
 
   // Loads the extension specified by |file_path|. Works for both packed and
@@ -171,8 +175,6 @@ class ChromeTestExtensionLoader {
   // renderer and false otherwise (this roughly maps to "true in browser tests,
   // false in unit tests").
   absl::optional<bool> wait_for_renderers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeTestExtensionLoader);
 };
 
 }  // namespace extensions

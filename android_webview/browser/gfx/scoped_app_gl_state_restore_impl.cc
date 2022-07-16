@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/android/build_info.h"
 #include "base/lazy_instance.h"
 #include "components/viz/common/features.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -43,14 +44,16 @@ class AppContextSurface {
         context_(gl::init::CreateGLContext(nullptr,
                                            surface_.get(),
                                            gl::GLContextAttribs())) {}
+
+  AppContextSurface(const AppContextSurface&) = delete;
+  AppContextSurface& operator=(const AppContextSurface&) = delete;
+
   void MakeCurrent() { context_->MakeCurrent(surface_.get()); }
   void ReleaseCurrent() { context_->ReleaseCurrent(surface_.get()); }
 
  private:
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppContextSurface);
 };
 
 base::LazyInstance<AppContextSurface>::DestructorAtExit g_app_context_surface =
@@ -102,6 +105,20 @@ ScopedAppGLStateRestoreImpl::ScopedAppGLStateRestoreImpl(
   MakeAppContextCurrent();
 
   ClearGLErrors(true, "Incoming GLError");
+
+  if (base::android::BuildInfo::GetInstance()->sdk_int() ==
+      base::android::SDK_VERSION_S) {
+    GLint red_bits = 0;
+    GLint green_bits = 0;
+    GLint blue_bits = 0;
+    GLint alpha_bits = 0;
+    glGetIntegerv(GL_RED_BITS, &red_bits);
+    glGetIntegerv(GL_GREEN_BITS, &green_bits);
+    glGetIntegerv(GL_BLUE_BITS, &blue_bits);
+    glGetIntegerv(GL_ALPHA_BITS, &alpha_bits);
+    skip_draw_ =
+        red_bits == 8 && green_bits == 0 && blue_bits == 0 && alpha_bits == 0;
+  }
 
   glGetBooleanv(GL_STENCIL_TEST, &stencil_state_.stencil_test_enabled);
   glGetIntegerv(GL_STENCIL_FUNC, &stencil_state_.stencil_front_func);

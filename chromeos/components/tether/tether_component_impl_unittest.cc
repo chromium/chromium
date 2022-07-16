@@ -118,6 +118,10 @@ class FakeCrashRecoveryManagerFactory
 }  // namespace
 
 class TetherComponentImplTest : public testing::Test {
+ public:
+  TetherComponentImplTest(const TetherComponentImplTest&) = delete;
+  TetherComponentImplTest& operator=(const TetherComponentImplTest&) = delete;
+
  protected:
   TetherComponentImplTest() = default;
   ~TetherComponentImplTest() override = default;
@@ -216,9 +220,6 @@ class TetherComponentImplTest : public testing::Test {
   std::unique_ptr<TetherComponent> component_;
 
   std::unique_ptr<TestTetherComponentObserver> test_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TetherComponentImplTest);
 };
 
 TEST_F(TetherComponentImplTest, TestShutdown_Disconnected) {

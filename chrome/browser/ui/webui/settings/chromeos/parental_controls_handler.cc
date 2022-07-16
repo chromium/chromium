@@ -35,13 +35,13 @@ ParentalControlsHandler::ParentalControlsHandler(Profile* profile)
 ParentalControlsHandler::~ParentalControlsHandler() = default;
 
 void ParentalControlsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showAddSupervisionDialog",
       base::BindRepeating(
           &ParentalControlsHandler::HandleShowAddSupervisionDialog,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "launchFamilyLinkSettings",
       base::BindRepeating(
           &ParentalControlsHandler::HandleLaunchFamilyLinkSettings,
@@ -54,15 +54,14 @@ void ParentalControlsHandler::OnJavascriptDisallowed() {}
 void ParentalControlsHandler::HandleShowAddSupervisionDialog(
     const base::ListValue* args) {
   DCHECK(args->GetList().empty());
-  AddSupervisionDialog::Show(
-      web_ui()->GetWebContents()->GetTopLevelNativeWindow());
+  AddSupervisionDialog::Show();
 }
 
 void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
     const base::ListValue* args) {
   DCHECK(args->GetList().empty());
 
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
 
   apps::AppRegistryCache& registry = proxy->AppRegistryCache();
@@ -79,7 +78,7 @@ void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
   // No FLH app installed, so try to launch Play Store to FLH app install page.
   if (registry.GetAppType(arc::kPlayStoreAppId) !=
       apps::mojom::AppType::kUnknown) {
-    apps::AppServiceProxyFactory::GetForProfile(profile_)->LaunchAppWithUrl(
+    proxy->LaunchAppWithUrl(
         arc::kPlayStoreAppId, ui::EF_NONE,
         GURL(chromeos::ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
         apps::mojom::LaunchSource::kFromChromeInternal);

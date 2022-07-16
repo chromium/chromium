@@ -21,6 +21,10 @@ const visaMethod = Object.freeze({
   },
 });
 
+const kylePayMethod = Object.freeze({
+  supportedMethods: 'https://kylepay.com/webpay',
+});
+
 const defaultDetails = Object.freeze({
   total: {
     label: 'Total',
@@ -31,13 +35,30 @@ const defaultDetails = Object.freeze({
   },
 });
 
+/**
+ * Do not query CanMakePayment before showing the Payment Request. This request
+ * will be sent with a url-based method and a basic-card methods.
+ */
+function noQueryShow() { // eslint-disable-line no-unused-vars, max-len
+  noQueryShowWithMethods([bobPayMethod, visaMethod]);
+}
 
 /**
- * Do not query CanMakePayment before showing the Payment Request.
+ * Do not query CanMakePayment before showing the Payment Request. This request
+ * will be sent with url-based methods only.
  */
-function noQueryShow() { // eslint-disable-line no-unused-vars
+ function noQueryShowWithUrlMethods() { // eslint-disable-line no-unused-vars
+  noQueryShowWithMethods([bobPayMethod, kylePayMethod]);
+}
+
+/**
+ * Do not query CanMakePayment before showing the Payment Request. This request
+ * will be sent with the given methods.
+ * @param {Array<Object>} methods An array of payment method objects.
+ */
+function noQueryShowWithMethods(methods) { // eslint-disable-line no-unused-vars
   try {
-    request = new PaymentRequest([bobPayMethod, visaMethod], defaultDetails);
+    request = new PaymentRequest(methods, defaultDetails);
     request.show()
         .then(function(resp) {
           resp.complete('success')
@@ -57,11 +78,29 @@ function noQueryShow() { // eslint-disable-line no-unused-vars
 }
 
 /**
- * Queries CanMakePayment and the shows the PaymentRequest after.
+ * Queries CanMakePayment and the shows the PaymentRequest after. This request
+ * will be sent with a url-based method and a basic-card methods.
  */
-async function queryShow() { // eslint-disable-line no-unused-vars
+async function queryShow() { // eslint-disable-line no-unused-vars, max-len
+  queryShowWithMethods([bobPayMethod, visaMethod]);
+}
+
+/**
+ * Queries CanMakePayment and the shows the PaymentRequest after. This request
+ * will be sent with url-based methods only.
+ */
+async function queryShowWithUrlMethods() { // eslint-disable-line no-unused-vars
+  queryShowWithMethods([bobPayMethod, kylePayMethod]);
+}
+
+/**
+ * Queries CanMakePayment and the shows the PaymentRequest after. This request
+ * will be sent with url-based methods only.
+ * @param {Array<Object>} methods An array of payment method objects.
+ */
+ async function queryShowWithMethods(methods) { // eslint-disable-line no-unused-vars, max-len
   try {
-    request = new PaymentRequest([bobPayMethod, visaMethod], defaultDetails);
+    request = new PaymentRequest(methods, defaultDetails);
     print(await request.canMakePayment());
     print(await request.hasEnrolledInstrument());
     request.show()
@@ -83,11 +122,29 @@ async function queryShow() { // eslint-disable-line no-unused-vars
 }
 
 /**
- * Queries CanMakePayment but does not show the PaymentRequest after.
+ * Queries CanMakePayment but does not show the PaymentRequest after. This
+ * request will be sent with a url-based method and a basic-card methods.
  */
-async function queryNoShow() { // eslint-disable-line no-unused-vars
+async function queryNoShow() { // eslint-disable-line no-unused-vars, max-len
+  queryNoShowWithMethods([bobPayMethod, visaMethod]);
+}
+
+/**
+ * Queries CanMakePayment but does not show the PaymentRequest after. This
+ * request will be sent with the given methods.
+ */
+async function queryNoShowWithUrlMethods() { // eslint-disable-line no-unused-vars, max-len
+  queryNoShowWithMethods([bobPayMethod, kylePayMethod]);
+}
+
+/**
+ * Queries CanMakePayment but does not show the PaymentRequest after. This
+ * request will be sent with url-based methods only.
+ * @param {Array<Object>} methods An array of payment method objects.
+ */
+async function queryNoShowWithMethods(methods) { // eslint-disable-line no-unused-vars, max-len
   try {
-    request = new PaymentRequest([bobPayMethod, visaMethod], defaultDetails);
+    request = new PaymentRequest(methods, defaultDetails);
     print(await request.canMakePayment());
     print(await request.hasEnrolledInstrument());
   } catch (error) {

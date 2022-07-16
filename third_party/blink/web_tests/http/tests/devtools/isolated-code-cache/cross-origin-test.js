@@ -41,7 +41,8 @@
   // change this if the heuristics change.
   await PerformanceTestRunner.invokeAsyncWithTimeline('loadScript');
   await PerformanceTestRunner.printTimelineRecordsWithDetails(
-      TimelineModel.TimelineModel.RecordType.CompileScript);
+      TimelineModel.TimelineModel.RecordType.CompileScript,
+      TimelineModel.TimelineModel.RecordType.CacheScript);
 
   // Second navigation
   TestRunner.addResult(
@@ -65,7 +66,8 @@
   await TestRunner.addIframe(localhost_scope, {id: frameId});
   await PerformanceTestRunner.invokeAsyncWithTimeline('loadScript');
   await PerformanceTestRunner.printTimelineRecordsWithDetails(
-      TimelineModel.TimelineModel.RecordType.CompileScript);
+      TimelineModel.TimelineModel.RecordType.CompileScript,
+      TimelineModel.TimelineModel.RecordType.CacheScript);
 
   TestRunner.completeTest();
 })();

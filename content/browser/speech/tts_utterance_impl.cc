@@ -60,8 +60,7 @@ std::unique_ptr<TtsUtterance> TtsUtterance::Create() {
 
 TtsUtteranceImpl::TtsUtteranceImpl(BrowserContext* browser_context,
                                    WebContents* web_contents)
-    : WebContentsObserver(web_contents),
-      browser_context_(browser_context),
+    : browser_context_(browser_context),
       was_created_with_web_contents_(web_contents != nullptr),
       id_(next_utterance_id_++),
       src_id_(-1),
@@ -69,6 +68,9 @@ TtsUtteranceImpl::TtsUtteranceImpl(BrowserContext* browser_context,
       char_index_(0),
       finished_(false) {
   options_ = std::make_unique<base::DictionaryValue>();
+  if (web_contents) {
+    web_contents_ = web_contents->GetWeakPtr();
+  }
 }
 
 TtsUtteranceImpl::~TtsUtteranceImpl() {
@@ -213,6 +215,10 @@ int TtsUtteranceImpl::GetId() {
 
 bool TtsUtteranceImpl::IsFinished() {
   return finished_;
+}
+
+WebContents* TtsUtteranceImpl::GetWebContents() {
+  return web_contents_.get();
 }
 
 }  // namespace content

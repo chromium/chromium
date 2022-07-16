@@ -62,15 +62,12 @@ using MdnsResponderServiceError = MdnsResponderManager::ServiceError;
 //
 // The multicast of responses of the same record on an interface must be at
 // least one second apart on that particular interface.
-const base::TimeDelta kMinIntervalBetweenSameRecord =
-    base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kMinIntervalBetweenSameRecord = base::Seconds(1);
 
-const base::TimeDelta kMinIntervalBetweenMdnsResponses =
-    base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kMinIntervalBetweenMdnsResponses = base::Seconds(1);
 
 // RFC 6762, Section 10.
-const base::TimeDelta kDefaultTtlForRecordWithHostname =
-    base::TimeDelta::FromSeconds(120);
+const base::TimeDelta kDefaultTtlForRecordWithHostname = base::Seconds(120);
 
 // RFC 6762, Section 8.3.
 const int kMinNumAnnouncementsToSend = 2;
@@ -80,7 +77,7 @@ const uint8_t kMaxMdnsResponseRetries = 2;
 // The capacity of the send queue for packets blocked by an incomplete send.
 const uint8_t kSendQueueCapacity = 100;
 // Maximum delay allowed for per-response rate-limited responses.
-const base::TimeDelta kMaxScheduledDelay = base::TimeDelta::FromSeconds(10);
+const base::TimeDelta kMaxScheduledDelay = base::Seconds(10);
 
 // The query name of the mDNS name generator service.
 const char kMdnsNameGeneratorServiceInstanceName[] =
@@ -106,10 +103,8 @@ const char kTxtversLine[] = "\x9txtvers=1";
 // shared resource record set, should be delayed uniformly and randomly in the
 // range of 20-120 ms. This delay is applied in addition to the scheduled delay
 // by rate limiting.
-const base::TimeDelta kMinRandDelayForSharedResult =
-    base::TimeDelta::FromMilliseconds(20);
-const base::TimeDelta kMaxRandDelayForSharedResult =
-    base::TimeDelta::FromMilliseconds(120);
+const base::TimeDelta kMinRandDelayForSharedResult = base::Milliseconds(20);
+const base::TimeDelta kMaxRandDelayForSharedResult = base::Milliseconds(120);
 
 class RandomUuidNameGenerator
     : public network::MdnsResponderManager::NameGenerator {
@@ -324,7 +319,7 @@ struct PendingPacket {
 base::TimeDelta GetRandTimeDelta(const base::TimeDelta& min,
                                  const base::TimeDelta& max) {
   DCHECK_LE(min, max);
-  return base::TimeDelta::FromMicroseconds(
+  return base::Microseconds(
       base::RandInt(min.InMicroseconds(), max.InMicroseconds()));
 }
 
@@ -413,6 +408,10 @@ class MdnsResponderManager::SocketHandler {
         responder_manager_(responder_manager),
         io_buffer_(base::MakeRefCounted<net::IOBufferWithSize>(
             net::dns_protocol::kMaxMulticastSize + 1)) {}
+
+  SocketHandler(const SocketHandler&) = delete;
+  SocketHandler& operator=(const SocketHandler&) = delete;
+
   ~SocketHandler() = default;
 
   int Start() {
@@ -503,8 +502,6 @@ class MdnsResponderManager::SocketHandler {
   net::IPEndPoint multicast_addr_;
 
   base::WeakPtrFactory<SocketHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SocketHandler);
 };
 
 // Implements the rate limiting schemes for sending responses as defined by
@@ -548,6 +545,10 @@ class MdnsResponderManager::SocketHandler::ResponseScheduler {
         tick_clock_(base::DefaultTickClock::GetInstance()),
         dispatch_timer_(std::make_unique<base::OneShotTimer>(tick_clock_)),
         next_available_time_per_resp_sched_(tick_clock_->NowTicks()) {}
+
+  ResponseScheduler(const ResponseScheduler&) = delete;
+  ResponseScheduler& operator=(const ResponseScheduler&) = delete;
+
   ~ResponseScheduler() { dispatch_timer_->Stop(); }
 
   // Implements the rate limit scheme on the underlying interface managed by
@@ -640,8 +641,6 @@ class MdnsResponderManager::SocketHandler::ResponseScheduler {
   std::priority_queue<PendingPacket> send_queue_;
 
   base::WeakPtrFactory<ResponseScheduler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResponseScheduler);
 };
 
 bool MdnsResponderManager::SocketHandler::Send(

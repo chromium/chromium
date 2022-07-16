@@ -97,6 +97,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
  public:
   explicit LayoutBlockFlow(ContainerNode*);
   ~LayoutBlockFlow() override;
+  void Trace(Visitor*) const override;
 
   static LayoutBlockFlow* CreateAnonymous(Document*,
                                           scoped_refptr<ComputedStyle>,
@@ -263,6 +264,8 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject*) override;
 
+  bool CreatesAnonymousWrapper() const override;
+
   void MoveAllChildrenIncludingFloatsTo(LayoutBlock* to_block,
                                         bool full_remove_insert);
 
@@ -354,6 +357,14 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
       rare_data_->multi_column_flow_thread_ = nullptr;
   }
 
+  // Return true if this block establishes a fragmentation context root (e.g. a
+  // multicol container).
+  //
+  // Implementation detail: At some point in the future there should be no flow
+  // threads. Callers that only want to know if this is a fragmentation context
+  // root (and don't depend on flow threads) should call this method.
+  bool IsFragmentationContextRoot() const { return MultiColumnFlowThread(); }
+
   void AddVisualOverflowFromInlineChildren();
 
   void AddLayoutOverflowFromInlineChildren();
@@ -414,7 +425,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   LayoutUnit XPositionForFloatIncludingMargin(
       const FloatingObject& child) const {
     NOT_DESTROYED();
-    LayoutUnit scrollbar_adjustment(OriginAdjustmentForScrollbars().Width());
+    LayoutUnit scrollbar_adjustment(OriginAdjustmentForScrollbars().width());
     if (IsHorizontalWritingMode()) {
       return child.X() + child.GetLayoutObject()->MarginLeft() +
              scrollbar_adjustment;
@@ -471,7 +482,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   FloatingObject* LastFloatFromPreviousLine() const {
     NOT_DESTROYED();
-    return ContainsFloats() ? floating_objects_->Set().back().get() : nullptr;
+    return ContainsFloats() ? floating_objects_->Set().back().Get() : nullptr;
   }
 
   void SetShouldDoFullPaintInvalidationForFirstLine();
@@ -752,12 +763,14 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
  public:
   struct FloatWithRect {
     DISALLOW_NEW();
-    FloatWithRect(LayoutBox* f)
+    explicit FloatWithRect(LayoutBox* f)
         : object(f), rect(f->FrameRect()), ever_had_layout(f->EverHadLayout()) {
       rect.Expand(f->MarginBoxOutsets());
     }
 
-    LayoutBox* object;
+    void Trace(Visitor* visitor) const { visitor->Trace(object); }
+
+    Member<LayoutBox> object;
     LayoutRect rect;
     bool ever_had_layout;
   };
@@ -835,20 +848,20 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
       return (-block->MarginAfter()).ClampNegativeToZero();
     }
 
-    void Trace(Visitor*) const {}
+    void Trace(Visitor*) const;
 
     MarginValues margins_;
     LayoutUnit pagination_strut_propagated_from_child_;
 
     LayoutUnit first_forced_break_offset_;
 
-    LayoutMultiColumnFlowThread* multi_column_flow_thread_ = nullptr;
+    Member<LayoutMultiColumnFlowThread> multi_column_flow_thread_;
 
     // |offset_mapping_| is used only for legacy layout tree for caching offset
     // mapping for |NGInlineNode::GetOffsetMapping()|.
     // TODO(yosin): Once we have no legacy support, we should get rid of
     // |offset_mapping_| here.
-    std::unique_ptr<NGOffsetMapping> offset_mapping_;
+    Member<NGOffsetMapping> offset_mapping_;
 
     // Name of the start page for this object, if propagated from a descendant;
     // see https://drafts.csswg.org/css-page-3/#start-page-value
@@ -866,11 +879,11 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void ClearOffsetMappingIfNeeded();
   const NGOffsetMapping* GetOffsetMapping() const;
-  void SetOffsetMapping(std::unique_ptr<NGOffsetMapping>);
+  void SetOffsetMapping(NGOffsetMapping*);
 
   const FloatingObjects* GetFloatingObjects() const {
     NOT_DESTROYED();
-    return floating_objects_.get();
+    return floating_objects_;
   }
 
   static void UpdateAncestorShouldPaintFloatingObject(
@@ -1003,8 +1016,8 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   bool CheckIfIsSelfCollapsingBlock() const;
 
  protected:
-  Persistent<LayoutBlockFlowRareData> rare_data_;
-  std::unique_ptr<FloatingObjects> floating_objects_;
+  Member<LayoutBlockFlowRareData> rare_data_;
+  Member<FloatingObjects> floating_objects_;
 
   friend class MarginInfo;
   friend class LineWidth;  // needs to know FloatingObject
@@ -1072,7 +1085,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                                   const InlineIterator& clean_line_start,
                                   const BidiStatus& clean_line_bidi_status);
   void LinkToEndLineIfNeeded(LineLayoutState&);
-  void MarkDirtyFloatsForPaintInvalidation(Vector<FloatWithRect>& floats);
+  void MarkDirtyFloatsForPaintInvalidation(HeapVector<FloatWithRect>& floats);
   RootInlineBox* DetermineStartPosition(LineLayoutState&, InlineBidiResolver&);
   void DetermineEndPosition(LineLayoutState&,
                             RootInlineBox* start_box,
@@ -1108,5 +1121,8 @@ struct DowncastTraits<LayoutBlockFlow> {
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::LayoutBlockFlow::FloatWithRect)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_BLOCK_FLOW_H_

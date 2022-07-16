@@ -5,8 +5,8 @@
 #include "media/fuchsia/cdm/fuchsia_cdm.h"
 
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/logging.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_promise.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -47,7 +47,7 @@ fuchsia::media::drm::LicenseInitData CreateLicenseInitData(
 fuchsia::media::drm::LicenseServerMessage CreateLicenseServerMessage(
     const std::vector<uint8_t>& response) {
   fuchsia::media::drm::LicenseServerMessage message;
-  message.message = cr_fuchsia::MemBufferFromString(
+  message.message = base::MemBufferFromString(
       base::StringPiece(reinterpret_cast<const char*>(response.data()),
                         response.size()),
       "cr-drm-license-server-message");
@@ -142,6 +142,9 @@ class FuchsiaCdm::CdmSession {
         fit::bind_member(this, &CdmSession::OnSessionError));
   }
 
+  CdmSession(const CdmSession&) = delete;
+  CdmSession& operator=(const CdmSession&) = delete;
+
   ~CdmSession() {
     if (!session_id_.empty()) {
       session_callbacks_->closed_cb.Run(session_id_,
@@ -204,18 +207,17 @@ class FuchsiaCdm::CdmSession {
 
   void OnLicenseMessageGenerated(fuchsia::media::drm::LicenseMessage message) {
     DCHECK(!session_id_.empty());
-    std::string session_msg;
-    bool msg_available =
-        cr_fuchsia::StringFromMemBuffer(message.message, &session_msg);
+    absl::optional<std::string> session_msg =
+        base::StringFromMemBuffer(message.message);
 
-    if (!msg_available) {
+    if (!session_msg) {
       LOG(ERROR) << "Failed to generate message for session " << session_id_;
       return;
     }
 
     session_callbacks_->message_cb.Run(
         session_id_, ToCdmMessageType(message.type),
-        std::vector<uint8_t>(session_msg.begin(), session_msg.end()));
+        std::vector<uint8_t>(session_msg->begin(), session_msg->end()));
   }
 
   void OnKeyStatesChanged(
@@ -273,8 +275,6 @@ class FuchsiaCdm::CdmSession {
   // `GenerateLicenseRelease` has been called and the session is waiting for
   // license release response from server.
   bool pending_release_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmSession);
 };
 
 FuchsiaCdm::SessionCallbacks::SessionCallbacks() = default;

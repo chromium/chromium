@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_UNSAFE_RESOURCE_UTIL_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_UNSAFE_RESOURCE_UTIL_H_
 
-#include "base/callback.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 
 namespace content {
@@ -29,10 +28,10 @@ namespace security_interstitials {
 content::NavigationEntry* GetNavigationEntryForResource(
     const UnsafeResource& resource);
 
-// Builds a getter for WebContents* from the given render frame id.
-base::RepeatingCallback<content::WebContents*(void)> GetWebContentsGetter(
-    int render_process_host_id,
-    int render_frame_id);
+// Returns the WebContents associated with the given |resource| based on the
+// frame or document for which it was created. If that frame/document no longer
+// exists, this returns nullptr.
+content::WebContents* GetWebContentsForResource(const UnsafeResource& resource);
 
 }  // namespace security_interstitials
 

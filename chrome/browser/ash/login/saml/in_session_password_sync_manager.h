@@ -17,6 +17,7 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/login/auth/cryptohome_authenticator.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
+#include "base/callback_forward.h"
 #include "chromeos/login/auth/extended_authenticator.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
@@ -114,8 +115,14 @@ class InSessionPasswordSyncManager
   // Reset lockscreen re-authentication dialog.
   void ResetDialog();
 
-  // Get lockscreen reauth dialog width
+  // Get lockscreen reauth dialog width.
   int GetDialogWidth();
+
+  // Check if reauth dialog is loaded and ready for testing.
+  bool IsReauthDialogLoadedForTesting(base::OnceClosure callback);
+
+  // Notify test that the reauth dialog is ready for testing.
+  void OnReauthDialogReadyForTesting();
 
   LockScreenStartReauthDialog* get_reauth_dialog_for_testing() {
     return lock_screen_start_reauth_dialog_.get();
@@ -145,6 +152,10 @@ class InSessionPasswordSyncManager
   std::unique_ptr<LockScreenStartReauthDialog> lock_screen_start_reauth_dialog_;
 
   PasswordChangedCallback password_changed_callback_;
+
+  // A callback that is used to notify test that the reauth dialog is loaded.
+  base::OnceClosure on_dialog_loaded_callback_for_testing_;
+  bool is_dialog_loaded_for_testing_ = false;
 
   friend class InSessionPasswordSyncManagerTest;
   friend class InSessionPasswordSyncManagerFactory;

@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
@@ -38,6 +37,10 @@ class OAuth2TokenFetcher : public base::SupportsWeakPtr<OAuth2TokenFetcher>,
   OAuth2TokenFetcher(
       OAuth2TokenFetcher::Delegate* delegate,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  OAuth2TokenFetcher(const OAuth2TokenFetcher&) = delete;
+  OAuth2TokenFetcher& operator=(const OAuth2TokenFetcher&) = delete;
+
   ~OAuth2TokenFetcher() override;
 
   void StartExchangeFromAuthCode(const std::string& auth_code,
@@ -65,8 +68,6 @@ class OAuth2TokenFetcher : public base::SupportsWeakPtr<OAuth2TokenFetcher>,
   std::string session_index_;
   std::string signin_scoped_device_id_;
   std::string auth_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2TokenFetcher);
 };
 
 }  // namespace ash

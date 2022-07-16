@@ -30,6 +30,7 @@
 interface ShadowRoot : DocumentFragment {
     readonly attribute ShadowRootMode mode;
     readonly attribute Element host;
+    attribute EventHandler onslotchange;
     // TODO(lyf): Change the type to `[TreatNullAs=xxx] HTMLString` after
     // https://crbug.com/1058762 has been fixed.
     [CEReactions, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString innerHTML;
@@ -37,7 +38,7 @@ interface ShadowRoot : DocumentFragment {
     readonly attribute SlotAssignmentMode slotAssignment;
 
     // Declarative Shadow DOM getInnerHTML() function.
-    [Affects=Nothing, RuntimeEnabled=DeclarativeShadowDOM, MeasureAs=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
+    [Affects=Nothing, MeasureAs=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
 };
 
 ShadowRoot includes DocumentOrShadowRoot;

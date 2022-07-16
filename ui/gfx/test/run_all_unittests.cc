@@ -4,7 +4,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_discardable_memory_allocator.h"
@@ -33,6 +32,9 @@ class GfxTestSuite : public base::TestSuite {
  public:
   GfxTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {
   }
+
+  GfxTestSuite(const GfxTestSuite&) = delete;
+  GfxTestSuite& operator=(const GfxTestSuite&) = delete;
 
  protected:
   void Initialize() override {
@@ -68,8 +70,6 @@ class GfxTestSuite : public base::TestSuite {
 
  private:
   base::TestDiscardableMemoryAllocator discardable_memory_allocator;
-
-  DISALLOW_COPY_AND_ASSIGN(GfxTestSuite);
 };
 
 }  // namespace

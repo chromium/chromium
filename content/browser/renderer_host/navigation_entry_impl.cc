@@ -30,6 +30,7 @@
 #include "content/public/common/content_constants.h"
 #include "content/public/common/url_constants.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -800,9 +801,10 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
   blink::NavigationDownloadPolicy download_policy;
   if (IsViewSourceMode())
     download_policy.SetDisallowed(blink::NavigationDownloadType::kViewSource);
-
-  // TODO(https://crbug.com/1223394): Stop setting `base_url_for_data_url` and
-  // `history_url_for_data_url` for subframe history navigations.
+  // `base_url_for_data_url` is saved in NavigationEntry but should only be used
+  // by main frames, because loadData* navigations can only happen on the main
+  // frame.
+  bool is_for_main_frame = (root_node()->frame_entry == &frame_entry);
   return blink::mojom::CommonNavigationParams::New(
       dest_url, frame_entry.initiator_origin(), std::move(dest_referrer),
       GetTransitionType(), navigation_type, download_policy,
@@ -810,13 +812,15 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
       // replace an entry on session history / reload / restore navigation. New
       // navigation that may use replacement create their CommonNavigationParams
       // via NavigationRequest, for example, instead of via NavigationEntry.
-      false /* should_replace_entry */, GetBaseURLForDataURL(),
-      GetHistoryURLForDataURL(), previews_state, navigation_start,
-      frame_entry.method(), post_body ? post_body : post_data_,
-      network::mojom::SourceLocation::New(), has_started_from_context_menu(),
-      has_user_gesture(), false /* has_text_fragment_token */,
+      false /* should_replace_entry */,
+      is_for_main_frame ? GetBaseURLForDataURL() : GURL(), previews_state,
+      navigation_start, frame_entry.method(),
+      post_body ? post_body : post_data_, network::mojom::SourceLocation::New(),
+      has_started_from_context_menu(), has_user_gesture(),
+      false /* has_text_fragment_token */,
       network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
-      false /* is_history_navigation_in_new_child_frame */, input_start);
+      false /* is_history_navigation_in_new_child_frame */, input_start,
+      network::mojom::RequestDestination::kEmpty);
 }
 
 blink::mojom::CommitNavigationParamsPtr
@@ -857,7 +861,10 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
 
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
-          origin_to_commit, network::mojom::WebSandboxFlags(),
+          origin_to_commit,
+          // The correct storage key will be computed before committing the
+          // navigation.
+          blink::StorageKey(), network::mojom::WebSandboxFlags(),
           GetIsOverridingUserAgent(), redirects,
           std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(), std::string(), original_url,
@@ -866,7 +873,7 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           subframe_unique_names, intended_as_new_entry, pending_offset_to_send,
           current_offset_to_send, current_length_to_send, false,
           IsViewSourceMode(), should_clear_history_list(),
-          blink::mojom::NavigationTiming::New(), absl::nullopt,
+          blink::mojom::NavigationTiming::New(),
           blink::mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create(),
           std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>(),
@@ -888,9 +895,17 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           std::vector<
               blink::mojom::
                   AppHistoryEntryPtr>() /* app_history_forward_entries */,
-          std::vector<GURL>() /* early_hints_preloaded_resources */);
+          std::vector<GURL>() /* early_hints_preloaded_resources */,
+          absl::nullopt /* ad_auction_components */,
+          // This timestamp will be populated when the commit IPC is sent.
+          base::TimeTicks() /* commit_sent */);
 #if defined(OS_ANDROID)
-  if (NavigationControllerImpl::ValidateDataURLAsString(GetDataURLAsString())) {
+  // `data_url_as_string` is saved in NavigationEntry but should only be used by
+  // main frames, because loadData* navigations can only happen on the main
+  // frame.
+  bool is_for_main_frame = (root_node()->frame_entry == &frame_entry);
+  if (is_for_main_frame &&
+      NavigationControllerImpl::ValidateDataURLAsString(GetDataURLAsString())) {
     commit_params->data_url_as_string = GetDataURLAsString()->data();
   }
 #endif

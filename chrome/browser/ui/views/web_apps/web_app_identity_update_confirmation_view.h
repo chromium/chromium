@@ -7,11 +7,14 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/web_applications/components/web_app_callback_app_identity.h"
+#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/dialog_delegate.h"
 
+class Profile;
 class SkBitmap;
 class WebAppUninstallDialogViews;
 
@@ -22,6 +25,7 @@ class WebAppIdentityUpdateConfirmationView : public views::DialogDelegateView {
  public:
   METADATA_HEADER(WebAppIdentityUpdateConfirmationView);
   WebAppIdentityUpdateConfirmationView(
+      Profile* profile,
       const std::string& app_id,
       bool title_change,
       bool icon_change,
@@ -29,7 +33,6 @@ class WebAppIdentityUpdateConfirmationView : public views::DialogDelegateView {
       const std::u16string& new_title,
       const SkBitmap& old_icon,
       const SkBitmap& new_icon,
-      content::WebContents* web_contents,
       web_app::AppIdentityDialogCallback callback);
   WebAppIdentityUpdateConfirmationView(
       const WebAppIdentityUpdateConfirmationView&) = delete;
@@ -45,9 +48,12 @@ class WebAppIdentityUpdateConfirmationView : public views::DialogDelegateView {
   bool Cancel() override;
 
   void OnDialogAccepted();
+  void OnWebAppUninstallDialogClosed(bool uninstalled);
+
+  Profile* const profile_;
 
   // The id of the app whose identity is changing.
-  std::string app_id_;
+  const std::string app_id_;
 
   // A callback to relay the results of the app identity update dialog.
   web_app::AppIdentityDialogCallback callback_;
@@ -55,7 +61,15 @@ class WebAppIdentityUpdateConfirmationView : public views::DialogDelegateView {
   // The app uninstall dialog, shown to confirm the uninstallation.
   std::unique_ptr<WebAppUninstallDialogViews> uninstall_dialog_;
 
-  content::WebContents* web_contents_;
+  base::WeakPtrFactory<WebAppIdentityUpdateConfirmationView> weak_factory_{
+      this};
 };
+
+BEGIN_VIEW_BUILDER(,
+                   WebAppIdentityUpdateConfirmationView,
+                   views::DialogDelegateView)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(, WebAppIdentityUpdateConfirmationView)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_IDENTITY_UPDATE_CONFIRMATION_VIEW_H_

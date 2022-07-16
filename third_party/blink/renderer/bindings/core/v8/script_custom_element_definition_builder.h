@@ -25,6 +25,12 @@ class CORE_EXPORT ScriptCustomElementDefinitionBuilder
                                        CustomElementRegistry*,
                                        V8CustomElementConstructor* constructor,
                                        ExceptionState&);
+
+  ScriptCustomElementDefinitionBuilder(
+      const ScriptCustomElementDefinitionBuilder&) = delete;
+  ScriptCustomElementDefinitionBuilder& operator=(
+      const ScriptCustomElementDefinitionBuilder&) = delete;
+
   ~ScriptCustomElementDefinitionBuilder() = default;
 
   bool CheckConstructorIntrinsics() override;
@@ -51,8 +57,6 @@ class CORE_EXPORT ScriptCustomElementDefinitionBuilder
   v8::Local<v8::Value> v8_form_reset_callback_;
   v8::Local<v8::Value> v8_form_disabled_callback_;
   v8::Local<v8::Value> v8_form_state_restore_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptCustomElementDefinitionBuilder);
 };
 
 }  // namespace blink

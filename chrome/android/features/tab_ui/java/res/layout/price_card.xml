@@ -31,7 +31,7 @@
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="4dp"
             android:singleLine="true"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Dark"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Dark"
             android:textAlignment="viewStart" />
     </LinearLayout>
 </merge>

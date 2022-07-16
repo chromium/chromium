@@ -12,8 +12,8 @@
 
 #include "ash/assistant/ui/main_stage/animated_container_view.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
 namespace ash {
@@ -28,7 +28,13 @@ class COMPONENT_EXPORT(ASSISTANT_UI) UiElementContainerView
     : public AnimatedContainerView {
  public:
   explicit UiElementContainerView(AssistantViewDelegate* delegate);
+
+  UiElementContainerView(const UiElementContainerView&) = delete;
+  UiElementContainerView& operator=(const UiElementContainerView&) = delete;
+
   ~UiElementContainerView() override;
+
+  void OnOverflowIndicatorVisibilityChanged(bool is_visible);
 
   // AnimatedContainerView:
   const char* GetClassName() const override;
@@ -36,31 +42,31 @@ class COMPONENT_EXPORT(ASSISTANT_UI) UiElementContainerView
   int GetHeightForWidth(int width) const override;
   gfx::Size GetMinimumSize() const override;
   void Layout() override;
-  void OnContentsPreferredSizeChanged(views::View* content_view) override;
   void OnCommittedQueryChanged(const AssistantQuery& query) override;
+
+  // views::View:
+  void OnThemeChanged() override;
+
+  // AssistantScrollView::Observer:
+  void OnContentsPreferredSizeChanged(views::View* content_view) override;
 
  private:
   void InitLayout();
+
+  SkColor GetOverflowIndicatorBackgroundColor() const;
 
   // AnimatedContainerView:
   std::unique_ptr<ElementAnimator> HandleUiElement(
       const AssistantUiElement* ui_element) override;
   void OnAllViewsAnimatedIn() override;
-  void OnScrollBarUpdated(views::ScrollBar* scroll_bar,
-                          int viewport_size,
-                          int content_size,
-                          int content_scroll_offset) override;
-  void OnScrollBarVisibilityChanged(views::ScrollBar* scroll_bar,
-                                    bool is_visible) override;
-
-  void UpdateScrollIndicator(bool can_scroll);
 
   views::View* scroll_indicator_ = nullptr;  // Owned by view hierarchy.
 
   // Factory instance used to construct views for modeled UI elements.
   std::unique_ptr<AssistantUiElementViewFactory> view_factory_;
 
-  DISALLOW_COPY_AND_ASSIGN(UiElementContainerView);
+  // Whether to use dark/light mode colors, which default to dark.
+  const bool use_dark_light_mode_colors_;
 };
 
 }  // namespace ash

@@ -47,6 +47,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ResetRequestHandler
       FinishedCallback finished_callback,
       std::unique_ptr<FidoDiscoveryFactory> fido_discovery_factory =
           std::make_unique<FidoDiscoveryFactory>());
+
+  ResetRequestHandler(const ResetRequestHandler&) = delete;
+  ResetRequestHandler& operator=(const ResetRequestHandler&) = delete;
+
   ~ResetRequestHandler() override;
 
  private:
@@ -63,8 +67,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ResetRequestHandler
   std::unique_ptr<FidoDiscoveryFactory> fido_discovery_factory_;
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<ResetRequestHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResetRequestHandler);
 };
 
 }  // namespace device

@@ -29,11 +29,11 @@ namespace {
 
 // A reasonable timeout that gives enough time for attestation to be ready,
 // yet does not make the caller wait too long.
-constexpr base::TimeDelta kReadyTimeout = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kReadyTimeout = base::Seconds(60);
 
 // Delay before checking again whether the TPM has been prepared for
 // attestation.
-constexpr base::TimeDelta kRetryDelay = base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kRetryDelay = base::Milliseconds(300);
 
 // Values for the attestation server switch.
 constexpr char kAttestationServerDefault[] = "default";

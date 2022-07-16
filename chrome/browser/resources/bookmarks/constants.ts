@@ -20,7 +20,7 @@ export enum DropPosition {
  */
 export enum Command {
   EDIT = 0,
-  COPY_URL = 1,
+  // REMOVED_COPY_URL = 1  // Removed as being redundant with COPY
   SHOW_IN_FOLDER = 2,
   DELETE = 3,
   OPEN_NEW_TAB = 4,

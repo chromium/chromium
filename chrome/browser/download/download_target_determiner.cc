@@ -10,11 +10,11 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/rand_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -23,12 +23,15 @@
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/download/download_stats.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -38,6 +41,7 @@
 #include "net/base/filename_util.h"
 #include "net/http/http_content_disposition.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
@@ -405,11 +409,13 @@ void DownloadTargetDeterminer::NotifyExtensionsDone(
       net::FileURLToFilePath(download_->GetURL(), &file_path);
       new_path = new_path.ReplaceExtension(file_path.Extension());
     } else {
-      // If the (Chrome) extension does not suggest an file extension, do not
+      // If the (Chrome) extension does not suggest an file extension, or if the
+      // suggested extension matches that of the |virtual_path_|, do not
       // pass a mime type to GenerateSafeFileName so that it does not force the
-      // filename to have an extension. Otherwise, correct the file extension in
-      // case it is wrongly given.
-      if (new_path.Extension().empty()) {
+      // filename to have an extension or generate a different one. Otherwise,
+      // correct the file extension in case it is wrongly given.
+      if (new_path.Extension().empty() ||
+          new_path.Extension() == virtual_path_.Extension()) {
         net::GenerateSafeFileName(std::string() /*mime_type*/,
                                   false /*ignore_extension*/, &new_path);
       } else {
@@ -873,6 +879,11 @@ void DownloadTargetDeterminer::CheckVisitedReferrerBeforeDone(
     bool visited_referrer_before) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(STATE_DETERMINE_INTERMEDIATE_PATH, next_state_);
+  safe_browsing::RecordDownloadFileTypeAttributes(
+      safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+          virtual_path_.BaseName()),
+      download_->HasUserGesture(), visited_referrer_before,
+      GetLastDownloadBypassTimestamp());
   danger_level_ = GetDangerLevel(
       visited_referrer_before ? VISITED_REFERRER : NO_VISITS_TO_REFERRER);
   if (danger_level_ != DownloadFileType::NOT_DANGEROUS &&
@@ -1125,6 +1136,18 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
        (download_->HasUserGesture() && visits == VISITED_REFERRER)))
     return DownloadFileType::NOT_DANGEROUS;
   return danger_level;
+}
+
+absl::optional<base::Time>
+DownloadTargetDeterminer::GetLastDownloadBypassTimestamp() const {
+  safe_browsing::SafeBrowsingMetricsCollector* metrics_collector =
+      safe_browsing::SafeBrowsingMetricsCollectorFactory::GetForProfile(
+          GetProfile());
+  // metrics_collector can be null in incognito.
+  return metrics_collector ? metrics_collector->GetLatestEventTimestamp(
+                                 safe_browsing::SafeBrowsingMetricsCollector::
+                                     EventType::DANGEROUS_DOWNLOAD_BYPASS)
+                           : absl::nullopt;
 }
 
 void DownloadTargetDeterminer::OnDownloadDestroyed(

@@ -17,75 +17,27 @@ To collect a profile:
 """
 
 import argparse
-import gzip
-import json
 import logging
 import os
 
 from matplotlib import pylab as plt
 import numpy as np
 
-
-def _LoadTrace(filename: str) -> dict:
-  """Loads a JSON trace, gzipped or not.
-
-  Args:
-    filename: Filename, gzipped or not.
-
-  Returns:
-    A dictionary with the trace content.
-  """
-  try:
-    f = None
-    if filename.endswith('.gz'):
-      f = gzip.open(filename, 'r')
-    else:
-      f = open(filename, 'r')
-    return json.load(f)
-  finally:
-    if f is not None:
-      f.close()
+from parse_trace import LoadTrace, GetAllocatorDumps, ProcessNamesAndLabels
 
 
 def _ParseTrace(trace: dict) -> dict:
   """Parses a trace, and returns thread cache stats.
 
   Args:
-    trace: As returned by _LoadTrace()
+    trace: As returned by LoadTrace()
 
   Returns:
     {pid  -> {'name': str, 'labels': str, 'data': np.array}.
     Where the data array contains 'size' and 'count' columns.
   """
-  events = trace['traceEvents']
-  memory_infra_events = [
-      e for e in events if e['cat'] == 'disabled-by-default-memory-infra'
-  ]
-  dumps = [
-      e for e in memory_infra_events
-      if e['name'] == 'periodic_interval' and e['args']['dumps']
-      ['level_of_detail'] == 'detailed' and 'allocators' in e['args']['dumps']
-  ]
-
-  # Process names and labels.
-  pid_to_name = {}
-  pid_to_labels = {}
-
-  metadata_events = [
-      e for e in trace['traceEvents'] if e['cat'] == '__metadata'
-  ]
-
-  process_name_events = [
-      e for e in metadata_events if e['name'] == 'process_name'
-  ]
-  for e in process_name_events:
-    pid_to_name[e['pid']] = e['args']['name']
-
-  process_labels_events = [
-      e for e in metadata_events if e['name'] == 'process_labels'
-  ]
-  for e in process_labels_events:
-    pid_to_labels[e['pid']] = e['args']['labels']
+  dumps = GetAllocatorDumps(trace)
+  pid_to_name, pid_to_labels = ProcessNamesAndLabels(trace)
 
   result = {}
   for dump in dumps:
@@ -131,9 +83,9 @@ def _PlotProcess(all_data: dict, pid: int, output_prefix: str):
   plt.figure(figsize=(16, 8))
   plt.title('Allocation count vs Size - %s - %s' %
             (data['name'], data['labels']))
-  plt.stem(data['data']['size'], data['data']['count'])
   plt.xscale('log', base=2)
   plt.yscale('log', base=10)
+  plt.stem(data['data']['size'], data['data']['count'])
   plt.xlabel('Size (log)')
   plt.ylabel('Allocations (log)')
   plt.savefig('%s_%d_count.png' % (output_prefix, pid), bbox_inches='tight')
@@ -181,7 +133,7 @@ def main():
   args = parser.parse_args()
 
   logging.info('Loading the trace')
-  trace = _LoadTrace(args.trace)
+  trace = LoadTrace(args.trace)
 
   logging.info('Parsing the trace')
   stats_per_process = _ParseTrace(trace)

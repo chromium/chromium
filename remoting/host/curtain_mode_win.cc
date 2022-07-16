@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/host/client_session_control.h"
 
 #include <windows.h>
@@ -18,11 +18,11 @@ class CurtainModeWin : public CurtainMode {
  public:
   CurtainModeWin();
 
+  CurtainModeWin(const CurtainModeWin&) = delete;
+  CurtainModeWin& operator=(const CurtainModeWin&) = delete;
+
   // Overriden from CurtainMode.
   bool Activate() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CurtainModeWin);
 };
 
 CurtainModeWin::CurtainModeWin() {

@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.debug.DevCssTest');
 goog.setTestOnly();
@@ -56,10 +48,13 @@ testSuite({
     el = document.getElementById('devcss-test-2');
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testGetIe6CombinedSelectorText() {
     let devcssInstance = new DevCss();
+    /** @suppress {visibility} suppression added to enable type checking */
     devcssInstance.ie6CombinedMatches_ = [];
     let css = '.class2 { -goog-ie6-selector:".class1_class2"; prop: val; }';
+    /** @suppress {visibility} suppression added to enable type checking */
     let newCss = devcssInstance.getIe6CombinedSelectorText_(css);
     assertEquals('.class1_class2', newCss);
     assertArrayEquals(
@@ -69,9 +64,11 @@ testSuite({
         devcssInstance.ie6CombinedMatches_[0].combinedClassName);
 
     devcssInstance = new DevCss();
+    /** @suppress {visibility} suppression added to enable type checking */
     devcssInstance.ie6CombinedMatches_ = [];
     css = '.class3 { prop: val; -goog-ie6-selector:".class1_class2_class3";' +
         'prop: val; }';
+    /** @suppress {visibility} suppression added to enable type checking */
     newCss = devcssInstance.getIe6CombinedSelectorText_(css);
     assertEquals('.class1_class2_class3', newCss);
     assertArrayEquals(
@@ -82,10 +79,12 @@ testSuite({
         devcssInstance.ie6CombinedMatches_[0].combinedClassName);
 
     devcssInstance = new DevCss();
+    /** @suppress {visibility} suppression added to enable type checking */
     devcssInstance.ie6CombinedMatches_ = [];
     css = '.class3, .class5 {' +
         '-goog-ie6-selector:".class1_class2_class3, .class4_class5";' +
         'prop: val; }';
+    /** @suppress {visibility} suppression added to enable type checking */
     newCss = devcssInstance.getIe6CombinedSelectorText_(css);
     assertEquals('.class1_class2_class3, .class4_class5', newCss);
     assertArrayEquals(
@@ -101,6 +100,7 @@ testSuite({
         devcssInstance.ie6CombinedMatches_[1].combinedClassName);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testAddIe6CombinedClassNames() {
     const el_combined1 = document.getElementById('devcss-test-combined1');
     const el_combined2 = document.getElementById('devcss-test-combined2');
@@ -109,6 +109,7 @@ testSuite({
     const el_notcombined3 = document.getElementById('devcss-test-notcombined3');
 
     const devcssInstance = new DevCss();
+    /** @suppress {visibility} suppression added to enable type checking */
     devcssInstance.ie6CombinedMatches_ = [
       {
         classNames: ['ie6-2', 'ie6-1'],
@@ -132,6 +133,7 @@ testSuite({
 
   testActivateBrowserSpecificCssALL() {
     // equals GECKO
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const devcssInstance = new DevCss('GECKO');
     devcssInstance.activateBrowserSpecificCssRules(false);
     let backgroundColor = style.getBackgroundColor(el);
@@ -148,6 +150,7 @@ testSuite({
 
   testActivateBrowserSpecificCssWithVersion() {
     // equals IE 6
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const devcssInstance = new DevCss('IE', '6');
     devcssInstance.activateBrowserSpecificCssRules(false);
     const elIe6 = document.getElementById('devcss-test-ie6');
@@ -155,6 +158,7 @@ testSuite({
     assertEquals('rgb(255,192,203)', spaceless(backgroundColor));
 
     // IE8 test case w/ two selectors joined by a commma.
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const devCssInstanceTwo = new DevCss('IE', '8');
     devCssInstanceTwo.activateBrowserSpecificCssRules(false);
     const elIe8One = document.getElementById('devcss-ie8-1');
@@ -170,6 +174,7 @@ testSuite({
     let marginBox = style.getMarginBox(el);
     assertEquals(1, marginBox.top);  // should still be 1
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const devcssInstance = new DevCss('WEBKIT', 254);
     devcssInstance.activateBrowserSpecificCssRules(false);
     marginBox = style.getMarginBox(el);
@@ -177,6 +182,7 @@ testSuite({
   },
 
   testActivateBrowserSpecificCssGteValid() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const devcssInstance = new DevCss('WEBKIT', 255);
     devcssInstance.activateBrowserSpecificCssRules(false);
     const marginBox = style.getMarginBox(el);
@@ -188,6 +194,7 @@ testSuite({
     let marginBox = style.getMarginBox(el);
     assertEquals(1, marginBox.left);  // should still be 1
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const devcssInstance = new DevCss('WEBKIT', 202);
     devcssInstance.activateBrowserSpecificCssRules(false);
     marginBox = style.getMarginBox(el);
@@ -195,6 +202,7 @@ testSuite({
   },
 
   testActivateBrowserSpecificCssLteValid() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const devcssInstance = new DevCss('WEBKIT', 199);
     devcssInstance.activateBrowserSpecificCssRules(false);
     const marginBox = style.getMarginBox(el);
@@ -202,6 +210,7 @@ testSuite({
   },
 
   testReplaceIe6Selectors() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const devcssInstance = new DevCss('IE', 6);
     devcssInstance.activateBrowserSpecificCssRules(false);
 

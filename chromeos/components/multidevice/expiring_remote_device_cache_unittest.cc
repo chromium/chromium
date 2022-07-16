@@ -14,6 +14,11 @@ namespace chromeos {
 namespace multidevice {
 
 class ExpiringRemoteDeviceCacheTest : public ::testing::Test {
+ public:
+  ExpiringRemoteDeviceCacheTest(const ExpiringRemoteDeviceCacheTest&) = delete;
+  ExpiringRemoteDeviceCacheTest& operator=(
+      const ExpiringRemoteDeviceCacheTest&) = delete;
+
  protected:
   ExpiringRemoteDeviceCacheTest()
       : test_remote_device_list_(CreateRemoteDeviceListForTest(5)),
@@ -60,8 +65,6 @@ class ExpiringRemoteDeviceCacheTest : public ::testing::Test {
   RemoteDeviceList test_remote_device_list_;
   RemoteDeviceRefList test_remote_device_ref_list_;
   std::unique_ptr<ExpiringRemoteDeviceCache> cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpiringRemoteDeviceCacheTest);
 };
 
 TEST_F(ExpiringRemoteDeviceCacheTest,

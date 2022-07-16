@@ -1,4 +1,4 @@
-    <style include="shared-style cr-icons">
+    <style include="shared-style cr-icons cr-nav-menu-item-style">
       :host {
         display: flex;
         flex-direction: column;
@@ -93,31 +93,74 @@
         /* At large font sizes, prevents the text from wrapping weirdly. */
         overflow-x: hidden;
       }
+
+      iron-icon {
+        display: none;
+      }
+
+      :host-context([enable-branding-update]) iron-icon {
+        display: block;
+      }
+
+      :host-context([enable-branding-update]) #clear-browsing-data {
+        justify-content: normal;
+      }
+
+      :host-context([enable-branding-update]) #clear-browsing-data .cr-icon {
+        margin-inline-end: 0;
+        margin-inline-start: 9px;
+      }
+
+      :host-context([enable-branding-update]) #syncedTabs + .separator {
+        display: none;
+      }
     </style>
 
     <cr-menu-selector>
       <iron-selector id="menu" selected="{{selectedPage}}"
           selectable=".page-item" attr-for-selected="path"
-          on-iron-activate="onSelectorActivate_">
-        <a role="menuitem" href="/" class="page-item" path="history"
+          on-iron-activate="onSelectorActivate_" selected-attribute="selected">
+        <a id="history" role="menuitem" class="page-item cr-nav-menu-item"
+            href="[[getHistoryItemHref_(selectedTab, showHistoryClusters_)]]"
+            path="[[getHistoryItemPath_(selectedTab, showHistoryClusters_)]]"
             on-click="onItemClick_">
+          <iron-icon icon="cr:schedule"></iron-icon>
           $i18n{historyMenuItem}
           <paper-ripple></paper-ripple>
         </a>
-        <a role="menuitem" href="/syncedTabs" class="page-item"
+        <a id="syncedTabs" role="menuitem" href="/syncedTabs"
+            class="page-item cr-nav-menu-item"
             path="syncedTabs" on-click="onItemClick_">
+          <iron-icon icon="cr:phonelink"></iron-icon>
           $i18n{openTabsMenuItem}
           <paper-ripple></paper-ripple>
         </a>
         <div class="separator"></div>
         <a role="menuitem" id="clear-browsing-data"
+            class="cr-nav-menu-item"
             href="chrome://settings/clearBrowserData"
             on-click="onClearBrowsingDataTap_"
             disabled$="[[guestSession_]]"
             tabindex$="[[computeClearBrowsingDataTabIndex_(guestSession_)]]">
+          <iron-icon icon="cr:delete"></iron-icon>
           $i18n{clearBrowsingData}
           <div class="cr-icon icon-external"></div>
           <paper-ripple id="cbd-ripple"></paper-ripple>
+        </a>
+        <!-- tabindex is needed below because <a> without href attribute is not
+             focusable in sequential keyboard navigation by default. -->
+        <a role="menuitem" id="toggle-history-clusters"
+            class="cr-nav-menu-item"
+            tabindex="0"
+            on-click="onToggleHistoryClustersClick_"
+            on-keydown="onToggleHistoryClustersKeydown_"
+            on-mousedown="onToggleHistoryClustersMousedown_"
+            hidden="[[!showToggleHistoryClusters_]]">
+          <iron-icon icon="[[getToggleHistoryClustersItemIcon_(
+              historyClustersVisible)]]">
+          </iron-icon>
+          [[getToggleHistoryClustersItemLabel_(historyClustersVisible)]]
+          <paper-ripple id="thc-ripple"></paper-ripple>
         </a>
       </iron-selector>
     </cr-menu-selector>

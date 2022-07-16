@@ -52,7 +52,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 using base::Time;
-using base::TimeDelta;
 using update_client::UpdateQueryParams;
 
 namespace extensions {
@@ -610,10 +609,8 @@ void ExtensionDownloader::CreateManifestLoader() {
   // common for the retail mode AppPack on ChromeOS. Retrying once should be
   // enough to recover in those cases; let the fetcher retry up to 3 times
   // just in case. http://crosbug.com/130602
-  const int kMaxRetries = 3;
   manifest_loader_->SetRetryOptions(
-      kMaxRetries,
-      network::SimpleURLLoader::RetryMode::RETRY_ON_NETWORK_CHANGE);
+      3, network::SimpleURLLoader::RetryMode::RETRY_ON_NETWORK_CHANGE);
 
   network::mojom::URLLoaderFactory* url_loader_factory_to_use =
       GetURLLoaderFactoryToUse(active_request->full_url());
@@ -853,7 +850,7 @@ void ExtensionDownloader::HandleManifestResults(
   if (fetch_data->base_url().DomainIs(kGoogleDotCom) &&
       results->daystart_elapsed_seconds >= 0) {
     Time day_start =
-        Time::Now() - TimeDelta::FromSeconds(results->daystart_elapsed_seconds);
+        Time::Now() - base::Seconds(results->daystart_elapsed_seconds);
 
     for (const ExtensionId& id : extension_ids) {
       ExtensionDownloaderDelegate::PingResult& result = ping_results_[id];
@@ -868,8 +865,8 @@ void ExtensionDownloader::HandleManifestResults(
       no_updates, fetch_data->request_ids(),
       ExtensionDownloaderDelegate::Error::NO_UPDATE_AVAILABLE);
   ExtensionIdSet extension_ids_with_errors;
-  for (const auto& error : errors)
-    extension_ids_with_errors.insert(error.first);
+  for (const auto& e : errors)
+    extension_ids_with_errors.insert(e.first);
   NotifyExtensionsDownloadStageChanged(
       extension_ids_with_errors, ExtensionDownloaderDelegate::Stage::FINISHED);
   NotifyExtensionsManifestInvalidFailure(errors, fetch_data->request_ids());
@@ -1265,10 +1262,9 @@ void ExtensionDownloader::StartExtensionLoader() {
       GetURLLoaderFactoryToUse(extension_loader_resource_request_->url);
   extension_loader_ = network::SimpleURLLoader::Create(
       std::move(extension_loader_resource_request_), traffic_annotation);
-  const int kMaxRetries = 3;
+  // Retry up to 3 times.
   extension_loader_->SetRetryOptions(
-      kMaxRetries,
-      network::SimpleURLLoader::RetryMode::RETRY_ON_NETWORK_CHANGE);
+      3, network::SimpleURLLoader::RetryMode::RETRY_ON_NETWORK_CHANGE);
 
   extension_loader_->DownloadToTempFile(
       url_loader_factory_to_use,
@@ -1284,7 +1280,7 @@ void ExtensionDownloader::OnExtensionLoadComplete(base::FilePath crx_path) {
       extension_loader_->ResponseInfo()->headers) {
     response_code = extension_loader_->ResponseInfo()->headers->response_code();
   }
-  const base::TimeDelta& backoff_delay = base::TimeDelta::FromMilliseconds(0);
+  const base::TimeDelta& backoff_delay = base::Milliseconds(0);
 
   ExtensionFetch& active_request = *extensions_queue_.active_request();
   const ExtensionId& id = active_request.id;

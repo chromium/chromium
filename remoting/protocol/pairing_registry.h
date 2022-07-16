@@ -107,6 +107,9 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
       scoped_refptr<base::SingleThreadTaskRunner> delegate_task_runner,
       std::unique_ptr<Delegate> delegate);
 
+  PairingRegistry(const PairingRegistry&) = delete;
+  PairingRegistry& operator=(const PairingRegistry&) = delete;
+
   // Creates a pairing for a new client and saves it to disk.
   //
   // TODO(jamiewalch): Plumb the Save callback into the RequestPairing flow
@@ -182,8 +185,6 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
   std::unique_ptr<Delegate> delegate_;
 
   base::queue<base::OnceClosure> pending_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(PairingRegistry);
 };
 
 }  // namespace protocol

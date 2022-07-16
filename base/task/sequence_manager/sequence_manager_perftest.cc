@@ -13,7 +13,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/post_task.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
@@ -22,6 +21,7 @@
 #include "base/task/sequence_manager/test/test_task_queue.h"
 #include "base/task/sequence_manager/test/test_task_time_observer.h"
 #include "base/task/sequence_manager/thread_controller_with_message_pump_impl.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_impl.h"
@@ -60,19 +60,24 @@ class PerfTestTimeDomain : public MockTimeDomain {
   PerfTestTimeDomain& operator=(const PerfTestTimeDomain&) = delete;
   ~PerfTestTimeDomain() override = default;
 
-  absl::optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) override {
-    absl::optional<TimeTicks> run_time = NextScheduledRunTime();
-    if (!run_time)
-      return absl::nullopt;
-    SetNowTicks(*run_time);
-    // Makes SequenceManager to continue immediately.
-    return TimeDelta();
+  base::TimeTicks GetNextDelayedTaskTime(DelayedWakeUp next_wake_up,
+                                         LazyNow* lazy_now) const override {
+    // Check if we have a task that should be running now.
+    if (next_wake_up.time <= NowTicks())
+      return base::TimeTicks();
+
+    // Rely on MaybeFastForwardToWakeUp to be called to advance
+    // time.
+    return base::TimeTicks::Max();
   }
 
-  void SetNextDelayedDoWork(LazyNow* lazy_now, TimeTicks run_time) override {
-    // De-dupe DoWorks.
-    if (NumberOfScheduledWakeUps() == 1u)
-      RequestDoWork();
+  bool MaybeFastForwardToWakeUp(absl::optional<DelayedWakeUp> wake_up,
+                                bool quit_when_idle_requested) override {
+    if (wake_up) {
+      SetNowTicks(wake_up->time);
+      return true;
+    }
+    return false;
   }
 };
 
@@ -120,7 +125,7 @@ class BaseSequenceManagerPerfTestDelegate : public PerfTestDelegate {
   scoped_refptr<TaskRunner> CreateTaskRunner() override {
     scoped_refptr<TestTaskQueue> task_queue =
         manager_->CreateTaskQueueWithType<TestTaskQueue>(
-            TaskQueue::Spec("test").SetTimeDomain(time_domain_.get()));
+            TaskQueue::Spec("test"));
     owned_task_queues_.push_back(task_queue);
     return task_queue->task_runner();
   }
@@ -137,12 +142,12 @@ class BaseSequenceManagerPerfTestDelegate : public PerfTestDelegate {
   void SetSequenceManager(std::unique_ptr<SequenceManager> manager) {
     manager_ = std::move(manager);
     time_domain_ = std::make_unique<PerfTestTimeDomain>();
-    manager_->RegisterTimeDomain(time_domain_.get());
+    manager_->SetTimeDomain(time_domain_.get());
   }
 
   void ShutDown() {
     owned_task_queues_.clear();
-    manager_->UnregisterTimeDomain(time_domain_.get());
+    manager_->ResetTimeDomain();
     manager_.reset();
   }
 
@@ -434,7 +439,7 @@ class SingleThreadDelayedTestCase : public TestCase {
       unsigned int delay =
           num_tasks_to_post_ % 2 ? 1 : (10 + num_tasks_to_post_ % 10);
       task_runners_[queue]->PostDelayedTask(FROM_HERE, task_closure_,
-                                            TimeDelta::FromMilliseconds(delay));
+                                            Milliseconds(delay));
     }
 
     void SignalDone() override { delegate_->SignalDone(); }

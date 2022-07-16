@@ -9,8 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -44,6 +43,9 @@ class MEDIA_EXPORT MediaServiceThrottler {
   // The first thread on which GetInstance() is called is the thread on which
   // calls to OnMediaServerCrash() will be signaled.
   static MediaServiceThrottler* GetInstance();
+
+  MediaServiceThrottler(const MediaServiceThrottler&) = delete;
+  MediaServiceThrottler& operator=(const MediaServiceThrottler&) = delete;
 
   // Returns the delay to wait until a new client is allowed to be created.
   base::TimeDelta GetDelayForClientCreation();
@@ -107,8 +109,6 @@ class MEDIA_EXPORT MediaServiceThrottler {
   std::unique_ptr<MediaServerCrashListener> crash_listener_;
 
   scoped_refptr<base::SingleThreadTaskRunner> crash_listener_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaServiceThrottler);
 };
 
 }  // namespace media

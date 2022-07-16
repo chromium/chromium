@@ -22,6 +22,10 @@ class Keyboard final : public ScriptWrappable {
 
  public:
   explicit Keyboard(ExecutionContext*);
+
+  Keyboard(const Keyboard&) = delete;
+  Keyboard& operator=(const Keyboard&) = delete;
+
   ~Keyboard() override;
 
   // KeyboardLock API: https://w3c.github.io/keyboard-lock/
@@ -36,8 +40,6 @@ class Keyboard final : public ScriptWrappable {
  private:
   Member<KeyboardLock> keyboard_lock_;
   Member<KeyboardLayout> keyboard_layout_;
-
-  DISALLOW_COPY_AND_ASSIGN(Keyboard);
 };
 
 }  // namespace blink

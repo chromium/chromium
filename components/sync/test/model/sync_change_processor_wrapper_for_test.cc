@@ -25,7 +25,8 @@ SyncChangeProcessorWrapperForTest::SyncChangeProcessorWrapperForTest(
   DCHECK(wrapped);
 }
 
-SyncChangeProcessorWrapperForTest::~SyncChangeProcessorWrapperForTest() {}
+SyncChangeProcessorWrapperForTest::~SyncChangeProcessorWrapperForTest() =
+    default;
 
 absl::optional<ModelError>
 SyncChangeProcessorWrapperForTest::ProcessSyncChanges(

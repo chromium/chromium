@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
 #include "extensions/common/extension_builder.h"
@@ -18,8 +19,9 @@ class BluetoothSocketApiUnittest : public ApiUnitTest {
  public:
   BluetoothSocketApiUnittest() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketApiUnittest);
+  BluetoothSocketApiUnittest(const BluetoothSocketApiUnittest&) = delete;
+  BluetoothSocketApiUnittest& operator=(const BluetoothSocketApiUnittest&) =
+      delete;
 };
 
 // Tests that bluetoothSocket.create fails as expected when extension does not
@@ -33,7 +35,14 @@ TEST_F(BluetoothSocketApiUnittest, Permission) {
 
 // Tests bluetoothSocket.create() and bluetoothSocket.close().
 // Regression test for https://crbug.com/831651.
-TEST_F(BluetoothSocketApiUnittest, CreateThenClose) {
+// TODO(https://crbug.com/1251347): Port //device/bluetooth to Fuchsia to enable
+// bluetooth extensions.
+#if defined(OS_FUCHSIA)
+#define MAYBE_CreateThenClose DISABLED_CreateThenClose
+#else
+#define MAYBE_CreateThenClose CreateThenClose
+#endif
+TEST_F(BluetoothSocketApiUnittest, MAYBE_CreateThenClose) {
   scoped_refptr<const Extension> extension_with_socket_permitted =
       ExtensionBuilder()
           .SetManifest(

@@ -20,6 +20,10 @@ class CastExtensionSystemFactory : public ExtensionSystemProvider {
 
   static CastExtensionSystemFactory* GetInstance();
 
+  CastExtensionSystemFactory(const CastExtensionSystemFactory&) = delete;
+  CastExtensionSystemFactory& operator=(const CastExtensionSystemFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<CastExtensionSystemFactory>;
 
@@ -32,8 +36,6 @@ class CastExtensionSystemFactory : public ExtensionSystemProvider {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionSystemFactory);
 };
 
 }  // namespace extensions

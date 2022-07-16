@@ -1,0 +1,147 @@
+<!--
+@AURALINUX-ALLOW:class:*
+@AURALINUX-ALLOW:description=*
+@AURALINUX-ALLOW:id:*
+@AURALINUX-ALLOW:tag:*
+@BLINK-ALLOW:className*
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:description=*
+-->
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<body>
+<div hidden id="link-label">Link (from aria-labelledby)</div>
+<div hidden id="circle-label">Circle (from aria-labelledby)</div>
+<svg class="name-aria-labelledby">
+  <a href="foo.html"
+     aria-label="Link (from aria-label)"
+     aria-labelledby="link-label"
+     xlink:title="Link (from xlink:title)">
+    <title>Link (from title)</title>
+    <circle cx="10" cy="10" r="5"/>
+  </a>
+</svg>
+<svg class="name-aria-label">
+  <a href="foo.html"
+     aria-label="Link (from aria-label)"
+     xlink:title="Link (from xlink:title)">
+    <title>Link (from title)</title>
+    <circle cx="10" cy="10" r="5"/>
+  </a>
+</svg>
+<svg class="name-title">
+  <a href="foo.html" xlink:title="Link (from xlink:title)">
+    <title>Link (from title)</title>
+    <circle cx="10" cy="10" r="5"/>
+  </a>
+</svg>
+<svg class="name-xlink-title">
+  <a href="foo.html" xlink:title="Link (from xlink:title)">
+    <circle cx="10" cy="10" r="5"/>
+  </a>
+</svg>
+<svg class="name-aria-labelledby">
+  <circle aria-labelledby="circle-label" cx="10" cy="10" r="5"/>
+</svg>
+<svg class="name-aria-label">
+  <circle aria-label="Circle (from aria-label)" cx="10" cy="10" r="5"/>
+</svg>
+<svg class="name-title">
+  <circle cx="10" cy="10" r="5">
+    <title>Circle (from title)</title>
+  </circle>
+</svg>
+<svg class="name-use-title">
+  <symbol id="myCircle" width="10" height="10">
+    <circle cx="10" cy="10" r="5"/>
+  </symbol>
+  <use href="#myCircle" x="5"  y="5" style="opacity:1.0">
+    <title>Circle (From first use element's title)</title>
+  </use>
+  <use href="#myCircle" x="20" y="5" style="opacity:0.5">
+   <title>Circle (From second use element's title)</title>
+  </use>
+</svg>
+<svg class="name-symbol-title">
+  <symbol id="myRect" width="10" height="10">
+    <rect x="10" y="10" width="50" height="30"/>
+    <title>Rectangle Symbol (From symbol's title)</title>
+  </symbol>
+  <use href="#myRect" x="5"  y="5" style="opacity:1.0" />
+  <use href="#myRect" x="20" y="5" style="opacity:0.5" />
+</svg>
+<div hidden id="link-description">Link (from aria-describedby)</div>
+<svg class="description-aria-describedby">
+  <a href="foo.html"
+     aria-description="Link (from aria-description)"
+     aria-describedby="link-description"
+     xlink:title="Link (from xlink:title)">
+    <title>Link (from title)</title>
+    <desc>Link (from desc)</desc>
+    <circle cx="10" cy="10" r="5"/>
+  </a>
+</svg>
+<svg class="description-aria-description">
+  <a href="foo.html"
+     aria-description="Link (from aria-description)"
+     xlink:title="Link (from xlink:title)">
+    <title>Link (from title)</title>
+    <desc>Link (from desc)</desc>
+    <circle cx="10" cy="10" r="5"/>
+  </a>
+</svg>
+<svg class="description-desc">
+  <a href="foo.html"
+     xlink:title="Link (from xlink:title)">
+    <title>Link (from title)</title>
+    <desc>Link (from desc)</desc>
+    <circle cx="10" cy="10" r="5"/>
+  </a>
+</svg>
+<svg class="description-title">
+  <a href="foo.html"
+     aria-label="Link (from aria-label)"
+     xlink:title="Link (from xlink:title)">
+    <title>Link (from title)</title>
+    <circle cx="10" cy="10" r="5"/>
+  </a>
+</svg>
+<svg class="description-xlink-title">
+  <a href="foo.html"
+     xlink:title="Link (from xlink:title)">
+    <title>Link (from title)</title>
+    <circle cx="10" cy="10" r="5"/>
+  </a>
+</svg>
+<svg class="description-use-desc">
+  <symbol id="myCircle2" width="10" height="10">
+    <circle cx="10" cy="10" r="5"/>
+  </symbol>
+  <use href="#myCircle2" x="5"  y="5" style="opacity:1.0">
+    <desc>Circle (From first use element's desc)</desc>
+  </use>
+  <use href="#myCircle2" x="20" y="5" style="opacity:0.5">
+   <desc>Circle (From second use element's desc)</desc>
+  </use>
+</svg>
+<svg class="description-use-title">
+  <symbol id="myCircle3" width="10" height="10">
+    <circle cx="10" cy="10" r="5"/>
+  </symbol>
+  <use aria-label="Circle 1" href="#myCircle3" x="5"  y="5" style="opacity:1.0">
+    <title>Circle (From first use element's title)</title>
+  </use>
+  <use aria-label="Circle 2" href="#myCircle3" x="20" y="5" style="opacity:0.5">
+   <title>Circle (From second use element's title)</title>
+  </use>
+</svg>
+<svg class="desc-symbol-desc">
+  <symbol id="myRect2" width="10" height="10">
+    <rect x="10" y="10" width="50" height="30"/>
+    <desc>Rectangle Symbol (From symbol's desc)</desc>
+  </symbol>
+  <use href="#myRect2" x="5"  y="5" style="opacity:1.0" />
+  <use href="#myRect2" x="20" y="5" style="opacity:0.5" />
+</svg>
+</body>
+</html>

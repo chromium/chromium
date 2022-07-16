@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_mediator.h"
@@ -104,6 +105,14 @@
   return self.unifiedConsentViewController.isScrolledToBottom;
 }
 
+- (BOOL)hasManagedSyncDataType {
+  return HasManagedSyncDataType(self.browser->GetBrowserState());
+}
+
+- (BOOL)hasAccountRestrictions {
+  return IsRestrictAccountsToPatternsEnabled();
+}
+
 #pragma mark - Private
 
 // Opens the identity chooser dialog with an animation from |point|.
@@ -126,6 +135,14 @@
 }
 
 #pragma mark - UnifiedConsentViewControllerDelegate
+
+- (BOOL)unifiedConsentCoordinatorHasManagedSyncDataType {
+  return self.hasManagedSyncDataType;
+}
+
+- (BOOL)unifiedConsentCoordinatorHasAccountRestrictions {
+  return self.hasAccountRestrictions;
+}
 
 - (void)unifiedConsentViewControllerViewDidAppear:
     (UnifiedConsentViewController*)controller {
@@ -150,6 +167,11 @@
   DCHECK(!self.settingsLinkWasTapped);
   self.settingsLinkWasTapped = YES;
   [self.delegate unifiedConsentCoordinatorDidTapSettingsLink:self];
+}
+
+- (void)unifiedConsentViewControllerDidTapLearnMoreLink:
+    (UnifiedConsentViewController*)controller {
+  [self.delegate unifiedConsentCoordinatorDidTapLearnMoreLink:self];
 }
 
 - (void)unifiedConsentViewControllerDidTapIdentityButtonControl:

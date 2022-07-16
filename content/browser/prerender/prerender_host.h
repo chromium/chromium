@@ -9,7 +9,9 @@
 
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
+#include "content/browser/prerender/prerender_attributes.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/renderer_host/stored_page.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -17,7 +19,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
-#include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -32,7 +33,7 @@ class WebContentsImpl;
 // that triggered prerendering and starts prerendering. Then NavigationRequest
 // is expected to find this host from PrerenderHostRegistry and activate the
 // prerendered page upon navigation. This is created per request from a renderer
-// process via PrerenderProcessor or will directly be created for
+// process via SpeculationHostImpl or will directly be created for
 // browser-initiated prerendering (this code path is not implemented yet). This
 // is owned by PrerenderHostRegistry.
 class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
@@ -62,7 +63,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kNavigationRequestBlockedByCsp = 9,
     kMainFrameNavigation = 10,
     kMojoBinderPolicy = 11,
-    kPlugin = 12,
+    // kPlugin = 12,  // No longer used.
     kRendererProcessCrashed = 13,
     kRendererProcessKilled = 14,
     kDownload = 15,
@@ -75,11 +76,18 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kCancelAllHostsForTesting = 22,
     kDidFailLoad = 23,
     kStop = 24,
-    kMaxValue = kStop,
+    kSslCertificateError = 25,
+    kLoginAuthRequested = 26,
+    kUaChangeRequiresReload = 27,
+    kBlockedByClient = 28,
+    kAudioOutputDeviceRequested = 29,
+    kMixedContent = 30,
+    kTriggerBackgrounded = 31,
+    kMaxValue = kTriggerBackgrounded,
   };
 
-  PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
-                RenderFrameHostImpl& initiator_render_frame_host);
+  PrerenderHost(const PrerenderAttributes& attributes,
+                WebContents& web_contents);
   ~PrerenderHost() override;
 
   PrerenderHost(const PrerenderHost&) = delete;
@@ -92,16 +100,15 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
 
   // WebContentsObserver implementation:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void OnVisibilityChanged(Visibility visibility) override;
+  void ResourceLoadComplete(
+      RenderFrameHost* render_frame_host,
+      const GlobalRequestID& request_id,
+      const blink::mojom::ResourceLoadInfo& resource_load_info) override;
 
-  // Activates the prerendered page and returns BackForwardCacheImpl::Entry
-  // containing the page. This must be called after this host gets ready for
-  // activation.
-  //
-  // TODO(https://crbug.com/1181263): Refactor BackForwardCacheImpl::Entry into
-  // a generic "page" object to make clear that the same logic is also used for
-  // prerendering.
-  std::unique_ptr<BackForwardCacheImpl::Entry> Activate(
-      NavigationRequest& navigation_request);
+  // Activates the prerendered page and returns StoredPage containing the page.
+  // This must be called after this host gets ready for activation.
+  std::unique_ptr<StoredPage> Activate(NavigationRequest& navigation_request);
 
   // Returns true if the navigation params that were used in the initial
   // prerender navigation (i.e., in StartPrerendering()) match the navigation
@@ -111,9 +118,14 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   bool AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
       NavigationRequest& navigation_request);
 
+  bool IsFramePolicyCompatibleWithPrimaryFrameTree();
+
   // Returns the main RenderFrameHost of the prerendered page.
   // This must be called after StartPrerendering() and before Activate().
   RenderFrameHostImpl* GetPrerenderedMainFrameHost();
+
+  // Returns the frame tree for the prerendered page `this` is hosting.
+  FrameTree& GetPrerenderFrameTree();
 
   // Tells the reason of the destruction of this host. PrerenderHostRegistry
   // uses this before abandoning the host.
@@ -134,13 +146,20 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // The initial navigation id is set by the PrerenderNavigationThrottle
+  // The initial navigation is set by the PrerenderNavigationThrottle
   // when the PrerenderHost is first navigated, which happens immediately
   // after creation.
+  void SetInitialNavigation(NavigationRequest* navigation);
   absl::optional<int64_t> GetInitialNavigationId() const;
-  void SetInitialNavigationId(int64_t navigation_id);
 
-  url::Origin initiator_origin() const { return initiator_origin_; }
+  // Returns absl::nullopt iff prerendering is initiated by the browser (not by
+  // a renderer using Speculation Rules API).
+  absl::optional<url::Origin> initiator_origin() const {
+    return attributes_.initiator_origin;
+  }
+  const GURL& initiator_url() const { return attributes_.initiator_url; }
+
+  bool IsBrowserInitiated() { return attributes_.IsBrowserInitiated(); }
 
   int frame_tree_node_id() const { return frame_tree_node_id_; }
 
@@ -165,12 +184,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   bool AreCommonNavigationParamsCompatibleWithNavigation(
       const blink::mojom::CommonNavigationParams& potential_activation);
 
-  // TODO(https://crbug.com/1217045): Flatten the params and do not rely on
-  // PrerenderAttributesPtr.
-  const blink::mojom::PrerenderAttributesPtr attributes_;
-  const url::Origin initiator_origin_;
-  const int initiator_process_id_;
-  const blink::LocalFrameToken initiator_frame_token_;
+  const PrerenderAttributes attributes_;
 
   // Indicates if `page_holder_` is ready for activation.
   bool is_ready_for_activation_ = false;
@@ -187,9 +201,10 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   base::ObserverList<Observer> observers_;
 
   // Navigation parameters for the navigation which loaded the main document of
-  // the prerendered page, copied immediately after BeginNavigation. They will
-  // be compared with the navigation parameters of the potential activation when
-  // attempting to reserve the prerender host for a navigation.
+  // the prerendered page, copied immediately after BeginNavigation when
+  // throttles are created. They will be compared with the navigation parameters
+  // of the potential activation when attempting to reserve the prerender host
+  // for a navigation.
   blink::mojom::BeginNavigationParamsPtr begin_params_;
   blink::mojom::CommonNavigationParamsPtr common_params_;
 

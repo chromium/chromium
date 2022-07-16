@@ -15,7 +15,7 @@
 #include "url/origin.h"
 
 namespace {
-constexpr base::TimeDelta kShortDelay = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kShortDelay = base::Seconds(1);
 }  // namespace
 
 class UsageScenarioDataStoreTest : public testing::Test {

@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "net/base/backoff_entry.h"

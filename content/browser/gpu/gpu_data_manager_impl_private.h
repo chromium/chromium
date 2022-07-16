@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list_threadsafe.h"
@@ -42,6 +41,11 @@ namespace content {
 class CONTENT_EXPORT GpuDataManagerImplPrivate {
  public:
   explicit GpuDataManagerImplPrivate(GpuDataManagerImpl* owner);
+
+  GpuDataManagerImplPrivate(const GpuDataManagerImplPrivate&) = delete;
+  GpuDataManagerImplPrivate& operator=(const GpuDataManagerImplPrivate&) =
+      delete;
+
   virtual ~GpuDataManagerImplPrivate();
 
   void StartUmaTimer();
@@ -278,8 +282,6 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   bool application_is_visible_ = true;
 
   bool disable_gpu_compositing_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuDataManagerImplPrivate);
 };
 
 }  // namespace content

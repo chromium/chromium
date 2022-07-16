@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -40,6 +39,10 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
   class Delegate {
    public:
     explicit Delegate(Profile* profile);
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate();
 
     virtual bool ShouldIncludeExtension(const Extension* extension) = 0;
@@ -125,11 +128,15 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
     // Name for corresponding pref that keeps if the info the bubble contains
     // was acknowledged by user.
     std::string acknowledged_pref_name_;
-
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   ExtensionMessageBubbleController(Delegate* delegate, Browser* browser);
+
+  ExtensionMessageBubbleController(const ExtensionMessageBubbleController&) =
+      delete;
+  ExtensionMessageBubbleController& operator=(
+      const ExtensionMessageBubbleController&) = delete;
+
   ~ExtensionMessageBubbleController() override;
 
   Delegate* delegate() const { return delegate_.get(); }
@@ -222,8 +229,6 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleController);
 };
 
 }  // namespace extensions

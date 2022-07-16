@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -12,15 +12,11 @@
       "transform": 1
     },
     {
-      "name": "ContentsLayer for LayoutHTMLCanvas CANVAS id='world'",
+      "name": "LayoutBlockFlow (positioned) DIV id='output'",
+      "position": [8, 8],
       "bounds": [100, 50],
-      "transform": 1
-    },
-    {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='output')",
-      "bounds": [100, 50],
-      "backgroundColor": "#008000",
-      "transform": 1
+      "contentsOpaque": true,
+      "backgroundColor": "#008000"
     }
   ],
   "transforms": [

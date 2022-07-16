@@ -59,6 +59,9 @@ class SingleLoginAttempt : public XmppConnection::Delegate {
   // Does not take ownership of |delegate|, which must not be NULL.
   SingleLoginAttempt(const LoginSettings& login_settings, Delegate* delegate);
 
+  SingleLoginAttempt(const SingleLoginAttempt&) = delete;
+  SingleLoginAttempt& operator=(const SingleLoginAttempt&) = delete;
+
   ~SingleLoginAttempt() override;
 
   // XmppConnection::Delegate implementation.
@@ -75,8 +78,6 @@ class SingleLoginAttempt : public XmppConnection::Delegate {
   const ConnectionSettingsList settings_list_;
   ConnectionSettingsList::const_iterator current_settings_;
   std::unique_ptr<XmppConnection> xmpp_connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleLoginAttempt);
 };
 
 }  // namespace notifier

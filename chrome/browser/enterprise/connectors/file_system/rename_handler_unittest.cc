@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,19 +35,6 @@ using testing::Return;
 namespace enterprise_connectors {
 
 const char kBox[] = "box";
-// Also kWildcardSendDownloadToCloudPref in test_helper.h.
-constexpr char kRenameSendDownloadToCloudPref[] = R"([
-  {
-    "service_provider": "box",
-    "enterprise_id": "1234567890",
-    "enable": [
-      {
-        "url_list": ["renameme.com"],
-        "mime_types": ["text/plain", "image/png", "application/zip"]
-      }
-    ]
-  }
-])";
 
 using RenameHandler = FileSystemRenameHandler;
 
@@ -55,6 +43,7 @@ class RenameHandlerCreateTestBase : public testing::Test {
   Profile* profile() { return profile_; }
 
   void Init(bool enable_feature_flag, const char* pref_value) {
+    ASSERT_TRUE(pref_value);
     if (enable_feature_flag) {
       scoped_feature_list_.InitWithFeatures({kFileSystemConnectorEnabled}, {});
     } else {
@@ -72,6 +61,7 @@ class RenameHandlerCreateTestBase : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   TestingProfile* profile_;
@@ -95,6 +85,7 @@ TEST_P(RenameHandlerCreateTest, FeatureFlagTest) {
   // Ensure a RenameHandler can be created with the profile in download item.
   content::FakeDownloadItem item;
   item.SetURL(GURL("https://renameme.com"));
+  item.SetTabUrl(GURL("https://renameme.com"));
   item.SetMimeType("text/plain");
   content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
   auto handler = RenameHandler::CreateIfNeeded(&item);
@@ -128,74 +119,474 @@ TEST_P(RenameHandlerCreateTest, Completed_NoRerouteInfo) {
 
 INSTANTIATE_TEST_CASE_P(, RenameHandlerCreateTest, testing::Bool());
 
-class RenameHandlerCreateTest_ByUrl : public RenameHandlerCreateTestBase {
- public:
-  RenameHandlerCreateTest_ByUrl() {
-    Init(true, kRenameSendDownloadToCloudPref);
+struct PolicyTestParam {
+  const char* test_policy = nullptr;
+  std::string item_url;
+  std::string tab_url;
+  std::string item_mime_type;
+  bool expect_routing = false;
+  std::string expect_logic_msg;
+
+  // To print param value for debugging.
+  std::string Print() const {
+    std::string str;
+    if (expect_logic_msg.size()) {
+      str += "\nExpectation logic: ";
+      str += expect_logic_msg;
+    }
+    str += "\nTest inputs:\n > Policy: ";
+    str += test_policy;
+    str += "\n > test item item url: " + item_url +
+           "\n > test item tab url: " + tab_url +
+           "\n > test item mime type: " + item_mime_type;
+    return str;
   }
 };
 
-TEST_F(RenameHandlerCreateTest_ByUrl, NoUrlMatchesPattern) {
-  content::FakeDownloadItem item;
-  item.SetURL(GURL("https://one.com/file.txt"));
-  item.SetTabUrl(GURL("https://two.com"));
-  item.SetMimeType("text/plain");
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
-
-  auto handler = RenameHandler::CreateIfNeeded(&item);
-  ASSERT_EQ(nullptr, handler.get());
-}
-
-TEST_F(RenameHandlerCreateTest_ByUrl, FileUrlMatchesPattern) {
-  content::FakeDownloadItem item;
-  item.SetURL(GURL("https://renameme.com/file.txt"));
-  item.SetTabUrl(GURL("https://two.com"));
-  item.SetMimeType("text/plain");
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
-
-  auto handler = RenameHandler::CreateIfNeeded(&item);
-  ASSERT_NE(nullptr, handler.get());
-}
-
-TEST_F(RenameHandlerCreateTest_ByUrl, TabUrlMatchesPattern) {
-  content::FakeDownloadItem item;
-  item.SetURL(GURL("https://one.com/file.txt"));
-  item.SetTabUrl(GURL("https://renameme.com"));
-  item.SetMimeType("text/plain");
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
-
-  auto handler = RenameHandler::CreateIfNeeded(&item);
-  ASSERT_NE(nullptr, handler.get());
-}
-
-TEST_F(RenameHandlerCreateTest_ByUrl, DisallowByMimeType) {
-  content::FakeDownloadItem item;
-  item.SetURL(GURL("https://renameme.com/file.json"));
-  item.SetTabUrl(GURL("https://renameme.com"));
-  item.SetMimeType("application/json");
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
-
-  auto handler = RenameHandler::CreateIfNeeded(&item);
-  ASSERT_EQ(nullptr, handler.get());
-}
-
-class RenameHandlerCreateTest_Wildcard : public RenameHandlerCreateTestBase {
- public:
-  RenameHandlerCreateTest_Wildcard() {
-    Init(true, kWildcardSendDownloadToCloudPref);
-  }
+class RenameHandlerCreateTest_Policies
+    : public RenameHandlerCreateTestBase,
+      public testing::WithParamInterface<PolicyTestParam> {
+  void SetUp() override { Init(true, GetParam().test_policy); }
 };
 
-TEST_F(RenameHandlerCreateTest_Wildcard, AllowedByWildcard) {
+TEST_P(RenameHandlerCreateTest_Policies, Test) {
+  const auto& param = GetParam();
+
   content::FakeDownloadItem item;
-  item.SetURL(GURL("https://one.com/file.txt"));
-  item.SetTabUrl(GURL("https://two.com"));
-  item.SetMimeType("text/plain");
+  item.SetURL(GURL(param.item_url));
+  item.SetTabUrl(GURL(param.tab_url));
+  item.SetMimeType(param.item_mime_type);
   content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
 
   auto handler = RenameHandler::CreateIfNeeded(&item);
-  ASSERT_NE(nullptr, handler.get());
+  bool rename_handler_created = handler.get() != nullptr;
+  ASSERT_EQ(param.expect_routing, rename_handler_created) << param.Print();
 }
+
+namespace create_by_policies_tests {
+
+constexpr char kFSCPref_NoDict[] = R"([])";
+
+constexpr char kFSCPref_NoEnterpriseId[] = R"([
+  {
+    "service_provider": "box",
+    "enable": [{
+        "url_list": [ "yes.com" ],
+        "mime_types": [ "text/plain", "image/png", "application/zip" ]
+    }]
+  }
+])";
+
+constexpr char kFSCPref_NoUrlList[] = R"([
+  {
+    "service_provider": "box",
+    "enterprise_id": "1234567890",
+    "enable": [{"mime_types": [ "text/plain", "image/png", "application/zip" ]}]
+  }
+])";
+
+constexpr char kFSCPref_NoMimeTypes[] = R"([
+  {
+    "service_provider": "box",
+    "enterprise_id": "1234567890",
+    "enable": [{"url_list": [ "yes.com" ]}]
+  }
+])";
+
+// All expecting NO routing.
+std::vector<PolicyTestParam> incomplete_policies_tests = {
+    {kFSCPref_NoDict},
+    {R"([{ "service_provider": "box", "enterprise_id": "12345" }])"},
+    {R"([{ "service_provider": "box" }])"},
+    {R"([{ "enable": [{ "url_list": ["here.com"] }] }])"},
+    {R"([{ "enable": [{ "mime_types": ["this/that"] }] }])"},
+    {R"([{ "enable": [{ "url_list": ["here.com"],
+                        "mime_types": ["this/that"]}]
+        }])"},
+    {R"([{ "enable": [{ "url_list": ["*"],
+                        "mime_types": ["*"]}],
+           "disable": [{ "url_list": ["here.com"]}]
+        }])"},
+    {R"([{ "enable": [{ "url_list": ["*"],
+                        "mime_types": ["*"]}],
+           "disable": [{ "mime_types": ["this/that"]}]
+        }])"},
+    {R"([{ "enable": [{ "url_list": ["*"],
+                        "mime_types": ["*"] }],
+           "disable": [{ "mime_types": ["this/that"],
+                         "url_list": ["here.com"]}]
+        }])"},
+    {kFSCPref_NoEnterpriseId},
+    {kFSCPref_NoUrlList},
+    {kFSCPref_NoMimeTypes}};
+INSTANTIATE_TEST_CASE_P(PolicyValidation,
+                        RenameHandlerCreateTest_Policies,
+                        testing::ValuesIn(incomplete_policies_tests));
+
+constexpr char kFSCPref_EmptyEnable_OffByDefault[] = R"([
+  {
+    "service_provider": "box",
+    "enterprise_id": "1234567890",
+    "enable": [{ "url_list": [ ],
+                 "mime_types": [ ] }]
+  }
+])";
+// kWildcardSendDownloadToCloudPref is in test_helper.h. It is equivalent to
+// on-by-default.
+PolicyTestParam on_by_default_should_route_everything{
+    kWildcardSendDownloadToCloudPref,
+    "https://no.com/file.txt",
+    "https://no.com",
+    "text/plain",
+    true,
+    "Wildcard policy ===> Any URL/MIME should result in YES routing"};
+PolicyTestParam empty_enable_equals_off_by_default{
+    kFSCPref_EmptyEnable_OffByDefault,
+    "https://yes.com/file.txt",
+    "https://yes.com",
+    "text/plain",
+    false,
+    "Empty enable ===> Everything should result in NO routing"};
+std::vector<PolicyTestParam> simple_policies_tests = {
+    on_by_default_should_route_everything, empty_enable_equals_off_by_default};
+
+INSTANTIATE_TEST_CASE_P(SimplePolicies,
+                        RenameHandlerCreateTest_Policies,
+                        testing::ValuesIn(simple_policies_tests));
+
+constexpr char kMimeType_JPG[] = "image/jpg";
+constexpr char kMimeType_7Z[] = "application/x-7z-compressed";
+
+constexpr char kFSCPref_OffByDefault_Except[] = R"([
+  {
+    "service_provider": "box",
+    "enterprise_id": "1234567890",
+    "enable": [
+      {
+        "url_list": ["yes.com"],
+        "mime_types": ["image/jpg", "image/jpeg", "image/png"]
+      }
+    ]
+  }
+])";
+PolicyTestParam no_url_matches_pattern{
+    kFSCPref_OffByDefault_Except,
+    "https://one.com/file.jpg",
+    "https://two.com",
+    kMimeType_JPG,
+    false,
+    "No URL matches pattern ===> NO routing"};
+PolicyTestParam file_url_matches_pattern{
+    kFSCPref_OffByDefault_Except,
+    "https://yes.com/file.jpg",
+    "https://two.com",
+    kMimeType_JPG,
+    true,
+    "File URL matches pattern ===> YES routing"};
+PolicyTestParam tab_url_matches_pattern{
+    kFSCPref_OffByDefault_Except,
+    "https://one.com/file.jpg",
+    "https://yes.com",
+    kMimeType_JPG,
+    true,
+    "Tab URL matches pattern ===> YES routing"};
+PolicyTestParam disallowed_by_mime_type{
+    kFSCPref_OffByDefault_Except,
+    "https://yes.com/file.json",
+    "https://yes.com",
+    "application/json",
+    false,
+    "Disalloswed by MIME type  ===> NO routing"};
+
+constexpr char kFSCPref_OffByDefault_Except_NoMimeTypes[] = R"([
+  {
+   "domain": "google.com",
+   "enable": [ {
+      "url_list": [ "yes.com" ]
+   } ],
+   "enterprise_id": "611447719",
+   "service_provider": "box"
+}
+])";
+PolicyTestParam no_enable_field_equals_disable{
+    kFSCPref_OffByDefault_Except_NoMimeTypes,
+    "https://yes.com/file.txt",
+    "https://two.com",
+    "text/plain",
+    false,
+    "No enable field in policy means no exception to enable ===> Everything "
+    "should result in NO routing"};
+
+std::vector<PolicyTestParam> off_by_default_tests = {
+    no_url_matches_pattern, file_url_matches_pattern, tab_url_matches_pattern,
+    disallowed_by_mime_type, no_enable_field_equals_disable};
+INSTANTIATE_TEST_CASE_P(OffByDefault_Except,
+                        RenameHandlerCreateTest_Policies,
+                        testing::ValuesIn(off_by_default_tests));
+
+// Off by default policy: all combos should result in NO routing except for
+// yes.com + yes routing type
+std::vector<PolicyTestParam> off_by_default_with_exception_tests = {
+    {kFSCPref_OffByDefault_Except, "https://yes.com/file.jpg",
+     "https://yes.com", kMimeType_JPG, true},
+    {kFSCPref_OffByDefault_Except, "https://no.com/file.jpg", "https://no.com",
+     kMimeType_JPG, false},
+    {kFSCPref_OffByDefault_Except, "https://no.com/file.7z", "https://no.com",
+     kMimeType_7Z, false},
+    {kFSCPref_OffByDefault_Except, "https://yes.com/file.7z", "https://yes.com",
+     kMimeType_7Z, false}};
+
+INSTANTIATE_TEST_CASE_P(OffByDefaultWithExceptions,
+                        RenameHandlerCreateTest_Policies,
+                        testing::ValuesIn(off_by_default_with_exception_tests));
+
+constexpr char kFSCPref_OnByDefault_Except[] = R"([
+  {
+    "disable": [ {
+      "mime_types": [ "application/x-bzip", "application/x-7z-compressed" ],
+      "url_list": [ "no.com", "no1.com", "no2.com" ]
+    } ],
+    "domain": "google.com",
+    "enable": [ {
+      "mime_types": [ "*" ],
+      "url_list": [ "*" ]
+    } ],
+    "enterprise_id": "123456789",
+    "service_provider": "box"
+  }
+])";
+
+// On by default policy: all combos should result in routing except for
+// no.com + no routing type
+std::vector<PolicyTestParam> on_by_default_with_exception_tests = {
+    {kFSCPref_OnByDefault_Except, "https://no.com/file.7z", "https://no.com",
+     kMimeType_7Z, false},
+    {kFSCPref_OnByDefault_Except, "https://no.com/file.jpg", "https://no.com",
+     kMimeType_JPG, true},
+    {kFSCPref_OnByDefault_Except, "https://yes.com/file.jpg", "https://yes.com",
+     kMimeType_JPG, true},
+    {kFSCPref_OnByDefault_Except, "https://yes.com/file.7z", "https://yes.com",
+     kMimeType_7Z, true}};
+
+INSTANTIATE_TEST_CASE_P(OnByDefault_Except,
+                        RenameHandlerCreateTest_Policies,
+                        testing::ValuesIn(on_by_default_with_exception_tests));
+
+constexpr char kFSCPref_OffByDefault_Except_SubtypeWildcard[] = R"([
+  {
+    "service_provider": "box",
+    "enterprise_id": "1234567890",
+    "enable": [
+      {
+        "url_list": ["yes.com"],
+        "mime_types": ["image/*", "application/*"]
+      }
+    ]
+  }
+])";
+
+// Off by default policy: all combos should result in routing except for
+// no.com + no routing type
+std::vector<PolicyTestParam>
+    off_by_default_with_exception_subtype_wildcard_tests = {
+        {kFSCPref_OffByDefault_Except_SubtypeWildcard, "https://no.com/file.7z",
+         "https://no.com", kMimeType_7Z, false},
+        {kFSCPref_OffByDefault_Except_SubtypeWildcard,
+         "https://no.com/file.jpg", "https://no.com", kMimeType_JPG, false},
+        {kFSCPref_OffByDefault_Except_SubtypeWildcard,
+         "https://yes.com/file.jpg", "https://yes.com", kMimeType_JPG, true},
+        {kFSCPref_OffByDefault_Except_SubtypeWildcard,
+         "https://yes.com/file.7z", "https://yes.com", kMimeType_7Z, true}};
+
+INSTANTIATE_TEST_CASE_P(
+    OffByDefault_Except_SubtypeWildcard,
+    RenameHandlerCreateTest_Policies,
+    testing::ValuesIn(off_by_default_with_exception_subtype_wildcard_tests));
+
+constexpr char kFSCPref_OnByDefault_Except_SubtypeWildcard[] = R"([
+  {
+    "disable": [ {
+      "mime_types": [ "application/*", "image/*" ],
+      "url_list": [ "no.com", "no1.com", "no2.com" ]
+    } ],
+    "domain": "google.com",
+    "enable": [ {
+      "mime_types": [ "*" ],
+      "url_list": [ "*" ]
+    } ],
+    "enterprise_id": "123456789",
+    "service_provider": "box"
+  }
+])";
+
+// On by default policy: all combos should result in routing except for
+// no.com + no routing type
+std::vector<PolicyTestParam>
+    on_by_default_with_exception_subtype_wildcard_tests = {
+        {kFSCPref_OnByDefault_Except_SubtypeWildcard, "https://no.com/file.7z",
+         "https://no.com", kMimeType_7Z, false},
+        {kFSCPref_OnByDefault_Except_SubtypeWildcard, "https://no.com/file.jpg",
+         "https://no.com", kMimeType_JPG, false},
+        {kFSCPref_OnByDefault_Except_SubtypeWildcard,
+         "https://yes.com/file.jpg", "https://yes.com", kMimeType_JPG, true},
+        {kFSCPref_OnByDefault_Except_SubtypeWildcard, "https://yes.com/file.7z",
+         "https://yes.com", kMimeType_7Z, true}};
+
+INSTANTIATE_TEST_CASE_P(
+    OnByDefault_Except_SubtypeWildcard,
+    RenameHandlerCreateTest_Policies,
+    testing::ValuesIn(on_by_default_with_exception_subtype_wildcard_tests));
+
+constexpr char kFSCPref_DisEnableConflict[] = R"([
+  {
+    "disable": [ {
+      "mime_types": [ "application/*", "image/*" ],
+      "url_list": [ "*" ]
+    } ],
+    "domain": "google.com",
+    "enable": [ {
+      "mime_types": [ "*" ],
+      "url_list": [ "no.com", "no1.com", "no2.com" ]
+    } ],
+    "enterprise_id": "123456789",
+    "service_provider": "box"
+  }
+])";
+
+std::vector<PolicyTestParam> conflicting_filter_tests = {
+    {kFSCPref_DisEnableConflict, "https://no.com/file.7z", "https://no.com",
+     kMimeType_7Z, false},
+    {kFSCPref_DisEnableConflict, "https://no.com/file.jpg", "https://no.com",
+     kMimeType_JPG, false},
+    {kFSCPref_DisEnableConflict, "https://yes.com/file.jpg", "https://yes.com",
+     kMimeType_JPG, false},
+    {kFSCPref_DisEnableConflict, "https://yes.com/file.7z", "https://yes.com",
+     kMimeType_7Z, false}};
+
+INSTANTIATE_TEST_CASE_P(DisEnableConflict,
+                        RenameHandlerCreateTest_Policies,
+                        testing::ValuesIn(conflicting_filter_tests));
+
+constexpr char kFSCPref_OffByDefault_Except_WildcardWithExcessiveTypes[] = R"([
+  {
+    "service_provider": "box",
+    "enterprise_id": "1234567890",
+    "enable": [
+      {
+        "url_list": [ "*", "yes.com" ],
+        "mime_types": ["image/jpg", "image/*"]
+      }
+    ]
+  }
+])";
+
+constexpr char kFSCPref_OnByDefault_Except_WildcardWithExcessiveTypes[] =
+    R"([
+  {
+    "disable": [ {
+      "mime_types": [ "image/jpg", "*" ],
+      "url_list": [ "*", "no.com" ]
+    } ],
+    "domain": "google.com",
+    "enable": [ {
+      "mime_types": [ "*" ],
+      "url_list": [ "*" ]
+    } ],
+    "enterprise_id": "123456789",
+    "service_provider": "box"
+  }
+])";
+
+constexpr char kMimeType_PNG[] = "image/png";
+
+std::vector<PolicyTestParam> excessive_filter_tests = {
+    // Off by default policy with enable that has wildcard in URL and mime type
+    // lists, plus some explicit types and URLs. Should behave the same as
+    // off by default with with wildcard enable for all URLs + all image types.
+    {kFSCPref_OffByDefault_Except_WildcardWithExcessiveTypes,
+     "https://no.com/file.7z", "https://no.com", kMimeType_7Z, false},
+    {kFSCPref_OffByDefault_Except_WildcardWithExcessiveTypes,
+     "https://no.com/file.jpg", "https://no.com", kMimeType_JPG, true},
+    {kFSCPref_OffByDefault_Except_WildcardWithExcessiveTypes,
+     "https://no.com/file.png", "https://no.com", kMimeType_PNG, true},
+    {kFSCPref_OffByDefault_Except_WildcardWithExcessiveTypes,
+     "https://yes.com/file.jpg", "https://yes.com", kMimeType_JPG, true},
+    {kFSCPref_OffByDefault_Except_WildcardWithExcessiveTypes,
+     "https://yes.com/file.png", "https://yes.com", kMimeType_PNG, true},
+    {kFSCPref_OffByDefault_Except_WildcardWithExcessiveTypes,
+     "https://yes.com/file.7z", "https://yes.com", kMimeType_7Z, false},
+    {kFSCPref_OffByDefault_Except_WildcardWithExcessiveTypes,
+     "https://no.com/file.7z", "https://no.com", kMimeType_7Z, false},
+    // On by default policy with disable that has wildcard in URL and mime type
+    // lists, plus some explicit types and URLs. Should behave the same as
+    // wildcard disable for all URLs + all types.
+    {kFSCPref_OnByDefault_Except_WildcardWithExcessiveTypes,
+     "https://no.com/file.7z", "https://no.com", kMimeType_7Z, false},
+    {kFSCPref_OnByDefault_Except_WildcardWithExcessiveTypes,
+     "https://no.com/file.jpg", "https://no.com", kMimeType_JPG, false},
+    {kFSCPref_OnByDefault_Except_WildcardWithExcessiveTypes,
+     "https://no.com/file.png", "https://no.com", kMimeType_PNG, false},
+    {kFSCPref_OnByDefault_Except_WildcardWithExcessiveTypes,
+     "https://yes.com/file.jpg", "https://yes.com", kMimeType_JPG, false},
+    {kFSCPref_OnByDefault_Except_WildcardWithExcessiveTypes,
+     "https://yes.com/file.png", "https://yes.com", kMimeType_PNG, false},
+    {kFSCPref_OnByDefault_Except_WildcardWithExcessiveTypes,
+     "https://yes.com/file.7z", "https://yes.com", kMimeType_7Z, false},
+    {kFSCPref_OnByDefault_Except_WildcardWithExcessiveTypes,
+     "https://no.com/file.7z", "https://no.com", kMimeType_7Z, false}};
+
+INSTANTIATE_TEST_CASE_P(WildcardWithExcessiveItems,
+                        RenameHandlerCreateTest_Policies,
+                        testing::ValuesIn(excessive_filter_tests));
+
+constexpr char kFSCPref_DisEnableLists[] = R"([
+  {
+    "disable": [ {
+      "mime_types": [ "application/*", "audio/*" ],
+      "url_list": [ "no-app.com, no-audio.com" ]
+    }, {
+      "mime_types": [ "text/*" ],
+      "url_list": [ "no-text.com" ]
+    } ],
+    "domain": "google.com",
+    "enable": [ {
+      "mime_types": [ "video/*" ],
+      "url_list": [ "yes-video.com" ]
+    }, {
+      "mime_types": [ "image/*" ],
+      "url_list": [ "yes-image.com" ]
+    } ],
+    "enterprise_id": "123456789",
+    "service_provider": "box"
+  }
+])";
+
+constexpr char kMimeType_AudioMPEG[] = "audio/mpeg";
+constexpr char kMimeType_TextPlain[] = "text/plain";
+constexpr char kMimeType_VideoMP4[] = "video/mp4";
+
+std::vector<PolicyTestParam> disenable_lists_tests = {
+    {kFSCPref_DisEnableLists, "https://no-app.com/file.7z",
+     "https://no-app.com", kMimeType_7Z, false},
+    {kFSCPref_DisEnableLists, "https://no-app.com/file.jpg",
+     "https://no-app.com", kMimeType_JPG, false},
+    {kFSCPref_DisEnableLists, "https://no-audio.com/file.mpeg",
+     "https://no-audio.com", kMimeType_AudioMPEG, false},
+    {kFSCPref_DisEnableLists, "https://no-text.com/file.txt",
+     "https://no-text.com", kMimeType_TextPlain, false},
+    {kFSCPref_DisEnableLists, "https://yes-video.com/file.txt",
+     "https://yes.com", kMimeType_TextPlain, false},
+    {kFSCPref_DisEnableLists, "https://yes-video.com/file.mp4",
+     "https://yes.com", kMimeType_VideoMP4, true},
+    {kFSCPref_DisEnableLists, "https://yes-image.com/file.jpg",
+     "https://yes-image.com", kMimeType_JPG, true},
+    {kFSCPref_DisEnableLists, "https://yes-image.com/file.png",
+     "https://yes-image.com", kMimeType_PNG, true}};
+
+INSTANTIATE_TEST_CASE_P(DisEnableLists,
+                        RenameHandlerCreateTest_Policies,
+                        testing::ValuesIn(disenable_lists_tests));
+}  // namespace create_by_policies_tests
 
 constexpr char ATokenBySignIn[] = "ATokenBySignIn";
 constexpr char RTokenBySignIn[] = "RTokenBySignIn";
@@ -451,6 +842,7 @@ class RenameHandlerOAuth2Test : public testing::Test,
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   TestingProfileManager profile_manager_;
   TestingProfile* profile_;
   std::unique_ptr<base::RunLoop> run_loop_;

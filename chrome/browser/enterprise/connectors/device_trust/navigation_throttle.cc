@@ -7,8 +7,8 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/url_util.h"
 #include "components/prefs/pref_service.h"
@@ -47,10 +47,16 @@ DeviceTrustNavigationThrottle::MaybeCreateThrottleFor(
 
 DeviceTrustNavigationThrottle::DeviceTrustNavigationThrottle(
     content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {
-  device_trust_service_ =
-      DeviceTrustFactory::GetForProfile(Profile::FromBrowserContext(
-          navigation_handle->GetWebContents()->GetBrowserContext()));
+    : DeviceTrustNavigationThrottle(
+          DeviceTrustServiceFactory::GetForProfile(Profile::FromBrowserContext(
+              navigation_handle->GetWebContents()->GetBrowserContext())),
+          navigation_handle) {}
+
+DeviceTrustNavigationThrottle::DeviceTrustNavigationThrottle(
+    DeviceTrustService* device_trust_service,
+    content::NavigationHandle* navigation_handle)
+    : content::NavigationThrottle(navigation_handle),
+      device_trust_service_(device_trust_service) {
   matcher_ = std::make_unique<url_matcher::URLMatcher>();
 
   // Start listening for pref changes.
@@ -64,10 +70,10 @@ DeviceTrustNavigationThrottle::DeviceTrustNavigationThrottle(
 DeviceTrustNavigationThrottle::~DeviceTrustNavigationThrottle() = default;
 
 void DeviceTrustNavigationThrottle::OnTrustedUrlPatternsChanged(
-    const base::ListValue* origins) {
+    const base::ListValue& origins) {
   DVLOG(1)
       << "DeviceTrustNavigationThrottle::OnTrustedUrlPatternsChanged count="
-      << origins->GetSize();
+      << origins.GetList().size();
 
   url_matcher::URLMatcherConditionSet::ID id(0);
   if (!matcher_->IsEmpty()) {
@@ -78,7 +84,7 @@ void DeviceTrustNavigationThrottle::OnTrustedUrlPatternsChanged(
   if (device_trust_service_ && device_trust_service_->IsEnabled()) {
     // Add the new endpoints to the conditions.
     policy::url_util::AddFilters(matcher_.get(), true /* allowed */, &id,
-                                 origins);
+                                 &origins);
   }
 }
 
@@ -152,6 +158,8 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
       device_trust_service_->BuildChallengeResponse(
           challenge, std::move(resume_navigation_callback));
 
+      CHECK(!deferring_);
+      deferring_ = true;
       return DEFER;
     }
   } else {
@@ -165,6 +173,11 @@ void DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume(
   DVLOG(1) << "DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume "
               "challenge_response="
            << challenge_response;
+  if (!deferring_) {
+    DVLOG(1) << "No navigation was deferred.";
+    return;
+  }
+  deferring_ = false;
   if (challenge_response == std::string()) {
     // Cancel the navigation if challenge signature is invalid.
     CancelDeferredNavigation(content::NavigationThrottle::CANCEL_AND_IGNORE);

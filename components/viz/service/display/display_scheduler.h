@@ -8,9 +8,8 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -21,9 +20,9 @@
 
 namespace viz {
 
-class BeginFrameSource;
-
-class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
+class VIZ_SERVICE_EXPORT DisplayScheduler
+    : public DisplaySchedulerBase,
+      public DynamicBeginFrameDeadlineOffsetSource {
  public:
   // `max_pending_swaps_120hz`, if positive, is used as the number of pending
   // swaps while running at 120hz. Otherwise, this will fallback to
@@ -34,6 +33,10 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
                    absl::optional<int> max_pending_swaps_120hz,
                    bool wait_for_all_surfaces_before_draw = false,
                    gfx::RenderingPipeline* gpu_pipeline = nullptr);
+
+  DisplayScheduler(const DisplayScheduler&) = delete;
+  DisplayScheduler& operator=(const DisplayScheduler&) = delete;
+
   ~DisplayScheduler() override;
 
   // DisplaySchedulerBase implementation.
@@ -49,6 +52,9 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
   void OnDisplayDamaged(SurfaceId surface_id) override;
   void OnRootFrameMissing(bool missing) override;
   void OnPendingSurfacesChanged() override;
+
+  // DynamicBeginFrameDeadlineOffsetSource:
+  base::TimeDelta GetDeadlineOffset(base::TimeDelta interval) const override;
 
  protected:
   class BeginFrameObserver;
@@ -130,10 +136,12 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
 
   bool observing_begin_frame_source_;
 
-  base::WeakPtrFactory<DisplayScheduler> weak_ptr_factory_{this};
+  // If set, we are dynamically adjusting our frame deadline, by the percentile
+  // of historic draw times to base the adjustment on.
+  const absl::optional<double> dynamic_cc_deadlines_percentile_;
+  const absl::optional<double> dynamic_scheduler_deadlines_percentile_;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayScheduler);
+  base::WeakPtrFactory<DisplayScheduler> weak_ptr_factory_{this};
 };
 
 }  // namespace viz

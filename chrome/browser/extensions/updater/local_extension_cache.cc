@@ -9,9 +9,9 @@
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/version.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -25,8 +25,7 @@ const char kCRXFileExtension[] = ".crx";
 
 // Delay between checks for flag file presence when waiting for the cache to
 // become ready.
-constexpr base::TimeDelta kCacheStatusPollingDelay =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kCacheStatusPollingDelay = base::Seconds(1);
 
 }  // namespace
 

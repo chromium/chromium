@@ -32,6 +32,12 @@ class CONTENT_EXPORT IndexedDBConnectionCoordinator {
   IndexedDBConnectionCoordinator(
       IndexedDBDatabase* db,
       TasksAvailableCallback tasks_available_callback);
+
+  IndexedDBConnectionCoordinator(const IndexedDBConnectionCoordinator&) =
+      delete;
+  IndexedDBConnectionCoordinator& operator=(
+      const IndexedDBConnectionCoordinator&) = delete;
+
   ~IndexedDBConnectionCoordinator();
 
   void ScheduleOpenConnection(
@@ -105,8 +111,6 @@ class CONTENT_EXPORT IndexedDBConnectionCoordinator {
 
   // |weak_factory_| is used for all callback uses.
   base::WeakPtrFactory<IndexedDBConnectionCoordinator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBConnectionCoordinator);
 };
 
 }  // namespace content

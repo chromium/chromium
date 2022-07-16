@@ -4,13 +4,11 @@
 
 #include "components/autofill/core/browser/autofill_manager.h"
 
-#include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -25,10 +23,6 @@
 namespace autofill {
 
 namespace {
-
-// Set a conservative upper bound on the number of forms we are willing to
-// cache, simply to prevent unbounded memory consumption.
-const size_t kAutofillManagerMaxFormCacheSize = 100;
 
 // Returns the AutofillField* corresponding to |field| in |form| or nullptr,
 // if not found.
@@ -143,8 +137,6 @@ AutofillManager::AutofillManager(
 
 AutofillManager::~AutofillManager() {
   translate_observation_.Reset();
-  if (!query_result_delay_task_.IsCancelled())
-    query_result_delay_task_.Cancel();
 }
 
 void AutofillManager::OnLanguageDetermined(
@@ -167,9 +159,9 @@ void AutofillManager::OnTranslateDriverDestroyed(
   translate_observation_.Reset();
 }
 
-LanguageCode AutofillManager::GetCurrentPageLanguage() const {
-  DCHECK(client_);
-  const translate::LanguageState* language_state = client_->GetLanguageState();
+LanguageCode AutofillManager::GetCurrentPageLanguage() {
+  DCHECK(client());
+  const translate::LanguageState* language_state = client()->GetLanguageState();
   if (!language_state)
     return LanguageCode();
   return LanguageCode(language_state->current_language());
@@ -182,20 +174,27 @@ void AutofillManager::OnFormSubmitted(const FormData& form,
     OnFormSubmittedImpl(form, known_success, source);
 }
 
-void AutofillManager::OnFormsSeen(const std::vector<FormData>& forms) {
-  if (!IsValidFormDataVector(forms) || !driver_->RendererIsAvailable())
+void AutofillManager::OnFormsSeen(
+    const std::vector<FormData>& updated_forms,
+    const std::vector<FormGlobalId>& removed_forms) {
+  if (base::FeatureList::IsEnabled(features::kAutofillDisplaceRemovedForms)) {
+    // Erase forms that have been removed from the DOM. This prevents
+    // |form_structures_| from growing up its upper bound
+    // kAutofillManagerMaxFormCacheSize.
+    for (FormGlobalId removed_form : removed_forms)
+      form_structures_.erase(removed_form);
+  }
+
+  if (!IsValidFormDataVector(updated_forms) || !driver_->RendererIsAvailable())
     return;
 
   // This should be called even forms is empty, AutofillProviderAndroid uses
   // this event to detect form submission.
-  if (!ShouldParseForms(forms))
-    return;
-
-  if (forms.empty())
+  if (!ShouldParseForms(updated_forms))
     return;
 
   std::vector<const FormData*> new_forms;
-  for (const FormData& form : forms) {
+  for (const FormData& form : updated_forms) {
     const auto parse_form_start_time = AutofillTickClock::NowTicks();
     FormStructure* cached_form_structure =
         FindCachedFormByRendererId(form.global_id());
@@ -375,11 +374,11 @@ bool AutofillManager::GetCachedFormAndField(const FormData& form,
 
 std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
 AutofillManager::CreateFormInteractionsUkmLogger() {
-  if (!client())
+  if (!unsafe_client())
     return nullptr;
 
   return std::make_unique<AutofillMetrics::FormInteractionsUkmLogger>(
-      client()->GetUkmRecorder(), client()->GetUkmSourceId());
+      unsafe_client()->GetUkmRecorder(), unsafe_client()->GetUkmSourceId());
 }
 
 size_t AutofillManager::FindCachedFormsBySignature(
@@ -503,32 +502,6 @@ void AutofillManager::OnLoadedServerPredictions(
 
   LogAutofillTypePredictionsAvailable(log_manager_, queried_forms);
 
-  // TODO(crbug.com/1176816): Remove the test code after initial integration.
-  int delay = 0;
-  if (auto* cmd = base::CommandLine::ForCurrentProcess()) {
-    // This command line helps to simulate query result arriving after autofill
-    // is triggered and shall be used for manual test only.
-    std::string value = cmd->GetSwitchValueASCII(
-        "autofill-server-query-result-delay-in-seconds");
-    if (!base::StringToInt(value, &delay))
-      delay = 0;
-  }
-
-  if (delay > 0) {
-    query_result_delay_task_.Reset(
-        base::BindOnce(&AutofillManager::PropagateAutofillPredictionsToDriver,
-                       base::Unretained(this)));
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(query_result_delay_task_.callback(), queried_forms),
-        base::TimeDelta::FromSeconds(delay));
-  } else {
-    PropagateAutofillPredictionsToDriver(queried_forms);
-  }
-}
-
-void AutofillManager::PropagateAutofillPredictionsToDriver(
-    const std::vector<FormStructure*>& queried_forms) {
   // Forward form structures to the password generation manager to detect
   // account creation forms.
   driver()->PropagateAutofillPredictions(queried_forms);

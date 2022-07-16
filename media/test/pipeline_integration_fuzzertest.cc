@@ -118,7 +118,7 @@ namespace media {
 
 // Limit the amount of initial (or post-seek) audio silence padding allowed in
 // rendering of fuzzed input.
-constexpr base::TimeDelta kMaxPlayDelay = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kMaxPlayDelay = base::Seconds(10);
 
 void OnEncryptedMediaInitData(media::PipelineIntegrationTestBase* test,
                               media::EmeInitDataType /* type */,

@@ -5,6 +5,7 @@
 #include "components/signin/internal/identity_manager/accounts_cookie_mutator_impl.h"
 
 #include <utility>
+#include <vector>
 
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"

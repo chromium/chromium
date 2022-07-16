@@ -45,6 +45,10 @@ class SecurityKeyIpcServerImpl : public SecurityKeyIpcServer,
       const SecurityKeyAuthHandler::SendMessageCallback& message_callback,
       base::OnceClosure connect_callback,
       base::OnceClosure done_callback);
+
+  SecurityKeyIpcServerImpl(const SecurityKeyIpcServerImpl&) = delete;
+  SecurityKeyIpcServerImpl& operator=(const SecurityKeyIpcServerImpl&) = delete;
+
   ~SecurityKeyIpcServerImpl() override;
 
   // SecurityKeyIpcServer implementation.
@@ -99,8 +103,6 @@ class SecurityKeyIpcServerImpl : public SecurityKeyIpcServer,
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<SecurityKeyIpcServerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyIpcServerImpl);
 };
 
 }  // namespace remoting

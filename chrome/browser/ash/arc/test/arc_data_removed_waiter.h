@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 
 namespace base {
@@ -20,6 +19,10 @@ namespace arc {
 class ArcDataRemovedWaiter : public ArcSessionManagerObserver {
  public:
   ArcDataRemovedWaiter();
+
+  ArcDataRemovedWaiter(const ArcDataRemovedWaiter&) = delete;
+  ArcDataRemovedWaiter& operator=(const ArcDataRemovedWaiter&) = delete;
+
   ~ArcDataRemovedWaiter() override;
 
   // Waits until ARC data is removed. Waiting is end once ArcSessionManager
@@ -31,8 +34,6 @@ class ArcDataRemovedWaiter : public ArcSessionManagerObserver {
   void OnArcDataRemoved() override;
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDataRemovedWaiter);
 };
 
 }  // namespace arc

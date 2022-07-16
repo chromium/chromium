@@ -35,6 +35,13 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
+#endif
+
 #if !defined(OS_ANDROID)
 #include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
@@ -126,7 +133,6 @@ void ChromePageInfoDelegate::OnUserActionOnPasswordUi(
 }
 
 std::u16string ChromePageInfoDelegate::GetWarningDetailText() {
-  std::vector<size_t> placeholder_offsets;
   auto* chrome_password_protection_service =
       GetChromePasswordProtectionService();
 
@@ -134,8 +140,7 @@ std::u16string ChromePageInfoDelegate::GetWarningDetailText() {
   return chrome_password_protection_service
              ? chrome_password_protection_service->GetWarningDetailText(
                    chrome_password_protection_service
-                       ->reused_password_account_type_for_last_shown_warning(),
-                   &placeholder_offsets)
+                       ->reused_password_account_type_for_last_shown_warning())
              : std::u16string();
 }
 #endif
@@ -161,8 +166,17 @@ bool ChromePageInfoDelegate::CreateInfoBarDelegate() {
 }
 
 void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {
-  chrome::ShowSiteSettings(chrome::FindBrowserWithWebContents(web_contents_),
-                           site_url);
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (web_app::AppBrowserController::IsWebApp(browser)) {
+    web_app::AppId app_id = browser->app_controller()->app_id();
+    chrome::ShowAppManagementPage(GetProfile(), app_id,
+                                  AppManagementEntryPoint::kPageInfoView);
+    return;
+  }
+#endif
+
+  chrome::ShowSiteSettings(browser, site_url);
 }
 
 void ChromePageInfoDelegate::OpenCookiesDialog() {

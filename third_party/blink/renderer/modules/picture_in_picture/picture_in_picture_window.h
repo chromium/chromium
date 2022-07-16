@@ -25,7 +25,12 @@ class PictureInPictureWindow
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  PictureInPictureWindow() = delete;
+
   PictureInPictureWindow(ExecutionContext*, const gfx::Size& size);
+
+  PictureInPictureWindow(const PictureInPictureWindow&) = delete;
+  PictureInPictureWindow& operator=(const PictureInPictureWindow&) = delete;
 
   int width() const { return size_.width(); }
   int height() const { return size_.height(); }
@@ -58,8 +63,6 @@ class PictureInPictureWindow
  private:
   // The Picture-in-Picture window size in pixels.
   gfx::Size size_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PictureInPictureWindow);
 };
 
 }  // namespace blink

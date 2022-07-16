@@ -10,11 +10,13 @@
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -47,13 +49,16 @@ class ArcNotificationContentView
  public:
   METADATA_HEADER(ArcNotificationContentView);
 
-
   ArcNotificationContentView(ArcNotificationItem* item,
                              const message_center::Notification& notification,
                              message_center::MessageView* message_view);
   ArcNotificationContentView(const ArcNotificationContentView&) = delete;
   ArcNotificationContentView& operator=(const ArcNotificationContentView&) = delete;
   ~ArcNotificationContentView() override;
+
+  // Width of scrollbar, to reduce the notification content width.
+  constexpr static int kScrollBarWidth =
+      ui::kOverlayScrollbarThumbWidthPressed + ui::kOverlayScrollbarStrokeWidth;
 
   void Update(const message_center::Notification& notification);
   message_center::NotificationControlButtonsView* GetControlButtonsView();
@@ -205,7 +210,6 @@ class ArcNotificationContentView
   absl::optional<gfx::Insets> mask_insets_;
 
   std::unique_ptr<ui::LayerTreeOwner> surface_copy_;
-
 };
 
 }  // namespace ash

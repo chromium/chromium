@@ -42,7 +42,7 @@ PassthroughProgramCache::PassthroughProgramCache(
     : ProgramCache(max_cache_size_bytes),
       disable_gpu_shader_disk_cache_(disable_gpu_shader_disk_cache),
       curr_size_bytes_(0),
-      store_(ProgramMRUCache::NO_AUTO_EVICT) {
+      store_(ProgramLRUCache::NO_AUTO_EVICT) {
 #if defined(USE_EGL)
   EGLDisplay display = gl::GLSurfaceEGL::GetHardwareDisplay();
 
@@ -138,7 +138,7 @@ void PassthroughProgramCache::Set(Key&& key, Value&& value) {
 
   // Evict any cached program with the same key in favor of the least recently
   // accessed.
-  ProgramMRUCache::iterator existing = store_.Peek(key);
+  ProgramLRUCache::iterator existing = store_.Peek(key);
   if (existing != store_.end())
     store_.Erase(existing);
 
@@ -170,7 +170,7 @@ void PassthroughProgramCache::Set(Key&& key, Value&& value) {
 
 const PassthroughProgramCache::ProgramCacheValue* PassthroughProgramCache::Get(
     const Key& key) {
-  ProgramMRUCache::iterator found = store_.Get(key);
+  ProgramLRUCache::iterator found = store_.Get(key);
   return found == store_.end() ? nullptr : &found->second;
 }
 

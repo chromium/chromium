@@ -18,6 +18,10 @@ class CONTENT_EXPORT FlingSchedulerAndroid : public FlingSchedulerBase,
                                              public ui::WindowAndroidObserver {
  public:
   explicit FlingSchedulerAndroid(RenderWidgetHostImpl* host);
+
+  FlingSchedulerAndroid(const FlingSchedulerAndroid&) = delete;
+  FlingSchedulerAndroid& operator=(const FlingSchedulerAndroid&) = delete;
+
   ~FlingSchedulerAndroid() override;
 
   // FlingControllerSchedulerClient
@@ -47,8 +51,6 @@ class CONTENT_EXPORT FlingSchedulerAndroid : public FlingSchedulerBase,
   void OnActivityStarted() override {}
 
   ui::WindowAndroid* observed_window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FlingSchedulerAndroid);
 };
 
 }  // namespace content

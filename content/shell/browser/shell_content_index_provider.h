@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/content_index_provider.h"
 #include "ui/gfx/geometry/size.h"
@@ -22,6 +21,11 @@ namespace content {
 class ShellContentIndexProvider : public ContentIndexProvider {
  public:
   ShellContentIndexProvider();
+
+  ShellContentIndexProvider(const ShellContentIndexProvider&) = delete;
+  ShellContentIndexProvider& operator=(const ShellContentIndexProvider&) =
+      delete;
+
   ~ShellContentIndexProvider() override;
 
   // ContentIndexProvider implementation.
@@ -47,8 +51,6 @@ class ShellContentIndexProvider : public ContentIndexProvider {
   std::map<std::string, std::pair<int64_t, url::Origin>> entries_;
 
   std::vector<gfx::Size> icon_sizes_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellContentIndexProvider);
 };
 
 }  // namespace content

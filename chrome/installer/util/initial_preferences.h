@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -97,6 +96,9 @@ class InitialPreferences {
   // Parses a preferences directly from |prefs| and does not merge any command
   // line switches with the distribution dictionary.
   explicit InitialPreferences(const base::DictionaryValue& prefs);
+
+  InitialPreferences(const InitialPreferences&) = delete;
+  InitialPreferences& operator=(const InitialPreferences&) = delete;
 
   ~InitialPreferences();
 
@@ -201,9 +203,6 @@ class InitialPreferences {
   std::unique_ptr<base::DictionaryValue> initial_dictionary_;
   base::DictionaryValue* distribution_ = nullptr;
   bool preferences_read_from_file_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InitialPreferences);
 };
 
 }  // namespace installer

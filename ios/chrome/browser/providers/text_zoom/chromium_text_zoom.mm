@@ -19,8 +19,7 @@ void SetTextZoomForWebState(web::WebState* web_state, int size) {
 }
 
 bool IsTextZoomEnabled() {
-  return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET &&
-         base::FeatureList::IsEnabled(web::kWebPageTextAccessibility);
+  return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
 }  // namespace provider

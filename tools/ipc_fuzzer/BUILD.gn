@@ -29,7 +29,11 @@ if (enable_ipc_fuzzer) {
     testonly = true
     deps = [
       "//tools/ipc_fuzzer/fuzzer:ipc_fuzzer",
-      "//tools/ipc_fuzzer/message_dump:ipc_message_dump",
+
+      # Disable this until build is fixed.
+      # TODO(1241274): Fix the build issue and reenable this.
+      # "//tools/ipc_fuzzer/message_dump:ipc_message_dump",
+
       "//tools/ipc_fuzzer/message_replay:ipc_fuzzer_replay",
       "//tools/ipc_fuzzer/message_tools:ipc_message_list",
       "//tools/ipc_fuzzer/message_tools:ipc_message_util",

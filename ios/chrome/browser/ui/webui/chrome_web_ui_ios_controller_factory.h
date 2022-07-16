@@ -25,14 +25,17 @@ class ChromeWebUIIOSControllerFactory : public web::WebUIIOSControllerFactory {
 
   static ChromeWebUIIOSControllerFactory* GetInstance();
 
+  ChromeWebUIIOSControllerFactory(const ChromeWebUIIOSControllerFactory&) =
+      delete;
+  ChromeWebUIIOSControllerFactory& operator=(
+      const ChromeWebUIIOSControllerFactory&) = delete;
+
  protected:
   ChromeWebUIIOSControllerFactory();
   ~ChromeWebUIIOSControllerFactory() override;
 
  private:
   friend class base::NoDestructor<ChromeWebUIIOSControllerFactory>;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebUIIOSControllerFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_CHROME_WEB_UI_IOS_CONTROLLER_FACTORY_H_

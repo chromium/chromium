@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
@@ -26,6 +25,9 @@ template <typename UserData>
 class WindowUserData : public aura::WindowObserver {
  public:
   WindowUserData() {}
+
+  WindowUserData(const WindowUserData&) = delete;
+  WindowUserData& operator=(const WindowUserData&) = delete;
 
   ~WindowUserData() override { clear(); }
 
@@ -75,8 +77,6 @@ class WindowUserData : public aura::WindowObserver {
   }
 
   std::map<aura::Window*, std::unique_ptr<UserData>> window_to_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowUserData);
 };
 
 }  // namespace ash

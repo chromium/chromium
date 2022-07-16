@@ -49,7 +49,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "components/user_manager/user_manager.h"
@@ -113,7 +113,7 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
   }
 
   std::unique_ptr<api::identity::GetAuthToken::Params> params(
-      api::identity::GetAuthToken::Params::Create(*args_));
+      api::identity::GetAuthToken::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   interactive_ = params->details.get() && params->details->interactive.get() &&
                  *params->details->interactive;
@@ -239,8 +239,8 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
   token_key_.account_info = account_info;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   bool is_kiosk = user_manager::UserManager::Get()->IsLoggedInAsKioskApp() ||
                   user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp();
   bool is_public_session =
@@ -485,9 +485,9 @@ void IdentityGetAuthTokenFunction::StartMintToken(
             user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp() ||
             user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
           gaia_mint_token_mode_ = OAuth2MintTokenFlow::MODE_MINT_TOKEN_FORCE;
-          policy::BrowserPolicyConnectorChromeOS* connector =
+          policy::BrowserPolicyConnectorAsh* connector =
               g_browser_process->platform_part()
-                  ->browser_policy_connector_chromeos();
+                  ->browser_policy_connector_ash();
           if (connector->IsDeviceEnterpriseManaged()) {
             StartDeviceAccessTokenRequest();
           } else {
@@ -559,7 +559,7 @@ void IdentityGetAuthTokenFunction::OnMintTokenSuccess(
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("identity", "OnMintTokenSuccess", this);
 
   IdentityTokenCacheValue token = IdentityTokenCacheValue::CreateToken(
-      access_token, granted_scopes, base::TimeDelta::FromSeconds(time_to_live));
+      access_token, granted_scopes, base::Seconds(time_to_live));
   IdentityAPI::GetFactoryInstance()
       ->Get(GetProfile())
       ->token_cache()

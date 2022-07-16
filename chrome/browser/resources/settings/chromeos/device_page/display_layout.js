@@ -21,15 +21,25 @@ let InfoItem;
  */
 let DisplaySelectEvent;
 
-(function() {
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
+import '//resources/polymer/v3_0/paper-styles/shadow.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {DragBehavior, DragPosition} from './drag_behavior.js';
+import {LayoutBehavior} from './layout_behavior.js';
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, getDisplayApi, StorageSpaceState} from './device_page_browser_proxy.js';
+import '../../settings_shared_css.js';
+
 
 /** @type {number} */ const MIN_VISUAL_SCALE = .01;
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'display-layout',
 
   behaviors: [
-    Polymer.IronResizableBehavior,
+    IronResizableBehavior,
     DragBehavior,
     LayoutBehavior,
   ],
@@ -61,10 +71,6 @@ Polymer({
     mirroringDestinationIds_: Array,
   },
 
-  /** @private {boolean} */
-  allowDisplayIdentificationApi_:
-      loadTimeData.getBoolean('allowDisplayIdentificationApi'),
-
   /** @private {!{left: number, top: number}} */
   visualOffset_: {left: 0, top: 0},
 
@@ -76,7 +82,7 @@ Polymer({
    */
   lastDragCoordinates_: null,
 
-  /** @private {?settings.DevicePageBrowserProxy} */
+  /** @private {?DevicePageBrowserProxy} */
   browserProxy_: null,
 
   /** @private {boolean} */
@@ -92,9 +98,7 @@ Polymer({
 
   /** @override */
   created() {
-    if (this.allowDisplayAlignmentApi_ || this.allowDisplayIdentificationApi_) {
-      this.browserProxy_ = settings.DevicePageBrowserProxyImpl.getInstance();
-    }
+    this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   },
 
   /** @override */
@@ -128,7 +132,8 @@ Polymer({
     // Pass keyboard dragging flag to drag behavior before initializing.
     this.keyboardDragEnabled = this.allowKeyboardDrag_;
     this.initializeDrag(
-        !this.mirroring, this.$.displayArea, this.onDrag_.bind(this));
+        !this.mirroring, this.$.displayArea,
+        (id, amount) => this.onDrag_(id, amount));
   },
 
   /**
@@ -244,23 +249,6 @@ Polymer({
   },
 
   /**
-   * @param {boolean} mirroring
-   * @param {string} displayName
-   * @param {string} mirroringName
-   * @return {string}
-   * @private
-   */
-  getDisplayName_(mirroring, displayName, mirroringName) {
-    // TODO(https://crbug.com/1064125): Remove call to getDisplayName_() in
-    // display_layout.html.
-    if (this.allowDisplayIdentificationApi_) {
-      return '';
-    }
-
-    return mirroring ? mirroringName : displayName;
-  },
-
-  /**
    * @param {!chrome.system.display.DisplayUnitInfo} display
    * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
    * @return {boolean}
@@ -314,14 +302,10 @@ Polymer({
       this.finishUpdateDisplayBounds(id);
       newBounds = this.getCalculatedDisplayBounds(id);
       this.lastDragCoordinates_ = null;
-      if (this.allowDisplayIdentificationApi_) {
-        // When the drag stops, remove the highlight around the display.
-        this.browserProxy_.highlightDisplay(this.invalidDisplayId_);
-      }
+      // When the drag stops, remove the highlight around the display.
+      this.browserProxy_.highlightDisplay(this.invalidDisplayId_);
     } else {
-      if (this.allowDisplayIdentificationApi_) {
-        this.browserProxy_.highlightDisplay(id);
-      }
+      this.browserProxy_.highlightDisplay(id);
       // Make sure the dragged display is also selected.
       if (id !== this.selectedDisplay.id) {
         this.fire('select-display', id);
@@ -372,4 +356,3 @@ Polymer({
   },
 
 });
-})();

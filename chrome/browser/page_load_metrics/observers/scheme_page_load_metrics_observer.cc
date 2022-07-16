@@ -141,8 +141,8 @@ void SchemePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
 
   for (size_t index = 0;
        index < base::size(kUnderStatRecordingIntervalsSeconds); ++index) {
-    base::TimeDelta threshold(base::TimeDelta::FromSeconds(
-        kUnderStatRecordingIntervalsSeconds[index]));
+    base::TimeDelta threshold(
+        base::Seconds(kUnderStatRecordingIntervalsSeconds[index]));
     if (fcp <= threshold) {
       base::UmaHistogramEnumeration(
           GetDelegate().GetUrl().scheme() == url::kHttpScheme

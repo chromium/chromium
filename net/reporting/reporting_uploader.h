@@ -19,7 +19,7 @@ class Origin;
 
 namespace net {
 
-class NetworkIsolationKey;
+class IsolationInfo;
 class URLRequestContext;
 
 // Uploads already-serialized reports and converts responses to one of the
@@ -35,12 +35,14 @@ class NET_EXPORT ReportingUploader {
   // Starts to upload the reports in |json| (properly tagged as JSON data) to
   // |url|, and calls |callback| when complete (whether successful or not).
   // All of the reports in |json| must describe requests to the same origin;
-  // |report_origin| must be that origin.
+  // |report_origin| must be that origin. Credentials may be sent with the
+  // upload if |eligible_for_credentials| is true.
   virtual void StartUpload(const url::Origin& report_origin,
                            const GURL& url,
-                           const NetworkIsolationKey& network_isolation_key,
+                           const IsolationInfo& isolation_info,
                            const std::string& json,
                            int max_depth,
+                           bool eligible_for_credentials,
                            UploadCallback callback) = 0;
 
   // Cancels pending uploads.

@@ -4,37 +4,18 @@
 
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 
-#include <set>
-
 #include "base/check_op.h"
-#include "base/containers/contains.h"
-#include "base/no_destructor.h"
 
 namespace ui {
 namespace {
 
 TouchSelectionMenuRunner* g_touch_selection_menu_runner = nullptr;
 
-// TODO(jamescook): Remove after investigation of https://crbug.com/1146270
-std::set<TouchSelectionMenuClient*>& ValidClients() {
-  static base::NoDestructor<std::set<TouchSelectionMenuClient*>> valid_clients;
-  return *valid_clients;
-}
-
 }  // namespace
 
-TouchSelectionMenuClient::TouchSelectionMenuClient() {
-  ValidClients().insert(this);
-}
+TouchSelectionMenuClient::TouchSelectionMenuClient() = default;
 
-TouchSelectionMenuClient::~TouchSelectionMenuClient() {
-  ValidClients().erase(this);
-}
-
-// static
-bool TouchSelectionMenuClient::IsValid(TouchSelectionMenuClient* client) {
-  return base::Contains(ValidClients(), client);
-}
+TouchSelectionMenuClient::~TouchSelectionMenuClient() = default;
 
 base::WeakPtr<TouchSelectionMenuClient> TouchSelectionMenuClient::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();

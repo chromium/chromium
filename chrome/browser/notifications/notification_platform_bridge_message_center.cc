@@ -12,6 +12,7 @@
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #include "chrome/browser/notifications/profile_notification.h"
+#include "chrome/common/notifications/notification_operation.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -39,7 +40,7 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
   void SettingsClick() override {
     NotificationDisplayServiceImpl::GetForProfile(profile_)
         ->ProcessNotificationOperation(
-            NotificationCommon::OPERATION_SETTINGS, notification_type_,
+            NotificationOperation::kSettings, notification_type_,
             notification_.origin_url(), notification_.id(), absl::nullopt,
             absl::nullopt, absl::nullopt /* by_user */);
   }
@@ -47,8 +48,8 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
   void DisableNotification() override {
     NotificationDisplayServiceImpl::GetForProfile(profile_)
         ->ProcessNotificationOperation(
-            NotificationCommon::OPERATION_DISABLE_PERMISSION,
-            notification_type_, notification_.origin_url(), notification_.id(),
+            NotificationOperation::kDisablePermission, notification_type_,
+            notification_.origin_url(), notification_.id(),
             absl::nullopt /* action_index */, absl::nullopt /* reply */,
             absl::nullopt /* by_user */);
   }
@@ -56,7 +57,7 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
   void Close(bool by_user) override {
     NotificationDisplayServiceImpl::GetForProfile(profile_)
         ->ProcessNotificationOperation(
-            NotificationCommon::OPERATION_CLOSE, notification_type_,
+            NotificationOperation::kClose, notification_type_,
             notification_.origin_url(), notification_.id(),
             absl::nullopt /* action_index */, absl::nullopt /* reply */,
             by_user);
@@ -66,7 +67,7 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
              const absl::optional<std::u16string>& reply) override {
     NotificationDisplayServiceImpl::GetForProfile(profile_)
         ->ProcessNotificationOperation(
-            NotificationCommon::OPERATION_CLICK, notification_type_,
+            NotificationOperation::kClick, notification_type_,
             notification_.origin_url(), notification_.id(), button_index, reply,
             absl::nullopt /* by_user */);
   }

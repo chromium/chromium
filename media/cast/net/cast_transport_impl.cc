@@ -13,7 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/net/rtcp/sender_rtcp_session.h"
@@ -61,6 +61,9 @@ class CastTransportImpl::RtcpClient : public RtcpObserver {
         media_type_(media_type),
         cast_transport_impl_(cast_transport_impl) {}
 
+  RtcpClient(const RtcpClient&) = delete;
+  RtcpClient& operator=(const RtcpClient&) = delete;
+
   void OnReceivedCastMessage(const RtcpCastMessage& cast_message) override {
     rtcp_observer_->OnReceivedCastMessage(cast_message);
     cast_transport_impl_->OnReceivedCastMessage(rtp_sender_ssrc_, cast_message);
@@ -81,8 +84,6 @@ class CastTransportImpl::RtcpClient : public RtcpObserver {
   const std::unique_ptr<RtcpObserver> rtcp_observer_;
   const EventMediaType media_type_;
   CastTransportImpl* const cast_transport_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(RtcpClient);
 };
 
 struct CastTransportImpl::RtpStreamSession {
@@ -120,8 +121,8 @@ CastTransportImpl::CastTransportImpl(
       pacer_(kTargetBurstSize,
              kMaxBurstSize,
              clock,
-             logging_flush_interval > base::TimeDelta() ? &recent_packet_events_
-                                                        : nullptr,
+             logging_flush_interval.is_positive() ? &recent_packet_events_
+                                                  : nullptr,
              transport_.get(),
              transport_task_runner),
       last_byte_acked_for_audio_(0) {
@@ -129,7 +130,7 @@ CastTransportImpl::CastTransportImpl(
   DCHECK(transport_client_);
   DCHECK(transport_);
   DCHECK(transport_task_runner_);
-  if (logging_flush_interval_ > base::TimeDelta()) {
+  if (logging_flush_interval_.is_positive()) {
     transport_task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&CastTransportImpl::SendRawEvents,
@@ -280,7 +281,7 @@ PacketReceiverCallback CastTransportImpl::PacketReceiverForTesting() {
 }
 
 void CastTransportImpl::SendRawEvents() {
-  DCHECK(logging_flush_interval_ > base::TimeDelta());
+  DCHECK(logging_flush_interval_.is_positive());
 
   if (!recent_frame_events_.empty() || !recent_packet_events_.empty()) {
     std::unique_ptr<std::vector<FrameEvent>> frame_events(

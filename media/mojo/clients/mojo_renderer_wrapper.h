@@ -20,6 +20,10 @@ namespace media {
 class MojoRendererWrapper : public Renderer {
  public:
   explicit MojoRendererWrapper(std::unique_ptr<MojoRenderer> mojo_renderer);
+
+  MojoRendererWrapper(const MojoRendererWrapper&) = delete;
+  MojoRendererWrapper& operator=(const MojoRendererWrapper&) = delete;
+
   ~MojoRendererWrapper() override;
 
   // Renderer implementation.
@@ -36,9 +40,6 @@ class MojoRendererWrapper : public Renderer {
 
  private:
   std::unique_ptr<MojoRenderer> mojo_renderer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoRendererWrapper);
 };
 
 }  // namespace media

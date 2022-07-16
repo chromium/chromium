@@ -42,8 +42,6 @@ enum class SyncStatusActionType {
   kNoAction,
   // User needs to reauthenticate.
   kReauthenticate,
-  // User needs to sign out and sign in.
-  kSignoutAndSignin,
   // User needs to upgrade the client.
   kUpgradeClient,
   // User needs to enter their passphrase.

@@ -8,7 +8,10 @@ option optimize_for = LITE_RUNTIME;
 
 package download_pb;
 
-import "download_source.proto";
+import "components/download/database/proto/download_source.proto";
+
+// For DownloadItemRerouteInfo.
+import "components/enterprise/common/proto/download_item_reroute_info.proto";
 
 message HttpRequestHeader {
   optional string key = 1;
@@ -79,6 +82,8 @@ message InProgressInfo {
   optional int64 bytes_wasted = 26;
   optional int32 auto_resume_count = 27;
   optional DownloadSchedule download_schedule = 28;
+  optional enterprise_connectors.DownloadItemRerouteInfo reroute_info = 29;
+  optional int32 credentials_mode = 30;  // network::mojom::CredentialsMode
 }
 
 // Stores various metadata related to a download.
@@ -90,7 +95,7 @@ message DownloadInfo {
   optional InProgressInfo in_progress_info = 4;
 }
 
-// database entry for download information.
+// In progress database entry for download information.
 message DownloadDBEntry {
   // Add field for offline page download.
   oneof entry { DownloadInfo download_info = 1; }

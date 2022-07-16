@@ -11,17 +11,10 @@
 #include "base/observer_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/vector_icon_types.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
 class PrefService;
-
-namespace views {
-class ImageButton;
-class InkDropHost;
-class LabelButton;
-}  // namespace views
 
 namespace ash {
 class ColorModeObserver;
@@ -65,10 +58,11 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   SkColor GetBaseLayerColor(BaseLayerType type) const override;
   SkColor GetControlsLayerColor(ControlsLayerType type) const override;
   SkColor GetContentLayerColor(ContentLayerType type) const override;
-  RippleAttributes GetRippleAttributes(
-      SkColor bg_color = gfx::kPlaceholderColor) const override;
+  std::pair<SkColor, float> GetInkDropBaseColorAndOpacity(
+      SkColor background_color = gfx::kPlaceholderColor) const override;
   void AddObserver(ColorModeObserver* observer) override;
   void RemoveObserver(ColorModeObserver* observer) override;
+  // TODO(minch): Rename to ShouldUseDarkColors.
   bool IsDarkModeEnabled() const override;
 
   // Gets the color of |type| of the corresponding layer based on the current
@@ -87,33 +81,6 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // mode and color theme.
   SkColor GetInvertedBackgroundColor() const;
 
-  // Helpers to style different types of buttons. Depending on the type may
-  // style text, icon and background colors for both enabled and disabled
-  // states. May overwrite an prior styles on |button|.
-  void DecoratePillButton(views::LabelButton* button,
-                          const gfx::VectorIcon* icon);
-  void DecorateCloseButton(views::ImageButton* button,
-                           int button_size,
-                           const gfx::VectorIcon& icon);
-  void DecorateIconButton(views::ImageButton* button,
-                          const gfx::VectorIcon& icon,
-                          bool toggled,
-                          int icon_size);
-  void DecorateFloatingIconButton(views::ImageButton* button,
-                                  const gfx::VectorIcon& icon);
-
-  // Decorates the ink drop managed by `host`. `ink_drop_config_flags` is a
-  // bitmask which specifies the ink drop attributes to modify. `bg_color` is
-  // the background color of the UI element that wants to show ink drop.
-  enum InkDropConfigParam {
-    kConfigBaseColor = 1,
-    kConfigVisibleOpacity = 1 << 1,
-    kConfigHighlightOpacity = 1 << 2
-  };
-  void DecorateInkDrop(views::InkDropHost* host,
-                       int ink_drop_config_flags,
-                       SkColor bg_color = gfx::kPlaceholderColor);
-
   // Whether the system color mode is themed, by default is true. If true, the
   // background color will be calculated based on extracted wallpaper color.
   bool IsThemed() const;
@@ -126,6 +93,7 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
 
  private:
   friend class ScopedLightModeAsDefault;
+  friend class ScopedAssistantLightModeAsDefault;
 
   // Gets the color of |type| of the corresponding layer. Returns color based on
   // the current inverted color mode if |inverted| is true.

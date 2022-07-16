@@ -6,11 +6,10 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -63,6 +62,12 @@ class TestPeriodicBackgroundSyncPermissionContext
 
 class PeriodicBackgroundSyncPermissionContextTest
     : public ChromeRenderViewHostTestHarness {
+ public:
+  PeriodicBackgroundSyncPermissionContextTest(
+      const PeriodicBackgroundSyncPermissionContextTest&) = delete;
+  PeriodicBackgroundSyncPermissionContextTest& operator=(
+      const PeriodicBackgroundSyncPermissionContextTest&) = delete;
+
  protected:
   PeriodicBackgroundSyncPermissionContextTest() = default;
   ~PeriodicBackgroundSyncPermissionContextTest() override = default;
@@ -121,7 +126,6 @@ class PeriodicBackgroundSyncPermissionContextTest
  private:
   std::unique_ptr<TestPeriodicBackgroundSyncPermissionContext>
       permission_context_;
-  DISALLOW_COPY_AND_ASSIGN(PeriodicBackgroundSyncPermissionContextTest);
 };
 
 TEST_F(PeriodicBackgroundSyncPermissionContextTest, DenyWhenFeatureDisabled) {

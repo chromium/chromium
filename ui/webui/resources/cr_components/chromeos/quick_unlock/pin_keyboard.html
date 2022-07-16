@@ -54,7 +54,7 @@
 
       #backspaceButton {
         --cr-icon-button-fill-color: var(--pin-keyboard-backspace-color,
-            var(--google-grey-700));
+                                         var(--cros-icon-color-primary));
         --cr-icon-button-size: 48px;
         --cr-icon-button-transition: none;
         height: var(--pin-button-size);
@@ -73,7 +73,6 @@
         border: 0;
         box-shadow: none;
         box-sizing: border-box;
-        color: var(--google-grey-900);
         display: flex;
         flex-direction: column;
         font-weight: 400;
@@ -85,8 +84,8 @@
         padding: 0;
         width: var(--pin-button-size);
 
-        --ink-color: var(--google-grey-900);
-        --paper-ripple-opacity: .15;
+        --ink-color: var(--cros-ripple-color);
+        --paper-ripple-opacity: 1;
       }
 
       :host-context(.focus-outline-visible) .digit-button:focus {
@@ -98,7 +97,8 @@
       }
 
       inner-text.letter {
-        color: var(--pin-keyboard-letter-color, var(--google-grey-700));
+        color: var(--pin-keyboard-letter-color,
+                   var(--cros-text-color-secondary));
         font-size: 12px;
       }
 
@@ -111,7 +111,7 @@
       }
 
       .number {
-        color: var(--pin-keyboard-number-color, var(--paper-blue-grey-700));
+        color: var(--pin-keyboard-number-color, var(--cros-text-color-primary));
         font-size: 20px;
       }
 
@@ -125,9 +125,12 @@
                                        18px);
         --cr-input-padding-end: 0;
         --cr-input-padding-start: 0;
-        background-color: white;
+        --cr-search-field-placeholder-color:
+            var(--cros-textfield-input-color-disabled);
+        background-color: var(--cros-textfield-background-color);
         border: 0;
         box-sizing: border-box;
+        color: var(--cros-textfield-input-color);
         font-face: Roboto-Regular;
         font-size: 13px;
         left: 0;
@@ -159,7 +162,8 @@
       <div id="pinInputDiv">
         <cr-input id="pinInput" type="password" value="{{value}}"
             is-input-rtl$="[[isInputRtl_(value)]]" aria-label="[[ariaLabel]]"
-            make-contrast$="[[hasInputOrFocus_(value, focused_)]]" invalid="[[hasError]]"
+            make-contrast$="[[hasInputOrFocus_(value, focused_)]]"
+            invalid="[[hasError]]"
             placeholder="[[getInputPlaceholder_(enablePassword,
                 enablePlaceholder)]]" inputmode="none"
             on-keydown="onInputKeyDown_" force-underline="true"

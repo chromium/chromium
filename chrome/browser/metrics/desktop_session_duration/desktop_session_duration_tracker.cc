@@ -153,7 +153,7 @@ void DesktopSessionDurationTracker::EndSession(
   // Trim any timeouts from the session length and lower bound to a session of
   // length 0.
   delta -= time_to_discount;
-  if (delta < base::TimeDelta())
+  if (delta.is_negative())
     delta = base::TimeDelta();
 
   for (Observer& observer : observer_list_)
@@ -166,8 +166,7 @@ void DesktopSessionDurationTracker::EndSession(
   UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration", delta);
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", delta,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromHours(24), 50);
+                             base::Milliseconds(1), base::Hours(24), 50);
 }
 
 void DesktopSessionDurationTracker::InitInactivityTimeout() {
@@ -179,7 +178,7 @@ void DesktopSessionDurationTracker::InitInactivityTimeout() {
   if (!param_value.empty())
     base::StringToInt(param_value, &timeout_minutes);
 
-  inactivity_timeout_ = base::TimeDelta::FromMinutes(timeout_minutes);
+  inactivity_timeout_ = base::Minutes(timeout_minutes);
 }
 
 }  // namespace metrics

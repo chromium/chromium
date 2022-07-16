@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!--
-Copyright 2010 The Closure Library Authors. All Rights Reserved.
+Copyright The Closure Library Authors. All Rights Reserved.
 
 Use of this source code is governed by the Apache License, Version 2.0.
 See the COPYING file for details.
@@ -58,7 +58,7 @@ See the COPYING file for details.
     var divConsole = new goog.debug.DivConsole($('div-console'));
     divConsole.setCapturing(true);
 
-    var logger = goog.debug.LogManager.getRoot();
+    var logger = goog.log.getRootLogger();
 
     function makeTree() {
       goog.debug.Trace.initCurrentTrace();

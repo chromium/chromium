@@ -47,6 +47,8 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
+import java.util.List;
+
 /**
  * A default {@link ContextMenuItemDelegate} that supports the context menu functionality in Tab.
  */
@@ -357,11 +359,15 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     @Override
-    public void removeHighlighting(RenderFrameHost renderFrameHost) {
-        TextFragmentReceiver producer = renderFrameHost != null
-                ? renderFrameHost.getInterfaceToRendererFrame(TextFragmentReceiver.MANAGER)
-                : mTab.getWebContents().getMainFrame().getInterfaceToRendererFrame(
-                        TextFragmentReceiver.MANAGER);
-        producer.removeFragments();
+    public void removeHighlighting() {
+        List<RenderFrameHost> renderFrameHosts =
+                mTab.getWebContents().getMainFrame().getAllRenderFrameHosts();
+
+        // Remove highlights from all frames in the primary page.
+        for (RenderFrameHost renderFrameHost : renderFrameHosts) {
+            TextFragmentReceiver producer =
+                    renderFrameHost.getInterfaceToRendererFrame(TextFragmentReceiver.MANAGER);
+            producer.removeFragments();
+        }
     }
 }

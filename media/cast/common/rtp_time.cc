@@ -20,7 +20,7 @@ base::TimeDelta TicksToTimeDelta(int64_t ticks, int timebase) {
                             base::Time::kMicrosecondsPerSecond +
                                 0.5 /* rounding */;
   DCHECK_LT(micros, static_cast<double>(std::numeric_limits<int64_t>::max()));
-  return base::TimeDelta::FromMicroseconds(static_cast<int64_t>(micros));
+  return base::Microseconds(static_cast<int64_t>(micros));
 }
 
 // Returns the tick count in the given timebase nearest to the base::TimeDelta.

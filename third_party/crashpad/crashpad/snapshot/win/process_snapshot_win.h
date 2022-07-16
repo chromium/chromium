@@ -25,7 +25,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "client/crashpad_info.h"
 #include "snapshot/crashpad_info_client_options.h"
 #include "snapshot/exception_snapshot.h"
@@ -55,6 +54,10 @@ namespace crashpad {
 class ProcessSnapshotWin final : public ProcessSnapshot {
  public:
   ProcessSnapshotWin();
+
+  ProcessSnapshotWin(const ProcessSnapshotWin&) = delete;
+  ProcessSnapshotWin& operator=(const ProcessSnapshotWin&) = delete;
+
   ~ProcessSnapshotWin() override;
 
   //! \brief Initializes the object.
@@ -192,8 +195,6 @@ class ProcessSnapshotWin final : public ProcessSnapshot {
   timeval snapshot_time_;
   CrashpadInfoClientOptions options_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessSnapshotWin);
 };
 
 }  // namespace crashpad

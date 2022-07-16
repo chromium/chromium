@@ -78,6 +78,10 @@ std::string GetLayerNames(const aura::Window* window) {
 class WorkspaceControllerTest : public AshTestBase {
  public:
   WorkspaceControllerTest() = default;
+
+  WorkspaceControllerTest(const WorkspaceControllerTest&) = delete;
+  WorkspaceControllerTest& operator=(const WorkspaceControllerTest&) = delete;
+
   ~WorkspaceControllerTest() override = default;
 
   aura::Window* CreateTestWindowUnparented() {
@@ -128,9 +132,6 @@ class WorkspaceControllerTest : public AshTestBase {
   ShelfLayoutManager* shelf_layout_manager() {
     return GetPrimaryShelf()->shelf_layout_manager();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WorkspaceControllerTest);
 };
 
 // Assertions around adding a normal window.
@@ -585,6 +586,11 @@ class DontCrashOnChangeAndActivateDelegate
  public:
   DontCrashOnChangeAndActivateDelegate() : window_(NULL) {}
 
+  DontCrashOnChangeAndActivateDelegate(
+      const DontCrashOnChangeAndActivateDelegate&) = delete;
+  DontCrashOnChangeAndActivateDelegate& operator=(
+      const DontCrashOnChangeAndActivateDelegate&) = delete;
+
   void set_window(aura::Window* window) { window_ = window; }
 
   // WindowDelegate overrides:
@@ -598,8 +604,6 @@ class DontCrashOnChangeAndActivateDelegate
 
  private:
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DontCrashOnChangeAndActivateDelegate);
 };
 
 }  // namespace

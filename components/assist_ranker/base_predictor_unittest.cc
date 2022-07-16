@@ -72,6 +72,10 @@ class FakePredictor : public BasePredictor {
   // |predictor_config|.
   static std::unique_ptr<FakePredictor> Create(
       PredictorConfig predictor_config);
+
+  FakePredictor(const FakePredictor&) = delete;
+  FakePredictor& operator=(const FakePredictor&) = delete;
+
   ~FakePredictor() override {}
   // Validation will always succeed.
   static RankerModelStatus ValidateModel(const RankerModel& model) {
@@ -84,7 +88,6 @@ class FakePredictor : public BasePredictor {
 
  private:
   FakePredictor(const PredictorConfig& config) : BasePredictor(config) {}
-  DISALLOW_COPY_AND_ASSIGN(FakePredictor);
 };
 
 std::unique_ptr<FakePredictor> FakePredictor::Create(
@@ -103,6 +106,10 @@ std::unique_ptr<FakePredictor> FakePredictor::Create(
 }  // namespace
 
 class BasePredictorTest : public ::testing::Test {
+ public:
+  BasePredictorTest(const BasePredictorTest&) = delete;
+  BasePredictorTest& operator=(const BasePredictorTest&) = delete;
+
  protected:
   BasePredictorTest() = default;
 
@@ -121,8 +128,6 @@ class BasePredictorTest : public ::testing::Test {
 
   // Manages the enabling/disabling of features within the scope of a test.
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(BasePredictorTest);
 };
 
 void BasePredictorTest::SetUp() {

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/menu_test_base.h"
 #include "ui/native_theme/themed_vector_icon.h"
@@ -218,7 +217,13 @@ using MenuItemViewTestInsertWithSubmenu1 = MenuItemViewTestInsertWithSubmenu<1>;
 VIEW_TEST(MenuItemViewTestInsertWithSubmenu0, InsertItemWithSubmenu0)
 
 // If this flakes, disable and log details in http://crbug.com/523255.
-VIEW_TEST(MenuItemViewTestInsertWithSubmenu1, InsertItemWithSubmenu1)
+// Failing on Linux Ozone Tester (Wayland) (See crbug.com/1236048).
+#if defined(USE_OZONE)
+#define MAYBE_InsertItemWithSubmenu1 DISABLED_InsertItemWithSubmenu1
+#else
+#define MAYBE_InsertItemWithSubmenu1 InsertItemWithSubmenu1
+#endif
+VIEW_TEST(MenuItemViewTestInsertWithSubmenu1, MAYBE_InsertItemWithSubmenu1)
 
 // Test class for removing a menu item while the menu is open.
 template <int REMOVE_INDEX, int SELECT_INDEX>

@@ -11,11 +11,16 @@ void TestLoginScreenModel::SetUserList(
     const std::vector<ash::LoginUserInfo>& users) {}
 void TestLoginScreenModel::SetPinEnabledForUser(const AccountId& account_id,
                                                 bool is_enabled) {}
-void TestLoginScreenModel::SetFingerprintState(const AccountId& account_id,
-                                               ash::FingerprintState state) {}
 void TestLoginScreenModel::SetAvatarForUser(const AccountId& account_id,
                                             const ash::UserAvatar& avatar) {}
+void TestLoginScreenModel::SetFingerprintState(const AccountId& account_id,
+                                               ash::FingerprintState state) {}
 void TestLoginScreenModel::NotifyFingerprintAuthResult(
+    const AccountId& account_id,
+    bool successful) {}
+void TestLoginScreenModel::SetSmartLockState(const AccountId& account_id,
+                                             ash::SmartLockState state) {}
+void TestLoginScreenModel::NotifySmartLockAuthResult(
     const AccountId& account_id,
     bool successful) {}
 void TestLoginScreenModel::EnableAuthForUser(const AccountId& account_id) {}

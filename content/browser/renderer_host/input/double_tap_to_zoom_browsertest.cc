@@ -107,6 +107,20 @@ IN_PROC_BROWSER_TEST_P(DoubleTapToZoomBrowserTest, MobileOptimizedStatus) {
       << std::get<2>(GetParam());
 }
 
+IN_PROC_BROWSER_TEST_P(DoubleTapToZoomBrowserTest, TapDelayEnabled) {
+  bool expected_is_viewport_mobile_optimized = std::get<1>(GetParam());
+  LoadURL();
+  WebContents* main_contents = shell()->web_contents();
+  RenderFrameSubmissionObserver frame_observer(main_contents);
+  frame_observer.WaitForMetadataChange();
+
+  ASSERT_EQ(!expected_is_viewport_mobile_optimized,
+            EvalJs(shell(),
+                   "let kTapDelayEnabled = 3965;"
+                   "internals.isUseCounted(document, kTapDelayEnabled)"))
+      << std::get<2>(GetParam());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* No prefix. */,
     DoubleTapToZoomBrowserTest,

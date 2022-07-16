@@ -186,6 +186,6 @@ void WebContentsModalDialogManager::WebContentsDestroyed() {
   CloseAllDialogs();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsModalDialogManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsModalDialogManager);
 
 }  // namespace web_modal

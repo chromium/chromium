@@ -48,8 +48,8 @@ void InitResourceBundleRendererSide() {
                                                           pak_region);
 
   std::pair<int, ui::ResourceScaleFactor> extra_paks[] = {
-      {kAndroidWebViewMainPakDescriptor, ui::SCALE_FACTOR_NONE},
-      {kAndroidWebView100PercentPakDescriptor, ui::SCALE_FACTOR_100P}};
+      {kAndroidWebViewMainPakDescriptor, ui::kScaleFactorNone},
+      {kAndroidWebView100PercentPakDescriptor, ui::k100Percent}};
 
   for (const auto& pak_info : extra_paks) {
     pak_fd = global_descriptors->Get(pak_info.first);

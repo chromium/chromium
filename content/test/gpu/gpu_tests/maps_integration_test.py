@@ -113,10 +113,13 @@ class MapsIntegrationTest(expected_color_test.ExpectedColorTest):
     # The bottom corners of Mac screenshots have black triangles due to the
     # rounded corners of Mac windows. So, crop the bottom few rows off now to
     # get rid of those. The triangles appear to be 5 pixels wide and tall
-    # regardless of DPI, so 10 pixels should be sufficient.
+    # regardless of DPI, so 10 pixels should be sufficient. However, when
+    # running under Python 3, 10 isn't quite enough for some reason, so use
+    # 20 instead.
     if self.browser.platform.GetOSName() == 'mac':
-      img_height, img_width = screenshot.shape[:2]
-      screenshot = image_util.Crop(screenshot, 0, 0, img_width, img_height - 10)
+      img_height = image_util.Height(screenshot)
+      img_width = image_util.Width(screenshot)
+      screenshot = image_util.Crop(screenshot, 0, 0, img_width, img_height - 20)
     x1, y1, x2, y2 = _GetCropBoundaries(screenshot)
     screenshot = image_util.Crop(screenshot, x1, y1, x2 - x1, y2 - y1)
 
@@ -163,7 +166,8 @@ def _GetCropBoundaries(screenshot):
     A 4-tuple (x1, y1, x2, y2) denoting the top left and bottom right
     coordinates to crop to.
   """
-  img_height, img_width = screenshot.shape[:2]
+  img_height = image_util.Height(screenshot)
+  img_width = image_util.Width(screenshot)
 
   def RowIsWhite(row):
     for col in range(img_width):

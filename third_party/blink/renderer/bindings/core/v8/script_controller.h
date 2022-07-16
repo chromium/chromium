@@ -60,6 +60,10 @@ class CORE_EXPORT ScriptController final
   ScriptController(LocalDOMWindow& window,
                    LocalWindowProxyManager& window_proxy_manager)
       : window_(&window), window_proxy_manager_(&window_proxy_manager) {}
+
+  ScriptController(const ScriptController&) = delete;
+  ScriptController& operator=(const ScriptController&) = delete;
+
   void Trace(Visitor*) const;
 
   // This returns an initialized window proxy. (If the window proxy is not
@@ -119,8 +123,6 @@ class CORE_EXPORT ScriptController final
 
   const Member<LocalDOMWindow> window_;
   const Member<LocalWindowProxyManager> window_proxy_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptController);
 };
 
 }  // namespace blink

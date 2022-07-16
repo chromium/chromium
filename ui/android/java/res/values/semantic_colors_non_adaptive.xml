@@ -39,8 +39,12 @@
     <!-- Same as ?attr/colorError. -->
     <color name="default_text_color_error_light">@color/baseline_error_200</color>
     <color name="default_text_color_error_dark">@color/baseline_error_600</color>
-    <color name="default_text_color_link_disabled_light">@color/modern_grey_300_alpha_38</color>
-    <color name="default_text_color_link_disabled_dark">@color/modern_grey_800_alpha_38</color>
+    <!-- Same as ?attr/onSurface with alpha. -->
+    <color name="default_text_color_link_disabled_light">@color/baseline_neutral_100_alpha_38</color>
+    <color name="default_text_color_link_disabled_dark">@color/baseline_neutral_900_alpha_38</color>
+    <!-- Same as ?attr/colorOnPrimary. -->
+    <color name="default_text_color_on_accent1_light">@color/baseline_neutral_0</color>
+    <color name="default_text_color_on_accent1_dark">@color/baseline_primary_800</color>
 
     <!-- Same as ?attr/colorError. -->
     <color name="default_red_light">@color/baseline_error_200</color>
@@ -118,9 +122,10 @@
     <!-- Same as ?attr/colorOnSurfaceVariant. -->
     <color name="default_control_color_normal_light" tools:ignore="UnusedResources">@color/baseline_neutral_variant_700</color>
     <color name="default_control_color_normal_dark" tools:ignore="UnusedResources">@color/baseline_neutral_variant_200</color>
-    <!-- TODO(https://crbug/1216642): Figure out how to route this correctly. -->
-    <color name="default_control_color_highlight_light" tools:ignore="UnusedResources">@color/baseline_neutral_900</color>
-    <color name="default_control_color_highlight_dark" tools:ignore="UnusedResources">@color/baseline_neutral_100</color>
+    <!-- TODO(https://crbug/1216642): Rework to route through
+         ?attr/colorOnSurface with alpha. -->
+    <color name="default_control_color_highlight_light" tools:ignore="UnusedResources">@color/baseline_neutral_900_alpha_10</color>
+    <color name="default_control_color_highlight_dark" tools:ignore="UnusedResources">@color/baseline_neutral_100_alpha_10</color>
 
     <!--  Filled Button  -->
     <color name="filled_button_bg_color_dark">@color/modern_blue_600</color>
@@ -154,7 +159,6 @@
     <color name="ntp_incognito_icon_color" tools:ignore="UnusedResources">@color/baseline_neutral_50</color>
 
     <!-- Illustration -->
-    <color name="drag_handlebar_color">@color/modern_grey_300</color>
     <color name="promo_illustration_bg_color_light">@color/modern_grey_100_alpha_38</color>
     <color name="promo_illustration_bg_color_dark">@color/modern_grey_800_alpha_38</color>
 
@@ -180,4 +184,7 @@
     <color name="adaptive_toolbar_preference_header_blue_dark">@color/modern_blue_300</color>
     <color name="adaptive_toolbar_preference_header_omnibox_light">@color/modern_grey_100</color>
     <color name="adaptive_toolbar_preference_header_omnibox_dark">@color/white_alpha_6</color>
+
+    <!-- Toast colors -->
+    <color name="toast_bg_color">@color/baseline_neutral_900_with_neutral_200_alpha_11_with_primary_200_alpha_2</color>
 </resources>

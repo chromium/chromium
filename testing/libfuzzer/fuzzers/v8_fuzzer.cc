@@ -96,15 +96,20 @@ struct Environment {
         v8::platform::InProcessStackDumping::kDisabled, nullptr);
 
     v8::V8::InitializePlatform(platform_.get());
+#ifdef V8_VIRTUAL_MEMORY_CAGE
+    v8::V8::InitializeVirtualMemoryCage();
+#endif
     v8::V8::Initialize();
     v8::Isolate::CreateParams create_params;
 
-    create_params.array_buffer_allocator = &mock_arraybuffer_allocator;
+    mock_arraybuffer_allocator = std::make_unique<MockArrayBufferAllocator>();
+
+    create_params.array_buffer_allocator = mock_arraybuffer_allocator.get();
     isolate = v8::Isolate::New(create_params);
     terminator_thread = std::thread(terminate_execution, isolate, ref(mtx),
                                     ref(is_running), ref(start_time));
   }
-  MockArrayBufferAllocator mock_arraybuffer_allocator;
+  std::unique_ptr<MockArrayBufferAllocator> mock_arraybuffer_allocator;
   mutex mtx;
   std::thread terminator_thread;
   v8::Isolate* isolate;

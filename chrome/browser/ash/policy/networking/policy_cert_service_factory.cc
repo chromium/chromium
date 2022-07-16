@@ -6,7 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/singleton.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/networking/device_network_configuration_updater.h"
 #include "chrome/browser/ash/policy/networking/policy_cert_service.h"
 #include "chrome/browser/ash/policy/networking/user_network_configuration_updater.h"
@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
 #include "services/network/cert_verifier_with_trust_anchors.h"
@@ -33,7 +32,7 @@ chromeos::PolicyCertificateProvider* GetPolicyCertificateProvider(
     Profile* profile) {
   if (chromeos::ProfileHelper::Get()->IsSigninProfile(profile)) {
     return g_browser_process->platform_part()
-        ->browser_policy_connector_chromeos()
+        ->browser_policy_connector_ash()
         ->GetDeviceNetworkConfigurationUpdater();
   }
 
@@ -61,39 +60,30 @@ PolicyCertServiceFactory* PolicyCertServiceFactory::GetInstance() {
 }
 
 // static
-void PolicyCertServiceFactory::SetUsedPolicyCertificates(
-    const std::string& user_email) {
-  if (UsedPolicyCertificates(user_email))
-    return;
-  ListPrefUpdate update(g_browser_process->local_state(),
-                        prefs::kUsedPolicyCertificates);
-  update->Append(user_email);
-}
-
-// static
-void PolicyCertServiceFactory::ClearUsedPolicyCertificates(
-    const std::string& user_email) {
-  ListPrefUpdate update(g_browser_process->local_state(),
-                        prefs::kUsedPolicyCertificates);
-  update->EraseListValue(base::Value(user_email));
-}
-
-// static
-bool PolicyCertServiceFactory::UsedPolicyCertificates(
-    const std::string& user_email) {
-  base::Value value(user_email);
+bool PolicyCertServiceFactory::MigrateLocalStatePrefIntoProfilePref(
+    const std::string& user_email,
+    Profile* profile) {
+  base::Value user_email_value(user_email);
   const base::ListValue* list =
       g_browser_process->local_state()->GetList(prefs::kUsedPolicyCertificates);
   if (!list) {
     NOTREACHED();
     return false;
   }
-  return base::Contains(list->GetList(), value);
+
+  if (base::Contains(list->GetList(), user_email_value)) {
+    profile->GetPrefs()->SetBoolean(prefs::kUsedPolicyCertificates, true);
+    return PolicyCertServiceFactory::ClearUsedPolicyCertificates(user_email);
+  }
+  return false;
 }
 
 // static
-void PolicyCertServiceFactory::RegisterPrefs(PrefRegistrySimple* local_state) {
-  local_state->RegisterListPref(prefs::kUsedPolicyCertificates);
+bool PolicyCertServiceFactory::ClearUsedPolicyCertificates(
+    const std::string& user_email) {
+  ListPrefUpdate update(g_browser_process->local_state(),
+                        prefs::kUsedPolicyCertificates);
+  return (update->EraseListValue(base::Value(user_email)) > 0);
 }
 
 PolicyCertServiceFactory::PolicyCertServiceFactory()
@@ -116,11 +106,11 @@ KeyedService* PolicyCertServiceFactory::BuildServiceInstanceFor(
 
   if (chromeos::ProfileHelper::Get()->IsSigninProfile(profile)) {
     return new PolicyCertService(profile, policy_certificate_provider,
-                                 /*may_use_profile_wide_trust_anchors=*/false,
-                                 /*user_id=*/std::string(),
-                                 /*user_manager=*/nullptr);
+                                 /*may_use_profile_wide_trust_anchors=*/false);
   }
 
+  // Don't allow policy-provided certificates for "special" Profiles except the
+  // one listed above.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(
@@ -128,13 +118,19 @@ KeyedService* PolicyCertServiceFactory::BuildServiceInstanceFor(
   if (!user)
     return nullptr;
 
+  MigrateLocalStatePrefIntoProfilePref(user->GetAccountId().GetUserEmail(),
+                                       profile);
+
+  // Only allow trusted policy-provided certificates for non-guest primary
+  // users. Guest users don't have user policy, but set
+  // `may_use_profile_wide_trust_anchors`=false for them out of caution against
+  // future changes.
   bool may_use_profile_wide_trust_anchors =
       user == user_manager->GetPrimaryUser() &&
       user->GetType() != user_manager::USER_TYPE_GUEST;
 
-  return new PolicyCertService(
-      profile, policy_certificate_provider, may_use_profile_wide_trust_anchors,
-      user->GetAccountId().GetUserEmail(), user_manager);
+  return new PolicyCertService(profile, policy_certificate_provider,
+                               may_use_profile_wide_trust_anchors);
 }
 
 content::BrowserContext* PolicyCertServiceFactory::GetBrowserContextToUse(

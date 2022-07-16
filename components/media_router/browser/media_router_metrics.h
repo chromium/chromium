@@ -68,9 +68,10 @@ enum class MediaRouterDialogOpenOrigin {
   CONTEXTUAL_MENU = 2,
   PAGE = 3,
   APP_MENU = 4,
+  SYSTEM_TRAY = 5,
 
   // NOTE: Add entries only immediately above this line.
-  TOTAL_COUNT = 5
+  TOTAL_COUNT = 6
 };
 
 // The possible outcomes from a route creation response.
@@ -112,6 +113,11 @@ enum class PresentationUrlType {
   kPresentationUrlTypeCount
 };
 
+enum class UiType {
+  kCastDialog,
+  kGlobalMediaControls,
+};
+
 class MediaRouterMetrics {
  public:
   MediaRouterMetrics();
@@ -138,6 +144,10 @@ class MediaRouterMetrics {
   static const char kHistogramUiDialogPaint[];
   static const char kHistogramUiFirstAction[];
   static const char kHistogramUiIconStateAtInit[];
+
+  // When recording the number of devices shown in UI we record after a delay
+  // because discovering devices can take some time after the UI is shown.
+  static const base::TimeDelta kDeviceCountMetricDelay;
 
   // Records where the user clicked to open the Media Router dialog.
   static void RecordMediaRouterDialogOrigin(MediaRouterDialogOpenOrigin origin);
@@ -175,10 +185,28 @@ class MediaRouterMetrics {
 
   // Records the type of the sink that media is being Cast to.
   static void RecordMediaSinkType(SinkIconType sink_icon_type);
+  static void RecordMediaSinkTypeForGlobalMediaControls(
+      SinkIconType sink_icon_type);
+  static void RecordMediaSinkTypeForCastDialog(SinkIconType sink_icon_type);
+  static void RecordMediaSinkTypeWhenCastAndDialPresent(
+      SinkIconType sink_icon_type,
+      UiType ui);
 
   // Records the number of devices shown in the Cast dialog. The device count
   // may be 0.
   static void RecordDeviceCount(int device_count);
+
+  // Records the number of sinks in |is_available| state, provided by |provider|
+  // that was opened via |origin|. Recorded for the global media controls and
+  // the Cast dialog, respectively.
+  static void RecordGmcDeviceCount(MediaRouterDialogOpenOrigin origin,
+                                   mojom::MediaRouteProviderId provider,
+                                   bool is_available,
+                                   int count);
+  static void RecordCastDialogDeviceCount(MediaRouterDialogOpenOrigin origin,
+                                          mojom::MediaRouteProviderId provider,
+                                          bool is_available,
+                                          int count);
 
   // Records the index of the device the user has started casting to on the
   // devices list. The index starts at 0.

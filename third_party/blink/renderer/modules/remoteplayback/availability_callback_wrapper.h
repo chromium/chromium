@@ -23,6 +23,11 @@ class AvailabilityCallbackWrapper final
  public:
   explicit AvailabilityCallbackWrapper(V8RemotePlaybackAvailabilityCallback*);
   explicit AvailabilityCallbackWrapper(base::RepeatingClosure);
+
+  AvailabilityCallbackWrapper(const AvailabilityCallbackWrapper&) = delete;
+  AvailabilityCallbackWrapper& operator=(const AvailabilityCallbackWrapper&) =
+      delete;
+
   ~AvailabilityCallbackWrapper() override = default;
 
   void Run(RemotePlayback*, bool new_availability);
@@ -36,8 +41,6 @@ class AvailabilityCallbackWrapper final
   // Only one of these callbacks must be set.
   Member<V8RemotePlaybackAvailabilityCallback> bindings_cb_;
   base::RepeatingClosure internal_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(AvailabilityCallbackWrapper);
 };
 
 }  // namespace blink

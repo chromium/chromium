@@ -23,6 +23,7 @@ ScopedWebFrame::ScopedWebFrame()
           /*is_hidden=*/false,
           /*is_prerendering=*/false,
           /*is_inside_portal=*/false,
+          /*is_fenced_frame=*/false,
           /*compositing_enabled=*/false,
           /*widgets_never_composited=*/false,
           /*opener=*/nullptr,
@@ -34,7 +35,9 @@ ScopedWebFrame::ScopedWebFrame()
                                                    &frame_client_,
                                                    nullptr,
                                                    blink::LocalFrameToken(),
-                                                   nullptr)) {}
+                                                   nullptr)) {
+  view_->DidAttachLocalMainFrame();
+}
 
 ScopedWebFrame::~ScopedWebFrame() {
   view_->Close();

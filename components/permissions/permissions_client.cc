@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "build/chromeos_buildflags.h"
+#include "components/permissions/permission_uma_util.h"
 
 #if !defined(OS_ANDROID)
 #include "ui/gfx/paint_vector_icon.h"
@@ -78,6 +79,7 @@ void PermissionsClient::OnPromptResolved(
     RequestType request_type,
     PermissionAction action,
     const GURL& origin,
+    PermissionPromptDisposition prompt_disposition,
     absl::optional<QuietUiReason> quiet_ui_reason) {}
 
 absl::optional<bool>
@@ -109,11 +111,21 @@ absl::optional<GURL> PermissionsClient::OverrideCanonicalOrigin(
   return absl::nullopt;
 }
 
+bool PermissionsClient::DoOriginsMatchNewTabPage(const GURL& requesting_origin,
+                                                 const GURL& embedding_origin) {
+  return false;
+}
+
 #if defined(OS_ANDROID)
 bool PermissionsClient::IsPermissionControlledByDse(
     content::BrowserContext* browser_context,
     ContentSettingsType type,
     const url::Origin& origin) {
+  return false;
+}
+
+bool PermissionsClient::IsDseOrigin(content::BrowserContext* browser_context,
+                                    const url::Origin& origin) {
   return false;
 }
 

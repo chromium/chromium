@@ -42,13 +42,17 @@ class FontSizeTabHelperFakeWebStateTest : public PlatformTest {
 
     FontSizeTabHelper::CreateForWebState(&web_state_);
   }
+
+  FontSizeTabHelperFakeWebStateTest(const FontSizeTabHelperFakeWebStateTest&) =
+      delete;
+  FontSizeTabHelperFakeWebStateTest& operator=(
+      const FontSizeTabHelperFakeWebStateTest&) = delete;
+
   ~FontSizeTabHelperFakeWebStateTest() override {}
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   web::FakeWebState web_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontSizeTabHelperFakeWebStateTest);
 };
 
 // Tests that zoom is only enabled if the page content is html.
@@ -77,6 +81,10 @@ class FontSizeTabHelperTest : public ChromeWebTest {
           [invocation setReturnValue:&preferred_content_size_category_];
         });
   }
+
+  FontSizeTabHelperTest(const FontSizeTabHelperTest&) = delete;
+  FontSizeTabHelperTest& operator=(const FontSizeTabHelperTest&) = delete;
+
   ~FontSizeTabHelperTest() override { [application_ stopMocking]; }
 
   void SetUp() override {
@@ -101,7 +109,7 @@ class FontSizeTabHelperTest : public ChromeWebTest {
                     userInfo:nil];
 
     base::test::ios::SpinRunLoopWithMinDelay(
-        base::TimeDelta::FromSecondsD(base::test::ios::kSpinDelaySeconds));
+        base::Seconds(base::test::ios::kSpinDelaySeconds));
   }
 
   std::string ZoomMultiplierPrefKey(UIContentSizeCategory category, GURL url) {
@@ -127,7 +135,7 @@ class FontSizeTabHelperTest : public ChromeWebTest {
     LoadHtml(@"<html><body>Content</body></html>", url);
 
     base::test::ios::SpinRunLoopWithMinDelay(
-        base::TimeDelta::FromSecondsD(base::test::ios::kSpinDelaySeconds));
+        base::Seconds(base::test::ios::kSpinDelaySeconds));
   }
 
   // Returns the current value of the WebKit text size adjustment style.
@@ -170,8 +178,6 @@ class FontSizeTabHelperTest : public ChromeWebTest {
   UIContentSizeCategory preferred_content_size_category_ =
       UIContentSizeCategoryLarge;
   id application_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(FontSizeTabHelperTest);
 };
 
 // Tests that a web page's font size is set properly in a procedure started
@@ -346,7 +352,7 @@ TEST_F(FontSizeTabHelperTest, ClearUserZoomPrefs) {
       FontSizeTabHelper::FromWebState(web_state());
   font_size_tab_helper->UserZoom(ZOOM_IN);
   base::test::ios::SpinRunLoopWithMinDelay(
-      base::TimeDelta::FromSecondsD(base::test::ios::kSpinDelaySeconds));
+      base::Seconds(base::test::ios::kSpinDelaySeconds));
 
   // Make sure the first value is stored in the pref store.
   const base::Value* pref =

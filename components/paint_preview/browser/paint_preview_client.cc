@@ -55,8 +55,10 @@ PaintPreviewCaptureResponseToPaintPreviewFrameProto(
     PaintPreviewFrameProto* proto) {
   proto->set_embedding_token_high(frame_guid.GetHighForSerialization());
   proto->set_embedding_token_low(frame_guid.GetLowForSerialization());
-  proto->set_scroll_offset_x(response->scroll_offsets.width());
-  proto->set_scroll_offset_y(response->scroll_offsets.height());
+  proto->set_scroll_offset_x(response->scroll_offsets.x());
+  proto->set_scroll_offset_y(response->scroll_offsets.y());
+  proto->set_frame_offset_x(response->frame_offsets.x());
+  proto->set_frame_offset_y(response->frame_offsets.y());
 
   std::vector<base::UnguessableToken> frame_guids;
   for (const auto& id_pair : response->content_id_to_embedding_token) {
@@ -94,14 +96,15 @@ void RecordUkmCaptureData(ukm::SourceId source_id,
 
 base::flat_set<base::UnguessableToken> CreateAcceptedTokenList(
     content::RenderFrameHost* render_frame_host) {
-  auto rfhs = render_frame_host->GetFramesInSubtree();
   std::vector<base::UnguessableToken> tokens;
-  tokens.reserve(rfhs.size());
-  for (content::RenderFrameHost* rfh : rfhs) {
-    auto maybe_token = rfh->GetEmbeddingToken();
-    if (maybe_token.has_value())
-      tokens.push_back(maybe_token.value());
-  }
+  render_frame_host->ForEachRenderFrameHost(base::BindRepeating(
+      [](std::vector<base::UnguessableToken>* tokens,
+         content::RenderFrameHost* rfh) {
+        auto maybe_token = rfh->GetEmbeddingToken();
+        if (maybe_token.has_value())
+          tokens->push_back(maybe_token.value());
+      },
+      &tokens));
   return base::flat_set<base::UnguessableToken>(std::move(tokens));
 }
 
@@ -230,10 +233,10 @@ void PaintPreviewClient::InProgressDocumentCaptureState::RecordSuccessfulFrame(
   had_success = true;
 
   PaintPreviewFrameProto* frame_proto;
-  if (is_main_frame) {
+  if (frame_guid == root_frame_token) {
     main_frame_blink_recording_time = response->blink_recording_time;
     frame_proto = proto.mutable_root_frame();
-    frame_proto->set_is_main_frame(true);
+    frame_proto->set_is_main_frame(is_main_frame);
   } else {
     frame_proto = proto.add_subframes();
     frame_proto->set_is_main_frame(false);
@@ -317,6 +320,16 @@ void PaintPreviewClient::CapturePaintPreview(
   document_data.source_id =
       ukm::GetSourceIdForWebContentsDocument(web_contents());
   document_data.accepted_tokens = CreateAcceptedTokenList(render_frame_host);
+  auto token = render_frame_host->GetEmbeddingToken();
+  if (token.has_value()) {
+    document_data.root_frame_token = token.value();
+  } else {
+    // This should be impossible, but if it happens in a release build just
+    // abort.
+    DVLOG(1) << "Error: Root frame does not have an embedding token.";
+    NOTREACHED();
+    return;
+  }
   document_data.capture_links = params.inner.capture_links;
   document_data.max_per_capture_size = params.inner.max_capture_size;
   document_data.max_decoded_image_size_bytes =
@@ -418,8 +431,6 @@ void PaintPreviewClient::CapturePaintPreviewInternal(
   if (!base::Contains(document_data->accepted_tokens, frame_guid))
     return;
 
-  if (params.is_main_frame)
-    document_data->root_frame_token = frame_guid;
   // Deduplicate data if a subframe is required multiple times.
   if (base::Contains(document_data->awaiting_subframes, frame_guid) ||
       base::Contains(document_data->finished_subframes, frame_guid))
@@ -594,6 +605,6 @@ void PaintPreviewClient::OnFinished(
   all_document_data_.erase(guid);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PaintPreviewClient)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PaintPreviewClient);
 
 }  // namespace paint_preview

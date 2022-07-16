@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_WEB_PACKAGE_MOCK_WEB_BUNDLE_READER_FACTORY_H_
 #define CONTENT_BROWSER_WEB_PACKAGE_MOCK_WEB_BUNDLE_READER_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "content/browser/web_package/web_bundle_reader.h"
 
@@ -20,6 +19,11 @@ class MockWebBundleReaderFactory {
   static std::unique_ptr<MockWebBundleReaderFactory> Create();
 
   MockWebBundleReaderFactory() = default;
+
+  MockWebBundleReaderFactory(const MockWebBundleReaderFactory&) = delete;
+  MockWebBundleReaderFactory& operator=(const MockWebBundleReaderFactory&) =
+      delete;
+
   virtual ~MockWebBundleReaderFactory() = default;
 
   // Creates WebBundleReader instance. A temporary file is created and
@@ -50,9 +54,6 @@ class MockWebBundleReaderFactory {
   virtual void FullfillResponse(
       web_package::mojom::BundleResponseLocationPtr expected_parse_args,
       web_package::mojom::BundleResponsePtr response) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWebBundleReaderFactory);
 };
 
 }  // namespace content

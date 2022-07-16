@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS global setup
-FAIL base URL when service worker does respondWith(fetch(responseUrl)). assert_equals: referrer expected "https://web-platform.test:8444/service-workers/service-worker/resources/fetch-request-css-base-url-style.css?fetch" but got "https://web-platform.test:8444/service-workers/service-worker/resources/fetch-request-css-base-url-style.css"
-PASS base URL when service worker does respondWith(new Response()).
-PASS cleanup global state
-Harness: the test ran to completion.
-

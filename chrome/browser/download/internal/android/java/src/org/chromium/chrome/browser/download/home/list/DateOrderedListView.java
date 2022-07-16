@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator.DateOrderedListObserver;
+import org.chromium.chrome.browser.download.home.list.ListItem.OfflineItemListItem;
 import org.chromium.chrome.browser.download.home.list.holder.ListItemViewHolder;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
@@ -41,6 +42,7 @@ class DateOrderedListView {
     private final int mInterImagePaddingPx;
     private final int mPrefetchVerticalPaddingPx;
     private final int mHorizontalPaddingPx;
+    private final int mVerticalPaddingPx;
     private final int mMaxWidthImageItemPx;
 
     private final RecyclerView mView;
@@ -61,6 +63,8 @@ class DateOrderedListView {
                 R.dimen.download_manager_horizontal_margin);
         mPrefetchVerticalPaddingPx = context.getResources().getDimensionPixelSize(
                 R.dimen.download_manager_prefetch_vertical_margin);
+        mVerticalPaddingPx = context.getResources().getDimensionPixelSize(
+                R.dimen.download_manager_vertical_margin_between_download_types);
         mMaxWidthImageItemPx = context.getResources().getDimensionPixelSize(
                 R.dimen.download_manager_max_image_item_width_wide_screen);
 
@@ -242,6 +246,20 @@ class DateOrderedListView {
                             == HorizontalDisplayStyle.WIDE) {
                 outRect.right += Math.max(getAvailableViewWidth() - mMaxWidthImageItemPx, 0);
             }
+
+            // If the current item is the last of its download type in a given section and not
+            // displayed in a grid, add padding below. Grid items are handled differently as
+            // described in the next section.
+            if (isLastOfDownloadTypeInSection(position) && !(isGridItem(position))) {
+                outRect.bottom += mVerticalPaddingPx;
+            }
+
+            // If the previous item was a grid item, and current one is not, add padding above to
+            // differentiate between sections.
+            if (position > 0 && isLastOfDownloadTypeInSection(position - 1)
+                    && isGridItem(position - 1)) {
+                outRect.top += mVerticalPaddingPx;
+            }
         }
 
         private void computeItemDecoration(int position, Rect outRect) {
@@ -283,6 +301,50 @@ class DateOrderedListView {
         // For right edge, the calculation is exactly same as left, except we have one extra
         // shrink. Negate the final value.
         outRect.right = -(leftMargin + columnIndex * padding - (columnIndex + 1) * shrink);
+    }
+
+    /**
+     * Determines whether or not the item at position is an OfflineItemListItem (representing a
+     * downloaded item) and is the last of its type in a given section. Does so by comparing the
+     * current item to the following item.
+     * @param position Index of the item we are checking
+     * @return Whether or not the current item is the last of its download type in a given section.
+     */
+    private boolean isLastOfDownloadTypeInSection(int position) {
+        // If the current item is not an OfflineItemListItem, it cannot have a download type, and
+        // thus can't be the last of its download type.
+        ListItem currentItem = mModel.get(position);
+        if (!(currentItem instanceof OfflineItemListItem)) return false;
+
+        // If the next item is not an OfflineItemListItem, it cannot have a download type. This
+        // means the next item can't be the same type as the current item and the current item is
+        // therefore the last of its download type.
+        ListItem nextItem = position >= mModel.size() - 1 ? null : mModel.get(position + 1);
+        if (!(nextItem instanceof OfflineItemListItem)) return true;
+
+        // If both items are OfflineItemListItems, but are of different type, then the current item
+        // is the last of its type.
+        boolean nextItemIsDifferentType = ((OfflineItemListItem) currentItem).item.filter
+                != ((OfflineItemListItem) nextItem).item.filter;
+        if (nextItemIsDifferentType) return true;
+
+        // If this point is reached, both items are OfflineListItems and the same type, meaning the
+        // current item is not the last of its type.
+        return false;
+    }
+
+    /**
+     * Determines whether or not the item at position is displayed in a grid (e.g. multiple images).
+     * Does so by checking if the item's span size is less than the span count of a row.
+     * @param position Index of the item we are checking
+     * @return Whether or not the item at position is displayed in a grid.
+     */
+    private boolean isGridItem(int position) {
+        GridLayoutManager.SpanSizeLookup spanLookup = mGridLayoutManager.getSpanSizeLookup();
+        int spanCount = mGridLayoutManager.getSpanCount();
+        int spanSize = spanLookup.getSpanSize(position);
+
+        return spanSize < spanCount;
     }
 
     private class ModelChangeProcessor extends ForwardingListObservable<Void>

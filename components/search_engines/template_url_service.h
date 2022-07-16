@@ -17,7 +17,6 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/default_clock.h"
@@ -31,6 +30,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/syncable_service.h"
+#include "components/sync/protocol/search_engine_specifics.pb.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #if defined(OS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -126,6 +126,10 @@ class TemplateURLService : public WebDataServiceConsumer,
       const base::RepeatingClosure& dsp_change_callback);
   // The following is for testing.
   TemplateURLService(const Initializer* initializers, const int count);
+
+  TemplateURLService(const TemplateURLService&) = delete;
+  TemplateURLService& operator=(const TemplateURLService&) = delete;
+
   ~TemplateURLService() override;
 
   // Log a SearchTemplateURLEvent.
@@ -249,6 +253,11 @@ class TemplateURLService : public WebDataServiceConsumer,
                         const std::u16string& title,
                         const std::u16string& keyword,
                         const std::string& search_url);
+
+  // Sets the `is_active` field of the specified TemplateURL to `kTrue` or
+  // `kFalse`. Called when a user explicitly activates/deactivates the search
+  // engine.
+  void SetIsActiveTemplateURL(TemplateURL* url, bool is_active);
 
   // Creates a TemplateURL for |keyword| marked with created_from_play_api().
   // Returns the newly created engine.
@@ -409,6 +418,16 @@ class TemplateURLService : public WebDataServiceConsumer,
   // Clears the session token. Should be called when the user clears browsing
   // data.
   void ClearSessionToken();
+
+  // Explicitly converts from ActiveStatus enum in sync protos to enum in
+  // TemplateURLData.
+  static TemplateURLData::ActiveStatus ActiveStatusFromSync(
+      sync_pb::SearchEngineSpecifics_ActiveStatus is_active);
+
+  // Explicitly converts from ActiveStatus enum in TemplateURLData to enum in
+  // sync protos.
+  static sync_pb::SearchEngineSpecifics_ActiveStatus ActiveStatusToSync(
+      TemplateURLData::ActiveStatus is_active);
 
   // Returns a SyncData with a sync representation of the search engine data
   // from |turl|.
@@ -636,6 +655,11 @@ class TemplateURLService : public WebDataServiceConsumer,
 
   void OnSyncedDefaultSearchProviderGUIDChanged();
 
+  // Goes through a vector of TemplateURLs and sets is_active to true if it was
+  // not previously set (currently kUnspecified) and has been interacted with
+  // by the user.
+  void MaybeSetIsActiveSearchEngines(OwnedTemplateURLVector* template_urls);
+
   // Adds to |matches| all TemplateURLs stored in |keyword_to_turl_and_length|
   // whose keywords begin with |prefix|, sorted shortest-keyword-first.  If
   // |supports_replacement_only| is true, only TemplateURLs that support
@@ -810,8 +834,6 @@ class TemplateURLService : public WebDataServiceConsumer,
   // android.
   std::unique_ptr<TemplateUrlServiceAndroid> template_url_service_android_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLService);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_H_

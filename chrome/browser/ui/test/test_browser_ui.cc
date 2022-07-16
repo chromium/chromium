@@ -12,7 +12,6 @@
 #include "ui/aura/test/ui_controls_factory_aura.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/views/test/ui_controls_factory_desktop_aura_ozone.h"
-#include "ui/views/test/ui_controls_factory_desktop_aurax11.h"
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -45,9 +44,6 @@ void InstallUIControlsAura() {
 #elif defined(USE_OZONE)
   ui_controls::InstallUIControlsAura(
       views::test::CreateUIControlsDesktopAuraOzone());
-#elif defined(USE_X11)
-  ui_controls::InstallUIControlsAura(
-      views::test::CreateUIControlsDesktopAura());
 #else
   ui_controls::EnableUIControls();
 #endif

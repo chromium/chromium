@@ -40,6 +40,11 @@ class LenientMockSiteDataCacheImpl : public SiteDataCacheImpl {
  public:
   explicit LenientMockSiteDataCacheImpl(const std::string& browser_context_id)
       : SiteDataCacheImpl(browser_context_id) {}
+
+  LenientMockSiteDataCacheImpl(const LenientMockSiteDataCacheImpl&) = delete;
+  LenientMockSiteDataCacheImpl& operator=(const LenientMockSiteDataCacheImpl&) =
+      delete;
+
   ~LenientMockSiteDataCacheImpl() override = default;
 
   // The 2 following functions allow setting the expectations for the mocked
@@ -82,8 +87,6 @@ class LenientMockSiteDataCacheImpl : public SiteDataCacheImpl {
   MOCK_METHOD0(ClearAllSiteData, void());
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(LenientMockSiteDataCacheImpl);
 };
 using MockSiteDataCache = ::testing::StrictMock<LenientMockSiteDataCacheImpl>;
 

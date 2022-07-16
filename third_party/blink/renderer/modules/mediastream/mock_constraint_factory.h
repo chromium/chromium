@@ -16,6 +16,10 @@ namespace blink {
 class MockConstraintFactory {
  public:
   MockConstraintFactory();
+
+  MockConstraintFactory(const MockConstraintFactory&) = delete;
+  MockConstraintFactory& operator=(const MockConstraintFactory&) = delete;
+
   ~MockConstraintFactory();
 
   MediaConstraints CreateMediaConstraints() const;
@@ -29,8 +33,6 @@ class MockConstraintFactory {
  private:
   MediaTrackConstraintSetPlatform basic_;
   Vector<MediaTrackConstraintSetPlatform> advanced_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockConstraintFactory);
 };
 
 }  // namespace blink

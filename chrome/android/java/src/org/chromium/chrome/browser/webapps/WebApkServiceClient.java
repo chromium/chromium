@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -55,7 +56,8 @@ public class WebApkServiceClient {
         }
     }
 
-    private static final String CATEGORY_WEBAPK_API = "android.intent.category.WEBAPK_API";
+    @VisibleForTesting
+    public static final String CATEGORY_WEBAPK_API = "android.intent.category.WEBAPK_API";
     private static final String TAG = "WebApk";
 
     private static WebApkServiceClient sInstance;
@@ -120,7 +122,7 @@ public class WebApkServiceClient {
             builder.setContentSmallIconForRemoteApp(icon);
         }
         if (!builder.hasStatusBarIconBitmap()) {
-            builder.setStatusBarIconForRemoteApp(iconId, icon, webApkPackage);
+            builder.setStatusBarIconForRemoteApp(iconId, icon);
         }
     }
 

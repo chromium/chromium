@@ -54,6 +54,10 @@ class MODULES_EXPORT DatabaseTracker {
 
  public:
   static DatabaseTracker& Tracker();
+
+  DatabaseTracker(const DatabaseTracker&) = delete;
+  DatabaseTracker& operator=(const DatabaseTracker&) = delete;
+
   // This singleton will potentially be used from multiple worker threads and
   // the page's context thread simultaneously.  To keep this safe, it's
   // currently using 4 locks.  In order to avoid deadlock when taking multiple
@@ -96,8 +100,6 @@ class MODULES_EXPORT DatabaseTracker {
   Mutex open_database_map_guard_;
 
   mutable std::unique_ptr<DatabaseOriginMap> open_database_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseTracker);
 };
 
 }  // namespace blink

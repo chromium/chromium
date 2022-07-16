@@ -445,8 +445,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
       on_blocklist_cleared_run_loop.QuitClosure());
   base::Time now = base::Time::Now();
   GetProfile()->ClearBrowsingData(
-      {BrowsingDataType::COOKIES_AND_SITE_DATA},
-      now - base::TimeDelta::FromDays(1), now,
+      {BrowsingDataType::COOKIES_AND_SITE_DATA}, now - base::Days(1), now,
       on_browsing_data_cleared_run_loop.QuitClosure());
   on_blocklist_cleared_run_loop.Run();
 

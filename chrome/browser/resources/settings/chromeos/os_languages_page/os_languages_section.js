@@ -118,12 +118,7 @@ Polymer({
     if (id === ACCESSIBILITY_COMMON_IME_ID) {
       return '';
     }
-    // LanguageHelper.getInputMethodDisplayName will throw an error if the ID
-    // isn't found, such as when using CrOS on Linux.
-    try {
-      return languageHelper.getInputMethodDisplayName(id);
-    } catch (_) {
-      return '';
-    }
+
+    return languageHelper.getInputMethodDisplayName(id);
   },
 });

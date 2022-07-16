@@ -272,7 +272,7 @@ TEST(HttpAuthHandlerFactoryTest, LogCreateAuthHandlerResults) {
       HttpAuthHandlerFactory::CreateDefault());
   GURL origin("http://www.example.com");
   SSLInfo null_ssl_info;
-  RecordingBoundTestNetLog test_net_log;
+  RecordingNetLogObserver net_log_observer;
 
   net::NetLogCaptureMode capture_modes[] = {
       NetLogCaptureMode::kDefault, NetLogCaptureMode::kIncludeSensitive};
@@ -301,17 +301,18 @@ TEST(HttpAuthHandlerFactoryTest, LogCreateAuthHandlerResults) {
 
   // For each level of capture sensitivity...
   for (auto capture_mode : capture_modes) {
-    test_net_log.SetObserverCaptureMode(capture_mode);
+    net_log_observer.SetObserverCaptureMode(capture_mode);
 
     // ... evaluate the expected results for each test case.
     for (auto test_case : test_cases) {
       std::unique_ptr<HttpAuthHandler> handler;
       int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
           test_case.challenge, test_case.auth_target, null_ssl_info,
-          NetworkIsolationKey(), origin, test_net_log.bound(),
-          host_resolver.get(), &handler);
+          NetworkIsolationKey(), origin,
+          NetLogWithSource::Make(NetLogSourceType::NONE), host_resolver.get(),
+          &handler);
       EXPECT_THAT(rv, IsError(test_case.expected_net_error));
-      auto entries = test_net_log.GetEntriesWithType(
+      auto entries = net_log_observer.GetEntriesWithType(
           NetLogEventType::AUTH_HANDLER_CREATE_RESULT);
       ASSERT_EQ(1u, entries.size());
       const std::string* scheme = entries[0].params.FindStringKey("scheme");
@@ -336,7 +337,7 @@ TEST(HttpAuthHandlerFactoryTest, LogCreateAuthHandlerResults) {
                   challenge->data());
       }
 
-      test_net_log.Clear();
+      net_log_observer.Clear();
     }
   }
 }

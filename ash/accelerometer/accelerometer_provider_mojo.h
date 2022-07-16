@@ -100,6 +100,12 @@ class ASH_EXPORT AccelerometerProviderMojo
   void OnSensorServiceDisconnect();
   void ResetSensorService();
 
+  // Called when an in-use device is unplugged, and we need to search for other
+  // devices to use.
+  // Assumes that the angle device won't be unplugged.
+  void ResetStates();
+  void QueryDevices();
+
   void SetECLidAngleDriverSupported();
 
   // Update |initialization_state_| upon new devices' arrival.
@@ -150,7 +156,9 @@ class ASH_EXPORT AccelerometerProviderMojo
   // accelerometer's required attributes before creating the
   // AccelerometerSamplesObserver of it.
   void RegisterAccelerometerWithId(int32_t id);
-  void OnAccelerometerRemoteDisconnect(int32_t id);
+  void OnAccelerometerRemoteDisconnect(int32_t id,
+                                       uint32_t custom_reason_code,
+                                       const std::string& description);
   void GetAttributesCallback(
       int32_t id,
       const std::vector<absl::optional<std::string>>& values);

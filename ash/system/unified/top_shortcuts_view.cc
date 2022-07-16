@@ -15,16 +15,17 @@
 #include "ash/shutdown_controller_impl.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/button_style.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/collapse_button.h"
-#include "ash/system/unified/sign_out_button.h"
 #include "ash/system/unified/top_shortcut_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "ash/system/unified/user_chooser_view.h"
+#include "ash/system/user/login_status.h"
 #include "base/bind.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -43,10 +44,11 @@ namespace {
 class UserAvatarButton : public views::Button {
  public:
   explicit UserAvatarButton(PressedCallback callback);
-  ~UserAvatarButton() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserAvatarButton);
+  UserAvatarButton(const UserAvatarButton&) = delete;
+  UserAvatarButton& operator=(const UserAvatarButton&) = delete;
+
+  ~UserAvatarButton() override = default;
 };
 
 UserAvatarButton::UserAvatarButton(PressedCallback callback)
@@ -94,8 +96,8 @@ void TopShortcutButtonContainer::Layout() {
   if (visible_children.size() > 1) {
     spacing = (child_area.width() - visible_child_width) /
               (static_cast<int>(visible_children.size()) - 1);
-    spacing = base::ClampToRange(spacing, kUnifiedTopShortcutButtonMinSpacing,
-                                 kUnifiedTopShortcutButtonDefaultSpacing);
+    spacing = base::clamp(spacing, kUnifiedTopShortcutButtonMinSpacing,
+                          kUnifiedTopShortcutButtonDefaultSpacing);
   }
 
   int x = child_area.x();
@@ -113,7 +115,7 @@ void TopShortcutButtonContainer::Layout() {
           child_area.width() -
           (static_cast<int>(visible_children.size()) - 1) * spacing -
           (visible_child_width - width);
-      width = base::ClampToRange(width, 0, remainder);
+      width = base::clamp(width, 0, std::max(0, remainder));
     }
 
     child->SetBounds(x, child_y, width, child->GetHeightForWidth(width));
@@ -188,9 +190,14 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
         UserChooserDetailedViewController::IsUserChooserEnabled());
     container_->AddUserAvatarButton(user_avatar_button_);
 
-    sign_out_button_ = new SignOutButton(
+    sign_out_button_ = new PillButton(
         base::BindRepeating(&UnifiedSystemTrayController::HandleSignOutAction,
-                            base::Unretained(controller)));
+                            base::Unretained(controller)),
+        user::GetLocalizedSignOutStringForStatus(
+            Shell::Get()->session_controller()->login_status(),
+            /*multiline=*/false),
+        PillButton::Type::kIconless,
+        /*icon=*/nullptr);
     container_->AddSignOutButton(sign_out_button_);
   }
 

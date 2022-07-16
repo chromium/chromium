@@ -10,9 +10,11 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
@@ -27,6 +29,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -51,12 +54,14 @@ using testing::_;
 using testing::Contains;
 using testing::DoAll;
 using testing::ElementsAre;
+using testing::Invoke;
 using testing::Mock;
 using testing::Not;
 using testing::Pair;
 using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
+using testing::WithArg;
 
 // Matcher for absl::optional. Can be combined with Not().
 MATCHER(HasValue, "Has value") {
@@ -72,6 +77,9 @@ using CertProvisioningResponseError =
     enterprise_management::ClientCertificateProvisioningResponse;
 
 namespace em = enterprise_management;
+
+// An enum for PSM execution result values.
+using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
 
 namespace policy {
 
@@ -142,24 +150,24 @@ base::Value ConvertEncryptedRecordToValue(
     }
     record_request.SetPath("encryptionInfo", std::move(encryption_info));
   }
-  if (record.has_sequencing_information()) {
-    base::Value sequencing_information(base::Value::Type::DICTIONARY);
-    if (record.sequencing_information().has_sequencing_id()) {
-      sequencing_information.SetStringKey(
-          "sequencingId", base::NumberToString(
-                              record.sequencing_information().sequencing_id()));
+  if (record.has_sequence_information()) {
+    base::Value sequence_information(base::Value::Type::DICTIONARY);
+    if (record.sequence_information().has_sequencing_id()) {
+      sequence_information.SetStringKey(
+          "sequencingId",
+          base::NumberToString(record.sequence_information().sequencing_id()));
     }
-    if (record.sequencing_information().has_generation_id()) {
-      sequencing_information.SetStringKey(
-          "generationId", base::NumberToString(
-                              record.sequencing_information().generation_id()));
+    if (record.sequence_information().has_generation_id()) {
+      sequence_information.SetStringKey(
+          "generationId",
+          base::NumberToString(record.sequence_information().generation_id()));
     }
-    if (record.sequencing_information().has_priority()) {
-      sequencing_information.SetIntKey(
-          "priority", record.sequencing_information().priority());
+    if (record.sequence_information().has_priority()) {
+      sequence_information.SetIntKey("priority",
+                                     record.sequence_information().priority());
     }
     record_request.SetPath("sequencingInformation",
-                           std::move(sequencing_information));
+                           std::move(sequence_information));
   }
   return record_request;
 }
@@ -193,6 +201,18 @@ struct MockRobotAuthCodeCallbackObserver {
 
 struct MockResponseCallbackObserver {
   MOCK_METHOD(void, OnResponseReceived, (absl::optional<base::Value>));
+};
+
+class FakeClientDataDelegate : public ClientDataDelegate {
+ public:
+  void FillRegisterBrowserRequest(
+      enterprise_management::RegisterBrowserRequest* request,
+      base::OnceClosure callback) const override {
+    request->set_os_platform(GetOSPlatform());
+    request->set_os_version(GetOSVersion());
+
+    std::move(callback).Run();
+  }
 };
 
 std::string CreatePolicyData(const std::string& policy_value) {
@@ -275,8 +295,14 @@ em::DeviceManagementRequest GetReregistrationRequest() {
   return request;
 }
 
+// Constructs the DeviceManagementRequest with
+// CertificateBasedDeviceRegistrationData.
+// Also, if |psm_execution_result| or |psm_determination_timestamp| has a value,
+// then populate its corresponding PSM field in DeviceRegisterRequest.
 em::DeviceManagementRequest GetCertBasedRegistrationRequest(
-    FakeSigningService* fake_signing_service) {
+    FakeSigningService* fake_signing_service,
+    absl::optional<PsmExecutionResult> psm_execution_result,
+    absl::optional<int64_t> psm_determination_timestamp) {
   em::CertificateBasedDeviceRegistrationData data;
   data.set_certificate_type(em::CertificateBasedDeviceRegistrationData::
                                 ENTERPRISE_ENROLLMENT_CERTIFICATE);
@@ -297,6 +323,12 @@ em::DeviceManagementRequest GetCertBasedRegistrationRequest(
       em::DeviceRegisterRequest::LIFETIME_INDEFINITE);
   register_request->set_flavor(
       em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_ATTESTATION);
+  if (psm_determination_timestamp.has_value()) {
+    register_request->set_psm_determination_timestamp_ms(
+        psm_determination_timestamp.value());
+  }
+  if (psm_execution_result.has_value())
+    register_request->set_psm_execution_result(psm_execution_result.value());
 
   em::DeviceManagementRequest request;
 
@@ -311,23 +343,13 @@ em::DeviceManagementRequest GetCertBasedRegistrationRequest(
 
 #if defined(OS_WIN) || defined(OS_APPLE) || \
     (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-em::DeviceManagementRequest GetEnrollementRequest() {
+em::DeviceManagementRequest GetEnrollmentRequest() {
   em::DeviceManagementRequest request;
 
   em::RegisterBrowserRequest* enrollment_request =
       request.mutable_register_browser_request();
-  enrollment_request->set_os_platform(policy::GetOSPlatform());
-  enrollment_request->set_os_version(policy::GetOSVersion());
-
-#if defined(OS_IOS)
-  enrollment_request->set_device_model(policy::GetDeviceModel());
-  enrollment_request->set_brand_name(policy::GetDeviceManufacturer());
-#else
-  enrollment_request->set_machine_name(policy::GetMachineName());
-  enrollment_request->set_allocated_browser_device_identifier(
-      GetBrowserDeviceIdentifier().release());
-#endif
-
+  enrollment_request->set_os_platform(GetOSPlatform());
+  enrollment_request->set_os_version(GetOSVersion());
   return request;
 }
 #endif
@@ -467,8 +489,8 @@ class CloudPolicyClientTest : public testing::Test {
             &url_loader_factory_);
     client_ = std::make_unique<CloudPolicyClient>(
         kMachineID, kMachineModel, kBrandCode, kAttestedDeviceId,
-        kEthernetMacAddress, kDockMacAddress, kManufactureDate,
-        &fake_signing_service_, &service_, shared_url_loader_factory_,
+        kEthernetMacAddress, kDockMacAddress, kManufactureDate, &service_,
+        shared_url_loader_factory_,
         base::BindRepeating(
             &MockDeviceDMTokenCallbackObserver::OnDeviceDMTokenRequested,
             base::Unretained(&device_dmtoken_callback_observer_)));
@@ -642,12 +664,14 @@ TEST_F(CloudPolicyClientTest, RegistrationWithTokenAndPolicyFetch) {
               OnDeviceDMTokenRequested(
                   /*user_affiliation_ids=*/std::vector<std::string>()))
       .WillOnce(Return(kDeviceDMToken));
-  client_->RegisterWithToken(kEnrollmentToken, "device_id");
+  FakeClientDataDelegate client_data_delegate;
+  client_->RegisterWithToken(kEnrollmentToken, "device_id",
+                             client_data_delegate);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_TOKEN_ENROLLMENT,
             job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            GetEnrollementRequest().SerializePartialAsString());
+            GetEnrollmentRequest().SerializePartialAsString());
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
@@ -762,13 +786,17 @@ TEST_F(CloudPolicyClientTest, RegistrationWithCertificateAndPolicyFetch) {
       em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_ATTESTATION);
   client_->RegisterWithCertificate(
       device_attestation, std::string() /* client_id */, DMAuth::NoAuth(),
-      kEnrollmentCertificate, std::string() /* sub_organization */);
+      kEnrollmentCertificate, std::string() /* sub_organization */,
+      &fake_signing_service_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       DeviceManagementService::JobConfiguration::TYPE_CERT_BASED_REGISTRATION,
       job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            GetCertBasedRegistrationRequest(&fake_signing_service_)
+            GetCertBasedRegistrationRequest(
+                &fake_signing_service_,
+                /*psm_execution_result=*/absl::nullopt,
+                /*psm_determination_timestamp=*/absl::nullopt)
                 .SerializePartialAsString());
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
@@ -795,7 +823,8 @@ TEST_F(CloudPolicyClientTest, RegistrationWithCertificateFailToSignRequest) {
       em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_ATTESTATION);
   client_->RegisterWithCertificate(
       device_attestation, std::string() /* client_id */, DMAuth::NoAuth(),
-      kEnrollmentCertificate, std::string() /* sub_organization */);
+      kEnrollmentCertificate, std::string() /* sub_organization */,
+      &fake_signing_service_);
   EXPECT_FALSE(client_->is_registered());
   EXPECT_EQ(DM_STATUS_CANNOT_SIGN_REQUEST, client_->status());
 }
@@ -962,18 +991,17 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithMetaData) {
   RegisterClient();
 
   const int kPublicKeyVersion = 42;
-  const base::Time kTimestamp(base::Time::UnixEpoch() +
-                              base::TimeDelta::FromDays(20));
+  const base::Time kOldTimestamp(base::Time::UnixEpoch() + base::Days(20));
 
   em::DeviceManagementRequest policy_request = GetPolicyRequest();
   em::PolicyFetchRequest* policy_fetch_request =
       policy_request.mutable_policy_request()->mutable_requests(0);
-  policy_fetch_request->set_timestamp(kTimestamp.ToJavaTime());
+  policy_fetch_request->set_timestamp(kOldTimestamp.ToJavaTime());
   policy_fetch_request->set_public_key_version(kPublicKeyVersion);
 
   em::DeviceManagementResponse policy_response = GetPolicyResponse();
 
-  client_->set_last_policy_timestamp(kTimestamp);
+  client_->set_last_policy_timestamp(kOldTimestamp);
   client_->set_public_key_version(kPublicKeyVersion);
 
   ExpectAndCaptureJob(policy_response);
@@ -1301,8 +1329,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
     const em::PolicyFetchRequest& fetch_request = policy_request.requests(i);
     ASSERT_TRUE(fetch_request.has_policy_type());
     EXPECT_FALSE(fetch_request.has_settings_entity_id());
-    std::pair<std::string, std::string> key(fetch_request.policy_type(),
-                                            std::string());
+    key = {fetch_request.policy_type(), std::string()};
     EXPECT_EQ(1u, expected_namespaces.erase(key));
   }
   EXPECT_TRUE(expected_namespaces.empty());
@@ -1633,6 +1660,62 @@ TEST_F(CloudPolicyClientTest, UploadChromeOsUserReport) {
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 }
 
+// A helper class to test all em::DeviceRegisterRequest::PsmExecutionResult enum
+// values.
+class CloudPolicyClientRegisterWithPsmParamsTest
+    : public CloudPolicyClientTest,
+      public testing::WithParamInterface<PsmExecutionResult> {
+ public:
+  PsmExecutionResult GetPsmExecutionResult() const { return GetParam(); }
+};
+
+TEST_P(CloudPolicyClientRegisterWithPsmParamsTest,
+       RegistrationWithCertificateAndPsmResult) {
+  const int64_t kExpectedPsmDeterminationTimestamp = 2;
+
+  const em::DeviceManagementResponse policy_response = GetPolicyResponse();
+  const PsmExecutionResult psm_execution_result = GetPsmExecutionResult();
+
+  EXPECT_CALL(device_dmtoken_callback_observer_,
+              OnDeviceDMTokenRequested(
+                  /*user_affiliation_ids=*/std::vector<std::string>()))
+      .WillOnce(Return(kDeviceDMToken));
+  ExpectAndCaptureJob(GetRegistrationResponse());
+  fake_signing_service_.set_success(true);
+  EXPECT_CALL(observer_, OnRegistrationStateChanged);
+  CloudPolicyClient::RegistrationParameters device_attestation(
+      em::DeviceRegisterRequest::DEVICE,
+      em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_ATTESTATION);
+  device_attestation.SetPsmDeterminationTimestamp(
+      kExpectedPsmDeterminationTimestamp);
+  device_attestation.SetPsmExecutionResult(psm_execution_result);
+  client_->RegisterWithCertificate(
+      device_attestation, std::string() /* client_id */, DMAuth::NoAuth(),
+      kEnrollmentCertificate, std::string() /* sub_organization */,
+      &fake_signing_service_);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      DeviceManagementService::JobConfiguration::TYPE_CERT_BASED_REGISTRATION,
+      job_type_);
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            GetCertBasedRegistrationRequest(&fake_signing_service_,
+                                            psm_execution_result,
+                                            kExpectedPsmDeterminationTimestamp)
+                .SerializePartialAsString());
+  EXPECT_TRUE(client_->is_registered());
+  EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CloudPolicyClientRegisterWithPsmParams,
+    CloudPolicyClientRegisterWithPsmParamsTest,
+    ::testing::Values(
+        em::DeviceRegisterRequest::PSM_RESULT_UNKNOWN,
+        em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE,
+        em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE,
+        em::DeviceRegisterRequest::PSM_RESULT_ERROR));
+
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
 
@@ -1686,11 +1769,11 @@ TEST_P(CloudPolicyClientUploadSecurityEventTest, Test) {
               *payload->FindStringPath(
                   ReportingJobConfigurationBase::BrowserDictionaryBuilder::
                       GetMachineUserPath()));
-    EXPECT_EQ(policy::GetOSPlatform(),
+    EXPECT_EQ(GetOSPlatform(),
               *payload->FindStringPath(
                   ReportingJobConfigurationBase::DeviceDictionaryBuilder::
                       GetOSPlatformPath()));
-    EXPECT_EQ(policy::GetOSVersion(),
+    EXPECT_EQ(GetOSVersion(),
               *payload->FindStringPath(
                   ReportingJobConfigurationBase::DeviceDictionaryBuilder::
                       GetOSVersionPath()));
@@ -1804,10 +1887,10 @@ TEST_F(CloudPolicyClientTest, UploadEncryptedReport) {
   // Create record
   ::reporting::EncryptedRecord record;
   record.set_encrypted_wrapped_record("Enterprise");
-  auto* sequencing_information = record.mutable_sequencing_information();
-  sequencing_information->set_sequencing_id(1701);
-  sequencing_information->set_generation_id(12345678);
-  sequencing_information->set_priority(::reporting::IMMEDIATE);
+  auto* sequence_information = record.mutable_sequence_information();
+  sequence_information->set_sequencing_id(1701);
+  sequence_information->set_generation_id(12345678);
+  sequence_information->set_priority(::reporting::IMMEDIATE);
 
   RegisterClient();
 

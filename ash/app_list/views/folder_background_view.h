@@ -16,6 +16,10 @@ class AppListFolderView;
 class FolderBackgroundView : public views::View {
  public:
   explicit FolderBackgroundView(AppListFolderView* folder_view);
+
+  FolderBackgroundView(const FolderBackgroundView&) = delete;
+  FolderBackgroundView& operator=(const FolderBackgroundView&) = delete;
+
   ~FolderBackgroundView() override;
 
   void set_folder_view(AppListFolderView* folder_view) {
@@ -34,8 +38,6 @@ class FolderBackgroundView : public views::View {
   void HandleClickOrTap();
 
   AppListFolderView* folder_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(FolderBackgroundView);
 };
 
 }  // namespace ash

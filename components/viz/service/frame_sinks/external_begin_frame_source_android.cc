@@ -34,9 +34,8 @@ void ExternalBeginFrameSourceAndroid::OnVSync(
   DCHECK_EQ(base::TimeTicks::GetClock(),
             base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
   base::TimeTicks frame_time =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(time_micros);
-  base::TimeDelta vsync_period(
-      base::TimeDelta::FromMicroseconds(period_micros));
+      base::TimeTicks() + base::Microseconds(time_micros);
+  base::TimeDelta vsync_period(base::Microseconds(period_micros));
   // Calculate the next frame deadline:
   base::TimeTicks deadline = frame_time + vsync_period;
 
@@ -48,6 +47,13 @@ void ExternalBeginFrameSourceAndroid::OnVSync(
 void ExternalBeginFrameSourceAndroid::UpdateRefreshRate(float refresh_rate) {
   Java_ExternalBeginFrameSourceAndroid_updateRefreshRate(
       base::android::AttachCurrentThread(), j_object_, refresh_rate);
+}
+
+void ExternalBeginFrameSourceAndroid::SetDynamicBeginFrameDeadlineOffsetSource(
+    DynamicBeginFrameDeadlineOffsetSource*
+        dynamic_begin_frame_deadline_offset_source) {
+  begin_frame_args_generator_.set_dynamic_begin_frame_deadline_offset_source(
+      dynamic_begin_frame_deadline_offset_source);
 }
 
 void ExternalBeginFrameSourceAndroid::OnNeedsBeginFrames(

@@ -19,15 +19,16 @@ namespace remoting {
 class VideoDecoderVerbatim : public VideoDecoder {
  public:
   VideoDecoderVerbatim();
+
+  VideoDecoderVerbatim(const VideoDecoderVerbatim&) = delete;
+  VideoDecoderVerbatim& operator=(const VideoDecoderVerbatim&) = delete;
+
   ~VideoDecoderVerbatim() override;
 
   // VideoDecoder implementation.
   void SetPixelFormat(PixelFormat pixel_format) override;
   bool DecodePacket(const VideoPacket& packet,
                     webrtc::DesktopFrame* frame) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderVerbatim);
 };
 
 }  // namespace remoting

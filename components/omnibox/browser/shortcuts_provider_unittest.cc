@@ -481,18 +481,18 @@ TEST_F(ShortcutsProviderTest, CalculateScore) {
   EXPECT_LT(score_one_quarter, score_one_half);
 
   // Should decay with time - one week.
-  shortcut.last_access_time = base::Time::Now() - base::TimeDelta::FromDays(7);
+  shortcut.last_access_time = base::Time::Now() - base::Days(7);
   int score_week_old = CalculateScore("test", shortcut);
   EXPECT_LT(score_week_old, kMaxScore);
 
   // Should decay more in two weeks.
-  shortcut.last_access_time = base::Time::Now() - base::TimeDelta::FromDays(14);
+  shortcut.last_access_time = base::Time::Now() - base::Days(14);
   int score_two_weeks_old = CalculateScore("test", shortcut);
   EXPECT_LT(score_two_weeks_old, score_week_old);
 
   // But not if it was actively clicked on. 2 hits slow decaying power.
   shortcut.number_of_hits = 2;
-  shortcut.last_access_time = base::Time::Now() - base::TimeDelta::FromDays(14);
+  shortcut.last_access_time = base::Time::Now() - base::Days(14);
   int score_popular_two_weeks_old = CalculateScore("test", shortcut);
   EXPECT_LT(score_two_weeks_old, score_popular_two_weeks_old);
   // But still decayed.
@@ -500,7 +500,7 @@ TEST_F(ShortcutsProviderTest, CalculateScore) {
 
   // 3 hits slow decaying power even more.
   shortcut.number_of_hits = 3;
-  shortcut.last_access_time = base::Time::Now() - base::TimeDelta::FromDays(14);
+  shortcut.last_access_time = base::Time::Now() - base::Days(14);
   int score_more_popular_two_weeks_old = CalculateScore("test", shortcut);
   EXPECT_LT(score_two_weeks_old, score_more_popular_two_weeks_old);
   EXPECT_LT(score_popular_two_weeks_old, score_more_popular_two_weeks_old);

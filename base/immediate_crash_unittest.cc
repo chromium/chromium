@@ -167,7 +167,7 @@ std::vector<Instruction> MaybeSkipOptionalFooter(
   return std::vector<Instruction>(iter, instructions.end());
 }
 
-#if BUILDFLAG(USE_CLANG_COVERAGE)
+#if BUILDFLAG(USE_CLANG_COVERAGE) || BUILDFLAG(CLANG_PROFILING)
 bool MatchPrefix(const std::vector<Instruction>& haystack,
                  const base::span<const Instruction>& needle) {
   for (size_t i = 0; i < needle.size(); i++) {
@@ -184,11 +184,11 @@ std::vector<Instruction> DropUntilMatch(
     haystack.erase(haystack.begin());
   return haystack;
 }
-#endif  // USE_CLANG_COVERAGE
+#endif  // USE_CLANG_COVERAGE || BUILDFLAG(CLANG_PROFILING)
 
 std::vector<Instruction> MaybeSkipCoverageHook(
     std::vector<Instruction> instructions) {
-#if BUILDFLAG(USE_CLANG_COVERAGE)
+#if BUILDFLAG(USE_CLANG_COVERAGE) || BUILDFLAG(CLANG_PROFILING)
   // Warning: it is not illegal for the entirety of the expected crash sequence
   // to appear as a subsequence of the coverage hook code. If that happens, this
   // code will falsely exit early, having not found the real expected crash
@@ -197,7 +197,7 @@ std::vector<Instruction> MaybeSkipCoverageHook(
   return DropUntilMatch(instructions, base::make_span(kRequiredBody));
 #else
   return instructions;
-#endif  // USE_CLANG_COVERAGE
+#endif  // USE_CLANG_COVERAGE || BUILDFLAG(CLANG_PROFILING)
 }
 
 }  // namespace

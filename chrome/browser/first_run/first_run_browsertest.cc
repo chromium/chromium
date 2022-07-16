@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
@@ -71,6 +70,11 @@ class FirstRunMasterPrefsBrowserTestBase : public InProcessBrowserTest {
  public:
   FirstRunMasterPrefsBrowserTestBase() {}
 
+  FirstRunMasterPrefsBrowserTestBase(
+      const FirstRunMasterPrefsBrowserTestBase&) = delete;
+  FirstRunMasterPrefsBrowserTestBase& operator=(
+      const FirstRunMasterPrefsBrowserTestBase&) = delete;
+
  protected:
   void SetUp() override {
     // All users of this test class need to call SetInitialPreferencesForTest()
@@ -112,8 +116,6 @@ class FirstRunMasterPrefsBrowserTestBase : public InProcessBrowserTest {
  private:
   base::FilePath prefs_file_;
   std::unique_ptr<std::string> text_;
-
-  DISALLOW_COPY_AND_ASSIGN(FirstRunMasterPrefsBrowserTestBase);
 };
 
 template<const char Text[]>
@@ -122,14 +124,16 @@ class FirstRunMasterPrefsBrowserTestT
  public:
   FirstRunMasterPrefsBrowserTestT() {}
 
+  FirstRunMasterPrefsBrowserTestT(const FirstRunMasterPrefsBrowserTestT&) =
+      delete;
+  FirstRunMasterPrefsBrowserTestT& operator=(
+      const FirstRunMasterPrefsBrowserTestT&) = delete;
+
  protected:
   void SetUp() override {
     SetInitialPreferencesForTest(Text);
     FirstRunMasterPrefsBrowserTestBase::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FirstRunMasterPrefsBrowserTestT);
 };
 
 // Returns the true expected import state, derived from the original
@@ -218,7 +222,8 @@ typedef FirstRunMasterPrefsBrowserTestT<kImportNothing>
 IN_PROC_BROWSER_TEST_F(FirstRunMasterPrefsImportNothing,
                        ImportNothingAndShowNewTabPage) {
   EXPECT_EQ(AUTO_IMPORT_CALLED, auto_import_state());
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   content::WebContents* tab = browser()->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_TRUE(WaitForLoadStop(tab));
 }
@@ -238,6 +243,11 @@ class FirstRunMasterPrefsWithTrackedPreferences
  public:
   FirstRunMasterPrefsWithTrackedPreferences() {}
 
+  FirstRunMasterPrefsWithTrackedPreferences(
+      const FirstRunMasterPrefsWithTrackedPreferences&) = delete;
+  FirstRunMasterPrefsWithTrackedPreferences& operator=(
+      const FirstRunMasterPrefsWithTrackedPreferences&) = delete;
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     FirstRunMasterPrefsBrowserTestT::SetUpCommandLine(command_line);
@@ -254,9 +264,6 @@ class FirstRunMasterPrefsWithTrackedPreferences
     // order to be able to test all SettingsEnforcement groups.
     chrome_prefs::DisableDomainCheckForTesting();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FirstRunMasterPrefsWithTrackedPreferences);
 };
 
 IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsWithTrackedPreferences,
@@ -317,6 +324,12 @@ class FirstRunMasterPrefsVariationsSeedTest
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         variations::switches::kDisableFieldTrialTestingConfig);
   }
+
+  FirstRunMasterPrefsVariationsSeedTest(
+      const FirstRunMasterPrefsVariationsSeedTest&) = delete;
+  FirstRunMasterPrefsVariationsSeedTest& operator=(
+      const FirstRunMasterPrefsVariationsSeedTest&) = delete;
+
   ~FirstRunMasterPrefsVariationsSeedTest() override = default;
 
   void SetUp() override {
@@ -359,8 +372,6 @@ class FirstRunMasterPrefsVariationsSeedTest
     EXPECT_TRUE(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
     return user_data_dir.AppendASCII("FirstRunMasterPrefsVariationsSeedTest");
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FirstRunMasterPrefsVariationsSeedTest);
 };
 
 IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, Test) {
@@ -372,8 +383,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, Test) {
                                  variations::prefs::kVariationsSeedSignature));
 
   // Verify variations loaded in VariationsService by metrics.
-  histogram_tester_.ExpectUniqueSample("Variations.SeedLoadResult",
-                                       variations::StoreSeedResult::SUCCESS, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Variations.SeedLoadResult", variations::StoreSeedResult::kSuccess, 1);
   histogram_tester_.ExpectUniqueSample(
       "Variations.LoadSeedSignature",
       variations::VerifySignatureResult::VALID_SIGNATURE, 1);

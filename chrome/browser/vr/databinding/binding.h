@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/vr/databinding/binding_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -57,6 +56,9 @@ class Binding : public BindingBase {
       : getter_(getter), historic_setter_(setter) {}
 #endif
 
+  Binding(const Binding&) = delete;
+  Binding& operator=(const Binding&) = delete;
+
   ~Binding() override = default;
 
   // This function will check if the getter is producing a different value than
@@ -97,8 +99,6 @@ class Binding : public BindingBase {
   std::string getter_text_;
   std::string setter_text_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(Binding);
 };
 
 // These macros are sugar for constructing a simple binding. It is meant to make

@@ -14,19 +14,17 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/form_fetcher.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/credential_provider_interface.h"
 #include "components/password_manager/core/browser/ui/plaintext_reason.h"
 #include "components/prefs/pref_member.h"
 #include "components/undo/undo_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace password_manager {
+class MovePasswordToAccountStoreHelper;
 class PasswordManagerClient;
 struct PasswordForm;
 }  // namespace password_manager
@@ -43,6 +41,10 @@ class PasswordManagerPresenter
  public:
   // |password_view| the UI view that owns this presenter, must not be NULL.
   explicit PasswordManagerPresenter(PasswordUIView* password_view);
+
+  PasswordManagerPresenter(const PasswordManagerPresenter&) = delete;
+  PasswordManagerPresenter& operator=(const PasswordManagerPresenter&) = delete;
+
   ~PasswordManagerPresenter() override;
 
   void Initialize();
@@ -129,27 +131,6 @@ class PasswordManagerPresenter
   void RemoveLogin(const password_manager::PasswordForm& form);
 
  private:
-  // Used for moving a form from the profile store to the account store.
-  class MovePasswordToAccountStoreHelper
-      : public password_manager::FormFetcher::Consumer {
-   public:
-    // Starts moving |form|. |done_callback| is run when done.
-    MovePasswordToAccountStoreHelper(
-        const password_manager::PasswordForm& form,
-        password_manager::PasswordManagerClient* client,
-        base::OnceClosure done_callback);
-    ~MovePasswordToAccountStoreHelper() override;
-
-   private:
-    // FormFetcher::Consumer.
-    void OnFetchCompleted() override;
-
-    password_manager::PasswordForm form_;
-    password_manager::PasswordManagerClient* const client_;
-    base::OnceClosure done_callback_;
-    std::unique_ptr<password_manager::FormFetcher> form_fetcher_;
-  };
-
   // Convenience typedef for a map containing PasswordForms grouped into
   // equivalence classes. Each equivalence class corresponds to one entry shown
   // in the UI, and deleting an UI entry will delete all PasswordForms that are
@@ -160,8 +141,8 @@ class PasswordManagerPresenter
       std::map<std::string,
                std::vector<std::unique_ptr<password_manager::PasswordForm>>>;
 
-  using MovePasswordToAccountStoreHelperList =
-      std::list<std::unique_ptr<MovePasswordToAccountStoreHelper>>;
+  using MovePasswordToAccountStoreHelperList = std::list<
+      std::unique_ptr<password_manager::MovePasswordToAccountStoreHelper>>;
 
   // Attempts to remove the entries corresponding to |index| from |form_map|.
   // This will also add a corresponding undo operation to |undo_manager_|.
@@ -207,8 +188,6 @@ class PasswordManagerPresenter
 
   // Contains the helpers currently executing moving tasks.
   MovePasswordToAccountStoreHelperList move_to_account_helpers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerPresenter);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_MANAGER_PRESENTER_H_

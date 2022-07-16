@@ -40,6 +40,9 @@ class MODULES_EXPORT SensorProxy : public GarbageCollected<SensorProxy>,
                                const String& unsanitized_message) {}
   };
 
+  SensorProxy(const SensorProxy&) = delete;
+  SensorProxy& operator=(const SensorProxy&) = delete;
+
   ~SensorProxy() override;
 
   void Dispose();
@@ -110,8 +113,6 @@ class MODULES_EXPORT SensorProxy : public GarbageCollected<SensorProxy>,
       sizeof(device::SensorReadingSharedBuffer) ==
           device::mojom::blink::SensorInitParams::kReadBufferSizeForTests,
       "Check reading buffer size for tests");
-
-  DISALLOW_COPY_AND_ASSIGN(SensorProxy);
 };
 
 }  // namespace blink

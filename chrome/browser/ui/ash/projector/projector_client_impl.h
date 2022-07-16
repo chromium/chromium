@@ -16,6 +16,10 @@
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 
+namespace views {
+class WebView;
+}  // namespace views
+
 class OnDeviceSpeechRecognizer;
 
 // The client implementation for the ProjectorController in ash/. This client is
@@ -24,7 +28,10 @@ class ProjectorClientImpl : public ash::ProjectorClient,
                             public SpeechRecognizerDelegate,
                             public speech::SodaInstaller::Observer {
  public:
-  // Used by unittests and browsertests to set projector controller.
+  // RecordingOverlayViewImpl calls this function to initialize the annotator
+  // tool.
+  static void InitForProjectorAnnotator(views::WebView* web_view);
+
   explicit ProjectorClientImpl(ash::ProjectorController* controller);
 
   ProjectorClientImpl();
@@ -38,6 +45,10 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   void ShowSelfieCam() override;
   void CloseSelfieCam() override;
   bool IsSelfieCamVisible() const override;
+  bool GetDriveFsMountPointPath(base::FilePath* result) const override;
+  bool IsDriveFsMounted() const override;
+  void OpenProjectorApp() const override;
+  void OnNewScreencastPreconditionChanged(bool can_start) const override;
 
   // SpeechRecognizerDelegate:
   void OnSpeechResult(
@@ -52,18 +63,11 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   // speech::SodaInstaller::Observer:
   void OnSodaInstalled() override;
   // We are not utilizing the following methods. Mark them as empty overrides.
-  void OnSodaLanguagePackInstalled(
-      speech::LanguageCode language_code) override {}
   void OnSodaError() override {}
-  void OnSodaLanguagePackError(speech::LanguageCode language_code) override {}
   void OnSodaProgress(int combined_progress) override {}
-  void OnSodaLanguagePackProgress(int language_progress,
-                                  speech::LanguageCode language_code) override {
-  }
 
  private:
   ash::ProjectorController* const controller_;
-
   SpeechRecognizerStatus recognizer_status_ =
       SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF;
   std::unique_ptr<OnDeviceSpeechRecognizer> speech_recognizer_;

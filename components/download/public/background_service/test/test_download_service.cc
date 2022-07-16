@@ -23,6 +23,10 @@ namespace {
 class TestServiceConfig : public ServiceConfig {
  public:
   TestServiceConfig() = default;
+
+  TestServiceConfig(const TestServiceConfig&) = delete;
+  TestServiceConfig& operator=(const TestServiceConfig&) = delete;
+
   ~TestServiceConfig() override = default;
 
   // ServiceConfig implementation.
@@ -34,8 +38,6 @@ class TestServiceConfig : public ServiceConfig {
 
  private:
   base::TimeDelta time_delta_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestServiceConfig);
 };
 
 }  // namespace

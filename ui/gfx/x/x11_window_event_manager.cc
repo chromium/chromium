@@ -49,6 +49,9 @@ class XWindowEventManager::MultiMask {
  public:
   MultiMask() { memset(mask_bits_, 0, sizeof(mask_bits_)); }
 
+  MultiMask(const MultiMask&) = delete;
+  MultiMask& operator=(const MultiMask&) = delete;
+
   ~MultiMask() = default;
 
   void AddMask(EventMask mask) {
@@ -80,8 +83,6 @@ class XWindowEventManager::MultiMask {
   static constexpr auto kMaskSize = 25;
 
   int mask_bits_[kMaskSize];
-
-  DISALLOW_COPY_AND_ASSIGN(MultiMask);
 };
 
 XWindowEventManager::XWindowEventManager() = default;

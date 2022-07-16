@@ -36,19 +36,21 @@ WebState::OpenURLParams::OpenURLParams(const GURL& url,
                                        ui::PageTransition transition,
                                        bool is_renderer_initiated)
     : OpenURLParams(url,
-                    GURL::EmptyGURL(),
+                    GURL(),
                     referrer,
                     disposition,
                     transition,
                     is_renderer_initiated) {}
 
-WebState::OpenURLParams::OpenURLParams(const OpenURLParams& params)
-    : url(params.url),
-      virtual_url(params.virtual_url),
-      referrer(params.referrer),
-      disposition(params.disposition),
-      transition(params.transition),
-      is_renderer_initiated(params.is_renderer_initiated) {}
+WebState::OpenURLParams::OpenURLParams(const OpenURLParams& params) = default;
+
+WebState::OpenURLParams& WebState::OpenURLParams::operator=(
+    const OpenURLParams& params) = default;
+
+WebState::OpenURLParams::OpenURLParams(OpenURLParams&& params) = default;
+
+WebState::OpenURLParams& WebState::OpenURLParams::operator=(
+    OpenURLParams&& params) = default;
 
 WebState::OpenURLParams::~OpenURLParams() {}
 

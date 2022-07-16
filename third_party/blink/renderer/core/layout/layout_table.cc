@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_table_caption.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
@@ -81,6 +80,16 @@ LayoutTable::LayoutTable(Element* element)
 
 LayoutTable::~LayoutTable() = default;
 
+void LayoutTable::Trace(Visitor* visitor) const {
+  visitor->Trace(captions_);
+  visitor->Trace(column_layout_objects_);
+  visitor->Trace(head_);
+  visitor->Trace(foot_);
+  visitor->Trace(first_body_);
+  visitor->Trace(table_layout_);
+  LayoutBlock::Trace(visitor);
+}
+
 void LayoutTable::StyleDidChange(StyleDifference diff,
                                  const ComputedStyle* old_style) {
   NOT_DESTROYED();
@@ -108,9 +117,9 @@ void LayoutTable::StyleDidChange(StyleDifference diff,
     // explicit width is specified on the table. Auto width implies auto table
     // layout.
     if (StyleRef().IsFixedTableLayout())
-      table_layout_ = std::make_unique<TableLayoutAlgorithmFixed>(this);
+      table_layout_ = MakeGarbageCollected<TableLayoutAlgorithmFixed>(this);
     else
-      table_layout_ = std::make_unique<TableLayoutAlgorithmAuto>(this);
+      table_layout_ = MakeGarbageCollected<TableLayoutAlgorithmAuto>(this);
   }
 
   if (!old_style)
@@ -128,8 +137,9 @@ void LayoutTable::StyleDidChange(StyleDifference diff,
     MarkAllCellsWidthsDirtyAndOrNeedsLayout(kMarkDirtyAndNeedsLayout);
 }
 
-static inline void ResetSectionPointerIfNotBefore(LayoutTableSection*& ptr,
-                                                  LayoutObject* before) {
+static inline void ResetSectionPointerIfNotBefore(
+    Member<LayoutTableSection>& ptr,
+    LayoutObject* before) {
   if (!before || !ptr)
     return;
   LayoutObject* o = before->PreviousSibling();
@@ -634,7 +644,7 @@ void LayoutTable::SimplifiedNormalFlowLayout() {
   // FIXME: We should walk through the items in the tree in tree order to do the
   // layout here instead of walking through individual parts of the tree.
   // crbug.com/442737
-  for (auto*& caption : captions_)
+  for (auto& caption : captions_)
     caption->LayoutIfNeeded();
 
   for (LayoutTableSection* section = TopSection(); section;
@@ -675,7 +685,7 @@ RecalcLayoutOverflowResult LayoutTable::RecalcLayoutOverflow() {
 
 void LayoutTable::RecalcVisualOverflow() {
   NOT_DESTROYED();
-  for (auto* caption : captions_) {
+  for (const auto& caption : captions_) {
     if (!caption->HasSelfPaintingLayer())
       caption->RecalcVisualOverflow();
   }
@@ -692,7 +702,6 @@ void LayoutTable::RecalcVisualOverflow() {
 void LayoutTable::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
-  LayoutAnalyzer::Scope analyzer(*this);
 
   if (SimplifiedLayout())
     return;
@@ -1040,7 +1049,7 @@ void LayoutTable::AddVisualOverflowFromChildren() {
   }
 
   // Add overflow from our caption.
-  for (auto* caption : captions_)
+  for (const auto& caption : captions_)
     AddVisualOverflowFromChild(*caption);
 
   // Add overflow from our sections.
@@ -1155,7 +1164,7 @@ MinMaxSizes LayoutTable::PreferredLogicalWidths() const {
   table_layout_->ApplyPreferredLogicalWidthQuirks(sizes.min_size,
                                                   sizes.max_size);
 
-  for (const auto* caption : captions_) {
+  for (const auto& caption : captions_) {
     LayoutUnit min_preferred_logical_width =
         caption->PreferredLogicalWidths().min_size;
     sizes.Encompass(min_preferred_logical_width);

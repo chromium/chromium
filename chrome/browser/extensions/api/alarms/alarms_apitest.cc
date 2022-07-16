@@ -20,7 +20,7 @@ using ContextType = ExtensionApiTest::ContextType;
 class AlarmsApiTest : public ExtensionApiTest,
                       public testing::WithParamInterface<ContextType> {
  public:
-  AlarmsApiTest() = default;
+  AlarmsApiTest() : ExtensionApiTest(GetParam()) {}
   ~AlarmsApiTest() override = default;
   AlarmsApiTest& operator=(const AlarmsApiTest&) = delete;
   AlarmsApiTest(const AlarmsApiTest&) = delete;
@@ -39,10 +39,8 @@ class AlarmsApiTest : public ExtensionApiTest,
   }
 
   const Extension* LoadAlarmsExtensionIncognito(const char* path) {
-    return LoadExtension(
-        test_data_dir_.AppendASCII("alarms").AppendASCII(path),
-        {.allow_in_incognito = true,
-         .load_as_service_worker = GetParam() == ContextType::kServiceWorker});
+    return LoadExtension(test_data_dir_.AppendASCII("alarms").AppendASCII(path),
+                         {.allow_in_incognito = true});
   }
 };
 

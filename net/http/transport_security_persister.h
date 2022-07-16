@@ -58,10 +58,18 @@ class NET_EXPORT TransportSecurityPersister
     : public TransportSecurityState::Delegate,
       public base::ImportantFileWriter::DataSerializer {
  public:
+  // Create a TransportSecurityPersister with state |state| on background runner
+  // |background_runner|. |data_path| points to the file to hold the transport
+  // security state data on disk.
   TransportSecurityPersister(
       TransportSecurityState* state,
-      const base::FilePath& profile_path,
-      const scoped_refptr<base::SequencedTaskRunner>& background_runner);
+      const scoped_refptr<base::SequencedTaskRunner>& background_runner,
+      const base::FilePath& data_path);
+
+  TransportSecurityPersister(const TransportSecurityPersister&) = delete;
+  TransportSecurityPersister& operator=(const TransportSecurityPersister&) =
+      delete;
+
   ~TransportSecurityPersister() override;
 
   // Called by the TransportSecurityState when it changes its state.
@@ -125,8 +133,6 @@ class NET_EXPORT TransportSecurityPersister
   scoped_refptr<base::SequencedTaskRunner> background_runner_;
 
   base::WeakPtrFactory<TransportSecurityPersister> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TransportSecurityPersister);
 };
 
 }  // namespace net

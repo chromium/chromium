@@ -45,6 +45,11 @@ class Oobe {
   registerScreen(el, attributes) {}
 
   /**
+   * @param {OOBE_UI_STATE} state
+   */
+  setOobeUIState(state) {}
+
+  /**
    * @param {Object} params
    */
   showScreen(params) {}
@@ -60,6 +65,8 @@ class Oobe {
   getOobeConfiguration() {}
 
   startDemoModeFlow() {}
+
+  isOobeUI() {}
 
   /** @type {DISPLAY_TYPE} */
   set displayType(value) {}

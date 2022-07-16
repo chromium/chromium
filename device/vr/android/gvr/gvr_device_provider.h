@@ -19,6 +19,10 @@ class GvrDevice;
 class DEVICE_VR_EXPORT GvrDeviceProvider : public VRDeviceProvider {
  public:
   GvrDeviceProvider();
+
+  GvrDeviceProvider(const GvrDeviceProvider&) = delete;
+  GvrDeviceProvider& operator=(const GvrDeviceProvider&) = delete;
+
   ~GvrDeviceProvider() override;
 
   void Initialize(
@@ -36,8 +40,6 @@ class DEVICE_VR_EXPORT GvrDeviceProvider : public VRDeviceProvider {
  private:
   std::unique_ptr<GvrDevice> vr_device_;
   bool initialized_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GvrDeviceProvider);
 };
 
 }  // namespace device

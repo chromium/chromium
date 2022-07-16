@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/gtest_prod_util.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/search_provider.h"
@@ -159,6 +160,10 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Whether zero suggest suggestions are allowed in the given context.
   // Invoked early, confirms all the external conditions for ZeroSuggest are
   // met.
+  //
+  // TODO(tommycli): Combine this method with `TypeOfResultToRun()`. Currently,
+  // the logic to turn on and off requests by flags is split between these two
+  // functions, so the reader has to look in two places.
   bool AllowZeroSuggestSuggestions(const AutocompleteInput& input) const;
 
   // Checks whether we have a set of zero suggest results cached, and if so

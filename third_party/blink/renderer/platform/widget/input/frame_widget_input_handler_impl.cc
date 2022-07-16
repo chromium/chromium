@@ -24,18 +24,16 @@ FrameWidgetInputHandlerImpl::FrameWidgetInputHandlerImpl(
     base::WeakPtr<WidgetBase> widget,
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
         frame_widget_input_handler,
-    scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     scoped_refptr<MainThreadEventQueue> input_event_queue)
     : widget_(std::move(widget)),
       main_thread_frame_widget_input_handler_(
           std::move(frame_widget_input_handler)),
-      input_event_queue_(input_event_queue),
-      main_thread_task_runner_(main_thread_task_runner) {}
+      input_event_queue_(input_event_queue) {}
 
 FrameWidgetInputHandlerImpl::~FrameWidgetInputHandlerImpl() = default;
 
 void FrameWidgetInputHandlerImpl::RunOnMainThread(base::OnceClosure closure) {
-  if (input_event_queue_) {
+  if (ThreadedCompositingEnabled()) {
     input_event_queue_->QueueClosure(std::move(closure));
   } else {
     std::move(closure).Run();
@@ -278,7 +276,7 @@ void FrameWidgetInputHandlerImpl::SelectWordAroundCaret(
   // If the mojom channel is registered with compositor thread, we have to run
   // the callback on compositor thread. Otherwise run it on main thread. Mojom
   // requires the callback runs on the same thread.
-  if (!main_thread_task_runner_->BelongsToCurrentThread()) {
+  if (ThreadedCompositingEnabled()) {
     callback = base::BindOnce(
         [](scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner,
            SelectWordAroundCaretCallback callback, bool did_select,

@@ -18,8 +18,7 @@ TEST(AXRolePropertiesTest, TestSupportsHierarchicalLevel) {
   std::unordered_set<ax::mojom::Role>
       roles_expected_supports_hierarchical_level = {
           ax::mojom::Role::kComment, ax::mojom::Role::kListItem,
-          ax::mojom::Role::kRow, ax::mojom::Role::kTabList,
-          ax::mojom::Role::kTreeItem};
+          ax::mojom::Role::kRow, ax::mojom::Role::kTreeItem};
 
   for (int role_idx = static_cast<int>(ax::mojom::Role::kMinValue);
        role_idx <= static_cast<int>(ax::mojom::Role::kMaxValue); role_idx++) {

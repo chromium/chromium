@@ -232,11 +232,12 @@ void FrameSequenceTrackerCollection::NotifyImplFrameCausedNoDamage(
 }
 
 void FrameSequenceTrackerCollection::NotifyMainFrameCausedNoDamage(
-    const viz::BeginFrameArgs& args) {
+    const viz::BeginFrameArgs& args,
+    bool aborted) {
   for (auto& tracker : frame_trackers_)
-    tracker.second->ReportMainFrameCausedNoDamage(args);
+    tracker.second->ReportMainFrameCausedNoDamage(args, aborted);
   for (auto& tracker : custom_frame_trackers_)
-    tracker.second->ReportMainFrameCausedNoDamage(args);
+    tracker.second->ReportMainFrameCausedNoDamage(args, aborted);
 }
 
 void FrameSequenceTrackerCollection::NotifyPauseFrameProduction() {

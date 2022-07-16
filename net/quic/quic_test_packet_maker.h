@@ -52,6 +52,10 @@ class QuicTestPacketMaker {
                       const std::string& host,
                       quic::Perspective perspective,
                       bool client_headers_include_h2_stream_dependency);
+
+  QuicTestPacketMaker(const QuicTestPacketMaker&) = delete;
+  QuicTestPacketMaker& operator=(const QuicTestPacketMaker&) = delete;
+
   ~QuicTestPacketMaker();
 
   void set_hostname(const std::string& host);
@@ -617,8 +621,6 @@ class QuicTestPacketMaker {
   quic::QuicPacketHeader header_;
   quic::QuicFrames frames_;
   std::unique_ptr<quic::test::SimpleDataProducer> data_producer_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuicTestPacketMaker);
 };
 
 }  // namespace test

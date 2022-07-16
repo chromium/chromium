@@ -9,7 +9,6 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {
@@ -21,6 +20,11 @@ class ASH_EXPORT DisplayConfigurationObserver
       public TabletModeObserver {
  public:
   DisplayConfigurationObserver();
+
+  DisplayConfigurationObserver(const DisplayConfigurationObserver&) = delete;
+  DisplayConfigurationObserver& operator=(const DisplayConfigurationObserver&) =
+      delete;
+
   ~DisplayConfigurationObserver() override;
 
   bool save_preference() const { return save_preference_; }
@@ -44,8 +48,6 @@ class ASH_EXPORT DisplayConfigurationObserver
   bool was_in_mirror_mode_ = false;
 
   base::WeakPtrFactory<DisplayConfigurationObserver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayConfigurationObserver);
 };
 
 }  // namespace ash

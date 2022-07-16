@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -28,6 +27,10 @@ class ManagePasswordsUIController;
 class ManagePasswordsTest : public InProcessBrowserTest {
  public:
   ManagePasswordsTest();
+
+  ManagePasswordsTest(const ManagePasswordsTest&) = delete;
+  ManagePasswordsTest& operator=(const ManagePasswordsTest&) = delete;
+
   ~ManagePasswordsTest() override;
 
   // InProcessBrowserTest:
@@ -85,8 +88,6 @@ class ManagePasswordsTest : public InProcessBrowserTest {
   password_manager::FakeFormFetcher fetcher_;
 
   base::CallbackListSubscription create_services_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagePasswordsTest);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_TEST_H_

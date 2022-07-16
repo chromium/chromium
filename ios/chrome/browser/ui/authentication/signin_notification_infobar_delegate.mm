@@ -15,31 +15,23 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "components/signin/ios/browser/features.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_utils.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// Avatar profile picture size.
-const CGFloat kAvatarImageDimension = 40.0f;
-
-}  // namespace
 
 // static
 bool SigninNotificationInfoBarDelegate::Create(
@@ -69,24 +61,15 @@ SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
   ChromeIdentity* identity =
       auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
-  UIImage* image = ios::GetChromeBrowserProvider()
-                       .GetChromeIdentityService()
-                       ->GetCachedAvatarForIdentity(identity);
-  if (!image) {
-    image = [UIImage imageNamed:@"ios_default_avatar"];
-  }
-  icon_ = gfx::Image(CircularImageFromImage(image, kAvatarImageDimension));
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
+  UIImage* image = accountManagerService->GetIdentityAvatarWithIdentity(
+      identity, IdentityAvatarSize::DefaultLarge);
+  icon_ = gfx::Image(CircularImageFromImage(image, image.size.width));
 
-  if (base::FeatureList::IsEnabled(
-          signin::kSigninNotificationInfobarUsernameInTitle)) {
-    title_ = base::SysNSStringToUTF16(l10n_util::GetNSStringF(
-        IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE_WITH_USERNAME,
-        base::SysNSStringToUTF16(identity.userGivenName)));
-  } else {
-    title_ = base::SysNSStringToUTF16(
-        l10n_util::GetNSString(IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE));
-  }
-
+  title_ = base::SysNSStringToUTF16(l10n_util::GetNSStringF(
+      IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE_WITH_USERNAME,
+      base::SysNSStringToUTF16(identity.userGivenName)));
   message_ = base::SysNSStringToUTF16(identity.userEmail);
   button_text_ =
       base::SysNSStringToUTF16(l10n_util::GetNSString(IDS_IOS_SETTINGS_TITLE));

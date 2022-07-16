@@ -36,6 +36,10 @@ class NetworkLocationProvider : public LocationProvider,
       const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       const std::string& api_key,
       PositionCache* position_cache);
+
+  NetworkLocationProvider(const NetworkLocationProvider&) = delete;
+  NetworkLocationProvider& operator=(const NetworkLocationProvider&) = delete;
+
   ~NetworkLocationProvider() override;
 
   // LocationProvider implementation
@@ -106,8 +110,6 @@ class NetworkLocationProvider : public LocationProvider,
   bool is_awaiting_initial_permission_status_ = true;
 
   base::WeakPtrFactory<NetworkLocationProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkLocationProvider);
 };
 
 }  // namespace device

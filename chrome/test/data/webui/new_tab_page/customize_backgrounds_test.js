@@ -4,26 +4,20 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {BackgroundSelectionType, NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {assertNotStyle, assertStyle} from 'chrome://test/new_tab_page/test_support.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {eventToPromise, flushTasks, isVisible} from 'chrome://test/test_util.m.js';
+import {NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {assertNotStyle, assertStyle, installMock} from 'chrome://test/new_tab_page/test_support.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
+import {eventToPromise, flushTasks, isVisible} from 'chrome://test/test_util.js';
 
 function createCollection(id = 0, label = '', url = '') {
   return {id: id, label: label, previewImageUrl: {url: url}};
 }
 
 suite('NewTabPageCustomizeBackgroundsTest', () => {
-  /**
-   * @implements {WindowProxy}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let windowProxy;
 
-  /**
-   * @implements {newTabPage.mojom.PageHandlerRemote}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let handler;
 
   async function createCustomizeBackgrounds() {
@@ -39,19 +33,19 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
   setup(() => {
     PolymerTest.clearBody();
 
-    windowProxy = TestBrowserProxy.fromClass(WindowProxy);
+    windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('createIframeSrc', '');
-    WindowProxy.setInstance(windowProxy);
 
-    handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
+    handler = installMock(
+        newTabPage.mojom.PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(
+            mock, new newTabPage.mojom.PageCallbackRouter()));
     handler.setResultFor('getBackgroundCollections', Promise.resolve({
       collections: [],
     }));
     handler.setResultFor('getBackgroundImages', Promise.resolve({
       images: [],
     }));
-    NewTabPageProxy.setInstance(
-        handler, new newTabPage.mojom.PageCallbackRouter());
   });
 
   test('creating element shows background collection tiles', async () => {
@@ -173,16 +167,9 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
         customizeBackgrounds.shadowRoot.querySelector('#images .tile');
     const item = customizeBackgrounds.$.imagesRepeat.itemForElement(element);
     assertEquals(image.attribution1, item.attribution1);
-    assertEquals(
-        BackgroundSelectionType.NO_SELECTION,
-        customizeBackgrounds.backgroundSelection.type);
     assertFalse(element.classList.contains('selected'));
     element.click();
-    assertEquals(
-        BackgroundSelectionType.IMAGE,
-        customizeBackgrounds.backgroundSelection.type);
-    assertDeepEquals(image, customizeBackgrounds.backgroundSelection.image);
-    assertTrue(element.classList.contains('selected'));
+    assertEquals(1, handler.getCallCount('setBackgroundImage'));
   });
 
   test('image selected by current theme', async () => {
@@ -220,11 +207,7 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
     const element =
         customizeBackgrounds.shadowRoot.querySelector('#images .tile');
     element.click();
-    assertTrue(element.classList.contains('selected'));
-    customizeBackgrounds.backgroundSelection = {
-      type: BackgroundSelectionType.NO_BACKGROUND
-    };
-    assertFalse(element.classList.contains('selected'));
+    assertEquals(1, handler.getCallCount('setBackgroundImage'));
   });
 
   test('choosing local dispatches cancel', async () => {
@@ -244,61 +227,32 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
       customizeBackgrounds = await createCustomizeBackgrounds();
     });
 
-    function assertNotSelected() {
-      assertFalse(
-          !!customizeBackgrounds.$.noBackground.querySelector('.selected'));
+    function assertSetNoBackgroundImageNotCalled() {
+      assertEquals(0, handler.getCallCount('setNoBackgroundImage'));
     }
 
-    function assertSelected() {
-      assertTrue(
-          !!customizeBackgrounds.$.noBackground.querySelector('.selected'));
+    function assertSetNoBackgroundImageCalled() {
+      assertEquals(1, handler.getCallCount('setNoBackgroundImage'));
     }
 
     test('no background selected by default', () => {
-      assertSelected();
+      assertSetNoBackgroundImageNotCalled();
     });
 
     test('no background selected when clicked', () => {
       customizeBackgrounds.theme = {backgroundImage: {url: {url: 'http://a'}}};
-      customizeBackgrounds.backgroundSelection = {
-        type: BackgroundSelectionType.NO_SELECTION
-      };
-      assertNotSelected();
       customizeBackgrounds.$.noBackground.click();
-      assertSelected();
+      assertSetNoBackgroundImageCalled();
     });
 
     test('not selected when refresh collection set', () => {
-      customizeBackgrounds.backgroundSelection = {
-        type: BackgroundSelectionType.NO_SELECTION
-      };
-      customizeBackgrounds.theme = {};
-      assertSelected();
       customizeBackgrounds.theme = {dailyRefreshCollectionId: 'landscape'};
-      assertNotSelected();
+      assertSetNoBackgroundImageNotCalled();
     });
 
     test('not selected when refresh collection set', () => {
-      customizeBackgrounds.backgroundSelection = {
-        type: BackgroundSelectionType.NO_SELECTION
-      };
-      customizeBackgrounds.theme = {};
-      assertSelected();
       customizeBackgrounds.theme = {backgroundImage: {url: {url: 'http://a'}}};
-      assertNotSelected();
-    });
-
-    test('not selected when refresh toggle changed', () => {
-      customizeBackgrounds.backgroundSelection = {
-        type: BackgroundSelectionType.NO_SELECTION
-      };
-      customizeBackgrounds.theme = {};
-      assertSelected();
-      customizeBackgrounds.backgroundSelection = {
-        type: BackgroundSelectionType.DAILY_REFRESH,
-        dailyRefreshCollectionId: 'landscape',
-      };
-      assertNotSelected();
+      assertSetNoBackgroundImageNotCalled();
     });
   });
 });

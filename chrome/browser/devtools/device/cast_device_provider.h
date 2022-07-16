@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/device/android_device_manager.h"
@@ -24,6 +23,9 @@ class CastDeviceProvider
       public local_discovery::ServiceDiscoveryDeviceLister::Delegate {
  public:
   CastDeviceProvider();
+
+  CastDeviceProvider(const CastDeviceProvider&) = delete;
+  CastDeviceProvider& operator=(const CastDeviceProvider&) = delete;
 
   // DeviceProvider implementation:
   void QueryDevices(SerialsCallback callback) override;
@@ -58,8 +60,6 @@ class CastDeviceProvider
   std::map<std::string, std::string> service_hostname_map_;
 
   base::WeakPtrFactory<CastDeviceProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastDeviceProvider);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVICE_CAST_DEVICE_PROVIDER_H_

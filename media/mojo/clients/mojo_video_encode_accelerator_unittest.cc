@@ -37,6 +37,11 @@ class MockMojoVideoEncodeAccelerator : public mojom::VideoEncodeAccelerator {
  public:
   MockMojoVideoEncodeAccelerator() = default;
 
+  MockMojoVideoEncodeAccelerator(const MockMojoVideoEncodeAccelerator&) =
+      delete;
+  MockMojoVideoEncodeAccelerator& operator=(
+      const MockMojoVideoEncodeAccelerator&) = delete;
+
   // mojom::VideoEncodeAccelerator impl.
   void Initialize(
       const media::VideoEncodeAccelerator::Config& config,
@@ -118,8 +123,6 @@ class MockMojoVideoEncodeAccelerator : public mojom::VideoEncodeAccelerator {
   mojo::Remote<mojom::VideoEncodeAcceleratorClient> client_;
   int32_t configured_bitstream_buffer_id_ = -1;
   bool initialization_success_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMojoVideoEncodeAccelerator);
 };
 
 // Mock implementation of the client of MojoVideoEncodeAccelerator.
@@ -127,15 +130,17 @@ class MockVideoEncodeAcceleratorClient : public VideoEncodeAccelerator::Client {
  public:
   MockVideoEncodeAcceleratorClient() = default;
 
+  MockVideoEncodeAcceleratorClient(const MockVideoEncodeAcceleratorClient&) =
+      delete;
+  MockVideoEncodeAcceleratorClient& operator=(
+      const MockVideoEncodeAcceleratorClient&) = delete;
+
   MOCK_METHOD3(RequireBitstreamBuffers,
                void(unsigned int, const gfx::Size&, size_t));
   MOCK_METHOD2(BitstreamBufferReady,
                void(int32_t, const media::BitstreamBufferMetadata&));
   MOCK_METHOD1(NotifyError, void(VideoEncodeAccelerator::Error));
   MOCK_METHOD1(NotifyEncoderInfoChange, void(const media::VideoEncoderInfo&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockVideoEncodeAcceleratorClient);
 };
 
 // Test wrapper for a MojoVideoEncodeAccelerator, which translates between a
@@ -144,6 +149,11 @@ class MockVideoEncodeAcceleratorClient : public VideoEncodeAccelerator::Client {
 class MojoVideoEncodeAcceleratorTest : public ::testing::Test {
  public:
   MojoVideoEncodeAcceleratorTest() = default;
+
+  MojoVideoEncodeAcceleratorTest(const MojoVideoEncodeAcceleratorTest&) =
+      delete;
+  MojoVideoEncodeAcceleratorTest& operator=(
+      const MojoVideoEncodeAcceleratorTest&) = delete;
 
   void SetUp() override {
     mojo::PendingRemote<mojom::VideoEncodeAccelerator> mojo_vea;
@@ -204,8 +214,6 @@ class MojoVideoEncodeAcceleratorTest : public ::testing::Test {
 
   // The class under test, as a generic media::VideoEncodeAccelerator.
   std::unique_ptr<VideoEncodeAccelerator> mojo_vea_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoEncodeAcceleratorTest);
 };
 
 TEST_F(MojoVideoEncodeAcceleratorTest, CreateAndDestroy) {}

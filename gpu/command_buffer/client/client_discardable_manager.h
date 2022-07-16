@@ -21,6 +21,10 @@ namespace gpu {
 class GPU_EXPORT ClientDiscardableManager {
  public:
   ClientDiscardableManager();
+
+  ClientDiscardableManager(const ClientDiscardableManager&) = delete;
+  ClientDiscardableManager& operator=(const ClientDiscardableManager&) = delete;
+
   ~ClientDiscardableManager();
 
   // Note that the handles bound to an id are not guaranteed to outlive the
@@ -62,9 +66,9 @@ class GPU_EXPORT ClientDiscardableManager {
   bool CreateNewAllocation(CommandBuffer* command_buffer);
 
  private:
-  uint32_t allocation_size_;
+  size_t allocation_size_;
   size_t element_size_ = sizeof(base::subtle::Atomic32);
-  uint32_t elements_per_allocation_ = allocation_size_ / element_size_;
+  size_t elements_per_allocation_ = allocation_size_ / element_size_;
 
   struct Allocation;
   std::vector<std::unique_ptr<Allocation>> allocations_;
@@ -73,8 +77,6 @@ class GPU_EXPORT ClientDiscardableManager {
   // Handles that are pending service deletion, and can be re-used once
   // ClientDiscardableHandle::CanBeReUsed returns true.
   base::queue<ClientDiscardableHandle> pending_handles_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientDiscardableManager);
 };
 
 }  // namespace gpu

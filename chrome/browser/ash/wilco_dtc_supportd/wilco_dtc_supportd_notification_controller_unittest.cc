@@ -87,6 +87,11 @@ class WilcoDtcSupportdNotificationControllerTest
             profile_manager_.profile_manager());
   }
 
+  WilcoDtcSupportdNotificationControllerTest(
+      const WilcoDtcSupportdNotificationControllerTest&) = delete;
+  WilcoDtcSupportdNotificationControllerTest& operator=(
+      const WilcoDtcSupportdNotificationControllerTest&) = delete;
+
  protected:
   WilcoDtcSupportdNotificationController* notification_controller() const {
     return notification_controller_.get();
@@ -121,8 +126,6 @@ class WilcoDtcSupportdNotificationControllerTest
   std::unique_ptr<WilcoDtcSupportdNotificationController>
       notification_controller_;
   std::unique_ptr<NotificationDisplayServiceTester> service_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdNotificationControllerTest);
 };
 
 }  // namespace

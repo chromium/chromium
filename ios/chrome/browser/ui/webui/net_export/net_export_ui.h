@@ -15,8 +15,8 @@ class NetExportUI : public web::WebUIIOSController {
  public:
   explicit NetExportUI(web::WebUIIOS* web_ui, const std::string& host);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetExportUI);
+  NetExportUI(const NetExportUI&) = delete;
+  NetExportUI& operator=(const NetExportUI&) = delete;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_NET_EXPORT_NET_EXPORT_UI_H_

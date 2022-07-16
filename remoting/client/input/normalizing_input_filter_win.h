@@ -29,6 +29,11 @@ namespace remoting {
 class NormalizingInputFilterWin : public protocol::InputFilter {
  public:
   explicit NormalizingInputFilterWin(protocol::InputStub* input_stub);
+
+  NormalizingInputFilterWin(const NormalizingInputFilterWin&) = delete;
+  NormalizingInputFilterWin& operator=(const NormalizingInputFilterWin&) =
+      delete;
+
   ~NormalizingInputFilterWin() override;
 
   // InputFilter interface.
@@ -51,8 +56,6 @@ class NormalizingInputFilterWin : public protocol::InputFilter {
 
   // True if LeftControl is pressed as part of AltGr.
   bool altgr_is_pressed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NormalizingInputFilterWin);
 };
 
 }  // namespace remoting

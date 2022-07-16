@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -36,6 +35,10 @@ class MessageCenterImpl : public MessageCenter,
  public:
   explicit MessageCenterImpl(
       std::unique_ptr<LockScreenController> lock_screen_controller);
+
+  MessageCenterImpl(const MessageCenterImpl&) = delete;
+  MessageCenterImpl& operator=(const MessageCenterImpl&) = delete;
+
   ~MessageCenterImpl() override;
 
   // MessageCenter overrides:
@@ -51,8 +54,9 @@ class MessageCenterImpl : public MessageCenter,
   bool HasPopupNotifications() const override;
   bool IsQuietMode() const override;
   bool IsSpokenFeedbackEnabled() const override;
-  Notification* FindOldestNotificationByNotiferId(
-      const NotifierId& notifier_id) override;
+  Notification* FindNotificationById(const std::string& id) override;
+  Notification* FindParentNotificationForOriginUrl(
+      const GURL& origin_url) override;
   Notification* FindPopupNotificationById(const std::string& id) override;
   Notification* FindVisibleNotificationById(const std::string& id) override;
   NotificationList::Notifications FindNotificationsByAppId(
@@ -129,8 +133,6 @@ class MessageCenterImpl : public MessageCenter,
   std::u16string system_notification_app_name_;
 
   MessageCenterStatsCollector stats_collector_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageCenterImpl);
 };
 
 }  // namespace message_center

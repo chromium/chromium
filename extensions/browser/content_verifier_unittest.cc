@@ -71,6 +71,11 @@ base::FilePath AppendSuffix(const base::FilePath& path,
 class TestContentVerifierDelegate : public MockContentVerifierDelegate {
  public:
   TestContentVerifierDelegate() = default;
+
+  TestContentVerifierDelegate(const TestContentVerifierDelegate&) = delete;
+  TestContentVerifierDelegate& operator=(const TestContentVerifierDelegate&) =
+      delete;
+
   ~TestContentVerifierDelegate() override = default;
 
   std::set<base::FilePath> GetBrowserImagePaths(
@@ -80,8 +85,6 @@ class TestContentVerifierDelegate : public MockContentVerifierDelegate {
 
  private:
   std::set<base::FilePath> browser_images_paths_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContentVerifierDelegate);
 };
 
 std::set<base::FilePath> TestContentVerifierDelegate::GetBrowserImagePaths(
@@ -151,7 +154,7 @@ class ContentVerifierTest : public ExtensionsTest {
 
     // Manually register handlers since the |ContentScriptsHandler| is not
     // usually registered in extensions_unittests.
-    ScopedTestingManifestHandlerRegistry registry;
+    ScopedTestingManifestHandlerRegistry scoped_registry;
     {
       ManifestHandlerRegistry* registry = ManifestHandlerRegistry::Get();
       registry->RegisterHandler(std::make_unique<BackgroundManifestHandler>());

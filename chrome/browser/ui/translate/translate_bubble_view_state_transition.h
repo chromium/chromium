@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_VIEW_STATE_TRANSITION_H_
 #define CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_VIEW_STATE_TRANSITION_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
 
 namespace translate {
@@ -101,6 +100,11 @@ class TranslateBubbleViewStateTransition {
   explicit TranslateBubbleViewStateTransition(
       TranslateBubbleModel::ViewState view_state);
 
+  TranslateBubbleViewStateTransition(
+      const TranslateBubbleViewStateTransition&) = delete;
+  TranslateBubbleViewStateTransition& operator=(
+      const TranslateBubbleViewStateTransition&) = delete;
+
   TranslateBubbleModel::ViewState view_state() const { return view_state_; }
 
   // Transitions the view state.
@@ -118,8 +122,6 @@ class TranslateBubbleViewStateTransition {
   // before the user opens the 'Advanced' view. This is used to navigate when
   // pressing 'Cancel' button on the 'Advanced' view.
   TranslateBubbleModel::ViewState view_state_before_advanced_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateBubbleViewStateTransition);
 };
 
 #endif  // CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_VIEW_STATE_TRANSITION_H_

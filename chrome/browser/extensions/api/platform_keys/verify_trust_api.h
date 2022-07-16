@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/browser_thread.h"
@@ -48,6 +47,10 @@ class VerifyTrustAPI : public BrowserContextKeyedAPI,
 
   // Consumers should use the factory instead of this constructor.
   explicit VerifyTrustAPI(content::BrowserContext* context);
+
+  VerifyTrustAPI(const VerifyTrustAPI&) = delete;
+  VerifyTrustAPI& operator=(const VerifyTrustAPI&) = delete;
+
   ~VerifyTrustAPI() override;
 
   // Verifies the server certificate as described by |params| for the
@@ -101,8 +104,6 @@ class VerifyTrustAPI : public BrowserContextKeyedAPI,
       registry_observation_{this};
 
   base::WeakPtrFactory<VerifyTrustAPI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VerifyTrustAPI);
 };
 
 template <>

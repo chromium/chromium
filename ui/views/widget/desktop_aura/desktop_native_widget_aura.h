@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -65,6 +64,10 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
       public aura::WindowTreeHostObserver {
  public:
   explicit DesktopNativeWidgetAura(internal::NativeWidgetDelegate* delegate);
+
+  DesktopNativeWidgetAura(const DesktopNativeWidgetAura&) = delete;
+  DesktopNativeWidgetAura& operator=(const DesktopNativeWidgetAura&) = delete;
+
   ~DesktopNativeWidgetAura() override;
 
   // Maps from window to DesktopNativeWidgetAura. |window| must be a root
@@ -169,7 +172,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   bool IsMaximized() const override;
   bool IsMinimized() const override;
   void Restore() override;
-  void SetFullscreen(bool fullscreen, bool delay) override;
+  void SetFullscreen(bool fullscreen, const base::TimeDelta& delay) override;
   bool IsFullscreen() const override;
   void SetCanAppearInExistingFullscreenSpaces(
       bool can_appear_in_existing_fullscreen_spaces) override;
@@ -337,8 +340,6 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   // The following factory is used for calls to close the NativeWidgetAura
   // instance.
   base::WeakPtrFactory<DesktopNativeWidgetAura> close_widget_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopNativeWidgetAura);
 };
 
 }  // namespace views

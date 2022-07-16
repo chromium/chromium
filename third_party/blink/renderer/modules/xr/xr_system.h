@@ -172,6 +172,11 @@ class XRSystem final : public EventTargetWithInlineData,
                                device::mojom::blink::XRSessionMode mode,
                                RequestedXRSessionFeatureSet required_features,
                                RequestedXRSessionFeatureSet optional_features);
+
+    PendingRequestSessionQuery(const PendingRequestSessionQuery&) = delete;
+    PendingRequestSessionQuery& operator=(const PendingRequestSessionQuery&) =
+        delete;
+
     virtual ~PendingRequestSessionQuery() = default;
 
     // Resolves underlying promise with passed in XR session.
@@ -272,8 +277,6 @@ class XRSystem final : public EventTargetWithInlineData,
 
     Vector<device::mojom::XRDepthUsage> preferred_usage_;
     Vector<device::mojom::XRDepthDataFormat> preferred_format_;
-
-    DISALLOW_COPY_AND_ASSIGN(PendingRequestSessionQuery);
   };
 
   static device::mojom::blink::XRSessionOptionsPtr XRSessionOptionsFromQuery(
@@ -289,6 +292,11 @@ class XRSystem final : public EventTargetWithInlineData,
     PendingSupportsSessionQuery(ScriptPromiseResolver*,
                                 device::mojom::blink::XRSessionMode,
                                 bool throw_on_unsupported);
+
+    PendingSupportsSessionQuery(const PendingSupportsSessionQuery&) = delete;
+    PendingSupportsSessionQuery& operator=(const PendingSupportsSessionQuery&) =
+        delete;
+
     virtual ~PendingSupportsSessionQuery() = default;
 
     // Resolves underlying promise.
@@ -327,8 +335,6 @@ class XRSystem final : public EventTargetWithInlineData,
 
     // Only set when calling the deprecated supportsSession method.
     const bool throw_on_unsupported_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(PendingSupportsSessionQuery);
   };
 
   // Helper, logs message to the console as well as DVLOGs.

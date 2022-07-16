@@ -8,12 +8,11 @@
 
 #include "base/environment.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/process/kill.h"
 #include "base/rand_util.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/multiprocess_test.h"
-#include "base/test/scoped_environment_variable_override.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/multiprocess_func_list.h"
@@ -37,8 +36,7 @@ std::string MultiProcessLockTest::GenerateLockName() {
 }
 
 void MultiProcessLockTest::ExpectLockIsLocked(const std::string &name) {
-  base::test::ScopedEnvironmentVariableOverride var(kLockEnvironmentVarName,
-                                                    name);
+  base::ScopedEnvironmentVariableOverride var(kLockEnvironmentVarName, name);
   EXPECT_FALSE(var.WasSet());
 
   base::Process process = SpawnChild("MultiProcessLockTryFailMain");
@@ -50,8 +48,7 @@ void MultiProcessLockTest::ExpectLockIsLocked(const std::string &name) {
 
 void MultiProcessLockTest::ExpectLockIsUnlocked(
     const std::string &name) {
-  base::test::ScopedEnvironmentVariableOverride var(kLockEnvironmentVarName,
-                                                    name);
+  base::ScopedEnvironmentVariableOverride var(kLockEnvironmentVarName, name);
   EXPECT_FALSE(var.WasSet());
   base::Process process = SpawnChild("MultiProcessLockTrySucceedMain");
   ASSERT_TRUE(process.IsValid());

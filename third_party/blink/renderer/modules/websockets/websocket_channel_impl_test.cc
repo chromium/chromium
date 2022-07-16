@@ -311,7 +311,8 @@ class WebSocketChannelImplTest : public WebSocketChannelImplTestBase {
 
   static Vector<uint8_t> AsVector(const char* data, size_t size) {
     Vector<uint8_t> v;
-    v.Append(reinterpret_cast<const uint8_t*>(data), size);
+    v.Append(reinterpret_cast<const uint8_t*>(data),
+             static_cast<wtf_size_t>(size));
     return v;
   }
   static Vector<uint8_t> AsVector(const char* data) {
@@ -396,6 +397,9 @@ class CallTrackingClosure {
  public:
   CallTrackingClosure() = default;
 
+  CallTrackingClosure(const CallTrackingClosure&) = delete;
+  CallTrackingClosure& operator=(const CallTrackingClosure&) = delete;
+
   base::OnceClosure Closure() {
     // This use of base::Unretained is safe because nothing can call the
     // callback once the test has finished.
@@ -408,8 +412,6 @@ class CallTrackingClosure {
   void Called() { was_called_ = true; }
 
   bool was_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CallTrackingClosure);
 };
 
 std::ostream& operator<<(

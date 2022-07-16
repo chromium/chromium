@@ -86,6 +86,9 @@ class AudioRendererMixerTest
         step, output_parameters_.sample_rate());
   }
 
+  AudioRendererMixerTest(const AudioRendererMixerTest&) = delete;
+  AudioRendererMixerTest& operator=(const AudioRendererMixerTest&) = delete;
+
   AudioRendererMixer* GetMixer(const base::UnguessableToken& owner_token,
                                const AudioParameters& params,
                                AudioLatency::LatencyType latency,
@@ -359,9 +362,6 @@ class AudioRendererMixerTest
   std::unique_ptr<FakeAudioRenderCallback> expected_callback_;
   double epsilon_;
   bool half_fill_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererMixerTest);
 };
 
 class AudioRendererMixerBehavioralTest : public AudioRendererMixerTest {};
@@ -479,7 +479,7 @@ TEST_P(AudioRendererMixerBehavioralTest, OnRenderErrorPausedInput) {
 // Ensure the physical stream is paused after a certain amount of time with no
 // inputs playing.  The test will hang if the behavior is incorrect.
 TEST_P(AudioRendererMixerBehavioralTest, MixerPausesStream) {
-  const base::TimeDelta kPauseTime = base::TimeDelta::FromMilliseconds(500);
+  const base::TimeDelta kPauseTime = base::Milliseconds(500);
   // This value can't be too low or valgrind, tsan will timeout on the bots.
   const base::TimeDelta kTestTimeout = 10 * kPauseTime;
   mixer_->SetPauseDelayForTesting(kPauseTime);
@@ -492,7 +492,7 @@ TEST_P(AudioRendererMixerBehavioralTest, MixerPausesStream) {
   InitializeInputs(1);
 
   // Ensure never playing the input results in a sink pause.
-  const base::TimeDelta kSleepTime = base::TimeDelta::FromMilliseconds(100);
+  const base::TimeDelta kSleepTime = base::Milliseconds(100);
   base::TimeTicks start_time = base::TimeTicks::Now();
   while (!pause_event.IsSignaled()) {
     mixer_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(), 0,

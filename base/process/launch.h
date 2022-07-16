@@ -68,15 +68,16 @@ struct BASE_EXPORT LaunchOptions {
   class BASE_EXPORT PreExecDelegate {
    public:
     PreExecDelegate() = default;
+
+    PreExecDelegate(const PreExecDelegate&) = delete;
+    PreExecDelegate& operator=(const PreExecDelegate&) = delete;
+
     virtual ~PreExecDelegate() = default;
 
     // Since this is to be run between fork and exec, and fork may have happened
     // while multiple threads were running, this function needs to be async
     // safe.
     virtual void RunAsyncSafe() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(PreExecDelegate);
   };
 #endif  // defined(OS_POSIX)
 

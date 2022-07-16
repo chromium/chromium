@@ -10,8 +10,8 @@
 #include "base/run_loop.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/service/fake_drive_service.h"
+#include "google_apis/common/test_util.h"
 #include "google_apis/drive/drive_api_parser.h"
-#include "google_apis/drive/test_util.h"
 
 using google_apis::ApiErrorCode;
 using google_apis::FileResource;

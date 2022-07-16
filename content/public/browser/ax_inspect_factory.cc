@@ -13,7 +13,7 @@ namespace content {
 
 // static
 std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateBlinkFormatter() {
-  return CreateFormatter(kBlink);
+  return CreateFormatter(ui::AXApiType::kBlink);
 }
 
 #if !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
@@ -21,7 +21,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateBlinkFormatter() {
 // static
 std::unique_ptr<ui::AXTreeFormatter>
 AXInspectFactory::CreatePlatformFormatter() {
-  return AXInspectFactory::CreateFormatter(kBlink);
+  return AXInspectFactory::CreateFormatter(ui::AXApiType::kBlink);
 }
 
 // static
@@ -29,14 +29,14 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreatePlatformRecorder(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const AXTreeSelector& selector) {
-  return AXInspectFactory::CreateRecorder(kBlink);
+  return AXInspectFactory::CreateRecorder(ui::AXApiType::kBlink);
 }
 
 // static
 std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
-    AXInspectFactory::Type type) {
+    ui::AXApiType::Type type) {
   switch (type) {
-    case kBlink:
+    case ui::AXApiType::kBlink:
       return std::make_unique<AccessibilityTreeFormatterBlink>();
     default:
       NOTREACHED() << "Unsupported inspect type " << type;
@@ -46,7 +46,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
 
 // static
 std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
-    AXInspectFactory::Type type,
+    ui::AXApiType::Type type,
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const AXTreeSelector& selector) {
@@ -55,24 +55,5 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
 }
 
 #endif
-
-AXInspectFactory::Type::operator std::string() const {
-  switch (type_) {
-    case kAndroid:
-      return "android";
-    case kBlink:
-      return "blink";
-    case kMac:
-      return "mac";
-    case kLinux:
-      return "linux";
-    case kWinIA2:
-      return "win";
-    case kWinUIA:
-      return "uia";
-    default:
-      return "unknown";
-  }
-}
 
 }  // namespace content

@@ -834,7 +834,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureChromeURLs) {
     tab_api_permissions.insert(APIPermissionID::kTab);
     URLPatternSet tab_hosts;
     tab_hosts.AddOrigin(UserScript::ValidUserScriptSchemes(),
-                        settings_url.GetOrigin());
+                        settings_url.DeprecatedGetOriginAsURL());
     PermissionSet tab_permissions(std::move(tab_api_permissions),
                                   ManifestPermissionSet(), tab_hosts.Clone(),
                                   tab_hosts.Clone());
@@ -866,7 +866,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureChromeUntrustedURLs) {
     // extensions, are not able to capture chrome-untrusted://.
     tab_hosts.AddOrigin(UserScript::ValidUserScriptSchemes(
                             /*can_execute_script_everywhere=*/true),
-                        chrome_untrusted_url.GetOrigin());
+                        chrome_untrusted_url.DeprecatedGetOriginAsURL());
     PermissionSet tab_permissions(std::move(tab_api_permissions),
                                   ManifestPermissionSet(), tab_hosts.Clone(),
                                   tab_hosts.Clone());
@@ -893,7 +893,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureFileURLs) {
     tab_api_permissions.insert(APIPermissionID::kTab);
     URLPatternSet tab_hosts;
     tab_hosts.AddOrigin(UserScript::ValidUserScriptSchemes(),
-                        file_url.GetOrigin());
+                        file_url.DeprecatedGetOriginAsURL());
     PermissionSet tab_permissions(std::move(tab_api_permissions),
                                   ManifestPermissionSet(), tab_hosts.Clone(),
                                   tab_hosts.Clone());
@@ -937,10 +937,12 @@ TEST(PermissionsDataTest, ChromeWebstoreUrl) {
   const int kTabId = 1;
   std::string error;
   URLPatternSet tab_hosts;
-  tab_hosts.AddOrigin(UserScript::ValidUserScriptSchemes(),
-                      GURL("https://chrome.google.com/webstore").GetOrigin());
-  tab_hosts.AddOrigin(UserScript::ValidUserScriptSchemes(),
-                      GURL("https://chrome.google.com./webstore").GetOrigin());
+  tab_hosts.AddOrigin(
+      UserScript::ValidUserScriptSchemes(),
+      GURL("https://chrome.google.com/webstore").DeprecatedGetOriginAsURL());
+  tab_hosts.AddOrigin(
+      UserScript::ValidUserScriptSchemes(),
+      GURL("https://chrome.google.com./webstore").DeprecatedGetOriginAsURL());
   PermissionSet tab_permissions(APIPermissionSet(), ManifestPermissionSet(),
                                 tab_hosts.Clone(), tab_hosts.Clone());
   for (const Extension* extension : extensions) {
@@ -1163,6 +1165,10 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PolicyHostRestrictions) {
 class CaptureVisiblePageTest : public testing::Test {
  public:
   CaptureVisiblePageTest() = default;
+
+  CaptureVisiblePageTest(const CaptureVisiblePageTest&) = delete;
+  CaptureVisiblePageTest& operator=(const CaptureVisiblePageTest&) = delete;
+
   ~CaptureVisiblePageTest() override = default;
 
   bool CanCapture(const Extension& extension,
@@ -1223,13 +1229,9 @@ class CaptureVisiblePageTest : public testing::Test {
   scoped_refptr<const Extension> all_urls_;
   scoped_refptr<const Extension> active_tab_;
   scoped_refptr<const Extension> page_capture_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureVisiblePageTest);
 };
 
-// TODO(crbug.com/1004573) Disabled due to flake
-TEST_F(CaptureVisiblePageTest,
-       DISABLED_URLsCapturableWithEitherActiveTabOrAllURLs) {
+TEST_F(CaptureVisiblePageTest, URLsCapturableWithEitherActiveTabOrAllURLs) {
   const GURL test_urls[] = {
       // Normal web page.
       GURL("https://example.com"),

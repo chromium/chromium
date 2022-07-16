@@ -60,10 +60,12 @@ WARN_UNUSED_RESULT bool ParseHashAlgorithm(const der::Input& input,
 class NET_EXPORT SignatureAlgorithmParameters {
  public:
   SignatureAlgorithmParameters() {}
-  virtual ~SignatureAlgorithmParameters() {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SignatureAlgorithmParameters);
+  SignatureAlgorithmParameters(const SignatureAlgorithmParameters&) = delete;
+  SignatureAlgorithmParameters& operator=(const SignatureAlgorithmParameters&) =
+      delete;
+
+  virtual ~SignatureAlgorithmParameters() {}
 };
 
 // Parameters for an RSASSA-PSS signature algorithm.
@@ -87,6 +89,9 @@ class NET_EXPORT RsaPssParameters : public SignatureAlgorithmParameters {
 // corresponds to "AlgorithmIdentifier" from RFC 5280.
 class NET_EXPORT SignatureAlgorithm {
  public:
+  SignatureAlgorithm(const SignatureAlgorithm&) = delete;
+  SignatureAlgorithm& operator=(const SignatureAlgorithm&) = delete;
+
   ~SignatureAlgorithm();
 
   SignatureAlgorithmId algorithm() const { return algorithm_; }
@@ -135,8 +140,6 @@ class NET_EXPORT SignatureAlgorithm {
   const SignatureAlgorithmId algorithm_;
   const DigestAlgorithm digest_;
   const std::unique_ptr<SignatureAlgorithmParameters> params_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignatureAlgorithm);
 };
 
 }  // namespace net

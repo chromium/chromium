@@ -32,8 +32,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -93,9 +91,7 @@
 #pragma mark - ViewController Lifecycle.
 
 - (instancetype)initWithBrowser:(Browser*)browser {
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? ChromeTableViewStyle()
-                               : UITableViewStylePlain;
+  UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
     _browser = browser;
@@ -136,18 +132,6 @@
     flexibleSpace, self.clearBrowsingDataBarButton, flexibleSpace
   ]
                animated:YES];
-
-  if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.styler.tableViewBackgroundColor =
-        [UIColor colorNamed:kPrimaryBackgroundColor];
-    self.tableView.backgroundColor = self.styler.tableViewBackgroundColor;
-
-    // TableView configuration
-    self.tableView.estimatedRowHeight = 56;
-    self.tableView.rowHeight = UITableViewAutomaticDimension;
-    self.tableView.estimatedSectionHeaderHeight = 0;
-  }
 
   self.tableView.accessibilityIdentifier =
       kClearBrowsingDataViewAccessibilityIdentifier;

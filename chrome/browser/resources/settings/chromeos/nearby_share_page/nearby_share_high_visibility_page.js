@@ -19,6 +19,18 @@ const NearbyVisibilityErrorState = {
   SOMETHING_WRONG: 3,
 };
 
+/**
+ * The pulse animation asset URL for light mode.
+ * @type {string}
+ */
+const PULSE_ANIMATION_URL_LIGHT = 'nearby_share_pulse_animation_light.json';
+
+/**
+ * The pulse animation asset URL for dark mode.
+ * @type {string}
+ */
+const PULSE_ANIMATION_URL_DARK = 'nearby_share_pulse_animation_dark.json';
+
 Polymer({
   is: 'nearby-share-high-visibility-page',
 
@@ -86,8 +98,16 @@ Polymer({
       computed:
           'computeErrorState_(shutoffTimestamp, remainingTimeInSeconds_,' +
           'registerResult, nearbyProcessStopped, startAdvertisingFailed)'
-    }
+    },
 
+    /**
+     * Whether the high visibility page is being rendered in dark mode.
+     * @private {boolean}
+     */
+    isDarkModeActive_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @private {number} */
@@ -107,18 +127,6 @@ Polymer({
       clearInterval(this.remainingTimeIntervalId_);
       this.remainingTimeIntervalId_ = -1;
     }
-  },
-
-  /** @private */
-  calculateRemainingTime_() {
-    if (this.shutoffTimestamp === 0) {
-      return;
-    }
-
-    const now = performance.now();
-    const remainingTimeInMs =
-        this.shutoffTimestamp > now ? this.shutoffTimestamp - now : 0;
-    this.remainingTimeInSeconds_ = Math.ceil(remainingTimeInMs / 1000);
   },
 
   /**
@@ -219,6 +227,18 @@ Polymer({
         'nearbyShareHighVisibilitySubTitle', this.deviceName, timeValue);
   },
 
+  /** @private */
+  calculateRemainingTime_() {
+    if (this.shutoffTimestamp === 0) {
+      return;
+    }
+
+    const now = performance.now();
+    const remainingTimeInMs =
+        this.shutoffTimestamp > now ? this.shutoffTimestamp - now : 0;
+    this.remainingTimeInSeconds_ = Math.ceil(remainingTimeInMs / 1000);
+  },
+
   /**
    * Announce the remaining time for screen readers. Only announce once per
    * minute to avoid overwhelming user. Though this gets called once every
@@ -242,5 +262,16 @@ Polymer({
 
     return this.i18n(
         'nearbyShareHighVisibilitySubTitle', this.deviceName, timeValue);
+  },
+
+  /**
+   * Returns the URL for the asset that defines the high visibility page's
+   * pulsing background animation.
+   * @return {string}
+   * @private
+   */
+  getAnimationUrl_() {
+    return this.isDarkModeActive_ ? PULSE_ANIMATION_URL_DARK :
+                                    PULSE_ANIMATION_URL_LIGHT;
   },
 });

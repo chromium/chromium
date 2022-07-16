@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
-FAIL Client hints loaded on cross-origin iframe request with feature policy. promise_test: Unhandled rejection with value: "FAIL Device-Memory True None"
-FAIL Client hints loaded on same-origin iframe request with feature policy. promise_test: Unhandled rejection with value: "FAIL DPR False 1"
+FAIL Client hints loaded on cross-origin iframe request with feature policy. promise_test: Unhandled rejection with value: "FAIL Sec-CH-Device-Memory True None"
+FAIL Client hints loaded on same-origin iframe request with feature policy. promise_test: Unhandled rejection with value: "FAIL Sec-CH-DPR False 1"
 PASS Iframe trying to set Accept-CH-Lifetime.
-FAIL Client hints loaded on cross-origin iframe request with feature policy after attempting to set independently. promise_test: Unhandled rejection with value: "FAIL Device-Memory True None"
+FAIL Client hints loaded on cross-origin iframe request with feature policy after attempting to set independently. promise_test: Unhandled rejection with value: "FAIL Sec-CH-Device-Memory True None"
 Harness: the test ran to completion.
 

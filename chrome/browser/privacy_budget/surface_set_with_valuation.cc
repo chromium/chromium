@@ -13,6 +13,11 @@
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 
+namespace base {
+template <typename TagType, typename UnderlyingType>
+class StrongAlias;
+}  // namespace base
+
 static_assert(std::is_same<RepresentativeSurface,
                            SurfaceSetWithValuation::key_type>::value,
               "");
@@ -50,8 +55,7 @@ bool SurfaceSetWithValuation::TryAdd(blink::IdentifiableSurface surface,
 void SurfaceSetWithValuation::AssignWithBudget(
     RepresentativeSurfaceSet&& incoming_container,
     double budget) {
-  surfaces_ = std::move(incoming_container);
-  cost_ = valuation_.Cost(surfaces_);
+  Assign(std::move(incoming_container));
 
   if (cost_ <= budget)
     return;
@@ -68,6 +72,12 @@ void SurfaceSetWithValuation::AssignWithBudget(
   }
 
   surfaces_ = container_type(new_beginning, container.end());
+}
+
+void SurfaceSetWithValuation::Assign(
+    RepresentativeSurfaceSet&& incoming_container) {
+  surfaces_ = std::move(incoming_container);
+  cost_ = valuation_.Cost(surfaces_);
 }
 
 void SurfaceSetWithValuation::Clear() {

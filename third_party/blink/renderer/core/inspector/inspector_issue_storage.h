@@ -37,8 +37,8 @@ class CORE_EXPORT InspectorIssueStorage {
   void AddInspectorIssue(CoreProbeSink*, AuditsIssue);
 
   void Clear();
-  size_t size() const;
-  protocol::Audits::InspectorIssue* at(size_t index) const;
+  wtf_size_t size() const;
+  protocol::Audits::InspectorIssue* at(wtf_size_t index) const;
 
   virtual ~InspectorIssueStorage();
 

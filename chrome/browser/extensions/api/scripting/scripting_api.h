@@ -129,7 +129,9 @@ class ScriptingRegisterContentScriptsFunction : public ExtensionFunction {
   ~ScriptingRegisterContentScriptsFunction() override;
 
   // Called when script files have been checked.
-  void OnContentScriptFilesValidated(ValidateContentScriptsResult result);
+  void OnContentScriptFilesValidated(
+      std::set<std::string> persistent_script_ids,
+      ValidateContentScriptsResult result);
 
   // Called when content scripts have been registered.
   void OnContentScriptsRegistered(const absl::optional<std::string>& error);
@@ -151,6 +153,53 @@ class ScriptingGetRegisteredContentScriptsFunction : public ExtensionFunction {
 
  private:
   ~ScriptingGetRegisteredContentScriptsFunction() override;
+};
+
+class ScriptingUnregisterContentScriptsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("scripting.unregisterContentScripts",
+                             SCRIPTING_UNREGISTERCONTENTSCRIPTS)
+
+  ScriptingUnregisterContentScriptsFunction();
+  ScriptingUnregisterContentScriptsFunction(
+      const ScriptingUnregisterContentScriptsFunction&) = delete;
+  ScriptingUnregisterContentScriptsFunction& operator=(
+      const ScriptingUnregisterContentScriptsFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~ScriptingUnregisterContentScriptsFunction() override;
+
+  // Called when content scripts have been unregistered.
+  void OnContentScriptsUnregistered(const absl::optional<std::string>& error);
+};
+
+class ScriptingUpdateContentScriptsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("scripting.updateContentScripts",
+                             SCRIPTING_UPDATECONTENTSCRIPTS)
+
+  ScriptingUpdateContentScriptsFunction();
+  ScriptingUpdateContentScriptsFunction(
+      const ScriptingUpdateContentScriptsFunction&) = delete;
+  ScriptingUpdateContentScriptsFunction& operator=(
+      const ScriptingUpdateContentScriptsFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~ScriptingUpdateContentScriptsFunction() override;
+
+  // Called when script files have been checked.
+  void OnContentScriptFilesValidated(
+      std::set<std::string> persistent_script_ids,
+      ValidateContentScriptsResult result);
+
+  // Called when content scripts have been updated.
+  void OnContentScriptsUpdated(const absl::optional<std::string>& error);
 };
 
 }  // namespace extensions

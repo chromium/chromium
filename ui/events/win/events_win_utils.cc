@@ -35,7 +35,7 @@ namespace {
 #define SIGNATURE_MASK 0xFFFFFF00
 
 // Get the native mouse key state from the native event message type.
-int GetNativeMouseKey(const MSG& native_event) {
+int GetNativeMouseKey(const CHROME_MSG& native_event) {
   switch (native_event.message) {
     case WM_LBUTTONDBLCLK:
     case WM_LBUTTONDOWN:
@@ -69,7 +69,7 @@ int GetNativeMouseKey(const MSG& native_event) {
   return 0;
 }
 
-bool IsButtonDown(const MSG& native_event) {
+bool IsButtonDown(const CHROME_MSG& native_event) {
   return ((MK_LBUTTON | MK_MBUTTON | MK_RBUTTON | MK_XBUTTON1 | MK_XBUTTON2) &
           native_event.wParam) != 0;
 }
@@ -79,7 +79,7 @@ bool IsClientMouseMessage(UINT message) {
          (message >= WM_MOUSEFIRST && message <= WM_MOUSELAST);
 }
 
-bool IsClientMouseEvent(const MSG& native_event) {
+bool IsClientMouseEvent(const CHROME_MSG& native_event) {
   return IsClientMouseMessage(native_event.message);
 }
 
@@ -88,7 +88,7 @@ bool IsNonClientMouseMessage(UINT message) {
          (message >= WM_NCMOUSEMOVE && message <= WM_NCXBUTTONDBLCLK);
 }
 
-bool IsNonClientMouseEvent(const MSG& native_event) {
+bool IsNonClientMouseEvent(const CHROME_MSG& native_event) {
   return IsNonClientMouseMessage(native_event.message);
 }
 
@@ -96,17 +96,17 @@ bool IsMouseMessage(UINT message) {
   return IsClientMouseMessage(message) || IsNonClientMouseMessage(message);
 }
 
-bool IsMouseEvent(const MSG& native_event) {
+bool IsMouseEvent(const CHROME_MSG& native_event) {
   return IsClientMouseEvent(native_event) ||
          IsNonClientMouseEvent(native_event);
 }
 
-bool IsMouseWheelEvent(const MSG& native_event) {
+bool IsMouseWheelEvent(const CHROME_MSG& native_event) {
   return native_event.message == WM_MOUSEWHEEL ||
          native_event.message == WM_MOUSEHWHEEL;
 }
 
-bool IsKeyEvent(const MSG& native_event) {
+bool IsKeyEvent(const CHROME_MSG& native_event) {
   return native_event.message == WM_KEYDOWN ||
          native_event.message == WM_SYSKEYDOWN ||
          native_event.message == WM_CHAR ||
@@ -115,14 +115,14 @@ bool IsKeyEvent(const MSG& native_event) {
          native_event.message == WM_SYSKEYUP;
 }
 
-bool IsScrollEvent(const MSG& native_event) {
+bool IsScrollEvent(const CHROME_MSG& native_event) {
   return native_event.message == WM_VSCROLL ||
          native_event.message == WM_HSCROLL;
 }
 
 // Returns a mask corresponding to the set of pressed modifier keys.
 // Checks the current global state and the state sent by client mouse messages.
-int KeyStateFlags(const MSG& native_event) {
+int KeyStateFlags(const CHROME_MSG& native_event) {
   int flags = GetModifiersFromKeyState();
 
   // Check key messages for the extended key flag.
@@ -141,7 +141,7 @@ int KeyStateFlags(const MSG& native_event) {
 
 // Returns a mask corresponding to the set of pressed mouse buttons.
 // This includes the button of the given message, even if it is being released.
-int MouseStateFlags(const MSG& native_event) {
+int MouseStateFlags(const CHROME_MSG& native_event) {
   int win_flags = GetNativeMouseKey(native_event);
 
   // Client mouse messages provide key states in their WPARAMs.
@@ -162,8 +162,7 @@ class GetTickCountClock : public base::TickClock {
   ~GetTickCountClock() override = default;
 
   base::TimeTicks NowTicks() const override {
-    return base::TimeTicks() +
-           base::TimeDelta::FromMilliseconds(::GetTickCount());
+    return base::TimeTicks() + base::Milliseconds(::GetTickCount());
   }
 };
 
@@ -171,7 +170,7 @@ const base::TickClock* g_tick_count_clock = nullptr;
 
 }  // namespace
 
-EventType EventTypeFromMSG(const MSG& native_event) {
+EventType EventTypeFromMSG(const CHROME_MSG& native_event) {
   switch (native_event.message) {
     case WM_KEYDOWN:
     case WM_SYSKEYDOWN:
@@ -236,7 +235,7 @@ EventType EventTypeFromMSG(const MSG& native_event) {
   return ET_UNKNOWN;
 }
 
-int EventFlagsFromMSG(const MSG& native_event) {
+int EventFlagsFromMSG(const CHROME_MSG& native_event) {
   int flags = KeyStateFlags(native_event);
   if (IsMouseEvent(native_event))
     flags |= MouseStateFlags(native_event);
@@ -244,7 +243,7 @@ int EventFlagsFromMSG(const MSG& native_event) {
   return flags;
 }
 
-base::TimeTicks EventTimeFromMSG(const MSG& native_event) {
+base::TimeTicks EventTimeFromMSG(const CHROME_MSG& native_event) {
   // On Windows, the native input event timestamp (|native_event.time|) is
   // coming from |GetTickCount()| clock [1], while in platform independent code
   // path we get timestamps by calling |TimeTicks::Now()|, which, if using high-
@@ -265,15 +264,14 @@ base::TimeTicks EventLatencyTimeFromTickClock(DWORD event_time,
     g_tick_count_clock = default_tick_count_clock.get();
 
   base::TimeTicks time_stamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(event_time);
+      base::TimeTicks() + base::Milliseconds(event_time);
 
   base::TimeTicks current_tick_count = g_tick_count_clock->NowTicks();
   // Check if the 32-bit tick count wrapped around after the event.
   if (current_tick_count < time_stamp) {
     // ::GetTickCount returns an unsigned 32-bit value, which will fit into the
     // signed 64-bit base::TimeTicks.
-    current_tick_count +=
-        base::TimeDelta::FromMilliseconds(std::numeric_limits<DWORD>::max());
+    current_tick_count += base::Milliseconds(std::numeric_limits<DWORD>::max());
   }
 
   // |time_stamp| is from the GetTickCount clock, which has a different 0-point
@@ -299,7 +297,7 @@ base::TimeTicks EventLatencyTimeFromPerformanceCounter(UINT64 event_time) {
   return time_stamp;
 }
 
-gfx::Point EventLocationFromMSG(const MSG& native_event) {
+gfx::Point EventLocationFromMSG(const CHROME_MSG& native_event) {
   // This code may use GetCursorPos() to get a mouse location. This may
   // fail in certain situations (see
   // https://bugs.chromium.org/p/chromium/issues/detail?id=540840#c20 for
@@ -339,7 +337,7 @@ gfx::Point EventLocationFromMSG(const MSG& native_event) {
   return event_location;
 }
 
-gfx::Point EventSystemLocationFromMSG(const MSG& native_event) {
+gfx::Point EventSystemLocationFromMSG(const CHROME_MSG& native_event) {
   POINT global_point = {GET_X_LPARAM(native_event.lParam),
                         GET_Y_LPARAM(native_event.lParam)};
   // Wheel events have position in screen coordinates.
@@ -348,20 +346,20 @@ gfx::Point EventSystemLocationFromMSG(const MSG& native_event) {
   return gfx::Point(global_point);
 }
 
-KeyboardCode KeyboardCodeFromMSG(const MSG& native_event) {
+KeyboardCode KeyboardCodeFromMSG(const CHROME_MSG& native_event) {
   return KeyboardCodeForWindowsKeyCode(static_cast<WORD>(native_event.wParam));
 }
 
-DomCode CodeFromMSG(const MSG& native_event) {
+DomCode CodeFromMSG(const CHROME_MSG& native_event) {
   const uint16_t scan_code = GetScanCodeFromLParam(native_event.lParam);
   return CodeForWindowsScanCode(scan_code);
 }
 
-bool IsCharFromMSG(const MSG& native_event) {
+bool IsCharFromMSG(const CHROME_MSG& native_event) {
   return native_event.message == WM_CHAR || native_event.message == WM_SYSCHAR;
 }
 
-int GetChangedMouseButtonFlagsFromMSG(const MSG& native_event) {
+int GetChangedMouseButtonFlagsFromMSG(const CHROME_MSG& native_event) {
   switch (GetNativeMouseKey(native_event)) {
     case MK_LBUTTON:
       return EF_LEFT_MOUSE_BUTTON;
@@ -376,7 +374,7 @@ int GetChangedMouseButtonFlagsFromMSG(const MSG& native_event) {
   return 0;
 }
 
-PointerDetails GetMousePointerDetailsFromMSG(const MSG& native_event) {
+PointerDetails GetMousePointerDetailsFromMSG(const CHROME_MSG& native_event) {
   // We should filter out all the mouse events Synthesized from touch events.
   // TODO(lanwei): Will set the pointer ID, see https://crbug.com/616771.
   if ((GetMessageExtraInfo() & SIGNATURE_MASK) != MOUSEEVENTF_FROMTOUCHPEN)
@@ -385,7 +383,7 @@ PointerDetails GetMousePointerDetailsFromMSG(const MSG& native_event) {
   return PointerDetails(EventPointerType::kPen);
 }
 
-gfx::Vector2d GetMouseWheelOffsetFromMSG(const MSG& native_event) {
+gfx::Vector2d GetMouseWheelOffsetFromMSG(const CHROME_MSG& native_event) {
   DCHECK(native_event.message == WM_MOUSEWHEEL ||
          native_event.message == WM_MOUSEHWHEEL);
   if (native_event.message == WM_MOUSEWHEEL)
@@ -393,22 +391,22 @@ gfx::Vector2d GetMouseWheelOffsetFromMSG(const MSG& native_event) {
   return gfx::Vector2d(GET_WHEEL_DELTA_WPARAM(native_event.wParam), 0);
 }
 
-MSG CopyMSGEvent(const MSG& event) {
+CHROME_MSG CopyMSGEvent(const CHROME_MSG& event) {
   return event;
 }
 
-void ReleaseCopiedMSGEvent(const MSG& event) {}
+void ReleaseCopiedMSGEvent(const CHROME_MSG& event) {}
 
-void ClearTouchIdIfReleasedFromMSG(const MSG& xev) {
+void ClearTouchIdIfReleasedFromMSG(const CHROME_MSG& xev) {
   NOTIMPLEMENTED();
 }
 
-int GetTouchIdFromMSG(const MSG& xev) {
+int GetTouchIdFromMSG(const CHROME_MSG& xev) {
   NOTIMPLEMENTED();
   return 0;
 }
 
-PointerDetails GetTouchPointerDetailsFromMSG(const MSG& native_event) {
+PointerDetails GetTouchPointerDetailsFromMSG(const CHROME_MSG& native_event) {
   NOTIMPLEMENTED();
   return PointerDetails(EventPointerType::kTouch,
                         /* pointer_id*/ 0,
@@ -417,7 +415,7 @@ PointerDetails GetTouchPointerDetailsFromMSG(const MSG& native_event) {
                         /* force */ 0.f);
 }
 
-bool GetScrollOffsetsFromMSG(const MSG& native_event) {
+bool GetScrollOffsetsFromMSG(const CHROME_MSG& native_event) {
   // TODO(ananta)
   // Support retrieving the scroll offsets from the scroll event.
   if (native_event.message == WM_VSCROLL || native_event.message == WM_HSCROLL)
@@ -425,7 +423,7 @@ bool GetScrollOffsetsFromMSG(const MSG& native_event) {
   return false;
 }
 
-bool GetFlingDataFromMSG(const MSG& native_event,
+bool GetFlingDataFromMSG(const CHROME_MSG& native_event,
                          float* vx,
                          float* vy,
                          float* vx_ordinal,
@@ -493,7 +491,7 @@ LPARAM GetLParamFromScanCode(uint16_t scan_code) {
   return l_param;
 }
 
-KeyEvent KeyEventFromMSG(const MSG& msg) {
+KeyEvent KeyEventFromMSG(const CHROME_MSG& msg) {
   DCHECK(IsKeyEvent(msg));
   EventType type = EventTypeFromMSG(msg);
   KeyboardCode key_code = KeyboardCodeFromMSG(msg);
@@ -511,7 +509,7 @@ KeyEvent KeyEventFromMSG(const MSG& msg) {
   }
 }
 
-MSG MSGFromKeyEvent(KeyEvent* event, HWND hwnd) {
+CHROME_MSG MSGFromKeyEvent(KeyEvent* event, HWND hwnd) {
   if (event->HasNativeEvent())
     return event->native_event();
   uint16_t scan_code = KeycodeConverter::DomCodeToNativeKeycode(event->code());
@@ -525,7 +523,7 @@ MSG MSGFromKeyEvent(KeyEvent* event, HWND hwnd) {
   return {hwnd, message, w_param, l_param};
 }
 
-MouseEvent MouseEventFromMSG(const MSG& msg) {
+MouseEvent MouseEventFromMSG(const CHROME_MSG& msg) {
   EventType type = EventTypeFromMSG(msg);
   gfx::Point location = EventLocationFromMSG(msg);
   gfx::Point root_location = EventSystemLocationFromMSG(msg);
@@ -538,7 +536,7 @@ MouseEvent MouseEventFromMSG(const MSG& msg) {
                     changed_button_flags, pointer_details);
 }
 
-MouseWheelEvent MouseWheelEventFromMSG(const MSG& msg) {
+MouseWheelEvent MouseWheelEventFromMSG(const CHROME_MSG& msg) {
   gfx::Vector2d offset = GetMouseWheelOffsetFromMSG(msg);
   gfx::Point location = EventLocationFromMSG(msg);
   gfx::Point root_location = EventSystemLocationFromMSG(msg);

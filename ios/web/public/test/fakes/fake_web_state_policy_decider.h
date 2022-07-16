@@ -26,11 +26,11 @@ class FakeWebStatePolicyDecider : public WebStatePolicyDecider {
   // WebStatePolicyDecider overrides
   // Always calls |callback| with PolicyDecision::Allow().
   void ShouldAllowRequest(NSURLRequest* request,
-                          const RequestInfo& request_info,
+                          RequestInfo request_info,
                           PolicyDecisionCallback callback) override;
   // Always calls |callback| with PolicyDecision::Allow().
   void ShouldAllowResponse(NSURLResponse* response,
-                           bool for_main_frame,
+                           ResponseInfo response_info,
                            PolicyDecisionCallback callback) override;
   void WebStateDestroyed() override {}
 

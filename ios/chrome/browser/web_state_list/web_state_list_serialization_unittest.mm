@@ -68,14 +68,16 @@ class WebStateListSerializationTest : public PlatformTest {
  public:
   WebStateListSerializationTest() = default;
 
+  WebStateListSerializationTest(const WebStateListSerializationTest&) = delete;
+  WebStateListSerializationTest& operator=(
+      const WebStateListSerializationTest&) = delete;
+
   WebStateListDelegate* web_state_list_delegate() {
     return &web_state_list_delegate_;
   }
 
  private:
   FakeWebStateListDelegate web_state_list_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateListSerializationTest);
 };
 
 TEST_F(WebStateListSerializationTest, SerializationEmpty) {

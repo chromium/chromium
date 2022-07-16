@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "ui/views/cascading_property.h"
+
 #include "ui/base/theme_provider.h"
-#include "ui/native_theme/native_theme.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/gfx/color_utils.h"
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
                                        views::CascadingProperty<SkColor>*)
@@ -25,18 +28,18 @@ class CascadingThemeProviderColor final : public CascadingProperty<SkColor> {
   const int color_id_;
 };
 
-class CascadingNativeThemeColor final : public CascadingProperty<SkColor> {
+class CascadingColorProviderColor final : public CascadingProperty<SkColor> {
  public:
-  explicit CascadingNativeThemeColor(ui::NativeTheme::ColorId color_id)
+  explicit CascadingColorProviderColor(ui::ColorId color_id)
       : color_id_(color_id) {}
 
   // CascadingProperty<SkColor>:
   SkColor GetValue(const View* view) const override {
-    return view->GetNativeTheme()->GetSystemColor(color_id_);
+    return view->GetColorProvider()->GetColor(color_id_);
   }
 
  private:
-  const ui::NativeTheme::ColorId color_id_;
+  const ui::ColorId color_id_;
 };
 }  // namespace
 
@@ -53,13 +56,29 @@ void SetCascadingThemeProviderColor(
       std::make_unique<views::CascadingThemeProviderColor>(color_id));
 }
 
-void SetCascadingNativeThemeColor(
+void SetCascadingColorProviderColor(
     views::View* view,
     const ui::ClassProperty<CascadingProperty<SkColor>*>* property_key,
-    ui::NativeTheme::ColorId color_id) {
+    ui::ColorId color_id) {
   SetCascadingProperty(
       view, property_key,
-      std::make_unique<views::CascadingNativeThemeColor>(color_id));
+      std::make_unique<views::CascadingColorProviderColor>(color_id));
+}
+
+SkColor GetCascadingBackgroundColor(View* view) {
+  const absl::optional<SkColor> color =
+      GetCascadingProperty(view, kCascadingBackgroundColor);
+  return color.value_or(
+      view->GetColorProvider()->GetColor(ui::kColorWindowBackground));
+}
+
+SkColor GetCascadingAccentColor(View* view) {
+  const SkColor default_color =
+      view->GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused);
+
+  return color_utils::PickGoogleColor(
+      default_color, GetCascadingBackgroundColor(view),
+      color_utils::kMinimumVisibleContrastRatio);
 }
 
 }  // namespace views

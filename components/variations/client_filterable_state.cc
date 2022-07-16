@@ -63,8 +63,13 @@ base::Version ClientFilterableState::GetOSVersion() {
 
 ClientFilterableState::ClientFilterableState(
     IsEnterpriseFunction is_enterprise_function)
-    : is_enterprise_function_(std::move(is_enterprise_function)) {}
-ClientFilterableState::~ClientFilterableState() {}
+    : is_enterprise_function_(std::move(is_enterprise_function)) {
+  // The callback is only used when processing a study that uses the
+  // is_enterprise filter. If you're building a client that isn't expecting that
+  // filter, you should use a callback that always returns false.
+  DCHECK(is_enterprise_function_);
+}
+ClientFilterableState::~ClientFilterableState() = default;
 
 bool ClientFilterableState::IsEnterprise() const {
   if (!is_enterprise_.has_value())

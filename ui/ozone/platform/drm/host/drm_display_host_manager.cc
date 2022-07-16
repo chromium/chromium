@@ -146,7 +146,7 @@ class FindDrmDisplayHostById {
 DrmDisplayHostManager::DrmDisplayHostManager(
     GpuThreadAdapter* proxy,
     DeviceManager* device_manager,
-    OzonePlatform::InitializedHostProperties* host_properties,
+    OzonePlatform::PlatformRuntimeProperties* host_properties,
     InputControllerEvdev* input_controller)
     : proxy_(proxy),
       device_manager_(device_manager),
@@ -337,7 +337,7 @@ void DrmDisplayHostManager::OnAddGraphicsDevice(
     std::unique_ptr<DrmDeviceHandle> handle) {
   if (handle->IsValid()) {
     drm_devices_[dev_path] = sys_path;
-    proxy_->GpuAddGraphicsDeviceOnUIThread(sys_path, handle->PassFD());
+    proxy_->GpuAddGraphicsDevice(sys_path, handle->PassFD());
     NotifyDisplayDelegate();
   }
 
@@ -379,8 +379,8 @@ void DrmDisplayHostManager::OnGpuProcessLaunched() {
 
   // Send the primary device first since this is used to initialize graphics
   // state.
-  proxy_->GpuAddGraphicsDeviceOnIOThread(
-      drm_devices_[primary_graphics_card_path_], handle->PassFD());
+  proxy_->GpuAddGraphicsDevice(drm_devices_[primary_graphics_card_path_],
+                               handle->PassFD());
 }
 
 void DrmDisplayHostManager::OnGpuThreadReady() {

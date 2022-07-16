@@ -175,11 +175,14 @@ TEST_F(WebCryptoRsaPssTest, VerifyKnownAnswer) {
   const base::ListValue* tests = nullptr;
   ASSERT_TRUE(test_data.GetList("tests", &tests));
 
-  for (size_t test_index = 0; test_index < tests->GetSize(); ++test_index) {
+  for (size_t test_index = 0; test_index < tests->GetList().size();
+       ++test_index) {
     SCOPED_TRACE(test_index);
 
-    const base::DictionaryValue* test;
-    ASSERT_TRUE(tests->GetDictionary(test_index, &test));
+    const base::Value& test_value = tests->GetList()[test_index];
+    ASSERT_TRUE(test_value.is_dict());
+    const base::DictionaryValue* test =
+        &base::Value::AsDictionaryValue(test_value);
 
     blink::WebCryptoAlgorithm hash = GetDigestAlgorithm(test, "hash");
 
@@ -197,8 +200,8 @@ TEST_F(WebCryptoRsaPssTest, VerifyKnownAnswer) {
                             blink::kWebCryptoAlgorithmIdRsaPss, hash.Id()),
                         true, blink::kWebCryptoKeyUsageVerify, &public_key));
 
-    int saltLength;
-    ASSERT_TRUE(test->GetInteger("saltLength", &saltLength));
+    absl::optional<int> saltLength = test->FindIntKey("saltLength");
+    ASSERT_TRUE(saltLength);
 
     std::vector<uint8_t> message = GetBytesFromHexString(test, "message");
     std::vector<uint8_t> signature = GetBytesFromHexString(test, "signature");
@@ -206,20 +209,20 @@ TEST_F(WebCryptoRsaPssTest, VerifyKnownAnswer) {
     // Test that verification returns true when it should.
     bool is_match = false;
     ASSERT_EQ(Status::Success(),
-              Verify(CreateRsaPssAlgorithm(saltLength), public_key,
+              Verify(CreateRsaPssAlgorithm(*saltLength), public_key,
                      CryptoData(signature), CryptoData(message), &is_match));
     EXPECT_TRUE(is_match);
 
     // Corrupt the message and make sure that verification fails.
     ASSERT_EQ(Status::Success(),
-              Verify(CreateRsaPssAlgorithm(saltLength), public_key,
+              Verify(CreateRsaPssAlgorithm(*saltLength), public_key,
                      CryptoData(signature), CryptoData(Corrupted(message)),
                      &is_match));
     EXPECT_FALSE(is_match);
 
     // Corrupt the signature and make sure that verification fails.
     ASSERT_EQ(Status::Success(),
-              Verify(CreateRsaPssAlgorithm(saltLength), public_key,
+              Verify(CreateRsaPssAlgorithm(*saltLength), public_key,
                      CryptoData(Corrupted(signature)), CryptoData(message),
                      &is_match));
     EXPECT_FALSE(is_match);

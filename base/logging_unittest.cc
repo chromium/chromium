@@ -43,24 +43,15 @@
 #endif  // OS_WIN
 
 #if defined(OS_FUCHSIA)
-#include <fuchsia/logger/cpp/fidl.h>
-#include <lib/fidl/cpp/binding.h>
-#include <lib/sys/cpp/component_context.h>
 #include <lib/zx/channel.h>
 #include <lib/zx/event.h>
 #include <lib/zx/exception.h>
-#include <lib/zx/process.h>
 #include <lib/zx/thread.h>
-#include <lib/zx/time.h>
-#include <zircon/process.h>
 #include <zircon/syscalls/debug.h>
 #include <zircon/syscalls/exception.h>
 #include <zircon/types.h>
-
-#include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/process_context.h"
-#include "base/fuchsia/test_log_listener_safe.h"
 #endif  // OS_FUCHSIA
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace logging {
@@ -272,6 +263,8 @@ TEST_F(LoggingTest, AlwaysLogErrorsToStderr) {
   bool did_log_info = false;
   bool did_log_error = false;
 
+  // Fuchsia only logs to stderr when explicitly specified.
+#if !defined(OS_FUCHSIA)
   // When no destinations are specified, ERRORs should still log to stderr.
   TestForLogToStderr(LOG_NONE, &did_log_info, &did_log_error);
   EXPECT_FALSE(did_log_info);
@@ -281,6 +274,7 @@ TEST_F(LoggingTest, AlwaysLogErrorsToStderr) {
   TestForLogToStderr(LOG_TO_FILE, &did_log_info, &did_log_error);
   EXPECT_FALSE(did_log_info);
   EXPECT_TRUE(did_log_error);
+#endif
 
   // ERRORs should not be logged to stderr if any destination besides FILE is
   // set.
@@ -711,65 +705,6 @@ namespace nested_test {
     EXPECT_EQ("Hello World", ostr.str());
   }
 }  // namespace nested_test
-
-#if defined(OS_FUCHSIA)
-
-// Verifies that calling the log macro goes to the Fuchsia system logs, by
-// default.
-TEST_F(LoggingTest, FuchsiaSystemLogging) {
-  constexpr char kLogMessage[] = "system log!";
-
-  base::SimpleTestLogListener listener;
-
-  // Connect the test LogListenerSafe to the Log.
-  std::unique_ptr<fuchsia::logger::LogFilterOptions> options =
-      std::make_unique<fuchsia::logger::LogFilterOptions>();
-  options->filter_by_pid = true;
-  options->pid = base::Process::Current().Pid();
-  fuchsia::logger::LogPtr log = base::ComponentContextForProcess()
-                                    ->svc()
-                                    ->Connect<fuchsia::logger::Log>();
-  listener.ListenToLog(log.get(), std::move(options));
-
-  // Ensure that logging is directed to the system debug log.
-  CHECK(InitLogging({.logging_dest = LOG_DEFAULT}));
-
-  // Emit the test log message, and spin the loop until it is reported to the
-  // test listener.
-  LOG(ERROR) << kLogMessage;
-
-  absl::optional<fuchsia::logger::LogMessage> logged_message =
-      listener.RunUntilMessageReceived(kLogMessage);
-
-  ASSERT_TRUE(logged_message.has_value());
-  EXPECT_EQ(logged_message->severity,
-            static_cast<int32_t>(fuchsia::logger::LogLevelFilter::ERROR));
-  ASSERT_EQ(logged_message->tags.size(), 1u);
-  EXPECT_EQ(logged_message->tags[0], base::CommandLine::ForCurrentProcess()
-                                         ->GetProgram()
-                                         .BaseName()
-                                         .AsUTF8Unsafe());
-}
-
-TEST_F(LoggingTest, FuchsiaLogging) {
-  MockLogSource mock_log_source;
-  EXPECT_CALL(mock_log_source, Log())
-      .Times(DCHECK_IS_ON() ? 2 : 1)
-      .WillRepeatedly(Return("log message"));
-
-  SetMinLogLevel(LOGGING_INFO);
-
-  EXPECT_TRUE(LOG_IS_ON(INFO));
-  EXPECT_EQ(DCHECK_IS_ON(), DLOG_IS_ON(INFO));
-
-  ZX_LOG(INFO, ZX_ERR_INTERNAL) << mock_log_source.Log();
-  ZX_DLOG(INFO, ZX_ERR_INTERNAL) << mock_log_source.Log();
-
-  ZX_CHECK(true, ZX_ERR_INTERNAL);
-  ZX_DCHECK(true, ZX_ERR_INTERNAL);
-}
-
-#endif  // defined(OS_FUCHSIA)
 
 TEST_F(LoggingTest, LogPrefix) {
   // Use a static because only captureless lambdas can be converted to a

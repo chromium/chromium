@@ -38,6 +38,10 @@ class TextDecoderStream final : public ScriptWrappable {
                     const WTF::TextEncoding&,
                     const TextDecoderOptions*,
                     ExceptionState&);
+
+  TextDecoderStream(const TextDecoderStream&) = delete;
+  TextDecoderStream& operator=(const TextDecoderStream&) = delete;
+
   ~TextDecoderStream() override;
 
   // From text_decoder_stream.idl
@@ -56,8 +60,6 @@ class TextDecoderStream final : public ScriptWrappable {
   const WTF::TextEncoding encoding_;
   const bool fatal_;
   const bool ignore_bom_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextDecoderStream);
 };
 
 }  // namespace blink

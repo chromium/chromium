@@ -24,7 +24,9 @@ namespace base {
 namespace {
 
 struct CheckOnDestroy {
-  ~CheckOnDestroy() { CHECK(false); }
+  ~CheckOnDestroy() {
+    CHECK(false);
+  }
 };
 
 TEST(NoDestructorTest, SkipsDestructors) {
@@ -80,8 +82,7 @@ TEST(NoDestructorTest, ForwardsArguments) {
   CopyOnly copy_only;
   MoveOnly move_only;
 
-  static NoDestructor<ForwardingTestStruct> test_forwarding(
-      copy_only, std::move(move_only));
+  static NoDestructor<ForwardingTestStruct> test_forwarding(copy_only, std::move(move_only));
 }
 
 TEST(NoDestructorTest, Accessors) {
@@ -155,13 +156,12 @@ subtle::Atomic32 BlockingConstructor::complete_construction_ = 0;
 // scoped-static-initializationconstruction on its NoDestructor instance.
 class BlockingConstructorThread : public SimpleThread {
  public:
-  BlockingConstructorThread(ThreadPriority thread_priority,
-                            OnceClosure before_get)
+  BlockingConstructorThread(ThreadPriority thread_priority, OnceClosure before_get)
       : SimpleThread("BlockingConstructorThread", Options(thread_priority)),
         before_get_(std::move(before_get)) {}
+
   BlockingConstructorThread(const BlockingConstructorThread&) = delete;
-  BlockingConstructorThread& operator=(const BlockingConstructorThread&) =
-      delete;
+  BlockingConstructorThread& operator=(const BlockingConstructorThread&) = delete;
 
   void Run() override {
     if (before_get_)
@@ -193,7 +193,7 @@ TEST(NoDestructorTest, PriorityInversionAtStaticInitializationResolves) {
   background_getter.Start();
 
   while (!BlockingConstructor::WasConstructorCalled())
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
+    PlatformThread::Sleep(Milliseconds(1));
 
   // Spin 4 foreground thread per core contending to get the already under
   // construction NoDestructor. When they are all running and poking at it :
@@ -201,8 +201,8 @@ TEST(NoDestructorTest, PriorityInversionAtStaticInitializationResolves) {
   const int kNumForegroundThreads = 4 * SysInfo::NumberOfProcessors();
   std::vector<std::unique_ptr<SimpleThread>> foreground_threads;
   RepeatingClosure foreground_thread_ready_callback =
-      BarrierClosure(kNumForegroundThreads,
-                     BindOnce(&BlockingConstructor::CompleteConstructionNow));
+      BarrierClosure(kNumForegroundThreads, BindOnce(&BlockingConstructor::CompleteConstructionNow));
+
   for (int i = 0; i < kNumForegroundThreads; ++i) {
     foreground_threads.push_back(std::make_unique<BlockingConstructorThread>(
         ThreadPriority::NORMAL, foreground_thread_ready_callback));
@@ -218,7 +218,7 @@ TEST(NoDestructorTest, PriorityInversionAtStaticInitializationResolves) {
 
   // Fail if this test takes more than 5 seconds (it takes 5-10 seconds on a
   // Z840 without r527445 but is expected to be fast (~30ms) with the fix).
-  EXPECT_LT(TimeTicks::Now() - test_begin, TimeDelta::FromSeconds(5));
+  EXPECT_LT(TimeTicks::Now() - test_begin, Seconds(5));
 }
 
 }  // namespace base

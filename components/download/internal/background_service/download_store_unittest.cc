@@ -27,6 +27,9 @@ class DownloadStoreTest : public testing::Test {
  public:
   DownloadStoreTest() : db_(nullptr) {}
 
+  DownloadStoreTest(const DownloadStoreTest&) = delete;
+  DownloadStoreTest& operator=(const DownloadStoreTest&) = delete;
+
   ~DownloadStoreTest() override = default;
 
   void CreateDatabase() {
@@ -66,8 +69,6 @@ class DownloadStoreTest : public testing::Test {
   leveldb_proto::test::FakeDB<protodb::Entry>* db_;
   std::unique_ptr<DownloadStore> store_;
   absl::optional<bool> hard_recover_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadStoreTest);
 };
 
 TEST_F(DownloadStoreTest, Initialize) {

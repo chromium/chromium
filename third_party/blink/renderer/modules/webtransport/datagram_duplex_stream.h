@@ -41,6 +41,7 @@ class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
     return web_transport_->datagramWritable();
   }
 
+  uint32_t maxDatagramSize() const { return max_datagram_size_; }
   absl::optional<double> incomingMaxAge() const { return incoming_max_age_; }
   void setIncomingMaxAge(absl::optional<double> max_age);
 
@@ -61,6 +62,11 @@ class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
  private:
   const Member<WebTransport> web_transport_;
 
+  // TODO(yhirano): Update this variable when the session is established.
+  // We need to choose an initial value without knowing the actual network
+  // condition, so let's choose a conservative value. This will be update when
+  // the path migration happens.
+  uint32_t max_datagram_size_ = 1024;
   absl::optional<double> incoming_max_age_;
   absl::optional<double> outgoing_max_age_;
   int32_t incoming_high_water_mark_ = kDefaultIncomingHighWaterMark;

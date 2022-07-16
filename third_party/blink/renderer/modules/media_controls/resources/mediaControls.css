@@ -13,7 +13,7 @@ video::-webkit-media-controls {
   writing-mode: horizontal-tb;
   width: inherit;
   height: inherit;
-  position: relative;
+  contain: paint;
   direction: ltr;
   display: flex;
   flex-direction: column;

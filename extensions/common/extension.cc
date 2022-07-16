@@ -208,11 +208,12 @@ const int Extension::kValidBookmarkAppSchemes = URLPattern::SCHEME_HTTP |
                                                 URLPattern::SCHEME_HTTPS |
                                                 URLPattern::SCHEME_EXTENSION;
 
+// TODO(https://crbug.com/1257045): Remove urn: scheme support.
 const int Extension::kValidHostPermissionSchemes =
     URLPattern::SCHEME_CHROMEUI | URLPattern::SCHEME_HTTP |
     URLPattern::SCHEME_HTTPS | URLPattern::SCHEME_FILE |
     URLPattern::SCHEME_FTP | URLPattern::SCHEME_WS | URLPattern::SCHEME_WSS |
-    URLPattern::SCHEME_URN;
+    URLPattern::SCHEME_URN | URLPattern::SCHEME_UUID_IN_PACKAGE;
 
 //
 // Extension
@@ -707,7 +708,7 @@ bool Extension::LoadExtent(const char* key,
     return false;
   }
 
-  for (size_t i = 0; i < pattern_list->GetSize(); ++i) {
+  for (size_t i = 0; i < pattern_list->GetList().size(); ++i) {
     std::string pattern_string;
     if (!pattern_list->GetString(i, &pattern_string)) {
       *error = ErrorUtils::FormatErrorMessageUTF16(

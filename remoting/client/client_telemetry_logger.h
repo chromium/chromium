@@ -31,6 +31,10 @@ class ClientTelemetryLogger {
   ClientTelemetryLogger(ChromotingEventLogWriter* log_writer,
                         ChromotingEvent::Mode mode,
                         ChromotingEvent::SessionEntryPoint entry_point);
+
+  ClientTelemetryLogger(const ClientTelemetryLogger&) = delete;
+  ClientTelemetryLogger& operator=(const ClientTelemetryLogger&) = delete;
+
   ~ClientTelemetryLogger();
 
   void SetAuthMethod(ChromotingEvent::AuthMethod auth_method);
@@ -119,8 +123,6 @@ class ClientTelemetryLogger {
   ChromotingEventLogWriter* log_writer_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientTelemetryLogger);
 };
 
 }  // namespace remoting

@@ -11,14 +11,11 @@ namespace web {
 
 class WebStateImpl;
 
-// Allow navigation items up to ~63k (like components/sessions/core)
-const int kMaxNavigationItemSize = 63 * 1024;
-
 // Class that can serialize and deserialize session information.
 class SessionStorageBuilder {
  public:
   // Creates a serializable session storage from |web_state|.
-  CRWSessionStorage* BuildStorage(WebStateImpl* web_state) const;
+  CRWSessionStorage* BuildStorage(const WebStateImpl* web_state) const;
   // Populates |web_state| with |storage|'s session information.
   // The provided |web_state| must already have a |NavigationManager|.
   void ExtractSessionState(WebStateImpl* web_state,

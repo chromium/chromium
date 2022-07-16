@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/auth/arc_active_directory_enrollment_token_fetcher.h"
 #include "chrome/browser/ash/arc/extensions/fake_arc_support.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/dm_token_storage.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -53,8 +53,8 @@ constexpr char kNotYetFetched[] = "NOT-YET-FETCHED";
 using Status = ArcActiveDirectoryEnrollmentTokenFetcher::Status;
 
 std::string GetDmServerUrl() {
-  policy ::BrowserPolicyConnectorChromeOS* const connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* const connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->device_management_service()
       ->configuration()
       ->GetDMServerUrl();
@@ -236,6 +236,12 @@ void FinishSamlResponseJob(const network::ResourceRequest& request,
 class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
     : public InProcessBrowserTest,
       public ArcSupportHost::ErrorDelegate {
+ public:
+  ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest(
+      const ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest&) = delete;
+  ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest& operator=(
+      const ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest&) = delete;
+
  protected:
   ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest() = default;
   ~ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest() override = default;
@@ -372,8 +378,6 @@ class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
   void OnRunNetworkTestsClicked() override {}
 
   std::unique_ptr<ArcSupportHost> support_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest);
 };
 
 // Non-SAML flow fetches valid enrollment token and user id.

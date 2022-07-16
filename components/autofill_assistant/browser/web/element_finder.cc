@@ -90,8 +90,8 @@ ClientStatus MoveAutofillValueRegexpToTextFilter(
   text_filter.set_case_sensitive(
       autofill_value_regexp.value_expression_re2().case_sensitive());
   std::string re2;
-  ClientStatus re2_status = user_data::GetFormattedAutofillValue(
-      autofill_value_regexp, user_data, &re2);
+  ClientStatus re2_status = user_data::GetFormattedClientValue(
+      autofill_value_regexp, *user_data, &re2);
   text_filter.set_re2(re2);
   // Assigning text_filter will clear autofill_value_regexp.
   *value->mutable_text_filter() = text_filter;
@@ -338,56 +338,80 @@ ElementFinder::Result::~Result() = default;
 
 ElementFinder::Result::Result(const Result&) = default;
 
+ElementFinder::Result ElementFinder::Result::EmptyResult() {
+  return ElementFinder::Result();
+}
+
 ElementFinder::ElementFinder(content::WebContents* web_contents,
                              DevtoolsClient* devtools_client,
                              const UserData* user_data,
+                             ProcessedActionStatusDetailsProto* log_info,
                              const Selector& selector,
                              ResultType result_type)
     : web_contents_(web_contents),
       devtools_client_(devtools_client),
       user_data_(user_data),
+      log_info_(log_info),
       selector_(selector),
       result_type_(result_type) {}
 
 ElementFinder::~ElementFinder() = default;
 
-void ElementFinder::Start(Callback callback) {
-  StartInternal(std::move(callback), web_contents_->GetMainFrame(),
-                /* frame_id= */ "", /* document_object_id= */ "");
-}
-
-void ElementFinder::StartInternal(Callback callback,
-                                  content::RenderFrameHost* frame,
-                                  const std::string& frame_id,
-                                  const std::string& document_object_id) {
+void ElementFinder::Start(const Result& start_element, Callback callback) {
   callback_ = std::move(callback);
 
   if (selector_.empty()) {
-    SendResult(ClientStatus(INVALID_SELECTOR));
+    SendErrorResult(ClientStatus(INVALID_SELECTOR));
     return;
   }
 
   ClientStatus resolve_status =
       GetUserDataResolvedSelector(selector_, user_data_, &selector_proto_);
   if (!resolve_status.ok()) {
-    SendResult(resolve_status);
+    SendErrorResult(resolve_status);
     return;
   }
 
-  current_frame_ = frame;
-  current_frame_id_ = frame_id;
-  current_frame_root_ = document_object_id;
-  if (current_frame_root_.empty()) {
+  if (start_element.container_frame_host == nullptr) {
+    current_frame_ = web_contents_->GetMainFrame();
+  } else {
+    current_frame_ = start_element.container_frame_host;
+  }
+  current_frame_id_ = start_element.node_frame_id();
+  frame_stack_ = start_element.frame_stack();
+
+  if (start_element.object_id().empty()) {
     GetDocumentElement();
   } else {
-    current_matches_.emplace_back(current_frame_root_);
+    current_matches_.emplace_back(start_element.object_id());
     ExecuteNextTask();
   }
 }
 
-void ElementFinder::SendResult(const ClientStatus& status) {
+void ElementFinder::UpdateLogInfo(const ClientStatus& status) {
+  if (log_info_ == nullptr) {
+    return;
+  }
+
+  ElementFinderInfoProto* info = log_info_->add_element_finder_info();
+  info->set_status(status.proto_status());
+  if (!status.ok()) {
+    info->set_failed_filter_index_range_start(
+        current_filter_index_range_start_);
+    info->set_failed_filter_index_range_end(next_filter_index_);
+    info->set_get_document_failed(get_document_failed_);
+  }
+  if (selector_.proto.has_tracking_id()) {
+    info->set_tracking_id(selector_.proto.tracking_id());
+  }
+}
+
+void ElementFinder::SendErrorResult(const ClientStatus& status) {
   if (!callback_)
     return;
+
+  DCHECK(!status.ok());
+  UpdateLogInfo(status);
 
   std::move(callback_).Run(status, std::make_unique<Result>());
 }
@@ -395,6 +419,8 @@ void ElementFinder::SendResult(const ClientStatus& status) {
 void ElementFinder::SendSuccessResult(const std::string& object_id) {
   if (!callback_)
     return;
+
+  UpdateLogInfo(OkClientStatus());
 
   // Fill in result and return
   std::unique_ptr<Result> result =
@@ -439,6 +465,7 @@ void ElementFinder::ExecuteNextTask() {
     return;
   }
 
+  current_filter_index_range_start_ = next_filter_index_;
   const auto& filter = filters.Get(next_filter_index_);
   switch (filter.filter_case()) {
     case SelectorProto::Filter::kEnterFrame: {
@@ -505,7 +532,7 @@ void ElementFinder::ExecuteNextTask() {
     case SelectorProto::Filter::FILTER_NOT_SET:
       VLOG(1) << __func__ << " Unset or unknown filter in " << filter << " in "
               << selector_;
-      SendResult(ClientStatus(INVALID_SELECTOR));
+      SendErrorResult(ClientStatus(INVALID_SELECTOR));
       return;
   }
 }
@@ -514,11 +541,11 @@ bool ElementFinder::ConsumeOneMatchOrFail(std::string& object_id_out) {
   if (current_matches_.size() > 1) {
     VLOG(1) << __func__ << " Got " << current_matches_.size() << " matches for "
             << selector_ << ", when only 1 was expected.";
-    SendResult(ClientStatus(TOO_MANY_ELEMENTS));
+    SendErrorResult(ClientStatus(TOO_MANY_ELEMENTS));
     return false;
   }
   if (current_matches_.empty()) {
-    SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
+    SendErrorResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
     return false;
   }
 
@@ -535,7 +562,7 @@ bool ElementFinder::ConsumeMatchAtOrFail(size_t index,
     return true;
   }
 
-  SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
+  SendErrorResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
   return false;
 }
 
@@ -546,7 +573,7 @@ bool ElementFinder::ConsumeAllMatchesOrFail(
     current_matches_.clear();
     return true;
   }
-  SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
+  SendErrorResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
   return false;
 }
 
@@ -558,7 +585,7 @@ bool ElementFinder::ConsumeMatchArrayOrFail(std::string& array_object_id) {
   }
 
   if (current_matches_.empty()) {
-    SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
+    SendErrorResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
     return false;
   }
 
@@ -604,7 +631,7 @@ void ElementFinder::OnMoveMatchesToJSArrayRecursive(
       CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
   if (!status.ok()) {
     VLOG(1) << __func__ << ": Failed to push value to JS array.";
-    SendResult(status);
+    SendErrorResult(status);
     return;
   }
 
@@ -613,7 +640,7 @@ void ElementFinder::OnMoveMatchesToJSArrayRecursive(
   if (index == 0 &&
       !SafeGetObjectId(result->GetResult(), &current_matches_js_array_)) {
     VLOG(1) << __func__ << " Failed to get array ID.";
-    SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
+    SendErrorResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
     return;
   }
 
@@ -635,17 +662,18 @@ void ElementFinder::OnGetDocumentElement(
       CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
   if (!status.ok()) {
     VLOG(1) << __func__ << " Failed to get document root element.";
-    SendResult(status);
+    get_document_failed_ = true;
+    SendErrorResult(status);
     return;
   }
   std::string object_id;
   if (!SafeGetObjectId(result->GetResult(), &object_id)) {
     VLOG(1) << __func__ << " Failed to get document root element.";
-    SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
+    get_document_failed_ = true;
+    SendErrorResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
     return;
   }
 
-  current_frame_root_ = object_id;
   // Use the node as root for the rest of the evaluation.
   current_matches_.emplace_back(object_id);
 
@@ -681,7 +709,7 @@ void ElementFinder::OnApplyJsFilters(
     // call, it is expected.
     VLOG(1) << __func__ << ": Context doesn't exist yet to query frame "
             << frame_stack_.size() << " of " << selector_;
-    SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
+    SendErrorResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
     return;
   }
   ClientStatus status =
@@ -689,7 +717,7 @@ void ElementFinder::OnApplyJsFilters(
   if (!status.ok()) {
     VLOG(1) << __func__ << ": Failed to query selector for frame "
             << frame_stack_.size() << " of " << selector_ << ": " << status;
-    SendResult(status);
+    SendErrorResult(status);
     return;
   }
 
@@ -718,7 +746,7 @@ void ElementFinder::ResolvePseudoElement(
   if (!ConvertPseudoType(proto_pseudo_type, &pseudo_type)) {
     VLOG(1) << __func__ << ": Unsupported pseudo-type "
             << PseudoTypeName(proto_pseudo_type);
-    SendResult(ClientStatus(INVALID_ACTION));
+    SendErrorResult(ClientStatus(INVALID_ACTION));
     return;
   }
 
@@ -742,7 +770,8 @@ void ElementFinder::OnDescribeNodeForPseudoElement(
     std::unique_ptr<dom::DescribeNodeResult> result) {
   if (!result || !result->GetNode()) {
     VLOG(1) << __func__ << " Failed to describe the node for pseudo element.";
-    SendResult(UnexpectedDevtoolsErrorStatus(reply_status, __FILE__, __LINE__));
+    SendErrorResult(
+        UnexpectedDevtoolsErrorStatus(reply_status, __FILE__, __LINE__));
     return;
   }
 
@@ -792,7 +821,8 @@ void ElementFinder::OnDescribeNodeForFrame(
     std::unique_ptr<dom::DescribeNodeResult> result) {
   if (!result || !result->GetNode()) {
     VLOG(1) << __func__ << " Failed to describe the node.";
-    SendResult(UnexpectedDevtoolsErrorStatus(reply_status, __FILE__, __LINE__));
+    SendErrorResult(
+        UnexpectedDevtoolsErrorStatus(reply_status, __FILE__, __LINE__));
     return;
   }
 
@@ -808,11 +838,10 @@ void ElementFinder::OnDescribeNodeForFrame(
         FindCorrespondingRenderFrameHost(node->GetFrameId(), web_contents_);
     if (!frame) {
       VLOG(1) << __func__ << " Failed to find corresponding owner frame.";
-      SendResult(ClientStatus(FRAME_HOST_NOT_FOUND));
+      SendErrorResult(ClientStatus(FRAME_HOST_NOT_FOUND));
       return;
     }
     current_frame_ = frame;
-    current_frame_root_.clear();
 
     if (node->HasContentDocument()) {
       // If the frame has a ContentDocument it's considered a local frame. In
@@ -856,16 +885,13 @@ void ElementFinder::OnResolveNode(
     std::unique_ptr<dom::ResolveNodeResult> result) {
   if (!result || !result->GetObject() || !result->GetObject()->HasObjectId()) {
     VLOG(1) << __func__ << " Failed to resolve object id from backend id.";
-    SendResult(UnexpectedDevtoolsErrorStatus(reply_status, __FILE__, __LINE__));
+    SendErrorResult(
+        UnexpectedDevtoolsErrorStatus(reply_status, __FILE__, __LINE__));
     return;
   }
 
-  std::string object_id = result->GetObject()->GetObjectId();
-  if (current_frame_root_.empty()) {
-    current_frame_root_ = object_id;
-  }
   // Use the node as root for the rest of the evaluation.
-  current_matches_.emplace_back(object_id);
+  current_matches_.emplace_back(result->GetObject()->GetObjectId());
   ExecuteNextTask();
 }
 
@@ -927,7 +953,7 @@ void ElementFinder::OnReportMatchingElementsArrayRecursive(
   if (!status.ok()) {
     VLOG(1) << __func__ << ": Failed to get element from array for "
             << selector_;
-    SendResult(status);
+    SendErrorResult(status);
     return;
   }
 

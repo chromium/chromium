@@ -4,15 +4,12 @@
 
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 
-#include "base/feature_list.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
+#import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -71,10 +68,7 @@ using l10n_util::GetNSStringF;
   std::u16string name16 = SysNSStringToUTF16(name);
   switch (self.signinPromoViewMode) {
     case SigninPromoViewModeNoAccounts: {
-      NSString* signInString =
-          base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)
-              ? GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)
-              : GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN);
+      NSString* signInString = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
       signinPromoView.accessibilityLabel = signInString;
       [signinPromoView.primaryButton setTitle:signInString
                                      forState:UIControlStateNormal];
@@ -103,11 +97,8 @@ using l10n_util::GetNSStringF;
 
   DCHECK_NE(self.signinPromoViewMode, SigninPromoViewModeNoAccounts);
   UIImage* image = self.userImage;
-  if (!image) {
-    image = ios::GetChromeBrowserProvider()
-                .GetSigninResourcesProvider()
-                ->GetDefaultAvatar();
-  }
+  if (!image)
+    image = ios::provider::GetSigninDefaultAvatar();
   [signinPromoView setProfileImage:image];
 }
 

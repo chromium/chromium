@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/test/test_url_constants.h"
 #include "net/base/escape.h"
 #import "net/base/mac/url_conversions.h"

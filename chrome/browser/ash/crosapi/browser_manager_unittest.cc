@@ -9,25 +9,35 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
+#include "components/component_updater/mock_component_updater_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::component_updater::FakeCrOSComponentManager;
+using ::component_updater::MockComponentUpdateService;
+using update_client::UpdateClient;
 using user_manager::User;
 
 namespace crosapi {
 
 namespace {
+
 class BrowserManagerFake : public BrowserManager {
  public:
-  BrowserManagerFake() : BrowserManager(nullptr) {}
+  BrowserManagerFake(
+      scoped_refptr<component_updater::CrOSComponentManager> manager,
+      component_updater::ComponentUpdateService* update_service)
+      : BrowserManager(manager, update_service) {}
   ~BrowserManagerFake() override = default;
-  void Start(mojom::InitialBrowserAction initial_browser_action) override {
+  void Start(
+      browser_util::InitialBrowserAction initial_browser_action) override {
     ++start_count_;
     SetState(State::STARTING);
   }
@@ -40,6 +50,7 @@ class BrowserManagerFake : public BrowserManager {
  private:
   int start_count_ = 0;
 };
+
 }  // namespace
 
 class BrowserManagerTest : public testing::Test {
@@ -51,7 +62,12 @@ class BrowserManagerTest : public testing::Test {
     fake_user_manager_ = new ash::FakeChromeUserManager;
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_));
-    fake_browser_manager_ = std::make_unique<BrowserManagerFake>();
+
+    auto fake_cros_component_manager =
+        base::MakeRefCounted<FakeCrOSComponentManager>();
+    component_update_service_ = std::make_unique<MockComponentUpdateService>();
+    fake_browser_manager_ = std::make_unique<BrowserManagerFake>(
+        fake_cros_component_manager, component_update_service_.get());
   }
 
   void AddRegularUser(const std::string& email) {
@@ -64,12 +80,14 @@ class BrowserManagerTest : public testing::Test {
         user, &testing_profile_);
   }
 
+ protected:
   // The order of these members is relevant for both construction and
   // destruction timing.
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
   ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  std::unique_ptr<MockComponentUpdateService> component_update_service_;
   std::unique_ptr<BrowserManagerFake> fake_browser_manager_;
 
   ScopedTestingLocalState local_state_;
@@ -81,6 +99,10 @@ TEST_F(BrowserManagerTest, LacrosKeepAlive) {
   AddRegularUser("user@test.com");
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+  browser_util::SetProfileMigrationCompletedForUser(
+      local_state_.Get(), chromeos::ProfileHelper::Get()
+                              ->GetUserByProfile(&testing_profile_)
+                              ->username_hash());
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
   EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
 

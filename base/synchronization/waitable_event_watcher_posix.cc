@@ -34,6 +34,9 @@ class Flag : public RefCountedThreadSafe<Flag> {
  public:
   Flag() { flag_ = false; }
 
+  Flag(const Flag&) = delete;
+  Flag& operator=(const Flag&) = delete;
+
   void Set() {
     AutoLock locked(lock_);
     flag_ = true;
@@ -50,8 +53,6 @@ class Flag : public RefCountedThreadSafe<Flag> {
 
   mutable Lock lock_;
   bool flag_;
-
-  DISALLOW_COPY_AND_ASSIGN(Flag);
 };
 
 // -----------------------------------------------------------------------------

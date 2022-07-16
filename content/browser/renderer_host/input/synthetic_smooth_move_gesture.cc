@@ -67,13 +67,15 @@ SyntheticGesture::Result SyntheticSmoothMoveGesture::ForwardInputEvents(
     case SyntheticSmoothMoveGestureParams::TOUCH_INPUT:
       if (!synthetic_pointer_driver_)
         synthetic_pointer_driver_ = SyntheticPointerDriver::Create(
-            content::mojom::GestureSourceType::kTouchInput);
+            content::mojom::GestureSourceType::kTouchInput,
+            params_.from_devtools_debugger);
       ForwardTouchInputEvents(timestamp, target);
       break;
     case SyntheticSmoothMoveGestureParams::MOUSE_DRAG_INPUT:
       if (!synthetic_pointer_driver_)
         synthetic_pointer_driver_ = SyntheticPointerDriver::Create(
-            content::mojom::GestureSourceType::kMouseInput);
+            content::mojom::GestureSourceType::kMouseInput,
+            params_.from_devtools_debugger);
       ForwardMouseClickInputEvents(timestamp, target);
       break;
     case SyntheticSmoothMoveGestureParams::MOUSE_WHEEL_INPUT:
@@ -258,6 +260,9 @@ void SyntheticSmoothMoveGesture::ForwardMouseWheelEvent(
     const blink::WebMouseWheelEvent::Phase phase,
     const base::TimeTicks& timestamp,
     int modifiers) const {
+  if (params_.from_devtools_debugger) {
+    modifiers |= blink::WebInputEvent::kFromDebugger;
+  }
   blink::WebMouseWheelEvent mouse_wheel_event =
       blink::SyntheticWebMouseWheelEventBuilder::Build(
           0, 0, delta.x(), delta.y(), modifiers, params_.granularity);
@@ -356,9 +361,8 @@ void SyntheticSmoothMoveGesture::ComputeNextMoveSegment() {
                params_.speed_in_pixels_s));
     DCHECK_GT(total_duration_in_us, 0);
     current_move_segment_start_time_ = current_move_segment_stop_time_;
-    current_move_segment_stop_time_ =
-        current_move_segment_start_time_ +
-        base::TimeDelta::FromMicroseconds(total_duration_in_us);
+    current_move_segment_stop_time_ = current_move_segment_start_time_ +
+                                      base::Microseconds(total_duration_in_us);
   }
 }
 

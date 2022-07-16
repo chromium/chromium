@@ -245,11 +245,13 @@ namespace http://www.w3.org/1999/xhtml
     property onscroll
     property onscrollend
     property onsearch
+    property onsecuritypolicyviolation
     property onseeked
     property onseeking
     property onselect
     property onselectionchange
     property onselectstart
+    property onslotchange
     property onstalled
     property onsubmit
     property onsuspend
@@ -745,6 +747,7 @@ html element input
     property setCustomValidity
     property setRangeText
     property setSelectionRange
+    property showPicker
     property size
     property src
     property step
@@ -970,7 +973,10 @@ html element select
     property value
     property willValidate
 html element selectmenu
+    property form
+    property name
     property open
+    property type
     property value
 html element slot
     property assign
@@ -1448,11 +1454,13 @@ namespace http://www.w3.org/2000/svg
     property onscroll
     property onscrollend
     property onsearch
+    property onsecuritypolicyviolation
     property onseeked
     property onseeking
     property onselect
     property onselectionchange
     property onselectstart
+    property onslotchange
     property onstalled
     property onsubmit
     property onsuspend

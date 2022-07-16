@@ -24,6 +24,9 @@ class TestKioskExtensionBuilder {
  public:
   TestKioskExtensionBuilder(extensions::Manifest::Type type,
                             const std::string& extension_id);
+  TestKioskExtensionBuilder(const TestKioskExtensionBuilder&) = delete;
+  TestKioskExtensionBuilder& operator=(const TestKioskExtensionBuilder&) =
+      delete;
   ~TestKioskExtensionBuilder();
 
   const std::string& extension_id() const { return extension_id_; }
@@ -47,8 +50,6 @@ class TestKioskExtensionBuilder {
   bool offline_enabled_ = true;
   std::vector<extensions::SecondaryKioskAppInfo> secondary_extensions_;
   std::string version_ = "1.0";
-
-  DISALLOW_COPY_AND_ASSIGN(TestKioskExtensionBuilder);
 };
 
 }  // namespace ash

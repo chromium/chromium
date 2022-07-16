@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/signatures.h"
@@ -35,9 +36,11 @@ using VoteTypeMap =
 
 // Contains information for sending a SINGLE_USERNAME vote.
 struct SingleUsernameVoteData {
-  SingleUsernameVoteData(autofill::FieldRendererId renderer_id,
-                         const std::u16string& username_candidate_value,
-                         const FormPredictions& form_predictions);
+  SingleUsernameVoteData(
+      autofill::FieldRendererId renderer_id,
+      const std::u16string& username_value,
+      const FormPredictions& form_predictions,
+      const std::vector<const PasswordForm*>& stored_credentials);
   SingleUsernameVoteData(const SingleUsernameVoteData&);
   SingleUsernameVoteData& operator=(const SingleUsernameVoteData&);
   SingleUsernameVoteData(SingleUsernameVoteData&& other);
@@ -52,6 +55,14 @@ struct SingleUsernameVoteData {
 
   // Predictions for the form which contains a field with |renderer_id|.
   FormPredictions form_predictions;
+
+  // Type of the value seen in the single username candidate field.
+  autofill::AutofillUploadContents::ValueType value_type;
+
+  // Information about username edits in a save/update prompt. Not calculated on
+  // Android, because it's not possible to edit credentials in prompts on
+  // Android.
+  autofill::AutofillUploadContents::SingleUsernamePromptEdit prompt_edit;
 };
 
 // This class manages vote uploads for password forms.
@@ -138,6 +149,15 @@ class VotesUploader {
   // method.
   void MaybeSendSingleUsernameVote();
 
+// Not calculated on Android, because it's not possible to edit credentials in
+// prompts on Android.
+#if !defined(OS_ANDROID)
+  // Calculate whether the username value was edited in a prompt based on
+  // suggested and saved username values and whether it confirms or
+  // contradicts |single_username_vote_data_|.
+  void CalculateUsernamePromptEditState(const std::u16string& saved_username);
+#endif  // !defined(OS_ANDROID)
+
   void set_generation_popup_was_shown(bool generation_popup_was_shown) {
     generation_popup_was_shown_ = generation_popup_was_shown;
   }
@@ -183,24 +203,20 @@ class VotesUploader {
   void set_single_username_vote_data(
       autofill::FieldRendererId renderer_id,
       const std::u16string& username_candidate_value,
-      const FormPredictions& form_predictions) {
+      const FormPredictions& form_predictions,
+      const std::vector<const PasswordForm*>& stored_credentials) {
     single_username_vote_data_.emplace(renderer_id, username_candidate_value,
-                                       form_predictions);
+                                       form_predictions, stored_credentials);
   }
 
   void set_suggested_username(const std::u16string& suggested_username) {
     suggested_username_ = suggested_username;
   }
 
-  void set_saved_username(const std::u16string& saved_username) {
-    saved_username_ = saved_username;
-  }
-
 #if defined(UNIT_TEST)
   const std::u16string& suggested_username() const {
     return suggested_username_;
   }
-  const std::u16string& saved_username() const { return saved_username_; }
 #endif
 
  private:
@@ -236,13 +252,22 @@ class VotesUploader {
                      autofill::FieldSignature field_signature,
                      autofill::ServerFieldType field_type);
 
-  // Sets a server field type for the |field| and updates
-  // |available_field_types| and |field_info_manager| accordingly. Returns true
-  // iff a non-default type is assigned to the |field|.
-  bool SetSingleUsernameVote(
+  // On username first flow votes are uploaded both for the single username form
+  // and for the single password form. This method sets the data needed to
+  // upload vote on the username form. The vote is based on the user interaction
+  // with the save prompt (i.e. whether the suggested value was actually saved).
+  bool SetSingleUsernameVoteOnUsernameForm(
       autofill::AutofillField* field,
       autofill::ServerFieldTypeSet* available_field_types,
       autofill::FormSignature form_signature);
+
+  // On username first flow votes are uploaded both for the single username form
+  // and for the single password form. This method sets the data needed to
+  // upload vote on the password form. The vote is based on whether there was
+  // a username form that preceded the password form, and on the type of user
+  // input it had (e.g. email-like, phone-like, arbitrary string).
+  void SetSingleUsernameVoteOnPasswordForm(
+      autofill::FormStructure& form_structure);
 
   // The client which implements embedder-specific PasswordManager operations.
   PasswordManagerClient* client_;
@@ -292,9 +317,6 @@ class VotesUploader {
 
   // The username that is suggested in a save/update prompt.
   std::u16string suggested_username_;
-
-  // The username that was saved.
-  std::u16string saved_username_;
 };
 
 }  // namespace password_manager

@@ -14,15 +14,30 @@ js_type_check("closure_compile_module") {
   closure_flags = default_closure_args + mojom_js_args +
                   [ "js_module_root=" + rebase_path(".", root_build_dir) ]
 
-  deps = [ ":traffic_counters" ]
+  deps = [
+    ":traffic_counters",
+    ":traffic_counters_adapter",
+  ]
 }
 
 js_library("traffic_counters") {
   deps = [
+    ":traffic_counters_adapter",
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//chromeos/services/network_config/public/mojom:network_types_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("traffic_counters_adapter") {
+  deps = [
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
+    "//chromeos/services/network_config/public/mojom:network_types_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }

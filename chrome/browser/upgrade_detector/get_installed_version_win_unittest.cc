@@ -5,9 +5,13 @@
 #include "chrome/browser/upgrade_detector/get_installed_version.h"
 
 #include <stdint.h>
+#include <utility>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "chrome/install_static/install_util.h"
@@ -44,23 +48,37 @@ class GetInstalledVersionWinTest : public ::testing::Test {
   }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   registry_util::RegistryOverrideManager registry_overrides_;
 };
 
 // Tests that an empty instance is returned when no version is in the registry.
 TEST_F(GetInstalledVersionWinTest, NoVersion) {
-  InstalledAndCriticalVersion versions = GetInstalledVersion();
-  EXPECT_FALSE(versions.installed_version.IsValid());
-  EXPECT_FALSE(versions.critical_version.has_value());
+  base::RunLoop run_loop;
+  InstalledVersionCallback callback =
+      base::BindLambdaForTesting([&](InstalledAndCriticalVersion versions) {
+        EXPECT_FALSE(versions.installed_version.IsValid());
+        EXPECT_FALSE(versions.critical_version.has_value());
+        run_loop.Quit();
+      });
+  GetInstalledVersion(std::move(callback));
+  run_loop.Run();
 }
 
 // Tests that the product version in the registry is returned.
 TEST_F(GetInstalledVersionWinTest, WithVersion) {
   ASSERT_NO_FATAL_FAILURE(SetInstalledVersion(version_info::GetVersion()));
-  InstalledAndCriticalVersion versions = GetInstalledVersion();
-  ASSERT_TRUE(versions.installed_version.IsValid());
-  EXPECT_EQ(versions.installed_version, version_info::GetVersion());
-  EXPECT_FALSE(versions.critical_version.has_value());
+
+  base::RunLoop run_loop;
+  InstalledVersionCallback callback =
+      base::BindLambdaForTesting([&](InstalledAndCriticalVersion versions) {
+        ASSERT_TRUE(versions.installed_version.IsValid());
+        EXPECT_EQ(versions.installed_version, version_info::GetVersion());
+        EXPECT_FALSE(versions.critical_version.has_value());
+        run_loop.Quit();
+      });
+  GetInstalledVersion(std::move(callback));
+  run_loop.Run();
 }
 
 // Tests that the product version and critical version in the registry are
@@ -71,10 +89,17 @@ TEST_F(GetInstalledVersionWinTest, WithCriticalVersion) {
   base::Version critical_version = base::Version(std::move(components));
   ASSERT_NO_FATAL_FAILURE(SetInstalledVersion(version_info::GetVersion()));
   ASSERT_NO_FATAL_FAILURE(SetCriticalVersion(critical_version));
-  InstalledAndCriticalVersion versions = GetInstalledVersion();
-  ASSERT_TRUE(versions.installed_version.IsValid());
-  EXPECT_EQ(versions.installed_version, version_info::GetVersion());
-  ASSERT_TRUE(versions.critical_version.has_value());
-  ASSERT_TRUE(versions.critical_version.value().IsValid());
-  EXPECT_EQ(versions.critical_version.value(), critical_version);
+
+  base::RunLoop run_loop;
+  InstalledVersionCallback callback =
+      base::BindLambdaForTesting([&](InstalledAndCriticalVersion versions) {
+        ASSERT_TRUE(versions.installed_version.IsValid());
+        EXPECT_EQ(versions.installed_version, version_info::GetVersion());
+        ASSERT_TRUE(versions.critical_version.has_value());
+        ASSERT_TRUE(versions.critical_version.value().IsValid());
+        EXPECT_EQ(versions.critical_version.value(), critical_version);
+        run_loop.Quit();
+      });
+  GetInstalledVersion(std::move(callback));
+  run_loop.Run();
 }

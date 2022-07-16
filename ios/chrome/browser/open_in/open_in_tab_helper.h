@@ -78,6 +78,9 @@ enum class OpenInMimeType {
 class OpenInTabHelper : public web::WebStateObserver,
                         public web::WebStateUserData<OpenInTabHelper> {
  public:
+  OpenInTabHelper(const OpenInTabHelper&) = delete;
+  OpenInTabHelper& operator=(const OpenInTabHelper&) = delete;
+
   ~OpenInTabHelper() override;
 
   // Creates OpenInTabHelper and attaches to |web_state|. |web_state| must not
@@ -121,8 +124,6 @@ class OpenInTabHelper : public web::WebStateObserver,
   __weak id<OpenInTabHelperDelegate> delegate_ = nil;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(OpenInTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_OPEN_IN_OPEN_IN_TAB_HELPER_H_

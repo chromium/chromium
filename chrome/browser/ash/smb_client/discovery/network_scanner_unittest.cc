@@ -35,6 +35,10 @@ void ExpectFailure(bool success, const HostMap& actual_hosts) {
 class NetworkScannerTest : public testing::Test {
  public:
   NetworkScannerTest() = default;
+
+  NetworkScannerTest(const NetworkScannerTest&) = delete;
+  NetworkScannerTest& operator=(const NetworkScannerTest&) = delete;
+
   ~NetworkScannerTest() override = default;
 
  protected:
@@ -68,8 +72,6 @@ class NetworkScannerTest : public testing::Test {
 
  private:
   NetworkScanner scanner_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkScannerTest);
 };
 
 TEST_F(NetworkScannerTest, SuccessIsFalseAndHostsMapIsEmptyWithNoLocator) {

@@ -16,6 +16,7 @@
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
@@ -83,7 +84,7 @@ class AppListClientImpl
                         int suggestion_index,
                         bool launch_as_default) override;
   void InvokeSearchResultAction(const std::string& result_id,
-                                int action_index) override;
+                                ash::SearchResultActionType action) override;
   void GetSearchResultContextMenuModel(
       const std::string& result_id,
       GetContextMenuModelCallback callback) override;
@@ -97,13 +98,6 @@ class AppListClientImpl
                            GetContextMenuModelCallback callback) override;
   void OnAppListVisibilityWillChange(bool visible) override;
   void OnAppListVisibilityChanged(bool visible) override;
-  void OnItemAdded(int profile_id,
-                   std::unique_ptr<ash::AppListItemMetadata> item) override;
-  void OnItemUpdated(int profile_id,
-                     std::unique_ptr<ash::AppListItemMetadata> item) override;
-  void OnFolderDeleted(int profile_id,
-                       std::unique_ptr<ash::AppListItemMetadata> item) override;
-  void OnPageBreakItemDeleted(int profile_id, const std::string& id) override;
   void OnSearchResultVisibilityChanged(const std::string& id,
                                        bool visible) override;
   void OnQuickSettingsChanged(
@@ -115,6 +109,9 @@ class AppListClientImpl
       int position_index) override;
   ash::AppListNotifier* GetNotifier() override;
   void LoadIcon(int profile_id, const std::string& app_id) override;
+  void OnAppListSortRequested(int profile_id,
+                              ash::AppListSortOrder order) override;
+  void OnAppListSortRevertRequested(int profile_id) override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
@@ -128,7 +125,8 @@ class AppListClientImpl
   void PinApp(const std::string& app_id) override;
   void UnpinApp(const std::string& app_id) override;
   Pinnable GetPinnable(const std::string& app_id) override;
-  void CreateNewWindow(bool incognito) override;
+  void CreateNewWindow(bool incognito,
+                       bool should_trigger_session_restore) override;
   void OpenURL(Profile* profile,
                const GURL& url,
                ui::PageTransition transition,

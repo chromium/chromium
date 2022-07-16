@@ -61,7 +61,7 @@ void MockNetworkChangeNotifier::NotifyNetworkMadeDefault(
 void MockNetworkChangeNotifier::QueueNetworkMadeDefault(
     NetworkChangeNotifier::NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeNotifier::MADE_DEFAULT, network);
+      NetworkChangeNotifier::NetworkChangeType::kMadeDefault, network);
 }
 
 void MockNetworkChangeNotifier::NotifyNetworkDisconnected(
@@ -74,13 +74,13 @@ void MockNetworkChangeNotifier::NotifyNetworkDisconnected(
 void MockNetworkChangeNotifier::QueueNetworkDisconnected(
     NetworkChangeNotifier::NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeNotifier::DISCONNECTED, network);
+      NetworkChangeNotifier::NetworkChangeType::kDisconnected, network);
 }
 
 void MockNetworkChangeNotifier::NotifyNetworkConnected(
     NetworkChangeNotifier::NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeNotifier::CONNECTED, network);
+      NetworkChangeNotifier::NetworkChangeType::kConnected, network);
   // Spin the message loop so the notification is delivered.
   base::RunLoop().RunUntilIdle();
 }

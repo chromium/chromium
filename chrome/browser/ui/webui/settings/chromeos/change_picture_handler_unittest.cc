@@ -60,6 +60,7 @@ class ChangePictureHandlerTest : public testing::Test {
 
     handler_ = std::make_unique<ChangePictureHandler>();
     handler_->set_web_ui(web_ui_.get());
+    handler_->AllowJavascript();
     handler_->RegisterMessages();
 
     listener_ = handler_.get();
@@ -110,6 +111,8 @@ class ChangePictureHandlerTest : public testing::Test {
                            void* params) {
     listener_->FileSelected(path, index, params);
   }
+
+  void CancelFileSelection() { listener_->FileSelectionCanceled(nullptr); }
 
   void OnCameraImageDecoded() {
     SkBitmap bitmap;
@@ -229,6 +232,21 @@ TEST_F(ChangePictureHandlerTest, ShouldSendUmaMetricWhenCameraImageIsDecoded) {
   histogram_tester().ExpectBucketCount(
       ChangePictureHandler::kUserImageChangedHistogramName,
       default_user_image::kHistogramImageFromCamera, 1);
+}
+
+TEST_F(ChangePictureHandlerTest,
+       ShouldSelectTheCurrentUserImageIfFileSelectionIsCanceled) {
+  // keep the current call size so we can check what happened after our test
+  // method call.
+  auto number_of_calls_before_cancel = web_ui()->call_data().size();
+  CancelFileSelection();
+  // reset back to previous profile image.
+  EXPECT_EQ(web_ui()
+                ->call_data()
+                .at(number_of_calls_before_cancel)
+                ->arg1()
+                ->GetString(),
+            "profile-image-changed");
 }
 
 }  // namespace settings

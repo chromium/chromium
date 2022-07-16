@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_NOTIFICATION_MANAGER_INTERFACE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace ash {
 namespace file_system_provider {
@@ -21,6 +20,11 @@ class NotificationManagerInterface {
   typedef base::OnceCallback<void(NotificationResult)> NotificationCallback;
 
   NotificationManagerInterface() {}
+
+  NotificationManagerInterface(const NotificationManagerInterface&) = delete;
+  NotificationManagerInterface& operator=(const NotificationManagerInterface&) =
+      delete;
+
   virtual ~NotificationManagerInterface() {}
 
   // Shows a notification about the request being unresponsive. The |callback|
@@ -30,9 +34,6 @@ class NotificationManagerInterface {
 
   // Hides a notification previously shown with |id|.
   virtual void HideUnresponsiveNotification(int id) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationManagerInterface);
 };
 
 }  // namespace file_system_provider

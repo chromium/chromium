@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_icon_loader.h"
+#include "chrome/common/notifications/notification_operation.h"
 #include "ui/gfx/image/image.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -123,7 +124,7 @@ void NotificationPlatformBridgeChromeOs::HandleNotificationClosed(
   } else {
     NotificationDisplayServiceImpl::GetForProfile(notification->profile())
         ->ProcessNotificationOperation(
-            NotificationCommon::OPERATION_CLOSE, notification->type(),
+            NotificationOperation::kClose, notification->type(),
             notification->notification().origin_url(),
             notification->original_id(), absl::nullopt, absl::nullopt, by_user);
   }
@@ -142,7 +143,7 @@ void NotificationPlatformBridgeChromeOs::HandleNotificationClicked(
   } else {
     NotificationDisplayServiceImpl::GetForProfile(notification->profile())
         ->ProcessNotificationOperation(
-            NotificationCommon::OPERATION_CLICK, notification->type(),
+            NotificationOperation::kClick, notification->type(),
             notification->notification().origin_url(),
             notification->original_id(), absl::nullopt, absl::nullopt,
             absl::nullopt);
@@ -162,7 +163,7 @@ void NotificationPlatformBridgeChromeOs::HandleNotificationButtonClicked(
   } else {
     NotificationDisplayServiceImpl::GetForProfile(notification->profile())
         ->ProcessNotificationOperation(
-            NotificationCommon::OPERATION_CLICK, notification->type(),
+            NotificationOperation::kClick, notification->type(),
             notification->notification().origin_url(),
             notification->original_id(), button_index, reply, absl::nullopt);
   }
@@ -179,7 +180,7 @@ void NotificationPlatformBridgeChromeOs::
   } else {
     NotificationDisplayServiceImpl::GetForProfile(notification->profile())
         ->ProcessNotificationOperation(
-            NotificationCommon::OPERATION_SETTINGS, notification->type(),
+            NotificationOperation::kSettings, notification->type(),
             notification->notification().origin_url(),
             notification->original_id(), absl::nullopt, absl::nullopt,
             absl::nullopt);
@@ -194,11 +195,11 @@ void NotificationPlatformBridgeChromeOs::DisableNotification(
 
   DCHECK_NE(NotificationHandler::Type::TRANSIENT, notification->type());
   NotificationDisplayServiceImpl::GetForProfile(notification->profile())
-      ->ProcessNotificationOperation(
-          NotificationCommon::OPERATION_DISABLE_PERMISSION,
-          notification->type(), notification->notification().origin_url(),
-          notification->original_id(), absl::nullopt, absl::nullopt,
-          absl::nullopt);
+      ->ProcessNotificationOperation(NotificationOperation::kDisablePermission,
+                                     notification->type(),
+                                     notification->notification().origin_url(),
+                                     notification->original_id(), absl::nullopt,
+                                     absl::nullopt, absl::nullopt);
 }
 
 ProfileNotification* NotificationPlatformBridgeChromeOs::GetProfileNotification(

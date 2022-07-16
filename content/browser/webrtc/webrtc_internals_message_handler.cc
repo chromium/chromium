@@ -34,40 +34,40 @@ WebRTCInternalsMessageHandler::~WebRTCInternalsMessageHandler() {
 }
 
 void WebRTCInternalsMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getStandardStats",
       base::BindRepeating(&WebRTCInternalsMessageHandler::OnGetStandardStats,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getLegacyStats",
       base::BindRepeating(&WebRTCInternalsMessageHandler::OnGetLegacyStats,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "enableAudioDebugRecordings",
       base::BindRepeating(
           &WebRTCInternalsMessageHandler::OnSetAudioDebugRecordingsEnabled,
           base::Unretained(this), true));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "disableAudioDebugRecordings",
       base::BindRepeating(
           &WebRTCInternalsMessageHandler::OnSetAudioDebugRecordingsEnabled,
           base::Unretained(this), false));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "enableEventLogRecordings",
       base::BindRepeating(
           &WebRTCInternalsMessageHandler::OnSetEventLogRecordingsEnabled,
           base::Unretained(this), true));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "disableEventLogRecordings",
       base::BindRepeating(
           &WebRTCInternalsMessageHandler::OnSetEventLogRecordingsEnabled,
           base::Unretained(this), false));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "finishedDOMLoad",
       base::BindRepeating(&WebRTCInternalsMessageHandler::OnDOMLoadDone,
                           base::Unretained(this)));
@@ -150,6 +150,11 @@ void WebRTCInternalsMessageHandler::OnDOMLoadDone(const base::ListValue* args) {
 void WebRTCInternalsMessageHandler::OnUpdate(const std::string& event_name,
                                              const base::Value* event_data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!IsJavascriptAllowed()) {
+    // Javascript is disallowed, either due to the page still loading, or in the
+    // process of being unloaded. Skip this update.
+    return;
+  }
 
   RenderFrameHost* host = GetWebRTCInternalsHost();
   if (!host)

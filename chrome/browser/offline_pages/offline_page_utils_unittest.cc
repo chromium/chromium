@@ -100,7 +100,7 @@ class OfflinePageUtilsTest
       if (min_request_count <= GetRequestCount()) {
         break;
       }
-      RunTasksForDuration(base::TimeDelta::FromMilliseconds(100));
+      RunTasksForDuration(base::Milliseconds(100));
     }
   }
 
@@ -285,31 +285,31 @@ void OfflinePageUtilsTest::CreateCachedOfflinePages() {
 
   clock()->SetNow(base::Time::Now());
   // Time 01:00:00.
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   std::unique_ptr<OfflinePageTestArchiver> archiver(BuildArchiver(
       kTestPage1Url, base::FilePath(FILE_PATH_LITERAL("page1.mhtml"))));
   client_id.id = kTestPage1ClientId;
   SavePage(kTestPage1Url, client_id, std::move(archiver));
   // time 02:00:00.
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   archiver = BuildArchiver(kTestPage2Url,
                            base::FilePath(FILE_PATH_LITERAL("page2.mhtml")));
   client_id.id = kTestPage2ClientId;
   SavePage(kTestPage2Url, client_id, std::move(archiver));
   // time 03:00:00.
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   archiver = BuildArchiver(kTestPage3Url,
                            base::FilePath(FILE_PATH_LITERAL("page3.mhtml")));
   client_id.id = kTestPage3ClientId;
   SavePage(kTestPage3Url, client_id, std::move(archiver));
   // Add a temporary page to test boundary at 10:00:00.
-  clock()->Advance(base::TimeDelta::FromHours(7));
+  clock()->Advance(base::Hours(7));
   archiver = BuildArchiver(kTestPage4Url,
                            base::FilePath(FILE_PATH_LITERAL("page4.mhtml")));
   client_id.id = kTestPage4ClientId;
   SavePage(kTestPage4Url, client_id, std::move(archiver));
   // Reset clock->to 03:00:00.
-  clock()->Advance(base::TimeDelta::FromHours(-7));
+  clock()->Advance(base::Hours(-7));
 }
 
 std::unique_ptr<OfflinePageTestArchiver> OfflinePageUtilsTest::BuildArchiver(
@@ -392,7 +392,7 @@ TEST_F(OfflinePageUtilsTest, ScheduleDownloadWithFailedFileAcecssRequest) {
   // Here, we're waiting to make sure a request is not created. We can't use
   // QuitClosure, since there's no callback threaded through ScheduleDownload.
   // Instead, just wait a bit and assume ScheduleDownload is complete.
-  RunTasksForDuration(base::TimeDelta::FromSeconds(1));
+  RunTasksForDuration(base::Seconds(1));
 
   EXPECT_EQ(0, FindRequestByNamespaceAndURL(kDownloadNamespace, kTestPage4Url));
 }
@@ -403,13 +403,12 @@ TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeBetween) {
   CreateCachedOfflinePages();
 
   // Advance the clock so that we don't hit the time check boundary.
-  clock()->Advance(base::TimeDelta::FromMinutes(5));
+  clock()->Advance(base::Minutes(5));
 
   // Get the size of cached offline pages between 01:05:00 and 03:05:00.
-  EXPECT_EQ(
-      kTestFileSize * 2,
-      GetCachedOfflinePageSizeBetween(
-          clock()->Now() - base::TimeDelta::FromHours(2), clock()->Now()));
+  EXPECT_EQ(kTestFileSize * 2,
+            GetCachedOfflinePageSizeBetween(clock()->Now() - base::Hours(2),
+                                            clock()->Now()));
 }
 
 TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeNoPageInModel) {
@@ -420,14 +419,13 @@ TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeNoPageInModel) {
       FROM_HERE, TestTimeouts::action_max_timeout());
 #endif  // defined(OS_ANDROID)
 
-  clock()->Advance(base::TimeDelta::FromHours(3));
+  clock()->Advance(base::Hours(3));
 
   // Get the size of cached offline pages between 01:00:00 and 03:00:00.
   // Since no temporary pages were added to the model, the cache size should be
   // 0.
-  EXPECT_EQ(
-      0, GetCachedOfflinePageSizeBetween(
-             clock()->Now() - base::TimeDelta::FromHours(2), clock()->Now()));
+  EXPECT_EQ(0, GetCachedOfflinePageSizeBetween(clock()->Now() - base::Hours(2),
+                                               clock()->Now()));
 }
 
 TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeNoPageInRange) {
@@ -435,12 +433,11 @@ TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeNoPageInRange) {
   CreateCachedOfflinePages();
 
   // Advance the clock so that we don't hit the time check boundary.
-  clock()->Advance(base::TimeDelta::FromMinutes(5));
+  clock()->Advance(base::Minutes(5));
 
   // Get the size of cached offline pages between 03:04:00 and 03:05:00.
-  EXPECT_EQ(
-      0, GetCachedOfflinePageSizeBetween(
-             clock()->Now() - base::TimeDelta::FromMinutes(1), clock()->Now()));
+  EXPECT_EQ(0, GetCachedOfflinePageSizeBetween(
+                   clock()->Now() - base::Minutes(1), clock()->Now()));
 }
 
 TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeAllPagesInRange) {
@@ -448,13 +445,12 @@ TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeAllPagesInRange) {
   CreateCachedOfflinePages();
 
   // Advance the clock to 23:00:00.
-  clock()->Advance(base::TimeDelta::FromHours(20));
+  clock()->Advance(base::Hours(20));
 
   // Get the size of cached offline pages between -01:00:00 and 23:00:00.
-  EXPECT_EQ(
-      kTestFileSize * 4,
-      GetCachedOfflinePageSizeBetween(
-          clock()->Now() - base::TimeDelta::FromHours(24), clock()->Now()));
+  EXPECT_EQ(kTestFileSize * 4,
+            GetCachedOfflinePageSizeBetween(clock()->Now() - base::Hours(24),
+                                            clock()->Now()));
 }
 
 TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeAllPagesInvalidRange) {
@@ -462,13 +458,13 @@ TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeAllPagesInvalidRange) {
   CreateCachedOfflinePages();
 
   // Advance the clock to 23:00:00.
-  clock()->Advance(base::TimeDelta::FromHours(20));
+  clock()->Advance(base::Hours(20));
 
   // Get the size of cached offline pages between 23:00:00 and -01:00:00, which
   // is an invalid range, the return value will be false and there will be no
   // callback.
   EXPECT_FALSE(GetCachedOfflinePageSizeBetween(
-      clock()->Now(), clock()->Now() - base::TimeDelta::FromHours(24)));
+      clock()->Now(), clock()->Now() - base::Hours(24)));
 }
 
 TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeEdgeCase) {
@@ -478,10 +474,9 @@ TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeEdgeCase) {
   // Get the size of cached offline pages between 02:00:00 and 03:00:00, since
   // we are using a [begin_time, end_time) range so there will be only 1 page
   // when query for this time range.
-  EXPECT_EQ(
-      kTestFileSize * 1,
-      GetCachedOfflinePageSizeBetween(
-          clock()->Now() - base::TimeDelta::FromHours(1), clock()->Now()));
+  EXPECT_EQ(kTestFileSize * 1,
+            GetCachedOfflinePageSizeBetween(clock()->Now() - base::Hours(1),
+                                            clock()->Now()));
 }
 
 // Timeout on Android.  http://crbug.com/981972

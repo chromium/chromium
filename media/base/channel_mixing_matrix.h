@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "media/base/channel_layout.h"
 #include "media/base/media_export.h"
 
@@ -19,6 +18,9 @@ class MEDIA_EXPORT ChannelMixingMatrix {
                       int input_channels,
                       ChannelLayout output_layout,
                       int output_channels);
+
+  ChannelMixingMatrix(const ChannelMixingMatrix&) = delete;
+  ChannelMixingMatrix& operator=(const ChannelMixingMatrix&) = delete;
 
   ~ChannelMixingMatrix();
 
@@ -55,8 +57,6 @@ class MEDIA_EXPORT ChannelMixingMatrix {
   // remove the channel from |unaccounted_inputs_|.
   void Mix(Channels input_ch, Channels output_ch, float scale);
   void MixWithoutAccounting(Channels input_ch, Channels output_ch, float scale);
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelMixingMatrix);
 };
 
 }  // namespace media

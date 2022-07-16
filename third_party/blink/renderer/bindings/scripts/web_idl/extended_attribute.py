@@ -8,7 +8,7 @@ import itertools
 class ExtendedAttribute(object):
     """
     Represents a single extended attribute.
-    https://heycam.github.io/webidl/#dfn-extended-attribute
+    https://webidl.spec.whatwg.org/#dfn-extended-attribute
     """
 
     # [Key]
@@ -165,7 +165,7 @@ class ExtendedAttributes(object):
         'B': (ExtendedAttribute('B', value='baz')),
       }
 
-    https://heycam.github.io/webidl/#idl-extended-attributes
+    https://webidl.spec.whatwg.org/#idl-extended-attributes
     """
 
     def __init__(self, extended_attributes=None):

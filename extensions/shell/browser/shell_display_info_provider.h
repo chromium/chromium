@@ -14,8 +14,8 @@ class ShellDisplayInfoProvider : public DisplayInfoProvider {
  public:
   ShellDisplayInfoProvider();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellDisplayInfoProvider);
+  ShellDisplayInfoProvider(const ShellDisplayInfoProvider&) = delete;
+  ShellDisplayInfoProvider& operator=(const ShellDisplayInfoProvider&) = delete;
 };
 
 }  // namespace extensions

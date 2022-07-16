@@ -1,12 +1,13 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
-// Use of this sink code is governed by a BSD-style license that can be found
-// in the LICENSE file.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
 namespace blink {
@@ -86,6 +87,43 @@ TEST(ScriptResourceTest, RedirectDuringRevalidation) {
 
   auto* new_handler = resource->CacheHandler();
   EXPECT_FALSE(new_handler);
+}
+
+TEST(ScriptResourceTest, WebUICodeCacheEnabled) {
+  SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
+      "codecachewithhashing");
+
+  const KURL url("codecachewithhashing://www.example.com/script.js");
+  ScriptResource* resource = ScriptResource::CreateForTest(url, UTF8Encoding());
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+
+  resource->ResponseReceived(response);
+  constexpr char kData[5] = "abcd";
+  resource->AppendData(kData, strlen(kData));
+  resource->FinishForTest();
+
+  auto* handler = resource->CacheHandler();
+  EXPECT_TRUE(handler);
+  EXPECT_TRUE(handler->HashRequired());
+  EXPECT_EQ(UTF8Encoding().GetName(), handler->Encoding());
+
+  SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashing("codecachewithhashing");
+}
+
+TEST(ScriptResourceTest, WebUICodeCacheDisabled) {
+  const KURL url("nocodecachewithhashing://www.example.com/script.js");
+  ScriptResource* resource = ScriptResource::CreateForTest(url, UTF8Encoding());
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+
+  resource->ResponseReceived(response);
+  constexpr char kData[5] = "abcd";
+  resource->AppendData(kData, strlen(kData));
+  resource->FinishForTest();
+
+  auto* handler = resource->CacheHandler();
+  EXPECT_FALSE(handler);
 }
 
 }  // namespace

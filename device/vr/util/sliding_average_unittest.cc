@@ -44,17 +44,15 @@ TEST(SlidingAverage, Basics) {
 TEST(SlidingTimeDeltaAverage, Basics) {
   SlidingTimeDeltaAverage meter(5);
 
-  EXPECT_EQ(base::TimeDelta::FromSeconds(42),
-            meter.GetAverageOrDefault(base::TimeDelta::FromSeconds(42)));
+  EXPECT_EQ(base::Seconds(42), meter.GetAverageOrDefault(base::Seconds(42)));
   EXPECT_EQ(base::TimeDelta(), meter.GetAverage());
 
-  meter.AddSample(base::TimeDelta::FromSeconds(100));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(100),
-            meter.GetAverageOrDefault(base::TimeDelta::FromSeconds(42)));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(100), meter.GetAverage());
+  meter.AddSample(base::Seconds(100));
+  EXPECT_EQ(base::Seconds(100), meter.GetAverageOrDefault(base::Seconds(42)));
+  EXPECT_EQ(base::Seconds(100), meter.GetAverage());
 
-  meter.AddSample(base::TimeDelta::FromMilliseconds(200000));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(150), meter.GetAverage());
+  meter.AddSample(base::Milliseconds(200000));
+  EXPECT_EQ(base::Seconds(150), meter.GetAverage());
 }
 
 }  // namespace device

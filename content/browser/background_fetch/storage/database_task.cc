@@ -52,7 +52,7 @@ base::WeakPtr<DatabaseTaskHost> DatabaseTask::GetWeakPtr() {
 }
 
 void DatabaseTask::Finished() {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Post the OnTaskFinished callback to the same thread, to allow the the
   // DatabaseTask to finish execution before deallocating it.
   base::ThreadTaskRunnerHandle::Get()->PostTask(

@@ -14,8 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/host_port_pair.h"
@@ -35,6 +35,9 @@ class ResolverThread : public base::SimpleThread {
  public:
   ResolverThread();
 
+  ResolverThread(const ResolverThread&) = delete;
+  ResolverThread& operator=(const ResolverThread&) = delete;
+
   ~ResolverThread() override;
 
   // Called on the main thread.
@@ -49,8 +52,6 @@ class ResolverThread : public base::SimpleThread {
   AddressList* addresses_;
   std::string host_;
   int rv_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResolverThread);
 };
 
 ResolverThread::ResolverThread()

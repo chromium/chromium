@@ -34,6 +34,8 @@
 #include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_draggable_region.h"
@@ -46,6 +48,7 @@ namespace blink {
 class Document;
 class WebElement;
 class WebFormElement;
+class WebFormControlElement;
 class WebElementCollection;
 class WebString;
 class WebURL;
@@ -106,11 +109,16 @@ class WebDocument : public WebNode {
   BLINK_EXPORT WebElement Head();
   BLINK_EXPORT WebString Title() const;
   BLINK_EXPORT WebString ContentAsTextForTesting() const;
-  BLINK_EXPORT WebElementCollection All();
+  BLINK_EXPORT WebElementCollection All() const;
   BLINK_EXPORT WebVector<WebFormElement> Forms() const;
   BLINK_EXPORT WebURL CompleteURL(const WebString&) const;
   BLINK_EXPORT WebElement GetElementById(const WebString&) const;
   BLINK_EXPORT WebElement FocusedElement() const;
+
+  // The unassociated form controls are form control elements that are not
+  // associated to a <form> element.
+  BLINK_EXPORT WebVector<WebFormControlElement> UnassociatedFormControls()
+      const;
 
   // Inserts the given CSS source code as a style sheet in the document.
   BLINK_EXPORT WebStyleSheetKey
@@ -131,8 +139,6 @@ class WebDocument : public WebNode {
 
   BLINK_EXPORT WebVector<WebDraggableRegion> DraggableRegions() const;
 
-  BLINK_EXPORT WebURL CanonicalUrlForSharing() const;
-
   BLINK_EXPORT WebDistillabilityFeatures DistillabilityFeatures();
 
   BLINK_EXPORT void SetShowBeforeUnloadDialog(bool show_dialog);
@@ -149,9 +155,14 @@ class WebDocument : public WebNode {
   BLINK_EXPORT bool IsAccessibilityEnabled();
 
   // Adds `callback` to the post-prerendering activation steps.
-  // https://jeremyroman.github.io/alternate-loading-modes/#document-post-prerendering-activation-steps-list
+  // https://wicg.github.io/nav-speculation/prerendering.html#document-post-prerendering-activation-steps-list
   BLINK_EXPORT void AddPostPrerenderingActivationStep(
       base::OnceClosure callback);
+
+  // Sets a cookie manager which can be used for this document.
+  BLINK_EXPORT void SetCookieManager(
+      CrossVariantMojoRemote<
+          network::mojom::RestrictedCookieManagerInterfaceBase> cookie_manager);
 
 #if INSIDE_BLINK
   BLINK_EXPORT WebDocument(Document*);

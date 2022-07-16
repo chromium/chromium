@@ -5,7 +5,6 @@
 #include <map>
 
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
@@ -20,6 +19,8 @@
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/preference_specifics.pb.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -37,6 +38,12 @@ using user_prefs::PrefRegistrySyncable;
 class SingleClientPreferencesSyncTest : public SyncTest {
  public:
   SingleClientPreferencesSyncTest() : SyncTest(SINGLE_CLIENT) {}
+
+  SingleClientPreferencesSyncTest(const SingleClientPreferencesSyncTest&) =
+      delete;
+  SingleClientPreferencesSyncTest& operator=(
+      const SingleClientPreferencesSyncTest&) = delete;
+
   ~SingleClientPreferencesSyncTest() override = default;
 
   // If non-empty, |contents| will be written to the Preferences file of the
@@ -65,8 +72,6 @@ class SingleClientPreferencesSyncTest : public SyncTest {
   // Profile object is created. If empty, no preexisting file will be written.
   // The map key corresponds to the profile's index.
   std::map<int, std::string> preexisting_preferences_file_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleClientPreferencesSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest, Sanity) {

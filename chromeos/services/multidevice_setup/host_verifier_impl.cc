@@ -48,12 +48,11 @@ const char kLastUsedTimeDeltaMsPrefName[] =
     "multidevice_setup.last_used_time_delta_ms";
 
 // Delta to set for the first retry.
-constexpr const base::TimeDelta kFirstRetryDelta =
-    base::TimeDelta::FromMinutes(10);
+constexpr const base::TimeDelta kFirstRetryDelta = base::Minutes(10);
 
 // Delta for the time between a successful FindEligibleDevices call and a
 // request to sync devices.
-constexpr const base::TimeDelta kSyncDelay = base::TimeDelta::FromSeconds(5);
+constexpr const base::TimeDelta kSyncDelay = base::Seconds(5);
 
 // The multiplier for increasing the backoff timer between retries.
 const double kExponentialBackoffMultiplier = 1.5;
@@ -236,7 +235,7 @@ void HostVerifierImpl::AttemptVerificationAfterInitialTimeout(
   base::Time retry_time = retry_time_from_prefs;
   while (clock_->Now() >= retry_time) {
     time_delta_ms *= kExponentialBackoffMultiplier;
-    retry_time += base::TimeDelta::FromMilliseconds(time_delta_ms);
+    retry_time += base::Milliseconds(time_delta_ms);
   }
 
   pref_service_->SetInt64(kRetryTimestampPrefName, retry_time.ToJavaTime());

@@ -6,7 +6,6 @@
 #define ASH_WM_DESKS_DESKS_TEST_UTIL_H_
 
 #include "ash/wm/desks/desks_controller.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 
 namespace ash {
@@ -16,6 +15,11 @@ namespace ash {
 class DeskSwitchAnimationWaiter : public DesksController::Observer {
  public:
   DeskSwitchAnimationWaiter();
+
+  DeskSwitchAnimationWaiter(const DeskSwitchAnimationWaiter&) = delete;
+  DeskSwitchAnimationWaiter& operator=(const DeskSwitchAnimationWaiter&) =
+      delete;
+
   ~DeskSwitchAnimationWaiter() override;
 
   void Wait();
@@ -28,11 +32,11 @@ class DeskSwitchAnimationWaiter : public DesksController::Observer {
                                const Desk* deactivated) override;
   void OnDeskSwitchAnimationLaunching() override;
   void OnDeskSwitchAnimationFinished() override;
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override;
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeskSwitchAnimationWaiter);
 };
 
 // Activates the given |desk| and waits for the desk switch animation to

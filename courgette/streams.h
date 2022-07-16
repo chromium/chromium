@@ -48,6 +48,9 @@ class SourceStream {
  public:
   SourceStream() : start_(nullptr), end_(nullptr), current_(nullptr) {}
 
+  SourceStream(const SourceStream&) = delete;
+  SourceStream& operator=(const SourceStream&) = delete;
+
   // Initializes the SourceStream to yield the bytes at |pointer|.  The caller
   // still owns the memory at |pointer| and should free the memory only after
   // the last use of the stream.
@@ -117,8 +120,6 @@ class SourceStream {
   const uint8_t* start_;    // Points to start of buffer.
   const uint8_t* end_;      // Points to first location after buffer.
   const uint8_t* current_;  // Points into buffer at current read location.
-
-  DISALLOW_COPY_AND_ASSIGN(SourceStream);
 };
 
 // A SinkStream accumulates writes into a buffer that it owns.  The stream is
@@ -129,6 +130,10 @@ class SourceStream {
 class SinkStream {
  public:
   SinkStream() {}
+
+  SinkStream(const SinkStream&) = delete;
+  SinkStream& operator=(const SinkStream&) = delete;
+
   ~SinkStream() {}
 
   // Appends |byte_count| bytes from |data| to the stream.
@@ -169,14 +174,16 @@ class SinkStream {
 
  private:
   NoThrowBuffer<char> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SinkStream);
 };
 
 // A SourceStreamSet is a set of SourceStreams.
 class SourceStreamSet {
  public:
   SourceStreamSet();
+
+  SourceStreamSet(const SourceStreamSet&) = delete;
+  SourceStreamSet& operator=(const SourceStreamSet&) = delete;
+
   ~SourceStreamSet();
 
   // Initializes the SourceStreamSet with the stream data in memory at |source|.
@@ -205,8 +212,6 @@ class SourceStreamSet {
  private:
   size_t count_;
   SourceStream streams_[kMaxStreams];
-
-  DISALLOW_COPY_AND_ASSIGN(SourceStreamSet);
 };
 
 // A SinkStreamSet is a set of SinkStreams.  Data is collected by writing to the
@@ -217,6 +222,10 @@ class SourceStreamSet {
 class SinkStreamSet {
  public:
   SinkStreamSet();
+
+  SinkStreamSet(const SinkStreamSet&) = delete;
+  SinkStreamSet& operator=(const SinkStreamSet&) = delete;
+
   ~SinkStreamSet();
 
   // Initializes the SinkStreamSet to have |stream_index_limit| streams.  Must
@@ -243,8 +252,6 @@ class SinkStreamSet {
 
   size_t count_;
   SinkStream streams_[kMaxStreams];
-
-  DISALLOW_COPY_AND_ASSIGN(SinkStreamSet);
 };
 
 }  // namespace courgette

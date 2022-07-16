@@ -40,10 +40,9 @@ NetworkTestHelper::NetworkTestHelper()
 
   network_profile_handler_ = NetworkProfileHandler::InitializeForTesting();
   network_configuration_handler_ =
-      base::WrapUnique<NetworkConfigurationHandler>(
-          NetworkConfigurationHandler::InitializeForTest(
-              network_state_helper_.network_state_handler(),
-              network_device_handler()));
+      NetworkConfigurationHandler::InitializeForTest(
+          network_state_helper_.network_state_handler(),
+          network_device_handler());
   ui_proxy_config_service_ = std::make_unique<chromeos::UIProxyConfigService>(
       &user_prefs_, &local_state_,
       network_state_helper_.network_state_handler(),

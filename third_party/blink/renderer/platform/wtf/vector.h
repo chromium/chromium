@@ -88,10 +88,18 @@ class Deque;
   } else {                                                                   \
     ANNOTATE_CHANGE_SIZE(buffer, capacity, old_size, new_size)               \
   }
+#define MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, buffer, capacity, size) \
+  if (Allocator::kIsGarbageCollected && Allocator::IsIncrementalMarking()) { \
+    ANNOTATE_NEW_BUFFER(buffer, capacity, capacity);                         \
+  } else {                                                                   \
+    ANNOTATE_NEW_BUFFER(buffer, capacity, size)                              \
+  }
 #else
 #define MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, buffer, capacity, \
                                            old_size, new_size)          \
   ANNOTATE_CHANGE_SIZE(buffer, capacity, old_size, new_size)
+#define MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, buffer, capacity, size) \
+  ANNOTATE_NEW_BUFFER(buffer, capacity, size)
 #endif  // defined(ADDRESS_SANITIZER)
 
 template <bool needsDestruction, typename T>
@@ -628,7 +636,7 @@ class VectorBuffer<T, 0, Allocator> : protected VectorBufferBase<T, Allocator> {
       succeeded = true;
     }
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
-    ANNOTATE_NEW_BUFFER(buffer_, capacity_, size_);
+    MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, buffer_, capacity_, size_);
 #endif
     return succeeded;
   }
@@ -756,7 +764,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
       succeeded = true;
     }
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
-    ANNOTATE_NEW_BUFFER(buffer_, capacity_, size_);
+    MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, buffer_, capacity_, size_);
 #endif
     return succeeded;
   }
@@ -870,7 +878,8 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
       AsAtomicPtr(&other.buffer_)
           ->store(other.InlineBuffer(), std::memory_order_relaxed);
       std::swap(size_, other.size_);
-      ANNOTATE_NEW_BUFFER(other.buffer_, inlineCapacity, other.size_);
+      MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, other.buffer_,
+                                        inlineCapacity, other.size_);
       Allocator::BackingWriteBarrier(&buffer_);
     } else if (!this_source_begin &&
                other_source_begin) {  // Their buffer is inline, ours is not.
@@ -880,7 +889,8 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
       AsAtomicPtr(&other.buffer_)->store(Buffer(), std::memory_order_relaxed);
       AsAtomicPtr(&buffer_)->store(InlineBuffer(), std::memory_order_relaxed);
       std::swap(size_, other.size_);
-      ANNOTATE_NEW_BUFFER(buffer_, inlineCapacity, size_);
+      MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, buffer_, inlineCapacity,
+                                        size_);
       Allocator::BackingWriteBarrier(&other.buffer_);
     } else {  // Both buffers are inline.
       DCHECK(this_source_begin);
@@ -1492,6 +1502,11 @@ inline Vector<T, inlineCapacity, Allocator>::Vector() {
                     !IsTraceable<T>::value,
                 "Cannot put DISALLOW_NEW objects that "
                 "have trace methods into an off-heap Vector");
+  static_assert(
+      Allocator::kIsGarbageCollected || !IsMemberType<T>::value,
+      "Cannot put Member into an off-heap Vector. Use HeapVector instead.");
+  static_assert(Allocator::kIsGarbageCollected || !IsWeakMemberType<T>::value,
+                "WeakMember is not allowed in Vector nor HeapVector.");
   static_assert(Allocator::kIsGarbageCollected ||
                     !IsPointerToGarbageCollectedType<T>::value,
                 "Cannot put raw pointers to garbage-collected classes into "
@@ -1511,6 +1526,11 @@ inline Vector<T, inlineCapacity, Allocator>::Vector(wtf_size_t size)
                     !IsTraceable<T>::value,
                 "Cannot put DISALLOW_NEW objects that "
                 "have trace methods into an off-heap Vector");
+  static_assert(
+      Allocator::kIsGarbageCollected || !IsMemberType<T>::value,
+      "Cannot put Member into an off-heap Vector. Use HeapVector instead.");
+  static_assert(Allocator::kIsGarbageCollected || !IsWeakMemberType<T>::value,
+                "WeakMember is not allowed in Vector nor HeapVector.");
   static_assert(Allocator::kIsGarbageCollected ||
                     !IsPointerToGarbageCollectedType<T>::value,
                 "Cannot put raw pointers to garbage-collected classes into "
@@ -1525,22 +1545,22 @@ template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 inline Vector<T, inlineCapacity, Allocator>::Vector(wtf_size_t size,
                                                     const T& val)
     : Base(size) {
-  // TODO(yutak): Introduce these assertions. Some use sites call this function
-  // in the context where T is an incomplete type.
-  //
-  // static_assert(!std::is_polymorphic<T>::value ||
-  //               !VectorTraits<T>::canInitializeWithMemset,
-  //               "Cannot initialize with memset if there is a vtable");
-  // static_assert(Allocator::isGarbageCollected ||
-  //               !IsDisallowNew<T>::value ||
-  //               !IsTraceable<T>::value,
-  //               "Cannot put DISALLOW_NEW objects that "
-  //               "have trace methods into an off-heap Vector");
-  // static_assert(Allocator::isGarbageCollected ||
-  //               !IsPointerToGarbageCollectedType<T>::value,
-  //               "Cannot put raw pointers to garbage-collected classes into "
-  //               "an off-heap Vector.  Use HeapVector<Member<T>> instead.");
-
+  static_assert(!std::is_polymorphic<T>::value ||
+                    !VectorTraits<T>::kCanInitializeWithMemset,
+                "Cannot initialize with memset if there is a vtable");
+  static_assert(Allocator::kIsGarbageCollected || !IsDisallowNew<T>::value ||
+                    !IsTraceable<T>::value,
+                "Cannot put DISALLOW_NEW objects that "
+                "have trace methods into an off-heap Vector");
+  static_assert(
+      Allocator::kIsGarbageCollected || !IsMemberType<T>::value,
+      "Cannot put Member into an off-heap Vector. Use HeapVector instead.");
+  static_assert(Allocator::kIsGarbageCollected || !IsWeakMemberType<T>::value,
+                "WeakMember is not allowed in Vector nor HeapVector.");
+  static_assert(Allocator::kIsGarbageCollected ||
+                    !IsPointerToGarbageCollectedType<T>::value,
+                "Cannot put raw pointers to garbage-collected classes into "
+                "an off-heap Vector.  Use HeapVector<Member<T>> instead.");
   ANNOTATE_NEW_BUFFER(begin(), capacity(), size);
   size_ = size;
   TypeOperations::UninitializedFill(begin(), end(), val);
@@ -1627,8 +1647,16 @@ Vector<T, inlineCapacity, Allocator>::Vector(
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-Vector<T, inlineCapacity, Allocator>& Vector<T, inlineCapacity, Allocator>::
-operator=(Vector<T, inlineCapacity, Allocator>&& other) {
+Vector<T, inlineCapacity, Allocator>&
+Vector<T, inlineCapacity, Allocator>::operator=(
+    Vector<T, inlineCapacity, Allocator>&& other) {
+  // Explicitly clearing allows the backing to be freed
+  // immediately. In the non-garbage-collected case this is
+  // often just slightly moving it earlier as the old backing
+  // would otherwise be freed in the destructor. For the
+  // garbage-collected case this allows for freeing the backing
+  // right away without introducing GC pressure.
+  clear();
   swap(other);
   return *this;
 }
@@ -1834,7 +1862,7 @@ inline void Vector<T, inlineCapacity, Allocator>::ReserveInitialCapacity(
   if (initial_capacity > INLINE_CAPACITY) {
     ANNOTATE_DELETE_BUFFER(begin(), capacity(), size_);
     Base::AllocateBuffer(initial_capacity);
-    ANNOTATE_NEW_BUFFER(begin(), capacity(), size_);
+    MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, begin(), capacity(), size_);
   }
 }
 
@@ -1865,7 +1893,7 @@ void Vector<T, inlineCapacity, Allocator>::ShrinkCapacity(
   Base::ResetBufferPointer();
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
   if (old_buffer != begin()) {
-    ANNOTATE_NEW_BUFFER(begin(), capacity(), size_);
+    MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, begin(), capacity(), size_);
     ANNOTATE_DELETE_BUFFER(old_buffer, old_capacity, size_);
   }
 #endif
@@ -2084,7 +2112,7 @@ inline auto Vector<T, inlineCapacity, Allocator>::erase(iterator first,
     -> iterator {
   DCHECK_LE(first, last);
   const wtf_size_t index = static_cast<wtf_size_t>(first - begin());
-  const wtf_size_t diff = std::distance(first, last);
+  const wtf_size_t diff = static_cast<wtf_size_t>(std::distance(first, last));
   EraseAt(index, diff);
   return begin() + index;
 }
@@ -2147,6 +2175,10 @@ void TraceInlinedBuffer(VisitorDispatcher visitor,
                         const T* buffer_begin,
                         size_t capacity) {
   const T* buffer_end = buffer_begin + capacity;
+#ifdef ANNOTATE_CONTIGUOUS_CONTAINER
+  // Vector can trace unused slots (which are already zeroed out).
+  ANNOTATE_CHANGE_SIZE(buffer_begin, capacity, 0, capacity);
+#endif  // ANNOTATE_CONTIGUOUS_CONTAINER
   for (const T* buffer_entry = buffer_begin; buffer_entry != buffer_end;
        buffer_entry++) {
     Allocator::template Trace<T, VectorTraits<T>>(visitor, *buffer_entry);

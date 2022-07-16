@@ -8,6 +8,9 @@
 
 namespace blink {
 
+LaunchParams::LaunchParams(KURL target_url)
+    : target_url_(std::move(target_url)) {}
+
 LaunchParams::LaunchParams(HeapVector<Member<FileSystemHandle>> files)
     : files_(std::move(files)) {}
 

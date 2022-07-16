@@ -5,18 +5,50 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_MEMBER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_MEMBER_H_
 
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/write_barrier.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/construct_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
-
-#if BUILDFLAG(USE_V8_OILPAN)
-#include "third_party/blink/renderer/platform/heap/v8_wrapper/member.h"
-#else  // !USE_V8_OILPAN
-#include "third_party/blink/renderer/platform/heap/impl/member.h"
-#endif  // !USE_V8_OILPAN
+#include "v8/include/cppgc/member.h"
 
 namespace blink {
+
+template <typename T>
+using Member = cppgc::Member<T>;
+
+template <typename T>
+using WeakMember = cppgc::WeakMember<T>;
+
+template <typename T>
+using UntracedMember = cppgc::UntracedMember<T>;
+
+template <typename T>
+inline bool IsHashTableDeletedValue(const Member<T>& m) {
+  return m == cppgc::kSentinelPointer;
+}
+
+constexpr auto kMemberDeletedValue = cppgc::kSentinelPointer;
+
+template <typename T>
+struct ThreadingTrait<blink::Member<T>> {
+  STATIC_ONLY(ThreadingTrait);
+  static constexpr ThreadAffinity kAffinity = ThreadingTrait<T>::kAffinity;
+};
+
+template <typename T>
+struct ThreadingTrait<blink::WeakMember<T>> {
+  STATIC_ONLY(ThreadingTrait);
+  static constexpr ThreadAffinity kAffinity = ThreadingTrait<T>::kAffinity;
+};
+
+template <typename T>
+struct ThreadingTrait<blink::UntracedMember<T>> {
+  STATIC_ONLY(ThreadingTrait);
+  static constexpr ThreadAffinity kAffinity = ThreadingTrait<T>::kAffinity;
+};
 
 template <typename T>
 inline void swap(Member<T>& a, Member<T>& b) {
@@ -102,19 +134,11 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
   }
 
   static void ConstructDeletedValue(MemberType& slot, bool) {
-#if BUILDFLAG(USE_V8_OILPAN)
     slot = cppgc::kSentinelPointer;
-#else   // !USE_V8_OILPAN
-    slot = WTF::kHashTableDeletedValue;
-#endif  // !USE_V8_OILPAN
   }
 
   static bool IsDeletedValue(const MemberType& value) {
-#if BUILDFLAG(USE_V8_OILPAN)
     return value.Get() == cppgc::kSentinelPointer;
-#else   // !USE_V8_OILPAN
-    return value.IsHashTableDeletedValue();
-#endif  // !USE_V8_OILPAN
   }
 };
 
@@ -133,6 +157,47 @@ struct HashTraits<blink::WeakMember<T>>
 template <typename T>
 struct HashTraits<blink::UntracedMember<T>>
     : BaseMemberHashTraits<T, blink::UntracedMember<T>> {};
+
+template <typename T, typename Traits, typename Allocator>
+class MemberConstructTraits {
+  STATIC_ONLY(MemberConstructTraits);
+
+ public:
+  template <typename... Args>
+  static T* Construct(void* location, Args&&... args) {
+    return new (NotNullTag::kNotNull, location) T(std::forward<Args>(args)...);
+  }
+
+  static void NotifyNewElement(T* element) {
+    blink::WriteBarrier::DispatchForObject(element);
+  }
+
+  template <typename... Args>
+  static T* ConstructAndNotifyElement(void* location, Args&&... args) {
+    // ConstructAndNotifyElement updates an existing Member which might
+    // also be comncurrently traced while we update it. The regular ctors
+    // for Member don't use an atomic write which can lead to data races.
+    T* object = Construct(location, std::forward<Args>(args)...,
+                          typename T::AtomicInitializerTag());
+    NotifyNewElement(object);
+    return object;
+  }
+
+  static void NotifyNewElements(T* array, size_t len) {
+    while (len-- > 0) {
+      blink::WriteBarrier::DispatchForObject(array);
+      array++;
+    }
+  }
+};
+
+template <typename T, typename Traits, typename Allocator>
+class ConstructTraits<blink::Member<T>, Traits, Allocator>
+    : public MemberConstructTraits<blink::Member<T>, Traits, Allocator> {};
+
+template <typename T, typename Traits, typename Allocator>
+class ConstructTraits<blink::WeakMember<T>, Traits, Allocator>
+    : public MemberConstructTraits<blink::WeakMember<T>, Traits, Allocator> {};
 
 }  // namespace WTF
 

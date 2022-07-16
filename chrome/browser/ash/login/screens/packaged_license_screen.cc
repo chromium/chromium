@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
@@ -50,7 +50,7 @@ PackagedLicenseScreen::~PackagedLicenseScreen() {
 
 bool PackagedLicenseScreen::MaybeSkip(WizardContext* context) {
   policy::EnrollmentConfig config = g_browser_process->platform_part()
-                                        ->browser_policy_connector_chromeos()
+                                        ->browser_policy_connector_ash()
                                         ->GetPrescribedEnrollmentConfig();
   // License screen should be shown when device packed with license and other
   // enrollment flows are not triggered by the device state.

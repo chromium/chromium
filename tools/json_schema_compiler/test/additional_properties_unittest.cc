@@ -40,10 +40,10 @@ TEST(JsonSchemaCompilerAdditionalPropertiesTest,
   auto param_object_value = std::make_unique<base::DictionaryValue>();
   param_object_value->SetString("str", "a");
   param_object_value->SetInteger("num", 1);
-  auto params_value = std::make_unique<base::ListValue>();
-  params_value->Append(param_object_value->CreateDeepCopy());
+  std::vector<base::Value> params_value;
+  params_value.push_back(param_object_value->Clone());
   std::unique_ptr<ap::AdditionalProperties::Params> params(
-      ap::AdditionalProperties::Params::Create(*params_value));
+      ap::AdditionalProperties::Params::Create(params_value));
   EXPECT_TRUE(params.get());
   EXPECT_TRUE(params->param_object.additional_properties.Equals(
       param_object_value.get()));

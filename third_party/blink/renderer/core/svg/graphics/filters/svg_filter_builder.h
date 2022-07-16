@@ -55,7 +55,8 @@ class SVGFilterGraphNodeMap final
   // SvgAttributeChanged.
   FilterEffect* EffectForElement(
       SVGFilterPrimitiveStandardAttributes& primitive) {
-    return effect_element_.at(&primitive);
+    auto it = effect_element_.find(&primitive);
+    return it != effect_element_.end() ? it->value : nullptr;
   }
 
   void InvalidateDependentEffects(FilterEffect*);

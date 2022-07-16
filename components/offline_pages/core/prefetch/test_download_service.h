@@ -20,6 +20,10 @@ namespace offline_pages {
 class TestDownloadService : public download::BackgroundDownloadService {
  public:
   TestDownloadService();
+
+  TestDownloadService(const TestDownloadService&) = delete;
+  TestDownloadService& operator=(const TestDownloadService&) = delete;
+
   ~TestDownloadService() override;
 
   // BackgroundDownloadService implementation.
@@ -48,7 +52,6 @@ class TestDownloadService : public download::BackgroundDownloadService {
   TestDownloadClient* client_ = nullptr;
   int next_file_id_ = 0;
   std::string test_file_data_;
-  DISALLOW_COPY_AND_ASSIGN(TestDownloadService);
 };
 
 }  // namespace offline_pages

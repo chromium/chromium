@@ -11,6 +11,7 @@
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer.h"
 #include "media/base/renderer_client.h"
+#include "media/mojo/mojom/dcomp_surface_registry.mojom.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "media/renderers/win/media_foundation_renderer.h"
@@ -22,7 +23,7 @@ namespace media {
 
 // Wrap media::MediaFoundationRenderer to remove its dependence on
 // media::mojom::MediaFoundationRendererExtension interface.
-class MediaFoundationRendererWrapper
+class MediaFoundationRendererWrapper final
     : public Renderer,
       public mojom::MediaFoundationRendererExtension,
       public mojom::MuteStateObserver {
@@ -32,12 +33,13 @@ class MediaFoundationRendererWrapper
   MediaFoundationRendererWrapper(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       mojom::FrameInterfaceFactory* frame_interfaces,
+      mojo::PendingRemote<mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<RendererExtension> renderer_extension_receiver);
   MediaFoundationRendererWrapper(const MediaFoundationRendererWrapper&) =
       delete;
   MediaFoundationRendererWrapper operator=(
       const MediaFoundationRendererWrapper&) = delete;
-  ~MediaFoundationRendererWrapper() final;
+  ~MediaFoundationRendererWrapper() override;
 
   // Renderer implementation.
   void Initialize(MediaResource* media_resource,
@@ -52,25 +54,32 @@ class MediaFoundationRendererWrapper
   base::TimeDelta GetMediaTime() override;
 
   // mojom::MediaFoundationRendererExtension implementation.
-  void SetDCOMPMode(bool enabled, SetDCOMPModeCallback callback) final;
-  void GetDCOMPSurface(GetDCOMPSurfaceCallback callback) final;
-  void SetVideoStreamEnabled(bool enabled) final;
-  void SetOutputParams(const gfx::Rect& output_rect) final;
+  void GetDCOMPSurface(GetDCOMPSurfaceCallback callback) override;
+  void SetVideoStreamEnabled(bool enabled) override;
+  void SetOutputRect(const gfx::Rect& output_rect,
+                     SetOutputRectCallback callback) override;
 
   // mojom::MuteStateObserver implementation.
-  void OnMuteStateChange(bool muted) final;
+  void OnMuteStateChange(bool muted) override;
 
  private:
-  void OnReceiveDCOMPSurface(HANDLE handle);
+  void OnReceiveDCOMPSurface(GetDCOMPSurfaceCallback callback,
+                             base::win::ScopedHandle handle);
+  void OnDCOMPSurfaceHandleRegistered(
+      GetDCOMPSurfaceCallback callback,
+      const absl::optional<base::UnguessableToken>& token);
 
   mojom::FrameInterfaceFactory* frame_interfaces_;
   std::unique_ptr<MediaFoundationRenderer> renderer_;
   mojo::Receiver<MediaFoundationRendererExtension> renderer_extension_receiver_;
-  GetDCOMPSurfaceCallback get_decomp_surface_cb_;
-
   mojo::Receiver<mojom::MuteStateObserver> site_mute_observer_;
+
   float volume_ = 1.0;
   bool muted_ = false;  // Whether the site (WebContents) is muted.
+
+  bool has_get_dcomp_surface_called_ = false;
+  mojo::Remote<mojom::DCOMPSurfaceRegistry> dcomp_surface_registry_;
+  base::UnguessableToken dcomp_surface_token_;
 
   base::WeakPtrFactory<MediaFoundationRendererWrapper> weak_factory_{this};
 };

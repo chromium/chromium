@@ -40,9 +40,9 @@ class MediaPipelineImpl;
 class VideoGeometrySetterService;
 class VideoModeSwitcher;
 
-class CastRenderer : public ::media::Renderer,
-                     public VideoResolutionPolicy::Observer,
-                     public mojom::VideoGeometryChangeClient {
+class CastRenderer final : public ::media::Renderer,
+                           public VideoResolutionPolicy::Observer,
+                           public mojom::VideoGeometryChangeClient {
  public:
   // |frame_interfaces| provides interfaces tied to RenderFrameHost.
   CastRenderer(CmaBackendFactory* backend_factory,
@@ -52,7 +52,11 @@ class CastRenderer : public ::media::Renderer,
                const base::UnguessableToken& overlay_plane_id,
                ::media::mojom::FrameInterfaceFactory* frame_interfaces,
                external_service_support::ExternalConnector* connector);
-  ~CastRenderer() final;
+
+  CastRenderer(const CastRenderer&) = delete;
+  CastRenderer& operator=(const CastRenderer&) = delete;
+
+  ~CastRenderer() override;
   // For CmaBackend implementation, CastRenderer must be connected to
   // VideoGeometrySetterService.
   void SetVideoGeometrySetterService(
@@ -61,22 +65,22 @@ class CastRenderer : public ::media::Renderer,
   // ::media::Renderer implementation.
   void Initialize(::media::MediaResource* media_resource,
                   ::media::RendererClient* client,
-                  ::media::PipelineStatusCallback init_cb) final;
+                  ::media::PipelineStatusCallback init_cb) override;
   void SetCdm(::media::CdmContext* cdm_context,
-              CdmAttachedCB cdm_attached_cb) final;
-  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) final;
-  void Flush(base::OnceClosure flush_cb) final;
-  void StartPlayingFrom(base::TimeDelta time) final;
-  void SetPlaybackRate(double playback_rate) final;
-  void SetVolume(float volume) final;
-  base::TimeDelta GetMediaTime() final;
+              CdmAttachedCB cdm_attached_cb) override;
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
+  void Flush(base::OnceClosure flush_cb) override;
+  void StartPlayingFrom(base::TimeDelta time) override;
+  void SetPlaybackRate(double playback_rate) override;
+  void SetVolume(float volume) override;
+  base::TimeDelta GetMediaTime() override;
 
   // VideoResolutionPolicy::Observer implementation.
   void OnVideoResolutionPolicyChanged() override;
 
   // mojom::VideoGeometryChangeClient implementation.
   void OnVideoGeometryChange(const gfx::RectF& rect_f,
-                             gfx::OverlayTransform transform) final;
+                             gfx::OverlayTransform transform) override;
 
   // TODO(guohuideng): For now we use a global callback to gain access to
   // VideoPlaneController so CastRenderer can set the video geometry. We
@@ -147,7 +151,6 @@ class CastRenderer : public ::media::Renderer,
   absl::optional<float> pending_volume_;
 
   base::WeakPtrFactory<CastRenderer> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(CastRenderer);
 };
 
 }  // namespace media

@@ -13,6 +13,7 @@
 #include "chrome/grit/usb_internals_resources.h"
 #include "chrome/grit/usb_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 UsbInternalsUI::UsbInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
@@ -36,6 +37,12 @@ UsbInternalsUI::UsbInternalsUI(content::WebUI* web_ui)
       source,
       base::make_span(kUsbInternalsResources, kUsbInternalsResourcesSize),
       IDR_USB_INTERNALS_USB_INTERNALS_HTML);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::RequireTrustedTypesFor,
+      "require-trusted-types-for 'script';");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types usb-test-static;");
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }

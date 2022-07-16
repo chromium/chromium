@@ -32,9 +32,6 @@ class COMPONENT_EXPORT(UI_BASE) LinuxUiDelegate {
       uint32_t parent_widget,
       base::OnceCallback<void(const std::string&)> callback);
 
-  // Only implemented on Wayland.
-  virtual int GetKeyState();
-
  private:
   static LinuxUiDelegate* instance_;
 };

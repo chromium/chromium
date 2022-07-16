@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "components/arc/mojom/video_encode_accelerator.mojom.h"
 #include "components/arc/video_accelerator/video_frame_plane.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -31,6 +30,11 @@ class GpuArcVideoEncodeAccelerator
   explicit GpuArcVideoEncodeAccelerator(
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
+
+  GpuArcVideoEncodeAccelerator(const GpuArcVideoEncodeAccelerator&) = delete;
+  GpuArcVideoEncodeAccelerator& operator=(const GpuArcVideoEncodeAccelerator&) =
+      delete;
+
   ~GpuArcVideoEncodeAccelerator() override;
 
  private:
@@ -71,8 +75,10 @@ class GpuArcVideoEncodeAccelerator
                           uint32_t offset,
                           uint32_t size,
                           UseBitstreamBufferCallback callback) override;
-  void RequestEncodingParametersChange(uint32_t bitrate,
+  void RequestEncodingParametersChange(const media::Bitrate& bitrate,
                                        uint32_t framerate) override;
+  void RequestEncodingParametersChangeDeprecated(uint32_t bitrate,
+                                                 uint32_t framerate) override;
   void Flush(FlushCallback callback) override;
 
   // Global counter that keeps track of the number of active clients (i.e., how
@@ -90,8 +96,6 @@ class GpuArcVideoEncodeAccelerator
   int32_t bitstream_buffer_serial_;
   std::unordered_map<uint32_t, UseBitstreamBufferCallback> use_bitstream_cbs_;
   gpu::GpuMemoryBufferSupport support_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuArcVideoEncodeAccelerator);
 };
 
 }  // namespace arc

@@ -27,10 +27,11 @@ class PPAPI_HOST_EXPORT MessageFilterHost : public ResourceHost {
                     PP_Instance instance,
                     PP_Resource resource,
                     const scoped_refptr<ResourceMessageFilter>& message_filter);
-  virtual ~MessageFilterHost();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessageFilterHost);
+  MessageFilterHost(const MessageFilterHost&) = delete;
+  MessageFilterHost& operator=(const MessageFilterHost&) = delete;
+
+  virtual ~MessageFilterHost();
 };
 
 }  // namespace host

@@ -79,7 +79,7 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
 
   // Returns visual rect for painting emphasis mark and text decoration for
   // |NGBoxFragmentPainter|.
-  IntRect VisualRectForPaint(const PhysicalOffset& paint_offset) const;
+  gfx::Rect VisualRectForPaint(const PhysicalOffset& paint_offset) const;
 
   static void AssertStyleIsValid(const ComputedStyle& style);
 

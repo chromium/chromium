@@ -168,41 +168,11 @@
                        }];
 }
 
-#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
-
-// TODO(crbug.com/1131852): Preview depracted is iOS13+
-- (BOOL)webView:(WKWebView*)webView
-    shouldPreviewElement:(WKPreviewElementInfo*)elementInfo {
-  return self.webStateImpl->ShouldPreviewLink(
-      net::GURLWithNSURL(elementInfo.linkURL));
-}
-
-- (UIViewController*)webView:(WKWebView*)webView
-    previewingViewControllerForElement:(WKPreviewElementInfo*)elementInfo
-                        defaultActions:
-                            (NSArray<id<WKPreviewActionItem>>*)previewActions {
-  // Prevent |_contextMenuController| from intercepting the default behavior for
-  // the current on-going touch. Otherwise it would cancel the on-going Peek&Pop
-  // action and show its own context menu instead (crbug.com/770619).
-  [self.contextMenuController allowSystemUIForCurrentGesture];
-
-  return self.webStateImpl->GetPreviewingViewController(
-      net::GURLWithNSURL(elementInfo.linkURL));
-}
-
-- (void)webView:(WKWebView*)webView
-    commitPreviewingViewController:(UIViewController*)previewingViewController {
-  return self.webStateImpl->CommitPreviewingViewController(
-      previewingViewController);
-}
-
-#endif  // End of >iOS13 deprecated block.
-
 - (void)webView:(WKWebView*)webView
     contextMenuConfigurationForElement:(WKContextMenuElementInfo*)elementInfo
                      completionHandler:
                          (void (^)(UIContextMenuConfiguration* _Nullable))
-                             completionHandler API_AVAILABLE(ios(13.0)) {
+                             completionHandler {
   web::WebStateDelegate* delegate = self.webStateImpl->GetDelegate();
   if (!delegate) {
     completionHandler(nil);
@@ -212,46 +182,20 @@
   web::ContextMenuParams params;
   params.link_url = net::GURLWithNSURL(elementInfo.linkURL);
 
-  delegate->ContextMenuConfiguration(
-      self.webStateImpl, params, /*preview_provider=*/nil, completionHandler);
+  delegate->ContextMenuConfiguration(self.webStateImpl, params,
+                                     completionHandler);
 }
 
 - (void)webView:(WKWebView*)webView
-    contextMenuDidEndForElement:(WKContextMenuElementInfo*)elementInfo
-    API_AVAILABLE(ios(13.0)) {
-  web::WebStateDelegate* delegate = self.webStateImpl->GetDelegate();
-  if (!delegate) {
-    return;
-  }
-
-  delegate->ContextMenuDidEnd(self.webStateImpl,
-                              net::GURLWithNSURL(elementInfo.linkURL));
-}
-
-- (void)webView:(WKWebView*)webView
-     contextMenuForElement:(nonnull WKContextMenuElementInfo*)elementInfo
+     contextMenuForElement:(WKContextMenuElementInfo*)elementInfo
     willCommitWithAnimator:
-        (nonnull id<UIContextMenuInteractionCommitAnimating>)animator
-    API_AVAILABLE(ios(13.0)) {
+        (id<UIContextMenuInteractionCommitAnimating>)animator {
   web::WebStateDelegate* delegate = self.webStateImpl->GetDelegate();
   if (!delegate) {
     return;
   }
 
-  delegate->ContextMenuWillCommitWithAnimator(
-      self.webStateImpl, net::GURLWithNSURL(elementInfo.linkURL), animator);
-}
-
-- (void)webView:(WKWebView*)webView
-    contextMenuWillPresentForElement:(WKContextMenuElementInfo*)elementInfo
-    API_AVAILABLE(ios(13.0)) {
-  web::WebStateDelegate* delegate = self.webStateImpl->GetDelegate();
-  if (!delegate) {
-    return;
-  }
-
-  delegate->ContextMenuWillPresent(self.webStateImpl,
-                                   net::GURLWithNSURL(elementInfo.linkURL));
+  delegate->ContextMenuWillCommitWithAnimator(self.webStateImpl, animator);
 }
 
 #pragma mark - Helper
@@ -273,8 +217,8 @@
     return;
   }
 
-  if (self.webStateImpl->GetVisibleURL().GetOrigin() !=
-          requestURL.GetOrigin() &&
+  if (self.webStateImpl->GetVisibleURL().DeprecatedGetOriginAsURL() !=
+          requestURL.DeprecatedGetOriginAsURL() &&
       frame.mainFrame) {
     // Dialog was requested by web page's main frame, but visible URL has
     // different origin. This could happen if the user has started a new

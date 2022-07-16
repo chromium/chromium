@@ -141,6 +141,9 @@ class NET_EXPORT X509Certificate
       base::span<const uint8_t> data,
       int format);
 
+  X509Certificate(const X509Certificate&) = delete;
+  X509Certificate& operator=(const X509Certificate&) = delete;
+
   // Appends a representation of this object to the given pickle.
   // The Pickle contains the certificate and any certificates that were
   // stored in |intermediate_ca_certs_| at the time it was serialized.
@@ -317,8 +320,6 @@ class NET_EXPORT X509Certificate
   // Untrusted intermediate certificates associated with this certificate
   // that may be needed for chain building.
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediate_ca_certs_;
-
-  DISALLOW_COPY_AND_ASSIGN(X509Certificate);
 };
 
 }  // namespace net

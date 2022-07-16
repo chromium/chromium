@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview A wrapper around a goog.editor.Field
@@ -35,6 +27,8 @@ goog.require('goog.editor.range');
 goog.require('goog.events.BrowserEvent');
 goog.require('goog.events.EventHandler');
 goog.require('goog.events.EventType');
+goog.requireType('goog.dom.AbstractRange');
+goog.requireType('goog.dom.SavedCaretRange');
 
 
 
@@ -45,6 +39,7 @@ goog.require('goog.events.EventType');
  * @extends {goog.Disposable}
  */
 goog.editor.ClickToEditWrapper = function(fieldObj) {
+  'use strict';
   goog.Disposable.call(this);
 
   /**
@@ -114,18 +109,21 @@ goog.inherits(goog.editor.ClickToEditWrapper, goog.Disposable);
 
 /** @return {goog.editor.Field} The field. */
 goog.editor.ClickToEditWrapper.prototype.getFieldObject = function() {
+  'use strict';
   return this.fieldObj_;
 };
 
 
 /** @return {goog.dom.DomHelper} The dom helper of the uneditable element. */
 goog.editor.ClickToEditWrapper.prototype.getOriginalDomHelper = function() {
+  'use strict';
   return this.originalDomHelper_;
 };
 
 
 /** @override */
 goog.editor.ClickToEditWrapper.prototype.disposeInternal = function() {
+  'use strict';
   goog.editor.ClickToEditWrapper.base(this, 'disposeInternal');
   this.exitDocument();
 
@@ -146,6 +144,7 @@ goog.editor.ClickToEditWrapper.prototype.disposeInternal = function() {
  * Also sets up lorem ipsum text.
  */
 goog.editor.ClickToEditWrapper.prototype.enterDocument = function() {
+  'use strict';
   if (this.isInDocument_) {
     return;
   }
@@ -177,6 +176,7 @@ goog.editor.ClickToEditWrapper.prototype.enterDocument = function() {
  * Destroy listeners when the field is removed from the document.
  */
 goog.editor.ClickToEditWrapper.prototype.exitDocument = function() {
+  'use strict';
   this.mouseEventHandler_.removeAll();
   this.isInDocument_ = false;
 };
@@ -190,6 +190,7 @@ goog.editor.ClickToEditWrapper.prototype.exitDocument = function() {
  * @return {Element} The element containing the editable field contents.
  */
 goog.editor.ClickToEditWrapper.prototype.getElement = function() {
+  'use strict';
   return this.fieldObj_.isLoaded() ? this.fieldObj_.getElement() :
                                      this.fieldObj_.getOriginalElement();
 };
@@ -202,6 +203,7 @@ goog.editor.ClickToEditWrapper.prototype.getElement = function() {
  * @private
  */
 goog.editor.ClickToEditWrapper.prototype.shouldHandleMouseEvent_ = function(e) {
+  'use strict';
   return e.isButton(goog.events.BrowserEvent.MouseButton.LEFT) &&
       !(e.shiftKey || e.ctrlKey || e.altKey || e.metaKey);
 };
@@ -213,6 +215,7 @@ goog.editor.ClickToEditWrapper.prototype.shouldHandleMouseEvent_ = function(e) {
  * @private
  */
 goog.editor.ClickToEditWrapper.prototype.handleClick_ = function(e) {
+  'use strict';
   // If the user clicked on a link in an uneditable field,
   // we want to cancel the click.
   var anchorAncestor = goog.dom.getAncestorByTagNameAndClass(
@@ -233,6 +236,7 @@ goog.editor.ClickToEditWrapper.prototype.handleClick_ = function(e) {
  * @private
  */
 goog.editor.ClickToEditWrapper.prototype.handleMouseUp_ = function(e) {
+  'use strict';
   // Only respond to the left mouse button.
   if (this.shouldHandleMouseEvent_(e)) {
     // We need to get the selection when the user mouses up, but the
@@ -249,6 +253,7 @@ goog.editor.ClickToEditWrapper.prototype.handleMouseUp_ = function(e) {
  * @private
  */
 goog.editor.ClickToEditWrapper.prototype.finishMouseUp_ = function() {
+  'use strict';
   // Make sure that the field is still not editable.
   if (!this.fieldObj_.isLoaded()) {
     if (this.savedCaretRange_) {
@@ -278,6 +283,7 @@ goog.editor.ClickToEditWrapper.prototype.finishMouseUp_ = function() {
  * @private
  */
 goog.editor.ClickToEditWrapper.prototype.ensureFieldEditable_ = function() {
+  'use strict';
   if (!this.fieldObj_.isLoaded()) {
     this.mouseEventTriggeredLoad_ = true;
     this.makeFieldEditable(this.fieldObj_);
@@ -291,6 +297,7 @@ goog.editor.ClickToEditWrapper.prototype.ensureFieldEditable_ = function() {
  * @private
  */
 goog.editor.ClickToEditWrapper.prototype.renderSelection_ = function() {
+  'use strict';
   if (this.savedCaretRange_) {
     // Make sure that the restoration document is inside the iframe
     // if we're using one.
@@ -338,6 +345,7 @@ goog.editor.ClickToEditWrapper.prototype.renderSelection_ = function() {
  * @protected
  */
 goog.editor.ClickToEditWrapper.prototype.focusOnFieldObj = function(field) {
+  'use strict';
   field.focusAndPlaceCursorAtStart();
 };
 
@@ -348,6 +356,7 @@ goog.editor.ClickToEditWrapper.prototype.focusOnFieldObj = function(field) {
  * @protected
  */
 goog.editor.ClickToEditWrapper.prototype.makeFieldEditable = function(field) {
+  'use strict';
   field.makeEditable();
 };
 
@@ -364,6 +373,7 @@ goog.editor.ClickToEditWrapper.prototype.makeFieldEditable = function(field) {
  * @private
  */
 goog.editor.ClickToEditWrapper.createCaretRange_ = function(range) {
+  'use strict';
   return range && goog.editor.range.saveUsingNormalizedCarets(range);
 };
 
@@ -376,6 +386,7 @@ goog.editor.ClickToEditWrapper.createCaretRange_ = function(range) {
  * @private
  */
 goog.editor.ClickToEditWrapper.prototype.insertCarets_ = function() {
+  'use strict';
   var fieldElement = this.fieldObj_.getOriginalElement();
 
   this.savedCaretRange_ = null;
@@ -402,7 +413,10 @@ goog.editor.ClickToEditWrapper.prototype.insertCarets_ = function() {
       specialNodeClicked = this.savedAnchorClicked_;
     }
 
-    var isFieldElement = function(node) { return node == fieldElement; };
+    var isFieldElement = function(node) {
+      'use strict';
+      return node == fieldElement;
+    };
     if (specialNodeClicked &&
         goog.dom.getAncestor(specialNodeClicked, isFieldElement, true)) {
       // Insert the cursor at the beginning of the active element to be

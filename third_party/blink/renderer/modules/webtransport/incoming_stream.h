@@ -17,13 +17,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
 class ScriptState;
-class StreamAbortInfo;
 class ReadableStream;
 class ReadableStreamDefaultControllerWithScriptScope;
 
@@ -42,7 +42,7 @@ class MODULES_EXPORT IncomingStream final
   };
 
   IncomingStream(ScriptState*,
-                 base::OnceClosure on_abort,
+                 base::OnceCallback<void(absl::optional<uint8_t>)> on_abort,
                  mojo::ScopedDataPipeConsumerHandle);
   ~IncomingStream();
 
@@ -60,17 +60,13 @@ class MODULES_EXPORT IncomingStream final
     return readable_;
   }
 
-  ScriptPromise ReadingAborted() const { return reading_aborted_; }
-
-  void AbortReading(StreamAbortInfo*);
-
   // Called from WebTransport via a WebTransportStream class. May execute
   // JavaScript.
   void OnIncomingStreamClosed(bool fin_received);
 
-  // Called via WebTransport via a WebTransportStream class. Expects a
+  // Errors the associated stream with the given reason. Expects a
   // JavaScript scope to have been entered.
-  void Reset();
+  void Error(ScriptValue reason);
 
   // Called from WebTransport rather than using
   // ExecutionContextLifecycleObserver to ensure correct destruction order.
@@ -83,8 +79,6 @@ class MODULES_EXPORT IncomingStream final
 
  private:
   class UnderlyingSource;
-
-  using IsLocalAbort = base::StrongAlias<class IsLocalAbortTag, bool>;
 
   // Called when |data_pipe_| becomes readable or errored.
   void OnHandleReady(MojoResult, const mojo::HandleSignalsState&);
@@ -106,20 +100,15 @@ class MODULES_EXPORT IncomingStream final
   // Copies a sequence of bytes into an ArrayBuffer and enqueues it.
   void EnqueueBytes(const void* source, uint32_t byte_length);
 
-  // Creates a DOMException indicating that the stream has been aborted.
-  // If IsLocalAbort it true it will indicate a locally-initiated abort,
-  // otherwise it will indicate a server--initiated abort.
-  ScriptValue CreateAbortException(IsLocalAbort);
-
-  // Closes |readable_|, resolves |reading_aborted_| and resets |data_pipe_|.
+  // Closes |readable_|, and resets |data_pipe_|.
   void CloseAbortAndReset();
 
-  // Errors |readable_|, resolves |reading_aborted_| and resets |data_pipe_|.
+  // Errors |readable_|, and resets |data_pipe_|.
   // |exception| will be set as the error on |readable_|.
   void ErrorStreamAbortAndReset(ScriptValue exception);
 
-  // Resolves the |reading_aborted_| promise and resets the |data_pipe_|.
-  void AbortAndReset();
+  // Resets the |data_pipe_|.
+  void AbortAndReset(absl::optional<uint8_t> code);
 
   // Resets |data_pipe_| and clears the watchers.
   // If the pipe is open it will be closed as a side-effect.
@@ -130,7 +119,7 @@ class MODULES_EXPORT IncomingStream final
 
   const Member<ScriptState> script_state_;
 
-  base::OnceClosure on_abort_;
+  base::OnceCallback<void(absl::optional<uint8_t>)> on_abort_;
 
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
 
@@ -142,10 +131,6 @@ class MODULES_EXPORT IncomingStream final
 
   Member<ReadableStream> readable_;
   Member<ReadableStreamDefaultControllerWithScriptScope> controller_;
-
-  // Promise returned by the |readingAborted| attribute.
-  ScriptPromise reading_aborted_;
-  Member<ScriptPromiseResolver> reading_aborted_resolver_;
 
   State state_ = State::kOpen;
 

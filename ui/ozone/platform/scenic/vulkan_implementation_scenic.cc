@@ -138,7 +138,7 @@ bool VulkanImplementationScenic::GetPhysicalDevicePresentationSupport(
 std::vector<const char*>
 VulkanImplementationScenic::GetRequiredDeviceExtensions() {
   std::vector<const char*> result = {
-      VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME,
+      VK_FUCHSIA_BUFFER_COLLECTION_X_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_MEMORY_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
       VK_KHR_BIND_MEMORY_2_EXTENSION_NAME,
@@ -304,12 +304,15 @@ class SysmemBufferCollectionImpl : public gpu::SysmemBufferCollection {
   SysmemBufferCollectionImpl(
       scoped_refptr<ui::SysmemBufferCollection> collection)
       : collection_(std::move(collection)) {}
+
+  SysmemBufferCollectionImpl(const SysmemBufferCollectionImpl&) = delete;
+  SysmemBufferCollectionImpl& operator=(const SysmemBufferCollectionImpl&) =
+      delete;
+
   ~SysmemBufferCollectionImpl() override = default;
 
  private:
   scoped_refptr<ui::SysmemBufferCollection> collection_;
-
-  DISALLOW_COPY_AND_ASSIGN(SysmemBufferCollectionImpl);
 };
 
 std::unique_ptr<gpu::SysmemBufferCollection>

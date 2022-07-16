@@ -22,7 +22,11 @@
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-persistent-handle.h"
+
+namespace v8 {
+class UnboundScript;
+}  // namespace v8
 
 namespace auction_worklet {
 
@@ -36,6 +40,7 @@ class SellerWorklet : public mojom::SellerWorklet {
   // Starts loading the worklet script on construction. Callback will be invoked
   // asynchronously once the data has been fetched or an error has occurred.
   SellerWorklet(scoped_refptr<AuctionV8Helper> v8_helper,
+                bool pause_for_debugger_on_start,
                 mojo::PendingRemote<network::mojom::URLLoaderFactory>
                     pending_url_loader_factory,
                 const GURL& script_source_url,
@@ -46,6 +51,10 @@ class SellerWorklet : public mojom::SellerWorklet {
   SellerWorklet& operator=(const SellerWorklet&) = delete;
 
   ~SellerWorklet() override;
+
+  // Warning: The caller may need to spin the event loop for this to get
+  // initialized to a value different from kNoDebugContextGroupId.
+  int context_group_id_for_testing() const { return context_group_id_; }
 
   // mojom::SellerWorklet implementation:
   void ScoreAd(const std::string& ad_metadata_json,
@@ -64,6 +73,8 @@ class SellerWorklet : public mojom::SellerWorklet {
                     double browser_signal_bid,
                     double browser_signal_desirability,
                     ReportResultCallback callback) override;
+  void ConnectDevToolsAgent(
+      mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) override;
 
  private:
   // Portion of SellerWorklet that deals with V8 execution, and therefore lives
@@ -94,9 +105,14 @@ class SellerWorklet : public mojom::SellerWorklet {
                       double browser_signal_desirability,
                       ReportResultCallback callback);
 
+    void ConnectDevToolsAgent(
+        mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent);
+
    private:
     friend class base::DeleteHelper<V8State>;
     ~V8State();
+
+    void FinishInit();
 
     void PostScoreAdCallbackToUserThread(ScoreAdCallback callback,
                                          double score,
@@ -108,6 +124,10 @@ class SellerWorklet : public mojom::SellerWorklet {
         absl::optional<GURL> report_url,
         std::vector<std::string> errors);
 
+    static void PostResumeToUserThread(
+        base::WeakPtr<SellerWorklet> parent,
+        scoped_refptr<base::SequencedTaskRunner> user_thread);
+
     const scoped_refptr<AuctionV8Helper> v8_helper_;
     const base::WeakPtr<SellerWorklet> parent_;
     const scoped_refptr<base::SequencedTaskRunner> user_thread_;
@@ -118,12 +138,18 @@ class SellerWorklet : public mojom::SellerWorklet {
 
     const GURL script_source_url_;
 
+    int context_group_id_;
+
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };
+
+  void ResumeIfPaused();
+  void StartIfReady();
 
   void OnDownloadComplete(WorkletLoader::Result worklet_script,
                           absl::optional<std::string> error_msg);
 
+  void DeliverContextGroupIdOnUserThread(int context_group_id);
   void DeliverScoreAdCallbackOnUserThread(ScoreAdCallback callback,
                                           double score,
                                           std::vector<std::string> errors);
@@ -134,6 +160,18 @@ class SellerWorklet : public mojom::SellerWorklet {
       std::vector<std::string> errors);
 
   scoped_refptr<base::SequencedTaskRunner> v8_runner_;
+
+  // Kept around until Start().
+  scoped_refptr<AuctionV8Helper> v8_helper_;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+      pending_url_loader_factory_;
+
+  const GURL script_source_url_;
+  bool paused_;
+
+  // `context_group_id_` starts at kNoDebugContextGroupId, but then gets
+  // initialized after some thread hops.
+  int context_group_id_;
 
   std::unique_ptr<WorkletLoader> worklet_loader_;
 

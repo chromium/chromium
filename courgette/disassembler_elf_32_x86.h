@@ -39,6 +39,9 @@ class DisassemblerElf32X86 : public DisassemblerElf32 {
 
   DisassemblerElf32X86(const uint8_t* start, size_t length);
 
+  DisassemblerElf32X86(const DisassemblerElf32X86&) = delete;
+  DisassemblerElf32X86& operator=(const DisassemblerElf32X86&) = delete;
+
   ~DisassemblerElf32X86() override { }
 
   // DisassemblerElf32 interfaces.
@@ -58,9 +61,6 @@ class DisassemblerElf32X86 : public DisassemblerElf32 {
 #if COURGETTE_HISTOGRAM_TARGETS
   std::map<RVA, int> rel32_target_rvas_;
 #endif
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisassemblerElf32X86);
 };
 
 }  // namespace courgette

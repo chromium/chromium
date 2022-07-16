@@ -21,6 +21,7 @@ static_library("server") {
     ":proto",
     "//base",
     "//components/content_creation/notes/core:features",
+    "//components/shared_highlighting/core/common",
     "//components/signin/public/identity_manager",
     "//google_apis",
     "//net",

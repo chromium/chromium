@@ -17,8 +17,8 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
@@ -45,7 +45,7 @@ bool g_using_install_attributes_for_testing = false;
 const int kDbusRetryCount = 12;
 
 // Interval of TPM lock state query retries during consistency check.
-constexpr base::TimeDelta kDbusRetryInterval = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kDbusRetryInterval = base::Seconds(5);
 
 std::string ReadMapKey(const std::map<std::string, std::string>& map,
                        const std::string& key) {

@@ -16,7 +16,8 @@ namespace blink {
 WebString WebFrameContentDumper::DumpFrameTreeAsText(WebLocalFrame* frame,
                                                      size_t max_chars) {
   StringBuilder text;
-  FrameContentAsText(max_chars, To<WebLocalFrameImpl>(frame)->GetFrame(), text);
+  FrameContentAsText(base::checked_cast<wtf_size_t>(max_chars),
+                     To<WebLocalFrameImpl>(frame)->GetFrame(), text);
   return text.ToString();
 }
 

@@ -49,6 +49,10 @@ enum { NM_DEVICE_TYPE_WIFI = 2 };
 class NetworkManagerWlanApi : public WifiDataProviderCommon::WlanApiInterface {
  public:
   NetworkManagerWlanApi();
+
+  NetworkManagerWlanApi(const NetworkManagerWlanApi&) = delete;
+  NetworkManagerWlanApi& operator=(const NetworkManagerWlanApi&) = delete;
+
   ~NetworkManagerWlanApi() override;
 
   // Must be called before any other interface method. Will return false if the
@@ -85,8 +89,6 @@ class NetworkManagerWlanApi : public WifiDataProviderCommon::WlanApiInterface {
 
   scoped_refptr<dbus::Bus> system_bus_;
   dbus::ObjectProxy* network_manager_proxy_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkManagerWlanApi);
 };
 
 // Convert a wifi frequency to the corresponding channel. Adapted from

@@ -32,9 +32,7 @@ const CGFloat kButtonSpacing = 20.0f;
   // Set up a blurred background.
   UIBlurEffect* effect = nil;
   // SystemXYZMaterial effect styles are iOS 13+, but so is multiwindow.
-  if (@available(iOS 13, *)) {
-    effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThinMaterial];
-  }
+  effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThinMaterial];
 
   UIVisualEffectView* backgroundBlurEffect =
       [[UIVisualEffectView alloc] initWithEffect:effect];
@@ -84,10 +82,8 @@ const CGFloat kButtonSpacing = 20.0f;
 }
 
 - (void)buttonPressed:(id)sender {
-  if (@available(iOS 13, *)) {
-    [self.blockingSceneCommandHandler
-        activateBlockingScene:self.view.window.windowScene];
-  }
+  [self.blockingSceneCommandHandler
+      activateBlockingScene:self.view.window.windowScene];
 }
 
 @end

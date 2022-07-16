@@ -17,11 +17,13 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -43,7 +45,7 @@ public class ChipView extends LinearLayout {
     private static final int MAX_LINES = 2;
 
     private final RippleBackgroundHelper mRippleBackgroundHelper;
-    private final TextView mPrimaryText;
+    private final AppCompatTextView mPrimaryText;
     private final ChromeImageView mStartIcon;
     private final boolean mUseRoundedStartIcon;
     private final LoadingView mLoadingView;
@@ -55,27 +57,26 @@ public class ChipView extends LinearLayout {
     private final int mCornerRadius;
 
     private ViewGroup mEndIconWrapper;
-    private TextView mSecondaryText;
+    private AppCompatTextView mSecondaryText;
 
-    /**
-     * Constructor for inflating from XML.
-     */
-    public ChipView(Context context, @StyleRes int chipStyle) {
-        this(context, null, chipStyle);
+    /** Constructor for applying a theme overlay. */
+    public ChipView(Context context, @StyleRes int themeOverlay) {
+        this(new ContextThemeWrapper(context, themeOverlay), null, R.attr.chipStyle, 0);
     }
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public ChipView(Context context, AttributeSet attrs) {
-        this(context, attrs, R.style.SuggestionChipThemeOverlay);
+        this(new ContextThemeWrapper(context, R.style.SuggestionChipThemeOverlay), attrs,
+                R.attr.chipStyle, 0);
     }
 
-    private ChipView(Context context, AttributeSet attrs, @StyleRes int themeOverlay) {
-        super(new ContextThemeWrapper(context, themeOverlay), attrs, R.attr.chipStyle);
+    /** Constructor for base classes and programmatic creation. */
+    public ChipView(Context context, AttributeSet attrs, @AttrRes int defStyleAttr,
+            @StyleRes int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
 
         TypedArray a = getContext().obtainStyledAttributes(
-                attrs, R.styleable.ChipView, R.attr.chipStyle, 0);
+                attrs, R.styleable.ChipView, defStyleAttr, defStyleRes);
 
         boolean extendLateralPadding =
                 a.getBoolean(R.styleable.ChipView_extendLateralPadding, false);
@@ -149,8 +150,8 @@ public class ChipView extends LinearLayout {
         int loadingViewWidthPadding = (iconWidth - loadingViewSize) / 2;
         mLoadingView = new LoadingView(getContext());
         mLoadingView.setVisibility(GONE);
-        mLoadingView.setIndeterminateTintList(ColorStateList.valueOf(
-                ApiCompatibilityUtils.getColor(getResources(), R.color.default_icon_color_blue)));
+        mLoadingView.setIndeterminateTintList(ColorStateList.valueOf(ApiCompatibilityUtils.getColor(
+                getResources(), R.color.default_icon_color_accent1_baseline)));
         mLoadingView.setPaddingRelative(loadingViewWidthPadding, loadingViewHeightPadding,
                 loadingViewWidthPadding, loadingViewHeightPadding);
         addView(mLoadingView, new LayoutParams(iconWidth, iconHeight));
@@ -160,7 +161,8 @@ public class ChipView extends LinearLayout {
         // remaining 8dp.
         ViewCompat.setPaddingRelative(this, leadingElementPadding, 0, endPadding, 0);
 
-        mPrimaryText = new TextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
+        mPrimaryText =
+                new AppCompatTextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
         ApiCompatibilityUtils.setTextAppearance(mPrimaryText, primaryTextAppearance);
 
         // If false fall back to single line defined in XML styles.
@@ -320,8 +322,8 @@ public class ChipView extends LinearLayout {
      */
     public TextView getSecondaryTextView() {
         if (mSecondaryText == null) {
-            mSecondaryText =
-                    new TextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
+            mSecondaryText = new AppCompatTextView(
+                    new ContextThemeWrapper(getContext(), R.style.ChipTextView));
             ApiCompatibilityUtils.setTextAppearance(mSecondaryText, mSecondaryTextAppearanceId);
             // Ensure that basic state changes are aligned with the ChipView. They update
             // automatically once the view is part of the hierarchy.

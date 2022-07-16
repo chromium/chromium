@@ -59,6 +59,10 @@ class MockPersistentNelStore
   using CommandList = std::vector<Command>;
 
   MockPersistentNelStore();
+
+  MockPersistentNelStore(const MockPersistentNelStore&) = delete;
+  MockPersistentNelStore& operator=(const MockPersistentNelStore&) = delete;
+
   ~MockPersistentNelStore() override;
 
   // PersistentNelStore implementation:
@@ -110,8 +114,6 @@ class MockPersistentNelStore
   // Simulates the delta to be added to |policy_count_| the next time Flush() is
   // called. Reset to 0 when Flush() is called.
   int queued_policy_count_delta_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPersistentNelStore);
 };
 
 bool operator==(const MockPersistentNelStore::Command& lhs,

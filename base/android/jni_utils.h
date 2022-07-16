@@ -6,6 +6,7 @@
 #define BASE_ANDROID_JNI_UTILS_H_
 
 #include <jni.h>
+#include <string>
 
 #include "base/android/scoped_java_ref.h"
 

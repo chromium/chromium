@@ -23,16 +23,14 @@ namespace {
 // |resource_identifier| in the precedence order of the rules.
 class RuleIteratorImpl : public RuleIterator {
  public:
-  // |RuleIteratorImpl| takes the ownership of |auto_lock|.
   RuleIteratorImpl(
       const OriginIdentifierValueMap::Rules::const_iterator& current_rule,
       const OriginIdentifierValueMap::Rules::const_iterator& rule_end,
-      base::AutoLock* auto_lock)
+      std::unique_ptr<base::AutoLock> auto_lock)
       : current_rule_(current_rule),
         rule_end_(rule_end),
-        auto_lock_(auto_lock) {
-  }
-  ~RuleIteratorImpl() override {}
+        auto_lock_(std::move(auto_lock)) {}
+  ~RuleIteratorImpl() override = default;
 
   bool HasNext() const override { return (current_rule_ != rule_end_); }
 
@@ -71,9 +69,9 @@ bool OriginIdentifierValueMap::PatternPair::operator<(
          std::tie(other.primary_pattern, other.secondary_pattern);
 }
 
-OriginIdentifierValueMap::ValueEntry::ValueEntry() {}
+OriginIdentifierValueMap::ValueEntry::ValueEntry() = default;
 
-OriginIdentifierValueMap::ValueEntry::~ValueEntry() {}
+OriginIdentifierValueMap::ValueEntry::~ValueEntry() = default;
 
 std::unique_ptr<RuleIterator> OriginIdentifierValueMap::GetRuleIterator(
     ContentSettingsType content_type,
@@ -88,8 +86,8 @@ std::unique_ptr<RuleIterator> OriginIdentifierValueMap::GetRuleIterator(
   auto it = entries_.find(content_type);
   if (it == entries_.end())
     return nullptr;
-  return std::unique_ptr<RuleIterator>(new RuleIteratorImpl(
-      it->second.begin(), it->second.end(), auto_lock.release()));
+  return std::make_unique<RuleIteratorImpl>(
+      it->second.begin(), it->second.end(), std::move(auto_lock));
 }
 
 size_t OriginIdentifierValueMap::size() const {
@@ -99,9 +97,9 @@ size_t OriginIdentifierValueMap::size() const {
   return size;
 }
 
-OriginIdentifierValueMap::OriginIdentifierValueMap() {}
+OriginIdentifierValueMap::OriginIdentifierValueMap() = default;
 
-OriginIdentifierValueMap::~OriginIdentifierValueMap() {}
+OriginIdentifierValueMap::~OriginIdentifierValueMap() = default;
 
 const base::Value* OriginIdentifierValueMap::GetValue(
     const GURL& primary_url,

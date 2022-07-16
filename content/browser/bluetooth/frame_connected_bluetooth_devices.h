@@ -37,6 +37,12 @@ class CONTENT_EXPORT FrameConnectedBluetoothDevices final {
   // |rfh| should be the RenderFrameHost that owns the WebBluetoothServiceImpl
   // that owns this map.
   explicit FrameConnectedBluetoothDevices(RenderFrameHost* rfh);
+
+  FrameConnectedBluetoothDevices(const FrameConnectedBluetoothDevices&) =
+      delete;
+  FrameConnectedBluetoothDevices& operator=(
+      const FrameConnectedBluetoothDevices&) = delete;
+
   ~FrameConnectedBluetoothDevices();
 
   // Returns true if the map holds a connection to |device_id|.
@@ -86,8 +92,6 @@ class CONTENT_EXPORT FrameConnectedBluetoothDevices final {
   // Keeps track of which device addresses correspond to which ids.
   std::unordered_map<std::string, blink::WebBluetoothDeviceId>
       device_address_to_id_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameConnectedBluetoothDevices);
 };
 
 }  // namespace content

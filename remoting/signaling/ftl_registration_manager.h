@@ -39,6 +39,10 @@ class FtlRegistrationManager final : public RegistrationManager {
       OAuthTokenGetter* token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<FtlDeviceIdProvider> device_id_provider);
+
+  FtlRegistrationManager(const FtlRegistrationManager&) = delete;
+  FtlRegistrationManager& operator=(const FtlRegistrationManager&) = delete;
+
   ~FtlRegistrationManager() override;
 
   // RegistrationManager implementations.
@@ -80,8 +84,6 @@ class FtlRegistrationManager final : public RegistrationManager {
   std::string registration_id_;
   std::string ftl_auth_token_;
   net::BackoffEntry sign_in_backoff_;
-
-  DISALLOW_COPY_AND_ASSIGN(FtlRegistrationManager);
 };
 
 }  // namespace remoting

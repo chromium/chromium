@@ -9,14 +9,17 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/background_eid_generator.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/wire_message.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 
@@ -85,17 +88,17 @@ base::TimeDelta BluetoothLowEnergyWeaveClientConnection::GetTimeoutForSubStatus(
     SubStatus sub_status) {
   switch (sub_status) {
     case SubStatus::WAITING_CONNECTION_RESPONSE:
-      return base::TimeDelta::FromSeconds(kConnectionResponseTimeoutSeconds);
+      return base::Seconds(kConnectionResponseTimeoutSeconds);
     case SubStatus::WAITING_CONNECTION_LATENCY:
-      return base::TimeDelta::FromSeconds(kConnectionLatencyTimeoutSeconds);
+      return base::Seconds(kConnectionLatencyTimeoutSeconds);
     case SubStatus::WAITING_GATT_CONNECTION:
-      return base::TimeDelta::FromSeconds(kGattConnectionTimeoutSeconds);
+      return base::Seconds(kGattConnectionTimeoutSeconds);
     case SubStatus::WAITING_CHARACTERISTICS:
-      return base::TimeDelta::FromSeconds(kGattCharacteristicsTimeoutSeconds);
+      return base::Seconds(kGattCharacteristicsTimeoutSeconds);
     case SubStatus::WAITING_NOTIFY_SESSION:
-      return base::TimeDelta::FromSeconds(kNotifySessionTimeoutSeconds);
+      return base::Seconds(kNotifySessionTimeoutSeconds);
     case SubStatus::CONNECTED_AND_SENDING_MESSAGE:
-      return base::TimeDelta::FromSeconds(kSendingMessageTimeoutSeconds);
+      return base::Seconds(kSendingMessageTimeoutSeconds);
     default:
       // Max signifies that there should be no timeout.
       return base::TimeDelta::Max();
@@ -371,8 +374,8 @@ void BluetoothLowEnergyWeaveClientConnection::SendMessageImpl(
   // For each packet, create a WriteRequest and add it to the queue.
   for (uint32_t i = 0; i < weave_packets.size(); ++i) {
     WriteRequestType request_type = (i != weave_packets.size() - 1)
-                                        ? WriteRequestType::REGULAR
-                                        : WriteRequestType::MESSAGE_COMPLETE;
+                                        ? WriteRequestType::kRegular
+                                        : WriteRequestType::kMessageComplete;
     queued_write_requests_.emplace(std::make_unique<WriteRequest>(
         weave_packets[i], request_type, message.get()));
   }
@@ -381,6 +384,18 @@ void BluetoothLowEnergyWeaveClientConnection::SendMessageImpl(
   queued_wire_messages_.emplace(std::move(message));
 
   ProcessNextWriteRequest();
+}
+
+void BluetoothLowEnergyWeaveClientConnection::RegisterPayloadFileImpl(
+    int64_t payload_id,
+    mojom::PayloadFilesPtr payload_files,
+    FileTransferUpdateCallback file_transfer_update_callback,
+    base::OnceCallback<void(bool)> registration_result_callback) {
+  // Currently the only user of this API is Phone Hub, which only works over
+  // Nearby Connections.
+  PA_LOG(WARNING)
+      << "RegisterPayloadFile is not supported over BLE connections.";
+  std::move(registration_result_callback).Run(/*success=*/false);
 }
 
 void BluetoothLowEnergyWeaveClientConnection::DeviceConnectedStateChanged(
@@ -647,7 +662,7 @@ void BluetoothLowEnergyWeaveClientConnection::SendConnectionRequest() {
 
   queued_write_requests_.emplace(std::make_unique<WriteRequest>(
       packet_generator_->CreateConnectionRequest(),
-      WriteRequestType::CONNECTION_REQUEST));
+      WriteRequestType::kConnectionRequest));
   ProcessNextWriteRequest();
 }
 
@@ -720,7 +735,7 @@ void BluetoothLowEnergyWeaveClientConnection::OnRemoteCharacteristicWritten() {
   }
 
   if (pending_write_request_->request_type ==
-      WriteRequestType::CONNECTION_CLOSE) {
+      WriteRequestType::kConnectionClose) {
     // Once a "connection close" uWeave packet has been sent, the connection
     // is ready to be disconnected.
     PA_LOG(INFO) << "uWeave \"connection close\" packet sent to "
@@ -731,7 +746,7 @@ void BluetoothLowEnergyWeaveClientConnection::OnRemoteCharacteristicWritten() {
   }
 
   if (pending_write_request_->request_type ==
-      WriteRequestType::MESSAGE_COMPLETE) {
+      WriteRequestType::kMessageComplete) {
     if (queued_wire_messages_.empty()) {
       PA_LOG(ERROR) << "Sent a WriteRequest with type == MESSAGE_COMPLETE, but "
                     << "there were no queued WireMessages. Cannot process "
@@ -794,9 +809,9 @@ void BluetoothLowEnergyWeaveClientConnection::OnWriteRemoteCharacteristicError(
     return;
   }
 
-  if (pending_write_request_->request_type == WriteRequestType::REGULAR ||
+  if (pending_write_request_->request_type == WriteRequestType::kRegular ||
       pending_write_request_->request_type ==
-          WriteRequestType::MESSAGE_COMPLETE) {
+          WriteRequestType::kMessageComplete) {
     std::unique_ptr<WireMessage> failed_message =
         std::move(queued_wire_messages_.front());
     queued_wire_messages_.pop();
@@ -839,7 +854,7 @@ void BluetoothLowEnergyWeaveClientConnection::
   queued_write_requests_.emplace(
       std::make_unique<WriteRequest>(packet_generator_->CreateConnectionClose(
                                          packet_receiver_->GetReasonToClose()),
-                                     WriteRequestType::CONNECTION_CLOSE));
+                                     WriteRequestType::kConnectionClose));
 
   if (pending_write_request_) {
     PA_LOG(WARNING) << "Waiting for current write to complete, then will send "

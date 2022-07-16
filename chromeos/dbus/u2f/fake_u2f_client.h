@@ -6,7 +6,6 @@
 #define CHROMEOS_DBUS_U2F_FAKE_U2F_CLIENT_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 
 namespace chromeos {
@@ -20,8 +19,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_U2F) FakeU2FClient : public U2FClient {
   FakeU2FClient& operator=(const FakeU2FClient&) = delete;
 
   // U2FClient:
-  void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) override;
   void IsUvpaa(const u2f::IsUvpaaRequest& request,
                DBusMethodCallback<u2f::IsUvpaaResponse> callback) override;
   void IsU2FEnabled(const u2f::IsUvpaaRequest& request,

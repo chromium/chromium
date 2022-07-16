@@ -4,8 +4,8 @@
 
 #include "ash/system/power/power_button_menu_item_view.h"
 
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/scoped_light_mode_as_default.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font.h"
@@ -43,6 +43,7 @@ PowerButtonMenuItemView::PowerButtonMenuItemView(
     const std::u16string& title_text)
     : views::ImageButton(std::move(callback)), icon_(icon) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  set_suppress_default_focus_handling();
   SetFocusPainter(nullptr);
 
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());

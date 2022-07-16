@@ -16,7 +16,7 @@ ConfigureGetUpdatesRequestEvent::ConfigureGetUpdatesRequestEvent(
     const sync_pb::ClientToServerMessage& request)
     : timestamp_(timestamp), origin_(origin), request_(request) {}
 
-ConfigureGetUpdatesRequestEvent::~ConfigureGetUpdatesRequestEvent() {}
+ConfigureGetUpdatesRequestEvent::~ConfigureGetUpdatesRequestEvent() = default;
 
 std::unique_ptr<ProtocolEvent> ConfigureGetUpdatesRequestEvent::Clone() const {
   return std::make_unique<ConfigureGetUpdatesRequestEvent>(timestamp_, origin_,

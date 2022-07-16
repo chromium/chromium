@@ -10,6 +10,7 @@
 
 #include "base/debug/alias.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/windows_version.h"
@@ -54,6 +55,7 @@ void InitializeDirectWrite() {
   tried_dwrite_initialize = true;
 
   TRACE_EVENT0("fonts", "gfx::InitializeDirectWrite");
+  SCOPED_UMA_HISTOGRAM_LONG_TIMER("DirectWrite.Fonts.Gfx.InitializeTime");
 
   Microsoft::WRL::ComPtr<IDWriteFactory> factory;
   CreateDWriteFactory(&factory);
@@ -73,8 +75,7 @@ void InitializeDirectWrite() {
     // Windows (win7_rtm) may fail to map the service sections
     // (crbug.com/956064).
     constexpr int kMaxRetries = 5;
-    constexpr base::TimeDelta kRetrySleepTime =
-        base::TimeDelta::FromMicroseconds(500);
+    constexpr base::TimeDelta kRetrySleepTime = base::Microseconds(500);
     while (iteration < kMaxRetries) {
       base::PlatformThread::Sleep(kRetrySleepTime);
       direct_write_font_mgr = SkFontMgr_New_DirectWrite(factory.Get());

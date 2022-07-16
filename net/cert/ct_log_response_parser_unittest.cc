@@ -100,8 +100,7 @@ TEST(CTLogResponseParserTest, ParsesJsonSTHWithLargeTimestamp) {
   ASSERT_TRUE(FillSignedTreeHead(*large_timestamp_json, &tree_head));
 
   base::Time expected_time =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMilliseconds(INT64_C(1) << 34);
+      base::Time::UnixEpoch() + base::Milliseconds(INT64_C(1) << 34);
 
   EXPECT_EQ(tree_head.timestamp, expected_time);
 }

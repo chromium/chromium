@@ -7,7 +7,7 @@
 
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "third_party/blink/public/mojom/device/device.mojom.h"
 
 namespace content {
@@ -17,7 +17,7 @@ class RenderFrameHost;
 // A browser-side mojo service, which corresponds to the navigator.managed Web
 // API. Available only to trusted web applications.
 class DeviceServiceImpl final
-    : public content::DocumentServiceBase<blink::mojom::DeviceAPIService> {
+    : public content::DocumentService<blink::mojom::DeviceAPIService> {
  public:
   using DeviceAttributeCallback =
       base::OnceCallback<void(blink::mojom::DeviceAttributeResultPtr)>;

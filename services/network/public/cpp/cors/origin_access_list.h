@@ -43,6 +43,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessList {
   };
 
   OriginAccessList();
+
+  OriginAccessList(const OriginAccessList&) = delete;
+  OriginAccessList& operator=(const OriginAccessList&) = delete;
+
   ~OriginAccessList();
 
   // Clears the old allow list for |source_origin|, and set |patterns| to the
@@ -128,8 +132,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessList {
       MapType type);
 
   OriginPatternsMap map_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginAccessList);
 };
 
 }  // namespace cors

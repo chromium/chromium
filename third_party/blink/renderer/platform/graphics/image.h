@@ -43,7 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 class SkMatrix;
 
@@ -63,6 +63,7 @@ class WebGraphicsContext3DProviderWrapper;
 class DarkModeImageCache;
 
 struct ImageTilingInfo;
+struct ImageDrawOptions;
 
 class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   friend class GeneratedImage;
@@ -79,7 +80,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
   static scoped_refptr<Image> LoadPlatformResource(
       int resource_id,
-      ui::ResourceScaleFactor scale_factor = ui::SCALE_FACTOR_100P);
+      ui::ResourceScaleFactor scale_factor = ui::k100Percent);
 
   static PaintImage ResizeAndOrientImage(
       const PaintImage&,
@@ -89,10 +90,10 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
       InterpolationQuality = kInterpolationNone);
 
   virtual bool IsSVGImage() const { return false; }
+  virtual bool IsSVGImageForContainer() const { return false; }
   virtual bool IsBitmapImage() const { return false; }
   virtual bool IsStaticBitmapImage() const { return false; }
   virtual bool IsPlaceholderImage() const { return false; }
-  virtual bool IsGradientGeneratedImage() const { return false; }
 
   virtual bool CurrentFrameKnownToBeOpaque() = 0;
 
@@ -162,11 +163,11 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
     return SizeWithConfigAsFloat(config);
   }
 
-  IntRect Rect() const { return IntRect(IntPoint(), Size()); }
-  int width() const { return Size().Width(); }
-  int height() const { return Size().Height(); }
+  IntRect Rect() const { return IntRect(gfx::Point(), Size()); }
+  int width() const { return Size().width(); }
+  int height() const { return Size().height(); }
 
-  virtual bool GetHotSpot(IntPoint&) const { return false; }
+  virtual bool GetHotSpot(gfx::Point&) const { return false; }
 
   enum SizeAvailability {
     kSizeUnavailable,
@@ -294,15 +295,16 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
                     const cc::PaintFlags&,
                     const FloatRect& dst_rect,
                     const FloatRect& src_rect,
-                    const SkSamplingOptions&,
-                    RespectImageOrientationEnum,
-                    ImageClampingMode,
-                    ImageDecodingMode) = 0;
+                    const ImageDrawOptions& draw_options) = 0;
 
   // Apply this Image as a shader to the passed PaintFlags. This is currently
   // only used by GraphicsContext::DrawImageRRect() and to match the semantics
   // of that function the shader should use a clamping tile mode if possible.
-  virtual bool ApplyShader(cc::PaintFlags&, const SkMatrix& local_matrix);
+  virtual bool ApplyShader(cc::PaintFlags&,
+                           const SkMatrix& local_matrix,
+                           const FloatRect& dst_rect,
+                           const FloatRect& src_rect,
+                           const ImageDrawOptions& draw_options);
 
   // Use ContextProvider() for immediate use only, use
   // ContextProviderWrapper() to obtain a retainable reference. Note:
@@ -329,7 +331,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
                            const cc::PaintFlags&,
                            const FloatRect& dest_rect,
                            const ImageTilingInfo& tiling_info,
-                           RespectImageOrientationEnum);
+                           const ImageDrawOptions& draw_options);
 
   // Creates and initializes a PaintImageBuilder with the metadata flags for the
   // PaintImage.

@@ -145,7 +145,11 @@ bool DictionaryValueUpdate::GetInteger(base::StringPiece path,
 
 bool DictionaryValueUpdate::GetDouble(base::StringPiece path,
                                       double* out_value) const {
-  return value_->GetDouble(path, out_value);
+  if (absl::optional<double> value = value_->FindDoubleKey(path)) {
+    *out_value = *value;
+    return true;
+  }
+  return false;
 }
 
 bool DictionaryValueUpdate::GetString(base::StringPiece path,

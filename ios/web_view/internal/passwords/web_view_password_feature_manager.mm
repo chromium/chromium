@@ -35,6 +35,11 @@ bool WebViewPasswordFeatureManager::ShouldShowAccountStorageOptIn() const {
   return false;
 }
 
+bool WebViewPasswordFeatureManager::
+    ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const {
+  return false;
+}
+
 bool WebViewPasswordFeatureManager::ShouldShowAccountStorageReSignin(
     const GURL& current_page_url) const {
   return false;
@@ -61,6 +66,10 @@ WebViewPasswordFeatureManager::GetDefaultPasswordStore() const {
 void WebViewPasswordFeatureManager::SetDefaultPasswordStore(
     const password_manager::PasswordForm::Store& store) {
   NOTREACHED();
+}
+
+bool WebViewPasswordFeatureManager::IsDefaultPasswordStoreSet() const {
+  return false;
 }
 
 password_manager::metrics_util::PasswordAccountStorageUsageLevel

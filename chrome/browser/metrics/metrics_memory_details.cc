@@ -10,8 +10,8 @@
 
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -207,14 +207,17 @@ void MetricsMemoryDetails::UpdateSiteIsolationMetrics() {
     if (!contents)
       continue;
 
-    // If this is a RVH for a subframe; skip it to avoid double-counting the
-    // WebContents.
-    if (rvh != contents->GetMainFrame()->GetRenderViewHost())
+    // Skip if this is not the RVH for the primary main frame of |contents|, as
+    // we want to call SiteDetails::CollectSiteInfo() once per WebContents.
+    if (rvh !=
+        contents->GetPrimaryPage().GetMainDocument().GetRenderViewHost()) {
+      // |rvh| is for a subframe document or a non primary page main document.
       continue;
+    }
 
     // The rest of this block will happen only once per WebContents.
     SiteData& site_data = site_data_map[contents->GetBrowserContext()];
-    SiteDetails::CollectSiteInfo(contents, &site_data);
+    SiteDetails::CollectSiteInfo(contents->GetPrimaryPage(), &site_data);
   }
   SiteDetails::UpdateHistograms(site_data_map);
 }

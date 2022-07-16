@@ -15,8 +15,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
@@ -74,6 +74,9 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
       LoopbackCoordinator* coordinator,
       const base::UnguessableToken& group_id);
 
+  LoopbackStream(const LoopbackStream&) = delete;
+  LoopbackStream& operator=(const LoopbackStream&) = delete;
+
   ~LoopbackStream() final;
 
   bool is_recording() const { return network_ && network_->is_started(); }
@@ -112,6 +115,9 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
     FlowNetwork(scoped_refptr<base::SequencedTaskRunner> flow_task_runner,
                 const media::AudioParameters& output_params,
                 std::unique_ptr<InputSyncWriter> writer);
+
+    FlowNetwork(const FlowNetwork&) = delete;
+    FlowNetwork& operator=(const FlowNetwork&) = delete;
 
     // These must be called to override the Clock/SyncWriter before Start().
     void set_clock_for_testing(const base::TickClock* clock) { clock_ = clock; }
@@ -207,8 +213,6 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
     const std::unique_ptr<media::AudioBus> mix_bus_;
 
     SEQUENCE_CHECKER(control_sequence_);
-
-    DISALLOW_COPY_AND_ASSIGN(FlowNetwork);
   };
 
   // Reports a fatal error to the client, and then runs the BindingLostCallback.
@@ -241,8 +245,6 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<LoopbackStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoopbackStream);
 };
 
 }  // namespace audio

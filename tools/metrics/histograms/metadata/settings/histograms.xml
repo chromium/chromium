@@ -1,0 +1,649 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Settings histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Settings.AdvancedSpellcheck.OnStartup" enum="BooleanEnabled"
+    expires_after="2022-04-17">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    The state of the advanced spellcheck setting, recorded on profile startup.
+  </summary>
+</histogram>
+
+<histogram name="Settings.AllSites.DeprecatedRedirect" enum="BooleanRedirected"
+    expires_after="M101">
+  <owner>sauski@google.com</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    Whether or not navigations to the All Sites page occured because the user
+    was redirected from the deprecated Site Data page.
+  </summary>
+</histogram>
+
+<histogram name="Settings.AutocompleteSearches.OnStartup" enum="BooleanEnabled"
+    expires_after="2022-04-24">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    The state of the autocomplete searches setting, recorded on profile startup.
+  </summary>
+</histogram>
+
+<histogram name="Settings.FilterOnLoadTime" units="ms"
+    expires_after="2018-08-30">
+  <owner>gab@chromium.org</owner>
+  <summary>
+    The amount of time it took to run PrefHashFilter::FilterOnLoad on startup.
+  </summary>
+</histogram>
+
+<histogram name="Settings.FilterSerializeDataTime" units="ms"
+    expires_after="2018-08-30">
+  <owner>gab@chromium.org</owner>
+  <summary>
+    The amount of time it took to run PrefHashFilter::FilterSerializeData on the
+    UI thread prior to writing the Preferences file to disk. Only logged when
+    PrefHashFilter::FilterSerializeData actually had work to do.
+  </summary>
+</histogram>
+
+<histogram name="Settings.GivenShowHomeButton_HomePageIsNewTabPage"
+    enum="Boolean" expires_after="2022-04-17">
+  <owner>mpearson@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Whether or not the home page user preference is set to the default NTP value
+    when a profile is loaded. This is only logged if the home button is shown.
+  </summary>
+</histogram>
+
+<histogram name="Settings.HashesDictionaryTrusted" enum="BooleanValid"
+    expires_after="M77">
+  <owner>csharp@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Logged on profile load. Indicates whether the hashes dictionary for this
+    profile is trusted.
+  </summary>
+</histogram>
+
+<histogram name="Settings.Homepage.LocationType" enum="HomepageLocationType"
+    expires_after="2022-04-24">
+  <owner>bttk@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    The location type for the homepage if the homepage is enabled. Recorded on
+    deferred startup iff the homepage is enabled. Android only.
+  </summary>
+</histogram>
+
+<histogram name="Settings.HomePageEngineType" enum="OmniboxSearchEngineType"
+    expires_after="2022-04-10">
+  <owner>mpearson@chromium.org</owner>
+  <owner>csharp@chromium.org</owner>
+  <summary>
+    Tries to pretend the home page URL is a search URL, and records the search
+    engine type of that URL by comparing the TLD+1 of the home page URL with
+    those of the different known search engines. Recorded when a profile is
+    opened, if a home page URL has been set. Note that at least one profile is
+    opened on startup.
+  </summary>
+</histogram>
+
+<histogram name="Settings.HomePageIsCustomized" enum="Boolean"
+    expires_after="2020-08-28">
+  <obsolete>
+    Expired and removed from code as of 10/2020.
+  </obsolete>
+  <owner>twellington@chromium.org</owner>
+  <owner>tedchoc@chromium.org</owner>
+  <summary>
+    Whether or not the user has customized their homepage. This is recorded for
+    all users with a configurable homepage, regardless of whether they have
+    explicitly disabled the home button in settings. Recorded for Android only
+    on deferred startup and when the user changes their homepage URL.
+  </summary>
+</histogram>
+
+<histogram name="Settings.JsonDataReadSizeKilobytes" units="KB"
+    expires_after="2018-07-30">
+  <owner>gab@chromium.org</owner>
+  <summary>
+    The size (in kilobytes) of the JSON settings read from disk on startup.
+    Suffixed with the name of the corresponding JSON file.
+  </summary>
+</histogram>
+
+<histogram name="Settings.LoadCompletedTime.MD" units="ms"
+    expires_after="2020-08-01">
+  <owner>dpapad@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <summary>
+    The amount of time between the render frame host StartProvisionalLoad event
+    and the render frame DocumentOnLoadCompleted event for the MD Settings page.
+  </summary>
+</histogram>
+
+<histogram name="Settings.LoadDocumentTime.MD" units="ms"
+    expires_after="2020-08-01">
+  <owner>dpapad@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <summary>
+    The amount of time between the render frame host StartProvisionalLoad and
+    DidFinishDocumentLoad events for the MD Settings page.
+  </summary>
+</histogram>
+
+<histogram name="Settings.OpenSettingsFromMenu.PerProfileType"
+    enum="BrowserProfileType" expires_after="2021-12-31">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Records the profile type for opening the Settings page from menu.
+  </summary>
+</histogram>
+
+<histogram name="Settings.PinnedTabEngineTypes" enum="OmniboxSearchEngineType"
+    expires_after="2022-01-02">
+  <owner>mpearson@chromium.org</owner>
+  <owner>csharp@chromium.org</owner>
+  <summary>
+    Tries to pretend pinned tab URLs are search URLs, and records the search
+    engine types of those URLs by comparing the TLD+1s of the URLs with those of
+    the different known search engines. Recorded when a profile is opened, if
+    there are pinned tabs. Note that at least one profile is opened on startup.
+  </summary>
+</histogram>
+
+<histogram name="Settings.PinUnlockSetup" enum="LockScreenProgress"
+    expires_after="2022-04-10">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>jessejames@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The users progress through the pin unlock setup wizard. Each type
+    corresponds to the user completeing a different stage of the setup wizard.
+  </summary>
+</histogram>
+
+<histogram name="Settings.PreloadStatus.OnStartup" enum="BooleanEnabled"
+    expires_after="2022-04-17">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    The status of the preload setting, recorded on profile startup. Not recorded
+    for iOS where the setting does not exist.
+  </summary>
+</histogram>
+
+<histogram name="Settings.PrivacyElementInteractions"
+    enum="SettingsPrivacyElementInteractions" expires_after="2022-04-10">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>sauski@chromium.org</owner>
+  <summary>
+    Which privacy related settings elements a user interacted with. Recorded
+    every time a user interacts with an element of interest.
+  </summary>
+</histogram>
+
+<histogram name="Settings.PrivacySandbox.Enabled"
+    enum="SettingsPrivacySandboxEnabled" expires_after="2022-04-24">
+  <owner>harrisonseean@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    Whether or not privacy sandbox apis are enabled, including the current state
+    of cookie settings, and if it is disabled by policy. Recorded on profile
+    startup. Values 8, 9, and 10 were added with M92.
+  </summary>
+</histogram>
+
+<histogram name="Settings.PrivacySandbox.PrivacySandboxReferrer"
+    enum="PrivacySandboxReferrer" expires_after="M95">
+  <owner>andzaytsev@google.com</owner>
+  <owner>harrisonseean@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    Referrer of a navigation to the Privacy Sandbox UI Settings view. Recorded
+    when the user enters the view.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyCheck.ChromeCleanerResult"
+    enum="SafetyCheckChromeCleanerStatus" expires_after="2022-04-24">
+  <owner>rainhard@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Resulting state of the safety check Chrome cleaner check. Recorded when a
+    safety check is run by the user. Value 4-9 got added with M88.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyCheck.ExtensionsResult"
+    enum="SafetyCheckExtensionsStatus" expires_after="2021-06-20">
+  <owner>andzaytsev@google.com</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>Resulting state of the safety check extensions check.</summary>
+</histogram>
+
+<histogram name="Settings.SafetyCheck.Interactions"
+    enum="SettingsSafetyCheckInteractions" expires_after="2022-05-01">
+  <owner>rainhard@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>anaudrey@chromium.org</owner>
+  <summary>
+    Which user actions were taken in safety check. Recorded every time a user
+    does an interaction in safety check. Value 5 and 6 got added with M86, 7-9
+    with M87, 10 with M88, and 11 with M89.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyCheck.PasswordsResult"
+    enum="SafetyCheckPasswordsStatus" expires_after="2022-04-10">
+  <owner>andzaytsev@google.com</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>Resulting state of the safety check password check.</summary>
+</histogram>
+
+<histogram name="Settings.SafetyCheck.SafeBrowsingResult"
+    enum="SafetyCheckSafeBrowsingStatus" expires_after="2022-04-03">
+  <owner>andzaytsev@google.com</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>Resulting state of the safety check Safe Browsing check.</summary>
+</histogram>
+
+<histogram name="Settings.SafetyCheck.UpdatesResult"
+    enum="SafetyCheckUpdateStatus" expires_after="2022-04-10">
+  <owner>andzaytsev@google.com</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>Resulting state of the safety check updates check.</summary>
+</histogram>
+
+<histogram name="Settings.SearchEngines.Interactions"
+    enum="SettingsSearchEnginesInteractions" expires_after="2022-05-02">
+  <owner>yoangela@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Which Search Engines settings page elements a user interacted with. Recorded
+    every time a user interacts with an element of interest.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SearchLength" units="units" expires_after="M85">
+  <owner>dschuyler@chromium.org</owner>
+  <summary>
+    The number of characters typed in the chrome://settings page search box.
+    Intended to determine if we are making the user type too much to find what
+    they are looking for (the search is incremental).
+  </summary>
+</histogram>
+
+<histogram name="Settings.SearchLengthNoMatch" units="units"
+    expires_after="M85">
+  <owner>dschuyler@chromium.org</owner>
+  <summary>
+    If no matches are found when searching within the chrome://settings page,
+    record the length of the search text.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SearchPageMatchCount" units="units"
+    expires_after="M85">
+  <owner>dschuyler@chromium.org</owner>
+  <summary>
+    The number of search page hits within the chrome://settings page. This is
+    especially important when the count is zero (i.e. we returned no hits for a
+    given search in settings). A search is considered complete via timeout since
+    there is no concrete way to define the end of a search (the search is
+    incremental).
+  </summary>
+</histogram>
+
+<histogram name="Settings.SearchSections" enum="SettingsSections"
+    expires_after="M85">
+  <owner>dschuyler@chromium.org</owner>
+  <summary>
+    If there is no further activity in the search box for 1 second, this records
+    one tick each time a settings section is shown as a result of searching
+    withing the chrome://settings page. If multiple matches are found within the
+    same section, the section match is only recorded once.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SearchSubpageMatchCount" units="units"
+    expires_after="M85">
+  <owner>dschuyler@chromium.org</owner>
+  <summary>
+    The number of search subpage hits within the chrome://settings page. This is
+    different from Settings.SearchPageMatchCount in that it is tracking hits in
+    subpages rather than top level pages. See also
+    Settings.SearchPageMatchCount.
+  </summary>
+</histogram>
+
+<histogram name="Settings.ShowHomeButton" enum="BooleanEnabled"
+    expires_after="2022-04-17">
+  <owner>mpearson@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Whether or not the home button is enabled in user preferences when a profile
+    is loaded.
+  </summary>
+</histogram>
+
+<histogram name="Settings.ShowHomeButtonPreferenceState" enum="BooleanEnabled"
+    expires_after="M85">
+  <obsolete>
+    Expired and removed from code as of 10/2020.
+  </obsolete>
+  <owner>twellington@chromium.org</owner>
+  <owner>tedchoc@chromium.org</owner>
+  <summary>
+    If the home button is enabled or disabled. This is only recorded if the
+    force homepage feature flag is enabled or the home button is partner
+    provided. Recorded for Android only on deferred startup and when the user
+    changes their home button enabled setting.
+
+    This histogram is currently being updated to
+    ShowHomeButtonPreferenceStateManaged and will eventually be removed.
+  </summary>
+</histogram>
+
+<histogram name="Settings.ShowHomeButtonPreferenceStateChanged"
+    enum="BooleanEnabled" expires_after="M88">
+  <obsolete>
+    Removed from code as of 10/2020.
+  </obsolete>
+  <owner>twellington@chromium.org</owner>
+  <owner>tedchoc@chromium.org</owner>
+  <summary>
+    The new state of the show home button preference after it is changed by the
+    user. Recorded for Android only.
+  </summary>
+</histogram>
+
+<histogram name="Settings.ShowHomeButtonPreferenceStateManaged"
+    enum="HomeButtonPreferenceStateType" expires_after="M88">
+  <obsolete>
+    Removed from code as of 10/2020.
+  </obsolete>
+  <owner>twellington@chromium.org</owner>
+  <owner>tedchoc@chromium.org</owner>
+  <summary>
+    If the home button is enabled or disabled, either by user or by policy.
+    Recorded for Android only on deferred startup and when the user changes
+    their home button enabled setting.
+
+    Note: HomeButtonPreferenceStateType#ManagedDisabled is currently not used.
+  </summary>
+</histogram>
+
+<histogram name="Settings.StartSetAsDefault" enum="BooleanHit"
+    expires_after="M77">
+  <owner>pmonette@chromium.org</owner>
+  <summary>
+    The user clicked &quot;Make Google Chrome the default browser&quot; on the
+    settings page.
+  </summary>
+</histogram>
+
+<histogram name="Settings.StartupPageEngineTypes"
+    enum="OmniboxSearchEngineType" expires_after="2022-05-01">
+  <owner>mpearson@chromium.org</owner>
+  <owner>csharp@chromium.org</owner>
+  <summary>
+    Tries to pretend the startup page URLs are search URLs, and records the
+    search engine types of those URLs by comparing the TLD+1s of the URLs with
+    those of the different known search engines. Recorded when a profile is
+    opened, if startup page URLs have been set. Note that at least one profile
+    is opened on startup.
+  </summary>
+</histogram>
+
+<histogram name="Settings.StartupPageLoadSettings" enum="SessionStartupPref"
+    expires_after="2022-04-10">
+  <owner>mpearson@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>The startup page settings when a profile is loaded.</summary>
+</histogram>
+
+<histogram name="Settings.TimeToFirstSearch" units="ms" expires_after="M85">
+  <owner>dschuyler@chromium.org</owner>
+  <summary>
+    The time between when the chrome://settings page is opened to the first time
+    a search is done within that page. This is intended to evaluate how long a
+    user looks for a setting before giving up and searching for it.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TimeUntilInteractive" units="ms"
+    expires_after="2021-08-22">
+  <owner>dbeam@chromium.org</owner>
+  <owner>dpapad@chromium.org</owner>
+  <summary>
+    The time until the settings Web UI is loaded, rendered, and interactive for
+    users (as in they can change a setting). Automatically logged each time the
+    settings page is opened (if not closed before interactive).
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceChanged" enum="TrackedPreference"
+    expires_after="M90">
+  <owner>proberge@chromium.org</owner>
+  <summary>
+    The id of a tracked preference whose value has been changed since the last
+    time Chrome set it. Without a suffix, this histogram stands for preference
+    validation using MACs in the JSON pref files.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceCleared" enum="TrackedPreference"
+    expires_after="M90">
+  <owner>proberge@chromium.org</owner>
+  <summary>
+    The id of a tracked preference whose value has been cleared since the last
+    time Chrome set it. Without a suffix, this histogram stands for preference
+    validation using MACs in the JSON pref files.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceInitialized"
+    enum="TrackedPreference" expires_after="M90">
+  <owner>proberge@chromium.org</owner>
+  <summary>
+    The id of a tracked preference whose last value isn't known. We may be just
+    starting to track the preference, or local state may have been changed
+    outside of Chrome. This should only happen once per pref per profile.
+    Without a suffix, this histogram stands for preference validation using MACs
+    in the JSON pref files.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceMigratedLegacyDeviceId"
+    enum="TrackedPreference" expires_after="M90">
+  <owner>proberge@chromium.org</owner>
+  <summary>
+    The id of a tracked preference whose value has not changed since the last
+    time Chrome set it, but which was last set using a legacy device ID. Each
+    user should report this at most once per preference id and immediately be
+    migrated to the latest hashing model. Without a suffix, this histogram
+    stands for preference validation using MACs in the JSON pref files.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceNullInitialized"
+    enum="TrackedPreference" expires_after="M90">
+  <owner>proberge@chromium.org</owner>
+  <summary>
+    The id of a tracked preference which was initialized despite the absence of
+    a MAC as its value was NULL. Without a suffix, this histogram stands for
+    preference validation using MACs in the JSON pref files.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceReset" enum="TrackedPreference"
+    expires_after="M90">
+  <owner>proberge@chromium.org</owner>
+  <summary>The id of a tracked preference which was reset by Chrome.</summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferencesNoEnforcementOnDomain"
+    enum="BooleanEnabled" expires_after="2018-08-30">
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Whether settings enforcement was cancelled for a machine joined to a domain.
+    Reported once per session on browser startup (note: this histogram was
+    disabled for part of M40).
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceTrustedInitialized"
+    enum="TrackedPreference" expires_after="M90">
+  <owner>proberge@chromium.org</owner>
+  <summary>
+    The id of a tracked preference which was initialized despite the absence of
+    a MAC as the current MACs are trusted, inferring that this is a newly
+    tracked pref. Without a suffix, this histogram stands for preference
+    validation using MACs in the JSON pref files.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceUnchanged" enum="TrackedPreference"
+    expires_after="2021-10-25">
+  <owner>proberge@chromium.org</owner>
+  <summary>
+    The id of a tracked preference whose value has not changed since the last
+    time Chrome set it. Without a suffix, this histogram stands for preference
+    validation using MACs in the JSON pref files.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceWantedReset"
+    enum="TrackedPreference" expires_after="M90">
+  <owner>proberge@chromium.org</owner>
+  <summary>
+    The id of a tracked preference which Chrome would have reset had the config
+    allowed it.
+  </summary>
+</histogram>
+
+<histogram name="SettingsResetBubble.NumNoThanksPerReset" units="units"
+    expires_after="M85">
+  <owner>mad@chromium.org</owner>
+  <summary>
+    Counts the number of times the user clicked on the No Thanks button of the
+    settings reset bubble before clicking on the Reset button in the same Chrome
+    session.
+  </summary>
+</histogram>
+
+<histogram name="SettingsResetPrompt.ConfigError"
+    enum="SettingsResetPromptConfigError" expires_after="M82">
+  <owner>alito@chromium.org</owner>
+  <summary>
+    Indicates if an error was detected in the settings reset prompt config data
+    while initializing the reset prompt configuration.
+  </summary>
+</histogram>
+
+<histogram name="SettingsResetPrompt.DialogShown" enum="BooleanShown"
+    expires_after="M85">
+  <owner>alito@chromium.org</owner>
+  <summary>
+    Indicates whether the settings reset prompt dialog was shown to the user.
+  </summary>
+</histogram>
+
+<histogram name="SettingsResetPrompt.PromptAccepted" enum="BooleanAccepted"
+    expires_after="M95">
+  <owner>proberge@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Indicates whether the user accepted the settings reset prompt. Warning: This
+    histogram was expired in M90 and restored M92. Data may be missing M90-91.
+  </summary>
+</histogram>
+
+<histogram name="SettingsResetPrompt.PromptRequired" enum="BooleanRequired"
+    expires_after="M82">
+  <owner>alito@chromium.org</owner>
+  <summary>
+    Indicates whether the settings reset prompt should be shown to the user
+    based on the state of the user's settings.
+  </summary>
+</histogram>
+
+<histogram name="SettingsResetPrompt.ResetState"
+    enum="SettingsResetPromptResetState" expires_after="M82">
+  <owner>alito@chromium.org</owner>
+  <summary>
+    Indicates whether the settings reset prompt is enabled for the user's
+    setting, or the reason for it being disabled. Logged once after startup.
+  </summary>
+</histogram>
+
+<histogram name="SettingsResetPrompt.SettingsReset"
+    enum="SettingsResetPromptSettingsReset" expires_after="M85">
+  <owner>alito@chromium.org</owner>
+  <summary>
+    Indicates which settings were reset after the user accepted the settings
+    reset prompt.
+  </summary>
+</histogram>
+
+<histogram name="SettingsResetPrompt.TimeUntilAccepted" units="ms"
+    expires_after="M85">
+  <owner>alito@chromium.org</owner>
+  <summary>
+    The time between the settings reset prompt dialog being shown and the user
+    accepting the prompt.
+  </summary>
+</histogram>
+
+<histogram name="SettingsResetPrompt.TimeUntilCanceled" units="ms"
+    expires_after="M85">
+  <owner>alito@chromium.org</owner>
+  <summary>
+    The time between the settings reset prompt dialog being shown and the user
+    declining the prompt by clicking the cancel button.
+  </summary>
+</histogram>
+
+<histogram name="SettingsResetPrompt.TimeUntilDismissed" units="ms"
+    expires_after="M85">
+  <owner>alito@chromium.org</owner>
+  <summary>
+    The time between the settings reset prompt dialog being shown and the user
+    dismissing the prompt, for example by clicking on the 'x' in the dialog or
+    pressing the Escape key.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

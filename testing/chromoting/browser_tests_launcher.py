@@ -4,6 +4,9 @@
 
 
 """Utility script to launch browser-tests on the Chromoting bot."""
+
+from __future__ import print_function
+
 import argparse
 import time
 
@@ -67,10 +70,10 @@ def LaunchBTCommand(args, command):
     # record instances where a test passed despite a JID mismatch.
     if jids_used and host_jid.rstrip() not in jids_used:
       host_jid_mismatch = True
-      print 'Host JID mismatch. JID in host log = %s.' % host_jid.rstrip()
-      print 'Host JIDs used by test:'
+      print('Host JID mismatch. JID in host log = %s.' % host_jid.rstrip())
+      print('Host JIDs used by test:')
       for jid in jids_used:
-        print jid
+        print(jid)
 
     if host_jid_mismatch:
       # The JID for the remote-host did not match the JID that was used for this
@@ -83,7 +86,7 @@ def LaunchBTCommand(args, command):
       time.sleep(30)
       continue
     elif jids_used:
-      print 'JID used by test matched me2me host JID: %s' % host_jid
+      print('JID used by test matched me2me host JID: %s' % host_jid)
     else:
       # There wasn't a mismatch and no JIDs were returned. If no JIDs were
       # returned, that means the test didn't use any JIDs, so there is nothing
@@ -102,9 +105,9 @@ def LaunchBTCommand(args, command):
     # and, because sometimes that line gets logged even if the test
     # eventually passes, we'll also look for "(TIMED OUT)", before retrying.
     if BROWSER_NOT_STARTED_ERROR in results and TIME_OUT_INDICATOR in results:
-      print 'Browser-instance not started (http://crbug/480025). Retrying.'
+      print('Browser-instance not started (http://crbug/480025). Retrying.')
     else:
-      print 'Test failed for unknown reason. Retrying.'
+      print('Test failed for unknown reason. Retrying.')
 
     retries += 1
 
@@ -156,9 +159,9 @@ if __name__ == '__main__':
   try:
     host_logs = main(command_line_args)
     if TEST_FAILURE:
-      print '++++++++++AT LEAST 1 TEST FAILED++++++++++'
-      print FAILING_TESTS.rstrip('\n')
-      print '++++++++++++++++++++++++++++++++++++++++++'
+      print('++++++++++AT LEAST 1 TEST FAILED++++++++++')
+      print(FAILING_TESTS.rstrip('\n'))
+      print('++++++++++++++++++++++++++++++++++++++++++')
       raise Exception('At least one test failed.')
   finally:
     # Stop host and cleanup user-profile-dir.

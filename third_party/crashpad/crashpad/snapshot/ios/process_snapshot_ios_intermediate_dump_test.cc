@@ -25,6 +25,7 @@
 #include "minidump/minidump_file_writer.h"
 #include "test/errors.h"
 #include "test/scoped_temp_dir.h"
+#include "test/test_paths.h"
 #include "util/file/file_io.h"
 #include "util/file/filesystem.h"
 #include "util/file/string_file.h"
@@ -281,7 +282,6 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
 
 #if defined(ARCH_CPU_X86_64)
     thread_state_flavor_t flavor = x86_THREAD_STATE;
-    mach_msg_type_number_t state_count = x86_THREAD_STATE_COUNT;
     x86_thread_state_t state = {};
     state.tsh.flavor = x86_THREAD_STATE64;
     state.tsh.count = x86_THREAD_STATE64_COUNT;
@@ -289,7 +289,6 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
     size_t state_length = sizeof(x86_thread_state_t);
 #elif defined(ARCH_CPU_ARM64)
     thread_state_flavor_t flavor = ARM_UNIFIED_THREAD_STATE;
-    mach_msg_type_number_t state_count = ARM_UNIFIED_THREAD_STATE_COUNT;
     arm_unified_thread_state_t state = {};
     state.ash.flavor = ARM_THREAD_STATE64;
     state.ash.count = ARM_THREAD_STATE64_COUNT;
@@ -297,12 +296,10 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
     size_t state_length = sizeof(arm_unified_thread_state_t);
 #endif
     EXPECT_TRUE(writer->AddProperty(Key::kException, &exception));
-    EXPECT_TRUE(writer->AddProperty(Key::kCode, code, code_count));
-    EXPECT_TRUE(writer->AddProperty(Key::kCodeCount, &code_count));
+    EXPECT_TRUE(writer->AddProperty(Key::kCodes, code, code_count));
     EXPECT_TRUE(writer->AddProperty(Key::kFlavor, &flavor));
     EXPECT_TRUE(writer->AddPropertyBytes(
         Key::kState, reinterpret_cast<const void*>(&state), state_length));
-    EXPECT_TRUE(writer->AddProperty(Key::kStateCount, &state_count));
     uint64_t thread_id = 1;
     EXPECT_TRUE(writer->AddProperty(Key::kThreadID, &thread_id));
   }
@@ -340,9 +337,8 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
       stack_region_address += 10;
       EXPECT_TRUE(
           writer->AddProperty(Key::kStackRegionAddress, &stack_region_address));
-      constexpr char memory_region[] = "stack_data";
       EXPECT_TRUE(
-          writer->AddPropertyBytes(Key::kStackRegionData, memory_region, 10));
+          writer->AddPropertyBytes(Key::kStackRegionData, "stack_data", 10));
       {
         IOSIntermediateDumpWriter::ScopedArray memoryRegions(
             writer, Key::kThreadContextMemoryRegions);
@@ -351,9 +347,8 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
           const vm_address_t memory_region_address = 0;
           EXPECT_TRUE(writer->AddProperty(
               Key::kThreadContextMemoryRegionAddress, &memory_region_address));
-          constexpr char memory_region[] = "string";
           EXPECT_TRUE(writer->AddPropertyBytes(
-              Key::kThreadContextMemoryRegionData, memory_region, 6));
+              Key::kThreadContextMemoryRegionData, "string", 6));
         }
       }
     }
@@ -634,6 +629,15 @@ TEST_F(ProcessSnapshotIOSIntermediateDumpTest, FullReport) {
   EXPECT_FALSE(IsRegularFile(path()));
   EXPECT_TRUE(DumpSnapshot(process_snapshot));
   ExpectSnapshot(process_snapshot);
+}
+
+TEST_F(ProcessSnapshotIOSIntermediateDumpTest, FuzzTestCases) {
+  base::FilePath fuzz_path = TestPaths::TestDataRoot().Append(FILE_PATH_LITERAL(
+      "snapshot/ios/testdata/crash-1fa088dda0adb41459d063078a0f384a0bb8eefa"));
+
+  crashpad::internal::ProcessSnapshotIOSIntermediateDump process_snapshot;
+  EXPECT_TRUE(process_snapshot.Initialize(fuzz_path, {}));
+  EXPECT_TRUE(LoggingRemoveFile(path()));
 }
 
 }  // namespace

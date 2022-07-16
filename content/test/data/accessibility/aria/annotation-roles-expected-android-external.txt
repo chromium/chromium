@@ -1,0 +1,7 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, A11Y_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View text:"comment" actions:[A11Y_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="comment", roleDescription="comment"]
+++View text:"suggestion" actions:[A11Y_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="suggestion", roleDescription="suggestion"]
+++View actions:[A11Y_FOCUS] bundle:[chromeRole="paragraph"]
+++++TextView text:"This is " actions:[A11Y_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++++View text:"highlighted" actions:[A11Y_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="mark", roleDescription="highlight"]
+++++TextView text:"." actions:[A11Y_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

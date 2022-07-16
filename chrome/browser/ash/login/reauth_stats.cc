@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/user_manager/known_user.h"
 
-namespace chromeos {
+namespace ash {
 
 void RecordReauthReason(const AccountId& account_id, ReauthReason reason) {
   int old_reason;
@@ -43,4 +43,4 @@ void SendReauthReason(const AccountId& account_id, bool password_changed) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

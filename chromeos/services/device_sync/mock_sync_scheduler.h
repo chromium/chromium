@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_MOCK_SYNC_SCHEDULER_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_MOCK_SYNC_SCHEDULER_H_
 
-#include "base/macros.h"
 #include "chromeos/services/device_sync/sync_scheduler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -17,6 +16,10 @@ namespace device_sync {
 class MockSyncScheduler : public SyncScheduler {
  public:
   MockSyncScheduler();
+
+  MockSyncScheduler(const MockSyncScheduler&) = delete;
+  MockSyncScheduler& operator=(const MockSyncScheduler&) = delete;
+
   ~MockSyncScheduler() override;
 
   // SyncScheduler:
@@ -28,9 +31,6 @@ class MockSyncScheduler : public SyncScheduler {
   MOCK_CONST_METHOD0(GetStrategy, Strategy(void));
   MOCK_CONST_METHOD0(GetSyncState, SyncState(void));
   MOCK_METHOD1(OnSyncCompleted, void(bool success));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSyncScheduler);
 };
 
 }  // namespace device_sync

@@ -248,6 +248,10 @@ namespace {
       }
       this->arena_->mu.Lock();
     }
+
+    ArenaLock(const ArenaLock&) = delete;
+    ArenaLock& operator=(const ArenaLock&) = delete;
+
     ~ArenaLock() { RAW_CHECK(this->left_, "haven't left Arena region"); }
     void Leave() /*UNLOCK_FUNCTION()*/ {
       this->arena_->mu.Unlock();
@@ -265,7 +269,6 @@ namespace {
     sigset_t mask_;   // old mask of blocked signals
 #endif
     LowLevelAlloc::Arena *arena_;
-    DISALLOW_COPY_AND_ASSIGN(ArenaLock);
   };
 } // anonymous namespace
 

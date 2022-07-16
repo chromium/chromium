@@ -67,6 +67,8 @@ const base::Feature kPermissionPredictionServiceUseUrlOverride{
     "kPermissionPredictionServiceUseUrlOverride",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, permission verification and requesting is done on
+// RFH->GetLastCommittedOrigin() instead of RFH->GetLastCommittedURL().
 const base::Feature kRevisedOriginHandling{"PermissionsRevisedOriginHandling",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 

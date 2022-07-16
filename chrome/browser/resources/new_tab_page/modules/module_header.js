@@ -72,6 +72,16 @@ export class ModuleHeaderElement extends mixinBehaviors
         value: false,
       },
 
+      /**
+       * False if the header should display a menu button that lets the user
+       * open the module action menu.
+       * @type {boolean}
+       */
+      hideMenuButton: {
+        type: Boolean,
+        value: false,
+      },
+
       /** @type {string} */
       dismissText: String,
 

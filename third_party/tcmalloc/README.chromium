@@ -81,3 +81,4 @@ Modifications:
 - Fix thread-safety annotations (https://github.com/gperftools/gperftools/pull/1251)
 - Fixed -Wimplicit-int-float-conversion.
 - Fixed %rsp register clobber in linux_syscall_support.h (https://github.com/gperftools/gperftools/issues/1076)
+- Inlining of DISALLOW_COPY_AND_ASSIGN() macros

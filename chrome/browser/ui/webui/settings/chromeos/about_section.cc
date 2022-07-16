@@ -113,6 +113,19 @@ const std::vector<SearchConcept>& GetDiagnosticsAppSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetDeviceNameSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_ABOUT_DEVICE_NAME,
+       mojom::kDetailedBuildInfoSubpagePath,
+       mojom::SearchResultIcon::kChrome,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kChangeDeviceName},
+       {IDS_OS_SETTINGS_TAG_ABOUT_DEVICE_NAME_ALT1, SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const std::vector<SearchConcept>& GetAboutTermsOfServiceSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
@@ -186,6 +199,11 @@ AboutSection::AboutSection(Profile* profile,
   if (base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp)) {
     updater.AddSearchTags(GetDiagnosticsAppSearchConcepts());
   }
+
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kEnableHostnameSetting)) {
+    updater.AddSearchTags(GetDeviceNameSearchConcepts());
+  }
 }
 
 AboutSection::~AboutSection() = default;
@@ -246,6 +264,18 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     {"aboutDeviceNameInfo", IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INFO},
     {"aboutDeviceNameConstraints",
      IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_CONSTRAINTS},
+    {"aboutDeviceNameConstraintsA11yDescription",
+     IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_CONSTRAINTS_A11Y_DESCRIPTION},
+    {"aboutDeviceNameInputCharacterCount",
+     IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INPUT_COUNT},
+    {"aboutDeviceNameInputA11yLabel",
+     IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INPUT_A11Y_LABEL},
+    {"aboutDeviceNameDoneBtnA11yLabel",
+     IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_DONE_BTN_A11Y_LABEL},
+    {"aboutDeviceNameEditBtnA11yLabel",
+     IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_EDIT_BTN_A11Y_LABEL},
+    {"aboutDeviceNameEditBtnA11yDescription",
+     IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_EDIT_BTN_A11Y_DESCRIPTION},
 
     // About page, update warning dialog.
     {"aboutUpdateWarningMessage",
@@ -259,10 +289,11 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     {"aboutChannelDev", IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_DEV},
     {"aboutChannelLabel", IDS_SETTINGS_ABOUT_PAGE_CHANNEL},
     {"aboutChannelStable", IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_STABLE},
-    {"aboutChannelLongTermStable",
-     IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_STABLE_TT},
+    {"aboutChannelLongTermSupport",
+     IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_LTS},
     {"aboutCheckForUpdates", IDS_SETTINGS_ABOUT_PAGE_CHECK_FOR_UPDATES},
-    {"aboutCurrentlyOnChannel", IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL},
+    {"aboutCurrentlyOnChannelInfo",
+     IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_INFO},
     {"aboutDetailedBuildInfo", IDS_SETTINGS_ABOUT_PAGE_DETAILED_BUILD_INFO},
     {version_ui::kApplicationLabel, IDS_PRODUCT_NAME},
     {version_ui::kPlatform, IDS_PLATFORM_LABEL},
@@ -419,7 +450,7 @@ void AboutSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::SearchResultIcon::kChrome, mojom::SearchResultDefaultRank::kMedium,
       mojom::kDetailedBuildInfoSubpagePath);
   static constexpr mojom::Setting kDetailedBuildInfoSettings[] = {
-      mojom::Setting::kChangeChromeChannel,
+      mojom::Setting::kChangeChromeChannel, mojom::Setting::kChangeDeviceName,
       mojom::Setting::kCopyDetailedBuildInfo};
   RegisterNestedSettingBulk(mojom::Subpage::kDetailedBuildInfo,
                             kDetailedBuildInfoSettings, generator);

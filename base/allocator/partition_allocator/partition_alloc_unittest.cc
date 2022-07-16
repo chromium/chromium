@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <limits>
 #include <memory>
+#include <random>
 #include <vector>
 
 #include "base/allocator/buildflags.h"
@@ -18,7 +19,6 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
 #include "base/allocator/partition_allocator/partition_page.h"
@@ -26,21 +26,32 @@
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/bits.h"
+#include "base/cpu.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/memory/tagging.h"
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if defined(__ARM_FEATURE_MEMORY_TAGGING)
+#include <arm_acle.h>
+#endif
 
 #if defined(OS_POSIX)
 #include <sys/mman.h>
 #include <sys/resource.h>
 #include <sys/time.h>
 #endif  // defined(OS_POSIX)
+
+#define EXPECT_PEQ(ptr1, ptr2) \
+  { EXPECT_EQ(memory::UnmaskPtr(ptr1), memory::UnmaskPtr(ptr2)); }
+
+#define EXPECT_PNE(ptr1, ptr2) \
+  { EXPECT_NE(memory::UnmaskPtr(ptr1), memory::UnmaskPtr(ptr2)); }
 
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
@@ -149,8 +160,8 @@ const size_t kTestAllocSize = 16;
 const size_t kPointerOffset = kPartitionRefCountOffsetAdjustment;
 const size_t kExtraAllocSize = kInSlotRefCountBufferSize;
 #else
-const size_t kPointerOffset = kCookieSize + kPartitionRefCountOffsetAdjustment;
-const size_t kExtraAllocSize = kCookieSize * 2 + kInSlotRefCountBufferSize;
+const size_t kPointerOffset = kPartitionRefCountOffsetAdjustment;
+const size_t kExtraAllocSize = kCookieSize + kInSlotRefCountBufferSize;
 #endif
 const size_t kRealAllocSize =
     bits::AlignUp(kTestAllocSize + kExtraAllocSize, kAlignment);
@@ -193,17 +204,30 @@ class PartitionAllocTest : public testing::Test {
 
   void SetUp() override {
     PartitionAllocGlobalInit(HandleOOM);
-    allocator.init({PartitionOptions::AlignedAlloc::kDisallowed,
-                    PartitionOptions::ThreadCache::kDisabled,
-                    PartitionOptions::Quarantine::kDisallowed,
-                    PartitionOptions::Cookies::kAllowed,
-                    PartitionOptions::RefCount::kAllowed});
+    allocator.init({
+      PartitionOptions::AlignedAlloc::kDisallowed,
+          PartitionOptions::ThreadCache::kDisabled,
+          PartitionOptions::Quarantine::kDisallowed,
+          PartitionOptions::Cookie::kAllowed,
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+          PartitionOptions::BackupRefPtr::kEnabled,
+#else
+          PartitionOptions::BackupRefPtr::kDisabled,
+#endif
+          PartitionOptions::UseConfigurablePool::kNo,
+          PartitionOptions::LazyCommit::kEnabled
+    });
     aligned_allocator.init({PartitionOptions::AlignedAlloc::kAllowed,
                             PartitionOptions::ThreadCache::kDisabled,
                             PartitionOptions::Quarantine::kDisallowed,
-                            PartitionOptions::Cookies::kDisallowed,
-                            PartitionOptions::RefCount::kDisallowed});
+                            PartitionOptions::Cookie::kDisallowed,
+                            PartitionOptions::BackupRefPtr::kDisabled,
+                            PartitionOptions::UseConfigurablePool::kNo,
+                            PartitionOptions::LazyCommit::kEnabled});
     test_bucket_index_ = SizeToIndex(kRealAllocSize);
+
+    allocator.root()->UncapEmptySlotSpanMemoryForTesting();
+    aligned_allocator.root()->UncapEmptySlotSpanMemoryForTesting();
   }
 
   size_t SizeToIndex(size_t size) {
@@ -248,16 +272,18 @@ class PartitionAllocTest : public testing::Test {
       else if (i == num_slots - 1)
         last = allocator.root()->AdjustPointerForExtrasSubtract(ptr);
     }
-    EXPECT_EQ(SlotSpan::FromSlotStartPtr(first),
-              SlotSpan::FromSlotStartPtr(last));
+    EXPECT_EQ(SlotSpan::FromSlotStartPtr(base::memory::UnmaskPtr(first)),
+              SlotSpan::FromSlotStartPtr(base::memory::UnmaskPtr(last)));
     if (bucket->num_system_pages_per_slot_span ==
         NumSystemPagesPerPartitionPage())
-      EXPECT_EQ(reinterpret_cast<size_t>(first) & PartitionPageBaseMask(),
-                reinterpret_cast<size_t>(last) & PartitionPageBaseMask());
+      EXPECT_EQ(reinterpret_cast<size_t>(base::memory::UnmaskPtr(first)) &
+                    PartitionPageBaseMask(),
+                reinterpret_cast<size_t>(base::memory::UnmaskPtr(last)) &
+                    PartitionPageBaseMask());
     EXPECT_EQ(num_slots,
               static_cast<size_t>(
                   bucket->active_slot_spans_head->num_allocated_slots));
-    EXPECT_EQ(nullptr, bucket->active_slot_spans_head->freelist_head);
+    EXPECT_EQ(nullptr, bucket->active_slot_spans_head->get_freelist_head());
     EXPECT_TRUE(bucket->is_valid());
     EXPECT_TRUE(bucket->active_slot_spans_head !=
                 SlotSpan::get_sentinel_slot_span());
@@ -356,7 +382,12 @@ class PartitionAllocTest : public testing::Test {
 
   void RunRefCountReallocSubtest(size_t orig_size, size_t new_size);
 
-  base::test::ScopedFeatureList scoped_feature_list;
+  NOINLINE MALLOC_FN void* Alloc(size_t size) {
+    return allocator.root()->Alloc(size, "");
+  }
+
+  NOINLINE void Free(void* ptr) { allocator.root()->Free(ptr); }
+
   PartitionAllocator<base::internal::ThreadSafe> allocator;
   PartitionAllocator<base::internal::ThreadSafe> aligned_allocator;
   size_t test_bucket_index_;
@@ -377,7 +408,8 @@ void FreeFullSlotSpan(PartitionRoot<base::internal::ThreadSafe>* root,
   char* ptr = reinterpret_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span));
   size_t i;
   for (i = 0; i < num_slots; ++i) {
-    root->Free(ptr + kPointerOffset);
+    // Remask is needed here because each slot can have a different tag.
+    root->Free(memory::RemaskPtr(ptr + kPointerOffset));
     ptr += size;
   }
 }
@@ -478,7 +510,8 @@ TEST_F(PartitionAllocTest, MultiAlloc) {
       allocator.root()->Alloc(kTestAllocSize, type_name));
   EXPECT_TRUE(ptr1);
   EXPECT_TRUE(ptr2);
-  ptrdiff_t diff = ptr2 - ptr1;
+  ptrdiff_t diff = reinterpret_cast<char*>(base::memory::UnmaskPtr(ptr2)) -
+                   reinterpret_cast<char*>(base::memory::UnmaskPtr(ptr1));
   EXPECT_EQ(static_cast<ptrdiff_t>(kRealAllocSize), diff);
 
   // Check that we re-use the just-freed slot.
@@ -486,19 +519,19 @@ TEST_F(PartitionAllocTest, MultiAlloc) {
   ptr2 = reinterpret_cast<char*>(
       allocator.root()->Alloc(kTestAllocSize, type_name));
   EXPECT_TRUE(ptr2);
-  diff = ptr2 - ptr1;
+  diff = base::memory::UnmaskPtr(ptr2) - base::memory::UnmaskPtr(ptr1);
   EXPECT_EQ(static_cast<ptrdiff_t>(kRealAllocSize), diff);
   allocator.root()->Free(ptr1);
   ptr1 = reinterpret_cast<char*>(
       allocator.root()->Alloc(kTestAllocSize, type_name));
   EXPECT_TRUE(ptr1);
-  diff = ptr2 - ptr1;
+  diff = base::memory::UnmaskPtr(ptr2) - base::memory::UnmaskPtr(ptr1);
   EXPECT_EQ(static_cast<ptrdiff_t>(kRealAllocSize), diff);
 
   char* ptr3 = reinterpret_cast<char*>(
       allocator.root()->Alloc(kTestAllocSize, type_name));
   EXPECT_TRUE(ptr3);
-  diff = ptr3 - ptr1;
+  diff = base::memory::UnmaskPtr(ptr3) - base::memory::UnmaskPtr(ptr1);
   EXPECT_EQ(static_cast<ptrdiff_t>(kRealAllocSize * 2), diff);
 
   allocator.root()->Free(ptr1);
@@ -563,9 +596,9 @@ TEST_F(PartitionAllocTest, SlotSpanTransitions) {
   EXPECT_EQ(nullptr, slot_span2->next_slot_span);
 
   // Bounce slot_span1 back into the non-full list then fill it up again.
-  char* ptr =
+  char* ptr = memory::RemaskPtr(
       reinterpret_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span1)) +
-      kPointerOffset;
+      kPointerOffset);
   allocator.root()->Free(ptr);
   EXPECT_EQ(slot_span1, bucket->active_slot_spans_head);
   (void)allocator.root()->Alloc(kTestAllocSize, type_name);
@@ -581,26 +614,28 @@ TEST_F(PartitionAllocTest, SlotSpanTransitions) {
   EXPECT_EQ(nullptr, slot_span3->next_slot_span);
 
   // Work out a pointer into slot_span2 and free it.
-  ptr = reinterpret_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span2)) +
-        kPointerOffset;
+  ptr = memory::RemaskPtr(
+      reinterpret_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span2)) +
+      kPointerOffset);
   allocator.root()->Free(ptr);
   // Trying to allocate at this time should cause us to cycle around to
   // slot_span2 and find the recently freed slot.
   char* new_ptr = reinterpret_cast<char*>(
       allocator.root()->Alloc(kTestAllocSize, type_name));
-  EXPECT_EQ(ptr, new_ptr);
+  EXPECT_PEQ(ptr, new_ptr);
   EXPECT_EQ(slot_span2, bucket->active_slot_spans_head);
   EXPECT_EQ(slot_span3, slot_span2->next_slot_span);
 
   // Work out a pointer into slot_span1 and free it. This should pull the slot
   // span back into the list of available slot spans.
-  ptr = reinterpret_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span1)) +
-        kPointerOffset;
+  ptr = memory::RemaskPtr(
+      reinterpret_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span1)) +
+      kPointerOffset);
   allocator.root()->Free(ptr);
   // This allocation should be satisfied by slot_span1.
   new_ptr = reinterpret_cast<char*>(
       allocator.root()->Alloc(kTestAllocSize, type_name));
-  EXPECT_EQ(ptr, new_ptr);
+  EXPECT_PEQ(ptr, new_ptr);
   EXPECT_EQ(slot_span1, bucket->active_slot_spans_head);
   EXPECT_EQ(slot_span2, slot_span1->next_slot_span);
 
@@ -720,17 +755,17 @@ TEST_F(PartitionAllocTest, Alloc) {
 
   // Change the size of the realloc, remaining inside the same bucket.
   void* new_ptr = allocator.root()->Realloc(ptr, base_size + 2, type_name);
-  EXPECT_EQ(ptr, new_ptr);
+  EXPECT_PEQ(ptr, new_ptr);
   new_ptr = allocator.root()->Realloc(ptr, base_size + 1, type_name);
-  EXPECT_EQ(ptr, new_ptr);
+  EXPECT_PEQ(ptr, new_ptr);
   new_ptr =
       allocator.root()->Realloc(ptr, base_size + kSmallestBucket, type_name);
-  EXPECT_EQ(ptr, new_ptr);
+  EXPECT_PEQ(ptr, new_ptr);
 
   // Change the size of the realloc, switching buckets.
   new_ptr = allocator.root()->Realloc(ptr, base_size + kSmallestBucket + 1,
                                       type_name);
-  EXPECT_NE(new_ptr, ptr);
+  EXPECT_PNE(new_ptr, ptr);
   // Check that the realloc copied correctly.
   char* new_char_ptr = static_cast<char*>(new_ptr);
   EXPECT_EQ(*new_char_ptr, 'A');
@@ -746,13 +781,13 @@ TEST_F(PartitionAllocTest, Alloc) {
   // do an alloc of the old allocation size and check that the old allocation
   // address is at the head of the freelist and reused.
   void* reused_ptr = allocator.root()->Alloc(base_size + 1, type_name);
-  EXPECT_EQ(reused_ptr, orig_ptr);
+  EXPECT_PEQ(reused_ptr, orig_ptr);
   allocator.root()->Free(reused_ptr);
 
   // Downsize the realloc.
   ptr = new_ptr;
   new_ptr = allocator.root()->Realloc(ptr, base_size + 1, type_name);
-  EXPECT_EQ(new_ptr, orig_ptr);
+  EXPECT_PEQ(new_ptr, orig_ptr);
   new_char_ptr = static_cast<char*>(new_ptr);
   EXPECT_EQ(*new_char_ptr, 'B');
   *new_char_ptr = 'C';
@@ -760,7 +795,7 @@ TEST_F(PartitionAllocTest, Alloc) {
   // Upsize the realloc to outside the partition.
   ptr = new_ptr;
   new_ptr = allocator.root()->Realloc(ptr, kMaxBucketed + 1, type_name);
-  EXPECT_NE(new_ptr, ptr);
+  EXPECT_PNE(new_ptr, ptr);
   new_char_ptr = static_cast<char*>(new_ptr);
   EXPECT_EQ(*new_char_ptr, 'C');
   *new_char_ptr = 'D';
@@ -780,8 +815,8 @@ TEST_F(PartitionAllocTest, Alloc) {
   // Downsize the realloc to inside the partition.
   ptr = new_ptr;
   new_ptr = allocator.root()->Realloc(ptr, base_size + 1, type_name);
-  EXPECT_NE(new_ptr, ptr);
-  EXPECT_EQ(new_ptr, orig_ptr);
+  EXPECT_PNE(new_ptr, ptr);
+  EXPECT_PEQ(new_ptr, orig_ptr);
   new_char_ptr = static_cast<char*>(new_ptr);
   EXPECT_EQ(*new_char_ptr, 'F');
 
@@ -815,7 +850,7 @@ TEST_F(PartitionAllocTest, AllocSizes) {
 
   {
     const size_t size =
-        (((PartitionPageSize() * kMaxPartitionPagesPerSlotSpan) -
+        (((PartitionPageSize() * kMaxPartitionPagesPerRegularSlotSpan) -
           SystemPageSize()) /
          2) -
         kExtraAllocSize;
@@ -844,9 +879,9 @@ TEST_F(PartitionAllocTest, AllocSizes) {
     EXPECT_EQ(0, slot_span->num_allocated_slots);
     EXPECT_EQ(0, slot_span->num_unprovisioned_slots);
     void* new_ptr_1 = allocator.root()->Alloc(size, type_name);
-    EXPECT_EQ(ptr2, new_ptr_1);
+    EXPECT_PEQ(ptr2, new_ptr_1);
     void* new_ptr_2 = allocator.root()->Alloc(size, type_name);
-    EXPECT_EQ(ptr3, new_ptr_2);
+    EXPECT_PEQ(ptr3, new_ptr_2);
 
     allocator.root()->Free(new_ptr_1);
     allocator.root()->Free(new_ptr_2);
@@ -873,6 +908,7 @@ TEST_F(PartitionAllocTest, AllocSizes) {
     // Check a more reasonable, but still direct mapped, size.
     // Chop a system page and a byte off to test for rounding errors.
     size_t size = 20 * 1024 * 1024;
+    ASSERT_GT(size, kMaxBucketed);
     size -= SystemPageSize();
     size -= 1;
     void* ptr = allocator.root()->Alloc(size, type_name);
@@ -893,7 +929,9 @@ TEST_F(PartitionAllocTest, AllocSizes) {
 // Test that we can fetch the real allocated size after an allocation.
 TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   void* ptr;
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   void* slot_start;
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   size_t requested_size, actual_capacity, predicted_capacity;
 
   // Allocate something small.
@@ -902,14 +940,17 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
       allocator.root()->AllocationCapacityFromRequestedSize(requested_size);
   ptr = allocator.root()->Alloc(requested_size, type_name);
   EXPECT_TRUE(ptr);
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   slot_start = reinterpret_cast<char*>(ptr) - allocator.root()->extras_offset;
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_LT(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; ++offset) {
-    EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-              slot_start);
+    EXPECT_PEQ(
+        PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+        slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   allocator.root()->Free(ptr);
@@ -921,14 +962,17 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
       allocator.root()->AllocationCapacityFromRequestedSize(requested_size);
   ptr = allocator.root()->Alloc(requested_size, type_name);
   EXPECT_TRUE(ptr);
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   slot_start = reinterpret_cast<char*>(ptr) - allocator.root()->extras_offset;
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_EQ(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; offset += 877) {
-    EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-              slot_start);
+    EXPECT_PEQ(
+        PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+        slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   allocator.root()->Free(ptr);
@@ -945,14 +989,17 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
       allocator.root()->AllocationCapacityFromRequestedSize(requested_size);
   ptr = allocator.root()->Alloc(requested_size, type_name);
   EXPECT_TRUE(ptr);
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   slot_start = reinterpret_cast<char*>(ptr) - allocator.root()->extras_offset;
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_EQ(requested_size + SystemPageSize(), actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; offset += 4999) {
-    EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-              slot_start);
+    EXPECT_PEQ(
+        PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+        slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -962,14 +1009,17 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
       allocator.root()->AllocationCapacityFromRequestedSize(requested_size);
   ptr = allocator.root()->Alloc(requested_size, type_name);
   EXPECT_TRUE(ptr);
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   slot_start = reinterpret_cast<char*>(ptr) - allocator.root()->extras_offset;
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_EQ(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; offset += 4999) {
-    EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-              slot_start);
+    EXPECT_PEQ(
+        PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+        slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -985,14 +1035,17 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
         allocator.root()->AllocationCapacityFromRequestedSize(requested_size);
     ptr = allocator.root()->Alloc(requested_size, type_name);
     EXPECT_TRUE(ptr);
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
     slot_start = reinterpret_cast<char*>(ptr) - allocator.root()->extras_offset;
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
     actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
     EXPECT_EQ(predicted_capacity, actual_capacity);
     EXPECT_LT(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     for (size_t offset = 0; offset < requested_size; offset += 16111) {
-      EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-                slot_start);
+      EXPECT_PEQ(
+          PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+          slot_start);
     }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
     allocator.root()->Free(ptr);
@@ -1029,8 +1082,9 @@ TEST_F(PartitionAllocTest, GetSlotStartMultiplePages) {
     char* slot_start =
         reinterpret_cast<char*>(ptr) - allocator.root()->extras_offset;
     for (size_t offset = 0; offset < requested_size; offset += 13) {
-      EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-                slot_start);
+      EXPECT_PEQ(
+          PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+          slot_start);
     }
     allocator.root()->Free(ptr);
   }
@@ -1047,8 +1101,8 @@ TEST_F(PartitionAllocTest, Realloc) {
   // realloc(ptr, 0) should be equivalent to free().
   void* ptr2 = allocator.root()->Realloc(ptr, 0, type_name);
   EXPECT_EQ(nullptr, ptr2);
-  EXPECT_EQ(allocator.root()->AdjustPointerForExtrasSubtract(ptr),
-            slot_span->freelist_head);
+  EXPECT_PEQ(allocator.root()->AdjustPointerForExtrasSubtract(ptr),
+             slot_span->get_freelist_head());
 
   // Test that growing an allocation with realloc() copies everything from the
   // old allocation.
@@ -1058,7 +1112,7 @@ TEST_F(PartitionAllocTest, Realloc) {
   ptr = allocator.root()->Alloc(size, type_name);
   memset(ptr, 'A', size);
   ptr2 = allocator.root()->Realloc(ptr, size + 1, type_name);
-  EXPECT_NE(ptr, ptr2);
+  EXPECT_PNE(ptr, ptr2);
   char* char_ptr2 = static_cast<char*>(ptr2);
   EXPECT_EQ('A', char_ptr2[0]);
   EXPECT_EQ('A', char_ptr2[size - 1]);
@@ -1070,7 +1124,7 @@ TEST_F(PartitionAllocTest, Realloc) {
   // from the old allocation. Use |size - 1| to test what happens to the extra
   // space before the cookie.
   ptr = allocator.root()->Realloc(ptr2, size - 1, type_name);
-  EXPECT_NE(ptr2, ptr);
+  EXPECT_PNE(ptr2, ptr);
   char* char_ptr = static_cast<char*>(ptr);
   EXPECT_EQ('A', char_ptr[0]);
   EXPECT_EQ('A', char_ptr[size - 2]);
@@ -1083,40 +1137,46 @@ TEST_F(PartitionAllocTest, Realloc) {
   // Single-slot slot spans...
   // Test that growing an allocation with realloc() copies everything from the
   // old allocation.
-  size = 200000;
+  size = MaxRegularSlotSpanSize() + 1;
+  ASSERT_LE(2 * size, kMaxBucketed);  // should be in single-slot span range
   // Confirm size doesn't fill the entire slot.
   ASSERT_LT(size, allocator.root()->AllocationCapacityFromRequestedSize(size));
   ptr = allocator.root()->Alloc(size, type_name);
   memset(ptr, 'A', size);
   ptr2 = allocator.root()->Realloc(ptr, size * 2, type_name);
-  EXPECT_NE(ptr, ptr2);
+  EXPECT_PNE(ptr, ptr2);
   char_ptr2 = static_cast<char*>(ptr2);
   EXPECT_EQ('A', char_ptr2[0]);
   EXPECT_EQ('A', char_ptr2[size - 1]);
 #if EXPENSIVE_DCHECKS_ARE_ON()
   EXPECT_EQ(kUninitializedByte, static_cast<unsigned char>(char_ptr2[size]));
 #endif
+  allocator.root()->Free(ptr2);
 
   // Test that shrinking an allocation with realloc() also copies everything
   // from the old allocation.
-  ptr = allocator.root()->Realloc(ptr2, size / 2, type_name);
-  EXPECT_NE(ptr2, ptr);
-  char_ptr = static_cast<char*>(ptr);
-  EXPECT_EQ('A', char_ptr[0]);
-  EXPECT_EQ('A', char_ptr[size / 2 - 1]);
+  size = 2 * (MaxRegularSlotSpanSize() + 1);
+  ASSERT_GT(size / 2, MaxRegularSlotSpanSize());  // in single-slot span range
+  ptr = allocator.root()->Alloc(size, type_name);
+  memset(ptr, 'A', size);
+  ptr2 = allocator.root()->Realloc(ptr2, size / 2, type_name);
+  EXPECT_PNE(ptr, ptr2);
+  char_ptr2 = static_cast<char*>(ptr2);
+  EXPECT_EQ('A', char_ptr2[0]);
+  EXPECT_EQ('A', char_ptr2[size / 2 - 1]);
 #if DCHECK_IS_ON()
   // For single-slot slot spans, the cookie is always placed immediately after
   // the allocation.
-  EXPECT_EQ(kCookieValue[0], static_cast<unsigned char>(char_ptr[size / 2]));
+  EXPECT_EQ(kCookieValue[0], static_cast<unsigned char>(char_ptr2[size / 2]));
 #endif
-
-  allocator.root()->Free(ptr);
+  allocator.root()->Free(ptr2);
 
   // Test that shrinking a direct mapped allocation happens in-place.
   // Pick a large size so that Realloc doesn't think it's worthwhile to
   // downsize even if one less super page is used (due to high granularity on
   // 64-bit systems).
   size = 10 * kSuperPageSize + SystemPageSize() - 42;
+  ASSERT_GT(size - 32 * SystemPageSize(), kMaxBucketed);
   ptr = allocator.root()->Alloc(size, type_name);
   size_t actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
   ptr2 = allocator.root()->Realloc(ptr, size - SystemPageSize(), type_name);
@@ -1132,7 +1192,7 @@ TEST_F(PartitionAllocTest, Realloc) {
   // Test that a previously in-place shrunk direct mapped allocation can be
   // expanded up again up to its original size.
   ptr = allocator.root()->Realloc(ptr3, size, type_name);
-  EXPECT_EQ(ptr3, ptr);
+  EXPECT_PEQ(ptr3, ptr);
   EXPECT_EQ(actual_capacity, allocator.root()->AllocationCapacityFromPtr(ptr));
 
   // Test that the allocation can be expanded in place up to its capacity.
@@ -1162,6 +1222,7 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAligned) {
     // downsize even if one less super page is used (due to high granularity on
     // 64-bit systems), even if the alignment padding is taken out.
     size_t size = 10 * kSuperPageSize + SystemPageSize() - 42;
+    ASSERT_GT(size, kMaxBucketed);
     void* ptr =
         allocator.root()->AllocFlagsInternal(0, size, alignment, type_name);
     size_t actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
@@ -1192,7 +1253,7 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAligned) {
     // Test that a direct mapped allocation is performed not in-place when the
     // new size is small enough.
     ptr3 = allocator.root()->Realloc(ptr2, SystemPageSize(), type_name);
-    EXPECT_NE(ptr2, ptr3);
+    EXPECT_PNE(ptr2, ptr3);
 
     allocator.root()->Free(ptr3);
   }
@@ -1202,18 +1263,20 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
   // Pick size such that the alignment will put it cross the super page
   // boundary.
   size_t size = 2 * kSuperPageSize - kMaxSupportedAlignment + SystemPageSize();
+  ASSERT_GT(size, kMaxBucketed);
   void* ptr = allocator.root()->AllocFlagsInternal(
       0, size, kMaxSupportedAlignment, type_name);
   // Reallocating with the same size will actually relocate, because without a
   // need for alignment we can downsize the reservation significantly.
   void* ptr2 = allocator.root()->Realloc(ptr, size, type_name);
-  EXPECT_NE(ptr, ptr2);
+  EXPECT_PNE(ptr, ptr2);
   allocator.root()->Free(ptr2);
 
   // Again pick size such that the alignment will put it cross the super page
   // boundary, but this time make it so large that Realloc doesn't fing it worth
   // shrinking.
   size = 10 * kSuperPageSize - kMaxSupportedAlignment + SystemPageSize();
+  ASSERT_GT(size, kMaxBucketed);
   ptr = allocator.root()->AllocFlagsInternal(0, size, kMaxSupportedAlignment,
                                              type_name);
   ptr2 = allocator.root()->Realloc(ptr, size, type_name);
@@ -1222,13 +1285,7 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
 }
 
 // Tests the handing out of freelists for partial slot spans.
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// Bulk-disabled on mac-arm64 for bot stabilization: https://crbug.com/1154345
-#define MAYBE_PartialPageFreelists DISABLED_PartialPageFreelists
-#else
-#define MAYBE_PartialPageFreelists PartialPageFreelists
-#endif
-TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
+TEST_F(PartitionAllocTest, PartialPageFreelists) {
   size_t big_size = SystemPageSize() - kExtraAllocSize;
   size_t bucket_index = SizeToIndex(big_size + kExtraAllocSize);
   PartitionRoot<ThreadSafe>::Bucket* bucket =
@@ -1247,25 +1304,25 @@ TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
   // The freelist should have one entry, because we were able to exactly fit
   // one object slot and one freelist pointer (the null that the head points
   // to) into a system page.
-  EXPECT_FALSE(slot_span->freelist_head);
+  EXPECT_FALSE(slot_span->get_freelist_head());
   EXPECT_EQ(1, slot_span->num_allocated_slots);
   EXPECT_EQ(3, slot_span->num_unprovisioned_slots);
 
   void* ptr2 = allocator.root()->Alloc(big_size, type_name);
   EXPECT_TRUE(ptr2);
-  EXPECT_FALSE(slot_span->freelist_head);
+  EXPECT_FALSE(slot_span->get_freelist_head());
   EXPECT_EQ(2, slot_span->num_allocated_slots);
   EXPECT_EQ(2, slot_span->num_unprovisioned_slots);
 
   void* ptr3 = allocator.root()->Alloc(big_size, type_name);
   EXPECT_TRUE(ptr3);
-  EXPECT_FALSE(slot_span->freelist_head);
+  EXPECT_FALSE(slot_span->get_freelist_head());
   EXPECT_EQ(3, slot_span->num_allocated_slots);
   EXPECT_EQ(1, slot_span->num_unprovisioned_slots);
 
   void* ptr4 = allocator.root()->Alloc(big_size, type_name);
   EXPECT_TRUE(ptr4);
-  EXPECT_FALSE(slot_span->freelist_head);
+  EXPECT_FALSE(slot_span->get_freelist_head());
   EXPECT_EQ(4, slot_span->num_allocated_slots);
   EXPECT_EQ(0, slot_span->num_unprovisioned_slots);
 
@@ -1289,11 +1346,11 @@ TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
   allocator.root()->Free(ptr6);
   EXPECT_NE(-1, slot_span->empty_cache_index);
   EXPECT_NE(-1, slot_span2->empty_cache_index);
-  EXPECT_TRUE(slot_span2->freelist_head);
+  EXPECT_TRUE(slot_span2->get_freelist_head());
   EXPECT_EQ(0, slot_span2->num_allocated_slots);
 
-  // Size that doesn't divide the system page size.
-  size_t non_dividing_size = 2100 - kExtraAllocSize;
+  // Size that's just above half a page.
+  size_t non_dividing_size = SystemPageSize() / 2 + 1 - kExtraAllocSize;
   bucket_index = SizeToIndex(non_dividing_size + kExtraAllocSize);
   bucket = &allocator.root()->buckets[bucket_index];
   EXPECT_EQ(nullptr, bucket->empty_slot_spans_head);
@@ -1308,19 +1365,22 @@ TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
       bucket->slot_size;
   const size_t expected_slots = kNumBucketsPerOrderBits == 3 ? 16u : 24u;
   EXPECT_EQ(expected_slots, total_slots);
-  EXPECT_FALSE(slot_span->freelist_head);
+  EXPECT_FALSE(slot_span->get_freelist_head());
   EXPECT_EQ(1, slot_span->num_allocated_slots);
   EXPECT_EQ(expected_slots - 1, slot_span->num_unprovisioned_slots);
 
   ptr2 = allocator.root()->Alloc(non_dividing_size, type_name);
   EXPECT_TRUE(ptr2);
-  EXPECT_TRUE(slot_span->freelist_head);
+  EXPECT_TRUE(slot_span->get_freelist_head());
   EXPECT_EQ(2, slot_span->num_allocated_slots);
+  // 2 slots got provisioned: the first one fills the rest of the first (already
+  // provision page) and exceeds it by just a tad, thus leading to provisioning
+  // a new page, and the second one fully fits within that new page.
   EXPECT_EQ(expected_slots - 3, slot_span->num_unprovisioned_slots);
 
   ptr3 = allocator.root()->Alloc(non_dividing_size, type_name);
   EXPECT_TRUE(ptr3);
-  EXPECT_FALSE(slot_span->freelist_head);
+  EXPECT_FALSE(slot_span->get_freelist_head());
   EXPECT_EQ(3, slot_span->num_allocated_slots);
   EXPECT_EQ(expected_slots - 3, slot_span->num_unprovisioned_slots);
 
@@ -1328,7 +1388,7 @@ TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
   allocator.root()->Free(ptr2);
   allocator.root()->Free(ptr3);
   EXPECT_NE(-1, slot_span->empty_cache_index);
-  EXPECT_TRUE(slot_span2->freelist_head);
+  EXPECT_TRUE(slot_span2->get_freelist_head());
   EXPECT_EQ(0, slot_span2->num_allocated_slots);
 
   // And test a couple of sizes that do not cross SystemPageSize() with a
@@ -1372,7 +1432,7 @@ TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
             slot_span->num_unprovisioned_slots);
 
   allocator.root()->Free(ptr);
-  EXPECT_TRUE(slot_span->freelist_head);
+  EXPECT_TRUE(slot_span->get_freelist_head());
   EXPECT_EQ(0, slot_span->num_allocated_slots);
 
   static_assert(kExtraAllocSize < 64, "");
@@ -1399,7 +1459,7 @@ TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
             slot_span->num_unprovisioned_slots);
 
   allocator.root()->Free(ptr);
-  EXPECT_TRUE(slot_span->freelist_head);
+  EXPECT_TRUE(slot_span->get_freelist_head());
   EXPECT_EQ(0, slot_span->num_allocated_slots);
 
   // And try an allocation size (against the generic allocator) that is
@@ -1413,7 +1473,7 @@ TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
   EXPECT_EQ(1, slot_span->num_allocated_slots);
   // Only the first slot was provisioned, and that's the one that was just
   // allocated so the free list is empty.
-  EXPECT_TRUE(!slot_span->freelist_head);
+  EXPECT_TRUE(!slot_span->get_freelist_head());
   total_slots =
       (slot_span->bucket->num_system_pages_per_slot_span * SystemPageSize()) /
       (page_and_a_half_size + kExtraAllocSize);
@@ -1424,7 +1484,7 @@ TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
       allocator.root()->AdjustPointerForExtrasSubtract(ptr));
   EXPECT_EQ(2, slot_span->num_allocated_slots);
   // As above, only one slot was provisioned.
-  EXPECT_TRUE(!slot_span->freelist_head);
+  EXPECT_TRUE(!slot_span->get_freelist_head());
   EXPECT_EQ(total_slots - 2, slot_span->num_unprovisioned_slots);
   allocator.root()->Free(ptr);
   allocator.root()->Free(ptr2);
@@ -1436,7 +1496,7 @@ TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
   slot_span = SlotSpan::FromSlotStartPtr(
       allocator.root()->AdjustPointerForExtrasSubtract(ptr));
   EXPECT_EQ(1, slot_span->num_allocated_slots);
-  EXPECT_TRUE(slot_span->freelist_head);
+  EXPECT_TRUE(slot_span->get_freelist_head());
   total_slots =
       (slot_span->bucket->num_system_pages_per_slot_span * SystemPageSize()) /
       (page_size + kExtraAllocSize);
@@ -1554,10 +1614,10 @@ TEST_F(PartitionAllocTest, MappingCollision) {
   // with the goal of tripping up alignment of the next mapping.
   map1 = AllocPages(page_base - PageAllocationGranularity(),
                     PageAllocationGranularity(), PageAllocationGranularity(),
-                    PageReadWrite, PageTag::kPartitionAlloc);
+                    PageReadWriteTagged, PageTag::kPartitionAlloc);
   EXPECT_TRUE(map1);
   map2 = AllocPages(page_base + kSuperPageSize, PageAllocationGranularity(),
-                    PageAllocationGranularity(), PageReadWrite,
+                    PageAllocationGranularity(), PageReadWriteTagged,
                     PageTag::kPartitionAlloc);
   EXPECT_TRUE(map2);
   EXPECT_TRUE(TrySetSystemPagesAccess(map1, PageAllocationGranularity(),
@@ -1619,12 +1679,12 @@ TEST_F(PartitionAllocTest, FreeCache) {
   allocator.root()->Free(ptr);
   EXPECT_EQ(0, slot_span->num_allocated_slots);
   EXPECT_NE(-1, slot_span->empty_cache_index);
-  EXPECT_TRUE(slot_span->freelist_head);
+  EXPECT_TRUE(slot_span->get_freelist_head());
 
   CycleFreeCache(kTestAllocSize);
 
   // Flushing the cache should have really freed the unused slot spans.
-  EXPECT_FALSE(slot_span->freelist_head);
+  EXPECT_FALSE(slot_span->get_freelist_head());
   EXPECT_EQ(-1, slot_span->empty_cache_index);
   EXPECT_EQ(0, slot_span->num_allocated_slots);
   size_t num_system_pages_per_slot_span = allocator.root()
@@ -1647,9 +1707,9 @@ TEST_F(PartitionAllocTest, FreeCache) {
   // used does not get freed.
   for (size_t i = 0; i < kMaxFreeableSpans * 2; ++i) {
     ptr = allocator.root()->Alloc(big_size, type_name);
-    EXPECT_TRUE(slot_span->freelist_head);
+    EXPECT_TRUE(slot_span->get_freelist_head());
     allocator.root()->Free(ptr);
-    EXPECT_TRUE(slot_span->freelist_head);
+    EXPECT_TRUE(slot_span->get_freelist_head());
   }
   EXPECT_EQ(expected_committed_size,
             allocator.root()->get_total_size_of_committed_pages());
@@ -1683,13 +1743,13 @@ TEST_F(PartitionAllocTest, LostFreeSlotSpansBug) {
   EXPECT_TRUE(bucket->empty_slot_spans_head->next_slot_span);
   EXPECT_EQ(0, slot_span->num_allocated_slots);
   EXPECT_EQ(0, slot_span2->num_allocated_slots);
-  EXPECT_TRUE(slot_span->freelist_head);
-  EXPECT_TRUE(slot_span2->freelist_head);
+  EXPECT_TRUE(slot_span->get_freelist_head());
+  EXPECT_TRUE(slot_span2->get_freelist_head());
 
   CycleFreeCache(kTestAllocSize);
 
-  EXPECT_FALSE(slot_span->freelist_head);
-  EXPECT_FALSE(slot_span2->freelist_head);
+  EXPECT_FALSE(slot_span->get_freelist_head());
+  EXPECT_FALSE(slot_span2->get_freelist_head());
 
   EXPECT_TRUE(bucket->empty_slot_spans_head);
   EXPECT_TRUE(bucket->empty_slot_spans_head->next_slot_span);
@@ -1757,19 +1817,25 @@ TEST_F(PartitionAllocTest, LostFreeSlotSpansBug) {
 // TODO(lizeb): make these tests faster.
 TEST_F(PartitionAllocDeathTest, RepeatedAllocReturnNullDirect) {
   // A direct-mapped allocation size.
-  EXPECT_DEATH(DoReturnNullTest(32 * 1024 * 1024, kPartitionAllocFlags),
+  size_t direct_map_size = 32 * 1024 * 1024;
+  ASSERT_GT(direct_map_size, kMaxBucketed);
+  EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionAllocFlags),
                "DoReturnNullTest");
 }
 
 // Repeating above test with Realloc
 TEST_F(PartitionAllocDeathTest, RepeatedReallocReturnNullDirect) {
-  EXPECT_DEATH(DoReturnNullTest(32 * 1024 * 1024, kPartitionReallocFlags),
+  size_t direct_map_size = 32 * 1024 * 1024;
+  ASSERT_GT(direct_map_size, kMaxBucketed);
+  EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionReallocFlags),
                "DoReturnNullTest");
 }
 
 // Repeating above test with TryRealloc
 TEST_F(PartitionAllocDeathTest, RepeatedTryReallocReturnNullDirect) {
-  EXPECT_DEATH(DoReturnNullTest(32 * 1024 * 1024, kPartitionRootTryRealloc),
+  size_t direct_map_size = 32 * 1024 * 1024;
+  ASSERT_GT(direct_map_size, kMaxBucketed);
+  EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionRootTryRealloc),
                "DoReturnNullTest");
 }
 
@@ -1777,19 +1843,28 @@ TEST_F(PartitionAllocDeathTest, RepeatedTryReallocReturnNullDirect) {
 // Test "return null" with a 512 kB block size.
 TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedAllocReturnNull) {
   // A single-slot but non-direct-mapped allocation size.
-  EXPECT_DEATH(DoReturnNullTest(512 * 1024, kPartitionAllocFlags),
+  size_t single_slot_size = 512 * 1024;
+  ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
+  ASSERT_LE(single_slot_size, kMaxBucketed);
+  EXPECT_DEATH(DoReturnNullTest(single_slot_size, kPartitionAllocFlags),
                "DoReturnNullTest");
 }
 
 // Repeating above test with Realloc.
 TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedReallocReturnNull) {
-  EXPECT_DEATH(DoReturnNullTest(512 * 1024, kPartitionReallocFlags),
+  size_t single_slot_size = 512 * 1024;
+  ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
+  ASSERT_LE(single_slot_size, kMaxBucketed);
+  EXPECT_DEATH(DoReturnNullTest(single_slot_size, kPartitionReallocFlags),
                "DoReturnNullTest");
 }
 
 // Repeating above test with TryRealloc.
 TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNull) {
-  EXPECT_DEATH(DoReturnNullTest(512 * 1024, kPartitionRootTryRealloc),
+  size_t single_slot_size = 512 * 1024;
+  ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
+  ASSERT_LE(single_slot_size, kMaxBucketed);
+  EXPECT_DEATH(DoReturnNullTest(single_slot_size, kPartitionRootTryRealloc),
                "DoReturnNullTest");
 }
 
@@ -1836,6 +1911,7 @@ TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
       bits::AlignUp(kMaxBucketed + kSuperPageSize, kSuperPageSize) -
           PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize()};
   for (size_t size : kSizes) {
+    ASSERT_GT(size, kMaxBucketed);
     size -= kExtraAllocSize;
     EXPECT_GT(size, kMaxBucketed)
         << "allocation not large enough for direct allocation";
@@ -1851,38 +1927,56 @@ TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
   }
 }
 
-// These tests rely on precise layout. We handle cookies, not reference counts.
+#if (defined(OS_LINUX) || defined(OS_ANDROID)) && defined(ARCH_CPU_ARM64)
+TEST_F(PartitionAllocTest, MTEProtectsFreedPtr) {
+  // This test checks that Arm's memory tagging extension is correctly
+  // protecting freed pointers. Writes to a freed pointer should cause a crash.
+  CPU cpu;
+  if (!cpu.has_mte()) {
+    // This test won't pass on non-MTE systems.
+    GTEST_SKIP();
+  }
+
+  constexpr uint64_t kCookie = 0x1234567890ABCDEF;
+  constexpr uint64_t kQuarantined = 0xEFEFEFEFEFEFEFEF;
+
+  size_t alloc_size = 64 - kExtraAllocSize;
+  uint64_t* ptr1 = reinterpret_cast<uint64_t*>(
+      allocator.root()->Alloc(alloc_size, type_name));
+  EXPECT_TRUE(ptr1);
+
+  // Write to the pointer whilst it's live
+  *ptr1 = kCookie;
+
+  // Invalidate the pointer on free.
+  allocator.root()->Free(ptr1);
+
+  // Writing to ptr1 after free should crash.
+  EXPECT_EXIT(
+      {
+        // Should be in synchronous MTE mode for running this test.
+        *ptr1 = kQuarantined;
+      },
+      testing::KilledBySignal(SIGSEGV), "");
+}
+#endif
+
+// These tests rely on precise layout. They handle cookie, not ref-count.
 #if !BUILDFLAG(USE_BACKUP_REF_PTR) && defined(PA_HAS_FREELIST_HARDENING)
 
-namespace {
-
-// Used to adjust the returned pointer. This is necessary to make the following
-// death tests pass with DCHECK_IS_ON(), as they rely on the precise knowledge
-// of the allocator layout. Since the offset is 0 for non-DCHECK() builds, this
-// provides the benefit of more testing coverage.
-constexpr size_t kAllocationOffset =
-#if DCHECK_IS_ON()
-    kCookieSize;
-#else
-    0;
-#endif
-}  // namespace
-
 TEST_F(PartitionAllocDeathTest, UseAfterFreeDetection) {
+  CPU cpu;
   void* data = allocator.root()->Alloc(100, "");
   allocator.root()->Free(data);
 
   // use after free, not crashing here, but the next allocation should crash,
   // since we corrupted the freelist.
-  //
-  // When there is a cookie, must offset the UaF since the freelist entry is
-  // stored over the cookie area, not the allocated data.
-  void* data_before_cookie = reinterpret_cast<char*>(data) - kAllocationOffset;
-  memset(data_before_cookie, 0x42, 100);
+  memset(data, 0x42, 100);
   EXPECT_DEATH(allocator.root()->Alloc(100, ""), "");
 }
 
 TEST_F(PartitionAllocDeathTest, FreelistCorruption) {
+  CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
   void** fake_freelist_entry =
       static_cast<void**>(allocator.root()->Alloc(alloc_size, ""));
@@ -1892,35 +1986,55 @@ TEST_F(PartitionAllocDeathTest, FreelistCorruption) {
   void** uaf_data =
       static_cast<void**>(allocator.root()->Alloc(alloc_size, ""));
   allocator.root()->Free(uaf_data);
-  void** uaf_data_before_cookie = reinterpret_cast<void**>(
-      reinterpret_cast<char*>(uaf_data) - kAllocationOffset);
   // Try to confuse the allocator. This is still easy to circumvent willingly,
   // "just" need to set uaf_data[1] to ~uaf_data[0].
-  uaf_data_before_cookie[0] = fake_freelist_entry;
+  void* previous_uaf_data = uaf_data[0];
+  uaf_data[0] = fake_freelist_entry;
   EXPECT_DEATH(allocator.root()->Alloc(alloc_size, ""), "");
+
+  // Restore the freelist entry value, otherwise freelist corruption is detected
+  // in TearDown(), crashing this process.
+  uaf_data[0] = previous_uaf_data;
 }
 
-// With DCHECK_IS_ON(), cookies already handle off-by-one detection.
+// With DCHECK_IS_ON(), cookie already handles off-by-one detection.
 #if !DCHECK_IS_ON()
 TEST_F(PartitionAllocDeathTest, OffByOneDetection) {
+  CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
   char* array = static_cast<char*>(allocator.root()->Alloc(alloc_size, ""));
-  array[alloc_size] = 'A';
-  // Crash at the next allocation. This assumes that we are touching a new,
-  // non-randomized slot span, where the next slot to be handed over to the
-  // application directly follows the current one.
-  EXPECT_DEATH(allocator.root()->Alloc(alloc_size, ""), "");
+  if (cpu.has_mte()) {
+    EXPECT_DEATH(array[alloc_size] = 'A', "");
+  } else {
+    char previous_value = array[alloc_size];
+    array[alloc_size] = 'A';
+    // Crash at the next allocation. This assumes that we are touching a new,
+    // non-randomized slot span, where the next slot to be handed over to the
+    // application directly follows the current one.
+    EXPECT_DEATH(allocator.root()->Alloc(alloc_size, ""), "");
+
+    // Restore integrity, otherwise the process will crash in TearDown().
+    array[alloc_size] = previous_value;
+  }
 }
 
 TEST_F(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
+  CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
   void** array = static_cast<void**>(allocator.root()->Alloc(alloc_size, ""));
   char valid;
-  array[2] = &valid;
-  // Crash at the next allocation. This assumes that we are touching a new,
-  // non-randomized slot span, where the next slot to be handed over to the
-  // application directly follows the current one.
-  EXPECT_DEATH(allocator.root()->Alloc(alloc_size, ""), "");
+  if (cpu.has_mte()) {
+    EXPECT_DEATH(array[2] = &valid, "");
+  } else {
+    void* previous_value = array[2];
+    array[2] = &valid;
+    // Crash at the next allocation. This assumes that we are touching a new,
+    // non-randomized slot span, where the next slot to be handed over to the
+    // application directly follows the current one.
+    EXPECT_DEATH(allocator.root()->Alloc(alloc_size, ""), "");
+
+    array[2] = previous_value;
+  }
 }
 #endif  // !DCHECK_IS_ON()
 
@@ -2224,8 +2338,12 @@ TEST_F(PartitionAllocTest, Purge) {
   // state of the free cache ring.
   allocator.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans);
 
-  char* big_ptr =
-      reinterpret_cast<char*>(allocator.root()->Alloc(256 * 1024, type_name));
+  // A single-slot but non-direct-mapped allocation size.
+  size_t single_slot_size = 512 * 1024;
+  ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
+  ASSERT_LE(single_slot_size, kMaxBucketed);
+  char* big_ptr = reinterpret_cast<char*>(
+      allocator.root()->Alloc(single_slot_size, type_name));
   allocator.root()->Free(big_ptr);
   allocator.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans);
 
@@ -2280,7 +2398,7 @@ TEST_F(PartitionAllocTest, PreferActiveOverEmpty) {
   // A good choice here is to re-fill the third slot span since the first two
   // are empty. We used to fail that.
   void* ptr7 = allocator.root()->Alloc(size, type_name);
-  EXPECT_EQ(ptr6, ptr7);
+  EXPECT_PEQ(ptr6, ptr7);
   EXPECT_EQ(slot_span3, bucket->active_slot_spans_head);
 
   allocator.root()->Free(ptr5);
@@ -2502,11 +2620,11 @@ TEST_F(PartitionAllocTest, PurgeDiscardableWithFreeListRewrite) {
   // Let's check we didn't brick the freelist.
   void* ptr1b =
       allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
-  EXPECT_EQ(ptr1, ptr1b);
+  EXPECT_PEQ(ptr1, ptr1b);
   void* ptr2b =
       allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
-  EXPECT_EQ(ptr2, ptr2b);
-  EXPECT_FALSE(slot_span->freelist_head);
+  EXPECT_PEQ(ptr2, ptr2b);
+  EXPECT_FALSE(slot_span->get_freelist_head());
 
   allocator.root()->Free(ptr1);
   allocator.root()->Free(ptr2);
@@ -2561,19 +2679,18 @@ TEST_F(PartitionAllocTest, PurgeDiscardableDoubleTruncateFreeList) {
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), false);
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), false);
 
-  EXPECT_FALSE(slot_span->freelist_head);
+  EXPECT_FALSE(slot_span->get_freelist_head());
 
   allocator.root()->Free(ptr1);
   allocator.root()->Free(ptr2);
 }
 
-TEST_F(PartitionAllocTest, ReallocMovesCookies) {
+TEST_F(PartitionAllocTest, ReallocMovesCookie) {
   // Resize so as to be sure to hit a "resize in place" case, and ensure that
-  // use of the entire result is compatible with the debug mode's cookies, even
+  // use of the entire result is compatible with the debug mode's cookie, even
   // when the bucket size is large enough to span more than one partition page
   // and we can track the "raw" size. See https://crbug.com/709271
-  static const size_t kSize =
-      base::MaxSystemPagesPerSlotSpan() * base::SystemPageSize();
+  static const size_t kSize = base::MaxRegularSlotSpanSize();
   void* ptr = allocator.root()->Alloc(kSize + 1, type_name);
   EXPECT_TRUE(ptr);
 
@@ -2627,6 +2744,8 @@ TEST_F(PartitionAllocTest, Bug_897585) {
   // test case in the indicated bug.
   size_t kInitialSize = 983040;
   size_t kDesiredSize = 983100;
+  ASSERT_GT(kInitialSize, kMaxBucketed);
+  ASSERT_GT(kDesiredSize, kMaxBucketed);
   void* ptr = allocator.root()->AllocFlags(PartitionAllocReturnNull,
                                            kInitialSize, nullptr);
   ASSERT_NE(nullptr, ptr);
@@ -2697,21 +2816,18 @@ TEST_F(PartitionAllocTest, Alignment) {
   std::vector<void*> allocated_ptrs;
 
   for (size_t size = 1; size <= base::PartitionPageSize(); size <<= 1) {
+    if (size <= kExtraAllocSize)
+      continue;
+    size_t requested_size = size - kExtraAllocSize;
+
     // All allocations which are not direct-mapped occupy contiguous slots of a
     // span, starting on a page boundary. This means that allocations are first
     // rounded up to the nearest bucket size, then have an address of the form:
+    //   (partition-page-aligned address) + i * bucket_size.
     //
-    // (page-aligned address) + i * bucket_size.
-
     // All powers of two are bucket sizes, meaning that all power of two
     // allocations smaller than a page will be aligned on the allocation size.
     size_t expected_alignment = size;
-#if DCHECK_IS_ON()
-    // When DCHECK_IS_ON(), a kCookieSize cookie is added on both sides before
-    // rounding up the allocation size. The returned pointer points after the
-    // cookie.
-    expected_alignment = std::min(expected_alignment, kCookieSize);
-#endif
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     // When BackupRefPtr is enabled, kInSlotRefCountBufferSize is added before
     // rounding up the allocation size, making the raw size not a power of two.
@@ -2723,7 +2839,7 @@ TEST_F(PartitionAllocTest, Alignment) {
         std::min({expected_alignment, kInSlotRefCountBufferSize});
 #endif
     for (int index = 0; index < 3; index++) {
-      void* ptr = allocator.root()->Alloc(size, "");
+      void* ptr = allocator.root()->Alloc(requested_size, "");
       allocated_ptrs.push_back(ptr);
       EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(ptr) % expected_alignment)
           << (index + 1) << "-th allocation of size=" << size;
@@ -2758,7 +2874,7 @@ TEST_F(PartitionAllocTest, FundamentalAlignment) {
     // Since slot size is multiples of base::kAlignment,
     // C % kAlignment == (slot_size - kExtraAllocSize) % kAlignment.
     // C % kAlignment == (-kExtraAllocSize) % kAlignment.
-    // Since kCookieSize * 2 is multiples of kAlignment,
+    // Since kCookieSize is a multiple of kAlignment,
     // C % kAlignment == (-kInSlotRefCountBufferSize) % kAlignment
     // == (kAlignment - kInSlotRefCountBufferSize) % kAlignment.
     EXPECT_EQ(allocator.root()->AllocationCapacityFromPtr(ptr) %
@@ -2855,42 +2971,63 @@ TEST_F(PartitionAllocTest, GetUsableSize) {
   }
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// Disabled pending investigation: https://crbug.com/1154345
-#define MAYBE_Bookkeeping DISABLED_Bookkeeping
-#else
-#define MAYBE_Bookkeeping Bookkeeping
-#endif
-TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
+TEST_F(PartitionAllocTest, Bookkeeping) {
   auto& root = *allocator.root();
 
   EXPECT_EQ(0U, root.total_size_of_committed_pages);
+  EXPECT_EQ(0U, root.max_size_of_committed_pages);
+  EXPECT_EQ(0U, root.get_total_size_of_allocated_bytes());
+  EXPECT_EQ(0U, root.get_max_size_of_allocated_bytes());
   EXPECT_EQ(0U, root.total_size_of_super_pages);
   size_t small_size = 1000;
 
   // A full slot span of size 1 partition page is committed.
   void* ptr = root.Alloc(small_size - kExtraAllocSize, type_name);
-  // Lazy commit commites only needed pages.
+  // Lazy commit commits only needed pages.
   size_t expected_committed_size = allocator.root()->use_lazy_commit
                                        ? SystemPageSize()
                                        : PartitionPageSize();
   size_t expected_super_pages_size = kSuperPageSize;
+  size_t expected_max_committed_size = expected_committed_size;
+  size_t bucket_index = SizeToIndex(small_size - kExtraAllocSize);
+  PartitionBucket<base::internal::ThreadSafe>* bucket =
+      &root.buckets[bucket_index];
+  size_t expected_total_allocated_size = bucket->slot_size;
+  size_t expected_max_allocated_size = expected_total_allocated_size;
+
   EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_total_allocated_size,
+            root.get_total_size_of_allocated_bytes());
+  EXPECT_EQ(expected_max_allocated_size,
+            root.get_max_size_of_allocated_bytes());
   EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
 
   // Freeing memory doesn't result in decommitting pages right away.
   root.Free(ptr);
+  expected_total_allocated_size = 0U;
   EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_total_allocated_size,
+            root.get_total_size_of_allocated_bytes());
+  EXPECT_EQ(expected_max_allocated_size,
+            root.get_max_size_of_allocated_bytes());
   EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
 
   // Allocating the same size lands it in the same slot span.
   ptr = root.Alloc(small_size - kExtraAllocSize, type_name);
   EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_max_allocated_size,
+            root.get_max_size_of_allocated_bytes());
   EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
 
   // Freeing memory doesn't result in decommitting pages right away.
   root.Free(ptr);
   EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_max_allocated_size,
+            root.get_max_size_of_allocated_bytes());
   EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
 
   // Allocating another size commits another slot span.
@@ -2898,44 +3035,95 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
   expected_committed_size += allocator.root()->use_lazy_commit
                                  ? SystemPageSize()
                                  : PartitionPageSize();
+  expected_max_committed_size =
+      std::max(expected_max_committed_size, expected_committed_size);
+  expected_max_allocated_size =
+      std::max(expected_max_allocated_size, static_cast<size_t>(2048));
   EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_max_allocated_size,
+            root.get_max_size_of_allocated_bytes());
   EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
 
   // Freeing memory doesn't result in decommitting pages right away.
   root.Free(ptr);
   EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_max_allocated_size,
+            root.get_max_size_of_allocated_bytes());
   EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
 
   // Single-slot slot spans...
   size_t big_size = kMaxBucketed - SystemPageSize();
-  size_t bucket_index = SizeToIndex(big_size + kExtraAllocSize);
-  PartitionBucket<base::internal::ThreadSafe>* bucket =
-      &root.buckets[bucket_index];
+  ASSERT_GT(big_size, MaxRegularSlotSpanSize());
+  ASSERT_LE(big_size, kMaxBucketed);
+  bucket_index = SizeToIndex(big_size - kExtraAllocSize);
+  bucket = &root.buckets[bucket_index];
+  // Assert the allocation doesn't fill the entire span nor entire partition
+  // page, to make the test more interesting.
   ASSERT_LT(big_size, bucket->get_bytes_per_span());
   ASSERT_NE(big_size % PartitionPageSize(), 0U);
   ptr = root.Alloc(big_size - kExtraAllocSize, type_name);
   expected_committed_size += bucket->get_bytes_per_span();
+  expected_max_committed_size =
+      std::max(expected_max_committed_size, expected_committed_size);
+  expected_total_allocated_size += bucket->get_bytes_per_span();
+  expected_max_allocated_size =
+      std::max(expected_max_allocated_size, expected_total_allocated_size);
   EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_total_allocated_size,
+            root.get_total_size_of_allocated_bytes());
+  EXPECT_EQ(expected_max_allocated_size,
+            root.get_max_size_of_allocated_bytes());
   EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
 
   // Allocating 2nd time doesn't overflow the super page...
   void* ptr2 = root.Alloc(big_size - kExtraAllocSize, type_name);
   expected_committed_size += bucket->get_bytes_per_span();
+  expected_max_committed_size =
+      std::max(expected_max_committed_size, expected_committed_size);
+  expected_total_allocated_size += bucket->get_bytes_per_span();
+  expected_max_allocated_size =
+      std::max(expected_max_allocated_size, expected_total_allocated_size);
   EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_total_allocated_size,
+            root.get_total_size_of_allocated_bytes());
+  EXPECT_EQ(expected_max_allocated_size,
+            root.get_max_size_of_allocated_bytes());
   EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
 
   // ... but 3rd time does.
   void* ptr3 = root.Alloc(big_size - kExtraAllocSize, type_name);
   expected_committed_size += bucket->get_bytes_per_span();
+  expected_max_committed_size =
+      std::max(expected_max_committed_size, expected_committed_size);
+  expected_total_allocated_size += bucket->get_bytes_per_span();
+  expected_max_allocated_size =
+      std::max(expected_max_allocated_size, expected_total_allocated_size);
   expected_super_pages_size += kSuperPageSize;
   EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_total_allocated_size,
+            root.get_total_size_of_allocated_bytes());
+  EXPECT_EQ(expected_max_allocated_size,
+            root.get_max_size_of_allocated_bytes());
   EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
 
   // Freeing memory doesn't result in decommitting pages right away.
   root.Free(ptr);
   root.Free(ptr2);
   root.Free(ptr3);
+  expected_total_allocated_size -= 3 * bucket->get_bytes_per_span();
+  expected_max_allocated_size =
+      std::max(expected_max_allocated_size, expected_total_allocated_size);
   EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_total_allocated_size,
+            root.get_total_size_of_allocated_bytes());
+  EXPECT_EQ(expected_max_allocated_size,
+            root.get_max_size_of_allocated_bytes());
   EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
 
   // Now everything should be decommitted. The reserved space for super pages
@@ -2943,6 +3131,11 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
   root.PurgeMemory(PartitionPurgeDecommitEmptySlotSpans);
   expected_committed_size = 0;
   EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_total_allocated_size,
+            root.get_total_size_of_allocated_bytes());
+  EXPECT_EQ(expected_max_allocated_size,
+            root.get_max_size_of_allocated_bytes());
   EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
 
   // None of the above should affect the direct map space.
@@ -2969,12 +3162,18 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
       kMaxSupportedAlignment,
   };
   for (size_t huge_size : huge_sizes) {
+    ASSERT_GT(huge_size, kMaxBucketed);
     for (size_t alignment : alignments) {
       // For direct map, we commit only as many pages as needed.
       size_t aligned_size = bits::AlignUp(huge_size, SystemPageSize());
       ptr = root.AllocFlagsInternal(0, huge_size - kExtraAllocSize, alignment,
                                     type_name);
       expected_committed_size += aligned_size;
+      expected_max_committed_size =
+          std::max(expected_max_committed_size, expected_committed_size);
+      expected_total_allocated_size += aligned_size;
+      expected_max_allocated_size =
+          std::max(expected_max_allocated_size, expected_total_allocated_size);
       // The total reserved map includes metadata and guard pages at the ends.
       // It also includes alignment. However, these would double count the first
       // partition page, so it needs to be subtracted.
@@ -2985,6 +3184,11 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
           bits::AlignUp(aligned_size + surrounding_pages_size,
                         DirectMapAllocationGranularity());
       EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+      EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+      EXPECT_EQ(expected_total_allocated_size,
+                root.get_total_size_of_allocated_bytes());
+      EXPECT_EQ(expected_max_allocated_size,
+                root.get_max_size_of_allocated_bytes());
       EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
       EXPECT_EQ(expected_direct_map_size,
                 root.total_size_of_direct_mapped_pages);
@@ -2994,7 +3198,17 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
       root.Free(ptr);
       expected_committed_size -= aligned_size;
       expected_direct_map_size = 0;
+      expected_max_committed_size =
+          std::max(expected_max_committed_size, expected_committed_size);
+      expected_total_allocated_size -= aligned_size;
+      expected_max_allocated_size =
+          std::max(expected_max_allocated_size, expected_total_allocated_size);
       EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+      EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+      EXPECT_EQ(expected_total_allocated_size,
+                root.get_total_size_of_allocated_bytes());
+      EXPECT_EQ(expected_max_allocated_size,
+                root.get_max_size_of_allocated_bytes());
       EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
       EXPECT_EQ(expected_direct_map_size,
                 root.total_size_of_direct_mapped_pages);
@@ -3029,6 +3243,8 @@ TEST_F(PartitionAllocTest, RefCountBasic) {
 
   allocator.root()->Free(ptr1);
   // The allocation shouldn't be reclaimed, and its contents should be zapped.
+  // Remask ptr1 to get its correct MTE tag.
+  ptr1 = memory::RemaskPtr(ptr1);
   EXPECT_NE(*ptr1, kCookie);
   EXPECT_EQ(*ptr1, kQuarantined);
 
@@ -3040,6 +3256,8 @@ TEST_F(PartitionAllocTest, RefCountBasic) {
   allocator.root()->Free(ptr2);
 
   // When the last reference is released, the slot should become reusable.
+  // Remask ref_count because PartitionAlloc retags ptr to enforce quarantine.
+  ref_count = memory::RemaskPtr(ref_count);
   EXPECT_TRUE(ref_count->Release());
   PartitionAllocFreeForRefCounting(reinterpret_cast<char*>(ptr1) -
                                    kPointerOffset);
@@ -3064,11 +3282,15 @@ void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
   void* ptr2 = allocator.root()->Realloc(ptr1, new_size, type_name);
   EXPECT_TRUE(ptr2);
 
+  // PartitionAlloc may retag memory areas on realloc (even if they
+  // do not move), so recover the true tag here.
+  ref_count1 = memory::RemaskPtr(ref_count1);
+
   // Re-query ref-count. It may have moved if Realloc changed the slot.
   auto* ref_count2 =
       PartitionRefCountPointer(reinterpret_cast<char*>(ptr2) - kPointerOffset);
 
-  if (ptr1 == ptr2) {
+  if (memory::UnmaskPtr(ptr1) == memory::UnmaskPtr(ptr2)) {
     // If the slot didn't change, ref-count should stay the same.
     EXPECT_EQ(ref_count1, ref_count2);
     EXPECT_FALSE(ref_count2->IsAliveWithNoKnownRefs());
@@ -3111,12 +3333,9 @@ TEST_F(PartitionAllocTest, ReservationOffset) {
   EXPECT_EQ(kOffsetTagNormalBuckets, *ReservationOffsetPointer(ptr_as_uintptr));
   allocator.root()->Free(ptr);
 
-  // For not yet allocated memory, offset should be kOffsetTagNotAllocated.
-  EXPECT_EQ(kOffsetTagNotAllocated,
-            *ReservationOffsetPointer(ptr_as_uintptr + 100 * kSuperPageSize));
-
   // For direct-map,
   size_t large_size = kSuperPageSize * 5 + PartitionPageSize() * .5f;
+  ASSERT_GT(large_size, kMaxBucketed);
   ptr = allocator.root()->Alloc(large_size, type_name);
   EXPECT_TRUE(ptr);
   ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
@@ -3154,6 +3373,7 @@ TEST_F(PartitionAllocTest, ReservationOffset) {
 
 TEST_F(PartitionAllocTest, GetReservationStart) {
   size_t large_size = kSuperPageSize * 3 + PartitionPageSize() * .5f;
+  ASSERT_GT(large_size, kMaxBucketed);
   void* ptr = allocator.root()->Alloc(large_size, type_name);
   EXPECT_TRUE(ptr);
   void* slot_start = allocator.root()->AdjustPointerForExtrasSubtract(ptr);
@@ -3199,17 +3419,9 @@ TEST_F(PartitionAllocTest, CheckReservationType) {
   EXPECT_TRUE(IsManagedByNormalBuckets(ptr_to_check));
   EXPECT_FALSE(IsManagedByDirectMap(ptr_to_check));
   EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
-  // Pick a likely unallocated super page.
-  ptr_to_check = bits::AlignUp(ptr, kSuperPageSize) + 100 * kSuperPageSize;
-#if DCHECK_IS_ON()
-  // Expect to DCHECK on unallocated region.
-  EXPECT_DEATH_IF_SUPPORTED(IsReservationStart(ptr_to_check), "");
-#endif
-  EXPECT_FALSE(IsManagedByNormalBuckets(ptr_to_check));
-  EXPECT_FALSE(IsManagedByDirectMap(ptr_to_check));
-  EXPECT_FALSE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
 
   size_t large_size = 2 * kSuperPageSize;
+  ASSERT_GT(large_size, kMaxBucketed);
   ptr = reinterpret_cast<char*>(allocator.root()->Alloc(large_size, type_name));
   EXPECT_TRUE(ptr);
   ptr_to_check = ptr;
@@ -3247,32 +3459,28 @@ TEST_F(PartitionAllocTest, CheckReservationType) {
 // Test for crash http://crbug.com/1169003.
 TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {
   // Size is large enough to satisfy it from a single-slot slot span
-  size_t test_size =
-      SystemPageSize() * MaxSystemPagesPerSlotSpan() - kExtraAllocSize;
+  size_t test_size = MaxRegularSlotSpanSize() - kExtraAllocSize;
   void* ptr = allocator.root()->AllocFlags(PartitionAllocReturnNull, test_size,
                                            nullptr);
   EXPECT_TRUE(ptr);
 
-  // Create new root to simulate ConfigurePartitionRefCountSupport(false)
-
-  // Copied from ConfigurePartitionRefCountSupport()
+  // Create new root and call PurgeMemory to simulate ConfigurePartitions().
   allocator.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
                                 PartitionPurgeDiscardUnusedSystemPages);
-
-  // Create a new root
-  auto* new_root = new base::PartitionRoot<base::internal::ThreadSafe>({
-      base::PartitionOptions::AlignedAlloc::kDisallowed,
-      base::PartitionOptions::ThreadCache::kDisabled,
-      base::PartitionOptions::Quarantine::kDisallowed,
-      base::PartitionOptions::Cookies::kAllowed,
-      base::PartitionOptions::RefCount::kDisallowed,
-  });
+  auto* new_root = new base::PartitionRoot<base::internal::ThreadSafe>(
+      {base::PartitionOptions::AlignedAlloc::kDisallowed,
+       base::PartitionOptions::ThreadCache::kDisabled,
+       base::PartitionOptions::Quarantine::kDisallowed,
+       base::PartitionOptions::Cookie::kAllowed,
+       base::PartitionOptions::BackupRefPtr::kDisabled,
+       base::PartitionOptions::UseConfigurablePool::kNo,
+       base::PartitionOptions::LazyCommit::kEnabled});
 
   // Realloc from |allocator.root()| into |new_root|.
   void* ptr2 = new_root->ReallocFlags(PartitionAllocReturnNull, ptr,
                                       test_size + 1024, nullptr);
   EXPECT_TRUE(ptr2);
-  EXPECT_NE(ptr, ptr2);
+  EXPECT_PNE(ptr, ptr2);
 }
 
 TEST_F(PartitionAllocTest, FastPathOrReturnNull) {
@@ -3301,7 +3509,7 @@ TEST_F(PartitionAllocTest, FastPathOrReturnNull) {
     allocated_size += allocation_size;
   }
   EXPECT_LE(allocated_size,
-            PartitionPageSize() * kMaxPartitionPagesPerSlotSpan);
+            PartitionPageSize() * kMaxPartitionPagesPerRegularSlotSpan);
 
   for (void* ptr_to_free : ptrs)
     allocator.root()->FreeNoHooks(ptr_to_free);
@@ -3416,6 +3624,225 @@ TEST_F(PartitionAllocTest, GetIndex) {
     ASSERT_EQ(lookup.bucket_sizes()[index], size);
   }
 }
+
+// Used to check alignment. If the compiler understands the annotations, the
+// zeroing in the constructor uses aligned SIMD instructions.
+TEST_F(PartitionAllocTest, MallocFunctionAnnotations) {
+  struct TestStruct {
+    uint64_t a = 0;
+    uint64_t b = 0;
+  };
+
+  void* buffer = Alloc(sizeof(TestStruct));
+  // Should use "mov*a*ps" on x86_64.
+  auto* x = new (buffer) TestStruct();
+
+  EXPECT_EQ(x->a, 0u);
+  Free(buffer);
+}
+
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+TEST_F(PartitionAllocTest, Padding) {
+  uintptr_t brp_enabled_offset =
+      reinterpret_cast<uintptr_t>(&allocator.root()->brp_enabled_) -
+      reinterpret_cast<uintptr_t>(allocator.root());
+  uintptr_t lock_offset =
+      reinterpret_cast<uintptr_t>(&allocator.root()->lock_) -
+      reinterpret_cast<uintptr_t>(allocator.root());
+
+  // Double-check that the padding in the root was not removed.
+  EXPECT_GT(lock_offset - brp_enabled_offset, 64u);
+}
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+
+// Test that the ConfigurablePool works properly.
+TEST_F(PartitionAllocTest, ConfigurablePool) {
+  EXPECT_FALSE(IsConfigurablePoolAvailable());
+
+  // The rest is only applicable to 64-bit mode
+#if defined(ARCH_CPU_64_BITS)
+  // Repeat the test for every possible Pool size
+  const size_t max_pool_size = PartitionAddressSpace::ConfigurablePoolMaxSize();
+  const size_t min_pool_size = PartitionAddressSpace::ConfigurablePoolMinSize();
+  for (size_t pool_size = max_pool_size; pool_size >= min_pool_size;
+       pool_size /= 2) {
+    DCHECK(bits::IsPowerOfTwo(pool_size));
+    EXPECT_FALSE(IsConfigurablePoolAvailable());
+    void* pool_memory = AllocPages(nullptr, pool_size, pool_size,
+                                   PageInaccessible, PageTag::kPartitionAlloc);
+    EXPECT_NE(nullptr, pool_memory);
+    PartitionAddressSpace::InitConfigurablePool(pool_memory, pool_size);
+
+    EXPECT_TRUE(IsConfigurablePoolAvailable());
+
+    auto* root = new base::PartitionRoot<ThreadSafe>({
+        base::PartitionOptions::AlignedAlloc::kDisallowed,
+        base::PartitionOptions::ThreadCache::kDisabled,
+        base::PartitionOptions::Quarantine::kDisallowed,
+        base::PartitionOptions::Cookie::kAllowed,
+        base::PartitionOptions::BackupRefPtr::kDisabled,
+        base::PartitionOptions::UseConfigurablePool::kIfAvailable,
+        base::PartitionOptions::LazyCommit::kEnabled,
+    });
+    root->UncapEmptySlotSpanMemoryForTesting();
+
+    const size_t count = 250;
+    std::vector<void*> allocations(count, nullptr);
+    uintptr_t pool_base = reinterpret_cast<uintptr_t>(pool_memory);
+    for (size_t i = 0; i < count; ++i) {
+      const size_t size = kTestSizes[base::RandGenerator(kTestSizesCount)];
+      allocations[i] = root->Alloc(size, nullptr);
+      EXPECT_NE(nullptr, allocations[i]);
+      uintptr_t allocation_base =
+          memory::UnmaskPtr(reinterpret_cast<uintptr_t>(allocations[i]));
+      EXPECT_TRUE(allocation_base >= pool_base &&
+                  allocation_base < pool_base + pool_size);
+    }
+
+    PartitionAddressSpace::UninitConfigurablePoolForTesting();
+    FreePages(pool_memory, pool_size);
+  }
+
+#endif  // defined(ARCH_CPU_64_BITS)
+}
+
+TEST_F(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
+  // Use another root, since the ones from the test harness disable the empty
+  // slot span size cap.
+  PartitionRoot<ThreadSafe> root;
+  root.Init({PartitionOptions::AlignedAlloc::kDisallowed,
+             PartitionOptions::ThreadCache::kDisabled,
+             PartitionOptions::Quarantine::kDisallowed,
+             PartitionOptions::Cookie::kAllowed,
+             PartitionOptions::BackupRefPtr::kDisabled,
+             PartitionOptions::UseConfigurablePool::kNo,
+             PartitionOptions::LazyCommit::kEnabled});
+
+  // Allocate some memory, don't free it to keep committed memory.
+  std::vector<void*> allocated_memory;
+  const size_t size = SystemPageSize();
+  const size_t count = 400;
+  for (size_t i = 0; i < count; i++) {
+    void* ptr = root.Alloc(size, "");
+    allocated_memory.push_back(ptr);
+  }
+  ASSERT_GE(root.total_size_of_committed_pages.load(std::memory_order_relaxed),
+            size * count);
+
+  // To create empty slot spans, allocate from single-slot slot spans, 128kiB at
+  // a time.
+  std::vector<void*> single_slot_allocated_memory;
+  constexpr size_t single_slot_count = 15;
+  static_assert(single_slot_count < kMaxFreeableSpans,
+                "Should do fewer allocations than the ring size.");
+  const size_t single_slot_size = MaxRegularSlotSpanSize() + 1;
+  // Make sure that even with allocation size rounding up, a single allocation
+  // is still below the threshold.
+  ASSERT_LT(MaxRegularSlotSpanSize() * 2,
+            ((count * size) >> root.max_empty_slot_spans_dirty_bytes_shift));
+  for (size_t i = 0; i < single_slot_count; i++) {
+    void* ptr = root.Alloc(single_slot_size, "");
+    single_slot_allocated_memory.push_back(ptr);
+  }
+
+  // Free everything at once, creating as many empty slot spans as there are
+  // allocations (since they are from single-slot slot spans).
+  for (void* ptr : single_slot_allocated_memory)
+    root.Free(ptr);
+
+  // Still have some committed empty slot spans.
+  // TS_UNCHECKED_READ() is not an issue here, since everything is
+  // single-threaded.
+  EXPECT_GT(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes), 0u);
+  // But not all, as the cap triggered.
+  EXPECT_LT(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes),
+            single_slot_count * single_slot_size);
+
+  // Nothing left after explicit purge.
+  root.PurgeMemory(PartitionPurgeDecommitEmptySlotSpans);
+  EXPECT_EQ(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes), 0u);
+
+  for (void* ptr : allocated_memory)
+    root.Free(ptr);
+}
+
+#if defined(OS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    BUILDFLAG(IS_CHROMECAST)
+extern "C" {
+void* __real_malloc(size_t);
+}  // extern "C"
+
+TEST_F(PartitionAllocTest, HandleMixedAllocations) {
+  void* ptr = __real_malloc(12);
+  // Should not crash, no test assertion.
+  free(ptr);
+}
+#endif
+
+TEST_F(PartitionAllocTest, SortFreelist) {
+  const size_t count = 100;
+  const size_t allocation_size = 1;
+  void* first_ptr = allocator.root()->Alloc(allocation_size, "");
+
+  std::vector<void*> allocations;
+  for (size_t i = 0; i < count; ++i)
+    allocations.push_back(allocator.root()->Alloc(allocation_size, ""));
+
+  // Shuffle and free memory out of order.
+  std::random_device rd;
+  std::mt19937 generator(rd());
+  std::shuffle(allocations.begin(), allocations.end(), generator);
+
+  // Keep one allocation alive (first_ptr), so that the SlotSpan is not fully
+  // empty.
+  for (void* ptr : allocations)
+    allocator.root()->Free(ptr);
+  allocations.clear();
+
+  allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
+
+  size_t bucket_index = SizeToIndex(allocation_size + kExtraAllocSize);
+  auto& bucket = allocator.root()->buckets[bucket_index];
+  EXPECT_TRUE(bucket.active_slot_spans_head->freelist_is_sorted);
+
+  // Can sort again.
+  allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
+  EXPECT_TRUE(bucket.active_slot_spans_head->freelist_is_sorted);
+
+  for (size_t i = 0; i < count; ++i) {
+    allocations.push_back(allocator.root()->Alloc(allocation_size, ""));
+    // Allocating keeps the freelist sorted.
+    EXPECT_TRUE(bucket.active_slot_spans_head->freelist_is_sorted);
+  }
+
+  // Check that it is sorted.
+  for (size_t i = 1; i < allocations.size(); i++) {
+    EXPECT_LT(
+        reinterpret_cast<uintptr_t>(memory::UnmaskPtr(allocations[i - 1])),
+        reinterpret_cast<uintptr_t>(memory::UnmaskPtr(allocations[i])));
+  }
+
+  for (void* ptr : allocations) {
+    allocator.root()->Free(ptr);
+    // Free()-ing memory destroys order.  Not looking at the head of the active
+    // list, as it is not necessarily the one from which |ptr| came from.
+    auto* slot_span = SlotSpan::FromSlotStartPtr(
+        allocator.root()->AdjustPointerForExtrasSubtract(ptr));
+    EXPECT_FALSE(slot_span->freelist_is_sorted);
+  }
+
+  allocator.root()->Free(first_ptr);
+}
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_LINUX) && \
+    defined(ARCH_CPU_64_BITS)
+TEST_F(PartitionAllocTest, CrashOnUnknownPointer) {
+  int not_a_heap_object = 42;
+  EXPECT_DEATH(
+      allocator.root()->Free(reinterpret_cast<void*>(&not_a_heap_object)), "");
+}
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_LINUX) &&
+        // defined(ARCH_CPU_64_BITS)
 
 }  // namespace internal
 }  // namespace base

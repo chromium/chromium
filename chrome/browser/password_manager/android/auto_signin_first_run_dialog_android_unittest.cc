@@ -4,7 +4,6 @@
 
 #include "chrome/browser/password_manager/android/auto_signin_first_run_dialog_android.h"
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -19,15 +18,18 @@ class AutoSigninFirstRunDialogAndroidTest
     : public ChromeRenderViewHostTestHarness {
  public:
   AutoSigninFirstRunDialogAndroidTest() {}
+
+  AutoSigninFirstRunDialogAndroidTest(
+      const AutoSigninFirstRunDialogAndroidTest&) = delete;
+  AutoSigninFirstRunDialogAndroidTest& operator=(
+      const AutoSigninFirstRunDialogAndroidTest&) = delete;
+
   ~AutoSigninFirstRunDialogAndroidTest() override {}
 
   PrefService* prefs();
 
  protected:
   AutoSigninFirstRunDialogAndroid* CreateDialog();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutoSigninFirstRunDialogAndroidTest);
 };
 
 AutoSigninFirstRunDialogAndroid*

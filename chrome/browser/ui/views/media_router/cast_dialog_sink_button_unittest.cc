@@ -22,10 +22,11 @@ namespace media_router {
 class CastDialogSinkButtonTest : public ChromeViewsTestBase {
  public:
   CastDialogSinkButtonTest() = default;
-  ~CastDialogSinkButtonTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastDialogSinkButtonTest);
+  CastDialogSinkButtonTest(const CastDialogSinkButtonTest&) = delete;
+  CastDialogSinkButtonTest& operator=(const CastDialogSinkButtonTest&) = delete;
+
+  ~CastDialogSinkButtonTest() override = default;
 };
 
 TEST_F(CastDialogSinkButtonTest, SetTitleLabel) {

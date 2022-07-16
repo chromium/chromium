@@ -20,6 +20,10 @@ class PPAPI_PROXY_EXPORT UDPSocketResource : public UDPSocketResourceBase,
                                              public thunk::PPB_UDPSocket_API {
  public:
   UDPSocketResource(Connection connection, PP_Instance instance);
+
+  UDPSocketResource(const UDPSocketResource&) = delete;
+  UDPSocketResource& operator=(const UDPSocketResource&) = delete;
+
   ~UDPSocketResource() override;
 
   // PluginResource implementation.
@@ -53,9 +57,6 @@ class PPAPI_PROXY_EXPORT UDPSocketResource : public UDPSocketResourceBase,
                     scoped_refptr<TrackedCallback> callback) override;
   int32_t LeaveGroup(PP_Resource group,
                      scoped_refptr<TrackedCallback> callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UDPSocketResource);
 };
 
 }  // namespace proxy

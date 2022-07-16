@@ -16,6 +16,10 @@ namespace net {
 class NET_EXPORT ClientCertStoreMac : public ClientCertStore {
  public:
   ClientCertStoreMac();
+
+  ClientCertStoreMac(const ClientCertStoreMac&) = delete;
+  ClientCertStoreMac& operator=(const ClientCertStoreMac&) = delete;
+
   ~ClientCertStoreMac() override;
 
   // ClientCertStore:
@@ -44,8 +48,6 @@ class NET_EXPORT ClientCertStoreMac : public ClientCertStore {
       ClientCertIdentityList regular_identities,
       const SSLCertRequestInfo& request,
       ClientCertIdentityList* selected_identities);
-
-  DISALLOW_COPY_AND_ASSIGN(ClientCertStoreMac);
 };
 
 }  // namespace net

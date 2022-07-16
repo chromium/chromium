@@ -157,6 +157,8 @@ class StreamModel {
   // Returns true if one or more "cards" can be rendered from the content.
   bool HasVisibleContent();
 
+  ContentStats GetContentStats() const;
+
  private:
   struct SharedState {
     // Whether the data has been changed since the last call to |OnUiUpdate()|.

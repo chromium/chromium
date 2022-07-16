@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CONNECTION_ATTEMPT_IMPL_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CONNECTION_ATTEMPT_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -33,6 +32,9 @@ class ConnectionAttemptImpl : public ConnectionAttempt,
     static Factory* test_factory_;
   };
 
+  ConnectionAttemptImpl(const ConnectionAttemptImpl&) = delete;
+  ConnectionAttemptImpl& operator=(const ConnectionAttemptImpl&) = delete;
+
   ~ConnectionAttemptImpl() override;
 
   mojo::PendingRemote<mojom::ConnectionDelegate> GenerateRemote();
@@ -51,8 +53,6 @@ class ConnectionAttemptImpl : public ConnectionAttempt,
   mojo::Receiver<mojom::ConnectionDelegate> receiver_{this};
 
   base::WeakPtrFactory<ConnectionAttemptImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionAttemptImpl);
 };
 
 }  // namespace secure_channel

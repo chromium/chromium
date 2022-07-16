@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/printing/printers_map.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -52,9 +51,11 @@ void ExpectPrinterStatusesEqual(const CupsPrinterStatus expected_printer_status,
 class PrintersMapTest : public testing::Test {
  public:
   PrintersMapTest() = default;
-  ~PrintersMapTest() override = default;
 
-  DISALLOW_COPY_AND_ASSIGN(PrintersMapTest);
+  PrintersMapTest(const PrintersMapTest&) = delete;
+  PrintersMapTest& operator=(const PrintersMapTest&) = delete;
+
+  ~PrintersMapTest() override = default;
 };
 
 TEST_F(PrintersMapTest, GetAllReturnsEmptyVector) {

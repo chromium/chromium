@@ -22,7 +22,10 @@ generate_grd("build_grdp") {
 preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = preprocess_folder
-  in_files = [ "bookmarks_api_proxy.ts" ]
+  in_files = [
+    "bookmarks_api_proxy.ts",
+    "bookmarks_drag_manager.ts",
+  ]
 }
 
 preprocess_if_expr("preprocess_generated") {

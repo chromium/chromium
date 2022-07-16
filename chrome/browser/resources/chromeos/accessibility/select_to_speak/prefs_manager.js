@@ -13,8 +13,14 @@ export class PrefsManager {
     /** @private {?string} */
     this.voiceNameFromLocale_ = null;
 
+    /** @private {?string} */
+    this.enhancedVoiceName_ = PrefsManager.DEFAULT_NETWORK_VOICE;
+
     /** @private {Set<string>} */
     this.validVoiceNames_ = new Set();
+
+    /** @private {Map<string, string>} */
+    this.extensionForVoice_ = new Map();
 
     /** @private {number} */
     this.speechRate_ = 1.0;
@@ -40,8 +46,25 @@ export class PrefsManager {
     /** @private {boolean} */
     this.navigationControlsEnabled_ = true;
 
-    /** @private {boolean} */
-    this.enhancedNetworkVoicesEnabled_ = true;
+    /**
+     * A pref indicating whether the user enables the network voices. The pref
+     * is synced to local storage as "enhancedNetworkVoices". Use
+     * this.enhancedNetworkVoicesEnabled() to refer whether to enable the
+     * network voices instead of using this pref directly.
+     * @private {boolean}
+     */
+    this.enhancedNetworkVoicesEnabled_ = false;
+
+    /**
+     * Whether to allow enhanced network voices in Select-to-Speak. Unlike
+     * |this.enhancedNetworkVoicesEnabled_|, which represents the user's
+     * preference, |this.enhancedNetworkVoicesAllowed_| is set by admin via
+     * policy. |this.enhancedNetworkVoicesAllowed_| does not override
+     * |this.enhancedNetworkVoicesEnabled_| but changes
+     * this.enhancedNetworkVoicesEnabled().
+     * @private {boolean}
+     */
+    this.enhancedNetworkVoicesAllowed_ = true;
 
     /** @private {boolean} */
     this.enhancedVoicesDialogShown_ = false;
@@ -69,8 +92,14 @@ export class PrefsManager {
             !voice.eventTypes.includes(chrome.tts.EventType.CANCELLED)) {
           return;
         }
+
         if (voice.voiceName) {
-          this.validVoiceNames_.add(voice.voiceName);
+          this.extensionForVoice_.set(voice.voiceName, voice.extensionId || '');
+          if ((voice.extensionId !== PrefsManager.ENHANCED_TTS_EXTENSION_ID) &&
+              !voice.remote) {
+            // Don't consider network voices when computing default.
+            this.validVoiceNames_.add(voice.voiceName);
+          }
         }
       });
 
@@ -196,7 +225,7 @@ export class PrefsManager {
                 }));
                 Promise.all(setPrefsPromises)
                     .then(
-                        this.onTtsSettingsMigrationSuccess_.bind(this),
+                        () => this.onTtsSettingsMigrationSuccess_(),
                         (error) => {
                           console.log(error);
                           this.migrationInProgress_ = false;
@@ -225,21 +254,36 @@ export class PrefsManager {
   }
 
   /**
-   * Loads preferences from chrome.storage, sets default values if
-   * necessary, and registers a listener to update prefs when they
-   * change.
+   * Loads prefs and policy from chrome.storage and chrome.settingsPrivate,
+   * sets default values if necessary, and registers a listener to update prefs
+   * and policy when they change.
    */
   initPreferences() {
-    var updatePrefs = () => {
+    const updatePolicy = () => {
+      chrome.settingsPrivate.getPref(
+          PrefsManager.ENHANCED_VOICES_POLICY_KEY, (pref) => {
+            if (pref === undefined) {
+              return;
+            }
+            this.enhancedNetworkVoicesAllowed_ = !!pref.value;
+          });
+    };
+    const updatePrefs = () => {
       chrome.storage.sync.get(
           [
             'voice', 'rate', 'pitch', 'wordHighlight', 'highlightColor',
             'backgroundShading', 'navigationControls', 'enhancedNetworkVoices',
-            'enhancedVoicesDialogShown'
+            'enhancedVoicesDialogShown', 'enhancedVoiceName'
           ],
           (prefs) => {
             if (prefs['voice']) {
               this.voiceNameFromPrefs_ = prefs['voice'];
+            }
+            if (prefs['enhancedVoiceName'] !== undefined) {
+              this.enhancedVoiceName_ = prefs['enhancedVoiceName'];
+            } else {
+              chrome.storage.sync.set(
+                  {'enhancedVoiceName': this.enhancedVoiceName_});
             }
             if (prefs['wordHighlight'] !== undefined) {
               this.wordHighlight_ = prefs['wordHighlight'];
@@ -287,7 +331,10 @@ export class PrefsManager {
           });
     };
 
+    updatePolicy();
     updatePrefs();
+
+    chrome.settingsPrivate.onPrefsChanged.addListener(updatePolicy);
     chrome.storage.onChanged.addListener(updatePrefs);
 
     this.updateDefaultVoice_();
@@ -297,16 +344,13 @@ export class PrefsManager {
   }
 
   /**
-   * Generates the basic speech options for Select-to-Speak based on user
-   * preferences. Call for each chrome.tts.speak.
-   * @return {!chrome.tts.TtsOptions} options The TTS options.
+   * Get the voice name of the user's preferred local voice.
+   * @return {string|undefined} Name of preferred local voice.
    */
-  speechOptions() {
-    const options = /** @type {!chrome.tts.TtsOptions} */ ({});
-
+  getLocalVoice() {
     // To use the default (system) voice: don't specify options['voiceName'].
     if (this.voiceNameFromPrefs_ === PrefsManager.SYSTEM_VOICE) {
-      return options;
+      return undefined;
     }
 
     // Pick the voice name from prefs first, or the one that matches
@@ -314,24 +358,57 @@ export class PrefsManager {
     // loaded. If no voices are found, leave the voiceName option
     // unset to let the browser try to route the speech request
     // anyway if possible.
-    var valid = '';
-    this.validVoiceNames_.forEach(function(voiceName) {
-      if (valid) {
-        valid += ',';
-      }
-      valid += voiceName;
-    });
     if (this.voiceNameFromPrefs_ &&
         this.validVoiceNames_.has(this.voiceNameFromPrefs_)) {
-      options['voiceName'] = this.voiceNameFromPrefs_;
+      return this.voiceNameFromPrefs_;
     } else if (
         this.voiceNameFromLocale_ &&
         this.validVoiceNames_.has(this.voiceNameFromLocale_)) {
-      options['voiceName'] = this.voiceNameFromLocale_;
+      return this.voiceNameFromLocale_;
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Generates the basic speech options for Select-to-Speak based on user
+   * preferences. Call for each chrome.tts.speak.
+   * @param {boolean} enhancedVoicesFlag whether enhanced voices are enabled.
+   * @return {!chrome.tts.TtsOptions} options The TTS options.
+   */
+  getSpeechOptions(enhancedVoicesFlag) {
+    const options = /** @type {!chrome.tts.TtsOptions} */ ({});
+    const useEnhancedVoices = enhancedVoicesFlag &&
+        this.enhancedNetworkVoicesEnabled_ && navigator.onLine;
+
+    if (useEnhancedVoices) {
+      options['voiceName'] = this.enhancedVoiceName_;
+    } else {
+      const localVoice = this.getLocalVoice();
+      if (localVoice !== undefined) {
+        options['voiceName'] = localVoice;
+      }
     }
     return options;
   }
 
+  /**
+   * Returns extension ID of the TTS engine for given voice name.
+   * @param {string} voiceName Voice name specified in TTS options
+   * @returns {string} extension ID of TTS engine
+   */
+  ttsExtensionForVoice(voiceName) {
+    return this.extensionForVoice_.get(voiceName) || '';
+  }
+
+  /**
+   * Checks if the voice is an enhanced network TTS voice.
+   * @returns {boolean} True if the voice is an enhanced network TTS voice.
+   */
+  isNetworkVoice(voiceName) {
+    return this.ttsExtensionForVoice(voiceName) ===
+        PrefsManager.ENHANCED_TTS_EXTENSION_ID;
+  }
   /**
    * Gets the user's word highlighting enabled preference.
    * @return {boolean} True if word highlighting is enabled.
@@ -378,11 +455,22 @@ export class PrefsManager {
 
   /**
    * Gets the user's preference for whether enhanced network TTS voices are
-   * enabled.
+   * enabled. Always returns false if the policy disallows the feature.
    * @return {boolean} True if enhanced TTS voices are enabled.
    */
   enhancedNetworkVoicesEnabled() {
-    return this.enhancedNetworkVoicesEnabled_;
+    return this.enhancedNetworkVoicesAllowed_ ?
+        this.enhancedNetworkVoicesEnabled_ :
+        false;
+  }
+
+  /**
+   * Gets the admin's policy for whether enhanced network TTS voices are
+   * allowed.
+   * @return {boolean} True if enhanced TTS voices are allowed.
+   */
+  enhancedNetworkVoicesAllowed() {
+    return this.enhancedNetworkVoicesAllowed_;
   }
 
   /**
@@ -408,15 +496,51 @@ export class PrefsManager {
       this.enhancedVoicesDialogShown_ = true;
       chrome.storage.sync.set(
           {'enhancedVoicesDialogShown': this.enhancedVoicesDialogShown_});
+      if (!this.enhancedNetworkVoicesAllowed_) {
+        console.warn(
+            'Network voices dialog was shown when the policy disallows it.');
+      }
     }
   }
 }
+
+/**
+ * Constant used as the value for a menu option representing the current device
+ * language.
+ * @type {string}
+ */
+PrefsManager.USE_DEVICE_LANGUAGE = 'select_to_speak_device_language';
 
 /**
  * Constant representing the system TTS voice.
  * @type {string}
  */
 PrefsManager.SYSTEM_VOICE = 'select_to_speak_system_voice';
+
+/**
+ * Constant representing the voice name for the default (server-selected)
+ * network TTS voice.
+ * @type {string}
+ */
+PrefsManager.DEFAULT_NETWORK_VOICE = 'default-wavenet';
+
+/**
+ * Extension ID of the enhanced network TTS voices extension.
+ * @const {string}
+ */
+PrefsManager.ENHANCED_TTS_EXTENSION_ID = 'jacnkoglebceckolkoapelihnglgaicd';
+
+/**
+ * Extension ID of the Google TTS voices extension.
+ * @const {string}
+ */
+PrefsManager.GOOGLE_TTS_EXTENSION_ID = 'gjjabgpgjpampikjhjpfhneeoapjbjaf';
+
+/**
+ * Extension ID of the eSpeak TTS voices extension.
+ * @const {string}
+ */
+PrefsManager.ESPEAK_EXTENSION_ID = 'dakbfdmgjiabojdgbiljlhgjbokobjpg';
 
 /**
  * Default speech rate for both Select-to-Speak and global prefs.
@@ -429,3 +553,11 @@ PrefsManager.DEFAULT_RATE = 1.0;
  * @type {number}
  */
 PrefsManager.DEFAULT_PITCH = 1.0;
+
+/**
+ * Settings key for the policy indicating whether to allow enhanced network
+ * voices.
+ * @type {string}
+ */
+PrefsManager.ENHANCED_VOICES_POLICY_KEY =
+    'settings.a11y.enhanced_network_voices_in_select_to_speak_allowed';

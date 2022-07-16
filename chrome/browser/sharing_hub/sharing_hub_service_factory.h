@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SHARING_HUB_SHARING_HUB_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SHARING_HUB_SHARING_HUB_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -20,6 +19,9 @@ class SharingHubServiceFactory : public BrowserContextKeyedServiceFactory {
   static SharingHubService* GetForProfile(Profile* profile);
   static SharingHubServiceFactory* GetInstance();
 
+  SharingHubServiceFactory(const SharingHubServiceFactory&) = delete;
+  SharingHubServiceFactory& operator=(const SharingHubServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<SharingHubServiceFactory>;
 
@@ -29,8 +31,6 @@ class SharingHubServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SharingHubServiceFactory);
 };
 
 }  // namespace sharing_hub

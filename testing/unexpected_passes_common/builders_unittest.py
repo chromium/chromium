@@ -172,7 +172,7 @@ class GetMirroredBuildersForCiBuilderUnittest(unittest.TestCase):
 
   def testFakeCiBuilder(self):
     """Tests that a fake CI builder gets properly mapped."""
-    self._fake_ci_mock.return_value = {'foo_ci': 'foo_try'}
+    self._fake_ci_mock.return_value = {'foo_ci': {'foo_try'}}
     try_builder, found_mirror = (
         self._builders_instance._GetMirroredBuildersForCiBuilder('foo_ci'))
     self.assertTrue(found_mirror)

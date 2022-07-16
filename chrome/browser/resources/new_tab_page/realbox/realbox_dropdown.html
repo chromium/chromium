@@ -110,7 +110,8 @@
           filter="[[computeMatchBelongsToGroup_(groupId)]]"
           on-dom-change="onResultRepaint_">
         <ntp-realbox-match tabindex="0" role="option" match="[[item]]"
-            match-index="[[matchIndex_(item)]]">
+            match-index="[[matchIndex_(item)]]"
+            is-rich-suggestion$="[[item.isRichSuggestion]]">
         </ntp-realbox-match>
       </template>
     </template>

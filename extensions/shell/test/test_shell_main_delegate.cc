@@ -22,6 +22,11 @@ class TestShellContentUtilityClient : public content::ContentUtilityClient {
           std::make_unique<content::NetworkServiceTestHelper>();
     }
   }
+
+  TestShellContentUtilityClient(const TestShellContentUtilityClient&) = delete;
+  TestShellContentUtilityClient& operator=(
+      const TestShellContentUtilityClient&) = delete;
+
   ~TestShellContentUtilityClient() override {}
 
   // content::ContentUtilityClient implementation.
@@ -33,8 +38,6 @@ class TestShellContentUtilityClient : public content::ContentUtilityClient {
  private:
   std::unique_ptr<content::NetworkServiceTestHelper>
       network_service_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestShellContentUtilityClient);
 };
 
 }  // namespace

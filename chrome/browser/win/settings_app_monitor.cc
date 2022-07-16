@@ -14,10 +14,10 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/scoped_variant.h"
 #include "chrome/browser/win/automation_controller.h"
@@ -115,6 +115,11 @@ class SettingsAppMonitor::AutomationControllerDelegate
   AutomationControllerDelegate(
       scoped_refptr<base::SequencedTaskRunner> monitor_runner,
       base::WeakPtr<SettingsAppMonitor> monitor);
+
+  AutomationControllerDelegate(const AutomationControllerDelegate&) = delete;
+  AutomationControllerDelegate& operator=(const AutomationControllerDelegate&) =
+      delete;
+
   ~AutomationControllerDelegate() override;
 
   // AutomationController::Delegate:
@@ -149,8 +154,6 @@ class SettingsAppMonitor::AutomationControllerDelegate
 
   // The browser chooser must only be invoked once.
   mutable bool browser_chooser_invoked_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationControllerDelegate);
 };
 
 SettingsAppMonitor::AutomationControllerDelegate::AutomationControllerDelegate(

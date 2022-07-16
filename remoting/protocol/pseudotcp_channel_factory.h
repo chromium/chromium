@@ -23,6 +23,10 @@ class PseudoTcpChannelFactory : public StreamChannelFactory {
   // |datagram_channel_factory| must outlive this object.
   explicit PseudoTcpChannelFactory(
       DatagramChannelFactory* datagram_channel_factory);
+
+  PseudoTcpChannelFactory(const PseudoTcpChannelFactory&) = delete;
+  PseudoTcpChannelFactory& operator=(const PseudoTcpChannelFactory&) = delete;
+
   ~PseudoTcpChannelFactory() override;
 
   // StreamChannelFactory interface.
@@ -43,8 +47,6 @@ class PseudoTcpChannelFactory : public StreamChannelFactory {
   DatagramChannelFactory* datagram_channel_factory_;
 
   PendingSocketsMap pending_sockets_;
-
-  DISALLOW_COPY_AND_ASSIGN(PseudoTcpChannelFactory);
 };
 
 }  // namespace protocol

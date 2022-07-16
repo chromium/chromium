@@ -36,6 +36,8 @@ class BLINK_COMMON_EXPORT TrialTokenResult {
 
   const TrialToken* ParsedToken() const { return parsed_token_.get(); }
 
+  void SetStatus(OriginTrialTokenStatus status) { status_ = status; }
+
  private:
   OriginTrialTokenStatus status_;
   std::unique_ptr<TrialToken> parsed_token_;

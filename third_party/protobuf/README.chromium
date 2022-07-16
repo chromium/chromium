@@ -85,3 +85,9 @@ Description of the patches:
 
   Fixes a bug in delimited message parsing and serialization, as fixed in
   protobuf commit with hash bd9a7104e11740e4bcfbde46c190c2d908ef331a
+
+- 0024-fix-thread-priority-on-protobuf-initialization.patch
+
+  Adds hooks to allow running callback before and after protobuf initialisation.
+  These hooks allows to fix priority inversion by injecting code that boost
+  the thread priority while loading protobufs (https://crbug.com/1218253).

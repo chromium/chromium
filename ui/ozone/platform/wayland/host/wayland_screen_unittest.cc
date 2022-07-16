@@ -38,6 +38,10 @@ constexpr uint32_t kOutputHeight = 768;
 class TestDisplayObserver : public display::DisplayObserver {
  public:
   TestDisplayObserver() {}
+
+  TestDisplayObserver(const TestDisplayObserver&) = delete;
+  TestDisplayObserver& operator=(const TestDisplayObserver&) = delete;
+
   ~TestDisplayObserver() override {}
 
   display::Display GetDisplay() { return std::move(display_); }
@@ -67,8 +71,6 @@ class TestDisplayObserver : public display::DisplayObserver {
   uint32_t changed_metrics_ = 0;
   display::Display display_;
   display::Display removed_display_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDisplayObserver);
 };
 
 }  // namespace
@@ -76,6 +78,10 @@ class TestDisplayObserver : public display::DisplayObserver {
 class WaylandScreenTest : public WaylandTest {
  public:
   WaylandScreenTest() = default;
+
+  WaylandScreenTest(const WaylandScreenTest&) = delete;
+  WaylandScreenTest& operator=(const WaylandScreenTest&) = delete;
+
   ~WaylandScreenTest() override = default;
 
   void SetUp() override {
@@ -121,9 +127,6 @@ class WaylandScreenTest : public WaylandTest {
   WaylandOutputManager* output_manager_ = nullptr;
 
   std::unique_ptr<WaylandScreen> platform_screen_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WaylandScreenTest);
 };
 
 // Tests whether a primary output has been initialized before PlatformScreen is
@@ -139,6 +142,77 @@ TEST_P(WaylandScreenTest, OutputBaseTest) {
   // Ensure the size property of the primary display.
   EXPECT_EQ(platform_screen_->GetPrimaryDisplay().bounds(),
             gfx::Rect(0, 0, kOutputWidth, kOutputHeight));
+}
+
+// In multi-monitor setup, the `entered_outputs_` list should be updated when
+// the display is unplugged or switched off.
+TEST_P(WaylandScreenTest, EnteredOutputListAfterDisplayRemoval) {
+  wl::TestOutput* output1 = server_.output();
+  gfx::Rect output1_rect = server_.output()->GetRect();
+
+  // Add a second display.
+  wl::TestOutput* output2 = server_.CreateAndInitializeOutput();
+  Sync();
+  // The second display is located to the right of first display
+  gfx::Rect output2_rect(output1_rect.right(), 0, 800, 600);
+  output2->SetRect(output2_rect);
+  output2->Flush();
+  Sync();
+
+  // Add a third display.
+  wl::TestOutput* output3 = server_.CreateAndInitializeOutput();
+  Sync();
+  // The third display is located to the right of second display
+  gfx::Rect output3_rect(output2_rect.right(), 0, 800, 600);
+  output3->SetRect(output3_rect);
+  output3->Flush();
+  Sync();
+
+  EXPECT_EQ(3u, platform_screen_->GetAllDisplays().size());
+
+  wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+  ASSERT_TRUE(surface);
+
+  wl_surface_send_enter(surface->resource(), output1->resource());
+  wl_surface_send_enter(surface->resource(), output2->resource());
+  Sync();
+  // The window entered two outputs
+  auto entered_outputs = window_->root_surface()->entered_outputs();
+  EXPECT_EQ(2u, entered_outputs.size());
+
+  wl_surface_send_enter(surface->resource(), output3->resource());
+  Sync();
+  // The window entered three outputs
+  entered_outputs = window_->root_surface()->entered_outputs();
+  EXPECT_EQ(3u, entered_outputs.size());
+
+  // Destroy third display
+  output3->DestroyGlobal();
+  Sync();
+  entered_outputs = window_->root_surface()->entered_outputs();
+  EXPECT_EQ(2u, entered_outputs.size());
+
+  // Destroy second display
+  output2->DestroyGlobal();
+  Sync();
+  entered_outputs = window_->root_surface()->entered_outputs();
+  EXPECT_EQ(1u, entered_outputs.size());
+
+  // Add a second display.
+  output2 = server_.CreateAndInitializeOutput();
+  Sync();
+  // The second display is located to the right of first display
+  output2->SetRect(output2_rect);
+  output2->Flush();
+  Sync();
+
+  wl_surface_send_enter(surface->resource(), output2->resource());
+  Sync();
+
+  // The window entered two outputs
+  entered_outputs = window_->root_surface()->entered_outputs();
+  EXPECT_EQ(2u, entered_outputs.size());
 }
 
 TEST_P(WaylandScreenTest, MultipleOutputsAddedAndRemoved) {
@@ -688,43 +762,6 @@ TEST_P(WaylandScreenTest, SetWindowScale) {
   EXPECT_EQ(window_->ui_scale_, kForcedUIScale);
 
   display::Display::ResetForceDeviceScaleFactorForTesting();
-}
-
-// Tests that WaylandScreen updates list of displays with additional fractional
-// scale by taking only decimal part of it and updating the displays using their
-// existing scale + fractional part. This fractional part comes from GNOME's
-// accessibility feature called "Large Text".
-TEST_P(WaylandScreenTest, SetAdditionalScale) {
-  TestDisplayObserver observer;
-  platform_screen_->AddObserver(&observer);
-
-  const display::Display primary_display =
-      platform_screen_->GetPrimaryDisplay();
-
-  wl::TestOutput* output2 = server_.CreateAndInitializeOutput();
-
-  Sync();
-
-  // Place it on the right side of the primary display.
-  const gfx::Rect output2_rect =
-      gfx::Rect(primary_display.bounds().width(), 0, 1024, 768);
-  output2->SetRect(output2_rect);
-  output2->Flush();
-
-  Sync();
-
-  const std::vector<float> scales = {0.2, 0.7, 1.3, 1.6, 1.8, 2.3, 2.9, 3.5};
-  // Pretend GNOME updates scale and sets fractional scale (Large Text feature).
-  for (auto scale : scales) {
-    platform_screen_->SetDeviceScaleFactor(scale);
-    for (auto& display : platform_screen_->GetAllDisplays()) {
-      float whole = 0;
-      // WaylandScreen will get decimal part and use the integer part provided
-      // by wl_output.
-      float expected_scale = std::modf(scale, &whole) + 1.f;
-      EXPECT_EQ(expected_scale, display.device_scale_factor());
-    }
-  }
 }
 
 namespace {

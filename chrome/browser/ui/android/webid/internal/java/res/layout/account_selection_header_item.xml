@@ -5,14 +5,27 @@
 
 <!-- Please update R.dimens.account_selection_sheet_height_single_account
      when modifying the margins or text sizes. -->
-<org.chromium.ui.widget.TextViewWithLeading
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/account_selection_sheet_title"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="16dp"
     android:layout_gravity="center_horizontal"
-    android:gravity="center"
-    android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-    android:minHeight="@dimen/account_selection_sheet_title_height"
-    android:layout_marginBottom="@dimen/account_selection_sheet_title_margin_bottom"/>
+    android:orientation="vertical"
+    android:minHeight="@dimen/account_selection_sheet_title_height">
+  <org.chromium.ui.widget.TextViewWithLeading
+      android:id="@+id/header_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="8dp"
+      android:gravity="center"
+      android:textAppearance="@style/TextAppearance.Headline.Primary"/>
+  <TextView
+    android:id="@+id/header_idp_url"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+</LinearLayout>

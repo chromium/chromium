@@ -24,6 +24,10 @@ class MockAudibleContentsObserver
  public:
   MockAudibleContentsObserver() {}
 
+  MockAudibleContentsObserver(const MockAudibleContentsObserver&) = delete;
+  MockAudibleContentsObserver& operator=(const MockAudibleContentsObserver&) =
+      delete;
+
   // AudibleContentsTracker::Observer:
   void OnAudioStart() override { is_audio_playing_ = true; }
   void OnAudioEnd() override { is_audio_playing_ = false; }
@@ -32,8 +36,6 @@ class MockAudibleContentsObserver
 
  private:
   bool is_audio_playing_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAudibleContentsObserver);
 };
 
 }  // namespace
@@ -41,6 +43,10 @@ class MockAudibleContentsObserver
 class AudibleContentsTrackerTest : public InProcessBrowserTest {
  public:
   AudibleContentsTrackerTest() {}
+
+  AudibleContentsTrackerTest(const AudibleContentsTrackerTest&) = delete;
+  AudibleContentsTrackerTest& operator=(const AudibleContentsTrackerTest&) =
+      delete;
 
   void SetUp() override {
     observer_ = std::make_unique<MockAudibleContentsObserver>();
@@ -65,8 +71,6 @@ class AudibleContentsTrackerTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<MockAudibleContentsObserver> observer_;
   std::unique_ptr<metrics::AudibleContentsTracker> tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudibleContentsTrackerTest);
 };
 
 // TODO(crbug.com/1124845): Flaky on Win7 32-bit.
@@ -87,8 +91,8 @@ IN_PROC_BROWSER_TEST_F(AudibleContentsTrackerTest,
       test_data_dir.AppendASCII("chrome/test/data/"));
   // Start the test server after adding the request handler for thread safety.
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/autoplay_audio.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/autoplay_audio.html")));
 
   // Wait until the audio starts.
   while (!audio_observer->is_audio_playing()) {

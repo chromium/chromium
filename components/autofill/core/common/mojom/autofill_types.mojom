@@ -178,11 +178,8 @@ struct FormData {
   mojo_base.mojom.String16 name_attribute;
   mojo_base.mojom.String16 name;
   array<ButtonTitleInfo> button_titles;
-  url.mojom.Url url;
-  url.mojom.Url full_url;
   url.mojom.Url action;
   bool is_action_empty;
-  url.mojom.Origin main_frame_origin;
   bool is_form_tag;
   FormRendererId unique_renderer_id;
   array<FrameTokenWithPredecessor> child_frames;

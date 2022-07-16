@@ -10,13 +10,12 @@
 #include "ash/ash_export.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "ash/system/unified/detailed_view_controller.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 
 namespace ash {
 
 namespace tray {
-class BluetoothDetailedView;
+class BluetoothDetailedViewLegacy;
 }  // namespace tray
 
 class DetailedViewDelegate;
@@ -29,6 +28,12 @@ class ASH_EXPORT UnifiedBluetoothDetailedViewController
  public:
   explicit UnifiedBluetoothDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
+
+  UnifiedBluetoothDetailedViewController(
+      const UnifiedBluetoothDetailedViewController&) = delete;
+  UnifiedBluetoothDetailedViewController& operator=(
+      const UnifiedBluetoothDetailedViewController&) = delete;
+
   ~UnifiedBluetoothDetailedViewController() override;
 
   // DetailedViewControllerBase:
@@ -46,14 +51,12 @@ class ASH_EXPORT UnifiedBluetoothDetailedViewController
 
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  tray::BluetoothDetailedView* view_ = nullptr;
+  tray::BluetoothDetailedViewLegacy* view_ = nullptr;
 
   BluetoothDeviceList connected_devices_;
   BluetoothDeviceList connecting_devices_;
   BluetoothDeviceList paired_not_connected_devices_;
   BluetoothDeviceList discovered_not_paired_devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedBluetoothDetailedViewController);
 };
 
 }  // namespace ash

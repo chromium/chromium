@@ -5,6 +5,7 @@
 #include "tools/json_schema_compiler/test/error_generation.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -81,16 +82,17 @@ TEST(JsonSchemaCompilerErrorTest, TypeIsRequired) {
 
 TEST(JsonSchemaCompilerErrorTest, TooManyParameters) {
   {
-    std::unique_ptr<base::ListValue> params_value =
-        List(std::make_unique<Value>(5));
+    std::vector<Value> params_value;
+    params_value.emplace_back(5);
     std::u16string error;
-    EXPECT_TRUE(errors::TestFunction::Params::Create(*params_value, &error));
+    EXPECT_TRUE(errors::TestFunction::Params::Create(params_value, &error));
   }
   {
-    std::unique_ptr<base::ListValue> params_value =
-        List(std::make_unique<Value>(5), std::make_unique<Value>(5));
+    std::vector<Value> params_value;
+    params_value.emplace_back(5);
+    params_value.emplace_back(5);
     std::u16string error;
-    EXPECT_FALSE(errors::TestFunction::Params::Create(*params_value, &error));
+    EXPECT_FALSE(errors::TestFunction::Params::Create(params_value, &error));
     EXPECT_TRUE(EqualsUtf16("expected 1 arguments, got 2", error));
   }
 }
@@ -99,16 +101,16 @@ TEST(JsonSchemaCompilerErrorTest, TooManyParameters) {
 
 TEST(JsonSchemaCompilerErrorTest, ParamIsRequired) {
   {
-    std::unique_ptr<base::ListValue> params_value =
-        List(std::make_unique<Value>(5));
+    std::vector<Value> params_value;
+    params_value.emplace_back(5);
     std::u16string error;
-    EXPECT_TRUE(errors::TestFunction::Params::Create(*params_value, &error));
+    EXPECT_TRUE(errors::TestFunction::Params::Create(params_value, &error));
   }
   {
-    std::unique_ptr<base::ListValue> params_value =
-        List(std::make_unique<Value>());
+    std::vector<Value> params_value;
+    params_value.emplace_back();
     std::u16string error;
-    EXPECT_FALSE(errors::TestFunction::Params::Create(*params_value, &error));
+    EXPECT_FALSE(errors::TestFunction::Params::Create(params_value, &error));
     EXPECT_TRUE(EqualsUtf16("'num' is required", error));
   }
 }
@@ -132,16 +134,16 @@ TEST(JsonSchemaCompilerErrorTest, WrongPropertyValueType) {
 TEST(JsonSchemaCompilerErrorTest, WrongParameterCreationType) {
   {
     std::u16string error;
-    std::unique_ptr<base::ListValue> params_value =
-        List(std::make_unique<Value>("Yeah!"));
-    EXPECT_TRUE(errors::TestString::Params::Create(*params_value, &error));
+    std::vector<Value> params_value;
+    params_value.emplace_back("Yeah!");
+    EXPECT_TRUE(errors::TestString::Params::Create(params_value, &error));
   }
   {
-    std::unique_ptr<base::ListValue> params_value =
-        List(std::make_unique<Value>(5));
+    std::vector<Value> params_value;
+    params_value.emplace_back(5);
     std::u16string error;
     EXPECT_FALSE(
-        errors::TestTypeInObject::Params::Create(*params_value, &error));
+        errors::TestTypeInObject::Params::Create(params_value, &error));
     EXPECT_TRUE(EqualsUtf16("'paramObject': expected dictionary, got integer",
         error));
   }

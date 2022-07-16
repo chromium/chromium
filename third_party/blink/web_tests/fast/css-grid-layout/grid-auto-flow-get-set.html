@@ -83,11 +83,11 @@
     debug("Test getting grid-auto-flow set through CSS");
     checkGridAutoFlowSetCSSValue("gridAutoFlowColumnSparse", "column");
     checkGridAutoFlowSetCSSValue("gridAutoFlowRowSparse", "row");
-    checkGridAutoFlowSetCSSValue("gridAutoFlowDense", "row dense");
+    checkGridAutoFlowSetCSSValue("gridAutoFlowDense", "dense");
     checkGridAutoFlowSetCSSValue("gridAutoFlowColumnDense", "column dense");
-    checkGridAutoFlowSetCSSValue("gridAutoFlowRowDense", "row dense");
+    checkGridAutoFlowSetCSSValue("gridAutoFlowRowDense", "dense");
     checkGridAutoFlowSetCSSValue("gridAutoFlowDenseColumn", "column dense");
-    checkGridAutoFlowSetCSSValue("gridAutoFlowDenseRow", "row dense");
+    checkGridAutoFlowSetCSSValue("gridAutoFlowDenseRow", "dense");
     checkGridAutoFlowSetCSSValue("gridAutoFlowInherit", "column");
     checkGridAutoFlowSetCSSValue("gridAutoFlowNoInherit", "row");
 
@@ -110,9 +110,9 @@
     debug("Test getting and setting grid-auto-flow through JS");
     checkGridAutoFlowSetJSValue("column", "column", "column");
     checkGridAutoFlowSetJSValue("column dense", "column dense", "column dense");
-    checkGridAutoFlowSetJSValue("row dense", "row dense", "row dense");
+    checkGridAutoFlowSetJSValue("row dense", "dense", "dense");
     checkGridAutoFlowSetJSValue("dense column", "column dense", "column dense");
-    checkGridAutoFlowSetJSValue("dense row", "row dense", "row dense");
+    checkGridAutoFlowSetJSValue("dense row", "dense", "dense");
     checkGridAutoFlowSetJSValue("row", "row", "row");
 
     debug("");

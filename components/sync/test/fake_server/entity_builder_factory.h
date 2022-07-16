@@ -30,7 +30,7 @@ class EntityBuilderFactory {
   explicit EntityBuilderFactory(const std::string& cache_guid);
   virtual ~EntityBuilderFactory();
 
-  const BookmarkEntityBuilder NewBookmarkEntityBuilder(
+  BookmarkEntityBuilder NewBookmarkEntityBuilder(
       const std::string& title,
       absl::optional<std::string> originator_client_item_id = absl::nullopt);
 

@@ -97,14 +97,14 @@ void ImageThumbnailRequest::OnDecodeImageFailed() {
   FinishRequest(SkBitmap());
 }
 
-void ImageThumbnailRequest::OnLoadComplete(const std::vector<uint8_t>& data) {
+void ImageThumbnailRequest::OnLoadComplete(std::vector<uint8_t> data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (data.empty()) {
     FinishRequest(SkBitmap());
     return;
   }
 
-  ImageDecoder::Start(this, data);
+  ImageDecoder::Start(this, std::move(data));
 }
 
 void ImageThumbnailRequest::FinishRequest(SkBitmap thumbnail) {

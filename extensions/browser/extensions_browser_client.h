@@ -72,7 +72,6 @@ class ExtensionSystem;
 class ExtensionSystemProvider;
 class ExtensionWebContentsObserver;
 class KioskDelegate;
-class MediaRouterExtensionAccessLogger;
 class ProcessManagerDelegate;
 class ProcessMap;
 class RuntimeAPIDelegate;
@@ -367,10 +366,6 @@ class ExtensionsBrowserClient {
   virtual base::FilePath GetSaveFilePath(content::BrowserContext* context);
   virtual void SetLastSaveFilePath(content::BrowserContext* context,
                                    const base::FilePath& path);
-
-  // Retrieves the media router access logger for this session.
-  virtual const MediaRouterExtensionAccessLogger* GetMediaRouterAccessLogger()
-      const;
 
   // Returns true if the |extension_id| requires its own isolated storage
   // partition.

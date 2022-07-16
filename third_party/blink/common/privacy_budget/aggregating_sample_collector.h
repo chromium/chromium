@@ -75,8 +75,7 @@ class BLINK_COMMON_EXPORT_PRIVATE AggregatingSampleCollector
 
   // Maximum age of the oldest sample in the unsent collection. Again, the class
   // will flush all samples if this limit overflows.
-  static constexpr base::TimeDelta kMaxUnsentSampleAge =
-      base::TimeDelta::FromSeconds(5);
+  static constexpr base::TimeDelta kMaxUnsentSampleAge = base::Seconds(5);
 
   // Should be the same as the type for ukm::UkmEntry::metrics_
   using UkmMetricsContainerType = decltype(ukm::mojom::UkmEntry::metrics);

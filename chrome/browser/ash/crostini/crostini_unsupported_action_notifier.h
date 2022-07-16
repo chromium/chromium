@@ -13,7 +13,7 @@
 #include "ash/public/cpp/toast_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/aura/client/focus_change_observer.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace crostini {
 
@@ -24,7 +24,7 @@ namespace crostini {
 class CrostiniUnsupportedActionNotifier
     : public ash::TabletModeObserver,
       public aura::client::FocusChangeObserver,
-      public chromeos::input_method::InputMethodManager::Observer,
+      public ash::input_method::InputMethodManager::Observer,
       public ash::KeyboardControllerObserver {
  public:
   // Adapter around external integrations which we can mock out for testing,
@@ -41,8 +41,7 @@ class CrostiniUnsupportedActionNotifier
     virtual bool IsFocusedWindowCrostini();
 
     // Gets the descriptor for the currently active input method.
-    virtual chromeos::input_method::InputMethodDescriptor
-    GetCurrentInputMethod();
+    virtual ash::input_method::InputMethodDescriptor GetCurrentInputMethod();
 
     // Is the current virtual keyboard visible.
     virtual bool IsVirtualKeyboardVisible();
@@ -53,7 +52,7 @@ class CrostiniUnsupportedActionNotifier
     // Gets a human-friendly name for the given input method descriptor
     // in the current display language.
     virtual std::string GetLocalizedDisplayName(
-        const chromeos::input_method::InputMethodDescriptor& descriptor);
+        const ash::input_method::InputMethodDescriptor& descriptor);
 
     // How long in milliseconds toasts should be displayed for. Timing varies
     // depending on e.g. whether screen magnification is enabled.
@@ -65,9 +64,9 @@ class CrostiniUnsupportedActionNotifier
     virtual void AddTabletModeObserver(ash::TabletModeObserver* observer);
     virtual void RemoveTabletModeObserver(ash::TabletModeObserver* observer);
     virtual void AddInputMethodObserver(
-        chromeos::input_method::InputMethodManager::Observer* observer);
+        ash::input_method::InputMethodManager::Observer* observer);
     virtual void RemoveInputMethodObserver(
-        chromeos::input_method::InputMethodManager::Observer* observer);
+        ash::input_method::InputMethodManager::Observer* observer);
     virtual void AddKeyboardControllerObserver(
         ash::KeyboardControllerObserver* observer);
     virtual void RemoveKeyboardControllerObserver(
@@ -77,6 +76,12 @@ class CrostiniUnsupportedActionNotifier
   CrostiniUnsupportedActionNotifier();
   explicit CrostiniUnsupportedActionNotifier(
       std::unique_ptr<Delegate> delegate);
+
+  CrostiniUnsupportedActionNotifier(const CrostiniUnsupportedActionNotifier&) =
+      delete;
+  CrostiniUnsupportedActionNotifier& operator=(
+      const CrostiniUnsupportedActionNotifier&) = delete;
+
   ~CrostiniUnsupportedActionNotifier() override;
 
   // ash::TabletModeObserver:
@@ -86,8 +91,8 @@ class CrostiniUnsupportedActionNotifier
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override;
 
-  // chromeos::input_method::InputMethodManager::Observer:
-  void InputMethodChanged(chromeos::input_method::InputMethodManager* manager,
+  // ash::input_method::InputMethodManager::Observer:
+  void InputMethodChanged(ash::input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
 
@@ -110,13 +115,11 @@ class CrostiniUnsupportedActionNotifier
   void ShowIMEUnsupportedNotificationIfNeeded();
 
   bool IsIMESupportedByCrostini(
-      const chromeos::input_method::InputMethodDescriptor& method);
+      const ash::input_method::InputMethodDescriptor& method);
 
   std::unique_ptr<Delegate> delegate_;
   bool virtual_keyboard_unsupported_message_shown_ = false;
   bool ime_unsupported_message_shown_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUnsupportedActionNotifier);
 };
 
 }  // namespace crostini

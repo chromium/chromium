@@ -15,6 +15,10 @@ namespace remoting {
 class MockKeychain : public Keychain {
  public:
   MockKeychain();
+
+  MockKeychain(const MockKeychain&) = delete;
+  MockKeychain& operator=(const MockKeychain&) = delete;
+
   ~MockKeychain() override;
 
   void ExpectAndCaptureSetData(Key key,
@@ -28,9 +32,6 @@ class MockKeychain : public Keychain {
   MOCK_METHOD3(SetData, void(Key, const std::string&, const std::string&));
   MOCK_METHOD2(RemoveData, void(Key, const std::string&));
   MOCK_CONST_METHOD2(GetData, std::string(Key, const std::string&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockKeychain);
 };
 
 }  // namespace remoting

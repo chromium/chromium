@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/strings/grit/components_strings.h"
@@ -89,14 +90,26 @@ TranslateUIDelegate::TranslateUIDelegate(
   if (base::FeatureList::IsEnabled(
           language::kContentLanguagesInLanguagePicker)) {
     MaybeSetContentLanguages();
-    // Also start listening for changes in the accept languages.
-    PrefService* pref_service =
-        translate_manager->translate_client()->GetPrefs();
-    pref_change_registrar_.Init(pref_service);
-    pref_change_registrar_.Add(
-        language::prefs::kAcceptLanguages,
-        base::BindRepeating(&TranslateUIDelegate::MaybeSetContentLanguages,
-                            base::Unretained(this)));
+
+    if (!base::GetFieldTrialParamByFeatureAsBool(
+            language::kContentLanguagesInLanguagePicker,
+            language::kContentLanguagesDisableObserversParam,
+            false /* default */)) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      const std::string& pref_name = language::prefs::kPreferredLanguages;
+#else
+      const std::string& pref_name = language::prefs::kAcceptLanguages;
+#endif
+
+      // Also start listening for changes in the accept languages.
+      PrefService* pref_service =
+          translate_manager->translate_client()->GetPrefs();
+      pref_change_registrar_.Init(pref_service);
+      pref_change_registrar_.Add(
+          pref_name,
+          base::BindRepeating(&TranslateUIDelegate::MaybeSetContentLanguages,
+                              base::Unretained(this)));
+    }
   }
 
   std::string locale =
@@ -321,7 +334,8 @@ void TranslateUIDelegate::Translate() {
     translate_manager_->TranslatePage(
         GetSourceLanguageCode(), GetTargetLanguageCode(), false,
         translate_manager_->GetActiveTranslateMetricsLogger()
-            ->GetNextManualTranslationType());
+            ->GetNextManualTranslationType(
+                /*is_context_menu_initiated_translation=*/false));
     UMA_HISTOGRAM_BOOLEAN(kPerformTranslate, true);
     if (IsLikelyAmpCacheUrl(translate_driver_->GetLastCommittedURL()))
       UMA_HISTOGRAM_BOOLEAN(kPerformTranslateAmpCacheUrl, true);
@@ -329,7 +343,8 @@ void TranslateUIDelegate::Translate() {
 }
 
 void TranslateUIDelegate::RevertTranslation() {
-  if (translate_manager_) {
+  if (translate_manager_ &&
+      translate_manager_->GetLanguageState()->IsPageTranslated()) {
     translate_manager_->RevertTranslation();
     UMA_HISTOGRAM_BOOLEAN(kRevertTranslation, true);
   }
@@ -391,11 +406,11 @@ bool TranslateUIDelegate::IsSiteOnNeverPromptList() const {
   return !host.empty() && prefs_->IsSiteOnNeverPromptList(host);
 }
 
-bool TranslateUIDelegate::CanAddToNeverPromptList() const {
+bool TranslateUIDelegate::CanAddSiteToNeverPromptList() const {
   return !GetPageHost().empty();
 }
 
-void TranslateUIDelegate::SetNeverPrompt(bool value) {
+void TranslateUIDelegate::SetNeverPromptSite(bool value) {
   std::string host = GetPageHost();
   if (host.empty())
     return;
@@ -453,7 +468,7 @@ void TranslateUIDelegate::SetAlwaysTranslate(bool value) {
     // If a language is being added to the always translate list on a
     // blocklisted site, remove that site from the blocklist.
     if (IsSiteOnNeverPromptList())
-      SetNeverPrompt(false);
+      SetNeverPromptSite(false);
   } else {
     prefs_->RemoveLanguagePairFromAlwaysTranslateList(source_lang, target_lang);
   }

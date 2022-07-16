@@ -329,8 +329,9 @@ base::FilePath OperationManager::GetAssociatedDownloadFolder() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   return file_manager::util::GetDownloadsFolderForProfile(profile);
-#endif
+#else
   return base::FilePath();
+#endif
 }
 
 Operation* OperationManager::GetOperation(const ExtensionId& extension_id) {

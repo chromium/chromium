@@ -20,6 +20,10 @@ namespace viz {
 class MockDisplayClient : public mojom::DisplayClient {
  public:
   MockDisplayClient();
+
+  MockDisplayClient(const MockDisplayClient&) = delete;
+  MockDisplayClient& operator=(const MockDisplayClient&) = delete;
+
   ~MockDisplayClient() override;
 
   mojo::PendingRemote<mojom::DisplayClient> BindRemote();
@@ -46,8 +50,6 @@ class MockDisplayClient : public mojom::DisplayClient {
 
  private:
   mojo::Receiver<mojom::DisplayClient> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockDisplayClient);
 };
 
 }  // namespace viz

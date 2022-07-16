@@ -12,7 +12,7 @@
 
     <link rel="stylesheet" href="chrome://resources/css/action_link.css">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
-    <link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_colors.generated.css">
+    <link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
     <link rel="stylesheet" href="foreground/css/list.css">
     <link rel="stylesheet" href="foreground/css/table.css">
     <link rel="stylesheet" href="foreground/css/tree.css">
@@ -135,8 +135,6 @@
 
       <command id="default-task">
       <command id="open-with" label="$i18n{OPEN_WITH_BUTTON_LABEL}">
-      <command id="more-actions" label="$i18n{MORE_ACTIONS_BUTTON_LABEL}">
-      <command id="show-submenu" label="$i18n{MORE_ACTIONS_BUTTON_LABEL}">
       <command id="invoke-sharesheet" label="$i18n{SHARESHEET_BUTTON_LABEL}">
       <command id="toggle-holding-space">
       <command id="go-to-file-location"
@@ -188,12 +186,8 @@
                   visibleif="full-page" class="hide-on-toolbar" hidden></cr-menu-item>
         <cr-menu-item command="#open-with"
                   visibleif="full-page" class="hide-on-toolbar" sub-menu="#tasks-menu" hidden></cr-menu-item>
-        <cr-menu-item command="#more-actions"
-                  visibleif="full-page" class="hide-on-toolbar" sub-menu="#share-menu" hidden></cr-menu-item>
         <cr-menu-item command="#invoke-sharesheet"
-                  visibleif="full-page" class="hide-on-toolbar">
-                    $i18n{SHARE_BUTTON_TOOLTIP}
-                  </cr-menu-item>
+                  visibleif="full-page" class="hide-on-toolbar">$i18n{SHARESHEET_BUTTON_LABEL}</cr-menu-item>
         <cr-menu-item command="#go-to-file-location"
                   visibleif="full-page" class="hide-on-toolbar" hidden></cr-menu-item>
         <hr id="tasks-separator" visibleif="full-page" class="hide-on-toolbar" hidden>
@@ -321,21 +315,6 @@
                menu-item-selector="cr-menu-item, hr">
       </cr-menu>
 
-      <cr-menu id="share-menu" class="chrome-menu files-menu"
-               aria-label="$i18n{MORE_ACTIONS_BUTTON_LABEL}"
-               menu-item-selector="cr-menu-item, hr">
-        <cr-menu-item command="#share"></cr-menu-item>
-        <cr-menu-item command="#share-with-linux"></cr-menu-item>
-        <cr-menu-item command="#manage-linux-sharing"></cr-menu-item>
-        <cr-menu-item command="#share-with-plugin-vm"></cr-menu-item>
-        <cr-menu-item command="#manage-plugin-vm-sharing"></cr-menu-item>
-        <hr id="drive-share-separator">
-        <hr id="more-actions-separator">
-        <cr-menu-item command="#show-submenu"
-                  visibleif="full-page" class="hide-on-toolbar"
-                  sub-menu="#share-sub-menu" hidden></cr-menu-item>
-      </cr-menu>
-
       <cr-menu id="providers-menu"
                class="chrome-menu files-menu has-icon-start"
                menu-item-selector="cr-menu-item, hr">
@@ -350,8 +329,6 @@
         <cr-menu-item command="#delete">$i18n{DELETE_BUTTON_LABEL}</cr-menu-item>
       </cr-menu>
 
-      <cr-menu id="share-sub-menu" class="chrome-menu files-menu"
-               menu-item-selector="cr-menu-item">
       </cr-menu>
     </menus>
 
@@ -413,14 +390,6 @@
             <button id="tasks" class="combobutton menu-button" menu="#tasks-menu"
                     tabindex="0" hidden
                     aria-label="$i18n{TASKS_BUTTON_LABEL}">
-            </button>
-            <button id="share-menu-button" class="icon-button menu-button" tabindex="0" hidden
-                    menu="#share-menu"
-                    aria-label="$i18n{SHARE_BUTTON_TOOLTIP}"
-                    aria-activedescendant="share-menu"
-                    has-tooltip>
-              <files-toggle-ripple></files-toggle-ripple>
-              <div class="icon"></div>
             </button>
             <cr-button id="sharesheet-button" class="icon-button menu-button" tabindex="0" hidden
                     aria-label="$i18n{SHARESHEET_BUTTON_LABEL}"
@@ -543,6 +512,7 @@
           <div id="a11y-msg" aria-live="polite" style="display: inline-block; position: fixed; clip: rect(0, 0, 0, 0);"></div>
           <div class="main-panel">
             <div class="filelist-panel">
+              <div id="banners"></div>
               <div class="drive-welcome header"></div>
               <div id="photos-welcome" class="photos-welcome-hidden" hidden></div>
               <div class="holding-space-welcome" hidden style="height: 0; opacity: 0;"></div>

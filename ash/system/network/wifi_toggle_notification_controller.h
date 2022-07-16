@@ -6,20 +6,22 @@
 #define ASH_SYSTEM_NETWORK_WIFI_TOGGLE_NOTIFICATION_CONTROLLER_H_
 
 #include "ash/system/network/network_observer.h"
-#include "base/macros.h"
 
 namespace ash {
 
 class WifiToggleNotificationController : public NetworkObserver {
  public:
   WifiToggleNotificationController();
+
+  WifiToggleNotificationController(const WifiToggleNotificationController&) =
+      delete;
+  WifiToggleNotificationController& operator=(
+      const WifiToggleNotificationController&) = delete;
+
   ~WifiToggleNotificationController() override;
 
   // NetworkObserver:
   void RequestToggleWifi() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WifiToggleNotificationController);
 };
 
 }  // namespace ash

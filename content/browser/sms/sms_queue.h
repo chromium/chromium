@@ -18,6 +18,10 @@ namespace content {
 class CONTENT_EXPORT SmsQueue {
  public:
   SmsQueue();
+
+  SmsQueue(const SmsQueue&) = delete;
+  SmsQueue& operator=(const SmsQueue&) = delete;
+
   ~SmsQueue();
 
   using FailureType = SmsFetchFailureType;
@@ -35,8 +39,6 @@ class CONTENT_EXPORT SmsQueue {
 
  private:
   std::map<OriginList, base::ObserverList<Subscriber>> subscribers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmsQueue);
 };
 
 }  // namespace content

@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_tab_slider.h"
+#include "ash/wm/window_cycle/window_cycle_view.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -29,8 +30,6 @@ class Widget;
 
 namespace ash {
 
-class WindowCycleView;
-
 // Tracks a set of Windows that can be stepped through. This class is used by
 // the WindowCycleController.
 class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
@@ -42,9 +41,6 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   WindowCycleList(const WindowCycleList&) = delete;
   WindowCycleList& operator=(const WindowCycleList&) = delete;
   ~WindowCycleList() override;
-
-  // Horizontal padding between the alt-tab bandshield and the window previews.
-  static constexpr int kInsideBorderHorizontalPaddingDp = 64;
 
   // Returns the |target_window_| from |cycle_view_|.
   aura::Window* GetTargetWindow();
@@ -88,6 +84,9 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // Returns the window for the preview item located at |event|. Returns nullptr
   // if |event| not in cycle view or if |cycle_view_| does not exist.
   aura::Window* GetWindowAtPoint(const ui::LocatedEvent* event);
+
+  // Returns whether or not the event is located in tab slider container.
+  bool IsEventInTabSliderContainer(const ui::LocatedEvent* event);
 
   // Returns true if the window list overlay should be shown.
   bool ShouldShowUi();
@@ -144,21 +143,6 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
   // Returns the number of windows in the window cycle list for all desks.
   int GetNumberOfWindowsAllDesks() const;
-
-  // Returns the views for the window cycle list.
-  const views::View::Views& GetWindowCycleItemViewsForTesting() const;
-
-  // Returns the views for the window cycle tab slider buttons.
-  const views::View::Views& GetWindowCycleTabSliderButtonsForTesting() const;
-
-  // Returns no recent items label.
-  const views::Label* GetWindowCycleNoRecentItemsLabelForTesting() const;
-
-  // Returns the window cycle list's target window.
-  const aura::Window* GetTargetWindowForTesting() const;
-
-  // Returns whether the cycle view is animating.
-  bool IsCycleViewAnimatingForTesting() const;
 
   // List of weak pointers to windows to use while cycling with the keyboard.
   // List is built when the user initiates the gesture (i.e. hits alt-tab the

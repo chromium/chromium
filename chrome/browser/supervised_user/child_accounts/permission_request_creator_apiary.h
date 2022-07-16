@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -31,6 +30,12 @@ class PermissionRequestCreatorApiary : public PermissionRequestCreator {
   PermissionRequestCreatorApiary(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  PermissionRequestCreatorApiary(const PermissionRequestCreatorApiary&) =
+      delete;
+  PermissionRequestCreatorApiary& operator=(
+      const PermissionRequestCreatorApiary&) = delete;
+
   ~PermissionRequestCreatorApiary() override;
 
   static std::unique_ptr<PermissionRequestCreator> CreateWithProfile(
@@ -72,8 +77,6 @@ class PermissionRequestCreatorApiary : public PermissionRequestCreator {
   bool retry_on_network_change_;
 
   RequestList requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionRequestCreatorApiary);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_PERMISSION_REQUEST_CREATOR_APIARY_H_

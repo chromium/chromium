@@ -427,7 +427,8 @@ static UText* TextOpenLatin1(UTextWithBuffer* ut_with_buffer,
     DCHECK(!text);
     return nullptr;
   }
-  TextInit(text, &kTextLatin1Funcs, string.data(), string.size(), prior_context,
+  TextInit(text, &kTextLatin1Funcs, string.data(),
+           base::checked_cast<unsigned>(string.size()), prior_context,
            prior_context_length);
   return text;
 }
@@ -574,7 +575,8 @@ static UText* TextOpenUTF16(UText* text,
     DCHECK(!text);
     return nullptr;
   }
-  TextInit(text, &kTextUTF16Funcs, string.data(), string.size(), prior_context,
+  TextInit(text, &kTextUTF16Funcs, string.data(),
+           base::checked_cast<unsigned>(string.size()), prior_context,
            prior_context_length);
   return text;
 }
@@ -732,7 +734,7 @@ static TextBreakIterator* GetNonSharedCharacterBreakIterator() {
     ICUError error_code;
     iterator = base::WrapUnique(icu::BreakIterator::createCharacterInstance(
         icu::Locale(CurrentTextBreakLocaleID()), error_code));
-    CHECK(U_SUCCESS(error_code) && iterator)
+    DCHECK(U_SUCCESS(error_code) && iterator)
         << "ICU could not open a break iterator: " << u_errorName(error_code)
         << " (" << error_code << ")";
   }

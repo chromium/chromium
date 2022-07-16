@@ -21,7 +21,11 @@
     inline-size: 160px;
   }
   .red { color: red; }
-  .cb { position: relative; }
+  .cb {
+    position: relative;
+    inset-block-start: 15px;
+    inset-inline-start: 20px;
+  }
   .rtl { direction: rtl; }
   .ltr { direction: ltr; }
   .inline { display: inline; }
@@ -41,6 +45,7 @@ There should be no red.
   <div class="container rtl">
     X<span class="rtl cb">X<div class="abs inline">XX</div><span class="red">XX</span></span>
   </div>
+
   <div class="container rtl">
     X<span class="rtl cb">X<div class="abs block">XX</div><br><span class="red">XX</span></span>
   </div>

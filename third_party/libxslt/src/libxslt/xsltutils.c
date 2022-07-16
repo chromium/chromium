@@ -948,17 +948,19 @@ xsltDocumentSortFunction(xmlNodeSetPtr list) {
 }
 
 /**
- * xsltComputeSortResult:
+ * xsltComputeSortResultiInternal:
  * @ctxt:  a XSLT process context
  * @sort:  node list
+ * @xfrm:  Transform strings according to locale
  *
  * reorder the current node list accordingly to the set of sorting
  * requirement provided by the array of nodes.
  *
  * Returns a ordered XPath nodeset or NULL in case of error.
  */
-xmlXPathObjectPtr *
-xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
+static xmlXPathObjectPtr *
+xsltComputeSortResultInternal(xsltTransformContextPtr ctxt, xmlNodePtr sort,
+                              int xfrm) {
 #ifdef XSLT_REFACTORED
     xsltStyleItemSortPtr comp;
 #else
@@ -1045,7 +1047,7 @@ xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
 		}
 	    } else {
 		if (res->type == XPATH_STRING) {
-		    if (comp->locale != (xsltLocale)0) {
+		    if ((xfrm) && (comp->locale != (xsltLocale)0)) {
 			xmlChar *str = res->stringval;
 			res->stringval = (xmlChar *) xsltStrxfrm(comp->locale, str);
 			xmlFree(str);
@@ -1073,6 +1075,21 @@ xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
     ctxt->xpathCtxt->namespaces = oldNamespaces;
 
     return(results);
+}
+
+/**
+ * xsltComputeSortResult:
+ * @ctxt:  a XSLT process context
+ * @sort:  node list
+ *
+ * reorder the current node list accordingly to the set of sorting
+ * requirement provided by the array of nodes.
+ *
+ * Returns a ordered XPath nodeset or NULL in case of error.
+ */
+xmlXPathObjectPtr *
+xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
+    return xsltComputeSortResultInternal(ctxt, sort, /* xfrm */ 0);
 }
 
 /**
@@ -1175,7 +1192,8 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 
     len = list->nodeNr;
 
-    resultsTab[0] = xsltComputeSortResult(ctxt, sorts[0]);
+    resultsTab[0] = xsltComputeSortResultInternal(ctxt, sorts[0],
+                                                  /* xfrm */ 1);
     for (i = 1;i < XSLT_MAX_SORT;i++)
 	resultsTab[i] = NULL;
 
@@ -1246,8 +1264,10 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 			 * full set, this might be optimized ... or not
 			 */
 			if (resultsTab[depth] == NULL)
-			    resultsTab[depth] = xsltComputeSortResult(ctxt,
-				                        sorts[depth]);
+			    resultsTab[depth] =
+                                xsltComputeSortResultInternal(ctxt,
+                                                              sorts[depth],
+                                                              /* xfrm */ 1);
 			res = resultsTab[depth];
 			if (res == NULL)
 			    break;

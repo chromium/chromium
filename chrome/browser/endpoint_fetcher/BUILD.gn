@@ -9,6 +9,7 @@ android_library("java") {
     ":jni_headers",
     "//base:base_java",
     "//chrome/browser/profiles/android:java",
+    "//net/android:net_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   sources = [

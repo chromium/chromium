@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "services/device/generic_sensor/platform_sensor_util.h"
@@ -23,8 +24,7 @@ PlatformSensor::PlatformSensor(mojom::SensorType type,
     : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       reading_buffer_(reading_buffer),
       type_(type),
-      provider_(provider),
-      have_raw_reading_(false) {}
+      provider_(provider) {}
 
 PlatformSensor::~PlatformSensor() {
   if (provider_)
@@ -72,23 +72,16 @@ bool PlatformSensor::StopListening(Client* client,
     return false;
 
   auto& config_list = client_entry->second;
-  auto config_entry = std::find(config_list.begin(), config_list.end(), config);
-  if (config_entry == config_list.end())
+  if (base::Erase(config_list, config) == 0)
     return false;
-
-  config_list.erase(config_entry);
 
   return UpdateSensorInternal(config_map_);
 }
 
 bool PlatformSensor::StopListening(Client* client) {
   DCHECK(client);
-  auto client_entry = config_map_.find(client);
-  if (client_entry == config_map_.end())
+  if (config_map_.erase(client) == 0)
     return false;
-
-  config_map_.erase(client_entry);
-
   return UpdateSensorInternal(config_map_);
 }
 
@@ -116,9 +109,9 @@ bool PlatformSensor::GetLatestReading(SensorReading* result) {
 
 bool PlatformSensor::GetLatestRawReading(SensorReading* result) const {
   base::AutoLock auto_lock(lock_);
-  if (!have_raw_reading_)
+  if (!last_raw_reading_.has_value())
     return false;
-  *result = last_raw_reading_;
+  *result = last_raw_reading_.value();
   return true;
 }
 
@@ -141,7 +134,6 @@ void PlatformSensor::UpdateSharedBuffer(const SensorReading& reading) {
   {
     base::AutoLock auto_lock(lock_);
     last_raw_reading_ = reading;
-    have_raw_reading_ = true;
   }
 
   // Round the reading to guard user privacy. See https://crbug.com/1018180.

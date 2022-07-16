@@ -34,11 +34,11 @@ class RelayoutView : public views::View {
  public:
   RelayoutView() = default;
 
+  RelayoutView(const RelayoutView&) = delete;
+  RelayoutView& operator=(const RelayoutView&) = delete;
+
   // views::View:
   void ChildPreferredSizeChanged(View* child) override { Layout(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RelayoutView);
 };
 
 }  // namespace
@@ -112,10 +112,6 @@ void TriView::AddView(Container container, views::View* view) {
 
 void TriView::AddViewAt(Container container, views::View* view, int index) {
   GetContainer(container)->AddChildViewAt(view, index);
-}
-
-void TriView::RemoveAllChildren(Container container, bool delete_children) {
-  GetContainer(container)->RemoveAllChildViews(delete_children);
 }
 
 void TriView::SetInsets(const gfx::Insets& insets) {

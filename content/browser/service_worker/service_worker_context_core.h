@@ -14,7 +14,7 @@
 
 #include "base/callback.h"
 #include "base/containers/id_map.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
@@ -77,6 +77,9 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // instance always outlives the ContainerHostIterator one.
   class CONTENT_EXPORT ContainerHostIterator {
    public:
+    ContainerHostIterator(const ContainerHostIterator&) = delete;
+    ContainerHostIterator& operator=(const ContainerHostIterator&) = delete;
+
     ~ContainerHostIterator();
     ServiceWorkerContainerHost* GetContainerHost();
     void Advance();
@@ -93,8 +96,6 @@ class CONTENT_EXPORT ServiceWorkerContextCore
     ContainerHostByClientUUIDMap* const map_;
     ContainerHostPredicate predicate_;
     ContainerHostByClientUUIDMap::iterator container_host_iterator_;
-
-    DISALLOW_COPY_AND_ASSIGN(ContainerHostIterator);
   };
 
   // This is owned by ServiceWorkerContextWrapper. |observer_list| is created in
@@ -112,6 +113,10 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // TODO(https://crbug.com/877356): Remove this copy mechanism.
   ServiceWorkerContextCore(ServiceWorkerContextCore* old_context,
                            ServiceWorkerContextWrapper* wrapper);
+
+  ServiceWorkerContextCore(const ServiceWorkerContextCore&) = delete;
+  ServiceWorkerContextCore& operator=(const ServiceWorkerContextCore&) = delete;
+
   ~ServiceWorkerContextCore() override;
 
   void OnStorageWiped();
@@ -349,9 +354,11 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   int GetVersionFailureCount(int64_t version_id);
 
   // Called by ServiceWorkerStorage when StoreRegistration() succeeds.
-  void NotifyRegistrationStored(int64_t registration_id, const GURL& scope);
-  // Called on the core thread and notifies observers that all registrations
-  // have been deleted for a particular `key`.
+  void NotifyRegistrationStored(int64_t registration_id,
+                                const GURL& scope,
+                                const blink::StorageKey& key);
+  // Notifies observers that all registrations have been deleted for a
+  // particular `key`.
   void NotifyAllRegistrationsDeletedForStorageKey(const blink::StorageKey& key);
 
   const scoped_refptr<blink::URLLoaderFactoryBundle>&
@@ -477,8 +484,6 @@ class CONTENT_EXPORT ServiceWorkerContextCore
       quota_client_receiver_;
 
   base::WeakPtrFactory<ServiceWorkerContextCore> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContextCore);
 };
 
 }  // namespace content

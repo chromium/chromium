@@ -8,21 +8,16 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_consumer.h"
-#import "ios/chrome/browser/ui/settings/google_services/google_services_settings_mode.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_service_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller_model_delegate.h"
 
 class AuthenticationService;
+class ChromeAccountManagerService;
 @protocol GoogleServicesSettingsCommandHandler;
 @class GoogleServicesSettingsViewController;
 class PrefService;
 @protocol SyncErrorSettingsCommandHandler;
-class SyncSetupService;
-
-namespace syncer {
-class SyncService;
-}  // namespace syncer
 
 namespace signin {
 class IdentityManager;
@@ -33,8 +28,6 @@ class IdentityManager;
     : NSObject <GoogleServicesSettingsServiceDelegate,
                 GoogleServicesSettingsViewControllerModelDelegate>
 
-// Google services settings mode.
-@property(nonatomic, assign, readonly) GoogleServicesSettingsMode mode;
 // View controller.
 @property(nonatomic, weak) id<GoogleServicesSettingsConsumer> consumer;
 // Authentication service.
@@ -42,22 +35,17 @@ class IdentityManager;
 // Command handler.
 @property(nonatomic, weak) id<GoogleServicesSettingsCommandHandler>
     commandHandler;
-// Sync error handler.
-@property(nonatomic, weak) id<SyncErrorSettingsCommandHandler> syncErrorHandler;
-// Sync service.
-@property(nonatomic, assign) syncer::SyncService* syncService;
 // Identity manager;
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
 
 // Designated initializer. All the paramters should not be null.
 // |userPrefService|: preference service from the browser state.
 // |localPrefService|: preference service from the application context.
-// |syncSetupService|: allows configuring sync.
 // |mode|: mode to display the Google services settings.
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
                        localPrefService:(PrefService*)localPrefService
-                       syncSetupService:(SyncSetupService*)syncSetupService
-                                   mode:(GoogleServicesSettingsMode)mode
+                  accountManagerService:
+                      (ChromeAccountManagerService*)accountManagerService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

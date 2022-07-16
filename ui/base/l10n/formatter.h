@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/msgfmt.h"
 #include "third_party/icu/source/i18n/unicode/plurrule.h"
@@ -43,6 +42,8 @@ class Formatter {
     TWO_UNITS_COUNT      // Enum size counter, not a unit pair.  Must be last.
   };
 
+  Formatter() = delete;
+
   Formatter(const Pluralities& sec_pluralities,
             const Pluralities& min_pluralities,
             const Pluralities& hour_pluralities,
@@ -63,6 +64,9 @@ class Formatter {
             const Pluralities& day_hour_pluralities1,
             const Pluralities& day_hour_pluralities2);
 
+  Formatter(const Formatter&) = delete;
+  Formatter& operator=(const Formatter&) = delete;
+
   void Format(Unit unit, int value, icu::UnicodeString* formatted_string) const;
 
   void Format(TwoUnits units,
@@ -82,14 +86,16 @@ class Formatter {
 
   std::unique_ptr<icu::MessageFormat> simple_format_[UNIT_COUNT];
   std::unique_ptr<icu::MessageFormat> detailed_format_[TWO_UNITS_COUNT][2];
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Formatter);
 };
 
 // Class to hold all Formatters, intended to be used in a global LazyInstance.
 class COMPONENT_EXPORT(UI_BASE) FormatterContainer {
  public:
   FormatterContainer();
+
+  FormatterContainer(const FormatterContainer&) = delete;
+  FormatterContainer& operator=(const FormatterContainer&) = delete;
+
   ~FormatterContainer();
 
   const Formatter* Get(TimeFormat::Format format,
@@ -106,8 +112,6 @@ class COMPONENT_EXPORT(UI_BASE) FormatterContainer {
 
   std::unique_ptr<Formatter> formatter_[TimeFormat::FORMAT_COUNT]
                                        [TimeFormat::LENGTH_COUNT];
-
-  DISALLOW_COPY_AND_ASSIGN(FormatterContainer);
 };
 
 // Windows compilation requires full definition of FormatterContainer before

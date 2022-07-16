@@ -23,8 +23,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -173,7 +173,7 @@ int RunContentMain(
       std::move(on_browser_start_callback), std::move(options));
   HeadlessContentMainDelegate delegate(std::move(browser));
   params.delegate = &delegate;
-  return content::ContentMain(params);
+  return content::ContentMain(std::move(params));
 }
 
 bool ValidateCommandLine(const base::CommandLine& command_line) {
@@ -398,7 +398,7 @@ void HeadlessShell::DevToolsTargetReady() {
         FROM_HERE,
         base::BindOnce(&HeadlessShell::FetchTimeout,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(timeout_ms));
+        base::Milliseconds(timeout_ms));
   }
   // TODO(skyostil): Implement more features to demonstrate the devtools API.
 }
@@ -416,6 +416,11 @@ void HeadlessShell::FetchTimeout() {
   LOG(INFO) << "Timeout.";
   devtools_client_->GetPage()->GetExperimental()->StopLoading(
       page::StopLoadingParams::Builder().Build());
+  // After calling page.stopLoading() the page will not fire any
+  // life cycle events, so we have to proceed on our own.
+  browser_->BrowserMainThread()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HeadlessShell::OnPageReady, weak_factory_.GetWeakPtr()));
 }
 
 void HeadlessShell::OnTargetCrashed(

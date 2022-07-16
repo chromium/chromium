@@ -14,6 +14,9 @@ class ReadingListModel;
 // taken to not modify the model.
 class ReadingListModelObserver {
  public:
+  ReadingListModelObserver(const ReadingListModelObserver&) = delete;
+  ReadingListModelObserver& operator=(const ReadingListModelObserver&) = delete;
+
   // Invoked when the model has finished loading. Until this method is called it
   // is unsafe to use the model.
   virtual void ReadingListModelLoaded(const ReadingListModel* model) = 0;
@@ -76,8 +79,6 @@ class ReadingListModelObserver {
  protected:
   ReadingListModelObserver() {}
   virtual ~ReadingListModelObserver() {}
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListModelObserver);
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_MODEL_OBSERVER_H_

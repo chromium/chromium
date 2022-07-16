@@ -21,8 +21,6 @@
 #include "ios/chrome/app/application_delegate/startup_information.h"
 #include "ios/chrome/app/application_delegate/tab_opening.h"
 #include "ios/chrome/app/application_mode.h"
-#import "ios/chrome/app/intents/OpenInChromeIncognitoIntent.h"
-#import "ios/chrome/app/intents/OpenInChromeIntent.h"
 #include "ios/chrome/app/main_controller.h"
 #include "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
@@ -41,6 +39,8 @@
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
+#import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/mac/url_conversions.h"
@@ -68,6 +68,9 @@ class FakeU2FTabHelper : public U2FTabHelper {
                            base::WrapUnique(new FakeU2FTabHelper(web_state)));
   }
 
+  FakeU2FTabHelper(const FakeU2FTabHelper&) = delete;
+  FakeU2FTabHelper& operator=(const FakeU2FTabHelper&) = delete;
+
   void EvaluateU2FResult(const GURL& url) override { url_ = url; }
 
   const GURL& url() const { return url_; }
@@ -75,7 +78,6 @@ class FakeU2FTabHelper : public U2FTabHelper {
  private:
   FakeU2FTabHelper(web::WebState* web_state) : U2FTabHelper(web_state) {}
   GURL url_;
-  DISALLOW_COPY_AND_ASSIGN(FakeU2FTabHelper);
 };
 
 #pragma mark - Test class.

@@ -169,6 +169,111 @@ span.bold {
 }
 
 .throbber {
-  -webkit-margin-end: 0.5em;
+  margin-block-end: 0.5em;
   margin-top: 1px;
+}
+
+/*
+Styles related to the `md-screen-container`
+*/
+
+#outer-container {
+  height: 100%;
+  z-index: 1;
+}
+
+.oobe-vertical-margin {
+  align-self: stretch;
+  flex: 0 1 auto; /* grow shrink basis */
+  height: var(--oobe-dialog-side-margin);
+  min-height: 0;
+}
+
+#scroll-container {
+  bottom: var(--shelf-area-height);  /* Leave space for the shelf */
+  left: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#scroll-container.disable-scroll {
+  overflow-y: hidden;
+}
+
+#inner-container {
+  border-radius: 2px;
+  position: relative;
+}
+
+#inner-container {
+  display: grid;
+  place-items: center;
+}
+
+#inner-container.animation {
+  overflow: hidden;
+}
+
+#inner-container.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+#inner-container.disable-scroll {
+  left: 0;
+  position: absolute;
+}
+
+/* Only play this animation when 'down' class is removed. */
+.oobe-display #inner-container:not(.down) {
+  transition: transform 200ms ease-in-out;
+}
+
+.oobe-display #inner-container.down {
+  transform: translateY(50px) rotateX(-2.5deg);
+}
+
+#oobe {
+  display: grid;
+  flex: 1 0 auto; /* grow shrink basis */
+  min-height: var(--oobe-dialog-min-height);
+  place-items: center;
+  width: 100%;
+}
+
+/* Styles related to the `top_header_bar` */
+
+#top-header-bar {
+  z-index: 1;
+}
+
+.top-header-bar-strip {
+  display: flex;
+  justify-content: flex-end;
+  min-height: 0;
+  width: 100%;
+}
+
+/* Styles related to the `api-keys-container` */
+
+#api-keys-notice-container {
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+  position: fixed;
+  top: 10px;
+  width: 100%;
+}
+
+#api-keys-notice {
+  background-color: rgba(0, 0, 0, 0.75);
+  border-radius: 4px;
+  color: whitesmoke;
+  font-size: 15px;
+  padding: 20px;
+  text-align: center;
+  width: 722px; /* same as #signin-banner */
 }

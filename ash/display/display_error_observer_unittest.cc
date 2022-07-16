@@ -19,6 +19,10 @@
 namespace ash {
 
 class DisplayErrorObserverTest : public AshTestBase {
+ public:
+  DisplayErrorObserverTest(const DisplayErrorObserverTest&) = delete;
+  DisplayErrorObserverTest& operator=(const DisplayErrorObserverTest&) = delete;
+
  protected:
   DisplayErrorObserverTest() = default;
 
@@ -38,12 +42,10 @@ class DisplayErrorObserverTest : public AshTestBase {
 
  private:
   std::unique_ptr<DisplayErrorObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayErrorObserverTest);
 };
 
 TEST_F(DisplayErrorObserverTest, Normal) {
-  UpdateDisplay("200x200,300x300");
+  UpdateDisplay("300x200,400x300");
   observer()->OnDisplayModeChangeFailed(
       display::DisplayConfigurator::DisplayStateList(),
       display::MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
@@ -52,7 +54,7 @@ TEST_F(DisplayErrorObserverTest, Normal) {
 }
 
 TEST_F(DisplayErrorObserverTest, CallTwice) {
-  UpdateDisplay("200x200,300x300");
+  UpdateDisplay("300x200,400x300");
   observer()->OnDisplayModeChangeFailed(
       display::DisplayConfigurator::DisplayStateList(),
       display::MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
@@ -68,7 +70,7 @@ TEST_F(DisplayErrorObserverTest, CallTwice) {
 }
 
 TEST_F(DisplayErrorObserverTest, CallWithDifferentState) {
-  UpdateDisplay("200x200,300x300");
+  UpdateDisplay("300x200,400x300");
   observer()->OnDisplayModeChangeFailed(
       display::DisplayConfigurator::DisplayStateList(),
       display::MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
@@ -85,7 +87,7 @@ TEST_F(DisplayErrorObserverTest, CallWithDifferentState) {
 
 TEST_F(DisplayErrorObserverTest, FailureWithInternalDisplay) {
   // Failure with a single internal display --> No notification.
-  UpdateDisplay("200x200,300x300");
+  UpdateDisplay("300x200,400x300");
   const int64_t internal_display_id = display_manager()->GetDisplayAt(0).id();
   const int64_t external_display_id = display_manager()->GetDisplayAt(1).id();
   display::test::ScopedSetInternalDisplayId set_internal(display_manager(),

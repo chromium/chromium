@@ -26,6 +26,9 @@ class MockCameraModule : public cros::mojom::CameraModule {
  public:
   MockCameraModule();
 
+  MockCameraModule(const MockCameraModule&) = delete;
+  MockCameraModule& operator=(const MockCameraModule&) = delete;
+
   ~MockCameraModule();
 
   void OpenDevice(
@@ -100,8 +103,6 @@ class MockCameraModule : public cros::mojom::CameraModule {
   base::Thread mock_module_thread_;
   mojo::Receiver<cros::mojom::CameraModule> receiver_{this};
   mojo::AssociatedRemote<cros::mojom::CameraModuleCallbacks> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCameraModule);
 };
 
 }  // namespace unittest_internal

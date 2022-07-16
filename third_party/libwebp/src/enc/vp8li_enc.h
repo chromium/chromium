@@ -69,6 +69,8 @@ typedef struct {
   int use_palette_;
   int palette_size_;
   uint32_t palette_[MAX_PALETTE_SIZE];
+  // Sorted version of palette_ for cache purposes.
+  uint32_t palette_sorted_[MAX_PALETTE_SIZE];
 
   // Some 'scratch' (potentially large) objects.
   struct VP8LBackwardRefs refs_[4];  // Backward Refs array for temporaries.

@@ -73,7 +73,7 @@ String CSSFontFaceSrcValue::CustomCSSText() const {
     result.Append(SerializeString(format_));
     result.Append(')');
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 bool CSSFontFaceSrcValue::HasFailedOrCanceledSubresources() const {
@@ -107,6 +107,12 @@ FontResource& CSSFontFaceSrcValue::Fetch(ExecutionContext* context,
     if (!params.Url().IsLocalFile()) {
       params.SetCrossOriginAccessControl(security_origin,
                                          kCrossOriginAttributeAnonymous);
+    }
+    // Fetch inline web fonts synchronously to make them immediately available,
+    // matching what web developers generally expect.
+    if (RuntimeEnabledFeatures::SyncLoadDataUrlFontsEnabled()) {
+      if (params.Url().ProtocolIsData())
+        params.MakeSynchronous();
     }
     fetched_ = MakeGarbageCollected<FontResourceHelper>(
         FontResource::Fetch(params, context->Fetcher(), client),

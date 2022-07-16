@@ -22,6 +22,7 @@ include_rules = [
   "+components/browser_ui/photo_picker/android",
   "+components/browser_ui/share/android",
   "+components/browser_ui/site_settings/android",
+  "+components/browser_ui/styles/android",
   "+components/browser_ui/util/android",
   "+components/browser_ui/webshare/android",
   "+components/browser_ui/widget/android",

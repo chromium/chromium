@@ -523,8 +523,11 @@ TEST(AXPlatformNodeBaseTest, CompareTo) {
 
   // Test for two nodes that do not share the same root. They should not be
   // comparable.
-  AXPlatformNodeBase detached_node;
-  EXPECT_EQ(absl::nullopt, n1->CompareTo(detached_node));
+  AXPlatformNodeDelegateBase detached_delegate;
+  std::unique_ptr<AXPlatformNodeBase> detached_node(
+      static_cast<AXPlatformNodeBase*>(
+          AXPlatformNode::Create(&detached_delegate)));
+  EXPECT_EQ(absl::nullopt, n1->CompareTo(*detached_node));
 
   // Create a test vector of all the tree nodes arranged in a pre-order
   // traversal way. The node that has a smaller index in the vector should also

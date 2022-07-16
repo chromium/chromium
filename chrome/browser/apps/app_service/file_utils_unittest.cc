@@ -12,6 +12,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -19,6 +21,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
+#include "net/base/filename_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -46,6 +49,7 @@ class FileUtilsTest : public ::testing::Test {
         storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
             mount_name_, storage::FileSystemType::kFileSystemTypeExternal,
             storage::FileSystemMountOption(), base::FilePath(fs_root_)));
+    ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
   }
 
   void TearDown() override {
@@ -58,6 +62,8 @@ class FileUtilsTest : public ::testing::Test {
   }
 
   TestingProfile* GetProfile() { return profile_; }
+
+  base::FilePath GetTempDir() { return scoped_temp_dir_.GetPath(); }
 
   // FileUtils explicitly relies on ChromeOS Files.app for files manipulation.
   const url::Origin GetFileManagerOrigin() {
@@ -87,6 +93,7 @@ class FileUtilsTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  base::ScopedTempDir scoped_temp_dir_;
   TestingProfile* profile_;
 };
 
@@ -105,18 +112,18 @@ TEST_F(FileUtilsTest, GetFileSystemURL) {
   EXPECT_THAT(fsurl_list, ElementsAre(ToTestFileSystemURL(path)));
 }
 
-TEST_F(FileUtilsTest, GetFileUrls) {
+TEST_F(FileUtilsTest, GetFileSystemUrls) {
   std::vector<GURL> url_list;
   std::vector<base::FilePath> fp_list;
 
   // Case 1: fp_list is empty.
-  url_list = GetFileUrls(GetProfile(), fp_list);
+  url_list = GetFileSystemUrls(GetProfile(), fp_list);
   EXPECT_THAT(url_list, IsEmpty());
 
   // Case 2: fp_list contain some paths.
   const std::string path = "Images/foo.jpg";
   fp_list.push_back(base::FilePath(fs_root_).Append(path));
-  url_list = GetFileUrls(GetProfile(), fp_list);
+  url_list = GetFileSystemUrls(GetProfile(), fp_list);
   // Given a list of absolute file paths, return a list of filesystem:// URLs
   // that use the kFileSystemTypeExternal type with Files Manager's origin.
   // TODO(crbug/1203961): The use of Files Manager origin in these URLs is
@@ -128,12 +135,55 @@ TEST_F(FileUtilsTest, GetFileUrls) {
 
   // Case 3: paths not originating in a known root are ignored.
   fp_list.push_back(base::FilePath("/not/a/known/root").Append(path));
-  url_list = GetFileUrls(GetProfile(), fp_list);
+  url_list = GetFileSystemUrls(GetProfile(), fp_list);
   // Still just one path corresponding to foo.jpg under a known root.
   EXPECT_THAT(
       url_list,
       ElementsAre(ToGURL(
           base::FilePath(storage::kExternalDir).Append(mount_name_), path)));
+}
+
+TEST_F(FileUtilsTest, GetFileUrls) {
+  constexpr char kTestData[] = "testing1234";
+  base::FilePath test_file = GetTempDir().AppendASCII("test.txt");
+  ASSERT_EQ(static_cast<int>(base::size(kTestData)),
+            base::WriteFile(test_file, kTestData, base::size(kTestData)));
+
+  std::vector<GURL> url_list;
+  std::vector<base::FilePath> fp_list;
+
+  // fp_list is empty.
+  url_list = GetFileUrls(fp_list);
+  EXPECT_THAT(url_list, IsEmpty());
+
+  // fp_list containing test profile path should work with file: url.
+  fp_list.push_back(test_file);
+  url_list = GetFileUrls(fp_list);
+  base::FilePath url_path;
+  net::FileURLToFilePath(url_list.at(0), &url_path);
+  EXPECT_EQ(url_path, test_file);
+}
+
+TEST_F(FileUtilsTest, GetSingleFileSystemURL) {
+  GURL url;
+  storage::FileSystemURL fsurl;
+
+  const std::string path = "Documents/foo.txt";
+  url = ToGURL(base::FilePath(storage::kTestDir), path);
+  fsurl = GetFileSystemURL(GetProfile(), url);
+  EXPECT_EQ(fsurl, ToTestFileSystemURL(path));
+}
+
+TEST_F(FileUtilsTest, GetSingleFileSystemUrl) {
+  GURL url;
+  base::FilePath file_path;
+
+  const std::string path = "Images/foo.jpg";
+  file_path = base::FilePath(fs_root_).Append(path);
+  url = GetFileSystemUrl(GetProfile(), file_path);
+  EXPECT_EQ(
+      url,
+      ToGURL(base::FilePath(storage::kExternalDir).Append(mount_name_), path));
 }
 
 }  // namespace

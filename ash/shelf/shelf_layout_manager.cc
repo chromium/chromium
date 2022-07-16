@@ -16,6 +16,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller.h"
+#include "ash/drag_drop/scoped_drag_drop_observer.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -56,9 +57,10 @@
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
+#include "ui/aura/client/drag_drop_client.h"
+#include "ui/aura/client/screen_position_client.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -106,8 +108,8 @@ constexpr int kNotificationBubbleGapHeight = 6;
 // - This ShelfLayoutManager manages the shelf for the secondary display.
 // |kMaxAutoHideShowShelfRegionSize| refers to the maximum size of the region
 // from the right edge of the primary display which can trigger showing the
-// auto hidden shelf. The region is used to make it easier to trigger showing
-// the auto hidden shelf when the shelf is on the boundary between displays.
+// auto-hidden shelf. The region is used to make it easier to trigger showing
+// the auto-hidden shelf when the shelf is on the boundary between displays.
 constexpr int kMaxAutoHideShowShelfRegionSize = 10;
 
 aura::Window* GetDragHandleNudgeWindow(ShelfWidget* shelf_widget) {
@@ -262,6 +264,10 @@ class HotseatEventHandler : public ui::EventHandler,
     shelf_layout_manager_->AddObserver(this);
     Shell::Get()->AddPreTargetHandler(this);
   }
+
+  HotseatEventHandler(const HotseatEventHandler&) = delete;
+  HotseatEventHandler& operator=(const HotseatEventHandler&) = delete;
+
   ~HotseatEventHandler() override {
     shelf_layout_manager_->RemoveObserver(this);
     Shell::Get()->RemovePreTargetHandler(this);
@@ -285,7 +291,6 @@ class HotseatEventHandler : public ui::EventHandler,
   // Whether events should get forwarded to ShelfLayoutManager.
   bool should_forward_event_ = false;
   ShelfLayoutManager* const shelf_layout_manager_;  // unowned.
-  DISALLOW_COPY_AND_ASSIGN(HotseatEventHandler);
 };
 
 }  // namespace
@@ -366,7 +371,8 @@ ShelfLayoutManager::ShelfLayoutManager(ShelfWidget* shelf_widget, Shelf* shelf)
     : shelf_widget_(shelf_widget),
       shelf_(shelf),
       is_background_blur_enabled_(features::IsBackgroundBlurEnabled()),
-      is_app_list_bubble_enabled_(features::IsAppListBubbleEnabled()) {
+      is_productivity_launcher_enabled_(
+          features::IsProductivityLauncherEnabled()) {
   DCHECK(shelf_widget_);
   DCHECK(shelf_);
 }
@@ -549,6 +555,9 @@ void ShelfLayoutManager::UpdateAutoHideState() {
         mouse_over_shelf_when_auto_hide_timer_started_ =
             shelf_widget_->GetWindowBoundsInScreen().Contains(
                 display::Screen::GetScreen()->GetCursorScreenPoint());
+        drag_over_shelf_when_auto_hide_timer_started_ =
+            in_drag_drop_ && shelf_widget_->GetWindowBoundsInScreen().Contains(
+                                 last_drag_drop_position_in_screen_);
       }
       StartAutoHideTimer();
     }
@@ -582,10 +591,11 @@ void ShelfLayoutManager::UpdateAutoHideForMouseEvent(ui::MouseEvent* event,
       // the shelf immediately. If it's a mouse-out, hide after a delay (but
       // only if it really is a mouse-out, meaning the mouse actually exited the
       // shelf bounds as opposed to having been outside all along).
-      if (event->type() == ui::ET_MOUSE_PRESSED)
+      if (event->type() == ui::ET_MOUSE_PRESSED) {
         UpdateAutoHideState();
-      else if (last_seen_mouse_position_was_over_shelf_)
+      } else if (last_seen_mouse_position_was_over_shelf_) {
         StartAutoHideTimer();
+      }
       last_seen_mouse_position_was_over_shelf_ = false;
     }
   }
@@ -884,9 +894,9 @@ ShelfBackgroundType ShelfLayoutManager::GetShelfBackgroundType() const {
   const bool app_list_is_visible =
       Shell::Get()->app_list_controller() &&
       Shell::Get()->app_list_controller()->IsVisible(display_.id());
-  // If the AppListBubble is enabled, the AppList is just another bubble, the
+  // If ProductivityLauncher is enabled, the AppList is just another bubble, the
   // shelf does not need to react to it in clamshell mode.
-  if (!is_app_list_bubble_enabled_ && app_list_is_visible) {
+  if (!is_productivity_launcher_enabled_ && app_list_is_visible) {
     // When auto-hide shelf is enabled, shelf cannot be considered maximized.
     if (maximized && state_.visibility_state != SHELF_AUTO_HIDE)
       return ShelfBackgroundType::kMaximizedWithAppList;
@@ -1215,6 +1225,7 @@ void ShelfLayoutManager::ResumeWorkAreaUpdate() {
 void ShelfLayoutManager::SetState(ShelfVisibilityState visibility_state) {
   if (suspend_visibility_update_)
     return;
+
   State state;
   const HotseatState previous_hotseat_state = hotseat_state();
   state.visibility_state = visibility_state;
@@ -1239,6 +1250,20 @@ void ShelfLayoutManager::SetState(ShelfVisibilityState visibility_state) {
     return;  // Nothing changed.
   }
 
+  if (visibility_state == SHELF_AUTO_HIDE &&
+      state_.visibility_state != SHELF_AUTO_HIDE) {
+    DCHECK(!drag_drop_observer_);
+    drag_drop_observer_ = std::make_unique<ScopedDragDropObserver>(
+        /*client=*/aura::client::GetDragDropClient(
+            shelf_->GetWindow()->GetRootWindow()),
+        /*event_callback=*/base::BindRepeating(
+            &ShelfLayoutManager::UpdateAutoHideForDragDrop,
+            base::Unretained(this)));
+  } else if (visibility_state != SHELF_AUTO_HIDE &&
+             state_.visibility_state == SHELF_AUTO_HIDE) {
+    drag_drop_observer_.reset();
+  }
+
   for (auto& observer : observers_)
     observer.WillChangeVisibilityState(visibility_state);
 
@@ -1251,9 +1276,9 @@ void ShelfLayoutManager::SetState(ShelfVisibilityState visibility_state) {
   bool delay_background_change = false;
 
   // Do not animate the background when:
-  // - Going from a hidden / auto hidden shelf in fullscreen to a visible shelf
+  // - Going from a hidden / auto-hidden shelf in fullscreen to a visible shelf
   //   in tablet mode.
-  // - Going from an auto hidden shelf in tablet mode to a visible shelf in
+  // - Going from an auto-hidden shelf in tablet mode to a visible shelf in
   //   tablet mode.
   // - Doing so would result in animating the opacity of the shelf while it is
   //   showing blur.
@@ -1384,8 +1409,8 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
     }
     case kDragCompleteInProgress:
       if (visibility_state == SHELF_AUTO_HIDE) {
-        // When the shelf is autohidden and the drag is being completed, the
-        // auto hide state has been finalized, so ensure the hotseat matches.
+        // When the shelf is auto hidden and the drag is being completed, the
+        // auto-hide state has been finalized, so ensure the hotseat matches.
         DCHECK_EQ(drag_auto_hide_state_, auto_hide_state);
         return auto_hide_state == SHELF_AUTO_HIDE_SHOWN
                    ? HotseatState::kExtended
@@ -1474,7 +1499,7 @@ bool ShelfLayoutManager::SetDimmed(bool dimmed) {
   if (dimmed_for_inactivity_ == dimmed)
     return false;
 
-  // We do not want the auto hide state to change while setting up animations.
+  // We do not want the auto-hide state to change while setting up animations.
   std::unique_ptr<Shelf::ScopedAutoHideLock> auto_hide_lock =
       std::make_unique<Shelf::ScopedAutoHideLock>(shelf_);
 
@@ -1521,7 +1546,27 @@ void ShelfLayoutManager::UpdateBoundsAndOpacity(bool animate) {
   HotseatWidget* hotseat_widget = shelf_->hotseat_widget();
   StatusAreaWidget* status_widget = shelf_widget_->status_area_widget();
   {
-    shelf_->shelf_widget()->UpdateLayout(animate);
+    // If the current shelf widget bounds is below the auto hidden bounds in the
+    // auto hide state, set |animate| to false to prevent the shelf widget
+    // animating upward and then disappearing with the opacity changes to 0
+    // while hiding. See crbug.com/1203861.
+    if (visibility_state() == SHELF_AUTO_HIDE &&
+        auto_hide_state() == SHELF_AUTO_HIDE_HIDDEN && animate) {
+      gfx::Rect current_shelf_bounds =
+          shelf_->shelf_widget()->GetWindowBoundsInScreen();
+      gfx::Rect shelf_target_bounds = shelf_->shelf_widget()->GetTargetBounds();
+      bool should_hide_shelf_immediately = shelf_->SelectValueForShelfAlignment(
+          current_shelf_bounds.y() >= shelf_target_bounds.y(),
+          current_shelf_bounds.right() <= shelf_target_bounds.right(),
+          current_shelf_bounds.x() >= shelf_target_bounds.x());
+
+      if (should_hide_shelf_immediately)
+        shelf_->shelf_widget()->UpdateLayout(false);
+      else
+        shelf_->shelf_widget()->UpdateLayout(animate);
+    } else {
+      shelf_->shelf_widget()->UpdateLayout(animate);
+    }
     hotseat_widget->UpdateLayout(animate);
     status_widget->UpdateLayout(animate);
     nav_widget->UpdateLayout(animate);
@@ -1763,22 +1808,65 @@ void ShelfLayoutManager::UpdateTargetBoundsForGesture(
   shelf_->status_area_widget()->UpdateTargetBoundsForGesture(shelf_position);
 }
 
+void ShelfLayoutManager::UpdateAutoHideForDragDrop(
+    const ui::DropTargetEvent* event) {
+  DCHECK_EQ(visibility_state(), SHELF_AUTO_HIDE);
+  if (!event) {
+    if (!in_mouse_drag_ && in_drag_drop_ &&
+        shelf_->shelf_widget()->GetVisibleShelfBounds().Contains(
+            last_drag_drop_position_in_screen_)) {
+      // In this case the gesture drag and drop was ended so we need to
+      // reset the |last_drag_drop_position_in_screen_| and call
+      // UpdateAutoHideState() to check whether we need to hide the shelf.
+      last_drag_drop_position_in_screen_ = gfx::Point(0, 0);
+      UpdateAutoHideState();
+    }
+    // If this is a gesture drag, `in_mouse_drag_` will already be false here.
+    // If this is a mouse drag, the mouse event handler will not receive a
+    // MOUSE_RELEASED or MOUSE_CAPTURE_CHANGED event when the drag ends, so we
+    // must manually reset `in_mouse_drag_` here.
+    in_mouse_drag_ = false;
+    in_drag_drop_ = false;
+    return;
+  }
+
+  in_drag_drop_ = true;
+  last_drag_drop_position_in_screen_ = event->root_location();
+  ::wm::ConvertPointToScreen(shelf_->GetWindow()->GetRootWindow(),
+                             &last_drag_drop_position_in_screen_);
+  bool is_drag_over_shelf =
+      shelf_->shelf_widget()->GetVisibleShelfBounds().Contains(
+          last_drag_drop_position_in_screen_);
+
+  if (is_drag_over_shelf != last_seen_drag_position_was_over_shelf_) {
+    last_seen_drag_position_was_over_shelf_ = is_drag_over_shelf;
+    if (is_drag_over_shelf) {
+      // If a drag enters the shelf area, changes to shelf visibility
+      // (i.e. potentially showing the shelf) should take place immediately.
+      UpdateAutoHideState();
+    } else {
+      // If a drag exits the shelf area, the shelf should hide after a delay.
+      StartAutoHideTimer();
+    }
+  }
+}
+
 void ShelfLayoutManager::UpdateAutoHideStateNow() {
   SetState(state_.visibility_state);
 
-  // If the state did not change, the auto hide timer may still be running.
+  // If the state did not change, the auto-hide timer may still be running.
   StopAutoHideTimer();
 }
 
 void ShelfLayoutManager::StartAutoHideTimer() {
-  auto_hide_timer_.Start(FROM_HERE,
-                         base::TimeDelta::FromMilliseconds(kAutoHideDelayMS),
-                         this, &ShelfLayoutManager::UpdateAutoHideStateNow);
+  auto_hide_timer_.Start(FROM_HERE, base::Milliseconds(kAutoHideDelayMS), this,
+                         &ShelfLayoutManager::UpdateAutoHideStateNow);
 }
 
 void ShelfLayoutManager::StopAutoHideTimer() {
   auto_hide_timer_.Stop();
   mouse_over_shelf_when_auto_hide_timer_started_ = false;
+  drag_over_shelf_when_auto_hide_timer_started_ = false;
 }
 
 gfx::Rect ShelfLayoutManager::GetAutoHideShowShelfRegionInScreen() const {
@@ -1816,12 +1904,12 @@ ShelfAutoHideState ShelfLayoutManager::CalculateAutoHideState(
   if (visibility_state != SHELF_AUTO_HIDE)
     return SHELF_AUTO_HIDE_HIDDEN;
 
-  // Don't update the auto hide state if it is locked.
+  // Don't update the auto-hide state if it is locked.
   if (shelf_->auto_hide_lock())
     return state_.auto_hide_state;
 
   const bool in_tablet_mode = Shell::Get()->IsInTabletMode();
-  // Don't let the shelf auto-hide when in tablet mode and Chromevox is on.
+  // Don't let the shelf auto hide when in tablet mode and Chromevox is on.
   if (in_tablet_mode &&
       Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     return SHELF_AUTO_HIDE_SHOWN;
@@ -1868,7 +1956,10 @@ ShelfAutoHideState ShelfLayoutManager::CalculateAutoHideState(
     return drag_auto_hide_state_;
   }
 
-  // Don't show if the user is dragging the mouse.
+  if (in_drag_drop_)
+    return CalculateAutoHideStateBasedOnDragLocation();
+
+  // Don't show if the user is dragging the mouse without a payload.
   if (in_mouse_drag_)
     return SHELF_AUTO_HIDE_HIDDEN;
 
@@ -1879,6 +1970,38 @@ ShelfAutoHideState ShelfLayoutManager::CalculateAutoHideState(
 
   if (window_drag_controller_ &&
       window_drag_controller_->during_window_restoration_callback()) {
+    return SHELF_AUTO_HIDE_SHOWN;
+  }
+
+  return SHELF_AUTO_HIDE_HIDDEN;
+}
+
+ShelfAutoHideState
+ShelfLayoutManager::CalculateAutoHideStateBasedOnDragLocation() const {
+  gfx::Rect shelf_region = shelf_->shelf_widget()->GetVisibleShelfBounds();
+  if (shelf_widget_->status_area_widget() &&
+      shelf_widget_->status_area_widget()->IsMessageBubbleShown() &&
+      IsVisible()) {
+    // Increase the the hit test area to prevent the shelf from disappearing
+    // when the drag is over the bubble gap.
+    ShelfAlignment alignment = shelf_->alignment();
+    shelf_region.Inset(
+        alignment == ShelfAlignment::kRight ? -kNotificationBubbleGapHeight : 0,
+        shelf_->IsHorizontalAlignment() ? -kNotificationBubbleGapHeight : 0,
+        alignment == ShelfAlignment::kLeft ? -kNotificationBubbleGapHeight : 0,
+        0);
+  }
+
+  if (shelf_region.Contains(last_drag_drop_position_in_screen_))
+    return SHELF_AUTO_HIDE_SHOWN;
+
+  // See `CalculateAutoHideStateBasedOnCursorLocation()` for an explanation of
+  // this code, which makes it easier to show the shelf even if the user
+  // overshoots.
+  if ((state_.auto_hide_state == SHELF_AUTO_HIDE_SHOWN ||
+       drag_over_shelf_when_auto_hide_timer_started_) &&
+      GetAutoHideShowShelfRegionInScreen().Contains(
+          last_drag_drop_position_in_screen_)) {
     return SHELF_AUTO_HIDE_SHOWN;
   }
 
@@ -1919,7 +2042,7 @@ ShelfLayoutManager::CalculateAutoHideStateBasedOnCursorLocation() const {
   if (shelf_region.Contains(cursor_position_in_screen) && !in_tablet_mode)
     return SHELF_AUTO_HIDE_SHOWN;
 
-  // When the shelf is auto hidden and the shelf is on the boundary between
+  // When the shelf is auto-hidden and the shelf is on the boundary between
   // two displays, it is hard to trigger showing the shelf. For instance, if a
   // user's primary display is left of their secondary display, it is hard to
   // unautohide a left aligned shelf on the secondary display.
@@ -2000,7 +2123,7 @@ float ShelfLayoutManager::ComputeTargetOpacity(const State& state) const {
     return opacity_when_visible;
   }
 
-  // In Chrome OS Material Design, when shelf is hidden during auto hide state,
+  // In Chrome OS Material Design, when shelf is hidden during auto-hide state,
   // target bounds are also hidden. So the window can extend to the edge of
   // screen.
   return (state.visibility_state == SHELF_AUTO_HIDE &&
@@ -2092,16 +2215,17 @@ void ShelfLayoutManager::AttemptToDragByMouse(
     return;
 
   drag_status_ = kDragAttempt;
-  last_mouse_drag_position_ = mouse_in_screen.location();
+  last_mouse_drag_position_in_screen_ = mouse_in_screen.location();
 }
 
 void ShelfLayoutManager::StartMouseDrag(const ui::MouseEvent& mouse_in_screen) {
-  float scroll_y_hint = mouse_in_screen.y() - last_mouse_drag_position_.y();
+  float scroll_y_hint =
+      mouse_in_screen.y() - last_mouse_drag_position_in_screen_.y();
   if (!StartAppListDrag(mouse_in_screen, scroll_y_hint)) {
-    StartShelfDrag(
-        mouse_in_screen,
-        gfx::Vector2dF(mouse_in_screen.x() - last_mouse_drag_position_.x(),
-                       scroll_y_hint));
+    StartShelfDrag(mouse_in_screen,
+                   gfx::Vector2dF(mouse_in_screen.x() -
+                                      last_mouse_drag_position_in_screen_.x(),
+                                  scroll_y_hint));
   }
 }
 
@@ -2116,8 +2240,8 @@ void ShelfLayoutManager::UpdateMouseDrag(
 
   if (drag_status_ == kDragAttempt) {
     // Do not start drag for the small offset.
-    if (abs(mouse_in_screen.location().y() - last_mouse_drag_position_.y()) <
-        kMouseDragThreshold) {
+    if (abs(mouse_in_screen.location().y() -
+            last_mouse_drag_position_in_screen_.y()) < kMouseDragThreshold) {
       return;
     }
 
@@ -2125,12 +2249,12 @@ void ShelfLayoutManager::UpdateMouseDrag(
     // start mouse drag when mouse is moved.
     StartMouseDrag(mouse_in_screen);
   } else {
-    int scroll_x =
-        mouse_in_screen.location().x() - last_mouse_drag_position_.x();
-    int scroll_y =
-        mouse_in_screen.location().y() - last_mouse_drag_position_.y();
+    int scroll_x = mouse_in_screen.location().x() -
+                   last_mouse_drag_position_in_screen_.x();
+    int scroll_y = mouse_in_screen.location().y() -
+                   last_mouse_drag_position_in_screen_.y();
     UpdateDrag(mouse_in_screen, scroll_x, scroll_y);
-    last_mouse_drag_position_ = mouse_in_screen.location();
+    last_mouse_drag_position_in_screen_ = mouse_in_screen.location();
   }
 }
 
@@ -2160,7 +2284,7 @@ void ShelfLayoutManager::ReleaseMouseDrag(
     default:
       NOTREACHED();
   }
-  last_mouse_drag_position_ = gfx::Point();
+  last_mouse_drag_position_in_screen_ = gfx::Point();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2378,7 +2502,7 @@ void ShelfLayoutManager::CompleteAppListDrag(
       Shell::Get()->app_list_controller()->CalculateStateAfterShelfDrag(
           event_in_screen, launcher_above_shelf_bottom_amount_);
 
-  // Keep auto-hide shelf visible if failed to open the app list.
+  // Keep auto-hidden shelf visible if failed to open the app list.
   absl::optional<Shelf::ScopedAutoHideLock> auto_hide_lock;
   if (app_list_state == AppListViewState::kClosed)
     auto_hide_lock.emplace(shelf_);
@@ -2409,7 +2533,7 @@ void ShelfLayoutManager::CancelDrag(
     swipe_home_to_overview_controller_.reset();
   } else {
     // Set |drag_status_| to kDragCancelInProgress to set the
-    // auto hide state to |drag_auto_hide_state_|, which is the
+    // auto-hide state to |drag_auto_hide_state_|, which is the
     // visibility state before starting drag.
     drag_status_ = kDragCancelInProgress;
     UpdateVisibilityState();
@@ -2455,10 +2579,10 @@ void ShelfLayoutManager::CompleteDragWithChangedVisibility() {
                               ? SHELF_AUTO_HIDE_HIDDEN
                               : SHELF_AUTO_HIDE_SHOWN;
 
-  // Gesture drag will only change the auto hide state of the shelf but not the
-  // auto hide behavior. Auto hide behavior can only be changed through the
+  // Gesture drag will only change the auto-hide state of the shelf but not the
+  // auto-hide behavior. Auto-hide behavior can only be changed through the
   // context menu of the shelf. Set |drag_status_| to kDragCompleteInProgress to
-  // set the auto hide state to |drag_auto_hide_state_|.
+  // set the auto-hide state to |drag_auto_hide_state_|.
   drag_status_ = kDragCompleteInProgress;
 
   UpdateVisibilityState();
@@ -2585,7 +2709,7 @@ bool ShelfLayoutManager::MaybeStartDragWindowFromShelf(
   if (drag_status_ != kDragInProgress)
     return false;
 
-  // Do not drag on a auto-hide hidden shelf or a hidden shelf.
+  // Do not drag on an auto-hidden shelf or a hidden shelf.
   if ((visibility_state() == SHELF_AUTO_HIDE &&
        auto_hide_state() == SHELF_AUTO_HIDE_HIDDEN) ||
       visibility_state() == SHELF_HIDDEN) {

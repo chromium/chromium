@@ -10,7 +10,6 @@
 #include "ash/detachable_base/detachable_base_observer.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/public/cpp/session/user_info.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -41,6 +40,10 @@ UserInfo CreateUser(const std::string& email,
 class TestBaseObserver : public DetachableBaseObserver {
  public:
   TestBaseObserver() = default;
+
+  TestBaseObserver(const TestBaseObserver&) = delete;
+  TestBaseObserver& operator=(const TestBaseObserver&) = delete;
+
   ~TestBaseObserver() override = default;
 
   int pairing_status_changed_count() const {
@@ -72,8 +75,6 @@ class TestBaseObserver : public DetachableBaseObserver {
   int pairing_status_changed_count_ = 0;
   int update_required_changed_count_ = 0;
   bool requires_update_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBaseObserver);
 };
 
 }  // namespace
@@ -81,6 +82,11 @@ class TestBaseObserver : public DetachableBaseObserver {
 class DetachableBaseHandlerTest : public testing::Test {
  public:
   DetachableBaseHandlerTest() = default;
+
+  DetachableBaseHandlerTest(const DetachableBaseHandlerTest&) = delete;
+  DetachableBaseHandlerTest& operator=(const DetachableBaseHandlerTest&) =
+      delete;
+
   ~DetachableBaseHandlerTest() override = default;
 
   // testing::Test:
@@ -137,8 +143,6 @@ class DetachableBaseHandlerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   TestingPrefServiceSimple local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(DetachableBaseHandlerTest);
 };
 
 TEST_F(DetachableBaseHandlerTest, NoDetachableBase) {

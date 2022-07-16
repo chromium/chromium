@@ -9,7 +9,6 @@
 #include "ash/test/test_window_builder.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window.h"
@@ -20,6 +19,10 @@
 namespace ash {
 
 class PointScanControllerTest : public AshTestBase {
+ public:
+  PointScanControllerTest(const PointScanControllerTest&) = delete;
+  PointScanControllerTest& operator=(const PointScanControllerTest&) = delete;
+
  protected:
   PointScanControllerTest() = default;
   ~PointScanControllerTest() override = default;
@@ -117,8 +120,6 @@ class PointScanControllerTest : public AshTestBase {
   int diff_count_ = 0;
   int row_diff_count_ = 0;
   int col_diff_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PointScanControllerTest);
 };
 
 TEST_F(PointScanControllerTest, StartScanning) {

@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/renderer_host/input/one_shot_timeout_monitor.h"
+#include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/common/page_visibility_state.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -41,9 +41,12 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   void SetIsFrozen(bool frozen);
   void SetFrameTreeVisibility(
       blink::mojom::PageVisibilityState visibility_state);
+  // TODO(https://crbug.com/1234634): Remove
+  // restoring_main_frame_from_back_forward_cache.
   void SetIsInBackForwardCache(
       bool is_in_back_forward_cache,
-      blink::mojom::PageRestoreParamsPtr page_restore_params);
+      blink::mojom::PageRestoreParamsPtr page_restore_params,
+      bool restoring_main_frame_from_back_forward_cache);
   bool IsInBackForwardCache() const { return is_in_back_forward_cache_; }
 
   // Called when we're committing main-frame same-site navigations where we did
@@ -85,9 +88,12 @@ class CONTENT_EXPORT PageLifecycleStateManager {
  private:
   // Send mojo message to renderer if the effective (page) lifecycle state has
   // changed.
+  // TODO(https://crbug.com/1234634): Remove
+  // restoring_main_frame_from_back_forward_cache.
   void SendUpdatesToRendererIfNeeded(
       blink::mojom::PageRestoreParamsPtr page_restore_params,
-      base::OnceClosure done_cb);
+      base::OnceClosure done_cb,
+      bool restoring_main_frame_from_back_forward_cache);
 
   void OnPageLifecycleChangedAck(
       blink::mojom::PageLifecycleStatePtr acknowledged_state,
@@ -125,7 +131,7 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   // This is the per-page state that is sent to renderer most lately.
   blink::mojom::PageLifecycleStatePtr last_state_sent_to_renderer_;
 
-  std::unique_ptr<OneShotTimeoutMonitor> back_forward_cache_timeout_monitor_;
+  base::OneShotTimer back_forward_cache_timeout_monitor_;
 
   TestDelegate* test_delegate_{nullptr};
   // NOTE: This must be the last member.

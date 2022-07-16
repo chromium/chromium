@@ -17,27 +17,14 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
-#include "ui/gfx/switches.h"
-
-#if defined(USE_X11) || defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"  // nogncheck
-#endif
-
-#if defined(USE_X11)
-#include "ui/base/x/x11_util.h"        // nogncheck
-#include "ui/gfx/x/connection.h"       // nogncheck
-#include "ui/gfx/x/screensaver.h"      // nogncheck
-#endif
-
-#if defined(USE_OZONE)
 #include "ui/display/screen.h"
-#endif
+#include "ui/gfx/switches.h"
 
 namespace device {
 
@@ -140,19 +127,9 @@ void GetDbusStringsForApi(DBusAPI api,
 }
 
 void SetScreenSaverSuspended(bool suspend) {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    auto* const screen = display::Screen::GetScreen();
-    // The screen can be nullptr in tests.
-    if (!screen)
-      return;
+  // The screen can be nullptr in tests.
+  if (auto* const screen = display::Screen::GetScreen())
     screen->SetScreenSaverSuspended(suspend);
-    return;
-  }
-#endif
-#if defined(USE_X11)
-  ui::SuspendX11ScreenSaver(suspend);
-#endif
 }
 
 }  // namespace
@@ -165,6 +142,9 @@ class PowerSaveBlocker::Delegate
            const std::string& description,
            scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
            scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner);
+
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
 
   // Post a task to initialize the delegate on the UI thread, which will itself
   // then post a task to apply the power save block on the blocking task runner.
@@ -211,8 +191,6 @@ class PowerSaveBlocker::Delegate
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 PowerSaveBlocker::Delegate::Delegate(

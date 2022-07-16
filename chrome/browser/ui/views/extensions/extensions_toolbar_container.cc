@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 
+#include <memory>
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
@@ -66,40 +69,66 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
     : ToolbarIconContainerView(/*uses_highlight=*/true),
       browser_(browser),
       model_(ToolbarActionsModel::Get(browser_->profile())),
-      extensions_button_(new ExtensionsToolbarButton(browser_, this)),
+      extensions_button_(
+          base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl)
+              ? nullptr
+              : new ExtensionsToolbarButton(
+                    browser,
+                    this,
+                    ExtensionsToolbarButton::ButtonType::kExtensions)),
+      extensions_controls_(
+          base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl)
+              ? new ExtensionsToolbarControls(
+                    std::make_unique<ExtensionsToolbarButton>(
+                        browser,
+                        this,
+                        ExtensionsToolbarButton::ButtonType::kExtensions),
+                    std::make_unique<ExtensionsToolbarButton>(
+                        browser,
+                        this,
+                        ExtensionsToolbarButton::ButtonType::kSiteAccess))
+              : nullptr),
       display_mode_(display_mode) {
   // The container shouldn't show unless / until we have extensions available.
   SetVisible(false);
 
   model_observation_.Observe(model_);
-  // Do not flip the Extensions icon in RTL.
-  extensions_button_->SetFlipCanvasOnPaintForRTLUI(false);
 
   const views::FlexSpecification hide_icon_flex_specification =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kPreferredSnapToZero,
                                views::MaximumFlexSizeRule::kPreferred)
           .WithWeight(0);
+  GetTargetLayoutManager()
+      ->SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse)
+      .SetDefault(views::kFlexBehaviorKey,
+                  hide_icon_flex_specification.WithOrder(3));
+
+  views::View* const main_item =
+      extensions_button_
+          ? static_cast<views::View* const>(extensions_button_)
+          : static_cast<views::View* const>(extensions_controls_);
   switch (display_mode) {
     case DisplayMode::kNormal:
       // In normal mode, the menu icon is always shown.
-      extensions_button_->SetProperty(views::kFlexBehaviorKey,
-                                      views::FlexSpecification());
+      main_item->SetProperty(views::kFlexBehaviorKey,
+                             views::FlexSpecification());
       break;
     case DisplayMode::kCompact:
     case DisplayMode::kAutoHide:
       // In compact/auto hide mode, the menu icon can be hidden but has the
       // highest priority.
-      extensions_button_->SetProperty(
-          views::kFlexBehaviorKey, hide_icon_flex_specification.WithOrder(1));
+      main_item->SetProperty(views::kFlexBehaviorKey,
+                             hide_icon_flex_specification.WithOrder(1));
       break;
   }
-  extensions_button_->SetID(VIEW_ID_EXTENSIONS_MENU_BUTTON);
-  AddMainButton(extensions_button_);
-  GetTargetLayoutManager()
-      ->SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse)
-      .SetDefault(views::kFlexBehaviorKey,
-                  hide_icon_flex_specification.WithOrder(3));
+  if (extensions_button_) {
+    // Do not flip the Extensions icon in RTL.
+    extensions_button_->SetFlipCanvasOnPaintForRTLUI(false);
+    extensions_button_->SetID(VIEW_ID_EXTENSIONS_MENU_BUTTON);
+  }
+
+  AddMainItem(main_item);
   CreateActions();
 
   // TODO(pbos): Consider splitting out tab-strip observing into another class.
@@ -111,7 +140,7 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
 ExtensionsToolbarContainer::~ExtensionsToolbarContainer() {
   // The child views hold pointers to the |actions_|, and thus need to be
   // destroyed before them.
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 
   // Create a copy of the anchored widgets, since |anchored_widgets_| will
   // be modified by closing them.
@@ -128,9 +157,19 @@ ExtensionsToolbarContainer::~ExtensionsToolbarContainer() {
 }
 
 void ExtensionsToolbarContainer::UpdateAllIcons() {
-  extensions_button_->UpdateIcon();
+  GetExtensionsButton()->UpdateIcon();
+  UpdateControlsVisibility();
+
   for (const auto& action : actions_)
     action->UpdateState();
+}
+
+// TODO(emiliapaz): Move this method as an accessor in the header file once the
+// redesigned menu and toolbar with access control is released.
+ExtensionsToolbarButton* ExtensionsToolbarContainer::GetExtensionsButton()
+    const {
+  return extensions_button_ ? extensions_button_
+                            : extensions_controls_->extensions_button();
 }
 
 ToolbarActionView* ExtensionsToolbarContainer::GetViewForId(
@@ -240,11 +279,10 @@ void ExtensionsToolbarContainer::AnchorAndShowWidgetImmediately(
   // * AnchorAndShowWidgetImmediately runs.
   // Revisit how to handle that, likely the Widget should Close on removal which
   // would remove the AnchoredWidget entry.
-
   views::View* const anchor_view = GetViewForId(iter->extension_id);
   widget->widget_delegate()->AsBubbleDialogDelegate()->SetAnchorView(
       anchor_view && anchor_view->GetVisible() ? anchor_view
-                                               : extensions_button_);
+                                               : GetExtensionsButton());
   widget->Show();
 }
 
@@ -385,7 +423,7 @@ void ExtensionsToolbarContainer::ShowToolbarActionBubble(
 
   views::Widget* const widget = views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<ToolbarActionsBarBubbleViews>(
-          anchor_view ? anchor_view : extensions_button_,
+          anchor_view ? anchor_view : GetExtensionsButton(),
           anchor_view != nullptr, std::move(controller)));
 
   ShowWidgetForExtension(widget, extension_id);
@@ -397,7 +435,7 @@ void ExtensionsToolbarContainer::ShowToolbarActionBubbleAsync(
 }
 
 void ExtensionsToolbarContainer::ToggleExtensionsMenu() {
-  extensions_button_->ToggleExtensionsMenu();
+  GetExtensionsButton()->ToggleExtensionsMenu();
 }
 
 bool ExtensionsToolbarContainer::HasAnyExtensions() const {
@@ -425,6 +463,8 @@ void ExtensionsToolbarContainer::OnToolbarActionAdded(
   if (display_mode_ != DisplayMode::kAutoHide)
     UpdateContainerVisibility();
 
+  UpdateControlsVisibility();
+
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -450,6 +490,7 @@ void ExtensionsToolbarContainer::OnToolbarActionRemoved(
   icons_.erase(action_id);
 
   UpdateContainerVisibilityAfterAnimation();
+  UpdateControlsVisibility();
 
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -459,6 +500,8 @@ void ExtensionsToolbarContainer::OnToolbarActionUpdated(
   ToolbarActionViewController* action = GetActionForId(action_id);
   if (action)
     action->UpdateState();
+
+  UpdateControlsVisibility();
 }
 
 void ExtensionsToolbarContainer::OnToolbarModelInitialized() {
@@ -480,7 +523,7 @@ void ExtensionsToolbarContainer::ReorderViews() {
     ReorderChildView(GetViewForId(drop_info_->action_id), drop_info_->index);
 
   // The extension button is always last.
-  ReorderChildView(extensions_button_, -1);
+  ReorderChildView(main_item(), -1);
 }
 
 void ExtensionsToolbarContainer::CreateActions() {
@@ -520,7 +563,7 @@ bool ExtensionsToolbarContainer::CanShowIconInToolbar() const {
 
 views::LabelButton* ExtensionsToolbarContainer::GetOverflowReferenceView()
     const {
-  return extensions_button_;
+  return GetExtensionsButton();
 }
 
 gfx::Size ExtensionsToolbarContainer::GetToolbarActionSize() {
@@ -604,6 +647,12 @@ int ExtensionsToolbarContainer::OnDragUpdated(
   BrowserActionDragData data;
   if (!data.Read(event.data()))
     return ui::DragDropTypes::DRAG_NONE;
+
+  // Check if there is an extension for the dragged icon (e.g. an extension can
+  // be de deleted while dragging its icon).
+  if (!GetActionForId(data.id()))
+    return ui::DragDropTypes::DRAG_NONE;
+
   size_t before_icon = 0;
   // Figure out where to display the icon during dragging transition.
 
@@ -634,6 +683,9 @@ int ExtensionsToolbarContainer::OnDragUpdated(
 }
 
 void ExtensionsToolbarContainer::OnDragExited() {
+  if (!drop_info_)
+    return;
+
   const ToolbarActionsModel::ActionId dragged_extension_id =
       drop_info_->action_id;
   drop_info_.reset();
@@ -708,6 +760,9 @@ void ExtensionsToolbarContainer::SetExtensionIconVisibility(
                            return GetViewForId(action_id) == GetViewForId(id);
                          });
   ToolbarActionView* extension_view = GetViewForId(*it);
+  if (!extension_view)
+    return;
+
   extension_view->SetImageModel(
       views::Button::STATE_NORMAL,
       visible ? ui::ImageModel::FromImageSkia(GetExtensionIcon(extension_view))
@@ -741,7 +796,7 @@ bool ExtensionsToolbarContainer::ShouldContainerBeVisible() const {
     return true;
 
   // Is menu showing.
-  if (extensions_button_->GetExtensionsMenuShowing())
+  if (GetExtensionsButton()->GetExtensionsMenuShowing())
     return true;
 
   // Is extension pop out is showing.
@@ -788,6 +843,15 @@ void ExtensionsToolbarContainer::DragDropCleanup(
   GetAnimatingLayoutManager()->PostOrQueueAction(base::BindOnce(
       &ExtensionsToolbarContainer::SetExtensionIconVisibility,
       weak_ptr_factory_.GetWeakPtr(), dragged_extension_id, true));
+}
+
+void ExtensionsToolbarContainer::UpdateControlsVisibility() {
+  if (!extensions_controls_)
+    return;
+
+  extensions_controls_->UpdateSiteAccessButtonVisibility(
+      ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
+          actions_, GetCurrentWebContents()));
 }
 
 BEGIN_METADATA(ExtensionsToolbarContainer, ToolbarIconContainerView)

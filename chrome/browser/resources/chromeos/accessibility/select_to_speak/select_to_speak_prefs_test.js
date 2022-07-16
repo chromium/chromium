@@ -4,7 +4,7 @@
 
 GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
 GEN_INCLUDE(['../../../../../../ui/webui/resources/js/cr.js']);
-GEN_INCLUDE(['../../../../../test/data/webui/fake_chrome_event.js']);
+GEN_INCLUDE(['fake_chrome_event.js']);
 GEN_INCLUDE(['fake_settings_private.js']);
 GEN_INCLUDE(['mock_storage.js']);
 
@@ -18,9 +18,12 @@ SelectToSpeakPrefsTest = class extends SelectToSpeakE2ETest {
     this.mockStorage_ = MockStorage;
     chrome.storage = this.mockStorage_;
 
+    const enhancedNetworkVoicesAllowedKey =
+        'settings.a11y.enhanced_network_voices_in_select_to_speak_allowed';
     this.mockSettingsPrivate_ = new settings.FakeSettingsPrivate([
       {type: 'number', key: 'settings.tts.speech_rate', value: 1.0},
-      {type: 'number', key: 'settings.tts.speech_pitch', value: 1.0}
+      {type: 'number', key: 'settings.tts.speech_pitch', value: 1.0},
+      {type: 'boolean', key: enhancedNetworkVoicesAllowedKey, value: true}
     ]);
     this.mockSettingsPrivate_.allowSetPref();
     chrome.settingsPrivate = this.mockSettingsPrivate_;

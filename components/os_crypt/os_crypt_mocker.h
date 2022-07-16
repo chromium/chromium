@@ -5,13 +5,15 @@
 #ifndef COMPONENTS_OS_CRYPT_OS_CRYPT_MOCKER_H_
 #define COMPONENTS_OS_CRYPT_OS_CRYPT_MOCKER_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 
 // Handles the mocking of OSCrypt, such that it does not reach system level
 // services.
 class OSCryptMocker {
  public:
+  OSCryptMocker(const OSCryptMocker&) = delete;
+  OSCryptMocker& operator=(const OSCryptMocker&) = delete;
+
   // Inject mocking into OSCrypt.
   static void SetUp();
 
@@ -30,9 +32,6 @@ class OSCryptMocker {
 
   // Restore OSCrypt to its real behaviour.
   static void TearDown();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OSCryptMocker);
 };
 
 #endif  // COMPONENTS_OS_CRYPT_OS_CRYPT_MOCKER_H_

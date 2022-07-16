@@ -4,7 +4,7 @@
 
 #include "components/viz/common/transition_utils.h"
 
-#include <vector>
+#include <memory>
 
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
@@ -47,7 +47,7 @@ float TransitionUtils::ComputeAccumulatedOpacity(
 
 // static
 std::unique_ptr<CompositorRenderPass>
-TransitionUtils::CopyPassWithRenderPassFiltering(
+TransitionUtils::CopyPassWithQuadFiltering(
     const CompositorRenderPass& source_pass,
     FilterCallback filter_callback) {
   // This code is similar to CompositorRenderPass::DeepCopy, but does special
@@ -60,6 +60,7 @@ TransitionUtils::CopyPassWithRenderPassFiltering(
       source_pass.transform_to_root_target, source_pass.filters,
       source_pass.backdrop_filters, source_pass.backdrop_filter_bounds,
       source_pass.subtree_capture_id, source_pass.subtree_size,
+      source_pass.shared_element_resource_id,
       source_pass.has_transparent_background, source_pass.cache_render_pass,
       source_pass.has_damage_from_contributing_content,
       source_pass.generate_mipmap, source_pass.has_per_quad_damage);
@@ -82,12 +83,13 @@ TransitionUtils::CopyPassWithRenderPassFiltering(
     }
     DCHECK(quad->shared_quad_state == *sqs_iter);
 
+    if (filter_callback.Run(*quad, *copy_pass.get()))
+      continue;
+
     if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
       const auto* pass_quad = CompositorRenderPassDrawQuad::MaterialCast(quad);
-      if (!filter_callback.Run(*pass_quad, *copy_pass.get())) {
-        copy_pass->CopyFromAndAppendRenderPassDrawQuad(
-            pass_quad, pass_quad->render_pass_id);
-      }
+      copy_pass->CopyFromAndAppendRenderPassDrawQuad(pass_quad,
+                                                     pass_quad->render_pass_id);
     } else {
       copy_pass->CopyFromAndAppendDrawQuad(quad);
     }

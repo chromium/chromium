@@ -8,11 +8,9 @@
 #include <cstddef>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/ntp_snippets/callbacks.h"
 #include "components/ntp_snippets/content_suggestion.h"
@@ -42,6 +40,8 @@ class CachedImageFetcher {
   CachedImageFetcher(std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher,
                      PrefService* pref_service,
                      RemoteSuggestionsDatabase* database);
+  CachedImageFetcher(const CachedImageFetcher&) = delete;
+  CachedImageFetcher& operator=(const CachedImageFetcher&) = delete;
   virtual ~CachedImageFetcher();
 
   // Fetches the image for a suggestion. The fetcher will first issue a lookup
@@ -95,8 +95,6 @@ class CachedImageFetcher {
   RequestThrottler thumbnail_requests_throttler_;
 
   base::WeakPtrFactory<CachedImageFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CachedImageFetcher);
 };
 
 }  // namespace ntp_snippets

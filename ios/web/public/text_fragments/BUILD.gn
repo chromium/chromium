@@ -3,10 +3,9 @@
 # found in the LICENSE file.
 
 source_set("text_fragments") {
-  deps = [
-    "//base",
-    "//ios/web/public/",
-  ]
+  deps = [ "//base" ]
+
+  public_deps = [ "//ios/web/public/" ]
 
   sources = [ "text_fragments_manager.h" ]
 

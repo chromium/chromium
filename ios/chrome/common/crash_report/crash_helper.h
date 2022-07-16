@@ -23,13 +23,13 @@ bool UserEnabledUploading();
 
 // Check and cache the GroupUserDefaults value synced from the associated
 // kCrashpadIOS feature.
-bool CanCrashpadStart();
+bool CanUseCrashpad();
 
 // Returns the shared app group crashpad directory.
 base::FilePath CrashpadDumpLocation();
 
 // Initialize Crashpad.
-void StartCrashpad();
+bool StartCrashpad();
 
 }  // namespace common
 }  // namespace crash_helper

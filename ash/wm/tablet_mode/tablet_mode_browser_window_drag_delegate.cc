@@ -51,6 +51,10 @@ class SourceWindowAnimationObserver : public ui::ImplicitAnimationObserver,
     dragged_window_->AddObserver(this);
   }
 
+  SourceWindowAnimationObserver(const SourceWindowAnimationObserver&) = delete;
+  SourceWindowAnimationObserver& operator=(
+      const SourceWindowAnimationObserver&) = delete;
+
   ~SourceWindowAnimationObserver() override { StopObserving(); }
 
   // ui::ImplicitAnimationObserver:
@@ -95,8 +99,6 @@ class SourceWindowAnimationObserver : public ui::ImplicitAnimationObserver,
 
   aura::Window* source_window_;
   aura::Window* dragged_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(SourceWindowAnimationObserver);
 };
 
 }  // namespace

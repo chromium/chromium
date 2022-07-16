@@ -143,6 +143,11 @@ subresources to only those that have explicitly opted in via
 * COEP is simply "require-corp" or nothing and we track uses of the feature via
   `kCrossOriginEmbedderPolicyRequireCorp`.
 
+* Usage of COEP in SharedWorker is tracked via:
+  - `kCoepNoneSharedWorker`,
+  - `kCoepRequireCorpSharedWorker`
+  - `kCoepCredentiallessSharedWorker`.
+
 Note that some APIs having precise timers or memory measurement are enabled only
 for pages that set COOP to "same-origin" and COEP to "require-corp".
 

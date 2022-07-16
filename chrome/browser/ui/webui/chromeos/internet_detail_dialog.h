@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_INTERNET_DETAIL_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_INTERNET_DETAIL_DIALOG_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"  // nogncheck
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -18,6 +17,9 @@ class NetworkState;
 
 class InternetDetailDialog : public SystemWebDialogDelegate {
  public:
+  InternetDetailDialog(const InternetDetailDialog&) = delete;
+  InternetDetailDialog& operator=(const InternetDetailDialog&) = delete;
+
   // Returns whether the dialog is being shown.
   static bool IsShown();
 
@@ -41,8 +43,6 @@ class InternetDetailDialog : public SystemWebDialogDelegate {
   std::string network_id_;
   std::string network_type_;
   std::string network_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternetDetailDialog);
 };
 
 // A WebUI to host a subset of the network details page to allow setting of
@@ -50,6 +50,10 @@ class InternetDetailDialog : public SystemWebDialogDelegate {
 class InternetDetailDialogUI : public ui::MojoWebDialogUI {
  public:
   explicit InternetDetailDialogUI(content::WebUI* web_ui);
+
+  InternetDetailDialogUI(const InternetDetailDialogUI&) = delete;
+  InternetDetailDialogUI& operator=(const InternetDetailDialogUI&) = delete;
+
   ~InternetDetailDialogUI() override;
 
   // Instantiates implementor of the mojom::CrosNetworkConfig mojo interface
@@ -60,8 +64,6 @@ class InternetDetailDialogUI : public ui::MojoWebDialogUI {
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(InternetDetailDialogUI);
 };
 
 }  // namespace chromeos

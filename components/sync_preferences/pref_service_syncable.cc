@@ -214,7 +214,7 @@ void PrefServiceSyncable::AddRegisteredSyncablePreference(
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (flags & user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF) {
-    if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+    if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
       // Register the pref under the new ModelType::OS_PREFERENCES.
       os_pref_sync_associator_.RegisterPref(path);
       // Also register under the old ModelType::PREFERENCES. This ensures that
@@ -230,7 +230,7 @@ void PrefServiceSyncable::AddRegisteredSyncablePreference(
   }
   if (flags & user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF) {
     // See comments for SYNCABLE_OS_PREF above.
-    if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+    if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
       os_priority_pref_sync_associator_.RegisterPref(path);
       priority_pref_sync_associator_.RegisterPrefWithLegacyModelType(path);
     } else {

@@ -42,6 +42,10 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
     static const size_t BUFFER_SIZE = 512;
 
     SettingGetter() {}
+
+    SettingGetter(const SettingGetter&) = delete;
+    SettingGetter& operator=(const SettingGetter&) = delete;
+
     virtual ~SettingGetter() {}
 
     // Initializes the class: obtains a gconf/gsettings client, or simulates
@@ -137,9 +141,6 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
     // considered a match for "google.com", even though the bypass rule does not
     // include a wildcard, and the matched host is not a subdomain.
     virtual bool UseSuffixMatching() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SettingGetter);
   };
 
   // ProxyConfigServiceLinux is created on the glib thread, and
@@ -174,6 +175,9 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
     Delegate(std::unique_ptr<base::Environment> env_var_getter,
              absl::optional<std::unique_ptr<SettingGetter>> setting_getter,
              absl::optional<NetworkTrafficAnnotationTag> traffic_annotation);
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
 
     // Synchronously obtains the proxy configuration. If gconf,
     // gsettings, or kioslaverc are used, also enables notifications for
@@ -273,8 +277,6 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
     base::ObserverList<Observer>::Unchecked observers_;
 
     MutableNetworkTrafficAnnotationTag traffic_annotation_;
-
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // Thin wrapper shell around Delegate.
@@ -290,6 +292,9 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
       std::unique_ptr<base::Environment> env_var_getter,
       SettingGetter* setting_getter,  // TODO(eroman): Use std::unique_ptr.
       const NetworkTrafficAnnotationTag& traffic_annotation);
+
+  ProxyConfigServiceLinux(const ProxyConfigServiceLinux&) = delete;
+  ProxyConfigServiceLinux& operator=(const ProxyConfigServiceLinux&) = delete;
 
   ~ProxyConfigServiceLinux() override;
 
@@ -313,8 +318,6 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
 
  private:
   scoped_refptr<Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyConfigServiceLinux);
 };
 
 }  // namespace net

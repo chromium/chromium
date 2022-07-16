@@ -261,8 +261,7 @@ TEST_F(ThreadPoolPerfTest, PostRunBusyTasksManyThreads) {
   StartThreadPool(
       4, 4,
       BindRepeating(&ThreadPoolPerfTest::ContinuouslyPostBusyWaitTasks,
-                    Unretained(this), 10000,
-                    base::TimeDelta::FromMicroseconds(200)));
+                    Unretained(this), 10000, base::Microseconds(200)));
   Benchmark(kStoryPostRunBusyManyThreads, ExecutionMode::kPostAndRun);
 }
 

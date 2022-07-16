@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/render_view_impl.h"
 #include "gin/handle.h"
 #include "gin/per_isolate_data.h"
 #include "gin/wrappable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "v8/include/v8-context.h"
 
 namespace content {
 
@@ -27,13 +27,14 @@ class TestGinObject : public gin::Wrappable<TestGinObject> {
     return gin::CreateHandle(isolate, new TestGinObject(alive));
   }
 
+  TestGinObject(const TestGinObject&) = delete;
+  TestGinObject& operator=(const TestGinObject&) = delete;
+
  private:
   TestGinObject(bool* alive) : alive_(alive) { *alive_ = true; }
   ~TestGinObject() override { *alive_ = false; }
 
   bool* alive_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestGinObject);
 };
 
 gin::WrapperInfo TestGinObject::kWrapperInfo = { gin::kEmbedderNativeGin };
@@ -41,18 +42,18 @@ gin::WrapperInfo TestGinObject::kWrapperInfo = { gin::kEmbedderNativeGin };
 class GinBrowserTest : public RenderViewTest {
  public:
   GinBrowserTest() {}
+
+  GinBrowserTest(const GinBrowserTest&) = delete;
+  GinBrowserTest& operator=(const GinBrowserTest&) = delete;
+
   ~GinBrowserTest() override {}
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kJavaScriptFlags, "--expose_gc");
+        blink::switches::kJavaScriptFlags, "--expose_gc");
 
     RenderViewTest::SetUp();
   }
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(GinBrowserTest);
 };
 
 // Test that garbage collection doesn't crash if a gin-wrapped object is

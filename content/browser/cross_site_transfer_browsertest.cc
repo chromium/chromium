@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -45,14 +44,15 @@ class NoTransferRequestDelegate : public WebContentsDelegate {
  public:
   NoTransferRequestDelegate() {}
 
+  NoTransferRequestDelegate(const NoTransferRequestDelegate&) = delete;
+  NoTransferRequestDelegate& operator=(const NoTransferRequestDelegate&) =
+      delete;
+
   bool ShouldAllowRendererInitiatedCrossProcessNavigation(
       bool is_main_frame_navigation) override {
     // Intentionally cancel the transfer.
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoTransferRequestDelegate);
 };
 
 class CrossSiteTransferTest : public ContentBrowserTest {
@@ -429,8 +429,8 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, NoDeliveryToDetachedFrame) {
   EXPECT_TRUE(NavigateToURL(shell(), attacker_page));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   RenderFrameHostImpl* child_frame = root->child_at(0)->current_frame_host();
 

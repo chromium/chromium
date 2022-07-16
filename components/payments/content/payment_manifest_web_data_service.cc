@@ -156,6 +156,39 @@ PaymentManifestWebDataService::GetSecurePaymentConfirmationInstrumentsImpl(
           ->GetSecurePaymentConfirmationInstruments(std::move(credential_ids)));
 }
 
+void PaymentManifestWebDataService::ClearSecurePaymentConfirmationInstruments(
+    base::Time begin,
+    base::Time end,
+    base::OnceClosure callback) {
+  WebDataServiceBase::Handle handle = wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(&PaymentManifestWebDataService::
+                         ClearSecurePaymentConfirmationInstrumentsImpl,
+                     this, begin, end),
+      this);
+  clearing_instruments_requests_[handle] = std::move(callback);
+}
+
+std::unique_ptr<WDTypedResult>
+PaymentManifestWebDataService::ClearSecurePaymentConfirmationInstrumentsImpl(
+    base::Time begin,
+    base::Time end,
+    WebDatabase* db) {
+  return std::make_unique<WDResult<bool>>(
+      BOOL_RESULT, PaymentMethodManifestTable::FromWebDatabase(db)
+                       ->ClearSecurePaymentConfirmationInstruments(begin, end));
+}
+
+void PaymentManifestWebDataService::OnWebDataServiceRequestDone(
+    WebDataServiceBase::Handle h,
+    std::unique_ptr<WDTypedResult> result) {
+  if (clearing_instruments_requests_.find(h) ==
+      clearing_instruments_requests_.end())
+    return;
+
+  std::move(clearing_instruments_requests_[h]).Run();
+}
+
 void PaymentManifestWebDataService::RemoveExpiredData(WebDatabase* db) {
   PaymentMethodManifestTable::FromWebDatabase(db)->RemoveExpiredData();
   WebAppManifestSectionTable::FromWebDatabase(db)->RemoveExpiredData();

@@ -1,4 +1,0 @@
-
-Running: testNoSocketOpenWhenOffline
-onerror onclose 
-

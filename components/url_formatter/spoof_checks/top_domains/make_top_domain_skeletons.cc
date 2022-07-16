@@ -186,4 +186,6 @@ int main(int argc, const char** argv) {
   GenerateSkeletons("domains.list", "domains.skeletons", spoof_checker.get());
   GenerateSkeletons("test_domains.list", "test_domains.skeletons",
                     spoof_checker.get());
+  GenerateSkeletons("browsertest_domains.list", "browsertest_domains.skeletons",
+                    spoof_checker.get());
 }

@@ -135,38 +135,48 @@ public class ShareIntentTest {
             // package and class names do not matter.
             return new MockChromeActivity(mActivityTestRule.getActivity());
         });
-        RootUiCoordinator rootUiCoordinator = TestThreadUtils.runOnUiThreadBlocking(() -> {
-            return new RootUiCoordinator(mockActivity, null,
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowserControlsManager browserControlsManager = new BrowserControlsManager(
+                    mockActivity, BrowserControlsManager.ControlsPosition.TOP);
+            RootUiCoordinator rootUiCoordinator = new RootUiCoordinator(mockActivity, null,
                     mockActivity.getShareDelegateSupplier(), mockActivity.getActivityTabProvider(),
                     null, null, null, null, new OneshotSupplierImpl<>(),
                     new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
                     ()
                             -> null,
-                    new BrowserControlsManager(
-                            mockActivity, BrowserControlsManager.ControlsPosition.TOP),
-                    mActivityTestRule.getActivity().getWindowAndroid(), new DummyJankTracker());
-        });
-        ShareHelper.setLastShareComponentName(
-                null, new ComponentName("test.package", "test.activity"));
+                    browserControlsManager, mActivityTestRule.getActivity().getWindowAndroid(),
+                    new DummyJankTracker(), mockActivity.getLifecycleDispatcher(),
+                    mockActivity.getLayoutManagerSupplier(),
+                    /* menuOrKeyboardActionController= */ mockActivity,
+                    mockActivity::getActivityThemeColor,
+                    mockActivity.getModalDialogManagerSupplier(),
+                    /* appMenuBlocker= */ mockActivity, mockActivity::supportsAppMenu,
+                    mockActivity::supportsFindInPage, mockActivity.getTabCreatorManagerSupplier(),
+                    browserControlsManager.getFullscreenManager(),
+                    mockActivity.getCompositorViewHolderSupplier(),
+                    mockActivity.getTabContentManagerSupplier(),
+                    mockActivity.getOverviewModeBehaviorSupplier(),
+                    mockActivity::getSnackbarManager, mockActivity.getActivityType(),
+                    mockActivity::isInOverviewMode, mockActivity::isWarmOnResume,
+                    /* appMenuDelegate= */ mockActivity,
+                    /* statusBarColorProvider= */ mockActivity,
+                    mockActivity.getIntentRequestTracker(), new OneshotSupplierImpl<>(), false);
 
-        WindowAndroid window = TestThreadUtils.runOnUiThreadBlocking(() -> {
-            return new WindowAndroid(mActivityTestRule.getActivity()) {
+            ShareHelper.setLastShareComponentName(
+                    null, new ComponentName("test.package", "test.activity"));
+
+            WindowAndroid window = new WindowAndroid(mActivityTestRule.getActivity()) {
                 @Override
                 public WeakReference<Activity> getActivity() {
                     return new WeakReference<>(mockActivity);
                 }
             };
-        });
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mockActivity.getActivityTab().updateAttachment(window, null));
+            mockActivity.getActivityTab().updateAttachment(window, null);
+            rootUiCoordinator.onShareMenuItemSelected(
+                    true /* shareDirectly */, false /* isIncognito */);
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> rootUiCoordinator.onShareMenuItemSelected(
-                                true /* shareDirectly */, false /* isIncognito */));
-
-        ShareHelper.setLastShareComponentName(null, new ComponentName("", ""));
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShareHelper.setLastShareComponentName(null, new ComponentName("", ""));
             mockActivity.getActivityTab().updateAttachment(null, null);
             window.destroy();
         });

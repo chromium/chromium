@@ -34,16 +34,14 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWhenEmpty) {
 
   base::Value actual_output = ConvertGoldenInputToProcessorInput(input);
 
-  base::Value expected_output =
-      utils::CreateTimeLimitPolicy(base::TimeDelta::FromHours(6));
+  base::Value expected_output = utils::CreateTimeLimitPolicy(base::Hours(6));
 
   EXPECT_TRUE(actual_output == expected_output);
 }
 
 TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithBedtimes) {
   ConsistencyGoldenInput input;
-  base::Value expected_output =
-      utils::CreateTimeLimitPolicy(base::TimeDelta::FromHours(6));
+  base::Value expected_output = utils::CreateTimeLimitPolicy(base::Hours(6));
 
   // First window: Wednesday, 22:30 to 8:00
   consistency_utils::AddWindowLimitEntryToGoldenInput(
@@ -68,8 +66,7 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithBedtimes) {
 
 TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithBedtimesLastUpdated) {
   ConsistencyGoldenInput input;
-  base::Value expected_output =
-      utils::CreateTimeLimitPolicy(base::TimeDelta::FromHours(6));
+  base::Value expected_output = utils::CreateTimeLimitPolicy(base::Hours(6));
 
   // First window: Wednesday, 22:30 to 8:00
   consistency_utils::AddWindowLimitEntryToGoldenInput(
@@ -95,14 +92,14 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithUsageLimit) {
   // First quota: Tuesday, 60 minutes
   consistency_utils::AddUsageLimitEntryToGoldenInput(&input, TUESDAY, 60,
                                                      absl::nullopt);
-  utils::AddTimeUsageLimit(&expected_output, utils::kTuesday,
-                           base::TimeDelta::FromMinutes(60), kTestLastUpdated);
+  utils::AddTimeUsageLimit(&expected_output, utils::kTuesday, base::Minutes(60),
+                           kTestLastUpdated);
 
   // Second quota: Friday, 30 minutes
   consistency_utils::AddUsageLimitEntryToGoldenInput(&input, FRIDAY, 30,
                                                      absl::nullopt);
-  utils::AddTimeUsageLimit(&expected_output, utils::kFriday,
-                           base::TimeDelta::FromMinutes(30), kTestLastUpdated);
+  utils::AddTimeUsageLimit(&expected_output, utils::kFriday, base::Minutes(30),
+                           kTestLastUpdated);
 
   base::Value actual_output = ConvertGoldenInputToProcessorInput(input);
 
@@ -111,20 +108,19 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithUsageLimit) {
 
 TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithUsageLimitDefaultReset) {
   ConsistencyGoldenInput input;
-  base::Value expected_output =
-      utils::CreateTimeLimitPolicy(base::TimeDelta::FromHours(6));
+  base::Value expected_output = utils::CreateTimeLimitPolicy(base::Hours(6));
 
   // First quota: Tuesday, 60 minutes
   consistency_utils::AddUsageLimitEntryToGoldenInput(&input, TUESDAY, 60,
                                                      absl::nullopt);
-  utils::AddTimeUsageLimit(&expected_output, utils::kTuesday,
-                           base::TimeDelta::FromMinutes(60), kTestLastUpdated);
+  utils::AddTimeUsageLimit(&expected_output, utils::kTuesday, base::Minutes(60),
+                           kTestLastUpdated);
 
   // Second quota: Friday, 30 minutes
   consistency_utils::AddUsageLimitEntryToGoldenInput(&input, FRIDAY, 30,
                                                      absl::nullopt);
-  utils::AddTimeUsageLimit(&expected_output, utils::kFriday,
-                           base::TimeDelta::FromMinutes(30), kTestLastUpdated);
+  utils::AddTimeUsageLimit(&expected_output, utils::kFriday, base::Minutes(30),
+                           kTestLastUpdated);
 
   base::Value actual_output = ConvertGoldenInputToProcessorInput(input);
 
@@ -133,14 +129,12 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithUsageLimitDefaultReset) {
 
 TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithUsageLimitLastUpdated) {
   ConsistencyGoldenInput input;
-  base::Value expected_output =
-      utils::CreateTimeLimitPolicy(base::TimeDelta::FromHours(6));
+  base::Value expected_output = utils::CreateTimeLimitPolicy(base::Hours(6));
 
   // First quota: Tuesday, 60 minutes
   consistency_utils::AddUsageLimitEntryToGoldenInput(&input, TUESDAY, 60,
                                                      kTestTimestamp);
-  utils::AddTimeUsageLimit(&expected_output, utils::kTuesday,
-                           base::TimeDelta::FromMinutes(60),
+  utils::AddTimeUsageLimit(&expected_output, utils::kTuesday, base::Minutes(60),
                            base::Time::FromJavaTime(kTestTimestamp));
 
   base::Value actual_output = ConvertGoldenInputToProcessorInput(input);
@@ -150,8 +144,7 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithUsageLimitLastUpdated) {
 
 TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithOverride) {
   ConsistencyGoldenInput input;
-  base::Value expected_output =
-      utils::CreateTimeLimitPolicy(base::TimeDelta::FromHours(6));
+  base::Value expected_output = utils::CreateTimeLimitPolicy(base::Hours(6));
 
   // Override: Unlock bedtime
   consistency_utils::AddOverrideToGoldenInput(&input, UNLOCK_WINDOW_LIMIT,
@@ -167,8 +160,7 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithOverride) {
 
 TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithTimedOverride) {
   ConsistencyGoldenInput input;
-  base::Value expected_output =
-      utils::CreateTimeLimitPolicy(base::TimeDelta::FromHours(6));
+  base::Value expected_output = utils::CreateTimeLimitPolicy(base::Hours(6));
   const int64_t override_duration_millis = 10000;
 
   // Override: Grant more time
@@ -177,7 +169,7 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithTimedOverride) {
   utils::AddOverrideWithDuration(
       &expected_output, usage_time_limit::TimeLimitOverride::Action::kUnlock,
       base::Time::FromJavaTime(kTestTimestamp),
-      base::TimeDelta::FromMilliseconds(override_duration_millis));
+      base::Milliseconds(override_duration_millis));
 
   base::Value actual_output = ConvertGoldenInputToProcessorInput(input);
 
@@ -229,7 +221,7 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertOutputWhenLockedByUsageLimit) {
   state.active_policy = usage_time_limit::PolicyType::kUsageLimit;
   state.next_state_active_policy = usage_time_limit::PolicyType::kNoPolicy;
   state.is_time_usage_limit_enabled = true;
-  state.remaining_usage = base::TimeDelta::FromMilliseconds(remaining_millis);
+  state.remaining_usage = base::Milliseconds(remaining_millis);
   state.next_unlock_time = base::Time::FromJavaTime(kTestTimestamp);
 
   ConsistencyGoldenOutput actual_output =
@@ -257,10 +249,9 @@ TEST_F(ConsistencyGoldenConverterTest, GeneratePreviousStateUnlockUsageLimit) {
   EXPECT_TRUE(generated_state->is_time_usage_limit_enabled);
   EXPECT_EQ(generated_state->active_policy,
             usage_time_limit::PolicyType::kUsageLimit);
-  EXPECT_EQ(generated_state->remaining_usage, base::TimeDelta::FromMinutes(0));
+  EXPECT_EQ(generated_state->remaining_usage, base::Minutes(0));
   EXPECT_EQ(generated_state->time_usage_limit_started,
-            base::Time::FromJavaTime(kTestTimestamp) -
-                base::TimeDelta::FromMinutes(1));
+            base::Time::FromJavaTime(kTestTimestamp) - base::Minutes(1));
 }
 
 TEST_F(ConsistencyGoldenConverterTest, GeneratePreviousStateOtherOverrides) {

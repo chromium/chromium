@@ -124,10 +124,10 @@ KURL ModulatorImplBase::ResolveModuleSpecifier(const String& specifier,
   // cases.
 
   absl::optional<KURL> mapped_url;
-  if (import_map_) {
+  if (GetImportMap()) {
     String import_map_debug_message;
-    mapped_url = import_map_->Resolve(parsed_specifier, base_url,
-                                      &import_map_debug_message);
+    mapped_url = GetImportMap()->Resolve(parsed_specifier, base_url,
+                                         &import_map_debug_message);
 
     // Output the resolution log. This is too verbose to be always shown, but
     // will be helpful for Web developers (and also Chromium developers) for
@@ -168,60 +168,12 @@ KURL ModulatorImplBase::ResolveModuleSpecifier(const String& specifier,
   }
 }
 
-ScriptValue ModulatorImplBase::CreateTypeError(const String& message) const {
-  ScriptState::Scope scope(script_state_);
-  ScriptValue error(
-      script_state_->GetIsolate(),
-      V8ThrowException::CreateTypeError(script_state_->GetIsolate(), message));
-  return error;
-}
-
-ScriptValue ModulatorImplBase::CreateSyntaxError(const String& message) const {
-  ScriptState::Scope scope(script_state_);
-  ScriptValue error(script_state_->GetIsolate(),
-                    V8ThrowException::CreateSyntaxError(
-                        script_state_->GetIsolate(), message));
-  return error;
-}
-
-// <specdef href="https://wicg.github.io/import-maps/#register-an-import-map">
-void ModulatorImplBase::RegisterImportMap(const ImportMap* import_map,
-                                          ScriptValue error_to_rethrow) {
-  DCHECK(import_map);
-
-  // <spec step="7">If import map parse result’s error to rethrow is not null,
-  // then:</spec>
-  if (!error_to_rethrow.IsEmpty()) {
-    // <spec step="7.1">Report the exception given import map parse result’s
-    // error to rethrow. ...</spec>
-    if (!IsScriptingDisabled()) {
-      ScriptState::Scope scope(script_state_);
-      ModuleRecord::ReportException(script_state_, error_to_rethrow.V8Value());
-    }
-
-    // <spec step="7.2">Return.</spec>
-    return;
-  }
-
-  // <spec step="8">Update element’s node document's import map with import map
-  // parse result’s import map.</spec>
-  //
-  // TODO(crbug.com/927119): Implement merging. Currently only one import map is
-  // allowed.
-
-  // Because the second and subsequent import maps are already rejected in
-  // ScriptLoader::PrepareScript(), this is called only once.
-  DCHECK(!import_map_);
-  import_map_ = import_map;
-}
-
 bool ModulatorImplBase::HasValidContext() {
   return script_state_->ContextIsValid();
 }
 
 void ModulatorImplBase::ResolveDynamically(
     const ModuleRequest& module_request,
-    const KURL& referrer_url,
     const ReferrerScriptInfo& referrer_info,
     ScriptPromiseResolver* resolver) {
   String reason;
@@ -232,8 +184,8 @@ void ModulatorImplBase::ResolveDynamically(
   }
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kDynamicImportModuleScript);
-  dynamic_module_resolver_->ResolveDynamically(module_request, referrer_url,
-                                               referrer_info, resolver);
+  dynamic_module_resolver_->ResolveDynamically(module_request, referrer_info,
+                                               resolver);
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#hostgetimportmetaproperties">
@@ -257,23 +209,26 @@ ModuleType ModulatorImplBase::ModuleTypeFromRequest(
     const ModuleRequest& module_request) const {
   String module_type_string = module_request.GetModuleTypeString();
   if (module_type_string.IsNull()) {
-    // Per https://github.com/whatwg/html/pull/5883, if no type assertion is
-    // provided then the import should be treated as a JavaScript module.
+    // <spec href="https://html.spec.whatwg.org/#fetch-a-single-module-script"
+    // step="1">Let module type be "javascript".</spec> If no type assertion is
+    // provided, the import is treated as a JavaScript module.
     return ModuleType::kJavaScript;
   } else if (base::FeatureList::IsEnabled(blink::features::kJSONModules) &&
              module_type_string == "json") {
-    // Per https://github.com/whatwg/html/pull/5658, a "json" type assertion
-    // indicates that the import should be treated as a JSON module script.
+    // <spec href="https://html.spec.whatwg.org/#fetch-a-single-module-script"
+    // step="17"> If...module type is "json", then set module script to the
+    // result of creating a JSON module script...</spec>
     return ModuleType::kJSON;
   } else if (RuntimeEnabledFeatures::CSSModulesEnabled() &&
-             module_type_string == "css") {
-    // Per https://github.com/whatwg/html/pull/4898, a "css" type assertion
-    // indicates that the import should be treated as a CSS module script.
+             module_type_string == "css" && GetExecutionContext()->IsWindow()) {
+    // <spec href="https://html.spec.whatwg.org/#fetch-a-single-module-script"
+    // step="16"> If...module type is "css", then set module script to the
+    // result of creating a CSS module script...</spec>
     return ModuleType::kCSS;
   } else {
-    // Per https://github.com/whatwg/html/pull/5883, if an unsupported type
-    // assertion is provided then the import should be treated as an error
-    // similar to an invalid module specifier.
+    // Per https://github.com/whatwg/html/pull/7066, unrecognized type
+    // assertions or "css" type assertions in a non-document context should be
+    // treated as an error similar to an invalid module specifier.
     return ModuleType::kInvalid;
   }
 }
@@ -335,7 +290,6 @@ void ModulatorImplBase::Trace(Visitor* visitor) const {
   visitor->Trace(tree_linker_registry_);
   visitor->Trace(module_record_resolver_);
   visitor->Trace(dynamic_module_resolver_);
-  visitor->Trace(import_map_);
 
   Modulator::Trace(visitor);
 }

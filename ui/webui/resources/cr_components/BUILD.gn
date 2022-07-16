@@ -24,16 +24,17 @@ generate_grd("build_grdp") {
   if (is_chromeos_ash) {
     input_files_base_dir = rebase_path(".", "//")
     input_files = [
-      "chromeos/multidevice_setup/all_set_1x.svg",
-      "chromeos/multidevice_setup/all_set_2x.svg",
-      "chromeos/multidevice_setup/start_setup_icon_1x.png",
-      "chromeos/multidevice_setup/start_setup_icon_2x.png",
+      "chromeos/multidevice_setup/all_set_1x_dark.svg",
+      "chromeos/multidevice_setup/all_set_1x_light.svg",
+      "chromeos/multidevice_setup/all_set_2x_dark.svg",
+      "chromeos/multidevice_setup/all_set_2x_light.svg",
       "chromeos/cellular_setup/sim_detect_error.svg",
       "chromeos/cellular_setup/error_1x.png",
       "chromeos/cellular_setup/error_2x.png",
       "chromeos/cellular_setup/final_page_success_1x.png",
       "chromeos/cellular_setup/final_page_success_2x.png",
       "chromeos/cellular_setup/default_esim_profile.svg",
+      "chromeos/cellular_setup/default_esim_profile_dark.svg",
       "chromeos/network/cellular_0_with_x.svg",
       "chromeos/network/cellular_0.svg",
       "chromeos/network/cellular_1.svg",
@@ -43,7 +44,7 @@ generate_grd("build_grdp") {
       "chromeos/network/cellular_off.svg",
       "chromeos/network/cellular_locked.svg",
       "chromeos/network/ethernet.svg",
-      "chromeos/network/globe_badge.svg",
+      "chromeos/network/roaming_badge.svg",
       "chromeos/network/vpn.svg",
       "chromeos/network/wifi_0_with_x.svg",
       "chromeos/network/wifi_0.svg",
@@ -91,7 +92,12 @@ preprocess_if_expr("preprocess_src") {
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   in_files = [
+    "chromeos/traffic_counters/traffic_counters_adapter.js",
+    "chromeos/bluetooth/bluetooth_utils.js",
+    "chromeos/bluetooth/bluetooth_types.js",
     "chromeos/bluetooth/bluetooth_metrics_utils.js",
+    "chromeos/bluetooth/cros_bluetooth_config.js",
+    "chromeos/smb_shares/smb_browser_proxy.js",
     "most_visited/browser_proxy.js",
     "most_visited/window_proxy.js",
   ]
@@ -111,6 +117,7 @@ preprocess_if_expr("preprocess_generated") {
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
+    "iph_bubble/iph_bubble.ts",
     "most_visited/most_visited.mojom-lite.js",
     "most_visited/most_visited.js",
     "managed_dialog/managed_dialog.js",
@@ -120,7 +127,18 @@ preprocess_if_expr("preprocess_generated") {
 
   if (is_chromeos_ash) {
     in_files += [
-      "chromeos/bluetooth/bluetooth_dialog.m.js",
+      "chromeos/bluetooth/bluetooth_base_page.js",
+      "chromeos/bluetooth/bluetooth_dialog.js",
+      "chromeos/bluetooth/bluetooth_icon.js",
+      "chromeos/bluetooth/bluetooth_icons.js",
+      "chromeos/bluetooth/bluetooth_spinner_page.js",
+      "chromeos/bluetooth/bluetooth_pairing_device_selection_page.js",
+      "chromeos/bluetooth/bluetooth_pairing_enter_code_page.js",
+      "chromeos/bluetooth/bluetooth_pairing_request_code_page.js",
+      "chromeos/bluetooth/bluetooth_pairing_confirm_code_page.js",
+      "chromeos/bluetooth/bluetooth_pairing_device_item.js",
+      "chromeos/bluetooth/bluetooth_device_battery_info.js",
+      "chromeos/bluetooth/bluetooth_pairing_ui.js",
       "chromeos/cellular_setup/activation_code_page.m.js",
       "chromeos/cellular_setup/activation_verification_page.m.js",
       "chromeos/cellular_setup/base_page.m.js",
@@ -143,6 +161,7 @@ preprocess_if_expr("preprocess_generated") {
       "chromeos/cellular_setup/setup_loading_page.m.js",
       "chromeos/cellular_setup/subflow_behavior.m.js",
       "chromeos/cellular_setup/webview_post_util.m.js",
+      "chromeos/localized_link/localized_link.js",
       "chromeos/multidevice_setup/mojo_api.m.js",
       "chromeos/multidevice_setup/fake_mojo_service.m.js",
       "chromeos/multidevice_setup/button_bar.m.js",
@@ -156,6 +175,7 @@ preprocess_if_expr("preprocess_generated") {
       "chromeos/multidevice_setup/multidevice_setup_shared_css.m.js",
       "chromeos/multidevice_setup/ui_page.m.js",
       "chromeos/multidevice_setup/icons.m.js",
+      "chromeos/network_health/mojo_interface_provider.m.js",
       "chromeos/network_health/network_health_container.m.js",
       "chromeos/network_health/network_health_summary.m.js",
       "chromeos/network_health/network_health_mojo.m.js",
@@ -196,8 +216,7 @@ preprocess_if_expr("preprocess_generated") {
       "chromeos/quick_unlock/pin_keyboard_icon.m.js",
       "chromeos/quick_unlock/pin_keyboard.m.js",
       "chromeos/quick_unlock/setup_pin_keyboard.m.js",
-      "chromeos/smb_shares/add_smb_share_dialog.m.js",
-      "chromeos/smb_shares/smb_browser_proxy.m.js",
+      "chromeos/smb_shares/add_smb_share_dialog.js",
       "chromeos/traffic_counters/traffic_counters.js",
     ]
   }
@@ -211,8 +230,6 @@ if (is_chromeos_ash) {
     in_files = []
     if (!optimize_webui) {
       in_files += [
-        "chromeos/bluetooth/bluetooth_dialog.html",
-        "chromeos/bluetooth/bluetooth_dialog.js",
         "chromeos/network/network_apnlist.html",
         "chromeos/network/network_apnlist.js",
         "chromeos/network/network_choose_mobile.html",
@@ -320,6 +337,8 @@ if (is_chromeos_ash) {
       "chromeos/network/cr_policy_network_behavior_mojo.js",
       "chromeos/network/cr_policy_network_indicator_mojo.html",
       "chromeos/network/cr_policy_network_indicator_mojo.js",
+      "chromeos/network_health/mojo_interface_provider.html",
+      "chromeos/network_health/mojo_interface_provider.js",
       "chromeos/network_health/network_diagnostics.html",
       "chromeos/network_health/network_diagnostics.js",
       "chromeos/network_health/network_diagnostics_mojo.html",
@@ -360,10 +379,6 @@ if (is_chromeos_ash) {
       "chromeos/quick_unlock/pin_keyboard.js",
       "chromeos/quick_unlock/setup_pin_keyboard.html",
       "chromeos/quick_unlock/setup_pin_keyboard.js",
-      "chromeos/smb_shares/add_smb_share_dialog.html",
-      "chromeos/smb_shares/add_smb_share_dialog.js",
-      "chromeos/smb_shares/smb_browser_proxy.html",
-      "chromeos/smb_shares/smb_browser_proxy.js",
     ]
   }
 }
@@ -384,6 +399,7 @@ group("closure_compile") {
 group("polymer3_elements") {
   public_deps = [
     "customize_themes:web_components",
+    "iph_bubble:web_components",
     "managed_dialog:web_components",
     "managed_footnote:web_components",
     "most_visited:web_components",

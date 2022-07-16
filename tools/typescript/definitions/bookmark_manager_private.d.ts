@@ -44,7 +44,7 @@ declare global {
       export function undo(): void;
       export function redo(): void;
 
-      type DragData = {
+      export type DragData = {
         elements: chrome.bookmarks.BookmarkTreeNode[]|null;
         sameProfile: boolean;
       };

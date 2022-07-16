@@ -11,9 +11,8 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -46,6 +45,9 @@ class PrefChangeWatcher {
  public:
   PrefChangeWatcher(const char* pref_name, PrefService* prefs);
 
+  PrefChangeWatcher(const PrefChangeWatcher&) = delete;
+  PrefChangeWatcher& operator=(const PrefChangeWatcher&) = delete;
+
   void Wait();
 
   void OnPrefChange();
@@ -55,8 +57,6 @@ class PrefChangeWatcher {
 
   base::RunLoop run_loop_;
   PrefChangeRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefChangeWatcher);
 };
 
 PrefChangeWatcher::PrefChangeWatcher(const char* pref_name, PrefService* prefs)
@@ -81,6 +81,12 @@ void PrefChangeWatcher::OnPrefChange() {
 
 class LoginScreenDefaultPolicyBrowsertestBase
     : public DevicePolicyCrosBrowserTest {
+ public:
+  LoginScreenDefaultPolicyBrowsertestBase(
+      const LoginScreenDefaultPolicyBrowsertestBase&) = delete;
+  LoginScreenDefaultPolicyBrowsertestBase& operator=(
+      const LoginScreenDefaultPolicyBrowsertestBase&) = delete;
+
  protected:
   LoginScreenDefaultPolicyBrowsertestBase();
   ~LoginScreenDefaultPolicyBrowsertestBase() override;
@@ -91,13 +97,16 @@ class LoginScreenDefaultPolicyBrowsertestBase
   void RefreshDevicePolicyAndWaitForPrefChange(const char* pref_name);
 
   Profile* login_profile_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenDefaultPolicyBrowsertestBase);
 };
 
 class LoginScreenDefaultPolicyLoginScreenBrowsertest
     : public LoginScreenDefaultPolicyBrowsertestBase {
+ public:
+  LoginScreenDefaultPolicyLoginScreenBrowsertest(
+      const LoginScreenDefaultPolicyLoginScreenBrowsertest&) = delete;
+  LoginScreenDefaultPolicyLoginScreenBrowsertest& operator=(
+      const LoginScreenDefaultPolicyLoginScreenBrowsertest&) = delete;
+
  protected:
   LoginScreenDefaultPolicyLoginScreenBrowsertest();
   ~LoginScreenDefaultPolicyLoginScreenBrowsertest() override;
@@ -109,13 +118,16 @@ class LoginScreenDefaultPolicyLoginScreenBrowsertest
 
   void VerifyPrefFollowsRecommendation(const char* pref_name,
                                        const base::Value& recommended_value);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenDefaultPolicyLoginScreenBrowsertest);
 };
 
 class LoginScreenDefaultPolicyInSessionBrowsertest
     : public LoginScreenDefaultPolicyBrowsertestBase {
+ public:
+  LoginScreenDefaultPolicyInSessionBrowsertest(
+      const LoginScreenDefaultPolicyInSessionBrowsertest&) = delete;
+  LoginScreenDefaultPolicyInSessionBrowsertest& operator=(
+      const LoginScreenDefaultPolicyInSessionBrowsertest&) = delete;
+
  protected:
   LoginScreenDefaultPolicyInSessionBrowsertest();
   ~LoginScreenDefaultPolicyInSessionBrowsertest() override;
@@ -124,9 +136,6 @@ class LoginScreenDefaultPolicyInSessionBrowsertest
   void SetUpOnMainThread() override;
 
   void VerifyPrefFollowsDefault(const char* pref_name);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenDefaultPolicyInSessionBrowsertest);
 };
 
 LoginScreenDefaultPolicyBrowsertestBase::

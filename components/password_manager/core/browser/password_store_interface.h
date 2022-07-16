@@ -12,11 +12,16 @@
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 
+namespace syncer {
+class ProxyModelTypeControllerDelegate;
+}  // namespace syncer
+
 namespace password_manager {
 
 struct PasswordForm;
 
 class FieldInfoStore;
+class PasswordStoreBackend;
 class PasswordStoreConsumer;
 class SmartBubbleStatsStore;
 
@@ -144,6 +149,14 @@ class PasswordStoreInterface : public RefcountedKeyedService {
 
   // Returns the store responsible for field info stats.
   virtual FieldInfoStore* GetFieldInfoStore() = 0;
+
+  // For sync codebase only: instantiates a proxy controller delegate to
+  // interact with PasswordSyncBridge. Must be called from the UI thread.
+  virtual std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+  CreateSyncControllerDelegate() = 0;
+
+  // Tests only can retrieve the backend.
+  virtual PasswordStoreBackend* GetBackendForTesting() = 0;
 
  protected:
   ~PasswordStoreInterface() override = default;

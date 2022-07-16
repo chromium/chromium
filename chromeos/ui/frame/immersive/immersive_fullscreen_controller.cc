@@ -45,14 +45,15 @@ namespace {
 class ImmersiveWindowTargeter : public aura::WindowTargeter {
  public:
   ImmersiveWindowTargeter() = default;
+
+  ImmersiveWindowTargeter(const ImmersiveWindowTargeter&) = delete;
+  ImmersiveWindowTargeter& operator=(const ImmersiveWindowTargeter&) = delete;
+
   ~ImmersiveWindowTargeter() override = default;
 
   bool ShouldUseExtendedBounds(const aura::Window* target) const override {
     return target->parent() == window();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveWindowTargeter);
 };
 
 // The delay in milliseconds between the mouse stopping at the top edge of the
@@ -418,7 +419,7 @@ void ImmersiveFullscreenController::UpdateTopEdgeHoverTimer(
   top_edge_hover_timer_.Stop();
   // Timer is stopped when |this| is destroyed, hence Unretained() is safe.
   top_edge_hover_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kMouseRevealDelayMs),
+      FROM_HERE, base::Milliseconds(kMouseRevealDelayMs),
       base::BindOnce(
           &ImmersiveFullscreenController::AcquireLocatedEventRevealedLock,
           base::Unretained(this)));
@@ -544,9 +545,9 @@ base::TimeDelta ImmersiveFullscreenController::GetAnimationDuration(
     case ANIMATE_NO:
       return base::TimeDelta();
     case ANIMATE_SLOW:
-      return base::TimeDelta::FromMilliseconds(400);
+      return base::Milliseconds(400);
     case ANIMATE_FAST:
-      return base::TimeDelta::FromMilliseconds(200);
+      return base::Milliseconds(200);
   }
   NOTREACHED();
   return base::TimeDelta();
@@ -614,7 +615,7 @@ void ImmersiveFullscreenController::MaybeEndReveal(Animate animate) {
 
   reveal_state_ = SLIDING_CLOSED;
   base::TimeDelta duration = GetAnimationDuration(animate);
-  if (duration > base::TimeDelta()) {
+  if (duration.is_positive()) {
     animation_->SetSlideDuration(duration);
     animation_->Hide();
   } else {

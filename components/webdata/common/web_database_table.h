@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_TABLE_H_
 #define COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_TABLE_H_
 
-#include "base/macros.h"
 #include "components/webdata/common/webdata_export.h"
 
 namespace sql {
@@ -24,6 +23,10 @@ class WEBDATA_EXPORT WebDatabaseTable {
 
   // The object is not ready for use until Init() has been called.
   WebDatabaseTable();
+
+  WebDatabaseTable(const WebDatabaseTable&) = delete;
+  WebDatabaseTable& operator=(const WebDatabaseTable&) = delete;
+
   virtual ~WebDatabaseTable();
 
   // Retrieves the TypeKey for the concrete subtype.
@@ -60,9 +63,6 @@ class WEBDATA_EXPORT WebDatabaseTable {
   // ~WebDatabaseTable.
   sql::Database* db_;
   sql::MetaTable* meta_table_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebDatabaseTable);
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_TABLE_H_

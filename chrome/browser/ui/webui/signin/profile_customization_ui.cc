@@ -14,9 +14,9 @@
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/signin_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -32,13 +32,15 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUIProfileCustomizationHost);
   webui::SetJSModuleDefaults(source);
-  source->SetDefaultResource(IDR_PROFILE_CUSTOMIZATION_HTML);
+  source->SetDefaultResource(
+      IDR_SIGNIN_PROFILE_CUSTOMIZATION_PROFILE_CUSTOMIZATION_HTML);
   static constexpr webui::ResourcePath kResources[] = {
-      {"profile_customization_app.js", IDR_PROFILE_CUSTOMIZATION_APP_JS},
+      {"profile_customization_app.js",
+       IDR_SIGNIN_PROFILE_CUSTOMIZATION_PROFILE_CUSTOMIZATION_APP_JS},
       {"profile_customization_browser_proxy.js",
-       IDR_PROFILE_CUSTOMIZATION_BROWSER_PROXY_JS},
-      {"signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS},
-      {"signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS},
+       IDR_SIGNIN_PROFILE_CUSTOMIZATION_PROFILE_CUSTOMIZATION_BROWSER_PROXY_JS},
+      {"signin_shared_css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
+      {"signin_vars_css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
   };
   source->AddResourcePaths(kResources);
 

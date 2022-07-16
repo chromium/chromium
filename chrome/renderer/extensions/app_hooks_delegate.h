@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
 #include "v8/include/v8.h"
@@ -24,6 +23,10 @@ class AppHooksDelegate : public APIBindingHooksDelegate {
   AppHooksDelegate(Dispatcher* dispatcher,
                    APIRequestHandler* request_handler,
                    IPCMessageSender* ipc_sender);
+
+  AppHooksDelegate(const AppHooksDelegate&) = delete;
+  AppHooksDelegate& operator=(const AppHooksDelegate&) = delete;
+
   ~AppHooksDelegate() override;
 
   // APIBindingHooksDelegate:
@@ -73,8 +76,6 @@ class AppHooksDelegate : public APIBindingHooksDelegate {
   IPCMessageSender* ipc_sender_ = nullptr;
 
   base::WeakPtrFactory<AppHooksDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppHooksDelegate);
 };
 
 }  // namespace extensions

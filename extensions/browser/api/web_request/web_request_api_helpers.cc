@@ -28,6 +28,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -40,7 +41,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/extension_messages.h"
 #include "net/cookies/cookie_util.h"
@@ -1750,15 +1750,15 @@ bool ShouldHideResponseHeader(int extra_info_spec, const std::string& name) {
 
 bool ArePublicSessionRestrictionsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::LoginState::IsInitialized()) {
-    return chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled();
-  }
+  return chromeos::LoginState::IsInitialized() &&
+         chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   DCHECK(chromeos::LacrosService::Get());
   return chromeos::LacrosService::Get()->init_params()->session_type ==
          crosapi::mojom::SessionType::kPublicSession;
-#endif
+#else
   return false;
+#endif
 }
 
 }  // namespace extension_web_request_api_helpers

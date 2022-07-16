@@ -38,8 +38,6 @@ GAIAInfoUpdateServiceFactory* GAIAInfoUpdateServiceFactory::GetInstance() {
 KeyedService* GAIAInfoUpdateServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!GAIAInfoUpdateService::ShouldUseGAIAProfileInfo(profile))
-    return NULL;
 
   if (!g_browser_process->profile_manager())
     return nullptr;  // Some tests don't have a profile manager.
@@ -51,5 +49,9 @@ KeyedService* GAIAInfoUpdateServiceFactory::BuildServiceInstanceFor(
 }
 
 bool GAIAInfoUpdateServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}
+
+bool GAIAInfoUpdateServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }

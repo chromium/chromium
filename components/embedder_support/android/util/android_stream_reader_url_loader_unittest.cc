@@ -150,6 +150,12 @@ class TestResponseDelegate
 };
 
 class AndroidStreamReaderURLLoaderTest : public ::testing::Test {
+ public:
+  AndroidStreamReaderURLLoaderTest(const AndroidStreamReaderURLLoaderTest&) =
+      delete;
+  AndroidStreamReaderURLLoaderTest& operator=(
+      const AndroidStreamReaderURLLoaderTest&) = delete;
+
  protected:
   AndroidStreamReaderURLLoaderTest() {}
   ~AndroidStreamReaderURLLoaderTest() override = default;
@@ -232,8 +238,6 @@ class AndroidStreamReaderURLLoaderTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidStreamReaderURLLoaderTest);
 };
 
 TEST_F(AndroidStreamReaderURLLoaderTest, ReadFakeStream) {

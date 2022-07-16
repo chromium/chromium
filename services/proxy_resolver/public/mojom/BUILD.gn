@@ -12,6 +12,7 @@ mojom("mojom") {
     "//services/network/public/mojom:mojom_network_isolation_key",
     "//url/mojom:url_mojom_gurl",
   ]
+  public_deps = [ "//sandbox/policy/mojom" ]
 
   if (!is_ios) {
     export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"

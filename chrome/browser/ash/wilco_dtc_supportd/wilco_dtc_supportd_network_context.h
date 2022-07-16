@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_WILCO_DTC_SUPPORTD_NETWORK_CONTEXT_H_
 #define CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_WILCO_DTC_SUPPORTD_NETWORK_CONTEXT_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
@@ -36,6 +35,12 @@ class WilcoDtcSupportdNetworkContextImpl
       public network::mojom::URLLoaderNetworkServiceObserver {
  public:
   WilcoDtcSupportdNetworkContextImpl();
+
+  WilcoDtcSupportdNetworkContextImpl(
+      const WilcoDtcSupportdNetworkContextImpl&) = delete;
+  WilcoDtcSupportdNetworkContextImpl& operator=(
+      const WilcoDtcSupportdNetworkContextImpl&) = delete;
+
   ~WilcoDtcSupportdNetworkContextImpl() override;
 
   // WilcoDtcSupportdNetworkContext overrides:
@@ -92,8 +97,6 @@ class WilcoDtcSupportdNetworkContextImpl
 
   mojo::ReceiverSet<network::mojom::URLLoaderNetworkServiceObserver>
       cert_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdNetworkContextImpl);
 };
 
 }  // namespace ash

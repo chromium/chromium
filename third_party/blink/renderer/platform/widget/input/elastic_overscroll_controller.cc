@@ -315,8 +315,8 @@ void ElasticOverscrollController::Animate(base::TimeTicks time) {
 }
 
 bool ElasticOverscrollController::PinnedHorizontally(float direction) const {
-  gfx::ScrollOffset scroll_offset = helper_->ScrollOffset();
-  gfx::ScrollOffset max_scroll_offset = helper_->MaxScrollOffset();
+  gfx::Vector2dF scroll_offset = helper_->ScrollOffset();
+  gfx::Vector2dF max_scroll_offset = helper_->MaxScrollOffset();
   if (direction < 0)
     return scroll_offset.x() <= 0;
   if (direction > 0)
@@ -325,8 +325,8 @@ bool ElasticOverscrollController::PinnedHorizontally(float direction) const {
 }
 
 bool ElasticOverscrollController::PinnedVertically(float direction) const {
-  gfx::ScrollOffset scroll_offset = helper_->ScrollOffset();
-  gfx::ScrollOffset max_scroll_offset = helper_->MaxScrollOffset();
+  gfx::Vector2dF scroll_offset = helper_->ScrollOffset();
+  gfx::Vector2dF max_scroll_offset = helper_->MaxScrollOffset();
   if (direction < 0)
     return scroll_offset.y() <= 0;
   if (direction > 0)
@@ -347,8 +347,8 @@ void ElasticOverscrollController::ReconcileStretchAndScroll() {
   if (stretch.IsZero())
     return;
 
-  gfx::ScrollOffset scroll_offset = helper_->ScrollOffset();
-  gfx::ScrollOffset max_scroll_offset = helper_->MaxScrollOffset();
+  gfx::Vector2dF scroll_offset = helper_->ScrollOffset();
+  gfx::Vector2dF max_scroll_offset = helper_->MaxScrollOffset();
 
   // Compute stretch_adjustment which will be added to |stretch| and subtracted
   // from the |scroll_offset|.

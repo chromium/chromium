@@ -6,11 +6,11 @@
 #define CC_TREES_TREE_SYNCHRONIZER_H_
 
 #include "cc/cc_export.h"
+#include "cc/trees/layer_tree_host.h"
 
 namespace cc {
 
 class LayerImpl;
-class LayerTreeHost;
 class LayerTreeImpl;
 class Layer;
 
@@ -22,14 +22,15 @@ class CC_EXPORT TreeSynchronizer {
   // Accepts a Layer tree and returns a reference to a LayerImpl tree that
   // duplicates the structure of the Layer tree, reusing the LayerImpls in the
   // tree provided by old_layer_impl_root if possible.
-  static void SynchronizeTrees(Layer* layer_root, LayerTreeImpl* tree_impl);
+  static void SynchronizeTrees(const CommitState*, LayerTreeImpl* tree_impl);
+
   static void SynchronizeTrees(LayerTreeImpl* pending_tree,
                                LayerTreeImpl* active_tree);
 
+  static void PushLayerProperties(CommitState*, LayerTreeImpl* impl_tree);
+
   static void PushLayerProperties(LayerTreeImpl* pending_tree,
                                   LayerTreeImpl* active_tree);
-  static void PushLayerProperties(LayerTreeHost* host_tree,
-                                  LayerTreeImpl* impl_tree);
 };
 
 }  // namespace cc

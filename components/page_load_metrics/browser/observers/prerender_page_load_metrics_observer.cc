@@ -101,8 +101,7 @@ void PrerenderPageLoadMetricsObserver::OnFirstInputInPage(
   UMA_HISTOGRAM_CUSTOM_TIMES(
       internal::kHistogramPrerenderFirstInputDelay4,
       timing.interactive_timing->first_input_delay.value(),
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-      50);
+      base::Milliseconds(1), base::Seconds(60), 50);
 }
 
 void PrerenderPageLoadMetricsObserver::OnComplete(
@@ -119,8 +118,12 @@ PrerenderPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 
 void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
     const page_load_metrics::mojom::PageLoadTiming& main_frame_timing) {
-  if (!GetDelegate().WasPrerenderedThenActivatedInForeground())
+  if (!GetDelegate().WasPrerenderedThenActivatedInForeground() ||
+      !main_frame_timing.activation_start) {
+    // Even if the page was activated, activation_start may not yet been
+    // notified by the renderer. Ignore such page loads.
     return;
+  }
 
   const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =
       GetDelegate()

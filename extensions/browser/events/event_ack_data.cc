@@ -30,15 +30,18 @@ struct EventInfo {
 }  // namespace
 
 // Class that holds map of unacked event information keyed by event id, accessed
-// on service worker core thread.
-// TODO(crbug.com/824858): This shouldn't be needed after service worker core
-// thread moves to the UI thread.
+// on the UI thread.
+// TODO(crbug.com/824858): This shouldn't be needed since ServiceWorkerContext
+// moved to the UI thread.
 // TODO(lazyboy): Could this potentially be owned exclusively (and deleted) on
-// the core thread, thus not requiring RefCounted?
+// the UI thread, thus not requiring RefCounted?
 class EventAckData::CoreThreadEventInfo
     : public base::RefCountedThreadSafe<CoreThreadEventInfo> {
  public:
   CoreThreadEventInfo() = default;
+
+  CoreThreadEventInfo(const CoreThreadEventInfo&) = delete;
+  CoreThreadEventInfo& operator=(const CoreThreadEventInfo&) = delete;
 
   // Map of event information keyed by event_id.
   std::map<int, EventInfo> event_map;
@@ -46,8 +49,6 @@ class EventAckData::CoreThreadEventInfo
  private:
   friend class base::RefCountedThreadSafe<CoreThreadEventInfo>;
   ~CoreThreadEventInfo() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(CoreThreadEventInfo);
 };
 
 EventAckData::EventAckData()

@@ -47,12 +47,12 @@
 namespace blink {
 
 CSSFontSelector::CSSFontSelector(const TreeScope& tree_scope)
-    : tree_scope_(&tree_scope),
-      generic_font_family_settings_(tree_scope.GetDocument()
-                                        .GetFrame()
-                                        ->GetSettings()
-                                        ->GetGenericFontFamilySettings()) {
+    : tree_scope_(&tree_scope) {
   DCHECK(tree_scope.GetDocument().GetFrame());
+  generic_font_family_settings_ = tree_scope.GetDocument()
+                                      .GetFrame()
+                                      ->GetSettings()
+                                      ->GetGenericFontFamilySettings();
   FontCache::GetFontCache()->AddClient(this);
   if (tree_scope.RootNode().IsDocumentNode()) {
     font_face_cache_ = MakeGarbageCollected<FontFaceCache>();
@@ -62,6 +62,10 @@ CSSFontSelector::CSSFontSelector(const TreeScope& tree_scope)
 }
 
 CSSFontSelector::~CSSFontSelector() = default;
+
+UseCounter* CSSFontSelector::GetUseCounter() {
+  return &GetDocument();
+}
 
 void CSSFontSelector::RegisterForInvalidationCallbacks(
     FontSelectorClient* client) {
@@ -97,12 +101,15 @@ void CSSFontSelector::FontCacheInvalidated() {
 
 scoped_refptr<FontData> CSSFontSelector::GetFontData(
     const FontDescription& font_description,
-    const AtomicString& family_name) {
+    const FontFamily& font_family) {
+  const auto& family_name = font_family.FamilyName();
   Document& document = GetTreeScope()->GetDocument();
-  if (CSSSegmentedFontFace* face =
-          font_face_cache_->Get(font_description, family_name)) {
-    document.GetFontMatchingMetrics()->ReportWebFontFamily(family_name);
-    return face->GetFontData(font_description);
+  if (!font_family.FamilyIsGeneric()) {
+    if (CSSSegmentedFontFace* face =
+            font_face_cache_->Get(font_description, family_name)) {
+      document.GetFontMatchingMetrics()->ReportWebFontFamily(family_name);
+      return face->GetFontData(font_description);
+    }
   }
 
   document.GetFontMatchingMetrics()->ReportSystemFontFamily(family_name);
@@ -110,7 +117,7 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
   // Try to return the correct font based off our settings, in case we were
   // handed the generic font family name.
   AtomicString settings_family_name = FamilyNameFromSettings(
-      generic_font_family_settings_, font_description, family_name);
+      generic_font_family_settings_, font_description, font_family, &document);
   if (settings_family_name.IsEmpty())
     return nullptr;
 
@@ -126,33 +133,6 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
       settings_family_name, font_description, font_data.get());
 
   return font_data;
-}
-
-void CSSFontSelector::WillUseFontData(const FontDescription& font_description,
-                                      const AtomicString& family,
-                                      const String& text) {
-  CSSSegmentedFontFace* face = font_face_cache_->Get(font_description, family);
-  if (face)
-    face->WillUseFontData(font_description, text);
-}
-
-void CSSFontSelector::WillUseRange(const FontDescription& font_description,
-                                   const AtomicString& family,
-                                   const FontDataForRangeSet& range_set) {
-  CSSSegmentedFontFace* face = font_face_cache_->Get(font_description, family);
-  if (face)
-    face->WillUseRange(font_description, range_set);
-}
-
-bool CSSFontSelector::IsPlatformFamilyMatchAvailable(
-    const FontDescription& font_description,
-    const AtomicString& passed_family) {
-  AtomicString family = FamilyNameFromSettings(generic_font_family_settings_,
-                                               font_description, passed_family);
-  if (family.IsEmpty())
-    family = passed_family;
-  return FontCache::GetFontCache()->IsPlatformFamilyMatchAvailable(
-      font_description, family);
 }
 
 void CSSFontSelector::UpdateGenericFontFamilySettings(Document& document) {
@@ -233,9 +213,8 @@ void CSSFontSelector::ReportLastResortFallbackFontLookup(
 
 void CSSFontSelector::Trace(Visitor* visitor) const {
   visitor->Trace(tree_scope_);
-  visitor->Trace(font_face_cache_);
   visitor->Trace(clients_);
-  FontSelector::Trace(visitor);
+  CSSFontSelectorBase::Trace(visitor);
 }
 
 }  // namespace blink

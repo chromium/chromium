@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
 import android.graphics.Rect;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -69,6 +70,7 @@ public interface ContextualSearchPanelInterface {
     boolean isProcessingPendingNavigation();
     boolean isPeeking();
     WebContents getWebContents();
+    ViewGroup getContainerView();
 
     /** {@link OverlayPanelBase} methods */
     boolean isPanelOpened();

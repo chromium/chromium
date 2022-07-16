@@ -19,6 +19,10 @@ constexpr int kBubbleTotalWidthDp = 192;
 }  // namespace
 
 class LoginBaseBubbleViewTest : public LoginTestBase {
+ public:
+  LoginBaseBubbleViewTest(const LoginBaseBubbleViewTest&) = delete;
+  LoginBaseBubbleViewTest& operator=(const LoginBaseBubbleViewTest&) = delete;
+
  protected:
   LoginBaseBubbleViewTest() = default;
   ~LoginBaseBubbleViewTest() override = default;
@@ -49,9 +53,6 @@ class LoginBaseBubbleViewTest : public LoginTestBase {
   LoginBaseBubbleView* bubble_;
   views::View* container_;
   views::View* anchor_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginBaseBubbleViewTest);
 };
 
 TEST_F(LoginBaseBubbleViewTest, BasicProperties) {

@@ -4,7 +4,9 @@
 
 #include "ash/shelf/shelf_view_test_api.h"
 
+#include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/shelf/shelf_app_button.h"
 #include "ash/shelf/shelf_menu_model_adapter.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -22,6 +24,10 @@ namespace {
 class TestAPIAnimationObserver : public views::BoundsAnimatorObserver {
  public:
   TestAPIAnimationObserver() = default;
+
+  TestAPIAnimationObserver(const TestAPIAnimationObserver&) = delete;
+  TestAPIAnimationObserver& operator=(const TestAPIAnimationObserver&) = delete;
+
   ~TestAPIAnimationObserver() override = default;
 
   // views::BoundsAnimatorObserver overrides:
@@ -29,9 +35,6 @@ class TestAPIAnimationObserver : public views::BoundsAnimatorObserver {
   void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override {
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestAPIAnimationObserver);
 };
 
 }  // namespace
@@ -55,7 +58,8 @@ ShelfID ShelfViewTestAPI::AddItem(ShelfItemType type) {
   ShelfItem item;
   item.type = type;
   item.id = ShelfID(base::NumberToString(id_++));
-  shelf_view_->model_->Add(item);
+  shelf_view_->model_->Add(item,
+                           std::make_unique<TestShelfItemDelegate>(item.id));
   return item.id;
 }
 

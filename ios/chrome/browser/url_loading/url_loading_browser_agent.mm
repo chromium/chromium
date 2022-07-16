@@ -310,8 +310,7 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   DCHECK(delegate_);
   DCHECK(browser_);
 
-  if (base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
-      params.in_incognito) {
+  if (params.in_incognito) {
     IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
         agentFromScene:SceneStateBrowserAgent::FromBrowser(browser_)
                            ->GetSceneState()];

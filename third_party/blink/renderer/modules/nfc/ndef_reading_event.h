@@ -14,12 +14,14 @@ namespace blink {
 class ExceptionState;
 class NDEFMessage;
 class NDEFReadingEventInit;
+class ScriptState;
 
 class NDEFReadingEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static NDEFReadingEvent* Create(const AtomicString&,
+  static NDEFReadingEvent* Create(const ScriptState*,
+                                  const AtomicString&,
                                   const NDEFReadingEventInit*,
                                   ExceptionState&);
 

@@ -39,14 +39,18 @@ std::string GetPDFPlaceholderHTML(const GURL& pdf_url) {
   return webui::GetI18nTemplateHtml(template_html, &values);
 }
 
-bool IsPdfInternalPluginAllowedOrigin(const url::Origin& origin) {
+bool IsPdfExtensionOrigin(const url::Origin& origin) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Allow embedding the internal PDF plugin in the built-in PDF extension.
-  if (origin.scheme() == extensions::kExtensionScheme &&
-      origin.host() == extension_misc::kPdfExtensionId) {
+  return origin.scheme() == extensions::kExtensionScheme &&
+         origin.host() == extension_misc::kPdfExtensionId;
+#else
+  return false;
+#endif
+}
+
+bool IsPdfInternalPluginAllowedOrigin(const url::Origin& origin) {
+  if (IsPdfExtensionOrigin(origin))
     return true;
-  }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Allow embedding the internal PDF plugin in chrome://print.
   if (origin == url::Origin::Create(GURL(chrome::kChromeUIPrintURL)))

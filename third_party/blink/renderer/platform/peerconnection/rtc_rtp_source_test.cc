@@ -44,7 +44,7 @@ TEST(RtcRtpSource, BasicPropertiesAreSetAndReturned) {
 TEST(RtcRtpSource, BaseTimeTicksAndRtcMicrosAreTheSame) {
   base::TimeTicks first_chromium_timestamp = base::TimeTicks::Now();
   base::TimeTicks webrtc_timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(rtc::TimeMicros());
+      base::TimeTicks() + base::Microseconds(rtc::TimeMicros());
   base::TimeTicks second_chromium_timestamp = base::TimeTicks::Now();
 
   // Test that the timestamps are correctly ordered, which they can only be if

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -44,6 +43,9 @@ class WilcoDtcSupportdManager final
   WilcoDtcSupportdManager();
   // For use in tests.
   explicit WilcoDtcSupportdManager(std::unique_ptr<Delegate> delegate);
+
+  WilcoDtcSupportdManager(const WilcoDtcSupportdManager&) = delete;
+  WilcoDtcSupportdManager& operator=(const WilcoDtcSupportdManager&) = delete;
 
   ~WilcoDtcSupportdManager() override;
 
@@ -87,8 +89,6 @@ class WilcoDtcSupportdManager final
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<WilcoDtcSupportdManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdManager);
 };
 
 }  // namespace ash

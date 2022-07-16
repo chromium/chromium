@@ -190,3 +190,14 @@ void AddOptionalVerticalPadding(id<EdgeLayoutGuideProvider> outerView,
   [NSLayoutConstraint
       activateConstraints:@[ topPaddingConstraint, bottomPaddingConstraint ]];
 }
+
+NSLayoutConstraint* VerticalConstraintsWithInset(UIView* innerView,
+                                                 UIView* outerView,
+                                                 CGFloat inset) {
+  NSLayoutConstraint* heightConstraint =
+      [outerView.heightAnchor constraintEqualToAnchor:innerView.heightAnchor
+                                             constant:inset];
+  heightConstraint.priority = UILayoutPriorityDefaultLow;
+  heightConstraint.active = YES;
+  return heightConstraint;
+}

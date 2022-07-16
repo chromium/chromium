@@ -28,9 +28,7 @@ class CORE_EXPORT LayoutNGTableCellLegacy final
 
   void UpdateBlockLayout(bool relayout_children) override;
 
-  // This class used to be called LayoutNGTableCell, and many test baselines
-  // expect its name to be LayoutNGTableCell, not LayoutNGTableCellLegacy.
-  const char* GetName() const override { return "LayoutNGTableCell"; }
+  const char* GetName() const override { return "LayoutNGTableCellLegacy"; }
 
  protected:
   bool IsOfType(LayoutObjectType type) const final {

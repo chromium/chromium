@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +23,10 @@ import org.chromium.base.Consumer;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
+import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController;
+import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.StoreInfoActionHandler;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils.OfflinePageLoadUrlDelegate;
@@ -42,19 +46,22 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
+import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
 import org.chromium.components.page_info.PageInfoView;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -67,12 +74,16 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final Context mContext;
     private final Profile mProfile;
+    private final Supplier<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier;
+    private final boolean mPageInfoOpenedFromStoreIcon;
     private String mOfflinePageCreationDate;
     private OfflinePageLoadUrlDelegate mOfflinePageLoadUrlDelegate;
 
     public ChromePageInfoControllerDelegate(Context context, WebContents webContents,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            OfflinePageLoadUrlDelegate offlinePageLoadUrlDelegate) {
+            OfflinePageLoadUrlDelegate offlinePageLoadUrlDelegate,
+            @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
+            boolean pageInfoOpenedFromStoreIcon) {
         super(new ChromeAutocompleteSchemeClassifier(Profile.fromWebContents(webContents)),
                 VrModuleProvider.getDelegate(),
                 /** isSiteSettingsAvailable= */
@@ -83,6 +94,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         mWebContents = webContents;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mProfile = Profile.fromWebContents(mWebContents);
+        mStoreInfoActionHandlerSupplier = storeInfoActionHandlerSupplier;
+        mPageInfoOpenedFromStoreIcon = pageInfoOpenedFromStoreIcon;
 
         initOfflinePageParams();
         mOfflinePageLoadUrlDelegate = offlinePageLoadUrlDelegate;
@@ -217,9 +230,34 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     }
 
     @Override
-    public PageInfoSubpageController createHistoryController(
-            PageInfoMainController mainController, PageInfoRowView rowView, String host) {
-        return new PageInfoHistoryController(mainController, rowView, this, host);
+    public Collection<PageInfoSubpageController> createAdditionalRowViews(
+            PageInfoMainController mainController, ViewGroup rowWrapper) {
+        Collection<PageInfoSubpageController> controllers = new ArrayList<>();
+        if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
+            final Tab tab = TabUtils.fromWebContents(mWebContents);
+            final PageInfoRowView historyRow = new PageInfoRowView(rowWrapper.getContext(), null);
+            historyRow.setId(PageInfoHistoryController.HISTORY_ROW_ID);
+            rowWrapper.addView(historyRow);
+            controllers.add(new PageInfoHistoryController(
+                    mainController, historyRow, this, () -> { return tab; }));
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE)) {
+            Tab tab = TabUtils.fromWebContents(mWebContents);
+            final PageInfoRowView aboutThisSiteRow =
+                    new PageInfoRowView(rowWrapper.getContext(), null);
+            aboutThisSiteRow.setId(PageInfoAboutThisSiteController.ROW_ID);
+            rowWrapper.addView(aboutThisSiteRow);
+            controllers.add(new PageInfoAboutThisSiteController(
+                    mainController, aboutThisSiteRow, this, tab));
+        }
+        if (PageInfoFeatures.PAGE_INFO_STORE_INFO.isEnabled() && !isIncognito()) {
+            final PageInfoRowView storeInfoRow = new PageInfoRowView(rowWrapper.getContext(), null);
+            storeInfoRow.setId(PageInfoStoreInfoController.STORE_INFO_ROW_ID);
+            rowWrapper.addView(storeInfoRow);
+            controllers.add(new PageInfoStoreInfoController(mainController, storeInfoRow,
+                    mStoreInfoActionHandlerSupplier, mPageInfoOpenedFromStoreIcon));
+        }
+        return controllers;
     }
 
     /**
@@ -247,7 +285,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     @Override
     @NonNull
     public SiteSettingsDelegate getSiteSettingsDelegate() {
-        return new ChromeSiteSettingsDelegate(mContext, getBrowserContext());
+        return new ChromeSiteSettingsDelegate(mContext, mProfile);
     }
 
     @NonNull

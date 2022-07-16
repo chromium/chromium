@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -42,6 +43,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(SiteSettingsTest.SITE_SETTINGS_BATCH_NAME)
+@DisableFeatures({ChromeFeatureList.REVERT_DSE_AUTOMATIC_PERMISSIONS})
 public class PermissionInfoTest {
     private static final String DSE_ORIGIN = "https://www.google.com";
     private static final String OTHER_ORIGIN = "https://www.other.com";

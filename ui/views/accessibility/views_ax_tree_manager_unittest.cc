@@ -163,7 +163,7 @@ ui::AXNode* ViewsAXTreeManagerTest::FindNodeInSubtree(
       root->GetStringAttribute(ax::mojom::StringAttribute::kName);
   const std::string& value =
       root->GetStringAttribute(ax::mojom::StringAttribute::kValue);
-  if (root->data().role == role &&
+  if (root->GetRole() == role &&
       (name == name_or_value || value == name_or_value)) {
     return root;
   }
@@ -193,23 +193,21 @@ TEST_P(ViewsAXTreeManagerTest, MirrorInitialTree) {
   button()->GetViewAccessibility().GetAccessibleNodeData(&button_data);
   ui::AXNode* ax_button = FindNode(ax::mojom::Role::kButton, "");
   ASSERT_NE(nullptr, ax_button);
-  EXPECT_EQ(button_data.role, ax_button->data().role);
+  EXPECT_EQ(button_data.role, ax_button->GetRole());
   EXPECT_EQ(
       button_data.GetStringAttribute(ax::mojom::StringAttribute::kDescription),
-      ax_button->data().GetStringAttribute(
-          ax::mojom::StringAttribute::kDescription));
+      ax_button->GetStringAttribute(ax::mojom::StringAttribute::kDescription));
   EXPECT_EQ(
       button_data.GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb),
-      ax_button->data().GetIntAttribute(
-          ax::mojom::IntAttribute::kDefaultActionVerb));
-  EXPECT_TRUE(ax_button->data().HasState(ax::mojom::State::kFocusable));
+      ax_button->GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+  EXPECT_TRUE(ax_button->HasState(ax::mojom::State::kFocusable));
 }
 
 TEST_P(ViewsAXTreeManagerTest, PerformAction) {
   ui::AXNode* ax_button = FindNode(ax::mojom::Role::kButton, "");
   ASSERT_NE(nullptr, ax_button);
-  ASSERT_FALSE(ax_button->data().HasIntAttribute(
-      ax::mojom::IntAttribute::kCheckedState));
+  ASSERT_FALSE(
+      ax_button->HasIntAttribute(ax::mojom::IntAttribute::kCheckedState));
   button()->SetState(TestButton::STATE_PRESSED);
   button()->NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
                                      true);

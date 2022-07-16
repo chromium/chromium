@@ -32,6 +32,12 @@ std::unique_ptr<DataWithTimestamp> GenerateAdvertisementData() {
 
 class SecureChannelErrorTolerantBleAdvertisementImplTest
     : public testing::Test {
+ public:
+  SecureChannelErrorTolerantBleAdvertisementImplTest(
+      const SecureChannelErrorTolerantBleAdvertisementImplTest&) = delete;
+  SecureChannelErrorTolerantBleAdvertisementImplTest& operator=(
+      const SecureChannelErrorTolerantBleAdvertisementImplTest&) = delete;
+
  protected:
   SecureChannelErrorTolerantBleAdvertisementImplTest()
       : fake_advertisement_data_(GenerateAdvertisementData()) {}
@@ -123,9 +129,6 @@ class SecureChannelErrorTolerantBleAdvertisementImplTest
   bool stopped_callback_called_;
 
   std::unique_ptr<ErrorTolerantBleAdvertisement> advertisement_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelErrorTolerantBleAdvertisementImplTest);
 };
 
 TEST_F(SecureChannelErrorTolerantBleAdvertisementImplTest,

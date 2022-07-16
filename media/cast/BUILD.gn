@@ -7,6 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
+import("//third_party/libaom/options.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("logging_proto") {
@@ -148,10 +149,10 @@ source_set("sender") {
     "sender/video_frame_factory.h",
     "sender/video_sender.cc",
     "sender/video_sender.h",
-    "sender/vp8_encoder.cc",
-    "sender/vp8_encoder.h",
-    "sender/vp8_quantizer_parser.cc",
-    "sender/vp8_quantizer_parser.h",
+    "sender/vpx_encoder.cc",
+    "sender/vpx_encoder.h",
+    "sender/vpx_quantizer_parser.cc",
+    "sender/vpx_quantizer_parser.h",
   ]
 
   deps = [
@@ -160,6 +161,7 @@ source_set("sender") {
     "//base",
     "//media",
     "//media/capture:capture_base",
+    "//third_party/libaom:libaom_buildflags",
     "//third_party/libvpx",
     "//third_party/opus",
     "//ui/gfx/geometry",
@@ -179,6 +181,15 @@ source_set("sender") {
       "CoreVideo.framework",
       "VideoToolbox.framework",
     ]
+  }
+
+  if (enable_libaom) {
+    sources += [
+      "sender/av1_encoder.cc",
+      "sender/av1_encoder.h",
+    ]
+
+    deps += [ "//third_party/libaom" ]
   }
 }
 
@@ -318,7 +329,7 @@ test("cast_unittests") {
     "sender/fake_video_encode_accelerator_factory.h",
     "sender/video_encoder_unittest.cc",
     "sender/video_sender_unittest.cc",
-    "sender/vp8_quantizer_parser_unittest.cc",
+    "sender/vpx_quantizer_parser_unittest.cc",
     "test/end2end_unittest.cc",
     "test/receiver/audio_decoder_unittest.cc",
     "test/receiver/cast_message_builder_unittest.cc",

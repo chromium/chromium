@@ -38,10 +38,21 @@ HoldingSpaceProgress::HoldingSpaceProgress(
     const absl::optional<int64_t>& current_bytes,
     const absl::optional<int64_t>& total_bytes,
     const absl::optional<bool>& complete)
+    : HoldingSpaceProgress(current_bytes,
+                           total_bytes,
+                           complete,
+                           /*hidden=*/false) {}
+
+HoldingSpaceProgress::HoldingSpaceProgress(
+    const absl::optional<int64_t>& current_bytes,
+    const absl::optional<int64_t>& total_bytes,
+    const absl::optional<bool>& complete,
+    bool hidden)
     : current_bytes_(current_bytes),
       total_bytes_(total_bytes),
       complete_(
-          complete.value_or(CalculateComplete(current_bytes_, total_bytes_))) {
+          complete.value_or(CalculateComplete(current_bytes_, total_bytes_))),
+      hidden_(hidden) {
   DCHECK_GE(current_bytes_.value_or(0), 0);
   DCHECK_GE(total_bytes_.value_or(0), 0);
 
@@ -67,12 +78,17 @@ HoldingSpaceProgress& HoldingSpaceProgress::operator=(
 HoldingSpaceProgress::~HoldingSpaceProgress() = default;
 
 bool HoldingSpaceProgress::operator==(const HoldingSpaceProgress& rhs) const {
-  return std::tie(current_bytes_, total_bytes_, complete_) ==
-         std::tie(rhs.current_bytes_, rhs.total_bytes_, complete_);
+  return std::tie(current_bytes_, total_bytes_, complete_, hidden_) ==
+         std::tie(rhs.current_bytes_, rhs.total_bytes_, rhs.complete_,
+                  rhs.hidden_);
 }
 
 HoldingSpaceProgress& HoldingSpaceProgress::operator+=(
     const HoldingSpaceProgress& rhs) {
+  // Hidden instances shouldn't be included in cumulative progress calculations.
+  DCHECK(!hidden_);
+  DCHECK(!rhs.hidden_);
+
   HoldingSpaceProgress temp(*this);
   temp = temp + rhs;
 
@@ -85,6 +101,10 @@ HoldingSpaceProgress& HoldingSpaceProgress::operator+=(
 
 HoldingSpaceProgress HoldingSpaceProgress::operator+(
     const HoldingSpaceProgress& rhs) const {
+  // Hidden instances shouldn't be included in cumulative progress calculations.
+  DCHECK(!hidden_);
+  DCHECK(!rhs.hidden_);
+
   // The number of `current_bytes` should only be present if present for both
   // the lhs and `rhs` instances. Otherwise `current_bytes` is indeterminate.
   absl::optional<int64_t> current_bytes(current_bytes_);
@@ -134,6 +154,10 @@ bool HoldingSpaceProgress::IsComplete() const {
 
 bool HoldingSpaceProgress::IsIndeterminate() const {
   return !current_bytes_.has_value() || !total_bytes_.has_value();
+}
+
+bool HoldingSpaceProgress::IsHidden() const {
+  return hidden_;
 }
 
 }  // namespace ash

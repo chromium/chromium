@@ -66,8 +66,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
@@ -178,24 +178,24 @@ void NetworkChangeNotifierAndroid::OnMaxBandwidthChanged(
 
 void NetworkChangeNotifierAndroid::OnNetworkConnected(NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeType::CONNECTED, network);
+      NetworkChangeType::kConnected, network);
 }
 
 void NetworkChangeNotifierAndroid::OnNetworkSoonToDisconnect(
     NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeType::SOON_TO_DISCONNECT, network);
+      NetworkChangeType::kSoonToDisconnect, network);
 }
 
 void NetworkChangeNotifierAndroid::OnNetworkDisconnected(
     NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeType::DISCONNECTED, network);
+      NetworkChangeType::kDisconnected, network);
 }
 
 void NetworkChangeNotifierAndroid::OnNetworkMadeDefault(NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeType::MADE_DEFAULT, network);
+      NetworkChangeType::kMadeDefault, network);
 }
 
 NetworkChangeNotifierAndroid::NetworkChangeNotifierAndroid(
@@ -238,10 +238,10 @@ NetworkChangeNotifierAndroid::NetworkChangeCalculatorParamsAndroid() {
   // IPAddressChanged is produced immediately prior to ConnectionTypeChanged
   // so delay IPAddressChanged so they get merged with the following
   // ConnectionTypeChanged signal.
-  params.ip_address_offline_delay_ = base::TimeDelta::FromSeconds(1);
-  params.ip_address_online_delay_ = base::TimeDelta::FromSeconds(1);
-  params.connection_type_offline_delay_ = base::TimeDelta::FromSeconds(0);
-  params.connection_type_online_delay_ = base::TimeDelta::FromSeconds(0);
+  params.ip_address_offline_delay_ = base::Seconds(1);
+  params.ip_address_online_delay_ = base::Seconds(1);
+  params.connection_type_offline_delay_ = base::Seconds(0);
+  params.connection_type_online_delay_ = base::Seconds(0);
   return params;
 }
 

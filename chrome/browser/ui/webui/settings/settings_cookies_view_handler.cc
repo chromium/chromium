@@ -50,11 +50,6 @@ int GetCategoryLabelID(CookieTreeNode::DetailedInfo::NodeType node_type) {
       {CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE,
        IDS_SETTINGS_COOKIES_LOCAL_STORAGE},
 
-      {CookieTreeNode::DetailedInfo::TYPE_APPCACHES,
-       IDS_SETTINGS_COOKIES_APPLICATION_CACHE},
-      {CookieTreeNode::DetailedInfo::TYPE_APPCACHE,
-       IDS_SETTINGS_COOKIES_APPLICATION_CACHE},
-
       {CookieTreeNode::DetailedInfo::TYPE_INDEXED_DBS,
        IDS_SETTINGS_COOKIES_DATABASE_STORAGE},
       {CookieTreeNode::DetailedInfo::TYPE_INDEXED_DB,
@@ -107,7 +102,7 @@ CookiesViewHandler::Request::Request(TreeModelBatchBehavior batch_behavior,
                                      base::OnceClosure initial_task)
     : batch_behavior(batch_behavior), initial_task(std::move(initial_task)) {
   if (batch_behavior == Request::ASYNC_BATCH)
-    batch_end_task = base::DoNothing::Once();
+    batch_end_task = base::DoNothing();
 }
 
 CookiesViewHandler::Request::Request(base::OnceClosure initial_task,
@@ -145,39 +140,39 @@ void CookiesViewHandler::OnJavascriptDisallowed() {
 }
 
 void CookiesViewHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "localData.getDisplayList",
       base::BindRepeating(&CookiesViewHandler::HandleGetDisplayList,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "localData.removeAll",
       base::BindRepeating(&CookiesViewHandler::HandleRemoveAll,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "localData.removeShownItems",
       base::BindRepeating(&CookiesViewHandler::HandleRemoveShownItems,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "localData.removeItem",
       base::BindRepeating(&CookiesViewHandler::HandleRemoveItem,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "localData.getCookieDetails",
       base::BindRepeating(&CookiesViewHandler::HandleGetCookieDetails,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "localData.getNumCookiesString",
       base::BindRepeating(&CookiesViewHandler::HandleGetNumCookiesString,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "localData.removeSite",
       base::BindRepeating(&CookiesViewHandler::HandleRemoveSite,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "localData.removeThirdPartyCookies",
       base::BindRepeating(&CookiesViewHandler::HandleRemoveThirdParty,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "localData.reload",
       base::BindRepeating(&CookiesViewHandler::HandleReloadCookies,
                           base::Unretained(this)));

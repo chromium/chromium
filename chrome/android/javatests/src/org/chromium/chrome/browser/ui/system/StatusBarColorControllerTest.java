@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.system;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 
@@ -15,12 +14,14 @@ import androidx.test.filters.LargeTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -50,20 +52,25 @@ import java.util.concurrent.TimeoutException;
  * There are additional status bar color tests in {@link BrandColorTest}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
 public class StatusBarColorControllerTest {
     // clang-format on
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, true);
 
     private @ColorInt int mScrimColor;
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mScrimColor = ApiCompatibilityUtils.getColor(mActivityTestRule.getActivity().getResources(),
+        mScrimColor = ApiCompatibilityUtils.getColor(sActivityTestRule.getActivity().getResources(),
                 org.chromium.chrome.R.color.default_scrim_color);
     }
 
@@ -76,14 +83,13 @@ public class StatusBarColorControllerTest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testColorToggleIncognitoInOverview() throws Exception {
-        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
-        Resources resources = activity.getResources();
+        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final int expectedOverviewStandardColor = defaultColorFallbackToBlack(
-                ChromeColors.getPrimaryBackgroundColor(resources, false));
-        final int expectedOverviewIncognitoColor = defaultColorFallbackToBlack(
-                ChromeColors.getPrimaryBackgroundColor(resources, true));
+                ChromeColors.getPrimaryBackgroundColor(activity, false));
+        final int expectedOverviewIncognitoColor =
+                defaultColorFallbackToBlack(ChromeColors.getPrimaryBackgroundColor(activity, true));
 
-        mActivityTestRule.loadUrlInNewTab(
+        sActivityTestRule.loadUrlInNewTab(
                 "about:blank", true /* incognito */, TabLaunchType.FROM_CHROME_UI);
         TabModelSelector tabModelSelector = activity.getTabModelSelector();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -106,14 +112,13 @@ public class StatusBarColorControllerTest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testBrandColorIgnoredInOverview() throws Exception {
-        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
-        Resources resources = activity.getResources();
+        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final int expectedDefaultStandardColor =
-                defaultColorFallbackToBlack(ChromeColors.getDefaultThemeColor(resources, false));
+                defaultColorFallbackToBlack(ChromeColors.getDefaultThemeColor(activity, false));
 
-        String pageWithBrandColorUrl = mActivityTestRule.getTestServer().getURL(
+        String pageWithBrandColorUrl = sActivityTestRule.getTestServer().getURL(
                 "/chrome/test/data/android/theme_color_test.html");
-        mActivityTestRule.loadUrl(pageWithBrandColorUrl);
+        sActivityTestRule.loadUrl(pageWithBrandColorUrl);
         ThemeTestUtils.waitForThemeColor(activity, Color.RED);
         waitForStatusBarColor(activity, Color.RED);
 
@@ -130,9 +135,11 @@ public class StatusBarColorControllerTest {
     @Feature({"StatusBar"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testColorWithStatusIndicator() {
-        final ChromeActivity activity = mActivityTestRule.getActivity();
+        final ChromeActivity activity = sActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
-                mActivityTestRule.getActivity().getStatusBarColorController();
+                sActivityTestRule.getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getStatusBarColorController();
         final Supplier<Integer> statusBarColor = () -> activity.getWindow().getStatusBarColor();
         final int initialColor = statusBarColor.get();
 

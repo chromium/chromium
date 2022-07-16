@@ -115,6 +115,8 @@ Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> ConvertAccepts(
   Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> result;
   result.ReserveInitialCapacity(types.size());
   for (const auto& t : types) {
+    if (!t->hasAccept())
+      continue;
     Vector<String> mimeTypes;
     mimeTypes.ReserveInitialCapacity(t->accept().size());
     Vector<String> extensions;

@@ -42,27 +42,15 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests {@link AccountManagementFragment}.
- */
+/** Tests {@link AccountManagementFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountManagementFragmentTest {
-    private static final String CHILD_ACCOUNT_EMAIL = "child@gmail.com";
-
-    private final FakeAccountManagerFacade mFakeFacade = new FakeAccountManagerFacade() {
-        @Override
-        public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {
-            listener.onStatusReady(CHILD_ACCOUNT_EMAIL.equals(account.name)
-                            ? ChildAccountStatus.REGULAR_CHILD
-                            : ChildAccountStatus.NOT_CHILD);
-        }
-    };
+    private static final Account CHILD_ACCOUNT =
+            AccountManagerTestRule.createChildAccount("account@gmail.com");
 
     public final SettingsActivityTestRule<AccountManagementFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(AccountManagementFragment.class);
@@ -77,8 +65,7 @@ public class AccountManagementFragmentTest {
             RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
 
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(mFakeFacade);
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -116,7 +103,7 @@ public class AccountManagementFragmentTest {
     @MediumTest
     @Feature("RenderTest")
     public void testAccountManagementViewForChildAccount() throws Exception {
-        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT.name);
         final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
                 Profile::getLastUsedRegularProfile);
         CriteriaHelper.pollUiThread(profile::isChild);
@@ -135,10 +122,10 @@ public class AccountManagementFragmentTest {
         onView(withText(R.string.sign_out)).perform(click());
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> Assert.assertNull("Account should be signed out!",
+                        -> Assert.assertFalse("Account should be signed out!",
                                 IdentityServicesProvider.get()
                                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
+                                        .hasPrimaryAccount(ConsentLevel.SIGNIN)));
     }
 
     @Test

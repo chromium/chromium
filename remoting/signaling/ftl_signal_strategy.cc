@@ -33,6 +33,10 @@ class FtlSignalStrategy::Core {
   Core(std::unique_ptr<OAuthTokenGetter> oauth_token_getter,
        std::unique_ptr<RegistrationManager> registration_manager,
        std::unique_ptr<MessagingClient> messaging_client);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core();
 
   void Connect();
@@ -92,7 +96,6 @@ class FtlSignalStrategy::Core {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<Core> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 FtlSignalStrategy::Core::Core(

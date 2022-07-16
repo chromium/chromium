@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/region.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -20,25 +21,24 @@ struct LayerDebugInfo;
 
 namespace blink {
 
-class DisplayItemClient;
-
 struct RasterInvalidationInfo {
   DISALLOW_NEW();
 
   // This is for comparison only. Don't dereference because the client may have
   // died.
-  const DisplayItemClient* client = nullptr;
+  DisplayItemClientId client_id = kInvalidDisplayItemClientId;
   String client_debug_name;
   // For CAP, this is set in PaintArtifactCompositor when converting chunk
   // raster invalidations to cc raster invalidations.
-  IntRect rect;
+  gfx::Rect rect;
   PaintInvalidationReason reason = PaintInvalidationReason::kFull;
 };
 
 inline bool operator==(const RasterInvalidationInfo& a,
                        const RasterInvalidationInfo& b) {
-  return a.client == b.client && a.client_debug_name == b.client_debug_name &&
-         a.rect == b.rect && a.reason == b.reason;
+  return a.client_id == b.client_id &&
+         a.client_debug_name == b.client_debug_name && a.rect == b.rect &&
+         a.reason == b.reason;
 }
 inline bool operator!=(const RasterInvalidationInfo& a,
                        const RasterInvalidationInfo& b) {
@@ -47,8 +47,8 @@ inline bool operator!=(const RasterInvalidationInfo& a,
 
 inline std::ostream& operator<<(std::ostream& os,
                                 const RasterInvalidationInfo& info) {
-  return os << info.client << ":" << info.client_debug_name
-            << " rect=" << info.rect << " reason=" << info.reason;
+  return os << info.client_id << ":" << info.client_debug_name
+            << " rect=" << info.rect.ToString() << " reason=" << info.reason;
 }
 
 struct RasterUnderInvalidation {
@@ -61,7 +61,6 @@ struct RasterUnderInvalidation {
 
 class PLATFORM_EXPORT RasterInvalidationTracking {
  public:
-  DISALLOW_NEW();
 
   // When RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() and
   // SimulateRasterUnderInvalidation(true) is called, all changed pixels will
@@ -76,9 +75,9 @@ class PLATFORM_EXPORT RasterInvalidationTracking {
 
   static bool IsTracingRasterInvalidations();
 
-  void AddInvalidation(const DisplayItemClient*,
+  void AddInvalidation(DisplayItemClientId,
                        const String& debug_name,
-                       const IntRect&,
+                       const gfx::Rect&,
                        PaintInvalidationReason);
   bool HasInvalidations() const { return !invalidations_.IsEmpty(); }
   const Vector<RasterInvalidationInfo>& Invalidations() const {
@@ -93,7 +92,7 @@ class PLATFORM_EXPORT RasterInvalidationTracking {
   // original drawings to show the under raster invalidations.
   void CheckUnderInvalidations(const String& layer_debug_name,
                                sk_sp<PaintRecord> new_record,
-                               const IntRect& new_interest_rect);
+                               const gfx::Rect& new_interest_rect);
 
   void AsJSON(JSONObject*, bool detailed) const;
 
@@ -109,7 +108,7 @@ class PLATFORM_EXPORT RasterInvalidationTracking {
 
   // The following fields are for raster under-invalidation detection.
   sk_sp<PaintRecord> last_painted_record_;
-  IntRect last_interest_rect_;
+  gfx::Rect last_interest_rect_;
   Region invalidation_region_since_last_paint_;
   Vector<RasterUnderInvalidation> under_invalidations_;
   sk_sp<PaintRecord> under_invalidation_record_;

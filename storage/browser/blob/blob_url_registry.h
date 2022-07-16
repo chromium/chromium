@@ -24,6 +24,10 @@ namespace storage {
 class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
  public:
   explicit BlobUrlRegistry(base::WeakPtr<BlobUrlRegistry> fallback = nullptr);
+
+  BlobUrlRegistry(const BlobUrlRegistry&) = delete;
+  BlobUrlRegistry& operator=(const BlobUrlRegistry&) = delete;
+
   ~BlobUrlRegistry();
 
   // Creates a url mapping from blob to the given url. Returns false if
@@ -79,7 +83,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
       token_to_url_and_blob_;
 
   base::WeakPtrFactory<BlobUrlRegistry> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(BlobUrlRegistry);
 };
 
 }  // namespace storage

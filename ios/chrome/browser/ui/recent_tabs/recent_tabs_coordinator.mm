@@ -25,7 +25,6 @@
 #include "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
-#import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -71,16 +70,14 @@
   self.recentTabsTableViewController.handler = handler;
   self.recentTabsTableViewController.presentationDelegate = self;
 
-  if (@available(iOS 13.0, *)) {
-    self.recentTabsContextMenuHelper =
-        [[RecentTabsContextMenuHelper alloc] initWithBrowser:self.browser
-                              recentTabsPresentationDelegate:self
-                                      tabContextMenuDelegate:self];
-    self.recentTabsTableViewController.menuProvider =
-        self.recentTabsContextMenuHelper;
-    self.recentTabsTableViewController.session =
-        self.baseViewController.view.window.windowScene.session;
-  }
+  self.recentTabsContextMenuHelper =
+      [[RecentTabsContextMenuHelper alloc] initWithBrowser:self.browser
+                            recentTabsPresentationDelegate:self
+                                    tabContextMenuDelegate:self];
+  self.recentTabsTableViewController.menuProvider =
+      self.recentTabsContextMenuHelper;
+  self.recentTabsTableViewController.session =
+      self.baseViewController.view.window.windowScene.session;
 
   // Adds the "Done" button and hooks it up to |stop|.
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
@@ -116,15 +113,11 @@
   self.recentTabsNavigationController.toolbarHidden = YES;
 
   BOOL useCustomPresentation = YES;
-  if (IsCollectionsCardPresentationStyleEnabled()) {
-    if (@available(iOS 13, *)) {
       [self.recentTabsNavigationController
           setModalPresentationStyle:UIModalPresentationFormSheet];
       self.recentTabsNavigationController.presentationController.delegate =
           self.recentTabsTableViewController;
       useCustomPresentation = NO;
-    }
-  }
 
   if (useCustomPresentation) {
     self.recentTabsTransitioningDelegate =
@@ -145,6 +138,7 @@
 
 - (void)stop {
   [self.recentTabsTableViewController dismissModals];
+  self.recentTabsTableViewController.browser = nil;
   [self.recentTabsNavigationController
       dismissViewControllerAnimated:YES
                          completion:self.completion];

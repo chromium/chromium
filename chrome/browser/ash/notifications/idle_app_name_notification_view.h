@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace extensions {
 class Extension;
 }  // namespace extensions
@@ -28,6 +26,11 @@ class IdleAppNameNotificationView {
   IdleAppNameNotificationView(int message_visibility_time_in_ms,
                               int animation_time_ms,
                               const extensions::Extension* extension);
+
+  IdleAppNameNotificationView(const IdleAppNameNotificationView&) = delete;
+  IdleAppNameNotificationView& operator=(const IdleAppNameNotificationView&) =
+      delete;
+
   virtual ~IdleAppNameNotificationView();
 
   // Close and destroy the message instantly.
@@ -47,8 +50,6 @@ class IdleAppNameNotificationView {
 
   // A reference to an existing message.
   IdleAppNameNotificationDelegateView* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleAppNameNotificationView);
 };
 
 }  // namespace ash

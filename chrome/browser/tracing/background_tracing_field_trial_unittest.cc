@@ -64,9 +64,7 @@ using tracing::BackgroundTracingSetupMode;
 struct SetupModeParams {
   const char* enable_background_tracing = nullptr;
   const char* trace_output_file = nullptr;
-  const char* trace_upload_url = nullptr;
-  BackgroundTracingSetupMode expected_mode_json;
-  BackgroundTracingSetupMode expected_mode_proto;
+  BackgroundTracingSetupMode expected_mode;
 };
 
 }  // namespace
@@ -74,68 +72,42 @@ struct SetupModeParams {
 TEST_F(BackgroundTracingTest, GetBackgroundTracingSetupMode) {
   const std::vector<const SetupModeParams> kParams = {
       // No config file param.
-      {nullptr, nullptr, nullptr, BackgroundTracingSetupMode::kFromFieldTrial,
-       BackgroundTracingSetupMode::kFromFieldTrial},
+      {nullptr, nullptr, BackgroundTracingSetupMode::kFromFieldTrial},
       // Empty config filename.
-      {"", "output_file.gz", nullptr,
-       BackgroundTracingSetupMode::kDisabledInvalidCommandLine,
+      {"", "output_file.gz",
        BackgroundTracingSetupMode::kDisabledInvalidCommandLine},
-      // No output location switches.
-      {"config.json", nullptr, nullptr,
-       BackgroundTracingSetupMode::kDisabledInvalidCommandLine,
+      // No output location switch.
+      {"config.json", nullptr,
        BackgroundTracingSetupMode::kDisabledInvalidCommandLine},
-      // Empty output location switches.
-      {"config.json", "", "",
-       BackgroundTracingSetupMode::kDisabledInvalidCommandLine,
+      // Empty output location switch.
+      {"config.json", "",
        BackgroundTracingSetupMode::kDisabledInvalidCommandLine},
-      // Both output location switches.
-      {"config.json", "output_file.gz", "http://localhost:8080",
-       BackgroundTracingSetupMode::kDisabledInvalidCommandLine,
-       BackgroundTracingSetupMode::kDisabledInvalidCommandLine},
-      // url is only valid for legacy JSON traces.
-      {"config.json", "", "http://localhost:8080",
-       BackgroundTracingSetupMode::kFromConfigFile,
-       BackgroundTracingSetupMode::kDisabledInvalidCommandLine},
-      // file is valid for both JSON and proto traces.
-      {"config.json", "output_file.gz", "",
-       BackgroundTracingSetupMode::kFromConfigFile,
+      // file is valid for proto traces.
+      {"config.json", "output_file.gz",
        BackgroundTracingSetupMode::kFromConfigFile},
   };
 
-  for (bool enable_proto_traces : {true, false}) {
-    for (const SetupModeParams& params : kParams) {
-      SCOPED_TRACE(::testing::Message()
-                   << "enable_background_tracing "
-                   << params.enable_background_tracing << " trace_output_file "
-                   << params.trace_output_file << " trace_upload_url "
-                   << params.trace_upload_url << " enable_proto_traces "
-                   << enable_proto_traces);
-      base::test::ScopedFeatureList feature_list;
-      feature_list.InitWithFeatureState(features::kBackgroundTracingProtoOutput,
-                                        enable_proto_traces);
-
-      base::test::ScopedCommandLine scoped_command_line;
-      base::CommandLine* command_line =
-          scoped_command_line.GetProcessCommandLine();
-      if (params.enable_background_tracing) {
-        command_line->AppendSwitchASCII(switches::kEnableBackgroundTracing,
-                                        params.enable_background_tracing);
-      }
-      if (params.trace_output_file) {
-        command_line->AppendSwitchASCII(switches::kBackgroundTracingOutputFile,
-                                        params.trace_output_file);
-      }
-      if (params.trace_upload_url) {
-        command_line->AppendSwitchASCII(switches::kTraceUploadURL,
-                                        params.trace_upload_url);
-      }
-
-      EXPECT_EQ(tracing::GetBackgroundTracingSetupMode(),
-                enable_proto_traces ? params.expected_mode_proto
-                                    : params.expected_mode_json);
+  for (const SetupModeParams& params : kParams) {
+    SCOPED_TRACE(::testing::Message()
+                 << "enable_background_tracing "
+                 << params.enable_background_tracing << " trace_output_file "
+                 << params.trace_output_file);
+    base::test::ScopedFeatureList feature_list;
+    base::test::ScopedCommandLine scoped_command_line;
+    base::CommandLine* command_line =
+        scoped_command_line.GetProcessCommandLine();
+    if (params.enable_background_tracing) {
+      command_line->AppendSwitchASCII(switches::kEnableBackgroundTracing,
+                                      params.enable_background_tracing);
     }
+    if (params.trace_output_file) {
+      command_line->AppendSwitchASCII(switches::kBackgroundTracingOutputFile,
+                                      params.trace_output_file);
+    }
+
+    EXPECT_EQ(tracing::GetBackgroundTracingSetupMode(), params.expected_mode);
   }
-}
+  }
 
 TEST_F(BackgroundTracingTest, SetupBackgroundTracingFieldTrial) {
   const std::string kTrialName = "BackgroundTracing";

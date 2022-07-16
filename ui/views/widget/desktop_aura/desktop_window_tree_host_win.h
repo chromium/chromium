@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
@@ -54,16 +53,44 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   DesktopWindowTreeHostWin(
       internal::NativeWidgetDelegate* native_widget_delegate,
       DesktopNativeWidgetAura* desktop_native_widget_aura);
+
+  DesktopWindowTreeHostWin(const DesktopWindowTreeHostWin&) = delete;
+  DesktopWindowTreeHostWin& operator=(const DesktopWindowTreeHostWin&) = delete;
+
   ~DesktopWindowTreeHostWin() override;
 
   // A way of converting an HWND into a content window.
   static aura::Window* GetContentWindowForHWND(HWND hwnd);
 
-  // Set to true when DesktopDragDropClientWin starts a touch-initiated drag
-  // drop and false when it finishes. While in touch drag, if pointer events are
-  // received, the equivalent mouse events are generated, because ole32
-  // ::DoDragDrop does not seem to handle pointer events.
-  void SetInTouchDrag(bool in_touch_drag);
+  // When DesktopDragDropClientWin starts a touch-initiated drag, it calls
+  // this method to record that we're in touch drag mode, and synthesizes
+  // right mouse button down and move events to get ::DoDragDrop started.
+  void StartTouchDrag(gfx::Point screen_point);
+
+  // If in touch drag mode, this method synthesizes a left mouse button up
+  // event to match the left mouse button down event in StartTouchDrag. It
+  // also restores the cursor pos to where the drag started, to avoid leaving
+  // the cursor outside the Chrome window doing the drag drop. This allows
+  // subsequent touch drag drops to succeed. Touch drag drop requires that
+  // the cursor be over the same window as the touch drag point.
+  // This needs to be called in two cases:
+  // 1. The normal case is that ::DoDragDrop starts, we get touch move events,
+  // which we turn into mouse move events, and then we get a touch release
+  // event. Calling FinishTouchDragIfInDrag generates a mouse up, which stops
+  // the drag drop.
+  // 2. ::DoDragDrop exits immediately, w/o us handling any touch events. In
+  // this case, FinishTouchDragIfInDrag makes sure we have a mouse button up to
+  // match the mouse button down, because we won't get a touch release event. We
+  // don't know for sure if ::DoDragDrop exited immediately, other than by
+  // checking if `in_touch_drag_` has been set to false.
+  //
+  // So, we always call FinishTouchDragIfInDrag after ::DoDragDrop exits, to
+  // make sure it gets called, and we make it handle getting called multiple
+  // times. Most of the time, FinishTouchDrag will have already been called when
+  // we get a touch release event, in which case the second call needs to be a
+  // noop, which is accomplished by checking if `in_touch_drag_` is already
+  // false.
+  void FinishTouchDrag(gfx::Point screen_point);
 
  protected:
   // Overridden from DesktopWindowTreeHost:
@@ -138,6 +165,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void HideImpl() override;
   gfx::Rect GetBoundsInPixels() const override;
   void SetBoundsInPixels(const gfx::Rect& bounds) override;
+  gfx::Rect GetBoundsInAcceleratedWidgetPixelCoordinates() override;
   gfx::Point GetLocationOnScreenInPixels() const override;
   void SetCapture() override;
   void ReleaseCapture() override;
@@ -317,13 +345,17 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // when that stat is no longer tracked.
   gfx::Point occluded_window_mouse_event_loc_;
 
+  // Set to true when DesktopDragDropClientWin starts a touch-initiated drag
+  // drop and false when it finishes. While in touch drag, if touch move events
+  // are received, the equivalent mouse events are generated, because ole32
+  // ::DoDragDrop does not seem to handle touch events. WinRT drag drop does
+  // support touch, but we've been unable to use it in Chrome. See
+  // https://crbug.com/1236783 for more info.
   bool in_touch_drag_ = false;
 
   // The z-order level of the window; the window exhibits "always on top"
   // behavior if > 0.
   ui::ZOrderLevel z_order_ = ui::ZOrderLevel::kNormal;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopWindowTreeHostWin);
 };
 
 }  // namespace views

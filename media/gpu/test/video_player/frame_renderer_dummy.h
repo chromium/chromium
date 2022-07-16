@@ -9,7 +9,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -25,6 +24,9 @@ namespace test {
 // immediately, or introduce a delay to simulate actual rendering.
 class FrameRendererDummy : public FrameRenderer {
  public:
+  FrameRendererDummy(const FrameRendererDummy&) = delete;
+  FrameRendererDummy& operator=(const FrameRendererDummy&) = delete;
+
   ~FrameRendererDummy() override;
 
   // Create an instance of the dummy frame renderer. |frame_duration| specifies
@@ -95,7 +97,6 @@ class FrameRendererDummy : public FrameRenderer {
 
   SEQUENCE_CHECKER(client_sequence_checker_);
   SEQUENCE_CHECKER(renderer_sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(FrameRendererDummy);
 };
 
 }  // namespace test

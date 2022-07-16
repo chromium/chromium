@@ -99,7 +99,8 @@ public class EditorTextField extends FrameLayout implements EditorFieldView, Vie
         if (fieldModel.getActionIconAction() != null) {
             mActionIcon = (ImageView) mIconsLayer.findViewById(R.id.action_icon);
             mActionIcon.setImageDrawable(TintedDrawable.constructTintedDrawable(context,
-                    fieldModel.getActionIconResourceId(), R.color.default_icon_color_blue));
+                    fieldModel.getActionIconResourceId(),
+                    R.color.default_icon_color_accent1_tint_list));
             mActionIcon.setContentDescription(context.getResources().getString(
                     fieldModel.getActionIconDescriptionForAccessibility()));
             mActionIcon.setOnClickListener(this);

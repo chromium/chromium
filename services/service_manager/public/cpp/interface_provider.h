@@ -29,6 +29,10 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
   class TestApi {
    public:
     explicit TestApi(InterfaceProvider* provider) : provider_(provider) {}
+
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
     ~TestApi() {}
 
     void SetBinderForName(
@@ -51,7 +55,6 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
 
    private:
     InterfaceProvider* provider_;
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
 
   // Constructs an InterfaceProvider which is usable immediately despite not
@@ -67,6 +70,9 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
   InterfaceProvider(
       mojo::PendingRemote<mojom::InterfaceProvider> interface_provider,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  InterfaceProvider(const InterfaceProvider&) = delete;
+  InterfaceProvider& operator=(const InterfaceProvider&) = delete;
 
   ~InterfaceProvider();
 
@@ -127,8 +133,6 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
   ForwardCallback forward_callback_;
 
   base::WeakPtrFactory<InterfaceProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceProvider);
 };
 
 }  // namespace service_manager

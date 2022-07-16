@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/test/ink_drop_ripple_test_api.h"
@@ -24,6 +23,11 @@ class FloodFillInkDropRippleTestApi : public InkDropRippleTestApi {
  public:
   explicit FloodFillInkDropRippleTestApi(
       FloodFillInkDropRipple* ink_drop_ripple);
+
+  FloodFillInkDropRippleTestApi(const FloodFillInkDropRippleTestApi&) = delete;
+  FloodFillInkDropRippleTestApi& operator=(
+      const FloodFillInkDropRippleTestApi&) = delete;
+
   ~FloodFillInkDropRippleTestApi() override;
 
   // Transforms |point| into the FloodFillInkDropRipples clip layer coordinate
@@ -57,8 +61,6 @@ class FloodFillInkDropRippleTestApi : public InkDropRippleTestApi {
     return static_cast<FloodFillInkDropRipple*>(
         InkDropRippleTestApi::ink_drop_ripple());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FloodFillInkDropRippleTestApi);
 };
 
 }  // namespace test

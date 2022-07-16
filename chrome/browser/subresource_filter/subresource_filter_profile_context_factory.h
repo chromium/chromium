@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SUBRESOURCE_FILTER_SUBRESOURCE_FILTER_PROFILE_CONTEXT_FACTORY_H_
 #define CHROME_BROWSER_SUBRESOURCE_FILTER_SUBRESOURCE_FILTER_PROFILE_CONTEXT_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class KeyedService;
@@ -27,14 +26,17 @@ class SubresourceFilterProfileContextFactory
 
   SubresourceFilterProfileContextFactory();
 
+  SubresourceFilterProfileContextFactory(
+      const SubresourceFilterProfileContextFactory&) = delete;
+  SubresourceFilterProfileContextFactory& operator=(
+      const SubresourceFilterProfileContextFactory&) = delete;
+
  private:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterProfileContextFactory);
 };
 
 #endif  // CHROME_BROWSER_SUBRESOURCE_FILTER_SUBRESOURCE_FILTER_PROFILE_CONTEXT_FACTORY_H_

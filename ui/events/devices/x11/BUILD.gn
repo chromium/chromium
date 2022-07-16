@@ -5,7 +5,7 @@
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 
-assert(use_x11 || ozone_platform_x11)
+assert(ozone_platform_x11)
 
 component("x11") {
   output_name = "events_devices_x11"

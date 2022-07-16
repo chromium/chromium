@@ -105,7 +105,7 @@ InstanceIDGetTokenFunction::~InstanceIDGetTokenFunction() {}
 
 ExtensionFunction::ResponseAction InstanceIDGetTokenFunction::DoWork() {
   std::unique_ptr<api::instance_id::GetToken::Params> params =
-      api::instance_id::GetToken::Params::Create(*args_);
+      api::instance_id::GetToken::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GetInstanceID()->GetToken(
@@ -132,7 +132,7 @@ InstanceIDDeleteTokenFunction::~InstanceIDDeleteTokenFunction() {}
 
 ExtensionFunction::ResponseAction InstanceIDDeleteTokenFunction::DoWork() {
   std::unique_ptr<api::instance_id::DeleteToken::Params> params =
-      api::instance_id::DeleteToken::Params::Create(*args_);
+      api::instance_id::DeleteToken::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GetInstanceID()->DeleteToken(

@@ -15,13 +15,16 @@ class NetworkChangeNotifierFactoryCast
     : public net::NetworkChangeNotifierFactory {
  public:
   NetworkChangeNotifierFactoryCast() {}
+
+  NetworkChangeNotifierFactoryCast(const NetworkChangeNotifierFactoryCast&) =
+      delete;
+  NetworkChangeNotifierFactoryCast& operator=(
+      const NetworkChangeNotifierFactoryCast&) = delete;
+
   ~NetworkChangeNotifierFactoryCast() override;
 
   // net::NetworkChangeNotifierFactory implementation:
   std::unique_ptr<net::NetworkChangeNotifier> CreateInstance() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeNotifierFactoryCast);
 };
 
 }  // namespace chromecast

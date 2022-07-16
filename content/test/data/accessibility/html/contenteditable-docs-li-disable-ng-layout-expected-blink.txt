@@ -24,7 +24,7 @@ rootWebArea isLineBreakingObject=true
 ++++++++++++++inlineTextBox name='A list item with an inner p role=presentation' previousOnLineId=listMarker:"3. "
 ++++++++++listItem isLineBreakingObject=true
 ++++++++++++listMarker name='4. ' nextOnLineId=inlineTextBox:"A list item with both a br and "
-++++++++++++staticText name='A list item with both a br and ' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=listMarker:"4. "
+++++++++++++staticText name='A list item with both a br and' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=listMarker:"4. "
 ++++++++++++++inlineTextBox name='A list item with both a br and ' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=listMarker:"4. "
 ++++++++++++lineBreak name='<newline>' previousOnLineId=inlineTextBox:"A list item with both a br and " isLineBreakingObject=true
 ++++++++++++++inlineTextBox name='<newline>' previousOnLineId=inlineTextBox:"A list item with both a br and " isLineBreakingObject=true
@@ -54,7 +54,7 @@ rootWebArea isLineBreakingObject=true
 ++++++++++++++inlineTextBox name='each separated by a space' previousOnLineId=inlineTextBox:"A list item with a role presentation, and two inner spans, "
 ++++++++++listItem isLineBreakingObject=true
 ++++++++++++listMarker name='7. ' nextOnLineId=inlineTextBox:"A list item with a role presentation, and two inner spans, "
-++++++++++++staticText name='A list item with a role presentation, and two inner spans, ' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=listMarker:"7. "
+++++++++++++staticText name='A list item with a role presentation, and two inner spans,' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=listMarker:"7. "
 ++++++++++++++inlineTextBox name='A list item with a role presentation, and two inner spans, ' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=listMarker:"7. "
 ++++++++++++lineBreak name='<newline>' previousOnLineId=inlineTextBox:"A list item with a role presentation, and two inner spans, " isLineBreakingObject=true
 ++++++++++++++inlineTextBox name='<newline>' previousOnLineId=inlineTextBox:"A list item with a role presentation, and two inner spans, " isLineBreakingObject=true

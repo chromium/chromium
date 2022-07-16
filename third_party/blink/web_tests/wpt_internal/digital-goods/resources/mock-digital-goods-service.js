@@ -126,7 +126,7 @@ class MockDigitalGoodsFactory {
   }
 
   async createDigitalGoods(paymentMethod) {
-    if (paymentMethod !== 'https://play.google.com/billing') {
+    if (paymentMethod !== 'https://example.com/billing') {
       return {
         code: CreateDigitalGoodsResponseCode.kUnsupportedPaymentMethod,
         digitalGoods: null
@@ -148,7 +148,7 @@ let mockDigitalGoodsFactory = new MockDigitalGoodsFactory();
 export function digital_goods_test(func, {
   title,
   expectedAction,
-  paymentMethod = 'https://play.google.com/billing',
+  paymentMethod = 'https://example.com/billing',
 } = {}) {
   promise_test(async () => {
     mockDigitalGoods.resetRecordedAction_();

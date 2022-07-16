@@ -15,12 +15,12 @@
 set noparent
 # NOTE: keep this in sync with lsc-owners-override@chromium.org owners
 alexmos@chromium.org
+altimin@chromium.org
 arthursonzogni@chromium.org
 avi@chromium.org
 clamy@chromium.org
 creis@chromium.org
 dgozman@chromium.org
-falken@chromium.org
 jam@chromium.org
 jochen@chromium.org
 kinuko@chromium.org
@@ -29,31 +29,30 @@ pfeldman@chromium.org
 # NOTE: keep this in sync with lsc-owners-override@chromium.org owners
 
 # per-file rules:
-# These are for the common case of adding or renaming files. If you're doing
+
+# This is for the common case of adding or renaming files. If you're doing
 # structural changes, please get a review from a reviewer in this file.
 per-file BUILD.gn=*
 
-# For threading (BrowserThread, BrowserMainLoop, ThreadPool, etc.)
-per-file *browser_main_loop*=gab@chromium.org
-per-file *browser_task_environment*=gab@chromium.org
-per-file *browser_thread*=gab@chromium.org
+# The remaining rules are for platform-specific implementation changes.
+# Do NOT add other per-file changes as they would also apply to public/.
 
 # For Fuchsia-specific changes:
-per-file *_fuchsia*=file://build/fuchsia/OWNERS
+per-file ...fuchsia*=file://build/fuchsia/OWNERS
 
 # For Mac-specific changes:
-per-file *_mac.*=ellyjones@chromium.org
-per-file *_mac.*=mark@chromium.org
-per-file *_mac.*=rsesek@chromium.org
-per-file *_mac.*=tapted@chromium.org
-per-file *_mac_*=ellyjones@chromium.org
-per-file *_mac_*=mark@chromium.org
-per-file *_mac_*=rsesek@chromium.org
-per-file *_mac_*=tapted@chromium.org
-per-file *.mm=ellyjones@chromium.org
-per-file *.mm=mark@chromium.org
-per-file *.mm=rsesek@chromium.org
-per-file *.mm=tapted@chromium.org
+per-file ..._mac.*=ellyjones@chromium.org
+per-file ..._mac.*=mark@chromium.org
+per-file ..._mac.*=rsesek@chromium.org
+per-file ..._mac.*=tapted@chromium.org
+per-file ..._mac_*=ellyjones@chromium.org
+per-file ..._mac_*=mark@chromium.org
+per-file ..._mac_*=rsesek@chromium.org
+per-file ..._mac_*=tapted@chromium.org
+per-file ....mm=ellyjones@chromium.org
+per-file ....mm=mark@chromium.org
+per-file ....mm=rsesek@chromium.org
+per-file ....mm=tapted@chromium.org
 
 # Translation artifacts:
 per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS

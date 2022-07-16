@@ -16,6 +16,10 @@ namespace remoting {
 class GlDemoScreen : public Drawable {
  public:
   GlDemoScreen();
+
+  GlDemoScreen(const GlDemoScreen&) = delete;
+  GlDemoScreen& operator=(const GlDemoScreen&) = delete;
+
   ~GlDemoScreen() override;
 
   // Drawable implementation.
@@ -31,8 +35,6 @@ class GlDemoScreen : public Drawable {
 
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<Drawable> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlDemoScreen);
 };
 
 }  // namespace remoting

@@ -42,7 +42,7 @@ TEST_P(NGTextFragmentPainterTest, TestTextStyle) {
       *cursor.Current().GetDisplayItemClient();
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(&text_fragment, kForegroundType)));
+                          IsSameId(text_fragment.Id(), kForegroundType)));
 }
 
 TEST_P(NGTextFragmentPainterTest, LineBreak) {
@@ -71,6 +71,31 @@ TEST_P(NGTextFragmentPainterTest, DegenerateUnderlineIntercepts) {
   UpdateAllLifecyclePhasesForTest();
   // Test for https://crbug.com/1043753: the underline intercepts are infinite
   // due to letter spacing and this test passes if that does not cause a crash.
+}
+
+TEST_P(NGTextFragmentPainterTest, SvgTextWithFirstLineTextDecoration) {
+  SetBodyInnerHTML(R"HTML(
+<!DOCTYPE html>
+<style>
+*::first-line {
+  text-decoration: underline dashed;
+}
+</style>
+<svg xmlns="http://www.w3.org/2000/svg">
+  <text y="30">vX7 Image 2</text>
+</svg>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Test passes if no crashes.
+}
+
+TEST_P(NGTextFragmentPainterTest, SvgTextWithTextDecorationNotInFirstLine) {
+  SetBodyInnerHTML(R"HTML(
+    <style>text:first-line { fill: lime; }</style>
+    <svg xmlns="http://www.w3.org/2000/svg">
+    <text text-decoration="overline">foo</text>
+    </svg>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Test passes if no crashes.
 }
 
 }  // namespace blink

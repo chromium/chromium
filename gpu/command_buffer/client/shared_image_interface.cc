@@ -41,4 +41,9 @@ Mailbox SharedImageInterface::CreateSharedImage(
                            surface_origin, alpha_type, usage);
 }
 
+void SharedImageInterface::CopyToGpuMemoryBuffer(const SyncToken& sync_token,
+                                                 const Mailbox& mailbox) {
+  NOTREACHED();
+}
+
 }  // namespace gpu

@@ -18,5 +18,5 @@ TEST_F(ChromeWebContentsViewDelegateViewsTest, ContextMenuNoFocusedFrame) {
       CreateWebContentsViewDelegate(web_contents()));
   EXPECT_FALSE(web_contents()->GetFocusedFrame());
   const content::ContextMenuParams params;
-  delegate_view->ShowContextMenu(web_contents()->GetMainFrame(), params);
+  delegate_view->ShowContextMenu(*web_contents()->GetMainFrame(), params);
 }

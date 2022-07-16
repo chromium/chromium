@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_SYSTEM_MENU_INSERTION_DELEGATE_WIN_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/views/controls/menu/menu_insertion_delegate_win.h"
 
 // SystemMenuInsertionDelegateWin is used to determine the index to insert menu
@@ -15,13 +14,16 @@
 class SystemMenuInsertionDelegateWin : public views::MenuInsertionDelegateWin {
  public:
   SystemMenuInsertionDelegateWin() {}
+
+  SystemMenuInsertionDelegateWin(const SystemMenuInsertionDelegateWin&) =
+      delete;
+  SystemMenuInsertionDelegateWin& operator=(
+      const SystemMenuInsertionDelegateWin&) = delete;
+
   ~SystemMenuInsertionDelegateWin() override {}
 
   // Overridden from views::MenuInsertionDelegateWin:
   int GetInsertionIndex(HMENU native_menu) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemMenuInsertionDelegateWin);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_SYSTEM_MENU_INSERTION_DELEGATE_WIN_H_

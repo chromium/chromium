@@ -44,6 +44,10 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
   // Same except the created resolver will own its own HostResolverManager.
   ContextHostResolver(std::unique_ptr<HostResolverManager> owned_manager,
                       std::unique_ptr<ResolveContext> resolve_context);
+
+  ContextHostResolver(const ContextHostResolver&) = delete;
+  ContextHostResolver& operator=(const ContextHostResolver&) = delete;
+
   ~ContextHostResolver() override;
 
   // HostResolver methods:
@@ -103,8 +107,6 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
   bool shutting_down_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ContextHostResolver);
 };
 
 }  // namespace net

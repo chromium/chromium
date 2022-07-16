@@ -8,7 +8,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/media/session/media_session_impl.h"
@@ -68,6 +68,11 @@ class MediaSessionImplVisibilityBrowserTest
     EnableDisableResumingBackgroundVideos(params.background_resuming ==
                                           BackgroundResuming::ENABLED);
   }
+
+  MediaSessionImplVisibilityBrowserTest(
+      const MediaSessionImplVisibilityBrowserTest&) = delete;
+  MediaSessionImplVisibilityBrowserTest& operator=(
+      const MediaSessionImplVisibilityBrowserTest&) = delete;
 
   ~MediaSessionImplVisibilityBrowserTest() override = default;
 
@@ -132,7 +137,7 @@ class MediaSessionImplVisibilityBrowserTest
         GetVisibilityTestData().session_state_after_hide;
 
     if (state_before_hide == state_after_hide) {
-      Wait(base::TimeDelta::FromSeconds(1));
+      Wait(base::Seconds(1));
       ASSERT_EQ(state_after_hide,
                 media_session_->GetMediaSessionInfoSync()->state);
     } else {
@@ -170,8 +175,6 @@ class MediaSessionImplVisibilityBrowserTest
 
   WebContents* web_contents_;
   MediaSessionImpl* media_session_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionImplVisibilityBrowserTest);
 };
 
 namespace {

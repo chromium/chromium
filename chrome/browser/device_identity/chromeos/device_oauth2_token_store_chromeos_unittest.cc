@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -23,41 +24,18 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace {
-// Helper class for tests to wait until the store's init procedure is completed.
-class DeviceOAuth2TokenStoreInitWaiter {
- public:
-  DeviceOAuth2TokenStoreInitWaiter() = default;
-  // The caller must ensure that the DeviceOAuth2TokenStoreInitWaiter outlives
-  // the callback it returns.
-  DeviceOAuth2TokenStore::InitCallback GetCallback() {
-    return base::BindOnce(&DeviceOAuth2TokenStoreInitWaiter::OnInit,
-                          base::Unretained(this));
-  }
-  void Wait() { run_loop_.Run(); }
-  bool HasInitBeenCalled() { return init_called_; }
-  bool GetInitResult() {
-    CHECK(init_called_);
-    return init_result_;
-  }
-  bool GetValidationRequired() {
-    CHECK(init_called_);
-    return validation_required_;
-  }
+using base::test::TestFuture;
 
- private:
-  void OnInit(bool init_result, bool validation_required) {
-    ASSERT_FALSE(init_called_);
-    init_called_ = true;
-    init_result_ = init_result;
-    validation_required_ = validation_required;
-    run_loop_.Quit();
-  }
-  base::RunLoop run_loop_;
-  bool init_called_ = false;
-  bool init_result_ = false;
-  bool validation_required_ = false;
+namespace {
+
+// Helper class for tests to wait until the store's init procedure is completed.
+class DeviceOAuth2TokenStoreInitWaiter : public TestFuture<bool, bool> {
+ public:
+  bool HasInitBeenCalled() const { return IsReady(); }
+  bool GetInitResult() { return Get<0>(); }
+  bool GetValidationRequired() { return Get<1>(); }
 };
+
 }  // namespace
 
 class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {

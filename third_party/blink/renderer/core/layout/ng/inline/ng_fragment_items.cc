@@ -95,7 +95,9 @@ void NGFragmentItems::FinalizeAfterLayout(
     wtf_size_t fragment_id;
     wtf_size_t item_index;
   };
-  HashMap<const LayoutObject*, LastItem> last_items;
+  HeapHashMap<Member<const LayoutObject>, LastItem> last_items;
+  ClearCollectionScope<HeapHashMap<Member<const LayoutObject>, LastItem>>
+      clear_scope(&last_items);
   wtf_size_t item_index = 0;
   for (const auto& result : results) {
     const auto& fragment =
@@ -117,7 +119,9 @@ void NGFragmentItems::FinalizeAfterLayout(
       DCHECK(layout_object->IsInLayoutNGInlineFormattingContext());
 
       item.SetDeltaToNextForSameLayoutObject(0);
-      if (UNLIKELY(layout_object->IsFloating() || !layout_object->IsInline())) {
+      const bool use_break_token =
+          layout_object->IsFloating() || !layout_object->IsInline();
+      if (UNLIKELY(use_break_token)) {
         // Fragments that aren't really on a line, such as floats, will have
         // block break tokens if they continue in a subsequent fragmentainer, so
         // just check that. Floats in particular will continue as regular box
@@ -155,7 +159,13 @@ void NGFragmentItems::FinalizeAfterLayout(
       DCHECK_LT(last_index, fragment_items->EndItemIndex());
       DCHECK_LT(last_index, item_index);
       last_item->SetDeltaToNextForSameLayoutObject(item_index - last_index);
-      if (!layout_object->IsFloating())
+      // Because we found a following fragment, reset |IsLastForNode| for the
+      // last item except:
+      // a. |IsLastForNode| is computed from break token. The last item already
+      //    has the correct value.
+      // b. Ellipses for atomic inlines. |IsLastForNode| of the last box item
+      //    should be set to ease handling of this edge case.
+      if (!use_break_token && !(layout_object->IsBox() && item.IsEllipsis()))
         last_item->SetIsLastForNode(false);
 #if DCHECK_IS_ON()
       CheckIsLast(*last_item);
@@ -221,9 +231,6 @@ const NGFragmentItem* NGFragmentItems::EndOfReusableItems(
     if (item.Type() != NGFragmentItem::kLine)
       return &item;
 
-    const NGPhysicalLineBoxFragment* line_box_fragment = item.LineBoxFragment();
-    DCHECK(line_box_fragment);
-
     // If there is a dirty item in the middle of a line, its previous line is
     // not reusable, because the dirty item may affect the previous line to wrap
     // differently.
@@ -231,9 +238,22 @@ const NGFragmentItem* NGFragmentItems::EndOfReusableItems(
     if (!CanReuseAll(&line))
       return last_line_start;
 
+    const NGPhysicalLineBoxFragment& line_box_fragment =
+        *item.LineBoxFragment();
+
     // Abort if the line propagated its descendants to outside of the line.
     // They are propagated through NGLayoutResult, which we don't cache.
-    if (line_box_fragment->HasPropagatedDescendants())
+    if (line_box_fragment.HasPropagatedDescendants())
+      return &item;
+
+    // Abort if we are an empty line-box. We don't have any content, and might
+    // resolve the BFC block-offset at the incorrect position.
+    if (line_box_fragment.IsEmptyLineBox())
+      return &item;
+
+    // Abort reusing block-in-inline because it may need to set
+    // |NGPreviousInflowData|.
+    if (UNLIKELY(line_box_fragment.IsBlockInInline()))
       return &item;
 
     // TODO(kojii): Running the normal layout code at least once for this
@@ -241,7 +261,7 @@ const NGFragmentItem* NGFragmentItems::EndOfReusableItems(
     // partial. Remove the last fragment if it is the end of the
     // fragmentation to do so, but we should figure out how to setup the
     // states without doing this.
-    if (!line_box_fragment->BreakToken())
+    if (!line_box_fragment.BreakToken())
       return &item;
 
     last_line_start = &item;

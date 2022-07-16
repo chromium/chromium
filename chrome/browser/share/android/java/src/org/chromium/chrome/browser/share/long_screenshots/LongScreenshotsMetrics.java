@@ -88,4 +88,13 @@ public class LongScreenshotsMetrics {
         RecordHistogram.recordEnumeratedHistogram("Sharing.LongScreenshots.BitmapGenerationStatus",
                 status, BitmapGenerationStatus.COUNT);
     }
+
+    /**
+     * Records the selected screenshot's region's height.
+     * @param sizePx the height of the saved bitmap, in pixels.
+     */
+    public static void logBitmapSelectedHeightPx(int sizePx) {
+        RecordHistogram.recordCount100000Histogram(
+                "Sharing.LongScreenshots.BitmapSelectedHeight", sizePx);
+    }
 }

@@ -5,7 +5,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/mac/mac_util.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/background/background_mode_manager.h"

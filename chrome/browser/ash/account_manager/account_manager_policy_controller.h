@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
 #include "components/account_id/account_id.h"
@@ -35,6 +34,12 @@ class AccountManagerPolicyController : public KeyedService {
       account_manager::AccountManager* account_manager,
       account_manager::AccountManagerFacade* account_manager_facade,
       const AccountId& device_account_id);
+
+  AccountManagerPolicyController(const AccountManagerPolicyController&) =
+      delete;
+  AccountManagerPolicyController& operator=(
+      const AccountManagerPolicyController&) = delete;
+
   ~AccountManagerPolicyController() override;
 
   // Starts applying the behaviour required by |account_manager::AccountManager|
@@ -85,8 +90,6 @@ class AccountManagerPolicyController : public KeyedService {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AccountManagerPolicyController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccountManagerPolicyController);
 };
 
 }  // namespace ash

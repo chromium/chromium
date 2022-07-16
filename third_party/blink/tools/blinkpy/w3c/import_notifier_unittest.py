@@ -281,7 +281,7 @@ class ImportNotifierTest(unittest.TestCase):
         self.host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'external/wpt/bar/OWNERS', 'test@chromium.org')
 
-        data = ('{"dirs":{"external/wpt/foo":{"monorail":{"component":'
+        data = ('{"dirs":{"third_party/blink/web_tests/external/wpt/foo":{"monorail":{"component":'
                 '"Blink>Infra>Ecosystem"},"teamEmail":"email","wpt":{'
                 '"notify":"YES"}}}}')
 

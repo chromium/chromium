@@ -30,25 +30,31 @@ namespace tether {
 
 namespace {
 
-constexpr base::TimeDelta kDisconnectTetheringRequestTime =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kDisconnectTetheringRequestTime = base::Seconds(3);
 
 // Used to verify the DisonnectTetheringOperation notifies the observer when
 // appropriate.
 class MockOperationObserver : public DisconnectTetheringOperation::Observer {
  public:
   MockOperationObserver() = default;
+
+  MockOperationObserver(const MockOperationObserver&) = delete;
+  MockOperationObserver& operator=(const MockOperationObserver&) = delete;
+
   ~MockOperationObserver() = default;
 
   MOCK_METHOD2(OnOperationFinished, void(const std::string&, bool));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockOperationObserver);
 };
 
 }  // namespace
 
 class DisconnectTetheringOperationTest : public testing::Test {
+ public:
+  DisconnectTetheringOperationTest(const DisconnectTetheringOperationTest&) =
+      delete;
+  DisconnectTetheringOperationTest& operator=(
+      const DisconnectTetheringOperationTest&) = delete;
+
  protected:
   DisconnectTetheringOperationTest()
       : local_device_(multidevice::RemoteDeviceRefBuilder()
@@ -115,9 +121,6 @@ class DisconnectTetheringOperationTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<DisconnectTetheringOperation> operation_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisconnectTetheringOperationTest);
 };
 
 TEST_F(DisconnectTetheringOperationTest, TestSuccess) {

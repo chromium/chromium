@@ -63,6 +63,12 @@
 #pragma mark - ChromeBrowserProviderObserverBridgeTest
 
 class ChromeBrowserProviderObserverBridgeTest : public PlatformTest {
+ public:
+  ChromeBrowserProviderObserverBridgeTest(
+      const ChromeBrowserProviderObserverBridgeTest&) = delete;
+  ChromeBrowserProviderObserverBridgeTest& operator=(
+      const ChromeBrowserProviderObserverBridgeTest&) = delete;
+
  protected:
   ChromeBrowserProviderObserverBridgeTest()
       : test_observer_([[TestChromeBrowserProviderObserver alloc] init]) {}
@@ -77,8 +83,6 @@ class ChromeBrowserProviderObserverBridgeTest : public PlatformTest {
 
  private:
   TestChromeBrowserProviderObserver* test_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserProviderObserverBridgeTest);
 };
 
 // Tests that |OnChromeIdentityServiceDidChange| is forwarded.

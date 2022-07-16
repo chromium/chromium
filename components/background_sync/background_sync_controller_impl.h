@@ -11,7 +11,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/background_sync/background_sync_delegate.h"
@@ -53,6 +52,11 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   BackgroundSyncControllerImpl(
       content::BrowserContext* browser_context,
       std::unique_ptr<background_sync::BackgroundSyncDelegate> delegate);
+
+  BackgroundSyncControllerImpl(const BackgroundSyncControllerImpl&) = delete;
+  BackgroundSyncControllerImpl& operator=(const BackgroundSyncControllerImpl&) =
+      delete;
+
   ~BackgroundSyncControllerImpl() override;
 
   // content::BackgroundSyncController overrides.
@@ -94,9 +98,10 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   void RemoveFromTrackedOrigins(const url::Origin& origin) override;
 
   // content_settings::Observer overrides.
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   bool IsOriginTracked(const url::Origin& origin) {
     return periodic_sync_origins_.find(origin) != periodic_sync_origins_.end();
@@ -127,8 +132,6 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   std::unique_ptr<BackgroundSyncMetrics> background_sync_metrics_;
 
   std::set<url::Origin> periodic_sync_origins_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncControllerImpl);
 };
 
 #endif  // COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_CONTROLLER_IMPL_H_

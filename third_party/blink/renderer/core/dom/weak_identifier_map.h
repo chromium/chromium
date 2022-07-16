@@ -28,12 +28,15 @@ class WeakIdentifierMap final
   }
 
   static IdentifierType Identifier(T* object) {
-    IdentifierType result = Instance().object_to_identifier_.at(object);
+    IdentifierType result;
 
-    if (WTF::IsHashTraitsEmptyValue<HashTraits<IdentifierType>>(result)) {
+    auto it = Instance().object_to_identifier_.find(object);
+    if (it == Instance().object_to_identifier_.end()) {
       do {
         result = Next();
       } while (!LIKELY(Instance().Put(object, result)));
+    } else {
+      result = it->value;
     }
     return result;
   }
@@ -43,7 +46,8 @@ class WeakIdentifierMap final
   }
 
   static T* Lookup(IdentifierType identifier) {
-    return Instance().identifier_to_object_.at(identifier);
+    auto it = Instance().identifier_to_object_.find(identifier);
+    return it != Instance().identifier_to_object_.end() ? it->value : nullptr;
   }
 
   static void NotifyObjectDestroyed(T* object) {

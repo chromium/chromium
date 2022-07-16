@@ -34,17 +34,20 @@
   `);
 
   const panel = UI.panels.timeline;
-  panel._captureLayersAndPicturesSetting.set(true);
-  panel._onModeChanged();
+  panel.captureLayersAndPicturesSetting.set(true);
+  panel.onModeChanged();
 
   var paintEvents = [];
   await PerformanceTestRunner.invokeAsyncWithTimeline('performActions');
   var events = PerformanceTestRunner.mainTrackEvents();
   for (var event of events) {
-    if (event.name === TimelineModel.TimelineModel.RecordType.Paint) {
+    // When CompositeAfterPaint is enabled, a Paint trace event will be
+    // generated which encompasses the entire paint cycle for the page. That
+    // event will not correspond to any captured picture, and we just ignore it
+    // for the purpose of this test.
+    if (event.name === TimelineModel.TimelineModel.RecordType.Paint &&
+        TimelineModel.TimelineData.forEvent(event).picture) {
       paintEvents.push(event);
-      if (!TimelineModel.TimelineData.forEvent(event).picture)
-        TestRunner.addResult('Event without picture at ' + paintEvents.length);
     }
   }
 
@@ -52,21 +55,21 @@
     throw new Error('FAIL: Expect at least two paint events');
 
   TestRunner.addSniffer(
-      panel._flameChart._detailsView, '_appendDetailsTabsForTraceEventAndShowDetails', onRecordDetailsReady, false);
+      panel.flameChart.detailsView, 'appendDetailsTabsForTraceEventAndShowDetails', onRecordDetailsReady, false);
   panel.select(Timeline.TimelineSelection.fromTraceEvent(paintEvents[0]));
 
   function onRecordDetailsReady() {
     var updateCount = 0;
 
-    panel._flameChart._detailsView._tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.PaintProfiler, true);
-    var paintProfilerView = panel._flameChart._detailsView._lazyPaintProfilerView._paintProfilerView;
-    TestRunner.addSniffer(paintProfilerView, '_update', onPaintProfilerUpdate, true);
+    panel.flameChart.detailsView.tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.PaintProfiler, true);
+    var paintProfilerView = panel.flameChart.detailsView.lazyPaintProfilerView.paintProfilerView;
+    TestRunner.addSniffer(paintProfilerView, 'update', onPaintProfilerUpdate, true);
 
     function onPaintProfilerUpdate() {
       // No snapshot, not a real update yet -- wait for another update!
-      if (!paintProfilerView._snapshot)
+      if (!paintProfilerView.snapshot)
         return;
-      var logSize = paintProfilerView._log && paintProfilerView._log.length ? '>0' : '0';
+      var logSize = paintProfilerView.log && paintProfilerView.log.length ? '>0' : '0';
       TestRunner.addResult('Paint ' + updateCount + ' log size: ' + logSize);
       if (updateCount++)
         TestRunner.completeTest();

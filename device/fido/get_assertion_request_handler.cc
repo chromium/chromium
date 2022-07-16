@@ -561,6 +561,14 @@ void GetAssertionRequestHandler::HandleResponse(
     return;
   }
 
+  if (selected_authenticator_for_pin_uv_auth_token_ &&
+      authenticator != selected_authenticator_for_pin_uv_auth_token_) {
+    FIDO_LOG(DEBUG) << "Ignoring response from "
+                    << authenticator->GetDisplayName()
+                    << " because another authenticator was selected";
+    return;
+  }
+
 #if defined(OS_WIN)
   if (authenticator->IsWinNativeApiAuthenticator()) {
     state_ = State::kFinished;

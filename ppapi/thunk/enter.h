@@ -14,14 +14,15 @@
 #include "ppapi/shared_impl/ppapi_globals.h"
 #include "ppapi/shared_impl/proxy_lock.h"
 #include "ppapi/shared_impl/resource.h"
-#include "ppapi/shared_impl/resource_tracker.h"
 #include "ppapi/shared_impl/singleton_resource_id.h"
-#include "ppapi/shared_impl/tracked_callback.h"
 #include "ppapi/thunk/ppapi_thunk_export.h"
 #include "ppapi/thunk/ppb_instance_api.h"
 #include "ppapi/thunk/resource_creation_api.h"
 
 namespace ppapi {
+
+class TrackedCallback;
+
 namespace thunk {
 
 // Enter* helper objects: These objects wrap a call from the C PPAPI into
@@ -183,6 +184,10 @@ class EnterResource
       : EnterBase(resource, callback) {
     Init(resource, report_error);
   }
+
+  EnterResource(const EnterResource&) = delete;
+  EnterResource& operator=(const EnterResource&) = delete;
+
   ~EnterResource() {}
 
   ResourceT* object() { return object_; }
@@ -200,8 +205,6 @@ class EnterResource
   }
 
   ResourceT* object_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnterResource);
 };
 
 // ----------------------------------------------------------------------------

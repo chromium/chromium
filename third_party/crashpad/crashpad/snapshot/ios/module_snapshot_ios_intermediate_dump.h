@@ -23,7 +23,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "snapshot/crashpad_info_client_options.h"
 #include "snapshot/module_snapshot.h"
 #include "util/ios/ios_intermediate_dump_map.h"
@@ -37,6 +36,12 @@ namespace internal {
 class ModuleSnapshotIOSIntermediateDump final : public ModuleSnapshot {
  public:
   ModuleSnapshotIOSIntermediateDump();
+
+  ModuleSnapshotIOSIntermediateDump(const ModuleSnapshotIOSIntermediateDump&) =
+      delete;
+  ModuleSnapshotIOSIntermediateDump& operator=(
+      const ModuleSnapshotIOSIntermediateDump&) = delete;
+
   ~ModuleSnapshotIOSIntermediateDump() override;
 
   //! \brief Initialize the snapshot
@@ -84,8 +89,6 @@ class ModuleSnapshotIOSIntermediateDump final : public ModuleSnapshot {
   std::vector<AnnotationSnapshot> annotation_objects_;
 
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleSnapshotIOSIntermediateDump);
 };
 
 }  // namespace internal

@@ -10,6 +10,7 @@
 #include <map>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/match_compare.h"
@@ -70,14 +71,21 @@ class AutocompleteResult {
   // elements between first_index and last_index, including the element pointed
   // by first_index, but not the element pointed by last_index.
   void GroupSuggestionsBySearchVsURL(JNIEnv* env,
-                                     int firstIndex,
-                                     int lastIndex);
+                                     int first_index,
+                                     int last_index);
 
   // Compares the set of AutocompleteMatch references held by Java with the
   // AutocompleteMatch objects held by this instance of the AutocompleteResult
   // and returns true if the two sets are same.
+  // The |match_index|, when different than -1 (|kNoMatchIndex|), specifies the
+  // index of a match of particular interest; this index helps identify cases
+  // where an action is planned on suggestion at an index that falls outside of
+  // bounds of valid AutocompleteResult indices, where every other aspect of the
+  // AutocompleteResult is correct.
   bool VerifyCoherency(JNIEnv* env,
-                       const base::android::JavaParamRef<jlongArray>& matches);
+                       const base::android::JavaParamRef<jlongArray>& matches,
+                       jint match_index,
+                       jint verification_point);
 #endif
 
   // Moves matches from |old_matches| to provide a consistent result set.

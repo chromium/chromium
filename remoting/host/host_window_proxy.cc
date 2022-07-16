@@ -11,7 +11,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/proto/control.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -27,6 +27,9 @@ class HostWindowProxy::Core
   Core(scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
        scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
        std::unique_ptr<HostWindow> host_window);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
 
   // Starts |host_window_| on the |ui_task_runner_| thread.
   void Start(const base::WeakPtr<ClientSessionControl>& client_session_control);
@@ -70,8 +73,6 @@ class HostWindowProxy::Core
 
   // Used to create the control pointer passed to |host_window_|.
   base::WeakPtrFactory<ClientSessionControl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 HostWindowProxy::HostWindowProxy(

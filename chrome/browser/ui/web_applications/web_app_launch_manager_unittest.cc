@@ -1,15 +1,19 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,7 +59,11 @@ class WebAppLaunchManagerUnitTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-    WebAppProvider::Get(profile())->Start();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    SkipMainProfileCheckForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+    WebAppProvider::GetForLocalAppsUnchecked(profile())->Start();
   }
 
  protected:
@@ -67,7 +75,7 @@ class WebAppLaunchManagerUnitTest : public WebAppTest {
     apps::AppLaunchParams params(
         kTestAppId, apps::mojom::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::NEW_WINDOW,
-        apps::mojom::AppLaunchSource::kSourceCommandLine);
+        apps::mojom::LaunchSource::kFromCommandLine);
 
     params.current_directory = base::FilePath(kCurrentDirectory);
     params.command_line = command_line;
@@ -99,7 +107,7 @@ class WebAppLaunchManagerUnitTest : public WebAppTest {
               expected_results.command_line.GetArgs());
     EXPECT_EQ(actual_results.current_directory,
               expected_results.current_directory);
-    EXPECT_EQ(actual_results.source, expected_results.source);
+    EXPECT_EQ(actual_results.launch_source, expected_results.launch_source);
     EXPECT_EQ(actual_results.launch_files, expected_results.launch_files);
     EXPECT_EQ(actual_results.url_handler_launch_url,
               expected_results.url_handler_launch_url);
@@ -135,7 +143,7 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication) {
 
   manager.LaunchApplication(kTestAppId, command_line,
                             base::FilePath(kCurrentDirectory), absl::nullopt,
-                            absl::nullopt, base::DoNothing());
+                            absl::nullopt, {}, base::DoNothing());
   run_loop.Run();
 }
 
@@ -150,6 +158,8 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolWebPrefix) {
   apps::AppLaunchParams expected_results =
       CreateLaunchParams(command_line, std::vector<base::FilePath>(),
                          absl::nullopt, protocol_handler_launch_url);
+  expected_results.launch_source =
+      apps::mojom::LaunchSource::kFromProtocolHandler;
 
   testing::StrictMock<MockWebAppLaunchManager> manager(profile());
   EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))
@@ -165,7 +175,7 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolWebPrefix) {
 
   manager.LaunchApplication(kTestAppId, command_line,
                             base::FilePath(kCurrentDirectory), absl::nullopt,
-                            protocol_handler_launch_url, base::DoNothing());
+                            protocol_handler_launch_url, {}, base::DoNothing());
   run_loop.Run();
 }
 
@@ -180,6 +190,8 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolMailTo) {
   apps::AppLaunchParams expected_results =
       CreateLaunchParams(command_line, std::vector<base::FilePath>(),
                          absl::nullopt, protocol_handler_launch_url);
+  expected_results.launch_source =
+      apps::mojom::LaunchSource::kFromProtocolHandler;
 
   testing::StrictMock<MockWebAppLaunchManager> manager(profile());
   EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))
@@ -195,65 +207,19 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolMailTo) {
 
   manager.LaunchApplication(kTestAppId, command_line,
                             base::FilePath(kCurrentDirectory), absl::nullopt,
-                            protocol_handler_launch_url, base::DoNothing());
+                            protocol_handler_launch_url, {}, base::DoNothing());
   run_loop.Run();
 }
 
-TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolFile) {
-#if defined(OS_WIN)
-  const base::FilePath::CharType kTestPath[] =
-      FILE_PATH_LITERAL("file:///C:/test_app_path/test_app_file.txt");
-#else
-  const base::FilePath::CharType kTestPath[] =
-      FILE_PATH_LITERAL("file:///C:/test_app_path/test_app_file.txt");
-#endif  // defined(OS_WIN)
-
-  base::RunLoop run_loop;
-  const absl::optional<GURL> protocol_handler_launch_url(
-      "file:///C:/test_app_path/test_app_file.txt");
-  base::CommandLine command_line = CreateCommandLine();
-
-  command_line.AppendArg(protocol_handler_launch_url.value().spec());
-
-  apps::AppLaunchParams expected_results = CreateLaunchParams(
-      command_line, {base::FilePath(kTestPath)}, absl::nullopt, absl::nullopt);
-
-  testing::StrictMock<MockWebAppLaunchManager> manager(profile());
-  EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))
-      .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](apps::AppLaunchParams&& params,
-              base::OnceCallback<void(Browser * browser,
-                                      apps::mojom::LaunchContainer container)>
-                  callback) {
-            ValidateLaunchParams(params, expected_results);
-            run_loop.Quit();
-          }));
-
-  manager.LaunchApplication(kTestAppId, command_line,
-                            base::FilePath(kCurrentDirectory), absl::nullopt,
-                            absl::nullopt, base::DoNothing());
-  run_loop.Run();
-}
-
+// Apps are not allowed to handle https:// either as protocols or as file paths.
 TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolDisallowed) {
-#if defined(OS_WIN)
-  const base::FilePath::CharType kTestPath[] =
-      FILE_PATH_LITERAL("https://www.test.com/");
-#else
-  const base::FilePath::CharType kTestPath[] =
-      FILE_PATH_LITERAL("https://www.test.com/");
-#endif  // defined(OS_WIN)
-
   base::RunLoop run_loop;
-  const absl::optional<GURL> protocol_handler_launch_url(
-      "https://www.test.com/");
   base::CommandLine command_line = CreateCommandLine();
 
-  command_line.AppendArg(protocol_handler_launch_url.value().spec());
+  command_line.AppendArg("https://www.test.com/");
 
-  apps::AppLaunchParams expected_results = CreateLaunchParams(
-      command_line, {base::FilePath(kTestPath)}, absl::nullopt, absl::nullopt);
+  apps::AppLaunchParams expected_results =
+      CreateLaunchParams(command_line, {}, absl::nullopt, absl::nullopt);
 
   testing::StrictMock<MockWebAppLaunchManager> manager(profile());
   EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))
@@ -269,11 +235,18 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolDisallowed) {
 
   manager.LaunchApplication(kTestAppId, command_line,
                             base::FilePath(kCurrentDirectory), absl::nullopt,
-                            absl::nullopt, base::DoNothing());
+                            absl::nullopt, {}, base::DoNothing());
   run_loop.Run();
 }
 
 TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_FileFullPath) {
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsFileHandlingSettingsGated)) {
+    // With this flag enabled, this test has no value because the file paths are
+    // not parsed by WebAppLaunchManager.
+    return;
+  }
+
 #if defined(OS_WIN)
   const base::FilePath::CharType kTestPath[] =
       FILE_PATH_LITERAL("c:\\test_app_path\\test_app_file.txt");
@@ -305,11 +278,18 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_FileFullPath) {
 
   manager.LaunchApplication(kTestAppId, command_line,
                             base::FilePath(kCurrentDirectory), absl::nullopt,
-                            absl::nullopt, base::DoNothing());
+                            absl::nullopt, {}, base::DoNothing());
   run_loop.Run();
 }
 
 TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_FileRelativePath) {
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsFileHandlingSettingsGated)) {
+    // With this flag enabled, this test has no value because the file paths are
+    // not parsed by WebAppLaunchManager.
+    return;
+  }
+
 #if defined(OS_WIN)
   const base::FilePath::CharType kTestPath[] =
       FILE_PATH_LITERAL("test_app_path\\test_app_file.txt");
@@ -341,7 +321,7 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_FileRelativePath) {
 
   manager.LaunchApplication(kTestAppId, command_line,
                             base::FilePath(kCurrentDirectory), absl::nullopt,
-                            absl::nullopt, base::DoNothing());
+                            absl::nullopt, {}, base::DoNothing());
   run_loop.Run();
 }
 

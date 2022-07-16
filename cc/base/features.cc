@@ -48,13 +48,18 @@ const base::Feature kScrollUnification{"ScrollUnification",
 const base::Feature kSchedulerSmoothnessForAnimatedScrolls{
     "SmoothnessModeForAnimatedScrolls", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kWheelEventRegions{"WheelEventRegions",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kHudDisplayForPerformanceMetrics{
     "HudDisplayForPerformanceMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kJankInjectionAblationFeature{
     "JankInjectionAblation", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kPreferNewContentForCheckerboardedScrolls{
+    "PreferNewContentForCheckerboardedScrolls",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kDurationEstimatesInCompositorTimingHistory{
+    "DurationEstimatesInCompositorTimingHistory",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features

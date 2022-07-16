@@ -50,10 +50,10 @@ BackForwardCacheCommitDeferringCondition::WillCommitNavigation(
   BackForwardCacheImpl::Entry* bfcache_entry =
       bfcache.GetEntry(navigation_request_.nav_entry_id());
   if (!bfcache_entry)
-    return kProceed;
+    return Result::kProceed;
 
   bfcache.WillCommitNavigationToCachedEntry(*bfcache_entry, std::move(resume));
-  return kDefer;
+  return Result::kDefer;
 }
 
 }  // namespace content

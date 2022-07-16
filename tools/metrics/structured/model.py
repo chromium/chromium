@@ -72,7 +72,7 @@ class Model:
 
   OWNER_REGEX = r'^.+@(chromium\.org|google\.com)$'
   NAME_REGEX = r'^[A-Za-z0-9_.]+$'
-  TYPE_REGEX = r'^(hmac-string|int)$'
+  TYPE_REGEX = r'^(hmac-string|raw-string|int)$'
   ID_REGEX = r'^(none|per-project|uma)$'
   SCOPE_REGEX = r'^(profile|device)$'
 
@@ -130,7 +130,9 @@ class Project:
     self.summary = util.get_text_child(elem, 'summary')
     self.owners = util.get_text_children(elem, 'owner', Model.OWNER_REGEX)
 
-    self.events = [Event(e) for e in util.get_compound_children(elem, 'event')]
+    self.events = [
+        Event(e, self) for e in util.get_compound_children(elem, 'event')
+    ]
 
   def __repr__(self):
     events = '\n\n'.join(str(e) for e in self.events)
@@ -172,7 +174,7 @@ class Event:
   Calling str(event) will return a canonically formatted XML string.
   """
 
-  def __init__(self, elem):
+  def __init__(self, elem, project):
     util.check_attributes(elem, {'name'})
     util.check_children(elem, {'summary', 'metric'})
     util.check_child_names_unique(elem, 'metric')
@@ -180,7 +182,7 @@ class Event:
     self.name = util.get_attr(elem, 'name', Model.NAME_REGEX)
     self.summary = util.get_text_child(elem, 'summary')
     self.metrics = [
-        Metric(m) for m in util.get_compound_children(elem, 'metric')
+        Metric(m, project) for m in util.get_compound_children(elem, 'metric')
     ]
 
   def __repr__(self):
@@ -209,13 +211,18 @@ class Metric:
   Calling str(metric) will return a canonically formatted XML string.
   """
 
-  def __init__(self, elem):
+  def __init__(self, elem, project):
     util.check_attributes(elem, {'name', 'type'})
     util.check_children(elem, {'summary'})
 
     self.name = util.get_attr(elem, 'name', Model.NAME_REGEX)
     self.type = util.get_attr(elem, 'type', Model.TYPE_REGEX)
     self.summary = util.get_text_child(elem, 'summary')
+
+    if self.type == 'raw-string' and project.id != 'none':
+      util.error(
+          elem, "raw-string metrics must be in a project with id type "
+          "'none', but {} has id type '{}'".format(project.name, project.id))
 
   def __repr__(self):
     summary = wrap(self.summary, indent='    ')

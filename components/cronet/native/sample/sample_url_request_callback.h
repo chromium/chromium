@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "cronet_c.h"
 

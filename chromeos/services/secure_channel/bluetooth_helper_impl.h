@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/secure_channel/bluetooth_helper.h"
 #include "chromeos/services/secure_channel/data_with_timestamp.h"
@@ -43,6 +42,9 @@ class BluetoothHelperImpl : public BluetoothHelper {
     static Factory* test_factory_;
   };
 
+  BluetoothHelperImpl(const BluetoothHelperImpl&) = delete;
+  BluetoothHelperImpl& operator=(const BluetoothHelperImpl&) = delete;
+
   ~BluetoothHelperImpl() override;
 
  private:
@@ -74,8 +76,6 @@ class BluetoothHelperImpl : public BluetoothHelper {
   multidevice::RemoteDeviceCache* remote_device_cache_;
   std::unique_ptr<BackgroundEidGenerator> background_eid_generator_;
   std::unique_ptr<ForegroundEidGenerator> foreground_eid_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothHelperImpl);
 };
 
 }  // namespace secure_channel

@@ -22,6 +22,7 @@ class ZeroconfScannerDetector
   // Service types used by the detector.
   static const char kEsclServiceType[];
   static const char kEsclsServiceType[];
+  static const char kGenericScannerServiceType[];
 
   ~ZeroconfScannerDetector() override = default;
 

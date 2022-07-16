@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,6 +33,11 @@ namespace arc {
 class ArcAppUninstallDialogViewBrowserTest : public InProcessBrowserTest {
  public:
   ArcAppUninstallDialogViewBrowserTest() {}
+
+  ArcAppUninstallDialogViewBrowserTest(
+      const ArcAppUninstallDialogViewBrowserTest&) = delete;
+  ArcAppUninstallDialogViewBrowserTest& operator=(
+      const ArcAppUninstallDialogViewBrowserTest&) = delete;
 
   ~ArcAppUninstallDialogViewBrowserTest() override = default;
 
@@ -106,14 +110,18 @@ class ArcAppUninstallDialogViewBrowserTest : public InProcessBrowserTest {
   Profile* profile_ = nullptr;
 
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppUninstallDialogViewBrowserTest);
 };
 
 class ArcAppPermissionDialogViewBrowserTest
     : public ArcAppUninstallDialogViewBrowserTest {
  public:
   ArcAppPermissionDialogViewBrowserTest() {}
+
+  ArcAppPermissionDialogViewBrowserTest(
+      const ArcAppPermissionDialogViewBrowserTest&) = delete;
+  ArcAppPermissionDialogViewBrowserTest& operator=(
+      const ArcAppPermissionDialogViewBrowserTest&) = delete;
+
   // InProcessBrowserTest:
   ~ArcAppPermissionDialogViewBrowserTest() override = default;
 
@@ -184,8 +192,6 @@ class ArcAppPermissionDialogViewBrowserTest
 
   base::WeakPtrFactory<ArcAppPermissionDialogViewBrowserTest> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppPermissionDialogViewBrowserTest);
 };
 
 // Basic flow of requesting scan device list or access permission.

@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "base/test/task_environment.h"
+#include "media/base/svc_scalability_mode.h"
 #include "media/base/video_codecs.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +23,11 @@ constexpr webrtc::VideoEncoderFactory::CodecSupport kSupportedPowerEfficient = {
     true, true};
 constexpr webrtc::VideoEncoderFactory::CodecSupport kUnsupported = {false,
                                                                     false};
-constexpr gfx::Size max_resolution = {1920, 1080};
+constexpr gfx::Size kMaxResolution = {1920, 1080};
+constexpr uint32_t kMaxFramerateNumerator = 30;
+constexpr uint32_t kMaxFramerateDenominator = 1;
+const std::vector<media::SVCScalabilityMode> kScalabilityModes = {
+    media::SVCScalabilityMode::kL1T2, media::SVCScalabilityMode::kL1T3};
 
 bool Equals(webrtc::VideoEncoderFactory::CodecSupport a,
             webrtc::VideoEncoderFactory::CodecSupport b) {
@@ -39,8 +44,10 @@ class MockGpuVideoEncodeAcceleratorFactories
   absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>
   GetVideoEncodeAcceleratorSupportedProfiles() override {
     media::VideoEncodeAccelerator::SupportedProfiles profiles = {
-        {media::VP8PROFILE_ANY, max_resolution, 30, 1},
-        {media::VP9PROFILE_PROFILE0, max_resolution, 30, 1}};
+        {media::VP8PROFILE_ANY, kMaxResolution, kMaxFramerateNumerator,
+         kMaxFramerateDenominator, kScalabilityModes},
+        {media::VP9PROFILE_PROFILE0, kMaxResolution, kMaxFramerateNumerator,
+         kMaxFramerateDenominator, kScalabilityModes}};
     return profiles;
   }
 };
@@ -90,23 +97,15 @@ TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportNoSvc) {
 TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportSvc) {
   EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
       .WillRepeatedly(Return(true));
-  // VP8 and VP9 supported for singles spatial layers.
+  // Test supported modes.
   EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(Sdp("VP8"), "L1T2"),
                      kSupportedPowerEfficient));
   EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(Sdp("VP9"), "L1T3"),
                      kSupportedPowerEfficient));
 
-  // VP9 support for spatial layers is conditionally supported/unsupported.
-  EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(Sdp("VP9"), "L3T3"),
-                     RTCVideoEncoder::Vp9HwSupportForSpatialLayers()
-                         ? kSupportedPowerEfficient
-                         : kUnsupported));
-
-  // Valid SVC config but AV1 is not supported.
+  // Test unsupported modes.
   EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(Sdp("AV1"), "L2T1"),
                      kUnsupported));
-
-  // Invalid SVC config even though VP8 is supported.
   EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(Sdp("H264"), "L1T2"),
                      kUnsupported));
   EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(Sdp("VP8"), "L3T3"),

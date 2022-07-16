@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.net.jsloaderTest');
 goog.setTestOnly();
@@ -52,29 +44,44 @@ testSuite({
   },
 
   testSafeLoad() {
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     window.test1 = null;
     const testUrl = TrustedResourceUrl.fromConstant(
         Const.from('testdata/jsloader_test1.js'));
     const testUrlValue = TrustedResourceUrl.unwrap(testUrl);
     const result = jsloader.safeLoad(testUrl);
 
-    return result.then(() => {
-      const script = result.defaultScope_.script_;
+    return result
+        .then(/**
+                 @suppress {strictMissingProperties} suppression added to
+                 enable type checking
+               */
+              () => {
+                /**
+                 * @suppress {visibility,strictMissingProperties} suppression
+                 * added to enable type checking
+                 */
+                const script = result.defaultScope_.script_;
 
-      assertNotNull('script created', script);
-      assertEquals('encoding is utf-8', 'UTF-8', script.charset);
+                assertNotNull('script created', script);
+                assertEquals('encoding is utf-8', 'UTF-8', script.charset);
 
-      // Check that the URI matches ours.
-      assertTrue('server URI', script.src.indexOf(testUrlValue) >= 0);
+                // Check that the URI matches ours.
+                assertTrue('server URI', script.src.indexOf(testUrlValue) >= 0);
 
-      // Check that the script was really loaded.
-      assertEquals('verification object', 'Test #1 loaded', window.test1);
-    });
+                // Check that the script was really loaded.
+                assertEquals(
+                    'verification object', 'Test #1 loaded', window.test1);
+              });
   },
 
   testSafeLoadAndVerify() {
     const testUrl = TrustedResourceUrl.fromConstant(
         Const.from('testdata/jsloader_test2.js'));
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const result = jsloader.safeLoadAndVerify(testUrl, 'test2');
 
     return result.then((verifyObj) => {
@@ -86,23 +93,39 @@ testSuite({
   testSafeLoadAndVerifyError() {
     const testUrl = TrustedResourceUrl.fromConstant(
         Const.from('testdata/jsloader_test2.js'));
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const result = jsloader.safeLoadAndVerify(testUrl, 'fake');
 
-    return result.then(fail, (error) => {
-      // Check that the error code is right.
-      assertEquals('verification error', ErrorCode.VERIFY_ERROR, error.code);
-    });
+    return result.then(
+        fail, /**
+                 @suppress {strictMissingProperties} suppression added to
+                 enable type checking
+               */
+        (error) => {
+          // Check that the error code is right.
+          assertEquals(
+              'verification error', ErrorCode.VERIFY_ERROR, error.code);
+        });
   },
 
   testSafeLoadAndVerifyCanceled() {
     const testUrl = TrustedResourceUrl.fromConstant(
         Const.from('testdata/jsloader_test2.js'));
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const result = jsloader.safeLoadAndVerify(testUrl, 'test2');
     result.cancel();
   },
 
   testSafeLoadMany() {
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     window.test1 = null;
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     window.test4 = null;
 
     // Load test #3 and then #1.
@@ -112,6 +135,10 @@ testSuite({
     ];
     const result = jsloader.safeLoadMany(testUrls1);
 
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     window.test3Callback = (msg) => {
       // Check that the 1st test was not loaded yet.
       assertEquals('verification object', null, window.test1);
@@ -122,18 +149,33 @@ testSuite({
       jsloader.safeLoadMany(testUrls2);
     };
 
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     window.test4Callback = (msg) => {
       // Check that the 1st test was already loaded.
       assertEquals('verification object', 'Test #1 loaded', window.test1);
 
       // on last script loaded, set variable
+      /**
+       * @suppress {strictMissingProperties} suppression added to enable type
+       * checking
+       */
       window.test4 = msg;
     };
 
-    return result.then(() => {
-      // verify that the last loaded script callback has executed
-      assertEquals('verification object', 'Test #4 loaded', window.test4);
-    });
+    return result.then(/**
+                          @suppress {strictMissingProperties} suppression added
+                          to enable type checking
+                        */
+                       () => {
+                         // verify that the last loaded script callback has
+                         // executed
+                         assertEquals(
+                             'verification object', 'Test #4 loaded',
+                             window.test4);
+                       });
   },
 
   testLoadWithOptions() {
@@ -149,6 +191,10 @@ testSuite({
     const result = jsloader.safeLoad(testUrl, options);
 
     return result.then(() => {
+      /**
+       * @suppress {visibility,strictMissingProperties} suppression added to
+       * enable type checking
+       */
       const script = result.defaultScope_.script_;
 
       // Check that the URI matches ours.

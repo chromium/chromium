@@ -21,6 +21,10 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioDelayStatsReporter {
   // |variance_window_size| is the window size, that is the number of delay
   // values, on which to calculate the variance.
   AudioDelayStatsReporter(int variance_window_size);
+
+  AudioDelayStatsReporter(const AudioDelayStatsReporter&) = delete;
+  AudioDelayStatsReporter& operator=(const AudioDelayStatsReporter&) = delete;
+
   virtual ~AudioDelayStatsReporter();
 
   // Reports delay stats and stores delays. When the number of stored delays
@@ -41,8 +45,6 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioDelayStatsReporter {
 
   // Ensures that all function calls are done on the same thread.
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDelayStatsReporter);
 };
 
 }  // namespace media

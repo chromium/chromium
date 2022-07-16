@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
@@ -24,6 +23,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/test/browser_task_environment.h"
@@ -43,30 +43,6 @@ namespace {
 
 const char kPolicyInvalidationTopic[] = "policy_invalidation_topic";
 
-class FakeCloudPolicyStore : public CloudPolicyStore {
- public:
-  FakeCloudPolicyStore();
-
-  // CloudPolicyStore:
-  void Store(const em::PolicyFetchResponse& policy) override;
-  void Load() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeCloudPolicyStore);
-};
-
-FakeCloudPolicyStore::FakeCloudPolicyStore() {}
-
-void FakeCloudPolicyStore::Store(const em::PolicyFetchResponse& policy) {
-  policy_ = std::make_unique<em::PolicyData>();
-  policy_->ParseFromString(policy.policy_data());
-  Load();
-}
-
-void FakeCloudPolicyStore::Load() {
-  NotifyStoreLoaded();
-}
-
 }  // namespace
 
 // Verifies that an invalidator is created/destroyed as an invalidation service
@@ -78,7 +54,18 @@ TEST(AffiliatedCloudPolicyInvalidatorTest, CreateUseDestroy) {
 
   // Set up a CloudPolicyCore backed by a simple CloudPolicyStore that does no
   // signature verification and stores policy in memory.
-  FakeCloudPolicyStore store;
+  MockCloudPolicyStore store;
+  ON_CALL(store, Load()).WillByDefault([&store]() {
+    store.NotifyStoreLoaded();
+  });
+  ON_CALL(store, Store(testing::_))
+      .WillByDefault([&store](const em::PolicyFetchResponse& policy) {
+        auto policy_data = std::make_unique<em::PolicyData>();
+        ASSERT_TRUE(policy_data->ParseFromString(policy.policy_data()));
+        store.set_policy_data_for_testing(std::move(policy_data));
+        store.Load();
+      });
+
   CloudPolicyCore core(dm_protocol::kChromeDevicePolicyType, std::string(),
                        &store, base::ThreadTaskRunnerHandle::Get(),
                        network::TestNetworkConnectionTracker::CreateGetter());

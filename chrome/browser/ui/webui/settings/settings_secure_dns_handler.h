@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/net/dns_probe_runner.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -25,6 +24,10 @@ namespace settings {
 class SecureDnsHandler : public SettingsPageUIHandler {
  public:
   SecureDnsHandler();
+
+  SecureDnsHandler(const SecureDnsHandler&) = delete;
+  SecureDnsHandler& operator=(const SecureDnsHandler&) = delete;
+
   ~SecureDnsHandler() override;
 
   // SettingsPageUIHandler:
@@ -81,8 +84,6 @@ class SecureDnsHandler : public SettingsPageUIHandler {
   // there is no probe currently in progress.
   std::string probe_callback_id_;
   PrefChangeRegistrar pref_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureDnsHandler);
 };
 
 }  // namespace settings

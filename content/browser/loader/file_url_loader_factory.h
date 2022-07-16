@@ -6,9 +6,8 @@
 #define CONTENT_BROWSER_LOADER_FILE_URL_LOADER_FACTORY_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -41,6 +40,9 @@ class CONTENT_EXPORT FileURLLoaderFactory
       scoped_refptr<SharedCorsOriginAccessList> shared_cors_origin_access_list,
       base::TaskPriority task_priority);
 
+  FileURLLoaderFactory(const FileURLLoaderFactory&) = delete;
+  FileURLLoaderFactory& operator=(const FileURLLoaderFactory&) = delete;
+
  private:
   FileURLLoaderFactory(
       const base::FilePath& profile_path,
@@ -69,8 +71,6 @@ class CONTENT_EXPORT FileURLLoaderFactory
   const scoped_refptr<SharedCorsOriginAccessList>
       shared_cors_origin_access_list_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileURLLoaderFactory);
 };
 
 }  // namespace content

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
@@ -34,6 +33,10 @@ class GaiaScreen : public BaseScreen {
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
   explicit GaiaScreen(const ScreenExitCallback& exit_callback);
+
+  GaiaScreen(const GaiaScreen&) = delete;
+  GaiaScreen& operator=(const GaiaScreen&) = delete;
+
   ~GaiaScreen() override;
 
   void SetView(GaiaView* view);
@@ -54,8 +57,6 @@ class GaiaScreen : public BaseScreen {
   GaiaView* view_ = nullptr;
 
   ScreenExitCallback exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(GaiaScreen);
 };
 
 }  // namespace ash

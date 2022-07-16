@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
@@ -108,25 +109,6 @@ public class PriceTrackingUtilitiesTest {
     @Test
     @SmallTest
     @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
-    public void testIsPriceTrackingEligibleSyncDisabled() {
-        setTabSyncStatus(false, false);
-        Assert.assertFalse(PriceTrackingUtilities.isPriceTrackingEligible());
-    }
-
-    @UiThreadTest
-    @Test
-    @SmallTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
-
-    public void testIsPriceTrackingEligibleNoSyncedTabs() {
-        setTabSyncStatus(true, false);
-        Assert.assertFalse(PriceTrackingUtilities.isPriceTrackingEligible());
-    }
-
-    @UiThreadTest
-    @Test
-    @SmallTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
 
     public void testIsPriceTrackingEligibleNoMbb() {
         setMbbStatus(false);
@@ -164,7 +146,7 @@ public class PriceTrackingUtilitiesTest {
     }
 
     private void setSignedInStatus(boolean isSignedIn) {
-        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(isSignedIn);
+        when(mIdentityManagerMock.hasPrimaryAccount(anyInt())).thenReturn(isSignedIn);
     }
 
     private void setTabSyncStatus(boolean isSyncRequested, boolean hasSessions) {

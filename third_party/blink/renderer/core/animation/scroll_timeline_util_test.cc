@@ -7,7 +7,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_csskeywordvalue_cssnumericvalue_scrolltimelineelementbasedoffset_string.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_scrolltimelineautokeyword.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -61,11 +60,7 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
   ASSERT_TRUE(element_id.has_value());
 
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(scroller);
-  const double time_range = 100;
-  options->setTimeRange(
-      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(
-          time_range));
+  options->setSource(scroller);
   options->setOrientation("block");
   options->setScrollOffsets({OffsetFromString(GetDocument(), "50px"),
                              OffsetFromString(GetDocument(), "auto")});
@@ -76,7 +71,6 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
       ToCompositorScrollTimeline(timeline);
   EXPECT_EQ(compositor_timeline->GetActiveIdForTest(), absl::nullopt);
   EXPECT_EQ(compositor_timeline->GetPendingIdForTest(), element_id);
-  EXPECT_EQ(compositor_timeline->GetTimeRangeForTest(), time_range);
   EXPECT_EQ(compositor_timeline->GetDirectionForTest(),
             CompositorScrollTimeline::ScrollDown);
   EXPECT_EQ(compositor_timeline->GetStartScrollOffsetForTest(), 50);
@@ -95,18 +89,18 @@ TEST_F(ScrollTimelineUtilTest,
   EXPECT_EQ(ToCompositorScrollTimeline(timeline), nullptr);
 }
 
-TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullScrollSource) {
+TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullSource) {
   // Directly call the constructor to make it easier to pass a null
-  // scrollSource. The alternative approach would require us to remove the
+  // source. The alternative approach would require us to remove the
   // documentElement from the document.
-  Element* scroll_source = nullptr;
+  Element* source = nullptr;
   ScrollTimelineOffset* start_scroll_offset =
       MakeGarbageCollected<ScrollTimelineOffset>();
   ScrollTimelineOffset* end_scroll_offset =
       MakeGarbageCollected<ScrollTimelineOffset>();
   ScrollTimeline* timeline = MakeGarbageCollected<ScrollTimeline>(
-      &GetDocument(), scroll_source, ScrollTimeline::Block,
-      CreateScrollOffsets(start_scroll_offset, end_scroll_offset), 100);
+      &GetDocument(), source, ScrollTimeline::Block,
+      CreateScrollOffsets(start_scroll_offset, end_scroll_offset));
 
   scoped_refptr<CompositorScrollTimeline> compositor_timeline =
       ToCompositorScrollTimeline(timeline);
@@ -119,10 +113,7 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullLayoutBox) {
   ASSERT_FALSE(div->GetLayoutBox());
 
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  auto* time_range =
-      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
-  options->setTimeRange(time_range);
-  options->setScrollSource(div);
+  options->setSource(div);
   ScrollTimeline* timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
@@ -130,7 +121,7 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullLayoutBox) {
       ToCompositorScrollTimeline(timeline);
   EXPECT_TRUE(compositor_timeline.get());
   // Here we just want to test the start/end scroll offset.
-  // ToCompositorScrollTimelineNullScrollSource covers the expected pending id
+  // ToCompositorScrollTimelineNullSource covers the expected pending id
   // and ConvertOrientationNullStyle covers the orientation conversion.
   EXPECT_EQ(compositor_timeline->GetStartScrollOffsetForTest(), absl::nullopt);
   EXPECT_EQ(compositor_timeline->GetEndScrollOffsetForTest(), absl::nullopt);

@@ -20,7 +20,6 @@ class PasswordAutofillManager;
 class PasswordManager;
 }  // namespace password_manager
 
-
 // An iOS implementation of password_manager::PasswordManagerDriver.
 class IOSChromePasswordManagerDriver
     : public password_manager::PasswordManagerDriver {
@@ -28,6 +27,12 @@ class IOSChromePasswordManagerDriver
   explicit IOSChromePasswordManagerDriver(
       id<PasswordManagerDriverBridge> bridge,
       password_manager::PasswordManager* password_manager);
+
+  IOSChromePasswordManagerDriver(const IOSChromePasswordManagerDriver&) =
+      delete;
+  IOSChromePasswordManagerDriver& operator=(
+      const IOSChromePasswordManagerDriver&) = delete;
+
   ~IOSChromePasswordManagerDriver() override;
 
   // password_manager::PasswordManagerDriver implementation.
@@ -49,16 +54,14 @@ class IOSChromePasswordManagerDriver
   password_manager::PasswordManager* GetPasswordManager() override;
   password_manager::PasswordAutofillManager* GetPasswordAutofillManager()
       override;
-  bool IsMainFrame() const override;
   ::ui::AXTreeID GetAxTreeId() const override;
+  bool IsInPrimaryMainFrame() const override;
   bool CanShowAutofillUi() const override;
   const GURL& GetLastCommittedURL() const override;
 
  private:
   __weak id<PasswordManagerDriverBridge> bridge_;  // (weak)
   password_manager::PasswordManager* password_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromePasswordManagerDriver);
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_IOS_CHROME_PASSWORD_MANAGER_DRIVER_H_

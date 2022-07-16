@@ -52,6 +52,9 @@ class NetBiosClient : public network::mojom::UDPSocketListener,
 
   explicit NetBiosClient(network::mojom::NetworkContext* network_context);
 
+  NetBiosClient(const NetBiosClient&) = delete;
+  NetBiosClient& operator=(const NetBiosClient&) = delete;
+
   ~NetBiosClient() override;
 
   // NetBiosClientInterface override.
@@ -103,8 +106,6 @@ class NetBiosClient : public network::mojom::UDPSocketListener,
   std::unique_ptr<FirewallHole> firewall_hole_;
   mojo::Remote<network::mojom::UDPSocket> server_socket_;
   mojo::Receiver<network::mojom::UDPSocketListener> listener_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetBiosClient);
 };
 
 }  // namespace smb_client

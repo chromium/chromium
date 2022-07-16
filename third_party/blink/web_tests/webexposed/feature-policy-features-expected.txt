@@ -10,17 +10,18 @@ ch-device-memory
 ch-downlink
 ch-dpr
 ch-ect
-ch-lang
 ch-prefers-color-scheme
 ch-rtt
 ch-ua
 ch-ua-arch
 ch-ua-bitness
 ch-ua-full-version
+ch-ua-full-version-list
 ch-ua-mobile
 ch-ua-model
 ch-ua-platform
 ch-ua-platform-version
+ch-viewport-height
 ch-viewport-width
 ch-width
 clipboard-read
@@ -40,6 +41,7 @@ gyroscope
 hid
 idle-detection
 interest-cohort
+keyboard-map
 magnetometer
 microphone
 midi

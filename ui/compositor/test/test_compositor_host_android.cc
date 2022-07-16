@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
@@ -30,14 +29,16 @@ class TestCompositorHostAndroid : public TestCompositorHost {
                                  viz::LocalSurfaceId());
   }
 
+  TestCompositorHostAndroid(const TestCompositorHostAndroid&) = delete;
+  TestCompositorHostAndroid& operator=(const TestCompositorHostAndroid&) =
+      delete;
+
   // Overridden from TestCompositorHost:
   void Show() override { compositor_->SetVisible(true); }
   ui::Compositor* GetCompositor() override { return compositor_.get(); }
 
  private:
   std::unique_ptr<ui::Compositor> compositor_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCompositorHostAndroid);
 };
 
 TestCompositorHost* TestCompositorHost::Create(

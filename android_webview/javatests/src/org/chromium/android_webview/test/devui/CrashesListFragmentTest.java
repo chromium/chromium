@@ -48,7 +48,6 @@ import androidx.annotation.IdRes;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -75,10 +74,11 @@ import org.chromium.android_webview.devui.util.CrashBugUrlFactory;
 import org.chromium.android_webview.devui.util.WebViewPackageHelper;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -104,25 +104,29 @@ public class CrashesListFragmentTest {
     private static final String CRASH_UPLOAD_BUTTON_TEXT = "Upload this crash report";
 
     @Rule
-    public IntentsTestRule mRule =
-            new IntentsTestRule<MainActivity>(MainActivity.class, false, false);
+    public BaseActivityTestRule mRule = new BaseActivityTestRule<MainActivity>(MainActivity.class);
 
     @After
     public void tearDown() {
         FileUtils.recursivelyDeleteFile(SystemWideCrashDirectories.getWebViewCrashDir(), null);
         FileUtils.recursivelyDeleteFile(SystemWideCrashDirectories.getWebViewCrashLogDir(), null);
+
         // Activity is launched, i.e the test is not skipped.
         if (mRule.getActivity() != null) {
             // Tests are responsible for verifying every Intent they trigger.
             assertNoUnverifiedIntents();
+            Intents.release();
         }
     }
 
     private void launchCrashesFragment() {
-        Intent intent = new Intent();
+        Intent intent = new Intent(ContextUtils.getApplicationContext(), MainActivity.class);
         intent.putExtra(MainActivity.FRAGMENT_ID_INTENT_EXTRA, MainActivity.FRAGMENT_ID_CRASHES);
         mRule.launchActivity(intent);
         onView(withId(R.id.fragment_crashes_list)).check(matches(isDisplayed()));
+
+        // Only start recording intents after launching the MainActivity.
+        Intents.init();
 
         // Stub all external intents, to avoid launching other apps (ex. system browser), has to be
         // done after launching the activity.
@@ -225,7 +229,7 @@ public class CrashesListFragmentTest {
 
             @Override
             public boolean matchesSafely(View view) {
-                Drawable expectedDrawable = mResources.getDrawable(expectedId);
+                Drawable expectedDrawable = view.getContext().getDrawable(expectedId);
                 return withDrawable(expectedDrawable).matches(view);
             }
 
@@ -1050,7 +1054,6 @@ public class CrashesListFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/1231595")
     public void testConsentErrorMessage_shown_canUseGms() throws Throwable {
         Context context = InstrumentationRegistry.getTargetContext();
 

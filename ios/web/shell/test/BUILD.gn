@@ -17,7 +17,6 @@ group("all_tests") {
 # EG2 targets.
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -56,7 +55,6 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -67,12 +65,15 @@ source_set("eg_test_support+eg2") {
     "earl_grey/shell_actions.h",
     "earl_grey/shell_actions.mm",
     "earl_grey/shell_actions_app_interface.h",
+    "earl_grey/shell_actions_app_interface_stub.mm",
     "earl_grey/shell_earl_grey.h",
     "earl_grey/shell_earl_grey.mm",
     "earl_grey/shell_earl_grey_app_interface.h",
+    "earl_grey/shell_earl_grey_app_interface_stub.mm",
     "earl_grey/shell_matchers.h",
     "earl_grey/shell_matchers.mm",
     "earl_grey/shell_matchers_app_interface.h",
+    "earl_grey/shell_matchers_app_interface_stub.mm",
     "earl_grey/web_shell_test_case.h",
     "earl_grey/web_shell_test_case.mm",
   ]
@@ -91,7 +92,6 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg_tests+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",

@@ -46,6 +46,9 @@ class WriteUidGidMapDelegate : public base::LaunchOptions::PreExecDelegate {
         supports_deny_setgroups_(
             NamespaceUtils::KernelSupportsDenySetgroups()) {}
 
+  WriteUidGidMapDelegate(const WriteUidGidMapDelegate&) = delete;
+  WriteUidGidMapDelegate& operator=(const WriteUidGidMapDelegate&) = delete;
+
   ~WriteUidGidMapDelegate() override {}
 
   void RunAsyncSafe() override {
@@ -60,7 +63,6 @@ class WriteUidGidMapDelegate : public base::LaunchOptions::PreExecDelegate {
   const uid_t uid_;
   const gid_t gid_;
   const bool supports_deny_setgroups_;
-  DISALLOW_COPY_AND_ASSIGN(WriteUidGidMapDelegate);
 };
 
 void SetEnvironForNamespaceType(base::EnvironmentMap* environ,

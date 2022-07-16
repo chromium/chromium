@@ -104,6 +104,10 @@ intptr_t CopySyscallArgsToAux(const struct arch_seccomp_data& args, void* aux) {
 class CopyAllArgsOnUnamePolicy : public bpf_dsl::Policy {
  public:
   explicit CopyAllArgsOnUnamePolicy(std::vector<uint64_t>* aux) : aux_(aux) {}
+
+  CopyAllArgsOnUnamePolicy(const CopyAllArgsOnUnamePolicy&) = delete;
+  CopyAllArgsOnUnamePolicy& operator=(const CopyAllArgsOnUnamePolicy&) = delete;
+
   ~CopyAllArgsOnUnamePolicy() override {}
 
   ResultExpr EvaluateSyscall(int sysno) const override {
@@ -117,8 +121,6 @@ class CopyAllArgsOnUnamePolicy : public bpf_dsl::Policy {
 
  private:
   std::vector<uint64_t>* aux_;
-
-  DISALLOW_COPY_AND_ASSIGN(CopyAllArgsOnUnamePolicy);
 };
 
 // We are testing Syscall::Call() by making use of a BPF filter that

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/invalidation/impl/invalidation_logger_observer.h"
@@ -25,6 +24,11 @@ class InvalidationsMessageHandler
       public invalidation::InvalidationLoggerObserver {
  public:
   InvalidationsMessageHandler();
+
+  InvalidationsMessageHandler(const InvalidationsMessageHandler&) = delete;
+  InvalidationsMessageHandler& operator=(const InvalidationsMessageHandler&) =
+      delete;
+
   ~InvalidationsMessageHandler() override;
 
   // Implementation of InvalidationLoggerObserver.
@@ -60,8 +64,6 @@ class InvalidationsMessageHandler
   invalidation::InvalidationLogger* logger_;
 
   base::WeakPtrFactory<InvalidationsMessageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InvalidationsMessageHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INVALIDATIONS_INVALIDATIONS_MESSAGE_HANDLER_H_

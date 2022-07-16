@@ -15,6 +15,11 @@ namespace wm {
 class TestingCursorClientObserver : public aura::client::CursorClientObserver {
  public:
   TestingCursorClientObserver();
+
+  TestingCursorClientObserver(const TestingCursorClientObserver&) = delete;
+  TestingCursorClientObserver& operator=(const TestingCursorClientObserver&) =
+      delete;
+
   void reset();
 
   bool is_cursor_visible() const { return cursor_visibility_; }
@@ -31,8 +36,6 @@ class TestingCursorClientObserver : public aura::client::CursorClientObserver {
   bool did_visibility_change_;
   ui::CursorSize cursor_size_;
   bool did_cursor_size_change_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingCursorClientObserver);
 };
 
 }  // namespace wm

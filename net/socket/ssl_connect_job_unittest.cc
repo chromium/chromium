@@ -167,7 +167,8 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
 
  protected:
   MockClientSocketFactory socket_factory_;
-  MockHostResolver host_resolver_;
+  MockHostResolver host_resolver_{/*default_result=*/MockHostResolverBase::
+                                      RuleResolver::GetLocalhostResult()};
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
   DefaultCTPolicyEnforcer ct_policy_enforcer_;
@@ -211,7 +212,7 @@ TEST_F(SSLConnectJobTest, TCPFail) {
 }
 
 TEST_F(SSLConnectJobTest, TCPTimeout) {
-  const base::TimeDelta kTinyTime = base::TimeDelta::FromMicroseconds(1);
+  const base::TimeDelta kTinyTime = base::Microseconds(1);
 
   // Make request hang.
   host_resolver_.set_ondemand_mode(true);
@@ -233,7 +234,7 @@ TEST_F(SSLConnectJobTest, TCPTimeout) {
 }
 
 TEST_F(SSLConnectJobTest, SSLTimeoutSyncConnect) {
-  const base::TimeDelta kTinyTime = base::TimeDelta::FromMicroseconds(1);
+  const base::TimeDelta kTinyTime = base::Microseconds(1);
 
   // DNS lookup and transport connect complete synchronously, but SSL
   // negotiation hangs.
@@ -262,7 +263,7 @@ TEST_F(SSLConnectJobTest, SSLTimeoutSyncConnect) {
 }
 
 TEST_F(SSLConnectJobTest, SSLTimeoutAsyncTcpConnect) {
-  const base::TimeDelta kTinyTime = base::TimeDelta::FromMicroseconds(1);
+  const base::TimeDelta kTinyTime = base::Microseconds(1);
 
   // DNS lookup is asynchronous, and later SSL negotiation hangs.
   host_resolver_.set_ondemand_mode(true);
@@ -337,7 +338,7 @@ TEST_F(SSLConnectJobTest, BasicDirectAsync) {
   EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
   EXPECT_TRUE(host_resolver_.has_pending_requests());
   EXPECT_EQ(MEDIUM, host_resolver_.last_request_priority());
-  FastForwardBy(base::TimeDelta::FromSeconds(5));
+  FastForwardBy(base::Seconds(5));
 
   base::TimeTicks resolve_complete_time = base::TimeTicks::Now();
   host_resolver_.ResolveAllPending();
@@ -545,35 +546,6 @@ TEST_F(SSLConnectJobTest, DirectLegacyCryptoFallback) {
   }
 }
 
-// Test that the feature flag disables the legacy crypto fallback.
-TEST_F(SSLConnectJobTest, LegacyCryptoFallbackDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kTLSLegacyCryptoFallbackForMetrics);
-  for (Error error :
-       {ERR_CONNECTION_CLOSED, ERR_CONNECTION_RESET, ERR_SSL_PROTOCOL_ERROR,
-        ERR_SSL_VERSION_OR_CIPHER_MISMATCH}) {
-    SCOPED_TRACE(error);
-
-    StaticSocketDataProvider data;
-    socket_factory_.AddSocketDataProvider(&data);
-    SSLSocketDataProvider ssl(ASYNC, error);
-    socket_factory_.AddSSLSocketDataProvider(&ssl);
-    ssl.expected_disable_legacy_crypto = false;
-
-    TestConnectJobDelegate test_delegate;
-    std::unique_ptr<ConnectJob> ssl_connect_job =
-        CreateConnectJob(&test_delegate);
-
-    test_delegate.StartJobExpectingResult(ssl_connect_job.get(), error,
-                                          /*expect_sync_result=*/false);
-    ConnectionAttempts connection_attempts =
-        ssl_connect_job->GetConnectionAttempts();
-    ASSERT_EQ(1u, connection_attempts.size());
-    EXPECT_THAT(connection_attempts[0].result, test::IsError(error));
-  }
-}
-
 TEST_F(SSLConnectJobTest, LegacyCryptoFallbackHistograms) {
   base::FilePath certs_dir = GetTestCertsDirectory();
 
@@ -599,8 +571,6 @@ TEST_F(SSLConnectJobTest, LegacyCryptoFallbackHistograms) {
 
   // TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
   const uint16_t kModernCipher = 0xc02f;
-  // TLS_RSA_WITH_3DES_EDE_CBC_SHA
-  const uint16_t k3DESCipher = 0x000a;
 
   struct HistogramTest {
     SSLLegacyCryptoFallback expected;
@@ -618,16 +588,6 @@ TEST_F(SSLConnectJobTest, LegacyCryptoFallbackHistograms) {
        SSL_SIGN_RSA_PSS_RSAE_SHA256, sha1_leaf},
       {SSLLegacyCryptoFallback::kNoFallback, OK, kModernCipher,
        SSL_SIGN_RSA_PSS_RSAE_SHA256, ok_with_unused_sha1},
-
-      // Connections using 3DES map to kUsed3DES or kSentSHA1CertAndUsed3DES.
-      // Note our only supported 3DES cipher suite does not include a server
-      // signature, so |peer_signature_algorithm| would always be zero.
-      {SSLLegacyCryptoFallback::kUsed3DES, ERR_SSL_PROTOCOL_ERROR, k3DESCipher,
-       0, ok_cert},
-      {SSLLegacyCryptoFallback::kSentSHA1CertAndUsed3DES,
-       ERR_SSL_PROTOCOL_ERROR, k3DESCipher, 0, sha1_leaf},
-      {SSLLegacyCryptoFallback::kSentSHA1CertAndUsed3DES,
-       ERR_SSL_PROTOCOL_ERROR, k3DESCipher, 0, ok_with_unused_sha1},
 
       // Connections using SHA-1 map to kUsedSHA1 or kSentSHA1CertAndUsedSHA1.
       {SSLLegacyCryptoFallback::kUsedSHA1, ERR_SSL_PROTOCOL_ERROR,
@@ -959,7 +919,7 @@ TEST_F(SSLConnectJobTest, HttpProxyAuthChallenge) {
 
   // While waiting for auth credentials to be provided, the Job should not time
   // out.
-  FastForwardBy(base::TimeDelta::FromDays(1));
+  FastForwardBy(base::Days(1));
   test_delegate.WaitForAuthChallenge(1);
   EXPECT_FALSE(test_delegate.has_result());
 

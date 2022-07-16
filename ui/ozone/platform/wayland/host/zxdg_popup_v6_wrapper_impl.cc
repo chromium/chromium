@@ -10,11 +10,13 @@
 
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
+#include "ui/ozone/platform/wayland/host/shell_popup_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
@@ -27,74 +29,80 @@ namespace ui {
 
 namespace {
 
-uint32_t TranslateAnchor(WlAnchor anchor) {
+uint32_t TranslateAnchor(OwnedWindowAnchorPosition anchor) {
   switch (anchor) {
-    case WlAnchor::None:
+    case OwnedWindowAnchorPosition::kNone:
       return ZXDG_POSITIONER_V6_ANCHOR_NONE;
-    case WlAnchor::Top:
+    case OwnedWindowAnchorPosition::kTop:
       return ZXDG_POSITIONER_V6_ANCHOR_TOP;
-    case WlAnchor::Bottom:
+    case OwnedWindowAnchorPosition::kBottom:
       return ZXDG_POSITIONER_V6_ANCHOR_BOTTOM;
-    case WlAnchor::Left:
+    case OwnedWindowAnchorPosition::kLeft:
       return ZXDG_POSITIONER_V6_ANCHOR_LEFT;
-    case WlAnchor::Right:
+    case OwnedWindowAnchorPosition::kRight:
       return ZXDG_POSITIONER_V6_ANCHOR_RIGHT;
-    case WlAnchor::TopLeft:
+    case OwnedWindowAnchorPosition::kTopLeft:
       return ZXDG_POSITIONER_V6_ANCHOR_TOP | ZXDG_POSITIONER_V6_ANCHOR_LEFT;
-    case WlAnchor::BottomLeft:
+    case OwnedWindowAnchorPosition::kBottomLeft:
       return ZXDG_POSITIONER_V6_ANCHOR_BOTTOM | ZXDG_POSITIONER_V6_ANCHOR_LEFT;
-    case WlAnchor::TopRight:
+    case OwnedWindowAnchorPosition::kTopRight:
       return ZXDG_POSITIONER_V6_ANCHOR_TOP | ZXDG_POSITIONER_V6_ANCHOR_RIGHT;
-    case WlAnchor::BottomRight:
+    case OwnedWindowAnchorPosition::kBottomRight:
       return ZXDG_POSITIONER_V6_ANCHOR_BOTTOM | ZXDG_POSITIONER_V6_ANCHOR_RIGHT;
   }
 }
 
-uint32_t TranslateGravity(WlGravity gravity) {
+uint32_t TranslateGravity(OwnedWindowAnchorGravity gravity) {
   switch (gravity) {
-    case WlGravity::None:
+    case OwnedWindowAnchorGravity::kNone:
       return ZXDG_POSITIONER_V6_GRAVITY_NONE;
-    case WlGravity::Top:
+    case OwnedWindowAnchorGravity::kTop:
       return ZXDG_POSITIONER_V6_GRAVITY_TOP;
-    case WlGravity::Bottom:
+    case OwnedWindowAnchorGravity::kBottom:
       return ZXDG_POSITIONER_V6_GRAVITY_BOTTOM;
-    case WlGravity::Left:
+    case OwnedWindowAnchorGravity::kLeft:
       return ZXDG_POSITIONER_V6_GRAVITY_LEFT;
-    case WlGravity::Right:
+    case OwnedWindowAnchorGravity::kRight:
       return ZXDG_POSITIONER_V6_GRAVITY_RIGHT;
-    case WlGravity::TopLeft:
+    case OwnedWindowAnchorGravity::kTopLeft:
       return ZXDG_POSITIONER_V6_GRAVITY_TOP | ZXDG_POSITIONER_V6_GRAVITY_LEFT;
-    case WlGravity::BottomLeft:
+    case OwnedWindowAnchorGravity::kBottomLeft:
       return ZXDG_POSITIONER_V6_GRAVITY_BOTTOM |
              ZXDG_POSITIONER_V6_GRAVITY_LEFT;
-    case WlGravity::TopRight:
+    case OwnedWindowAnchorGravity::kTopRight:
       return ZXDG_POSITIONER_V6_GRAVITY_TOP | ZXDG_POSITIONER_V6_GRAVITY_RIGHT;
-    case WlGravity::BottomRight:
+    case OwnedWindowAnchorGravity::kBottomRight:
       return ZXDG_POSITIONER_V6_GRAVITY_BOTTOM |
              ZXDG_POSITIONER_V6_GRAVITY_RIGHT;
   }
 }
 
 uint32_t TranslateConstraintAdjustment(
-    WlConstraintAdjustment constraint_adjustment) {
+    OwnedWindowConstraintAdjustment constraint_adjustment) {
   uint32_t res = 0;
-  if ((constraint_adjustment & WlConstraintAdjustment::SlideX) !=
-      WlConstraintAdjustment::None)
+  if ((constraint_adjustment &
+       OwnedWindowConstraintAdjustment::kAdjustmentSlideX) !=
+      OwnedWindowConstraintAdjustment::kAdjustmentNone)
     res |= ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_SLIDE_X;
-  if ((constraint_adjustment & WlConstraintAdjustment::SlideY) !=
-      WlConstraintAdjustment::None)
+  if ((constraint_adjustment &
+       OwnedWindowConstraintAdjustment::kAdjustmentSlideY) !=
+      OwnedWindowConstraintAdjustment::kAdjustmentNone)
     res |= ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_SLIDE_Y;
-  if ((constraint_adjustment & WlConstraintAdjustment::FlipX) !=
-      WlConstraintAdjustment::None)
+  if ((constraint_adjustment &
+       OwnedWindowConstraintAdjustment::kAdjustmentFlipX) !=
+      OwnedWindowConstraintAdjustment::kAdjustmentNone)
     res |= ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_X;
-  if ((constraint_adjustment & WlConstraintAdjustment::FlipY) !=
-      WlConstraintAdjustment::None)
+  if ((constraint_adjustment &
+       OwnedWindowConstraintAdjustment::kAdjustmentFlipY) !=
+      OwnedWindowConstraintAdjustment::kAdjustmentNone)
     res |= ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_Y;
-  if ((constraint_adjustment & WlConstraintAdjustment::ResizeX) !=
-      WlConstraintAdjustment::None)
+  if ((constraint_adjustment &
+       OwnedWindowConstraintAdjustment::kAdjustmentResizeX) !=
+      OwnedWindowConstraintAdjustment::kAdjustmentNone)
     res |= ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_RESIZE_X;
-  if ((constraint_adjustment & WlConstraintAdjustment::ResizeY) !=
-      WlConstraintAdjustment::None)
+  if ((constraint_adjustment &
+       OwnedWindowConstraintAdjustment::kAdjustmentRezizeY) !=
+      OwnedWindowConstraintAdjustment::kAdjustmentNone)
     res |= ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_RESIZE_Y;
   return res;
 }
@@ -103,8 +111,10 @@ uint32_t TranslateConstraintAdjustment(
 
 ZXDGPopupV6WrapperImpl::ZXDGPopupV6WrapperImpl(
     std::unique_ptr<ZXDGSurfaceV6WrapperImpl> surface,
-    WaylandWindow* wayland_window)
+    WaylandWindow* wayland_window,
+    WaylandConnection* connection)
     : wayland_window_(wayland_window),
+      connection_(connection),
       zxdg_surface_v6_wrapper_(std::move(surface)) {
   DCHECK(zxdg_surface_v6_wrapper_);
   DCHECK(wayland_window_ && wayland_window_->parent_window());
@@ -112,9 +122,8 @@ ZXDGPopupV6WrapperImpl::ZXDGPopupV6WrapperImpl(
 
 ZXDGPopupV6WrapperImpl::~ZXDGPopupV6WrapperImpl() = default;
 
-bool ZXDGPopupV6WrapperImpl::Initialize(WaylandConnection* connection,
-                                        const ShellPopupParams& params) {
-  if (!connection->shell() && !connection->shell_v6()) {
+bool ZXDGPopupV6WrapperImpl::Initialize(const ShellPopupParams& params) {
+  if (!connection_->shell_v6()) {
     NOTREACHED() << "Wrong shell protocol";
     return false;
   }
@@ -137,30 +146,20 @@ bool ZXDGPopupV6WrapperImpl::Initialize(WaylandConnection* connection,
   if (!zxdg_surface_v6_wrapper_ || !parent_xdg_surface)
     return false;
 
-  auto new_params = params;
+  params_ = params;
   // Wayland doesn't allow empty bounds. If a zero or negative size is set, the
   // invalid_input error is raised. Thus, use the least possible one.
   // WaylandPopup will update its bounds upon the following configure event.
-  if (new_params.bounds.IsEmpty())
-    new_params.bounds.set_size({1, 1});
+  if (params_.bounds.IsEmpty())
+    params_.bounds.set_size({1, 1});
 
-  if (connection->shell_v6())
-    return InitializeV6(connection, new_params, parent_xdg_surface);
-
-  return false;
-}
-
-bool ZXDGPopupV6WrapperImpl::InitializeV6(
-    WaylandConnection* connection,
-    const ShellPopupParams& params,
-    ZXDGSurfaceV6WrapperImpl* parent_xdg_surface) {
-  static const struct zxdg_popup_v6_listener zxdg_popup_v6_listener = {
+  static constexpr zxdg_popup_v6_listener zxdg_popup_v6_listener = {
       &ZXDGPopupV6WrapperImpl::Configure,
       &ZXDGPopupV6WrapperImpl::PopupDone,
   };
 
   zxdg_positioner_v6* positioner =
-      CreatePositioner(connection, wayland_window_->parent_window(), params);
+      CreatePositioner(wayland_window_->parent_window());
   if (!positioner)
     return false;
 
@@ -172,10 +171,8 @@ bool ZXDGPopupV6WrapperImpl::InitializeV6(
 
   zxdg_positioner_v6_destroy(positioner);
 
-  if (CanGrabPopup(connection)) {
-    zxdg_popup_v6_grab(zxdg_popup_v6_.get(), connection->seat(),
-                       connection->serial());
-  }
+  GrabIfPossible(connection_, wayland_window_->parent_window());
+
   zxdg_popup_v6_add_listener(zxdg_popup_v6_.get(), &zxdg_popup_v6_listener,
                              this);
 
@@ -193,38 +190,45 @@ bool ZXDGPopupV6WrapperImpl::IsConfigured() {
   return zxdg_surface_v6_wrapper_->IsConfigured();
 }
 
+bool ZXDGPopupV6WrapperImpl::SetBounds(const gfx::Rect& new_bounds) {
+  // zxdg_popup_v6 doesn't support repositioning. The client must recreate the
+  // objects instead.
+  return false;
+}
+
+void ZXDGPopupV6WrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
+  zxdg_surface_v6_set_window_geometry(zxdg_surface_v6_wrapper_->zxdg_surface(),
+                                      bounds.x(), bounds.y(), bounds.width(),
+                                      bounds.height());
+}
+
+void ZXDGPopupV6WrapperImpl::Grab(uint32_t serial) {
+  zxdg_popup_v6_grab(zxdg_popup_v6_.get(), connection_->seat(), serial);
+}
+
 zxdg_positioner_v6* ZXDGPopupV6WrapperImpl::CreatePositioner(
-    WaylandConnection* connection,
-    WaylandWindow* parent_window,
-    const ShellPopupParams& params) {
+    WaylandWindow* parent_window) {
   struct zxdg_positioner_v6* positioner;
-  positioner = zxdg_shell_v6_create_positioner(connection->shell_v6());
+  positioner = zxdg_shell_v6_create_positioner(connection_->shell_v6());
   if (!positioner)
     return nullptr;
 
-  // The parent we got must be the topmost in the stack of the same family
-  // windows.
-  DCHECK_EQ(parent_window->GetTopMostChildWindow(), parent_window);
-
-  // Place anchor to the end of the possible position.
-  gfx::Rect anchor_rect = GetAnchorRect(
-      params.menu_type, params.bounds,
-      gfx::ScaleToRoundedRect(parent_window->GetBounds(),
-                              1.0 / parent_window->window_scale()));
+  gfx::Rect anchor_rect;
+  OwnedWindowAnchorPosition anchor_position;
+  OwnedWindowAnchorGravity anchor_gravity;
+  OwnedWindowConstraintAdjustment constraint_adjustment;
+  FillAnchorData(params_, &anchor_rect, &anchor_position, &anchor_gravity,
+                 &constraint_adjustment);
 
   zxdg_positioner_v6_set_anchor_rect(positioner, anchor_rect.x(),
                                      anchor_rect.y(), anchor_rect.width(),
                                      anchor_rect.height());
-  zxdg_positioner_v6_set_size(positioner, params.bounds.width(),
-                              params.bounds.height());
-  zxdg_positioner_v6_set_anchor(
-      positioner, TranslateAnchor(GetAnchor(params.menu_type, params.bounds)));
-  zxdg_positioner_v6_set_gravity(
-      positioner,
-      TranslateGravity(GetGravity(params.menu_type, params.bounds)));
+  zxdg_positioner_v6_set_size(positioner, params_.bounds.width(),
+                              params_.bounds.height());
+  zxdg_positioner_v6_set_anchor(positioner, TranslateAnchor(anchor_position));
+  zxdg_positioner_v6_set_gravity(positioner, TranslateGravity(anchor_gravity));
   zxdg_positioner_v6_set_constraint_adjustment(
-      positioner,
-      TranslateConstraintAdjustment(GetConstraintAdjustment(params.menu_type)));
+      positioner, TranslateConstraintAdjustment(constraint_adjustment));
   return positioner;
 }
 

@@ -33,6 +33,11 @@ class CrostiniUpgraderDialogBrowserTest : public CrostiniDialogBrowserTest {
       : CrostiniDialogBrowserTest(true /*register_termina*/),
         app_id_(crostini::CrostiniTestHelper::GenerateAppId(kDesktopFileId)) {}
 
+  CrostiniUpgraderDialogBrowserTest(const CrostiniUpgraderDialogBrowserTest&) =
+      delete;
+  CrostiniUpgraderDialogBrowserTest& operator=(
+      const CrostiniUpgraderDialogBrowserTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     chromeos::CrostiniUpgraderDialog::Show(browser()->profile(),
@@ -100,8 +105,6 @@ class CrostiniUpgraderDialogBrowserTest : public CrostiniDialogBrowserTest {
 
  private:
   std::string app_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUpgraderDialogBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CrostiniUpgraderDialogBrowserTest,

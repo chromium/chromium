@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/sqlite_proto/table_manager.h"
 #include "url/gurl.h"
 
@@ -61,6 +60,11 @@ class AutocompleteActionPredictorTable : public sqlite_proto::TableManager {
 
   typedef std::vector<Row> Rows;
 
+  AutocompleteActionPredictorTable(const AutocompleteActionPredictorTable&) =
+      delete;
+  AutocompleteActionPredictorTable& operator=(
+      const AutocompleteActionPredictorTable&) = delete;
+
   // DB sequence functions.
   void GetRow(const Row::Id& id, Row* row);
   void GetAllRows(Rows* row_buffer);
@@ -80,8 +84,6 @@ class AutocompleteActionPredictorTable : public sqlite_proto::TableManager {
   // TableManager methods (DB sequence).
   void CreateOrClearTablesIfNecessary() override;
   void LogDatabaseStats() override;
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteActionPredictorTable);
 };
 
 }  // namespace predictors

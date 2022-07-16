@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/memory/singleton.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -78,10 +78,9 @@ bool AssetsLoader::AssetsSupported() {
 #endif  // BUILDFLAG(USE_VR_ASSETS_COMPONENT)
 }
 
-void AssetsLoader::OnComponentReady(
-    const base::Version& version,
-    const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+void AssetsLoader::OnComponentReady(const base::Version& version,
+                                    const base::FilePath& install_dir,
+                                    base::Value manifest) {
   main_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AssetsLoader::OnComponentReadyInternal,

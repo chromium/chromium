@@ -37,6 +37,7 @@ class ChromeAppListItem {
 
     void SetFolderId(const std::string& folder_id);
     void SetPosition(const syncer::StringOrdinal& position);
+    void SetName(const std::string& name);
 
    private:
     ChromeAppListItem* const item_;
@@ -76,12 +77,8 @@ class ChromeAppListItem {
   // interfaces that talk to ash directly.
   void IncrementIconVersion();
   void SetIcon(const gfx::ImageSkia& icon);
-  void SetName(const std::string& name);
-  void SetNameAndShortName(const std::string& name,
-                           const std::string& short_name);
   void SetAppStatus(ash::AppStatus app_status);
   void SetFolderId(const std::string& folder_id);
-  void SetPosition(const syncer::StringOrdinal& position);
   void SetIsPageBreak(bool is_page_break);
   void SetIsPersistent(bool is_persistent);
 
@@ -117,11 +114,16 @@ class ChromeAppListItem {
 
   std::string ToDebugString() const;
 
-  // Set the default position if it exists. Otherwise set the first available
-  // position in the app list if |model_updater| is not null.
-  void SetDefaultPositionIfApplicable(AppListModelUpdater* model_updater);
+  // Returns the default position if it exists. Otherwise returns the position
+  // for a new item if |model_updater| is not null.
+  syncer::StringOrdinal CalculateDefaultPositionIfApplicable(
+      AppListModelUpdater* model_updater);
+
+  AppListModelUpdater* model_updater() { return model_updater_; }
 
  protected:
+  friend class ChromeAppListModelUpdater;
+
   ChromeAppListItem(Profile* profile, const std::string& app_id);
 
   Profile* profile() const { return profile_; }
@@ -130,13 +132,18 @@ class ChromeAppListItem {
 
   AppListControllerDelegate* GetController();
 
-  AppListModelUpdater* model_updater() { return model_updater_; }
+  void SetName(const std::string& name);
+  void SetNameAndShortName(const std::string& name,
+                           const std::string& short_name);
+  void SetPosition(const syncer::StringOrdinal& position);
+
   void set_model_updater(AppListModelUpdater* model_updater) {
     model_updater_ = model_updater;
   }
 
-  // Updates item position and name from |sync_item|. |sync_item| must be valid.
-  void UpdateFromSync(
+  // Initializes item position and name from `sync_item`. `sync_item` must be
+  // valid.
+  void InitFromSync(
       const app_list::AppListSyncableService::SyncItem* sync_item);
 
   // Get the context menu of a certain app. This could be different for

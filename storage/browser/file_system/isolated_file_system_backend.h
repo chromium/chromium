@@ -33,7 +33,7 @@ class IsolatedFileSystemBackend : public FileSystemBackend {
   CopyOrMoveFileValidatorFactory* GetCopyOrMoveFileValidatorFactory(
       FileSystemType type,
       base::File::Error* error_code) override;
-  FileSystemOperation* CreateFileSystemOperation(
+  std::unique_ptr<FileSystemOperation> CreateFileSystemOperation(
       const FileSystemURL& url,
       FileSystemContext* context,
       base::File::Error* error_code) const override;

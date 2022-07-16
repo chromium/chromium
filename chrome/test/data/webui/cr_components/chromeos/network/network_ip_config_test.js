@@ -15,9 +15,6 @@ suite('NetworkIpConfigTest', function() {
   let ipConfig;
 
   setup(function() {
-    loadTimeData.overrideValues({
-      updatedCellularActivationUi: true,
-    });
     ipConfig = document.createElement('network-ip-config');
     document.body.appendChild(ipConfig);
     Polymer.dom.flush();

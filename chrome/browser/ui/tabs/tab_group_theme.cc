@@ -76,3 +76,19 @@ int GetTabGroupContextMenuColorId(TabGroupColorId group_color_id) {
 
   return group_id_map.at(group_color_id);
 }
+
+int GetTabGroupBookmarkColorId(tab_groups::TabGroupColorId group_color_id) {
+  static constexpr auto group_id_map =
+      base::MakeFixedFlatMap<TabGroupColorId, int>({
+          {TabGroupColorId::kGrey, TP::COLOR_TAB_GROUP_BOOKMARK_BAR_GREY},
+          {TabGroupColorId::kBlue, TP::COLOR_TAB_GROUP_BOOKMARK_BAR_BLUE},
+          {TabGroupColorId::kRed, TP::COLOR_TAB_GROUP_BOOKMARK_BAR_RED},
+          {TabGroupColorId::kYellow, TP::COLOR_TAB_GROUP_BOOKMARK_BAR_YELLOW},
+          {TabGroupColorId::kGreen, TP::COLOR_TAB_GROUP_BOOKMARK_BAR_GREEN},
+          {TabGroupColorId::kPink, TP::COLOR_TAB_GROUP_BOOKMARK_BAR_PINK},
+          {TabGroupColorId::kPurple, TP::COLOR_TAB_GROUP_BOOKMARK_BAR_PURPLE},
+          {TabGroupColorId::kCyan, TP::COLOR_TAB_GROUP_BOOKMARK_BAR_CYAN},
+      });
+
+  return group_id_map.at(group_color_id);
+}

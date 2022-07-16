@@ -28,7 +28,7 @@ class SkColorFilterWrapper : public DarkModeColorFilter {
       const DarkModeSettings& settings) {
     SkHighContrastConfig config;
     config.fInvertStyle = invert_style;
-    config.fGrayscale = settings.grayscale;
+    config.fGrayscale = false;
     config.fContrast = settings.contrast;
 
     return std::unique_ptr<SkColorFilterWrapper>(

@@ -16,6 +16,9 @@
 // Shows passwords details.
 - (void)showDetailedViewForForm:(const password_manager::PasswordForm&)form;
 
+// Shows form to manually enter new password credentials.
+- (void)showAddPasswordSheet;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_SETTINGS_COMMANDS_H_

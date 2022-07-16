@@ -59,7 +59,9 @@ suite(extension_manager_unit_tests.suiteName, function() {
     return browserProxy.whenCalled('initializeKioskAppSettings').then(() => {
       expectTrue(
           manager.shadowRoot.querySelector('extensions-toolbar').kioskEnabled);
-      manager.shadowRoot.querySelector('extensions-toolbar').fire('kiosk-tap');
+      manager.shadowRoot.querySelector('extensions-toolbar')
+          .dispatchEvent(
+              new CustomEvent('kiosk-tap', {bubbles: true, composed: true}));
       flush();
       expectTrue(!!manager.shadowRoot.querySelector('extensions-kiosk-dialog'));
     });

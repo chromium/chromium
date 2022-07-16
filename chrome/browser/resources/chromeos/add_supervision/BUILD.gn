@@ -10,14 +10,14 @@ js_type_check("closure_compile") {
   deps = [
     ":add_supervision_api_server",
     ":add_supervision_ui",
-    ":post_message_api",
+    "//ui/webui/resources/js:post_message_api_server.m",
   ]
 }
 
 js_library("add_supervision_api_server") {
   deps = [
-    ":post_message_api",
     "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:post_message_api_server.m",
   ]
 }
 
@@ -31,9 +31,6 @@ js_library("add_supervision_ui") {
     "$externs_path/chrome_extensions.js",
     "$externs_path/webview_tag.js",
   ]
-}
-
-js_library("post_message_api") {
 }
 
 html_to_js("web_components") {

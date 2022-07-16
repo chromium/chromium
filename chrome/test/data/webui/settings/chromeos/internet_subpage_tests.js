@@ -13,7 +13,7 @@
 // #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // clang-format on
 
@@ -88,11 +88,7 @@ suite('InternetSubpage', function() {
         mojoApi_.getDeviceStateForTest(mojom.NetworkType.kCellular);
   }
 
-  function initSubpage(isUpdatedCellularUiEnabled) {
-    if (isUpdatedCellularUiEnabled !== undefined) {
-      loadTimeData.overrideValues(
-          {updatedCellularActivationUi: !!isUpdatedCellularUiEnabled});
-    }
+  function initSubpage() {
     PolymerTest.clearBody();
     internetSubpage = document.createElement('settings-internet-subpage');
     assertTrue(!!internetSubpage);
@@ -152,7 +148,7 @@ suite('InternetSubpage', function() {
     });
 
     test('Tether', function() {
-      initSubpage(false);
+      initSubpage();
       const mojom = chromeos.networkConfig.mojom;
       setNetworksForTest(mojom.NetworkType.kTether, [
         OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
@@ -201,7 +197,7 @@ suite('InternetSubpage', function() {
     });
 
     test('Deep link to add cellular button', async () => {
-      initSubpage(true /* isUpdatedCellularUiEnabled */);
+      initSubpage();
       addCellularNetworks();
       const mojom = chromeos.networkConfig.mojom;
       await flushAsync();
@@ -213,7 +209,7 @@ suite('InternetSubpage', function() {
         simInfos: [{eid: 'eid'}],
       };
       cellularNetworkList.globalPolicy = {
-        allowOnlyPolicyNetworksToConnect: false,
+        allowOnlyPolicyWifiNetworksToConnect: false,
       };
       await flushAsync();
 
@@ -234,29 +230,8 @@ suite('InternetSubpage', function() {
     });
 
     test(
-        'Tether plus Cellular with updatedCellularActivationUi false',
-        function() {
-          initSubpage(false /* isUpdatedCellularUiEnabled */);
-          const mojom = chromeos.networkConfig.mojom;
-          addCellularNetworks();
-          return flushAsync().then(() => {
-            assertEquals(3, internetSubpage.networkStateList_.length);
-            const toggle = internetSubpage.$$('#deviceEnabledButton');
-            assertTrue(!!toggle);
-            assertFalse(toggle.disabled);
-            const networkList = internetSubpage.$$('#networkList');
-            assertTrue(!!networkList);
-            assertEquals(3, networkList.networks.length);
-            const tetherToggle = internetSubpage.$$('#tetherEnabledButton');
-            assertTrue(!!tetherToggle);
-            assertFalse(tetherToggle.disabled);
-          });
-        });
-
-    test(
-        'Tether plus Cellular with updatedCellularActivationUi true',
-        function() {
-          initSubpage(true /* isUpdatedCellularUiEnabled */);
+        'Tether plus Cellular', function() {
+          initSubpage();
           const mojom = chromeos.networkConfig.mojom;
           addCellularNetworks();
           return flushAsync().then(() => {
@@ -278,7 +253,7 @@ suite('InternetSubpage', function() {
       // |oldRoute| in currentRouteChanged() could become undefined if a page
       // is refreshed. This test makes sure if |oldRoute| is undefined no js
       // console error is thrown.
-      initSubpage(true /* isUpdatedCellularUiEnabled */);
+      initSubpage();
       const mojom = chromeos.networkConfig.mojom;
       addCellularNetworks();
       return flushAsync().then(() => {
@@ -295,7 +270,7 @@ suite('InternetSubpage', function() {
 
     // Regression test for https://crbug.com/1197342.
     test('pSIM section shows when cellularNetworks present', async () => {
-      initSubpage(true /* isUpdatedCellularUiEnabled */);
+      initSubpage();
 
       const mojom = chromeos.networkConfig.mojom;
       const networks = [
@@ -327,9 +302,8 @@ suite('InternetSubpage', function() {
 
     // Regression test for https://crbug.com/1182406.
     test(
-        'Cellular subpage with no networks w/ updatedCellularActivationUi flag',
-        function() {
-          initSubpage(true /* isUpdatedCellularUiEnabled */);
+        'Cellular subpage with no networks', function() {
+          initSubpage();
           addCellularNetworks([] /* networks */);
           return flushAsync().then(() => {
             const cellularNetworkList =
@@ -337,64 +311,6 @@ suite('InternetSubpage', function() {
             assertTrue(!!cellularNetworkList);
           });
         });
-
-    test('Select locked SIM shows details', async () => {
-      initSubpage(false /* isUpdatedCellularUiEnabled */);
-
-      internetSubpage.globalPolicy = {
-        allowOnlyPolicyNetworksToConnect: false,
-      };
-
-      // Add cellular network with locked SIM.
-      const lockedSim = OncMojo.getDefaultNetworkState(
-          chromeos.networkConfig.mojom.NetworkType.kCellular, 'cellular1');
-      lockedSim.typeState.cellular.simLocked = true;
-      addCellularNetworks([lockedSim]);
-
-      return flushAsync().then(async () => {
-        const networkList = internetSubpage.$$('#networkList');
-        assertTrue(!!networkList);
-
-        // Selecting this network should cause the the detail page to be shown
-        // instead of initiating a connection.
-        const showDetailPromise =
-            test_util.eventToPromise('show-detail', internetSubpage);
-
-        const event = {detail: lockedSim, target: networkList};
-        networkList.fire('selected', event);
-        await showDetailPromise;
-      });
-    });
-
-    test('Deep link to tether on/off toggle w/ cellular', async () => {
-      initSubpage(false /* isUpdatedCellularUiEnabled */);
-      const mojom = chromeos.networkConfig.mojom;
-      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kTether);
-      setNetworksForTest(mojom.NetworkType.kCellular, [
-        OncMojo.getDefaultNetworkState(
-            mojom.NetworkType.kCellular, 'cellular1'),
-        OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
-        OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether2'),
-      ]);
-      internetSubpage.tetherDeviceState = {
-        type: mojom.NetworkType.kTether,
-        deviceState: mojom.DeviceStateType.kEnabled
-      };
-
-      const params = new URLSearchParams;
-      params.append('settingId', '22');
-      settings.Router.getInstance().navigateTo(
-          settings.routes.INTERNET_NETWORKS, params);
-
-      await flushAsync();
-
-      const deepLinkElement = internetSubpage.$$('#tetherEnabledButton');
-      assertTrue(!!deepLinkElement);
-      await test_util.waitAfterNextRender(deepLinkElement);
-      assertEquals(
-          deepLinkElement, getDeepActiveElement(),
-          'Tether enabled should be focused for settingId=22.');
-    });
 
     suite('VPN', function() {
       function initVpn() {

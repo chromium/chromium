@@ -15,13 +15,11 @@ namespace {
 // Client name for Chrome extensions that require access to Identity APIs.
 const char* const kExtensionsIdentityAPIOAuthConsumerName =
     "extensions_identity_api";
-const char* const kTokenHandleFetcherOAuthConsumerName = "token_handle_fetcher";
-const char* const kArcAuthContextOAuthConsumerName = "ArcAuthContext";
 
 }  // namespace
 
-// clang-format off
 const std::set<std::string> GetUnconsentedOAuth2Scopes() {
+  // clang-format off
   return {
       // Used to fetch account information.
       GaiaConstants::kGoogleUserInfoEmail,
@@ -52,7 +50,14 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       // Required by Permission Request Creator.
       GaiaConstants::kClassifyUrlKidPermissionOAuth2Scope,
 
-      // Required by ChromeOS only.
+      // Required by the feedback uploader.
+      GaiaConstants::kSupportContentOAuth2Scope,
+
+      // Required by the Google Photos NTP module.
+      GaiaConstants::kPhotosModuleOAuth2Scope,
+      GaiaConstants::kPhotosModuleImageOAuth2Scope,
+
+    // Required by ChromeOS only.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       GaiaConstants::kAccountsReauthOAuth2Scope,
       GaiaConstants::kAssistantOAuth2Scope,
@@ -63,18 +68,16 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       GaiaConstants::kDriveOAuth2Scope,
       GaiaConstants::kDriveReadOnlyOAuth2Scope,
       GaiaConstants::kGCMGroupServerOAuth2Scope,
-      GaiaConstants::kKidFamilyReadonlyOAuth2Scope,
-      GaiaConstants::kKidManagementOAuth2Scope,
-      GaiaConstants::kKidManagementPrivilegedOAuth2Scope,
-      GaiaConstants::kKidsSupervisionSetupChildOAuth2Scope,
+      GaiaConstants::kCloudPlatformProjectsOAuth2Scope,
       GaiaConstants::kNearbyShareOAuth2Scope,
+      GaiaConstants::kOAuth1LoginScope,
       GaiaConstants::kPeopleApiReadOnlyOAuth2Scope,
       GaiaConstants::kPhotosOAuth2Scope,
       GaiaConstants::kTachyonOAuthScope,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
-}
 // clang-format on
+}
 
 const std::set<std::string> GetPrivilegedOAuth2Scopes() {
   return {
@@ -85,8 +88,6 @@ const std::set<std::string> GetPrivilegedOAuth2Scopes() {
 const std::set<std::string> GetPrivilegedOAuth2Consumers() {
   return {
       kExtensionsIdentityAPIOAuthConsumerName,
-      kTokenHandleFetcherOAuthConsumerName,
-      kArcAuthContextOAuthConsumerName,
   };
 }
 

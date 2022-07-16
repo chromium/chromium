@@ -65,7 +65,9 @@
  }
 </style>
 <div id="diagnosticsContainer" hidden="[[!systemInfoReceived_]]">
-  <div id="header">[[i18n('diagnosticsTitle')]]</div>
+  <div id="header" hidden$="[[isNetworkingEnabled]]">
+    [[i18n('diagnosticsTitle')]]
+  </div>
   <div id="banner" hidden="[[!bannerMessage]]" class$="[[scrollingClass_]]">
     <iron-icon icon="diagnostics:info" id="bannerIcon"></iron-icon>
     <span id="bannerMsg">[[bannerMessage]]</span>
@@ -73,32 +75,29 @@
   <div class="overview-container">
     <overview-card id="overviewCard"></overview-card>
   </div>
-  <div class="diagnostics-cards-container">
+  <div class$="[[getCardContainerClass_(isNetworkingEnabled)]]">
     <template is="dom-if" if="[[showBatteryStatusCard_]]" restamp>
       <div class="card-width">
         <battery-status-card id="batteryStatusCard"
-          is-test-running="{{isTestRunning}}"
-          is-active="[[isActive]]"
-          >
+            test-suite-status="{{testSuiteStatus}}"
+            is-active="[[isActive]]">
         </battery-status-card>
       </div>
     </template>
     <div class="card-width">
       <cpu-card id="cpuCard"
-        is-test-running="{{isTestRunning}}"
-        is-active="[[isActive]]"
-        >
+          test-suite-status="{{testSuiteStatus}}"
+          is-active="[[isActive]]">
       </cpu-card>
     </div>
     <div class="card-width">
       <memory-card id="memoryCard"
-        is-test-running="{{isTestRunning}}"
-        is-active="[[isActive]]"
-        >
+          test-suite-status="{{testSuiteStatus}}"
+          is-active="[[isActive]]">
       </memory-card>
     </div>
   </div>
-  <template is="dom-if" if="[[showSessionLogButton]]">
+  <template is="dom-if" if="[[!isNetworkingEnabled]]">
     <div class="session-log-container">
       <cr-button on-click="onSessionLogClick_" class="session-log-button"
           hidden="[[!isLoggedIn_]]">

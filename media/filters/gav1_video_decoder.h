@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/media_export.h"
@@ -47,7 +46,6 @@ class MEDIA_EXPORT Gav1VideoDecoder : public OffloadableVideoDecoder {
                   const WaitingCB& waiting_cb) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure reset_cb) override;
-  bool IsOptimizedForRTC() const override;
 
   // OffloadableVideoDecoder implementation.
   void Detach() override;
@@ -96,7 +94,7 @@ class OffloadingGav1VideoDecoder : public OffloadingVideoDecoder {
   explicit OffloadingGav1VideoDecoder(MediaLog* media_log)
       : OffloadingVideoDecoder(
             0,
-            std::vector<VideoCodec>(1, kCodecAV1),
+            std::vector<VideoCodec>(1, VideoCodec::kAV1),
             std::make_unique<Gav1VideoDecoder>(
                 media_log,
                 OffloadableVideoDecoder::OffloadState::kOffloaded)) {}

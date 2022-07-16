@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:paddingHorizontal="@dimen/page_info_popup_padding_sides"
+    android:paddingVertical="@dimen/page_info_popup_padding_vertical"
+    android:orientation="horizontal" >
+
+    <TextView
+        style="@style/PreferenceTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/page_zoom_title" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/page_zoom_decrease_zoom_button"
+        android:layout_width="@dimen/page_zoom_min_touch_target_size"
+        android:layout_height="@dimen/page_zoom_min_touch_target_size"
+        android:src="@drawable/ic_remove"
+        android:background="?attr/selectableItemBackground"
+        android:layout_marginHorizontal="@dimen/page_zoom_control_spacing"
+        android:contentDescription="@string/page_zoom_decrease_zoom_button_text"
+        android:tint="@color/default_icon_color_tint_list" />
+
+    <TextView
+        android:id="@+id/page_zoom_current_zoom_level_text"
+        style="@style/PreferenceTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/page_zoom_increase_zoom_button"
+        android:layout_width="@dimen/page_zoom_min_touch_target_size"
+        android:layout_height="@dimen/page_zoom_min_touch_target_size"
+        android:src="@drawable/ic_add"
+        android:background="?attr/selectableItemBackground"
+        android:layout_marginHorizontal="@dimen/page_zoom_control_spacing"
+        android:contentDescription="@string/page_zoom_increase_zoom_button_text"
+        android:tint="@color/default_icon_color_tint_list" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/page_zoom_reset_zoom_button"
+        style="@style/TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/reset" />
+
+</LinearLayout>

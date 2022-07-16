@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Class to support scrollable containers for drag and drop.
@@ -25,6 +17,8 @@ goog.require('goog.events.EventHandler');
 goog.require('goog.events.EventType');
 goog.require('goog.math.Coordinate');
 goog.require('goog.style');
+goog.requireType('goog.events.Event');
+goog.requireType('goog.math.Rect');
 
 
 
@@ -48,6 +42,7 @@ goog.require('goog.style');
  */
 goog.fx.DragScrollSupport = function(
     containerNode, opt_margin, opt_externalMouseMoveTracking) {
+  'use strict';
   goog.fx.DragScrollSupport.base(this, 'constructor');
 
   /**
@@ -159,6 +154,7 @@ goog.fx.DragScrollSupport.MARGIN = 32;
  *     only when the cursor is inside the container node.
  */
 goog.fx.DragScrollSupport.prototype.setConstrainScroll = function(constrain) {
+  'use strict';
   this.constrainScroll_ = !!this.margin_ && constrain;
 };
 
@@ -169,6 +165,7 @@ goog.fx.DragScrollSupport.prototype.setConstrainScroll = function(constrain) {
  */
 goog.fx.DragScrollSupport.prototype.setHorizontalScrolling = function(
     scrolling) {
+  'use strict';
   this.horizontalScrolling_ = scrolling;
 };
 
@@ -182,6 +179,7 @@ goog.fx.DragScrollSupport.prototype.setHorizontalScrolling = function(
  * @private
  */
 goog.fx.DragScrollSupport.prototype.constrainBounds_ = function(bounds) {
+  'use strict';
   var margin = this.margin_;
   if (margin) {
     var quarterHeight = bounds.height * 0.25;
@@ -206,6 +204,7 @@ goog.fx.DragScrollSupport.prototype.constrainBounds_ = function(bounds) {
  */
 goog.fx.DragScrollSupport.prototype.setupListeners_ = function(
     externalMouseMoveTracking) {
+  'use strict';
   if (!externalMouseMoveTracking) {
     // Track mouse pointer position to determine scroll direction.
     this.eventHandler_.listen(
@@ -225,6 +224,7 @@ goog.fx.DragScrollSupport.prototype.setupListeners_ = function(
  * @private
  */
 goog.fx.DragScrollSupport.prototype.onTick_ = function(event) {
+  'use strict';
   this.containerNode_.scrollTop += this.scrollDelta_.y;
   this.containerNode_.scrollLeft += this.scrollDelta_.x;
 };
@@ -235,6 +235,7 @@ goog.fx.DragScrollSupport.prototype.onTick_ = function(event) {
  * @param {goog.events.Event} event Mouse move event.
  */
 goog.fx.DragScrollSupport.prototype.onMouseMove = function(event) {
+  'use strict';
   var deltaX = this.horizontalScrolling_ ?
       this.calculateScrollDelta(
           event.clientX, this.scrollBounds_.left, this.scrollBounds_.width) :
@@ -264,6 +265,7 @@ goog.fx.DragScrollSupport.prototype.onMouseMove = function(event) {
  * @private
  */
 goog.fx.DragScrollSupport.prototype.isInContainerBounds_ = function(x, y) {
+  'use strict';
   var containerBounds = this.containerBounds_;
   return containerBounds.left <= x &&
       containerBounds.left + containerBounds.width >= x &&
@@ -285,6 +287,7 @@ goog.fx.DragScrollSupport.prototype.isInContainerBounds_ = function(x, y) {
  */
 goog.fx.DragScrollSupport.prototype.calculateScrollDelta = function(
     coordinate, min, rangeLength) {
+  'use strict';
   var delta = 0;
   if (coordinate < min) {
     delta = -goog.fx.DragScrollSupport.SCROLL_STEP_;
@@ -297,6 +300,7 @@ goog.fx.DragScrollSupport.prototype.calculateScrollDelta = function(
 
 /** @override */
 goog.fx.DragScrollSupport.prototype.disposeInternal = function() {
+  'use strict';
   goog.fx.DragScrollSupport.superClass_.disposeInternal.call(this);
   this.eventHandler_.dispose();
   this.scrollTimer_.dispose();

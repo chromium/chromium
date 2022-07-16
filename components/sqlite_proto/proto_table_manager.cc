@@ -4,8 +4,8 @@
 
 #include "components/sqlite_proto/proto_table_manager.h"
 
-#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"

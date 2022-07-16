@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
+#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "rlz/lib/assert.h"

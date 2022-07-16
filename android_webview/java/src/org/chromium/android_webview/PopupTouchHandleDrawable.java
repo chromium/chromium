@@ -598,7 +598,7 @@ public class PopupTouchHandleDrawable extends View implements DisplayAndroidObse
                 // Intentionally swallowed due to bad Android implemention. See crbug.com/633224.
             }
         }
-        mParentPositionObserver.clearListener();
+        mParentPositionObserver.removeListener(mParentPositionListener);
     }
 
     @CalledByNative
@@ -646,7 +646,7 @@ public class PopupTouchHandleDrawable extends View implements DisplayAndroidObse
     public void onContainerViewChanged(ViewGroup newContainerView) {
         // If the parent View ever changes, the parent position observer
         // must be updated accordingly.
-        mParentPositionObserver.clearListener();
+        mParentPositionObserver.removeListener(mParentPositionListener);
         mParentPositionObserver = new ViewPositionObserver(newContainerView);
         if (mContainer.isShowing()) {
             mParentPositionObserver.addListener(mParentPositionListener);

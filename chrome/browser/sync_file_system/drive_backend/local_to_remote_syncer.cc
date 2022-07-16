@@ -15,9 +15,9 @@
 #include "base/format_macros.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "chrome/browser/sync_file_system/drive_backend/callback_helper.h"
 #include "chrome/browser/sync_file_system/drive_backend/drive_backend_constants.h"
 #include "chrome/browser/sync_file_system/drive_backend/drive_backend_util.h"
@@ -485,7 +485,7 @@ void LocalToRemoteSyncer::DidDeleteRemoteFile(
   // last sync completed.  As our policy for deletion-modification conflict
   // resolution, ignore the local deletion.
   if (status == SYNC_STATUS_OK || error == google_apis::HTTP_NOT_FOUND) {
-    SyncStatusCode status = metadata_database()->UpdateByDeletedRemoteFile(
+    status = metadata_database()->UpdateByDeletedRemoteFile(
         remote_file_tracker_->file_id());
     SyncCompleted(std::move(token), status);
     return;
@@ -571,7 +571,7 @@ void LocalToRemoteSyncer::DidUploadExistingFile(
   if (!details.missing() && details.file_kind() == FILE_KIND_FILE &&
       details.title() == title.AsUTF8Unsafe() &&
       HasFileAsParent(details, remote_parent_folder_tracker_->file_id())) {
-    SyncStatusCode status = metadata_database()->UpdateTracker(
+    status = metadata_database()->UpdateTracker(
         remote_file_tracker_->tracker_id(), file.details());
     SyncCompleted(std::move(token), status);
     return;

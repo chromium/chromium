@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
-#include "chrome/browser/web_applications/components/external_install_options.h"
+#include "chrome/browser/web_applications/external_install_options.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {

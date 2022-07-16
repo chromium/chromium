@@ -8,6 +8,7 @@
 
 namespace mojo {
 
+// static
 bool StructTraits<network::mojom::AuthChallengeInfoDataView,
                   net::AuthChallengeInfo>::
     Read(network::mojom::AuthChallengeInfoDataView data,
@@ -21,10 +22,24 @@ bool StructTraits<network::mojom::AuthChallengeInfoDataView,
   return true;
 }
 
+// static
 bool StructTraits<network::mojom::HttpVersionDataView, net::HttpVersion>::Read(
     network::mojom::HttpVersionDataView data,
     net::HttpVersion* out) {
   *out = net::HttpVersion(data.major_value(), data.minor_value());
+  return true;
+}
+
+// static
+bool StructTraits<
+    network::mojom::ResolveErrorInfoDataView,
+    net::ResolveErrorInfo>::Read(network::mojom::ResolveErrorInfoDataView data,
+                                 net::ResolveErrorInfo* out) {
+  // There should not be a secure network error if the error code indicates no
+  // error.
+  if (data.error() == net::OK && data.is_secure_network_error())
+    return false;
+  *out = net::ResolveErrorInfo(data.error(), data.is_secure_network_error());
   return true;
 }
 

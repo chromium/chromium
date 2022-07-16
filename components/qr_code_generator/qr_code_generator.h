@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct QRVersionInfo;
@@ -26,6 +27,10 @@ class QRCodeGenerator {
    public:
     GeneratedCode();
     GeneratedCode(GeneratedCode&&);
+
+    GeneratedCode(const GeneratedCode&) = delete;
+    GeneratedCode& operator=(const GeneratedCode&) = delete;
+
     ~GeneratedCode();
 
     // Pixel data; pointer to an array of bytes, where the least-significant
@@ -36,8 +41,6 @@ class QRCodeGenerator {
 
     // Width and height (which are equal) of the generated data, in tiles.
     int qr_size = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(GeneratedCode);
   };
 
   // Static parameters for V5 QR codes.
@@ -49,6 +52,30 @@ class QRCodeGenerator {
     static constexpr size_t kSegmentDataBytes = 43;
     static constexpr size_t kDataBytes = kSegmentDataBytes * kNumSegments;
     static constexpr size_t kInputBytes = kDataBytes - 2;
+  };
+
+  // VersionClass enumerates the two types of QR code supported: small and
+  // large. These differ in the size of the lengths used.
+  enum class VersionClass {
+    SMALL,
+    LARGE,
+    // Micro QR codes and versions >= 27 would be their own class but are not
+    // supported.
+  };
+
+  // SegmentType enumerates the different data segments that can be in a QR
+  // code. See section 7.3.
+  enum class SegmentType {
+    DIGIT = 1,
+    ALPHANUM = 2,
+    BINARY = 3,
+    // ECI and Kanji segments are not supported.
+  };
+
+  // A Segment is a run of input bytes encoded as a given segment type.
+  struct Segment {
+    SegmentType type;
+    size_t length;
   };
 
   QRCodeGenerator();
@@ -66,6 +93,9 @@ class QRCodeGenerator {
       absl::optional<uint8_t> mask = absl::nullopt);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(QRCodeGenerator, Segmentation);
+  FRIEND_TEST_ALL_PREFIXES(QRCodeGenerator, SegmentationValid);
+
   // PutFinder paints a finder symbol at the given coordinates.
   void PutFinder(int x, int y);
 
@@ -124,6 +154,52 @@ class QRCodeGenerator {
   // CountPenaltyPoints sums the penalty points for the current, fully drawn,
   // code. See table 11.
   unsigned CountPenaltyPoints() const;
+
+  // ClassifyByte returns the smallest |SegmentType| that can encode |byte|.
+  static SegmentType ClassifyByte(uint8_t byte);
+
+  // IsValidSegmentation returns true if |segments| precisely covers |input|
+  // with segments that can encode the corresponding byte of |input|.
+  static bool IsValidSegmentation(const std::vector<Segment>& segments,
+                                  base::span<const uint8_t> input);
+
+  // NoSuperfluousSegments returns true if no consecutive segments in |segments|
+  // have the same type.
+  static bool NoSuperfluousSegments(const std::vector<Segment>& segments);
+
+  // InitialSegmentation returns a segmentation of |input| that puts each
+  // byte into the smallest |SegmentType| that can encode it while merging
+  // consecutive segments of the same type.
+  static std::vector<Segment> InitialSegmentation(
+      base::span<const uint8_t> input);
+
+  // MergeSegments replaces the segments indexed by |start| and |end|
+  // (inclusive) with |replacement|.
+  static size_t MergeSegments(std::vector<Segment>* segments,
+                              size_t start,
+                              size_t end,
+                              Segment replacement);
+
+  // MaybeMerge merges the segments indexed by |start| and |end| (inclusive)
+  // with a single segment of type |merged_type|, if that merge would take fewer
+  // bits.
+  static size_t MaybeMerge(VersionClass vclass,
+                           std::vector<Segment>* segments,
+                           size_t start,
+                           size_t end,
+                           SegmentType merged_type);
+
+  // SegmentDigitAlphaSpan updates the segments indexed by |start| and |end|
+  // (inclusive) to be a fairly optimal segmentation. The indicated segments
+  // must all be |DIGIT| or |ALPHANUM| segments.
+  static size_t SegmentDigitAlphaSpan(VersionClass vclass,
+                                      std::vector<Segment>* segments,
+                                      size_t start,
+                                      size_t end);
+
+  // SegmentInput returns a fairly optimal segmentation of |input|.
+  static std::vector<Segment> SegmentInput(VersionClass vclass,
+                                           base::span<const uint8_t> input);
 
   // Parameters for the currently-selected version of the QR code.
   // Generate() will pick a version that can contain enough data.

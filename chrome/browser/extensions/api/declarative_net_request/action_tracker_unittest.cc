@@ -197,8 +197,8 @@ TEST_P(ActionTrackerTest, GetMatchedRulesLifespan) {
 
   // Half life of a matched rule associated with a non-active tab, with 50ms
   // added.
-  base::TimeDelta half_life = (ActionTracker::kNonActiveTabRuleLifespan / 2) +
-                              base::TimeDelta::FromMilliseconds(50);
+  base::TimeDelta half_life =
+      (ActionTracker::kNonActiveTabRuleLifespan / 2) + base::Milliseconds(50);
 
   // Advance the clock by half of the lifespan of a matched rule for the unknown
   // tab ID.
@@ -287,8 +287,7 @@ TEST_P(ActionTrackerTest, RulesClearedOnTimer) {
   // Advance the clock by more than the lifespan of a rule through
   // |mock_time_task_runner|.
   mock_time_task_runner->FastForwardBy(
-      ActionTracker::kNonActiveTabRuleLifespan +
-      base::TimeDelta::FromSeconds(1));
+      ActionTracker::kNonActiveTabRuleLifespan + base::Seconds(1));
 
   // Verify that the rule has been cleared by the recurring task.
   EXPECT_EQ(0, action_tracker()->GetMatchedRuleCountForTest(

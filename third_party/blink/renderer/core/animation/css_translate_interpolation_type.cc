@@ -190,11 +190,11 @@ void CSSTranslateInterpolationType::ApplyStandardPropertyValue(
   const CSSToLengthConversionData& conversion_data =
       state.CssToLengthConversionData();
   Length x = To<InterpolableLength>(*list.Get(kTranslateX))
-                 .CreateLength(conversion_data, kValueRangeAll);
+                 .CreateLength(conversion_data, Length::ValueRange::kAll);
   Length y = To<InterpolableLength>(*list.Get(kTranslateY))
-                 .CreateLength(conversion_data, kValueRangeAll);
+                 .CreateLength(conversion_data, Length::ValueRange::kAll);
   float z = To<InterpolableLength>(*list.Get(kTranslateZ))
-                .CreateLength(conversion_data, kValueRangeAll)
+                .CreateLength(conversion_data, Length::ValueRange::kAll)
                 .Pixels();
 
   scoped_refptr<TranslateTransformOperation> result =

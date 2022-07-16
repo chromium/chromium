@@ -15,17 +15,18 @@ namespace weblayer {
 class WebLayerFieldTrials : public variations::PlatformFieldTrials {
  public:
   WebLayerFieldTrials() = default;
+
+  WebLayerFieldTrials(const WebLayerFieldTrials&) = delete;
+  WebLayerFieldTrials& operator=(const WebLayerFieldTrials&) = delete;
+
   ~WebLayerFieldTrials() override = default;
 
   // variations::PlatformFieldTrials:
-  void SetupFieldTrials() override;
-  void SetupFeatureControllingFieldTrials(
+  void SetUpFieldTrials() override;
+  void SetUpFeatureControllingFieldTrials(
       bool has_seed,
       const base::FieldTrial::EntropyProvider* low_entropy_provider,
       base::FeatureList* feature_list) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebLayerFieldTrials);
 };
 
 }  // namespace weblayer

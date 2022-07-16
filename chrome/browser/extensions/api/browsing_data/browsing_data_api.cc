@@ -290,19 +290,17 @@ ExtensionFunction::ResponseAction BrowsingDataRemoverFunction::Run() {
   DCHECK(profile);
 
   // Grab the initial |options| parameter, and parse out the arguments.
-  base::DictionaryValue* options;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetDictionary(0, &options));
-  DCHECK(options);
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_dict());
+  const base::Value& options = args()[0];
 
-  EXTENSION_FUNCTION_VALIDATE(
-      ParseOriginTypeMask(*options, &origin_type_mask_));
+  EXTENSION_FUNCTION_VALIDATE(ParseOriginTypeMask(options, &origin_type_mask_));
 
   // If |ms_since_epoch| isn't set, default it to 0.
-  double ms_since_epoch;
-  if (!options->GetDouble(extension_browsing_data_api_constants::kSinceKey,
-                          &ms_since_epoch)) {
-    ms_since_epoch = 0;
-  }
+  double ms_since_epoch =
+      options.FindDoubleKey(extension_browsing_data_api_constants::kSinceKey)
+          .value_or(0);
+
   // base::Time takes a double that represents seconds since epoch. JavaScript
   // gives developers milliseconds, so do a quick conversion before populating
   // the object.
@@ -310,10 +308,10 @@ ExtensionFunction::ResponseAction BrowsingDataRemoverFunction::Run() {
 
   EXTENSION_FUNCTION_VALIDATE(GetRemovalMask(&removal_mask_));
 
-  base::Value* origins =
-      options->FindKeyOfType(extension_browsing_data_api_constants::kOriginsKey,
-                             base::Value::Type::LIST);
-  base::Value* exclude_origins = options->FindKeyOfType(
+  const base::Value* origins =
+      options.FindKeyOfType(extension_browsing_data_api_constants::kOriginsKey,
+                            base::Value::Type::LIST);
+  const base::Value* exclude_origins = options.FindKeyOfType(
       extension_browsing_data_api_constants::kExcludeOriginsKey,
       base::Value::Type::LIST);
 
@@ -416,54 +414,63 @@ void BrowsingDataRemoverFunction::StartRemoving() {
 }
 
 bool BrowsingDataRemoverFunction::ParseOriginTypeMask(
-    const base::DictionaryValue& options,
+    const base::Value& options,
     uint64_t* origin_type_mask) {
+  DCHECK(options.is_dict());
+
   // Parse the |options| dictionary to generate the origin set mask. Default to
   // UNPROTECTED_WEB if the developer doesn't specify anything.
   *origin_type_mask = content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
 
-  const base::DictionaryValue* d = nullptr;
-  if (options.HasKey(extension_browsing_data_api_constants::kOriginTypesKey)) {
-    if (!options.GetDictionary(
-            extension_browsing_data_api_constants::kOriginTypesKey, &d)) {
+  const base::Value* origin_type_dict =
+      options.FindKey(extension_browsing_data_api_constants::kOriginTypesKey);
+  if (!origin_type_dict)
+    return true;
+
+  if (!origin_type_dict->is_dict())
+    return false;
+
+  const base::Value* option = nullptr;
+
+  // The developer specified something! Reset to 0 and parse the dictionary.
+  *origin_type_mask = 0;
+
+  // Unprotected web.
+  option = origin_type_dict->FindKey(
+      extension_browsing_data_api_constants::kUnprotectedWebKey);
+  if (option) {
+    if (!option->is_bool())
       return false;
-    }
-    bool value;
 
-    // The developer specified something! Reset to 0 and parse the dictionary.
-    *origin_type_mask = 0;
+    *origin_type_mask |=
+        option->GetBool()
+            ? content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB
+            : 0;
+  }
 
-    // Unprotected web.
-    if (d->HasKey(extension_browsing_data_api_constants::kUnprotectedWebKey)) {
-      if (!d->GetBoolean(
-              extension_browsing_data_api_constants::kUnprotectedWebKey,
-              &value)) {
-        return false;
-      }
-      *origin_type_mask |=
-          value ? content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB : 0;
-    }
+  // Protected web.
+  option = origin_type_dict->FindKey(
+      extension_browsing_data_api_constants::kProtectedWebKey);
+  if (option) {
+    if (!option->is_bool())
+      return false;
 
-    // Protected web.
-    if (d->HasKey(extension_browsing_data_api_constants::kProtectedWebKey)) {
-      if (!d->GetBoolean(
-              extension_browsing_data_api_constants::kProtectedWebKey,
-              &value)) {
-        return false;
-      }
-      *origin_type_mask |=
-          value ? content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB : 0;
-    }
+    *origin_type_mask |=
+        option->GetBool()
+            ? content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB
+            : 0;
+  }
 
-    // Extensions.
-    if (d->HasKey(extension_browsing_data_api_constants::kExtensionsKey)) {
-      if (!d->GetBoolean(extension_browsing_data_api_constants::kExtensionsKey,
-                         &value)) {
-        return false;
-      }
-      *origin_type_mask |=
-          value ? chrome_browsing_data_remover::ORIGIN_TYPE_EXTENSION : 0;
-    }
+  // Extensions.
+  option = origin_type_dict->FindKey(
+      extension_browsing_data_api_constants::kExtensionsKey);
+  if (option) {
+    if (!option->is_bool())
+      return false;
+
+    *origin_type_mask |=
+        option->GetBool() ? chrome_browsing_data_remover::ORIGIN_TYPE_EXTENSION
+                          : 0;
   }
 
   return true;
@@ -495,18 +502,15 @@ bool BrowsingDataRemoverFunction::ParseOrigins(const base::Value& list_value,
 // Returns false if parse was not successful, i.e. if 'dataToRemove' is not
 // present or any data-type keys don't have supported (boolean) values.
 bool BrowsingDataRemoveFunction::GetRemovalMask(uint64_t* removal_mask) {
-  base::DictionaryValue* data_to_remove;
-  if (!args_->GetDictionary(1, &data_to_remove))
+  if (args().size() <= 1 || !args()[1].is_dict())
     return false;
 
   *removal_mask = 0;
-  for (base::DictionaryValue::Iterator i(*data_to_remove);
-       !i.IsAtEnd();
-       i.Advance()) {
-    if (!i.value().is_bool())
+  for (const auto kv : args()[1].DictItems()) {
+    if (!kv.second.is_bool())
       return false;
-    if (i.value().GetBool())
-      *removal_mask |= MaskForKey(i.key().c_str());
+    if (kv.second.GetBool())
+      *removal_mask |= MaskForKey(kv.first.c_str());
   }
 
   return true;

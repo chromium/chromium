@@ -40,7 +40,7 @@ To look a the delta between two dumps, control-click two different dark-purple M
 circles.
 
 ### Blindspots
-  * Statistics are self-reported. If the MemoryDumpProvider implemenation does
+  * Statistics are self-reported. If the MemoryDumpProvider implementation does
     not fully cover the resource usage of the subsystem, those resources will
     not be accounted.
 
@@ -157,7 +157,7 @@ looking similar due to the nature of DOM node allocation.
 | ------- | ----- |
 | Out of process heap profiling start mode. | This option is somewhat misnamed. It tells OOPHP which processes to profile at startup. Other processes can selected manually later via chrome://memory-internals even if this is set to "disabled". |
 | Keep track of even the small allocations in memlog heap dumps. | By default, small allocations are not emitted in the heap dump to reduce dump size. Enabling this track _all_ allocations. |
-| The type of stack to record for memlog heap dumps | If possible, use Native stack frames as that provides the best information. When those are not availble either due to performance for build (eg, no frame-pointers on arm32 official) configurations, using trace events for a "pseudo stack" can give good information too. |
+| The type of stack to record for memlog heap dumps | If possible, use Native stack frames as that provides the best information. When those are not available either due to performance for build (eg, no frame-pointers on arm32 official) configurations, using trace events for a "pseudo stack" can give good information too. |
 | Heap profiling | Deprecated. Enables the in-process heap profiler. Functionality should be fully subsumed by preceeding options. |
 
 #### Saving a heap dump
@@ -168,7 +168,7 @@ looking similar due to the nature of DOM node allocation.
   2. Symbolize trace using  [`symbolize_trace.py`](../../third_party/catapult/tracing/bin/symbolize_trace). If the Chrome binary was built locally, pass the flag "--is-local-build".
   3. Analyze resuing heap dump using [`diff_heap_profiler.py`](#diff-heap-profiler), or [Heap Profile view in Chrome Tracing](#tracing-heap-profile)
 
-On deskop, using chrome://memory-internals to take a heap dump is more reliable
+On desktop, using chrome://memory-internals to take a heap dump is more reliable
 as it directly saves the heapdump to a file instead of passing the serialized data
 through the chrome://tracing renderer process which can easily OOM. For Android,
 this native file saving was harder to implement and would still leave the
@@ -259,10 +259,10 @@ can notice kernel resources that are allocated (eg, GPU memory, or drive memory
 such as the Windows Paged and Non-paged pools) as side effects of user mode
 calls nor do they account for memory that does not go through new/malloc
 (manulaly callling `mmap()`, or `VirtualAlloc()`). Querying a full view of
-these allocaitons usually requires admin privileges, the semantics change
+these allocations usually requires admin privileges, the semantics change
 per platform, and the performance can vary from being "constant-ish" to
 being dependent on virtual space size (eg, probing allocation via
-VirtualQueryEx or parsing /proc/self/maps) or number of proccesses in the
+VirtualQueryEx or parsing /proc/self/maps) or number of processes in the
 system (NTQuerySystemInformation).
 
 As an example of error in measurement, PartitionAlloc did not account for

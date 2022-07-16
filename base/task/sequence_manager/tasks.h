@@ -6,8 +6,8 @@
 #define BASE_TASK_SEQUENCE_MANAGER_TASKS_H_
 
 #include "base/pending_task.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/sequence_manager/enqueue_order.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 namespace sequence_manager {
@@ -60,14 +60,9 @@ struct DelayedWakeUp {
     return !(*this != other);
   }
 
-  bool operator<=(const DelayedWakeUp& other) const {
-    if (time == other.time) {
-      if (resolution == other.resolution)
-        return true;
-
-      return resolution < other.resolution;
-    }
-    return time < other.time;
+  // Used for a min-heap.
+  bool operator>(const DelayedWakeUp& other) const {
+    return std::tie(time, resolution) > std::tie(other.time, other.resolution);
   }
 };
 

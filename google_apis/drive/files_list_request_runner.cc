@@ -10,8 +10,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "google_apis/common/api_error_codes.h"
+#include "google_apis/common/request_sender.h"
 #include "google_apis/drive/drive_api_requests.h"
-#include "google_apis/drive/request_sender.h"
 
 namespace google_apis {
 

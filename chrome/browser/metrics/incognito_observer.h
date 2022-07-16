@@ -18,12 +18,13 @@ class IncognitoObserver {
   static std::unique_ptr<IncognitoObserver> Create(
       const base::RepeatingClosure& update_closure);
 
+  IncognitoObserver(const IncognitoObserver&) = delete;
+  IncognitoObserver& operator=(const IncognitoObserver&) = delete;
+
   virtual ~IncognitoObserver();
 
  protected:
   IncognitoObserver();
-
-  DISALLOW_COPY_AND_ASSIGN(IncognitoObserver);
 };
 
 #endif  // CHROME_BROWSER_METRICS_INCOGNITO_OBSERVER_H_

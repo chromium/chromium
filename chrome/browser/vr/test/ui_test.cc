@@ -191,15 +191,15 @@ bool UiTest::VerifyRequiresLayout(const std::set<UiElementName>& names,
 }
 
 bool UiTest::RunForMs(float milliseconds) {
-  return RunFor(base::TimeDelta::FromMilliseconds(milliseconds));
+  return RunFor(base::Milliseconds(milliseconds));
 }
 
 bool UiTest::RunForSeconds(float seconds) {
-  return RunFor(base::TimeDelta::FromSecondsD(seconds));
+  return RunFor(base::Seconds(seconds));
 }
 
 bool UiTest::AdvanceFrame() {
-  current_time_ += base::TimeDelta::FromMilliseconds(16);
+  current_time_ += base::Milliseconds(16);
   return OnBeginFrame();
 }
 
@@ -242,7 +242,7 @@ void UiTest::ClickElement(UiElement* element) {
 
 bool UiTest::RunFor(base::TimeDelta delta) {
   base::TimeTicks target_time = current_time_ + delta;
-  base::TimeDelta frame_time = base::TimeDelta::FromMilliseconds(16);
+  base::TimeDelta frame_time = base::Milliseconds(16);
   bool changed = false;
 
   // Run a frame in the near future to trigger new state changes.

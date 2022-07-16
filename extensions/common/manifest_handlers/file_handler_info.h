@@ -43,14 +43,16 @@ struct FileHandlers : public Extension::ManifestData {
 class FileHandlersParser : public ManifestHandler {
  public:
   FileHandlersParser();
+
+  FileHandlersParser(const FileHandlersParser&) = delete;
+  FileHandlersParser& operator=(const FileHandlersParser&) = delete;
+
   ~FileHandlersParser() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(FileHandlersParser);
 };
 
 }  // namespace extensions

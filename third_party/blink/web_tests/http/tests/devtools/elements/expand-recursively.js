@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that expanding elements recursively works.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="depth-1">

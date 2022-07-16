@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/focus/focus_manager.h"
@@ -28,6 +27,10 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
   METADATA_HEADER(AccessiblePaneView);
 
   AccessiblePaneView();
+
+  AccessiblePaneView(const AccessiblePaneView&) = delete;
+  AccessiblePaneView& operator=(const AccessiblePaneView&) = delete;
+
   ~AccessiblePaneView() override;
 
   // Set focus to the pane with complete keyboard access.
@@ -126,8 +129,6 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
   friend class AccessiblePaneViewFocusSearch;
 
   base::WeakPtrFactory<AccessiblePaneView> method_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccessiblePaneView);
 };
 
 }  // namespace views

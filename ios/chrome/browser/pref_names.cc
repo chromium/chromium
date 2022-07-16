@@ -93,13 +93,10 @@ const char kIosSettingsPromoAlreadySeen[] = "ios.settings.promo_already_seen";
 const char kIosSettingsSigninPromoDisplayedCount[] =
     "ios.settings.signin_promo_displayed_count";
 
-// True if the previous session exited cleanly.
-// This can be different from kStabilityExitedCleanly, because the last run of
-// the program may not have included a browsing session, and thus the last run
-// of the program may have happened after the run that included the last
-// session.
-const char kLastSessionExitedCleanly[] =
-    "ios.user_experience_metrics.last_session_exited_cleanly";
+// Preference that holds a boolean indicating whether the link previews are
+// enabled. Link previews display a live preview of the selected link after a
+// long press.
+const char kLinkPreviewEnabled[] = "ios.link_preview_enabled";
 
 // Preference that holds a boolean indicating whether the suggestions on the NTP
 // are enabled.
@@ -137,10 +134,6 @@ const char kSigninShouldPromptForSigninAgain[] =
 const char kSigninWebSignDismissalCount[] =
     "ios.signin.web_signin_dismissal_count";
 
-// Integer to count the number of times the MICE web sign-in is displayed.
-const char kSigninBottomSheetShownCount[] =
-    "ios.signin.bottom_sheet_shown_count";
-
 // Dictionary which stores the zoom levels the user has changed. The zoom levels
 // are unique for a given (iOS Dynamic Type, website domain) pair. Thus, the
 // dictionary keys are the iOS Dynamic Type level, mapping to sub-dictionarys
@@ -153,5 +146,9 @@ const char kPrintingEnabled[] = "printing.enabled";
 // Bool used for the incognito biometric authentication setting.
 const char kIncognitoAuthenticationSetting[] =
     "ios.settings.incognito_authentication_enabled";
+
+// Integer that represents the value of BrowserSigninPolicy. Values are defined
+// in ios/chrome/browser/policy/policy_util.h.
+const char kBrowserSigninPolicy[] = "signin.browser_signin_policy";
 
 }  // namespace prefs

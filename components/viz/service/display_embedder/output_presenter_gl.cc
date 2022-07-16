@@ -19,6 +19,8 @@
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_surface.h"
@@ -62,14 +64,16 @@ class PresenterImageGL : public OutputPresenter::Image {
 
   gl::GLImage* GetGLImage(std::unique_ptr<gfx::GpuFence>* fence);
 
+  const gfx::ColorSpace& color_space() {
+    DCHECK(overlay_representation_);
+    return overlay_representation_->color_space();
+  }
+
  private:
   std::unique_ptr<gpu::SharedImageRepresentationOverlay>
       overlay_representation_;
-  std::unique_ptr<gpu::SharedImageRepresentationGLTexture> gl_representation_;
   std::unique_ptr<gpu::SharedImageRepresentationOverlay::ScopedReadAccess>
       scoped_overlay_read_access_;
-  std::unique_ptr<gpu::SharedImageRepresentationGLTexture::ScopedAccess>
-      scoped_gl_read_access_;
 
   int present_count_ = 0;
 };
@@ -96,14 +100,8 @@ bool PresenterImageGL::Initialize(
 
   overlay_representation_ = representation_factory->ProduceOverlay(mailbox);
 
-  // If the backing doesn't support overlay, then fallback to GL.
   if (!overlay_representation_) {
     LOG(ERROR) << "ProduceOverlay() failed";
-    gl_representation_ = representation_factory->ProduceGLTexture(mailbox);
-  }
-
-  if (!overlay_representation_ && !gl_representation_) {
-    LOG(ERROR) << "ProduceOverlay() and ProduceGLTexture() failed.";
     return false;
   }
 
@@ -112,25 +110,17 @@ bool PresenterImageGL::Initialize(
 
 void PresenterImageGL::BeginPresent() {
   if (++present_count_ != 1) {
-    DCHECK(scoped_overlay_read_access_ || scoped_gl_read_access_);
+    DCHECK(scoped_overlay_read_access_);
     return;
   }
 
   DCHECK(!sk_surface());
   DCHECK(!scoped_overlay_read_access_);
 
-  if (overlay_representation_) {
     scoped_overlay_read_access_ =
         overlay_representation_->BeginScopedReadAccess(
             true /* need_gl_image */);
     DCHECK(scoped_overlay_read_access_);
-    return;
-  }
-
-  scoped_gl_read_access_ = gl_representation_->BeginScopedAccess(
-      GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
-      gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo);
-  DCHECK(scoped_gl_read_access_);
 }
 
 void PresenterImageGL::EndPresent(gfx::GpuFenceHandle release_fence) {
@@ -138,13 +128,9 @@ void PresenterImageGL::EndPresent(gfx::GpuFenceHandle release_fence) {
   if (--present_count_)
     return;
 
-  // Check there is no release fence if we have a non-overlay read access.
-  DCHECK(!scoped_gl_read_access_ || release_fence.is_null());
-  if (scoped_overlay_read_access_)
-    scoped_overlay_read_access_->SetReleaseFence(std::move(release_fence));
+  scoped_overlay_read_access_->SetReleaseFence(std::move(release_fence));
 
   scoped_overlay_read_access_.reset();
-  scoped_gl_read_access_.reset();
 }
 
 int PresenterImageGL::GetPresentCount() const {
@@ -154,27 +140,15 @@ int PresenterImageGL::GetPresentCount() const {
 void PresenterImageGL::OnContextLost() {
   if (overlay_representation_)
     overlay_representation_->OnContextLost();
-  if (gl_representation_)
-    gl_representation_->OnContextLost();
 }
 
 gl::GLImage* PresenterImageGL::GetGLImage(
     std::unique_ptr<gfx::GpuFence>* fence) {
-  if (scoped_overlay_read_access_) {
-    if (fence) {
-      *fence = TakeGpuFence(scoped_overlay_read_access_->TakeAcquireFences());
-    }
-    return scoped_overlay_read_access_->gl_image();
+  DCHECK(scoped_overlay_read_access_);
+  if (fence) {
+    *fence = TakeGpuFence(scoped_overlay_read_access_->TakeAcquireFences());
   }
-
-  DCHECK(scoped_gl_read_access_);
-
-  if (gl::GLFence::IsGpuFenceSupported() && fence) {
-    if (auto gl_fence = gl::GLFence::CreateForGpuFence())
-      *fence = gl_fence->GetGpuFence();
-  }
-  auto* texture = gl_representation_->GetTexture();
-  return texture->GetLevelImage(texture->target(), 0);
+  return scoped_overlay_read_access_->gl_image();
 }
 
 }  // namespace
@@ -368,33 +342,48 @@ void OutputPresenterGL::SchedulePrimaryPlane(
     Image* image,
     bool is_submitted) {
   std::unique_ptr<gfx::GpuFence> fence;
+  auto* presenter_image = static_cast<PresenterImageGL*>(image);
   // If the submitted_image() is being scheduled, we don't new a new fence.
-  auto* gl_image = reinterpret_cast<PresenterImageGL*>(image)->GetGLImage(
+  auto* gl_image = presenter_image->GetGLImage(
       (is_submitted || !gl_surface_->SupportsPlaneGpuFences()) ? nullptr
                                                                : &fence);
 
   // Output surface is also z-order 0.
   constexpr int kPlaneZOrder = 0;
-  gl_surface_->ScheduleOverlayPlane(kPlaneZOrder, plane.transform, gl_image,
-                                    ToNearestRect(plane.display_rect),
-                                    plane.uv_rect, plane.enable_blending,
-                                    std::move(fence));
+  // TODO(edcourtney): We pass a full damage rect - actual damage is passed via
+  // PostSubBuffer. As part of unifying the handling of the primary plane and
+  // overlays, damage should be added to OutputSurfaceOverlayPlane and passed in
+  // here.
+  gl_surface_->ScheduleOverlayPlane(
+      gl_image, std::move(fence),
+      gfx::OverlayPlaneData(
+          kPlaneZOrder, plane.transform, ToNearestRect(plane.display_rect),
+          plane.uv_rect, plane.enable_blending, gfx::Rect(plane.resource_size),
+          plane.opacity, plane.priority_hint, plane.rounded_corners,
+          presenter_image->color_space(),
+          /*hdr_metadata=*/absl::nullopt));
 }
 
 void OutputPresenterGL::ScheduleBackground(Image* image) {
+  auto* presenter_image = static_cast<PresenterImageGL*>(image);
   // Background is not seen by user, and is created before buffer queue buffers.
   // So fence is not needed.
-  auto* gl_image =
-      reinterpret_cast<PresenterImageGL*>(image)->GetGLImage(nullptr);
+  auto* gl_image = presenter_image->GetGLImage(nullptr);
 
   // Background is also z-order 0.
   constexpr int kPlaneZOrder = INT32_MIN;
   // Background always uses the full texture.
   constexpr gfx::RectF kUVRect(0.f, 0.f, 1.0f, 1.0f);
   gl_surface_->ScheduleOverlayPlane(
-      kPlaneZOrder, gfx::OVERLAY_TRANSFORM_NONE, gl_image, gfx::Rect(),
-      /*crop_rect=*/kUVRect,
-      /*enable_blend=*/false, /*gpu_fence=*/nullptr);
+      gl_image, /*gpu_fence=*/nullptr,
+      gfx::OverlayPlaneData(kPlaneZOrder, gfx::OVERLAY_TRANSFORM_NONE,
+                            gfx::Rect(),
+                            /*crop_rect=*/kUVRect,
+                            /*enable_blend=*/false, /*damage_rect=*/gfx::Rect(),
+                            /*opacity=*/1.0f, gfx::OverlayPriorityHint::kNone,
+                            /*rounded_corners=*/gfx::RRectF(),
+                            /*color_space=*/presenter_image->color_space(),
+                            /*hdr_metadata=*/absl::nullopt));
 }
 
 void OutputPresenterGL::CommitOverlayPlanes(
@@ -423,12 +412,27 @@ void OutputPresenterGL::ScheduleOverlays(
     const auto& overlay = overlays[i];
     auto* gl_image = accesses[i] ? accesses[i]->gl_image() : nullptr;
 #if defined(OS_ANDROID) || defined(USE_OZONE)
-    if (gl_image) {
+    // TODO(msisov): Once shared image factory allows creating a non backed
+    // images and ScheduleOverlayPlane does not rely on GLImage, remove the if
+    // condition that checks if this is a solid color overlay plane.
+    //
+    // Solid color overlays can be non-backed and are delegated for processing
+    // to underlying backend. The only backend that uses them is Wayland - it
+    // may have a protocol that asks Wayland compositor to create a solid color
+    // buffer for a client. OverlayProcessorDelegated decides if a solid color
+    // overlay is an overlay candidate and should be scheduled.
+    if (gl_image || overlay.solid_color.has_value()) {
       DCHECK(!overlay.gpu_fence_id);
       gl_surface_->ScheduleOverlayPlane(
-          overlay.plane_z_order, overlay.transform, gl_image,
-          ToNearestRect(overlay.display_rect), overlay.uv_rect,
-          !overlay.is_opaque, TakeGpuFence(accesses[i]->TakeAcquireFences()));
+          gl_image,
+          accesses[i] ? TakeGpuFence(accesses[i]->TakeAcquireFences())
+                      : nullptr,
+          gfx::OverlayPlaneData(
+              overlay.plane_z_order, overlay.transform,
+              ToNearestRect(overlay.display_rect), overlay.uv_rect,
+              !overlay.is_opaque, ToEnclosingRect(overlay.damage_rect),
+              overlay.opacity, overlay.priority_hint, overlay.rounded_corners,
+              overlay.color_space, overlay.hdr_metadata, overlay.solid_color));
     }
 #elif defined(OS_APPLE)
     // For RenderPassDrawQuad the ddl is not nullptr, and the opacity is applied

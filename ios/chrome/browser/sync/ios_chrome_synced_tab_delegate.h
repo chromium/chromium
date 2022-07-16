@@ -22,6 +22,10 @@ class IOSChromeSyncedTabDelegate
     : public sync_sessions::SyncedTabDelegate,
       public web::WebStateUserData<IOSChromeSyncedTabDelegate> {
  public:
+  IOSChromeSyncedTabDelegate(const IOSChromeSyncedTabDelegate&) = delete;
+  IOSChromeSyncedTabDelegate& operator=(const IOSChromeSyncedTabDelegate&) =
+      delete;
+
   ~IOSChromeSyncedTabDelegate() override;
 
   // SyncedTabDelegate:
@@ -64,8 +68,6 @@ class IOSChromeSyncedTabDelegate
   mutable CRWSessionStorage* session_storage_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeSyncedTabDelegate);
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_IOS_CHROME_SYNCED_TAB_DELEGATE_H_

@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "components/page_info/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -20,8 +19,9 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -51,85 +51,79 @@ PageInfoHoverButton::PageInfoHoverButton(
   label()->SetHandlesTooltips(false);
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-
-  views::GridLayout* grid_layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
   const int icon_label_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-
-  constexpr int kColumnSetId = 0;
-  views::ColumnSet* columns = grid_layout->AddColumnSet(kColumnSetId);
+  views::style::TextContext text_context =
+      views::style::CONTEXT_DIALOG_BODY_TEXT;
   // TODO(olesiamarukhno): Unify the column width through all views in the
   // page info (PageInfoHoverButton, PermissionSelectorRow, ChosenObjectView,
   // SecurityInformationView). Currently, it isn't same everywhere and it
   // causes label text next to icon not to be aligned by 1 or 2px.
-  columns->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  columns->AddPaddingColumn(views::GridLayout::kFixedSize, icon_label_spacing);
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER, 1.0,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  columns->AddPaddingColumn(views::GridLayout::kFixedSize, icon_label_spacing);
-  columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::FILL,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kUsePreferred,
-                     views::GridLayout::kFixedSize, 0);
-  columns->AddPaddingColumn(views::GridLayout::kFixedSize, icon_label_spacing);
-  columns->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kFixed, 16, 0);
+  views::TableLayout* table_layout =
+      SetLayoutManager(std::make_unique<views::TableLayout>());
+  table_layout
+      ->AddColumn(views::LayoutAlignment::kCenter,
+                  views::LayoutAlignment::kCenter,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kCenter, 1.0f,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
+      .AddColumn(views::LayoutAlignment::kEnd, views::LayoutAlignment::kStretch,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
+      .AddColumn(views::LayoutAlignment::kCenter,
+                 views::LayoutAlignment::kCenter,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kFixed, 16, 0)
+      .AddRows(1, views::TableLayout::kFixedSize,
+               // Force row to have sufficient height for full line-height of
+               // the title.
+               views::style::GetLineHeight(text_context,
+                                           views::style::STYLE_PRIMARY));
 
-  views::style::TextContext text_context =
-      base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)
-          ? views::style::CONTEXT_DIALOG_BODY_TEXT
-          : views::style::CONTEXT_LABEL;
+  // TODO(pkasting): This class should subclass Button, not HoverButton.
+  table_layout->SetChildViewIgnoredByLayout(image(), true);
+  table_layout->SetChildViewIgnoredByLayout(label(), true);
+  table_layout->SetChildViewIgnoredByLayout(ink_drop_container(), true);
 
-  // Force row to have sufficient height for full line-height of the title.
-  grid_layout->StartRow(
-      views::GridLayout::kFixedSize, kColumnSetId,
-      views::style::GetLineHeight(text_context, views::style::STYLE_PRIMARY));
-
-  grid_layout->AddView(CreateIconView(main_image_icon));
+  AddChildView(CreateIconView(main_image_icon));
   auto title_label = std::make_unique<views::StyledLabel>();
   title_label->SetTextContext(text_context);
 
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
-    title_ = grid_layout->AddView(std::move(title_label));
-    title_->SetCanProcessEventsWithinSubtree(false);
+  title_ = AddChildView(std::move(title_label));
+  title_->SetCanProcessEventsWithinSubtree(false);
 
-    auto secondary_label = std::make_unique<views::Label>(
-        std::u16string(), views::style::CONTEXT_LABEL,
-        views::style::STYLE_SECONDARY);
-    secondary_label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-    secondary_label_ = grid_layout->AddView(std::move(secondary_label));
+  auto secondary_label = std::make_unique<views::Label>(
+      std::u16string(), views::style::CONTEXT_LABEL,
+      views::style::STYLE_SECONDARY);
+  secondary_label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  secondary_label_ = AddChildView(std::move(secondary_label));
 
-    if (action_image_icon.has_value()) {
-      grid_layout->AddView(CreateIconView(action_image_icon.value()));
-    }
+  if (action_image_icon.has_value()) {
+    AddChildView(CreateIconView(action_image_icon.value()));
   } else {
-    auto title_wrapper = std::make_unique<views::View>();
-    title_wrapper->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal));
-    title_ = title_wrapper->AddChildView(std::move(title_label));
-    // Hover the whole button when hovering |title_|. This is OK because
-    // |title_| will never have a link in it.
-    title_wrapper->SetCanProcessEventsWithinSubtree(false);
-    grid_layout->AddView(std::move(title_wrapper));
+    // Fill the cell with an empty view at column 4.
+    AddChildView(std::make_unique<views::View>());
   }
 
   if (title_resource_id)
     SetTitleText(title_resource_id, secondary_text);
 
   if (!subtitle_text.empty()) {
-    grid_layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-    auto subtitle_label = std::make_unique<views::Label>(
+    table_layout->AddRows(1, views::TableLayout::kFixedSize);
+    AddChildView(std::make_unique<views::View>());
+    subtitle_ = AddChildView(std::make_unique<views::Label>(
         subtitle_text, views::style::CONTEXT_LABEL,
-        views::style::STYLE_SECONDARY);
-    subtitle_label->SetMultiLine(true);
-    subtitle_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    subtitle_label->SetAutoColorReadabilityEnabled(false);
-    grid_layout->SkipColumns(1);
-    subtitle_ = grid_layout->AddView(std::move(subtitle_label));
+        views::style::STYLE_SECONDARY));
+    subtitle_->SetMultiLine(true);
+    subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    subtitle_->SetAutoColorReadabilityEnabled(false);
+    AddChildView(std::make_unique<views::View>());
+    AddChildView(std::make_unique<views::View>());
   }
 
   SetBorder(views::CreateEmptyBorder(layout_provider->GetInsetsMetric(
@@ -145,20 +139,9 @@ PageInfoHoverButton::PageInfoHoverButton(
 void PageInfoHoverButton::SetTitleText(int title_resource_id,
                                        const std::u16string& secondary_text) {
   DCHECK(title_);
-  if (secondary_text.empty()) {
-    title_->SetText(l10n_util::GetStringUTF16(title_resource_id));
-  } else if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
-    title_->SetText(l10n_util::GetStringUTF16(title_resource_id));
+  title_->SetText(l10n_util::GetStringUTF16(title_resource_id));
+  if (!secondary_text.empty()) {
     secondary_label_->SetText(secondary_text);
-  } else {
-    size_t offset;
-    auto title_text =
-        l10n_util::GetStringFUTF16(title_resource_id, secondary_text, &offset);
-    title_->SetText(title_text);
-    views::StyledLabel::RangeStyleInfo style_info;
-    style_info.text_style = views::style::STYLE_SECONDARY;
-    title_->AddStyleRange(gfx::Range(offset, offset + secondary_text.length()),
-                          style_info);
   }
   UpdateAccessibleName();
 }
@@ -167,6 +150,10 @@ void PageInfoHoverButton::SetTitleText(const std::u16string& title_text) {
   DCHECK(title_);
   title_->SetText(title_text);
   UpdateAccessibleName();
+}
+
+void PageInfoHoverButton::SetSubtitleMultiline(bool is_multiline) {
+  subtitle()->SetMultiLine(is_multiline);
 }
 
 void PageInfoHoverButton::UpdateAccessibleName() {

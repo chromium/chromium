@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that all inlined scripts from the same document are shown in the same source frame with html script tags. Bug 54544.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await TestRunner.navigatePromise('resources/inline-scripts.html');

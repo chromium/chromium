@@ -41,6 +41,16 @@ void TabClusterUIController::RemoveTabItem(TabClusterUIItem* tab_item) {
   tab_items_.erase(iter);
 }
 
+void TabClusterUIController::ChangeActiveCandidate(
+    TabClusterUIItem* old_active_item,
+    TabClusterUIItem* new_active_item) {
+  for (auto* const tab_item : clusterer_.GetUpdatedClusterInfo(
+           tab_items_, old_active_item, new_active_item)) {
+    for (auto& observer : observers_)
+      observer.OnTabItemUpdated(tab_item);
+  }
+}
+
 void TabClusterUIController::AddObserver(
     TabClusterUIController::Observer* observer) {
   observers_.AddObserver(observer);

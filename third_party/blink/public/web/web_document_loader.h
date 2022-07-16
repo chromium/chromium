@@ -65,9 +65,6 @@ class BLINK_EXPORT WebDocumentLoader {
 
   static bool WillLoadUrlAsEmpty(const WebURL&);
 
-  // Returns the url of original request which initited this load.
-  virtual WebURL OriginalUrl() const = 0;
-
   // Returns the http referrer of original request which initited this load.
   virtual WebString OriginalReferrer() const = 0;
 
@@ -143,9 +140,6 @@ class BLINK_EXPORT WebDocumentLoader {
   // Whether the last navigation (cross-document or same-document) that
   // committed in this WebDocumentLoader had transient activation.
   virtual bool LastNavigationHadTransientUserActivation() const = 0;
-
-  // Returns true when the document is a FTP directory.
-  virtual bool IsListingFtpDirectory() const = 0;
 
   // Sets the CodeCacheHost for this loader.
   virtual void SetCodeCacheHost(

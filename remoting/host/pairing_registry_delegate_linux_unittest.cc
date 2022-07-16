@@ -44,7 +44,7 @@ TEST_F(PairingRegistryDelegateLinuxTest, SaveAndLoad) {
   EXPECT_TRUE(delegate->Save(pairing2));
 
   // Verify that there are two pairings in the store now.
-  EXPECT_EQ(delegate->LoadAll()->GetSize(), 2u);
+  EXPECT_EQ(delegate->LoadAll()->GetList().size(), 2u);
 
   // Verify that they can be retrieved.
   EXPECT_EQ(delegate->Load(pairing1.client_id()), pairing1);
@@ -58,7 +58,7 @@ TEST_F(PairingRegistryDelegateLinuxTest, SaveAndLoad) {
   EXPECT_EQ(delegate->Load(pairing2.client_id()), pairing2);
 
   // Verify that the only value that left is |pairing2|.
-  EXPECT_EQ(delegate->LoadAll()->GetSize(), 1u);
+  EXPECT_EQ(delegate->LoadAll()->GetList().size(), 1u);
   std::unique_ptr<base::ListValue> pairings = delegate->LoadAll();
   base::DictionaryValue* json;
   EXPECT_TRUE(pairings->GetDictionary(0, &json));

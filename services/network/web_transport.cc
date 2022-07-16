@@ -6,6 +6,8 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
@@ -14,7 +16,6 @@
 #include "net/third_party/quiche/src/quic/core/quic_time.h"
 #include "net/third_party/quiche/src/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_mem_slice.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_mem_slice_span.h"
 #include "net/third_party/quiche/src/quic/quic_transport/quic_transport_stream.h"
 #include "services/network/network_context.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
@@ -27,7 +28,7 @@ net::WebTransportParameters CreateParameters(
     const std::vector<mojom::WebTransportCertificateFingerprintPtr>&
         fingerprints) {
   net::WebTransportParameters params;
-  params.enable_quic_transport = true;
+  params.enable_quic_transport = false;
   params.enable_web_transport_http3 = true;
 
   for (const auto& fingerprint : fingerprints) {
@@ -73,6 +74,21 @@ class WebTransport::Stream final {
     void OnCanWrite() override {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&Stream::Send, stream_));
+    }
+    void OnResetStreamReceived(quic::WebTransportStreamError error) override {
+      if (auto* stream = stream_.get()) {
+        stream->OnResetStreamReceived(error);
+      }
+    }
+    void OnStopSendingReceived(quic::WebTransportStreamError error) override {
+      if (auto* stream = stream_.get()) {
+        stream->OnStopSendingReceived(error);
+      }
+    }
+    void OnWriteSideInDataRecvdState() override {
+      if (auto* stream = stream_.get()) {
+        stream->OnWriteSideInDataRecvdState();
+      }
     }
 
    private:
@@ -134,16 +150,25 @@ class WebTransport::Stream final {
     MaySendFin();
   }
 
-  void Abort(quic::QuicRstStreamErrorCode code) {
-    auto* stream = incoming_ ? incoming_ : outgoing_;
-    if (!stream) {
+  void Abort(uint8_t code) {
+    if (!outgoing_) {
       return;
     }
-    stream->ResetWithUserCode(code);
-    incoming_ = nullptr;
+    outgoing_->ResetWithUserCode(code);
     outgoing_ = nullptr;
     readable_watcher_.Cancel();
     readable_.reset();
+    MayDisposeLater();
+  }
+
+  void StopSending(uint8_t code) {
+    if (!incoming_) {
+      return;
+    }
+    incoming_->SendStopSending(code);
+    incoming_ = nullptr;
+    writable_watcher_.Cancel();
+    writable_.reset();
     MayDisposeLater();
   }
 
@@ -230,10 +255,9 @@ class WebTransport::Stream final {
       return;
     }
     if (outgoing_->SendFin()) {
-      outgoing_ = nullptr;
+      // We don't reset `outgoing_` as we want to wait for the ACK signal.
       readable_watcher_.Cancel();
       readable_.reset();
-      MayDisposeLater();
     }
     // Otherwise, retry in Send().
   }
@@ -282,10 +306,42 @@ class WebTransport::Stream final {
     }
   }
 
+  void OnResetStreamReceived(quic::WebTransportStreamError error) {
+    if (transport_->client_) {
+      transport_->client_->OnReceivedResetStream(id_, error);
+    }
+    incoming_ = nullptr;
+    writable_watcher_.Cancel();
+    writable_.reset();
+    MayDisposeLater();
+  }
+
+  void OnStopSendingReceived(quic::WebTransportStreamError error) {
+    if (transport_->client_) {
+      transport_->client_->OnReceivedStopSending(id_, error);
+    }
+    outgoing_ = nullptr;
+    readable_watcher_.Cancel();
+    readable_.reset();
+    MayDisposeLater();
+  }
+
+  void OnWriteSideInDataRecvdState() {
+    if (transport_->client_) {
+      transport_->client_->OnOutgoingStreamClosed(id_);
+    }
+
+    outgoing_ = nullptr;
+    readable_watcher_.Cancel();
+    readable_.reset();
+    MayDisposeLater();
+  }
+
   void Dispose() {
     transport_->streams_.erase(id_);
     // Deletes |this|.
   }
+
   void MayDisposeLater() {
     if (outgoing_ || incoming_) {
       return;
@@ -315,7 +371,7 @@ class WebTransport::Stream final {
 
   // This must be the last member.
   base::WeakPtrFactory<Stream> weak_factory_{this};
-};  // namespace network
+};
 
 WebTransport::WebTransport(
     const GURL& url,
@@ -428,16 +484,20 @@ void WebTransport::SendFin(uint32_t stream) {
   it->second->NotifyFinFromClient();
 }
 
-void WebTransport::AbortStream(uint32_t stream, uint64_t code) {
+void WebTransport::AbortStream(uint32_t stream, uint8_t code) {
   auto it = streams_.find(stream);
   if (it == streams_.end()) {
     return;
   }
-  auto code_to_pass = quic::QuicRstStreamErrorCode::QUIC_STREAM_NO_ERROR;
-  if (code < quic::QuicRstStreamErrorCode::QUIC_STREAM_LAST_ERROR) {
-    code_to_pass = static_cast<quic::QuicRstStreamErrorCode>(code);
+  it->second->Abort(code);
+}
+
+void WebTransport::StopSending(uint32_t stream, uint8_t code) {
+  auto it = streams_.find(stream);
+  if (it == streams_.end()) {
+    return;
   }
-  it->second->Abort(code_to_pass);
+  it->second->StopSending(code);
 }
 
 void WebTransport::SetOutgoingDatagramExpirationDuration(
@@ -450,7 +510,38 @@ void WebTransport::SetOutgoingDatagramExpirationDuration(
       quic::QuicTime::Delta::FromMicroseconds(duration.InMicroseconds()));
 }
 
-void WebTransport::OnConnected() {
+void WebTransport::Close(mojom::WebTransportCloseInfoPtr close_info) {
+  if (torn_down_) {
+    return;
+  }
+  closing_ = true;
+
+  receiver_.reset();
+  handshake_client_.reset();
+  client_.reset();
+
+  absl::optional<net::WebTransportCloseInfo> close_info_to_pass;
+  if (close_info) {
+    close_info_to_pass =
+        absl::make_optional<net::WebTransportCloseInfo>(close_info->code, "");
+
+    // As described at
+    // https://w3c.github.io/webtransport/#dom-webtransport-close,
+    // the size of the reason string must not exceed 1024.
+    constexpr size_t kMaxSize = 1024;
+    if (close_info->reason.size() > kMaxSize) {
+      base::TruncateUTF8ToByteSize(close_info->reason, kMaxSize,
+                                   &close_info_to_pass->reason);
+    } else {
+      close_info_to_pass->reason = std::move(close_info->reason);
+    }
+  }
+
+  transport_->Close(close_info_to_pass);
+}
+
+void WebTransport::OnConnected(
+    scoped_refptr<net::HttpResponseHeaders> response_headers) {
   if (torn_down_) {
     return;
   }
@@ -459,14 +550,17 @@ void WebTransport::OnConnected() {
 
   handshake_client_->OnConnectionEstablished(
       receiver_.BindNewPipeAndPassRemote(),
-      client_.BindNewPipeAndPassReceiver());
+      client_.BindNewPipeAndPassReceiver(), std::move(response_headers));
 
   handshake_client_.reset();
-  client_.set_disconnect_handler(
+  // We set the disconnect handler for `receiver_`, not `client_`, in order
+  // to make the closing sequence consistent: The client calls Close() and
+  // then resets the mojo endpoints.
+  receiver_.set_disconnect_handler(
       base::BindOnce(&WebTransport::Dispose, base::Unretained(this)));
 }
 
-void WebTransport::OnConnectionFailed() {
+void WebTransport::OnConnectionFailed(const net::WebTransportError& error) {
   if (torn_down_) {
     return;
   }
@@ -475,24 +569,39 @@ void WebTransport::OnConnectionFailed() {
 
   // Here we assume that the error is not going to handed to the
   // initiator renderer.
-  handshake_client_->OnHandshakeFailed(transport_->error());
+  handshake_client_->OnHandshakeFailed(error);
 
   TearDown();
 }
 
-void WebTransport::OnClosed() {
+void WebTransport::OnClosed(
+    const absl::optional<net::WebTransportCloseInfo>& close_info) {
   if (torn_down_) {
     return;
   }
 
   DCHECK(!handshake_client_);
+  if (closing_) {
+    closing_ = false;
+  } else {
+    mojom::WebTransportCloseInfoPtr close_info_to_pass;
+    if (close_info) {
+      close_info_to_pass = mojom::WebTransportCloseInfo::New(
+          close_info->code, close_info->reason);
+    }
+    client_->OnClosed(std::move(close_info_to_pass));
+  }
 
   TearDown();
 }
 
-void WebTransport::OnError() {
+void WebTransport::OnError(const net::WebTransportError& error) {
   if (torn_down_) {
     return;
+  }
+
+  if (closing_) {
+    closing_ = false;
   }
 
   DCHECK(!handshake_client_);

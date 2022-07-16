@@ -44,6 +44,9 @@ class TestCancelableSyncSocket : public base::CancelableSyncSocket {
 
   void ExpectOwnershipTransfer() { expect_ownership_transfer_ = true; }
 
+  TestCancelableSyncSocket(const TestCancelableSyncSocket&) = delete;
+  TestCancelableSyncSocket& operator=(const TestCancelableSyncSocket&) = delete;
+
   ~TestCancelableSyncSocket() override {
     // When the handle is sent over mojo, mojo takes ownership over it and
     // closes it. We have to make sure we do not also retain the handle in the
@@ -54,8 +57,6 @@ class TestCancelableSyncSocket : public base::CancelableSyncSocket {
 
  private:
   bool expect_ownership_transfer_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCancelableSyncSocket);
 };
 
 class MockDelegate : public AudioOutputDelegate {

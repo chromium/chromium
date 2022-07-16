@@ -11,6 +11,7 @@
 
 namespace base {
 class DictionaryValue;
+class Value;
 }
 
 namespace chromeos {
@@ -30,42 +31,38 @@ using GuidToPolicyMap =
 // Creates a managed ONC dictionary from the given arguments. Depending on the
 // profile type, the policies are assumed to come from the user or device policy
 // and and |user_settings| to be the user's non-shared or shared settings.
-// Each of the arguments can be NULL.
+// Each of the arguments can be null.
 // TODO(pneubeck): Add documentation of the returned format, see
 //   https://crbug.com/408990 .
-std::unique_ptr<base::DictionaryValue> CreateManagedONC(
-    const base::DictionaryValue* global_policy,
-    const base::DictionaryValue* network_policy,
-    const base::DictionaryValue* user_settings,
-    const base::DictionaryValue* active_settings,
-    const NetworkProfile* profile);
+base::Value CreateManagedONC(const base::Value* global_policy,
+                             const base::Value* network_policy,
+                             const base::Value* user_settings,
+                             const base::Value* active_settings,
+                             const NetworkProfile* profile);
 
 // Adds properties to |shill_properties_to_update|, which are enforced on an
 // unmanaged network by the global config |global_network_policy| of the policy.
 // |shill_dictionary| are the network's current properties read from Shill.
-void SetShillPropertiesForGlobalPolicy(
-    const base::DictionaryValue& shill_dictionary,
-    const base::DictionaryValue& global_network_policy,
-    base::DictionaryValue* shill_properties_to_update);
+void SetShillPropertiesForGlobalPolicy(const base::Value& shill_dictionary,
+                                       const base::Value& global_network_policy,
+                                       base::Value* shill_properties_to_update);
 
 // Creates a Shill property dictionary from the given arguments. The resulting
 // dictionary will be sent to Shill by the caller. Depending on the profile
 // type, |network_policy| is interpreted as the user or device policy and
 // |user_settings| as the user or shared settings. |network_policy| or
 // |user_settings| can be NULL, but not both.
-std::unique_ptr<base::DictionaryValue> CreateShillConfiguration(
-    const NetworkProfile& profile,
-    const std::string& guid,
-    const base::DictionaryValue* global_policy,
-    const base::DictionaryValue* network_policy,
-    const base::DictionaryValue* user_settings);
+base::Value CreateShillConfiguration(const NetworkProfile& profile,
+                                     const std::string& guid,
+                                     const base::Value* global_policy,
+                                     const base::Value* network_policy,
+                                     const base::Value* user_settings);
 
 // Returns the policy from |policies| matching |actual_network|, if any exists.
 // Returns NULL otherwise. |actual_network| must be part of a ONC
 // NetworkConfiguration.
-const base::DictionaryValue* FindMatchingPolicy(
-    const GuidToPolicyMap& policies,
-    const base::DictionaryValue& actual_network);
+const base::Value* FindMatchingPolicy(const GuidToPolicyMap& policies,
+                                      const base::Value& actual_network);
 
 }  // namespace policy_util
 

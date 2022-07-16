@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_INFOBARS_CONTENT_CONTENT_INFOBAR_MANAGER_H_
 #define COMPONENTS_INFOBARS_CONTENT_CONTENT_INFOBAR_MANAGER_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "content/public/browser/reload_type.h"
@@ -30,6 +29,10 @@ class ContentInfoBarManager
       public content::WebContentsUserData<ContentInfoBarManager> {
  public:
   explicit ContentInfoBarManager(content::WebContents* web_contents);
+
+  ContentInfoBarManager(const ContentInfoBarManager&) = delete;
+  ContentInfoBarManager& operator=(const ContentInfoBarManager&) = delete;
+
   ~ContentInfoBarManager() override;
 
   static InfoBarDelegate::NavigationDetails
@@ -61,7 +64,8 @@ class ContentInfoBarManager
   int GetActiveEntryID() override;
 
   // content::WebContentsObserver:
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void NavigationEntryCommitted(
@@ -70,8 +74,6 @@ class ContentInfoBarManager
 
   // See description in set_ignore_next_reload().
   bool ignore_next_reload_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentInfoBarManager);
 };
 
 }  // namespace infobars

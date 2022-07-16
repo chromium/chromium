@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/bluetooth_delegate.h"
@@ -160,6 +161,11 @@ class TestBluetoothDelegate : public BluetoothDelegate {
     prompt_ = prompt.get();
     return std::move(prompt);
   }
+  void ShowDeviceCredentialsPrompt(RenderFrameHost* frame,
+                                   const std::u16string& device_identifier,
+                                   CredentialsCallback callback) override {
+    NOTREACHED();
+  }
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
       RenderFrameHost* frame,
       const std::string& device_address) override {
@@ -247,6 +253,23 @@ class TestContentBrowserClient : public ContentBrowserClient {
 
   TestBluetoothDelegate* bluetooth_delegate() { return &bluetooth_delegate_; }
 
+  AllowWebBluetoothResult AllowWebBluetooth(
+      content::BrowserContext* browser_context,
+      const url::Origin& requesting_origin,
+      const url::Origin& embedding_origin) override {
+    checked_allow_web_bluetooth_ = true;
+
+    if (block_globally_disabled_)
+      return AllowWebBluetoothResult::BLOCK_GLOBALLY_DISABLED;
+
+    return ContentBrowserClient::AllowWebBluetooth(
+        browser_context, requesting_origin, embedding_origin);
+  }
+
+  void block_globally_disabled() { block_globally_disabled_ = true; }
+
+  bool checked_allow_web_bluetooth() { return checked_allow_web_bluetooth_; }
+
  protected:
   // ChromeContentBrowserClient:
   BluetoothDelegate* GetBluetoothDelegate() override {
@@ -255,6 +278,8 @@ class TestContentBrowserClient : public ContentBrowserClient {
 
  private:
   TestBluetoothDelegate bluetooth_delegate_;
+  bool checked_allow_web_bluetooth_ = false;
+  bool block_globally_disabled_ = false;
 };
 
 }  // namespace
@@ -267,8 +292,12 @@ class WebBluetoothServiceImplBrowserTest : public ContentBrowserTest {
             base::Unretained(this))) {}
   ~WebBluetoothServiceImplBrowserTest() override = default;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    ContentBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     ASSERT_TRUE(test_server_handle_ =
                     embedded_test_server()->StartAndReturnHandle());
 
@@ -310,6 +339,18 @@ class WebBluetoothServiceImplBrowserTest : public ContentBrowserTest {
     browser_client_.bluetooth_delegate()->SetDeviceToSelect(device_address);
   }
 
+  bool CheckedAllowWebBluetooth() {
+    return browser_client_.checked_allow_web_bluetooth();
+  }
+
+  void BlockGloballyDisabled() { browser_client_.block_globally_disabled(); }
+
+  WebBluetoothServiceImpl* GetWebBluetoothServiceForTesting(
+      RenderFrameHost* render_frame_host) {
+    return static_cast<RenderFrameHostImpl*>(render_frame_host)
+        ->GetWebBluetoothServiceForTesting();
+  }
+
   WebContents* GetWebContents() { return shell()->web_contents(); }
   TestBluetoothDelegate* GetBluetoothDelegate() {
     return browser_client_.bluetooth_delegate();
@@ -344,8 +385,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   EXPECT_TRUE(GetBluetoothDelegate()->showed_bluetooth_scanning_prompt());
 
   WebBluetoothServiceImpl* service_for_main_frame =
-      static_cast<RenderFrameHostImpl*>(GetWebContents()->GetMainFrame())
-          ->GetWebBluetoothServiceForTesting();
+      GetWebBluetoothServiceForTesting(GetWebContents()->GetMainFrame());
   // ScanningClient with the main frame is created.
   EXPECT_EQ(service_for_main_frame->scanning_clients_.size(), 1u);
 
@@ -365,11 +405,14 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   RenderFrameHost* prerendered_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
 
-  // Runs JS asynchronously since Mojo calls is deferred on the prerendering.
-  content::ExecuteScriptAsync(prerendered_frame_host, R"(
-    var requestLEScanPromise = navigator.bluetooth.requestLEScan({
-    acceptAllAdvertisements: true});
-  )");
+  // A SecurityError is thrown when there is no user gesture.
+  constexpr char kUserGestureError[] =
+      "Must be handling a user gesture to show a permission request.";
+  auto result = EvalJs(prerendered_frame_host, R"(
+      navigator.bluetooth.requestLEScan({acceptAllAdvertisements: true});)",
+                       content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  EXPECT_THAT(result.error, ::testing::HasSubstr(kUserGestureError));
+
   // The prerendering doesn't show the bluetoothscanning prompt.
   EXPECT_FALSE(GetBluetoothDelegate()->showed_bluetooth_scanning_prompt());
   // ScanningClient is not created in the prerendering.
@@ -388,14 +431,19 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
       adapter());
 
   EXPECT_CALL(*adapter(), AddObserver(_));
+
+  // Scanning after the prerendering activation to ensure it shows the prompt on
+  // the activated page.
+  EXPECT_TRUE(ExecJs(GetWebContents()->GetMainFrame(), R"(
+      var requestLEScanPromise = navigator.bluetooth.requestLEScan({
+        acceptAllAdvertisements: true});)"));
   // Waits for ShowBluetoothScanningPrompt() since the page is activated.
   GetBluetoothDelegate()->WaitForShowBluetoothScanningPrompt();
   // It should show the scanning prompt.
   EXPECT_TRUE(GetBluetoothDelegate()->showed_bluetooth_scanning_prompt());
 
   WebBluetoothServiceImpl* service_for_activated_frame =
-      static_cast<RenderFrameHostImpl*>(GetWebContents()->GetMainFrame())
-          ->GetWebBluetoothServiceForTesting();
+      GetWebBluetoothServiceForTesting(GetWebContents()->GetMainFrame());
   // ScanningClient is created after the prerendering activation.
   EXPECT_EQ(service_for_activated_frame->scanning_clients_.size(), 1u);
 
@@ -406,10 +454,16 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   EXPECT_CALL(*adapter(), RemoveObserver(_));
 }
 
-// Tests that navigator.bluetooth.requestDevice() is deferred in the
-// prerendering and works after the prerendering activation.
+// Tests that navigator.bluetooth.requestDevice() has an error without a user
+// gesture in the prerendering and works in the prerendering activation.
+// TODO(crbug.com/1269285): Fix flakiness on Linux and ChromeOS then reenable.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_RequestDeviceInPrerendering DISABLED_RequestDeviceInPrerendering
+#else
+#define MAYBE_RequestDeviceInPrerendering RequestDeviceInPrerendering
+#endif
 IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
-                       RequestDeviceInPrerendering) {
+                       MAYBE_RequestDeviceInPrerendering) {
   GURL url = embedded_test_server()->GetURL("/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -433,9 +487,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   )"));
 
   // WebBluetoothService is created for the main frame.
-  EXPECT_NE(static_cast<content::RenderFrameHostImpl*>(
-                GetWebContents()->GetMainFrame())
-                ->GetWebBluetoothServiceForTesting(),
+  EXPECT_NE(GetWebBluetoothServiceForTesting(GetWebContents()->GetMainFrame()),
             nullptr);
 
   // Loads a page in the prerender.
@@ -446,29 +498,23 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   content::RenderFrameHost* prerendered_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
 
-  // Runs JS asynchronously since mojom::WebBluetoothService::RequestDevice() is
-  // deferred on the prerendering.
-  EXPECT_TRUE(content::ExecJs(prerendered_frame_host, R"(
-    var requestDevicePromise = (async() => {
-      try {
-        let device = await navigator.bluetooth.requestDevice({
-          filters: [{name: 'Test Device', services: ['heart_rate']}]});
-        return "";
-      } catch(e) {
-        return `${e.name}: ${e.message}`;
-      }
-    })();
-  )"));
+  // A SecurityError is thrown when there is no user gesture.
+  constexpr char kUserGestureError[] =
+      "Must be handling a user gesture to show a permission request.";
+  auto result =
+      content::EvalJs(prerendered_frame_host, R"(
+      navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]}))",
+                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  EXPECT_THAT(result.error, ::testing::HasSubstr(kUserGestureError));
 
   // WebBluetoothService is not created for `prerendered_frame_host`.
-  ASSERT_EQ(static_cast<content::RenderFrameHostImpl*>(prerendered_frame_host)
-                ->web_bluetooth_services_.size(),
-            0u);
+  EXPECT_EQ(GetWebBluetoothServiceForTesting(prerendered_frame_host), nullptr);
 
   // Loading a new primary page removes observer.
   EXPECT_CALL(*adapter(), RemoveObserver(_));
 
-  // Navigates the primary page to the URL.
+  // Navigate to the prerendered page.
   prerender_helper()->NavigatePrimaryPage(prerender_url);
   // The page should be activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
@@ -480,14 +526,115 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   EXPECT_CALL(*adapter(), AddObserver(_));
   EXPECT_CALL(*adapter(), GetDevice(kDeviceAddress));
 
-  EXPECT_EQ("",
-            content::EvalJs(prerendered_frame_host, "requestDevicePromise"));
+  EXPECT_TRUE(content::ExecJs(GetWebContents()->GetMainFrame(), R"(
+      navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]}))"));
 
   // WebBluetoothService is created for the activated page.
-  EXPECT_NE(static_cast<content::RenderFrameHostImpl*>(prerendered_frame_host)
-                ->GetWebBluetoothServiceForTesting(),
+  EXPECT_NE(GetWebBluetoothServiceForTesting(GetWebContents()->GetMainFrame()),
             nullptr);
 
+  EXPECT_CALL(*adapter(), RemoveObserver(_));
+}
+
+// Tests that GetBluetoothAllowed() only works with the main page in order to
+// ensure that it's no problem to get the main frame from the WebContents.
+// TODO(crbug.com/1269285): Fix flakiness on Linux and ChromeOS then reenable.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_GetBluetoothAllowedNotCalledInPrerendering \
+  DISABLED_GetBluetoothAllowedNotCalledInPrerendering
+#else
+#define MAYBE_GetBluetoothAllowedNotCalledInPrerendering \
+  GetBluetoothAllowedNotCalledInPrerendering
+#endif
+IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
+                       MAYBE_GetBluetoothAllowedNotCalledInPrerendering) {
+  GURL url = embedded_test_server()->GetURL("/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Loads a page in the prerender.
+  auto prerender_url = embedded_test_server()->GetURL("/empty.html");
+  // The prerendering doesn't affect the current scanning.
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  RenderFrameHost* prerendered_frame_host =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+
+  // Runs JS asynchronously since Mojo calls are deferred during prerendering.
+  content::DOMMessageQueue message_queue;
+  content::ExecuteScriptAsync(prerendered_frame_host, R"(
+    navigator.bluetooth.getAvailability()
+    .then(isBluetoothAvailable => {
+      window.domAutomationController.send('Done');
+    });
+  )");
+
+  // WebBluetoothService is not created for `prerendered_frame_host`.
+  EXPECT_EQ(GetWebBluetoothServiceForTesting(prerendered_frame_host), nullptr);
+  // It should not be called in the prerendering.
+  EXPECT_FALSE(CheckedAllowWebBluetooth());
+
+  // Navigates the primary page to the URL.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  // The page should be activated from the prerendering.
+  EXPECT_TRUE(host_observer.was_activated());
+
+  // Sets BlueboothAdapter for the new primary page since the previous
+  // adapter is released by BluetoothAdapterFactoryWrapper::ReleaseAdapter().
+  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterForTesting(
+      adapter());
+  EXPECT_CALL(*adapter(), AddObserver(_));
+
+  std::string message;
+  do {
+    ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  } while (message != "\"Done\"");
+
+  // It should be called when activated.
+  EXPECT_TRUE(CheckedAllowWebBluetooth());
+  EXPECT_NE(GetWebBluetoothServiceForTesting(prerendered_frame_host), nullptr);
+  EXPECT_CALL(*adapter(), RemoveObserver(_));
+}
+
+// Tests that console messages have correct source frames.
+IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
+                       ConsoleLogFromSourceFrame) {
+  WebContentsConsoleObserver console_observer(GetWebContents());
+  constexpr char kConsoleLog[] = "Bluetooth permission has been blocked.";
+  console_observer.SetPattern(kConsoleLog);
+
+  // Block Web Bluetooth to get the console message.
+  BlockGloballyDisabled();
+
+  GURL url = embedded_test_server()->GetURL("/page_with_blank_iframe.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_CALL(*adapter(), AddObserver(_));
+
+  RenderFrameHost* sub_frame = ChildFrameAt(GetWebContents(), 0);
+  ASSERT_TRUE(sub_frame);
+
+  constexpr char kErrorMessage[] =
+      "NotFoundError: Web Bluetooth API globally disabled.";
+
+  EXPECT_EQ(kErrorMessage, content::EvalJs(sub_frame, R"(
+    (async() => {
+      try {
+        let device = await navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]});
+        return "";
+      } catch(e) {
+        return `${e.name}: ${e.message}`;
+      }
+    })()
+  )"));
+
+  console_observer.Wait();
+  std::vector<WebContentsConsoleObserver::Message> messages =
+      console_observer.messages();
+  EXPECT_EQ(messages.size(), 1u);
+  EXPECT_EQ(messages.back().source_frame, sub_frame);
   EXPECT_CALL(*adapter(), RemoveObserver(_));
 }
 

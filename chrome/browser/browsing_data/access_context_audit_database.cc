@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "components/browsing_data/core/features.h"
@@ -54,16 +55,9 @@ void DatabaseErrorCallback(sql::Database* db,
 // Returns true if a cookie table already exists in |db|, but is missing the
 // is_persistent field.
 bool CookieTableMissingIsPersistent(sql::Database* db) {
-  const char kSelectCookieTable[] =
-      "SELECT sql FROM sqlite_master WHERE name = 'cookies' AND type = 'table'";
-  sql::Statement statement(db->GetUniqueStatement(kSelectCookieTable));
-
-  // Unable to step implies cookies table does not exist.
-  if (!statement.Step())
+  if (!db->DoesTableExist("cookies"))
     return false;
-
-  std::string cookies_schema = statement.ColumnString(0);
-  return cookies_schema.find("is_persistent") == std::string::npos;
+  return !db->DoesColumnExist("cookies", "is_persistent");
 }
 
 // Removes all cookie records in |db| with is_persistent = false.

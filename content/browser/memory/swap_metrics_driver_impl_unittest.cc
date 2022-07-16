@@ -63,6 +63,10 @@ class SwapMetricsDelegateCounter : public SwapMetricsDriver::Delegate {
         num_compressed_updates_(0),
         num_updates_failed_(0) {}
 
+  SwapMetricsDelegateCounter(const SwapMetricsDelegateCounter&) = delete;
+  SwapMetricsDelegateCounter& operator=(const SwapMetricsDelegateCounter&) =
+      delete;
+
   ~SwapMetricsDelegateCounter() override = default;
 
   void OnSwapInCount(uint64_t count, base::TimeDelta interval) override {
@@ -97,13 +101,11 @@ class SwapMetricsDelegateCounter : public SwapMetricsDriver::Delegate {
   size_t num_decompressed_updates_;
   size_t num_compressed_updates_;
   size_t num_updates_failed_;
-
-  DISALLOW_COPY_AND_ASSIGN(SwapMetricsDelegateCounter);
 };
 
 // The time delta between updates must non-zero for the delegate callbacks to be
 // invoked.
-constexpr base::TimeDelta kUpdateDelay = base::TimeDelta::FromMilliseconds(50);
+constexpr base::TimeDelta kUpdateDelay = base::Milliseconds(50);
 
 }  // namespace
 
@@ -154,7 +156,7 @@ TEST_F(TestSwapMetricsDriver, ExpectedMetricCounts) {
 
 TEST_F(TestSwapMetricsDriver, TimerStartSuccess) {
   std::unique_ptr<SwapMetricsDriver> driver =
-      CreateDriver(base::TimeDelta::FromSeconds(60), false);
+      CreateDriver(base::Seconds(60), false);
   auto result = driver->Start();
   EXPECT_EQ(
       SwapMetricsDriver::SwapMetricsUpdateResult::kSwapMetricsUpdateSuccess,
@@ -163,7 +165,7 @@ TEST_F(TestSwapMetricsDriver, TimerStartSuccess) {
 
 TEST_F(TestSwapMetricsDriver, TimerStartFail) {
   std::unique_ptr<SwapMetricsDriver> driver =
-      CreateDriver(base::TimeDelta::FromSeconds(60), true);
+      CreateDriver(base::Seconds(60), true);
   auto result = driver->Start();
   EXPECT_EQ(
       SwapMetricsDriver::SwapMetricsUpdateResult::kSwapMetricsUpdateFailed,
@@ -172,7 +174,7 @@ TEST_F(TestSwapMetricsDriver, TimerStartFail) {
 
 TEST_F(TestSwapMetricsDriver, UpdateMetricsFail) {
   std::unique_ptr<SwapMetricsDriver> driver =
-      CreateDriver(base::TimeDelta::FromSeconds(60), true);
+      CreateDriver(base::Seconds(60), true);
   auto result = driver->InitializeMetrics();
   EXPECT_EQ(
       SwapMetricsDriver::SwapMetricsUpdateResult::kSwapMetricsUpdateFailed,

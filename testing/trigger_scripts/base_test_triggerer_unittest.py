@@ -31,6 +31,17 @@ class UnitTest(fake_filesystem_unittest.TestCase):
         bot = bots[0]
         self.assertIn('bot_id', bot)
 
+    @unittest.skipUnless('TRIGGER_SCRIPT_INTEGRATION_TESTS' in os.environ,
+                         'this is quick check test using real swarming server')
+    def test_list_bots(self):
+        # This just checks list_bots runs without error.
+        triggerer = base_test_triggerer.BaseTestTriggerer()
+        with fake_filesystem_unittest.Pause(self):
+            tasks = triggerer.list_tasks(('pool:luci.flex.ci', ), limit=1)
+        self.assertGreater(len(tasks), 0)
+        task = tasks[0]
+        self.assertIn('task_id', task)
+
     def test_convert_to_go_swarming_args(self):
         args = [
             '--swarming', 'x.apphost.com', '--dimension', 'pool', 'ci',

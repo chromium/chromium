@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/unguessable_token.h"
 
@@ -97,6 +96,9 @@ class COMPONENT_EXPORT(MOJO_BOOTSTRAP) PendingConnectionManager {
 
   static PendingConnectionManager& Get();
 
+  PendingConnectionManager(const PendingConnectionManager&) = delete;
+  PendingConnectionManager& operator=(const PendingConnectionManager&) = delete;
+
   // Responds to a file descriptor request for |token| with |fd|. |token| is the
   // UnguessableToken::ToString() representation of the |token| parameter to
   // ExpectOpenIpcChannel().
@@ -119,8 +121,6 @@ class COMPONENT_EXPORT(MOJO_BOOTSTRAP) PendingConnectionManager {
 
   base::flat_map<std::string, OpenIpcChannelCallback>
       open_ipc_channel_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingConnectionManager);
 };
 
 }  // namespace mojo_bootstrap

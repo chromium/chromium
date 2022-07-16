@@ -1,4 +1,7 @@
+nicolaso@chromium.org
 tmartino@chromium.org
-grt@chromium.org
+ydago@chromium.org
+
+grt@chromium.org  # emeritus
 
 per-file credential_provider*=file://chrome/credential_provider/OWNERS

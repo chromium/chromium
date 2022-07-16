@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -47,6 +46,10 @@ struct URLRequestContextConfig {
   // App-provided hint that server supports QUIC.
   struct QuicHint {
     QuicHint(const std::string& host, int port, int alternate_port);
+
+    QuicHint(const QuicHint&) = delete;
+    QuicHint& operator=(const QuicHint&) = delete;
+
     ~QuicHint();
 
     // Host name of the server that supports QUIC.
@@ -55,9 +58,6 @@ struct URLRequestContextConfig {
     const int port;
     // Alternate protocol port.
     const int alternate_port;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(QuicHint);
   };
 
   // Public-Key-Pinning configuration structure.
@@ -65,6 +65,10 @@ struct URLRequestContextConfig {
     Pkp(const std::string& host,
         bool include_subdomains,
         const base::Time& expiration_date);
+
+    Pkp(const Pkp&) = delete;
+    Pkp& operator=(const Pkp&) = delete;
+
     ~Pkp();
 
     // Host name.
@@ -75,9 +79,6 @@ struct URLRequestContextConfig {
     const bool include_subdomains;
     // Expiration date for the pins.
     const base::Time expiration_date;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Pkp);
   };
 
   // Simulated headers, used to preconfigure the Reporting API and Network Error
@@ -130,6 +131,10 @@ struct URLRequestContextConfig {
       // values. On iOS, corresponds to NSThread::setThreadPriority values. Do
       // not specify for other targets.
       absl::optional<double> network_thread_priority);
+
+  URLRequestContextConfig(const URLRequestContextConfig&) = delete;
+  URLRequestContextConfig& operator=(const URLRequestContextConfig&) = delete;
+
   ~URLRequestContextConfig();
 
   // Configures |context_builder| based on |this|.
@@ -202,7 +207,8 @@ struct URLRequestContextConfig {
  private:
   // Parses experimental options and makes appropriate changes to settings in
   // the URLRequestContextConfig and URLRequestContextBuilder.
-  void ParseAndSetExperimentalOptions(
+  // Returns whether the operation was successful.
+  bool ParseAndSetExperimentalOptions(
       net::URLRequestContextBuilder* context_builder,
       net::HttpNetworkSessionParams* session_params,
       net::QuicParams* quic_params);
@@ -215,8 +221,6 @@ struct URLRequestContextConfig {
   //   "option_value2",
   //    ...}, "experiment2: {"option3", "option_value3", ...}, ...}
   const std::string experimental_options;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestContextConfig);
 };
 
 // Stores intermediate state for URLRequestContextConfig.  Initializes with
@@ -224,6 +228,12 @@ struct URLRequestContextConfig {
 // modified, and it can be finalized with Build().
 struct URLRequestContextConfigBuilder {
   URLRequestContextConfigBuilder();
+
+  URLRequestContextConfigBuilder(const URLRequestContextConfigBuilder&) =
+      delete;
+  URLRequestContextConfigBuilder& operator=(
+      const URLRequestContextConfigBuilder&) = delete;
+
   ~URLRequestContextConfigBuilder();
 
   // Finalize state into a URLRequestContextConfig.  Must only be called once,
@@ -275,9 +285,6 @@ struct URLRequestContextConfigBuilder {
   // On iOS, corresponds to NSThread::setThreadPriority values.
   // Do not specify for other targets.
   absl::optional<double> network_thread_priority;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(URLRequestContextConfigBuilder);
 };
 
 }  // namespace cronet

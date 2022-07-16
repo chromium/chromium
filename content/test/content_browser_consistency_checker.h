@@ -6,7 +6,6 @@
 #define CONTENT_TEST_CONTENT_BROWSER_CONSISTENCY_CHECKER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace content {
 
@@ -26,6 +25,12 @@ class WebContents;
 class ContentBrowserConsistencyChecker {
  public:
   ContentBrowserConsistencyChecker();
+
+  ContentBrowserConsistencyChecker(const ContentBrowserConsistencyChecker&) =
+      delete;
+  ContentBrowserConsistencyChecker& operator=(
+      const ContentBrowserConsistencyChecker&) = delete;
+
   ~ContentBrowserConsistencyChecker();
 
  private:
@@ -33,8 +38,6 @@ class ContentBrowserConsistencyChecker {
 
   // The callback needs to be cached so that it can be unregistered.
   base::RepeatingCallback<void(WebContents*)> creation_hook_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentBrowserConsistencyChecker);
 };
 
 }  // namespace content

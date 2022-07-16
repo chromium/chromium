@@ -39,6 +39,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPBoundSocket
   TCPBoundSocket(SocketFactory* socket_factory,
                  net::NetLog* net_log,
                  const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
+  TCPBoundSocket(const TCPBoundSocket&) = delete;
+  TCPBoundSocket& operator=(const TCPBoundSocket&) = delete;
+
   ~TCPBoundSocket() override;
 
   // Attempts to bind a socket to the specified address. Returns net::OK on
@@ -83,8 +87,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPBoundSocket
   std::unique_ptr<TCPConnectedSocket> connecting_socket_;
 
   base::WeakPtrFactory<TCPBoundSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TCPBoundSocket);
 };
 
 }  // namespace network

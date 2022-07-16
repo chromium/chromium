@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
@@ -54,6 +53,10 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   };
 
   explicit ExtensionActionRunner(content::WebContents* web_contents);
+
+  ExtensionActionRunner(const ExtensionActionRunner&) = delete;
+  ExtensionActionRunner& operator=(const ExtensionActionRunner&) = delete;
+
   ~ExtensionActionRunner() override;
 
   // Returns the ExtensionActionRunner for the given |web_contents|, or null
@@ -259,8 +262,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
       extension_registry_observation_{this};
 
   base::WeakPtrFactory<ExtensionActionRunner> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionRunner);
 };
 
 }  // namespace extensions

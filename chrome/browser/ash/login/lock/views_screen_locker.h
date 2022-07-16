@@ -31,6 +31,10 @@ class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
                           public lock_screen_apps::FocusCyclerDelegate {
  public:
   explicit ViewsScreenLocker(ScreenLocker* screen_locker);
+
+  ViewsScreenLocker(const ViewsScreenLocker&) = delete;
+  ViewsScreenLocker& operator=(const ViewsScreenLocker&) = delete;
+
   ~ViewsScreenLocker() override;
 
   void Init();
@@ -92,8 +96,6 @@ class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
   std::unique_ptr<MojoSystemInfoDispatcher> system_info_updater_;
 
   base::WeakPtrFactory<ViewsScreenLocker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsScreenLocker);
 };
 
 }  // namespace ash

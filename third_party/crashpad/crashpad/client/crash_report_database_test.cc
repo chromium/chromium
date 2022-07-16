@@ -32,6 +32,9 @@ class CrashReportDatabaseTest : public testing::Test {
  public:
   CrashReportDatabaseTest() {}
 
+  CrashReportDatabaseTest(const CrashReportDatabaseTest&) = delete;
+  CrashReportDatabaseTest& operator=(const CrashReportDatabaseTest&) = delete;
+
  protected:
   // testing::Test:
   void SetUp() override {
@@ -125,8 +128,6 @@ class CrashReportDatabaseTest : public testing::Test {
  private:
   ScopedTempDir temp_dir_;
   std::unique_ptr<CrashReportDatabase> db_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashReportDatabaseTest);
 };
 
 TEST_F(CrashReportDatabaseTest, Initialize) {

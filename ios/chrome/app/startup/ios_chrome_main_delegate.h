@@ -12,13 +12,15 @@
 class IOSChromeMainDelegate : public web::WebMainDelegate {
  public:
   IOSChromeMainDelegate();
+
+  IOSChromeMainDelegate(const IOSChromeMainDelegate&) = delete;
+  IOSChromeMainDelegate& operator=(const IOSChromeMainDelegate&) = delete;
+
   ~IOSChromeMainDelegate() override;
 
  protected:
   // web::WebMainDelegate implementation:
   void BasicStartupComplete() override;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeMainDelegate);
 };
 
 #endif  // IOS_CHROME_APP_STARTUP_IOS_CHROME_MAIN_DELEGATE_H_

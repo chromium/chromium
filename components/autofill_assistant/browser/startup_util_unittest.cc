@@ -8,6 +8,7 @@
 #include <memory>
 #include <ostream>
 
+#include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/script_parameters.h"
@@ -66,16 +67,16 @@ const std::array<base::Feature, 4> kFullFeatureSet = {
     kAutofillAssistantChromeEntry, kAutofillAssistantLoadDFMForTriggerScripts};
 
 // Common script parameters to reuse.
-const std::map<std::string, std::string> kRegularScript = {
+const base::flat_map<std::string, std::string> kRegularScript = {
     {"ENABLED", "true"},
     {"START_IMMEDIATELY", "true"},
     {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
-const std::map<std::string, std::string> kRequestTriggerScript = {
+const base::flat_map<std::string, std::string> kRequestTriggerScript = {
     {"ENABLED", "true"},
     {"START_IMMEDIATELY", "false"},
     {"REQUEST_TRIGGER_SCRIPT", "true"},
     {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
-const std::map<std::string, std::string> kBase64TriggerScript = {
+const base::flat_map<std::string, std::string> kBase64TriggerScript = {
     {"ENABLED", "true"},
     {"START_IMMEDIATELY", "false"},
     {"TRIGGER_SCRIPTS_BASE64", "abc"},
@@ -344,7 +345,7 @@ TEST_P(StartupUtilParametrizedTest, InvalidParameterCombinationsShouldFail) {
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{
               std::make_unique<ScriptParameters>(
-                  std::map<std::string, std::string>{
+                  base::flat_map<std::string, std::string>{
                       {"ENABLED", "true"},
                       {"START_IMMEDIATELY", "false"},
                       {"ORIGINAL_DEEPLINK", "https://www.example.com"}}),
@@ -362,7 +363,7 @@ TEST_P(StartupUtilParametrizedTest, InvalidParameterCombinationsShouldFail) {
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{
               std::make_unique<ScriptParameters>(
-                  std::map<std::string, std::string>{
+                  base::flat_map<std::string, std::string>{
                       {"ENABLED", "true"},
                       {"START_IMMEDIATELY", "false"},
                       {"REQUEST_TRIGGER_SCRIPT", "false"},
@@ -381,7 +382,7 @@ TEST_P(StartupUtilParametrizedTest, InvalidParameterCombinationsShouldFail) {
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{
               std::make_unique<ScriptParameters>(
-                  std::map<std::string, std::string>{
+                  base::flat_map<std::string, std::string>{
                       {"ENABLED", "true"},
                       {"START_IMMEDIATELY", "false"},
                       {"TRIGGER_SCRIPTS_BASE64", ""},
@@ -398,7 +399,7 @@ TEST_P(StartupUtilParametrizedTest, InvalidParameterCombinationsShouldFail) {
   // ORIGINAL_DEEPLINK or initial url must be specified and valid.
   EXPECT_THAT(StartupUtil().ChooseStartupModeForIntent(
                   TriggerContext{std::make_unique<ScriptParameters>(
-                                     std::map<std::string, std::string>{
+                                     base::flat_map<std::string, std::string>{
                                          {"ENABLED", "true"},
                                          {"START_IMMEDIATELY", "true"}}),
                                  kDefaultCCTOptions},
@@ -413,7 +414,7 @@ TEST_P(StartupUtilParametrizedTest, InvalidParameterCombinationsShouldFail) {
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{
               std::make_unique<ScriptParameters>(
-                  std::map<std::string, std::string>{
+                  base::flat_map<std::string, std::string>{
                       {"ENABLED", "true"}, {"START_IMMEDIATELY", "true"}}),
               {std::string(), /* is_cct = */ true, false, false,
                /* initial_url = */ "https://www.example.com", false}},
@@ -430,7 +431,7 @@ INSTANTIATE_TEST_SUITE_P(StartupParamTestSuite,
                          ValuesIn(kTestFeatureConfigs));
 
 TEST_F(StartupUtilTest, ChooseStartupUrlForIntentPrefersOriginalDeeplink) {
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ORIGINAL_DEEPLINK", "https://www.original-deeplink.com"}};
 
   EXPECT_THAT(StartupUtil().ChooseStartupUrlForIntent(

@@ -15,8 +15,4 @@
     readonly attribute FrozenArray<PaymentDetailsModifier> modifiers;
 
     [CallWith=ScriptState, RaisesException] void respondWith(Promise<boolean> canMakePaymentResponse);
-
-    // https://gist.github.com/rsolomakhin/eba91c185028899883d2c7f37f357d7c
-    [RuntimeEnabled=PaymentHandlerMinimalUI] readonly attribute DOMString currency;
-    [RuntimeEnabled=PaymentHandlerMinimalUI, CallWith=ScriptState, RaisesException] void respondWithMinimalUI(Promise<CanMakePaymentResponse> response);
 };

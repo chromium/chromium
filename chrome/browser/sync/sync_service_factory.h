@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
@@ -31,6 +30,9 @@ class SyncServiceFactory : public BrowserContextKeyedServiceFactory {
   // absolutely necessary! Prefer GetForProfile instead.
   static syncer::SyncServiceImpl* GetAsSyncServiceImplForProfile(
       Profile* profile);
+
+  SyncServiceFactory(const SyncServiceFactory&) = delete;
+  SyncServiceFactory& operator=(const SyncServiceFactory&) = delete;
 
   // Returns whether a SyncService has already been created for the profile.
   // Note that GetForProfile will create the service if it doesn't exist yet.
@@ -62,8 +64,6 @@ class SyncServiceFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_SERVICE_FACTORY_H_

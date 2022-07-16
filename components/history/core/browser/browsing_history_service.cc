@@ -271,7 +271,7 @@ void BrowsingHistoryService::QueryHistoryInternal(
       // Start a timer with timeout before we make the actual query, otherwise
       // tests get confused when completion callback is run synchronously.
       web_history_timer_->Start(
-          FROM_HERE, base::TimeDelta::FromSeconds(kWebHistoryTimeoutSeconds),
+          FROM_HERE, base::Seconds(kWebHistoryTimeoutSeconds),
           base::BindOnce(&BrowsingHistoryService::WebHistoryTimeout,
                          weak_factory_.GetWeakPtr(), state));
 
@@ -332,6 +332,46 @@ void BrowsingHistoryService::QueryHistoryInternal(
   if (should_return_results_immediately) {
     ReturnResultsToDriver(std::move(state));
   }
+}
+
+void BrowsingHistoryService::GetLastVisitToHostBeforeRecentNavigations(
+    const std::string& host_name,
+    base::OnceCallback<void(base::Time)> callback) {
+  base::Time now = base::Time::Now();
+  local_history_->GetLastVisitToHost(
+      host_name, base::Time() /* before_time */, now /* end_time */,
+      base::BindOnce(
+          &BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete,
+          weak_factory_.GetWeakPtr(), host_name, now, std::move(callback)),
+      &query_task_tracker_);
+}
+
+void BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete(
+    const std::string& host_name,
+    base::Time query_start_time,
+    base::OnceCallback<void(base::Time)> callback,
+    HistoryLastVisitResult result) {
+  if (!result.success || result.last_visit.is_null()) {
+    std::move(callback).Run(base::Time());
+    return;
+  }
+
+  base::Time end_time =
+      result.last_visit < (query_start_time - base::Minutes(1))
+          ? result.last_visit
+          : query_start_time - base::Minutes(1);
+  local_history_->GetLastVisitToHost(
+      host_name, base::Time() /* before_time */, end_time /* end_time */,
+      base::BindOnce(
+          &BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete2,
+          weak_factory_.GetWeakPtr(), std::move(callback)),
+      &query_task_tracker_);
+}
+
+void BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete2(
+    base::OnceCallback<void(base::Time)> callback,
+    HistoryLastVisitResult result) {
+  std::move(callback).Run(result.last_visit);
 }
 
 void BrowsingHistoryService::RemoveVisits(
@@ -700,8 +740,8 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
             continue;
           }
           // The timestamp on the server is a Unix time.
-          base::Time time = base::Time::UnixEpoch() +
-                            base::TimeDelta::FromMicroseconds(timestamp_usec);
+          base::Time time =
+              base::Time::UnixEpoch() + base::Microseconds(timestamp_usec);
 
           // Get the ID of the client that this visit came from.
           std::string client_id;

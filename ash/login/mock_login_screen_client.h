@@ -16,6 +16,10 @@ namespace ash {
 class MockLoginScreenClient : public LoginScreenClient {
  public:
   MockLoginScreenClient();
+
+  MockLoginScreenClient(const MockLoginScreenClient&) = delete;
+  MockLoginScreenClient& operator=(const MockLoginScreenClient&) = delete;
+
   ~MockLoginScreenClient() override;
 
   MOCK_METHOD(void,
@@ -78,6 +82,7 @@ class MockLoginScreenClient : public LoginScreenClient {
   MOCK_METHOD(void, SignOutUser, (), (override));
   MOCK_METHOD(void, CancelAddUser, (), (override));
   MOCK_METHOD(void, LoginAsGuest, (), (override));
+  MOCK_METHOD(void, ShowGuestTosScreen, (), (override));
   MOCK_METHOD(void,
               OnMaxIncorrectPasswordAttempted,
               (const AccountId& account_id),
@@ -119,8 +124,6 @@ class MockLoginScreenClient : public LoginScreenClient {
       ParentCodeValidationResult::kValid;
   base::OnceCallback<void(bool)>*
       authenticate_user_with_password_or_pin_callback_storage_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockLoginScreenClient);
 };
 
 }  // namespace ash

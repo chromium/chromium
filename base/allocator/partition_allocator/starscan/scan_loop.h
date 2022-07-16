@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/starscan/starscan_fwd.h"
 #include "base/compiler_specific.h"
+#include "base/memory/tagging.h"
 #include "build/build_config.h"
 
 #if defined(ARCH_CPU_X86_64)
@@ -42,6 +43,9 @@ namespace internal {
 // incoming ranges are properly aligned. The class is designed around the CRTP
 // version of the "template method" (in GoF terms). CRTP is needed for fast
 // static dispatch.
+// 使用可用的最佳 SIMD 扩展对内存范围进行迭代。假设64位平台支持笼子，并且传入范围的
+// 开始指针正确对齐。该类是围绕“模板方法”的 CRTP 版本（在 GoF 术语中）设计的。
+// 快速静态调度需要 CRTP。
 template <typename Derived>
 class ScanLoop {
  public:
@@ -54,8 +58,12 @@ class ScanLoop {
   void Run(uintptr_t* begin, uintptr_t* end);
 
  private:
-  const Derived& derived() const { return static_cast<const Derived&>(*this); }
-  Derived& derived() { return static_cast<Derived&>(*this); }
+  const Derived& derived() const {
+    return static_cast<const Derived&>(*this);
+  }
+  Derived& derived() {
+    return static_cast<Derived&>(*this);
+  }
 
 #if defined(ARCH_CPU_X86_64)
   __attribute__((target("avx2"))) void RunAVX2(uintptr_t*, uintptr_t*);
@@ -88,13 +96,13 @@ void ScanLoop<Derived>::Run(uintptr_t* begin, uintptr_t* end) {
 
 template <typename Derived>
 void ScanLoop<Derived>::RunUnvectorized(uintptr_t* begin, uintptr_t* end) {
-  PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % sizeof(uintptr_t)));
+  PA_SCAN_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % sizeof(uintptr_t)));
 #if defined(PA_HAS_64_BITS_POINTERS)
   static constexpr uintptr_t mask = Derived::CageMask();
   const uintptr_t base = derived().CageBase();
 #endif
   for (; begin < end; ++begin) {
-    const uintptr_t maybe_ptr = *begin;
+    const uintptr_t maybe_ptr = *(memory::RemaskPtr(begin));
 #if defined(PA_HAS_64_BITS_POINTERS)
     if (LIKELY((maybe_ptr & mask) != base))
       continue;
@@ -108,12 +116,11 @@ void ScanLoop<Derived>::RunUnvectorized(uintptr_t* begin, uintptr_t* end) {
 
 #if defined(ARCH_CPU_X86_64)
 template <typename Derived>
-__attribute__((target("avx2"))) void ScanLoop<Derived>::RunAVX2(
-    uintptr_t* begin,
-    uintptr_t* end) {
+__attribute__((target("avx2")))
+void ScanLoop<Derived>::RunAVX2(uintptr_t* begin, uintptr_t* end) {
   static constexpr size_t kAlignmentRequirement = 32;
   static constexpr size_t kWordsInVector = 4;
-  PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
+  PA_SCAN_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
   // Stick to integer instructions. This brings slightly better throughput. For
   // example, according to the Intel docs, on Broadwell and Haswell the CPI of
   // vmovdqa (_mm256_load_si256) is twice smaller (0.25) than that of vmovapd
@@ -150,7 +157,7 @@ __attribute__((target("sse4.1"))) void ScanLoop<Derived>::RunSSE4(
     uintptr_t* end) {
   static constexpr size_t kAlignmentRequirement = 16;
   static constexpr size_t kWordsInVector = 2;
-  PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
+  PA_SCAN_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
   const __m128i vbase = _mm_set1_epi64x(derived().CageBase());
   const __m128i cage_mask = _mm_set1_epi64x(derived().CageMask());
 
@@ -185,14 +192,14 @@ template <typename Derived>
 void ScanLoop<Derived>::RunNEON(uintptr_t* begin, uintptr_t* end) {
   static constexpr size_t kAlignmentRequirement = 16;
   static constexpr size_t kWordsInVector = 2;
-  PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
+  PA_SCAN_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
   const uint64x2_t vbase = vdupq_n_u64(derived().CageBase());
   const uint64x2_t cage_mask = vdupq_n_u64(derived().CageMask());
 
   uintptr_t* payload = begin;
   for (; payload < (end - kWordsInVector); payload += kWordsInVector) {
     const uint64x2_t maybe_ptrs =
-        vld1q_u64(reinterpret_cast<uint64_t*>(payload));
+        vld1q_u64(reinterpret_cast<uint64_t*>(memory::RemaskPtr(payload)));
     const uint64x2_t vand = vandq_u64(maybe_ptrs, cage_mask);
     const uint64x2_t vcmp = vceqq_u64(vand, vbase);
     const uint32_t max = vmaxvq_u32(vreinterpretq_u32_u64(vcmp));

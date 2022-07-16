@@ -107,6 +107,9 @@ class RenderFrameAudioInputStreamFactory::Core final
        MediaStreamManager* media_stream_manager,
        RenderFrameHost* render_frame_host);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core() final;
 
   void Init(mojo::PendingReceiver<blink::mojom::RendererAudioInputStreamFactory>
@@ -153,8 +156,6 @@ class RenderFrameAudioInputStreamFactory::Core final
   base::WeakPtr<ForwardingAudioStreamFactory::Core> forwarding_factory_;
 
   base::WeakPtrFactory<Core> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 RenderFrameAudioInputStreamFactory::RenderFrameAudioInputStreamFactory(

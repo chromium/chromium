@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_cancel_handler.h"
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "components/infobars/core/infobar.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
@@ -17,6 +18,9 @@
 
 using infobars::InfoBar;
 using infobars::InfoBarManager;
+
+const base::Feature kInfobarRemoveCheck{"InfobarRemoveCheck",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 #pragma mark - InfobarOverlayRequestCancelHandler
 
@@ -62,6 +66,9 @@ void InfobarOverlayRequestCancelHandler::RemovalObserver::OnInfoBarRemoved(
     infobars::InfoBar* infobar,
     bool animate) {
   if (cancel_handler_->infobar() == infobar) {
+    if (base::FeatureList::IsEnabled(kInfobarRemoveCheck)) {
+      static_cast<InfoBarIOS*>(infobar)->set_removed_from_owner();
+    }
     cancel_handler_->CancelForInfobarRemoval();
     // The cancel handler is destroyed after Cancel(), so no code can be added
     // after this call.
@@ -72,6 +79,9 @@ void InfobarOverlayRequestCancelHandler::RemovalObserver::OnInfoBarReplaced(
     InfoBar* old_infobar,
     InfoBar* new_infobar) {
   if (cancel_handler_->infobar() == old_infobar) {
+    if (base::FeatureList::IsEnabled(kInfobarRemoveCheck)) {
+      static_cast<InfoBarIOS*>(old_infobar)->set_removed_from_owner();
+    }
     cancel_handler_->HandleReplacement(static_cast<InfoBarIOS*>(new_infobar));
     cancel_handler_->CancelForInfobarRemoval();
     // The cancel handler is destroyed after Cancel(), so no code can be added

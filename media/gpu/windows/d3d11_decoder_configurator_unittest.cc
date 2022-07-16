@@ -27,7 +27,8 @@ class D3D11DecoderConfiguratorUnittest : public ::testing::Test {
                                          bool encrypted) {
     VideoDecoderConfig result;
     result.Initialize(
-        kUnknownVideoCodec,  // It doesn't matter because it won't be used.
+        VideoCodec::kUnknown,  // It doesn't matter because it won't
+                               // be used.
         profile, VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
         kNoTransformation, size, {}, {}, {},
         encrypted ? EncryptionScheme::kCenc : EncryptionScheme::kUnencrypted);
@@ -44,7 +45,8 @@ class D3D11DecoderConfiguratorUnittest : public ::testing::Test {
     workarounds.disable_dxgi_zero_copy_video = false;
     auto media_log = std::make_unique<NullMediaLog>();
     return D3D11DecoderConfigurator::Create(prefs, workarounds, config,
-                                            bit_depth, media_log.get());
+                                            bit_depth, media_log.get(),
+                                            false /*use_shared_handle*/);
   }
 };
 

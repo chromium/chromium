@@ -4,9 +4,10 @@
 
 import 'chrome://extensions/extensions.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {eventToPromise, isChildVisible} from '../test_util.m.js';
+import {eventToPromise, isChildVisible} from '../test_util.js';
 
 import {TestService} from './test_service.js';
 import {MetricsPrivateMock} from './test_util.js';
@@ -25,6 +26,7 @@ suite('RuntimeHostPermissions', function() {
     delegate = new TestService();
     element.delegate = delegate;
     element.itemId = ITEM_ID;
+    element.useNewSiteAccessPage = false;
 
     document.body.appendChild(element);
 
@@ -53,14 +55,14 @@ suite('RuntimeHostPermissions', function() {
     expectTrue(testIsVisible('#host-access'));
 
     const selectHostAccess = element.shadowRoot.querySelector('#host-access');
-    expectEquals(HostAccess.ON_CLICK, selectHostAccess.selected);
+    expectEquals(HostAccess.ON_CLICK, selectHostAccess.value);
     // For on-click mode, there should be no runtime hosts listed.
     expectFalse(testIsVisible('#hosts'));
 
     // Changing the data's access should change the UI appropriately.
     element.set('permissions.hostAccess', HostAccess.ON_ALL_SITES);
     flush();
-    expectEquals(HostAccess.ON_ALL_SITES, selectHostAccess.selected);
+    expectEquals(HostAccess.ON_ALL_SITES, selectHostAccess.value);
     expectFalse(testIsVisible('#hosts'));
 
     // Setting the mode to on specific sites should display the runtime hosts
@@ -71,7 +73,7 @@ suite('RuntimeHostPermissions', function() {
       {host: 'https://chromium.org', granted: true}
     ]);
     flush();
-    expectEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.selected);
+    expectEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
     expectTrue(testIsVisible('#hosts'));
     // Expect three entries in the list: the two hosts + the add-host button.
     expectEquals(
@@ -80,6 +82,37 @@ suite('RuntimeHostPermissions', function() {
             .getElementsByTagName('li')
             .length);
     expectTrue(testIsVisible('#add-host'));
+  });
+
+  test('permissions display new site access menu', function() {
+    element.set('useNewSiteAccessPage', true);
+    const permissions = {
+      hostAccess: HostAccess.ON_CLICK,
+      hasAllHosts: true,
+      hosts: [{granted: false, host: 'https://*/*'}],
+    };
+
+    element.set('permissions', permissions);
+    flush();
+
+    const testIsVisible = isChildVisible.bind(null, element);
+    expectTrue(testIsVisible('#host-access'));
+
+    const selectHostAccess = element.shadowRoot.querySelector('#host-access');
+    expectEquals(HostAccess.ON_CLICK, selectHostAccess.value);
+    // For on-click mode, there should be no runtime hosts listed.
+    expectFalse(testIsVisible('#hosts'));
+
+    // Changing the data's access should change the UI appropriately.
+    element.set('permissions.hostAccess', HostAccess.ON_ALL_SITES);
+    flush();
+    expectEquals(HostAccess.ON_ALL_SITES, selectHostAccess.value);
+    expectFalse(testIsVisible('#hosts'));
+
+    element.set('permissions.hostAccess', HostAccess.ON_SPECIFIC_SITES);
+    flush();
+    expectEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
+    // TODO(crbug.com/1253673): Test the new "customize for each site" menu.
   });
 
   test('permissions selection', async () => {
@@ -99,7 +132,8 @@ suite('RuntimeHostPermissions', function() {
     // event, then verifies that the delegate was called with the correct
     // value.
     function expectDelegateCallOnAccessChange(newValue) {
-      selectHostAccess.selected = newValue;
+      selectHostAccess.value = newValue;
+      selectHostAccess.dispatchEvent(new CustomEvent('change'));
       return delegate.whenCalled('setItemHostAccess').then((args) => {
         expectEquals(ITEM_ID, args[0] /* id */);
         expectEquals(newValue, args[1] /* access */);
@@ -134,7 +168,8 @@ suite('RuntimeHostPermissions', function() {
     const selectHostAccess = element.shadowRoot.querySelector('#host-access');
     assertTrue(!!selectHostAccess);
 
-    selectHostAccess.selected = HostAccess.ON_SPECIFIC_SITES;
+    selectHostAccess.value = HostAccess.ON_SPECIFIC_SITES;
+    selectHostAccess.dispatchEvent(new CustomEvent('change'));
 
     flush();
     const dialog =
@@ -156,7 +191,7 @@ suite('RuntimeHostPermissions', function() {
     await whenClosed;
 
     flush();
-    expectEquals(HostAccess.ON_CLICK, selectHostAccess.selected);
+    expectEquals(HostAccess.ON_CLICK, selectHostAccess.value);
     expectEquals(
         getUserActionCount('Extensions.Settings.Hosts.AddHostDialogCanceled'),
         1);
@@ -166,7 +201,8 @@ suite('RuntimeHostPermissions', function() {
         getUserActionCount('Extensions.Settings.Hosts.OnClickSelected'), 0);
     // Changing to a different option after this should still log a user action
     // as expected.
-    selectHostAccess.selected = HostAccess.ON_ALL_SITES;
+    selectHostAccess.value = HostAccess.ON_ALL_SITES;
+    selectHostAccess.dispatchEvent(new CustomEvent('change'));
     flush();
     expectEquals(
         getUserActionCount('Extensions.Settings.Hosts.OnAllSitesSelected'), 1);
@@ -185,7 +221,8 @@ suite('RuntimeHostPermissions', function() {
     const selectHostAccess = element.shadowRoot.querySelector('#host-access');
     assertTrue(!!selectHostAccess);
 
-    selectHostAccess.selected = HostAccess.ON_SPECIFIC_SITES;
+    selectHostAccess.value = HostAccess.ON_SPECIFIC_SITES;
+    selectHostAccess.dispatchEvent(new CustomEvent('change'));
     expectEquals(
         getUserActionCount('Extensions.Settings.Hosts.OnSpecificSitesSelected'),
         1);
@@ -209,7 +246,7 @@ suite('RuntimeHostPermissions', function() {
     dialog.shadowRoot.querySelector('.action-button').click();
     return whenClosed.then(() => {
       flush();
-      expectEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.selected);
+      expectEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
       expectEquals(
           getUserActionCount(
               'Extensions.Settings.Hosts.AddHostDialogSubmitted'),

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -217,9 +216,8 @@ TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForGaiaAccountForm) {
 TEST_F(PasswordManagerClientHelperTest,
        NoPromptToMoveForNonOptedInUserIfRefusedTooManyTimes) {
   base::test::ScopedFeatureList account_storage_feature;
-  account_storage_feature.InitAndEnableFeatureWithParameters(
-      features::kEnablePasswordsAccountStorage,
-      {{features::kMaxMoveToAccountOffersForNonOptedInUser, "1"}});
+  account_storage_feature.InitAndEnableFeature(
+      features::kEnablePasswordsAccountStorage);
   ON_CALL(*client()->GetPasswordFeatureManager(),
           ShouldShowAccountStorageBubbleUi)
       .WillByDefault(Return(true));
@@ -236,10 +234,10 @@ TEST_F(PasswordManagerClientHelperTest,
   helper()->NotifySuccessfulLoginWithExistingPassword(
       CreateFormManager(&form, /*is_movable=*/true));
 
-  // If the previous move was refused and the max is 1, shouldn't offer anymore.
+  // If the previous 5 moves were refused, shouldn't offer anymore.
   EXPECT_CALL(*client()->GetPasswordFeatureManager(),
               GetMoveOfferedToNonOptedInUserCount)
-      .WillOnce(Return(1));
+      .WillOnce(Return(5));
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);
   helper()->NotifySuccessfulLoginWithExistingPassword(
       CreateFormManager(&form, /*is_movable=*/true));

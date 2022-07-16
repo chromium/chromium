@@ -123,6 +123,12 @@ void SharedImageStub::ExecuteDeferredRequest(
           std::move(request->get_create_shared_image_video_planes()));
       break;
 
+    case mojom::DeferredSharedImageRequest::Tag::kCopyToGpuMemoryBuffer: {
+      auto& params = *request->get_copy_to_gpu_memory_buffer();
+      OnCopyToGpuMemoryBuffer(params.mailbox, params.release_id);
+      break;
+    }
+
     case mojom::DeferredSharedImageRequest::Tag::kCreateSwapChain:
       OnCreateSwapChain(std::move(request->get_create_swap_chain()));
       break;
@@ -226,7 +232,9 @@ void SharedImageStub::OnCreateSharedImage(
     return;
   }
 
-  if (!MakeContextCurrent()) {
+  // Some shared image backing factories will use GL.
+  // TODO(crbug.com/1239365): Only request GL when needed.
+  if (!MakeContextCurrent(/*needs_gl=*/true)) {
     OnError();
     return;
   }
@@ -400,6 +408,26 @@ void SharedImageStub::OnCreateSharedImageVideoPlanes(
     return;
   }
   sync_point_client_state_->ReleaseFenceSync(params->release_id);
+}
+
+void SharedImageStub::OnCopyToGpuMemoryBuffer(const Mailbox& mailbox,
+                                              uint32_t release_id) {
+  if (!mailbox.IsSharedImage()) {
+    DLOG(ERROR) << "SharedImageStub: Trying to access a SharedImage with a "
+                   "non-SharedImage mailbox.";
+    OnError();
+    return;
+  }
+  if (!MakeContextCurrent()) {
+    OnError();
+    return;
+  }
+  if (!factory_->CopyToGpuMemoryBuffer(mailbox)) {
+    DLOG(ERROR) << "SharedImageStub: Unable to update shared GMB";
+    OnError();
+    return;
+  }
+  sync_point_client_state_->ReleaseFenceSync(release_id);
 }
 
 void SharedImageStub::OnCreateSwapChain(

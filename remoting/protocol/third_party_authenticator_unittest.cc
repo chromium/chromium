@@ -110,6 +110,11 @@ class ThirdPartyAuthenticatorTest : public AuthenticatorTestBase {
 
  public:
   ThirdPartyAuthenticatorTest() = default;
+
+  ThirdPartyAuthenticatorTest(const ThirdPartyAuthenticatorTest&) = delete;
+  ThirdPartyAuthenticatorTest& operator=(const ThirdPartyAuthenticatorTest&) =
+      delete;
+
   ~ThirdPartyAuthenticatorTest() override = default;
 
  protected:
@@ -127,9 +132,6 @@ class ThirdPartyAuthenticatorTest : public AuthenticatorTestBase {
 
   FakeTokenFetcher token_fetcher_;
   FakeTokenValidator* token_validator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyAuthenticatorTest);
 };
 
 TEST_F(ThirdPartyAuthenticatorTest, SuccessfulAuth) {

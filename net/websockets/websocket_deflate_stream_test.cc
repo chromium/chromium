@@ -93,6 +93,11 @@ class MockWebSocketStream : public WebSocketStream {
 class WebSocketDeflatePredictorMock : public WebSocketDeflatePredictor {
  public:
   WebSocketDeflatePredictorMock() : result_(DEFLATE) {}
+
+  WebSocketDeflatePredictorMock(const WebSocketDeflatePredictorMock&) = delete;
+  WebSocketDeflatePredictorMock& operator=(
+      const WebSocketDeflatePredictorMock&) = delete;
+
   ~WebSocketDeflatePredictorMock() override {
     // Verify whether all expectaions are consumed.
     if (!frames_to_be_input_.empty()) {
@@ -187,8 +192,6 @@ class WebSocketDeflatePredictorMock : public WebSocketDeflatePredictor {
   // Pushed by |RecordWrittenFrames| and popped and verified by
   // |VerifySentFrame|.
   base::circular_deque<const WebSocketFrame*> frames_written_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketDeflatePredictorMock);
 };
 
 class WebSocketDeflateStreamTest : public ::testing::Test {

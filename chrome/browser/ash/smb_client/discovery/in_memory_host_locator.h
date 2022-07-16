@@ -17,6 +17,9 @@ class InMemoryHostLocator : public HostLocator {
   InMemoryHostLocator();
   explicit InMemoryHostLocator(bool should_run_synchronously);
 
+  InMemoryHostLocator(const InMemoryHostLocator&) = delete;
+  InMemoryHostLocator& operator=(const InMemoryHostLocator&) = delete;
+
   ~InMemoryHostLocator() override;
 
   // Adds host with |hostname| and |address| to host_map_.
@@ -38,8 +41,6 @@ class InMemoryHostLocator : public HostLocator {
   HostMap host_map_;
   FindHostsCallback stored_callback_;
   bool should_run_synchronously_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryHostLocator);
 };
 
 }  // namespace smb_client

@@ -57,6 +57,10 @@ void CheckCalledCallback(bool* flag) {
 class TestShutdownController : public ShutdownController {
  public:
   TestShutdownController() = default;
+
+  TestShutdownController(const TestShutdownController&) = delete;
+  TestShutdownController& operator=(const TestShutdownController&) = delete;
+
   ~TestShutdownController() override = default;
 
   int num_shutdown_requests() const { return num_shutdown_requests_; }
@@ -69,8 +73,6 @@ class TestShutdownController : public ShutdownController {
   }
 
   int num_shutdown_requests_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestShutdownController);
 };
 
 }  // namespace
@@ -78,6 +80,10 @@ class TestShutdownController : public ShutdownController {
 class LockStateControllerTest : public PowerButtonTestBase {
  public:
   LockStateControllerTest() = default;
+
+  LockStateControllerTest(const LockStateControllerTest&) = delete;
+  LockStateControllerTest& operator=(const LockStateControllerTest&) = delete;
+
   ~LockStateControllerTest() override = default;
 
   // PowerButtonTestBase:
@@ -303,9 +309,6 @@ class LockStateControllerTest : public PowerButtonTestBase {
       shutdown_controller_resetter_;
   std::unique_ptr<TestShutdownController> test_shutdown_controller_;
   TestSessionStateAnimator* test_animator_ = nullptr;   // not owned
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LockStateControllerTest);
 };
 
 // Test the show menu and shutdown flow for non-Chrome-OS hardware that doesn't

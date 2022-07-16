@@ -149,7 +149,7 @@ TEST_F(WindowPreviewViewTest,
 }
 
 TEST_F(WindowPreviewViewTest, LayoutChildWithinParentBounds) {
-  UpdateDisplay("1000x1000");
+  UpdateDisplay("1000x900");
 
   // Create two widgets linked transiently. The child window is within the
   // bounds of the parent window.
@@ -181,7 +181,7 @@ TEST_F(WindowPreviewViewTest, LayoutChildWithinParentBounds) {
 // Test that WindowPreviewView layouts the transient tree correctly when each
 // transient child is outside the bounds of its transient parent.
 TEST_F(WindowPreviewViewTest, LayoutChildOutsideParentBounds) {
-  UpdateDisplay("1000x1000");
+  UpdateDisplay("1000x900");
 
   // Create two widgets linked transiently. The child window is outside of the
   // bounds of the parent window.

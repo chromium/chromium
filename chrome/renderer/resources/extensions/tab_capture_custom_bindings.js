@@ -51,5 +51,4 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
   }
 
   apiFunctions.setCustomCallback('capture', proxyToGetUserMedia);
-  apiFunctions.setCustomCallback('captureOffscreenTab', proxyToGetUserMedia);
 });

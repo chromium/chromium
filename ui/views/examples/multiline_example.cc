@@ -22,7 +22,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
 
 using l10n_util::GetStringUTF16;
@@ -43,15 +43,16 @@ gfx::Range ClampRange(gfx::Range range, uint32_t max) {
 class PreferredSizeLabel : public Label {
  public:
   PreferredSizeLabel() = default;
+
+  PreferredSizeLabel(const PreferredSizeLabel&) = delete;
+  PreferredSizeLabel& operator=(const PreferredSizeLabel&) = delete;
+
   ~PreferredSizeLabel() override = default;
 
   // Label:
   gfx::Size CalculatePreferredSize() const override {
     return gfx::Size(50, Label::CalculatePreferredSize().height());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PreferredSizeLabel);
 };
 
 }  // namespace
@@ -67,6 +68,9 @@ class MultilineExample::RenderTextView : public View {
     render_text_->SetMultiline(true);
     SetBorder(CreateSolidBorder(2, SK_ColorGRAY));
   }
+
+  RenderTextView(const RenderTextView&) = delete;
+  RenderTextView& operator=(const RenderTextView&) = delete;
 
   void OnPaint(gfx::Canvas* canvas) override {
     View::OnPaint(canvas);
@@ -125,8 +129,6 @@ class MultilineExample::RenderTextView : public View {
   }
 
   std::unique_ptr<gfx::RenderText> render_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderTextView);
 };
 
 MultilineExample::MultilineExample()
@@ -135,20 +137,23 @@ MultilineExample::MultilineExample()
 MultilineExample::~MultilineExample() = default;
 
 void MultilineExample::CreateExampleView(View* container) {
-  const std::u16string kTestString =
-      u"qwerty"
-      u"\x627\x644\x631\x626\x64A\x633\x64A\x629"
-      u"asdfgh";
+  container->SetLayoutManager(std::make_unique<views::TableLayout>())
+      ->AddColumn(LayoutAlignment::kStart, LayoutAlignment::kCenter,
+                  TableLayout::kFixedSize,
+                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch, 1.0f,
+                 TableLayout::ColumnSize::kFixed, 0, 0)
+      .AddRows(4, TableLayout::kFixedSize);
 
-  auto render_text_view = std::make_unique<RenderTextView>();
-  render_text_view->SetText(kTestString);
+  const std::u16string kTestString = u"qwertyالرئيسيةasdfgh";
 
-  auto label = std::make_unique<PreferredSizeLabel>();
-  label->SetText(kTestString);
-  label->SetMultiLine(true);
-  label->SetBorder(CreateSolidBorder(2, SK_ColorCYAN));
+  container->AddChildView(
+      std::make_unique<Label>(GetStringUTF16(IDS_MULTILINE_RENDER_TEXT_LABEL)));
+  render_text_view_ =
+      container->AddChildView(std::make_unique<RenderTextView>());
+  render_text_view_->SetText(kTestString);
 
-  auto label_checkbox = std::make_unique<Checkbox>(
+  label_checkbox_ = container->AddChildView(std::make_unique<Checkbox>(
       GetStringUTF16(IDS_MULTILINE_LABEL),
       base::BindRepeating(
           [](MultilineExample* example) {
@@ -156,50 +161,32 @@ void MultilineExample::CreateExampleView(View* container) {
                                          ? example->textfield_->GetText()
                                          : std::u16string());
           },
-          base::Unretained(this)));
-  label_checkbox->SetChecked(true);
-  label_checkbox->SetRequestFocusOnPress(false);
+          base::Unretained(this))));
+  label_checkbox_->SetChecked(true);
+  label_checkbox_->SetRequestFocusOnPress(false);
+  label_ = container->AddChildView(std::make_unique<PreferredSizeLabel>());
+  label_->SetText(kTestString);
+  label_->SetMultiLine(true);
+  label_->SetBorder(CreateSolidBorder(2, SK_ColorCYAN));
 
-  auto elision_checkbox = std::make_unique<Checkbox>(
+  elision_checkbox_ = container->AddChildView(std::make_unique<Checkbox>(
       GetStringUTF16(IDS_MULTILINE_ELIDE_LABEL),
       base::BindRepeating(
           [](MultilineExample* example) {
             example->render_text_view_->SetMaxLines(
                 example->elision_checkbox_->GetChecked() ? 3 : 0);
           },
-          base::Unretained(this)));
-  elision_checkbox->SetChecked(false);
-  elision_checkbox->SetRequestFocusOnPress(false);
+          base::Unretained(this))));
+  elision_checkbox_->SetChecked(false);
+  elision_checkbox_->SetRequestFocusOnPress(false);
+  container->AddChildView(std::make_unique<View>());
 
-  auto textfield = std::make_unique<Textfield>();
-  textfield->set_controller(this);
-  textfield->SetText(kTestString);
-
-  GridLayout* layout =
-      container->SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  ColumnSet* column_set = layout->AddColumnSet(0);
-  column_set->AddColumn(GridLayout::LEADING, GridLayout::CENTER, 0.0f,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1.0f,
-                        GridLayout::ColumnSize::kFixed, 0, 0);
-
-  layout->StartRow(0, 0);
-  layout->AddView(
-      std::make_unique<Label>(GetStringUTF16(IDS_MULTILINE_RENDER_TEXT_LABEL)));
-  render_text_view_ = layout->AddView(std::move(render_text_view));
-
-  layout->StartRow(0, 0);
-  label_checkbox_ = layout->AddView(std::move(label_checkbox));
-  label_ = layout->AddView(std::move(label));
-
-  layout->StartRow(0, 0);
-  elision_checkbox_ = layout->AddView(std::move(elision_checkbox));
-
-  layout->StartRow(0, 0);
-  layout->AddView(
+  auto* label = container->AddChildView(
       std::make_unique<Label>(GetStringUTF16(IDS_MULTILINE_SAMPLE_TEXT_LABEL)));
-  textfield_ = layout->AddView(std::move(textfield));
+  textfield_ = container->AddChildView(std::make_unique<Textfield>());
+  textfield_->set_controller(this);
+  textfield_->SetText(kTestString);
+  textfield_->SetAssociatedLabel(label);
 }
 
 void MultilineExample::ContentsChanged(Textfield* sender,

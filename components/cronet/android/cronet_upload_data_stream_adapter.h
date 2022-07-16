@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/cronet/cronet_upload_data_stream.h"
@@ -36,6 +35,11 @@ class ByteBufferWithIOBuffer;
 class CronetUploadDataStreamAdapter : public CronetUploadDataStream::Delegate {
  public:
   CronetUploadDataStreamAdapter(JNIEnv* env, jobject jupload_data_stream);
+
+  CronetUploadDataStreamAdapter(const CronetUploadDataStreamAdapter&) = delete;
+  CronetUploadDataStreamAdapter& operator=(
+      const CronetUploadDataStreamAdapter&) = delete;
+
   ~CronetUploadDataStreamAdapter() override;
 
   // CronetUploadDataStream::Delegate implementation.  Called on network thread.
@@ -68,8 +72,6 @@ class CronetUploadDataStreamAdapter : public CronetUploadDataStream::Delegate {
 
   // Keeps the net::IOBuffer and Java ByteBuffer alive until the next Read().
   std::unique_ptr<ByteBufferWithIOBuffer> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CronetUploadDataStreamAdapter);
 };
 
 }  // namespace cronet

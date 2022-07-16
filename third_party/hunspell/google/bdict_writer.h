@@ -21,6 +21,10 @@ class BDictWriter {
   typedef std::vector< std::pair<std::string, std::vector<int> > > WordList;
 
   BDictWriter();
+
+  BDictWriter(const BDictWriter&) = delete;
+  BDictWriter& operator=(const BDictWriter&) = delete;
+
   ~BDictWriter();
 
   // Affix setters.
@@ -61,8 +65,6 @@ class BDictWriter {
 
   // Root of the generated trie. Filled by SetWords.
   DicNode* trie_root_;
-
-  DISALLOW_COPY_AND_ASSIGN(BDictWriter);
 };
 
 }  // namespace hunspell

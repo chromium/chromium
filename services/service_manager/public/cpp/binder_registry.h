@@ -26,6 +26,10 @@ class BinderRegistryWithArgs {
       void(const std::string&, mojo::ScopedMessagePipeHandle, BinderArgs...)>;
 
   BinderRegistryWithArgs() {}
+
+  BinderRegistryWithArgs(const BinderRegistryWithArgs&) = delete;
+  BinderRegistryWithArgs& operator=(const BinderRegistryWithArgs&) = delete;
+
   ~BinderRegistryWithArgs() = default;
 
   template <typename Interface>
@@ -133,8 +137,6 @@ class BinderRegistryWithArgs {
   InterfaceNameToBinderMap binders_;
 
   base::WeakPtrFactory<BinderRegistryWithArgs> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BinderRegistryWithArgs);
 };
 
 using BinderRegistry = BinderRegistryWithArgs<>;

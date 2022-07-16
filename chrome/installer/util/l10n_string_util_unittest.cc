@@ -4,7 +4,6 @@
 
 #include "chrome/installer/util/l10n_string_util.h"
 
-#include "base/macros.h"
 #include "build/branding_buildflags.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/test/scoped_install_details.h"

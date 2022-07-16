@@ -176,7 +176,7 @@ TestConnectionFactoryImpl::TestConnectionFactoryImpl(
           base::BindRepeating(&WriteContinuation))),
       fake_handler_(scoped_handler_.get()) {
   // Set a non-null time.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(1));
+  tick_clock_.Advance(base::Milliseconds(1));
 
   EXPECT_EQ(mojo::CreateDataPipe(nullptr, receive_pipe_producer_,
                                  receive_pipe_consumer_),
@@ -524,8 +524,7 @@ TEST_F(ConnectionFactoryImplTest, CanarySucceedsRetryDuringLogin) {
 
   // Pump the loop, to ensure the pending backoff retry has no effect.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, GetRunLoop()->QuitWhenIdleClosure(),
-      base::TimeDelta::FromMilliseconds(1));
+      FROM_HERE, GetRunLoop()->QuitWhenIdleClosure(), base::Milliseconds(1));
   WaitForConnections();
 }
 
@@ -611,7 +610,7 @@ TEST_F(ConnectionFactoryImplTest, DISABLED_SuppressConnectWhenNoNetwork) {
   EXPECT_TRUE(factory()->IsEndpointReachable());
 
   // Advance clock so the login window reset isn't encountered.
-  factory()->tick_clock()->Advance(base::TimeDelta::FromSeconds(11));
+  factory()->tick_clock()->Advance(base::Seconds(11));
 
   // Will trigger reset, but will not attempt a new connection.
   factory()->OnConnectionChanged(

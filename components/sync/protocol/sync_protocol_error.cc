@@ -51,7 +51,7 @@ SyncProtocolError::SyncProtocolError()
 
 SyncProtocolError::SyncProtocolError(const SyncProtocolError& other) = default;
 
-SyncProtocolError::~SyncProtocolError() {}
+SyncProtocolError::~SyncProtocolError() = default;
 
 std::unique_ptr<base::DictionaryValue> SyncProtocolError::ToValue() const {
   auto value = std::make_unique<base::DictionaryValue>();

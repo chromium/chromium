@@ -40,6 +40,7 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
 #include "third_party/blink/renderer/platform/audio/audio_destination_consumer.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -133,8 +134,8 @@ class PLATFORM_EXPORT MediaStreamSource final
     capabilities_ = capabilities;
   }
 
-  void SetAudioFormat(size_t number_of_channels, float sample_rate);
-  void ConsumeAudio(AudioBus*, size_t number_of_frames);
+  void SetAudioFormat(int number_of_channels, float sample_rate);
+  void ConsumeAudio(AudioBus*, int number_of_frames);
 
   // Only used if this is a WebAudio source.
   // The WebAudioDestinationConsumer is not owned, and has to be disposed of
@@ -157,8 +158,8 @@ class PLATFORM_EXPORT MediaStreamSource final
    public:
     explicit ConsumerWrapper(WebAudioDestinationConsumer* consumer);
 
-    void SetFormat(size_t number_of_channels, float sample_rate) override;
-    void ConsumeAudio(AudioBus* bus, size_t number_of_frames) override;
+    void SetFormat(int number_of_channels, float sample_rate) override;
+    void ConsumeAudio(AudioBus* bus, int number_of_frames) override;
 
     // m_consumer is not owned by this class.
     WebAudioDestinationConsumer* consumer_;

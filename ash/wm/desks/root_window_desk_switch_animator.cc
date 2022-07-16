@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screen_util.h"
 #include "ash/utility/layer_util.h"
@@ -23,7 +24,7 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -41,14 +42,13 @@ constexpr int kMaxScreenshotRetries = 2;
 // request a new screenshot.
 constexpr int kMinDistanceBeforeScreenshotDp = 40;
 
-constexpr base::TimeDelta kAnimationDuration =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(300);
 
 // The amount, by which the detached old layers of the removed desk's windows,
 // is translated vertically during the for-remove desk switch animation.
 constexpr int kRemovedDeskWindowYTranslation = 20;
 constexpr base::TimeDelta kRemovedDeskWindowTranslationDuration =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 
 // When ending a swipe that is deemed fast, the target desk only needs to be
 // 10% shown for us to animate to that desk, compared to 50% shown for a non
@@ -77,7 +77,8 @@ void TakeScreenshot(
 
   const gfx::Rect request_bounds(screenshot_layer->size());
   auto screenshot_request = std::make_unique<viz::CopyOutputRequest>(
-      viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
+      viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kNativeTextures,
       std::move(on_screenshot_taken));
   screenshot_request->set_area(request_bounds);
   screenshot_request->set_result_task_runner(
@@ -317,17 +318,28 @@ int RootWindowDeskSwitchAnimator::EndSwipeAnimation(bool is_fast_swipe) {
     return ending_desk_index;
   }
 
+  // In tests, StartAnimation() may trigger OnDeskSwitchAnimationFinished()
+  // right away which may delete |this|. Store the target index in a
+  // local so we do not try to access a member of a deleted object.
+  int local_ending_desk_index = -1;
+
+  // For the improvements trial, try animating to `ending_desk_index_`
+  // regardless of how much of it is visible.
+  if (is_fast_swipe && features::AreDesksTrackpadSwipeImprovementsEnabled()) {
+    local_ending_desk_index = ending_desk_index_;
+    // If the ending desk screenshot is underway, it will call
+    // `StartAnimation()` when finished.
+    if (ending_desk_screenshot_taken_)
+      StartAnimation();
+    return local_ending_desk_index;
+  }
+
   // If the ending desk screenshot has not finished,
   // GetIndexOfMostVisibleDeskScreenshot() will
   // still return a valid desk index that we can animate to, but we need to make
   // sure the ending desk screenshot callback does not get called.
   if (!ending_desk_screenshot_taken_)
     weak_ptr_factory_.InvalidateWeakPtrs();
-
-  // In tests, StartAnimation() may trigger OnDeskSwitchAnimationFinished()
-  // right away which may delete |this|. Store the target index in a
-  // local so we do not try to access a member of a deleted object.
-  int local_ending_desk_index = -1;
 
   // If the swipe we are ending with is deemed a fast swipe, we animate to
   // |ending_desk_index_| if more than 10% of it is currently visible.
@@ -441,6 +453,10 @@ void RootWindowDeskSwitchAnimator::CompleteAnimationPhase1WithLayer(
 
   starting_desk_screenshot_taken_ = true;
   OnScreenshotLayerCreated();
+
+  if (on_starting_screenshot_taken_callback_for_testing_)
+    std::move(on_starting_screenshot_taken_callback_for_testing_).Run();
+
   delegate_->OnStartingDeskScreenshotTaken(ending_desk_index_);
 }
 

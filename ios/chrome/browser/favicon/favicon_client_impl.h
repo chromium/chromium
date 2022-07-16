@@ -18,6 +18,10 @@ class GURL;
 class FaviconClientImpl : public favicon::FaviconClient {
  public:
   FaviconClientImpl();
+
+  FaviconClientImpl(const FaviconClientImpl&) = delete;
+  FaviconClientImpl& operator=(const FaviconClientImpl&) = delete;
+
   ~FaviconClientImpl() override;
 
  private:
@@ -30,8 +34,6 @@ class FaviconClientImpl : public favicon::FaviconClient {
       const std::vector<int>& desired_sizes_in_pixel,
       favicon_base::FaviconResultsCallback callback,
       base::CancelableTaskTracker* tracker) override;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconClientImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_FAVICON_CLIENT_IMPL_H_

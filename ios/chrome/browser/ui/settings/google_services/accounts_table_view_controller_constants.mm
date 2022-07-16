@@ -8,12 +8,8 @@
 #error "This file requires ARC support."
 #endif
 
-NSString* const kSettingsAccountsTableViewId = @"kSettingsAccountsTableViewId";
+NSString* const kSettingsAccountsTableViewId = @"SettingsAccountsTableViewId";
 NSString* const kSettingsAccountsTableViewAddAccountCellId =
-    @"kSettingsAccountsTableViewAddAccountCellId";
+    @"SettingsAccountsTableViewAddAccountCellId";
 NSString* const kSettingsAccountsTableViewSignoutCellId =
-    @"kSettingsAccountsTableViewSignoutCellId";
-NSString* const kSettingsAccountsTableViewSignoutAndClearDataCellId =
-    @"kSettingsAccountsTableViewSignoutAndClearDataCellId";
-NSString* const kSettingsAccountsTableViewSyncCellId =
-    @"kSettingsAccountsTableViewSyncCellId";
+    @"SettingsAccountsTableViewSignoutCellId";

@@ -12,38 +12,31 @@ namespace base {
 namespace sequence_manager {
 namespace internal {
 
-void RealTimeDomain::OnRegisterWithSequenceManager(
-    SequenceManagerImpl* sequence_manager) {
-  TimeDomain::OnRegisterWithSequenceManager(sequence_manager);
-  tick_clock_ = sequence_manager->GetTickClock();
-}
+RealTimeDomain::RealTimeDomain(const base::TickClock* clock)
+    : tick_clock_(clock) {}
 
-LazyNow RealTimeDomain::CreateLazyNow() const {
-  return LazyNow(tick_clock_);
-}
-
-TimeTicks RealTimeDomain::Now() const {
+TimeTicks RealTimeDomain::NowTicks() const {
   return tick_clock_->NowTicks();
 }
 
-absl::optional<TimeDelta> RealTimeDomain::DelayTillNextTask(LazyNow* lazy_now) {
-  absl::optional<TimeTicks> next_run_time = NextScheduledRunTime();
-  if (!next_run_time)
-    return absl::nullopt;
-
+base::TimeTicks RealTimeDomain::GetNextDelayedTaskTime(
+    DelayedWakeUp next_wake_up,
+    sequence_manager::LazyNow* lazy_now) const {
   TimeTicks now = lazy_now->Now();
-  if (now >= next_run_time) {
+  if (now >= next_wake_up.time) {
     // Overdue work needs to be run immediately.
-    return TimeDelta();
+    return TimeTicks();
   }
 
-  TimeDelta delay = *next_run_time - now;
+  TimeDelta delay = next_wake_up.time - now;
   TRACE_EVENT1("sequence_manager", "RealTimeDomain::DelayTillNextTask",
                "delay_ms", delay.InMillisecondsF());
-  return delay;
+  return next_wake_up.time;
 }
 
-bool RealTimeDomain::MaybeFastForwardToNextTask(bool quit_when_idle_requested) {
+bool RealTimeDomain::MaybeFastForwardToWakeUp(
+    absl::optional<DelayedWakeUp> next_wake_up,
+    bool quit_when_idle_requested) {
   return false;
 }
 

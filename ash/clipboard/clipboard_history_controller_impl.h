@@ -116,7 +116,6 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   std::vector<std::string> GetHistoryItemIds() const override;
   bool PasteClipboardItemById(const std::string& item_id) override;
   bool DeleteClipboardItemById(const std::string& item_id) override;
-  bool DeleteClipboardItemByClipboardData(ui::ClipboardData* data) override;
 
   // ClipboardHistory::Observer:
   void OnClipboardHistoryItemAdded(const ClipboardHistoryItem& item,

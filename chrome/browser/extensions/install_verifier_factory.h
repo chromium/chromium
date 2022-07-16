@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_INSTALL_VERIFIER_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_INSTALL_VERIFIER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -15,6 +14,9 @@ class InstallVerifier;
 
 class InstallVerifierFactory : public BrowserContextKeyedServiceFactory {
  public:
+  InstallVerifierFactory(const InstallVerifierFactory&) = delete;
+  InstallVerifierFactory& operator=(const InstallVerifierFactory&) = delete;
+
   static InstallVerifier* GetForBrowserContext(
       content::BrowserContext* context);
   static InstallVerifierFactory* GetInstance();
@@ -30,8 +32,6 @@ class InstallVerifierFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallVerifierFactory);
 };
 
 }  // namespace extensions

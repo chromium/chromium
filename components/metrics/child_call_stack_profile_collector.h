@@ -8,10 +8,9 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/metrics/public/mojom/call_stack_profile_collector.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -53,6 +52,12 @@ class SampledProfile;
 class ChildCallStackProfileCollector {
  public:
   ChildCallStackProfileCollector();
+
+  ChildCallStackProfileCollector(const ChildCallStackProfileCollector&) =
+      delete;
+  ChildCallStackProfileCollector& operator=(
+      const ChildCallStackProfileCollector&) = delete;
+
   ~ChildCallStackProfileCollector();
 
   // Sets the CallStackProfileCollector interface from |parent_collector|. This
@@ -73,10 +78,15 @@ class ChildCallStackProfileCollector {
   // for storage, pending availability of the parent mojo interface.
   struct ProfileState {
     ProfileState();
-    ProfileState(ProfileState&&);
     // |profile| is not const& because it can be very large and must be passed
     // with std::move.
     ProfileState(base::TimeTicks start_timestamp, std::string profile);
+
+    ProfileState(const ProfileState&) = delete;
+    ProfileState& operator=(const ProfileState&) = delete;
+
+    ProfileState(ProfileState&&);
+
     ~ProfileState();
 
     ProfileState& operator=(ProfileState&&);
@@ -85,9 +95,6 @@ class ChildCallStackProfileCollector {
 
     // The serialized sampled profile.
     std::string profile;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ProfileState);
   };
 
   // This object may be accessed on any thread, including the profiler
@@ -114,8 +121,6 @@ class ChildCallStackProfileCollector {
   // Profiles being cached by this object, pending a parent interface to be
   // supplied.
   std::vector<ProfileState> profiles_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildCallStackProfileCollector);
 };
 
 }  // namespace metrics

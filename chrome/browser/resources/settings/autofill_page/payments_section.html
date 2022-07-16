@@ -80,16 +80,16 @@
       <button id="menuEditCreditCard" class="dropdown-item"
           on-click="onMenuEditCreditCardTap_">$i18n{edit}</button>
       <button id="menuRemoveCreditCard" class="dropdown-item"
-          hidden$="[[!activeCreditCard.metadata.isLocal]]"
+          hidden$="[[!activeCreditCard_.metadata.isLocal]]"
           on-click="onMenuRemoveCreditCardTap_">$i18n{removeCreditCard}</button>
       <button id="menuClearCreditCard" class="dropdown-item"
           on-click="onMenuClearCreditCardTap_"
-          hidden$="[[!activeCreditCard.metadata.isCached]]">
+          hidden$="[[!activeCreditCard_.metadata.isCached]]">
         $i18n{clearCreditCard}
       </button>
     </cr-action-menu>
     <template is="dom-if" if="[[showCreditCardDialog_]]" restamp>
-      <settings-credit-card-edit-dialog credit-card="[[activeCreditCard]]"
+      <settings-credit-card-edit-dialog credit-card="[[activeCreditCard_]]"
           on-close="onCreditCardDialogClose_">
       </settings-credit-card-edit-dialog>
     </template>

@@ -29,6 +29,10 @@ class CastMessageBuilder {
                      uint32_t media_ssrc,
                      bool decoder_faster_than_max_frame_rate,
                      int max_unacked_frames);
+
+  CastMessageBuilder(const CastMessageBuilder&) = delete;
+  CastMessageBuilder& operator=(const CastMessageBuilder&) = delete;
+
   ~CastMessageBuilder();
 
   void CompleteFrameReceived(FrameId frame_id);
@@ -59,8 +63,6 @@ class CastMessageBuilder {
   bool slowing_down_ack_;
   bool acked_last_frame_;
   base::circular_deque<FrameId> ack_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastMessageBuilder);
 };
 
 }  // namespace cast

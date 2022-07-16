@@ -8,11 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -129,19 +125,19 @@ FamilyLinkUserInternalsMessageHandler::
 void FamilyLinkUserInternalsMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "registerForEvents",
       base::BindRepeating(
           &FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getBasicInfo",
       base::BindRepeating(
           &FamilyLinkUserInternalsMessageHandler::HandleGetBasicInfo,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "tryURL",
       base::BindRepeating(&FamilyLinkUserInternalsMessageHandler::HandleTryURL,
                           base::Unretained(this)));
@@ -180,11 +176,11 @@ void FamilyLinkUserInternalsMessageHandler::HandleGetBasicInfo(
 
 void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
     const base::ListValue* args) {
-  DCHECK_EQ(2u, args->GetSize());
-  std::string callback_id;
-  std::string url_str;
-  if (!args->GetString(0, &callback_id) || !args->GetString(1, &url_str))
+  DCHECK_EQ(2u, args->GetList().size());
+  if (!args->GetList()[0].is_string() || !args->GetList()[1].is_string())
     return;
+  const std::string& callback_id = args->GetList()[0].GetString();
+  const std::string& url_str = args->GetList()[1].GetString();
 
   GURL url = url_formatter::FixupURL(url_str, std::string());
   if (!url.is_valid())
@@ -200,12 +196,10 @@ void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
             web_contents->GetOutermostWebContents());
   }
 
-  std::map<std::string, std::u16string> allowlists =
-      filter->GetMatchingAllowlistTitles(url);
   filter->GetFilteringBehaviorForURLWithAsyncChecks(
       url,
       base::BindOnce(&FamilyLinkUserInternalsMessageHandler::OnTryURLResult,
-                     weak_factory_.GetWeakPtr(), allowlists, callback_id),
+                     weak_factory_.GetWeakPtr(), callback_id),
       skip_manual_parent_filter);
 }
 
@@ -275,24 +269,15 @@ void FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings(
 }
 
 void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
-    const std::map<std::string, std::u16string>& allowlists,
     const std::string& callback_id,
     SupervisedUserURLFilter::FilteringBehavior behavior,
     supervised_user_error_page::FilteringBehaviorReason reason,
     bool uncertain) {
-  std::vector<std::string> allowlists_list;
-  for (const auto& allowlist : allowlists) {
-    allowlists_list.push_back(
-        base::StringPrintf("%s: %s", allowlist.first.c_str(),
-                           base::UTF16ToUTF8(allowlist.second).c_str()));
-  }
-  std::string allowlists_str = base::JoinString(allowlists_list, "; ");
   base::DictionaryValue result;
   result.SetString("allowResult",
                    FilteringBehaviorToString(behavior, uncertain));
   result.SetBoolean("manual", reason == supervised_user_error_page::MANUAL &&
                                   behavior == SupervisedUserURLFilter::ALLOW);
-  result.SetString("allowlists", allowlists_str);
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 

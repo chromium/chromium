@@ -20,6 +20,11 @@ class DesktopMediaWindowRegistryAura final : public DesktopMediaWindowRegistry,
 
   DesktopMediaWindowRegistryAura() = default;
 
+  DesktopMediaWindowRegistryAura(const DesktopMediaWindowRegistryAura&) =
+      delete;
+  DesktopMediaWindowRegistryAura& operator=(
+      const DesktopMediaWindowRegistryAura&) = delete;
+
   Id RegisterWindow(gfx::NativeWindow window) final {
     base::IDMap<aura::Window*>::const_iterator it(&registered_windows_);
     for (; !it.IsAtEnd(); it.Advance()) {
@@ -51,8 +56,6 @@ class DesktopMediaWindowRegistryAura final : public DesktopMediaWindowRegistry,
   }
 
   base::IDMap<aura::Window*> registered_windows_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaWindowRegistryAura);
 };
 
 // static

@@ -7,18 +7,18 @@
 #include <cmath>
 
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
+#include "ash/display/display_util.h"
 #include "ash/host/root_window_transformer.h"
 #include "ash/shell.h"
 #include "ash/utility/transformer_util.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "ui/display/display.h"
-#include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ash {
 namespace {
@@ -123,6 +123,9 @@ class AshRootWindowTransformer : public RootWindowTransformer {
     initial_host_size_ = info.bounds_in_native().size();
   }
 
+  AshRootWindowTransformer(const AshRootWindowTransformer&) = delete;
+  AshRootWindowTransformer& operator=(const AshRootWindowTransformer&) = delete;
+
   // aura::RootWindowTransformer overrides:
   gfx::Transform GetTransform() const override { return transform_; }
   gfx::Transform GetInverseTransform() const override {
@@ -186,8 +189,6 @@ class AshRootWindowTransformer : public RootWindowTransformer {
   gfx::Transform insets_and_scale_transform_;
   gfx::Rect initial_root_bounds_;
   gfx::Size initial_host_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshRootWindowTransformer);
 };
 
 // RootWindowTransformer for mirror root window. We simply copy the
@@ -204,13 +205,7 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
     display::Display::Rotation active_root_rotation =
         source_display_info.GetActiveRotation();
 
-    // The rotation of the source display (internal display) should be undone in
-    // the destination display (external display) if mirror mode is enabled in
-    // tablet mode.
-    bool should_undo_rotation = Shell::Get()
-                                    ->display_manager()
-                                    ->layout_store()
-                                    ->forced_mirror_mode_for_tablet();
+    const bool should_undo_rotation = ShouldUndoRotationForMirror();
     gfx::Transform rotation_transform;
     if (should_undo_rotation) {
       // Calculate the transform to undo the rotation and apply it to the
@@ -271,6 +266,10 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
     }
   }
 
+  MirrorRootWindowTransformer(const MirrorRootWindowTransformer&) = delete;
+  MirrorRootWindowTransformer& operator=(const MirrorRootWindowTransformer&) =
+      delete;
+
   // aura::RootWindowTransformer overrides:
   gfx::Transform GetTransform() const override { return transform_; }
   gfx::Transform GetInverseTransform() const override {
@@ -292,8 +291,6 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
   gfx::Transform transform_;
   gfx::Rect root_bounds_;
   gfx::Insets insets_;
-
-  DISALLOW_COPY_AND_ASSIGN(MirrorRootWindowTransformer);
 };
 
 class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
@@ -332,6 +329,11 @@ class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
                          -SkIntToScalar(display.bounds().y()));
   }
 
+  PartialBoundsRootWindowTransformer(
+      const PartialBoundsRootWindowTransformer&) = delete;
+  PartialBoundsRootWindowTransformer& operator=(
+      const PartialBoundsRootWindowTransformer&) = delete;
+
   // RootWindowTransformer:
   gfx::Transform GetTransform() const override { return transform_; }
   gfx::Transform GetInverseTransform() const override {
@@ -350,8 +352,6 @@ class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
  private:
   gfx::Transform transform_;
   gfx::Rect root_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(PartialBoundsRootWindowTransformer);
 };
 
 }  // namespace

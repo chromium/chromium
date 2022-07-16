@@ -13,7 +13,7 @@ namespace base {
 // Scheduling interval to use for realtime audio threads.
 // TODO(crbug.com/1224707): Add scheduling period to Thread::Options and remove
 // this constants.
-constexpr TimeDelta kAudioSchedulingPeriod = TimeDelta::FromMilliseconds(10);
+constexpr TimeDelta kAudioSchedulingPeriod = Milliseconds(10);
 
 // Reserve 10% or one CPU core for audio threads.
 // TODO(crbug.com/1174811): A different value may need to be used for WebAudio
@@ -24,7 +24,7 @@ constexpr float kAudioSchedulingCapacity = 0.1;
 // Scheduling interval to use for display threads.
 // TODO(crbug.com/1224707): Add scheduling period to Thread::Options and remove
 // this constants.
-constexpr TimeDelta kDisplaySchedulingPeriod = TimeDelta::FromSeconds(1) / 60;
+constexpr TimeDelta kDisplaySchedulingPeriod = Seconds(1) / 60;
 
 // Reserve 50% of one CPU core for display threads.
 // TODO(crbug.com/1181421): Currently DISPLAY priority is not enabled for any

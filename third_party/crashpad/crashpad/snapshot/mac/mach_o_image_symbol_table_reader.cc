@@ -53,6 +53,11 @@ class MachOImageSymbolTableReaderInitializer {
     DCHECK(linkedit_range_.IsValid());
   }
 
+  MachOImageSymbolTableReaderInitializer(
+      const MachOImageSymbolTableReaderInitializer&) = delete;
+  MachOImageSymbolTableReaderInitializer& operator=(
+      const MachOImageSymbolTableReaderInitializer&) = delete;
+
   ~MachOImageSymbolTableReaderInitializer() {}
 
   //! \brief Reads the symbol table from another process.
@@ -246,8 +251,6 @@ class MachOImageSymbolTableReaderInitializer {
   CheckedMachAddressRange linkedit_range_;
   ProcessReaderMac* process_reader_;  // weak
   const MachOImageSegmentReader* linkedit_segment_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(MachOImageSymbolTableReaderInitializer);
 };
 
 }  // namespace internal

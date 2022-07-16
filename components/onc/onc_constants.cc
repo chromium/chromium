@@ -134,6 +134,7 @@ const char kServingOperator[] = "ServingOperator";
 const char kSignalStrength[] = "SignalStrength";
 const char kSIMLockStatus[] = "SIMLockStatus";
 const char kSIMPresent[] = "SIMPresent";
+const char kSMDPAddress[] = "SMDPAddress";
 const char kSupportNetworkScan[] = "SupportNetworkScan";
 const char kTechnologyCdma1Xrtt[] = "CDMA1XRTT";
 const char kTechnologyEdge[] = "EDGE";
@@ -306,6 +307,7 @@ const char kStretch[] = "Stretch";
 namespace eap {
 const char kAnonymousIdentity[] = "AnonymousIdentity";
 const char kAutomatic[] = "Automatic";
+const char kDomainSuffixMatch[] = "DomainSuffixMatch";
 const char kEAP_AKA[] = "EAP-AKA";
 const char kEAP_FAST[] = "EAP-FAST";
 const char kEAP_SIM[] = "EAP-SIM";
@@ -497,12 +499,22 @@ const char kPasswordPlaceholderVerbatim[] = "${PASSWORD}";
 }  // namespace substitutes
 
 namespace global_network_config {
+const char kAllowOnlyPolicyCellularNetworks[] =
+    "AllowOnlyPolicyCellularNetworks";
 const char kAllowOnlyPolicyNetworksToAutoconnect[] =
     "AllowOnlyPolicyNetworksToAutoconnect";
 const char kAllowOnlyPolicyNetworksToConnect[] =
     "AllowOnlyPolicyNetworksToConnect";
 const char kAllowOnlyPolicyNetworksToConnectIfAvailable[] =
     "AllowOnlyPolicyNetworksToConnectIfAvailable";
+// AllowOnlyPolicyNetworksToConnect and
+// AllowOnlyPolicyNetworksToConnectIfAvailable field are currently only applied
+// to WiFi networks. TODO(crbug.com/1234561): Fix this when ONC field is
+// updated.
+const char* kAllowOnlyPolicyWiFiToConnect = kAllowOnlyPolicyNetworksToConnect;
+const char* kAllowOnlyPolicyWiFiToConnectIfAvailable =
+    kAllowOnlyPolicyNetworksToConnectIfAvailable;
+
 const char kBlacklistedHexSSIDs[] = "BlacklistedHexSSIDs";  // Deprecated
 const char kBlockedHexSSIDs[] = "BlockedHexSSIDs";
 const char kDisableNetworkTypes[] = "DisableNetworkTypes";

@@ -4,6 +4,8 @@
 
 #include "components/sync/engine/commit_util.h"
 
+#include "components/sync/protocol/sync.pb.h"
+
 namespace syncer {
 
 namespace commit_util {
@@ -23,12 +25,12 @@ void AddExtensionsActivityToMessage(
   activity->GetAndClearRecords(extensions_activity_buffer);
 
   const ExtensionsActivity::Records& records = *extensions_activity_buffer;
-  for (auto it = records.begin(); it != records.end(); ++it) {
+  for (const auto& id_and_record : records) {
     sync_pb::ChromiumExtensionsActivity* activity_message =
         message->add_extensions_activity();
-    activity_message->set_extension_id(it->second.extension_id);
+    activity_message->set_extension_id(id_and_record.second.extension_id);
     activity_message->set_bookmark_writes_since_last_commit(
-        it->second.bookmark_write_count);
+        id_and_record.second.bookmark_write_count);
   }
 }
 
@@ -40,7 +42,7 @@ void AddClientConfigParamsToMessage(
     const std::vector<std::string>& fcm_registration_tokens,
     sync_pb::CommitMessage* message) {
   sync_pb::ClientConfigParams* config_params = message->mutable_config_params();
-  DCHECK(Intersection(enabled_types, ProxyTypes()).Empty());
+  DCHECK(Difference(enabled_types, ProtocolTypes()).Empty());
   for (ModelType type : enabled_types) {
     int field_number = GetSpecificsFieldNumberFromModelType(type);
     config_params->mutable_enabled_type_ids()->Add(field_number);

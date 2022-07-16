@@ -12,7 +12,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
@@ -29,6 +28,7 @@ class FilePath;
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }  // namespace content
 
 namespace network {
@@ -57,12 +57,16 @@ class WebApkInstaller {
  public:
   using FinishCallback = WebApkInstallService::FinishCallback;
 
+  WebApkInstaller(const WebApkInstaller&) = delete;
+  WebApkInstaller& operator=(const WebApkInstaller&) = delete;
+
   virtual ~WebApkInstaller();
 
   // Creates a self-owned WebApkInstaller instance and talks to the Chrome
   // WebAPK server to generate a WebAPK on the server and locally requests the
   // APK to be installed. Calls |callback| once the install completed or failed.
   static void InstallAsync(content::BrowserContext* context,
+                           content::WebContents* web_contents,
                            const webapps::ShortcutInfo& shortcut_info,
                            const SkBitmap& primary_icon,
                            bool is_primary_icon_maskable,
@@ -79,6 +83,7 @@ class WebApkInstaller {
   // Calls the private function |InstallAsync| for testing.
   // Should be used only for testing.
   static void InstallAsyncForTesting(WebApkInstaller* installer,
+                                     content::WebContents* web_contents,
                                      const webapps::ShortcutInfo& shortcut_info,
                                      const SkBitmap& primary_icon,
                                      bool is_primary_icon_maskable,
@@ -166,7 +171,8 @@ class WebApkInstaller {
   // Talks to the Chrome WebAPK server to generate a WebAPK on the server and to
   // Google Play to install the downloaded WebAPK. Calls |callback| once the
   // install completed or failed.
-  void InstallAsync(const webapps::ShortcutInfo& shortcut_info,
+  void InstallAsync(content::WebContents* web_contents,
+                    const webapps::ShortcutInfo& shortcut_info,
                     const SkBitmap& primary_icon,
                     bool is_primary_icon_maskable,
                     FinishCallback finish_callback);
@@ -203,6 +209,8 @@ class WebApkInstaller {
   GURL GetServerUrl();
 
   content::BrowserContext* browser_context_;
+
+  base::WeakPtr<content::WebContents> web_contents_;
 
   // Sends HTTP request to WebAPK server.
   std::unique_ptr<network::SimpleURLLoader> loader_;
@@ -248,8 +256,6 @@ class WebApkInstaller {
 
   // Used to get |weak_ptr_|.
   base::WeakPtrFactory<WebApkInstaller> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebApkInstaller);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_INSTALLER_H_

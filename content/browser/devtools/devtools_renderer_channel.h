@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -28,10 +27,6 @@ class DevToolsSession;
 class RenderFrameHostImpl;
 class WorkerDevToolsAgentHost;
 
-namespace protocol {
-class TargetAutoAttacher;
-}
-
 // This class encapsulates a connection to blink::mojom::DevToolsAgent
 // in the renderer (either RenderFrame or some kind of worker).
 // When the renderer changes (e.g. worker restarts or a new RenderFrame
@@ -42,6 +37,10 @@ class CONTENT_EXPORT DevToolsRendererChannel
     : public blink::mojom::DevToolsAgentHost {
  public:
   explicit DevToolsRendererChannel(DevToolsAgentHostImpl* owner);
+
+  DevToolsRendererChannel(const DevToolsRendererChannel&) = delete;
+  DevToolsRendererChannel& operator=(const DevToolsRendererChannel&) = delete;
+
   ~DevToolsRendererChannel() override;
 
   // Dedicated workers use non-associated version,
@@ -62,10 +61,12 @@ class CONTENT_EXPORT DevToolsRendererChannel
   void InspectElement(const gfx::Point& point);
   void ForceDetachWorkerSessions();
 
-  void SetReportChildWorkers(protocol::TargetAutoAttacher* attacher,
-                             bool report,
+  using ChildWorkerCreatedCallback =
+      base::RepeatingCallback<void(DevToolsAgentHostImpl*,
+                                   bool waiting_for_debugger)>;
+  void SetReportChildWorkers(ChildWorkerCreatedCallback report_callback,
                              bool wait_for_debugger,
-                             base::OnceClosure callback);
+                             base::OnceClosure completion_callback);
 
  private:
   // blink::mojom::DevToolsAgentHost implementation.
@@ -93,13 +94,11 @@ class CONTENT_EXPORT DevToolsRendererChannel
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> associated_agent_remote_;
   int process_id_;
   RenderFrameHostImpl* frame_host_ = nullptr;
-  base::flat_set<protocol::TargetAutoAttacher*> report_attachers_;
-  base::flat_set<protocol::TargetAutoAttacher*> wait_for_debugger_attachers_;
   base::flat_set<WorkerDevToolsAgentHost*> child_workers_;
-  base::OnceClosure set_report_callback_;
+  ChildWorkerCreatedCallback child_worker_created_callback_;
+  bool wait_for_debugger_ = false;
+  base::OnceClosure set_report_completion_callback_;
   base::WeakPtrFactory<DevToolsRendererChannel> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsRendererChannel);
 };
 
 }  // namespace content

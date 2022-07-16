@@ -144,7 +144,7 @@ class Builders(object):
 
     fake_builders = self.GetFakeCiBuilders()
     if ci_builder in fake_builders:
-      mirrored_builders.add(fake_builders[ci_builder])
+      mirrored_builders |= fake_builders[ci_builder]
       logging.debug('%s is a fake CI builder mirrored by %s', ci_builder,
                     fake_builders[ci_builder])
       return mirrored_builders, True
@@ -213,9 +213,9 @@ class Builders(object):
     """Gets a mapping of fake CI builders to their mirrored trybots.
 
     Returns:
-      A dict of string -> string. Each key is a CI builder that doesn't actually
-      exist and each value is a try builder that mirrors the CI builder but does
-      exist.
+      A dict of string -> set(string). Each key is a CI builder that doesn't
+      actually exist and each value is a set of try builders that mirror the CI
+      builder but do exist.
     """
     raise NotImplementedError()
 

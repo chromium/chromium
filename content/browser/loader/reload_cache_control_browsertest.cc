@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "content/public/test/browser_test.h"
@@ -61,6 +60,11 @@ const ExpectedCacheControl kExpectedCacheControlForBypassingReload = {
 
 // Tests end to end behaviors between Blink and content around reload variants.
 class ReloadCacheControlBrowserTest : public ContentBrowserTest {
+ public:
+  ReloadCacheControlBrowserTest(const ReloadCacheControlBrowserTest&) = delete;
+  ReloadCacheControlBrowserTest& operator=(
+      const ReloadCacheControlBrowserTest&) = delete;
+
  protected:
   ReloadCacheControlBrowserTest() {}
   ~ReloadCacheControlBrowserTest() override = default;
@@ -108,8 +112,6 @@ class ReloadCacheControlBrowserTest : public ContentBrowserTest {
     base::AutoLock lock(request_log_lock_);
     request_log_.push_back(log);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ReloadCacheControlBrowserTest);
 };
 
 // Test if reload issues requests with proper cache control flags.

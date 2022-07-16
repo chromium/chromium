@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/net/probe_message.pb.h"
 
 namespace chrome_browser_net {
@@ -19,6 +18,9 @@ namespace chrome_browser_net {
 class ProbeMessage {
  public:
   ProbeMessage();
+
+  ProbeMessage(const ProbeMessage&) = delete;
+  ProbeMessage& operator=(const ProbeMessage&) = delete;
 
   // Generate a ProbeRequest packet.
   void GenerateProbeRequest(const ProbePacket_Token& received_token,
@@ -56,8 +58,6 @@ class ProbeMessage {
   static const uint32_t kMaxNumberProbePackets;
   static const uint32_t kMaxPacingIntervalMicros;
   static const char kEncodingString[];
-
-  DISALLOW_COPY_AND_ASSIGN(ProbeMessage);
 };
 }       // namespace chrome_browser_net
 #endif  // CHROME_BROWSER_NET_PROBE_MESSAGE_H_

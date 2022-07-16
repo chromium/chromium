@@ -38,13 +38,19 @@ namespace WTF {
 // The linked list is implementing in a vector (with links being indexes instead
 // of pointers), to simplify the move of backing during GC compaction.
 //
-// Unlike ListHashSet, this container supports WeakMember<T>.
+// This container supports WeakMember<T>.
 //
-// LinkedHashSet iterators are invalidated by mutation of the collection.
+// LinkedHashSet iterators are not invalidated by mutation of the
+// collection, unless they point to removed items. This means, for example, that
+// you can safely modify the container while iterating over it generally, as
+// long as you don't remove the current item. Moving items does not invalidate
+// iterator, so that it may cause unexpected behavior (i.e. loop unexpectedly
+// ends when moving the current item to last).
 //
 // Note: empty/deleted values as defined in HashTraits are not allowed.
 template <typename ValueArg,
           typename TraitsArg = HashTraits<ValueArg>,
+          typename HashArg = typename DefaultHash<ValueArg>::Hash,
           typename Allocator = PartitionAllocator>
 class LinkedHashSet {
   USE_ALLOCATOR(LinkedHashSet, Allocator);
@@ -53,7 +59,7 @@ class LinkedHashSet {
   using Value = ValueArg;
   using Map = HashMap<Value,
                       wtf_size_t,
-                      typename DefaultHash<Value>::Hash,
+                      HashArg,
                       TraitsArg,
                       HashTraits<wtf_size_t>,
                       Allocator>;
@@ -118,7 +124,7 @@ class LinkedHashSet {
     // to remove dead weak entries while an active iterator exists.
     typename Map::const_iterator map_iterator_;
 
-    friend class LinkedHashSet<ValueArg, TraitsArg, Allocator>;
+    friend class LinkedHashSet<ValueArg, TraitsArg, HashArg, Allocator>;
   };
 
   using iterator = IteratorWrapper<BackingIterator>;
@@ -172,6 +178,16 @@ class LinkedHashSet {
   iterator find(ValuePeekInType);
   const_iterator find(ValuePeekInType) const;
   bool Contains(ValuePeekInType) const;
+
+  // An alternate version of find() that finds the object by hashing and
+  // comparing with some other type, to avoid the cost of type conversion.
+  // The HashTranslator interface is defined in HashSet.
+  template <typename HashTranslator, typename T>
+  iterator Find(const T&);
+  template <typename HashTranslator, typename T>
+  const_iterator Find(const T&) const;
+  template <typename HashTranslator, typename T>
+  bool Contains(const T&) const;
 
   template <typename IncomingValueType>
   AddResult insert(IncomingValueType&&);
@@ -233,8 +249,8 @@ class LinkedHashSet {
   ListType list_;
 };
 
-template <typename T, typename TraitsArg, typename Allocator>
-inline LinkedHashSet<T, TraitsArg, Allocator>::LinkedHashSet() {
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
+inline LinkedHashSet<T, TraitsArg, HashArg, Allocator>::LinkedHashSet() {
   static_assert(Allocator::kIsGarbageCollected ||
                     !IsPointerToGarbageCollectedType<T>::value,
                 "Cannot put raw pointers to garbage-collected classes into "
@@ -242,15 +258,16 @@ inline LinkedHashSet<T, TraitsArg, Allocator>::LinkedHashSet() {
                 "HeapLinkedHashSet<Member<T>> instead.");
 }
 
-template <typename T, typename TraitsArg, typename Allocator>
-inline void LinkedHashSet<T, TraitsArg, Allocator>::Swap(LinkedHashSet& other) {
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
+inline void LinkedHashSet<T, TraitsArg, HashArg, Allocator>::Swap(
+    LinkedHashSet& other) {
   value_to_index_.swap(other.value_to_index_);
   list_.swap(other.list_);
 }
 
-template <typename T, typename TraitsArg, typename Allocator>
-typename LinkedHashSet<T, TraitsArg, Allocator>::iterator
-LinkedHashSet<T, TraitsArg, Allocator>::find(ValuePeekInType value) {
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
+typename LinkedHashSet<T, TraitsArg, HashArg, Allocator>::iterator
+LinkedHashSet<T, TraitsArg, HashArg, Allocator>::find(ValuePeekInType value) {
   typename Map::const_iterator it = value_to_index_.find(value);
 
   if (it == value_to_index_.end())
@@ -258,9 +275,10 @@ LinkedHashSet<T, TraitsArg, Allocator>::find(ValuePeekInType value) {
   return MakeIterator(list_.MakeIterator(it->value));
 }
 
-template <typename T, typename TraitsArg, typename Allocator>
-typename LinkedHashSet<T, TraitsArg, Allocator>::const_iterator
-LinkedHashSet<T, TraitsArg, Allocator>::find(ValuePeekInType value) const {
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
+typename LinkedHashSet<T, TraitsArg, HashArg, Allocator>::const_iterator
+LinkedHashSet<T, TraitsArg, HashArg, Allocator>::find(
+    ValuePeekInType value) const {
   typename Map::const_iterator it = value_to_index_.find(value);
 
   if (it == value_to_index_.end())
@@ -268,24 +286,67 @@ LinkedHashSet<T, TraitsArg, Allocator>::find(ValuePeekInType value) const {
   return MakeIterator(list_.MakeConstIterator(it->value));
 }
 
-template <typename T, typename TraitsArg, typename Allocator>
-bool LinkedHashSet<T, TraitsArg, Allocator>::Contains(
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
+bool LinkedHashSet<T, TraitsArg, HashArg, Allocator>::Contains(
     ValuePeekInType value) const {
   return value_to_index_.Contains(value);
 }
 
-template <typename T, typename TraitsArg, typename Allocator>
+template <typename ValueType,
+          typename TraitsArg,
+          typename HashArg,
+          typename Allocator>
+template <typename HashTranslator, typename T>
+inline
+    typename LinkedHashSet<ValueType, TraitsArg, HashArg, Allocator>::iterator
+    LinkedHashSet<ValueType, TraitsArg, HashArg, Allocator>::Find(
+        const T& value) {
+  typename Map::const_iterator it =
+      value_to_index_.template Find<HashTranslator>(value);
+  if (it == value_to_index_.end())
+    return end();
+  return MakeIterator(list_.MakeIterator(it->value));
+}
+
+template <typename ValueType,
+          typename TraitsArg,
+          typename HashArg,
+          typename Allocator>
+template <typename HashTranslator, typename T>
+inline typename LinkedHashSet<ValueType, TraitsArg, HashArg, Allocator>::
+    const_iterator
+    LinkedHashSet<ValueType, TraitsArg, HashArg, Allocator>::Find(
+        const T& value) const {
+  typename Map::const_iterator it =
+      value_to_index_.template Find<HashTranslator>(value);
+  if (it == value_to_index_.end())
+    return end();
+  return MakeIterator(list_.MakeConstIterator(it->value));
+}
+
+template <typename ValueType,
+          typename TraitsArg,
+          typename HashArg,
+          typename Allocator>
+template <typename HashTranslator, typename T>
+bool LinkedHashSet<ValueType, TraitsArg, HashArg, Allocator>::Contains(
+    const T& value) const {
+  return value_to_index_.template Contains<HashTranslator>(value);
+}
+
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
 template <typename IncomingValueType>
-typename LinkedHashSet<T, TraitsArg, Allocator>::AddResult
-LinkedHashSet<T, TraitsArg, Allocator>::insert(IncomingValueType&& value) {
+typename LinkedHashSet<T, TraitsArg, HashArg, Allocator>::AddResult
+LinkedHashSet<T, TraitsArg, HashArg, Allocator>::insert(
+    IncomingValueType&& value) {
   return InsertOrMoveBefore(end(), std::forward<IncomingValueType>(value),
                             MoveType::kDontMove);
 }
 
-template <typename T, typename TraitsArg, typename Allocator>
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
 template <typename IncomingValueType>
-typename LinkedHashSet<T, TraitsArg, Allocator>::AddResult
-LinkedHashSet<T, TraitsArg, Allocator>::InsertBefore(
+typename LinkedHashSet<T, TraitsArg, HashArg, Allocator>::AddResult
+LinkedHashSet<T, TraitsArg, HashArg, Allocator>::InsertBefore(
     ValuePeekInType before_value,
     IncomingValueType&& value) {
   return InsertOrMoveBefore(find(before_value),
@@ -293,42 +354,43 @@ LinkedHashSet<T, TraitsArg, Allocator>::InsertBefore(
                             MoveType::kDontMove);
 }
 
-template <typename T, typename TraitsArg, typename Allocator>
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
 template <typename IncomingValueType>
-typename LinkedHashSet<T, TraitsArg, Allocator>::AddResult
-LinkedHashSet<T, TraitsArg, Allocator>::InsertBefore(
+typename LinkedHashSet<T, TraitsArg, HashArg, Allocator>::AddResult
+LinkedHashSet<T, TraitsArg, HashArg, Allocator>::InsertBefore(
     const_iterator it,
     IncomingValueType&& value) {
   return InsertOrMoveBefore(it, std::forward<IncomingValueType>(value),
                             MoveType::kDontMove);
 }
 
-template <typename T, typename TraitsArg, typename Allocator>
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
 template <typename IncomingValueType>
-typename LinkedHashSet<T, TraitsArg, Allocator>::AddResult
-LinkedHashSet<T, TraitsArg, Allocator>::AppendOrMoveToLast(
+typename LinkedHashSet<T, TraitsArg, HashArg, Allocator>::AddResult
+LinkedHashSet<T, TraitsArg, HashArg, Allocator>::AppendOrMoveToLast(
     IncomingValueType&& value) {
   return InsertOrMoveBefore(end(), std::forward<IncomingValueType>(value),
                             MoveType::kMoveIfValueExists);
 }
 
-template <typename T, typename TraitsArg, typename Allocator>
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
 template <typename IncomingValueType>
-typename LinkedHashSet<T, TraitsArg, Allocator>::AddResult
-LinkedHashSet<T, TraitsArg, Allocator>::PrependOrMoveToFirst(
+typename LinkedHashSet<T, TraitsArg, HashArg, Allocator>::AddResult
+LinkedHashSet<T, TraitsArg, HashArg, Allocator>::PrependOrMoveToFirst(
     IncomingValueType&& value) {
   return InsertOrMoveBefore(begin(), std::forward<IncomingValueType>(value),
                             MoveType::kMoveIfValueExists);
 }
 
-template <typename T, typename TraitsArg, typename Allocator>
-inline void LinkedHashSet<T, TraitsArg, Allocator>::erase(
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
+inline void LinkedHashSet<T, TraitsArg, HashArg, Allocator>::erase(
     ValuePeekInType value) {
   erase(find(value));
 }
 
-template <typename T, typename TraitsArg, typename Allocator>
-inline void LinkedHashSet<T, TraitsArg, Allocator>::erase(const_iterator it) {
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
+inline void LinkedHashSet<T, TraitsArg, HashArg, Allocator>::erase(
+    const_iterator it) {
   if (it == end())
     return;
 
@@ -340,20 +402,20 @@ inline void LinkedHashSet<T, TraitsArg, Allocator>::erase(const_iterator it) {
   list_.erase(it.iterator_);
 }
 
-template <typename T, typename TraitsArg, typename Allocator>
-inline void LinkedHashSet<T, TraitsArg, Allocator>::RemoveFirst() {
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
+inline void LinkedHashSet<T, TraitsArg, HashArg, Allocator>::RemoveFirst() {
   DCHECK(!IsEmpty());
   erase(begin());
 }
 
-template <typename T, typename TraitsArg, typename Allocator>
-inline void LinkedHashSet<T, TraitsArg, Allocator>::pop_back() {
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
+inline void LinkedHashSet<T, TraitsArg, HashArg, Allocator>::pop_back() {
   DCHECK(!IsEmpty());
   erase(--end());
 }
 
-template <typename T, typename TraitsArg, typename Allocator>
-inline void LinkedHashSet<T, TraitsArg, Allocator>::clear() {
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
+inline void LinkedHashSet<T, TraitsArg, HashArg, Allocator>::clear() {
   // Forbid GC while modifying LinkedHashSet to avoid conflict between
   // |value_to_index_| and |list_|.
   auto scope = GCForbiddenScope();
@@ -362,10 +424,10 @@ inline void LinkedHashSet<T, TraitsArg, Allocator>::clear() {
   list_.clear();
 }
 
-template <typename T, typename TraitsArg, typename Allocator>
+template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
 template <typename IncomingValueType>
-typename LinkedHashSet<T, TraitsArg, Allocator>::AddResult
-LinkedHashSet<T, TraitsArg, Allocator>::InsertOrMoveBefore(
+typename LinkedHashSet<T, TraitsArg, HashArg, Allocator>::AddResult
+LinkedHashSet<T, TraitsArg, HashArg, Allocator>::InsertOrMoveBefore(
     const_iterator position,
     IncomingValueType&& value,
     MoveType type) {

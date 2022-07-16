@@ -1186,7 +1186,6 @@ util.getRootTypeLabel = locationInfo => {
       }
       console.error('Unsupported media view root type: ' + mediaViewRootType);
       return locationInfo.volumeInfo.label;
-    case VolumeManagerCommon.RootType.DRIVE_OTHER:
     case VolumeManagerCommon.RootType.ARCHIVE:
     case VolumeManagerCommon.RootType.REMOVABLE:
     case VolumeManagerCommon.RootType.MTP:
@@ -1490,24 +1489,6 @@ util.isRecentsFilterEnabled = () => {
  */
 util.isSwaEnabled = () => {
   return loadTimeData.getBoolean('FILES_SWA');
-};
-
-/**
- * Returns true when FilesZipMount feature is enabled.
- * TODO(crbug.com/912236) Remove once transition to new ZIP system is finished.
- * @return {boolean}
- */
-util.isZipMountEnabled = () => {
-  return loadTimeData.getBoolean('ZIP_MOUNT');
-};
-
-/**
- * Returns true when FilesZipPack feature is enabled.
- * TODO(crbug.com/912236) Remove once transition to new ZIP system is finished.
- * @return {boolean}
- */
-util.isZipPackEnabled = () => {
-  return loadTimeData.getBoolean('ZIP_PACK');
 };
 
 /**
@@ -1822,12 +1803,6 @@ util.getFilesAppModalDialogInstance = () => {
   }
 
   return /** @type {!HTMLDialogElement} */ (dialogElement);
-};
-
-/** @return {boolean} */
-util.isSharesheetEnabled = () => {
-  return loadTimeData.valueExists('SHARESHEET_ENABLED') &&
-      loadTimeData.getBoolean('SHARESHEET_ENABLED');
 };
 
 util.isDriveDssPinEnabled = () => {

@@ -15,12 +15,13 @@ namespace policy {
 class SANDBOX_POLICY_EXPORT ImeProcessPolicy : public BPFBasePolicy {
  public:
   ImeProcessPolicy();
+
+  ImeProcessPolicy(const ImeProcessPolicy&) = delete;
+  ImeProcessPolicy& operator=(const ImeProcessPolicy&) = delete;
+
   ~ImeProcessPolicy() override;
 
   bpf_dsl::ResultExpr EvaluateSyscall(int sysno) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImeProcessPolicy);
 };
 
 }  // namespace policy

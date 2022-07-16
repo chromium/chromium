@@ -318,10 +318,10 @@ TEST_F(BoxCreateUpstreamFolderApiCallFlowTest, CreateApiCallBody) {
 
 TEST_F(BoxCreateUpstreamFolderApiCallFlowTest, IsExpectedSuccessCode) {
   ASSERT_TRUE(flow_->IsExpectedSuccessCode(201));
+  ASSERT_TRUE(flow_->IsExpectedSuccessCode(409));
   ASSERT_FALSE(flow_->IsExpectedSuccessCode(400));
   ASSERT_FALSE(flow_->IsExpectedSuccessCode(403));
   ASSERT_FALSE(flow_->IsExpectedSuccessCode(404));
-  ASSERT_FALSE(flow_->IsExpectedSuccessCode(409));
 }
 
 TEST_F(BoxCreateUpstreamFolderApiCallFlowTest, ProcessApiCallFailure) {
@@ -349,14 +349,24 @@ class BoxCreateUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess
   network::mojom::URLResponseHeadPtr head_;
 };
 
-TEST_F(BoxCreateUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess, Normal) {
-  auto http_head = network::CreateURLResponseHead(net::HTTP_CREATED);
+TEST_F(BoxCreateUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess, Created) {
   flow_->ProcessApiCallSuccess(
-      http_head.get(),
+      head_.get(),
       std::make_unique<std::string>(kFileSystemBoxCreateFolderResponseBody));
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(processed_success_);
   ASSERT_EQ(response_code_, net::HTTP_CREATED);
+  ASSERT_EQ(processed_folder_id_, kFileSystemBoxCreateFolderResponseFolderId);
+}
+
+TEST_F(BoxCreateUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess, Conflict) {
+  auto http_head = network::CreateURLResponseHead(net::HTTP_CONFLICT);
+  flow_->ProcessApiCallSuccess(
+      http_head.get(), std::make_unique<std::string>(
+                           kFileSystemBoxCreateFolderConflictResponseBody));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(processed_success_);
+  ASSERT_EQ(response_code_, net::HTTP_CONFLICT);
   ASSERT_EQ(processed_folder_id_, kFileSystemBoxCreateFolderResponseFolderId);
 }
 
@@ -453,7 +463,7 @@ class BoxWholeFileUploadApiCallFlowTest
     flow_ = std::make_unique<BoxWholeFileUploadApiCallFlowForTest>(
         base::BindOnce(&BoxWholeFileUploadApiCallFlowTest::OnResponse,
                        factory_.GetWeakPtr()),
-        folder_id_, file_name_, file_path_);
+        folder_id_, mime_type_, file_name_, file_path_);
   }
 
   void OnResponse(BoxApiCallResponse response, const std::string& file_id) {
@@ -518,7 +528,7 @@ TEST_F(BoxWholeFileUploadApiCallFlowTest, CreateApiCallBodyAndContentType) {
   std::string expected_type("multipart/form-data; boundary=");
   ASSERT_EQ(content_type.substr(0, expected_type.size()), expected_type);
 
-  flow_->SetFileReadForTesting(file_content_, mime_type_);
+  flow_->SetFileReadForTesting(file_content_);
   ASSERT_EQ(flow_->CreateApiCallBody(), MakeExpectedBody());
 }
 
@@ -1162,7 +1172,7 @@ TEST_F(BoxCommitUploadSessionApiCallFlowTest, ProcessApiCallSuccess_Retry) {
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(processed_success_);
   ASSERT_EQ(response_code_, net::HTTP_ACCEPTED);
-  ASSERT_EQ(retry_after_, base::TimeDelta::FromSeconds(120));
+  ASSERT_EQ(retry_after_, base::Seconds(120));
 }
 
 TEST_F(BoxCommitUploadSessionApiCallFlowTest, ProcessApiCallSuccess_Created) {
@@ -1177,7 +1187,7 @@ TEST_F(BoxCommitUploadSessionApiCallFlowTest, ProcessApiCallSuccess_Created) {
 
   ASSERT_TRUE(processed_success_);
   ASSERT_EQ(response_code_, net::HTTP_CREATED);
-  ASSERT_EQ(retry_after_, base::TimeDelta::FromSeconds(0));
+  ASSERT_EQ(retry_after_, base::Seconds(0));
   ASSERT_FALSE(file_id_.empty());
   ASSERT_EQ(BoxApiCallFlow::MakeUrlToShowFile(file_id_),
             GURL(kFileSystemBoxUploadResponseFileUrl));
@@ -1239,6 +1249,8 @@ TEST_F(BoxGetCurrentUserApiCallFlowTest, ProcessApiCallSuccess) {
   std::string body(R"({
     "type": "user",
     "id": "9876",
+    "login": "wile.e.coyote@acme.com",
+    "name": "Wile E. Coyote",
     "enterprise": {
       "type": "enterprise",
       "id": "31415926",

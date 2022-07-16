@@ -34,6 +34,7 @@ PASS parseThenSerializeRule('a > b { }') is 'a > b { }'
 
 
 PASS parseThenSerializeRule(':active { }') is ':active { }'
+PASS parseThenSerializeRule(':autofill { }') is ':autofill { }'
 PASS parseThenSerializeRule(':checked { }') is ':checked { }'
 PASS parseThenSerializeRule(':disabled { }') is ':disabled { }'
 PASS parseThenSerializeRule(':empty { }') is ':empty { }'

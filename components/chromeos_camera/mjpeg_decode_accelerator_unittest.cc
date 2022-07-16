@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/chromeos_camera/mjpeg_decode_accelerator.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -18,9 +20,9 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/gtest_prod_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -36,11 +38,11 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/chromeos_camera/gpu_mjpeg_decode_accelerator_factory.h"
-#include "components/chromeos_camera/mjpeg_decode_accelerator.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/test_data_util.h"
 #include "media/base/video_frame_layout.h"
+#include "media/base/video_util.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/test/local_gpu_memory_buffer_manager.h"
 #include "media/gpu/test/video_frame_helpers.h"
@@ -498,6 +500,16 @@ enum ClientState {
   CS_ERROR,
 };
 
+struct DecodeTask {
+  const ParsedJpegImage* image;
+  gfx::Size target_size;
+
+  DecodeTask(const ParsedJpegImage* im)
+      : image(im), target_size(im->visible_size) {}
+  DecodeTask(const ParsedJpegImage* im, const gfx::Size ts)
+      : image(im), target_size(ts) {}
+};
+
 struct PerfMetrics {
   size_t num_frames_decoded;
   base::TimeDelta total_decode_time;
@@ -508,10 +520,14 @@ class JpegClient : public MjpegDecodeAccelerator::Client {
  public:
   // JpegClient takes ownership of |note|.
   JpegClient(
-      const std::vector<const ParsedJpegImage*>& test_image_files,
+      const std::vector<DecodeTask>& tasks,
       std::unique_ptr<media::test::ClientStateNotification<ClientState>> note,
       bool use_dmabuf,
       bool skip_result_checking);
+
+  JpegClient(const JpegClient&) = delete;
+  JpegClient& operator=(const JpegClient&) = delete;
+
   ~JpegClient() override;
   void CreateJpegDecoder();
   void StartDecode(int32_t task_id, bool do_prepare_memory);
@@ -545,8 +561,8 @@ class JpegClient : public MjpegDecodeAccelerator::Client {
   // to check the similarity.
   double GetMeanAbsoluteDifference();
 
-  // JpegClient doesn't own |test_image_files_|.
-  const std::vector<const ParsedJpegImage*>& test_image_files_;
+  // JpegClient doesn't own |tasks_|.
+  const std::vector<DecodeTask>& tasks_;
 
   ClientState state_;
 
@@ -568,8 +584,9 @@ class JpegClient : public MjpegDecodeAccelerator::Client {
   std::unique_ptr<gfx::GpuMemoryBuffer> hw_out_gmb_;
   scoped_refptr<media::VideoFrame> hw_out_dmabuf_frame_;
   scoped_refptr<media::VideoFrame> hw_out_frame_;
-  // Output video frame from the software decoder.
+  // Output and intermediate frame for the software decoder.
   scoped_refptr<media::VideoFrame> sw_out_frame_;
+  scoped_refptr<media::VideoFrame> sw_tmp_frame_;
 
   // This should be the first member to get destroyed because |decoder_|
   // potentially uses other members in the JpegClient instance. For example,
@@ -584,16 +601,14 @@ class JpegClient : public MjpegDecodeAccelerator::Client {
   std::vector<base::TimeDelta> decode_map_times_;
 
   base::WeakPtrFactory<JpegClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JpegClient);
 };
 
 JpegClient::JpegClient(
-    const std::vector<const ParsedJpegImage*>& test_image_files,
+    const std::vector<DecodeTask>& tasks,
     std::unique_ptr<media::test::ClientStateNotification<ClientState>> note,
     bool use_dmabuf,
     bool skip_result_checking)
-    : test_image_files_(test_image_files),
+    : tasks_(tasks),
       state_(CS_CREATED),
       note_(std::move(note)),
       use_dmabuf_(use_dmabuf),
@@ -694,11 +709,11 @@ void JpegClient::NotifyError(int32_t task_id,
 }
 
 void JpegClient::PrepareMemory(int32_t task_id) {
-  const ParsedJpegImage* image_file = test_image_files_[task_id];
+  const DecodeTask& task = tasks_[task_id];
 
   if (use_dmabuf_) {
-    in_dmabuf_fd_ = g_env->CreateDmaBufFd(image_file->data_str.data(),
-                                          image_file->data_str.size());
+    in_dmabuf_fd_ = g_env->CreateDmaBufFd(task.image->data_str.data(),
+                                          task.image->data_str.size());
     ASSERT_TRUE(in_dmabuf_fd_.is_valid());
 
     // TODO(kamesan): create test cases for more formats when they're used.
@@ -706,30 +721,34 @@ void JpegClient::PrepareMemory(int32_t task_id) {
         g_env->GetSupportedDmaBufFormats();
     ASSERT_FALSE(supported_formats.empty());
     hw_out_dmabuf_frame_ = g_env->CreateDmaBufVideoFrame(
-        supported_formats[0], image_file->coded_size, image_file->visible_size,
-        &hw_out_gmb_);
+        supported_formats[0], task.target_size, task.target_size, &hw_out_gmb_);
     ASSERT_TRUE(hw_out_dmabuf_frame_);
     ASSERT_TRUE(hw_out_gmb_);
   } else {
     in_shm_mapping_ = base::WritableSharedMemoryMapping();
     in_shm_ =
-        base::UnsafeSharedMemoryRegion::Create(image_file->data_str.size());
+        base::UnsafeSharedMemoryRegion::Create(task.image->data_str.size());
     ASSERT_TRUE(in_shm_.IsValid());
     in_shm_mapping_ = in_shm_.Map();
     ASSERT_TRUE(in_shm_mapping_.IsValid());
-    memcpy(in_shm_mapping_.memory(), image_file->data_str.data(),
-           image_file->data_str.size());
+    memcpy(in_shm_mapping_.memory(), task.image->data_str.data(),
+           task.image->data_str.size());
 
-    // MJDA only supports I420 format for SHM output buffer.
-    hw_out_frame_ = g_env->CreateShmVideoFrame(media::PIXEL_FORMAT_I420,
-                                               image_file->coded_size,
-                                               image_file->visible_size);
+    // Only I420 output buffer is used in the shared memory path.
+    hw_out_frame_ = g_env->CreateShmVideoFrame(
+        media::PIXEL_FORMAT_I420, task.target_size, task.target_size);
     ASSERT_TRUE(hw_out_frame_);
   }
 
-  sw_out_frame_ = g_env->CreateShmVideoFrame(media::PIXEL_FORMAT_I420,
-                                             image_file->coded_size,
-                                             image_file->visible_size);
+  if (task.image->visible_size != task.target_size) {
+    // Needs an intermediate buffer for cropping/scaling.
+    sw_tmp_frame_ = g_env->CreateShmVideoFrame(media::PIXEL_FORMAT_I420,
+                                               task.image->coded_size,
+                                               task.image->visible_size);
+    ASSERT_TRUE(sw_tmp_frame_);
+  }
+  sw_out_frame_ = g_env->CreateShmVideoFrame(
+      media::PIXEL_FORMAT_I420, task.target_size, task.target_size);
   ASSERT_TRUE(sw_out_frame_);
 }
 
@@ -743,43 +762,42 @@ void JpegClient::SaveToFile(int32_t task_id,
                             scoped_refptr<media::VideoFrame> in_frame,
                             const std::string& suffix) {
   LOG_ASSERT(in_frame);
-  const ParsedJpegImage* image_file = test_image_files_[task_id];
+  const DecodeTask& task = tasks_[task_id];
 
   // First convert to ARGB format. Note that in our case, the coded size and the
   // visible size will be the same.
   scoped_refptr<media::VideoFrame> argb_out_frame =
       media::VideoFrame::CreateFrame(
-          media::VideoPixelFormat::PIXEL_FORMAT_ARGB, image_file->visible_size,
-          gfx::Rect(image_file->visible_size), image_file->visible_size,
-          base::TimeDelta());
+          media::VideoPixelFormat::PIXEL_FORMAT_ARGB, task.target_size,
+          gfx::Rect(task.target_size), task.target_size, base::TimeDelta());
   LOG_ASSERT(argb_out_frame);
   LOG_ASSERT(in_frame->visible_rect() == argb_out_frame->visible_rect());
 
   // Note that we use J420ToARGB instead of I420ToARGB so that the
   // kYuvJPEGConstants YUV-to-RGB conversion matrix is used.
-  const int conversion_status =
-      libyuv::J420ToARGB(in_frame->data(media::VideoFrame::kYPlane),
-                         in_frame->stride(media::VideoFrame::kYPlane),
-                         in_frame->data(media::VideoFrame::kUPlane),
-                         in_frame->stride(media::VideoFrame::kUPlane),
-                         in_frame->data(media::VideoFrame::kVPlane),
-                         in_frame->stride(media::VideoFrame::kVPlane),
-                         argb_out_frame->data(media::VideoFrame::kARGBPlane),
-                         argb_out_frame->stride(media::VideoFrame::kARGBPlane),
-                         argb_out_frame->visible_rect().width(),
-                         argb_out_frame->visible_rect().height());
+  const int conversion_status = libyuv::J420ToARGB(
+      in_frame->visible_data(media::VideoFrame::kYPlane),
+      in_frame->stride(media::VideoFrame::kYPlane),
+      in_frame->visible_data(media::VideoFrame::kUPlane),
+      in_frame->stride(media::VideoFrame::kUPlane),
+      in_frame->visible_data(media::VideoFrame::kVPlane),
+      in_frame->stride(media::VideoFrame::kVPlane),
+      argb_out_frame->visible_data(media::VideoFrame::kARGBPlane),
+      argb_out_frame->stride(media::VideoFrame::kARGBPlane),
+      argb_out_frame->visible_rect().width(),
+      argb_out_frame->visible_rect().height());
   LOG_ASSERT(conversion_status == 0);
 
   // Save as a PNG.
   std::vector<uint8_t> png_output;
   const bool png_encode_status = gfx::PNGCodec::Encode(
-      argb_out_frame->data(media::VideoFrame::kARGBPlane),
+      argb_out_frame->visible_data(media::VideoFrame::kARGBPlane),
       gfx::PNGCodec::FORMAT_BGRA, argb_out_frame->visible_rect().size(),
       argb_out_frame->stride(media::VideoFrame::kARGBPlane),
       true, /* discard_transparency */
       std::vector<gfx::PNGCodec::Comment>(), &png_output);
   LOG_ASSERT(png_encode_status);
-  const base::FilePath in_filename(image_file->filename());
+  const base::FilePath in_filename(task.image->filename());
   const base::FilePath out_filename =
       in_filename.ReplaceExtension(".png").InsertBeforeExtension(suffix);
   const int size = base::checked_cast<int>(png_output.size());
@@ -819,8 +837,8 @@ double JpegClient::GetMeanAbsoluteDifference() {
 }
 
 void JpegClient::StartDecode(int32_t task_id, bool do_prepare_memory) {
-  ASSERT_LT(base::checked_cast<size_t>(task_id), test_image_files_.size());
-  const ParsedJpegImage* image_file = test_image_files_[task_id];
+  ASSERT_LT(base::checked_cast<size_t>(task_id), tasks_.size());
+  const DecodeTask& task = tasks_[task_id];
 
   if (do_prepare_memory)
     PrepareMemory(task_id);
@@ -830,39 +848,85 @@ void JpegClient::StartDecode(int32_t task_id, bool do_prepare_memory) {
     base::ScopedFD duped_in_dmabuf_fd(HANDLE_EINTR(dup(in_dmabuf_fd_.get())));
     ASSERT_TRUE(duped_in_dmabuf_fd.is_valid());
     decoder_->Decode(task_id, std::move(duped_in_dmabuf_fd),
-                     image_file->data_str.size(), 0 /* src_offset */,
+                     task.image->data_str.size(), 0 /* src_offset */,
                      hw_out_dmabuf_frame_);
   } else {
     base::subtle::PlatformSharedMemoryRegion dup_region =
         base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
             in_shm_.Duplicate());
-    ASSERT_EQ(dup_region.GetSize(), image_file->data_str.size());
+    ASSERT_EQ(dup_region.GetSize(), task.image->data_str.size());
     media::BitstreamBuffer bitstream_buffer(task_id, std::move(dup_region),
-                                            image_file->data_str.size());
+                                            task.image->data_str.size());
     decoder_->Decode(std::move(bitstream_buffer), hw_out_frame_);
   }
 }
 
 bool JpegClient::GetSoftwareDecodeResult(int32_t task_id) {
+  const DecodeTask& task = tasks_[task_id];
+  const bool do_crop_scale = task.target_size != task.image->visible_size;
   DCHECK(sw_out_frame_->IsMappable());
   DCHECK_EQ(sw_out_frame_->format(), media::PIXEL_FORMAT_I420);
-  const ParsedJpegImage* image_file = test_image_files_[task_id];
+  if (do_crop_scale) {
+    DCHECK(sw_tmp_frame_->IsMappable());
+    DCHECK_EQ(sw_tmp_frame_->format(), media::PIXEL_FORMAT_I420);
+  }
+  media::VideoFrame* decode_frame =
+      do_crop_scale ? sw_tmp_frame_.get() : sw_out_frame_.get();
   if (libyuv::ConvertToI420(
-          reinterpret_cast<const uint8_t*>(image_file->data_str.data()),
-          image_file->data_str.size(),
-          sw_out_frame_->data(media::VideoFrame::kYPlane),
-          sw_out_frame_->stride(media::VideoFrame::kYPlane),
-          sw_out_frame_->data(media::VideoFrame::kUPlane),
-          sw_out_frame_->stride(media::VideoFrame::kUPlane),
-          sw_out_frame_->data(media::VideoFrame::kVPlane),
-          sw_out_frame_->stride(media::VideoFrame::kVPlane), 0, 0,
-          sw_out_frame_->visible_rect().width(),
-          sw_out_frame_->visible_rect().height(),
-          sw_out_frame_->visible_rect().width(),
-          sw_out_frame_->visible_rect().height(), libyuv::kRotate0,
+          reinterpret_cast<const uint8_t*>(task.image->data_str.data()),
+          task.image->data_str.size(),
+          decode_frame->visible_data(media::VideoFrame::kYPlane),
+          decode_frame->stride(media::VideoFrame::kYPlane),
+          decode_frame->visible_data(media::VideoFrame::kUPlane),
+          decode_frame->stride(media::VideoFrame::kUPlane),
+          decode_frame->visible_data(media::VideoFrame::kVPlane),
+          decode_frame->stride(media::VideoFrame::kVPlane), 0, 0,
+          decode_frame->visible_rect().width(),
+          decode_frame->visible_rect().height(),
+          decode_frame->visible_rect().width(),
+          decode_frame->visible_rect().height(), libyuv::kRotate0,
           libyuv::FOURCC_MJPG) != 0) {
-    LOG(ERROR) << "Software decode " << image_file->filename() << " failed.";
+    LOG(ERROR) << "Software decode " << task.image->filename() << " failed.";
     return false;
+  }
+  if (do_crop_scale) {
+    const gfx::Rect crop = media::CropSizeForScalingToTarget(
+        sw_tmp_frame_->visible_rect().size(),
+        sw_out_frame_->visible_rect().size(), /*alignment=*/2u);
+    if (crop.IsEmpty()) {
+      LOG(ERROR) << "Failed to calculate crop rectangle for "
+                 << sw_tmp_frame_->visible_rect().size().ToString() << " to "
+                 << sw_out_frame_->visible_rect().size().ToString();
+      return false;
+    }
+    if (libyuv::I420Scale(
+            sw_tmp_frame_->visible_data(media::VideoFrame::kYPlane) +
+                crop.y() * sw_tmp_frame_->stride(media::VideoFrame::kYPlane) +
+                crop.x(),
+            sw_tmp_frame_->stride(media::VideoFrame::kYPlane),
+            sw_tmp_frame_->visible_data(media::VideoFrame::kUPlane) +
+                crop.y() / 2 *
+                    sw_tmp_frame_->stride(media::VideoFrame::kUPlane) +
+                crop.x() / 2,
+            sw_tmp_frame_->stride(media::VideoFrame::kUPlane),
+            sw_tmp_frame_->visible_data(media::VideoFrame::kVPlane) +
+                crop.y() / 2 *
+                    sw_tmp_frame_->stride(media::VideoFrame::kVPlane) +
+                crop.x() / 2,
+            sw_tmp_frame_->stride(media::VideoFrame::kVPlane), crop.width(),
+            crop.height(),
+            sw_out_frame_->visible_data(media::VideoFrame::kYPlane),
+            sw_out_frame_->stride(media::VideoFrame::kYPlane),
+            sw_out_frame_->visible_data(media::VideoFrame::kUPlane),
+            sw_out_frame_->stride(media::VideoFrame::kUPlane),
+            sw_out_frame_->visible_data(media::VideoFrame::kVPlane),
+            sw_out_frame_->stride(media::VideoFrame::kVPlane),
+            sw_out_frame_->visible_rect().width(),
+            sw_out_frame_->visible_rect().height(),
+            libyuv::kFilterBilinear) != 0) {
+      LOG(ERROR) << "Software crop/scale failed.";
+      return false;
+    }
   }
   return true;
 }
@@ -886,6 +950,10 @@ class ScopedJpegClient {
   ScopedJpegClient(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                    std::unique_ptr<JpegClient> client)
       : task_runner_(task_runner), client_(std::move(client)) {}
+
+  ScopedJpegClient(const ScopedJpegClient&) = delete;
+  ScopedJpegClient& operator=(const ScopedJpegClient&) = delete;
+
   ~ScopedJpegClient() {
     task_runner_->DeleteSoon(FROM_HERE, std::move(client_));
   }
@@ -894,31 +962,29 @@ class ScopedJpegClient {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<JpegClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedJpegClient);
 };
 
 class MjpegDecodeAcceleratorTest : public ::testing::TestWithParam<bool> {
+ public:
+  MjpegDecodeAcceleratorTest(const MjpegDecodeAcceleratorTest&) = delete;
+  MjpegDecodeAcceleratorTest& operator=(const MjpegDecodeAcceleratorTest&) =
+      delete;
+
  protected:
   MjpegDecodeAcceleratorTest() = default;
 
-  void TestDecode(const std::vector<const ParsedJpegImage*>& images,
+  void TestDecode(const std::vector<DecodeTask>& tasks,
                   const std::vector<ClientState>& expected_status,
                   size_t num_concurrent_decoders = 1);
-  void PerfDecodeByJDA(int decode_times,
-                       const std::vector<const ParsedJpegImage*>& images);
-  void PerfDecodeBySW(int decode_times,
-                      const std::vector<const ParsedJpegImage*>& images);
-
- protected:
-  DISALLOW_COPY_AND_ASSIGN(MjpegDecodeAcceleratorTest);
+  void PerfDecodeByJDA(int decode_times, const std::vector<DecodeTask>& tasks);
+  void PerfDecodeBySW(int decode_times, const std::vector<DecodeTask>& tasks);
 };
 
 void MjpegDecodeAcceleratorTest::TestDecode(
-    const std::vector<const ParsedJpegImage*>& images,
+    const std::vector<DecodeTask>& tasks,
     const std::vector<ClientState>& expected_status,
     size_t num_concurrent_decoders) {
-  LOG_ASSERT(images.size() >= expected_status.size());
+  LOG_ASSERT(tasks.size() >= expected_status.size());
   base::Thread decoder_thread("DecoderThread");
   ASSERT_TRUE(decoder_thread.Start());
 
@@ -926,7 +992,7 @@ void MjpegDecodeAcceleratorTest::TestDecode(
 
   for (size_t i = 0; i < num_concurrent_decoders; i++) {
     auto client = std::make_unique<JpegClient>(
-        images,
+        tasks,
         std::make_unique<media::test::ClientStateNotification<ClientState>>(),
         GetParam() /* use_dmabuf */, false /* skip_result_checking */);
     scoped_clients.emplace_back(
@@ -939,7 +1005,7 @@ void MjpegDecodeAcceleratorTest::TestDecode(
     ASSERT_EQ(scoped_clients.back()->client()->note()->Wait(), CS_INITIALIZED);
   }
 
-  for (size_t index = 0; index < images.size(); index++) {
+  for (size_t index = 0; index < tasks.size(); index++) {
     for (const auto& scoped_client : scoped_clients) {
       decoder_thread.task_runner()->PostTask(
           FROM_HERE, base::BindOnce(&JpegClient::StartDecode,
@@ -957,14 +1023,14 @@ void MjpegDecodeAcceleratorTest::TestDecode(
 
 void MjpegDecodeAcceleratorTest::PerfDecodeByJDA(
     int decode_times,
-    const std::vector<const ParsedJpegImage*>& images) {
-  LOG_ASSERT(images.size() == 1);
+    const std::vector<DecodeTask>& tasks) {
+  LOG_ASSERT(tasks.size() == 1);
   base::Thread decoder_thread("DecoderThread");
   ASSERT_TRUE(decoder_thread.Start());
   const bool use_dmabuf = GetParam();
 
   auto client = std::make_unique<JpegClient>(
-      images,
+      tasks,
       std::make_unique<media::test::ClientStateNotification<ClientState>>(),
       use_dmabuf, true /* skip_result_checking */);
   auto scoped_client = std::make_unique<ScopedJpegClient>(
@@ -1002,18 +1068,18 @@ void MjpegDecodeAcceleratorTest::PerfDecodeByJDA(
               << " iterations (avg: " << avg_decode_map_time << ")";
     g_env->AddMetric("hw_jpeg_decode_map_latency", avg_decode_map_time);
   }
-  LOG(INFO) << "-- " << images[0]->visible_size.ToString() << " ("
-            << images[0]->visible_size.GetArea() << " pixels), "
-            << images[0]->filename();
+  LOG(INFO) << "-- " << tasks[0].image->visible_size.ToString() << " ("
+            << tasks[0].image->visible_size.GetArea() << " pixels), "
+            << tasks[0].image->filename();
 }
 
 void MjpegDecodeAcceleratorTest::PerfDecodeBySW(
     int decode_times,
-    const std::vector<const ParsedJpegImage*>& images) {
-  LOG_ASSERT(images.size() == 1);
+    const std::vector<DecodeTask>& tasks) {
+  LOG_ASSERT(tasks.size() == 1);
 
   std::unique_ptr<JpegClient> client = std::make_unique<JpegClient>(
-      images,
+      tasks,
       std::make_unique<media::test::ClientStateNotification<ClientState>>(),
       false /* use_dmabuf */, true /* skip_result_checking */);
 
@@ -1021,14 +1087,14 @@ void MjpegDecodeAcceleratorTest::PerfDecodeBySW(
   client->PrepareMemory(task_id);
   const base::ElapsedTimer timer;
   for (int index = 0; index < decode_times; index++)
-    client->GetSoftwareDecodeResult(task_id);
+    ASSERT_TRUE(client->GetSoftwareDecodeResult(task_id));
   const base::TimeDelta elapsed_time = timer.Elapsed();
   const base::TimeDelta avg_decode_time = elapsed_time / decode_times;
   LOG(INFO) << "Decode: " << elapsed_time << " for " << decode_times
             << " iterations (avg: " << avg_decode_time << ")";
-  LOG(INFO) << "-- " << images[0]->visible_size.ToString() << ", ("
-            << images[0]->visible_size.GetArea() << " pixels) "
-            << images[0]->filename();
+  LOG(INFO) << "-- " << tasks[0].image->visible_size.ToString() << ", ("
+            << tasks[0].image->visible_size.GetArea() << " pixels) "
+            << tasks[0].image->filename();
   g_env->AddMetric("sw_jpeg_decode_latency", avg_decode_time);
 }
 
@@ -1066,8 +1132,7 @@ scoped_refptr<media::VideoFrame> GetTestDecodedData() {
 }
 
 TEST(JpegClientTest, GetMeanAbsoluteDifference) {
-  JpegClient client(std::vector<const ParsedJpegImage*>(), nullptr, false,
-                    false);
+  JpegClient client(std::vector<DecodeTask>{}, nullptr, false, false);
   client.hw_out_frame_ = GetTestDecodedData();
   client.sw_out_frame_ = GetTestDecodedData();
 
@@ -1102,97 +1167,146 @@ TEST(JpegClientTest, GetMeanAbsoluteDifference) {
 }
 
 TEST_P(MjpegDecodeAcceleratorTest, SimpleDecode) {
-  std::vector<const ParsedJpegImage*> images;
+  std::vector<DecodeTask> tasks;
   for (auto& image : g_env->image_data_user_)
-    images.push_back(image.get());
-  const std::vector<ClientState> expected_status(images.size(), CS_DECODE_PASS);
-  TestDecode(images, expected_status);
+    tasks.emplace_back(image.get());
+  const std::vector<ClientState> expected_status(tasks.size(), CS_DECODE_PASS);
+  TestDecode(tasks, expected_status);
+}
+
+#if BUILDFLAG(USE_VAAPI)
+TEST_P(MjpegDecodeAcceleratorTest, DecodeBlit) {
+  std::vector<DecodeTask> tasks;
+  for (auto& image : g_env->image_data_user_) {
+    tasks.emplace_back(image.get(),
+                       gfx::Size((image->visible_size.width() / 2) & ~1,
+                                 (image->visible_size.height() / 2) & ~1));
+    tasks.emplace_back(image.get(),
+                       gfx::Size((image->visible_size.width() / 2) & ~1,
+                                 (image->visible_size.height() * 2 / 3) & ~1));
+    tasks.emplace_back(image.get(),
+                       gfx::Size((image->visible_size.width() * 2 / 3) & ~1,
+                                 (image->visible_size.height() / 2) & ~1));
+  }
+  const std::vector<ClientState> expected_status(tasks.size(), CS_DECODE_PASS);
+  TestDecode(tasks, expected_status);
+}
+#endif
+
+TEST_P(MjpegDecodeAcceleratorTest, InvalidTargetSize) {
+  std::vector<DecodeTask> tasks;
+  for (auto& image : g_env->image_data_user_) {
+    // Upscaling is not supported.
+    tasks.emplace_back(image.get(), gfx::Size(image->visible_size.width() * 2,
+                                              image->visible_size.height()));
+    tasks.emplace_back(image.get(),
+                       gfx::Size(image->visible_size.width(),
+                                 image->visible_size.height() * 2));
+    // Odd dimensions are not supported.
+    tasks.emplace_back(image.get(),
+                       gfx::Size((image->visible_size.width() / 2) | 1,
+                                 image->visible_size.height() / 2));
+    tasks.emplace_back(image.get(),
+                       gfx::Size(image->visible_size.width() / 2,
+                                 (image->visible_size.height() / 2) | 1));
+  }
+  const std::vector<ClientState> expected_status(tasks.size(), CS_ERROR);
+  TestDecode(tasks, expected_status);
 }
 
 TEST_P(MjpegDecodeAcceleratorTest, MultipleDecoders) {
-  std::vector<const ParsedJpegImage*> images;
+  std::vector<DecodeTask> tasks;
   for (auto& image : g_env->image_data_user_)
-    images.push_back(image.get());
-  const std::vector<ClientState> expected_status(images.size(), CS_DECODE_PASS);
-  TestDecode(images, expected_status, 3 /* num_concurrent_decoders */);
+    tasks.emplace_back(image.get());
+  const std::vector<ClientState> expected_status(tasks.size(), CS_DECODE_PASS);
+  TestDecode(tasks, expected_status, 3 /* num_concurrent_decoders */);
 }
 
 TEST_P(MjpegDecodeAcceleratorTest, InputSizeChange) {
   // The size of |image_data_1280x720_black_| is smaller than
   // |image_data_1280x720_default_|.
-  const std::vector<const ParsedJpegImage*> images = {
-      g_env->image_data_1280x720_black_.get(),
-      g_env->image_data_1280x720_default_.get(),
-      g_env->image_data_1280x720_black_.get()};
-  const std::vector<ClientState> expected_status(images.size(), CS_DECODE_PASS);
-  TestDecode(images, expected_status);
+  const std::vector<DecodeTask> tasks = {
+      DecodeTask(g_env->image_data_1280x720_black_.get()),
+      DecodeTask(g_env->image_data_1280x720_default_.get()),
+      DecodeTask(g_env->image_data_1280x720_black_.get()),
+  };
+  const std::vector<ClientState> expected_status(tasks.size(), CS_DECODE_PASS);
+  TestDecode(tasks, expected_status);
 }
 
 TEST_P(MjpegDecodeAcceleratorTest, ResolutionChange) {
-  const std::vector<const ParsedJpegImage*> images = {
-      g_env->image_data_640x368_black_.get(),
-      g_env->image_data_1280x720_default_.get(),
-      g_env->image_data_640x368_black_.get()};
-  const std::vector<ClientState> expected_status(images.size(), CS_DECODE_PASS);
-  TestDecode(images, expected_status);
+  const std::vector<DecodeTask> tasks = {
+      DecodeTask(g_env->image_data_640x368_black_.get()),
+      DecodeTask(g_env->image_data_1280x720_default_.get()),
+      DecodeTask(g_env->image_data_640x368_black_.get()),
+  };
+  const std::vector<ClientState> expected_status(tasks.size(), CS_DECODE_PASS);
+  TestDecode(tasks, expected_status);
 }
 
 TEST_P(MjpegDecodeAcceleratorTest, CodedSizeAlignment) {
-  const std::vector<const ParsedJpegImage*> images = {
-      g_env->image_data_640x360_black_.get()};
+  const std::vector<DecodeTask> tasks = {
+      DecodeTask(g_env->image_data_640x360_black_.get()),
+  };
   const std::vector<ClientState> expected_status = {CS_DECODE_PASS};
-  TestDecode(images, expected_status);
+  TestDecode(tasks, expected_status);
 }
 
 // Tests whether different JPEG sampling formats will be decoded correctly.
 TEST_P(MjpegDecodeAcceleratorTest, SamplingFormatChange) {
-  const std::vector<const ParsedJpegImage*> images = {
-      g_env->image_data_640x368_black_.get(),
-      g_env->image_data_640x368_422_black_.get()};
-  const std::vector<ClientState> expected_status(images.size(), CS_DECODE_PASS);
-  TestDecode(images, expected_status);
+  const std::vector<DecodeTask> tasks = {
+      DecodeTask(g_env->image_data_640x368_black_.get()),
+      DecodeTask(g_env->image_data_640x368_422_black_.get()),
+  };
+  const std::vector<ClientState> expected_status(tasks.size(), CS_DECODE_PASS);
+  TestDecode(tasks, expected_status);
 }
 
 TEST_P(MjpegDecodeAcceleratorTest, FailureJpeg) {
-  const std::vector<const ParsedJpegImage*> images = {
-      g_env->image_data_invalid_.get()};
+  const std::vector<DecodeTask> tasks = {
+      DecodeTask(g_env->image_data_invalid_.get()),
+  };
   const std::vector<ClientState> expected_status = {CS_ERROR};
-  TestDecode(images, expected_status);
+  TestDecode(tasks, expected_status);
 }
 
 TEST_P(MjpegDecodeAcceleratorTest, KeepDecodeAfterFailure) {
-  const std::vector<const ParsedJpegImage*> images = {
-      g_env->image_data_invalid_.get(),
-      g_env->image_data_1280x720_default_.get()};
+  const std::vector<DecodeTask> tasks = {
+      DecodeTask(g_env->image_data_invalid_.get()),
+      DecodeTask(g_env->image_data_1280x720_default_.get()),
+  };
   const std::vector<ClientState> expected_status = {CS_ERROR, CS_DECODE_PASS};
-  TestDecode(images, expected_status);
+  TestDecode(tasks, expected_status);
 }
 
 TEST_P(MjpegDecodeAcceleratorTest, Abort) {
   constexpr size_t kNumOfJpegToDecode = 5;
-  const std::vector<const ParsedJpegImage*> images(
-      kNumOfJpegToDecode, g_env->image_data_1280x720_default_.get());
+  const std::vector<DecodeTask> tasks(
+      kNumOfJpegToDecode,
+      DecodeTask(g_env->image_data_1280x720_default_.get()));
   // Verify only one decode success to ensure both decoders have started the
   // decoding. Then destroy the first decoder when it is still decoding. The
   // kernel should not crash during this test.
   const std::vector<ClientState> expected_status = {CS_DECODE_PASS};
-  TestDecode(images, expected_status, 2 /* num_concurrent_decoders */);
+  TestDecode(tasks, expected_status, 2 /* num_concurrent_decoders */);
 }
 
 TEST_P(MjpegDecodeAcceleratorTest, PerfJDA) {
   // Only the first image will be used for perf testing.
   ASSERT_GE(g_env->image_data_user_.size(), 1u);
-  const std::vector<const ParsedJpegImage*> images = {
-      g_env->image_data_user_[0].get()};
-  PerfDecodeByJDA(g_env->perf_decode_times_, images);
+  const std::vector<DecodeTask> tasks = {
+      DecodeTask(g_env->image_data_user_[0].get()),
+  };
+  PerfDecodeByJDA(g_env->perf_decode_times_, tasks);
 }
 
 TEST_F(MjpegDecodeAcceleratorTest, PerfSW) {
   // Only the first image will be used for perf testing.
   ASSERT_GE(g_env->image_data_user_.size(), 1u);
-  const std::vector<const ParsedJpegImage*> images = {
-      g_env->image_data_user_[0].get()};
-  PerfDecodeBySW(g_env->perf_decode_times_, images);
+  const std::vector<DecodeTask> tasks = {
+      DecodeTask(g_env->image_data_user_[0].get()),
+  };
+  PerfDecodeBySW(g_env->perf_decode_times_, tasks);
 }
 
 std::string TestParamToString(::testing::TestParamInfo<bool> param_info) {

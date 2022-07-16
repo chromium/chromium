@@ -42,8 +42,8 @@ void TabBrowserControlsConstraintsHelper::UpdateState(
 
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
-  web_contents->GetMainFrame()->UpdateBrowserControlsState(
-      constraints_state, current_state, animate);
+  web_contents->UpdateBrowserControlsState(constraints_state, current_state,
+                                           animate);
 }
 
 static jlong JNI_TabBrowserControlsConstraintsHelper_Init(

@@ -73,10 +73,18 @@ export function getColorModeString(mojoColorMode) {
  */
 export function getPageSizeString(pageSize) {
   switch (pageSize) {
+    case ash.scanning.mojom.PageSize.kIsoA3:
+      return loadTimeData.getString('a3OptionText');
     case ash.scanning.mojom.PageSize.kIsoA4:
       return loadTimeData.getString('a4OptionText');
+    case ash.scanning.mojom.PageSize.kIsoB4:
+      return loadTimeData.getString('b4OptionText');
+    case ash.scanning.mojom.PageSize.kLegal:
+      return loadTimeData.getString('legalOptionText');
     case ash.scanning.mojom.PageSize.kNaLetter:
       return loadTimeData.getString('letterOptionText');
+    case ash.scanning.mojom.PageSize.kTabloid:
+      return loadTimeData.getString('tabloidOptionText');
     case ash.scanning.mojom.PageSize.kMax:
       return loadTimeData.getString('fitToScanAreaOptionText');
     default:
@@ -116,10 +124,18 @@ export function getSourceTypeString(mojoSourceType) {
  */
 export function pageSizeFromString(pageSizeString) {
   switch (pageSizeString) {
+    case ash.scanning.mojom.PageSize.kIsoA3.toString():
+      return ash.scanning.mojom.PageSize.kIsoA3;
     case ash.scanning.mojom.PageSize.kIsoA4.toString():
       return ash.scanning.mojom.PageSize.kIsoA4;
+    case ash.scanning.mojom.PageSize.kIsoB4.toString():
+      return ash.scanning.mojom.PageSize.kIsoB4;
+    case ash.scanning.mojom.PageSize.kLegal.toString():
+      return ash.scanning.mojom.PageSize.kLegal;
     case ash.scanning.mojom.PageSize.kNaLetter.toString():
       return ash.scanning.mojom.PageSize.kNaLetter;
+    case ash.scanning.mojom.PageSize.kTabloid.toString():
+      return ash.scanning.mojom.PageSize.kTabloid;
     case ash.scanning.mojom.PageSize.kMax.toString():
       return ash.scanning.mojom.PageSize.kMax;
     default:

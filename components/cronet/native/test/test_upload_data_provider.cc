@@ -15,6 +15,9 @@ class TestRunnable {
   // Creates Cronet runnable that runs |task| once and destroys itself.
   static Cronet_RunnablePtr CreateRunnable(base::OnceClosure task);
 
+  TestRunnable(const TestRunnable&) = delete;
+  TestRunnable& operator=(const TestRunnable&) = delete;
+
  private:
   explicit TestRunnable(base::OnceClosure task);
   ~TestRunnable();
@@ -24,8 +27,6 @@ class TestRunnable {
 
   // Closure to run.
   base::OnceClosure task_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRunnable);
 };
 
 TestRunnable::TestRunnable(base::OnceClosure task) : task_(std::move(task)) {}
@@ -276,7 +277,7 @@ void TestUploadDataProvider::Close() {
 }
 
 void TestUploadDataProvider::AssertClosed() {
-  awaiting_close_.TimedWait(base::TimeDelta::FromMilliseconds(5000));
+  awaiting_close_.TimedWait(base::Milliseconds(5000));
   EXPECT_TRUE(closed_.IsSet()) << "Was not closed";
 }
 

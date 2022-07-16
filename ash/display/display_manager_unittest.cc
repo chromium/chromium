@@ -26,6 +26,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
@@ -58,6 +59,7 @@
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/font_render_params.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace ash {
 
@@ -79,6 +81,10 @@ class DisplayManagerTest : public AshTestBase,
                            public aura::WindowObserver {
  public:
   DisplayManagerTest() = default;
+
+  DisplayManagerTest(const DisplayManagerTest&) = delete;
+  DisplayManagerTest& operator=(const DisplayManagerTest&) = delete;
+
   ~DisplayManagerTest() override = default;
 
   void SetUp() override {
@@ -183,8 +189,6 @@ class DisplayManagerTest : public AshTestBase,
   uint32_t changed_metrics_ = 0u;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayManagerTest);
 };
 
 TEST_F(DisplayManagerTest, UpdateDisplayTest) {
@@ -2146,6 +2150,10 @@ TEST_F(DisplayManagerTest, UpdateMouseCursorAfterRotateZoom) {
 class TestDisplayObserver : public display::DisplayObserver {
  public:
   TestDisplayObserver() : changed_(false) {}
+
+  TestDisplayObserver(const TestDisplayObserver&) = delete;
+  TestDisplayObserver& operator=(const TestDisplayObserver&) = delete;
+
   ~TestDisplayObserver() override = default;
 
   // display::DisplayObserver overrides:
@@ -2172,8 +2180,6 @@ class TestDisplayObserver : public display::DisplayObserver {
  private:
   MirrorWindowTestApi test_api;
   bool changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDisplayObserver);
 };
 
 TEST_F(DisplayManagerTest, SoftwareMirroring) {
@@ -3105,6 +3111,54 @@ TEST_F(DisplayManagerTest, DisplayPrefsAndForcedMirrorMode) {
   EXPECT_TRUE(display_manager()->external_display_mirror_info().empty());
 }
 
+TEST_F(DisplayManagerTest, ForcedMirrorModeExited) {
+  UpdateDisplay("400x300,800x700");
+  base::RunLoop().RunUntilIdle();
+
+  // Set the first display as internal display so that the tablet mode can be
+  // enabled.
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
+  // Initially we can save display prefs ...
+  EXPECT_TRUE(Shell::Get()->ShouldSaveDisplaySettings());
+  // ... and there are no external displays that are candidates for mirror
+  // restore.
+  EXPECT_TRUE(display_manager()->external_display_mirror_info().empty());
+
+  // Turn on tablet mode, and expect that it's not possible to persist the
+  // display prefs while forced mirror mode is active.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
+  EXPECT_TRUE(
+      display_manager()->layout_store()->forced_mirror_mode_for_tablet());
+  EXPECT_FALSE(Shell::Get()->ShouldSaveDisplaySettings());
+  // Forced mirror mode does not add external displays as candidates for mirror
+  // restore.
+  EXPECT_TRUE(display_manager()->external_display_mirror_info().empty());
+
+  // Exit mirror mode, and expect that `forced_mirror_mode_for_tablet` is now
+  // false.
+  SetSoftwareMirrorMode(false);
+  EXPECT_FALSE(display_manager()->IsInSoftwareMirrorMode());
+  EXPECT_FALSE(
+      display_manager()->layout_store()->forced_mirror_mode_for_tablet());
+
+  // Randomly change the external monitor's resolution/refresh rate, and
+  // expect that the setting is retained.
+  const display::ManagedDisplayInfo& info_1 = GetDisplayInfoAt(0);
+  const display::ManagedDisplayInfo::ManagedDisplayModeList& modes =
+      info_1.display_modes();
+  display::test::SetDisplayResolution(display_manager(), info_1.id(),
+                                      modes[0].size());
+  display_manager()->UpdateDisplays();
+  EXPECT_EQ(
+      display_manager()->GetDisplayForId(info_1.id()).device_scale_factor(),
+      1.f);
+  EXPECT_FALSE(display_manager()->IsInSoftwareMirrorMode());
+}
+
 TEST_F(DisplayManagerTest, DisplayPrefsAndKioskMode) {
   // Login in as kiosk app.
   UserSession session;
@@ -3163,6 +3217,10 @@ TEST_F(DisplayManagerTest, DontRegisterBadConfig) {
 class ScreenShutdownTest : public AshTestBase {
  public:
   ScreenShutdownTest() = default;
+
+  ScreenShutdownTest(const ScreenShutdownTest&) = delete;
+  ScreenShutdownTest& operator=(const ScreenShutdownTest&) = delete;
+
   ~ScreenShutdownTest() override = default;
 
   void TearDown() override {
@@ -3176,9 +3234,6 @@ class ScreenShutdownTest : public AshTestBase {
     EXPECT_EQ("500x300", all[0].size().ToString());
     EXPECT_EQ("800x400", all[1].size().ToString());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenShutdownTest);
 };
 
 TEST_F(ScreenShutdownTest, ScreenAfterShutdown) {
@@ -3204,13 +3259,13 @@ class FontTestHelper : public AshTestBase {
     SetUp();
   }
 
+  FontTestHelper(const FontTestHelper&) = delete;
+  FontTestHelper& operator=(const FontTestHelper&) = delete;
+
   ~FontTestHelper() override { TearDown(); }
 
   // AshTestBase:
   void TestBody() override { NOTREACHED(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FontTestHelper);
 };
 
 bool IsTextSubpixelPositioningEnabled() {
@@ -3555,6 +3610,11 @@ namespace {
 class DisplayManagerOrientationTest : public DisplayManagerTest {
  public:
   DisplayManagerOrientationTest() = default;
+
+  DisplayManagerOrientationTest(const DisplayManagerOrientationTest&) = delete;
+  DisplayManagerOrientationTest& operator=(
+      const DisplayManagerOrientationTest&) = delete;
+
   ~DisplayManagerOrientationTest() override = default;
 
   void SetUp() override {
@@ -3571,9 +3631,6 @@ class DisplayManagerOrientationTest : public DisplayManagerTest {
   AccelerometerUpdate portrait_primary;
   AccelerometerUpdate portrait_secondary;
   AccelerometerUpdate landscape_primary;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayManagerOrientationTest);
 };
 
 class TestObserver : public ScreenOrientationController::Observer {
@@ -3611,22 +3668,22 @@ TEST_F(DisplayManagerOrientationTest, SaveRestoreUserRotationLock) {
   {
     window_a->SetProperty(aura::client::kAppType,
                           static_cast<int>(AppType::CHROME_APP));
-    orientation_controller->LockOrientationForWindow(window_a,
-                                                     OrientationLockType::kAny);
+    orientation_controller->LockOrientationForWindow(
+        window_a, chromeos::OrientationType::kAny);
   }
   aura::Window* window_p = CreateTestWindowInShellWithId(0);
   {
     window_p->SetProperty(aura::client::kAppType,
                           static_cast<int>(AppType::CHROME_APP));
     orientation_controller->LockOrientationForWindow(
-        window_p, OrientationLockType::kPortrait);
+        window_p, chromeos::OrientationType::kPortrait);
   }
   aura::Window* window_l = CreateTestWindowInShellWithId(0);
   {
     window_l->SetProperty(aura::client::kAppType,
                           static_cast<int>(AppType::CHROME_APP));
     orientation_controller->LockOrientationForWindow(
-        window_l, OrientationLockType::kLandscape);
+        window_l, chromeos::OrientationType::kLandscape);
   }
 
   DisplayConfigurationController* configuration_controller =
@@ -3648,7 +3705,7 @@ TEST_F(DisplayManagerOrientationTest, SaveRestoreUserRotationLock) {
 
   EXPECT_EQ(display::Display::ROTATE_0, screen->GetPrimaryDisplay().rotation());
   EXPECT_FALSE(display_manager->registered_internal_display_rotation_lock());
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
             test_api.GetCurrentOrientation());
 
   // Enable lock at 0.
@@ -3666,7 +3723,7 @@ TEST_F(DisplayManagerOrientationTest, SaveRestoreUserRotationLock) {
   EXPECT_EQ(display::Display::ROTATE_0,
             display_manager->registered_internal_display_rotation());
   EXPECT_EQ(0, test_observer.countAndReset());
-  EXPECT_EQ(OrientationLockType::kPortraitPrimary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             test_api.GetCurrentOrientation());
 
   // Any will rotate to the locked rotation.
@@ -3739,7 +3796,7 @@ TEST_F(DisplayManagerOrientationTest, UserRotationLockReverse) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   orientation_controller->LockOrientationForWindow(
-      window, OrientationLockType::kPortrait);
+      window, chromeos::OrientationType::kPortrait);
   EXPECT_EQ(display::Display::ROTATE_270,
             screen->GetPrimaryDisplay().rotation());
 
@@ -3777,15 +3834,15 @@ TEST_F(DisplayManagerOrientationTest, LockToSpecificOrientation) {
   {
     window_a->SetProperty(aura::client::kAppType,
                           static_cast<int>(AppType::CHROME_APP));
-    orientation_controller->LockOrientationForWindow(window_a,
-                                                     OrientationLockType::kAny);
+    orientation_controller->LockOrientationForWindow(
+        window_a, chromeos::OrientationType::kAny);
   }
   wm::ActivateWindow(window_a);
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   orientation_controller->OnAccelerometerUpdated(portrait_primary);
 
-  EXPECT_EQ(OrientationLockType::kPortraitPrimary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             test_api.GetCurrentOrientation());
 
   orientation_controller->OnAccelerometerUpdated(portrait_secondary);
@@ -3799,44 +3856,44 @@ TEST_F(DisplayManagerOrientationTest, LockToSpecificOrientation) {
                           static_cast<int>(AppType::CHROME_APP));
 
   orientation_controller->LockOrientationForWindow(
-      window_psc, OrientationLockType::kPortraitSecondary);
+      window_psc, chromeos::OrientationType::kPortraitSecondary);
   orientation_controller->LockOrientationForWindow(
-      window_psc, OrientationLockType::kCurrent);
+      window_psc, chromeos::OrientationType::kCurrent);
   wm::ActivateWindow(window_psc);
 
   orientation_controller->LockOrientationForWindow(
-      window_lsc, OrientationLockType::kLandscapeSecondary);
+      window_lsc, chromeos::OrientationType::kLandscapeSecondary);
   orientation_controller->LockOrientationForWindow(
-      window_lsc, OrientationLockType::kCurrent);
+      window_lsc, chromeos::OrientationType::kCurrent);
 
-  EXPECT_EQ(OrientationLockType::kPortraitSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitSecondary,
             test_api.GetCurrentOrientation());
 
   // The orientation should stay portrait secondary.
   orientation_controller->OnAccelerometerUpdated(portrait_primary);
-  EXPECT_EQ(OrientationLockType::kPortraitSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitSecondary,
             test_api.GetCurrentOrientation());
   wm::ActivateWindow(window_lsc);
 
-  EXPECT_EQ(OrientationLockType::kLandscapeSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapeSecondary,
             test_api.GetCurrentOrientation());
 
   // The orientation should stay landscape secondary.
   orientation_controller->OnAccelerometerUpdated(landscape_primary);
-  EXPECT_EQ(OrientationLockType::kLandscapeSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapeSecondary,
             test_api.GetCurrentOrientation());
 
   wm::ActivateWindow(window_a);
   orientation_controller->OnAccelerometerUpdated(portrait_primary);
 
   // Swtching to |window_a| enables rotation.
-  EXPECT_EQ(OrientationLockType::kPortraitPrimary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             test_api.GetCurrentOrientation());
 
   // The orientation has alraedy been locked to secondary once, so
   // it should swtich back to the portrait secondary.
   wm::ActivateWindow(window_psc);
-  EXPECT_EQ(OrientationLockType::kPortraitSecondary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitSecondary,
             test_api.GetCurrentOrientation());
 }
 
@@ -4392,72 +4449,105 @@ TEST_F(DisplayManagerTest, MirrorModeRestoreAfterResume) {
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
 }
 
-// crbug.com/1003339
-TEST_F(DisplayManagerTest, DISABLED_SoftwareMirrorRotationForTablet) {
-  UpdateDisplay("400x300,800x700");
-  base::RunLoop().RunUntilIdle();
+TEST_F(DisplayManagerTest, SoftwareMirrorRotationForTablet) {
+  enum Scenario {
+    // Auto mirror mode set when entering tablet mode.
+    kForcedMirror,
+    // Manual mirror mode with device is in physical tablet mode.
+    kPhysicalTablet,
+  };
 
   // Set the first display as internal display so that the tablet mode can be
   // enabled.
   display::test::DisplayManagerTestApi(display_manager())
       .SetFirstDisplayAsInternalDisplay();
 
-  // Simulate turning on mirror mode triggered by tablet mode on.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
-  EXPECT_EQ(gfx::Rect(0, 0, 400, 300),
-            display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
-  MirrorWindowTestApi test_api;
-  std::vector<aura::WindowTreeHost*> host_list = test_api.GetHosts();
-  ASSERT_EQ(1U, host_list.size());
-  EXPECT_EQ(gfx::Size(800, 700), host_list[0]->GetBoundsInPixels().size());
-  EXPECT_EQ(gfx::Size(400, 300), host_list[0]->window()->bounds().size());
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  auto tablet_mode_test_api = std::make_unique<TabletModeControllerTestApi>();
 
-  // Test the target display's bounds after the transforms are applied.
-  gfx::RectF transformed_rect1(
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
-  Shell::Get()->GetPrimaryRootWindow()->transform().TransformRect(
-      &transformed_rect1);
-  host_list[0]->window()->transform().TransformRect(&transformed_rect1);
-  EXPECT_EQ(gfx::RectF(0.0f, 100.0f, 800.0f, 600.0f), transformed_rect1);
+  for (auto sc : {kForcedMirror, kPhysicalTablet}) {
+    SCOPED_TRACE(testing::Message() << "Scenario: " << sc);
 
-  // Rotate the source display by 90 degrees.
-  UpdateDisplay("400x300/r,800x700");
-  EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
-  EXPECT_EQ(gfx::Rect(0, 0, 300, 400),
-            display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
-  host_list = test_api.GetHosts();
-  ASSERT_EQ(1U, host_list.size());
-  EXPECT_EQ(gfx::Size(800, 700), host_list[0]->GetBoundsInPixels().size());
-  EXPECT_EQ(gfx::Size(300, 400), host_list[0]->window()->bounds().size());
+    UpdateDisplay("400x300,800x700");
+    switch (sc) {
+      case kForcedMirror: {
+        // Simulate turning on mirror mode triggered by tablet mode on.
+        tablet_mode_controller->SetEnabledForTest(true);
+        base::RunLoop().RunUntilIdle();
+        break;
+      }
+      case kPhysicalTablet: {
+        // Simulate physical tablet mode with clamshell ui.
+        tablet_mode_controller->SetEnabledForTest(true);
+        tablet_mode_test_api->AttachExternalMouse();
+        base::RunLoop().RunUntilIdle();
 
-  // Test the target display's bounds after the transforms are applied.
-  gfx::RectF transformed_rect2(
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
-  Shell::Get()->GetPrimaryRootWindow()->transform().TransformRect(
-      &transformed_rect2);
-  host_list[0]->window()->transform().TransformRect(&transformed_rect2);
-  EXPECT_EQ(gfx::RectF(100.0f, 0.0f, 600.0f, 800.0f), transformed_rect2);
+        // Manual mirror mode.
+        SetSoftwareMirrorMode(true);
 
-  // Change the bounds of the source display and rotate the source display by 90
-  // degrees.
-  UpdateDisplay("300x400/r,800x700");
-  EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
-  EXPECT_EQ(gfx::Rect(0, 0, 400, 300),
-            display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
-  host_list = test_api.GetHosts();
-  ASSERT_EQ(1U, host_list.size());
-  EXPECT_EQ(gfx::Size(800, 700), host_list[0]->GetBoundsInPixels().size());
-  EXPECT_EQ(gfx::Size(400, 300), host_list[0]->window()->bounds().size());
+        ASSERT_TRUE(tablet_mode_controller->is_in_tablet_physical_state());
+        ASSERT_FALSE(tablet_mode_controller->IsInTabletMode());
+        break;
+      }
+    }
 
-  // Test the target display's bounds after the transforms are applied.
-  gfx::RectF transformed_rect3(
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
-  Shell::Get()->GetPrimaryRootWindow()->transform().TransformRect(
-      &transformed_rect3);
-  host_list[0]->window()->transform().TransformRect(&transformed_rect3);
-  EXPECT_EQ(gfx::RectF(0.0f, 100.0f, 800.0f, 600.0f), transformed_rect3);
+    ASSERT_TRUE(display_manager()->IsInSoftwareMirrorMode());
+    EXPECT_EQ(gfx::Rect(0, 0, 400, 300),
+              display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
+    MirrorWindowTestApi test_api;
+    std::vector<aura::WindowTreeHost*> host_list = test_api.GetHosts();
+    ASSERT_EQ(1U, host_list.size());
+    EXPECT_EQ(gfx::Size(800, 700), host_list[0]->GetBoundsInPixels().size());
+    EXPECT_EQ(gfx::Size(400, 300), host_list[0]->window()->bounds().size());
+
+    // Test the target display's bounds after the transforms are applied.
+    gfx::RectF transformed_rect1(
+        display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
+    Shell::Get()->GetPrimaryRootWindow()->transform().TransformRect(
+        &transformed_rect1);
+    host_list[0]->window()->transform().TransformRect(&transformed_rect1);
+    EXPECT_EQ(gfx::RectF(0.0f, 50.0f, 800.0f, 600.0f), transformed_rect1);
+
+    // Rotate the source display by 90 degrees.
+    UpdateDisplay("400x300/r,800x700");
+    EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
+    EXPECT_EQ(gfx::Rect(0, 0, 300, 400),
+              display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
+    host_list = test_api.GetHosts();
+    ASSERT_EQ(1U, host_list.size());
+    EXPECT_EQ(gfx::Size(800, 700), host_list[0]->GetBoundsInPixels().size());
+    EXPECT_EQ(gfx::Size(300, 400), host_list[0]->window()->bounds().size());
+
+    // Test the target display's bounds after the transforms are applied.
+    gfx::RectF transformed_rect2(
+        display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
+    Shell::Get()->GetPrimaryRootWindow()->transform().TransformRect(
+        &transformed_rect2);
+    host_list[0]->window()->transform().TransformRect(&transformed_rect2);
+    // Use gfx::EncolosingRect because `transfored_rect2` has rounding errors:
+    //   137.000000,0.000000 524.999939x699.999939
+    EXPECT_EQ(gfx::Rect(137.0f, 0.0f, 525.0f, 700.0f),
+              gfx::ToEnclosingRect(transformed_rect2));
+
+    // Change the bounds of the source display and rotate the source display by
+    // 90 degrees.
+    UpdateDisplay("300x400/r,800x700");
+    EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
+    EXPECT_EQ(gfx::Rect(0, 0, 400, 300),
+              display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
+    host_list = test_api.GetHosts();
+    ASSERT_EQ(1U, host_list.size());
+    EXPECT_EQ(gfx::Size(800, 700), host_list[0]->GetBoundsInPixels().size());
+    EXPECT_EQ(gfx::Size(400, 300), host_list[0]->window()->bounds().size());
+
+    // Test the target display's bounds after the transforms are applied.
+    gfx::RectF transformed_rect3(
+        display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
+    Shell::Get()->GetPrimaryRootWindow()->transform().TransformRect(
+        &transformed_rect3);
+    host_list[0]->window()->transform().TransformRect(&transformed_rect3);
+    EXPECT_EQ(gfx::RectF(0.0f, 50.0f, 800.0f, 600.0f), transformed_rect3);
+  }
 }
 
 // crbug.com/1003339
@@ -4584,9 +4674,9 @@ TEST_F(DisplayManagerTest, PanelOrientation) {
   // Check the orientation controller reports correct orientation.
   auto* screen_orientation_controller =
       Shell::Get()->screen_orientation_controller();
-  EXPECT_EQ(OrientationLockType::kLandscape,
+  EXPECT_EQ(chromeos::OrientationType::kLandscape,
             screen_orientation_controller->natural_orientation());
-  EXPECT_EQ(OrientationLockType::kLandscapePrimary,
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
             screen_orientation_controller->GetCurrentOrientation());
 
   // Test if changing rotation works as if it's landscape panel.
@@ -4599,7 +4689,7 @@ TEST_F(DisplayManagerTest, PanelOrientation) {
             display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel());
   EXPECT_EQ(display::Display::ROTATE_270,
             display::Screen::GetScreen()->GetPrimaryDisplay().rotation());
-  EXPECT_EQ(OrientationLockType::kPortraitPrimary,
+  EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             screen_orientation_controller->GetCurrentOrientation());
 }
 

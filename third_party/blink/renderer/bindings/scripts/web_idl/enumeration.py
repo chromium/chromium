@@ -14,7 +14,7 @@ from .user_defined_type import UserDefinedType
 
 class Enumeration(UserDefinedType, WithExtendedAttributes,
                   WithCodeGeneratorInfo, WithComponent, WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-enums"""
+    """https://webidl.spec.whatwg.org/#idl-enums"""
 
     class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
              WithComponent, WithDebugInfo):

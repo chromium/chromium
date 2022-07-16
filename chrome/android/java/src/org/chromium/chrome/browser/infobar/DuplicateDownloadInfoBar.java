@@ -5,31 +5,20 @@
 package org.chromium.chrome.browser.infobar;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Typeface;
-import android.net.Uri;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.TextUtils;
 import android.text.style.ClickableSpan;
-import android.text.style.StyleSpan;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.task.AsyncTask;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
+import org.chromium.chrome.browser.download.DuplicateDownloadClickableSpan;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
-import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarLayout;
-
-import java.io.File;
 
 /**
  * An infobar to ask whether to proceed downloading a file that already exists locally or is still
@@ -71,106 +60,39 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
         mDuplicateRequestExists = duplicateRequestExists;
     }
 
-    /**
-     * Gets the infobar text for regular downloads.
-     * @param context Context to be used.
-     * @param template Template of the text to be displayed.
-     */
-    private CharSequence getDownloadMessageText(final Context context, final String template) {
-        final File file = new File(mFilePath);
-        final Uri fileUri = Uri.fromFile(file);
-        final String mimeType = getMimeTypeFromUri(fileUri);
-        final String filename = file.getName();
-        return getMessageText(template, filename, new ClickableSpan() {
-            @Override
-            public void onClick(View view) {
-                new AsyncTask<String>() {
-                    @Override
-                    protected String doInBackground() {
-                        if (DownloadCollectionBridge.shouldPublishDownload(mFilePath)) {
-                            Uri uri = DownloadCollectionBridge.getDownloadUriForFileName(filename);
-                            return uri == null ? null : uri.toString();
-                        } else {
-                            if (file.exists()) return mFilePath;
-                            return null;
-                        }
-                    }
-
-                    @Override
-                    protected void onPostExecute(String filePath) {
-                        if (filePath != null) {
-                            DownloadUtils.openFile(filePath, mimeType, null, mOTRProfileID, null,
-                                    null, DownloadOpenSource.INFO_BAR, context);
-                        } else {
-                            DownloadManagerService.openDownloadsPage(
-                                    ContextUtils.getApplicationContext(), mOTRProfileID,
-                                    DownloadOpenSource.INFO_BAR);
-                        }
-                    }
-                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }
-        });
-    }
-
-    /**
-     * Gets the infobar text for offline page downloads.
-     * @param context Context to be used.
-     * @param template Template of the text to be displayed.
-     */
-    private CharSequence getOfflinePageMessageText(final Context context, final String template) {
-        return getMessageText(template, mFilePath, new ClickableSpan() {
-            @Override
-            public void onClick(View view) {
-                // TODO(qinmin): open the offline page on local storage instead of opening the url.
-                // However, there could be multiple stored offline pages for the same url, need to
-                // figure out which one to use.
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(mPageUrl));
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setPackage(context.getPackageName());
-                context.startActivity(intent);
-            }
-        });
-    }
-
-    /**
-     * Helper method to get the text to be displayed on the infobar.
-     * @param template Message template.
-     * @param fileName Name of the file.
-     * @param clickableSpan Action to perform when clicking on the file name.
-     * @return message to be displayed on the infobar.
-     */
-    private CharSequence getMessageText(
-            final String template, final String fileName, final ClickableSpan clickableSpan) {
-        final SpannableString formattedFilePath = new SpannableString(fileName);
-        formattedFilePath.setSpan(new StyleSpan(Typeface.BOLD), 0, fileName.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        formattedFilePath.setSpan(
-                clickableSpan, 0, fileName.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return TextUtils.expandTemplate(template, formattedFilePath);
-    }
-
-    /**
-     * Retrieve the mime type based on the given file URI.
-     * @param fileUri URI of the file
-     * @return Possible mime type of the file.
-     */
-    private static String getMimeTypeFromUri(Uri fileUri) {
-        String extension = MimeTypeMap.getFileExtensionFromUrl(fileUri.toString());
-        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-    }
-
     @Override
     public void createContent(InfoBarLayout layout) {
         super.createContent(layout);
         Context context = layout.getContext();
-        String template = context.getString(mDuplicateRequestExists
-                        ? R.string.duplicate_download_request_infobar_text
-                        : R.string.duplicate_download_infobar_text);
         if (mIsOfflinePage) {
-            layout.setMessage(getOfflinePageMessageText(context, template));
+            layout.setMessage(DownloadUtils.getOfflinePageMessageText(
+                    context, mFilePath, mDuplicateRequestExists, new ClickableSpan() {
+                        @Override
+                        public void onClick(View view) {
+                            DownloadUtils.openPageUrl(context, mPageUrl);
+                            recordLinkClicked(true);
+                        }
+                    }));
         } else {
-            layout.setMessage(getDownloadMessageText(context, template));
+            DuplicateDownloadClickableSpan span =
+                    new DuplicateDownloadClickableSpan(context, mFilePath,
+                            ()
+                                    -> this.recordLinkClicked(false),
+                            mOTRProfileID, DownloadOpenSource.INFO_BAR);
+            layout.setMessage(DownloadUtils.getDownloadMessageText(context,
+                    context.getString(R.string.duplicate_download_infobar_text), mFilePath,
+                    false /*addSizeStringIfAvailable*/, 0 /*totalBytes*/, span));
         }
+    }
+
+    /**
+     * Records the link clicked histogram.
+     * @param isOfflinePage Whether this is an offline page download.
+     */
+    private void recordLinkClicked(boolean isOfflinePage) {
+        RecordHistogram.recordEnumeratedHistogram(isOfflinePage
+                        ? "Download.DuplicateInfobarEvent.OfflinePage"
+                        : "Download.DuplicateInfobarEvent.Download",
+                DuplicateDownloadInfobarEvent.LINK_CLICKED, DuplicateDownloadInfobarEvent.COUNT);
     }
 }

@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 class FindBarController;
 
 // Handles all platform specific operations on behalf of the FindBarController.
@@ -17,6 +15,9 @@ class FindBarPlatformHelper {
  public:
   static std::unique_ptr<FindBarPlatformHelper> Create(
       FindBarController* find_bar_controller);
+
+  FindBarPlatformHelper(const FindBarPlatformHelper&) = delete;
+  FindBarPlatformHelper& operator=(const FindBarPlatformHelper&) = delete;
 
   virtual ~FindBarPlatformHelper();
 
@@ -28,9 +29,6 @@ class FindBarPlatformHelper {
 
   // Owns FindBarPlatformHelper.
   FindBarController* const find_bar_controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FindBarPlatformHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_PLATFORM_HELPER_H_

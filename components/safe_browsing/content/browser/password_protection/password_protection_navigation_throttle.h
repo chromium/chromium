@@ -31,6 +31,12 @@ class PasswordProtectionNavigationThrottle
       content::NavigationHandle* navigation_handle,
       scoped_refptr<PasswordProtectionRequestContent> request,
       bool is_warning_showing);
+
+  PasswordProtectionNavigationThrottle(
+      const PasswordProtectionNavigationThrottle&) = delete;
+  PasswordProtectionNavigationThrottle& operator=(
+      const PasswordProtectionNavigationThrottle&) = delete;
+
   ~PasswordProtectionNavigationThrottle() override;
 
   // content::NavigationThrottle:
@@ -51,7 +57,6 @@ class PasswordProtectionNavigationThrottle
  private:
   scoped_refptr<PasswordProtectionRequestContent> request_;
   bool is_warning_showing_;
-  DISALLOW_COPY_AND_ASSIGN(PasswordProtectionNavigationThrottle);
 };
 
 }  // namespace safe_browsing

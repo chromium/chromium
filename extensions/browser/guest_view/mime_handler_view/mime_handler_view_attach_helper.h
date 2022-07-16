@@ -58,6 +58,10 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
       uint32_t* data_pipe_size,
       base::OnceClosure resume_load = base::DoNothing());
 
+  MimeHandlerViewAttachHelper(const MimeHandlerViewAttachHelper&) = delete;
+  MimeHandlerViewAttachHelper& operator=(const MimeHandlerViewAttachHelper&) =
+      delete;
+
   ~MimeHandlerViewAttachHelper() override;
 
   // content::RenderProcessHostObserver overrides.
@@ -104,8 +108,6 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   content::RenderProcessHost* const render_process_host_;
 
   base::WeakPtrFactory<MimeHandlerViewAttachHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MimeHandlerViewAttachHelper);
 };
 
 }  // namespace extensions

@@ -4,14 +4,13 @@
 
 #include "remoting/host/sas_injector.h"
 
-#include <windows.h>
-#include <sas.h>
-
 #include <memory>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/scoped_native_library.h"
 #include "base/win/registry.h"
 
 namespace remoting {
@@ -26,11 +25,18 @@ const wchar_t kSoftwareSasValueName[] = L"SoftwareSASGeneration";
 
 const DWORD kEnableSoftwareSasByServices = 1;
 
+// https://docs.microsoft.com/en-us/windows/win32/api/sas/nf-sas-sendsas
+typedef void(NTAPI* SendSASFunction)(BOOL);
+
 // Toggles the default software SAS generation policy to enable SAS generation
 // by services. Non-default policy is not changed.
 class ScopedSoftwareSasPolicy {
  public:
   ScopedSoftwareSasPolicy();
+
+  ScopedSoftwareSasPolicy(const ScopedSoftwareSasPolicy&) = delete;
+  ScopedSoftwareSasPolicy& operator=(const ScopedSoftwareSasPolicy&) = delete;
+
   ~ScopedSoftwareSasPolicy();
 
   bool Apply();
@@ -41,8 +47,6 @@ class ScopedSoftwareSasPolicy {
 
   // True if the policy needs to be restored.
   bool restore_policy_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSoftwareSasPolicy);
 };
 
 ScopedSoftwareSasPolicy::ScopedSoftwareSasPolicy() = default;
@@ -94,13 +98,12 @@ bool ScopedSoftwareSasPolicy::Apply() {
 class SasInjectorWin : public SasInjector {
  public:
   SasInjectorWin();
+  SasInjectorWin(const SasInjectorWin&) = delete;
+  SasInjectorWin& operator=(const SasInjectorWin&) = delete;
   ~SasInjectorWin() override;
 
   // SasInjector implementation.
   bool InjectSas() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SasInjectorWin);
 };
 
 SasInjectorWin::SasInjectorWin() = default;
@@ -112,11 +115,28 @@ bool SasInjectorWin::InjectSas() {
   // if the policy does not allow services to generate software SAS.
   ScopedSoftwareSasPolicy enable_sas;
   if (!enable_sas.Apply()) {
+    LOG(ERROR) << "SAS policy could not be applied, skipping SAS injection.";
     return false;
   }
 
-  SendSAS(/*AsUser=*/FALSE);
-  return true;
+  // Use LoadLibrary here as sas.dll is not consistently shipped on all Windows
+  // SKUs (notably server releases) and linking against it prevents the host
+  // from starting correctly.
+  bool sas_injected = false;
+  base::ScopedNativeLibrary library(base::FilePath(L"sas.dll"));
+  if (library.is_valid()) {
+    SendSASFunction send_sas_func = reinterpret_cast<SendSASFunction>(
+        library.GetFunctionPointer("SendSAS"));
+    if (send_sas_func) {
+      sas_injected = true;
+      send_sas_func(/*AsUser=*/FALSE);
+    } else {
+      LOG(ERROR) << "SendSAS() not found in sas.dll, skipping SAS injection.";
+    }
+  } else {
+    LOG(ERROR) << "sas.dll could not be loaded, skipping SAS injection.";
+  }
+  return sas_injected;
 }
 
 std::unique_ptr<SasInjector> SasInjector::Create() {

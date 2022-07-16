@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(ShellDesktopControllerAuraBrowserTest, TwoAppWindows) {
             // closing the last window. If DesktopController::Run() finishes
             // before we close the last window and update |test_succeeded|, the
             // test fails.
-            base::TimeDelta::FromMilliseconds(500));
+            base::Milliseconds(500));
       }));
 
   RunDesktopController();
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(ShellDesktopControllerAuraBrowserTest, ReloadApp) {
               app_window->OnNativeClose();
               test_succeeded = true;
             }),
-            base::TimeDelta::FromMilliseconds(500));
+            base::Milliseconds(500));
       }));
 
   RunDesktopController();

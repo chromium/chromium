@@ -49,6 +49,7 @@ interface SharedWorkerFactory {
       url.mojom.Origin constructor_origin,
 
       string user_agent,
+      string reduced_user_agent,
       UserAgentMetadata ua_metadata,
       bool pause_on_start,
       mojo_base.mojom.UnguessableToken devtools_worker_token,
@@ -63,11 +64,6 @@ interface SharedWorkerFactory {
       // worker client, because for example, the worker's URL is
       // not http(s) or another service worker supported scheme.
       ServiceWorkerContainerInfoForClient? service_worker_container_info,
-
-      // The ID of the AppCacheHost in the browser process that serves resources
-      // for this shared worker. This is not specified when AppCache doesn't
-      // serve resources for this shared worker.
-      mojo_base.mojom.UnguessableToken? appcache_host_id,
 
       // Used for passing the main script pre-requested by the browser process
       // and its redirect information.

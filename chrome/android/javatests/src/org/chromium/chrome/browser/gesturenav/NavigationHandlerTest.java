@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
+import android.view.MotionEvent;
 
 import androidx.test.filters.SmallTest;
 
@@ -202,7 +204,8 @@ public class NavigationHandlerTest {
         // |triggerUi| can be invoked by SwipeRefreshHandler on the rendered
         // page. Make sure this won't crash after the handler(and also
         // handler action delegate) is destroyed.
-        Assert.assertFalse(mNavigationHandler.triggerUi(LEFT_EDGE, 0, 0));
+        Assert.assertFalse(TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> mNavigationHandler.triggerUi(LEFT_EDGE, 0, 0)));
 
         // Just check we're still on the same URL.
         Assert.assertEquals(mTestServer.getURL(RENDERED_PAGE),
@@ -225,6 +228,27 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
+    public void testSwipeAfterDestroyActivity_NativePage() {
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        TestThreadUtils.runOnUiThreadBlocking(mActivityTestRule.getActivity()::finish);
+
+        // CompositorViewHolder dispatches motion events and invoke the handler's
+        // |handleTouchEvent| on native pages. Make sure this won't crash the app after
+        // the handler is destroyed.
+        long eventTime = SystemClock.uptimeMillis();
+        MotionEvent e = MotionEvent.obtain(
+                eventTime, eventTime, MotionEvent.ACTION_DOWN, /*x=*/10, /*y=*/100, 0);
+        TestThreadUtils.runOnUiThreadBlockingNoException(
+                ()
+                        -> mActivityTestRule.getActivity()
+                                   .getCompositorViewHolderForTesting()
+                                   .dispatchTouchEvent(e));
+    }
+
+    @Test
+    @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testEdgeSwipeIsNoopInTabSwitcher() throws TimeoutException {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
@@ -236,6 +260,18 @@ public class NavigationHandlerTest {
         setTabSwitcherModeAndWait(false);
         Assert.assertEquals("Current page should not change. ", UrlConstants.RECENT_TABS_URL,
                 ChromeTabUtils.getUrlStringOnUiThread(currentTab()));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testSwipeAndHoldOnNtp_EnterTabSwitcher() throws TimeoutException {
+        // Clicking tab switcher button while swiping and holding the gesture navigation
+        // bubble should reset the state and dismiss the UI.
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        mNavUtils.swipeFromEdgeAndHold(/*leftEdge=*/true);
+        setTabSwitcherModeAndWait(true);
+        Assert.assertFalse("Navigation UI should be reset.", mNavigationHandler.isActive());
     }
 
     /**

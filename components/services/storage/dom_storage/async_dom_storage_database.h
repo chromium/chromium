@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/unguessable_token.h"
@@ -31,6 +31,9 @@ struct DatabaseTaskTraits;
 class AsyncDomStorageDatabase {
  public:
   using StatusCallback = base::OnceCallback<void(leveldb::Status)>;
+
+  AsyncDomStorageDatabase(const AsyncDomStorageDatabase&) = delete;
+  AsyncDomStorageDatabase& operator=(const AsyncDomStorageDatabase&) = delete;
 
   ~AsyncDomStorageDatabase();
 
@@ -96,7 +99,7 @@ class AsyncDomStorageDatabase {
         std::move(task), std::move(callback),
         base::SequencedTaskRunnerHandle::Get());
     if (database_) {
-      database_.PostTaskWithThisObject(FROM_HERE, std::move(wrapped_task));
+      database_.PostTaskWithThisObject(std::move(wrapped_task));
     } else {
       tasks_to_run_on_open_.push_back(std::move(wrapped_task));
     }
@@ -121,8 +124,6 @@ class AsyncDomStorageDatabase {
   std::vector<BoundDatabaseTask> tasks_to_run_on_open_;
 
   base::WeakPtrFactory<AsyncDomStorageDatabase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncDomStorageDatabase);
 };
 
 namespace internal {

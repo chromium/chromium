@@ -42,8 +42,7 @@ const int kConsumerCapabilityEvaluationMicros = 1000000;  // 1 second
 // longer, and currently-accumulated feedback is not considered recent enough to
 // base decisions off of.  This prevents changes to the capture size when there
 // is an unexpected pause in events.
-const base::TimeDelta kMaxTimeSinceLastFeedbackUpdate =
-    base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kMaxTimeSinceLastFeedbackUpdate = base::Seconds(1);
 
 // The amount of additional time, since content animation was last detected, to
 // continue being extra-careful about increasing the capture size.  This is used
@@ -59,8 +58,7 @@ const int kProvingPeriodForAnimatedContentMicros = 30000000;  // 30 seconds
 // time between frames at |frame_rate| and return the fractional difference.
 double FractionFromExpectedFrameRate(base::TimeDelta delta, int frame_rate) {
   DCHECK_GT(frame_rate, 0);
-  const base::TimeDelta expected_delta =
-      base::TimeDelta::FromSeconds(1) / frame_rate;
+  const base::TimeDelta expected_delta = base::Seconds(1) / frame_rate;
   return (delta - expected_delta) / expected_delta;
 }
 
@@ -68,7 +66,7 @@ double FractionFromExpectedFrameRate(base::TimeDelta delta, int frame_rate) {
 // TODO(miu): Patch FeedbackSignalAccumulator reset behavior and remove this
 // hack.
 base::TimeTicks JustAfter(base::TimeTicks t) {
-  return t + base::TimeDelta::FromMicroseconds(1);
+  return t + base::Microseconds(1);
 }
 
 }  // anonymous namespace
@@ -89,10 +87,10 @@ VideoCaptureOracle::VideoCaptureOracle(bool enable_auto_throttling)
       smoothing_sampler_(kDefaultMinCapturePeriod),
       content_sampler_(kDefaultMinCapturePeriod),
       min_capture_period_(kDefaultMinCapturePeriod),
-      buffer_pool_utilization_(base::TimeDelta::FromMicroseconds(
-          kBufferUtilizationEvaluationMicros)),
-      estimated_capable_area_(base::TimeDelta::FromMicroseconds(
-          kConsumerCapabilityEvaluationMicros)) {
+      buffer_pool_utilization_(
+          base::Microseconds(kBufferUtilizationEvaluationMicros)),
+      estimated_capable_area_(
+          base::Microseconds(kConsumerCapabilityEvaluationMicros)) {
   VLOG(1) << "Capture size auto-throttling is now "
           << (enable_auto_throttling ? "enabled." : "disabled.");
 }
@@ -205,7 +203,7 @@ bool VideoCaptureOracle::ObserveEventAndDecideCapture(
           event_time - GetFrameTimestamp(next_frame_number_ - 1);
     }
     const base::TimeDelta upper_bound =
-        base::TimeDelta::FromMilliseconds(kUpperBoundDurationEstimateMicros);
+        base::Milliseconds(kUpperBoundDurationEstimateMicros);
     duration_of_next_frame_ = std::max(
         std::min(duration_of_next_frame_, upper_bound), min_capture_period());
   }
@@ -345,8 +343,8 @@ void VideoCaptureOracle::RecordConsumerFeedback(
   base::TimeDelta period;
   if (std::isfinite(feedback.max_framerate_fps) &&
       feedback.max_framerate_fps > 0.0) {
-    period = std::max(min_capture_period_,
-                      base::TimeDelta::FromHz(feedback.max_framerate_fps));
+    period =
+        std::max(min_capture_period_, base::Hertz(feedback.max_framerate_fps));
   } else {
     period = min_capture_period_;
   }

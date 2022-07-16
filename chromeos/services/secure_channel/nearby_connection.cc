@@ -4,12 +4,20 @@
 
 #include "chromeos/services/secure_channel/nearby_connection.h"
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/wire_message.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace chromeos {
 
@@ -48,6 +56,9 @@ NearbyConnection::NearbyConnection(multidevice::RemoteDeviceRef remote_device,
       nearby_connector_(nearby_connector),
       eid_(eid) {
   DCHECK(nearby_connector_);
+  file_payload_listener_receivers_.set_disconnect_handler(base::BindRepeating(
+      &NearbyConnection::OnFilePayloadListenerRemoteDisconnected,
+      base::Unretained(this)));
 }
 
 NearbyConnection::~NearbyConnection() {
@@ -65,6 +76,8 @@ void NearbyConnection::Connect() {
 void NearbyConnection::Disconnect() {
   message_sender_.reset();
   message_receiver_.reset();
+  file_payload_handler_.reset();
+  CleanUpPendingFileTransfersOnDisconnect();
   SetStatus(Status::DISCONNECTED);
 }
 
@@ -77,8 +90,73 @@ void NearbyConnection::SendMessageImpl(std::unique_ptr<WireMessage> message) {
   ProcessQueuedMessagesToSend();
 }
 
+void NearbyConnection::RegisterPayloadFileImpl(
+    int64_t payload_id,
+    mojom::PayloadFilesPtr payload_files,
+    FileTransferUpdateCallback file_transfer_update_callback,
+    base::OnceCallback<void(bool)> registration_result_callback) {
+  mojo::PendingRemote<mojom::FilePayloadListener>
+      file_payload_listener_pending_remote;
+  file_payload_listener_receivers_.Add(
+      this,
+      file_payload_listener_pending_remote.InitWithNewPipeAndPassReceiver(),
+      /*context=*/payload_id);
+  file_transfer_update_callbacks_.emplace(
+      payload_id, std::move(file_transfer_update_callback));
+
+  file_payload_handler_->RegisterPayloadFile(
+      payload_id, std::move(payload_files),
+      std::move(file_payload_listener_pending_remote),
+      std::move(registration_result_callback));
+}
+
 void NearbyConnection::OnMessageReceived(const std::string& message) {
   OnBytesReceived(message);
+}
+
+void NearbyConnection::OnFileTransferUpdate(
+    mojom::FileTransferUpdatePtr update) {
+  auto it = file_transfer_update_callbacks_.find(update->payload_id);
+  if (it == file_transfer_update_callbacks_.end()) {
+    PA_LOG(WARNING) << "Received transfer update for unregistered file payload "
+                    << update->payload_id;
+    Disconnect();
+    return;
+  }
+
+  bool is_transfer_complete =
+      update->status != mojom::FileTransferStatus::kInProgress;
+  it->second.Run(std::move(update));
+  if (is_transfer_complete) {
+    file_transfer_update_callbacks_.erase(it);
+  }
+}
+
+void NearbyConnection::CleanUpPendingFileTransfersOnDisconnect() {
+  // Notify clients of uncompleted file transfers and clean up callbacks and
+  // corresponding FilePayloadListener receivers when the connection
+  // drops.
+  for (auto& id_to_callback : file_transfer_update_callbacks_) {
+    id_to_callback.second.Run(mojom::FileTransferUpdate::New(
+        id_to_callback.first, mojom::FileTransferStatus::kCanceled,
+        /*total_bytes=*/0, /*bytes_transferred=*/0));
+  }
+  file_transfer_update_callbacks_.clear();
+  file_payload_listener_receivers_.Clear();
+}
+
+void NearbyConnection::OnFilePayloadListenerRemoteDisconnected() {
+  int64_t payload_id = file_payload_listener_receivers_.current_context();
+  auto it = file_transfer_update_callbacks_.find(payload_id);
+  if (it != file_transfer_update_callbacks_.end()) {
+    // If the file transfer update callback hasn't been removed by the time the
+    // corresponding Remote endpoint disconnects, the transfer for this payload
+    // hasn't completed yet and we need to send a cancelation update.
+    it->second.Run(mojom::FileTransferUpdate::New(
+        payload_id, mojom::FileTransferStatus::kCanceled,
+        /*total_bytes=*/0, /*bytes_transferred=*/0));
+    file_transfer_update_callbacks_.erase(it);
+  }
 }
 
 std::vector<uint8_t>
@@ -99,18 +177,27 @@ NearbyConnection::GetRemoteDeviceBluetoothAddressAsVector() {
 }
 
 void NearbyConnection::OnConnectResult(
-    mojo::PendingRemote<mojom::NearbyMessageSender> message_sender) {
-  // If a connection failed to be established, disconnect.
+    mojo::PendingRemote<mojom::NearbyMessageSender> message_sender,
+    mojo::PendingRemote<mojom::NearbyFilePayloadHandler> file_payload_handler) {
   if (!message_sender) {
     PA_LOG(WARNING) << "NearbyConnector returned invalid MessageSender; "
                     << "stopping connection attempt.";
     Disconnect();
     return;
   }
+  if (!file_payload_handler) {
+    PA_LOG(WARNING) << "NearbyConnector returned invalid FilePayloadHandler; "
+                    << "stopping connection attempt.";
+    Disconnect();
+    return;
+  }
 
   message_sender_.Bind(std::move(message_sender));
+  file_payload_handler_.Bind(std::move(file_payload_handler));
 
   message_sender_.set_disconnect_handler(
+      base::BindOnce(&NearbyConnection::Disconnect, base::Unretained(this)));
+  file_payload_handler_.set_disconnect_handler(
       base::BindOnce(&NearbyConnection::Disconnect, base::Unretained(this)));
   message_receiver_.set_disconnect_handler(
       base::BindOnce(&NearbyConnection::Disconnect, base::Unretained(this)));

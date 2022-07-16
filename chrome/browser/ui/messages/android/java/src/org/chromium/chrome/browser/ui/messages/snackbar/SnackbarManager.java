@@ -4,7 +4,12 @@
 
 package org.chromium.chrome.browser.ui.messages.snackbar;
 
+import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_CONTROLS;
+import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_ICONS;
+import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_TEXT;
+
 import android.app.Activity;
+import android.os.Build;
 import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -61,6 +66,8 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     }
 
     public static final int DEFAULT_SNACKBAR_DURATION_MS = 3000;
+    // For snackbars with long strings where a longer duration is favorable.
+    public static final int DEFAULT_SNACKBAR_DURATION_LONG_MS = 8000;
     private static final int ACCESSIBILITY_MODE_SNACKBAR_DURATION_MS = 30000;
 
     // Used instead of the constant so tests can override the value.
@@ -161,7 +168,8 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     /**
      * Dismisses snackbars that are associated with the given {@link SnackbarController}.
      *
-     * @param controller Only snackbars with this controller will be removed.
+     * @param controller Only snackbars with this controller will be removed. A snackbar associated
+     *         with a null controller cannot be dismissed via this method.
      */
     public void dismissSnackbars(SnackbarController controller) {
         if (mSnackbars.removeMatchingSnackbars(controller)) {
@@ -172,7 +180,8 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     /**
      * Dismisses snackbars that have a certain controller and action data.
      *
-     * @param controller Only snackbars with this controller will be removed.
+     * @param controller Only snackbars with this controller will be removed. A snackbar associated
+     *         with a null controller cannot be dismissed via this method.
      * @param actionData Only snackbars whose action data is equal to actionData will be removed.
      */
     public void dismissSnackbars(SnackbarController controller, Object actionData) {
@@ -257,14 +266,20 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
         }
     }
 
-    private int getDuration(Snackbar snackbar) {
+    @VisibleForTesting
+    int getDuration(Snackbar snackbar) {
         int durationMs = snackbar.getDuration();
         if (durationMs == 0) durationMs = sSnackbarDurationMs;
 
         if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
-            durationMs *= 2;
-            if (durationMs < sAccessibilitySnackbarDurationMs) {
-                durationMs = sAccessibilitySnackbarDurationMs;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                return ChromeAccessibilityUtil.get().getRecommendedTimeoutMillis(
+                        durationMs, FLAG_CONTENT_ICONS | FLAG_CONTENT_CONTROLS | FLAG_CONTENT_TEXT);
+            } else {
+                durationMs *= 2;
+                if (durationMs < sAccessibilitySnackbarDurationMs) {
+                    durationMs = sAccessibilitySnackbarDurationMs;
+                }
             }
         }
 
@@ -287,6 +302,16 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     public static void setDurationForTesting(int durationMs) {
         sSnackbarDurationMs = durationMs;
         sAccessibilitySnackbarDurationMs = durationMs;
+    }
+
+    @VisibleForTesting
+    static int getDefaultDurationForTesting() {
+        return sSnackbarDurationMs;
+    }
+
+    @VisibleForTesting
+    static int getDefaultA11yDurationForTesting() {
+        return sAccessibilitySnackbarDurationMs;
     }
 
     /**

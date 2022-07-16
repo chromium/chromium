@@ -974,7 +974,9 @@ void V4L2CaptureDelegate::DoCapture() {
 
 bool V4L2CaptureDelegate::StopStream() {
   DCHECK(v4l2_task_runner_->BelongsToCurrentThread());
-  DCHECK(is_capturing_);
+  if (!is_capturing_)
+    return false;
+
   is_capturing_ = false;
 
   // The order is important: stop streaming, clear |buffer_pool_|,
@@ -1003,7 +1005,6 @@ void V4L2CaptureDelegate::SetErrorState(VideoCaptureError error,
                                         const base::Location& from_here,
                                         const std::string& reason) {
   DCHECK(v4l2_task_runner_->BelongsToCurrentThread());
-  is_capturing_ = false;
   client_->OnError(error, from_here, reason);
 }
 

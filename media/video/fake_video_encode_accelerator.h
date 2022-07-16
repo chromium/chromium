@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
@@ -32,6 +31,11 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
  public:
   explicit FakeVideoEncodeAccelerator(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  FakeVideoEncodeAccelerator(const FakeVideoEncodeAccelerator&) = delete;
+  FakeVideoEncodeAccelerator& operator=(const FakeVideoEncodeAccelerator&) =
+      delete;
+
   ~FakeVideoEncodeAccelerator() override;
 
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
@@ -106,8 +110,6 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
   EncodingCallback encoding_callback_;
 
   base::WeakPtrFactory<FakeVideoEncodeAccelerator> weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVideoEncodeAccelerator);
 };
 
 }  // namespace media

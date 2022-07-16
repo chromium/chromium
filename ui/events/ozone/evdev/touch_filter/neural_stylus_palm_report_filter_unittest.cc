@@ -21,6 +21,10 @@ class NeuralStylusReportFilterTest : public testing::Test {
  public:
   NeuralStylusReportFilterTest() = default;
 
+  NeuralStylusReportFilterTest(const NeuralStylusReportFilterTest&) = delete;
+  NeuralStylusReportFilterTest& operator=(const NeuralStylusReportFilterTest&) =
+      delete;
+
   void SetUp() override {
     shared_palm_state = std::make_unique<SharedPalmDetectionFilterState>();
     palm_detection_filter_ =
@@ -35,8 +39,6 @@ class NeuralStylusReportFilterTest : public testing::Test {
   std::unique_ptr<SharedPalmDetectionFilterState> shared_palm_state;
   std::unique_ptr<PalmDetectionFilter> palm_detection_filter_;
   EventDeviceInfo nocturne_touchscreen_info_, nocturne_stylus_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(NeuralStylusReportFilterTest);
 };
 
 TEST_F(NeuralStylusReportFilterTest, TestSetsToZero) {
@@ -79,11 +81,11 @@ TEST_F(NeuralStylusReportFilterTest, TestNoUpdatesWhenNotTouching) {
 
   shared_palm_state->active_palm_touches = 2;
   shared_palm_state->latest_stylus_touch_time =
-      sample_t - base::TimeDelta::FromMillisecondsD(10.0);
+      sample_t - base::Milliseconds(10.0);
   shared_palm_state->latest_palm_touch_time =
-      sample_t - base::TimeDelta::FromMillisecondsD(15.0);
+      sample_t - base::Milliseconds(15.0);
   shared_palm_state->latest_finger_touch_time =
-      sample_t - base::TimeDelta::FromMillisecondsD(20.0);
+      sample_t - base::Milliseconds(20.0);
 
   inputs[0].altered = true;
   inputs[0].stylus_button = true;
@@ -93,13 +95,11 @@ TEST_F(NeuralStylusReportFilterTest, TestNoUpdatesWhenNotTouching) {
   histogram_tester.ExpectTotalCount(NeuralStylusReportFilter::kNeuralPalmAge,
                                     1);
   histogram_tester.ExpectTimeBucketCount(
-      NeuralStylusReportFilter::kNeuralPalmAge,
-      base::TimeDelta::FromMillisecondsD(15.0), 1);
+      NeuralStylusReportFilter::kNeuralPalmAge, base::Milliseconds(15.0), 1);
   histogram_tester.ExpectTotalCount(NeuralStylusReportFilter::kNeuralFingerAge,
                                     1);
   histogram_tester.ExpectTimeBucketCount(
-      NeuralStylusReportFilter::kNeuralFingerAge,
-      base::TimeDelta::FromMillisecondsD(20.0), 1);
+      NeuralStylusReportFilter::kNeuralFingerAge, base::Milliseconds(20.0), 1);
   histogram_tester.ExpectTotalCount(
       NeuralStylusReportFilter::kNeuralPalmTouchCount, 1);
   histogram_tester.ExpectBucketCount(
@@ -107,9 +107,8 @@ TEST_F(NeuralStylusReportFilterTest, TestNoUpdatesWhenNotTouching) {
   // We should now get a bunch of updates.
 
   // Ensure no more updates.
-  palm_detection_filter_->Filter(
-      inputs, sample_t + base::TimeDelta::FromMillisecondsD(5.0), &hold,
-      &suppress);
+  palm_detection_filter_->Filter(inputs, sample_t + base::Milliseconds(5.0),
+                                 &hold, &suppress);
   histogram_tester.ExpectTotalCount(NeuralStylusReportFilter::kNeuralPalmAge,
                                     1);
   histogram_tester.ExpectTotalCount(NeuralStylusReportFilter::kNeuralFingerAge,
@@ -119,32 +118,26 @@ TEST_F(NeuralStylusReportFilterTest, TestNoUpdatesWhenNotTouching) {
 
   // Set to 0 again, filter, then set to touching again.
   inputs[0] = inputs[1];
-  palm_detection_filter_->Filter(
-      inputs, sample_t + base::TimeDelta::FromMillisecondsD(10.0), &hold,
-      &suppress);
+  palm_detection_filter_->Filter(inputs, sample_t + base::Milliseconds(10.0),
+                                 &hold, &suppress);
 
   inputs[0].altered = true;
   inputs[0].stylus_button = true;
-  palm_detection_filter_->Filter(
-      inputs, sample_t + base::TimeDelta::FromMillisecondsD(15.0), &hold,
-      &suppress);
+  palm_detection_filter_->Filter(inputs, sample_t + base::Milliseconds(15.0),
+                                 &hold, &suppress);
   histogram_tester.ExpectTotalCount(NeuralStylusReportFilter::kNeuralPalmAge,
                                     2);
   histogram_tester.ExpectTimeBucketCount(
-      NeuralStylusReportFilter::kNeuralPalmAge,
-      base::TimeDelta::FromMillisecondsD(15.0), 1);
+      NeuralStylusReportFilter::kNeuralPalmAge, base::Milliseconds(15.0), 1);
   histogram_tester.ExpectTimeBucketCount(
-      NeuralStylusReportFilter::kNeuralPalmAge,
-      base::TimeDelta::FromMillisecondsD(30.0), 1);
+      NeuralStylusReportFilter::kNeuralPalmAge, base::Milliseconds(30.0), 1);
 
   histogram_tester.ExpectTotalCount(NeuralStylusReportFilter::kNeuralFingerAge,
                                     2);
   histogram_tester.ExpectTimeBucketCount(
-      NeuralStylusReportFilter::kNeuralFingerAge,
-      base::TimeDelta::FromMillisecondsD(20.0), 1);
+      NeuralStylusReportFilter::kNeuralFingerAge, base::Milliseconds(20.0), 1);
   histogram_tester.ExpectTimeBucketCount(
-      NeuralStylusReportFilter::kNeuralFingerAge,
-      base::TimeDelta::FromMillisecondsD(35.0), 1);
+      NeuralStylusReportFilter::kNeuralFingerAge, base::Milliseconds(35.0), 1);
 
   histogram_tester.ExpectTotalCount(
       NeuralStylusReportFilter::kNeuralPalmTouchCount, 2);

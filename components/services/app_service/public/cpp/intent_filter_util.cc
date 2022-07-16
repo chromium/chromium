@@ -4,10 +4,43 @@
 
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 
+#include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
+#include "components/services/app_service/public/cpp/intent_constants.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "url/url_constants.h"
 
 namespace {
+
+// Returns true if |value1| has overlapping values with |value2|. This method
+// should be called twice, with |value1| and |value2| swapped.
+bool ConditionValuesHaveOverlap(const apps::mojom::ConditionValuePtr& value1,
+                                const apps::mojom::ConditionValuePtr& value2) {
+  if (value1 == value2) {
+    return true;
+  }
+
+  if (value1->match_type == apps::mojom::PatternMatchType::kLiteral) {
+    if (value2->match_type == apps::mojom::PatternMatchType::kPrefix) {
+      return base::StartsWith(/*str=*/value1->value,
+                              /*search_for=*/value2->value);
+    } else if (value2->match_type == apps::mojom::PatternMatchType::kGlob) {
+      return apps_util::MatchGlob(/*value=*/value1->value,
+                                  /*pattern=*/value2->value);
+    }
+  }
+
+  else if (value1->match_type == apps::mojom::PatternMatchType::kPrefix &&
+           value2->match_type == apps::mojom::PatternMatchType::kPrefix) {
+    return base::StartsWith(/*str=*/value1->value,
+                            /*search_for=*/value2->value) ||
+           base::StartsWith(/*str=*/value2->value,
+                            /*search_for=*/value1->value);
+  }
+
+  return false;
+}
 
 bool ConditionsHaveOverlap(const apps::mojom::ConditionPtr& condition1,
                            const apps::mojom::ConditionPtr& condition2) {
@@ -18,7 +51,8 @@ bool ConditionsHaveOverlap(const apps::mojom::ConditionPtr& condition1,
   // is an overlap.
   for (auto& value1 : condition1->condition_values) {
     for (auto& value2 : condition2->condition_values) {
-      if (value1 == value2) {
+      if (ConditionValuesHaveOverlap(value1, value2) ||
+          ConditionValuesHaveOverlap(value2, value1)) {
         return true;
       }
     }
@@ -62,16 +96,12 @@ void AddSingleValueCondition(apps::mojom::ConditionType condition_type,
   intent_filter->conditions.push_back(std::move(condition));
 }
 
-apps::mojom::IntentFilterPtr CreateIntentFilterForUrlScope(
-    const GURL& url,
-    bool with_action_view) {
+apps::mojom::IntentFilterPtr CreateIntentFilterForUrlScope(const GURL& url) {
   auto intent_filter = apps::mojom::IntentFilter::New();
 
-  if (with_action_view) {
-    AddSingleValueCondition(
-        apps::mojom::ConditionType::kAction, apps_util::kIntentActionView,
-        apps::mojom::PatternMatchType::kNone, intent_filter);
-  }
+  AddSingleValueCondition(apps::mojom::ConditionType::kAction,
+                          apps_util::kIntentActionView,
+                          apps::mojom::PatternMatchType::kNone, intent_filter);
 
   AddSingleValueCondition(apps::mojom::ConditionType::kScheme, url.scheme(),
                           apps::mojom::PatternMatchType::kNone, intent_filter);
@@ -104,6 +134,7 @@ int GetFilterMatchLevel(const apps::mojom::IntentFilterPtr& intent_filter) {
         match_level += IntentFilterMatchLevel::kPattern;
         break;
       case apps::mojom::ConditionType::kMimeType:
+      case apps::mojom::ConditionType::kFile:
         match_level += IntentFilterMatchLevel::kMimeType;
         break;
     }
@@ -227,35 +258,65 @@ std::set<std::string> AppManagementGetSupportedLinks(
   std::set<std::string> supported_links;
   for (auto& host : hosts) {
     for (auto& path : paths) {
-      supported_links.insert(host + path);
+      if (path.front() == '/') {
+        supported_links.insert(host + path);
+      } else {
+        supported_links.insert(host + "/" + path);
+      }
     }
   }
 
   return supported_links;
 }
 
-bool IsSupportedLink(const apps::mojom::IntentFilterPtr& intent_filter) {
+bool IsSupportedLinkForApp(const std::string& app_id,
+                           const apps::mojom::IntentFilterPtr& intent_filter) {
+  // Filters associated with kUseBrowserForLink are a special case. These
+  // filters do not "belong" to the app and should not be treated as supported
+  // links.
+  if (app_id == apps::kUseBrowserForLink) {
+    return false;
+  }
+
+  bool action = false;
   bool scheme = false;
   bool host = false;
+  bool pattern = false;
   for (auto& condition : intent_filter->conditions) {
-    if (condition->condition_type == apps::mojom::ConditionType::kScheme) {
-      for (auto& condition_value : condition->condition_values) {
-        if (condition_value->value == "http" ||
-            condition_value->value == "https") {
-          scheme = true;
-          break;
+    switch (condition->condition_type) {
+      case apps::mojom::ConditionType::kAction:
+        for (auto& condition_value : condition->condition_values) {
+          if (condition_value->value == apps_util::kIntentActionView) {
+            action = true;
+            break;
+          }
         }
-      }
-    } else if (condition->condition_type == apps::mojom::ConditionType::kHost) {
-      host = true;
+        break;
+      case apps::mojom::ConditionType::kScheme:
+        for (auto& condition_value : condition->condition_values) {
+          if (condition_value->value == "http" ||
+              condition_value->value == "https") {
+            scheme = true;
+            break;
+          }
+        }
+        break;
+      case apps::mojom::ConditionType::kHost:
+        host = true;
+        break;
+      case apps::mojom::ConditionType::kPattern:
+        pattern = true;
+        break;
+      default:
+        break;
     }
 
-    if (scheme && host) {
-      break;
+    if (action && scheme && host && pattern) {
+      return true;
     }
   }
 
-  return scheme && host;
+  return false;
 }
 
 }  // namespace apps_util

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -43,6 +42,10 @@ class UserImageManagerImpl : public UserImageManager,
   // UserImageManager:
   UserImageManagerImpl(const AccountId& account_id,
                        user_manager::UserManager* user_manager);
+
+  UserImageManagerImpl(const UserImageManagerImpl&) = delete;
+  UserImageManagerImpl& operator=(const UserImageManagerImpl&) = delete;
+
   ~UserImageManagerImpl() override;
 
   void LoadUserImage() override;
@@ -206,8 +209,6 @@ class UserImageManagerImpl : public UserImageManager,
   bool is_random_image_set_ = false;
 
   base::WeakPtrFactory<UserImageManagerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserImageManagerImpl);
 };
 
 }  // namespace ash

@@ -19,8 +19,7 @@ class CORE_EXPORT NGMathPaddedLayoutAlgorithm
 
   scoped_refptr<const NGLayoutResult> Layout() final;
 
-  MinMaxSizesResult ComputeMinMaxSizes(
-      const MinMaxSizesFloatInput&) const final;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
 
  private:
   LayoutUnit RequestedLSpace() const;

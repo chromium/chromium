@@ -82,7 +82,7 @@ TEST_F(ProxyManagerTest, ProxyRequestRateLimitBurst) {
 TEST_F(ProxyManagerTest, ProxyRequestRateLimitShortGap) {
   for (int i = 0; i < ProxyManager::kRateLimit + 1; i++) {
     if (i == ProxyManager::kRateLimit / 2)
-      FastForwardBy(base::TimeDelta::FromSecondsD(.99));
+      FastForwardBy(base::Seconds(.99));
     ProxyRequest();
   }
   EXPECT_EQ(NumRequestsByStatusCode(kHttpTooManyRequests), 1);
@@ -93,7 +93,7 @@ TEST_F(ProxyManagerTest, ProxyRequestRateLimitLongGap) {
   for (int i = 0; i < ProxyManager::kRateLimit + 1; i++)
     ProxyRequest();
   EXPECT_EQ(NumRequestsByStatusCode(kHttpTooManyRequests), 1);
-  FastForwardBy(base::TimeDelta::FromSecondsD(1.01));
+  FastForwardBy(base::Seconds(1.01));
   for (int i = 0; i < ProxyManager::kRateLimit + 1; i++)
     ProxyRequest();
   EXPECT_EQ(NumRequestsByStatusCode(kHttpTooManyRequests), 2);
@@ -102,8 +102,7 @@ TEST_F(ProxyManagerTest, ProxyRequestRateLimitLongGap) {
 // Test that calls at a constant rate below the rate limit are allowed.
 TEST_F(ProxyManagerTest, ProxyRequestRateLimitBelow) {
   for (int i = 0; i < ProxyManager::kRateLimit + 10; i++) {
-    FastForwardBy(
-        base::TimeDelta::FromSecondsD(1.01 / ProxyManager::kRateLimit));
+    FastForwardBy(base::Seconds(1.01 / ProxyManager::kRateLimit));
     ProxyRequest();
   }
   EXPECT_EQ(NumRequestsByStatusCode(kHttpTooManyRequests), 0);
@@ -112,8 +111,7 @@ TEST_F(ProxyManagerTest, ProxyRequestRateLimitBelow) {
 // Test that calls at a constant rate above the rate limit are blocked.
 TEST_F(ProxyManagerTest, ProxyRequestRateLimitAbove) {
   for (int i = 0; i < ProxyManager::kRateLimit + 10; i++) {
-    FastForwardBy(
-        base::TimeDelta::FromSecondsD(.99 / ProxyManager::kRateLimit));
+    FastForwardBy(base::Seconds(.99 / ProxyManager::kRateLimit));
     ProxyRequest();
   }
   EXPECT_EQ(NumRequestsByStatusCode(kHttpTooManyRequests), 10);

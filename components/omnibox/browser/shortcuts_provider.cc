@@ -382,8 +382,7 @@ int ShortcutsProvider::CalculateScore(
   const double kLn2 = 0.6931471805599453;
   base::TimeDelta time_passed = base::Time::Now() - shortcut.last_access_time;
   // Clamp to 0 in case time jumps backwards (e.g. due to DST).
-  double decay_exponent =
-      std::max(0.0, kLn2 * time_passed / base::TimeDelta::FromDays(7));
+  double decay_exponent = std::max(0.0, kLn2 * time_passed / base::Days(7));
 
   // We modulate the decay factor based on how many times the shortcut has been
   // used. Newly created shortcuts decay at full speed; otherwise, decaying by

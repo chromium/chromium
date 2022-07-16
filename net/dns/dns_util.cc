@@ -222,7 +222,7 @@ bool GetTimeDeltaForConnectionTypeFromFieldTrial(
   int64_t ms;
   if (!base::StringToInt64(group_parts[type_size], &ms))
     return false;
-  *out = base::TimeDelta::FromMilliseconds(ms);
+  *out = base::Milliseconds(ms);
   return true;
 }
 

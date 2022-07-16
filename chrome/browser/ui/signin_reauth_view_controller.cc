@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,6 +18,7 @@
 #include "chrome/browser/signin/reauth_tab_helper.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -75,6 +76,11 @@ SigninReauthViewController::SigninReauthViewController(
       content::WebContents::Create(content::WebContents::CreateParams(
           browser_->profile(),
           content::SiteInstance::Create(browser_->profile())));
+
+  // To allow passing encryption keys during interactions with the page,
+  // instantiate SyncEncryptionKeysTabHelper.
+  SyncEncryptionKeysTabHelper::CreateForWebContents(reauth_web_contents_.get());
+
   const GURL& reauth_url = GaiaUrls::GetInstance()->reauth_url();
   reauth_web_contents_->GetController().LoadURL(
       reauth_url, content::Referrer(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
@@ -139,7 +145,6 @@ void SigninReauthViewController::OnReauthConfirmed(
   consent_ = consent;
 
   user_confirmed_reauth_ = true;
-  user_confirmed_reauth_time_ = base::TimeTicks::Now();
   OnStateChanged();
 }
 
@@ -157,7 +162,6 @@ void SigninReauthViewController::OnGaiaReauthPageNavigated() {
   OnGaiaReauthTypeDetermined(tab_helper->is_within_reauth_origin()
                                  ? GaiaReauthType::kEmbeddedFlow
                                  : GaiaReauthType::kSAMLFlow);
-  RecordGaiaNavigationDuration();
   gaia_reauth_page_state_ = GaiaReauthPageState::kNavigated;
   OnStateChanged();
 }
@@ -169,10 +173,8 @@ void SigninReauthViewController::OnGaiaReauthPageComplete(
   DCHECK(!gaia_reauth_page_result_);
   // |kNavigated| state will be skipped if the first navigation completes Gaia
   // reauth.
-  if (gaia_reauth_page_state_ < GaiaReauthPageState::kNavigated) {
+  if (gaia_reauth_page_state_ < GaiaReauthPageState::kNavigated)
     OnGaiaReauthTypeDetermined(GaiaReauthType::kAutoApproved);
-    RecordGaiaNavigationDuration();
-  }
   gaia_reauth_page_state_ = GaiaReauthPageState::kDone;
   gaia_reauth_page_result_ = result;
 
@@ -291,17 +293,6 @@ signin::ReauthTabHelper* SigninReauthViewController::GetReauthTabHelper() {
     return nullptr;
 
   return signin::ReauthTabHelper::FromWebContents(web_contents);
-}
-
-void SigninReauthViewController::RecordGaiaNavigationDuration() {
-  base::TimeTicks navigation_time = base::TimeTicks::Now();
-
-  base::UmaHistogramTimes(
-      "Signin.TransactionalReauthGaiaNavigationDuration.FromReauthStart",
-      navigation_time - reauth_start_time_);
-  base::UmaHistogramTimes(
-      "Signin.TransactionalReauthGaiaNavigationDuration.FromConfirmClick",
-      navigation_time - user_confirmed_reauth_time_);
 }
 
 void SigninReauthViewController::ShowReauthConfirmationDialog() {

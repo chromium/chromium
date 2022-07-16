@@ -19,11 +19,9 @@ class IncognitoBlockerSceneAgentTest : public PlatformTest {
       : scene_state_([[SceneState alloc] initWithAppState:nil]),
         scene_state_mock_(OCMPartialMock(scene_state_)),
         agent_([[IncognitoBlockerSceneAgent alloc] init]) {
-    if (@available(iOS 13, *)) {
-      scene_mock_ = OCMClassMock([UIWindowScene class]);
-      scene_state_.scene = scene_mock_;
-      OCMStub([scene_state_mock_ scene]).andReturn(scene_mock_);
-    }
+    scene_mock_ = OCMClassMock([UIWindowScene class]);
+    scene_state_.scene = scene_mock_;
+    OCMStub([scene_state_mock_ scene]).andReturn(scene_mock_);
     agent_.sceneState = scene_state_;
   }
 
@@ -47,12 +45,7 @@ TEST_F(IncognitoBlockerSceneAgentTest, ShowIncognitoBlocker) {
   UIWindow* window = [[UIWindow alloc] init];
 
   id applicationWindowMock = nil;
-  if (@available(iOS 13, *)) {
-    OCMStub([scene_mock_ windows]).andReturn(@[ window ]);
-  } else {
-    applicationWindowMock = OCMPartialMock(UIApplication.sharedApplication);
-    OCMStub([applicationWindowMock windows]).andReturn(@[ window ]);
-  }
+  OCMStub([scene_mock_ windows]).andReturn(@[ window ]);
 
   // Prepare to go to background with some incognito content.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -97,12 +90,7 @@ TEST_F(IncognitoBlockerSceneAgentTest, ShowBlockerOnTopWindow) {
   NSArray* windows = @[ topWindow, bottomWindow ];
 
   id applicationWindowMock = nil;
-  if (@available(iOS 13, *)) {
-    OCMStub([scene_mock_ windows]).andReturn(windows);
-  } else {
-    applicationWindowMock = OCMPartialMock(UIApplication.sharedApplication);
-    OCMStub([applicationWindowMock windows]).andReturn(windows);
-  }
+  OCMStub([scene_mock_ windows]).andReturn(windows);
 
   // Prepare to go to background with some incognito content.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;

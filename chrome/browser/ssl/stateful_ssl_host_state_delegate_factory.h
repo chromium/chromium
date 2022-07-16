@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SSL_STATEFUL_SSL_HOST_STATE_DELEGATE_FACTORY_H_
 #define CHROME_BROWSER_SSL_STATEFUL_SSL_HOST_STATE_DELEGATE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/prefs/pref_service.h"
@@ -21,6 +20,11 @@ class StatefulSSLHostStateDelegateFactory
   static StatefulSSLHostStateDelegate* GetForProfile(Profile* profile);
 
   static StatefulSSLHostStateDelegateFactory* GetInstance();
+
+  StatefulSSLHostStateDelegateFactory(
+      const StatefulSSLHostStateDelegateFactory&) = delete;
+  StatefulSSLHostStateDelegateFactory& operator=(
+      const StatefulSSLHostStateDelegateFactory&) = delete;
 
   // Returns the default factory, useful in tests where it's null by default.
   static TestingFactory GetDefaultFactoryForTesting();
@@ -38,8 +42,6 @@ class StatefulSSLHostStateDelegateFactory
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(StatefulSSLHostStateDelegateFactory);
 };
 
 #endif  // CHROME_BROWSER_SSL_STATEFUL_SSL_HOST_STATE_DELEGATE_FACTORY_H_

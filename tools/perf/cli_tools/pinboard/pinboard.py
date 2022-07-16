@@ -124,7 +124,7 @@ def StartPinpointJobs(state, date):
   configs = LoadJsonFile(JOB_CONFIGS_PATH)
   for config in configs:
     config['base_git_hash'] = revision
-    with tempfile_ext.NamedTemporaryFile() as tmp:
+    with tempfile_ext.NamedTemporaryFile(mode='w') as tmp:
       json.dump(config, tmp)
       tmp.close()
       output = subprocess.check_output(
@@ -194,7 +194,7 @@ def UpdateJobsState(state):
   storage are updated.
   """
   local_path = CachedFilePath(JOBS_STATE_FILE)
-  with tempfile_ext.NamedTemporaryFile() as tmp:
+  with tempfile_ext.NamedTemporaryFile(mode='w') as tmp:
     json.dump(state, tmp, sort_keys=True, indent=2, separators=(',', ': '))
     tmp.close()
     if not os.path.exists(local_path) or not filecmp.cmp(tmp.name, local_path):

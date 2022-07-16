@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`This test verifies that persistent grid in iframe are positioned correctly.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <!DOCTYPE html>

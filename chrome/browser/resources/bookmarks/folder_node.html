@@ -1,12 +1,14 @@
-<style include="cr-shared-style shared-style">
+<style include="cr-shared-style shared-style cr-nav-menu-item-style">
   :host {
     display: block;
     --cr-vertical-tab-height: 33px;
   }
 
-  #container {
+  .cr-nav-menu-item {
+    color: var(--folder-inactive-color);
     /* Add enough space at the end for the focus outline to not be cropped. */
     margin-inline-end: 3px;
+    padding: 0;
   }
 
   #inner-container {
@@ -41,22 +43,18 @@
   }
 
   .menu-label {
-    color: var(--folder-inactive-color);
     font-weight: 500;
     grid-area: label;
     padding: 0 6px;
     white-space: nowrap;
   }
 
-  :host([is-selected-folder_]) .menu-label,
-  :host([is-selected-folder_]) .folder-icon {
+  :host([is-selected-folder_]) .cr-nav-menu-item {
     color: var(--interactive-color);
   }
 
   @media (prefers-color-scheme: dark) {
-    #container.drag-on .menu-label,
-    #container.drag-on .folder-icon,
-    #container.drag-on #arrow {
+    .cr-nav-menu-item.drag-on {
       color: var(--google-grey-refresh-700);
     }
   }
@@ -68,17 +66,56 @@
   #arrow[is-open] {
     transform: initial;
   }
+
+  :host-context([enable-branding-update]) .cr-vertical-tab::before {
+    display: none;
+  }
+
+  :host-context([enable-branding-update]) #inner-container {
+    min-height: 0;
+  }
+
+  :host-context([enable-branding-update]) #container {
+    min-width: fit-content;
+    padding-inline-end: 10px;
+  }
+
+  :host-context([enable-branding-update]) #arrow {
+    margin: 0;
+  }
+  
+  paper-ripple {
+    display: none;
+  }
+
+  :host-context([enable-branding-update]) paper-ripple {
+    display: block;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host-context([enable-branding-update]) .cr-nav-menu-item[selected] #arrow,
+    :host-context([enable-branding-update]) .cr-nav-menu-item.drag-on #arrow {
+      --cr-icon-button-fill-color: black;
+    }
+
+    :host-context([enable-branding-update]) .cr-nav-menu-item.drag-on {
+      --iron-icon-fill-color: black;
+      background: var(--google-blue-refresh-300);
+      color: var(--google-grey-900);
+    }
+  }
 </style>
 
 <div id="container"
-    class$="cr-vertical-tab [[getContainerClass_(isSelectedFolder_)]]"
+    class$="cr-vertical-tab cr-nav-menu-item [[getContainerClass_(isSelectedFolder_)]]"
     hidden="[[isRootFolder_(depth)]]"
     role="treeitem"
     aria-owns="descendants"
     tabindex$="[[getTabIndex_(selectedFolder_, itemId)]]"
     on-click="selectFolder_"
     on-dblclick="toggleFolder_"
-    on-contextmenu="onContextMenu_">
+    on-contextmenu="onContextMenu_"
+    selected$="[[isSelectedFolder_]]">
   <div id="inner-container">
     <template is="dom-if" if="[[hasChildFolder_]]">
       <cr-icon-button id="arrow" iron-icon="cr:arrow-drop-down"
@@ -93,6 +130,7 @@
     <div class="menu-label" title="[[item_.title]]">
       [[item_.title]]
     </div>
+    <paper-ripple></paper-ripple>
   </div>
 </div>
 <div id="descendants" role="group">

@@ -24,26 +24,34 @@ namespace net {
 class DelayedCookieMonsterChangeDispatcher : public CookieChangeDispatcher {
  public:
   DelayedCookieMonsterChangeDispatcher();
+
+  DelayedCookieMonsterChangeDispatcher(
+      const DelayedCookieMonsterChangeDispatcher&) = delete;
+  DelayedCookieMonsterChangeDispatcher& operator=(
+      const DelayedCookieMonsterChangeDispatcher&) = delete;
+
   ~DelayedCookieMonsterChangeDispatcher() override;
 
   // net::CookieChangeDispatcher
   std::unique_ptr<CookieChangeSubscription> AddCallbackForCookie(
       const GURL& url,
       const std::string& name,
+      const absl::optional<CookiePartitionKey>& cookie_partition_key,
       CookieChangeCallback callback) override WARN_UNUSED_RESULT;
   std::unique_ptr<CookieChangeSubscription> AddCallbackForUrl(
       const GURL& url,
+      const absl::optional<CookiePartitionKey>& cookie_partition_key,
       CookieChangeCallback callback) override WARN_UNUSED_RESULT;
   std::unique_ptr<CookieChangeSubscription> AddCallbackForAllChanges(
       CookieChangeCallback callback) override WARN_UNUSED_RESULT;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DelayedCookieMonsterChangeDispatcher);
 };
 
 class DelayedCookieMonster : public CookieStore {
  public:
   DelayedCookieMonster();
+
+  DelayedCookieMonster(const DelayedCookieMonster&) = delete;
+  DelayedCookieMonster& operator=(const DelayedCookieMonster&) = delete;
 
   ~DelayedCookieMonster() override;
 
@@ -56,9 +64,11 @@ class DelayedCookieMonster : public CookieStore {
                                const CookieOptions& options,
                                SetCookiesCallback callback) override;
 
-  void GetCookieListWithOptionsAsync(const GURL& url,
-                                     const CookieOptions& options,
-                                     GetCookieListCallback callback) override;
+  void GetCookieListWithOptionsAsync(
+      const GURL& url,
+      const CookieOptions& options,
+      const CookiePartitionKeychain& cookie_partition_keychain,
+      GetCookieListCallback callback) override;
 
   void GetAllCookiesAsync(GetAllCookiesCallback callback) override;
 
@@ -111,8 +121,6 @@ class DelayedCookieMonster : public CookieStore {
   std::string cookie_line_;
   CookieAccessResultList cookie_access_result_list_;
   CookieList cookie_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayedCookieMonster);
 };
 
 class CookieURLHelper {

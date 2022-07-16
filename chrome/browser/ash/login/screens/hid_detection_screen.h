@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_detector.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -45,12 +44,16 @@ class HIDDetectionScreen : public BaseScreen,
   using InputDeviceInfoPtr = device::mojom::InputDeviceInfoPtr;
   using DeviceMap = std::map<std::string, InputDeviceInfoPtr>;
 
-  enum class Result { NEXT, SKIP, SKIPPED_FOR_TESTS };
+  enum class Result { NEXT, SKIPPED_FOR_TESTS };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
   HIDDetectionScreen(HIDDetectionView* view,
                      const ScreenExitCallback& exit_callback);
+
+  HIDDetectionScreen(const HIDDetectionScreen&) = delete;
+  HIDDetectionScreen& operator=(const HIDDetectionScreen&) = delete;
+
   ~HIDDetectionScreen() override;
 
   static std::string GetResultString(Result result);
@@ -115,21 +118,6 @@ class HIDDetectionScreen : public BaseScreen,
   void CleanupOnExit();
 
   bool ShouldEnableContinueButton();
-
-  // Types of dialog leaving scenarios for UMA metric.
-  enum ContinueScenarioType {
-    // Only pointing device detected, user pressed 'Continue'.
-    POINTING_DEVICE_ONLY_DETECTED,
-
-    // Only keyboard detected, user pressed 'Continue'.
-    KEYBOARD_DEVICE_ONLY_DETECTED,
-
-    // All devices detected.
-    All_DEVICES_DETECTED,
-
-    // Must be last enum element.
-    CONTINUE_SCENARIO_TYPE_SIZE
-  };
 
   void InitializeAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
@@ -272,8 +260,6 @@ class HIDDetectionScreen : public BaseScreen,
   bool devices_enumerated_ = false;
 
   base::WeakPtrFactory<HIDDetectionScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HIDDetectionScreen);
 };
 
 }  // namespace ash

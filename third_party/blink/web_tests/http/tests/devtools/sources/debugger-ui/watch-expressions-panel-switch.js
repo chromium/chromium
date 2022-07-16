@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests debugger does not fail when stopped while a panel other than scripts was opened. Both valid and invalid expressions are added to watch expressions.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -21,8 +21,8 @@
     'x', 'y.foo'
   ]);
   await SourcesTestRunner.startDebuggerTestPromise();
-  UI.panels.sources._sidebarPaneStack.showView(
-      UI.panels.sources._watchSidebarPane);
+  UI.panels.sources.sidebarPaneStack.showView(
+      UI.panels.sources.watchSidebarPane);
   TestRunner.addResult('Watches before running testFunction:');
   await waitForUpdate();
   TestRunner.evaluateInPagePromise('testFunction()');
@@ -33,19 +33,19 @@
   function waitForUpdate() {
     return new Promise(resolve => {
       TestRunner.addSniffer(
-          Sources.WatchExpression.prototype, '_createWatchExpression',
+          Sources.WatchExpression.prototype, 'createWatchExpression',
           watchExpressionsUpdated);
       let updateCount = 2;
       function watchExpressionsUpdated(result, wasThrown) {
         if (result !== undefined || wasThrown !== undefined) {
-          TestRunner.addResult(this._element.deepTextContent());
+          TestRunner.addResult(this.element.deepTextContent());
           if (--updateCount === 0) {
             resolve();
             return;
           }
         }
         TestRunner.addSniffer(
-            Sources.WatchExpression.prototype, '_createWatchExpression',
+            Sources.WatchExpression.prototype, 'createWatchExpression',
             watchExpressionsUpdated);
       }
     });

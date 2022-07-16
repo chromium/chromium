@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace views {
 
@@ -21,6 +21,10 @@ class VIEWS_EXPORT RadioButton : public Checkbox {
 
   explicit RadioButton(const std::u16string& label = std::u16string(),
                        int group_id = 0);
+
+  RadioButton(const RadioButton&) = delete;
+  RadioButton& operator=(const RadioButton&) = delete;
+
   ~RadioButton() override;
 
   // Overridden from View:
@@ -44,10 +48,14 @@ class VIEWS_EXPORT RadioButton : public Checkbox {
 
  private:
   void GetViewsInGroupFromParent(int group, Views* views);
-
-  DISALLOW_COPY_AND_ASSIGN(RadioButton);
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, RadioButton, Checkbox)
+VIEW_BUILDER_PROPERTY(bool, Checked)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, RadioButton)
 
 #endif  // UI_VIEWS_CONTROLS_BUTTON_RADIO_BUTTON_H_

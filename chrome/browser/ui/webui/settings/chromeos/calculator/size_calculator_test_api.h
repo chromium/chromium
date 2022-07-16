@@ -15,28 +15,46 @@ namespace chromeos {
 namespace settings {
 namespace calculator {
 
-class SizeStatTestAPI {
+class TotalDiskSpaceTestAPI {
  public:
-  explicit SizeStatTestAPI(StorageHandler* handler,
-                           SizeStatCalculator* size_stat_calculator) {
-    size_stat_calculator_ = size_stat_calculator;
-    size_stat_calculator_->AddObserver(handler);
+  TotalDiskSpaceTestAPI(StorageHandler* handler,
+                        TotalDiskSpaceCalculator* total_disk_space_calculator) {
+    total_disk_space_calculator_ = total_disk_space_calculator;
+    total_disk_space_calculator_->AddObserver(handler);
   }
 
-  void StartCalculation() { size_stat_calculator_->StartCalculation(); }
+  void StartCalculation() { total_disk_space_calculator_->StartCalculation(); }
 
-  void SimulateOnGetSizeStat(int64_t* total_size, int64_t* available_size) {
-    size_stat_calculator_->OnGetSizeStat(total_size, available_size);
+  void SimulateOnGetRootDeviceSize(absl::optional<uint64_t> reply) {
+    total_disk_space_calculator_->OnGetRootDeviceSize(reply);
   }
 
  private:
-  SizeStatCalculator* size_stat_calculator_;
+  TotalDiskSpaceCalculator* total_disk_space_calculator_;
+};
+
+class FreeDiskSpaceTestAPI {
+ public:
+  FreeDiskSpaceTestAPI(StorageHandler* handler,
+                       FreeDiskSpaceCalculator* free_disk_space_calculator) {
+    free_disk_space_calculator_ = free_disk_space_calculator;
+    free_disk_space_calculator_->AddObserver(handler);
+  }
+
+  void StartCalculation() { free_disk_space_calculator_->StartCalculation(); }
+
+  void SimulateOnGetFreeDiskSpace(int64_t* available_bytes) {
+    free_disk_space_calculator_->OnGetFreeDiskSpace(available_bytes);
+  }
+
+ private:
+  FreeDiskSpaceCalculator* free_disk_space_calculator_;
 };
 
 class MyFilesSizeTestAPI {
  public:
-  explicit MyFilesSizeTestAPI(StorageHandler* handler,
-                              MyFilesSizeCalculator* my_files_size_calculator) {
+  MyFilesSizeTestAPI(StorageHandler* handler,
+                     MyFilesSizeCalculator* my_files_size_calculator) {
     my_files_size_calculator_ = my_files_size_calculator;
     my_files_size_calculator_->AddObserver(handler);
   }
@@ -53,7 +71,7 @@ class MyFilesSizeTestAPI {
 
 class BrowsingDataSizeTestAPI {
  public:
-  explicit BrowsingDataSizeTestAPI(
+  BrowsingDataSizeTestAPI(
       StorageHandler* handler,
       BrowsingDataSizeCalculator* browsing_data_size_calculator) {
     browsing_data_size_calculator_ = browsing_data_size_calculator;
@@ -74,8 +92,8 @@ class BrowsingDataSizeTestAPI {
 
 class AppsSizeTestAPI {
  public:
-  explicit AppsSizeTestAPI(StorageHandler* handler,
-                           AppsSizeCalculator* apps_size_calculator) {
+  AppsSizeTestAPI(StorageHandler* handler,
+                  AppsSizeCalculator* apps_size_calculator) {
     apps_size_calculator_ = apps_size_calculator;
     apps_size_calculator_->AddObserver(handler);
   }
@@ -104,9 +122,8 @@ class AppsSizeTestAPI {
 
 class CrostiniSizeTestAPI {
  public:
-  explicit CrostiniSizeTestAPI(
-      StorageHandler* handler,
-      CrostiniSizeCalculator* crostini_size_calculator) {
+  CrostiniSizeTestAPI(StorageHandler* handler,
+                      CrostiniSizeCalculator* crostini_size_calculator) {
     crostini_size_calculator_ = crostini_size_calculator;
     crostini_size_calculator_->AddObserver(handler);
   }
@@ -124,9 +141,8 @@ class CrostiniSizeTestAPI {
 
 class OtherUsersSizeTestAPI {
  public:
-  explicit OtherUsersSizeTestAPI(
-      StorageHandler* handler,
-      OtherUsersSizeCalculator* other_users_size_calculator) {
+  OtherUsersSizeTestAPI(StorageHandler* handler,
+                        OtherUsersSizeCalculator* other_users_size_calculator) {
     other_users_size_calculator_ = other_users_size_calculator;
     other_users_size_calculator_->AddObserver(handler);
   }

@@ -72,7 +72,6 @@
 #define COMPONENTS_INVALIDATION_IMPL_INVALIDATION_SERVICE_TEST_TEMPLATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/invalidation/impl/fake_invalidation_handler.h"
 #include "components/invalidation/impl/topic_invalidation_map_test_util.h"
 #include "components/invalidation/public/ack_handle.h"
@@ -333,6 +332,11 @@ TYPED_TEST_P(InvalidationServiceTest, EmptySetUnregisters) {
 class BoundFakeInvalidationHandler : public FakeInvalidationHandler {
  public:
   explicit BoundFakeInvalidationHandler(const InvalidationService& invalidator);
+
+  BoundFakeInvalidationHandler(const BoundFakeInvalidationHandler&) = delete;
+  BoundFakeInvalidationHandler& operator=(const BoundFakeInvalidationHandler&) =
+      delete;
+
   ~BoundFakeInvalidationHandler() override;
 
   // Returns the last return value of GetInvalidatorState() on the
@@ -346,8 +350,6 @@ class BoundFakeInvalidationHandler : public FakeInvalidationHandler {
  private:
   const InvalidationService& invalidator_;
   InvalidatorState last_retrieved_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(BoundFakeInvalidationHandler);
 };
 
 TYPED_TEST_P(InvalidationServiceTest, GetInvalidatorStateAlwaysCurrent) {

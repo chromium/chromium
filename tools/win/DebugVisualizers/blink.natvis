@@ -1,6 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <AutoVisualizer
     xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <!--
+   !== USE_V8_OILPAN version of Member
+   !== Note: We need type cast to |raw_| because |raw_| is in base class
+   !== |cppgc::internal::MemberBase| instead of |BasicMember|.
+   !== See "v8/include/cppgc/member.h"
+   !-->
+  <Type Name="cppgc::internal::BasicMember&lt;*&gt;">
+    <SmartPointer Usage="Minimal">($T1*)raw_</SmartPointer>
+    <DisplayString Condition="raw_ == 0">null</DisplayString>
+    <DisplayString>{*($T1*)raw_}</DisplayString>
+    <Expand>
+      <Item Name="Raw">($T1*)raw_</Item>
+      <ExpandedItem Condition="raw_ != 0">($T1*)raw_</ExpandedItem>
+    </Expand>
+  </Type>
+  <Type Name="cppgc::internal::BasicPersistent&lt;*&gt;">
+    <SmartPointer Usage="Minimal">($T1*)raw_</SmartPointer>
+    <DisplayString Condition="raw_ == 0">null</DisplayString>
+    <DisplayString>{*($T1*)raw_}</DisplayString>
+    <Expand>
+      <Item Name="Raw">($T1*)raw_</Item>
+      <ExpandedItem Condition="raw_ != 0">($T1*)raw_</ExpandedItem>
+    </Expand>
+  </Type>
+  <!--
+   !== !USE_V8_OILPAN version of Member
+   !== See "third_party/blink/renderer/platform/heap/impl/member.h"
+   !-->
   <Type Name="blink::MemberBase&lt;*&gt;">
     <SmartPointer Usage="Minimal">raw_</SmartPointer>
     <DisplayString Condition="raw_ == 0">null</DisplayString>
@@ -165,8 +193,8 @@
   <Type Name="blink::ContainerNode">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>first_child_.raw_</HeadPointer>
-        <NextPointer>next_.raw_</NextPointer>
+        <HeadPointer>(blink::Node*)first_child_.raw_</HeadPointer>
+        <NextPointer>(blink::Node*)next_.raw_</NextPointer>
         <ValueNode>this</ValueNode>
       </LinkedListItems>
     </Expand>
@@ -183,8 +211,8 @@
   <Type Name="blink::LayoutObjectChildList">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>first_child_</HeadPointer>
-        <NextPointer>next_</NextPointer>
+        <HeadPointer>(blink::LayoutObject*)first_child_.raw_</HeadPointer>
+        <NextPointer>(blink::LayoutObject*)next_.raw_</NextPointer>
         <ValueNode>this</ValueNode>
       </LinkedListItems>
     </Expand>
@@ -196,8 +224,8 @@
   <Type Name="blink::InlineFlowBox">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>first_child_</HeadPointer>
-        <NextPointer>next_</NextPointer>
+        <HeadPointer>(blink::InlineFlowBox*)first_child_.raw_</HeadPointer>
+        <NextPointer>(blink::InlineFlowBox*)next_.raw_</NextPointer>
         <ValueNode>this</ValueNode>
       </LinkedListItems>
     </Expand>
@@ -205,8 +233,8 @@
   <Type Name="blink::InlineBoxList&lt;blink::InlineFlowBox&gt;">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>first_</HeadPointer>
-        <NextPointer>(blink::InlineFlowBox*)next_</NextPointer>
+        <HeadPointer>(blink::InlineFlowBox*)first_.raw_</HeadPointer>
+        <NextPointer>(blink::InlineFlowBox*)next_.raw_</NextPointer>
         <ValueNode>this</ValueNode>
       </LinkedListItems>
     </Expand>
@@ -240,50 +268,46 @@
     </Expand>
   </Type>
   <Type Name="blink::NGPhysicalFragment">
-    <DisplayString>{(blink::NGPhysicalFragment::NGFragmentType)type_} {size_} {*layout_object_}</DisplayString>
-    <Expand>
-      <!-- Resolve subclasses because VS can't resolve without virtual functions -->
-      <ExpandedItem Condition="type_ == 0">(blink::NGPhysicalBoxFragment*)this</ExpandedItem>
-      <ExpandedItem Condition="type_ == 1">(blink::NGPhysicalTextFragment*)this</ExpandedItem>
-      <ExpandedItem Condition="type_ == 2">(blink::NGPhysicalLineBoxFragment*)this</ExpandedItem>
-    </Expand>
+    <Intrinsic Name="Type" Expression="(NGFragmentType)type_" />
+    <!-- Resolve subclasses because VS can't resolve automatically when without virtual functions -->
+    <MostDerivedType Condition="Type() == kFragmentBox">(NGPhysicalBoxFragment*)this</MostDerivedType>
+    <MostDerivedType Condition="Type() == kFragmentLineBox">(NGPhysicalLineBoxFragment*)this</MostDerivedType>
+    <DisplayString>{Type()} {size_} {*layout_object_}</DisplayString>
   </Type>
   <Type Name="blink::NGPhysicalBoxFragment">
+    <Intrinsic Name="BoxType" Expression="(NGBoxType)sub_type_" />
+    <DisplayString>{BoxType()} {size_} {*layout_object_}</DisplayString>
     <Expand>
-      <Item Name="SubType">(blink::NGPhysicalFragment::NGBoxType)sub_type_</Item>
+      <Item Name="FragmentItems" Condition="const_has_fragment_items_">
+        *(NGFragmentItems*)(&amp;children_[const_num_children_])
+      </Item>
       <Synthetic Name="Children">
-        <DisplayString>{num_children_}</DisplayString>
+        <DisplayString>{const_num_children_}</DisplayString>
         <Expand>
           <ArrayItems>
-            <Size>num_children_</Size>
+            <Size>const_num_children_</Size>
             <ValuePointer>children_</ValuePointer>
           </ArrayItems>
         </Expand>
       </Synthetic>
+      <ExpandedItem>this,!</ExpandedItem>
     </Expand>
   </Type>
   <Type Name="blink::NGPhysicalLineBoxFragment">
-    <Expand>
-      <Synthetic Name="Children">
-        <DisplayString>{num_children_}</DisplayString>
-        <Expand>
-          <ArrayItems>
-            <Size>num_children_</Size>
-            <ValuePointer>children_</ValuePointer>
-          </ArrayItems>
-        </Expand>
-      </Synthetic>
-    </Expand>
+    <Intrinsic Name="LineBoxType" Expression="(NGLineBoxType)sub_type_" />
+    <DisplayString>{LineBoxType()} {size_} {*layout_object_}</DisplayString>
   </Type>
   <Type Name="blink::NGFragmentItem">
+    <Intrinsic Name="Type" Expression="(ItemType)type_" />
     <Expand>
-      <Item Name="Type">(blink::NGFragmentItem::ItemType)type_</Item>
-      <Item Name="TextType" Condition="type_ == 0">(blink::NGTextType)sub_type_</Item>
-      <Item Name="Text" Condition="type_ == 0">text_</Item>
-      <Item Name="GeneratedText" Condition="type_ == 1">generated_text_</Item>
-      <Item Name="LineBoxType" Condition="type_ == 2">(NGPhysicalLineBoxFragment::NGLineBoxType)sub_type_</Item>
-      <Item Name="Line" Condition="type_ == 2">line_</Item>
-      <Item Name="Box" Condition="type_ == 3">box_</Item>
+      <Item Name="Type">Type()</Item>
+      <Item Name="TextType" Condition="Type() == kText">(blink::NGTextType)sub_type_</Item>
+      <Item Name="Text" Condition="Type() == kText">text_</Item>
+      <Item Name="SVGText" Condition="Type() == kSVGText">svg_text_</Item>
+      <Item Name="GeneratedText" Condition="Type() == kGeneratedText">generated_text_</Item>
+      <Item Name="LineBoxType" Condition="Type() == kLine">(NGPhysicalLineBoxFragment::NGLineBoxType)sub_type_</Item>
+      <Item Name="Line" Condition="Type() == kLine">line_</Item>
+      <Item Name="Box" Condition="Type() == kBox">box_</Item>
       <Item Name="layout_object_">layout_object_</Item>
       <Item Name="rect_">rect_</Item>
       <Item Name="ink_overflow_type_">(NGInkOverflow::Type)ink_overflow_type_</Item>

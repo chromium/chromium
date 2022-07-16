@@ -124,25 +124,25 @@ TEST_F(AnimationHostTest, ImplOnlyScrollAnimationUpdateTargetIfDetached) {
   client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
   client_impl_.RegisterElementId(element_id_, ElementListType::PENDING);
 
-  gfx::ScrollOffset target_offset(0., 2.);
-  gfx::ScrollOffset current_offset(0., 1.);
+  gfx::Vector2dF target_offset(0., 2.);
+  gfx::Vector2dF current_offset(0., 1.);
   host_impl_->ImplOnlyScrollAnimationCreate(element_id_, target_offset,
                                             current_offset, base::TimeDelta(),
                                             base::TimeDelta());
 
   gfx::Vector2dF scroll_delta(0, 0.5);
-  gfx::ScrollOffset max_scroll_offset(0., 3.);
+  gfx::Vector2dF max_scroll_offset(0., 3.);
 
   base::TimeTicks time;
 
-  time += base::TimeDelta::FromSecondsD(0.1);
+  time += base::Seconds(0.1);
   EXPECT_TRUE(host_impl_->ImplOnlyScrollAnimationUpdateTarget(
       scroll_delta, max_scroll_offset, time, base::TimeDelta()));
 
   // Detach all animations from layers and timelines.
   host_impl_->ClearMutators();
 
-  time += base::TimeDelta::FromSecondsD(0.1);
+  time += base::Seconds(0.1);
   EXPECT_FALSE(host_impl_->ImplOnlyScrollAnimationUpdateTarget(
       scroll_delta, max_scroll_offset, time, base::TimeDelta()));
 }
@@ -161,7 +161,7 @@ TEST_F(AnimationHostTest, FastLayerTreeMutatorUpdateTakesEffectInSameFrame) {
   AddOpacityTransitionToAnimation(worklet_animation_.get(), duration,
                                   start_opacity, end_opacity, true);
 
-  base::TimeDelta local_time = base::TimeDelta::FromSecondsD(duration / 2);
+  base::TimeDelta local_time = base::Seconds(duration / 2);
 
   MockLayerTreeMutator* mock_mutator = new NiceMock<MockLayerTreeMutator>();
   host_impl_->SetLayerTreeMutator(
@@ -212,7 +212,7 @@ TEST_F(AnimationHostTest, LayerTreeMutatorsIsMutatedWithCorrectInputState) {
   EXPECT_CALL(*mock_mutator, MutateRef(_));
 
   base::TimeTicks time;
-  time += base::TimeDelta::FromSecondsD(0.1);
+  time += base::Seconds(0.1);
   TickAnimationsTransferEvents(time, 0u);
 }
 
@@ -237,7 +237,7 @@ TEST_F(AnimationHostTest, LayerTreeMutatorsIsMutatedOnlyWhenInputChanges) {
   EXPECT_CALL(*mock_mutator, MutateRef(_)).Times(1);
 
   base::TimeTicks time;
-  time += base::TimeDelta::FromSecondsD(0.1);
+  time += base::Seconds(0.1);
   TickAnimationsTransferEvents(time, 0u);
 
   // The time has not changed which means worklet animation input is the same.
@@ -260,7 +260,8 @@ bool Animation1TimeEquals20(MutatorInputState* input) {
   return in && in->added_and_updated_animations.size() == 1 &&
          in->added_and_updated_animations[0]
                  .worklet_animation_id.animation_id == 22 &&
-         in->added_and_updated_animations[0].current_time == 20;
+         in->added_and_updated_animations[0].current_time ==
+             0.2 * ScrollTimeline::kScrollTimelineDurationMs;
 }
 
 void CreateScrollingNodeForElement(ElementId element_id,
@@ -290,7 +291,7 @@ void CreateScrollingNodeForElement(ElementId element_id,
 
 void SetScrollOffset(PropertyTrees* property_trees,
                      ElementId element_id,
-                     gfx::ScrollOffset offset) {
+                     gfx::Vector2dF offset) {
   // Update both scroll and transform trees
   property_trees->scroll_tree.SetScrollOffset(element_id, offset);
   TransformNode* transform_node =
@@ -316,14 +317,14 @@ TEST_F(AnimationHostTest, LayerTreeMutatorUpdateReflectsScrollAnimations) {
   CreateScrollingNodeForElement(element_id, &property_trees);
 
   // Set an initial scroll value.
-  SetScrollOffset(&property_trees, element_id, gfx::ScrollOffset(10, 10));
+  SetScrollOffset(&property_trees, element_id, gfx::Vector2dF(10, 10));
 
   scoped_refptr<MockAnimation> mock_scroll_animation(
       new MockAnimation(animation_id1));
   EXPECT_CALL(*mock_scroll_animation, Tick(_))
       .WillOnce(InvokeWithoutArgs([&]() {
         // Scroll to 20% of the max value.
-        SetScrollOffset(&property_trees, element_id, gfx::ScrollOffset(20, 20));
+        SetScrollOffset(&property_trees, element_id, gfx::Vector2dF(20, 20));
       }));
 
   // Ensure scroll animation is ticking.
@@ -331,12 +332,12 @@ TEST_F(AnimationHostTest, LayerTreeMutatorUpdateReflectsScrollAnimations) {
   host_impl_->AddToTicking(mock_scroll_animation);
 
   // Create scroll timeline that links scroll animation and worklet animation
-  // together. Use timerange so that we have 1:1 time & scroll mapping.
+  // together.
   std::vector<double> scroll_offsets;
   scroll_offsets.push_back(0);
   scroll_offsets.push_back(100);
   auto scroll_timeline = ScrollTimeline::Create(
-      element_id, ScrollTimeline::ScrollDown, scroll_offsets, 100);
+      element_id, ScrollTimeline::ScrollDown, scroll_offsets);
 
   // Create a worklet animation that is bound to the scroll timeline.
   scoped_refptr<WorkletAnimation> worklet_animation(
@@ -379,7 +380,7 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimation) {
   scroll_offsets.push_back(0);
   scroll_offsets.push_back(100);
   auto scroll_timeline = ScrollTimeline::Create(
-      element_id_, ScrollTimeline::ScrollDown, scroll_offsets, 1000);
+      element_id_, ScrollTimeline::ScrollDown, scroll_offsets);
 
   int animation_id = 11;
   // Create an animation that is bound to the scroll timeline.
@@ -397,15 +398,15 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimation) {
             KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY);
 
   auto& scroll_tree = property_trees.scroll_tree;
-  SetScrollOffset(&property_trees, element_id_, gfx::ScrollOffset(0, 20));
+  SetScrollOffset(&property_trees, element_id_, gfx::Vector2dF(0, 20));
   EXPECT_TRUE(host_impl_->TickAnimations(base::TimeTicks(),
                                          property_trees.scroll_tree, false));
 
   EXPECT_EQ(keyframe_model->run_state(), KeyframeModel::STARTING);
   double tick_time = (scroll_timeline->CurrentTime(scroll_tree, false).value() -
                       base::TimeTicks())
-                         .InSecondsF();
-  EXPECT_EQ(tick_time, 0.2);
+                         .InMillisecondsF();
+  EXPECT_EQ(tick_time, 0.2 * ScrollTimeline::kScrollTimelineDurationMs);
 
   scroll_timeline->DetachAnimation(animation);
   EXPECT_FALSE(host_impl_->TickAnimations(base::TimeTicks(),
@@ -446,7 +447,7 @@ TEST_F(AnimationHostTest, ScrollTimelineOffsetUpdatedByScrollAnimation) {
   EXPECT_CALL(*mock_scroll_animation, Tick(_))
       .WillOnce(InvokeWithoutArgs([&]() {
         // Scroll to 20% of the max value.
-        SetScrollOffset(&property_trees, element_id_, gfx::ScrollOffset(0, 20));
+        SetScrollOffset(&property_trees, element_id_, gfx::Vector2dF(0, 20));
       }));
 
   // Ensure scroll animation is ticking.
@@ -458,7 +459,7 @@ TEST_F(AnimationHostTest, ScrollTimelineOffsetUpdatedByScrollAnimation) {
   scroll_offsets.push_back(100);
 
   auto scroll_timeline = ScrollTimeline::Create(
-      element_id_, ScrollTimeline::ScrollDown, scroll_offsets, 1000);
+      element_id_, ScrollTimeline::ScrollDown, scroll_offsets);
 
   host_impl_->TickAnimations(base::TimeTicks(), property_trees.scroll_tree,
                              false);
@@ -466,8 +467,8 @@ TEST_F(AnimationHostTest, ScrollTimelineOffsetUpdatedByScrollAnimation) {
   double tick_time =
       (scroll_timeline->CurrentTime(property_trees.scroll_tree, false).value() -
        base::TimeTicks())
-          .InSecondsF();
-  EXPECT_EQ(tick_time, 0.2);
+          .InMillisecondsF();
+  EXPECT_EQ(tick_time, 0.2 * ScrollTimeline::kScrollTimelineDurationMs);
 }
 
 }  // namespace

@@ -112,13 +112,13 @@ void Login::OnDNSChanged() {
 void Login::OnNetworkEvent() {
   // Reconnect in 1 to 9 seconds (vary the time a little to try to
   // avoid spikey behavior on network hiccups).
-  reconnect_interval_ = base::TimeDelta::FromSeconds(base::RandInt(1, 9));
+  reconnect_interval_ = base::Seconds(base::RandInt(1, 9));
   TryReconnect();
   delegate_->OnTransientDisconnection();
 }
 
 void Login::ResetReconnectState() {
-  reconnect_interval_ = base::TimeDelta::FromSeconds(base::RandInt(5, 25));
+  reconnect_interval_ = base::Seconds(base::RandInt(5, 25));
   reconnect_timer_.Stop();
 }
 
@@ -134,8 +134,7 @@ void Login::TryReconnect() {
 
 void Login::DoReconnect() {
   // Double reconnect time up to 30 minutes.
-  const base::TimeDelta kMaxReconnectInterval =
-      base::TimeDelta::FromMinutes(30);
+  const base::TimeDelta kMaxReconnectInterval = base::Minutes(30);
   reconnect_interval_ *= 2;
   if (reconnect_interval_ > kMaxReconnectInterval)
     reconnect_interval_ = kMaxReconnectInterval;

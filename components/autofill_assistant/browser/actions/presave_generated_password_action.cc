@@ -36,10 +36,10 @@ void PresaveGeneratedPasswordAction::InternalProcessAction(
     return;
   }
 
-  if (!delegate_->GetUserData()->has_additional_value(
+  if (!delegate_->GetUserData()->HasAdditionalValue(
           presave_password.memory_key()) ||
       delegate_->GetUserData()
-              ->additional_value(presave_password.memory_key())
+              ->GetAdditionalValue(presave_password.memory_key())
               ->strings()
               .values()
               .size() != 1) {
@@ -65,7 +65,7 @@ void PresaveGeneratedPasswordAction::InternalProcessAction(
   }
 
   std::string password = delegate_->GetUserData()
-                             ->additional_value(presave_password.memory_key())
+                             ->GetAdditionalValue(presave_password.memory_key())
                              ->strings()
                              .values(0);
 

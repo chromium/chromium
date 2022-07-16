@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -42,11 +42,13 @@ class VirtualTimeTest : public SimTest {
 
   String ExecuteJavaScript(String script_source) {
     ScriptExecutionCallbackHelper callback_helper;
-    WebView()
-        .MainFrame()
-        ->ToWebLocalFrame()
-        ->RequestExecuteScriptAndReturnValue(
-            WebScriptSource(WebString(script_source)), false, &callback_helper);
+    WebScriptSource source(script_source);
+    WebView().MainFrame()->ToWebLocalFrame()->RequestExecuteScript(
+        DOMWrapperWorld::kMainWorldId, base::make_span(&source, 1), false,
+        WebLocalFrame::kSynchronous, &callback_helper,
+        BackForwardCacheAware::kAllow,
+        WebLocalFrame::PromiseBehavior::kDontWait);
+
     return callback_helper.Result();
   }
 
@@ -71,7 +73,7 @@ class VirtualTimeTest : public SimTest {
         FROM_HERE,
         WTF::Bind(&VirtualTimeTest::StopVirtualTimeAndExitRunLoop,
                   WTF::Unretained(this)),
-        base::TimeDelta::FromMillisecondsD(delay_ms));
+        base::Milliseconds(delay_ms));
     test::EnterRunLoop();
   }
 };

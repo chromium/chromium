@@ -5,7 +5,7 @@
 <script>
   const t = async_test('low importance on in-viewport images must be fetched with kLow resource load priority');
   const url = new URL('../resources/slow-image.php?sleep=1000&name=square.png', location);
-  const priorityPromise = internals.getResourcePriority(url, document);
+  const priorityPromise = internals.getInitialResourcePriority(url, document);
 
   // Synchronous wait to delay layout by .5 seconds
   const end = Date.now() + 500;

@@ -13,9 +13,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
-#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_image_source_util.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -66,14 +66,8 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                             const V8CanvasImageSource* source,
                             const VideoFrameInit* init,
                             ExceptionState& exception_state);
-  // TODO(https://crbug.com/1231806): Combine w/ ArrayBuffer Create() below when
-  // [AllowShared] BufferSource is supported.
   static VideoFrame* Create(ScriptState*,
-                            const MaybeShared<DOMArrayBufferView>&,
-                            const VideoFrameBufferInit*,
-                            ExceptionState&);
-  static VideoFrame* Create(ScriptState*,
-                            DOMArrayBufferBase*,
+                            const AllowSharedBufferSource*,
                             const VideoFrameBufferInit*,
                             ExceptionState&);
 
@@ -91,18 +85,12 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   uint32_t displayWidth() const;
   uint32_t displayHeight() const;
 
-  absl::optional<VideoColorSpace*> colorSpace();
+  VideoColorSpace* colorSpace();
 
   uint32_t allocationSize(VideoFrameCopyToOptions* options, ExceptionState&);
 
-  // TODO(https://crbug.com/1231806): Combine w/ ArrayBuffer copyTo() below when
-  // [AllowShared] BufferSource is supported.
   ScriptPromise copyTo(ScriptState* script_state,
-                       const MaybeShared<DOMArrayBufferView>& destination,
-                       VideoFrameCopyToOptions* options,
-                       ExceptionState& exception_state);
-  ScriptPromise copyTo(ScriptState* script_state,
-                       DOMArrayBufferBase* destination,
+                       const AllowSharedBufferSource* destination,
                        VideoFrameCopyToOptions* options,
                        ExceptionState& exception_state);
 
@@ -143,12 +131,6 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 
-  ScriptPromise CopyToImpl(ScriptState* script_state,
-                           unsigned char* destination,
-                           size_t dest_byte_length,
-                           VideoFrameCopyToOptions* options,
-                           ExceptionState& exception_state);
-
   // Underlying frame
   scoped_refptr<VideoFrameHandle> handle_;
 
@@ -157,6 +139,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   Member<DOMRectReadOnly> coded_rect_;
   Member<DOMRectReadOnly> visible_rect_;
   Member<VideoColorSpace> color_space_;
+  Member<VideoColorSpace> empty_color_space_;
 };
 
 }  // namespace blink

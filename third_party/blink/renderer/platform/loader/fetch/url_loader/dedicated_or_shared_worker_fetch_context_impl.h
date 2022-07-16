@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info_notifier.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom-blink.h"
@@ -116,7 +117,7 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
       CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
           url_loader_factory) override;
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader(
-      blink::mojom::CodeCacheHost*) override;
+      CodeCacheHost*) override;
   void WillSendRequest(WebURLRequest&) override;
   mojom::ControllerServiceWorkerMode GetControllerServiceWorkerMode()
       const override;

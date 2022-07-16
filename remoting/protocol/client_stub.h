@@ -29,6 +29,10 @@ class ClientStub : public ClipboardStub,
                    public KeyboardLayoutStub {
  public:
   ClientStub() {}
+
+  ClientStub(const ClientStub&) = delete;
+  ClientStub& operator=(const ClientStub&) = delete;
+
   ~ClientStub() override {}
 
   // Passes the set of capabilities supported by the host to the client.
@@ -45,9 +49,6 @@ class ClientStub : public ClipboardStub,
 
   // Passes the host's transport info to the client.
   virtual void SetTransportInfo(const TransportInfo& transport_info) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientStub);
 };
 
 }  // namespace protocol

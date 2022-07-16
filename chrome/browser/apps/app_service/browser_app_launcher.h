@@ -47,25 +47,28 @@ class BrowserAppLauncher {
   BrowserAppLauncher(const BrowserAppLauncher&) = delete;
   BrowserAppLauncher& operator=(const BrowserAppLauncher&) = delete;
 
-  // Launches an app for the given |app_id| in a way specified by |params|.
+  // Launches an app for the given `app_id` in a way specified by `params`.
   content::WebContents* LaunchAppWithParams(AppLaunchParams&& params);
 
-  // Attempts to open |app_id| in a new window or tab. Open an empty browser
+  // Attempts to open `app_id` in a new window or tab. Open an empty browser
   // window if unsuccessful. The user's preferred launch container for the app
-  // (standalone window or browser tab) is used. |callback| will be called with
+  // (standalone window or browser tab) is used. `callback` will be called with
   // the container type used to open the app, kLaunchContainerNone if an empty
-  // browser window was opened. |callback|'s |browser| will be nullptr if the
+  // browser window was opened. `callback`'s `browser` will be nullptr if the
   // navigation failed.
-  // |url_handler_launch_url| is the launch URL when a PWA should be launched
+  // `url_handler_launch_url` is the launch URL when a PWA should be launched
   // as the URL handler. It's null if it's not a URL handler launch.
-  // |protocol_handler_launch_url| is the protocol URL when a PWA is launched
+  // `protocol_handler_launch_url` is the protocol URL when a PWA is launched
   // as a protocol handler. It's null if it's not a protocol handler launch.
+  // `launch_files` is a list of files to be passed to the PWA when it is
+  // launched as a file handler, or empty if it's not a file handling launch.
   void LaunchAppWithCallback(
       const std::string& app_id,
       const base::CommandLine& command_line,
       const base::FilePath& current_directory,
       const absl::optional<GURL>& url_handler_launch_url,
       const absl::optional<GURL>& protocol_handler_launch_url,
+      const std::vector<base::FilePath>& launch_files,
       base::OnceCallback<void(Browser* browser,
                               apps::mojom::LaunchContainer container)>
           callback);

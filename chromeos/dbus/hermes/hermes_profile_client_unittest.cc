@@ -121,4 +121,38 @@ TEST_F(HermesProfileClientTest, TestDisableProfile) {
   EXPECT_EQ(status, HermesResponseStatus::kErrorAlreadyDisabled);
 }
 
+TEST_F(HermesProfileClientTest, TestRenameProfile) {
+  dbus::ObjectPath test_profile_path(kTestProfilePath);
+  dbus::MethodCall method_call(hermes::kHermesProfileInterface,
+                               hermes::profile::kRename);
+  method_call.SetSerial(123);
+  EXPECT_CALL(
+      *proxy_.get(),
+      DoCallMethodWithErrorResponse(
+          hermes_test_utils::MatchMethodName(hermes::profile::kRename), _, _))
+      .Times(2)
+      .WillRepeatedly(Invoke(this, &HermesProfileClientTest::OnMethodCalled));
+
+  // Verify that client makes corresponding dbus method call with
+  // correct arguments.
+  HermesResponseStatus status;
+  AddPendingMethodCallResult(dbus::Response::CreateEmpty(), nullptr);
+  client_->RenameProfile(
+      test_profile_path, "new_profile_name",
+      base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(status, HermesResponseStatus::kSuccess);
+
+  // Verify that error responses are returned properly.
+  std::unique_ptr<dbus::ErrorResponse> error_response =
+      dbus::ErrorResponse::FromMethodCall(&method_call,
+                                          hermes::kErrorInvalidParameter, "");
+  AddPendingMethodCallResult(nullptr, std::move(error_response));
+  client_->RenameProfile(
+      test_profile_path, "another_new_name",
+      base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(status, HermesResponseStatus::kErrorInvalidParameter);
+}
+
 }  // namespace chromeos

@@ -26,6 +26,10 @@ namespace ukm {
 class UkmService;
 }
 
+namespace network_time {
+class NetworkTimeTracker;
+}
+
 namespace metrics {
 
 class MetricsLogUploader;
@@ -36,6 +40,10 @@ class MetricsService;
 class MetricsServiceClient {
  public:
   MetricsServiceClient();
+
+  MetricsServiceClient(const MetricsServiceClient&) = delete;
+  MetricsServiceClient& operator=(const MetricsServiceClient&) = delete;
+
   virtual ~MetricsServiceClient();
 
   // Returns the MetricsService instance that this client is associated with.
@@ -62,6 +70,9 @@ class MetricsServiceClient {
 
   // Returns the current application locale (e.g. "en-US").
   virtual std::string GetApplicationLocale() = 0;
+
+  // Return a NetworkTimeTracker for access to a server-provided clock.
+  virtual const network_time::NetworkTimeTracker* GetNetworkTimeTracker() = 0;
 
   // Retrieves the brand code string associated with the install, returning
   // false if no brand code is available.
@@ -115,6 +126,9 @@ class MetricsServiceClient {
   // can override this in tests if tests need to make assertions on the log
   // data.
   virtual bool ShouldStartUpFastForTesting() const;
+
+  // Called when loading state changed, e.g. start/stop loading.
+  virtual void LoadingStateChanged(bool is_loading) {}
 
   // Called on plugin loading errors.
   virtual void OnPluginLoadingError(const base::FilePath& plugin_path) {}
@@ -175,10 +189,23 @@ class MetricsServiceClient {
   // Checks if the user has forced metrics collection on via the override flag.
   bool IsMetricsReportingForceEnabled() const;
 
+  // Initializes per-user metrics collection. For more details what per-user
+  // metrics collection is, refer to MetricsService::InitPerUserMetrics.
+  //
+  // Since the concept of a user is only applicable in Ash Chrome, this function
+  // should no-op for other platforms.
+  virtual void InitPerUserMetrics() {}
+
+  // Updates the current user's metrics consent. This allows embedders to update
+  // the user consent. If there is no current user, then this function will
+  // no-op.
+  //
+  // Since the concept of a user is only applicable on Ash Chrome, this function
+  // should no-op for other platforms.
+  virtual void UpdateCurrentUserMetricsConsent(bool user_metrics_consent) {}
+
  private:
   base::RepeatingClosure update_running_services_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceClient);
 };
 
 }  // namespace metrics

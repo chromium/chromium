@@ -8,8 +8,8 @@
 #include <set>
 
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
@@ -29,6 +29,10 @@ class SourceUrlRecorderWebStateObserver;
 class METRICS_EXPORT DelegatingUkmRecorder : public UkmRecorder {
  public:
   DelegatingUkmRecorder();
+
+  DelegatingUkmRecorder(const DelegatingUkmRecorder&) = delete;
+  DelegatingUkmRecorder& operator=(const DelegatingUkmRecorder&) = delete;
+
   ~DelegatingUkmRecorder() override;
 
   // Lazy global instance getter.
@@ -85,8 +89,6 @@ class METRICS_EXPORT DelegatingUkmRecorder : public UkmRecorder {
   mutable base::Lock lock_;
 
   std::unordered_map<UkmRecorder*, Delegate> delegates_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegatingUkmRecorder);
 };
 
 }  // namespace ukm

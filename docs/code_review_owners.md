@@ -34,6 +34,15 @@ duration, using a special label `Owners-Override`. However, these changes will
 still need a second human (anyone with committers `Code-Review +1` powers) to
 vote.
 
+### What should I do when I need to get Owners-Override for one-off CLs?
+
+One-off CLs do not need to go through Large Scale Changes. If the CLs make
+only mechanical changes associated with changes in //base/ APIs, //build/ APIs,
+//content/ APIs, //url/ APIs or //third_party/blink/public/APIs, the API owners can set `Owners-Override`.
+
+For other one-off CLs, [Chrome Eng Review members](https://chromium.googlesource.com/chromium/src/+/HEAD/ENG_REVIEW_OWNERS)
+can set `Owners-Override`.
+
 ### How does Rubber Stamper bot work?
 
 Rubber Stamper applies the Bot-Commit label to conforming CLs, allowing them to
@@ -46,6 +55,10 @@ it provided both code review and OWNERS approval, that would be an abuse vector:
 that would allow anyone who can create a revert or cherry-pick to land it
 without any other person being involved (e.g. the silent revert of security
 patches).
+
+When you need to get Owners-Override for sheriffing CLs, reach out to Active
+Sheriffs or Release Program Managers. If they are not available, send an email
+to lsc-owners-override@chromium.org.
 
 ### Will trivial files require code-review?
 

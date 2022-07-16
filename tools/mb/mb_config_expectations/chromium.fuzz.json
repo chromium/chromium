@@ -6,7 +6,8 @@
       "is_debug": true,
       "is_lsan": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "ASAN Release": {
@@ -17,7 +18,8 @@
       "is_component_build": false,
       "is_debug": false,
       "is_lsan": true,
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "v8_enable_verify_heap": true
     }
   },
@@ -30,7 +32,8 @@
       "is_debug": false,
       "is_lsan": true,
       "proprietary_codecs": true,
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "v8_enable_verify_heap": true
     }
   },
@@ -336,7 +339,8 @@
       "is_debug": false,
       "is_msan": true,
       "msan_track_origins": 2,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "MSAN Release (no origins)": {
@@ -346,7 +350,8 @@
       "is_debug": false,
       "is_msan": true,
       "msan_track_origins": 0,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Mac ASAN Release": {
@@ -382,7 +387,8 @@
       "is_debug": true,
       "is_tsan": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "TSAN Release": {
@@ -392,7 +398,8 @@
       "is_component_build": false,
       "is_debug": false,
       "is_tsan": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "UBSan Release": {
@@ -401,7 +408,8 @@
       "is_component_build": false,
       "is_debug": false,
       "is_ubsan": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "UBSan vptr Release": {
@@ -411,7 +419,8 @@
       "is_debug": false,
       "is_ubsan_no_recover": true,
       "is_ubsan_vptr": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Win ASan Release": {

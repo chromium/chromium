@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 #include "chrome/browser/signin/signin_manager.h"
 
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,10 +52,13 @@ class SigninManagerTest : public testing::Test {
  public:
   SigninManagerTest()
       : identity_test_env_(/*test_url_loader_factory=*/nullptr,
-                           /*pref_service=*/nullptr,
+                           /*pref_service=*/&prefs_,
                            signin::AccountConsistencyMethod::kDice,
                            /*test_signin_client=*/nullptr),
         observer_(identity_test_env_.identity_manager()) {}
+
+  SigninManagerTest(const SigninManagerTest&) = delete;
+  SigninManagerTest& operator=(const SigninManagerTest&) = delete;
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -64,7 +69,8 @@ class SigninManagerTest : public testing::Test {
   void TearDown() override { identity_manager()->RemoveObserver(&observer_); }
 
   void RecreateSigninManager() {
-    signin_manger_ = std::make_unique<SigninManager>(identity_manager());
+    signin_manger_ =
+        std::make_unique<SigninManager>(&prefs_, identity_manager());
   }
 
   AccountInfo GetAccountInfo(const std::string& email) {
@@ -147,12 +153,11 @@ class SigninManagerTest : public testing::Test {
 
   FakeIdentityManagerObserver& observer() { return observer_; }
 
+  sync_preferences::TestingPrefServiceSyncable prefs_;
   content::BrowserTaskEnvironment task_environment_;
   IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<SigninManager> signin_manger_;
   FakeIdentityManagerObserver observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninManagerTest);
 };
 
 TEST_F(
@@ -388,6 +393,26 @@ TEST_F(SigninManagerTest, ClearPrimaryAccountAndSignOut) {
             event.GetEventTypeFor(ConsentLevel::kSignin));
   EXPECT_EQ(PrimaryAccountChangeEvent::Type::kCleared,
             event.GetEventTypeFor(ConsentLevel::kSync));
+  EXPECT_EQ(account, event.GetPreviousState().primary_account);
+  EXPECT_TRUE(event.GetCurrentState().primary_account.IsEmpty());
+}
+
+TEST_F(SigninManagerTest,
+       UnconsentedPrimaryAccountClearedWhenSigninDisallowed) {
+  // Prerequisite: add an unconsented primary account.
+  AccountInfo account = MakeAccountAvailableWithCookies(kTestEmail);
+  ExpectUnconsentedPrimaryAccountSetEvent(account);
+
+  prefs_.SetBoolean(prefs::kSigninAllowed, false);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  EXPECT_EQ(1U, observer().events().size());
+  auto event = observer().events()[0];
+  EXPECT_EQ(PrimaryAccountChangeEvent::Type::kCleared,
+            event.GetEventTypeFor(ConsentLevel::kSignin));
   EXPECT_EQ(account, event.GetPreviousState().primary_account);
   EXPECT_TRUE(event.GetCurrentState().primary_account.IsEmpty());
 }

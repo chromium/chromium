@@ -15,9 +15,9 @@
 #include "base/fuchsia/process_context.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "fuchsia/base/test/fit_adapter.h"
 #include "fuchsia/base/test/frame_test_util.h"
-#include "fuchsia/base/test/result_receiver.h"
 #include "fuchsia/base/test/test_devtools_list_fetcher.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/test/frame_for_test.h"
@@ -119,15 +119,13 @@ TEST_F(WebInstanceHostIntegrationTest, FrameHostDebugging) {
                                                 std::move(create_frame_params));
 
   // Expect to receive a notification of the selected DevTools port.
-  base::RunLoop run_loop;
-  cr_fuchsia::ResultReceiver<
-      fuchsia::web::Context_GetRemoteDebuggingPort_Result>
-      port_receiver(run_loop.QuitClosure());
+  base::test::TestFuture<fuchsia::web::Context_GetRemoteDebuggingPort_Result>
+      port_receiver;
   context_->GetRemoteDebuggingPort(
-      cr_fuchsia::CallbackToFitFunction(port_receiver.GetReceiveCallback()));
-  run_loop.Run();
-  ASSERT_TRUE(port_receiver->is_response());
-  uint16_t remote_debugging_port = port_receiver->response().port;
+      cr_fuchsia::CallbackToFitFunction(port_receiver.GetCallback()));
+  ASSERT_TRUE(port_receiver.Wait());
+  ASSERT_TRUE(port_receiver.Get().is_response());
+  uint16_t remote_debugging_port = port_receiver.Get().response().port;
   ASSERT_TRUE(remote_debugging_port != 0);
 
   // Navigate to a URL, the devtools service should be active and report a

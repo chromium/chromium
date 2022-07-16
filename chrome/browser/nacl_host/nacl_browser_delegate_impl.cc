@@ -190,7 +190,7 @@ bool NaClBrowserDelegateImpl::IsNonSfiModeAllowed(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   auto* registry = extensions::ExtensionRegistry::Get(
       profile_manager_->GetProfileByPath(profile_directory));
-  return IsExtensionOrSharedModuleWhitelisted(
+  return IsExtensionOrSharedModuleAllowed(
       manifest_url, &registry->enabled_extensions(), allowed_nonsfi_origins_);
 #else
   return false;

@@ -20,6 +20,11 @@ namespace quick_unlock {
 namespace {
 
 class FingerprintStorageUnitTest : public testing::Test {
+ public:
+  FingerprintStorageUnitTest(const FingerprintStorageUnitTest&) = delete;
+  FingerprintStorageUnitTest& operator=(const FingerprintStorageUnitTest&) =
+      delete;
+
  protected:
   FingerprintStorageUnitTest() : profile_(std::make_unique<TestingProfile>()) {}
   ~FingerprintStorageUnitTest() override {}
@@ -36,8 +41,6 @@ class FingerprintStorageUnitTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(FingerprintStorageUnitTest);
 };
 
 }  // namespace
@@ -45,6 +48,10 @@ class FingerprintStorageUnitTest : public testing::Test {
 // Provides test-only FingerprintStorage APIs.
 class FingerprintStorageTestApi {
  public:
+  FingerprintStorageTestApi(const FingerprintStorageTestApi&) = delete;
+  FingerprintStorageTestApi& operator=(const FingerprintStorageTestApi&) =
+      delete;
+
   // Does *not* take ownership over `fingerprint_storage`.
   explicit FingerprintStorageTestApi(FingerprintStorage* fingerprint_storage)
       : fingerprint_storage_(fingerprint_storage) {}
@@ -55,8 +62,6 @@ class FingerprintStorageTestApi {
 
  private:
   FingerprintStorage* fingerprint_storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(FingerprintStorageTestApi);
 };
 
 // Verifies that:

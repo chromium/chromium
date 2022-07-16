@@ -52,6 +52,11 @@ class CastAudioJsonProvider {
 class CastAudioJsonProviderImpl : public CastAudioJsonProvider {
  public:
   CastAudioJsonProviderImpl();
+
+  CastAudioJsonProviderImpl(const CastAudioJsonProviderImpl&) = delete;
+  CastAudioJsonProviderImpl& operator=(const CastAudioJsonProviderImpl&) =
+      delete;
+
   ~CastAudioJsonProviderImpl() override;
 
  private:
@@ -71,8 +76,6 @@ class CastAudioJsonProviderImpl : public CastAudioJsonProvider {
   void SetTuningChangedCallback(TuningChangedCallback callback) override;
 
   base::SequenceBound<FileWatcher> cast_audio_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastAudioJsonProviderImpl);
 };
 
 }  // namespace media

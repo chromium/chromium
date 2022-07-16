@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_driver.h"
@@ -37,12 +36,14 @@ class TestAutofillDriver : public ContentAutofillDriver {
   // AutofillDriver implementation overrides.
   bool IsIncognito() const override;
   bool IsInMainFrame() const override;
+  bool IsPrerendering() const override;
   bool CanShowAutofillUi() const override;
   ui::AXTreeID GetAxTreeId() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool RendererIsAvailable() override;
 #if !defined(OS_IOS)
-  InternalAuthenticator* GetOrCreateCreditCardInternalAuthenticator() override;
+  webauthn::InternalAuthenticator* GetOrCreateCreditCardInternalAuthenticator()
+      override;
 #endif
   void FillOrPreviewForm(int query_id,
                          mojom::RendererFormDataAction action,
@@ -83,7 +84,7 @@ class TestAutofillDriver : public ContentAutofillDriver {
   void SetSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 #if !defined(OS_IOS)
-  void SetAuthenticator(InternalAuthenticator* authenticator_);
+  void SetAuthenticator(webauthn::InternalAuthenticator* authenticator_);
 #endif
 
  private:
@@ -94,7 +95,7 @@ class TestAutofillDriver : public ContentAutofillDriver {
   net::IsolationInfo isolation_info_;
 
 #if !defined(OS_IOS)
-  std::unique_ptr<InternalAuthenticator> test_authenticator_;
+  std::unique_ptr<webauthn::InternalAuthenticator> test_authenticator_;
 #endif
 };
 

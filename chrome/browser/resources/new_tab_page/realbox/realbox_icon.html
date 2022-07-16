@@ -7,23 +7,37 @@
     width: 32px;
   }
 
-  #imageContainer {
+  #container {
     align-items: center;
     border-radius: 8px;
-    display: none;
+    display: flex;
     height: 32px;
     justify-content: center;
     overflow: hidden;
     width: 32px;
   }
 
-  :host-context(ntp-realbox-match[has-image]) #imageContainer {
-    display: flex;
+  /* Entity matches feature a dominant color background until image loads. */
+  :host-context(ntp-realbox-match[is-rich-suggestion][has-image]) #container {
+    background-color: var(--container-bg-color);
+  }
+
+  /* Calculator answer and suggestion answer icons feature a blue background. */
+  :host-context(ntp-realbox-match[is-rich-suggestion]:not([has-image])) #container {
+    background-color: var(--google-blue-600);
+    border-radius: 50%;
+    height: 24px;
+    width: 24px;
   }
 
   #image {
+    display: none;
     max-height: 32px;
     max-width: 32px;
+  }
+
+  :host-context(ntp-realbox-match[has-image]) #image {
+    display: initial;
   }
 
   #icon {
@@ -42,6 +56,10 @@
     display: none;
   }
 
+  :host-context(ntp-realbox-match[is-rich-suggestion]) #icon {
+    background-color: white;
+  }
+
   :host([in-searchbox][background-image='google_g.png']) #icon {
     background-size: 12px;
   }
@@ -50,8 +68,8 @@
     -webkit-mask-size: 20px;  /* Loupe in realbox is larger than in matches. */
   }
 </style>
-<div id="imageContainer" style$="[[imageContainerStyle_]]">
-    <image id="image" src$="[[imageSrc_]]"></image>
-</div>
-<div id="icon" style$="[[iconStyle_]]">
+<div id="container" style="--container-bg-color:
+    [[containerBgColor_(imageSrc_, match.imageDominantColor)]];">
+  <image id="image" src="[[imageSrc_]]"></image>
+  <div id="icon" style="[[iconStyle_]]"></div>
 </div>

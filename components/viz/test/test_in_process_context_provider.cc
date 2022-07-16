@@ -83,13 +83,13 @@ std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext() {
 }
 
 TestInProcessContextProvider::TestInProcessContextProvider(
-    bool enable_gpu_rasterization,
-    bool enable_oop_rasterization,
+    bool enable_gles2_interface,
     bool support_locking,
+    RasterInterfaceType raster_interface_type,
     gpu::raster::GrShaderCache* gr_shader_cache,
     gpu::GpuProcessActivityFlags* activity_flags)
-    : enable_gpu_rasterization_(enable_gpu_rasterization),
-      enable_oop_rasterization_(enable_oop_rasterization),
+    : enable_gles2_interface_(enable_gles2_interface),
+      raster_interface_type_(raster_interface_type),
       activity_flags_(activity_flags) {
   if (support_locking)
     context_lock_.emplace();
@@ -106,10 +106,13 @@ void TestInProcessContextProvider::Release() const {
 }
 
 gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
-  if (enable_oop_rasterization_) {
+  if (raster_interface_type_ == RasterInterfaceType::OOPR ||
+      raster_interface_type_ == RasterInterfaceType::Software) {
+    DCHECK(!enable_gles2_interface_);
     gpu::ContextCreationAttribs attribs;
     attribs.bind_generates_resource = false;
-    attribs.enable_oop_rasterization = true;
+    attribs.enable_oop_rasterization =
+        raster_interface_type_ == RasterInterfaceType::OOPR;
     attribs.enable_raster_interface = true;
     attribs.enable_gles2_interface = false;
 
@@ -127,7 +130,8 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
         base::ThreadTaskRunnerHandle::Get());
 
     caps_ = raster_context_->GetCapabilities();
-  } else {
+  } else if (raster_interface_type_ == RasterInterfaceType::GPU ||
+             enable_gles2_interface_) {
     display_controller_ =
         std::make_unique<DisplayCompositorMemoryAndTaskController>(
             TestGpuServiceHolder::GetInstance()->task_executor(),
@@ -140,9 +144,11 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
     cache_controller_ = std::make_unique<ContextCacheController>(
         gles2_context_->GetImplementation(),
         base::ThreadTaskRunnerHandle::Get());
-    raster_implementation_gles2_ =
-        std::make_unique<gpu::raster::RasterImplementationGLES>(
-            gles2_context_->GetImplementation(), ContextSupport());
+    if (raster_interface_type_ == RasterInterfaceType::GPU) {
+      raster_implementation_gles2_ =
+          std::make_unique<gpu::raster::RasterImplementationGLES>(
+              gles2_context_->GetImplementation(), ContextSupport());
+    }
 
     caps_ = gles2_context_->GetCapabilities();
   }
@@ -150,7 +156,9 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
   // We don't have a good way for tests to change what the in process gpu
   // service will return for this capability. But we want to use gpu
   // rasterization if and only if the test requests it.
-  caps_.gpu_rasterization = enable_gpu_rasterization_;
+  caps_.gpu_rasterization =
+      raster_interface_type_ == RasterInterfaceType::GPU ||
+      raster_interface_type_ == RasterInterfaceType::OOPR;
 
   cache_controller_->SetLock(GetLock());
   return gpu::ContextResult::kSuccess;
@@ -161,6 +169,7 @@ gpu::gles2::GLES2Interface* TestInProcessContextProvider::ContextGL() {
 }
 
 gpu::raster::RasterInterface* TestInProcessContextProvider::RasterInterface() {
+  DCHECK(raster_interface_type_ != RasterInterfaceType::None);
   if (raster_context_) {
     return raster_context_->GetImplementation();
   } else {

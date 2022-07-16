@@ -18,13 +18,15 @@ select {
 }
 
 h1 {
-  background: rgb(218, 54, 232);
-  color: white;
+  color: rgb(32, 33, 36);
   display: block;
-  font-size: 16px;
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
   height: 56px;
   line-height: 56px;
-  text-align: center;
+  text-align: start;
   width: 100%;
 }
 

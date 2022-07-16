@@ -17,6 +17,10 @@
 namespace base {
 
 class MessagePumpIOSForIOTest : public testing::Test {
+ public:
+  MessagePumpIOSForIOTest(const MessagePumpIOSForIOTest&) = delete;
+  MessagePumpIOSForIOTest& operator=(const MessagePumpIOSForIOTest&) = delete;
+
  protected:
   MessagePumpIOSForIOTest() = default;
   ~MessagePumpIOSForIOTest() override = default;
@@ -43,9 +47,6 @@ class MessagePumpIOSForIOTest : public testing::Test {
 
   int pipefds_[2];
   int alternate_pipefds_[2];
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpIOSForIOTest);
 };
 
 namespace {

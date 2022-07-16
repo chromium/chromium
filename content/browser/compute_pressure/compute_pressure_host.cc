@@ -128,8 +128,8 @@ void ComputePressureHost::UpdateObservers(ComputePressureSample sample,
   blink::mojom::ComputePressureState quantized_state =
       quantizer_.Quantize(sample);
 
-  // TODO(oyiptong): Rate-limit observers in non-visible frames instead of
-  //                 cutting off their updates completely.
+  // TODO(pwnall): Rate-limit observers in non-visible frames instead of
+  //               cutting off their updates completely.
   if (sample_time - last_report_time_ < visible_observer_rate_limit_) {
     return;
   }
@@ -144,14 +144,14 @@ void ComputePressureHost::UpdateObservers(ComputePressureSample sample,
 
     RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
     if (!rfh || !rfh->IsActive()) {
-      // TODO(oyiptong): Is it safe to disconnect observers in this state?
+      // TODO(pwnall): Is it safe to disconnect observers in this state?
       continue;
     }
 
     if (rfh->GetVisibilityState() !=
         blink::mojom::PageVisibilityState::kVisible) {
-      // TODO(oyiptong): Rate-limit observers in non-visible frames instead of
-      //                 cutting off their updates completely.
+      // TODO(pwnall): Rate-limit observers in non-visible frames instead of
+      //               cutting off their updates completely.
       continue;
     }
 

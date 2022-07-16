@@ -5,8 +5,8 @@
 #include "components/download/public/background_service/basic_task_scheduler.h"
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -32,7 +32,7 @@ void BasicTaskScheduler::ScheduleTask(download::DownloadTaskType task_type,
                      weak_factory_.GetWeakPtr(), task_type));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, scheduled_tasks_[task_type].callback(),
-      base::TimeDelta::FromSeconds(window_start_time_seconds));
+      base::Seconds(window_start_time_seconds));
 }
 
 void BasicTaskScheduler::CancelTask(download::DownloadTaskType task_type) {

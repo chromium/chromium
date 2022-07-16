@@ -43,6 +43,9 @@ class NGTableFragmentData {
   // Column/row location is used for collapsed border painting.
   // Only present if borders are collapsed.
   struct CollapsedBordersGeometry {
+    USING_FAST_MALLOC(CollapsedBordersGeometry);
+
+   public:
     Vector<LayoutUnit> columns;  // Column offsets from table grid border.
     Vector<LayoutUnit> rows;     // Row offsets from table grid border.
 

@@ -17,6 +17,10 @@ namespace views {
 class SeparatorTest : public ViewsTestBase {
  public:
   SeparatorTest() = default;
+
+  SeparatorTest(const SeparatorTest&) = delete;
+  SeparatorTest& operator=(const SeparatorTest&) = delete;
+
   ~SeparatorTest() override = default;
 
  protected:
@@ -33,9 +37,6 @@ class SeparatorTest : public ViewsTestBase {
   static const SkColor kBackgroundColor;
   static const SkColor kForegroundColor;
   static const gfx::Size kTestImageSize;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SeparatorTest);
 };
 
 const SkColor SeparatorTest::kBackgroundColor = SK_ColorRED;

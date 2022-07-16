@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -20,9 +19,15 @@ class GURL;
 
 class AutocompleteClassifier : public KeyedService {
  public:
+  AutocompleteClassifier() = delete;
+
   AutocompleteClassifier(
       std::unique_ptr<AutocompleteController> controller_,
       std::unique_ptr<AutocompleteSchemeClassifier> scheme_classifier);
+
+  AutocompleteClassifier(const AutocompleteClassifier&) = delete;
+  AutocompleteClassifier& operator=(const AutocompleteClassifier&) = delete;
+
   ~AutocompleteClassifier() override;
 
   // KeyedService:
@@ -64,8 +69,6 @@ class AutocompleteClassifier : public KeyedService {
   // Are we currently in Classify? Used to verify Classify isn't invoked
   // recursively, since this can corrupt state and cause crashes.
   bool inside_classify_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AutocompleteClassifier);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_CLASSIFIER_H_

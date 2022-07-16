@@ -1,5 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-// Use of this source code is governed by the Apache License, Version 2.0.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.graphics.ext.ElementTest');
 goog.setTestOnly();
@@ -13,12 +16,14 @@ let el;
 let graphics;
 let mockWrapper;
 
+/** @suppress {missingProperties} suppression added to enable type checking */
 function assertPosition(fn, left, top, width = undefined, height = undefined) {
   mockWrapper.setTransformation(0, 0, 0, 5, 5);
   mockWrapper.setTransformation(
       left, top, 0, (width || 10) / 2, (height || 10) / 2);
   mockWrapper.$replay();
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   el = new ext.Element(graphics, mockWrapper);
   el.setSize(10, 10);
   fn();
@@ -28,7 +33,7 @@ testSuite({
   setUp() {
     const div = document.getElementById('root');
     graphics = new ext.Graphics(100, 100, 200, 200);
-    div.innerHTML = '';
+    div.textContent = '';
     graphics.render(div);
 
     mockWrapper = new StrictMock(googGraphics.Element);

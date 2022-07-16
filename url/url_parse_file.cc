@@ -42,48 +42,24 @@ namespace url {
 
 namespace {
 
-// A subcomponent of DoInitFileURL, the input of this function should be a UNC
+// A subcomponent of DoParseFileURL, the input of this function should be a UNC
 // path name, with the index of the first character after the slashes following
 // the scheme given in |after_slashes|. This will initialize the host, path,
 // query, and ref, and leave the other output components untouched
-// (DoInitFileURL handles these for us).
-template<typename CHAR>
+// (DoParseFileURL handles these for us).
+template <typename CHAR>
 void DoParseUNC(const CHAR* spec,
                 int after_slashes,
                 int spec_len,
-               Parsed* parsed) {
+                Parsed* parsed) {
   int next_slash = FindNextSlash(spec, after_slashes, spec_len);
-  if (next_slash == spec_len) {
-    // No additional slash found, as in "file://foo", treat the text as the
-    // host with no path (this will end up being UNC to server "foo").
-    int host_len = spec_len - after_slashes;
-    if (host_len)
-      parsed->host = Component(after_slashes, host_len);
-    else
-      parsed->host.reset();
-    parsed->path.reset();
-    return;
-  }
 
-#ifdef WIN32
-  // See if we have something that looks like a path following the first
-  // component. As in "file://localhost/c:/", we get "c:/" out. We want to
-  // treat this as a having no host but the path given. Works on Windows only.
-  if (DoesBeginWindowsDriveSpec(spec, next_slash + 1, spec_len)) {
-    parsed->host.reset();
-    ParsePathInternal(spec, MakeRange(next_slash, spec_len),
-                      &parsed->path, &parsed->query, &parsed->ref);
-    return;
-  }
-#endif
-
-  // Otherwise, everything up until that first slash we found is the host name,
-  // which will end up being the UNC host. For example "file://foo/bar.txt"
-  // will get a server name of "foo" and a path of "/bar". Later, on Windows,
-  // this should be treated as the filename "\\foo\bar.txt" in proper UNC
-  // notation.
-  int host_len = next_slash - after_slashes;
-  if (host_len)
+  // Everything up until that first slash we found (or end of string) is the
+  // host name, which will end up being the UNC host. For example,
+  // "file://foo/bar.txt" will get a server name of "foo" and a path of "/bar".
+  // Later, on Windows, this should be treated as the filename "\\foo\bar.txt"
+  // in proper UNC notation.
+  if (after_slashes < next_slash)
     parsed->host = MakeRange(after_slashes, next_slash);
   else
     parsed->host.reset();
@@ -98,7 +74,7 @@ void DoParseUNC(const CHAR* spec,
 // A subcomponent of DoParseFileURL, the input should be a local file, with the
 // beginning of the path indicated by the index in |path_begin|. This will
 // initialize the host, path, query, and ref, and leave the other output
-// components untouched (DoInitFileURL handles these for us).
+// components untouched (DoParseFileURL handles these for us).
 template<typename CHAR>
 void DoParseLocalFile(const CHAR* spec,
                       int path_begin,

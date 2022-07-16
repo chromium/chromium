@@ -29,14 +29,14 @@ class WebStateObserverMock : public web::WebStateObserver {
  public:
   WebStateObserverMock() = default;
 
+  WebStateObserverMock(const WebStateObserverMock&) = delete;
+  WebStateObserverMock& operator=(const WebStateObserverMock&) = delete;
+
   MOCK_METHOD2(WebFrameDidBecomeAvailable,
                void(web::WebState*, web::WebFrame*));
   MOCK_METHOD2(WebFrameWillBecomeUnavailable,
                void(web::WebState*, web::WebFrame*));
   void WebStateDestroyed(web::WebState* web_state) override { NOTREACHED(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateObserverMock);
 };
 
 // A predicate that returns true if |frame| is a main frame.
@@ -71,67 +71,63 @@ class WebFrameWebStateObserverInttest : public WebTestWithWebState {
         &net::test_server::HandlePrefixedRequest, "/echo-query",
         base::BindRepeating(&testing::HandlePageWithContents)));
     ASSERT_TRUE(test_server_.Start());
+
+    web_state()->AddObserver(&observer_);
+  }
+
+  void TearDown() override {
+    web_state()->RemoveObserver(&observer_);
+    WebTestWithWebState::TearDown();
   }
 
   net::EmbeddedTestServer test_server_;
+  testing::StrictMock<WebStateObserverMock> observer_;
 };
 
 // Web frame events should be registered on HTTP navigation.
 TEST_F(WebFrameWebStateObserverInttest, SingleWebFrameHTTP) {
-  testing::StrictMock<WebStateObserverMock> observer;
-  web_state()->AddObserver(&observer);
-  EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
+  EXPECT_CALL(observer_, WebFrameDidBecomeAvailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
 
   test::LoadUrl(web_state(), test_server_.GetURL("/echo-query?test"));
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "test"));
 
-  EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
+  EXPECT_CALL(observer_, WebFrameDidBecomeAvailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
-  EXPECT_CALL(observer, WebFrameWillBecomeUnavailable(web_state(), testing::_))
+  EXPECT_CALL(observer_, WebFrameWillBecomeUnavailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
 
   test::LoadUrl(web_state(), test_server_.GetURL("/echo-query?secondPage"));
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "secondPage"));
-
-  web_state()->RemoveObserver(&observer);
 }
 
 // Web frame events should be registered on HTTPS navigation.
 TEST_F(WebFrameWebStateObserverInttest, SingleWebFrameHTTPS) {
-  testing::StrictMock<WebStateObserverMock> observer;
-  web_state()->AddObserver(&observer);
-
-  EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
+  EXPECT_CALL(observer_, WebFrameDidBecomeAvailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
 
   // Load a first page to avoid having an item inserted during the |LoadHtml|.
   test::LoadUrl(web_state(), test_server_.GetURL("/echo-query?test"));
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "test"));
 
-  EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
+  EXPECT_CALL(observer_, WebFrameDidBecomeAvailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
-  EXPECT_CALL(observer, WebFrameWillBecomeUnavailable(web_state(), testing::_))
+  EXPECT_CALL(observer_, WebFrameWillBecomeUnavailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
 
   LoadHtml(@"<p></p>", GURL("https://testurl1"));
 
-  EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
+  EXPECT_CALL(observer_, WebFrameDidBecomeAvailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
-  EXPECT_CALL(observer, WebFrameWillBecomeUnavailable(web_state(), testing::_))
+  EXPECT_CALL(observer_, WebFrameWillBecomeUnavailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
 
   LoadHtml(@"<p></p>", GURL("https://testurl2"));
-
-  web_state()->RemoveObserver(&observer);
 }
 
 // Web frame event should be registered on HTTPS navigation with iframe.
 TEST_F(WebFrameWebStateObserverInttest, TwoWebFrameHTTPS) {
-  testing::StrictMock<WebStateObserverMock> observer;
-  web_state()->AddObserver(&observer);
-
-  EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
+  EXPECT_CALL(observer_, WebFrameDidBecomeAvailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
 
   // Load a first page to avoid having an item inserted during the |LoadHtml|.
@@ -142,33 +138,31 @@ TEST_F(WebFrameWebStateObserverInttest, TwoWebFrameHTTPS) {
   // guaranteed due to the async nature of messaging. The following expectations
   // use separate matchers to identify main and child frames so that they can
   // be matched in any order.
-  EXPECT_CALL(observer,
+  EXPECT_CALL(observer_,
               WebFrameDidBecomeAvailable(web_state(), Truly(IsMainFrame)))
       .WillOnce(VerifyMainWebFrame(web_state()));
-  EXPECT_CALL(observer,
+  EXPECT_CALL(observer_,
               WebFrameDidBecomeAvailable(web_state(), Not(Truly(IsMainFrame))))
       .WillOnce(VerifyChildWebFrame(web_state()));
-  EXPECT_CALL(observer, WebFrameWillBecomeUnavailable(web_state(), testing::_))
+  EXPECT_CALL(observer_, WebFrameWillBecomeUnavailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
 
   LoadHtml(@"<p><iframe/></p>", GURL("https://testurl1"));
 
-  EXPECT_CALL(observer,
+  EXPECT_CALL(observer_,
               WebFrameDidBecomeAvailable(web_state(), Truly(IsMainFrame)))
       .WillOnce(VerifyMainWebFrame(web_state()));
-  EXPECT_CALL(observer,
+  EXPECT_CALL(observer_,
               WebFrameDidBecomeAvailable(web_state(), Not(Truly(IsMainFrame))))
       .WillOnce(VerifyChildWebFrame(web_state()));
-  EXPECT_CALL(observer,
+  EXPECT_CALL(observer_,
               WebFrameWillBecomeUnavailable(web_state(), Truly(IsMainFrame)))
       .WillOnce(VerifyMainWebFrame(web_state()));
-  EXPECT_CALL(observer, WebFrameWillBecomeUnavailable(web_state(),
-                                                      Not(Truly(IsMainFrame))))
+  EXPECT_CALL(observer_, WebFrameWillBecomeUnavailable(web_state(),
+                                                       Not(Truly(IsMainFrame))))
       .WillOnce(VerifyChildWebFrame(web_state()));
 
   LoadHtml(@"<p><iframe/></p>", GURL("https://testurl2"));
-
-  web_state()->RemoveObserver(&observer);
 }
 
 }  // namespace web

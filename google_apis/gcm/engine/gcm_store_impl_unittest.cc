@@ -396,7 +396,6 @@ TEST_F(GCMStoreImplTest, OutgoingMessages) {
   LoadGCMStore(gcm_store.get(), &load_result);
 
   std::vector<std::string> persistent_ids;
-  const int kNumPersistentIds = 10;
   for (int i = 0; i < kNumPersistentIds; ++i) {
     persistent_ids.push_back(GetNextPersistentId());
     mcs_proto::DataMessageStanza message;
@@ -444,7 +443,6 @@ TEST_F(GCMStoreImplTest, IncomingAndOutgoingMessages) {
   LoadGCMStore(gcm_store.get(), &load_result);
 
   std::vector<std::string> persistent_ids;
-  const int kNumPersistentIds = 10;
   for (int i = 0; i < kNumPersistentIds; ++i) {
     persistent_ids.push_back(GetNextPersistentId());
     gcm_store->AddIncomingMessage(

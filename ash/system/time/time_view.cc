@@ -6,9 +6,12 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_constants.h"
@@ -25,13 +28,16 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -46,13 +52,23 @@ const int kTimerSlopSeconds = 1;
 // clock.
 const int kVerticalClockLeftPadding = 9;
 
+// Padding between the left/right edge of the shelf and the left edge of the
+// vertical clock with date.
+const int kVerticalDateClockHorizontalPadding = 4;
+
+// Padding on top/bottom of the vertical clock date view.
+const int kVerticalDateVerticalPadding = 4;
+
+// How much size smaller the text in the date view compare to the text size of
+// the clock view.
+const int kDateTextSizeDiff = 4;
+
 // Offset used to bring the minutes line closer to the hours line in the
 // vertical clock.
 const int kVerticalClockMinutesTopOffset = -2;
 
-// Leading padding used to draw the tray background to the left of the clock
-// when the shelf is vertically aligned.
-const int kClockLeadingPadding = 8;
+// The Id for `vertical_view_`.
+const int kVerticalViewId = 1000;
 
 std::u16string FormatDate(const base::Time& time) {
   // Use 'short' month format (e.g., "Oct") followed by non-padded day of
@@ -62,8 +78,51 @@ std::u16string FormatDate(const base::Time& time) {
 
 }  // namespace
 
-TimeView::TimeView(ClockLayout clock_layout, ClockModel* model)
-    : ActionableView(TrayPopupInkDropStyle::INSET_BOUNDS), model_(model) {
+VerticalDateView::VerticalDateView()
+    : icon_(AddChildView(std::make_unique<views::ImageView>())),
+      text_label_(AddChildView(std::make_unique<views::Label>())) {
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  text_label_->SetSubpixelRenderingEnabled(false);
+  text_label_->SetAutoColorReadabilityEnabled(false);
+  text_label_->SetFontList(
+      gfx::FontList().Derive(kTrayTextFontSizeIncrease - kDateTextSizeDiff,
+                             gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+  text_label_->SetElideBehavior(gfx::NO_ELIDE);
+  UpdateText();
+  text_label_->SetBorder(
+      views::CreateEmptyBorder(kVerticalDateVerticalPadding, 0, 0, 0));
+  SetBorder(views::CreateEmptyBorder(0, 0, kVerticalDateVerticalPadding, 0));
+}
+
+VerticalDateView::~VerticalDateView() = default;
+
+void VerticalDateView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  text_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  icon_->SetImage(gfx::CreateVectorIcon(
+      kCalendarBackgroundIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+}
+
+void VerticalDateView::UpdateText() {
+  std::u16string new_text =
+      base::TimeFormatWithPattern(base::Time::Now(), "dd");
+  if (text_label_->GetText() == new_text)
+    return;
+  text_label_->SetText(new_text);
+  text_label_->SetTooltipText(base::TimeFormatFriendlyDate(base::Time::Now()));
+  text_label_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+}
+
+TimeView::TimeView(
+    ClockLayout clock_layout,
+    ClockModel* model,
+    absl::optional<OnTimeViewActionPerformedCallback> perform_action_callback)
+    : ActionableView(TrayPopupInkDropStyle::INSET_BOUNDS),
+      model_(model),
+      callback_(perform_action_callback) {
   SetTimer(base::Time::Now());
   SetFocusBehavior(FocusBehavior::NEVER);
   model_->AddObserver(this);
@@ -118,11 +177,12 @@ void TimeView::SetTextShadowValues(const gfx::ShadowValues& shadows) {
   vertical_label_minutes_->SetShadows(shadows);
 }
 
-void TimeView::SetShowDateWhenHorizontal(bool show_date_when_horizontal) {
-  if (show_date_when_horizontal_ == show_date_when_horizontal)
+void TimeView::SetShowDate(bool show_date) {
+  if (show_date_ == show_date)
     return;
-  show_date_when_horizontal_ = show_date_when_horizontal;
+  show_date_ = show_date;
   UpdateText();
+  SetupVerticalSubViews();
   PreferredSizeChanged();
 }
 
@@ -149,7 +209,9 @@ const char* TimeView::GetClassName() const {
 }
 
 bool TimeView::PerformAction(const ui::Event& event) {
-  return false;
+  if (callback_.has_value())
+    callback_->Run(event);
+  return true;
 }
 
 void TimeView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -162,8 +224,8 @@ void TimeView::ChildPreferredSizeChanged(views::View* child) {
 }
 
 bool TimeView::OnMousePressed(const ui::MouseEvent& event) {
-  // Let the event fall through.
-  return false;
+  // Let `PerformAction` get called.
+  return true;
 }
 
 void TimeView::OnGestureEvent(ui::GestureEvent* event) {
@@ -205,8 +267,7 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
   std::u16string current_date_time = l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_DATE_TIME, FormatDate(now), current_time);
 
-  std::u16string new_label =
-      show_date_when_horizontal_ ? current_date_time : current_time;
+  std::u16string new_label = show_date_ ? current_date_time : current_time;
   const bool label_length_changed =
       horizontal_label_->GetText().length() != new_label.length();
   horizontal_label_->SetText(new_label);
@@ -224,6 +285,7 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
       !base::i18n::IsRTL())
     hour = u"0" + hour;
 
+  vertical_date_view_->UpdateText();
   vertical_label_hours_->SetText(hour);
   vertical_label_minutes_->SetText(minute);
   vertical_label_hours_->NotifyAccessibilityEvent(
@@ -239,6 +301,33 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
     PreferredSizeChanged();
 }
 
+void TimeView::SetupVerticalSubViews() {
+  views::View* vertical_view =
+      vertical_view_ ? vertical_view_.get() : children()[0];
+  DCHECK_EQ(kVerticalViewId, vertical_view->GetID());
+  views::GridLayout* layout =
+      vertical_view->SetLayoutManager(std::make_unique<views::GridLayout>());
+  const int kColumnId = 0;
+  views::ColumnSet* columns = layout->AddColumnSet(kColumnId);
+  columns->AddPaddingColumn(0, show_date_ ? kVerticalDateClockHorizontalPadding
+                                          : kVerticalClockLeftPadding);
+  columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER, 0,
+                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  if (show_date_) {
+    layout->StartRow(0, kColumnId);
+    layout->AddExistingView(vertical_date_view_);
+    vertical_date_view_->SetVisible(true);
+  } else {
+    vertical_date_view_->SetVisible(false);
+  }
+  layout->StartRow(0, kColumnId);
+  layout->AddExistingView(vertical_label_hours_);
+  layout->StartRow(0, kColumnId);
+  layout->AddExistingView(vertical_label_minutes_);
+
+  layout->AddPaddingRow(0, kVerticalClockMinutesTopOffset);
+}
+
 void TimeView::SetupSubviews(ClockLayout clock_layout) {
   horizontal_view_ = std::make_unique<View>();
   horizontal_view_->SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -249,24 +338,24 @@ void TimeView::SetupSubviews(ClockLayout clock_layout) {
   SetupLabel(horizontal_label_);
 
   vertical_view_ = std::make_unique<View>();
-  views::GridLayout* layout =
-      vertical_view_->SetLayoutManager(std::make_unique<views::GridLayout>());
-  const int kColumnId = 0;
-  views::ColumnSet* columns = layout->AddColumnSet(kColumnId);
-  columns->AddPaddingColumn(0, kVerticalClockLeftPadding);
-  columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER, 0,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  layout->AddPaddingRow(0, kClockLeadingPadding);
-  layout->StartRow(0, kColumnId);
-  vertical_label_hours_ = layout->AddView(std::make_unique<views::Label>());
+  vertical_view_->SetID(kVerticalViewId);
+  vertical_date_view_ =
+      vertical_view_->AddChildView(std::make_unique<VerticalDateView>());
+  vertical_label_hours_ =
+      vertical_view_->AddChildView(std::make_unique<views::Label>());
   SetupLabel(vertical_label_hours_);
-  layout->StartRow(0, kColumnId);
-  vertical_label_minutes_ = layout->AddView(std::make_unique<views::Label>());
+  vertical_label_hours_->SetBorder(
+      views::CreateEmptyBorder(0, 0, 0, kVerticalDateClockHorizontalPadding));
+
+  vertical_label_minutes_ =
+      vertical_view_->AddChildView(std::make_unique<views::Label>());
   SetupLabel(vertical_label_minutes_);
+
   // Pull the minutes up closer to the hours by using a negative top border.
   vertical_label_minutes_->SetBorder(
-      views::CreateEmptyBorder(kVerticalClockMinutesTopOffset, 0, 0, 0));
-  layout->AddPaddingRow(0, kVerticalClockMinutesTopOffset);
+      views::CreateEmptyBorder(kVerticalClockMinutesTopOffset, 0, 0,
+                               kVerticalDateClockHorizontalPadding));
+  SetupVerticalSubViews();
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   AddChildView(clock_layout == ClockLayout::HORIZONTAL_CLOCK
@@ -297,7 +386,7 @@ void TimeView::SetTimer(const base::Time& now) {
   seconds_left += kTimerSlopSeconds;
 
   timer_.Stop();
-  timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(seconds_left), this,
+  timer_.Start(FROM_HERE, base::Seconds(seconds_left), this,
                &TimeView::UpdateText);
 }
 

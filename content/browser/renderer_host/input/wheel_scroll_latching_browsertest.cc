@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "cc/base/features.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -29,12 +27,11 @@ namespace {
 void GiveItSomeTime() {
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromMilliseconds(20));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(20));
   run_loop.Run();
 }
 
 const char kWheelEventLatchingDataURL[] = R"HTML(
-    data:text/html;charset=utf-8,
     <!DOCTYPE html>
     <meta name='viewport' content='width=device-width, minimum-scale=1'>
     <style>
@@ -98,14 +95,14 @@ class WheelScrollLatchingBrowserTest : public ContentBrowserTest {
 
   RenderWidgetHostViewBase* GetRootView() {
     return static_cast<RenderWidgetHostViewBase*>(web_contents()
-                                                      ->GetFrameTree()
-                                                      ->root()
+                                                      ->GetPrimaryFrameTree()
+                                                      .root()
                                                       ->current_frame_host()
                                                       ->GetView());
   }
 
   void LoadURL(const std::string& page_data) {
-    const GURL data_url("data:text/html," + page_data);
+    const GURL data_url("data:text/html;charset=utf-8," + page_data);
     EXPECT_TRUE(NavigateToURL(shell(), data_url));
 
     RenderWidgetHostImpl* host = GetWidgetHost();
@@ -133,17 +130,7 @@ class WheelScrollLatchingBrowserTest : public ContentBrowserTest {
 // wheel scroll latching is enabled the wheel event will be still sent to the
 // document's scrolling element and the document's scrolling element will
 // continue scrolling.
-// Disabled on Android due to flakiness. See https://crbug.com/894572.
-#if defined(OS_ANDROID)
-#define MAYBE_WheelEventTarget DISABLED_WheelEventTarget
-#else
-#define MAYBE_WheelEventTarget WheelEventTarget
-#endif
-IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest, MAYBE_WheelEventTarget) {
-  base::FeatureList::ScopedDisallowOverrides disallow_feature_overrides(
-      nullptr);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(::features::kWheelEventRegions);
+IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest, WheelEventTarget) {
   LoadURL(kWheelEventLatchingDataURL);
   EXPECT_EQ(0, ExecuteScriptAndExtractInt("documentWheelEventCounter"));
   EXPECT_EQ(0, ExecuteScriptAndExtractInt("scrollableDivWheelEventCounter"));
@@ -160,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest, MAYBE_WheelEventTarget) {
              ExecuteScriptAndExtractDouble(
                  "scrollableDiv.getBoundingClientRect().right")) /
             2;
-  float y = 0.5 * scrollable_div_top;
+  float y = 0.1 * scrollable_div_top;
   float delta_x = 0;
   float delta_y = -0.6 * scrollable_div_top;
   blink::WebMouseWheelEvent wheel_event =
@@ -173,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest, MAYBE_WheelEventTarget) {
                                     ui::LatencyInfo());
 
   // Runs until we get the InputMsgAck callback.
-  EXPECT_EQ(blink::mojom::InputEventResultState::kNotConsumed,
+  EXPECT_EQ(blink::mojom::InputEventResultState::kSetNonBlocking,
             input_msg_watcher->WaitForAck());
 
   while (ExecuteScriptAndExtractDouble("document.scrollingElement.scrollTop") <
@@ -320,7 +307,6 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 const char kWheelRetargetIfPreventedByDefault[] = R"HTML(
-    data:text/html;charset=utf-8,
     <!DOCTYPE html>
     <meta name='viewport' content='width=device-width, minimum-scale=1'>
     <style>

@@ -16,8 +16,6 @@
 #include "base/threading/thread_checker.h"
 #include "components/arc/video_accelerator/protected_buffer_allocator.h"
 #include "media/gpu/macros.h"
-#include "mojo/public/cpp/system/buffer.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
@@ -40,6 +38,9 @@ constexpr size_t kMaxBuffersPerAllocator = 64;
 
 class ProtectedBufferManager::ProtectedBuffer {
  public:
+  ProtectedBuffer(const ProtectedBuffer&) = delete;
+  ProtectedBuffer& operator=(const ProtectedBuffer&) = delete;
+
   virtual ~ProtectedBuffer() {}
 
   // Downcasting methods to return duplicated handles to the underlying
@@ -65,8 +66,6 @@ class ProtectedBufferManager::ProtectedBuffer {
 
  private:
   scoped_refptr<gfx::NativePixmap> dummy_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProtectedBuffer);
 };
 
 class ProtectedBufferManager::ProtectedSharedMemory
@@ -185,6 +184,11 @@ class ProtectedBufferManager::ProtectedBufferAllocatorImpl
       uint64_t allocator_id,
       scoped_refptr<ProtectedBufferManager> protected_buffer_manager,
       base::OnceClosure release_all_protected_buffers_cb);
+
+  ProtectedBufferAllocatorImpl(const ProtectedBufferAllocatorImpl&) = delete;
+  ProtectedBufferAllocatorImpl& operator=(const ProtectedBufferAllocatorImpl&) =
+      delete;
+
   ~ProtectedBufferAllocatorImpl() override;
   bool AllocateProtectedSharedMemory(base::ScopedFD dummy_fd,
                                      size_t size) override;
@@ -199,7 +203,6 @@ class ProtectedBufferManager::ProtectedBufferAllocatorImpl
   base::OnceClosure release_all_protected_buffers_cb_;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(ProtectedBufferAllocatorImpl);
 };
 
 ProtectedBufferManager::ProtectedBufferAllocatorImpl::

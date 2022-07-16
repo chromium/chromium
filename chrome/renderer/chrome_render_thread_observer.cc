@@ -16,15 +16,14 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -80,6 +79,9 @@ class RendererResourceDelegate
  public:
   RendererResourceDelegate() = default;
 
+  RendererResourceDelegate(const RendererResourceDelegate&) = delete;
+  RendererResourceDelegate& operator=(const RendererResourceDelegate&) = delete;
+
   void OnRequestComplete() override {
     // Update the browser about our cache.
 
@@ -95,7 +97,7 @@ class RendererResourceDelegate
           FROM_HERE,
           base::BindOnce(&RendererResourceDelegate::InformHostOfCacheStats,
                          weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kCacheStatsDelayMS));
+          base::Milliseconds(kCacheStatsDelayMS));
     }
   }
 
@@ -128,8 +130,6 @@ class RendererResourceDelegate
       cache_stats_recorder_;
 
   base::WeakPtrFactory<RendererResourceDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RendererResourceDelegate);
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -238,7 +238,11 @@ void ChromeRenderThreadObserver::UnregisterMojoInterfaces(
 void ChromeRenderThreadObserver::SetInitialConfiguration(
     bool is_incognito_process,
     mojo::PendingReceiver<chrome::mojom::ChromeOSListener>
-        chromeos_listener_receiver) {
+        chromeos_listener_receiver,
+    mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
+        content_settings_manager) {
+  if (content_settings_manager)
+    content_settings_manager_.Bind(std::move(content_settings_manager));
   is_incognito_process_ = is_incognito_process;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos_listener_receiver) {

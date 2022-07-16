@@ -70,7 +70,7 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
 
   void SetDevicePolicy(int policy) {
     scoped_testing_cros_settings_.device_settings()->SetInteger(
-        chromeos::kDeviceCrostiniArcAdbSideloadingAllowed, policy);
+        ash::kDeviceCrostiniArcAdbSideloadingAllowed, policy);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -101,7 +101,7 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
   void FakePlannedNotificationTime() {
     // Fake that the first notification had been displayed more than 24 hours
     // ago.
-    base::Time yesterday = base::Time::Now() - base::TimeDelta::FromHours(25);
+    base::Time yesterday = base::Time::Now() - base::Hours(25);
     local_state_.Get()->SetInt64(
         prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime,
         yesterday.ToDeltaSinceWindowsEpoch().InSeconds());

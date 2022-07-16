@@ -333,7 +333,7 @@ ExtensionFunction::ResponseValue ClipboardBookmarkManagerFunction::CopyOrCut(
 
 ExtensionFunction::ResponseValue
 BookmarkManagerPrivateCopyFunction::RunOnReady() {
-  std::unique_ptr<Copy::Params> params(Copy::Params::Create(*args_));
+  std::unique_ptr<Copy::Params> params(Copy::Params::Create(args()));
   if (!params)
     return BadMessage();
   return CopyOrCut(false, params->id_list);
@@ -344,7 +344,7 @@ BookmarkManagerPrivateCutFunction::RunOnReady() {
   if (!EditBookmarksEnabled())
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
-  std::unique_ptr<Cut::Params> params(Cut::Params::Create(*args_));
+  std::unique_ptr<Cut::Params> params(Cut::Params::Create(args()));
   if (!params)
     return BadMessage();
   return CopyOrCut(true, params->id_list);
@@ -355,7 +355,7 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
   if (!EditBookmarksEnabled())
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
-  std::unique_ptr<Paste::Params> params(Paste::Params::Create(*args_));
+  std::unique_ptr<Paste::Params> params(Paste::Params::Create(args()));
   if (!params)
     return BadMessage();
   BookmarkModel* model =
@@ -390,7 +390,7 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
 
 ExtensionFunction::ResponseValue
 BookmarkManagerPrivateCanPasteFunction::RunOnReady() {
-  std::unique_ptr<CanPaste::Params> params(CanPaste::Params::Create(*args_));
+  std::unique_ptr<CanPaste::Params> params(CanPaste::Params::Create(args()));
   if (!params)
     return BadMessage();
 
@@ -413,7 +413,7 @@ BookmarkManagerPrivateSortChildrenFunction::RunOnReady() {
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
   std::unique_ptr<SortChildren::Params> params(
-      SortChildren::Params::Create(*args_));
+      SortChildren::Params::Create(args()));
   if (!params)
     return BadMessage();
 
@@ -433,12 +433,7 @@ BookmarkManagerPrivateStartDragFunction::RunOnReady() {
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
   content::WebContents* web_contents = GetSenderWebContents();
-  if (GetViewType(web_contents) != mojom::ViewType::kTabContents) {
-    NOTREACHED();
-    return Error(kUnknownErrorDoNotUse);
-  }
-
-  std::unique_ptr<StartDrag::Params> params(StartDrag::Params::Create(*args_));
+  std::unique_ptr<StartDrag::Params> params(StartDrag::Params::Create(args()));
   if (!params)
     return BadMessage();
 
@@ -466,7 +461,7 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
   if (!EditBookmarksEnabled())
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
-  std::unique_ptr<Drop::Params> params(Drop::Params::Create(*args_));
+  std::unique_ptr<Drop::Params> params(Drop::Params::Create(args()));
   if (!params)
     return BadMessage();
 
@@ -479,8 +474,6 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
     return Error(error);
 
   content::WebContents* web_contents = GetSenderWebContents();
-  DCHECK_EQ(mojom::ViewType::kTabContents, GetViewType(web_contents));
-
   size_t drop_index;
   if (params->index)
     drop_index = static_cast<size_t>(*params->index);
@@ -504,7 +497,7 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
 ExtensionFunction::ResponseValue
 BookmarkManagerPrivateGetSubtreeFunction::RunOnReady() {
   std::unique_ptr<GetSubtree::Params> params(
-      GetSubtree::Params::Create(*args_));
+      GetSubtree::Params::Create(args()));
   if (!params)
     return BadMessage();
 
@@ -536,7 +529,7 @@ BookmarkManagerPrivateRemoveTreesFunction::RunOnReady() {
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
   std::unique_ptr<RemoveTrees::Params> params(
-      RemoveTrees::Params::Create(*args_));
+      RemoveTrees::Params::Create(args()));
   if (!params)
     return BadMessage();
 
@@ -575,6 +568,6 @@ BookmarkManagerPrivateRedoFunction::RunOnReady() {
   return NoArguments();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(BookmarkManagerPrivateDragEventRouter)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(BookmarkManagerPrivateDragEventRouter);
 
 }  // namespace extensions

@@ -34,6 +34,10 @@ class BackButtonTest : public AshTestBase,
                        public testing::WithParamInterface<bool> {
  public:
   BackButtonTest() = default;
+
+  BackButtonTest(const BackButtonTest&) = delete;
+  BackButtonTest& operator=(const BackButtonTest&) = delete;
+
   ~BackButtonTest() override = default;
 
   BackButton* back_button() {
@@ -73,9 +77,6 @@ class BackButtonTest : public AshTestBase,
 
  protected:
   std::unique_ptr<ShelfViewTestAPI> test_api_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackButtonTest);
 };
 
 enum class TestAccessibilityFeature {

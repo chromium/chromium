@@ -29,11 +29,17 @@ struct CONTENT_EXPORT MediaDeviceSaltAndOrigin {
   MediaDeviceSaltAndOrigin();
   MediaDeviceSaltAndOrigin(std::string device_id_salt,
                            std::string group_id_salt,
-                           url::Origin origin);
+                           url::Origin origin,
+                           bool has_focus,
+                           bool is_background);
+  MediaDeviceSaltAndOrigin(const MediaDeviceSaltAndOrigin& other);
+  ~MediaDeviceSaltAndOrigin() = default;
 
   std::string device_id_salt;
   std::string group_id_salt;
   url::Origin origin;
+  bool has_focus;
+  bool is_background;
 };
 
 // Returns the current media device ID salt and security origin for the given

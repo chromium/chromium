@@ -70,7 +70,7 @@ class DirectoryOwnersExtractor(object):
             email_map[tuple(owners)].add(owned_directory_relpath)
         return {
             owners: sorted(owned_directories)
-            for owners, owned_directories in email_map.iteritems()
+            for owners, owned_directories in email_map.items()
         }
 
     def find_owners_file(self, start_path):
@@ -162,24 +162,25 @@ class DirectoryOwnersExtractor(object):
             A WPTDirMetadata object, or None if not found.
         """
         print('_read_dir_metadata %s' % path)
-        root_path = self.finder.web_tests_dir()
         dir_path = self.filesystem.dirname(path)
 
         # dirmd starts with an absolute directory path, `dir_path`, traverses all
         # parent directories and stops at `root_path` to find the first available DIR_METADATA
         # file. `root_path` is the web_tests directory.
-        print(self.executive)
         json_data = self.executive.run_command([
-            self.finder.path_from_depot_tools_base('dirmd'), 'compute',
-            '-root', root_path, dir_path
+            self.finder.path_from_depot_tools_base('dirmd'),
+            'read',
+            '-form', 'sparse',
+            dir_path,
         ])
-        print(json_data)
         try:
             data = json.loads(json_data)
         except ValueError:
             return None
 
-        relative_path = self.filesystem.relpath(dir_path, root_path)
+        # Paths in the dirmd output are relative to the repo root.
+        repo_root = self.finder.path_from_chromium_base()
+        relative_path = self.filesystem.relpath(dir_path, repo_root)
         return WPTDirMetadata(data, relative_path)
 
 

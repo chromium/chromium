@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_ARC_GRAPHICS_TRACING_ARC_GRAPHICS_TRACING_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_ARC_GRAPHICS_TRACING_ARC_GRAPHICS_TRACING_UI_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/arc_graphics_tracing/arc_graphics_tracing.h"
 #include "content/public/browser/web_ui_controller.h"
 
@@ -21,8 +20,8 @@ class ArcGraphicsTracingUI : public content::WebUIController {
  public:
   explicit ArcGraphicsTracingUI(content::WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcGraphicsTracingUI);
+  ArcGraphicsTracingUI(const ArcGraphicsTracingUI&) = delete;
+  ArcGraphicsTracingUI& operator=(const ArcGraphicsTracingUI&) = delete;
 };
 
 }  // namespace chromeos

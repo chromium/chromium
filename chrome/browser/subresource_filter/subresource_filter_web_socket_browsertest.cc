@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,6 +29,11 @@ class SubresourceFilterWebSocketBrowserTest
       public ::testing::WithParamInterface<WebSocketCreationPolicy> {
  public:
   SubresourceFilterWebSocketBrowserTest() {}
+
+  SubresourceFilterWebSocketBrowserTest(
+      const SubresourceFilterWebSocketBrowserTest&) = delete;
+  SubresourceFilterWebSocketBrowserTest& operator=(
+      const SubresourceFilterWebSocketBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
     SubresourceFilterBrowserTest::SetUpOnMainThread();
@@ -60,8 +64,6 @@ class SubresourceFilterWebSocketBrowserTest
 
  private:
   std::unique_ptr<net::SpawnedTestServer> websocket_test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterWebSocketBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest, BlockWebSocket) {
@@ -72,7 +74,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest, BlockWebSocket) {
   ConfigureAsPhishingURL(url);
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("echo-with-no-extension"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   CreateWebSocketAndExpectResult(websocket_url,
                                  false /* expect_connection_success */);
 }
@@ -85,7 +87,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest,
   GURL websocket_url(GetWebSocketUrl("echo-with-no-extension"));
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("echo-with-no-extension"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   CreateWebSocketAndExpectResult(websocket_url,
                                  true /* expect_connection_success */);
@@ -98,7 +100,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest,
                          GetParam() == IN_WORKER ? "inWorker" : "")));
   GURL websocket_url(GetWebSocketUrl("echo-with-no-extension"));
   ConfigureAsPhishingURL(url);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   CreateWebSocketAndExpectResult(websocket_url,
                                  true /* expect_connection_success */);

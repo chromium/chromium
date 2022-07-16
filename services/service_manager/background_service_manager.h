@@ -34,6 +34,10 @@ class ServiceManager;
 class BackgroundServiceManager {
  public:
   explicit BackgroundServiceManager(const std::vector<Manifest>& manifests);
+
+  BackgroundServiceManager(const BackgroundServiceManager&) = delete;
+  BackgroundServiceManager& operator=(const BackgroundServiceManager&) = delete;
+
   ~BackgroundServiceManager();
 
   // Creates a service instance for |identity|. This is intended for use by the
@@ -59,8 +63,6 @@ class BackgroundServiceManager {
 
   // Must only be used on the background thread.
   std::unique_ptr<ServiceManager> service_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundServiceManager);
 };
 
 }  // namespace service_manager

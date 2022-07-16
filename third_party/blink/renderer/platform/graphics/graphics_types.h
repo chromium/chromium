@@ -34,6 +34,9 @@
 
 namespace blink {
 
+typedef uintptr_t DisplayItemClientId;
+static const DisplayItemClientId kInvalidDisplayItemClientId = 0u;
+
 enum AlphaDisposition {
   kPremultiplyAlpha,
   kUnpremultiplyAlpha,
@@ -115,6 +118,12 @@ enum class BlendMode {
 enum OpacityMode {
   kNonOpaque,
   kOpaque,
+};
+
+enum class RasterEffectOutset : uint8_t {
+  kNone,
+  kHalfPixel,
+  kWholePixel,
 };
 
 // Specifies whether the provider should rasterize paint commands on the CPU

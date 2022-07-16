@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
@@ -26,6 +25,10 @@ namespace ash {
 class LibvdaServiceProvider : public CrosDBusService::ServiceProviderInterface {
  public:
   LibvdaServiceProvider();
+
+  LibvdaServiceProvider(const LibvdaServiceProvider&) = delete;
+  LibvdaServiceProvider& operator=(const LibvdaServiceProvider&) = delete;
+
   ~LibvdaServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -52,8 +55,6 @@ class LibvdaServiceProvider : public CrosDBusService::ServiceProviderInterface {
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
   base::WeakPtrFactory<LibvdaServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LibvdaServiceProvider);
 };
 
 }  // namespace ash

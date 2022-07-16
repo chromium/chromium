@@ -42,6 +42,17 @@
 </div>
 <div id="body-container" style="visibility:hidden">
   <div id="flagsTemplate">
+<if expr="lacros or chromeos">
+    <div class="os-link-container" id="os-link-container">
+      <span class="os-link-icon"></span>
+      <span aria-hidden="true" id="os-link-desc">$i18n{os-flags-text1}</span>
+      <a href="#" id="os-link-href" tabindex="4" aria-describedby="os-link-desc">
+        $i18n{os-flags-link}
+      </a>
+      <span aria-hidden="true">$i18n{os-flags-text2}</span>
+    </div>
+</if>
+
     <div class="flex-container">
       <div class="flex"><h1 class="section-header-title">$i18n{heading}</h1></div>
       <span id="version" class="flex">$i18n{version}</span>
@@ -70,7 +81,7 @@
         <a href="#tab-content-available" id="tab-available" class="tab" role="tab"
             aria-selected="true"
             aria-controls="panel1"
-            tabindex="4">$i18n{available}</a>
+            tabindex="5">$i18n{available}</a>
         <div id="tab-content-available" class="tab-content"
             role="tabpanel" aria-labelledby="tab-available" aria-hidden="false">
         </div>
@@ -94,14 +105,14 @@
                   <textarea class="experiment-origin-list-value"
                       jsvalues=".internal_name:internal_name; .value:origin_list_value;
                           aria-labelledby:internal_name + '_name'"
-                      tabindex="6"></textarea>
+                      tabindex="7"></textarea>
                 </div>
                 <a class="permalink" jsvalues="href: '#' + internal_name"
-                    jscontent="'#' + internal_name" tabindex="6"></a>
+                    jscontent="'#' + internal_name" tabindex="7"></a>
               </div>
               <div class="flex experiment-actions">
                 <div jsdisplay="options && options.length > 0">
-                  <select class="experiment-select" tabindex="6"
+                  <select class="experiment-select" tabindex="7"
                       jsvalues=".internal_name:internal_name;.disabled:!enabled;
                           aria-labelledby:internal_name + '_name'">
                     <option jsvalues=".selected:selected;"
@@ -110,7 +121,7 @@
                     </option>
                   </select>
                 </div>
-                <select class="experiment-enable-disable" tabindex="6"
+                <select class="experiment-enable-disable" tabindex="7"
                     jsdisplay="enabled !== undefined"
                     jsvalues=".internal_name:internal_name;
                         aria-labelledby:internal_name + '_name'">
@@ -141,14 +152,14 @@
                   <textarea class="experiment-origin-list-value"
                       jsvalues=".internal_name:internal_name; .value:origin_list_value;
                           aria-labelledby:internal_name + '_name'"
-                      tabindex="6"></textarea>
+                      tabindex="7"></textarea>
                 </div>
                 <a class="permalink" jsvalues="href: '#' + internal_name"
-                    jscontent="'#' + internal_name" tabindex="6"></a>
+                    jscontent="'#' + internal_name" tabindex="7"></a>
               </div>
               <div class="flex experiment-actions">
                 <div jsdisplay="options && options.length > 0">
-                  <select class="experiment-select" tabindex="6"
+                  <select class="experiment-select" tabindex="7"
                       jsvalues=".internal_name:internal_name;.disabled:!enabled;
                           aria-labelledby:internal_name + '_name'">
                     <option jsvalues=".selected:selected;"
@@ -158,7 +169,7 @@
                   </select>
                 </div>
                 <!-- Represent enabled / disabled options in a drop down -->
-                <select class="experiment-enable-disable" tabindex="6"
+                <select class="experiment-enable-disable" tabindex="7"
                     jsdisplay="enabled !== undefined"
                     jsvalues=".internal_name:internal_name;
                         aria-labelledby:internal_name + '_name'">
@@ -178,7 +189,7 @@
       <li>
         <a href="#tab-content-unavailable" id="tab-unavailable" class="tab" role="tab"
            aria-selected="false" aria-controls="panel2"
-           tabindex="5">$i18n{unavailable}</a>
+           tabindex="6">$i18n{unavailable}</a>
         <div id="tab-content-unavailable" class="tab-content"
             role="tabpanel" aria-labelledby="tab-unavailable" aria-hidden="false">
           <div class="experiment"
@@ -196,7 +207,7 @@
                 </p>
                 <a class="permalink"
                     jsvalues="href: '#' + internal_name"
-                    jscontent="'#' + internal_name" tabindex="8"></a>
+                    jscontent="'#' + internal_name" tabindex="9"></a>
               </div>
               <div class="flex experiment-actions">$i18n{not-available-platform}</div>
             </div>

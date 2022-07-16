@@ -9,19 +9,21 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 
-import androidx.annotation.Nullable;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /**
  * An interface for providing a custom view binder for a menu item displayed in the app menu.
  * The binder may be used to custom layout/presentation of individual menu items. Clicks on the menu
- * item need to be handled by {@link AppMenuClickHandler}, which is received in {{@link
- * #getView(MenuItem, View, ViewGroup, LayoutInflater, AppMenuClickHandler, highlightedItemId)}}.
- * Any in-product help highlighting for custom items and its sub-view needs to be handled by the
- * binder.
+ * item need to be handled by {@link AppMenuClickHandler}, which can be received in {@link
+ * ViewBinder#bind(model, view, propertyKey)} by {@link AppMenuItemProperties#CLICK_HANDLER} as a
+ * propertyKey. Any in-product help highlighting for custom items and its sub-view needs to be
+ * handled by the binder. The custom view binder can use {@link AppMenuItemProperties#HIGHLIGHTED}
+ * to determine if an item should be highlighted.
  */
-public interface CustomViewBinder {
+public interface CustomViewBinder extends ViewBinder<PropertyModel, View, PropertyKey> {
     /**
      * Indicates that this view binder does not handle a particular menu item.
      * See {{@link #getItemViewType(int)}}.
@@ -29,11 +31,10 @@ public interface CustomViewBinder {
     int NOT_HANDLED = -1;
 
     /**
-     * @return The number of types of Views that will be created by
-     * {{@link #getView(MenuItem, View, ViewGroup, LayoutInflater, AppMenuClickHandler,
-     * highlightedItemId)}}. The value returned by this method should be effectively treated as
-     * final. Once the CustomViewBinder has been retrieved by the app menu, it is expected that the
-     * item view type count remains stable.
+     * @return The number of types of Views that will be handled by ViewBinder. The value returned
+     *         by this method should be effectively treated as final. Once the CustomViewBinder has
+     *         been retrieved by the app menu, it is expected that the item view type count remains
+     *         stable.
      */
     int getViewTypeCount();
 
@@ -45,22 +46,14 @@ public interface CustomViewBinder {
     int getItemViewType(int id);
 
     /**
-     * Get a View that displays the data for an item handled by this binder.
-     * See {@link Adapter#getView(int, View, ViewGroup)}.
-     * @param item The {@link MenuItem} for which to create and bind a view.
-     * @param convertView The old view to re-use if possible.
-     * @param parent The parent that this view will eventually be attached to.
-     * @param inflater A {@link LayoutInflater} to use when inflating new views.
-     * @param appMenuClickHandler A {@link AppMenuClickHandler} to handle click events in the view.
-     * @param highlightedItemId     The resource id of the menu item that should be highlighted.
-     *                              Can be {@code null} if no item should be highlighted. Note that
-     *                              the custom view binder is responsible for highlighting the
-     *                              custom view and the appropriate sub-view based on this id.
-     * @return A View corresponding to the provided menu item.
+     * Return the layout resource id for the custom view. This method will only be called if the
+     * item is supported by this view binder ({@link #getItemViewType(int)} didn't return
+     * NOT_HANDLED).
+     * @param id The custom binder view type for a given menu item.
+     * @return The resource id for the layout for the provided view type, used to create a {@link
+     *         LayoutViewBuilder} if the viewType is supported, otherwise NOT_HANDLED.
      */
-    View getView(MenuItem item, @Nullable View convertView, ViewGroup parent,
-            LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler,
-            @Nullable Integer highlightedItemId);
+    int getLayoutId(int viewType);
 
     /**
      * Determines whether the enter animation should be applied to the menu item matching the

@@ -11,7 +11,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr char kAuthMethodUsageAsTabletHistogramName[] =
@@ -27,6 +27,10 @@ constexpr char kAuthMethodSwitchHistogramName[] =
 class LoginAuthRecorderTest : public InProcessBrowserTest {
  public:
   LoginAuthRecorderTest() = default;
+
+  LoginAuthRecorderTest(const LoginAuthRecorderTest&) = delete;
+  LoginAuthRecorderTest& operator=(const LoginAuthRecorderTest&) = delete;
+
   ~LoginAuthRecorderTest() override = default;
 
  protected:
@@ -37,7 +41,7 @@ class LoginAuthRecorderTest : public InProcessBrowserTest {
   }
 
   void EnableTabletMode(bool enable) {
-    ash::ShellTestApi().SetTabletModeEnabledForTest(enable);
+    ShellTestApi().SetTabletModeEnabledForTest(enable);
   }
 
   LoginAuthRecorder* metrics_recorder() {
@@ -63,9 +67,6 @@ class LoginAuthRecorderTest : public InProcessBrowserTest {
 
   // Used to verify recorded data.
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginAuthRecorderTest);
 };
 
 // Verifies that auth method usage is recorded correctly.
@@ -181,4 +182,4 @@ IN_PROC_BROWSER_TEST_F(LoginAuthRecorderTest, AuthMethodSwitch) {
                     LoginAuthRecorder::AuthMethodSwitchType::kPinToPassword, 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

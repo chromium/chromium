@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/memory_pressure_listener.h"
@@ -728,7 +728,7 @@ class CC_EXPORT GpuImageDecodeCache
 
   // |persistent_cache_| represents the long-lived cache, keeping a certain
   // budget of ImageDatas alive even when their ref count reaches zero.
-  using PersistentCache = base::HashingMRUCache<PaintImage::FrameKey,
+  using PersistentCache = base::HashingLRUCache<PaintImage::FrameKey,
                                                 scoped_refptr<ImageData>,
                                                 PaintImage::FrameKeyHash>;
   void AddToPersistentCache(const DrawImage& draw_image,

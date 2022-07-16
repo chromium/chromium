@@ -124,7 +124,7 @@ void PowerButtonTestBase::EnableTabletMode(bool enable) {
 
 void PowerButtonTestBase::AdvanceClockToAvoidIgnoring() {
   tick_clock_.Advance(PowerButtonController::kIgnoreRepeatedButtonUpDelay +
-                      base::TimeDelta::FromMilliseconds(1));
+                      base::Milliseconds(1));
 }
 
 }  // namespace ash

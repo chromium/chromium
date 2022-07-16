@@ -69,7 +69,7 @@ void GeneratedImageCache::RemoveSize(const FloatSize& size) {
 }
 
 CSSImageGeneratorValue::CSSImageGeneratorValue(ClassType class_type)
-    : CSSValue(class_type), keep_alive_(PERSISTENT_FROM_HERE) {}
+    : CSSValue(class_type) {}
 
 CSSImageGeneratorValue::~CSSImageGeneratorValue() = default;
 
@@ -103,6 +103,11 @@ void CSSImageGeneratorValue::RemoveClient(const ImageResourceObserver* client) {
     DCHECK(keep_alive_);
     keep_alive_.Clear();
   }
+}
+
+void CSSImageGeneratorValue::TraceAfterDispatch(blink::Visitor* visitor) const {
+  visitor->Trace(clients_);
+  CSSValue::TraceAfterDispatch(visitor);
 }
 
 Image* CSSImageGeneratorValue::GetImage(const ImageResourceObserver* client,

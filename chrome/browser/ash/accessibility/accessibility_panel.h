@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -31,6 +30,10 @@ class AccessibilityPanel : public views::WidgetDelegate,
   explicit AccessibilityPanel(content::BrowserContext* browser_context,
                               std::string content_url,
                               std::string widget_name);
+
+  AccessibilityPanel(const AccessibilityPanel&) = delete;
+  AccessibilityPanel& operator=(const AccessibilityPanel&) = delete;
+
   ~AccessibilityPanel() override;
 
   // Closes the panel immediately, deleting the WebView/WebContents.
@@ -52,7 +55,7 @@ class AccessibilityPanel : public views::WidgetDelegate,
   class AccessibilityPanelWebContentsObserver;
 
   // content::WebContentsDelegate:
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
 
   // Indirectly invoked by the component extension.
@@ -62,8 +65,6 @@ class AccessibilityPanel : public views::WidgetDelegate,
   std::unique_ptr<AccessibilityPanelWebContentsObserver> web_contents_observer_;
   views::Widget* widget_ = nullptr;
   views::View* web_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityPanel);
 };
 
 }  // namespace ash

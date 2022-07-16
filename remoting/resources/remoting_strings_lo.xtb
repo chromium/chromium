@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">ເກີດ​ຄວາມ​ຜິດ​ພາດ​ທີ່​ບໍ່​ຄາດ​ຄິດ​ຂຶ້ນ​. ກະ​ລຸ​ນາ​ລາຍ​ງານ​ບັນ​ຫາ​ນີ້ໃຫ້ຜູ້​ພັດ​ທະ​ນາ​.</translation>
 <translation id="1697532407822776718">ທ່ານຕັ້ງຮຽບຮ້ອຍໝົດແລ້ວ!</translation>
 <translation id="1742469581923031760">ການ​ເຊື່ອມ​ຕໍ່...</translation>
+<translation id="177040763384871009">ເພື່ອອະນຸຍາດໃຫ້ລິ້ງທີ່ຄລິກຢູ່ອຸປະກອນທາງໄກຖືກເປີດຢູ່ໂປຣແກຣມທ່ອງເວັບລູກຂ່າຍ, ທ່ານຈະຕ້ອງປ່ຽນໂປຣແກຣມທ່ອງເວັບຂອງລະບົບໃຫ້ເປັນ "<ph name="URL_FORWARDER_NAME" />" ກ່ອນ.</translation>
 <translation id="177096447311351977">IP ຊ່ອງສໍາລັບລູກຂ່າຍ: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' ຊ່ອງ='<ph name="CHANNEL_TYPE" />' ການເຊື່ອມຕໍ່='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">ລຶບ</translation>
 <translation id="2009755455353575666">ການ​ເຊື່ອມ​ຕໍ່​ບໍ່ສໍາເລັດ</translation>
@@ -56,6 +57,7 @@
 <translation id="369442766917958684">ອອບລາຍ</translation>
 <translation id="3695446226812920698">ສຶກສາວິທີການ</translation>
 <translation id="3776024066357219166">ໝົດໄລຍະເວລາ Chrome Remote Desktop ຂອງທ່ານແລ້ວ.</translation>
+<translation id="3858860766373142691">ຊື່</translation>
 <translation id="3897092660631435901">ເມ​ນູ</translation>
 <translation id="3905196214175737742">ໂດ​ເມນ​ເຈົ້າ​ຂອງ​ແມ່​ຂ່າຍ​ໃຊ້​ບໍ່​ໄດ້.</translation>
 <translation id="3931191050278863510">ແມ່​ຂ່າຍ​ຢຸ​ດ​ແລ້ວ.</translation>
@@ -77,6 +79,7 @@
 <translation id="4512952200932940229">ລິຂະສິດ 2021 Chromium Authors. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="4513946894732546136">ຄໍາຄິດເຫັນ</translation>
 <translation id="4563926062592110512">ຕັດເຊື່ອມຕໍ່ລູກຂ່າຍແລ້ວ: <ph name="CLIENT_USERNAME" /> .</translation>
+<translation id="4618411825115957973">ບໍ່ໄດ້ຕັ້ງຄ່າ <ph name="URL_FORWARDER_NAME" /> ຢ່າງຖືກຕ້ອງ. ກະລຸນາເລືອກໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນອື່ນແລ້ວຈາກນັ້ນເປີດການນຳໃຊ້ການສົ່ງຕໍ່ URL ອີກເທື່ອໜຶ່ງ.</translation>
 <translation id="4635770493235256822">ອຸປະກອນທາງໄກ</translation>
 <translation id="4660011489602794167">ສະແດງແປ້ນພິມ</translation>
 <translation id="4703799847237267011">ໄລຍະເວລາຂອງ Chromoting ​ສິ້ນ​ສຸດ​ລົງ​.</translation>
@@ -97,7 +100,6 @@
 <translation id="5222676887888702881">ອອກຈາກລະບົບ</translation>
 <translation id="5234764350956374838">ປ່ອຍໄປ</translation>
 <translation id="5308380583665731573">​ເຊື່ອມ​ຕໍ່</translation>
-<translation id="5327248766486351172">ຊື່</translation>
 <translation id="533625276787323658">ບໍ່​ມີ​ຫຍັງ​ໃຫ້​ເຊື່ອ​ມຕໍ່​ກັບ</translation>
 <translation id="5397086374758643919">ຕົວຖອນຕິດຕັ້ງແມ່ຂ່າຍ Chrome Remote Desktop</translation>
 <translation id="5419418238395129586">ອອນລາຍຫຼ້າສຸດ: <ph name="DATE" /></translation>
@@ -108,6 +110,7 @@
 <translation id="5750083143895808682">ເຂົ້າສູ່ລະບົບເປັນ <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">ເຊື່ອມຕໍ່ໃໝ່</translation>
 <translation id="5810269635982033450">ໜ້າຈໍເຮັດໜ້າທີ່ເປັນແທຣັກແຜດ</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ຮ້ອງຂໍການເຂົ້າເຖິງເພື່ອເບິ່ງໜ້າຈໍຂອງທ່ານ ແລະ ຄວບຄຸມແປ້ນພິມ ແລະ ເມົ້າຂອງທ່ານແລ້ວ. ກົດ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ຫາກທ່ານບໍ່ຄາດວ່າຈະມີຄຳຮ້ອງຂໍນີ້. ບໍ່ດັ່ງນັ້ນໃຫ້ເລືອກ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ເພື່ອອະນຸຍາດການເຊື່ອມຕໍ່ເມື່ອພ້ອມ.</translation>
 <translation id="5823658491130719298">ໃນຄອມພິວເຕີທີ່ທ່ານຕ້ອງການເຂົ້າເຖິງຈາກທາງໄກ, ເປີດ Chrome ແລະ ເຂົ້າຫາ <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">ຕົວເລືອກການສະແດງຜົນ</translation>
 <translation id="6033507038939587647">ຕົວເລືອກແປ້ນພິມ</translation>
@@ -143,6 +146,7 @@ Desktop</translation>
 <translation id="7434397035092923453">ປະຕິເສດການເຂົ້າຫາສໍາລັບລູກຂ່າຍ​: <ph name="CLIENT_USERNAME" /> .</translation>
 <translation id="7444276978508498879">ເຊື່ອມ​ຕໍ່​ລູກຂ່າຍແລ້ວ: <ph name="CLIENT_USERNAME" /> .</translation>
 <translation id="7526139040829362392">ປ່ຽນບັນຊີ</translation>
+<translation id="7535110896613603182">ເປີດການຕັ້ງຄ່າແອັບເລີ່ມຕົ້ນ</translation>
 <translation id="7628469622942688817">ຈື່ PIN ຂອງຂ້ອຍໃນອຸປະກອນນີ້.</translation>
 <translation id="7649070708921625228">ຊ່ວຍ​ເຫຼືອ</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
@@ -167,6 +171,7 @@ Desktop</translation>
 ເພື່ອໃຫ້ການອະນຸຍາດ, ກະລຸນາຄລິກ '<ph name="BUTTON_NAME" />' ຂ້າງລຸ່ມ. ໃນແຖບການຕັ້ງຄ່າ 'ການຊ່ວຍເຂົ້າເຖິງ' ທີ່ເປີດຢູ່, ກະລຸນາໝາຍເອົາກ່ອງຢູ່ໜ້າ '<ph name="SERVICE_SCRIPT_NAME" />'.
 
 ຖ້າມີການໝາຍເອົາ '<ph name="SERVICE_SCRIPT_NAME" />' ຢູ່ແລ້ວ, ກະລຸນາຍົກເລີກການໝາຍເອົາ ແລະ ຈາກນັ້ນໝາຍເອົາມັນອີກຄັ້ງ.</translation>
+<translation id="8305209735512572429">ໂປຣເຊສການຣີໂໝດການພິສູດຢືນຢັນເວັບ</translation>
 <translation id="8383794970363966105">ເພື່ອໃຊ້ Chromoting, ທ່ານຈໍາເປັນຕ້ອງເພີ່ມບັນຊີ Google ໃສ່ກັບອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="8386846956409881180">ແມ່​ຂ່າຍ​ຖືກ​ກຳ​ນົດ​ຄ່າ​ດ້ວຍ​ຄຳ​ຢັ້ງ​ຢືນ OAuth ໃຊ້​ບໍ່​ໄດ້.</translation>
 <translation id="8397385476380433240">ໃຫ້ການອະນຸຍາດແກ່ <ph name="PRODUCT_NAME" /></translation>

@@ -13,7 +13,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -66,6 +65,10 @@ class CpuDataCollector {
   }
 
   CpuDataCollector();
+
+  CpuDataCollector(const CpuDataCollector&) = delete;
+  CpuDataCollector& operator=(const CpuDataCollector&) = delete;
+
   ~CpuDataCollector();
 
   // Starts a repeating timer which periodically runs a callback to collect
@@ -139,7 +142,6 @@ class CpuDataCollector {
   int cpu_count_;
 
   base::WeakPtrFactory<CpuDataCollector> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CpuDataCollector);
 };
 
 }  // namespace ash

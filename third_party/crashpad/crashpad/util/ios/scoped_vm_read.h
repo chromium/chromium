@@ -17,7 +17,6 @@
 
 #include <mach/mach.h>
 
-#include "base/macros.h"
 
 namespace crashpad {
 namespace internal {
@@ -28,6 +27,10 @@ namespace internal {
 class ScopedVMReadInternal {
  public:
   ScopedVMReadInternal();
+
+  ScopedVMReadInternal(const ScopedVMReadInternal&) = delete;
+  ScopedVMReadInternal& operator=(const ScopedVMReadInternal&) = delete;
+
   ~ScopedVMReadInternal();
 
   //! \brief Releases any previously read data and vm_reads \a data. Logs an
@@ -51,8 +54,6 @@ class ScopedVMReadInternal {
 
   // The size of the pages that were actually read.
   mach_msg_type_number_t vm_read_data_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVMReadInternal);
 };
 
 //! \brief A scoped wrapper for calls to `vm_read` and `vm_deallocate`.  Allows
@@ -63,6 +64,10 @@ template <typename T>
 class ScopedVMRead {
  public:
   ScopedVMRead() : internal_() {}
+
+  ScopedVMRead(const ScopedVMRead&) = delete;
+  ScopedVMRead& operator=(const ScopedVMRead&) = delete;
+
   ~ScopedVMRead() {}
 
   //! \brief Releases any previously read data and vm_reads data.
@@ -70,11 +75,20 @@ class ScopedVMRead {
   //! \param[in] data Memory to be read by vm_read.
   //! \param[in] count Length of \a data.
   //!
-  //! \return `true` if all the data was read. Logs an error and returns false
-  //!   on failure
+  //! \return `true` if all \a data was read. Returns false on failure.
   bool Read(const void* data, size_t count = 1) {
     size_t data_length = count * sizeof(T);
     return internal_.Read(data, data_length);
+  }
+
+  //! \brief Releases any previously read data and vm_reads address.
+  //!
+  //! \param[in] address Address of memory to be read by vm_read.
+  //! \param[in] count Length of \a data.
+  //!
+  //! \return `true` if all of \a address was read. Returns false on failure.
+  bool Read(vm_address_t address, size_t count = 1) {
+    return Read(reinterpret_cast<T*>(address), count);
   }
 
   //! \brief Returns the pointer to memory safe to read during the in-process
@@ -87,7 +101,6 @@ class ScopedVMRead {
 
  private:
   ScopedVMReadInternal internal_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedVMRead);
 };
 
 }  // namespace internal

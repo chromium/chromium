@@ -49,6 +49,10 @@ namespace {
 class FakeFullscreenDelegate : public WebContentsDelegate {
  public:
   FakeFullscreenDelegate() = default;
+
+  FakeFullscreenDelegate(const FakeFullscreenDelegate&) = delete;
+  FakeFullscreenDelegate& operator=(const FakeFullscreenDelegate&) = delete;
+
   ~FakeFullscreenDelegate() override = default;
 
   void EnterFullscreenModeForTab(
@@ -67,7 +71,6 @@ class FakeFullscreenDelegate : public WebContentsDelegate {
 
  private:
   bool is_fullscreen_ = false;
-  DISALLOW_COPY_AND_ASSIGN(FakeFullscreenDelegate);
 };
 
 }  // namespace

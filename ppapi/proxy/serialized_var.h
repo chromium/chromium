@@ -115,6 +115,10 @@ class PPAPI_PROXY_EXPORT SerializedVar {
    public:
     Inner();
     Inner(VarSerializationRules* serialization_rules);
+
+    Inner(const Inner&) = delete;
+    Inner& operator=(const Inner&) = delete;
+
     ~Inner();
 
     VarSerializationRules* serialization_rules() {
@@ -199,8 +203,6 @@ class PPAPI_PROXY_EXPORT SerializedVar {
     // (e.g. PP_VARTYPE_STRING). The data is stored in |raw_var_data_| and the
     // PP_Var is constructed when |GetVar()| is called.
     std::unique_ptr<RawVarDataGraph> raw_var_data_;
-
-    DISALLOW_COPY_AND_ASSIGN(Inner);
   };
 
   SerializedVar(VarSerializationRules* serialization_rules);
@@ -281,10 +283,12 @@ class PPAPI_PROXY_EXPORT ReceiveSerializedVarReturnValue
   //   ReceiveSerializedVarReturnValue(serialized).Return(dispatcher);
   explicit ReceiveSerializedVarReturnValue(const SerializedVar& serialized);
 
-  PP_Var Return(Dispatcher* dispatcher);
+  ReceiveSerializedVarReturnValue(const ReceiveSerializedVarReturnValue&) =
+      delete;
+  ReceiveSerializedVarReturnValue& operator=(
+      const ReceiveSerializedVarReturnValue&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReceiveSerializedVarReturnValue);
+  PP_Var Return(Dispatcher* dispatcher);
 };
 
 // Example for API:
@@ -298,7 +302,14 @@ class PPAPI_PROXY_EXPORT ReceiveSerializedVarReturnValue
 //   }
 class PPAPI_PROXY_EXPORT ReceiveSerializedException : public SerializedVar {
  public:
+  ReceiveSerializedException() = delete;
+
   ReceiveSerializedException(Dispatcher* dispatcher, PP_Var* exception);
+
+  ReceiveSerializedException(const ReceiveSerializedException&) = delete;
+  ReceiveSerializedException& operator=(const ReceiveSerializedException&) =
+      delete;
+
   ~ReceiveSerializedException();
 
   // Returns true if the exception passed in the constructor is set. Check
@@ -308,8 +319,6 @@ class PPAPI_PROXY_EXPORT ReceiveSerializedException : public SerializedVar {
  private:
   // The input/output exception we're wrapping. May be NULL.
   PP_Var* exception_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ReceiveSerializedException);
 };
 
 // Helper class for when we're returning a vector of Vars. When it goes out
@@ -327,9 +336,17 @@ class PPAPI_PROXY_EXPORT ReceiveSerializedException : public SerializedVar {
 //   }
 class PPAPI_PROXY_EXPORT ReceiveSerializedVarVectorOutParam {
  public:
+  ReceiveSerializedVarVectorOutParam() = delete;
+
   ReceiveSerializedVarVectorOutParam(Dispatcher* dispatcher,
                                      uint32_t* output_count,
                                      PP_Var** output);
+
+  ReceiveSerializedVarVectorOutParam(
+      const ReceiveSerializedVarVectorOutParam&) = delete;
+  ReceiveSerializedVarVectorOutParam& operator=(
+      const ReceiveSerializedVarVectorOutParam&) = delete;
+
   ~ReceiveSerializedVarVectorOutParam();
 
   std::vector<SerializedVar>* OutParam();
@@ -340,8 +357,6 @@ class PPAPI_PROXY_EXPORT ReceiveSerializedVarVectorOutParam {
   PP_Var** output_;
 
   std::vector<SerializedVar> vector_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ReceiveSerializedVarVectorOutParam);
 };
 
 // Helpers for message receiving side ------------------------------------------

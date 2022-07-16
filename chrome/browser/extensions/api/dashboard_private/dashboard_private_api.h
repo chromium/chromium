@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -31,6 +30,13 @@ class DashboardPrivateShowPermissionPromptForDelegatedInstallFunction
       DASHBOARDPRIVATE_SHOWPERMISSIONPROMPTFORDELEGATEDINSTALL)
 
   DashboardPrivateShowPermissionPromptForDelegatedInstallFunction();
+
+  DashboardPrivateShowPermissionPromptForDelegatedInstallFunction(
+      const DashboardPrivateShowPermissionPromptForDelegatedInstallFunction&) =
+      delete;
+  DashboardPrivateShowPermissionPromptForDelegatedInstallFunction& operator=(
+      const DashboardPrivateShowPermissionPromptForDelegatedInstallFunction&) =
+      delete;
 
  private:
   using Params =
@@ -65,9 +71,6 @@ class DashboardPrivateShowPermissionPromptForDelegatedInstallFunction
   scoped_refptr<Extension> dummy_extension_;
 
   std::unique_ptr<ExtensionInstallPrompt> install_prompt_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      DashboardPrivateShowPermissionPromptForDelegatedInstallFunction);
 };
 
 }  // namespace extensions

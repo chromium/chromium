@@ -24,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/toolbar_shadow_height"
-        app:tabIndicatorColor="@color/default_control_color_active"
+        app:tabIndicatorColor="@macro/tab_layout_selected_tab_color"
         app:tabGravity="fill"
         app:tabMode="fixed"
         app:tabMaxWidth="2000dp">

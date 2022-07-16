@@ -79,20 +79,26 @@ also need to include your new `eg_app_support+eg2` target in
  CL adding App Interface]).
 
 Note that if you create an App interface, you can’t build the app interface
-class in your eg2_tests target, but you need to include and refer to it. If you
-see a “Undefined symbols for architecture… MyTestAppInterface”, add
+class in your eg2_tests target, but you need to include and refer to it. To
+satisfy the linker, you'll need to create a `my_test_app_interface_stub.mm`
+file with the following content in it and build it as a dependency of your
+tests that use the app interface.
+
+```objc
+#import "ios_internal/chrome/test/earl_grey2/my_test_app_interface.h"
+
+#import <TestLib/EarlGreyImpl/EarlGrey.h>
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(MyTestAppInterface)
+
 ```
-#if defined(CHROME_EARL_GREY_2)
-// TODO(crbug.com/1015113) The EG2 macro is breaking indexing for some reason
-// without the trailing semicolon.  For now, disable the extra semi warning
-// so Xcode indexing works for the egtest.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(HandoffManagerAppInterface);
-#pragma clang diagnostic pop
-#endif  // defined(CHROME_EARL_GREY_2)
-```
-to the top of your foo_egtest.mm file. 
+
+If you don't you'll get linker errors that read like “Undefined symbols for
+architecture… MyTestAppInterface”
 
 #### Creating test targets and adding the target to test suites
 

@@ -370,10 +370,11 @@ interface DCOMPTexture {
   // Sets the size of DCOMPTexture.
   SetTextureSize(gfx.mojom.Size size);
 
-  // Binds the DCOMPTexture to a DCOMP surface handle. The surface handle is
-  // provided as token registered with the DCOMP surface handle registry in the
-  // GPU process.
-  SetSurfaceHandle(mojo_base.mojom.UnguessableToken surface_handle_token);
+  // Binds the DCOMPTexture to a DCOMP surface handle and returns whether the
+  // operation succeeded or not. The surface handle is provided as `token`
+  // registered with the DCOMP surface handle registry in the GPU process.
+  SetDCOMPSurfaceHandle(mojo_base.mojom.UnguessableToken token)
+      => (bool success);
 };
 
 // Interface used by GPU to notify the client of a DCOMPTexture instance about
@@ -387,12 +388,8 @@ interface DCOMPTextureClient {
   // DCOMPTexture instance.
   OnSharedImageMailboxBound(Mailbox mailbox);
 
-  // Informs the client that DCOMP surface handle has been bound to the
-  // DCOMPTexture instance.
-  OnDCOMPSurfaceHandleBound(bool success);
-
   // Informs the client of a change in video composition parameter.
-  OnCompositionParamsChanged(gfx.mojom.Rect output_rect);
+  OnOutputRectChange(gfx.mojom.Rect output_rect);
 };
 
 // DeferredRequests are batched locally by clients and sent to the service only
@@ -480,6 +477,10 @@ union DeferredSharedImageRequest {
 
   // See UpdateSharedImageParams.
   UpdateSharedImageParams update_shared_image;
+
+  // See CopyToGpuMemoryBufferParams.
+  [EnableIf=is_win]
+  CopyToGpuMemoryBufferParams copy_to_gpu_memory_buffer;
 
   // Destroys the shared image identified by this Mailbox.
   Mailbox destroy_shared_image;
@@ -592,13 +593,13 @@ struct CreateGMBSharedImageParams {
   // A handle to the existing GPU memory buffer.
   gfx.mojom.GpuMemoryBufferHandle buffer_handle;
 
-  // Size in pixels.
+  // Size in pixels of the GPU memory buffer.
   gfx.mojom.Size size;
 
-  // Format of pixels in the buffer.
+  // Format of pixels in the GPU memory buffer.
   gfx.mojom.BufferFormat format;
 
-  // Image plane represented by the buffer.
+  // Plane for which to create the shared image.
   gfx.mojom.BufferPlane plane;
 
   // Color space.
@@ -671,6 +672,17 @@ struct UpdateSharedImageParams {
   // An optional GpuFenceHandle for the server to wait on before updating the
   // image from whatever backs it.
   gfx.mojom.GpuFenceHandle? in_fence_handle;
+};
+
+// Updates the contents of the GpuMemoryBuffer associated with the shared image.
+// Necessary on platforms like Windows where renderer cannot create native GMBs.
+[EnableIf=is_win]
+struct CopyToGpuMemoryBufferParams {
+  // The mailbox identifying the shared image which should update its GMB.
+  Mailbox mailbox;
+
+  // The fence to release once the GMB has been updated.
+  uint32 release_id;
 };
 
 [EnableIf=is_win]

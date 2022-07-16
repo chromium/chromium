@@ -23,6 +23,10 @@ class OpenXrAnchorManager {
   OpenXrAnchorManager(const OpenXrExtensionHelper& extension_helper,
                       XrSession session,
                       XrSpace mojo_space);
+
+  OpenXrAnchorManager(const OpenXrAnchorManager&) = delete;
+  OpenXrAnchorManager& operator=(const OpenXrAnchorManager&) = delete;
+
   ~OpenXrAnchorManager();
 
   void AddCreateAnchorRequest(
@@ -89,7 +93,6 @@ class OpenXrAnchorManager {
 
   AnchorId::Generator anchor_id_generator_;  // 0 is not a valid anchor ID
   std::map<AnchorId, AnchorData> openxr_anchors_;
-  DISALLOW_COPY_AND_ASSIGN(OpenXrAnchorManager);
 };
 
 }  // namespace device

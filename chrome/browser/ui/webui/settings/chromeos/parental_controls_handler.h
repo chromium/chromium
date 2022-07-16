@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PARENTAL_CONTROLS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PARENTAL_CONTROLS_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 class Profile;
@@ -17,6 +16,10 @@ namespace settings {
 class ParentalControlsHandler : public ::settings::SettingsPageUIHandler {
  public:
   explicit ParentalControlsHandler(Profile* profile);
+
+  ParentalControlsHandler(const ParentalControlsHandler&) = delete;
+  ParentalControlsHandler& operator=(const ParentalControlsHandler&) = delete;
+
   ~ParentalControlsHandler() override;
 
  protected:
@@ -33,8 +36,6 @@ class ParentalControlsHandler : public ::settings::SettingsPageUIHandler {
   void HandleLaunchFamilyLinkSettings(const base::ListValue* args);
 
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParentalControlsHandler);
 };
 
 }  // namespace settings

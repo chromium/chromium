@@ -17,13 +17,12 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/arc_features.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/audio/arc_audio_bridge.h"
 #include "components/arc/intent_helper/control_camera_app_delegate.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/url_formatter/url_fixer.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -203,15 +202,6 @@ void ArcIntentHelperBridge::OnOpenUrl(const std::string& url) {
     g_open_url_delegate->OpenUrlFromArc(gurl);
 }
 
-void ArcIntentHelperBridge::OnOpenCustomTabDeprecated(
-    const std::string& url,
-    int32_t task_id,
-    int32_t surface_id,
-    int32_t top_margin,
-    OnOpenCustomTabCallback callback) {
-  OnOpenCustomTab(url, task_id, std::move(callback));
-}
-
 void ArcIntentHelperBridge::OnOpenCustomTab(const std::string& url,
                                             int32_t task_id,
                                             OnOpenCustomTabCallback callback) {
@@ -245,12 +235,6 @@ void ArcIntentHelperBridge::OpenWallpaperPicker() {
   ash::WallpaperController::Get()->OpenWallpaperPickerIfAllowed();
 }
 
-void ArcIntentHelperBridge::SetWallpaperDeprecated(
-    const std::vector<uint8_t>& jpeg_data) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  LOG(ERROR) << "IntentHelper.SetWallpaper is deprecated";
-}
-
 void ArcIntentHelperBridge::OpenVolumeControl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   RecordOpenType(ArcIntentHelperOpenType::VOLUME_CONTROL);
@@ -270,11 +254,13 @@ void ArcIntentHelperBridge::OnOpenWebApp(const std::string& url) {
     g_open_url_delegate->OpenWebAppFromArc(gurl);
 }
 
-void ArcIntentHelperBridge::RecordShareFilesMetrics(mojom::ShareFiles flag) {
+// TODO(b/200873831): Delete this anytime on 2022.
+void ArcIntentHelperBridge::RecordShareFilesMetricsDeprecated(
+    mojom::ShareFiles flag) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Record metrics coming from ARC, these are related Share files feature
   // stability.
-  UMA_HISTOGRAM_ENUMERATION("Arc.ShareFilesOnExit", flag);
+  LOG(ERROR) << "Arc.ShareFilesOnExit is deprecated, erasing incoming";
 }
 
 void ArcIntentHelperBridge::LaunchCameraApp(uint32_t intent_id,
@@ -331,13 +317,20 @@ void ArcIntentHelperBridge::IsChromeAppEnabled(
   std::move(callback).Run(false);
 }
 
-void ArcIntentHelperBridge::OnPreferredAppsChanged(
+void ArcIntentHelperBridge::OnPreferredAppsChangedDeprecated(
     std::vector<IntentFilter> added,
     std::vector<IntentFilter> deleted) {
   added_preferred_apps_ = std::move(added);
   deleted_preferred_apps_ = std::move(deleted);
   for (auto& observer : observer_list_)
     observer.OnPreferredAppsChanged();
+}
+
+void ArcIntentHelperBridge::OnSupportedLinksChanged(
+    std::vector<arc::mojom::SupportedLinksPtr> added_packages,
+    std::vector<arc::mojom::SupportedLinksPtr> removed_packages) {
+  for (auto& observer : observer_list_)
+    observer.OnArcSupportedLinksChanged(added_packages, removed_packages);
 }
 
 void ArcIntentHelperBridge::OnDownloadAdded(
@@ -361,14 +354,6 @@ void ArcIntentHelperBridge::OnDownloadAdded(
 void ArcIntentHelperBridge::OnOpenAppWithIntent(
     const GURL& start_url,
     arc::mojom::LaunchIntentPtr intent) {
-  // Fall-back to the previous behavior where the web app opens without any
-  // share data.
-  if (!base::FeatureList::IsEnabled(arc::kEnableWebAppShareFeature)) {
-    if (intent->data)
-      OnOpenWebApp(intent->data->spec());
-    return;
-  }
-
   // Web app launches should only be invoked on HTTPS URLs.
   if (CanOpenWebAppForUrl(start_url)) {
     RecordOpenType(ArcIntentHelperOpenType::WEB_APP);

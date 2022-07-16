@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
@@ -67,7 +66,7 @@ scoped_refptr<extensions::Extension> CreateFakeExtension(
   manifest.SetKey(extensions::manifest_keys::kName, base::Value("unused"));
 
   base::ListValue permissions_list;
-  permissions_list.AppendString("fileSystemProvider");
+  permissions_list.Append("fileSystemProvider");
   manifest.SetKey(extensions::manifest_keys::kPermissions,
                   std::move(permissions_list));
 

@@ -274,8 +274,8 @@ int BeepingSource::OnMoreData(base::TimeDelta /* delay */,
   BeepContext* beep_context = GetBeepContext();
   if (beep_context->automatic_beep()) {
     base::TimeDelta delta = interval_from_last_beep_ -
-        base::TimeDelta::FromMilliseconds(kAutomaticBeepIntervalInMs);
-    if (delta > base::TimeDelta()) {
+                            base::Milliseconds(kAutomaticBeepIntervalInMs);
+    if (delta.is_positive()) {
       should_beep = true;
       interval_from_last_beep_ = delta;
     }

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/cronet/cronet_upload_data_stream.h"
@@ -161,6 +160,11 @@ class VerifyDestructionRunnable : public Cronet_Runnable {
  public:
   VerifyDestructionRunnable(base::WaitableEvent* destroyed)
       : destroyed_(destroyed) {}
+
+  VerifyDestructionRunnable(const VerifyDestructionRunnable&) = delete;
+  VerifyDestructionRunnable& operator=(const VerifyDestructionRunnable&) =
+      delete;
+
   // Signal event indicating Runnable was properly Destroyed.
   ~VerifyDestructionRunnable() override { destroyed_->Signal(); }
 
@@ -169,8 +173,6 @@ class VerifyDestructionRunnable : public Cronet_Runnable {
  private:
   // Event indicating destructor is called.
   base::WaitableEvent* const destroyed_;
-
-  DISALLOW_COPY_AND_ASSIGN(VerifyDestructionRunnable);
 };
 #endif  // DCHECK_IS_ON()
 
@@ -241,6 +243,10 @@ namespace cronet {
 class Cronet_UrlRequestImpl::NetworkTasks : public CronetURLRequest::Callback {
  public:
   NetworkTasks(const std::string& url, Cronet_UrlRequestImpl* url_request);
+
+  NetworkTasks(const NetworkTasks&) = delete;
+  NetworkTasks& operator=(const NetworkTasks&) = delete;
+
   ~NetworkTasks() override = default;
 
   // Callback function used for GetStatus().
@@ -308,7 +314,6 @@ class Cronet_UrlRequestImpl::NetworkTasks : public CronetURLRequest::Callback {
 
   // All methods except constructor are invoked on the network thread.
   THREAD_CHECKER(network_thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(NetworkTasks);
 };
 
 Cronet_UrlRequestImpl::Cronet_UrlRequestImpl() = default;
@@ -557,7 +562,7 @@ void Cronet_UrlRequestImpl::InvokeCallbackOnResponseStarted() {
     return;
 #if DCHECK_IS_ON()
   // Verify that Executor calls Cronet_Runnable_Destroy().
-  if (!runnable_destroyed_.TimedWait(base::TimeDelta::FromSeconds(5))) {
+  if (!runnable_destroyed_.TimedWait(base::Seconds(5))) {
     LOG(ERROR) << "Cronet Executor didn't call Cronet_Runnable_Destroy() in "
                   "5s; still waiting.";
     runnable_destroyed_.Wait();

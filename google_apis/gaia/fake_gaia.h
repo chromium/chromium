@@ -100,6 +100,10 @@ class FakeGaia {
   };
 
   FakeGaia();
+
+  FakeGaia(const FakeGaia&) = delete;
+  FakeGaia& operator=(const FakeGaia&) = delete;
+
   virtual ~FakeGaia();
 
   void SetFakeMergeSessionParams(const std::string& email,
@@ -344,7 +348,6 @@ class FakeGaia {
   GaiaAuthConsumer::ReAuthProofTokenStatus next_reauth_status_ =
       GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess;
   GURL embedded_setup_chromeos_iframe_url_;
-  DISALLOW_COPY_AND_ASSIGN(FakeGaia);
 };
 
 #endif  // GOOGLE_APIS_GAIA_FAKE_GAIA_H_

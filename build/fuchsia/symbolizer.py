@@ -38,7 +38,7 @@ def RunSymbolizer(input_file, output_file, build_ids_files):
   for build_ids_file in build_ids_files:
     symbolizer_cmd.extend(['--ids-txt', build_ids_file])
 
-  logging.info('Running "%s".' % ' '.join(symbolizer_cmd))
+  logging.debug('Running "%s".' % ' '.join(symbolizer_cmd))
   return subprocess.Popen(symbolizer_cmd, stdin=input_file, stdout=output_file,
                           stderr=subprocess.STDOUT, close_fds=True)
 
@@ -54,8 +54,6 @@ def SymbolizerFilter(input_file, build_ids_files):
   symbolizer_proc = RunSymbolizer(input_file, subprocess.PIPE, build_ids_files)
 
   while True:
-    # TODO(chonggu): Switch to encoding='utf-8' once we drop Python 2
-    # support.
     line = symbolizer_proc.stdout.readline().decode('utf-8')
     if not line:
       break

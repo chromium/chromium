@@ -128,11 +128,23 @@ void AssistantUiControllerImpl::ShowUi(AssistantEntryPoint entry_point) {
   model_.SetVisible(entry_point);
 }
 
-void AssistantUiControllerImpl::CloseUi(AssistantExitPoint exit_point) {
-  if (model_.visibility() == AssistantVisibility::kClosed)
-    return;
+absl::optional<base::ScopedClosureRunner> AssistantUiControllerImpl::CloseUi(
+    AssistantExitPoint exit_point) {
+  if (model_.visibility() != AssistantVisibility::kVisible)
+    return absl::nullopt;
 
-  model_.SetClosed(exit_point);
+  // Set visibility to `kClosing`.
+  model_.SetClosing(exit_point);
+
+  // When the return value is destroyed, visibility will be set to `kClosed`
+  // provided the visibility change hasn't been invalidated.
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](const base::WeakPtr<AssistantUiControllerImpl>& weak_ptr,
+         chromeos::assistant::AssistantExitPoint exit_point) {
+        if (weak_ptr)
+          weak_ptr->model_.SetClosed(exit_point);
+      },
+      weak_factory_for_delayed_visibility_changes_.GetWeakPtr(), exit_point));
 }
 
 void AssistantUiControllerImpl::ToggleUi(
@@ -206,6 +218,8 @@ void AssistantUiControllerImpl::OnUiVisibilityChanged(
     AssistantVisibility old_visibility,
     absl::optional<AssistantEntryPoint> entry_point,
     absl::optional<AssistantExitPoint> exit_point) {
+  weak_factory_for_delayed_visibility_changes_.InvalidateWeakPtrs();
+
   if (new_visibility == AssistantVisibility::kVisible) {
     // Only record the entry point when Assistant UI becomes visible.
     assistant::util::RecordAssistantEntryPoint(entry_point.value());

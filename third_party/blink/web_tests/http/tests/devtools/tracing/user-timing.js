@@ -46,7 +46,7 @@
     TestRunner.completeTest();
 
     function processAsyncEvent(event) {
-      if (!event._parsedCategories.has('blink.user_timing')) return;
+      if (!event.parsedCategories.has('blink.user_timing')) return;
 
       const roundedDuration = Math.round(event.duration / 100) * 100;
       TestRunner.addResult(`Got Async Event. Duration: ${roundedDuration}`);

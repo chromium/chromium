@@ -41,10 +41,8 @@ absl::optional<EventType> ConvertKeyEventType(
   switch (type) {
     case fuchsia::ui::input3::KeyEventType::PRESSED:
       return ET_KEY_PRESSED;
-      break;
     case fuchsia::ui::input3::KeyEventType::RELEASED:
       return ET_KEY_RELEASED;
-      break;
     case fuchsia::ui::input3::KeyEventType::SYNC:
     case fuchsia::ui::input3::KeyEventType::CANCEL:
       // SYNC and CANCEL should not generate ui::Events.

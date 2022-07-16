@@ -16,6 +16,8 @@ import android.view.View.MeasureSpec;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 
@@ -23,6 +25,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.metrics.RecordUserAction;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -247,8 +250,8 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
 
     /**
      * @param dismiss Whether or not to dismiss this popup when the screen is tapped.  This will
-     *                happen for both taps inside and outside the popup.  The default is
-     *                {@code false}.
+     *                happen for both taps inside and outside the popup except when a tap is handled
+     *                by child views. The default is {@code false}.
      */
     public void setDismissOnTouchInteraction(boolean dismiss) {
         mDismissOnTouchInteraction = dismiss;
@@ -478,6 +481,27 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         mWidth = contentView.getMeasuredWidth() + paddingX;
         mHeight = contentView.getMeasuredHeight() + paddingY;
 
+        // Calculate the width of the contentView by adding the width of its children, their margin,
+        // and its own padding. This is necessary when a TextView overflows to multiple lines
+        // because the contentView(parent) would return the maximum available width, which is larger
+        // than the actual needed width.
+        ViewGroup parent = (ViewGroup) contentView;
+        boolean isHorizontalLinearLayout = parent instanceof LinearLayout
+                && ((LinearLayout) parent).getOrientation() == LinearLayout.HORIZONTAL;
+        if (isHorizontalLinearLayout && parent.getChildCount() > 0) {
+            int contentMeasuredWidth = contentView.getPaddingStart() + contentView.getPaddingEnd();
+            for (int index = 0; index < parent.getChildCount(); index++) {
+                View childView = parent.getChildAt(index);
+                int childWidth = childView.getMeasuredWidth();
+                if (childWidth > 0) {
+                    contentMeasuredWidth += childWidth;
+                    LayoutParams lp = (LayoutParams) childView.getLayoutParams();
+                    contentMeasuredWidth += lp.leftMargin + lp.rightMargin;
+                }
+            }
+            mWidth = contentMeasuredWidth + paddingX;
+        }
+
         // Determine the position of the text popup.
         mX = getPopupX(anchorRect, mCachedWindowRect, mWidth, mMarginPx, mHorizontalOverlapAnchor,
                 mPreferredHorizontalOrientation, mPositionToLeft);
@@ -578,9 +602,20 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        boolean returnValue = mTouchListener != null && mTouchListener.onTouch(v, event);
-        if (mDismissOnTouchInteraction) dismiss();
-        return returnValue;
+        boolean touchInterceptedByClient =
+                mTouchListener != null && mTouchListener.onTouch(v, event);
+
+        RecordUserAction.record(event.getAction() == MotionEvent.ACTION_OUTSIDE
+                        ? "InProductHelp.OutsideTouch"
+                        : "InProductHelp.InsideTouch");
+
+        // Pass down the touch event to child views. If the content view has clickable children,
+        // make sure we give them the opportunity to trigger.
+        boolean touchInterceptedByChild = !touchInterceptedByClient
+                && mPopupWindow.getContentView().dispatchTouchEvent(event);
+        if (!touchInterceptedByChild && mDismissOnTouchInteraction) dismiss();
+
+        return touchInterceptedByClient;
     }
 
     private static int clamp(int value, int a, int b) {

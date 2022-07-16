@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
@@ -19,14 +18,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/signin/account_id_from_account_info.h"
-#include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -43,7 +42,7 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#include "components/policy/core/common/management/platform_management_service.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -55,6 +54,10 @@
 #include "components/unified_consent/unified_consent_service.h"
 #include "content/public/browser/storage_partition.h"
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/dice_signed_in_profile_creator.h"
+#endif
+
 namespace {
 
 const void* const kCurrentDiceTurnSyncOnHelperKey =
@@ -65,6 +68,11 @@ bool g_show_sync_enabled_ui_for_testing_ = false;
 class DiceTurnSyncOnHelperShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
+  DiceTurnSyncOnHelperShutdownNotifierFactory(
+      const DiceTurnSyncOnHelperShutdownNotifierFactory&) = delete;
+  DiceTurnSyncOnHelperShutdownNotifierFactory& operator=(
+      const DiceTurnSyncOnHelperShutdownNotifierFactory&) = delete;
+
   static DiceTurnSyncOnHelperShutdownNotifierFactory* GetInstance() {
     static base::NoDestructor<DiceTurnSyncOnHelperShutdownNotifierFactory>
         factory;
@@ -83,8 +91,6 @@ class DiceTurnSyncOnHelperShutdownNotifierFactory
     DependsOn(policy::UserPolicySigninServiceFactory::GetInstance());
   }
   ~DiceTurnSyncOnHelperShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(DiceTurnSyncOnHelperShutdownNotifierFactory);
 };
 
 // User input handler for the signin confirmation dialog.
@@ -311,6 +317,9 @@ void DiceTurnSyncOnHelper::OnEnterpriseAccountConfirmation(
     SigninChoice choice) {
   enterprise_account_confirmed_ =
       choice == SIGNIN_CHOICE_CONTINUE || choice == SIGNIN_CHOICE_NEW_PROFILE;
+  signin_util::RecordEnterpriseProfileCreationUserChoice(
+      profile_, enterprise_account_confirmed_);
+
   switch (choice) {
     case SIGNIN_CHOICE_CANCEL:
       base::RecordAction(
@@ -377,8 +386,7 @@ void DiceTurnSyncOnHelper::OnRegisteredForPolicy(const std::string& dm_token,
   client_id_ = client_id;
 
   if (!base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) ||
-      !profile_->GetPrefs()->GetBoolean(
-          prefs::kUserAcceptedAccountManagement)) {
+      !chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
     // Allow user to create a new profile before continuing with sign-in.
     delegate_->ShowEnterpriseAccountConfirmation(
         account_info_,
@@ -387,9 +395,8 @@ void DiceTurnSyncOnHelper::OnRegisteredForPolicy(const std::string& dm_token,
     return;
   }
 
-  DCHECK(
-      base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
-      profile_->GetPrefs()->GetBoolean(prefs::kUserAcceptedAccountManagement));
+  DCHECK(base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
+         chrome::enterprise_util::UserAcceptedAccountManagement(profile_));
   LoadPolicyWithCachedCredentials();
 }
 
@@ -437,6 +444,7 @@ void DiceTurnSyncOnHelper::OnProviderUpdatePropagated(
 }
 
 void DiceTurnSyncOnHelper::CreateNewSignedInProfile() {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(!dice_signed_in_profile_creator_);
   // Unretained is fine because the profile creator is owned by this.
   dice_signed_in_profile_creator_ =
@@ -446,6 +454,9 @@ void DiceTurnSyncOnHelper::CreateNewSignedInProfile() {
           /*use_guest=*/false,
           base::BindOnce(&DiceTurnSyncOnHelper::OnNewSignedInProfileCreated,
                          base::Unretained(this)));
+#else
+  NOTIMPLEMENTED() << "Creating profiles is not yet supported on lacros.";
+#endif
 }
 
 syncer::SyncService* DiceTurnSyncOnHelper::GetSyncService() {
@@ -455,6 +466,7 @@ syncer::SyncService* DiceTurnSyncOnHelper::GetSyncService() {
 }
 
 void DiceTurnSyncOnHelper::OnNewSignedInProfileCreated(Profile* new_profile) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(dice_signed_in_profile_creator_);
   dice_signed_in_profile_creator_.reset();
   ProfileMetrics::LogProfileAddNewUser(ProfileMetrics::ADD_NEW_USER_SYNC_FLOW);
@@ -479,6 +491,9 @@ void DiceTurnSyncOnHelper::OnNewSignedInProfileCreated(Profile* new_profile) {
     // No policy to load - simply complete the signin process.
     SigninAndShowSyncConfirmationUI();
   }
+#else
+  NOTIMPLEMENTED() << "Creating profiles is not yet supported for lacros.";
+#endif
 }
 
 void DiceTurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
@@ -492,12 +507,14 @@ void DiceTurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
   base::RecordAction(base::UserMetricsAction("Signin_Signin_Succeed"));
 
   if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
-    if (!profile_->GetPrefs()->GetBoolean(
-            prefs::kUserAcceptedAccountManagement)) {
-      profile_->GetPrefs()->SetBoolean(prefs::kUserAcceptedAccountManagement,
-                                       enterprise_account_confirmed_);
+    bool user_accepted_management =
+        chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
+    if (!user_accepted_management) {
+      chrome::enterprise_util::SetUserAcceptedAccountManagement(
+          profile_, enterprise_account_confirmed_);
+      user_accepted_management = true;
     }
-    if (profile_->GetPrefs()->GetBoolean(prefs::kUserAcceptedAccountManagement))
+    if (user_accepted_management)
       signin_aborted_mode_ = SigninAbortedMode::KEEP_ACCOUNT;
   }
 
@@ -518,23 +535,21 @@ void DiceTurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
     // dialog is shown to check whether sync was disabled by admin. Only wait
     // for cloud policies because local policies are instantly available. See
     // http://crbug.com/812546
-    auto management_authorities =
-        policy::BrowserManagementService(profile_).GetManagementAuthorities();
-    auto platform_management_authorities =
-        policy::PlatformManagementService().GetManagementAuthorities();
-    management_authorities.insert(platform_management_authorities.begin(),
-                                  platform_management_authorities.end());
-    bool is_enterprise_user =
-        !policy::BrowserPolicyConnector::IsNonEnterpriseUser(
-            account_info_.email);
     bool may_have_cloud_policies =
-        is_enterprise_user ||
-        management_authorities.find(
-            policy::EnterpriseManagementAuthority::CLOUD) !=
-            management_authorities.end() ||
-        management_authorities.find(
-            policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) !=
-            management_authorities.end();
+        !policy::BrowserPolicyConnector::IsNonEnterpriseUser(
+            account_info_.email) ||
+        policy::ManagementServiceFactory::GetForProfile(profile_)
+            ->HasManagementAuthority(
+                policy::EnterpriseManagementAuthority::CLOUD) ||
+        policy::ManagementServiceFactory::GetForProfile(profile_)
+            ->HasManagementAuthority(
+                policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) ||
+        policy::ManagementServiceFactory::GetForPlatform()
+            ->HasManagementAuthority(
+                policy::EnterpriseManagementAuthority::CLOUD) ||
+        policy::ManagementServiceFactory::GetForPlatform()
+            ->HasManagementAuthority(
+                policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 
     if (may_have_cloud_policies &&
         SyncStartupTracker::GetSyncServiceState(sync_service) ==
@@ -608,12 +623,18 @@ void DiceTurnSyncOnHelper::FinishSyncSetupAndDelete(
       break;
     }
     case LoginUIService::ABORT_SYNC: {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
       auto* primary_account_mutator =
           identity_manager_->GetPrimaryAccountMutator();
       DCHECK(primary_account_mutator);
       primary_account_mutator->RevokeSyncConsent(
           signin_metrics::ABORT_SIGNIN,
           signin_metrics::SignoutDelete::kIgnoreMetric);
+#else
+      // TODO(crbug.com/1248047): We should support this flow by disabling all
+      // data types instead of revoking the sync consent.
+      NOTIMPLEMENTED() << "Not syncing is not yet supported on lacros.";
+#endif
       AbortAndDelete();
       return;
     }
@@ -671,6 +692,7 @@ void DiceTurnSyncOnHelper::AbortAndDelete() {
     policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
         ->ShutdownUserCloudPolicyManager();
   }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT) {
     if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
       policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
@@ -684,6 +706,10 @@ void DiceTurnSyncOnHelper::AbortAndDelete() {
         signin_metrics::SourceForRefreshTokenOperation::
             kDiceTurnOnSyncHelper_Abort);
   }
+#else
+  NOTIMPLEMENTED()
+      << "Profiles without accounts are not yet supported on lacros.";
+#endif
 
   delete this;
 }

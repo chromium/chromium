@@ -40,8 +40,8 @@ class OmniboxViewTest : public testing::Test {
   OmniboxViewTest() {
     controller_ = std::make_unique<TestOmniboxEditController>();
     view_ = std::make_unique<TestOmniboxView>(controller_.get());
-    view_->SetModel(
-        std::make_unique<TestOmniboxEditModel>(view_.get(), controller_.get()));
+    view_->SetModel(std::make_unique<TestOmniboxEditModel>(
+        view_.get(), controller_.get(), nullptr));
 
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
     client()->SetBookmarkModel(bookmark_model_.get());

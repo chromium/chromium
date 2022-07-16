@@ -21,7 +21,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -85,6 +85,9 @@ class FakeFileStreamReader : public FileStreamReader {
             contents.size())),
         net_error_(net::OK),
         size_(size) {}
+
+  FakeFileStreamReader(const FakeFileStreamReader&) = delete;
+  FakeFileStreamReader& operator=(const FakeFileStreamReader&) = delete;
 
   ~FakeFileStreamReader() override = default;
 
@@ -160,8 +163,6 @@ class FakeFileStreamReader : public FileStreamReader {
   scoped_refptr<base::SingleThreadTaskRunner> async_task_runner_;
   int net_error_;
   uint64_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFileStreamReader);
 };
 
 class MockFileStreamReaderProvider
@@ -205,6 +206,10 @@ class MockFileStreamReaderProvider
 class BlobReaderTest : public ::testing::Test {
  public:
   BlobReaderTest() = default;
+
+  BlobReaderTest(const BlobReaderTest&) = delete;
+  BlobReaderTest& operator=(const BlobReaderTest&) = delete;
+
   ~BlobReaderTest() override = default;
 
   void SetUp() override {
@@ -287,9 +292,6 @@ class BlobReaderTest : public ::testing::Test {
   MockFileStreamReaderProvider* provider_ = nullptr;
   std::unique_ptr<BlobReader> reader_;
   scoped_refptr<FileSystemContext> file_system_context_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BlobReaderTest);
 };
 
 TEST_F(BlobReaderTest, BasicMemory) {
@@ -357,8 +359,9 @@ TEST_F(BlobReaderTest, BasicFileSystem) {
   const GURL kURL("filesystem:http://example.com/temporary/test_file/here.txt");
   const std::string kData = "FileData!!!";
   const base::Time kTime = base::Time::Now();
-  b->AppendFileSystemFile(file_system_context_->CrackURL(kURL), 0, kData.size(),
-                          kTime, file_system_context_);
+  b->AppendFileSystemFile(
+      file_system_context_->CrackURLInFirstPartyContext(kURL), 0, kData.size(),
+      kTime, file_system_context_);
   this->InitializeReader(std::move(b));
   // Non-async reader.
   ExpectFileSystemCall(kURL, 0, kData.size(), kTime,
@@ -620,8 +623,9 @@ TEST_F(BlobReaderTest, FileSystemAsync) {
   const GURL kURL("filesystem:http://example.com/temporary/test_file/here.txt");
   const std::string kData = "FileData!!!";
   const base::Time kTime = base::Time::Now();
-  b->AppendFileSystemFile(file_system_context_->CrackURL(kURL), 0, kData.size(),
-                          kTime, file_system_context_);
+  b->AppendFileSystemFile(
+      file_system_context_->CrackURLInFirstPartyContext(kURL), 0, kData.size(),
+      kTime, file_system_context_);
   this->InitializeReader(std::move(b));
 
   std::unique_ptr<FakeFileStreamReader> reader(new FakeFileStreamReader(kData));

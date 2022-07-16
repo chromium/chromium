@@ -42,6 +42,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ChunkedDataPipeUploadDataStream
       mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
           chunked_data_pipe_getter);
 
+  ChunkedDataPipeUploadDataStream(const ChunkedDataPipeUploadDataStream&) =
+      delete;
+  ChunkedDataPipeUploadDataStream& operator=(
+      const ChunkedDataPipeUploadDataStream&) = delete;
+
   ~ChunkedDataPipeUploadDataStream() override;
 
   bool AllowHTTP1() const override;
@@ -107,8 +112,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ChunkedDataPipeUploadDataStream
   CacheState cache_state_ = CacheState::kDisabled;
   size_t dst_window_size_ = kDefaultDestinationWindowSize;
   std::vector<char> cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChunkedDataPipeUploadDataStream);
 };
 
 }  // namespace network

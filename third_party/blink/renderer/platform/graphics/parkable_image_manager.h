@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PARKABLE_IMAGE_MANAGER_H_
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
@@ -15,6 +16,7 @@
 
 namespace blink {
 
+class ParkableImageImpl;
 class ParkableImage;
 
 PLATFORM_EXPORT extern const base::Feature kParkableImagesToDisk;
@@ -43,6 +45,7 @@ class PLATFORM_EXPORT ParkableImageManager
   struct Statistics;
 
   friend class ParkableImage;
+  friend class ParkableImageImpl;
   friend class base::NoDestructor<ParkableImageManager>;
   friend class ParkableImageBaseTest;
 
@@ -52,12 +55,20 @@ class PLATFORM_EXPORT ParkableImageManager
 
   // Register and unregister a ParkableImage with the manager. ParkableImage
   // should call these when created/destructed.
-  void Add(ParkableImage* image) LOCKS_EXCLUDED(lock_);
-  void Remove(ParkableImage* image) LOCKS_EXCLUDED(lock_)
+  void Add(ParkableImageImpl* image) LOCKS_EXCLUDED(lock_);
+  void Remove(ParkableImageImpl* image) LOCKS_EXCLUDED(lock_)
       EXCLUSIVE_LOCKS_REQUIRED(image->lock_);
 
-  bool IsRegistered(ParkableImage* image) LOCKS_EXCLUDED(lock_)
+  scoped_refptr<ParkableImageImpl> CreateParkableImage(size_t offset);
+  void DestroyParkableImageOnMainThread(scoped_refptr<ParkableImageImpl> image)
+      LOCKS_EXCLUDED(lock_);
+  void DestroyParkableImage(scoped_refptr<ParkableImageImpl> image)
+      LOCKS_EXCLUDED(lock_);
+
+  bool IsRegistered(ParkableImageImpl* image) LOCKS_EXCLUDED(lock_)
       EXCLUSIVE_LOCKS_REQUIRED(image->lock_);
+  // bool IsRegistered(ParkableImage* image) LOCKS_EXCLUDED(lock_)
+  //     EXCLUSIVE_LOCKS_REQUIRED(image->impl_->lock_);
 
   void ScheduleDelayedParkingTaskIfNeeded() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void MaybeParkImages() LOCKS_EXCLUDED(lock_);
@@ -66,9 +77,9 @@ class PLATFORM_EXPORT ParkableImageManager
 
   void RecordStatisticsAfter5Minutes() const LOCKS_EXCLUDED(lock_);
 
-  void MoveImage(ParkableImage* image,
-                 WTF::HashSet<ParkableImage*>* from,
-                 WTF::HashSet<ParkableImage*>* to)
+  void MoveImage(ParkableImageImpl* image,
+                 WTF::HashSet<ParkableImageImpl*>* from,
+                 WTF::HashSet<ParkableImageImpl*>* to)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void RecordDiskWriteTime(base::TimeDelta write_time) LOCKS_EXCLUDED(lock_) {
@@ -83,8 +94,8 @@ class PLATFORM_EXPORT ParkableImageManager
 
   // Keeps track of whether the image is unparked or on disk. ParkableImage
   // should call these when written to or read from disk.
-  void OnWrittenToDisk(ParkableImage* image) LOCKS_EXCLUDED(lock_);
-  void OnReadFromDisk(ParkableImage* image) LOCKS_EXCLUDED(lock_);
+  void OnWrittenToDisk(ParkableImageImpl* image) LOCKS_EXCLUDED(lock_);
+  void OnReadFromDisk(ParkableImageImpl* image) LOCKS_EXCLUDED(lock_);
 
   void SetDataAllocatorForTesting(
       std::unique_ptr<DiskDataAllocator> allocator) {
@@ -92,8 +103,7 @@ class PLATFORM_EXPORT ParkableImageManager
   }
 
   void ResetForTesting();
-  constexpr static auto kDelayedParkingInterval =
-      base::TimeDelta::FromSeconds(2);
+  constexpr static auto kDelayedParkingInterval = base::Seconds(2);
   constexpr static const char* kAllocatorDumpName = "parkable_images";
 
   mutable Mutex lock_;
@@ -112,8 +122,8 @@ class PLATFORM_EXPORT ParkableImageManager
   // |on_disk_images_| keeps track of all images that do not have an in-memory
   // representation. Accessing the data for any image in |on_disk_images_|
   // involves a read from disk.
-  WTF::HashSet<ParkableImage*> unparked_images_ GUARDED_BY(lock_);
-  WTF::HashSet<ParkableImage*> on_disk_images_ GUARDED_BY(lock_);
+  WTF::HashSet<ParkableImageImpl*> unparked_images_ GUARDED_BY(lock_);
+  WTF::HashSet<ParkableImageImpl*> on_disk_images_ GUARDED_BY(lock_);
 
   bool has_pending_parking_task_ GUARDED_BY(lock_) = false;
   bool has_posted_accounting_task_ GUARDED_BY(lock_) = false;

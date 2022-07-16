@@ -40,8 +40,7 @@ namespace {
 const uint8_t kLowBatteryLevel = 16;
 
 // Don't show 2 low battery notification within |kNotificationInterval|.
-constexpr base::TimeDelta kNotificationInterval =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kNotificationInterval = base::Seconds(60);
 
 constexpr char kNotifierStylusBattery[] = "ash.stylus-battery";
 

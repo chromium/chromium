@@ -20,10 +20,6 @@ namespace ui {
 class OSExchangeData;
 }
 
-namespace views {
-class Widget;
-}
-
 namespace button_drag_utils {
 
 // Sets url and title on data as well as setting a suitable image for dragging.
@@ -33,7 +29,6 @@ VIEWS_EXPORT void SetURLAndDragImage(const GURL& url,
                                      const std::u16string& title,
                                      const gfx::ImageSkia& icon,
                                      const gfx::Point* press_pt,
-                                     const views::Widget& widget,
                                      ui::OSExchangeData* data);
 
 // As above, but only sets the image.
@@ -41,7 +36,6 @@ VIEWS_EXPORT void SetDragImage(const GURL& url,
                                const std::u16string& title,
                                const gfx::ImageSkia& icon,
                                const gfx::Point* press_pt,
-                               const views::Widget& widget,
                                ui::OSExchangeData* data);
 
 }  // namespace button_drag_utils

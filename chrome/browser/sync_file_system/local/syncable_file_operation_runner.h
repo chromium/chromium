@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_status.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -33,6 +32,10 @@ class SyncableFileOperationRunner
   class Task {
    public:
     Task() {}
+
+    Task(const Task&) = delete;
+    Task& operator=(const Task&) = delete;
+
     virtual ~Task() {}
 
     // Only one of Run() or Cancel() is called.
@@ -47,12 +50,15 @@ class SyncableFileOperationRunner
     friend class SyncableFileOperationRunner;
     bool IsRunnable(LocalFileSyncStatus* status) const;
     void Start(LocalFileSyncStatus* status);
-
-    DISALLOW_COPY_AND_ASSIGN(Task);
   };
 
   SyncableFileOperationRunner(int64_t max_inflight_tasks,
                               LocalFileSyncStatus* sync_status);
+
+  SyncableFileOperationRunner(const SyncableFileOperationRunner&) = delete;
+  SyncableFileOperationRunner& operator=(const SyncableFileOperationRunner&) =
+      delete;
+
   ~SyncableFileOperationRunner() override;
 
   // LocalFileSyncStatus::Observer overrides.
@@ -94,8 +100,6 @@ class SyncableFileOperationRunner
 
   const int64_t max_inflight_tasks_;
   int64_t num_inflight_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncableFileOperationRunner);
 };
 
 }  // namespace sync_file_system

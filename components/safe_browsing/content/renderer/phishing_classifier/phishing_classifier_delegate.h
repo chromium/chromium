@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -47,6 +46,11 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   // will be used.
   static PhishingClassifierDelegate* Create(content::RenderFrame* render_frame,
                                             PhishingClassifier* classifier);
+
+  PhishingClassifierDelegate(const PhishingClassifierDelegate&) = delete;
+  PhishingClassifierDelegate& operator=(const PhishingClassifierDelegate&) =
+      delete;
+
   ~PhishingClassifierDelegate() override;
 
   // mojom::PhishingDetector
@@ -172,8 +176,6 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   mojo::ReceiverSet<mojom::PhishingDetector> phishing_detector_receivers_;
 
   service_manager::BinderRegistry registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(PhishingClassifierDelegate);
 };
 
 }  // namespace safe_browsing

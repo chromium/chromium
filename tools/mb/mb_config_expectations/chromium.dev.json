@@ -1,18 +1,4 @@
 {
-  "android-lollipop-arm-rel-swarming": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "strip_debug_info": true,
-      "symbol_level": 1,
-      "system_webview_package_name": "com.google.android.webview",
-      "target_os": "android",
-      "use_goma": true
-    }
-  },
   "android-marshmallow-arm64-rel-swarming": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -58,6 +44,17 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
+      "use_goma": true
+    }
+  },
+  "mac-arm-rel-swarming": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
       "use_goma": true
     }
   },

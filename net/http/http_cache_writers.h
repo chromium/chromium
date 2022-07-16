@@ -55,6 +55,10 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
 
   // |cache| and |entry| must outlive this object.
   Writers(HttpCache* cache, HttpCache::ActiveEntry* entry);
+
+  Writers(const Writers&) = delete;
+  Writers& operator=(const Writers&) = delete;
+
   ~Writers();
 
   // Retrieves data from the network transaction associated with the Writers
@@ -288,7 +292,6 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   base::OnceClosure cache_callback_;  // Callback for cache_.
 
   base::WeakPtrFactory<Writers> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(Writers);
 };
 
 }  // namespace net

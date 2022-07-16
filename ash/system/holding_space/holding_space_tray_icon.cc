@@ -23,6 +23,7 @@
 #include "base/i18n/rtl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -42,7 +43,7 @@ constexpr int kPreviewIndexOffsetForDropTarget = 3;
 // The previews are animated in and shifted with a delay that increases
 // incrementally. This is the delay increment.
 constexpr base::TimeDelta kPreviewItemUpdateDelayIncrement =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 
 // Helpers ---------------------------------------------------------------------
 
@@ -79,7 +80,7 @@ class HoldingSpaceTrayIcon::ResizeAnimation
     animation_.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
     animation_.SetSlideDuration(
         ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
-        base::TimeDelta::FromMilliseconds(250));
+        base::Milliseconds(250));
   }
   ResizeAnimation(const ResizeAnimation&) = delete;
   ResizeAnimation operator=(const ResizeAnimation&) = delete;

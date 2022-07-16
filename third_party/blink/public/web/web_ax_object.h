@@ -151,7 +151,6 @@ class WebAXObject {
   BLINK_EXPORT bool IsVisited() const;
 
   BLINK_EXPORT WebString AccessKey() const;
-  BLINK_EXPORT bool CanPress() const;
   BLINK_EXPORT bool CanSetValueAttribute() const;
   // Deprecated.
   BLINK_EXPORT void ColorValue(int& r, int& g, int& b) const;

@@ -101,7 +101,6 @@ class AwSettings : public content::WebContentsObserver {
   bool javascript_can_open_windows_automatically_;
   bool allow_third_party_cookies_;
   bool allow_file_access_;
-  bool is_dark_mode_;
 
   JavaObjectWeakGlobalRef aw_settings_;
 };

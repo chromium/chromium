@@ -8,9 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 class FilePath;
 }  // namespace base
 
@@ -28,7 +29,7 @@ extern const char kHostOwnerConfigPath[];
 extern const char kHostOwnerEmailConfigPath[];
 // Login used to authenticate signaling.
 extern const char kXmppLoginConfigPath[];
-// OAuth refresh token used to fetch an access token for the XMPP network.
+// OAuth refresh token used to fetch an access token for calling network APIs.
 extern const char kOAuthRefreshTokenConfigPath[];
 // Unique identifier of the host used to register the host in directory.
 // Normally a random UUID.
@@ -48,15 +49,14 @@ extern const char kEnableH264ConfigPath[];
 // Number of Kibibytes of frame data to allow each client to record.
 extern const char kFrameRecorderBufferKbConfigPath[];
 
-// Helpers for serializing/deserializing Host configuration dictonaries.
-std::unique_ptr<base::DictionaryValue> HostConfigFromJson(
-    const std::string& serialized);
-std::string HostConfigToJson(const base::DictionaryValue& host_config);
+// Helpers for serializing/deserializing Host configuration dictionaries.
+absl::optional<base::Value> HostConfigFromJson(const std::string& serialized);
+std::string HostConfigToJson(const base::Value& host_config);
 
 // Helpers for loading/saving host configurations from/to files.
-std::unique_ptr<base::DictionaryValue> HostConfigFromJsonFile(
+absl::optional<base::Value> HostConfigFromJsonFile(
     const base::FilePath& config_file);
-bool HostConfigToJsonFile(const base::DictionaryValue& host_config,
+bool HostConfigToJsonFile(const base::Value& host_config,
                           const base::FilePath& config_file);
 
 }  // namespace remoting

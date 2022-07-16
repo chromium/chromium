@@ -12,11 +12,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/scoped_enable_unadjusted_mouse_events.h"
 #include "ui/aura/window.h"
@@ -67,6 +67,26 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
                                    public display::DisplayObserver,
                                    public ui::CompositorObserver {
  public:
+  // VideoCaptureLock ensures state necessary for capturing video remains in
+  // effect. For example, this may force keeping the compositor visible when
+  // it normally would not be.
+  class AURA_EXPORT VideoCaptureLock {
+   public:
+    VideoCaptureLock(const VideoCaptureLock&) = delete;
+    VideoCaptureLock& operator=(const VideoCaptureLock&) = delete;
+    ~VideoCaptureLock();
+
+   private:
+    friend class WindowTreeHost;
+
+    explicit VideoCaptureLock(WindowTreeHost* host);
+
+    base::WeakPtr<WindowTreeHost> host_;
+  };
+
+  WindowTreeHost(const WindowTreeHost&) = delete;
+  WindowTreeHost& operator=(const WindowTreeHost&) = delete;
+
   ~WindowTreeHost() override;
 
   // Creates a new WindowTreeHost with the specified |properties|.
@@ -208,6 +228,13 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   virtual void SetBoundsInPixels(const gfx::Rect& bounds_in_pixels) = 0;
   virtual gfx::Rect GetBoundsInPixels() const = 0;
 
+  // Returns the bounds relative to the accelerated widget. In the typical case,
+  // the origin is 0,0 and the size is the same as the pixel-bounds. On some
+  // OSs the bounds may be inset (on Windows, this is referred to as the client
+  // area). When the bounds are inset, this returns a non-zero origin with a
+  // size smaller than GetBoundsInPixels().
+  virtual gfx::Rect GetBoundsInAcceleratedWidgetPixelCoordinates();
+
   // Sets the OS capture to the root window.
   virtual void SetCapture() = 0;
 
@@ -233,15 +260,20 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   virtual bool ShouldSendKeyEventToIme();
 
   // Determines if native window occlusion should be enabled or not.
-  bool IsNativeWindowOcclusionEnabled();
+  bool IsNativeWindowOcclusionEnabled() const;
 
   // Remembers the current occlusion state, and if it has changed, notifies
-  // observers of the change.
-  virtual void SetNativeWindowOcclusionState(Window::OcclusionState state);
+  // observers of the change. `occluded_region` is only applicable when visible
+  // and gives the occluded region. If `occluded_region` is empty, the entire
+  // AcceleratedWidget is visible.
+  virtual void SetNativeWindowOcclusionState(Window::OcclusionState state,
+                                             const SkRegion& occluded_region);
 
   Window::OcclusionState GetNativeWindowOcclusionState() {
     return occlusion_state_;
   }
+
+  const SkRegion& GetNativeOccludedRegion() const { return occluded_region_; }
 
   // Requests using unadjusted movement mouse events, i.e. WM_INPUT on Windows.
   // Returns a ScopedEnableUnadjustedMouseEvents instance which stops using
@@ -258,6 +290,9 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   virtual void LockMouse(Window* window);
   virtual void UnlockMouse(Window* window);
 
+  // See VideoCaptureLock for details. This may return null.
+  std::unique_ptr<VideoCaptureLock> CreateVideoCaptureLock();
+
   bool holding_pointer_moves() const { return holding_pointer_moves_; }
 
  protected:
@@ -270,8 +305,21 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // during subclass initialization, when the value is needed before InitHost().
   void IntializeDeviceScaleFactor(float device_scale_factor);
 
+  // All calls to changing the visibility of the Compositor funnel into this.
+  // In addition to changing the visibility this may also evict the root frame.
+  void UpdateCompositorVisibility(bool visible);
+
   void DestroyCompositor();
   void DestroyDispatcher();
+
+  // Sets whether the accelerated widget has been made visible. This is called
+  // when platform specific api has been called to make the widget visible. The
+  // widget is not necessarily shown/drawn (it may be occluded or minimized),
+  // but from the OSs perspective, the window may be shown to the user.
+  //
+  // This is called from Show(), subclasses that do not call Show() must call
+  // this.
+  void OnAcceleratedWidgetMadeVisible(bool value);
 
   void CreateCompositor(
       bool force_software_compositor = false,
@@ -333,7 +381,36 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   void SetNativeWindowOcclusionEnabled(bool enable);
 
  private:
+  class HideHelper;
+
+  friend class HideHelper;
   friend class test::WindowTreeHostTestApi;
+
+  void DecrementVideoCaptureCount();
+  void MaybeUpdateComposibleVisibilityForVideoLockCountChange();
+  bool CalculateCompositorVisibilityFromOcclusionState() const;
+
+  // See `kApplyNativeOcclusionToCompositorTypeRelease` for details.
+  bool ShouldReleaseResourcesWhenHidden() const;
+
+  // See `kApplyNativeOcclusionToCompositorTypeThrottle` for details.
+  bool ShouldThrottleWhenOccluded() const;
+
+  // Starts the steps necessary to release viz resources and hide.
+  void StartReleasingResourcesForHide();
+
+  // Restores temporary state set in StartReleasingResourcesForHide().
+  void RestoreHideTransitionState();
+
+  // Completes a hide initiated to release resources.
+  void FinishHideTransition();
+
+  static const base::flat_set<WindowTreeHost*>& GetThrottledHostsForTesting();
+
+  // Returns true if in the process of releasing resources before hiding.
+  bool is_transitioning_to_hidden() const {
+    return hide_helper_.get() != nullptr;
+  }
 
   // Moves the cursor to the specified location. This method is internally used
   // by MoveCursorToLocationInDIP() and MoveCursorToLocationInPixels().
@@ -354,7 +431,8 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
 
   // Keeps track of the occlusion state of the host, and used to send
   // notifications to observers when it changes.
-  Window::OcclusionState occlusion_state_;
+  Window::OcclusionState occlusion_state_ = Window::OcclusionState::UNKNOWN;
+  SkRegion occluded_region_;
 
   base::ObserverList<WindowTreeHostObserver>::Unchecked observers_;
 
@@ -375,7 +453,7 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   float device_scale_factor_ = 1.f;
 
   // Last cursor set.  Used for testing.
-  gfx::NativeCursor last_cursor_;
+  gfx::NativeCursor last_cursor_ = ui::mojom::CursorType::kNull;
   gfx::Point last_cursor_request_position_in_host_;
 
   std::unique_ptr<ui::ViewProp> prop_;
@@ -383,10 +461,10 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // The InputMethod instance used to process key events.
   // If owned it, it is created in GetInputMethod() method;
   // If not owned it, it is passed in through SetSharedInputMethod() method.
-  ui::InputMethod* input_method_;
+  ui::InputMethod* input_method_ = nullptr;
 
   // Whether the InputMethod instance is owned by this WindowTreeHost.
-  bool owned_input_method_;
+  bool owned_input_method_ = false;
 
   // Set to true if this WindowTreeHost is currently holding pointer moves.
   bool holding_pointer_moves_ = false;
@@ -394,9 +472,16 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // Set to true if native window occlusion should be calculated.
   bool native_window_occlusion_enabled_ = false;
 
-  base::WeakPtrFactory<WindowTreeHost> weak_factory_{this};
+  bool accelerated_widget_made_visible_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(WindowTreeHost);
+  // Number of VideoCaptureLocks that have been created and not destroyed.
+  int video_capture_count_ = 0;
+
+  // Used to set up and restore state necessary to release resources when
+  // hiding. Non-null while waiting for state to be released (transitioning).
+  std::unique_ptr<HideHelper> hide_helper_;
+
+  base::WeakPtrFactory<WindowTreeHost> weak_factory_{this};
 };
 
 }  // namespace aura

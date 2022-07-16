@@ -22,6 +22,10 @@ class PPAPI_PROXY_EXPORT VpnProviderResource
       public thunk::PPB_VpnProvider_API {
  public:
   VpnProviderResource(Connection connection, PP_Instance instance);
+
+  VpnProviderResource(const VpnProviderResource&) = delete;
+  VpnProviderResource& operator=(const VpnProviderResource&) = delete;
+
   virtual ~VpnProviderResource();
 
   // PluginResource implementation.
@@ -83,8 +87,6 @@ class PPAPI_PROXY_EXPORT VpnProviderResource
 
   // Connection bound state
   bool bound_;
-
-  DISALLOW_COPY_AND_ASSIGN(VpnProviderResource);
 };
 
 }  // namespace proxy

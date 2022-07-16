@@ -4,13 +4,25 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("cros_camera") {
+mojom("cros_camera_common") {
   sources = [
     "camera3.mojom",
     "camera_app.mojom",
     "camera_common.mojom",
     "camera_metadata.mojom",
     "camera_metadata_tags.mojom",
+  ]
+
+  deps = [
+    "//media/capture/mojom:image_capture",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/range/mojom",
+  ]
+  webui_module_path = "/media/capture/video/chromeos/mojom"
+}
+
+mojom("cros_camera") {
+  sources = [
     "cros_camera_client.mojom",
     "cros_camera_service.mojom",
   ]
@@ -19,7 +31,6 @@ mojom("cros_camera") {
     "//chromeos/components/sensors/mojom",
     "//components/chromeos_camera/common",
     "//media/capture/mojom:image_capture",
-    "//ui/gfx/geometry/mojom",
-    "//ui/gfx/range/mojom",
   ]
+  public_deps = [ ":cros_camera_common" ]
 }

@@ -30,6 +30,12 @@ class GpuMemoryBufferVirtualDeviceMojoAdapter
       GpuMemoryBufferVirtualDeviceMojoAdapter&) = delete;
   GpuMemoryBufferVirtualDeviceMojoAdapter& operator=(
       GpuMemoryBufferVirtualDeviceMojoAdapter&) = delete;
+
+  GpuMemoryBufferVirtualDeviceMojoAdapter(
+      const GpuMemoryBufferVirtualDeviceMojoAdapter&) = delete;
+  GpuMemoryBufferVirtualDeviceMojoAdapter& operator=(
+      const GpuMemoryBufferVirtualDeviceMojoAdapter&) = delete;
+
   ~GpuMemoryBufferVirtualDeviceMojoAdapter() override;
 
   void SetReceiverDisconnectedCallback(base::OnceClosure callback);
@@ -73,8 +79,6 @@ class GpuMemoryBufferVirtualDeviceMojoAdapter
   scoped_refptr<VideoFrameAccessHandlerRemote> frame_access_handler_remote_;
   bool video_frame_handler_has_forwarder_ = false;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferVirtualDeviceMojoAdapter);
 };
 
 }  // namespace video_capture

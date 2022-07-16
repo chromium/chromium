@@ -73,6 +73,20 @@ typedef interface IAppWeb IAppWeb;
 #endif 	/* __IAppWeb_FWD_DEFINED__ */
 
 
+#ifndef __IProcessLauncher_FWD_DEFINED__
+#define __IProcessLauncher_FWD_DEFINED__
+typedef interface IProcessLauncher IProcessLauncher;
+
+#endif 	/* __IProcessLauncher_FWD_DEFINED__ */
+
+
+#ifndef __IProcessLauncher2_FWD_DEFINED__
+#define __IProcessLauncher2_FWD_DEFINED__
+typedef interface IProcessLauncher2 IProcessLauncher2;
+
+#endif 	/* __IProcessLauncher2_FWD_DEFINED__ */
+
+
 #ifndef __GoogleUpdate3WebUserClass_FWD_DEFINED__
 #define __GoogleUpdate3WebUserClass_FWD_DEFINED__
 
@@ -95,6 +109,18 @@ typedef struct GoogleUpdate3WebSystemClass GoogleUpdate3WebSystemClass;
 #endif /* __cplusplus */
 
 #endif 	/* __GoogleUpdate3WebSystemClass_FWD_DEFINED__ */
+
+
+#ifndef __ProcessLauncherClass_FWD_DEFINED__
+#define __ProcessLauncherClass_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class ProcessLauncherClass ProcessLauncherClass;
+#else
+typedef struct ProcessLauncherClass ProcessLauncherClass;
+#endif /* __cplusplus */
+
+#endif 	/* __ProcessLauncherClass_FWD_DEFINED__ */
 
 
 #ifndef __ICurrentState_FWD_DEFINED__
@@ -123,6 +149,20 @@ typedef interface IAppBundleWeb IAppBundleWeb;
 typedef interface IAppWeb IAppWeb;
 
 #endif 	/* __IAppWeb_FWD_DEFINED__ */
+
+
+#ifndef __IProcessLauncher_FWD_DEFINED__
+#define __IProcessLauncher_FWD_DEFINED__
+typedef interface IProcessLauncher IProcessLauncher;
+
+#endif 	/* __IProcessLauncher_FWD_DEFINED__ */
+
+
+#ifndef __IProcessLauncher2_FWD_DEFINED__
+#define __IProcessLauncher2_FWD_DEFINED__
+typedef interface IProcessLauncher2 IProcessLauncher2;
+
+#endif 	/* __IProcessLauncher2_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -1084,12 +1124,234 @@ EXTERN_C const IID IID_IAppWeb;
 #endif 	/* __IAppWeb_INTERFACE_DEFINED__ */
 
 
+#ifndef __IProcessLauncher_INTERFACE_DEFINED__
+#define __IProcessLauncher_INTERFACE_DEFINED__
+
+/* interface IProcessLauncher */
+/* [unique][helpstring][uuid][oleautomation][object] */ 
+
+
+EXTERN_C const IID IID_IProcessLauncher;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("128C2DA6-2BC0-44c0-B3F6-4EC22E647964")
+    IProcessLauncher : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE LaunchCmdLine( 
+            /* [string][in] */ const WCHAR *cmd_line) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE LaunchBrowser( 
+            /* [in] */ DWORD browser_type,
+            /* [string][in] */ const WCHAR *url) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE LaunchCmdElevated( 
+            /* [string][in] */ const WCHAR *app_guid,
+            /* [string][in] */ const WCHAR *cmd_id,
+            /* [in] */ DWORD caller_proc_id,
+            /* [out] */ ULONG_PTR *proc_handle) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IProcessLauncherVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IProcessLauncher * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IProcessLauncher * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IProcessLauncher * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *LaunchCmdLine )( 
+            IProcessLauncher * This,
+            /* [string][in] */ const WCHAR *cmd_line);
+        
+        HRESULT ( STDMETHODCALLTYPE *LaunchBrowser )( 
+            IProcessLauncher * This,
+            /* [in] */ DWORD browser_type,
+            /* [string][in] */ const WCHAR *url);
+        
+        HRESULT ( STDMETHODCALLTYPE *LaunchCmdElevated )( 
+            IProcessLauncher * This,
+            /* [string][in] */ const WCHAR *app_guid,
+            /* [string][in] */ const WCHAR *cmd_id,
+            /* [in] */ DWORD caller_proc_id,
+            /* [out] */ ULONG_PTR *proc_handle);
+        
+        END_INTERFACE
+    } IProcessLauncherVtbl;
+
+    interface IProcessLauncher
+    {
+        CONST_VTBL struct IProcessLauncherVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IProcessLauncher_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IProcessLauncher_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IProcessLauncher_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IProcessLauncher_LaunchCmdLine(This,cmd_line)	\
+    ( (This)->lpVtbl -> LaunchCmdLine(This,cmd_line) ) 
+
+#define IProcessLauncher_LaunchBrowser(This,browser_type,url)	\
+    ( (This)->lpVtbl -> LaunchBrowser(This,browser_type,url) ) 
+
+#define IProcessLauncher_LaunchCmdElevated(This,app_guid,cmd_id,caller_proc_id,proc_handle)	\
+    ( (This)->lpVtbl -> LaunchCmdElevated(This,app_guid,cmd_id,caller_proc_id,proc_handle) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IProcessLauncher_INTERFACE_DEFINED__ */
+
+
+#ifndef __IProcessLauncher2_INTERFACE_DEFINED__
+#define __IProcessLauncher2_INTERFACE_DEFINED__
+
+/* interface IProcessLauncher2 */
+/* [unique][helpstring][uuid][oleautomation][object] */ 
+
+
+EXTERN_C const IID IID_IProcessLauncher2;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("D106AB5F-A70E-400E-A21B-96208C1D8DBB")
+    IProcessLauncher2 : public IProcessLauncher
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE LaunchCmdLineEx( 
+            /* [string][in] */ const WCHAR *cmd_line,
+            /* [out] */ DWORD *server_proc_id,
+            /* [out] */ ULONG_PTR *proc_handle,
+            /* [out] */ ULONG_PTR *stdout_handle) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IProcessLauncher2Vtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IProcessLauncher2 * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IProcessLauncher2 * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IProcessLauncher2 * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *LaunchCmdLine )( 
+            IProcessLauncher2 * This,
+            /* [string][in] */ const WCHAR *cmd_line);
+        
+        HRESULT ( STDMETHODCALLTYPE *LaunchBrowser )( 
+            IProcessLauncher2 * This,
+            /* [in] */ DWORD browser_type,
+            /* [string][in] */ const WCHAR *url);
+        
+        HRESULT ( STDMETHODCALLTYPE *LaunchCmdElevated )( 
+            IProcessLauncher2 * This,
+            /* [string][in] */ const WCHAR *app_guid,
+            /* [string][in] */ const WCHAR *cmd_id,
+            /* [in] */ DWORD caller_proc_id,
+            /* [out] */ ULONG_PTR *proc_handle);
+        
+        HRESULT ( STDMETHODCALLTYPE *LaunchCmdLineEx )( 
+            IProcessLauncher2 * This,
+            /* [string][in] */ const WCHAR *cmd_line,
+            /* [out] */ DWORD *server_proc_id,
+            /* [out] */ ULONG_PTR *proc_handle,
+            /* [out] */ ULONG_PTR *stdout_handle);
+        
+        END_INTERFACE
+    } IProcessLauncher2Vtbl;
+
+    interface IProcessLauncher2
+    {
+        CONST_VTBL struct IProcessLauncher2Vtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IProcessLauncher2_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IProcessLauncher2_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IProcessLauncher2_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IProcessLauncher2_LaunchCmdLine(This,cmd_line)	\
+    ( (This)->lpVtbl -> LaunchCmdLine(This,cmd_line) ) 
+
+#define IProcessLauncher2_LaunchBrowser(This,browser_type,url)	\
+    ( (This)->lpVtbl -> LaunchBrowser(This,browser_type,url) ) 
+
+#define IProcessLauncher2_LaunchCmdElevated(This,app_guid,cmd_id,caller_proc_id,proc_handle)	\
+    ( (This)->lpVtbl -> LaunchCmdElevated(This,app_guid,cmd_id,caller_proc_id,proc_handle) ) 
+
+
+#define IProcessLauncher2_LaunchCmdLineEx(This,cmd_line,server_proc_id,proc_handle,stdout_handle)	\
+    ( (This)->lpVtbl -> LaunchCmdLineEx(This,cmd_line,server_proc_id,proc_handle,stdout_handle) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IProcessLauncher2_INTERFACE_DEFINED__ */
+
+
 
 #ifndef __UpdaterLegacyLib_LIBRARY_DEFINED__
 #define __UpdaterLegacyLib_LIBRARY_DEFINED__
 
 /* library UpdaterLegacyLib */
 /* [helpstring][version][uuid] */ 
+
+
 
 
 
@@ -1112,6 +1374,14 @@ EXTERN_C const CLSID CLSID_GoogleUpdate3WebSystemClass;
 
 class DECLSPEC_UUID("8A1D4361-2C08-4700-A351-3EAA9CBFF5E4")
 GoogleUpdate3WebSystemClass;
+#endif
+
+EXTERN_C const CLSID CLSID_ProcessLauncherClass;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("ABC01078-F197-4b0b-ADBC-CFE684B39C82")
+ProcessLauncherClass;
 #endif
 #endif /* __UpdaterLegacyLib_LIBRARY_DEFINED__ */
 

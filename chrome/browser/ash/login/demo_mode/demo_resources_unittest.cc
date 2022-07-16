@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -40,6 +39,10 @@ class DemoResourcesTest : public testing::Test {
   DemoResourcesTest()
       : browser_process_platform_part_test_api_(
             g_browser_process->platform_part()) {}
+
+  DemoResourcesTest(const DemoResourcesTest&) = delete;
+  DemoResourcesTest& operator=(const DemoResourcesTest&) = delete;
+
   ~DemoResourcesTest() override = default;
 
   void SetUp() override {
@@ -85,8 +88,6 @@ class DemoResourcesTest : public testing::Test {
 
  private:
   BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoResourcesTest);
 };
 
 TEST_F(DemoResourcesTest, GetPaths) {

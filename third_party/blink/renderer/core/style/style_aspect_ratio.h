@@ -25,12 +25,12 @@ class StyleAspectRatio {
   // 0/x and x/0 are valid (and computed style needs to serialize them
   // as such), but they are not useful for layout, so we map it to auto here.
   EAspectRatioType GetType() const {
-    if (ratio_.Width() == 0 || ratio_.Height() == 0)
+    if (ratio_.width() == 0 || ratio_.height() == 0)
       return EAspectRatioType::kAuto;
     // Since we do calculations on LayoutUnits, also check that our width/height
     // doesn't convert to zero.
-    if (ratio_.Width() < LayoutUnit::Epsilon() ||
-        ratio_.Height() < LayoutUnit::Epsilon()) {
+    if (ratio_.width() < LayoutUnit::Epsilon() ||
+        ratio_.height() < LayoutUnit::Epsilon()) {
       return EAspectRatioType::kAuto;
     }
     return GetTypeForComputedStyle();

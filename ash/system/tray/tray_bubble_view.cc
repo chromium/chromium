@@ -7,12 +7,14 @@
 #include <algorithm>
 #include <numeric>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -20,6 +22,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
@@ -28,7 +31,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/painter.h"
@@ -67,12 +70,13 @@ BubbleBorder::Arrow GetArrowAlignment(ash::ShelfAlignment alignment) {
 class MouseMoveDetectorHost : public views::MouseWatcherHost {
  public:
   MouseMoveDetectorHost();
+
+  MouseMoveDetectorHost(const MouseMoveDetectorHost&) = delete;
+  MouseMoveDetectorHost& operator=(const MouseMoveDetectorHost&) = delete;
+
   ~MouseMoveDetectorHost() override;
 
   bool Contains(const gfx::Point& screen_point, EventType type) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MouseMoveDetectorHost);
 };
 
 MouseMoveDetectorHost::MouseMoveDetectorHost() {}
@@ -91,6 +95,9 @@ class BottomAlignedBoxLayout : public views::BoxLayout {
   explicit BottomAlignedBoxLayout(TrayBubbleView* bubble_view)
       : BoxLayout(BoxLayout::Orientation::kVertical),
         bubble_view_(bubble_view) {}
+
+  BottomAlignedBoxLayout(const BottomAlignedBoxLayout&) = delete;
+  BottomAlignedBoxLayout& operator=(const BottomAlignedBoxLayout&) = delete;
 
   ~BottomAlignedBoxLayout() override {}
 
@@ -117,8 +124,6 @@ class BottomAlignedBoxLayout : public views::BoxLayout {
   }
 
   TrayBubbleView* bubble_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(BottomAlignedBoxLayout);
 };
 
 }  // namespace
@@ -140,6 +145,13 @@ bool TrayBubbleView::Delegate::ShouldEnableExtraKeyboardAccessibility() {
 }
 
 void TrayBubbleView::Delegate::HideBubble(const TrayBubbleView* bubble_view) {}
+
+absl::optional<AcceleratorAction>
+TrayBubbleView::Delegate::GetAcceleratorAction() const {
+  // TODO(crbug/1234891) Make this a pure virtual function so all
+  // bubble delegates need to specify accelerator actions.
+  return absl::nullopt;
+}
 
 TrayBubbleView::InitParams::InitParams() = default;
 
@@ -200,11 +212,21 @@ void TrayBubbleView::RerouteEventHandler::OnKeyEvent(ui::KeyEvent* event) {
   // To provide consistent behavior with a menu, process accelerator as a menu
   // is open if the event is not handled by the widget.
   ui::Accelerator accelerator(*event);
-  ViewsDelegate::ProcessMenuAcceleratorResult result =
-      ViewsDelegate::GetInstance()->ProcessAcceleratorWhileMenuShowing(
-          accelerator);
-  if (result == ViewsDelegate::ProcessMenuAcceleratorResult::CLOSE_MENU)
+
+  // crbug/1212857 Immediately close the bubble if the accelerator action
+  // is going to do it and do not process the accelerator. If the accelerator
+  // action is executed asynchronously it will execute after the bubble has
+  // already been closed and it will result in the accelerator action reopening
+  // the bubble.
+  if (tray_bubble_view_->GetAcceleratorAction().has_value() &&
+      AcceleratorControllerImpl::Get()->DoesAcceleratorMatchAction(
+          ui::Accelerator(*event),
+          tray_bubble_view_->GetAcceleratorAction().value())) {
     tray_bubble_view_->CloseBubbleView();
+  } else {
+    ViewsDelegate::GetInstance()->ProcessAcceleratorWhileMenuShowing(
+        accelerator);
+  }
 }
 
 TrayBubbleView::TrayBubbleView(const InitParams& init_params)
@@ -221,6 +243,10 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
       owned_bubble_border_(bubble_border_),
       is_gesture_dragging_(false),
       mouse_actively_entered_(false) {
+  // We set the dialog role because views::BubbleDialogDelegate defaults this to
+  // an alert dialog. This would make screen readers announce the whole of the
+  // system tray which is undesirable.
+  SetAccessibleRole(ax::mojom::Role::kDialog);
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
   SetPaintClientToLayer(false);
@@ -228,8 +254,8 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   DCHECK(delegate_);
   DCHECK(params_.parent_window);
   // anchor_widget() is computed by BubbleDialogDelegateView().
-  DCHECK(((init_params.anchor_mode != TrayBubbleView::AnchorMode::kView) ||
-          anchor_widget()));
+  DCHECK((init_params.anchor_mode != TrayBubbleView::AnchorMode::kView) ||
+         anchor_widget());
   bubble_border_->set_use_theme_background_color(!init_params.bg_color);
   if (init_params.corner_radius)
     bubble_border_->SetCornerRadius(init_params.corner_radius.value());
@@ -251,7 +277,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
         gfx::RoundedCornersF{kUnifiedTrayCornerRadius});
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetIsFastRoundedCorner(true);
-    layer()->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   } else {
     // Create a layer so that the layer for FocusRing stays in this view's
     // layer. Without it, the layer for FocusRing goes above the
@@ -324,6 +350,10 @@ gfx::Insets TrayBubbleView::GetBorderInsets() const {
   return bubble_border_ ? bubble_border_->GetInsets() : gfx::Insets();
 }
 
+absl::optional<AcceleratorAction> TrayBubbleView::GetAcceleratorAction() const {
+  return delegate_->GetAcceleratorAction();
+}
+
 void TrayBubbleView::ResetDelegate() {
   reroute_event_handler_.reset();
 
@@ -350,13 +380,6 @@ bool TrayBubbleView::IsAnchoredToStatusArea() const {
 
 void TrayBubbleView::StopReroutingEvents() {
   reroute_event_handler_.reset();
-}
-
-ax::mojom::Role TrayBubbleView::GetAccessibleWindowRole() {
-  // We override the role because the base class sets it to alert dialog.
-  // This would make screen readers announce the whole of the system tray
-  // which is undesirable.
-  return ax::mojom::Role::kDialog;
 }
 
 void TrayBubbleView::OnBeforeBubbleWidgetInit(Widget::InitParams* params,

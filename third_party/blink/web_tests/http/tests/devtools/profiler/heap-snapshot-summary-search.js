@@ -16,13 +16,13 @@
     HeapProfilerTestRunner.takeAndOpenSnapshot(createHeapSnapshot, step1a);
     function addSearchResultSniffer(step) {
       function jumpToSearchResult() {
-        step(HeapProfilerTestRunner.currentProfileView()._searchResults.length);
+        step(HeapProfilerTestRunner.currentProfileView().searchResults.length);
       }
-      TestRunner.addSniffer(HeapProfilerTestRunner.currentProfileView(), '_jumpToSearchResult', jumpToSearchResult);
+      TestRunner.addSniffer(HeapProfilerTestRunner.currentProfileView(), 'jumpToSearchResult', jumpToSearchResult);
     }
 
     function addNodeSelectedSniffer(callback) {
-      TestRunner.addSniffer(HeapProfilerTestRunner.currentProfileView(), '_selectRevealedNode', callback);
+      TestRunner.addSniffer(HeapProfilerTestRunner.currentProfileView(), 'selectRevealedNode', callback);
     }
 
     function step1a() {

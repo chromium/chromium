@@ -21,6 +21,9 @@ class LockTable : public base::RefCounted<LockTable> {
  public:
   LockTable();
 
+  LockTable(const LockTable&) = delete;
+  LockTable& operator=(const LockTable&) = delete;
+
   // Locks a file.
   base::File::Error LockFile(FileImpl* file);
 
@@ -39,8 +42,6 @@ class LockTable : public base::RefCounted<LockTable> {
   // Open, locked files. We keep track of this so we quickly error when we try
   // to double lock a file.
   std::set<base::FilePath> locked_files_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockTable);
 };
 
 }  // namespace filesystem

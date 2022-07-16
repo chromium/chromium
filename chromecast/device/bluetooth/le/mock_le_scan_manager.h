@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/device/bluetooth/le/le_scan_manager.h"
 #include "chromecast/device/bluetooth/le/scan_filter.h"
 #include "testing/gmock/include/gmock/gmock.h"

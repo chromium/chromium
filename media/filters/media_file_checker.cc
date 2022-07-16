@@ -86,8 +86,7 @@ bool MediaFileChecker::Start(base::TimeDelta check_time) {
   auto do_nothing_cb = base::BindRepeating([](AVFrame*) { return true; });
   const base::TimeTicks deadline =
       base::TimeTicks::Now() +
-      std::min(check_time,
-               base::TimeDelta::FromSeconds(kMaxCheckTimeInSeconds));
+      std::min(check_time, base::Seconds(kMaxCheckTimeInSeconds));
   do {
     result = av_read_frame(glue.format_context(), &packet);
     if (result < 0)

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "media/base/media_util.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_decoder_config.h"
@@ -31,7 +30,7 @@ namespace {
 // timestamp field. These two functions are used for converting between
 // bitstream ID and fake timestamp.
 base::TimeDelta BitstreamIdToFakeTimestamp(int32_t bitstream_id) {
-  return base::TimeDelta::FromMilliseconds(bitstream_id);
+  return base::Milliseconds(bitstream_id);
 }
 
 int32_t FakeTimestampToBitstreamId(base::TimeDelta timestamp) {
@@ -103,7 +102,8 @@ void VdVideoDecodeAccelerator::Destroy() {
   // Because VdaVideoFramePool is blocked for this callback, we must call the
   // callback before destroying.
   if (notify_layout_changed_cb_)
-    std::move(notify_layout_changed_cb_).Run(absl::nullopt);
+    std::move(notify_layout_changed_cb_)
+        .Run(CroStatus::Codes::kFailedToGetFrameLayout);
   client_ = nullptr;
   vd_.reset();
 
@@ -264,6 +264,17 @@ void VdVideoDecodeAccelerator::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(vd_);
 
+  if (is_resetting_) {
+    VLOGF(1) << "The previous Reset() has not finished yet, aborted.";
+    return;
+  }
+
+  is_resetting_ = true;
+  if (notify_layout_changed_cb_) {
+    std::move(notify_layout_changed_cb_).Run(CroStatus::Codes::kResetRequired);
+    import_frame_cb_.Reset();
+  }
+
   vd_->Reset(
       base::BindOnce(&VdVideoDecodeAccelerator::OnResetDone, weak_this_));
 }
@@ -272,7 +283,9 @@ void VdVideoDecodeAccelerator::OnResetDone() {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(client_);
+  DCHECK(is_resetting_);
 
+  is_resetting_ = false;
   client_->NotifyResetDone();
 }
 
@@ -288,14 +301,21 @@ void VdVideoDecodeAccelerator::RequestFrames(
   DCHECK(client_);
   DCHECK(!notify_layout_changed_cb_);
 
-  notify_layout_changed_cb_ = std::move(notify_layout_changed_cb);
-  import_frame_cb_ = std::move(import_frame_cb);
-
   // Stop tracking currently-allocated pictures, otherwise the count will be
   // corrupted as we import new frames with the same IDs as the old ones.
   // The client should still have its own reference to the frame data, which
   // will keep it valid for as long as it needs it.
   picture_at_client_.clear();
+
+  notify_layout_changed_cb_ = std::move(notify_layout_changed_cb);
+  import_frame_cb_ = std::move(import_frame_cb);
+  // We need to check if Reset() was received before RequestFrames() so that we
+  // can unblock the frame pool in that case.
+  if (is_resetting_) {
+    std::move(notify_layout_changed_cb_).Run(CroStatus::Codes::kResetRequired);
+    import_frame_cb_.Reset();
+    return;
+  }
 
   // After calling ProvidePictureBuffersWithVisibleRect(), the client might
   // still send buffers with old coded size. We temporarily store at
@@ -324,6 +344,9 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
   DVLOGF(4) << "picture_buffer_id: " << picture_buffer_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
+  if (!import_frame_cb_)
+    return;
+
   // The first imported picture after requesting buffers.
   // |notify_layout_changed_cb_| must be called in this clause because it blocks
   // VdaVideoFramePool.
@@ -331,7 +354,9 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
     auto fourcc = Fourcc::FromVideoPixelFormat(pixel_format);
     if (!fourcc) {
       VLOGF(1) << "Failed to convert to Fourcc.";
-      std::move(notify_layout_changed_cb_).Run(absl::nullopt);
+      import_frame_cb_.Reset();
+      std::move(notify_layout_changed_cb_)
+          .Run(CroStatus::Codes::kFailedToChangeResolution);
       return;
     }
 
@@ -349,12 +374,27 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
                << ", coded_size: " << coded_size_.ToString()
                << ", planes: " << VectorToString(planes)
                << ", modifier: " << std::hex << modifier;
-      std::move(notify_layout_changed_cb_).Run(absl::nullopt);
+      import_frame_cb_.Reset();
+      std::move(notify_layout_changed_cb_)
+          .Run(CroStatus::Codes::kFailedToChangeResolution);
       return;
     }
 
-    std::move(notify_layout_changed_cb_)
-        .Run(GpuBufferLayout::Create(*fourcc, coded_size_, planes, modifier));
+    auto gb_layout =
+        GpuBufferLayout::Create(*fourcc, coded_size_, planes, modifier);
+    if (!gb_layout) {
+      VLOGF(1) << "Failed to create GpuBufferLayout. fourcc: "
+               << fourcc->ToString()
+               << ", coded_size: " << coded_size_.ToString()
+               << ", planes: " << VectorToString(planes)
+               << ", modifier: " << std::hex << modifier;
+      layout_ = absl::nullopt;
+      import_frame_cb_.Reset();
+      std::move(notify_layout_changed_cb_)
+          .Run(CroStatus::Codes::kFailedToChangeResolution);
+      return;
+    }
+    std::move(notify_layout_changed_cb_).Run(*gb_layout);
   }
 
   if (!layout_)
@@ -391,7 +431,6 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
              << " still referenced, dropping it.";
   }
 
-  DCHECK(import_frame_cb_);
   import_frame_cb_.Run(std::move(wrapped_frame));
 }
 

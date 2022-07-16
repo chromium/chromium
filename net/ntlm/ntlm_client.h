@@ -42,6 +42,9 @@ class NET_EXPORT_PRIVATE NtlmClient {
   // Integrity Check (MIC).
   explicit NtlmClient(NtlmFeatures features);
 
+  NtlmClient(const NtlmClient&) = delete;
+  NtlmClient& operator=(const NtlmClient&) = delete;
+
   ~NtlmClient();
 
   bool IsNtlmV2() const { return features_.enable_NTLMv2; }
@@ -150,8 +153,6 @@ class NET_EXPORT_PRIVATE NtlmClient {
   const NtlmFeatures features_;
   NegotiateFlags negotiate_flags_;
   std::vector<uint8_t> negotiate_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(NtlmClient);
 };
 
 }  // namespace ntlm

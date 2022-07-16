@@ -8,9 +8,8 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/url_request/url_request_context_getter.h"
 
 namespace net {
@@ -21,6 +20,9 @@ class URLRequestContextGetter : public net::URLRequestContextGetter {
  public:
   explicit URLRequestContextGetter(
       scoped_refptr<base::SingleThreadTaskRunner> network_task_runner);
+
+  URLRequestContextGetter(const URLRequestContextGetter&) = delete;
+  URLRequestContextGetter& operator=(const URLRequestContextGetter&) = delete;
 
   // Overridden from net::URLRequestContextGetter:
   net::URLRequestContext* GetURLRequestContext() override;
@@ -34,8 +36,6 @@ class URLRequestContextGetter : public net::URLRequestContextGetter {
 
   // Only accessed on the IO thread.
   std::unique_ptr<net::URLRequestContext> url_request_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestContextGetter);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_NET_URL_REQUEST_CONTEXT_GETTER_H_

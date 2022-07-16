@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/scoped_multi_source_observation.h"
@@ -17,19 +18,23 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/rrect_f.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -38,7 +43,6 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -64,7 +68,7 @@ class HighlightBorder : public views::View {
 
   void Layout() override {
     auto bounds = parent()->GetLocalBounds();
-    bounds.Inset(gfx::Insets(views::PlatformStyle::kFocusHaloInset));
+    bounds.Inset(gfx::Insets(views::FocusRing::kDefaultHaloInset));
     SetBoundsRect(bounds);
   }
 
@@ -79,10 +83,10 @@ class HighlightBorder : public views::View {
     View::ConvertRectToTarget(parent(), this, &rect);
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_FocusedBorderColor));
+    flags.setColor(
+        GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(views::PlatformStyle::kFocusHaloThickness);
+    flags.setStrokeWidth(views::FocusRing::kDefaultHaloThickness);
     canvas->DrawRoundRect(rect, (*rrect).GetSimpleRadius(), flags);
   }
 };
@@ -214,6 +218,9 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
       parent,
       base::BindRepeating(&ArcSplashScreenDialogView::OnCloseButtonClicked,
                           base::Unretained(this)));
+
+  activation_observation_.Observe(
+      wm::GetActivationClient(parent_window()->GetRootWindow()));
 }
 
 ArcSplashScreenDialogView::~ArcSplashScreenDialogView() = default;
@@ -236,6 +243,37 @@ void ArcSplashScreenDialogView::AddedToWidget() {
   auto* const frame = GetBubbleFrameView();
   if (frame)
     frame->SetCornerRadius(kCornerRadius);
+}
+
+void ArcSplashScreenDialogView::OnWindowActivated(ActivationReason reason,
+                                                  aura::Window* gained_active,
+                                                  aura::Window* lost_active) {
+  if (gained_active != parent_window())
+    return;
+
+  // Safe-guard for the activation forwarding loop.
+  if (forwarding_activation_)
+    return;
+
+  forwarding_activation_ = true;
+  // Forward the activation to the dialog if available.
+  // To avoid nested-activation, here we post the task to the queue.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<ArcSplashScreenDialogView> view) {
+                       if (!view)
+                         return;
+
+                       base::AutoReset<bool> forwarding_activation_update(
+                           &view->forwarding_activation_, false);
+                       auto* const widget = view->GetWidget();
+                       if (!widget)
+                         return;
+                       if (widget->IsClosed())
+                         return;
+                       widget->Activate();
+                     },
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcSplashScreenDialogView::OnCloseButtonClicked() {

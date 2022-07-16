@@ -14,12 +14,12 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/post_task_and_reply_with_result_internal.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/post_task_and_reply_with_result_internal.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -131,11 +131,21 @@ BASE_EXPORT bool PostTaskAndReply(const Location& from_here,
 // or thread and same TaskTraits if applicable) when |task| completes. Returns
 // false if the task definitely won't run because of current shutdown state. Can
 // only be called when SequencedTaskRunnerHandle::IsSet().
-template <typename TaskReturnType, typename ReplyArgType>
+//
+// Templating on the types of |task| and |reply| allows template matching to
+// work for both base::RepeatingCallback and base::OnceCallback in each case.
+template <typename TaskReturnType,
+          typename ReplyArgType,
+          template <typename>
+          class TaskCallbackType,
+          template <typename>
+          class ReplyCallbackType,
+          typename = EnableIfIsBaseCallback<TaskCallbackType>,
+          typename = EnableIfIsBaseCallback<ReplyCallbackType>>
 bool PostTaskAndReplyWithResult(const Location& from_here,
                                 const TaskTraits& traits,
-                                OnceCallback<TaskReturnType()> task,
-                                OnceCallback<void(ReplyArgType)> reply) {
+                                TaskCallbackType<TaskReturnType()> task,
+                                ReplyCallbackType<void(ReplyArgType)> reply) {
   auto* result = new std::unique_ptr<TaskReturnType>();
   return PostTaskAndReply(
       from_here, traits,

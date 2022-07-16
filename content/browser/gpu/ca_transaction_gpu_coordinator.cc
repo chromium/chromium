@@ -9,7 +9,6 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_features.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
@@ -23,9 +22,7 @@ scoped_refptr<CATransactionGPUCoordinator> CATransactionGPUCoordinator::Create(
       new CATransactionGPUCoordinator(host));
   // Avoid modifying result's refcount in the constructor by performing this
   // PostTask afterward.
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? BrowserThread::UI
-                          : BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ui::WindowResizeHelperMac::Get()->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -43,9 +40,7 @@ CATransactionGPUCoordinator::~CATransactionGPUCoordinator() {
 }
 
 void CATransactionGPUCoordinator::HostWillBeDestroyed() {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? BrowserThread::UI
-                          : BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ui::WindowResizeHelperMac::Get()->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -68,14 +63,8 @@ void CATransactionGPUCoordinator::RemovePostCommitObserverOnUIThread() {
 
 void CATransactionGPUCoordinator::OnActivateForTransaction() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    OnActivateForTransactionOnProcessThread();
-  } else {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&CATransactionGPUCoordinator::
-                                      OnActivateForTransactionOnProcessThread,
-                                  this));
-  }
+  if (host_)
+    host_->gpu_service()->BeginCATransaction();
 }
 
 void CATransactionGPUCoordinator::OnEnterPostCommit() {
@@ -86,15 +75,9 @@ void CATransactionGPUCoordinator::OnEnterPostCommit() {
   // (and removed from the list of post-commit observers) soon after.
   pending_commit_count_++;
 
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    OnEnterPostCommitOnProcessThread();
-  } else {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &CATransactionGPUCoordinator::OnEnterPostCommitOnProcessThread,
-            this));
-  }
+  if (host_)
+    host_->gpu_service()->CommitCATransaction(base::BindOnce(
+        &CATransactionGPUCoordinator::OnCommitCompletedOnProcessThread, this));
 }
 
 bool CATransactionGPUCoordinator::ShouldWaitInPostCommit() {
@@ -102,27 +85,8 @@ bool CATransactionGPUCoordinator::ShouldWaitInPostCommit() {
   return pending_commit_count_ > 0;
 }
 
-void CATransactionGPUCoordinator::OnActivateForTransactionOnProcessThread() {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? BrowserThread::UI
-                          : BrowserThread::IO);
-  if (host_)
-    host_->gpu_service()->BeginCATransaction();
-}
-
-void CATransactionGPUCoordinator::OnEnterPostCommitOnProcessThread() {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? BrowserThread::UI
-                          : BrowserThread::IO);
-  if (host_)
-    host_->gpu_service()->CommitCATransaction(base::BindOnce(
-        &CATransactionGPUCoordinator::OnCommitCompletedOnProcessThread, this));
-}
-
 void CATransactionGPUCoordinator::OnCommitCompletedOnProcessThread() {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? BrowserThread::UI
-                          : BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ui::WindowResizeHelperMac::Get()->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CATransactionGPUCoordinator::OnCommitCompletedOnUI,

@@ -41,6 +41,9 @@ class ValidationTestDataSource : public TestdataSource {
  public:
   ValidationTestDataSource() : TestdataSource(true) {}
 
+  ValidationTestDataSource(const ValidationTestDataSource&) = delete;
+  ValidationTestDataSource& operator=(const ValidationTestDataSource&) = delete;
+
   ~ValidationTestDataSource() override {}
 
   void Get(const std::string& key, const Callback& data_ready) const override {
@@ -62,9 +65,6 @@ class ValidationTestDataSource : public TestdataSource {
             "\"id\": \"data/CA/QC\", \"zip\": \"G|H|J\", \"name\": \"Quebec\"}"
             "}"));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ValidationTestDataSource);
 };
 
 class AutofillProfileValidatorTest : public testing::Test {
@@ -76,6 +76,10 @@ class AutofillProfileValidatorTest : public testing::Test {
         onvalidated_cb_(
             base::BindOnce(&AutofillProfileValidatorTest::OnValidated,
                            base::Unretained(this))) {}
+
+  AutofillProfileValidatorTest(const AutofillProfileValidatorTest&) = delete;
+  AutofillProfileValidatorTest& operator=(const AutofillProfileValidatorTest&) =
+      delete;
 
  protected:
   const std::unique_ptr<AutofillProfileValidator> validator_;
@@ -106,8 +110,6 @@ class AutofillProfileValidatorTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment scoped_task_scheduler;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileValidatorTest);
 };
 
 // Validate a valid profile, for which the rules are not loaded, yet.

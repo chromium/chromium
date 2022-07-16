@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/fake_shill_service_client.h"
@@ -56,6 +55,9 @@ void OnGetDictionaryError(const std::string& method_name,
 class ShillServiceClientImpl : public ShillServiceClient {
  public:
   explicit ShillServiceClientImpl(dbus::Bus* bus) : bus_(bus) {}
+
+  ShillServiceClientImpl(const ShillServiceClientImpl&) = delete;
+  ShillServiceClientImpl& operator=(const ShillServiceClientImpl&) = delete;
 
   ~ShillServiceClientImpl() override {
     for (HelperMap::iterator iter = helpers_.begin(); iter != helpers_.end();
@@ -224,15 +226,13 @@ class ShillServiceClientImpl : public ShillServiceClient {
                                             std::move(error_callback));
   }
 
-  void RequestTrafficCounters(const dbus::ObjectPath& service_path,
-                              ListValueCallback callback,
-                              ErrorCallback error_callback) override {
+  void RequestTrafficCounters(
+      const dbus::ObjectPath& service_path,
+      DBusMethodCallback<base::Value> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kRequestTrafficCountersFunction);
 
-    GetHelper(service_path)
-        ->CallListValueMethodWithErrorCallback(
-            &method_call, std::move(callback), std::move(error_callback));
+    GetHelper(service_path)->CallValueMethod(&method_call, std::move(callback));
   }
 
   void ResetTrafficCounters(const dbus::ObjectPath& service_path,
@@ -304,8 +304,6 @@ class ShillServiceClientImpl : public ShillServiceClient {
   dbus::Bus* bus_;
   HelperMap helpers_;
   base::WeakPtrFactory<ShillServiceClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShillServiceClientImpl);
 };
 
 }  // namespace

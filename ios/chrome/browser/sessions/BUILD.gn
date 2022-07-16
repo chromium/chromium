@@ -128,6 +128,24 @@ source_set("serialisation") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("session_saving") {
+  sources = [
+    "session_saving_scene_agent.h",
+    "session_saving_scene_agent.mm",
+  ]
+  deps = [
+    ":restoration_agent",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/ui/main:browser_interface_provider",
+    "//ios/chrome/browser/ui/main:observing_scene_agent",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/web_state_list/web_usage_enabler",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true

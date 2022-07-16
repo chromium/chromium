@@ -24,11 +24,6 @@ if (use_goma && goma_dir == "") {
 declare_args() {
   # TODO(crbug.com/726475): true if use_goma = true in the future.
   use_java_goma = false
-
-  # Deprecated and ignored as Goma RBE is now the default. Still exists
-  # to avoid breaking the build on the bots. Will be removed when all
-  # bots have been configured to not set this variable.
-  ios_use_goma_rbe = -1
 }
 
 assert(!is_win || !use_goma || is_clang,

@@ -40,8 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_scrolltimelineautokeyword.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unrestricteddouble.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_double.h"
 #include "third_party/blink/renderer/core/animation/css_number_interpolation_type.h"
@@ -52,6 +51,7 @@
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -149,7 +149,7 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
   void MakeCompositedAnimation() {
     // Create a compositable animation; in this case opacity from 1 to 0.
     Timing timing;
-    timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+    timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
 
     StringKeyframe* start_keyframe = MakeGarbageCollected<StringKeyframe>();
     start_keyframe->SetCSSPropertyValue(CSSPropertyID::kOpacity, "1.0",
@@ -186,7 +186,7 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
       double duration = 30,
       Timing::FillMode fill_mode = Timing::FillMode::AUTO) {
     Timing timing;
-    timing.iteration_duration = AnimationTimeDelta::FromSecondsD(duration);
+    timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(duration);
     timing.fill_mode = fill_mode;
     return MakeGarbageCollected<KeyframeEffect>(nullptr, MakeEmptyEffectModel(),
                                                 timing);
@@ -195,15 +195,15 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
   bool SimulateFrame(double time_ms) {
     if (animation->pending()) {
       animation->NotifyReady(
-          AnimationTimeDelta::FromMillisecondsD(last_frame_time));
+          ANIMATION_TIME_DELTA_FROM_MILLISECONDS(last_frame_time));
     }
     SimulateMicrotask();
 
     last_frame_time = time_ms;
     const auto* paint_artifact_compositor =
         GetDocument().GetFrame()->View()->GetPaintArtifactCompositor();
-    GetDocument().GetAnimationClock().UpdateTime(
-        base::TimeTicks() + base::TimeDelta::FromMillisecondsD(time_ms));
+    GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                                 base::Milliseconds(time_ms));
     GetDocument().GetPendingAnimations().Update(paint_artifact_compositor,
                                                 false);
     // The timeline does not know about our animation, so we have to explicitly
@@ -219,25 +219,38 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
 
   void SimulateFrameForScrollAnimations() {
     // Advance time by 100 ms.
-    auto new_time = GetAnimationClock().CurrentTime() +
-                    base::TimeDelta::FromMilliseconds(100);
+    auto new_time = GetAnimationClock().CurrentTime() + base::Milliseconds(100);
     GetPage().Animator().ServiceScriptedAnimations(new_time);
   }
 
-  bool StartTimeIsSet(Animation* animation) {
-    return animation->startTime();
+  bool StartTimeIsSet(Animation* for_animation) {
+    return for_animation->startTime();
   }
 
-  bool CurrentTimeIsSet(Animation* animation) {
-    return animation->currentTime();
+  bool CurrentTimeIsSet(Animation* for_animation) {
+    return for_animation->currentTime();
   }
 
-  double GetStartTimeMs(Animation* animation) {
-    return animation->startTime()->GetAsDouble();
+  double GetStartTimeMs(Animation* for_animation) {
+    return for_animation->startTime()->GetAsDouble();
   }
 
-  double GetCurrentTimeMs(Animation* animation) {
-    return animation->currentTime()->GetAsDouble();
+  double GetCurrentTimeMs(Animation* for_animation) {
+    return for_animation->currentTime()->GetAsDouble();
+  }
+
+  double GetStartTimePercent(Animation* for_animation) {
+    return for_animation->startTime()
+        ->GetAsCSSNumericValue()
+        ->to(CSSPrimitiveValue::UnitType::kPercentage)
+        ->value();
+  }
+
+  double GetCurrentTimePercent(Animation* for_animation) {
+    return for_animation->currentTime()
+        ->GetAsCSSNumericValue()
+        ->to(CSSPrimitiveValue::UnitType::kPercentage)
+        ->value();
   }
 
 #define EXPECT_TIME(expected, observed) \
@@ -257,7 +270,7 @@ class AnimationAnimationTestCompositing
                              String from,
                              String to) {
     Timing timing;
-    timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+    timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
 
     StringKeyframe* start_keyframe = MakeGarbageCollected<StringKeyframe>();
     start_keyframe->SetCSSPropertyValue(
@@ -317,8 +330,8 @@ TEST_P(AnimationAnimationTestNoCompositing, CurrentTimeDoesNotSetOutdated) {
   // FIXME: We should split simulateFrame into a version that doesn't update
   // the animation and one that does, as most of the tests don't require
   // update() to be called.
-  GetDocument().GetAnimationClock().UpdateTime(
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(10000));
+  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                               base::Milliseconds(10000));
   EXPECT_TIME(10000, GetCurrentTimeMs(animation));
   EXPECT_FALSE(animation->Outdated());
 }
@@ -785,7 +798,7 @@ TEST_P(AnimationAnimationTestNoCompositing, FinishRaisesException) {
   // Cannot finish an animation that has an infinite iteration-count and a
   // non-zero iteration-duration.
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(1);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
   timing.iteration_count = std::numeric_limits<double>::infinity();
   animation->setEffect(MakeGarbageCollected<KeyframeEffect>(
       nullptr, MakeEmptyEffectModel(), timing));
@@ -1020,9 +1033,9 @@ TEST_P(AnimationAnimationTestNoCompositing, AnimationsDisassociateFromEffect) {
 
 TEST_P(AnimationAnimationTestNoCompositing, AnimationsReturnTimeToNextEffect) {
   Timing timing;
-  timing.start_delay = AnimationTimeDelta::FromSecondsD(1);
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(1);
-  timing.end_delay = AnimationTimeDelta::FromSecondsD(1);
+  timing.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
+  timing.end_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
   auto* keyframe_effect = MakeGarbageCollected<KeyframeEffect>(
       nullptr, MakeEmptyEffectModel(), timing);
   animation = timeline->Play(keyframe_effect);
@@ -1031,12 +1044,12 @@ TEST_P(AnimationAnimationTestNoCompositing, AnimationsReturnTimeToNextEffect) {
 
   // Next effect change at end of start delay.
   SimulateFrame(0);
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(1),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(1),
                    animation->TimeToEffectChange().value());
 
   // Next effect change at end of start delay.
   SimulateFrame(500);
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(0.5),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(0.5),
                    animation->TimeToEffectChange().value());
 
   // Start of active phase.
@@ -1051,7 +1064,7 @@ TEST_P(AnimationAnimationTestNoCompositing, AnimationsReturnTimeToNextEffect) {
 
   // Start of the after phase. Next effect change at end of after phase.
   SimulateFrame(2000);
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(1),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(1),
                    animation->TimeToEffectChange().value());
 
   // Still in effect if fillmode = forward|both.
@@ -1062,13 +1075,13 @@ TEST_P(AnimationAnimationTestNoCompositing, AnimationsReturnTimeToNextEffect) {
   animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(0),
                             ASSERT_NO_EXCEPTION);
   SimulateFrame(3000);
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(1),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(1),
                    animation->TimeToEffectChange().value());
 
   // Start delay is scaled by playback rate.
   animation->setPlaybackRate(2);
   SimulateFrame(3000);
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(0.5),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(0.5),
                    animation->TimeToEffectChange().value());
 
   // Effectively a paused animation.
@@ -1082,14 +1095,14 @@ TEST_P(AnimationAnimationTestNoCompositing, AnimationsReturnTimeToNextEffect) {
   animation->setPlaybackRate(-1);
   animation->Update(kTimingUpdateOnDemand);
   SimulateFrame(3000);
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(1),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(1),
                    animation->TimeToEffectChange().value());
 
   // End delay is scaled by playback rate.
   animation->setPlaybackRate(-2);
   animation->Update(kTimingUpdateOnDemand);
   SimulateFrame(3000);
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(0.5),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(0.5),
                    animation->TimeToEffectChange().value());
 }
 
@@ -1325,7 +1338,7 @@ TEST_P(AnimationAnimationTestCompositing,
   LayoutObject* object_not_composited = GetLayoutObjectByElementId("bar");
 
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
   auto* keyframe_effect_composited = MakeGarbageCollected<KeyframeEffect>(
       To<Element>(object_composited->GetNode()), MakeSimpleEffectModel(),
       timing);
@@ -1423,7 +1436,7 @@ TEST_P(AnimationAnimationTestCompositing, PreCommitRecordsHistograms) {
   // Now make the playback rate 0. This trips both the invalid animation and
   // unsupported timing parameter reasons.
   animation->setPlaybackRate(0);
-  animation->NotifyReady(AnimationTimeDelta::FromSecondsD(100));
+  animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_SECONDS(100));
   {
     HistogramTester histogram;
     ASSERT_TRUE(animation->PreCommit(0, nullptr, true));
@@ -1514,7 +1527,7 @@ TEST_P(AnimationAnimationTestCompositing, InfiniteDurationAnimation) {
 
   OptionalEffectTiming* effect_timing = OptionalEffectTiming::Create();
   effect_timing->setDuration(
-      MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(
+      MakeGarbageCollected<V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
           std::numeric_limits<double>::infinity()));
   animation->effect()->updateTiming(effect_timing);
   EXPECT_EQ(CompositorAnimations::kEffectHasUnsupportedTimingParameters,
@@ -1687,16 +1700,13 @@ TEST_P(AnimationAnimationTestCompositing,
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kProgrammatic);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  auto* time_range =
-      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
-  options->setTimeRange(time_range);
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
   // Create KeyframeEffect
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
 
   StringKeyframe* start_keyframe = MakeGarbageCollected<StringKeyframe>();
   start_keyframe->SetCSSPropertyValue(CSSPropertyID::kOpacity, "1.0",
@@ -1756,16 +1766,13 @@ TEST_P(AnimationAnimationTestCompositing,
   scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
                                    mojom::blink::ScrollType::kProgrammatic);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  auto* time_range =
-      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
-  options->setTimeRange(time_range);
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
   // Create KeyframeEffect
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
 
   StringKeyframe* start_keyframe = MakeGarbageCollected<StringKeyframe>();
   start_keyframe->SetCSSPropertyValue(CSSPropertyID::kOpacity, "1.0",
@@ -1796,9 +1803,10 @@ TEST_P(AnimationAnimationTestCompositing,
       nullptr);
 
   UpdateAllLifecyclePhasesForTest();
-  const double TEST_START_TIME = 10;
+  const double TEST_START_PERCENT = 10;
   scroll_animation->setStartTime(
-      MakeGarbageCollected<V8CSSNumberish>(TEST_START_TIME),
+      MakeGarbageCollected<V8CSSNumberish>(
+          CSSUnitValues::percent(TEST_START_PERCENT)),
       ASSERT_NO_EXCEPTION);
   scroll_animation->play();
   EXPECT_EQ(scroll_animation->CheckCanStartAnimationOnCompositor(nullptr),
@@ -1812,7 +1820,7 @@ TEST_P(AnimationAnimationTestCompositing,
           ->CcAnimation()
           ->GetKeyframeModel(compositor_target_property::OPACITY);
   EXPECT_EQ(keyframe_model->start_time() - base::TimeTicks(),
-            base::TimeDelta::FromMilliseconds(TEST_START_TIME));
+            base::Seconds(TEST_START_PERCENT));
   EXPECT_EQ(keyframe_model->time_offset(), base::TimeDelta());
 }
 
@@ -1835,10 +1843,7 @@ TEST_P(AnimationAnimationTestNoCompositing, ScrollLinkedAnimationCreation) {
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kProgrammatic);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  auto* time_range =
-      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
-  options->setTimeRange(time_range);
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
@@ -1853,19 +1858,19 @@ TEST_P(AnimationAnimationTestNoCompositing, ScrollLinkedAnimationCreation) {
   scroll_animation->play();
 
   // Verify start and current times in Pending state.
-  EXPECT_TIME(0, GetStartTimeMs(scroll_animation));
-  EXPECT_TIME(20, GetCurrentTimeMs(scroll_animation));
+  EXPECT_TIME(0, GetStartTimePercent(scroll_animation));
+  EXPECT_TIME(20, GetCurrentTimePercent(scroll_animation));
 
   UpdateAllLifecyclePhasesForTest();
   // Verify start and current times in Playing state.
-  EXPECT_TIME(0, GetStartTimeMs(scroll_animation));
-  EXPECT_TIME(20, GetCurrentTimeMs(scroll_animation));
+  EXPECT_TIME(0, GetStartTimePercent(scroll_animation));
+  EXPECT_TIME(20, GetCurrentTimePercent(scroll_animation));
 
   // Verify current time after scroll.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 40),
                                    mojom::blink::ScrollType::kProgrammatic);
   SimulateFrameForScrollAnimations();
-  EXPECT_TIME(40, GetCurrentTimeMs(scroll_animation));
+  EXPECT_TIME(40, GetCurrentTimePercent(scroll_animation));
 }
 
 // Verifies that finished composited scroll-linked animations restart on
@@ -1891,16 +1896,13 @@ TEST_P(AnimationAnimationTestCompositing,
 
   // Create ScrollTimeline
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  auto* time_range =
-      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
-  options->setTimeRange(time_range);
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
   // Create KeyframeEffect
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
   StringKeyframe* start_keyframe = MakeGarbageCollected<StringKeyframe>();
   start_keyframe->SetCSSPropertyValue(CSSPropertyID::kOpacity, "1.0",
                                       SecureContextMode::kInsecureContext,
@@ -1936,16 +1938,18 @@ TEST_P(AnimationAnimationTestCompositing,
 
   // Advances the animation to "finished" state. The composited animation will
   // be destroyed accordingly.
-  scroll_animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(50000),
-                                   ASSERT_NO_EXCEPTION);
+  scroll_animation->setCurrentTime(
+      MakeGarbageCollected<V8CSSNumberish>(CSSUnitValues::percent(100)),
+      ASSERT_NO_EXCEPTION);
   EXPECT_EQ(scroll_animation->playState(), "finished");
   scroll_animation->Update(kTimingUpdateForAnimationFrame);
   GetDocument().GetPendingAnimations().Update(nullptr, true);
   EXPECT_FALSE(scroll_animation->HasActiveAnimationsOnCompositor());
 
   // Restarting the animation should create a new compositor animation.
-  scroll_animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(100),
-                                   ASSERT_NO_EXCEPTION);
+  scroll_animation->setCurrentTime(
+      MakeGarbageCollected<V8CSSNumberish>(CSSUnitValues::percent(50)),
+      ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(scroll_animation->playState(), "running");
   scroll_animation->Update(kTimingUpdateForAnimationFrame);
@@ -2091,7 +2095,7 @@ class AnimationPendingAnimationsTest : public PaintTestConfigurations,
 
   Animation* MakeAnimation(const char* target, CompositingMode mode) {
     Timing timing;
-    timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+    timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
     StringKeyframe* start_keyframe = MakeGarbageCollected<StringKeyframe>();
     start_keyframe->SetCSSPropertyValue(CSSPropertyID::kOpacity, "1.0",
                                         SecureContextMode::kInsecureContext,
@@ -2214,7 +2218,7 @@ TEST_P(AnimationPendingAnimationsTest,
 }
 
 TEST_P(AnimationAnimationTestCompositing,
-       ScrollLinkedAnimationNotCompositedIfScrollSourceIsNotComposited) {
+       ScrollLinkedAnimationNotCompositedIfSourceIsNotComposited) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -2238,16 +2242,13 @@ TEST_P(AnimationAnimationTestCompositing,
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kProgrammatic);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  auto* time_range =
-      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
-  options->setTimeRange(time_range);
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
   // Create KeyframeEffect
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
 
   StringKeyframe* start_keyframe = MakeGarbageCollected<StringKeyframe>();
   start_keyframe->SetCSSPropertyValue(CSSPropertyID::kOpacity, "1.0",
@@ -2389,7 +2390,7 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsDoNotTick) {
 
   // The next effect change should be at the end because the animation does not
   // tick while hidden.
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(30),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(30),
                    animation->TimeToEffectChange().value());
 }
 
@@ -2440,7 +2441,7 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsTickWhenVisible) {
 
   // The next effect change should be at the end because the animation does not
   // tick while hidden.
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(30),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(30),
                    animation->TimeToEffectChange().value());
 
   Element* visibility = GetElementById("visibility");
@@ -2458,7 +2459,7 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsTickWhenVisible) {
 
   // The next effect change should be at the end because the animation is
   // running on the compositor.
-  EXPECT_TIMEDELTA(AnimationTimeDelta::FromSecondsD(30),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(30),
                    animation->TimeToEffectChange().value());
 }
 

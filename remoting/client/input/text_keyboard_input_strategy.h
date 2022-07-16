@@ -17,6 +17,11 @@ class ClientInputInjector;
 class TextKeyboardInputStrategy : public KeyboardInputStrategy {
  public:
   explicit TextKeyboardInputStrategy(ClientInputInjector* input_injector);
+
+  TextKeyboardInputStrategy(const TextKeyboardInputStrategy&) = delete;
+  TextKeyboardInputStrategy& operator=(const TextKeyboardInputStrategy&) =
+      delete;
+
   ~TextKeyboardInputStrategy() override;
 
   // KeyboardInputStrategy overrides.
@@ -27,8 +32,6 @@ class TextKeyboardInputStrategy : public KeyboardInputStrategy {
   base::queue<KeyEvent> ConvertDeleteEvent(uint8_t modifiers);
 
   ClientInputInjector* input_injector_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextKeyboardInputStrategy);
 };
 
 }  // namespace remoting

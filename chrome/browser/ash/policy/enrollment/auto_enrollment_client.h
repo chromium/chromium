@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
 
 class PrefService;
 
@@ -79,12 +80,6 @@ class AutoEnrollmentClient {
     // the protocol will be cached in |local_state|. |power_initial| and
     // |power_limit| are exponents of power-of-2 values which will be the
     // initial modulus and the maximum modulus used by this client.
-    // If the modulus requested by the server is higher or equal than
-    // |1<<power_outdated_server_detect|, the client will assume that the server
-    // is outdated and that no Initial Enrollment should happen.
-    // TODO(pmarko): Remove |power_outdated_server_detect| when the server
-    // version supporting Initial Enrollment has been in production for a while
-    // (https://crbug.com/846645).
     virtual std::unique_ptr<AutoEnrollmentClient> CreateForInitialEnrollment(
         const ProgressCallback& progress_callback,
         DeviceManagementService* device_management_service,
@@ -94,7 +89,7 @@ class AutoEnrollmentClient {
         const std::string& device_brand_code,
         int power_initial,
         int power_limit,
-        int power_outdated_server_detect) = 0;
+        PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory) = 0;
   };
 
   virtual ~AutoEnrollmentClient() {}

@@ -64,10 +64,11 @@ ClipboardHistoryDisplayFormat CalculateDisplayFormat(
     case ui::ClipboardInternalFormat::kText:
     case ui::ClipboardInternalFormat::kSvg:
     case ui::ClipboardInternalFormat::kRtf:
-    case ui::ClipboardInternalFormat::kFilenames:
     case ui::ClipboardInternalFormat::kBookmark:
     case ui::ClipboardInternalFormat::kWeb:
       return ClipboardHistoryDisplayFormat::kText;
+    case ui::ClipboardInternalFormat::kFilenames:
+      return ClipboardHistoryDisplayFormat::kFile;
     case ui::ClipboardInternalFormat::kCustom:
       return ContainsFileSystemData(data)
                  ? ClipboardHistoryDisplayFormat::kFile
@@ -129,6 +130,15 @@ size_t GetCountOfCopiedFiles(const ui::ClipboardData& data) {
 }
 
 std::u16string GetFileSystemSources(const ui::ClipboardData& data) {
+  // Outside of the Files app, file system sources are written as filenames.
+  if (ContainsFormat(data, ui::ClipboardInternalFormat::kFilenames)) {
+    std::vector<std::string> sources;
+    for (const ui::FileInfo& filename : data.filenames())
+      sources.push_back(filename.path.value());
+    return base::UTF8ToUTF16(base::JoinString(sources, "\n"));
+  }
+
+  // Within the Files app, file system sources are written as custom data.
   if (!ContainsFormat(data, ui::ClipboardInternalFormat::kCustom))
     return std::u16string();
 

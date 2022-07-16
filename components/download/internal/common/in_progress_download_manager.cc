@@ -70,7 +70,8 @@ std::unique_ptr<DownloadItemImpl> CreateDownloadItemImpl(
       in_progress_info->interrupt_reason, in_progress_info->paused,
       in_progress_info->metered, false, base::Time(),
       in_progress_info->transient, in_progress_info->received_slices,
-      in_progress_info->download_schedule, std::move(download_entry));
+      in_progress_info->reroute_info, in_progress_info->download_schedule,
+      std::move(download_entry));
 }
 
 void OnUrlDownloadHandlerCreated(
@@ -259,6 +260,10 @@ void InProgressDownloadManager::DownloadUrl(
     std::unique_ptr<DownloadUrlParameters> params) {
   if (!CanDownload(params.get()))
     return;
+
+  download::RecordDownloadCountWithSource(
+      download::DownloadCountTypes::DOWNLOAD_TRIGGERED_COUNT,
+      params->download_source());
 
   // Start the new download, the download should be saved to the file path
   // specifcied in the |params|.

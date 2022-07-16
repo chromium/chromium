@@ -14,11 +14,11 @@
 #include "base/environment.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_message_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -997,6 +997,9 @@ class TestAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
       : expected_frames_per_buffer_(expected_frames_per_buffer),
         event_(event) {}
 
+  TestAudioSourceCallback(const TestAudioSourceCallback&) = delete;
+  TestAudioSourceCallback& operator=(const TestAudioSourceCallback&) = delete;
+
   ~TestAudioSourceCallback() override {}
 
   int OnMoreData(base::TimeDelta,
@@ -1013,8 +1016,6 @@ class TestAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
  private:
   const int expected_frames_per_buffer_;
   base::WaitableEvent* event_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAudioSourceCallback);
 };
 
 // Test that we can create an AudioOutputStream with kMinAudioBufferSize and

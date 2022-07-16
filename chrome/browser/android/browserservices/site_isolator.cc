@@ -5,7 +5,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/SiteIsolator_jni.h"
-#include "components/embedder_support/android/browser_context/browser_context_handle.h"
+#include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/site_instance.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -18,7 +18,7 @@ void JNI_SiteIsolator_StartIsolatingSite(JNIEnv* env,
   std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
   content::SiteInstance::StartIsolatingSite(
-      browser_context::BrowserContextFromJavaHandle(j_profile), *gurl,
+      content::BrowserContextFromJavaHandle(j_profile), *gurl,
       content::ChildProcessSecurityPolicy::IsolatedOriginSource::
           USER_TRIGGERED);
 }

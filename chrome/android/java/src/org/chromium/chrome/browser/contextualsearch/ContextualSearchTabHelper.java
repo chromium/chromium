@@ -9,6 +9,7 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -32,6 +33,8 @@ import org.chromium.url.GURL;
 /** Manages the enabling and disabling and gesture listeners for ContextualSearch on a given Tab. */
 public class ContextualSearchTabHelper
         extends EmptyTabObserver implements NetworkChangeNotifier.ConnectionTypeObserver {
+    private static final String TAG = "ContextualSearch";
+
     /** The Tab that this helper tracks. */
     private final Tab mTab;
 
@@ -191,13 +194,17 @@ public class ContextualSearchTabHelper
      */
     private void updateHooksForTab(Tab tab) {
         WebContents currentWebContents = tab.getWebContents();
-        if (currentWebContents != mWebContents
-                || mContextualSearchManager != getContextualSearchManager(tab)) {
-            mWebContents = currentWebContents;
+        boolean webContentsChanged = currentWebContents != mWebContents;
+        if (webContentsChanged || mContextualSearchManager != getContextualSearchManager(tab)) {
             mContextualSearchManager = getContextualSearchManager(tab);
-            if (mWebContents != null && mSelectionClientManager == null) {
-                mSelectionClientManager = new SelectionClientManager(mWebContents);
+            if (webContentsChanged && currentWebContents != null) {
+                // Ensure the hooks are cleared on the old web contents before proceeding. All of
+                // the objects associated with the web content need to be recreated in order for
+                // selection to continue working. See https://crbug.com/1076326 for more details.
+                removeContextualSearchHooks(mWebContents);
+                mSelectionClientManager = new SelectionClientManager(currentWebContents);
             }
+            mWebContents = currentWebContents;
             updateContextualSearchHooks(mWebContents);
         }
     }
@@ -242,7 +249,7 @@ public class ContextualSearchTabHelper
      * Removes Contextual Search hooks for its client and listener from the given WebContents.
      * @param webContents The WebContents to detach the gesture state listener from.
      */
-    private void removeContextualSearchHooks(WebContents webContents) {
+    private void removeContextualSearchHooks(@Nullable WebContents webContents) {
         if (webContents == null) return;
 
         if (mGestureStateListener != null) {
@@ -268,11 +275,15 @@ public class ContextualSearchTabHelper
     /** @return whether Contextual Search is enabled and active in this tab. */
     private boolean isContextualSearchActive(WebContents webContents) {
         assert mTab.getWebContents() == null || mTab.getWebContents() == webContents;
+        boolean isCct = mTab.isCustomTab();
         ContextualSearchManager manager = getContextualSearchManager(mTab);
-        if (manager == null) return false;
+        if (manager == null) {
+            if (isCct) Log.w(TAG, "No manager!");
+            return false;
+        }
 
-        return !webContents.isIncognito() && FirstRunStatus.getFirstRunFlowComplete()
-                && !ContextualSearchManager.isContextualSearchDisabled()
+        boolean isActive = !webContents.isIncognito() && FirstRunStatus.getFirstRunFlowComplete()
+                && !ContextualSearchPolicy.isContextualSearchDisabled()
                 && TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()
                 && !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
                 // Svelte and Accessibility devices are incompatible with the first-run flow and
@@ -280,6 +291,24 @@ public class ContextualSearchTabHelper
                 // and http://crbug.com/396934).
                 && !manager.isRunningInCompatibilityMode() && !(mTab.isShowingErrorPage())
                 && isDeviceOnline(manager);
+        if (isCct && !isActive) {
+            // TODO(donnd): remove after https://crbug.com/1192143 is resolved.
+            Log.w(TAG, "Not allowed to be active! Checking reasons:");
+            Log.w(TAG,
+                    "!isIncognito: " + !webContents.isIncognito() + " getFirstRunFlowComplete: "
+                            + FirstRunStatus.getFirstRunFlowComplete()
+                            + " !isContextualSearchDisabled: "
+                            + !ContextualSearchManager.isContextualSearchDisabled()
+                            + " isDefaultSearchEngineGoogle: "
+                            + TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()
+                            + " !needToCheckForSearchEnginePromo: "
+                            + !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
+                            + " !isRunningInCompatibilityMode: "
+                            + !manager.isRunningInCompatibilityMode()
+                            + " !isShowingErrorPage: " + !mTab.isShowingErrorPage()
+                            + " isDeviceOnline: " + isDeviceOnline(manager));
+        }
+        return isActive;
     }
 
     /** @return Whether the device is online, or we have disabled online-detection. */
@@ -313,9 +342,7 @@ public class ContextualSearchTabHelper
 
         ContextualSearchManager manager = getContextualSearchManager(mTab);
         if (manager != null) {
-            boolean isEnabled = !ContextualSearchManager.isContextualSearchDisabled()
-                    && !ContextualSearchManager.isContextualSearchUninitialized();
-            manager.onContextualSearchPrefChanged(isEnabled);
+            manager.onContextualSearchPrefChanged();
         }
     }
 

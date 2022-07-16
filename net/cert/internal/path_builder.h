@@ -110,6 +110,10 @@ class NET_EXPORT CertPathBuilder {
   struct NET_EXPORT Result : public base::SupportsUserData {
     Result();
     Result(Result&&);
+
+    Result(const Result&) = delete;
+    Result& operator=(const Result&) = delete;
+
     ~Result() override;
     Result& operator=(Result&&);
 
@@ -141,9 +145,6 @@ class NET_EXPORT CertPathBuilder {
     // True if the search stopped because it exceeded the deadline configured
     // with |SetDeadline|.
     bool exceeded_deadline = false;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Result);
   };
 
   // Creates a CertPathBuilder that attempts to find a path from |cert| to a
@@ -168,6 +169,10 @@ class NET_EXPORT CertPathBuilder {
                   const std::set<der::Input>& user_initial_policy_set,
                   InitialPolicyMappingInhibit initial_policy_mapping_inhibit,
                   InitialAnyPolicyInhibit initial_any_policy_inhibit);
+
+  CertPathBuilder(const CertPathBuilder&) = delete;
+  CertPathBuilder& operator=(const CertPathBuilder&) = delete;
+
   ~CertPathBuilder();
 
   // Adds a CertIssuerSource to provide intermediates for use in path building.
@@ -223,8 +228,6 @@ class NET_EXPORT CertPathBuilder {
   uint32_t max_iteration_count_ = 0;
   base::TimeTicks deadline_;
   bool explore_all_paths_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CertPathBuilder);
 };
 
 }  // namespace net

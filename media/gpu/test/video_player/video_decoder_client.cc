@@ -22,8 +22,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#include "media/gpu/chromeos/chromeos_video_decoder_factory.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
+#include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/chromeos/video_frame_converter.h"
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
@@ -185,7 +185,7 @@ void VideoDecoderClient::CreateDecoderTask(bool* success,
   switch (decoder_client_config_.implementation) {
     case DecoderImplementation::kVD:
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-      decoder_ = ChromeosVideoDecoderFactory::Create(
+      decoder_ = VideoDecoderPipeline::Create(
           base::ThreadTaskRunnerHandle::Get(),
           std::make_unique<PlatformVideoFramePool>(gpu_memory_buffer_factory_),
           std::make_unique<VideoFrameConverter>(),

@@ -47,6 +47,10 @@ class APP_MENU_EXPORT NotificationMenuView : public views::View {
       Delegate* notification_item_view_delegate,
       views::SlideOutControllerDelegate* slide_out_controller_delegate,
       const std::string& app_id);
+
+  NotificationMenuView(const NotificationMenuView&) = delete;
+  NotificationMenuView& operator=(const NotificationMenuView&) = delete;
+
   ~NotificationMenuView() override;
 
   // views::View:
@@ -118,8 +122,6 @@ class APP_MENU_EXPORT NotificationMenuView : public views::View {
   // A view that shows icons of notifications for this app that are not being
   // shown.
   NotificationOverflowView* overflow_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationMenuView);
 };
 
 }  // namespace ash

@@ -5,14 +5,16 @@
 #ifndef CONTENT_PUBLIC_TEST_IDLE_TEST_UTILS_H_
 #define CONTENT_PUBLIC_TEST_IDLE_TEST_UTILS_H_
 
-#include "content/public/browser/idle_manager.h"
+#include <memory>
 
 namespace content {
+
+class IdleTimeProvider;
 
 class ScopedIdleProviderForTest {
  public:
   explicit ScopedIdleProviderForTest(
-      std::unique_ptr<IdleManager::IdleTimeProvider> idle_time_provider);
+      std::unique_ptr<IdleTimeProvider> idle_time_provider);
   ~ScopedIdleProviderForTest();
 };
 

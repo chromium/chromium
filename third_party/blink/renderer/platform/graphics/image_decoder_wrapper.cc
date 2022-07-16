@@ -69,7 +69,7 @@ ImageDecoderWrapper::ImageDecoderWrapper(
     ImageDecoder::AlphaOption alpha_option,
     ColorBehavior decoder_color_behavior,
     ImageDecoder::HighBitDepthDecodingOption decoding_option,
-    size_t index,
+    wtf_size_t index,
     const SkImageInfo& info,
     void* pixels,
     size_t row_bytes,
@@ -91,7 +91,7 @@ ImageDecoderWrapper::ImageDecoderWrapper(
 ImageDecoderWrapper::~ImageDecoderWrapper() = default;
 
 bool ImageDecoderWrapper::Decode(ImageDecoderFactory* factory,
-                                 size_t* frame_count,
+                                 wtf_size_t* frame_count,
                                  bool* has_alpha) {
   DCHECK(frame_count);
   DCHECK(has_alpha);
@@ -201,7 +201,7 @@ bool ImageDecoderWrapper::Decode(ImageDecoderFactory* factory,
 }
 
 bool ImageDecoderWrapper::ShouldDecodeToExternalMemory(
-    size_t frame_count,
+    wtf_size_t frame_count,
     bool resume_decoding) const {
   // Some multi-frame images need their decode cached in the decoder to allow
   // future frames to reference previous frames.
@@ -261,7 +261,7 @@ bool ImageDecoderWrapper::ShouldRemoveDecoder(
 void ImageDecoderWrapper::PurgeAllFramesIfNecessary(
     ImageDecoder* decoder,
     bool frame_was_completely_decoded,
-    size_t frame_count) const {
+    wtf_size_t frame_count) const {
   // We only purge all frames when we have decoded the last frame for a
   // multi-frame image. This is because once the last frame is decoded, the
   // animation will loop back to the first frame which does not need the last
@@ -276,7 +276,7 @@ void ImageDecoderWrapper::PurgeAllFramesIfNecessary(
   if (!frame_was_completely_decoded)
     return;
 
-  const size_t last_frame_index = frame_count - 1;
+  const wtf_size_t last_frame_index = frame_count - 1;
   if (frame_index_ == last_frame_index)
     decoder->ClearCacheExceptFrame(kNotFound);
 }

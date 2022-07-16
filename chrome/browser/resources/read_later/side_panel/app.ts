@@ -53,7 +53,9 @@ export class SidePanelAppElement extends PolymerElement {
   connectedCallback() {
     super.connectedCallback();
     const lastActiveTab = window.localStorage[LOCAL_STORAGE_TAB_ID_KEY];
-    if (lastActiveTab) {
+    if (loadTimeData.getBoolean('hasUnseenReadingListEntries')) {
+      window.localStorage[LOCAL_STORAGE_TAB_ID_KEY] = 'readingList';
+    } else if (lastActiveTab) {
       this.selectedTab_ = Object.keys(this.tabs_).indexOf(lastActiveTab) || 0;
     }
 

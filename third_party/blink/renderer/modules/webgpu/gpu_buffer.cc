@@ -15,12 +15,12 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/modules/webgpu/dawn_callback.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/dawn_callback.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -169,8 +169,8 @@ ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
 
   // And send the command, leaving remaining validation to Dawn.
   auto* callback =
-      BindDawnCallback(&GPUBuffer::OnMapAsyncCallback, WrapPersistent(this),
-                       WrapPersistent(resolver));
+      BindDawnOnceCallback(&GPUBuffer::OnMapAsyncCallback, WrapPersistent(this),
+                           WrapPersistent(resolver));
 
   GetProcs().bufferMapAsync(GetHandle(), mode, map_offset, map_size,
                             callback->UnboundCallback(),
@@ -374,7 +374,17 @@ void GPUBuffer::ResetMappingState(v8::Isolate* isolate) {
     bool did_detach = array_buffer->Transfer(isolate, contents);
 
     // |did_detach| would be false if the buffer were already detached.
-    DCHECK(did_detach);
+    //   Crash if it was, as this indicates that unmapping could alias the
+    //   backing store, or possibly even free it out from under the
+    //   ArrayBuffer. It might be difficult to be 100% certain about this
+    //   invariant, so we CHECK, even in release builds. (Actually, it would be
+    //   fine if the ArrayBuffer was detached without being transferred, but
+    //   this isn't a common case, so it can be revisited if needed.)
+    // TODO(crbug.com/1243842): This CHECK can currently be hit easily by JS
+    //   code. We need to validate against this case by preventing the
+    //   ArrayBuffer from being transferred/detached by outside code.
+    CHECK(did_detach)
+        << "An ArrayBuffer from getMappedRange() was detached before unmap()";
     DCHECK(array_buffer->IsDetached());
   }
   mapped_array_buffers_.clear();

@@ -297,7 +297,7 @@ TEST(PerformanceLogger, TracingStartStop) {
   base::ListValue* categories;
   EXPECT_TRUE(cmd->params->GetList("traceConfig.includedCategories",
                                    &categories));
-  EXPECT_EQ(2u, categories->GetSize());
+  EXPECT_EQ(2u, categories->GetList().size());
   std::string category;
   EXPECT_TRUE(categories->GetString(0, &category));
   EXPECT_EQ("benchmark", category);

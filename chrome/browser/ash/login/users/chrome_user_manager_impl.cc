@@ -11,6 +11,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/timezone/timezone_resolver.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/session/session_controller.h"
@@ -24,14 +26,15 @@
 #include "base/format_macros.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -48,8 +51,9 @@
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/ash/login/users/supervised_user_manager_impl.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/external_data/handlers/crostini_ansible_playbook_external_data_handler.h"
+#include "chrome/browser/ash/policy/external_data/handlers/preconfigured_desk_templates_external_data_handler.h"
 #include "chrome/browser/ash/policy/external_data/handlers/print_servers_external_data_handler.h"
 #include "chrome/browser/ash/policy/external_data/handlers/printers_external_data_handler.h"
 #include "chrome/browser/ash/policy/external_data/handlers/user_avatar_image_external_data_handler.h"
@@ -58,6 +62,7 @@
 #include "chrome/browser/ash/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/ash/policy/networking/user_network_configuration_updater.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/session_length_limiter.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
@@ -67,7 +72,6 @@
 #include "chrome/browser/chromeos/extensions/active_tab_permission_granter_delegate_chromeos.h"
 #include "chrome/browser/chromeos/extensions/extension_tab_util_delegate_chromeos.h"
 #include "chrome/browser/chromeos/extensions/permissions_updater_delegate_chromeos.h"
-#include "chrome/browser/chromeos/session_length_limiter.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/profiles/profile.h"
@@ -89,8 +93,6 @@
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/onc/certificate_scope.h"
 #include "chromeos/network/proxy/proxy_config_service_impl.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/timezone/timezone_resolver.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_util.h"
 #include "components/crash/core/common/crash_key.h"
@@ -198,7 +200,7 @@ void SetPublicAccountDelegates() {
 
 policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
   return g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->GetMinimumVersionPolicyHandler();
 }
 
@@ -370,7 +372,7 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
 
   policy::DeviceLocalAccountPolicyService* device_local_account_policy_service =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetDeviceLocalAccountPolicyService();
 
   if (GetMinimumVersionPolicyHandler()) {
@@ -391,6 +393,9 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
           cros_settings_, device_local_account_policy_service));
   cloud_external_data_policy_handlers_.push_back(
       std::make_unique<policy::CrostiniAnsiblePlaybookExternalDataHandler>(
+          cros_settings_, device_local_account_policy_service));
+  cloud_external_data_policy_handlers_.push_back(
+      std::make_unique<policy::PreconfiguredDeskTemplatesExternalDataHandler>(
           cros_settings_, device_local_account_policy_service));
 
   // Record the stored session length for enrolled device.
@@ -472,8 +477,8 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
   }
 
   // Multiprofile mode is not allowed on the Active Directory managed devices.
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (connector->IsActiveDirectoryManaged())
     return user_manager::UserList();
 
@@ -545,12 +550,13 @@ user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
 
 void ChromeUserManagerImpl::RemoveUserInternal(
     const AccountId& account_id,
+    user_manager::UserRemovalReason reason,
     user_manager::RemoveUserDelegate* delegate) {
   CrosSettings* cros_settings = CrosSettings::Get();
 
   auto callback =
       base::BindOnce(&ChromeUserManagerImpl::RemoveUserInternal,
-                     weak_factory_.GetWeakPtr(), account_id, delegate);
+                     weak_factory_.GetWeakPtr(), account_id, reason, delegate);
 
   // Ensure the value of owner email has been fetched.
   if (CrosSettingsProvider::TRUSTED !=
@@ -568,7 +574,38 @@ void ChromeUserManagerImpl::RemoveUserInternal(
   g_browser_process->profile_manager()
       ->GetProfileAttributesStorage()
       .RemoveProfileByAccountId(account_id);
-  RemoveNonOwnerUserInternal(account_id, delegate);
+  if (!user_added_removed_reporter_intialized_) {
+    CacheRemovedUser(account_id.GetUserEmail(), reason);
+  }
+  RemoveNonOwnerUserInternal(account_id, reason, delegate);
+}
+
+void ChromeUserManagerImpl::CacheRemovedUser(
+    const std::string& user_email,
+    user_manager::UserRemovalReason reason) {
+  // There is only a need to cache removed users if they should be reported.
+  bool reporting_enabled = false;
+  CrosSettings::Get()->GetBoolean(kReportDeviceLoginLogout, &reporting_enabled);
+  if (!reporting_enabled) {
+    return;
+  }
+
+  // Unaffiliated users should not have their email reported.
+  if (ShouldReportUser(user_email)) {
+    removed_user_cache_.push_back(std::make_pair(user_email, reason));
+  } else {
+    removed_user_cache_.push_back(std::make_pair("", reason));
+  }
+}
+
+std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
+ChromeUserManagerImpl::GetRemovedUserCache() const {
+  return removed_user_cache_;
+}
+
+void ChromeUserManagerImpl::MarkReporterInitialized() {
+  removed_user_cache_.clear();
+  user_added_removed_reporter_intialized_ = true;
 }
 
 void ChromeUserManagerImpl::SaveUserOAuthStatus(
@@ -607,8 +644,8 @@ void ChromeUserManagerImpl::OnUserProfileLoaded(const AccountId& account_id) {
 
 void ChromeUserManagerImpl::OwnershipStatusChanged() {
   if (!device_local_account_policy_service_) {
-    policy::BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     device_local_account_policy_service_ =
         connector->GetDeviceLocalAccountPolicyService();
     if (device_local_account_policy_service_)
@@ -653,8 +690,8 @@ bool ChromeUserManagerImpl::IsUserNonCryptohomeDataEphemeral(
 }
 
 bool ChromeUserManagerImpl::AreEphemeralUsersEnabled() const {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return GetEphemeralUsersEnabled() &&
          (connector->IsDeviceEnterpriseManaged() ||
           GetOwnerAccountId().is_valid());
@@ -673,8 +710,8 @@ PrefService* ChromeUserManagerImpl::GetLocalState() const {
 }
 
 bool ChromeUserManagerImpl::IsEnterpriseManaged() const {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->IsDeviceEnterpriseManaged();
 }
 
@@ -759,13 +796,17 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
          it != users_.end();) {
       const AccountId account_id = (*it)->GetAccountId();
       if ((*it)->HasGaiaAccount() && account_id != GetOwnerAccountId()) {
+        user_manager::UserManager::Get()->NotifyUserToBeRemoved(account_id);
         RemoveNonCryptohomeData(account_id);
         DeleteUser(*it);
+        user_manager::UserManager::Get()->NotifyUserRemoved(
+            account_id,
+            user_manager::UserRemovalReason::DEVICE_EPHEMERAL_USERS_ENABLED);
         it = users_.erase(it);
         changed = true;
       } else {
         if ((*it)->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
-          prefs_users_update->AppendString(account_id.GetUserEmail());
+          prefs_users_update->Append(account_id.GetUserEmail());
         ++it;
       }
     }
@@ -1014,7 +1055,7 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
       GetLocalState(), kDeviceLocalAccountsWithSavedData);
   prefs_device_local_accounts_update->ClearList();
   for (const auto& account : device_local_accounts)
-    prefs_device_local_accounts_update->AppendString(account.user_id);
+    prefs_device_local_accounts_update->Append(account.user_id);
 
   // Remove the old device local accounts from the user list.
   for (user_manager::UserList::iterator it = users_.begin();
@@ -1243,8 +1284,8 @@ void ChromeUserManagerImpl::SetUserAffiliation(
   user_manager::User* user = FindUserAndModify(account_id);
 
   if (user) {
-    policy::BrowserPolicyConnectorChromeOS const* const connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh const* const connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     const bool is_affiliated = IsUserAffiliated(
         user_affiliation_ids, connector->GetDeviceAffiliationIDs(),
         account_id.GetUserEmail());
@@ -1275,7 +1316,7 @@ bool ChromeUserManagerImpl::IsManagedSessionEnabledForUser(
     const user_manager::User& active_user) const {
   policy::DeviceLocalAccountPolicyService* service =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetDeviceLocalAccountPolicyService();
   if (!service)
     return kManagedSessionEnabledByDefault;
@@ -1352,8 +1393,8 @@ bool ChromeUserManagerImpl::IsStubAccountId(const AccountId& account_id) const {
 
 bool ChromeUserManagerImpl::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
-  const policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  const policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   // Supervised accounts are not allowed on the Active Directory devices. It
   // also makes sure "locally-managed.localhost" would work properly and would
   // not be detected as supervised users.

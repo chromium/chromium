@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
@@ -23,6 +22,11 @@ class PollGetUpdatesRequestEvent : public ProtocolEvent {
   PollGetUpdatesRequestEvent(base::Time timestamp,
                              const sync_pb::ClientToServerMessage& request);
   ~PollGetUpdatesRequestEvent() override;
+
+  PollGetUpdatesRequestEvent(const PollGetUpdatesRequestEvent&) = delete;
+  PollGetUpdatesRequestEvent& operator=(const PollGetUpdatesRequestEvent&) =
+      delete;
+
   std::unique_ptr<ProtocolEvent> Clone() const override;
 
  private:
@@ -34,8 +38,6 @@ class PollGetUpdatesRequestEvent : public ProtocolEvent {
 
   const base::Time timestamp_;
   const sync_pb::ClientToServerMessage request_;
-
-  DISALLOW_COPY_AND_ASSIGN(PollGetUpdatesRequestEvent);
 };
 
 }  // namespace syncer

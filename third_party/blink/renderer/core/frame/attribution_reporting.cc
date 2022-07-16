@@ -97,6 +97,20 @@ ScriptPromise AttributionReporting::registerAttributionSource(
   blink::Impression impression =
       ConvertWebImpressionToImpression(*web_impression);
 
+  Document* document = GetSupplementable()->document();
+
+  if (document->IsPrerendering()) {
+    document->AddPostPrerenderingActivationStep(
+        WTF::Bind(&AttributionReporting::RegisterImpression,
+                  WrapWeakPersistent(this), impression));
+  } else {
+    RegisterImpression(impression);
+  }
+
+  return ScriptPromise::CastUndefined(script_state);
+}
+
+void AttributionReporting::RegisterImpression(blink::Impression impression) {
   if (!conversion_host_.is_bound()) {
     GetSupplementable()
         ->GetFrame()
@@ -104,9 +118,7 @@ ScriptPromise AttributionReporting::registerAttributionSource(
         ->GetInterface(conversion_host_.BindNewEndpointAndPassReceiver(
             GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
-
   conversion_host_->RegisterImpression(impression);
-  return ScriptPromise::CastUndefined(script_state);
 }
 
 }  // namespace blink

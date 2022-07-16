@@ -5,9 +5,9 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -23,7 +23,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/users_private.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/ownership/mock_owner_key_util.h"
@@ -54,7 +53,7 @@ class TestPrefsUtil : public PrefsUtil {
 
     base::ListValue* value = new base::ListValue();
     for (auto& email : user_list_) {
-      value->AppendString(email);
+      value->Append(email);
     }
     pref_object->value.reset(value);
 
@@ -99,6 +98,10 @@ class TestDelegate : public UsersPrivateDelegate {
     profile_ = profile;
     prefs_util_ = nullptr;
   }
+
+  TestDelegate(const TestDelegate&) = delete;
+  TestDelegate& operator=(const TestDelegate&) = delete;
+
   ~TestDelegate() override = default;
 
   PrefsUtil* GetPrefsUtil() override {
@@ -111,8 +114,6 @@ class TestDelegate : public UsersPrivateDelegate {
  private:
   Profile* profile_;  // weak
   std::unique_ptr<TestPrefsUtil> prefs_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
 class UsersPrivateApiTest : public ExtensionApiTest {
@@ -128,8 +129,12 @@ class UsersPrivateApiTest : public ExtensionApiTest {
         ->SetOwnerKeyUtilForTesting(owner_key_util);
 
     scoped_testing_cros_settings_.device_settings()->Set(
-        chromeos::kDeviceOwner, base::Value("testuser@gmail.com"));
+        ash::kDeviceOwner, base::Value("testuser@gmail.com"));
   }
+
+  UsersPrivateApiTest(const UsersPrivateApiTest&) = delete;
+  UsersPrivateApiTest& operator=(const UsersPrivateApiTest&) = delete;
+
   ~UsersPrivateApiTest() override = default;
 
   static std::unique_ptr<KeyedService> GetUsersPrivateDelegate(
@@ -163,8 +168,6 @@ class UsersPrivateApiTest : public ExtensionApiTest {
  private:
   chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsersPrivateApiTest);
 };
 
 // static

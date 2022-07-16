@@ -83,7 +83,7 @@ url::Origin origin = GetLastCommittedOrigin();
 **_Bad_**
 ```c++
 GURL url = ...;
-GURL origin = url.GetOrigin();
+GURL origin = url.DeprecatedGetOriginAsURL();
 // BUG: |origin| will be empty if |url| is a blob: URL like
 //      "blob:http://origin/guid-goes-here".
 // BUG: |origin| will be incorrect if |url| is an "about:blank" URL

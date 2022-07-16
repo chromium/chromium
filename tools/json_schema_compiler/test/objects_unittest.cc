@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/json/json_writer.h"
 #include "base/values.h"
@@ -27,11 +28,10 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
     info_value.SetIntPath("integer", 5);
     info_value.SetBoolPath("boolean", true);
 
-    base::Value params_value(base::Value::Type::LIST);
-    params_value.Append(std::move(info_value));
+    std::vector<base::Value> params_value;
+    params_value.push_back(std::move(info_value));
     std::unique_ptr<test::api::objects::ObjectParam::Params> params(
-        test::api::objects::ObjectParam::Params::Create(
-            base::Value::AsListValue(params_value)));
+        test::api::objects::ObjectParam::Params::Create(params_value));
     EXPECT_TRUE(params.get());
     EXPECT_EQ((size_t) 2, params->info.strings.size());
     EXPECT_EQ("one", params->info.strings[0]);
@@ -47,11 +47,10 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
     info_value.SetKey("strings", std::move(strings));
     info_value.SetIntPath("integer", 5);
 
-    base::Value params_value(base::Value::Type::LIST);
-    params_value.Append(std::move(info_value));
+    std::vector<base::Value> params_value;
+    params_value.push_back(std::move(info_value));
     std::unique_ptr<test::api::objects::ObjectParam::Params> params(
-        test::api::objects::ObjectParam::Params::Create(
-            base::Value::AsListValue(params_value)));
+        test::api::objects::ObjectParam::Params::Create(params_value));
     EXPECT_FALSE(params.get());
   }
 }

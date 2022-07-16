@@ -30,6 +30,9 @@ class VideoEncoderVpx : public VideoEncoder {
   static std::unique_ptr<VideoEncoderVpx> CreateForVP8();
   static std::unique_ptr<VideoEncoderVpx> CreateForVP9();
 
+  VideoEncoderVpx(const VideoEncoderVpx&) = delete;
+  VideoEncoderVpx& operator=(const VideoEncoderVpx&) = delete;
+
   ~VideoEncoderVpx() override;
 
   void SetTickClockForTests(const base::TickClock* tick_clock);
@@ -89,8 +92,6 @@ class VideoEncoderVpx : public VideoEncoder {
   VideoEncoderHelper helper_;
 
   const base::TickClock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoEncoderVpx);
 };
 
 }  // namespace remoting

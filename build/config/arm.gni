@@ -123,4 +123,14 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
   # arm64 supports only "hard".
   arm_float_abi = "hard"
   arm_use_neon = true
+  declare_args() {
+    # Enables the new Armv8 branch protection features. Valid strings are:
+    # - "standard": Enables both Pointer Authentication Code (featured in
+    #               Armv8.3) and Branch Target Identification (Armv8.5).
+    # - "none": No branch protection.
+    arm_control_flow_integrity = "none"
+  }
+  assert(arm_control_flow_integrity == "none" ||
+             arm_control_flow_integrity == "standard",
+         "Invalid branch protection option")
 }

@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -56,6 +55,12 @@ class TestPermissionContext : public payments::PaymentHandlerPermissionContext {
 
 class PaymentHandlerPermissionContextTests
     : public ChromeRenderViewHostTestHarness {
+ public:
+  PaymentHandlerPermissionContextTests(
+      const PaymentHandlerPermissionContextTests&) = delete;
+  PaymentHandlerPermissionContextTests& operator=(
+      const PaymentHandlerPermissionContextTests&) = delete;
+
  protected:
   PaymentHandlerPermissionContextTests() = default;
 
@@ -69,8 +74,6 @@ class PaymentHandlerPermissionContextTests
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
 #endif
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentHandlerPermissionContextTests);
 };
 
 // PaymentHandler permission should be denied for insecure origin.
@@ -93,7 +96,8 @@ TEST_F(PaymentHandlerPermissionContextTests, TestInsecureRequestingUrl) {
 
   ContentSetting setting =
       HostContentSettingsMapFactory::GetForProfile(profile())
-          ->GetContentSetting(url.GetOrigin(), url.GetOrigin(),
+          ->GetContentSetting(url.DeprecatedGetOriginAsURL(),
+                              url.DeprecatedGetOriginAsURL(),
                               ContentSettingsType::PAYMENT_HANDLER);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, setting);
 }
@@ -107,19 +111,19 @@ TEST_F(PaymentHandlerPermissionContextTests, TestInsecureQueryingUrl) {
   // Check that there is no saved content settings.
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             HostContentSettingsMapFactory::GetForProfile(profile())
-                ->GetContentSetting(insecure_url.GetOrigin(),
-                                    insecure_url.GetOrigin(),
+                ->GetContentSetting(insecure_url.DeprecatedGetOriginAsURL(),
+                                    insecure_url.DeprecatedGetOriginAsURL(),
                                     ContentSettingsType::PAYMENT_HANDLER));
-  EXPECT_EQ(
-      CONTENT_SETTING_ALLOW,
-      HostContentSettingsMapFactory::GetForProfile(profile())
-          ->GetContentSetting(secure_url.GetOrigin(), insecure_url.GetOrigin(),
-                              ContentSettingsType::PAYMENT_HANDLER));
-  EXPECT_EQ(
-      CONTENT_SETTING_ALLOW,
-      HostContentSettingsMapFactory::GetForProfile(profile())
-          ->GetContentSetting(insecure_url.GetOrigin(), secure_url.GetOrigin(),
-                              ContentSettingsType::PAYMENT_HANDLER));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            HostContentSettingsMapFactory::GetForProfile(profile())
+                ->GetContentSetting(secure_url.DeprecatedGetOriginAsURL(),
+                                    insecure_url.DeprecatedGetOriginAsURL(),
+                                    ContentSettingsType::PAYMENT_HANDLER));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            HostContentSettingsMapFactory::GetForProfile(profile())
+                ->GetContentSetting(insecure_url.DeprecatedGetOriginAsURL(),
+                                    secure_url.DeprecatedGetOriginAsURL(),
+                                    ContentSettingsType::PAYMENT_HANDLER));
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_context

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_OBSERVER_MANAGER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_OBSERVER_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
@@ -26,10 +25,22 @@ class ActivationState;
 
 // Manages retaining the list of SubresourceFilterObservers and notifying them
 // of various filtering events. Scoped to the lifetime of a WebContents.
+// !!!WARNING!!!: This observer will receive notifications from all pages
+// within a WebContents. This includes non-primary pages like those that are
+// prerendering which is probably not what clients expect. Clients should
+// make sure they're manually scoping observations to the relevant page.
+// TODO(bokan): We should probably refactor this class to manage the
+// observations of a single Page/FrameTree. #MPArch
 class SubresourceFilterObserverManager
     : public content::WebContentsUserData<SubresourceFilterObserverManager> {
  public:
   explicit SubresourceFilterObserverManager(content::WebContents* web_contents);
+
+  SubresourceFilterObserverManager(const SubresourceFilterObserverManager&) =
+      delete;
+  SubresourceFilterObserverManager& operator=(
+      const SubresourceFilterObserverManager&) = delete;
+
   ~SubresourceFilterObserverManager() override;
 
   void AddObserver(SubresourceFilterObserver* observer);
@@ -67,8 +78,6 @@ class SubresourceFilterObserverManager
   friend class content::WebContentsUserData<SubresourceFilterObserverManager>;
   base::ObserverList<SubresourceFilterObserver>::Unchecked observers_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterObserverManager);
 };
 
 }  // namespace subresource_filter

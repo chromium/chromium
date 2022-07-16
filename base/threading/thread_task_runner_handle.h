@@ -8,10 +8,11 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -41,6 +42,10 @@ class BASE_EXPORT ThreadTaskRunnerHandle {
   // to the current thread for this to succeed.
   explicit ThreadTaskRunnerHandle(
       scoped_refptr<SingleThreadTaskRunner> task_runner);
+
+  ThreadTaskRunnerHandle(const ThreadTaskRunnerHandle&) = delete;
+  ThreadTaskRunnerHandle& operator=(const ThreadTaskRunnerHandle&) = delete;
+
   ~ThreadTaskRunnerHandle();
 
  private:
@@ -50,8 +55,6 @@ class BASE_EXPORT ThreadTaskRunnerHandle {
   // Registers |task_runner_|'s SequencedTaskRunner interface as the
   // SequencedTaskRunnerHandle on this thread.
   SequencedTaskRunnerHandle sequenced_task_runner_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadTaskRunnerHandle);
 };
 
 // ThreadTaskRunnerHandleOverride overrides the task runner returned by

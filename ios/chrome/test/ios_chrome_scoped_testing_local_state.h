@@ -13,14 +13,18 @@
 class IOSChromeScopedTestingLocalState {
  public:
   IOSChromeScopedTestingLocalState();
+
+  IOSChromeScopedTestingLocalState(const IOSChromeScopedTestingLocalState&) =
+      delete;
+  IOSChromeScopedTestingLocalState& operator=(
+      const IOSChromeScopedTestingLocalState&) = delete;
+
   ~IOSChromeScopedTestingLocalState();
 
   TestingPrefServiceSimple* Get();
 
  private:
   TestingPrefServiceSimple local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeScopedTestingLocalState);
 };
 
 #endif  // IOS_CHROME_TEST_IOS_CHROME_SCOPED_TESTING_LOCAL_STATE_H_

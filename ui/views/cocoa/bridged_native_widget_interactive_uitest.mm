@@ -7,7 +7,6 @@
 #import <Cocoa/Cocoa.h>
 
 #import "base/mac/mac_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "ui/base/hit_test.h"
 #import "ui/base/test/nswindow_fullscreen_notification_waiter.h"
@@ -25,6 +24,10 @@ namespace test {
 class BridgedNativeWidgetUITest : public WidgetTest {
  public:
   BridgedNativeWidgetUITest() = default;
+
+  BridgedNativeWidgetUITest(const BridgedNativeWidgetUITest&) = delete;
+  BridgedNativeWidgetUITest& operator=(const BridgedNativeWidgetUITest&) =
+      delete;
 
   // testing::Test:
   void SetUp() override {
@@ -60,9 +63,6 @@ class BridgedNativeWidgetUITest : public WidgetTest {
 
  protected:
   std::unique_ptr<Widget> widget_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BridgedNativeWidgetUITest);
 };
 
 // Tests for correct fullscreen tracking, regardless of whether it is initiated

@@ -166,7 +166,7 @@ TEST_F(V8ContextTrackerDeathTest,
   // Create a child of mock_graph_->frame that is in the same process.
   TestNodeWrapper<FrameNodeImpl> child2_frame(graph()->CreateFrameNodeAutoId(
       mock_graph_->process.get(), mock_graph_->page.get(),
-      mock_graph_->frame.get(), 3));
+      mock_graph_->frame.get()));
   // This should explode because synchronous iframe data is expected, but not
   // provided.
   EXPECT_DCHECK_DEATH(tracker_->OnV8ContextCreated(

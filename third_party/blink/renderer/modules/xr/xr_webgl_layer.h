@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_webgl_layer_init.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
 #include "third_party/blink/renderer/modules/xr/xr_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/modules/xr/xr_view.h"
@@ -61,8 +62,15 @@ class XRWebGLLayer final : public XRLayer {
   void UpdateViewports();
 
   HTMLCanvasElement* output_canvas() const;
-  uint32_t CameraImageTextureId() const;
-  absl::optional<gpu::MailboxHolder> CameraImageMailboxHolder() const;
+
+  // Returns WebGLTexture (actually a WebGLUnownedTexture instance)
+  // corresponding to the camera image.
+  // The texture is owned by the XRWebGLLayer and will be freed in OnFrameEnd().
+  // When the texture is deleted by the layer, the returned object will have its
+  // texture name set to 0 to avoid using stale texture names in case the user
+  // code still holds references to this object.
+  // The consumers should not attempt to delete the texture themselves.
+  WebGLTexture* GetCameraTexture();
 
   void OnFrameStart(
       const absl::optional<gpu::MailboxHolder>& buffer_mailbox_holder,
@@ -82,7 +90,7 @@ class XRWebGLLayer final : public XRLayer {
   uint32_t GetBufferTextureId(
       const absl::optional<gpu::MailboxHolder>& buffer_mailbox_holder);
 
-  void BindBufferTexture(
+  void BindCameraBufferTexture(
       const absl::optional<gpu::MailboxHolder>& buffer_mailbox_holder);
 
   Member<XRViewport> left_viewport_;
@@ -100,6 +108,11 @@ class XRWebGLLayer final : public XRLayer {
   uint32_t clean_frame_count = 0;
 
   uint32_t camera_image_texture_id_;
+  // WebGL texture that points to the |camera_image_texture_|. Must be notified
+  // via a call to |WebGLUnownedTexture::OnGLDeleteTextures()| when
+  // |camera_image_texture_id_| is deleted.
+  Member<WebGLUnownedTexture> camera_image_texture_;
+
   absl::optional<gpu::MailboxHolder> camera_image_mailbox_holder_;
 };
 

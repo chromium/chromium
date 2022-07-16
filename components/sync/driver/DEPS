@@ -17,6 +17,7 @@ include_rules = [
   "+net",
   "+policy",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
   "+services/network/test",
   "+third_party/metrics_proto",
 ]

@@ -50,12 +50,6 @@ class TabController {
 
   virtual const ui::ListSelectionModel& GetSelectionModel() const = 0;
 
-  // Returns true if multiple selection is supported.
-  virtual bool SupportsMultipleSelection() = 0;
-
-  // Returns true if the close button for the given tab is forced to be hidden.
-  virtual bool ShouldHideCloseButtonForTab(Tab* tab) const = 0;
-
   // Selects the tab. |event| is the event that causes |tab| to be selected.
   virtual void SelectTab(Tab* tab, const ui::Event& event) = 0;
 

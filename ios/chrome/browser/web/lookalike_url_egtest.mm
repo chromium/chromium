@@ -26,11 +26,6 @@
 #error "This file requires ARC support."
 #endif
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(LookalikeUrlAppInterface);
-#pragma clang diagnostic pop
-
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
 using chrome_test_util::Omnibox;

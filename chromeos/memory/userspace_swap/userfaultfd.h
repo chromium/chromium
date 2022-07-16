@@ -175,6 +175,9 @@ class CHROMEOS_EXPORT UserfaultFD {
   // Wrap FD is used to take a donated FD and assume ownership of it.
   static std::unique_ptr<UserfaultFD> WrapFD(base::ScopedFD fd);
 
+  UserfaultFD(const UserfaultFD&) = delete;
+  UserfaultFD& operator=(const UserfaultFD&) = delete;
+
   ~UserfaultFD();
 
   base::ScopedFD ReleaseFD();
@@ -205,8 +208,6 @@ class CHROMEOS_EXPORT UserfaultFD {
 
   std::unique_ptr<UserfaultFDHandler> handler_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> watcher_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserfaultFD);
 };
 
 }  // namespace userspace_swap

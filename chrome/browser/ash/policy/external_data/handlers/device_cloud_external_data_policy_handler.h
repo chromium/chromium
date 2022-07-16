@@ -16,10 +16,12 @@ class DeviceCloudExternalDataPolicyHandler
  public:
   DeviceCloudExternalDataPolicyHandler();
 
-  virtual void Shutdown() = 0;
+  DeviceCloudExternalDataPolicyHandler(
+      const DeviceCloudExternalDataPolicyHandler&) = delete;
+  DeviceCloudExternalDataPolicyHandler& operator=(
+      const DeviceCloudExternalDataPolicyHandler&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudExternalDataPolicyHandler);
+  virtual void Shutdown() = 0;
 };
 
 }  // namespace policy

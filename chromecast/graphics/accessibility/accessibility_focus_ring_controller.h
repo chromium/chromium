@@ -35,6 +35,12 @@ class AccessibilityHighlightLayer;
 class AccessibilityFocusRingController : public AccessibilityLayerDelegate {
  public:
   explicit AccessibilityFocusRingController(aura::Window* root_window);
+
+  AccessibilityFocusRingController(const AccessibilityFocusRingController&) =
+      delete;
+  AccessibilityFocusRingController& operator=(
+      const AccessibilityFocusRingController&) = delete;
+
   ~AccessibilityFocusRingController() override;
 
   void SetFocusRingColor(SkColor color);
@@ -128,8 +134,6 @@ class AccessibilityFocusRingController : public AccessibilityLayerDelegate {
   std::unique_ptr<AccessibilityHighlightLayer> highlight_layer_;
   SkColor highlight_color_ = SK_ColorBLACK;
   float highlight_opacity_ = 0.f;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityFocusRingController);
 };
 
 }  // namespace chromecast

@@ -34,11 +34,13 @@ public class CommerceSubscription {
         String USER_MANAGED = "USER_MANAGED";
     }
 
-    @StringDef({TrackingIdType.IDENTIFIER_TYPE_UNSPECIFIED, TrackingIdType.OFFER_ID})
+    @StringDef({TrackingIdType.IDENTIFIER_TYPE_UNSPECIFIED, TrackingIdType.OFFER_ID,
+            TrackingIdType.PRODUCT_CLUSTER_ID})
     @Retention(RetentionPolicy.SOURCE)
     public @interface TrackingIdType {
         String IDENTIFIER_TYPE_UNSPECIFIED = "IDENTIFIER_TYPE_UNSPECIFIED";
         String OFFER_ID = "OFFER_ID";
+        String PRODUCT_CLUSTER_ID = "PRODUCT_CLUSTER_ID";
     }
 
     public static final long UNSAVED_SUBSCRIPTION = -1L;

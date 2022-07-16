@@ -34,8 +34,7 @@ WindowDimmer::WindowDimmer(aura::Window* parent,
     ::wm::SetWindowVisibilityAnimationType(
         window_, ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE);
     ::wm::SetWindowVisibilityAnimationDuration(
-        window_,
-        base::TimeDelta::FromMilliseconds(kDefaultDimAnimationDurationMs));
+        window_, base::Milliseconds(kDefaultDimAnimationDurationMs));
   }
   window_->AddObserver(this);
 

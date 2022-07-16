@@ -69,10 +69,10 @@ suite('<app-management-pwa-detail-view>', function() {
                      .checked);
     };
 
-    await checkToggle('NOTIFICATIONS');
-    await checkToggle('GEOLOCATION');
-    await checkToggle('MEDIASTREAM_CAMERA');
-    await checkToggle('MEDIASTREAM_MIC');
+    await checkToggle('kNotifications');
+    await checkToggle('kLocation');
+    await checkToggle('kCamera');
+    await checkToggle('kMicrophone');
   });
 
   test('Pin to shelf toggle', async function() {

@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -31,6 +30,9 @@ class LowDiskNotification : public chromeos::UserDataAuthClient::Observer {
  public:
   // Registers this class as the UserDataAuthClient LowDiskSpaceHandler.
   LowDiskNotification();
+
+  LowDiskNotification(const LowDiskNotification&) = delete;
+  LowDiskNotification& operator=(const LowDiskNotification&) = delete;
 
   // Resets UserDataAuthClient LowDiskSpaceHandler.
   ~LowDiskNotification() override;
@@ -64,16 +66,8 @@ class LowDiskNotification : public chromeos::UserDataAuthClient::Observer {
   base::TimeDelta notification_interval_;
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<LowDiskNotification> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LowDiskNotification);
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-using ::ash::LowDiskNotification;
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_LOW_DISK_NOTIFICATION_H_

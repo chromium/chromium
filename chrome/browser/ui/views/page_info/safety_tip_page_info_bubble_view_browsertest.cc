@@ -35,6 +35,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
+#include "components/page_info/features.h"
 #include "components/reputation/core/safety_tip_test_utils.h"
 #include "components/reputation/core/safety_tips.pb.h"
 #include "components/reputation/core/safety_tips_config.h"
@@ -364,6 +365,13 @@ class SafetyTipPageInfoBubbleViewBrowserTest
     return AreLookalikeWarningsEnabled() ? IsUIShowing() : !IsUIShowing();
   }
 
+  std::u16string GetSafetyTipSummaryText() {
+    auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
+    auto* summary_label = page_info->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_SUMMARY_LABEL);
+    return static_cast<views::StyledLabel*>(summary_label)->GetText();
+  }
+
   void CheckPageInfoShowsSafetyTipInfo(
       Browser* browser,
       security_state::SafetyTipStatus expected_safety_tip_status,
@@ -375,21 +383,20 @@ class SafetyTipPageInfoBubbleViewBrowserTest
     OpenPageInfoBubble(browser);
     ASSERT_EQ(PageInfoBubbleViewBase::GetShownBubbleType(),
               PageInfoBubbleViewBase::BubbleType::BUBBLE_PAGE_INFO);
-    auto* page_info = static_cast<PageInfoBubbleView*>(
-        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+    auto* page_info = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
     ASSERT_TRUE(page_info);
 
     switch (expected_safety_tip_status) {
       case security_state::SafetyTipStatus::kBadReputation:
       case security_state::SafetyTipStatus::kBadReputationIgnored:
-        EXPECT_EQ(page_info->GetWindowTitle(),
+        EXPECT_EQ(GetSafetyTipSummaryText(),
                   l10n_util::GetStringUTF16(
                       IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_TITLE));
         break;
 
       case security_state::SafetyTipStatus::kLookalike:
       case security_state::SafetyTipStatus::kLookalikeIgnored:
-        EXPECT_EQ(page_info->GetWindowTitle(),
+        EXPECT_EQ(GetSafetyTipSummaryText(),
                   l10n_util::GetStringFUTF16(
                       IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_TITLE,
                       security_interstitials::common_string_util::
@@ -418,9 +425,9 @@ class SafetyTipPageInfoBubbleViewBrowserTest
         PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
     ASSERT_TRUE(page_info);
     EXPECT_TRUE(
-        page_info->GetWindowTitle() ==
+        GetSafetyTipSummaryText() ==
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_NOT_SECURE_SUMMARY) ||
-        page_info->GetWindowTitle() ==
+        GetSafetyTipSummaryText() ==
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_INTERNAL_PAGE));
     if (PageInfoBubbleViewBase::GetShownBubbleType() ==
         PageInfoBubbleViewBase::BubbleType::BUBBLE_PAGE_INFO) {
@@ -691,7 +698,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
                               WindowOpenDisposition::CURRENT_TAB);
   ASSERT_NO_FATAL_FAILURE(CheckNoButtons());
-  auto* page_info = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
   EXPECT_EQ(
       page_info->GetWindowTitle(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_TITLE));
@@ -924,6 +931,30 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_EQ(IsUIShowing(), AreLookalikeWarningsEnabled());
 }
 
+// Tests that Safety Tips don't trigger on lookalike domains that are one
+// character swap away from an engaged site.
+IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
+                       NoTriggerOnCharacterSwap_SiteEngagement) {
+  const GURL kNavigatedUrl = GetURL("character-wsap.com");
+  const GURL kTargetUrl = GetURL("character-swap.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_FALSE(IsUIShowing());
+}
+
+// Tests that Safety Tips don't trigger on lookalike domains that are one
+// character swap away from a top site.
+IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
+                       NoTriggerOnCharacterSwap_TopSite) {
+  const GURL kNavigatedUrl = GetURL("goolge.com");
+  const GURL kTargetUrl = GetURL("google.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_FALSE(IsUIShowing());
+}
+
 // Tests that Safety Tips trigger on lookalike domains with tail embedding when
 // enabled, and not otherwise.
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
@@ -1106,7 +1137,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
                   WindowOpenDisposition::CURRENT_TAB);
     histogram_tester.ExpectBucketCount(
         kHistogramPrefix + "SafetyTip_BadReputation",
-        SafetyTipInteraction::kStartNewNavigation, 1);
+        SafetyTipInteraction::kChangePrimaryPage, 1);
   }
 }
 
@@ -1119,7 +1150,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   if (!IsSuspiciousSiteWarningEnabled()) {
     return;
   }
-  const base::TimeDelta kMinWarningTime = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kMinWarningTime = base::Milliseconds(10);
 
   // Test the histogram for no user action taken.
   {
@@ -1133,7 +1164,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
     NavigateToURL(browser(), GURL("about:blank"),
                   WindowOpenDisposition::CURRENT_TAB);
     auto samples = histograms.GetAllSamples(
-        "Security.SafetyTips.OpenTime.StartNewNavigation.SafetyTip_"
+        "Security.SafetyTips.OpenTime.ChangePrimaryPage.SafetyTip_"
         "BadReputation");
     ASSERT_EQ(1u, samples.size());
     EXPECT_LE(kMinWarningTime.InMilliseconds(), samples.front().min);
@@ -1613,27 +1644,29 @@ class SafetyTipPageInfoBubbleViewPrerenderBrowserTest
       const SafetyTipPageInfoBubbleViewPrerenderBrowserTest&) = delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
+    feature_list_.InitWithFeatures({security_state::features::kSafetyTipUI},
+                                   {});
     reputation::InitializeSafetyTipConfig();
+    prerender_helper_.SetUp(embedded_test_server());
     InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  content::WebContents* web_contents() { return web_contents_; }
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
   content::test::PrerenderTestHelper* prerender_helper() {
     return &prerender_helper_;
   }
 
  private:
-  content::WebContents* web_contents_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that ReputationWebContentsObserver only checks heuristics when the
@@ -1644,7 +1677,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
                        SafetyTipOnPrerender) {
   // Start test server.
   GURL url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   base::RunLoop run_loop_for_prerenderer;
   auto* rep_observer =
@@ -1684,4 +1717,30 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
   // Make sure that the prerender was activated when the main frame was
   // navigated to the prerender_url.
   ASSERT_TRUE(host_observer.was_activated());
+}
+
+// Ensure prerender navigations don't close the Safety Tip.
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
+                       StillShowAfterPrerenderNavigation) {
+  GURL url = embedded_test_server()->GetURL("site1.com", "/title1.html");
+  reputation::SetSafetyTipBadRepPatterns({"site1.com/"});
+
+  base::HistogramTester histograms;
+  const char kHistogramName[] = "Security.SafetyTips.SafetyTipShown";
+
+  // Generate a Safety Tip.
+  content::TestNavigationObserver navigation_observer(web_contents());
+  NavigateToURL(browser(), url, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_TRUE(IsUIShowing());
+  histograms.ExpectTotalCount(kHistogramName, 1);
+
+  // Wait until the primary page is loaded and start a prerender.
+  navigation_observer.Wait();
+  prerender_helper()->AddPrerender(
+      embedded_test_server()->GetURL("site1.com", "/title2.html"));
+
+  // Ensure the tip isn't closed by prerender navigation and isn't from the
+  // prerendered page.
+  EXPECT_TRUE(IsUIShowing());
+  histograms.ExpectTotalCount(kHistogramName, 1);
 }

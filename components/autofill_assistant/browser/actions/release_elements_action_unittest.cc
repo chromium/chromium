@@ -15,8 +15,6 @@
 namespace autofill_assistant {
 namespace {
 
-using ::base::test::RunOnceCallback;
-using ::testing::_;
 using ::testing::Pointee;
 using ::testing::Property;
 

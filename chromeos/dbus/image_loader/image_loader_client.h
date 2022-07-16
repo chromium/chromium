@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 
@@ -22,6 +21,9 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_LOADER) ImageLoaderClient
     : public DBusClient {
  public:
+  ImageLoaderClient(const ImageLoaderClient&) = delete;
+  ImageLoaderClient& operator=(const ImageLoaderClient&) = delete;
+
   ~ImageLoaderClient() override;
 
   // Registers a component by copying from |component_folder_abs_path| into its
@@ -63,9 +65,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_LOADER) ImageLoaderClient
  protected:
   // Create() should be used instead.
   ImageLoaderClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageLoaderClient);
 };
 
 }  // namespace chromeos

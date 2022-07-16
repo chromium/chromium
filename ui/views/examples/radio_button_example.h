@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -19,6 +18,10 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT RadioButtonExample : public ExampleBase {
  public:
   RadioButtonExample();
+
+  RadioButtonExample(const RadioButtonExample&) = delete;
+  RadioButtonExample& operator=(const RadioButtonExample&) = delete;
+
   ~RadioButtonExample() override;
 
   // ExampleBase:
@@ -29,8 +32,6 @@ class VIEWS_EXAMPLES_EXPORT RadioButtonExample : public ExampleBase {
 
   // Group of 3 radio buttons.
   std::vector<RadioButton*> radio_buttons_;
-
-  DISALLOW_COPY_AND_ASSIGN(RadioButtonExample);
 };
 
 }  // namespace examples

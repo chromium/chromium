@@ -23,14 +23,17 @@ class ClientVideoStatsDispatcher : public ChannelDispatcherBase {
  public:
   ClientVideoStatsDispatcher(const std::string& stream_name,
                              VideoStatsStub* video_stats_stub);
+
+  ClientVideoStatsDispatcher(const ClientVideoStatsDispatcher&) = delete;
+  ClientVideoStatsDispatcher& operator=(const ClientVideoStatsDispatcher&) =
+      delete;
+
   ~ClientVideoStatsDispatcher() override;
 
  private:
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
 
   VideoStatsStub* video_stats_stub_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientVideoStatsDispatcher);
 };
 
 }  // namespace protocol

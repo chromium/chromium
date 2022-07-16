@@ -77,6 +77,9 @@ class VDSOSupport {
  public:
   VDSOSupport();
 
+  VDSOSupport(const VDSOSupport&) = delete;
+  VDSOSupport& operator=(const VDSOSupport&) = delete;
+
   typedef ElfMemImage::SymbolInfo SymbolInfo;
   typedef ElfMemImage::SymbolIterator SymbolIterator;
 
@@ -125,8 +128,6 @@ class VDSOSupport {
   // The low bit is always available because vdso_base_ is
   // page-aligned.
   static const void *vdso_base_;
-
-  DISALLOW_COPY_AND_ASSIGN(VDSOSupport);
 };
 
 }  // namespace base

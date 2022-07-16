@@ -68,6 +68,10 @@ interface DisplayPrivate {
   [EnableIf=is_android]
   PreserveChildSurfaceControls();
 
+  // Lets client control whether it wants `DidCompleteSwapWithSize` callbacks.
+  [EnableIf=is_android]
+  SetSwapCompletionCallbackEnabled(bool enable);
+
   // Adds an observer that gets notified about vsync parameter changes. See
   // VSyncParameterObserver for details.
   //

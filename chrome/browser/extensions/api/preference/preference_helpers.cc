@@ -112,12 +112,13 @@ void DispatchEventToExtensions(Profile* profile,
         extension->permissions_data()->HasAPIPermission(permission) &&
         (!incognito || util::IsIncognitoEnabled(extension->id(), profile))) {
       // Inject level of control key-value.
-      base::DictionaryValue* dict;
-      bool rv = args->GetDictionary(0, &dict);
-      DCHECK(rv);
+      base::Value::ListView args_list = args->GetList();
+      DCHECK(!args_list.empty());
+      DCHECK(args_list[0].is_dict());
+
       std::string level_of_control =
           GetLevelOfControl(profile, extension->id(), browser_pref, incognito);
-      dict->SetString(kLevelOfControlKey, level_of_control);
+      args_list[0].SetStringKey(kLevelOfControlKey, level_of_control);
 
       // If the extension is in incognito split mode,
       // a) incognito pref changes are visible only to the incognito tabs
@@ -147,9 +148,9 @@ void DispatchEventToExtensions(Profile* profile,
         }
       }
 
-      std::unique_ptr<base::ListValue> args_copy = args->CreateDeepCopy();
+      base::Value args_copy = args->Clone();
       auto event = std::make_unique<Event>(histogram_value, event_name,
-                                           std::move(*args_copy).TakeList(),
+                                           std::move(args_copy).TakeList(),
                                            restrict_to_profile);
       router->DispatchEventToExtension(extension->id(), std::move(event));
     }

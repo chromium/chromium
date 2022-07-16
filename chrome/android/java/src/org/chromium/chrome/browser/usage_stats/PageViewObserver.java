@@ -12,18 +12,15 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
-import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 
@@ -35,14 +32,11 @@ import java.lang.reflect.Method;
  * visited fully-qualified domain name (FQDN).
  */
 @SuppressLint("NewApi")
-public class PageViewObserver {
+public class PageViewObserver extends EmptyTabObserver {
     private static final String TAG = "PageViewObserver";
-    private static final String AMP_QUERY_PARAM = "amp_js_v";
 
     private final Activity mActivity;
-    private final TabModelSelectorTabModelObserver mTabModelObserver;
-    private final TabModelSelector mTabModelSelector;
-    private final TabObserver mTabObserver;
+    private final CurrentTabObserver mCurrentTabObserver;
     private final EventTracker mEventTracker;
     private final TokenTracker mTokenTracker;
     private final SuspensionTracker mSuspensionTracker;
@@ -51,85 +45,52 @@ public class PageViewObserver {
     private Tab mCurrentTab;
     private String mLastFqdn;
 
-    public PageViewObserver(Activity activity, TabModelSelector tabModelSelector,
+    PageViewObserver(Activity activity, ObservableSupplier<Tab> tabSupplier,
             EventTracker eventTracker, TokenTracker tokenTracker,
             SuspensionTracker suspensionTracker,
             Supplier<TabContentManager> tabContentManagerSupplier) {
         mActivity = activity;
-        mTabModelSelector = tabModelSelector;
         mEventTracker = eventTracker;
         mTokenTracker = tokenTracker;
         mSuspensionTracker = suspensionTracker;
         mTabContentManagerSupplier = tabContentManagerSupplier;
-        mTabObserver = new EmptyTabObserver() {
-            @Override
-            public void onShown(Tab tab, @TabSelectionType int type) {
-                if (!tab.isLoading() && !tab.isBeingRestored()) {
-                    updateUrl(tab.getUrl());
-                }
-            }
+        mCurrentTabObserver = new CurrentTabObserver(tabSupplier, this, this::activeTabChanged);
+        mCurrentTabObserver.triggerWithCurrentTab();
+    }
 
-            @Override
-            public void onHidden(Tab tab, @TabHidingType int type) {
-                updateUrl(null);
-            }
+    @Override
+    public void onShown(Tab tab, @TabSelectionType int type) {
+        if (!tab.isLoading() && !tab.isBeingRestored()) {
+            updateUrl(tab.getUrl());
+        }
+    }
 
-            @Override
-            public void onUpdateUrl(Tab tab, GURL url) {
-                assert tab == mCurrentTab;
-                String newFqdn = getValidFqdnOrEmptyString(url);
-                // We don't call updateUrl() here to avoid reporting start events for domains
-                // that never paint, e.g. link shorteners. We still need to check the SuspendedTab
-                // state because a tab that's suspended can't paint, and the user could be
-                // navigating away from a suspended domain.
-                checkSuspendedTabState(mSuspensionTracker.isWebsiteSuspended(newFqdn), newFqdn);
-            }
+    @Override
+    public void onHidden(Tab tab, @TabHidingType int type) {
+        updateUrl(null);
+    }
 
-            @Override
-            public void didFirstVisuallyNonEmptyPaint(Tab tab) {
-                assert tab == mCurrentTab;
+    @Override
+    public void onUpdateUrl(Tab tab, GURL url) {
+        assert tab == mCurrentTab;
+        String newFqdn = getValidFqdnOrEmptyString(url);
+        // We don't call updateUrl() here to avoid reporting start events for domains
+        // that never paint, e.g. link shorteners. We still need to check the SuspendedTab
+        // state because a tab that's suspended can't paint, and the user could be
+        // navigating away from a suspended domain.
+        checkSuspendedTabState(mSuspensionTracker.isWebsiteSuspended(newFqdn), newFqdn);
+    }
 
-                updateUrl(tab.getUrl());
-            }
+    @Override
+    public void didFirstVisuallyNonEmptyPaint(Tab tab) {
+        assert tab == mCurrentTab;
 
-            @Override
-            public void onCrash(Tab tab) {
-                updateUrl(null);
-            }
-        };
+        updateUrl(tab.getUrl());
+    }
 
-        mTabModelObserver = new TabModelSelectorTabModelObserver(tabModelSelector) {
-            @Override
-            public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                activeTabChanged(tab);
-            }
-
-            @Override
-            public void didAddTab(
-                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
-                activeTabChanged(tab);
-            }
-
-            @Override
-            public void willCloseTab(Tab tab, boolean animate) {
-                assert tab != null;
-                if (tab != mCurrentTab) return;
-
-                updateUrl(null);
-                switchObserverToTab(null);
-            }
-
-            @Override
-            public void tabRemoved(Tab tab) {
-                assert tab != null;
-                if (tab != mCurrentTab) return;
-
-                updateUrl(null);
-                switchObserverToTab(null);
-            }
-        };
-
-        activeTabChanged(tabModelSelector.getCurrentTab());
+    @Override
+    public void onCrash(Tab tab) {
+        updateUrl(null);
     }
 
     /** Notify PageViewObserver that {@code fqdn} was just suspended or un-suspended. */
@@ -179,6 +140,7 @@ public class PageViewObserver {
      * hidden, or it's hidden and should be shown.
      */
     private boolean checkSuspendedTabState(boolean isNewlySuspended, String fqdn) {
+        if (mCurrentTab == null) return false;
         SuspendedTab suspendedTab = SuspendedTab.from(mCurrentTab, mTabContentManagerSupplier);
         // We don't need to do anything in situations where the current state matches the desired;
         // i.e. either the suspended tab is already showing with the correct fqdn, or the suspended
@@ -206,29 +168,16 @@ public class PageViewObserver {
     }
 
     private void activeTabChanged(Tab tab) {
-        if (tab == mCurrentTab || mTabModelSelector.getCurrentTab() != tab) return;
-
-        switchObserverToTab(tab);
-        // If the newly active tab is hidden, we don't want to check its URL yet; we'll wait until
-        // the onShown event fires.
-        if (mCurrentTab != null && !tab.isHidden()) {
-            updateUrl(tab.getUrl());
-        }
-    }
-
-    private void switchObserverToTab(Tab tab) {
-        if (mCurrentTab != tab && mCurrentTab != null) {
-            mCurrentTab.removeObserver(mTabObserver);
-        }
-
-        if (tab != null && tab.isIncognito()) {
-            mCurrentTab = null;
-            return;
-        }
-
         mCurrentTab = tab;
-        if (mCurrentTab != null) {
-            mCurrentTab.addObserver(mTabObserver);
+        if (mCurrentTab == null) {
+            updateUrl(null);
+        } else if (mCurrentTab.isIncognito()) {
+            updateUrl(null);
+            mCurrentTab.removeObserver(this);
+        } else if (!mCurrentTab.isHidden()) {
+            // If the newly active tab is hidden, we don't want to check its URL yet; we'll wait
+            // until the onShown event fires.
+            updateUrl(mCurrentTab.getUrl());
         }
     }
 

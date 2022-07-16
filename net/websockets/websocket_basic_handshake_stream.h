@@ -43,6 +43,10 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
       WebSocketStreamRequestAPI* request,
       WebSocketEndpointLockManager* websocket_endpoint_lock_manager);
 
+  WebSocketBasicHandshakeStream(const WebSocketBasicHandshakeStream&) = delete;
+  WebSocketBasicHandshakeStream& operator=(
+      const WebSocketBasicHandshakeStream&) = delete;
+
   ~WebSocketBasicHandshakeStream() override;
 
   // HttpStreamBase methods
@@ -152,8 +156,6 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
   WebSocketEndpointLockManager* const websocket_endpoint_lock_manager_;
 
   base::WeakPtrFactory<WebSocketBasicHandshakeStream> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketBasicHandshakeStream);
 };
 
 }  // namespace net

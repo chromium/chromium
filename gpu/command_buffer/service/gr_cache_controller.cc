@@ -50,9 +50,8 @@ void GrCacheController::ScheduleGrContextCleanup() {
   purge_gr_cache_cb_.Reset(base::BindOnce(&GrCacheController::PurgeGrCache,
                                           base::Unretained(this),
                                           current_idle_id_));
-  task_runner_->PostDelayedTask(
-      FROM_HERE, purge_gr_cache_cb_.callback(),
-      base::TimeDelta::FromSeconds(kIdleCleanupDelaySeconds));
+  task_runner_->PostDelayedTask(FROM_HERE, purge_gr_cache_cb_.callback(),
+                                base::Seconds(kIdleCleanupDelaySeconds));
 }
 
 void GrCacheController::PurgeGrCache(uint64_t idle_id) {

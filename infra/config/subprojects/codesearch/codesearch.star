@@ -38,7 +38,6 @@ try_.defaults.goma_backend.set(goma.backend.RBE_PROD)
 try_.defaults.os.set(os.LINUX_BIONIC_SWITCH_TO_DEFAULT)
 try_.defaults.pool.set("luci.chromium.try")
 try_.defaults.service_account.set("chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com")
-try_.defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 
 try_.defaults.caches.set([
     swarming.cache(

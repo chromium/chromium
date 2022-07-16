@@ -21,6 +21,12 @@ class GCM_EXPORT InstanceIDDeleteTokenRequestHandler :
       const std::string& authorized_entity,
       const std::string& scope,
       int gcm_version);
+
+  InstanceIDDeleteTokenRequestHandler(
+      const InstanceIDDeleteTokenRequestHandler&) = delete;
+  InstanceIDDeleteTokenRequestHandler& operator=(
+      const InstanceIDDeleteTokenRequestHandler&) = delete;
+
   ~InstanceIDDeleteTokenRequestHandler() override;
 
    // UnregistrationRequest overrides:
@@ -34,8 +40,6 @@ class GCM_EXPORT InstanceIDDeleteTokenRequestHandler :
   std::string authorized_entity_;
   std::string scope_;
   int gcm_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDDeleteTokenRequestHandler);
 };
 
 }  // namespace gcm

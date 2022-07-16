@@ -20,6 +20,9 @@ namespace android_webview {
 // WebKit directly to implement (and that aren't needed in the chrome app).
 class AwRenderViewExt : public blink::WebViewObserver {
  public:
+  AwRenderViewExt(const AwRenderViewExt&) = delete;
+  AwRenderViewExt& operator=(const AwRenderViewExt&) = delete;
+
   static void WebViewCreated(blink::WebView* web_view);
 
  private:
@@ -38,8 +41,6 @@ class AwRenderViewExt : public blink::WebViewObserver {
   // Whether the contents size may have changed and |UpdateContentsSize| needs
   // to be called.
   bool needs_contents_size_update_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(AwRenderViewExt);
 };
 
 }  // namespace android_webview

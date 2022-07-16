@@ -6,10 +6,9 @@
 // See transport_security_state_static.template for more information on the data
 // in this file.
 
-#include <stdint.h>
-
-#include "base/cxx17_backports.h"
-#include "net/http/transport_security_state_source.h"
+// Note that consumers must include <stdint.h>, "base/cxx17_backports.h", and
+// "net/http/transport_security_state_source.h", which this file cannot do
+// itself, since it's always included in a nested namespace.
 
 [[SPKI_HASHES]]
 

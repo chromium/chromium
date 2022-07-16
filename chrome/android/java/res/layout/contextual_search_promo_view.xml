@@ -2,65 +2,65 @@
 <!-- Copyright 2016 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-
-<RelativeLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/contextual_search_promo"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/contextual_search_promo_background"
-    android:orientation="vertical"
+    android:paddingTop="8dp"
+    android:paddingBottom="16dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
     android:visibility="invisible">
 
-    <!-- The top margin is supposed to be 16d, but the promo background already sets a
-         insetTop of 9dp (see contextual_search_promo_background.xml). For this reason,
-         we only should set the remaining margin top, which is 7dp -->
-    <org.chromium.ui.widget.TextViewWithClickableSpans
-        android:id="@+id/contextual_search_promo_text"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
+    <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="7dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:bufferType="spannable"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+        style="@style/MaterialCardStyle">
 
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/contextual_search_allow_button"
-        android:layout_below="@id/contextual_search_promo_text"
-        android:layout_alignParentEnd="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:text="@string/contextual_search_allow_button"
-        style="@style/FilledButton" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/contextual_search_no_thanks_button"
-        android:layout_below="@id/contextual_search_promo_text"
-        android:layout_toStartOf="@id/contextual_search_allow_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:text="@string/contextual_search_no_thanks_button"
-        style="@style/TextButton" />
+            <org.chromium.ui.widget.TextViewWithClickableSpans
+                android:id="@+id/contextual_search_promo_text"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:bufferType="spannable"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
-    <View
-        android:layout_below="@id/contextual_search_allow_button"
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:layout_marginTop="16dp"
-        android:background="@color/contextual_search_promo_border_color" />
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/contextual_search_allow_button"
+                android:layout_below="@id/contextual_search_promo_text"
+                android:layout_alignParentEnd="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/contextual_search_allow_button"
+                style="@style/FilledButton.Flat" />
 
-</RelativeLayout>
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/contextual_search_no_thanks_button"
+                android:layout_below="@id/contextual_search_promo_text"
+                android:layout_toStartOf="@id/contextual_search_allow_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/contextual_search_no_thanks_button"
+                style="@style/TextButton" />
+        </RelativeLayout>
+    </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+</FrameLayout>

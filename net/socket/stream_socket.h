@@ -29,25 +29,6 @@ class NET_EXPORT StreamSocket : public Socket {
  public:
   using BeforeConnectCallback = base::RepeatingCallback<int()>;
 
-  // This is used in DumpMemoryStats() to track the estimate of memory usage of
-  // a socket.
-  struct NET_EXPORT_PRIVATE SocketMemoryStats {
-   public:
-    SocketMemoryStats();
-    ~SocketMemoryStats();
-    // Estimated total memory usage of this socket in bytes.
-    size_t total_size;
-    // Size of all buffers used by this socket in bytes.
-    size_t buffer_size;
-    // Number of certs used by this socket.
-    size_t cert_count;
-    // Total size of certs used by this socket in bytes.
-    size_t cert_size;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SocketMemoryStats);
-  };
-
   ~StreamSocket() override {}
 
   // Sets a callback to be invoked before establishing a connection. This allows
@@ -167,11 +148,6 @@ class NET_EXPORT StreamSocket : public Socket {
   // 0 if the socket does not implement the function. The count is reset when
   // Disconnect() is called.
   virtual int64_t GetTotalReceivedBytes() const = 0;
-
-  // Dumps memory allocation stats into |stats|. |stats| can be assumed as being
-  // default initialized upon entry. Implementations should override fields in
-  // |stats|. Default implementation does nothing.
-  virtual void DumpMemoryStats(SocketMemoryStats* stats) const {}
 
   // Apply |tag| to this socket. If socket isn't yet connected, tag will be
   // applied when socket is later connected. If Connect() fails or socket

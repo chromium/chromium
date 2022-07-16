@@ -30,17 +30,17 @@ class BudgetPoolTest : public testing::Test {
   ~BudgetPoolTest() override = default;
 
   void SetUp() override {
-    clock_.Advance(base::TimeDelta::FromMicroseconds(5000));
+    clock_.Advance(base::Microseconds(5000));
     null_task_runner_ = base::MakeRefCounted<base::NullTaskRunner>();
     start_time_ = clock_.NowTicks();
   }
 
   base::TimeTicks MillisecondsAfterStart(int milliseconds) {
-    return start_time_ + base::TimeDelta::FromMilliseconds(milliseconds);
+    return start_time_ + base::Milliseconds(milliseconds);
   }
 
   base::TimeTicks SecondsAfterStart(int seconds) {
-    return start_time_ + base::TimeDelta::FromSeconds(seconds);
+    return start_time_ + base::Seconds(seconds);
   }
 
  protected:
@@ -81,8 +81,8 @@ TEST_F(BudgetPoolTest, WakeUpBudgetPool) {
   std::unique_ptr<WakeUpBudgetPool> pool =
       std::make_unique<WakeUpBudgetPool>("test");
 
-  pool->SetWakeUpInterval(base::TimeTicks(), base::TimeDelta::FromSeconds(10));
-  pool->SetWakeUpDuration(base::TimeDelta::FromMilliseconds(10));
+  pool->SetWakeUpInterval(base::TimeTicks(), base::Seconds(10));
+  pool->SetWakeUpDuration(base::Milliseconds(10));
 
   // Can't run tasks until a wake-up.
   EXPECT_FALSE(pool->CanRunTasksAt(MillisecondsAfterStart(0)));
@@ -102,7 +102,7 @@ TEST_F(BudgetPoolTest, WakeUpBudgetPool) {
   // GetNextAllowedRunTime should return the desired time when in the
   // wakeup window and return the next wakeup otherwise.
   EXPECT_EQ(start_time_, pool->GetNextAllowedRunTime(start_time_));
-  EXPECT_EQ(base::TimeTicks() + base::TimeDelta::FromSeconds(10),
+  EXPECT_EQ(base::TimeTicks() + base::Seconds(10),
             pool->GetNextAllowedRunTime(MillisecondsAfterStart(15)));
 
   pool->RecordTaskRunTime(MillisecondsAfterStart(5), MillisecondsAfterStart(7));
@@ -114,7 +114,7 @@ TEST_F(BudgetPoolTest, WakeUpBudgetPool) {
   EXPECT_FALSE(pool->CanRunTasksAt(MillisecondsAfterStart(10)));
   EXPECT_FALSE(pool->CanRunTasksAt(MillisecondsAfterStart(11)));
   EXPECT_EQ(start_time_, pool->GetNextAllowedRunTime(start_time_));
-  EXPECT_EQ(base::TimeTicks() + base::TimeDelta::FromSeconds(10),
+  EXPECT_EQ(base::TimeTicks() + base::Seconds(10),
             pool->GetNextAllowedRunTime(MillisecondsAfterStart(15)));
 
   pool->OnWakeUp(MillisecondsAfterStart(12005));
@@ -126,7 +126,7 @@ TEST_F(BudgetPoolTest, WakeUpBudgetPool) {
   EXPECT_TRUE(pool->CanRunTasksAt(MillisecondsAfterStart(12014)));
   EXPECT_FALSE(pool->CanRunTasksAt(MillisecondsAfterStart(12015)));
   EXPECT_FALSE(pool->CanRunTasksAt(MillisecondsAfterStart(12016)));
-  EXPECT_EQ(base::TimeTicks() + base::TimeDelta::FromSeconds(20),
+  EXPECT_EQ(base::TimeTicks() + base::Seconds(20),
             pool->GetNextAllowedRunTime(SecondsAfterStart(13)));
 }
 

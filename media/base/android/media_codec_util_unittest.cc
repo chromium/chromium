@@ -4,7 +4,6 @@
 
 #include "media/base/android/media_codec_util.h"
 #include "base/android/build_info.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -20,10 +19,13 @@ using base::android::SDK_VERSION_NOUGAT_MR1;
 class MediaCodecUtilTest : public testing::Test {
  public:
   MediaCodecUtilTest() {}
+
+  MediaCodecUtilTest(const MediaCodecUtilTest&) = delete;
+  MediaCodecUtilTest& operator=(const MediaCodecUtilTest&) = delete;
+
   ~MediaCodecUtilTest() override {}
 
  public:
-  DISALLOW_COPY_AND_ASSIGN(MediaCodecUtilTest);
 };
 
 TEST_F(MediaCodecUtilTest, TestCodecAvailableIfNewerVersion) {

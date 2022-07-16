@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_LOCAL_CARD_MIGRATION_BUBBLE_CONTROLLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_LOCAL_CARD_MIGRATION_BUBBLE_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 
 namespace autofill {
@@ -18,14 +17,17 @@ class LocalCardMigrationBubble;
 class LocalCardMigrationBubbleController {
  public:
   LocalCardMigrationBubbleController() {}
+
+  LocalCardMigrationBubbleController(
+      const LocalCardMigrationBubbleController&) = delete;
+  LocalCardMigrationBubbleController& operator=(
+      const LocalCardMigrationBubbleController&) = delete;
+
   virtual ~LocalCardMigrationBubbleController() {}
 
   virtual void OnConfirmButtonClicked() = 0;
   virtual void OnCancelButtonClicked() = 0;
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationBubbleController);
 };
 
 }  // namespace autofill

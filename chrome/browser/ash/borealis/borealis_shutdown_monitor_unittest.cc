@@ -45,7 +45,7 @@ TEST_F(BorealisShutdownMonitorTest, CanShutdownImmediately) {
 TEST_F(BorealisShutdownMonitorTest, CanShutdownWithDelay) {
   BorealisShutdownMonitor monitor(profile());
 
-  monitor.SetShutdownDelayForTesting(base::TimeDelta::FromSeconds(0));
+  monitor.SetShutdownDelayForTesting(base::Seconds(0));
   monitor.ShutdownWithDelay();
 
   EXPECT_CALL(context_manager_mock_, ShutDownBorealis(testing::_));
@@ -57,7 +57,7 @@ TEST_F(BorealisShutdownMonitorTest, CancelDelayedShutdownPreventsIt) {
 
   EXPECT_CALL(context_manager_mock_, ShutDownBorealis(testing::_)).Times(0);
 
-  monitor.SetShutdownDelayForTesting(base::TimeDelta::FromSeconds(0));
+  monitor.SetShutdownDelayForTesting(base::Seconds(0));
   monitor.ShutdownWithDelay();
 
   monitor.CancelDelayedShutdown();
@@ -69,11 +69,11 @@ TEST_F(BorealisShutdownMonitorTest, LaterShutdownOverridesEarlier) {
 
   EXPECT_CALL(context_manager_mock_, ShutDownBorealis(testing::_)).Times(0);
 
-  monitor.SetShutdownDelayForTesting(base::TimeDelta::FromSeconds(0));
+  monitor.SetShutdownDelayForTesting(base::Seconds(0));
   monitor.ShutdownWithDelay();
 
   // I'm assuming this thread won't be idle for 99 seconds.
-  monitor.SetShutdownDelayForTesting(base::TimeDelta::FromSeconds(99));
+  monitor.SetShutdownDelayForTesting(base::Seconds(99));
   monitor.ShutdownWithDelay();
 
   task_environment_.RunUntilIdle();
@@ -84,7 +84,7 @@ TEST_F(BorealisShutdownMonitorTest, DeletingMonitorCancelsShutdowns) {
 
   EXPECT_CALL(context_manager_mock_, ShutDownBorealis(testing::_)).Times(0);
 
-  monitor->SetShutdownDelayForTesting(base::TimeDelta::FromSeconds(0));
+  monitor->SetShutdownDelayForTesting(base::Seconds(0));
   monitor->ShutdownWithDelay();
   monitor.reset();
 

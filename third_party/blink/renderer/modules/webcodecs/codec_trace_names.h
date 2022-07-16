@@ -19,6 +19,7 @@ struct CodecTraceNames {
     flush = codec_name + "::Flush";
     handle_error = codec_name + "::HandleError";
     output = codec_name + "::Ouput";
+    reset = codec_name + "::OnCodecReclaimed";
     reset = codec_name + "::Reset";
     reconfigure = codec_name + "::Reconfigure";
     requests_counter = codec_name + " requests";
@@ -37,6 +38,7 @@ struct CodecTraceNames {
   std::string flush;
   std::string handle_error;
   std::string output;
+  std::string reclaimed;
   std::string reset;
   std::string reconfigure;
   std::string requests_counter;

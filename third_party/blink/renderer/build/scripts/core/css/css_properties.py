@@ -262,8 +262,6 @@ class CSSProperties(object):
         if property_['inherited']:
             property_['is_inherited_setter'] = (
                 'Set' + method_name + 'IsInherited')
-        property_['is_animation_property'] = (
-            property_['priority'] == 'Animation')
 
         # Figure out whether this property should have style builders at all.
         # E.g. shorthands do not get style builders.

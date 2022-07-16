@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -16,6 +15,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_paths.h"
@@ -51,6 +51,11 @@ using net::test_server::HttpResponse;
 class CorsFileOriginBrowserTest : public ContentBrowserTest {
  public:
   CorsFileOriginBrowserTest() : pass_string_(u"PASS"), fail_string_(u"FAIL") {}
+
+  CorsFileOriginBrowserTest(const CorsFileOriginBrowserTest&) = delete;
+  CorsFileOriginBrowserTest& operator=(const CorsFileOriginBrowserTest&) =
+      delete;
+
   ~CorsFileOriginBrowserTest() override = default;
 
  protected:
@@ -173,8 +178,6 @@ class CorsFileOriginBrowserTest : public ContentBrowserTest {
 
   const std::u16string pass_string_;
   const std::u16string fail_string_;
-
-  DISALLOW_COPY_AND_ASSIGN(CorsFileOriginBrowserTest);
 };
 
 // Tests end to end Origin header and CORS check behaviors with
@@ -243,7 +246,8 @@ IN_PROC_BROWSER_TEST_F(CorsFileOriginBrowserTest, AccessToAnotherFileUrl) {
 
 // TODO(lukasza, nasko): https://crbug.com/981018: Enable this test on Macs
 // after understanding what makes it flakily fail on the mac-rel trybot.
-#if defined(OS_MAC)
+// Also flaky on Lacros: https://crbug.com/1247748.
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_UniversalAccessFromFileUrls DISABLED_UniversalAccessFromFileUrls
 #else
 #define MAYBE_UniversalAccessFromFileUrls UniversalAccessFromFileUrls

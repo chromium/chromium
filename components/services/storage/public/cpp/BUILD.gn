@@ -6,6 +6,7 @@ component("cpp") {
   output_name = "storage_service_public"
 
   public = [
+    "big_io_buffer.h",
     "constants.h",
     "quota_client_callback_wrapper.h",
     "quota_error_or.h",
@@ -13,6 +14,7 @@ component("cpp") {
   ]
 
   sources = [
+    "big_io_buffer.cc",
     "constants.cc",
     "quota_client_callback_wrapper.cc",
   ]
@@ -22,6 +24,7 @@ component("cpp") {
     "//components/services/storage/public/cpp/buckets",
     "//components/services/storage/public/cpp/filesystem",
     "//components/services/storage/public/mojom",
+    "//net",
   ]
 
   defines = [ "IS_STORAGE_SERVICE_PUBLIC_IMPL" ]

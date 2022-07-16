@@ -22,6 +22,8 @@ from blinkpy.web_tests.builder_list import BuilderList
 class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
     command_constructor = RebaselineCL
+    command_constructor.flag_specific_builder = (
+        lambda self, flag_specific: frozenset(["MOCK Try Highdpi"]))
 
     def setUp(self):
         BaseTestCase.setUp(self)
@@ -440,7 +442,6 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             self.command_options(flag_specific='highdpi'), [], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Running the tool with highdpi builder only.\n',
             'INFO: Finished try jobs found for all try bots.\n',
             'INFO: Rebaselining one/flaky-fail.html\n',
             'INFO: Rebaselining one/missing.html\n',
@@ -597,11 +598,12 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         test_baseline_set.add('one/flaky-fail.html', Build('MOCK Bar4', 200))
         self.command.fill_in_missing_results(test_baseline_set)
         self.assertEqual(
-            test_baseline_set.build_port_pairs('one/flaky-fail.html'), [
-                (Build('MOCK Foo12', 100), 'foo-foo12'),
-                (Build('MOCK Bar4', 200), 'bar-bar4'),
-                (Build('MOCK Foo12', 100), 'foo-foo45'),
+            sorted(test_baseline_set.build_port_pairs('one/flaky-fail.html')),
+            [
                 (Build('MOCK Bar4', 200), 'bar-bar3'),
+                (Build('MOCK Bar4', 200), 'bar-bar4'),
+                (Build('MOCK Foo12', 100), 'foo-foo12'),
+                (Build('MOCK Foo12', 100), 'foo-foo45'),
             ])
         self.assertLog([
             'INFO: For one/flaky-fail.html:\n',

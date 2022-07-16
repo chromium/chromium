@@ -5,7 +5,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -27,6 +26,10 @@ namespace {
 class TestImageSkiaSource : public ImageSkiaSource {
  public:
   explicit TestImageSkiaSource(const Size& dip_size) : dip_size_(dip_size) {}
+
+  TestImageSkiaSource(const TestImageSkiaSource&) = delete;
+  TestImageSkiaSource& operator=(const TestImageSkiaSource&) = delete;
+
   ~TestImageSkiaSource() override = default;
 
   // ImageSkiaSource:
@@ -36,8 +39,6 @@ class TestImageSkiaSource : public ImageSkiaSource {
 
  private:
   const Size dip_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestImageSkiaSource);
 };
 
 // A helper to construct a skia.mojom.BitmapN32 without using StructTraits

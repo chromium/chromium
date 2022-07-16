@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 
 namespace chromeos {
@@ -21,6 +20,11 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) FakePermissionBrokerClient
     : public PermissionBrokerClient {
  public:
   FakePermissionBrokerClient();
+
+  FakePermissionBrokerClient(const FakePermissionBrokerClient&) = delete;
+  FakePermissionBrokerClient& operator=(const FakePermissionBrokerClient&) =
+      delete;
+
   ~FakePermissionBrokerClient() override;
 
   // Checks that a fake instance was initialized and returns it.
@@ -104,8 +108,6 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) FakePermissionBrokerClient
 
   RuleSet tcp_deny_rule_set_;
   RuleSet udp_deny_rule_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePermissionBrokerClient);
 };
 
 }  // namespace chromeos

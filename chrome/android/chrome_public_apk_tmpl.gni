@@ -22,6 +22,7 @@ default_chrome_public_jinja_variables = [
   "channel=$android_channel",
   "enable_vr=$enable_vr",
   "include_arcore_manifest_flag=false",
+  "zygote_preload_class=org.chromium.content_public.app.ZygotePreload",
 ]
 
 # Enable stack unwinding only on official build with specific channels. It is
@@ -138,7 +139,7 @@ template("chrome_public_common_apk_or_module_tmpl") {
     } else if (_is_monochrome) {
       min_sdk_version = 24
     } else {
-      min_sdk_version = 21
+      min_sdk_version = default_min_sdk_version
     }
 
     resource_exclusion_regex = common_resource_exclusion_regex
@@ -184,7 +185,7 @@ template("chrome_public_common_apk_or_module_tmpl") {
       strip_resource_names = !is_java_debug
 
       # Shortens resource file names in apk eg: res/drawable/button.xml -> res/a.xml
-      short_resource_paths = true
+      short_resource_paths = !is_java_debug
 
       # Removes unused resources from the apk. Only enabled on official builds
       # since it adds a slow step and serializes the build graph causing fewer

@@ -16,11 +16,11 @@
 ++++++++++++++[section]
 ++++++++++++++++[push button] name='Show month selection panel'
 ++++++++++++++++++[static] name='September 2008'
-++++++++++++++++++[document frame]
+++++++++++++++++++[image]
 ++++++++++++++[push button] name='Show previous month'
-++++++++++++++++[document frame]
+++++++++++++++++[image]
 ++++++++++++++[push button] name='Show next month'
-++++++++++++++++[document frame]
+++++++++++++++++[image]
 ++++++++++++++[table] cols=7 headers=(NONE); rows=6 headers=(NONE); caption=false; spans=(all: 1x1)
 ++++++++++++++++[section]
 ++++++++++++++++++[section]

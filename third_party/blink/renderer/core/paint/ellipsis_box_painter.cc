@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/line/ellipsis_box.h"
 #include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
 #include "third_party/blink/renderer/core/layout/text_run_constructor.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/text_painter.h"
@@ -50,9 +51,9 @@ void EllipsisBoxPainter::PaintEllipsis(const PaintInfo& paint_info,
   DCHECK(ellipsis_box_.KnownToHaveNoOverflow());
   IntRect visual_rect = EnclosingIntRect(box_rect);
   if (!ellipsis_box_.IsHorizontal())
-    visual_rect.SetSize(visual_rect.Size().TransposedSize());
+    visual_rect.set_size(visual_rect.size().TransposedSize());
   DrawingRecorder recorder(context, ellipsis_box_, paint_info.phase,
-                           visual_rect);
+                           ToGfxRect(visual_rect));
 
   GraphicsContextStateSaver state_saver(context);
   if (!ellipsis_box_.IsHorizontal())
@@ -64,23 +65,28 @@ void EllipsisBoxPainter::PaintEllipsis(const PaintInfo& paint_info,
   if (!font_data)
     return;
 
-  TextPaintStyle text_style = TextPainter::TextPaintingStyle(
-      ellipsis_box_.GetLineLayoutItem().GetDocument(), style, paint_info);
+  const Document& document = ellipsis_box_.GetLineLayoutItem().GetDocument();
+  TextPaintStyle text_style =
+      TextPainter::TextPaintingStyle(document, style, paint_info);
   TextRun text_run = ConstructTextRun(font, ellipsis_box_.EllipsisStr(), style,
                                       TextRun::kAllowTrailingExpansion);
   PhysicalOffset text_origin(
       box_origin.left, box_origin.top + font_data->GetFontMetrics().Ascent());
   TextPainter text_painter(context, font, text_run, text_origin, box_rect,
                            ellipsis_box_.IsHorizontal());
+
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kText));
+
   text_painter.Paint(0, ellipsis_box_.EllipsisStr().length(),
                      ellipsis_box_.EllipsisStr().length(), text_style,
-                     kInvalidDOMNodeId);
+                     kInvalidDOMNodeId, auto_dark_mode);
   // TODO(npm): Check that there are non-whitespace characters. See
   // crbug.com/788444.
   context.GetPaintController().SetTextPainted();
 
   if (!font.ShouldSkipDrawing())
-    PaintTimingDetector::NotifyTextPaint(visual_rect);
+    PaintTimingDetector::NotifyTextPaint(ToGfxRect(visual_rect));
 }
 
 }  // namespace blink

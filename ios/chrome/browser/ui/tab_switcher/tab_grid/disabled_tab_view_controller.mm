@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -129,13 +130,9 @@ NSAttributedString* GetBodyString(TabGridPage page) {
   [scrollView addSubview:container];
   [self.view addSubview:scrollView];
 
-  NSLayoutConstraint* scrollViewHeightConstraint = [scrollView.heightAnchor
-      constraintEqualToAnchor:container.heightAnchor
-                     constant:(self.scrollViewContentInsets.top +
-                               self.scrollViewContentInsets.bottom)];
-  scrollViewHeightConstraint.priority = UILayoutPriorityDefaultLow;
-  scrollViewHeightConstraint.active = YES;
-  self.scrollViewHeight = scrollViewHeightConstraint;
+  self.scrollViewHeight = VerticalConstraintsWithInset(
+      container, scrollView,
+      self.scrollViewContentInsets.top + self.scrollViewContentInsets.bottom);
 
   [NSLayoutConstraint activateConstraints:@[
     [topLabel.topAnchor constraintEqualToAnchor:container.topAnchor

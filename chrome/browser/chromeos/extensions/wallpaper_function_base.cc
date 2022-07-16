@@ -91,6 +91,9 @@ class WallpaperFunctionBase::UnsafeWallpaperDecoder
   explicit UnsafeWallpaperDecoder(scoped_refptr<WallpaperFunctionBase> function)
       : function_(function) {}
 
+  UnsafeWallpaperDecoder(const UnsafeWallpaperDecoder&) = delete;
+  UnsafeWallpaperDecoder& operator=(const UnsafeWallpaperDecoder&) = delete;
+
   void Start(const std::vector<uint8_t>& image_data) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -98,8 +101,7 @@ class WallpaperFunctionBase::UnsafeWallpaperDecoder
     // unsafe image decoder here. Before user login, a robust jpeg decoder will
     // be used.
     CHECK(chromeos::LoginState::Get()->IsUserLoggedIn());
-    std::string image_data_str(image_data.begin(), image_data.end());
-    ImageDecoder::StartWithOptions(this, image_data_str,
+    ImageDecoder::StartWithOptions(this, image_data,
                                    ImageDecoder::DEFAULT_CODEC, true);
   }
 
@@ -136,8 +138,6 @@ class WallpaperFunctionBase::UnsafeWallpaperDecoder
  private:
   scoped_refptr<WallpaperFunctionBase> function_;
   base::AtomicFlag cancel_flag_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnsafeWallpaperDecoder);
 };
 
 WallpaperFunctionBase::UnsafeWallpaperDecoder*

@@ -5,26 +5,28 @@
 #ifndef CHROME_BROWSER_UI_BLOCKED_CONTENT_POPUNDER_PREVENTER_H_
 #define CHROME_BROWSER_UI_BLOCKED_CONTENT_POPUNDER_PREVENTER_H_
 
-#include "base/macros.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "base/memory/weak_ptr.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 // An object to block creation of pop-unders.
 //
 // This must be used whenever a window is activated. To use it, simply
 // create an instance of PopunderPreventer *before* a WebContents is activated,
 // and pass to the constructor the WebContents that is about to be activated.
-class PopunderPreventer : public content::WebContentsObserver {
+class PopunderPreventer {
  public:
   explicit PopunderPreventer(content::WebContents* activating_contents);
-  ~PopunderPreventer() override;
+
+  PopunderPreventer(const PopunderPreventer&) = delete;
+  PopunderPreventer& operator=(const PopunderPreventer&) = delete;
+
+  ~PopunderPreventer();
 
  private:
-  // Overridden from WebContentsObserver:
-  void WebContentsDestroyed() override;
-
-  content::WebContents* popup_;
-
-  DISALLOW_COPY_AND_ASSIGN(PopunderPreventer);
+  base::WeakPtr<content::WebContents> popup_;
 };
 
 #endif  // CHROME_BROWSER_UI_BLOCKED_CONTENT_POPUNDER_PREVENTER_H_

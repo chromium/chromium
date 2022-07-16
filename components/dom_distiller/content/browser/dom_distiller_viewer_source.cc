@@ -7,16 +7,15 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -62,7 +61,8 @@ class DomDistillerViewerSource::RequestViewerHandle
   // content::WebContentsObserver implementation:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void WebContentsDestroyed() override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
 
@@ -117,9 +117,6 @@ void DomDistillerViewerSource::RequestViewerHandle::SendJavaScript(
 
 void DomDistillerViewerSource::RequestViewerHandle::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted())
     return;
@@ -142,8 +139,8 @@ void DomDistillerViewerSource::RequestViewerHandle::DidFinishNavigation(
   Cancel();
 }
 
-void DomDistillerViewerSource::RequestViewerHandle::RenderProcessGone(
-    base::TerminationStatus status) {
+void DomDistillerViewerSource::RequestViewerHandle::
+    PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) {
   Cancel();
 }
 
@@ -172,7 +169,7 @@ void DomDistillerViewerSource::RequestViewerHandle::DOMContentLoaded(
   // reason the accessibility focus is on the close button of the CCT, the title
   // could go unannounced.
   // See http://crbug.com/811417.
-  if (render_frame_host->GetParent()) {
+  if (render_frame_host->GetParentOrOuterDocument()) {
     return;
   }
 
@@ -180,7 +177,7 @@ void DomDistillerViewerSource::RequestViewerHandle::DOMContentLoaded(
       render_frame_host->GetLastCommittedURL());
   if (start_time_ms > 0) {
     base::TimeTicks start_time =
-        base::TimeDelta::FromMilliseconds(start_time_ms) + base::TimeTicks();
+        base::Milliseconds(start_time_ms) + base::TimeTicks();
     base::TimeDelta latency = base::TimeTicks::Now() - start_time;
 
     UMA_HISTOGRAM_TIMES("DomDistiller.Time.ViewerLoading", latency);

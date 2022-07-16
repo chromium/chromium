@@ -44,8 +44,6 @@ void BluetoothBlocklist::Add(base::StringPiece blocklist_string) {
   if (blocklist_string.empty())
     return;
   base::StringPairs kv_pairs;
-  bool parsed_values = false;
-  bool invalid_values = false;
   base::SplitStringIntoKeyValuePairs(blocklist_string,
                                      ':',  // Key-value delimiter
                                      ',',  // Key-value pair delimiter
@@ -56,19 +54,15 @@ void BluetoothBlocklist::Add(base::StringPiece blocklist_string) {
       switch (pair.second[0]) {
         case 'e':
           Add(uuid, Value::EXCLUDE);
-          parsed_values = true;
           continue;
         case 'r':
           Add(uuid, Value::EXCLUDE_READS);
-          parsed_values = true;
           continue;
         case 'w':
           Add(uuid, Value::EXCLUDE_WRITES);
-          parsed_values = true;
           continue;
       }
     }
-    invalid_values = true;
   }
 }
 
@@ -160,6 +154,7 @@ void BluetoothBlocklist::PopulateWithDefaultValues() {
   Add(BluetoothUUID("00001530-1212-efde-1523-785feabcd123"), Value::EXCLUDE);
   Add(BluetoothUUID("f000ffc0-0451-4000-b000-000000000000"), Value::EXCLUDE);
   Add(BluetoothUUID("00060000"), Value::EXCLUDE);
+  Add(BluetoothUUID("fff9"), Value::EXCLUDE);
   Add(BluetoothUUID("fffd"), Value::EXCLUDE);
   Add(BluetoothUUID("fde2"), Value::EXCLUDE);
   // Characteristics:

@@ -22,6 +22,12 @@ class PowerMonitorMessageBroadcaster : public base::PowerStateObserver,
                                        public device::mojom::PowerMonitor {
  public:
   PowerMonitorMessageBroadcaster();
+
+  PowerMonitorMessageBroadcaster(const PowerMonitorMessageBroadcaster&) =
+      delete;
+  PowerMonitorMessageBroadcaster& operator=(
+      const PowerMonitorMessageBroadcaster&) = delete;
+
   ~PowerMonitorMessageBroadcaster() override;
 
   void Bind(mojo::PendingReceiver<device::mojom::PowerMonitor> receiver);
@@ -40,8 +46,6 @@ class PowerMonitorMessageBroadcaster : public base::PowerStateObserver,
  private:
   mojo::ReceiverSet<device::mojom::PowerMonitor> receivers_;
   mojo::RemoteSet<device::mojom::PowerMonitorClient> clients_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorMessageBroadcaster);
 };
 
 }  // namespace device

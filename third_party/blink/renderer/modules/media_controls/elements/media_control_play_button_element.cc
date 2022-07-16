@@ -74,7 +74,11 @@ void MediaControlPlayButtonElement::DefaultEventHandler(Event& event) {
 
     MediaElement().TogglePlayState();
     UpdateDisplayType();
-    event.SetDefaultHandled();
+
+    // Don't set default handled in the overflow menu since it also needs to
+    // handle the click.
+    if (!IsOverflowElement())
+      event.SetDefaultHandled();
   }
   MediaControlInputElement::DefaultEventHandler(event);
 }

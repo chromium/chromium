@@ -16,10 +16,10 @@ RealTimeReportGenerator::RealTimeReportGenerator(
 RealTimeReportGenerator::~RealTimeReportGenerator() = default;
 
 std::vector<std::unique_ptr<google::protobuf::MessageLite>>
-RealTimeReportGenerator::Generate(ReportType type) {
+RealTimeReportGenerator::Generate(ReportType type, const Data& data) {
   if (!delegate_)
     return std::vector<std::unique_ptr<google::protobuf::MessageLite>>();
-  return delegate_->Generate(type);
+  return delegate_->Generate(type, data);
 }
 
 }  // namespace enterprise_reporting

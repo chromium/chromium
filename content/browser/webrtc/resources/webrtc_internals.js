@@ -330,8 +330,8 @@ function addPeerConnection(data) {
   // Show deprecation notices as a list.
   // Note: data.rtcConfiguration is not in JSON format and may
   // not be defined in tests.
+  const deprecationNotices = document.createElement('ul');
   if (data.rtcConfiguration) {
-    const deprecationNotices = document.createElement('ul');
     deprecationNotices.className = 'peerconnection-deprecations';
     if (data.rtcConfiguration.indexOf('extmapAllowMixed: false') !== -1) {
       // Hard deprecation, setting "false" will no longer work.
@@ -354,8 +354,46 @@ function addPeerConnection(data) {
         'M93. See https://www.chromestatus.com/feature/5823036655665152 ' +
         'for more details.');
     }
-    peerConnectionElement.appendChild(deprecationNotices);
   }
+  if (data.constraints) {
+    if (data.constraints.indexOf('enableDtlsSrtp:') !== -1) {
+      if (data.constraints.indexOf('enableDtlsSrtp: {exact: false}') !== -1) {
+        appendChildWithText(deprecationNotices, 'li',
+          'The constraint "DtlsSrtpKeyAgreement" will be removed. You have ' +
+          'specified a "false" value for this constraint, which is ' +
+          'interpreted as an attempt to use the deprecated "SDES" key ' +
+          'negotiation method. This functionality will be removed; use a ' +
+          'service that supports DTLS key negotiation instead.');
+      } else {
+        appendChildWithText(deprecationNotices, 'li',
+          'The constraint "DtlsSrtpKeyAgreement" will be removed. You have ' +
+          'specified a "true" value for this constraint, which has no ' +
+          'effect, but you can remove this constraint for tidiness.');
+      }
+    }
+  }
+  peerConnectionElement.appendChild(deprecationNotices);
+
+  const iceConnectionStates = document.createElement('div');
+  iceConnectionStates.textContent = 'ICE connection state: new';
+  iceConnectionStates.className = 'iceconnectionstate';
+  peerConnectionElement.appendChild(iceConnectionStates);
+
+  const connectionStates = document.createElement('div');
+  connectionStates.textContent = 'Connection state: new';
+  connectionStates.className = 'connectionstate';
+  peerConnectionElement.appendChild(connectionStates);
+
+  const signalingStates = document.createElement('div');
+  signalingStates.textContent = 'Signaling state: new';
+  signalingStates.className = 'signalingstate';
+  peerConnectionElement.appendChild(signalingStates);
+
+  const candidatePair = document.createElement('div');
+  candidatePair.textContent = 'ICE Candidate pair: ';
+  candidatePair.className = 'candidatepair';
+  candidatePair.appendChild(document.createElement('span'));
+  peerConnectionElement.appendChild(candidatePair);
 
   return peerConnectionElement;
 }
@@ -424,6 +462,61 @@ function addStandardStats(data) {
     const report = data.reports[i];
     statsTable.addStatsReport(peerConnectionElement, report);
     drawSingleReport(peerConnectionElement, report, false);
+  }
+  // Determine currently connected candidate pair.
+  const stats = r.statsById;
+
+  let activeCandidatePair = null;
+  let remoteCandidate = null;
+  let localCandidate = null;
+
+  // Get the first active candidate pair. This ignores the rare case of
+  // non-bundled connections.
+  stats.forEach(report => {
+    if (report.type === 'transport' && !activeCandidatePair) {
+      activeCandidatePair = stats.get(report.selectedCandidatePairId);
+    }
+  });
+
+  const candidateElement = peerConnectionElement
+    .getElementsByClassName('candidatepair')[0].firstElementChild;
+  if (activeCandidatePair) {
+    if (activeCandidatePair.remoteCandidateId) {
+      remoteCandidate = stats.get(activeCandidatePair.remoteCandidateId);
+    }
+    if (activeCandidatePair.localCandidateId) {
+      localCandidate = stats.get(activeCandidatePair.localCandidateId);
+    }
+    if (localCandidate && localCandidate.address &&
+        localCandidate.address.indexOf(':') !== -1) {
+      // Show IPv6 in []
+      candidateElement.innerText =
+          '[' + localCandidate.address + ']:' + localCandidate.port
+          + ' <=> [' + remoteCandidate.address + ']:' + remoteCandidate.port;
+    } else {
+      candidateElement.innerText =
+          localCandidate.address + ':' + localCandidate.port
+          + ' <=> ' + remoteCandidate.address + ':' + remoteCandidate.port;
+    }
+
+    const statsContainer =
+        document.getElementById(peerConnectionElement.id + '-table-container');
+    const activeConnectionClass = 'stats-table-active-connection';
+    statsContainer.childNodes.forEach(node => {
+      if (node.nodeName !== 'DETAILS') {
+        return;
+      }
+      const innerText = node.firstElementChild.innerText;
+      if (innerText.startsWith(activeCandidatePair.id)
+          || innerText.startsWith(localCandidate.id)
+          || innerText.startsWith(remoteCandidate.id)) {
+        node.classList.add(activeConnectionClass);
+      } else {
+        node.classList.remove(activeConnectionClass);
+      }
+    });
+  } else {
+    candidateElement.innerText = '(not connected)';
   }
 }
 

@@ -4,5 +4,5 @@
      found in the LICENSE file. -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="LauncherTheme" parent="@android:style/Theme.NoDisplay" />
+    <style name="LauncherTheme" parent="Theme.BrowserUI.NoDisplay" />
 </resources>

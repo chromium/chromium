@@ -47,6 +47,9 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthCrosPlatformAuthenticator;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const base::Feature kU2fPermissionPrompt;
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

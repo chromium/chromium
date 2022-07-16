@@ -1,70 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="5" by="lint 4.0.1" client="cli" variant="all" version="4.0.1">
+<issues format="5" by="lint 7.0.0" client="cli" variant="all" version="4.0.1">
 
     <issue
-        id="InlinedApi"
-        message="Field requires API level 25 (current min is 21): `android.provider.Settings.Global#DEVICE_NAME`"
-        errorLine1="    private static final String DEVICE_NAME_SETTING_KEY = Settings.Global.DEVICE_NAME;"
-        errorLine2="                                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="MissingVersion"
+        message="Should set `android:versionCode` to specify the application version">
+        <location
+            file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml"
+            line="2"/>
+    </issue>
+
+    <issue
+        id="MissingVersion"
+        message="Should set `android:versionName` to specify the application version">
+        <location
+            file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml"
+            line="2"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../chromecast/media/cma/backend/android/java/src/org/chromium/chromecast/cma/backend/android/AudioSinkAudioTrackImpl.java"
+            line="248"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../chromecast/media/cma/backend/android/java/src/org/chromium/chromecast/cma/backend/android/AudioSinkAudioTrackImpl.java"
+            line="380"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../chromecast/media/cma/backend/android/java/src/org/chromium/chromecast/cma/backend/android/AudioSinkAudioTrackImpl.java"
+            line="479"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
             file="../../chromecast/base/java/src/org/chromium/chromecast/base/CastSettingsManager.java"
-            line="37"
-            column="59"/>
+            line="151"/>
     </issue>
 
     <issue
-        id="InflateParams"
-        message="Avoid passing `null` as the view root (needed to resolve layout parameters on the inflated layout&apos;s root element)"
-        errorLine1="                                        .inflate(R.layout.cast_web_contents_activity, null);"
-        errorLine2="                                                                                      ~~~~">
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
-            file="../../chromecast/browser/android/apk/src/org/chromium/chromecast/shell/CastWebContentsFragment.java"
-            line="68"
-            column="87"/>
-    </issue>
-
-    <issue
-        id="InflateParams"
-        message="Avoid passing `null` as the view root (needed to resolve layout parameters on the inflated layout&apos;s root element)"
-        errorLine1="                        .inflate(R.layout.cast_web_contents_activity, null),"
-        errorLine2="                                                                      ~~~~">
-        <location
-            file="../../chromecast/browser/android/apk/src/org/chromium/chromecast/shell/CastWebContentsView.java"
-            line="50"
-            column="71"/>
-    </issue>
-
-    <issue
-        id="MissingVersion"
-        message="Should set `android:versionCode` to specify the application version"
-        errorLine1="&lt;manifest package=&quot;org.chromium.chromecast.shell&quot; xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
-        errorLine2=" ~~~~~~~~">
-        <location
-            file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml"
-            line="2"
-            column="2"/>
-    </issue>
-
-    <issue
-        id="MissingVersion"
-        message="Should set `android:versionName` to specify the application version"
-        errorLine1="&lt;manifest package=&quot;org.chromium.chromecast.shell&quot; xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
-        errorLine2=" ~~~~~~~~">
-        <location
-            file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml"
-            line="2"
-            column="2"/>
+            file="../../chromecast/media/cma/backend/android/java/src/org/chromium/chromecast/cma/backend/android/VolumeControl.java"
+            line="93"/>
     </issue>
 
     <issue
         id="Overdraw"
-        message="Possible overdraw: Root element paints background `#FFFFFF` with a theme that also paints a background (inferred theme is `@style/CastShellTheme`)"
-        errorLine1="    android:background=&quot;#FFFFFF&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Possible overdraw: Root element paints background `#FFFFFF` with a theme that also paints a background (inferred theme is `@style/CastShellTheme`)">
         <location
             file="../../chromecast/browser/android/apk/res/layout/cast_web_contents_activity.xml"
-            line="12"
-            column="5"/>
+            line="12"/>
     </issue>
 
     <issue

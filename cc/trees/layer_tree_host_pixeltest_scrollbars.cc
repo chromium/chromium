@@ -154,9 +154,8 @@ TEST_P(LayerTreeHostScrollbarsPixelTest, MAYBE_HugeTransformScale) {
   background->AddChild(layer);
 
   auto context = base::MakeRefCounted<viz::TestInProcessContextProvider>(
-      /*enable_gpu_rasterization=*/false,
-      /*enable_oop_rasterization=*/false,
-      /*support_locking=*/false);
+      /*enable_gles2_interface=*/true, /*support_locking=*/false,
+      viz::RasterInterfaceType::None);
   gpu::ContextResult result = context->BindToCurrentThread();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   int max_texture_size = 0;

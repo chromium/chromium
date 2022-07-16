@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2020 Unicode, Inc.
+<!-- Copyright © 1991-2021 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
-Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+SPDX-License-Identifier: Unicode-DFS-2016
 CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 
 Derived short names and annotations, using GenerateDerivedAnnotations.java. See warnings in /annotations/ file.
@@ -13,6 +13,146 @@ Derived short names and annotations, using GenerateDerivedAnnotations.java. See 
 		<language type="en"/>
 	</identity>
 	<annotations>
+		<annotation cp="🫃🏻">belly | bloated | full | light skin tone | pregnant | pregnant man</annotation>
+		<annotation cp="🫃🏻" type="tts">pregnant man: light skin tone</annotation>
+		<annotation cp="🫃🏼">belly | bloated | full | medium-light skin tone | pregnant | pregnant man</annotation>
+		<annotation cp="🫃🏼" type="tts">pregnant man: medium-light skin tone</annotation>
+		<annotation cp="🫃🏽">belly | bloated | full | medium skin tone | pregnant | pregnant man</annotation>
+		<annotation cp="🫃🏽" type="tts">pregnant man: medium skin tone</annotation>
+		<annotation cp="🫃🏾">belly | bloated | full | medium-dark skin tone | pregnant | pregnant man</annotation>
+		<annotation cp="🫃🏾" type="tts">pregnant man: medium-dark skin tone</annotation>
+		<annotation cp="🫃🏿">belly | bloated | dark skin tone | full | pregnant | pregnant man</annotation>
+		<annotation cp="🫃🏿" type="tts">pregnant man: dark skin tone</annotation>
+		<annotation cp="🫄🏻">belly | bloated | full | light skin tone | pregnant | pregnant person</annotation>
+		<annotation cp="🫄🏻" type="tts">pregnant person: light skin tone</annotation>
+		<annotation cp="🫄🏼">belly | bloated | full | medium-light skin tone | pregnant | pregnant person</annotation>
+		<annotation cp="🫄🏼" type="tts">pregnant person: medium-light skin tone</annotation>
+		<annotation cp="🫄🏽">belly | bloated | full | medium skin tone | pregnant | pregnant person</annotation>
+		<annotation cp="🫄🏽" type="tts">pregnant person: medium skin tone</annotation>
+		<annotation cp="🫄🏾">belly | bloated | full | medium-dark skin tone | pregnant | pregnant person</annotation>
+		<annotation cp="🫄🏾" type="tts">pregnant person: medium-dark skin tone</annotation>
+		<annotation cp="🫄🏿">belly | bloated | dark skin tone | full | pregnant | pregnant person</annotation>
+		<annotation cp="🫄🏿" type="tts">pregnant person: dark skin tone</annotation>
+		<annotation cp="🫅🏻">light skin tone | monarch | noble | person with crown | regal | royalty</annotation>
+		<annotation cp="🫅🏻" type="tts">person with crown: light skin tone</annotation>
+		<annotation cp="🫅🏼">medium-light skin tone | monarch | noble | person with crown | regal | royalty</annotation>
+		<annotation cp="🫅🏼" type="tts">person with crown: medium-light skin tone</annotation>
+		<annotation cp="🫅🏽">medium skin tone | monarch | noble | person with crown | regal | royalty</annotation>
+		<annotation cp="🫅🏽" type="tts">person with crown: medium skin tone</annotation>
+		<annotation cp="🫅🏾">medium-dark skin tone | monarch | noble | person with crown | regal | royalty</annotation>
+		<annotation cp="🫅🏾" type="tts">person with crown: medium-dark skin tone</annotation>
+		<annotation cp="🫅🏿">dark skin tone | monarch | noble | person with crown | regal | royalty</annotation>
+		<annotation cp="🫅🏿" type="tts">person with crown: dark skin tone</annotation>
+		<annotation cp="🫰🏻">expensive | hand with index finger and thumb crossed | heart | light skin tone | love | money | snap</annotation>
+		<annotation cp="🫰🏻" type="tts">hand with index finger and thumb crossed: light skin tone</annotation>
+		<annotation cp="🫰🏼">expensive | hand with index finger and thumb crossed | heart | love | medium-light skin tone | money | snap</annotation>
+		<annotation cp="🫰🏼" type="tts">hand with index finger and thumb crossed: medium-light skin tone</annotation>
+		<annotation cp="🫰🏽">expensive | hand with index finger and thumb crossed | heart | love | medium skin tone | money | snap</annotation>
+		<annotation cp="🫰🏽" type="tts">hand with index finger and thumb crossed: medium skin tone</annotation>
+		<annotation cp="🫰🏾">expensive | hand with index finger and thumb crossed | heart | love | medium-dark skin tone | money | snap</annotation>
+		<annotation cp="🫰🏾" type="tts">hand with index finger and thumb crossed: medium-dark skin tone</annotation>
+		<annotation cp="🫰🏿">dark skin tone | expensive | hand with index finger and thumb crossed | heart | love | money | snap</annotation>
+		<annotation cp="🫰🏿" type="tts">hand with index finger and thumb crossed: dark skin tone</annotation>
+		<annotation cp="🫱🏻">hand | light skin tone | right | rightward | rightwards hand</annotation>
+		<annotation cp="🫱🏻" type="tts">rightwards hand: light skin tone</annotation>
+		<annotation cp="🫱🏼">hand | medium-light skin tone | right | rightward | rightwards hand</annotation>
+		<annotation cp="🫱🏼" type="tts">rightwards hand: medium-light skin tone</annotation>
+		<annotation cp="🫱🏽">hand | medium skin tone | right | rightward | rightwards hand</annotation>
+		<annotation cp="🫱🏽" type="tts">rightwards hand: medium skin tone</annotation>
+		<annotation cp="🫱🏾">hand | medium-dark skin tone | right | rightward | rightwards hand</annotation>
+		<annotation cp="🫱🏾" type="tts">rightwards hand: medium-dark skin tone</annotation>
+		<annotation cp="🫱🏿">dark skin tone | hand | right | rightward | rightwards hand</annotation>
+		<annotation cp="🫱🏿" type="tts">rightwards hand: dark skin tone</annotation>
+		<annotation cp="🫱🏻‍🫲🏼">agreement | hand | handshake | light skin tone | medium-light skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏻‍🫲🏼" type="tts">handshake: light skin tone, medium-light skin tone</annotation>
+		<annotation cp="🫱🏻‍🫲🏽">agreement | hand | handshake | light skin tone | medium skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏻‍🫲🏽" type="tts">handshake: light skin tone, medium skin tone</annotation>
+		<annotation cp="🫱🏻‍🫲🏾">agreement | hand | handshake | light skin tone | medium-dark skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏻‍🫲🏾" type="tts">handshake: light skin tone, medium-dark skin tone</annotation>
+		<annotation cp="🫱🏻‍🫲🏿">agreement | dark skin tone | hand | handshake | light skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏻‍🫲🏿" type="tts">handshake: light skin tone, dark skin tone</annotation>
+		<annotation cp="🫱🏼‍🫲🏻">agreement | hand | handshake | light skin tone | medium-light skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏼‍🫲🏻" type="tts">handshake: medium-light skin tone, light skin tone</annotation>
+		<annotation cp="🫱🏼‍🫲🏽">agreement | hand | handshake | medium skin tone | medium-light skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏼‍🫲🏽" type="tts">handshake: medium-light skin tone, medium skin tone</annotation>
+		<annotation cp="🫱🏼‍🫲🏾">agreement | hand | handshake | medium-dark skin tone | medium-light skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏼‍🫲🏾" type="tts">handshake: medium-light skin tone, medium-dark skin tone</annotation>
+		<annotation cp="🫱🏼‍🫲🏿">agreement | dark skin tone | hand | handshake | medium-light skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏼‍🫲🏿" type="tts">handshake: medium-light skin tone, dark skin tone</annotation>
+		<annotation cp="🫱🏽‍🫲🏻">agreement | hand | handshake | light skin tone | medium skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏽‍🫲🏻" type="tts">handshake: medium skin tone, light skin tone</annotation>
+		<annotation cp="🫱🏽‍🫲🏼">agreement | hand | handshake | medium skin tone | medium-light skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏽‍🫲🏼" type="tts">handshake: medium skin tone, medium-light skin tone</annotation>
+		<annotation cp="🫱🏽‍🫲🏾">agreement | hand | handshake | medium skin tone | medium-dark skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏽‍🫲🏾" type="tts">handshake: medium skin tone, medium-dark skin tone</annotation>
+		<annotation cp="🫱🏽‍🫲🏿">agreement | dark skin tone | hand | handshake | medium skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏽‍🫲🏿" type="tts">handshake: medium skin tone, dark skin tone</annotation>
+		<annotation cp="🫱🏾‍🫲🏻">agreement | hand | handshake | light skin tone | medium-dark skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏾‍🫲🏻" type="tts">handshake: medium-dark skin tone, light skin tone</annotation>
+		<annotation cp="🫱🏾‍🫲🏼">agreement | hand | handshake | medium-dark skin tone | medium-light skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏾‍🫲🏼" type="tts">handshake: medium-dark skin tone, medium-light skin tone</annotation>
+		<annotation cp="🫱🏾‍🫲🏽">agreement | hand | handshake | medium skin tone | medium-dark skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏾‍🫲🏽" type="tts">handshake: medium-dark skin tone, medium skin tone</annotation>
+		<annotation cp="🫱🏾‍🫲🏿">agreement | dark skin tone | hand | handshake | medium-dark skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏾‍🫲🏿" type="tts">handshake: medium-dark skin tone, dark skin tone</annotation>
+		<annotation cp="🫱🏿‍🫲🏻">agreement | dark skin tone | hand | handshake | light skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏿‍🫲🏻" type="tts">handshake: dark skin tone, light skin tone</annotation>
+		<annotation cp="🫱🏿‍🫲🏼">agreement | dark skin tone | hand | handshake | medium-light skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏿‍🫲🏼" type="tts">handshake: dark skin tone, medium-light skin tone</annotation>
+		<annotation cp="🫱🏿‍🫲🏽">agreement | dark skin tone | hand | handshake | medium skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏿‍🫲🏽" type="tts">handshake: dark skin tone, medium skin tone</annotation>
+		<annotation cp="🫱🏿‍🫲🏾">agreement | dark skin tone | hand | handshake | medium-dark skin tone | meeting | shake</annotation>
+		<annotation cp="🫱🏿‍🫲🏾" type="tts">handshake: dark skin tone, medium-dark skin tone</annotation>
+		<annotation cp="🫲🏻">hand | left | leftward | leftwards hand | light skin tone</annotation>
+		<annotation cp="🫲🏻" type="tts">leftwards hand: light skin tone</annotation>
+		<annotation cp="🫲🏼">hand | left | leftward | leftwards hand | medium-light skin tone</annotation>
+		<annotation cp="🫲🏼" type="tts">leftwards hand: medium-light skin tone</annotation>
+		<annotation cp="🫲🏽">hand | left | leftward | leftwards hand | medium skin tone</annotation>
+		<annotation cp="🫲🏽" type="tts">leftwards hand: medium skin tone</annotation>
+		<annotation cp="🫲🏾">hand | left | leftward | leftwards hand | medium-dark skin tone</annotation>
+		<annotation cp="🫲🏾" type="tts">leftwards hand: medium-dark skin tone</annotation>
+		<annotation cp="🫲🏿">dark skin tone | hand | left | leftward | leftwards hand</annotation>
+		<annotation cp="🫲🏿" type="tts">leftwards hand: dark skin tone</annotation>
+		<annotation cp="🫳🏻">dismiss | drop | light skin tone | palm down hand | shoo</annotation>
+		<annotation cp="🫳🏻" type="tts">palm down hand: light skin tone</annotation>
+		<annotation cp="🫳🏼">dismiss | drop | medium-light skin tone | palm down hand | shoo</annotation>
+		<annotation cp="🫳🏼" type="tts">palm down hand: medium-light skin tone</annotation>
+		<annotation cp="🫳🏽">dismiss | drop | medium skin tone | palm down hand | shoo</annotation>
+		<annotation cp="🫳🏽" type="tts">palm down hand: medium skin tone</annotation>
+		<annotation cp="🫳🏾">dismiss | drop | medium-dark skin tone | palm down hand | shoo</annotation>
+		<annotation cp="🫳🏾" type="tts">palm down hand: medium-dark skin tone</annotation>
+		<annotation cp="🫳🏿">dark skin tone | dismiss | drop | palm down hand | shoo</annotation>
+		<annotation cp="🫳🏿" type="tts">palm down hand: dark skin tone</annotation>
+		<annotation cp="🫴🏻">beckon | catch | come | light skin tone | offer | palm up hand</annotation>
+		<annotation cp="🫴🏻" type="tts">palm up hand: light skin tone</annotation>
+		<annotation cp="🫴🏼">beckon | catch | come | medium-light skin tone | offer | palm up hand</annotation>
+		<annotation cp="🫴🏼" type="tts">palm up hand: medium-light skin tone</annotation>
+		<annotation cp="🫴🏽">beckon | catch | come | medium skin tone | offer | palm up hand</annotation>
+		<annotation cp="🫴🏽" type="tts">palm up hand: medium skin tone</annotation>
+		<annotation cp="🫴🏾">beckon | catch | come | medium-dark skin tone | offer | palm up hand</annotation>
+		<annotation cp="🫴🏾" type="tts">palm up hand: medium-dark skin tone</annotation>
+		<annotation cp="🫴🏿">beckon | catch | come | dark skin tone | offer | palm up hand</annotation>
+		<annotation cp="🫴🏿" type="tts">palm up hand: dark skin tone</annotation>
+		<annotation cp="🫵🏻">index pointing at the viewer | light skin tone | point | you</annotation>
+		<annotation cp="🫵🏻" type="tts">index pointing at the viewer: light skin tone</annotation>
+		<annotation cp="🫵🏼">index pointing at the viewer | medium-light skin tone | point | you</annotation>
+		<annotation cp="🫵🏼" type="tts">index pointing at the viewer: medium-light skin tone</annotation>
+		<annotation cp="🫵🏽">index pointing at the viewer | medium skin tone | point | you</annotation>
+		<annotation cp="🫵🏽" type="tts">index pointing at the viewer: medium skin tone</annotation>
+		<annotation cp="🫵🏾">index pointing at the viewer | medium-dark skin tone | point | you</annotation>
+		<annotation cp="🫵🏾" type="tts">index pointing at the viewer: medium-dark skin tone</annotation>
+		<annotation cp="🫵🏿">dark skin tone | index pointing at the viewer | point | you</annotation>
+		<annotation cp="🫵🏿" type="tts">index pointing at the viewer: dark skin tone</annotation>
+		<annotation cp="🫶🏻">heart hands | light skin tone | love</annotation>
+		<annotation cp="🫶🏻" type="tts">heart hands: light skin tone</annotation>
+		<annotation cp="🫶🏼">heart hands | love | medium-light skin tone</annotation>
+		<annotation cp="🫶🏼" type="tts">heart hands: medium-light skin tone</annotation>
+		<annotation cp="🫶🏽">heart hands | love | medium skin tone</annotation>
+		<annotation cp="🫶🏽" type="tts">heart hands: medium skin tone</annotation>
+		<annotation cp="🫶🏾">heart hands | love | medium-dark skin tone</annotation>
+		<annotation cp="🫶🏾" type="tts">heart hands: medium-dark skin tone</annotation>
+		<annotation cp="🫶🏿">dark skin tone | heart hands | love</annotation>
+		<annotation cp="🫶🏿" type="tts">heart hands: dark skin tone</annotation>
 		<annotation cp="👋🏻">hand | light skin tone | wave | waving</annotation>
 		<annotation cp="👋🏻" type="tts">waving hand: light skin tone</annotation>
 		<annotation cp="👋🏼">hand | medium-light skin tone | wave | waving</annotation>
@@ -133,15 +273,15 @@ Derived short names and annotations, using GenerateDerivedAnnotations.java. See 
 		<annotation cp="🤘🏾" type="tts">sign of the horns: medium-dark skin tone</annotation>
 		<annotation cp="🤘🏿">dark skin tone | finger | hand | horns | rock-on | sign of the horns</annotation>
 		<annotation cp="🤘🏿" type="tts">sign of the horns: dark skin tone</annotation>
-		<annotation cp="🤙🏻">call | call me hand | hand | light skin tone</annotation>
+		<annotation cp="🤙🏻">call | call me hand | hand | hang loose | light skin tone | Shaka</annotation>
 		<annotation cp="🤙🏻" type="tts">call me hand: light skin tone</annotation>
-		<annotation cp="🤙🏼">call | call me hand | hand | medium-light skin tone</annotation>
+		<annotation cp="🤙🏼">call | call me hand | hand | hang loose | medium-light skin tone | Shaka</annotation>
 		<annotation cp="🤙🏼" type="tts">call me hand: medium-light skin tone</annotation>
-		<annotation cp="🤙🏽">call | call me hand | hand | medium skin tone</annotation>
+		<annotation cp="🤙🏽">call | call me hand | hand | hang loose | medium skin tone | Shaka</annotation>
 		<annotation cp="🤙🏽" type="tts">call me hand: medium skin tone</annotation>
-		<annotation cp="🤙🏾">call | call me hand | hand | medium-dark skin tone</annotation>
+		<annotation cp="🤙🏾">call | call me hand | hand | hang loose | medium-dark skin tone | Shaka</annotation>
 		<annotation cp="🤙🏾" type="tts">call me hand: medium-dark skin tone</annotation>
-		<annotation cp="🤙🏿">call | call me hand | dark skin tone | hand</annotation>
+		<annotation cp="🤙🏿">call | call me hand | dark skin tone | hand | hang loose | Shaka</annotation>
 		<annotation cp="🤙🏿" type="tts">call me hand: dark skin tone</annotation>
 		<annotation cp="👈🏻">backhand | backhand index pointing left | finger | hand | index | light skin tone | point</annotation>
 		<annotation cp="👈🏻" type="tts">backhand index pointing left: light skin tone</annotation>
@@ -303,6 +443,16 @@ Derived short names and annotations, using GenerateDerivedAnnotations.java. See 
 		<annotation cp="🤲🏾" type="tts">palms up together: medium-dark skin tone</annotation>
 		<annotation cp="🤲🏿">dark skin tone | palms up together | prayer</annotation>
 		<annotation cp="🤲🏿" type="tts">palms up together: dark skin tone</annotation>
+		<annotation cp="🤝🏻">agreement | hand | handshake | light skin tone | meeting | shake</annotation>
+		<annotation cp="🤝🏻" type="tts">handshake: light skin tone</annotation>
+		<annotation cp="🤝🏼">agreement | hand | handshake | medium-light skin tone | meeting | shake</annotation>
+		<annotation cp="🤝🏼" type="tts">handshake: medium-light skin tone</annotation>
+		<annotation cp="🤝🏽">agreement | hand | handshake | medium skin tone | meeting | shake</annotation>
+		<annotation cp="🤝🏽" type="tts">handshake: medium skin tone</annotation>
+		<annotation cp="🤝🏾">agreement | hand | handshake | medium-dark skin tone | meeting | shake</annotation>
+		<annotation cp="🤝🏾" type="tts">handshake: medium-dark skin tone</annotation>
+		<annotation cp="🤝🏿">agreement | dark skin tone | hand | handshake | meeting | shake</annotation>
+		<annotation cp="🤝🏿" type="tts">handshake: dark skin tone</annotation>
 		<annotation cp="🙏🏻">ask | folded hands | hand | high 5 | high five | light skin tone | please | pray | thanks</annotation>
 		<annotation cp="🙏🏻" type="tts">folded hands: light skin tone</annotation>
 		<annotation cp="🙏🏼">ask | folded hands | hand | high 5 | high five | medium-light skin tone | please | pray | thanks</annotation>
@@ -3207,15 +3357,15 @@ Derived short names and annotations, using GenerateDerivedAnnotations.java. See 
 		<annotation cp="🛀🏾" type="tts">person taking bath: medium-dark skin tone</annotation>
 		<annotation cp="🛀🏿">bath | bathtub | dark skin tone | person taking bath</annotation>
 		<annotation cp="🛀🏿" type="tts">person taking bath: dark skin tone</annotation>
-		<annotation cp="🛌🏻">hotel | light skin tone | person in bed | sleep</annotation>
+		<annotation cp="🛌🏻">good night | hotel | light skin tone | person in bed | sleep</annotation>
 		<annotation cp="🛌🏻" type="tts">person in bed: light skin tone</annotation>
-		<annotation cp="🛌🏼">hotel | medium-light skin tone | person in bed | sleep</annotation>
+		<annotation cp="🛌🏼">good night | hotel | medium-light skin tone | person in bed | sleep</annotation>
 		<annotation cp="🛌🏼" type="tts">person in bed: medium-light skin tone</annotation>
-		<annotation cp="🛌🏽">hotel | medium skin tone | person in bed | sleep</annotation>
+		<annotation cp="🛌🏽">good night | hotel | medium skin tone | person in bed | sleep</annotation>
 		<annotation cp="🛌🏽" type="tts">person in bed: medium skin tone</annotation>
-		<annotation cp="🛌🏾">hotel | medium-dark skin tone | person in bed | sleep</annotation>
+		<annotation cp="🛌🏾">good night | hotel | medium-dark skin tone | person in bed | sleep</annotation>
 		<annotation cp="🛌🏾" type="tts">person in bed: medium-dark skin tone</annotation>
-		<annotation cp="🛌🏿">dark skin tone | hotel | person in bed | sleep</annotation>
+		<annotation cp="🛌🏿">dark skin tone | good night | hotel | person in bed | sleep</annotation>
 		<annotation cp="🛌🏿" type="tts">person in bed: dark skin tone</annotation>
 		<annotation cp="🧑🏻‍🤝‍🧑🏻">couple | hand | hold | holding hands | light skin tone | people holding hands | person</annotation>
 		<annotation cp="🧑🏻‍🤝‍🧑🏻" type="tts">people holding hands: light skin tone</annotation>

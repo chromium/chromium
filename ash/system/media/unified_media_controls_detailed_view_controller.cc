@@ -4,9 +4,9 @@
 
 #include "ash/system/media/unified_media_controls_detailed_view_controller.h"
 
-#include "ash/public/cpp/media_notification_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/media/media_notification_provider.h"
 #include "ash/system/media/unified_media_controls_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/tray_constants.h"

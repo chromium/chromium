@@ -31,9 +31,9 @@
 namespace performance_manager {
 
 constexpr base::TimeDelta kTitleOrFaviconChangePostLoadGracePeriod =
-    base::TimeDelta::FromSeconds(20);
+    base::Seconds(20);
 constexpr base::TimeDelta kFeatureUsagePostBackgroundGracePeriod =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 // A mock implementation of a SiteDataWriter.
 class LenientMockDataWriter : public SiteDataWriter {
@@ -88,8 +88,9 @@ class MockDataCache : public SiteDataCache {
   }
   std::unique_ptr<SiteDataWriter> GetWriterForOrigin(
       const url::Origin& origin) override {
-    scoped_refptr<internal::SiteDataImpl> fake_impl = base::WrapRefCounted(
-        new internal::SiteDataImpl(origin, &delegate_, &data_store_));
+    scoped_refptr<internal::SiteDataImpl> fake_impl =
+        base::WrapRefCounted(new internal::SiteDataImpl(
+            origin, delegate_.GetWeakPtr(), &data_store_));
 
     return std::make_unique<MockDataWriter>(origin, fake_impl);
   }

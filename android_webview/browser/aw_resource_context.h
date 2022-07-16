@@ -19,6 +19,10 @@ namespace android_webview {
 class AwResourceContext : public content::ResourceContext {
  public:
   AwResourceContext();
+
+  AwResourceContext(const AwResourceContext&) = delete;
+  AwResourceContext& operator=(const AwResourceContext&) = delete;
+
   ~AwResourceContext() override;
 
   void SetExtraHeaders(const GURL& url, const std::string& headers);
@@ -27,8 +31,6 @@ class AwResourceContext : public content::ResourceContext {
  private:
   base::Lock extra_headers_lock_;
   std::map<std::string, std::string> extra_headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwResourceContext);
 };
 
 }  // namespace android_webview

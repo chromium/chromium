@@ -35,12 +35,17 @@ CfmMemoryDetails::CfmMemoryDetails(
 CfmMemoryDetails::~CfmMemoryDetails() = default;
 
 void CfmMemoryDetails::OnDetailsAvailable() {
+  if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&CfmMemoryDetails::OnDetailsAvailable, this));
+    return;
+  }
+
   CollectProcessInformation();
-  // Now go do expensive memory lookups in a thread pool.
-  base::ThreadPool::PostTask(
+
+  // Now Post to UI thread for expensive extensions information lookups.
+  content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&CfmMemoryDetails::CollectExtensionsInformation, this));
 }
 
@@ -58,17 +63,33 @@ void CfmMemoryDetails::CollectProcessInformation() {
       proc_mem_info_mojom->product_name =
           base::UTF16ToUTF8(proc_mem_info.product_name);
       proc_mem_info_mojom->num_processes = proc_mem_info.num_processes;
-      proc_mem_info_mojom->process_type =
-          ProcessMemoryInformation::GetFullTypeNameInEnglish(
-              proc_mem_info.process_type, proc_mem_info.renderer_type);
       proc_mem_info_mojom->num_open_fds = proc_mem_info.num_open_fds;
       proc_mem_info_mojom->open_fds_soft_limit =
           proc_mem_info.open_fds_soft_limit;
-      proc_mem_info_mojom->renderer_type =
-          proc_mem_info.ProcessMemoryInformation::GetRendererTypeNameInEnglish(
-              proc_mem_info.renderer_type);
       proc_mem_info_mojom->private_memory_footprint_kb =
           proc_mem_info.private_memory_footprint_kb;
+
+      // Avoid DCHECK in test builds by defining unknown directly
+      bool process_type_unknown = proc_mem_info.process_type ==
+                                  content::ProcessType::PROCESS_TYPE_UNKNOWN;
+      bool process_type_renderer = proc_mem_info.process_type ==
+                                   content::ProcessType::PROCESS_TYPE_RENDERER;
+      bool renderer_type_unknown =
+          proc_mem_info.renderer_type ==
+          ProcessMemoryInformation::RendererProcessType::RENDERER_UNKNOWN;
+
+      proc_mem_info_mojom->process_type =
+          (process_type_renderer && renderer_type_unknown) ||
+                  process_type_unknown
+              ? "unknown"
+              : ProcessMemoryInformation::GetFullTypeNameInEnglish(
+                    proc_mem_info.process_type, proc_mem_info.renderer_type);
+
+      proc_mem_info_mojom->renderer_type =
+          renderer_type_unknown
+              ? "unknown"
+              : ProcessMemoryInformation::GetRendererTypeNameInEnglish(
+                    proc_mem_info.renderer_type);
 
       auto& titles = proc_mem_info_mojom->titles;
       titles.reserve(proc_mem_info.titles.size());

@@ -100,6 +100,30 @@ cast_source_set("resampler") {
   ]
 }
 
+cast_source_set("audio_renderer") {
+  sources = [
+    "cast_audio_renderer.cc",
+    "cast_audio_renderer.h",
+  ]
+
+  public_deps = [ "//chromecast/media/audio/audio_output_service:proto" ]
+
+  deps = [
+    ":audio_io_thread",
+    "//base",
+    "//chromecast/common/mojom",
+    "//chromecast/media/audio/audio_output_service:output_connection",
+    "//chromecast/media/audio/net:common",
+    "//chromecast/media/cma/base",
+    "//chromecast/public/media",
+    "//media",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//third_party/blink/public/common",
+  ]
+}
+
 cast_source_set("audio") {
   sources = [
     "cast_audio_input_stream.cc",
@@ -132,6 +156,7 @@ cast_source_set("audio") {
     "//chromecast/media/audio/mixer_service:common",
     "//chromecast/media/audio/mixer_service:output_stream_connection",
     "//chromecast/media/audio/mixer_service:proto",
+    "//chromecast/media/audio/net:proto",
     "//chromecast/media/base",
     "//chromecast/media/base:monotonic_clock",
     "//chromecast/media/cma/backend",
@@ -160,6 +185,26 @@ cast_source_set("audio") {
   configs += [ "//media/audio:platform_config" ]
 }
 
+cast_source_set("cast_audio_output_device") {
+  sources = [
+    "cast_audio_output_device.cc",
+    "cast_audio_output_device.h",
+  ]
+
+  deps = [
+    ":audio_io_thread",
+    "//base",
+    "//chromecast/common/mojom",
+    "//chromecast/media/audio/audio_output_service:output_connection",
+    "//chromecast/media/audio/audio_output_service:proto",
+    "//chromecast/media/base:monotonic_clock",
+    "//content/renderer:renderer",
+    "//media",
+    "//media/mojo/mojom",
+    "//net",
+  ]
+}
+
 if (is_android) {
   cast_source_set("cast_audio_device_factory") {
     sources = [
@@ -168,9 +213,14 @@ if (is_android) {
     ]
 
     deps = [
+      ":cast_audio_output_device",
       "//base",
+      "//chromecast/base",
+      "//content/public/renderer",
       "//content/renderer:renderer",
       "//media",
+      "//third_party/blink/public:blink",
+      "//third_party/blink/public/common",
     ]
   }
 }

@@ -14,6 +14,13 @@
 struct KeyEvent;
 class Status;
 
+// Check if the character is typeable in accordance with WebDriver definition.
+// Quote: "An extended grapheme cluster is typeable
+//          if it consists of a single unicode code point
+//          and the code is not undefined."
+// See also: https://www.w3.org/TR/webdriver/#dfn-code
+bool IsTypeableKey(char16_t key, std::string* code = nullptr);
+
 // Converts keys into appropriate |KeyEvent|s. This will do a best effort
 // conversion. However, if the input is invalid it will return a status with
 // an error message. If |release_modifiers| is true, all modifiers would be

@@ -13,7 +13,7 @@ namespace {
 // fraction to update animatable properties. That being the case, this value
 // doesn't really matter but is chosen to be on the order of minutes to minimize
 // overhead that may occur during cyclic animation restart.
-constexpr base::TimeDelta kAnimationDuration = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kAnimationDuration = base::Minutes(1);
 
 // Helpers ---------------------------------------------------------------------
 
@@ -35,7 +35,8 @@ float ConvertFromAngleToPosition(float angle_in_degrees) {
 
 HoldingSpaceProgressRingIndeterminateAnimation::
     HoldingSpaceProgressRingIndeterminateAnimation()
-    : HoldingSpaceProgressRingAnimation(kAnimationDuration,
+    : HoldingSpaceProgressRingAnimation(Type::kIndeterminate,
+                                        kAnimationDuration,
                                         /*is_cyclic=*/true) {}
 
 HoldingSpaceProgressRingIndeterminateAnimation::
@@ -44,7 +45,8 @@ HoldingSpaceProgressRingIndeterminateAnimation::
 void HoldingSpaceProgressRingIndeterminateAnimation::UpdateAnimatableProperties(
     double fraction,
     float* start_position,
-    float* end_position) {
+    float* end_position,
+    float* opacity) {
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time();
 
   // Since `elapsed_time` is used rather than the animation `fraction`, it is

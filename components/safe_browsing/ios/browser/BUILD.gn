@@ -26,6 +26,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:ping_manager_unittest",
     "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
+    "//components/safe_browsing/core/browser:user_population_unittest",
     "//components/safe_browsing/core/browser:verdict_cache_manager_unittest",
     "//components/safe_browsing/core/browser/db:unit_tests_local_db",
     "//components/safe_browsing/core/browser/realtime:unit_tests",

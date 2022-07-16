@@ -24,7 +24,9 @@
 namespace chromecast {
 
 // Receives messages from the browser process and stores identification settings
-// to feed into URLLoaderThrottles for throttling url requests in renderers.
+// to feed into URLLoaderThrottles for throttling url requests in the browser or
+// renderers. When constructed in a renderer, this class could be deleted on a
+// different thread from the main thread.
 class IdentificationSettingsManager
     : public mojom::IdentificationSettingsManager,
       public CastURLLoaderThrottle::Delegate {
@@ -38,7 +40,6 @@ class IdentificationSettingsManager
   IdentificationSettingsManager(const IdentificationSettingsManager&) = delete;
   IdentificationSettingsManager& operator=(
       const IdentificationSettingsManager&) = delete;
-  ~IdentificationSettingsManager() override;
 
   // CastURLLoaderThrottle::Delegate implementation:
   // |callback| will only be run if net::IO_PENDING is returned.
@@ -56,6 +57,9 @@ class IdentificationSettingsManager
   void UpdateSubstitutableParamValues(
       std::vector<mojom::IndexValuePairPtr> updated_values) override;
   void UpdateBackgroundMode(bool background_mode) override;
+
+ protected:
+  ~IdentificationSettingsManager() override;
 
  private:
   struct RequestInfo;

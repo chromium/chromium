@@ -354,12 +354,10 @@ const CGFloat kControlPointEnd = 0.514375;
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 13, *)) {
-    if ([self.traitCollection
-            hasDifferentColorAppearanceComparedToTraitCollection:
-                previousTraitCollection]) {
-      self.arrowLayer.fillColor = BubbleColor().CGColor;
-    }
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    self.arrowLayer.fillColor = BubbleColor().CGColor;
   }
 }
 

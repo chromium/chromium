@@ -23,6 +23,11 @@ class CupsProxyServiceManagerFactory
   static CupsProxyServiceManager* GetForBrowserContext(
       content::BrowserContext* context);
 
+  CupsProxyServiceManagerFactory(const CupsProxyServiceManagerFactory&) =
+      delete;
+  CupsProxyServiceManagerFactory& operator=(
+      const CupsProxyServiceManagerFactory&) = delete;
+
  private:
   friend base::NoDestructor<CupsProxyServiceManagerFactory>;
 
@@ -36,8 +41,6 @@ class CupsProxyServiceManagerFactory
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CupsProxyServiceManagerFactory);
 };
 
 }  // namespace chromeos

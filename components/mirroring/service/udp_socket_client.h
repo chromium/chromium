@@ -30,6 +30,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) UdpSocketClient final
                   network::mojom::NetworkContext* context,
                   base::OnceClosure error_callback);
 
+  UdpSocketClient(const UdpSocketClient&) = delete;
+  UdpSocketClient& operator=(const UdpSocketClient&) = delete;
+
   ~UdpSocketClient() override;
 
   // media::cast::PacketTransport implementations.
@@ -83,8 +86,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) UdpSocketClient final
   int num_packets_pending_receive_;
 
   base::WeakPtrFactory<UdpSocketClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UdpSocketClient);
 };
 
 }  // namespace mirroring

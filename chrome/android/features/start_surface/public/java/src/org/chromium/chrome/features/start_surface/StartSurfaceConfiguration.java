@@ -10,10 +10,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -66,6 +68,12 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
                     HOME_BUTTON_ON_GRID_TAB_SWITCHER_PARAM, false);
 
+    private static final String TAB_COUNT_BUTTON_ON_START_SURFACE_PARAM =
+            "tab_count_button_on_start_surface";
+    public static final BooleanCachedFieldTrialParameter TAB_COUNT_BUTTON_ON_START_SURFACE =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    TAB_COUNT_BUTTON_ON_START_SURFACE_PARAM, false);
+
     private static final String NEW_SURFACE_PARAM = "new_home_surface_from_home_button";
     public static final StringCachedFieldTrialParameter NEW_SURFACE_FROM_HOME_BUTTON =
             new StringCachedFieldTrialParameter(
@@ -86,15 +94,68 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, FINALE_ANIMATION_ENABLED_PARAM, false);
 
+    private static final String WARM_UP_RENDERER_PARAM = "warm_up_renderer";
+    public static final BooleanCachedFieldTrialParameter WARM_UP_RENDERER =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.START_SURFACE_ANDROID, WARM_UP_RENDERER_PARAM, false);
+
+    private static final String SPARE_RENDERER_DELAY_MS_PARAM = "spare_renderer_delay_ms";
+    public static final IntCachedFieldTrialParameter SPARE_RENDERER_DELAY_MS =
+            new IntCachedFieldTrialParameter(
+                    ChromeFeatureList.START_SURFACE_ANDROID, SPARE_RENDERER_DELAY_MS_PARAM, 1000);
+
+    private static final String CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP_PARAM =
+            "check_sync_before_show_start_at_startup";
+    public static final BooleanCachedFieldTrialParameter CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP_PARAM, false);
+
+    private static final String BEHAVIOURAL_TARGETING_PARAM = "behavioural_targeting";
+    public static final StringCachedFieldTrialParameter BEHAVIOURAL_TARGETING =
+            new StringCachedFieldTrialParameter(
+                    ChromeFeatureList.START_SURFACE_ANDROID, BEHAVIOURAL_TARGETING_PARAM, "");
+
+    private static final String USER_CLICK_THRESHOLD_PARAM = "user_clicks_threshold";
+    public static final IntCachedFieldTrialParameter USER_CLICK_THRESHOLD =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    USER_CLICK_THRESHOLD_PARAM, Integer.MAX_VALUE);
+
+    private static final String NUM_DAYS_KEEP_SHOW_START_AT_STARTUP_PARAM =
+            "num_days_keep_show_start_at_startup";
+    public static final IntCachedFieldTrialParameter NUM_DAYS_KEEP_SHOW_START_AT_STARTUP =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    NUM_DAYS_KEEP_SHOW_START_AT_STARTUP_PARAM, 7);
+
+    private static final String NUM_DAYS_USER_CLICK_BELOW_THRESHOLD_PARAM =
+            "num_days_user_click_below_threshold";
+    public static final IntCachedFieldTrialParameter NUM_DAYS_USER_CLICK_BELOW_THRESHOLD =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    NUM_DAYS_USER_CLICK_BELOW_THRESHOLD_PARAM, 7);
+
+    private static final String SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS_PARAM =
+            "signin_promo_NTP_since_first_time_shown_limit_hours";
+    public static final IntCachedFieldTrialParameter
+            SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS =
+                    new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                            SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS_PARAM, -1);
+
+    private static final String SIGNIN_PROMO_NTP_RESET_AFTER_HOURS_PARAM =
+            "signin_promo_NTP_reset_after_hours";
+    public static final IntCachedFieldTrialParameter SIGNIN_PROMO_NTP_RESET_AFTER_HOURS =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    SIGNIN_PROMO_NTP_RESET_AFTER_HOURS_PARAM, -1);
+
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";
     private static final String REGULAR_START_SUBFIX = ".NoInstant";
 
     /**
-     * @return Whether the Start Surface is enabled.
-     * @Deprecated Use {@link ReturnToStartSurfaceUtil#isStartSurfaceHomepageEnabled()} instead.
+     * @return Whether the Start Surface feature flag is enabled.
+     * @Deprecated Use {@link
+     * org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil#isStartSurfaceEnabled}
+     * instead.
      */
-    public static boolean isStartSurfaceEnabled() {
+    public static boolean isStartSurfaceFlagEnabled() {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.START_SURFACE_ANDROID)
                 && !SysUtils.isLowEndDevice();
     }
@@ -103,7 +164,7 @@ public class StartSurfaceConfiguration {
      * @return Whether the Start Surface SinglePane is enabled.
      */
     public static boolean isStartSurfaceSinglePaneEnabled() {
-        return isStartSurfaceEnabled() && START_SURFACE_VARIATION.getValue().equals("single");
+        return isStartSurfaceFlagEnabled() && START_SURFACE_VARIATION.getValue().equals("single");
     }
 
     /**
@@ -229,5 +290,11 @@ public class StartSurfaceConfiguration {
     static void setFeedVisibilityForTesting(boolean isVisible) {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, isVisible);
+    }
+
+    @NativeMethods
+    interface Natives {
+        // Native methods
+        void warmupRenderer(Profile profile);
     }
 }

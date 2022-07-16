@@ -1,4 +1,4 @@
-CONSOLE MESSAGE: line 30: debug
+CONSOLE MESSAGE: debug
 {
   "layers": [
     {

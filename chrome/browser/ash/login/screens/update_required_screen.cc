@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/system_tray.h"
@@ -18,13 +19,12 @@
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -41,8 +41,7 @@ constexpr char kUserActionConfirmDeleteUsersData[] = "confirm-delete-users";
 // Delay before showing error message if captive portal is detected.
 // We wait for this delay to let captive portal to perform redirect and show
 // its login page before error message appears.
-constexpr const base::TimeDelta kDelayErrorMessage =
-    base::TimeDelta::FromSeconds(10);
+constexpr const base::TimeDelta kDelayErrorMessage = base::Seconds(10);
 
 }  // namespace
 
@@ -61,7 +60,7 @@ UpdateRequiredScreen::UpdateRequiredScreen(UpdateRequiredView* view,
   error_message_delay_ = kDelayErrorMessage;
 
   eol_message_subscription_ = CrosSettings::Get()->AddSettingsObserver(
-      chromeos::kDeviceMinimumVersionAueMessage,
+      kDeviceMinimumVersionAueMessage,
       base::BindRepeating(&UpdateRequiredScreen::OnEolMessageChanged,
                           weak_factory_.GetWeakPtr()));
   if (view_)
@@ -81,9 +80,9 @@ void UpdateRequiredScreen::OnViewDestroyed(UpdateRequiredView* view) {
 
 void UpdateRequiredScreen::ShowImpl() {
   LoginScreen::Get()->SetAllowLoginAsGuest(false);
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  view_->SetEnterpriseAndDeviceName(connector->GetEnterpriseDisplayDomain(),
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  view_->SetEnterpriseAndDeviceName(connector->GetEnterpriseDomainManager(),
                                     ui::GetChromeOSDeviceName());
 
   is_shown_ = true;
@@ -125,16 +124,16 @@ void UpdateRequiredScreen::OnGetEolInfo(
 }
 
 void UpdateRequiredScreen::OnEolMessageChanged() {
-  chromeos::CrosSettingsProvider::TrustedStatus status =
+  CrosSettingsProvider::TrustedStatus status =
       CrosSettings::Get()->PrepareTrustedValues(
           base::BindOnce(&UpdateRequiredScreen::OnEolMessageChanged,
                          weak_factory_.GetWeakPtr()));
-  if (status != chromeos::CrosSettingsProvider::TRUSTED)
+  if (status != CrosSettingsProvider::TRUSTED)
     return;
 
   std::string eol_message;
-  if (view_ && CrosSettings::Get()->GetString(
-                   chromeos::kDeviceMinimumVersionAueMessage, &eol_message)) {
+  if (view_ && CrosSettings::Get()->GetString(kDeviceMinimumVersionAueMessage,
+                                              &eol_message)) {
     view_->SetEolMessage(eol_message);
   }
 }
@@ -430,7 +429,10 @@ void UpdateRequiredScreen::DeleteUsersData() {
   // change underneath.
   const user_manager::UserList user_list = user_manager->GetUsers();
   for (user_manager::User* user : user_list) {
-    user_manager->RemoveUser(user->GetAccountId(), this /* delegate */);
+    user_manager->RemoveUser(user->GetAccountId(),
+                             user_manager::UserRemovalReason::
+                                 LOCAL_USER_INITIATED_ON_REQUIRED_UPDATE,
+                             /*delegate=*/this);
   }
 }
 

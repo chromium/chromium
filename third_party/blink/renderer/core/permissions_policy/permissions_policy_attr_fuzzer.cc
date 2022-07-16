@@ -23,6 +23,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   scoped_refptr<const blink::SecurityOrigin> child_origin =
       blink::SecurityOrigin::CreateFromString("https://example.net/");
   blink::PermissionsPolicyParser::ParseAttribute(
-      WTF::String(data, size), parent_origin.get(), child_origin.get(), logger);
+      WTF::String(data, static_cast<wtf_size_t>(size)), parent_origin.get(),
+      child_origin.get(), logger);
   return 0;
 }

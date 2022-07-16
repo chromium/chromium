@@ -4,6 +4,7 @@
 
 #include "mojo/public/cpp/system/invitation.h"
 
+#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/invitation.h"

@@ -64,10 +64,13 @@ source_set("browser") {
       "android/app_banner_manager_android.h",
       "android/features.cc",
       "android/features.h",
+      "android/installable/installable_ambient_badge_client.h",
       "android/installable/installable_ambient_badge_infobar.cc",
       "android/installable/installable_ambient_badge_infobar.h",
       "android/installable/installable_ambient_badge_infobar_delegate.cc",
       "android/installable/installable_ambient_badge_infobar_delegate.h",
+      "android/installable/installable_ambient_badge_message_controller.cc",
+      "android/installable/installable_ambient_badge_message_controller.h",
       "android/shortcut_info.cc",
       "android/shortcut_info.h",
       "android/webapk/webapk_icon_hasher.cc",
@@ -92,6 +95,8 @@ source_set("browser") {
       "//components/feature_engagement",
       "//components/infobars/android",
       "//components/infobars/content",
+      "//components/messages/android",
+      "//components/messages/android:feature_flags",
       "//components/strings",
       "//components/url_formatter",
       "//components/version_info",
@@ -118,6 +123,8 @@ source_set("test_support") {
     ":browser",
     "//base",
     "//skia",
+    "//third_party/blink/public/common:headers",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
     "//url",
   ]
 }
@@ -145,4 +152,9 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/blink/public/mojom:mojom_platform_headers",
   ]
+
+  if (is_android) {
+    sources += [ "android/installable/installable_ambient_badge_message_controller_unittest.cc" ]
+    deps += [ "//components/messages/android:test_support" ]
+  }
 }

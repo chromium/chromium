@@ -26,6 +26,10 @@
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "components/sync/test/model/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -175,9 +179,8 @@ PasswordForm MakePasswordFormWithIssues(
   form.username_value = u"username_value";
   form.password_element = u"password_element";
   form.signon_realm = signon_realm;
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   for (const auto& issue_type : issue_types) {
-    form.password_issues->insert_or_assign(
+    form.password_issues.insert_or_assign(
         issue_type,
         InsecurityMetadata(base::Time::FromTimeT(kIssuesCreationTime),
                            IsMuted(false)));
@@ -204,6 +207,10 @@ PasswordForm MakeBlocklistedForm(const std::string& signon_realm) {
 class FakeDatabase {
  public:
   FakeDatabase() = default;
+
+  FakeDatabase(const FakeDatabase&) = delete;
+  FakeDatabase& operator=(const FakeDatabase&) = delete;
+
   ~FakeDatabase() = default;
 
   FormRetrievalResult ReadAllLogins(PrimaryKeyToFormMap* map) {
@@ -248,9 +255,8 @@ class FakeDatabase {
     // Insecure credentials don't change if neither the form nor the db
     // contain any password_issues.
     bool insecure_changed =
-        password_changed || (form.password_issues.has_value() &&
-                             !(form.password_issues->empty() &&
-                               data_[key]->password_issues->empty()));
+        password_changed ||
+        !(form.password_issues.empty() && data_[key]->password_issues.empty());
     data_[key] = std::make_unique<PasswordForm>(form);
 
     return {PasswordStoreChange(PasswordStoreChange::UPDATE, form, key,
@@ -280,8 +286,6 @@ class FakeDatabase {
   int primary_key_ = 1;
   PrimaryKeyToFormMap data_;
   AddLoginError error_ = AddLoginError::kNone;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDatabase);
 };
 
 class MockSyncMetadataStore : public PasswordStoreSync::MetadataStore {
@@ -700,7 +704,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldMergeSyncRemoteAndLocalPasswords) {
       CreateSpecificsWithSignonRealm(kSignonRealm3);
 
   base::Time now = base::Time::Now();
-  base::Time yesterday = now - base::TimeDelta::FromDays(1);
+  base::Time yesterday = now - base::Days(1);
 
   form2.date_created = yesterday;
   specifics2.mutable_client_only_encrypted_data()->set_date_created(
@@ -774,7 +778,7 @@ TEST_F(PasswordSyncBridgeTest,
   // than the local one. We will assign primary keys for Form 1 and Form 2 in
   // the local DB.
   base::Time now = base::Time::Now();
-  base::Time yesterday = now - base::TimeDelta::FromDays(1);
+  base::Time yesterday = now - base::Days(1);
   const int kPrimaryKey1 = 1000;
   const int kPrimaryKey2 = 1001;
   const std::string kPrimaryKeyStr1 = "1000";
@@ -1328,13 +1332,15 @@ TEST_F(PasswordSyncBridgeTest,
 }
 
 TEST_F(PasswordSyncBridgeTest,
-       EqualPasswordsDifferentInsecureCredentialsDuringMerge) {
+       ShouldUploadLocalWhenEqualPasswordsAndLocalPhishedDuringMerge) {
   const int kPrimaryKey = 1000;
   // Test that during merge when Passwords are equal but have different
-  // insecure credentials, local data get updated.
+  // insecure credentials, remote data gets updated if the local password
+  // has been marked as phished.
   const std::string kStorageKey = "1000";
+  const std::vector<InsecureType> kLocalIssuesTypes = {InsecureType::kPhished};
   const PasswordForm kForm =
-      MakePasswordFormWithIssues(kSignonRealm1, {InsecureType::kLeaked});
+      MakePasswordFormWithIssues(kSignonRealm1, kLocalIssuesTypes);
   std::vector<InsecureType> kRemoteIssuesTypes = {InsecureType::kReused,
                                                   InsecureType::kWeak};
 
@@ -1344,17 +1350,14 @@ TEST_F(PasswordSyncBridgeTest,
       CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1,
                                               kRemoteIssuesTypes);
 
-  // Test that UpdateLoginSync is invoked with remote insecure credentials.
-  PasswordForm kExpectedIssuesForm =
-      MakePasswordFormWithIssues(kSignonRealm1, kRemoteIssuesTypes);
-  EXPECT_CALL(
-      *mock_password_store_sync(),
-      UpdateLoginSync(
-          FormHasPasswordIssues(kExpectedIssuesForm.password_issues), _));
-
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateAdd(
       kStorageKey, SpecificsToEntity(specifics)));
+
+  EXPECT_CALL(
+      mock_processor(),
+      Put(kStorageKey, EntityDataHasSecurityIssueTypes(kLocalIssuesTypes), _));
+
   absl::optional<syncer::ModelError> error = bridge()->MergeSyncData(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_FALSE(error);

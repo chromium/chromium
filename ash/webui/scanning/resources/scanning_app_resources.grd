@@ -15,6 +15,7 @@
       <!-- Privileged app host contents. -->
       <include name="IDR_SCANNING_APP_INDEX_HTML" file="index.html" type="BINDATA" />
       <include name="IDR_SCANNING_MOJO_LITE_JS" file="${root_gen_dir}/ash/webui/scanning/mojom/scanning.mojom-lite.js" resource_path="scanning.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_ACCESSIBILITY_FEATURES_MOJO_LITE_JS" file="${root_gen_dir}/ash/webui/common/mojom/accessibility_features.mojom-lite.js" resource_path="accessibility_features.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_SCANNING_APP_FILE_PATH_MOJO_LITE_JS" file="${root_gen_dir}/mojo/public/mojom/base/file_path.mojom-lite.js" resource_path="file_path.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_SCANNING_APP_JS" file="${root_gen_dir}/ash/webui/scanning/resources/scanning_app.js" resource_path="scanning_app.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_SCAN_TO_SELECT_HTML" file="scan_to_select.html" type="BINDATA"/>

@@ -39,6 +39,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IgnoreErrorsCertVerifier
   IgnoreErrorsCertVerifier(std::unique_ptr<net::CertVerifier> verifier,
                            SPKIHashSet allowlist);
 
+  IgnoreErrorsCertVerifier(const IgnoreErrorsCertVerifier&) = delete;
+  IgnoreErrorsCertVerifier& operator=(const IgnoreErrorsCertVerifier&) = delete;
+
   ~IgnoreErrorsCertVerifier() override;
 
   // Verify skips certificate verification and returns OK if any of the
@@ -59,8 +62,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IgnoreErrorsCertVerifier
 
   std::unique_ptr<net::CertVerifier> verifier_;
   SPKIHashSet allowlist_;
-
-  DISALLOW_COPY_AND_ASSIGN(IgnoreErrorsCertVerifier);
 };
 
 }  // namespace network

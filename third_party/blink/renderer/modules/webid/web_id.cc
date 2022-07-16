@@ -7,8 +7,10 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_id_logout_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_id_request_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/webid/web_id_type_converters.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -154,8 +156,12 @@ ScriptPromise WebId::get(ScriptState* script_state,
   String client_id = options->hasClientId() ? options->clientId() : "";
   String nonce = options->hasNonce() ? options->nonce() : "";
 
+  DCHECK(options->hasPreferAutoSignIn());
+  bool prefer_auto_sign_in = options->preferAutoSignIn();
+
   auth_request_->RequestIdToken(
       provider, client_id, nonce, ToRequestMode(options->mode()),
+      prefer_auto_sign_in,
       WTF::Bind(&OnRequestIdToken, WrapPersistent(resolver)));
 
   return promise;
@@ -173,10 +179,28 @@ ScriptPromise WebId::provide(ScriptState* script_state, String id_token) {
   return promise;
 }
 
-ScriptPromise WebId::logout(ScriptState* script_state,
-                            const Vector<String>& logout_endpoints) {
+ScriptPromise WebId::logout(
+    ScriptState* script_state,
+    const HeapVector<Member<WebIdLogoutRequest>>& logout_endpoints,
+    ExceptionState& exception_state) {
   if (logout_endpoints.IsEmpty()) {
     return ScriptPromise();
+  }
+
+  Vector<mojom::blink::LogoutRequestPtr> logout_requests;
+  for (auto& request : logout_endpoints) {
+    auto logout_request = mojom::blink::LogoutRequest::From(*request);
+    if (!logout_request->endpoint.IsValid()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                        "Invalid logout endpoint URL.");
+      return ScriptPromise();
+    }
+    if (logout_request->account_id.length() == 0) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                        "Account ID cannot be empty.");
+      return ScriptPromise();
+    }
+    logout_requests.push_back(std::move(logout_request));
   }
 
   BindRemote(auth_request_);
@@ -184,7 +208,7 @@ ScriptPromise WebId::logout(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  auth_request_->Logout(logout_endpoints,
+  auth_request_->Logout(std::move(logout_requests),
                         WTF::Bind(&OnLogout, WrapPersistent(resolver)));
 
   return promise;

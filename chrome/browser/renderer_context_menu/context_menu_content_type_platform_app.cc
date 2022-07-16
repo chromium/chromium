@@ -45,7 +45,6 @@ bool ContextMenuContentTypePlatformApp::SupportsGroup(int group) {
     case ITEM_GROUP_COPY:
       return ContextMenuContentType::SupportsGroup(group);
     case ITEM_GROUP_CURRENT_EXTENSION:
-    case ITEM_GROUP_LENS_REGION_SEARCH:
       return true;
     case ITEM_GROUP_DEVTOOLS_UNPACKED_EXT:
       // Add dev tools for unpacked extensions.

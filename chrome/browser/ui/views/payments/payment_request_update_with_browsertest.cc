@@ -14,6 +14,11 @@
 namespace payments {
 
 class PaymentRequestUpdateWithTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestUpdateWithTest(const PaymentRequestUpdateWithTest&) = delete;
+  PaymentRequestUpdateWithTest& operator=(const PaymentRequestUpdateWithTest&) =
+      delete;
+
  protected:
   PaymentRequestUpdateWithTest() {}
 
@@ -26,9 +31,6 @@ class PaymentRequestUpdateWithTest : public PaymentRequestBrowserTestBase {
 
     WaitForObservedEvent();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestUpdateWithTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithEmpty) {

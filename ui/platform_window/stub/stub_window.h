@@ -6,7 +6,6 @@
 #define UI_PLATFORM_WINDOW_STUB_STUB_WINDOW_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -21,6 +20,10 @@ class STUB_WINDOW_EXPORT StubWindow : public PlatformWindow {
   explicit StubWindow(PlatformWindowDelegate* delegate,
                       bool use_default_accelerated_widget = true,
                       const gfx::Rect& bounds = gfx::Rect());
+
+  StubWindow(const StubWindow&) = delete;
+  StubWindow& operator=(const StubWindow&) = delete;
+
   ~StubWindow() override;
 
  protected:
@@ -59,8 +62,6 @@ class STUB_WINDOW_EXPORT StubWindow : public PlatformWindow {
 
   PlatformWindowDelegate* delegate_;
   gfx::Rect bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(StubWindow);
 };
 
 }  // namespace ui

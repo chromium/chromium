@@ -12,6 +12,7 @@
 #include "extensions/renderer/gin_port.h"
 #include "extensions/renderer/one_time_message_handler.h"
 #include "gin/handle.h"
+#include "v8/include/v8-forward.h"
 
 struct ExtensionMsg_ExternalConnectionInfo;
 struct ExtensionMsg_TabConnectionInfo;
@@ -21,6 +22,7 @@ class RenderFrame;
 }
 
 namespace extensions {
+enum class SerializationFormat;
 class NativeExtensionBindingsSystem;
 class ScriptContextSetIterable;
 struct Message;
@@ -67,6 +69,12 @@ class NativeRendererMessagingService : public GinPort::Delegate {
  public:
   explicit NativeRendererMessagingService(
       NativeExtensionBindingsSystem* bindings_system);
+
+  NativeRendererMessagingService(const NativeRendererMessagingService&) =
+      delete;
+  NativeRendererMessagingService& operator=(
+      const NativeRendererMessagingService&) = delete;
+
   ~NativeRendererMessagingService() override;
 
   // Checks whether the port exists in the given frame. If it does not, a reply
@@ -102,7 +110,8 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   // Creates and opens a new message port in the specified context.
   gin::Handle<GinPort> Connect(ScriptContext* script_context,
                                const MessageTarget& target,
-                               const std::string& name);
+                               const std::string& name,
+                               SerializationFormat format);
 
   // Sends a one-time message, as is used by runtime.sendMessage.
   void SendOneTimeMessage(ScriptContext* script_context,
@@ -190,8 +199,6 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   NativeExtensionBindingsSystem* const bindings_system_;
 
   OneTimeMessageHandler one_time_message_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeRendererMessagingService);
 };
 
 }  // namespace extensions

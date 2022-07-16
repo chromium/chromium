@@ -13,8 +13,8 @@
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/components/app_registrar_observer.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,19 +34,24 @@ class DigitalAssetLinksHandler;
 
 namespace web_app {
 
+class SystemWebAppDelegate;
 class WebAppRegistrar;
 class WebAppProvider;
 
 // Class to encapsulate logic to control the browser UI for
 // web apps.
 // App information is obtained from the WebAppRegistrar.
-// Icon information is obtained from the AppIconManager.
+// Icon information is obtained from the WebAppIconManager.
 // Note: Much of the functionality in HostedAppBrowserController
 // will move to this class.
 class WebAppBrowserController : public AppBrowserController,
                                 public AppRegistrarObserver {
  public:
-  explicit WebAppBrowserController(Browser* browser);
+  WebAppBrowserController(WebAppProvider& provider,
+                          Browser* browser,
+                          AppId app_id,
+                          const SystemWebAppDelegate* system_app,
+                          bool has_tab_strip);
   WebAppBrowserController(const WebAppBrowserController&) = delete;
   WebAppBrowserController& operator=(const WebAppBrowserController&) = delete;
   ~WebAppBrowserController() override;
@@ -68,9 +73,13 @@ class WebAppBrowserController : public AppBrowserController,
       webapps::WebappUninstallSource webapp_uninstall_source) override;
   bool IsInstalled() const override;
   bool IsHostedApp() const override;
+  std::unique_ptr<TabMenuModelFactory> GetTabMenuModelFactory() const override;
   bool AppUsesWindowControlsOverlay() const override;
   bool IsWindowControlsOverlayEnabled() const override;
   void ToggleWindowControlsOverlayEnabled() override;
+  gfx::Rect GetDefaultBounds() const override;
+  bool HasReloadButton() const override;
+  const SystemWebAppDelegate* system_app() const override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool ShouldShowCustomTabBar() const override;
@@ -83,7 +92,7 @@ class WebAppBrowserController : public AppBrowserController,
   void SetReadIconCallbackForTesting(base::OnceClosure callback);
 
  protected:
-  // web_app::AppBrowserController:
+  // AppBrowserController:
   void OnTabInserted(content::WebContents* contents) override;
   void OnTabRemoved(content::WebContents* contents) override;
 
@@ -104,6 +113,7 @@ class WebAppBrowserController : public AppBrowserController,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   WebAppProvider& provider_;
+  const SystemWebAppDelegate* system_app_;
   mutable absl::optional<ui::ImageModel> app_icon_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

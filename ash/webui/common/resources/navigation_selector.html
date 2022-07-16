@@ -11,7 +11,7 @@
   border-inline-start-width: 0;
   border-radius: 0 20px 20px 0;
   border-style: solid;
-  color: var(--cros-text-color-secondary);
+  color: var(--cros-text-color-primary);
   cursor: pointer;
   display: flex;
   font-weight: 500;
@@ -19,7 +19,6 @@
   margin-inline-end: 2px;
   min-height: 32px;
   padding-inline-start: 20px;
-  width: 225px;
 }
 
 div:hover:not(.selected).navigation-item {
@@ -32,7 +31,9 @@ div:hover:not(.selected).navigation-item {
 }
 
 iron-icon {
-  --iron-icon-fill-color: var(--google-grey-700);
+  --iron-icon-fill-color: var(--cros-icon-color-primary);
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
   margin-inline-end: 16px;
   pointer-events: none;
   vertical-align: top;
@@ -50,31 +51,13 @@ cr-expand-button {
 
 <div id="navigationSelectorComponent">
   <div id="navigationSelectorMenu">
-    <template id="menuItems" is="dom-repeat" items="{{menuItems}}">
-      <template is="dom-if" if="[[!isCollapsible_(item)]]">
-        <div class$="{{computeInitialClass_(item.selectorItem)}}" tabindex="0"
+    <template id="selectorItems" is="dom-repeat" items="{{selectorItems}}">
+        <div class$="{{computeInitialClass_(item)}}" tabindex="0"
             on-click="onSelected_">
-          <iron-icon class="icon" icon="[[item.selectorItem.icon]]" alt="">
+          <iron-icon class="icon" icon="[[item.icon]]" alt="">
           </iron-icon>
-          [[item.selectorItem.name]]
+          [[item.name]]
         </div>
-      </template>
-      <template is="dom-if" if="[[isCollapsible_(item)]]">
-        <cr-expand-button class="expand-button" on-click="onExpandClicked_">
-          [[item.selectorItem.name]]
-        </cr-expand-button>
-        <iron-collapse opened="[[item.properties.isExpanded]]">
-          <template class="collapsed-list" is="dom-repeat"
-              items="{{item.properties.subMenuItems}}">
-            <div class$="{{computeInitialClass_(item)}}" tabindex="0"
-                on-click="onNestedSelected_">
-              <iron-icon class="icon" icon="[[getIcon_(item)]]" alt="">
-              </iron-icon>
-              [[item.name]]
-            </div>
-          </template>
-        </iron-collapse>
-      </template>
     </template>
   </div>
 </div>

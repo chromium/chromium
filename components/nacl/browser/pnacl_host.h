@@ -12,9 +12,8 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
 #include "components/nacl/browser/nacl_file_host.h"
@@ -45,6 +44,9 @@ class PnaclHost {
   // so that the BrowsingDataRemover can clear it even if no translation has
   // ever been started.
   static PnaclHost* GetInstance();
+
+  PnaclHost(const PnaclHost&) = delete;
+  PnaclHost& operator=(const PnaclHost&) = delete;
 
   // The PnaclHost instance is intentionally leaked on shutdown. DeInitIfSafe()
   // attempts to cleanup |disk_cache_| earlier, but if it fails to do so in
@@ -191,7 +193,6 @@ class PnaclHost {
   std::unique_ptr<PnaclTranslationCache> disk_cache_;
   PendingTranslationMap pending_translations_;
   base::ThreadChecker thread_checker_;
-  DISALLOW_COPY_AND_ASSIGN(PnaclHost);
 };
 
 }  // namespace pnacl

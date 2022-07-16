@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_FirstScrollDelay) {
   frame_observer.WaitForScrollOffset(gfx::Vector2d(0, scroll_distance));
 
   // Navigate away.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Check UKM.
   std::vector<const ukm::mojom::UkmEntry*> entries =

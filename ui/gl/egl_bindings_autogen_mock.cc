@@ -426,6 +426,14 @@ MockEGLInterface::Mock_eglQueryDebugKHR(EGLint attribute, EGLAttrib* value) {
   return interface_->QueryDebugKHR(attribute, value);
 }
 
+EGLBoolean GL_BINDING_CALL
+MockEGLInterface::Mock_eglQueryDeviceAttribEXT(EGLDeviceEXT device,
+                                               EGLint attribute,
+                                               EGLAttrib* value) {
+  MakeEglMockFunctionUnique("eglQueryDeviceAttribEXT");
+  return interface_->QueryDeviceAttribEXT(device, attribute, value);
+}
+
 const char* GL_BINDING_CALL
 MockEGLInterface::Mock_eglQueryDeviceStringEXT(EGLDeviceEXT device,
                                                EGLint name) {
@@ -447,6 +455,14 @@ MockEGLInterface::Mock_eglQueryDisplayAttribANGLE(EGLDisplay dpy,
                                                   EGLAttrib* value) {
   MakeEglMockFunctionUnique("eglQueryDisplayAttribANGLE");
   return interface_->QueryDisplayAttribANGLE(dpy, attribute, value);
+}
+
+EGLBoolean GL_BINDING_CALL
+MockEGLInterface::Mock_eglQueryDisplayAttribEXT(EGLDisplay dpy,
+                                                EGLint attribute,
+                                                EGLAttrib* value) {
+  MakeEglMockFunctionUnique("eglQueryDisplayAttribEXT");
+  return interface_->QueryDisplayAttribEXT(dpy, attribute, value);
 }
 
 EGLBoolean GL_BINDING_CALL
@@ -764,6 +780,9 @@ MockEGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryContext);
   if (strcmp(name, "eglQueryDebugKHR") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryDebugKHR);
+  if (strcmp(name, "eglQueryDeviceAttribEXT") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_eglQueryDeviceAttribEXT);
   if (strcmp(name, "eglQueryDeviceStringEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglQueryDeviceStringEXT);
@@ -772,6 +791,9 @@ MockEGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "eglQueryDisplayAttribANGLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglQueryDisplayAttribANGLE);
+  if (strcmp(name, "eglQueryDisplayAttribEXT") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_eglQueryDisplayAttribEXT);
   if (strcmp(name, "eglQueryStreamKHR") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryStreamKHR);
   if (strcmp(name, "eglQueryStreamu64KHR") == 0)

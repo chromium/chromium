@@ -15,7 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/display/manager/display_manager.h"
 
 namespace ash {
@@ -65,6 +65,7 @@ void ImeControllerImpl::SetClient(ImeControllerClient* client) {
     if (CastConfigController::Get())
       CastConfigController::Get()->RemoveObserver(this);
     Shell::Get()->display_manager()->RemoveObserver(this);
+    Shell::Get()->system_tray_notifier()->RemoveScreenCaptureObserver(this);
   }
 
   client_ = client;
@@ -72,6 +73,7 @@ void ImeControllerImpl::SetClient(ImeControllerClient* client) {
   if (client_) {
     if (CastConfigController::Get())
       CastConfigController::Get()->AddObserver(this);
+    Shell::Get()->system_tray_notifier()->AddScreenCaptureObserver(this);
     Shell::Get()->display_manager()->AddObserver(this);
   }
 }
@@ -245,13 +247,12 @@ void ImeControllerImpl::SetCapsLockEnabled(bool caps_enabled) {
     client_->SetCapsLockEnabled(caps_enabled);
 }
 
-void ImeControllerImpl::OverrideKeyboardKeyset(
-    chromeos::input_method::ImeKeyset keyset) {
+void ImeControllerImpl::OverrideKeyboardKeyset(input_method::ImeKeyset keyset) {
   OverrideKeyboardKeyset(keyset, base::DoNothing());
 }
 
 void ImeControllerImpl::OverrideKeyboardKeyset(
-    chromeos::input_method::ImeKeyset keyset,
+    input_method::ImeKeyset keyset,
     ImeControllerClient::OverrideKeyboardKeysetCallback callback) {
   if (client_)
     client_->OverrideKeyboardKeyset(keyset, std::move(callback));
@@ -265,7 +266,7 @@ std::vector<std::string> ImeControllerImpl::GetCandidateImesForAccelerator(
     const ui::Accelerator& accelerator) const {
   std::vector<std::string> candidate_ids;
 
-  using chromeos::extension_ime_util::GetInputMethodIDByEngineID;
+  using extension_ime_util::GetInputMethodIDByEngineID;
   std::vector<std::string> input_method_ids_to_switch;
   switch (accelerator.key_code()) {
     case ui::VKEY_CONVERT:  // Henkan key on JP106 keyboard
@@ -297,6 +298,17 @@ std::vector<std::string> ImeControllerImpl::GetCandidateImesForAccelerator(
       candidate_ids.push_back(ime.id);
   }
   return candidate_ids;
+}
+
+void ImeControllerImpl::OnScreenCaptureStart(
+    const base::RepeatingClosure& stop_callback,
+    const base::RepeatingClosure& source_callback,
+    const std::u16string& screen_capture_status) {
+  client_->UpdateCastingState(true);
+}
+
+void ImeControllerImpl::OnScreenCaptureStop() {
+  client_->UpdateCastingState(false);
 }
 
 }  // namespace ash

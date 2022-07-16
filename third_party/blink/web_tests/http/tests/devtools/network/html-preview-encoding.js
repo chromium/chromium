@@ -17,7 +17,7 @@
 
     const previewView = new Network.RequestPreviewView(request);
     previewView.wasShown();
-    const htmlPreviewView = await previewView._contentViewPromise;
+    const htmlPreviewView = await previewView.contentViewPromise;
     htmlPreviewView.wasShown();
     const iframe = htmlPreviewView.contentElement.firstChild;
     TestRunner.addResult('iframe.src: ' + iframe.src);

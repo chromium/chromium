@@ -30,7 +30,7 @@ class PortalRecentlyAudibleBrowserTest : public InProcessBrowserTest {
   PortalRecentlyAudibleBrowserTest() = default;
 
   void SetUp() override {
-    EXPECT_GT(TestTimeouts::action_timeout(), base::TimeDelta::FromSeconds(2))
+    EXPECT_GT(TestTimeouts::action_timeout(), base::Seconds(2))
         << "action timeout must be long enough for recently audible indicator "
            "to update";
 
@@ -119,7 +119,7 @@ class PortalRecentlyAudibleBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PortalRecentlyAudibleBrowserTest, PlayToneAtTopLevel) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_FALSE(ActiveTabHasAlertState(TabAlertState::AUDIO_PLAYING));
 
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(PortalRecentlyAudibleBrowserTest, PlayToneAtTopLevel) {
 IN_PROC_BROWSER_TEST_F(PortalRecentlyAudibleBrowserTest, PlayToneInPortal) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* title1 = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(
       InsertPortalTo(title1, embedded_test_server()->GetURL("/title2.html")));
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(PortalRecentlyAudibleBrowserTest,
                        PlayToneInNestedPortal) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* title1 = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(
       InsertPortalTo(title1, embedded_test_server()->GetURL("/title2.html")));
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(PortalRecentlyAudibleBrowserTest,
                        ActivateWithTonePlayingInHost) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* title1 = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(
       InsertPortalTo(title1, embedded_test_server()->GetURL("/title2.html")));
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(PortalRecentlyAudibleBrowserTest,
                        ActivateWithTonePlayingInPortal) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* title1 = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(
       InsertPortalTo(title1, embedded_test_server()->GetURL("/title2.html")));
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(PortalRecentlyAudibleBrowserTest,
                        ActivateAndAdoptWithTonePlayingInHost) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* title1 = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(
       InsertPortalTo(title1, embedded_test_server()->GetURL("/title2.html")));
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(PortalRecentlyAudibleBrowserTest,
                        NavigateTabWithTonePlayingInPortal) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* title1 = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(
       InsertPortalTo(title1, embedded_test_server()->GetURL("/title2.html")));
@@ -261,8 +261,8 @@ IN_PROC_BROWSER_TEST_F(PortalRecentlyAudibleBrowserTest,
   ASSERT_TRUE(PlayTone(title2));
   EXPECT_TRUE(ActiveTabChangesTo(TabAlertState::AUDIO_PLAYING, true));
 
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title3.html")));
   EXPECT_TRUE(ActiveTabChangesTo(TabAlertState::AUDIO_PLAYING, false));
 }
 
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(PortalRecentlyAudibleBrowserTest,
                        NavigatePortalWithTonePlayingInPortal) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* title1 = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(
       InsertPortalTo(title1, embedded_test_server()->GetURL("/title2.html")));
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(PortalRecentlyAudibleBrowserTest,
                        RemovePortalWithTonePlayingInPortal) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* title1 = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(
       InsertPortalTo(title1, embedded_test_server()->GetURL("/title2.html")));

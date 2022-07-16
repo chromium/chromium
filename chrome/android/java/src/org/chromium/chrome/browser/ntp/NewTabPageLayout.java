@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareT
 import org.chromium.chrome.browser.cryptids.ProbabilisticCryptidRenderer;
 import org.chromium.chrome.browser.explore_sites.ExperimentalExploreSitesSection;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
+import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -62,10 +64,12 @@ import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialServiceFactory;
 import org.chromium.chrome.browser.video_tutorials.iph.VideoTutorialTryNowTracker;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.vr.VrModeObserver;
@@ -149,40 +153,9 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
      */
     private int mSearchBoxBoundsVerticalInset;
 
-    private ScrollDelegate mScrollDelegate;
+    private FeedSurfaceScrollDelegate mScrollDelegate;
 
     private NewTabPageUma mNewTabPageUma;
-
-    /**
-     * A delegate used to obtain information about scroll state and perform various scroll
-     * functions.
-     */
-    public interface ScrollDelegate {
-        /**
-         * @return Whether the scroll view is initialized. If false, the other delegate methods
-         *         may not be valid.
-         */
-        boolean isScrollViewInitialized();
-
-        /**
-         * Checks whether the child at a given position is visible.
-         * @param position The position of the child to check.
-         * @return True if the child is at least partially visible.
-         */
-        boolean isChildVisibleAtPosition(int position);
-
-        /**
-         * @return The vertical scroll offset of the view containing this layout in pixels. Not
-         *         valid until scroll view is initialized.
-         */
-        int getVerticalScrollOffset();
-
-        /**
-         * Snaps the scroll point of the scroll view to prevent the user from scrolling to midway
-         * through a transition.
-         */
-        void snapScroll();
-    }
 
     /**
      * Constructor for inflating from XML.
@@ -230,7 +203,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
      */
     public void initialize(NewTabPageManager manager, Activity activity,
             TileGroup.Delegate tileGroupDelegate, boolean searchProviderHasLogo,
-            boolean searchProviderIsGoogle, ScrollDelegate scrollDelegate,
+            boolean searchProviderIsGoogle, FeedSurfaceScrollDelegate scrollDelegate,
             ContextMenuManager contextMenuManager, UiConfig uiConfig, Supplier<Tab> tabProvider,
             ActivityLifecycleDispatcher lifecycleDispatcher, NewTabPageUma uma, boolean isIncognito,
             WindowAndroid windowAndroid) {
@@ -279,6 +252,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         }
         mNoSearchLogoSpacer = findViewById(R.id.no_search_logo_spacer);
 
+        initializeSearchBoxBackground();
         initializeSearchBoxTextView();
         initializeVoiceSearchButton();
         initializeLensButton();
@@ -303,10 +277,20 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     }
 
     /**
-     * @return The {@link ScrollDelegate} for this class.
+     * @return The {@link FeedSurfaceScrollDelegate} for this class.
      */
-    ScrollDelegate getScrollDelegate() {
+    FeedSurfaceScrollDelegate getScrollDelegate() {
         return mScrollDelegate;
+    }
+
+    /**
+     * Sets up the search box background tint.
+     */
+    private void initializeSearchBoxBackground() {
+        final int searchBoxColor =
+                ChromeColors.getSurfaceColor(getContext(), R.dimen.toolbar_text_box_elevation);
+        final ColorStateList colorStateList = ColorStateList.valueOf(searchBoxColor);
+        findViewById(R.id.search_box).setBackgroundTintList(colorStateList);
     }
 
     /**
@@ -911,6 +895,10 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
             mCallbackController = null;
         }
 
+        if (mTileGroup != null) {
+            mTileGroup.destroy();
+        }
+
         VrModuleProvider.unregisterVrModeObserver(this);
 
         if (mSearchProviderLogoView != null) {
@@ -928,7 +916,6 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         if (getToolbarTransitionPercentage() > 0f) return;
         VideoTutorialTryNowTracker tryNowTracker = VideoTutorialServiceFactory.getTryNowTracker();
         UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, new Handler());
-        // TODO(shaktisahu): Determine if there is conflict with another IPH.
         if (tryNowTracker.didClickTryNowButton(FeatureType.SEARCH)) {
             IPHCommandBuilder iphCommandBuilder = createIPHCommandBuilder(mActivity.getResources(),
                     R.string.video_tutorials_iph_tap_here_to_start,
@@ -951,8 +938,8 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     private static IPHCommandBuilder createIPHCommandBuilder(Resources resources,
             @StringRes int stringId, @StringRes int accessibilityStringId, View anchorView,
             boolean showHighlight) {
-        IPHCommandBuilder iphCommandBuilder =
-                new IPHCommandBuilder(resources, null, stringId, accessibilityStringId);
+        IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(resources,
+                FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE, stringId, accessibilityStringId);
         iphCommandBuilder.setAnchorView(anchorView);
         int yInsetPx = resources.getDimensionPixelOffset(
                 R.dimen.video_tutorial_try_now_iph_ntp_searchbox_y_inset);

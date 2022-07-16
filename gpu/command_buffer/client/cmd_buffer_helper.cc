@@ -208,7 +208,7 @@ void CommandBufferHelper::OrderingBarrier() {
 void CommandBufferHelper::PeriodicFlushCheck() {
   base::TimeTicks current_time = base::TimeTicks::Now();
   if (current_time - last_flush_time_ >
-      base::TimeDelta::FromMicroseconds(kPeriodicFlushDelayInMicroseconds)) {
+      base::Microseconds(kPeriodicFlushDelayInMicroseconds)) {
     Flush();
   }
 }

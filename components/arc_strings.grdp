@@ -16,6 +16,26 @@
   <message name="IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_DONT_ASK_ME" desc="Label for check box that prevents the dialog from being shown in the future">
     Don’t ask again for this app
   </message>
+  <message name="IDS_ASH_ARC_NEARBY_SHARE_FILE_PREPARATION_PROGRESS" desc="Label for progress bar that shows file preparation progress during Nearby Share from the ARC application.">
+    Preparing file
+  </message>
+  <message name="IDS_ASH_ARC_NEARBY_SHARE_FILES_PREPARATION_PROGRESS" desc="Label for progress bar that shows files preparation progress during Nearby Share from the ARC application.">
+    Preparing files
+  </message>
+  <message name="IDS_ASH_ARC_NEARBY_SHARE_ERROR_DIALOG_MESSAGE" desc="Dialog body that tells the user there was an error while sharing text and/or files.">
+    Something went wrong while using Nearby Share
+  </message>
+  <message name="IDS_ASH_ARC_NEARBY_SHARE_LOW_DISK_SPACE_DIALOG_TITLE" desc="Dialog title that tells the user Nearby Share failed due to low disk space.">
+    Free up space
+  </message>
+  <message name="IDS_ASH_ARC_NEARBY_SHARE_LOW_DISK_SPACE_DIALOG_MESSAGE" desc="Dialog body that tells the user Nearby Share failed due to low disk space while sharing a file(s).">
+    {NUM_FILES, plural,
+      =1 {To send this file using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE">$1<ex>20MB</ex></ph>) on your device}
+      other {To send these files using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE">$1<ex>20MB</ex></ph>) on your device}}
+  </message>
+  <message name="IDS_ASH_ARC_NEARBY_SHARE_LOW_DISK_SPACE_DIALOG_STORAGE_BUTTON" desc="Label for button to acknowledge Nearby Share failed due to low disk space and open the Storage management settings page.">
+    Storage management
+  </message>
   <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE" desc="Item in a list of possible sizes for the app. Makes the app in a portrait, phone size.">
     Phone
   </message>

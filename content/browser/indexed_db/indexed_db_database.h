@@ -19,7 +19,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/indexed_db/scopes/scopes_lock_manager.h"
@@ -67,6 +66,9 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   static const int64_t kInvalidId = 0;
   static const int64_t kMinimumIndexId = 30;
+
+  IndexedDBDatabase(const IndexedDBDatabase&) = delete;
+  IndexedDBDatabase& operator=(const IndexedDBDatabase&) = delete;
 
   virtual ~IndexedDBDatabase();
 
@@ -215,6 +217,10 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   struct CONTENT_EXPORT PutOperationParams {
     PutOperationParams();
+
+    PutOperationParams(const PutOperationParams&) = delete;
+    PutOperationParams& operator=(const PutOperationParams&) = delete;
+
     ~PutOperationParams();
     int64_t object_store_id;
     IndexedDBValue value;
@@ -222,28 +228,9 @@ class CONTENT_EXPORT IndexedDBDatabase {
     blink::mojom::IDBPutMode put_mode;
     blink::mojom::IDBTransaction::PutCallback callback;
     std::vector<blink::IndexedDBIndexKeys> index_keys;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(PutOperationParams);
   };
   leveldb::Status PutOperation(std::unique_ptr<PutOperationParams> params,
                                IndexedDBTransaction* transaction);
-
-  struct CONTENT_EXPORT PutAllOperationParams {
-    PutAllOperationParams();
-    ~PutAllOperationParams();
-    IndexedDBValue value;
-    std::unique_ptr<blink::IndexedDBKey> key;
-    std::vector<blink::IndexedDBIndexKeys> index_keys;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(PutAllOperationParams);
-  };
-  leveldb::Status PutAllOperation(
-      int64_t object_store_id,
-      std::vector<std::unique_ptr<PutAllOperationParams>> params,
-      blink::mojom::IDBTransaction::PutAllCallback callback,
-      IndexedDBTransaction* transaction);
 
   leveldb::Status SetIndexKeysOperation(
       int64_t object_store_id,
@@ -256,6 +243,11 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   struct OpenCursorOperationParams {
     OpenCursorOperationParams();
+
+    OpenCursorOperationParams(const OpenCursorOperationParams&) = delete;
+    OpenCursorOperationParams& operator=(const OpenCursorOperationParams&) =
+        delete;
+
     ~OpenCursorOperationParams();
     int64_t object_store_id;
     int64_t index_id;
@@ -264,9 +256,6 @@ class CONTENT_EXPORT IndexedDBDatabase {
     indexed_db::CursorType cursor_type;
     blink::mojom::IDBTaskType task_type;
     blink::mojom::IDBDatabase::OpenCursorCallback callback;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(OpenCursorOperationParams);
   };
   leveldb::Status OpenCursorOperation(
       std::unique_ptr<OpenCursorOperationParams> params,
@@ -398,8 +387,6 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   // |weak_factory_| is used for all callback uses.
   base::WeakPtrFactory<IndexedDBDatabase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBDatabase);
 };
 
 }  // namespace content

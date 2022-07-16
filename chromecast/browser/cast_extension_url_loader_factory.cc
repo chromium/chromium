@@ -20,6 +20,7 @@
 #include "extensions/browser/extension_registry_factory.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -48,6 +49,9 @@ class CastExtensionURLLoader : public network::mojom::URLLoader,
     cast_extension_url_loader->Start(request_id, options, std::move(request),
                                      traffic_annotation, network_factory);
   }
+
+  CastExtensionURLLoader(const CastExtensionURLLoader&) = delete;
+  CastExtensionURLLoader& operator=(const CastExtensionURLLoader&) = delete;
 
  private:
   CastExtensionURLLoader(
@@ -170,8 +174,6 @@ class CastExtensionURLLoader : public network::mojom::URLLoader,
 
   // This is the URLLoader from the network URLLoaderFactory.
   mojo::Remote<network::mojom::URLLoader> network_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionURLLoader);
 };
 
 }  // namespace

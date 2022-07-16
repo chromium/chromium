@@ -213,9 +213,8 @@ TEST(IPAddressTest, IsPubliclyRoutableIPv4) {
                {"224.0.0.0", RESERVED},
                {"255.255.255.255", RESERVED}};
 
-  IPAddress address;
-  IPAddress mapped_address;
   for (const auto& test : tests) {
+    IPAddress address;
     EXPECT_TRUE(address.AssignFromIPLiteral(test.address));
     ASSERT_TRUE(address.IsValid());
     EXPECT_EQ(!test.is_reserved, address.IsPubliclyRoutable());

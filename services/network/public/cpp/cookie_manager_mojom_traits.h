@@ -5,6 +5,9 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_COOKIE_MANAGER_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_COOKIE_MANAGER_MOJOM_TRAITS_H_
 
+#include <bitset>
+#include <vector>
+
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
@@ -12,6 +15,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_partition_keychain.h"
 #include "net/cookies/same_party_context.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -95,10 +99,6 @@ template <>
 struct StructTraits<
     network::mojom::CookieSameSiteContextMetadataDataView,
     net::CookieOptions::SameSiteCookieContext::ContextMetadata> {
-  static bool affected_by_bugfix_1166211(
-      const net::CookieOptions::SameSiteCookieContext::ContextMetadata& m) {
-    return m.affected_by_bugfix_1166211;
-  }
   static net::CookieOptions::SameSiteCookieContext::ContextMetadata::
       ContextDowngradeType
       cross_site_redirect_downgrade(
@@ -180,6 +180,34 @@ struct StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions> {
 };
 
 template <>
+struct StructTraits<network::mojom::CookiePartitionKeyDataView,
+                    net::CookiePartitionKey> {
+  static const net::SchemefulSite& site(const net::CookiePartitionKey& cpk) {
+    return cpk.site();
+  }
+  static bool from_script(const net::CookiePartitionKey& cpk) {
+    return cpk.from_script();
+  }
+
+  static bool Read(network::mojom::CookiePartitionKeyDataView partition_key,
+                   net::CookiePartitionKey* out);
+};
+
+template <>
+struct StructTraits<network::mojom::CookiePartitionKeychainDataView,
+                    net::CookiePartitionKeychain> {
+  static bool contains_all_partitions(
+      const net::CookiePartitionKeychain& keychain) {
+    return keychain.ContainsAllKeys();
+  }
+  static const std::vector<net::CookiePartitionKey> keys(
+      const net::CookiePartitionKeychain& keychain);
+
+  static bool Read(network::mojom::CookiePartitionKeychainDataView keychain,
+                   net::CookiePartitionKeychain* out);
+};
+
+template <>
 struct StructTraits<network::mojom::CanonicalCookieDataView,
                     net::CanonicalCookie> {
   static const std::string& name(const net::CanonicalCookie& c) {
@@ -217,7 +245,7 @@ struct StructTraits<network::mojom::CanonicalCookieDataView,
   static bool same_party(const net::CanonicalCookie& c) {
     return c.IsSameParty();
   }
-  static absl::optional<net::SchemefulSite> partition_key(
+  static absl::optional<net::CookiePartitionKey> partition_key(
       const net::CanonicalCookie& c) {
     return c.PartitionKey();
   }
@@ -233,10 +261,10 @@ template <>
 struct StructTraits<network::mojom::CookieInclusionStatusDataView,
                     net::CookieInclusionStatus> {
   static uint32_t exclusion_reasons(const net::CookieInclusionStatus& s) {
-    return s.exclusion_reasons();
+    return static_cast<uint32_t>(s.exclusion_reasons().to_ulong());
   }
   static uint32_t warning_reasons(const net::CookieInclusionStatus& s) {
-    return s.warning_reasons();
+    return static_cast<uint32_t>(s.warning_reasons().to_ulong());
   }
   static bool Read(network::mojom::CookieInclusionStatusDataView status,
                    net::CookieInclusionStatus* out);

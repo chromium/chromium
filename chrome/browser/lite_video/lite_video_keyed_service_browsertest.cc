@@ -233,7 +233,8 @@ IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
       LiteVideoKeyedServiceFactory::GetForProfile(browser()->profile()));
 
   // Navigate metrics get recorded.
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://testserver.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://testserver.com")));
 
   // Close the tab to flush any UKM metrics.
   browser()->tab_strip_model()->GetActiveWebContents()->Close();
@@ -262,7 +263,7 @@ IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
       LiteVideoKeyedServiceFactory::GetForProfile(browser()->profile()));
   GURL navigation_url("https://testserver.com");
   // Navigate metrics get recorded.
-  ui_test_utils::NavigateToURL(browser(), navigation_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), navigation_url));
 
   // Close the tab to flush the UKM metrics.
   browser()->tab_strip_model()->GetActiveWebContents()->Close();
@@ -308,7 +309,7 @@ IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
   GURL navigation_url("https://litevideo.com");
 
   // Navigate metrics get recorded.
-  ui_test_utils::NavigateToURL(browser(), navigation_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), navigation_url));
 
   EXPECT_GT(RetryForHistogramUntilCountReached(
                 *histogram_tester(), "LiteVideo.HintAgent.HasHint", 1),
@@ -684,7 +685,7 @@ IN_PROC_BROWSER_TEST_P(LiteVideoNetworkConnectionBrowserTest,
   GURL navigation_url("https://litevideo.com");
 
   // Navigate metrics get recorded.
-  ui_test_utils::NavigateToURL(browser(), navigation_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), navigation_url));
   EXPECT_GT(RetryForHistogramUntilCountReached(
                 *histogram_tester(), "LiteVideo.Navigation.HasHint", 1),
             0);
@@ -712,7 +713,7 @@ IN_PROC_BROWSER_TEST_P(
   GURL navigation_url("https://litevideo.com");
 
   // Navigate metrics get recorded.
-  ui_test_utils::NavigateToURL(browser(), navigation_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), navigation_url));
 
   EXPECT_GT(RetryForHistogramUntilCountReached(
                 *histogram_tester(), "LiteVideo.Navigation.HasHint", 1),
@@ -736,7 +737,7 @@ IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
       LiteVideoKeyedServiceFactory::GetForProfile(browser()->profile()));
 
   // Navigate metrics get recorded.
-  ui_test_utils::NavigateToURL(browser(), https_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url()));
 
   EXPECT_EQ(RetryForHistogramUntilCountReached(
                 *histogram_tester(), "LiteVideo.Navigation.HasHint", 2),
@@ -815,7 +816,7 @@ IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceCoinflipBrowserTest,
       LiteVideoKeyedServiceFactory::GetForProfile(browser()->profile()));
 
   // Navigate metrics get recorded.
-  ui_test_utils::NavigateToURL(browser(), https_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url()));
 
   EXPECT_EQ(RetryForHistogramUntilCountReached(
                 *histogram_tester(), "LiteVideo.Navigation.HasHint", 2),
@@ -851,7 +852,7 @@ IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
   GURL navigation_url("https://blockedhost.com");
 
   // Navigate metrics get recorded.
-  ui_test_utils::NavigateToURL(browser(), navigation_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), navigation_url));
 
   EXPECT_GT(RetryForHistogramUntilCountReached(
                 *histogram_tester(), "LiteVideo.Navigation.HasHint", 1),
@@ -878,6 +879,10 @@ class LiteVideoKeyedServicePrerenderBrowserTest
       const LiteVideoKeyedServicePrerenderBrowserTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    // TODO(crbug.com/846380): move ScopedFeatureList init to the constructor.
+    // Due to LiteVideoKeyedServiceBrowserTest's use of ScopedFeatureList, we
+    // construct the prerender helper here to ensure the correct relative order
+    // of construction and destriction of the lists.
     prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
         base::BindRepeating(
             &LiteVideoKeyedServicePrerenderBrowserTest::GetWebContents,
@@ -886,7 +891,9 @@ class LiteVideoKeyedServicePrerenderBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    prerender_helper_->SetUpOnMainThread(embedded_test_server());
+    // We set up here rather than in the earlier SetUp due to the creation
+    // timing of prerender_helper_ (SetUp happens prior to SetUpCommandLine).
+    prerender_helper_->SetUp(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -932,4 +939,25 @@ IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServicePrerenderBrowserTest,
   // The number of the entry should be 1 since FlushUKMMetrics is called by
   // the lite video observer after activating.
   EXPECT_EQ(1u, entries.size());
+}
+
+IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServicePrerenderBrowserTest,
+                       PrerenderingShouldNotUpdateBlocklists) {
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Load a test page in the prerender.
+  const int host_id = prerender_test_helper().AddPrerender(prerender_url);
+  content::RenderFrameHost* prerendered_render_frame_host =
+      prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
+  ASSERT_TRUE(prerendered_render_frame_host);
+  histogram_tester()->ExpectTotalCount(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.MainFrame", 1);
+
+  // Activate the prerendered page.
+  prerender_test_helper().NavigatePrimaryPage(prerender_url);
+  histogram_tester()->ExpectTotalCount(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.MainFrame", 2);
 }

@@ -25,6 +25,10 @@ class ProxyResolverFactoryImpl : public mojom::ProxyResolverFactory {
  public:
   explicit ProxyResolverFactoryImpl(
       mojo::PendingReceiver<mojom::ProxyResolverFactory> receiver);
+
+  ProxyResolverFactoryImpl(const ProxyResolverFactoryImpl&) = delete;
+  ProxyResolverFactoryImpl& operator=(const ProxyResolverFactoryImpl&) = delete;
+
   ~ProxyResolverFactoryImpl() override;
 
   // Used by jobs to pass ownership of a newly bound ProxyResolver to this
@@ -57,8 +61,6 @@ class ProxyResolverFactoryImpl : public mojom::ProxyResolverFactory {
 
   mojo::Receiver<mojom::ProxyResolverFactory> receiver_;
   mojo::UniqueReceiverSet<mojom::ProxyResolver> resolvers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverFactoryImpl);
 };
 
 }  // namespace proxy_resolver

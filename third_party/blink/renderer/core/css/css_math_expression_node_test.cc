@@ -99,10 +99,8 @@ TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
 
   TestAccumulatePixelsAndPercent(
       conversion_data,
-      CSSMathExpressionNumericLiteral::Create(
-          CSSNumericLiteralValue::Create(10,
-                                         CSSPrimitiveValue::UnitType::kPixels),
-          true),
+      CSSMathExpressionNumericLiteral::Create(CSSNumericLiteralValue::Create(
+          10, CSSPrimitiveValue::UnitType::kPixels)),
       50, 0);
 
   TestAccumulatePixelsAndPercent(
@@ -110,12 +108,10 @@ TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
       CSSMathExpressionBinaryOperation::Create(
           CSSMathExpressionNumericLiteral::Create(
               CSSNumericLiteralValue::Create(
-                  10, CSSPrimitiveValue::UnitType::kPixels),
-              true),
+                  10, CSSPrimitiveValue::UnitType::kPixels)),
           CSSMathExpressionNumericLiteral::Create(
               CSSNumericLiteralValue::Create(
-                  20, CSSPrimitiveValue::UnitType::kPixels),
-              true),
+                  20, CSSPrimitiveValue::UnitType::kPixels)),
           CSSMathOperator::kAdd),
       150, 0);
 
@@ -124,12 +120,10 @@ TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
       CSSMathExpressionBinaryOperation::Create(
           CSSMathExpressionNumericLiteral::Create(
               CSSNumericLiteralValue::Create(
-                  1, CSSPrimitiveValue::UnitType::kInches),
-              true),
+                  1, CSSPrimitiveValue::UnitType::kInches)),
           CSSMathExpressionNumericLiteral::Create(
               CSSNumericLiteralValue::Create(
-                  2, CSSPrimitiveValue::UnitType::kNumber),
-              true),
+                  2, CSSPrimitiveValue::UnitType::kNumber)),
           CSSMathOperator::kMultiply),
       960, 0);
 
@@ -139,30 +133,26 @@ TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
           CSSMathExpressionBinaryOperation::Create(
               CSSMathExpressionNumericLiteral::Create(
                   CSSNumericLiteralValue::Create(
-                      50, CSSPrimitiveValue::UnitType::kPixels),
-                  true),
+                      50, CSSPrimitiveValue::UnitType::kPixels)),
               CSSMathExpressionNumericLiteral::Create(
                   CSSNumericLiteralValue::Create(
-                      0.25, CSSPrimitiveValue::UnitType::kNumber),
-                  false),
+                      0.25, CSSPrimitiveValue::UnitType::kNumber)),
               CSSMathOperator::kMultiply),
           CSSMathExpressionBinaryOperation::Create(
               CSSMathExpressionNumericLiteral::Create(
                   CSSNumericLiteralValue::Create(
-                      20, CSSPrimitiveValue::UnitType::kPixels),
-                  true),
+                      20, CSSPrimitiveValue::UnitType::kPixels)),
               CSSMathExpressionNumericLiteral::Create(
                   CSSNumericLiteralValue::Create(
-                      40, CSSPrimitiveValue::UnitType::kPercentage),
-                  false),
+                      40, CSSPrimitiveValue::UnitType::kPercentage)),
               CSSMathOperator::kSubtract),
           CSSMathOperator::kSubtract),
       -37.5, 40);
 }
 
 TEST(CSSCalculationValue, RefCount) {
-  scoped_refptr<const CalculationValue> calc =
-      CalculationValue::Create(PixelsAndPercent(1, 2), kValueRangeAll);
+  scoped_refptr<const CalculationValue> calc = CalculationValue::Create(
+      PixelsAndPercent(1, 2), Length::ValueRange::kAll);
 
   // FIXME: Test the Length construction without using the ref count value.
 
@@ -177,8 +167,8 @@ TEST(CSSCalculationValue, RefCount) {
     Length length_c(calc);
     length_c = length_a;
 
-    Length length_d(
-        CalculationValue::Create(PixelsAndPercent(1, 2), kValueRangeAll));
+    Length length_d(CalculationValue::Create(PixelsAndPercent(1, 2),
+                                             Length::ValueRange::kAll));
     length_d = length_a;
   }
   EXPECT_TRUE(calc->HasOneRef());

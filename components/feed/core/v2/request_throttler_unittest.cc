@@ -31,8 +31,7 @@ class FeedRequestThrottlerTest : public testing::Test {
 
     // Set the clock to 12:01AM.
     base::Time twelveO_One =
-        (base::Time::Now() + base::TimeDelta::FromDays(1)).LocalMidnight() +
-        base::TimeDelta::FromMinutes(1);
+        (base::Time::Now() + base::Days(1)).LocalMidnight() + base::Minutes(1);
     task_environment_.AdvanceClock(twelveO_One - base::Time::Now());
   }
 
@@ -56,9 +55,9 @@ TEST_F(FeedRequestThrottlerTest, QuotaIsPerDay) {
   }
   // Because we started at 12:01AM, we need to advance 24 hours before making
   // another successful request.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(23));
+  task_environment_.FastForwardBy(base::Hours(23));
   EXPECT_FALSE(throttler_.RequestQuota(NetworkRequestType::kUploadActions));
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   EXPECT_TRUE(throttler_.RequestQuota(NetworkRequestType::kUploadActions));
 }
 

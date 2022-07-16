@@ -20,7 +20,6 @@
 #include "content/browser/loader/download_utils_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/global_request_id.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -89,11 +88,13 @@ DevToolsURLLoaderInterceptor::Modifications::Modifications(
     protocol::Maybe<std::string> modified_url,
     protocol::Maybe<std::string> modified_method,
     protocol::Maybe<protocol::Binary> modified_post_data,
-    std::unique_ptr<HeadersVector> modified_headers)
+    std::unique_ptr<HeadersVector> modified_headers,
+    protocol::Maybe<bool> intercept_response)
     : modified_url(std::move(modified_url)),
       modified_method(std::move(modified_method)),
       modified_post_data(std::move(modified_post_data)),
-      modified_headers(std::move(modified_headers)) {}
+      modified_headers(std::move(modified_headers)),
+      intercept_response(std::move(intercept_response)) {}
 
 DevToolsURLLoaderInterceptor::Modifications::Modifications(
     absl::optional<net::Error> error_reason,
@@ -279,6 +280,9 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
       mojo::PendingRemote<network::mojom::CookieManager> cookie_manager);
 
+  InterceptionJob(const InterceptionJob&) = delete;
+  InterceptionJob& operator=(const InterceptionJob&) = delete;
+
   void GetResponseBody(std::unique_ptr<GetResponseBodyCallback> callback);
   void TakeResponseBodyPipe(TakeResponseBodyPipeCallback callback);
   void ContinueInterceptedRequest(
@@ -429,8 +433,6 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   // current request URL. Tracked for the purpose of computing the proper
   // SameSite cookies to return, which depends on the redirect chain.
   std::vector<GURL> url_chain_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterceptionJob);
 };
 
 void DevToolsURLLoaderInterceptor::CreateJob(
@@ -587,12 +589,9 @@ void DevToolsURLLoaderFactoryProxy::OnProxyBindingError() {
 
 // static
 void DevToolsURLLoaderInterceptor::HandleAuthRequest(
-    int32_t process_id,
-    int32_t routing_id,
-    int32_t request_id,
+    GlobalRequestID req_id,
     const net::AuthChallengeInfo& auth_info,
     HandleAuthRequestCallback callback) {
-  GlobalRequestID req_id(process_id, request_id);
   if (auto* job = InterceptionJob::FindByRequestId(req_id))
     job->OnAuthRequest(auth_info, std::move(callback));
   else
@@ -878,6 +877,20 @@ Response InterceptionJob::InnerContinueRequest(
   }
   waiting_for_resolution_ = false;
 
+  if (modifications->intercept_response.isJust()) {
+    if (modifications->intercept_response.fromJust()) {
+      if (stage_ == InterceptionStage::REQUEST)
+        stage_ = InterceptionStage::BOTH;
+      else
+        stage_ = InterceptionStage::RESPONSE;
+    } else {
+      if (stage_ == InterceptionStage::BOTH)
+        stage_ = InterceptionStage::REQUEST;
+      else if (stage_ == InterceptionStage::RESPONSE)
+        stage_ = InterceptionStage::DONT_INTERCEPT;
+    }
+  }
+
   if (state_ == State::kAuthRequired) {
     if (!modifications->auth_challenge_response)
       return Response::InvalidParams("authChallengeResponse required.");
@@ -904,22 +917,44 @@ Response InterceptionJob::InnerContinueRequest(
   }
 
   if (modifications->response_headers || modifications->response_body) {
-    return ProcessResponseOverride(std::move(modifications->response_headers),
-                                   std::move(modifications->response_body),
-                                   modifications->body_offset);
+    // If only intercepted response headers are overridden continue with
+    // normal load of the original response body.
+    if (response_metadata_ && !modifications->response_body) {
+      network::mojom::URLResponseHeadPtr& head = response_metadata_->head;
+      head->headers = std::move(modifications->response_headers);
+      // TODO(caseq): we're cheating here a bit, raw_headers() have \0's
+      // where real headers would have \r\n, but the sizes here
+      // probably don't have to be exact.
+      size_t headers_size = head->headers->raw_headers().size();
+      head->encoded_data_length = headers_size;
+    } else {
+      return ProcessResponseOverride(std::move(modifications->response_headers),
+                                     std::move(modifications->response_body),
+                                     modifications->body_offset);
+    }
   }
 
   if (state_ == State::kFollowRedirect) {
-    if (modifications->modified_url.isJust()) {
-      CancelRequest();
-      // Fall through to the generic logic of re-starting the request
-      // at the bottom of the method.
-    } else {
-      // TODO(caseq): report error if other modifications are present.
+    if (!modifications->modified_url.isJust()) {
+      // TODO(caseq): report error modifications other than headers are present.
       state_ = State::kRequestSent;
-      loader_->FollowRedirect({}, {}, {}, absl::nullopt);
+      std::vector<std::string> removed_headers;
+      net::HttpRequestHeaders modified_headers;
+      if (modifications->modified_headers) {
+        for (const auto& entry : *modifications->modified_headers) {
+          if (entry.second.empty())
+            removed_headers.push_back(entry.first);
+          else
+            modified_headers.SetHeader(entry.first, entry.second);
+        }
+      }
+      loader_->FollowRedirect(removed_headers, modified_headers, {},
+                              absl::nullopt);
       return Response::Success();
     }
+    CancelRequest();
+    // Fall through to the generic logic of re-starting the request
+    // at the bottom of the method.
   }
   if (state_ == State::kRedirectReceived) {
     // TODO(caseq): report error if other modifications are present.
@@ -1123,7 +1158,8 @@ void InterceptionJob::ProcessSetCookies(const net::HttpResponseHeaders& headers,
   size_t iter = 0;
   while (headers.EnumerateHeader(&iter, name, &cookie_line)) {
     std::unique_ptr<net::CanonicalCookie> cookie = net::CanonicalCookie::Create(
-        create_loader_params_->request.url, cookie_line, now, server_time);
+        create_loader_params_->request.url, cookie_line, now, server_time,
+        net::CookiePartitionKey::Todo());
     if (cookie)
       cookies.emplace_back(std::move(cookie));
   }
@@ -1300,7 +1336,9 @@ void InterceptionJob::FetchCookies(
           request.request_initiator, is_main_frame_navigation,
           should_treat_as_first_party));
 
-  cookie_manager_->GetCookieList(request.url, options, std::move(callback));
+  cookie_manager_->GetCookieList(request.url, options,
+                                 net::CookiePartitionKeychain::Todo(),
+                                 std::move(callback));
 }
 
 void InterceptionJob::NotifyClient(

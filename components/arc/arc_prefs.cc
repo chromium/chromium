@@ -114,6 +114,11 @@ const char kArcIsManaged[] = "arc.is_managed";
 const char kArcShowResizeLockSplashScreenLimits[] =
     "arc.show_resize_lock_splash_screen_limits";
 
+// A preference to know whether or not the Arc.PlayStoreLaunchWithinAWeek
+// metric can been recorded.
+const char kArcPlayStoreLaunchMetricCanBeRecorded[] =
+    "arc.playstore_launched_by_user";
+
 // ======== LOCAL STATE PREFS ========
 
 // A boolean preference that indicates whether this device has run with the

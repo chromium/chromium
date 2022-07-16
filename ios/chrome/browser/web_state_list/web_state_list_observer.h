@@ -35,6 +35,10 @@ enum class ActiveWebStateChangeReason {
 class WebStateListObserver {
  public:
   WebStateListObserver();
+
+  WebStateListObserver(const WebStateListObserver&) = delete;
+  WebStateListObserver& operator=(const WebStateListObserver&) = delete;
+
   virtual ~WebStateListObserver();
 
   // Invoked after a new WebState has been added to the WebStateList at the
@@ -99,9 +103,6 @@ class WebStateListObserver {
   // were performed on it during the batch (e.g. detect that all tabs were
   // closed at once).
   virtual void BatchOperationEnded(WebStateList* web_state_list);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateListObserver);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_OBSERVER_H_

@@ -24,6 +24,12 @@ namespace ash {
 class WifiToggleNotificationControllerTest : public AshTestBase {
  public:
   WifiToggleNotificationControllerTest() = default;
+
+  WifiToggleNotificationControllerTest(
+      const WifiToggleNotificationControllerTest&) = delete;
+  WifiToggleNotificationControllerTest& operator=(
+      const WifiToggleNotificationControllerTest&) = delete;
+
   ~WifiToggleNotificationControllerTest() override = default;
 
   // testing::Test:
@@ -39,8 +45,6 @@ class WifiToggleNotificationControllerTest : public AshTestBase {
   chromeos::network_config::CrosNetworkConfigTestHelper network_config_helper_;
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WifiToggleNotificationControllerTest);
 };
 
 // Verifies that toggling Wi-Fi (usually via keyboard) shows a notification.

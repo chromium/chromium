@@ -25,6 +25,7 @@
 #include "components/offline_items_collection/core/offline_item_state.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/base/l10n/time_format.h"
 
@@ -78,7 +79,6 @@ AvailableContentType ContentType(const OfflineItem& item) {
       if (item.is_suggested)
         return AvailableContentType::kPrefetchedPage;
       return AvailableContentType::kOtherPage;
-      break;
     case offline_items_collection::FILTER_VIDEO:
       return AvailableContentType::kVideo;
     case offline_items_collection::FILTER_AUDIO:
@@ -107,6 +107,9 @@ class ThumbnailFetch {
     GURL thumbnail;
     GURL favicon;
   };
+
+  ThumbnailFetch(const ThumbnailFetch&) = delete;
+  ThumbnailFetch& operator=(const ThumbnailFetch&) = delete;
 
   // Gets visuals for a list of visuals. Calls |complete_callback| with
   // a list of VisualsDataUris structs containing data URIs for thumbnails and
@@ -199,8 +202,6 @@ class ThumbnailFetch {
   std::vector<VisualsDataUris> visuals_;
   base::OnceCallback<void(std::vector<VisualsDataUris>)> complete_callback_;
   size_t callback_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ThumbnailFetch);
 };
 
 chrome::mojom::AvailableOfflineContentPtr CreateAvailableOfflineContent(
@@ -217,31 +218,37 @@ chrome::mojom::AvailableOfflineContentPtr CreateAvailableOfflineContent(
 }  // namespace
 
 AvailableOfflineContentProvider::AvailableOfflineContentProvider(
-    Profile* profile)
-    : profile_(profile) {}
+    int render_process_host_id)
+    : render_process_host_id_(render_process_host_id) {}
 
 AvailableOfflineContentProvider::~AvailableOfflineContentProvider() = default;
 
 void AvailableOfflineContentProvider::List(ListCallback callback) {
+  Profile* profile = GetProfile();
+  if (!profile) {
+    CloseSelfOwnedReceiverIfNeeded();
+    return;
+  }
   offline_items_collection::OfflineContentAggregator* aggregator =
-      OfflineContentAggregatorFactory::GetForKey(profile_->GetProfileKey());
+      OfflineContentAggregatorFactory::GetForKey(profile->GetProfileKey());
   aggregator->GetAllItems(
       base::BindOnce(&AvailableOfflineContentProvider::ListFinalize,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     // aggregator is a keyed service, and is alive as long as
-                     // profile_, which outlives this.
                      base::Unretained(aggregator)));
 }
 
 void AvailableOfflineContentProvider::LaunchItem(
     const std::string& item_id,
     const std::string& name_space) {
+  Profile* profile = GetProfile();
+  if (!profile)
+    return;
   offline_items_collection::OfflineContentAggregator* aggregator =
-      OfflineContentAggregatorFactory::GetForKey(profile_->GetProfileKey());
+      OfflineContentAggregatorFactory::GetForKey(profile->GetProfileKey());
 
   offline_items_collection::OpenParams open_params(
       offline_items_collection::LaunchLocation::NET_ERROR_SUGGESTION);
-  open_params.open_in_incognito = profile_->IsOffTheRecord();
+  open_params.open_in_incognito = profile->IsOffTheRecord();
   aggregator->OpenItem(
       open_params, offline_items_collection::ContentId(name_space, item_id));
 }
@@ -254,21 +261,26 @@ void AvailableOfflineContentProvider::LaunchDownloadsPage(
 }
 
 void AvailableOfflineContentProvider::ListVisibilityChanged(bool is_visible) {
-  profile_->GetPrefs()->SetBoolean(feed::prefs::kArticlesListVisible,
-                                   is_visible);
+  Profile* profile = GetProfile();
+  if (!profile)
+    return;
+  profile->GetPrefs()->SetBoolean(feed::prefs::kArticlesListVisible,
+                                  is_visible);
 }
 
 // static
 void AvailableOfflineContentProvider::Create(
-    Profile* profile,
+    int render_process_host_id,
     mojo::PendingReceiver<chrome::mojom::AvailableOfflineContentProvider>
         receiver) {
-  // Self owned receiveres remain as long as the pipe is error free. The
-  // renderer is on the other side of the pipe, and the profile outlives the
-  // RenderProcessHost, so the profile will outlive the Mojo pipe.
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<AvailableOfflineContentProvider>(profile),
+  // Self owned receivers remain as long as the pipe is error free.
+  auto provider_self_owned_receiver = mojo::MakeSelfOwnedReceiver(
+      std::make_unique<AvailableOfflineContentProvider>(render_process_host_id),
       std::move(receiver));
+  // TODO(curranmax): Rework this code so the static_cast is not needed.
+  auto* provider = static_cast<AvailableOfflineContentProvider*>(
+      provider_self_owned_receiver->impl());
+  provider->SetSelfOwnedReceiver(provider_self_owned_receiver);
 }
 
 // Picks the best available offline content items, and passes them to callback.
@@ -276,6 +288,12 @@ void AvailableOfflineContentProvider::ListFinalize(
     AvailableOfflineContentProvider::ListCallback callback,
     offline_items_collection::OfflineContentAggregator* aggregator,
     const std::vector<OfflineItem>& all_items) {
+  Profile* profile = GetProfile();
+  if (!profile) {
+    CloseSelfOwnedReceiverIfNeeded();
+    return;
+  }
+
   std::vector<OfflineItem> selected(kMinInterestingItemCount);
   const auto end = std::partial_sort_copy(all_items.begin(), all_items.end(),
                                           selected.begin(), selected.end(),
@@ -296,7 +314,7 @@ void AvailableOfflineContentProvider::ListFinalize(
     selected_ids.push_back(item.id);
 
   bool list_visible_by_prefs =
-      profile_->GetPrefs()->GetBoolean(feed::prefs::kArticlesListVisible);
+      profile->GetPrefs()->GetBoolean(feed::prefs::kArticlesListVisible);
 
   auto complete =
       [](AvailableOfflineContentProvider::ListCallback callback,
@@ -316,6 +334,28 @@ void AvailableOfflineContentProvider::ListFinalize(
       aggregator, selected_ids,
       base::BindOnce(complete, std::move(callback), std::move(selected),
                      list_visible_by_prefs));
+}
+
+Profile* AvailableOfflineContentProvider::GetProfile() {
+  content::RenderProcessHost* render_process_host =
+      content::RenderProcessHost::FromID(render_process_host_id_);
+  if (!render_process_host)
+    return nullptr;
+  return Profile::FromBrowserContext(render_process_host->GetBrowserContext());
+}
+
+void AvailableOfflineContentProvider::SetSelfOwnedReceiver(
+    const mojo::SelfOwnedReceiverRef<
+        chrome::mojom::AvailableOfflineContentProvider>&
+        provider_self_owned_receiver) {
+  provider_self_owned_receiver_ = provider_self_owned_receiver;
+}
+
+void AvailableOfflineContentProvider::CloseSelfOwnedReceiverIfNeeded() {
+  // Closing the mojo pipe invalidates any pending callbacks, and they should
+  // not be used after the receiver is closed.
+  if (provider_self_owned_receiver_)
+    provider_self_owned_receiver_->Close();
 }
 
 }  // namespace android

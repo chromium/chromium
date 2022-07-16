@@ -3228,7 +3228,7 @@ class FormatConverter {
     const unsigned kMaxNumberOfComponents = 4;
     const unsigned kMaxBytesPerComponent = 4;
     unpacked_intermediate_src_data_ = std::make_unique<uint8_t[]>(
-        src_sub_rectangle_.Width() * kMaxNumberOfComponents *
+        src_sub_rectangle_.width() * kMaxNumberOfComponents *
         kMaxBytesPerComponent);
     DCHECK(unpacked_intermediate_src_data_.get());
   }
@@ -3448,7 +3448,7 @@ void FormatConverter::Convert() {
   const SrcType* src_row_start =
       static_cast<const SrcType*>(static_cast<const void*>(
           static_cast<const uint8_t*>(src_start_) +
-          ((src_stride_ * src_sub_rectangle_.Y()) + src_row_offset_)));
+          ((src_stride_ * src_sub_rectangle_.y()) + src_row_offset_)));
 
   // If packing multiple images into a 3D texture, and flipY is true,
   // then the sub-rectangle is pointing at the start of the
@@ -3463,41 +3463,41 @@ void FormatConverter::Convert() {
   DstType* dst_row_start = static_cast<DstType*>(dst_start_);
   if (kTrivialUnpack) {
     for (int d = 0; d < depth_; ++d) {
-      for (int i = 0; i < src_sub_rectangle_.Height(); ++i) {
+      for (int i = 0; i < src_sub_rectangle_.height(); ++i) {
         Pack<DstFormat, alphaOp>(src_row_start, dst_row_start,
-                                 src_sub_rectangle_.Width());
+                                 src_sub_rectangle_.width());
         src_row_start += src_stride_in_elements;
         dst_row_start += dst_stride_in_elements;
       }
       src_row_start += src_stride_in_elements *
-                       (unpack_image_height_ - src_sub_rectangle_.Height());
+                       (unpack_image_height_ - src_sub_rectangle_.height());
     }
   } else if (kTrivialPack) {
     for (int d = 0; d < depth_; ++d) {
-      for (int i = 0; i < src_sub_rectangle_.Height(); ++i) {
+      for (int i = 0; i < src_sub_rectangle_.height(); ++i) {
         Unpack<SrcFormat>(src_row_start, dst_row_start,
-                          src_sub_rectangle_.Width());
+                          src_sub_rectangle_.width());
         src_row_start += src_stride_in_elements;
         dst_row_start += dst_stride_in_elements;
       }
       src_row_start += src_stride_in_elements *
-                       (unpack_image_height_ - src_sub_rectangle_.Height());
+                       (unpack_image_height_ - src_sub_rectangle_.height());
     }
   } else {
     for (int d = 0; d < depth_; ++d) {
-      for (int i = 0; i < src_sub_rectangle_.Height(); ++i) {
+      for (int i = 0; i < src_sub_rectangle_.height(); ++i) {
         Unpack<SrcFormat>(src_row_start,
                           reinterpret_cast<IntermType*>(
                               unpacked_intermediate_src_data_.get()),
-                          src_sub_rectangle_.Width());
+                          src_sub_rectangle_.width());
         Pack<DstFormat, alphaOp>(reinterpret_cast<IntermType*>(
                                      unpacked_intermediate_src_data_.get()),
-                                 dst_row_start, src_sub_rectangle_.Width());
+                                 dst_row_start, src_sub_rectangle_.width());
         src_row_start += src_stride_in_elements;
         dst_row_start += dst_stride_in_elements;
       }
       src_row_start += src_stride_in_elements *
-                       (unpack_image_height_ - src_sub_rectangle_.Height());
+                       (unpack_image_height_ - src_sub_rectangle_.height());
     }
   }
   success_ = true;
@@ -3920,8 +3920,8 @@ bool WebGLImageConversion::PackImageData(
   // Output data is tightly packed (alignment == 1).
   PixelStoreParams params;
   params.alignment = 1;
-  if (ComputeImageSizeInBytes(format, type, source_image_sub_rectangle.Width(),
-                              source_image_sub_rectangle.Height(), depth,
+  if (ComputeImageSizeInBytes(format, type, source_image_sub_rectangle.width(),
+                              source_image_sub_rectangle.height(), depth,
                               params, &packed_size, nullptr,
                               nullptr) != GL_NO_ERROR)
     return false;
@@ -3948,15 +3948,15 @@ bool WebGLImageConversion::ExtractImageData(
     Vector<uint8_t>& data) {
   if (!image_data)
     return false;
-  int width = image_data_size.Width();
-  int height = image_data_size.Height();
+  int width = image_data_size.width();
+  int height = image_data_size.height();
 
   unsigned packed_size;
   // Output data is tightly packed (alignment == 1).
   PixelStoreParams params;
   params.alignment = 1;
-  if (ComputeImageSizeInBytes(format, type, source_image_sub_rectangle.Width(),
-                              source_image_sub_rectangle.Height(), depth,
+  if (ComputeImageSizeInBytes(format, type, source_image_sub_rectangle.width(),
+                              source_image_sub_rectangle.height(), depth,
                               params, &packed_size, nullptr,
                               nullptr) != GL_NO_ERROR)
     return false;
@@ -4029,7 +4029,7 @@ bool WebGLImageConversion::PackPixels(const void* source_data,
                                       bool flip_y) {
   DCHECK_GE(depth, 1);
   if (unpack_image_height == 0) {
-    unpack_image_height = source_data_sub_rectangle.Height();
+    unpack_image_height = source_data_sub_rectangle.height();
   }
   int valid_src = source_data_width * TexelBytesForFormat(source_data_format);
   int remainder =
@@ -4037,17 +4037,17 @@ bool WebGLImageConversion::PackPixels(const void* source_data,
   int src_stride =
       remainder ? (valid_src + source_unpack_alignment - remainder) : valid_src;
   int src_row_offset =
-      source_data_sub_rectangle.X() * TexelBytesForFormat(source_data_format);
+      source_data_sub_rectangle.x() * TexelBytesForFormat(source_data_format);
   DataFormat dst_data_format =
       GetDataFormat(destination_format, destination_type);
   if (dst_data_format == kDataFormatNumFormats)
     return false;
   int dst_stride =
-      source_data_sub_rectangle.Width() * TexelBytesForFormat(dst_data_format);
+      source_data_sub_rectangle.width() * TexelBytesForFormat(dst_data_format);
   if (flip_y) {
     destination_data =
         static_cast<uint8_t*>(destination_data) +
-        dst_stride * ((depth * source_data_sub_rectangle.Height()) - 1);
+        dst_stride * ((depth * source_data_sub_rectangle.height()) - 1);
     dst_stride = -dst_stride;
   }
   if (!HasAlpha(source_data_format) || !HasColor(source_data_format) ||
@@ -4056,9 +4056,9 @@ bool WebGLImageConversion::PackPixels(const void* source_data,
 
   if (source_data_format == dst_data_format && alpha_op == kAlphaDoNothing) {
     const uint8_t* base_ptr = static_cast<const uint8_t*>(source_data) +
-                              src_stride * source_data_sub_rectangle.Y();
+                              src_stride * source_data_sub_rectangle.y();
     const uint8_t* base_end = static_cast<const uint8_t*>(source_data) +
-                              src_stride * source_data_sub_rectangle.MaxY();
+                              src_stride * source_data_sub_rectangle.bottom();
 
     // If packing multiple images into a 3D texture, and flipY is true,
     // then the sub-rectangle is pointing at the start of the

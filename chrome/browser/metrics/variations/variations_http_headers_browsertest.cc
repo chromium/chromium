@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -70,6 +69,10 @@ namespace {
 class VariationHeaderSetter : public ChromeBrowserMainExtraParts {
  public:
   VariationHeaderSetter() = default;
+
+  VariationHeaderSetter(const VariationHeaderSetter&) = delete;
+  VariationHeaderSetter& operator=(const VariationHeaderSetter&) = delete;
+
   ~VariationHeaderSetter() override = default;
 
   // ChromeBrowserMainExtraParts:
@@ -79,18 +82,22 @@ class VariationHeaderSetter : public ChromeBrowserMainExtraParts {
         variations::VariationsIdsProvider::GetInstance();
     variations_provider->ForceVariationIds({"12", "456", "t789"}, "");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VariationHeaderSetter);
 };
 
 class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
  public:
   VariationsHttpHeadersBrowserTest()
       : https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  VariationsHttpHeadersBrowserTest(const VariationsHttpHeadersBrowserTest&) =
+      delete;
+  VariationsHttpHeadersBrowserTest& operator=(
+      const VariationsHttpHeadersBrowserTest&) = delete;
+
   ~VariationsHttpHeadersBrowserTest() override = default;
 
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
+    InProcessBrowserTest::CreatedBrowserMainParts(parts);
     static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
         std::make_unique<VariationHeaderSetter>());
   }
@@ -231,7 +238,7 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
     // Navigate to a Google URL.
     GURL page_url =
         GetGoogleUrlWithPath("/service_worker/fetch_from_page.html");
-    ui_test_utils::NavigateToURL(browser(), page_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
     EXPECT_TRUE(HasReceivedHeader(page_url, "X-Client-Data"));
     // Check that there is a controller to check that the test is really testing
     // service worker.
@@ -248,6 +255,19 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ("hello", EvalJs(GetWebContents(),
                               base::StrCat({"fetch_from_page('",
                                             GetExampleUrl().spec(), "');"})));
+    EXPECT_FALSE(HasReceivedHeader(GetExampleUrl(), "X-Client-Data"));
+
+    // Navigate to a Google URL which causes redirects.
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GetGoogleRedirectUrl1()));
+
+    // Verify redirect requests from google domains.
+    // Redirect to google domains.
+    EXPECT_TRUE(HasReceivedHeader(GetGoogleRedirectUrl1(), "X-Client-Data"));
+    EXPECT_TRUE(HasReceivedHeader(GetGoogleRedirectUrl2(), "X-Client-Data"));
+
+    // Redirect to non-google domains.
+    EXPECT_TRUE(HasReceivedHeader(GetExampleUrl(), "Host"));
     EXPECT_FALSE(HasReceivedHeader(GetExampleUrl(), "X-Client-Data"));
   }
 
@@ -309,8 +329,6 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
 
   // For waiting for requests.
   std::map<GURL, base::OnceClosure> done_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsHttpHeadersBrowserTest);
 };
 
 // Used for testing the kRestrictGoogleWebVisibility feature.
@@ -328,11 +346,13 @@ class VariationsHttpHeadersBrowserTestWithRestrictedVisibility
     }
   }
 
+  VariationsHttpHeadersBrowserTestWithRestrictedVisibility(
+      const VariationsHttpHeadersBrowserTestWithRestrictedVisibility&) = delete;
+  VariationsHttpHeadersBrowserTestWithRestrictedVisibility& operator=(
+      const VariationsHttpHeadersBrowserTestWithRestrictedVisibility&) = delete;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      VariationsHttpHeadersBrowserTestWithRestrictedVisibility);
 };
 
 std::unique_ptr<net::test_server::HttpResponse>
@@ -462,7 +482,7 @@ void CreateFieldTrialsWithDifferentVisibilities() {
 // attached to network requests to Google but stripped on redirects.
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
                        TestStrippingHeadersFromResourceRequest) {
-  ui_test_utils::NavigateToURL(browser(), GetGoogleRedirectUrl1());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleRedirectUrl1()));
 
   EXPECT_TRUE(HasReceivedHeader(GetGoogleRedirectUrl1(), "X-Client-Data"));
   EXPECT_TRUE(HasReceivedHeader(GetGoogleRedirectUrl2(), "X-Client-Data"));
@@ -475,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
                        TestStrippingHeadersFromSubresourceRequest) {
   GURL url = server()->GetURL("/simple_page.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(FetchResource(browser(), GetGoogleRedirectUrl1()));
   EXPECT_TRUE(HasReceivedHeader(GetGoogleRedirectUrl1(), "X-Client-Data"));
   EXPECT_TRUE(HasReceivedHeader(GetGoogleRedirectUrl2(), "X-Client-Data"));
@@ -485,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, Incognito) {
   Browser* incognito = CreateIncognitoBrowser();
-  ui_test_utils::NavigateToURL(incognito, GetGoogleUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito, GetGoogleUrl()));
 
   EXPECT_FALSE(HasReceivedHeader(GetGoogleUrl(), "X-Client-Data"));
 
@@ -504,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserSignedIn) {
       IdentityManagerFactory::GetForProfile(browser()->profile()),
       "main_email@gmail.com", signin::ConsentLevel::kSync);
 
-  ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
 
   absl::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
@@ -550,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserNotSignedIn) {
   CreateGoogleSignedInFieldTrial(signed_in_id);
 
   // By default the user is not signed in.
-  ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
 
   absl::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
@@ -605,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
                        CheckLowEntropySourceValue) {
   std::unique_ptr<const base::FieldTrial::EntropyProvider>
       low_entropy_provider = g_browser_process->GetMetricsServicesManager()
-                                 ->CreateEntropyProvider();
+                                 ->CreateEntropyProviderForTesting();
 
   // Create a trial with 100 groups and variation ids to validate that the group
   // reported in the variations header is actually based on the low entropy
@@ -629,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   // studies.
   trial->group();
 
-  ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
   absl::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
   ASSERT_TRUE(header);
@@ -659,7 +679,7 @@ IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTestWithRestrictedVisibility,
   // kRestrictGoogleWebVisibility is enabled and the same values otherwise.
   CreateFieldTrialsWithDifferentVisibilities();
 
-  ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
   absl::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
   ASSERT_TRUE(header);
@@ -752,7 +772,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   // Verify "X-Client-Data" is present on the navigation to Google.
   // Also test that "Service-Worker-Navigation-Preload" is present to verify
   // we are really testing the navigation preload request.
-  ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
   EXPECT_TRUE(HasReceivedHeader(GetGoogleUrl(), "X-Client-Data"));
   EXPECT_TRUE(
       HasReceivedHeader(GetGoogleUrl(), "Service-Worker-Navigation-Preload"));
@@ -763,6 +783,13 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
                        ServiceWorkerNetworkFallback) {
   ServiceWorkerTest("/service_worker/network_fallback_worker.js");
+}
+
+// Verify in an integration test that the variations header (X-Client-Data) is
+// not exposed in the service worker fetch event.
+IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
+                       ServiceWorkerDoesNotSeeHeader) {
+  ServiceWorkerTest("/service_worker/fail_on_variations_header_worker.js");
 }
 
 // Verify in an integration test that the variations header (X-Client-Data) is

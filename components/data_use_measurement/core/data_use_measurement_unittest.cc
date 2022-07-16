@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -36,6 +35,9 @@ class DataUseMeasurementTest {
         net::NetworkChangeNotifier::GetConnectionType()));
   }
 
+  DataUseMeasurementTest(const DataUseMeasurementTest&) = delete;
+  DataUseMeasurementTest& operator=(const DataUseMeasurementTest&) = delete;
+
   // This function makes a user request and confirms that its effect is
   // reflected in proper histograms.
   void TestForAUserRequest(const std::string& target_dimension) {
@@ -59,8 +61,6 @@ class DataUseMeasurementTest {
 
   DataUseMeasurement data_use_measurement_;
   const std::string kConnectionType = "NotCellular";
-
-  DISALLOW_COPY_AND_ASSIGN(DataUseMeasurementTest);
 };
 
 // This test function tests recording of data use information in UMA histogram

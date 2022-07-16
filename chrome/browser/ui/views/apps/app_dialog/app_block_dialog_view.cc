@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/apps/app_dialog/app_block_dialog_view.h"
 
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"

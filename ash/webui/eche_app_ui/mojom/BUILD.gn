@@ -1,0 +1,22 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "eche_app.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ash.eche_app.mojom.ScreenBacklightState"
+          cpp = "ash::ScreenBacklightState"
+        },
+      ]
+      traits_headers = [ "//ash/webui/eche_app_ui/mojom/types_mojom_traits.h" ]
+      traits_sources = [ "//ash/webui/eche_app_ui/mojom/types_mojom_traits.cc" ]
+    },
+  ]
+}

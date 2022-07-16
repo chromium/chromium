@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/browser/web_package/web_bundle_handle_tracker.h"
@@ -107,14 +108,14 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
   // Record iframes embedded in cross-origin contexts without a CSP
   // frame-ancestor directive.
   bool is_embedded_in_cross_origin_context = false;
-  RenderFrameHostImpl* parent = rfh->frame_tree_node()->parent();
+  RenderFrameHostImpl* parent = rfh->GetParent();
   while (parent) {
     if (!parent->GetLastCommittedOrigin().IsSameOriginWith(
             rfh->GetLastCommittedOrigin())) {
       is_embedded_in_cross_origin_context = true;
       break;
     }
-    parent = parent->frame_tree_node()->parent();
+    parent = parent->GetParent();
   }
 
   if (is_embedded_in_cross_origin_context && !has_embedding_control &&
@@ -122,7 +123,19 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
     client->LogWebFeatureForCurrentPage(
         rfh,
         blink::mojom::WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
+    RenderFrameHostImpl* main_frame = rfh->GetMainFrame();
+    ukm::builders::CrossOriginSubframeWithoutEmbeddingControl(
+        main_frame->GetPageUkmSourceId())
+        .SetSubframeEmbedded(1)
+        .Record(ukm::UkmRecorder::Get());
   }
+
+  // Webview tag guests do not follow regular process model decisions. They
+  // always stay in their original SiteInstance, regardless of COOP. Assumption
+  // made below about COOP:same-origin and unsafe-none never being in the same
+  // BrowsingInstance does not hold. See https://crbug.com/1243711.
+  if (rfh->GetSiteInstance()->IsGuest())
+    return;
 
   // Check if the navigation resulted in having same-origin documents in pages
   // with different COOP status inside the browsing context group.
@@ -314,7 +327,8 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
   // If `url` is one that is allowed in WebUI renderer process, ensure that its
   // origin is either opaque or its process lock matches the RFH process lock.
   if (is_allowed_in_web_ui_renderer) {
-    url::Origin url_origin = url::Origin::Create(url.GetOrigin());
+    url::Origin url_origin =
+        url::Origin::Create(url.DeprecatedGetOriginAsURL());
 
     // Verify `site_info`'s process lock matches the RFH's process lock, if one
     // is in place.
@@ -328,14 +342,20 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
 }
 
 // A renderer-initiated navigation should be ignored iff a) there is an ongoing
-// request b) which is browser initiated and c) the renderer request is not
-// user-initiated.
+// request b) which is browser initiated or a history traversal and c) the
+// renderer request is not user-initiated.
+// Renderer-initiated history traversals cause navigations to be ignored for
+// compatibility reasons - this behavior is asserted by several web platform
+// tests.
 // static
 bool Navigator::ShouldIgnoreIncomingRendererRequest(
     const NavigationRequest* ongoing_navigation_request,
     bool has_user_gesture) {
   return ongoing_navigation_request &&
-         ongoing_navigation_request->browser_initiated() && !has_user_gesture;
+         (ongoing_navigation_request->browser_initiated() ||
+          NavigationTypeUtils::IsHistory(
+              ongoing_navigation_request->common_params().navigation_type)) &&
+         !has_user_gesture;
 }
 
 NavigatorDelegate* Navigator::GetDelegate() {
@@ -379,9 +399,9 @@ void Navigator::DidNavigate(
     was_within_same_document = false;
   }
   // At this point we have already chosen a SiteInstance for this navigation, so
-  // set |origin_isolation_request| to kNone in the conversion to UrlInfo
-  // below.
-  const UrlInfo url_info(params.url, UrlInfo::OriginIsolationRequest::kNone);
+  // set OriginIsolationRequest to kNone in the conversion to UrlInfo below:
+  // this is done implicitly in the UrlInfoInit constructor.
+  const UrlInfo url_info(UrlInfoInit(params.url));
 
   if (auto& old_page_info = navigation_request->commit_params().old_page_info) {
     // This is a same-site main-frame navigation where we did a proactive
@@ -408,7 +428,7 @@ void Navigator::DidNavigate(
   // run unload handlers.  Those unload handlers should still see the old
   // frame's origin.  See https://crbug.com/825283.
   frame_tree_node->render_manager()->DidNavigateFrame(
-      render_frame_host, params.gesture == NavigationGestureUser,
+      render_frame_host, navigation_request->common_params().has_user_gesture,
       was_within_same_document,
       navigation_request->coop_status()
           .require_browsing_instance_swap() /* clear_proxies_on_commit */,
@@ -462,8 +482,7 @@ void Navigator::DidNavigate(
   // node to consider itself no longer on the initial empty document. Record
   // whether we're leaving the initial empty document before that.
   bool was_on_initial_empty_document =
-      frame_tree_node
-          ->is_on_initial_empty_document_or_subsequent_empty_documents();
+      frame_tree_node->is_on_initial_empty_document();
 
   render_frame_host->DidNavigate(params, navigation_request.get(),
                                  was_within_same_document);
@@ -556,12 +575,10 @@ void Navigator::DidNavigate(
   // Run post-commit tasks.
   if (delegate_) {
     if (details.is_main_frame) {
-      delegate_->DidNavigateMainFramePostCommit(render_frame_host, details,
-                                                params);
+      delegate_->DidNavigateMainFramePostCommit(render_frame_host, details);
     }
 
-    delegate_->DidNavigateAnyFramePostCommit(render_frame_host, details,
-                                             params);
+    delegate_->DidNavigateAnyFramePostCommit(render_frame_host, details);
   }
 }
 
@@ -742,7 +759,7 @@ void Navigator::NavigateFromFrameProxy(
 
   // Allow the delegate to cancel the cross-process navigation.
   if (!delegate_->ShouldAllowRendererInitiatedCrossProcessNavigation(
-          render_frame_host->frame_tree_node()->IsMainFrame()))
+          render_frame_host->is_main_frame()))
     return;
 
   // TODO(creis): Determine if this transfer started as a browser-initiated

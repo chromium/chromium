@@ -172,9 +172,10 @@ absl_source_set("hashtablez_sampler") {
     ":have_sse",
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/abseil-cpp/absl/base:exponential_biased",
     "//third_party/abseil-cpp/absl/debugging:stacktrace",
     "//third_party/abseil-cpp/absl/memory",
+    "//third_party/abseil-cpp/absl/profiling:exponential_biased",
+    "//third_party/abseil-cpp/absl/profiling:sample_recorder",
     "//third_party/abseil-cpp/absl/synchronization",
     "//third_party/abseil-cpp/absl/utility",
   ]
@@ -218,7 +219,6 @@ absl_source_set("raw_hash_set") {
     ":hashtable_debug_hooks",
     ":hashtablez_sampler",
     ":have_sse",
-    ":layout",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:endian",
@@ -326,6 +326,18 @@ absl_source_set("unordered_set_modifiers_test") {
   ]
 }
 
+absl_source_set("sample_element_size_test") {
+  testonly = true
+  public = [ "sample_element_size_test.cc" ]
+  deps = [
+    ":flat_hash_map",
+    ":flat_hash_set",
+    ":node_hash_map",
+    ":node_hash_set",
+    "//third_party/googletest:gtest",
+  ]
+}
+
 absl_source_set("btree") {
   sources = [
     "internal/btree.h",
@@ -370,7 +382,7 @@ absl_source_set("inlined_vector_test") {
     "//third_party/abseil-cpp/absl/hash:hash_testing",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/strings",
-    "//third_party/googletest:gtest",
     "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
   ]
 }

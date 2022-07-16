@@ -38,12 +38,13 @@ public final class TabHelpers {
         ContinuousSearchTabHelper.createForTab(tab);
         if (ReaderModeManager.isEnabled()) ReaderModeManager.createForTab(tab);
         AutofillAssistantTabHelper.createForTab(tab);
+
         // The following will start prefetching data for the price drops feature, so
         // we should only do it if the user is eligible for the feature (e.g. has sync enabled).
         if (!tab.isIncognito() && !((TabImpl) tab).isCustomTab()
                 && PriceTrackingUtilities.isPriceTrackingEligible()
                 && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled()) {
-            ShoppingPersistedTabData.from(tab);
+            ShoppingPersistedTabData.initialize(tab);
         }
 
         // TODO(jinsukkim): Do this by having something observe new tab creation.

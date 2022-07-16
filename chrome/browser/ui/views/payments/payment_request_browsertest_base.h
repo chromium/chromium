@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/test_chrome_payment_request_delegate.h"
@@ -93,6 +92,12 @@ class PaymentRequestBrowserTestBase
     PROCESSING_SPINNER_HIDDEN,
     PAYMENT_HANDLER_WINDOW_OPENED,
   };
+
+  PaymentRequestBrowserTestBase(const PaymentRequestBrowserTestBase&) = delete;
+  PaymentRequestBrowserTestBase& operator=(
+      const PaymentRequestBrowserTestBase&) = delete;
+
+  base::WeakPtr<PaymentRequestBrowserTestBase> GetWeakPtr();
 
  protected:
   PaymentRequestBrowserTestBase();
@@ -282,7 +287,7 @@ class PaymentRequestBrowserTestBase
   bool is_browser_window_active_ = true;
   bool skip_ui_for_basic_card_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestBrowserTestBase);
+  base::WeakPtrFactory<PaymentRequestBrowserTestBase> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

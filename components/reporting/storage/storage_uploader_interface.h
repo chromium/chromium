@@ -9,8 +9,9 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "components/reporting/proto/record.pb.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "base/strings/string_piece.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -24,6 +25,19 @@ namespace reporting {
 // automatically discards after |Completed| returns.
 class UploaderInterface {
  public:
+  // Reason upload is instantiated.
+  enum class UploadReason : uint32_t {
+    UNKNOWN = 0,
+    MANUAL = 1,
+    KEY_DELIVERY = 2,
+    PERIODIC = 3,
+    IMMEDIATE_FLUSH = 4,
+    FAILURE_RETRY = 5,
+    INCOMPLETE_RETRY = 6,
+    INIT_RESUME = 7,
+    MAX_REASON = 8,  // Anything beyond this is illegal.
+  };
+
   // using AsyncStartUploaderCb =
   //     base::RepeatingCallback<StatusOr<std::unique_ptr<UploaderInterface>>(
   //         bool need_encryption_key)>;
@@ -36,7 +50,7 @@ class UploaderInterface {
       base::OnceCallback<void(StatusOr<std::unique_ptr<UploaderInterface>>)>;
   // Callback type for asynchronous UploadInterface provider.
   using AsyncStartUploaderCb =
-      base::RepeatingCallback<void(bool need_encryption_key,
+      base::RepeatingCallback<void(UploaderInterface::UploadReason reason,
                                    UploaderInterfaceResultCb)>;
 
   UploaderInterface(const UploaderInterface& other) = delete;
@@ -54,13 +68,15 @@ class UploaderInterface {
   // be called after the record or error status has been processed, with true
   // if next record needs to be delivered and false if the Uploader should
   // stop.
-  virtual void ProcessGap(SequencingInformation start,
+  virtual void ProcessGap(SequenceInformation start,
                           uint64_t count,
                           base::OnceCallback<void(bool)> processed_cb) = 0;
 
   // Finalizes the upload (e.g. sends the message to server and gets
   // response). Called always, regardless of whether there were errors.
   virtual void Completed(Status final_status) = 0;
+
+  static base::StringPiece ReasonToString(UploadReason);
 
  protected:
   UploaderInterface();

@@ -112,7 +112,6 @@ source_set("browser") {
     "//ios/components/webui:url_constants",
     "//ios/net",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/voice",
     "//ios/web",
     "//ios/web/common",
     "//ios/web/public",
@@ -150,7 +149,6 @@ source_set("utils") {
     "//components/variations",
     "//ios/chrome/browser/browsing_data:feature_flags",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
   ]
 }
 
@@ -195,6 +193,7 @@ source_set("browser_impl") {
     "//components/component_updater",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/crash/core/common:crash_key_lib",
     "//components/crash/core/common:reporter_running_ios",
     "//components/flags_ui",
     "//components/gcm_driver",
@@ -233,6 +232,7 @@ source_set("browser_impl") {
     "//ios/chrome/browser/metrics:expired_histograms_array",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/open_from_clipboard",
+    "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/prefs",
     "//ios/chrome/browser/prefs:browser_prefs",
@@ -278,8 +278,17 @@ tweak_info_plist("experimental_info_plist") {
   ]
 }
 
+bundle_data("settings_experimental_synctypeslist_plist") {
+  sources =
+      [ "resources/Settings.bundle/ExperimentalSyncTypesListDisabled.plist" ]
+  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/{{source_file_part}}" ]
+}
+
 bundle_data("settings_resources_experimental_plist") {
-  public_deps = [ ":experimental_info_plist" ]
+  public_deps = [
+    ":experimental_info_plist",
+    ":settings_experimental_synctypeslist_plist",
+  ]
   sources = get_target_outputs(":experimental_info_plist")
   outputs = [ "{{bundle_resources_dir}}/Settings.bundle/Experimental.plist" ]
 }

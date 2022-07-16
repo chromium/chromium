@@ -12,9 +12,8 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -49,6 +48,9 @@ class PrefChangeWatcher {
  public:
   PrefChangeWatcher(const char* pref_name, PrefService* prefs);
 
+  PrefChangeWatcher(const PrefChangeWatcher&) = delete;
+  PrefChangeWatcher& operator=(const PrefChangeWatcher&) = delete;
+
   void Wait();
 
   void OnPrefChange();
@@ -58,8 +60,6 @@ class PrefChangeWatcher {
 
   base::RunLoop run_loop_;
   PrefChangeRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefChangeWatcher);
 };
 
 PrefChangeWatcher::PrefChangeWatcher(const char* pref_name,
@@ -84,6 +84,12 @@ void PrefChangeWatcher::OnPrefChange() {
 
 class LoginScreenAccessibilityPolicyBrowsertest
     : public DevicePolicyCrosBrowserTest {
+ public:
+  LoginScreenAccessibilityPolicyBrowsertest(
+      const LoginScreenAccessibilityPolicyBrowsertest&) = delete;
+  LoginScreenAccessibilityPolicyBrowsertest& operator=(
+      const LoginScreenAccessibilityPolicyBrowsertest&) = delete;
+
  protected:
   LoginScreenAccessibilityPolicyBrowsertest();
   ~LoginScreenAccessibilityPolicyBrowsertest() override;
@@ -100,9 +106,6 @@ class LoginScreenAccessibilityPolicyBrowsertest
   base::Value GetPrefValue(const char* pref_name) const;
 
   Profile* login_profile_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenAccessibilityPolicyBrowsertest);
 };
 
 LoginScreenAccessibilityPolicyBrowsertest::

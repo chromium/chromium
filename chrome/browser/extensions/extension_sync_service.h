@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/sync_bundle.h"
@@ -41,6 +40,10 @@ class ExtensionSyncService : public syncer::SyncableService,
                              public extensions::ExtensionPrefsObserver {
  public:
   explicit ExtensionSyncService(Profile* profile);
+
+  ExtensionSyncService(const ExtensionSyncService&) = delete;
+  ExtensionSyncService& operator=(const ExtensionSyncService&) = delete;
+
   ~ExtensionSyncService() override;
 
   // Convenience function to get the ExtensionSyncService for a BrowserContext.
@@ -153,8 +156,6 @@ class ExtensionSyncService : public syncer::SyncableService,
   // have started happening. It will cause sync to call us back
   // asynchronously via MergeDataAndStartSyncing as soon as possible.
   syncer::SyncableService::StartSyncFlare flare_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionSyncService);
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_SYNC_SERVICE_H_

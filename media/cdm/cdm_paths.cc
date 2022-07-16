@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/system/sys_info.h"
 #include "media/media_buildflags.h"
 
 namespace media {
@@ -41,14 +40,10 @@ base::FilePath GetPlatformSpecificDirectory(const std::string& cdm_base_path) {
 }
 
 #if defined(OS_WIN)
-const char kCdmStore[] = "CdmStore";
-
-base::FilePath GetCdmStorePath(const base::FilePath& user_data_dir,
+base::FilePath GetCdmStorePath(const base::FilePath& cdm_store_path_root,
                                const base::UnguessableToken& cdm_origin_id,
                                const std::string& key_system) {
-  return user_data_dir.AppendASCII(kCdmStore)
-      .AppendASCII(base::SysInfo::ProcessCPUArchitecture())
-      .AppendASCII(cdm_origin_id.ToString())
+  return cdm_store_path_root.AppendASCII(cdm_origin_id.ToString())
       .AppendASCII(key_system);
 }
 #endif  // defined(OS_WIN)

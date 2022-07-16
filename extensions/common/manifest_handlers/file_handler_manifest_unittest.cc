@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <vector>
-
 #include "base/cxx17_backports.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
-#include "extensions/common/install_warning.h"
-#include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
 #include "extensions/common/manifest_test.h"
@@ -85,47 +81,6 @@ TEST_F(FileHandlersManifestTest, NotPlatformApp) {
   const FileHandlersInfo* handlers =
       FileHandlers::GetFileHandlers(extension.get());
   ASSERT_TRUE(handlers == NULL);
-}
-
-TEST_F(FileHandlersManifestTest, HostedNotBookmarkApp) {
-  // This should load successfully but have the file handlers ignored.
-  scoped_refptr<const Extension> extension =
-      LoadAndExpectSuccess("file_handlers_valid_hosted_app.json",
-                           extensions::mojom::ManifestLocation::kInternal);
-
-  ASSERT_TRUE(extension);
-
-  std::vector<InstallWarning> expected_warnings;
-  expected_warnings.push_back(
-      InstallWarning(errors::kInvalidFileHandlersHostedAppsNotSupported));
-  EXPECT_EQ(expected_warnings, extension->install_warnings());
-
-  EXPECT_TRUE(extension->is_hosted_app());
-  EXPECT_FALSE(extension->from_bookmark());
-
-  const FileHandlersInfo* handlers =
-      FileHandlers::GetFileHandlers(extension.get());
-  EXPECT_FALSE(handlers);
-}
-
-TEST_F(FileHandlersManifestTest, HostedBookmarkApp) {
-  // This should load successfully with file handlers.
-  scoped_refptr<const Extension> extension =
-      LoadAndExpectSuccess("file_handlers_valid_hosted_app.json",
-                           extensions::mojom::ManifestLocation::kInternal,
-                           extensions::Extension::FROM_BOOKMARK);
-
-  ASSERT_TRUE(extension);
-  EXPECT_TRUE(extension->install_warnings().empty());
-
-  // Check we're a hosted app and a bookmark app.
-  EXPECT_TRUE(extension->is_hosted_app());
-  EXPECT_TRUE(extension->from_bookmark());
-
-  const FileHandlersInfo* handlers =
-      FileHandlers::GetFileHandlers(extension.get());
-  ASSERT_TRUE(handlers);
-  EXPECT_GE(handlers->size(), 1u);
 }
 
 }  // namespace extensions

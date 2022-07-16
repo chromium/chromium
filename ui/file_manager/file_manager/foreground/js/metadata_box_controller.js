@@ -86,9 +86,6 @@ export class MetadataBoxController {
   /**
    * Initialize the controller with quick view which will be lazily loaded.
    *
-   * TODO(oka): store quickViewModel_.metadataBoxActive state to persistent
-   * storage using FilesApp window.appState?
-   *
    * @param{!FilesQuickView} quickView
    */
   init(quickView) {

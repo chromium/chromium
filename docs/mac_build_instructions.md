@@ -12,20 +12,30 @@ Are you a Google employee? See
 
 ## System requirements
 
-*   A Mac running 10.15.4+, Intel or Arm.
+*   A Mac, Intel or Arm.
     ([More details about Arm Macs](https://chromium.googlesource.com/chromium/src.git/+/main/docs/mac_arm64.md).)
-*   [Xcode](https://developer.apple.com/xcode/) 12.2+. This version of Xcode
-    comes with ...
-*   The macOS 11.0 SDK. Run
+*   [Xcode](https://developer.apple.com/xcode/). Xcode comes with...
+*   The macOS SDK. Run
 
     ```shell
     $ ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
     ```
 
-    to check whether you have it. Building with a newer SDK usually works too
-    (please fix it if it doesn't), but the releases
-    [currently use Xcode 12.2](https://source.chromium.org/search?q=MAC_BINARIES_LABEL&ss=chromium)
-    and the macOS 11.0 SDK.
+    to check whether you have it, and what version you have.
+    `mac_sdk_official_version` in [mac_sdk.gni](../build/config/mac/mac_sdk.gni)
+    is the SDK version used on all the bots and for
+    [official builds](https://source.chromium.org/search?q=MAC_BINARIES_LABEL&ss=chromium),
+    so that version is guaranteed to work. Building with a newer SDK usually
+    works too (please fix or file a bug if it doesn't).
+    
+    Building with an older SDK might also work, but if it doesn't then we won't
+    accept changes for making it work.
+    
+    The easiest way to get the newest SDK is to use the newest version of Xcode,
+    which often requires using the newest version of macOS. We don't use Xcode
+    itself much, so if you're know what you're doing, you can likely get the
+    build working with an older version of macOS as long as you get a new
+    version of the macOS SDK on it.
 
 ## Install `depot_tools`
 
@@ -184,7 +194,7 @@ Every time you start a new developer build of Chrome you get a system dialog
 asking "Do you want the application Chromium.app to accept incoming
 network connections?" - to avoid this, run with this command-line flag:
 
---disable-features="MediaRouter"
+--disable-features="DialMediaRouteProvider"
 
 ## Running test targets
 

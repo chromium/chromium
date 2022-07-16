@@ -5,13 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_WELCOME_WELCOME_SCREEN_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_FIRST_RUN_WELCOME_WELCOME_SCREEN_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 @protocol TOSCommands;
 
 // Extends the base delegate protocol to handle taps on the custom button.
-@protocol
-    WelcomeScreenViewControllerDelegate <FirstRunScreenViewControllerDelegate>
+@protocol WelcomeScreenViewControllerDelegate <PromoStyleViewControllerDelegate>
 
 // Returns whether the metrics reporting consent checkbox should be selected or
 // not by default.
@@ -20,7 +19,7 @@
 @end
 
 // View controller of welcome screen.
-@interface WelcomeScreenViewController : FirstRunScreenViewController
+@interface WelcomeScreenViewController : PromoStyleViewController
 
 @property(nonatomic, weak) id<WelcomeScreenViewControllerDelegate> delegate;
 

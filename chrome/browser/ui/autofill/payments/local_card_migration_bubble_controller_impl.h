@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_BUBBLE_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_BUBBLE_CONTROLLER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_controller_observer.h"
@@ -22,6 +21,10 @@ class LocalCardMigrationBubbleControllerImpl
       public content::WebContentsUserData<
           LocalCardMigrationBubbleControllerImpl> {
  public:
+  LocalCardMigrationBubbleControllerImpl(
+      const LocalCardMigrationBubbleControllerImpl&) = delete;
+  LocalCardMigrationBubbleControllerImpl& operator=(
+      const LocalCardMigrationBubbleControllerImpl&) = delete;
   ~LocalCardMigrationBubbleControllerImpl() override;
 
   // Shows the prompt that offers local credit card migration.
@@ -76,8 +79,6 @@ class LocalCardMigrationBubbleControllerImpl
       observer_list_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationBubbleControllerImpl);
 };
 
 }  // namespace autofill

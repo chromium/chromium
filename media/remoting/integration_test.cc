@@ -23,14 +23,16 @@ class MediaRemotingIntegrationTest : public testing::Test,
         base::Unretained(this)));
   }
 
+  MediaRemotingIntegrationTest(const MediaRemotingIntegrationTest&) = delete;
+  MediaRemotingIntegrationTest& operator=(const MediaRemotingIntegrationTest&) =
+      delete;
+
  private:
   std::unique_ptr<Renderer> CreateEnd2EndTestRenderer(
       absl::optional<RendererType> renderer_type) {
     return std::make_unique<End2EndTestRenderer>(
         this->CreateDefaultRenderer(renderer_type));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRemotingIntegrationTest);
 };
 
 TEST_F(MediaRemotingIntegrationTest, BasicPlayback) {
@@ -60,7 +62,7 @@ TEST_F(MediaRemotingIntegrationTest, MediaSource_ConfigChange_WebM) {
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(gfx::Size(640, 360))).Times(1);
   scoped_refptr<DecoderBuffer> second_file =
       ReadTestDataFile("bear-640x360.webm");
-  ASSERT_TRUE(source.AppendAtTime(base::TimeDelta::FromSeconds(kAppendTimeSec),
+  ASSERT_TRUE(source.AppendAtTime(base::Seconds(kAppendTimeSec),
                                   second_file->data(),
                                   second_file->data_size()));
   source.EndOfStream();

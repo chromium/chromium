@@ -2,11 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../icons.js';
+import '../permission_item.js';
+import '../pin_to_shelf_item.js';
+import '../shared_style.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/icons.m.js';
+
+import {assertNotReached} from '//resources/js/assert.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Router} from '../../../../router.js';
+import {routes} from '../../../os_route.m.js';
+import {AppManagementStoreClient} from '../store_client.js';
+import {getSelectedApp} from '../util.js';
+
+import {PluginVmBrowserProxyImpl} from './plugin_vm_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-plugin-vm-detail-view',
 
   behaviors: [
-    app_management.AppManagementStoreClient,
+    AppManagementStoreClient,
     WebUIListenerBehavior,
   ],
 
@@ -32,21 +52,21 @@ Polymer({
   attached() {
     // When the state is changed, get the new selected app and assign it to
     // |app_|
-    this.watch('app_', state => app_management.util.getSelectedApp(state));
+    this.watch('app_', state => getSelectedApp(state));
     this.updateFromStore();
   },
 
   /** @private */
   onSharedPathsClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_PATHS,
+    Router.getInstance().navigateTo(
+        routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_PATHS,
         new URLSearchParams({'id': this.app_.id}));
   },
 
   /** @private */
   onSharedUsbDevicesClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_USB_DEVICES,
+    Router.getInstance().navigateTo(
+        routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_USB_DEVICES,
         new URLSearchParams({'id': this.app_.id}));
   },
 
@@ -57,11 +77,11 @@ Polymer({
   onPermissionChanged_: async function(e) {
     this.pendingPermissionItem_ = /** @type {Element} */ (e.target);
     switch (e.target.permissionType) {
-      case 'CAMERA':
+      case 'kCamera':
         this.dialogText_ =
             loadTimeData.getString('pluginVmPermissionDialogCameraLabel');
         break;
-      case 'MICROPHONE':
+      case 'kMicrophone':
         this.dialogText_ =
             loadTimeData.getString('pluginVmPermissionDialogMicrophoneLabel');
         break;
@@ -69,9 +89,8 @@ Polymer({
         assertNotReached();
     }
 
-    const requiresRelaunch =
-        await settings.PluginVmBrowserProxyImpl.getInstance()
-            .isRelaunchNeededForNewPermissions();
+    const requiresRelaunch = await PluginVmBrowserProxyImpl.getInstance()
+                                 .isRelaunchNeededForNewPermissions();
     if (requiresRelaunch) {
       this.showDialog_ = true;
     } else {
@@ -81,7 +100,7 @@ Polymer({
 
   onRelaunchTap_: function() {
     this.pendingPermissionItem_.syncPermission();
-    settings.PluginVmBrowserProxyImpl.getInstance().relaunchPluginVm();
+    PluginVmBrowserProxyImpl.getInstance().relaunchPluginVm();
     this.showDialog_ = false;
   },
 

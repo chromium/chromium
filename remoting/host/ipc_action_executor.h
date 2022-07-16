@@ -20,6 +20,10 @@ class IpcActionExecutor : public ActionExecutor {
  public:
   explicit IpcActionExecutor(
       scoped_refptr<DesktopSessionProxy> desktop_session_proxy);
+
+  IpcActionExecutor(const IpcActionExecutor&) = delete;
+  IpcActionExecutor& operator=(const IpcActionExecutor&) = delete;
+
   ~IpcActionExecutor() override;
 
   // ActionStub interface.
@@ -28,8 +32,6 @@ class IpcActionExecutor : public ActionExecutor {
  private:
   // Wraps the IPC channel to the desktop process.
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcActionExecutor);
 };
 
 }  // namespace remoting

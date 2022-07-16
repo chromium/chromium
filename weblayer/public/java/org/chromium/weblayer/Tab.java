@@ -214,8 +214,13 @@ public class Tab {
      * Tab, the target language will be |targetLanguage|. Notes:
      * - |targetLanguage| should be specified as the language code (e.g., "de" for German).
      * - Passing an empty string causes behavior to revert to default.
-     * - Even with the target language specified, the translate UI will not trigger for pages in the
-     *   user's locale.
+     * - Specifying a non-empty target language will also result in the following behaviors (all of
+     *   which are intentional as part of the semantics of having a target language):
+     *   - Translation is initiated automatically (note that the infobar UI is present)
+     *   - Translation occurs even for languages/sites that the user has blocklisted
+     *   - Translation occurs even for pages in the user's default locale
+     *   - Translation does *not* occur nor is the infobar UI shown for pages in the specified
+     *     target language
      */
     public void setTranslateTargetLanguage(@NonNull String targetLanguage) {
         ThreadCheck.ensureOnUiThread();

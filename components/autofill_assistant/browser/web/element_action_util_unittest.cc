@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_assistant/browser/actions/action_delegate_util.h"
+#include "components/autofill_assistant/browser/web/element_action_util.h"
 
 #include "base/guid.h"
 #include "base/test/bind.h"
@@ -21,7 +21,6 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::InSequence;
-using ::testing::Return;
 
 class ElementActionUtilTest : public testing::Test {
  public:
@@ -150,9 +149,10 @@ TEST_F(ElementActionUtilTest, TakeElementAndGetProperty) {
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "value"));
   EXPECT_CALL(*this, MockDoneGet(EqualsStatus(OkClientStatus()), "value"));
 
-  TakeElementAndGetProperty<std::string>(
+  TakeElementAndGetProperty<const std::string&>(
       base::BindOnce(&ElementActionUtilTest::MockGetAction,
                      base::Unretained(this)),
+      std::string(),
       base::BindOnce(&ElementActionUtilTest::MockDoneGet,
                      base::Unretained(this)),
       OkClientStatus(), std::move(expected_element));
@@ -166,9 +166,10 @@ TEST_F(ElementActionUtilTest, TakeElementAndGetPropertyWithFailedStatus) {
               MockDoneGet(EqualsStatus(ClientStatus(ELEMENT_RESOLUTION_FAILED)),
                           std::string()));
 
-  TakeElementAndGetProperty<std::string>(
+  TakeElementAndGetProperty<const std::string&>(
       base::BindOnce(&ElementActionUtilTest::MockGetAction,
                      base::Unretained(this)),
+      std::string(),
       base::BindOnce(&ElementActionUtilTest::MockDoneGet,
                      base::Unretained(this)),
       ClientStatus(ELEMENT_RESOLUTION_FAILED), std::move(expected_element));

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_MAIN_RESOURCE_HANDLE_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_MAIN_RESOURCE_HANDLE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_accessed_callback.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
@@ -55,6 +54,12 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
   ServiceWorkerMainResourceHandle(
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       ServiceWorkerAccessedCallback on_service_worker_accessed);
+
+  ServiceWorkerMainResourceHandle(const ServiceWorkerMainResourceHandle&) =
+      delete;
+  ServiceWorkerMainResourceHandle& operator=(
+      const ServiceWorkerMainResourceHandle&) = delete;
+
   ~ServiceWorkerMainResourceHandle();
 
   // Called after a ServiceWorkerContainerHost tied with |container_info| was
@@ -138,8 +143,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
   scoped_refptr<ServiceWorkerContextWrapper> context_wrapper_;
 
   base::WeakPtrFactory<ServiceWorkerMainResourceHandle> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerMainResourceHandle);
 };
 
 }  // namespace content

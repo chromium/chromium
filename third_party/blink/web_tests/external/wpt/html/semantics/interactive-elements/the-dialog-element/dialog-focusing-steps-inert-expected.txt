@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Dialog focusing steps should not run when dialog is inert assert_equals: Dialog focusing steps should not run when dialog is inert expected Element node <input id="outer-input"></input> but got Element node <body>
+<input id="outer-input">
+<dialog inert="" open="">...
+Harness: the test ran to completion.
+

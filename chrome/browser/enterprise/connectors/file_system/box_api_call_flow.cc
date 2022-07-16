@@ -89,22 +89,6 @@ std::string ExtractParentId(const base::Value& value) {
   return id;
 }
 
-// For possible extensions:
-// https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
-std::string GetMimeType(base::FilePath file_path) {
-  auto ext = file_path.FinalExtension();
-  DCHECK(ext.size()) << file_path;
-  if (ext.front() == '.') {
-    ext.erase(ext.begin());
-  }
-  DCHECK_NE(ext, FILE_PATH_LITERAL("crdownload"));
-
-  std::string file_type;
-  bool result = net::GetMimeTypeFromExtension(ext, &file_type);
-  DCHECK(result || file_type.empty());
-  return file_type;
-}
-
 base::Value CreateEmptyDict() {
   return base::Value(base::Value::Type::DICTIONARY);
 }
@@ -173,6 +157,10 @@ void ProcessUploadSuccessResponse(
 }  // namespace
 
 namespace enterprise_connectors {
+
+const char kBoxEnterpriseIdFieldName[] = "enterprise.id";
+const char kBoxLoginFieldName[] = "login";
+const char kBoxNameFieldName[] = "name";
 
 // File size limit according to https://developer.box.com/guides/uploads/:
 // - Chucked upload APIs is only supported for file size >= 20 MB;
@@ -412,19 +400,17 @@ std::string BoxCreateUpstreamFolderApiCallFlow::CreateApiCallBody() {
 }
 
 bool BoxCreateUpstreamFolderApiCallFlow::IsExpectedSuccessCode(int code) const {
-  return code == net::HTTP_CREATED;
+  return code == net::HTTP_CREATED || code == net::HTTP_CONFLICT;
 }
 
 void BoxCreateUpstreamFolderApiCallFlow::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
   auto response_code = head->headers->response_code();
-  CHECK_EQ(response_code, net::HTTP_CREATED);
-
   data_decoder::DataDecoder::ParseJsonIsolated(
       *body,
       base::BindOnce(&BoxCreateUpstreamFolderApiCallFlow::OnSuccessJsonParsed,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), response_code));
 }
 
 void BoxCreateUpstreamFolderApiCallFlow::ProcessFailure(Response response) {
@@ -432,13 +418,40 @@ void BoxCreateUpstreamFolderApiCallFlow::ProcessFailure(Response response) {
 }
 
 void BoxCreateUpstreamFolderApiCallFlow::OnSuccessJsonParsed(
+    int network_response_code,
     ParseResult result) {
+  DCHECK(result.value);
+  if (!result.value)
+    return OnFailureJsonParsed(network_response_code, std::move(result));
+
   std::string folder_id;
-  if (result.value) {
-    folder_id = ExtractId(*result.value);
+  absl::optional<base::Value> folder_info_dict;
+
+  if (network_response_code == net::HTTP_CREATED) {
+    folder_info_dict = std::move(result.value);
+  } else {
+    // Right after a folder was created with a previous upload, the folder may
+    // not be found via BoxFindUpstreamFolderApiCallFlow, therefore BoxUploader
+    // tries to create a folder again and gets a conflict. The conflicting
+    // folder is included in the response body so can also be extracted to
+    // return a folder_id.
+    DCHECK_EQ(network_response_code, net::HTTP_CONFLICT);
+    std::string* box_error_code = result.value->FindStringPath("code");
+    base::Value* conflict_folders_list =
+        result.value->FindListPath("context_info.conflicts");
+    if (box_error_code && *box_error_code == "item_name_in_use" &&
+        conflict_folders_list && conflict_folders_list->GetList().size() > 0) {
+      folder_info_dict = absl::make_optional<base::Value>(
+          conflict_folders_list->GetList()[0].Clone());
+    }
   }
+
+  if (!folder_info_dict.has_value())
+    return OnFailureJsonParsed(network_response_code, std::move(result));
+
+  folder_id = ExtractId(*folder_info_dict);
   LOG_PARSE_FAIL_IF(folder_id.empty(), ERROR, "CreateUpstreamFolder", result);
-  std::move(callback_).Run(Response{!folder_id.empty(), net::HTTP_CREATED},
+  std::move(callback_).Run(Response{!folder_id.empty(), network_response_code},
                            folder_id);
   return;
 }
@@ -456,7 +469,7 @@ BoxGetCurrentUserApiCallFlow::~BoxGetCurrentUserApiCallFlow() = default;
 
 GURL BoxGetCurrentUserApiCallFlow::CreateApiCallUrl() {
   return BoxApiCallFlow::CreateApiCallUrl().Resolve(
-      "2.0/users/me?fields=enterprise");
+      "2.0/users/me?fields=enterprise,login,name");
 }
 
 bool BoxGetCurrentUserApiCallFlow::IsExpectedSuccessCode(int code) const {
@@ -479,13 +492,14 @@ void BoxGetCurrentUserApiCallFlow::OnJsonParsed(ParseResult result) {
     std::move(callback_).Run(Response{false, net::HTTP_OK}, CreateEmptyDict());
     return;
   }
-
-  // TODO(https://crbug.com/1230049): Extract into a struct instead of returning
-  //  a json blob to the callback.
-  if (!result.value->FindStringPath("enterprise.id")) {
-    LOG(ERROR) << "[BoxApiCallFlow] GetCurrentUser succeeded but "
-                  "response does not include enterprise_id: "
-               << *result.value;
+  if (!result.value->is_dict() ||
+      !result.value->FindStringPath(kBoxEnterpriseIdFieldName) ||
+      !result.value->FindStringPath(kBoxLoginFieldName) ||
+      !result.value->FindStringPath(kBoxNameFieldName)) {
+    LOG(ERROR)
+        << "[BoxApiCallFlow] GetCurrentUser succeeded but "
+           "response does not include all of enterprise_id, login, and name: "
+        << *result.value;
     std::move(callback_).Run(Response{false, net::HTTP_OK}, CreateEmptyDict());
     return;
   }
@@ -559,13 +573,22 @@ void BoxPreflightCheckApiCallFlow::ProcessFailure(Response response) {
 BoxWholeFileUploadApiCallFlow::BoxWholeFileUploadApiCallFlow(
     TaskCallback callback,
     const std::string& folder_id,
+    const std::string& mime_type,
     const base::FilePath& target_file_name,
     const base::FilePath& local_file_path)
     : folder_id_(folder_id),
+      mime_type_(mime_type),
       target_file_name_(target_file_name),
       local_file_path_(local_file_path),
       multipart_boundary_(net::GenerateMimeMultipartBoundary()),
-      callback_(std::move(callback)) {}
+      callback_(std::move(callback)) {
+  DCHECK(!mime_type_.empty())
+      << "No MIME type for download, will not send content-type header";
+  DCHECK(!folder_id_.empty());
+  DCHECK(!target_file_name_.empty());
+  DCHECK(!local_file_path_.empty());
+  DCHECK(!multipart_boundary_.empty());
+}
 
 BoxWholeFileUploadApiCallFlow::~BoxWholeFileUploadApiCallFlow() = default;
 
@@ -581,7 +604,7 @@ void BoxWholeFileUploadApiCallFlow::PostReadFileTask(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& access_token) {
   auto read_file_task = base::BindOnce(&BoxWholeFileUploadApiCallFlow::ReadFile,
-                                       local_file_path_, target_file_name_);
+                                       local_file_path_);
   auto read_file_reply = base::BindOnce(
       &BoxWholeFileUploadApiCallFlow::OnFileRead, weak_factory_.GetWeakPtr(),
       url_loader_factory, access_token);
@@ -592,34 +615,30 @@ void BoxWholeFileUploadApiCallFlow::PostReadFileTask(
 }
 
 // static
-absl::optional<BoxWholeFileUploadApiCallFlow::FileRead>
-BoxWholeFileUploadApiCallFlow::ReadFile(
-    const base::FilePath& path,
-    const base::FilePath& target_file_name) {
-  FileRead file_read;
-  file_read.mime = GetMimeType(target_file_name);
-  DCHECK(file_read.mime.size());
-  if (!base::ReadFileToStringWithMaxSize(path, &file_read.content,
+absl::optional<std::string> BoxWholeFileUploadApiCallFlow::ReadFile(
+    const base::FilePath& path) {
+  std::string file_content;
+  if (!base::ReadFileToStringWithMaxSize(path, &file_content,
                                          kWholeFileUploadMaxSize)) {
-    DLOG(ERROR) << "File " << path << " with target name " << target_file_name;
+    DLOG(ERROR) << "Cannot read file " << path;
     return absl::nullopt;
   }
-  DCHECK_LE(file_read.content.size(), kWholeFileUploadMaxSize);
-  return absl::optional<FileRead>(std::move(file_read));
+  DCHECK_LE(file_content.size(), kWholeFileUploadMaxSize);
+  return absl::optional<std::string>(std::move(file_content));
 }
 
 void BoxWholeFileUploadApiCallFlow::OnFileRead(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& access_token,
-    absl::optional<FileRead> file_read) {
-  if (!file_read) {
+    absl::optional<std::string> file_content) {
+  if (!file_content) {
     DLOG(ERROR) << "[BoxApiCallFlow] WholeFileUpload read file failed";
     // TODO(https://crbug.com/1165972): error handling
     ProcessFailure(Response{false, 0});
     return;
   }
-  DCHECK_LE(file_read->content.size(), kWholeFileUploadMaxSize);
-  file_read_ = std::move(*file_read);
+  DCHECK_LE(file_content_.size(), kWholeFileUploadMaxSize);
+  file_content_ = std::move(*file_content);
 
   // Continue to the original call flow after file has been read.
   OAuth2ApiCallFlow::Start(url_loader_factory, access_token);
@@ -630,11 +649,6 @@ GURL BoxWholeFileUploadApiCallFlow::CreateApiCallUrl() {
 }
 
 std::string BoxWholeFileUploadApiCallFlow::CreateApiCallBody() {
-  CHECK(!folder_id_.empty());
-  CHECK(!target_file_name_.empty());
-  CHECK(!file_read_.mime.empty()) << target_file_name_;
-  CHECK(!multipart_boundary_.empty());
-
   base::Value attr(base::Value::Type::DICTIONARY);
   attr.SetStringKey("name", target_file_name_.MaybeAsASCII());
   attr.SetKey("parent", CreateSingleFieldDict("id", folder_id_));
@@ -647,8 +661,8 @@ std::string BoxWholeFileUploadApiCallFlow::CreateApiCallBody() {
                                   "application/json", &body);
 
   net::AddMultipartValueForUploadWithFileName(
-      "file", target_file_name_.MaybeAsASCII(), file_read_.content,
-      multipart_boundary_, file_read_.mime, &body);
+      "file", target_file_name_.MaybeAsASCII(), file_content_,
+      multipart_boundary_, mime_type_, &body);
   net::AddMultipartFinalDelimiterForUpload(multipart_boundary_, &body);
 
   return body;
@@ -679,11 +693,8 @@ void BoxWholeFileUploadApiCallFlow::ProcessFailure(Response response) {
   std::move(callback_).Run(response, std::string());
 }
 
-void BoxWholeFileUploadApiCallFlow::SetFileReadForTesting(
-    std::string content,
-    std::string mime_type) {
-  file_read_.content = std::move(content);
-  file_read_.mime = std::move(mime_type);
+void BoxWholeFileUploadApiCallFlow::SetFileReadForTesting(std::string content) {
+  file_content_ = std::move(content);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

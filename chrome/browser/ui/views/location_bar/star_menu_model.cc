@@ -8,7 +8,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/models/image_model.h"
-#include "ui/native_theme/native_theme.h"
+#include "ui/color/color_id.h"
 
 StarMenuModel::StarMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                              bool bookmarked,
@@ -27,8 +27,7 @@ void StarMenuModel::Build(bool bookmarked,
       CommandBookmark,
       bookmarked ? IDS_STAR_VIEW_MENU_EDIT_BOOKMARK
                  : IDS_STAR_VIEW_MENU_ADD_BOOKMARK,
-      ui::ImageModel::FromVectorIcon(
-          omnibox::kStarIcon, ui::NativeTheme::kColorId_DefaultIconColor));
+      ui::ImageModel::FromVectorIcon(omnibox::kStarIcon, ui::kColorIcon));
   AddItemWithStringIdAndIcon(
       exists_as_unread_in_read_later ? CommandMarkAsRead
                                      : CommandMoveToReadLater,
@@ -36,9 +35,7 @@ void StarMenuModel::Build(bool bookmarked,
                                      : IDS_STAR_VIEW_MENU_MOVE_TO_READ_LATER,
       ui::ImageModel::FromVectorIcon(
           exists_as_unread_in_read_later ? kReadLaterIcon : kReadLaterAddIcon,
-          can_move_to_read_later
-              ? ui::NativeTheme::kColorId_DefaultIconColor
-              : ui::NativeTheme::kColorId_DisabledIconColor));
+          can_move_to_read_later ? ui::kColorIcon : ui::kColorIconDisabled));
   int index = GetIndexOfCommandId(CommandMoveToReadLater);
   if (index != -1) {
     SetEnabledAt(index, can_move_to_read_later);

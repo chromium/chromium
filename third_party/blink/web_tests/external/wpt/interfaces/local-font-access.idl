@@ -25,8 +25,14 @@ dictionary QueryOptions {
 interface FontMetadata {
   Promise<Blob> blob();
 
+  // Names
   readonly attribute USVString postscriptName;
   readonly attribute USVString fullName;
   readonly attribute USVString family;
   readonly attribute USVString style;
+
+  // Metrics
+  readonly attribute boolean italic;
+  readonly attribute float stretch;
+  readonly attribute float weight;
 };

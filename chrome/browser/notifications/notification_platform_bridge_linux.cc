@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/environment.h"
+#include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/i18n/number_formatting.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/notifications/notification_operation.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -197,7 +199,7 @@ bool ShouldAddCloseButton(const std::string& server_name,
 }
 
 void ForwardNotificationOperationOnUiThread(
-    NotificationCommon::Operation operation,
+    NotificationOperation operation,
     NotificationHandler::Type notification_type,
     const GURL& origin,
     const std::string& notification_id,
@@ -216,7 +218,8 @@ void ForwardNotificationOperationOnUiThread(
   DCHECK(!profile_id.empty());
 
   g_browser_process->profile_manager()->LoadProfile(
-      profile_id, is_incognito,
+      NotificationPlatformBridge::GetProfileBaseNameFromProfileId(profile_id),
+      is_incognito,
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      operation, notification_type, origin, notification_id,
                      action_index, reply, by_user));
@@ -894,7 +897,7 @@ class NotificationPlatformBridgeLinuxImpl
   void ForwardNotificationOperation(
       const base::Location& location,
       NotificationData* data,
-      NotificationCommon::Operation operation,
+      NotificationOperation operation,
       const absl::optional<int>& action_index,
       const absl::optional<bool>& by_user,
       const absl::optional<std::u16string>& reply) {
@@ -923,17 +926,17 @@ class NotificationPlatformBridgeLinuxImpl
 
     if (action == kDefaultButtonId) {
       ForwardNotificationOperation(
-          FROM_HERE, data, NotificationCommon::OPERATION_CLICK,
+          FROM_HERE, data, NotificationOperation::kClick,
           absl::nullopt /* action_index */, absl::nullopt /* by_user */,
           absl::nullopt /* reply */);
     } else if (action == kSettingsButtonId) {
       ForwardNotificationOperation(
-          FROM_HERE, data, NotificationCommon::OPERATION_SETTINGS,
+          FROM_HERE, data, NotificationOperation::kSettings,
           absl::nullopt /* action_index */, absl::nullopt /* by_user */,
           absl::nullopt /* reply */);
     } else if (action == kCloseButtonId) {
       ForwardNotificationOperation(
-          FROM_HERE, data, NotificationCommon::OPERATION_CLOSE,
+          FROM_HERE, data, NotificationOperation::kClose,
           absl::nullopt /* action_index */, true /* by_user */,
           absl::nullopt /* reply */);
       CloseOnTaskRunner(data->profile_id, data->notification_id);
@@ -946,7 +949,7 @@ class NotificationPlatformBridgeLinuxImpl
       if (id_zero_based >= n_buttons)
         return;
       ForwardNotificationOperation(
-          FROM_HERE, data, NotificationCommon::OPERATION_CLICK, id_zero_based,
+          FROM_HERE, data, NotificationOperation::kClick, id_zero_based,
           absl::nullopt /* by_user */, absl::nullopt /* reply */);
     }
   }
@@ -965,10 +968,10 @@ class NotificationPlatformBridgeLinuxImpl
     if (!data)
       return;
 
-    ForwardNotificationOperation(
-        FROM_HERE, data, NotificationCommon::OPERATION_CLICK,
-        absl::nullopt /* action_index */, absl::nullopt /* by_user */,
-        base::UTF8ToUTF16(reply));
+    ForwardNotificationOperation(FROM_HERE, data, NotificationOperation::kClick,
+                                 absl::nullopt /* action_index */,
+                                 absl::nullopt /* by_user */,
+                                 base::UTF8ToUTF16(reply));
   }
 
   void OnNotificationClosed(dbus::Signal* signal) {
@@ -983,8 +986,7 @@ class NotificationPlatformBridgeLinuxImpl
       return;
 
     // TODO(peter): Can we support |by_user| appropriately here?
-    ForwardNotificationOperation(FROM_HERE, data,
-                                 NotificationCommon::OPERATION_CLOSE,
+    ForwardNotificationOperation(FROM_HERE, data, NotificationOperation::kClose,
                                  absl::nullopt /* action_index */,
                                  true /* by_user */, absl::nullopt /* reply */);
     notifications_.erase(data);

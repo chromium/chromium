@@ -30,8 +30,8 @@
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -66,7 +66,7 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
     // Pretend to respond asynchronously.
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(data)),
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(1));
   }
 
   void DownloadPhotoToFile(const std::string& url,
@@ -174,8 +174,7 @@ void AmbientAshTestBase::SetUp() {
   ambient_controller()->set_backend_controller_for_testing(nullptr);
   ambient_controller()->set_backend_controller_for_testing(
       std::make_unique<FakeAmbientBackendControllerImpl>());
-  token_controller()->SetTokenUsageBufferForTesting(
-      base::TimeDelta::FromSeconds(30));
+  token_controller()->SetTokenUsageBufferForTesting(base::Seconds(30));
   SetAmbientModeEnabled(true);
   base::RunLoop().RunUntilIdle();
 }
@@ -352,7 +351,7 @@ void AmbientAshTestBase::FastForwardToNextImage() {
 void AmbientAshTestBase::FastForwardTiny() {
   // `TestAmbientURLLoaderImpl` has a small delay (1ms) to fake download delay,
   // here we fake plenty of time to download the image.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(10));
+  task_environment()->FastForwardBy(base::Milliseconds(10));
 }
 
 void AmbientAshTestBase::FastForwardToBackgroundLockScreenTimeout() {
@@ -429,9 +428,8 @@ int AmbientAshTestBase::GetNumOfActiveWakeLocks(
   return result_count;
 }
 
-void AmbientAshTestBase::IssueAccessToken(const std::string& token,
-                                          bool with_error) {
-  GetAmbientAshTestHelper()->IssueAccessToken(token, with_error);
+void AmbientAshTestBase::IssueAccessToken(bool is_empty) {
+  GetAmbientAshTestHelper()->IssueAccessToken(is_empty);
 }
 
 bool AmbientAshTestBase::IsAccessTokenRequestPending() {

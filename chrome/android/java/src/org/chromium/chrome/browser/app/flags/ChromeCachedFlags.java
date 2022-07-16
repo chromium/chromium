@@ -9,19 +9,18 @@ import android.text.TextUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lens.LensFeature;
 import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
 import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceConfig;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceConfig;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 
 import java.util.ArrayList;
@@ -67,14 +66,16 @@ public class ChromeCachedFlags {
         // Workaround for crbug.com/1223545: Do not use Arrays.asList().
         List<String> featuresToCache = new ArrayList<String>() {
             {
-                add(ChromeFeatureList.ANDROID_PARTNER_CUSTOMIZATION_PHENOTYPE);
                 add(ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION);
                 add(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION);
                 add(ChromeFeatureList.BOOKMARK_BOTTOM_SHEET);
                 add(ChromeFeatureList.CCT_INCOGNITO);
                 add(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY);
                 add(ChromeFeatureList.CCT_REMOVE_REMOTE_VIEW_IDS);
-                add(ChromeFeatureList.CLIPBOARD_SUGGESTION_CONTENT_HIDDEN);
+                add(ChromeFeatureList.CCT_RESIZABLE_90_MAXIMUM_HEIGHT);
+                add(ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE);
+                add(ChromeFeatureList.CCT_RESIZABLE_FOR_FIRST_PARTIES);
+                add(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES);
                 add(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS);
                 add(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA);
                 add(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED);
@@ -83,16 +84,20 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.DYNAMIC_COLOR_ANDROID);
                 add(ChromeFeatureList.EARLY_LIBRARY_LOAD);
                 add(ChromeFeatureList.ELASTIC_OVERSCROLL);
+                add(ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS);
+                add(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP);
+                add(ChromeFeatureList.FEED_LOADING_PLACEHOLDER);
+                add(ChromeFeatureList
+                                .GIVE_JAVA_UI_THREAD_DEFAULT_TASK_TRAITS_USER_BLOCKING_PRIORITY);
                 add(ChromeFeatureList.IMMERSIVE_UI_MODE);
                 add(ChromeFeatureList.INSTANT_START);
+                add(ChromeFeatureList.INSTANCE_SWITCHER);
                 add(ChromeFeatureList.INTEREST_FEED_V2);
-                add(ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH);
                 add(ChromeFeatureList.NEW_WINDOW_APP_MENU);
                 add(ChromeFeatureList.OFFLINE_MEASUREMENTS_BACKGROUND_TASK);
                 add(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS);
                 add(ChromeFeatureList.PAINT_PREVIEW_DEMO);
                 add(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP);
-                add(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS);
                 add(ChromeFeatureList.READ_LATER);
                 add(ChromeFeatureList.START_SURFACE_ANDROID);
                 add(ChromeFeatureList.STORE_HOURS);
@@ -104,6 +109,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.THEME_REFACTOR_ANDROID);
                 add(ChromeFeatureList.TOOLBAR_USE_HARDWARE_BITMAP_DRAW);
                 add(ChromeFeatureList.USE_CHIME_ANDROID_SDK);
+                add(ChromeFeatureList.WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT);
             }
         };
         CachedFeatureFlags.cacheNativeFlags(featuresToCache);
@@ -113,46 +119,50 @@ public class ChromeCachedFlags {
                 new ArrayList<CachedFieldTrialParameter>() {
                     {
                         add(ChimeFeatures.ALWAYS_REGISTER);
+                        add(StartSurfaceConfiguration.BEHAVIOURAL_TARGETING);
                         add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_LIMIT);
                         add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_PERIOD);
                         add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_SESSION_TIME_MS);
-                        add(LensFeature.DISABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_INCOGNITO);
-                        add(LensFeature.ENABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_LOW_END_DEVICE);
-                        add(LensFeature.ENABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_TABLET);
-                        add(LensFeature.MIN_AGSA_VERSION_LENS_CAMERA_ASSISTED_SEARCH);
-                        add(LensFeature.SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH);
-                        add(LensFeature.SKIP_AGSA_VERSION_CHECK);
-                        add(LensFeature.SKIP_LENS_ELIGIBILITY_CHECKS);
+                        add(FeedPlaceholderLayout.ENABLE_INSTANT_START_ANIMATION);
                         add(PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL);
                         add(ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS);
+                        add(StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP);
+                        add(StartSurfaceConfiguration.FINALE_ANIMATION_ENABLED);
                         add(StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER);
                         add(StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON);
+                        add(StartSurfaceConfiguration.NUM_DAYS_KEEP_SHOW_START_AT_STARTUP);
+                        add(StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD);
                         add(StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB);
+                        add(StartSurfaceConfiguration.SHOW_NTP_TILES_ON_OMNIBOX);
                         add(StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER);
+                        add(StartSurfaceConfiguration
+                                        .SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS);
+                        add(StartSurfaceConfiguration.SIGNIN_PROMO_NTP_RESET_AFTER_HOURS);
+                        add(StartSurfaceConfiguration.SPARE_RENDERER_DELAY_MS);
                         add(StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES);
                         add(StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB);
                         add(StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY);
                         add(StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START);
-                        add(StartSurfaceConfiguration.SHOW_NTP_TILES_ON_OMNIBOX);
                         add(StartSurfaceConfiguration.START_SURFACE_VARIATION);
                         add(StartSurfaceConfiguration.SUPPORT_ACCESSIBILITY);
-                        add(StartSurfaceConfiguration.FINALE_ANIMATION_ENABLED);
+                        add(StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE);
+                        add(StartSurfaceConfiguration.USER_CLICK_THRESHOLD);
+                        add(StartSurfaceConfiguration.WARM_UP_RENDERER);
                         add(StartupPaintPreviewHelper.ACCESSIBILITY_SUPPORT_PARAM);
-                        add(CommerceSubscriptionsServiceConfig.STALE_TAB_LOWER_BOUND_SECONDS);
-                        add(CommerceSubscriptionsServiceConfig.SUBSCRIPTIONS_SERVICE_BASE_URL);
-                        add(PriceTrackingUtilities.ENABLE_PRICE_NOTIFICATION);
-                        add(PriceTrackingUtilities.ENABLE_PRICE_TRACKING);
                         add(TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION);
                         add(TabUiFeatureUtilities.ENABLE_LAUNCH_BUG_FIX);
                         add(TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH);
                         add(TabUiFeatureUtilities.ENABLE_SEARCH_CHIP);
                         add(TabUiFeatureUtilities.ENABLE_SEARCH_CHIP_ADAPTIVE);
                         add(TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION);
+                        add(TabUiFeatureUtilities.SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST);
+                        add(TabUiFeatureUtilities.ENABLE_TAB_GROUP_SHARING);
                         add(TabUiFeatureUtilities.ZOOMING_MIN_MEMORY);
                         add(TabUiFeatureUtilities.ZOOMING_MIN_SDK);
                         add(TabUiFeatureUtilities.SKIP_SLOW_ZOOMING);
                         add(TabUiFeatureUtilities.TAB_GRID_LAYOUT_ANDROID_NEW_TAB_TILE);
                         add(TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO);
+                        add(ThemeUtils.ENABLE_FULL_DYNAMIC_COLORS);
                     }
                 };
         tryToCatchMissingParameters(fieldTrialsToCache);

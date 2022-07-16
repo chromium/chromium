@@ -11,7 +11,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 namespace login {
 
 class SecurityTokenSessionControllerFactory
@@ -42,6 +42,6 @@ class SecurityTokenSessionControllerFactory
 };
 
 }  // namespace login
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_SESSION_CONTROLLER_FACTORY_H_

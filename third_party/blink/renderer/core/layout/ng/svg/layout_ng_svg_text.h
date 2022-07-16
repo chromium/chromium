@@ -34,9 +34,12 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
   bool IsChildAllowed(LayoutObject* child, const ComputedStyle&) const override;
   void AddChild(LayoutObject* child, LayoutObject* before_child) override;
   void RemoveChild(LayoutObject* child) override;
-  FloatRect ObjectBoundingBox() const override;
-  FloatRect StrokeBoundingBox() const override;
-  FloatRect VisualRectInLocalSVGCoordinates() const override;
+  gfx::RectF ObjectBoundingBox() const override;
+  gfx::RectF StrokeBoundingBox() const override;
+  gfx::RectF VisualRectInLocalSVGCoordinates() const override;
+  void AbsoluteQuads(Vector<FloatQuad>& quads,
+                     MapCoordinatesFlags mode) const override;
+  FloatRect LocalBoundingBoxRectForAccessibility() const override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void WillBeDestroyed() override;
   bool NodeAtPoint(HitTestResult& result,
@@ -48,14 +51,17 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
 
   // LayoutBox override:
   bool CreatesNewFormattingContext() const override;
+  void UpdateFromStyle() override;
 
   // LayoutBlock override:
+  void Paint(const PaintInfo&) const override;
   void UpdateBlockLayout(bool relayout_children) override;
 
   void UpdateFont();
+  void UpdateTransformAffectsVectorEffect();
 
   // bounding_box_* are mutable for on-demand computation in a const method.
-  mutable FloatRect bounding_box_;
+  mutable gfx::RectF bounding_box_;
   mutable bool needs_update_bounding_box_ : 1;
 
   bool needs_text_metrics_update_ : 1;

@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_EXTERNAL_ARC_MESSAGE_CENTER_ARC_NOTIFICATION_VIEW_H_
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
-#include "base/macros.h"
 #include "ui/message_center/views/message_view.h"
 
 namespace aura {
@@ -35,6 +34,10 @@ class ArcNotificationView : public message_center::MessageView,
   // |content_view| is a view to be hosted in this view.
   ArcNotificationView(ArcNotificationItem* item,
                       const message_center::Notification& notification);
+
+  ArcNotificationView(const ArcNotificationView&) = delete;
+  ArcNotificationView& operator=(const ArcNotificationView&) = delete;
+
   ~ArcNotificationView() override;
 
   // These method are called by the content view when focus handling is deferred
@@ -95,8 +98,6 @@ class ArcNotificationView : public message_center::MessageView,
   ArcNotificationContentView* const content_view_;
 
   std::unique_ptr<views::Painter> focus_painter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationView);
 };
 
 }  // namespace ash

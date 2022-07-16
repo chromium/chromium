@@ -62,9 +62,10 @@ std::string EntryKey(int64_t service_worker_registration_id,
 }
 
 std::string EntryKey(const content::ContentIndexEntry& entry) {
-  return EntryKey(entry.service_worker_registration_id,
-                  url::Origin::Create(entry.launch_url.GetOrigin()),
-                  entry.description->id);
+  return EntryKey(
+      entry.service_worker_registration_id,
+      url::Origin::Create(entry.launch_url.DeprecatedGetOriginAsURL()),
+      entry.description->id);
 }
 
 EntryKeyComponents GetEntryKeyComponents(const std::string& key) {
@@ -142,6 +143,9 @@ void ContentIndexProviderImpl::OnContentAdded(
     content::ContentIndexEntry entry) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  if (!entry.is_top_level_context)
+    return;
+
   OfflineItemList items(1, EntryToOfflineItem(entry));
 
   // Delete the entry before adding it just in case the ID was overwritten.
@@ -149,8 +153,9 @@ void ContentIndexProviderImpl::OnContentAdded(
 
   NotifyItemsAdded(items);
 
-  metrics_.RecordContentAdded(url::Origin::Create(entry.launch_url.GetOrigin()),
-                              entry.description->category);
+  metrics_.RecordContentAdded(
+      url::Origin::Create(entry.launch_url.DeprecatedGetOriginAsURL()),
+      entry.description->category);
 }
 
 void ContentIndexProviderImpl::OnContentDeleted(
@@ -319,8 +324,11 @@ void ContentIndexProviderImpl::DidGetAllEntries(
     return;
   }
 
-  for (const auto& entry : entries)
+  for (const auto& entry : entries) {
+    if (!entry.is_top_level_context)
+      continue;
     item_list->push_back(EntryToOfflineItem(entry));
+  }
 
   std::move(done_closure).Run();
 }
@@ -363,7 +371,8 @@ OfflineItem ContentIndexProviderImpl::EntryToOfflineItem(
 
   if (site_engagement_service_) {
     item.content_quality_score =
-        site_engagement_service_->GetScore(entry.launch_url.GetOrigin()) /
+        site_engagement_service_->GetScore(
+            entry.launch_url.DeprecatedGetOriginAsURL()) /
         site_engagement::SiteEngagementScore::kMaxPoints;
   }
 

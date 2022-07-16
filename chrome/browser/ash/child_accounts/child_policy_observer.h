@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 
@@ -20,7 +19,7 @@ class OneShotTimer;
 }  // namespace base
 
 namespace policy {
-class UserCloudPolicyManagerChromeOS;
+class UserCloudPolicyManagerAsh;
 }  // namespace policy
 
 namespace ash {
@@ -47,6 +46,10 @@ class ChildPolicyObserver : public policy::CloudPolicyService::Observer {
       base::OnceCallback<void(Profile*, InitialPolicyRefreshResult)>;
 
   explicit ChildPolicyObserver(Profile* profile);
+
+  ChildPolicyObserver(const ChildPolicyObserver&) = delete;
+  ChildPolicyObserver& operator=(const ChildPolicyObserver&) = delete;
+
   ~ChildPolicyObserver() override;
 
   // policy::CloudPolicyService::Observer:
@@ -72,7 +75,7 @@ class ChildPolicyObserver : public policy::CloudPolicyService::Observer {
   void OnPolicyReady(InitialPolicyRefreshResult refresh_result);
 
   // Returns user cloud policy manager for |profile_|.
-  policy::UserCloudPolicyManagerChromeOS* GetUserCloudPolicyManager();
+  policy::UserCloudPolicyManagerAsh* GetUserCloudPolicyManager();
 
   // The result of initial policy refresh for child user.
   InitialPolicyRefreshResult refresh_result_ =
@@ -87,8 +90,6 @@ class ChildPolicyObserver : public policy::CloudPolicyService::Observer {
 
   // Profile of the child user, not owned.
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildPolicyObserver);
 };
 
 }  // namespace ash

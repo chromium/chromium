@@ -67,6 +67,9 @@ struct NET_EXPORT WebSocketFrameHeader {
   // Constructor to avoid a lot of repetitive initialisation.
   explicit WebSocketFrameHeader(OpCode opCode) : opcode(opCode) {}
 
+  WebSocketFrameHeader(const WebSocketFrameHeader&) = delete;
+  WebSocketFrameHeader& operator=(const WebSocketFrameHeader&) = delete;
+
   // Create a clone of this object on the heap.
   std::unique_ptr<WebSocketFrameHeader> Clone() const;
 
@@ -83,9 +86,6 @@ struct NET_EXPORT WebSocketFrameHeader {
   bool masked = false;
   WebSocketMaskingKey masking_key = {};
   uint64_t payload_length = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketFrameHeader);
 };
 
 // Contains an entire WebSocket frame including payload. This is used by APIs
@@ -94,6 +94,10 @@ struct NET_EXPORT WebSocketFrameHeader {
 struct NET_EXPORT_PRIVATE WebSocketFrame {
   // A frame must always have an opcode, so this parameter is compulsory.
   explicit WebSocketFrame(WebSocketFrameHeader::OpCode opcode);
+
+  WebSocketFrame(const WebSocketFrame&) = delete;
+  WebSocketFrame& operator=(const WebSocketFrame&) = delete;
+
   ~WebSocketFrame();
 
   // |header| is always present.
@@ -107,9 +111,6 @@ struct NET_EXPORT_PRIVATE WebSocketFrame {
   // object.
   // TODO(yoicho): Find more better way to clarify the life cycle.
   const char* payload = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketFrame);
 };
 
 // Structure describing one chunk of a WebSocket frame.
@@ -131,6 +132,10 @@ struct NET_EXPORT_PRIVATE WebSocketFrame {
 // WebSocketFrameParser). To construct WebSocket frames, use functions below.
 struct NET_EXPORT WebSocketFrameChunk {
   WebSocketFrameChunk();
+
+  WebSocketFrameChunk(const WebSocketFrameChunk&) = delete;
+  WebSocketFrameChunk& operator=(const WebSocketFrameChunk&) = delete;
+
   ~WebSocketFrameChunk();
 
   // Non-null |header| is provided only if this chunk is the first part of
@@ -148,9 +153,6 @@ struct NET_EXPORT WebSocketFrameChunk {
   // object.
   // TODO(yoicho): Find more better way to clarify the life cycle.
   base::span<const char> payload;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketFrameChunk);
 };
 
 using WebSocketMaskingKey = WebSocketFrameHeader::WebSocketMaskingKey;

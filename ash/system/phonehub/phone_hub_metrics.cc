@@ -93,5 +93,112 @@ void LogNotificationInteraction(NotificationInteraction interaction) {
                                 interaction);
 }
 
+std::string GetCameraRollMediaTypeSubcategoryName(
+    CameraRollMediaType mediaType) {
+  switch (mediaType) {
+    case CameraRollMediaType::kPhoto:
+      return ".Photo";
+    case CameraRollMediaType::kVideo:
+      return ".Video";
+    default:
+      DCHECK(false) << "Invalid Camera Roll media type";
+      return "";
+  }
+}
+
+void LogCameraRollContentShown(int index, CameraRollMediaType mediaType) {
+  std::string subcategory = GetCameraRollMediaTypeSubcategoryName(mediaType);
+  switch (index) {
+    case 0:
+      base::UmaHistogramSparse(
+          "PhoneHub.CameraRoll.Content.Shown" + subcategory,
+          static_cast<int>(CameraRollContentShown::kContentShown1));
+      break;
+    case 1:
+      base::UmaHistogramSparse(
+          "PhoneHub.CameraRoll.Content.Shown" + subcategory,
+          static_cast<int>(CameraRollContentShown::kContentShown2));
+      break;
+    case 2:
+      base::UmaHistogramSparse(
+          "PhoneHub.CameraRoll.Content.Shown" + subcategory,
+          static_cast<int>(CameraRollContentShown::kContentShown3));
+      break;
+    case 3:
+      base::UmaHistogramSparse(
+          "PhoneHub.CameraRoll.Content.Shown" + subcategory,
+          static_cast<int>(CameraRollContentShown::kContentShown4));
+      break;
+    default:
+      base::UmaHistogramSparse(
+          "PhoneHub.CameraRoll.Content.Shown" + subcategory,
+          static_cast<int>(CameraRollContentShown::kContentShownGTE5));
+      break;
+  }
+}
+
+void LogCameraRollContentClicked(int index, CameraRollMediaType mediaType) {
+  std::string subcategory = GetCameraRollMediaTypeSubcategoryName(mediaType);
+  switch (index) {
+    case 0:
+      base::UmaHistogramSparse(
+          "PhoneHub.CameraRoll.Content.Clicked" + subcategory,
+          static_cast<int>(CameraRollContentClicked::kContentClicked1));
+      break;
+    case 1:
+      base::UmaHistogramSparse(
+          "PhoneHub.CameraRoll.Content.Clicked" + subcategory,
+          static_cast<int>(CameraRollContentClicked::kContentClicked2));
+      break;
+    case 2:
+      base::UmaHistogramSparse(
+          "PhoneHub.CameraRoll.Content.Clicked" + subcategory,
+          static_cast<int>(CameraRollContentClicked::kContentClicked3));
+      break;
+    case 3:
+      base::UmaHistogramSparse(
+          "PhoneHub.CameraRoll.Content.Clicked" + subcategory,
+          static_cast<int>(CameraRollContentClicked::kContentClicked4));
+      break;
+    default:
+      base::UmaHistogramSparse(
+          "PhoneHub.CameraRoll.Content.Clicked" + subcategory,
+          static_cast<int>(CameraRollContentClicked::kContentClickedGTE5));
+      break;
+  }
+}
+
+void LogCameraRollContextMenuDownload(int index,
+                                      CameraRollMediaType mediaType) {
+  std::string subcategory = GetCameraRollMediaTypeSubcategoryName(mediaType);
+  switch (index) {
+    case 0:
+      base::UmaHistogramSparse(
+          "PhoneHub.CameraRoll.ContextMenu.Download" + subcategory,
+          static_cast<int>(CameraRollContextMenuDownload::kDownload1));
+      break;
+    case 1:
+      base::UmaHistogramSparse(
+          "PhoneHub.CameraRoll.ContextMenu.Download" + subcategory,
+          static_cast<int>(CameraRollContextMenuDownload::kDownload2));
+      break;
+    case 2:
+      base::UmaHistogramSparse(
+          "PhoneHub.CameraRoll.ContextMenu.Download" + subcategory,
+          static_cast<int>(CameraRollContextMenuDownload::kDownload3));
+      break;
+    case 3:
+      base::UmaHistogramSparse(
+          "PhoneHub.CameraRoll.ContextMenu.Download" + subcategory,
+          static_cast<int>(CameraRollContextMenuDownload::kDownload4));
+      break;
+    default:
+      base::UmaHistogramSparse(
+          "PhoneHub.CameraRoll.ContextMenu.Download" + subcategory,
+          static_cast<int>(CameraRollContextMenuDownload::kDownloadGTE5));
+      break;
+  }
+}
+
 }  // namespace phone_hub_metrics
 }  // namespace ash

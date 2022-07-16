@@ -5,7 +5,6 @@
 #include <cmath>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/aligned_memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringize_macros.h"
@@ -26,7 +25,6 @@ static const int kVectorSize = 8192;
 
 class VectorMathTest : public testing::Test {
  public:
-
   VectorMathTest() {
     // Initialize input and output vectors.
     input_vector_.reset(static_cast<float*>(base::AlignedAlloc(
@@ -34,6 +32,9 @@ class VectorMathTest : public testing::Test {
     output_vector_.reset(static_cast<float*>(base::AlignedAlloc(
         sizeof(float) * kVectorSize, vector_math::kRequiredAlignment)));
   }
+
+  VectorMathTest(const VectorMathTest&) = delete;
+  VectorMathTest& operator=(const VectorMathTest&) = delete;
 
   void FillTestVectors(float input, float output) {
     // Setup input and output vectors.
@@ -49,8 +50,6 @@ class VectorMathTest : public testing::Test {
  protected:
   std::unique_ptr<float[], base::AlignedFreeDeleter> input_vector_;
   std::unique_ptr<float[], base::AlignedFreeDeleter> output_vector_;
-
-  DISALLOW_COPY_AND_ASSIGN(VectorMathTest);
 };
 
 // Ensure each optimized vector_math::FMAC() method returns the same value.

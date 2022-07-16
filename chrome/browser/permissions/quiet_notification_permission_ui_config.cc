@@ -76,9 +76,9 @@ bool QuietNotificationPermissionUiConfig::IsAdaptiveActivationDryRunEnabled() {
 base::TimeDelta
 QuietNotificationPermissionUiConfig::GetAdaptiveActivationWindowSize() {
   if (!base::FeatureList::IsEnabled(features::kQuietNotificationPrompts))
-    return base::TimeDelta::FromDays(90);
+    return base::Days(90);
 
-  return base::TimeDelta::FromDays(base::GetFieldTrialParamByFeatureAsInt(
+  return base::Days(base::GetFieldTrialParamByFeatureAsInt(
       features::kQuietNotificationPrompts,
       kAdaptiveActivationActionWindowSizeInDays, 90 /* default */));
 }

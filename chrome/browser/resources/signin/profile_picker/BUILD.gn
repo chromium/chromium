@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
@@ -9,6 +10,8 @@ import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../../tools/optimize_webui.gni")
+
+assert(!is_chromeos_ash)
 
 preprocess_folder = "preprocessed"
 
@@ -69,13 +72,13 @@ preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "profile_picker.ts",
-    "navigation_mixin.ts",
-    "policy_helper.ts",
+    "ensure_lazy_loaded.ts",
     "icons.ts",
     "lazy_load.ts",
-    "ensure_lazy_loaded.ts",
     "manage_profiles_browser_proxy.ts",
+    "navigation_mixin.ts",
+    "policy_helper.ts",
+    "profile_picker.ts",
   ]
 }
 
@@ -88,12 +91,15 @@ preprocess_if_expr("preprocess_generated") {
     "profile_picker_main_view.ts",
     "profile_card.ts",
     "profile_card_menu.ts",
-    "profile_creation_flow/profile_type_choice.ts",
     "profile_creation_flow/local_profile_customization.ts",
+    "profile_creation_flow/profile_type_choice.ts",
     "profile_picker_shared_css.ts",
     "profile_creation_flow/shared_css.ts",
     "profile_switch.ts",
   ]
+  if (is_chromeos_lacros) {
+    in_files += [ "profile_creation_flow/account_selection_lacros.ts" ]
+  }
 }
 
 grit("resources") {
@@ -116,6 +122,7 @@ grit("resources") {
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
+  composite = true
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "ensure_lazy_loaded.ts",
@@ -135,6 +142,9 @@ ts_library("build_ts") {
     "profile_picker_shared_css.ts",
     "profile_switch.ts",
   ]
+  if (is_chromeos_lacros) {
+    in_files += [ "profile_creation_flow/account_selection_lacros.ts" ]
+  }
   definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
@@ -160,10 +170,10 @@ group("web_components") {
 
 html_to_js("web_components_local") {
   js_files = [
-    "profile_picker_app.ts",
-    "profile_picker_main_view.ts",
     "profile_card.ts",
     "profile_card_menu.ts",
+    "profile_picker_app.ts",
+    "profile_picker_main_view.ts",
     "profile_picker_shared_css.ts",
     "profile_switch.ts",
   ]

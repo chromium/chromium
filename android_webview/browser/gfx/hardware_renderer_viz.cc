@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "android_webview/browser/gfx/aw_gl_surface.h"
-#include "android_webview/browser/gfx/aw_render_thread_context_provider.h"
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
 #include "android_webview/browser/gfx/display_webview.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
@@ -44,7 +43,7 @@
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -68,6 +67,10 @@ class HardwareRendererViz::OnViz : public viz::DisplayClient {
  public:
   OnViz(OutputSurfaceProviderWebView* output_surface_provider,
         const scoped_refptr<RootFrameSink>& root_frame_sink);
+
+  OnViz(const OnViz&) = delete;
+  OnViz& operator=(const OnViz&) = delete;
+
   ~OnViz() override;
 
   void DrawAndSwapOnViz(const gfx::Size& viewport,
@@ -121,8 +124,6 @@ class HardwareRendererViz::OnViz : public viz::DisplayClient {
   OverlayProcessorWebView* overlay_processor_webview_ = nullptr;
 
   THREAD_CHECKER(viz_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(OnViz);
 };
 
 HardwareRendererViz::OnViz::OnViz(

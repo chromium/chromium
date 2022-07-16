@@ -84,6 +84,9 @@ class DevicePermissionsPrompt {
            content::BrowserContext* context,
            bool multiple);
 
+    Prompt(const Prompt&) = delete;
+    Prompt& operator=(const Prompt&) = delete;
+
     // Only one observer may be registered at a time.
     virtual void SetObserver(Observer* observer);
 
@@ -122,11 +125,13 @@ class DevicePermissionsPrompt {
     Observer* observer_ = nullptr;
     content::BrowserContext* browser_context_ = nullptr;
     bool multiple_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(Prompt);
   };
 
   explicit DevicePermissionsPrompt(content::WebContents* web_contents);
+
+  DevicePermissionsPrompt(const DevicePermissionsPrompt&) = delete;
+  DevicePermissionsPrompt& operator=(const DevicePermissionsPrompt&) = delete;
+
   virtual ~DevicePermissionsPrompt();
 
   void AskForUsbDevices(const Extension* extension,
@@ -165,8 +170,6 @@ class DevicePermissionsPrompt {
 
   // Parameters available to the UI implementation.
   scoped_refptr<Prompt> prompt_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevicePermissionsPrompt);
 };
 
 }  // namespace extensions

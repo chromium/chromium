@@ -16,6 +16,11 @@ class ScreenSwitchCheckController : public ScreenCaptureObserver,
                                     public ScreenShareObserver {
  public:
   ScreenSwitchCheckController();
+
+  ScreenSwitchCheckController(const ScreenSwitchCheckController&) = delete;
+  ScreenSwitchCheckController& operator=(const ScreenSwitchCheckController&) =
+      delete;
+
   ~ScreenSwitchCheckController() override;
 
   // Determines if it's ok to switch away from the currently active user. Screen
@@ -38,8 +43,6 @@ class ScreenSwitchCheckController : public ScreenCaptureObserver,
 
   bool has_capture_ = false;
   bool has_share_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenSwitchCheckController);
 };
 
 }  // namespace ash

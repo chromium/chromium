@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 
+#include <utility>
+
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/time/default_clock.h"
@@ -283,6 +285,24 @@ int InSessionPasswordSyncManager::GetDialogWidth() {
   if (!lock_screen_start_reauth_dialog_)
     return 0;
   return lock_screen_start_reauth_dialog_->GetDialogWidth();
+}
+
+bool InSessionPasswordSyncManager::IsReauthDialogLoadedForTesting(
+    base::OnceClosure callback) {
+  if (is_dialog_loaded_for_testing_)
+    return true;
+  DCHECK(!on_dialog_loaded_callback_for_testing_);
+  on_dialog_loaded_callback_for_testing_ = std::move(callback);
+  return false;
+}
+
+void InSessionPasswordSyncManager::OnReauthDialogReadyForTesting() {
+  if (is_dialog_loaded_for_testing_)
+    return;
+  is_dialog_loaded_for_testing_ = true;
+  if (on_dialog_loaded_callback_for_testing_) {
+    std::move(on_dialog_loaded_callback_for_testing_).Run();
+  }
 }
 
 }  // namespace ash

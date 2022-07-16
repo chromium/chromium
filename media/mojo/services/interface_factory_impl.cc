@@ -9,7 +9,7 @@
 #include "base/guid.h"
 
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "media/mojo/services/mojo_decryptor_service.h"
@@ -140,13 +140,14 @@ void InterfaceFactoryImpl::CreateFlingingRenderer(
 
 #if defined(OS_WIN)
 void InterfaceFactoryImpl::CreateMediaFoundationRenderer(
+    mojo::PendingRemote<mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
         renderer_extension_receiver) {
   DVLOG(2) << __func__;
   auto renderer = mojo_media_client_->CreateMediaFoundationRenderer(
       base::ThreadTaskRunnerHandle::Get(), frame_interfaces_.get(),
-      std::move(renderer_extension_receiver));
+      std::move(media_log_remote), std::move(renderer_extension_receiver));
   if (!renderer) {
     DLOG(ERROR) << "MediaFoundationRenderer creation failed.";
     return;

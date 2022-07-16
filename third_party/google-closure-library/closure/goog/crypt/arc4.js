@@ -1,16 +1,8 @@
-// Copyright 2005 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview ARC4 streamcipher implementation.  A description of the
@@ -42,6 +34,7 @@ goog.require('goog.asserts');
  * @struct
  */
 goog.crypt.Arc4 = function() {
+  'use strict';
   /**
    * A permutation of all 256 possible bytes.
    * @type {Array<number>}
@@ -71,6 +64,7 @@ goog.crypt.Arc4 = function() {
  * @param {number=} opt_length Indicates # of bytes to take from the key.
  */
 goog.crypt.Arc4.prototype.setKey = function(key, opt_length) {
+  'use strict';
   goog.asserts.assertArray(key, 'Key parameter must be a byte array');
 
   if (!opt_length) {
@@ -116,6 +110,7 @@ goog.crypt.Arc4.prototype.setKey = function(key, opt_length) {
  * @param {number} length Number of bytes to disregard from the stream.
  */
 goog.crypt.Arc4.prototype.discard = function(length) {
+  'use strict';
   var i = this.index1_;
   var j = this.index2_;
   var state = this.state_;
@@ -140,6 +135,7 @@ goog.crypt.Arc4.prototype.discard = function(length) {
  * @param {number=} opt_length The number of bytes to crypt.
  */
 goog.crypt.Arc4.prototype.crypt = function(data, opt_length) {
+  'use strict';
   if (!opt_length) {
     opt_length = data.length;
   }

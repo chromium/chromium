@@ -18,6 +18,10 @@ namespace remoting {
 class BackoffTimer {
  public:
   BackoffTimer();
+
+  BackoffTimer(const BackoffTimer&) = delete;
+  BackoffTimer& operator=(const BackoffTimer&) = delete;
+
   ~BackoffTimer();
 
   // Invokes |user_task| at intervals specified by |delay|, and
@@ -43,8 +47,6 @@ class BackoffTimer {
   base::Location posted_from_;
   net::BackoffEntry::Policy backoff_policy_ = {};
   std::unique_ptr<net::BackoffEntry> backoff_entry_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackoffTimer);
 };
 
 }  // namespace remoting

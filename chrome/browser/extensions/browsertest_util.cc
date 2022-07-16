@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
@@ -58,7 +58,7 @@ Browser* LaunchAppBrowser(Profile* profile, const Extension* extension_app) {
           ->LaunchAppWithParams(apps::AppLaunchParams(
               extension_app->id(), LaunchContainer::kLaunchContainerWindow,
               WindowOpenDisposition::CURRENT_TAB,
-              AppLaunchSource::kSourceTest)));
+              apps::mojom::LaunchSource::kFromTest)));
 
   Browser* browser = chrome::FindLastActive();
   bool is_correct_app_browser =

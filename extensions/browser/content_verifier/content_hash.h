@@ -76,12 +76,14 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
                  url_loader_factory_remote,
              const GURL& fetch_url,
              ContentVerifierKey verifier_key);
+
+    FetchKey(const FetchKey&) = delete;
+    FetchKey& operator=(const FetchKey&) = delete;
+
     ~FetchKey();
 
     FetchKey(FetchKey&& other);
     FetchKey& operator=(FetchKey&& other);
-
-    DISALLOW_COPY_AND_ASSIGN(FetchKey);
   };
 
   // Result of checking tree hash root (typically calculated from block hashes
@@ -96,6 +98,9 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
     // Hash does not match the one from verified_contents.json.
     HASH_MISMATCH
   };
+
+  ContentHash(const ContentHash&) = delete;
+  ContentHash& operator=(const ContentHash&) = delete;
 
   // Factory:
   // Returns ContentHash through |created_callback|, the returned values are:
@@ -259,8 +264,6 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   // TODO(asargent) - use the value from verified_contents.json for each
   // file, instead of using a constant.
   int block_size_ = extension_misc::kContentVerificationDefaultBlockSize;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentHash);
 };
 
 }  // namespace extensions

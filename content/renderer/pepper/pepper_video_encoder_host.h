@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -46,6 +45,10 @@ class CONTENT_EXPORT PepperVideoEncoderHost
   PepperVideoEncoderHost(RendererPpapiHost* host,
                          PP_Instance instance,
                          PP_Resource resource);
+
+  PepperVideoEncoderHost(const PepperVideoEncoderHost&) = delete;
+  PepperVideoEncoderHost& operator=(const PepperVideoEncoderHost&) = delete;
+
   ~PepperVideoEncoderHost() override;
 
  private:
@@ -180,8 +183,6 @@ class CONTENT_EXPORT PepperVideoEncoderHost
 #endif
 
   base::WeakPtrFactory<PepperVideoEncoderHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperVideoEncoderHost);
 };
 
 }  // namespace content

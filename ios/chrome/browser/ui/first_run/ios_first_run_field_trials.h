@@ -39,6 +39,10 @@ class FirstRunFieldTrialConfig {
  public:
   // Initializes with |trial_name| as the name of the FieldTrial.
   FirstRunFieldTrialConfig(const std::string& trial_name);
+
+  FirstRunFieldTrialConfig(const FirstRunFieldTrialConfig&) = delete;
+  FirstRunFieldTrialConfig& operator=(const FirstRunFieldTrialConfig&) = delete;
+
   ~FirstRunFieldTrialConfig();
 
   // Creates and returns a one-time randomized FieldTrial with
@@ -64,8 +68,6 @@ class FirstRunFieldTrialConfig {
  private:
   std::string trial_name_;
   std::vector<FirstRunFieldTrialGroup> groups_;
-
-  DISALLOW_COPY_AND_ASSIGN(FirstRunFieldTrialConfig);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_IOS_FIRST_RUN_FIELD_TRIALS_H_

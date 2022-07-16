@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/crash/core/app/crash_reporter_client.h"
@@ -20,6 +19,10 @@
 class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
  public:
   static void Create();
+
+  ChromeCrashReporterClient(const ChromeCrashReporterClient&) = delete;
+  ChromeCrashReporterClient& operator=(const ChromeCrashReporterClient&) =
+      delete;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // If true, processes of this type should pass crash-loop-before down to the
@@ -72,8 +75,6 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
 
   ChromeCrashReporterClient();
   ~ChromeCrashReporterClient() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeCrashReporterClient);
 };
 
 #endif  // OS_WIN

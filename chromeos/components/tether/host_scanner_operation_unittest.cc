@@ -50,15 +50,16 @@ class FakeHostScanDevicePrioritizer : public HostScanDevicePrioritizer {
 class MockOperationObserver : public HostScannerOperation::Observer {
  public:
   MockOperationObserver() = default;
+
+  MockOperationObserver(const MockOperationObserver&) = delete;
+  MockOperationObserver& operator=(const MockOperationObserver&) = delete;
+
   ~MockOperationObserver() = default;
 
   MOCK_METHOD3(OnTetherAvailabilityResponse,
                void(const std::vector<HostScannerOperation::ScannedDeviceInfo>&,
                     const multidevice::RemoteDeviceRefList&,
                     bool));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockOperationObserver);
 };
 
 DeviceStatus CreateFakeDeviceStatus() {
@@ -69,6 +70,10 @@ DeviceStatus CreateFakeDeviceStatus() {
 }  // namespace
 
 class HostScannerOperationTest : public testing::Test {
+ public:
+  HostScannerOperationTest(const HostScannerOperationTest&) = delete;
+  HostScannerOperationTest& operator=(const HostScannerOperationTest&) = delete;
+
  protected:
   HostScannerOperationTest()
       : local_device_(multidevice::RemoteDeviceRefBuilder()
@@ -142,9 +147,6 @@ class HostScannerOperationTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<HostScannerOperation> operation_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostScannerOperationTest);
 };
 
 TEST_F(HostScannerOperationTest,
@@ -173,7 +175,7 @@ TEST_F(HostScannerOperationTest,
 
 TEST_F(HostScannerOperationTest, RecordsResponseDuration) {
   static constexpr base::TimeDelta kTetherAvailabilityResponseTime =
-      base::TimeDelta::FromSeconds(3);
+      base::Seconds(3);
 
   // Advance the clock in order to verify a non-zero response duration is
   // recorded and verified (below).

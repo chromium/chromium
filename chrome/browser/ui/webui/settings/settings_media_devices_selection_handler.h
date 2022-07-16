@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_MEDIA_DEVICES_SELECTION_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_MEDIA_DEVICES_SELECTION_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -19,6 +18,11 @@ class MediaDevicesSelectionHandler
       public SettingsPageUIHandler {
  public:
   explicit MediaDevicesSelectionHandler(Profile* profile);
+
+  MediaDevicesSelectionHandler(const MediaDevicesSelectionHandler&) = delete;
+  MediaDevicesSelectionHandler& operator=(const MediaDevicesSelectionHandler&) =
+      delete;
+
   ~MediaDevicesSelectionHandler() override;
 
   // SettingsPageUIHandler:
@@ -58,8 +62,6 @@ class MediaDevicesSelectionHandler
   base::ScopedObservation<MediaCaptureDevicesDispatcher,
                           MediaCaptureDevicesDispatcher::Observer>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaDevicesSelectionHandler);
 };
 
 }  // namespace settings

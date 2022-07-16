@@ -17,11 +17,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/input_method/autocorrect_manager.h"
+#include "chrome/browser/ash/input_method/native_input_method_engine.h"
 #include "chrome/browser/chromeos/extensions/dictionary_event_router.h"
 #include "chrome/browser/chromeos/extensions/ime_menu_event_router.h"
 #include "chrome/browser/chromeos/extensions/input_method_event_router.h"
-#include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
-#include "chrome/browser/chromeos/input_method/native_input_method_engine.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
@@ -38,12 +38,14 @@
 #include "components/sync/driver/sync_user_settings.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
-#include "ui/base/ime/chromeos/ime_keyboard.h"
-#include "ui/base/ime/chromeos/input_method_descriptor.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
-#include "ui/base/ime/chromeos/input_method_util.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
+#include "ui/base/ime/ash/input_method_descriptor.h"
+#include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_util.h"
+
+namespace {
 
 namespace input_method_private = extensions::api::input_method_private;
 namespace AddWordToDictionary =
@@ -83,11 +85,11 @@ namespace SetSelectionRange =
 namespace OnInputMethodOptionsChanged =
     extensions::api::input_method_private::OnInputMethodOptionsChanged;
 namespace OnAutocorrect = extensions::api::input_method_private::OnAutocorrect;
+namespace GetTextFieldBounds =
+    extensions::api::input_method_private::GetTextFieldBounds;
 
-namespace {
-
-using chromeos::InputMethodEngine;
-using chromeos::InputMethodEngineBase;
+using ::ash::input_method::InputMethodEngine;
+using ::ash::input_method::InputMethodEngineBase;
 
 // Prefix, which is used by XKB.
 const char kXkbPrefix[] = "xkb:";
@@ -139,8 +141,7 @@ InputMethodPrivateGetInputMethodConfigFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateGetCurrentInputMethodFunction::Run() {
-  chromeos::input_method::InputMethodManager* manager =
-      chromeos::input_method::InputMethodManager::Get();
+  auto* manager = ash::input_method::InputMethodManager::Get();
   return RespondNow(OneArgument(
       base::Value(manager->GetActiveIMEState()->GetCurrentInputMethod().id())));
 }
@@ -148,12 +149,12 @@ InputMethodPrivateGetCurrentInputMethodFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateSetCurrentInputMethodFunction::Run() {
   std::unique_ptr<SetCurrentInputMethod::Params> params(
-      SetCurrentInputMethod::Params::Create(*args_));
+      SetCurrentInputMethod::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  scoped_refptr<chromeos::input_method::InputMethodManager::State> ime_state =
-      chromeos::input_method::InputMethodManager::Get()->GetActiveIMEState();
+  scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
+      ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
   const std::vector<std::string>& input_methods =
-      ime_state->GetActiveInputMethodIds();
+      ime_state->GetEnabledInputMethodIds();
   for (size_t i = 0; i < input_methods.size(); ++i) {
     const std::string& input_method = input_methods[i];
     if (input_method == params->input_method_id) {
@@ -171,15 +172,14 @@ InputMethodPrivateSetCurrentInputMethodFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateGetInputMethodsFunction::Run() {
   std::unique_ptr<base::ListValue> output(new base::ListValue());
-  chromeos::input_method::InputMethodManager* manager =
-      chromeos::input_method::InputMethodManager::Get();
-  chromeos::input_method::InputMethodUtil* util = manager->GetInputMethodUtil();
-  scoped_refptr<chromeos::input_method::InputMethodManager::State> ime_state =
+  auto* manager = ash::input_method::InputMethodManager::Get();
+  ash::input_method::InputMethodUtil* util = manager->GetInputMethodUtil();
+  scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
       manager->GetActiveIMEState();
-  std::unique_ptr<chromeos::input_method::InputMethodDescriptors>
-      input_methods = ime_state->GetActiveInputMethods();
+  std::unique_ptr<ash::input_method::InputMethodDescriptors> input_methods =
+      ime_state->GetEnabledInputMethodsSortedByLocalizedDisplayNames();
   for (size_t i = 0; i < input_methods->size(); ++i) {
-    const chromeos::input_method::InputMethodDescriptor& input_method =
+    const ash::input_method::InputMethodDescriptor& input_method =
         (*input_methods)[i];
     auto val = std::make_unique<base::DictionaryValue>();
     val->SetString("id", input_method.id());
@@ -208,7 +208,7 @@ InputMethodPrivateFetchAllDictionaryWordsFunction::Run() {
   const std::set<std::string>& words = dictionary->GetWords();
   std::unique_ptr<base::ListValue> output(new base::ListValue());
   for (auto it = words.begin(); it != words.end(); ++it) {
-    output->AppendString(*it);
+    output->Append(*it);
   }
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(output))));
@@ -217,7 +217,7 @@ InputMethodPrivateFetchAllDictionaryWordsFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateAddWordToDictionaryFunction::Run() {
   std::unique_ptr<AddWordToDictionary::Params> params(
-      AddWordToDictionary::Params::Create(*args_));
+      AddWordToDictionary::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   SpellcheckService* spellcheck =
       SpellcheckServiceFactory::GetForContext(browser_context());
@@ -261,11 +261,10 @@ InputMethodPrivateGetEncryptSyncEnabledFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateSetXkbLayoutFunction::Run() {
   std::unique_ptr<SetXkbLayout::Params> params(
-      SetXkbLayout::Params::Create(*args_));
+      SetXkbLayout::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  chromeos::input_method::InputMethodManager* manager =
-      chromeos::input_method::InputMethodManager::Get();
-  chromeos::input_method::ImeKeyboard* keyboard = manager->GetImeKeyboard();
+  auto* manager = ash::input_method::InputMethodManager::Get();
+  ash::input_method::ImeKeyboard* keyboard = manager->GetImeKeyboard();
   keyboard->SetCurrentKeyboardLayoutByName(params->xkb_name);
   return RespondNow(NoArguments());
 }
@@ -295,11 +294,11 @@ InputMethodPrivateHideInputViewFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateOpenOptionsPageFunction::Run() {
   std::unique_ptr<OpenOptionsPage::Params> params(
-      OpenOptionsPage::Params::Create(*args_));
+      OpenOptionsPage::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  scoped_refptr<chromeos::input_method::InputMethodManager::State> ime_state =
-      chromeos::input_method::InputMethodManager::Get()->GetActiveIMEState();
-  const chromeos::input_method::InputMethodDescriptor* ime =
+  scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
+      ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
+  const ash::input_method::InputMethodDescriptor* ime =
       ime_state->GetInputMethodFromId(params->input_method_id);
   if (!ime)
     return RespondNow(Error(InformativeError(
@@ -330,7 +329,7 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
         kErrorInputContextHandlerNotAvailable, static_function_name())));
 
   std::unique_ptr<GetSurroundingText::Params> params(
-      GetSurroundingText::Params::Create(*args_));
+      GetSurroundingText::Params::Create(args()));
   if (params->before_length < 0 || params->after_length < 0)
     return RespondNow(Error(InformativeError(
         base::StringPrintf("%s before_length = %d, after_length = %d.",
@@ -377,7 +376,7 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
-  const auto params = GetSettings::Params::Create(*args_);
+  const auto params = GetSettings::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   const base::DictionaryValue* input_methods =
@@ -392,7 +391,7 @@ ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateSetSettingsFunction::Run() {
-  const auto params = SetSettings::Params::Create(*args_);
+  const auto params = SetSettings::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   DictionaryPrefUpdate update(
@@ -423,7 +422,7 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  const auto parent_params = SetCompositionRange::Params::Create(*args_);
+  const auto parent_params = SetCompositionRange::Params::Create(args());
   const auto& params = parent_params->parameters;
   std::vector<InputMethodEngineBase::SegmentInfo> segments;
   if (params.segments) {
@@ -451,7 +450,7 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
     }
   }
 
-  if (!engine->chromeos::InputMethodEngineBase::SetCompositionRange(
+  if (!engine->InputMethodEngineBase::SetCompositionRange(
           params.context_id, params.selection_before, params.selection_after,
           segments, &error)) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
@@ -467,7 +466,7 @@ InputMethodPrivateSetComposingRangeFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  const auto parent_params = SetComposingRange::Params::Create(*args_);
+  const auto parent_params = SetComposingRange::Params::Create(args());
   const auto& params = parent_params->parameters;
   std::vector<InputMethodEngineBase::SegmentInfo> segments;
   if (params.segments) {
@@ -495,7 +494,7 @@ InputMethodPrivateSetComposingRangeFunction::Run() {
     }
   }
 
-  if (!engine->chromeos::InputMethodEngineBase::SetComposingRange(
+  if (!engine->InputMethodEngineBase::SetComposingRange(
           params.context_id, params.start, params.end, segments, &error)) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
@@ -510,11 +509,10 @@ InputMethodPrivateGetAutocorrectRangeFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  const auto parent_params = GetAutocorrectRange::Params::Create(*args_);
+  const auto parent_params = GetAutocorrectRange::Params::Create(args());
   const auto& params = parent_params->parameters;
-  const gfx::Range range =
-      engine->chromeos::InputMethodEngineBase::GetAutocorrectRange(
-          params.context_id, &error);
+  const gfx::Range range = engine->InputMethodEngineBase::GetAutocorrectRange(
+      params.context_id, &error);
   auto ret = std::make_unique<base::DictionaryValue>();
   ret->SetInteger("start", range.is_empty() ? 0 : range.start());
   ret->SetInteger("end", range.is_empty() ? 0 : range.end());
@@ -531,11 +529,35 @@ InputMethodPrivateGetAutocorrectCharacterBoundsFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
   const auto parent_params =
-      GetAutocorrectCharacterBounds::Params::Create(*args_);
+      GetAutocorrectCharacterBounds::Params::Create(args());
   const auto& params = parent_params->parameters;
   const gfx::Rect rect =
-      engine->chromeos::InputMethodEngineBase::GetAutocorrectCharacterBounds(
+      engine->InputMethodEngineBase::GetAutocorrectCharacterBounds(
           params.context_id, &error);
+  if (rect.IsEmpty()) {
+    return RespondNow(Error(InformativeError(error, static_function_name())));
+  }
+  auto ret = std::make_unique<base::DictionaryValue>();
+  ret->SetInteger("x", rect.x());
+  ret->SetInteger("y", rect.y());
+  ret->SetInteger("width", rect.width());
+  ret->SetInteger("height", rect.height());
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(ret))));
+}
+
+ExtensionFunction::ResponseAction
+InputMethodPrivateGetTextFieldBoundsFunction::Run() {
+  std::string error;
+  InputMethodEngine* engine =
+      GetEngineIfActive(browser_context(), extension_id(), &error);
+  if (!engine)
+    return RespondNow(Error(InformativeError(error, static_function_name())));
+
+  const auto parent_params = GetTextFieldBounds::Params::Create(args());
+  const auto& params = parent_params->parameters;
+  const gfx::Rect rect = engine->InputMethodEngineBase::GetTextFieldBounds(
+      params.context_id, &error);
   if (rect.IsEmpty()) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
@@ -556,9 +578,9 @@ InputMethodPrivateSetAutocorrectRangeFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  const auto parent_params = SetAutocorrectRange::Params::Create(*args_);
+  const auto parent_params = SetAutocorrectRange::Params::Create(args());
   const auto& params = parent_params->parameters;
-  if (!engine->chromeos::InputMethodEngineBase::SetAutocorrectRange(
+  if (!engine->InputMethodEngineBase::SetAutocorrectRange(
           params.context_id,
           gfx::Range(params.selection_start, params.selection_end), &error)) {
     auto results = std::make_unique<base::ListValue>();
@@ -577,11 +599,11 @@ InputMethodPrivateSetSelectionRangeFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
   std::unique_ptr<SetSelectionRange::Params> parent_params(
-      SetSelectionRange::Params::Create(*args_));
+      SetSelectionRange::Params::Create(args()));
   const SetSelectionRange::Params::Parameters& params =
       parent_params->parameters;
 
-  if (!engine->chromeos::InputMethodEngineBase::SetSelectionRange(
+  if (!engine->InputMethodEngineBase::SetSelectionRange(
           params.context_id, *params.selection_start, *params.selection_end,
           &error)) {
     auto results = std::make_unique<base::ListValue>();
@@ -606,11 +628,11 @@ ExtensionFunction::ResponseAction InputMethodPrivateResetFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateOnAutocorrectFunction::Run() {
   std::unique_ptr<OnAutocorrect::Params> parent_params(
-      OnAutocorrect::Params::Create(*args_));
+      OnAutocorrect::Params::Create(args()));
   const OnAutocorrect::Params::Parameters& params = parent_params->parameters;
   std::string error;
-  chromeos::NativeInputMethodEngine* engine =
-      static_cast<chromeos::NativeInputMethodEngine*>(
+  ash::input_method::NativeInputMethodEngine* engine =
+      static_cast<ash::input_method::NativeInputMethodEngine*>(
           GetEngineIfActive(Profile::FromBrowserContext(browser_context()),
                             extension_id(), &error));
   if (!engine)
@@ -660,7 +682,7 @@ InputMethodAPI::~InputMethodAPI() {
 // static
 std::string InputMethodAPI::GetInputMethodForXkb(const std::string& xkb_id) {
   std::string xkb_prefix =
-      chromeos::extension_ime_util::GetInputMethodIDByEngineID(kXkbPrefix);
+      ash::extension_ime_util::GetInputMethodIDByEngineID(kXkbPrefix);
   size_t prefix_length = xkb_prefix.length();
   DCHECK(xkb_id.substr(0, prefix_length) == xkb_prefix);
   return xkb_id.substr(prefix_length);

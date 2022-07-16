@@ -5,7 +5,6 @@
 #include "chromeos/services/device_sync/software_feature_manager_impl.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/multidevice/software_feature.h"
@@ -81,6 +80,11 @@ class DeviceSyncSoftwareFeatureManagerImplTest
         test_ineligible_external_devices_infos_(
             {all_test_external_device_infos_[3],
              all_test_external_device_infos_[4]}) {}
+
+  DeviceSyncSoftwareFeatureManagerImplTest(
+      const DeviceSyncSoftwareFeatureManagerImplTest&) = delete;
+  DeviceSyncSoftwareFeatureManagerImplTest& operator=(
+      const DeviceSyncSoftwareFeatureManagerImplTest&) = delete;
 
   void SetUp() override {
     mock_cryptauth_client_factory_ =
@@ -343,9 +347,6 @@ class DeviceSyncSoftwareFeatureManagerImplTest
       find_eligible_unlock_devices_callback_;
   std::vector<cryptauth::ExternalDeviceInfo> result_eligible_devices_;
   std::vector<cryptauth::IneligibleDevice> result_ineligible_devices_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncSoftwareFeatureManagerImplTest);
 };
 
 TEST_F(DeviceSyncSoftwareFeatureManagerImplTest,

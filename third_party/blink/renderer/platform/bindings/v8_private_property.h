@@ -15,8 +15,6 @@
 
 namespace blink {
 
-class ScriptWrappable;
-
 // Provides access to V8's private properties with a symbol key.
 //
 //   static const V8PrivateProperty::SymbolKey kPrivateProperty;
@@ -75,9 +73,6 @@ class PLATFORM_EXPORT V8PrivateProperty {
 
    private:
     friend class V8PrivateProperty;
-    // The following classes are exceptionally allowed to call to
-    // getFromMainWorld.
-    friend class V8ExtendableMessageEvent;
 
     Symbol(v8::Isolate* isolate, v8::Local<v8::Private> private_symbol)
         : private_symbol_(private_symbol), isolate_(isolate) {}
@@ -86,10 +81,6 @@ class PLATFORM_EXPORT V8PrivateProperty {
     v8::Local<v8::Context> GetContext() const {
       return isolate_->GetCurrentContext();
     }
-
-    // Only friend classes are allowed to use this API.
-    WARN_UNUSED_RESULT v8::MaybeLocal<v8::Value> GetFromMainWorld(
-        ScriptWrappable*);
 
     v8::Local<v8::Private> private_symbol_;
     v8::Isolate* isolate_;

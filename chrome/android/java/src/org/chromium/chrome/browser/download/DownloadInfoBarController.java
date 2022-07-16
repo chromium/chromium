@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
-import org.chromium.components.download.DownloadState;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -68,7 +67,7 @@ import java.util.Set;
  * This class is responsible for tracking various updates for download items, offline items, android
  * downloads and computing the the state of the {@link DownloadProgressInfoBar} .
  */
-public class DownloadInfoBarController implements OfflineContentProvider.Observer {
+public class DownloadInfoBarController implements DownloadMessageUiController {
     private static final String SPEEDING_UP_MESSAGE_ENABLED = "speeding_up_message_enabled";
     private static final long DURATION_ACCELERATED_INFOBAR_IN_MS = 3000;
     private static final long DURATION_SHOW_RESULT_IN_MS = 6000;
@@ -270,7 +269,6 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
         }
     }
 
-    private final boolean mUseNewDownloadPath;
     private final OTRProfileID mOtrProfileID;
     private final Handler mHandler = new Handler();
     private final DownloadProgressInfoBar.Client mClient = new DownloadProgressInfoBarClient();
@@ -311,70 +309,20 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
 
     /** Constructor. */
     public DownloadInfoBarController(OTRProfileID otrProfileID) {
-        mUseNewDownloadPath =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER);
         mOtrProfileID = otrProfileID;
         mHandler.post(() -> getOfflineContentProvider().addObserver(this));
     }
 
-    /**
-     * Shows the message that download has started. Unlike other methods in this class, this
-     * method doesn't require an {@link OfflineItem} and is invoked by the backend to provide a
-     * responsive feedback to the users even before the download has actually started.
-     */
+    @Override
     public void onDownloadStarted() {
         computeNextStepForUpdate(null, true, false, false);
     }
 
-    /** Updates the InfoBar when new information about a download comes in. */
-    public void onDownloadItemUpdated(DownloadItem downloadItem) {
-        if (mUseNewDownloadPath) return;
-
-        OfflineItem offlineItem = DownloadItem.createOfflineItem(downloadItem);
-        if (!isVisibleToUser(offlineItem)) return;
-
-        if (downloadItem.getDownloadInfo().state() == DownloadState.COMPLETE) {
-            handleDownloadCompletion(downloadItem);
-            return;
-        }
-
-        if (offlineItem.state == OfflineItemState.CANCELLED) {
-            onItemRemoved(offlineItem.id);
-            return;
-        }
-
-        computeNextStepForUpdate(offlineItem);
-    }
-
-    /** Updates the InfoBar after a download has been removed. */
-    public void onDownloadItemRemoved(ContentId contentId) {
-        if (mUseNewDownloadPath) return;
-        onItemRemoved(contentId);
-    }
-
-    /** Associates a notification ID with the tracked download for future usage. */
-    // TODO(shaktisahu): Find an alternative way after moving to offline content provider.
+    @Override
     public void onNotificationShown(ContentId id, int notificationId) {
         mNotificationIds.put(id, notificationId);
     }
 
-    private void handleDownloadCompletion(DownloadItem downloadItem) {
-        // Multiple OnDownloadUpdated() notifications may be issued while the
-        // download is in the COMPLETE state. Don't handle it if it was previously not in-progress.
-        if (!mTrackedItems.containsKey(downloadItem.getContentId())) return;
-
-        // If the download should be auto-opened, we shouldn't show the infobar.
-        DownloadManagerService.getDownloadManagerService().checkIfDownloadWillAutoOpen(
-                downloadItem, (result) -> {
-                    if (result) {
-                        onItemRemoved(downloadItem.getContentId());
-                    } else {
-                        computeNextStepForUpdate(DownloadItem.createOfflineItem(downloadItem));
-                    }
-                });
-    }
-
-    // OfflineContentProvider.Observer implementation.
     @Override
     public void onItemsAdded(List<OfflineItem> items) {
         for (OfflineItem item : items) {
@@ -409,7 +357,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
         computeNextStepForUpdate(item);
     }
 
-    /** @return Whether the infobar is currently showing. */
+    @Override
     public boolean isShowing() {
         return mCurrentInfoBar != null;
     }
@@ -835,6 +783,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
     @VisibleForTesting
     protected void showInfoBar(@DownloadInfoBarState int state, DownloadProgressInfoBarData info) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_INFOBAR)) return;
+        assert !ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE);
 
         mCurrentInfo = info;
 
@@ -1094,12 +1043,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
         mDownloadLaterDialogHelper.showChangeScheduleDialog(
                 currentSchedule, Source.DOWNLOAD_INFOBAR, (newSchedule) -> {
                     if (newSchedule == null) return;
-                    if (mUseNewDownloadPath) {
-                        OfflineContentAggregatorFactory.get().changeSchedule(id, newSchedule);
-                    } else {
-                        DownloadManagerService.getDownloadManagerService().changeSchedule(
-                                id, newSchedule, mOtrProfileID);
-                    }
+                    OfflineContentAggregatorFactory.get().changeSchedule(id, newSchedule);
                 });
     }
 
@@ -1141,11 +1085,11 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
         assert shownState != -1 : "Invalid state " + state;
 
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.Download.InfoBar.Shown", shownState, UmaInfobarShown.NUM_ENTRIES);
-        RecordHistogram.recordEnumeratedHistogram("Android.Download.InfoBar.Shown",
+                "Download.Progress.InfoBar.Shown", shownState, UmaInfobarShown.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram("Download.Progress.InfoBar.Shown",
                 UmaInfobarShown.ANY_STATE, UmaInfobarShown.NUM_ENTRIES);
         if (multipleDownloadState != -1) {
-            RecordHistogram.recordEnumeratedHistogram("Android.Download.InfoBar.Shown",
+            RecordHistogram.recordEnumeratedHistogram("Download.Progress.InfoBar.Shown",
                     multipleDownloadState, UmaInfobarShown.NUM_ENTRIES);
         }
     }
@@ -1156,7 +1100,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
 
     private void recordCloseButtonClicked() {
         RecordUserAction.record("Android.Download.InfoBar.CloseButtonClicked");
-        RecordHistogram.recordEnumeratedHistogram("Android.Download.InfoBar.CloseButtonClicked",
+        RecordHistogram.recordEnumeratedHistogram("Download.Progress.InfoBar.CloseButtonClicked",
                 mState, DownloadInfoBarState.NUM_ENTRIES);
     }
 

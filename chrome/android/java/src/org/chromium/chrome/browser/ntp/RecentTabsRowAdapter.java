@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.signin.SyncPromoView;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
+import org.chromium.chrome.browser.ui.signin.SigninPromoController.SyncPromoState;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -427,38 +428,22 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    /**
-     * A group containing the personalized signin promo.
-     */
-    class PersonalizedSigninPromoGroup extends PromoGroup {
-        @Override
-        @ChildType
-        int getChildType() {
-            return ChildType.PERSONALIZED_SIGNIN_PROMO;
-        }
-
-        @Override
-        View getChildView(
-                int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-                convertView = layoutInflater.inflate(
-                        R.layout.personalized_signin_promo_view_recent_tabs, parent, false);
-            }
-            mRecentTabsManager.setUpSyncPromoView(
-                    convertView.findViewById(R.id.signin_promo_view_container));
-            return convertView;
-        }
-    }
-
-    /**
-     * A group containing the personalized sync promo.
-     */
+    /** A group containing the personalized sync promo. */
     class PersonalizedSyncPromoGroup extends PromoGroup {
+        private final @ChildType int mChildType;
+
+        PersonalizedSyncPromoGroup(@ChildType int childType) {
+            assert childType == ChildType.PERSONALIZED_SIGNIN_PROMO
+                    || childType
+                            == ChildType.PERSONALIZED_SYNC_PROMO : "Unsupported child type:"
+                                    + childType;
+            mChildType = childType;
+        }
+
         @Override
         @ChildType
         int getChildType() {
-            return ChildType.PERSONALIZED_SYNC_PROMO;
+            return mChildType;
         }
 
         @Override
@@ -861,16 +846,16 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             addGroup(new ForeignSessionGroup(session));
         }
 
-        switch (mRecentTabsManager.getPromoType()) {
-            case RecentTabsManager.PromoState.PROMO_NONE:
+        switch (mRecentTabsManager.getPromoState()) {
+            case SyncPromoState.NO_PROMO:
                 break;
-            case RecentTabsManager.PromoState.PROMO_SIGNIN_PERSONALIZED:
-                addGroup(new PersonalizedSigninPromoGroup());
+            case SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE:
+                addGroup(new PersonalizedSyncPromoGroup(ChildType.PERSONALIZED_SIGNIN_PROMO));
                 break;
-            case RecentTabsManager.PromoState.PROMO_SYNC_PERSONALIZED:
-                addGroup(new PersonalizedSyncPromoGroup());
+            case SyncPromoState.PROMO_FOR_SIGNED_IN_STATE:
+                addGroup(new PersonalizedSyncPromoGroup(ChildType.PERSONALIZED_SYNC_PROMO));
                 break;
-            case RecentTabsManager.PromoState.PROMO_SYNC:
+            case SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE:
                 addGroup(new SyncPromoGroup());
                 break;
             default:

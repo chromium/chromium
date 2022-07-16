@@ -324,17 +324,8 @@ GetA11yFullscreenMagnifierFocusFollowingSearchConcepts() {
   return *tags;
 }
 
-bool AreExperimentalA11yLabelsAllowed() {
-  return base::FeatureList::IsEnabled(
-      ::features::kExperimentalAccessibilityLabels);
-}
-
 bool IsLiveCaptionEnabled() {
   return media::IsLiveCaptionFeatureEnabled();
-}
-
-bool IsMagnifierPanningImprovementsEnabled() {
-  return ::features::IsMagnifierPanningImprovementsEnabled();
 }
 
 bool IsMagnifierContinuousMouseFollowingModeSettingEnabled() {
@@ -346,13 +337,8 @@ bool IsSwitchAccessTextAllowed() {
       ::switches::kEnableExperimentalAccessibilitySwitchAccessText);
 }
 
-bool IsSwitchAccessPointScanningEnabled() {
-  return ::features::IsSwitchAccessPointScanningEnabled();
-}
-
 bool IsSwitchAccessSetupGuideAllowed() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kEnableExperimentalAccessibilitySwitchAccessSetupGuide);
+  return ::features::IsExperimentalAccessibilitySwitchAccessSetupGuideEnabled();
 }
 
 bool AreTabletNavigationButtonsAllowed() {
@@ -499,8 +485,6 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_AUTOCLICK_MOVEMENT_THRESHOLD_LARGE},
       {"autoclickMovementThresholdExtraLarge",
        IDS_SETTINGS_AUTOCLICK_MOVEMENT_THRESHOLD_EXTRA_LARGE},
-      {"dictationDescription",
-       IDS_SETTINGS_ACCESSIBILITY_DICTATION_DESCRIPTION},
       {"dictationLabel", IDS_SETTINGS_ACCESSIBILITY_DICTATION_LABEL},
       {"dictationLocaleMenuLabel",
        IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_MENU_LABEL},
@@ -508,6 +492,10 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_OFFLINE},
       {"dictationLocaleSubLabelNetwork",
        IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_NETWORK},
+      // For temporary network label, we can use the string that's shown when a
+      // SODA download fails.
+      {"dictationLocaleSubLabelNetworkTemporarily",
+       IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_ERROR},
       {"dictationChangeLanguageButton",
        IDS_SETTINGS_ACCESSIBILITY_DICTATION_CHANGE_LANGUAGE_BUTTON},
       {"dictationChangeLanguageDialogTitle",
@@ -662,8 +650,6 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_SWITCH_ACCESS_SETUP_ASSIGN_PREVIOUS_TITLE},
       {"switchAccessSetupClosingTitle",
        IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_TITLE},
-      {"switchAccessSetupClosingAutoScanInstructions",
-       IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_AUTO_SCAN_INSTRUCTIONS},
       {"switchAccessSetupClosingManualScanInstructions",
        IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_MANUAL_SCAN_INSTRUCTIONS},
       {"switchAccessSetupClosingInfo",
@@ -764,6 +750,12 @@ void AccessibilitySection::AddLoadTimeData(
                                       ? IDS_SETTINGS_KEYBOARD_KEY_LAUNCHER
                                       : IDS_SETTINGS_KEYBOARD_KEY_SEARCH);
 
+  html_source->AddLocalizedString(
+      "dictationDescription",
+      ::features::IsExperimentalAccessibilityDictationOfflineEnabled()
+          ? IDS_SETTINGS_ACCESSIBILITY_DICTATION_NEW_DESCRIPTION
+          : IDS_SETTINGS_ACCESSIBILITY_DICTATION_DESCRIPTION);
+
   html_source->AddString("a11yLearnMoreUrl",
                          chrome::kChromeAccessibilityHelpURL);
 
@@ -771,23 +763,14 @@ void AccessibilitySection::AddLoadTimeData(
       "showExperimentalAccessibilitySwitchAccessImprovedTextInput",
       IsSwitchAccessTextAllowed());
 
-  html_source->AddBoolean("isSwitchAccessPointScanningEnabled",
-                          IsSwitchAccessPointScanningEnabled());
-
   html_source->AddBoolean("showSwitchAccessSetupGuide",
                           IsSwitchAccessSetupGuideAllowed());
-
-  html_source->AddBoolean("showExperimentalA11yLabels",
-                          AreExperimentalA11yLabelsAllowed());
 
   html_source->AddBoolean("showTabletModeShelfNavigationButtonsSettings",
                           AreTabletNavigationButtonsAllowed());
 
   html_source->AddString("tabletModeShelfNavigationButtonsLearnMoreUrl",
                          chrome::kTabletModeGesturesLearnMoreURL);
-
-  html_source->AddBoolean("isMagnifierPanningImprovementsEnabled",
-                          IsMagnifierPanningImprovementsEnabled());
 
   html_source->AddBoolean(
       "isMagnifierContinuousMouseFollowingModeSettingEnabled",
@@ -972,8 +955,7 @@ void AccessibilitySection::UpdateTextToSpeechEnginesSearchTags() {
 void AccessibilitySection::UpdateSearchTags() {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
-  if (accessibility_state_utils::IsScreenReaderEnabled() &&
-      AreExperimentalA11yLabelsAllowed()) {
+  if (accessibility_state_utils::IsScreenReaderEnabled()) {
     updater.AddSearchTags(GetA11yLabelsSearchConcepts());
   } else {
     updater.RemoveSearchTags(GetA11yLabelsSearchConcepts());
@@ -988,8 +970,7 @@ void AccessibilitySection::UpdateSearchTags() {
     updater.RemoveSearchTags(GetA11yLiveCaptionSearchConcepts());
   }
 
-  if (IsMagnifierPanningImprovementsEnabled() &&
-      pref_service_->GetBoolean(
+  if (pref_service_->GetBoolean(
           ash::prefs::kAccessibilityScreenMagnifierEnabled)) {
     updater.AddSearchTags(
         GetA11yFullscreenMagnifierFocusFollowingSearchConcepts());

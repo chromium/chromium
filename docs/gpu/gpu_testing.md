@@ -86,7 +86,7 @@ overview of this documentation and links back to various portions.
 Please see the [GPU Pixel Wrangling instructions] for links to dashboards
 showing the status of various bots in the GPU fleet.
 
-[GPU Pixel Wrangling instructions]: pixel_wrangling.md#Fleet-Status
+[GPU Pixel Wrangling instructions]: http://go/gpu-pixel-wrangler#fleet-status
 
 ## Using the GPU Bots
 
@@ -396,9 +396,9 @@ a swarming task, which contains something like:
 
 ```
 Download inputs files into directory foo:
-# (if needed, use "\${platform}" as-is) cipd install "infra/tools/luci/isolated/\${platform}" -root bar
-# (if needed) ./bar/isolated login
-./bar/isolated download -I https://isolateserver.appspot.com --namespace default-gzip -isolated 07f20bcb2b29b3d8f4ba73166313a37efd651746 -output-dir foo
+# (if needed, use "\${platform}" as-is) cipd install "infra/tools/luci/cas/\${platform}" -root bar
+# (if needed) ./bar/cas login
+./bar/cas download -cas-instance projects/chromium-swarm/instances/default_instance -digest 68ae1d6b22673b0ab7b4427ca1fc2a4761c9ee53474105b9076a23a67e97a18a/647 -dir foo
 ```
 
 Before attempting to download an isolate, you must ensure you have permission
@@ -551,7 +551,7 @@ itself will contain links. In either case, these links will direct to Gold
 pages showing the image produced by the image and the approved image that most
 closely matches it.
 
-Note that for the tests which programatically check colors in certain regions of
+Note that for the tests which programmatically check colors in certain regions of
 the image (tests with `expected_colors` fields in [pixel_test_pages]), there
 likely won't be a closest approved image since those tests only upload data to
 Gold in the event of a failure.
@@ -565,7 +565,7 @@ you will have to approve new images. Simply run your CL through the CQ and
 follow the steps outline [here][pixel wrangling triage] under the "Check if any
 pixel test failures are actual failures or need to be rebaselined." step.
 
-[pixel wrangling triage]: pixel_wrangling.md#How-to-Keep-the-Bots-Green
+[pixel wrangling triage]: http://go/gpu-pixel-wrangler-info#how-to-keep-the-bots-green
 
 If you are adding a new pixel test, it is beneficial to set the
 `grace_period_end` argument in the test's definition. This will allow the test
@@ -674,4 +674,4 @@ include links to the failing builds and copies of the logs, since the logs
 expire after a few days. [GPU pixel wranglers] should give the highest priority
 to eliminating flakiness on the tree.
 
-[GPU pixel wranglers]: pixel_wrangling.md
+[GPU pixel wranglers]: http://go/gpu-pixel-wrangler

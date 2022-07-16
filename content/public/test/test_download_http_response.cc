@@ -7,20 +7,23 @@
 #include <inttypes.h>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/test_completion_callback.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
+#include "net/test/embedded_test_server/http_response.h"
 
 namespace content {
 
@@ -76,18 +79,21 @@ class HttpResponse : public net::test_server::HttpResponse {
  public:
   explicit HttpResponse(base::WeakPtr<TestDownloadHttpResponse> owner)
       : owner_(owner) {}
+
+  HttpResponse(const HttpResponse&) = delete;
+  HttpResponse& operator=(const HttpResponse&) = delete;
+
   ~HttpResponse() override = default;
 
  private:
   // net::test_server::HttpResponse implementations.
-  void SendResponse(const net::test_server::SendBytesCallback& send,
-                    net::test_server::SendCompleteCallback done) override {
+  void SendResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
     if (owner_)
-      owner_->SendResponse(send, std::move(done));
+      owner_->SendResponse(delegate);
   }
 
   base::WeakPtr<TestDownloadHttpResponse> owner_;
-  DISALLOW_COPY_AND_ASSIGN(HttpResponse);
 };
 
 }  // namespace
@@ -228,14 +234,13 @@ TestDownloadHttpResponse::TestDownloadHttpResponse(
 TestDownloadHttpResponse::~TestDownloadHttpResponse() = default;
 
 void TestDownloadHttpResponse::SendResponse(
-    const net::test_server::SendBytesCallback& send,
-    net::test_server::SendCompleteCallback done) {
-  bytes_sender_ = send;
-  done_callback_ = std::move(done);
+    base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) {
+  response_delegate_ = delegate;
 
   // Throw error before sending headers.
   if (ShouldAbortImmediately()) {
-    bytes_sender_.Run(std::string(), GenerateResultClosure());
+    response_delegate_->SendRawResponseHeaders("");
+    response_delegate_->SendContents("", GenerateResultClosure());
     return;
   }
 
@@ -290,7 +295,8 @@ void TestDownloadHttpResponse::ParseRequestHeader() {
 void TestDownloadHttpResponse::SendResponseHeaders() {
   // Send static response in |parameters_| and close connection.
   if (!parameters_.static_response.empty()) {
-    bytes_sender_.Run(parameters_.static_response, GenerateResultClosure());
+    response_delegate_->SendRawResponseHeaders(parameters_.static_response);
+    response_delegate_->SendContents("", GenerateResultClosure());
     return;
   }
 
@@ -301,16 +307,18 @@ void TestDownloadHttpResponse::SendResponseHeaders() {
   if (GetResponseForRangeRequest(&response, &delay_response)) {
     if (delay_response) {
       delayed_response_callback_ =
-          base::BindOnce(bytes_sender_, response, GenerateResultClosure()),
-      bytes_sender_.Run(GetDefaultResponseHeaders(), base::DoNothing());
+          base::BindOnce(&net::test_server::HttpResponseDelegate::SendContents,
+                         response_delegate_, response, GenerateResultClosure());
+      response_delegate_->SendRawResponseHeaders(GetDefaultResponseHeaders());
     } else {
-      bytes_sender_.Run(response, GenerateResultClosure());
+      response_delegate_->SendContents(response, GenerateResultClosure());
     }
     return;
   }
 
   // Send the headers and start to send the body.
-  bytes_sender_.Run(GetDefaultResponseHeaders(), SendNextBodyChunkClosure());
+  response_delegate_->SendRawResponseHeaders(GetDefaultResponseHeaders());
+  SendResponseBodyChunk();
 }
 
 std::string TestDownloadHttpResponse::GetDefaultResponseHeaders() {
@@ -587,11 +595,10 @@ void TestDownloadHttpResponse::SendBodyChunkInternal(
     base::OnceClosure next) {
   std::string response_chunk = GetResponseChunk(buffer_range);
   transferred_bytes_ += static_cast<int64_t>(response_chunk.size());
-  bytes_sender_.Run(response_chunk, std::move(next));
+  response_delegate_->SendContents(response_chunk, std::move(next));
 }
 
-net::test_server::SendCompleteCallback
-TestDownloadHttpResponse::SendNextBodyChunkClosure() {
+base::OnceClosure TestDownloadHttpResponse::SendNextBodyChunkClosure() {
   return base::BindOnce(&TestDownloadHttpResponse::SendResponseBodyChunk,
                         base::Unretained(this));
 }
@@ -609,11 +616,10 @@ void TestDownloadHttpResponse::GenerateResult() {
                                  std::move(completed_request));
 
   // Close the HTTP connection.
-  std::move(done_callback_).Run();
+  response_delegate_->FinishResponse();
 }
 
-net::test_server::SendCompleteCallback
-TestDownloadHttpResponse::GenerateResultClosure() {
+base::OnceClosure TestDownloadHttpResponse::GenerateResultClosure() {
   return base::BindOnce(&TestDownloadHttpResponse::GenerateResult,
                         base::Unretained(this));
 }

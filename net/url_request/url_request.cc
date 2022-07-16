@@ -23,6 +23,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_delegate.h"
 #include "net/base/upload_data_stream.h"
+#include "net/cert/x509_certificate.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/same_party_context.h"
@@ -34,6 +35,7 @@
 #include "net/log/net_log_source_type.h"
 #include "net/socket/next_proto.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "net/ssl/ssl_private_key.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request_context.h"
@@ -127,6 +129,15 @@ void ConvertRealLoadTimesToBlockingTimes(LoadTimingInfo* load_timing_info) {
     if (connect_timing->ssl_end < block_on_connect)
       connect_timing->ssl_end = block_on_connect;
   }
+}
+
+NetLogWithSource CreateNetLogWithSource(
+    NetLog* net_log,
+    absl::optional<net::NetLogSource> net_log_source) {
+  if (net_log_source) {
+    return NetLogWithSource::Make(net_log, net_log_source.value());
+  }
+  return NetLogWithSource::Make(net_log, NetLogSourceType::URL_REQUEST);
 }
 
 }  // namespace
@@ -444,6 +455,23 @@ void URLRequest::SetDefaultCookiePolicyToBlock() {
   g_default_can_use_cookies = false;
 }
 
+void URLRequest::SetURLChain(const std::vector<GURL>& url_chain) {
+  DCHECK(!job_);
+  DCHECK(!is_pending_);
+  DCHECK_EQ(url_chain_.size(), 1u);
+
+  if (url_chain.size() < 2)
+    return;
+
+  // In most cases the current request URL will match the last URL in the
+  // explicitly set URL chain.  In some cases, however, a throttle will modify
+  // the request URL resulting in a different request URL.  We handle this by
+  // using previous values from the explicitly set URL chain, but with the
+  // request URL as the final entry in the chain.
+  url_chain_.insert(url_chain_.begin(), url_chain.begin(),
+                    url_chain.begin() + url_chain.size() - 1);
+}
+
 void URLRequest::set_site_for_cookies(const SiteForCookies& site_for_cookies) {
   DCHECK(!is_pending_);
   site_for_cookies_ = site_for_cookies;
@@ -544,13 +572,15 @@ URLRequest::URLRequest(const GURL& url,
                        RequestPriority priority,
                        Delegate* delegate,
                        const URLRequestContext* context,
-                       NetworkTrafficAnnotationTag traffic_annotation)
+                       NetworkTrafficAnnotationTag traffic_annotation,
+                       bool is_for_websockets,
+                       absl::optional<net::NetLogSource> net_log_source)
     : context_(context),
-      net_log_(NetLogWithSource::Make(context->net_log(),
-                                      NetLogSourceType::URL_REQUEST)),
+      net_log_(CreateNetLogWithSource(context->net_log(), net_log_source)),
       url_chain_(1, url),
       force_ignore_site_for_cookies_(false),
       force_ignore_top_frame_party_for_cookies_(false),
+      force_main_frame_for_same_site_cookies_(false),
       method_("GET"),
       referrer_policy_(
           ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE),
@@ -564,6 +594,7 @@ URLRequest::URLRequest(const GURL& url,
       reporting_upload_depth_(0),
 #endif
       delegate_(delegate),
+      is_for_websockets_(is_for_websockets),
       status_(OK),
       is_pending_(false),
       is_redirecting_(false),
@@ -607,7 +638,8 @@ void URLRequest::BeforeRequestComplete(int error) {
     StartJob(std::make_unique<URLRequestRedirectJob>(
         this, new_url,
         // Use status code 307 to preserve the method, so POST requests work.
-        URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT, "Delegate"));
+        RedirectUtil::ResponseCode::REDIRECT_307_TEMPORARY_REDIRECT,
+        "Delegate"));
   } else {
     StartJob(context_->job_factory()->CreateJob(this));
   }

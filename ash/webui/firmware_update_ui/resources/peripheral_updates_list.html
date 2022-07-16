@@ -1,0 +1,12 @@
+<style include="firmware-fonts firmware-shared">
+  #container {
+    width: 600px;
+  }
+</style>
+<div id="container">
+  <dom-repeat id="updateList" items="[[firmwareUpdates_]]" as="update">
+    <template>
+      <update-card update="[[update]]"></update-card>
+    </template>
+  </dom-repeat>
+</div>

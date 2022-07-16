@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_SERVICE_WORKER_PAGE_LOAD_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_SERVICE_WORKER_PAGE_LOAD_METRICS_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 
@@ -49,6 +48,12 @@ class ServiceWorkerPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   ServiceWorkerPageLoadMetricsObserver();
+
+  ServiceWorkerPageLoadMetricsObserver(
+      const ServiceWorkerPageLoadMetricsObserver&) = delete;
+  ServiceWorkerPageLoadMetricsObserver& operator=(
+      const ServiceWorkerPageLoadMetricsObserver&) = delete;
+
   // page_load_metrics::PageLoadMetricsObserver implementation:
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
                          ukm::SourceId source_id) override;
@@ -79,8 +84,6 @@ class ServiceWorkerPageLoadMetricsObserver
   ui::PageTransition transition_ = ui::PAGE_TRANSITION_LINK;
   bool was_no_store_main_resource_ = false;
   bool logged_ukm_event_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_SERVICE_WORKER_PAGE_LOAD_METRICS_OBSERVER_H_

@@ -62,6 +62,10 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   UserScriptLoader(content::BrowserContext* browser_context,
                    const mojom::HostID& host_id);
+
+  UserScriptLoader(const UserScriptLoader&) = delete;
+  UserScriptLoader& operator=(const UserScriptLoader&) = delete;
+
   ~UserScriptLoader() override;
 
   // Add |scripts| to the set of scripts managed by this loader. If provided,
@@ -163,7 +167,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   // The mutually-exclusive information about sets of scripts that were added or
   // removed since the last script load. These maps are keyed by script ids.
-  // Note that we only need HostID information for removal.
+  // Note that we only need a script's id for removal.
   std::map<std::string, std::unique_ptr<UserScript>> added_scripts_map_;
   std::set<std::string> removed_script_ids_;
 
@@ -196,8 +200,6 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   std::list<ScriptsLoadedCallback> loading_callbacks_;
 
   base::WeakPtrFactory<UserScriptLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserScriptLoader);
 };
 
 }  // namespace extensions

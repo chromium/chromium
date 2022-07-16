@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/arc_bridge.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -36,6 +35,10 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   ArcBridgeHostImpl(
       ArcBridgeService* arc_bridge_service,
       mojo::PendingReceiver<mojom::ArcBridgeHost> pending_receiver);
+
+  ArcBridgeHostImpl(const ArcBridgeHostImpl&) = delete;
+  ArcBridgeHostImpl& operator=(const ArcBridgeHostImpl&) = delete;
+
   ~ArcBridgeHostImpl() override;
 
   // ArcBridgeHost overrides.
@@ -101,6 +104,9 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   void OnIntentHelperInstanceReady(
       mojo::PendingRemote<mojom::IntentHelperInstance> intent_helper_remote)
       override;
+  void OnKeyboardShortcutInstanceReady(
+      mojo::PendingRemote<mojom::KeyboardShortcutInstance>
+          keyboard_shortcut_remote) override;
   void OnKeymasterInstanceReady(
       mojo::PendingRemote<mojom::KeymasterInstance> keymaster_remote) override;
   void OnKioskInstanceReady(
@@ -205,8 +211,6 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   // Put as a last member to ensure that any callback tied to the elements
   // is not invoked.
   std::vector<std::unique_ptr<MojoChannelBase>> mojo_channels_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBridgeHostImpl);
 };
 
 }  // namespace arc

@@ -11,6 +11,7 @@
 #include "base/strings/string_split.h"
 #include "components/variations/variations_associated_data.h"
 #include "services/device/public/cpp/hid/hid_switches.h"
+#include "services/device/public/mojom/hid.mojom.h"
 
 namespace device {
 
@@ -73,6 +74,8 @@ constexpr HidBlocklist::Entry kStaticEntries[] = {
     VENDOR_PRODUCT_RULE(0x18d1, 0x5026),
     // VASCO
     VENDOR_PRODUCT_RULE(0x1a44, 0x00bb),
+    // OnlyKey
+    VENDOR_PRODUCT_RULE(0x1d50, 0x60fc),
     // Keydo AES
     VENDOR_PRODUCT_RULE(0x1e0d, 0xf1ae),
     // Neowave Keydo
@@ -195,6 +198,12 @@ bool IsReportTypeComponent(base::StringPiece string) {
 
 }  // namespace
 
+constexpr base::Feature kWebHidBlocklist{"WebHIDBlocklist",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
+constexpr base::FeatureParam<std::string> kWebHidBlocklistAdditions{
+    &kWebHidBlocklist, "blocklist_additions", /*default_value=*/""};
+
 // static
 HidBlocklist& HidBlocklist::Get() {
   static base::NoDestructor<HidBlocklist> instance;
@@ -263,8 +272,7 @@ std::vector<uint8_t> HidBlocklist::GetProtectedReportIds(
 }
 
 void HidBlocklist::PopulateWithServerProvidedValues() {
-  std::string blocklist_string = variations::GetVariationParamValue(
-      "WebHIDBlocklist", "blocklist_additions");
+  std::string blocklist_string = kWebHidBlocklistAdditions.Get();
   DLOG(WARNING) << "HID blocklist additions: " << blocklist_string;
   for (const auto& blocklist_rule :
        base::SplitStringPiece(blocklist_string, ",", base::TRIM_WHITESPACE,

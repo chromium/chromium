@@ -6,6 +6,13 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/help_app_ui/buildflags.h"
+#include "ash/webui/help_app_ui/help_app_manager.h"
+#include "ash/webui/help_app_ui/help_app_manager_factory.h"
+#include "ash/webui/help_app_ui/search/search.mojom.h"
+#include "ash/webui/help_app_ui/search/search_handler.h"
+#include "ash/webui/help_app_ui/url_constants.h"
+#include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -38,13 +45,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/components/help_app_ui/buildflags.h"
-#include "chromeos/components/help_app_ui/help_app_manager.h"
-#include "chromeos/components/help_app_ui/help_app_manager_factory.h"
-#include "chromeos/components/help_app_ui/search/search.mojom.h"
-#include "chromeos/components/help_app_ui/search/search_handler.h"
-#include "chromeos/components/help_app_ui/url_constants.h"
-#include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
@@ -53,19 +53,23 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace ash {
+namespace {
+
 class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
   HelpAppIntegrationTest() {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kHelpAppDiscoverTabNotificationAllChannels,
-         chromeos::features::kReleaseNotesNotificationAllChannels,
-         chromeos::features::kHelpAppLauncherSearch},
+        {features::kHelpAppDiscoverTabNotificationAllChannels,
+         features::kReleaseNotesNotificationAllChannels,
+         features::kHelpAppLauncherSearch},
         {});
   }
 
@@ -94,10 +98,12 @@ void WaitForAppToOpen(const GURL& expected_url) {
   EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
 }
 
+}  // namespace
+
 // Test that the Help App installs and launches correctly. Runs some spot
 // checks on the manifest.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2) {
-  const GURL url(chromeos::kChromeUIHelpAppURL);
+  const GURL url(kChromeUIHelpAppURL);
   EXPECT_NO_FATAL_FAILURE(
       ExpectSystemWebAppValid(web_app::SystemAppType::HELP, url, "Explore"));
 }
@@ -105,16 +111,21 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2) {
 // Test that the Help App is searchable by additional strings.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2SearchInLauncher) {
   WaitForTestSystemAppInstall();
-  EXPECT_EQ(
-      std::vector<std::string>({"Get Help", "Perks", "Offers"}),
-      GetManager().GetAdditionalSearchTerms(web_app::SystemAppType::HELP));
+  auto* system_app = GetManager().GetSystemApp(web_app::SystemAppType::HELP);
+  std::vector<int> search_terms = system_app->GetAdditionalSearchTerms();
+  std::vector<std::string> search_terms_strings;
+  std::transform(search_terms.begin(), search_terms.end(),
+                 std::back_inserter(search_terms_strings),
+                 [](int term) { return l10n_util::GetStringUTF8(term); });
+  EXPECT_EQ(std::vector<std::string>({"Get Help", "Perks", "Offers"}),
+            search_terms_strings);
 }
 
 // Test that the Help App has a minimum window size of 600x320.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2MinWindowSize) {
   WaitForTestSystemAppInstall();
-  auto app_id = LaunchParamsForApp(web_app::SystemAppType::HELP).app_id;
-  EXPECT_EQ(GetManager().GetMinimumWindowSize(app_id), gfx::Size(600, 320));
+  auto* system_app = GetManager().GetSystemApp(web_app::SystemAppType::HELP);
+  EXPECT_EQ(system_app->GetMinimumWindowSize(), gfx::Size(600, 320));
 }
 
 // Test that the Help App has a default size of 960x600 and is in the center of
@@ -244,9 +255,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   auto display_service =
       std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
   auto release_notes_notification =
-      std::make_unique<ash::ReleaseNotesNotification>(profile());
-  auto release_notes_storage =
-      std::make_unique<ash::ReleaseNotesStorage>(profile());
+      std::make_unique<ReleaseNotesNotification>(profile());
+  auto release_notes_storage = std::make_unique<ReleaseNotesStorage>(profile());
 
   // Force the release notes notification to show up.
   profile()->GetPrefs()->SetInteger(
@@ -325,14 +335,12 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   auto notifications = display_service->GetDisplayedNotificationsForType(
       NotificationHandler::Type::TRANSIENT);
   ASSERT_EQ(1u, notifications.size());
-  ASSERT_EQ(chromeos::kShowHelpAppDiscoverTabNotificationId,
-            notifications[0].id());
+  ASSERT_EQ(kShowHelpAppDiscoverTabNotificationId, notifications[0].id());
 
   // Click on the notification.
-  display_service->SimulateClick(
-      NotificationHandler::Type::TRANSIENT,
-      chromeos::kShowHelpAppDiscoverTabNotificationId, absl::nullopt,
-      absl::nullopt);
+  display_service->SimulateClick(NotificationHandler::Type::TRANSIENT,
+                                 kShowHelpAppDiscoverTabNotificationId,
+                                 absl::nullopt, absl::nullopt);
 
 #if BUILDFLAG(ENABLE_CROS_HELP_APP)
   EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/discover")));
@@ -529,12 +537,12 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 
   // Search using the search handler to confirm that the update happened.
   base::RunLoop run_loop;
-  chromeos::help_app::HelpAppManagerFactory::GetForBrowserContext(profile())
+  help_app::HelpAppManagerFactory::GetForBrowserContext(profile())
       ->search_handler()
       ->Search(u"verycomplicatedsearchquery",
                /*max_num_results=*/3u,
                base::BindLambdaForTesting(
-                   [&](std::vector<chromeos::help_app::mojom::SearchResultPtr>
+                   [&](std::vector<help_app::mojom::SearchResultPtr>
                            search_results) {
                      EXPECT_EQ(search_results.size(), 1u);
                      EXPECT_EQ(search_results[0]->id, "test-id");
@@ -606,12 +614,12 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // Search using the search handler to confirm that only the valid article was
   // added to the index.
   base::RunLoop run_loop;
-  chromeos::help_app::HelpAppManagerFactory::GetForBrowserContext(profile())
+  help_app::HelpAppManagerFactory::GetForBrowserContext(profile())
       ->search_handler()
       ->Search(u"verycomplicatedsearchquery",
                /*max_num_results=*/3u,
                base::BindLambdaForTesting(
-                   [&](std::vector<chromeos::help_app::mojom::SearchResultPtr>
+                   [&](std::vector<help_app::mojom::SearchResultPtr>
                            search_results) {
                      EXPECT_EQ(search_results.size(), 1u);
                      EXPECT_EQ(search_results[0]->id, "test-id-2");
@@ -633,7 +641,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 
   // Wait for system apps background tasks to start.
   base::RunLoop run_loop;
-  web_app::WebAppProvider::Get(browser()->profile())
+  web_app::WebAppProvider::GetForTest(browser()->profile())
       ->system_web_app_manager()
       .on_tasks_started()
       .Post(FROM_HERE, run_loop.QuitClosure());
@@ -675,12 +683,12 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // by the mock app.
   // Search using the search handler to confirm that the update happened.
   base::RunLoop search_run_loop;
-  chromeos::help_app::HelpAppManagerFactory::GetForBrowserContext(profile())
+  help_app::HelpAppManagerFactory::GetForBrowserContext(profile())
       ->search_handler()
       ->Search(u"verycomplicatedsearchquery",
                /*max_num_results=*/1u,
                base::BindLambdaForTesting(
-                   [&](std::vector<chromeos::help_app::mojom::SearchResultPtr>
+                   [&](std::vector<help_app::mojom::SearchResultPtr>
                            search_results) {
                      ASSERT_EQ(search_results.size(), 1u);
                      EXPECT_EQ(search_results[0]->id, "mock-app-test-id");
@@ -766,3 +774,5 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     HelpAppAllProfilesIntegrationTest);
+
+}  // namespace ash

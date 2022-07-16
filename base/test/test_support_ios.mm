@@ -106,6 +106,19 @@ bool IsSceneStartupEnabled() {
   _window.reset();
 }
 
+- (UIWindow*)window {
+  // Required for backwards compatibility with ScopedKeyWindow.
+  // Note that from iOS 15 the concept of key window is deprecated.
+  NSArray<UIWindow*>* windows = [UIApplication sharedApplication].windows;
+  for (UIWindow* window in windows) {
+    if (window.isKeyWindow)
+      return window;
+  }
+  // Returns a weak pointer to _window, ChromeUnitTestSceneDelegate retains
+  // ownership of the object.
+  return _window.get();
+}
+
 @end
 
 @implementation ChromeUnitTestDelegate

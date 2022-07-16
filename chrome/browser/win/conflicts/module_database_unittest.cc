@@ -35,6 +35,10 @@ constexpr uint32_t kTime2 = 0xBAADF00D;
 }  // namespace
 
 class ModuleDatabaseTest : public testing::Test {
+ public:
+  ModuleDatabaseTest(const ModuleDatabaseTest&) = delete;
+  ModuleDatabaseTest& operator=(const ModuleDatabaseTest&) = delete;
+
  protected:
   ModuleDatabaseTest()
       : dll1_(kDll1),
@@ -88,8 +92,6 @@ class ModuleDatabaseTest : public testing::Test {
   absl::optional<UtilWinImpl> util_win_impl_;
 
   std::unique_ptr<ModuleDatabase> module_database_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleDatabaseTest);
 };
 
 TEST_F(ModuleDatabaseTest, DatabaseIsConsistent) {
@@ -135,6 +137,10 @@ TEST_F(ModuleDatabaseTest, DatabaseIsConsistent) {
 class DummyObserver : public ModuleDatabaseObserver {
  public:
   DummyObserver() = default;
+
+  DummyObserver(const DummyObserver&) = delete;
+  DummyObserver& operator=(const DummyObserver&) = delete;
+
   ~DummyObserver() override = default;
 
   void OnNewModuleFound(const ModuleInfoKey& module_key,
@@ -161,8 +167,6 @@ class DummyObserver : public ModuleDatabaseObserver {
   int new_module_count_ = 0;
   int known_module_loaded_count_ = 0;
   bool on_module_database_idle_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyObserver);
 };
 
 TEST_F(ModuleDatabaseTest, Observers) {

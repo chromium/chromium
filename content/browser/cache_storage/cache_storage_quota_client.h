@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_QUOTA_CLIENT_H_
 #define CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_QUOTA_CLIENT_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/services/storage/public/cpp/storage_key_quota_client.h"
@@ -32,6 +31,10 @@ class CONTENT_EXPORT CacheStorageQuotaClient
  public:
   CacheStorageQuotaClient(scoped_refptr<CacheStorageManager> cache_manager,
                           storage::mojom::CacheStorageOwner owner);
+
+  CacheStorageQuotaClient(const CacheStorageQuotaClient&) = delete;
+  CacheStorageQuotaClient& operator=(const CacheStorageQuotaClient&) = delete;
+
   ~CacheStorageQuotaClient() override;
 
   // storage::StorageKeyQuotaClient method overrides.
@@ -57,8 +60,6 @@ class CONTENT_EXPORT CacheStorageQuotaClient
   const storage::mojom::CacheStorageOwner owner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageQuotaClient);
 };
 
 }  // namespace content

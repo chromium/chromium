@@ -475,9 +475,10 @@ static uint32_t ReadEncodedRunLength(const std::string& str, size_t i) {
   DCHECK_LE(i + 4, str.length());
 
   // Step 1: Extract the big-endian count.
-  uint32_t encoded_length =
-      ((uint8_t)(str[i + 3]) << 0) | ((uint8_t)(str[i + 2]) << 8) |
-      ((uint8_t)(str[i + 1]) << 16) | ((uint8_t)(str[i + 0]) << 24);
+  uint32_t encoded_length = (static_cast<uint8_t>(str[i + 3]) << 0) |
+                            (static_cast<uint8_t>(str[i + 2]) << 8) |
+                            (static_cast<uint8_t>(str[i + 1]) << 16) |
+                            (static_cast<uint8_t>(str[i + 0]) << 24);
 
   // Step 2: If this was an inverted count, un-invert it.
   uint32_t length;

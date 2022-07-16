@@ -27,8 +27,7 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kTestActiveDirectoryUser[] = "test-user";
@@ -63,6 +62,9 @@ class ActiveDirectoryLoginTest : public OobeBaseTest {
         test_realm_(user_manager::kSupervisedUserDomain),
         test_user_(kTestActiveDirectoryUser + ("@" + test_realm_)) {}
 
+  ActiveDirectoryLoginTest(const ActiveDirectoryLoginTest&) = delete;
+  ActiveDirectoryLoginTest& operator=(const ActiveDirectoryLoginTest&) = delete;
+
   ~ActiveDirectoryLoginTest() override = default;
 
  protected:
@@ -76,14 +78,17 @@ class ActiveDirectoryLoginTest : public OobeBaseTest {
       &mixin_host_,
       DeviceStateMixin::State::OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED};
   ActiveDirectoryLoginMixin ad_login_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryLoginTest);
 };
 
 class ActiveDirectoryLoginAutocompleteTest : public ActiveDirectoryLoginTest {
  public:
   ActiveDirectoryLoginAutocompleteTest() = default;
+
+  ActiveDirectoryLoginAutocompleteTest(
+      const ActiveDirectoryLoginAutocompleteTest&) = delete;
+  ActiveDirectoryLoginAutocompleteTest& operator=(
+      const ActiveDirectoryLoginAutocompleteTest&) = delete;
+
   void SetUpInProcessBrowserTestFixture() override {
     ActiveDirectoryLoginTest::SetUpInProcessBrowserTestFixture();
 
@@ -96,9 +101,6 @@ class ActiveDirectoryLoginAutocompleteTest : public ActiveDirectoryLoginTest {
   }
 
   std::string autocomplete_realm_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryLoginAutocompleteTest);
 };
 
 }  // namespace
@@ -325,4 +327,4 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryLoginAutocompleteTest, TestAutocomplete) {
   EXPECT_EQ(kPassword, fake_authpolicy_client()->auth_password());
 }
 
-}  // namespace chromeos
+}  // namespace ash

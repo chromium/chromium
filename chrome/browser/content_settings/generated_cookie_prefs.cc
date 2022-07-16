@@ -98,8 +98,8 @@ GeneratedCookiePrefBase::~GeneratedCookiePrefBase() = default;
 void GeneratedCookiePrefBase::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  if (content_type == ContentSettingsType::COOKIES) {
+    ContentSettingsTypeSet content_type_set) {
+  if (content_type_set.Contains(ContentSettingsType::COOKIES)) {
     NotifyObservers(pref_name_);
   }
 }

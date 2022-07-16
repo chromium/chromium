@@ -1,39 +1,26 @@
 @@include@@variables.include
 
-APT_GET="`which apt-get 2> /dev/null`"
-APT_CONFIG="`which apt-config 2> /dev/null`"
+APT_GET="`command -v apt-get 2> /dev/null`"
+APT_CONFIG="`command -v apt-config 2> /dev/null`"
 
 SOURCES_PREAMBLE="### THIS FILE IS AUTOMATICALLY CONFIGURED ###
 # You may comment out this entry, but any other modifications may be lost.\n"
 
-# Install the repository/package signing keys, if they aren't already.
+# Set variables for the locations of the apt trusted keyrings.
+find_apt_trusted() {
+  eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
+}
+
+# Install the repository/package signing keys.
 # (see also: https://www.google.com/linuxrepositories/)
 install_key() {
-  APT_KEY="`which apt-key 2> /dev/null`"
-  if [ ! -x "$APT_KEY" ]; then
-    return
-  fi
-
-  NEED_KEYS=0
-
-  # 2017 signing subkey
-  "$APT_KEY" export 997C215E 2>&1 | \
-    grep -q -- "-----BEGIN PGP PUBLIC KEY BLOCK-----"
-  if [ $? -ne 0 ]; then
-    NEED_KEYS=1
-  fi
-
-  # 2019 signing subkey
-  "$APT_KEY" export 3CB3BD13 2>&1 | \
-    grep -q -- "-----BEGIN PGP PUBLIC KEY BLOCK-----"
-  if [ $? -ne 0 ]; then
-    NEED_KEYS=1
-  fi
-
-  if [ $NEED_KEYS -eq 1 ]; then
-    "$APT_KEY" add - >/dev/null 2>&1 <<KEYDATA
------BEGIN PGP PUBLIC KEY BLOCK-----
-
+  find_apt_trusted
+  # ASCII-armored keyrings are only supported in apt 1.4 and later, but we must
+  # continue supporting Trusty and Xenial which have older versions of apt, so
+  # the keyring is installed as a binary blob.  base64 is used to decode the
+  # ASCII keyring, which should always be available since it comes from the
+  # coreutils.
+  (base64 -d > "$APT_TRUSTEDDIR/@@PACKAGE@@.gpg") <<KEYDATA
 mQINBFcMjNMBEAC6Wr5QuLIFgz1V1EFPlg8ty2TsjQEl4VWftUAqWlMevJFWvYEx
 BOsOZ6kNFfBfjAxgJNWTkxZrHzDl74R7KW/nUx6X57bpFjUyRaB8F3/NpWKSeIGS
 pJT+0m2SgUNhLAn1WY/iNJGNaMl7lgUnaP+/ZsSNT9hyTBiH3Ev5VvAtMGhVI/u8
@@ -164,10 +151,12 @@ G4wjQ+qsWo+wDI9WMdtpNG1toJrSUL4OYa4oX3YogSv5hGrbYIaP4HwO6O2oTMnS
 0lRIGJOqbEQcmKUa/nWT/3NipTnYzyMjMlEQe89YKjd+32tjMfOSdIOvwCGaTizd
 WnKPF77qB9D0v8C/7AdHmEFqf2ZX8vK31aaY+ZpPWG5IHlf6f/buIMBalJOxIBev
 eBqxcHwQ
-=4zaS
------END PGP PUBLIC KEY BLOCK-----
 KEYDATA
-  fi
+}
+
+uninstall_key() {
+  find_apt_trusted
+  rm -f "$APT_TRUSTEDDIR/@@PACKAGE@@.gpg"
 }
 
 # Set variables for the locations of the apt sources lists.
@@ -290,7 +279,7 @@ handle_distro_upgrade() {
     if [ $? -eq 0 ]; then
       sed -i -e "s,^[[:space:]]*#[[:space:]]*\(.*\)[[:space:]]*# disabled on upgrade to .*,\1," \
         "$SOURCELIST"
-      LOGGER=$(which logger 2> /dev/null)
+      LOGGER=$(command -v logger 2> /dev/null)
       if [ "$LOGGER" ]; then
         "$LOGGER" -t "$0" "Reverted repository modification: $REPOLINE."
       fi

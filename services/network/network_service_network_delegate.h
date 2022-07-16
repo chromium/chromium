@@ -15,6 +15,10 @@
 #include "services/network/network_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace net {
+class SiteForCookies;
+}  // namespace net
+
 namespace network {
 
 // TODO(mmenke):  Look into merging this with URLLoader, and removing the
@@ -28,6 +32,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
       bool validate_referrer_policy_on_initial_request,
       mojo::PendingRemote<mojom::ProxyErrorClient> proxy_error_client_remote,
       NetworkContext* network_context);
+
+  NetworkServiceNetworkDelegate(const NetworkServiceNetworkDelegate&) = delete;
+  NetworkServiceNetworkDelegate& operator=(
+      const NetworkServiceNetworkDelegate&) = delete;
+
   ~NetworkServiceNetworkDelegate() override;
 
   void set_enable_referrers(bool enable_referrers) {
@@ -39,9 +48,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
   int OnBeforeURLRequest(net::URLRequest* request,
                          net::CompletionOnceCallback callback,
                          GURL* new_url) override;
-  int OnBeforeStartTransaction(net::URLRequest* request,
-                               net::CompletionOnceCallback callback,
-                               net::HttpRequestHeaders* headers) override;
+  int OnBeforeStartTransaction(
+      net::URLRequest* request,
+      const net::HttpRequestHeaders& headers,
+      OnBeforeStartTransactionCallback callback) override;
   int OnHeadersReceived(
       net::URLRequest* request,
       net::CompletionOnceCallback callback,
@@ -109,8 +119,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
 
   mutable base::WeakPtrFactory<NetworkServiceNetworkDelegate> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceNetworkDelegate);
 };
 
 }  // namespace network

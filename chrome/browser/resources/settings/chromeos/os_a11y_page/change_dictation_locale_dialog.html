@@ -9,7 +9,7 @@
   }
 
   h2 {
-    color: var(--google-grey-700);
+    color: var(--cros-text-color-secondary);
     min-height: 36px;
     padding-bottom: 0;
     padding-top: 0;
@@ -27,7 +27,7 @@
   }
 
   .previous {
-    fill: var(--google-grey-700);
+    fill: var(--cros-text-color-secondary);
   }
 
   .active {
@@ -39,7 +39,7 @@
   }
 
   .subtitle {
-    color: var(--google-grey-700);
+    color: var(--cros-text-color-secondary);
   }
 
   iron-list > div:not(.selected):hover {
@@ -95,7 +95,7 @@
           <paper-ripple></paper-ripple>
           <div class="flex padded" aria-hidden="true">
             [[item.name]]
-            <div class="subtitle" hidden="[[!item.offline]]">
+            <div class="subtitle" hidden="[[!item.worksOffline]]">
               $i18n{dictationLocaleOfflineSubtitle}
             </div>
           </div>
@@ -121,7 +121,7 @@
           <paper-ripple></paper-ripple>
           <div class="flex padded" aria-hidden="true">
             [[item.name]]
-            <div class="subtitle" hidden="[[!item.offline]]">
+            <div class="subtitle" hidden="[[!item.worksOffline]]">
               $i18n{dictationLocaleOfflineSubtitle}
             </div>
           </div>

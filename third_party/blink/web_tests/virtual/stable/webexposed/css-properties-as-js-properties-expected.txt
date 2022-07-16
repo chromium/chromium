@@ -1,6 +1,7 @@
 This test (crudely) documents Blink's web-exposed CSS properties.  All changes to this list should go through Blink's feature review process: http://www.chromium.org/blink#new-features
 
 
+accentColor
 additiveSymbols
 alignContent
 alignItems
@@ -16,6 +17,7 @@ animationIterationCount
 animationName
 animationPlayState
 animationTimingFunction
+appRegion
 appearance
 ascentOverride
 aspectRatio
@@ -127,7 +129,11 @@ columnSpan
 columnWidth
 columns
 contain
+containIntrinsicBlockSize
+containIntrinsicHeight
+containIntrinsicInlineSize
 containIntrinsicSize
+containIntrinsicWidth
 content
 contentVisibility
 counterIncrement
@@ -168,6 +174,10 @@ fontOpticalSizing
 fontSize
 fontStretch
 fontStyle
+fontSynthesis
+fontSynthesisSmallCaps
+fontSynthesisStyle
+fontSynthesisWeight
 fontVariant
 fontVariantCaps
 fontVariantEastAsian

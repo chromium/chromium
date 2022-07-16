@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/action_after_pagehide.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -26,7 +25,6 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
-#include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/frame/report.h"
@@ -125,7 +123,7 @@ DOMWindow* DOMWindow::parent() const {
   if (!GetFrame())
     return nullptr;
 
-  Frame* parent = GetFrame()->Tree().Parent();
+  Frame* parent = GetFrame()->Tree().Parent(FrameTreeBoundary::kFenced);
   return parent ? parent->DomWindow() : GetFrame()->DomWindow();
 }
 
@@ -133,30 +131,7 @@ DOMWindow* DOMWindow::top() const {
   if (!GetFrame())
     return nullptr;
 
-  // TODO(crbug.com/1123606): Remove this once we use MPArch as the underlying
-  // fenced frames implementation, instead of the
-  // `FencedFrameShadowDOMDelegate`. This is the version of `top()` specifically
-  // for fenced frames implemented with the ShadowDOM, because it provides
-  // top-most DOMWindow within the "fenced" frame tree. That is, the closest
-  // DOMWindow to this window that is marked as fenced, if one such frame
-  // exists (see the early-break below). See
-  // https://docs.google.com/document/d/1ijTZJT3DHQ1ljp4QQe4E4XCCRaYAxmInNzN1SzeJM8s/edit#heading=h.jztjmd6vstll.
-  if (RuntimeEnabledFeatures::FencedFramesEnabled(GetExecutionContext()) &&
-      features::kFencedFramesImplementationTypeParam.Get() ==
-          features::FencedFramesImplementationType::kShadowDOM) {
-    Frame* frame = GetFrame();
-    while (frame->Parent()) {
-      if (frame->Owner() && frame->Owner()->GetFramePolicy().is_fenced) {
-        break;
-      }
-      frame = frame->Parent();
-    }
-
-    DCHECK(frame);
-    return frame->DomWindow();
-  }
-
-  return GetFrame()->Tree().Top().DomWindow();
+  return GetFrame()->Tree().Top(FrameTreeBoundary::kFenced).DomWindow();
 }
 
 void DOMWindow::postMessage(v8::Isolate* isolate,
@@ -457,21 +432,19 @@ void DOMWindow::PostMessageForTesting(
 }
 
 void DOMWindow::InstallCoopAccessMonitor(
-    network::mojom::blink::CoopAccessReportType report_type,
     LocalFrame* accessing_frame,
-    mojo::PendingRemote<network::mojom::blink::CrossOriginOpenerPolicyReporter>
-        pending_reporter,
-    bool endpoint_defined,
-    const WTF::String& reported_window_url) {
+    network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
+        coop_reporter_params) {
   CoopAccessMonitor monitor;
 
   DCHECK(accessing_frame->IsMainFrame());
-  monitor.report_type = report_type;
+  monitor.report_type = coop_reporter_params->report_type;
   monitor.accessing_main_frame = accessing_frame->GetLocalFrameToken();
-  monitor.endpoint_defined = endpoint_defined;
-  monitor.reported_window_url = std::move(reported_window_url);
+  monitor.endpoint_defined = coop_reporter_params->endpoint_defined;
+  monitor.reported_window_url =
+      std::move(coop_reporter_params->reported_window_url);
 
-  monitor.reporter.Bind(std::move(pending_reporter));
+  monitor.reporter.Bind(std::move(coop_reporter_params->reporter));
   // CoopAccessMonitor are cleared when their reporter are gone. This avoids
   // accumulation. However it would have been interesting continuing reporting
   // accesses past this point, at least for the ReportingObserver and Devtool.
@@ -703,9 +676,7 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
   // capabilities.  An explainer for the general delegation API is here:
   // https://github.com/mustaqahmed/capability-delegation
   bool delegate_payment_request = false;
-  if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(
-          GetExecutionContext()) &&
-      LocalFrame::HasTransientUserActivation(source_frame) &&
+  if (LocalFrame::HasTransientUserActivation(source_frame) &&
       options->hasDelegate()) {
     Vector<String> capability_list;
     options->delegate().Split(' ', capability_list);

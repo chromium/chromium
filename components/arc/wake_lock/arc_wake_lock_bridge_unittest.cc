@@ -38,6 +38,9 @@ class ArcWakeLockBridgeTest : public testing::Test {
     CreateWakeLockInstance();
   }
 
+  ArcWakeLockBridgeTest(const ArcWakeLockBridgeTest&) = delete;
+  ArcWakeLockBridgeTest& operator=(const ArcWakeLockBridgeTest&) = delete;
+
   ~ArcWakeLockBridgeTest() override { DestroyWakeLockInstance(); }
 
  protected:
@@ -104,8 +107,6 @@ class ArcWakeLockBridgeTest : public testing::Test {
   std::unique_ptr<ArcBridgeService> bridge_service_;
   std::unique_ptr<FakeWakeLockInstance> instance_;
   std::unique_ptr<ArcWakeLockBridge> wake_lock_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcWakeLockBridgeTest);
 };
 
 TEST_F(ArcWakeLockBridgeTest, AcquireAndReleaseSinglePartialWakeLock) {

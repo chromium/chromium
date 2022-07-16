@@ -4,13 +4,19 @@
 
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 
-#include "base/macros.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
+#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 
@@ -44,6 +50,8 @@ class AppLaunchManager : public StartupAppLauncher::Delegate {
       app_launcher_ = std::make_unique<WebKioskAppLauncher>(
           profile, this, *kiosk_app_id.account_id);
   }
+  AppLaunchManager(const AppLaunchManager&) = delete;
+  AppLaunchManager& operator=(const AppLaunchManager&) = delete;
 
   void Start() { app_launcher_->Initialize(); }
 
@@ -80,8 +88,6 @@ class AppLaunchManager : public StartupAppLauncher::Delegate {
   bool IsShowingNetworkConfigScreen() const override { return false; }
 
   std::unique_ptr<KioskAppLauncher> app_launcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppLaunchManager);
 };
 
 void LaunchAppOrDie(Profile* profile, const KioskAppId& kiosk_app_id) {
@@ -107,6 +113,26 @@ void ResetEphemeralKioskPreferences(PrefService* prefs) {
 void SetEphemeralKioskPreferencesListForTesting(
     std::vector<std::string>* prefs) {
   test_prefs_to_reset = prefs;
+}
+
+bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
+                              PrefService* local_state) {
+  KioskAppManager* app_manager = KioskAppManager::Get();
+  WebKioskAppManager* web_app_manager = WebKioskAppManager::Get();
+  ArcKioskAppManager* arc_app_manager = ArcKioskAppManager::Get();
+
+  // We shouldn't auto launch kiosk app if powerwash screen should be shown.
+  bool prevent_autolaunch =
+      local_state->GetBoolean(prefs::kFactoryResetRequested);
+  return command_line.HasSwitch(switches::kLoginManager) &&
+         (app_manager->IsAutoLaunchEnabled() ||
+          web_app_manager->GetAutoLaunchAccountId().is_valid() ||
+          arc_app_manager->GetAutoLaunchAccountId().is_valid()) &&
+         KioskAppLaunchError::Get() == KioskAppLaunchError::Error::kNone &&
+         // IsOobeCompleted() is needed to prevent kiosk session start in case
+         // of enterprise rollback, when keeping the enrollment, policy, not
+         // clearing TPM, but wiping stateful partition.
+         StartupUtils::IsOobeCompleted() && !prevent_autolaunch;
 }
 
 }  // namespace ash

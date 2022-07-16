@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_UPDATER_EXTENSION_UPDATE_CLIENT_COMMAND_LINE_CONFIG_POLICY_H_
 #define CHROME_BROWSER_EXTENSIONS_UPDATER_EXTENSION_UPDATE_CLIENT_COMMAND_LINE_CONFIG_POLICY_H_
 
-#include "base/macros.h"
 #include "components/update_client/command_line_config_policy.h"
 
 namespace base {
@@ -22,13 +21,16 @@ class ExtensionUpdateClientCommandLineConfigPolicy final
   explicit ExtensionUpdateClientCommandLineConfigPolicy(
       const base::CommandLine* cmdline);
 
+  ExtensionUpdateClientCommandLineConfigPolicy(
+      const ExtensionUpdateClientCommandLineConfigPolicy&) = delete;
+  ExtensionUpdateClientCommandLineConfigPolicy& operator=(
+      const ExtensionUpdateClientCommandLineConfigPolicy&) = delete;
+
   // update_client::CommandLineConfigPolicy overrides.
   bool TestRequest() const override;
 
  private:
   bool test_request_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionUpdateClientCommandLineConfigPolicy);
 };
 
 }  // namespace extensions

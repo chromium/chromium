@@ -24,6 +24,9 @@ class MockSharedWorkerHelper : public SharedWorkerHelper {
  public:
   explicit MockSharedWorkerHelper(content::BrowserContext* browser_context);
 
+  MockSharedWorkerHelper(const MockSharedWorkerHelper&) = delete;
+  MockSharedWorkerHelper& operator=(const MockSharedWorkerHelper&) = delete;
+
   // Adds some shared worker samples.
   void AddSharedWorkerSamples();
 
@@ -49,8 +52,6 @@ class MockSharedWorkerHelper : public SharedWorkerHelper {
   FetchCallback callback_;
   std::map<SharedWorkerInfo, bool> workers_;
   std::list<SharedWorkerInfo> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSharedWorkerHelper);
 };
 
 }  // namespace browsing_data

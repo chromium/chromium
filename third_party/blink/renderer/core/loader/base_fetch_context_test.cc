@@ -98,9 +98,6 @@ class MockBaseFetchContext final : public BaseFetchContext {
   }
   const KURL& Url() const override { return execution_context_->Url(); }
 
-  const SecurityOrigin* GetParentSecurityOrigin() const override {
-    return nullptr;
-  }
   ContentSecurityPolicy* GetContentSecurityPolicy() const override {
     return execution_context_->GetContentSecurityPolicy();
   }
@@ -110,6 +107,10 @@ class MockBaseFetchContext final : public BaseFetchContext {
     visitor->Trace(execution_context_);
     visitor->Trace(fetch_client_settings_object_);
     BaseFetchContext::Trace(visitor);
+  }
+
+  ExecutionContext* GetExecutionContext() const override {
+    return execution_context_;
   }
 
  private:

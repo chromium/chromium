@@ -42,8 +42,9 @@
 // method. It is called when a gesture starts, moves, or ends.
 - (void)handlePanGesture:(UIPanGestureRecognizer*)gesture;
 
-// Adds UI element to the set of animated objects. The set holds weak references
-// to the animatees.
+// Adds UI element to the set of animated objects. The set holds strong
+// references to the animatees. It gets cleaned up at destruction of the
+// handler.
 - (void)addAnimatee:(id<ViewRevealingAnimatee>)animatee;
 
 // Requests the pan handler to transition to |state|. Depending on the

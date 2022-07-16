@@ -123,13 +123,18 @@ class PasswordEditDialogCoordinator implements ModalDialogProperties.Controller 
         mDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
-                        .with(ModalDialogProperties.TITLE,
-                                resources.getString(R.string.update_password_dialog_title, origin))
+                        .with(ModalDialogProperties.TITLE, resources,
+                                R.string.confirm_username_dialog_title)
+                        // TODO(crbug.com/1237077): Currently PasswordEditDialog is only used for
+                        // confirming username in update password flow. The positive button text is
+                        // set to "Update". In the future, when this dialog is used in other
+                        // scenarios, the buttontext should be set dynamically based on scenario.
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
                                 R.string.password_manager_update_button)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
                                 R.string.password_generation_dialog_cancel_button)
-                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
+                        .with(ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
                         .build();
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);

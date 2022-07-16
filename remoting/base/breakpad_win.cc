@@ -59,6 +59,10 @@ using base::subtle::NoBarrier_CompareAndSwap;
 class BreakpadWin {
  public:
   BreakpadWin();
+
+  BreakpadWin(const BreakpadWin&) = delete;
+  BreakpadWin& operator=(const BreakpadWin&) = delete;
+
   ~BreakpadWin();
 
   static BreakpadWin* GetInstance();
@@ -90,8 +94,6 @@ class BreakpadWin {
   static const wchar_t* pipe_name_;
 
   friend void ::remoting::InitializeCrashReportingForTest(const wchar_t*);
-
-  DISALLOW_COPY_AND_ASSIGN(BreakpadWin);
 };
 
 // |LazyInstance| is used to guarantee that the exception handler will be

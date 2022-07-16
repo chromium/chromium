@@ -4,88 +4,100 @@
 
 #include "chrome/browser/video_tutorials/internal/tutorial_manager_impl.h"
 
-#include <set>
+#include <string>
+#include <vector>
 
 #include "base/bind.h"
-#include "chrome/browser/video_tutorials/internal/config.h"
-#include "chrome/browser/video_tutorials/prefs.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace video_tutorials {
 namespace {
 
-std::vector<Tutorial> FilterTutorials(const std::vector<Tutorial>& tutorials) {
-  std::vector<Tutorial> tutorials_excluding_summary;
-  for (const auto& tutorial : tutorials) {
-    if (tutorial.feature == FeatureType::kSummary)
-      continue;
-    tutorials_excluding_summary.emplace_back(tutorial);
+void FilterOutSummaryCard(std::vector<Tutorial>& tutorials) {
+  for (auto it = tutorials.begin(); it != tutorials.end();) {
+    if (it->feature == FeatureType::kSummary) {
+      it = tutorials.erase(it);
+    } else {
+      ++it;
+    }
   }
+}
 
-  return tutorials_excluding_summary;
+bool FindTutorialGroupInLanguage(const proto::VideoTutorialGroups& groups,
+                                 const std::string& language,
+                                 proto::VideoTutorialGroup& out_group) {
+  for (const proto::VideoTutorialGroup& group : groups.tutorial_groups()) {
+    if (group.language() == language) {
+      out_group = group;
+      return true;
+    }
+  }
+  return false;
+}
+
+void FindTutorialGroupInPreferredLanguageOrDefault(
+    const proto::VideoTutorialGroups& groups,
+    const std::string& language,
+    proto::VideoTutorialGroup& out_group) {
+  bool found = FindTutorialGroupInLanguage(groups, language, out_group);
+  if (!found && groups.tutorial_groups_size() > 0)
+    out_group = groups.tutorial_groups(0);
 }
 
 }  // namespace
 
 TutorialManagerImpl::TutorialManagerImpl(std::unique_ptr<TutorialStore> store,
                                          PrefService* prefs)
-    : store_(std::move(store)), prefs_(prefs) {
-  Initialize();
-}
+    : store_(std::move(store)) {}
 
 TutorialManagerImpl::~TutorialManagerImpl() = default;
 
-void TutorialManagerImpl::Initialize() {
-  store_->Initialize(base::BindOnce(&TutorialManagerImpl::OnInitCompleted,
-                                    weak_ptr_factory_.GetWeakPtr()));
+void TutorialManagerImpl::Initialize(SuccessCallback callback) {
+  DCHECK(!initialized_);
+
+  // The data doesn't exist in the cache. Load it from the DB.
+  store_->InitAndLoad(base::BindOnce(&TutorialManagerImpl::OnDataLoaded,
+                                     weak_ptr_factory_.GetWeakPtr(),
+                                     std::move(callback)));
+}
+
+bool TutorialManagerImpl::IsInitialized() {
+  return initialized_;
 }
 
 void TutorialManagerImpl::GetTutorials(MultipleItemCallback callback) {
-  if (!init_success_.has_value()) {
-    MaybeCacheApiCall(base::BindOnce(&TutorialManagerImpl::GetTutorials,
-                                     weak_ptr_factory_.GetWeakPtr(),
-                                     std::move(callback)));
+  DCHECK(initialized_);
+  if (!tutorial_groups_) {
+    std::move(callback).Run(std::vector<Tutorial>());
     return;
   }
 
-  // Find the data from cache. If the preferred locale is not set, use a default
-  // locale value to show the tutorial promos. Users will be asked again to
-  // confirm their language before the video starts.
-  absl::optional<std::string> preferred_locale = GetPreferredLocale();
-  std::string locale = preferred_locale.has_value()
-                           ? preferred_locale.value()
-                           : Config::GetDefaultPreferredLocale();
-  if (tutorial_group_.has_value() && tutorial_group_->language == locale) {
-    std::move(callback).Run(FilterTutorials(tutorial_group_->tutorials));
-    return;
-  }
+  auto preferred_locale = tutorial_groups_->preferred_locale();
+  proto::VideoTutorialGroup active_group;
+  FindTutorialGroupInPreferredLanguageOrDefault(*tutorial_groups_,
+                                                preferred_locale, active_group);
+  auto tutorials = TutorialsFromProto(&active_group);
 
-  // The data doesn't exist in the cache. Probably the locale has changed. Load
-  // it from the DB.
-  store_->LoadEntries(
-      {locale},
-      base::BindOnce(&TutorialManagerImpl::OnTutorialsLoaded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  FilterOutSummaryCard(tutorials);
+  std::move(callback).Run(tutorials);
 }
 
 void TutorialManagerImpl::GetTutorial(FeatureType feature_type,
                                       SingleItemCallback callback) {
-  // Ensure that all the tutorials are already loaded.
-  GetTutorials(base::BindOnce(&TutorialManagerImpl::RunSingleItemCallback,
-                              weak_ptr_factory_.GetWeakPtr(),
-                              std::move(callback), feature_type));
-}
-
-void TutorialManagerImpl::RunSingleItemCallback(
-    SingleItemCallback callback,
-    FeatureType feature_type,
-    std::vector<Tutorial> tutorials_excluding_summary) {
-  if (!tutorial_group_.has_value()) {
+  DCHECK(initialized_);
+  if (!tutorial_groups_) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
 
-  for (const Tutorial& tutorial : tutorial_group_->tutorials) {
+  auto preferred_locale = tutorial_groups_->preferred_locale();
+  proto::VideoTutorialGroup active_group;
+  FindTutorialGroupInPreferredLanguageOrDefault(*tutorial_groups_,
+                                                preferred_locale, active_group);
+  auto tutorials = TutorialsFromProto(&active_group);
+  for (const Tutorial& tutorial : tutorials) {
     if (tutorial.feature == feature_type) {
       std::move(callback).Run(tutorial);
       return;
@@ -95,113 +107,88 @@ void TutorialManagerImpl::RunSingleItemCallback(
   std::move(callback).Run(absl::nullopt);
 }
 
-const std::vector<std::string>& TutorialManagerImpl::GetSupportedLanguages() {
-  return supported_languages_;
+std::vector<std::string> TutorialManagerImpl::GetSupportedLanguages() {
+  DCHECK(initialized_);
+
+  std::vector<std::string> supported_languages;
+  if (!tutorial_groups_)
+    return supported_languages;
+
+  for (const proto::VideoTutorialGroup& group :
+       tutorial_groups_->tutorial_groups()) {
+    supported_languages.emplace_back(group.language());
+  }
+
+  return supported_languages;
 }
 
 const std::vector<std::string>&
 TutorialManagerImpl::GetAvailableLanguagesForTutorial(
     FeatureType feature_type) {
+  DCHECK(initialized_);
   return languages_for_tutorials_[feature_type];
 }
 
 absl::optional<std::string> TutorialManagerImpl::GetPreferredLocale() {
-  if (prefs_->HasPrefPath(kPreferredLocaleKey))
-    return prefs_->GetString(kPreferredLocaleKey);
-  return absl::nullopt;
+  DCHECK(initialized_);
+  std::string preferred_locale;
+  if (tutorial_groups_)
+    preferred_locale = tutorial_groups_->preferred_locale();
+  return preferred_locale.empty() ? absl::nullopt
+                                  : absl::make_optional(preferred_locale);
 }
 
 void TutorialManagerImpl::SetPreferredLocale(const std::string& locale) {
-  prefs_->SetString(kPreferredLocaleKey, locale);
-}
-
-void TutorialManagerImpl::OnInitCompleted(bool success) {
-  if (!success)
+  DCHECK(initialized_);
+  if (!tutorial_groups_)
     return;
 
-  store_->LoadEntries({},
-                      base::BindOnce(&TutorialManagerImpl::OnInitialDataLoaded,
-                                     weak_ptr_factory_.GetWeakPtr()));
+  tutorial_groups_->set_preferred_locale(locale);
+  store_->Update(*tutorial_groups_,
+                 base::BindOnce(&TutorialManagerImpl::OnGroupsSaved,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
-void TutorialManagerImpl::OnInitialDataLoaded(
-    bool success,
-    std::unique_ptr<std::vector<TutorialGroup>> all_groups) {
-  if (all_groups) {
-    supported_languages_.clear();
-    for (auto& tutorial_group : *all_groups) {
-      supported_languages_.emplace_back(tutorial_group.language);
-    }
+std::string TutorialManagerImpl::GetTextLocale() {
+  DCHECK(initialized_);
+  return tutorial_groups_ ? tutorial_groups_->text_locale() : std::string();
+}
 
+void TutorialManagerImpl::OnDataLoaded(
+    SuccessCallback callback,
+    bool success,
+    std::unique_ptr<proto::VideoTutorialGroups> loaded_data) {
+  tutorial_groups_ = std::move(loaded_data);
+
+  if (tutorial_groups_) {
     languages_for_tutorials_.clear();
-    for (auto& tutorial_group : *all_groups) {
-      for (auto& tutorial : tutorial_group.tutorials) {
-        languages_for_tutorials_[tutorial.feature].emplace_back(
-            tutorial_group.language);
+    for (const auto& group : tutorial_groups_->tutorial_groups()) {
+      for (const auto& tutorial : group.tutorials()) {
+        auto feature = ToFeatureType(tutorial.feature());
+        languages_for_tutorials_[feature].emplace_back(group.language());
       }
     }
   }
 
-  init_success_ = success;
-
-  // Flush all cached calls in FIFO sequence.
-  while (!cached_api_calls_.empty()) {
-    auto api_call = std::move(cached_api_calls_.front());
-    cached_api_calls_.pop_front();
-    std::move(api_call).Run();
-  }
-}
-
-void TutorialManagerImpl::OnTutorialsLoaded(
-    MultipleItemCallback callback,
-    bool success,
-    std::unique_ptr<std::vector<TutorialGroup>> loaded_groups) {
-  if (!success || !loaded_groups || loaded_groups->empty()) {
-    std::move(callback).Run(std::vector<Tutorial>());
-    return;
-  }
-
-  if (!init_success_.has_value()) {
-    MaybeCacheApiCall(base::BindOnce(
-        &TutorialManagerImpl::OnTutorialsLoaded, weak_ptr_factory_.GetWeakPtr(),
-        std::move(callback), success, std::move(loaded_groups)));
-    return;
-  }
-
-  // We are loading tutorials only for the preferred locale.
-  DCHECK(loaded_groups->size() == 1u);
-  tutorial_group_ = loaded_groups->front();
-  std::move(callback).Run(FilterTutorials(tutorial_group_->tutorials));
+  initialized_ = true;
+  std::move(callback).Run(success);
 }
 
 void TutorialManagerImpl::SaveGroups(
-    std::unique_ptr<std::vector<TutorialGroup>> groups) {
-  std::vector<std::string> new_locales;
-  std::vector<std::pair<std::string, TutorialGroup>> key_entry_pairs;
-  for (auto& group : *groups.get()) {
-    new_locales.emplace_back(group.language);
-    key_entry_pairs.emplace_back(std::make_pair(group.language, group));
+    std::unique_ptr<proto::VideoTutorialGroups> groups) {
+  DCHECK(initialized_);
+  if (!groups) {
+    OnGroupsSaved(true);
+    return;
   }
 
-  // Remove the languages that don't exist in the new data.
-  // TODO(shaktisahu): Maybe completely nuke the DB and save new data.
-  std::vector<std::string> keys_to_delete;
-  for (auto& old_language : supported_languages_) {
-    if (std::find(new_locales.begin(), new_locales.end(), old_language) ==
-        new_locales.end()) {
-      keys_to_delete.emplace_back(old_language);
-    }
-  }
+  if (tutorial_groups_)
+    groups->set_preferred_locale(tutorial_groups_->preferred_locale());
 
-  store_->UpdateAll(key_entry_pairs, keys_to_delete,
-                    base::BindOnce(&TutorialManagerImpl::OnInitCompleted,
-                                   weak_ptr_factory_.GetWeakPtr()));
+  store_->Update(*groups, base::BindOnce(&TutorialManagerImpl::OnGroupsSaved,
+                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
-void TutorialManagerImpl::MaybeCacheApiCall(base::OnceClosure api_call) {
-  DCHECK(!init_success_.has_value())
-      << "Only cache API calls before initialization.";
-  cached_api_calls_.emplace_back(std::move(api_call));
-}
+void TutorialManagerImpl::OnGroupsSaved(bool success) {}
 
 }  // namespace video_tutorials

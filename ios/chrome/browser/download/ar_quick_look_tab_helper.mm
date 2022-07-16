@@ -133,11 +133,9 @@ void ARQuickLookTabHelper::DidFinishDownload() {
     return;
   }
 
-  net::URLFetcherFileWriter* file_writer =
-      download_task_->GetResponseWriter()->AsFileWriter();
-  base::FilePath path = file_writer->file_path();
-  NSURL* fileURL =
-      [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
+  NSURL* fileURL = [NSURL
+      fileURLWithPath:base::SysUTF8ToNSString(
+                          download_task_->GetResponsePath().AsUTF8Unsafe())];
   bool allow_content_scaling = true;
   if (download_task_->GetOriginalUrl().ref() ==
       kDisallowContentScalingUrlFragment) {
@@ -171,27 +169,8 @@ void ARQuickLookTabHelper::DownloadWithDestinationDir(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   std::u16string file_name = download_task_->GetSuggestedFilename();
   base::FilePath path = destination_dir.Append(base::UTF16ToUTF8(file_name));
-  auto writer = std::make_unique<net::URLFetcherFileWriter>(task_runner, path);
-  writer->Initialize(base::BindRepeating(
-      &ARQuickLookTabHelper::DownloadWithWriter, AsWeakPtr(),
-      base::Passed(std::move(writer)), download_task_.get()));
-}
-
-void ARQuickLookTabHelper::DownloadWithWriter(
-    std::unique_ptr<net::URLFetcherFileWriter> writer,
-    web::DownloadTask* download_task,
-    int writer_initialization_status) {
-  // Return early if |download_task_| has changed.
-  if (download_task != download_task_.get()) {
-    return;
-  }
-
-  if (writer_initialization_status == net::OK) {
-    download_task_->Start(std::move(writer));
-    LogHistogram(download_task_.get());
-  } else {
-    RemoveCurrentDownload();
-  }
+  download_task->Start(path, web::DownloadTask::Destination::kToDisk);
+  LogHistogram(download_task_.get());
 }
 
 void ARQuickLookTabHelper::OnDownloadUpdated(web::DownloadTask* download_task) {

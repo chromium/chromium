@@ -24,7 +24,7 @@ class BacklightBrightnessChange;
 namespace ash {
 namespace ml {
 
-static constexpr base::TimeDelta kSliderDelay = base::TimeDelta::FromSeconds(1);
+static constexpr base::TimeDelta kSliderDelay = base::Seconds(1);
 
 // This class handles logging for settings changes that are initiated by the
 // user from the quick settings tray. Exported for tests.

@@ -17,7 +17,6 @@ source_set("cpp") {
   deps = [
     "//chrome/app:generated_resources",
     "//chrome/common",
-    "//chrome/services:sandbox_types",
     "//content/public/browser",
     "//media:media_buildflags",
     "//net:buildflags",

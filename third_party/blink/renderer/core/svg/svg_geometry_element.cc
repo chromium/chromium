@@ -115,7 +115,7 @@ bool SVGGeometryElement::isPointInStroke(SVGPointTearOff* point) const {
       PathLengthScaleFactor());
 
   Path path = AsPath();
-  FloatPoint local_point(point->Target()->Value());
+  gfx::PointF local_point = point->Target()->Value();
   if (layout_shape.HasNonScalingStroke()) {
     const AffineTransform transform =
         layout_shape.ComputeNonScalingStrokeTransform();
@@ -185,7 +185,7 @@ SVGPointTearOff* SVGGeometryElement::getPointAtLength(
     if (length > computed_length)
       length = computed_length;
   }
-  FloatPoint point = path.PointAtLength(length);
+  gfx::PointF point = path.PointAtLength(length);
 
   return SVGPointTearOff::CreateDetached(point);
 }
@@ -228,7 +228,7 @@ float SVGGeometryElement::PathLengthScaleFactor(float computed_path_length,
   // However, since 0 * Infinity is not zero (but rather NaN) per
   // IEEE, we need to make sure to clamp the result below - avoiding
   // the actual Infinity (and using max()) instead.
-  return clampTo<float>(computed_path_length / author_path_length);
+  return ClampTo<float>(computed_path_length / author_path_length);
 }
 
 void SVGGeometryElement::GeometryPresentationAttributeChanged(
@@ -250,7 +250,7 @@ void SVGGeometryElement::GeometryAttributeChanged() {
 LayoutObject* SVGGeometryElement::CreateLayoutObject(const ComputedStyle&,
                                                      LegacyLayout) {
   // By default, any subclass is expected to do path-based drawing.
-  return new LayoutSVGPath(this);
+  return MakeGarbageCollected<LayoutSVGPath>(this);
 }
 
 }  // namespace blink

@@ -19,6 +19,11 @@ namespace crash_reporter {
 class CrashMetricsReporterObserver : public CrashMetricsReporter::Observer {
  public:
   CrashMetricsReporterObserver() {}
+
+  CrashMetricsReporterObserver(const CrashMetricsReporterObserver&) = delete;
+  CrashMetricsReporterObserver& operator=(const CrashMetricsReporterObserver&) =
+      delete;
+
   ~CrashMetricsReporterObserver() {}
 
   // CrashMetricsReporter::Observer:
@@ -39,13 +44,16 @@ class CrashMetricsReporterObserver : public CrashMetricsReporter::Observer {
  private:
   base::RunLoop wait_run_loop_;
   CrashMetricsReporter::ReportedCrashTypeSet recorded_crash_types_;
-  DISALLOW_COPY_AND_ASSIGN(CrashMetricsReporterObserver);
 };
 
 class CrashMetricsReporterTest : public testing::Test {
  public:
   CrashMetricsReporterTest()
       : scoped_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
+
+  CrashMetricsReporterTest(const CrashMetricsReporterTest&) = delete;
+  CrashMetricsReporterTest& operator=(const CrashMetricsReporterTest&) = delete;
+
   ~CrashMetricsReporterTest() override {}
 
  protected:
@@ -83,7 +91,6 @@ class CrashMetricsReporterTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment scoped_environment_;
-  DISALLOW_COPY_AND_ASSIGN(CrashMetricsReporterTest);
 };
 
 TEST_F(CrashMetricsReporterTest, RendereMainFrameOOM) {

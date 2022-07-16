@@ -54,10 +54,10 @@ const uint8_t kTestKeyData[] = {
 
 bool GetFakeCertificateDER(const base::TimeDelta& expiry,
                            std::string* certificate) {
-  base::Time valid_start = base::Time::Now() - base::TimeDelta::FromDays(1);
+  base::Time valid_start = base::Time::Now() - base::Days(1);
   base::Time valid_expiry = base::Time::Now() + expiry;
   if (valid_expiry <= valid_start) {
-    valid_start = valid_expiry - base::TimeDelta::FromDays(1);
+    valid_start = valid_expiry - base::Days(1);
   }
   std::unique_ptr<crypto::RSAPrivateKey> test_key(
       crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(std::vector<uint8_t>(

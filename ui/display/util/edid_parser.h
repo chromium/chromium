@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/display/types/display_constants.h"
@@ -30,6 +29,10 @@ class DISPLAY_UTIL_EXPORT EdidParser {
  public:
   explicit EdidParser(const std::vector<uint8_t>& edid_blob,
                       bool is_external = false);
+
+  EdidParser(const EdidParser&) = delete;
+  EdidParser& operator=(const EdidParser&) = delete;
+
   ~EdidParser();
 
   uint16_t manufacturer_id() const { return manufacturer_id_; }
@@ -71,7 +74,20 @@ class DISPLAY_UTIL_EXPORT EdidParser {
 
   // Generates a unique display id out of a mix of |manufacturer_id_|, hashed
   // |display_name_| if available, and |output_index|.
-  int64_t GetDisplayId(uint8_t output_index) const;
+  // Here, uniqueness is heavily based on the connector's index to which the
+  // display is attached to.
+  int64_t GetIndexBasedDisplayId(uint8_t output_index) const;
+
+  // Generates a unique display ID out of a mix of |manufacturer_id_|,
+  // |product_id_|, |display_name_|, |week_of_manufacture_|,
+  // |year_of_manufacture_|, |max_image_size_|,
+  // |block_zero_serial_number_hash_|, and
+  // |descriptor_block_serial_number_hash_|. Note that a hash will be produced
+  // regardless of whether or not some (or all) of the fields are
+  // missing/empty/default.
+  // Here, uniqueness is solely based on a display's EDID and is not guaranteed
+  // due to known EDIDs' completeness and correctness issues.
+  int64_t GetEdidBasedDisplayId() const;
 
   // Splits the |product_code| (as returned by GetDisplayId()) into its
   // constituents |manufacturer_id| and |product_id|.
@@ -113,8 +129,6 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   base::flat_set<gfx::ColorSpace::PrimaryID> supported_color_primary_ids_;
   base::flat_set<gfx::ColorSpace::TransferID> supported_color_transfer_ids_;
   absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
-
-  DISALLOW_COPY_AND_ASSIGN(EdidParser);
 };
 
 }  // namespace display

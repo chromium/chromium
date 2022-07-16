@@ -19,6 +19,7 @@
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 using content::BrowserThread;
@@ -270,7 +271,8 @@ storage::FileSystemURL RecentDiskSource::BuildDiskURL(
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   return mount_points->CreateExternalFileSystemURL(
-      url::Origin::Create(params_.value().origin()), mount_point_name_, path);
+      blink::StorageKey(url::Origin::Create(params_.value().origin())),
+      mount_point_name_, path);
 }
 
 }  // namespace chromeos

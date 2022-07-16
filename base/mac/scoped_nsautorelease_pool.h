@@ -23,10 +23,17 @@ namespace mac {
 // dependency.
 //
 // Use only in C++ code; use @autoreleasepool in Obj-C(++) code.
+// ScopedNSAutoreleasePool 在实例化时分配一个 NSAutoreleasePool 并在销毁时发送一个 -drain 消息。
+// 这允许在普通 C++ 代码中维护自动释放池，而不会引入任何直接的 Objective-C 依赖项。
+// 仅在 C++ 代码中使用； 在 Obj-C(++) 代码中使用 @autoreleasepool。
 
 class BASE_EXPORT ScopedNSAutoreleasePool {
  public:
   ScopedNSAutoreleasePool();
+
+  ScopedNSAutoreleasePool(const ScopedNSAutoreleasePool&) = delete;
+  ScopedNSAutoreleasePool& operator=(const ScopedNSAutoreleasePool&) = delete;
+
   ~ScopedNSAutoreleasePool();
 
   // Clear out the pool in case its position on the stack causes it to be
@@ -36,9 +43,6 @@ class BASE_EXPORT ScopedNSAutoreleasePool {
   void Recycle();
  private:
   NSAutoreleasePool* autorelease_pool_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedNSAutoreleasePool);
 };
 
 }  // namespace mac

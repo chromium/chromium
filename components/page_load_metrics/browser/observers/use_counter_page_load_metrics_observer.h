@@ -7,7 +7,6 @@
 
 #include <bitset>
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/css_property_id.mojom.h"
@@ -24,6 +23,10 @@ const char kAnimatedCssPropertiesHistogramName[] =
     "Blink.UseCounter.AnimatedCSSProperties";
 const char kPermissionsPolicyViolationHistogramName[] =
     "Blink.UseCounter.PermissionsPolicy.Violation.Enforce";
+const char kPermissionsPolicyHeaderHistogramName[] =
+    "Blink.UseCounter.PermissionsPolicy.Header2";
+const char kPermissionsPolicyIframeAttributeHistogramName[] =
+    "Blink.UseCounter.PermissionsPolicy.Allow2";
 
 }  // namespace internal
 
@@ -31,6 +34,12 @@ class UseCounterPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   UseCounterPageLoadMetricsObserver();
+
+  UseCounterPageLoadMetricsObserver(const UseCounterPageLoadMetricsObserver&) =
+      delete;
+  UseCounterPageLoadMetricsObserver& operator=(
+      const UseCounterPageLoadMetricsObserver&) = delete;
+
   ~UseCounterPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver.
@@ -86,7 +95,14 @@ class UseCounterPageLoadMetricsObserver
                   blink::mojom::PermissionsPolicyFeature::kMaxValue) +
               1>
       violated_permissions_policy_features_recorded_;
-  DISALLOW_COPY_AND_ASSIGN(UseCounterPageLoadMetricsObserver);
+  std::bitset<static_cast<size_t>(
+                  blink::mojom::PermissionsPolicyFeature::kMaxValue) +
+              1>
+      iframe_permissions_policy_features_recorded_;
+  std::bitset<static_cast<size_t>(
+                  blink::mojom::PermissionsPolicyFeature::kMaxValue) +
+              1>
+      header_permissions_policy_features_recorded_;
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_USE_COUNTER_PAGE_LOAD_METRICS_OBSERVER_H_

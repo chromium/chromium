@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/media_drm_key_type.h"
 #include "media/base/media_export.h"
@@ -47,6 +46,10 @@ class MEDIA_EXPORT MediaDrmStorage
   };
 
   MediaDrmStorage();
+
+  MediaDrmStorage(const MediaDrmStorage&) = delete;
+  MediaDrmStorage& operator=(const MediaDrmStorage&) = delete;
+
   virtual ~MediaDrmStorage();
 
   // Callback to return whether the operation succeeded.
@@ -94,9 +97,6 @@ class MEDIA_EXPORT MediaDrmStorage
   // to the storage backend.
   virtual void RemovePersistentSession(const std::string& session_id,
                                        ResultCB result_cb) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaDrmStorage);
 };
 
 using CreateStorageCB =

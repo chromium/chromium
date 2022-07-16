@@ -37,7 +37,9 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_tree.h"
 #include "ui/base/ui_base_features.h"
 
 namespace content {
@@ -120,13 +122,6 @@ void DumpAccessibilityTestBase::ChooseFeatures(
   enabled_features->emplace_back(features::kUseAXPositionForDocumentMarkers);
 
   enabled_features->emplace_back(blink::features::kPortals);
-
-  // TODO(dmazzoni): DumpAccessibilityTree expectations are based on the
-  // assumption that the accessibility labels feature is off. (There are
-  // also several tests that explicitly enable the feature.) It'd be better
-  // if DumpAccessibilityTree tests assumed that the feature is on by
-  // default instead.  http://crbug.com/940330
-  disabled_features->emplace_back(features::kExperimentalAccessibilityLabels);
 }
 
 std::string
@@ -253,7 +248,24 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   // flaky.
   BrowserAccessibilityManager::NeverSuppressOrDelayEventsForTesting();
 
+  // Enable the behavior whereby all focused nodes will be exposed to the
+  // platform accessibility layer. This behavior is currently disabled in
+  // production code, but is enabled in tests so that it could be tested
+  // thoroughly before it is turned on for all code.
+  // TODO(nektar): Turn this on in a followup patch.
+  // ui::AXTree::SetFocusedNodeShouldNeverBeIgnored();
+
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  absl::optional<ui::AXInspectScenario> scenario =
+      test_helper_.ParseScenario(file_path, DefaultFilters());
+  if (!scenario) {
+    ADD_FAILURE()
+        << "Failed to process a testing file. The file might not exist: "
+        << file_path.LossyDisplayName();
+    return;
+  }
+  scenario_ = std::move(*scenario);
 
   // Exit without running the test if we can't find an expectation file.
   // This is used to skip certain tests on certain platforms.
@@ -274,37 +286,6 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     LOG(INFO) << "Skipping this test on this platform.";
     return;
   }
-
-  std::string html_contents;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    // Exit without running the test if the source file is missing, since that
-    // was the behavior prior to http://crrev.com/c/1661175.
-    // It would be preferable if we were to fail the test instead.
-    // http://crbug.com/975830
-    if (!base::ReadFileToString(file_path, &html_contents)) {
-      LOG(INFO) << "File not found: " << file_path.LossyDisplayName();
-      LOG(INFO) << "Skipping test.";
-      return;
-    }
-  }
-
-  // Parse the test html file and parse special directives, usually
-  // beginning with an '@' and inside an HTML comment, that control how the
-  // test is run and how the results are interpreted.
-  std::vector<std::string> lines;
-
-  size_t scenario_start = html_contents.find("<!--");
-  size_t scenario_end = html_contents.find("-->", scenario_start);
-  if (scenario_start != std::string::npos &&
-      scenario_end != std::string::npos) {
-    auto start = html_contents.begin() + scenario_start;
-    auto end = start + (scenario_end - scenario_start);
-    lines = base::SplitString(base::MakeStringPiece(start, end), "\n",
-                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  }
-
-  scenario_ = test_helper_.ParseScenario(lines, DefaultFilters());
 
   // Get the test URL.
   GURL url(embedded_test_server()->GetURL("/" + std::string(file_dir) + "/" +
@@ -375,8 +356,7 @@ std::vector<std::string> DumpAccessibilityTestBase::CollectAllFrameUrls(
     const std::vector<std::string>& skip_urls) {
   std::vector<std::string> all_frame_urls;
   // Get the url of every frame in the frame tree.
-  FrameTree* frame_tree = GetWebContents()->GetFrameTree();
-  for (FrameTreeNode* node : frame_tree->Nodes()) {
+  for (FrameTreeNode* node : GetWebContents()->GetPrimaryFrameTree().Nodes()) {
     // Ignore about:blank urls because of the case where a parent frame A
     // has a child iframe B and it writes to the document using
     // contentDocument.open() on the child frame B.
@@ -399,7 +379,7 @@ std::vector<std::string> DumpAccessibilityTestBase::CollectAllFrameUrls(
     }
     if (!skip_url && url != url::kAboutBlankURL && !url.empty() &&
         node->frame_owner_element_type() !=
-            blink::mojom::FrameOwnerElementType::kPortal) {
+            blink::FrameOwnerElementType::kPortal) {
       all_frame_urls.push_back(url);
     }
   }

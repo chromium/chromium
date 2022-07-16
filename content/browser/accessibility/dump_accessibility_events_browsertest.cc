@@ -31,6 +31,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/base/escape.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 #if defined(OS_WIN)
 #include "content/browser/accessibility/browser_accessibility_manager_win.h"
@@ -164,7 +165,7 @@ void DumpAccessibilityEventsTest::RunEventTest(
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityEventsTestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<AXInspectFactory::Type>& i) const {
+      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
     return std::string(i.param);
   }
 };
@@ -215,11 +216,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaComboBoxExpand) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-expand.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsAriaComboBoxSelect) {
-  RunEventTest(FILE_PATH_LITERAL("aria-combo-box-select.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
@@ -749,8 +745,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("menulist-collapse-next.html"));
 }
 
+// TODO(crbug/1232295): Flaky on Linux and Win.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_AccessibilityEventsMenuListExpand \
+  DISABLED_AccessibilityEventsMenuListExpand
+#else
+#define MAYBE_AccessibilityEventsMenuListExpand \
+  AccessibilityEventsMenuListExpand
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsMenuListExpand) {
+                       MAYBE_AccessibilityEventsMenuListExpand) {
   RunEventTest(FILE_PATH_LITERAL("menulist-expand.html"));
 }
 
@@ -764,6 +768,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("menulist-next.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsMenuWithOptgroupListNext) {
+  RunEventTest(FILE_PATH_LITERAL("menulist-with-optgroup-next.html"));
+}
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsMultipleAriaPropertiesChanged) {
   RunEventTest(FILE_PATH_LITERAL("multiple-aria-properties-changed.html"));
@@ -884,8 +892,8 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsTableColumnHidden) {
-  RunEventTest(FILE_PATH_LITERAL("table-column-hidden.html"));
+                       AccessibilityEventsRemoveSubtree) {
+  RunEventTest(FILE_PATH_LITERAL("remove-subtree.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,

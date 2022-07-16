@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -58,6 +57,9 @@ class WindowSizer {
         gfx::Rect* bounds,
         ui::WindowShowState* show_state) const = 0;
   };
+
+  WindowSizer(const WindowSizer&) = delete;
+  WindowSizer& operator=(const WindowSizer&) = delete;
 
   // Determines the position and size for a window as it is created as well
   // as the initial state. This function uses several strategies to figure out
@@ -159,8 +161,6 @@ class WindowSizer {
 
   // Note that this browser handle might be NULL.
   const Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowSizer);
 };
 
 #endif  // CHROME_BROWSER_UI_WINDOW_SIZER_WINDOW_SIZER_H_

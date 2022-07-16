@@ -29,11 +29,11 @@ bool PrintedDocument::RenderPrintedDocument(PrintingContext* context) {
   size_t num_pages = expected_page_count();
   for (size_t metafile_page_number = 1; metafile_page_number <= num_pages;
        metafile_page_number++) {
-    if (context->NewPage() != PrintingContext::OK)
+    if (context->NewPage() != mojom::ResultCode::kSuccess)
       return false;
     metafile->RenderPage(metafile_page_number, context->context(), paper_rect,
                          /*autorotate=*/true, /*fit_to_page=*/false);
-    if (context->PageDone() != PrintingContext::OK)
+    if (context->PageDone() != mojom::ResultCode::kSuccess)
       return false;
   }
   return true;

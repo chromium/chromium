@@ -56,7 +56,7 @@ class ClipboardBrowserTest : public WebLayerBrowserTest {
   }
 
   GURL GetBaseOrigin() {
-    return embedded_test_server()->base_url().GetOrigin();
+    return embedded_test_server()->base_url().DeprecatedGetOriginAsURL();
   }
 
   permissions::MockPermissionPromptFactory* prompt_factory() {

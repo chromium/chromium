@@ -52,15 +52,17 @@ class MockMojoVideoEncodeAcceleratorClient
  public:
   MockMojoVideoEncodeAcceleratorClient() = default;
 
+  MockMojoVideoEncodeAcceleratorClient(
+      const MockMojoVideoEncodeAcceleratorClient&) = delete;
+  MockMojoVideoEncodeAcceleratorClient& operator=(
+      const MockMojoVideoEncodeAcceleratorClient&) = delete;
+
   MOCK_METHOD3(RequireBitstreamBuffers,
                void(uint32_t, const gfx::Size&, uint32_t));
   MOCK_METHOD2(BitstreamBufferReady,
                void(int32_t, const media::BitstreamBufferMetadata&));
   MOCK_METHOD1(NotifyError, void(VideoEncodeAccelerator::Error));
   MOCK_METHOD1(NotifyEncoderInfoChange, void(const VideoEncoderInfo& info));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockMojoVideoEncodeAcceleratorClient);
 };
 
 // Test harness for a MojoVideoEncodeAcceleratorService; the tests manipulate it
@@ -71,6 +73,11 @@ class MockMojoVideoEncodeAcceleratorClient
 class MojoVideoEncodeAcceleratorServiceTest : public ::testing::Test {
  public:
   MojoVideoEncodeAcceleratorServiceTest() = default;
+
+  MojoVideoEncodeAcceleratorServiceTest(
+      const MojoVideoEncodeAcceleratorServiceTest&) = delete;
+  MojoVideoEncodeAcceleratorServiceTest& operator=(
+      const MojoVideoEncodeAcceleratorServiceTest&) = delete;
 
   void TearDown() override {
     // The destruction of a mojo::SelfOwnedReceiver closes the bound message
@@ -133,8 +140,6 @@ class MojoVideoEncodeAcceleratorServiceTest : public ::testing::Test {
 
   // The class under test.
   std::unique_ptr<MojoVideoEncodeAcceleratorService> mojo_vea_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoEncodeAcceleratorServiceTest);
 };
 
 // This test verifies the BindAndInitialize() communication prologue in

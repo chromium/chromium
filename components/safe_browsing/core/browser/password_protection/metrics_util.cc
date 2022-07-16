@@ -396,12 +396,6 @@ void LogWarningAction(WarningUIType ui_type,
   }
 }
 
-void LogNumberOfReuseBeforeSyncPasswordChange(size_t reuse_count) {
-  UMA_HISTOGRAM_COUNTS_100(
-      "PasswordProtection.GaiaPasswordReusesBeforeGaiaPasswordChanged",
-      reuse_count);
-}
-
 void LogModalWarningDialogLifetime(
     base::TimeTicks modal_construction_start_time) {
   UMA_HISTOGRAM_MEDIUM_TIMES(

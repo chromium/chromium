@@ -27,6 +27,10 @@ namespace net {
 class NET_EXPORT WebSocketFrameParser {
  public:
   WebSocketFrameParser();
+
+  WebSocketFrameParser(const WebSocketFrameParser&) = delete;
+  WebSocketFrameParser& operator=(const WebSocketFrameParser&) = delete;
+
   ~WebSocketFrameParser();
 
   // Decodes the given byte stream and stores parsed WebSocket frames in
@@ -81,8 +85,6 @@ class NET_EXPORT WebSocketFrameParser {
   uint64_t frame_offset_;
 
   WebSocketError websocket_error_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketFrameParser);
 };
 
 }  // namespace net

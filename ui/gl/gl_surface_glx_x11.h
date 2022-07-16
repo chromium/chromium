@@ -5,7 +5,6 @@
 #ifndef UI_GL_GL_SURFACE_GLX_X11_H_
 #define UI_GL_GL_SURFACE_GLX_X11_H_
 
-#include "base/macros.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
@@ -21,6 +20,9 @@ class GL_EXPORT GLSurfaceGLXX11 : public NativeViewGLSurfaceGLX,
  public:
   explicit GLSurfaceGLXX11(gfx::AcceleratedWidget window);
 
+  GLSurfaceGLXX11(const GLSurfaceGLXX11&) = delete;
+  GLSurfaceGLXX11& operator=(const GLSurfaceGLXX11&) = delete;
+
  protected:
   ~GLSurfaceGLXX11() override;
 
@@ -30,9 +32,6 @@ class GL_EXPORT GLSurfaceGLXX11 : public NativeViewGLSurfaceGLX,
 
   // x11::EventObserver:
   void OnEvent(const x11::Event& event) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GLSurfaceGLXX11);
 };
 
 }  // namespace gl

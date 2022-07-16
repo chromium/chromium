@@ -20,9 +20,13 @@ namespace bluetooth {
 
 class BleNotificationLogger : public GattClientManager::Observer {
  public:
-  static constexpr auto kMinLogInterval = base::TimeDelta::FromMinutes(1);
+  static constexpr auto kMinLogInterval = base::Minutes(1);
 
   explicit BleNotificationLogger(GattClientManager* gcm);
+
+  BleNotificationLogger(const BleNotificationLogger&) = delete;
+  BleNotificationLogger& operator=(const BleNotificationLogger&) = delete;
+
   ~BleNotificationLogger() override;
 
   // GattClientManager::Observer implementation:
@@ -47,7 +51,6 @@ class BleNotificationLogger : public GattClientManager::Observer {
   // Key: Device address, Value: Map[Key: Characteristic UUID, Value: count]
   std::map<Addr, std::map<Uuid, int32_t>> device_to_char_uuid_to_count_;
   base::WeakPtrFactory<BleNotificationLogger> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(BleNotificationLogger);
 };
 
 }  // namespace bluetooth

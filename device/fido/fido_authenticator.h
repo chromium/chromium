@@ -72,6 +72,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   using DeleteCredentialCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
                               absl::optional<DeleteCredentialResponse>)>;
+  using UpdateUserInformationCallback =
+      base::OnceCallback<void(CtapDeviceResponseCode,
+                              absl::optional<UpdateUserInformationResponse>)>;
   using BioEnrollmentCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
                               absl::optional<BioEnrollmentResponse>)>;
@@ -81,6 +84,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
           callback)>;
 
   FidoAuthenticator() = default;
+
+  FidoAuthenticator(const FidoAuthenticator&) = delete;
+  FidoAuthenticator& operator=(const FidoAuthenticator&) = delete;
+
   virtual ~FidoAuthenticator() = default;
 
   // Sends GetInfo request to connected authenticator. Once response to GetInfo
@@ -205,6 +212,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
       const PublicKeyCredentialDescriptor& credential_id,
       DeleteCredentialCallback callback);
 
+  virtual void UpdateUserInformation(
+      const pin::TokenResponse& pin_token,
+      const PublicKeyCredentialDescriptor& credential_id,
+      const PublicKeyCredentialUserEntity& updated_user,
+      UpdateUserInformationCallback callback);
+
   // Biometric enrollment commands.
   virtual void GetModality(BioEnrollmentCallback callback);
   virtual void GetSensorInfo(BioEnrollmentCallback callback);
@@ -283,9 +296,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   virtual bool IsChromeOSAuthenticator() const = 0;
 #endif
   virtual base::WeakPtr<FidoAuthenticator> GetWeakPtr() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FidoAuthenticator);
 };
 
 }  // namespace device

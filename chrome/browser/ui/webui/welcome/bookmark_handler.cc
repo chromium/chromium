@@ -17,27 +17,28 @@ BookmarkHandler::BookmarkHandler(PrefService* prefs) : prefs_(prefs) {}
 BookmarkHandler::~BookmarkHandler() {}
 
 void BookmarkHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "toggleBookmarkBar",
       base::BindRepeating(&BookmarkHandler::HandleToggleBookmarkBar,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "isBookmarkBarShown",
       base::BindRepeating(&BookmarkHandler::HandleIsBookmarkBarShown,
                           base::Unretained(this)));
 }
 
 void BookmarkHandler::HandleToggleBookmarkBar(const base::ListValue* args) {
-  bool show;
-  CHECK(args->GetBoolean(0, &show));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  const bool show = list[0].GetBool();
   prefs_->SetBoolean(bookmarks::prefs::kShowBookmarkBar, show);
 }
 
 void BookmarkHandler::HandleIsBookmarkBarShown(const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
 

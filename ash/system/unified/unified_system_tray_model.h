@@ -68,6 +68,10 @@ class ASH_EXPORT UnifiedSystemTrayModel {
   };
 
   explicit UnifiedSystemTrayModel(Shelf* shelf);
+
+  UnifiedSystemTrayModel(const UnifiedSystemTrayModel&) = delete;
+  UnifiedSystemTrayModel& operator=(const UnifiedSystemTrayModel&) = delete;
+
   ~UnifiedSystemTrayModel();
 
   void AddObserver(Observer* observer);
@@ -169,8 +173,6 @@ class ASH_EXPORT UnifiedSystemTrayModel {
   base::ObserverList<Observer>::Unchecked observers_;
 
   std::unique_ptr<PaginationModel> pagination_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTrayModel);
 };
 
 }  // namespace ash

@@ -9,8 +9,7 @@
 namespace remoting {
 
 // static
-const base::TimeDelta MessageTracker::kCleanupInterval =
-    base::TimeDelta::FromMinutes(2);
+const base::TimeDelta MessageTracker::kCleanupInterval = base::Minutes(2);
 
 MessageTracker::MessageTracker() = default;
 

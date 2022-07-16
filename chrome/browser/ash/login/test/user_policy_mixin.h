@@ -8,15 +8,13 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 
-namespace chromeos {
-
+namespace ash {
 class LocalPolicyTestServerMixin;
 
 // Mixin for setting up user policy for a test user.
@@ -30,6 +28,10 @@ class UserPolicyMixin : public InProcessBrowserTestMixin {
   UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
                   const AccountId& account_id,
                   LocalPolicyTestServerMixin* policy_server);
+
+  UserPolicyMixin(const UserPolicyMixin&) = delete;
+  UserPolicyMixin& operator=(const UserPolicyMixin&) = delete;
+
   ~UserPolicyMixin() override;
 
   // InProcessBrowserTestMixin:
@@ -72,16 +74,14 @@ class UserPolicyMixin : public InProcessBrowserTestMixin {
   policy::UserPolicyBuilder user_policy_builder_;
 
   base::WeakPtrFactory<UserPolicyMixin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserPolicyMixin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::UserPolicyMixin;
-}  // namespace ash
+namespace chromeos {
+using ::ash::UserPolicyMixin;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_USER_POLICY_MIXIN_H_

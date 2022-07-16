@@ -76,8 +76,8 @@ SVGParsingError SVGIntegerOptionalInteger::SetValueAsString(
     x = y = 0;
   }
 
-  first_integer_->SetValue(clampTo<int>(x));
-  second_integer_->SetValue(clampTo<int>(y));
+  first_integer_->SetValue(ClampTo<int>(x));
+  second_integer_->SetValue(ClampTo<int>(y));
   return parse_status;
 }
 

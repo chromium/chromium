@@ -1,22 +1,13 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.eventsTest');
 goog.setTestOnly();
 
 const AssertionError = goog.require('goog.asserts.AssertionError');
-const BrowserFeature = goog.require('goog.events.BrowserFeature');
 const CaptureSimulationMode = goog.require('goog.events.CaptureSimulationMode');
 const EntryPointMonitor = goog.require('goog.debug.EntryPointMonitor');
 const ErrorHandler = goog.require('goog.debug.ErrorHandler');
@@ -26,6 +17,7 @@ const GoogEventTarget = goog.require('goog.events.EventTarget');
 const Listener = goog.require('goog.events.Listener');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
 const TagName = goog.require('goog.dom.TagName');
+const disposeAll = goog.require('goog.disposeAll');
 const dom = goog.require('goog.dom');
 const entryPointRegistry = goog.require('goog.debug.entryPointRegistry');
 const events = goog.require('goog.events');
@@ -33,6 +25,7 @@ const functions = goog.require('goog.functions');
 const recordFunction = goog.require('goog.testing.recordFunction');
 const testSuite = goog.require('goog.testing.testSuite');
 
+/** @suppress {visibility} suppression added to enable type checking */
 const originalHandleBrowserEvent = events.handleBrowserEvent_;
 let propertyReplacer;
 let et1;
@@ -74,6 +67,10 @@ function runEventPropagationWithReentrantDispatch(useCapture) {
 
   // Fire the first event.
   const firstEvent = new GoogEvent(eventType);
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
   firstEvent.isFirstEvent = true;
   child.dispatchEvent(firstEvent);
 
@@ -151,9 +148,11 @@ testSuite({
   },
 
   tearDown() {
-    events.CAPTURE_SIMULATION_MODE = CaptureSimulationMode.ON;
+    /** Use computed properties to avoid compiler checks of defines */
+    events['CAPTURE_SIMULATION_MODE'] = CaptureSimulationMode.ON;
+    /** @suppress {visibility} suppression added to enable type checking */
     events.handleBrowserEvent_ = originalHandleBrowserEvent;
-    goog.disposeAll(et1, et2, et3);
+    disposeAll(et1, et2, et3);
     events.removeAll(document.body);
     propertyReplacer.reset();
   },
@@ -164,7 +163,9 @@ testSuite({
 
     events.protectBrowserEventEntryPoint(errorHandler);
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const browserEventHandler = recordFunction(events.handleBrowserEvent_);
+    /** @suppress {visibility} suppression added to enable type checking */
     events.handleBrowserEvent_ = function() {
       try {
         browserEventHandler.apply(this, arguments);
@@ -376,9 +377,8 @@ testSuite({
     events.removeAll(et2);
     events.removeAll(et3);
 
-    // Try again with the new API and without capture simulation:
-    if (!BrowserFeature.HAS_W3C_EVENT_SUPPORT) return;
-    events.CAPTURE_SIMULATION_MODE = CaptureSimulationMode.OFF_AND_FAIL;
+    /** Use computed properties to avoid compiler checks of defines */
+    events['CAPTURE_SIMULATION_MODE'] = CaptureSimulationMode.OFF_AND_FAIL;
     count = 0;
 
     events.listen(et1, 'test', callbackCapture1, {capture: true});
@@ -484,7 +484,9 @@ testSuite({
     assertEquals(20, count);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testEntryPointRegistry() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const monitor = new EntryPointMonitor();
     const replacement = () => {};
     monitor.wrap = recordFunction(functions.constant(replacement));
@@ -514,6 +516,10 @@ testSuite({
 
     const div = dom.createElement(TagName.DIV);
     const key = events.listen(div, EventType.CLICK, goog.nullFunction);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     const listenerStack = key.creationStack;
 
     // Check that the name of this test function occurs in the stack trace.
@@ -618,6 +624,7 @@ testSuite({
     const SubClass = function() { /* does not call superclass ctor */ };
     goog.inherits(SubClass, GoogEventTarget);
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const instance = new SubClass();
 
     let e;
@@ -637,9 +644,13 @@ testSuite({
 
   testAssertWhenDispatchEventIsUsedWithNonCustomEventTarget() {
     const obj = {};
-    let e = assertThrows(() => {
-      events.dispatchEvent(obj, 'test1');
-    });
+    let e = assertThrows(/**
+                            @suppress {checkTypes} suppression added to enable
+                            type checking
+                          */
+                         () => {
+                           events.dispatchEvent(obj, 'test1');
+                         });
     assertTrue(e instanceof AssertionError);
   },
 
@@ -757,36 +768,22 @@ testSuite({
   },
 
   testCaptureSimulationModeOffAndFail() {
-    events.CAPTURE_SIMULATION_MODE = CaptureSimulationMode.OFF_AND_FAIL;
-    const captureHandler = recordFunction();
-
-    if (!BrowserFeature.HAS_W3C_EVENT_SUPPORT) {
-      const err = assertThrows(() => {
-        events.listen(document.body, 'click', captureHandler, true);
-      });
-      assertTrue(err instanceof AssertionError);
-
-      // Sanity tests.
-      dispatchClick(document.body);
-      assertEquals(0, captureHandler.getCallCount());
-    } else {
-      events.listen(document.body, 'click', captureHandler, true);
-      dispatchClick(document.body);
-      assertEquals(1, captureHandler.getCallCount());
-    }
-  },
-
-  testCaptureSimulationModeOffAndSilent() {
-    events.CAPTURE_SIMULATION_MODE = CaptureSimulationMode.OFF_AND_SILENT;
+    /** Use computed properties to avoid compiler checks of defines */
+    events['CAPTURE_SIMULATION_MODE'] = CaptureSimulationMode.OFF_AND_FAIL;
     const captureHandler = recordFunction();
 
     events.listen(document.body, 'click', captureHandler, true);
-    if (!BrowserFeature.HAS_W3C_EVENT_SUPPORT) {
-      dispatchClick(document.body);
-      assertEquals(0, captureHandler.getCallCount());
-    } else {
-      dispatchClick(document.body);
-      assertEquals(1, captureHandler.getCallCount());
-    }
+    dispatchClick(document.body);
+    assertEquals(1, captureHandler.getCallCount());
+  },
+
+  testCaptureSimulationModeOffAndSilent() {
+    /** Use computed properties to avoid compiler checks of defines */
+    events['CAPTURE_SIMULATION_MODE'] = CaptureSimulationMode.OFF_AND_SILENT;
+    const captureHandler = recordFunction();
+
+    events.listen(document.body, 'click', captureHandler, true);
+    dispatchClick(document.body);
+    assertEquals(1, captureHandler.getCallCount());
   },
 });

@@ -38,7 +38,7 @@ namespace {
 const char kProxyHostName[] = "proxy.test";
 const int kProxyPort = 4321;
 
-constexpr base::TimeDelta kTinyTime = base::TimeDelta::FromMicroseconds(1);
+constexpr base::TimeDelta kTinyTime = base::Microseconds(1);
 
 class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
  public:
@@ -82,7 +82,8 @@ class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
   }
 
  protected:
-  MockHostResolver host_resolver_;
+  MockHostResolver host_resolver_{/*default_result=*/MockHostResolverBase::
+                                      RuleResolver::GetLocalhostResult()};
   MockTaggingClientSocketFactory client_socket_factory_;
   const CommonConnectJobParams common_connect_job_params_;
 };

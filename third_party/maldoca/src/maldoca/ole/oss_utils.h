@@ -20,7 +20,9 @@
 #ifndef MALDOCA_OLE_OSS_UTILS_H_
 #define MALDOCA_OLE_OSS_UTILS_H_
 
+#if !defined(_WIN32)
 #include <iconv.h>
+#endif  // _WIN32
 
 #include <string>
 
@@ -28,13 +30,16 @@
 #include "absl/status/statusor.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/string_view.h"
-#include "google/protobuf/io/tokenizer.h"
+#ifndef MALDOCA_IN_CHROMIUM
+#include "google/protobuf/io/tokenizer.h"  // nogncheck
+#endif
 #include "libxml/tree.h"
 #include "maldoca/base/file.h"
 #include "maldoca/base/logging.h"
 
 namespace maldoca {
 namespace utils {
+
 // Custom libXML deleters so that we can wrap xml object or z_stream object
 // pointers to std::unique_ptr.
 struct XmlCharDeleter {
@@ -62,18 +67,24 @@ class BufferToUtf8 {
  public:
   explicit BufferToUtf8(const char* encode_name) { Init(encode_name); }
   virtual ~BufferToUtf8() {
+#if !defined(_WIN32)
     if (converter_ != nullptr) {
       iconv_close(converter_);
     }
+#endif  // _WIN32
   }
   BufferToUtf8& operator=(const BufferToUtf8&) = delete;
   BufferToUtf8(const BufferToUtf8&) = delete;
-  // Initialiize encoder.
+  // Initialize encoder.
   virtual bool Init(const char* encode_name);
   // Check if the encoder is valid.
   virtual bool IsValid() {
+#if defined(_WIN32)
+    return init_success_;
+#else
     return converter_ != nullptr ||
            internal_converter_ != InternalConverter::kNone;
+#endif  // _WIN32
   }
   // Max number of character error before giving up while converting input
   // to output.
@@ -104,7 +115,12 @@ class BufferToUtf8 {
                                        std::string* out_str,
                                        int* bytes_consumed, int* bytes_filled,
                                        int* error_char_count);
+#if defined(_WIN32)
+  int code_page_ = 0;
+  bool init_success_ = false;
+#else
   iconv_t converter_ = nullptr;
+#endif  // _WIN32
   int max_error_ = 0;  // defaults to give up on any error.
   InternalConverter internal_converter_ = InternalConverter::kNone;
 };
@@ -130,10 +146,11 @@ int log2Floor(uint32_t n);
 int Log2Ceiling(uint32_t n);
 
 // Read the content of filename into content. If log_error is true, errors
-// are logged. Return true upon success.
-// This function MUST be able to run before InitGoogle.
+// are logged. xor_decode_file determines whether the file's content will be
+// xor-decoded or not. Return true upon success. This function MUST be able
+// to run before InitGoogle.
 bool ReadFileToString(absl::string_view filename, std::string* content,
-                      bool log_error);
+                      bool log_error, bool xor_decode_file = false);
 
 #ifndef MALDOCA_CHROME
 // Simple collector just concat error into a string

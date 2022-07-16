@@ -5,6 +5,7 @@
 #include "base/win/windows_version.h"
 
 #include "base/check_op.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -24,7 +25,17 @@ TEST(WindowsVersion, GetVersionExAndKernelOsVersionMatch) {
 
 TEST(OSInfo, MajorMinorBuildToVersion) {
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 32767),
-            Version::WIN10_21H1);
+            Version::WIN11);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 22000),
+            Version::WIN11);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 21999),
+            Version::SERVER_2022);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 20348),
+            Version::SERVER_2022);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 20347),
+            Version::WIN10_21H2);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 19044),
+            Version::WIN10_21H2);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 19043),
             Version::WIN10_21H1);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 19042),
@@ -58,12 +69,40 @@ TEST(OSInfo, MajorMinorBuildToVersion) {
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(0, 0, 0), Version::PRE_XP);
 
 #if !DCHECK_IS_ON()
-  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(11, 0, 0), Version::WIN_LAST);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(12, 0, 0), Version::WIN_LAST);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(9, 0, 0), Version::WIN_LAST);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(8, 0, 0), Version::WIN_LAST);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(7, 0, 0), Version::WIN_LAST);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(6, 4, 0), Version::WIN8_1);
 #endif  // !DCHECK_IS_ON()
+}
+
+// For more info on what processor information is defined, see:
+// http://msdn.microsoft.com/en-us/library/b0084kay.aspx
+TEST(OSInfo, GetWowStatusForProcess) {
+#if defined(ARCH_CPU_64_BITS)
+  EXPECT_TRUE(OSInfo::GetInstance()->IsWowDisabled());
+#elif defined(ARCH_CPU_X86)
+  if (OSInfo::GetArchitecture() == OSInfo::X86_ARCHITECTURE) {
+    EXPECT_TRUE(OSInfo::GetInstance()->IsWowDisabled());
+  } else if (OSInfo::GetArchitecture() == OSInfo::X64_ARCHITECTURE) {
+    EXPECT_TRUE(OSInfo::GetInstance()->IsWowX86OnAMD64());
+  } else {
+    // Currently, the only way to determine if a WOW emulation is
+    // running on an ARM64 device is via the function that the
+    // |IsWow*| helper functions rely on.  As such, it is not possible
+    // to separate out x86 running on ARM64 machines vs x86 running on
+    // other host machines.
+    EXPECT_TRUE(OSInfo::GetInstance()->IsWowX86OnARM64() ||
+                OSInfo::GetInstance()->IsWowX86OnOther());
+  }
+#else
+  ADD_FAILURE()
+      << "This test fails when we're using a process or host machine that is "
+         "not being considered by our helper functions.  If you're seeing this "
+         "error, please add a helper function for determining WOW emulation "
+         "for your process and host machine.";
+#endif
 }
 
 }  // namespace win

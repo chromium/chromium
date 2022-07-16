@@ -8,14 +8,16 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_app_url_loader.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/account_id/account_id.h"
+#include "components/exo/wm_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -35,11 +37,15 @@ class WebKioskAppData;
 
 // Object responsible for preparing and launching web kiosk app. Is destroyed
 // upon app launch.
-class WebKioskAppLauncher : public KioskAppLauncher {
+class WebKioskAppLauncher : public KioskAppLauncher,
+                            public crosapi::BrowserManagerObserver,
+                            public exo::WMHelper::ExoWindowObserver {
  public:
   WebKioskAppLauncher(Profile* profile,
                       Delegate* delegate,
                       const AccountId& account_id);
+  WebKioskAppLauncher(const WebKioskAppLauncher&) = delete;
+  WebKioskAppLauncher& operator=(const WebKioskAppLauncher&) = delete;
   ~WebKioskAppLauncher() override;
 
   // Replaces data retriever used for new WebAppInstallTask in tests.
@@ -61,8 +67,23 @@ class WebKioskAppLauncher : public KioskAppLauncher {
   void LaunchApp() override;
   void RestartLauncher() override;
 
+  // crosapi::BrowserManagerObserver:
+  void OnStateChanged() override;
+
+  // exo::WMHelper::ExoWindowObserver:
+  void OnExoWindowCreated(aura::Window* window) override;
+
+  // Callback method triggered after web application and its icon are obtained
+  // from `WebKioskAppManager`.
   void OnAppDataObtained(std::unique_ptr<WebApplicationInfo> app_info);
 
+  // Callback method triggered after the lacros-chrome window is created.
+  void OnLacrosWindowCreated(crosapi::mojom::CreationResult result);
+
+  // Create a new lacros-chrome window.
+  void CreateNewLacrosWindow();
+
+  // Get the current web application to be launched in the session.
   const WebKioskAppData* GetCurrentApp() const;
 
   bool is_installed_ = false;  // Whether the installation was completed.
@@ -82,8 +103,13 @@ class WebKioskAppLauncher : public KioskAppLauncher {
 
   BrowserWindow* test_browser_window_ = nullptr;
 
+  // Observe the launch state of `BrowserManager`, and launch the lacros-chrome
+  // when it is ready. This object is only used when Lacros is enabled.
+  base::ScopedObservation<crosapi::BrowserManager,
+                          crosapi::BrowserManagerObserver>
+      observation_{this};
+
   base::WeakPtrFactory<WebKioskAppLauncher> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(WebKioskAppLauncher);
 };
 
 }  // namespace ash

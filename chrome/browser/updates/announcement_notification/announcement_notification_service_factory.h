@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -19,6 +18,11 @@ class AnnouncementNotificationServiceFactory
   static AnnouncementNotificationServiceFactory* GetInstance();
   static AnnouncementNotificationService* GetForProfile(Profile* profile);
 
+  AnnouncementNotificationServiceFactory(
+      const AnnouncementNotificationServiceFactory&) = delete;
+  AnnouncementNotificationServiceFactory& operator=(
+      const AnnouncementNotificationServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<AnnouncementNotificationServiceFactory>;
 
@@ -30,8 +34,6 @@ class AnnouncementNotificationServiceFactory
 
   AnnouncementNotificationServiceFactory();
   ~AnnouncementNotificationServiceFactory() override;
-
-  DISALLOW_COPY_AND_ASSIGN(AnnouncementNotificationServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_SERVICE_FACTORY_H_

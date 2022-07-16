@@ -9,7 +9,6 @@
 
 #include "third_party/blink/public/platform/web_computed_ax_tree.h"
 
-#include "base/macros.h"
 #include "content/renderer/render_frame_impl.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "ui/accessibility/ax_tree.h"
@@ -19,6 +18,9 @@ namespace content {
 class AomContentAxTree : public blink::WebComputedAXTree {
  public:
   explicit AomContentAxTree(RenderFrameImpl* render_frame);
+
+  AomContentAxTree(const AomContentAxTree&) = delete;
+  AomContentAxTree& operator=(const AomContentAxTree&) = delete;
 
   // blink::WebComputedAXTree implementation.
   bool ComputeAccessibilityTree() override;
@@ -54,7 +56,6 @@ class AomContentAxTree : public blink::WebComputedAXTree {
                                   bool* out_param);
   ui::AXTree tree_;
   RenderFrameImpl* render_frame_;
-  DISALLOW_COPY_AND_ASSIGN(AomContentAxTree);
 };
 
 }  // namespace content

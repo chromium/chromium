@@ -32,6 +32,10 @@ class VerdictCacheManagerFactory : public BrowserContextKeyedServiceFactory {
   // Get the singleton instance.
   static VerdictCacheManagerFactory* GetInstance();
 
+  VerdictCacheManagerFactory(const VerdictCacheManagerFactory&) = delete;
+  VerdictCacheManagerFactory& operator=(const VerdictCacheManagerFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<VerdictCacheManagerFactory>;
 
@@ -43,8 +47,6 @@ class VerdictCacheManagerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(VerdictCacheManagerFactory);
 };
 
 }  // namespace safe_browsing

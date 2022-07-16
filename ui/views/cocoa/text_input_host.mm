@@ -314,7 +314,6 @@ bool TextInputHost::HasCompositionText(bool* out_has_composition_text) {
     return true;
   *out_has_composition_text = text_input_client_->HasCompositionText();
   return true;
-  return true;
 }
 
 bool TextInputHost::GetCompositionTextRange(gfx::Range* out_composition_range) {

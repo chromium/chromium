@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
-#include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
@@ -82,11 +81,11 @@ const char CellularMetricsLogger::kSimPinChangeSuccessHistogram[] =
 
 // static
 const base::TimeDelta CellularMetricsLogger::kInitializationTimeout =
-    base::TimeDelta::FromSeconds(15);
+    base::Seconds(15);
 
 // static
 const base::TimeDelta CellularMetricsLogger::kDisconnectRequestTimeout =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 
 // static
 CellularMetricsLogger::SimPinOperationResult
@@ -261,15 +260,13 @@ CellularMetricsLogger::ShillErrorToConnectResult(
 class ESimFeatureUsageMetrics
     : public feature_usage::FeatureUsageMetrics::Delegate {
  public:
-  ESimFeatureUsageMetrics(
-      CellularESimProfileHandler* cellular_esim_profile_handler,
-      const base::TickClock* tick_clock)
+  explicit ESimFeatureUsageMetrics(
+      CellularESimProfileHandler* cellular_esim_profile_handler)
       : cellular_esim_profile_handler_(cellular_esim_profile_handler) {
     DCHECK(cellular_esim_profile_handler);
-    DCHECK(tick_clock);
     feature_usage_metrics_ =
         std::make_unique<feature_usage::FeatureUsageMetrics>(
-            kESimUMAFeatureName, this, tick_clock);
+            kESimUMAFeatureName, this);
   }
 
   ~ESimFeatureUsageMetrics() override = default;
@@ -368,7 +365,7 @@ void CellularMetricsLogger::Init(
 
   if (cellular_esim_profile_handler_) {
     esim_feature_usage_metrics_ = std::make_unique<ESimFeatureUsageMetrics>(
-        cellular_esim_profile_handler_, base::DefaultTickClock::GetInstance());
+        cellular_esim_profile_handler_);
   }
 
   if (LoginState::IsInitialized())

@@ -66,11 +66,9 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
 
   WebViewImpl* WebView() { return web_view_helper_->GetWebView(); }
 
-  const cc::Layer* RootCcLayer() {
-    return paint_artifact_compositor()->RootLayer();
-  }
+  cc::Layer* RootCcLayer() { return paint_artifact_compositor()->RootLayer(); }
 
-  const cc::Layer* CcLayerByDOMElementId(const char* id) {
+  cc::Layer* CcLayerByDOMElementId(const char* id) {
     auto layers = CcLayersByDOMElementId(RootCcLayer(), id);
     return layers.IsEmpty() ? nullptr : layers[0];
   }
@@ -151,7 +149,7 @@ TEST_P(CompositingTest, DidScrollCallbackAfterScrollableAreaChanges) {
   EXPECT_NE(nullptr, scrollable_area);
 
   CompositorElementId scroll_element_id = scrollable_area->GetScrollElementId();
-  const auto* overflow_scroll_layer =
+  auto* overflow_scroll_layer =
       CcLayerByCcElementId(RootCcLayer(), scroll_element_id);
   const auto* scroll_node =
       RootCcLayer()
@@ -166,7 +164,7 @@ TEST_P(CompositingTest, DidScrollCallbackAfterScrollableAreaChanges) {
   EXPECT_EQ(ScrollOffset(), scrollable_area->GetScrollOffset());
   cc::CompositorCommitData commit_data;
   commit_data.scrolls.push_back(
-      {scroll_element_id, gfx::ScrollOffset(0, 1), absl::nullopt});
+      {scroll_element_id, gfx::Vector2dF(0, 1), absl::nullopt});
   overflow_scroll_layer->layer_tree_host()->ApplyCompositorChanges(
       &commit_data);
   UpdateAllLifecyclePhases();
@@ -186,7 +184,7 @@ TEST_P(CompositingTest, DidScrollCallbackAfterScrollableAreaChanges) {
   // apply impl-side offsets without crashing.
   ASSERT_EQ(overflow_scroll_layer,
             CcLayerByCcElementId(RootCcLayer(), scroll_element_id));
-  commit_data.scrolls[0] = {scroll_element_id, gfx::ScrollOffset(0, 1),
+  commit_data.scrolls[0] = {scroll_element_id, gfx::Vector2dF(0, 1),
                             absl::nullopt};
   overflow_scroll_layer->layer_tree_host()->ApplyCompositorChanges(
       &commit_data);
@@ -223,7 +221,7 @@ TEST_P(CompositingTest, FrameViewScroll) {
   EXPECT_EQ(ScrollOffset(), scrollable_area->GetScrollOffset());
   cc::CompositorCommitData commit_data;
   commit_data.scrolls.push_back({scrollable_area->GetScrollElementId(),
-                                 gfx::ScrollOffset(0, 1), absl::nullopt});
+                                 gfx::Vector2dF(0, 1), absl::nullopt});
   RootCcLayer()->layer_tree_host()->ApplyCompositorChanges(&commit_data);
   UpdateAllLifecyclePhases();
   EXPECT_EQ(ScrollOffset(0, 1), scrollable_area->GetScrollOffset());
@@ -452,9 +450,9 @@ TEST_P(CompositingTest, BackgroundColorInScrollingContentsLayer) {
   Element* scroller = GetElementById("scroller");
   LayoutBox* scroller_box = scroller->GetLayoutBox();
   ASSERT_TRUE(layout_view->GetBackgroundPaintLocation() ==
-              kBackgroundPaintInScrollingContents);
+              kBackgroundPaintInContentsSpace);
   ASSERT_TRUE(scroller_box->GetBackgroundPaintLocation() ==
-              kBackgroundPaintInScrollingContents);
+              kBackgroundPaintInContentsSpace);
 
   // The root layer and root scrolling contents layer get background_color by
   // blending the CSS background-color of the <html> element with
@@ -510,9 +508,9 @@ TEST_P(CompositingTest, BackgroundColorInGraphicsLayer) {
   Element* scroller = GetElementById("scroller");
   LayoutBox* scroller_box = scroller->GetLayoutBox();
   ASSERT_TRUE(layout_view->GetBackgroundPaintLocation() ==
-              kBackgroundPaintInGraphicsLayer);
+              kBackgroundPaintInBorderBoxSpace);
   ASSERT_TRUE(scroller_box->GetBackgroundPaintLocation() ==
-              kBackgroundPaintInGraphicsLayer);
+              kBackgroundPaintInBorderBoxSpace);
 
   // The root layer gets background_color by blending the CSS background-color
   // of the <html> element with LocalFrameView::BaseBackgroundColor(), which is
@@ -674,19 +672,31 @@ TEST_P(CompositingSimTest, LayerUpdatesDoNotInvalidateEarlierLayers) {
 
   // Initially, neither a nor b should have a layer that should push properties.
   cc::LayerTreeHost& host = *Compositor().LayerTreeHost();
-  EXPECT_FALSE(host.LayersThatShouldPushProperties().count(a_layer));
-  EXPECT_FALSE(host.LayersThatShouldPushProperties().count(b_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          a_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          b_layer));
 
   // Modifying b should only cause the b layer to need to push properties.
   b_element->setAttribute(html_names::kStyleAttr, "opacity: 0.2");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(host.LayersThatShouldPushProperties().count(a_layer));
-  EXPECT_TRUE(host.LayersThatShouldPushProperties().count(b_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          a_layer));
+  EXPECT_TRUE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          b_layer));
 
   // After a frame, no layers should need to push properties again.
   Compositor().BeginFrame();
-  EXPECT_FALSE(host.LayersThatShouldPushProperties().count(a_layer));
-  EXPECT_FALSE(host.LayersThatShouldPushProperties().count(b_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          a_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          b_layer));
 }
 
 TEST_P(CompositingSimTest, LayerUpdatesDoNotInvalidateLaterLayers) {
@@ -716,24 +726,42 @@ TEST_P(CompositingSimTest, LayerUpdatesDoNotInvalidateLaterLayers) {
 
   // Initially, no layer should need to push properties.
   cc::LayerTreeHost& host = *Compositor().LayerTreeHost();
-  EXPECT_FALSE(host.LayersThatShouldPushProperties().count(a_layer));
-  EXPECT_FALSE(host.LayersThatShouldPushProperties().count(b_layer));
-  EXPECT_FALSE(host.LayersThatShouldPushProperties().count(c_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          a_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          b_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          c_layer));
 
   // Modifying a and b (adding opacity to a and removing opacity from b) should
   // not cause the c layer to push properties.
   a_element->setAttribute(html_names::kStyleAttr, "opacity: 0.3");
   b_element->setAttribute(html_names::kStyleAttr, "");
   UpdateAllLifecyclePhases();
-  EXPECT_TRUE(host.LayersThatShouldPushProperties().count(a_layer));
-  EXPECT_TRUE(host.LayersThatShouldPushProperties().count(b_layer));
-  EXPECT_FALSE(host.LayersThatShouldPushProperties().count(c_layer));
+  EXPECT_TRUE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          a_layer));
+  EXPECT_TRUE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          b_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          c_layer));
 
   // After a frame, no layers should need to push properties again.
   Compositor().BeginFrame();
-  EXPECT_FALSE(host.LayersThatShouldPushProperties().count(a_layer));
-  EXPECT_FALSE(host.LayersThatShouldPushProperties().count(b_layer));
-  EXPECT_FALSE(host.LayersThatShouldPushProperties().count(c_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          a_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          b_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          c_layer));
 }
 
 TEST_P(CompositingSimTest,
@@ -1718,10 +1746,10 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
   // Simulate the scroll update with scroll delta from impl-side.
   cc::CompositorCommitData commit_data;
   commit_data.scrolls.emplace_back(cc::CompositorCommitData::ScrollUpdateInfo(
-      element_id, gfx::ScrollOffset(0, 10), absl::nullopt));
+      element_id, gfx::Vector2dF(0, 10), absl::nullopt));
   Compositor().LayerTreeHost()->ApplyCompositorChanges(&commit_data);
   EXPECT_EQ(FloatPoint(0, 10), scrollable_area->ScrollPosition());
-  EXPECT_EQ(gfx::ScrollOffset(0, 10),
+  EXPECT_EQ(gfx::Vector2dF(0, 10),
             GetPropertyTrees()->scroll_tree.current_scroll_offset(element_id));
 
   // Update just the blink lifecycle because a full frame would clear the bit
@@ -2095,6 +2123,81 @@ TEST_P(CompositingSimTest, ChangingContentsOpaqueForTextRequiresFullUpdate) {
             PaintArtifactCompositor::PreviousUpdateType::kFull);
   EXPECT_FALSE(CcLayerByDOMElementId("target")->contents_opaque());
   EXPECT_FALSE(CcLayerByDOMElementId("target")->contents_opaque_for_text());
+}
+
+TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeSimpleBg) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <div id="target" style="will-change: transform; background: white;
+                              width: 100.6px; height: 10.3px">
+        TEXT
+      </div>
+  )HTML");
+  Compositor().BeginFrame();
+  auto* cc_layer = CcLayerByDOMElementId("target");
+  // In CompositeAfterPaint, we adjust visual rect of the DrawingDisplayItem
+  // with simple painting to the bounds of the painting.
+  EXPECT_EQ(gfx::Size(101, 10), cc_layer->bounds());
+  EXPECT_TRUE(cc_layer->contents_opaque());
+  EXPECT_TRUE(cc_layer->contents_opaque_for_text());
+}
+
+TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeComplexBg) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <div id="target" style="will-change: transform; background: white;
+                              border: 2px inset blue;
+                              width: 100.6px; height: 10.3px">
+        TEXT
+      </div>
+  )HTML");
+  Compositor().BeginFrame();
+  auto* cc_layer = CcLayerByDOMElementId("target");
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_EQ(gfx::Size(105, 15), cc_layer->bounds());
+    EXPECT_FALSE(cc_layer->contents_opaque());
+  } else {
+    // Pre-CAP always pixel-snaps composited layer bounds, which might be
+    // incorrect in some corner cases where we don't pixel-snap painting.
+    EXPECT_EQ(gfx::Size(105, 14), cc_layer->bounds());
+    EXPECT_TRUE(cc_layer->contents_opaque());
+  }
+  EXPECT_TRUE(cc_layer->contents_opaque_for_text());
+}
+
+TEST_P(CompositingSimTest, ContentsOpaqueForTextWithPartialBackground) {
+  // This test works only with the new text opaque algorithm.
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <div id="target" style="will-change: transform; padding: 10px">
+        <div style="background: white">TEXT</div>
+      </div>
+  )HTML");
+  Compositor().BeginFrame();
+  auto* cc_layer = CcLayerByDOMElementId("target");
+  EXPECT_FALSE(cc_layer->contents_opaque());
+  EXPECT_TRUE(cc_layer->contents_opaque_for_text());
+}
+
+TEST_P(CompositingSimTest, ContentsOpaqueForTextWithBorderRadiusAndPadding) {
+  // This test works only with the new text opaque algorithm.
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <div id="target" style="will-change: transform; border-radius: 5px;
+                              padding: 10px; background: blue">
+        TEXT
+      </div>
+  )HTML");
+  Compositor().BeginFrame();
+  auto* cc_layer = CcLayerByDOMElementId("target");
+  EXPECT_FALSE(cc_layer->contents_opaque());
+  EXPECT_TRUE(cc_layer->contents_opaque_for_text());
 }
 
 TEST_P(CompositingSimTest, FullCompositingUpdateReasons) {
@@ -2484,6 +2587,30 @@ TEST_P(CompositingSimTest, CompositorAnimationOfOpacityHasPaintedContent) {
       <div id="animation"></div>
   )HTML");
   Compositor().BeginFrame();
+  EXPECT_TRUE(CcLayerByDOMElementId("animation")->DrawsContent());
+}
+
+TEST_P(CompositingSimTest, CompositorAnimationOfNonInvertibleTransform) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        @keyframes anim {
+          0% { transform: scale(0); }
+          99% { transform: scale(0); }
+          100% { transform: scale(1); }
+        }
+        #animation {
+          animation-name: anim;
+          animation-duration: 999s;
+          width: 100px;
+          height: 100px;
+          background: lightblue;
+        }
+      </style>
+      <div id="animation"></div>
+  )HTML");
+  Compositor().BeginFrame();
+  EXPECT_TRUE(CcLayerByDOMElementId("animation"));
   EXPECT_TRUE(CcLayerByDOMElementId("animation")->DrawsContent());
 }
 

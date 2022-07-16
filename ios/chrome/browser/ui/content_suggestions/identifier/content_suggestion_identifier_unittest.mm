@@ -27,7 +27,7 @@ TEST_F(ContentSuggestionIdentifierTest, IsEquals) {
   std::string id2("identifier");
   ContentSuggestionsSectionInformation* sectionInfo =
       [[ContentSuggestionsSectionInformation alloc]
-          initWithSectionID:ContentSuggestionsSectionArticles];
+          initWithSectionID:ContentSuggestionsSectionMostVisited];
 
   ContentSuggestionIdentifier* suggestionIdentifier1 =
       [[ContentSuggestionIdentifier alloc] init];
@@ -68,10 +68,10 @@ TEST_F(ContentSuggestionIdentifierTest, IsNotEquals) {
   std::string id2("identifier2");
   ContentSuggestionsSectionInformation* sectionInfo1 =
       [[ContentSuggestionsSectionInformation alloc]
-          initWithSectionID:ContentSuggestionsSectionArticles];
+          initWithSectionID:ContentSuggestionsSectionMostVisited];
   ContentSuggestionsSectionInformation* sectionInfo2 =
       [[ContentSuggestionsSectionInformation alloc]
-          initWithSectionID:ContentSuggestionsSectionReadingList];
+          initWithSectionID:ContentSuggestionsSectionLogo];
 
   ContentSuggestionIdentifier* suggestionIdentifier1 =
       [[ContentSuggestionIdentifier alloc] init];

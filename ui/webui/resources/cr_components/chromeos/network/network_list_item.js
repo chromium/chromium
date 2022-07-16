@@ -111,6 +111,9 @@ Polymer({
     /** @private {?chromeos.networkConfig.mojom.ManagedProperties|undefined} */
     managedProperties_: Object,
 
+    /** @type {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+    globalPolicy: Object,
+
     /**
      * Title containing the item's name and subtitle.
      * @private {string}
@@ -127,14 +130,6 @@ Polymer({
     subtitle_: {
       type: String,
       value: '',
-    },
-
-    /** @private */
-    isUpdatedCellularUiEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('updatedCellularActivationUi');
-      }
     },
 
     /**
@@ -196,6 +191,17 @@ Polymer({
       computed: 'computeIsESimInstallingProfile_(item, item.customItemType)',
     },
 
+    /**
+     * Indicates the network item is a blocked cellular network by policy.
+     * @private
+     */
+    isBlockedNetwork_: {
+      type: Boolean,
+      reflectToAttribute: true,
+      value: false,
+      computed: 'computeIsBlockedNetwork_(item, globalPolicy)',
+    },
+
     /**@private {boolean} */
     isCellularUnlockDialogOpen_: {
       type: Boolean,
@@ -245,10 +251,6 @@ Polymer({
       // Item is a custom OOBE network or pending eSIM profile.
       const item = /** @type {!NetworkList.CustomItemState} */ (this.item);
       this.subtitle_ = item.customItemSubtitle;
-      return;
-    }
-
-    if (!this.isUpdatedCellularUiEnabled_) {
       return;
     }
 
@@ -355,7 +357,7 @@ Polymer({
    * @private
    */
   computeDisabled_() {
-    if (!this.deviceState || !this.isUpdatedCellularUiEnabled_) {
+    if (!this.deviceState) {
       return false;
     }
     return OncMojo.deviceIsInhibited(this.deviceState);
@@ -424,6 +426,12 @@ Polymer({
                 index, total, this.getItemName_(), status,
                 this.item.typeState.cellular.signalStrength);
           }
+          if (this.isBlockedNetwork_) {
+            return this.i18n(
+                'networkListItemCellularBlockedWithConnectionStatusA11yLabel',
+                index, total, this.getItemName_(), status,
+                this.item.typeState.cellular.signalStrength);
+          }
           if (this.subtitle_) {
             return this.i18n(
                 'networkListItemLabelCellularWithConnectionStatusAndProviderName',
@@ -439,6 +447,12 @@ Polymer({
         if (this.isPSimPendingActivationNetwork_) {
           return this.i18n(
               'networkListItemLabelCellularUnactivated', index, total,
+              this.getItemName_(), this.item.typeState.cellular.signalStrength);
+        }
+
+        if (this.isBlockedNetwork_) {
+          return this.i18n(
+              'networkListItemCellularBlockedA11yLabel', index, total,
               this.getItemName_(), this.item.typeState.cellular.signalStrength);
         }
 
@@ -568,17 +582,7 @@ Polymer({
 
     if (this.networkState.type === mojom.NetworkType.kCellular) {
       if (this.networkState.typeState.cellular.simLocked) {
-        return this.isUpdatedCellularUiEnabled_ ?
-            this.i18n('networkListItemUpdatedCellularSimCardLocked') :
-            this.i18n('networkListItemSimCardLocked');
-      }
-      if (!this.isUpdatedCellularUiEnabled_ &&
-          this.shouldShowNotAvailableText_()) {
-        return this.i18n('networkListItemNotAvailable');
-      }
-      if (!this.isUpdatedCellularUiEnabled_ &&
-          this.isCellularNetworkScanning_()) {
-        return this.i18n('networkListItemScanning');
+        return this.i18n('networkListItemUpdatedCellularSimCardLocked');
       }
       if (this.isPSimUnavailableNetwork_) {
         return this.i18n('networkListItemUnavailableSimNetwork');
@@ -605,8 +609,7 @@ Polymer({
     const mojom = chromeos.networkConfig.mojom;
     if (this.networkState &&
         this.networkState.type === mojom.NetworkType.kCellular &&
-        this.networkState.typeState.cellular.simLocked &&
-        this.isUpdatedCellularUiEnabled_) {
+        this.networkState.typeState.cellular.simLocked) {
       return 'warning';
     }
     if (this.isPSimUnavailableNetwork_) {
@@ -698,6 +701,8 @@ Polymer({
     } else if (
         this.showButtons &&
         (this.isPSimUnavailableNetwork_ || this.isPSimActivatingNetwork_)) {
+      this.fireShowDetails_(event);
+    } else if (this.isBlockedNetwork_) {
       this.fireShowDetails_(event);
     } else {
       this.fire('selected', this.item);
@@ -823,9 +828,6 @@ Polymer({
    * @private
    */
   computeIsPSimPendingActivationNetwork_(managedProperties) {
-    if (!this.isUpdatedCellularUiEnabled_) {
-      return false;
-    }
     if (!managedProperties) {
       return false;
     }
@@ -871,9 +873,6 @@ Polymer({
    * @private
    */
   computeIsPSimUnavailableNetwork_(managedProperties) {
-    if (!this.isUpdatedCellularUiEnabled_) {
-      return false;
-    }
     if (!managedProperties) {
       return false;
     }
@@ -887,15 +886,33 @@ Polymer({
    * @private
    */
   computeIsPSimActivatingNetwork_() {
-    if (!this.isUpdatedCellularUiEnabled_) {
-      return false;
-    }
     if (!this.networkState || !this.networkState.typeState.cellular ||
         this.networkState.typeState.cellular.eid) {
       return false;
     }
     return this.networkState.typeState.cellular.activationState ===
         chromeos.networkConfig.mojom.ActivationStateType.kActivating;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeIsBlockedNetwork_() {
+    // The blocked cellular network item will be gray out in the network list.
+    // TODO(crbug.com/1254917). WiFi list behavior should be consistent with
+    // Cellular.
+    if (!this.globalPolicy || !this.item ||
+        this.isPolicySource(this.item.source)) {
+      return false;
+    }
+
+    if (this.item.type === chromeos.networkConfig.mojom.NetworkType.kCellular &&
+        !!this.globalPolicy.allowOnlyPolicyCellularNetworks) {
+      return true;
+    }
+
+    return false;
   },
 
   /**
@@ -932,8 +949,7 @@ Polymer({
     if (!this.showButtons) {
       return false;
     }
-    if (!this.networkState || !this.networkState.typeState.cellular ||
-        !this.isUpdatedCellularUiEnabled_) {
+    if (!this.networkState || !this.networkState.typeState.cellular) {
       return false;
     }
     return this.networkState.typeState.cellular.simLocked;

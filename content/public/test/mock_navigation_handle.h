@@ -49,7 +49,7 @@ class MockNavigationHandle : public NavigationHandle {
   SiteInstance* GetSourceSiteInstance() override {
     return nullptr;  // Good enough for unit tests...
   }
-  bool IsInMainFrame() override {
+  bool IsInMainFrame() const override {
     return render_frame_host_ ? !render_frame_host_->GetParent() : true;
   }
   MOCK_METHOD0(IsInPrerenderedMainFrame, bool());
@@ -62,11 +62,18 @@ class MockNavigationHandle : public NavigationHandle {
     NOTIMPLEMENTED();
     return false;
   }
-  bool IsInPrimaryMainFrame() override { return is_in_primary_main_frame_; }
+  bool IsInPrimaryMainFrame() const override {
+    return is_in_primary_main_frame_;
+  }
   MOCK_METHOD0(GetFrameTreeNodeId, int());
   MOCK_METHOD0(GetPreviousRenderFrameHostId, GlobalRenderFrameHostId());
   bool IsServedFromBackForwardCache() override {
     return is_served_from_bfcache_;
+  }
+  bool IsPageActivation() const override {
+    MockNavigationHandle* handle = const_cast<MockNavigationHandle*>(this);
+    return handle->IsPrerenderedPageActivation() ||
+           handle->IsServedFromBackForwardCache();
   }
   RenderFrameHost* GetParentFrame() override {
     return render_frame_host_ ? render_frame_host_->GetParent() : nullptr;
@@ -157,6 +164,7 @@ class MockNavigationHandle : public NavigationHandle {
               RegisterThrottleForTesting,
               (std::unique_ptr<NavigationThrottle>));
   MOCK_METHOD(bool, IsDeferredForTesting, ());
+  MOCK_METHOD(bool, IsCommitDeferringConditionDeferredForTesting, ());
   MOCK_METHOD(void,
               RegisterSubresourceOverride,
               (blink::mojom::TransferrableURLLoaderPtr));
@@ -170,10 +178,12 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD(void, SetSilentlyIgnoreErrors, ());
   MOCK_METHOD(network::mojom::WebSandboxFlags, SandboxFlagsToCommit, ());
   MOCK_METHOD(bool, IsWaitingToCommit, ());
-  MOCK_METHOD(bool, WasEarlyHintsPreloadLinkHeaderReceived, ());
+  MOCK_METHOD(bool, WasResourceHintsReceived, ());
+  MOCK_METHOD(bool, IsPdf, ());
   void WriteIntoTrace(perfetto::TracedValue context) override {
     auto dict = std::move(context).WriteDictionary();
   }
+  MOCK_METHOD(bool, SetNavigationTimeout, (base::TimeDelta));
 
   void set_url(const GURL& url) { url_ = url; }
   void set_previous_main_frame_url(const GURL& previous_main_frame_url) {

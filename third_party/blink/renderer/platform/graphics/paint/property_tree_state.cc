@@ -45,7 +45,7 @@ bool ClipChainHasCompositedTransformTo(
 }
 }  // namespace
 
-const PropertyTreeState& PropertyTreeState::Root() {
+const PropertyTreeState& PropertyTreeStateOrAlias::Root() {
   DEFINE_STATIC_LOCAL(
       const PropertyTreeState, root,
       (TransformPaintPropertyNode::Root(), ClipPaintPropertyNode::Root(),
@@ -53,11 +53,12 @@ const PropertyTreeState& PropertyTreeState::Root() {
   return root;
 }
 
-bool PropertyTreeState::ChangedToRoot(PaintPropertyChangeType change) const {
-  const auto& root = Root();
-  return Transform().Changed(change, root.Transform()) ||
-         Clip().Changed(change, root, &Transform()) ||
-         Effect().Changed(change, root, &Transform());
+bool PropertyTreeStateOrAlias::Changed(
+    PaintPropertyChangeType change,
+    const PropertyTreeState& relative_to) const {
+  return Transform().Changed(change, relative_to.Transform()) ||
+         Clip().Changed(change, relative_to, &Transform()) ||
+         Effect().Changed(change, relative_to, &Transform());
 }
 
 absl::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(

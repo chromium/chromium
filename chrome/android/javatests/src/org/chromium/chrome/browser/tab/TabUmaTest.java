@@ -84,11 +84,12 @@ public class TabUmaTest {
                 /* ChromeActivityNativeDelegate */ cta, /* isCustomTab= */ false,
                 rootUiCoordinator.getBrowserControlsManager(),
                 cta.getFullscreenManager(), /* TabCreatorManager */ cta,
-                cta::getTabModelSelector, cta::getCompositorViewHolder,
+                cta::getTabModelSelector, cta.getCompositorViewHolderSupplier(),
                 cta.getModalDialogManagerSupplier(), cta::getSnackbarManager,
                 cta.getBrowserControlsManager(), cta.getActivityTabProvider(),
                 cta.getLifecycleDispatcher(), cta.getWindowAndroid(),
-                cta::getLastUserInteractionTime, cta::hadWarmStart, new DummyJankTracker());
+                cta::getLastUserInteractionTime, cta::hadWarmStart, new DummyJankTracker(),
+                rootUiCoordinator.getToolbarManager()::getToolbar);
         // clang-format on
     }
 

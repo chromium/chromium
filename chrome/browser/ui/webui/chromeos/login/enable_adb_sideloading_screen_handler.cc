@@ -61,14 +61,10 @@ void EnableAdbSideloadingScreenHandler::DeclareLocalizedValues(
                IDS_ENABLE_ARC_ADB_SIDELOADING_SETUP_TITLE);
   builder->Add("enableAdbSideloadingSetupMessage",
                IDS_ENABLE_ARC_ADB_SIDELOADING_SETUP_MESSAGE);
-  builder->Add("enableAdbSideloadingIllustrationTitle",
-               IDS_ENABLE_ARC_ADB_SIDELOADING_SETUP_ILLUSTRATION_TITLE);
   builder->Add("enableAdbSideloadingErrorTitle",
                IDS_ENABLE_ARC_ADB_SIDELOADING_ERROR_TITLE);
   builder->Add("enableAdbSideloadingErrorMessage",
                IDS_ENABLE_ARC_ADB_SIDELOADING_ERROR_MESSAGE);
-  builder->Add("enableAdbSideloadingErrorIllustrationTitle",
-               IDS_ENABLE_ARC_ADB_SIDELOADING_ERROR_ILLUSTRATION_TITLE);
   builder->Add("enableAdbSideloadingLearnMore",
                IDS_ENABLE_ARC_ADB_SIDELOADING_LEARN_MORE);
   builder->Add("enableAdbSideloadingConfirmButton",

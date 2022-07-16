@@ -1,0 +1,63 @@
+<style include="common-style untrusted-style">
+  :host {
+    margin: 12px 0;
+  }
+</style>
+<iron-list items="[[tiles_]]" grid scroll-target="document">
+  <template>
+    <div class="photo-container">
+      <template is="dom-if" if="[[isLoadingTile_(item)]]">
+        <div tabindex$="[[tabIndex]]" role="button"
+            class="photo-inner-container placeholder"
+            style$="[[getLoadingPlaceholderAnimationDelay(index)]]"
+            aria-label$="[[geti18n_('ariaLabelLoading')]]" aria-disabled="true">
+        </div>
+      </template>
+      <template is="dom-if" if="[[isFailureTile_(item)]]">
+        <div tabindex$="[[tabIndex]]" role="button" aria-disabled="true"
+            class="photo-inner-container photo-loading-failure">
+          <div class$="[[getClassForImagesContainer_(item)]]">
+            <template is="dom-repeat" items="[[item.preview]]" as="preview">
+              <img src="[[preview.url]]" aria-hidden="true">
+            </template>
+          </div>
+          <div class="photo-text-container">
+            <p title$="[[item.name]]">[[item.name]]</p>
+            <p title$="[[geti18n_('zeroImages')]]">
+              [[geti18n_('zeroImages')]]
+            </p>
+          </div>
+      </div>
+      </template>
+      <template is="dom-if" if="[[isEmptyTile_(item)]]">
+        <div tabindex$="[[tabIndex]]" role="button" aria-disabled="[[!isSelectableTile_(item)]]"
+            class="photo-inner-container photo-empty" selectable$="[[isSelectableTile_(item)]]"
+            on-click="onCollectionSelected_" on-keypress="onCollectionSelected_">
+          <div class$="[[getClassForImagesContainer_(item)]]">
+            <img src="//personalization/common/no_images.svg" aria-hidden="true">
+          </div>
+          <div class="photo-text-container">
+            <p title$="[[item.name]]">[[item.name]]</p>
+            <p title$="[[item.count]]">[[item.count]]</p>
+          </div>
+        </div>
+      </template>
+      <template is="dom-if" if="[[isImageTile_(item)]]">
+        <div class="photo-inner-container" on-click="onCollectionSelected_"
+            on-keypress="onCollectionSelected_" tabindex$="[[tabIndex]]" role="button">
+          <div class$="[[getClassForImagesContainer_(item)]]">
+            <template is="dom-repeat" items="[[item.preview]]" as="preview">
+              <img src="[[preview.url]]" aria-hidden="true"
+                  on-load="onImgLoad_" on-error="onImgLoad_">
+            </template>
+          </div>
+          <div class="photo-text-container" hidden>
+            <p title$="[[item.name]]">[[item.name]]</p>
+            <p title$="[[item.count]]">[[item.count]]</p>
+          </div>
+          <div class="photo-gradient-mask" hidden></div>
+        </div>
+      </template>
+    </div>
+  </template>
+</iron-list>

@@ -6,11 +6,43 @@
 
 #include <relative-pointer-unstable-v1-client-protocol.h>
 
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 
 namespace ui {
+
+namespace {
+constexpr uint32_t kMinZwpRelativePointerManagerVersion = 1;
+}
+
+// static
+constexpr char WaylandZwpRelativePointerManager::kInterfaceName[];
+
+// static
+void WaylandZwpRelativePointerManager::Instantiate(
+    WaylandConnection* connection,
+    wl_registry* registry,
+    uint32_t name,
+    const std::string& interface,
+    uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
+  if (connection->wayland_zwp_relative_pointer_manager_ ||
+      version < kMinZwpRelativePointerManagerVersion)
+    return;
+
+  auto zwp_relative_pointer_manager_v1 =
+      wl::Bind<struct zwp_relative_pointer_manager_v1>(registry, name, version);
+  if (!zwp_relative_pointer_manager_v1) {
+    LOG(ERROR) << "Failed to bind zwp_relative_pointer_manager_v1";
+    return;
+  }
+  connection->wayland_zwp_relative_pointer_manager_ =
+      std::make_unique<WaylandZwpRelativePointerManager>(
+          zwp_relative_pointer_manager_v1.release(), connection);
+}
 
 WaylandZwpRelativePointerManager::WaylandZwpRelativePointerManager(
     zwp_relative_pointer_manager_v1* relative_pointer_manager,
@@ -29,8 +61,8 @@ void WaylandZwpRelativePointerManager::EnableRelativePointer() {
   relative_pointer_.reset(zwp_relative_pointer_manager_v1_get_relative_pointer(
       obj_.get(), connection_->pointer()->wl_object()));
 
-  static const struct zwp_relative_pointer_v1_listener
-      relative_pointer_listener = {
+  static constexpr zwp_relative_pointer_v1_listener relative_pointer_listener =
+      {
           &WaylandZwpRelativePointerManager::OnHandleMotion,
       };
   zwp_relative_pointer_v1_add_listener(relative_pointer_.get(),

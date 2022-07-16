@@ -129,7 +129,7 @@ static void JNI_GURL_GetOrigin(JNIEnv* env,
                                jlong parsed_ptr,
                                const JavaParamRef<jobject>& target) {
   std::unique_ptr<GURL> gurl = FromJavaGURL(env, j_spec, is_valid, parsed_ptr);
-  InitFromGURL(env, gurl->GetOrigin(), target);
+  InitFromGURL(env, gurl->DeprecatedGetOriginAsURL(), target);
 }
 
 static jboolean JNI_GURL_DomainIs(JNIEnv* env,

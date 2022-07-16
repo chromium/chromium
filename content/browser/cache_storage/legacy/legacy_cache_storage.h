@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -68,6 +67,9 @@ class CONTENT_EXPORT LegacyCacheStorage : public CacheStorage,
       LegacyCacheStorageManager* cache_storage_manager,
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner);
+
+  LegacyCacheStorage(const LegacyCacheStorage&) = delete;
+  LegacyCacheStorage& operator=(const LegacyCacheStorage&) = delete;
 
   // Any unfinished asynchronous operations may not complete or call their
   // callbacks.
@@ -340,8 +342,6 @@ class CONTENT_EXPORT LegacyCacheStorage : public CacheStorage,
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<LegacyCacheStorage> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LegacyCacheStorage);
 };
 
 }  // namespace content

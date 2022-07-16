@@ -27,7 +27,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -56,6 +55,9 @@ class FakeChooserView : public permissions::ChooserController::View {
     controller_->set_view(this);
   }
 
+  FakeChooserView(const FakeChooserView&) = delete;
+  FakeChooserView& operator=(const FakeChooserView&) = delete;
+
   ~FakeChooserView() override { controller_->set_view(nullptr); }
 
   void OnOptionsInitialized() override {
@@ -74,14 +76,15 @@ class FakeChooserView : public permissions::ChooserController::View {
 
  private:
   std::unique_ptr<permissions::ChooserController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeChooserView);
 };
 
 class FakeUsbChooser : public WebUsbChooser {
  public:
   explicit FakeUsbChooser(RenderFrameHost* render_frame_host)
       : WebUsbChooser(render_frame_host) {}
+
+  FakeUsbChooser(const FakeUsbChooser&) = delete;
+  FakeUsbChooser& operator=(const FakeUsbChooser&) = delete;
 
   ~FakeUsbChooser() override {}
 
@@ -101,13 +104,14 @@ class FakeUsbChooser : public WebUsbChooser {
 
  private:
   base::WeakPtrFactory<FakeUsbChooser> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUsbChooser);
 };
 
 class TestContentBrowserClient : public ChromeContentBrowserClient {
  public:
   TestContentBrowserClient() {}
+
+  TestContentBrowserClient(const TestContentBrowserClient&) = delete;
+  TestContentBrowserClient& operator=(const TestContentBrowserClient&) = delete;
 
   ~TestContentBrowserClient() override {}
 
@@ -132,8 +136,6 @@ class TestContentBrowserClient : public ChromeContentBrowserClient {
   bool use_real_chooser_ = false;
   std::unique_ptr<WebUsbServiceImpl> web_usb_service_;
   std::unique_ptr<WebUsbChooser> usb_chooser_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContentBrowserClient);
 };
 
 class WebUsbTest : public InProcessBrowserTest {
@@ -154,8 +156,8 @@ class WebUsbTest : public InProcessBrowserTest {
         content::SetBrowserClientForTesting(&test_content_browser_client_);
 
     GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");
-    ui_test_utils::NavigateToURL(browser(), url);
-    origin_ = url.GetOrigin();
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    origin_ = url.DeprecatedGetOriginAsURL();
 
     RenderFrameHost* render_frame_host =
         browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
@@ -352,53 +354,6 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, ShowChooserInBackgroundTab) {
             return `${e.name}: ${e.message}`;
           }
         })())"));
-}
-
-class WebUsbPrerenderinBrowserTest : public WebUsbTest {
- public:
-  WebUsbPrerenderinBrowserTest()
-      : prerender_helper_(
-            base::BindRepeating(&WebUsbPrerenderinBrowserTest::web_contents,
-                                base::Unretained(this))) {}
-  ~WebUsbPrerenderinBrowserTest() override = default;
-
-  content::test::PrerenderTestHelper* prerender_helper() {
-    return &prerender_helper_;
-  }
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  void OnJsTestExecutionDone(base::Value value) { result_ = std::move(value); }
-
-  bool HasResult() { return !!result_; }
-
- private:
-  absl::optional<base::Value> result_;
-  content::test::PrerenderTestHelper prerender_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(WebUsbPrerenderinBrowserTest, ShowChooserInPrerenderin) {
-  // Loads a page in the prerendering.
-  GURL prerender_url = embedded_test_server()->GetURL(
-      "localhost", "/simple_page.html?prerendering");
-  const int host_id = prerender_helper()->AddPrerender(prerender_url);
-  content::RenderFrameHost* prerender_rfh =
-      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
-
-  EXPECT_FALSE(HasResult());
-  prerender_rfh->ExecuteJavaScriptForTests(
-      u"((async () => {"
-      u"  let devices = await navigator.usb.getDevices();"
-      u"  return devices.map(device => device.serialNumber);"
-      u"})())",
-      base::BindOnce(&WebUsbPrerenderinBrowserTest::OnJsTestExecutionDone,
-                     base::Unretained(this)));
-
-  // Activate the prerendered page.
-  prerender_helper()->NavigatePrimaryPage(prerender_url);
-  EXPECT_TRUE(HasResult());
 }
 
 }  // namespace

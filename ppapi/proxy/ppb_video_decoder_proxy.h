@@ -21,6 +21,10 @@ namespace proxy {
 class PPB_VideoDecoder_Proxy : public InterfaceProxy {
  public:
   explicit PPB_VideoDecoder_Proxy(Dispatcher* dispatcher);
+
+  PPB_VideoDecoder_Proxy(const PPB_VideoDecoder_Proxy&) = delete;
+  PPB_VideoDecoder_Proxy& operator=(const PPB_VideoDecoder_Proxy&) = delete;
+
   ~PPB_VideoDecoder_Proxy() override;
 
   // Creates a VideoDecoder object in the plugin process.
@@ -72,8 +76,6 @@ class PPB_VideoDecoder_Proxy : public InterfaceProxy {
   void OnMsgResetACK(const ppapi::HostResource& decoder, int32_t result);
 
   ProxyCompletionCallbackFactory<PPB_VideoDecoder_Proxy> callback_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_VideoDecoder_Proxy);
 };
 
 }  // namespace proxy

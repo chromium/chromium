@@ -14,6 +14,11 @@ namespace device {
 class PlatformSensorProviderAndroid : public PlatformSensorProvider {
  public:
   PlatformSensorProviderAndroid();
+
+  PlatformSensorProviderAndroid(const PlatformSensorProviderAndroid&) = delete;
+  PlatformSensorProviderAndroid& operator=(
+      const PlatformSensorProviderAndroid&) = delete;
+
   ~PlatformSensorProviderAndroid() override;
 
   void SetSensorManagerToNullForTesting();
@@ -45,8 +50,6 @@ class PlatformSensorProviderAndroid : public PlatformSensorProvider {
 
   // Java object org.chromium.device.sensors.PlatformSensorProvider
   base::android::ScopedJavaGlobalRef<jobject> j_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorProviderAndroid);
 };
 
 }  // namespace device

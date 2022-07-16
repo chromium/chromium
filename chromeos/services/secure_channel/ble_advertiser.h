@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_BLE_ADVERTISER_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_BLE_ADVERTISER_H_
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 
@@ -32,6 +31,9 @@ class BleAdvertiser {
     virtual void OnFailureToGenerateAdvertisement(
         const DeviceIdPair& device_id_pair) = 0;
   };
+
+  BleAdvertiser(const BleAdvertiser&) = delete;
+  BleAdvertiser& operator=(const BleAdvertiser&) = delete;
 
   virtual ~BleAdvertiser();
 
@@ -66,8 +68,6 @@ class BleAdvertiser {
 
  private:
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(BleAdvertiser);
 };
 
 }  // namespace secure_channel

@@ -109,6 +109,9 @@ class AsyncOperation
         base::BindOnce(&AsyncOperation::OnResult, weak_factory_.GetWeakPtr());
   }
 
+  AsyncOperation(const AsyncOperation&) = delete;
+  AsyncOperation& operator=(const AsyncOperation&) = delete;
+
   ~AsyncOperation() override { DCHECK_CALLED_ON_VALID_THREAD(thread_checker_); }
 
   // ABI::Windows::Foundation::IAsyncOperation:
@@ -150,8 +153,6 @@ class AsyncOperation
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<AsyncOperation> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncOperation);
 };
 
 }  // namespace win

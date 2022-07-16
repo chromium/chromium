@@ -22,6 +22,9 @@ class CryptAuthKeyRegistry {
   using KeyBundleMap =
       base::flat_map<CryptAuthKeyBundle::Name, CryptAuthKeyBundle>;
 
+  CryptAuthKeyRegistry(const CryptAuthKeyRegistry&) = delete;
+  CryptAuthKeyRegistry& operator=(const CryptAuthKeyRegistry&) = delete;
+
   virtual ~CryptAuthKeyRegistry();
 
   // Returns the underlying map from the key-bundle name to the key bundle.
@@ -66,8 +69,6 @@ class CryptAuthKeyRegistry {
   virtual void OnKeyRegistryUpdated() = 0;
 
   KeyBundleMap key_bundles_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthKeyRegistry);
 };
 
 }  // namespace device_sync

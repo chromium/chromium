@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_computed_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unrestricteddouble.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
@@ -229,8 +229,10 @@ Response InspectorAnimationAgent::getCurrentTime(const String& id,
   Response response = AssertAnimation(id, animation);
   if (!response.IsSuccess())
     return response;
-  if (id_to_animation_clone_.at(id))
-    animation = id_to_animation_clone_.at(id);
+
+  auto it = id_to_animation_clone_.find(id);
+  if (it != id_to_animation_clone_.end())
+    animation = it->value;
 
   *current_time = Timing::NullValue();
   if (animation->Paused() || !animation->timeline()->IsActive()) {
@@ -296,47 +298,47 @@ Response InspectorAnimationAgent::setPaused(
 blink::Animation* InspectorAnimationAgent::AnimationClone(
     blink::Animation* animation) {
   const String id = String::Number(animation->SequenceNumber());
-  if (!id_to_animation_clone_.at(id)) {
-    auto* old_effect = To<KeyframeEffect>(animation->effect());
-    DCHECK(old_effect->Model()->IsKeyframeEffectModel());
-    KeyframeEffectModelBase* old_model = old_effect->Model();
-    KeyframeEffectModelBase* new_model = nullptr;
-    // Clone EffectModel.
-    // TODO(samli): Determine if this is an animations bug.
-    if (old_model->IsStringKeyframeEffectModel()) {
-      auto* old_string_keyframe_model =
-          To<StringKeyframeEffectModel>(old_model);
-      KeyframeVector old_keyframes = old_string_keyframe_model->GetFrames();
-      StringKeyframeVector new_keyframes;
-      for (auto& old_keyframe : old_keyframes)
-        new_keyframes.push_back(To<StringKeyframe>(*old_keyframe));
-      new_model =
-          MakeGarbageCollected<StringKeyframeEffectModel>(new_keyframes);
-    } else if (old_model->IsTransitionKeyframeEffectModel()) {
-      auto* old_transition_keyframe_model =
-          To<TransitionKeyframeEffectModel>(old_model);
-      KeyframeVector old_keyframes = old_transition_keyframe_model->GetFrames();
-      TransitionKeyframeVector new_keyframes;
-      for (auto& old_keyframe : old_keyframes)
-        new_keyframes.push_back(To<TransitionKeyframe>(*old_keyframe));
-      new_model =
-          MakeGarbageCollected<TransitionKeyframeEffectModel>(new_keyframes);
-    }
+  auto it = id_to_animation_clone_.find(id);
+  if (it != id_to_animation_clone_.end())
+    return it->value;
 
-    auto* new_effect = MakeGarbageCollected<KeyframeEffect>(
-        old_effect->EffectTarget(), new_model, old_effect->SpecifiedTiming());
-    is_cloning_ = true;
-    blink::Animation* clone =
-        blink::Animation::Create(new_effect, animation->timeline());
-    is_cloning_ = false;
-    id_to_animation_clone_.Set(id, clone);
-    id_to_animation_.Set(String::Number(clone->SequenceNumber()), clone);
-    clone->play();
-    clone->setStartTime(animation->startTime(), ASSERT_NO_EXCEPTION);
-
-    animation->SetEffectSuppressed(true);
+  auto* old_effect = To<KeyframeEffect>(animation->effect());
+  DCHECK(old_effect->Model()->IsKeyframeEffectModel());
+  KeyframeEffectModelBase* old_model = old_effect->Model();
+  KeyframeEffectModelBase* new_model = nullptr;
+  // Clone EffectModel.
+  // TODO(samli): Determine if this is an animations bug.
+  if (old_model->IsStringKeyframeEffectModel()) {
+    auto* old_string_keyframe_model = To<StringKeyframeEffectModel>(old_model);
+    KeyframeVector old_keyframes = old_string_keyframe_model->GetFrames();
+    StringKeyframeVector new_keyframes;
+    for (auto& old_keyframe : old_keyframes)
+      new_keyframes.push_back(To<StringKeyframe>(*old_keyframe));
+    new_model = MakeGarbageCollected<StringKeyframeEffectModel>(new_keyframes);
+  } else if (old_model->IsTransitionKeyframeEffectModel()) {
+    auto* old_transition_keyframe_model =
+        To<TransitionKeyframeEffectModel>(old_model);
+    KeyframeVector old_keyframes = old_transition_keyframe_model->GetFrames();
+    TransitionKeyframeVector new_keyframes;
+    for (auto& old_keyframe : old_keyframes)
+      new_keyframes.push_back(To<TransitionKeyframe>(*old_keyframe));
+    new_model =
+        MakeGarbageCollected<TransitionKeyframeEffectModel>(new_keyframes);
   }
-  return id_to_animation_clone_.at(id);
+
+  auto* new_effect = MakeGarbageCollected<KeyframeEffect>(
+      old_effect->EffectTarget(), new_model, old_effect->SpecifiedTiming());
+  is_cloning_ = true;
+  blink::Animation* clone =
+      blink::Animation::Create(new_effect, animation->timeline());
+  is_cloning_ = false;
+  id_to_animation_clone_.Set(id, clone);
+  id_to_animation_.Set(String::Number(clone->SequenceNumber()), clone);
+  clone->play();
+  clone->setStartTime(animation->startTime(), ASSERT_NO_EXCEPTION);
+
+  animation->SetEffectSuppressed(true);
+  return clone;
 }
 
 Response InspectorAnimationAgent::seekAnimations(
@@ -353,7 +355,7 @@ Response InspectorAnimationAgent::seekAnimations(
     if (!clone->Paused())
       clone->play();
     clone->SetCurrentTimeInternal(
-        AnimationTimeDelta::FromMillisecondsD(current_time));
+        ANIMATION_TIME_DELTA_FROM_MILLISECONDS(current_time));
   }
   return Response::Success();
 }
@@ -361,12 +363,14 @@ Response InspectorAnimationAgent::seekAnimations(
 Response InspectorAnimationAgent::releaseAnimations(
     std::unique_ptr<protocol::Array<String>> animation_ids) {
   for (const String& animation_id : *animation_ids) {
-    blink::Animation* animation = id_to_animation_.at(animation_id);
-    if (animation)
-      animation->SetEffectSuppressed(false);
-    blink::Animation* clone = id_to_animation_clone_.at(animation_id);
-    if (clone)
-      clone->cancel();
+    auto it = id_to_animation_.find(animation_id);
+    if (it != id_to_animation_.end())
+      it->value->SetEffectSuppressed(false);
+
+    it = id_to_animation_clone_.find(animation_id);
+    if (it != id_to_animation_clone_.end())
+      it->value->cancel();
+
     id_to_animation_clone_.erase(animation_id);
     id_to_animation_.erase(animation_id);
     cleared_animations_.insert(animation_id);
@@ -387,7 +391,8 @@ Response InspectorAnimationAgent::setTiming(const String& animation_id,
 
   OptionalEffectTiming* timing = OptionalEffectTiming::Create();
   timing->setDuration(
-      MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(duration));
+      MakeGarbageCollected<V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
+          duration));
   timing->setDelay(delay);
   animation->effect()->updateTiming(timing, exception_state);
   return Response::Success();
@@ -401,8 +406,11 @@ Response InspectorAnimationAgent::resolveAnimation(
   Response response = AssertAnimation(animation_id, animation);
   if (!response.IsSuccess())
     return response;
-  if (id_to_animation_clone_.at(animation_id))
-    animation = id_to_animation_clone_.at(animation_id);
+
+  auto it = id_to_animation_clone_.find(animation_id);
+  if (it != id_to_animation_clone_.end())
+    animation = it->value;
+
   const Element* element =
       To<KeyframeEffect>(animation->effect())->EffectTarget();
   Document* document = element->ownerDocument();
@@ -519,9 +527,12 @@ void InspectorAnimationAgent::DidClearDocumentOfWindowObject(
 
 Response InspectorAnimationAgent::AssertAnimation(const String& id,
                                                   blink::Animation*& result) {
-  result = id_to_animation_.at(id);
-  if (!result)
+  auto it = id_to_animation_.find(id);
+  if (it == id_to_animation_.end()) {
+    result = nullptr;
     return Response::ServerError("Could not find animation with given id");
+  }
+  result = it->value;
   return Response::Success();
 }
 

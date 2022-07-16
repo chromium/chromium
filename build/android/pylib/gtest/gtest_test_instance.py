@@ -339,6 +339,7 @@ class GtestTestInstance(test_instance.TestInstance):
     self._symbolizer = stack_symbolizer.Symbolizer(None)
     self._total_external_shards = args.test_launcher_total_shards
     self._wait_for_java_debugger = args.wait_for_java_debugger
+    self._use_existing_test_data = args.use_existing_test_data
 
     # GYP:
     if args.executable_dist_dir:
@@ -532,6 +533,10 @@ class GtestTestInstance(test_instance.TestInstance):
   @property
   def wait_for_java_debugger(self):
     return self._wait_for_java_debugger
+
+  @property
+  def use_existing_test_data(self):
+    return self._use_existing_test_data
 
   #override
   def TestType(self):

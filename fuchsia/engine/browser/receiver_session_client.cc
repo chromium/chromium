@@ -11,8 +11,10 @@
 #include "media/base/video_decoder_config.h"
 
 ReceiverSessionClient::ReceiverSessionClient(
-    fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request)
-    : message_port_request_(std::move(message_port_request)) {
+    fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request,
+    bool video_only_receiver)
+    : message_port_request_(std::move(message_port_request)),
+      video_only_receiver_(video_only_receiver) {
   DCHECK(message_port_request_);
 }
 
@@ -29,10 +31,12 @@ void ReceiverSessionClient::SetCastStreamingReceiver(
   // out by build flags.
   auto stream_config =
       std::make_unique<cast_streaming::ReceiverSession::AVConstraints>(
-          cast_streaming::ToVideoCaptureConfigCodecs(
-              media::VideoCodec::kCodecH264, media::VideoCodec::kCodecVP8),
-          cast_streaming::ToAudioCaptureConfigCodecs(
-              media::AudioCodec::kCodecAAC, media::AudioCodec::kCodecOpus));
+          cast_streaming::ToVideoCaptureConfigCodecs(media::VideoCodec::kH264,
+                                                     media::VideoCodec::kVP8),
+          video_only_receiver_
+              ? std::vector<openscreen::cast::AudioCodec>()
+              : cast_streaming::ToAudioCaptureConfigCodecs(
+                    media::AudioCodec::kAAC, media::AudioCodec::kOpus));
 
   receiver_session_ = cast_streaming::ReceiverSession::Create(
       std::move(stream_config),

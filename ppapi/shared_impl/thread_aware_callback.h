@@ -18,6 +18,10 @@ class MessageLoopShared;
 namespace internal {
 
 class PPAPI_SHARED_EXPORT ThreadAwareCallbackBase {
+ public:
+  ThreadAwareCallbackBase(const ThreadAwareCallbackBase&) = delete;
+  ThreadAwareCallbackBase& operator=(const ThreadAwareCallbackBase&) = delete;
+
  protected:
   ThreadAwareCallbackBase();
   ~ThreadAwareCallbackBase();
@@ -31,8 +35,6 @@ class PPAPI_SHARED_EXPORT ThreadAwareCallbackBase {
 
   scoped_refptr<MessageLoopShared> target_loop_;
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadAwareCallbackBase);
 };
 
 }  // namespace internal

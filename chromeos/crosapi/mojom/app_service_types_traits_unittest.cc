@@ -32,10 +32,11 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
   icon_key->icon_effects = 2;
   input->icon_key = std::move(icon_key);
 
-  input->last_launch_time = base::Time() + base::TimeDelta::FromDays(1);
-  input->install_time = base::Time() + base::TimeDelta::FromDays(2);
+  input->last_launch_time = base::Time() + base::Days(1);
+  input->install_time = base::Time() + base::Days(2);
 
-  input->install_source = apps::mojom::InstallSource::kUser;
+  input->install_reason = apps::mojom::InstallReason::kUser;
+  input->policy_id = "https://app.site/alpha";
   input->recommendable = apps::mojom::OptionalBool::kTrue;
   input->searchable = apps::mojom::OptionalBool::kTrue;
   input->paused = apps::mojom::OptionalBool::kFalse;
@@ -56,6 +57,15 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
 
   input->window_mode = apps::mojom::WindowMode::kWindow;
 
+  auto permission = apps::mojom::Permission::New();
+  permission->permission_type = apps::mojom::PermissionType::kCamera;
+  permission->value = apps::mojom::PermissionValue::New();
+  permission->value->set_bool_value(true);
+  permission->is_managed = true;
+  input->permissions.push_back(std::move(permission));
+
+  input->allow_uninstall = apps::mojom::OptionalBool::kTrue;
+
   apps::mojom::AppPtr output;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(input, output));
@@ -73,11 +83,11 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
   EXPECT_EQ(output->icon_key->timeline, 1U);
   EXPECT_EQ(output->icon_key->icon_effects, 2U);
 
-  EXPECT_EQ(output->last_launch_time,
-            base::Time() + base::TimeDelta::FromDays(1));
-  EXPECT_EQ(output->install_time, base::Time() + base::TimeDelta::FromDays(2));
+  EXPECT_EQ(output->last_launch_time, base::Time() + base::Days(1));
+  EXPECT_EQ(output->install_time, base::Time() + base::Days(2));
 
-  EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kUser);
+  EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kUser);
+  EXPECT_EQ(output->policy_id, "https://app.site/alpha");
   EXPECT_EQ(output->recommendable, apps::mojom::OptionalBool::kTrue);
   EXPECT_EQ(output->searchable, apps::mojom::OptionalBool::kTrue);
   EXPECT_EQ(output->paused, apps::mojom::OptionalBool::kFalse);
@@ -101,6 +111,16 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
   EXPECT_EQ(filter->activity_label, "activity_label");
 
   EXPECT_EQ(output->window_mode, apps::mojom::WindowMode::kWindow);
+
+  ASSERT_EQ(output->permissions.size(), 1U);
+  auto& out_permission = output->permissions[0];
+  EXPECT_EQ(out_permission->permission_type,
+            apps::mojom::PermissionType::kCamera);
+  ASSERT_TRUE(out_permission->value->is_bool_value());
+  EXPECT_TRUE(out_permission->value->get_bool_value());
+  EXPECT_TRUE(out_permission->is_managed);
+
+  EXPECT_EQ(output->allow_uninstall, apps::mojom::OptionalBool::kTrue);
 }
 
 // Test that serialization and deserialization works with optional fields that
@@ -112,7 +132,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripNoOptional) {
   input->readiness = apps::mojom::Readiness::kReady;
   input->additional_search_terms = {"1", "2"};
 
-  input->install_source = apps::mojom::InstallSource::kUser;
+  input->install_reason = apps::mojom::InstallReason::kUser;
   input->recommendable = apps::mojom::OptionalBool::kTrue;
   input->searchable = apps::mojom::OptionalBool::kTrue;
   input->paused = apps::mojom::OptionalBool::kFalse;
@@ -129,6 +149,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripNoOptional) {
       apps::mojom::PatternMatchType::kNone, intent_filter);
   input->intent_filters.push_back(std::move(intent_filter));
   input->window_mode = apps::mojom::WindowMode::kBrowser;
+  input->allow_uninstall = apps::mojom::OptionalBool::kTrue;
 
   apps::mojom::AppPtr output;
   ASSERT_TRUE(
@@ -139,7 +160,8 @@ TEST(AppServiceTypesTraitsTest, RoundTripNoOptional) {
   EXPECT_EQ(output->readiness, apps::mojom::Readiness::kReady);
   EXPECT_EQ(output->additional_search_terms, input->additional_search_terms);
 
-  EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kUser);
+  EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kUser);
+  EXPECT_FALSE(output->policy_id.has_value());
   EXPECT_EQ(output->recommendable, apps::mojom::OptionalBool::kTrue);
   EXPECT_EQ(output->searchable, apps::mojom::OptionalBool::kTrue);
   EXPECT_EQ(output->paused, apps::mojom::OptionalBool::kFalse);
@@ -161,6 +183,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripNoOptional) {
             apps::mojom::PatternMatchType::kNone);
 
   EXPECT_EQ(output->window_mode, apps::mojom::WindowMode::kBrowser);
+  EXPECT_EQ(output->allow_uninstall, apps::mojom::OptionalBool::kTrue);
 }
 
 // Test that serialization and deserialization works with updating app type.
@@ -270,57 +293,57 @@ TEST(AppServiceTypesTraitsTest, RoundTripReadiness) {
 }
 
 // Test that serialization and deserialization works with updating install
-// source.
-TEST(AppServiceTypesTraitsTest, RoundTripInstallSource) {
+// reason.
+TEST(AppServiceTypesTraitsTest, RoundTripInstallReason) {
   apps::mojom::AppPtr input = apps::mojom::App::New();
   {
-    input->install_source = apps::mojom::InstallSource::kUnknown;
+    input->install_reason = apps::mojom::InstallReason::kUnknown;
     apps::mojom::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
-    EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kUnknown);
+    EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kUnknown);
   }
   {
-    input->install_source = apps::mojom::InstallSource::kSystem;
+    input->install_reason = apps::mojom::InstallReason::kSystem;
     apps::mojom::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
-    EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kSystem);
+    EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kSystem);
   }
   {
-    input->install_source = apps::mojom::InstallSource::kPolicy;
+    input->install_reason = apps::mojom::InstallReason::kPolicy;
     apps::mojom::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
-    EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kPolicy);
+    EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kPolicy);
   }
   {
-    input->install_source = apps::mojom::InstallSource::kOem;
+    input->install_reason = apps::mojom::InstallReason::kOem;
     apps::mojom::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
-    EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kOem);
+    EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kOem);
   }
   {
-    input->install_source = apps::mojom::InstallSource::kDefault;
+    input->install_reason = apps::mojom::InstallReason::kDefault;
     apps::mojom::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
-    EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kDefault);
+    EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kDefault);
   }
   {
-    input->install_source = apps::mojom::InstallSource::kSync;
+    input->install_reason = apps::mojom::InstallReason::kSync;
     apps::mojom::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
-    EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kSync);
+    EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kSync);
   }
   {
-    input->install_source = apps::mojom::InstallSource::kUser;
+    input->install_reason = apps::mojom::InstallReason::kUser;
     apps::mojom::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
-    EXPECT_EQ(output->install_source, apps::mojom::InstallSource::kUser);
+    EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kUser);
   }
 }
 
@@ -557,6 +580,12 @@ TEST(AppServiceTypesTraitsTest, RoundTripIntentFilters) {
   apps_util::AddSingleValueCondition(apps::mojom::ConditionType::kMimeType, "5",
                                      apps::mojom::PatternMatchType::kMimeType,
                                      intent_filter);
+  apps_util::AddSingleValueCondition(apps::mojom::ConditionType::kFile, "6",
+                                     apps::mojom::PatternMatchType::kMimeType,
+                                     intent_filter);
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kFile, "7",
+      apps::mojom::PatternMatchType::kFileExtension, intent_filter);
   input->intent_filters.push_back(std::move(intent_filter));
 
   apps::mojom::AppPtr output;
@@ -565,7 +594,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripIntentFilters) {
 
   ASSERT_EQ(output->intent_filters.size(), 1U);
   auto& filter = output->intent_filters[0];
-  ASSERT_EQ(filter->conditions.size(), 5U);
+  ASSERT_EQ(filter->conditions.size(), 7U);
   {
     auto& condition = filter->conditions[0];
     EXPECT_EQ(condition->condition_type, apps::mojom::ConditionType::kScheme);
@@ -605,6 +634,22 @@ TEST(AppServiceTypesTraitsTest, RoundTripIntentFilters) {
     EXPECT_EQ(condition->condition_values[0]->match_type,
               apps::mojom::PatternMatchType::kMimeType);
     EXPECT_EQ(condition->condition_values[0]->value, "5");
+  }
+  {
+    auto& condition = filter->conditions[5];
+    EXPECT_EQ(condition->condition_type, apps::mojom::ConditionType::kFile);
+    ASSERT_EQ(condition->condition_values.size(), 1U);
+    EXPECT_EQ(condition->condition_values[0]->match_type,
+              apps::mojom::PatternMatchType::kMimeType);
+    EXPECT_EQ(condition->condition_values[0]->value, "6");
+  }
+  {
+    auto& condition = filter->conditions[6];
+    EXPECT_EQ(condition->condition_type, apps::mojom::ConditionType::kFile);
+    ASSERT_EQ(condition->condition_values.size(), 1U);
+    EXPECT_EQ(condition->condition_values[0]->match_type,
+              apps::mojom::PatternMatchType::kFileExtension);
+    EXPECT_EQ(condition->condition_values[0]->value, "7");
   }
 }
 
@@ -655,42 +700,42 @@ TEST(AppServiceTypesTraitsTest, RoundTripUninstallSource) {
 
 // Test that serialization and deserialization works with icon type.
 TEST(AppServiceTypesTraitsTest, RoundTripIconType) {
-  apps::mojom::IconType input;
+  apps::IconType input;
   {
-    input = apps::mojom::IconType::kUnknown;
-    apps::mojom::IconType output;
+    input = apps::IconType::kUnknown;
+    apps::IconType output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconType>(
         input, output));
-    EXPECT_EQ(output, apps::mojom::IconType::kUnknown);
+    EXPECT_EQ(output, apps::IconType::kUnknown);
   }
   {
-    input = apps::mojom::IconType::kUncompressed;
-    apps::mojom::IconType output;
+    input = apps::IconType::kUncompressed;
+    apps::IconType output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconType>(
         input, output));
-    EXPECT_EQ(output, apps::mojom::IconType::kUncompressed);
+    EXPECT_EQ(output, apps::IconType::kUncompressed);
   }
   {
-    input = apps::mojom::IconType::kCompressed;
-    apps::mojom::IconType output;
+    input = apps::IconType::kCompressed;
+    apps::IconType output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconType>(
         input, output));
-    EXPECT_EQ(output, apps::mojom::IconType::kCompressed);
+    EXPECT_EQ(output, apps::IconType::kCompressed);
   }
   {
-    input = apps::mojom::IconType::kStandard;
-    apps::mojom::IconType output;
+    input = apps::IconType::kStandard;
+    apps::IconType output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconType>(
         input, output));
-    EXPECT_EQ(output, apps::mojom::IconType::kStandard);
+    EXPECT_EQ(output, apps::IconType::kStandard);
   }
 }
 
 // Test that serialization and deserialization works with icon value.
 TEST(AppServiceTypesTraitsTest, RoundTripIconValue) {
   {
-    auto input = apps::mojom::IconValue::New();
-    input->icon_type = apps::mojom::IconType::kUnknown;
+    auto input = std::make_unique<apps::IconValue>();
+    input->icon_type = apps::IconType::kUnknown;
 
     std::vector<float> scales;
     scales.push_back(1.0f);
@@ -702,19 +747,19 @@ TEST(AppServiceTypesTraitsTest, RoundTripIconValue) {
     input->compressed = {1u, 2u};
     input->is_placeholder_icon = true;
 
-    apps::mojom::IconValuePtr output;
+    auto output = std::make_unique<apps::IconValue>();
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconValue>(
         input, output));
 
-    EXPECT_EQ(output->icon_type, apps::mojom::IconType::kUnknown);
+    EXPECT_EQ(output->icon_type, apps::IconType::kUnknown);
     EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(output->uncompressed),
                                           gfx::Image(image)));
     EXPECT_EQ(output->compressed, std::vector<uint8_t>({1u, 2u}));
     EXPECT_TRUE(output->is_placeholder_icon);
   }
   {
-    auto input = apps::mojom::IconValue::New();
-    input->icon_type = apps::mojom::IconType::kUncompressed;
+    auto input = std::make_unique<apps::IconValue>();
+    input->icon_type = apps::IconType::kUncompressed;
 
     std::vector<float> scales;
     scales.push_back(1.0f);
@@ -724,27 +769,28 @@ TEST(AppServiceTypesTraitsTest, RoundTripIconValue) {
     input->uncompressed = image;
     input->is_placeholder_icon = false;
 
-    apps::mojom::IconValuePtr output;
+    auto output = std::make_unique<apps::IconValue>();
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconValue>(
         input, output));
 
-    EXPECT_EQ(output->icon_type, apps::mojom::IconType::kUncompressed);
+    EXPECT_EQ(output->icon_type, apps::IconType::kUncompressed);
     EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(output->uncompressed),
                                           gfx::Image(image)));
     EXPECT_FALSE(output->is_placeholder_icon);
   }
   {
-    auto input = apps::mojom::IconValue::New();
-    input->icon_type = apps::mojom::IconType::kCompressed;
+    auto input = std::make_unique<apps::IconValue>();
+    input->icon_type = apps::IconType::kCompressed;
 
     input->compressed = {3u, 4u};
     input->is_placeholder_icon = true;
 
-    apps::mojom::IconValuePtr output;
+    auto output = std::make_unique<apps::IconValue>();
+    ;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconValue>(
         input, output));
 
-    EXPECT_EQ(output->icon_type, apps::mojom::IconType::kCompressed);
+    EXPECT_EQ(output->icon_type, apps::IconType::kCompressed);
     EXPECT_EQ(output->compressed, std::vector<uint8_t>({3u, 4u}));
     EXPECT_TRUE(output->is_placeholder_icon);
   }
@@ -780,5 +826,288 @@ TEST(AppServiceTypesTraitsTest, RoundTripWindowMode) {
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::WindowMode>(
         input, output));
     EXPECT_EQ(output, apps::mojom::WindowMode::kTabbedWindow);
+  }
+}
+
+// Test that serialization and deserialization works with launch source.
+TEST(AppServiceTypesTraitsTest, RoundTripLaunchSource) {
+  apps::mojom::LaunchSource input;
+  {
+    input = apps::mojom::LaunchSource::kUnknown;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromAppListGrid;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromAppListGridContextMenu;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromAppListQuery;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromAppListQueryContextMenu;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromAppListRecommendation;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromParentalControls;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromShelf;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromFileManager;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromLink;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromOmnibox;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromChromeInternal;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromKeyboard;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromOtherApp;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromMenu;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromInstalledNotification;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromTest;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromArc;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromSharesheet;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromReleaseNotesNotification;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromFullRestore;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromSmartTextContextMenu;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+  {
+    input = apps::mojom::LaunchSource::kFromDiscoverTabNotification;
+    apps::mojom::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
+}
+
+TEST(AppServiceTypesTraitsTest, RoundTripPermissions) {
+  {
+    auto permission = apps::mojom::Permission::New();
+    permission->permission_type = apps::mojom::PermissionType::kUnknown;
+    permission->value = apps::mojom::PermissionValue::New();
+    permission->value->set_bool_value(true);
+    permission->is_managed = false;
+    apps::mojom::PermissionPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
+        permission, output));
+    EXPECT_EQ(permission->permission_type, output->permission_type);
+    EXPECT_EQ(permission->value, output->value);
+    EXPECT_EQ(permission->is_managed, output->is_managed);
+  }
+  {
+    auto permission = apps::mojom::Permission::New();
+    permission->permission_type = apps::mojom::PermissionType::kCamera;
+    permission->value = apps::mojom::PermissionValue::New();
+    permission->value->set_bool_value(false);
+    permission->is_managed = true;
+    apps::mojom::PermissionPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
+        permission, output));
+    EXPECT_EQ(permission->permission_type, output->permission_type);
+    EXPECT_EQ(permission->value, output->value);
+    EXPECT_EQ(permission->is_managed, output->is_managed);
+  }
+  {
+    auto permission = apps::mojom::Permission::New();
+    permission->permission_type = apps::mojom::PermissionType::kLocation;
+    permission->value = apps::mojom::PermissionValue::New();
+    permission->value->set_tristate_value(apps::mojom::TriState::kAllow);
+    permission->is_managed = false;
+    apps::mojom::PermissionPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
+        permission, output));
+    EXPECT_EQ(permission->permission_type, output->permission_type);
+    EXPECT_EQ(permission->value, output->value);
+    EXPECT_EQ(permission->is_managed, output->is_managed);
+  }
+  {
+    auto permission = apps::mojom::Permission::New();
+    permission->permission_type = apps::mojom::PermissionType::kMicrophone;
+    permission->value = apps::mojom::PermissionValue::New();
+    permission->value->set_tristate_value(apps::mojom::TriState::kBlock);
+    permission->is_managed = true;
+    apps::mojom::PermissionPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
+        permission, output));
+    EXPECT_EQ(permission->permission_type, output->permission_type);
+    EXPECT_EQ(permission->value, output->value);
+    EXPECT_EQ(permission->is_managed, output->is_managed);
+  }
+  {
+    auto permission = apps::mojom::Permission::New();
+    permission->permission_type = apps::mojom::PermissionType::kNotifications;
+    permission->value = apps::mojom::PermissionValue::New();
+    permission->value->set_tristate_value(apps::mojom::TriState::kAsk);
+    permission->is_managed = false;
+    apps::mojom::PermissionPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
+        permission, output));
+    EXPECT_EQ(permission->permission_type, output->permission_type);
+    EXPECT_EQ(permission->value, output->value);
+    EXPECT_EQ(permission->is_managed, output->is_managed);
+  }
+  {
+    auto permission = apps::mojom::Permission::New();
+    permission->permission_type = apps::mojom::PermissionType::kContacts;
+    permission->value = apps::mojom::PermissionValue::New();
+    permission->value->set_tristate_value(apps::mojom::TriState::kAllow);
+    permission->is_managed = true;
+    apps::mojom::PermissionPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
+        permission, output));
+    EXPECT_EQ(permission->permission_type, output->permission_type);
+    EXPECT_EQ(permission->value, output->value);
+    EXPECT_EQ(permission->is_managed, output->is_managed);
+  }
+  {
+    auto permission = apps::mojom::Permission::New();
+    permission->permission_type = apps::mojom::PermissionType::kStorage;
+    permission->value = apps::mojom::PermissionValue::New();
+    permission->value->set_tristate_value(apps::mojom::TriState::kBlock);
+    permission->is_managed = false;
+    apps::mojom::PermissionPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
+        permission, output));
+    EXPECT_EQ(permission->permission_type, output->permission_type);
+    EXPECT_EQ(permission->value, output->value);
+    EXPECT_EQ(permission->is_managed, output->is_managed);
   }
 }

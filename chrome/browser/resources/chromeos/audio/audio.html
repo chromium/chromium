@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Audio Page</title>
+  <link rel = "stylesheet" href = "audio.css">
+  <script type="module" src="audio.js"></script>
+</head>
+<body>
+  <section id="devices" hidden>
+    <div id = "device-table-explainer">
+      <h>Device Table</h>
+      <p>Please check if your intended device is displayed on the table.
+        If your device is not active, select the intended device from the
+        system tray. Then, select "Test Input Device" or "Test Output Device"
+        depending on which kind of device you are having issue with.
+      </p>
+    </div>
+    <div id="warning-banner" hidden>
+      <p id="warning-msg"></p>
+      <button id ="banner-feedback" class="feedback-btn">File feedback</button>
+    </div>
+    <div id = "deviceTable">
+    </div>
+    <div id="test-buttons">
+      <p id="device-not-present">Do not see your audio device on the table?</p>
+      <button id="no-device-feedback" class="feedback-btn">
+        File feedback
+      </button>
+      <button id="output-btn">Test Output Device</button>
+      <button id="input-btn">Test Input Device</button>
+    </div>
+  </section>
+  <section id="output" hidden>
+    <div id = "output-explainer">
+      <h>Test Output Devices</h>
+      <p>Please play through each audio files,
+        and then indicate whether you could hear each audio clearly.</p>
+      <p>playing from: <b id = "active-output"></b></p>
+      <p class = "advice-label">please select your device from the system
+        tray if this is not the intended device.</p>
+    </div>
+    <div id = "audio-player">
+    </div>
+  </section>
+  <section id="input" hidden>
+    <div id = "input-explainer">
+      <h>Test Input Devices</h>
+      <p>Please click the record button and say something.
+        Observe if you can see audio frequency from both channels,
+        and then listen to the playback and indicate if you can hear
+        the recording clearly.</p>
+      <p class="advice-label">For example, you could say: "I'm just testing
+        my audio input device."</p>
+      <p>Input from: <b id = "active-input"></b></p>
+      <p class="advice-label">please select your device from the system
+        tray if this is not the intended device.</p>
+    </div>
+    <div id = "channels">
+      <p>
+        Channle 0
+      </p>
+      <canvas id="channel-l"></canvas>
+      <p>
+        Channle 1
+      </p>
+      <canvas id="channel-r"></canvas>
+    </div>
+    <div id = "recording">
+      <div id="button-section">
+        <button id="record-btn">Record</button>
+        <p id = "counter"></p>
+      </div>
+      <div id="audio-file">
+
+      </div>
+      <div id = "input-qs" hidden>
+        <p>Can hear audio clearly?</p>
+        <button id = "input-yes">Yes</button>
+        <button id = "input-no">No</button>
+      </div>
+    </div>
+  </section>
+  <section id="feedback" hidden>
+    <div id = "feedback-explainer">
+      <h>Feedback</h>
+      <p>To help us get to your issue as quickly as possible,
+        please follow the steps below and submit a feedback report.</p>
+      <div class="feedback-step">
+        <p class="feedback-list">1. Copy and download:</p>
+        <p class="instruction">Copy the below audio information, and then
+          download the sample recording if you created one.</p>
+        <button id="copy-btn">copy</button>
+        <textarea id="audio-info" rows="10" cols="40" disabled=true></textarea>
+        <div id="input-replay" hidden>
+          <a id="download-btn">download</a>
+          <audio id="test-input-audio" src="" controls=true>
+            This browser does not support the audio element.
+          </audio>
+        </div>
+      </div>
+      <div class="feedback-step">
+        <p class="feedback-list">2. Reproduce audio issue:</p>
+        <p class="instruction">Navigate to the page or application
+          that you are having audio issue with and reproduce the audio issue.
+          For example, if you cannot hear the audio output from an Android app
+          installed on your chromebook, navigate to the app, play the intended
+          audio, then come back to this page.</p>
+        <p class="instruction"><b>Note: Do not close the page or application.
+          </b> Keep the audio on and follow the next step of submitting
+          feedback with the audio playing or recording from the page or
+          application causing the issue.</p>
+      </div>
+      <div class="feedback-step">
+        <p class="feedback-list">3. Submit feedback:</p>
+        <p class="instruction">Click on "Submit feedback",
+          paste the copied audio information and attach the
+          downloaded recording file if one exists. Then, fill
+          in additional information according to the text you
+          just pasted.
+        </p>
+        <button id="submit-btn">Submit feedback</button>
+      </div>
+    </div>
+  </section>
+  <template id="deviceTable-template">
+    <table>
+      <thead>
+        <tr>
+          <th data-field="name">Name</th>
+          <th data-field="device-type">Device Type</th>
+          <th data-field="is-active">Is Active?</th>
+          <th data-field="volume">Volume/Gain</th>
+          <th data-field="is-muted">Is Muted?</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </template>
+  <template id="audioPlayer-template">
+    <div class = "audio-player">
+      <p id="audio-name"></p>
+      <p id="audio-expectation"></p>
+      <button id="play-btn">Play audio samples</button>
+      <button id="back" class="back-btn" hidden></button>
+      <div id ="output-qs" hidden>
+        <p>Can hear audio clearly?</p>
+        <button id="output-yes" class="yes-btn">Yes</button>
+        <button id="output-no" class="no-btn">No</button>
+      </div>
+    </div>
+  </template>
+</body>
+</html>

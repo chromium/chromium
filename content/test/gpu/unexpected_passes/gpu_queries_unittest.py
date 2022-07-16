@@ -72,16 +72,18 @@ class QueryBuilderUnittest(unittest.TestCase):
     querier = gpu_uu.CreateGenericGpuQuerier(suite='webgl_conformance1')
     self._popen_mock.return_value = uu.FakeProcess(
         stdout=json.dumps(query_results))
-    results = querier.QueryBuilder('builder', 'ci')
+    results, expectation_files = querier.QueryBuilder('builder', 'ci')
     self.assertEqual(len(results), 1)
+    self.assertIsNone(expectation_files)
     self.assertEqual(
         results[0],
         data_types.Result('test_name', ['webgl-version-1'], 'Failure',
                           'step_name', '1234'))
 
     querier = gpu_uu.CreateGenericGpuQuerier(suite='webgl_conformance2')
-    results = querier.QueryBuilder('builder', 'ci')
+    results, expectation_files = querier.QueryBuilder('builder', 'ci')
     self.assertEqual(len(results), 1)
+    self.assertIsNone(expectation_files)
     self.assertEqual(
         results[0],
         data_types.Result('test_name', ['webgl-version-2'], 'Failure',

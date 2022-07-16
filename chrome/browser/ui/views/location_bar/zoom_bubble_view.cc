@@ -60,13 +60,11 @@ namespace {
 
 // The default time that the bubble should stay on the screen if it will close
 // automatically.
-constexpr base::TimeDelta kBubbleCloseDelayDefault =
-    base::TimeDelta::FromMilliseconds(1500);
+constexpr base::TimeDelta kBubbleCloseDelayDefault = base::Milliseconds(1500);
 
 // A longer timeout used for how long the bubble should stay on the screen
 // before it will close automatically after + or - buttons have been used.
-constexpr base::TimeDelta kBubbleCloseDelayLong =
-    base::TimeDelta::FromMilliseconds(5000);
+constexpr base::TimeDelta kBubbleCloseDelayLong = base::Milliseconds(5000);
 
 class ZoomButtonHighlightPathGenerator : public views::HighlightPathGenerator {
  public:
@@ -113,7 +111,7 @@ class ZoomValue : public views::Label {
 
  private:
   int GetLabelMaxWidth(const content::WebContents* web_contents) const {
-    const int border_width = border() ? border()->GetInsets().width() : 0;
+    const int border_width = GetInsets().width();
     int max_w = 0;
     auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
     DCHECK(zoom_controller);

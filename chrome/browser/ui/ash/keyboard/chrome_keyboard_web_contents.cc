@@ -43,6 +43,12 @@ class ChromeKeyboardContentsDelegate : public content::WebContentsDelegate,
                                        public content::WebContentsObserver {
  public:
   ChromeKeyboardContentsDelegate() = default;
+
+  ChromeKeyboardContentsDelegate(const ChromeKeyboardContentsDelegate&) =
+      delete;
+  ChromeKeyboardContentsDelegate& operator=(
+      const ChromeKeyboardContentsDelegate&) = delete;
+
   ~ChromeKeyboardContentsDelegate() override = default;
 
  private:
@@ -127,8 +133,6 @@ class ChromeKeyboardContentsDelegate : public content::WebContentsDelegate,
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override { delete this; }
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeKeyboardContentsDelegate);
 };
 
 }  // namespace
@@ -191,7 +195,8 @@ void ChromeKeyboardWebContents::SetKeyboardUrl(const GURL& new_url) {
   if (old_url == new_url)
     return;
 
-  if (old_url.GetOrigin() != new_url.GetOrigin()) {
+  if (old_url.DeprecatedGetOriginAsURL() !=
+      new_url.DeprecatedGetOriginAsURL()) {
     // Sets keyboard window rectangle to 0 and closes the current page before
     // navigating to a keyboard in a different extension. This keeps the UX the
     // same as Android. Note we need to explicitly close the current page as it

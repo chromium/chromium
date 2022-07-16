@@ -41,16 +41,6 @@ const base::Feature kRealboxMatchOmniboxTheme{
 const base::Feature kRealboxUseGoogleGIcon{"NtpRealboxUseGoogleGIcon",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, shows Vasco suggestion chips in the NTP below fakebox/realbox
-// despite other config except DisableSearchSuggestChips below.
-const base::Feature kSearchSuggestChips{"SearchSuggestChips",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, hides Vasco suggestion chips in the NTP below fakebox/realbox
-// despite other config.
-const base::Feature kDisableSearchSuggestChips{
-    "DisableSearchSuggestChips", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, handles navigations from the Most Visited tiles explicitly and
 // overrides the navigation's transition type to bookmark navigation before the
 // navigation is issued.
@@ -58,6 +48,10 @@ const base::Feature kDisableSearchSuggestChips{
 // in ChromeContentBrowserClient::OverrideNavigationParams.
 extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly{
     "HandleMostVisitedNavigationExplicitly", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// If enabled, OneGoogleBar will be shown.
+const base::Feature kNtpOneGoogleBar{"NtpOneGoogleBar",
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, logo will be shown.
 const base::Feature kNtpLogo{"NtpLogo", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -103,6 +97,10 @@ const base::Feature kNtpDriveModule{"NtpDriveModule",
 const base::Feature kNtpPhotosModule{"NtpPhotosModule",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, SafeBrowsing module will be shown to a target user.
+const base::Feature kNtpSafeBrowsingModule{"NtpSafeBrowsingModule",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, modules will be able to be reordered via dragging and dropping
 const base::Feature kNtpModulesDragAndDrop{"NtpModulesDragAndDrop",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
@@ -119,10 +117,11 @@ const char kNtpRecipeTasksModuleCacheMaxAgeSParam[] =
 const char kNtpChromeCartModuleDataParam[] = "NtpChromeCartModuleDataParam";
 const char kNtpChromeCartModuleAbandonedCartDiscountParam[] =
     "NtpChromeCartModuleAbandonedCartDiscountParam";
-const char NtpChromeCartModuleAbandonedCartDiscountUseUtmParam[] =
+const char kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam[] =
     "NtpChromeCartModuleAbandonedCartDiscountUseUtmParam";
 const char kNtpChromeCartModuleHeuristicsImprovementParam[] =
     "NtpChromeCartModuleHeuristicsImprovementParam";
+const char kNtpChromeCartModuleCouponParam[] = "NtpChromeCartModuleCouponParam";
 const char kNtpDriveModuleDataParam[] = "NtpDriveModuleDataParam";
 const char kNtpDriveModuleManagedUsersOnlyParam[] =
     "NtpDriveModuleManagedUsersOnlyParam";
@@ -130,6 +129,11 @@ const char kNtpDriveModuleCacheMaxAgeSParam[] =
     "NtpDriveModuleCacheMaxAgeSParam";
 const char kNtpDriveModuleExperimentGroupParam[] =
     "NtpDriveModuleExperimentGroupParam";
+const char kNtpPhotosModuleDataParam[] = "NtpPhotosModuleDataParam";
+const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[] =
+    "NtpSafeBrowsingModuleCooldownPeriodDaysParam";
+const char kNtpSafeBrowsingModuleCountMaxParam[] =
+    "NtpSafeBrowsingModuleCountMaxParam";
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
@@ -138,9 +142,9 @@ base::TimeDelta GetModulesLoadTimeout() {
   // integer, return the default value.
   unsigned int param_value_as_int = 0;
   if (!base::StringToUint(param_value, &param_value_as_int)) {
-    return base::TimeDelta::FromSeconds(3);
+    return base::Seconds(3);
   }
-  return base::TimeDelta::FromMilliseconds(param_value_as_int);
+  return base::Milliseconds(param_value_as_int);
 }
 
 }  // namespace ntp_features

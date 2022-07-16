@@ -32,40 +32,46 @@ function futureMessage() {
   });
 };
 
+const kTreatAsPublicAddressSuffix =
+      "?pipe=header(Content-Security-Policy,treat-as-public-address)";
+
 // Resolves a URL relative to the current location, returning an absolute URL.
 //
 // `url` specifies the relative URL, e.g. "foo.html" or "http://foo.example".
-// `options.protocol` and `options.port`, if defined, override the respective
-// properties of the returned URL object.
+// `options`, if defined, should have the following shape:
+//
+//   {
+//     // Optional. Overrides the protocol of the returned URL.
+//     protocol,
+//
+//     // Optional. Overrides the port of the returned URL.
+//     port,
+//
+//     // Optional boolean. If defined and true, the returned URL path is altered
+//     // such that the response is served with a `treat-as-public-address` CSP
+//     // directive.
+//     treatAsPublicAddress,
+//   }
+//
 function resolveUrl(url, options) {
   const result = new URL(url, window.location);
   if (options === undefined) {
     return result;
   }
 
-  const { port, protocol } = options;
+  const { port, protocol, treatAsPublicAddress } = options;
   if (port !== undefined) {
     result.port = port;
   }
   if (protocol !== undefined) {
     result.protocol = protocol;
   }
-
-  return result;
-}
-
-const kDefaultSourcePath = "resources/fetcher.html";
-
-const kTreatAsPublicAddressSuffix =
-      "?pipe=header(Content-Security-Policy,treat-as-public-address)";
-
-function sourceUrl({ protocol, port, treatAsPublicAddress }) {
-  let path = kDefaultSourcePath;
   if (treatAsPublicAddress) {
-    path += kTreatAsPublicAddressSuffix;
+    result.searchParams.append(
+        "pipe", "header(Content-Security-Policy,treat-as-public-address)");
   }
 
-  return resolveUrl(path, { protocol, port });
+  return result;
 }
 
 const kFetchTestResult = {
@@ -78,42 +84,46 @@ const kFetchTestResult = {
 // Main argument shape:
 //
 //   {
-//     // Optional.
-//     source: {  // Optional, all fields optional.
-//       // Optional. The protocol of the URL of the initiator document.
-//       protocol,
+//     // Optional. Options for `resolveUrl()` when computing the source URL.
+//     source,
 //
-//       // Optional. The port of the URL of the initiator document.
-//       port,
+//     // Optional. Options for `resolveUrl()` when computing the target URL.
+//     target,
 //
-//       // Optional. If true, the initiator document sets the
-//       // `treat-as-public-address` CSP directive.
-//       treatAsPublicAddress,
-//     },
-//
-//     // Optional.
-//     target: {
-//       // The protocol of the URL of the target subresource.
-//       protocol,
-//
-//       // The port of the URL of the target subresource.
-//       port,
-//     },
-//
-//     // Required. The expected result of the fetch. Can be:
-//     // - `true` for a successful fetch
-//     // - `false` for a successful opaque fetch
-//     // - a string representation of an exception for a failed fetch
+//     // Required. One of the values in `kFetchTestResult`.
 //     expected,
 //   }
 //
 async function fetchTest(t, { source, target, expected }) {
-  if (source === undefined) {
-    source = {};
-  }
-  const iframe = await appendIframe(t, document, sourceUrl(source));
+  const sourceUrl = resolveUrl("resources/fetcher.html", source);
+  const iframe = await appendIframe(t, document, sourceUrl);
 
   const targetUrl = resolveUrl("/common/blank-with-cors.html", target);
+  const reply = futureMessage();
+  iframe.contentWindow.postMessage(targetUrl.href, "*");
+  assert_equals(await reply, expected);
+}
+
+const kWebsocketTestResult = {
+  success: "open",
+
+  // The code is a best guess. It is not yet entirely specified, so it may need
+  // to be changed in the future based on implementation experience.
+  failure: "close: code 1006",
+};
+
+// Runs a websocket test. Attempts to open a websocket from `source` (in an
+// iframe) to `target`, then checks that the result is as `expected`.
+//
+// Argument shape is same as for `fetchTest`, except for the following:
+//
+//   `expected` should be one of the values in `kWebsocketTestResult`.
+//
+async function websocketTest(t, { source, target, expected }) {
+  const sourceUrl = resolveUrl("resources/socket-opener.html", source);
+  const iframe = await appendIframe(t, document, sourceUrl);
+
+  const targetUrl = resolveUrl("/echo", target);
   const reply = futureMessage();
   iframe.contentWindow.postMessage(targetUrl.href, "*");
   assert_equals(await reply, expected);

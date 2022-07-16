@@ -178,4 +178,7 @@ public class PageInfoConnectionController
 
     @Override
     public void clearData() {}
+
+    @Override
+    public void updateRowIfNeeded() {}
 }

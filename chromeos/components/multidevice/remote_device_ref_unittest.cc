@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,6 +18,10 @@ const char kFakeBluetoothPublicAddress[] = "01:23:45:67:89:AB";
 }  // namespace
 
 class RemoteDeviceRefTest : public testing::Test {
+ public:
+  RemoteDeviceRefTest(const RemoteDeviceRefTest&) = delete;
+  RemoteDeviceRefTest& operator=(const RemoteDeviceRefTest&) = delete;
+
  protected:
   RemoteDeviceRefTest() = default;
 
@@ -42,8 +45,6 @@ class RemoteDeviceRefTest : public testing::Test {
   }
 
   std::shared_ptr<RemoteDevice> remote_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDeviceRefTest);
 };
 
 TEST_F(RemoteDeviceRefTest, TestFields) {

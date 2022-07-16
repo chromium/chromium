@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
-#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
@@ -56,6 +56,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
 
   QuotaTemporaryStorageEvictor(QuotaEvictionHandler* quota_eviction_handler,
                                int64_t interval_ms);
+
+  QuotaTemporaryStorageEvictor(const QuotaTemporaryStorageEvictor&) = delete;
+  QuotaTemporaryStorageEvictor& operator=(const QuotaTemporaryStorageEvictor&) =
+      delete;
+
   ~QuotaTemporaryStorageEvictor();
 
   void GetStatistics(std::map<std::string, int64_t>* statistics);
@@ -74,7 +79,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
                               int64_t total_space,
                               int64_t current_usage,
                               bool current_usage_is_complete);
-  void OnGotEvictionBucket(const absl::optional<BucketInfo>& bucket);
+  void OnGotEvictionBucket(const absl::optional<BucketLocator>& bucket);
   void OnEvictionComplete(blink::mojom::QuotaStatusCode status);
 
   void OnEvictionRoundStarted();
@@ -98,8 +103,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<QuotaTemporaryStorageEvictor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaTemporaryStorageEvictor);
 };
 
 }  // namespace storage

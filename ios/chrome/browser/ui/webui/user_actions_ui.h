@@ -14,10 +14,11 @@
 class UserActionsUI : public web::WebUIIOSController {
  public:
   explicit UserActionsUI(web::WebUIIOS* web_ui, const std::string& host);
-  ~UserActionsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserActionsUI);
+  UserActionsUI(const UserActionsUI&) = delete;
+  UserActionsUI& operator=(const UserActionsUI&) = delete;
+
+  ~UserActionsUI() override;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_USER_ACTIONS_UI_H_

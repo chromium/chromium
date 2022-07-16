@@ -48,6 +48,8 @@ class BASE_EXPORT EventLogMessage {
   LogMessage log_message_;
 };
 
+void BASE_EXPORT SetSyslogLoggingForTesting(bool logging_enabled);
+
 }  // namespace logging
 
 #endif  // BASE_SYSLOG_LOGGING_H_

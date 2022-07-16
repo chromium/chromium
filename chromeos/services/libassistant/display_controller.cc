@@ -10,7 +10,7 @@
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/internal_options.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/libassistant/display_connection_impl.h"
+#include "chromeos/services/libassistant/display_connection.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "chromeos/services/libassistant/util.h"
@@ -50,9 +50,9 @@ DisplayController::DisplayController(
     mojo::RemoteSet<mojom::SpeechRecognitionObserver>*
         speech_recognition_observers)
     : event_observer_(std::make_unique<EventObserver>(this)),
-      display_connection_(std::make_unique<DisplayConnectionImpl>(
-          event_observer_.get(),
-          /*feedback_ui_enabled=*/true)),
+      display_connection_(
+          std::make_unique<DisplayConnection>(event_observer_.get(),
+                                              /*feedback_ui_enabled=*/true)),
       speech_recognition_observers_(*speech_recognition_observers),
       mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(speech_recognition_observers);
@@ -76,7 +76,6 @@ void DisplayController::SetArcPlayStoreEnabled(bool enabled) {
 }
 
 void DisplayController::SetDeviceAppsEnabled(bool enabled) {
-  DCHECK(action_module_);
   display_connection_->SetDeviceAppsEnabled(enabled);
 
   DCHECK(action_module_);
@@ -96,13 +95,16 @@ void DisplayController::SetAndroidAppList(
 void DisplayController::OnAssistantClientCreated(
     AssistantClient* assistant_client) {
   assistant_client_ = assistant_client;
-  assistant_client_->assistant_manager_internal()->SetDisplayConnection(
-      display_connection_.get());
+  display_connection_->SetAssistantClient(assistant_client_);
+
+  // |display_connection_| outlives |assistant_client_|.
+  assistant_client_->AddDisplayEventObserver(display_connection_.get());
 }
 
 void DisplayController::OnDestroyingAssistantClient(
     AssistantClient* assistant_client) {
   assistant_client_ = nullptr;
+  display_connection_->SetAssistantClient(nullptr);
 }
 
 // Called from Libassistant thread.

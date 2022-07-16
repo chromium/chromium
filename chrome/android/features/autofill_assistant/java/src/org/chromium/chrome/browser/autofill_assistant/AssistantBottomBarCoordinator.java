@@ -206,7 +206,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
 
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             @Override
-            public void onSheetStateChanged(int newState) {
+            public void onSheetStateChanged(int newState, int reason) {
                 if (newState == SheetState.PEEK || newState == SheetState.HALF
                         || newState == SheetState.FULL) {
                     mModel.setBottomSheetState(newState);

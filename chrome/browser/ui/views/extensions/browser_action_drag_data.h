@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 
 class Profile;
@@ -22,6 +21,9 @@ class BrowserActionDragData {
  public:
   BrowserActionDragData();
   BrowserActionDragData(const std::string& id, int index);
+
+  BrowserActionDragData(const BrowserActionDragData&) = delete;
+  BrowserActionDragData& operator=(const BrowserActionDragData&) = delete;
 
   // These mirror the views::View and views::MenuDelegate methods for dropping,
   // and return the appropriate results for being able to drop an extension's
@@ -58,8 +60,6 @@ class BrowserActionDragData {
 
   // The index of the view being dragged.
   size_t index_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserActionDragData);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_BROWSER_ACTION_DRAG_DATA_H_

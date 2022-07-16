@@ -34,6 +34,7 @@ mojom("service") {
     "//media/capture/mojom:video_capture",
     "//media/mojo/mojom",
     "//media/mojo/mojom:remoting",
+    "//sandbox/policy/mojom",
     "//services/network/public/mojom",
     "//services/viz/public/mojom",
     "//ui/gfx/geometry/mojom",

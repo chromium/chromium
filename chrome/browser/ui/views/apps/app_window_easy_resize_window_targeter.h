@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_EASY_RESIZE_WINDOW_TARGETER_H_
 #define CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_EASY_RESIZE_WINDOW_TARGETER_H_
 
-#include "base/macros.h"
 #include "ui/wm/core/easy_resize_window_targeter.h"
 
 namespace ui {
@@ -19,6 +18,11 @@ class AppWindowEasyResizeWindowTargeter : public wm::EasyResizeWindowTargeter {
   AppWindowEasyResizeWindowTargeter(const gfx::Insets& insets,
                                     ui::BaseWindow* native_app_window);
 
+  AppWindowEasyResizeWindowTargeter(const AppWindowEasyResizeWindowTargeter&) =
+      delete;
+  AppWindowEasyResizeWindowTargeter& operator=(
+      const AppWindowEasyResizeWindowTargeter&) = delete;
+
   ~AppWindowEasyResizeWindowTargeter() override;
 
  protected:
@@ -29,8 +33,6 @@ class AppWindowEasyResizeWindowTargeter : public wm::EasyResizeWindowTargeter {
 
  private:
   ui::BaseWindow* native_app_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppWindowEasyResizeWindowTargeter);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_EASY_RESIZE_WINDOW_TARGETER_H_

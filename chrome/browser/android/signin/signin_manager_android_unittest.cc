@@ -53,6 +53,10 @@ std::unique_ptr<KeyedService> BuildOfflinePageModel(SimpleFactoryKey* key) {
 class SigninManagerAndroidTest : public ::testing::Test {
  public:
   SigninManagerAndroidTest() = default;
+
+  SigninManagerAndroidTest(const SigninManagerAndroidTest&) = delete;
+  SigninManagerAndroidTest& operator=(const SigninManagerAndroidTest&) = delete;
+
   ~SigninManagerAndroidTest() override = default;
 
   void SetUp() override {
@@ -101,8 +105,6 @@ class SigninManagerAndroidTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninManagerAndroidTest);
 };
 
 // TODO(crbug.com/929456): This test does not actually test anything; the

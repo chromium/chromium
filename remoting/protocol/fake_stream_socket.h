@@ -36,6 +36,10 @@ namespace protocol {
 class FakeStreamSocket : public P2PStreamSocket {
  public:
   FakeStreamSocket();
+
+  FakeStreamSocket(const FakeStreamSocket&) = delete;
+  FakeStreamSocket& operator=(const FakeStreamSocket&) = delete;
+
   ~FakeStreamSocket() override;
 
   // Returns all data written to the socket.
@@ -103,14 +107,16 @@ class FakeStreamSocket : public P2PStreamSocket {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtrFactory<FakeStreamSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeStreamSocket);
 };
 
 // StreamChannelFactory that creates FakeStreamSocket.
 class FakeStreamChannelFactory : public StreamChannelFactory {
  public:
   FakeStreamChannelFactory();
+
+  FakeStreamChannelFactory(const FakeStreamChannelFactory&) = delete;
+  FakeStreamChannelFactory& operator=(const FakeStreamChannelFactory&) = delete;
+
   ~FakeStreamChannelFactory() override;
 
   void set_asynchronous_create(bool asynchronous_create) {
@@ -148,8 +154,6 @@ class FakeStreamChannelFactory : public StreamChannelFactory {
 
   base::WeakPtr<FakeStreamChannelFactory> peer_factory_;
   base::WeakPtrFactory<FakeStreamChannelFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeStreamChannelFactory);
 };
 
 }  // namespace protocol

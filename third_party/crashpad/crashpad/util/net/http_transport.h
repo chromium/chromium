@@ -19,7 +19,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "util/net/http_headers.h"
 
 namespace crashpad {
@@ -35,6 +34,9 @@ class HTTPBodyStream;
 //! request that is appropriate for the host operating system.
 class HTTPTransport {
  public:
+  HTTPTransport(const HTTPTransport&) = delete;
+  HTTPTransport& operator=(const HTTPTransport&) = delete;
+
   virtual ~HTTPTransport();
 
   //! \brief Instantiates a concrete HTTPTransport class for the current
@@ -112,8 +114,6 @@ class HTTPTransport {
   HTTPHeaders headers_;
   std::unique_ptr<HTTPBodyStream> body_stream_;
   double timeout_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTTPTransport);
 };
 
 }  // namespace crashpad

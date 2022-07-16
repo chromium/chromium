@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Default "display-capture" permissions policy ["self"] allows the top-level document. promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getDisplayMedia' on 'MediaDevices': Audio only requests are not supported"
+FAIL Default "display-capture" permissions policy ["self"] allows same-origin iframes. assert_equals: expected "#OK" but got "#TypeError"
+FAIL Default "display-capture" permissions policy ["self"] disallows cross-origin iframes. assert_equals: expected "#NotAllowedError" but got "#TypeError"
+FAIL permissions policy "display-capture" can be enabled in cross-origin iframes using "allow" attribute. assert_equals: expected "#OK" but got "#TypeError"
+FAIL permissions policy "display-capture" can be disabled in same-origin iframes using "allow" attribute. assert_equals: expected "#NotAllowedError" but got "#TypeError"
+Harness: the test ran to completion.
+

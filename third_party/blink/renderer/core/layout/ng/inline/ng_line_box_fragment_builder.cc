@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 
 namespace blink {
 
@@ -24,11 +25,16 @@ void NGLineBoxFragmentBuilder::Reset() {
   oof_positioned_candidates_.Shrink(0);
   unpositioned_list_marker_ = NGUnpositionedListMarker();
 
+  annotation_overflow_ = LayoutUnit();
+  bfc_block_offset_.reset();
+  line_box_bfc_block_offset_.reset();
+  is_pushed_by_floats_ = false;
+  subtree_modified_margin_strut_ = false;
+
   size_.inline_size = LayoutUnit();
   metrics_ = FontHeight::Empty();
   line_box_type_ = NGPhysicalLineBoxFragment::kNormalLineBox;
 
-  break_appeal_ = kBreakAppealPerfect;
   has_floating_descendants_for_paint_ = false;
   has_descendant_that_depends_on_percentage_block_size_ = false;
   has_block_fragmentation_ = false;
@@ -43,9 +49,16 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
   for (unsigned index = 0; index < children.size(); ++index) {
     auto& child = children[index];
     if (child.layout_result) {
-      PropagateChildData(child.layout_result->PhysicalFragment(),
-                         child.Offset(),
-                         /* relative_offset */ LogicalOffset());
+      // An accumulated relative offset is applied to an OOF once it reaches its
+      // inline container. Subtract out the relative offset to avoid adding it
+      // twice.
+      PropagateChildData(
+          child.layout_result->PhysicalFragment(),
+          child.Offset() -
+              ComputeRelativeOffsetForInline(*ConstraintSpace(),
+                                             child.PhysicalFragment()->Style()),
+          ComputeRelativeOffsetForOOFInInline(
+              *ConstraintSpace(), child.PhysicalFragment()->Style()));
 
       // Skip over any children, the information should have already been
       // propagated into this layout result.
@@ -56,15 +69,14 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
     }
     if (child.out_of_flow_positioned_box) {
       AddOutOfFlowInlineChildCandidate(
-          NGBlockNode(To<LayoutBox>(child.out_of_flow_positioned_box)),
+          NGBlockNode(To<LayoutBox>(child.out_of_flow_positioned_box.Get())),
           child.Offset(), child.container_direction);
       child.out_of_flow_positioned_box = nullptr;
     }
   }
 
   DCHECK(oof_positioned_descendants_.IsEmpty());
-  MoveOutOfFlowDescendantCandidatesToDescendants(
-      /* relative_offset */ LogicalOffset());
+  MoveOutOfFlowDescendantCandidatesToDescendants();
 }
 
 scoped_refptr<const NGLayoutResult>

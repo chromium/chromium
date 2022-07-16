@@ -26,7 +26,6 @@ class MockSignalDatabase : public SignalDatabase {
               (proto::SignalType,
                uint64_t,
                absl::optional<int32_t>,
-               base::Time,
                SignalDatabase::SuccessCallback),
               (override));
   MOCK_METHOD(void,

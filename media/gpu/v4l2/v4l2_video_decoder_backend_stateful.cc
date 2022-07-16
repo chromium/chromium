@@ -10,13 +10,16 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_device.h"
+#include "media/gpu/v4l2/v4l2_stateful_workaround.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -122,10 +125,16 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3);
 
-  // Do not decode if a flush is in progress.
-  // This may actually be ok to do if we are changing resolution?
-  if (flush_cb_)
+  // Do not decode if a flush or resolution change is in progress.
+  if (!client_->IsDecoding())
     return;
+
+  if (need_resume_resolution_change_) {
+    need_resume_resolution_change_ = false;
+    ChangeResolution();
+    if (!client_->IsDecoding())
+      return;
+  }
 
   // Get a new decode request if none is in progress.
   if (!current_decode_request_) {
@@ -145,6 +154,11 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
     // This is our new decode request.
     current_decode_request_ = std::move(decode_request);
     DCHECK_EQ(current_decode_request_->bytes_used, 0u);
+
+    if (VideoCodecProfileToVideoCodec(profile_) == VideoCodec::kVP9 &&
+        !AppendVP9SuperFrameIndexIfNeeded(current_decode_request_->buffer)) {
+      VLOGF(1) << "Failed to append superframe index for VP9 k-SVC frame";
+    }
   }
 
   // Get a V4L2 buffer to copy the encoded data into.
@@ -163,6 +177,10 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
         .tv_usec = timespec.tv_nsec / 1000,
     };
     current_input_buffer_->SetTimeStamp(timestamp);
+
+    const int64_t flat_timespec =
+        base::TimeDelta::FromTimeSpec(timespec).InMilliseconds();
+    encoding_timestamps_[flat_timespec] = base::TimeTicks::Now();
   }
 
   // From here on we have both a decode request and input buffer, so we can
@@ -384,7 +402,17 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
         .tv_sec = timeval.tv_sec,
         .tv_nsec = timeval.tv_usec * 1000,
     };
-    const base::TimeDelta timestamp = base::TimeDelta::FromTimeSpec(timespec);
+
+    const int64_t flat_timespec =
+        base::TimeDelta::FromTimeSpec(timespec).InMilliseconds();
+    // TODO(b/190615065) |flat_timespec| might be repeated with H.264
+    // bitstreams, investigate why, and change the if() to DCHECK().
+    if (base::Contains(encoding_timestamps_, flat_timespec)) {
+      UMA_HISTOGRAM_TIMES(
+          "Media.PlatformVideoDecoding.Decode",
+          base::TimeTicks::Now() - encoding_timestamps_[flat_timespec]);
+      encoding_timestamps_.erase(flat_timespec);
+    }
 
     scoped_refptr<VideoFrame> frame;
 
@@ -410,6 +438,7 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
         NOTREACHED();
     }
 
+    const base::TimeDelta timestamp = base::TimeDelta::FromTimeSpec(timespec);
     client_->OutputFrame(std::move(frame), *visible_rect_, timestamp);
   }
 
@@ -597,11 +626,16 @@ bool V4L2StatefulVideoDecoderBackend::ApplyResolution(
   return true;
 }
 
-void V4L2StatefulVideoDecoderBackend::OnChangeResolutionDone(bool success) {
+void V4L2StatefulVideoDecoderBackend::OnChangeResolutionDone(CroStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOGF(3);
+  DVLOGF(3) << "status=" << static_cast<int>(status.code());
 
-  if (!success) {
+  if (status == CroStatus::Codes::kResetRequired) {
+    need_resume_resolution_change_ = true;
+    return;
+  }
+
+  if (status != CroStatus::Codes::kOk) {
     client_->OnBackendError();
     return;
   }
@@ -668,8 +702,8 @@ bool V4L2StatefulVideoDecoderBackend::IsSupportedProfile(
     VideoDecodeAccelerator::SupportedProfiles profiles =
         device->GetSupportedDecodeProfiles(base::size(kSupportedInputFourccs),
                                            kSupportedInputFourccs);
-    for (const auto& profile : profiles)
-      supported_profiles_.push_back(profile.profile);
+    for (const auto& entry : profiles)
+      supported_profiles_.push_back(entry.profile);
   }
   return std::find(supported_profiles_.begin(), supported_profiles_.end(),
                    profile) != supported_profiles_.end();

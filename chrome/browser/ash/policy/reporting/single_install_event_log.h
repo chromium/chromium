@@ -175,7 +175,7 @@ bool SingleInstallEventLog<T>::ParseIdFromFile(
     return false;
   if (file->ReadAtCurrentPos(reinterpret_cast<char*>(size), sizeof(*size)) !=
           sizeof(*size) ||
-      *size > kMaxBufferSize) {
+      *size < 0 || *size > kMaxBufferSize) {
     return false;
   }
   *package_buffer = std::make_unique<char[]>(*size);
@@ -204,7 +204,7 @@ bool SingleInstallEventLog<T>::LoadEventLogFromFile(
     ssize_t size;
     if (file->ReadAtCurrentPos(reinterpret_cast<char*>(&size), sizeof(size)) !=
             sizeof(size) ||
-        size > kMaxBufferSize) {
+        size < 0 || size > kMaxBufferSize) {
       log->incomplete_ = true;
       return false;
     }

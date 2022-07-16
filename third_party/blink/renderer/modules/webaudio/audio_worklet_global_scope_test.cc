@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
@@ -84,6 +84,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase,
             window->GetFrame()->Loader().UserAgentMetadata(),
             nullptr /* web_worker_fetch_context */,
             Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+            Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
             window->GetReferrerPolicy(), window->GetSecurityOrigin(),
             window->IsSecureContext(), window->GetHttpsState(),
             nullptr /* worker_clients */, nullptr /* content_settings_client */,
@@ -92,6 +93,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase,
             mojom::blink::V8CacheOptions::kDefault,
             MakeGarbageCollected<WorkletModuleResponsesMap>(),
             mojo::NullRemote() /* browser_interface_broker */,
+            window->GetFrame()->Loader().CreateWorkerCodeCacheHost(),
             BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
             window->GetAgentClusterID(), ukm::kInvalidSourceId,
             window->GetExecutionContextToken()),
@@ -152,8 +154,8 @@ class AudioWorkletGlobalScopeTest : public PageTestBase,
         global_scope->ScriptController()->GetScriptState();
     EXPECT_TRUE(script_state);
     KURL js_url("https://example.com/worklet.js");
-    v8::Local<v8::Module> module = ModuleTestBase::CompileModule(
-        script_state->GetIsolate(), source_code, js_url);
+    v8::Local<v8::Module> module =
+        ModuleTestBase::CompileModule(script_state, source_code, js_url);
     EXPECT_FALSE(module.IsEmpty());
     ScriptValue exception =
         ModuleRecord::Instantiate(script_state, module, js_url);

@@ -9,7 +9,6 @@
 
 #include <array>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,6 +26,10 @@ class NTPUserDataLogger {
  public:
   // Creates a NTPUserDataLogger. MUST be called only when the NTP is active.
   NTPUserDataLogger(Profile* profile, const GURL& ntp_url);
+
+  NTPUserDataLogger(const NTPUserDataLogger&) = delete;
+  NTPUserDataLogger& operator=(const NTPUserDataLogger&) = delete;
+
   virtual ~NTPUserDataLogger();
 
   // Called when a One Google Bar fetch has been completed after |duration|.
@@ -44,15 +47,6 @@ class NTPUserDataLogger {
   void LogMostVisitedLoaded(base::TimeDelta time,
                             bool using_most_visited,
                             bool is_visible);
-
-  // Called when a search suggestion event occurs on the NTP that has an integer
-  // value associated with it; N suggestions were shown on this NTP load, the
-  // Nth suggestion was clicked, etc. |time| is the delta time from navigation
-  // start until this event happened. Requires Google as the default search
-  // provider.
-  void LogSuggestionEventWithValue(NTPSuggestionsLoggingEventType event,
-                                   int data,
-                                   base::TimeDelta time);
 
   // Logs an impression on one of the NTP tiles by given details.
   void LogMostVisitedImpression(const ntp_tiles::NTPTileImpression& impression);
@@ -109,8 +103,6 @@ class NTPUserDataLogger {
 
   // The profile in which this New Tab Page was loaded.
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(NTPUserDataLogger);
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_NTP_USER_DATA_LOGGER_H_

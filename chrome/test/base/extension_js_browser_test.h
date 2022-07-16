@@ -5,8 +5,9 @@
 #ifndef CHROME_TEST_BASE_EXTENSION_JS_BROWSER_TEST_H_
 #define CHROME_TEST_BASE_EXTENSION_JS_BROWSER_TEST_H_
 
+#include <string>
+
 #include "base/callback_forward.h"
-#include "chrome/test/base/extension_load_waiter_one_shot.h"
 #include "chrome/test/base/javascript_browser_test.h"
 
 // A super class that handles javascript-based tests against an extension.
@@ -31,7 +32,11 @@ class ExtensionJSBrowserTest : public JavaScriptBrowserTest {
                           const std::string& test_name);
 
  private:
-  std::unique_ptr<ExtensionLoadWaiterOneShot> load_waiter_;
+  // The ID of the extension loaded in WaitForExtension().
+  std::string extension_id_;
+  // The browser context associated with the ExtensionHost loaded from
+  // WaitForExtension().
+  content::BrowserContext* extension_host_browser_context_ = nullptr;
   bool libs_loaded_ = false;
 };
 

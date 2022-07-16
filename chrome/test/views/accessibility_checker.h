@@ -22,6 +22,10 @@ class AccessibilityChecker : public ChromeViewsDelegate,
                              public views::WidgetObserver {
  public:
   AccessibilityChecker();
+
+  AccessibilityChecker(const AccessibilityChecker&) = delete;
+  AccessibilityChecker& operator=(const AccessibilityChecker&) = delete;
+
   ~AccessibilityChecker() override;
 
   // ChromeViewsDelegate:
@@ -36,8 +40,6 @@ class AccessibilityChecker : public ChromeViewsDelegate,
  private:
   base::ScopedMultiSourceObservation<views::Widget, WidgetObserver>
       scoped_observations_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityChecker);
 };
 
 #endif  // CHROME_TEST_VIEWS_ACCESSIBILITY_CHECKER_H_

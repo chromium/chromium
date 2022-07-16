@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/animation_export.h"
@@ -24,6 +23,10 @@ class AnimationTestApi {
   SetRichAnimationRenderMode(Animation::RichAnimationRenderMode mode);
 
   explicit AnimationTestApi(Animation* animation);
+
+  AnimationTestApi(const AnimationTestApi&) = delete;
+  AnimationTestApi& operator=(const AnimationTestApi&) = delete;
+
   ~AnimationTestApi();
 
   // Sets the start of the animation.
@@ -34,8 +37,6 @@ class AnimationTestApi {
 
  private:
   Animation* animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationTestApi);
 };
 
 // For manual animation time control in tests. Creating this object will

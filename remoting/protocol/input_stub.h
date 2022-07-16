@@ -21,6 +21,10 @@ class TouchEvent;
 class InputStub {
  public:
   InputStub() {}
+
+  InputStub(const InputStub&) = delete;
+  InputStub& operator=(const InputStub&) = delete;
+
   virtual ~InputStub() {}
 
   // Implementations must never assume the presence of any |event| fields,
@@ -29,9 +33,6 @@ class InputStub {
   virtual void InjectTextEvent(const TextEvent& event) = 0;
   virtual void InjectMouseEvent(const MouseEvent& event) = 0;
   virtual void InjectTouchEvent(const TouchEvent& event) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputStub);
 };
 
 }  // namespace protocol

@@ -11,10 +11,10 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/vr/android/arcore/ar_renderer.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gl {
 class SurfaceTexture;
@@ -48,6 +48,10 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport {
 
   explicit ArImageTransport(
       std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge);
+
+  ArImageTransport(const ArImageTransport&) = delete;
+  ArImageTransport& operator=(const ArImageTransport&) = delete;
+
   virtual ~ArImageTransport();
 
   virtual void DestroySharedBuffers(WebXrPresentationState* webxr);
@@ -132,7 +136,6 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport {
 
   // Must be last.
   base::WeakPtrFactory<ArImageTransport> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ArImageTransport);
 };
 
 class COMPONENT_EXPORT(VR_ARCORE) ArImageTransportFactory {

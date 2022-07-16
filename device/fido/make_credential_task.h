@@ -42,6 +42,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialTask : public FidoTask {
                      CtapMakeCredentialRequest request,
                      MakeCredentialOptions options,
                      MakeCredentialTaskCallback callback);
+
+  MakeCredentialTask(const MakeCredentialTask&) = delete;
+  MakeCredentialTask& operator=(const MakeCredentialTask&) = delete;
+
   ~MakeCredentialTask() override;
 
   // GetTouchRequest returns a request that will cause a device to flash and
@@ -87,8 +91,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialTask : public FidoTask {
   bool canceled_ = false;
 
   base::WeakPtrFactory<MakeCredentialTask> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MakeCredentialTask);
 };
 
 // FilterAndBatchCredentialDescriptors splits a list of

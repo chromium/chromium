@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_ARC_ARC_KIOSK_APP_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ASH_APP_MODE_ARC_ARC_KIOSK_APP_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -27,13 +26,14 @@ class ArcKioskAppServiceFactory : public BrowserContextKeyedServiceFactory {
   friend struct base::DefaultSingletonTraits<ArcKioskAppServiceFactory>;
 
   ArcKioskAppServiceFactory();
+  ArcKioskAppServiceFactory(const ArcKioskAppServiceFactory&) = delete;
+  ArcKioskAppServiceFactory& operator=(const ArcKioskAppServiceFactory&) =
+      delete;
   ~ArcKioskAppServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcKioskAppServiceFactory);
 };
 
 }  // namespace ash

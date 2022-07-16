@@ -267,14 +267,14 @@ bool HttpUtil::ParseRetryAfterHeader(const std::string& retry_after_string,
   base::TimeDelta interval;
 
   if (net::ParseUint32(retry_after_string, &seconds)) {
-    interval = base::TimeDelta::FromSeconds(seconds);
+    interval = base::Seconds(seconds);
   } else if (base::Time::FromUTCString(retry_after_string.c_str(), &time)) {
     interval = time - now;
   } else {
     return false;
   }
 
-  if (interval < base::TimeDelta::FromSeconds(0))
+  if (interval < base::Seconds(0))
     return false;
 
   *retry_after = interval;
@@ -416,10 +416,6 @@ bool HttpUtil::IsToken(base::StringPiece string) {
       return false;
   }
   return true;
-}
-
-bool HttpUtil::IsControlChar(char c) {
-  return (c >= 0x00 && c <= 0x1F) || c == 0x7F;
 }
 
 // See RFC 5987 Sec 3.2.1 for the definition of |parmname|.

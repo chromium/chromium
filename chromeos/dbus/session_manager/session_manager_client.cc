@@ -20,7 +20,6 @@
 #include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -166,6 +165,10 @@ bool ReadSecretFromSharedMemory(base::ScopedFD fd,
 class SessionManagerClientImpl : public SessionManagerClient {
  public:
   SessionManagerClientImpl() = default;
+
+  SessionManagerClientImpl(const SessionManagerClientImpl&) = delete;
+  SessionManagerClientImpl& operator=(const SessionManagerClientImpl&) = delete;
+
   ~SessionManagerClientImpl() override = default;
 
   // SessionManagerClient overrides:
@@ -1100,8 +1103,6 @@ class SessionManagerClientImpl : public SessionManagerClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<SessionManagerClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionManagerClientImpl);
 };
 
 SessionManagerClient::SessionManagerClient() {

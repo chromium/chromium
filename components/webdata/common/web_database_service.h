@@ -14,11 +14,10 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/webdata_export.h"
@@ -58,6 +57,9 @@ class WEBDATA_EXPORT WebDatabaseService
       const base::FilePath& path,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> db_task_runner);
+
+  WebDatabaseService(const WebDatabaseService&) = delete;
+  WebDatabaseService& operator=(const WebDatabaseService&) = delete;
 
   // Adds |table| as a WebDatabaseTable that will participate in
   // managing the database, transferring ownership. All calls to this
@@ -126,8 +128,6 @@ class WEBDATA_EXPORT WebDatabaseService
 
   // All vended weak pointers are invalidated in ShutdownDatabase().
   base::WeakPtrFactory<WebDatabaseService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebDatabaseService);
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_SERVICE_H_

@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "url/gurl.h"
 
@@ -55,6 +54,9 @@ class PluginUMAReporter {
   // Returns singleton instance.
   static PluginUMAReporter* GetInstance();
 
+  PluginUMAReporter(const PluginUMAReporter&) = delete;
+  PluginUMAReporter& operator=(const PluginUMAReporter&) = delete;
+
   void ReportPluginMissing(const std::string& plugin_mime_type,
                            const GURL& plugin_src);
 
@@ -84,8 +86,6 @@ class PluginUMAReporter {
   PluginType MimeTypeToPluginType(const std::string& mime_type);
 
   std::unique_ptr<UMASender> report_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginUMAReporter);
 };
 
 #endif  // CHROME_RENDERER_PLUGINS_PLUGIN_UMA_H_

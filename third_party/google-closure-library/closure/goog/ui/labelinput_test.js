@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.LabelInputTest');
 goog.setTestOnly();
@@ -44,6 +36,10 @@ function assertLabelValue(labelInput, expectedLabel) {
   }
 }
 
+/**
+ * @suppress {strictMissingProperties} suppression added to enable type
+ * checking
+ */
 function isPlaceholderSupported() {
   if (dom.getElement('i').placeholder != null) {
     return true;
@@ -83,6 +79,10 @@ testSuite({
     assertLabelValue(labelInput, 'new label');
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testPlaceholderAttribute() {
     labelInput = new LabelInput();
     labelInput.setLabel('search');
@@ -106,6 +106,10 @@ testSuite({
         labelInput.getElement().placeholder);
   },
 
+  /**
+     @suppress {strictMissingProperties,checkTypes} suppression added to enable
+     type checking
+   */
   testDecorateElementWithExistingPlaceholderAttribute() {
     labelInput = new LabelInput();
     labelInput.setLabel('search');
@@ -131,12 +135,20 @@ testSuite({
     }
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDecorateElementWithFocus() {
     labelInput = new LabelInput();
     labelInput.setLabel('search');
 
     const decoratedElement = dom.getElement('i');
 
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     decoratedElement.value = '';
     decoratedElement.focus();
 
@@ -165,6 +177,10 @@ testSuite({
     }
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDecorateElementWithFocusDelay() {
     if (isPlaceholderSupported()) {
       return;  // Delay only affects the older browsers.
@@ -174,10 +190,15 @@ testSuite({
     labelInput = new LabelInput();
     labelInput.setLabel(placeholder);
     const delay = 150;
+    /** @suppress {visibility} suppression added to enable type checking */
     labelInput.labelRestoreDelayMs = delay;
 
     const decoratedElement = dom.getElement('i');
 
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     decoratedElement.value = '';
     decoratedElement.focus();
 
@@ -203,6 +224,7 @@ testSuite({
         placeholder, labelInput.getElement().value);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testClassName() {
     labelInput = new LabelInput();
 
@@ -242,6 +264,7 @@ testSuite({
     labelInput.enterDocument();
 
     const labelElement = labelInput.getElement();
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const disabledClass =
         goog.getCssName(labelInput.labelCssClassName, 'disabled');
 

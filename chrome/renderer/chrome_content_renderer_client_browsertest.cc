@@ -167,7 +167,7 @@ class ChromeContentRendererClientBrowserTest :
 IN_PROC_BROWSER_TEST_P(ChromeContentRendererClientBrowserTest,
                        RewriteYouTubeFlashEmbed) {
   GURL url(https_server()->GetURL("/flash_embeds.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_P(ChromeContentRendererClientBrowserTest,
 IN_PROC_BROWSER_TEST_P(ChromeContentRendererClientBrowserTest,
                        RewriteYouTubeFlashEmbedObject) {
   GURL url(https_server()->GetURL("/flash_embeds.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* web_contents =
      browser()->tab_strip_model()->GetActiveWebContents();
 

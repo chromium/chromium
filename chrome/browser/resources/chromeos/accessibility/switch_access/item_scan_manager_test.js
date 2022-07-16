@@ -66,9 +66,11 @@ TEST_F('SwitchAccessItemScanManagerTest', 'MoveTo', function() {
     const desktop = rootWebArea.parent.root;
     const textFields =
         desktop.findAll({role: chrome.automation.RoleType.TEXT_FIELD});
-    assertEquals(2, textFields.length, 'Should be exactly 2 text fields.');
+    assertTrue(
+        textFields.length === 2 || textFields.length === 3,
+        'Should be exactly 2 or 3 text fields.');
     const omnibar = textFields[0];
-    const textInput = textFields[1];
+    const textInput = textFields[textFields.length - 1];
     const sliders = desktop.findAll({role: chrome.automation.RoleType.SLIDER});
     assertEquals(1, sliders.length, 'Should be exactly 1 slider.');
     const slider = sliders[0];
@@ -119,7 +121,7 @@ TEST_F('SwitchAccessItemScanManagerTest', 'MoveTo', function() {
 
 TEST_F('SwitchAccessItemScanManagerTest', 'JumpTo', function() {
   const website = `<div id="group1">
-                     <input type="text">
+                     <input id="testinput" type="text">
                      <button></button>
                    </div>
                    <div id="group2">
@@ -128,8 +130,7 @@ TEST_F('SwitchAccessItemScanManagerTest', 'JumpTo', function() {
                    </div>`;
   this.runWithLoadedTree(website, (rootWebArea) => {
     const desktop = rootWebArea.parent.root;
-    const textInput =
-        desktop.findAll({role: chrome.automation.RoleType.TEXT_FIELD})[1];
+    const textInput = this.findNodeById('testinput');
     assertNotNullNorUndefined(textInput, 'Text field is undefined');
     const group1 = this.findNodeById('group1');
     const group2 = this.findNodeById('group2');
@@ -358,17 +359,25 @@ TEST_F(
 TEST_F(
     'SwitchAccessItemScanManagerTest', 'ScanAndTypeVirtualKeyboard',
     function() {
-      const website = `<input type="text" id="input"></input>`;
+      const website = `<input type="text" id="testinput"></input>`;
       this.runWithLoadedTree(website, async (rootWebArea) => {
         // SA initially focuses this node; wait for it first.
-        await this.untilFocusIs(
-            {className: 'BrowserNonClientFrameViewChromeOS'});
+        await new Promise(resolve => {
+          chrome.commandLinePrivate.hasSwitch(
+              'lacros-chrome-path', async hasLacrosChromePath => {
+                if (!hasLacrosChromePath) {
+                  await this.untilFocusIs(
+                      {className: 'BrowserNonClientFrameViewChromeOS'});
+                }
+                resolve();
+              });
+        });
 
         // Move to the text field.
-        Navigator.byItem.moveTo_(this.findNodeById('input'));
+        Navigator.byItem.moveTo_(this.findNodeById('testinput'));
         const input = Navigator.byItem.node_;
         assertEquals(
-            'input', input.automationNode.htmlAttributes.id,
+            'testinput', input.automationNode.htmlAttributes.id,
             'Current node is not input');
         input.performAction(SwitchAccessMenuAction.KEYBOARD);
 
@@ -395,16 +404,26 @@ TEST_F(
     });
 
 TEST_F('SwitchAccessItemScanManagerTest', 'DismissVirtualKeyboard', function() {
-  const website = `<input type="text" id="input"></input><button>ok</button>`;
+  const website =
+      `<input type="text" id="testinput"></input><button>ok</button>`;
   this.runWithLoadedTree(website, async (rootWebArea) => {
-    // SA initially focuses this node; wait for it first.
-    await this.untilFocusIs({className: 'BrowserNonClientFrameViewChromeOS'});
+    // SA initially focuses this node in Ash Chrome; wait for it first.
+    await new Promise(resolve => {
+      chrome.commandLinePrivate.hasSwitch(
+          'lacros-chrome-path', async hasLacrosChromePath => {
+            if (!hasLacrosChromePath) {
+              await this.untilFocusIs(
+                  {className: 'BrowserNonClientFrameViewChromeOS'});
+            }
+            resolve();
+          });
+    });
 
     // Move to the text field.
-    Navigator.byItem.moveTo_(this.findNodeById('input'));
+    Navigator.byItem.moveTo_(this.findNodeById('testinput'));
     const input = Navigator.byItem.node_;
     assertEquals(
-        'input', input.automationNode.htmlAttributes.id,
+        'testinput', input.automationNode.htmlAttributes.id,
         'Current node is not input');
     input.performAction(SwitchAccessMenuAction.KEYBOARD);
 
@@ -451,9 +470,17 @@ TEST_F(
     <button>done</button>
   `;
       this.runWithLoadedTree(website, async (rootWebArea) => {
-        // SA initially focuses this node; wait for it first.
-        await this.untilFocusIs(
-            {className: 'BrowserNonClientFrameViewChromeOS'});
+        // SA initially focuses this node in Ash Chrome; wait for it first.
+        await new Promise(resolve => {
+          chrome.commandLinePrivate.hasSwitch(
+              'lacros-chrome-path', async hasLacrosChromePath => {
+                if (!hasLacrosChromePath) {
+                  await this.untilFocusIs(
+                      {className: 'BrowserNonClientFrameViewChromeOS'});
+                }
+                resolve();
+              });
+        });
 
         // Move to the slider.
         Navigator.byItem.moveTo_(this.findNodeById('slider'));

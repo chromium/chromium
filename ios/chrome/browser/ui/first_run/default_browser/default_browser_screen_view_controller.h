@@ -5,10 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_DEFAULT_BROWSER_DEFAULT_BROWSER_SCREEN_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_FIRST_RUN_DEFAULT_BROWSER_DEFAULT_BROWSER_SCREEN_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 // View controller of default browser screen.
-@interface DefaultBrowserScreenViewController : FirstRunScreenViewController
+@interface DefaultBrowserScreenViewController : PromoStyleViewController
 
 @end
 

@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf_observer.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/events/event_handler.h"
@@ -30,6 +29,10 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
                                        public ShelfObserver {
  public:
   explicit ShelfTooltipManager(Shelf* shelf);
+
+  ShelfTooltipManager(const ShelfTooltipManager&) = delete;
+  ShelfTooltipManager& operator=(const ShelfTooltipManager&) = delete;
+
   ~ShelfTooltipManager() override;
 
   // Closes the tooltip; uses an animation if |animate| is true.
@@ -84,8 +87,6 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
   ShelfTooltipDelegate* shelf_tooltip_delegate_ = nullptr;
 
   base::WeakPtrFactory<ShelfTooltipManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfTooltipManager);
 };
 
 }  // namespace ash

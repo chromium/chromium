@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that ScriptSearchScope sorts network and dirty results correctly.\n`);
   await TestRunner.loadTestModule('bindings_test_runner');
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadLegacyModule('search');
   await TestRunner.showPanel('sources');
 
@@ -70,7 +70,7 @@
       var paths = [];
       for (var i = 0; i < names.length; ++i)
         paths.push('/var/www/' + names[i]);
-      Persistence.isolatedFileSystemManager._onSearchCompleted(
+      Persistence.isolatedFileSystemManager.onSearchCompleted(
           {data: {requestId: requestId, fileSystemPath: path, files: paths}});
     }
   };

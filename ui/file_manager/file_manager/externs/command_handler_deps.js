@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DialogType} from '../common/js/dialog_type.js';
+import {FilesAppState} from '../common/js/files_app_state.js';
 import {ActionsController} from '../foreground/js/actions_controller.js';
-import {DialogType} from '../foreground/js/dialog_type.js';
 import {FileFilter} from '../foreground/js/directory_contents.js';
 import {DirectoryModel} from '../foreground/js/directory_model.js';
 import {DirectoryTreeNamingController} from '../foreground/js/directory_tree_naming_controller.js';
@@ -94,6 +95,6 @@ export class CommandHandlerDeps {
   /** @return {FileSelection} */
   getSelection() {}
 
-  /** @param {Object} appState App state. */
+  /** @param {!FilesAppState=} appState App state. */
   launchFileManager(appState) {}
 }

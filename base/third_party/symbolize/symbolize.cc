@@ -143,8 +143,10 @@ _START_GOOGLE_NAMESPACE_
 // descriptor "fd" into the buffer starting at "buf" while handling short reads
 // and EINTR.  On success, return the number of bytes read.  Otherwise, return
 // -1.
-static ssize_t ReadFromOffset(const int fd, void *buf, const size_t count,
-                              const off_t offset) {
+ssize_t ReadFromOffset(const int fd,
+                       void* buf,
+                       const size_t count,
+                       const off_t offset) {
   SAFE_ASSERT(fd >= 0);
   SAFE_ASSERT(count <= std::numeric_limits<ssize_t>::max());
   char *buf0 = reinterpret_cast<char *>(buf);
@@ -367,24 +369,17 @@ static bool GetSymbolFromObjectFile(const int fd,
   return false;
 }
 
-namespace {
 // Thin wrapper around a file descriptor so that the file descriptor
 // gets closed for sure.
-struct FileDescriptor {
-  const int fd_;
-  explicit FileDescriptor(int fd) : fd_(fd) {}
-  ~FileDescriptor() {
-    if (fd_ >= 0) {
-      close(fd_);
-    }
+FileDescriptor::FileDescriptor(int fd) : fd_(fd) {}
+
+FileDescriptor::~FileDescriptor() {
+  if (fd_ >= 0) {
+    close(fd_);
   }
-  int get() { return fd_; }
+}
 
- private:
-  explicit FileDescriptor(const FileDescriptor&);
-  void operator=(const FileDescriptor&);
-};
-
+namespace {
 // Helper class for reading lines from file.
 //
 // Note: we don't use ProcMapsIterator since the object is big (it has
@@ -508,12 +503,13 @@ static char *GetHex(const char *start, const char *end, uint64_t *hex) {
 // file is opened successfully, returns the file descriptor.  Otherwise,
 // returns -1.  |out_file_name_size| is the size of the file name buffer
 // (including the null-terminator).
-static ATTRIBUTE_NOINLINE int
-OpenObjectFileContainingPcAndGetStartAddress(uint64_t pc,
-                                             uint64_t &start_address,
-                                             uint64_t &base_address,
-                                             char *out_file_name,
-                                             int out_file_name_size) {
+ATTRIBUTE_NOINLINE int OpenObjectFileContainingPcAndGetStartAddress(
+    uint64_t pc,
+    uint64_t& start_address,
+    uint64_t& end_address,
+    uint64_t& base_address,
+    char* out_file_name,
+    int out_file_name_size) {
   int object_fd;
 
   int maps_fd;
@@ -558,7 +554,6 @@ OpenObjectFileContainingPcAndGetStartAddress(uint64_t pc,
     ++cursor;  // Skip '-'.
 
     // Read end address.
-    uint64_t end_address;
     cursor = GetHex(cursor, eol, &end_address);
     if (cursor == eol || *cursor != ' ') {
       return -1;  // Malformed line.
@@ -670,7 +665,7 @@ OpenObjectFileContainingPcAndGetStartAddress(uint64_t pc,
 // bytes. Output will be truncated as needed, and a NUL character is always
 // appended.
 // NOTE: code from sandbox/linux/seccomp-bpf/demo.cc.
-static char *itoa_r(intptr_t i, char *buf, size_t sz, int base, size_t padding) {
+char* itoa_r(intptr_t i, char* buf, size_t sz, int base, size_t padding) {
   // Make sure we can write at least one NUL byte.
   size_t n = 1;
   if (n > sz)
@@ -764,6 +759,7 @@ static ATTRIBUTE_NOINLINE bool SymbolizeAndDemangle(void *pc, char *out,
                                                     int out_size) {
   uint64_t pc0 = reinterpret_cast<uintptr_t>(pc);
   uint64_t start_address = 0;
+  uint64_t end_address = 0;
   uint64_t base_address = 0;
   int object_fd = -1;
 
@@ -778,10 +774,8 @@ static ATTRIBUTE_NOINLINE bool SymbolizeAndDemangle(void *pc, char *out,
                                                       base_address, out + 1,
                                                       out_size - 1);
   } else {
-    object_fd = OpenObjectFileContainingPcAndGetStartAddress(pc0, start_address,
-                                                             base_address,
-                                                             out + 1,
-                                                             out_size - 1);
+    object_fd = OpenObjectFileContainingPcAndGetStartAddress(
+        pc0, start_address, base_address, end_address, out + 1, out_size - 1);
   }
 
   FileDescriptor wrapped_object_fd(object_fd);

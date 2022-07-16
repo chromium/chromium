@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/windows_types.h"
@@ -33,6 +32,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN)
     : public VirtualKeyboardController {
  public:
   explicit OnScreenKeyboardDisplayManagerInputPane(HWND hwnd);
+
+  OnScreenKeyboardDisplayManagerInputPane(
+      const OnScreenKeyboardDisplayManagerInputPane&) = delete;
+  OnScreenKeyboardDisplayManagerInputPane& operator=(
+      const OnScreenKeyboardDisplayManagerInputPane&) = delete;
+
   ~OnScreenKeyboardDisplayManagerInputPane() override;
 
   // VirtualKeyboardController:
@@ -74,8 +79,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN)
   std::unique_ptr<VirtualKeyboardDebounceTimer> debouncer_;
   base::WeakPtrFactory<OnScreenKeyboardDisplayManagerInputPane> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(OnScreenKeyboardDisplayManagerInputPane);
 };
 
 }  // namespace ui

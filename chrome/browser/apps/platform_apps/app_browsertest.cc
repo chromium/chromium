@@ -89,7 +89,7 @@ namespace {
 // Non-abstract RenderViewContextMenu class.
 class PlatformAppContextMenu : public RenderViewContextMenu {
  public:
-  PlatformAppContextMenu(content::RenderFrameHost* render_frame_host,
+  PlatformAppContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params)
       : RenderViewContextMenu(render_frame_host, params) {}
 
@@ -241,7 +241,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     launch_files->file_paths.push_back(file_path);
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->LaunchAppWithFiles(
-            extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+            extension->id(),
             apps::GetEventFlags(
                 apps::mojom::LaunchContainer::kLaunchContainerNone,
                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -266,7 +266,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     apps::AppLaunchParams params(
         extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
         WindowOpenDisposition::NEW_WINDOW,
-        apps::mojom::AppLaunchSource::kSourceTest);
+        apps::mojom::LaunchSource::kFromTest);
     params.command_line = command_line;
     params.current_directory = test_data_dir_;
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, EmptyContextMenu) {
   ASSERT_TRUE(web_contents);
   content::ContextMenuParams params;
   auto menu = std::make_unique<PlatformAppContextMenu>(
-      web_contents->GetMainFrame(), params);
+      *web_contents->GetMainFrame(), params);
   menu->Init();
   ASSERT_TRUE(menu->HasCommandWithId(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
   ASSERT_TRUE(
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenu) {
   ASSERT_TRUE(web_contents);
   content::ContextMenuParams params;
   auto menu = std::make_unique<PlatformAppContextMenu>(
-      web_contents->GetMainFrame(), params);
+      *web_contents->GetMainFrame(), params);
   menu->Init();
   int first_extensions_command_id =
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, InstalledAppWithContextMenu) {
   ASSERT_TRUE(web_contents);
   content::ContextMenuParams params;
   auto menu = std::make_unique<PlatformAppContextMenu>(
-      web_contents->GetMainFrame(), params);
+      *web_contents->GetMainFrame(), params);
   menu->Init();
   int extensions_custom_id =
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   content::ContextMenuParams params;
   params.is_editable = true;
   auto menu = std::make_unique<PlatformAppContextMenu>(
-      web_contents->GetMainFrame(), params);
+      *web_contents->GetMainFrame(), params);
   menu->Init();
   int extensions_custom_id =
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenuSelection) {
   content::ContextMenuParams params;
   params.selection_text = u"Hello World";
   auto menu = std::make_unique<PlatformAppContextMenu>(
-      web_contents->GetMainFrame(), params);
+      *web_contents->GetMainFrame(), params);
   menu->Init();
   int extensions_custom_id =
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenuClicked) {
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.bar");
   auto menu = std::make_unique<PlatformAppContextMenu>(
-      web_contents->GetMainFrame(), params);
+      *web_contents->GetMainFrame(), params);
   menu->Init();
   int extensions_custom_id =
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
@@ -540,8 +540,9 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PlatformAppsOnly) {
       << message_;
 }
 
+// TODO(https://crbug.com/1246088): Flaky.
 // Tests that platform apps have isolated storage by default.
-IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, Isolation) {
+IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DISABLED_Isolation) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Load a (non-app) page under the "localhost" origin that sets a cookie.
@@ -551,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, Isolation) {
   replace_host.SetHostStr("localhost");
   set_cookie_url = set_cookie_url.ReplaceComponents(replace_host);
 
-  ui_test_utils::NavigateToURL(browser(), set_cookie_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), set_cookie_url));
 
   // Make sure the cookie is set.
   int cookie_size;
@@ -611,12 +612,14 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_ExtensionWindowingApis) {
 // ChromeOS does not support passing arguments on the command line, so the tests
 // that rely on this functionality are disabled.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Tests that launch data is sent through if the file extension matches.
 IN_PROC_BROWSER_TEST_F(PlatformAppWithFileBrowserTest,
                        LaunchFilesWithFileExtension) {
   RunPlatformAppTestWithFiles("platform_apps/launch_file_by_extension",
                               kTestFilePath);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Tests that command line parameters get passed through to platform apps
 // via launchData correctly when launching with a file.
@@ -703,7 +706,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppWithFileBrowserTest,
       "platform_apps/launch_file_with_any_extension", test_file))
       << message_;
 }
-#endif
+#endif  //  !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests that launch data is sent through for a file with no extension if a
 // handler accepts *.
@@ -943,7 +946,7 @@ void PlatformAppDevToolsBrowserTest::RunTestWithDevTools(const char* name,
         ->LaunchAppWithParams(apps::AppLaunchParams(
             extension->id(), LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW,
-            apps::mojom::AppLaunchSource::kSourceTest));
+            apps::mojom::LaunchSource::kFromTest));
     app_loaded_observer.Wait();
     window = GetFirstAppWindow();
     ASSERT_TRUE(window);
@@ -1092,7 +1095,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceTest));
+          apps::mojom::LaunchSource::kFromTest));
 
   ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
 }
@@ -1117,7 +1120,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PRE_ComponentAppBackgroundPage) {
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceTest));
+          apps::mojom::LaunchSource::kFromTest));
 
   ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
   ASSERT_FALSE(should_not_install.seen());
@@ -1158,7 +1161,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, ComponentAppBackgroundPage) {
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceTest));
+          apps::mojom::LaunchSource::kFromTest));
 
   ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
 }
@@ -1186,7 +1189,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
         ->LaunchAppWithParams(apps::AppLaunchParams(
             extension->id(), LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW,
-            apps::mojom::AppLaunchSource::kSourceTest));
+            apps::mojom::LaunchSource::kFromTest));
     ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
   }
 

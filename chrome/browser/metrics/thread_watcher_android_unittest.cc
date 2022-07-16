@@ -18,11 +18,10 @@ void OnThreadWatcherTask(base::WaitableEvent* event) {
 }
 
 void PostAndWaitForWatchdogThread(base::WaitableEvent* event) {
-  WatchDogThread::PostDelayedTask(FROM_HERE,
-                                  base::BindOnce(&OnThreadWatcherTask, event),
-                                  base::TimeDelta::FromSeconds(0));
+  WatchDogThread::PostDelayedTask(
+      FROM_HERE, base::BindOnce(&OnThreadWatcherTask, event), base::Seconds(0));
 
-  EXPECT_TRUE(event->TimedWait(base::TimeDelta::FromSeconds(1)));
+  EXPECT_TRUE(event->TimedWait(base::Seconds(1)));
 }
 
 void NotifyApplicationStateChange(base::android::ApplicationState state) {

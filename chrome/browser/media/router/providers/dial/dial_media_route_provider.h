@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
@@ -61,6 +60,10 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
       DialMediaSinkServiceImpl* media_sink_service,
       const std::string& hash_token,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  DialMediaRouteProvider(const DialMediaRouteProvider&) = delete;
+  DialMediaRouteProvider& operator=(const DialMediaRouteProvider&) = delete;
+
   ~DialMediaRouteProvider() override;
 
   // mojom::MediaRouteProvider:
@@ -124,13 +127,15 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
 
   struct MediaSinkQuery {
     MediaSinkQuery();
+
+    MediaSinkQuery(const MediaSinkQuery&) = delete;
+    MediaSinkQuery& operator=(const MediaSinkQuery&) = delete;
+
     ~MediaSinkQuery();
 
     // Set of registered media sources for current sink query.
     base::flat_set<MediaSource> media_sources;
     base::CallbackListSubscription subscription;
-
-    DISALLOW_COPY_AND_ASSIGN(MediaSinkQuery);
   };
 
   // MediaSinkServiceBase::Observer:
@@ -210,7 +215,6 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DialMediaRouteProvider> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DialMediaRouteProvider);
 };
 
 }  // namespace media_router

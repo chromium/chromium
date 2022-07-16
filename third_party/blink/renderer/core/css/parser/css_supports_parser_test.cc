@@ -178,10 +178,23 @@ TEST_F(CSSSupportsParserTest, ConsumeSupportsInParens) {
   // ( <supports-condition> )
   EXPECT_EQ(Result::kSupported, ConsumeSupportsInParens("(not (asdf:red))"));
   EXPECT_EQ(Result::kUnsupported, ConsumeSupportsInParens("(not (color:red))"));
+  EXPECT_EQ(Result::kParseFailure,
+            ConsumeSupportsInParens("(not (color:red)])"));
+
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsInParens("(not ( (color:gjhk) or (color:red) ))"));
+  EXPECT_EQ(
+      Result::kUnsupported,
+      ConsumeSupportsInParens("(not ( ((color:gjhk)) or (color:blue) ))"));
+  EXPECT_EQ(Result::kSupported,
+            ConsumeSupportsInParens("(( (color:gjhk) or (color:red) ))"));
+  EXPECT_EQ(Result::kSupported,
+            ConsumeSupportsInParens("(( ((color:gjhk)) or (color:blue) ))"));
 
   // <supports-feature>
   EXPECT_EQ(Result::kSupported, ConsumeSupportsInParens("(color:red)"));
   EXPECT_EQ(Result::kUnsupported, ConsumeSupportsInParens("(color:asdf)"));
+  EXPECT_EQ(Result::kParseFailure, ConsumeSupportsInParens("(color]asdf)"));
 
   // <general-enclosed>
   EXPECT_EQ(Result::kUnsupported, ConsumeSupportsInParens("asdf(1)"));

@@ -106,9 +106,9 @@ TEST(StructTraitsTest, KeyEvent) {
       {'Z', VKEY_Z, DomCode::NONE, EF_CAPS_LOCK_ON},
       {'z', VKEY_Z, DomCode::NONE, EF_NONE},
       {ET_KEY_PRESSED, VKEY_Z, EF_NONE,
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(101)},
+       base::TimeTicks() + base::Microseconds(101)},
       {'Z', VKEY_Z, DomCode::NONE, EF_NONE,
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(102)},
+       base::TimeTicks() + base::Microseconds(102)},
   };
 
   for (size_t i = 0; i < base::size(kTestData); i++) {
@@ -126,29 +126,27 @@ TEST(StructTraitsTest, KeyEvent) {
 TEST(StructTraitsTest, MouseEvent) {
   const MouseEvent kTestData[] = {
       {ET_MOUSE_PRESSED, gfx::Point(10, 10), gfx::Point(20, 30),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(201), EF_NONE, 0,
+       base::TimeTicks() + base::Microseconds(201), EF_NONE, 0,
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
       {ET_MOUSE_DRAGGED, gfx::Point(1, 5), gfx::Point(5, 1),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(202),
-       EF_LEFT_MOUSE_BUTTON, EF_LEFT_MOUSE_BUTTON,
+       base::TimeTicks() + base::Microseconds(202), EF_LEFT_MOUSE_BUTTON,
+       EF_LEFT_MOUSE_BUTTON,
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
       {ET_MOUSE_RELEASED, gfx::Point(411, 130), gfx::Point(20, 30),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(203),
+       base::TimeTicks() + base::Microseconds(203),
        EF_MIDDLE_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON, EF_RIGHT_MOUSE_BUTTON,
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
       {ET_MOUSE_MOVED, gfx::Point(0, 1), gfx::Point(2, 3),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(204), EF_ALT_DOWN,
-       0, PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
+       base::TimeTicks() + base::Microseconds(204), EF_ALT_DOWN, 0,
+       PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
       {ET_MOUSE_ENTERED, gfx::Point(6, 7), gfx::Point(8, 9),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(205), EF_NONE, 0,
+       base::TimeTicks() + base::Microseconds(205), EF_NONE, 0,
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
       {ET_MOUSE_EXITED, gfx::Point(10, 10), gfx::Point(20, 30),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(206),
-       EF_BACK_MOUSE_BUTTON, 0,
+       base::TimeTicks() + base::Microseconds(206), EF_BACK_MOUSE_BUTTON, 0,
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
       {ET_MOUSE_CAPTURE_CHANGED, gfx::Point(99, 99), gfx::Point(99, 99),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(207),
-       EF_CONTROL_DOWN, 0,
+       base::TimeTicks() + base::Microseconds(207), EF_CONTROL_DOWN, 0,
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
   };
 
@@ -166,16 +164,16 @@ TEST(StructTraitsTest, MouseEvent) {
 TEST(StructTraitsTest, MouseWheelEvent) {
   const MouseWheelEvent kTestData[] = {
       {gfx::Vector2d(11, 15), gfx::PointF(3, 4), gfx::PointF(40, 30),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(301),
-       EF_LEFT_MOUSE_BUTTON, EF_LEFT_MOUSE_BUTTON, gfx::Vector2d(1320, 1800)},
+       base::TimeTicks() + base::Microseconds(301), EF_LEFT_MOUSE_BUTTON,
+       EF_LEFT_MOUSE_BUTTON, gfx::Vector2d(1320, 1800)},
       {gfx::Vector2d(-5, 3), gfx::PointF(40, 3), gfx::PointF(4, 0),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(302),
+       base::TimeTicks() + base::Microseconds(302),
        EF_MIDDLE_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON,
        EF_MIDDLE_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON,
        gfx::Vector2d(-600, 360)},
       {gfx::Vector2d(1, 0), gfx::PointF(3, 4), gfx::PointF(40, 30),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(303), EF_NONE,
-       EF_NONE, gfx::Vector2d(120, -15)},
+       base::TimeTicks() + base::Microseconds(303), EF_NONE, EF_NONE,
+       gfx::Vector2d(120, -15)},
   };
 
   for (size_t i = 0; i < base::size(kTestData); i++) {
@@ -247,20 +245,15 @@ TEST(StructTraitsTest, GestureEvent) {
   pinch_update_details.set_scale(1.23f);
 
   const GestureEvent kTestData[] = {
-      {10, 20, EF_NONE,
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(401),
+      {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
        GestureEventDetails(ET_SCROLL_FLING_START)},
-      {10, 20, EF_NONE,
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(401),
+      {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
        GestureEventDetails(ET_GESTURE_TAP)},
-      {10, 20, EF_NONE,
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(401),
+      {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
        pinch_begin_details},
-      {10, 20, EF_NONE,
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(401),
+      {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
        pinch_end_details},
-      {10, 20, EF_NONE,
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(401),
+      {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
        pinch_update_details},
   };
 
@@ -282,33 +275,32 @@ TEST(StructTraitsTest, GestureEvent) {
 TEST(StructTraitsTest, ScrollEvent) {
   const ScrollEvent kTestData[] = {
       {ET_SCROLL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(501), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::NONE, ScrollEventPhase::kNone},
+       base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::NONE, ScrollEventPhase::kNone},
       {ET_SCROLL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(501), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::NONE, ScrollEventPhase::kUpdate},
+       base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::NONE, ScrollEventPhase::kUpdate},
       {ET_SCROLL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(501), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::NONE, ScrollEventPhase::kBegan},
+       base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::NONE, ScrollEventPhase::kBegan},
       {ET_SCROLL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(501), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::NONE, ScrollEventPhase::kEnd},
+       base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::NONE, ScrollEventPhase::kEnd},
       {ET_SCROLL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(501), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::BEGAN, ScrollEventPhase::kNone},
+       base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::BEGAN, ScrollEventPhase::kNone},
       {ET_SCROLL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(501), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::INERTIAL_UPDATE,
-       ScrollEventPhase::kNone},
+       base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::INERTIAL_UPDATE, ScrollEventPhase::kNone},
       {ET_SCROLL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(501), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::END, ScrollEventPhase::kNone},
+       base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::END, ScrollEventPhase::kNone},
       {ET_SCROLL_FLING_START, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(502), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::MAY_BEGIN, ScrollEventPhase::kNone},
+       base::TimeTicks() + base::Microseconds(502), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::MAY_BEGIN, ScrollEventPhase::kNone},
       {ET_SCROLL_FLING_CANCEL, gfx::Point(10, 20),
-       base::TimeTicks() + base::TimeDelta::FromMicroseconds(502), EF_NONE, 1,
-       2, 3, 4, 5, EventMomentumPhase::END, ScrollEventPhase::kNone},
+       base::TimeTicks() + base::Microseconds(502), EF_NONE, 1, 2, 3, 4, 5,
+       EventMomentumPhase::END, ScrollEventPhase::kNone},
   };
 
   for (size_t i = 0; i < base::size(kTestData); i++) {
@@ -404,6 +396,11 @@ TEST(StructTraitsTest, UnserializedTouchEventFields) {
 class FixedKeyboardLayoutEngine : public StubKeyboardLayoutEngine {
  public:
   FixedKeyboardLayoutEngine() = default;
+
+  FixedKeyboardLayoutEngine(const FixedKeyboardLayoutEngine&) = delete;
+  FixedKeyboardLayoutEngine& operator=(const FixedKeyboardLayoutEngine&) =
+      delete;
+
   ~FixedKeyboardLayoutEngine() override = default;
 
   // StubKeyboardLayoutEngine:
@@ -415,9 +412,6 @@ class FixedKeyboardLayoutEngine : public StubKeyboardLayoutEngine {
     *out_key_code = ui::VKEY_X;
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FixedKeyboardLayoutEngine);
 };
 
 TEST(StructTraitsTest, DifferentKeyboardLayout) {

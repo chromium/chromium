@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/download/download_history.h"
@@ -29,6 +28,10 @@ class TestDownloadCoreService : public DownloadCoreServiceImpl {
  public:
   explicit TestDownloadCoreService(Profile* profile)
       : DownloadCoreServiceImpl(profile), profile_(profile) {}
+
+  TestDownloadCoreService(const TestDownloadCoreService&) = delete;
+  TestDownloadCoreService& operator=(const TestDownloadCoreService&) = delete;
+
   ~TestDownloadCoreService() override {}
 
   void Shutdown() override {
@@ -57,8 +60,6 @@ class TestDownloadCoreService : public DownloadCoreServiceImpl {
   std::unique_ptr<DownloadHistory> download_history_;
   std::unique_ptr<ExtensionDownloadsEventRouter> router_;
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDownloadCoreService);
 };
 
 }  // namespace
@@ -66,6 +67,10 @@ class TestDownloadCoreService : public DownloadCoreServiceImpl {
 class DownloadsApiUnitTest : public ExtensionApiUnittest {
  public:
   DownloadsApiUnitTest() {}
+
+  DownloadsApiUnitTest(const DownloadsApiUnitTest&) = delete;
+  DownloadsApiUnitTest& operator=(const DownloadsApiUnitTest&) = delete;
+
   ~DownloadsApiUnitTest() override {}
   void SetUp() override {
     ExtensionApiUnittest::SetUp();
@@ -111,8 +116,6 @@ class DownloadsApiUnitTest : public ExtensionApiUnittest {
 
   std::unique_ptr<MockDownloadManager> manager_;
   content::DownloadManager::Observer* download_history_manager_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadsApiUnitTest);
 };
 
 // static

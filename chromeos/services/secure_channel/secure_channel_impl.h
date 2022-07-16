@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/services/secure_channel/active_connection_manager.h"
 #include "chromeos/services/secure_channel/connection_attempt_details.h"
@@ -60,6 +59,9 @@ class SecureChannelImpl : public mojom::SecureChannel,
    private:
     static Factory* test_factory_;
   };
+
+  SecureChannelImpl(const SecureChannelImpl&) = delete;
+  SecureChannelImpl& operator=(const SecureChannelImpl&) = delete;
 
   ~SecureChannelImpl() override;
 
@@ -190,8 +192,6 @@ class SecureChannelImpl : public mojom::SecureChannel,
   base::flat_map<ConnectionDetails,
                  std::vector<ConnectionRequestWaitingForDisconnection>>
       disconnecting_details_to_requests_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelImpl);
 };
 
 std::ostream& operator<<(std::ostream& stream,

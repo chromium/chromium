@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -51,7 +51,9 @@ bool FrameView::DisplayLockedInParentFrame() {
   // We check the inclusive ancestor to determine whether the subtree is locked,
   // since the contents of the frame are in the subtree of the frame, so they
   // would be locked if the frame owner is itself locked.
-  return DisplayLockUtilities::NearestLockedInclusiveAncestor(*owner);
+  // We use a paint check here, since as lock as we don't allow paint, we are
+  // display locked.
+  return DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(*owner);
 }
 
 void FrameView::UpdateViewportIntersection(unsigned flags,
@@ -133,7 +135,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
       // Don't let EnclosingRect turn an empty rect into a non-empty one.
       if (intersection_rect.IsEmpty()) {
         viewport_intersection =
-            IntRect(FlooredIntPoint(intersection_rect.offset), IntSize());
+            IntRect(ToFlooredPoint(intersection_rect.offset), IntSize());
       } else {
         viewport_intersection = EnclosingIntRect(intersection_rect);
       }
@@ -142,9 +144,15 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
       // intersection rect that is bigger than the rect we started with. Clamp
       // the size of the viewport intersection to the bounds of the iframe's
       // content rect.
-      viewport_intersection.SetLocation(
-          viewport_intersection.Location().ExpandedTo(IntPoint()));
-      viewport_intersection.SetSize(viewport_intersection.Size().ShrunkTo(
+      // TODO(crbug.com/1266532): This should be
+      //   viewport_intersection.Intersect(IntRect(gfx::Point(),
+      //       owner_layout_object->ContentSize()));
+      // but it exposes a bug of incorrect origin of viewport_intersection in
+      // multicol.
+      gfx::Point origin = viewport_intersection.origin();
+      origin.SetToMax(gfx::Point());
+      viewport_intersection.set_origin(origin);
+      viewport_intersection.set_size(viewport_intersection.size().ShrunkTo(
           RoundedIntSize(owner_layout_object->ContentSize())));
     }
 
@@ -156,13 +164,19 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
 
       if (mainframe_intersection_rect.IsEmpty()) {
         mainframe_intersection = IntRect(
-            FlooredIntPoint(mainframe_intersection_rect.offset), IntSize());
+            ToFlooredPoint(mainframe_intersection_rect.offset), IntSize());
       } else {
         mainframe_intersection = EnclosingIntRect(mainframe_intersection_rect);
       }
-      mainframe_intersection.SetLocation(
-          mainframe_intersection.Location().ExpandedTo(IntPoint()));
-      mainframe_intersection.SetSize(mainframe_intersection.Size().ShrunkTo(
+      // TODO(crbug.com/1266532): This should be
+      //   mainframe_intersection.Intersect(IntRect(gfx::Point(),
+      //       owner_layout_object->ContentSize()));
+      // but it exposes a bug of incorrect origin of mainframe_intersection in
+      // multicol.
+      gfx::Point origin = mainframe_intersection.origin();
+      origin.SetToMax(gfx::Point());
+      mainframe_intersection.set_origin(origin);
+      mainframe_intersection.set_size(mainframe_intersection.size().ShrunkTo(
           RoundedIntSize(owner_layout_object->ContentSize())));
     }
 
@@ -191,9 +205,9 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   main_frame_gfx_transform.RoundTranslationComponents();
 
   SetViewportIntersection(mojom::blink::ViewportIntersectionState(
-      viewport_intersection, mainframe_intersection, gfx::Rect(),
-      occlusion_state, gfx::Size(frame.GetMainFrameViewportSize()),
-      gfx::Point(frame.GetMainFrameScrollOffset()), main_frame_gfx_transform));
+      ToGfxRect(viewport_intersection), ToGfxRect(mainframe_intersection),
+      gfx::Rect(), occlusion_state, ToGfxSize(frame.GetMainFrameViewportSize()),
+      frame.GetMainFrameScrollOffset(), main_frame_gfx_transform));
 
   UpdateFrameVisibility(!viewport_intersection.IsEmpty());
 
@@ -204,7 +218,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
             .BoundingBox()));
     // Return <0, 0, 0, 0> if there is no area.
     if (projected_rect.IsEmpty())
-      projected_rect.SetLocation(IntPoint(0, 0));
+      projected_rect.set_origin(gfx::Point(0, 0));
     GetFrame().Client()->OnMainFrameIntersectionChanged(projected_rect);
   }
 
@@ -274,8 +288,7 @@ void FrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
 bool FrameView::RectInParentIsStable(
     const base::TimeTicks& event_timestamp) const {
   if (event_timestamp - rect_in_parent_stable_since_ <
-      base::TimeDelta::FromMilliseconds(
-          mojom::blink::kMinScreenRectStableTimeMs)) {
+      base::Milliseconds(mojom::blink::kMinScreenRectStableTimeMs)) {
     return false;
   }
   LocalFrameView* parent = ParentFrameView();

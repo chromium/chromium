@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/chromebox_for_meetings/network_settings_dialog.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 

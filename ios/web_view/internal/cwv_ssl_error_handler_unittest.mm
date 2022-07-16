@@ -21,11 +21,12 @@
 namespace ios_web_view {
 
 class CWVSSLErrorHandlerTest : public PlatformTest {
+ public:
+  CWVSSLErrorHandlerTest(const CWVSSLErrorHandlerTest&) = delete;
+  CWVSSLErrorHandlerTest& operator=(const CWVSSLErrorHandlerTest&) = delete;
+
  protected:
   CWVSSLErrorHandlerTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CWVSSLErrorHandlerTest);
 };
 
 TEST_F(CWVSSLErrorHandlerTest, Initialization) {

@@ -7,14 +7,21 @@
 #include <fstream>
 #include <iostream>
 
+#include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_constants.h"
+#include "ash/ambient/test/ambient_ash_test_helper.h"
+#include "ash/ambient/test/test_ambient_client.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -32,20 +39,43 @@ base::FilePath GetTestPath() {
 
 class AmbientPhotoCacheTest : public testing::Test {
  public:
+  AmbientPhotoCacheTest() = default;
+
   void SetUp() override {
+    ambient_ash_test_helper_ = std::make_unique<AmbientAshTestHelper>();
+    access_token_controller_ = std::make_unique<AmbientAccessTokenController>();
+
     auto test_path = GetTestPath();
     base::DeletePathRecursively(test_path);
-    photo_cache_ = AmbientPhotoCache::Create(test_path);
+    photo_cache_ = AmbientPhotoCache::Create(
+        test_path, ambient_ash_test_helper_->ambient_client(),
+        *access_token_controller_);
   }
 
   void TearDown() override { base::DeletePathRecursively(GetTestPath()); }
 
   AmbientPhotoCache* photo_cache() { return photo_cache_.get(); }
 
- protected:
-  base::test::TaskEnvironment task_environment_;
+  network::TestURLLoaderFactory& test_url_loader_factory() {
+    return ambient_ash_test_helper_->ambient_client().test_url_loader_factory();
+  }
+
+  bool IsAccessTokenRequestPending() {
+    return ambient_ash_test_helper_->ambient_client()
+        .IsAccessTokenRequestPending();
+  }
+
+  void IssueAccessToken() {
+    ambient_ash_test_helper_->ambient_client().IssueAccessToken(
+        /*is_empty=*/false);
+  }
+
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<AmbientAshTestHelper> ambient_ash_test_helper_;
+  std::unique_ptr<AmbientAccessTokenController> access_token_controller_;
   std::unique_ptr<AmbientPhotoCache> photo_cache_;
 };
 
@@ -109,6 +139,71 @@ TEST_F(AmbientPhotoCacheTest, SetsDataToEmptyStringWhenFilesMissing) {
     EXPECT_TRUE(cache_read.related_photo().details().empty());
     EXPECT_FALSE(cache_read.related_photo().is_portrait());
   }
+}
+
+TEST_F(AmbientPhotoCacheTest, DisableNewUrlDisablesTokenFetch) {
+  std::string fake_url = "https://faketesturl/";
+
+  // not token request if new url feature is not enabled.
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(features::kAmbientModeNewUrl);
+
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+  photo_cache()->DownloadPhoto(fake_url, base::BindOnce([](std::string&&) {}));
+
+  RunUntilIdle();
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
+  photo_cache()->DownloadPhotoToFile(fake_url, /*cache_index=*/1,
+                                     base::BindOnce([](bool) {}));
+
+  RunUntilIdle();
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+}
+
+TEST_F(AmbientPhotoCacheTest, EnableNewUrlAttachesTokenToDownloadRequest) {
+  std::string fake_url = "https://faketesturl/";
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAmbientModeNewUrl);
+
+  photo_cache()->DownloadPhoto(fake_url, base::BindOnce([](std::string&&) {}));
+  RunUntilIdle();
+  EXPECT_TRUE(IsAccessTokenRequestPending());
+  IssueAccessToken();
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
+  auto* pending_requests = test_url_loader_factory().pending_requests();
+  EXPECT_EQ(pending_requests->size(), std::size_t{1});
+  EXPECT_EQ(pending_requests->at(0).request.url, fake_url);
+  std::string header;
+  pending_requests->at(0).request.headers.GetHeader("Authorization", &header);
+
+  EXPECT_EQ(header,
+            std::string("Bearer ") + TestAmbientClient::kTestAccessToken);
+}
+
+TEST_F(AmbientPhotoCacheTest,
+       EnableNewUrlAttachesTokenToDownloadToFileRequest) {
+  std::string fake_url = "https://faketesturl/";
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAmbientModeNewUrl);
+
+  photo_cache()->DownloadPhotoToFile(fake_url, /*cache_index=*/1,
+                                     base::BindOnce([](bool) {}));
+
+  RunUntilIdle();
+  EXPECT_TRUE(IsAccessTokenRequestPending());
+  IssueAccessToken();
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
+  auto* pending_requests = test_url_loader_factory().pending_requests();
+  EXPECT_EQ(pending_requests->size(), std::size_t{1});
+  EXPECT_EQ(pending_requests->at(0).request.url, fake_url);
+  std::string header;
+  pending_requests->at(0).request.headers.GetHeader("Authorization", &header);
+
+  EXPECT_EQ(header,
+            std::string("Bearer ") + TestAmbientClient::kTestAccessToken);
 }
 
 }  // namespace ash

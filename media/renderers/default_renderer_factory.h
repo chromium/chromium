@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "media/base/media_export.h"
 #include "media/base/renderer_factory.h"
@@ -51,6 +50,10 @@ class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
       const GetGpuFactoriesCB& get_gpu_factories_cb,
       std::unique_ptr<SpeechRecognitionClient> speech_recognition_client);
 #endif
+
+  DefaultRendererFactory(const DefaultRendererFactory&) = delete;
+  DefaultRendererFactory& operator=(const DefaultRendererFactory&) = delete;
+
   ~DefaultRendererFactory() final;
 
   std::unique_ptr<Renderer> CreateRenderer(
@@ -82,8 +85,6 @@ class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
 #if !defined(OS_ANDROID)
   std::unique_ptr<SpeechRecognitionClient> speech_recognition_client_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultRendererFactory);
 };
 
 }  // namespace media

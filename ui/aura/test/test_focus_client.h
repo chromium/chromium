@@ -6,7 +6,6 @@
 #define UI_AURA_TEST_TEST_FOCUS_CLIENT_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/client/focus_client.h"
@@ -19,6 +18,10 @@ class TestFocusClient : public client::FocusClient,
                         public WindowObserver {
  public:
   explicit TestFocusClient(Window* root_window);
+
+  TestFocusClient(const TestFocusClient&) = delete;
+  TestFocusClient& operator=(const TestFocusClient&) = delete;
+
   ~TestFocusClient() override;
 
  private:
@@ -37,8 +40,6 @@ class TestFocusClient : public client::FocusClient,
   base::ScopedObservation<Window, WindowObserver> observation_manager_{this};
   base::ObserverList<aura::client::FocusChangeObserver>::Unchecked
       focus_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFocusClient);
 };
 
 }  // namespace test

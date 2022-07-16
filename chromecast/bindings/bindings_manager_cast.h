@@ -5,6 +5,8 @@
 #ifndef CHROMECAST_BINDINGS_BINDINGS_MANAGER_CAST_H_
 #define CHROMECAST_BINDINGS_BINDINGS_MANAGER_CAST_H_
 
+#include <list>
+
 #include "base/callback.h"
 #include "chromecast/bindings/bindings_manager.h"
 #include "chromecast/bindings/public/mojom/api_bindings.mojom.h"
@@ -43,8 +45,9 @@ class BindingsManagerCast : public BindingsManager,
                blink::MessagePortDescriptor port) override;
 
   // Stores all bindings, keyed on the string-based IDs provided by the
-  // ApiBindings interface.
-  std::map<std::string, std::string> bindings_;
+  // ApiBindings interface. Bindings are stored in the order they are added
+  // because evaluation order matters when one depends on another.
+  std::list<std::pair<std::string, std::string>> bindings_;
 
   mojo::Receiver<mojom::ApiBindings> receiver_{this};
 };

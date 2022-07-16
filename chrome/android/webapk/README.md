@@ -36,10 +36,9 @@ It is possible to build a test WebAPK and bypass the generation on the WebAPK
 server.
 
 On Android, build  
-//chrome/android/webapk/shell_apk:new_splash_webapk
-(new_splash='Android')  
+//chrome/android/webapk/shell_apk:webapk  
 On ChromeOS, build  
-//chrome/android/webapk/shell_apk:webapk
+//chrome/android/webapk/shell_apk:webapk_chromeos  
 
 Both can be customized via [shell_apk/manifest/bound_manifest_config.json](https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/webapk/shell_apk/manifest/bound_manifest_config.json)
 

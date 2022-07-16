@@ -29,6 +29,11 @@ class SurfaceObserver {
   // Called when the content size changes.
   virtual void OnContentSizeChanged(Surface* surface) {}
 
+  // Called when desk state of the window changes.
+  // |state| is the index of the desk which the window moved to,
+  // or -1 for a window assigned to all desks.
+  virtual void OnDeskChanged(Surface* surface, int state) {}
+
  protected:
   virtual ~SurfaceObserver() {}
 };

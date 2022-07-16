@@ -15,6 +15,10 @@ class PrefetchService;
 class PrefetchBackgroundTask {
  public:
   explicit PrefetchBackgroundTask(PrefetchService* service);
+
+  PrefetchBackgroundTask(const PrefetchBackgroundTask&) = delete;
+  PrefetchBackgroundTask& operator=(const PrefetchBackgroundTask&) = delete;
+
   virtual ~PrefetchBackgroundTask();
 
   // Tells the system how to reschedule the running of next background task when
@@ -34,8 +38,6 @@ class PrefetchBackgroundTask {
 
   // The PrefetchService owns |this|, so a raw pointer is OK.
   PrefetchService* service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchBackgroundTask);
 };
 
 }  // namespace offline_pages

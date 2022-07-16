@@ -159,7 +159,7 @@ TEST(OriginIdentifierValueMapTest, IterateNonempty) {
   ContentSettingsPattern sub_pattern =
       ContentSettingsPattern::FromString("sub.google.com");
   base::Time t1 = base::Time::Now();
-  base::Time t2 = t1 + base::TimeDelta::FromSeconds(1);
+  base::Time t2 = t1 + base::Seconds(1);
   map.SetValue(pattern, ContentSettingsPattern::Wildcard(),
                ContentSettingsType::COOKIES, t1, base::Value(1), {});
   map.SetValue(sub_pattern, ContentSettingsPattern::Wildcard(),
@@ -198,8 +198,7 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
                {base::Time(), content_settings::SessionModel::Durable});
   map.SetValue(sub_pattern, ContentSettingsPattern::Wildcard(),
                ContentSettingsType::COOKIES, t1, base::Value(2),
-               {content_settings::GetConstraintExpiration(
-                    base::TimeDelta::FromSeconds(100)),
+               {content_settings::GetConstraintExpiration(base::Seconds(100)),
                 content_settings::SessionModel::UserSession});
 
   {
@@ -226,7 +225,7 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
     EXPECT_EQ(rule.session_model, content_settings::SessionModel::Durable);
     ASSERT_FALSE(rule_iterator->HasNext());
   }
-  base::Time t2 = t1 + base::TimeDelta::FromSeconds(1);
+  base::Time t2 = t1 + base::Seconds(1);
   map.SetValue(pattern, ContentSettingsPattern::Wildcard(),
                ContentSettingsType::COOKIES, t2, base::Value(3), {});
 

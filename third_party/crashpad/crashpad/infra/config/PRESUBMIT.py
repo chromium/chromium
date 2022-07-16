@@ -14,13 +14,15 @@
 
 
 USE_PYTHON3 = True
+PRESUBMIT_VERSION = '2.0.0'
 
 
-def CheckChangeOnUpload(input_api, output_api):
+def CheckChangedLUCIConfigs(input_api, output_api):
     return input_api.canned_checks.CheckChangedLUCIConfigs(
         input_api, output_api)
 
 
-def CheckChangeOnCommit(input_api, output_api):
-    return input_api.canned_checks.CheckChangedLUCIConfigs(
-        input_api, output_api)
+def CheckLucicfgGenOutputMain(input_api, output_api):
+    return input_api.RunTests(
+        input_api.canned_checks.CheckLucicfgGenOutput(input_api, output_api,
+                                                      'main.star'))

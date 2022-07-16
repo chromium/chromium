@@ -16,7 +16,6 @@
 #include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/sequence_checker.h"
@@ -52,6 +51,10 @@ struct TestInfo;
 class WebTestResultPrinter {
  public:
   WebTestResultPrinter(std::ostream* output, std::ostream* error);
+
+  WebTestResultPrinter(const WebTestResultPrinter&) = delete;
+  WebTestResultPrinter& operator=(const WebTestResultPrinter&) = delete;
+
   ~WebTestResultPrinter() = default;
 
   void reset() { state_ = DURING_TEST; }
@@ -104,8 +107,6 @@ class WebTestResultPrinter {
 
   bool capture_text_only_ = false;
   bool encode_binary_data_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestResultPrinter);
 };
 
 class WebTestControlHost : public WebContentsObserver,

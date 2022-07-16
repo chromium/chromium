@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
@@ -28,7 +27,7 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -47,9 +46,9 @@
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_data_remover.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/arc/test/connection_holder_util.h"
@@ -97,6 +96,10 @@ namespace arc {
 class FakeAuthInstance : public mojom::AuthInstance {
  public:
   FakeAuthInstance() = default;
+
+  FakeAuthInstance(const FakeAuthInstance&) = delete;
+  FakeAuthInstance& operator=(const FakeAuthInstance&) = delete;
+
   ~FakeAuthInstance() override = default;
 
   void Init(mojo::PendingRemote<mojom::AuthHost> host_remote,
@@ -193,10 +196,13 @@ class FakeAuthInstance : public mojom::AuthInstance {
   std::string last_removed_account_;
 
   base::WeakPtrFactory<FakeAuthInstance> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FakeAuthInstance);
 };
 
 class ArcAuthServiceTest : public InProcessBrowserTest {
+ public:
+  ArcAuthServiceTest(const ArcAuthServiceTest&) = delete;
+  ArcAuthServiceTest& operator=(const ArcAuthServiceTest&) = delete;
+
  protected:
   ArcAuthServiceTest() = default;
 
@@ -455,8 +461,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
   // Not owned.
   ArcAuthService* auth_service_ = nullptr;
   ArcBridgeService* arc_bridge_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAuthServiceTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, GetPrimaryAccountForGaiaAccounts) {
@@ -845,6 +849,12 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, AccountRemovalsArePropagated) {
 class ArcRobotAccountAuthServiceTest : public ArcAuthServiceTest {
  public:
   ArcRobotAccountAuthServiceTest() = default;
+
+  ArcRobotAccountAuthServiceTest(const ArcRobotAccountAuthServiceTest&) =
+      delete;
+  ArcRobotAccountAuthServiceTest& operator=(
+      const ArcRobotAccountAuthServiceTest&) = delete;
+
   ~ArcRobotAccountAuthServiceTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -877,9 +887,9 @@ class ArcRobotAccountAuthServiceTest : public ArcAuthServiceTest {
 
  private:
   void SetUpPolicyClient() {
-    policy::BrowserPolicyConnectorChromeOS* const connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
-    policy::DeviceCloudPolicyManagerChromeOS* const cloud_policy_manager =
+    policy::BrowserPolicyConnectorAsh* const connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
+    policy::DeviceCloudPolicyManagerAsh* const cloud_policy_manager =
         connector->GetDeviceCloudPolicyManager();
 
     cloud_policy_manager->StartConnection(
@@ -892,8 +902,6 @@ class ArcRobotAccountAuthServiceTest : public ArcAuthServiceTest {
     cloud_policy_client->SetDMToken("fake-dm-token");
     cloud_policy_client->client_id_ = "client-id";
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ArcRobotAccountAuthServiceTest);
 };
 
 // Tests that when ARC requests account info for a demo session account,

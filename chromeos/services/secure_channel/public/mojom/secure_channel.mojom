@@ -6,6 +6,7 @@ module chromeos.secure_channel.mojom;
 
 import "chromeos/components/multidevice/mojom/multidevice_types.mojom";
 import "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom";
+import "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom";
 
 enum ConnectionAttemptFailureReason {
   // The local device could not authenticate with the remote device. This likely
@@ -126,6 +127,10 @@ struct ConnectionMetadata {
   string channel_binding_data;
 };
 
+// Allows clients to send messages to a remote device, or registers local files
+// to receive incoming files transferred from a remote device. Can also be used
+// to get metadata of the underlying connection. Called from Secure Channel
+// client side API implementation.
 interface Channel {
   // If the connection is dropped (e.g., by the remote device or due to
   // connection instability), this reason is supplied to the
@@ -139,6 +144,16 @@ interface Channel {
   // disconnected with reason |kConnectionDroppedReason|, and the SendMessage()
   // callback is never invoked.
   SendMessage(string message) => ();
+
+  // Registers |payload_files| to receive an incoming file transfer with
+  // the given |payload_id|. Callers can listen to progress information about
+  // the transfer through the |listener|. Returns whether the file was
+  // successfully registered. The |listener| will be disconnected after the file
+  // transfer is complete.
+  RegisterPayloadFile(int64 payload_id,
+                      PayloadFiles payload_files,
+                      pending_remote<FilePayloadListener> listener)
+      => (bool success);
 
   GetConnectionMetadata() => (ConnectionMetadata metadata);
 };

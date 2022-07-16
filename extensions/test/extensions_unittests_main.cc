@@ -77,7 +77,7 @@ void ExtensionsTestSuite::Initialize() {
   extensions::RegisterPathProvider();
 
   base::FilePath extensions_shell_and_test_pak_path;
-  base::PathService::Get(base::DIR_MODULE, &extensions_shell_and_test_pak_path);
+  base::PathService::Get(base::DIR_ASSETS, &extensions_shell_and_test_pak_path);
   ui::ResourceBundle::InitSharedInstanceWithPakPath(
       extensions_shell_and_test_pak_path.AppendASCII(
           "extensions_shell_and_test.pak"));

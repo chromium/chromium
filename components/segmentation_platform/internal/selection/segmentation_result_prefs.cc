@@ -4,7 +4,7 @@
 
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 
-#include "base/util/values/values_util.h"
+#include "base/json/values_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/segmentation_platform/internal/constants.h"
@@ -34,7 +34,7 @@ void SegmentationResultPrefs::SaveSegmentationResultToPref(
   segmentation_result.SetIntKey("segment_id", selected_segment->segment_id);
   segmentation_result.SetBoolKey("in_use", selected_segment->in_use);
   segmentation_result.SetKey(
-      "selection_time", util::TimeToValue(selected_segment->selection_time));
+      "selection_time", base::TimeToValue(selected_segment->selection_time));
   dictionary->SetKey(result_key, std::move(segmentation_result));
 }
 
@@ -55,7 +55,7 @@ SegmentationResultPrefs::ReadSegmentationResultFromPref(
   absl::optional<int> segment_id = segmentation_result.FindIntKey("segment_id");
   absl::optional<bool> in_use = segmentation_result.FindBoolKey("in_use");
   absl::optional<base::Time> selection_time =
-      util::ValueToTime(segmentation_result.FindPath("selection_time"));
+      base::ValueToTime(segmentation_result.FindPath("selection_time"));
 
   SelectedSegment selected_segment(
       static_cast<OptimizationTarget>(segment_id.value()));

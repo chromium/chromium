@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "build/build_config.h"
 #include "chrome/browser/share/proto/share_history_message.pb.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
@@ -46,6 +47,9 @@ class ShareHistory : public base::SupportsUserData::Data {
   // WINDOW value. A window of -1 means all available history.
   virtual void GetFlatShareHistory(GetFlatHistoryCallback callback,
                                    int window = -1);
+
+  virtual void Clear(const base::Time& start = base::Time(),
+                     const base::Time& end = base::Time());
 
   // Don't call this.
   //

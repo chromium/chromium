@@ -8,9 +8,7 @@
 #include <stdint.h>
 
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "ui/base/page_transition_types.h"
@@ -49,6 +47,12 @@ extern const int64_t kTaskId;
 // Set of test functions to manipulate a SerializedNavigationEntry.
 class SerializedNavigationEntryTestHelper {
  public:
+  SerializedNavigationEntryTestHelper() = delete;
+  SerializedNavigationEntryTestHelper(
+      const SerializedNavigationEntryTestHelper&) = delete;
+  SerializedNavigationEntryTestHelper& operator=(
+      const SerializedNavigationEntryTestHelper&) = delete;
+
   // Compares the two entries. This uses EXPECT_XXX on each member, if your test
   // needs to stop after this wrap calls to this in EXPECT_NO_FATAL_FAILURE.
   static void ExpectNavigationEquals(const SerializedNavigationEntry& expected,
@@ -89,9 +93,6 @@ class SerializedNavigationEntryTestHelper {
   static void SetReplacedEntryData(
       const SerializedNavigationEntry::ReplacedNavigationEntryData& data,
       SerializedNavigationEntry* navigation);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SerializedNavigationEntryTestHelper);
 };
 
 }  // namespace sessions

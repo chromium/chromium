@@ -20,9 +20,7 @@ namespace {
 const char kStartOnboardingQueryParam[] = "onboarding";
 const char kStartReceivingQueryParam[] = "receive";
 
-constexpr base::TimeDelta kShutoffTimeout = base::TimeDelta::FromMinutes(5);
-constexpr base::TimeDelta kOnboardingWaitTimeout =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kShutoffTimeout = base::Minutes(5);
 
 std::string GetTimestampString() {
   return base::NumberToString(
@@ -39,10 +37,7 @@ NearbyShareDelegateImpl::NearbyShareDelegateImpl(
           FROM_HERE,
           kShutoffTimeout,
           base::BindRepeating(&NearbyShareDelegateImpl::DisableHighVisibility,
-                              base::Unretained(this))),
-      onboarding_wait_timer_(FROM_HERE,
-                             kOnboardingWaitTimeout,
-                             base::BindRepeating([]() {})) {
+                              base::Unretained(this))) {
   ash::SessionController::Get()->AddObserver(this);
 }
 
@@ -73,15 +68,7 @@ void NearbyShareDelegateImpl::EnableHighVisibility() {
   if (!nearby_share_service_)
     return;
 
-  // Automatically enable the feature if onboarding is already completed.
-  if (nearby_share_service_->GetSettings()->IsOnboardingComplete())
-    nearby_share_service_->GetSettings()->SetEnabled(true);
-
   settings_opener_->ShowSettingsPage(kStartReceivingQueryParam);
-
-  if (!nearby_share_service_->GetSettings()->GetEnabled()) {
-    onboarding_wait_timer_.Reset();
-  }
 
   is_enable_high_visibility_request_active_ = true;
 }
@@ -118,24 +105,13 @@ void NearbyShareDelegateImpl::SetNearbyShareServiceForTest(
 void NearbyShareDelegateImpl::AddNearbyShareServiceObservers() {
   DCHECK(nearby_share_service_);
   DCHECK(!nearby_share_service_->HasObserver(this));
-  DCHECK(!settings_receiver_.is_bound());
   nearby_share_service_->AddObserver(this);
-  nearby_share_service_->GetSettings()->AddSettingsObserver(
-      settings_receiver_.BindNewPipeAndPassRemote());
 }
 
 void NearbyShareDelegateImpl::RemoveNearbyShareServiceObservers() {
   DCHECK(nearby_share_service_);
   DCHECK(nearby_share_service_->HasObserver(this));
   nearby_share_service_->RemoveObserver(this);
-  settings_receiver_.reset();
-}
-
-void NearbyShareDelegateImpl::OnEnabledChanged(bool enabled) {
-  if (enabled && onboarding_wait_timer_.IsRunning()) {
-    onboarding_wait_timer_.Stop();
-    EnableHighVisibility();
-  }
 }
 
 void NearbyShareDelegateImpl::OnHighVisibilityChangeRequested() {

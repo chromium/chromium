@@ -254,7 +254,6 @@ void {{ base_fixture_name }}::ValidateEventsImpl(uint32_t target_interface_versi
 
   if (ShouldSkip(target_interface_version)) {
     GTEST_SKIP();
-    return;
   }
 
   {% for step in steps %}

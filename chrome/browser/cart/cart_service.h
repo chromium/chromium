@@ -5,6 +5,7 @@
 #define CHROME_BROWSER_CART_CART_SERVICE_H_
 
 #include "base/callback_helpers.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -14,6 +15,8 @@
 #include "chrome/browser/cart/cart_metrics_tracker.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/cart/discount_url_loader.h"
+#include "chrome/browser/cart/fetch_discount_worker.h"
+#include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -26,7 +29,7 @@ class DiscountURLLoader;
 class FetchDiscountWorker;
 
 // Service to maintain and read/write data for chrome cart module.
-// TODO(crbug.com/1157892) Make this BrowserContext-based and get rid of Profile
+// TODO(crbug.com/1253633) Make this BrowserContext-based and get rid of Profile
 // usage so that we can modularize this.
 class CartService : public history::HistoryServiceObserver,
                     public KeyedService {
@@ -60,10 +63,10 @@ class CartService : public history::HistoryServiceObserver,
   void AddCart(const std::string& domain,
                const absl::optional<GURL>& cart_url,
                const cart_db::ChromeCartContentProto& proto);
-  // Delete the cart from certain domain in the cart service. When not
+  // Delete the cart from the same domain as |url| in the cart service. When not
   // |ignore_remove_status|, we keep the cart if it has been permanently
   // removed.
-  void DeleteCart(const std::string& domain, bool ignore_remove_status);
+  void DeleteCart(const GURL& url, bool ignore_remove_status);
   // Only load carts with fake data in the database.
   void LoadCartsWithFakeData(CartDB::LoadCallback callback);
   // Gets called when discounts are available for the given cart_url.
@@ -115,6 +118,10 @@ class CartService : public history::HistoryServiceObserver,
                      const history::DeletionInfo& deletion_info) override;
   // Returns whether a discount with |rule_id| is used or not.
   bool IsDiscountUsed(const std::string& rule_id);
+  // Records timestamp of the latest fetch for discount.
+  void RecordFetchTimestamp();
+  // Called by discount worker to pass new coupons to CouponService.
+  void UpdateFreeListingCoupons(const CouponService::CouponsMap& map);
   // KeyedService:
   void Shutdown() override;
 
@@ -123,6 +130,9 @@ class CartService : public history::HistoryServiceObserver,
   friend class CartServiceTest;
   friend class CartServiceDiscountTest;
   friend class CartServiceBrowserDiscountTest;
+  friend class CartServiceDiscountFetchTest;
+  friend class CartServiceCouponTest;
+  friend class FetchDiscountWorkerBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(CartHandlerNtpModuleFakeDataTest,
                            TestEnableFakeData);
 
@@ -183,25 +193,36 @@ class CartService : public history::HistoryServiceObserver,
   // Set discount_link_fetcher_ for testing purpose.
   void SetCartDiscountLinkFetcherForTesting(
       std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher);
+  // Set fetch_discount_worker_ for testing purpose.
+  void SetFetchDiscountWorkerForTesting(
+      std::unique_ptr<FetchDiscountWorker> fetch_discount_worker);
+  // Set coupon_service_ for testing purpose.
+  void SetCouponServiceForTesting(CouponService* coupon_service);
   // Returns whether a URL should be skipped based on server-side bloom filter.
   bool ShouldSkip(const GURL& url);
   void CacheUsedDiscounts(const cart_db::ChromeCartContentProto& proto);
   void CleanUpDiscounts(cart_db::ChromeCartContentProto proto);
   // A callback to to keep entries of removed carts when deletion.
   void OnDeleteCart(bool success, std::vector<CartDB::KeyAndValue> proto_pairs);
+  // A callback for when enable status for cart-related features has changed.
+  void OnCartFeaturesChanged(const std::string& pref_name);
+  // Get if cart and discount feature are both enabled.
+  bool IsCartAndDiscountEnabled();
 
   Profile* profile_;
   std::unique_ptr<CartDB> cart_db_;
-  history::HistoryService* history_service_;
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
   absl::optional<base::Value> domain_name_mapping_;
   absl::optional<base::Value> domain_cart_url_mapping_;
   std::unique_ptr<FetchDiscountWorker> fetch_discount_worker_;
+  std::unique_ptr<FetchDiscountWorker> fetch_discount_worker_for_testing_;
   std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher_;
   optimization_guide::OptimizationGuideDecider* optimization_guide_decider_;
   std::unique_ptr<CartMetricsTracker> metrics_tracker_;
   std::unique_ptr<DiscountURLLoader> discount_url_loader_;
+  CouponService* coupon_service_;
+  PrefChangeRegistrar pref_change_registrar_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };
 

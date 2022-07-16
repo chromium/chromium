@@ -6,6 +6,7 @@ package org.chromium.components.page_info;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -34,6 +36,7 @@ public class PageInfoRowView extends FrameLayout {
         public CharSequence subtitle;
         public Runnable clickCallback;
         public boolean decreaseIconSize;
+        public boolean singleLineSubTitle;
         public @ColorRes int rowTint;
     }
 
@@ -47,10 +50,13 @@ public class PageInfoRowView extends FrameLayout {
         mIcon = findViewById(R.id.page_info_row_icon);
         mTitle = findViewById(R.id.page_info_row_title);
         mSubtitle = findViewById(R.id.page_info_row_subtitle);
+        setVisibility(GONE);
     }
 
     public void setParams(ViewParams params) {
         setVisibility(params.visible ? VISIBLE : GONE);
+        if (!params.visible) return;
+
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         mIcon.setImageResource(params.iconResId);
         if (params.decreaseIconSize) {
@@ -68,6 +74,8 @@ public class PageInfoRowView extends FrameLayout {
         mTitle.setText(params.title);
         mTitle.setVisibility(params.title != null ? VISIBLE : GONE);
         updateSubtitle(params.subtitle);
+        mSubtitle.setSingleLine(params.singleLineSubTitle);
+        mSubtitle.setEllipsize(params.singleLineSubTitle ? TextUtils.TruncateAt.END : null);
         if (params.title != null && params.subtitle != null) {
             mTitle.setPadding(0, 0, 0, ViewUtils.dpToPx(displayMetrics, 4));
         }
@@ -77,7 +85,8 @@ public class PageInfoRowView extends FrameLayout {
             getChildAt(0).setOnClickListener((v) -> params.clickCallback.run());
         }
         if (params.rowTint != 0) {
-            setBackgroundColor(params.rowTint);
+            setBackgroundColor(AppCompatResources.getColorStateList(getContext(), params.rowTint)
+                                       .getDefaultColor());
         }
     }
 

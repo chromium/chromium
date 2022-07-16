@@ -28,6 +28,9 @@ class TestPaymentsClient : public payments::PaymentsClient {
       signin::IdentityManager* identity_manager,
       PersonalDataManager* personal_data_manager);
 
+  TestPaymentsClient(const TestPaymentsClient&) = delete;
+  TestPaymentsClient& operator=(const TestPaymentsClient&) = delete;
+
   ~TestPaymentsClient() override;
 
   void GetUnmaskDetails(
@@ -63,6 +66,11 @@ class TestPaymentsClient : public payments::PaymentsClient {
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrateCardsCallback callback) override;
 
+  void SelectChallengeOption(
+      const SelectChallengeOptionRequestDetails& details,
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                              const std::string&)> callback) override;
+
   // Some metrics are affected by the latency of GetUnmaskDetails, so it is
   // useful to control whether or not GetUnmaskDetails() is responded to.
   void ShouldReturnUnmaskDetailsImmediately(bool should_return_unmask_details);
@@ -84,11 +92,20 @@ class TestPaymentsClient : public payments::PaymentsClient {
   void SetUseInvalidLegalMessageInGetUploadDetails(
       bool use_invalid_legal_message);
 
+  void set_select_challenge_option_result(
+      AutofillClient::PaymentsRpcResult result) {
+    select_challenge_option_result_ = result;
+  }
+
   payments::PaymentsClient::UnmaskDetails* unmask_details() {
     return &unmask_details_;
   }
   const payments::PaymentsClient::UnmaskRequestDetails* unmask_request() {
     return unmask_request_;
+  }
+  const payments::PaymentsClient::SelectChallengeOptionRequestDetails*
+  select_challenge_option_request() {
+    return &select_challenge_option_request_;
   }
   int detected_values_in_upload_details() const { return detected_values_; }
   const std::vector<AutofillProfile>& addresses_in_upload_details() const {
@@ -115,6 +132,8 @@ class TestPaymentsClient : public payments::PaymentsClient {
   payments::PaymentsClient::UnmaskDetails unmask_details_;
   const payments::PaymentsClient::UnmaskRequestDetails* unmask_request_ =
       nullptr;
+  payments::PaymentsClient::SelectChallengeOptionRequestDetails
+      select_challenge_option_request_;
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
   std::vector<AutofillProfile> upload_details_addresses_;
   std::vector<AutofillProfile> upload_card_addresses_;
@@ -126,8 +145,8 @@ class TestPaymentsClient : public payments::PaymentsClient {
   std::unique_ptr<std::unordered_map<std::string, std::string>> save_result_;
   bool use_invalid_legal_message_ = false;
   std::unique_ptr<base::Value> LegalMessage();
-
-  DISALLOW_COPY_AND_ASSIGN(TestPaymentsClient);
+  absl::optional<AutofillClient::PaymentsRpcResult>
+      select_challenge_option_result_;
 };
 
 }  // namespace payments

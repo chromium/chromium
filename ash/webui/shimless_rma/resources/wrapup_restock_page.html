@@ -1,0 +1,23 @@
+<style include="cr-shared-style shimless-rma-shared">
+  iron-icon {
+    width: 300px;
+    height: 200px;
+  }
+</style>
+
+<base-page orientation="column">
+  <div slot="header">
+    <!-- TODO(gavindodd): Update text for i18n -->
+    <h1>Restock mainboard</h1>
+    <p>Choose to shutdown and restock mainboard or continue to finalize this
+      device.
+    </p>
+    <cr-button id="shutdown" on-click="onShutdownButtonClicked_">
+      Shutdown
+    </cr-button>
+  </div>
+  <div slot="body">
+    <!-- TODO(gavindodd): Replace with real image -->
+    <iron-icon icon="shimless:shimless-placeholder"></iron-icon>
+  </div>
+</base-page>

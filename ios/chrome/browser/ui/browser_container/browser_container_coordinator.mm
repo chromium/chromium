@@ -157,16 +157,14 @@
   if (!IsScreenTimeIntegrationEnabled())
     return;
 
-  if (@available(iOS 14, *)) {
-    ScreenTimeCoordinator* screenTimeCoordinator =
-        [[ScreenTimeCoordinator alloc]
-            initWithBaseViewController:self.viewController
-                               browser:self.browser];
-    [screenTimeCoordinator start];
-    self.viewController.screenTimeViewController =
-        screenTimeCoordinator.viewController;
-    self.screenTimeCoordinator = screenTimeCoordinator;
-  }
+  ScreenTimeCoordinator* screenTimeCoordinator = [[ScreenTimeCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [screenTimeCoordinator start];
+  self.viewController.screenTimeViewController =
+      screenTimeCoordinator.viewController;
+  self.screenTimeCoordinator = screenTimeCoordinator;
+
 #endif
 }
 

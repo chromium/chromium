@@ -9,8 +9,8 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/process/process_metrics.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 
 // NearOomMonitor tracks memory stats to estimate whether we are in "near-OOM"
@@ -23,6 +23,9 @@ class NearOomMonitor {
   // Returns nullptr when the monitor isn't enabled by
   // OomInterventionConfig::is_swap_monitor_enabled().
   static NearOomMonitor* GetInstance();
+
+  NearOomMonitor(const NearOomMonitor&) = delete;
+  NearOomMonitor& operator=(const NearOomMonitor&) = delete;
 
   virtual ~NearOomMonitor();
 
@@ -78,8 +81,6 @@ class NearOomMonitor {
 
   bool component_callback_is_enabled_;
   base::android::ScopedJavaGlobalRef<jobject> j_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(NearOomMonitor);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_OOM_INTERVENTION_NEAR_OOM_MONITOR_H_

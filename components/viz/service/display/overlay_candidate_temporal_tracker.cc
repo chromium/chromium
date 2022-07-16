@@ -9,7 +9,7 @@ namespace viz {
 OverlayCandidateTemporalTracker::OverlayCandidateTemporalTracker() = default;
 
 void OverlayCandidateTemporalTracker::Reset() {
-  ratio_rate_category = 0;
+  ratio_rate_category_ = 0;
 }
 
 int OverlayCandidateTemporalTracker::GetModeledPowerGain(
@@ -17,8 +17,8 @@ int OverlayCandidateTemporalTracker::GetModeledPowerGain(
     const OverlayCandidateTemporalTracker::Config& config,
     int display_area) {
   // Model of proportional power gained by hw overlay promotion.
-  return static_cast<int>((ratio_rate_category - config.damage_rate_threshold) *
-                          display_area);
+  return static_cast<int>(
+      (ratio_rate_category_ - config.damage_rate_threshold) * display_area);
 }
 
 void OverlayCandidateTemporalTracker::CategorizeDamageRatioRate(
@@ -27,9 +27,9 @@ void OverlayCandidateTemporalTracker::CategorizeDamageRatioRate(
   float mean_ratio_rate = MeanFrameRatioRate(config);
   // Simple implementation of hysteresis. If the value is far enough away from
   // the stored value it will be updated.
-  if (std::abs(mean_ratio_rate - ratio_rate_category) >=
+  if (std::abs(mean_ratio_rate - ratio_rate_category_) >=
       config.damage_rate_hysteresis_range) {
-    ratio_rate_category = mean_ratio_rate;
+    ratio_rate_category_ = mean_ratio_rate;
   }
 }
 
@@ -45,24 +45,24 @@ void OverlayCandidateTemporalTracker::AddRecord(
     ResourceId resource_id,
     const OverlayCandidateTemporalTracker::Config& config,
     bool force_resource_update) {
-  if ((prev_resource_id != resource_id || force_resource_update) &&
-      frame_record[(next_index + kNumRecords - 1) % kNumRecords] !=
+  if ((prev_resource_id_ != resource_id || force_resource_update) &&
+      frame_record_[(next_index_ + kNumRecords - 1) % kNumRecords] !=
           curr_frame) {
-    frame_record[next_index] = curr_frame;
-    damage_record[next_index] = damage_area_ratio;
-    next_index = (next_index + 1) % kNumRecords;
-    prev_resource_id = resource_id;
+    frame_record_[next_index_] = curr_frame;
+    damage_record_[next_index_] = damage_area_ratio;
+    next_index_ = (next_index_ + 1) % kNumRecords;
+    prev_resource_id_ = resource_id;
 
     CategorizeDamageRatioRate(curr_frame, config);
   }
-  absent = false;
+  absent_ = false;
 }
 
 uint64_t OverlayCandidateTemporalTracker::LastChangeFrameCount(
     uint64_t curr_frame) const {
   uint64_t diff_now_prev =
       (curr_frame -
-       frame_record[((next_index - 1) + kNumRecords) % kNumRecords]);
+       frame_record_[((next_index_ - 1) + kNumRecords) % kNumRecords]);
 
   return diff_now_prev;
 }
@@ -77,16 +77,16 @@ float OverlayCandidateTemporalTracker::MeanFrameRatioRate(
   // |skip_single_interruption|.
   bool skip_single_interruption = true;
   for (int i = 0; i < kNumRecords; i++) {
-    if (i != next_index) {
+    if (i != next_index_) {
       uint64_t diff_frames =
-          (frame_record[i] -
-           frame_record[((i - 1) + kNumRecords) % kNumRecords]);
+          (frame_record_[i] -
+           frame_record_[((i - 1) + kNumRecords) % kNumRecords]);
       if (skip_single_interruption &&
           diff_frames > config.max_frames_inactive) {
         skip_single_interruption = false;
         num_records--;
       } else if (diff_frames != 0) {
-        float damage_ratio = damage_record[i];
+        float damage_ratio = damage_record_[i];
         mean_ratio_rate += damage_ratio / diff_frames;
       }
     }
@@ -96,8 +96,8 @@ float OverlayCandidateTemporalTracker::MeanFrameRatioRate(
 }
 
 bool OverlayCandidateTemporalTracker::IsAbsent() {
-  bool ret = absent;
-  absent = true;
+  bool ret = absent_;
+  absent_ = true;
   return ret;
 }
 

@@ -57,31 +57,31 @@ namespace blink {
 template <>
 inline int16_t CSSPrimitiveValue::ConvertTo() const {
   DCHECK(IsNumber());
-  return clampTo<int16_t>(GetDoubleValue());
+  return ClampTo<int16_t>(GetDoubleValue());
 }
 
 template <>
 inline uint16_t CSSPrimitiveValue::ConvertTo() const {
   DCHECK(IsNumber());
-  return clampTo<uint16_t>(GetDoubleValue());
+  return ClampTo<uint16_t>(GetDoubleValue());
 }
 
 template <>
 inline int CSSPrimitiveValue::ConvertTo() const {
   DCHECK(IsNumber());
-  return clampTo<int>(GetDoubleValue());
+  return ClampTo<int>(GetDoubleValue());
 }
 
 template <>
 inline unsigned CSSPrimitiveValue::ConvertTo() const {
   DCHECK(IsNumber());
-  return clampTo<unsigned>(GetDoubleValue());
+  return ClampTo<unsigned>(GetDoubleValue());
 }
 
 template <>
 inline float CSSPrimitiveValue::ConvertTo() const {
   DCHECK(IsNumber());
-  return clampTo<float>(GetDoubleValue());
+  return ClampTo<float>(GetDoubleValue());
 }
 
 // TODO(sashab): Move these to CSSIdentifierValueMappings.h, and update to use
@@ -786,6 +786,105 @@ inline OpticalSizing CSSIdentifierValue::ConvertTo() const {
 
   NOTREACHED();
   return kAutoOpticalSizing;
+}
+
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(
+    FontDescription::FontSynthesisWeight font_synthesis_weight)
+    : CSSValue(kIdentifierClass) {
+  switch (font_synthesis_weight) {
+    case FontDescription::kAutoFontSynthesisWeight:
+      value_id_ = CSSValueID::kAuto;
+      return;
+    case FontDescription::kNoneFontSynthesisWeight:
+      value_id_ = CSSValueID::kNone;
+      return;
+  }
+
+  NOTREACHED();
+  value_id_ = CSSValueID::kAuto;
+}
+
+template <>
+inline FontDescription::FontSynthesisWeight CSSIdentifierValue::ConvertTo()
+    const {
+  switch (value_id_) {
+    case CSSValueID::kAuto:
+      return FontDescription::kAutoFontSynthesisWeight;
+    case CSSValueID::kNone:
+      return FontDescription::kNoneFontSynthesisWeight;
+    default:
+      break;
+  }
+
+  NOTREACHED();
+  return FontDescription::kAutoFontSynthesisWeight;
+}
+
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(
+    FontDescription::FontSynthesisStyle font_synthesis_style)
+    : CSSValue(kIdentifierClass) {
+  switch (font_synthesis_style) {
+    case FontDescription::kAutoFontSynthesisStyle:
+      value_id_ = CSSValueID::kAuto;
+      return;
+    case FontDescription::kNoneFontSynthesisStyle:
+      value_id_ = CSSValueID::kNone;
+      return;
+  }
+
+  NOTREACHED();
+  value_id_ = CSSValueID::kAuto;
+}
+
+template <>
+inline FontDescription::FontSynthesisStyle CSSIdentifierValue::ConvertTo()
+    const {
+  switch (value_id_) {
+    case CSSValueID::kAuto:
+      return FontDescription::kAutoFontSynthesisStyle;
+    case CSSValueID::kNone:
+      return FontDescription::kNoneFontSynthesisStyle;
+    default:
+      break;
+  }
+
+  NOTREACHED();
+  return FontDescription::kAutoFontSynthesisStyle;
+}
+
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(
+    FontDescription::FontSynthesisSmallCaps font_synthesis_small_caps)
+    : CSSValue(kIdentifierClass) {
+  switch (font_synthesis_small_caps) {
+    case FontDescription::kAutoFontSynthesisSmallCaps:
+      value_id_ = CSSValueID::kAuto;
+      return;
+    case FontDescription::kNoneFontSynthesisSmallCaps:
+      value_id_ = CSSValueID::kNone;
+      return;
+  }
+
+  NOTREACHED();
+  value_id_ = CSSValueID::kAuto;
+}
+
+template <>
+inline FontDescription::FontSynthesisSmallCaps CSSIdentifierValue::ConvertTo()
+    const {
+  switch (value_id_) {
+    case CSSValueID::kAuto:
+      return FontDescription::kAutoFontSynthesisSmallCaps;
+    case CSSValueID::kNone:
+      return FontDescription::kNoneFontSynthesisSmallCaps;
+    default:
+      break;
+  }
+
+  NOTREACHED();
+  return FontDescription::kAutoFontSynthesisSmallCaps;
 }
 
 template <>
@@ -1552,6 +1651,8 @@ inline EContainerType CSSIdentifierValue::ConvertTo() const {
       return kContainerTypeInlineSize;
     case CSSValueID::kBlockSize:
       return kContainerTypeBlockSize;
+    case CSSValueID::kSize:
+      return kContainerTypeSize;
     default:
       break;
   }

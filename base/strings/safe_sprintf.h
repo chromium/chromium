@@ -5,11 +5,11 @@
 #ifndef BASE_STRINGS_SAFE_SPRINTF_H_
 #define BASE_STRINGS_SAFE_SPRINTF_H_
 
-#include "build/build_config.h"
-
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+
+#include "build/build_config.h"
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
 // For ssize_t

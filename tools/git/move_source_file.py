@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -27,10 +27,9 @@ import sys
 import mffr
 
 if __name__ == '__main__':
-  # Need to add the directory containing sort-headers.py to the Python
+  # Need to add the directory containing sort_sources.py to the Python
   # classpath.
   sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..')))
-sort_headers = __import__('sort-headers')
 import sort_sources
 
 
@@ -65,21 +64,6 @@ def MakeDestinationPath(from_path, to_path):
   return to_path
 
 
-def UpdateIncludePathForBlink(path):
-  """Updates |path| as it would be when used in an include statement in Blink.
-
-  As Blink has its 'public' and 'Source' folders in the include search path,
-  these prefixes of file paths are not included in include statements. For
-  example, if |path| is 'public/foo/bar.h', the matching include statement
-  is '#include "foo/bar.h"'.
-  """
-  for prefix in ('public/', 'Source/'):
-    if path.startswith(prefix):
-      return path[len(prefix):]
-
-  return path
-
-
 def MoveFile(from_path, to_path):
   """Performs a git mv command to move a file from |from_path| to |to_path|.
   """
@@ -87,36 +71,20 @@ def MoveFile(from_path, to_path):
     raise Exception('Fatal: Failed to run git mv command.')
 
 
-def UpdateIncludes(from_path, to_path, in_blink):
+def UpdateIncludes(from_path, to_path):
   """Updates any includes of |from_path| to |to_path|. Paths supplied to this
   function have been mapped to forward slashes.
   """
-  from_include_path = from_path
-  to_include_path = to_path
-  if in_blink:
-    from_include_path = UpdateIncludePathForBlink(from_include_path)
-    to_include_path = UpdateIncludePathForBlink(to_include_path)
-
   # This handles three types of include/imports:
   # . C++ includes.
   # . Object-C imports
   # . Imports in mojom files.
   files_with_changed_includes = mffr.MultiFileFindReplace(
-      r'(#?(include|import)\s*["<])%s([>"]);?' % re.escape(from_include_path),
-      r'\1%s\3' % to_include_path,
-      ['*.cc', '*.h', '*.m', '*.mm', '*.cpp', '*.mojom'])
-
-  # Reorder headers in files that changed.
-  for changed_file in files_with_changed_includes:
-
-    def AlwaysConfirm(a, b):
-      return True
-
-    sort_headers.FixFileWithConfirmFunction(changed_file, AlwaysConfirm, True,
-                                            in_blink)
+      r'(#?(include|import)\s*["<])%s([>"]);?' % re.escape(from_path),
+      r'\1%s\3' % to_path, ['*.cc', '*.h', '*.m', '*.mm', '*.cpp', '*.mojom'])
 
 
-def UpdatePostMove(from_path, to_path, in_blink):
+def UpdatePostMove(from_path, to_path):
   """Given a file that has moved from |from_path| to |to_path|,
   updates the moved file's include guard to match the new path and
   updates all references to the file in other source files. Also tries
@@ -128,13 +96,13 @@ def UpdatePostMove(from_path, to_path, in_blink):
   extension = os.path.splitext(from_path)[1]
 
   if extension in ['.h', '.hh', '.mojom']:
-    UpdateIncludes(from_path, to_path, in_blink)
+    UpdateIncludes(from_path, to_path)
     if extension == '.mojom':
       # For mojom files, update includes of generated headers.
-      UpdateIncludes(from_path + '.h', to_path + '.h', in_blink)
-      UpdateIncludes(from_path + '-blink.h', to_path + '-blink.h', in_blink)
-      UpdateIncludes(from_path + '-shared.h', to_path + '-shared.h', in_blink)
-      UpdateIncludes(from_path + '-forward.h', to_path + '-forward.h', in_blink)
+      UpdateIncludes(from_path + '.h', to_path + '.h')
+      UpdateIncludes(from_path + '-blink.h', to_path + '-blink.h')
+      UpdateIncludes(from_path + '-shared.h', to_path + '-shared.h')
+      UpdateIncludes(from_path + '-forward.h', to_path + '-forward.h')
     else:
       UpdateIncludeGuard(from_path, to_path)
 
@@ -243,8 +211,6 @@ def main():
 
   cwd = os.getcwd()
   parent = os.path.dirname(cwd)
-  in_blink = (os.path.basename(parent) == 'third_party' and
-              os.path.basename(cwd) == 'WebKit')
 
   parser = optparse.OptionParser(usage='%prog FROM_PATH... TO_PATH')
   parser.add_option('--already_moved', action='store_true',
@@ -278,7 +244,7 @@ def main():
     to_path = MakeDestinationPath(from_path, orig_to_path)
     if not opts.already_moved:
       MoveFile(from_path, to_path)
-    UpdatePostMove(from_path, to_path, in_blink)
+    UpdatePostMove(from_path, to_path)
   return 0
 
 

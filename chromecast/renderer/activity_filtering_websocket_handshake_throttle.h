@@ -25,6 +25,12 @@ class ActivityFilteringWebSocketHandshakeThrottle
  public:
   explicit ActivityFilteringWebSocketHandshakeThrottle(
       ActivityUrlFilter* filter);
+
+  ActivityFilteringWebSocketHandshakeThrottle(
+      const ActivityFilteringWebSocketHandshakeThrottle&) = delete;
+  ActivityFilteringWebSocketHandshakeThrottle& operator=(
+      const ActivityFilteringWebSocketHandshakeThrottle&) = delete;
+
   ~ActivityFilteringWebSocketHandshakeThrottle() override;
 
   // blink::WebSocketHandshakeThrottle implementation:
@@ -34,8 +40,6 @@ class ActivityFilteringWebSocketHandshakeThrottle
 
  private:
   ActivityUrlFilter* const url_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActivityFilteringWebSocketHandshakeThrottle);
 };
 
 }  // namespace chromecast

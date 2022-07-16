@@ -7,21 +7,23 @@
 This executable script symbolizes proto perfetto traces.
 """
 
+import os
 import optparse
 import sys
 
 import symbolize_trace
 import flag_utils
+import display_in_browser
 
 
 def _CreateOptionParser():
   parser = optparse.OptionParser(description=('Symbolizes proto perfetto trace.'
                                 ' Takes a proto trace file as input.'),
-                                usage='%prog <proto_trace_file> [options] ',
+                                usage='%prog [options] <proto_trace_file>',
                                 prog='tools/tracing/symbolize_trace',
                                 conflict_handler='resolve')
 
-  parser = flag_utils.AddLoggingOptions(parser)
+  parser.add_option_group(flag_utils.GeneralOptions(parser))
   parser.add_option_group(flag_utils.SymbolizeOptions(parser))
 
   return parser
@@ -35,7 +37,8 @@ def main():
   # Argument error checking
   trace_file = None
   if not args:
-    raise Exception('Proto trace file argument is required.')
+    raise Exception('Proto trace file argument is required. Please pass the '
+                    'trace file to symbolize.')
   elif len(args) > 1:
     raise Exception('Too many arguments passed. Pass only one proto trace file.')
   else:
@@ -43,6 +46,10 @@ def main():
 
   # Symbolize Trace
   symbolize_trace.SymbolizeTrace(trace_file=trace_file, options=options)
+
+  if options.view:
+    # Only symbolizes proto traces, so trace format must be proto.
+    display_in_browser.DisplayInBrowser(options.output_file)
 
 if __name__ == '__main__':
   sys.exit(main())

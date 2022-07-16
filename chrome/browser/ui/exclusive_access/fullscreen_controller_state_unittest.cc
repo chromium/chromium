@@ -66,6 +66,7 @@ class FullscreenControllerTestWindow : public TestBrowserWindow,
       ExclusiveAccessBubbleType bubble_type,
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
       bool force_update) override;
+  bool IsExclusiveAccessBubbleDisplayed() const override;
   void OnExclusiveAccessUserInput() override;
   bool CanUserExitFullscreen() const override;
 
@@ -187,6 +188,10 @@ void FullscreenControllerTestWindow::UpdateExclusiveAccessExitBubbleContent(
     ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
     bool force_update) {}
 
+bool FullscreenControllerTestWindow::IsExclusiveAccessBubbleDisplayed() const {
+  return false;
+}
+
 void FullscreenControllerTestWindow::OnExclusiveAccessUserInput() {}
 
 bool FullscreenControllerTestWindow::CanUserExitFullscreen() const {
@@ -204,6 +209,11 @@ class FullscreenControllerStateUnitTest : public BrowserWithTestWindowTest,
  public:
   FullscreenControllerStateUnitTest();
 
+  FullscreenControllerStateUnitTest(const FullscreenControllerStateUnitTest&) =
+      delete;
+  FullscreenControllerStateUnitTest& operator=(
+      const FullscreenControllerStateUnitTest&) = delete;
+
   // FullscreenControllerStateTest:
   void SetUp() override;
   void TearDown() override;
@@ -217,8 +227,6 @@ class FullscreenControllerStateUnitTest : public BrowserWithTestWindowTest,
   bool ShouldSkipStateAndEventPair(State state, Event event) override;
   Browser* GetBrowser() override;
   FullscreenControllerTestWindow* window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenControllerStateUnitTest);
 };
 
 FullscreenControllerStateUnitTest::FullscreenControllerStateUnitTest() =
@@ -747,10 +755,10 @@ class FullscreenChangeObserver : public content::WebContentsObserver {
       : WebContentsObserver(web_contents) {
   }
 
-  MOCK_METHOD2(DidToggleFullscreenModeForTab, void(bool, bool));
+  FullscreenChangeObserver(const FullscreenChangeObserver&) = delete;
+  FullscreenChangeObserver& operator=(const FullscreenChangeObserver&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(FullscreenChangeObserver);
+  MOCK_METHOD2(DidToggleFullscreenModeForTab, void(bool, bool));
 };
 
 // Tests that going from tab fullscreen -> browser fullscreen causes an explicit

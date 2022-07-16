@@ -118,6 +118,10 @@ class ToplevelWindowEventHandler::ScopedWindowResizer
   ScopedWindowResizer(ToplevelWindowEventHandler* handler,
                       std::unique_ptr<WindowResizer> resizer,
                       bool grab_capture);
+
+  ScopedWindowResizer(const ScopedWindowResizer&) = delete;
+  ScopedWindowResizer& operator=(const ScopedWindowResizer&) = delete;
+
   ~ScopedWindowResizer() override;
 
   // Returns true if the drag moves the window and does not resize.
@@ -144,8 +148,6 @@ class ToplevelWindowEventHandler::ScopedWindowResizer
 
   // Set to true if OnWindowDestroying() is received.
   bool window_destroying_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedWindowResizer);
 };
 
 ToplevelWindowEventHandler::ScopedWindowResizer::ScopedWindowResizer(
@@ -322,7 +324,8 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
   if (window_resizer_ && !in_gesture_drag_)
     return;
 
-  if (window_resizer_ && window_resizer_->resizer()->GetTarget() != target)
+  if (window_resizer_ && window_resizer_->resizer()->GetTarget() != target &&
+      !target->bounds().IsEmpty())
     return;
 
   if (event->details().touch_points() > 2) {

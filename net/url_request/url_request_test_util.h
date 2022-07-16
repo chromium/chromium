@@ -17,9 +17,9 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
@@ -31,7 +31,6 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/same_party_context.h"
 #include "net/disk_cache/disk_cache.h"
-#include "net/ftp/ftp_network_layer.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_layer.h"
@@ -352,9 +351,10 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   int OnBeforeURLRequest(URLRequest* request,
                          CompletionOnceCallback callback,
                          GURL* new_url) override;
-  int OnBeforeStartTransaction(URLRequest* request,
-                               CompletionOnceCallback callback,
-                               HttpRequestHeaders* headers) override;
+  int OnBeforeStartTransaction(
+      URLRequest* request,
+      const HttpRequestHeaders& headers,
+      OnBeforeStartTransactionCallback callback) override;
   int OnHeadersReceived(
       URLRequest* request,
       CompletionOnceCallback callback,

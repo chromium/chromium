@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/webxr/android/ar_compositor_delegate_provider.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -24,6 +23,10 @@ class ArCoreDeviceProvider : public device::VRDeviceProvider {
  public:
   explicit ArCoreDeviceProvider(
       webxr::ArCompositorDelegateProvider compositor_delegate_provider);
+
+  ArCoreDeviceProvider(const ArCoreDeviceProvider&) = delete;
+  ArCoreDeviceProvider& operator=(const ArCoreDeviceProvider&) = delete;
+
   ~ArCoreDeviceProvider() override;
   void Initialize(
       base::RepeatingCallback<void(
@@ -42,7 +45,6 @@ class ArCoreDeviceProvider : public device::VRDeviceProvider {
 
   std::unique_ptr<device::ArCoreDevice> arcore_device_;
   bool initialized_ = false;
-  DISALLOW_COPY_AND_ASSIGN(ArCoreDeviceProvider);
 };
 
 }  // namespace webxr

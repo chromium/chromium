@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 12: Uncaught Error: An expected error
+CONSOLE ERROR: Uncaught Error: An expected error
 Test that the window.onerror handler in resources/js-test.js stops asynchronous tests
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

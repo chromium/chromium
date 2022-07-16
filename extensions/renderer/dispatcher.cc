@@ -35,6 +35,7 @@
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
@@ -86,6 +87,7 @@
 #include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
 #include "extensions/renderer/test_features_native_handler.h"
 #include "extensions/renderer/test_native_handler.h"
+#include "extensions/renderer/trace_util.h"
 #include "extensions/renderer/user_gestures_native_handler.h"
 #include "extensions/renderer/utils_native_handler.h"
 #include "extensions/renderer/v8_context_native_handler.h"
@@ -113,7 +115,10 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 using blink::WebDocument;
 using blink::WebSecurityPolicy;
@@ -197,11 +202,12 @@ class HandleScopeHelper {
       : handle_scope_(script_context->isolate()),
         context_scope_(script_context->v8_context()) {}
 
+  HandleScopeHelper(const HandleScopeHelper&) = delete;
+  HandleScopeHelper& operator=(const HandleScopeHelper&) = delete;
+
  private:
   v8::HandleScope handle_scope_;
   v8::Context::Scope context_scope_;
-
-  DISALLOW_COPY_AND_ASSIGN(HandleScopeHelper);
 };
 
 base::LazyInstance<WorkerScriptContextSet>::DestructorAtExit
@@ -287,7 +293,7 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
   // this enabled-ness is too late.
   WorkerThreadDispatcher::Get()->Init(RenderThread::Get());
 
-  // Register WebSecurityPolicy whitelists for the chrome-extension:// scheme.
+  // Register WebSecurityPolicy allowlists for the chrome-extension:// scheme.
   WebString extension_scheme(WebString::FromASCII(kExtensionScheme));
 
   // Extension resources are HTTP-like and safe to expose to the fetch API. The
@@ -303,11 +309,11 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs(
       extension_scheme);
 
-  // TODO(crbug.com/1184892): This is a temporary hack to allow
-  // SharedArrayBuffer access in extension processes. Remove once we add support
-  // for extension opt-in into cross-origin isolation.
-  WebSecurityPolicy::RegisterURLSchemeAsAllowingSharedArrayBuffers(
-      extension_scheme);
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kAllowSharedArrayBuffersUnconditionally)) {
+    WebSecurityPolicy::RegisterURLSchemeAsAllowingSharedArrayBuffers(
+        extension_scheme);
+  }
 
   // chrome-extension: resources should be allowed to register ServiceWorkers.
   WebSecurityPolicy::RegisterURLSchemeAsAllowingServiceWorkers(
@@ -324,7 +330,7 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
     InitOriginPermissions(extension);
   }
 
-  EnableCustomElementWhiteList();
+  EnableCustomElementAllowlist();
 }
 
 Dispatcher::~Dispatcher() {
@@ -579,7 +585,16 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     v8::Local<v8::Value> result = context->RunScript(
         v8_helpers::ToV8StringUnsafe(isolate, "service_worker"), script,
         base::BindOnce(&CrashOnException));
-    CHECK(result->IsFunction());
+    // This *should* always be a function (because the script is included as
+    // part of Chrome). However, it may not be in the case of e.g. binary
+    // corruption, or if certain JS hooks ran before the script (though that
+    // should be rare, since this is running right after the context is
+    // created).
+    // https://crbug.com/1260773.
+    if (!result->IsFunction()) {
+      NOTREACHED();
+      return;
+    }
     main_function = result.As<v8::Function>();
   }
 
@@ -773,6 +788,8 @@ void Dispatcher::ExecuteDeclarativeScript(content::RenderFrame* render_frame,
                                           const ExtensionId& extension_id,
                                           const std::string& script_id,
                                           const GURL& url) {
+  TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::ExecuteDeclarativeScript",
+                                 extension_id);
   script_injection_manager_->ExecuteDeclarativeScript(
       render_frame, tab_id, extension_id, script_id, url);
 }
@@ -780,6 +797,7 @@ void Dispatcher::ExecuteDeclarativeScript(content::RenderFrame* render_frame,
 void Dispatcher::ExecuteCode(mojom::ExecuteCodeParamsPtr param,
                              mojom::LocalFrame::ExecuteCodeCallback callback,
                              content::RenderFrame* render_frame) {
+  TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::ExecuteCode", param->host_id->id);
   script_injection_manager_->HandleExecuteCode(
       std::move(param), std::move(callback), render_frame);
 }
@@ -973,6 +991,8 @@ void Dispatcher::OnRendererAssociatedRequest(
 }
 
 void Dispatcher::ActivateExtension(const std::string& extension_id) {
+  TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::ActivateExtension", extension_id);
+
   const Extension* extension =
       RendererExtensionRegistry::Get()->GetByID(extension_id);
   if (!extension) {
@@ -1075,6 +1095,8 @@ void Dispatcher::LoadExtensions(
 }
 
 void Dispatcher::UnloadExtension(const std::string& extension_id) {
+  TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::UnloadExtension", extension_id);
+
   // See comment in OnLoaded for why it would be nice, but perhaps incorrect,
   // to CHECK here rather than guarding.
   // TODO(devlin): This may be fixed by crbug.com/528026. Monitor, and
@@ -1096,7 +1118,7 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
 
   // If the extension is later reloaded with a different set of permissions,
   // we'd like it to get a new isolated world ID, so that it can pick up the
-  // changed origin whitelist.
+  // changed origin allowlist.
   ScriptInjection::RemoveIsolatedWorld(extension_id);
 
   // Inform the bindings system that the contexts will be removed to allow time
@@ -1131,6 +1153,8 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
 void Dispatcher::SuspendExtension(
     const std::string& extension_id,
     mojom::Renderer::SuspendExtensionCallback callback) {
+  TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::SuspendExtension", extension_id);
+
   // Dispatch the suspend event. This doesn't go through the standard event
   // dispatch machinery because it requires special handling. We need to let
   // the browser know when we are starting and stopping the event dispatch, so
@@ -1184,7 +1208,7 @@ void Dispatcher::UpdateDefaultPolicyHostRestrictions(
 void Dispatcher::UpdateTabSpecificPermissions(const std::string& extension_id,
                                               URLPatternSet new_hosts,
                                               int tab_id,
-                                              bool update_origin_whitelist) {
+                                              bool update_origin_allowlist) {
   const Extension* extension =
       RendererExtensionRegistry::Get()->GetByID(extension_id);
   if (!extension)
@@ -1195,13 +1219,14 @@ void Dispatcher::UpdateTabSpecificPermissions(const std::string& extension_id,
                                         extensions::ManifestPermissionSet(),
                                         new_hosts.Clone(), new_hosts.Clone()));
 
-  if (update_origin_whitelist)
+  if (update_origin_allowlist)
     UpdateOriginPermissions(*extension);
 }
 
 void Dispatcher::UpdateUserScripts(
     base::ReadOnlySharedMemoryRegion shared_memory,
     mojom::HostIDPtr host_id) {
+  TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::UpdateUserScripts", host_id->id);
   user_script_set_manager_->OnUpdateUserScripts(std::move(shared_memory),
                                                 *host_id);
 }
@@ -1209,12 +1234,12 @@ void Dispatcher::UpdateUserScripts(
 void Dispatcher::ClearTabSpecificPermissions(
     const std::vector<std::string>& extension_ids,
     int tab_id,
-    bool update_origin_whitelist) {
+    bool update_origin_allowlist) {
   for (const std::string& id : extension_ids) {
     const Extension* extension = RendererExtensionRegistry::Get()->GetByID(id);
     if (extension) {
       extension->permissions_data()->ClearTabSpecificPermissions(tab_id);
-      if (update_origin_whitelist)
+      if (update_origin_allowlist)
         UpdateOriginPermissions(*extension);
     }
   }
@@ -1392,7 +1417,7 @@ void Dispatcher::UpdateOriginPermissions(const Extension& extension) {
   }
 }
 
-void Dispatcher::EnableCustomElementWhiteList() {
+void Dispatcher::EnableCustomElementAllowlist() {
   blink::WebCustomElement::AddEmbedderCustomElementName("appview");
   blink::WebCustomElement::AddEmbedderCustomElementName("extensionoptions");
   blink::WebCustomElement::AddEmbedderCustomElementName("webview");
@@ -1461,7 +1486,7 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
   // it is possible to gain access to a given GuestView element by declaring the
   // necessary permission in a manifest file. We don't want to define
   // error-providing elements in other extension contexts as the names could
-  // collide with names used in the extension. Also, WebUIs may be whitelisted
+  // collide with names used in the extension. Also, WebUIs may be allowlisted
   // to use GuestViews, but we don't define the error-providing elements in this
   // case.
   const bool is_platform_app =
@@ -1469,7 +1494,7 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
       !context->IsForServiceWorker() && context->extension() &&
       context->extension()->is_platform_app();
   const bool app_view_permission_exists = is_platform_app;
-  // The webview permission is also available to internal whitelisted
+  // The webview permission is also available to internal allowlisted
   // extensions, but not to extensions in general.
   const bool web_view_permission_exists = is_platform_app;
 

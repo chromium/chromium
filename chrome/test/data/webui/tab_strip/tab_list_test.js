@@ -4,30 +4,28 @@
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {TabElement} from 'chrome://tab-strip/tab.js';
-import {TabGroupElement} from 'chrome://tab-strip/tab_group.js';
-import {setScrollAnimationEnabledForTesting, TabListElement} from 'chrome://tab-strip/tab_list.js';
-import {TabStripEmbedderProxyImpl} from 'chrome://tab-strip/tab_strip_embedder_proxy.js';
-import {TabData, TabsApiProxyImpl} from 'chrome://tab-strip/tabs_api_proxy.js';
+import {TabElement} from 'chrome://tab-strip.top-chrome/tab.js';
+import {TabGroupElement} from 'chrome://tab-strip.top-chrome/tab_group.js';
+import {setScrollAnimationEnabledForTesting, TabListElement} from 'chrome://tab-strip.top-chrome/tab_list.js';
+import {PageRemote, Tab} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
+import {TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.m.js';
+import {flushTasks} from '../../test_util.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 
-import {TestTabStripEmbedderProxy} from './test_tab_strip_embedder_proxy.js';
 import {TestTabsApiProxy} from './test_tabs_api_proxy.js';
 
 suite('TabList', () => {
   /** @type {!TabListElement} */
   let tabList;
 
-  /** @type {!TestTabStripEmbedderProxy} */
-  let testTabStripEmbedderProxy;
-
   /** @type {!TestTabsApiProxy} */
   let testTabsApiProxy;
 
-  /** @type {!Array<!TabData>} */
+  /** @type {!PageRemote} */
+  let callbackRouter;
+
+  /** @type {!Array<!Tab>} */
   const tabs = [
     {
       active: true,
@@ -36,6 +34,7 @@ suite('TabList', () => {
       index: 0,
       pinned: false,
       title: 'Tab 1',
+      url: {url: 'about:blank'},
     },
     {
       active: false,
@@ -44,6 +43,7 @@ suite('TabList', () => {
       index: 1,
       pinned: false,
       title: 'Tab 2',
+      url: {url: 'about:blank'},
     },
     {
       active: false,
@@ -52,27 +52,28 @@ suite('TabList', () => {
       index: 2,
       pinned: false,
       title: 'Tab 3',
+      url: {url: 'about:blank'},
     },
   ];
 
   /**
-   * @param {!TabData} tab
+   * @param {!Tab} tab
    * @param {number} index
    */
   function pinTabAt(tab, index) {
     const changeInfo = {index: index, pinned: true};
     const updatedTab = Object.assign({}, tab, changeInfo);
-    webUIListenerCallback('tab-updated', updatedTab);
+    callbackRouter.tabUpdated(updatedTab);
   }
 
   /**
-   * @param {!TabData} tab
+   * @param {!Tab} tab
    * @param {number} index
    */
   function unpinTabAt(tab, index) {
     const changeInfo = {index: index, pinned: false};
     const updatedTab = Object.assign({}, tab, changeInfo);
-    webUIListenerCallback('tab-updated', updatedTab);
+    callbackRouter.tabUpdated(updatedTab);
   }
 
   /** @return {!NodeList<!TabElement>} */
@@ -103,6 +104,20 @@ suite('TabList', () => {
     });
   }
 
+  /**
+   * @param {!Tab} tab1
+   * @param {!Tab} tab2
+   */
+  function verifyTab(tab1, tab2) {
+    assertEquals(tab1.active, tab2.active);
+    assertDeepEquals(tab1.alertStates, tab2.alertStates);
+    assertEquals(tab1.id, tab2.id);
+    assertEquals(tab1.index, tab2.index);
+    assertEquals(tab1.pinned, tab2.pinned);
+    assertEquals(tab1.title, tab2.title);
+    assertDeepEquals(tab1.url, tab2.url);
+  }
+
   setup(async () => {
     document.documentElement.dir = 'ltr';
     document.body.innerHTML = '';
@@ -111,18 +126,17 @@ suite('TabList', () => {
     testTabsApiProxy = new TestTabsApiProxy();
     testTabsApiProxy.setTabs(tabs);
     TabsApiProxyImpl.instance_ = testTabsApiProxy;
+    callbackRouter = testTabsApiProxy.getCallbackRouterRemote();
 
-    testTabStripEmbedderProxy = new TestTabStripEmbedderProxy();
-    testTabStripEmbedderProxy.setColors({
+    testTabsApiProxy.setColors({
       '--background-color': 'white',
       '--foreground-color': 'black',
     });
-    testTabStripEmbedderProxy.setLayout({
+    testTabsApiProxy.setLayout({
       '--height': '100px',
       '--width': '150px',
     });
-    testTabStripEmbedderProxy.setVisible(true);
-    TabStripEmbedderProxyImpl.instance_ = testTabStripEmbedderProxy;
+    testTabsApiProxy.setVisible(true);
 
     setScrollAnimationEnabledForTesting(false);
 
@@ -135,38 +149,38 @@ suite('TabList', () => {
 
   teardown(() => {
     testTabsApiProxy.reset();
-    testTabStripEmbedderProxy.reset();
   });
 
   test('sets theme colors on init', async () => {
-    await testTabStripEmbedderProxy.whenCalled('getColors');
+    await testTabsApiProxy.whenCalled('getColors');
     assertEquals(tabList.style.getPropertyValue('--background-color'), 'white');
     assertEquals(tabList.style.getPropertyValue('--foreground-color'), 'black');
   });
 
   test('updates theme colors when theme changes', async () => {
-    testTabStripEmbedderProxy.setColors({
+    testTabsApiProxy.setColors({
       '--background-color': 'pink',
       '--foreground-color': 'blue',
     });
     webUIListenerCallback('theme-changed');
-    await testTabStripEmbedderProxy.whenCalled('getColors');
+    await testTabsApiProxy.whenCalled('getColors');
     assertEquals(tabList.style.getPropertyValue('--background-color'), 'pink');
     assertEquals(tabList.style.getPropertyValue('--foreground-color'), 'blue');
   });
 
   test('sets layout variables on init', async () => {
-    await testTabStripEmbedderProxy.whenCalled('getLayout');
+    await testTabsApiProxy.whenCalled('getLayout');
     assertEquals(tabList.style.getPropertyValue('--height'), '100px');
     assertEquals(tabList.style.getPropertyValue('--width'), '150px');
   });
 
   test('updates layout variables when layout changes', async () => {
-    webUIListenerCallback('layout-changed', {
+    callbackRouter.layoutChanged({
       '--height': '10000px',
       '--width': '10px',
     });
-    await testTabStripEmbedderProxy.whenCalled('getLayout');
+    await flushTasks();
+    await testTabsApiProxy.whenCalled('getLayout');
     assertEquals(tabList.style.getPropertyValue('--height'), '10000px');
     assertEquals(tabList.style.getPropertyValue('--width'), '10px');
   });
@@ -206,12 +220,13 @@ suite('TabList', () => {
   });
 
   test('calculates the correct unpinned tab width and height', async () => {
-    webUIListenerCallback('layout-changed', {
+    callbackRouter.layoutChanged({
       '--tabstrip-tab-thumbnail-height': '132px',
       '--tabstrip-tab-thumbnail-width': '200px',
       '--tabstrip-tab-title-height': '15px',
     });
-    await testTabStripEmbedderProxy.whenCalled('getLayout');
+    await flushTasks();
+    await testTabsApiProxy.whenCalled('getLayout');
 
     const tabListStyle = window.getComputedStyle(tabList);
     assertEquals(
@@ -229,31 +244,38 @@ suite('TabList', () => {
     });
   });
 
-  test('adds a new tab element when a tab is added in same window', () => {
-    const appendedTab = {
-      active: false,
-      alertStates: [],
-      id: 3,
-      index: 3,
-      title: 'New tab',
-    };
-    webUIListenerCallback('tab-created', appendedTab);
-    let tabElements = getUnpinnedTabs();
-    assertEquals(tabs.length + 1, tabElements.length);
-    assertEquals(tabElements[tabs.length].tab, appendedTab);
+  test(
+      'adds a new tab element when a tab is added in same window', async () => {
+        const appendedTab = {
+          active: false,
+          alertStates: [],
+          id: 3,
+          index: 3,
+          pinned: false,
+          title: 'New tab',
+          url: {url: 'about:blank'},
+        };
+        callbackRouter.tabCreated(appendedTab);
+        await flushTasks();
+        let tabElements = getUnpinnedTabs();
+        assertEquals(tabs.length + 1, tabElements.length);
+        verifyTab(tabElements[tabs.length].tab, appendedTab);
 
-    const prependedTab = {
-      active: false,
-      alertStates: [],
-      id: 4,
-      index: 0,
-      title: 'New tab',
-    };
-    webUIListenerCallback('tab-created', prependedTab);
-    tabElements = getUnpinnedTabs();
-    assertEquals(tabs.length + 2, tabElements.length);
-    assertEquals(tabElements[0].tab, prependedTab);
-  });
+        const prependedTab = {
+          active: false,
+          alertStates: [],
+          id: 4,
+          index: 0,
+          pinned: false,
+          title: 'New tab',
+          url: {url: 'about:blank'},
+        };
+        callbackRouter.tabCreated(prependedTab);
+        await flushTasks();
+        tabElements = getUnpinnedTabs();
+        assertEquals(tabs.length + 2, tabElements.length);
+        verifyTab(tabElements[0].tab, prependedTab);
+      });
 
   test('PlacesTabElement', () => {
     const pinnedTab =
@@ -368,15 +390,17 @@ suite('TabList', () => {
       async () => {
         tabs.forEach(pinTabAt);
         for (let i = 0; i < 4; i++) {
-          webUIListenerCallback('tab-created', {
+          callbackRouter.tabCreated({
             active: false,
             alertStates: [],
             id: tabs.length + i,
             index: tabs.length + i,
             pinned: true,
             title: 'Pinned tab',
+            url: {url: 'about:blank'},
           });
         }
+        await flushTasks();
         await tabList.animationPromises;
 
         const pinnedTabs = getPinnedTabs();
@@ -395,15 +419,17 @@ suite('TabList', () => {
       async () => {
         tabs.forEach(pinTabAt);
         for (let i = 0; i < 4; i++) {
-          webUIListenerCallback('tab-created', {
+          callbackRouter.tabCreated({
             active: false,
             alertStates: [],
             id: tabs.length + i,
             index: tabs.length + i,
             pinned: true,
             title: 'Pinned tab',
+            url: {url: 'about:blank'},
           });
         }
+        await flushTasks();
         await tabList.animationPromises;
 
         const pinnedTabs = getPinnedTabs();
@@ -441,8 +467,9 @@ suite('TabList', () => {
     // Group the tab at indexToGroup.
     const unpinnedTabs = getUnpinnedTabs();
     const tabToGroup = unpinnedTabs[indexToGroup];
-    webUIListenerCallback(
-        'tab-group-state-changed', tabToGroup.tab.id, indexToGroup, 'group0');
+    callbackRouter.tabGroupStateChanged(
+        tabToGroup.tab.id, indexToGroup, 'group0');
+    await flushTasks();
 
     const groupElement =
         /** @type {!TabGroupElement} */ (tabToGroup.parentElement);
@@ -482,9 +509,9 @@ suite('TabList', () => {
     // Group all tabs except for the first one.
     const ungroupedTab = getUnpinnedTabs()[0];
     tabs.slice(1).forEach(tab => {
-      webUIListenerCallback(
-          'tab-group-state-changed', tab.id, tab.index, 'group0');
+      callbackRouter.tabGroupStateChanged(tab.id, tab.index, 'group0');
     });
+    await flushTasks();
 
     // Move the group to index 0.
     const tabGroup = getTabGroups()[0];
@@ -495,7 +522,7 @@ suite('TabList', () => {
     testPlaceElementAnimationParams(ungroupedTab, -1, 0);
   });
 
-  test('AddNewTabGroup', () => {
+  test('AddNewTabGroup', async () => {
     const appendedTab = {
       active: false,
       alertStates: [],
@@ -503,8 +530,10 @@ suite('TabList', () => {
       id: 3,
       index: 3,
       title: 'New tab in group',
+      url: {url: 'about:blank'},
     };
-    webUIListenerCallback('tab-created', appendedTab);
+    callbackRouter.tabCreated(appendedTab);
+    await flushTasks();
     let tabElements = getUnpinnedTabs();
     assertEquals(tabs.length + 1, tabElements.length);
     assertEquals(getTabGroups().length, 1);
@@ -519,8 +548,10 @@ suite('TabList', () => {
       id: 4,
       index: 0,
       title: 'New tab',
+      url: {url: 'about:blank'},
     };
-    webUIListenerCallback('tab-created', prependedTab);
+    callbackRouter.tabCreated(prependedTab);
+    await flushTasks();
     tabElements = getUnpinnedTabs();
     assertEquals(tabs.length + 2, tabElements.length);
     assertEquals(getTabGroups().length, 2);
@@ -529,7 +560,7 @@ suite('TabList', () => {
         tabElements[prependedTab.index].parentElement.tagName);
   });
 
-  test('AddTabToExistingGroup', () => {
+  test('AddTabToExistingGroup', async () => {
     const appendedTab = {
       active: false,
       alertStates: [],
@@ -537,8 +568,10 @@ suite('TabList', () => {
       id: 3,
       index: 3,
       title: 'New tab in group',
+      url: {url: 'about:blank'},
     };
-    webUIListenerCallback('tab-created', appendedTab);
+    callbackRouter.tabCreated(appendedTab);
+    await flushTasks();
     const appendedTabInSameGroup = {
       active: false,
       alertStates: [],
@@ -546,8 +579,10 @@ suite('TabList', () => {
       id: 4,
       index: 4,
       title: 'New tab in same group',
+      url: {url: 'about:blank'},
     };
-    webUIListenerCallback('tab-created', appendedTabInSameGroup);
+    callbackRouter.tabCreated(appendedTabInSameGroup);
+    await flushTasks();
     const tabGroups = getTabGroups();
     assertEquals(tabGroups.length, 1);
     assertEquals(tabGroups[0].children.item(0).tab.id, appendedTab.id);
@@ -557,42 +592,47 @@ suite('TabList', () => {
 
   // Test that the TabList does not add a non-grouped tab to a tab group at the
   // same index.
-  test('HandleSingleTabBeforeGroup', () => {
+  test('HandleSingleTabBeforeGroup', async () => {
     const tabInGroup = {
       active: false,
       alertStates: [],
       groupId: 'group0',
       id: 3,
       index: 3,
+      pinned: false,
       title: 'New tab in group',
+      url: {url: 'about:blank'},
     };
-    webUIListenerCallback('tab-created', tabInGroup);
+    callbackRouter.tabCreated(tabInGroup);
+    await flushTasks();
     const tabNotInGroup = {
       active: false,
       alertStates: [],
       id: 4,
       index: 3,
+      pinned: false,
       title: 'New tab not in group',
+      url: {url: 'about:blank'},
     };
-    webUIListenerCallback('tab-created', tabNotInGroup);
+    callbackRouter.tabCreated(tabNotInGroup);
+    await flushTasks();
     const tabsContainerChildren =
         tabList.shadowRoot.querySelector('#unpinnedTabs').children;
     assertEquals(tabsContainerChildren.item(3).tagName, 'TABSTRIP-TAB');
-    assertEquals(tabsContainerChildren.item(3).tab, tabNotInGroup);
+    verifyTab(tabsContainerChildren.item(3).tab, tabNotInGroup);
     assertEquals(tabsContainerChildren.item(4).tagName, 'TABSTRIP-TAB-GROUP');
   });
 
-  test('HandleGroupedTabBeforeDifferentGroup', () => {
+  test('HandleGroupedTabBeforeDifferentGroup', async () => {
     const tabInOriginalGroup = tabs[1];
-    webUIListenerCallback(
-        'tab-group-state-changed', tabInOriginalGroup.id,
-        tabInOriginalGroup.index, 'originalGroup');
+    callbackRouter.tabGroupStateChanged(
+        tabInOriginalGroup.id, tabInOriginalGroup.index, 'originalGroup');
 
     // Create another group from the tab before group A.
     const tabInPrecedingGroup = tabs[0];
-    webUIListenerCallback(
-        'tab-group-state-changed', tabInPrecedingGroup.id,
-        tabInPrecedingGroup.index, 'precedingGroup');
+    callbackRouter.tabGroupStateChanged(
+        tabInPrecedingGroup.id, tabInPrecedingGroup.index, 'precedingGroup');
+    await flushTasks();
     const tabsContainerChildren =
         tabList.shadowRoot.querySelector('#unpinnedTabs').children;
 
@@ -609,17 +649,16 @@ suite('TabList', () => {
     assertEquals(originalGroup.children[0].tab.id, tabInOriginalGroup.id);
   });
 
-  test('HandleGroupedTabBeforeSameGroup', () => {
+  test('HandleGroupedTabBeforeSameGroup', async () => {
     const originalTabInGroup = tabs[1];
-    webUIListenerCallback(
-        'tab-group-state-changed', originalTabInGroup.id,
-        originalTabInGroup.index, 'sameGroup');
+    callbackRouter.tabGroupStateChanged(
+        originalTabInGroup.id, originalTabInGroup.index, 'sameGroup');
 
     // Create another group from the tab before group A.
     const precedingTabInGroup = tabs[0];
-    webUIListenerCallback(
-        'tab-group-state-changed', precedingTabInGroup.id,
-        precedingTabInGroup.index, 'sameGroup');
+    callbackRouter.tabGroupStateChanged(
+        precedingTabInGroup.id, precedingTabInGroup.index, 'sameGroup');
+    await flushTasks();
 
     const tabGroups = getTabGroups();
     const tabGroup = tabGroups[0];
@@ -632,48 +671,55 @@ suite('TabList', () => {
 
   test('removes a tab when tab is removed from current window', async () => {
     const tabToRemove = tabs[0];
-    webUIListenerCallback('tab-removed', tabToRemove.id);
+    callbackRouter.tabRemoved(tabToRemove.id);
+    await flushTasks();
     await tabList.animationPromises;
     assertEquals(tabs.length - 1, getUnpinnedTabs().length);
   });
 
-  test('updates a tab with new tab data when a tab is updated', () => {
+  test('updates a tab with new tab data when a tab is updated', async () => {
     const tabToUpdate = tabs[0];
     const changeInfo = {title: 'A new title'};
     const updatedTab = Object.assign({}, tabToUpdate, changeInfo);
-    webUIListenerCallback('tab-updated', updatedTab);
+    callbackRouter.tabUpdated(updatedTab);
+    await flushTasks();
     const tabElements = getUnpinnedTabs();
-    assertEquals(tabElements[0].tab, updatedTab);
+    verifyTab(tabElements[0].tab, updatedTab);
   });
 
-  test('updates tabs when a new tab is activated', () => {
+  test('updates tabs when a new tab is activated', async () => {
     const tabElements = getUnpinnedTabs();
 
     // Mock activating the 2nd tab
-    webUIListenerCallback('tab-active-changed', tabs[1].id);
+    callbackRouter.tabActiveChanged(tabs[1].id);
+    await flushTasks();
     assertFalse(tabElements[0].tab.active);
     assertTrue(tabElements[1].tab.active);
     assertFalse(tabElements[2].tab.active);
   });
 
-  test('adds a pinned tab to its designated container', () => {
-    webUIListenerCallback('tab-created', {
+  test('adds a pinned tab to its designated container', async () => {
+    callbackRouter.tabCreated({
       active: false,
       alertStates: [],
+      id: tabs.length,
       index: 0,
       title: 'New pinned tab',
       pinned: true,
+      url: {url: 'about:blank'},
     });
+    await flushTasks();
     const pinnedTabElements = getPinnedTabs();
     assertEquals(pinnedTabElements.length, 1);
     assertTrue(pinnedTabElements[0].tab.pinned);
   });
 
-  test('moves pinned tabs to designated containers', () => {
+  test('moves pinned tabs to designated containers', async () => {
     const tabToPin = tabs[1];
     const changeInfo = {index: 0, pinned: true};
     let updatedTab = Object.assign({}, tabToPin, changeInfo);
-    webUIListenerCallback('tab-updated', updatedTab);
+    callbackRouter.tabUpdated(updatedTab);
+    await flushTasks();
 
     let pinnedTabElements = getPinnedTabs();
     assertEquals(pinnedTabElements.length, 1);
@@ -685,7 +731,8 @@ suite('TabList', () => {
     changeInfo.index = 0;
     changeInfo.pinned = false;
     updatedTab = Object.assign({}, updatedTab, changeInfo);
-    webUIListenerCallback('tab-updated', updatedTab);
+    callbackRouter.tabUpdated(updatedTab);
+    await flushTasks();
 
     const unpinnedTabElements = getUnpinnedTabs();
     assertEquals(getPinnedTabs().length, 0);
@@ -693,10 +740,11 @@ suite('TabList', () => {
     assertEquals(unpinnedTabElements[0].tab.id, tabToPin.id);
   });
 
-  test('moves tab elements when tabs move', () => {
+  test('moves tab elements when tabs move', async () => {
     const tabElementsBeforeMove = getUnpinnedTabs();
     const tabToMove = tabs[0];
-    webUIListenerCallback('tab-moved', tabToMove.id, 2);
+    callbackRouter.tabMoved(tabToMove.id, 2);
+    await flushTasks();
 
     const tabElementsAfterMove = getUnpinnedTabs();
     assertEquals(tabElementsBeforeMove[0], tabElementsAfterMove[2]);
@@ -704,10 +752,11 @@ suite('TabList', () => {
     assertEquals(tabElementsBeforeMove[2], tabElementsAfterMove[1]);
   });
 
-  test('MoveExistingTabToGroup', () => {
+  test('MoveExistingTabToGroup', async () => {
     const tabToGroup = tabs[1];
-    webUIListenerCallback(
-        'tab-group-state-changed', tabToGroup.id, tabToGroup.index, 'group0');
+    callbackRouter.tabGroupStateChanged(
+        tabToGroup.id, tabToGroup.index, 'group0');
+    await flushTasks();
     let tabElements = getUnpinnedTabs();
     assertEquals(tabElements.length, tabs.length);
     assertEquals(
@@ -715,9 +764,9 @@ suite('TabList', () => {
         'TABSTRIP-TAB-GROUP');
 
     const anotherTabToGroup = tabs[2];
-    webUIListenerCallback(
-        'tab-group-state-changed', anotherTabToGroup.id,
-        anotherTabToGroup.index, 'group0');
+    callbackRouter.tabGroupStateChanged(
+        anotherTabToGroup.id, anotherTabToGroup.index, 'group0');
+    await flushTasks();
     tabElements = getUnpinnedTabs();
     assertEquals(tabElements.length, tabs.length);
     assertEquals(
@@ -725,11 +774,12 @@ suite('TabList', () => {
         tabElements[anotherTabToGroup.index].parentElement);
   });
 
-  test('MoveTabGroup', () => {
+  test('MoveTabGroup', async () => {
     const tabToGroup = tabs[1];
-    webUIListenerCallback(
-        'tab-group-state-changed', tabToGroup.id, tabToGroup.index, 'group0');
-    webUIListenerCallback('tab-group-moved', 'group0', 0);
+    callbackRouter.tabGroupStateChanged(
+        tabToGroup.id, tabToGroup.index, 'group0');
+    callbackRouter.tabGroupMoved('group0', 0);
+    await flushTasks();
 
     const tabAtIndex0 = getUnpinnedTabs()[0];
     assertEquals(tabAtIndex0.parentElement.tagName, 'TABSTRIP-TAB-GROUP');
@@ -817,7 +867,7 @@ suite('TabList', () => {
     await testTabsApiProxy.whenCalled('setThumbnailTracked');
     testTabsApiProxy.reset();
 
-    testTabStripEmbedderProxy.setVisible(false);
+    testTabsApiProxy.setVisible(false);
     document.dispatchEvent(new Event('visibilitychange'));
 
     // The tab strip should force untrack thumbnails for all tabs.
@@ -830,7 +880,7 @@ suite('TabList', () => {
     tabList.style.setProperty(
         '--tabstrip-tab-width', `${window.innerWidth / tabs.length}px`);
 
-    testTabStripEmbedderProxy.setVisible(true);
+    testTabsApiProxy.setVisible(true);
     document.dispatchEvent(new Event('visibilitychange'));
 
     await testTabsApiProxy.whenCalled('setThumbnailTracked');
@@ -838,7 +888,8 @@ suite('TabList', () => {
         testTabsApiProxy.getCallCount('setThumbnailTracked'), tabs.length);
   });
 
-  test('ShouldDebounceThumbnailTrackerWhenScrollingFast', async () => {
+  // Flaky on all platforms. https://crbug.com/1247687.
+  test.skip('ShouldDebounceThumbnailTrackerWhenScrollingFast', async () => {
     // Set tab widths such that 3 tabs fit in the viewport. This should reach a
     // state where the first 6 thumbnails are being tracked: 3 in the viewport
     // and 3 within the IntersectionObserver's rootMargin. The widths need to be
@@ -857,14 +908,17 @@ suite('TabList', () => {
 
     // Add enough tabs for there to be 13 tabs.
     for (let i = 0; i < 10; i++) {
-      webUIListenerCallback('tab-created', {
+      callbackRouter.tabCreated({
         active: false,
         alertStates: [],
         id: tabs.length + i,
         index: tabs.length + i,
-        title: '',
+        title: `Tab ${tabs.length + i + 1}`,
+        pinned: false,
+        url: {url: 'about:blank'},
       });
     }
+    await flushTasks();
     await tabList.animationPromises;
     await testTabsApiProxy.whenCalled('setThumbnailTracked');
     testTabsApiProxy.reset();
@@ -890,35 +944,37 @@ suite('TabList', () => {
   test(
       'focusing on tab strip with the keyboard adds a class and focuses ' +
           'the first tab',
-      () => {
-        webUIListenerCallback('received-keyboard-focus');
+      async () => {
+        callbackRouter.receivedKeyboardFocus();
+        await flushTasks();
         assertEquals(document.activeElement, tabList);
         assertEquals(tabList.shadowRoot.activeElement, getUnpinnedTabs()[0]);
         assertTrue(FocusOutlineManager.forDocument(document).visible);
       });
 
-  test('blurring the tab strip blurs the active element', () => {
+  test('blurring the tab strip blurs the active element', async () => {
     // First, make sure tab strip has keyboard focus.
-    webUIListenerCallback('received-keyboard-focus');
+    callbackRouter.receivedKeyboardFocus();
+    await flushTasks();
 
     window.dispatchEvent(new Event('blur'));
     assertEquals(tabList.shadowRoot.activeElement, null);
   });
 
-  test('should update the ID when a tab is replaced', () => {
+  test('should update the ID when a tab is replaced', async () => {
     assertEquals(getUnpinnedTabs()[0].tab.id, 0);
-    webUIListenerCallback('tab-replaced', tabs[0].id, 1000);
+    callbackRouter.tabReplaced(tabs[0].id, 1000);
+    await flushTasks();
     assertEquals(getUnpinnedTabs()[0].tab.id, 1000);
   });
 
   test('has custom context menu', async () => {
-    let event = new Event('contextmenu');
-    event.clientX = 1;
-    event.clientY = 2;
+    const event =
+        new PointerEvent('pointerup', {clientX: 1, clientY: 2, button: 2});
     document.dispatchEvent(event);
 
     const contextMenuArgs =
-        await testTabStripEmbedderProxy.whenCalled('showBackgroundContextMenu');
+        await testTabsApiProxy.whenCalled('showBackgroundContextMenu');
     assertEquals(contextMenuArgs[0], 1);
     assertEquals(contextMenuArgs[1], 2);
   });
@@ -926,17 +982,11 @@ suite('TabList', () => {
   test('scrolls to active tabs', async () => {
     await tabList.animationPromises;
 
-    const newTabButtonMargin = 15;
-    const newTabButtonWidth = 50;
     const scrollPadding = 32;
     const tabWidth = 200;
     const viewportWidth = 300;
 
     // Mock the width of each tab element.
-    tabList.style.setProperty(
-        '--tabstrip-new-tab-button-margin', `${newTabButtonMargin}px`);
-    tabList.style.setProperty(
-        '--tabstrip-new-tab-button-width', `${newTabButtonWidth}px`);
     tabList.style.setProperty(
         '--tabstrip-tab-thumbnail-width', `${tabWidth}px`);
     tabList.style.setProperty('--tabstrip-tab-spacing', '0px');
@@ -953,8 +1003,9 @@ suite('TabList', () => {
     // Verify the scrollLeft is currently at its default state of 0, and then
     // send a visibilitychange event to cause a scroll.
     assertEquals(tabList.scrollLeft, 0);
-    webUIListenerCallback('tab-active-changed', tabs[1].id);
-    testTabStripEmbedderProxy.setVisible(false);
+    callbackRouter.tabActiveChanged(tabs[1].id);
+    await flushTasks();
+    testTabsApiProxy.setVisible(false);
     document.dispatchEvent(new Event('visibilitychange'));
 
     // The 2nd tab should be off-screen to the right, so activating it should
@@ -963,20 +1014,15 @@ suite('TabList', () => {
     let activeTab = getUnpinnedTabs()[1];
     assertEquals(
         tabList.scrollLeft + tabList.offsetWidth,
-        activeTab.offsetLeft + activeTab.offsetWidth + scrollPadding +
-            newTabButtonMargin + newTabButtonWidth);
+        activeTab.offsetLeft + activeTab.offsetWidth + scrollPadding);
 
     // The 1st tab should be now off-screen to the left, so activating it should
     // scroll so that the element's left edge is aligned with the screen's
     // left edge.
-    webUIListenerCallback('tab-active-changed', tabs[0].id);
+    callbackRouter.tabActiveChanged(tabs[0].id);
+    await flushTasks();
     activeTab = getUnpinnedTabs()[0];
     assertEquals(tabList.scrollLeft, 0);
-  });
-
-  test('clicking on new tab button opens a new tab', async () => {
-    tabList.shadowRoot.querySelector('#newTabButton').click();
-    await testTabsApiProxy.whenCalled('createNewTab');
   });
 
   test('PreventsDraggingWhenOnlyOneTab', () => {

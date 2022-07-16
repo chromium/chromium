@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/macros.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -216,7 +217,7 @@ TEST_F(TabUsageRecorderBrowserAgentTest, TestSwitchedModeTabs) {
   web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, NOT_IN_MEMORY);
   web::FakeWebState* mock_tab_b = InsertFakeWebState(kURL, NOT_IN_MEMORY);
   web::FakeWebState* mock_tab_c = InsertFakeWebState(kURL, NOT_IN_MEMORY);
-  tab_usage_recorder_->RecordPrimaryTabModelChange(false, nullptr);
+  tab_usage_recorder_->RecordPrimaryBrowserChange(false, nullptr);
 
   // Switch from A (incognito evicted) to B (incognito evicted).
   tab_usage_recorder_->RecordTabSwitched(mock_tab_a, mock_tab_b);
@@ -345,12 +346,11 @@ TEST_F(TabUsageRecorderBrowserAgentTest, RendererTerminated) {
   for (int seconds = kExpiredTimesAddedCount; seconds > 0; seconds--) {
     int expired_time_delta =
         tab_usage_recorder::kSecondsBeforeRendererTermination + seconds;
-    AddTimeToDequeInTabUsageRecorder(
-        now - base::TimeDelta::FromSeconds(expired_time_delta));
+    AddTimeToDequeInTabUsageRecorder(now - base::Seconds(expired_time_delta));
   }
   base::TimeTicks recent_time =
-      now - base::TimeDelta::FromSeconds(
-                tab_usage_recorder::kSecondsBeforeRendererTermination / 2);
+      now -
+      base::Seconds(tab_usage_recorder::kSecondsBeforeRendererTermination / 2);
   AddTimeToDequeInTabUsageRecorder(recent_time);
 
   mock_tab_a->OnRenderProcessGone();

@@ -5,8 +5,7 @@
 #ifndef MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_DEVICE_FACTORY_H_
 #define MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_DEVICE_FACTORY_H_
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
@@ -29,6 +28,11 @@ namespace media {
 class CAPTURE_EXPORT VideoCaptureDeviceFactory {
  public:
   VideoCaptureDeviceFactory();
+
+  VideoCaptureDeviceFactory(const VideoCaptureDeviceFactory&) = delete;
+  VideoCaptureDeviceFactory& operator=(const VideoCaptureDeviceFactory&) =
+      delete;
+
   virtual ~VideoCaptureDeviceFactory();
 
   // Creates a VideoCaptureDevice object. Returns NULL if something goes wrong.
@@ -45,9 +49,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactory {
 
  protected:
   base::ThreadChecker thread_checker_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceFactory);
 };
 
 }  // namespace media

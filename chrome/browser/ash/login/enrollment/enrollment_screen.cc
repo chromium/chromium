@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
@@ -33,6 +33,7 @@
 #include "chrome/browser/policy/enrollment_status.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -47,10 +48,10 @@ using ::policy::EnrollmentConfig;
 // Do not change the UMA histogram parameters without renaming the histograms!
 #define UMA_ENROLLMENT_TIME(histogram_name, elapsed_timer)                   \
   do {                                                                       \
-    UMA_HISTOGRAM_CUSTOM_TIMES(                                              \
-        (histogram_name), (elapsed_timer)->Elapsed(),                        \
-        base::TimeDelta::FromMilliseconds(100) /* min */,                    \
-        base::TimeDelta::FromMinutes(15) /* max */, 100 /* bucket_count */); \
+    UMA_HISTOGRAM_CUSTOM_TIMES((histogram_name), (elapsed_timer)->Elapsed(), \
+                               base::Milliseconds(100) /* min */,            \
+                               base::Minutes(15) /* max */,                  \
+                               100 /* bucket_count */);                      \
   } while (0)
 
 const char* const kMetricEnrollmentTimeCancel =
@@ -67,12 +68,12 @@ constexpr double kJitterFactor = 0.1;           // +/- 10% jitter
 constexpr int64_t kMaxDelayMS = 8 * 60 * 1000;  // 8 minutes
 
 bool ShouldAttemptRestart() {
-  // Restart browser to switch from DeviceCloudPolicyManagerChromeOS to
+  // Restart browser to switch from DeviceCloudPolicyManagerAsh to
   // DeviceActiveDirectoryPolicyManager.
   if (g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->IsActiveDirectoryManaged()) {
-    // TODO(tnagel): Refactor BrowserPolicyConnectorChromeOS so that device
+    // TODO(tnagel): Refactor BrowserPolicyConnectorAsh so that device
     // policy providers are only registered after enrollment has finished and
     // thus the correct one can be picked without restarting the browser.
     return true;
@@ -84,10 +85,12 @@ bool ShouldAttemptRestart() {
 // Returns the manager of the domain (either the domain name or the email of the
 // admin of the domain) after enrollment, or an empty string.
 std::string GetEnterpriseDomainManager() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetEnterpriseDomainManager();
 }
+
+constexpr char kUserActionCancelTPMCheck[] = "cancel-tpm-check";
 
 }  // namespace
 
@@ -100,6 +103,10 @@ std::string EnrollmentScreen::GetResultString(Result result) {
       return "Back";
     case Result::SKIPPED_FOR_TESTS:
       return BaseScreen::kNotApplicable;
+    case Result::TPM_ERROR:
+      return "TpmError";
+    case Result::TPM_DBUS_ERROR:
+      return "TpmDbusError";
   }
 }
 
@@ -122,12 +129,21 @@ EnrollmentScreen::EnrollmentScreen(EnrollmentScreenView* view,
   retry_policy_.entry_lifetime_ms = -1;
   retry_policy_.always_use_initial_delay = true;
   retry_backoff_ = std::make_unique<net::BackoffEntry>(&retry_policy_);
+  if (view_)
+    view_->Bind(this);
 }
 
 EnrollmentScreen::~EnrollmentScreen() {
   DCHECK(!enrollment_helper_ || g_browser_process->IsShuttingDown() ||
          browser_shutdown::IsTryingToQuit() ||
          DBusThreadManager::Get()->IsUsingFakes());
+  if (view_)
+    view_->Unbind();
+}
+
+void EnrollmentScreen::OnViewDestroyed(EnrollmentScreenView* view) {
+  if (view_ == view)
+    view_ = nullptr;
 }
 
 void EnrollmentScreen::SetEnrollmentConfig(
@@ -169,7 +185,12 @@ void EnrollmentScreen::SetConfig() {
                        ? policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED
                        : policy::EnrollmentConfig::MODE_ATTESTATION;
   }
-  view_->SetEnrollmentConfig(config_);
+  VLOG(1) << "EnrollmentScreen::SetConfig()"
+          << " config_.mode = " << static_cast<int>(config_.mode)
+          << ", config_.auth_mechanism = "
+          << static_cast<int>(config_.auth_mechanism);
+  if (view_)
+    view_->SetEnrollmentConfig(config_);
   enrollment_helper_ = nullptr;
 }
 
@@ -209,7 +230,7 @@ void EnrollmentScreen::OnAuthCleared(base::OnceClosure callback) {
 bool EnrollmentScreen::MaybeSkip(WizardContext* context) {
   VLOG(1) << "EnrollmentScreen::MaybeSkip("
           << "config_.is_forced = " << config_.is_forced()
-          << "skip_to_login_for_tests = " << context->skip_to_login_for_tests
+          << ", skip_to_login_for_tests = " << context->skip_to_login_for_tests
           << ").";
   if (context->skip_to_login_for_tests && !config_.is_forced()) {
     exit_callback_.Run(Result::SKIPPED_FOR_TESTS);
@@ -219,6 +240,8 @@ bool EnrollmentScreen::MaybeSkip(WizardContext* context) {
 }
 
 void EnrollmentScreen::UpdateFlowType() {
+  if (!view_)
+    return;
   if (features::IsLicensePackagedOobeFlowEnabled() &&
       config_.license_type ==
           policy::EnrollmentConfig::LicenseType::kEnterprise) {
@@ -234,13 +257,22 @@ void EnrollmentScreen::UpdateFlowType() {
 }
 
 void EnrollmentScreen::ShowImpl() {
+  if (!tpm_checked_ && switches::IsTpmDynamic()) {
+    if (view_)
+      view_->ShowEnrollmentTPMCheckingScreen();
+    TakeTpmOwnership();
+    return;
+  }
   VLOG(1) << "Show enrollment screen";
-  view_->SetEnrollmentController(this);
+  if (view_)
+    view_->SetEnrollmentController(this);
   UMA(policy::kMetricEnrollmentTriggered);
   UpdateFlowType();
   if (switches::IsOsInstallAllowed()) {
-    view_->Show();
-    view_->ShowEnrollmentCloudReadyNotAllowedError();
+    if (view_) {
+      view_->SetIsBrandedBuild(context()->is_branded_build);
+      view_->ShowEnrollmentCloudReadyNotAllowedError();
+    }
     return;
   }
   switch (current_auth_) {
@@ -256,29 +288,60 @@ void EnrollmentScreen::ShowImpl() {
   }
 }
 
+void EnrollmentScreen::TakeTpmOwnership() {
+  // This is used in browsertest to test cancel button.
+  if (tpm_ownership_callback_for_testing_.has_value()) {
+    TpmManagerClient::Get()->TakeOwnership(
+        ::tpm_manager::TakeOwnershipRequest(),
+        std::move(tpm_ownership_callback_for_testing_.value()));
+    return;
+  }
+  TpmManagerClient::Get()->TakeOwnership(
+      ::tpm_manager::TakeOwnershipRequest(),
+      base::BindOnce(&EnrollmentScreen::OnTpmStatusResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void EnrollmentScreen::OnTpmStatusResponse(
+    const ::tpm_manager::TakeOwnershipReply& reply) {
+  if (is_hidden() || tpm_checked_)
+    return;
+  tpm_checked_ = true;
+  VLOG(1) << "OnTpmStatusResponse: status=" << reply.status();
+  switch (reply.status()) {
+    case ::tpm_manager::STATUS_SUCCESS:
+    case ::tpm_manager::STATUS_NOT_AVAILABLE:
+      ShowImpl();
+      break;
+    case ::tpm_manager::STATUS_DEVICE_ERROR:
+      ClearAuth(base::BindOnce(exit_callback_, Result::TPM_ERROR));
+      break;
+    case ::tpm_manager::STATUS_DBUS_ERROR:
+      ClearAuth(base::BindOnce(exit_callback_, Result::TPM_DBUS_ERROR));
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
 void EnrollmentScreen::ShowInteractiveScreen() {
   ClearAuth(base::BindOnce(&EnrollmentScreen::ShowSigninScreen,
                            weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EnrollmentScreen::HideImpl() {
-  view_->Hide();
+  if (view_)
+    view_->Hide();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void EnrollmentScreen::AuthenticateUsingAttestation() {
   VLOG(1) << "Authenticating using attestation.";
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
-  view_->Show();
+  if (view_)
+    view_->Show();
   CreateEnrollmentHelper();
-  if (enrollment_config_.mode ==
-      policy::EnrollmentConfig::MODE_ATTESTATION_ENROLLMENT_TOKEN) {
-    view_->ShowEnrollmentSpinnerScreen();
-    enrollment_helper_->EnrollUsingEnrollmentToken(
-        enrollment_config_.enrollment_token);
-  } else {
-    enrollment_helper_->EnrollUsingAttestation();
-  }
+  enrollment_helper_->EnrollUsingAttestation();
 }
 
 void EnrollmentScreen::OnLoginDone(const std::string& user,
@@ -289,7 +352,8 @@ void EnrollmentScreen::OnLoginDone(const std::string& user,
   UMA(enrollment_failed_once_ ? policy::kMetricEnrollmentRestarted
                               : policy::kMetricEnrollmentStarted);
 
-  view_->ShowEnrollmentSpinnerScreen();
+  if (view_)
+    view_->ShowEnrollmentWorkingScreen();
   CreateEnrollmentHelper();
   enrollment_helper_->EnrollUsingAuthCode(auth_code);
 }
@@ -367,7 +431,8 @@ void EnrollmentScreen::OnConfirmationClosed() {
 void EnrollmentScreen::OnAuthError(const GoogleServiceAuthError& error) {
   LOG(ERROR) << "Auth error: " << error.state();
   RecordEnrollmentErrorMetrics();
-  view_->ShowAuthError(error);
+  if (view_)
+    view_->ShowAuthError(error);
 }
 
 void EnrollmentScreen::OnEnrollmentError(policy::EnrollmentStatus status) {
@@ -385,7 +450,8 @@ void EnrollmentScreen::OnEnrollmentError(policy::EnrollmentStatus status) {
     }
   }
 
-  view_->ShowEnrollmentStatus(status);
+  if (view_)
+    view_->ShowEnrollmentStatus(status);
   if (WizardController::UsingHandsOffEnrollment())
     AutomaticRetry();
 }
@@ -394,7 +460,8 @@ void EnrollmentScreen::OnOtherError(
     EnterpriseEnrollmentHelper::OtherError error) {
   LOG(ERROR) << "Other enrollment error: " << error;
   RecordEnrollmentErrorMetrics();
-  view_->ShowOtherError(error);
+  if (view_)
+    view_->ShowOtherError(error);
   if (WizardController::UsingHandsOffEnrollment())
     AutomaticRetry();
 }
@@ -403,18 +470,20 @@ void EnrollmentScreen::OnDeviceEnrolled() {
   VLOG(1) << "Device enrolled.";
   enrollment_succeeded_ = true;
   // Some info to be shown on the success screen.
-  view_->SetEnterpriseDomainInfo(GetEnterpriseDomainManager(),
-                                 ui::GetChromeOSDeviceName());
+  if (view_)
+    view_->SetEnterpriseDomainInfo(GetEnterpriseDomainManager(),
+                                   ui::GetChromeOSDeviceName());
 
   enrollment_helper_->GetDeviceAttributeUpdatePermission();
 
   // Evaluates device policy TPMFirmwareUpdateSettings and updates the TPM if
   // the policy is set to auto-update vulnerable TPM firmware at enrollment.
   g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->GetTPMAutoUpdateModePolicyHandler()
       ->UpdateOnEnrollmentIfNeeded();
 }
+
 void EnrollmentScreen::OnIdentifierEntered(const std::string& email) {
   auto callback = base::BindOnce(&EnrollmentScreen::OnAccountStatusFetched,
                                  base::Unretained(this), email);
@@ -487,21 +556,23 @@ void EnrollmentScreen::OnDeviceAttributeUpdatePermission(bool granted) {
 void EnrollmentScreen::OnDeviceAttributeUploadCompleted(bool success) {
   if (success) {
     // If the device attributes have been successfully uploaded, fetch policy.
-    policy::BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     connector->GetDeviceCloudPolicyManager()->core()->RefreshSoon();
-    view_->ShowEnrollmentStatus(
-        policy::EnrollmentStatus::ForStatus(policy::EnrollmentStatus::SUCCESS));
-  } else {
+    if (view_) {
+      view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForStatus(
+          policy::EnrollmentStatus::SUCCESS));
+    }
+  } else if (view_) {
     view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForStatus(
         policy::EnrollmentStatus::ATTRIBUTE_UPDATE_FAILED));
   }
 }
 
 void EnrollmentScreen::ShowAttributePromptScreen() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  policy::DeviceCloudPolicyManagerChromeOS* policy_manager =
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
 
   std::string asset_id;
@@ -543,7 +614,8 @@ void EnrollmentScreen::ShowAttributePromptScreen() {
     }
   }
 
-  view_->ShowAttributePromptScreen(asset_id, location);
+  if (view_)
+    view_->ShowAttributePromptScreen(asset_id, location);
 }
 
 void EnrollmentScreen::ShowEnrollmentStatusOnSuccess() {
@@ -553,7 +625,7 @@ void EnrollmentScreen::ShowEnrollmentStatusOnSuccess() {
   if (WizardController::UsingHandsOffEnrollment() ||
       WizardController::skip_enrollment_prompts()) {
     OnConfirmationClosed();
-  } else {
+  } else if (view_) {
     view_->ShowEnrollmentStatus(
         policy::EnrollmentStatus::ForStatus(policy::EnrollmentStatus::SUCCESS));
   }
@@ -564,7 +636,8 @@ void EnrollmentScreen::UMA(policy::MetricEnrollment sample) {
 }
 
 void EnrollmentScreen::ShowSigninScreen() {
-  view_->Show();
+  if (view_)
+    view_->Show();
 }
 
 void EnrollmentScreen::RecordEnrollmentErrorMetrics() {
@@ -582,15 +655,18 @@ void EnrollmentScreen::JoinDomain(
     authpolicy_login_helper_ = std::make_unique<AuthPolicyHelper>();
   authpolicy_login_helper_->set_dm_token(dm_token);
   on_joined_callback_ = std::move(on_joined_callback);
-  view_->ShowActiveDirectoryScreen(
-      domain_join_config, std::string() /* machine_name */,
-      std::string() /* username */, authpolicy::ERROR_NONE);
+  if (view_) {
+    view_->ShowActiveDirectoryScreen(
+        domain_join_config, std::string() /* machine_name */,
+        std::string() /* username */, authpolicy::ERROR_NONE);
+  }
 }
 
 void EnrollmentScreen::OnBrowserRestart() {
   // When the browser is restarted, renderers are shutdown and the `view_`
   // wants to know in order to stop trying to use the soon-invalid renderers.
-  view_->Shutdown();
+  if (view_)
+    view_->Shutdown();
 }
 
 void EnrollmentScreen::OnActiveDirectoryJoined(
@@ -600,13 +676,24 @@ void EnrollmentScreen::OnActiveDirectoryJoined(
     const std::string& machine_domain) {
   if (error == authpolicy::ERROR_NONE) {
     VLOG(1) << "Joined active directory";
-    view_->ShowEnrollmentSpinnerScreen();
+    if (view_)
+      view_->ShowEnrollmentWorkingScreen();
     std::move(on_joined_callback_).Run(machine_domain);
     return;
   }
   LOG(ERROR) << "Active directory join error: " << error;
-  view_->ShowActiveDirectoryScreen(std::string() /* domain_join_config */,
-                                   machine_name, username, error);
+  if (view_) {
+    view_->ShowActiveDirectoryScreen(std::string() /* domain_join_config */,
+                                     machine_name, username, error);
+  }
+}
+
+void EnrollmentScreen::OnUserAction(const std::string& action_id) {
+  if (action_id == kUserActionCancelTPMCheck) {
+    OnCancel();
+  } else {
+    BaseScreen::OnUserAction(action_id);
+  }
 }
 
 }  // namespace ash

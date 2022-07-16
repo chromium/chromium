@@ -44,7 +44,7 @@ void* GetStackTop() {
 #endif
 }
 
-#elif defined(OS_MAC)
+#elif defined(OS_APPLE)
 
 void* GetStackTop() {
   return pthread_get_stackaddr_np(pthread_self());
@@ -70,8 +70,9 @@ void* GetStackTop() {
   // the start of the stack.
   // See https://code.google.com/p/nativeclient/issues/detail?id=3431.
   return __libc_stack_end;
-#endif  // defined(LIBC_GLIBC)
+#else
   return nullptr;
+#endif  // defined(LIBC_GLIBC)
 }
 
 #else  // defined(OS_WIN)

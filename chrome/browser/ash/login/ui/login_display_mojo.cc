@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/enable_adb_sideloading_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/enable_debugging_screen_handler.h"
@@ -28,9 +27,8 @@
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/known_user.h"
-#include "content/public/browser/notification_service.h"
-#include "ui/base/ime/chromeos/ime_keyboard.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -98,10 +96,7 @@ void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
     VLOG(1) << "Emitting login-prompt-visible";
     SessionManagerClient::Get()->EmitLoginPromptVisible();
 
-    content::NotificationService::current()->Notify(
-        chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-        content::NotificationService::AllSources(),
-        content::NotificationService::NoDetails());
+    session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
 
     // If there no available users exist, delay showing the dialogs until after
     // GAIA dialog is shown (GAIA dialog will check these local state values,

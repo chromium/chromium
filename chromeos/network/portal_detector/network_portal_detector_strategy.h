@@ -9,10 +9,15 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "net/base/backoff_entry.h"
+
+// TODO(https://crbug.com/1164001): remove after moving to ash/.
+namespace ash {
+class NetworkPortalDetectorImplTest;
+class NetworkPortalDetectorImplBrowserTest;
+}  // namespace ash
 
 namespace chromeos {
 
@@ -35,6 +40,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) PortalDetectorStrategy {
     // Returns time when current attempt was started.
     virtual base::TimeTicks AttemptStartTime() = 0;
   };
+
+  PortalDetectorStrategy(const PortalDetectorStrategy&) = delete;
+  PortalDetectorStrategy& operator=(const PortalDetectorStrategy&) = delete;
 
   virtual ~PortalDetectorStrategy();
 
@@ -75,8 +83,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) PortalDetectorStrategy {
   std::unique_ptr<net::BackoffEntry> backoff_entry_;
 
  private:
-  friend class NetworkPortalDetectorImplTest;
-  friend class NetworkPortalDetectorImplBrowserTest;
+  friend class ash::NetworkPortalDetectorImplTest;
+  friend class ash::NetworkPortalDetectorImplBrowserTest;
 
   static void set_delay_till_next_attempt_for_testing(
       const base::TimeDelta& timeout) {
@@ -106,8 +114,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) PortalDetectorStrategy {
 
   // True when |next_attempt_timeout_for_testing_| is initialized.
   static bool next_attempt_timeout_for_testing_initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(PortalDetectorStrategy);
 };
 
 }  // namespace chromeos

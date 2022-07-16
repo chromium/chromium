@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -29,13 +28,14 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/profiles/incognito_menu_view.h"
-#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
@@ -60,6 +60,7 @@
 #include "ui/views/view_class_properties.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/browser/ui/views/sync/dice_signin_button_view.h"
 #endif
 
@@ -105,14 +106,16 @@ class CircleImageSource : public gfx::CanvasImageSource {
  public:
   CircleImageSource(int size, SkColor color)
       : gfx::CanvasImageSource(gfx::Size(size, size)), color_(color) {}
+
+  CircleImageSource(const CircleImageSource&) = delete;
+  CircleImageSource& operator=(const CircleImageSource&) = delete;
+
   ~CircleImageSource() override = default;
 
   void Draw(gfx::Canvas* canvas) override;
 
  private:
   SkColor color_;
-
-  DISALLOW_COPY_AND_ASSIGN(CircleImageSource);
 };
 
 void CircleImageSource::Draw(gfx::Canvas* canvas) {
@@ -207,8 +210,8 @@ class CircularImageButton : public views::ImageButton {
     const SkScalar kButtonRadius =
         (kCircularImageButtonSize + 2 * kBorderThickness) / 2.0f;
 
-    SkColor icon_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_DefaultIconColor);
+    const auto* color_provider = GetColorProvider();
+    SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
     if (background_profile_color_ != SK_ColorTRANSPARENT)
       icon_color = GetProfileForegroundIconColor(background_profile_color_);
     gfx::ImageSkia image =
@@ -218,8 +221,8 @@ class CircularImageButton : public views::ImageButton {
     views::InkDrop::Get(this)->SetBaseColor(icon_color);
 
     if (show_border_) {
-      const SkColor separator_color = GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_MenuSeparatorColor);
+      const SkColor separator_color =
+          color_provider->GetColor(ui::kColorMenuSeparator);
       SetBorder(views::CreateRoundedRectBorder(kBorderThickness, kButtonRadius,
                                                separator_color));
     }
@@ -244,8 +247,7 @@ class FeatureButtonIconView : public views::ImageView {
   void OnThemeChanged() override {
     views::ImageView::OnThemeChanged();
     constexpr int kIconSize = 16;
-    const SkColor icon_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_DefaultIconColor);
+    const SkColor icon_color = GetColorProvider()->GetColor(ui::kColorIcon);
     gfx::ImageSkia image =
         ImageForMenu(icon_, icon_to_image_ratio_, icon_color);
     SetImage(SizeImage(ColorImage(image, icon_color), kIconSize));
@@ -267,8 +269,7 @@ class ProfileManagementIconView : public views::ImageView {
     views::ImageView::OnThemeChanged();
     constexpr float kIconToImageRatio = 0.75f;
     constexpr int kIconSize = 20;
-    const SkColor icon_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_DefaultIconColor);
+    const SkColor icon_color = GetColorProvider()->GetColor(ui::kColorIcon);
     gfx::ImageSkia image = ImageForMenu(icon_, kIconToImageRatio, icon_color);
     SetImage(SizeImage(image, kIconSize));
   }
@@ -288,7 +289,7 @@ class AvatarImageView : public views::ImageView {
       // This can happen if the account image hasn't been fetched yet, if there
       // is no image, or in tests.
       avatar_image_ = ui::ImageModel::FromVectorIcon(
-          kUserAccountAvatarIcon, ui::NativeTheme::kColorId_MenuIconColor,
+          kUserAccountAvatarIcon, ui::kColorMenuIcon,
           ProfileMenuViewBase::kIdentityImageSize);
     }
   }
@@ -300,7 +301,7 @@ class AvatarImageView : public views::ImageView {
     DCHECK(!avatar_image_.IsEmpty());
     gfx::ImageSkia sized_avatar_image = views::GetImageSkiaFromImageModel(
         SizeImageModel(avatar_image_, ProfileMenuViewBase::kIdentityImageSize),
-        GetNativeTheme());
+        GetColorProvider());
     sized_avatar_image = AddCircularBackground(
         sized_avatar_image, GetBackgroundColor(), kIdentityImageSizeInclBorder);
     gfx::ImageSkia sized_badge = AddCircularBackground(
@@ -318,8 +319,7 @@ class AvatarImageView : public views::ImageView {
 
  private:
   SkColor GetBackgroundColor() const {
-    return GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_BubbleBackground);
+    return GetColorProvider()->GetColor(ui::kColorBubbleBackground);
   }
 
   ui::ImageModel avatar_image_;
@@ -514,8 +514,14 @@ void ProfileMenuViewBase::ShowBubble(profiles::BubbleViewMode view_mode,
     DCHECK(browser->profile()->IsIncognitoProfile());
     bubble = new IncognitoMenuView(anchor_button, browser);
   } else {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Note: on Ash, Guest Sessions have incognito profiles, and use
+    // BUBBLE_VIEW_MODE_INCOGNITO.
+    NOTREACHED() << "The profile menu is not implemented on Ash.";
+#else
     DCHECK_EQ(profiles::BUBBLE_VIEW_MODE_PROFILE_CHOOSER, view_mode);
     bubble = new ProfileMenuView(anchor_button, browser);
+#endif
   }
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
@@ -565,6 +571,11 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
 
   RegisterWindowClosingCallback(base::BindOnce(
       &ProfileMenuViewBase::OnWindowClosing, base::Unretained(this)));
+
+  // Use `ax::mojom::Role::kMenuBar`, because it fits better the kind of UI
+  // contained in this dialog. The top-level container in this dialog uses a
+  // kMenu role to match.
+  SetAccessibleRole(ax::mojom::Role::kMenuBar);
 }
 
 ProfileMenuViewBase::~ProfileMenuViewBase() {
@@ -587,7 +598,7 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
     const ui::ThemedVectorIcon& avatar_header_art) {
   constexpr int kBottomMargin = kDefaultMargin;
 
-  identity_info_container_->RemoveAllChildViews(/*delete_children=*/true);
+  identity_info_container_->RemoveAllChildViews();
   // The colored background fully bleeds to the edges of the menu and to achieve
   // that margin is set to 0. Further margins will be added by children views.
   identity_info_container_->SetLayoutManager(
@@ -648,14 +659,14 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
     const std::u16string& description,
     const std::u16string& button_text,
-    ui::NativeTheme::ColorId background_color_id,
+    ui::ColorId background_color_id,
     const base::RepeatingClosure& action,
     bool show_sync_badge) {
   const int kDescriptionIconSpacing =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
-  sync_info_container_->RemoveAllChildViews(/*delete_children=*/true);
+  sync_info_container_->RemoveAllChildViews();
   sync_info_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetIgnoreDefaultMainAxisMargins(true)
@@ -727,14 +738,14 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
 void ProfileMenuViewBase::BuildSyncInfoWithoutCallToAction(
     const std::u16string& text,
     const base::RepeatingClosure& action) {
-  sync_info_container_->RemoveAllChildViews(/*delete_children=*/true);
+  sync_info_container_->RemoveAllChildViews();
   sync_info_container_->SetLayoutManager(std::make_unique<views::FillLayout>());
   sync_info_container_->AddChildView(std::make_unique<SyncButton>(
       base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                           base::Unretained(this), std::move(action)),
       this, text));
 
-  // No background required, so ui::NativeTheme isn't needed and
+  // No background required, so ui::ColorProvider isn't needed and
   // |sync_info_background_callback_| can be set to base::DoNothing().
   sync_info_container_->SetBackground(nullptr);
   sync_info_background_callback_ = base::DoNothing();
@@ -778,16 +789,15 @@ void ProfileMenuViewBase::AddFeatureButton(const std::u16string& text,
         views::BoxLayout::Orientation::kVertical));
   }
 
-  views::View* button;
   if (&icon == &gfx::kNoneIcon) {
-    button = features_container_->AddChildView(std::make_unique<HoverButton>(
+    features_container_->AddChildView(std::make_unique<HoverButton>(
         base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                             base::Unretained(this), std::move(action)),
         text));
   } else {
     auto icon_view =
         std::make_unique<FeatureButtonIconView>(icon, icon_to_image_ratio);
-    button = features_container_->AddChildView(std::make_unique<HoverButton>(
+    features_container_->AddChildView(std::make_unique<HoverButton>(
         base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                             base::Unretained(this), std::move(action)),
         std::move(icon_view), text));
@@ -799,8 +809,7 @@ void ProfileMenuViewBase::SetProfileManagementHeading(
   profile_mgmt_heading_ = heading;
 
   // Add separator before heading.
-  profile_mgmt_separator_container_->RemoveAllChildViews(
-      /*delete_children=*/true);
+  profile_mgmt_separator_container_->RemoveAllChildViews();
   profile_mgmt_separator_container_->SetLayoutManager(
       std::make_unique<views::FillLayout>());
   profile_mgmt_separator_container_->SetBorder(
@@ -809,8 +818,7 @@ void ProfileMenuViewBase::SetProfileManagementHeading(
       std::make_unique<views::Separator>());
 
   // Initialize heading layout.
-  profile_mgmt_heading_container_->RemoveAllChildViews(
-      /*delete_children=*/true);
+  profile_mgmt_heading_container_->RemoveAllChildViews();
   profile_mgmt_heading_container_->SetLayoutManager(
       std::make_unique<views::FillLayout>());
   profile_mgmt_heading_container_->SetBorder(
@@ -920,7 +928,7 @@ int ProfileMenuViewBase::GetMaxHeight() const {
 }
 
 void ProfileMenuViewBase::Reset() {
-  RemoveAllChildViews(/*delete_childen=*/true);
+  RemoveAllChildViews();
 
   auto components = std::make_unique<views::View>();
   components->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -990,17 +998,15 @@ void ProfileMenuViewBase::FocusFirstProfileButton() {
 }
 
 void ProfileMenuViewBase::BuildSyncInfoCallToActionBackground(
-    ui::NativeTheme::ColorId background_color_id,
-    ui::NativeTheme* native_theme) {
+    ui::ColorId background_color_id,
+    const ui::ColorProvider* color_provider) {
   const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
   sync_info_container_->SetBackground(views::CreateRoundedRectBackground(
-      native_theme->GetSystemColor(background_color_id), radius));
+      color_provider->GetColor(background_color_id), radius));
   sync_info_container_->SetBorder(views::CreatePaddedBorder(
       views::CreateRoundedRectBorder(
-          1, radius,
-          native_theme->GetSystemColor(
-              ui::NativeTheme::kColorId_MenuSeparatorColor)),
+          1, radius, color_provider->GetColor(ui::kColorMenuSeparator)),
       gfx::Insets(kSyncInfoInsidePadding)));
 }
 
@@ -1011,9 +1017,10 @@ void ProfileMenuViewBase::Init() {
 
 void ProfileMenuViewBase::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
-  SetBackground(views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogBackground)));
-  sync_info_background_callback_.Run(GetNativeTheme());
+  const auto* color_provider = GetColorProvider();
+  SetBackground(views::CreateSolidBackground(
+      color_provider->GetColor(ui::kColorDialogBackground)));
+  sync_info_background_callback_.Run(color_provider);
 }
 
 void ProfileMenuViewBase::OnWindowClosing() {
@@ -1025,15 +1032,8 @@ void ProfileMenuViewBase::OnWindowClosing() {
   g_profile_bubble_ = nullptr;
 }
 
-ax::mojom::Role ProfileMenuViewBase::GetAccessibleWindowRole() {
-  // Return |ax::mojom::Role::kMenuBar|, because it fits better the kind of UI
-  // contained in this dialog. The top-level container in this dialog uses a
-  // kMenu role to match.
-  return ax::mojom::Role::kMenuBar;
-}
-
 bool ProfileMenuViewBase::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Suppresses the context menu because some features, such as inspecting
   // elements, are not appropriate in a bubble.

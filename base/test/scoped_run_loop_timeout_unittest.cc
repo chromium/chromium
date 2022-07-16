@@ -22,7 +22,7 @@ TEST(ScopedRunLoopTimeoutTest, TimesOut) {
   TaskEnvironment task_environment;
   RunLoop run_loop;
 
-  static constexpr auto kArbitraryTimeout = TimeDelta::FromMilliseconds(10);
+  static constexpr auto kArbitraryTimeout = Milliseconds(10);
   ScopedRunLoopTimeout run_timeout(FROM_HERE, kArbitraryTimeout);
 
   // Since the delayed task will be posted only after the message pump starts
@@ -47,7 +47,7 @@ TEST(ScopedRunLoopTimeoutTest, RunTasksUntilTimeout) {
   TaskEnvironment task_environment;
   RunLoop run_loop;
 
-  static constexpr auto kArbitraryTimeout = TimeDelta::FromMilliseconds(10);
+  static constexpr auto kArbitraryTimeout = Milliseconds(10);
   ScopedRunLoopTimeout run_timeout(FROM_HERE, kArbitraryTimeout);
 
   // Posting a task with the same delay as our timeout, immediately before
@@ -65,7 +65,7 @@ TEST(ScopedRunLoopTimeoutTest, OnTimeoutLog) {
   TaskEnvironment task_environment;
   RunLoop run_loop;
 
-  static constexpr auto kArbitraryTimeout = TimeDelta::FromMilliseconds(10);
+  static constexpr auto kArbitraryTimeout = Milliseconds(10);
   ScopedRunLoopTimeout run_timeout(
       FROM_HERE, kArbitraryTimeout,
       BindRepeating([]() -> std::string { return "I like kittens!"; }));

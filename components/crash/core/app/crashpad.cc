@@ -17,7 +17,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -99,7 +98,7 @@ void InitializeDatabasePath(const base::FilePath& database_path) {
   g_database_path = new base::FilePath(database_path);
 }
 
-void InitializeCrashpadImpl(bool initial_client,
+bool InitializeCrashpadImpl(bool initial_client,
                             const std::string& process_type,
                             const std::string& user_data_dir,
                             const base::FilePath& exe_path,
@@ -134,9 +133,12 @@ void InitializeCrashpadImpl(bool initial_client,
   }
 
   // database_path is only valid in the browser process.
-  base::FilePath database_path = internal::PlatformCrashpadInitialization(
-      initial_client, browser_process, embedded_handler, user_data_dir,
-      exe_path, initial_arguments);
+  base::FilePath database_path;
+  if (!internal::PlatformCrashpadInitialization(
+          initial_client, browser_process, embedded_handler, user_data_dir,
+          exe_path, initial_arguments, &database_path)) {
+    return false;
+  }
 
 #if defined(OS_APPLE)
 #if defined(NDEBUG)
@@ -212,13 +214,15 @@ void InitializeCrashpadImpl(bool initial_client,
     SetUploadConsent(crash_reporter_client->GetCollectStatsConsent());
 #endif
   }
+  return true;
 }
 
 }  // namespace
 
-void InitializeCrashpad(bool initial_client, const std::string& process_type) {
-  InitializeCrashpadImpl(initial_client, process_type, std::string(),
-                         base::FilePath(), std::vector<std::string>(), false);
+bool InitializeCrashpad(bool initial_client, const std::string& process_type) {
+  return InitializeCrashpadImpl(initial_client, process_type, std::string(),
+                                base::FilePath(), std::vector<std::string>(),
+                                false);
 }
 
 #if defined(OS_WIN)

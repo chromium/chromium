@@ -11,13 +11,21 @@
 // a particular scope. An base::AutoReset<> object resets a variable to its
 // original value upon destruction, making it an alternative to writing
 // "var = false;" or "var = old_val;" at all of a block's exit points.
+// base::AutoReset<> 对于仅在特定范围内将变量设置为新值很有用。 base::AutoReset<> 对象
+// 在销毁时将变量重置为其原始值，使其成为编写“var = false;”的替代方法 或“var = old_val;”
+// 在一个block的所有出口点。
 //
 // This should be obvious, but note that an base::AutoReset<> instance should
 // have a shorter lifetime than its scoped_variable, to prevent invalid memory
 // writes when the base::AutoReset<> object is destroyed.
+// 这应该很明显，但请注意 base::AutoReset<> 实例的生命周期应该比它的 scoped_variable
+// 短，以防止在销毁 base::AutoReset<> 对象时进行无效的内存写入。
 
 namespace base {
 
+/**
+ * @brief 这个类真是把 RAII 机制运用到极致了
+ */
 template <typename T>
 class AutoReset {
  public:

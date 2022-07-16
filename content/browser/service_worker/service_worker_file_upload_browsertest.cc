@@ -74,6 +74,10 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
  public:
   ServiceWorkerFileUploadTest() = default;
 
+  ServiceWorkerFileUploadTest(const ServiceWorkerFileUploadTest&) = delete;
+  ServiceWorkerFileUploadTest& operator=(const ServiceWorkerFileUploadTest&) =
+      delete;
+
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
 
@@ -209,7 +213,7 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
   }
 
   RenderFrameHostImpl* current_frame_host() {
-    return web_contents()->GetFrameTree()->root()->current_frame_host();
+    return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
   int GetServiceWorkerProcessId() {
@@ -324,8 +328,6 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerFileUploadTest);
 };
 
 // Tests using Request.text().

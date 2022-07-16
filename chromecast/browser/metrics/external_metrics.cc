@@ -17,7 +17,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -178,7 +178,7 @@ void ExternalMetrics::ScheduleCollection() {
       FROM_HERE,
       base::BindOnce(&ExternalMetrics::CollectEventsAndReschedule,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kExternalMetricsCollectionIntervalSeconds));
+      base::Seconds(kExternalMetricsCollectionIntervalSeconds));
 }
 
 }  // namespace metrics

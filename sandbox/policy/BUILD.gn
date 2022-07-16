@@ -10,6 +10,7 @@ import("//chromeos/assistant/assistant.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
+# Most consumers of sandbox::policy should depend on this target.
 component("policy") {
   sources = [
     "export.h",
@@ -28,8 +29,10 @@ component("policy") {
     ":sanitizer_buildflags",
     "//base",
     "//build:chromeos_buildflags",
+    "//ppapi/buildflags",
     "//printing/buildflags",
     "//sandbox:common",
+    "//sandbox/policy/mojom",
   ]
   public_deps = []
   if (is_linux || is_chromeos) {
@@ -52,8 +55,6 @@ component("policy") {
       "linux/bpf_network_policy_linux.h",
       "linux/bpf_ppapi_policy_linux.cc",
       "linux/bpf_ppapi_policy_linux.h",
-      "linux/bpf_print_backend_policy_linux.cc",
-      "linux/bpf_print_backend_policy_linux.h",
       "linux/bpf_print_compositor_policy_linux.cc",
       "linux/bpf_print_compositor_policy_linux.h",
       "linux/bpf_renderer_policy_linux.cc",
@@ -71,6 +72,12 @@ component("policy") {
       "linux/sandbox_seccomp_bpf_linux.cc",
       "linux/sandbox_seccomp_bpf_linux.h",
     ]
+    if (enable_oop_printing) {
+      sources += [
+        "linux/bpf_print_backend_policy_linux.cc",
+        "linux/bpf_print_backend_policy_linux.h",
+      ]
+    }
     configs += [
       "//media:media_config",
       "//media/audio:platform_config",
@@ -116,6 +123,8 @@ component("policy") {
   }
   if (is_win) {
     sources += [
+      "win/lpac_capability.cc",
+      "win/lpac_capability.h",
       "win/sandbox_diagnostics.cc",
       "win/sandbox_diagnostics.h",
       "win/sandbox_win.cc",
@@ -142,7 +151,6 @@ component("policy") {
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
@@ -171,7 +179,9 @@ source_set("tests") {
     ":policy",
     "//base",
     "//base/test:test_support",
+    "//ppapi/buildflags:buildflags",
     "//printing/buildflags",
+    "//sandbox/policy/mojom",
     "//testing/gtest",
   ]
 
@@ -180,11 +190,30 @@ source_set("tests") {
       "win/mf_cdm_sandbox_type_unittest.cc",
       "win/sandbox_win_unittest.cc",
     ]
-    deps += [ "//sandbox/win:sandbox" ]
+    deps += [
+      ":sandbox_test_utils",
+      "//sandbox/win:sandbox",
+    ]
     data = [
       "//base/test/data/pe_image/pe_image_test_32.dll",
       "//base/test/data/pe_image/pe_image_test_64.dll",
       "//base/test/data/pe_image/pe_image_test_arm64.dll",
+    ]
+  }
+}
+
+source_set("sandbox_test_utils") {
+  testonly = true
+
+  if (is_win) {
+    sources = [
+      "win/sandbox_test_utils.cc",
+      "win/sandbox_test_utils.h",
+    ]
+
+    deps = [
+      "//sandbox/win:sandbox",
+      "//testing/gtest",
     ]
   }
 }

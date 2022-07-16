@@ -1,0 +1,377 @@
+<style>
+  :root {
+    --grid-gap: max(3px, 0.5vw);
+    --key-travel: 3px;
+
+    --rows: minmax(18px, 1fr) repeat(5, 2fr);
+  }
+
+  #keyboard {
+    column-gap: var(--grid-gap);
+    height: 200px;  /* Overriden by JavaScript */
+    width: 100%;
+  }
+
+  .main-cluster {
+    display: inline-grid;
+    grid-gap: var(--grid-gap);
+    grid-template-columns: repeat(29, 1fr);
+    grid-template-rows: var(--rows);
+    height: 100%;
+    width: 100%;
+  }
+
+  keyboard-key {
+    --keyboard-key-travel: var(--key-travel);
+    grid-column: span 2;
+  }
+
+  .left {
+    --keyboard-key-glyph-alignment: left;
+  }
+
+  .right {
+    --keyboard-key-glyph-alignment: right;
+  }
+
+  #topRow {
+    column-gap: var(--grid-gap);
+    display: flex;
+    grid-column: 1 / -1;
+  }
+
+  #topRow keyboard-key {
+    flex-basis: 0;
+    flex-grow: 1;
+  }
+
+  #arrowKeyCluster {
+    display: grid;
+    grid-column: span 6;
+    grid-gap: var(--grid-gap);
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+
+  #arrowKeyCluster keyboard-key {
+    grid-column: span 1;
+    grid-row: 2;
+  }
+
+  #arrowKeyCluster #upArrow {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  /* Default (ANSI) key sizes */
+
+  #backspaceKey,
+  #tabKey,
+  #enterKey {
+    grid-column: span 3;
+  }
+
+  #searchKey,
+  #rightShiftKey,
+  #leftAltKey {
+    grid-column: span 4;
+  }
+
+  #leftShiftKey,
+  #leftCtrlKey {
+    grid-column: span 5;
+  }
+
+  #spacebar {
+    grid-column: span 10;
+  }
+
+  /*
+   * On ISO and JIS, the Enter key is L-shaped (with the backslash key moved
+   * down one row). To achieve this with elements that fit in the grid, two
+   * separate elements are placed on the grid, with their corners and
+   * positioning tweaked to make them look like one key.
+   */
+  [data-mech-layout='iso'] #enterKey,
+  [data-mech-layout='jis'] #enterKey {
+    --keyboard-key-bottom-right-radius: 0;
+    grid-column: 28 / -1;
+    grid-row: 3;
+  }
+
+  #enterKeyLowerPart {
+    display: none;
+  }
+
+  [data-mech-layout='iso'] #enterKeyLowerPart,
+  [data-mech-layout='jis'] #enterKeyLowerPart {
+    --keyboard-key-border-top-width: 0;
+    --keyboard-key-top-radii: 0;
+    display: block;
+    grid-column: 29 / -1;
+    /*
+     * Expand the element upwards so that it overlaps the grid gap, key travel
+     * area, and border of the actual Enter key on the row above.
+     */
+    margin-top: calc(-1 * var(--grid-gap) - var(--key-travel) - 1px);
+  }
+
+  [data-mech-layout='iso'] #backslashKey,
+  [data-mech-layout='jis'] #backslashKey {
+    grid-column: 27 / span 2;
+    grid-row: 4;
+  }
+
+  /* Modifications for ISO */
+
+  [data-mech-layout='iso'] #leftShiftKey {
+    grid-column: span 3;
+  }
+
+  /* Modifications for JIS */
+
+  /*
+   * JIS crams in a few more keys, most notably an additional one on the number
+   * row, so a 30-column grid makes more sense for it.
+   */
+  .main-cluster[data-mech-layout='jis'] {
+    grid-template-columns: repeat(30, 1fr);
+  }
+
+  [data-mech-layout='jis'] #backspaceKey {
+    grid-column: span 2;
+  }
+
+  [data-mech-layout='jis'] #spacebar {
+    grid-column: span 6;
+  }
+
+  [data-mech-layout='jis'] #rightShiftKey {
+    grid-column: span 3;
+  }
+
+  [data-mech-layout='jis'] #arrowKeyCluster {
+    grid-column: span 7;
+  }
+
+  /* Modifications for Dell Enterprise keyboards */
+
+  [data-physical-layout='dell-enterprise'] #leftCtrlKey {
+    grid-column: span 3;
+  }
+
+  [data-physical-layout='dell-enterprise'] #leftAltKey {
+    grid-column: span 2;
+  }
+
+  #arrowKeyCluster #dellPageUpKey,
+  #arrowKeyCluster #dellPageDownKey {
+    grid-row: 1;
+  }
+
+  /* Modifications for Assistant key */
+
+  [data-show-assistant-key] #leftCtrlKey {
+    grid-column: span 3;
+  }
+
+  /* Number pad */
+
+  #numberPad {
+    display: none;
+  }
+
+  [data-show-number-pad] .main-cluster {
+    width: 77%;
+  }
+
+  [data-show-number-pad] #numberPad {
+    box-sizing: border-box;
+    display: inline-grid;
+    grid-gap: var(--grid-gap);
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: var(--rows);
+    height: 100%;
+    /*
+     * The number pad will always be on the right, even in RTL locales, so
+     * disable the lint warning.
+     */
+    padding-left:  /* csschecker-disable-line left-right */
+        calc(var(--grid-gap) * 3);
+    width: 23%;
+  }
+
+  #numberPad keyboard-key {
+    grid-column: span 1;
+  }
+
+  #numberPad .double-height {
+    grid-row: span 2;
+  }
+
+  #numberPad .double-width {
+    grid-column: span 2;
+  }
+</style>
+<div id="widthChangeDetector">
+  <!--
+    We don't want to both observe and modify the size of #keyboard, so instead
+    we observe the size of this empty element, which will change widths at the
+    same time as #keyboard.
+  -->
+</div>
+<div id="keyboard"
+    data-show-number-pad$="[[showNumberPad]]">
+  <div class="main-cluster"
+      data-mech-layout$="[[mechanicalLayout]]"
+      data-physical-layout$="[[physicalLayout]]"
+      data-show-assistant-key$="[[showAssistantKey]]">
+    <div id="topRow">
+      <keyboard-key main-glyph="esc"></keyboard-key>
+      <!-- TODO(crbug.com/1207678): Use icons for the top row keys. -->
+      <keyboard-key main-glyph="[b]"></keyboard-key>
+      <keyboard-key main-glyph="[r]"></keyboard-key>
+      <keyboard-key main-glyph="[fs]"></keyboard-key>
+      <keyboard-key main-glyph="[o]"></keyboard-key>
+      <keyboard-key main-glyph="[s]"></keyboard-key>
+      <keyboard-key main-glyph="[bd]"></keyboard-key>
+      <keyboard-key main-glyph="[bu]"></keyboard-key>
+      <keyboard-key main-glyph="[m]"></keyboard-key>
+      <keyboard-key main-glyph="[vd]"></keyboard-key>
+      <keyboard-key main-glyph="[vu]"></keyboard-key>
+      <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
+        <keyboard-key id="dellDeleteKey" main-glyph="delete"></keyboard-key>
+      </template>
+      <keyboard-key main-glyph="[p]"></keyboard-key>
+    </div>
+
+    <!-- TODO(crbug.com/1207678): Apply glyphs from the backend to the keys. -->
+    <keyboard-key main-glyph="\`"></keyboard-key>
+    <keyboard-key main-glyph="1"></keyboard-key>
+    <keyboard-key main-glyph="2"></keyboard-key>
+    <keyboard-key main-glyph="3"></keyboard-key>
+    <keyboard-key main-glyph="4"></keyboard-key>
+    <keyboard-key main-glyph="5"></keyboard-key>
+    <keyboard-key main-glyph="6"></keyboard-key>
+    <keyboard-key main-glyph="7"></keyboard-key>
+    <keyboard-key main-glyph="8"></keyboard-key>
+    <keyboard-key main-glyph="9"></keyboard-key>
+    <keyboard-key main-glyph="0"></keyboard-key>
+    <keyboard-key main-glyph="-"></keyboard-key>
+    <keyboard-key main-glyph="="></keyboard-key>
+    <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
+      <keyboard-key id="jisYenKey" main-glyph="¥"></keyboard-key>
+    </template>
+    <keyboard-key id="backspaceKey" class="right" main-glyph="backspace"></keyboard-key>
+
+    <keyboard-key id="tabKey" class="left" main-glyph="tab"></keyboard-key>
+    <keyboard-key main-glyph="q"></keyboard-key>
+    <keyboard-key main-glyph="w"></keyboard-key>
+    <keyboard-key main-glyph="e"></keyboard-key>
+    <keyboard-key main-glyph="r"></keyboard-key>
+    <keyboard-key main-glyph="t"></keyboard-key>
+    <keyboard-key main-glyph="y"></keyboard-key>
+    <keyboard-key main-glyph="u"></keyboard-key>
+    <keyboard-key main-glyph="i"></keyboard-key>
+    <keyboard-key main-glyph="o"></keyboard-key>
+    <keyboard-key main-glyph="p"></keyboard-key>
+    <keyboard-key main-glyph="["></keyboard-key>
+    <keyboard-key main-glyph="]"></keyboard-key>
+    <keyboard-key id="backslashKey" main-glyph="\\"></keyboard-key>
+
+    <keyboard-key id="searchKey" class="left" main-glyph="search"></keyboard-key>
+    <keyboard-key main-glyph="a"></keyboard-key>
+    <keyboard-key main-glyph="s"></keyboard-key>
+    <keyboard-key main-glyph="d"></keyboard-key>
+    <keyboard-key main-glyph="f"></keyboard-key>
+    <keyboard-key main-glyph="g"></keyboard-key>
+    <keyboard-key main-glyph="h"></keyboard-key>
+    <keyboard-key main-glyph="j"></keyboard-key>
+    <keyboard-key main-glyph="k"></keyboard-key>
+    <keyboard-key main-glyph="l"></keyboard-key>
+    <keyboard-key main-glyph=";"></keyboard-key>
+    <keyboard-key main-glyph="'"></keyboard-key>
+    <keyboard-key id="enterKey" class="right" main-glyph="enter"></keyboard-key>
+    <keyboard-key id="enterKeyLowerPart" main-glyph=""></keyboard-key>
+
+    <keyboard-key id="leftShiftKey" class="left" main-glyph="shift"></keyboard-key>
+    <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'iso')]]">
+      <keyboard-key id="isoKey" main-glyph="&lt;"></keyboard-key>
+    </template>
+    <keyboard-key main-glyph="z"></keyboard-key>
+    <keyboard-key main-glyph="x"></keyboard-key>
+    <keyboard-key main-glyph="c"></keyboard-key>
+    <keyboard-key main-glyph="v"></keyboard-key>
+    <keyboard-key main-glyph="b"></keyboard-key>
+    <keyboard-key main-glyph="n"></keyboard-key>
+    <keyboard-key main-glyph="m"></keyboard-key>
+    <keyboard-key main-glyph=","></keyboard-key>
+    <keyboard-key main-glyph="."></keyboard-key>
+    <keyboard-key main-glyph="/"></keyboard-key>
+    <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
+      <keyboard-key id="jisBackslashKey" main-glyph="\\"></keyboard-key>
+    </template>
+    <keyboard-key id="rightShiftKey" class="right" main-glyph="shift"></keyboard-key>
+
+    <keyboard-key id="leftCtrlKey" class="left" main-glyph="ctrl"></keyboard-key>
+    <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
+      <keyboard-key id="fnKey" class="disabled" main-glyph="fn"></keyboard-key>
+      <!-- TODO(crbug.com/1207678): Add an icon for the layout switch key. -->
+      <keyboard-key id="layoutSwitchKey" main-glyph="[g]"></keyboard-key>
+    </template>
+    <template is="dom-if" if="[[showAssistantKey]]">
+      <keyboard-key icon="keyboard:assistant"></keyboard-key>
+    </template>
+    <keyboard-key id="leftAltKey" class="left" main-glyph="alt"></keyboard-key>
+    <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
+      <keyboard-key id="jisAlphanumericKey" main-glyph="英数"></keyboard-key>
+    </template>
+    <keyboard-key id="spacebar" main-glyph=""></keyboard-key>
+    <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
+      <keyboard-key id="jisKanaKey" main-glyph="かな"></keyboard-key>
+    </template>
+    <keyboard-key id="rightAltKey" main-glyph="alt"></keyboard-key>
+    <keyboard-key id="rightCtrlKey" main-glyph="ctrl"></keyboard-key>
+
+    <div id="arrowKeyCluster">
+      <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
+        <keyboard-key id="dellPageUpKey" main-glyph="pg up"></keyboard-key>
+      </template>
+      <keyboard-key id="upArrow" icon="keyboard:arrow-up"></keyboard-key>
+      <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
+        <keyboard-key id="dellPageDownKey" main-glyph="pg dn"></keyboard-key>
+      </template>
+      <keyboard-key icon="keyboard:arrow-left"></keyboard-key>
+      <keyboard-key icon="keyboard:arrow-down"></keyboard-key>
+      <keyboard-key icon="keyboard:arrow-right"></keyboard-key>
+    </div>
+  </div>
+  <div id="numberPad">
+    <keyboard-key main-glyph="page up"></keyboard-key>
+    <keyboard-key main-glyph="page dn"></keyboard-key>
+    <keyboard-key main-glyph="home"></keyboard-key>
+    <keyboard-key main-glyph="end"></keyboard-key>
+
+    <keyboard-key main-glyph="delete"></keyboard-key>
+    <keyboard-key main-glyph="/"></keyboard-key>
+    <keyboard-key main-glyph="*"></keyboard-key>
+    <keyboard-key main-glyph="-"></keyboard-key>
+
+    <keyboard-key main-glyph="7"></keyboard-key>
+    <keyboard-key main-glyph="8"></keyboard-key>
+    <keyboard-key main-glyph="9"></keyboard-key>
+    <keyboard-key class="double-height" main-glyph="+"></keyboard-key>
+
+    <keyboard-key main-glyph="4"></keyboard-key>
+    <keyboard-key main-glyph="5"></keyboard-key>
+    <keyboard-key main-glyph="6"></keyboard-key>
+
+    <keyboard-key main-glyph="1"></keyboard-key>
+    <keyboard-key main-glyph="2"></keyboard-key>
+    <keyboard-key main-glyph="3"></keyboard-key>
+    <keyboard-key class="double-height" main-glyph="enter"></keyboard-key>
+
+    <keyboard-key class="double-width" main-glyph="0"></keyboard-key>
+    <keyboard-key main-glyph="."></keyboard-key>
+  </div>
+</div>

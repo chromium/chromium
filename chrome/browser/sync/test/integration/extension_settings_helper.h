@@ -15,14 +15,13 @@ class DictionaryValue;
 namespace extension_settings_helper {
 
 // Calls Set() with |settings| for |profile| and the extension with ID |id|.
-void SetExtensionSettings(
-    Profile* profile,
-    const std::string& id,
-    const base::DictionaryValue& settings);
+void SetExtensionSettings(Profile* profile,
+                          const std::string& id,
+                          const base::DictionaryValue& settings);
 
 // Calls Set() with |settings| for all profiles the extension with ID |id|.
-void SetExtensionSettingsForAllProfiles(
-    const std::string& id, const base::DictionaryValue& settings);
+void SetExtensionSettingsForAllProfiles(const std::string& id,
+                                        const base::DictionaryValue& settings);
 
 // Returns whether the extension settings are the same across all profiles.
 bool AllExtensionSettingsSameAsVerifier();

@@ -24,8 +24,12 @@ OutputContextOrder = {
   // The (ancestor) context comes before the node output when moving forward,
   // after when moving backward.
   DIRECTED: 'directed',
+
   // The (ancestor) context comes after the node output.
-  LAST: 'last'
+  LAST: 'last',
+
+  // Ancestor context is placed both before and after node output.
+  FIRST_AND_LAST: 'firstAndLast'
 };
 
 /**

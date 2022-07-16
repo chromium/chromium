@@ -13,11 +13,11 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {HTMLEscape} from '//resources/js/util.m.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.m.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getNetworkConfigService, getShimlessRmaService} from './mojo_interface_provider.js';
@@ -51,18 +51,6 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
 
   static get properties() {
     return {
-      /** @private {ShimlessRmaServiceInterface} */
-      shimlessRmaService_: {
-        type: Object,
-        value: null,
-      },
-
-      /** @private {?NetworkConfigServiceInterface} */
-      networkConfig_: {
-        type: Object,
-        value: null,
-      },
-
       /**
        * Array of available networks
        * @protected
@@ -76,7 +64,6 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
       /**
        * Tracks whether network has configuration to be connected
        * @protected
-       * @type {boolean}
        */
       enableConnect_: {
         type: Boolean,
@@ -85,7 +72,6 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
       /**
        * The type of network to be configured as a string. May be set initially
        * or updated by network-config.
-       * @type {string}
        * @protected
        */
       networkType_: {
@@ -96,7 +82,6 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
       /**
        * The name of the network. May be set initially or updated by
        * network-config.
-       * @type {string}
        * @protected
        */
       networkName_: {
@@ -116,7 +101,6 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
 
       /**
        * Set to true to show the 'connect' button instead of 'disconnect'.
-       * @type {boolean}
        * @protected
        */
       networkShowConnect_: {
@@ -135,12 +119,22 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
     };
   }
 
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
+    this.shimlessRmaService_ = getShimlessRmaService();
+    /** @private {?NetworkConfigServiceInterface} */
+    this.networkConfig_ = getNetworkConfigService();
+  }
+
   /** @override */
   ready() {
     super.ready();
-    this.shimlessRmaService_ = getShimlessRmaService();
-    this.networkConfig_ = getNetworkConfigService();
     this.refreshNetworks();
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: false},
+        ));
   }
 
   /** CrosNetworkConfigObserver impl */
@@ -286,20 +280,20 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
    * @protected
    */
   getDialogTitle_() {
+    // TODO(gavindodd): Is disconnect ever needed? Currently it is not used as
+    // networkShowConnect_ is always true.
     if (this.networkName_ && !this.networkShowConnect_) {
-      return this.networkName_;
-      // TODO(joonbug): Move these strings to //ui and uncomment this.
-      // return this.i18n('internetConfigName', this.networkName_);
+      // TODO(gavindodd): Confirm other i18n strings don't need HTMLEscape
+      return this.i18n('internetConfigName', HTMLEscape(this.networkName_));
     }
     const type = this.i18n('OncType' + this.networkType_);
-    return type;
-    // return this.i18n('internetJoinType', type);
+    return this.i18n('internetJoinType', type);
   }
 
   /** @return {!Promise<StateResult>} */
   onNextButtonClick() {
     return this.shimlessRmaService_.networkSelectionComplete();
   }
-};
+}
 
 customElements.define(OnboardingNetworkPage.is, OnboardingNetworkPage);

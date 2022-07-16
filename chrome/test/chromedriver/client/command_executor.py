@@ -83,6 +83,12 @@ class Command(object):
       _Method.GET, '/session/:sessionId/element/:id/computedlabel')
   GET_ELEMENT_COMPUTED_ROLE = (
       _Method.GET, '/session/:sessionId/element/:id/computedrole')
+  GET_ELEMENT_SHADOW_ROOT = (
+      _Method.GET, '/session/:sessionId/element/:id/shadow')
+  FIND_ELEMENT_FROM_SHADOW_ROOT = (
+      _Method.POST, '/session/:sessionId/shadow/:id/element')
+  FIND_ELEMENTS_FROM_SHADOW_ROOT = (
+      _Method.POST, '/session/:sessionId/shadow/:id/elements')
   ELEMENT_EQUALS = (
       _Method.GET, '/session/:sessionId/element/:id/equals/:other')
   GET_COOKIES = (_Method.GET, '/session/:sessionId/cookie')
@@ -204,6 +210,9 @@ class Command(object):
   SET_USER_VERIFIED = (
       _Method.POST,
       '/session/:sessionId/webauthn/authenticator/:authenticatorId/uv')
+  SET_SPC_TRANSACTION_MODE = (
+      _Method.POST,
+      '/session/:sessionId/secure-payment-confirmation/set-mode')
   SET_PERMISSION = (
       _Method.POST, '/session/:sessionId/permissions')
 

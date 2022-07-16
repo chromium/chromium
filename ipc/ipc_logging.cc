@@ -236,7 +236,7 @@ void Logging::Log(const LogData& data) {
         base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(&Logging::OnSendLogs, base::Unretained(this)),
-            base::TimeDelta::FromMilliseconds(kLogSendDelayMs));
+            base::Milliseconds(kLogSendDelayMs));
       }
     }
   }

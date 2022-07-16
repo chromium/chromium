@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/software_feature.h"
@@ -57,6 +56,11 @@ class CryptAuthFeatureStatusSetterImpl : public CryptAuthFeatureStatusSetter {
    private:
     static Factory* test_factory_;
   };
+
+  CryptAuthFeatureStatusSetterImpl(const CryptAuthFeatureStatusSetterImpl&) =
+      delete;
+  CryptAuthFeatureStatusSetterImpl& operator=(
+      const CryptAuthFeatureStatusSetterImpl&) = delete;
 
   ~CryptAuthFeatureStatusSetterImpl() override;
 
@@ -118,8 +122,6 @@ class CryptAuthFeatureStatusSetterImpl : public CryptAuthFeatureStatusSetter {
   std::unique_ptr<base::OneShotTimer> timer_;
   base::WeakPtrFactory<CryptAuthFeatureStatusSetterImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthFeatureStatusSetterImpl);
 };
 
 }  // namespace device_sync

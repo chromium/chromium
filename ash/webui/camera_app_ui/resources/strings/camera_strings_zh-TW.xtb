@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="zh-TW">
+<translation id="1113173431709655881">相機模式</translation>
+<translation id="1175958423215084756">偵測到連結。<ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">順時針旋轉 90 度</translation>
+<translation id="1276998909102132017">圖片庫圖片</translation>
+<translation id="1300209025925956156">掃描你的文件</translation>
+<translation id="1303487788671416818">啟用原尺寸影片快照</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />。按下搜尋鍵 + 向左鍵即可使用。</translation>
+<translation id="1430915738399379752">列印</translation>
+<translation id="1467231725790366244">已解除連接「<ph name="CAMERA" />」。</translation>
+<translation id="1473110567575736769">3 秒計時器</translation>
+<translation id="1545749641540134597">掃描 QR 圖碼</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">一般</translation>
+<translation id="1620510694547887537">攝影機</translation>
+<translation id="1627744224761163218">4 x 4</translation>
+<translation id="1664224225747386870">未錄製任何內容</translation>
+<translation id="1838104802459806957">向上傾斜</translation>
+<translation id="1851169887664797861">已推出新的相機控制項</translation>
+<translation id="1851616744363735765">已暫停</translation>
+<translation id="1862930711583847113">無法匯出「<ph name="FILE" />」</translation>
+<translation id="1899697626337024495">相片解析度</translation>
+<translation id="2022953316617983419">QR 圖碼</translation>
+<translation id="2036868001356139588">計時器倒數時間</translation>
+<translation id="2050339315714019657">直向</translation>
+<translation id="2064538373111010176">「<ph name="CAMERA" />」已啟用</translation>
+<translation id="2144806332417375165">自訂影片參數</translation>
+<translation id="2175927920773552910">QR 圖碼</translation>
+<translation id="229579744168541441">匯出至磁碟</translation>
+<translation id="2320741269052147773">向左平移</translation>
+<translation id="2501278716633472235">返回</translation>
+<translation id="2501853267655415902">已停止錄影</translation>
+<translation id="2501953888035679275">使用相機拍攝相片及錄製影片。</translation>
+<translation id="2517472476991765520">掃描</translation>
+<translation id="2549985041256363841">開始錄影</translation>
+<translation id="2599796128805996109">後置鏡頭</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> 秒</translation>
+<translation id="2761536921376153655">掃描類型</translation>
+<translation id="2879583609344924966">已連接「<ph name="CAMERA" />」。</translation>
+<translation id="2968794441791257519">使用相機拍攝的相片和影片將移至「下載內容」資料夾，你可以在「檔案」應用程式中找到這些內容。
+
+        具備儲存空間權限的應用程式將可存取你的相片和影片。</translation>
+<translation id="3067436040345934772">向右平移</translation>
+<translation id="3081586908890909590">切換為錄影模式</translation>
+<translation id="313467653172006084">每秒畫格數：30</translation>
+<translation id="3183731565330012717">格線類型</translation>
+<translation id="3227137524299004712">麥克風</translation>
+<translation id="3240426699337459095">連結已複製</translation>
+<translation id="3259149966178251584">相機解析度</translation>
+<translation id="3260401663013584785">無法偵測文件</translation>
+<translation id="3305962767867348165">修正</translation>
+<translation id="3448774564454087943">無法儲存長度太短的影片</translation>
+<translation id="346539236881580388">重拍</translation>
+<translation id="3517926952904427380">無法拍攝肖像相片</translation>
+<translation id="3569311554794739032">確定要移除「<ph name="FILE" />」嗎？</translation>
+<translation id="3573890771273113519">切換為掃描模式</translation>
+<translation id="3789724198583203151">逆時針旋轉 90 度</translation>
+<translation id="3810838688059735925">影片</translation>
+<translation id="3838931309141338733">掃描條碼</translation>
+<translation id="3892148308691398805">複製文字</translation>
+<translation id="4118525110028899586">暫停錄影</translation>
+<translation id="4121305183798804752">偵測到文件</translation>
+<translation id="4269820728363426813">複製連結網址</translation>
+<translation id="4279490309300973883">鏡像</translation>
+<translation id="4329152592498422850">切換為正方形相片拍攝模式</translation>
+<translation id="4383571725254449280">列印效能記錄</translation>
+<translation id="4445542136948522167">停止拍照</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />：<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> 百萬像素</translation>
+<translation id="4570032796877367747">前置鏡頭</translation>
+<translation id="4628948037717959914">相片</translation>
+<translation id="4649291346448517080">無法儲存檔案</translation>
+<translation id="4890010094662541459">3 x 3</translation>
+<translation id="491895758387112773">錄製多串流視訊</translation>
+<translation id="5057360777601936059">目前無法使用相機。
+        請檢查相機是否已正確連接。</translation>
+<translation id="5152121255775685072">前往圖片庫</translation>
+<translation id="520537883758714667">文件掃描功能現已推出</translation>
+<translation id="5317780077021120954">儲存</translation>
+<translation id="5444515100983837161">將鏡頭對準文件，確認各邊都在方框內。如要獲得最佳的掃描效果，請將文件與背景的顏色區分開來。</translation>
+<translation id="5671277269877808209">正方形</translation>
+<translation id="5746169159649715125">另存為 PDF</translation>
+<translation id="5753488212459587150">啟用專家模式</translation>
+<translation id="5759254179196327752">掃描文件</translation>
+<translation id="5775960006311140197">專家模式</translation>
+<translation id="5869546221129391014">格線</translation>
+<translation id="5975083100439434680">縮小</translation>
+<translation id="6073451960410192870">停止錄影</translation>
+<translation id="6197807149213783179">儲存中繼資料</translation>
+<translation id="6233780560267770709">3 x 3</translation>
+<translation id="6243827288366940320">黃金比例</translation>
+<translation id="6248749904681914629">外接鏡頭</translation>
+<translation id="6353688143752491039">感謝你針對相機應用程式提供意見回饋。
+
+如果你的意見是有關圖片或影片品質，請在附件中包含示例相片或影片，並且說明問題 (例如相片太暗或拍攝主體失焦)。</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />：<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> 百萬像素</translation>
+<translation id="6527303717912515753">分享</translation>
+<translation id="667999046851023355">文件</translation>
+<translation id="6681668084120808868">拍照</translation>
+<translation id="6778482348691154169">無法拍照</translation>
+<translation id="695140971690006676">全部重設</translation>
+<translation id="6965382102122355670">確定</translation>
+<translation id="698156982839284926">3 秒</translation>
+<translation id="712848772518857951">確定要移除這 <ph name="COUNT" /> 個項目嗎？</translation>
+<translation id="7134221860976209830">10 秒計時器</translation>
+<translation id="7191890674911603392">錄製類型</translation>
+<translation id="7243947652761655814">影片解析度</translation>
+<translation id="7337660886763914220">檔案系統發生錯誤。</translation>
+<translation id="7450541714075000668">已複製文字</translation>
+<translation id="7476762461674917065">顯示 GIF 錄製選項</translation>
+<translation id="7488619942230388918">錄製 GIF 影片</translation>
+<translation id="7557677699350329807">切換至下一個相機</translation>
+<translation id="7607002721634913082">已暫停</translation>
+<translation id="7608223098072244877">4 乘 4</translation>
+<translation id="7649070708921625228">說明</translation>
+<translation id="7658239707568436148">取消</translation>
+<translation id="7670511624014457267">每秒畫格數：60</translation>
+<translation id="7726641833034062494">錄製一般影片</translation>
+<translation id="7983668134180549431">偵測到文字。</translation>
+<translation id="8067883171444229417">播放影片</translation>
+<translation id="8120146556401698679">平移 傾斜 縮放</translation>
+<translation id="8131740175452115882">確認</translation>
+<translation id="8145038249676204903">切換為拍照模式</translation>
+<translation id="8167081290930651932">儲存為相片</translation>
+<translation id="8239780215768881278">拍攝影片快照</translation>
+<translation id="8261506727792406068">刪除</translation>
+<translation id="8425673304802773841">向下傾斜</translation>
+<translation id="8428213095426709021">設定</translation>
+<translation id="8687491812650032292">HD 高畫質 <ph name="HEIGHT" />p (<ph name="WIDTH" />：<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">我瞭解了</translation>
+<translation id="8730621377337864115">完成</translation>
+<translation id="8732462232047530626">預覽中繼資料</translation>
+<translation id="8815966864175525708">切換為肖像相片拍攝模式</translation>
+<translation id="8828441885228359828">繼續錄影</translation>
+<translation id="8870695351537079478">無法開始錄影</translation>
+<translation id="8903921497873541725">放大</translation>
+<translation id="9045010116236796332">將鏡頭對準文件，確認各邊都在方框內</translation>
+<translation id="9045155556724273246">10 秒</translation>
+<translation id="906331135292332864">正在處理圖片…</translation>
+<translation id="945522503751344254">提供意見</translation>
+</translationbundle>

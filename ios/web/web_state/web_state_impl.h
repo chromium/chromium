@@ -59,14 +59,16 @@ class WebUIIOS;
 //  - SessionWindows are transient owners, passing ownership into WebControllers
 //    during session restore, and discarding owned copies of WebStateImpls after
 //    writing them out for session saves.
-class WebStateImpl : public WebState,
-                     public NavigationManagerDelegate,
-                     public WebFramesManagerDelegate {
+class WebStateImpl : public WebState, public NavigationManagerDelegate {
  public:
   // Constructor for WebStateImpls created for new sessions.
   explicit WebStateImpl(const CreateParams& params);
   // Constructor for WebStatesImpls created for deserialized sessions
   WebStateImpl(const CreateParams& params, CRWSessionStorage* session_storage);
+
+  WebStateImpl(const WebStateImpl&) = delete;
+  WebStateImpl& operator=(const WebStateImpl&) = delete;
+
   ~WebStateImpl() override;
 
   // Gets/Sets the CRWWebController that backs this object.
@@ -116,10 +118,12 @@ class WebStateImpl : public WebState,
   const WebFramesManagerImpl& GetWebFramesManagerImpl() const;
   WebFramesManagerImpl& GetWebFramesManagerImpl();
 
-  // Returns the SessionCertificatePolicyCacheImpl for this WebStateImpl.
-  const SessionCertificatePolicyCacheImpl&
+  // Returns/Sets the SessionCertificatePolicyCacheImpl for this WebStateImpl.
+  const SessionCertificatePolicyCacheImpl*
   GetSessionCertificatePolicyCacheImpl() const;
-  SessionCertificatePolicyCacheImpl& GetSessionCertificatePolicyCacheImpl();
+  void SetSessionCertificatePolicyCacheImpl(
+      std::unique_ptr<SessionCertificatePolicyCacheImpl>
+          certificate_policy_cache);
 
   // Creates a WebUI page for the given url, owned by this object.
   void CreateWebUI(const GURL& url);
@@ -145,7 +149,7 @@ class WebStateImpl : public WebState,
   // the first PolicyDecision::CancelAndDisplayError() result that was received.
   void ShouldAllowRequest(
       NSURLRequest* request,
-      const WebStatePolicyDecider::RequestInfo& request_info,
+      WebStatePolicyDecider::RequestInfo request_info,
       WebStatePolicyDecider::PolicyDecisionCallback callback);
 
   // Decides whether the navigation corresponding to |response| should
@@ -165,35 +169,28 @@ class WebStateImpl : public WebState,
   // the first PolicyDecision::CancelAndDisplayError() result that was received.
   void ShouldAllowResponse(
       NSURLResponse* response,
-      bool for_main_frame,
+      WebStatePolicyDecider::ResponseInfo response_info,
       WebStatePolicyDecider::PolicyDecisionCallback callback);
-
-  // Determines whether the given link with |link_url| should show a preview on
-  // force touch.
-  bool ShouldPreviewLink(const GURL& link_url);
-  // Called when the user performs a peek action on a link with |link_url| with
-  // force touch. Returns a view controller shown as a pop-up. Uses Webkit's
-  // default preview behavior when it returns nil.
-  UIViewController* GetPreviewingViewController(const GURL& link_url);
-  // Called when the user performs a pop action on the preview on force touch.
-  // |previewing_view_controller| is the view controller that is popped.
-  // It should display |previewing_view_controller| inside the app.
-  void CommitPreviewingViewController(
-      UIViewController* previewing_view_controller);
 
   // Returns the UIView used to contain the WebView for sizing purposes. Can be
   // nil.
   UIView* GetWebViewContainer();
 
-  // WebFramesManagerDelegate.
-  void OnWebFrameAvailable(web::WebFrame* frame) override;
-  void OnWebFrameUnavailable(web::WebFrame* frame) override;
+  // Registers |frame| as a new web frame and notifies any observers.
+  void WebFrameBecameAvailable(std::unique_ptr<WebFrame> frame);
+  // Removes the web frame with |frame_id|, if one exists and notifies any
+  // observers.
+  void WebFrameBecameUnavailable(const std::string& frame_id);
+  // Removes all current web frames.
+  void RemoveAllWebFrames();
 
   // WebState:
   Getter CreateDefaultGetter() override;
   OnceGetter CreateDefaultOnceGetter() override;
   WebStateDelegate* GetDelegate() override;
   void SetDelegate(WebStateDelegate* delegate) override;
+  bool IsRealized() const final;
+  WebState* ForceRealized() final;
   bool IsWebUsageEnabled() const override;
   void SetWebUsageEnabled(bool enabled) override;
   UIView* GetView() override;
@@ -343,6 +340,9 @@ class WebStateImpl : public WebState,
   // Returns true if |web_controller_| has been set.
   bool Configured() const;
 
+  // Notifies observers that |frame| will be removed and then removes it.
+  void NotifyObserversAndRemoveWebFrame(WebFrame* frame);
+
   // Restores session history into the navigation manager.
   void RestoreSessionStorage(CRWSessionStorage* session_storage);
 
@@ -416,8 +416,6 @@ class WebStateImpl : public WebState,
   UserAgentType user_agent_type_;
 
   base::WeakPtrFactory<WebStateImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateImpl);
 };
 
 }  // namespace web

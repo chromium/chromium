@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 
 namespace gfx {
@@ -19,6 +18,12 @@ namespace ui {
 class HardwareDisplayPlaneManagerLegacy : public HardwareDisplayPlaneManager {
  public:
   explicit HardwareDisplayPlaneManagerLegacy(DrmDevice* device);
+
+  HardwareDisplayPlaneManagerLegacy(const HardwareDisplayPlaneManagerLegacy&) =
+      delete;
+  HardwareDisplayPlaneManagerLegacy& operator=(
+      const HardwareDisplayPlaneManagerLegacy&) = delete;
+
   ~HardwareDisplayPlaneManagerLegacy() override;
 
   // HardwareDisplayPlaneManager:
@@ -52,9 +57,6 @@ class HardwareDisplayPlaneManagerLegacy : public HardwareDisplayPlaneManager {
                     uint32_t crtc_index) const override;
   bool CommitColorMatrix(const CrtcProperties& crtc_props) override;
   bool CommitGammaCorrection(const CrtcProperties& crtc_props) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HardwareDisplayPlaneManagerLegacy);
 };
 
 }  // namespace ui

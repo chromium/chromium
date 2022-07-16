@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "media/base/decode_status.h"
 #include "media/base/video_decoder.h"
+#include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -61,6 +62,9 @@ class V4L2VideoDecoderBackend {
     virtual DmabufVideoFramePool* GetVideoFramePool() const = 0;
   };
 
+  V4L2VideoDecoderBackend(const V4L2VideoDecoderBackend&) = delete;
+  V4L2VideoDecoderBackend& operator=(const V4L2VideoDecoderBackend&) = delete;
+
   virtual ~V4L2VideoDecoderBackend();
 
   virtual bool Initialize() = 0;
@@ -85,9 +89,9 @@ class V4L2VideoDecoderBackend {
   virtual bool ApplyResolution(const gfx::Size& pic_size,
                                const gfx::Rect& visible_rect,
                                const size_t num_output_frames) = 0;
-  // Called when ChangeResolution is done. |success| indicates whether there is
+  // Called when ChangeResolution is done. |status| indicates whether there is
   // any error occurs during the resolution change.
-  virtual void OnChangeResolutionDone(bool success) = 0;
+  virtual void OnChangeResolutionDone(CroStatus status) = 0;
   // Clear all pending decoding tasks and call all pending decode callbacks
   // with |status| as argument.
   virtual void ClearPendingRequests(DecodeStatus status) = 0;
@@ -113,7 +117,6 @@ class V4L2VideoDecoderBackend {
   scoped_refptr<V4L2Queue> output_queue_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(V4L2VideoDecoderBackend);
 };
 
 }  // namespace media

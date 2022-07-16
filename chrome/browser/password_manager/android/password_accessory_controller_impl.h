@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -45,13 +44,20 @@ class PasswordAccessoryControllerImpl
   using PasswordDriverSupplierForFocusedFrame =
       base::RepeatingCallback<password_manager::PasswordManagerDriver*(
           content::WebContents*)>;
+
+  PasswordAccessoryControllerImpl(const PasswordAccessoryControllerImpl&) =
+      delete;
+  PasswordAccessoryControllerImpl& operator=(
+      const PasswordAccessoryControllerImpl&) = delete;
+
   ~PasswordAccessoryControllerImpl() override;
 
   // AccessoryController:
   void RegisterFillingSourceObserver(FillingSourceObserver observer) override;
   absl::optional<autofill::AccessorySheetData> GetSheetData() const override;
-  void OnFillingTriggered(autofill::FieldGlobalId focused_field_id,
-                          const autofill::UserInfo::Field& selection) override;
+  void OnFillingTriggered(
+      autofill::FieldGlobalId focused_field_id,
+      const autofill::AccessorySheetField& selection) override;
   void OnOptionSelected(autofill::AccessoryAction selected_action) override;
   void OnToggleChanged(autofill::AccessoryAction toggled_action,
                        bool enabled) override;
@@ -160,16 +166,16 @@ class PasswordAccessoryControllerImpl
   // Returns true if authentication should be triggered before filling
   // |selection| in to the field.
   bool ShouldTriggerBiometricReauth(
-      const autofill::UserInfo::Field& selection) const;
+      const autofill::AccessorySheetField& selection) const;
 
   // Called when the biometric authentication completes. If |auth_succeeded| is
   // true, |selection| will be passed on to be filled.
-  void OnReauthCompleted(autofill::UserInfo::Field selection,
+  void OnReauthCompleted(autofill::AccessorySheetField selection,
                          bool auth_succeeded);
 
   // Sends |selection| to the renderer to be filled, if it's a valid
   // entry for the origin of the frame that is currently focused.
-  void FillSelection(const autofill::UserInfo::Field& selection);
+  void FillSelection(const autofill::AccessorySheetField& selection);
 
   // Called From |AllPasswordsBottomSheetController| when
   // the Bottom Sheet view is destroyed.
@@ -190,7 +196,7 @@ class PasswordAccessoryControllerImpl
 
   // The authenticator used to trigger a biometric re-auth before filling.
   // null, if there is no ongoing authentication.
-  scoped_refptr<password_manager::BiometricAuthenticator> authenticator_;
+  scoped_refptr<device_reauth::BiometricAuthenticator> authenticator_;
 
   // Information about the currently focused field. This is the only place
   // allowed to store frame-specific data. If a new field is focused or focus is
@@ -219,8 +225,6 @@ class PasswordAccessoryControllerImpl
       security_state::NONE;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordAccessoryControllerImpl);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_ACCESSORY_CONTROLLER_IMPL_H_

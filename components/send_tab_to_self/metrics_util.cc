@@ -31,7 +31,8 @@ enum class NotificationStatus {
   kOpened = 2,
   kTimedOut = 3,
   kSent = 4,
-  kMaxValue = kSent,
+  kDismissReasonUnknown = 5,
+  kMaxValue = kDismissReasonUnknown,
 };
 
 std::string GetEntryPointHistogramString(ShareEntryPoint entry_point) {
@@ -88,6 +89,11 @@ void RecordNotificationTimedOut() {
 void RecordNotificationSent() {
   base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
                                 NotificationStatus::kSent);
+}
+
+void RecordNotificationDismissReasonUnknown() {
+  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
+                                NotificationStatus::kDismissReasonUnknown);
 }
 
 }  // namespace send_tab_to_self

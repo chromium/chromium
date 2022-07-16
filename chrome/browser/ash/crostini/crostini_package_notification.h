@@ -41,6 +41,11 @@ class CrostiniPackageNotification
                               const std::u16string& app_name,
                               const std::string& notification_id,
                               CrostiniPackageService* installer_service);
+
+  CrostiniPackageNotification(const CrostiniPackageNotification&) = delete;
+  CrostiniPackageNotification& operator=(const CrostiniPackageNotification&) =
+      delete;
+
   ~CrostiniPackageNotification() override;
 
   void UpdateProgress(PackageOperationStatus status,
@@ -127,8 +132,6 @@ class CrostiniPackageNotification
   int app_count_ = 0;
 
   base::WeakPtrFactory<CrostiniPackageNotification> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniPackageNotification);
 };
 
 }  // namespace crostini

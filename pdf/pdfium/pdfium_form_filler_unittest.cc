@@ -2,21 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "pdf/pdfium/pdfium_form_filler.h"
+
+#include <vector>
+
+#include "base/cxx17_backports.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "gin/public/isolate_holder.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/web/blink.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
+#include "third_party/pdfium/public/fpdf_formfill.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
-
-using testing::InSequence;
+#include "v8/include/v8-isolate.h"
 
 namespace chrome_pdf {
 
 namespace {
+
+using ::testing::Contains;
+using ::testing::InSequence;
+using ::testing::Return;
 
 class FormFillerTestClient : public TestClient {
  public:
@@ -26,6 +38,8 @@ class FormFillerTestClient : public TestClient {
   FormFillerTestClient& operator=(const FormFillerTestClient&) = delete;
 
   // Mock PDFEngine::Client methods.
+  MOCK_METHOD(void, Beep, (), (override));
+  MOCK_METHOD(std::string, GetURL, (), (override));
   MOCK_METHOD(void, ScrollToX, (int), (override));
   MOCK_METHOD(void, ScrollToY, (int), (override));
   MOCK_METHOD(void,
@@ -58,6 +72,19 @@ class FormFillerTest : public PDFiumTestBase {
     engine->form_filler_.Form_DoURIActionWithKeyboardModifier(
         &engine->form_filler_, uri, modifiers);
   }
+
+#if defined(PDF_ENABLE_V8)
+  void TriggerBeep(PDFiumEngine* engine) {
+    ASSERT_TRUE(engine);
+    engine->form_filler_.Form_Beep(&engine->form_filler_,
+                                   JSPLATFORM_BEEP_DEFAULT);
+  }
+
+  int TriggerGetFilePath(PDFiumEngine& engine, void* file_path, int length) {
+    return engine.form_filler_.Form_GetFilePath(&engine.form_filler_, file_path,
+                                                length);
+  }
+#endif  // defined(PDF_ENABLE_V8)
 };
 
 TEST_F(FormFillerTest, DoURIActionWithKeyboardModifier) {
@@ -160,5 +187,91 @@ TEST_F(FormFillerTest, FormOnFocusChange) {
     TriggerFormFocusChange(engine.get(), annot.get(), test_case.page_index);
   }
 }
+
+#if defined(PDF_ENABLE_V8)
+class FormFillerJavaScriptTest : public FormFillerTest {
+ public:
+  FormFillerJavaScriptTest() {
+    // Needed for setting up V8.
+    InitializeSDK(/*enable_v8=*/true, FontMappingMode::kNoMapping);
+  }
+
+  ~FormFillerJavaScriptTest() override { ShutdownSDK(); }
+};
+
+TEST_F(FormFillerJavaScriptTest, IsolateScoping) {
+  // Enter the embedder's isolate so it can be captured when the
+  // `PDFiumFormFiller` is created.
+  v8::Isolate* embedder_isolate = blink::MainThreadIsolate();
+  v8::Isolate::Scope embedder_isolate_scope(embedder_isolate);
+
+  FormFillerTestClient client;
+  PDFiumEngine engine(&client, PDFiumFormFiller::ScriptOption::kJavaScript);
+
+  gin::IsolateHolder pdfium_test_isolate_holder(
+      base::ThreadTaskRunnerHandle::Get(),
+      gin::IsolateHolder::IsolateType::kTest);
+  v8::Isolate* pdfium_test_isolate = pdfium_test_isolate_holder.isolate();
+
+  // Enter PDFium's isolate and then trigger a beep callback. The embedder's
+  // isolate should be entered during the callback's execution.
+  v8::Isolate::Scope pdfium_test_isolate_scope(pdfium_test_isolate);
+  EXPECT_CALL(client, Beep).WillOnce([&embedder_isolate]() {
+    EXPECT_EQ(v8::Isolate::TryGetCurrent(), embedder_isolate);
+  });
+  TriggerBeep(&engine);
+
+  // PDFium's isolate should be entered again after the callback completes.
+  EXPECT_EQ(v8::Isolate::TryGetCurrent(), pdfium_test_isolate);
+}
+
+TEST_F(FormFillerJavaScriptTest, GetFilePath) {
+  constexpr char kTestPath[] = "https://www.example.com/path/to/the.pdf";
+  constexpr int kTestPathSize = static_cast<int>(base::size(kTestPath));
+
+  FormFillerTestClient client;
+  EXPECT_CALL(client, GetURL).Times(2).WillRepeatedly(Return(kTestPath));
+  PDFiumEngine engine(&client, PDFiumFormFiller::ScriptOption::kJavaScript);
+
+  EXPECT_EQ(TriggerGetFilePath(engine, /*file_path=*/nullptr, /*length=*/0),
+            kTestPathSize);
+
+  std::vector<char> buffer(kTestPathSize, 'X');
+  EXPECT_EQ(TriggerGetFilePath(engine, buffer.data(), buffer.size()),
+            kTestPathSize);
+  EXPECT_STREQ(buffer.data(), kTestPath);
+}
+
+TEST_F(FormFillerJavaScriptTest, GetFilePathEmpty) {
+  FormFillerTestClient client;
+  EXPECT_CALL(client, GetURL).Times(2).WillRepeatedly(Return(std::string()));
+  PDFiumEngine engine(&client, PDFiumFormFiller::ScriptOption::kJavaScript);
+
+  EXPECT_EQ(TriggerGetFilePath(engine, /*file_path=*/nullptr, /*length=*/0), 1);
+
+  char buffer[] = "buffer";
+  EXPECT_EQ(TriggerGetFilePath(engine, buffer, /*length=*/1), 1);
+
+  // The trailing null should be copied over.
+  EXPECT_STREQ(buffer, "");
+}
+
+TEST_F(FormFillerJavaScriptTest, GetFilePathShortBuffer) {
+  constexpr char kTestPath[] = "https://www.example.com/path/to/the.pdf";
+  constexpr int kTestPathSize = static_cast<int>(base::size(kTestPath));
+
+  FormFillerTestClient client;
+  EXPECT_CALL(client, GetURL).WillRepeatedly(Return(kTestPath));
+  PDFiumEngine engine(&client, PDFiumFormFiller::ScriptOption::kJavaScript);
+
+  std::vector<char> buffer(kTestPathSize - 1, 'X');
+  EXPECT_EQ(TriggerGetFilePath(engine, buffer.data(), buffer.size()),
+            kTestPathSize);
+
+  // Nothing should be copied over. The buffer size is too small to contain a
+  // trailing null.
+  EXPECT_THAT(buffer, Contains('X').Times(buffer.size()));
+}
+#endif  // defined(PDF_ENABLE_V8)
 
 }  // namespace chrome_pdf

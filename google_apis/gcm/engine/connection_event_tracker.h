@@ -19,6 +19,10 @@ class GCM_EXPORT ConnectionEventTracker {
  public:
   // TODO(harkness): Pass in the storage information.
   ConnectionEventTracker();
+
+  ConnectionEventTracker(const ConnectionEventTracker&) = delete;
+  ConnectionEventTracker& operator=(const ConnectionEventTracker&) = delete;
+
   ~ConnectionEventTracker();
 
   // Returns a boolean indicating whether an attempt is currently in progress.
@@ -56,8 +60,6 @@ class GCM_EXPORT ConnectionEventTracker {
   // Number of events which were discarded due to exceeding the total number of
   // events collected. This is sent to GCM to represent those events.
   uint32_t number_discarded_events_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionEventTracker);
 };
 
 }  // namespace gcm

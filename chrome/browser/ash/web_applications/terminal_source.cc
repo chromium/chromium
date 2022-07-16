@@ -154,10 +154,20 @@ const ui::TemplateReplacements* TerminalSource::GetReplacements() {
 std::string TerminalSource::GetContentSecurityPolicy(
     network::mojom::CSPDirectiveName directive) {
   switch (directive) {
+    case network::mojom::CSPDirectiveName::ConnectSrc:
+      return "connect-src 'self' "
+             "https://*.corp.google.com:* wss://*.corp.google.com:* "
+             "https://*.r.ext.google.com:* wss://*.r.ext.google.com:*;";
+    case network::mojom::CSPDirectiveName::FrameAncestors:
+      return "frame-ancestors 'self';";
+    case network::mojom::CSPDirectiveName::FrameSrc:
+      return "frame-src 'self';";
     case network::mojom::CSPDirectiveName::ImgSrc:
       return "img-src * data: blob:;";
     case network::mojom::CSPDirectiveName::MediaSrc:
       return "media-src data:;";
+    case network::mojom::CSPDirectiveName::ObjectSrc:
+      return "object-src 'self';";
     case network::mojom::CSPDirectiveName::StyleSrc:
       return "style-src * 'unsafe-inline'; font-src *;";
     case network::mojom::CSPDirectiveName::RequireTrustedTypesFor:

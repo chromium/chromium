@@ -24,14 +24,14 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "url/gurl.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 // The string format used to append the distillation date to the URL host.
 NSString* const kURLAndDistillationDateFormat = @"%s • %@";
 }
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface ReadingListTableViewItem ()
 
@@ -89,7 +89,7 @@ NSString* const kURLAndDistillationDateFormat = @"%s • %@";
   TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
   URLCell.titleLabel.text = [self titleLabelText];
   URLCell.URLLabel.text = [self URLLabelText];
-  if (IsReadingListMessagesEnabled()) {
+  if (IsReadingListTimeToReadEnabled()) {
     URLCell.metadataLabel.text = self.estimatedReadTimeText;
   } else {
     URLCell.metadataLabel.text = self.distillationSizeText;

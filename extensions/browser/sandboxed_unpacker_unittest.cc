@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -533,8 +534,7 @@ TEST_F(SandboxedUnpackerTest, ImageDecoderFails) {
   ASSERT_EQ(CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE,
             GetInstallErrorType());
   EXPECT_EQ(
-      static_cast<int>(SandboxedUnpackerFailureReason::
-                           UTILITY_PROCESS_CRASHED_WHILE_TRYING_TO_INSTALL),
+      static_cast<int>(SandboxedUnpackerFailureReason::UNPACKER_CLIENT_FAILED),
       GetInstallErrorDetail());
 }
 

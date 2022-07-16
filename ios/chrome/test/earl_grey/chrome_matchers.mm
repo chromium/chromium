@@ -12,8 +12,6 @@
 #error "This file requires ARC support."
 #endif
 
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeMatchersAppInterface)
-
 namespace chrome_test_util {
 
 id<GREYMatcher> WindowWithNumber(int window_number) {
@@ -272,10 +270,6 @@ id<GREYMatcher> SettingsDoneButton() {
   return [ChromeMatchersAppInterface settingsDoneButton];
 }
 
-id<GREYMatcher> SyncSettingsConfirmButton() {
-  return [ChromeMatchersAppInterface syncSettingsConfirmButton];
-}
-
 id<GREYMatcher> AutofillCreditCardEditTableView() {
   return [ChromeMatchersAppInterface autofillCreditCardEditTableView];
 }
@@ -352,16 +346,16 @@ id<GREYMatcher> SettingsPrivacyTableView() {
   return [ChromeMatchersAppInterface settingsPrivacyTableView];
 }
 
-id<GREYMatcher> AccountsSyncButton() {
-  return [ChromeMatchersAppInterface accountsSyncButton];
-}
-
 id<GREYMatcher> ContentSettingsButton() {
   return [ChromeMatchersAppInterface contentSettingsButton];
 }
 
 id<GREYMatcher> GoogleServicesSettingsButton() {
   return [ChromeMatchersAppInterface googleServicesSettingsButton];
+}
+
+id<GREYMatcher> ManageSyncSettingsButton() {
+  return [ChromeMatchersAppInterface manageSyncSettingsButton];
 }
 
 id<GREYMatcher> GoogleServicesSettingsView() {
@@ -747,6 +741,10 @@ id<GREYMatcher> TabGridEditButton() {
   return [ChromeMatchersAppInterface tabGridEditButton];
 }
 
+id<GREYMatcher> TabGridEditMenuCloseAllButton() {
+  return [ChromeMatchersAppInterface tabGridEditMenuCloseAllButton];
+}
+
 id<GREYMatcher> TabGridSelectTabsMenuButton() {
   return [ChromeMatchersAppInterface tabGridSelectTabsMenuButton];
 }
@@ -761,6 +759,10 @@ id<GREYMatcher> TabGridEditCloseTabsButton() {
 
 id<GREYMatcher> TabGridEditSelectAllButton() {
   return [ChromeMatchersAppInterface tabGridEditSelectAllButton];
+}
+
+id<GREYMatcher> TabGridEditShareButton() {
+  return [ChromeMatchersAppInterface tabGridEditShareButton];
 }
 
 }  // namespace chrome_test_util

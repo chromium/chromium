@@ -27,6 +27,12 @@ class AwWebResourceInterceptResponse {
   // org.chromium.android_webview.AwWebResourceInterceptResponse class.
   explicit AwWebResourceInterceptResponse(
       const base::android::JavaRef<jobject>& obj);
+
+  AwWebResourceInterceptResponse(const AwWebResourceInterceptResponse&) =
+      delete;
+  AwWebResourceInterceptResponse& operator=(
+      const AwWebResourceInterceptResponse&) = delete;
+
   ~AwWebResourceInterceptResponse();
 
   // True if the call to shouldInterceptRequest raised an exception.
@@ -43,8 +49,6 @@ class AwWebResourceInterceptResponse {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwWebResourceInterceptResponse);
 };
 
 }  // namespace android_webview

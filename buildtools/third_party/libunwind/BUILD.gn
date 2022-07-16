@@ -30,6 +30,7 @@ source_set("libunwind") {
   if (is_fuchsia) {
     visibility += [ "//buildtools/third_party/libc++abi" ]
   } else if (is_android) {
+    visibility += [ "//buildtools/third_party/libc++abi" ]
     visibility += [ "//services/tracing/public/cpp" ]
   }
   if (!is_component_build) {
@@ -55,11 +56,13 @@ source_set("libunwind") {
     "//build/config/compiler:no_exceptions",
     "//build/config/compiler:no_rtti",
     "//build/config/coverage:default_coverage",
+    "//build/config/compiler:default_optimization",
   ]
   configs += [
     "//build/config/compiler:no_chromium_code",
     "//build/config/compiler:exceptions",
     "//build/config/compiler:rtti",
+    "//build/config/compiler:optimize_speed",
 
     # Must be after no_chromium_code
     ":libunwind_config",

@@ -8,7 +8,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
+#include "chrome/browser/scoped_disable_client_side_decorations_for_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -24,6 +26,7 @@
 namespace {
 
 using UkmEntry = ukm::builders::HistoryNavigation;
+using page_load_metrics::PageEndReason;
 
 class BackForwardCachePageLoadMetricsObserverBrowserTest
     : public MetricIntegrationTest {
@@ -35,7 +38,9 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
         {{features::kBackForwardCache,
           {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
            {"ignore_outstanding_network_request_for_testing", "true"}}},
-         {internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics, {{}}}},
+         {internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics, {{}}},
+         // Send all user interaction latencies to the browser process.
+         {blink::features::kSendAllUserInteractionLatencies, {{}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
         {features::kBackForwardCacheMemoryControls});
 
@@ -91,6 +96,26 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
       count++;
     }
     EXPECT_EQ(count, expected_count);
+  }
+
+  void VerifyHistoryNavPageEndReasons(const std::vector<PageEndReason>& reasons,
+                                      const GURL& url) {
+    unsigned int reason_index = 0;
+    for (auto* entry : ukm_recorder().GetEntriesByName(UkmEntry::kEntryName)) {
+      auto* source = ukm_recorder().GetSourceForSourceId(entry->source_id);
+      if (source->url() != url)
+        continue;
+      if (ukm_recorder().EntryHasMetric(
+              entry,
+              UkmEntry::kPageEndReasonAfterBackForwardCacheRestoreName)) {
+        ASSERT_LT(reason_index, reasons.size());
+        ukm_recorder().ExpectEntryMetric(
+            entry, UkmEntry::kPageEndReasonAfterBackForwardCacheRestoreName,
+            reasons[reason_index++]);
+      }
+    }
+    // Should have been through all the reasons.
+    EXPECT_EQ(reason_index, reasons.size());
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -311,6 +336,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
                        CumulativeLayoutShiftAfterBackForwardCacheRestore) {
+  // TODO(crbug.com/1240482): the test expectations fail if the window gets CSD
+  // and becomes smaller because of that.  Investigate this and remove the line
+  // below if possible.
+  ui::ScopedDisableClientSideDecorationsForTest scoped_disabled_csd;
+
   Start();
 
   const char path[] = "/layout-instability/simple-block-movement.html";
@@ -587,4 +617,185 @@ return score;
       "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
       "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms",
       2);
+}
+
+// Verifies that the app resumes HistoryNavigation logging for a page if the
+// page restores from the bf-cache after the app has backgrounded and
+// re-foregrounded.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCachePageLoadMetricsObserverBrowserTest,
+    ResumesLoggingAfterRestoringFromCacheAfterBackgrounding) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Navigate to A.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+
+  // Navigate to B.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+
+  // Navigate to A again, using history navigation.
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Navigate to B again, using history navigation.
+  web_contents()->GetController().GoForward();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  std::vector<PageEndReason> expected_reasons_a;
+  expected_reasons_a.push_back(page_load_metrics::END_FORWARD_BACK);
+  VerifyHistoryNavPageEndReasons(expected_reasons_a, url_a);
+
+  // No page end expected for url_b.
+  ExpectMetricCountForUrl(
+      url_b, UkmEntry::kPageEndReasonAfterBackForwardCacheRestoreName, 0);
+
+  // Simulate an app background. This is a bit fake but the best we can do in a
+  // browsertest.
+  auto* observer =
+      page_load_metrics::MetricsWebContentsObserver::FromWebContents(
+          web_contents());
+  observer->FlushMetricsOnAppEnterBackground();
+
+  // B's observer should have logged a page end reason.
+  std::vector<PageEndReason> expected_reasons_b;
+  expected_reasons_b.push_back(page_load_metrics::END_APP_ENTER_BACKGROUND);
+  VerifyHistoryNavPageEndReasons(expected_reasons_b, url_b);
+
+  // Go back to A, restoring it from the back-forward cache.
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  // Nothing new should have been logged for url_b - its page end happened
+  // when the backgrounding did.
+  VerifyHistoryNavPageEndReasons(expected_reasons_b, url_b);
+
+  // Navigate to B again - this should trigger the
+  // BackForwardCachePageLoadMetricsObserver for A.
+  web_contents()->GetController().GoForward();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  expected_reasons_a.push_back(page_load_metrics::END_FORWARD_BACK);
+  VerifyHistoryNavPageEndReasons(expected_reasons_a, url_a);
+
+  // Go back to A, restoring it from the back-forward cache (again)
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  expected_reasons_b.push_back(page_load_metrics::END_FORWARD_BACK);
+  VerifyHistoryNavPageEndReasons(expected_reasons_b, url_b);
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1261828): Flaky on linux-chromeos.
+#define MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies \
+  DISABLED_ResponsivenessMetricsNormalizationWithSendingAllLatencies
+#else
+#define MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies \
+  ResponsivenessMetricsNormalizationWithSendingAllLatencies
+#endif
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCachePageLoadMetricsObserverBrowserTest,
+    MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies) {
+  Start();
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  // Navigate to A.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+  content::RenderFrameHostWrapper rfh_a(top_frame_host());
+
+  // Navigate to B.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Go back to A.
+  {
+    auto waiter = CreatePageLoadMetricsTestWaiter();
+    waiter->AddPageExpectation(
+        page_load_metrics::PageLoadMetricsTestWaiter::TimingField::
+            kFirstInputDelayAfterBackForwardCacheRestore);
+
+    web_contents()->GetController().GoBack();
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    EXPECT_EQ(rfh_a.get(), top_frame_host());
+    EXPECT_NE(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+    // Simulate clicks.
+    content::SimulateMouseClick(web_contents(), 0,
+                                blink::WebPointerProperties::Button::kLeft);
+    content::SimulateMouseClick(web_contents(), 0,
+                                blink::WebPointerProperties::Button::kLeft);
+    content::SimulateMouseClick(web_contents(), 0,
+                                blink::WebPointerProperties::Button::kLeft);
+
+    waiter->Wait();
+  }
+
+  // Navigate to B again.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+
+  // Go back to A again.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  std::vector<std::string> ukm_list = {
+      "WorstUserInteractionLatencyAfterBackForwardCacheRestore."
+      "MaxEventduration",
+      "WorstUserInteractionLatencyAfterBackForwardCacheRestore."
+      "TotalEventduration",
+      "WorstUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
+      "MaxEventduration",
+      "WorstUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
+      "TotalEventduration",
+      "SumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
+      "TotalEventduration",
+      "SumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
+      "MaxEventduration",
+      "SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
+      "HighPercentile2.TotalEventduration",
+      "SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
+      "HighPercentile2.MaxEventduration",
+      "SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
+      "HighPercentile.TotalEventduration",
+      "SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
+      "HighPercentile.MaxEventduration",
+      "AverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
+      "MaxEventduration",
+      "AverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
+      "TotalEventduration"};
+
+  for (auto& ukm : ukm_list) {
+    ExpectMetricCountForUrl(url_a, ukm.c_str(), 1);
+    ExpectMetricCountForUrl(url_b, ukm.c_str(), 0);
+  }
+
+  std::vector<std::string> uma_list = {
+      internal::
+          kAverageUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kSlowUserInteractionLatencyOverBudgetHighPercentile_MaxEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kSlowUserInteractionLatencyOverBudgetHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kSumOfUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kWorstUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kAverageUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kSlowUserInteractionLatencyOverBudgetHighPercentile_TotalEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kSlowUserInteractionLatencyOverBudgetHighPercentile2_TotalEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kSumOfUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kWorstUserInteractionLatency_TotalEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kWorstUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore};
+
+  for (auto& uma : uma_list) {
+    histogram_tester().ExpectTotalCount(uma, 1);
+  }
 }

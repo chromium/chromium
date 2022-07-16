@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -47,6 +46,10 @@ class TriggeredProfileResetter : public KeyedService {
   enum : size_t { kMaxToolNameLength = 100 };
 
   explicit TriggeredProfileResetter(Profile* profile);
+
+  TriggeredProfileResetter(const TriggeredProfileResetter&) = delete;
+  TriggeredProfileResetter& operator=(const TriggeredProfileResetter&) = delete;
+
   ~TriggeredProfileResetter() override;
 
   // Causes the TriggeredProfileResetter to look for the presence of a trigger.
@@ -77,8 +80,6 @@ class TriggeredProfileResetter : public KeyedService {
   bool activate_called_ = false;
 
   std::u16string tool_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TriggeredProfileResetter);
 };
 
 // Exposed for testing.

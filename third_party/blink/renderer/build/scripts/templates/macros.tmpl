@@ -77,12 +77,6 @@ case {{ length }}:
 {% if predicate %}{{str}}{% endif %}
 {%- endmacro %}
 
-
-{# See //docs/lacros.md for details on these Chrome OS defines. #}
 {%- macro platform_define(platform) -%}
-{%- if platform|lower == 'chromeos' -%}
-(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
-{%- else -%}
 defined(OS_{{platform | upper}})
-{%- endif -%}
 {%- endmacro -%}

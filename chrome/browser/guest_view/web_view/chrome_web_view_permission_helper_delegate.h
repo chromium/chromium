@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_GUEST_VIEW_WEB_VIEW_CHROME_WEB_VIEW_PERMISSION_HELPER_DELEGATE_H_
 #define CHROME_BROWSER_GUEST_VIEW_WEB_VIEW_CHROME_WEB_VIEW_PERMISSION_HELPER_DELEGATE_H_
 
-#include "base/macros.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "content/public/browser/web_contents_receiver_set.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper_delegate.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -29,8 +28,20 @@ class ChromeWebViewPermissionHelperDelegate
 #endif
 {
  public:
+#if BUILDFLAG(ENABLE_PLUGINS)
+  static void BindPluginAuthHost(
+      mojo::PendingAssociatedReceiver<chrome::mojom::PluginAuthHost> receiver,
+      content::RenderFrameHost* rfh);
+#endif
+
   explicit ChromeWebViewPermissionHelperDelegate(
       WebViewPermissionHelper* web_view_permission_helper);
+
+  ChromeWebViewPermissionHelperDelegate(
+      const ChromeWebViewPermissionHelperDelegate&) = delete;
+  ChromeWebViewPermissionHelperDelegate& operator=(
+      const ChromeWebViewPermissionHelperDelegate&) = delete;
+
   ~ChromeWebViewPermissionHelperDelegate() override;
 
   // WebViewPermissionHelperDelegate implementation.
@@ -56,7 +67,7 @@ class ChromeWebViewPermissionHelperDelegate
   void BlockedUnauthorizedPlugin(const std::u16string& name,
                                  const std::string& identifier) override;
 
-  content::WebContentsFrameReceiverSet<chrome::mojom::PluginAuthHost>
+  content::RenderFrameHostReceiverSet<chrome::mojom::PluginAuthHost>
       plugin_auth_host_receivers_;
 
   void OnPermissionResponse(const std::string& identifier,
@@ -94,8 +105,6 @@ class ChromeWebViewPermissionHelperDelegate
 
   base::WeakPtrFactory<ChromeWebViewPermissionHelperDelegate> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebViewPermissionHelperDelegate);
 };
 
 }  // namespace extensions

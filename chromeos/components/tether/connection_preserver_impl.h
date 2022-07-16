@@ -46,6 +46,10 @@ class ConnectionPreserverImpl
       NetworkStateHandler* network_state_handler,
       ActiveHost* active_host,
       TetherHostResponseRecorder* tether_host_response_recorder);
+
+  ConnectionPreserverImpl(const ConnectionPreserverImpl&) = delete;
+  ConnectionPreserverImpl& operator=(const ConnectionPreserverImpl&) = delete;
+
   ~ConnectionPreserverImpl() override;
 
   // ConnectionPreserver:
@@ -96,8 +100,6 @@ class ConnectionPreserverImpl
   std::unique_ptr<secure_channel::ClientChannel> client_channel_;
 
   base::WeakPtrFactory<ConnectionPreserverImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionPreserverImpl);
 };
 
 }  // namespace tether

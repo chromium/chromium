@@ -200,7 +200,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
       base::TimeTicks::Now(),
       GenerateCommandProto(
           kUniqueID, base::TimeTicks::Now() - test_start_time_,
-          base::TimeDelta::FromSeconds(30),
+          base::Seconds(30),
           /*terminate_upon_input=*/false, /*id=*/7979,
           static_cast<
               chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum>(
@@ -221,7 +221,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest, CommandPayloadMissingId) {
   EXPECT_FALSE(job->Init(
       base::TimeTicks::Now(),
       GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
-                           base::TimeDelta::FromSeconds(30),
+                           base::Seconds(30),
                            /*terminate_upon_input=*/false,
                            /*id=*/absl::nullopt,
                            chromeos::cros_healthd::mojom::
@@ -241,7 +241,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest, CommandPayloadMissingCommand) {
   EXPECT_FALSE(job->Init(
       base::TimeTicks::Now(),
       GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
-                           base::TimeDelta::FromSeconds(30),
+                           base::Seconds(30),
                            /*terminate_upon_input=*/false,
                            /*id=*/1293, /*command=*/absl::nullopt,
                            /*include_output=*/true),
@@ -261,7 +261,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
       base::TimeTicks::Now(),
       GenerateCommandProto(
           kUniqueID, base::TimeTicks::Now() - test_start_time_,
-          base::TimeDelta::FromSeconds(30),
+          base::Seconds(30),
           /*terminate_upon_input=*/false,
           /*id=*/457658,
           chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kCancel,
@@ -288,7 +288,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
   std::unique_ptr<RemoteCommandJob> job =
       std::make_unique<DeviceCommandGetRoutineUpdateJob>();
   InitializeJob(
-      job.get(), kUniqueID, test_start_time_, base::TimeDelta::FromSeconds(30),
+      job.get(), kUniqueID, test_start_time_, base::Seconds(30),
       /*terminate_upon_input=*/false, /*id=*/56923,
       chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kRemove,
       /*include_output=*/true);
@@ -326,7 +326,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
   std::unique_ptr<RemoteCommandJob> job =
       std::make_unique<DeviceCommandGetRoutineUpdateJob>();
   InitializeJob(
-      job.get(), kUniqueID, test_start_time_, base::TimeDelta::FromSeconds(30),
+      job.get(), kUniqueID, test_start_time_, base::Seconds(30),
       /*terminate_upon_input=*/false, /*id=*/9812,
       chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kRemove,
       /*include_output=*/true);

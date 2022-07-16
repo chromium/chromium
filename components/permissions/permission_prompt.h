@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "components/permissions/permission_ui_selector.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -60,10 +61,38 @@ class PermissionPrompt {
     virtual void Accept() = 0;
     virtual void AcceptThisTime() = 0;
     virtual void Deny() = 0;
-    virtual void Closing() = 0;
+    virtual void Dismiss() = 0;
+    virtual void Ignore() = 0;
+
+    // If |ShouldCurrentRequestUseQuietUI| return true, this will provide a
+    // reason as to why the quiet UI needs to be used. Returns `absl::nullopt`
+    // otherwise.
+    virtual absl::optional<PermissionUiSelector::QuietUiReason>
+    ReasonForUsingQuietUi() const = 0;
+
+    // Notification permission requests might use a quiet UI when the
+    // "quiet-notification-prompts" feature is enabled. This is done either
+    // directly by the user in notifications settings, or via automatic logic
+    // that might trigger the current request to use the quiet UI.
+    virtual bool ShouldCurrentRequestUseQuietUI() const = 0;
+
+    // If the LocationBar is not visible, there is no place to display a quiet
+    // permission prompt. Abusive prompts will be ignored.
+    virtual bool ShouldDropCurrentRequestIfCannotShowQuietly() const = 0;
 
     // Whether the current request has been shown to the user at least once.
     virtual bool WasCurrentRequestAlreadyDisplayed() = 0;
+
+    // Set whether the current request should be dismissed if the current tab is
+    // closed.
+    virtual void SetDismissOnTabClose() = 0;
+
+    // Set whether the permission prompt bubble was shown for the current
+    // request.
+    virtual void SetBubbleShown() = 0;
+
+    // Set when the user made any decision for the currentrequest.
+    virtual void SetDecisionTime() = 0;
   };
 
   typedef base::RepeatingCallback<

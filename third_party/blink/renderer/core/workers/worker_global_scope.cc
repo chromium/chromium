@@ -326,9 +326,6 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
             ? SanitizeScriptErrors::kDoNotSanitize
             : SanitizeScriptErrors::kSanitize;
 
-    const KURL script_url =
-        ScriptSourceCode::UsePostRedirectURL() ? response_url : complete_url;
-
     // https://html.spec.whatwg.org/multipage/webappapis.html#fetch-a-classic-worker-imported-script
     // Step 7: Let script be the result of creating a classic script given
     // source text, settings object, response's url, the default classic script
@@ -339,8 +336,8 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
                                                 std::move(cached_meta_data)));
     ClassicScript* script = MakeGarbageCollected<ClassicScript>(
         ScriptSourceCode(source_code, ScriptSourceLocationType::kUnknown,
-                         handler, script_url),
-        script_url /* base_url */, ScriptFetchOptions(),
+                         handler, complete_url),
+        response_url /* base_url */, ScriptFetchOptions(),
         sanitize_script_errors);
 
     // Step 5.2: "Run the classic script script, with the rethrow errors
@@ -694,10 +691,17 @@ FontMatchingMetrics* WorkerGlobalScope::GetFontMatchingMetrics() {
   return font_matching_metrics_.get();
 }
 
-blink::mojom::CodeCacheHost* WorkerGlobalScope::GetCodeCacheHost() {
+CodeCacheHost* WorkerGlobalScope::GetCodeCacheHost() {
   if (!code_cache_host_) {
+    // We may not have a valid browser interface in tests. For ex:
+    // FakeWorkerGlobalScope doesn't provide a valid interface. These tests
+    // don't rely on code caching so it's safe to return nullptr here.
+    if (!GetBrowserInterfaceBroker().is_bound())
+      return nullptr;
+    mojo::Remote<mojom::CodeCacheHost> remote;
     GetBrowserInterfaceBroker().GetInterface(
-        code_cache_host_.BindNewPipeAndPassReceiver());
+        remote.BindNewPipeAndPassReceiver());
+    code_cache_host_ = std::make_unique<CodeCacheHost>(std::move(remote));
   }
   return code_cache_host_.get();
 }

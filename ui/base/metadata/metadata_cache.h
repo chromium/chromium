@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/metadata/metadata_types.h"
 
 namespace ui {
@@ -27,6 +26,9 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) MetaDataCache {
  public:
   MetaDataCache();
 
+  MetaDataCache(const MetaDataCache&) = delete;
+  MetaDataCache& operator=(const MetaDataCache&) = delete;
+
   static MetaDataCache* GetInstance();
 
   void AddClassMetaData(std::unique_ptr<ClassMetaData> class_data);
@@ -36,8 +38,6 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) MetaDataCache {
   ~MetaDataCache();
 
   std::vector<ClassMetaData*> class_data_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetaDataCache);
 };
 
 // These functions are rarely called directly, rather they are called from

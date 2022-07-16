@@ -50,9 +50,7 @@ UStringSearch* CreateSearcher() {
   UStringSearch* searcher =
       usearch_open(&kNewlineCharacter, 1, &kNewlineCharacter, 1,
                    search_collator_name.Utf8().c_str(), nullptr, &status);
-  DCHECK(status == U_ZERO_ERROR || status == U_USING_FALLBACK_WARNING ||
-         status == U_USING_DEFAULT_WARNING)
-      << status;
+  DCHECK(U_SUCCESS(status)) << status;
   return searcher;
 }
 
@@ -177,7 +175,7 @@ bool TextSearcherICU::NextMatchResult(MatchResultICU& result) {
 bool TextSearcherICU::NextMatchResultInternal(MatchResultICU& result) {
   UErrorCode status = U_ZERO_ERROR;
   const int match_start = usearch_next(searcher_, &status);
-  DCHECK_EQ(status, U_ZERO_ERROR);
+  DCHECK(U_SUCCESS(status));
 
   // TODO(iceman): It is possible to use |usearch_getText| function
   // to retrieve text length and not store it explicitly.
@@ -228,7 +226,7 @@ bool TextSearcherICU::IsCorrectKanaMatch(const UChar* text,
 void TextSearcherICU::SetPattern(const UChar* pattern, wtf_size_t length) {
   UErrorCode status = U_ZERO_ERROR;
   usearch_setPattern(searcher_, pattern, length, &status);
-  DCHECK_EQ(status, U_ZERO_ERROR);
+  DCHECK(U_SUCCESS(status));
 }
 
 void TextSearcherICU::SetCaseSensitivity(bool case_sensitive) {

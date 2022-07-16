@@ -174,6 +174,15 @@ public class ButtonView extends LinearLayout {
         return mSecondaryText;
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        mPrimaryText.setEnabled(enabled);
+        if (mSecondaryText != null) {
+            mSecondaryText.setEnabled(enabled);
+        }
+    }
+
     /**
      * Sets the correct tinting on the Chip's image view.
      * @param tintWithTextColor If true then the image view will be tinted with the primary text

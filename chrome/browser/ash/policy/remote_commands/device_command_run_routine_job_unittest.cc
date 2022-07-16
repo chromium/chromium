@@ -198,9 +198,9 @@ bool DeviceCommandRunRoutineJobTest::RunJob(
     base::Value params_dict,
     base::RepeatingCallback<void(RemoteCommandJob*)> callback) {
   auto job = std::make_unique<DeviceCommandRunRoutineJob>();
-  InitializeJob(
-      job.get(), kUniqueID, test_start_time_, base::TimeDelta::FromSeconds(30),
-      /*terminate_upon_input=*/false, routine, std::move(params_dict));
+  InitializeJob(job.get(), kUniqueID, test_start_time_, base::Seconds(30),
+                /*terminate_upon_input=*/false, routine,
+                std::move(params_dict));
   base::RunLoop run_loop;
   bool success = job->Run(base::Time::Now(), base::TimeTicks::Now(),
                           base::BindLambdaForTesting([&]() {
@@ -221,7 +221,7 @@ TEST_F(DeviceCommandRunRoutineJobTest, InvalidRoutineEnumInCommandPayload) {
   EXPECT_FALSE(job->Init(
       base::TimeTicks::Now(),
       GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
-                           base::TimeDelta::FromSeconds(30),
+                           base::Seconds(30),
                            /*terminate_upon_input=*/false, kInvalidRoutineEnum,
                            std::move(params_dict)),
       nullptr));
@@ -237,7 +237,7 @@ TEST_F(DeviceCommandRunRoutineJobTest, CommandPayloadMissingRoutine) {
   EXPECT_FALSE(job->Init(
       base::TimeTicks::Now(),
       GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
-                           base::TimeDelta::FromSeconds(30),
+                           base::Seconds(30),
                            /*terminate_upon_input=*/false,
                            /*routine=*/absl::nullopt, std::move(params_dict)),
       nullptr));
@@ -255,7 +255,7 @@ TEST_F(DeviceCommandRunRoutineJobTest, CommandPayloadMissingParamDict) {
   EXPECT_FALSE(job->Init(
       base::TimeTicks::Now(),
       GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
-                           base::TimeDelta::FromSeconds(30),
+                           base::Seconds(30),
                            /*terminate_upon_input=*/false, kValidRoutineEnum,
                            /*params=*/absl::nullopt),
       nullptr));
@@ -1370,6 +1370,78 @@ TEST_F(DeviceCommandRunRoutineJobTest,
       chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kVideoConferencing,
       std::move(params_dict),
       base::BindLambdaForTesting([](RemoteCommandJob* job) {
+        EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+        std::unique_ptr<std::string> payload = job->GetResultPayload();
+        EXPECT_TRUE(payload);
+        EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+      })));
+}
+
+// Note that the ARC HTTP routine has no parameters, so we only need to
+// test that it can be run successfully.
+TEST_F(DeviceCommandRunRoutineJobTest, RunArcHttpRoutineSuccess) {
+  auto run_routine_response =
+      chromeos::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetRunRoutineResponseForTesting(run_routine_response);
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  EXPECT_TRUE(RunJob(
+      chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kArcHttp,
+      std::move(params_dict),
+      base::BindLambdaForTesting([](RemoteCommandJob* job) {
+        EXPECT_EQ(
+            chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+                ->GetLastRunRoutine()
+                .value(),
+            chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kArcHttp);
+        EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+        std::unique_ptr<std::string> payload = job->GetResultPayload();
+        EXPECT_TRUE(payload);
+        EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+      })));
+}
+
+// Note that the ARC Ping routine has no parameters, so we only need to
+// test that it can be run successfully.
+TEST_F(DeviceCommandRunRoutineJobTest, RunArcPingRoutineSuccess) {
+  auto run_routine_response =
+      chromeos::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetRunRoutineResponseForTesting(run_routine_response);
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  EXPECT_TRUE(RunJob(
+      chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kArcPing,
+      std::move(params_dict),
+      base::BindLambdaForTesting([](RemoteCommandJob* job) {
+        EXPECT_EQ(
+            chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+                ->GetLastRunRoutine()
+                .value(),
+            chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kArcPing);
+        EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+        std::unique_ptr<std::string> payload = job->GetResultPayload();
+        EXPECT_TRUE(payload);
+        EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+      })));
+}
+
+// Note that the ARC DNS Resolution routine has no parameters, so we only need
+// to test that it can be run successfully.
+TEST_F(DeviceCommandRunRoutineJobTest, RunArcDnsResolutionRoutineSuccess) {
+  auto run_routine_response =
+      chromeos::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetRunRoutineResponseForTesting(run_routine_response);
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  EXPECT_TRUE(RunJob(
+      chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kArcDnsResolution,
+      std::move(params_dict),
+      base::BindLambdaForTesting([](RemoteCommandJob* job) {
+        EXPECT_EQ(chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+                      ->GetLastRunRoutine()
+                      .value(),
+                  chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
+                      kArcDnsResolution);
         EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
         std::unique_ptr<std::string> payload = job->GetResultPayload();
         EXPECT_TRUE(payload);

@@ -6,12 +6,18 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {IncognitoAvailability} from './constants.js';
 
-export class BrowserProxy {
-  getIncognitoAvailability(): Promise<IncognitoAvailability> {
+export interface BrowserProxy {
+  getIncognitoAvailability(): Promise<IncognitoAvailability>;
+  getCanEditBookmarks(): Promise<boolean>;
+  recordInHistogram(histogram: string, bucket: number, maxBucket: number): void;
+}
+
+export class BrowserProxyImpl implements BrowserProxy {
+  getIncognitoAvailability() {
     return sendWithPromise('getIncognitoAvailability');
   }
 
-  getCanEditBookmarks(): Promise<boolean> {
+  getCanEditBookmarks() {
     return sendWithPromise('getCanEditBookmarks');
   }
 
@@ -21,7 +27,7 @@ export class BrowserProxy {
   }
 
   static getInstance(): BrowserProxy {
-    return instance || (instance = new BrowserProxy());
+    return instance || (instance = new BrowserProxyImpl());
   }
 
   static setInstance(obj: BrowserProxy) {

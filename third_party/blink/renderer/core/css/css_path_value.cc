@@ -54,7 +54,7 @@ String CSSPathValue::CustomCSSText() const {
   result.Append("\"");
   result.Append(BuildStringFromByteStream(ByteStream(), serialization_format_));
   result.Append("\")");
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 bool CSSPathValue::Equals(const CSSPathValue& other) const {

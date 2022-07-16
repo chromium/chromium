@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
@@ -42,8 +41,32 @@ class MEDIA_EXPORT DecoderBuffer
 #endif
   };
 
+  using DiscardPadding = std::pair<base::TimeDelta, base::TimeDelta>;
+
+  struct MEDIA_EXPORT TimeInfo {
+    TimeInfo();
+    ~TimeInfo();
+    TimeInfo(const TimeInfo&);
+    TimeInfo& operator=(const TimeInfo&);
+
+    // Presentation time of the frame.
+    base::TimeDelta timestamp;
+
+    // Presentation duration of the frame.
+    base::TimeDelta duration;
+
+    // Duration of (audio) samples from the beginning and end of this frame
+    // which should be discarded after decoding. A value of kInfiniteDuration
+    // for the first value indicates the entire frame should be discarded; the
+    // second value must be base::TimeDelta() in this case.
+    DiscardPadding discard_padding;
+  };
+
   // Allocates buffer with |size| >= 0. |is_key_frame_| will default to false.
   explicit DecoderBuffer(size_t size);
+
+  DecoderBuffer(const DecoderBuffer&) = delete;
+  DecoderBuffer& operator=(const DecoderBuffer&) = delete;
 
   // Create a DecoderBuffer whose |data_| is copied from |data|. |data| must not
   // be NULL and |size| >= 0. The buffer's |is_key_frame_| will default to
@@ -94,9 +117,14 @@ class MEDIA_EXPORT DecoderBuffer
   // is disallowed.
   static scoped_refptr<DecoderBuffer> CreateEOSBuffer();
 
+  const TimeInfo& time_info() const {
+    DCHECK(!end_of_stream());
+    return time_info_;
+  }
+
   base::TimeDelta timestamp() const {
     DCHECK(!end_of_stream());
-    return timestamp_;
+    return time_info_.timestamp;
   }
 
   // TODO(dalecurtis): This should be renamed at some point, but to avoid a yak
@@ -105,7 +133,7 @@ class MEDIA_EXPORT DecoderBuffer
 
   base::TimeDelta duration() const {
     DCHECK(!end_of_stream());
-    return duration_;
+    return time_info_.duration;
   }
 
   void set_duration(base::TimeDelta duration) {
@@ -113,7 +141,7 @@ class MEDIA_EXPORT DecoderBuffer
     DCHECK(duration == kNoTimestamp ||
            (duration >= base::TimeDelta() && duration != kInfiniteDuration))
         << duration.InSecondsF();
-    duration_ = duration;
+    time_info_.duration = duration;
   }
 
   const uint8_t* data() const {
@@ -148,15 +176,14 @@ class MEDIA_EXPORT DecoderBuffer
     return side_data_size_;
   }
 
-  typedef std::pair<base::TimeDelta, base::TimeDelta> DiscardPadding;
   const DiscardPadding& discard_padding() const {
     DCHECK(!end_of_stream());
-    return discard_padding_;
+    return time_info_.discard_padding;
   }
 
   void set_discard_padding(const DiscardPadding& discard_padding) {
     DCHECK(!end_of_stream());
-    discard_padding_ = discard_padding;
+    time_info_.discard_padding = discard_padding;
   }
 
   // Returns DecryptConfig associated with |this|. Returns null iff |this| is
@@ -218,10 +245,7 @@ class MEDIA_EXPORT DecoderBuffer
   std::unique_ptr<uint8_t[]> data_;
 
  private:
-  // Presentation time of the frame.
-  base::TimeDelta timestamp_;
-  // Presentation duration of the frame.
-  base::TimeDelta duration_;
+  TimeInfo time_info_;
 
   // Size of the encoded data.
   size_t size_;
@@ -239,19 +263,11 @@ class MEDIA_EXPORT DecoderBuffer
   // Encryption parameters for the encoded data.
   std::unique_ptr<DecryptConfig> decrypt_config_;
 
-  // Duration of (audio) samples from the beginning and end of this frame which
-  // should be discarded after decoding. A value of kInfiniteDuration for the
-  // first value indicates the entire frame should be discarded; the second
-  // value must be base::TimeDelta() in this case.
-  DiscardPadding discard_padding_;
-
   // Whether the frame was marked as a keyframe in the container.
   bool is_key_frame_;
 
   // Constructor helper method for memory allocations.
   void Initialize();
-
-  DISALLOW_COPY_AND_ASSIGN(DecoderBuffer);
 };
 
 }  // namespace media

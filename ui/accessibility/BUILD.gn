@@ -61,12 +61,12 @@ component("ax_base") {
     "ax_mode.h",
     "ax_node_data.cc",
     "ax_node_data.h",
-    "ax_node_text_styles.cc",
-    "ax_node_text_styles.h",
     "ax_relative_bounds.cc",
     "ax_relative_bounds.h",
     "ax_role_properties.cc",
     "ax_role_properties.h",
+    "ax_text_attributes.cc",
+    "ax_text_attributes.h",
     "ax_tree_data.cc",
     "ax_tree_data.h",
     "ax_tree_id.cc",
@@ -81,7 +81,6 @@ component("ax_base") {
     ":ax_enums_mojo",
     "//base",
     "//base:i18n",
-    "//base/util/values:values_util",
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx/geometry",
@@ -89,6 +88,10 @@ component("ax_base") {
   ]
 
   deps = [ "//build:chromeos_buildflags" ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
+  }
 }
 
 #if (is_win) {
@@ -117,6 +120,8 @@ component("accessibility") {
     "ax_hypertext.h",
     "ax_language_detection.cc",
     "ax_language_detection.h",
+    "ax_live_region_tracker.cc",
+    "ax_live_region_tracker.h",
     "ax_mode_observer.h",
     "ax_node.cc",
     "ax_node.h",
@@ -143,13 +148,16 @@ component("accessibility") {
     "ax_tree_serializer.cc",
     "ax_tree_serializer.h",
     "ax_tree_source.h",
+    "ax_tree_source_annotator.h",
     "ax_tree_source_checker.h",
+    "ax_tree_source_observer.h",
     "null_ax_action_target.cc",
     "null_ax_action_target.h",
   ]
 
   deps = [
-    "//base/util/values:values_util",
+    "//base",
+    "//components/crash/core/common:crash_key",
     "//third_party/cld_3/src/src:cld_3",
   ]
 
@@ -176,6 +184,11 @@ component("accessibility") {
     ]
   }
 
+  if (is_fuchsia) {
+    public_deps +=
+        [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics" ]
+  }
+
   if (use_aura) {
     sources += [
       "aura/aura_window_properties.cc",
@@ -193,6 +206,8 @@ source_set("ax_assistant") {
   ]
 
   deps = [ ":accessibility" ]
+
+  public_deps = [ ":ax_enums_mojo" ]
 }
 
 static_library("test_support") {
@@ -219,6 +234,7 @@ static_library("test_support") {
 test("accessibility_unittests") {
   testonly = true
   sources = [
+    "ax_computed_node_data_unittest.cc",
     "ax_enum_util_unittest.cc",
     "ax_event_generator_unittest.cc",
     "ax_generated_tree_unittest.cc",

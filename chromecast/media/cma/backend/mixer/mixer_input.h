@@ -92,6 +92,10 @@ class MixerInput {
   };
 
   MixerInput(Source* source, FilterGroup* filter_group);
+
+  MixerInput(const MixerInput&) = delete;
+  MixerInput& operator=(const MixerInput&) = delete;
+
   ~MixerInput();
 
   void SetFilterGroup(FilterGroup* filter_group);
@@ -204,8 +208,6 @@ class MixerInput {
   std::vector<AudioOutputRedirectorInput*> audio_output_redirectors_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MixerInput);
 };
 
 }  // namespace media

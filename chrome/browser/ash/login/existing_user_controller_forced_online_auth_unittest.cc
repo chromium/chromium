@@ -28,17 +28,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::Return;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::testing::Return;
 
 const char kSamlToken1[] = "saml-token-1";
 const char kSamlToken2[] = "saml-token-2";
 
-constexpr base::TimeDelta kLoginOnlineShortDelay =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kLoginOnlineShortDelay = base::Seconds(10);
 
 }  // namespace
 
@@ -156,4 +154,4 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   EXPECT_EQ(password_sync_token_checkers_size(), 0);
 }
 
-}  // namespace chromeos
+}  // namespace ash

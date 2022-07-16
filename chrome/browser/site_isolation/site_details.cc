@@ -4,9 +4,12 @@
 
 #include "chrome/browser/site_isolation/site_details.h"
 
+#include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/buildflags/buildflags.h"
@@ -59,27 +62,39 @@ SiteData::SiteData() = default;
 SiteData::SiteData(const SiteData& other) = default;
 SiteData::~SiteData() = default;
 
-void SiteDetails::CollectSiteInfo(content::WebContents* contents,
-                                  SiteData* site_data) {
+void SiteDetails::CollectSiteInfo(content::Page& page, SiteData* site_data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // The primary should be the same for the whole tab.
-  content::SiteInstance* primary =
-      DeterminePrimarySiteInstance(contents->GetSiteInstance(), site_data);
-  BrowsingInstanceInfo* browsing_instance =
-      &site_data->browsing_instances[primary];
+  page.GetMainDocument().ForEachRenderFrameHost(base::BindRepeating(
+      [](content::Page* page, SiteData* site_data, RenderFrameHost* frame) {
+        // Each Page (whether primary or nested) will have its own primary
+        // SiteInstance and BrowsingInstance. With MPArch we may have multiple
+        // pages which could be in separate BrowsingInstances for nested pages.
+        content::SiteInstance* primary = DeterminePrimarySiteInstance(
+            frame->GetPage().GetMainDocument().GetSiteInstance(), site_data);
+        BrowsingInstanceInfo* browsing_instance =
+            &site_data->browsing_instances[primary];
 
-  for (RenderFrameHost* frame : contents->GetAllFrames()) {
-    // Ensure that we add the frame's SiteInstance to |site_instances|.
-    DCHECK(frame->GetSiteInstance()->IsRelatedSiteInstance(primary));
-    browsing_instance->site_instances.insert(frame->GetSiteInstance());
-    browsing_instance->proxy_count += frame->GetProxyCount();
+        // Ensure that we add the frame's SiteInstance to |site_instances|.
+        DCHECK(frame->GetSiteInstance()->IsRelatedSiteInstance(primary));
 
-    if (frame->GetParent()) {
-      if (frame->GetSiteInstance() != frame->GetParent()->GetSiteInstance())
-        site_data->out_of_process_frames++;
-    }
-  }
+        browsing_instance->site_instances.insert(frame->GetSiteInstance());
+        browsing_instance->proxy_count += frame->GetProxyCount();
+
+        if (frame->GetParent()) {
+          if (frame->GetSiteInstance() != frame->GetParent()->GetSiteInstance())
+            site_data->out_of_process_frames++;
+        } else {
+          // We are a main frame. If we are an inner frame tree and our parent's
+          // process doesn't match ours, count it.
+          if (frame->GetParentOrOuterDocument() &&
+              frame->GetParentOrOuterDocument()->GetProcess() !=
+                  frame->GetProcess()) {
+            site_data->out_of_process_inner_frame_trees++;
+          }
+        }
+      },
+      &page, site_data));
 }
 
 void SiteDetails::UpdateHistograms(
@@ -89,6 +104,7 @@ void SiteDetails::UpdateHistograms(
   int num_browsing_instances = 0;
   int num_oopifs = 0;
   int num_proxies = 0;
+  int num_oop_inner_frame_trees = 0;
   for (auto& site_data_map_entry : site_data_map) {
     const SiteData& site_data = site_data_map_entry.second;
     for (const auto& entry : site_data.browsing_instances) {
@@ -101,10 +117,13 @@ void SiteDetails::UpdateHistograms(
     }
     num_browsing_instances += site_data.browsing_instances.size();
     num_oopifs += site_data.out_of_process_frames;
+    num_oop_inner_frame_trees += site_data.out_of_process_inner_frame_trees;
   }
 
-  UMA_HISTOGRAM_COUNTS_100("SiteIsolation.BrowsingInstanceCount",
-                           num_browsing_instances);
-  UMA_HISTOGRAM_COUNTS_10000("SiteIsolation.ProxyCount", num_proxies);
-  UMA_HISTOGRAM_COUNTS_100("SiteIsolation.OutOfProcessIframes", num_oopifs);
+  base::UmaHistogramCounts100("SiteIsolation.BrowsingInstanceCount",
+                              num_browsing_instances);
+  base::UmaHistogramCounts10000("SiteIsolation.ProxyCount", num_proxies);
+  base::UmaHistogramCounts100("SiteIsolation.OutOfProcessIframes", num_oopifs);
+  base::UmaHistogramCounts100("SiteIsolation.OutOfProcessInnerFrameTrees",
+                              num_oop_inner_frame_trees);
 }

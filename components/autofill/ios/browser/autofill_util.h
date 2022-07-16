@@ -20,6 +20,7 @@ class WebState;
 
 namespace autofill {
 
+class FieldRendererId;
 struct FormData;
 struct FormFieldData;
 
@@ -82,7 +83,7 @@ void ExecuteJavaScriptFunction(const std::string& name,
                                JavaScriptResultCallback callback);
 
 // Extracts a vector of numeric renderer IDs from the JS returned json string.
-bool ExtractIDs(NSString* json_string, std::vector<uint32_t>* ids);
+bool ExtractIDs(NSString* json_string, std::vector<FieldRendererId>* ids);
 
 // Extracts a map of filled renderer IDs and values from the JS returned json
 // string.

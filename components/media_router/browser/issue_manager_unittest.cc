@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/media_router/browser/issue_manager.h"

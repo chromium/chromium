@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
@@ -19,11 +18,17 @@
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/filter/source_stream.h"
+#include "net/net_buildflags.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+
+#if BUILDFLAG(ENABLE_REPORTING)
+#include "services/network/public/mojom/reporting_service.mojom.h"
+#endif  // BUILDFLAG(ENABLE_REPORTING)
 
 namespace net {
 class HttpRequestHeaders;
@@ -32,6 +37,7 @@ class X509Certificate;
 }  // namespace net
 
 namespace network {
+struct CorsErrorStatus;
 struct ResourceRequest;
 struct URLLoaderCompletionStatus;
 namespace mojom {
@@ -56,12 +62,19 @@ class BackgroundSyncRestorer;
 class DevToolsNetworkResourceLoader;
 
 class NetworkHandler : public DevToolsDomainHandler,
+#if BUILDFLAG(ENABLE_REPORTING)
+                       public network::mojom::ReportingApiObserver,
+#endif  // BUILDFLAG(ENABLE_REPORTING)
                        public Network::Backend {
  public:
   NetworkHandler(const std::string& host_id,
                  const base::UnguessableToken& devtools_token,
                  DevToolsIOContext* io_context,
                  base::RepeatingClosure update_loader_factories_callback);
+
+  NetworkHandler(const NetworkHandler&) = delete;
+  NetworkHandler& operator=(const NetworkHandler&) = delete;
+
   ~NetworkHandler() override;
 
   static std::vector<NetworkHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
@@ -90,6 +103,13 @@ class NetworkHandler : public DevToolsDomainHandler,
                   Maybe<int> max_resource_size,
                   Maybe<int> max_post_data_size) override;
   Response Disable() override;
+
+#if BUILDFLAG(ENABLE_REPORTING)
+  void OnReportAdded(const net::ReportingReport& report) override;
+  void OnReportUpdated(const net::ReportingReport& report) override;
+#endif  // BUILDFLAG(ENABLE_REPORTING)
+
+  Response EnableReportingApi(bool enable) override;
 
   Response SetCacheDisabled(bool cache_disabled) override;
 
@@ -196,7 +216,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                         const std::string& loader_id,
                         const GURL& url,
                         const char* resource_type,
-                        const network::mojom::URLResponseHead& head,
+                        const network::mojom::URLResponseHeadDevToolsInfo& head,
                         Maybe<std::string> frame_id);
   void LoadingComplete(
       const std::string& request_id,
@@ -221,13 +241,15 @@ class NetworkHandler : public DevToolsDomainHandler,
       const std::string& devtools_request_id,
       const net::CookieAccessResultList& request_cookie_list,
       const std::vector<network::mojom::HttpRawHeaderPairPtr>& request_headers,
+      const base::TimeTicks timestamp,
       const network::mojom::ClientSecurityStatePtr& security_state);
   void OnResponseReceivedExtraInfo(
       const std::string& devtools_request_id,
       const net::CookieAndLineAccessResultList& response_cookie_list,
       const std::vector<network::mojom::HttpRawHeaderPairPtr>& response_headers,
       const absl::optional<std::string>& response_headers_text,
-      network::mojom::IPAddressSpace resource_address_space);
+      network::mojom::IPAddressSpace resource_address_space,
+      int32_t http_status_code);
   void OnTrustTokenOperationDone(
       const std::string& devtools_request_id,
       const network::mojom::TrustTokenOperationResult& result);
@@ -256,7 +278,7 @@ class NetworkHandler : public DevToolsDomainHandler,
       const std::string& cookie_line);
 
   void LoadNetworkResource(
-      const String& frameId,
+      Maybe<content::protocol::String> frameId,
       const String& url,
       std::unique_ptr<protocol::Network::LoadNetworkResourceOptions> options,
       std::unique_ptr<LoadNetworkResourceCallback> callback) override;
@@ -286,6 +308,8 @@ class NetworkHandler : public DevToolsDomainHandler,
       Response response,
       mojo::ScopedDataPipeConsumerHandle pipe,
       const std::string& mime_type);
+  std::unique_ptr<protocol::Network::ReportingApiReport> BuildProtocolReport(
+      const net::ReportingReport& report);
 
   // TODO(dgozman): Remove this.
   const std::string host_id_;
@@ -298,6 +322,9 @@ class NetworkHandler : public DevToolsDomainHandler,
   StoragePartition* storage_partition_;
   RenderFrameHostImpl* host_;
   bool enabled_;
+#if BUILDFLAG(ENABLE_REPORTING)
+  mojo::Receiver<network::mojom::ReportingApiObserver> reporting_receiver_;
+#endif  // BUILDFLAG(ENABLE_REPORTING)
   std::vector<std::pair<std::string, std::string>> extra_headers_;
   std::unique_ptr<DevToolsURLLoaderInterceptor> url_loader_interceptor_;
   bool bypass_service_worker_;
@@ -311,8 +338,6 @@ class NetworkHandler : public DevToolsDomainHandler,
   absl::optional<std::set<net::SourceStream::SourceType>>
       accepted_stream_types_;
   base::WeakPtrFactory<NetworkHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkHandler);
 };
 
 }  // namespace protocol

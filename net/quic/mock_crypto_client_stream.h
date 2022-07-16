@@ -56,6 +56,10 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
       HandshakeMode handshake_mode,
       const net::ProofVerifyDetailsChromium* proof_verify_details_,
       bool use_mock_crypter);
+
+  MockCryptoClientStream(const MockCryptoClientStream&) = delete;
+  MockCryptoClientStream& operator=(const MockCryptoClientStream&) = delete;
+
   ~MockCryptoClientStream() override;
 
   // CryptoFramerVisitorInterface implementation.
@@ -105,8 +109,6 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
   const quic::QuicServerId server_id_;
   const net::ProofVerifyDetailsChromium* proof_verify_details_;
   const quic::QuicConfig config_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCryptoClientStream);
 };
 
 }  // namespace net

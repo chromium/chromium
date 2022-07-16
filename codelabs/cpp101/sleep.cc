@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
   }
 
   base::RunLoop run_loop;
-  base::TimeDelta duration = base::TimeDelta::FromSeconds(duration_seconds);
+  base::TimeDelta duration = base::Seconds(duration_seconds);
 
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(run_loop.QuitClosure()), duration);

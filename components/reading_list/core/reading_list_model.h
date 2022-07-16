@@ -31,6 +31,9 @@ class ReadingListModel {
  public:
   class ScopedReadingListBatchUpdate;
 
+  ReadingListModel(const ReadingListModel&) = delete;
+  ReadingListModel& operator=(const ReadingListModel&) = delete;
+
   // Returns true if the model finished loading. Until this returns true the
   // reading list is not ready for use.
   virtual bool loaded() const = 0;
@@ -154,6 +157,10 @@ class ReadingListModel {
    public:
     explicit ScopedReadingListBatchUpdate(ReadingListModel* model);
 
+    ScopedReadingListBatchUpdate(const ScopedReadingListBatchUpdate&) = delete;
+    ScopedReadingListBatchUpdate& operator=(
+        const ScopedReadingListBatchUpdate&) = delete;
+
     ~ScopedReadingListBatchUpdate() override;
 
     void ReadingListModelLoaded(const ReadingListModel* model) override;
@@ -161,8 +168,6 @@ class ReadingListModel {
 
    private:
     ReadingListModel* model_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedReadingListBatchUpdate);
   };
 
  protected:
@@ -186,8 +191,6 @@ class ReadingListModel {
 
  private:
   unsigned int current_batch_updates_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListModel);
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_MODEL_H_

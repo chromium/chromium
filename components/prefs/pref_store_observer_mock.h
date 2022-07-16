@@ -9,13 +9,16 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/prefs/pref_store.h"
 
 // A mock implementation of PrefStore::Observer.
 class PrefStoreObserverMock : public PrefStore::Observer {
  public:
   PrefStoreObserverMock();
+
+  PrefStoreObserverMock(const PrefStoreObserverMock&) = delete;
+  PrefStoreObserverMock& operator=(const PrefStoreObserverMock&) = delete;
+
   ~PrefStoreObserverMock() override;
 
   void VerifyAndResetChangedKey(const std::string& expected);
@@ -27,9 +30,6 @@ class PrefStoreObserverMock : public PrefStore::Observer {
   std::vector<std::string> changed_keys;
   bool initialized;
   bool initialization_success;  // Only valid if |initialized|.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrefStoreObserverMock);
 };
 
 #endif  // COMPONENTS_PREFS_PREF_STORE_OBSERVER_MOCK_H_

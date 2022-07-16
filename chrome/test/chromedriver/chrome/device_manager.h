@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 
@@ -21,6 +20,9 @@ class DeviceManager;
 
 class Device {
  public:
+  Device(const Device&) = delete;
+  Device& operator=(const Device&) = delete;
+
   ~Device();
 
   Status SetUp(const std::string& package,
@@ -30,6 +32,7 @@ class Device {
                const std::string& exec_name,
                const std::string& args,
                bool use_running_app,
+               bool keep_app_data_dir,
                int* port);
 
   Status TearDown();
@@ -51,13 +54,15 @@ class Device {
   Adb* adb_;
   int devtools_port_ = 0;
   base::OnceCallback<void()> release_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Device);
 };
 
 class DeviceManager {
  public:
   explicit DeviceManager(Adb* adb);
+
+  DeviceManager(const DeviceManager&) = delete;
+  DeviceManager& operator=(const DeviceManager&) = delete;
+
   ~DeviceManager();
 
   // Returns a device which will not be reassigned during its lifetime.
@@ -77,8 +82,6 @@ class DeviceManager {
   base::Lock devices_lock_;
   std::list<std::string> active_devices_;
   Adb* adb_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceManager);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_DEVICE_MANAGER_H_

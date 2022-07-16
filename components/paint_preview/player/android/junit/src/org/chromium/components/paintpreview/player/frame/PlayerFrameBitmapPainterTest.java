@@ -242,6 +242,12 @@ public class PlayerFrameBitmapPainterTest {
                 compressibleBitmap01.getBitmap(), new Rect(0, 10, 5, 15), new Rect(5, 0, 10, 5));
         canvas.assertDrawBitmap(
                 compressibleBitmap11.getBitmap(), new Rect(0, 0, 5, 10), new Rect(5, 5, 10, 15));
+
+        painter.destroy();
+        verify(compressibleBitmap00, times(1)).unlock();
+        verify(compressibleBitmap10, times(1)).unlock();
+        verify(compressibleBitmap01, times(1)).unlock();
+        verify(compressibleBitmap11, times(1)).unlock();
     }
 
     /**

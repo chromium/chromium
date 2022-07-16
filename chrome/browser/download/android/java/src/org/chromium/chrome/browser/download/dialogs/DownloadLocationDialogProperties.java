@@ -31,6 +31,12 @@ class DownloadLocationDialogProperties {
             new PropertyModel.ReadableBooleanPropertyKey();
 
     /**
+     * Whether to show the Incognito download warning.
+     */
+    static final PropertyModel.ReadableBooleanPropertyKey SHOW_INCOGNITO_WARNING =
+            new PropertyModel.ReadableBooleanPropertyKey();
+
+    /**
      * The file name shown in the download location dialog.
      */
     static final PropertyModel.ReadableObjectPropertyKey<CharSequence> FILE_NAME =
@@ -62,6 +68,6 @@ class DownloadLocationDialogProperties {
             new PropertyModel.ReadableBooleanPropertyKey();
 
     static final PropertyKey[] ALL_KEYS = new PropertyKey[] {TITLE, SUBTITLE, SHOW_SUBTITLE,
-            FILE_NAME, FILE_SIZE, SHOW_LOCATION_AVAILABLE_SPACE, DONT_SHOW_AGAIN_CHECKBOX_CHECKED,
-            DONT_SHOW_AGAIN_CHECKBOX_SHOWN};
+            SHOW_INCOGNITO_WARNING, FILE_NAME, FILE_SIZE, SHOW_LOCATION_AVAILABLE_SPACE,
+            DONT_SHOW_AGAIN_CHECKBOX_CHECKED, DONT_SHOW_AGAIN_CHECKBOX_SHOWN};
 }

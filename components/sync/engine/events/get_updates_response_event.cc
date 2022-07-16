@@ -15,7 +15,7 @@ GetUpdatesResponseEvent::GetUpdatesResponseEvent(
     SyncerError error)
     : timestamp_(timestamp), response_(response), error_(error) {}
 
-GetUpdatesResponseEvent::~GetUpdatesResponseEvent() {}
+GetUpdatesResponseEvent::~GetUpdatesResponseEvent() = default;
 
 std::unique_ptr<ProtocolEvent> GetUpdatesResponseEvent::Clone() const {
   return std::make_unique<GetUpdatesResponseEvent>(timestamp_, response_,

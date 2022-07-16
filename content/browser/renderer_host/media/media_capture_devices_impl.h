@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_MEDIA_CAPTURE_DEVICES_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_MEDIA_CAPTURE_DEVICES_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "content/public/browser/media_capture_devices.h"
 #include "media/base/video_facing.h"
@@ -15,6 +14,9 @@ namespace content {
 class MediaCaptureDevicesImpl : public MediaCaptureDevices {
  public:
   static MediaCaptureDevicesImpl* GetInstance();
+
+  MediaCaptureDevicesImpl(const MediaCaptureDevicesImpl&) = delete;
+  MediaCaptureDevicesImpl& operator=(const MediaCaptureDevicesImpl&) = delete;
 
   // Overriden from MediaCaptureDevices
   const blink::MediaStreamDevices& GetAudioCaptureDevices() override;
@@ -44,8 +46,6 @@ class MediaCaptureDevicesImpl : public MediaCaptureDevices {
 
   // A list of cached video capture devices.
   blink::MediaStreamDevices video_devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCaptureDevicesImpl);
 };
 
 }  // namespace content

@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
@@ -24,13 +25,12 @@ import android.support.test.InstrumentationRegistry;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,12 +46,12 @@ import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip.Icon;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderModel;
+import org.chromium.chrome.browser.autofill_assistant.header.AssistantTtsButtonState;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.widget.MaterialProgressBar;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -65,15 +65,15 @@ import java.util.List;
 public class AutofillAssistantHeaderUiTest {
     private static class ViewHolder {
         private final TextView mStatusMessage;
-        private final MaterialProgressBar mProgressBar;
         private final View mStepProgressBar;
         private final View mProfileIcon;
+        private final ImageView mTtsButton;
 
         private ViewHolder(View rootView) {
             mStatusMessage = rootView.findViewById(R.id.status_message);
-            mProgressBar = rootView.findViewById(R.id.progress_bar);
             mStepProgressBar = rootView.findViewById(R.id.step_progress_bar);
             mProfileIcon = rootView.findViewById(R.id.profile_image);
+            mTtsButton = (ImageView) rootView.findViewById(R.id.tts_button);
         }
     }
 
@@ -129,11 +129,7 @@ public class AutofillAssistantHeaderUiTest {
                 .check(matches(isDisplayed()))
                 .check(matches(withText("")));
 
-        onView(is(viewHolder.mProgressBar))
-                .check(matches(isDisplayed()))
-                .check(matches(hasProgress(0)));
-
-        onView(is(viewHolder.mStepProgressBar)).check(matches(not(isDisplayed())));
+        onView(is(viewHolder.mStepProgressBar)).check(matches(isDisplayed()));
 
         onView(is(viewHolder.mProfileIcon)).check(matches(isDisplayed()));
     }
@@ -153,14 +149,6 @@ public class AutofillAssistantHeaderUiTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantHeaderModel.STATUS_MESSAGE, "<b>Hello Bold</b>"));
         onView(is(viewHolder.mStatusMessage)).check(matches(withText("Hello Bold")));
-
-        int progress = 42;
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> model.set(AssistantHeaderModel.PROGRESS, progress));
-
-        onView(is(viewHolder.mProgressBar))
-                .check(matches(isDisplayed()))
-                .check(matches(hasProgress(progress)));
     }
 
     @Test
@@ -170,37 +158,16 @@ public class AutofillAssistantHeaderUiTest {
         AssistantHeaderCoordinator coordinator = createCoordinator(model);
         ViewHolder viewHolder = new ViewHolder(coordinator.getView());
 
-        onView(is(viewHolder.mProgressBar)).check(matches(isDisplayed()));
-        onView(is(viewHolder.mStepProgressBar)).check(matches(not(isDisplayed())));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> model.set(AssistantHeaderModel.PROGRESS_VISIBLE, false));
-
-        onView(is(viewHolder.mProgressBar)).check(matches(not(isDisplayed())));
-        onView(is(viewHolder.mStepProgressBar)).check(matches(not(isDisplayed())));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> model.set(AssistantHeaderModel.PROGRESS_VISIBLE, true));
-
-        onView(is(viewHolder.mProgressBar)).check(matches(isDisplayed()));
-        onView(is(viewHolder.mStepProgressBar)).check(matches(not(isDisplayed())));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> model.set(AssistantHeaderModel.USE_STEP_PROGRESS_BAR, true));
-
-        onView(is(viewHolder.mProgressBar)).check(matches(not(isDisplayed())));
         onView(is(viewHolder.mStepProgressBar)).check(matches(isDisplayed()));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantHeaderModel.PROGRESS_VISIBLE, false));
 
-        onView(is(viewHolder.mProgressBar)).check(matches(not(isDisplayed())));
         onView(is(viewHolder.mStepProgressBar)).check(matches(not(isDisplayed())));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantHeaderModel.PROGRESS_VISIBLE, true));
 
-        onView(is(viewHolder.mProgressBar)).check(matches(not(isDisplayed())));
         onView(is(viewHolder.mStepProgressBar)).check(matches(isDisplayed()));
     }
 
@@ -247,7 +214,6 @@ public class AutofillAssistantHeaderUiTest {
                 () -> model.set(AssistantHeaderModel.FEEDBACK_BUTTON_CALLBACK, mRunnableMock));
 
         onView(is(viewHolder.mProfileIcon)).perform(click());
-
         onView(withText(R.string.autofill_assistant_send_feedback)).perform(click());
 
         verify(mRunnableMock).run();
@@ -255,17 +221,85 @@ public class AutofillAssistantHeaderUiTest {
         // TODO(crbug.com/806868): Test click on the "Settings" menu item.
     }
 
-    private static Matcher<View> hasProgress(int expectedProgress) {
-        return new BaseMatcher<View>() {
-            @Override
-            public boolean matches(Object o) {
-                return ((MaterialProgressBar) o).getProgressForTesting() == expectedProgress;
-            }
+    @Test
+    @MediumTest
+    public void testProfileImageMenuSetMessages() {
+        AssistantHeaderModel model = createModel();
+        AssistantHeaderCoordinator coordinator = createCoordinator(model);
+        ViewHolder viewHolder = new ViewHolder(coordinator.getView());
 
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("hasProgress: " + expectedProgress);
-            }
-        };
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.set(AssistantHeaderModel.FEEDBACK_BUTTON_CALLBACK, mRunnableMock);
+            model.set(AssistantHeaderModel.PROFILE_ICON_MENU_SETTINGS_MESSAGE, "test_settings");
+            model.set(
+                    AssistantHeaderModel.PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE, "test_feedback");
+        });
+
+        onView(is(viewHolder.mProfileIcon)).perform(click());
+        onView(withText("test_feedback")).perform(click());
+        verify(mRunnableMock).run();
+        // TODO(crbug.com/1229482): Test click on the "Settings" menu item.
+    }
+
+    @Test
+    @MediumTest
+    public void testTtsButtonVisibility() {
+        AssistantHeaderModel model = createModel();
+        AssistantHeaderCoordinator coordinator = createCoordinator(model);
+        ViewHolder viewHolder = new ViewHolder(coordinator.getView());
+
+        onView(is(viewHolder.mTtsButton)).check(matches(not(isDisplayed())));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(AssistantHeaderModel.TTS_BUTTON_VISIBLE, true));
+        onView(is(viewHolder.mTtsButton)).check(matches(isDisplayed()));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(AssistantHeaderModel.TTS_BUTTON_VISIBLE, false));
+        onView(is(viewHolder.mTtsButton)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    public void testTtsButtonState() {
+        AssistantHeaderModel model = createModel();
+        AssistantHeaderCoordinator coordinator = createCoordinator(model);
+        ViewHolder viewHolder = new ViewHolder(coordinator.getView());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.set(AssistantHeaderModel.TTS_BUTTON_VISIBLE, true);
+            model.set(AssistantHeaderModel.TTS_BUTTON_STATE, AssistantTtsButtonState.DEFAULT);
+        });
+        onView(is(viewHolder.mTtsButton))
+                .check(matches(withTagValue(is(AssistantTagsForTesting.TTS_ENABLED_ICON_TAG))));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.set(AssistantHeaderModel.TTS_BUTTON_STATE, AssistantTtsButtonState.DISABLED);
+        });
+        onView(is(viewHolder.mTtsButton))
+                .check(matches(withTagValue(is(AssistantTagsForTesting.TTS_DISABLED_ICON_TAG))));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.set(AssistantHeaderModel.TTS_BUTTON_STATE, AssistantTtsButtonState.PLAYING);
+        });
+        onView(is(viewHolder.mTtsButton))
+                .check(matches(withTagValue(is(AssistantTagsForTesting.TTS_PLAYING_ICON_TAG))));
+    }
+
+    @Test
+    @MediumTest
+    public void testTtsButtonClick() {
+        AssistantHeaderModel model = createModel();
+        AssistantHeaderCoordinator coordinator = createCoordinator(model);
+        ViewHolder viewHolder = new ViewHolder(coordinator.getView());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.set(AssistantHeaderModel.TTS_BUTTON_VISIBLE, true);
+            model.set(AssistantHeaderModel.TTS_BUTTON_CALLBACK, mRunnableMock);
+        });
+
+        onView(is(viewHolder.mTtsButton)).perform(click());
+
+        verify(mRunnableMock).run();
     }
 }

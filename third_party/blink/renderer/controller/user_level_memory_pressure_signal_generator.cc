@@ -65,7 +65,7 @@ base::TimeDelta MinimumIntervalSeconds() {
   static const base::FeatureParam<double> kMinimumIntervalSeconds{
       &blink::features::kUserLevelMemoryPressureSignal, "minimum_interval_s",
       kDefaultMinimumIntervalSeconds};
-  return base::TimeDelta::FromSeconds(kMinimumIntervalSeconds.Get());
+  return base::Seconds(kMinimumIntervalSeconds.Get());
 }
 
 double MemoryThresholdParam() {
@@ -161,8 +161,7 @@ void UserLevelMemoryPressureSignalGenerator::Generate(MemoryUsage usage) {
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   last_generated_ = clock_->NowTicks();
 
-  delayed_report_timer_.StartOneShot(base::TimeDelta::FromSeconds(10),
-                                     FROM_HERE);
+  delayed_report_timer_.StartOneShot(base::Seconds(10), FROM_HERE);
 }
 
 void UserLevelMemoryPressureSignalGenerator::OnTimerFired(TimerBase*) {

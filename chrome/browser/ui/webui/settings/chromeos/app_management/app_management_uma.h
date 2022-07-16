@@ -24,7 +24,8 @@ enum class AppManagementEntryPoint {
   kDBusServicePluginVm = 11,
   kNotificationPluginVm = 12,
   kAppManagementMainViewBorealis = 13,
-  kMaxValue = kAppManagementMainViewBorealis,
+  kPageInfoView = 14,
+  kMaxValue = kPageInfoView,
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_APP_MANAGEMENT_APP_MANAGEMENT_UMA_H_

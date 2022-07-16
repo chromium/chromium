@@ -245,14 +245,16 @@ class MockLoopbackAudioObserver
     : public mixer_service::LoopbackConnection::Delegate {
  public:
   MockLoopbackAudioObserver() = default;
+
+  MockLoopbackAudioObserver(const MockLoopbackAudioObserver&) = delete;
+  MockLoopbackAudioObserver& operator=(const MockLoopbackAudioObserver&) =
+      delete;
+
   ~MockLoopbackAudioObserver() override = default;
 
   MOCK_METHOD6(OnLoopbackAudio,
                void(int64_t, SampleFormat, int, int, uint8_t*, int));
   MOCK_METHOD1(OnLoopbackInterrupted, void(LoopbackInterruptReason));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockLoopbackAudioObserver);
 };
 
 // Given |inputs|, returns mixed audio data according to the mixing method used
@@ -374,6 +376,10 @@ std::string DeathRegex(const std::string& regex) {
 }  // namespace
 
 class StreamMixerTest : public testing::Test {
+ public:
+  StreamMixerTest(const StreamMixerTest&) = delete;
+  StreamMixerTest& operator=(const StreamMixerTest&) = delete;
+
  protected:
   StreamMixerTest() {
     auto output = std::make_unique<NiceMock<MockMixerOutput>>();
@@ -482,8 +488,6 @@ class StreamMixerTest : public testing::Test {
   MockMixerOutput* mock_output_;
   std::unique_ptr<StreamMixer> mixer_;
   MockPostProcessorFactory* pp_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamMixerTest);
 };
 
 TEST_F(StreamMixerTest, AddSingleInput) {

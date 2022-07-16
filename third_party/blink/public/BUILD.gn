@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/dcheck_always_on.gni")
+import("//build/config/devtools.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/config.gni")
@@ -177,7 +178,6 @@ source_set("blink_headers") {
     "platform/web_blob_info.h",
     "platform/web_cache.h",
     "platform/web_callbacks.h",
-    "platform/web_client_hints_type.h",
     "platform/web_code_cache_loader.h",
     "platform/web_common.h",
     "platform/web_computed_ax_tree.h",
@@ -218,7 +218,6 @@ source_set("blink_headers") {
     "platform/web_graphics_context_3d_provider.h",
     "platform/web_http_body.h",
     "platform/web_http_header_visitor.h",
-    "platform/web_http_load_info.h",
     "platform/web_icon_sizes_parser.h",
     "platform/web_image_generator.h",
     "platform/web_impression.h",
@@ -283,7 +282,6 @@ source_set("blink_headers") {
     "platform/websocket_handshake_throttle_provider.h",
     "web/blink.h",
     "web/modules/autofill/web_form_element_observer.h",
-    "web/modules/media/audio/fuchsia_audio_device_factory.h",
     "web/modules/media/audio/web_audio_device_factory.h",
     "web/modules/media/audio/web_audio_input_ipc_factory.h",
     "web/modules/media/audio/web_audio_output_ipc_factory.h",
@@ -361,7 +359,6 @@ source_set("blink_headers") {
     "web/web_no_state_prefetch_client.h",
     "web/web_node.h",
     "web/web_non_composited_widget_client.h",
-    "web/web_optimization_guide_hints.h",
     "web/web_option_element.h",
     "web/web_origin_policy.h",
     "web/web_page_popup.h",
@@ -396,7 +393,6 @@ source_set("blink_headers") {
     "web/web_settings.h",
     "web/web_shared_worker.h",
     "web/web_shared_worker_client.h",
-    "web/web_swap_result.h",
     "web/web_testing_support.h",
     "web/web_text_check_client.h",
     "web/web_text_checking_completion.h",
@@ -427,7 +423,10 @@ source_set("blink_headers") {
   }
 
   if (is_win) {
-    sources += [ "web/win/web_font_rendering.h" ]
+    sources += [
+      "platform/web_font_prewarmer.h",
+      "web/win/web_font_rendering.h",
+    ]
   }
 
   public_configs = [
@@ -445,6 +444,7 @@ source_set("blink_headers") {
     "//services/service_manager/public/cpp",
     "//skia",
     "//third_party/blink/public/common",
+    "//third_party/blink/public/common:headers",
     "//ui/accessibility:ax_base",
     "//ui/base/cursor:cursor_base",
     "//ui/base/dragdrop/mojom:mojom_shared",
@@ -475,7 +475,7 @@ source_set("blink_headers") {
   ]
 }
 
-devtools_frontend_path = "//third_party/devtools-frontend/src"
+devtools_frontend_path = "//$devtools_root_location"
 
 group("blink_devtools_frontend_resources") {
   public_deps = [ "$devtools_frontend_path:devtools_frontend_resources" ]
@@ -516,8 +516,15 @@ grit("devtools_inspector_resources") {
     "inspector_overlay_resources.pak",
   ]
 
-  defines =
-      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_out_dir, root_build_dir) ]
+  _shared_intermediate_dir = rebase_path(root_out_dir, root_build_dir)
+  _devtools_grd_path = "$shared_intermediate_dir/$devtools_grd_location"
+  _devtools_grd_path_no_ext = get_path_info(_devtools_grd_path, "dir") + "/" +
+                              get_path_info(_devtools_grd_path, "name")
+
+  defines = [
+    "SHARED_INTERMEDIATE_DIR=" + _shared_intermediate_dir,
+    "DEVTOOLS_GRD_PATH=" + _devtools_grd_path_no_ext,
+  ]
 
   deps = [
     "$devtools_frontend_path:generate_devtools_inspector_overlay_resources",

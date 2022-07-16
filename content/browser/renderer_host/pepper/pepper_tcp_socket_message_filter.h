@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -74,6 +73,10 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
                                BrowserPpapiHostImpl* host,
                                PP_Instance instance,
                                ppapi::TCPSocketVersion version);
+
+  PepperTCPSocketMessageFilter(const PepperTCPSocketMessageFilter&) = delete;
+  PepperTCPSocketMessageFilter& operator=(const PepperTCPSocketMessageFilter&) =
+      delete;
 
   // Switches state to CONNECTED using the provided pipes. May only be called
   // before any messages are received,
@@ -369,8 +372,6 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
   // Vends weak pointers on the UI thread, for callbacks passed through Mojo
   // pipes not owned by |this|. All weak pointers released in Close().
   base::WeakPtrFactory<PepperTCPSocketMessageFilter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperTCPSocketMessageFilter);
 };
 
 }  // namespace content

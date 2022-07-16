@@ -35,22 +35,86 @@ namespace content {
 
 namespace {
 
+enum class Operation {
+  kRead,
+  kWrite,
+};
+
+bool CheckSecurityForAccessingCodeCacheData(const GURL& resource_url,
+                                            int render_process_id,
+                                            Operation operation) {
+  ProcessLock process_lock =
+      ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
+          render_process_id);
+
+  // Code caching is only allowed for http(s) and chrome/chrome-untrusted
+  // scripts. Furthermore, there is no way for http(s) pages to load chrome or
+  // chrome-untrusted scripts, so any http(s) page attempting to store data
+  // about a chrome or chrome-untrusted script would be an indication of
+  // suspicious activity.
+  if (resource_url.SchemeIs(content::kChromeUIScheme) ||
+      resource_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+    if (!process_lock.is_locked_to_site()) {
+      // We can't tell for certain whether this renderer is doing something
+      // malicious, but we don't trust it enough to store data.
+      return false;
+    }
+    if (process_lock.matches_scheme(url::kHttpScheme) ||
+        process_lock.matches_scheme(url::kHttpsScheme)) {
+      if (operation == Operation::kWrite) {
+        mojo::ReportBadMessage("HTTP(S) pages cannot cache WebUI code");
+      }
+      return false;
+    }
+    // Other schemes which might successfully load chrome or chrome-untrusted
+    // scripts, such as the PDF viewer, are unsupported but not considered
+    // dangerous.
+    return process_lock.matches_scheme(content::kChromeUIScheme) ||
+           process_lock.matches_scheme(content::kChromeUIUntrustedScheme);
+  }
+  if (resource_url.SchemeIsHTTPOrHTTPS()) {
+    if (process_lock.matches_scheme(content::kChromeUIScheme) ||
+        process_lock.matches_scheme(content::kChromeUIUntrustedScheme)) {
+      // It is possible for WebUI pages to include open-web content, but such
+      // usage is rare and we've decided that reasoning about security is easier
+      // if the WebUI code cache includes only WebUI scripts.
+      return false;
+    }
+    return true;
+  }
+
+  if (operation == Operation::kWrite) {
+    mojo::ReportBadMessage("Invalid URL scheme for code cache.");
+  }
+  return false;
+}
+
 // Code caches use two keys: the URL of requested resource |resource_url|
 // as the primary key and the origin lock of the renderer that requested this
 // resource as secondary key. This function returns the origin lock of the
 // renderer that will be used as the secondary key for the code cache.
 // The secondary key is:
+// Case 0. absl::nullopt if the resource URL or origin lock have unsupported
+// schemes, or if they represent potentially dangerous combinations such as
+// WebUI code in an open-web page.
 // Case 1. an empty GURL if the render process is not locked to an origin. In
 // this case, code cache uses |resource_url| as the key.
 // Case 2. a absl::nullopt, if the origin lock is opaque (for ex: browser
 // initiated navigation to a data: URL). In these cases, the code should not be
 // cached since the serialized value of opaque origins should not be used as a
 // key.
-// Case 3: origin_lock if the scheme of origin_lock is Http/Https/chrome.
+// Case 3: origin_lock if the scheme of origin_lock is
+// Http/Https/chrome/chrome-untrusted.
 // Case 4. absl::nullopt otherwise.
 absl::optional<GURL> GetSecondaryKeyForCodeCache(const GURL& resource_url,
-                                                 int render_process_id) {
-  if (!resource_url.is_valid() || !resource_url.SchemeIsHTTPOrHTTPS())
+                                                 int render_process_id,
+                                                 Operation operation) {
+  // Case 0: check for invalid schemes.
+  if (!CheckSecurityForAccessingCodeCacheData(resource_url, render_process_id,
+                                              operation)) {
+    return absl::nullopt;
+  }
+  if (!resource_url.is_valid())
     return absl::nullopt;
 
   ProcessLock process_lock =
@@ -79,10 +143,11 @@ absl::optional<GURL> GetSecondaryKeyForCodeCache(const GURL& resource_url,
   // file:// URLs will have a "file:" process lock and would thus share a
   // cache across all file:// URLs. That would likely be ok for security, but
   // since this case is not performance sensitive we will keep things simple and
-  // limit the cache to http/https/chrome processes.
+  // limit the cache to http/https/chrome/chrome-untrusted processes.
   if (process_lock.matches_scheme(url::kHttpScheme) ||
       process_lock.matches_scheme(url::kHttpsScheme) ||
-      process_lock.matches_scheme(content::kChromeUIScheme)) {
+      process_lock.matches_scheme(content::kChromeUIScheme) ||
+      process_lock.matches_scheme(content::kChromeUIUntrustedScheme)) {
     return process_lock.lock_url();
   }
 
@@ -171,9 +236,11 @@ void AddCodeCacheReceiver(
     mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>* receiver_set,
     scoped_refptr<GeneratedCodeCacheContext> context,
     int render_process_id,
+    const net::NetworkIsolationKey& nik,
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
     CodeCacheHostImpl::ReceiverSet::CodeCacheHostReceiverHandler handler) {
-  auto host = std::make_unique<CodeCacheHostImpl>(render_process_id, context);
+  auto host =
+      std::make_unique<CodeCacheHostImpl>(render_process_id, context, nik);
   auto* raw_host = host.get();
   auto id = receiver_set->Add(std::move(host), std::move(receiver));
   if (handler)
@@ -194,6 +261,7 @@ CodeCacheHostImpl::ReceiverSet::~ReceiverSet() = default;
 
 void CodeCacheHostImpl::ReceiverSet::Add(
     int render_process_id,
+    const net::NetworkIsolationKey& nik,
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
     CodeCacheHostReceiverHandler handler) {
   if (!receiver_set_) {
@@ -207,14 +275,16 @@ void CodeCacheHostImpl::ReceiverSet::Add(
   GeneratedCodeCacheContext::RunOrPostTask(
       generated_code_cache_context_, FROM_HERE,
       base::BindOnce(&AddCodeCacheReceiver, receiver_set_.get(),
-                     generated_code_cache_context_, render_process_id,
+                     generated_code_cache_context_, render_process_id, nik,
                      std::move(receiver), std::move(handler)));
 }
 
 void CodeCacheHostImpl::ReceiverSet::Add(
     int render_process_id,
+    const net::NetworkIsolationKey& nik,
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
-  Add(render_process_id, std::move(receiver), CodeCacheHostReceiverHandler());
+  Add(render_process_id, nik, std::move(receiver),
+      CodeCacheHostReceiverHandler());
 }
 
 void CodeCacheHostImpl::ReceiverSet::Clear() {
@@ -223,9 +293,11 @@ void CodeCacheHostImpl::ReceiverSet::Clear() {
 
 CodeCacheHostImpl::CodeCacheHostImpl(
     int render_process_id,
-    scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context)
+    scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context,
+    const net::NetworkIsolationKey& nik)
     : render_process_id_(render_process_id),
-      generated_code_cache_context_(std::move(generated_code_cache_context)) {
+      generated_code_cache_context_(std::move(generated_code_cache_context)),
+      network_isolation_key_(nik) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -243,11 +315,6 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadata(
     const GURL& url,
     base::Time expected_response_time,
     mojo_base::BigBuffer data) {
-  if (!url.SchemeIsHTTPOrHTTPS()) {
-    mojo::ReportBadMessage("Invalid URL scheme for code cache.");
-    return;
-  }
-
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   GeneratedCodeCache* code_cache = GetCodeCache(cache_type);
@@ -255,12 +322,12 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadata(
     return;
 
   absl::optional<GURL> origin_lock =
-      GetSecondaryKeyForCodeCache(url, render_process_id_);
+      GetSecondaryKeyForCodeCache(url, render_process_id_, Operation::kWrite);
   if (!origin_lock)
     return;
 
-  code_cache->WriteEntry(url, *origin_lock, expected_response_time,
-                         std::move(data));
+  code_cache->WriteEntry(url, *origin_lock, network_isolation_key_,
+                         expected_response_time, std::move(data));
 }
 
 void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
@@ -274,7 +341,7 @@ void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
   }
 
   absl::optional<GURL> origin_lock =
-      GetSecondaryKeyForCodeCache(url, render_process_id_);
+      GetSecondaryKeyForCodeCache(url, render_process_id_, Operation::kRead);
   if (!origin_lock) {
     std::move(callback).Run(base::Time(), std::vector<uint8_t>());
     return;
@@ -283,7 +350,8 @@ void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
   auto read_callback =
       base::BindOnce(&CodeCacheHostImpl::OnReceiveCachedCode,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  code_cache->FetchEntry(url, *origin_lock, std::move(read_callback));
+  code_cache->FetchEntry(url, *origin_lock, network_isolation_key_,
+                         std::move(read_callback));
 }
 
 void CodeCacheHostImpl::ClearCodeCacheEntry(
@@ -295,11 +363,11 @@ void CodeCacheHostImpl::ClearCodeCacheEntry(
     return;
 
   absl::optional<GURL> origin_lock =
-      GetSecondaryKeyForCodeCache(url, render_process_id_);
+      GetSecondaryKeyForCodeCache(url, render_process_id_, Operation::kWrite);
   if (!origin_lock)
     return;
 
-  code_cache->DeleteEntry(url, *origin_lock);
+  code_cache->DeleteEntry(url, *origin_lock, network_isolation_key_);
 }
 
 void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
@@ -309,13 +377,22 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
     const url::Origin& cache_storage_origin,
     const std::string& cache_storage_cache_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(&DidGenerateCacheableMetadataInCacheStorageOnUI, url,
-                     expected_response_time, std::move(data),
-                     cache_storage_origin, cache_storage_cache_name,
-                     render_process_id_, cache_storage_control_for_testing_,
-                     mojo::GetBadMessageCallback()));
+
+  auto task = base::BindOnce(
+      &DidGenerateCacheableMetadataInCacheStorageOnUI, url,
+      expected_response_time, std::move(data), cache_storage_origin,
+      cache_storage_cache_name, render_process_id_,
+      cache_storage_control_for_testing_, mojo::GetBadMessageCallback());
+
+  // This class may or may not be on the UI thread depending on
+  // whether NavigationThreadingOptimizations is enabled.
+  // TODO(crbug.com/1083097): Simplify this code when
+  // the NavigationThreadOptimizations is enabled by default
+  // and the feature is removed.
+  if (BrowserThread::CurrentlyOn(BrowserThread::UI))
+    std::move(task).Run();
+  else
+    GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
 }
 
 GeneratedCodeCache* CodeCacheHostImpl::GetCodeCache(
@@ -323,6 +400,23 @@ GeneratedCodeCache* CodeCacheHostImpl::GetCodeCache(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!generated_code_cache_context_)
     return nullptr;
+
+  ProcessLock process_lock =
+      ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
+          render_process_id_);
+
+  // To minimize the chance of any cache bug resulting in privilege escalation
+  // from an ordinary web page to trusted WebUI, we use a completely separate
+  // GeneratedCodeCache instance for WebUI pages.
+  if (process_lock.matches_scheme(content::kChromeUIScheme) ||
+      process_lock.matches_scheme(content::kChromeUIUntrustedScheme)) {
+    if (cache_type == blink::mojom::CodeCacheType::kJavascript) {
+      return generated_code_cache_context_->generated_webui_js_code_cache();
+    }
+
+    // WebAssembly in WebUI pages is not supported due to no current usage.
+    return nullptr;
+  }
 
   if (cache_type == blink::mojom::CodeCacheType::kJavascript)
     return generated_code_cache_context_->generated_js_code_cache();

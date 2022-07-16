@@ -55,6 +55,8 @@ static_library("metrics") {
     "log_decoder.h",
     "log_store.h",
     "machine_id_provider.h",
+    "metrics_data_validation.cc",
+    "metrics_data_validation.h",
     "metrics_log.cc",
     "metrics_log.h",
     "metrics_log_manager.cc",
@@ -124,14 +126,20 @@ static_library("metrics") {
     "//build:chromeos_buildflags",
     "//components/prefs",
     "//components/variations",
+    "//components/variations/field_trial_config",
+    "//components/variations/service:constants",
     "//components/version_info:version_info",
     "//crypto",
     "//extensions/buildflags",
+    "//third_party/icu",
     "//url",
   ]
 
   if (is_chromeos_ash) {
-    deps += [ ":serialization" ]
+    deps += [
+      ":serialization",
+      "//components/metrics/structured:neutrino_logging",
+    ]
   }
 
   if (is_android) {
@@ -139,7 +147,10 @@ static_library("metrics") {
   }
 
   if (is_ios) {
-    sources += [ "drive_metrics_provider_ios.mm" ]
+    sources += [
+      "clean_exit_beacon_ios.mm",
+      "drive_metrics_provider_ios.mm",
+    ]
   }
 
   if (is_linux || is_chromeos) {
@@ -278,6 +289,7 @@ static_library("net") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/encrypted_messages:encrypted_message_proto",
     "//components/encrypted_messages:encrypted_messages",
     "//components/variations",
@@ -434,6 +446,7 @@ source_set("unit_tests") {
     "histogram_encoder_unittest.cc",
     "library_support/histogram_manager_unittest.cc",
     "log_decoder_unittest.cc",
+    "metrics_data_validation_unittest.cc",
     "metrics_log_manager_unittest.cc",
     "metrics_log_store_unittest.cc",
     "metrics_log_unittest.cc",
@@ -466,16 +479,24 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//components/component_updater:test_support",
     "//components/encrypted_messages:encrypted_message_proto",
+    "//components/network_time:network_time_test_support",
     "//components/prefs:test_support",
     "//components/sync/base",
     "//components/sync/driver:test_support",
     "//components/variations",
+    "//components/variations:test_support",
+    "//components/variations/service:constants",
+
+    # TODO(crbug.com/1241702): Clean up version_info when the Variations Safe
+    # Mode experiment is over.
+    "//components/version_info",
     "//extensions/buildflags",
     "//mojo/public/cpp/bindings",
     "//net:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp:cpp",
     "//services/service_manager/public/cpp",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/metrics_proto",
     "//third_party/zlib/google:compression_utils",

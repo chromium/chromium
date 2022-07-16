@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 class GURL;
 
 // The ProfileIOData is slated for deletion. It currently only contains two
@@ -16,6 +14,10 @@ class GURL;
 class ProfileIOData {
  public:
   ProfileIOData() = delete;
+
+  ProfileIOData(const ProfileIOData&) = delete;
+  ProfileIOData& operator=(const ProfileIOData&) = delete;
+
   ~ProfileIOData() = delete;
 
   // Returns true if |scheme| is handled in Chrome, or by default handlers in
@@ -25,9 +27,6 @@ class ProfileIOData {
   // Returns true if |url| is handled in Chrome, or by default handlers in
   // net::URLRequest.
   static bool IsHandledURL(const GURL& url);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileIOData);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_IO_DATA_H_

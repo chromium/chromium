@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -22,6 +21,10 @@ namespace chromeos {
 class PrintersMap {
  public:
   PrintersMap();
+
+  PrintersMap(const PrintersMap&) = delete;
+  PrintersMap& operator=(const PrintersMap&) = delete;
+
   ~PrintersMap();
 
   // Returns printer matching |printer_id| if found in any PrinterClass.
@@ -95,8 +98,6 @@ class PrintersMap {
   // This map is used to persist the printer statuses so when |printers_| map is
   // rebuilt, all the statuses aren't lost. Key for this map is a printer id.
   base::flat_map<std::string, CupsPrinterStatus> printer_statuses_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintersMap);
 };
 
 }  // namespace chromeos

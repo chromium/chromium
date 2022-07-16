@@ -23,6 +23,12 @@ class GaiaAuthFetcherIOSBridge {
   class GaiaAuthFetcherIOSBridgeDelegate {
    public:
     GaiaAuthFetcherIOSBridgeDelegate();
+
+    GaiaAuthFetcherIOSBridgeDelegate(const GaiaAuthFetcherIOSBridgeDelegate&) =
+        delete;
+    GaiaAuthFetcherIOSBridgeDelegate& operator=(
+        const GaiaAuthFetcherIOSBridgeDelegate&) = delete;
+
     virtual ~GaiaAuthFetcherIOSBridgeDelegate();
 
     // Called when the request is done.
@@ -30,12 +36,14 @@ class GaiaAuthFetcherIOSBridge {
                                  const std::string& data,
                                  net::Error net_error,
                                  int response_code) = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(GaiaAuthFetcherIOSBridgeDelegate);
   };
 
   // Initializes the instance.
   GaiaAuthFetcherIOSBridge(GaiaAuthFetcherIOSBridgeDelegate* delegate);
+
+  GaiaAuthFetcherIOSBridge(const GaiaAuthFetcherIOSBridge&) = delete;
+  GaiaAuthFetcherIOSBridge& operator=(const GaiaAuthFetcherIOSBridge&) = delete;
+
   virtual ~GaiaAuthFetcherIOSBridge();
 
   // Starts a network fetch.
@@ -64,8 +72,6 @@ class GaiaAuthFetcherIOSBridge {
 
  private:
   GaiaAuthFetcherIOSBridgeDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(GaiaAuthFetcherIOSBridge);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_GAIA_AUTH_FETCHER_IOS_BRIDGE_H_

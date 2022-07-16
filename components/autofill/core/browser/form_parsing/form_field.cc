@@ -56,28 +56,18 @@ FieldCandidatesMap FormField::ParseFormFields(
     const LanguageCode& page_language,
     bool is_form_tag,
     LogManager* log_manager) {
-  // Set up a working copy of the fields to be processed.
-  std::vector<AutofillField*> processed_fields;
-  for (const auto& field : fields) {
-    // Ignore checkable fields as they interfere with parsers assuming context.
-    // Eg., while parsing address, "Is PO box" checkbox after ADDRESS_LINE1
-    // interferes with correctly understanding ADDRESS_LINE2.
-    // Ignore fields marked as presentational, unless for 'select' fields (for
-    // synthetic fields.)
-    if (IsCheckable(field->check_status) ||
-        (field->role == FormFieldData::RoleAttribute::kPresentation &&
-         field->form_control_type != "select-one")) {
-      continue;
-    }
-    processed_fields.push_back(field.get());
-  }
-
+  std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
   FieldCandidatesMap field_candidates;
 
   // Email pass.
   ParseFormFieldsPass(EmailField::Parse, processed_fields, &field_candidates,
                       page_language, log_manager);
   const size_t email_count = field_candidates.size();
+
+  // Merchant promo code pass.
+  ParseFormFieldsPass(MerchantPromoCodeField::Parse, processed_fields,
+                      &field_candidates, page_language, log_manager);
+  const size_t promo_code_count = field_candidates.size() - email_count;
 
   // Phone pass.
   ParseFormFieldsPass(PhoneField::Parse, processed_fields, &field_candidates,
@@ -103,10 +93,6 @@ FieldCandidatesMap FormField::ParseFormFields(
   ParseFormFieldsPass(NameField::Parse, processed_fields, &field_candidates,
                       page_language, log_manager);
 
-  // Merchant promo code pass.
-  ParseFormFieldsPass(MerchantPromoCodeField::Parse, processed_fields,
-                      &field_candidates, page_language, log_manager);
-
   // Search pass.
   ParseFormFieldsPass(SearchField::Parse, processed_fields, &field_candidates,
                       page_language, log_manager);
@@ -124,35 +110,56 @@ FieldCandidatesMap FormField::ParseFormFields(
   // Do not autofill a form if there aren't enough fields. Otherwise, it is
   // very easy to have false positives. See http://crbug.com/447332
   // For <form> tags, make an exception for email fields, which are commonly
-  // the only recognized field on account registration sites.
-  const bool accept_parsing =
-      fillable_fields >= kMinRequiredFieldsForHeuristics ||
-      (is_form_tag && email_count > 0);
-
-  if (!accept_parsing) {
-    if (log_manager) {
-      LogBuffer table_rows;
-      for (const auto& field : fields) {
-        table_rows << Tr{} << "Field:" << *field;
+  // the only recognized field on account registration sites. Also make an
+  // exception for promo code fields, which are often a single field in its own
+  // form.
+  if (fillable_fields < kMinRequiredFieldsForHeuristics) {
+    if ((is_form_tag && email_count > 0) || promo_code_count > 0) {
+      base::EraseIf(field_candidates, [&](const auto& candidate) {
+        return !(candidate.second.BestHeuristicType() == EMAIL_ADDRESS ||
+                 candidate.second.BestHeuristicType() == MERCHANT_PROMO_CODE);
+      });
+    } else {
+      if (log_manager) {
+        LogBuffer table_rows;
+        for (const auto& field : fields) {
+          table_rows << Tr{} << "Field:" << *field;
+        }
+        for (const auto& candidate : field_candidates) {
+          LogBuffer name;
+          name << "Type candidate for frame and renderer ID: "
+               << candidate.first;
+          LogBuffer description;
+          ServerFieldType field_type = candidate.second.BestHeuristicType();
+          description << "BestHeuristicType: "
+                      << AutofillType::ServerFieldTypeToString(field_type)
+                      << ", is fillable: " << IsFillableFieldType(field_type);
+          table_rows << Tr{} << std::move(name) << std::move(description);
+        }
+        log_manager->Log()
+            << LoggingScope::kParsing
+            << LogMessage::kLocalHeuristicDidNotFindEnoughFillableFields
+            << Tag{"table"} << Attrib{"class", "form"} << std::move(table_rows)
+            << CTag{"table"};
       }
-      for (const auto& candidate : field_candidates) {
-        LogBuffer name;
-        name << "Type candidate for frame and renderer ID: " << candidate.first;
-        LogBuffer description;
-        ServerFieldType field_type = candidate.second.BestHeuristicType();
-        description << "BestHeuristicType: "
-                    << AutofillType::ServerFieldTypeToString(field_type)
-                    << ", is fillable: " << IsFillableFieldType(field_type);
-        table_rows << Tr{} << std::move(name) << std::move(description);
-      }
-      log_manager->Log()
-          << LoggingScope::kParsing
-          << LogMessage::kLocalHeuristicDidNotFindEnoughFillableFields
-          << Tag{"table"} << Attrib{"class", "form"} << std::move(table_rows)
-          << CTag{"table"};
+      field_candidates.clear();
     }
-    field_candidates.clear();
   }
+
+  return field_candidates;
+}
+
+FieldCandidatesMap FormField::ParseFormFieldsForPromoCodes(
+    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    const LanguageCode& page_language,
+    bool is_form_tag,
+    LogManager* log_manager) {
+  std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
+  FieldCandidatesMap field_candidates;
+
+  // Merchant promo code pass.
+  ParseFormFieldsPass(MerchantPromoCodeField::Parse, processed_fields,
+                      &field_candidates, page_language, log_manager);
 
   return field_candidates;
 }
@@ -303,6 +310,27 @@ void FormField::AddClassification(const AutofillField* field,
 
   FieldCandidates& candidates = (*field_candidates)[field->global_id()];
   candidates.AddFieldCandidate(type, score);
+}
+
+// static
+std::vector<AutofillField*> FormField::RemoveCheckableFields(
+    const std::vector<std::unique_ptr<AutofillField>>& fields) {
+  // Set up a working copy of the fields to be processed.
+  std::vector<AutofillField*> processed_fields;
+  for (const auto& field : fields) {
+    // Ignore checkable fields as they interfere with parsers assuming context.
+    // Eg., while parsing address, "Is PO box" checkbox after ADDRESS_LINE1
+    // interferes with correctly understanding ADDRESS_LINE2.
+    // Ignore fields marked as presentational, unless for 'select' fields (for
+    // synthetic fields.)
+    if (IsCheckable(field->check_status) ||
+        (field->role == FormFieldData::RoleAttribute::kPresentation &&
+         field->form_control_type != "select-one")) {
+      continue;
+    }
+    processed_fields.push_back(field.get());
+  }
+  return processed_fields;
 }
 
 bool FormField::MatchAndAdvance(AutofillScanner* scanner,

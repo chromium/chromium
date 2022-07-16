@@ -40,23 +40,27 @@ declare_args() {
   enable_basic_print_dialog = enable_basic_printing && !is_chromeos_ash
 
   # Enables usage of notifications via Chrome's MessageCenter.
-  enable_chrome_notifications = is_mac || is_win || is_linux
+  enable_chrome_notifications = is_mac || is_win || is_linux || is_fuchsia
 
-  # Enables the Click to Call feature on desktop platforms.
-  enable_click_to_call = is_mac || is_win || is_linux || is_chromeos
+  # Disable Click to Call on Fuchsia.
+  enable_click_to_call = !is_fuchsia
 
   # Hangout services is an extension that adds extra features to Hangouts.
   # It is enableable separately to facilitate testing.
   enable_hangout_services_extension = is_chrome_branded
 
-  enable_one_click_signin =
-      is_win || is_mac || ((is_linux || is_chromeos_lacros) && !is_chromecast)
+  enable_one_click_signin = is_win || is_mac || is_fuchsia ||
+                            ((is_linux || is_chromeos_lacros) && !is_chromecast)
 
   enable_service_discovery = (enable_mdns && !is_android) || is_mac
 
   # Enables use of the session service, which is enabled by default.
   # Android stores them separately on the Java side.
   enable_session_service = !is_android && !is_chromecast
+
+  # Enables usage of the side search feature, which is disabled by default.
+  # This feature is only approved for release on ChromeOS at this time.
+  enable_side_search = is_chromeos
 
   enable_supervised_users = is_chromeos_ash || is_android
 
@@ -85,6 +89,7 @@ chrome_grit_defines = [
   "enable_print_preview=$enable_print_preview",
   "enable_printing=$enable_basic_printing",
   "enable_service_discovery=$enable_service_discovery",
+  "enable_side_search=$enable_side_search",
   "enable_supervised_users=$enable_supervised_users",
   "enable_vr=$enable_vr",
   "enable_webui_tab_strip=$enable_webui_tab_strip",

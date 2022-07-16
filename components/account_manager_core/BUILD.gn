@@ -24,6 +24,7 @@ component("account_manager_core") {
     "chromeos/access_token_fetcher.h",
     "chromeos/account_manager.cc",
     "chromeos/account_manager.h",
+    "chromeos/account_manager_facade_factory.h",
     "chromeos/account_manager_mojo_service.cc",
     "chromeos/account_manager_mojo_service.h",
     "chromeos/account_manager_ui.cc",
@@ -34,6 +35,7 @@ component("account_manager_core") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//chromeos/crosapi/mojom",
     "//components/prefs:prefs",
     "//google_apis:google_apis",
@@ -41,7 +43,15 @@ component("account_manager_core") {
     "//services/network/public/cpp:cpp",
   ]
 
-  public_deps = [ ":account_manager_proto" ]
+  if (is_chromeos_lacros) {
+    sources += [ "chromeos/account_manager_facade_factory_lacros.cc" ]
+    deps += [ "//chromeos/lacros:lacros" ]
+  }
+
+  public_deps = [
+    ":account_manager_proto",
+    "//third_party/abseil-cpp:absl",
+  ]
 
   defines = [ "IS_ACCOUNT_MANAGER_CORE_IMPL" ]
 }
@@ -52,6 +62,16 @@ source_set("test_support") {
   sources = [
     "account_manager_test_util.cc",
     "account_manager_test_util.h",
+    "chromeos/fake_account_manager_ui.cc",
+    "chromeos/fake_account_manager_ui.h",
+    "mock_account_manager_facade.cc",
+    "mock_account_manager_facade.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//google_apis",
+    "//testing/gmock",
   ]
 
   deps = [ ":account_manager_core" ]

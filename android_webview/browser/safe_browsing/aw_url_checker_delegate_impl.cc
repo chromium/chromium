@@ -30,6 +30,7 @@
 #include "components/security_interstitials/core/urls.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -112,15 +113,16 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     int render_process_id,
     int render_frame_id,
     bool originated_from_service_worker) {
-  std::unique_ptr<AwContentsIoThreadClient> client;
+  const content::GlobalRenderFrameHostId rfh_id(render_process_id,
+                                                render_frame_id);
 
+  std::unique_ptr<AwContentsIoThreadClient> client;
   if (originated_from_service_worker) {
     client = AwContentsIoThreadClient::GetServiceWorkerIoThreadClient();
-  } else if (render_process_id == -1 || render_frame_id == -1) {
+  } else if (!rfh_id) {
     client = AwContentsIoThreadClient::FromID(frame_tree_node_id);
   } else {
-    client =
-        AwContentsIoThreadClient::FromID(render_process_id, render_frame_id);
+    client = AwContentsIoThreadClient::FromID(rfh_id);
   }
 
   // If Safe Browsing is disabled by the app, skip the check. Default to
@@ -172,7 +174,8 @@ void AwUrlCheckerDelegateImpl::StartApplicationResponse(
     scoped_refptr<AwSafeBrowsingUIManager> ui_manager,
     const security_interstitials::UnsafeResource& resource,
     const AwWebResourceRequest& request) {
-  content::WebContents* web_contents = resource.web_contents_getter.Run();
+  content::WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
 
   security_interstitials::SecurityInterstitialTabHelper*
       security_interstitial_tab_helper = security_interstitials::
@@ -207,8 +210,9 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
     const AwWebResourceRequest& request,
     SafeBrowsingAction action,
     bool reporting) {
-  content::WebContents* web_contents = resource.web_contents_getter.Run();
-  // |web_contents_getter| can return null after RenderFrameHost is destroyed.
+  content::WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
+  // |web_contents| can be null after RenderFrameHost is destroyed.
   if (!web_contents)
     return;
 
@@ -280,7 +284,8 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
 void AwUrlCheckerDelegateImpl::StartDisplayingDefaultBlockingPage(
     scoped_refptr<AwSafeBrowsingUIManager> ui_manager,
     const security_interstitials::UnsafeResource& resource) {
-  content::WebContents* web_contents = resource.web_contents_getter.Run();
+  content::WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
   if (web_contents) {
     ui_manager->DisplayBlockingPage(resource);
     return;

@@ -19,9 +19,16 @@ class VideoCaptureDeviceChromeOSDelegate;
 class CAPTURE_EXPORT VideoCaptureDeviceChromeOSHalv3 final
     : public VideoCaptureDevice {
  public:
+  VideoCaptureDeviceChromeOSHalv3() = delete;
+
   VideoCaptureDeviceChromeOSHalv3(
       VideoCaptureDeviceChromeOSDelegate* delegate,
       const VideoCaptureDeviceDescriptor& vcd_descriptor);
+
+  VideoCaptureDeviceChromeOSHalv3(const VideoCaptureDeviceChromeOSHalv3&) =
+      delete;
+  VideoCaptureDeviceChromeOSHalv3& operator=(
+      const VideoCaptureDeviceChromeOSHalv3&) = delete;
 
   ~VideoCaptureDeviceChromeOSHalv3() final;
 
@@ -38,8 +45,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSHalv3 final
   VideoCaptureDeviceChromeOSDelegate* vcd_delegate_;
 
   ClientType client_type_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureDeviceChromeOSHalv3);
 };
 
 }  // namespace media

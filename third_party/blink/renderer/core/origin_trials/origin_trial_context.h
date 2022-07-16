@@ -19,9 +19,11 @@
 
 namespace blink {
 
+class Document;
 class ExecutionContext;
 class ScriptState;
 class TrialToken;
+class TrialTokenResult;
 
 enum class OriginTrialStatus {
   kEnabled = 0,
@@ -183,6 +185,7 @@ class CORE_EXPORT OriginTrialContext final
   bool EnableTrialFromToken(const SecurityOrigin* origin,
                             bool is_secure,
                             const String& token);
+
   // Validate the trial token injected by external script from script_origin.
   // If is_third_party flag is set on the token, script_origin will be used for
   // validation. Otherwise it's the same as above.
@@ -193,15 +196,25 @@ class CORE_EXPORT OriginTrialContext final
                             const String& token);
 
   // Validate the token result returned from token validator.
-  OriginTrialTokenStatus ValidateTokenResult(const String& trial_name,
-                                             bool is_secure,
-                                             bool is_secure_script_origin,
-                                             bool is_third_party);
+  // `trial_name` is returned to avoid multiple conversions from `std::string`
+  // to `WTF::String`.
+  // `token_result` is modified in place to reflect the `OriginTrialTokenStatus`
+  // change.
+  void ValidateTokenResult(bool is_secure,
+                           bool is_secure_script_origin,
+                           String& trial_name,
+                           TrialTokenResult& token_result);
 
-  // Installs JavaScript bindings on the relevant objects for the specified
-  // OriginTrialFeature. Returns true if the feature was not already added
-  // before, otherwise false.
-  bool InstallFeature(OriginTrialFeature, ScriptState*);
+  // Installs a series of OriginTrialFeatures listed in a HashSet. The return
+  // value indicates whether binding features were added, signalling that V8
+  // has to proceed with installing the conditional features.
+  bool InstallFeatures(const HashSet<OriginTrialFeature>& features,
+                       Document&,
+                       ScriptState*);
+
+  // Installs a settings feature for the relevant Document instance. Returns
+  // whether the given OriginTrialFeature describes a setting feature.
+  bool InstallSettingFeature(Document&, OriginTrialFeature);
 
   // Caches raw origin trial token along with the parse result to
   // `trial_results_`.

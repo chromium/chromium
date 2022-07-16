@@ -14,13 +14,16 @@ class NetworkChangeNotifierFactoryFuchsia
     : public net::NetworkChangeNotifierFactory {
  public:
   NetworkChangeNotifierFactoryFuchsia();
+
+  NetworkChangeNotifierFactoryFuchsia(
+      const NetworkChangeNotifierFactoryFuchsia&) = delete;
+  NetworkChangeNotifierFactoryFuchsia& operator=(
+      const NetworkChangeNotifierFactoryFuchsia&) = delete;
+
   ~NetworkChangeNotifierFactoryFuchsia() override;
 
   // net::NetworkChangeNotifierFactory implementation:
   std::unique_ptr<net::NetworkChangeNotifier> CreateInstance() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeNotifierFactoryFuchsia);
 };
 
 }  // namespace chromecast

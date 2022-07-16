@@ -29,6 +29,11 @@ class AbusiveOriginPermissionRevocationRequestTestBase : public testing::Test {
 
   AbusiveOriginPermissionRevocationRequestTestBase() = default;
 
+  AbusiveOriginPermissionRevocationRequestTestBase(
+      const AbusiveOriginPermissionRevocationRequestTestBase&) = delete;
+  AbusiveOriginPermissionRevocationRequestTestBase& operator=(
+      const AbusiveOriginPermissionRevocationRequestTestBase&) = delete;
+
   ~AbusiveOriginPermissionRevocationRequestTestBase() override = default;
 
  protected:
@@ -129,8 +134,6 @@ class AbusiveOriginPermissionRevocationRequestTestBase : public testing::Test {
       fake_database_manager_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AbusiveOriginPermissionRevocationRequestTestBase);
 };
 
 class AbusiveOriginPermissionRevocationRequestTest

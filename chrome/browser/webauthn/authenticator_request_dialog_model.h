@@ -92,7 +92,6 @@ class AuthenticatorRequestDialogModel {
     // Phone as a security key.
     kCableActivate,
     kAndroidAccessory,
-    kCableV2Activate,
     kCableV2QRCode,
 
     // Authenticator Client PIN.
@@ -158,7 +157,9 @@ class AuthenticatorRequestDialogModel {
     using WindowsAPI = base::StrongAlias<class WindowsAPITag,
                                          bool /* unused, but cannot be void */>;
     using Phone = base::StrongAlias<class PhoneTag, std::string>;
-    using Type = absl::variant<Transport, WindowsAPI, Phone>;
+    using OtherPhone = base::StrongAlias<class OtherPhoneTag,
+                                         bool /* unused, but cannot be void */>;
+    using Type = absl::variant<Transport, WindowsAPI, Phone, OtherPhone>;
 
     Mechanism(Type type,
               std::u16string name,
@@ -217,6 +218,12 @@ class AuthenticatorRequestDialogModel {
   };
 
   explicit AuthenticatorRequestDialogModel(const std::string& relying_party_id);
+
+  AuthenticatorRequestDialogModel(const AuthenticatorRequestDialogModel&) =
+      delete;
+  AuthenticatorRequestDialogModel& operator=(
+      const AuthenticatorRequestDialogModel&) = delete;
+
   ~AuthenticatorRequestDialogModel();
 
   Step current_step() const { return current_step_; }
@@ -297,7 +304,7 @@ class AuthenticatorRequestDialogModel {
   // Valid action when at step: kNotStarted, kMechanismSelection, and steps
   // where the other transports menu is shown, namely, kUsbInsertAndActivate,
   // kCableActivate.
-  void EnsureBleAdapterIsPoweredAndContinueWithCable();
+  void EnsureBleAdapterIsPoweredAndContinueWithStep(Step step);
 
   // Continues with the BLE/caBLE flow now that the Bluetooth adapter is
   // powered.
@@ -439,6 +446,10 @@ class AuthenticatorRequestDialogModel {
   // |responses()|.
   void OnAccountSelected(size_t index);
 
+  // Called when an account from |ephemeral_state_.users_| is selected from the
+  // Conditional UI prompt.
+  void OnAccountPreselected(const std::vector<uint8_t>& id);
+
   void SetSelectedAuthenticatorForTesting(AuthenticatorReference authenticator);
 
   base::span<const Mechanism> mechanisms() const;
@@ -564,6 +575,9 @@ class AuthenticatorRequestDialogModel {
   void StartGuidedFlowForTransport(AuthenticatorTransport transport,
                                    size_t mechanism_index);
 
+  // Starts the flow for adding an unlisted phone by showing a QR code.
+  void StartGuidedFlowForOtherPhone(size_t mechanism_index);
+
   // Displays a resident-key warning if needed and then calls
   // |HideDialogAndDispatchToNativeWindowsApi|.
   void StartWinNativeApi(size_t mechanism_index);
@@ -674,8 +688,6 @@ class AuthenticatorRequestDialogModel {
   absl::optional<std::string> cable_qr_string_;
 
   base::WeakPtrFactory<AuthenticatorRequestDialogModel> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestDialogModel);
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_REQUEST_DIALOG_MODEL_H_

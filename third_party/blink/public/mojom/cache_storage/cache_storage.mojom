@@ -124,12 +124,14 @@ union CacheKeysResult {
 // Handles calls for each individual cache. A cache relates directly to Cache
 // defined on spec: https://w3c.github.io/ServiceWorker/#cache-interface
 interface CacheStorageCache {
-  // Returns the first cached response that matches |request| according to
-  // options specified on |query_options|.  |in_related_fetch_event| will be
+  // Returns the first cached response that matches `request` according to
+  // options specified on `query_options`.  `in_related_fetch_event` will be
   // true if the operation was initiated within a FetchEvent handler with
-  // a matching request URL.
+  // a matching request URL. `in_range_fetch_event` will be true if the
+  // operation was initiated within a FetchEvent handler with a request
+  // range header.
   Match(blink.mojom.FetchAPIRequest request, CacheQueryOptions query_options,
-        bool in_related_fetch_event, int64 trace_id)
+        bool in_related_fetch_event, bool in_range_fetch_event, int64 trace_id)
       => (MatchResult result);
 
   // Returns all cached responses that match |request| according to options
@@ -176,12 +178,14 @@ interface CacheStorage {
   // Returns all cache names managed on this origin.
   Keys(int64 trace_id) => (array<mojo_base.mojom.String16> keys);
 
-  // Returns the first cached response that matches |request| and
-  // |match_options|. It can search on all caches if |cache_name| isn't provided
-  // on |match_options|.  |in_related_fetch_event| will be true if the operation
+  // Returns the first cached response that matches `request` and
+  // `match_options`. It can search on all caches if `cache_name` isn't provided
+  // on `match_options`.  `in_related_fetch_event` will be true if the operation
   // was initiated within a FetchEvent handler with a matching request URL.
+  // `in_range_fetch_event` will be true if the operation was initiated within a
+  // FetchEvent handler with a request range header.
   Match(blink.mojom.FetchAPIRequest request, MultiCacheQueryOptions match_options,
-        bool in_related_fetch_event, int64 trace_id)
+        bool in_related_fetch_event, bool in_range_fetch_event, int64 trace_id)
       => (MatchResult result);
 
   // Opens and returns a mojo interface to a cache, it creates if doesn't exist.

@@ -11,3 +11,11 @@ imageset("enterprise_icon_blue_large") {
     "enterprise_icon_blue_large.imageset/enterprise_icon_blue_large@3x.png",
   ]
 }
+
+imageset("enterprise_grey_icon_large") {
+  sources = [
+    "enterprise_grey_icon_large.imageset/Contents.json",
+    "enterprise_grey_icon_large.imageset/enterprise_grey_icon_large@2x.png",
+    "enterprise_grey_icon_large.imageset/enterprise_grey_icon_large@3x.png",
+  ]
+}

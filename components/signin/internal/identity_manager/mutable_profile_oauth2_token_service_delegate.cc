@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -110,6 +109,10 @@ class MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken
       SigninClient* client,
       const std::string& refresh_token,
       int attempt);
+
+  RevokeServerRefreshToken(const RevokeServerRefreshToken&) = delete;
+  RevokeServerRefreshToken& operator=(const RevokeServerRefreshToken&) = delete;
+
   ~RevokeServerRefreshToken() override;
 
  private:
@@ -126,8 +129,6 @@ class MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken
   std::string refresh_token_;
   int attempt_;
   base::WeakPtrFactory<RevokeServerRefreshToken> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RevokeServerRefreshToken);
 };
 
 MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::

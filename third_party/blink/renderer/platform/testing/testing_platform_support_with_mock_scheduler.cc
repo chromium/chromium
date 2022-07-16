@@ -16,7 +16,7 @@ TestingPlatformSupportWithMockScheduler::
     : test_task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>(
           base::TestMockTimeTaskRunner::Type::kStandalone)) {
   DCHECK(IsMainThread());
-  test_task_runner_->AdvanceMockTickClock(base::TimeDelta::FromSeconds(1));
+  test_task_runner_->AdvanceMockTickClock(base::Seconds(1));
   std::unique_ptr<base::sequence_manager::SequenceManagerForTest>
       sequence_manager = base::sequence_manager::SequenceManagerForTest::Create(
           nullptr, test_task_runner_, test_task_runner_->GetMockTickClock());
@@ -60,7 +60,7 @@ void TestingPlatformSupportWithMockScheduler::RunUntilIdle() {
 
 void TestingPlatformSupportWithMockScheduler::RunForPeriodSeconds(
     double seconds) {
-  RunForPeriod(base::TimeDelta::FromSecondsD(seconds));
+  RunForPeriod(base::Seconds(seconds));
 }
 
 void TestingPlatformSupportWithMockScheduler::RunForPeriod(
@@ -70,7 +70,7 @@ void TestingPlatformSupportWithMockScheduler::RunForPeriod(
 
 void TestingPlatformSupportWithMockScheduler::AdvanceClockSeconds(
     double seconds) {
-  AdvanceClock(base::TimeDelta::FromSecondsD(seconds));
+  AdvanceClock(base::Seconds(seconds));
 }
 
 void TestingPlatformSupportWithMockScheduler::AdvanceClock(

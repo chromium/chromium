@@ -8,12 +8,15 @@
 
 namespace security_interstitials {
 
+constexpr UnsafeResource::RenderProcessId UnsafeResource::kNoRenderProcessId;
+constexpr UnsafeResource::RenderFrameId UnsafeResource::kNoRenderFrameId;
+constexpr UnsafeResource::FrameTreeNodeId UnsafeResource::kNoFrameTreeNodeId;
+
 UnsafeResource::UnsafeResource()
     : is_subresource(false),
       is_subframe(false),
       threat_type(safe_browsing::SB_THREAT_TYPE_SAFE),
       request_destination(network::mojom::RequestDestination::kDocument),
-      threat_source(safe_browsing::ThreatSource::UNKNOWN),
       is_delayed_warning(false) {}
 
 UnsafeResource::UnsafeResource(const UnsafeResource& other) = default;

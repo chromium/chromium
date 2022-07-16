@@ -13,7 +13,6 @@
 #endif
 
 bool IsPasswordReuseDetectionEnabled() {
-  return base::ios::IsRunningOnIOS14OrLater() &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kPasswordReuseDetectionEnabled);
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordReuseDetectionEnabled);
 }

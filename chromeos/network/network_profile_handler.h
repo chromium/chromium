@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/shill/shill_property_changed_observer.h"
@@ -27,6 +26,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkProfileHandler
     : public ShillPropertyChangedObserver {
  public:
   typedef std::vector<NetworkProfile> ProfileList;
+
+  NetworkProfileHandler(const NetworkProfileHandler&) = delete;
+  NetworkProfileHandler& operator=(const NetworkProfileHandler&) = delete;
 
   ~NetworkProfileHandler() override;
 
@@ -102,9 +104,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkProfileHandler
 
   // For Shill client callbacks
   base::WeakPtrFactory<NetworkProfileHandler> weak_ptr_factory_{this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkProfileHandler);
 };
 
 }  // namespace chromeos

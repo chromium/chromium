@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 140 tests; 119 PASS, 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 140 tests; 121 PASS, 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS display: grid
 PASS display: inline-grid
 PASS grid-template-columns
@@ -63,8 +63,8 @@ PASS grid-auto-flow
 PASS grid-auto-flow.initial
 PASS grid-auto-flow.row
 PASS grid-auto-flow.column
-FAIL grid-auto-flow.dense assert_equals: dense expected "dense" but got "row dense"
-FAIL grid-auto-flow.row dense assert_equals: row dense expected "dense" but got "row dense"
+PASS grid-auto-flow.dense
+PASS grid-auto-flow.row dense
 PASS grid-auto-flow.column dense
 PASS grid-auto-flow.reset
 PASS grid-row-start

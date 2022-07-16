@@ -65,25 +65,22 @@ static WEBP_INLINE void SwapColor(uint32_t* const col1, uint32_t* const col2) {
   *col2 = tmp;
 }
 
-static void GreedyMinimizeDeltas(uint32_t palette[], int num_colors) {
-  // Find greedily always the closest color of the predicted color to minimize
-  // deltas in the palette. This reduces storage needs since the
-  // palette is stored with delta encoding.
-  uint32_t predict = 0x00000000;
-  int i, k;
-  for (i = 0; i < num_colors; ++i) {
-    int best_ix = i;
-    uint32_t best_score = ~0U;
-    for (k = i; k < num_colors; ++k) {
-      const uint32_t cur_score = PaletteColorDistance(palette[k], predict);
-      if (best_score > cur_score) {
-        best_score = cur_score;
-        best_ix = k;
-      }
+static WEBP_INLINE int SearchColorNoIdx(const uint32_t sorted[], uint32_t color,
+                                        int num_colors) {
+  int low = 0, hi = num_colors;
+  if (sorted[low] == color) return low;  // loop invariant: sorted[low] != color
+  while (1) {
+    const int mid = (low + hi) >> 1;
+    if (sorted[mid] == color) {
+      return mid;
+    } else if (sorted[mid] < color) {
+      low = mid;
+    } else {
+      hi = mid;
     }
-    SwapColor(&palette[best_ix], &palette[i]);
-    predict = palette[i];
   }
+  assert(0);
+  return 0;
 }
 
 // The palette has been sorted by alpha. This function checks if the other
@@ -92,7 +89,8 @@ static void GreedyMinimizeDeltas(uint32_t palette[], int num_colors) {
 // no benefit to re-organize them greedily. A monotonic development
 // would be spotted in green-only situations (like lossy alpha) or gray-scale
 // images.
-static int PaletteHasNonMonotonousDeltas(uint32_t palette[], int num_colors) {
+static int PaletteHasNonMonotonousDeltas(const uint32_t* const palette,
+                                         int num_colors) {
   uint32_t predict = 0x000000;
   int i;
   uint8_t sign_found = 0x00;
@@ -115,27 +113,214 @@ static int PaletteHasNonMonotonousDeltas(uint32_t palette[], int num_colors) {
   return (sign_found & (sign_found << 1)) != 0;  // two consequent signs.
 }
 
+static void PaletteSortMinimizeDeltas(const uint32_t* const palette_sorted,
+                                      int num_colors, uint32_t* const palette) {
+  uint32_t predict = 0x00000000;
+  int i, k;
+  memcpy(palette, palette_sorted, num_colors * sizeof(*palette));
+  if (!PaletteHasNonMonotonousDeltas(palette_sorted, num_colors)) return;
+  // Find greedily always the closest color of the predicted color to minimize
+  // deltas in the palette. This reduces storage needs since the
+  // palette is stored with delta encoding.
+  for (i = 0; i < num_colors; ++i) {
+    int best_ix = i;
+    uint32_t best_score = ~0U;
+    for (k = i; k < num_colors; ++k) {
+      const uint32_t cur_score = PaletteColorDistance(palette[k], predict);
+      if (best_score > cur_score) {
+        best_score = cur_score;
+        best_ix = k;
+      }
+    }
+    SwapColor(&palette[best_ix], &palette[i]);
+    predict = palette[i];
+  }
+}
+
+// Sort palette in increasing order and prepare an inverse mapping array.
+static void PrepareMapToPalette(const uint32_t palette[], uint32_t num_colors,
+                                uint32_t sorted[], uint32_t idx_map[]) {
+  uint32_t i;
+  memcpy(sorted, palette, num_colors * sizeof(*sorted));
+  qsort(sorted, num_colors, sizeof(*sorted), PaletteCompareColorsForQsort);
+  for (i = 0; i < num_colors; ++i) {
+    idx_map[SearchColorNoIdx(sorted, palette[i], num_colors)] = i;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Modified Zeng method from "A Survey on Palette Reordering
+// Methods for Improving the Compression of Color-Indexed Images" by Armando J.
+// Pinho and Antonio J. R. Neves.
+
+// Finds the biggest cooccurrence in the matrix.
+static void CoOccurrenceFindMax(const uint32_t* const cooccurrence,
+                                uint32_t num_colors, uint8_t* const c1,
+                                uint8_t* const c2) {
+  // Find the index that is most frequently located adjacent to other
+  // (different) indexes.
+  uint32_t best_sum = 0u;
+  uint32_t i, j, best_cooccurrence;
+  *c1 = 0u;
+  for (i = 0; i < num_colors; ++i) {
+    uint32_t sum = 0;
+    for (j = 0; j < num_colors; ++j) sum += cooccurrence[i * num_colors + j];
+    if (sum > best_sum) {
+      best_sum = sum;
+      *c1 = i;
+    }
+  }
+  // Find the index that is most frequently found adjacent to *c1.
+  *c2 = 0u;
+  best_cooccurrence = 0u;
+  for (i = 0; i < num_colors; ++i) {
+    if (cooccurrence[*c1 * num_colors + i] > best_cooccurrence) {
+      best_cooccurrence = cooccurrence[*c1 * num_colors + i];
+      *c2 = i;
+    }
+  }
+  assert(*c1 != *c2);
+}
+
+// Builds the cooccurrence matrix
+static WebPEncodingError CoOccurrenceBuild(const WebPPicture* const pic,
+                                           const uint32_t* const palette,
+                                           uint32_t num_colors,
+                                           uint32_t* cooccurrence) {
+  uint32_t *lines, *line_top, *line_current, *line_tmp;
+  int x, y;
+  const uint32_t* src = pic->argb;
+  uint32_t prev_pix = ~src[0];
+  uint32_t prev_idx = 0u;
+  uint32_t idx_map[MAX_PALETTE_SIZE] = {0};
+  uint32_t palette_sorted[MAX_PALETTE_SIZE];
+  lines = (uint32_t*)WebPSafeMalloc(2 * pic->width, sizeof(*lines));
+  if (lines == NULL) return VP8_ENC_ERROR_OUT_OF_MEMORY;
+  line_top = &lines[0];
+  line_current = &lines[pic->width];
+  PrepareMapToPalette(palette, num_colors, palette_sorted, idx_map);
+  for (y = 0; y < pic->height; ++y) {
+    for (x = 0; x < pic->width; ++x) {
+      const uint32_t pix = src[x];
+      if (pix != prev_pix) {
+        prev_idx = idx_map[SearchColorNoIdx(palette_sorted, pix, num_colors)];
+        prev_pix = pix;
+      }
+      line_current[x] = prev_idx;
+      // 4-connectivity is what works best as mentioned in "On the relation
+      // between Memon's and the modified Zeng's palette reordering methods".
+      if (x > 0 && prev_idx != line_current[x - 1]) {
+        const uint32_t left_idx = line_current[x - 1];
+        ++cooccurrence[prev_idx * num_colors + left_idx];
+        ++cooccurrence[left_idx * num_colors + prev_idx];
+      }
+      if (y > 0 && prev_idx != line_top[x]) {
+        const uint32_t top_idx = line_top[x];
+        ++cooccurrence[prev_idx * num_colors + top_idx];
+        ++cooccurrence[top_idx * num_colors + prev_idx];
+      }
+    }
+    line_tmp = line_top;
+    line_top = line_current;
+    line_current = line_tmp;
+    src += pic->argb_stride;
+  }
+  WebPSafeFree(lines);
+  return VP8_ENC_OK;
+}
+
+struct Sum {
+  uint8_t index;
+  uint32_t sum;
+};
+
+// Implements the modified Zeng method from "A Survey on Palette Reordering
+// Methods for Improving the Compression of Color-Indexed Images" by Armando J.
+// Pinho and Antonio J. R. Neves.
+static WebPEncodingError PaletteSortModifiedZeng(
+    const WebPPicture* const pic, const uint32_t* const palette_sorted,
+    uint32_t num_colors, uint32_t* const palette) {
+  uint32_t i, j, ind;
+  uint8_t remapping[MAX_PALETTE_SIZE];
+  uint32_t* cooccurrence;
+  struct Sum sums[MAX_PALETTE_SIZE];
+  uint32_t first, last;
+  uint32_t num_sums;
+  // TODO(vrabaud) check whether one color images should use palette or not.
+  if (num_colors <= 1) return VP8_ENC_OK;
+  // Build the co-occurrence matrix.
+  cooccurrence =
+      (uint32_t*)WebPSafeCalloc(num_colors * num_colors, sizeof(*cooccurrence));
+  if (cooccurrence == NULL) return VP8_ENC_ERROR_OUT_OF_MEMORY;
+  if (CoOccurrenceBuild(pic, palette_sorted, num_colors, cooccurrence) !=
+      VP8_ENC_OK) {
+    WebPSafeFree(cooccurrence);
+    return VP8_ENC_ERROR_OUT_OF_MEMORY;
+  }
+
+  // Initialize the mapping list with the two best indices.
+  CoOccurrenceFindMax(cooccurrence, num_colors, &remapping[0], &remapping[1]);
+
+  // We need to append and prepend to the list of remapping. To this end, we
+  // actually define the next start/end of the list as indices in a vector (with
+  // a wrap around when the end is reached).
+  first = 0;
+  last = 1;
+  num_sums = num_colors - 2;  // -2 because we know the first two values
+  if (num_sums > 0) {
+    // Initialize the sums with the first two remappings and find the best one
+    struct Sum* best_sum = &sums[0];
+    best_sum->index = 0u;
+    best_sum->sum = 0u;
+    for (i = 0, j = 0; i < num_colors; ++i) {
+      if (i == remapping[0] || i == remapping[1]) continue;
+      sums[j].index = i;
+      sums[j].sum = cooccurrence[i * num_colors + remapping[0]] +
+                    cooccurrence[i * num_colors + remapping[1]];
+      if (sums[j].sum > best_sum->sum) best_sum = &sums[j];
+      ++j;
+    }
+
+    while (num_sums > 0) {
+      const uint8_t best_index = best_sum->index;
+      // Compute delta to know if we need to prepend or append the best index.
+      int32_t delta = 0;
+      const int32_t n = num_colors - num_sums;
+      for (ind = first, j = 0; (ind + j) % num_colors != last + 1; ++j) {
+        const uint16_t l_j = remapping[(ind + j) % num_colors];
+        delta += (n - 1 - 2 * (int32_t)j) *
+                 (int32_t)cooccurrence[best_index * num_colors + l_j];
+      }
+      if (delta > 0) {
+        first = (first == 0) ? num_colors - 1 : first - 1;
+        remapping[first] = best_index;
+      } else {
+        ++last;
+        remapping[last] = best_index;
+      }
+      // Remove best_sum from sums.
+      *best_sum = sums[num_sums - 1];
+      --num_sums;
+      // Update all the sums and find the best one.
+      best_sum = &sums[0];
+      for (i = 0; i < num_sums; ++i) {
+        sums[i].sum += cooccurrence[best_index * num_colors + sums[i].index];
+        if (sums[i].sum > best_sum->sum) best_sum = &sums[i];
+      }
+    }
+  }
+  assert((last + 1) % num_colors == first);
+  WebPSafeFree(cooccurrence);
+
+  // Re-map the palette.
+  for (i = 0; i < num_colors; ++i) {
+    palette[i] = palette_sorted[remapping[(first + i) % num_colors]];
+  }
+  return VP8_ENC_OK;
+}
+
 // -----------------------------------------------------------------------------
 // Palette
-
-// If number of colors in the image is less than or equal to MAX_PALETTE_SIZE,
-// creates a palette and returns true, else returns false.
-static int AnalyzeAndCreatePalette(const WebPPicture* const pic,
-                                   int low_effort,
-                                   uint32_t palette[MAX_PALETTE_SIZE],
-                                   int* const palette_size) {
-  const int num_colors = WebPGetColorPalette(pic, palette);
-  if (num_colors > MAX_PALETTE_SIZE) {
-    *palette_size = 0;
-    return 0;
-  }
-  *palette_size = num_colors;
-  qsort(palette, num_colors, sizeof(*palette), PaletteCompareColorsForQsort);
-  if (!low_effort && PaletteHasNonMonotonousDeltas(palette, num_colors)) {
-    GreedyMinimizeDeltas(palette, num_colors);
-  }
-  return 1;
-}
 
 // These five modes are evaluated and their respective entropy is computed.
 typedef enum {
@@ -147,6 +332,13 @@ typedef enum {
   kPaletteAndSpatial = 5,
   kNumEntropyIx = 6
 } EntropyIx;
+
+typedef enum {
+  kSortedDefault = 0,
+  kMinimizeDelta = 1,
+  kModifiedZeng = 2,
+  kUnusedPalette = 3,
+} PaletteSorting;
 
 typedef enum {
   kHistoAlpha = 0,
@@ -362,11 +554,14 @@ typedef struct {
 } CrunchSubConfig;
 typedef struct {
   int entropy_idx_;
+  PaletteSorting palette_sorting_type_;
   CrunchSubConfig sub_configs_[CRUNCH_SUBCONFIGS_MAX];
   int sub_configs_size_;
 } CrunchConfig;
 
-#define CRUNCH_CONFIGS_MAX kNumEntropyIx
+// +2 because we add a palette sorting configuration for kPalette and
+// kPaletteAndSpatial.
+#define CRUNCH_CONFIGS_MAX (kNumEntropyIx + 2)
 
 static int EncoderAnalyze(VP8LEncoder* const enc,
                           CrunchConfig crunch_configs[CRUNCH_CONFIGS_MAX],
@@ -386,9 +581,15 @@ static int EncoderAnalyze(VP8LEncoder* const enc,
   int do_no_cache = 0;
   assert(pic != NULL && pic->argb != NULL);
 
-  use_palette =
-      AnalyzeAndCreatePalette(pic, low_effort,
-                              enc->palette_, &enc->palette_size_);
+  // Check whether a palette is possible.
+  enc->palette_size_ = WebPGetColorPalette(pic, enc->palette_sorted_);
+  use_palette = (enc->palette_size_ <= MAX_PALETTE_SIZE);
+  if (!use_palette) {
+    enc->palette_size_ = 0;
+  } else {
+    qsort(enc->palette_sorted_, enc->palette_size_,
+          sizeof(*enc->palette_sorted_), PaletteCompareColorsForQsort);
+  }
 
   // Empirical bit sizes.
   enc->histo_bits_ = GetHistoBits(method, use_palette,
@@ -398,6 +599,8 @@ static int EncoderAnalyze(VP8LEncoder* const enc,
   if (low_effort) {
     // AnalyzeEntropy is somewhat slow.
     crunch_configs[0].entropy_idx_ = use_palette ? kPalette : kSpatialSubGreen;
+    crunch_configs[0].palette_sorting_type_ =
+        use_palette ? kSortedDefault : kUnusedPalette;
     n_lz77s = 1;
     *crunch_configs_size = 1;
   } else {
@@ -418,13 +621,28 @@ static int EncoderAnalyze(VP8LEncoder* const enc,
         // a palette.
         if ((i != kPalette && i != kPaletteAndSpatial) || use_palette) {
           assert(*crunch_configs_size < CRUNCH_CONFIGS_MAX);
-          crunch_configs[(*crunch_configs_size)++].entropy_idx_ = i;
+          crunch_configs[(*crunch_configs_size)].entropy_idx_ = i;
+          if (use_palette && (i == kPalette || i == kPaletteAndSpatial)) {
+            crunch_configs[(*crunch_configs_size)].palette_sorting_type_ =
+                kMinimizeDelta;
+            ++*crunch_configs_size;
+            // Also add modified Zeng's method.
+            crunch_configs[(*crunch_configs_size)].entropy_idx_ = i;
+            crunch_configs[(*crunch_configs_size)].palette_sorting_type_ =
+                kModifiedZeng;
+          } else {
+            crunch_configs[(*crunch_configs_size)].palette_sorting_type_ =
+                kUnusedPalette;
+          }
+          ++*crunch_configs_size;
         }
       }
     } else {
       // Only choose the guessed best transform.
       *crunch_configs_size = 1;
       crunch_configs[0].entropy_idx_ = min_entropy_ix;
+      crunch_configs[0].palette_sorting_type_ =
+          use_palette ? kMinimizeDelta : kUnusedPalette;
       if (config->quality >= 75 && method == 5) {
         // Test with and without color cache.
         do_no_cache = 1;
@@ -432,6 +650,7 @@ static int EncoderAnalyze(VP8LEncoder* const enc,
         if (min_entropy_ix == kPalette) {
           *crunch_configs_size = 2;
           crunch_configs[1].entropy_idx_ = kPaletteAndSpatial;
+          crunch_configs[1].palette_sorting_type_ = kMinimizeDelta;
         }
       }
     }
@@ -1283,22 +1502,6 @@ static WebPEncodingError MakeInputImageCopy(VP8LEncoder* const enc) {
 
 // -----------------------------------------------------------------------------
 
-static WEBP_INLINE int SearchColorNoIdx(const uint32_t sorted[], uint32_t color,
-                                        int hi) {
-  int low = 0;
-  if (sorted[low] == color) return low;  // loop invariant: sorted[low] != color
-  while (1) {
-    const int mid = (low + hi) >> 1;
-    if (sorted[mid] == color) {
-      return mid;
-    } else if (sorted[mid] < color) {
-      low = mid;
-    } else {
-      hi = mid;
-    }
-  }
-}
-
 #define APPLY_PALETTE_GREEDY_MAX 4
 
 static WEBP_INLINE uint32_t SearchColorGreedy(const uint32_t palette[],
@@ -1331,17 +1534,6 @@ static WEBP_INLINE uint32_t ApplyPaletteHash2(uint32_t color) {
   // Forget about alpha.
   return ((uint32_t)((color & 0x00ffffffu) * ((1ull << 31) - 1))) >>
          (32 - PALETTE_INV_SIZE_BITS);
-}
-
-// Sort palette in increasing order and prepare an inverse mapping array.
-static void PrepareMapToPalette(const uint32_t palette[], int num_colors,
-                                uint32_t sorted[], uint32_t idx_map[]) {
-  int i;
-  memcpy(sorted, palette, num_colors * sizeof(*sorted));
-  qsort(sorted, num_colors, sizeof(*sorted), PaletteCompareColorsForQsort);
-  for (i = 0; i < num_colors; ++i) {
-    idx_map[SearchColorNoIdx(sorted, palette[i], num_colors)] = i;
-  }
 }
 
 // Use 1 pixel cache for ARGB pixels.
@@ -1571,7 +1763,8 @@ static int EncodeStreamHook(void* input, void* data2) {
     enc->use_predict_ = (entropy_idx == kSpatial) ||
                         (entropy_idx == kSpatialSubGreen) ||
                         (entropy_idx == kPaletteAndSpatial);
-    if (low_effort) {
+    // When using a palette, R/B==0, hence no need to test for cross-color.
+    if (low_effort || enc->use_palette_) {
       enc->use_cross_color_ = 0;
     } else {
       enc->use_cross_color_ = red_and_blue_always_zero ? 0 : enc->use_predict_;
@@ -1603,6 +1796,19 @@ static int EncodeStreamHook(void* input, void* data2) {
 
     // Encode palette
     if (enc->use_palette_) {
+      if (crunch_configs[idx].palette_sorting_type_ == kSortedDefault) {
+        // Nothing to do, we have already sorted the palette.
+        memcpy(enc->palette_, enc->palette_sorted_,
+               enc->palette_size_ * sizeof(*enc->palette_));
+      } else if (crunch_configs[idx].palette_sorting_type_ == kMinimizeDelta) {
+        PaletteSortMinimizeDeltas(enc->palette_sorted_, enc->palette_size_,
+                                  enc->palette_);
+      } else {
+        assert(crunch_configs[idx].palette_sorting_type_ == kModifiedZeng);
+        err = PaletteSortModifiedZeng(enc->pic_, enc->palette_sorted_,
+                                      enc->palette_size_, enc->palette_);
+        if (err != VP8_ENC_OK) goto Error;
+      }
       err = EncodePalette(bw, low_effort, enc);
       if (err != VP8_ENC_OK) goto Error;
       err = MapImageFromPalette(enc, use_delta_palette);
@@ -1767,6 +1973,8 @@ WebPEncodingError VP8LEncodeStream(const WebPConfig* const config,
         enc_side->palette_size_ = enc_main->palette_size_;
         memcpy(enc_side->palette_, enc_main->palette_,
                sizeof(enc_main->palette_));
+        memcpy(enc_side->palette_sorted_, enc_main->palette_sorted_,
+               sizeof(enc_main->palette_sorted_));
         param->enc_ = enc_side;
       }
       // Create the workers.

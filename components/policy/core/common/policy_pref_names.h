@@ -12,7 +12,6 @@ namespace policy {
 namespace policy_prefs {
 
 POLICY_EXPORT extern const char kCloudManagementEnrollmentMandatory[];
-POLICY_EXPORT extern const char kCloudPolicyOverridesPlatformPolicy[];
 POLICY_EXPORT extern const char kDlpClipboardCheckSizeLimit[];
 POLICY_EXPORT extern const char kDlpReportingEnabled[];
 POLICY_EXPORT extern const char kDlpRulesList[];
@@ -26,9 +25,11 @@ POLICY_EXPORT extern const char kUrlAllowlist[];
 POLICY_EXPORT extern const char kUserPolicyRefreshRate[];
 POLICY_EXPORT extern const char kIntensiveWakeUpThrottlingEnabled[];
 POLICY_EXPORT extern const char kTargetBlankImpliesNoOpener[];
+POLICY_EXPORT extern const char kUserAgentClientHintsGREASEUpdateEnabled[];
 #if defined(OS_ANDROID)
 POLICY_EXPORT extern const char kBackForwardCacheEnabled[];
 #endif  // defined(OS_ANDROID)
+POLICY_EXPORT extern const char kWebSQLInThirdPartyContextEnabled[];
 
 }  // namespace policy_prefs
 }  // namespace policy

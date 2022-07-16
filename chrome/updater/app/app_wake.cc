@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "build/build_config.h"
 #include "chrome/updater/app/app.h"
+#include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service_internal.h"
 
 namespace updater {
@@ -34,7 +35,7 @@ void AppWake::FirstTaskRun() {
   //
   // TODO(crbug.com/1113448) - consider initializing the thread pool in the
   // constructor of the base class or earlier, in the updater main.
-  update_service_internal_ = CreateUpdateServiceInternal();
+  update_service_internal_ = CreateUpdateServiceInternalProxy(updater_scope());
   update_service_internal_->Run(base::BindOnce(&AppWake::Shutdown, this, 0));
 }
 

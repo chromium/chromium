@@ -272,8 +272,12 @@ class WTF_EXPORT StringImpl {
 #if DCHECK_IS_ON()
     DCHECK(IsStatic() || verifier_.OnRef(ref_count_)) << AsciiForDebugging();
 #endif
-    if (!IsStatic())
+    if (!IsStatic()) {
       ref_count_ = base::CheckAdd(ref_count_, 1).ValueOrDie();
+#if DCHECK_IS_ON()
+      ref_count_change_count_++;
+#endif
+    }
   }
 
   ALWAYS_INLINE void Release() const {
@@ -289,6 +293,7 @@ class WTF_EXPORT StringImpl {
       // enough to catch implementation bugs, and that implementation bugs are
       // the only way we'd experience underflow.
       ref_count_ = base::CheckSub(ref_count_, 1).ValueOrDie();
+      ref_count_change_count_++;
 #else
       --ref_count_;
 #endif
@@ -296,6 +301,13 @@ class WTF_EXPORT StringImpl {
     if (ref_count_ == 0)
       DestroyIfNotStatic();
   }
+
+#if DCHECK_IS_ON()
+  unsigned int RefCountChangeCountForTesting() const {
+    return ref_count_change_count_;
+  }
+  void ResetRefCountChangeCountForTesting() { ref_count_change_count_ = 0; }
+#endif
 
   ALWAYS_INLINE void Adopted() const {}
 
@@ -568,6 +580,7 @@ class WTF_EXPORT StringImpl {
 
 #if DCHECK_IS_ON()
   mutable ThreadRestrictionVerifier verifier_;
+  mutable unsigned int ref_count_change_count_{0};
 #endif
   mutable unsigned ref_count_{1};
   const unsigned length_;

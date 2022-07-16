@@ -105,18 +105,6 @@ struct DnsConfigOverrides {
   bool clear_hosts = false;
 };
 
-// Host resolution error info.
-struct ResolveErrorInfo {
-  // Underlying network error code. See net/base/net_error_list.h for error
-  // descriptions.
-  int32 error;
-
-  // Whether |error| came from a DNS-over-HTTPS lookup. This will be false if
-  // the answer was obtained from the cache or if |error| is net::OK since this
-  // field is intended to identify secure DNS *network* failures.
-  bool is_secure_network_error = false;
-};
-
 // Control handle used to control outstanding NetworkContext::ResolveHost
 // requests. Handle is optional for all requests, and may be closed at any time
 // without affecting the request.
@@ -253,6 +241,19 @@ struct ResolveHostParameters {
 
   // Controls the resolver's Secure DNS behavior for this request.
   SecureDnsPolicy secure_dns_policy = SecureDnsPolicy.ALLOW;
+
+  // Enumeration for specifying the purpose of a host resolve request.
+  // These values are used for UMA. Entries should not be reordered. Keep this
+  // in sync with tools/metrics/histograms/enums.xml.
+  // TODO(crbug.com/1232623): Consider adding more values if kPreconnect isn't
+  // a majority of the purpose of host resolve requests.
+  enum Purpose {
+    kUnspecified,
+    kPreconnect,
+  };
+
+  // Specifies the purpose of the request.
+  Purpose purpose = Purpose.kUnspecified;
 };
 
 // Response interface used to receive notifications from

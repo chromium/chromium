@@ -43,6 +43,9 @@ class DisplayInfoProvider : public display::DisplayObserver {
   using DisplayLayoutList = std::vector<api::system_display::DisplayLayout>;
   using ErrorCallback = base::OnceCallback<void(absl::optional<std::string>)>;
 
+  DisplayInfoProvider(const DisplayInfoProvider&) = delete;
+  DisplayInfoProvider& operator=(const DisplayInfoProvider&) = delete;
+
   ~DisplayInfoProvider() override;
 
   // Returns a pointer to DisplayInfoProvider or null if Create() or
@@ -141,8 +144,6 @@ class DisplayInfoProvider : public display::DisplayObserver {
                                uint32_t metrics) override;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayInfoProvider);
 };
 
 }  // namespace extensions

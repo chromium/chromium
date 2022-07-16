@@ -47,6 +47,10 @@ class CallbackBinder : public InterfaceBinder<BinderArgs...> {
   CallbackBinder(const BindCallback& callback,
                  const scoped_refptr<base::SequencedTaskRunner>& task_runner)
       : callback_(callback), task_runner_(task_runner) {}
+
+  CallbackBinder(const CallbackBinder&) = delete;
+  CallbackBinder& operator=(const CallbackBinder&) = delete;
+
   ~CallbackBinder() override = default;
 
  private:
@@ -80,7 +84,6 @@ class CallbackBinder : public InterfaceBinder<BinderArgs...> {
 
   const BindCallback callback_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(CallbackBinder);
 };
 
 template <typename... BinderArgs>
@@ -100,6 +103,10 @@ class GenericCallbackBinder : public InterfaceBinder<BinderArgs...> {
       : callback_(
             base::BindRepeating(&BindCallbackAdapter<BinderArgs...>, callback)),
         task_runner_(task_runner) {}
+
+  GenericCallbackBinder(const GenericCallbackBinder&) = delete;
+  GenericCallbackBinder& operator=(const GenericCallbackBinder&) = delete;
+
   ~GenericCallbackBinder() override {}
 
  private:
@@ -126,7 +133,6 @@ class GenericCallbackBinder : public InterfaceBinder<BinderArgs...> {
 
   const BindCallback callback_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(GenericCallbackBinder);
 };
 
 }  // namespace service_manager

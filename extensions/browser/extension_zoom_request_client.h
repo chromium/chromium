@@ -21,6 +21,10 @@ class ExtensionZoomRequestClient : public zoom::ZoomRequestClient {
  public:
   explicit ExtensionZoomRequestClient(scoped_refptr<const Extension> extension);
 
+  ExtensionZoomRequestClient(const ExtensionZoomRequestClient&) = delete;
+  ExtensionZoomRequestClient& operator=(const ExtensionZoomRequestClient&) =
+      delete;
+
   bool ShouldSuppressBubble() const override;
   const Extension* extension() const { return extension_.get(); }
 
@@ -29,8 +33,6 @@ class ExtensionZoomRequestClient : public zoom::ZoomRequestClient {
 
  private:
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionZoomRequestClient);
 };
 
 }  // namespace extensions

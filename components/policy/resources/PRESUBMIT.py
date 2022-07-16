@@ -235,6 +235,8 @@ def _CommonChecks(input_api, output_api):
   root = input_api.change.RepositoryRoot()
   template_path = input_api.os_path.join(
       root, 'components', 'policy', 'resources', 'policy_templates.json')
+  device_policy_proto_path = input_api.os_path.join(
+      root, 'components', 'policy', 'proto', 'chrome_device_policy.proto')
   # policies in chrome/test/data/policy/policy_test_cases.json.
   test_cases_path = input_api.os_path.join(
       root, 'chrome', 'test', 'data', 'policy', 'policy_test_cases.json')
@@ -247,12 +249,16 @@ def _CommonChecks(input_api, output_api):
       template_path))
   template_changed = any(f.AbsoluteLocalPath() == template_path \
     for f in affected_files)
+  device_policy_proto_changed = \
+      any(f.AbsoluteLocalPath() == device_policy_proto_path \
+          for f in affected_files)
   tests_changed = any(f.AbsoluteLocalPath() == test_cases_path \
     for f in affected_files)
   syntax_check_changed = any(f.AbsoluteLocalPath() == syntax_check_path \
     for f in affected_files)
 
-  if template_changed or tests_changed or syntax_check_changed:
+  if (template_changed or device_policy_proto_changed or tests_changed or
+      syntax_check_changed):
     try:
       policies = _GetPolicyTemplates(template_path)
     except:
@@ -262,7 +268,9 @@ def _CommonChecks(input_api, output_api):
       results.extend(_CheckPolicyTestCases(input_api, output_api, policies))
     if template_changed:
       results.extend(_CheckPolicyHistograms(input_api, output_api, policies))
-    if template_changed or syntax_check_changed:
+    # chrome_device_policy.proto is hand crafted. When it is changed, we need
+    # to check if it still corresponds to policy_templates.json.
+    if template_changed or device_policy_proto_changed or syntax_check_changed:
       results.extend(_CheckPolicyTemplatesSyntax(input_api, output_api))
 
   return results

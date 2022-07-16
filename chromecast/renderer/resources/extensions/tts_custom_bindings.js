@@ -18,6 +18,7 @@ apiBridge.registerCustomHook(function(api) {
       eventHandler({
                      type: event.type,
                      charIndex: event.charIndex,
+                     length: event.length,
                      errorMessage: event.errorMessage
                    });
       if (event.isFinalEvent) {
@@ -36,17 +37,18 @@ apiBridge.registerCustomHook(function(api) {
     tts.onEvent.addListener(ttsEventListener);
   } catch (e) {}
 
-  apiFunctions.setHandleRequest('speak', function() {
-    var args = $Array.from(arguments);
-    if (args.length > 1 && args[1] && args[1].onEvent) {
-      var id = idGenerator.GetNextId();
-      args[1].srcId = id;
-      handlers[id] = args[1].onEvent;
-      // Keep the page alive until the event finishes.
-      // Balanced in eventHandler.
-      lazyBG.IncrementKeepaliveCount();
-    }
-    bindingUtil.sendRequest('tts.speak', args, undefined);
-    return id;
-  });
+  apiFunctions.setHandleRequest(
+      'speak', function(utterance, options, callback) {
+        if (options && options.onEvent) {
+          var id = idGenerator.GetNextId();
+          options.srcId = id;
+          handlers[id] = options.onEvent;
+          // Keep the page alive until the event finishes.
+          // Balanced in eventHandler.
+          lazyBG.IncrementKeepaliveCount();
+        }
+        bindingUtil.sendRequest(
+            'tts.speak', [utterance, options, callback], undefined);
+        return id;
+      });
 });

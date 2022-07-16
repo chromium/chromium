@@ -39,8 +39,6 @@
 // The web view content view being displayed.
 @property(nonatomic, strong, readonly)
     CRWWebViewContentView* webViewContentView;
-// The currently displayed transient content view.
-@property(nonatomic, strong, readonly) CRWContentView* transientContentView;
 @property(nonatomic, weak) id<CRWWebControllerContainerViewDelegate>
     delegate;  // weak
 
@@ -63,12 +61,6 @@
 
 // Replaces the currently displayed content with |webViewContentView|.
 - (void)displayWebViewContentView:(CRWWebViewContentView*)webViewContentView;
-
-// Adds |transientContentView| as a subview above previously displayed content.
-- (void)displayTransientContent:(CRWContentView*)transientContentView;
-
-// Removes the transient content view, if one is displayed.
-- (void)clearTransientContentView;
 
 // Updates the |webViewContentView|'s view hierarchy status based on the the
 // container view window status. If the current webView is active but the window

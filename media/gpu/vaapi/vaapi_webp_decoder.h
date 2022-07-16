@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/gpu/vaapi/vaapi_image_decoder.h"
 
 namespace media {
@@ -15,6 +14,10 @@ namespace media {
 class VaapiWebPDecoder : public VaapiImageDecoder {
  public:
   VaapiWebPDecoder();
+
+  VaapiWebPDecoder(const VaapiWebPDecoder&) = delete;
+  VaapiWebPDecoder& operator=(const VaapiWebPDecoder&) = delete;
+
   ~VaapiWebPDecoder() override;
 
   // VaapiImageDecoder implementation.
@@ -25,8 +28,6 @@ class VaapiWebPDecoder : public VaapiImageDecoder {
   // VaapiImageDecoder implementation.
   VaapiImageDecodeStatus AllocateVASurfaceAndSubmitVABuffers(
       base::span<const uint8_t> encoded_image) override;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiWebPDecoder);
 };
 
 }  // namespace media

@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTestCrossOrigin,
     console_observer.Wait();
     EXPECT_THAT(console_observer.GetMessageAt(0u),
                 ::testing::HasSubstr("data"));
-    SleepWithRunLoop(base::TimeDelta::FromSeconds(3), FROM_HERE);
+    SleepWithRunLoop(base::Seconds(3), FROM_HERE);
     EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), referrer_url);
   }
 
@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTestCrossOrigin,
                        "location.href = 'ftp://user:pass@example.com/';"));
     console_observer.Wait();
     EXPECT_THAT(console_observer.GetMessageAt(0u), ::testing::HasSubstr("ftp"));
-    SleepWithRunLoop(base::TimeDelta::FromSeconds(3), FROM_HERE);
+    SleepWithRunLoop(base::Seconds(3), FROM_HERE);
     EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), referrer_url);
   }
 }

@@ -1128,20 +1128,20 @@ function testLoadAbortNonWebSafeScheme() {
 // cause a crash.
 function testLoadAbortUnknownScheme() {
   var webview = document.createElement('webview');
-  var ftpURL = 'ftp://example.com/';
+  var wsURL = 'ws://example.com/';
   webview.addEventListener('loadabort', function(e) {
     embedder.test.assertEq('ERR_UNKNOWN_URL_SCHEME', e.reason);
-    embedder.test.assertEq(ftpURL, e.url);
+    embedder.test.assertEq(wsURL, e.url);
   });
   webview.addEventListener('loadstop', function(e) {
-    embedder.test.assertEq(ftpURL, webview.src);
+    embedder.test.assertEq(wsURL, webview.src);
     embedder.test.succeed();
   });
   webview.addEventListener('exit', function(e) {
     // We should not crash.
     embedder.test.fail();
   });
-  webview.src = ftpURL;
+  webview.src = wsURL;
   document.body.appendChild(webview);
 }
 

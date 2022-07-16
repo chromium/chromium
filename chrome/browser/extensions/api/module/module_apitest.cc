@@ -14,18 +14,10 @@ using ContextType = ExtensionBrowserTest::ContextType;
 class ExtensionModuleApiTest : public ExtensionApiTest,
                                public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionModuleApiTest() = default;
+  ExtensionModuleApiTest() : ExtensionApiTest(GetParam()) {}
   ~ExtensionModuleApiTest() override = default;
   ExtensionModuleApiTest(const ExtensionModuleApiTest&) = delete;
   ExtensionModuleApiTest& operator=(const ExtensionModuleApiTest&) = delete;
-
- protected:
-  bool RunTest(const char* name,
-               LoadOptions load_options = {}) WARN_UNUSED_RESULT {
-    load_options.load_as_service_worker =
-        GetParam() == ContextType::kServiceWorker;
-    return RunExtensionTest(name, {}, load_options);
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -38,24 +30,25 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 }  // namespace
 
 IN_PROC_BROWSER_TEST_P(ExtensionModuleApiTest, CognitoFile) {
-  ASSERT_TRUE(
-      RunTest("extension_module/cognito_file", {.allow_file_access = true}))
+  ASSERT_TRUE(RunExtensionTest("extension_module/cognito_file", {},
+                               {.allow_file_access = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionModuleApiTest, IncognitoFile) {
-  ASSERT_TRUE(RunTest("extension_module/incognito_file",
-                      {.allow_in_incognito = true, .allow_file_access = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("extension_module/incognito_file", {},
+                       {.allow_in_incognito = true, .allow_file_access = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionModuleApiTest, CognitoNoFile) {
-  ASSERT_TRUE(RunTest("extension_module/cognito_nofile")) << message_;
+  ASSERT_TRUE(RunExtensionTest("extension_module/cognito_nofile")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionModuleApiTest, IncognitoNoFile) {
-  ASSERT_TRUE(RunTest("extension_module/incognito_nofile",
-                      {.allow_in_incognito = true}))
+  ASSERT_TRUE(RunExtensionTest("extension_module/incognito_nofile", {},
+                               {.allow_in_incognito = true}))
       << message_;
 }
 

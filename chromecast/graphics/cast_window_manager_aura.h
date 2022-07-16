@@ -35,6 +35,10 @@ class CastWindowManagerAura : public CastWindowManager,
                               public aura::client::WindowParentingClient {
  public:
   explicit CastWindowManagerAura(bool enable_input);
+
+  CastWindowManagerAura(const CastWindowManagerAura&) = delete;
+  CastWindowManagerAura& operator=(const CastWindowManagerAura&) = delete;
+
   ~CastWindowManagerAura() override;
 
   void Setup();
@@ -86,8 +90,6 @@ class CastWindowManagerAura : public CastWindowManager,
 
   std::vector<WindowId> window_order_;
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastWindowManagerAura);
 };
 
 }  // namespace chromecast

@@ -11,21 +11,21 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ash/printing/enterprise_printers_provider.h"
+#include "chrome/browser/ash/printing/ppd_provider_factory.h"
+#include "chrome/browser/ash/printing/ppd_resolution_tracker.h"
+#include "chrome/browser/ash/printing/printer_event_tracker.h"
+#include "chrome/browser/ash/printing/printer_event_tracker_factory.h"
+#include "chrome/browser/ash/printing/printer_info.h"
+#include "chrome/browser/ash/printing/server_printers_provider.h"
+#include "chrome/browser/ash/printing/synced_printers_manager.h"
+#include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
+#include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
 #include "chrome/browser/chromeos/printing/cups_printer_status_creator.h"
-#include "chrome/browser/chromeos/printing/enterprise_printers_provider.h"
-#include "chrome/browser/chromeos/printing/ppd_provider_factory.h"
-#include "chrome/browser/chromeos/printing/ppd_resolution_tracker.h"
 #include "chrome/browser/chromeos/printing/print_servers_policy_provider.h"
 #include "chrome/browser/chromeos/printing/print_servers_provider.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
-#include "chrome/browser/chromeos/printing/printer_event_tracker.h"
-#include "chrome/browser/chromeos/printing/printer_event_tracker_factory.h"
-#include "chrome/browser/chromeos/printing/printer_info.h"
 #include "chrome/browser/chromeos/printing/printers_map.h"
-#include "chrome/browser/chromeos/printing/server_printers_provider.h"
-#include "chrome/browser/chromeos/printing/synced_printers_manager.h"
-#include "chrome/browser/chromeos/printing/synced_printers_manager_factory.h"
-#include "chrome/browser/chromeos/printing/usb_printer_notification_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/printing/cups_printer_status.h"
@@ -56,7 +56,7 @@ class PrintServersManagerImpl : public PrintServersManager {
  public:
   PrintServersManagerImpl(
       std::unique_ptr<PrintServersPolicyProvider> print_servers_provider,
-      std::unique_ptr<ServerPrintersProvider> server_printers_provider)
+      std::unique_ptr<ash::ServerPrintersProvider> server_printers_provider)
       : print_servers_provider_(std::move(print_servers_provider)),
         server_printers_provider_(std::move(server_printers_provider)) {
     print_servers_provider_->SetListener(
@@ -169,7 +169,7 @@ class PrintServersManagerImpl : public PrintServersManager {
 
   PrintServersConfig config_;
 
-  std::unique_ptr<ServerPrintersProvider> server_printers_provider_;
+  std::unique_ptr<ash::ServerPrintersProvider> server_printers_provider_;
 
   base::ObserverList<PrintServersManager::Observer>::Unchecked observer_list_;
 
@@ -183,12 +183,12 @@ std::unique_ptr<PrintServersManager> PrintServersManager::Create(
     Profile* profile) {
   return std::make_unique<PrintServersManagerImpl>(
       PrintServersPolicyProvider::Create(profile),
-      ServerPrintersProvider::Create(profile));
+      ash::ServerPrintersProvider::Create(profile));
 }
 
 // static
 std::unique_ptr<PrintServersManager> PrintServersManager::CreateForTesting(
-    std::unique_ptr<ServerPrintersProvider> server_printers_provider,
+    std::unique_ptr<ash::ServerPrintersProvider> server_printers_provider,
     std::unique_ptr<PrintServersPolicyProvider> print_servers_provider) {
   return std::make_unique<PrintServersManagerImpl>(
       std::move(print_servers_provider), std::move(server_printers_provider));

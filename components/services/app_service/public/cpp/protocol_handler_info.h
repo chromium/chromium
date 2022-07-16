@@ -29,6 +29,9 @@ using ProtocolHandlers = std::vector<ProtocolHandlerInfo>;
 bool operator==(const ProtocolHandlerInfo& handler1,
                 const ProtocolHandlerInfo& handler2);
 
+bool operator!=(const ProtocolHandlerInfo& handler1,
+                const ProtocolHandlerInfo& handler2);
+
 }  // namespace apps
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PROTOCOL_HANDLER_INFO_H_

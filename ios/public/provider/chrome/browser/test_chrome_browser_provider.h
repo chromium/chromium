@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#include "ios/public/provider/chrome/browser/user_feedback/test_user_feedback_provider.h"
 
 namespace ios {
 
@@ -24,39 +25,20 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
   static TestChromeBrowserProvider& GetTestProvider();
 
   // ChromeBrowserProvider:
-  SigninResourcesProvider* GetSigninResourcesProvider() override;
-  SigninErrorProvider* GetSigninErrorProvider() override;
-  void SetChromeIdentityServiceForTesting(
-      std::unique_ptr<ChromeIdentityService> service) override;
-  ChromeIdentityService* GetChromeIdentityService() override;
   ChromeTrustedVaultService* GetChromeTrustedVaultService() override;
   UITextField* CreateStyledTextField() const override NS_RETURNS_RETAINED;
-  VoiceSearchProvider* GetVoiceSearchProvider() const override;
-  AppDistributionProvider* GetAppDistributionProvider() const override;
-  OmahaServiceProvider* GetOmahaServiceProvider() const override;
-  UserFeedbackProvider* GetUserFeedbackProvider() const override;
-  SpotlightProvider* GetSpotlightProvider() const override;
-  FullscreenProvider* GetFullscreenProvider() const override;
-  BrandedImageProvider* GetBrandedImageProvider() const override;
+  TestUserFeedbackProvider* GetUserFeedbackProvider() const override;
   MailtoHandlerProvider* GetMailtoHandlerProvider() const override;
   DiscoverFeedProvider* GetDiscoverFeedProvider() const override;
-  TextZoomProvider* GetTextZoomProvider() const override;
 
  private:
-  std::unique_ptr<AppDistributionProvider> app_distribution_provider_;
-  std::unique_ptr<BrandedImageProvider> branded_image_provider_;
-  std::unique_ptr<ChromeIdentityService> chrome_identity_service_;
+  // ChromeBrowserProvider:
+  std::unique_ptr<ChromeIdentityService> CreateChromeIdentityService() override;
+
   std::unique_ptr<ChromeTrustedVaultService> chrome_trusted_vault_service_;
-  std::unique_ptr<OmahaServiceProvider> omaha_service_provider_;
-  std::unique_ptr<SigninErrorProvider> signin_error_provider_;
-  std::unique_ptr<SigninResourcesProvider> signin_resources_provider_;
-  std::unique_ptr<VoiceSearchProvider> voice_search_provider_;
-  std::unique_ptr<UserFeedbackProvider> user_feedback_provider_;
-  std::unique_ptr<SpotlightProvider> spotlight_provider_;
+  std::unique_ptr<TestUserFeedbackProvider> user_feedback_provider_;
   std::unique_ptr<MailtoHandlerProvider> mailto_handler_provider_;
-  std::unique_ptr<FullscreenProvider> fullscreen_provider_;
   std::unique_ptr<DiscoverFeedProvider> discover_feed_provider_;
-  std::unique_ptr<TextZoomProvider> text_zoom_provider_;
 };
 
 }  // namespace ios

@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
-#include "base/feature_list.h"
 
+#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/profile_picker.h"
@@ -63,14 +66,7 @@ bool IsBrowserSigninAllowed() {
          policy::BrowserSigninMode::kDisabled;
 }
 
-bool IsSignInProfileCreationFlowSupported() {
-  return AccountConsistencyModeManager::IsDiceSignInAllowed() &&
-         base::FeatureList::IsEnabled(features::kSignInProfileCreation);
-}
-
 std::string GetManagedDeviceDisclaimer() {
-  if (!base::FeatureList::IsEnabled(features::kSignInProfileCreationEnterprise))
-    return std::string();
   absl::optional<std::string> device_manager =
       chrome::GetDeviceManagerIdentity();
   if (!device_manager)
@@ -86,76 +82,104 @@ std::string GetManagedDeviceDisclaimer() {
 
 void AddStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"mainViewSubtitle", IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE},
-      {"addSpaceButton", IDS_PROFILE_PICKER_ADD_SPACE_BUTTON},
-      {"askOnStartupCheckboxText", IDS_PROFILE_PICKER_ASK_ON_STARTUP},
-      {"browseAsGuestButton", IDS_PROFILE_PICKER_BROWSE_AS_GUEST_BUTTON},
-      {"needsSigninPrompt",
-       IDS_PROFILE_PICKER_PROFILE_CARD_NEEDS_SIGNIN_PROMPT},
-      {"profileCardButtonLabel", IDS_PROFILE_PICKER_PROFILE_CARD_LABEL},
-      {"profileCardInputLabel", IDS_PROFILE_PICKER_PROFILE_CARD_INPUT_LABEL},
-      {"menu", IDS_MENU},
-      {"cancel", IDS_CANCEL},
-      {"profileMenuName", IDS_SETTINGS_MORE_ACTIONS},
-      {"profileMenuRemoveText", IDS_PROFILE_PICKER_PROFILE_MENU_REMOVE_TEXT},
-      {"profileMenuCustomizeText",
-       IDS_PROFILE_PICKER_PROFILE_MENU_CUSTOMIZE_TEXT},
-      {"removeWarningLocalProfile",
-       IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE},
-      {"removeWarningLocalProfileTitle",
-       IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE_TITLE},
-      {"removeWarningSignedInProfile",
-       IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE},
-      {"removeWarningSignedInProfileTitle",
-       IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE},
-      {"removeWarningHistory", IDS_PROFILE_PICKER_REMOVE_WARNING_HISTORY},
-      {"removeWarningPasswords", IDS_PROFILE_PICKER_REMOVE_WARNING_PASSWORDS},
-      {"removeWarningBookmarks", IDS_PROFILE_PICKER_REMOVE_WARNING_BOOKMARKS},
-      {"removeWarningAutofill", IDS_PROFILE_PICKER_REMOVE_WARNING_AUTOFILL},
-      {"removeWarningCalculating",
-       IDS_PROFILE_PICKER_REMOVE_WARNING_CALCULATING},
-      {"backButtonAriaLabel", IDS_PROFILE_PICKER_BACK_BUTTON_ARIA_LABEL},
-      {"profileTypeChoiceTitle",
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE},
-      {"profileTypeChoiceSubtitle",
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE},
-      {"signInButtonLabel",
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL},
-      {"notNowButtonLabel",
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL},
-      {"localProfileCreationTitle",
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_TITLE},
-      {"localProfileCreationCustomizeAvatarLabel",
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_CUSTOMIZE_AVATAR_BUTTON_LABEL},
-      {"localProfileCreationThemeText",
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_THEME_TEXT},
-      {"createProfileNamePlaceholder",
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_INPUT_NAME},
-      {"createDesktopShortcutLabel",
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_SHORTCUT_TEXT},
-      {"createProfileConfirm",
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_DONE},
-      {"defaultAvatarLabel", IDS_DEFAULT_AVATAR_LABEL_26},
-      {"selectAnAvatarDialogTitle",
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_AVATAR_TEXT},
-      {"selectAvatarDoneButtonLabel",
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_AVATAR_DONE},
-      {"profileSwitchTitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_TITLE},
-      {"profileSwitchSubtitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_SUBTITLE},
-      {"switchButtonLabel",
-       IDS_PROFILE_PICKER_PROFILE_SWITCH_SWITCH_BUTTON_LABEL},
+    {"mainViewSubtitle",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+     IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_LACROS
+#else
+     IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE
+#endif
+    },
+    {"addSpaceButton", IDS_PROFILE_PICKER_ADD_SPACE_BUTTON},
+    {"askOnStartupCheckboxText", IDS_PROFILE_PICKER_ASK_ON_STARTUP},
+    {"browseAsGuestButton", IDS_PROFILE_PICKER_BROWSE_AS_GUEST_BUTTON},
+    {"needsSigninPrompt", IDS_PROFILE_PICKER_PROFILE_CARD_NEEDS_SIGNIN_PROMPT},
+    {"profileCardButtonLabel", IDS_PROFILE_PICKER_PROFILE_CARD_LABEL},
+    {"profileCardInputLabel", IDS_PROFILE_PICKER_PROFILE_CARD_INPUT_LABEL},
+    {"menu", IDS_MENU},
+    {"cancel", IDS_CANCEL},
+    {"profileMenuName", IDS_SETTINGS_MORE_ACTIONS},
+    {"profileMenuRemoveText", IDS_PROFILE_PICKER_PROFILE_MENU_REMOVE_TEXT},
+    {"profileMenuCustomizeText",
+     IDS_PROFILE_PICKER_PROFILE_MENU_CUSTOMIZE_TEXT},
+    {"removeWarningLocalProfile",
+     IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE},
+    {"removeWarningLocalProfileTitle",
+     IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE_TITLE},
+    {"removeWarningSignedInProfile",
+     IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE},
+    {"removeWarningSignedInProfileTitle",
+     IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE},
+    {"removeWarningHistory", IDS_PROFILE_PICKER_REMOVE_WARNING_HISTORY},
+    {"removeWarningPasswords", IDS_PROFILE_PICKER_REMOVE_WARNING_PASSWORDS},
+    {"removeWarningBookmarks", IDS_PROFILE_PICKER_REMOVE_WARNING_BOOKMARKS},
+    {"removeWarningAutofill", IDS_PROFILE_PICKER_REMOVE_WARNING_AUTOFILL},
+    {"removeWarningCalculating", IDS_PROFILE_PICKER_REMOVE_WARNING_CALCULATING},
+    {"backButtonAriaLabel", IDS_PROFILE_PICKER_BACK_BUTTON_ARIA_LABEL},
+    {"profileTypeChoiceTitle",
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE},
+    {"profileTypeChoiceSubtitle",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_LACROS
+#else
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE
+#endif
+    },
+    {"signInButtonLabel",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL_LACROS
+#else
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL
+#endif
+    },
+    {"notNowButtonLabel",
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL},
+    {"localProfileCreationTitle",
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_TITLE},
+    {"localProfileCreationCustomizeAvatarLabel",
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_CUSTOMIZE_AVATAR_BUTTON_LABEL},
+    {"localProfileCreationThemeText",
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_THEME_TEXT},
+    {"createProfileNamePlaceholder",
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_INPUT_NAME},
+    {"createDesktopShortcutLabel",
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_SHORTCUT_TEXT},
+    {"createProfileConfirm",
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_DONE},
+    {"defaultAvatarLabel", IDS_DEFAULT_AVATAR_LABEL_26},
+    {"selectAnAvatarDialogTitle",
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_AVATAR_TEXT},
+    {"selectAvatarDoneButtonLabel",
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_AVATAR_DONE},
+    {"profileSwitchTitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_TITLE},
+    {"profileSwitchSubtitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_SUBTITLE},
+    {"switchButtonLabel",
+     IDS_PROFILE_PICKER_PROFILE_SWITCH_SWITCH_BUTTON_LABEL},
 
-      // Color picker.
-      {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
-      {"defaultThemeLabel", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
-      {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
-      {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
+    // Color picker.
+    {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
+    {"defaultThemeLabel", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
+    {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
+    {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    {"accountSelectionLacrosTitle",
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_TITLE},
+    {"accountSelectionLacrosSubtitle",
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE},
+    {"accountSelectionLacrosOtherAccountButtonLabel",
+     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_OTHER_ACCOUNT_BUTTON_LABEL},
+#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-  html_source->AddLocalizedString("mainViewTitle",
-                                  ProfilePicker::Shown()
-                                      ? IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2
-                                      : IDS_PROFILE_PICKER_MAIN_VIEW_TITLE);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  int main_view_title_id = IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_LACROS;
+#else
+  int main_view_title_id = ProfilePicker::Shown()
+                               ? IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2
+                               : IDS_PROFILE_PICKER_MAIN_VIEW_TITLE;
+#endif
+  html_source->AddLocalizedString("mainViewTitle", main_view_title_id);
 
   ProfilePicker::AvailabilityOnStartup availability_on_startup =
       static_cast<ProfilePicker::AvailabilityOnStartup>(
@@ -167,7 +191,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
                           g_browser_process->local_state()->GetBoolean(
                               prefs::kBrowserShowProfilePickerOnStartup));
   html_source->AddBoolean("signInProfileCreationFlowSupported",
-                          IsSignInProfileCreationFlowSupported());
+                          AccountConsistencyModeManager::IsDiceSignInAllowed());
 
   html_source->AddString("minimumPickerSize",
                          base::StringPrintf("%ipx", kMinimumPickerSizePx));
@@ -177,6 +201,12 @@ void AddStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddString("managedDeviceDisclaimer",
                          GetManagedDeviceDisclaimer());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  html_source->AddBoolean(
+      "isMultiProfileAccountConsistentcyLacrosEnabled",
+      base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
+#endif
 
   // Add policies.
   html_source->AddBoolean("isBrowserSigninAllowed", IsBrowserSigninAllowed());

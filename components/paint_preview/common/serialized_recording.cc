@@ -5,6 +5,8 @@
 #include "components/paint_preview/common/serialized_recording.h"
 
 #include "base/notreached.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "components/paint_preview/common/file_stream.h"
@@ -70,7 +72,15 @@ SerializedRecording::SerializedRecording(SerializedRecording&&) = default;
 SerializedRecording& SerializedRecording::operator=(SerializedRecording&&) =
     default;
 
-SerializedRecording::~SerializedRecording() = default;
+SerializedRecording::~SerializedRecording() {
+  if (is_file() && file_.IsValid()) {
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+        base::BindOnce([](base::File file) { file.Close(); },
+                       std::move(file_)));
+  }
+}
 
 bool SerializedRecording::IsValid() const {
   if (is_file()) {

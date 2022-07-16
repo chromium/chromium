@@ -14,6 +14,7 @@ using NetworkContextGetter =
     base::RepeatingCallback<network::mojom::NetworkContext*()>;
 
 void SetNetworkContextGetter(NetworkContextGetter network_context_getter);
+void ClearNetworkContextGetter();
 bool HasNetworkContextGetter();
 
 // This and all subsequent NetworkContext calls made must obey the thread safety

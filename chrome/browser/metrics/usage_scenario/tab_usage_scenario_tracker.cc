@@ -136,7 +136,7 @@ void TabUsageScenarioTracker::OnMediaEffectivelyFullscreenChanged(
   }
 }
 
-void TabUsageScenarioTracker::OnMainFrameNavigationCommitted(
+void TabUsageScenarioTracker::OnPrimaryMainFrameNavigationCommitted(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   usage_scenario_data_store_->OnTopLevelNavigation();

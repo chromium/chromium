@@ -10,7 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "components/account_id/account_id.h"
@@ -18,21 +18,28 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 
-class Profile;
-class PrefRegistrySimple;
+namespace account_manager {
+class AccountManager;
+}
 
 namespace signin {
 class IdentityManager;
-}  // namespace signin.
+}
+
+class Profile;
+class PrefRegistrySimple;
 
 namespace ash {
-class AccountManager;
 
 // Shows signin-related errors as notifications in Ash.
 class SigninErrorNotifier : public SigninErrorController::Observer,
                             public KeyedService {
  public:
   SigninErrorNotifier(SigninErrorController* controller, Profile* profile);
+
+  SigninErrorNotifier(const SigninErrorNotifier&) = delete;
+  SigninErrorNotifier& operator=(const SigninErrorNotifier&) = delete;
+
   ~SigninErrorNotifier() override;
 
   static std::unique_ptr<base::AutoReset<bool>> IgnoreSyncErrorsForTesting();
@@ -46,9 +53,15 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   void OnErrorChanged() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SigninErrorNotifierTest, TokenHandleTest);
+  FRIEND_TEST_ALL_PREFIXES(SigninErrorNotifierTest,
+                           TokenHandleErrorsDoNotDisplaySecondaryAccountErrors);
+
   // Handles errors for the Device Account.
-  // Displays a notification asking the user to Sign Out.
-  void HandleDeviceAccountError();
+  // Displays a notification with `error_message`, asking the user to Sign Out -
+  // as opposed to `HandleSecondaryAccountError` which asks the user to
+  // re-authenticate in-session.
+  void HandleDeviceAccountError(const std::u16string& error_message);
 
   // Handles errors for Secondary Accounts.
   // Displays a notification that allows users to open crOS Account Manager UI.
@@ -70,8 +83,6 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   void HandleSecondaryAccountReauthNotificationClick(
       absl::optional<int> button_index);
 
-  std::u16string GetMessageBody(bool is_secondary_account_error) const;
-
   // The error controller to query for error details.
   SigninErrorController* error_controller_;
 
@@ -91,7 +102,6 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   std::string secondary_account_notification_id_;
 
   base::WeakPtrFactory<SigninErrorNotifier> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SigninErrorNotifier);
 };
 
 }  // namespace ash

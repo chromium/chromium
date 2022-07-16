@@ -29,6 +29,9 @@ class CrashReporterClientImpl : public crash_reporter::CrashReporterClient {
  public:
   CrashReporterClientImpl() = default;
 
+  CrashReporterClientImpl(const CrashReporterClientImpl&) = delete;
+  CrashReporterClientImpl& operator=(const CrashReporterClientImpl&) = delete;
+
   // crash_reporter::CrashReporterClient implementation.
   bool IsRunningUnattended() override { return false; }
   bool GetCollectStatsConsent() override { return false; }
@@ -62,9 +65,6 @@ class CrashReporterClientImpl : public crash_reporter::CrashReporterClient {
     static base::NoDestructor<CrashReporterClientImpl> crash_reporter_client;
     return crash_reporter_client.get();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrashReporterClientImpl);
 };
 
 }  // namespace

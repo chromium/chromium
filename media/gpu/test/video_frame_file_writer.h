@@ -32,6 +32,9 @@ class VideoFrameFileWriter : public VideoFrameProcessor {
     kYUV,
   };
 
+  VideoFrameFileWriter(const VideoFrameFileWriter&) = delete;
+  VideoFrameFileWriter& operator=(const VideoFrameFileWriter&) = delete;
+
   ~VideoFrameFileWriter() override;
 
   // Create an instance of the video frame file writer.
@@ -95,8 +98,6 @@ class VideoFrameFileWriter : public VideoFrameProcessor {
 
   SEQUENCE_CHECKER(writer_sequence_checker_);
   SEQUENCE_CHECKER(writer_thread_sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameFileWriter);
 };
 
 }  // namespace test

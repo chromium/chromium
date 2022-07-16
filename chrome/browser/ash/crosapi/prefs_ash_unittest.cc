@@ -128,6 +128,54 @@ TEST_F(PrefsAshTest, LocalStatePrefs) {
       metrics::prefs::kMetricsReportingEnabled));
 }
 
+TEST_F(PrefsAshTest, LocalStatePref_SystemTracing) {
+  const char* pref_name = ash::prefs::kDeviceSystemWideTracingEnabled;
+
+  PrefsAsh prefs_ash(profile_manager(), local_state());
+  prefs_ash.OnPrimaryProfileReadyForTesting(CreateProfile());
+  mojo::Remote<mojom::Prefs> prefs_remote;
+  prefs_ash.BindReceiver(prefs_remote.BindNewPipeAndPassReceiver());
+  mojom::PrefPath path = mojom::PrefPath::kDeviceSystemWideTracingEnabled;
+
+  // Get returns value.
+  base::Value get_value;
+  // Tests the default pref value.
+  prefs_remote->GetPref(
+      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value) {
+        get_value = std::move(*value);
+      }));
+  prefs_remote.FlushForTesting();
+  EXPECT_TRUE(get_value.GetBool());
+
+  // Tests the GetPref() method.
+  local_state()->SetBoolean(pref_name, false);
+  prefs_remote->GetPref(
+      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value) {
+        get_value = std::move(*value);
+      }));
+  prefs_remote.FlushForTesting();
+  EXPECT_FALSE(get_value.GetBool());
+
+  local_state()->SetBoolean(pref_name, true);
+  prefs_remote->GetPref(
+      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value) {
+        get_value = std::move(*value);
+      }));
+  prefs_remote.FlushForTesting();
+  EXPECT_TRUE(get_value.GetBool());
+
+  // Tests observing pref changes.
+  auto observer = std::make_unique<TestObserver>();
+  prefs_remote->AddObserver(path,
+                            observer->receiver_.BindNewPipeAndPassRemote());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(observer->value_->GetBool());
+
+  local_state()->SetBoolean(pref_name, false);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(observer->value_->GetBool());
+}
+
 TEST_F(PrefsAshTest, ProfilePrefs) {
   Profile* const profile = CreateProfile();
   PrefService* const profile_prefs = profile->GetPrefs();

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
@@ -65,6 +64,10 @@ class PluginVmServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
  public:
   PluginVmServiceProvider();
+
+  PluginVmServiceProvider(const PluginVmServiceProvider&) = delete;
+  PluginVmServiceProvider& operator=(const PluginVmServiceProvider&) = delete;
+
   ~PluginVmServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -102,8 +105,6 @@ class PluginVmServiceProvider
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
   base::WeakPtrFactory<PluginVmServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmServiceProvider);
 };
 
 }  // namespace ash

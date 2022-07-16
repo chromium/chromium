@@ -1,55 +1,12 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 13
+// Next MinVersion: 19
 
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
-
-[Extensible]
-enum AnrType {
-  // Other types of ANR which are not explicitly defined.
-  UNKNOWN = 0,
-  // ANR while handling input events.
-  INPUT = 1,
-  // ANR in services.
-  SERVICE = 2,
-  // ANR in broadcasts.
-  BROADCAST = 3,
-  // ANR in content provider.
-  CONTENT_PROVIDER = 4,
-  // App custom ANR.
-  APP_REQUESTED = 5,
-};
-
-[Extensible]
-enum AnrSource {
-  // ANR coming from anything else than explicitly defined.
-  OTHER = 0,
-  // ANR coming from system server.
-  SYSTEM_SERVER = 1,
-  // ANR coming from system apps.
-  SYSTEM_APP = 2,
-  // ANR coming from GMS core.
-  GMS_CORE = 3,
-  // ANR coming from Play Store.
-  PLAY_STORE = 4,
-  // ANR coming from first party Google apps
-  FIRST_PARTY = 5,
-  // ANR coming from ARC apps other than explicitly defined.
-  ARC_OTHER = 6,
-  // ANR coming from ARC App launcher.
-  ARC_APP_LAUNCHER = 7,
-};
-
-// Describes an ANR event.
-struct Anr {
-  // Type of ANR event.
-  AnrType type;
-  // ANR source.
-  AnrSource source;
-};
+import "components/arc/mojom/anr.mojom";
 
 [Extensible]
 enum BootType {
@@ -149,6 +106,87 @@ enum CompanionLibApiId {
   IS_CLIPPING_TO_TASK_DISABLED = 23,
 };
 
+[Extensible]
+enum ArcDnsQuery {
+  // All other hostnames.
+  OTHER_HOST_NAME = 0,
+
+  // android.googleapis.com used by Android checkin.
+  ANDROID_API_HOST_NAME = 1,
+};
+
+// These enum values are persisted to metrics thus must be treated as
+// append-only.
+[Extensible]
+enum ArcNetworkEvent {
+  kUnknown = 0,
+  kAndroidLegacyVpnConnection = 1,
+  kAndroidThirdPartyVpnConnection = 2,
+  kMojoConfigureAndroidVpn = 3,
+  kMojoDisconnectAndroidVpn = 4,
+  kMojoDnsTest = 5,
+  kMojoHttpTest = 6,
+  kMojoPingTest = 7,
+  kWifiScannerClientConnection = 8,
+  kWifiScannerGetScanResults = 9,
+  kWifiScannerGetSingleScanResults = 10,
+  kWifiScannerEnable = 11,
+  kWifiScannerDisable = 12,
+  kWifiScannerStartSingleScan = 13,
+  kWifiScannerStartBackgroundScan = 14,
+  kWifiScannerStartPnoScan = 15,
+  kWifiScannerRegisterListener = 16,
+  kWifiManagerStartScan = 17,
+  kWifiManagerEnable = 18,
+  kWifiManagerDisable = 19,
+  kWifiManagerDisconnect = 20,
+  kWifiManagerReconnect = 21,
+  kWifiManagerGetNetworks = 22,
+  kWifiManagerGetNetworksPrivileged = 23,
+  kWifiManagerAddNetwork = 24,
+  kWifiManagerRemoveNetwork = 25,
+  kWifiManagerEnableNetwork = 26,
+  kWifiManagerDisableNetwork = 27,
+  kWifiManagerConnect = 28,
+  kWifiManagerSave = 29,
+  kWifiManagerForget = 30,
+  kWifiManagerRegisterScanListener = 31,
+  kWifiManagerAddNetworkSuggestions = 32,
+  [MinVersion=17] kWifiManagerEnableTdls = 33,
+  [MinVersion=17] kWifiManagerStartLocalHotspot = 34,
+  [MinVersion=17] kWifiManagerAddPasspointConfiguration = 35,
+};
+
+// These enum values are persisted to metrics thus must be treated as
+// append-only.
+[Extensible]
+enum ArcNetworkError {
+  kUnknown = 0,
+  kMojoGetNetworksError = 1,
+  kMojoWifiAddNetworkFailed = 2,
+  kMojoWifiForgetNetworkFailed = 3,
+  kMojoWifiConnectFailed = 4,
+  kMojoWifiDisconnectFailed = 5,
+  kMojoWifiScanTimeout = 6,
+  kMojoWifiGetScanResultsFailed = 7,
+  kNetdGetIpv4Error = 8,
+  kNetdSetIpv4Error = 9,
+  kNetdIfaceListError = 10,
+  kNetdIfaceUpError = 11,
+  kNetdIfaceMtuError = 12,
+  kNetdIfaceClearError = 13,
+  kNetdIfconfigGetError = 14,
+  kNetdRestartIpv6Error = 15,
+  kNetdIpForwardingStartError = 16,
+  kNetdIpForwardingStopError = 17,
+  kNetdIfaceForwardingStartError = 18,
+  kNetdIfaceForwardingStopError = 19,
+  kNetdTetheringStartError = 20,
+  kNetdTetheringStopError = 21,
+  kNetdSnatStartError = 22,
+  kNetdSnatStopError = 23,
+};
+
 // Describes the type of app kill being reported.
 [Extensible]
 enum AppKillType {
@@ -163,6 +201,17 @@ struct AppKill {
   // Number of kills. For LMKD kills, this is always 1. For OOM kills, this is
   // the total oom_kill count from /proc/vm_stat.
   uint32 count;
+};
+
+// Describes the primary ABI for an app
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum AppPrimaryAbi {
+  kNone = 0,
+  kArm = 1,
+  kArm64 = 2,
+  kX86 = 3,
+  kX86_64 = 4,
 };
 
 // Outlines the various states that can arise while performing Primary ABI
@@ -194,6 +243,14 @@ enum ArcClipboardDragDropEvent {
   kImageDragDropFromChrome = 5,
   kTextDragDropFromArc = 6,
   kImageDragDropFromArc = 7,
+};
+
+[Extensible]
+enum ArcImageCopyPasteCompatAction {
+  kPasteFromFiles = 0,
+  kDragFromFiles = 1,
+  kPasteFromBrowser = 2,
+  kDragFromBrowser = 3,
 };
 
 // Enumerates variations of Low Latency Stylus Library.
@@ -232,7 +289,32 @@ enum LowLatencyStylusLibApiId {
   kGLInkOverlaySetViewMatrix = 4,
 };
 
-// Next method ID: 16
+// Status for migration of the main account hash code from v2 to v3.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+[Extensible]
+enum MainAccountHashMigrationStatus {
+  // Hash code migration not required.
+  kHashCodeMigrationNotRequired = 0,
+
+  // Hash code migration successful.
+  kHashCodeMigrationSuccessful = 1,
+
+  // Hash code migration failed.
+  kHashCodeMigrationFailed = 2,
+
+  // Hash code migration failed due to multiple acc hash matching.
+  kHashCodeMigrationFailedDueToMultipleAccounts = 3,
+
+  // Hash code migration failed due to multiple acc hash matching.
+  kHashCodeMigrationFailedDueToNoMatchingAccount = 4,
+
+  // NOTE: If you add any entries to this enum, you must also update the
+  // corresponding UMA ArcMainAccountHashMigrationStatus at
+  // tools/metrics/histograms/enums.xml.
+};
+
+// Next method ID: 21
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -293,6 +375,33 @@ interface MetricsHost {
   [MinVersion=12] ReportPerAppFixupMetrics@15(
       mojo_base.mojom.TimeDelta duration,
       uint32 number_of_directories);
+
+  // Reports the result of DNS query inside ARC.
+  [MinVersion=13] ReportDnsQueryResult@16(
+      ArcDnsQuery query,
+      bool success);
+
+  // Reports main account hash migration status.
+  [MinVersion=14] ReportMainAccountHashMigrationMetrics@17(
+      MainAccountHashMigrationStatus status);
+
+  // Reports the operation type (copy & paste or drag & drop) and the source of
+  // the image (from browser or Files app) when image copy-paste app compat is
+  // triggered.
+  // Image copy-paste app compat is a feature that allows insertion of images to
+  // Android apps through commitContent IME API or Android intent, when the app
+  // don't support images in the clipboard.
+  [MinVersion=15] ReportImageCopyPasteCompatAction@18(
+      ArcImageCopyPasteCompatAction action_type);
+
+  // Reports occurrence of one event in the ARC networking stack.
+  [MinVersion=16] ReportArcNetworkEvent@19(ArcNetworkEvent event);
+
+  // Reports occurrence of one error in the ARC networking stack.
+  [MinVersion=16] ReportArcNetworkError@20(ArcNetworkError error);
+
+  // Reports primary ABI of an app during app launch.
+  [MinVersion=18] ReportAppPrimaryAbi@21(AppPrimaryAbi abi);
 };
 
 // Next method ID: 3

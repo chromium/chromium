@@ -15,7 +15,7 @@ namespace gin {
 // arbitrary JavaScript object as a result. For example, Dictionary is useful
 // when you might use the |dictionary| type in WebIDL:
 //
-//   http://heycam.github.io/webidl/#idl-dictionaries
+//   https://webidl.spec.whatwg.org/#idl-dictionaries
 //
 // WARNING: You cannot retain a Dictionary object in the heap. The underlying
 //          storage for Dictionary is tied to the closest enclosing

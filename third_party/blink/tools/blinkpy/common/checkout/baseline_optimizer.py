@@ -161,10 +161,10 @@ class BaselineOptimizer(object):
                         new_results_by_directory):
         data_for_result = {}
         for directory, result in results_by_directory.items():
-            if result not in data_for_result:
+            if str(result) not in data_for_result:
                 source = self._join_directory(directory, baseline_name)
-                data_for_result[result] = self._filesystem.read_binary_file(
-                    source)
+                data_for_result[str(
+                    result)] = self._filesystem.read_binary_file(source)
 
         fs_files = []
         for directory, result in results_by_directory.items():
@@ -189,8 +189,8 @@ class BaselineOptimizer(object):
                 destination = self._join_directory(directory, baseline_name)
                 self._filesystem.maybe_make_directory(
                     self._filesystem.split(destination)[0])
-                self._filesystem.write_binary_file(destination,
-                                                   data_for_result[result])
+                self._filesystem.write_binary_file(
+                    destination, data_for_result[result.__str__()])
                 file_names.append(destination)
 
         if file_names:

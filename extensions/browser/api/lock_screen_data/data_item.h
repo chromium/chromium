@@ -79,6 +79,10 @@ class DataItem {
            ValueStoreCache* value_store_cache,
            base::SequencedTaskRunner* task_runner,
            const std::string& crypto_key);
+
+  DataItem(const DataItem&) = delete;
+  DataItem& operator=(const DataItem&) = delete;
+
   virtual ~DataItem();
 
   // Registers the data item in the persistent data item storage.
@@ -133,8 +137,6 @@ class DataItem {
   const std::string crypto_key_;
 
   base::WeakPtrFactory<DataItem> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataItem);
 };
 
 }  // namespace lock_screen_data

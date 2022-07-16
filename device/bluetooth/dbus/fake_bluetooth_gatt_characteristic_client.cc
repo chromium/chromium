@@ -10,7 +10,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -359,7 +359,7 @@ void FakeBluetoothGattCharacteristicClient::StartNotify(
   // Respond asynchronously.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, std::move(callback),
-      base::TimeDelta::FromMilliseconds(kStartNotifyResponseIntervalMs));
+      base::Milliseconds(kStartNotifyResponseIntervalMs));
 }
 
 void FakeBluetoothGattCharacteristicClient::StopNotify(
@@ -563,8 +563,7 @@ void FakeBluetoothGattCharacteristicClient::
       base::BindOnce(&FakeBluetoothGattCharacteristicClient::
                          ScheduleHeartRateMeasurementValueChange,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(
-          kHeartRateMeasurementNotificationIntervalMs));
+      base::Milliseconds(kHeartRateMeasurementNotificationIntervalMs));
 }
 
 void FakeBluetoothGattCharacteristicClient::DelayedReadValueCallback(

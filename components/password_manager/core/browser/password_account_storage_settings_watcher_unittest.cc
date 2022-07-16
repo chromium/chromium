@@ -45,25 +45,31 @@ TEST(PasswordAccountStorageSettingsWatcherTest, NotifiesOnChanges) {
   account.gaia = "gaia_id";
   account.email = "email@test.com";
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-  sync_service.SetAuthenticatedAccountInfo(account);
-  sync_service.SetIsAuthenticatedAccountPrimary(false);
+  sync_service.SetAccountInfo(account);
+  sync_service.SetHasSyncConsent(false);
   ASSERT_FALSE(sync_service.IsSyncFeatureEnabled());
 
   // Once the SyncService notifies its observers, the watcher should run the
-  // callback: Still not opted in, but saving to the account store by default
-  // now because the user is signed in.
+  // callback: Still not opted in, and the default store now depends on whether
+  // the revised opt-in flow is active.
   EXPECT_CALL(change_callback, Run()).WillOnce([&]() {
     EXPECT_FALSE(feature_manager.IsOptedInForAccountStorage());
-    EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
-              PasswordForm::Store::kAccountStore);
+    EXPECT_FALSE(feature_manager.IsDefaultPasswordStoreSet());
+    if (base::FeatureList::IsEnabled(
+            features::kPasswordsAccountStorageRevisedOptInFlow)) {
+      EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
+                PasswordForm::Store::kProfileStore);
+    } else {
+      EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
+                PasswordForm::Store::kAccountStore);
+    }
   });
   sync_service.FireStateChanged();
 
   // Opt in. The watcher should run the callback.
   EXPECT_CALL(change_callback, Run()).WillOnce([&]() {
     EXPECT_TRUE(feature_manager.IsOptedInForAccountStorage());
-    EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
-              PasswordForm::Store::kAccountStore);
+    EXPECT_FALSE(feature_manager.IsDefaultPasswordStoreSet());
   });
   feature_manager.OptInToAccountStorage();
 
@@ -74,6 +80,14 @@ TEST(PasswordAccountStorageSettingsWatcherTest, NotifiesOnChanges) {
               PasswordForm::Store::kProfileStore);
   });
   feature_manager.SetDefaultPasswordStore(PasswordForm::Store::kProfileStore);
+
+  // Switch to saving to the account store. The watcher should run the callback.
+  EXPECT_CALL(change_callback, Run()).WillOnce([&]() {
+    EXPECT_TRUE(feature_manager.IsOptedInForAccountStorage());
+    EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
+              PasswordForm::Store::kAccountStore);
+  });
+  feature_manager.SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
 }
 
 }  // namespace password_manager

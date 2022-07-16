@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_AUTOFILL_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_AUTOFILL_INTERNALS_UI_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
 namespace content {
@@ -15,10 +14,11 @@ class WebUI;
 class AutofillInternalsUI : public content::WebUIController {
  public:
   explicit AutofillInternalsUI(content::WebUI* web_ui);
-  ~AutofillInternalsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillInternalsUI);
+  AutofillInternalsUI(const AutofillInternalsUI&) = delete;
+  AutofillInternalsUI& operator=(const AutofillInternalsUI&) = delete;
+
+  ~AutofillInternalsUI() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_AUTOFILL_INTERNALS_UI_H_

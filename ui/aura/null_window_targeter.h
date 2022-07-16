@@ -15,6 +15,10 @@ namespace aura {
 class AURA_EXPORT NullWindowTargeter : public WindowTargeter {
  public:
   NullWindowTargeter();
+
+  NullWindowTargeter(const NullWindowTargeter&) = delete;
+  NullWindowTargeter& operator=(const NullWindowTargeter&) = delete;
+
   ~NullWindowTargeter() override;
 
   // EventTargeter:
@@ -22,9 +26,6 @@ class AURA_EXPORT NullWindowTargeter : public WindowTargeter {
                                       ui::Event* event) override;
   ui::EventTarget* FindNextBestTarget(ui::EventTarget* previous_target,
                                       ui::Event* event) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NullWindowTargeter);
 };
 
 }  // namespace aura

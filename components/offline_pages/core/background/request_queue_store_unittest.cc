@@ -44,16 +44,16 @@ enum class LastResult {
 };
 
 SavePageRequest GetTestRequest(const GURL& url, const GURL& original_url) {
-  SavePageRequest request(kRequestId, url, kClientId,
-                          base::Time::FromDeltaSinceWindowsEpoch(
-                              base::TimeDelta::FromSeconds(1000)),
-                          kUserRequested);
+  SavePageRequest request(
+      kRequestId, url, kClientId,
+      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(1000)),
+      kUserRequested);
   // Set fields to non-default values.
   request.set_fail_state(offline_items_collection::FailState::FILE_NO_SPACE);
   request.set_started_attempt_count(2);
   request.set_completed_attempt_count(3);
-  request.set_last_attempt_time(base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromSeconds(400)));
+  request.set_last_attempt_time(
+      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(400)));
   request.set_request_origin("http://www.origin.com");
   // Note: pending_state is not stored.
   request.set_original_url(original_url);
@@ -680,8 +680,7 @@ TEST_F(RequestQueueStoreTest, UpdateRequest) {
   this->PumpLoop();
   this->ClearResults();
 
-  base::Time new_creation_time =
-      creation_time + base::TimeDelta::FromMinutes(1);
+  base::Time new_creation_time = creation_time + base::Minutes(1);
   // Try updating an existing request.
   SavePageRequest updated_request(kRequestId, kUrl1, kClientId,
                                   new_creation_time, kUserRequested);

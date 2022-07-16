@@ -181,14 +181,14 @@ TEST_F(WebMTracksParserTest, AudioVideoDefaultDurationSet) {
   EXPECT_LE(0, result);
   EXPECT_EQ(static_cast<int>(buf.size()), result);
 
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(12000),
+  EXPECT_EQ(base::Microseconds(12000),
             parser->GetAudioDefaultDuration(kOneMsInNs));
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(985000),
+  EXPECT_EQ(base::Microseconds(985000),
             parser->GetVideoDefaultDuration(5000000));  // 5 ms resolution
   EXPECT_EQ(kNoTimestamp, parser->GetAudioDefaultDuration(12346000));
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(12345),
+  EXPECT_EQ(base::Microseconds(12345),
             parser->GetAudioDefaultDuration(12345000));
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(12003),
+  EXPECT_EQ(base::Microseconds(12003),
             parser->GetAudioDefaultDuration(1000300));  // 1.0003 ms resolution
 }
 
@@ -262,10 +262,10 @@ TEST_F(WebMTracksParserTest, PrecisionCapping) {
       {kOneMsInNs, 0, kNoTimestamp},
       {kOneMsInNs, 1, kNoTimestamp},
       {kOneMsInNs, 999999, kNoTimestamp},
-      {kOneMsInNs, 1000000, base::TimeDelta::FromMilliseconds(1)},
-      {kOneMsInNs, 1000001, base::TimeDelta::FromMilliseconds(1)},
-      {kOneMsInNs, 1999999, base::TimeDelta::FromMilliseconds(1)},
-      {kOneMsInNs, 2000000, base::TimeDelta::FromMilliseconds(2)},
+      {kOneMsInNs, 1000000, base::Milliseconds(1)},
+      {kOneMsInNs, 1000001, base::Milliseconds(1)},
+      {kOneMsInNs, 1999999, base::Milliseconds(1)},
+      {kOneMsInNs, 2000000, base::Milliseconds(2)},
       {1, -1, kNoTimestamp},
       {1, 0, kNoTimestamp},
 
@@ -273,11 +273,11 @@ TEST_F(WebMTracksParserTest, PrecisionCapping) {
       {1, 1, kNoTimestamp},
       {1, 999, kNoTimestamp},
 
-      {1, 1000, base::TimeDelta::FromMicroseconds(1)},
-      {1, 1999, base::TimeDelta::FromMicroseconds(1)},
-      {1, 2000, base::TimeDelta::FromMicroseconds(2)},
+      {1, 1000, base::Microseconds(1)},
+      {1, 1999, base::Microseconds(1)},
+      {1, 2000, base::Microseconds(2)},
 
-      {64, 1792, base::TimeDelta::FromMicroseconds(1)},
+      {64, 1792, base::Microseconds(1)},
   };
 
   std::unique_ptr<WebMTracksParser> parser(

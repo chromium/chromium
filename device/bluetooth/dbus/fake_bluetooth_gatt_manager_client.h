@@ -34,6 +34,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattManagerClient
     : public BluetoothGattManagerClient {
  public:
   FakeBluetoothGattManagerClient();
+
+  FakeBluetoothGattManagerClient(const FakeBluetoothGattManagerClient&) =
+      delete;
+  FakeBluetoothGattManagerClient& operator=(
+      const FakeBluetoothGattManagerClient&) = delete;
+
   ~FakeBluetoothGattManagerClient() override;
 
   // DBusClient override.
@@ -123,8 +129,6 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattManagerClient
   ServiceMap service_map_;
   CharacteristicMap characteristic_map_;
   DescriptorMap descriptor_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothGattManagerClient);
 };
 
 }  // namespace bluez

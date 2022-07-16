@@ -181,11 +181,10 @@ void ExpectFrameContainsCertificateInfo(
     EXPECT_EQ(StringToVector(certs[i].authenticity_key()),
               cert->authenticity_key);
     EXPECT_EQ(StringToVector(certs[i].public_key()), cert->public_key);
-    EXPECT_EQ(base::Time::UnixEpoch() +
-                  base::TimeDelta::FromMilliseconds(certs[i].start_time()),
-              cert->start_time);
-    EXPECT_EQ(base::Time::UnixEpoch() +
-                  base::TimeDelta::FromMilliseconds(certs[i].end_time()),
+    EXPECT_EQ(
+        base::Time::UnixEpoch() + base::Milliseconds(certs[i].start_time()),
+        cert->start_time);
+    EXPECT_EQ(base::Time::UnixEpoch() + base::Milliseconds(certs[i].end_time()),
               cert->end_time);
     EXPECT_EQ(StringToVector(certs[i].encrypted_metadata_bytes()),
               cert->encrypted_metadata_bytes);

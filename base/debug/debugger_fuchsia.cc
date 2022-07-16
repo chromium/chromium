@@ -10,12 +10,7 @@
 #include <zircon/process.h>
 #include <zircon/syscalls.h>
 
-#include "base/clang_profiling_buildflags.h"
 #include "base/debug/alias.h"
-
-#if BUILDFLAG(CLANG_PROFILING)
-#include "base/test/clang_profiling.h"
-#endif
 
 namespace base {
 namespace debug {
@@ -29,11 +24,7 @@ bool BeingDebugged() {
   return (info.flags & ZX_INFO_PROCESS_FLAG_DEBUGGER_ATTACHED) != 0;
 }
 
-void BreakDebugger() {
-#if BUILDFLAG(CLANG_PROFILING)
-  WriteClangProfilingProfile();
-#endif
-
+void BreakDebuggerAsyncSafe() {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 

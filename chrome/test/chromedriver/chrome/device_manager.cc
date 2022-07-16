@@ -45,6 +45,7 @@ Status Device::SetUp(const std::string& package,
                      const std::string& exec_name,
                      const std::string& args,
                      bool use_running_app,
+                     bool keep_app_data_dir,
                      int* devtools_port) {
   if (!active_package_.empty())
     return Status(kUnknownError,
@@ -113,9 +114,11 @@ Status Device::SetUp(const std::string& package,
         return status;
     }
 
-    status = adb_->ClearAppData(serial_, package);
-    if (status.IsError())
-      return status;
+    if (!keep_app_data_dir) {
+      status = adb_->ClearAppData(serial_, package);
+      if (status.IsError())
+        return status;
+    }
 
     if (!known_activity.empty()) {
       if (!activity.empty() ||

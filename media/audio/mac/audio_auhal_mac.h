@@ -27,7 +27,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -79,6 +78,10 @@ class AUHALStream : public AudioOutputStream {
               const AudioParameters& params,
               AudioDeviceID device,
               const AudioManager::LogCallback& log_callback);
+
+  AUHALStream(const AUHALStream&) = delete;
+  AUHALStream& operator=(const AUHALStream&) = delete;
+
   // The dtor is typically called by the AudioManager only and it is usually
   // triggered by calling AudioOutputStream::Close().
   ~AUHALStream() override;
@@ -210,8 +213,6 @@ class AUHALStream : public AudioOutputStream {
   // Used to make sure control functions (Start(), Stop() etc) are called on the
   // right thread.
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(AUHALStream);
 };
 
 }  // namespace media

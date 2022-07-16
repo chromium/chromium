@@ -17,6 +17,10 @@ template <typename AXSourceNode>
 class AXTreeSourceChecker {
  public:
   explicit AXTreeSourceChecker(AXTreeSource<AXSourceNode>* tree);
+
+  AXTreeSourceChecker(const AXTreeSourceChecker&) = delete;
+  AXTreeSourceChecker& operator=(const AXTreeSourceChecker&) = delete;
+
   ~AXTreeSourceChecker();
 
   // Returns true if everything reachable from the root of the tree is
@@ -31,8 +35,6 @@ class AXTreeSourceChecker {
   AXTreeSource<AXSourceNode>* tree_;
 
   std::map<AXNodeID, AXNodeID> node_id_to_parent_id_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXTreeSourceChecker);
 };
 
 template <typename AXSourceNode>

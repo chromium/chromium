@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/infobars/android/infobar_android.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
@@ -17,6 +16,10 @@ namespace infobars {
 class ConfirmInfoBar : public InfoBarAndroid {
  public:
   explicit ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate);
+
+  ConfirmInfoBar(const ConfirmInfoBar&) = delete;
+  ConfirmInfoBar& operator=(const ConfirmInfoBar&) = delete;
+
   ~ConfirmInfoBar() override;
 
  protected:
@@ -32,9 +35,6 @@ class ConfirmInfoBar : public InfoBarAndroid {
                      const base::android::JavaParamRef<jobject>& obj) override;
 
   void ProcessButton(int action) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConfirmInfoBar);
 };
 
 }  // namespace infobars

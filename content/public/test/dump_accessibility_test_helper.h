@@ -9,6 +9,7 @@
 #include "base/gtest_prod_util.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/platform/inspect/ax_api_type.h"
 
 namespace base {
 class CommandLine;
@@ -25,9 +26,15 @@ namespace content {
 // A helper class for writing accessibility tree dump tests.
 class DumpAccessibilityTestHelper {
  public:
-  explicit DumpAccessibilityTestHelper(AXInspectFactory::Type type);
+  explicit DumpAccessibilityTestHelper(ui::AXApiType::Type type);
   explicit DumpAccessibilityTestHelper(const char* expectation_type);
   ~DumpAccessibilityTestHelper() = default;
+
+  // Overrides the expectation type. Useful to tune up the expectations format
+  // after the helper object was instantiated.
+  void OverrideExpectationType(const std::string& expectation_type) {
+    expectation_type_ = expectation_type;
+  }
 
   // Returns a path to an expectation file for the current platform. If no
   // suitable expectation file can be found, logs an error message and returns
@@ -47,13 +54,20 @@ class DumpAccessibilityTestHelper {
       const std::vector<std::string>& lines,
       const std::vector<ui::AXPropertyFilter>& default_filters = {});
 
+  // Parses a given testing scenario from a file. Prepends default property
+  // filters if any so the test file filters will take precedence over default
+  // filters in case of conflict.
+  absl::optional<ui::AXInspectScenario> ParseScenario(
+      const base::FilePath& scenario_path,
+      const std::vector<ui::AXPropertyFilter>& default_filters = {});
+
   // Returns a platform-dependent list of inspect types used in dump tree
   // testing.
-  static std::vector<AXInspectFactory::Type> TreeTestPasses();
+  static std::vector<ui::AXApiType::Type> TreeTestPasses();
 
   // Returns a platform-dependent list of inspect types used in dump events
   // testing.
-  static std::vector<AXInspectFactory::Type> EventTestPasses();
+  static std::vector<ui::AXApiType::Type> EventTestPasses();
 
   // Loads the given expectation file and returns the contents. An expectation
   // file may be empty, in which case an empty vector is returned.

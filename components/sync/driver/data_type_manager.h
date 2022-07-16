@@ -37,9 +37,9 @@ class DataTypeManager {
   // this.
   enum ConfigureStatus {
     UNKNOWN = -1,
-    OK,                  // Configuration finished some or all types.
-    ABORTED,             // Start was aborted by calling Stop() before
-                         // all types were started.
+    OK,       // Configuration finished some or all types.
+    ABORTED,  // Start was aborted by calling Stop() before
+              // all types were started.
   };
 
   // Note: |errors| is only filled when status is not OK.

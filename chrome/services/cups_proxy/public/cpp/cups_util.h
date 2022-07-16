@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/services/cups_proxy/public/cpp/ipp_messages.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

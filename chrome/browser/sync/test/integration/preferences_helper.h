@@ -18,7 +18,7 @@
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/prefs/json_pref_store.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/test/fake_server/fake_server.h"
 
 class PrefChangeRegistrar;

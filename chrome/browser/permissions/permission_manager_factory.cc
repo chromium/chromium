@@ -12,6 +12,7 @@
 #include "chrome/browser/display_capture/display_capture_permission_context.h"
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate.h"
 #include "chrome/browser/idle/idle_detection_permission_context.h"
+#include "chrome/browser/media/webrtc/chrome_camera_pan_tilt_zoom_permission_context_delegate.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permission_context.h"
 #include "chrome/browser/nfc/chrome_nfc_permission_context_delegate.h"
@@ -40,7 +41,7 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate_android.h"
 #else
-#include "chrome/browser/web_applications/components/file_handling_permission_context.h"
+#include "chrome/browser/web_applications/file_handling_permission_context.h"
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_MAC)
@@ -67,6 +68,9 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
 #endif  // defined(OS_MAC)
   delegates.media_stream_device_enumerator =
       MediaCaptureDevicesDispatcher::GetInstance();
+  delegates.camera_pan_tilt_zoom_permission_context_delegate =
+      std::make_unique<ChromeCameraPanTiltZoomPermissionContextDelegate>(
+          profile);
   delegates.nfc_permission_context_delegate =
       std::make_unique<ChromeNfcPermissionContextDelegate>();
 

@@ -20,6 +20,11 @@ namespace bluez {
 class BluetoothGattCharacteristicBlueZ
     : public virtual device::BluetoothGattCharacteristic {
  public:
+  BluetoothGattCharacteristicBlueZ(const BluetoothGattCharacteristicBlueZ&) =
+      delete;
+  BluetoothGattCharacteristicBlueZ& operator=(
+      const BluetoothGattCharacteristicBlueZ&) = delete;
+
   // device::BluetoothGattCharacteristic overrides.
   std::string GetIdentifier() const override;
 
@@ -38,8 +43,6 @@ class BluetoothGattCharacteristicBlueZ
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothGattCharacteristicBlueZ> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattCharacteristicBlueZ);
 };
 
 }  // namespace bluez

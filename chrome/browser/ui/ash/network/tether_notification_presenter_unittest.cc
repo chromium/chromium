@@ -83,6 +83,11 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
     std::string last_settings_subpage_;
   };
 
+  TetherNotificationPresenterTest(const TetherNotificationPresenterTest&) =
+      delete;
+  TetherNotificationPresenterTest& operator=(
+      const TetherNotificationPresenterTest&) = delete;
+
  protected:
   TetherNotificationPresenterTest()
       : test_device_(multidevice::CreateRemoteDeviceRefListForTest(1)[0]) {}
@@ -194,9 +199,6 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
   TestSettingsUiDelegate* test_settings_ui_delegate_;
   std::unique_ptr<TetherNotificationPresenter> notification_presenter_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TetherNotificationPresenterTest);
 };
 
 TEST_F(TetherNotificationPresenterTest,

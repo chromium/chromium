@@ -20,7 +20,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/keyboard/ui/grit/keyboard_resources.h"
-#include "chrome/browser/chromeos/input_method/component_extension_ime_manager_delegate_impl.h"
+#include "chrome/browser/ash/input_method/component_extension_ime_manager_delegate_impl.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 #endif
 
@@ -30,10 +30,11 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
   const char* const kAllowed[] = {
     extension_misc::kInAppPaymentsSupportAppId,
     extension_misc::kPdfExtensionId,
+#if defined(OS_CHROMEOS)
+    extension_misc::kAssessmentAssistantExtensionId,
+#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     extension_misc::kAccessibilityCommonExtensionId,
-    extension_misc::kAssessmentAssistantExtensionId,
-    extension_misc::kCameraAppId,
     extension_misc::kChromeVoxExtensionId,
     extension_misc::kEnhancedNetworkTtsExtensionId,
     extension_misc::kEspeakSpeechSynthesisExtensionId,
@@ -41,7 +42,6 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
     extension_misc::kGuestModeTestExtensionId,
     extension_misc::kSelectToSpeakExtensionId,
     extension_misc::kSwitchAccessExtensionId,
-    extension_misc::kZipArchiverExtensionId,
 #endif
   };
 
@@ -51,8 +51,8 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::ComponentExtensionIMEManagerDelegateImpl::IsIMEExtensionID(
-          extension_id)) {
+  if (ash::input_method::ComponentExtensionIMEManagerDelegateImpl::
+          IsIMEExtensionID(extension_id)) {
     return true;
   }
 #endif
@@ -85,7 +85,6 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
     case IDR_IMAGE_LOADER_MANIFEST:
     case IDR_KEYBOARD_MANIFEST:
     case IDR_MOBILE_MANIFEST:
-    case IDR_VIDEO_PLAYER_MANIFEST:
     case IDR_WALLPAPERMANAGER_MANIFEST:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case IDR_HELP_MANIFEST:

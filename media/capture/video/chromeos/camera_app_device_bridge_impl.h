@@ -28,6 +28,10 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
 
   CameraAppDeviceBridgeImpl();
 
+  CameraAppDeviceBridgeImpl(const CameraAppDeviceBridgeImpl&) = delete;
+  CameraAppDeviceBridgeImpl& operator=(const CameraAppDeviceBridgeImpl&) =
+      delete;
+
   ~CameraAppDeviceBridgeImpl() override;
 
   static CameraAppDeviceBridgeImpl* GetInstance();
@@ -97,8 +101,6 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
   base::Lock task_runner_map_lock_;
   base::flat_map<std::string, scoped_refptr<base::SingleThreadTaskRunner>>
       ipc_task_runners_ GUARDED_BY(task_runner_map_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(CameraAppDeviceBridgeImpl);
 };
 
 }  // namespace media

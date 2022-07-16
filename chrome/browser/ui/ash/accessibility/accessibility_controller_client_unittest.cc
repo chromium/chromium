@@ -6,7 +6,6 @@
 
 #include "ash/components/audio/sounds.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/accessibility/fake_accessibility_controller.h"
 #include "content/public/test/browser_task_environment.h"
@@ -19,12 +18,17 @@ namespace {
 
 using ::ash::Sound;
 
-constexpr base::TimeDelta kShutdownSoundDuration =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kShutdownSoundDuration = base::Milliseconds(1000);
 
 class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
  public:
   FakeAccessibilityControllerClient() = default;
+
+  FakeAccessibilityControllerClient(const FakeAccessibilityControllerClient&) =
+      delete;
+  FakeAccessibilityControllerClient& operator=(
+      const FakeAccessibilityControllerClient&) = delete;
+
   ~FakeAccessibilityControllerClient() override = default;
 
   // AccessibilityControllerClient:
@@ -77,7 +81,6 @@ class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
 
  private:
   bool dictation_on_ = false;
-  DISALLOW_COPY_AND_ASSIGN(FakeAccessibilityControllerClient);
 };
 
 }  // namespace
@@ -85,12 +88,16 @@ class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
 class AccessibilityControllerClientTest : public testing::Test {
  public:
   AccessibilityControllerClientTest() = default;
+
+  AccessibilityControllerClientTest(const AccessibilityControllerClientTest&) =
+      delete;
+  AccessibilityControllerClientTest& operator=(
+      const AccessibilityControllerClientTest&) = delete;
+
   ~AccessibilityControllerClientTest() override = default;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityControllerClientTest);
 };
 
 TEST_F(AccessibilityControllerClientTest, MethodCalls) {

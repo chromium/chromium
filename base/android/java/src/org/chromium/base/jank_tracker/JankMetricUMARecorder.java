@@ -18,12 +18,12 @@ public class JankMetricUMARecorder {
         }
 
         JankMetricUMARecorderJni.get().recordJankMetrics(scenarioToString(scenario),
-                metric.durationsNs, metric.jankBurstsNs, metric.skippedFrames);
+                metric.timestampsNs, metric.durationsNs, metric.jankBurstsNs, metric.skippedFrames);
     }
 
     // Convert an enum value to string to use as an UMA histogram name, changes to strings should be
     // reflected in android/histograms.xml.
-    private static String scenarioToString(@JankScenario int scenario) {
+    public static String scenarioToString(@JankScenario int scenario) {
         switch (scenario) {
             case JankScenario.PERIODIC_REPORTING:
                 return "Total";
@@ -48,7 +48,7 @@ public class JankMetricUMARecorder {
 
     @NativeMethods
     interface Natives {
-        void recordJankMetrics(
-                String scenarioName, long[] durationsNs, long[] jankBurstsNs, int missedFrames);
+        void recordJankMetrics(String scenarioName, long[] timestampsNs, long[] durationsNs,
+                long[] jankBurstsNs, int missedFrames);
     }
 }

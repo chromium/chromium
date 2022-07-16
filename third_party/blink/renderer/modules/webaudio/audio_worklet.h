@@ -24,6 +24,10 @@ class MODULES_EXPORT AudioWorklet final : public Worklet {
 
  public:
   explicit AudioWorklet(BaseAudioContext*);
+
+  AudioWorklet(const AudioWorklet&) = delete;
+  AudioWorklet& operator=(const AudioWorklet&) = delete;
+
   ~AudioWorklet() override = default;
 
   void CreateProcessor(scoped_refptr<AudioWorkletHandler>,
@@ -61,8 +65,6 @@ class MODULES_EXPORT AudioWorklet final : public Worklet {
   bool worklet_started_ = false;
 
   Member<BaseAudioContext> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioWorklet);
 };
 
 }  // namespace blink

@@ -21,6 +21,10 @@ class URLLoaderThrottleProvider : public blink::URLLoaderThrottleProvider {
   URLLoaderThrottleProvider(
       blink::ThreadSafeBrowserInterfaceBrokerProxy* broker,
       blink::URLLoaderThrottleProviderType type);
+
+  URLLoaderThrottleProvider& operator=(const URLLoaderThrottleProvider&) =
+      delete;
+
   ~URLLoaderThrottleProvider() override;
 
   // blink::URLLoaderThrottleProvider implementation.
@@ -41,8 +45,6 @@ class URLLoaderThrottleProvider : public blink::URLLoaderThrottleProvider {
   mojo::Remote<safe_browsing::mojom::SafeBrowsing> safe_browsing_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_ASSIGN(URLLoaderThrottleProvider);
 };
 
 }  // namespace weblayer

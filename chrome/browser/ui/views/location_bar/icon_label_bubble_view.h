@@ -81,6 +81,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
   };
 
   IconLabelBubbleView(const gfx::FontList& font_list, Delegate* delegate);
+
+  IconLabelBubbleView(const IconLabelBubbleView&) = delete;
+  IconLabelBubbleView& operator=(const IconLabelBubbleView&) = delete;
+
   ~IconLabelBubbleView() override;
 
   // views::InkDropObserver:
@@ -262,8 +266,6 @@ class IconLabelBubbleView : public views::InkDropObserver,
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&IconLabelBubbleView::OnTouchUiChanged,
                               base::Unretained(this)));
-
-  DISALLOW_COPY_AND_ASSIGN(IconLabelBubbleView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ICON_LABEL_BUBBLE_VIEW_H_

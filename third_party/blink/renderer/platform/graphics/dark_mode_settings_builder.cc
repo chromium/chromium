@@ -23,12 +23,10 @@ namespace {
 const constexpr DarkModeInversionAlgorithm kDefaultDarkModeInversionAlgorithm =
     DarkModeInversionAlgorithm::kInvertLightnessLAB;
 const constexpr DarkModeImagePolicy kDefaultDarkModeImagePolicy =
-    DarkModeImagePolicy::kFilterNone;
+    DarkModeImagePolicy::kFilterSmart;
 const constexpr int kDefaultTextBrightnessThreshold = 150;
 const constexpr int kDefaultBackgroundBrightnessThreshold = 205;
-const constexpr bool kDefaultDarkModeIsGrayscale = false;
 const constexpr float kDefaultDarkModeContrastPercent = 0.0f;
-const constexpr float kDefaultDarkModeImageGrayscalePercent = 0.0f;
 
 typedef std::unordered_map<std::string, std::string> SwitchParams;
 
@@ -155,20 +153,14 @@ DarkModeSettings BuildDarkModeSettings() {
   settings.image_policy = Clamp<DarkModeImagePolicy>(
       GetImagePolicy(switch_params), DarkModeImagePolicy::kFirst,
       DarkModeImagePolicy::kLast);
-  settings.text_brightness_threshold =
+  settings.foreground_brightness_threshold =
       Clamp<int>(GetTextBrightnessThreshold(switch_params), 0, 255);
   settings.background_brightness_threshold =
       Clamp<int>(GetBackgroundBrightnessThreshold(switch_params), 0, 255);
-  settings.grayscale = GetIntegerSwitchParamValue<bool>(
-      switch_params, "IsGrayScale", kDefaultDarkModeIsGrayscale);
   settings.contrast =
       Clamp<float>(GetFloatSwitchParamValue(switch_params, "ContrastPercent",
                                             kDefaultDarkModeContrastPercent),
                    -1.0f, 1.0f);
-  settings.image_grayscale_percent = Clamp<float>(
-      GetFloatSwitchParamValue(switch_params, "ImageGrayScalePercent",
-                               kDefaultDarkModeImageGrayscalePercent),
-      0.0f, 1.0f);
 
   settings.increase_text_contrast = GetIncreaseTextContrast(switch_params);
 

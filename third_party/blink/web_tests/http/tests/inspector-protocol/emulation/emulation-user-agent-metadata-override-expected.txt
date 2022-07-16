@@ -5,6 +5,7 @@ brands == []
 is mobile?false
 Missing header:sec-ch-ua
 Missing header:sec-ch-ua-full-version
+Missing header:sec-ch-ua-full-version-list
 Missing header:sec-ch-ua-arch
 Missing header:sec-ch-ua-platform
 Missing header:sec-ch-ua-platform-version
@@ -27,6 +28,16 @@ is mobile?true
             version : 3
         }
     ]
+    fullVersionList : [
+        [0] : {
+            brand : Ferrum
+            version : 42.0.3.14159
+        }
+        [1] : {
+            brand : Iron
+            version : 3.1.4.159
+        }
+    ]
     mobile : true
     model : QWERTY
     platform : Typewriter
@@ -35,6 +46,7 @@ is mobile?true
 }
 sec-ch-ua: "Ferrum";v="42.0", "Iron";v="3"
 sec-ch-ua-full-version: "42.0.3.14159"
+sec-ch-ua-full-version-list: "Ferrum";v="42.0.3.14159", "Iron";v="3.1.4.159"
 sec-ch-ua-arch: "Electromechanical"
 sec-ch-ua-platform: "Typewriter"
 sec-ch-ua-platform-version: "1950"
@@ -44,6 +56,7 @@ sec-ch-ua-model: "QWERTY"
 Testing effect on navigation
 sec-ch-ua: "Ferrum";v="42.0", "Iron";v="3"
 sec-ch-ua-full-version: "42.0.3.14159"
+sec-ch-ua-full-version-list: "Ferrum";v="42.0.3.14159", "Iron";v="3.1.4.159"
 sec-ch-ua-arch: "Electromechanical"
 sec-ch-ua-platform: "Typewriter"
 sec-ch-ua-platform-version: "1950"
@@ -62,6 +75,12 @@ is mobile?true
             version : 999
         }
     ]
+    fullVersionList : [
+        [0] : {
+            brand : content_shell
+            version : 999.77.34.5
+        }
+    ]
     mobile : true
     model : With erase tape
     platform : Electric Typewriter
@@ -70,6 +89,7 @@ is mobile?true
 }
 sec-ch-ua: "content_shell";v="999"
 sec-ch-ua-full-version: "999.77.34.5"
+sec-ch-ua-full-version-list: "content_shell";v="999.77.34.5"
 sec-ch-ua-arch: "Electronic"
 sec-ch-ua-platform: "Electric Typewriter"
 sec-ch-ua-platform-version: "1970"

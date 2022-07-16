@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/json/json_string_value_serializer.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/invalidation/public/single_topic_invalidation_set.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "testing/gtest/include/gtest/gtest.h"

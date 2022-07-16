@@ -728,7 +728,7 @@ class GetCurrentConnectionTypeRunner
   }
 
   void VerifyCompletes() {
-    EXPECT_TRUE(done_.TimedWait(base::TimeDelta::FromSeconds(5)));
+    EXPECT_TRUE(done_.TimedWait(base::Seconds(5)));
     thread_.Join();
   }
 

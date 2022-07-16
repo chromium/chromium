@@ -5,7 +5,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 
 #include <string>
-#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -145,6 +144,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "SafetyCheck";
       case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
         return "Kaleidoscope";
+      case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
+        return "EnterpriseSignoutResignSheet";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

@@ -878,7 +878,7 @@ static bool AbsoluteCaretY(const PositionInFlatTreeWithAffinity& c, int& y) {
   IntRect rect = AbsoluteCaretBoundsOf(c);
   if (rect.IsEmpty())
     return false;
-  y = rect.Y() + rect.Height() / 2;
+  y = rect.y() + rect.height() / 2;
   return true;
 }
 

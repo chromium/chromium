@@ -18,7 +18,7 @@ namespace chromeos {
 
 namespace {
 
-// Owned ChromeBrowserMainPartsChromeos.
+// Owned `ChromeBrowserMainPartsAsh`.
 SystemTokenCertDbStorage* g_system_token_cert_db_storage = nullptr;
 
 }  // namespace

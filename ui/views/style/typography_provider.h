@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_STYLE_TYPOGRAPHY_PROVIDER_H_
 #define UI_VIEWS_STYLE_TYPOGRAPHY_PROVIDER_H_
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font.h"
@@ -23,6 +22,10 @@ class View;
 class VIEWS_EXPORT TypographyProvider {
  public:
   TypographyProvider() = default;
+
+  TypographyProvider(const TypographyProvider&) = delete;
+  TypographyProvider& operator=(const TypographyProvider&) = delete;
+
   virtual ~TypographyProvider() = default;
 
   // Gets the FontDetails for the given |context| and |style|.
@@ -47,9 +50,6 @@ class VIEWS_EXPORT TypographyProvider {
   // and for user configurations where the NORMAL font is already BOLD. In both
   // of these cases, NORMAL is returned instead.
   static gfx::Font::Weight MediumWeightForUI();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TypographyProvider);
 };
 
 }  // namespace views

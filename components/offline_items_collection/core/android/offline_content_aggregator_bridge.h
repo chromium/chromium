@@ -34,6 +34,11 @@ class OfflineContentAggregatorBridge : public OfflineContentProvider::Observer,
   static base::android::ScopedJavaLocalRef<jobject>
   GetBridgeForOfflineContentAggregator(OfflineContentAggregator* aggregator);
 
+  OfflineContentAggregatorBridge(const OfflineContentAggregatorBridge&) =
+      delete;
+  OfflineContentAggregatorBridge& operator=(
+      const OfflineContentAggregatorBridge&) = delete;
+
   ~OfflineContentAggregatorBridge() override;
 
   // Methods called from Java via JNI.
@@ -110,8 +115,6 @@ class OfflineContentAggregatorBridge : public OfflineContentProvider::Observer,
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 
   std::unique_ptr<ThrottledOfflineContentProvider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineContentAggregatorBridge);
 };
 
 }  // namespace android

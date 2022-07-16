@@ -9,7 +9,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/wm/window_state.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
@@ -40,6 +39,10 @@ constexpr char kFingerprint[] = "pinky";
 class ScreenLockerTest : public InProcessBrowserTest {
  public:
   ScreenLockerTest() = default;
+
+  ScreenLockerTest(const ScreenLockerTest&) = delete;
+  ScreenLockerTest& operator=(const ScreenLockerTest&) = delete;
+
   ~ScreenLockerTest() override = default;
 
   FakeSessionManagerClient* session_manager_client() {
@@ -83,8 +86,6 @@ class ScreenLockerTest : public InProcessBrowserTest {
   void OnStartSession(const dbus::ObjectPath& path) {}
 
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenLockerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TestBadThenGoodPassword) {
@@ -206,8 +207,7 @@ IN_PROC_BROWSER_TEST_F(ScreenLockerTest, PasswordAuthWhenAuthDisabled) {
   ScreenLocker::default_screen_locker()->TemporarilyDisableAuthForUser(
       user_manager::StubAccountId(),
       AuthDisabledData(AuthDisabledReason::kTimeWindowLimit,
-                       base::Time::Now() + base::TimeDelta::FromHours(1),
-                       base::TimeDelta::FromHours(1),
+                       base::Time::Now() + base::Hours(1), base::Hours(1),
                        true /*disable_lock_screen_media*/));
 
   // Try to authenticate with password.
@@ -244,8 +244,7 @@ IN_PROC_BROWSER_TEST_F(ScreenLockerTest, FingerprintAuthWhenAuthDisabled) {
   ScreenLocker::default_screen_locker()->TemporarilyDisableAuthForUser(
       user_manager::StubAccountId(),
       AuthDisabledData(AuthDisabledReason::kTimeUsageLimit,
-                       base::Time::Now() + base::TimeDelta::FromHours(1),
-                       base::TimeDelta::FromHours(3),
+                       base::Time::Now() + base::Hours(1), base::Hours(3),
                        true /*disable_lock_screen_media*/));
 
   // Try to authenticate with fingerprint.

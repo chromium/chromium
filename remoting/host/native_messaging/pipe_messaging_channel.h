@@ -35,6 +35,10 @@ class PipeMessagingChannel : public extensions::NativeMessagingChannel {
   // Constructs an object taking the ownership of |input| and |output|. Closes
   // |input| and |output| to prevent the caller from using them.
   PipeMessagingChannel(base::File input, base::File output);
+
+  PipeMessagingChannel(const PipeMessagingChannel&) = delete;
+  PipeMessagingChannel& operator=(const PipeMessagingChannel&) = delete;
+
   ~PipeMessagingChannel() override;
 
   // If the ctor is called with |input| and |output| set to stdin/stdout,
@@ -67,8 +71,6 @@ class PipeMessagingChannel : public extensions::NativeMessagingChannel {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<PipeMessagingChannel> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PipeMessagingChannel);
 };
 
 }  // namespace remoting

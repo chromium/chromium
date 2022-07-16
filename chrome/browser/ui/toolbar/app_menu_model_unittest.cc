@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
@@ -27,7 +26,7 @@
 #include "ui/gfx/color_palette.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -40,6 +39,9 @@ class MenuError : public GlobalError {
       : command_id_(command_id),
         execute_count_(0) {
   }
+
+  MenuError(const MenuError&) = delete;
+  MenuError& operator=(const MenuError&) = delete;
 
   int execute_count() { return execute_count_; }
 
@@ -56,8 +58,6 @@ class MenuError : public GlobalError {
  private:
   int command_id_;
   int execute_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuError);
 };
 
 class FakeIconDelegate : public AppMenuIconController::Delegate {
@@ -79,6 +79,10 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
                          public ui::AcceleratorProvider {
  public:
   AppMenuModelTest() = default;
+
+  AppMenuModelTest(const AppMenuModelTest&) = delete;
+  AppMenuModelTest& operator=(const AppMenuModelTest&) = delete;
+
   ~AppMenuModelTest() override = default;
 
   // Don't handle accelerators.
@@ -86,9 +90,6 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
                                   ui::Accelerator* accelerator) const override {
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppMenuModelTest);
 };
 
 // Copies parts of MenuModelTest::Delegate and combines them with the

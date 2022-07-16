@@ -11,6 +11,7 @@
 #include "crypto/nss_util.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/parsed_certificate.h"
+#include "net/cert/internal/trust_store.h"
 #include "net/cert/known_roots_nss.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/test_root_certs.h"
@@ -83,9 +84,9 @@ void TrustStoreNSS::SyncGetIssuersOf(const ParsedCertificate* cert,
   CERT_DestroyCertList(found_certs);
 }
 
-void TrustStoreNSS::GetTrust(const scoped_refptr<ParsedCertificate>& cert,
-                             CertificateTrust* out_trust,
-                             base::SupportsUserData* debug_data) const {
+CertificateTrust TrustStoreNSS::GetTrust(
+    const ParsedCertificate* cert,
+    base::SupportsUserData* debug_data) const {
   crypto::EnsureNSSInit();
 
   // TODO(eroman): Inefficient -- path building will convert between
@@ -100,20 +101,17 @@ void TrustStoreNSS::GetTrust(const scoped_refptr<ParsedCertificate>& cert,
   ScopedCERTCertificate nss_cert(x509_util::CreateCERTCertificateFromBytes(
       cert->der_cert().UnsafeData(), cert->der_cert().Length()));
   if (!nss_cert) {
-    *out_trust = CertificateTrust::ForUnspecified();
-    return;
+    return CertificateTrust::ForUnspecified();
   }
 
   if (!IsCertAllowedForTrust(nss_cert.get())) {
-    *out_trust = CertificateTrust::ForUnspecified();
-    return;
+    return CertificateTrust::ForUnspecified();
   }
 
   // Determine the trustedness of the matched certificate.
   CERTCertTrust trust;
   if (CERT_GetCertTrust(nss_cert.get(), &trust) != SECSuccess) {
-    *out_trust = CertificateTrust::ForUnspecified();
-    return;
+    return CertificateTrust::ForUnspecified();
   }
 
   int trust_flags = SEC_GET_TRUST_FLAGS(&trust, trust_type_);
@@ -121,8 +119,7 @@ void TrustStoreNSS::GetTrust(const scoped_refptr<ParsedCertificate>& cert,
   // Determine if the certificate is distrusted.
   if ((trust_flags & (CERTDB_TERMINAL_RECORD | CERTDB_TRUSTED_CA |
                       CERTDB_TRUSTED)) == CERTDB_TERMINAL_RECORD) {
-    *out_trust = CertificateTrust::ForDistrusted();
-    return;
+    return CertificateTrust::ForDistrusted();
   }
 
   // Determine if the certificate is a trust anchor.
@@ -140,16 +137,14 @@ void TrustStoreNSS::GetTrust(const scoped_refptr<ParsedCertificate>& cert,
     // handling this may require iterating all the slots and manually computing
     // the trust settings directly, rather than CERT_GetCertTrust.
     if (!ignore_system_trust_settings_ || !IsKnownRoot(nss_cert.get())) {
-      *out_trust = CertificateTrust::ForTrustAnchor();
-      return;
+      return CertificateTrust::ForTrustAnchor();
     }
   }
 
   // Trusted server certs (CERTDB_TERMINAL_RECORD + CERTDB_TRUSTED) are
   // intentionally treated as unspecified. See https://crbug.com/814994.
 
-  *out_trust = CertificateTrust::ForUnspecified();
-  return;
+  return CertificateTrust::ForUnspecified();
 }
 
 bool TrustStoreNSS::IsCertAllowedForTrust(CERTCertificate* cert) const {

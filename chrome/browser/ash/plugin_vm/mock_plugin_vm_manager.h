@@ -31,11 +31,11 @@ class MockPluginVmManager : public PluginVmManager {
               (const));
   MOCK_METHOD(void,
               AddVmStartingObserver,
-              (chromeos::VmStartingObserver * observer),
+              (ash::VmStartingObserver * observer),
               ());
   MOCK_METHOD(void,
               RemoveVmStartingObserver,
-              (chromeos::VmStartingObserver * observer),
+              (ash::VmStartingObserver * observer),
               ());
   MOCK_METHOD(vm_tools::plugin_dispatcher::VmState, vm_state, (), (const));
   MOCK_METHOD(bool, IsRelaunchNeededForNewPermissions, (), (const));

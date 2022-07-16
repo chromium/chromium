@@ -20,6 +20,6 @@ const base::Feature kAllowSilentTrustedVaultDeviceRegistration{
 const base::FeatureParam<base::TimeDelta>
     kTrustedVaultServiceThrottlingDuration{
         &kSyncTrustedVaultPassphraseRecovery,
-        "TrustedVaultServiceThrottlingDuration", base::TimeDelta::FromDays(1)};
+        "TrustedVaultServiceThrottlingDuration", base::Days(1)};
 
 }  // namespace switches

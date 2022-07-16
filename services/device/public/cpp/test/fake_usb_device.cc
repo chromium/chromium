@@ -60,7 +60,7 @@ void FakeUsbDevice::CloseHandle() {
 
   MockUsbMojoDevice* mock_device = device_->mock_device();
   if (mock_device) {
-    mock_device->Close(base::DoNothing::Once());
+    mock_device->Close(base::DoNothing());
     return;
   }
 

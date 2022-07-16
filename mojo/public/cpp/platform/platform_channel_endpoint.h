@@ -20,6 +20,10 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannelEndpoint {
   PlatformChannelEndpoint();
   PlatformChannelEndpoint(PlatformChannelEndpoint&& other);
   explicit PlatformChannelEndpoint(PlatformHandle handle);
+
+  PlatformChannelEndpoint(const PlatformChannelEndpoint&) = delete;
+  PlatformChannelEndpoint& operator=(const PlatformChannelEndpoint&) = delete;
+
   ~PlatformChannelEndpoint();
 
   PlatformChannelEndpoint& operator=(PlatformChannelEndpoint&& other);
@@ -36,8 +40,6 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannelEndpoint {
 
  private:
   PlatformHandle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformChannelEndpoint);
 };
 
 }  // namespace mojo

@@ -1,0 +1,11 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='This text contains '
+++++++++++inlineTextBox name='This text contains '
+++++++++superscript textPosition=superscript
+++++++++++staticText name='superscript' textPosition=superscript
+++++++++++++inlineTextBox name='superscript'
+++++++++staticText name=' text.'
+++++++++++inlineTextBox name=' text.'

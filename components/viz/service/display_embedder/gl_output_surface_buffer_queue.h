@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/service/display/output_surface.h"
@@ -36,6 +37,10 @@ class VIZ_SERVICE_EXPORT GLOutputSurfaceBufferQueue
       scoped_refptr<VizProcessContextProvider> context_provider,
       gpu::SurfaceHandle surface_handle,
       std::unique_ptr<BufferQueue> buffer_queue);
+
+  GLOutputSurfaceBufferQueue(const GLOutputSurfaceBufferQueue&) = delete;
+  GLOutputSurfaceBufferQueue& operator=(const GLOutputSurfaceBufferQueue&) =
+      delete;
 
   ~GLOutputSurfaceBufferQueue() override;
 
@@ -99,8 +104,6 @@ class VIZ_SERVICE_EXPORT GLOutputSurfaceBufferQueue
   gfx::OverlayTransform display_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
   gfx::Size reshape_size_;
   gfx::Size swap_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLOutputSurfaceBufferQueue);
 };
 
 }  // namespace viz

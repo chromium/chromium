@@ -7,9 +7,11 @@
 
 #include <limits>
 #include <memory>
+#include <vector>
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/overview/overview_observer.h"
@@ -17,13 +19,13 @@
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/wm_event.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace ui {
 class Layer;
@@ -48,7 +50,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                                        public OverviewObserver,
                                        public display::DisplayObserver,
                                        public TabletModeObserver,
-                                       public AccessibilityObserver {
+                                       public AccessibilityObserver,
+                                       public ash::KeyboardControllerObserver,
+                                       public wm::ActivationChangeObserver {
  public:
   // |LEFT| and |RIGHT| are named for the positions to which they correspond in
   // clamshell mode or primary-landscape-oriented tablet mode. In portrait-
@@ -56,7 +60,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // in clamshell mode, although the display orientation may sometimes be
   // portrait, we always snap windows on the left and right (see
   // |IsLayoutHorizontal|). The snap positions are swapped in secondary-oriented
-  // tablet mode (see |IsLayoutRightSideUp|).
+  // tablet mode (see |IsLayoutPrimary|).
+  // TODO(crbug.com/1233194): Rename left/right to primary/secondary.
   enum SnapPosition { NONE, LEFT, RIGHT };
 
   // Why splitview was ended.
@@ -85,6 +90,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     kClamshellType,
   };
 
+  // TODO(crbug.com/1233194): Rename left/right to primary/secondary.
   enum class State {
     kNoSnap,
     kLeftSnapped,
@@ -110,24 +116,36 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   static SplitViewController* Get(const aura::Window* window);
 
   // The return values of these two functions together indicate what actual
-  // positions correspond to |LEFT| and |RIGHT|:
-  // |IsLayoutHorizontal|  |IsLayoutRightSideUp|  |LEFT|               |RIGHT|
-  // -------------------------------------------------------------------------
+  // positions correspond to |PRIMARY| and |SECONDARY|:
+  // |IsLayoutHorizontal|  |IsLayoutPrimary|    |PRIMARY|           |SECONDARY|
+  // --------------------------------------------------------------------------
   // true                  true                   left                 right
   // true                  false                  right                left
   // false                 true                   top                  bottom
   // false                 false                  bottom               top
   // In tablet mode, these functions return values based on display orientation.
-  // In clamshell mode, these functions return true.
-  static bool IsLayoutHorizontal();
-  static bool IsLayoutRightSideUp();
+  // In clamshell mode, these functions return above values if
+  // `chromeos::wm::features::IsVerticalSnapEnabled()`; otherwise they return
+  // true. |window| is used to find the nearest display to check if the display
+  // layout is horizontal and is primary or not.
+  static bool IsLayoutHorizontal(aura::Window* window);
+  static bool IsLayoutHorizontal(const display::Display& display);
+  static bool IsLayoutPrimary(aura::Window* window);
+  static bool IsLayoutPrimary(const display::Display& display);
 
   // Returns true if |position| actually signifies a left or top position,
   // according to the return values of |IsLayoutHorizontal| and
-  // |IsLayoutRightSideUp|.
-  static bool IsPhysicalLeftOrTop(SnapPosition position);
+  // |IsLayoutPrimary|. Physical position refers to the position of the window
+  // on the display that is held upward.
+  static bool IsPhysicalLeftOrTop(SnapPosition position, aura::Window* window);
+  static bool IsPhysicalLeftOrTop(SnapPosition position,
+                                  const display::Display& display);
 
   explicit SplitViewController(aura::Window* root_window);
+
+  SplitViewController(const SplitViewController&) = delete;
+  SplitViewController& operator=(const SplitViewController&) = delete;
+
   ~SplitViewController() override;
 
   // Returns true if split view mode is active. Please see SplitViewType above
@@ -257,6 +275,12 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   SplitViewController::SnapPosition ComputeSnapPosition(
       const gfx::Point& last_location_in_screen);
 
+  // In portrait mode split view, if the virtual keyboard occludes the input
+  // field in the bottom window. The bottom window will be pushed up above the
+  // virtual keyboard. In this case, we allow window state to set bounds for
+  // snapped window.
+  bool BoundsChangeIsFromVKAndAllowed(aura::Window* window) const;
+
   void AddObserver(SplitViewObserver* observer);
   void RemoveObserver(SplitViewObserver* observer);
 
@@ -298,6 +322,14 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override;
   void OnAccessibilityControllerShutdown() override;
+
+  // KeyboardControllerObserver
+  void OnKeyboardOccludedBoundsChanged(const gfx::Rect& screen_bounds) override;
+
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
   aura::Window* root_window() const { return root_window_; }
   aura::Window* left_window() { return left_window_; }
@@ -549,8 +581,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // versa.
   SnapPosition default_snap_position_ = NONE;
 
-  // Whether the previous layout is right-side-up (see |IsLayoutRightSideUp|).
-  // Consistent with |IsLayoutRightSideUp|, |is_previous_layout_right_side_up_|
+  // Whether the previous layout is right-side-up (see |IsLayoutPrimary|).
+  // Consistent with |IsLayoutPrimary|, |is_previous_layout_right_side_up_|
   // is always true in clamshell mode. It is not really used in clamshell mode,
   // but it is kept up to date in anticipation that future code changes could
   // introduce a bug similar to https://crbug.com/1029181 which could be
@@ -611,7 +643,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // even if the divider isn't moved.
   base::OneShotTimer resize_timer_;
 
-  DISALLOW_COPY_AND_ASSIGN(SplitViewController);
+  // A flag indicates the window bounds is currently changed due to the virtual
+  // keyboard.
+  bool changing_bounds_by_vk_ = false;
 };
 
 }  // namespace ash

@@ -10,7 +10,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
 
-namespace chromeos {
+namespace ash {
 
 GuestSessionMixin::GuestSessionMixin(InProcessBrowserTestMixinHost* mixin_host)
     : InProcessBrowserTestMixin(mixin_host) {}
@@ -25,4 +25,4 @@ void GuestSessionMixin::SetUpCommandLine(base::CommandLine* command_line) {
       switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());
 }
 
-}  // namespace chromeos
+}  // namespace ash

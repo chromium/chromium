@@ -32,6 +32,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorSurfaceControl
       const OverlayCandidate& overlay) const override;
 
  private:
+  // Historically, android media was hardcoding color space to srgb. This
+  // indicates that we going to use real one.
+  const bool use_real_color_space_;
   gfx::OverlayTransform display_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
   gfx::Size viewport_size_;
 };

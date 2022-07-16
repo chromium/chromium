@@ -47,12 +47,22 @@
 
   <!-- Browser managed status section -->
   <if expr="not chromeos">
-    <message name="IDS_MANAGEMENT_BROWSER_NOTICE" desc="Message shown when the browser is managed, it indicates what the administrator can do on the browser.">
+    <if expr="_google_chrome">
+      <message name="IDS_MANAGEMENT_BROWSER_NOTICE" desc="Message shown when the (Google-branded) Chrome browser is managed, it indicates what the administrator can do on the browser.">
       Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
-    </message>
-    <message name="IDS_MANAGEMENT_NOT_MANAGED_NOTICE" desc="Message indicating that the browser is not managed">
-      This browser is not managed by a company or other organization. Activity on this device may be managed outside of Chrome. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
-    </message>
+      </message>
+      <message name="IDS_MANAGEMENT_NOT_MANAGED_NOTICE" desc="Message indicating that the (Google-branded) Chrome browser is not managed">
+       This browser is not managed by a company or other organization. Activity on this device may be managed outside of Chrome. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+    </if>
+    <if expr="not _google_chrome">
+      <message name="IDS_MANAGEMENT_BROWSER_NOTICE" desc="Message shown when the (non-Google-branded) Chromium browser is managed, it indicates what the administrator can do on the browser.">
+      Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chromium. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_MANAGEMENT_NOT_MANAGED_NOTICE" desc="Message indicating that the (non-Google-branded) Chromium browser is not managed">
+       This browser is not managed by a company or other organization. Activity on this device may be managed outside of Chromium. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+    </if>
   </if>
 
   <!-- Chrome OS managed status section -->
@@ -101,8 +111,11 @@
     <message name="IDS_MANAGEMENT_LOG_UPLOAD_ENABLED" desc="Message stating that administrators have access to system logs on user's device.">
       Detailed system logs
     </message>
-    <message name="IDS_MANAGEMENT_REPORT_DEVICE_NETWORK_INTERFACES" desc="Message stating that administrators see device network interfaces.">
+    <message name="IDS_MANAGEMENT_REPORT_DEVICE_NETWORK_DATA" desc="Message stating that administrators see device network interfaces.">
       Network addresses
+    </message>
+    <message name="IDS_MANAGEMENT_REPORT_DEVICE_HARDWARE_DATA" desc="Message stating that administrators see device hardware status.">
+      Device statistics such as CPU/RAM usage and hardware specifications
     </message>
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_CRASH_REPORTS" desc="Message stating that administrators see the numbers and causes of the crashes that occurred on the device recently.">
       Numbers and causes of the crashes that occurred recently
@@ -116,8 +129,10 @@
     <message name="IDS_MANAGEMENT_REPORT_PRINT_JOBS" desc="Message stating that administrators can see printing history associated with user, device, and printer.">
       Printing history
     </message>
-    <message name="IDS_MANAGEMENT_REPORT_DLP_EVENTS" desc="Message show the users of DLP reporting enabled devices that events are being reported.">
-      Actions taken with data flagged as confidential
+    <message name="IDS_MANAGEMENT_REPORT_DLP_EVENTS" desc="Message stating that administrators can see attempts at prohibited actions on restricted data. Also shows the number of actions reported since login, and provides a 'Learn more' link.">
+      {COUNT, plural,
+      =1 {Actions taken with data flagged as confidential (1 action since login). <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://support.google.com/chrome/a/?p=chromeos_datacontrols"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>}
+      other {Actions taken with data flagged as confidential (# actions since login). <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://support.google.com/chrome/a/?p=chromeos_datacontrols"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>}}
     </message>
     <message name="IDS_MANAGEMENT_REPORT_LOGIN_LOGOUT" desc="Message stating that administrators can see device Login and Logout events.">
       Device login/logout history, including timestamps and failed attempts
@@ -157,7 +172,7 @@
   <message name="IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY" desc="Message describing that the administrator has installed some powerful extensions on the managed user's browser from a specific domain">
     <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> has installed extensions for additional functions. Extensions have access to some of your data.
   </message>
-  <message name="IDS_MANAGEMENT_EXTENSIONS_NAME" desc="Title of a column of the extension table showing the name of the extension">
+  <message name="IDS_MANAGEMENT_EXTENSIONS_NAME" desc="Title of a column of the extension table showing the name of the extension" meaning="Name of an inanimate object">
     Name
   </message>
   <message name="IDS_MANAGEMENT_EXTENSIONS_PERMISSIONS" desc="Title of a column of the extension table showing the permissions of the extension">
@@ -231,7 +246,7 @@
     Text is entered
   </message>
   <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_EVENT" desc="Event for the enterprise reporting feature">
-    Unsafe event occurs
+    Security event occurs
   </message>
   <message name="IDS_MANAGEMENT_PAGE_VISITED_EVENT" desc="Event for the real time URL check feature.">
     Page is visited
@@ -246,7 +261,7 @@
     Text you paste or attach is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.
   </message>
   <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_VISIBLE_DATA" desc="Description of the visible data for the Connectors reporting feature">
-    When security events are flagged by Chrome Enterprise Connectors, relevant data about the events is sent to your administrator. This can include URLs of pages you visit in Chrome, file names or metadata, and the username that you use to sign in to your device and Chrome.
+    When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs of pages you visit in Chrome, file names or metadata, and the username that you use to sign in to web based applications, your device and Chrome.
   </message>
   <message name="IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA" desc="Description of the visible data for the real time URL check feature.">
     URLs of pages you visit are sent to Google Cloud or third parties for analysis. For example, they might be scanned to detect unsafe websites.

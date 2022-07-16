@@ -18,7 +18,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "crypto/ec_private_key.h"
-#include "crypto/ec_signature_creator.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
@@ -142,37 +141,6 @@ class StreamReleaserCallback : public TestCompletionCallbackBase {
   void OnComplete(SpdyStreamRequest* request, int result);
 };
 
-// An ECSignatureCreator that returns deterministic signatures.
-class MockECSignatureCreator : public crypto::ECSignatureCreator {
- public:
-  explicit MockECSignatureCreator(crypto::ECPrivateKey* key);
-
-  // crypto::ECSignatureCreator
-  bool Sign(base::span<const uint8_t> data,
-            std::vector<uint8_t>* signature) override;
-  bool DecodeSignature(const std::vector<uint8_t>& signature,
-                       std::vector<uint8_t>* out_raw_sig) override;
-
- private:
-  crypto::ECPrivateKey* key_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockECSignatureCreator);
-};
-
-// An ECSignatureCreatorFactory creates MockECSignatureCreator.
-class MockECSignatureCreatorFactory : public crypto::ECSignatureCreatorFactory {
- public:
-  MockECSignatureCreatorFactory();
-  ~MockECSignatureCreatorFactory() override;
-
-  // crypto::ECSignatureCreatorFactory
-  std::unique_ptr<crypto::ECSignatureCreator> Create(
-      crypto::ECPrivateKey* key) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockECSignatureCreatorFactory);
-};
-
 // Helper to manage the lifetimes of the dependencies for a
 // HttpNetworkTransaction.
 struct SpdySessionDependencies {
@@ -232,6 +200,7 @@ struct SpdySessionDependencies {
   SpdySession::TimeFunc time_func;
   bool enable_http2_alternative_service;
   bool enable_websocket_over_http2;
+  bool enable_http2_settings_grease;
   absl::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
   bool http2_end_stream_with_data_frame;
   NetLog* net_log;
@@ -239,6 +208,7 @@ struct SpdySessionDependencies {
   bool enable_early_data;
   bool key_auth_cache_server_entries_by_network_isolation_key;
   bool enable_priority_update;
+  bool go_away_on_ip_change;
 };
 
 class SpdyURLRequestContext : public URLRequestContext {
@@ -281,13 +251,14 @@ class SpdySessionPoolPeer {
  public:
   explicit SpdySessionPoolPeer(SpdySessionPool* pool);
 
+  SpdySessionPoolPeer(const SpdySessionPoolPeer&) = delete;
+  SpdySessionPoolPeer& operator=(const SpdySessionPoolPeer&) = delete;
+
   void RemoveAliases(const SpdySessionKey& key);
   void SetEnableSendingInitialData(bool enabled);
 
  private:
   SpdySessionPool* const pool_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpdySessionPoolPeer);
 };
 
 class SpdyTestUtil {

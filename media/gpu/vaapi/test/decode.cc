@@ -19,6 +19,7 @@
 #include "media/gpu/vaapi/test/shared_va_surface.h"
 #include "media/gpu/vaapi/test/vaapi_device.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
+#include "media/gpu/vaapi/test/vp8_decoder.h"
 #include "media/gpu/vaapi/test/vp9_decoder.h"
 #include "media/gpu/vaapi/va_stubs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,6 +29,7 @@ using media::vaapi_test::Av1Decoder;
 using media::vaapi_test::SharedVASurface;
 using media::vaapi_test::VaapiDevice;
 using media::vaapi_test::VideoDecoder;
+using media::vaapi_test::Vp8Decoder;
 using media::vaapi_test::Vp9Decoder;
 using media_gpu_vaapi::InitializeStubs;
 using media_gpu_vaapi::kModuleVa;
@@ -58,7 +60,7 @@ constexpr char kUsageMsg[] =
 constexpr char kHelpMsg[] =
     "This binary decodes the IVF video in <video> path with specified video\n"
     "<profile> via thinly wrapped libva calls.\n"
-    "Supported codecs: VP9 (profiles 0, 2) and AV1 (profile 0)\n"
+    "Supported codecs: VP8, VP9 (profiles 0, 2), and AV1 (profile 0)\n"
     "\nThe following arguments are supported:\n"
     "    --video=<path>\n"
     "        Required. Path to IVF-formatted video to decode.\n"
@@ -70,6 +72,8 @@ constexpr char kHelpMsg[] =
     "        Specifically, try, in order, vaDeriveImage, then if that fails,\n"
     "        vaCreateImage + vaGetImage. Otherwise, only attempt the\n"
     "        specified fetch policy.\n"
+    "        NB: (b/201587517) AMD ignores this flag and always uses\n"
+    "        vaGetImage.\n"
     "    --out-prefix=<string>\n"
     "        Optional. Save PNGs of decoded (and visible, if --visible is\n"
     "        specified) frames if and only if a path prefix (which may\n"
@@ -129,6 +133,9 @@ std::unique_ptr<VideoDecoder> CreateDecoder(
   if (file_header.fourcc == fourcc('A', 'V', '0', '1')) {
     return std::make_unique<Av1Decoder>(std::move(ivf_parser), va_device,
                                         fetch_policy);
+  } else if (file_header.fourcc == fourcc('V', 'P', '8', '0')) {
+    return std::make_unique<Vp8Decoder>(std::move(ivf_parser), va_device,
+                                        fetch_policy);
   } else if (file_header.fourcc == fourcc('V', 'P', '9', '0')) {
     return std::make_unique<Vp9Decoder>(std::move(ivf_parser), va_device,
                                         fetch_policy);
@@ -140,7 +147,17 @@ std::unique_ptr<VideoDecoder> CreateDecoder(
 }
 
 absl::optional<SharedVASurface::FetchPolicy> GetFetchPolicy(
+    const VaapiDevice& va_device,
     const std::string& fetch_policy) {
+  // Always use kGetImage for AMD devices.
+  // TODO(b/201587517): remove this exception.
+  const std::string va_vendor_string = vaQueryVendorString(va_device.display());
+  if (base::StartsWith(va_vendor_string, "Mesa Gallium driver",
+                       base::CompareCase::SENSITIVE)) {
+    LOG(INFO) << "AMD driver detected, forcing vaGetImage";
+    return SharedVASurface::FetchPolicy::kGetImage;
+  }
+
   if (fetch_policy.empty())
     return SharedVASurface::FetchPolicy::kAny;
   if (base::EqualsCaseInsensitiveASCII(fetch_policy, "derive"))
@@ -187,12 +204,6 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  const auto fetch_policy = GetFetchPolicy(cmd->GetSwitchValueASCII("fetch"));
-  if (!fetch_policy) {
-    std::cout << kUsageMsg;
-    return EXIT_FAILURE;
-  }
-
   // Initialize VA stubs.
   StubPathMap paths;
   const std::string va_suffix(base::NumberToString(VA_MAJOR_VERSION + 1));
@@ -216,6 +227,13 @@ int main(int argc, char** argv) {
   const VaapiDevice va_device;
   const bool loop_decode = cmd->HasSwitch("loop");
   bool first_loop = true;
+
+  const auto fetch_policy =
+      GetFetchPolicy(va_device, cmd->GetSwitchValueASCII("fetch"));
+  if (!fetch_policy) {
+    std::cout << kUsageMsg;
+    return EXIT_FAILURE;
+  }
 
   do {
     const std::unique_ptr<VideoDecoder> dec =

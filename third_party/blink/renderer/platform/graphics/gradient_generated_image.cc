@@ -35,13 +35,10 @@ void GradientGeneratedImage::Draw(cc::PaintCanvas* canvas,
                                   const PaintFlags& flags,
                                   const FloatRect& dest_rect,
                                   const FloatRect& src_rect,
-                                  const SkSamplingOptions&,
-                                  RespectImageOrientationEnum,
-                                  ImageClampingMode,
-                                  ImageDecodingMode) {
+                                  const ImageDrawOptions& draw_options) {
   SkRect visible_src_rect = src_rect;
   if (!visible_src_rect.intersect(
-          SkRect::MakeWH(size_.Width(), size_.Height())))
+          SkRect::MakeWH(size_.width(), size_.height())))
     return;
 
   const SkMatrix transform = SkMatrix::RectToRect(src_rect, dest_rect);
@@ -49,25 +46,28 @@ void GradientGeneratedImage::Draw(cc::PaintCanvas* canvas,
   transform.mapRect(&visible_dest_rect, visible_src_rect);
 
   PaintFlags gradient_flags(flags);
-  gradient_->ApplyToFlags(gradient_flags, transform);
+  gradient_->ApplyToFlags(gradient_flags, transform, draw_options);
   canvas->drawRect(visible_dest_rect, gradient_flags);
 }
 
 void GradientGeneratedImage::DrawTile(GraphicsContext& context,
                                       const FloatRect& src_rect,
-                                      RespectImageOrientationEnum) {
+                                      const ImageDrawOptions& draw_options) {
   // TODO(ccameron): This function should not ignore |context|'s color behavior.
   // https://crbug.com/672306
   PaintFlags gradient_flags(context.FillFlags());
-  gradient_->ApplyToFlags(gradient_flags, SkMatrix::I());
+  gradient_->ApplyToFlags(gradient_flags, SkMatrix::I(), draw_options);
 
-  context.DrawRect(src_rect, gradient_flags);
+  context.DrawRect(src_rect, gradient_flags, AutoDarkMode::Disabled());
 }
 
 bool GradientGeneratedImage::ApplyShader(PaintFlags& flags,
-                                         const SkMatrix& local_matrix) {
+                                         const SkMatrix& local_matrix,
+                                         const FloatRect& dst_rect,
+                                         const FloatRect& src_rect,
+                                         const ImageDrawOptions& draw_options) {
   DCHECK(gradient_);
-  gradient_->ApplyToFlags(flags, local_matrix);
+  gradient_->ApplyToFlags(flags, local_matrix, draw_options);
 
   return true;
 }

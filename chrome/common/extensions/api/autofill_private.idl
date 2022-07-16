@@ -201,19 +201,22 @@ namespace autofillPrivate {
 
     // Gets the list of all countries.
     // |callback|: Callback which will be called with the countries.
-    static void getCountryList(GetCountryListCallback callback);
+    [supportsPromises] static void getCountryList(
+        GetCountryListCallback callback);
 
     // Gets the address components for a given country code.
     // |countryCode|: A two-character string representing the address' country
     //     whose components should be returned. See autofill_country.cc for a
     //     list of valid codes.
     // |callback|: Callback which will be called with components.
-    static void getAddressComponents(DOMString countryCode,
+    [supportsPromises] static void getAddressComponents(
+        DOMString countryCode,
         GetAddressComponentsCallback callback);
 
     // Gets the list of addresses.
     // |callback|: Callback which will be called with the list of addresses.
-    static void getAddressList(GetAddressListCallback callback);
+    [supportsPromises] static void getAddressList(
+        GetAddressListCallback callback);
 
     // Saves the given credit card. If |card| has an empty string as its
     // ID, it will be assigned a new one and added as a new entry.
@@ -229,12 +232,14 @@ namespace autofillPrivate {
     // will not be returned in the list of valid numbers.
     // |params|: The parameters to this function.
     // |callback|: Callback which will be called with validated phone numbers.
-    static void validatePhoneNumbers(ValidatePhoneParams params,
+    [supportsPromises] static void validatePhoneNumbers(
+        ValidatePhoneParams params,
         ValidatePhoneNumbersCallback callback);
 
     // Gets the list of credit cards.
     // |callback|: Callback which will be called with the list of credit cards.
-    static void getCreditCardList(GetCreditCardListCallback callback);
+    [supportsPromises] static void getCreditCardList(
+        GetCreditCardListCallback callback);
 
     // Clears the data associated with a wallet card which was saved
     // locally so that the saved copy is masked (e.g., "Card ending
@@ -253,7 +258,7 @@ namespace autofillPrivate {
 
     // Gets the list of UPI IDs (a.k.a. Virtual Payment Addresses).
     // |callback|: Callback which will be called with the list of UPI IDs.
-    static void getUpiIdList(GetUpiIdListCallback callback);
+    [supportsPromises] static void getUpiIdList(GetUpiIdListCallback callback);
   };
 
   interface Events {

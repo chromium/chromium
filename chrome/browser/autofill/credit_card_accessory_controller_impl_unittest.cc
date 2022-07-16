@@ -13,9 +13,9 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/form_data.h"
@@ -35,36 +35,6 @@ const std::u16string kFirstTwelveDigits = u"411111111111";
 
 namespace autofill {
 namespace {
-
-class TestBrowserAutofillManager : public BrowserAutofillManager {
- public:
-  TestBrowserAutofillManager(
-      AutofillDriver* driver,
-      AutofillClient* client,
-      PersonalDataManager* personal_data,
-      AutocompleteHistoryManager* autocomplete_history_manager,
-      std::unique_ptr<CreditCardAccessManager> cc_access_manager = nullptr)
-      // Force to use the constructor designated for unit test.
-      : BrowserAutofillManager(
-            driver,
-            client,
-            personal_data,
-            autocomplete_history_manager,
-            "en-US",
-            AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
-            std::move(cc_access_manager)) {}
-
-  ~TestBrowserAutofillManager() override = default;
-
-  const FormData& last_query_form() const override { return last_form_; }
-
-  void SetLastForm(FormData form) { last_form_ = std::move(form); }
-
- private:
-  FormData last_form_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserAutofillManager);
-};
 
 AccessorySheetData::Builder CreditCardAccessorySheetDataBuilder() {
   return AccessorySheetData::Builder(
@@ -93,10 +63,8 @@ class TestAccessManager : public CreditCardAccessManager {
     card_.SetNumber(kFirstTwelveDigits + card_.number());
   }
 
-  void FetchCreditCard(
-      const CreditCard* card,
-      base::WeakPtr<Accessor> accessor,
-      const base::TimeTicks& timestamp = base::TimeTicks()) override {
+  void FetchCreditCard(const CreditCard* card,
+                       base::WeakPtr<Accessor> accessor) override {
     accessor->OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card_);
   }
 
@@ -113,13 +81,11 @@ class CreditCardAccessoryControllerTest
     : public ChromeRenderViewHostTestHarness {
  public:
   CreditCardAccessoryControllerTest()
-      : af_manager_(&mock_af_driver_,
-                    &client_,
-                    &data_manager_,
-                    &history_,
-                    std::make_unique<TestAccessManager>(&mock_af_driver_,
-                                                        &client_,
-                                                        &data_manager_)) {}
+      : af_manager_(&mock_af_driver_, &client_, &data_manager_) {
+    af_manager_.set_credit_card_access_manager_for_test(
+        std::make_unique<TestAccessManager>(&mock_af_driver_, &client_,
+                                            &data_manager_));
+  }
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
@@ -127,7 +93,8 @@ class CreditCardAccessoryControllerTest
         {autofill::features::kAutofillEnableMerchantBoundVirtualCards,
          autofill::features::
              kAutofillShowUnmaskedCachedCardInManualFillingView},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            autofill::features::kAutofillFillMerchantPromoCodeFields});
     ChromeRenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL(kExampleSite));
     SetFormOrigin(GURL(kExampleSite));
@@ -142,6 +109,7 @@ class CreditCardAccessoryControllerTest
   void TearDown() override {
     data_manager_.SetPrefService(nullptr);
     data_manager_.ClearCreditCards();
+    data_manager_.ClearCreditCardOfferData();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -155,14 +123,14 @@ class CreditCardAccessoryControllerTest
     form.action = origin;
     form.main_frame_origin = url::Origin::Create(origin);
     client_.set_form_origin(origin);
-    af_manager_.SetLastForm(std::move(form));
+    // Promo codes are filtered by AutofillClient's |last_committed_url_|.
+    client_.set_last_committed_url(GURL(kExampleSite));
   }
 
  protected:
   TestAutofillClient client_;
   testing::NiceMock<MockAutofillDriver> mock_af_driver_;
   autofill::TestPersonalDataManager data_manager_;
-  MockAutocompleteHistoryManager history_;
   testing::NiceMock<MockManualFillingController> mock_mf_controller_;
   TestBrowserAutofillManager af_manager_;
   base::MockCallback<AccessoryController::FillingSourceObserver>
@@ -174,8 +142,34 @@ class CreditCardAccessoryControllerTestWithoutSupportingUnmaskedCards
     : public CreditCardAccessoryControllerTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        autofill::features::kAutofillShowUnmaskedCachedCardInManualFillingView);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            autofill::features::
+                kAutofillShowUnmaskedCachedCardInManualFillingView,
+            autofill::features::kAutofillFillMerchantPromoCodeFields});
+    ChromeRenderViewHostTestHarness::SetUp();
+    NavigateAndCommit(GURL(kExampleSite));
+    SetFormOrigin(GURL(kExampleSite));
+    FocusWebContentsOnMainFrame();
+
+    CreditCardAccessoryControllerImpl::CreateForWebContentsForTesting(
+        web_contents(), mock_mf_controller_.AsWeakPtr(), &data_manager_,
+        &af_manager_, &mock_af_driver_);
+    data_manager_.SetPrefService(profile()->GetPrefs());
+  }
+};
+
+class CreditCardAccessoryControllerTestSupportingPromoCodeOffers
+    : public CreditCardAccessoryControllerTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {autofill::features::kAutofillEnableMerchantBoundVirtualCards,
+         autofill::features::kAutofillShowUnmaskedCachedCardInManualFillingView,
+         autofill::features::kAutofillFillMerchantPromoCodeFields},
+        /*disabled_features=*/{});
     ChromeRenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL(kExampleSite));
     SetFormOrigin(GURL(kExampleSite));
@@ -271,11 +265,11 @@ TEST_F(CreditCardAccessoryControllerTest, ServerCardUnmask) {
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
-  UserInfo::Field field(card.ObfuscatedLastFourDigits(),
-                        /*text_to_fill=*/std::u16string(),
-                        card.ObfuscatedLastFourDigits(), card.guid(),
-                        /*is_obfuscated=*/false,
-                        /*selectable=*/true);
+  AccessorySheetField field(card.ObfuscatedLastFourDigits(),
+                            /*text_to_fill=*/std::u16string(),
+                            card.ObfuscatedLastFourDigits(), card.guid(),
+                            /*is_obfuscated=*/false,
+                            /*selectable=*/true);
 
   autofill::CreditCard card_to_unmask;
 
@@ -490,7 +484,7 @@ TEST_F(
 
   autofill::AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
                                       std::u16string());
-  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
+  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions)
       .WillOnce(SaveArg<0>(&result));
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
@@ -523,6 +517,139 @@ TEST_F(
           .AppendSimpleField(masked_card.Expiration4DigitYearAsString())
           .AppendSimpleField(
               masked_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(std::u16string())
+          .Build());
+}
+
+TEST_F(CreditCardAccessoryControllerTest, VirtualCreditCardWithCardArtUrl) {
+  // Add a masked card to PersonalDataManager.
+  autofill::CreditCard masked_card = test::GetMaskedServerCard();
+  masked_card.set_card_art_url(GURL("http://www.example.com/image.png"));
+  masked_card.set_virtual_card_enrollment_state(CreditCard::ENROLLED);
+  data_manager_.AddCreditCard(masked_card);
+
+  autofill::AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
+                                      std::u16string());
+  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions)
+      .WillOnce(SaveArg<0>(&result));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  EXPECT_EQ(result, controller()->GetSheetData());
+  // Verify that a virtual card is inserted before the actual masked card.
+  std::u16string virtual_card_label =
+      u"Virtual card " + masked_card.ObfuscatedLastFourDigits();
+  EXPECT_EQ(
+      result,
+      CreditCardAccessorySheetDataBuilder()
+          .AddUserInfo(kMasterCard, UserInfo::IsExactMatch(true),
+                       GURL("http://www.example.com/image.png"))
+          .AppendField(virtual_card_label, /*text_to_fill*/ std::u16string(),
+                       virtual_card_label, masked_card.guid() + "_vcn",
+                       /*is_obfuscated=*/false,
+                       /*selectable=*/true)
+          .AppendSimpleField(masked_card.Expiration2DigitMonthAsString())
+          .AppendSimpleField(masked_card.Expiration4DigitYearAsString())
+          .AppendSimpleField(
+              masked_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(std::u16string())
+          .AddUserInfo(kMasterCard, UserInfo::IsExactMatch(true))
+          .AppendField(masked_card.ObfuscatedLastFourDigits(),
+                       /*text_to_fill*/ std::u16string(),
+                       masked_card.ObfuscatedLastFourDigits(),
+                       masked_card.guid(),
+                       /*is_obfuscated=*/false,
+                       /*selectable=*/true)
+          .AppendSimpleField(masked_card.Expiration2DigitMonthAsString())
+          .AppendSimpleField(masked_card.Expiration4DigitYearAsString())
+          .AppendSimpleField(
+              masked_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(std::u16string())
+          .Build());
+}
+
+// Tests that when |kAutofillFillMerchantPromoCodeFields| feature is enabled,
+// promo codes are shown.
+TEST_F(CreditCardAccessoryControllerTestSupportingPromoCodeOffers,
+       RefreshSuggestionsWithPromoCodeOffers) {
+  autofill::CreditCard card = test::GetCreditCard();
+  data_manager_.AddCreditCard(card);
+  // Getting a promo code whose |merchant_origins| contains AutofillClient's
+  // |last_committed_url_|.
+  autofill::AutofillOfferData promo_code_valid = test::GetPromoCodeOfferData(
+      /*merchant_origin=*/GURL(kExampleSite),
+      /*is_expired=*/false);
+  autofill::AutofillOfferData promo_code_origin_mismatch =
+      test::GetPromoCodeOfferData(
+          /*merchant_origin=*/GURL("https://someorigin.com"),
+          /*is_expired=*/false);
+  autofill::AutofillOfferData promo_code_expired = test::GetPromoCodeOfferData(
+      /*merchant_origin=*/GURL(kExampleSite),
+      /*is_expired=*/true);
+  data_manager_.AddAutofillOfferData(promo_code_valid);
+  data_manager_.AddAutofillOfferData(promo_code_origin_mismatch);
+  data_manager_.AddAutofillOfferData(promo_code_expired);
+  autofill::AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
+                                      std::u16string());
+
+  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
+      .WillOnce(SaveArg<0>(&result));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  EXPECT_EQ(result, controller()->GetSheetData());
+  // Only valid promo code should appear in the AccessorySheet.
+  EXPECT_EQ(
+      result,
+      CreditCardAccessorySheetDataBuilder()
+          .AddUserInfo(kVisaCard)
+          .AppendField(card.ObfuscatedLastFourDigits(),
+                       /*text_to_fill=*/std::u16string(),
+                       card.ObfuscatedLastFourDigits(), card.guid(),
+                       /*is_obfuscated=*/false,
+                       /*selectable=*/true)
+          .AppendSimpleField(card.Expiration2DigitMonthAsString())
+          .AppendSimpleField(card.Expiration4DigitYearAsString())
+          .AppendSimpleField(card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(std::u16string())
+          .AddPromoCodeInfo(
+              base::ASCIIToUTF16(promo_code_valid.promo_code),
+              base::ASCIIToUTF16(
+                  promo_code_valid.display_strings.value_prop_text))
+          .Build());
+}
+
+// Tests that when |kAutofillFillMerchantPromoCodeFields| feature is disabled,
+// promo codes are not shown.
+TEST_F(CreditCardAccessoryControllerTest,
+       RefreshSuggestionsWithPromoCodeOffers) {
+  autofill::CreditCard card = test::GetCreditCard();
+  data_manager_.AddCreditCard(card);
+  autofill::AutofillOfferData promo_code = test::GetPromoCodeOfferData(
+      /*merchant_origin=*/GURL(kExampleSite));
+  data_manager_.AddAutofillOfferData(promo_code);
+  autofill::AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
+                                      std::u16string());
+
+  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
+      .WillOnce(SaveArg<0>(&result));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  EXPECT_EQ(result, controller()->GetSheetData());
+  // Promo code offers are available, but not shown.
+  EXPECT_EQ(
+      result,
+      CreditCardAccessorySheetDataBuilder()
+          .AddUserInfo(kVisaCard)
+          .AppendField(card.ObfuscatedLastFourDigits(),
+                       /*text_to_fill=*/std::u16string(),
+                       card.ObfuscatedLastFourDigits(), card.guid(),
+                       /*is_obfuscated=*/false,
+                       /*selectable=*/true)
+          .AppendSimpleField(card.Expiration2DigitMonthAsString())
+          .AppendSimpleField(card.Expiration4DigitYearAsString())
+          .AppendSimpleField(card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
           .AppendSimpleField(std::u16string())
           .Build());
 }

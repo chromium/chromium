@@ -104,6 +104,9 @@ enum SelectionMode { "select", "start", "end", "preserve" };
     // https://w3c.github.io/html-media-capture/#the-capture-attribute
     [Measure, RuntimeEnabled=MediaCapture, Reflect] attribute DOMString capture;
 
+    // https://github.com/whatwg/html/issues/6909
+    [RaisesException, RuntimeEnabled=HTMLInputElementShowPicker] void showPicker();
+
     // Non-standard APIs
     [Reflect, MeasureAs=PrefixedDirectoryAttribute] attribute boolean webkitdirectory;
     [Reflect, MeasureAs=IncrementalAttribute] attribute boolean incremental;

@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -42,6 +41,10 @@ namespace storage_monitor {
 class StorageMonitorWinTest : public testing::Test {
  public:
   StorageMonitorWinTest();
+
+  StorageMonitorWinTest(const StorageMonitorWinTest&) = delete;
+  StorageMonitorWinTest& operator=(const StorageMonitorWinTest&) = delete;
+
   ~StorageMonitorWinTest() override;
 
  protected:
@@ -74,8 +77,6 @@ class StorageMonitorWinTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageMonitorWinTest);
 };
 
 StorageMonitorWinTest::StorageMonitorWinTest() {

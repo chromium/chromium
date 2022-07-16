@@ -14,7 +14,7 @@ namespace base {
 
 namespace {
 
-constexpr TimeDelta kReceiveTimeout = base::TimeDelta::FromMilliseconds(750);
+constexpr TimeDelta kReceiveTimeout = base::Milliseconds(750);
 
 class HangingReceiveThread : public DelegateSimpleThread::Delegate {
  public:

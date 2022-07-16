@@ -61,6 +61,10 @@ class InspectDOMHandler : public web::WebUIIOSMessageHandler,
                           public JavaScriptConsoleFeatureDelegate {
  public:
   InspectDOMHandler();
+
+  InspectDOMHandler(const InspectDOMHandler&) = delete;
+  InspectDOMHandler& operator=(const InspectDOMHandler&) = delete;
+
   ~InspectDOMHandler() override;
 
   // WebUIIOSMessageHandler implementation
@@ -81,8 +85,6 @@ class InspectDOMHandler : public web::WebUIIOSMessageHandler,
 
   // Whether or not logging is enabled.
   bool logging_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InspectDOMHandler);
 };
 
 InspectDOMHandler::InspectDOMHandler() {}
@@ -93,10 +95,16 @@ InspectDOMHandler::~InspectDOMHandler() {
 }
 
 void InspectDOMHandler::HandleSetLoggingEnabled(const base::ListValue* args) {
-  DCHECK_EQ(1u, args->GetSize());
+  auto args_list = args->GetList();
+  if (args_list.size() != 1) {
+    NOTREACHED();
+    return;
+  }
 
   bool enabled = false;
-  if (!args->GetBoolean(0, &enabled)) {
+  if (args_list[0].is_bool()) {
+    enabled = args_list[0].GetBool();
+  } else {
     NOTREACHED();
   }
 
@@ -120,7 +128,7 @@ void InspectDOMHandler::SetLoggingEnabled(bool enabled) {
 }
 
 void InspectDOMHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setLoggingEnabled",
       base::BindRepeating(&InspectDOMHandler::HandleSetLoggingEnabled,
                           base::Unretained(this)));

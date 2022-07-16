@@ -150,8 +150,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, CopyImageToClipboard) {
 }
 
 // Verifies that `HoldingSpaceClient::OpenDownloads()` works as intended.
-// TODO(crbug.com/1139299): Flaky.
-IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, DISABLED_OpenDownloads) {
+IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenDownloads) {
   ASSERT_TRUE(HoldingSpaceController::Get());
 
   auto* holding_space_client = HoldingSpaceController::Get()->client();
@@ -253,13 +252,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItems) {
 // Verifies that `HoldingSpaceClient::ShowItemInFolder()` works as intended when
 // attempting to open holding space items backed by both non-existing and
 // existing files.
-// Flaky on linux-chromeos-dbg (https://crbug.com/1130958)
-#ifdef NDEBUG
-#define MAYBE_ShowItemInFolder ShowItemInFolder
-#else
-#define MAYBE_ShowItemInFolder DISABLED_ShowItemInFolder
-#endif
-IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, MAYBE_ShowItemInFolder) {
+IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, ShowItemInFolder) {
   ASSERT_TRUE(HoldingSpaceController::Get());
 
   auto* holding_space_client = HoldingSpaceController::Get()->client();

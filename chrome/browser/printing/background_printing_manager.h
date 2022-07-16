@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 
 namespace content {
@@ -29,6 +28,11 @@ class BackgroundPrintingManager {
   class Observer;
 
   BackgroundPrintingManager();
+
+  BackgroundPrintingManager(const BackgroundPrintingManager&) = delete;
+  BackgroundPrintingManager& operator=(const BackgroundPrintingManager&) =
+      delete;
+
   ~BackgroundPrintingManager();
 
   // Takes ownership of |preview_dialog| and deletes it when |preview_dialog|
@@ -58,21 +62,21 @@ class BackgroundPrintingManager {
   // version of the WebContents.
   struct PrintingContents {
     PrintingContents();
-    ~PrintingContents();
+
+    PrintingContents(const PrintingContents&) = delete;
+    PrintingContents& operator=(const PrintingContents&) = delete;
+
     PrintingContents(PrintingContents&&);
     PrintingContents& operator=(PrintingContents&&);
 
+    ~PrintingContents();
+
     std::unique_ptr<content::WebContents> contents;
     std::unique_ptr<Observer> observer;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(PrintingContents);
   };
   std::map<content::WebContents*, PrintingContents> printing_contents_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundPrintingManager);
 };
 
 }  // namespace printing

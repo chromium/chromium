@@ -1,0 +1,1 @@
+{"units": "you-nits", "traces": {"trace_with_three_samples": ["140.0", "43.20493798938573"], "trace_with_multiple_samples": ["250.0", "111.80339887498948"], "trace_with_one_sample_comma": ["177.0", "0.0"], "trace_with_one_sample": ["177.0", "0.0"], "trace_with_three_samples_comma": ["140.0", "43.20493798938573"]}}

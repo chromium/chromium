@@ -22,6 +22,7 @@ mojom("mojom") {
     ":nearby_share_target_types",
     "//device/bluetooth/public/mojom:deprecated_experimental_interfaces",
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
     "//services/network/public/mojom",
     "//url/mojom:url_mojom_gurl",
   ]

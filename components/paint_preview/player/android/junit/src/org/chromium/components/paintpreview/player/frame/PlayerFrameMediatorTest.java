@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Parcel;
 import android.util.Pair;
@@ -213,6 +214,11 @@ public class PlayerFrameMediatorTest {
         public GURL onClick(UnguessableToken frameGuid, int x, int y) {
             mClickedPoints.add(new ClickedPoint(frameGuid, x, y));
             return null;
+        }
+
+        @Override
+        public Point getRootFrameOffsets() {
+            return new Point();
         }
     }
 

@@ -52,6 +52,7 @@ sys.path.insert(1, _CLIENT_DIR)
 import chromedriver
 import websocket_connection
 import webelement
+import webshadowroot
 sys.path.remove(_CLIENT_DIR)
 
 sys.path.insert(1, _SERVER_DIR)
@@ -125,11 +126,6 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'ChromeDriverTestLegacy.testContextMenuEventFired',
     # Flaky: https://crbug.com/1157533.
     'ChromeDriverTest.testShadowDomFindElement',
-    # Failing: https://crbug.com/1223643.
-    'ChromeDriverSecureContextTest.testRemoveCredential',
-    'ChromeDriverSecureContextTest.testRemoveAllCredentials',
-    'ChromeDriverSecureContextTest.testAddVirtualAuthenticatorDefaultParams',
-    'ChromeDriverSecureContextTest.testSetUserVerified',
 ]
 
 _DESKTOP_NEGATIVE_FILTER = [
@@ -828,6 +824,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.SwitchToFrame('id')
     self.assertTrue(self._driver.ExecuteScript('return window.top != window'))
     self._driver.ExecuteScript('parent.postMessage("remove", "*");')
+    self._driver.SwitchToMainFrame()
     self.assertTrue(self._driver.ExecuteScript('return window.top == window'))
 
   def testSwitchToStaleFrame(self):
@@ -850,6 +847,70 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
   def testGetPageSource(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/page_test.html'))
     self.assertTrue('Link to empty.html' in self._driver.GetPageSource())
+
+  def testGetElementShadowRoot(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/get_element_shadow_root.html'))
+    element = self._driver.FindElement('tag name', 'custom-checkbox-element')
+    shadow = element.GetElementShadowRoot()
+    self.assertTrue(isinstance(shadow, webshadowroot.WebShadowRoot))
+
+  def testGetElementShadowRootNotExists(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/get_element_shadow_root.html'))
+    element = self._driver.FindElement('tag name', 'div')
+    with self.assertRaises(chromedriver.NoSuchShadowRoot):
+      element.GetElementShadowRoot()
+
+  def testFindElementFromShadowRoot(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/get_element_shadow_root.html'))
+    element = self._driver.FindElement('tag name', 'custom-checkbox-element')
+    shadow = element.GetElementShadowRoot()
+    self.assertTrue(isinstance(shadow, webshadowroot.WebShadowRoot))
+    elementInShadow = shadow.FindElement('css selector', 'input')
+    self.assertTrue(isinstance(elementInShadow, webelement.WebElement))
+
+  def testFindElementFromShadowRootInvalidArgs(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/get_element_shadow_root.html'))
+    element = self._driver.FindElement('tag name', 'custom-checkbox-element')
+    shadow = element.GetElementShadowRoot()
+    self.assertTrue(isinstance(shadow, webshadowroot.WebShadowRoot))
+    with self.assertRaises(chromedriver.InvalidArgument):
+      shadow.FindElement('tag name', 'input')
+    with self.assertRaises(chromedriver.InvalidArgument):
+      shadow.FindElement('xpath', '//')
+
+  def testDetachedShadowRootError(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/get_element_shadow_root.html'))
+    element = self._driver.FindElement('tag name', 'custom-checkbox-element')
+    shadow = element.GetElementShadowRoot()
+    self._driver.Refresh()
+    with self.assertRaises(chromedriver.DetachedShadowRoot):
+      shadow.FindElement('css selector', 'input')
+
+  def testFindElementsFromShadowRoot(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/get_element_shadow_root.html'))
+    element = self._driver.FindElement('tag name', 'custom-checkbox-element')
+    shadow = element.GetElementShadowRoot()
+    self.assertTrue(isinstance(shadow, webshadowroot.WebShadowRoot))
+    elementsInShadow = shadow.FindElements('css selector', 'input')
+    self.assertTrue(isinstance(elementsInShadow, list))
+    self.assertTrue(2, len(elementsInShadow))
+
+  def testFindElementsFromShadowRootInvalidArgs(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/get_element_shadow_root.html'))
+    element = self._driver.FindElement('tag name', 'custom-checkbox-element')
+    shadow = element.GetElementShadowRoot()
+    self.assertTrue(isinstance(shadow, webshadowroot.WebShadowRoot))
+    with self.assertRaises(chromedriver.InvalidArgument):
+      shadow.FindElements('tag name', 'input')
+    with self.assertRaises(chromedriver.InvalidArgument):
+      shadow.FindElements('xpath', '//')
 
   def testFindElement(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
@@ -926,6 +987,23 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     alert_button = self._driver.FindElement('css selector', '#aa1')
     alert_button.Click()
     self.assertTrue(self._driver.IsAlertOpen())
+
+  def testClickElementJustOutsidePage(self):
+    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=3878
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    windowHeight = self._driver.ExecuteScript('return window.innerHeight;')
+    self._driver.ExecuteScript(
+        '''
+        document.body.innerHTML = "<div style='height:%dpx'></div>" +
+          "<a href='#' onclick='return false;' id='link'>Click me</a>";
+        document.body.style.cssText = "padding:0.25px";
+        ''' % (2 * windowHeight))
+
+    link = self._driver.FindElement('css selector', '#link')
+    offsetTop = link.GetProperty('offsetTop')
+    targetScrollTop = offsetTop - windowHeight + 1
+    self._driver.ExecuteScript('window.scrollTo(0, %d);' % (targetScrollTop));
+    link.Click()
 
   def testActionsMouseMove(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
@@ -1647,6 +1725,15 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     elem.SendKeys(input_value)
     value = elem.GetProperty('value')
     self.assertEquals(input_value, value)
+
+  def testSendKeysNonBmp(self):
+    self._driver.Load(ChromeDriverTest.GetHttpUrlForFile(
+        '/chromedriver/two_inputs.html'))
+    elem = self._driver.FindElement('css selector', '#first')
+    expected = u'T\U0001f4a9XL\u0436'.encode('utf-8')
+    elem.SendKeys(expected)
+    actual = elem.GetProperty('value').encode('utf-8')
+    self.assertEquals(expected, actual)
 
   def testGetElementAttribute(self):
     self._driver.Load(self.GetHttpUrlForFile(
@@ -3063,6 +3150,43 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
         is_desktop,
         self._driver.capabilities['webauthn:extension:largeBlob'])
 
+  def testCanClickInIframesInShadow(self):
+    """Test that you can interact with a iframe within a shadow element.
+       See https://bugs.chromium.org/p/chromedriver/issues/detail?id=3445
+    """
+    self._driver.SetTimeouts({'implicit': 2000})
+    self._driver.Load(self.GetHttpUrlForFile(
+        '/chromedriver/shadow_iframe.html'))
+    frame = self._driver.ExecuteScript(
+      '''return document.querySelector("#shadow")
+          .shadowRoot.querySelector("iframe")''')
+    self._driver.SwitchToFrame(frame)
+    message = self._driver.FindElement('css selector', '#message')
+    self.assertTrue('clicked' not in message.GetText())
+    button = self._driver.FindElement('tag name', 'button')
+    button.Click()
+    message = self._driver.FindElement('css selector', '#message.result')
+    self.assertTrue('clicked' in message.GetText())
+
+  def testCanClickInIframesInShadowScrolled(self):
+    """Test that you can interact with a scrolled iframe
+       within a scrolled shadow element.
+       See https://bugs.chromium.org/p/chromedriver/issues/detail?id=3445
+    """
+    self._driver.SetTimeouts({'implicit': 2000})
+    self._driver.Load(self.GetHttpUrlForFile(
+        '/chromedriver/shadow_iframe.html'))
+    frame = self._driver.ExecuteScript(
+      '''return document.querySelector("#shadow_scroll")
+          .shadowRoot.querySelector("iframe")''')
+    self._driver.SwitchToFrame(frame)
+    message = self._driver.FindElement('css selector', '#message')
+    self.assertTrue('clicked' not in message.GetText())
+    button = self._driver.FindElement('tag name', 'button')
+    button.Click()
+    message = self._driver.FindElement('css selector', '#message.result')
+    self.assertTrue('clicked' in message.GetText())
+
 class ChromeDriverBackgroundTest(ChromeDriverBaseTestWithWebServer):
   def setUp(self):
     self._driver1 = self.CreateDriver()
@@ -3721,6 +3845,25 @@ class ChromeDriverTestLegacy(ChromeDriverBaseTestWithWebServer):
         'return arguments[0].value;', first))
     self.assertEquals('prickly pete', self._driver.ExecuteScript(
         'return arguments[0].value;', second))
+
+  def testSendingTabKeyMovesToNextInputElementEscapedTab(self):
+    """This behavior is not specified by the WebDriver standard
+    but it is supported by us de facto.
+    According to this table https://www.w3.org/TR/webdriver/#keyboard-actions
+    the code point 0x09 (HT) must be sent to the browser via a CompositionEvent.
+    We however historically have been sending it as KeyEvent
+    with code = ui::VKEY_TAB which leads to focus change.
+    For the sake of contrast GeckoDriver and Firefox do not show this behavior.
+    If in the future it turns out that our current behavior is undesirable
+    we can remove this test.
+    """
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/two_inputs.html'))
+    first = self._driver.FindElement('css selector', '#first')
+    second = self._driver.FindElement('css selector', '#second')
+    first.Click()
+    self._driver.SendKeys('snoopy\tprickly pete')
+    self.assertEquals('snoopy', first.GetProperty('value'))
+    self.assertEquals('prickly pete', second.GetProperty('value'))
 
   def testMobileEmulationDisabledByDefault(self):
     self.assertFalse(self._driver.capabilities['mobileEmulationEnabled'])

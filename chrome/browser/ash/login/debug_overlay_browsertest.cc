@@ -14,17 +14,16 @@
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kDebugButton[] = "invokeDebuggerButton";
 constexpr char kDebugOverlay[] = "debuggerOverlay";
 constexpr char kScreensPanel[] = "DebuggerPanelScreens";
 
-constexpr int kOobeScreensCount = 38;
-constexpr int kLoginScreensCount = 34;
-constexpr int kOsInstallScreensCount = 1;
+constexpr int kOobeScreensCount = 40;
+constexpr int kLoginScreensCount = 36;
+constexpr int kOsInstallScreensCount = 2;
 
 std::string ElementsInPanel(const std::string& panel) {
   return base::StrCat({"$('", panel, "').children.length"});
@@ -39,7 +38,7 @@ class DebugOverlayTest : public OobeBaseTest {
   ~DebugOverlayTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(::chromeos::switches::kShowOobeDevOverlay);
+    command_line->AppendSwitch(switches::kShowOobeDevOverlay);
     OobeBaseTest::SetUpCommandLine(command_line);
   }
 };
@@ -95,7 +94,7 @@ IN_PROC_BROWSER_TEST_P(DebugOverlayScreensTest, ExpectScreenButtonsCount) {
 INSTANTIATE_TEST_SUITE_P(All, DebugOverlayScreensTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(DebugOverlayOnLoginTest, ExpectScreenButtonsCount) {
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   WaitForOobeUI();
   test::OobeJS().ExpectHidden(kDebugOverlay);
   test::OobeJS().ExpectVisible(kDebugButton);
@@ -104,4 +103,4 @@ IN_PROC_BROWSER_TEST_F(DebugOverlayOnLoginTest, ExpectScreenButtonsCount) {
   test::OobeJS().ExpectEQ(ElementsInPanel(kScreensPanel), kLoginScreensCount);
 }
 
-}  // namespace chromeos
+}  // namespace ash

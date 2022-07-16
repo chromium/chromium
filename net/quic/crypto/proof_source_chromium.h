@@ -23,6 +23,10 @@ namespace net {
 class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
  public:
   ProofSourceChromium();
+
+  ProofSourceChromium(const ProofSourceChromium&) = delete;
+  ProofSourceChromium& operator=(const ProofSourceChromium&) = delete;
+
   ~ProofSourceChromium() override;
 
   // Initializes this object based on the certificate chain in |cert_path|,
@@ -44,7 +48,8 @@ class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
   quic::QuicReferenceCountedPointer<Chain> GetCertChain(
       const quic::QuicSocketAddress& server_address,
       const quic::QuicSocketAddress& client_address,
-      const std::string& hostname) override;
+      const std::string& hostname,
+      bool* cert_matched_sni) override;
 
   void ComputeTlsSignature(
       const quic::QuicSocketAddress& server_address,
@@ -53,6 +58,9 @@ class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
       uint16_t signature_algorithm,
       absl::string_view in,
       std::unique_ptr<SignatureCallback> callback) override;
+
+  absl::InlinedVector<uint16_t, 8> SupportedTlsSignatureAlgorithms()
+      const override;
 
   TicketCrypter* GetTicketCrypter() override;
   void SetTicketCrypter(std::unique_ptr<TicketCrypter> ticket_crypter);
@@ -68,11 +76,10 @@ class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
       quic::QuicCryptoProof* proof);
 
   std::unique_ptr<crypto::RSAPrivateKey> private_key_;
+  CertificateList certs_in_file_;
   quic::QuicReferenceCountedPointer<quic::ProofSource::Chain> chain_;
   std::string signed_certificate_timestamp_;
   std::unique_ptr<TicketCrypter> ticket_crypter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProofSourceChromium);
 };
 
 }  // namespace net

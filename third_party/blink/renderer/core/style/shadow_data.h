@@ -57,8 +57,8 @@ class CORE_EXPORT ShadowData {
 
   static ShadowData NeutralValue();
 
-  float X() const { return location_.X(); }
-  float Y() const { return location_.Y(); }
+  float X() const { return location_.x(); }
+  float Y() const { return location_.y(); }
   FloatPoint Location() const { return location_; }
   float Blur() const { return blur_; }
   float Spread() const { return spread_; }

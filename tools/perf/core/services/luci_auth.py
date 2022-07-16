@@ -5,6 +5,7 @@
 import re
 import subprocess
 import sys
+import six
 
 
 _RE_INFO_USER_EMAIL = r'Logged in as (?P<email>\S+)\.$'
@@ -16,9 +17,10 @@ class AuthorizationError(Exception):
 
 def _RunCommand(command):
   try:
-    return subprocess.check_output(
-        ['luci-auth', command], stderr=subprocess.STDOUT,
-        universal_newlines=True)
+    return six.ensure_str(
+        subprocess.check_output(['luci-auth', command],
+                                stderr=subprocess.STDOUT,
+                                universal_newlines=True))
   except subprocess.CalledProcessError as exc:
     raise AuthorizationError(exc.output.strip())
 
@@ -32,7 +34,7 @@ def CheckLoggedIn():
   try:
     GetAccessToken()
   except AuthorizationError as exc:
-    sys.exit(exc.message)
+    sys.exit(str(exc))
 
 
 def GetAccessToken():

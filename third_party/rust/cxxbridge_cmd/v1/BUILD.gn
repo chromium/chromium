@@ -1,0 +1,37 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("cxxbridge") {
+  crate_type = "bin"
+  crate_root = "crate/src/main.rs"
+  sources = [ "crate/src/main.rs" ]
+  edition = "2018"
+  deps = [
+    "//third_party/rust/clap/v2:lib",
+    "//third_party/rust/codespan_reporting/v0_11:lib",
+    "//third_party/rust/proc_macro2/v1:lib",
+    "//third_party/rust/quote/v1:lib",
+    "//third_party/rust/syn/v1:lib",
+  ]
+}
+cargo_crate("lib") {
+  crate_name = "cxxbridge_cmd"
+  epoch = "1"
+  crate_type = "rlib"
+  crate_root = "crate/src/lib.rs"
+
+  # Unit tests skipped. Generate with --with-tests to include them
+  skip_unit_tests = true
+  sources = [ "crate/src/lib.rs" ]
+  edition = "2018"
+  deps = [
+    "//third_party/rust/clap/v2:lib",
+    "//third_party/rust/codespan_reporting/v0_11:lib",
+    "//third_party/rust/proc_macro2/v1:lib",
+    "//third_party/rust/quote/v1:lib",
+    "//third_party/rust/syn/v1:lib",
+  ]
+}

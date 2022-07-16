@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,8 +34,7 @@ const char kLowDiskId[] = "crostini_low_disk";
 const char kNotifierLowDisk[] = "crostini.disk";
 const uint64_t kNotificationThreshold = 1 << 30;          // 1GB
 const uint64_t kNotificationSevereThreshold = 512 << 20;  // 512MB
-constexpr base::TimeDelta kNotificationInterval =
-    base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kNotificationInterval = base::Minutes(2);
 
 chromeos::CiceroneClient* GetCiceroneClient() {
   return chromeos::CiceroneClient::Get();
@@ -72,8 +71,8 @@ void CrostiniLowDiskNotification::ShowNotificationIfAppropriate(
   if (severity == Severity::NONE) {
     return;
   }
-  if (!chromeos::CrosSettings::Get()->GetBoolean(
-          chromeos::kDeviceShowLowDiskSpaceNotification,
+  if (!ash::CrosSettings::Get()->GetBoolean(
+          ash::kDeviceShowLowDiskSpaceNotification,
           &show_low_disk_space_notification)) {
     DVLOG(1) << "DeviceShowLowDiskSpaceNotification not set, "
                 "defaulting to showing the notification.";

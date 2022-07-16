@@ -5,7 +5,7 @@
 #ifndef CONTENT_RENDERER_MEDIA_ANDROID_STREAM_TEXTURE_WRAPPER_IMPL_H_
 #define CONTENT_RENDERER_MEDIA_ANDROID_STREAM_TEXTURE_WRAPPER_IMPL_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/renderer/media/android/stream_texture_factory.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -48,6 +48,9 @@ class CONTENT_EXPORT StreamTextureWrapperImpl
       bool enable_texture_copy,
       scoped_refptr<StreamTextureFactory> factory,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
+
+  StreamTextureWrapperImpl(const StreamTextureWrapperImpl&) = delete;
+  StreamTextureWrapperImpl& operator=(const StreamTextureWrapperImpl&) = delete;
 
   // Creates the underlying StreamTexture, and binds |stream_texture_proxy_| to
   // |compositor_task_runner|.
@@ -123,8 +126,6 @@ class CONTENT_EXPORT StreamTextureWrapperImpl
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
 
   base::WeakPtrFactory<StreamTextureWrapperImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StreamTextureWrapperImpl);
 };
 
 }  // namespace media

@@ -10,6 +10,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/settings/timezone_settings.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -20,8 +22,6 @@
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_util.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scoped_wake_lock.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -47,18 +47,18 @@ DeviceScheduledRebootHandler::DeviceScheduledRebootHandler(
     std::unique_ptr<ScheduledTaskExecutor> scheduled_task_executor)
     : cros_settings_(cros_settings),
       cros_settings_subscription_(cros_settings_->AddSettingsObserver(
-          chromeos::kDeviceScheduledReboot,
+          ash::kDeviceScheduledReboot,
           base::BindRepeating(
               &DeviceScheduledRebootHandler::OnScheduledRebootDataChanged,
               base::Unretained(this)))),
       scheduled_task_executor_(std::move(scheduled_task_executor)) {
-  chromeos::system::TimezoneSettings::GetInstance()->AddObserver(this);
+  ash::system::TimezoneSettings::GetInstance()->AddObserver(this);
   // Check if policy already exists.
   OnScheduledRebootDataChanged();
 }
 
 DeviceScheduledRebootHandler::~DeviceScheduledRebootHandler() {
-  chromeos::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  ash::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
 }
 
 void DeviceScheduledRebootHandler::OnRebootTimerExpired() {
@@ -93,7 +93,7 @@ void DeviceScheduledRebootHandler::OnScheduledRebootDataChanged() {
   // If the policy is removed then reset all state including any existing
   // scheduled reboots.
   const base::Value* value =
-      cros_settings_->GetPref(chromeos::kDeviceScheduledReboot);
+      cros_settings_->GetPref(ash::kDeviceScheduledReboot);
   if (!value) {
     ResetState();
     return;

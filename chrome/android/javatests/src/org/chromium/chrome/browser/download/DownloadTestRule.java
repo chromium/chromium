@@ -212,7 +212,7 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
         public void onDownloadItemUpdated(DownloadItem item) {}
 
         @Override
-        public void broadcastDownloadSuccessfulForTesting(DownloadInfo downloadInfo) {
+        public void broadcastDownloadSuccessful(DownloadInfo downloadInfo) {
             mLastDownloadFilePath = downloadInfo.getFilePath();
             mHttpDownloadFinished.notifyCalled();
         }

@@ -37,6 +37,10 @@ class VideoPlaneController {
   VideoPlaneController(
       const Size& graphics_resolution,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner);
+
+  VideoPlaneController(const VideoPlaneController&) = delete;
+  VideoPlaneController& operator=(const VideoPlaneController&) = delete;
+
   ~VideoPlaneController();
 
   // Sets the video plane geometry in *graphics plane coordinates*. If there is
@@ -95,8 +99,6 @@ class VideoPlaneController {
   scoped_refptr<RateLimitedSetVideoPlaneGeometry> video_plane_wrapper_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoPlaneController);
 };
 
 }  // namespace media

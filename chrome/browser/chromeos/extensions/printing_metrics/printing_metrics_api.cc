@@ -4,9 +4,9 @@
 
 #include "chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_api.h"
 
+#include "chrome/browser/ash/printing/history/print_job_history_service.h"
+#include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
 #include "chrome/browser/chromeos/extensions/printing_metrics/print_job_info_idl_conversions.h"
-#include "chrome/browser/chromeos/printing/history/print_job_history_service.h"
-#include "chrome/browser/chromeos/printing/history/print_job_history_service_factory.h"
 #include "chrome/common/extensions/api/printing_metrics.h"
 #include "content/public/browser/browser_context.h"
 
@@ -16,8 +16,8 @@ PrintingMetricsGetPrintJobsFunction::~PrintingMetricsGetPrintJobsFunction() =
     default;
 
 ExtensionFunction::ResponseAction PrintingMetricsGetPrintJobsFunction::Run() {
-  chromeos::PrintJobHistoryService* print_job_history_service =
-      chromeos::PrintJobHistoryServiceFactory::GetForBrowserContext(
+  ash::PrintJobHistoryService* print_job_history_service =
+      ash::PrintJobHistoryServiceFactory::GetForBrowserContext(
           browser_context());
   print_job_history_service->GetPrintJobs(base::BindOnce(
       &PrintingMetricsGetPrintJobsFunction::OnPrintJobsRetrieved, this));

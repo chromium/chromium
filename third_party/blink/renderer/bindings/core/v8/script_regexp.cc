@@ -64,7 +64,7 @@ ScriptRegexp::ScriptRegexp(const String& pattern,
                                         static_cast<v8::RegExp::Flags>(flags),
                                         kBacktrackLimit)
           .ToLocal(&regex))
-    regex_.Set(isolate, regex);
+    regex_.Reset(isolate, regex);
   if (try_catch.HasCaught() && !try_catch.Message().IsEmpty())
     exception_message_ =
         ToCoreStringWithUndefinedOrNullCheck(try_catch.Message()->Get());
@@ -93,7 +93,7 @@ int ScriptRegexp::Match(StringView string,
   v8::Context::Scope context_scope(context);
   v8::TryCatch try_catch(isolate);
 
-  v8::Local<v8::RegExp> regex = regex_.NewLocal(isolate);
+  v8::Local<v8::RegExp> regex = regex_.Get(isolate);
   v8::Local<v8::String> subject =
       V8String(isolate, StringView(string, start_from));
   v8::Local<v8::Value> return_value;

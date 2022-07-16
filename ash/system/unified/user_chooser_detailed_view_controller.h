@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/unified/detailed_view_controller.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -20,6 +19,12 @@ class ASH_EXPORT UserChooserDetailedViewController
  public:
   explicit UserChooserDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
+
+  UserChooserDetailedViewController(const UserChooserDetailedViewController&) =
+      delete;
+  UserChooserDetailedViewController& operator=(
+      const UserChooserDetailedViewController&) = delete;
+
   ~UserChooserDetailedViewController() override;
 
   // Return true if user chooser is enabled. Called from the view.
@@ -40,8 +45,6 @@ class ASH_EXPORT UserChooserDetailedViewController
 
  private:
   UnifiedSystemTrayController* tray_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserChooserDetailedViewController);
 };
 
 }  // namespace ash

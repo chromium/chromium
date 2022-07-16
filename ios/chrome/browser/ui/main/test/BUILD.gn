@@ -21,6 +21,7 @@ source_set("test") {
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/main:scene",
     "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test/fakes",
   ]
 }

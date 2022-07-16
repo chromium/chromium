@@ -64,8 +64,8 @@ NSString* const kFindInPageActivityType =
 }
 
 - (void)performActivity {
-  [self.handler openFindInPage];
   [self activityDidFinish:YES];
+  [self.handler openFindInPage];
 }
 
 @end

@@ -43,6 +43,9 @@ class ExpectCTBrowserTest : public CertVerifierBrowserTest {
         true);
   }
 
+  ExpectCTBrowserTest(const ExpectCTBrowserTest&) = delete;
+  ExpectCTBrowserTest& operator=(const ExpectCTBrowserTest&) = delete;
+
   ~ExpectCTBrowserTest() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
         absl::nullopt);
@@ -121,8 +124,6 @@ class ExpectCTBrowserTest : public CertVerifierBrowserTest {
   // The report-uri value to use in the Expect-CT header for requests handled by
   // ExpectCTHeaderRequestHandler.
   GURL report_uri_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpectCTBrowserTest);
 };
 
 // Tests that an Expect-CT reporter is properly set up and used for violations
@@ -156,11 +157,11 @@ IN_PROC_BROWSER_TEST_F(ExpectCTBrowserTest, TestDynamicExpectCTReporting) {
   mock_cert_verifier()->AddResultForCert(cert, verify_result, net::OK);
 
   // Fire off a request so that |test_server| sets a valid Expect-CT header.
-  ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/")));
 
   // Navigate to a test server URL, which should trigger an Expect-CT report
   // because the test server doesn't serve SCTs.
-  ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/")));
   WaitForReport();
   // WaitForReport() does not return util ReportRequestHandler runs, and the
   // handler does all the assertions, so there are no more assertions needed
@@ -202,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(ExpectCTBrowserTest,
 
   // Navigate to a test server URL, whose header should trigger an Expect-CT
   // report because the test server doesn't serve SCTs.
-  ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/")));
   WaitForReport();
   // WaitForReport() does not return util ReportRequestHandler runs, and the
   // handler does all the assertions, so there are no more assertions needed

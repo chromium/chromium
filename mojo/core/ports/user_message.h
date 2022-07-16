@@ -29,6 +29,10 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) UserMessage {
   struct TypeInfo {};
 
   explicit UserMessage(const TypeInfo* type_info);
+
+  UserMessage(const UserMessage&) = delete;
+  UserMessage& operator=(const UserMessage&) = delete;
+
   virtual ~UserMessage();
 
   const TypeInfo* type_info() const { return type_info_; }
@@ -47,8 +51,6 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) UserMessage {
 
  private:
   const TypeInfo* const type_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserMessage);
 };
 
 }  // namespace ports

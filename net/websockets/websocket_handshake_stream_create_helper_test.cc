@@ -84,6 +84,10 @@ class MockClientSocketHandleFactory {
             nullptr /* websocket_endpoint_lock_manager */),
         pool_(1, 1, &common_connect_job_params_) {}
 
+  MockClientSocketHandleFactory(const MockClientSocketHandleFactory&) = delete;
+  MockClientSocketHandleFactory& operator=(
+      const MockClientSocketHandleFactory&) = delete;
+
   // The created socket expects |expect_written| to be written to the socket,
   // and will respond with |return_to_read|. The test will fail if the expected
   // text is not written, or if all the bytes are not read.
@@ -108,8 +112,6 @@ class MockClientSocketHandleFactory {
   WebSocketMockClientSocketFactoryMaker socket_factory_maker_;
   const CommonConnectJobParams common_connect_job_params_;
   MockTransportClientSocketPool pool_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockClientSocketHandleFactory);
 };
 
 class TestConnectDelegate : public WebSocketStream::ConnectDelegate {

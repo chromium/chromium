@@ -17,6 +17,10 @@ namespace audio {
 class ServiceMetrics {
  public:
   explicit ServiceMetrics(const base::TickClock* clock);
+
+  ServiceMetrics(const ServiceMetrics&) = delete;
+  ServiceMetrics& operator=(const ServiceMetrics&) = delete;
+
   ~ServiceMetrics();
 
   void HasConnections();
@@ -28,8 +32,6 @@ class ServiceMetrics {
   const base::TickClock* clock_;
   base::TimeTicks has_connections_start_;
   base::TimeTicks has_no_connections_start_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceMetrics);
 };
 
 }  // namespace audio

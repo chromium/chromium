@@ -20,6 +20,7 @@
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/display_embedder/output_surface_provider.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
+#include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
 #include "components/viz/service/frame_sinks/video_capture/capturable_frame_sink.h"
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
@@ -74,12 +75,6 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
   surface_manager_.AddObserver(this);
 }
 
-FrameSinkManagerImpl::FrameSinkManagerImpl(
-    SharedBitmapManager* shared_bitmap_manager,
-    OutputSurfaceProvider* output_surface_provider)
-    : FrameSinkManagerImpl(
-          InitParams(shared_bitmap_manager, output_surface_provider)) {}
-
 FrameSinkManagerImpl::~FrameSinkManagerImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   video_capturers_.clear();
@@ -93,6 +88,24 @@ FrameSinkManagerImpl::~FrameSinkManagerImpl() {
 
   surface_manager_.RemoveObserver(this);
   surface_manager_.RemoveObserver(&hit_test_manager_);
+}
+
+CompositorFrameSinkImpl* FrameSinkManagerImpl::GetFrameSinkImpl(
+    const FrameSinkId& id) {
+  auto it = sink_map_.find(id);
+  if (it == sink_map_.end()) {
+    return nullptr;
+  }
+  return it->second.get();
+}
+
+FrameSinkBundleImpl* FrameSinkManagerImpl::GetFrameSinkBundle(
+    const FrameSinkBundleId& id) {
+  auto it = bundle_map_.find(id);
+  if (it == bundle_map_.end()) {
+    return nullptr;
+  }
+  return it->second.get();
 }
 
 void FrameSinkManagerImpl::BindAndSetClient(
@@ -173,15 +186,36 @@ void FrameSinkManagerImpl::CreateRootCompositorFrameSink(
     root_sink_map_[frame_sink_id] = std::move(root_compositor_frame_sink);
 }
 
+void FrameSinkManagerImpl::CreateFrameSinkBundle(
+    const FrameSinkBundleId& bundle_id,
+    mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,
+    mojo::PendingRemote<mojom::FrameSinkBundleClient> client) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (base::Contains(bundle_map_, bundle_id)) {
+    receiver_.ReportBadMessage("Duplicate FrameSinkBundle ID");
+    return;
+  }
+
+  bundle_map_[bundle_id] = std::make_unique<FrameSinkBundleImpl>(
+      *this, bundle_id, std::move(receiver), std::move(client));
+}
+
 void FrameSinkManagerImpl::CreateCompositorFrameSink(
     const FrameSinkId& frame_sink_id,
+    const absl::optional<FrameSinkBundleId>& bundle_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
     mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!base::Contains(sink_map_, frame_sink_id));
-
+  if (base::Contains(sink_map_, frame_sink_id)) {
+    receiver_.ReportBadMessage("Duplicate FrameSinkId");
+    return;
+  }
+  if (bundle_id && !GetFrameSinkBundle(*bundle_id)) {
+    VLOG(1) << "Terminating sink established with non-existent bundle";
+    return;
+  }
   sink_map_[frame_sink_id] = std::make_unique<CompositorFrameSinkImpl>(
-      this, frame_sink_id, std::move(receiver), std::move(client));
+      this, frame_sink_id, bundle_id, std::move(receiver), std::move(client));
 }
 
 void FrameSinkManagerImpl::DestroyCompositorFrameSink(
@@ -290,6 +324,11 @@ void FrameSinkManagerImpl::EvictSurfaces(
     if (it == support_map_.end())
       continue;
     it->second->EvictSurface(surface_id.local_surface_id());
+    if (!it->second->is_root())
+      continue;
+    auto root_it = root_sink_map_.find(surface_id.frame_sink_id());
+    if (root_it != root_sink_map_.end())
+      root_it->second->DidEvictSurface(surface_id);
   }
 }
 
@@ -313,6 +352,10 @@ void FrameSinkManagerImpl::SetHitTestAsyncQueriedDebugRegions(
       root_frame_sink_id, hit_test_async_queried_debug_queue);
   DCHECK(base::Contains(root_sink_map_, root_frame_sink_id));
   root_sink_map_[root_frame_sink_id]->ForceImmediateDrawAndSwapIfPossible();
+}
+
+void FrameSinkManagerImpl::DestroyFrameSinkBundle(const FrameSinkBundleId& id) {
+  bundle_map_.erase(id);
 }
 
 void FrameSinkManagerImpl::OnFirstSurfaceActivation(
@@ -570,7 +613,7 @@ base::flat_set<FrameSinkId> FrameSinkManagerImpl::GetChildrenByParent(
   return {};
 }
 
-const CompositorFrameSinkSupport* FrameSinkManagerImpl::GetFrameSinkForId(
+CompositorFrameSinkSupport* FrameSinkManagerImpl::GetFrameSinkForId(
     const FrameSinkId& frame_sink_id) const {
   auto it = support_map_.find(frame_sink_id);
   if (it != support_map_.end())

@@ -12,7 +12,6 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -39,11 +38,10 @@ namespace app_list {
 namespace {
 
 using base::Time;
-using base::TimeDelta;
 using file_manager::file_tasks::FileTasksObserver;
 
 // Limits how frequently models are queried for ranking results.
-constexpr TimeDelta kMinSecondsBetweenFetches = TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kMinSecondsBetweenFetches = base::Seconds(1);
 
 constexpr char kLogFileOpenType[] = "RecurrenceRanker.LogFileOpenType";
 
@@ -194,7 +192,8 @@ void SearchResultRanker::InitializeRankers(
             base::Unretained(this), default_config));
   }
 
-  app_launch_event_logger_ = std::make_unique<app_list::AppLaunchEventLogger>();
+  app_launch_event_logger_ =
+      std::make_unique<app_list::AppLaunchEventLogger>(profile_);
 
   // Initialize on-device app ranking model.
   RecurrenceRankerConfigProto config;

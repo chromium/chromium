@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -48,6 +47,9 @@ class NotificationDelegate : public message_center::NotificationDelegate,
                             base::Unretained(this)));
   }
 
+  NotificationDelegate(const NotificationDelegate&) = delete;
+  NotificationDelegate& operator=(const NotificationDelegate&) = delete;
+
   // ArcSessionManagerObserver:
   void OnArcPlayStoreEnabledChanged(bool enabled) override {
     // ARC Play Store can be only opted out in case notifcation is shown.
@@ -79,8 +81,6 @@ class NotificationDelegate : public message_center::NotificationDelegate,
 
   // Registrar used to monitor ARC enabled state.
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationDelegate);
 };
 
 const gfx::VectorIcon& GetNotificationIcon(ArcManagementTransition transition) {

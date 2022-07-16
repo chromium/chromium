@@ -10,9 +10,9 @@ using sync_pb::UserEventSpecifics;
 
 namespace syncer {
 
-NoOpUserEventService::NoOpUserEventService() {}
+NoOpUserEventService::NoOpUserEventService() = default;
 
-NoOpUserEventService::~NoOpUserEventService() {}
+NoOpUserEventService::~NoOpUserEventService() = default;
 
 void NoOpUserEventService::RecordUserEvent(
     std::unique_ptr<UserEventSpecifics> specifics) {}

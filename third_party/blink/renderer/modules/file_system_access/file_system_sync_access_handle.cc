@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_sync_access_handle.h"
+
+#include "base/files/file_error_or.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
@@ -70,38 +74,24 @@ void FileSystemSyncAccessHandle::DispatchQueuedClose() {
   ScriptPromiseResolver* resolver = queued_close_resolver_;
   queued_close_resolver_ = nullptr;
 
-  worker_pool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      CrossThreadBindOnce(&DoClose, WrapCrossThreadPersistent(this),
-                          WrapCrossThreadPersistent(resolver),
-                          resolver_task_runner_));
-}
-
-// static
-void FileSystemSyncAccessHandle::DoClose(
-    CrossThreadPersistent<FileSystemSyncAccessHandle> access_handle,
-    CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
-  DCHECK(access_handle->file_delegate_->IsValid())
+  // Access file delegate directly rather than through accessor method, which
+  // checks `io_pending_`.
+  DCHECK(file_delegate_->IsValid())
       << "file I/O operation queued after file closed";
-  access_handle->file_delegate_->Close();
 
-  PostCrossThreadTask(
-      *resolver_task_runner, FROM_HERE,
-      CrossThreadBindOnce(&FileSystemSyncAccessHandle::DidClose,
-                          std::move(access_handle), std::move(resolver)));
-}
+  file_delegate_->Close(WTF::Bind(
+      [](ScriptPromiseResolver* resolver,
+         FileSystemSyncAccessHandle* access_handle) {
+        ScriptState* script_state = resolver->GetScriptState();
+        if (!script_state->ContextIsValid())
+          return;
+        ScriptState::Scope scope(script_state);
 
-void FileSystemSyncAccessHandle::DidClose(
-    CrossThreadPersistent<ScriptPromiseResolver> resolver) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-  ScriptState::Scope scope(script_state);
-
-  access_handle_remote_->Close(
-      WTF::Bind([](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
-                std::move(resolver)));
+        access_handle->access_handle_remote_->Close(WTF::Bind(
+            [](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
+            WrapPersistent(resolver)));
+      },
+      WrapPersistent(resolver), WrapPersistent(this)));
 }
 
 ScriptPromise FileSystemSyncAccessHandle::flush(
@@ -121,47 +111,31 @@ ScriptPromise FileSystemSyncAccessHandle::flush(
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  worker_pool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      CrossThreadBindOnce(&DoFlush, WrapCrossThreadPersistent(this),
-                          WrapCrossThreadPersistent(resolver),
-                          resolver_task_runner_));
-  return resolver->Promise();
-}
+  ScriptPromise result = resolver->Promise();
 
-// static
-void FileSystemSyncAccessHandle::DoFlush(
-    CrossThreadPersistent<FileSystemSyncAccessHandle> access_handle,
-    CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
-  DCHECK(!IsMainThread()) << "File I/O should not happen on the main thread";
-
-  DCHECK(access_handle->file_delegate()->IsValid())
+  DCHECK(file_delegate()->IsValid())
       << "file I/O operation queued after file closed";
-  bool success = access_handle->file_delegate()->Flush();
 
-  PostCrossThreadTask(*resolver_task_runner, FROM_HERE,
-                      CrossThreadBindOnce(&FileSystemSyncAccessHandle::DidFlush,
-                                          std::move(access_handle),
-                                          std::move(resolver), success));
-}
+  file_delegate()->Flush(WTF::Bind(WTF::Bind(
+      [](ScriptPromiseResolver* resolver,
+         FileSystemSyncAccessHandle* access_handle, bool success) {
+        ScriptState* script_state = resolver->GetScriptState();
+        if (!script_state->ContextIsValid())
+          return;
+        ScriptState::Scope scope(script_state);
 
-void FileSystemSyncAccessHandle::DidFlush(
-    CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    bool success) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-  ScriptState::Scope scope(script_state);
+        access_handle->ExitOperation();
+        if (!success) {
+          resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+              script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
+              "flush failed"));
+          return;
+        }
+        resolver->Resolve();
+      },
+      WrapPersistent(resolver), WrapPersistent(this))));
 
-  ExitOperation();
-  if (!success) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
-        "Flush failed"));
-    return;
-  }
-  resolver->Resolve();
+  return result;
 }
 
 ScriptPromise FileSystemSyncAccessHandle::getSize(
@@ -181,46 +155,79 @@ ScriptPromise FileSystemSyncAccessHandle::getSize(
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  worker_pool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      CrossThreadBindOnce(&DoGetSize, WrapCrossThreadPersistent(this),
-                          WrapCrossThreadPersistent(resolver),
-                          resolver_task_runner_));
-  return resolver->Promise();
-}
+  ScriptPromise result = resolver->Promise();
 
-// static
-void FileSystemSyncAccessHandle::DoGetSize(
-    CrossThreadPersistent<FileSystemSyncAccessHandle> access_handle,
-    CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
-  DCHECK(access_handle->file_delegate()->IsValid())
+  DCHECK(file_delegate()->IsValid())
       << "file I/O operation queued after file closed";
-  FileErrorOr<int64_t> result = access_handle->file_delegate()->GetLength();
 
-  PostCrossThreadTask(
-      *resolver_task_runner, FROM_HERE,
-      CrossThreadBindOnce(&FileSystemSyncAccessHandle::DidGetSize,
-                          std::move(access_handle), std::move(resolver),
-                          result));
+  file_delegate()->GetLength(WTF::Bind(
+      [](ScriptPromiseResolver* resolver,
+         FileSystemSyncAccessHandle* access_handle,
+         base::FileErrorOr<int64_t> error_or_length) {
+        ScriptState* script_state = resolver->GetScriptState();
+        if (!script_state->ContextIsValid())
+          return;
+        ScriptState::Scope scope(script_state);
+
+        access_handle->ExitOperation();
+        if (error_or_length.is_error()) {
+          resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+              script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
+              "getSize failed"));
+          return;
+        }
+        resolver->Resolve(error_or_length.value());
+      },
+      WrapPersistent(resolver), WrapPersistent(this)));
+
+  return result;
 }
 
-void FileSystemSyncAccessHandle::DidGetSize(
-    CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    FileErrorOr<int64_t> result) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-  ScriptState::Scope scope(script_state);
-
-  ExitOperation();
-  if (result.is_error()) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
-        "getSize failed"));
-    return;
+ScriptPromise FileSystemSyncAccessHandle::truncate(
+    ScriptState* script_state,
+    uint64_t size,
+    ExceptionState& exception_state) {
+  if (is_closed_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The file was already closed");
+    return ScriptPromise();
   }
-  resolver->Resolve(result.value());
+
+  if (!EnterOperation()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Another I/O operation is in progress on the same file");
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise result = resolver->Promise();
+
+  DCHECK(file_delegate()->IsValid())
+      << "file I/O operation queued after file closed";
+
+  file_delegate()->SetLength(
+      base::checked_cast<int64_t>(size),
+      WTF::Bind(
+          [](ScriptPromiseResolver* resolver,
+             FileSystemSyncAccessHandle* access_handle, bool success) {
+            ScriptState* script_state = resolver->GetScriptState();
+            if (!script_state->ContextIsValid())
+              return;
+            ScriptState::Scope scope(script_state);
+
+            access_handle->ExitOperation();
+            if (!success) {
+              resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                  script_state->GetIsolate(),
+                  DOMExceptionCode::kInvalidStateError, "truncate failed"));
+              return;
+            }
+            resolver->Resolve(success);
+          },
+          WrapPersistent(resolver), WrapPersistent(this)));
+
+  return result;
 }
 
 uint64_t FileSystemSyncAccessHandle::read(
@@ -244,8 +251,13 @@ uint64_t FileSystemSyncAccessHandle::read(
   size_t read_size = buffer->byteLength();
   uint8_t* read_data = static_cast<uint8_t*>(buffer->BaseAddressMaybeShared());
   uint64_t file_offset = options->at();
+  if (!base::CheckedNumeric<int64_t>(file_offset).IsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Cannot read at given offset");
+    return 0;
+  }
 
-  FileErrorOr<int> result =
+  base::FileErrorOr<int> result =
       file_delegate()->Read(file_offset, {read_data, read_size});
 
   if (result.is_error()) {
@@ -268,10 +280,16 @@ uint64_t FileSystemSyncAccessHandle::write(
     return 0;
   }
 
-  uint64_t file_offset = options->at();
   if (!file_delegate()->IsValid() || is_closed_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The access handle was already closed");
+    return 0;
+  }
+
+  uint64_t file_offset = options->at();
+  if (!base::CheckedNumeric<int64_t>(file_offset).IsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Cannot write at given offset");
     return 0;
   }
 
@@ -293,9 +311,17 @@ uint64_t FileSystemSyncAccessHandle::write(
   }
   DCHECK_GE(write_end_offset, 0);
 
-  FileErrorOr<int> result =
+  base::FileErrorOr<int> result =
       file_delegate()->Write(file_offset, {write_data, write_size});
   if (result.is_error()) {
+    base::File::Error file_error = result.error();
+    DCHECK_NE(file_error, base::File::FILE_OK);
+    if (file_error == base::File::FILE_ERROR_NO_SPACE) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kQuotaExceededError,
+          "No space available for this operation");
+      return 0;
+    }
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Failed to write to the access handle");
     return 0;

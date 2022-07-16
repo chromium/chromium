@@ -35,10 +35,6 @@
 #include "ui/gl/test/gl_surface_test_support.h"
 #endif
 
-#if defined(OS_WIN)
-#include "base/win/scoped_com_initializer.h"
-#endif
-
 namespace {
 
 // Not using kExtensionScheme and kChromeSearchScheme to avoid the dependency
@@ -90,7 +86,7 @@ class ComponentsTestSuite : public base::TestSuite {
 #if defined(OS_ANDROID)
     base::PathService::Get(ui::DIR_RESOURCE_PAKS_ANDROID, &pak_path);
 #else
-    base::PathService::Get(base::DIR_MODULE, &pak_path);
+    base::PathService::Get(base::DIR_ASSETS, &pak_path);
 #endif
 
     base::FilePath ui_test_pak_path;
@@ -99,7 +95,7 @@ class ComponentsTestSuite : public base::TestSuite {
 
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         pak_path.AppendASCII("components_tests_resources.pak"),
-        ui::SCALE_FACTOR_NONE);
+        ui::kScaleFactorNone);
 
     ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(
         kNonWildcardDomainNonPortSchemes,
@@ -110,10 +106,6 @@ class ComponentsTestSuite : public base::TestSuite {
     ui::ResourceBundle::CleanupSharedInstance();
     base::TestSuite::Shutdown();
   }
-
-#if defined(OS_WIN)
-  base::win::ScopedCOMInitializer com_initializer_;
-#endif
 };
 
 class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {

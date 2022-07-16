@@ -91,22 +91,6 @@ void aom_comp_avg_pred_c(uint8_t* comp_pred,
                          int ref_stride);
 #define aom_comp_avg_pred aom_comp_avg_pred_c
 
-void aom_comp_avg_upsampled_pred_c(MACROBLOCKD* xd,
-                                   const struct AV1Common* const cm,
-                                   int mi_row,
-                                   int mi_col,
-                                   const MV* const mv,
-                                   uint8_t* comp_pred,
-                                   const uint8_t* pred,
-                                   int width,
-                                   int height,
-                                   int subpel_x_q3,
-                                   int subpel_y_q3,
-                                   const uint8_t* ref,
-                                   int ref_stride,
-                                   int subpel_search);
-#define aom_comp_avg_upsampled_pred aom_comp_avg_upsampled_pred_c
-
 void aom_comp_mask_pred_c(uint8_t* comp_pred,
                           const uint8_t* pred,
                           int width,
@@ -117,25 +101,6 @@ void aom_comp_mask_pred_c(uint8_t* comp_pred,
                           int mask_stride,
                           int invert_mask);
 #define aom_comp_mask_pred aom_comp_mask_pred_c
-
-void aom_comp_mask_upsampled_pred_c(MACROBLOCKD* xd,
-                                    const struct AV1Common* const cm,
-                                    int mi_row,
-                                    int mi_col,
-                                    const MV* const mv,
-                                    uint8_t* comp_pred,
-                                    const uint8_t* pred,
-                                    int width,
-                                    int height,
-                                    int subpel_x_q3,
-                                    int subpel_y_q3,
-                                    const uint8_t* ref,
-                                    int ref_stride,
-                                    const uint8_t* mask,
-                                    int mask_stride,
-                                    int invert_mask,
-                                    int subpel_search);
-#define aom_comp_mask_upsampled_pred aom_comp_mask_upsampled_pred_c
 
 void aom_convolve8_c(const uint8_t* src,
                      ptrdiff_t src_stride,
@@ -596,25 +561,6 @@ void aom_dist_wtd_comp_avg_pred_c(uint8_t* comp_pred,
                                   int ref_stride,
                                   const DIST_WTD_COMP_PARAMS* jcp_param);
 #define aom_dist_wtd_comp_avg_pred aom_dist_wtd_comp_avg_pred_c
-
-void aom_dist_wtd_comp_avg_upsampled_pred_c(
-    MACROBLOCKD* xd,
-    const struct AV1Common* const cm,
-    int mi_row,
-    int mi_col,
-    const MV* const mv,
-    uint8_t* comp_pred,
-    const uint8_t* pred,
-    int width,
-    int height,
-    int subpel_x_q3,
-    int subpel_y_q3,
-    const uint8_t* ref,
-    int ref_stride,
-    const DIST_WTD_COMP_PARAMS* jcp_param,
-    int subpel_search);
-#define aom_dist_wtd_comp_avg_upsampled_pred \
-  aom_dist_wtd_comp_avg_upsampled_pred_c
 
 unsigned int aom_dist_wtd_sad128x128_avg_c(
     const uint8_t* src_ptr,
@@ -3897,21 +3843,6 @@ uint64_t aom_sum_sse_2d_i16_c(const int16_t* src,
                               int height,
                               int* sum);
 #define aom_sum_sse_2d_i16 aom_sum_sse_2d_i16_c
-
-void aom_upsampled_pred_c(MACROBLOCKD* xd,
-                          const struct AV1Common* const cm,
-                          int mi_row,
-                          int mi_col,
-                          const MV* const mv,
-                          uint8_t* comp_pred,
-                          int width,
-                          int height,
-                          int subpel_x_q3,
-                          int subpel_y_q3,
-                          const uint8_t* ref,
-                          int ref_stride,
-                          int subpel_search);
-#define aom_upsampled_pred aom_upsampled_pred_c
 
 void aom_v_predictor_16x16_c(uint8_t* dst,
                              ptrdiff_t y_stride,

@@ -7,7 +7,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -58,6 +57,9 @@ class ServiceConnectedWaiter {
                                                    run_loop_.QuitClosure());
   }
 
+  ServiceConnectedWaiter(const ServiceConnectedWaiter&) = delete;
+  ServiceConnectedWaiter& operator=(const ServiceConnectedWaiter&) = delete;
+
   // Waits until the |service_path| passed to the constructor has connected.
   // If it has connected since the constructor has run, will return immediately.
   void Wait() {
@@ -70,8 +72,6 @@ class ServiceConnectedWaiter {
   ash::ShillServiceClient::TestInterface* shill_service_client_test_;
   std::string service_path_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceConnectedWaiter);
 };
 
 // Registers itself as ash::NetworkPolicyObserver and records events for
@@ -96,6 +96,7 @@ class ScopedNetworkPolicyApplicationObserver
 
   void PoliciesApplied(const std::string& userhash) override {
     policies_applied_events_.push_back(userhash);
+    policies_applied_wait_loop_[userhash].Quit();
   }
 
   void PolicyAppliedToNetwork(const std::string& service_path) override {
@@ -115,9 +116,15 @@ class ScopedNetworkPolicyApplicationObserver
     policy_applied_to_network_events_.clear();
   }
 
+  void WaitPoliciesApplied(const std::string& userhash) {
+    policies_applied_wait_loop_[userhash].Run();
+  }
+
  private:
   std::vector<std::string> policies_applied_events_;
   std::vector<std::string> policy_applied_to_network_events_;
+
+  std::map<std::string, base::RunLoop> policies_applied_wait_loop_;
 };
 
 }  // namespace
@@ -130,6 +137,10 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     login_mixin_.AppendRegularUsers(1);
     test_account_id_ = login_mixin_.users()[0].account_id;
   }
+
+  NetworkPolicyApplicationTest(const NetworkPolicyApplicationTest&) = delete;
+  NetworkPolicyApplicationTest& operator=(const NetworkPolicyApplicationTest&) =
+      delete;
 
  protected:
   // InProcessBrowserTest:
@@ -217,14 +228,12 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   ash::ShillProfileClient::TestInterface* shill_profile_client_test_ = nullptr;
   ash::ShillDeviceClient::TestInterface* shill_device_client_test_ = nullptr;
 
-  LoginManagerMixin login_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
   AccountId test_account_id_;
 
  private:
   testing::NiceMock<MockConfigurationPolicyProvider> policy_provider_;
   PolicyMap current_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkPolicyApplicationTest);
 };
 
 // This test applies a global network policy with
@@ -500,6 +509,108 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     EXPECT_THAT(
         *wifi_service_properties,
         DictionaryHasValue(shill::kGuidProperty, base::Value("{same_guid}")));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, DoesNotWipeCertSettings) {
+  const std::string kCertAndKeyId = "test";
+
+  // Set up a policy-managed EAP wifi with a certificate already selected.
+  shill_service_client_test_->AddService(
+      kServiceWifi1, "DeviceLevelWifiGuidOrig", "DeviceLevelWifiSsid",
+      shill::kTypeWifi, shill::kStateOnline, true /* add_to_visible */);
+  shill_service_client_test_->SetServiceProperty(
+      kServiceWifi1, shill::kSSIDProperty, base::Value("DeviceLevelWifiSsid"));
+  shill_service_client_test_->SetServiceProperty(
+      kServiceWifi1, shill::kSecurityClassProperty,
+      base::Value(shill::kSecurity8021x));
+
+  const char kDeviceONC1[] = R"(
+    {
+      "NetworkConfigurations": [
+        {
+          "GUID": "{DeviceLevelWifiGuid}",
+          "Name": "DeviceLevelWifiName",
+          "Type": "WiFi",
+          "WiFi": {
+             "AutoConnect": false,
+             "EAP":  {
+              "Outer": "EAP-TLS",
+              "ClientCertType": "Pattern",
+              "Identity": "test_identity",
+              "ClientCertPattern": {
+                "Issuer": {
+                  "Organization": "Example Inc."
+                }
+              }
+             },
+             "SSID": "DeviceLevelWifiSsid",
+             "Security": "WPA-EAP"
+          }
+        }
+      ]
+    })";
+  {
+    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
+    SetDeviceOpenNetworkConfiguration(kDeviceONC1);
+    network_policy_application_observer.WaitPoliciesApplied(
+        /*userhash=*/std::string());
+  }
+
+  shill_service_client_test_->SetServiceProperty(
+      kServiceWifi1, shill::kEapCertIdProperty, base::Value(kCertAndKeyId));
+  shill_service_client_test_->SetServiceProperty(
+      kServiceWifi1, shill::kEapKeyIdProperty, base::Value(kCertAndKeyId));
+
+  {
+    // Trigger reapplication of policy for the network by changing "Identity".
+    const char kDeviceONC2[] = R"(
+      {
+        "NetworkConfigurations": [
+          {
+            "GUID": "{DeviceLevelWifiGuid}",
+            "Name": "DeviceLevelWifiName",
+            "Type": "WiFi",
+            "WiFi": {
+               "AutoConnect": false,
+               "EAP":  {
+                "Outer": "EAP-TLS",
+                "ClientCertType": "Pattern",
+                "Identity": "test_identity_changed",
+                "ClientCertPattern": {
+                  "Issuer": {
+                    "Organization": "Example Inc."
+                  }
+                }
+               },
+               "SSID": "DeviceLevelWifiSsid",
+               "Security": "WPA-EAP"
+            }
+          }
+        ]
+      })";
+    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
+    SetDeviceOpenNetworkConfiguration(kDeviceONC2);
+    network_policy_application_observer.WaitPoliciesApplied(
+        /*userhash=*/std::string());
+  }
+
+  {
+    const base::Value* wifi_service_properties =
+        shill_service_client_test_->GetServiceProperties(kServiceWifi1);
+    ASSERT_TRUE(wifi_service_properties);
+    EXPECT_THAT(*wifi_service_properties,
+                DictionaryHasValue(shill::kGuidProperty,
+                                   base::Value("{DeviceLevelWifiGuid}")));
+    // Expect that the EAP.CertId and EAP.KeyId properties have been preserved.
+    const std::string* eap_cert_id =
+        wifi_service_properties->FindStringKey(shill::kEapCertIdProperty);
+    ASSERT_TRUE(eap_cert_id);
+    EXPECT_EQ(*eap_cert_id, kCertAndKeyId);
+    const std::string* eap_key_id =
+        wifi_service_properties->FindStringKey(shill::kEapKeyIdProperty);
+    ASSERT_TRUE(eap_key_id);
+    EXPECT_EQ(*eap_key_id, kCertAndKeyId);
   }
 }
 

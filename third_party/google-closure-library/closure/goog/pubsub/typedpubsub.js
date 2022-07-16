@@ -1,22 +1,14 @@
-// Copyright 2014 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.provide('goog.pubsub.TypedPubSub');
 
-goog.forwardDeclare('goog.pubsub.TopicId');
 goog.require('goog.Disposable');
 goog.require('goog.pubsub.PubSub');
+goog.requireType('goog.pubsub.TopicId');
 
 
 
@@ -29,6 +21,7 @@ goog.require('goog.pubsub.PubSub');
  * @extends {goog.Disposable}
  */
 goog.pubsub.TypedPubSub = function(opt_async) {
+  'use strict';
   goog.pubsub.TypedPubSub.base(this, 'constructor');
 
   this.pubSub_ = new goog.pubsub.PubSub(opt_async);
@@ -48,6 +41,7 @@ goog.inherits(goog.pubsub.TypedPubSub, goog.Disposable);
  * @template PAYLOAD, CONTEXT
  */
 goog.pubsub.TypedPubSub.prototype.subscribe = function(topic, fn, opt_context) {
+  'use strict';
   return this.pubSub_.subscribe(topic.toString(), fn, opt_context);
 };
 
@@ -64,6 +58,7 @@ goog.pubsub.TypedPubSub.prototype.subscribe = function(topic, fn, opt_context) {
  */
 goog.pubsub.TypedPubSub.prototype.subscribeOnce = function(
     topic, fn, opt_context) {
+  'use strict';
   return this.pubSub_.subscribeOnce(topic.toString(), fn, opt_context);
 };
 
@@ -79,6 +74,7 @@ goog.pubsub.TypedPubSub.prototype.subscribeOnce = function(
  */
 goog.pubsub.TypedPubSub.prototype.unsubscribe = function(
     topic, fn, opt_context) {
+  'use strict';
   return this.pubSub_.unsubscribe(topic.toString(), fn, opt_context);
 };
 
@@ -89,6 +85,7 @@ goog.pubsub.TypedPubSub.prototype.unsubscribe = function(
  * @return {boolean} Whether a matching subscription was removed.
  */
 goog.pubsub.TypedPubSub.prototype.unsubscribeByKey = function(key) {
+  'use strict';
   return this.pubSub_.unsubscribeByKey(key);
 };
 
@@ -101,6 +98,7 @@ goog.pubsub.TypedPubSub.prototype.unsubscribeByKey = function(key) {
  * @template PAYLOAD
  */
 goog.pubsub.TypedPubSub.prototype.publish = function(topic, payload) {
+  'use strict';
   return this.pubSub_.publish(topic.toString(), payload);
 };
 
@@ -112,6 +110,7 @@ goog.pubsub.TypedPubSub.prototype.publish = function(topic, payload) {
  * @template PAYLOAD
  */
 goog.pubsub.TypedPubSub.prototype.clear = function(opt_topic) {
+  'use strict';
   this.pubSub_.clear(
       opt_topic !== undefined ? opt_topic.toString() : undefined);
 };
@@ -125,6 +124,7 @@ goog.pubsub.TypedPubSub.prototype.clear = function(opt_topic) {
  * @template PAYLOAD
  */
 goog.pubsub.TypedPubSub.prototype.getCount = function(opt_topic) {
+  'use strict';
   return this.pubSub_.getCount(
       opt_topic !== undefined ? opt_topic.toString() : undefined);
 };

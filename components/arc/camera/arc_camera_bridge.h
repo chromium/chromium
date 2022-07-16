@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "components/arc/mojom/camera.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -33,6 +32,10 @@ class ArcCameraBridge : public KeyedService, public mojom::CameraHost {
 
   ArcCameraBridge(content::BrowserContext* context,
                   ArcBridgeService* bridge_service);
+
+  ArcCameraBridge(const ArcCameraBridge&) = delete;
+  ArcCameraBridge& operator=(const ArcCameraBridge&) = delete;
+
   ~ArcCameraBridge() override;
 
   // mojom::CameraHost overrides:
@@ -51,8 +54,6 @@ class ArcCameraBridge : public KeyedService, public mojom::CameraHost {
   std::map<PendingStartCameraServiceResult*,
            std::unique_ptr<PendingStartCameraServiceResult>>
       pending_start_camera_service_results_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcCameraBridge);
 };
 
 }  // namespace arc

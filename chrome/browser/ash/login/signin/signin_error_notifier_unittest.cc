@@ -21,6 +21,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -28,6 +29,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
@@ -36,12 +38,15 @@ namespace {
 const char kTestEmail[] = "email@example.com";
 const char kTestSecondaryEmail[] = "email2@example.com";
 
+const char kTokenHandle[] = "test_token_handle";
+
 // Notification ID corresponding to kProfileSigninNotificationId +
 // kTestAccountId.
 const char kPrimaryAccountErrorNotificationId[] =
     "chrome://settings/signin/testing_profile";
 const char kSecondaryAccountErrorNotificationId[] =
     "chrome://settings/signin/testing_profile/secondary-account";
+}  // namespace
 
 class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
  public:
@@ -292,5 +297,61 @@ TEST_F(SigninErrorNotifierTest, ChildSecondaryAccountMigrationTest) {
   EXPECT_NE(new_message, message);
 }
 
-}  // namespace
+// Tests that token handle errors display the expected error message.
+TEST_F(SigninErrorNotifierTest, TokenHandleTest) {
+  // Setup.
+  const CoreAccountId core_account_id =
+      identity_test_env()
+          ->MakePrimaryAccountAvailable(kTestEmail, signin::ConsentLevel::kSync)
+          .account_id;
+  const AccountId account_id = AccountId::FromUserEmailGaiaId(
+      /*user_email=*/kTestEmail, /*gaia_id=*/core_account_id.ToString());
+  TokenHandleUtil::StoreTokenHandle(account_id, kTokenHandle);
+  TokenHandleUtil::SetInvalidTokenForTesting(kTokenHandle);
+  SigninErrorNotifier* signin_error_notifier =
+      SigninErrorNotifierFactory::GetForProfile(GetProfile());
+  signin_error_notifier->OnTokenHandleCheck(account_id,
+                                            TokenHandleUtil::INVALID);
+
+  // Test.
+  absl::optional<message_center::Notification> notification =
+      display_service_->GetNotification(kPrimaryAccountErrorNotificationId);
+  ASSERT_TRUE(notification);
+  const std::u16string& message = notification->message();
+  EXPECT_EQ(message, l10n_util::GetStringUTF16(
+                         IDS_SYNC_TOKEN_HANDLE_ERROR_BUBBLE_VIEW_MESSAGE));
+}
+
+TEST_F(SigninErrorNotifierTest,
+       TokenHandleErrorsDoNotDisplaySecondaryAccountErrors) {
+  // Setup Secondary Account Error.
+  CoreAccountId secondary_account =
+      identity_test_env()->MakeAccountAvailable(kTestSecondaryEmail).account_id;
+  SetAuthError(
+      secondary_account,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  // Setup Device Account.
+  const CoreAccountId core_account_id =
+      identity_test_env()
+          ->MakePrimaryAccountAvailable(kTestEmail, signin::ConsentLevel::kSync)
+          .account_id;
+  const AccountId account_id = AccountId::FromUserEmailGaiaId(
+      /*user_email=*/kTestEmail, /*gaia_id=*/core_account_id.ToString());
+  TokenHandleUtil::StoreTokenHandle(account_id, kTokenHandle);
+  TokenHandleUtil::SetInvalidTokenForTesting(kTokenHandle);
+  SigninErrorNotifier* signin_error_notifier =
+      SigninErrorNotifierFactory::GetForProfile(GetProfile());
+  signin_error_notifier->OnTokenHandleCheck(account_id,
+                                            TokenHandleUtil::INVALID);
+
+  // Test.
+  absl::optional<message_center::Notification> notification =
+      display_service_->GetNotification(kPrimaryAccountErrorNotificationId);
+  ASSERT_TRUE(notification);
+  const std::u16string& message = notification->message();
+  EXPECT_EQ(message, l10n_util::GetStringUTF16(
+                         IDS_SYNC_TOKEN_HANDLE_ERROR_BUBBLE_VIEW_MESSAGE));
+}
+
 }  // namespace ash

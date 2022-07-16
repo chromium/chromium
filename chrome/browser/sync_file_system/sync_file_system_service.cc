@@ -13,10 +13,9 @@
 #include "base/bind.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/platform_apps/api/sync_file_system/extension_sync_event_observer.h"
 #include "chrome/browser/apps/platform_apps/api/sync_file_system/sync_file_system_api_helpers.h"
@@ -123,8 +122,8 @@ void DidGetFileSyncStatusForDump(
     file->SetString("status", SyncFileStatusToString(sync_file_status));
 
   // Once all results have been received, run the callback to signal end.
-  DCHECK_LE(*num_results, files->GetSize());
-  if (++*num_results < files->GetSize())
+  DCHECK_LE(*num_results, files->GetList().size());
+  if (++*num_results < files->GetList().size())
     return;
 
   // `callback` is a DumpFilesCallback, which should only be called
@@ -158,6 +157,9 @@ class LocalSyncRunner : public SyncProcessRunner,
                           nullptr, /* timer_helper */
                           1 /* max_parallel_task */) {}
 
+  LocalSyncRunner(const LocalSyncRunner&) = delete;
+  LocalSyncRunner& operator=(const LocalSyncRunner&) = delete;
+
   void StartSync(SyncStatusCallback callback) override {
     GetSyncService()->local_service_->ProcessLocalChange(
         base::BindOnce(&LocalSyncRunner::DidProcessLocalChange,
@@ -186,7 +188,6 @@ class LocalSyncRunner : public SyncProcessRunner,
   }
 
   base::WeakPtrFactory<LocalSyncRunner> factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(LocalSyncRunner);
 };
 
 // SyncProcessRunner implementation for RemoteSync.
@@ -202,6 +203,9 @@ class RemoteSyncRunner : public SyncProcessRunner,
                           1 /* max_parallel_task */),
         remote_service_(remote_service),
         last_state_(REMOTE_SERVICE_OK) {}
+
+  RemoteSyncRunner(const RemoteSyncRunner&) = delete;
+  RemoteSyncRunner& operator=(const RemoteSyncRunner&) = delete;
 
   void StartSync(SyncStatusCallback callback) override {
     remote_service_->ProcessRemoteChange(
@@ -250,7 +254,6 @@ class RemoteSyncRunner : public SyncProcessRunner,
   RemoteFileSyncService* remote_service_;
   RemoteServiceState last_state_;
   base::WeakPtrFactory<RemoteSyncRunner> factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(RemoteSyncRunner);
 };
 
 //-----------------------------------------------------------------------------
@@ -288,7 +291,7 @@ void SyncFileSystemService::InitializeForApp(
     SyncStatusCallback callback) {
   DCHECK(local_service_);
   DCHECK(remote_service_);
-  DCHECK(app_origin == app_origin.GetOrigin());
+  DCHECK(app_origin == app_origin.DeprecatedGetOriginAsURL());
 
   util::Log(logging::LOG_VERBOSE, FROM_HERE,
             "Initializing for App: %s", app_origin.spec().c_str());
@@ -553,8 +556,8 @@ void SyncFileSystemService::DidDumpFiles(
     const GURL& origin,
     DumpFilesCallback callback,
     std::unique_ptr<base::ListValue> dump_files) {
-  if (!dump_files || !dump_files->GetSize() ||
-      !local_service_ || !remote_service_) {
+  if (!dump_files || !dump_files->GetList().size() || !local_service_ ||
+      !remote_service_) {
     std::move(callback).Run(base::ListValue());
     return;
   }
@@ -571,20 +574,20 @@ void SyncFileSystemService::DidDumpFiles(
       base::OwnedRef(std::move(callback)));
 
   // After all metadata loaded, sync status can be added to each entry.
-  for (size_t i = 0; i < files->GetSize(); ++i) {
-    base::DictionaryValue* file = nullptr;
-    std::string path_string;
-    if (!files->GetDictionary(i, &file) ||
-        !file->GetString("path", &path_string)) {
+  for (base::Value& file : files->GetList()) {
+    const std::string* path_string =
+      file.is_dict() ? file.FindStringKey("path") : nullptr;
+    if (!path_string) {
       NOTREACHED();
       accumulate_callback.Run(nullptr, SYNC_FILE_ERROR_FAILED,
                               SYNC_FILE_STATUS_UNKNOWN);
       continue;
     }
-
-    base::FilePath file_path = base::FilePath::FromUTF8Unsafe(path_string);
+    base::FilePath file_path = base::FilePath::FromUTF8Unsafe(*path_string);
     FileSystemURL url = CreateSyncableFileSystemURL(origin, file_path);
-    GetFileSyncStatus(url, base::BindOnce(accumulate_callback, file));
+    base::DictionaryValue* file_value =
+        static_cast<base::DictionaryValue*>(&file);
+    GetFileSyncStatus(url, base::BindOnce(accumulate_callback, file_value));
   }
 }
 

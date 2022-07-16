@@ -113,7 +113,7 @@ class UserPolicySigninServiceBase : public KeyedService,
       const std::string& username);
 
   // Returns false if cloud policy is disabled or if the passed |email_address|
-  // is definitely not from a hosted domain (according to the blacklist in
+  // is definitely not from a hosted domain (according to the list in
   // BrowserPolicyConnector::IsNonEnterpriseUser()).
   bool ShouldLoadPolicyForUser(const std::string& email_address);
 

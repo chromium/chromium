@@ -51,11 +51,11 @@ TEST_F(RecoverModuleTest, CreateVtableWithDatabaseSpecifier) {
       db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
                   "USING recover(main.backing, t TEXT)"));
 }
-TEST_F(RecoverModuleTest, CreateVtableOnSqliteMaster) {
+TEST_F(RecoverModuleTest, CreateVtableOnSqliteSchema) {
   ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   EXPECT_TRUE(
       db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing USING recover("
-                  "sqlite_master, type TEXT, name TEXT, tbl_name TEXT, "
+                  "sqlite_schema, type TEXT, name TEXT, tbl_name TEXT, "
                   "rootpage INTEGER, sql TEXT)"));
 }
 

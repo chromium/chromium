@@ -28,6 +28,10 @@ class Extension;
 class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
  public:
   explicit ShellExtensionLoader(content::BrowserContext* browser_context);
+
+  ShellExtensionLoader(const ShellExtensionLoader&) = delete;
+  ShellExtensionLoader& operator=(const ShellExtensionLoader&) = delete;
+
   ~ShellExtensionLoader() override;
 
   // Loads an unpacked extension from a directory synchronously. Returns the
@@ -75,8 +79,6 @@ class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
   bool did_schedule_reload_ = false;
 
   base::WeakPtrFactory<ShellExtensionLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShellExtensionLoader);
 };
 
 }  // namespace extensions

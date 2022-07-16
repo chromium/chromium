@@ -10,9 +10,12 @@
 @BLINK-DENY:name='W?'
 @BLINK-DENY:name='F?'
 @MAC-ALLOW:AXRoleDescription
+@MAC-DENY:AXRoleDescription='Unlabeled image'
+@MAC-DENY:AXDescription='To get missing image descriptions, open the context menu.'
 @WIN-ALLOW:ia2_hypertext=*
 @WIN-DENY:ia2_hypertext='September? 2008*'
 @WIN-DENY:name='September? 2008'
+@WIN-DENY:name='To get missing image descriptions, open the context menu.'
 @UIA-WIN-ALLOW:ControllerFor=*
 @UIA-WIN-ALLOW:LocalizedControlType='date picker'
 @DEFAULT-ACTION-ON:Show date picker

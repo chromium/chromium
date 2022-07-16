@@ -19,8 +19,7 @@
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/material_components/utils.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -123,9 +122,7 @@ using bookmarks::BookmarkNode;
   DCHECK(browser);
   DCHECK(selectedFolder == NULL || selectedFolder->is_folder());
 
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? ChromeTableViewStyle()
-                               : UITableViewStylePlain;
+  UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
     _browser = browser;
@@ -224,7 +221,7 @@ using bookmarks::BookmarkNode;
     UIView* separator = [[UIView alloc] initWithFrame:separatorFrame];
     separator.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin |
                                  UIViewAutoresizingFlexibleWidth;
-    separator.backgroundColor = UIColor.cr_opaqueSeparatorColor;
+    separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
     [headerView addSubview:separator];
   }
   return headerView;

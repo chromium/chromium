@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "components/paint_preview/public/paint_preview_compositor_service.h"
 
 namespace base {

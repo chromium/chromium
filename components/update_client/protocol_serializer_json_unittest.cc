@@ -48,32 +48,32 @@ TEST(SerializeRequestJSON, Serialize) {
 
   std::vector<protocol_request::App> apps;
   apps.push_back(MakeProtocolApp(
-      "id1", base::Version("1.0"), "brand1", "source1", "location1", "fp1",
+      "id1", base::Version("1.0"), "ap1", "BRND", "source1", "location1", "fp1",
       {{"attr1", "1"}, {"attr2", "2"}}, "c1", "ch1", "cn1", "test", {0, 1},
-      MakeProtocolUpdateCheck(true),
-      MakeProtocolPing("id1", metadata.get(), {})));
-  apps.push_back(
-      MakeProtocolApp("id2", base::Version("2.0"), std::move(events)));
+      MakeProtocolUpdateCheck(true, "33.12", true),
+      MakeProtocolPing("id1", metadata.get(), {}), std::move(events)));
 
-  const auto request = std::make_unique<ProtocolSerializerJSON>()->Serialize(
-      MakeProtocolRequest("{15160585-8ADE-4D3C-839B-1281A6035D1F}", "prod_id",
-                          "1.0", "lang", "channel", "OS", "cacheable",
-                          {{"extra", "params"}}, nullptr, std::move(apps)));
+  const auto request =
+      std::make_unique<ProtocolSerializerJSON>()->Serialize(MakeProtocolRequest(
+          false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "prod_id", "1.0",
+          "lang", "channel", "OS", "cacheable", {{"extra", "params"}}, nullptr,
+          std::move(apps)));
   constexpr char regex[] =
       R"({"request":{"@os":"\w+","@updater":"prod_id",)"
-      R"("acceptformat":"crx2,crx3",)"
-      R"("app":\[{"appid":"id1","attr1":"1","attr2":"2","brand":"brand1",)"
-      R"("cohort":"c1","cohorthint":"ch1","cohortname":"cn1",)"
+      R"("acceptformat":"crx3",)"
+      R"("app":\[{"ap":"ap1","appid":"id1","attr1":"1","attr2":"2",)"
+      R"("brand":"BRND","cohort":"c1","cohorthint":"ch1","cohortname":"cn1",)"
       R"("disabled":\[{"reason":0},{"reason":1}],"enabled":false,)"
+      R"("event":\[{"a":1,"b":"2"},{"error":0}],)"
       R"("installedby":"location1","installsource":"source1",)"
       R"("packages":{"package":\[{"fp":"fp1"}]},)"
       R"("ping":{"ping_freshness":"{[-\w]{36}}","rd":1234},)"
       R"("release_channel":"test",)"
-      R"("updatecheck":{"updatedisabled":true},"version":"1.0"},)"
-      R"({"appid":"id2","event":\[{"a":1,"b":"2"},{"error":0}],)"
-      R"("version":"2.0"}],"arch":"\w+","dedup":"cr","dlpref":"cacheable",)"
-      R"("extra":"params","hw":{"physmemory":\d+},"lang":"lang",)"
-      R"("nacl_arch":"[-\w]+","os":{"arch":"[_,-.\w]+","platform":"OS",)"
+      R"("updatecheck":{"rollback_allowed":true,"targetversionprefix":"33.12",)"
+      R"("updatedisabled":true},"version":"1.0"}],"arch":"\w+","dedup":"cr",)"
+      R"("dlpref":"cacheable","extra":"params","hw":{"physmemory":\d+},)"
+      R"("ismachine":false,"lang":"lang","nacl_arch":"[-\w]+",)"
+      R"("os":{"arch":"[_,-.\w]+","platform":"OS",)"
       R"(("sp":"[\s\w]+",)?"version":"[+-.\w]+"},"prodchannel":"channel",)"
       R"("prodversion":"1.0","protocol":"3.1","requestid":"{[-\w]{36}}",)"
       R"("sessionid":"{[-\w]{36}}","updaterchannel":"channel",)"
@@ -86,14 +86,14 @@ TEST(SerializeRequestJSON, DownloadPreference) {
   // Verifies that an empty |download_preference| is not serialized.
   const auto serializer = std::make_unique<ProtocolSerializerJSON>();
   auto request = serializer->Serialize(
-      MakeProtocolRequest("{15160585-8ADE-4D3C-839B-1281A6035D1F}", "", "", "",
-                          "", "", "", {}, nullptr, {}));
+      MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "",
+                          "", "", "", "", "", {}, nullptr, {}));
   EXPECT_FALSE(RE2::PartialMatch(request, R"("dlpref":)")) << request;
 
   // Verifies that |download_preference| is serialized.
   request = serializer->Serialize(
-      MakeProtocolRequest("{15160585-8ADE-4D3C-839B-1281A6035D1F}", "", "", "",
-                          "", "", "cacheable", {}, nullptr, {}));
+      MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "",
+                          "", "", "", "", "cacheable", {}, nullptr, {}));
   EXPECT_TRUE(RE2::PartialMatch(request, R"("dlpref":"cacheable")")) << request;
 }
 
@@ -112,13 +112,14 @@ TEST(SerializeRequestJSON, UpdaterStateAttributes) {
   attributes["autoupdatecheckenabled"] = "0";
   attributes["updatepolicy"] = "-1";
   const auto request = serializer->Serialize(MakeProtocolRequest(
-      "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "prod_id", "1.0", "lang",
+      true, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "prod_id", "1.0", "lang",
       "channel", "OS", "cacheable", {{"extra", "params"}}, &attributes, {}));
   constexpr char regex[] =
       R"({"request":{"@os":"\w+","@updater":"prod_id",)"
-      R"("acceptformat":"crx2,crx3","arch":"\w+","dedup":"cr",)"
+      R"("acceptformat":"crx3","arch":"\w+","dedup":"cr",)"
       R"("dlpref":"cacheable","domainjoined":true,"extra":"params",)"
-      R"("hw":{"physmemory":\d+},"lang":"lang","nacl_arch":"[-\w]+",)"
+      R"("hw":{"physmemory":\d+},"ismachine":true,"lang":"lang",)"
+      R"("nacl_arch":"[-\w]+",)"
       R"("os":{"arch":"[,-.\w]+","platform":"OS",("sp":"[\s\w]+",)?)"
       R"("version":"[+-.\w]+"},"prodchannel":"channel","prodversion":"1.0",)"
       R"("protocol":"3.1","requestid":"{[-\w]{36}}","sessionid":"{[-\w]{36}}",)"
@@ -128,7 +129,7 @@ TEST(SerializeRequestJSON, UpdaterStateAttributes) {
       R"("version":"1\.2\.3\.4"},)"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       R"("updaterchannel":"channel","updaterversion":"1.0"(,"wow64":true)?}})";
-  EXPECT_TRUE(RE2::FullMatch(request, regex)) << request;
+  EXPECT_TRUE(RE2::FullMatch(request, regex)) << request << "\n VS \n" << regex;
 }
 
 }  // namespace update_client

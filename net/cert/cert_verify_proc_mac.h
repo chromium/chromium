@@ -5,6 +5,8 @@
 #ifndef NET_CERT_CERT_VERIFY_PROC_MAC_H_
 #define NET_CERT_CERT_VERIFY_PROC_MAC_H_
 
+#include <vector>
+
 #include "base/supports_user_data.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_verify_proc.h"
@@ -13,11 +15,11 @@ namespace net {
 
 // Performs certificate path construction and validation using OS X's
 // Security.framework.
-class NET_EXPORT_PRIVATE CertVerifyProcMac : public CertVerifyProc {
+class NET_EXPORT CertVerifyProcMac : public CertVerifyProc {
  public:
-  class ResultDebugData : public base::SupportsUserData::Data {
+  class NET_EXPORT ResultDebugData : public base::SupportsUserData::Data {
    public:
-    struct CertEvidenceInfo {
+    struct NET_EXPORT CertEvidenceInfo {
       CertEvidenceInfo();
       ~CertEvidenceInfo();
       CertEvidenceInfo(const CertEvidenceInfo&);

@@ -205,6 +205,9 @@ class Shelf::AutoHideEventHandler : public ui::EventHandler {
     Shell::Get()->AddPreTargetHandler(this);
   }
 
+  AutoHideEventHandler(const AutoHideEventHandler&) = delete;
+  AutoHideEventHandler& operator=(const AutoHideEventHandler&) = delete;
+
   ~AutoHideEventHandler() override {
     Shell::Get()->RemovePreTargetHandler(this);
   }
@@ -242,7 +245,6 @@ class Shelf::AutoHideEventHandler : public ui::EventHandler {
 
  private:
   Shelf* shelf_;
-  DISALLOW_COPY_AND_ASSIGN(AutoHideEventHandler);
 };
 
 // Shelf::AutoDimEventHandler -----------------------------------------------
@@ -257,6 +259,9 @@ class Shelf::AutoDimEventHandler : public ui::EventHandler,
     shelf_observation_.Observe(shelf_);
     UndimShelf();
   }
+
+  AutoDimEventHandler(const AutoDimEventHandler&) = delete;
+  AutoDimEventHandler& operator=(const AutoDimEventHandler&) = delete;
 
   ~AutoDimEventHandler() override {
     Shell::Get()->RemovePreTargetHandler(this);
@@ -321,9 +326,7 @@ class Shelf::AutoDimEventHandler : public ui::EventHandler,
   base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
 
   // Delay before dimming the shelf.
-  const base::TimeDelta kDimDelay = base::TimeDelta::FromSeconds(5);
-
-  DISALLOW_COPY_AND_ASSIGN(AutoDimEventHandler);
+  const base::TimeDelta kDimDelay = base::Seconds(5);
 };
 
 // Shelf ---------------------------------------------------------------------

@@ -11,7 +11,7 @@ namespace network_icon {
 
 NetworkIconAnimation::NetworkIconAnimation() : animation_(this) {
   // Set up the animation throbber.
-  animation_.SetThrobDuration(base::TimeDelta::FromMilliseconds(750));
+  animation_.SetThrobDuration(base::Milliseconds(750));
   animation_.SetTweenType(gfx::Tween::LINEAR);
 }
 

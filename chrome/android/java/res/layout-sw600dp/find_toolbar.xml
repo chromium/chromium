@@ -10,7 +10,7 @@
     android:id="@+id/find_toolbar"
     android:layout_width="0dp"
     android:layout_height="0dp"
-    android:background="@drawable/popup_bg_tinted"
+    android:background="@drawable/dialog_bg_tinted"
     android:visibility="gone">
     <include
         android:layout_width="match_parent"

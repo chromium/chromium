@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CERTIFICATE_REPORTING_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CERTIFICATE_REPORTING_METRICS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 
 // CertificateReportingService doesn't do its own scheduling when retrying

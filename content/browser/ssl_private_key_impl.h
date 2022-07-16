@@ -9,17 +9,20 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_errors.h"
 #include "net/ssl/ssl_private_key.h"
-#include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 
 namespace content {
 
 class SSLPrivateKeyImpl : public network::mojom::SSLPrivateKey {
  public:
   explicit SSLPrivateKeyImpl(scoped_refptr<net::SSLPrivateKey> ssl_private_key);
+
+  SSLPrivateKeyImpl(const SSLPrivateKeyImpl&) = delete;
+  SSLPrivateKeyImpl& operator=(const SSLPrivateKeyImpl&) = delete;
+
   ~SSLPrivateKeyImpl() override;
 
   // network::mojom::SSLPrivateKey:
@@ -33,8 +36,6 @@ class SSLPrivateKeyImpl : public network::mojom::SSLPrivateKey {
                 const std::vector<uint8_t>& signature);
 
   scoped_refptr<net::SSLPrivateKey> ssl_private_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLPrivateKeyImpl);
 };
 
 }  // namespace content

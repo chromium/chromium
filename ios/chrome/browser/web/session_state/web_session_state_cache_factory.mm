@@ -27,6 +27,11 @@ class WebSessionStateCacheWrapper : public KeyedService {
   explicit WebSessionStateCacheWrapper(
       ChromeBrowserState* browser_state,
       WebSessionStateCache* web_session_state_cache);
+
+  WebSessionStateCacheWrapper(const WebSessionStateCacheWrapper&) = delete;
+  WebSessionStateCacheWrapper& operator=(const WebSessionStateCacheWrapper&) =
+      delete;
+
   ~WebSessionStateCacheWrapper() override;
 
   WebSessionStateCache* web_session_state_cache() {
@@ -39,8 +44,6 @@ class WebSessionStateCacheWrapper : public KeyedService {
  private:
   __strong WebSessionStateCache* web_session_state_cache_;
   std::unique_ptr<AllWebStateListObservationRegistrar> registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSessionStateCacheWrapper);
 };
 
 WebSessionStateCacheWrapper::WebSessionStateCacheWrapper(

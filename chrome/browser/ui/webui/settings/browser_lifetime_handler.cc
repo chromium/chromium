@@ -11,8 +11,8 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -27,8 +27,8 @@ namespace {
 // Triggers a TPM firmware update using the least destructive mode from
 // |available_modes|.
 void TriggerTPMFirmwareUpdate(
-    const std::set<chromeos::tpm_firmware_update::Mode>& available_modes) {
-  using chromeos::tpm_firmware_update::Mode;
+    const std::set<ash::tpm_firmware_update::Mode>& available_modes) {
+  using ::ash::tpm_firmware_update::Mode;
 
   // Decide which update mode to use.
   for (Mode mode :
@@ -57,18 +57,18 @@ BrowserLifetimeHandler::BrowserLifetimeHandler() {}
 BrowserLifetimeHandler::~BrowserLifetimeHandler() {}
 
 void BrowserLifetimeHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "restart", base::BindRepeating(&BrowserLifetimeHandler::HandleRestart,
                                      base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "relaunch", base::BindRepeating(&BrowserLifetimeHandler::HandleRelaunch,
                                       base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "signOutAndRestart",
       base::BindRepeating(&BrowserLifetimeHandler::HandleSignOutAndRestart,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "factoryReset",
       base::BindRepeating(&BrowserLifetimeHandler::HandleFactoryReset,
                           base::Unretained(this)));
@@ -98,7 +98,7 @@ void BrowserLifetimeHandler::HandleFactoryReset(
   bool tpm_firmware_update_requested = args_list[0].GetBool();
 
   if (tpm_firmware_update_requested) {
-    chromeos::tpm_firmware_update::GetAvailableUpdateModes(
+    ash::tpm_firmware_update::GetAvailableUpdateModes(
         base::BindOnce(&TriggerTPMFirmwareUpdate), base::TimeDelta());
     return;
   }

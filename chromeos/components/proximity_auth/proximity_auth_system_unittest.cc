@@ -65,14 +65,16 @@ chromeos::multidevice::RemoteDeviceRef CreateRemoteDevice(
 class MockUnlockManager : public UnlockManager {
  public:
   MockUnlockManager() {}
+
+  MockUnlockManager(const MockUnlockManager&) = delete;
+  MockUnlockManager& operator=(const MockUnlockManager&) = delete;
+
   ~MockUnlockManager() override {}
   MOCK_METHOD0(IsUnlockAllowed, bool());
   MOCK_METHOD1(SetRemoteDeviceLifeCycle, void(RemoteDeviceLifeCycle*));
   MOCK_METHOD1(OnAuthAttempted, void(mojom::AuthType));
   MOCK_METHOD0(CancelConnectionAttempt, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockUnlockManager);
+  MOCK_METHOD0(GetLastRemoteStatusUnlockForLogging, std::string());
 };
 
 // Mock implementation of ProximityAuthProfilePrefManager.
@@ -83,11 +85,13 @@ class MockProximityAuthPrefManager : public ProximityAuthProfilePrefManager {
           fake_multidevice_setup_client)
       : ProximityAuthProfilePrefManager(nullptr,
                                         fake_multidevice_setup_client) {}
+
+  MockProximityAuthPrefManager(const MockProximityAuthPrefManager&) = delete;
+  MockProximityAuthPrefManager& operator=(const MockProximityAuthPrefManager&) =
+      delete;
+
   ~MockProximityAuthPrefManager() override {}
   MOCK_CONST_METHOD0(GetLastPasswordEntryTimestampMs, int64_t());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockProximityAuthPrefManager);
 };
 
 // Harness for ProximityAuthSystem to make it testable.
@@ -99,6 +103,11 @@ class TestableProximityAuthSystem : public ProximityAuthSystem {
       ProximityAuthPrefManager* pref_manager)
       : ProximityAuthSystem(secure_channel_client, std::move(unlock_manager)),
         life_cycle_(nullptr) {}
+
+  TestableProximityAuthSystem(const TestableProximityAuthSystem&) = delete;
+  TestableProximityAuthSystem& operator=(const TestableProximityAuthSystem&) =
+      delete;
+
   ~TestableProximityAuthSystem() override {}
 
   FakeRemoteDeviceLifeCycle* life_cycle() { return life_cycle_; }
@@ -115,13 +124,15 @@ class TestableProximityAuthSystem : public ProximityAuthSystem {
   }
 
   FakeRemoteDeviceLifeCycle* life_cycle_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestableProximityAuthSystem);
 };
 
 }  // namespace
 
 class ProximityAuthSystemTest : public testing::Test {
+ public:
+  ProximityAuthSystemTest(const ProximityAuthSystemTest&) = delete;
+  ProximityAuthSystemTest& operator=(const ProximityAuthSystemTest&) = delete;
+
  protected:
   ProximityAuthSystemTest()
       : user1_local_device_(CreateRemoteDevice(kUser1, "user1_local_device")),
@@ -214,8 +225,6 @@ class ProximityAuthSystemTest : public testing::Test {
  private:
   chromeos::multidevice::ScopedDisableLoggingForTesting disable_logging_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthSystemTest);
 };
 
 TEST_F(ProximityAuthSystemTest, SetRemoteDevicesForUser_NotStarted) {

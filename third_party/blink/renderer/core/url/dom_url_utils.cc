@@ -73,25 +73,14 @@ void DOMURLUtils::setHost(const String& value) {
 }
 
 void DOMURLUtils::setHostname(const String& value) {
+  if (value.IsEmpty())
+    return;
+
   KURL kurl = Url();
   if (!kurl.CanSetHostOrPort())
     return;
 
-  // Before setting new value:
-  // Remove all leading U+002F SOLIDUS ("/") characters.
-  //
-  // TODO(crbug.com/1212318): This is legacy WebKit behavior that should be
-  // removed.
-  unsigned i = 0;
-  unsigned host_length = value.length();
-  while (value[i] == '/')
-    i++;
-
-  if (i == host_length)
-    return;
-
-  kurl.SetHost(value.Substring(i));
-
+  kurl.SetHost(value);
   if (kurl.IsValid())
     SetURL(kurl);
 }

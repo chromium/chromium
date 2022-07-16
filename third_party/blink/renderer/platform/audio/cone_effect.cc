@@ -45,7 +45,7 @@ double ConeEffect::Gain(FloatPoint3D source_position,
   FloatPoint3D source_to_listener = listener_position - source_position;
 
   // Angle between the source orientation vector and the source-listener vector
-  double angle = rad2deg(source_to_listener.AngleBetween(source_orientation));
+  double angle = Rad2deg(source_to_listener.AngleBetween(source_orientation));
   double abs_angle = fabs(angle);
 
   // Divide by 2.0 here since API is entire angle (not half-angle)

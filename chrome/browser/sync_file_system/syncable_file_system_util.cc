@@ -8,13 +8,15 @@
 
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 using storage::ExternalMountPoints;
@@ -62,14 +64,15 @@ FileSystemURL CreateSyncableFileSystemURL(const GURL& origin,
     path_for_url = base::FilePath(path.value().substr(1));
 
   return ExternalMountPoints::GetSystemInstance()->CreateExternalFileSystemURL(
-      url::Origin::Create(origin), kSyncableMountName, path_for_url);
+      blink::StorageKey(url::Origin::Create(origin)), kSyncableMountName,
+      path_for_url);
 }
 
 FileSystemURL CreateSyncableFileSystemURLForSync(
     storage::FileSystemContext* file_system_context,
     const FileSystemURL& syncable_url) {
   return ExternalMountPoints::GetSystemInstance()->CreateExternalFileSystemURL(
-      syncable_url.origin(), kSyncableMountNameForInternalSync,
+      syncable_url.storage_key(), kSyncableMountNameForInternalSync,
       syncable_url.path());
 }
 
@@ -88,8 +91,10 @@ bool DeserializeSyncableFileSystemURL(const std::string& serialized_url,
   DCHECK(serialized_url.find('\\') == std::string::npos);
 #endif  // FILE_PATH_USES_WIN_SEPARATORS
 
+  const GURL gurl(serialized_url);
   FileSystemURL deserialized =
-      ExternalMountPoints::GetSystemInstance()->CrackURL(GURL(serialized_url));
+      ExternalMountPoints::GetSystemInstance()->CrackURL(
+          gurl, blink::StorageKey(url::Origin::Create(gurl)));
   if (!deserialized.is_valid() ||
       deserialized.type() != storage::kFileSystemTypeSyncable) {
     return false;

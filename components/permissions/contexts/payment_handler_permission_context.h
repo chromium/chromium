@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERMISSIONS_CONTEXTS_PAYMENT_HANDLER_PERMISSION_CONTEXT_H_
 #define COMPONENTS_PERMISSIONS_CONTEXTS_PAYMENT_HANDLER_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "components/permissions/permission_context_base.h"
 
 class GURL;
@@ -25,6 +24,12 @@ class PaymentHandlerPermissionContext
  public:
   explicit PaymentHandlerPermissionContext(
       content::BrowserContext* browser_context);
+
+  PaymentHandlerPermissionContext(const PaymentHandlerPermissionContext&) =
+      delete;
+  PaymentHandlerPermissionContext& operator=(
+      const PaymentHandlerPermissionContext&) = delete;
+
   ~PaymentHandlerPermissionContext() override;
 
  private:
@@ -37,8 +42,6 @@ class PaymentHandlerPermissionContext
       bool user_gesture,
       permissions::BrowserPermissionCallback callback) override;
   bool IsRestrictedToSecureOrigins() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentHandlerPermissionContext);
 };
 
 }  // namespace payments

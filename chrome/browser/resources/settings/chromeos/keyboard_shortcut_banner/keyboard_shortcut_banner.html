@@ -1,7 +1,7 @@
 <style>
   :host {
     align-items: center;
-    border: 1px solid var(--google-grey-200);
+    border: 1px solid var(--cr-separator-color);
     border-radius: 8px;
     column-gap: 12px;
     display: flex;
@@ -45,7 +45,10 @@
 
   /* Shortcut pods */
   kbd > kbd {
-    background-color: var(--google-grey-200);
+    background-color: var(--cros-shortcut-background-color);
+    background-image: linear-gradient(
+      var(--cros-shortcut-background-gradient-color),
+      var(--cros-shortcut-background-gradient-color));
     border-radius: 18px;
     box-shadow: var(--cr-elevation-1);
     color: var(--cr-secondary-text-color);
@@ -58,7 +61,7 @@
 
   /* Blue + icon between shortcut pods */
   :not(kbd) > kbd {
-    color: var(--google-blue-600);
+    color: var(--cros-text-color-prominent);
   }
 
   cr-button {

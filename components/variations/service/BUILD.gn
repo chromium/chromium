@@ -36,6 +36,7 @@ static_library("service") {
 
   deps = [
     ":buildflags",
+    ":constants",
     "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
@@ -66,6 +67,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":constants",
     ":service",
     "//base",
     "//base/test:test_support",
@@ -75,6 +77,7 @@ source_set("unit_tests") {
     "//components/variations",
     "//components/variations:test_support",
     "//components/variations/proto",
+    "//components/version_info",
     "//components/web_resource:test_support",
     "//net",
     "//net:test_support",
@@ -82,4 +85,13 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gtest",
   ]
+}
+
+static_library("constants") {
+  sources = [
+    "variations_safe_mode_constants.cc",
+    "variations_safe_mode_constants.h",
+  ]
+
+  deps = [ "//base" ]
 }

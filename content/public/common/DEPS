@@ -10,18 +10,4 @@ specific_include_rules = {
   ".*\.cc": [
     "+content/common",
   ],
-  "simple_url_loader\.cc": [
-    "-content",
-    "+content/public/common/simple_url_loader\.h",
-    "+content/public/common/resource_request\.h",
-    "+content/public/common/resource_response\.h",
-    "+content/public/common/url_loader\.mojom\.h",
-    "+content/public/common/url_loader_factory\.mojom\.h",
-  ],
-  "simple_url_loader_unittest\.cc": [
-    "+content/public/network",
-  ],
-  "url_utils_unittest\.cc": [
-    "+content/public/test",
-  ],
 }

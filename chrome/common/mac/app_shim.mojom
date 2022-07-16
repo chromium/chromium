@@ -73,6 +73,15 @@ struct ProfileMenuItem {
   mojo_base.mojom.FilePath profile_path;
 };
 
+// An entry in the application dock NSMenu.
+struct ApplicationDockMenuItem {
+  // The name to display.
+  mojo_base.mojom.String16 name;
+
+  // The URL to launch when this item is selected.
+  url.mojom.Url url;
+};
+
 // Interface through which the browser communicates to a shim process.
 interface AppShim {
   // Create the interface to the NSApplication (through which NSViews and
@@ -93,6 +102,9 @@ interface AppShim {
 
   // Called to update the state of the profiles NSMenu.
   UpdateProfileMenu(array<ProfileMenuItem> profile_menu_items);
+
+  // Called to update the state of the application dock menu.
+  UpdateApplicationDockMenu(array<ApplicationDockMenuItem> dock_menu_items);
 };
 
 // Interface through which the a process communicates to the browser process.
@@ -114,6 +126,10 @@ interface AppShimHost {
 
   // Sent when urls are opened by the app (e.g. clicking a link in mail)
   UrlsOpened(array<url.mojom.Url> urls);
+
+  // Sent when the app should be opened with an override url (e.g.
+  // user clicks on an item in the application dock menu).
+  OpenAppWithOverrideUrl(url.mojom.Url override_url);
 };
 
 // Properties of an app shim that are specified when it connects to the browser

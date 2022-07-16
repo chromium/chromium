@@ -187,7 +187,7 @@ TEST_F(WebStateTest, Snapshot) {
   // The subview is added but not immediately painted, so a small delay is
   // necessary.
   CGRect rect = [web_state()->GetView() bounds];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
   web_state()->TakeSnapshot(
       gfx::RectF(rect), base::BindRepeating(^(const gfx::Image& snapshot) {
         ASSERT_FALSE(snapshot.IsEmpty());
@@ -560,6 +560,18 @@ TEST_F(WebStateTest, RestoreLargeSession) {
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       navigation_manager->GetLastCommittedItem()->GetTransitionType(),
       ui::PAGE_TRANSITION_RELOAD));
+
+  // The restoration of www.0.com ends with displaying an error page which may
+  // not be complete at this point.
+  // Queue some javascript to wait for every handler to complete.
+  // TODO(crbug.com/1244067): Remove this workaround.
+  __block BOOL called = false;
+  web_state->ExecuteJavaScript(u"0;", base::BindOnce(^(const base::Value* res) {
+                                 called = true;
+                               }));
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return called;
+  }));
 }
 
 // Verifies that calling WebState::Stop() does not stop the session restoration.

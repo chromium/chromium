@@ -25,7 +25,7 @@
 #include "components/payments/core/payment_request_data_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/web_contents.h"
 
 namespace payments {

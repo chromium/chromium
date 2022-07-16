@@ -1,11 +1,27 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import './shared_style.js';
+import './toggle_row.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
+import {PermissionType, PermissionValue, TriState} from '../permission_constants.js';
+import {createBoolPermission, createTriStatePermission, getBoolPermissionValue, getTriStatePermissionValue, isBoolValue, isTriStateValue} from '../permission_util.js';
+
+import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementUserAction} from './constants.js';
+import {AppManagementStoreClient} from './store_client.js';
+import {getPermission, getPermissionValueBool, getSelectedApp, recordAppManagementUserAction} from './util.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-permission-item',
 
   behaviors: [
-    app_management.AppManagementStoreClient,
+    AppManagementStoreClient,
   ],
 
   properties: {
@@ -17,8 +33,7 @@ Polymer({
 
     /**
      * A string version of the permission type. Must be a value of the
-     * permission type enum corresponding to the AppType of app_.
-     * E.g. A value of PwaPermissionType if app_.type === AppType.kWeb.
+     * permission type enum in apps.mojom.PermissionType.
      * @type {string}
      */
     permissionType: String,
@@ -68,7 +83,7 @@ Polymer({
   listeners: {click: 'onClick_', change: 'togglePermission_'},
 
   attached() {
-    this.watch('app_', state => app_management.util.getSelectedApp(state));
+    this.watch('app_', state => getSelectedApp(state));
     this.updateFromStore();
   },
 
@@ -86,7 +101,7 @@ Polymer({
 
     assert(app);
 
-    return app_management.util.getPermission(app, permissionType) !== undefined;
+    return getPermission(app, permissionType) !== undefined;
   },
 
   /**
@@ -101,7 +116,7 @@ Polymer({
     }
 
     assert(app);
-    const permission = app_management.util.getPermission(app, permissionType);
+    const permission = getPermission(app, permissionType);
 
     assert(permission);
     return permission.isManaged;
@@ -118,7 +133,7 @@ Polymer({
     }
     assert(app);
 
-    return app_management.util.getPermissionValueBool(app, permissionType);
+    return getPermissionValueBool(app, permissionType);
   },
 
   resetToggle() {
@@ -153,26 +168,26 @@ Polymer({
     let newPermission;
 
     let newBoolState = false;  // to keep the closure compiler happy.
-    switch (app_management.util.getPermission(this.app_, this.permissionType)
-                .valueType) {
-      case PermissionValueType.kBool:
-        newPermission =
-            this.getUIPermissionBoolean_(this.app_, this.permissionType);
-        newBoolState = newPermission.value === Bool.kTrue;
-        break;
-      case PermissionValueType.kTriState:
-        newPermission =
-            this.getUIPermissionTriState_(this.app_, this.permissionType);
-        newBoolState = newPermission.value === TriState.kAllow;
-        break;
-      default:
-        assertNotReached();
+    const permissionValue = getPermission(this.app_, this.permissionType).value;
+    if (isBoolValue(permissionValue)) {
+      newPermission =
+          this.getUIPermissionBoolean_(this.app_, this.permissionType);
+      newBoolState = getBoolPermissionValue(newPermission.value);
+    } else if (isTriStateValue(permissionValue)) {
+      newPermission =
+          this.getUIPermissionTriState_(this.app_, this.permissionType);
+
+      newBoolState =
+          getTriStatePermissionValue(newPermission.value) === TriState.kAllow;
+    } else {
+      assertNotReached();
     }
-    app_management.BrowserProxy.getInstance().handler.setPermission(
+
+    BrowserProxy.getInstance().handler.setPermission(
         this.app_.id, newPermission);
 
-    settings.recordSettingChange();
-    app_management.util.recordAppManagementUserAction(
+    recordSettingChange();
+    recordAppManagementUserAction(
         this.app_.type,
         this.getUserMetricActionForPermission_(
             newBoolState, this.permissionType));
@@ -187,24 +202,14 @@ Polymer({
    * @private
    */
   getUIPermissionBoolean_(app, permissionType) {
-    let newPermissionValue;
-    const currentPermission =
-        app_management.util.getPermission(app, permissionType);
+    const currentPermission = getPermission(app, permissionType);
 
-    switch (currentPermission.value) {
-      case Bool.kFalse:
-        newPermissionValue = Bool.kTrue;
-        break;
-      case Bool.kTrue:
-        newPermissionValue = Bool.kFalse;
-        break;
-      default:
-        assertNotReached();
-    }
-    assert(newPermissionValue !== undefined);
-    return app_management.util.createPermission(
-        app_management.util.permissionTypeHandle(app, permissionType),
-        PermissionValueType.kBool, newPermissionValue,
+    assert(isBoolValue(currentPermission.value));
+
+    const newPermissionValue = !getBoolPermissionValue(currentPermission.value);
+
+    return createBoolPermission(
+        PermissionType[permissionType], newPermissionValue,
         currentPermission.isManaged);
   },
 
@@ -218,10 +223,11 @@ Polymer({
    */
   getUIPermissionTriState_(app, permissionType) {
     let newPermissionValue;
-    const currentPermission =
-        app_management.util.getPermission(app, permissionType);
+    const currentPermission = getPermission(app, permissionType);
 
-    switch (currentPermission.value) {
+    assert(isTriStateValue(currentPermission.value));
+
+    switch (getTriStatePermissionValue(currentPermission.value)) {
       case TriState.kBlock:
         newPermissionValue = TriState.kAllow;
         break;
@@ -240,9 +246,8 @@ Polymer({
     }
 
     assert(newPermissionValue !== undefined);
-    return app_management.util.createPermission(
-        app_management.util.permissionTypeHandle(app, permissionType),
-        PermissionValueType.kTriState, newPermissionValue,
+    return createTriStatePermission(
+        PermissionType[permissionType], newPermissionValue,
         currentPermission.isManaged);
   },
 
@@ -254,34 +259,31 @@ Polymer({
    */
   getUserMetricActionForPermission_(permissionValue, permissionType) {
     switch (permissionType) {
-      case 'NOTIFICATIONS':
+      case 'kNotifications':
         return permissionValue ? AppManagementUserAction.NotificationsTurnedOn :
                                  AppManagementUserAction.NotificationsTurnedOff;
 
-      case 'GEOLOCATION':
-      case 'LOCATION':
+      case 'kLocation':
         return permissionValue ? AppManagementUserAction.LocationTurnedOn :
                                  AppManagementUserAction.LocationTurnedOff;
 
-      case 'MEDIASTREAM_CAMERA':
-      case 'CAMERA':
+      case 'kCamera':
         return permissionValue ? AppManagementUserAction.CameraTurnedOn :
                                  AppManagementUserAction.CameraTurnedOff;
 
-      case 'MEDIASTREAM_MIC':
-      case 'MICROPHONE':
+      case 'kMicrophone':
         return permissionValue ? AppManagementUserAction.MicrophoneTurnedOn :
                                  AppManagementUserAction.MicrophoneTurnedOff;
 
-      case 'CONTACTS':
+      case 'kContacts':
         return permissionValue ? AppManagementUserAction.ContactsTurnedOn :
                                  AppManagementUserAction.ContactsTurnedOff;
 
-      case 'STORAGE':
+      case 'kStorage':
         return permissionValue ? AppManagementUserAction.StorageTurnedOn :
                                  AppManagementUserAction.StorageTurnedOff;
 
-      case 'PRINTING':
+      case 'kPrinting':
         return permissionValue ? AppManagementUserAction.PrintingTurnedOn :
                                  AppManagementUserAction.PrintingTurnedOff;
 

@@ -14,6 +14,10 @@ namespace gl {
 class GL_EXPORT VSyncProviderWin : public gfx::VSyncProvider {
  public:
   explicit VSyncProviderWin(gfx::AcceleratedWidget window);
+
+  VSyncProviderWin(const VSyncProviderWin&) = delete;
+  VSyncProviderWin& operator=(const VSyncProviderWin&) = delete;
+
   ~VSyncProviderWin() override;
 
   static void InitializeOneOff();
@@ -27,8 +31,6 @@ class GL_EXPORT VSyncProviderWin : public gfx::VSyncProvider {
 
  private:
   gfx::AcceleratedWidget window_;
-
-  DISALLOW_COPY_AND_ASSIGN(VSyncProviderWin);
 };
 
 }  // namespace gl

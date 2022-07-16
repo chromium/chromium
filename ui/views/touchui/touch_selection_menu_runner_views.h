@@ -5,8 +5,6 @@
 #ifndef UI_VIEWS_TOUCHUI_TOUCH_SELECTION_MENU_RUNNER_VIEWS_H_
 #define UI_VIEWS_TOUCHUI_TOUCH_SELECTION_MENU_RUNNER_VIEWS_H_
 
-
-#include "base/macros.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/views_export.h"
@@ -24,19 +22,29 @@ class VIEWS_EXPORT TouchSelectionMenuRunnerViews
   class VIEWS_EXPORT TestApi {
    public:
     explicit TestApi(TouchSelectionMenuRunnerViews* menu_runner);
+
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
     ~TestApi();
 
     gfx::Rect GetAnchorRect() const;
     LabelButton* GetFirstButton();
     Widget* GetWidget();
+    void ShowMenu(TouchSelectionMenuViews* menu,
+                  const gfx::Rect& anchor_rect,
+                  const gfx::Size& handle_image_size);
 
    private:
     TouchSelectionMenuRunnerViews* menu_runner_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
 
   TouchSelectionMenuRunnerViews();
+
+  TouchSelectionMenuRunnerViews(const TouchSelectionMenuRunnerViews&) = delete;
+  TouchSelectionMenuRunnerViews& operator=(
+      const TouchSelectionMenuRunnerViews&) = delete;
+
   ~TouchSelectionMenuRunnerViews() override;
 
  protected:
@@ -61,8 +69,6 @@ class VIEWS_EXPORT TouchSelectionMenuRunnerViews
   // A pointer to the currently running menu, or |nullptr| if no menu is
   // running. The menu manages its own lifetime and deletes itself when closed.
   TouchSelectionMenuViews* menu_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuRunnerViews);
 };
 
 }  // namespace views

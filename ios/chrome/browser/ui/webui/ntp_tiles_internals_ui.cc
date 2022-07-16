@@ -34,6 +34,11 @@ class IOSNTPTilesInternalsMessageHandlerBridge
       favicon::FaviconService* favicon_service)
       : handler_(favicon_service) {}
 
+  IOSNTPTilesInternalsMessageHandlerBridge(
+      const IOSNTPTilesInternalsMessageHandlerBridge&) = delete;
+  IOSNTPTilesInternalsMessageHandlerBridge& operator=(
+      const IOSNTPTilesInternalsMessageHandlerBridge&) = delete;
+
  private:
   // web::WebUIIOSMessageHandler:
   void RegisterMessages() override;
@@ -43,17 +48,20 @@ class IOSNTPTilesInternalsMessageHandlerBridge
   bool DoesSourceExist(ntp_tiles::TileSource source) override;
   std::unique_ptr<ntp_tiles::MostVisitedSites> MakeMostVisitedSites() override;
   PrefService* GetPrefs() override;
-  void RegisterMessageCallback(
+  using MessageCallback =
+      base::RepeatingCallback<void(base::Value::ConstListView)>;
+  void RegisterMessageCallback(const std::string& message,
+                               MessageCallback callback) override;
+  using DeprecatedMessageCallback =
+      base::RepeatingCallback<void(const base::ListValue*)>;
+  void RegisterDeprecatedMessageCallback(
       const std::string& message,
-      const base::RepeatingCallback<void(const base::ListValue*)>& callback)
-      override;
+      const DeprecatedMessageCallback& callback) override;
   void CallJavascriptFunctionVector(
       const std::string& name,
       const std::vector<const base::Value*>& values) override;
 
   ntp_tiles::NTPTilesInternalsMessageHandler handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSNTPTilesInternalsMessageHandlerBridge);
 };
 
 void IOSNTPTilesInternalsMessageHandlerBridge::RegisterMessages() {
@@ -93,8 +101,15 @@ PrefService* IOSNTPTilesInternalsMessageHandlerBridge::GetPrefs() {
 
 void IOSNTPTilesInternalsMessageHandlerBridge::RegisterMessageCallback(
     const std::string& message,
-    const base::RepeatingCallback<void(const base::ListValue*)>& callback) {
-  web_ui()->RegisterMessageCallback(message, callback);
+    MessageCallback callback) {
+  web_ui()->RegisterMessageCallback(message, std::move(callback));
+}
+
+void IOSNTPTilesInternalsMessageHandlerBridge::
+    RegisterDeprecatedMessageCallback(
+        const std::string& message,
+        const DeprecatedMessageCallback& callback) {
+  web_ui()->RegisterDeprecatedMessageCallback(message, callback);
 }
 
 void IOSNTPTilesInternalsMessageHandlerBridge::CallJavascriptFunctionVector(

@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -38,7 +37,7 @@ class ModuleInspector : public ModuleDatabaseObserver {
   // The amount of time before the |inspection_results_cache_| is flushed to
   // disk while the ModuleDatabase is not idle.
   static constexpr base::TimeDelta kFlushInspectionResultsTimerTimeout =
-      base::TimeDelta::FromMinutes(5);
+      base::Minutes(5);
 
   using OnModuleInspectedCallback =
       base::RepeatingCallback<void(const ModuleInfoKey& module_key,
@@ -46,6 +45,10 @@ class ModuleInspector : public ModuleDatabaseObserver {
 
   explicit ModuleInspector(
       const OnModuleInspectedCallback& on_module_inspected_callback);
+
+  ModuleInspector(const ModuleInspector&) = delete;
+  ModuleInspector& operator=(const ModuleInspector&) = delete;
+
   ~ModuleInspector() override;
 
   // Adds the module to the queue of modules to inspect. Starts the inspection
@@ -160,8 +163,6 @@ class ModuleInspector : public ModuleDatabaseObserver {
   // Weak pointers are used to safely post the inspection result back to the
   // ModuleInspector from the task scheduler.
   base::WeakPtrFactory<ModuleInspector> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleInspector);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_MODULE_INSPECTOR_H_

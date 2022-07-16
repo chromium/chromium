@@ -70,6 +70,10 @@ class NET_EXPORT_PRIVATE SocketBIOAdapter {
                    int read_buffer_capacity,
                    int write_buffer_capacity,
                    Delegate* delegate);
+
+  SocketBIOAdapter(const SocketBIOAdapter&) = delete;
+  SocketBIOAdapter& operator=(const SocketBIOAdapter&) = delete;
+
   ~SocketBIOAdapter();
 
   BIO* bio() { return bio_.get(); }
@@ -137,8 +141,6 @@ class NET_EXPORT_PRIVATE SocketBIOAdapter {
   Delegate* delegate_;
 
   base::WeakPtrFactory<SocketBIOAdapter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SocketBIOAdapter);
 };
 
 }  // namespace net

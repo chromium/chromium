@@ -6,6 +6,6 @@
 
 namespace sync_sessions {
 
-OpenTabsUIDelegate::~OpenTabsUIDelegate() {}
+OpenTabsUIDelegate::~OpenTabsUIDelegate() = default;
 
 }  // namespace sync_sessions

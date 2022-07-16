@@ -9,6 +9,7 @@
 
 namespace base {
 class DictionaryValue;
+class Value;
 }
 
 namespace TemplateURLPrepopulateData {
@@ -34,6 +35,6 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
 // used in the To/FromDictionary functions above for historical reasons.
 // TODO(a-v-y) Migrate to single TemplateURLData serialization format.
 std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
-    const base::DictionaryValue& engine);
+    const base::Value& engine);
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_DATA_UTIL_H_

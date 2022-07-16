@@ -14,7 +14,7 @@
 #include "ui/gfx/shadow_value.h"
 
 namespace ui {
-class NativeTheme;
+class ColorProvider;
 }
 
 namespace ash {
@@ -37,7 +37,8 @@ ASH_EXPORT const gfx::FontList& GetDefaultFontlist();
 // Returns the default static text shadow for Ambient Mode. |theme| can be a
 // nullptr if the ShadowValues returned are only used to calculate margins, in
 // which kPlaceholderColor will be used for the shadow color.
-ASH_EXPORT gfx::ShadowValues GetTextShadowValues(const ui::NativeTheme* theme);
+ASH_EXPORT gfx::ShadowValues GetTextShadowValues(
+    const ui::ColorProvider* color_provider);
 
 ASH_EXPORT bool IsAmbientModeTopicTypeAllowed(::ambient::TopicType topic);
 

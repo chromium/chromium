@@ -29,6 +29,9 @@ class GPU_GLES2_EXPORT GLContextVirtual : public gl::GLContext {
                    gl::GLContext* shared_context,
                    base::WeakPtr<GLContextVirtualDelegate> delegate);
 
+  GLContextVirtual(const GLContextVirtual&) = delete;
+  GLContextVirtual& operator=(const GLContextVirtual&) = delete;
+
   // Implement GLContext.
   bool Initialize(gl::GLSurface* compatible_surface,
                   const gl::GLContextAttribs& attribs) override;
@@ -61,8 +64,6 @@ class GPU_GLES2_EXPORT GLContextVirtual : public gl::GLContext {
 
   scoped_refptr<gl::GLContext> shared_context_;
   base::WeakPtr<GLContextVirtualDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLContextVirtual);
 };
 
 }  // namespace gpu

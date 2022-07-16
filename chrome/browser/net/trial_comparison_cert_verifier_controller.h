@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -32,6 +31,12 @@ class TrialComparisonCertVerifierController
   // preferences and reporting.
   // |profile| must outlive the TrialComparisonCertVerifierController.
   explicit TrialComparisonCertVerifierController(Profile* profile);
+
+  TrialComparisonCertVerifierController(
+      const TrialComparisonCertVerifierController&) = delete;
+  TrialComparisonCertVerifierController& operator=(
+      const TrialComparisonCertVerifierController&) = delete;
+
   ~TrialComparisonCertVerifierController() override;
 
   // Returns true if the trial could potentially be enabled for |profile|;
@@ -79,8 +84,6 @@ class TrialComparisonCertVerifierController
 
   mojo::RemoteSet<cert_verifier::mojom::TrialComparisonCertVerifierConfigClient>
       config_client_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrialComparisonCertVerifierController);
 };
 
 #endif  // CHROME_BROWSER_NET_TRIAL_COMPARISON_CERT_VERIFIER_CONTROLLER_H_

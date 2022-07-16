@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -24,15 +24,12 @@ namespace apps {
 
 // An app publisher (in the App Service sense) of extension-backed apps for
 // Chrome, including Chrome Apps (platform apps and legacy packaged apps) and
-// hosted apps (including desktop PWAs).
-//
-// In the future, desktop PWAs will be migrated to a new system.
+// hosted apps.
 //
 // See components/services/app_service/README.md.
 class ExtensionApps : public apps::ExtensionAppsBase {
  public:
-  ExtensionApps(const mojo::Remote<apps::mojom::AppService>& app_service,
-                Profile* profile);
+  explicit ExtensionApps(AppServiceProxy* proxy);
   ~ExtensionApps() override;
 
   ExtensionApps(const ExtensionApps&) = delete;
@@ -47,6 +44,8 @@ class ExtensionApps : public apps::ExtensionAppsBase {
   // ExtensionAppsBase overrides.
   bool Accepts(const extensions::Extension* extension) override;
   bool ShouldShownInLauncher(const extensions::Extension* extension) override;
+  std::unique_ptr<App> CreateApp(const extensions::Extension* extension,
+                                 Readiness readiness) override;
   apps::mojom::AppPtr Convert(const extensions::Extension* extension,
                               apps::mojom::Readiness readiness) override;
 };

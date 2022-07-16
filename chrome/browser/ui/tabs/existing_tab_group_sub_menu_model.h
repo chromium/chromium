@@ -33,7 +33,7 @@ class ExistingTabGroupSubMenuModel : public ExistingBaseSubMenuModel {
  private:
   // ExistingBaseSubMenuModel
   void ExecuteNewCommand(int event_flags) override;
-  void ExecuteExistingCommand(int command_index) override;
+  void ExecuteExistingCommand(int target_index) override;
 
   // Returns the group ids that appear in the submenu in the order that they
   // appear in the tab strip model, so that the user sees an ordered display.

@@ -27,6 +27,10 @@ namespace ios {
 class SavePasswordsConsumer : public password_manager::PasswordStoreConsumer {
  public:
   explicit SavePasswordsConsumer(id<SavePasswordsConsumerDelegate> delegate);
+
+  SavePasswordsConsumer(const SavePasswordsConsumer&) = delete;
+  SavePasswordsConsumer& operator=(const SavePasswordsConsumer&) = delete;
+
   ~SavePasswordsConsumer() override;
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
@@ -34,7 +38,6 @@ class SavePasswordsConsumer : public password_manager::PasswordStoreConsumer {
 
  private:
   __weak id<SavePasswordsConsumerDelegate> delegate_ = nil;
-  DISALLOW_COPY_AND_ASSIGN(SavePasswordsConsumer);
 };
 
 }  // namespace ios

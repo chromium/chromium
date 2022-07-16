@@ -7,11 +7,15 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -41,7 +45,15 @@
 namespace gpu {
 namespace raster {
 
+class WrappedSkImageFactory;
+
 namespace {
+
+size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
+  size_t estimated_size = 0;
+  viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size);
+  return estimated_size;
+}
 
 SkImageInfo MakeSkImageInfo(const gfx::Size& size, viz::ResourceFormat format) {
   return SkImageInfo::Make(size.width(), size.height(),
@@ -50,8 +62,72 @@ SkImageInfo MakeSkImageInfo(const gfx::Size& size, viz::ResourceFormat format) {
                            kOpaque_SkAlphaType);
 }
 
+uint64_t BackendTextureTracingID(const GrBackendTexture& backend_texture) {
+  switch (backend_texture.backend()) {
+    case GrBackendApi::kOpenGL: {
+      GrGLTextureInfo tex_info;
+      if (backend_texture.getGLTextureInfo(&tex_info))
+        return tex_info.fID;
+      break;
+    }
+#if defined(OS_MAC)
+    case GrBackendApi::kMetal: {
+      GrMtlTextureInfo image_info;
+      if (backend_texture.getMtlTextureInfo(&image_info))
+        return reinterpret_cast<uint64_t>(image_info.fTexture.get());
+      break;
+    }
+#endif
+#if BUILDFLAG(ENABLE_VULKAN)
+    case GrBackendApi::kVulkan: {
+      GrVkImageInfo image_info;
+      if (backend_texture.getVkImageInfo(&image_info))
+        return reinterpret_cast<uint64_t>(image_info.fImage);
+      break;
+    }
+#endif
+#if BUILDFLAG(SKIA_USE_DAWN)
+    case GrBackendApi::kDawn: {
+      GrDawnTextureInfo tex_info;
+      if (backend_texture.getDawnTextureInfo(&tex_info))
+        return reinterpret_cast<uint64_t>(tex_info.fTexture.Get());
+      break;
+    }
+#endif
+    default:
+      break;
+  }
+  return 0;
+}
+
 class WrappedSkImage : public ClearTrackingSharedImageBacking {
  public:
+  WrappedSkImage(base::PassKey<WrappedSkImageFactory>,
+                 const Mailbox& mailbox,
+                 viz::ResourceFormat format,
+                 const gfx::Size& size,
+                 const gfx::ColorSpace& color_space,
+                 GrSurfaceOrigin surface_origin,
+                 SkAlphaType alpha_type,
+                 uint32_t usage,
+                 size_t estimated_size,
+                 scoped_refptr<SharedContextState> context_state)
+      : ClearTrackingSharedImageBacking(mailbox,
+                                        format,
+                                        size,
+                                        color_space,
+                                        surface_origin,
+                                        alpha_type,
+                                        usage,
+                                        estimated_size,
+                                        false /* is_thread_safe */),
+        context_state_(std::move(context_state)) {
+    DCHECK(!!context_state_);
+  }
+
+  WrappedSkImage(const WrappedSkImage&) = delete;
+  WrappedSkImage& operator=(const WrappedSkImage&) = delete;
+
   ~WrappedSkImage() override {
     context_state_->MakeCurrent(nullptr);
     promise_texture_.reset();
@@ -97,9 +173,18 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
     auto client_guid = GetSharedImageGUIDForTracing(mailbox());
     auto service_guid = gl::GetGLTextureServiceGUIDForTracing(tracing_id_);
     pmd->CreateSharedGlobalAllocatorDump(service_guid);
+
+    std::string format_dump_name =
+        base::StringPrintf("%s/format=%d", dump_name.c_str(), format());
+    base::trace_event::MemoryAllocatorDump* format_dump =
+        pmd->CreateAllocatorDump(format_dump_name);
+    format_dump->AddScalar(
+        base::trace_event::MemoryAllocatorDump::kNameSize,
+        base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+        static_cast<uint64_t>(EstimatedSizeForMemTracking()));
+
     // TODO(piman): coalesce constant with TextureManager::DumpTextureRef.
     int importance = 2;  // This client always owns the ref.
-
     pmd->AddOwnershipEdge(client_guid, service_guid, importance);
   }
 
@@ -154,58 +239,58 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
 
  private:
   friend class gpu::raster::WrappedSkImageFactory;
+  class RepresentationSkia;
+  class RepresentationMemory;
 
-  WrappedSkImage(const Mailbox& mailbox,
-                 viz::ResourceFormat format,
-                 const gfx::Size& size,
-                 const gfx::ColorSpace& color_space,
-                 GrSurfaceOrigin surface_origin,
-                 SkAlphaType alpha_type,
-                 uint32_t usage,
-                 size_t estimated_size,
-                 scoped_refptr<SharedContextState> context_state)
-      : ClearTrackingSharedImageBacking(mailbox,
-                                        format,
-                                        size,
-                                        color_space,
-                                        surface_origin,
-                                        alpha_type,
-                                        usage,
-                                        estimated_size,
-                                        false /* is_thread_safe */),
-        context_state_(std::move(context_state)) {
-    DCHECK(!!context_state_);
-  }
+  bool Initialize() {
+    // MakeCurrent to avoid destroying another client's state because Skia may
+    // change GL state to create and upload textures (crbug.com/1095679).
+    if (!context_state_->MakeCurrent(nullptr))
+      return false;
+    context_state_->set_need_context_state_reset(true);
 
-  bool InitializeGMB(const SkImageInfo& info,
-                     SharedMemoryRegionWrapper shm_wrapper,
-                     GrMipMapped mipmap) {
-    if (Initialize(info, shm_wrapper.GetMemoryAsSpan(), shm_wrapper.GetStride(),
-                   mipmap)) {
-      shared_memory_wrapper_ = std::move(shm_wrapper);
-      return true;
+    DCHECK_NE(format(), viz::ResourceFormat::ETC1);
+    auto mipmap = usage() & SHARED_IMAGE_USAGE_MIPMAP ? GrMipMapped::kYes
+                                                      : GrMipMapped::kNo;
+#if DCHECK_IS_ON()
+    // Initializing to bright green makes it obvious if the pixels are not
+    // properly set before they are displayed (e.g. https://crbug.com/956555).
+    // We don't do this on release builds because there is a slight overhead.
+    backend_texture_ = context_state_->gr_context()->createBackendTexture(
+        size().width(), size().height(), GetSkColorType(), SkColors::kBlue,
+        mipmap, GrRenderable::kYes, GrProtected::kNo);
+#else
+    backend_texture_ = context_state_->gr_context()->createBackendTexture(
+        size().width(), size().height(), GetSkColorType(), mipmap,
+        GrRenderable::kYes, GrProtected::kNo);
+#endif
+
+    if (!backend_texture_.isValid()) {
+      DLOG(ERROR) << "createBackendTexture() failed with SkColorType:"
+                  << GetSkColorType();
+      return false;
     }
-    return false;
+
+    promise_texture_ = SkPromiseImageTexture::Make(backend_texture_);
+    tracing_id_ = BackendTextureTracingID(backend_texture_);
+
+    return true;
   }
 
   // |pixels| optionally contains pixel data to upload to the texture. If pixel
   // data is provided and the image format is not ETC1 then |stride| is used. If
-  // |stride| is non-zero then it's used as the stride, otherwise
-  // SkImageInfo::minRowBytes() is used for the stride. For ETC1 textures pixel
-  // data must be provided since updating compressed textures is not supported.
-  bool Initialize(const SkImageInfo& info,
-                  base::span<const uint8_t> pixels,
-                  size_t stride,
-                  GrMipMapped mipmap) {
-    if (context_state_->context_lost())
-      return false;
-
+  // |stride| is non-zero then it's used as the stride, otherwise it will create
+  // SkImageInfo from size() and format() and then SkImageInfo::minRowBytes() is
+  // used for the stride. For ETC1 textures pixel data must be provided since
+  // updating compressed textures is not supported.
+  bool InitializeWithData(base::span<const uint8_t> pixels, size_t stride) {
+    DCHECK(pixels.data());
     // MakeCurrent to avoid destroying another client's state because Skia may
     // change GL state to create and upload textures (crbug.com/1095679).
-    context_state_->MakeCurrent(nullptr);
+    if (!context_state_->MakeCurrent(nullptr))
+      return false;
     context_state_->set_need_context_state_reset(true);
 
-    if (pixels.data()) {
       if (format() == viz::ResourceFormat::ETC1) {
         backend_texture_ =
             context_state_->gr_context()->createCompressedBackendTexture(
@@ -213,6 +298,7 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
                 pixels.data(), pixels.size(), GrMipMapped::kNo,
                 GrProtected::kNo);
       } else {
+        auto info = MakeSkImageInfo(size(), format());
         if (!stride)
           stride = info.minRowBytes();
         SkPixmap pixmap(info, pixels.data(), stride);
@@ -224,65 +310,20 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
         return false;
 
       SetCleared();
-    } else {
-      DCHECK_NE(format(), viz::ResourceFormat::ETC1);
-#if DCHECK_IS_ON()
-      // Initializing to bright green makes it obvious if the pixels are not
-      // properly set before they are displayed (e.g. https://crbug.com/956555).
-      // We don't do this on release builds because there is a slight overhead.
-      backend_texture_ = context_state_->gr_context()->createBackendTexture(
-          size().width(), size().height(), GetSkColorType(), SkColors::kBlue,
-          mipmap, GrRenderable::kYes, GrProtected::kNo);
-#else
-      backend_texture_ = context_state_->gr_context()->createBackendTexture(
-          size().width(), size().height(), GetSkColorType(), mipmap,
-          GrRenderable::kYes, GrProtected::kNo);
-#endif
-
-      if (!backend_texture_.isValid()) {
-        DLOG(ERROR) << "createBackendTexture() failed with SkColorType:"
-                    << GetSkColorType();
-        return false;
-      }
-    }
 
     promise_texture_ = SkPromiseImageTexture::Make(backend_texture_);
-
-    switch (backend_texture_.backend()) {
-      case GrBackendApi::kOpenGL: {
-        GrGLTextureInfo tex_info;
-        if (backend_texture_.getGLTextureInfo(&tex_info))
-          tracing_id_ = tex_info.fID;
-        break;
-      }
-#if defined(OS_MAC)
-      case GrBackendApi::kMetal: {
-        GrMtlTextureInfo image_info;
-        if (backend_texture_.getMtlTextureInfo(&image_info))
-          tracing_id_ = reinterpret_cast<uint64_t>(image_info.fTexture.get());
-        break;
-      }
-#endif
-      case GrBackendApi::kVulkan: {
-        GrVkImageInfo image_info;
-        if (backend_texture_.getVkImageInfo(&image_info))
-          tracing_id_ = reinterpret_cast<uint64_t>(image_info.fImage);
-        break;
-      }
-#if BUILDFLAG(SKIA_USE_DAWN)
-      case GrBackendApi::kDawn: {
-        GrDawnTextureInfo tex_info;
-        if (backend_texture_.getDawnTextureInfo(&tex_info))
-          tracing_id_ = reinterpret_cast<uint64_t>(tex_info.fTexture.Get());
-        break;
-      }
-#endif
-      default:
-        NOTREACHED();
-        return false;
-    }
+    tracing_id_ = BackendTextureTracingID(backend_texture_);
 
     return true;
+  }
+
+  bool InitializeWithGMB(SharedMemoryRegionWrapper shm_wrapper) {
+    if (InitializeWithData(shm_wrapper.GetMemoryAsSpan(),
+                           shm_wrapper.GetStride())) {
+      shared_memory_wrapper_ = std::move(shm_wrapper);
+      return true;
+    }
+    return false;
   }
 
   scoped_refptr<SharedContextState> context_state_;
@@ -295,18 +336,17 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
   SharedMemoryRegionWrapper shared_memory_wrapper_;
 
   uint64_t tracing_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WrappedSkImage);
 };
 
-class WrappedSkImageRepresentationSkia : public SharedImageRepresentationSkia {
+class WrappedSkImage::RepresentationSkia
+    : public SharedImageRepresentationSkia {
  public:
-  WrappedSkImageRepresentationSkia(SharedImageManager* manager,
-                                   SharedImageBacking* backing,
-                                   MemoryTypeTracker* tracker)
+  RepresentationSkia(SharedImageManager* manager,
+                     SharedImageBacking* backing,
+                     MemoryTypeTracker* tracker)
       : SharedImageRepresentationSkia(manager, backing, tracker) {}
 
-  ~WrappedSkImageRepresentationSkia() override { DCHECK(!write_surface_); }
+  ~RepresentationSkia() override { DCHECK(!write_surface_); }
 
   sk_sp<SkSurface> BeginWriteAccess(
       int final_msaa_count,
@@ -364,12 +404,12 @@ class WrappedSkImageRepresentationSkia : public SharedImageRepresentationSkia {
   SkSurface* write_surface_ = nullptr;
 };
 
-class WrappedSkImageRepresentationMemory
+class WrappedSkImage::RepresentationMemory
     : public SharedImageRepresentationMemory {
  public:
-  WrappedSkImageRepresentationMemory(SharedImageManager* manager,
-                                     SharedImageBacking* backing,
-                                     MemoryTypeTracker* tracker)
+  RepresentationMemory(SharedImageManager* manager,
+                       SharedImageBacking* backing,
+                       MemoryTypeTracker* tracker)
       : SharedImageRepresentationMemory(manager, backing, tracker) {}
 
  protected:
@@ -406,8 +446,14 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
     uint32_t usage,
     bool is_thread_safe) {
   DCHECK(!is_thread_safe);
-  return CreateSharedImage(mailbox, format, size, color_space, surface_origin,
-                           alpha_type, usage, base::span<uint8_t>());
+  size_t estimated_size = EstimatedSize(format, size);
+  auto texture = std::make_unique<WrappedSkImage>(
+      base::PassKey<WrappedSkImageFactory>(), mailbox, format, size,
+      color_space, surface_origin, alpha_type, usage, estimated_size,
+      context_state_);
+  if (!texture->Initialize())
+    return nullptr;
+  return texture;
 }
 
 std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
@@ -419,14 +465,12 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> data) {
-  auto info = MakeSkImageInfo(size, format);
-  size_t estimated_size = info.computeMinByteSize();
-  std::unique_ptr<WrappedSkImage> texture(
-      new WrappedSkImage(mailbox, format, size, color_space, surface_origin,
-                         alpha_type, usage, estimated_size, context_state_));
-  GrMipMapped mipmap =
-      usage & SHARED_IMAGE_USAGE_MIPMAP ? GrMipMapped::kYes : GrMipMapped::kNo;
-  if (!texture->Initialize(info, data, /*stride=*/0, mipmap))
+  size_t estimated_size = EstimatedSize(format, size);
+  auto texture = std::make_unique<WrappedSkImage>(
+      base::PassKey<WrappedSkImageFactory>(), mailbox, format, size,
+      color_space, surface_origin, alpha_type, usage, estimated_size,
+      context_state_);
+  if (!texture->InitializeWithData(data, /*stride=*/0))
     return nullptr;
   return texture;
 }
@@ -445,8 +489,7 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
     uint32_t usage) {
   DCHECK_EQ(handle.type, gfx::SHARED_MEMORY_BUFFER);
 
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format,
-                                                     plane)) {
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
     DLOG(ERROR) << "Invalid image size for format.";
     return nullptr;
   }
@@ -471,12 +514,11 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
     return nullptr;
 
   auto info = MakeSkImageInfo(size, format);
-  std::unique_ptr<WrappedSkImage> texture(new WrappedSkImage(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      info.computeMinByteSize(), context_state_));
-  GrMipMapped mipmap = (usage & SHARED_IMAGE_USAGE_MIPMAP) ? GrMipMapped::kYes
-                                                           : GrMipMapped::kNo;
-  if (!texture->InitializeGMB(info, std::move(shm_wrapper), mipmap))
+  auto texture = std::make_unique<WrappedSkImage>(
+      base::PassKey<WrappedSkImageFactory>(), mailbox, format, size,
+      color_space, surface_origin, alpha_type, usage, info.computeMinByteSize(),
+      context_state_);
+  if (!texture->InitializeWithGMB(std::move(shm_wrapper)))
     return nullptr;
 
   return texture;
@@ -501,7 +543,7 @@ bool WrappedSkImageFactory::CanUseWrappedSkImage(
     // raster and/or display.
     return (usage & kWrappedSkImageUsage) && !(usage & ~kWrappedSkImageUsage);
   } else {
-    // For d SkiaRenderer/GL only use WrappedSkImages for OOP-R because
+    // For SkiaRenderer/GL only use WrappedSkImages for OOP-R because
     // CopySubTexture() doesn't use Skia. https://crbug.com/984045
     return (usage == kWrappedSkImageUsage) ||
            (usage == SHARED_IMAGE_USAGE_DISPLAY);
@@ -534,8 +576,7 @@ std::unique_ptr<SharedImageRepresentationSkia> WrappedSkImage::ProduceSkia(
     return nullptr;
 
   DCHECK_EQ(context_state_, context_state.get());
-  return std::make_unique<WrappedSkImageRepresentationSkia>(manager, this,
-                                                            tracker);
+  return std::make_unique<RepresentationSkia>(manager, this, tracker);
 }
 
 std::unique_ptr<SharedImageRepresentationMemory> WrappedSkImage::ProduceMemory(
@@ -544,8 +585,7 @@ std::unique_ptr<SharedImageRepresentationMemory> WrappedSkImage::ProduceMemory(
   if (!shared_memory_wrapper_.IsValid())
     return nullptr;
 
-  return std::make_unique<WrappedSkImageRepresentationMemory>(manager, this,
-                                                              tracker);
+  return std::make_unique<RepresentationMemory>(manager, this, tracker);
 }
 
 }  // namespace raster

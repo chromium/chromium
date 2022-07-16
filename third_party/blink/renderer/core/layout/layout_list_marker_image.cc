@@ -15,7 +15,8 @@ LayoutListMarkerImage::LayoutListMarkerImage(Element* element)
 
 LayoutListMarkerImage* LayoutListMarkerImage::CreateAnonymous(
     Document* document) {
-  LayoutListMarkerImage* object = new LayoutListMarkerImage(nullptr);
+  LayoutListMarkerImage* object =
+      MakeGarbageCollected<LayoutListMarkerImage>(nullptr);
   object->SetDocumentForAnonymous(document);
   return object;
 }
@@ -25,15 +26,14 @@ bool LayoutListMarkerImage::IsOfType(LayoutObjectType type) const {
   return type == kLayoutObjectListMarkerImage || LayoutImage::IsOfType(type);
 }
 
-LayoutSize LayoutListMarkerImage::DefaultSize() const {
+FloatSize LayoutListMarkerImage::DefaultSize() const {
   NOT_DESTROYED();
   const SimpleFontData* font_data = Style()->GetFont().PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
-    return LayoutSize(kDefaultWidth, kDefaultHeight);
-  LayoutUnit bullet_width =
-      font_data->GetFontMetrics().Ascent() / LayoutUnit(2);
-  return LayoutSize(bullet_width, bullet_width);
+    return FloatSize(kDefaultWidth, kDefaultHeight);
+  float bullet_width = font_data->GetFontMetrics().Ascent() / 2.f;
+  return FloatSize(bullet_width, bullet_width);
 }
 
 // Because ImageResource() is always LayoutImageResourceStyleImage. So we could
@@ -43,12 +43,12 @@ void LayoutListMarkerImage::ComputeIntrinsicSizingInfoByDefaultSize(
     IntrinsicSizingInfo& intrinsic_sizing_info) const {
   NOT_DESTROYED();
   FloatSize concrete_size = ImageResource()->ImageSizeWithDefaultSize(
-      Style()->EffectiveZoom(), FloatSize(DefaultSize()));
+      Style()->EffectiveZoom(), DefaultSize());
   concrete_size.Scale(ImageDevicePixelRatio());
   LayoutSize image_size(RoundedLayoutSize(concrete_size));
 
-  intrinsic_sizing_info.size.SetWidth(image_size.Width());
-  intrinsic_sizing_info.size.SetHeight(image_size.Height());
+  intrinsic_sizing_info.size.set_width(image_size.Width());
+  intrinsic_sizing_info.size.set_height(image_size.Height());
   intrinsic_sizing_info.has_width = true;
   intrinsic_sizing_info.has_height = true;
 }

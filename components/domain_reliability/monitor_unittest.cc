@@ -605,7 +605,7 @@ TEST_F(DomainReliabilityMonitorTest, RealRequest) {
 
   net::LoadTimingInfo load_timing_info;
   url_request->GetLoadTimingInfo(&load_timing_info);
-  base::TimeDelta expected_elapsed = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta expected_elapsed = base::Seconds(1);
   time_->Advance(load_timing_info.request_start - time_->NowTicks() +
                  expected_elapsed);
 

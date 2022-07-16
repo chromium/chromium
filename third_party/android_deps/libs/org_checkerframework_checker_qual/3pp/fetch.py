@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.8.0/checker-qual-3.8.0.jar'
-_FILE_NAME = 'checker-qual-3.8.0.jar'
-_FILE_VERSION = '3.8.0'
+_FILE_URL = 'https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.12.0/checker-qual-3.12.0.jar'
+_FILE_NAME = 'checker-qual-3.12.0.jar'
+_FILE_VERSION = '3.12.0'
 
 
 def do_latest():

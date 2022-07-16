@@ -41,7 +41,7 @@ constexpr char kUser2[] = "user2@gmail.com";
 
 class AmbientControllerTest : public AmbientAshTestBase {
  public:
-  AmbientControllerTest() : AmbientAshTestBase() {}
+  AmbientControllerTest() = default;
   ~AmbientControllerTest() override = default;
 
   // AmbientAshTestBase:
@@ -245,8 +245,7 @@ TEST_F(AmbientControllerTest, ShouldRequestAccessTokenWhenLockingScreen) {
   // Lock the screen will request a token.
   LockScreen();
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  std::string access_token = "access_token";
-  IssueAccessToken(access_token, /*with_error=*/false);
+  IssueAccessToken(/*is_empty=*/false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Should close ambient widget already when unlocking screen.
@@ -272,8 +271,7 @@ TEST_F(AmbientControllerTest, ShouldReturnCachedAccessToken) {
   // Lock the screen will request a token.
   LockScreen();
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  std::string access_token = "access_token";
-  IssueAccessToken(access_token, /*with_error=*/false);
+  IssueAccessToken(/*is_empty=*/false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Another token request will return cached token.
@@ -281,7 +279,7 @@ TEST_F(AmbientControllerTest, ShouldReturnCachedAccessToken) {
   base::RunLoop run_loop;
   ambient_controller()->RequestAccessToken(base::BindLambdaForTesting(
       [&](const std::string& gaia_id, const std::string& access_token_fetched) {
-        EXPECT_EQ(access_token_fetched, access_token);
+        EXPECT_EQ(access_token_fetched, TestAmbientClient::kTestAccessToken);
 
         std::move(closure).Run();
         run_loop.Quit();
@@ -299,8 +297,7 @@ TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
   // Lock the screen will request a token.
   LockScreen();
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  std::string access_token = "access_token";
-  IssueAccessToken(access_token, /*with_error=*/false);
+  IssueAccessToken(/*is_empty=*/false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Another token request will return cached token.
@@ -308,7 +305,7 @@ TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
   base::RunLoop run_loop_1;
   ambient_controller()->RequestAccessToken(base::BindLambdaForTesting(
       [&](const std::string& gaia_id, const std::string& access_token_fetched) {
-        EXPECT_EQ(access_token_fetched, access_token);
+        EXPECT_EQ(access_token_fetched, TestAmbientClient::kTestAccessToken);
 
         std::move(closure).Run();
         run_loop_1.Quit();
@@ -318,8 +315,7 @@ TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
 
   base::RunLoop run_loop_2;
   // When token expired, another token request will get empty token.
-  constexpr base::TimeDelta kTokenRefreshDelay =
-      base::TimeDelta::FromSeconds(60);
+  constexpr base::TimeDelta kTokenRefreshDelay = base::Seconds(60);
   task_environment()->FastForwardBy(kTokenRefreshDelay);
 
   closure = base::MakeExpectedRunClosure(FROM_HERE);
@@ -343,7 +339,7 @@ TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenAfterFailure) {
   // Lock the screen will request a token.
   LockScreen();
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  IssueAccessToken(/*is_empty=*/true);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Token request automatically retry.
@@ -360,13 +356,13 @@ TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenWithBackoffPolicy) {
   // Lock the screen will request a token.
   LockScreen();
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  IssueAccessToken(/*is_empty=*/true);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   base::TimeDelta delay1 = GetRefreshTokenDelay();
   task_environment()->FastForwardBy(delay1 * 1.1);
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  IssueAccessToken(/*is_empty=*/true);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   base::TimeDelta delay2 = GetRefreshTokenDelay();
@@ -385,25 +381,25 @@ TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenOnlyThreeTimes) {
   // Lock the screen will request a token.
   LockScreen();
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  IssueAccessToken(/*is_empty=*/true);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // 1st retry.
   task_environment()->FastForwardBy(GetRefreshTokenDelay() * 1.1);
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  IssueAccessToken(/*is_empty=*/true);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // 2nd retry.
   task_environment()->FastForwardBy(GetRefreshTokenDelay() * 1.1);
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  IssueAccessToken(/*is_empty=*/true);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // 3rd retry.
   task_environment()->FastForwardBy(GetRefreshTokenDelay() * 1.1);
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  IssueAccessToken(/*is_empty=*/true);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Will not retry.
@@ -620,8 +616,7 @@ TEST_F(AmbientControllerTest, ShouldDismissContainerViewOnKeyEvent) {
 
   // General key press will exit ambient mode.
   // Simulate key press to close the widget.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->PressKey(ui::VKEY_A, /*flags=*/0);
+  PressAndReleaseKey(ui::VKEY_A);
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
@@ -644,8 +639,7 @@ TEST_F(AmbientControllerTest,
 
   // General key press will exit ambient mode.
   // Simulate key press to close the widget.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->PressKey(ui::VKEY_A, /*flags=*/0);
+  PressAndReleaseKey(ui::VKEY_A);
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 

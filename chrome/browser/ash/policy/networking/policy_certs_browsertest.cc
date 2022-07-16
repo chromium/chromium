@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
@@ -34,8 +35,8 @@
 #include "chrome/browser/ash/policy/networking/user_network_configuration_updater_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -64,15 +65,14 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "crypto/scoped_test_nss_db.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/test/test_background_page_ready_observer.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/nss_cert_database.h"
@@ -121,6 +121,11 @@ class WebTrustedCertsChangedObserver
  public:
   WebTrustedCertsChangedObserver() = default;
 
+  WebTrustedCertsChangedObserver(const WebTrustedCertsChangedObserver&) =
+      delete;
+  WebTrustedCertsChangedObserver& operator=(
+      const WebTrustedCertsChangedObserver&) = delete;
+
   // chromeos::PolicyCertificateProvider::Observer
   void OnPolicyProvidedCertsChanged() override { run_loop_.Quit(); }
 
@@ -128,8 +133,6 @@ class WebTrustedCertsChangedObserver
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTrustedCertsChangedObserver);
 };
 
 // Allows waiting until |NetworkCertLoader| updates its list of certificates.
@@ -141,6 +144,10 @@ class NetworkCertLoaderTestObserver
       : network_cert_loader_(network_cert_loader) {
     network_cert_loader_->AddObserver(this);
   }
+
+  NetworkCertLoaderTestObserver(const NetworkCertLoaderTestObserver&) = delete;
+  NetworkCertLoaderTestObserver& operator=(
+      const NetworkCertLoaderTestObserver&) = delete;
 
   ~NetworkCertLoaderTestObserver() override {
     network_cert_loader_->RemoveObserver(this);
@@ -154,8 +161,6 @@ class NetworkCertLoaderTestObserver
  private:
   chromeos::NetworkCertLoader* network_cert_loader_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkCertLoaderTestObserver);
 };
 
 // Allows waiting until the |CertDatabase| notifies its observers that it has
@@ -164,14 +169,16 @@ class CertDatabaseChangedObserver : public net::CertDatabase::Observer {
  public:
   CertDatabaseChangedObserver() {}
 
+  CertDatabaseChangedObserver(const CertDatabaseChangedObserver&) = delete;
+  CertDatabaseChangedObserver& operator=(const CertDatabaseChangedObserver&) =
+      delete;
+
   void OnCertDBChanged() override { run_loop_.Quit(); }
 
   void Wait() { run_loop_.Run(); }
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertDatabaseChangedObserver);
 };
 
 // Retrieves the path to the directory containing certificates designated for
@@ -492,8 +499,9 @@ bool IsCertInNSSDatabase(Profile* profile,
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(IsCertInNSSDatabaseOnIOThread,
-                     CreateNSSCertDatabaseGetter(profile), subject_common_name,
-                     &cert_found, run_loop.QuitClosure()));
+                     NssServiceFactory::GetForContext(profile)
+                         ->CreateNSSCertDatabaseGetterForIOThread(),
+                     subject_common_name, &cert_found, run_loop.QuitClosure()));
   run_loop.Run();
   return cert_found;
 }
@@ -695,7 +703,7 @@ class PolicyProvidedCertsDeviceLocalAccountTest
     command_line->AppendSwitch(chromeos::switches::kOobeSkipPostLogin);
   }
 
-  chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
 
   const AccountId device_local_account_id_ =
       AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
@@ -732,18 +740,14 @@ class PolicyProvidedCertsPublicSessionTest
     ASSERT_TRUE(wizard_controller);
     wizard_controller->SkipToLoginForTesting();
 
-    content::WindowedNotificationObserver(
-        chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-        content::NotificationService::AllSources())
-        .Wait();
+    ash::LoginOrLockScreenVisibleWaiter().Wait();
 
     // Login into the public session.
-    chromeos::ExistingUserController* controller =
-        chromeos::ExistingUserController::current_controller();
+    auto* controller = ash::ExistingUserController::current_controller();
     ASSERT_TRUE(controller);
     chromeos::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
                                        device_local_account_id_);
-    controller->Login(user_context, chromeos::SigninSpecifics());
+    controller->Login(user_context, ash::SigninSpecifics());
   }
 };
 
@@ -752,7 +756,7 @@ class PolicyProvidedCertsPublicSessionTest
 IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsPublicSessionTest,
                        DISABLED_AllowedInPublicSession) {
   StartLogin();
-  chromeos::test::WaitForPrimaryUserSessionStart();
+  ash::test::WaitForPrimaryUserSessionStart();
 
   BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(1U, browser_list->size());
@@ -767,6 +771,12 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsPublicSessionTest,
 }
 
 class PolicyProvidedCertsOnUserSessionInitTest : public LoginPolicyTestBase {
+ public:
+  PolicyProvidedCertsOnUserSessionInitTest(
+      const PolicyProvidedCertsOnUserSessionInitTest&) = delete;
+  PolicyProvidedCertsOnUserSessionInitTest& operator=(
+      const PolicyProvidedCertsOnUserSessionInitTest&) = delete;
+
  protected:
   PolicyProvidedCertsOnUserSessionInitTest() {}
 
@@ -776,13 +786,6 @@ class PolicyProvidedCertsOnUserSessionInitTest : public LoginPolicyTestBase {
                    base::Value(user_policy_blob));
   }
 
-  void TriggerLogIn() {
-    ash::LoginDisplayHost::default_host()
-        ->GetOobeUI()
-        ->GetView<chromeos::GaiaScreenHandler>()
-        ->ShowSigninScreenForTest(kAccountId, kAccountPassword, kEmptyServices);
-  }
-
   Profile* active_user_profile() {
     const user_manager::User* const user =
         user_manager::UserManager::Get()->GetActiveUser();
@@ -790,9 +793,6 @@ class PolicyProvidedCertsOnUserSessionInitTest : public LoginPolicyTestBase {
         chromeos::ProfileHelper::Get()->GetProfileByUser(user);
     return profile;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PolicyProvidedCertsOnUserSessionInitTest);
 };
 
 // Verifies that the policy-provided trust root is active as soon as the user
@@ -807,12 +807,10 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsOnUserSessionInitTest,
   scoped_refptr<net::X509Certificate> server_cert = net::ImportCertFromFile(
       server_cert_path.DirName(), server_cert_path.BaseName().value());
 
-  SkipToLoginScreen();
+  OobeBaseTest::WaitForSigninScreen();
   TriggerLogIn();
 
-  EXPECT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
-
-  chromeos::test::WaitForPrimaryUserSessionStart();
+  ash::test::WaitForPrimaryUserSessionStart();
   EXPECT_EQ(net::OK, VerifyTestServerCert(active_user_profile(), server_cert));
 }
 
@@ -875,6 +873,12 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedClientCertsTest, ClientCertsImported) {
 // |kSigninScreenExtension2| into the sign-in profile.
 class PolicyProvidedCertsForSigninExtensionTest
     : public SigninProfileExtensionsPolicyTestBase {
+ public:
+  PolicyProvidedCertsForSigninExtensionTest(
+      const PolicyProvidedCertsForSigninExtensionTest&) = delete;
+  PolicyProvidedCertsForSigninExtensionTest& operator=(
+      const PolicyProvidedCertsForSigninExtensionTest&) = delete;
+
  protected:
   // Use DEV channel as sign-in screen extensions are currently usable there.
   PolicyProvidedCertsForSigninExtensionTest()
@@ -910,26 +914,29 @@ class PolicyProvidedCertsForSigninExtensionTest
   }
 
   void SetUpOnMainThread() override {
-    chromeos::StartupUtils::MarkOobeCompleted();  // Pretend that OOBE was
-                                                  // complete.
+    ash::StartupUtils::MarkOobeCompleted();  // Pretend that OOBE was complete.
 
     SigninProfileExtensionsPolicyTestBase::SetUpOnMainThread();
 
     signin_profile_ = GetInitialProfile();
     ASSERT_TRUE(chromeos::ProfileHelper::IsSigninProfile(signin_profile_));
 
-    extensions::ExtensionBackgroundPageReadyObserver extension_1_observer(
+    extensions::ExtensionHostTestHelper extension_1_observer(
         signin_profile_, kSigninScreenExtension1);
-    extensions::ExtensionBackgroundPageReadyObserver extension_2_observer(
+    extension_1_observer.RestrictToType(
+        extensions::mojom::ViewType::kExtensionBackgroundPage);
+    extensions::ExtensionHostTestHelper extension_2_observer(
         signin_profile_, kSigninScreenExtension2);
+    extension_2_observer.RestrictToType(
+        extensions::mojom::ViewType::kExtensionBackgroundPage);
 
     AddExtensionForForceInstallation(kSigninScreenExtension1,
                                      kSigninScreenExtension1UpdateManifestPath);
     AddExtensionForForceInstallation(kSigninScreenExtension2,
                                      kSigninScreenExtension2UpdateManifestPath);
 
-    extension_1_observer.Wait();
-    extension_2_observer.Wait();
+    extension_1_observer.WaitForHostCompletedFirstLoad();
+    extension_2_observer.WaitForHostCompletedFirstLoad();
   }
 
   content::StoragePartition* GetStoragePartitionForSigninExtension(
@@ -976,8 +983,6 @@ class PolicyProvidedCertsForSigninExtensionTest
 
     return onc_dict;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyProvidedCertsForSigninExtensionTest);
 };  // namespace policy
 
 // Verifies that a device-policy-provided, extension-scoped trust anchor is
@@ -992,8 +997,7 @@ class PolicyProvidedCertsForSigninExtensionTest
 // caches), the test is able to catch that.
 IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsForSigninExtensionTest,
                        ActiveOnlyInSelectedExtension) {
-  chromeos::OobeScreenWaiter(chromeos::OobeBaseTest::GetFirstSigninScreen())
-      .Wait();
+  ash::OobeScreenWaiter(ash::OobeBaseTest::GetFirstSigninScreen()).Wait();
   content::StoragePartition* signin_profile_default_partition =
       signin_profile_->GetDefaultStoragePartition();
 
@@ -1013,7 +1017,7 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsForSigninExtensionTest,
 
   // Not active in the StoragePartition used for the webview hosting GAIA.
   content::StoragePartition* signin_frame_partition =
-      chromeos::login::GetSigninPartition();
+      ash::login::GetSigninPartition();
   EXPECT_NE(signin_profile_default_partition, signin_frame_partition);
 
   EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID,

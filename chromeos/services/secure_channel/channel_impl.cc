@@ -5,6 +5,11 @@
 #include "chromeos/services/secure_channel/channel_impl.h"
 
 #include "base/bind.h"
+#include "base/callback.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace chromeos {
 
@@ -38,11 +43,53 @@ void ChannelImpl::HandleRemoteDeviceDisconnection() {
   // reason specific to this event.
   receiver_.ResetWithReason(mojom::Channel::kConnectionDroppedReason,
                             kReasonForDisconnection);
+
+  file_payload_listener_remotes_.Clear();
 }
 
 void ChannelImpl::SendMessage(const std::string& message,
                               SendMessageCallback callback) {
   delegate_->OnSendMessageRequested(message, std::move(callback));
+}
+
+void ChannelImpl::RegisterPayloadFile(
+    int64_t payload_id,
+    mojom::PayloadFilesPtr payload_files,
+    mojo::PendingRemote<mojom::FilePayloadListener> listener,
+    RegisterPayloadFileCallback callback) {
+  mojo::RemoteSetElementId remote_id =
+      file_payload_listener_remotes_.Add(std::move(listener));
+
+  delegate_->RegisterPayloadFile(
+      payload_id, std::move(payload_files),
+      base::BindRepeating(&ChannelImpl::NotifyFileTransferUpdate,
+                          weak_ptr_factory_.GetWeakPtr(), remote_id),
+      base::BindOnce(&ChannelImpl::OnRegisterPayloadFileResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     remote_id));
+}
+
+void ChannelImpl::OnRegisterPayloadFileResult(
+    RegisterPayloadFileCallback callback,
+    mojo::RemoteSetElementId listener_remote_id,
+    bool success) {
+  if (!success) {
+    file_payload_listener_remotes_.Remove(listener_remote_id);
+  }
+  std::move(callback).Run(success);
+}
+
+void ChannelImpl::NotifyFileTransferUpdate(
+    mojo::RemoteSetElementId listener_remote_id,
+    mojom::FileTransferUpdatePtr update) {
+  bool is_transfer_complete =
+      update->status != mojom::FileTransferStatus::kInProgress;
+  file_payload_listener_remotes_.Get(listener_remote_id)
+      ->OnFileTransferUpdate(std::move(update));
+
+  if (is_transfer_complete) {
+    file_payload_listener_remotes_.Remove(listener_remote_id);
+  }
 }
 
 void ChannelImpl::GetConnectionMetadata(

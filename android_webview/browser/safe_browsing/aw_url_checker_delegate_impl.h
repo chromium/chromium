@@ -33,6 +33,9 @@ class AwUrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
       scoped_refptr<AwSafeBrowsingUIManager> ui_manager,
       AwSafeBrowsingAllowlistManager* allowlist_manager);
 
+  AwUrlCheckerDelegateImpl(const AwUrlCheckerDelegateImpl&) = delete;
+  AwUrlCheckerDelegateImpl& operator=(const AwUrlCheckerDelegateImpl&) = delete;
+
  private:
   ~AwUrlCheckerDelegateImpl() override;
 
@@ -87,8 +90,6 @@ class AwUrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
   scoped_refptr<AwSafeBrowsingUIManager> ui_manager_;
   safe_browsing::SBThreatTypeSet threat_types_;
   AwSafeBrowsingAllowlistManager* allowlist_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwUrlCheckerDelegateImpl);
 };
 
 }  // namespace android_webview

@@ -64,6 +64,9 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
     }
   }
 
+  PromiseAllHandler(const PromiseAllHandler&) = delete;
+  PromiseAllHandler& operator=(const PromiseAllHandler&) = delete;
+
   virtual void Trace(Visitor* visitor) const {
     visitor->Trace(resolver_);
     visitor->Trace(values_);
@@ -160,8 +163,6 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
   // This is cleared when owners of this handler, that is, given promises are
   // settled.
   HeapVector<ScriptValue> values_;
-
-  DISALLOW_COPY_AND_ASSIGN(PromiseAllHandler);
 };
 
 }  // namespace

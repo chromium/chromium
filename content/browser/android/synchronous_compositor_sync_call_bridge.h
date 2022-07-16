@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_ANDROID_SYNCHRONOUS_COMPOSITOR_SYNC_CALL_BRIDGE_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/thread_annotations.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -73,6 +72,11 @@ class SynchronousCompositorSyncCallBridge
  public:
   explicit SynchronousCompositorSyncCallBridge(SynchronousCompositorHost* host);
 
+  SynchronousCompositorSyncCallBridge(
+      const SynchronousCompositorSyncCallBridge&) = delete;
+  SynchronousCompositorSyncCallBridge& operator=(
+      const SynchronousCompositorSyncCallBridge&) = delete;
+
   // Indicatation that the remote is now ready to process requests. Called
   // on either UI or IO thread.
   void RemoteReady();
@@ -123,8 +127,10 @@ class SynchronousCompositorSyncCallBridge
   void BeginFrameCompleteOnUIThread();
 
   // Process metadata.
-  void ProcessFrameMetadataOnUIThread(uint32_t metadata_version,
-                                      viz::CompositorFrameMetadata metadata);
+  void ProcessFrameMetadataOnUIThread(
+      uint32_t metadata_version,
+      viz::CompositorFrameMetadata metadata,
+      const viz::LocalSurfaceId& local_surface_id);
 
   // Signal all waiters for closure. Callee must host a lock to |lock_|.
   void SignalRemoteClosedToAllWaitersOnIOThread()
@@ -152,8 +158,6 @@ class SynchronousCompositorSyncCallBridge
       GUARDED_BY(lock_);
   base::ConditionVariable begin_frame_condition_ GUARDED_BY(lock_);
   RemoteState remote_state_ GUARDED_BY(lock_) = RemoteState::INIT;
-
-  DISALLOW_COPY_AND_ASSIGN(SynchronousCompositorSyncCallBridge);
 };
 
 }  // namespace content

@@ -38,6 +38,7 @@ enum CaptureIntent {
   DEFAULT = 0,
   VIDEO_RECORD = 1,
   STILL_CAPTURE = 2,
+  DOCUMENT = 3,
 };
 
 // Interface to let Chrome Camera App (Remote) get specific CameraAppDevice from
@@ -89,13 +90,13 @@ interface CameraAppDevice {
   // characteristics, orientation, etc.
   GetCameraInfo() => (CameraInfo camera_info);
 
-  // Sets reprocess option to bind with the coming take photo request. When this
-  // method is called, the reprocess option will be queued. All reprocess
+  // Sets reprocess options to bind with the coming take photo request. When
+  // this method is called, the reprocess options will be queued. All reprocess
   // options in the queue will be consumed when ImageCapture::TakePhoto() is
-  // triggered and all the queued reprocess options will be bound
-  // to that take photo request.
-  SetReprocessOption(Effect effect)
-      => (int32 status, media.mojom.Blob? blob);
+  // triggered and all the queued reprocess options will be bound to that take
+  // photo request.
+  SetReprocessOptions(array<Effect> effects,
+                      pending_remote<ReprocessResultListener> listener) => ();
 
   // Sets the fps range for upcoming configured camera stream.
   // The caller sets the |fps_range|.
@@ -117,22 +118,11 @@ interface CameraAppDevice {
   // Adds the remote of a ResultMetadataObserver to CameraAppDevice.
   // The |observer| will have a remote call from camera device.
   AddResultMetadataObserver(pending_remote<ResultMetadataObserver> observer,
-                            StreamType stream_type)
-      => (uint32 id);
+                            StreamType stream_type) => ();
 
-  // Remove a ResultMetadataObserver by supplying its id returned by
-  // AddResultMetadataObserver.
-  // If the ResultMetadataObserver is found, |is_success| returns true.
-  RemoveResultMetadataObserver(uint32 id) => (bool is_success);
-
-  // Adds an observer for camera events and returns the observer |id|. The
-  // |observer| is the remote of the observer to be added.
-  AddCameraEventObserver(pending_remote<CameraEventObserver> observer)
-      => (uint32 id);
-
-  // Removes the camera events observer according to given observer |id|. Sets
-  // |is_success| to true if remove successfully, false otherwise.
-  RemoveCameraEventObserver(uint32 id) => (bool is_success);
+  // Adds an observer for camera events. The |observer| is the remote of the
+  // observer to be added.
+  AddCameraEventObserver(pending_remote<CameraEventObserver> observer) => ();
 
   // Sets whether to disable the camera frame rotation at source. Sets
   // |is_success| to true if |is_enabled| is correctly set.
@@ -143,6 +133,10 @@ interface CameraAppDevice {
   // display the camera preview upright in the UI. The only valid values for
   // |rotation| are 0, 90, 180, and 270.
   GetCameraFrameRotation() => (uint32 rotation);
+
+  // Registers the document corners observer for preview.
+  RegisterDocumentCornersObserver(
+      pending_remote<DocumentCornersObserver> observer) => ();
 };
 
 // Interface for camera device to send camera metadata to Chrome Camera App.
@@ -156,4 +150,19 @@ interface ResultMetadataObserver {
 interface CameraEventObserver {
   // Triggered when the shutter is done for a still capture image.
   OnShutterDone();
+};
+
+// Interface for document corners detection.
+interface DocumentCornersObserver {
+  // Triggered when the detected document |corners| should be updated.
+  // The amount of corners will be either 0, indicating there are no corners
+  // detected, or 4, which are in top-left => bottom-left => bottom-right =>
+  // top-right order. The value of the coordinate of a corner will be in [0, 1).
+  OnDocumentCornersUpdated(array<gfx.mojom.PointF> corners);
+};
+
+// Interface for the listener of reprocess results.
+interface ReprocessResultListener {
+  // Triggered when reprocess done for target |effect|.
+  OnReprocessDone(Effect effect, int32 status, media.mojom.Blob? blob);
 };

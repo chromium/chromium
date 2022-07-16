@@ -110,6 +110,9 @@ void FakeAssistantManagerServiceImpl::DismissNotification(
 void FakeAssistantManagerServiceImpl::OnAccessibilityStatusChanged(
     bool spoken_feedback_enabled) {}
 
+void FakeAssistantManagerServiceImpl::OnColorModeChanged(
+    bool dark_mode_enabled) {}
+
 void FakeAssistantManagerServiceImpl::SendAssistantFeedback(
     const AssistantFeedback& feedback) {}
 

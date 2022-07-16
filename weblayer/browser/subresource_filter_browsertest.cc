@@ -175,7 +175,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   EXPECT_TRUE(page_activation);
   EXPECT_EQ(subresource_filter::mojom::ActivationLevel::kEnabled,
             page_activation.value());
-  EXPECT_FALSE(console_observer.messages().empty());
+
+  console_observer.Wait();
 
   // ... but it should not have blocked the subframe from being loaded.
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
@@ -363,9 +364,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
   // Allowlist via a reload.
   content::TestNavigationObserver navigation_observer(web_contents, 1);
-  subresource_filter::ContentSubresourceFilterThrottleManager::FromWebContents(
-      web_contents)
-      ->OnReloadRequested();
+  GetPrimaryPageThrottleManager()->OnReloadRequested();
   navigation_observer.Wait();
 
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
@@ -386,9 +385,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
   // Allowlist via a reload.
   content::TestNavigationObserver navigation_observer(web_contents, 1);
-  subresource_filter::ContentSubresourceFilterThrottleManager::FromWebContents(
-      web_contents)
-      ->OnReloadRequested();
+  GetPrimaryPageThrottleManager()->OnReloadRequested();
   navigation_observer.Wait();
 
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
@@ -413,8 +410,6 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  auto* throttle_manager = subresource_filter::
-      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
   auto* ads_intervention_manager =
       SubresourceFilterProfileContextFactory::GetForBrowserContext(
           web_contents->GetBrowserContext())
@@ -440,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
   // Trigger an ads violation and renavigate the page. Should trigger
   // subresource filter activation.
-  throttle_manager->OnAdsViolationTriggered(
+  GetPrimaryPageThrottleManager()->OnAdsViolationTriggered(
       web_contents->GetMainFrame(),
       subresource_filter::mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
   NavigateAndWaitForCompletion(url, shell());
@@ -502,8 +497,6 @@ IN_PROC_BROWSER_TEST_F(
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  auto* throttle_manager = subresource_filter::
-      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
   auto* ads_intervention_manager =
       SubresourceFilterProfileContextFactory::GetForBrowserContext(
           web_contents->GetBrowserContext())
@@ -529,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Trigger an ads violation and renavigate the page. Should trigger
   // subresource filter activation.
-  throttle_manager->OnAdsViolationTriggered(
+  GetPrimaryPageThrottleManager()->OnAdsViolationTriggered(
       web_contents->GetMainFrame(),
       subresource_filter::mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
   NavigateAndWaitForCompletion(url, shell());
@@ -558,14 +551,14 @@ IN_PROC_BROWSER_TEST_F(
   // Advance the clock by less than kAdsInterventionDuration and trigger another
   // intervention. This intervention is a no-op.
   test_clock->Advance(subresource_filter::kAdsInterventionDuration.Get() -
-                      base::TimeDelta::FromMinutes(30));
-  throttle_manager->OnAdsViolationTriggered(
+                      base::Minutes(30));
+  GetPrimaryPageThrottleManager()->OnAdsViolationTriggered(
       web_contents->GetMainFrame(),
       subresource_filter::mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
 
   // Advance the clock to to kAdsInterventionDuration from the first
   // intervention, this clear the intervention.
-  test_clock->Advance(base::TimeDelta::FromMinutes(30));
+  test_clock->Advance(base::Minutes(30));
   NavigateAndWaitForCompletion(url, shell());
 
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
@@ -612,8 +605,6 @@ IN_PROC_BROWSER_TEST_F(
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  auto* throttle_manager = subresource_filter::
-      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
   auto* ads_intervention_manager =
       SubresourceFilterProfileContextFactory::GetForBrowserContext(
           web_contents->GetBrowserContext())
@@ -636,11 +627,11 @@ IN_PROC_BROWSER_TEST_F(
 
   // Trigger an ads violation and renavigate to the page. Interventions are not
   // enforced so no activation should occur.
-  throttle_manager->OnAdsViolationTriggered(
+  GetPrimaryPageThrottleManager()->OnAdsViolationTriggered(
       web_contents->GetMainFrame(),
       subresource_filter::mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
 
-  const base::TimeDelta kRenavigationDelay = base::TimeDelta::FromHours(2);
+  const base::TimeDelta kRenavigationDelay = base::Hours(2);
   test_clock->Advance(kRenavigationDelay);
   NavigateAndWaitForCompletion(url, shell());
 

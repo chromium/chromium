@@ -176,6 +176,11 @@ class MockImageDecodeAcceleratorWorker : public ImageDecodeAcceleratorWorker {
   MockImageDecodeAcceleratorWorker(gfx::BufferFormat format_for_decodes)
       : format_for_decodes_(format_for_decodes) {}
 
+  MockImageDecodeAcceleratorWorker(const MockImageDecodeAcceleratorWorker&) =
+      delete;
+  MockImageDecodeAcceleratorWorker& operator=(
+      const MockImageDecodeAcceleratorWorker&) = delete;
+
   void Decode(std::vector<uint8_t> encoded_data,
               const gfx::Size& output_size,
               CompletedDecodeCB decode_cb) override {
@@ -222,8 +227,6 @@ class MockImageDecodeAcceleratorWorker : public ImageDecodeAcceleratorWorker {
 
   const gfx::BufferFormat format_for_decodes_;
   base::queue<PendingDecode> pending_decodes_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockImageDecodeAcceleratorWorker);
 };
 
 const int kChannelId = 1;
@@ -243,6 +246,12 @@ class ImageDecodeAcceleratorStubTest
   ImageDecodeAcceleratorStubTest()
       : GpuChannelTestCommon(false /* use_stub_bindings */),
         image_decode_accelerator_worker_(GetParam()) {}
+
+  ImageDecodeAcceleratorStubTest(const ImageDecodeAcceleratorStubTest&) =
+      delete;
+  ImageDecodeAcceleratorStubTest& operator=(
+      const ImageDecodeAcceleratorStubTest&) = delete;
+
   ~ImageDecodeAcceleratorStubTest() override = default;
 
   SyncPointManager* sync_point_manager() const {
@@ -653,8 +662,6 @@ class ImageDecodeAcceleratorStubTest
   TestImageFactory image_factory_;
   base::test::ScopedFeatureList feature_list_;
   base::WeakPtrFactory<ImageDecodeAcceleratorStubTest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDecodeAcceleratorStubTest);
 };
 
 // Tests the following flow: two decode requests are sent. One of the decodes is

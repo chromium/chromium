@@ -26,6 +26,7 @@
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -115,14 +116,17 @@ class AdTaggingPageLoadMetricsTestWaiter
 class AdTaggingBrowserTest : public SubresourceFilterBrowserTest {
  public:
   AdTaggingBrowserTest() : SubresourceFilterBrowserTest() {}
+
+  AdTaggingBrowserTest(const AdTaggingBrowserTest&) = delete;
+  AdTaggingBrowserTest& operator=(const AdTaggingBrowserTest&) = delete;
+
   ~AdTaggingBrowserTest() override {}
 
   void SetUpOnMainThread() override {
     SubresourceFilterBrowserTest::SetUpOnMainThread();
-    // Allowlist rules are only checked if there is a matching blocklist rule.
+    // For subdocument resources, allowlist rules are always checked.
     SetRulesetWithRules({CreateSuffixRule("ad_script.js"),
                          CreateSuffixRule("ad=true"),
-                         CreateSuffixRule("allowed=true"),
                          CreateAllowlistSuffixRule("allowed=true")});
   }
 
@@ -203,8 +207,6 @@ class AdTaggingBrowserTest : public SubresourceFilterBrowserTest {
   content::RenderFrameHost* CreateFrameWithWindowStopAbortedLoadImpl(
       const content::ToRenderFrameHost& adapter,
       bool ad_script);
-
-  DISALLOW_COPY_AND_ASSIGN(AdTaggingBrowserTest);
 };
 
 content::RenderFrameHost* AdTaggingBrowserTest::CreateDocWrittenFrameImpl(
@@ -225,7 +227,7 @@ content::RenderFrameHost* AdTaggingBrowserTest::CreateDocWrittenFrameImpl(
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded())
       << navigation_observer.last_net_error_code();
   return content::FrameMatchingPredicate(
-      web_contents, base::BindRepeating(&content::FrameMatchesName, name));
+      rfh->GetPage(), base::BindRepeating(&content::FrameMatchesName, name));
 }
 
 content::RenderFrameHost*
@@ -246,8 +248,7 @@ AdTaggingBrowserTest::CreateFrameWithDocWriteAbortedLoadImpl(
   EXPECT_TRUE(content::ExecJs(rfh, script));
   EXPECT_EQ(base::ASCIIToUTF16(name), title_watcher.WaitAndGetTitle());
   return content::FrameMatchingPredicate(
-      content::WebContents::FromRenderFrameHost(rfh),
-      base::BindRepeating(&content::FrameMatchesName, name));
+      rfh->GetPage(), base::BindRepeating(&content::FrameMatchesName, name));
 }
 
 content::RenderFrameHost*
@@ -268,8 +269,7 @@ AdTaggingBrowserTest::CreateFrameWithWindowStopAbortedLoadImpl(
   EXPECT_TRUE(content::ExecJs(rfh, script));
   EXPECT_EQ(base::ASCIIToUTF16(name), title_watcher.WaitAndGetTitle());
   return content::FrameMatchingPredicate(
-      content::WebContents::FromRenderFrameHost(rfh),
-      base::BindRepeating(&content::FrameMatchesName, name));
+      rfh->GetPage(), base::BindRepeating(&content::FrameMatchesName, name));
 }
 
 // Given a RenderFrameHost, navigates the page to the given |url| and waits
@@ -294,7 +294,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
                                  CONTENT_SETTING_ALLOW);
 
   TestSubresourceFilterObserver observer(web_contents());
-  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
 
   // Create an ad frame.
   GURL ad_url = GetURL("frame_factory.html?2&ad=true");
@@ -321,7 +322,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
                                  CONTENT_SETTING_BLOCK);
 
   TestSubresourceFilterObserver observer(web_contents());
-  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
 
   // Create an ad frame.
   GURL ad_url = GetURL("frame_factory.html?2&ad=true");
@@ -344,7 +346,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
   TestSubresourceFilterObserver observer(web_contents());
 
   // Main frame.
-  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
   EXPECT_FALSE(observer.GetIsAdSubframe(
       GetWebContents()->GetMainFrame()->GetFrameTreeNodeId()));
 
@@ -396,16 +399,26 @@ const char kSubresourceFilterOriginStatusHistogram[] =
 const char kWindowOpenFromAdStateHistogram[] = "Blink.WindowOpen.FromAdState";
 
 IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, VerifySameOriginWithoutNavigate) {
+  // The test assumes pages gets deleted after navigation, triggering histogram
+  // recording. Disable back/forward cache to ensure that pages don't get
+  // preserved in the cache.
+  // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
+  content::DisableBackForwardCacheForTesting(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+
   base::HistogramTester histogram_tester;
 
   // Main frame.
-  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
 
   // Ad frame via doc write.
   CreateDocWrittenFrameFromAdScript(GetWebContents());
 
   // Navigate away and ensure we report same origin.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   histogram_tester.ExpectUniqueSample(kSubresourceFilterOriginStatusHistogram,
                                       page_load_metrics::OriginStatus::kSame,
                                       1);
@@ -415,7 +428,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, VerifyCrossOriginWithoutNavigate) {
   base::HistogramTester histogram_tester;
 
   // Main frame.
-  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
 
   // Regular frame that's cross origin and has a doc write ad of its own.
   RenderFrameHost* regular_child = CreateSrcFrame(
@@ -424,7 +438,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, VerifyCrossOriginWithoutNavigate) {
   CreateDocWrittenFrameFromAdScript(regular_child);
 
   // Navigate away and ensure we report cross origin.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // TODO(johnidel): Check that frame was reported properly. See
   // crbug.com/914893.
@@ -437,7 +452,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
 
   auto waiter = CreateAdTaggingPageLoadMetricsTestWaiter();
   // Create the main frame and cross origin subframe from an ad script.
-  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
   CreateSrcFrameFromAdScript(GetWebContents(),
                              embedded_test_server()->GetURL(
                                  "b.com", "/ads_observer/same_origin_ad.html"));
@@ -449,7 +465,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   waiter->Wait();
 
   // Navigate away and ensure we report cross origin.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   histogram_tester.ExpectUniqueSample(kSubresourceFilterOriginStatusHistogram,
                                       page_load_metrics::OriginStatus::kCross,
                                       1);
@@ -463,7 +480,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
 
   // Create the main frame and same origin subframe from an ad script.
   // This triggers the subresource_filter ad detection.
-  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
   RenderFrameHost* ad_child = CreateSrcFrameFromAdScript(
       GetWebContents(), GetURL("frame_factory.html?ad=true"));
 
@@ -472,7 +490,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
                               "b.com", "/ad_tagging/frame_factory.html"));
 
   // Navigate away and ensure we report same origin.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   histogram_tester.ExpectUniqueSample(kSubresourceFilterOriginStatusHistogram,
                                       page_load_metrics::OriginStatus::kSame,
                                       1);
@@ -483,7 +502,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FrameLoadedByAdScript) {
   TestSubresourceFilterObserver observer(web_contents());
 
   // Main frame.
-  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
 
   // Child frame created by ad script.
   RenderFrameHost* ad_child = CreateSrcFrameFromAdScript(
@@ -500,7 +520,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, SameOriginFrameTagging) {
   TestSubresourceFilterObserver observer(web_contents());
 
   // Main frame.
-  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
 
   // (1) Vanilla child.
   content::RenderFrameHost* vanilla_frame =
@@ -523,7 +544,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   TestSubresourceFilterObserver observer(web_contents());
 
   // Main frame.
-  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
 
   // Vanilla frame and descendants
   content::RenderFrameHost* vanilla_frame =
@@ -577,7 +599,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   TestSubresourceFilterObserver observer(web_contents());
 
   // Main frame.
-  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
 
   // Vanilla child.
   content::RenderFrameHost* vanilla_frame_with_aborted_load =
@@ -616,7 +639,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   TestSubresourceFilterObserver observer(web_contents());
 
   // Main frame.
-  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
 
   // Vanilla child.
   content::RenderFrameHost* vanilla_frame_with_aborted_load =
@@ -656,7 +680,8 @@ IN_PROC_BROWSER_TEST_F(
   TestSubresourceFilterObserver observer(web_contents());
 
   // Main frame.
-  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
 
   // Create a frame and abort its initial load in vanilla script. The children
   // of this vanilla frame should be taggged correctly.
@@ -715,7 +740,8 @@ IN_PROC_BROWSER_TEST_F(
   TestSubresourceFilterObserver observer(web_contents());
 
   // Main frame.
-  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
 
   // Create a frame and abort its initial load in vanilla script. The children
   // of this vanilla frame should be taggged correctly.
@@ -773,7 +799,8 @@ IN_PROC_BROWSER_TEST_F(
   TestSubresourceFilterObserver observer(web_contents());
 
   // Main frame.
-  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
 
   content::RenderFrameHost* test_frame = CreateSrcFrame(
       GetWebContents(), GetURL("frame_factory.html?allowed=true"));
@@ -832,7 +859,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
                        VanillaExternalStylesheet_ResourcesNotTagged) {
   auto waiter = CreateAdTaggingPageLoadMetricsTestWaiter();
 
-  ui_test_utils::NavigateToURL(browser(), GetURL("test_div.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("test_div.html")));
   AddExternalStylesheet(GetWebContents(),
                         GetURL("sheet_with_vanilla_resources.css"));
 
@@ -849,7 +876,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
                        AdExternalStylesheet_ResourcesTagged) {
   auto waiter = CreateAdTaggingPageLoadMetricsTestWaiter();
 
-  ui_test_utils::NavigateToURL(browser(), GetURL("test_div.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("test_div.html")));
   AddExternalStylesheet(GetWebContents(),
                         GetURL("sheet_with_vanilla_resources.css?ad=true"));
 
@@ -955,7 +982,7 @@ IN_PROC_BROWSER_TEST_P(AdClickNavigationBrowserTest, UseCounter) {
   GURL url =
       embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* main_tab = GetWebContents();
   RenderFrameHost* child = CreateSrcFrame(
       main_tab, embedded_test_server()->GetURL(
@@ -997,7 +1024,7 @@ IN_PROC_BROWSER_TEST_P(AdClickNavigationBrowserTest, UseCounter) {
         // To report metrics.
         ASSERT_EQ(2, browser()->tab_strip_model()->count());
         browser()->tab_strip_model()->MoveSelectedTabsTo(0);
-        ui_test_utils::NavigateToURL(browser(), url);
+        ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
         break;
       }
     }
@@ -1034,7 +1061,7 @@ IN_PROC_BROWSER_TEST_P(AdTaggingEventFromSubframeBrowserTest,
   base::HistogramTester histogram_tester;
   GURL main_frame_url =
       embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
-  ui_test_utils::NavigateToURL(browser(), main_frame_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
   content::WebContents* main_tab = GetWebContents();
 
   std::string hostname = cross_origin ? "b.com" : "a.com";
@@ -1069,7 +1096,7 @@ IN_PROC_BROWSER_TEST_P(AdTaggingEventWithScriptInStackBrowserTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::HistogramTester histogram_tester;
   GURL main_frame_url = GetURL("frame_factory.html");
-  ui_test_utils::NavigateToURL(browser(), main_frame_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
   content::WebContents* main_tab = GetWebContents();
 
   std::string script = from_ad_script ? "windowOpenFromAdScript();"

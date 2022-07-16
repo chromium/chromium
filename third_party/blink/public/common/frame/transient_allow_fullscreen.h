@@ -18,8 +18,7 @@ class BLINK_COMMON_EXPORT TransientAllowFullscreen {
   TransientAllowFullscreen();
 
   // The lifespan should be just long enough to allow brief async script calls.
-  static constexpr base::TimeDelta kActivationLifespan =
-      base::TimeDelta::FromSeconds(1);
+  static constexpr base::TimeDelta kActivationLifespan = base::Seconds(1);
 
   // Activate the transient state.
   void Activate();

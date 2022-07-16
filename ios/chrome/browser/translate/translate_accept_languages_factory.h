@@ -25,6 +25,11 @@ class TranslateAcceptLanguagesFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state);
   static TranslateAcceptLanguagesFactory* GetInstance();
 
+  TranslateAcceptLanguagesFactory(const TranslateAcceptLanguagesFactory&) =
+      delete;
+  TranslateAcceptLanguagesFactory& operator=(
+      const TranslateAcceptLanguagesFactory&) = delete;
+
  private:
   friend class base::NoDestructor<TranslateAcceptLanguagesFactory>;
 
@@ -36,8 +41,6 @@ class TranslateAcceptLanguagesFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateAcceptLanguagesFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_TRANSLATE_TRANSLATE_ACCEPT_LANGUAGES_FACTORY_H_

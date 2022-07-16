@@ -38,6 +38,7 @@ class SegmentationPlatformProfileObserver : public base::SupportsUserData::Data,
 
   // ProfileManagerObserver overrides.
   void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
   // ProfileObserver overrides.
   void OnOffTheRecordProfileCreated(Profile* profile) override;

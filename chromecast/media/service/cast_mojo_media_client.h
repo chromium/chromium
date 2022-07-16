@@ -32,6 +32,10 @@ class CastMojoMediaClient : public ::media::MojoMediaClient {
                       VideoModeSwitcher* video_mode_switcher,
                       VideoResolutionPolicy* video_resolution_policy,
                       external_service_support::ExternalConnector* connector);
+
+  CastMojoMediaClient(const CastMojoMediaClient&) = delete;
+  CastMojoMediaClient& operator=(const CastMojoMediaClient&) = delete;
+
   ~CastMojoMediaClient() override;
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
@@ -65,8 +69,6 @@ class CastMojoMediaClient : public ::media::MojoMediaClient {
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
   VideoGeometrySetterService* video_geometry_setter_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(CastMojoMediaClient);
 };
 
 }  // namespace media

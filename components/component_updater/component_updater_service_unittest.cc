@@ -14,7 +14,6 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
@@ -83,15 +82,12 @@ class MockUpdateClient : public UpdateClient {
                      bool(const std::string& id, CrxUpdateItem* update_item));
   MOCK_CONST_METHOD1(IsUpdating, bool(const std::string& id));
   MOCK_METHOD0(Stop, void());
-  MOCK_METHOD4(SendUninstallPing,
-               void(const std::string& id,
-                    const base::Version& version,
+  MOCK_METHOD3(SendUninstallPing,
+               void(const CrxComponent& crx_component,
                     int reason,
                     Callback callback));
-  MOCK_METHOD3(SendRegistrationPing,
-               void(const std::string& id,
-                    const base::Version& version,
-                    Callback callback));
+  MOCK_METHOD2(SendRegistrationPing,
+               void(const CrxComponent& crx_component, Callback callback));
 
  private:
   ~MockUpdateClient() override = default;

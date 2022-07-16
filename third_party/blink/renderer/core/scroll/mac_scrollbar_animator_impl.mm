@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_animator.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_mac.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
+#include "third_party/blink/renderer/platform/geometry/cg_conversions.h"
 #include "third_party/blink/renderer/platform/mac/block_exceptions.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
@@ -85,7 +86,7 @@ ScrollbarPainter ScrollbarPainterForScrollbar(blink::Scrollbar& scrollbar) {
     return NSZeroRect;
 
   blink::IntSize contentsSize = _scrollableArea->ContentsSize();
-  return NSMakeRect(0, 0, contentsSize.Width(), contentsSize.Height());
+  return NSMakeRect(0, 0, contentsSize.width(), contentsSize.height());
 }
 
 - (BOOL)inLiveResizeForScrollerImpPair:(id)scrollerImpPair {
@@ -96,7 +97,7 @@ ScrollbarPainter ScrollbarPainterForScrollbar(blink::Scrollbar& scrollbar) {
   if (!_scrollableArea)
     return NSZeroPoint;
 
-  return _scrollableArea->LastKnownMousePosition();
+  return blink::PointToCGPoint(_scrollableArea->LastKnownMousePosition());
 }
 
 - (NSPoint)scrollerImpPair:(id)scrollerImpPair
@@ -119,8 +120,9 @@ ScrollbarPainter ScrollbarPainterForScrollbar(blink::Scrollbar& scrollbar) {
 
   DCHECK_EQ(scrollerImp, ScrollbarPainterForScrollbar(*scrollbar));
 
-  return scrollbar->ConvertFromContainingEmbeddedContentView(
-      blink::IntPoint(pointInContentArea));
+  return blink::PointToCGPoint(
+      scrollbar->ConvertFromContainingEmbeddedContentView(
+          gfx::Point(pointInContentArea)));
 }
 
 - (void)scrollerImpPair:(id)scrollerImpPair
@@ -191,7 +193,7 @@ class BlinkScrollbarPartAnimationTimer {
     start_time_ = base::Time::Now().ToDoubleT();
     // Set the framerate of the animation. NSAnimation uses a default
     // framerate of 60 Hz, so use that here.
-    timer_.StartRepeating(base::TimeDelta::FromSecondsD(1.0 / 60.0), FROM_HERE);
+    timer_.StartRepeating(base::Seconds(1.0 / 60.0), FROM_HERE);
   }
 
   void Stop() { timer_.Stop(); }
@@ -207,7 +209,7 @@ class BlinkScrollbarPartAnimationTimer {
       timer_.Stop();
 
     double fraction = delta / duration_;
-    fraction = clampTo(fraction, 0.0, 1.0);
+    fraction = ClampTo(fraction, 0.0, 1.0);
     double progress = timing_function_->Evaluate(fraction);
     // In some scenarios, animation_ gets released during the call to
     // setCurrentProgress. Because BlinkScrollbarPartAnimationTimer is a
@@ -408,8 +410,9 @@ class BlinkScrollbarPartAnimationTimer {
 
   DCHECK_EQ(scrollerImp, ScrollbarPainterForScrollbar(*_scrollbar));
 
-  return _scrollbar->ConvertFromContainingEmbeddedContentView(
-      _scrollbar->GetScrollableArea()->LastKnownMousePosition());
+  return blink::PointToCGPoint(
+      _scrollbar->ConvertFromContainingEmbeddedContentView(
+          _scrollbar->GetScrollableArea()->LastKnownMousePosition()));
 }
 
 - (void)setUpAlphaAnimation:
@@ -822,7 +825,7 @@ void MacScrollbarAnimatorImpl::StartScrollbarPaintTimer() {
       *task_runner_, FROM_HERE,
       WTF::Bind(&MacScrollbarAnimatorImpl::InitialScrollbarPaintTask,
                 WrapWeakPersistent(this)),
-      base::TimeDelta::FromMilliseconds(100));
+      base::Milliseconds(100));
 }
 
 bool MacScrollbarAnimatorImpl::ScrollbarPaintTimerIsActive() const {
@@ -857,8 +860,8 @@ void MacScrollbarAnimatorImpl::SendContentAreaScrolledTask() {
   if (SupportsContentAreaScrolledInDirection()) {
     [scrollbar_painter_controller_
         contentAreaScrolledInDirection:
-            NSMakePoint(content_area_scrolled_timer_scroll_delta_.Width(),
-                        content_area_scrolled_timer_scroll_delta_.Height())];
+            NSMakePoint(content_area_scrolled_timer_scroll_delta_.width(),
+                        content_area_scrolled_timer_scroll_delta_.height())];
     content_area_scrolled_timer_scroll_delta_ = ScrollOffset();
   } else
     [scrollbar_painter_controller_ contentAreaScrolled];

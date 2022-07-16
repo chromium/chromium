@@ -32,6 +32,10 @@ class FakeDesktopCapturer : public webrtc::DesktopCapturer {
           webrtc::SharedMemoryFactory* shared_memory_factory)>;
 
   FakeDesktopCapturer();
+
+  FakeDesktopCapturer(const FakeDesktopCapturer&) = delete;
+  FakeDesktopCapturer& operator=(const FakeDesktopCapturer&) = delete;
+
   ~FakeDesktopCapturer() override;
 
   void set_frame_generator(FrameGenerator frame_generator);
@@ -50,8 +54,6 @@ class FakeDesktopCapturer : public webrtc::DesktopCapturer {
   Callback* callback_;
 
   std::unique_ptr<webrtc::SharedMemoryFactory> shared_memory_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDesktopCapturer);
 };
 
 }  // namespace protocol

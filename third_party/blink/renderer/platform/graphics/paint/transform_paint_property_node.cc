@@ -12,9 +12,10 @@ const TransformPaintPropertyNode& TransformPaintPropertyNode::Root() {
   DEFINE_STATIC_REF(
       TransformPaintPropertyNode, root,
       base::AdoptRef(new TransformPaintPropertyNode(
-          nullptr, State{FloatSize(), &ScrollPaintPropertyNode::Root(), nullptr,
-                         State::Flags{false /* flattens_inherited_transform */,
-                                      false /* in_subtree_of_page_scale */}})));
+          nullptr,
+          State{gfx::Vector2dF(), &ScrollPaintPropertyNode::Root(), nullptr,
+                State::Flags{false /* flattens_inherited_transform */,
+                             false /* in_subtree_of_page_scale */}})));
   return *root;
 }
 
@@ -49,7 +50,7 @@ std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
   auto json = ToJSONBase();
   if (IsIdentityOr2DTranslation()) {
     if (!Translation2D().IsZero())
-      json->SetString("translation2d", Translation2D().ToString());
+      json->SetString("translation2d", String(Translation2D().ToString()));
   } else {
     json->SetString("matrix", Matrix().ToString());
     json->SetString("origin", Origin().ToString());

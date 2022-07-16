@@ -86,9 +86,6 @@ source_set("formats") {
 
   configs += [
     "//media:subcomponent_config",
-
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
   if (proprietary_codecs) {
@@ -190,11 +187,6 @@ static_library("test_support") {
     "webm/tracks_builder.h",
   ]
 
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
-
   deps = [
     "//base/test:test_support",
     "//media/base:test_support",
@@ -231,11 +223,6 @@ source_set("unit_tests") {
     "webm/webm_tracks_parser_unittest.cc",
     "webm/webm_video_client_unittest.cc",
     "webm/webm_webvtt_parser_unittest.cc",
-  ]
-
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
   deps = [

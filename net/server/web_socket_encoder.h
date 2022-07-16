@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
@@ -21,6 +22,9 @@ class WebSocketDeflateParameters;
 class WebSocketEncoder final {
  public:
   static const char kClientExtensions[];
+
+  WebSocketEncoder(const WebSocketEncoder&) = delete;
+  WebSocketEncoder& operator=(const WebSocketEncoder&) = delete;
 
   ~WebSocketEncoder();
 
@@ -38,9 +42,12 @@ class WebSocketEncoder final {
   WebSocket::ParseResult DecodeFrame(const base::StringPiece& frame,
                                      int* bytes_consumed,
                                      std::string* output);
-  void EncodeFrame(base::StringPiece frame,
-                   int masking_key,
-                   std::string* output);
+  void EncodeTextFrame(base::StringPiece frame,
+                       int masking_key,
+                       std::string* output);
+  void EncodePongFrame(base::StringPiece frame,
+                       int masking_key,
+                       std::string* output);
 
   bool deflate_enabled() const { return !!deflater_; }
 
@@ -54,14 +61,15 @@ class WebSocketEncoder final {
                    std::unique_ptr<WebSocketDeflater> deflater,
                    std::unique_ptr<WebSocketInflater> inflater);
 
+  std::vector<std::string> continuation_message_frames_;
+  bool is_current_message_compressed_ = false;
+
   bool Inflate(std::string* message);
   bool Deflate(base::StringPiece message, std::string* output);
 
   Type type_;
   std::unique_ptr<WebSocketDeflater> deflater_;
   std::unique_ptr<WebSocketInflater> inflater_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketEncoder);
 };
 
 }  // namespace net

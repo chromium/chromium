@@ -83,23 +83,25 @@ InlineTextBox* SearchAheadForBetterMatch(const LayoutText* layout_object) {
 }
 
 template <typename Strategy>
-PositionTemplate<Strategy> DownstreamIgnoringEditingBoundaries(
-    PositionTemplate<Strategy> position) {
+PositionTemplate<Strategy> DownstreamVisuallyEquivalent(
+    PositionTemplate<Strategy> position,
+    EditingBoundaryCrossingRule rule = kCanCrossEditingBoundary) {
   PositionTemplate<Strategy> last_position;
   while (!position.IsEquivalent(last_position)) {
     last_position = position;
-    position = MostForwardCaretPosition(position, kCanCrossEditingBoundary);
+    position = MostForwardCaretPosition(position, rule);
   }
   return position;
 }
 
 template <typename Strategy>
-PositionTemplate<Strategy> UpstreamIgnoringEditingBoundaries(
-    PositionTemplate<Strategy> position) {
+PositionTemplate<Strategy> UpstreamVisuallyEquivalent(
+    PositionTemplate<Strategy> position,
+    EditingBoundaryCrossingRule rule = kCanCrossEditingBoundary) {
   PositionTemplate<Strategy> last_position;
   while (!position.IsEquivalent(last_position)) {
     last_position = position;
-    position = MostBackwardCaretPosition(position, kCanCrossEditingBoundary);
+    position = MostBackwardCaretPosition(position, rule);
   }
   return position;
 }
@@ -191,12 +193,14 @@ InlineBoxPosition ComputeInlineBoxPositionForAtomicInline(
 template <typename Strategy>
 PositionWithAffinityTemplate<Strategy> ComputeInlineAdjustedPositionAlgorithm(
     const PositionWithAffinityTemplate<Strategy>&,
-    int recursion_depth);
+    int recursion_depth,
+    EditingBoundaryCrossingRule rule);
 
 template <typename Strategy>
 PositionWithAffinityTemplate<Strategy> AdjustBlockFlowPositionToInline(
     const PositionTemplate<Strategy>& position,
-    int recursion_depth) {
+    int recursion_depth,
+    EditingBoundaryCrossingRule rule) {
   DCHECK(position.IsNotNull());
   if (recursion_depth >= kBlockFlowAdjustmentMaxRecursionDepth) {
     // TODO(editing-dev): This function enters infinite recursion in some cases.
@@ -209,17 +213,17 @@ PositionWithAffinityTemplate<Strategy> AdjustBlockFlowPositionToInline(
   // non-editable positions. It acts to negate the logic at the beginning of
   // |LayoutObject::CreatePositionWithAffinity()|.
   const PositionTemplate<Strategy>& downstream_equivalent =
-      DownstreamIgnoringEditingBoundaries(position);
+      DownstreamVisuallyEquivalent(position);
   DCHECK(downstream_equivalent.IsNotNull());
   if (downstream_equivalent != position &&
       downstream_equivalent.AnchorNode()->GetLayoutObject()) {
     return ComputeInlineAdjustedPositionAlgorithm(
         PositionWithAffinityTemplate<Strategy>(downstream_equivalent,
                                                TextAffinity::kUpstream),
-        recursion_depth + 1);
+        recursion_depth + 1, rule);
   }
   const PositionTemplate<Strategy>& upstream_equivalent =
-      UpstreamIgnoringEditingBoundaries(position);
+      UpstreamVisuallyEquivalent(position);
   DCHECK(upstream_equivalent.IsNotNull());
   if (upstream_equivalent == position ||
       !upstream_equivalent.AnchorNode()->GetLayoutObject())
@@ -228,13 +232,14 @@ PositionWithAffinityTemplate<Strategy> AdjustBlockFlowPositionToInline(
   return ComputeInlineAdjustedPositionAlgorithm(
       PositionWithAffinityTemplate<Strategy>(upstream_equivalent,
                                              TextAffinity::kUpstream),
-      recursion_depth + 1);
+      recursion_depth + 1, rule);
 }
 
 template <typename Strategy>
 PositionWithAffinityTemplate<Strategy> ComputeInlineAdjustedPositionAlgorithm(
     const PositionWithAffinityTemplate<Strategy>& position,
-    int recursion_depth) {
+    int recursion_depth,
+    EditingBoundaryCrossingRule rule) {
   // TODO(yoichio): We don't assume |position| is canonicalized no longer and
   // there are few cases failing to compute. Fix it: crbug.com/812535.
   DCHECK(position.IsNotNull());
@@ -253,7 +258,7 @@ PositionWithAffinityTemplate<Strategy> ComputeInlineAdjustedPositionAlgorithm(
       CanHaveChildrenForEditing(position.AnchorNode()) &&
       HasRenderedNonAnonymousDescendantsWithHeight(&layout_object)) {
     return AdjustBlockFlowPositionToInline(position.GetPosition(),
-                                           recursion_depth);
+                                           recursion_depth, rule);
   }
 
   // TODO(crbug.com/567964): Change the second operand to DCHECK once fixed.
@@ -376,13 +381,15 @@ InlineBoxPosition ComputeInlineBoxPosition(
 }
 
 PositionWithAffinity ComputeInlineAdjustedPosition(
-    const PositionWithAffinity& position) {
-  return ComputeInlineAdjustedPositionAlgorithm(position, 0);
+    const PositionWithAffinity& position,
+    EditingBoundaryCrossingRule rule) {
+  return ComputeInlineAdjustedPositionAlgorithm(position, 0, rule);
 }
 
 PositionInFlatTreeWithAffinity ComputeInlineAdjustedPosition(
-    const PositionInFlatTreeWithAffinity& position) {
-  return ComputeInlineAdjustedPositionAlgorithm(position, 0);
+    const PositionInFlatTreeWithAffinity& position,
+    EditingBoundaryCrossingRule rule) {
+  return ComputeInlineAdjustedPositionAlgorithm(position, 0, rule);
 }
 
 InlineBoxPosition ComputeInlineBoxPositionForInlineAdjustedPosition(

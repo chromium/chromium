@@ -41,6 +41,10 @@ void ResolveOrReject(ScriptPromiseResolver* resolver,
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
           isolate, DOMExceptionCode::kNotAllowedError, message));
       break;
+    case mojom::blink::FileSystemAccessStatus::kNoModificationAllowedError:
+      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+          isolate, DOMExceptionCode::kNoModificationAllowedError, message));
+      break;
     case mojom::blink::FileSystemAccessStatus::kSecurityError:
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
           isolate, DOMExceptionCode::kSecurityError, message));

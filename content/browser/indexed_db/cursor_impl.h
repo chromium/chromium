@@ -28,6 +28,10 @@ class CursorImpl : public blink::mojom::IDBCursor {
              const blink::StorageKey& storage_key,
              IndexedDBDispatcherHost* dispatcher_host,
              scoped_refptr<base::SequencedTaskRunner> idb_runner);
+
+  CursorImpl(const CursorImpl&) = delete;
+  CursorImpl& operator=(const CursorImpl&) = delete;
+
   ~CursorImpl() override;
 
   // blink::mojom::IDBCursor implementation
@@ -53,8 +57,6 @@ class CursorImpl : public blink::mojom::IDBCursor {
   std::unique_ptr<IndexedDBCursor> cursor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CursorImpl);
 };
 
 }  // namespace content

@@ -12,14 +12,13 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/json/values_util.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
@@ -44,8 +43,8 @@
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/safe_browsing/content/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/gpu_feature_checker.h"
 #include "content/public/browser/storage_partition.h"
@@ -97,6 +96,10 @@ namespace {
 class PendingApprovals {
  public:
   PendingApprovals();
+
+  PendingApprovals(const PendingApprovals&) = delete;
+  PendingApprovals& operator=(const PendingApprovals&) = delete;
+
   ~PendingApprovals();
 
   void PushApproval(std::unique_ptr<WebstoreInstaller::Approval> approval);
@@ -110,8 +113,6 @@ class PendingApprovals {
       std::vector<std::unique_ptr<WebstoreInstaller::Approval>>;
 
   ApprovalList approvals_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingApprovals);
 };
 
 PendingApprovals::PendingApprovals() {}
@@ -309,7 +310,7 @@ ExtensionInstallStatus AddExtensionToPendingList(
   DCHECK(!pending_requests_update->FindKey(id));
   base::Value request_data(base::Value::Type::DICTIONARY);
   request_data.SetKey(extension_misc::kExtensionRequestTimestamp,
-                      ::util::TimeToValue(base::Time::Now()));
+                      ::base::TimeToValue(base::Time::Now()));
   if (!justification.empty()) {
     request_data.SetKey(extension_misc::kExtensionWorkflowJustification,
                         base::Value(justification));
@@ -410,7 +411,7 @@ std::u16string WebstorePrivateBeginInstallWithManifest3Function::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateBeginInstallWithManifest3Function::Run() {
-  params_ = Params::Create(*args_);
+  params_ = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   profile_ = Profile::FromBrowserContext(browser_context());
@@ -894,8 +895,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::
   }
 
   chrome::ShowExtensionInstallBlockedDialog(
-      extension->name(), blocked_by_policy_error_message_, image, contents,
-      std::move(done_callback));
+      extension->id(), extension->name(), blocked_by_policy_error_message_,
+      image, contents, std::move(done_callback));
 }
 
 WebstorePrivateCompleteInstallFunction::
@@ -907,7 +908,7 @@ WebstorePrivateCompleteInstallFunction::
 ExtensionFunction::ResponseAction
 WebstorePrivateCompleteInstallFunction::Run() {
   std::unique_ptr<CompleteInstall::Params> params(
-      CompleteInstall::Params::Create(*args_));
+      CompleteInstall::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   if (profile->IsGuestSession() || profile->IsOffTheRecord()) {
@@ -1031,7 +1032,7 @@ WebstorePrivateSetStoreLoginFunction::
 
 ExtensionFunction::ResponseAction WebstorePrivateSetStoreLoginFunction::Run() {
   std::unique_ptr<SetStoreLogin::Params> params(
-      SetStoreLogin::Params::Create(*args_));
+      SetStoreLogin::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   SetWebstoreLogin(Profile::FromBrowserContext(browser_context()),
                    params->login);
@@ -1117,7 +1118,7 @@ WebstorePrivateIsPendingCustodianApprovalFunction::
 ExtensionFunction::ResponseAction
 WebstorePrivateIsPendingCustodianApprovalFunction::Run() {
   std::unique_ptr<IsPendingCustodianApproval::Params> params(
-      IsPendingCustodianApproval::Params::Create(*args_));
+      IsPendingCustodianApproval::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!Profile::FromBrowserContext(browser_context())->IsSupervised())
@@ -1213,7 +1214,7 @@ WebstorePrivateGetExtensionStatusFunction::
 ExtensionFunction::ResponseAction
 WebstorePrivateGetExtensionStatusFunction::Run() {
   std::unique_ptr<GetExtensionStatus::Params> params(
-      GetExtensionStatus::Params::Create(*args_));
+      GetExtensionStatus::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const ExtensionId& extension_id = params->id;
@@ -1283,7 +1284,7 @@ WebstorePrivateRequestExtensionFunction::
 ExtensionFunction::ResponseAction
 WebstorePrivateRequestExtensionFunction::Run() {
   std::unique_ptr<RequestExtension::Params> params(
-      RequestExtension::Params::Create(*args_));
+      RequestExtension::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const ExtensionId& extension_id = params->id;

@@ -19,6 +19,7 @@ component("compositor") {
     "closure_animation_observer.h",
     "compositor.cc",
     "compositor.h",
+    "compositor_animation_observer.cc",
     "compositor_animation_observer.h",
     "compositor_export.h",
     "compositor_lock.cc",
@@ -191,13 +192,6 @@ static_library("test_support") {
     "//ui/gl:test_support",
   ]
 
-  if (use_x11) {
-    deps += [
-      "//ui/events/x",
-      "//ui/gfx/x",
-    ]
-  }
-
   if (is_mac) {
     deps += [
       "//gpu/ipc/service:service",
@@ -215,17 +209,6 @@ static_library("test_support") {
       "//ui/ozone",
       "//ui/platform_window",
     ]
-  }
-
-  if (use_x11) {
-    sources += [
-      "test/test_compositor_host_x11.cc",
-      "test/test_compositor_host_x11.h",
-    ]
-  }
-
-  if (is_linux || is_chromeos) {
-    sources += [ "test/test_compositor_host_linux.cc" ]
   }
 }
 

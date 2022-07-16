@@ -186,12 +186,14 @@ void AnimationTimeline::ScheduleServiceOnNextFrame() {
     document_->View()->ScheduleAnimation();
 }
 
-Animation* AnimationTimeline::Play(AnimationEffect* child) {
-  Animation* animation = Animation::Create(child, this);
-  DCHECK(animations_.Contains(animation));
-
-  animation->play();
-  DCHECK(animations_needing_update_.Contains(animation));
+Animation* AnimationTimeline::Play(AnimationEffect* child,
+                                   ExceptionState& exception_state) {
+  Animation* animation = Animation::Create(child, this, exception_state);
+  if (animation) {
+    DCHECK(animations_.Contains(animation));
+    animation->play();
+    DCHECK(animations_needing_update_.Contains(animation));
+  }
 
   return animation;
 }

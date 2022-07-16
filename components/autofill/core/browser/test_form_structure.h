@@ -14,13 +14,14 @@ namespace autofill {
 class TestFormStructure : public FormStructure {
  public:
   explicit TestFormStructure(const FormData& form);
+
+  TestFormStructure(const TestFormStructure&) = delete;
+  TestFormStructure& operator=(const TestFormStructure&) = delete;
+
   ~TestFormStructure() override;
 
   void SetFieldTypes(const std::vector<ServerFieldType>& heuristic_types,
                      const std::vector<ServerFieldType>& server_types);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestFormStructure);
 };
 
 }  // namespace autofill

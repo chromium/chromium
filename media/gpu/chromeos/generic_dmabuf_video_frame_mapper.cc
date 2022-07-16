@@ -58,6 +58,7 @@ scoped_refptr<VideoFrame> CreateMappedVideoFrame(
         layout.planes()[0].size, src_video_frame->timestamp());
   }
   if (!video_frame) {
+    MunmapBuffers(chunks, /*video_frame=*/nullptr);
     return nullptr;
   }
 
@@ -78,9 +79,12 @@ bool IsFormatSupported(VideoPixelFormat format) {
       PIXEL_FORMAT_I420,
       PIXEL_FORMAT_NV12,
       PIXEL_FORMAT_YV12,
+
+      // Compressed format.
+      PIXEL_FORMAT_MJPEG,
   };
   return std::find(std::cbegin(supported_formats), std::cend(supported_formats),
-                   format);
+                   format) != std::cend(supported_formats);
 }
 
 }  // namespace
@@ -141,7 +145,16 @@ scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::Map(
 
     // Map the current buffer.
     const auto& last_plane = planes[next_buf - 1];
-    const size_t mapped_size = last_plane.offset + last_plane.size;
+
+    size_t mapped_size = 0;
+    if (!base::CheckAdd<size_t>(last_plane.offset, last_plane.size)
+             .AssignIfValid(&mapped_size)) {
+      VLOGF(1) << "Overflow happens with offset=" << last_plane.offset
+               << " + size=" << last_plane.size;
+      MunmapBuffers(chunks, /*video_frame=*/nullptr);
+      return nullptr;
+    }
+
     uint8_t* mapped_addr = Mmap(mapped_size, dmabuf_fds[i].get());
     chunks.emplace_back(mapped_addr, mapped_size);
     for (size_t j = i; j < next_buf; ++j)

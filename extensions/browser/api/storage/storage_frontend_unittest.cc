@@ -9,17 +9,20 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/value_store/value_store.h"
+#include "components/value_store/value_store_factory_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/browser/api/storage/settings_namespace.h"
 #include "extensions/browser/api/storage/settings_test_util.h"
 #include "extensions/browser/extensions_test.h"
-#include "extensions/browser/value_store/settings_namespace.h"
-#include "extensions/browser/value_store/value_store.h"
-#include "extensions/browser/value_store/value_store_factory_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using value_store::ValueStore;
 
 namespace extensions {
 
@@ -40,7 +43,8 @@ class ExtensionSettingsFrontendTest : public ExtensionsTest {
   void SetUp() override {
     ExtensionsTest::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    storage_factory_ = new ValueStoreFactoryImpl(temp_dir_.GetPath());
+    storage_factory_ =
+        new value_store::ValueStoreFactoryImpl(temp_dir_.GetPath());
     ResetFrontend();
   }
 
@@ -59,7 +63,7 @@ class ExtensionSettingsFrontendTest : public ExtensionsTest {
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<StorageFrontend> frontend_;
-  scoped_refptr<ValueStoreFactoryImpl> storage_factory_;
+  scoped_refptr<value_store::ValueStoreFactoryImpl> storage_factory_;
 
  private:
   ExtensionsAPIClient extensions_api_client_;
@@ -130,8 +134,9 @@ TEST_F(ExtensionSettingsFrontendTest, SettingsClearedOnUninstall) {
   }
 
   // This would be triggered by extension uninstall via a DataDeleter.
-  frontend_->DeleteStorageSoon(id);
-  content::RunAllTasksUntilIdle();
+  base::RunLoop run_loop;
+  frontend_->DeleteStorageSoon(id, run_loop.QuitClosure());
+  run_loop.Run();
 
   // The storage area may no longer be valid post-uninstall, so re-request.
   storage = settings_test_util::GetStorage(extension, settings::LOCAL,

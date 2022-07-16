@@ -43,15 +43,9 @@ blink::WebInputEvent::Type GetWebInputEventType(PP_InputEvent_Type event_type) {
     case PP_INPUTEVENT_TYPE_WHEEL:
       return blink::WebInputEvent::Type::kMouseWheel;
     case PP_INPUTEVENT_TYPE_RAWKEYDOWN:
-    case PP_INPUTEVENT_TYPE_KEYDOWN:
-      // Blink no longer passes `kKeyDown` events into plugins, and instead
-      // passes `kRawKeyDown` events. However, `kRawKeyDown` gets mapped to
-      // `PP_INPUTEVENT_TYPE_KEYDOWN` for backwards compatibility. Map both
-      // Pepper enums to `kRawKeyDown` to allow for a common implementation
-      // between the Pepper and Pepper-free plugins.
-      // See the comments inside the definition of `ConvertEventTypes()` in
-      // content/renderer/pepper/event_conversion.cc.
       return blink::WebInputEvent::Type::kRawKeyDown;
+    case PP_INPUTEVENT_TYPE_KEYDOWN:
+      return blink::WebInputEvent::Type::kKeyDown;
     case PP_INPUTEVENT_TYPE_KEYUP:
       return blink::WebInputEvent::Type::kKeyUp;
     case PP_INPUTEVENT_TYPE_CHAR:
@@ -95,7 +89,7 @@ std::unique_ptr<blink::WebMouseEvent> GetWebMouseEvent(
 
   auto mouse_event = std::make_unique<blink::WebMouseEvent>(
       type, event.GetModifiers(),
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(event.GetTimeStamp()));
+      base::TimeTicks() + base::Seconds(event.GetTimeStamp()));
 
   mouse_event->button = GetWebPointerPropertiesButton(event.GetButton());
   mouse_event->click_count = event.GetClickCount();
@@ -113,7 +107,7 @@ std::unique_ptr<blink::WebKeyboardEvent> GetWebKeyboardEvent(
 
   auto keyboard_event = std::make_unique<blink::WebKeyboardEvent>(
       type, event.GetModifiers(),
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(event.GetTimeStamp()));
+      base::TimeTicks() + base::Seconds(event.GetTimeStamp()));
 
   keyboard_event->windows_key_code = event.GetKeyCode();
 
@@ -136,7 +130,7 @@ std::unique_ptr<blink::WebTouchEvent> GetWebTouchEvent(
 
   auto touch_event = std::make_unique<blink::WebTouchEvent>(
       type, event.GetModifiers(),
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(event.GetTimeStamp()));
+      base::TimeTicks() + base::Seconds(event.GetTimeStamp()));
 
   // The PDF plugin only cares about the first touch and the number of touches,
   // but copy over all the touches so that `touch_event->touches_length`
@@ -164,6 +158,7 @@ std::unique_ptr<blink::WebInputEvent> GetWebInputEvent(
     case blink::WebInputEvent::Type::kMouseLeave:
       return GetWebMouseEvent(pp::MouseInputEvent(event));
     case blink::WebInputEvent::Type::kRawKeyDown:
+    case blink::WebInputEvent::Type::kKeyDown:
     case blink::WebInputEvent::Type::kKeyUp:
     case blink::WebInputEvent::Type::kChar:
       return GetWebKeyboardEvent(pp::KeyboardInputEvent(event));

@@ -73,12 +73,10 @@ constexpr size_t kMaxNumberOfWorkers = 256;
 // Currently, only 1. is true as the configuration is per thread group.
 // TODO(https://crbug.com/927755): Fix racy condition when MayBlockThreshold ==
 // BlockedWorkersPoll.
-constexpr TimeDelta kForegroundMayBlockThreshold =
-    TimeDelta::FromMilliseconds(1000);
-constexpr TimeDelta kForegroundBlockedWorkersPoll =
-    TimeDelta::FromMilliseconds(1200);
-constexpr TimeDelta kBackgroundMayBlockThreshold = TimeDelta::FromSeconds(10);
-constexpr TimeDelta kBackgroundBlockedWorkersPoll = TimeDelta::FromSeconds(12);
+constexpr TimeDelta kForegroundMayBlockThreshold = Milliseconds(1000);
+constexpr TimeDelta kForegroundBlockedWorkersPoll = Milliseconds(1200);
+constexpr TimeDelta kBackgroundMayBlockThreshold = Seconds(10);
+constexpr TimeDelta kBackgroundBlockedWorkersPoll = Seconds(12);
 
 // Only used in DCHECKs.
 bool ContainsWorker(const std::vector<scoped_refptr<WorkerThread>>& workers,
@@ -233,7 +231,7 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
 
   // WorkerThread::Delegate:
   WorkerThread::ThreadLabel GetThreadLabel() const override;
-  void OnMainEntry(const WorkerThread* worker) override;
+  void OnMainEntry(WorkerThread* worker) override;
   RegisteredTaskSource GetWork(WorkerThread* worker) override;
   void DidProcessTask(RegisteredTaskSource task_source) override;
   TimeDelta GetSleepTimeout() override;
@@ -243,6 +241,11 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
   void BlockingStarted(BlockingType blocking_type) override;
   void BlockingTypeUpgraded() override;
   void BlockingEnded() override;
+
+  // Notifies the worker of shutdown, possibly marking the running task as
+  // MAY_BLOCK.
+  void OnShutdownStartedLockRequired(ScopedCommandsExecutor* executor)
+      EXCLUSIVE_LOCKS_REQUIRED(outer_->lock_);
 
   // Returns true iff the worker can get work. Cleans up the worker or puts it
   // on the idle stack if it can't get work.
@@ -255,13 +258,15 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
   void MaybeIncrementMaxTasksLockRequired()
       EXCLUSIVE_LOCKS_REQUIRED(outer_->lock_);
 
+  // Increments max [best effort] tasks.
+  void IncrementMaxTasksLockRequired() EXCLUSIVE_LOCKS_REQUIRED(outer_->lock_);
+
   TaskPriority current_task_priority_lock_required() const
       EXCLUSIVE_LOCKS_REQUIRED(outer_->lock_) {
     return *read_any().current_task_priority;
   }
 
-  // Exposed for AnnotateCheckedLockAcquired in
-  // ThreadGroupImpl::AdjustMaxTasks()
+  // Exposed for AnnotateAcquiredLockAlias
   const CheckedLock& lock() const LOCK_RETURNED(outer_->lock_) {
     return outer_->lock_;
   }
@@ -289,10 +294,8 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
     // ThreadPool.NumTasksBeforeDetach histogram was recorded.
     size_t num_tasks_since_last_detach = 0;
 
-    // Whether the worker is currently running a task (i.e. GetWork() has
-    // returned a non-empty task source and DidProcessTask() hasn't been called
-    // yet).
-    bool is_running_task = false;
+    // Associated WorkerThread, if any, initialized in OnMainEntry().
+    WorkerThread* worker_thread_;
 
 #if defined(OS_WIN)
     std::unique_ptr<win::ScopedWindowsThreadEnvironment> win_thread_environment;
@@ -304,10 +307,17 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
   struct WriteWorkerReadAny {
     // The priority of the task the worker is currently running if any.
     absl::optional<TaskPriority> current_task_priority;
+    // The shutdown behavior of the task the worker is currently running if any.
+    absl::optional<TaskShutdownBehavior> current_shutdown_behavior;
 
     // Time when MayBlockScopeEntered() was last called. Reset when
     // BlockingScopeExited() is called.
     TimeTicks blocking_start_time;
+
+    // Whether the worker is currently running a task (i.e. GetWork() has
+    // returned a non-empty task source and DidProcessTask() hasn't been called
+    // yet).
+    bool is_running_task() const { return !!current_shutdown_behavior; }
   } write_worker_read_any_;
 
   WorkerOnly& worker_only() {
@@ -332,11 +342,15 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
 
   const TrackedRef<ThreadGroupImpl> outer_;
 
-  // Whether |outer_->max_tasks_|/|outer_->max_best_effort_tasks_| was
+  // Whether |outer_->max_tasks_|/|outer_->max_best_effort_tasks_| were
   // incremented due to a ScopedBlockingCall on the thread.
   bool incremented_max_tasks_since_blocked_ GUARDED_BY(outer_->lock_) = false;
   bool incremented_max_best_effort_tasks_since_blocked_
       GUARDED_BY(outer_->lock_) = false;
+  // Whether |outer_->max_tasks_| and |outer_->max_best_effort_tasks_| was
+  // incremented due to running CONTINUE_ON_SHUTDOWN on the thread during
+  // shutdown.
+  bool incremented_max_tasks_for_shutdown_ GUARDED_BY(outer_->lock_) = false;
 
   // Verifies that specific calls are always made from the worker thread.
   THREAD_CHECKER(worker_thread_checker_);
@@ -546,7 +560,7 @@ ThreadGroupImpl::WorkerThreadDelegateImpl::GetThreadLabel() const {
 }
 
 void ThreadGroupImpl::WorkerThreadDelegateImpl::OnMainEntry(
-    const WorkerThread* worker) {
+    WorkerThread* worker) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
 
   {
@@ -565,6 +579,7 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::OnMainEntry(
       StringPrintf("ThreadPool%sWorker", outer_->thread_group_label_.c_str()));
 
   outer_->BindToCurrentThread();
+  worker_only().worker_thread_ = worker;
   SetBlockingObserverForCurrentThread(this);
 
   if (outer_->worker_started_for_testing_) {
@@ -579,7 +594,8 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::OnMainEntry(
 RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
     WorkerThread* worker) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  DCHECK(!worker_only().is_running_task);
+  DCHECK(!read_worker().current_task_priority);
+  DCHECK(!read_worker().current_shutdown_behavior);
 
   ScopedCommandsExecutor executor(outer_.get());
   CheckedAutoLock auto_lock(outer_->lock_);
@@ -589,6 +605,10 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   // Use this opportunity, before assigning work to this worker, to create/wake
   // additional workers if needed (doing this here allows us to reduce
   // potentially expensive create/wake directly on PostTask()).
+  //
+  // Note: FlushWorkerCreation() below releases |outer_->lock_|. It is thus
+  // important that all other operations come after it to keep this method
+  // transactional.
   if (!outer_->after_start().wakeup_after_getwork &&
       outer_->after_start().wakeup_strategy !=
           WakeUpStrategy::kCentralizedWakeUps) {
@@ -620,10 +640,10 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   }
 
   // Running task bookkeeping.
-  worker_only().is_running_task = true;
   outer_->IncrementTasksRunningLockRequired(priority);
   DCHECK(!outer_->idle_workers_stack_.Contains(worker));
   write_worker().current_task_priority = priority;
+  write_worker().current_shutdown_behavior = task_source->shutdown_behavior();
 
   if (outer_->after_start().wakeup_after_getwork &&
       outer_->after_start().wakeup_strategy !=
@@ -637,8 +657,8 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
 void ThreadGroupImpl::WorkerThreadDelegateImpl::DidProcessTask(
     RegisteredTaskSource task_source) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  DCHECK(worker_only().is_running_task);
-  DCHECK(read_worker().blocking_start_time.is_null());
+  DCHECK(read_worker().current_task_priority);
+  DCHECK(read_worker().current_shutdown_behavior);
 
   ++worker_only().num_tasks_since_last_detach;
 
@@ -657,13 +677,27 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::DidProcessTask(
   ScopedReenqueueExecutor reenqueue_executor;
   CheckedAutoLock auto_lock(outer_->lock_);
 
+  // During shutdown, max_tasks may have been incremented in StartShutdown().
+  if (incremented_max_tasks_for_shutdown_) {
+    DCHECK(outer_->shutdown_started_);
+    outer_->DecrementMaxTasksLockRequired();
+    if (*read_worker().current_task_priority == TaskPriority::BEST_EFFORT) {
+      outer_->DecrementMaxBestEffortTasksLockRequired();
+    }
+    incremented_max_tasks_since_blocked_ = false;
+    incremented_max_best_effort_tasks_since_blocked_ = false;
+    incremented_max_tasks_for_shutdown_ = false;
+  }
+
+  DCHECK(read_worker().blocking_start_time.is_null());
   DCHECK(!incremented_max_tasks_since_blocked_);
   DCHECK(!incremented_max_best_effort_tasks_since_blocked_);
 
   // Running task bookkeeping.
   outer_->DecrementTasksRunningLockRequired(
       *read_worker().current_task_priority);
-  worker_only().is_running_task = false;
+  write_worker().current_shutdown_behavior = absl::nullopt;
+  write_worker().current_task_priority = absl::nullopt;
 
   if (transaction_with_task_source) {
     outer_->ReEnqueueTaskSourceLockRequired(
@@ -789,7 +823,10 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::OnMainExit(
 void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingStarted(
     BlockingType blocking_type) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  DCHECK(worker_only().is_running_task);
+  DCHECK(read_worker().current_task_priority);
+  DCHECK(worker_only().worker_thread_);
+
+  worker_only().worker_thread_->MaybeUpdateThreadPriority();
 
   // MayBlock with no delay reuses WillBlock implementation.
   // WillBlock is always used when time overrides is active. crbug.com/1038867
@@ -806,7 +843,10 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingStarted(
   DCHECK(read_worker().blocking_start_time.is_null());
   write_worker().blocking_start_time = subtle::TimeTicksNowIgnoringOverride();
 
-  if (*read_worker().current_task_priority == TaskPriority::BEST_EFFORT)
+  if (incremented_max_tasks_for_shutdown_)
+    return;
+
+  if (*read_any().current_task_priority == TaskPriority::BEST_EFFORT)
     ++outer_->num_unresolved_best_effort_may_block_;
 
   if (blocking_type == BlockingType::WILL_BLOCK) {
@@ -822,7 +862,7 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingStarted(
 
 void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingTypeUpgraded() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  DCHECK(worker_only().is_running_task);
+  DCHECK(read_worker().current_task_priority);
 
   // The blocking type always being WILL_BLOCK in this experiment and with time
   // overrides, it should never be considered "upgraded".
@@ -850,25 +890,41 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingTypeUpgraded() {
 
 void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingEnded() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  DCHECK(worker_only().is_running_task);
 
   CheckedAutoLock auto_lock(outer_->lock_);
+  DCHECK(read_worker().current_task_priority);
   DCHECK(!read_worker().blocking_start_time.is_null());
-  if (incremented_max_tasks_since_blocked_)
-    outer_->DecrementMaxTasksLockRequired();
-  else
-    --outer_->num_unresolved_may_block_;
-
-  if (*read_worker().current_task_priority == TaskPriority::BEST_EFFORT) {
-    if (incremented_max_best_effort_tasks_since_blocked_)
-      outer_->DecrementMaxBestEffortTasksLockRequired();
+  write_worker().blocking_start_time = TimeTicks();
+  if (!incremented_max_tasks_for_shutdown_) {
+    if (incremented_max_tasks_since_blocked_)
+      outer_->DecrementMaxTasksLockRequired();
     else
-      --outer_->num_unresolved_best_effort_may_block_;
+      --outer_->num_unresolved_may_block_;
+
+    if (*read_worker().current_task_priority == TaskPriority::BEST_EFFORT) {
+      if (incremented_max_best_effort_tasks_since_blocked_)
+        outer_->DecrementMaxBestEffortTasksLockRequired();
+      else
+        --outer_->num_unresolved_best_effort_may_block_;
+    }
   }
 
   incremented_max_tasks_since_blocked_ = false;
   incremented_max_best_effort_tasks_since_blocked_ = false;
-  write_worker().blocking_start_time = TimeTicks();
+}
+
+void ThreadGroupImpl::WorkerThreadDelegateImpl::OnShutdownStartedLockRequired(
+    ScopedCommandsExecutor* executor) {
+  if (!read_any().is_running_task())
+    return;
+  // Workers running a CONTINUE_ON_SHUTDOWN tasks are replaced by incrementing
+  // max_tasks/max_best_effort_tasks. The effect is reverted in
+  // DidProcessTask().
+  if (*read_any().current_shutdown_behavior ==
+      TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN) {
+    incremented_max_tasks_for_shutdown_ = true;
+    IncrementMaxTasksLockRequired();
+  }
 }
 
 bool ThreadGroupImpl::WorkerThreadDelegateImpl::CanGetWorkLockRequired(
@@ -908,17 +964,27 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::
           outer_->after_start().may_block_threshold) {
     return;
   }
+  IncrementMaxTasksLockRequired();
+}
 
+void ThreadGroupImpl::WorkerThreadDelegateImpl::
+    IncrementMaxTasksLockRequired() {
   if (!incremented_max_tasks_since_blocked_) {
-    incremented_max_tasks_since_blocked_ = true;
-    --outer_->num_unresolved_may_block_;
     outer_->IncrementMaxTasksLockRequired();
+    // Update state for an unresolved ScopedBlockingCall.
+    if (!read_any().blocking_start_time.is_null()) {
+      incremented_max_tasks_since_blocked_ = true;
+      --outer_->num_unresolved_may_block_;
+    }
   }
   if (*read_any().current_task_priority == TaskPriority::BEST_EFFORT &&
       !incremented_max_best_effort_tasks_since_blocked_) {
-    incremented_max_best_effort_tasks_since_blocked_ = true;
-    --outer_->num_unresolved_best_effort_may_block_;
     outer_->IncrementMaxBestEffortTasksLockRequired();
+    // Update state for an unresolved ScopedBlockingCall.
+    if (!read_any().blocking_start_time.is_null()) {
+      incremented_max_best_effort_tasks_since_blocked_ = true;
+      --outer_->num_unresolved_best_effort_may_block_;
+    }
   }
 }
 
@@ -1008,6 +1074,28 @@ void ThreadGroupImpl::DidUpdateCanRunPolicy() {
   ScopedCommandsExecutor executor(this);
   CheckedAutoLock auto_lock(lock_);
   EnsureEnoughWorkersLockRequired(&executor);
+}
+
+void ThreadGroupImpl::OnShutdownStarted() {
+  ScopedCommandsExecutor executor(this);
+  CheckedAutoLock auto_lock(lock_);
+
+  // Don't do anything if the thread group isn't started.
+  if (max_tasks_ == 0 || UNLIKELY(join_for_testing_started_))
+    return;
+
+  // Start a MAY_BLOCK scope on each worker that is already running a task.
+  for (scoped_refptr<WorkerThread>& worker : workers_) {
+    // The delegates of workers inside a ThreadGroupImpl should be
+    // WorkerThreadDelegateImpls.
+    WorkerThreadDelegateImpl* delegate =
+        static_cast<WorkerThreadDelegateImpl*>(worker->delegate());
+    AnnotateAcquiredLockAlias annotate(lock_, delegate->lock());
+    delegate->OnShutdownStartedLockRequired(&executor);
+  }
+  EnsureEnoughWorkersLockRequired(&executor);
+
+  shutdown_started_ = true;
 }
 
 void ThreadGroupImpl::EnsureEnoughWorkersLockRequired(

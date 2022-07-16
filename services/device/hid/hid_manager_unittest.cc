@@ -64,8 +64,8 @@ class MockHidManagerClient : public mojom::HidManagerClient {
 class HidManagerTest : public DeviceServiceTestBase {
  public:
   HidManagerTest() = default;
-  HidManagerTest(const HidManagerTest& entry) = delete;
-  HidManagerTest& operator=(const HidManagerTest& entry) = delete;
+  HidManagerTest(const HidManagerTest&) = delete;
+  HidManagerTest& operator=(const HidManagerTest&) = delete;
 
   void SetUp() override {
     DeviceServiceTestBase::SetUp();
@@ -408,6 +408,7 @@ TEST_F(HidManagerTest, TestHidConnectionInterface) {
         /*connection_client=*/mojo::NullRemote(),
         /*watcher=*/mojo::NullRemote(),
         /*allow_protected_reports=*/false,
+        /*allow_fido_reports=*/false,
         base::BindLambdaForTesting(
             [&](mojo::PendingRemote<mojom::HidConnection> connection) {
               EXPECT_TRUE(connection);

@@ -68,6 +68,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothProfileManagerClient
     std::unique_ptr<uint16_t> features;
   };
 
+  BluetoothProfileManagerClient(const BluetoothProfileManagerClient&) = delete;
+  BluetoothProfileManagerClient& operator=(
+      const BluetoothProfileManagerClient&) = delete;
+
   ~BluetoothProfileManagerClient() override;
 
   // The ErrorCallback is used by adapter methods to indicate failure.
@@ -101,9 +105,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothProfileManagerClient
 
  protected:
   BluetoothProfileManagerClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothProfileManagerClient);
 };
 
 }  // namespace bluez

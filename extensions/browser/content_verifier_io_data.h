@@ -51,6 +51,10 @@ class ContentVerifierIOData {
   };
 
   ContentVerifierIOData();
+
+  ContentVerifierIOData(const ContentVerifierIOData&) = delete;
+  ContentVerifierIOData& operator=(const ContentVerifierIOData&) = delete;
+
   ~ContentVerifierIOData();
 
   void AddData(const std::string& extension_id,
@@ -64,8 +68,6 @@ class ContentVerifierIOData {
 
  private:
   std::map<std::string, std::unique_ptr<ExtensionData>> data_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentVerifierIOData);
 };
 
 }  // namespace extensions

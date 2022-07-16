@@ -238,9 +238,9 @@ void CSSTextIndentInterpolationType::ApplyStandardPropertyValue(
   const auto& css_text_indent_non_interpolable_value =
       To<CSSTextIndentNonInterpolableValue>(*non_interpolable_value);
   ComputedStyle& style = *state.Style();
-  style.SetTextIndent(
-      To<InterpolableLength>(interpolable_value)
-          .CreateLength(state.CssToLengthConversionData(), kValueRangeAll));
+  style.SetTextIndent(To<InterpolableLength>(interpolable_value)
+                          .CreateLength(state.CssToLengthConversionData(),
+                                        Length::ValueRange::kAll));
 
   const IndentMode& mode = css_text_indent_non_interpolable_value.Mode();
   style.SetTextIndentLine(mode.line);

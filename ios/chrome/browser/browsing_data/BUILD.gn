@@ -58,6 +58,7 @@ source_set("browsing_data") {
     "//ios/chrome/browser/external_files",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/language",
+    "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/reading_list:reading_list_remover",
     "//ios/chrome/browser/safe_browsing",

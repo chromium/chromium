@@ -13,6 +13,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -30,6 +31,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/disks/disk_mount_manager.h"
+#include "components/arc/arc_features.h"
 #include "components/arc/arc_util.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/vector_icons/vector_icons.h"
@@ -150,6 +152,10 @@ class CrosUsbNotificationDelegate
         settings_sub_page_(std::move(settings_sub_page)),
         disposition_(CrosUsbNotificationClosed::kUnknown) {}
 
+  CrosUsbNotificationDelegate(const CrosUsbNotificationDelegate&) = delete;
+  CrosUsbNotificationDelegate& operator=(const CrosUsbNotificationDelegate&) =
+      delete;
+
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override {
     disposition_ = CrosUsbNotificationClosed::kUnknown;
@@ -189,8 +195,6 @@ class CrosUsbNotificationDelegate
   std::string settings_sub_page_;
   CrosUsbNotificationClosed disposition_;
   base::WeakPtrFactory<CrosUsbNotificationDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrosUsbNotificationDelegate);
 };
 
 // List of class codes to handle / not handle.
@@ -335,6 +339,10 @@ CrosUsbDeviceInfo::~CrosUsbDeviceInfo() = default;
 std::string CrosUsbDetector::MakeNotificationId(const std::string& guid) {
   return "cros:" + guid;
 }
+
+CrosUsbDetector::DeviceClaim::DeviceClaim() = default;
+
+CrosUsbDetector::DeviceClaim::~DeviceClaim() = default;
 
 // static
 CrosUsbDetector* CrosUsbDetector::Get() {
@@ -540,9 +548,9 @@ void CrosUsbDetector::OnDeviceChecked(
     bool hide_notification,
     bool allowed) {
   if (!allowed) {
-    LOG(WARNING) << "Device not allowed by Permission Broker. product:"
-                 << device_info->product_id
-                 << " vendor:" << device_info->vendor_id;
+    LOG(WARNING) << "Device not allowed by Permission Broker. vendor: 0x"
+                 << std::hex << device_info->vendor_id << " product: 0x"
+                 << device_info->product_id;
     return;
   }
 
@@ -569,9 +577,10 @@ void CrosUsbDetector::OnDeviceChecked(
     }
   }
 
-  // Copy strings prior to moving |device_info| and |new_device|.
+  // Copy fields prior to moving |device_info| and |new_device|.
   std::string guid = device_info->guid;
   std::u16string label = new_device.label;
+  uint32_t allowed_interfaces_mask = new_device.allowed_interfaces_mask;
 
   new_device.info = std::move(device_info);
   auto result = usb_devices_.emplace(guid, std::move(new_device));
@@ -582,6 +591,20 @@ void CrosUsbDetector::OnDeviceChecked(
   }
 
   SignalUsbDeviceObservers();
+
+  // Temporarily allow User to attach un claimed USB devices to ARC VM.
+  // This part as well as the emperiment flag should go away once UI permission
+  // is integrated in |ShowNotificationForDevice|.
+  if (arc::IsArcVmEnabled() &&
+      base::FeatureList::IsEnabled(arc::kUsbDeviceDefaultAttachToArcVm)) {
+    if (has_supported_interface || allowed_interfaces_mask != 0) {
+      // USB devices not claimed by Chrome OS get automatically attached to the
+      // ARCVM. Note that this relies on the underlying VM (ARCVM) having
+      // its own permission model to restrict access to the device.
+      AttachUsbDeviceToVm(arc::kArcVmName, guid, base::DoNothing());
+      return;
+    }
+  }
 
   // Some devices should not trigger the notification.
   if (hide_notification || !ShouldShowNotification(result.first->second)) {
@@ -818,10 +841,9 @@ void CrosUsbDetector::AttachAfterDetach(
 
   auto claim_it = devices_claimed_.find(guid);
   if (claim_it != devices_claimed_.end()) {
-    if (claim_it->second.device_file.IsValid()) {
+    if (claim_it->second.device_file.is_valid()) {
       // We take a dup here which will be closed if DoVmAttach fails.
-      base::ScopedFD device_fd(
-          claim_it->second.device_file.Duplicate().TakePlatformFile());
+      base::ScopedFD device_fd(dup(claim_it->second.device_file.get()));
       DoVmAttach(vm_name, device.info.Clone(), std::move(device_fd),
                  std::move(callback));
     } else {
@@ -842,7 +864,7 @@ void CrosUsbDetector::AttachAfterDetach(
   }
 
   VLOG(1) << "Saving lifeline_fd " << write_end.get();
-  devices_claimed_[guid].lifeline_file = base::File(std::move(write_end));
+  devices_claimed_[guid].lifeline_file = std::move(write_end);
 
   // Open a file descriptor to pass to CrostiniManager & Concierge.
   device_manager_->OpenFileDescriptor(
@@ -868,7 +890,8 @@ void CrosUsbDetector::OnAttachUsbDeviceOpened(
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  devices_claimed_[device_info->guid].device_file = file.Duplicate();
+  devices_claimed_[device_info->guid].device_file =
+      base::ScopedFD(file.Duplicate().TakePlatformFile());
   if (!manager()) {
     LOG(ERROR) << "Attaching device without Crostini manager instance";
     std::move(callback).Run(/*success=*/false);
@@ -957,8 +980,7 @@ void CrosUsbDetector::OnUsbDeviceDetachFinished(
 void CrosUsbDetector::RelinquishDeviceClaim(const std::string& guid) {
   auto it = devices_claimed_.find(guid);
   if (it != devices_claimed_.end()) {
-    VLOG(1) << "Closing lifeline_fd "
-            << it->second.lifeline_file.GetPlatformFile();
+    VLOG(1) << "Closing lifeline_fd " << it->second.lifeline_file.get();
     devices_claimed_.erase(it);
   } else {
     LOG(ERROR) << "Relinquishing device with no prior claim: " << guid;

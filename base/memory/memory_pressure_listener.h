@@ -13,7 +13,6 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/tracing_buildflags.h"
 
 namespace base {
@@ -85,6 +84,9 @@ class BASE_EXPORT MemoryPressureListener {
       const MemoryPressureCallback& memory_pressure_callback,
       const SyncMemoryPressureCallback& sync_memory_pressure_callback);
 
+  MemoryPressureListener(const MemoryPressureListener&) = delete;
+  MemoryPressureListener& operator=(const MemoryPressureListener&) = delete;
+
   ~MemoryPressureListener();
 
   // Intended for use by the platform specific implementation.
@@ -108,8 +110,6 @@ class BASE_EXPORT MemoryPressureListener {
   SyncMemoryPressureCallback sync_memory_pressure_callback_;
 
   const base::Location creation_location_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryPressureListener);
 };
 
 }  // namespace base

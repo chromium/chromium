@@ -172,9 +172,10 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
   void WillShutdown() override;
   void Animate(base::TimeTicks time) override;
   void ReconcileElasticOverscrollAndRootScroll() override;
+  void SetPrefersReducedMotion(bool prefers_reduced_motion) override;
   void UpdateRootLayerStateForSynchronousInputHandler(
-      const gfx::ScrollOffset& total_scroll_offset,
-      const gfx::ScrollOffset& max_scroll_offset,
+      const gfx::Vector2dF& total_scroll_offset,
+      const gfx::Vector2dF& max_scroll_offset,
       const gfx::SizeF& scrollable_size,
       float page_scale_factor,
       float min_page_scale_factor,
@@ -186,7 +187,7 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
   void SetSynchronousInputHandler(
       SynchronousInputHandler* synchronous_input_handler) override;
   void SynchronouslySetRootScrollOffset(
-      const gfx::ScrollOffset& root_offset) override;
+      const gfx::Vector2dF& root_offset) override;
   void SynchronouslyZoomBy(float magnify_delta,
                            const gfx::Point& anchor) override;
 
@@ -224,6 +225,7 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
   void DispatchSingleInputEvent(std::unique_ptr<EventWithCallback>,
                                 const base::TimeTicks);
   void DispatchQueuedInputEvents();
+  void UpdateElasticOverscroll();
 
   // Helper functions for handling more complicated input events.
   EventDisposition HandleMouseWheel(const blink::WebMouseWheelEvent& event);
@@ -363,6 +365,9 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
   // This bit can be used to disable event attribution in cases where the
   // hit test information is unnecessary (e.g. tests).
   bool event_attribution_enabled_ = true;
+
+  // This tracks whether the user has set prefers reduced motion.
+  bool prefers_reduced_motion_ = false;
 
   // Helpers for the momentum scroll jank UMAs.
   std::unique_ptr<MomentumScrollJankTracker> momentum_scroll_jank_tracker_;

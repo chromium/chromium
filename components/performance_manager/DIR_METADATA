@@ -1,5 +1,2 @@
-monorail {
-  component: "Internals>PerformanceManager"
-}
+mixins: "//components/performance_manager/COMMON_METADATA"
 
-team_email: "catan-team@chromium.org"

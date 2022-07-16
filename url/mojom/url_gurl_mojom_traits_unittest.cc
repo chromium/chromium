@@ -120,17 +120,9 @@ TEST_F(MojoGURLStructTraitsTest, WindowsDriveInPathReplacement) {
         GURL("file://hostname/").ReplaceComponents(repl);
 
     EXPECT_EQ(kNewPath, url_made_with_replace_components.path());
-#ifdef WIN32
-    // Due to the reparsing logic in ReplaceComponents, the hostname is stripped
-    // for this URL too.
-    EXPECT_EQ("", url_made_with_replace_components.host());
-    EXPECT_EQ("file:///C:/dir/file.txt",
-              url_made_with_replace_components.spec());
-#else
     EXPECT_EQ("hostname", url_made_with_replace_components.host());
     EXPECT_EQ("file://hostname/C:/dir/file.txt",
               url_made_with_replace_components.spec());
-#endif
     // This is the MAIN VERIFICATION in this test. This used to fail on Windows,
     // see https://crbug.com/1214098.
     ExpectSerializationRoundtrips(url_made_with_replace_components);
@@ -141,15 +133,8 @@ TEST_F(MojoGURLStructTraitsTest, WindowsDriveInPathReplacement) {
     // hostname directly.
     GURL url_created_directly("file://hostname/C:/dir/file.txt");
     EXPECT_EQ("/C:/dir/file.txt", url_created_directly.path());
-#ifdef WIN32
-    // On Win32, the hostname will be reset by DoParseUNC.
-    EXPECT_EQ("", url_created_directly.host());
-    EXPECT_EQ("file:///C:/dir/file.txt", url_created_directly.spec());
-#else
-    // On other platforms, the hostname is kept.
     EXPECT_EQ("hostname", url_created_directly.host());
     EXPECT_EQ("file://hostname/C:/dir/file.txt", url_created_directly.spec());
-#endif
     ExpectSerializationRoundtrips(url_created_directly);
 
     // The URL created directly and the URL created through ReplaceComponents
@@ -159,6 +144,26 @@ TEST_F(MojoGURLStructTraitsTest, WindowsDriveInPathReplacement) {
     repl.SetPath(kNewPath.c_str(), url::Component(0, kNewPath.length()));
     GURL url_made_with_replace_components =
         GURL("file://hostname/").ReplaceComponents(repl);
+    EXPECT_EQ(url_created_directly.spec(),
+              url_made_with_replace_components.spec());
+  }
+
+  {
+    // #4: Try to create a URL with a Windows drive letter and "localhost" as
+    // hostname directly.
+    GURL url_created_directly("file://localhost/C:/dir/file.txt");
+    EXPECT_EQ("/C:/dir/file.txt", url_created_directly.path());
+    EXPECT_EQ("", url_created_directly.host());
+    EXPECT_EQ("file:///C:/dir/file.txt", url_created_directly.spec());
+    ExpectSerializationRoundtrips(url_created_directly);
+
+    // The URL created directly and the URL created through ReplaceComponents
+    // should be the same.
+    GURL::Replacements repl;
+    const std::string kNewPath = "/C:/dir/file.txt";
+    repl.SetPath(kNewPath.c_str(), url::Component(0, kNewPath.length()));
+    GURL url_made_with_replace_components =
+        GURL("file://localhost/").ReplaceComponents(repl);
     EXPECT_EQ(url_created_directly.spec(),
               url_made_with_replace_components.spec());
   }

@@ -7,7 +7,6 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/time/time.h"
 
@@ -28,6 +27,9 @@ class BASE_EXPORT MemoryPressureMonitor {
   using DispatchCallback =
       base::RepeatingCallback<void(MemoryPressureLevel level)>;
 
+  MemoryPressureMonitor(const MemoryPressureMonitor&) = delete;
+  MemoryPressureMonitor& operator=(const MemoryPressureMonitor&) = delete;
+
   virtual ~MemoryPressureMonitor();
 
   // Return the singleton MemoryPressureMonitor.
@@ -42,9 +44,6 @@ class BASE_EXPORT MemoryPressureMonitor {
 
  protected:
   MemoryPressureMonitor();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MemoryPressureMonitor);
 };
 
 }  // namespace base

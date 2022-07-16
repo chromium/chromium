@@ -16,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -46,6 +45,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/khronos/GLES2/gl2.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -65,9 +65,9 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/interpolated_transform.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/gfx/test/gfx_util.h"
+#include "ui/gfx/test/scoped_default_font_description.h"
 
 using cc::MatchesPNGFile;
 using cc::WritePNGFile;
@@ -113,6 +113,11 @@ class LayerWithRealCompositorTest : public testing::Test {
   LayerWithRealCompositorTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         default_font_desc_setter_("Segoe UI, 15px") {}
+
+  LayerWithRealCompositorTest(const LayerWithRealCompositorTest&) = delete;
+  LayerWithRealCompositorTest& operator=(const LayerWithRealCompositorTest&) =
+      delete;
+
   ~LayerWithRealCompositorTest() override = default;
 
   // Overridden from testing::Test:
@@ -177,7 +182,8 @@ class LayerWithRealCompositorTest : public testing::Test {
     scoped_refptr<ReadbackHolder> holder(new ReadbackHolder);
     std::unique_ptr<viz::CopyOutputRequest> request =
         std::make_unique<viz::CopyOutputRequest>(
-            viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+            viz::CopyOutputRequest::ResultFormat::RGBA,
+            viz::CopyOutputRequest::ResultDestination::kSystemMemory,
             base::BindOnce(&ReadbackHolder::OutputRequestCallback, holder));
     request->set_area(source_rect);
 
@@ -254,14 +260,16 @@ class LayerWithRealCompositorTest : public testing::Test {
   base::FilePath test_data_dir_;
 
   gfx::ScopedDefaultFontDescription default_font_desc_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerWithRealCompositorTest);
 };
 
 // LayerDelegate that paints colors to the layer.
 class TestLayerDelegate : public LayerDelegate {
  public:
   TestLayerDelegate() { reset(); }
+
+  TestLayerDelegate(const TestLayerDelegate&) = delete;
+  TestLayerDelegate& operator=(const TestLayerDelegate&) = delete;
+
   ~TestLayerDelegate() override {}
 
   void AddColor(SkColor color) {
@@ -307,8 +315,6 @@ class TestLayerDelegate : public LayerDelegate {
   int color_index_;
   float device_scale_factor_;
   gfx::Rect layer_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLayerDelegate);
 };
 
 // LayerDelegate that verifies that a layer was asked to update its canvas.
@@ -316,6 +322,10 @@ class DrawTreeLayerDelegate : public LayerDelegate {
  public:
   explicit DrawTreeLayerDelegate(const gfx::Rect& layer_bounds)
       : painted_(false), layer_bounds_(layer_bounds) {}
+
+  DrawTreeLayerDelegate(const DrawTreeLayerDelegate&) = delete;
+  DrawTreeLayerDelegate& operator=(const DrawTreeLayerDelegate&) = delete;
+
   ~DrawTreeLayerDelegate() override = default;
 
   void Reset() {
@@ -336,14 +346,16 @@ class DrawTreeLayerDelegate : public LayerDelegate {
 
   bool painted_;
   const gfx::Rect layer_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrawTreeLayerDelegate);
 };
 
 // The simplest possible layer delegate. Does nothing.
 class NullLayerDelegate : public LayerDelegate {
  public:
   NullLayerDelegate() {}
+
+  NullLayerDelegate(const NullLayerDelegate&) = delete;
+  NullLayerDelegate& operator=(const NullLayerDelegate&) = delete;
+
   ~NullLayerDelegate() override {}
 
   gfx::Rect invalidation() const { return invalidation_; }
@@ -357,14 +369,15 @@ class NullLayerDelegate : public LayerDelegate {
   }
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {}
-
-  DISALLOW_COPY_AND_ASSIGN(NullLayerDelegate);
 };
 
 // Remembers if it has been notified.
 class TestCompositorObserver : public CompositorObserver {
  public:
   TestCompositorObserver() = default;
+
+  TestCompositorObserver(const TestCompositorObserver&) = delete;
+  TestCompositorObserver& operator=(const TestCompositorObserver&) = delete;
 
   bool committed() const { return committed_; }
   bool notified() const { return started_ && ended_; }
@@ -390,8 +403,6 @@ class TestCompositorObserver : public CompositorObserver {
   bool committed_ = false;
   bool started_ = false;
   bool ended_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCompositorObserver);
 };
 
 class TestCompositorAnimationObserver : public CompositorAnimationObserver {
@@ -403,6 +414,11 @@ class TestCompositorAnimationObserver : public CompositorAnimationObserver {
     DCHECK(compositor_);
     compositor_->AddAnimationObserver(this);
   }
+
+  TestCompositorAnimationObserver(const TestCompositorAnimationObserver&) =
+      delete;
+  TestCompositorAnimationObserver& operator=(
+      const TestCompositorAnimationObserver&) = delete;
 
   ~TestCompositorAnimationObserver() override {
     if (compositor_)
@@ -427,8 +443,6 @@ class TestCompositorAnimationObserver : public CompositorAnimationObserver {
   ui::Compositor* compositor_;
   size_t animation_step_count_;
   bool shutdown_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCompositorAnimationObserver);
 };
 
 // An animation observer that invokes a callback when the animation ends.
@@ -486,6 +500,10 @@ class LayerWithDelegateTest : public testing::Test {
  public:
   LayerWithDelegateTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
+
+  LayerWithDelegateTest(const LayerWithDelegateTest&) = delete;
+  LayerWithDelegateTest& operator=(const LayerWithDelegateTest&) = delete;
+
   ~LayerWithDelegateTest() override {}
 
   // Overridden from testing::Test:
@@ -553,8 +571,6 @@ class LayerWithDelegateTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestContextFactories> context_factories_;
   std::unique_ptr<TestCompositorHost> compositor_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerWithDelegateTest);
 };
 
 void ReturnMailbox(bool* run, const gpu::SyncToken& sync_token, bool is_lost) {
@@ -980,6 +996,11 @@ TEST_F(LayerWithDelegateTest, SurfaceLayerCloneAndMirror) {
 class LayerWithNullDelegateTest : public LayerWithDelegateTest {
  public:
   LayerWithNullDelegateTest() {}
+
+  LayerWithNullDelegateTest(const LayerWithNullDelegateTest&) = delete;
+  LayerWithNullDelegateTest& operator=(const LayerWithNullDelegateTest&) =
+      delete;
+
   ~LayerWithNullDelegateTest() override {}
 
   void SetUp() override {
@@ -1018,8 +1039,6 @@ class LayerWithNullDelegateTest : public LayerWithDelegateTest {
 
  private:
   std::unique_ptr<NullLayerDelegate> default_layer_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerWithNullDelegateTest);
 };
 
 TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
@@ -2011,6 +2030,10 @@ class SchedulePaintLayerDelegate : public LayerDelegate {
  public:
   SchedulePaintLayerDelegate() : paint_count_(0), layer_(nullptr) {}
 
+  SchedulePaintLayerDelegate(const SchedulePaintLayerDelegate&) = delete;
+  SchedulePaintLayerDelegate& operator=(const SchedulePaintLayerDelegate&) =
+      delete;
+
   ~SchedulePaintLayerDelegate() override {}
 
   void set_layer(Layer* layer) {
@@ -2048,8 +2071,6 @@ class SchedulePaintLayerDelegate : public LayerDelegate {
   Layer* layer_;
   gfx::Rect schedule_paint_rect_;
   gfx::Rect last_clip_rect_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchedulePaintLayerDelegate);
 };
 
 }  // namespace
@@ -2499,7 +2520,7 @@ TEST_F(LayerWithRealCompositorTest, SwitchCCLayerSolidColorWhileAnimating) {
           ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   {
     ui::ScopedLayerAnimationSettings animation(root->GetAnimator());
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     root->SetFillsBoundsOpaquely(false);
     root->SetColor(transparent);
   }
@@ -2598,7 +2619,7 @@ TEST_F(LayerWithRealCompositorTest, SwitchCCLayerDeleteLayer) {
   {
     ui::ScopedLayerAnimationSettings animation(l1->GetAnimator());
     animation.AddObserver(&animation_observer);
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     l1->SetOpacity(0.f);
   }
 
@@ -2636,7 +2657,7 @@ TEST_F(LayerWithRealCompositorTest, TreeMutationDuringScaleFactorChange) {
   {
     ui::ScopedLayerAnimationSettings animation(layer_to_delete->GetAnimator());
     animation.AddObserver(&animation_observer);
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     layer_to_delete->SetTransform(transform);
   }
 
@@ -2657,7 +2678,7 @@ TEST_F(LayerWithRealCompositorTest, TreeMutationDuringScaleFactorChange) {
   {
     ui::ScopedLayerAnimationSettings animation(layer_to_delete->GetAnimator());
     animation.AddObserver(&animation_observer);
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     layer_to_delete->SetTransform(transform);
   }
 
@@ -2679,7 +2700,7 @@ TEST_F(LayerWithRealCompositorTest, TreeMutationDuringScaleFactorChange) {
   {
     ui::ScopedLayerAnimationSettings animation(child->GetAnimator());
     animation.AddObserver(&animation_observer);
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     child->SetTransform(transform);
   }
 
@@ -2702,7 +2723,7 @@ TEST_F(LayerWithRealCompositorTest, TreeMutationDuringScaleFactorChange) {
   {
     ui::ScopedLayerAnimationSettings animation(child->GetAnimator());
     animation.AddObserver(&animation_observer);
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     child->SetTransform(transform);
   }
 
@@ -2755,7 +2776,7 @@ TEST_F(LayerWithRealCompositorTest, ParentOrChildGoneDuringRemove) {
     {
       ui::ScopedLayerAnimationSettings animation(child->GetAnimator());
       animation.AddObserver(&animation_observer);
-      animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+      animation.SetTransitionDuration(base::Milliseconds(1000));
       child->SetBounds(gfx::Rect(10, 20, 100, 100));
     }
 
@@ -2822,6 +2843,11 @@ class LayerRemovingLayerAnimationObserver : public LayerAnimationObserver {
   LayerRemovingLayerAnimationObserver(Layer* root, Layer* child)
       : root_(root), child_(child) {}
 
+  LayerRemovingLayerAnimationObserver(
+      const LayerRemovingLayerAnimationObserver&) = delete;
+  LayerRemovingLayerAnimationObserver& operator=(
+      const LayerRemovingLayerAnimationObserver&) = delete;
+
   // LayerAnimationObserver:
   void OnLayerAnimationEnded(LayerAnimationSequence* sequence) override {
     root_->Remove(child_);
@@ -2836,8 +2862,6 @@ class LayerRemovingLayerAnimationObserver : public LayerAnimationObserver {
  private:
   Layer* root_;
   Layer* child_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerRemovingLayerAnimationObserver);
 };
 
 // Verifies that empty LayerAnimators are not left behind when removing child
@@ -2856,8 +2880,7 @@ TEST_F(LayerWithDelegateTest, NonAnimatingAnimatorsAreRemovedFromCollection) {
   child->GetAnimator()->AddObserver(&observer);
 
   std::unique_ptr<LayerAnimationElement> element =
-      ui::LayerAnimationElement::CreateOpacityElement(
-          0.5f, base::TimeDelta::FromSeconds(1));
+      ui::LayerAnimationElement::CreateOpacityElement(0.5f, base::Seconds(1));
   LayerAnimationSequence* sequence =
       new LayerAnimationSequence(std::move(element));
 
@@ -2950,8 +2973,8 @@ TEST(LayerDelegateTest, OnLayerBoundsChangedAnimation) {
 
   // Start the animation.
   std::unique_ptr<LayerAnimationElement> element =
-      LayerAnimationElement::CreateBoundsElement(
-          kTargetBounds, base::TimeDelta::FromSeconds(1));
+      LayerAnimationElement::CreateBoundsElement(kTargetBounds,
+                                                 base::Seconds(1));
   ASSERT_FALSE(element->IsThreaded(layer.get()));
   LayerAnimationElement* element_raw = element.get();
   animator->StartAnimation(new LayerAnimationSequence(std::move(element)));
@@ -3056,7 +3079,7 @@ TEST(LayerDelegateTest, OnLayerTransformedNonThreadedAnimation) {
   // Start the animation.
   std::unique_ptr<LayerAnimationElement> element =
       LayerAnimationElement::CreateInterpolatedTransformElement(
-          std::move(interpolated_transform), base::TimeDelta::FromSeconds(1));
+          std::move(interpolated_transform), base::Seconds(1));
   // The LayerAnimationElement returned by CreateInterpolatedTransformElement()
   // is non-threaded.
   ASSERT_FALSE(element->IsThreaded(layer.get()));
@@ -3123,8 +3146,8 @@ TEST(LayerDelegateTest, OnLayerTransformedThreadedAnimation) {
   gfx::Transform target_transform;
   target_transform.Skew(10.0f, 5.0f);
   std::unique_ptr<LayerAnimationElement> element =
-      LayerAnimationElement::CreateTransformElement(
-          target_transform, base::TimeDelta::FromSeconds(1));
+      LayerAnimationElement::CreateTransformElement(target_transform,
+                                                    base::Seconds(1));
   ASSERT_TRUE(element->IsThreaded(layer.get()));
   LayerAnimationElement* element_raw = element.get();
   // At the beginning, setting the transform actually does not change, so
@@ -3190,8 +3213,8 @@ TEST(LayerDelegateTest, OnLayerOpacityChangedAnimation) {
   const float initial_opacity = layer->opacity();
   const float kTargetOpacity = 0.5f;
   std::unique_ptr<LayerAnimationElement> element =
-      LayerAnimationElement::CreateOpacityElement(
-          kTargetOpacity, base::TimeDelta::FromSeconds(1));
+      LayerAnimationElement::CreateOpacityElement(kTargetOpacity,
+                                                  base::Seconds(1));
   ASSERT_TRUE(element->IsThreaded(layer.get()));
   LayerAnimationElement* element_raw = element.get();
   EXPECT_CALL(delegate,

@@ -10,9 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/projector/projector_metadata_model.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 
 namespace base {
@@ -48,8 +46,6 @@ class ASH_EXPORT ProjectorMetadataController {
  private:
   std::unique_ptr<ProjectorMetadata> metadata_;
 
-  // A blocking task runner for file IO operations.
-  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   base::WeakPtrFactory<ProjectorMetadataController> weak_factory_{this};
 };
 

@@ -30,6 +30,10 @@ class WebState;
 class FullscreenMediator : public FullscreenModelObserver {
  public:
   FullscreenMediator(FullscreenController* controller, FullscreenModel* model);
+
+  FullscreenMediator(const FullscreenMediator&) = delete;
+  FullscreenMediator& operator=(const FullscreenMediator&) = delete;
+
   ~FullscreenMediator() override;
 
   // Adds and removes FullscreenControllerObservers.
@@ -97,8 +101,6 @@ class FullscreenMediator : public FullscreenModelObserver {
   base::ObserverList<FullscreenControllerObserver>::Unchecked observers_;
 
   base::WeakPtrFactory<FullscreenMediator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenMediator);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MEDIATOR_H_

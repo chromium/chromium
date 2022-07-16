@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "media/midi/usb_midi_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +27,10 @@ std::vector<T> ToVector(const T((&array)[N])) {
 class MockUsbMidiDevice : public UsbMidiDevice {
  public:
   MockUsbMidiDevice() = default;
+
+  MockUsbMidiDevice(const MockUsbMidiDevice&) = delete;
+  MockUsbMidiDevice& operator=(const MockUsbMidiDevice&) = delete;
+
   ~MockUsbMidiDevice() override = default;
 
   std::vector<uint8_t> GetDescriptors() override {
@@ -50,11 +53,13 @@ class MockUsbMidiDevice : public UsbMidiDevice {
 
  private:
   std::string log_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockUsbMidiDevice);
 };
 
 class UsbMidiOutputStreamTest : public ::testing::Test {
+ public:
+  UsbMidiOutputStreamTest(const UsbMidiOutputStreamTest&) = delete;
+  UsbMidiOutputStreamTest& operator=(const UsbMidiOutputStreamTest&) = delete;
+
  protected:
   UsbMidiOutputStreamTest() {
     UsbMidiJack jack(&device_, 1, 2, 4);
@@ -63,9 +68,6 @@ class UsbMidiOutputStreamTest : public ::testing::Test {
 
   MockUsbMidiDevice device_;
   std::unique_ptr<UsbMidiOutputStream> stream_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsbMidiOutputStreamTest);
 };
 
 TEST_F(UsbMidiOutputStreamTest, SendEmpty) {

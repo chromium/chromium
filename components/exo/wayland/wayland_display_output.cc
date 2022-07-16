@@ -18,7 +18,7 @@
 namespace exo {
 namespace wayland {
 namespace {
-base::TimeDelta kDeleteTaskDelay = base::TimeDelta::FromSeconds(3);
+base::TimeDelta kDeleteTaskDelay = base::Seconds(3);
 
 void DoDelete(WaylandDisplayOutput* output, int retry_count) {
   if (retry_count > 0 && output->output_counts() > 0) {

@@ -63,11 +63,14 @@ void TablePainter::PaintBoxDecorationBackground(
       layout_table_.StyleRef().Visibility() == EVisibility::kVisible) {
     BoxPainter(layout_table_)
         .PaintBoxDecorationBackgroundWithRect(
-            paint_info, BoxPainter(layout_table_).VisualRect(paint_offset),
-            rect, layout_table_);
+            paint_info,
+            IntRect(BoxPainter(layout_table_).VisualRect(paint_offset)), rect,
+            layout_table_);
   }
 
   BoxPainter(layout_table_).RecordHitTestData(paint_info, rect, layout_table_);
+  BoxPainter(layout_table_)
+      .RecordRegionCaptureData(paint_info, rect, layout_table_);
 }
 
 void TablePainter::PaintMask(const PaintInfo& paint_info,

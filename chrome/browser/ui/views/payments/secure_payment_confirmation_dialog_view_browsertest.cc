@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/payments/test_secure_payment_confirmation_payment_request_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
+#include "components/payments/core/sizes.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
@@ -20,12 +21,10 @@
 namespace payments {
 namespace {
 
-constexpr int kInstrumentIconWidth = 32;
-constexpr int kInstrumentIconHeight = 20;
-
 const SkBitmap CreateInstrumentIcon(SkColor color) {
   SkBitmap bitmap;
-  bitmap.allocN32Pixels(kInstrumentIconWidth, kInstrumentIconHeight);
+  bitmap.allocN32Pixels(kSecurePaymentConfirmationInstrumentIconWidthPx,
+                        kSecurePaymentConfirmationInstrumentIconHeightPx);
   bitmap.eraseColor(color);
   return bitmap;
 }
@@ -43,6 +42,10 @@ class SecurePaymentConfirmationDialogViewTest
 
   content::WebContents* GetActiveWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  base::WeakPtr<SecurePaymentConfirmationDialogViewTest> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
   void CreateModel() {
@@ -74,7 +77,7 @@ class SecurePaymentConfirmationDialogViewTest
 
     test_delegate_ =
         std::make_unique<TestSecurePaymentConfirmationPaymentRequestDelegate>(
-            web_contents->GetMainFrame(), model_.GetWeakPtr(), this);
+            web_contents->GetMainFrame(), model_.GetWeakPtr(), GetWeakPtr());
 
     ResetEventWaiter(DialogEvent::DIALOG_OPENED);
     test_delegate_->ShowDialog(nullptr);
@@ -244,6 +247,9 @@ class SecurePaymentConfirmationDialogViewTest
   bool cancel_pressed_ = false;
 
   base::HistogramTester histogram_tester_;
+
+  base::WeakPtrFactory<SecurePaymentConfirmationDialogViewTest>
+      weak_ptr_factory_{this};
 };
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,

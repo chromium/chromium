@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "ash/drag_drop/drag_drop_tracker.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "base/check.h"
@@ -17,12 +19,17 @@
 #include "components/exo/surface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/env.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_delegate.h"
+#include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/hit_test.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
+#include "ui/events/event_utils.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -41,8 +48,8 @@ ExtendedDragSource* ExtendedDragSource::instance_ = nullptr;
 // Internal representation of a toplevel window, backed by an Exo shell surface,
 // which is being dragged. It supports both already mapped/visible windows as
 // well as newly created ones (i.e: not added to a root window yet), in which
-// case OnDraggedWindowVisibilityChanging callback is called to notify when it
-// is about to get visible.
+// case OnDraggedWindowVisibilityChanged callback is called to notify when it
+// has just got visible.
 class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver {
  public:
   DraggedWindowHolder(Surface* surface,
@@ -81,10 +88,10 @@ class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver {
     surface_->window()->RemoveObserver(this);
   }
 
-  void OnWindowVisibilityChanging(aura::Window* window, bool visible) override {
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
     DCHECK(window);
     if (window == toplevel_window_)
-      source_->OnDraggedWindowVisibilityChanging(visible);
+      source_->OnDraggedWindowVisibilityChanged(visible);
   }
 
   bool FindToplevelWindow() {
@@ -164,15 +171,63 @@ void ExtendedDragSource::Drag(Surface* dragged_surface,
   // Drag process will be started once OnDragStarted gets called.
 }
 
+void DispatchGestureEndToWindow(aura::Window* window) {
+  if (window && window->delegate()) {
+    ui::GestureEventDetails details(ui::ET_GESTURE_END);
+    details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
+    ui::GestureEvent gesture_end(0, 0, 0, ui::EventTimeForNow(), details);
+    window->delegate()->OnGestureEvent(&gesture_end);
+  }
+}
+
+bool ExtendedDragSource::TakeCapture(
+    aura::Window* root_window,
+    aura::Window* source_window,
+    ash::ToplevelWindowDragDelegate::CancelDragDropCallback callback) {
+  if (!IsActive())
+    return false;
+
+  drag_drop_tracker_.reset(new ash::DragDropTracker(root_window, callback));
+  // We need to transfer the current gesture sequence and the GR's touch event
+  // queue to the |drag_drop_tracker_|'s capture window so that when it takes
+  // capture, it still gets a valid gesture state.
+  aura::Env::GetInstance()->gesture_recognizer()->TransferEventsTo(
+      source_window, drag_drop_tracker_->capture_window(),
+      ui::TransferTouchesBehavior::kCancel);
+  // We also send a gesture end to the source window so it can clear state.
+  // TODO(varunjain): Remove this whole block when gesture sequence
+  // transferring is properly done in the GR (http://crbug.com/160558)
+  DispatchGestureEndToWindow(source_window);
+  drag_drop_tracker_->TakeCapture();
+  return true;
+}
+
+aura::Window* ExtendedDragSource::GetTarget(const ui::LocatedEvent& event) {
+  return drag_drop_tracker_->GetTarget(event);
+}
+
+ui::LocatedEvent* ExtendedDragSource::ConvertEvent(
+    aura::Window* target,
+    const ui::LocatedEvent& event) {
+  return drag_drop_tracker_->ConvertEvent(target, event);
+}
+
+aura::Window* ExtendedDragSource::capture_window() {
+  return drag_drop_tracker_->capture_window();
+}
+
 bool ExtendedDragSource::IsActive() const {
   return !!source_;
 }
 
 void ExtendedDragSource::OnToplevelWindowDragStarted(
     const gfx::PointF& start_location,
-    ui::mojom::DragEventSource source) {
+    ui::mojom::DragEventSource source,
+    aura::Window* drag_source_window) {
   pointer_location_ = start_location;
   drag_event_source_ = source;
+  drag_source_window_ =
+      drag_source_window ? drag_source_window->GetToplevelWindow() : nullptr;
   MaybeLockCursor();
 
   if (dragged_window_holder_ && dragged_window_holder_->toplevel_window())
@@ -205,8 +260,12 @@ void ExtendedDragSource::OnToplevelWindowDragEvent(ui::LocatedEvent* event) {
     return;
   }
 
-  // TODO(crbug.com/1099418): Support touch move source.
-  NOTIMPLEMENTED() << "Non-mouse window dragging not supported yet.";
+  if (event->IsGestureEvent()) {
+    handler->OnGestureEvent(event->AsGestureEvent());
+    return;
+  }
+
+  NOTREACHED() << "Only mouse and touch events are supported.";
 }
 
 void ExtendedDragSource::OnDataSourceDestroying(DataSource* source) {
@@ -243,13 +302,26 @@ void ExtendedDragSource::StartDrag(aura::Window* toplevel,
   auto move_source = drag_event_source_ == ui::mojom::DragEventSource::kTouch
                          ? ::wm::WINDOW_MOVE_SOURCE_TOUCH
                          : ::wm::WINDOW_MOVE_SOURCE_MOUSE;
-  toplevel_handler->AttemptToStartDrag(
-      toplevel, pointer_location, HTCAPTION, move_source,
-      ash::ToplevelWindowEventHandler::EndClosure(),
-      /*update_gesture_target=*/true, /*grab_capture=*/false);
+
+  auto end_closure = base::BindOnce(
+      [](aura::Window* toplevel,
+         ash::ToplevelWindowEventHandler::DragResult result) {
+        if (toplevel) {
+          toplevel->ClearProperty(ash::kIsDraggingTabsKey);
+          toplevel->ClearProperty(ash::kTabDraggingSourceWindowKey);
+        }
+      },
+      base::Unretained(toplevel));
+
+  // TODO(crbug.com/1167581): Experiment setting |update_gesture_target| back
+  // to true when capture is removed from drag and drop.
+  toplevel_handler->AttemptToStartDrag(toplevel, pointer_location, HTCAPTION,
+                                       move_source, std::move(end_closure),
+                                       /*update_gesture_target=*/false,
+                                       /*grab_capture=*/false);
 }
 
-void ExtendedDragSource::OnDraggedWindowVisibilityChanging(bool visible) {
+void ExtendedDragSource::OnDraggedWindowVisibilityChanged(bool visible) {
   DCHECK(dragged_window_holder_);
   DVLOG(1) << "Dragged window visibility changed. visible=" << visible;
 
@@ -260,6 +332,13 @@ void ExtendedDragSource::OnDraggedWindowVisibilityChanging(bool visible) {
 
   aura::Window* toplevel = dragged_window_holder_->toplevel_window();
   DCHECK(toplevel);
+
+  DCHECK(drag_source_window_);
+  toplevel->SetProperty(ash::kIsDraggingTabsKey, true);
+  if (drag_source_window_ != toplevel) {
+    toplevel->SetProperty(ash::kTabDraggingSourceWindowKey,
+                          drag_source_window_);
+  }
 
   // The |toplevel| window for the dragged surface has just been created and
   // it's about to be mapped. Calculate and set its position based on
@@ -289,6 +368,8 @@ void ExtendedDragSource::Cleanup() {
   }
   event_blocker_.reset();
   dragged_window_holder_.reset();
+  drag_source_window_ = nullptr;
+  drag_drop_tracker_.reset();
   UnlockCursor();
 }
 

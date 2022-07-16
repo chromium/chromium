@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/pose_util.h"
 
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace vr {
 

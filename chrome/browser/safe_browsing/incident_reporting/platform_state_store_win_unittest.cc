@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
@@ -38,6 +37,10 @@ class PlatformStateStoreWinTest : public ::testing::Test {
   PlatformStateStoreWinTest()
       : profile_(nullptr),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  PlatformStateStoreWinTest(const PlatformStateStoreWinTest&) = delete;
+  PlatformStateStoreWinTest& operator=(const PlatformStateStoreWinTest&) =
+      delete;
 
   void SetUp() override {
     ::testing::Test::SetUp();
@@ -106,8 +109,6 @@ class PlatformStateStoreWinTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   registry_util::RegistryOverrideManager registry_override_manager_;
   TestingProfileManager profile_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformStateStoreWinTest);
 };
 
 // static

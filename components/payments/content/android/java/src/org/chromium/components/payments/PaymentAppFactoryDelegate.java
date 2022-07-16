@@ -32,8 +32,11 @@ public interface PaymentAppFactoryDelegate {
      *
      * @param errorMessage The error message for the web developer, e.g., "Failed to download the
      * web app manifest file."
+     * @param errorReason The reason for the error, used internally to decide on specific failure
+     * handling behavior.
      */
-    default void onPaymentAppCreationError(String errorMessage) {}
+    default void onPaymentAppCreationError(
+            String errorMessage, @AppCreationFailureReason int errorReason) {}
 
     /**
      * Called when the factory has finished creating all payment apps. A factory should call this

@@ -21,7 +21,11 @@ namespace {
 // Returns true if |window| is considered to be a toplevel window.
 // Please see the aura::Window::GetToplevelWindow() for the condition.
 bool IsTopLevelWindow(aura::Window* window) {
-  return !!window->delegate();
+  // It can happen that we're trying to find the next top-level window as a
+  // result of a window being destroyed (i.e. inside
+  // WindowObserver::OnWindowDestroying()). In this case, the destroying window
+  // should not be returned again as the top-level window.
+  return !!window->delegate() && !window->is_destroying();
 }
 
 // Returns true if |window| can be a target at |screen_point| by |targeter|.

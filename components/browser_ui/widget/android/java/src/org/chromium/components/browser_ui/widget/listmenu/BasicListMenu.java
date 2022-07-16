@@ -75,7 +75,7 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
                         .with(ListMenuItemProperties.END_ICON_ID, endIconId)
                         .with(ListMenuItemProperties.ENABLED, enabled)
                         .with(ListMenuItemProperties.TINT_COLOR_ID,
-                                R.color.default_icon_color_secondary)
+                                R.color.default_icon_color_secondary_tint_list)
                         .build());
     }
 
@@ -172,7 +172,8 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
                 .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)
                 .with(ListMenuItemProperties.START_ICON_ID, iconId)
                 .with(ListMenuItemProperties.ENABLED, enabled)
-                .with(ListMenuItemProperties.TINT_COLOR_ID, R.color.default_icon_color_secondary)
+                .with(ListMenuItemProperties.TINT_COLOR_ID,
+                        R.color.default_icon_color_secondary_tint_list)
                 .build();
     }
 }

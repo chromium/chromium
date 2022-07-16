@@ -50,7 +50,7 @@ void VSyncTimingManager::OnUpdateVSyncParameters(base::TimeTicks timebase,
 void VSyncTimingManager::OnThrottlingStarted(
     const std::vector<aura::Window*>& windows,
     uint8_t fps) {
-  throttled_interval_ = base::TimeDelta::FromHz(fps);
+  throttled_interval_ = base::Hertz(fps);
   OnUpdateVSyncParameters(last_timebase_, last_interval_);
 }
 
@@ -89,7 +89,7 @@ void VSyncTimingManager::OnConnectionError() {
       FROM_HERE,
       base::BindOnce(&VSyncTimingManager::MaybeInitializeConnection,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(250));
+      base::Milliseconds(250));
 }
 
 }  // namespace exo

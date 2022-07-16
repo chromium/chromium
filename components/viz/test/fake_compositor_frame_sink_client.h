@@ -18,6 +18,11 @@ namespace viz {
 class FakeCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
  public:
   FakeCompositorFrameSinkClient();
+
+  FakeCompositorFrameSinkClient(const FakeCompositorFrameSinkClient&) = delete;
+  FakeCompositorFrameSinkClient& operator=(
+      const FakeCompositorFrameSinkClient&) = delete;
+
   ~FakeCompositorFrameSinkClient() override;
 
   mojo::PendingRemote<mojom::CompositorFrameSinkClient> BindInterfaceRemote();
@@ -43,8 +48,6 @@ class FakeCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
   std::vector<ReturnedResource> returned_resources_;
 
   mojo::Receiver<mojom::CompositorFrameSinkClient> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCompositorFrameSinkClient);
 };
 
 }  // namespace viz

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
@@ -38,6 +37,10 @@ class CupsPrintJob {
                ::printing::PrintJob::Source source,
                const std::string& source_id,
                const printing::proto::PrintSettings& settings);
+
+  CupsPrintJob(const CupsPrintJob&) = delete;
+  CupsPrintJob& operator=(const CupsPrintJob&) = delete;
+
   ~CupsPrintJob();
 
   // Create a unique id for a print job using the |printer_id| and |job_id|.
@@ -94,8 +97,6 @@ class CupsPrintJob {
   PrinterErrorCode error_code_ = PrinterErrorCode::NO_ERROR;
 
   base::WeakPtrFactory<CupsPrintJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CupsPrintJob);
 };
 
 }  // namespace chromeos

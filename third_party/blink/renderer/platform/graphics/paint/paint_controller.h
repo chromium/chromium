@@ -12,6 +12,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
 #include "cc/input/layer_selection_bound.h"
+#include "cc/paint/element_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunker.h"
+#include "third_party/blink/renderer/platform/graphics/paint/region_capture_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -35,12 +37,11 @@ enum class PaintBenchmarkMode {
   kNormal,
   kForceRasterInvalidationAndConvert,
   kForcePaintArtifactCompositorUpdate,
+  // Tests PaintController performance of moving cached subsequences.
   kForcePaint,
-  // The above modes don't additionally invalidate paintings, i.e. during
-  // repeated benchmarking, the PaintController is fully cached.
-  kPartialInvalidation,
-  kSmallInvalidation,
+  // Tests performance of core paint tree walk and moving cached display items.
   kSubsequenceCachingDisabled,
+  // Tests performance of full repaint.
   kCachingDisabled,
 };
 
@@ -86,13 +87,46 @@ class PLATFORM_EXPORT PaintController {
   Usage GetUsage() const { return usage_; }
 #endif
 
+  class PLATFORM_EXPORT CycleScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit CycleScope(bool record_debug_info = false)
+        : record_debug_info_(record_debug_info) {
+      clients_to_validate_ =
+          MakeGarbageCollected<HeapVector<Member<const DisplayItemClient>>>();
+    }
+    explicit CycleScope(PaintController& controller,
+                        bool record_debug_info = false)
+        : CycleScope(record_debug_info) {
+      AddController(controller);
+    }
+    void AddController(PaintController& controller) {
+      controller.StartCycle(*clients_to_validate_, record_debug_info_);
+      controllers_.push_back(&controller);
+    }
+    ~CycleScope();
+
+   protected:
+    Vector<PaintController*> controllers_;
+
+   private:
+    HeapVector<Member<const DisplayItemClient>>* clients_to_validate_;
+    bool record_debug_info_;
+  };
+  friend class CycleScope;
+
   // These methods are called during painting.
+
+  void RecordDebugInfo(const DisplayItemClient& client);
 
   // Provide a new set of paint chunk properties to apply to recorded display
   // items. If id is nullptr, the id of the first display item will be used as
   // the id of the paint chunk if needed.
-  void UpdateCurrentPaintChunkProperties(const PaintChunk::Id*,
+  void UpdateCurrentPaintChunkProperties(const PaintChunk::Id&,
+                                         const DisplayItemClient&,
                                          const PropertyTreeStateOrAlias&);
+  void UpdateCurrentPaintChunkProperties(const PropertyTreeStateOrAlias&);
   const PropertyTreeStateOrAlias& CurrentPaintChunkProperties() const {
     return paint_chunker_.CurrentPaintChunkProperties();
   }
@@ -115,38 +149,41 @@ class PLATFORM_EXPORT PaintController {
   }
 
   void RecordHitTestData(const DisplayItemClient&,
-                         const IntRect&,
+                         const gfx::Rect&,
                          TouchAction,
                          bool);
+
+  void RecordRegionCaptureData(const DisplayItemClient& client,
+                               const RegionCaptureCropId& crop_id,
+                               const gfx::Rect& rect);
 
   void RecordScrollHitTestData(
       const DisplayItemClient&,
       DisplayItem::Type,
       const TransformPaintPropertyNode* scroll_translation,
-      const IntRect&);
+      const gfx::Rect&);
 
   void RecordSelection(absl::optional<PaintedSelectionBound> start,
                        absl::optional<PaintedSelectionBound> end);
 
-  void SetPossibleBackgroundColor(const DisplayItemClient&,
-                                  Color,
-                                  uint64_t area);
-
   wtf_size_t NumNewChunks() const {
     return new_paint_artifact_->PaintChunks().size();
   }
-  const IntRect& LastChunkBounds() const {
+  const gfx::Rect& LastChunkBounds() const {
     return new_paint_artifact_->PaintChunks().back().bounds;
   }
 
+  void MarkClientForValidation(const DisplayItemClient& client);
+
   template <typename DisplayItemClass, typename... Args>
-  void CreateAndAppend(Args&&... args) {
+  void CreateAndAppend(const DisplayItemClient& client, Args&&... args) {
+    MarkClientForValidation(client);
     DisplayItemClass& display_item =
         new_paint_artifact_->GetDisplayItemList()
             .AllocateAndConstruct<DisplayItemClass>(
-                std::forward<Args>(args)...);
+                client.Id(), std::forward<Args>(args)...);
     display_item.SetFragment(current_fragment_);
-    ProcessNewItem(display_item);
+    ProcessNewItem(client, display_item);
   }
 
   // Tries to find the cached display item corresponding to the given
@@ -183,14 +220,6 @@ class PLATFORM_EXPORT PaintController {
   // Must be called when a painting is finished. Updates the current paint
   // artifact with the new paintings.
   void CommitNewDisplayItems();
-
-  // Called when the caller finishes updating a full document life cycle.
-  // The PaintController will cleanup data that will no longer be used for the
-  // next cycle, and update status to be ready for the next cycle.
-  // It updates caching status of DisplayItemClients, so if there are
-  // DisplayItemClients painting on multiple PaintControllers, we should call
-  // there FinishCycle() at the same time to ensure consistent caching status.
-  void FinishCycle();
 
   // Returns the approximate memory usage owned by this PaintController.
   size_t ApproximateUnsharedMemoryUsage() const;
@@ -286,6 +315,24 @@ class PLATFORM_EXPORT PaintController {
   friend class PaintUnderInvalidationChecker;
   friend class GraphicsLayer;  // Temporary for ClientCacheIsValid().
 
+  // Called before painting to optimize memory allocation by reserving space in
+  // |new_paint_artifact_| and |new_subsequences_| based on the size of the
+  // previous ones (|current_paint_artifact_| and |current_subsequences_|).
+  void ReserveCapacity();
+
+  // Called at the beginning of a paint cycle, as defined by CycleScope.
+  void StartCycle(
+      HeapVector<Member<const DisplayItemClient>>& clients_to_validate,
+      bool record_debug_info);
+
+  // Called at the end of a paint cycle, as defined by CycleScope.
+  // The PaintController will cleanup data that will no longer be used for the
+  // next cycle, and update status to be ready for the next cycle.
+  // It updates caching status of DisplayItemClients, so if there are
+  // DisplayItemClients painting on multiple PaintControllers, we should call
+  // there FinishCycle() at the same time to ensure consistent caching status.
+  void FinishCycle();
+
   // True if all display items associated with the client are validly cached.
   // However, the current algorithm allows the following situations even if
   // ClientCacheIsValid() is true for a client during painting:
@@ -301,9 +348,10 @@ class PLATFORM_EXPORT PaintController {
   void InvalidateAllForTesting();
 
   // Set new item state (cache skipping, etc) for the last new display item.
-  void ProcessNewItem(DisplayItem&);
+  void ProcessNewItem(const DisplayItemClient&, DisplayItem&);
 
   void CheckNewItem(DisplayItem&);
+  void CheckNewChunkId(const PaintChunk::Id&);
   void CheckNewChunk();
 
   // Maps a display item id to the index of the display item or the paint chunk.
@@ -316,15 +364,16 @@ class PLATFORM_EXPORT PaintController {
                               wtf_size_t index,
                               IdIndexMap&);
 
-  wtf_size_t FindCachedItem(const DisplayItem::Id&);
-  wtf_size_t FindOutOfOrderCachedItemForward(const DisplayItem::Id&);
+  wtf_size_t FindCachedItem(const DisplayItemClient&, const DisplayItem::Id&);
+  wtf_size_t FindOutOfOrderCachedItemForward(const DisplayItemClient&,
+                                             const DisplayItem::Id&);
   void AppendSubsequenceByMoving(const DisplayItemClient&,
                                  wtf_size_t subsequence_index,
                                  wtf_size_t start_chunk_index,
                                  wtf_size_t end_chunk_index);
 
   struct SubsequenceMarkers {
-    const DisplayItemClient* client = nullptr;
+    DisplayItemClientId client_id = kInvalidDisplayItemClientId;
     // The start and end (not included) index of paint chunks in this
     // subsequence.
     wtf_size_t start_chunk_index = 0;
@@ -332,11 +381,10 @@ class PLATFORM_EXPORT PaintController {
     bool is_moved_from_cached_subsequence = false;
   };
 
-  wtf_size_t GetSubsequenceIndex(const DisplayItemClient&) const;
-  const SubsequenceMarkers* GetSubsequenceMarkers(
-      const DisplayItemClient&) const;
+  wtf_size_t GetSubsequenceIndex(DisplayItemClientId) const;
+  const SubsequenceMarkers* GetSubsequenceMarkers(DisplayItemClientId) const;
 
-  void ValidateNewChunkId(const PaintChunk::Id&);
+  void ValidateNewChunkClient(const DisplayItemClient&);
 
   PaintUnderInvalidationChecker& EnsureUnderInvalidationChecker();
   ALWAYS_INLINE bool IsCheckingUnderInvalidation() const;
@@ -346,8 +394,6 @@ class PLATFORM_EXPORT PaintController {
 #endif
 
   void SetBenchmarkMode(PaintBenchmarkMode);
-  bool ShouldInvalidateDisplayItemForBenchmark();
-  bool ShouldInvalidateSubsequenceForBenchmark();
 
   void CheckNoNewPaint() const {
 #if DCHECK_IS_ON()
@@ -370,9 +416,12 @@ class PLATFORM_EXPORT PaintController {
   // CommitNewDisplayItems().
   scoped_refptr<PaintArtifact> new_paint_artifact_;
   PaintChunker paint_chunker_;
+  WeakPersistent<HeapVector<Member<const DisplayItemClient>>>
+      clients_to_validate_ = nullptr;
 
   bool cache_is_all_invalid_ = true;
   bool committed_ = false;
+  bool record_debug_info_ = false;
 
   // A stack recording current frames' first paints.
   Vector<FrameFirstPaint> frame_first_paints_;
@@ -415,7 +464,7 @@ class PLATFORM_EXPORT PaintController {
 
   struct SubsequencesData {
     // Map a client to the index into |tree|.
-    HashMap<const DisplayItemClient*, wtf_size_t> map;
+    HashMap<DisplayItemClientId, wtf_size_t> map;
     // A pre-order list of the subsequence tree.
     Vector<SubsequenceMarkers> tree;
   };
@@ -425,8 +474,6 @@ class PLATFORM_EXPORT PaintController {
   wtf_size_t current_fragment_ = 0;
 
   PaintBenchmarkMode benchmark_mode_ = PaintBenchmarkMode::kNormal;
-  int partial_invalidation_display_item_count_ = 0;
-  int partial_invalidation_subsequence_count_ = 0;
 
   static CounterForTesting* counter_for_testing_;
 

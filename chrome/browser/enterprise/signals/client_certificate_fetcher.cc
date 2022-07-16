@@ -4,10 +4,14 @@
 
 #include "chrome/browser/enterprise/signals/client_certificate_fetcher.h"
 
+#include <memory>
+#include <utility>
+
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "net/ssl/client_cert_identity.h"
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_cert_request_info.h"
 
@@ -50,9 +54,17 @@ void ClientCertificateFetcher::FetchAutoSelectedCertificateForUrl(
 
 void ClientCertificateFetcher::OnGetClientCertsComplete(
     net::ClientCertIdentityList client_certs) {
-  std::unique_ptr<net::ClientCertIdentity> selected_cert =
-      chrome::enterprise_util::AutoSelectCertificate(profile_, requesting_url_,
-                                                     client_certs);
+  net::ClientCertIdentityList matching_certificates, nonmatching_certificates;
+  chrome::enterprise_util::AutoSelectCertificates(
+      profile_, requesting_url_, std::move(client_certs),
+      &matching_certificates, &nonmatching_certificates);
+
+  std::unique_ptr<net::ClientCertIdentity> selected_cert;
+  if (!matching_certificates.empty()) {
+    // In case of multiple matching certificates simply take the first one,
+    // given the lack of other criteria here.
+    selected_cert = std::move(matching_certificates[0]);
+  }
 
   std::move(fetch_callback_).Run(std::move(selected_cert));
 }

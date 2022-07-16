@@ -9,7 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/captive_portal/content/captive_portal_service.h"
@@ -81,6 +81,9 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
   typedef base::RepeatingCallback<
       void(content::WebContents*, const GURL&, const std::string&, int)>
       OnBlockingPageShownCallback;
+
+  SSLErrorHandler(const SSLErrorHandler&) = delete;
+  SSLErrorHandler& operator=(const SSLErrorHandler&) = delete;
 
   ~SSLErrorHandler() override;
 
@@ -268,8 +271,6 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
   base::WeakPtrFactory<SSLErrorHandler> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorHandler);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_ERROR_HANDLER_H_

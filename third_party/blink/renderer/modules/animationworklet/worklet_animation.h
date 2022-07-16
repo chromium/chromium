@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ANIMATIONWORKLET_WORKLET_ANIMATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ANIMATIONWORKLET_WORKLET_ANIMATION_H_
 
+#include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_effect_owner.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/platform/animation/compositor_animation_client.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutators_state.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 
 namespace blink {
 
@@ -115,9 +117,12 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
   }
 
   // CompositorAnimationDelegate implementation.
-  void NotifyAnimationStarted(double monotonic_time, int group) override {}
-  void NotifyAnimationFinished(double monotonic_time, int group) override {}
-  void NotifyAnimationAborted(double monotonic_time, int group) override {}
+  void NotifyAnimationStarted(base::TimeDelta monotonic_time,
+                              int group) override {}
+  void NotifyAnimationFinished(base::TimeDelta monotonic_time,
+                               int group) override {}
+  void NotifyAnimationAborted(base::TimeDelta monotonic_time,
+                              int group) override {}
   void NotifyLocalTimeUpdated(
       absl::optional<base::TimeDelta> local_time) override;
 

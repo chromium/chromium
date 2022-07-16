@@ -6,7 +6,6 @@
 #define ASH_ASSISTANT_MODEL_ASSISTANT_UI_MODEL_OBSERVER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
@@ -31,6 +30,9 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModelObserver
   using AssistantEntryPoint = chromeos::assistant::AssistantEntryPoint;
   using AssistantExitPoint = chromeos::assistant::AssistantExitPoint;
 
+  AssistantUiModelObserver(const AssistantUiModelObserver&) = delete;
+  AssistantUiModelObserver& operator=(const AssistantUiModelObserver&) = delete;
+
   // Invoked when the UI mode is changed. If |due_to_interaction| is true, the
   // UI mode was changed as a result of an Assistant interaction.
   virtual void OnUiModeChanged(AssistantUiMode ui_mode,
@@ -53,8 +55,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModelObserver
  protected:
   AssistantUiModelObserver() = default;
   ~AssistantUiModelObserver() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantUiModelObserver);
 };
 
 }  // namespace ash

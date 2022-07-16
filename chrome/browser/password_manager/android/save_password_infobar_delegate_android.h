@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/password_manager/android/password_manager_infobar_delegate_android.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -33,6 +32,10 @@ class SavePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
   static void Create(
       content::WebContents* web_contents,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save);
+
+  SavePasswordInfoBarDelegate(const SavePasswordInfoBarDelegate&) = delete;
+  SavePasswordInfoBarDelegate& operator=(const SavePasswordInfoBarDelegate&) =
+      delete;
 
   ~SavePasswordInfoBarDelegate() override;
 
@@ -61,8 +64,6 @@ class SavePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
   // Measures the "Save password?" prompt lifetime. Used to report an UMA
   // signal.
   base::ElapsedTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SavePasswordInfoBarDelegate);
 };
 
 // Creates the platform-specific SavePassword InfoBar. This function is defined

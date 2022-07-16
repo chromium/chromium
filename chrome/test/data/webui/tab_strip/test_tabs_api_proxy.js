@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ExtensionsApiTab, TabData, TabGroupVisualData, TabsApiProxy} from 'chrome://tab-strip/tabs_api_proxy.js';
+import {PageCallbackRouter, PageRemote} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
+import {Tab, TabGroupVisualData} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
+import {ExtensionsApiTab, TabsApiProxy} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /** @implements {TabsApiProxy} */
 export class TestTabsApiProxy extends TestBrowserProxy {
@@ -12,7 +14,6 @@ export class TestTabsApiProxy extends TestBrowserProxy {
     super([
       'activateTab',
       'closeTab',
-      'createNewTab',
       'getGroupVisualData',
       'getTabs',
       'groupTab',
@@ -20,16 +21,53 @@ export class TestTabsApiProxy extends TestBrowserProxy {
       'moveTab',
       'setThumbnailTracked',
       'ungroupTab',
+      'closeContainer',
+      'getColors',
+      'getLayout',
+      'isVisible',
+      'observeThemeChanges',
+      'showBackgroundContextMenu',
+      'showEditDialogForGroup',
+      'showTabContextMenu',
+      'reportTabActivationDuration',
+      'reportTabDataReceivedDuration',
+      'reportTabCreationDuration',
     ]);
+
+    /** @type {!PageCallbackRouter} */
+    this.callbackRouter = new PageCallbackRouter();
+
+    /** @type {!PageRemote} */
+    this.callbackRouterRemote =
+        this.callbackRouter.$.bindNewPipeAndPassRemote();
 
     /** @type {!Object<!TabGroupVisualData>} */
     this.groupVisualData_;
 
-    /** @type {!Array<!TabData>} */
+    /** @type {!Array<!Tab>} */
     this.tabs_;
 
     /** @type {!Map<number, number>} */
     this.thumbnailRequestCounts_ = new Map();
+
+    /** @private {!Object<string, string>} */
+    this.colors_ = {};
+
+    /** @private {!Object<string, string>} */
+    this.layout_ = {};
+
+    /** @private {boolean} */
+    this.visible_ = false;
+  }
+
+  /** @override */
+  getCallbackRouter() {
+    return this.callbackRouter;
+  }
+
+  /** return {!PageRemote} */
+  getCallbackRouterRemote() {
+    return this.callbackRouterRemote;
   }
 
   /** @override */
@@ -45,20 +83,15 @@ export class TestTabsApiProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  createNewTab() {
-    this.methodCalled('createNewTab');
-  }
-
-  /** @override */
   getGroupVisualData() {
     this.methodCalled('getGroupVisualData');
-    return Promise.resolve(this.groupVisualData_);
+    return Promise.resolve({data: this.groupVisualData_});
   }
 
   /** @override */
   getTabs() {
     this.methodCalled('getTabs');
-    return Promise.resolve(this.tabs_.slice());
+    return Promise.resolve({tabs: this.tabs_.slice()});
   }
 
   /**
@@ -88,12 +121,12 @@ export class TestTabsApiProxy extends TestBrowserProxy {
     this.thumbnailRequestCounts_.clear();
   }
 
-  /** @param {!Object<!TabGroupVisualData>} groupVisualData */
-  setGroupVisualData(groupVisualData) {
-    this.groupVisualData_ = groupVisualData;
+  /** @param {!Object<!TabGroupVisualData>} data */
+  setGroupVisualData(data) {
+    this.groupVisualData_ = data;
   }
 
-  /** @param {!Array<!TabData>} tabs */
+  /** @param {!Array<!Tab>} tabs */
   setTabs(tabs) {
     this.tabs_ = tabs;
   }
@@ -110,5 +143,80 @@ export class TestTabsApiProxy extends TestBrowserProxy {
   /** @override */
   ungroupTab(tabId) {
     this.methodCalled('ungroupTab', [tabId]);
+  }
+
+  /** @override */
+  getColors() {
+    this.methodCalled('getColors');
+    return Promise.resolve({colors: this.colors_});
+  }
+
+  /** @override */
+  getLayout() {
+    this.methodCalled('getLayout');
+    return Promise.resolve({layout: this.layout_});
+  }
+
+  /** @override */
+  isVisible() {
+    this.methodCalled('isVisible');
+    return this.visible_;
+  }
+
+  /** @param {!Object<string, string>} colors */
+  setColors(colors) {
+    this.colors_ = colors;
+  }
+
+  /** @param {!Object<string, string>} layout */
+  setLayout(layout) {
+    this.layout_ = layout;
+  }
+
+  /** @param {boolean} visible */
+  setVisible(visible) {
+    this.visible_ = visible;
+  }
+
+  /** @override */
+  observeThemeChanges() {
+    this.methodCalled('observeThemeChanges');
+  }
+
+  /** @override */
+  closeContainer() {
+    this.methodCalled('closeContainer');
+  }
+
+  /** @override */
+  showBackgroundContextMenu(locationX, locationY) {
+    this.methodCalled('showBackgroundContextMenu', [locationX, locationY]);
+  }
+
+  /** @override */
+  showEditDialogForGroup(groupId, locationX, locationY, width, height) {
+    this.methodCalled(
+        'showEditDialogForGroup',
+        [groupId, locationX, locationY, width, height]);
+  }
+
+  /** @override */
+  showTabContextMenu(tabId, locationX, locationY) {
+    this.methodCalled('showTabContextMenu', [tabId, locationX, locationY]);
+  }
+
+  /** @override */
+  reportTabActivationDuration(durationMs) {
+    this.methodCalled('reportTabActivationDuration', [durationMs]);
+  }
+
+  /** @override */
+  reportTabDataReceivedDuration(tabCount, durationMs) {
+    this.methodCalled('reportTabDataReceivedDuration', [tabCount, durationMs]);
+  }
+
+  /** @override */
+  reportTabCreationDuration(tabCount, durationMs) {
+    this.methodCalled('reportTabCreationDuration', [tabCount, durationMs]);
   }
 }

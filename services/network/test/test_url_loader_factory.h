@@ -60,6 +60,10 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
   };
 
   TestURLLoaderFactory();
+
+  TestURLLoaderFactory(const TestURLLoaderFactory&) = delete;
+  TestURLLoaderFactory& operator=(const TestURLLoaderFactory&) = delete;
+
   ~TestURLLoaderFactory() override;
 
   using Redirects =
@@ -199,8 +203,6 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
 
   Interceptor interceptor_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestURLLoaderFactory);
 };
 
 }  // namespace network

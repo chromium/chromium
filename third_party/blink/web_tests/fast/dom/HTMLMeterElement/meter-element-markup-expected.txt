@@ -20,7 +20,6 @@ Both meter elements should have a nested shadow box with a width specified:
 |       pseudo="-internal-fallback"
 |       shadow:pseudoId="-internal-fallback"
 |       <slot>
-|         name="user-agent-default-slot"
 | "
     "
 | <meter>
@@ -45,7 +44,6 @@ Both meter elements should have a nested shadow box with a width specified:
 |       pseudo="-internal-fallback"
 |       shadow:pseudoId="-internal-fallback"
 |       <slot>
-|         name="user-agent-default-slot"
 | "
     "
 | <meter>
@@ -70,6 +68,5 @@ Both meter elements should have a nested shadow box with a width specified:
 |       pseudo="-internal-fallback"
 |       shadow:pseudoId="-internal-fallback"
 |       <slot>
-|         name="user-agent-default-slot"
 | "
   "

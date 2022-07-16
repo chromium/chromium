@@ -27,20 +27,22 @@ PendingTask::~PendingTask() = default;
 
 PendingTask& PendingTask::operator=(PendingTask&& other) = default;
 
-bool PendingTask::operator<(const PendingTask& other) const {
-  // Since the top of a priority queue is defined as the "greatest" element, we
-  // need to invert the comparison here.  We want the smaller time to be at the
-  // top of the heap.
-
-  if (delayed_run_time < other.delayed_run_time)
-    return false;
-
-  if (delayed_run_time > other.delayed_run_time)
-    return true;
+bool PendingTask::operator>(const PendingTask& other) const {
+  if (delayed_run_time != other.delayed_run_time)
+    return delayed_run_time > other.delayed_run_time;
 
   // If the times happen to match, then we use the sequence number to decide.
   // Compare the difference to support integer roll-over.
   return (sequence_num - other.sequence_num) > 0;
+}
+
+bool PendingTask::operator<(const PendingTask& other) const {
+  if (delayed_run_time != other.delayed_run_time)
+    return delayed_run_time < other.delayed_run_time;
+
+  // If the times happen to match, then we use the sequence number to decide.
+  // Compare the difference to support integer roll-over.
+  return (sequence_num - other.sequence_num) < 0;
 }
 
 TimeTicks PendingTask::GetDesiredExecutionTime() const {

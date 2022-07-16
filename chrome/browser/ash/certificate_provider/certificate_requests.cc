@@ -51,9 +51,9 @@ int CertificateRequests::AddRequest(
   state->pending_extensions.insert(extension_ids.begin(), extension_ids.end());
 
   const int request_id = next_free_request_id_++;
-  state->timeout.Start(
-      FROM_HERE, base::TimeDelta::FromMinutes(kGetCertificatesTimeoutInMinutes),
-      base::BindOnce(std::move(timeout_callback), request_id));
+  state->timeout.Start(FROM_HERE,
+                       base::Minutes(kGetCertificatesTimeoutInMinutes),
+                       base::BindOnce(std::move(timeout_callback), request_id));
 
   const auto insert_result =
       requests_.insert(std::make_pair(request_id, std::move(state)));

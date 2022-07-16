@@ -11,12 +11,12 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/update_client/protocol_definition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
+class Value;
 class Version;
 }
 
@@ -34,6 +34,7 @@ base::flat_map<std::string, std::string> BuildUpdateCheckExtraRequestHeaders(
     bool is_foreground);
 
 protocol_request::Request MakeProtocolRequest(
+    bool is_machine,
     const std::string& session_id,
     const std::string& prod_id,
     const std::string& browser_version,
@@ -48,25 +49,25 @@ protocol_request::Request MakeProtocolRequest(
 protocol_request::App MakeProtocolApp(
     const std::string& app_id,
     const base::Version& version,
-    absl::optional<std::vector<base::Value>> events);
-
-protocol_request::App MakeProtocolApp(
-    const std::string& app_id,
-    const base::Version& version,
+    const std::string& ap,
     const std::string& brand_code,
     const std::string& install_source,
     const std::string& install_location,
     const std::string& fingerprint,
-    const base::flat_map<std::string, std::string>& installer_attributes,
+    const std::map<std::string, std::string>& installer_attributes,
     const std::string& cohort,
     const std::string& cohort_hint,
     const std::string& cohort_name,
     const std::string& release_channel,
     const std::vector<int>& disabled_reasons,
     absl::optional<protocol_request::UpdateCheck> update_check,
-    absl::optional<protocol_request::Ping> ping);
+    absl::optional<protocol_request::Ping> ping,
+    absl::optional<std::vector<base::Value>> events);
 
-protocol_request::UpdateCheck MakeProtocolUpdateCheck(bool is_update_disabled);
+protocol_request::UpdateCheck MakeProtocolUpdateCheck(
+    bool is_update_disabled,
+    const std::string& target_version_prefix,
+    bool rollback_allowed);
 
 protocol_request::Ping MakeProtocolPing(const std::string& app_id,
                                         const PersistedData* metadata,

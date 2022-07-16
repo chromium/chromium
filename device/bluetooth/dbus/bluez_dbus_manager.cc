@@ -244,14 +244,10 @@ void BluezDBusManager::InitializeClients() {
       GetSystemBus(), bluetooth_service_name);
   client_bundle_->bluetooth_profile_manager_client()->Init(
       GetSystemBus(), bluetooth_service_name);
-
   client_bundle_->bluetooth_debug_manager_client()->Init(
       GetSystemBus(), bluetooth_service_name);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   client_bundle_->bluetooth_battery_client()->Init(GetSystemBus(),
                                                    bluetooth_service_name);
-#endif
 
   if (!alternate_bus_)
     return;

@@ -26,6 +26,11 @@ namespace {
 class TabletModePageBehaviorTest : public InProcessBrowserTest {
  public:
   TabletModePageBehaviorTest() = default;
+
+  TabletModePageBehaviorTest(const TabletModePageBehaviorTest&) = delete;
+  TabletModePageBehaviorTest& operator=(const TabletModePageBehaviorTest&) =
+      delete;
+
   ~TabletModePageBehaviorTest() override = default;
 
   // InProcessBrowserTest:
@@ -81,8 +86,6 @@ class TabletModePageBehaviorTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModePageBehaviorTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest,

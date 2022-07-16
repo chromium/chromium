@@ -167,6 +167,10 @@ class TabsCaptureVisibleTabFunction : public ExtensionFunction {
  public:
   TabsCaptureVisibleTabFunction();
 
+  TabsCaptureVisibleTabFunction(const TabsCaptureVisibleTabFunction&) = delete;
+  TabsCaptureVisibleTabFunction& operator=(
+      const TabsCaptureVisibleTabFunction&) = delete;
+
   // ExtensionFunction implementation.
   ResponseAction Run() override;
 
@@ -175,8 +179,6 @@ class TabsCaptureVisibleTabFunction : public ExtensionFunction {
 
  private:
   DECLARE_EXTENSION_FUNCTION("tabs.captureVisibleTab", TABS_CAPTUREVISIBLETAB)
-
-  DISALLOW_COPY_AND_ASSIGN(TabsCaptureVisibleTabFunction);
 };
 
 // Implement API call tabs.executeScript and tabs.insertCSS.
@@ -268,13 +270,14 @@ class TabsDiscardFunction : public ExtensionFunction {
 
   TabsDiscardFunction();
 
+  TabsDiscardFunction(const TabsDiscardFunction&) = delete;
+  TabsDiscardFunction& operator=(const TabsDiscardFunction&) = delete;
+
  private:
   ~TabsDiscardFunction() override;
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(TabsDiscardFunction);
 };
 
 }  // namespace api

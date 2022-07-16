@@ -16,7 +16,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -45,6 +44,11 @@ class ASH_EXPORT AssistantUiControllerImpl
  public:
   explicit AssistantUiControllerImpl(
       AssistantControllerImpl* assistant_controller);
+
+  AssistantUiControllerImpl(const AssistantUiControllerImpl&) = delete;
+  AssistantUiControllerImpl& operator=(const AssistantUiControllerImpl&) =
+      delete;
+
   ~AssistantUiControllerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -57,9 +61,10 @@ class ASH_EXPORT AssistantUiControllerImpl
   int GetNumberOfSessionsWhereOnboardingShown() const override;
   bool HasShownOnboarding() const override;
   void ShowUi(AssistantEntryPoint entry_point) override;
-  void CloseUi(AssistantExitPoint exit_point) override;
   void ToggleUi(absl::optional<AssistantEntryPoint> entry_point,
                 absl::optional<AssistantExitPoint> exit_point) override;
+  absl::optional<base::ScopedClosureRunner> CloseUi(
+      AssistantExitPoint exit_point) override;
 
   // AssistantInteractionModelObserver:
   void OnInputModalityChanged(InputModality input_modality) override;
@@ -113,7 +118,8 @@ class ASH_EXPORT AssistantUiControllerImpl
   base::ScopedObservation<OverviewController, OverviewObserver>
       overview_controller_observation_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(AssistantUiControllerImpl);
+  base::WeakPtrFactory<AssistantUiControllerImpl>
+      weak_factory_for_delayed_visibility_changes_{this};
 };
 
 }  // namespace ash

@@ -437,7 +437,7 @@ ResultCode InterceptionManager::PatchClientFunctions(
 #else
   base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
   base::win::Version real_os_version = os_info->Kernel32Version();
-  if (os_info->wow64_status() == base::win::OSInfo::WOW64_ENABLED) {
+  if (os_info->IsWowX86OnAMD64()) {
     if (real_os_version >= base::win::Version::WIN10)
       thunk.reset(new Wow64W10ResolverThunk(child_.Process(), relaxed_));
     else if (real_os_version >= base::win::Version::WIN8)

@@ -35,6 +35,10 @@ class FakeGeocoordinate
  public:
   explicit FakeGeocoordinate(
       std::unique_ptr<FakeGeocoordinateData> position_data);
+
+  FakeGeocoordinate(const FakeGeocoordinate&) = delete;
+  FakeGeocoordinate& operator=(const FakeGeocoordinate&) = delete;
+
   ~FakeGeocoordinate() override;
   IFACEMETHODIMP get_Latitude(DOUBLE* value) override;
   IFACEMETHODIMP get_Longitude(DOUBLE* value) override;
@@ -52,8 +56,6 @@ class FakeGeocoordinate
 
  private:
   std::unique_ptr<FakeGeocoordinateData> position_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGeocoordinate);
 };
 
 }  // namespace device

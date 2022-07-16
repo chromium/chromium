@@ -24,22 +24,21 @@ namespace device_sync {
 
 namespace {
 
-constexpr base::TimeDelta kZeroTimeDelta = base::TimeDelta::FromSeconds(0);
+constexpr base::TimeDelta kZeroTimeDelta = base::Seconds(0);
 
 // The default period between successful enrollments in days. Superseded by the
 // ClientDirective's checkin_delay_millis sent by CryptAuth.
-constexpr base::TimeDelta kDefaultRefreshPeriod = base::TimeDelta::FromDays(30);
+constexpr base::TimeDelta kDefaultRefreshPeriod = base::Days(30);
 
 // The default period, in hours, between Enrollment/DeviceSync attempts if the
 // previous Enrollment/DeviceSync attempt failed. Superseded by the
 // ClientDirective's retry_period_millis sent by CryptAuth.
-constexpr base::TimeDelta kDefaultRetryPeriod = base::TimeDelta::FromHours(12);
+constexpr base::TimeDelta kDefaultRetryPeriod = base::Hours(12);
 
 // The time to wait before an "immediate" retry attempt after a failed
 // Enrollment/DeviceSync attempt. Note: Some request types are throttled by
 // CryptAuth if more than one is sent within a five-minute window.
-constexpr base::TimeDelta kImmediateRetryDelay =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kImmediateRetryDelay = base::Minutes(5);
 
 // The default number of "immediate" retries after a failed
 // Enrollment/DeviceSync attempt. Superseded by the ClientDirective's
@@ -254,8 +253,7 @@ CryptAuthSchedulerImpl::GetLastSuccessfulDeviceSyncTime() const {
 }
 
 base::TimeDelta CryptAuthSchedulerImpl::GetRefreshPeriod() const {
-  return base::TimeDelta::FromMilliseconds(
-      client_directive_.checkin_delay_millis());
+  return base::Milliseconds(client_directive_.checkin_delay_millis());
 }
 absl::optional<base::TimeDelta>
 CryptAuthSchedulerImpl::GetTimeToNextEnrollmentRequest() const {
@@ -432,9 +430,9 @@ absl::optional<base::TimeDelta> CryptAuthSchedulerImpl::GetTimeToNextRequest(
   }
 
   // Recover from failure after expending allotted immediate retries.
-  return std::max(kZeroTimeDelta, base::TimeDelta::FromMilliseconds(
-                                      client_directive_.retry_period_millis()) -
-                                      time_since_last_attempt);
+  return std::max(kZeroTimeDelta,
+                  base::Milliseconds(client_directive_.retry_period_millis()) -
+                      time_since_last_attempt);
 }
 
 bool CryptAuthSchedulerImpl::IsWaitingForResult(

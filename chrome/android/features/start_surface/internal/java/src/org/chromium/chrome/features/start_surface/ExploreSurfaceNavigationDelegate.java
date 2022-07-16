@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
 /** Implementation of the {@link NativePageNavigationDelegate} for the explore surface. */
@@ -34,6 +33,7 @@ class ExploreSurfaceNavigationDelegate implements NativePageNavigationDelegate {
     @Nullable
     public Tab openUrl(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
         Tab newTab = ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(loadUrlParams,
+                windowOpenDisposition == WindowOpenDisposition.NEW_BACKGROUND_TAB,
                 windowOpenDisposition == WindowOpenDisposition.OFF_THE_RECORD,
                 mParentTabSupplier.get());
         assert newTab != null;
@@ -48,11 +48,5 @@ class ExploreSurfaceNavigationDelegate implements NativePageNavigationDelegate {
         // method.
         assert false; // NOTREACHED.
         return null;
-    }
-
-    @Override
-    public void navigateToHelpPage() {
-        openUrl(WindowOpenDisposition.CURRENT_TAB,
-                new LoadUrlParams(NEW_TAB_URL_HELP, PageTransition.AUTO_BOOKMARK));
     }
 }

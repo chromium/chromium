@@ -761,11 +761,11 @@ template class CORE_TEMPLATE_EXPORT PositionTemplate<EditingInFlatTreeStrategy>;
 
 #if DCHECK_IS_ON()
 
-void showTree(const blink::Position& pos) {
+void ShowTree(const blink::Position& pos) {
   pos.ShowTreeForThis();
 }
 
-void showTree(const blink::Position* pos) {
+void ShowTree(const blink::Position* pos) {
   if (pos)
     pos->ShowTreeForThis();
   else

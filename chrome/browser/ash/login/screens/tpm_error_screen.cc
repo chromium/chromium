@@ -33,8 +33,15 @@ void TpmErrorScreen::OnViewDestroyed(TpmErrorView* view) {
 }
 
 void TpmErrorScreen::ShowImpl() {
-  if (view_)
-    view_->Show();
+  if (!view_)
+    return;
+  DCHECK(!context()->tpm_owned_error || !context()->tpm_dbus_error);
+  if (context()->tpm_owned_error) {
+    view_->SetTPMOwnedErrorStep();
+  } else if (context()->tpm_dbus_error) {
+    view_->SetTPMDbusErrorStep();
+  }
+  view_->Show();
 }
 
 void TpmErrorScreen::HideImpl() {}

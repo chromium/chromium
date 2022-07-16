@@ -5,7 +5,6 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_GCP_CRASH_REPORTER_CLIENT_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_GCP_CRASH_REPORTER_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
 namespace base {
@@ -17,6 +16,10 @@ namespace credential_provider {
 class GcpCrashReporterClient : public crash_reporter::CrashReporterClient {
  public:
   GcpCrashReporterClient() = default;
+
+  GcpCrashReporterClient(const GcpCrashReporterClient&) = delete;
+  GcpCrashReporterClient& operator=(const GcpCrashReporterClient&) = delete;
+
   ~GcpCrashReporterClient() override;
 
   // crash_reporter::CrashReporterClient:
@@ -42,9 +45,6 @@ class GcpCrashReporterClient : public crash_reporter::CrashReporterClient {
  protected:
   virtual base::FilePath GetPathForFileVersionInfo(
       const std::wstring& exe_path);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GcpCrashReporterClient);
 };
 
 }  // namespace credential_provider

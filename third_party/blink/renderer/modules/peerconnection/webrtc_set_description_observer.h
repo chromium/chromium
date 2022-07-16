@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver_impl.h"
@@ -52,6 +52,10 @@ class MODULES_EXPORT WebRtcSetDescriptionObserver
   struct MODULES_EXPORT States {
     States();
     States(States&& other);
+
+    States(const States&) = delete;
+    States& operator=(const States&) = delete;
+
     ~States();
 
     States& operator=(States&& other);
@@ -67,11 +71,13 @@ class MODULES_EXPORT WebRtcSetDescriptionObserver
         pending_remote_description;
     std::unique_ptr<webrtc::SessionDescriptionInterface>
         current_remote_description;
-
-    DISALLOW_COPY_AND_ASSIGN(States);
   };
 
   WebRtcSetDescriptionObserver();
+
+  WebRtcSetDescriptionObserver(const WebRtcSetDescriptionObserver&) = delete;
+  WebRtcSetDescriptionObserver& operator=(const WebRtcSetDescriptionObserver&) =
+      delete;
 
   // Invoked in a PostTask() on the main thread after the SetLocalDescription()
   // or SetRemoteDescription() operation completed on the webrtc signaling
@@ -82,8 +88,6 @@ class MODULES_EXPORT WebRtcSetDescriptionObserver
  protected:
   friend class WTF::ThreadSafeRefCounted<WebRtcSetDescriptionObserver>;
   virtual ~WebRtcSetDescriptionObserver();
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcSetDescriptionObserver);
 };
 
 // Takes care of surfacing WebRtcSetDescriptionObserver::State information from
@@ -107,6 +111,11 @@ class MODULES_EXPORT WebRtcSetDescriptionObserverHandlerImpl
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
       scoped_refptr<WebRtcSetDescriptionObserver> observer,
       bool surface_receivers_only);
+
+  WebRtcSetDescriptionObserverHandlerImpl(
+      const WebRtcSetDescriptionObserverHandlerImpl&) = delete;
+  WebRtcSetDescriptionObserverHandlerImpl& operator=(
+      const WebRtcSetDescriptionObserverHandlerImpl&) = delete;
 
   // Must be called on the webrtc signaling thread internally by the handler
   // when the Set[Local/Remote]Description() operation finishes.
@@ -136,8 +145,6 @@ class MODULES_EXPORT WebRtcSetDescriptionObserverHandlerImpl
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map_;
   scoped_refptr<WebRtcSetDescriptionObserver> observer_;
   bool surface_receivers_only_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcSetDescriptionObserverHandlerImpl);
 };
 
 // An implementation of webrtc::SetLocalDescriptionObserverInterface for
@@ -152,6 +159,11 @@ class MODULES_EXPORT WebRtcSetLocalDescriptionObserverHandler
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
       scoped_refptr<WebRtcSetDescriptionObserver> observer,
       bool surface_receivers_only);
+
+  WebRtcSetLocalDescriptionObserverHandler(
+      const WebRtcSetLocalDescriptionObserverHandler&) = delete;
+  WebRtcSetLocalDescriptionObserverHandler& operator=(
+      const WebRtcSetLocalDescriptionObserverHandler&) = delete;
 
   // webrtc::SetLocalDescriptionObserverInterface implementation. Implementation
   // calls WebRtcSetDescriptionObserverHandlerImpl::OnSetDescriptionComplete().
@@ -168,8 +180,6 @@ class MODULES_EXPORT WebRtcSetLocalDescriptionObserverHandler
   ~WebRtcSetLocalDescriptionObserverHandler() override;
 
   scoped_refptr<WebRtcSetDescriptionObserverHandlerImpl> handler_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcSetLocalDescriptionObserverHandler);
 };
 
 // An implementation of webrtc::SetRemoteDescriptionObserverInterface for
@@ -184,6 +194,11 @@ class MODULES_EXPORT WebRtcSetRemoteDescriptionObserverHandler
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
       scoped_refptr<WebRtcSetDescriptionObserver> observer,
       bool surface_receivers_only);
+
+  WebRtcSetRemoteDescriptionObserverHandler(
+      const WebRtcSetRemoteDescriptionObserverHandler&) = delete;
+  WebRtcSetRemoteDescriptionObserverHandler& operator=(
+      const WebRtcSetRemoteDescriptionObserverHandler&) = delete;
 
   // webrtc::SetRemoteDescriptionObserverInterface implementation.
   // Implementation calls
@@ -201,8 +216,6 @@ class MODULES_EXPORT WebRtcSetRemoteDescriptionObserverHandler
   ~WebRtcSetRemoteDescriptionObserverHandler() override;
 
   scoped_refptr<WebRtcSetDescriptionObserverHandlerImpl> handler_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcSetRemoteDescriptionObserverHandler);
 };
 
 }  // namespace blink

@@ -22,6 +22,10 @@ namespace contextual_search {
 class CtrAggregatorTest : public testing::Test {
  public:
   CtrAggregatorTest() {}
+
+  CtrAggregatorTest(const CtrAggregatorTest&) = delete;
+  CtrAggregatorTest& operator=(const CtrAggregatorTest&) = delete;
+
   ~CtrAggregatorTest() override {}
 
   class WeeklyActivityStorageStub : public WeeklyActivityStorage {
@@ -61,9 +65,6 @@ class CtrAggregatorTest : public testing::Test {
   }
 
   void TearDown() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CtrAggregatorTest);
 };
 
 CtrAggregatorTest::WeeklyActivityStorageStub::WeeklyActivityStorageStub()

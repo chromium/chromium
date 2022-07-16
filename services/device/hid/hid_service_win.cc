@@ -24,11 +24,11 @@
 #include "base/files/file.h"
 #include "base/location.h"
 #include "base/memory/free_deleter.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/scoped_devinfo.h"
@@ -482,6 +482,7 @@ HidServiceWin::~HidServiceWin() = default;
 
 void HidServiceWin::Connect(const std::string& device_guid,
                             bool allow_protected_reports,
+                            bool allow_fido_reports,
                             ConnectCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto& map_entry = devices().find(device_guid);
@@ -514,10 +515,11 @@ void HidServiceWin::Connect(const std::string& device_guid,
   }
 
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                HidConnectionWin::Create(
-                                    device_info, std::move(file_handles),
-                                    allow_protected_reports)));
+      FROM_HERE,
+      base::BindOnce(std::move(callback),
+                     HidConnectionWin::Create(
+                         device_info, std::move(file_handles),
+                         allow_protected_reports, allow_fido_reports)));
 }
 
 base::WeakPtr<HidService> HidServiceWin::GetWeakPtr() {

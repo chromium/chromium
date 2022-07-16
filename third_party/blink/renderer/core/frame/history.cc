@@ -311,8 +311,8 @@ void History::StateObjectAdded(
   }
 
   DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
-      full_url, kSameDocumentNavigationHistoryApi, std::move(data), type,
-      restoration_type);
+      full_url, mojom::blink::SameDocumentNavigationType::kHistoryApi,
+      std::move(data), type, restoration_type);
 }
 
 }  // namespace blink

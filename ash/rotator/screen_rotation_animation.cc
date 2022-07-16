@@ -11,8 +11,8 @@
 #include "ui/compositor/layer_animation_delegate.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/interpolated_transform.h"
-#include "ui/gfx/transform.h"
 
 namespace ash {
 

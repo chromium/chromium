@@ -82,17 +82,17 @@ class ImageFrameGeneratorTest : public testing::Test,
 
   void MemoryAllocatorSet() override { ++memory_allocator_set_count_; }
 
-  ImageFrame::Status GetStatus(size_t index) override {
+  ImageFrame::Status GetStatus(wtf_size_t index) override {
     ImageFrame::Status current_status = status_;
     status_ = next_frame_status_;
     return current_status;
   }
 
-  void ClearCacheExceptFrameRequested(size_t clear_except_frame) override {
+  void ClearCacheExceptFrameRequested(wtf_size_t clear_except_frame) override {
     requested_clear_except_frame_ = clear_except_frame;
   }
 
-  size_t FrameCount() override { return frame_count_; }
+  wtf_size_t FrameCount() override { return frame_count_; }
   int RepetitionCount() const override {
     return frame_count_ == 1 ? kAnimationNone : kAnimationLoopOnce;
   }
@@ -112,7 +112,7 @@ class ImageFrameGeneratorTest : public testing::Test,
   void SetNextFrameStatus(ImageFrame::Status status) {
     next_frame_status_ = status;
   }
-  void SetFrameCount(size_t count) {
+  void SetFrameCount(wtf_size_t count) {
     frame_count_ = count;
     if (count > 1) {
       generator_ = nullptr;
@@ -136,8 +136,8 @@ class ImageFrameGeneratorTest : public testing::Test,
   int memory_allocator_set_count_;
   ImageFrame::Status status_;
   ImageFrame::Status next_frame_status_;
-  size_t frame_count_;
-  size_t requested_clear_except_frame_;
+  wtf_size_t frame_count_;
+  wtf_size_t requested_clear_except_frame_;
 };
 
 TEST_F(ImageFrameGeneratorTest, GetSupportedSizes) {
@@ -149,7 +149,7 @@ TEST_F(ImageFrameGeneratorTest, GetSupportedSizes) {
 
   struct Test {
     SkISize query_size;
-    size_t supported_size_index;
+    wtf_size_t supported_size_index;
   } tests[] = {{SkISize::Make(1, 1), 0},     {SkISize::Make(2, 2), 0},
                {SkISize::Make(25, 10), 1},   {SkISize::Make(1, 25), 1},
                {SkISize::Make(50, 51), 2},   {SkISize::Make(80, 80), 3},

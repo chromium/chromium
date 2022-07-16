@@ -97,10 +97,27 @@ MojoCreateSharedBufferResult* Mojo::createSharedBuffer(unsigned num_bytes) {
 void Mojo::bindInterface(ScriptState* script_state,
                          const String& interface_name,
                          MojoHandle* request_handle,
-                         const String& scope) {
+                         const String& scope,
+                         ExceptionState& exception_state) {
   std::string name = interface_name.Utf8();
   auto handle =
       mojo::ScopedMessagePipeHandle::From(request_handle->TakeHandle());
+
+  auto* context = ExecutionContext::From(script_state);
+
+  // If MojoJS broker is enabled, it must be used to handle bindInterface
+  // calls.
+  if (context->use_mojo_js_interface_broker()) {
+    if (scope == "context") {
+      context->GetMojoJSInterfaceBroker().GetInterface(name, std::move(handle));
+    } else {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          String::FromUTF8("MojoJS interface broker is specified, can't use "
+                           "scopes other than 'context'"));
+    }
+    return;
+  }
 
   if (scope == "process") {
     Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
@@ -108,9 +125,7 @@ void Mojo::bindInterface(ScriptState* script_state,
     return;
   }
 
-  ExecutionContext::From(script_state)
-      ->GetBrowserInterfaceBroker()
-      .GetInterface(name, std::move(handle));
+  context->GetBrowserInterfaceBroker().GetInterface(name, std::move(handle));
 }
 
 }  // namespace blink

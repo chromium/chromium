@@ -8,6 +8,8 @@ except ImportError:
   pass
 import unittest
 
+import six
+
 from cli_tools.soundwave import pandas_sqlite
 from core.external_modules import pandas
 
@@ -71,6 +73,6 @@ class TestPandasSQLite(unittest.TestCase):
       df = pandas.read_sql('SELECT * FROM bugs', con, index_col='bug_id')
       self.assertEqual(len(df), 3)  # Only one extra record added.
       self.assertEqual(df.loc[123]['status'], 'Fixed')  # Bug is now fixed.
-      self.assertItemsEqual(df.index, (123, 456, 789))
+      six.assertCountEqual(self, df.index, (123, 456, 789))
     finally:
       con.close()

@@ -76,7 +76,7 @@ ExternalSemaphore ExternalVkImageGLRepresentationShared::ReleaseTexture(
   if (!semaphore) {
     // TODO(crbug.com/933452): We should be able to handle this failure more
     // gracefully rather than shutting down the whole process.
-    LOG(FATAL) << "Unable to create an ExternalSemaphore in "
+    LOG(ERROR) << "Unable to create an ExternalSemaphore in "
                << "ExternalVkImageGLRepresentation for synchronization with "
                << "Vulkan";
     return {};
@@ -86,7 +86,7 @@ ExternalSemaphore ExternalVkImageGLRepresentationShared::ReleaseTexture(
   if (!gl_semaphore) {
     // TODO(crbug.com/933452): We should be able to semaphore_handle this
     // failure more gracefully rather than shutting down the whole process.
-    LOG(FATAL) << "Unable to export VkSemaphore into GL in "
+    LOG(ERROR) << "Unable to export VkSemaphore into GL in "
                << "ExternalVkImageGLRepresentation for synchronization with "
                << "Vulkan";
     return {};
@@ -178,6 +178,10 @@ void ExternalVkImageGLRepresentationShared::EndAccess() {
     external_semaphore =
         ReleaseTexture(backing_impl()->external_semaphore_pool(),
                        texture_service_id_, info.fImageLayout);
+    if (!external_semaphore) {
+      backing_impl()->context_state()->MarkContextLost();
+      return;
+    }
   }
   backing_impl()->EndAccess(readonly, std::move(external_semaphore),
                             true /* is_gl */);

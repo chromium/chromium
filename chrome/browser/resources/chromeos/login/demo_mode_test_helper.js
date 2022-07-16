@@ -7,7 +7,7 @@
  */
 
 /** Demo mode test helper. */
-class DemoModeTestHelper {
+/* #export */ class DemoModeTestHelper {
   /**
    * Start demo mode setup for telemetry.
    * @param {string} demoConfig Identifies demo mode type.

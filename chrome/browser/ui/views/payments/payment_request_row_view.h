@@ -54,6 +54,7 @@ class PaymentRequestRowView
   void SetIsHighlighted(bool highlighted);
 
   // views::Button:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void StateChanged(ButtonState old_state) override;
   void OnThemeChanged() override;
 

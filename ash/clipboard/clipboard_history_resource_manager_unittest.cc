@@ -128,8 +128,10 @@ TEST_F(ClipboardHistoryResourceManagerTest, GetLabel) {
   builder.SetText("Text")
       .SetMarkup("HTML with no image or table tags")
       .SetRtf("Rtf")
-      .SetFilenames({ui::FileInfo(base::FilePath("/dir/filename"),
-                                  base::FilePath("filename"))})
+      .SetFilenames({ui::FileInfo(base::FilePath("/path/to/File.txt"),
+                                  base::FilePath("File.txt")),
+                     ui::FileInfo(base::FilePath("/path/to/Other%20File.txt"),
+                                  base::FilePath("Other%20File.txt"))})
       .SetBookmarkTitle("Bookmark Title")
       .SetPng(gfx::test::CreatePNGBytes(10))
       .SetFileSystemData({u"/path/to/File.txt", u"/path/to/Other%20File.txt"})
@@ -164,7 +166,8 @@ TEST_F(ClipboardHistoryResourceManagerTest, GetLabel) {
   builder.ClearRtf();
 
   // In the absence of RTF data, Filenames data takes precedence.
-  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()), u"filename");
+  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()),
+            u"File.txt, Other File.txt");
 
   builder.ClearFilenames();
 

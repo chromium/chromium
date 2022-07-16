@@ -6,7 +6,7 @@ import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
-assert(use_x11 || ozone_platform_x11)
+assert(ozone_platform_x11)
 
 component("x11") {
   output_name = "x11_window"
@@ -19,6 +19,8 @@ component("x11") {
     "//ui/base",
     "//ui/base:hit_test",
     "//ui/base:wm_role_names",
+    "//ui/base/clipboard:clipboard_types",
+    "//ui/base/data_transfer_policy",
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom",
     "//ui/base/x",
@@ -36,6 +38,10 @@ component("x11") {
   defines = [ "X11_WINDOW_IMPLEMENTATION" ]
 
   sources = [
+    "hit_test_x11.cc",
+    "hit_test_x11.h",
+    "os_exchange_data_provider_x11.cc",
+    "os_exchange_data_provider_x11.h",
     "x11_topmost_window_finder.cc",
     "x11_topmost_window_finder.h",
     "x11_window.cc",
@@ -61,6 +67,7 @@ test("x11_unittests") {
   sources = [
     "test/device_data_manager_x11_unittest.cc",
     "test/events_x_unittest.cc",
+    "test/x11_drag_drop_client_unittest.cc",
     "test/x11_event_translation_unittest.cc",
     "test/x11_window_unittest.cc",
   ]
@@ -76,24 +83,23 @@ test("x11_unittests") {
     "//testing/gtest",
     "//ui/base",
     "//ui/base:features",
+    "//ui/base/dragdrop:types",
     "//ui/base/x",
     "//ui/base/x:test_support",
+    "//ui/base/x:unittests",
     "//ui/events:test_support",
     "//ui/events/platform/x11",
     "//ui/events/x",
     "//ui/gfx:test_support",
     "//ui/gfx/x",
     "//ui/gfx/x:unit_test",
+    "//ui/ozone",
     "//ui/platform_window",
   ]
 
   if (!is_chromeos && !is_chromeos_ash && !is_chromeos_lacros) {
     sources += [ "test/os_exchange_data_provider_x11_unittest.cc" ]
     deps += [ "//ui/base/clipboard:clipboard_types" ]
-  }
-
-  if (use_ozone) {
-    deps += [ "//ui/ozone" ]
   }
 
   configs += [ "//build/config:precompiled_headers" ]

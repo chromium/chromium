@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/sync/test/integration/performance/sync_timing_helper.h"
@@ -18,8 +17,8 @@ using content::OpenURLParams;
 using sessions_helper::GetLocalSession;
 using sessions_helper::GetSessionData;
 using sessions_helper::OpenMultipleTabs;
-using sessions_helper::SyncedSessionVector;
 using sessions_helper::SessionWindowMap;
+using sessions_helper::SyncedSessionVector;
 using sessions_helper::WaitForTabsToLoad;
 using sync_timing_helper::TimeMutualSyncCycle;
 
@@ -42,9 +41,12 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 
 }  // namespace
 
-class SessionsSyncPerfTest: public SyncTest {
+class SessionsSyncPerfTest : public SyncTest {
  public:
   SessionsSyncPerfTest() : SyncTest(TWO_CLIENT), url_number_(0) {}
+
+  SessionsSyncPerfTest(const SessionsSyncPerfTest&) = delete;
+  SessionsSyncPerfTest& operator=(const SessionsSyncPerfTest&) = delete;
 
   // Opens |num_tabs| new tabs on |profile|.
   void AddTabs(int profile, int num_tabs);
@@ -67,7 +69,6 @@ class SessionsSyncPerfTest: public SyncTest {
   GURL IntToURL(int n);
 
   int url_number_;
-  DISALLOW_COPY_AND_ASSIGN(SessionsSyncPerfTest);
 };
 
 void SessionsSyncPerfTest::AddTabs(int profile, int num_tabs) {

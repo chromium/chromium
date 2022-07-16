@@ -207,7 +207,7 @@ class CrostiniFeaturesAdbSideloadingTest : public testing::Test {
   void AllowAdbSideloadingByDevicePolicy() {
     scoped_settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     scoped_settings_helper_.SetInteger(
-        chromeos::kDeviceCrostiniArcAdbSideloadingAllowed,
+        ash::kDeviceCrostiniArcAdbSideloadingAllowed,
         enterprise_management::DeviceCrostiniArcAdbSideloadingAllowedProto::
             ALLOW_FOR_AFFILIATED_USERS);
   }
@@ -215,7 +215,7 @@ class CrostiniFeaturesAdbSideloadingTest : public testing::Test {
   void DisallowAdbSideloadingByDevicePolicy() {
     scoped_settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     scoped_settings_helper_.SetInteger(
-        chromeos::kDeviceCrostiniArcAdbSideloadingAllowed,
+        ash::kDeviceCrostiniArcAdbSideloadingAllowed,
         enterprise_management::DeviceCrostiniArcAdbSideloadingAllowedProto::
             DISALLOW);
   }

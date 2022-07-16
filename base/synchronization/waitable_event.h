@@ -9,7 +9,6 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -56,10 +55,12 @@ class BASE_EXPORT WaitableEvent {
   // Indicates whether a WaitableEvent should automatically reset the event
   // state after a single waiting thread has been released or remain signaled
   // until Reset() is manually invoked.
+  // 指示 WaitableEvent 是否应在释放单个等待线程后，自动重置事件状态，或者在手动调用
+  // Reset() 之前保持信号状态。
   enum class ResetPolicy { MANUAL, AUTOMATIC };
 
   // Indicates whether a new WaitableEvent should start in a signaled state or
-  // not.
+  // not. 指示新的 WaitableEvent 是否应以信号状态开始。
   enum class InitialState { SIGNALED, NOT_SIGNALED };
 
   // Constructs a WaitableEvent with policy and initial state as detailed in
@@ -73,6 +74,9 @@ class BASE_EXPORT WaitableEvent {
   // deleted.
   explicit WaitableEvent(win::ScopedHandle event_handle);
 #endif
+
+  WaitableEvent(const WaitableEvent&) = delete;
+  WaitableEvent& operator=(const WaitableEvent&) = delete;
 
   ~WaitableEvent();
 
@@ -115,6 +119,9 @@ class BASE_EXPORT WaitableEvent {
   // is useful to avoid telling base-internals that this thread is "blocked"
   // when it's merely idle and ready to do work. As such, this is only expected
   // to be used by thread and thread pool impls.
+  // 声明此 WaitableEvent 只会被在其堆栈底部空闲并等待工作的线程使用（特别是，在恢复正在进
+  // 行的工作之前它不会同步等待此事件）。 这对于避免告诉基本内部线程该线程在它只是空闲并准备
+  // 好工作时被“阻塞”很有用。 因此，这仅预计由线程和线程池实现使用。
   void declare_only_used_while_idle() { waiting_is_blocking_ = false; }
 
   // Wait, synchronously, on multiple events.
@@ -196,6 +203,9 @@ class BASE_EXPORT WaitableEvent {
    public:
     ReceiveRight(mach_port_t name, bool create_slow_watch_list);
 
+    ReceiveRight(const ReceiveRight&) = delete;
+    ReceiveRight& operator=(const ReceiveRight&) = delete;
+
     mach_port_t Name() const { return right_.get(); }
 
     // This structure is used iff UseSlowWatchList() is true. See the comment
@@ -222,8 +232,6 @@ class BASE_EXPORT WaitableEvent {
     // This is allocated iff UseSlowWatchList() is true. It is created on the
     // heap to avoid performing initialization when not using the slow path.
     std::unique_ptr<WatchList> slow_watch_list_;
-
-    DISALLOW_COPY_AND_ASSIGN(ReceiveRight);
   };
 
   const ResetPolicy policy_;
@@ -249,6 +257,7 @@ class BASE_EXPORT WaitableEvent {
   // behaviour.
   struct WaitableEventKernel :
       public RefCountedThreadSafe<WaitableEventKernel> {
+
    public:
     WaitableEventKernel(ResetPolicy reset_policy, InitialState initial_state);
 
@@ -284,8 +293,6 @@ class BASE_EXPORT WaitableEvent {
   // Whether a thread invoking Wait() on this WaitableEvent should be considered
   // blocked as opposed to idle (and potentially replaced if part of a pool).
   bool waiting_is_blocking_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitableEvent);
 };
 
 }  // namespace base

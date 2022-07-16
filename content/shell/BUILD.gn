@@ -195,9 +195,6 @@ static_library("content_shell_lib") {
   configs += [
     ":content_shell_lib_warnings",
     "//build/config:precompiled_headers",
-
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
   defines = [
@@ -236,7 +233,9 @@ static_library("content_shell_lib") {
     "//cc/base",
     "//components/cdm/renderer",
     "//components/keyed_service/content",
+    "//components/metrics",
     "//components/metrics:net",
+    "//components/metrics:test_support",
     "//components/network_session_configurator/common",
     "//components/performance_manager",
     "//components/permissions",
@@ -308,10 +307,6 @@ static_library("content_shell_lib") {
     deps += [ "//ui/gtk" ]
   }
 
-  if (use_x11) {
-    deps += [ "//ui/events/devices/x11" ]
-  }
-
   if (is_android) {
     deps += [
       "//components/embedder_support/android:view",
@@ -344,6 +339,7 @@ static_library("content_shell_lib") {
         "browser/shell_web_contents_view_delegate_views.cc",
       ]
       deps += [
+        "//ui/color:color_headers",
         "//ui/native_theme",
         "//ui/resources",
         "//ui/views:test_support",
@@ -541,9 +537,11 @@ if (is_android) {
       }
     }
 
-    if (is_win || is_linux || is_chromeos) {
+    if (is_win) {
       data_deps +=
           [ "//third_party/crashpad/crashpad/handler:crashpad_handler" ]
+    } else if (is_linux || is_chromeos) {
+      data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
     }
 
     if ((is_linux || is_chromeos) && !is_component_build) {
@@ -556,14 +554,14 @@ if (is_android) {
     cr_fuchsia_package("content_shell_pkg") {
       testonly = true
       binary = ":content_shell"
-      package_name_override = "content_shell"
+      package_name = "content_shell"
       manifest = "fuchsia/content_shell.cmx"
     }
 
-    fuchsia_package_runner("content_shell_fuchsia") {
+    fuchsia_package_installer("content_shell_fuchsia") {
       testonly = true
       package = ":content_shell_pkg"
-      package_name_override = "content_shell"
+      package_name = "content_shell"
     }
   }
 }
@@ -825,6 +823,7 @@ if (is_mac) {
 
 mojom("content_browsertests_mojom") {
   sources = [ "common/power_monitor_test.mojom" ]
+  public_deps = [ "//sandbox/policy/mojom" ]
 }
 
 group("content_shell_crash_test") {

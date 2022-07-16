@@ -5,7 +5,6 @@
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
@@ -86,9 +85,6 @@ void ContentPasswordManagerDriverFactory::RenderFrameDeleted(
 
 void ContentPasswordManagerDriverFactory::DidFinishNavigation(
     content::NavigationHandle* navigation) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation->IsInPrimaryMainFrame() || navigation->IsSameDocument() ||
       !navigation->HasCommitted()) {
     return;
@@ -109,6 +105,6 @@ void ContentPasswordManagerDriverFactory::RequestSendLoggingAvailability() {
     frame_and_driver.second.SendLoggingAvailability();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentPasswordManagerDriverFactory)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentPasswordManagerDriverFactory);
 
 }  // namespace password_manager

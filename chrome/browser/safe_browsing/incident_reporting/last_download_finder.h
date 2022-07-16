@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -47,6 +46,9 @@ class LastDownloadFinder : public ProfileManagerObserver,
       std::unique_ptr<ClientIncidentReport_DownloadDetails>,
       std::unique_ptr<ClientIncidentReport_NonBinaryDownloadDetails>)>
       LastDownloadCallback;
+
+  LastDownloadFinder(const LastDownloadFinder&) = delete;
+  LastDownloadFinder& operator=(const LastDownloadFinder&) = delete;
 
   ~LastDownloadFinder() override;
 
@@ -140,8 +142,6 @@ class LastDownloadFinder : public ProfileManagerObserver,
 
   // A factory for asynchronous operations on profiles' HistoryService.
   base::WeakPtrFactory<LastDownloadFinder> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LastDownloadFinder);
 };
 
 }  // namespace safe_browsing

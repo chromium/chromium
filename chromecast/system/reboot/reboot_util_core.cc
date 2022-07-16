@@ -48,6 +48,7 @@ bool RebootUtil::IsValidRebootSource(RebootShlib::RebootSource reboot_source) {
     case RebootShlib::RebootSource::MULTI_SERVICE_BUG:
     case RebootShlib::RebootSource::POWER_MANAGER_SHUTDOWN:
     case RebootShlib::RebootSource::EXPERIMENT_CHANGE:
+    case RebootShlib::RebootSource::ANOMALY:
       return true;
     default:
       return false;

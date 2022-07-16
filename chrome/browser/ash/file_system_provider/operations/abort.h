@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/file_system_provider/operations/operation.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -30,6 +29,10 @@ class Abort : public Operation {
         const ProvidedFileSystemInfo& file_system_info,
         int operation_request_id,
         storage::AsyncFileUtil::StatusCallback callback);
+
+  Abort(const Abort&) = delete;
+  Abort& operator=(const Abort&) = delete;
+
   ~Abort() override;
 
   // Operation overrides.
@@ -44,8 +47,6 @@ class Abort : public Operation {
  private:
   int operation_request_id_;
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Abort);
 };
 
 }  // namespace operations

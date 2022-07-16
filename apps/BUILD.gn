@@ -38,7 +38,7 @@ static_library("apps") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    "//base/util/values:values_util",
+    "//base",
     "//build:chromeos_buildflags",
     "//components/keyed_service/content",
     "//content/public/browser",
@@ -49,7 +49,10 @@ static_library("apps") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//components/user_manager" ]
+    deps += [
+      "//components/app_restore",
+      "//components/user_manager",
+    ]
   }
 }
 

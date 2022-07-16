@@ -18,7 +18,9 @@ using ContextType = ExtensionApiTest::ContextType;
 
 class ExecuteScriptApiTestBase : public ExtensionApiTest {
  public:
-  ExecuteScriptApiTestBase() = default;
+  explicit ExecuteScriptApiTestBase(
+      ContextType context_type = ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
   ~ExecuteScriptApiTestBase() override = default;
   ExecuteScriptApiTestBase(const ExecuteScriptApiTestBase&) = delete;
   ExecuteScriptApiTestBase& operator=(const ExecuteScriptApiTestBase&) = delete;
@@ -36,17 +38,15 @@ class ExecuteScriptApiTestBase : public ExtensionApiTest {
 class ExecuteScriptApiTest : public ExecuteScriptApiTestBase,
                              public testing::WithParamInterface<ContextType> {
  public:
-  ExecuteScriptApiTest() = default;
+  ExecuteScriptApiTest() : ExecuteScriptApiTestBase(GetParam()) {}
   ~ExecuteScriptApiTest() override = default;
   ExecuteScriptApiTest(const ExecuteScriptApiTest&) = delete;
   ExecuteScriptApiTest& operator=(const ExecuteScriptApiTest&) = delete;
 
  protected:
   bool RunTest(const char* extension_name, bool allow_file_access = false) {
-    return RunExtensionTest(
-        extension_name, {},
-        {.allow_file_access = allow_file_access,
-         .load_as_service_worker = GetParam() == ContextType::kServiceWorker});
+    return RunExtensionTest(extension_name, {},
+                            {.allow_file_access = allow_file_access});
   }
 };
 
@@ -59,59 +59,59 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 
 // If failing, mark disabled and update http://crbug.com/92105.
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptBasic) {
-  ASSERT_TRUE(RunTest("executescript/basic")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/basic")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptBadEncoding) {
-  ASSERT_TRUE(RunTest("executescript/bad_encoding")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/bad_encoding")) << message_;
 }
 
 // If failing, mark disabled and update http://crbug.com/92105.
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptInFrame) {
-  ASSERT_TRUE(RunTest("executescript/in_frame")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/in_frame")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptByFrameId) {
-  ASSERT_TRUE(RunTest("executescript/frame_id")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/frame_id")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptPermissions) {
-  ASSERT_TRUE(RunTest("executescript/permissions")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/permissions")) << message_;
 }
 
 // If failing, mark disabled and update http://crbug.com/84760.
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptFileAfterClose) {
-  ASSERT_TRUE(RunTest("executescript/file_after_close")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/file_after_close")) << message_;
 }
 
 // If crashing, mark disabled and update http://crbug.com/67774.
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptFragmentNavigation) {
-  ASSERT_TRUE(RunTest("executescript/fragment")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/fragment")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, NavigationRaceExecuteScript) {
-  ASSERT_TRUE(RunTest("executescript/navigation_race")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/navigation_race")) << message_;
 }
 
 // If failing, mark disabled and update http://crbug.com/92105.
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptFrameAfterLoad) {
-  ASSERT_TRUE(RunTest("executescript/frame_after_load")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/frame_after_load")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, FrameWithHttp204) {
-  ASSERT_TRUE(RunTest("executescript/http204")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/http204")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptRunAt) {
-  ASSERT_TRUE(RunTest("executescript/run_at")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/run_at")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptCSSOrigin) {
-  ASSERT_TRUE(RunTest("executescript/css_origin")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/css_origin")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptCallback) {
-  ASSERT_TRUE(RunTest("executescript/callback")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/callback")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptRemoveCSS) {
@@ -124,15 +124,15 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, UserGesture) {
   if (GetParam() == ContextType::kServiceWorker)
     return;
 
-  ASSERT_TRUE(RunTest("executescript/user_gesture")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/user_gesture")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, InjectIntoSubframesOnLoad) {
-  ASSERT_TRUE(RunTest("executescript/subframes_on_load")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/subframes_on_load")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, RemovedFrames) {
-  ASSERT_TRUE(RunTest("executescript/removed_frames")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/removed_frames")) << message_;
 }
 
 // Ensure that an extension can inject a script in a file frame provided it has
@@ -142,11 +142,12 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, InjectScriptInFileFrameAllowed) {
   // script into it.
   base::FilePath test_file =
       test_data_dir_.DirName().AppendASCII("test_file.txt");
-  ui_test_utils::NavigateToURL(browser(), net::FilePathToFileURL(test_file));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           net::FilePathToFileURL(test_file)));
 
   SetCustomArg("ALLOWED");
-  ASSERT_TRUE(RunTest("executescript/file_access",
-                      /*allow_file_access=*/true))
+  ASSERT_TRUE(RunExtensionTest("executescript/file_access", {},
+                               {.allow_file_access = true}))
       << message_;
 }
 
@@ -157,10 +158,11 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, InjectScriptInFileFrameDenied) {
   // script into it.
   base::FilePath test_file =
       test_data_dir_.DirName().AppendASCII("test_file.txt");
-  ui_test_utils::NavigateToURL(browser(), net::FilePathToFileURL(test_file));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           net::FilePathToFileURL(test_file)));
 
   SetCustomArg("DENIED");
-  ASSERT_TRUE(RunTest("executescript/file_access")) << message_;
+  ASSERT_TRUE(RunExtensionTest("executescript/file_access")) << message_;
 }
 
 // If tests time out because it takes too long to run them, then this value can

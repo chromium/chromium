@@ -26,6 +26,11 @@ class WebViewAutofillLogRouterFactory : public BrowserStateKeyedServiceFactory {
 
   static WebViewAutofillLogRouterFactory* GetInstance();
 
+  WebViewAutofillLogRouterFactory(const WebViewAutofillLogRouterFactory&) =
+      delete;
+  WebViewAutofillLogRouterFactory& operator=(
+      const WebViewAutofillLogRouterFactory&) = delete;
+
  private:
   friend class base::NoDestructor<WebViewAutofillLogRouterFactory>;
 
@@ -35,8 +40,6 @@ class WebViewAutofillLogRouterFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewAutofillLogRouterFactory);
 };
 
 }  // namespace autofill

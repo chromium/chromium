@@ -25,7 +25,15 @@ class IncognitoClearBrowsingDataDialog
  public:
   METADATA_HEADER(IncognitoClearBrowsingDataDialog);
 
-  static void Show(views::View* anchor_view, Profile* incognito_profile);
+  enum Type {
+    kDefaultBubble = 0,
+    kHistoryDisclaimerBubble = 1,
+    kMaxValue = kHistoryDisclaimerBubble,
+  };
+
+  static void Show(views::View* anchor_view,
+                   Profile* incognito_profile,
+                   Type type);
   static bool IsShowing();
 
   // testing
@@ -43,7 +51,8 @@ class IncognitoClearBrowsingDataDialog
 
  private:
   explicit IncognitoClearBrowsingDataDialog(views::View* anchor_view,
-                                            Profile* incognito_profile);
+                                            Profile* incognito_profile,
+                                            Type type);
 
   static void CloseDialog();
 
@@ -52,6 +61,9 @@ class IncognitoClearBrowsingDataDialog
   // Helper methods to add functionality to the button.
   void OnCloseWindowsButtonClicked();
   void OnCancelButtonClicked();
+
+  void SetDialogForDefaultBubbleType();
+  void SetDialogForHistoryDisclaimerBubbleType();
 
   Profile* incognito_profile_;
   NonAccessibleImageView* header_view_;

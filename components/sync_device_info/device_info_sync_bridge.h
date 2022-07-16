@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -27,6 +26,7 @@
 
 namespace sync_pb {
 class DeviceInfoSpecifics;
+enum SyncEnums_DeviceType : int;
 }  // namespace sync_pb
 
 namespace syncer {
@@ -45,6 +45,10 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
       OnceModelTypeStoreFactory store_factory,
       std::unique_ptr<ModelTypeChangeProcessor> change_processor,
       std::unique_ptr<DeviceInfoPrefs> device_info_prefs);
+
+  DeviceInfoSyncBridge(const DeviceInfoSyncBridge&) = delete;
+  DeviceInfoSyncBridge& operator=(const DeviceInfoSyncBridge&) = delete;
+
   ~DeviceInfoSyncBridge() override;
 
   LocalDeviceInfoProvider* GetLocalDeviceInfoProvider();
@@ -87,7 +91,8 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   std::vector<std::unique_ptr<DeviceInfo>> GetAllDeviceInfo() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  int CountActiveDevices() const override;
+  std::map<sync_pb::SyncEnums_DeviceType, int> CountActiveDevicesByType()
+      const override;
   bool IsRecentLocalCacheGuid(const std::string& cache_guid) const override;
 
   // For testing only.
@@ -147,12 +152,6 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   void CommitAndNotify(std::unique_ptr<ModelTypeStore::WriteBatch> batch,
                        bool should_notify);
 
-  // Counts the number of active devices relative to |now|. The activeness of a
-  // device depends on the amount of time since it was updated, which means
-  // comparing it against the current time. |now| is passed into this method to
-  // allow unit tests to control expected results.
-  int CountActiveDevices(const base::Time now) const;
-
   // Deletes locally old data and metadata entries without issuing tombstones.
   void ExpireOldEntries();
 
@@ -194,8 +193,6 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   const std::unique_ptr<DeviceInfoPrefs> device_info_prefs_;
 
   base::WeakPtrFactory<DeviceInfoSyncBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceInfoSyncBridge);
 };
 
 }  // namespace syncer

@@ -18,16 +18,13 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "content/public/browser/notification_service.h"
-
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
-#include "chrome/browser/sessions/app_session_service_factory.h"
-#endif
 
 using base::UserMetricsAction;
 using content::WebContents;
@@ -178,12 +175,8 @@ void BrowserList::CloseAllBrowsersWithProfile(
     const CloseCallback& on_close_success,
     const CloseCallback& on_close_aborted,
     bool skip_beforeunload) {
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
   SessionServiceFactory::ShutdownForProfile(profile);
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
   AppSessionServiceFactory::ShutdownForProfile(profile);
-#endif  //  BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
-#endif  //  BUILDFLAG(ENABLE_SESSION_SERVICE)
 
   TryToCloseBrowserList(GetBrowsersToClose(profile), on_close_success,
                         on_close_aborted, profile->GetPath(),

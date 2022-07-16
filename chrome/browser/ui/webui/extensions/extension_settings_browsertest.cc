@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ViewSource) {
   content::WebContents* options_contents = nullptr;
   {
     content::WebContentsAddedObserver options_contents_added_observer;
-    ui_test_utils::NavigateToURL(browser(), options_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), options_url));
     options_contents = options_contents_added_observer.GetWebContents();
   }
   ASSERT_TRUE(options_contents);
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
   // Navigate to chrome://extensions which is a allowlisted URL for the
   // chrome.activityLogPrivate API.
   GURL extensions_url("chrome://extensions");
-  ui_test_utils::NavigateToURL(browser(), extensions_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extensions_url));
   content::WebContents* page_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(page_contents);
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   GURL activity_log_url("chrome://extensions/?activity=" + extension->id());
-  ui_test_utils::NavigateToURL(browser(), activity_log_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), activity_log_url));
   content::WebContents* activity_log_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(activity_log_contents);

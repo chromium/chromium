@@ -29,18 +29,19 @@
 #include "ash/search_box/search_box_view_delegate.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/ime/composition_text.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/widget_test.h"
@@ -50,10 +51,18 @@ namespace {
 
 using test::AppListTestViewDelegate;
 
+SearchModel* GetSearchModel() {
+  return AppListModelProvider::Get()->search_model();
+}
+
 class KeyPressCounterView : public ContentsView {
  public:
   explicit KeyPressCounterView(AppListView* app_list_view)
       : ContentsView(app_list_view), count_(0) {}
+
+  KeyPressCounterView(const KeyPressCounterView&) = delete;
+  KeyPressCounterView& operator=(const KeyPressCounterView&) = delete;
+
   ~KeyPressCounterView() override = default;
 
   int GetCountAndReset() {
@@ -72,14 +81,16 @@ class KeyPressCounterView : public ContentsView {
     return false;
   }
   int count_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyPressCounterView);
 };
 
 class SearchBoxViewTest : public views::test::WidgetTest,
                           public SearchBoxViewDelegate {
  public:
   SearchBoxViewTest() = default;
+
+  SearchBoxViewTest(const SearchBoxViewTest&) = delete;
+  SearchBoxViewTest& operator=(const SearchBoxViewTest&) = delete;
+
   ~SearchBoxViewTest() override = default;
 
   // Overridden from testing::Test:
@@ -104,7 +115,7 @@ class SearchBoxViewTest : public views::test::WidgetTest,
         std::make_unique<KeyPressCounterView>(app_list_view_));
 
     widget_->Show();
-    counter_view_->Init(view_delegate_.GetModel());
+    counter_view_->Init();
     SetContentsView(counter_view_);
   }
 
@@ -189,9 +200,7 @@ class SearchBoxViewTest : public views::test::WidgetTest,
     results()->AddAt(index, std::move(search_result));
   }
 
-  SearchModel::SearchResults* results() {
-    return view_delegate_.GetSearchModel()->results();
-  }
+  SearchModel::SearchResults* results() { return GetSearchModel()->results(); }
 
  private:
   // Overridden from SearchBoxViewDelegate:
@@ -216,8 +225,6 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   std::u16string last_query_;
   int query_changed_count_ = 0;
   int last_result_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxViewTest);
 };
 
 TEST_F(SearchBoxViewTest, SearchBoxTextUsesAppListSearchBoxTextColor) {
@@ -249,13 +256,21 @@ TEST_F(SearchBoxViewTest, SearchBoxInactiveByDefault) {
   ASSERT_FALSE(view()->is_search_box_active());
 }
 
+TEST_F(SearchBoxViewTest, AccessibilityHintRemovedWhenSearchBoxActive) {
+  EXPECT_EQ(view()->search_box()->GetAccessibleName(),
+            l10n_util::GetStringUTF16(
+                IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL));
+
+  SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
+  EXPECT_EQ(view()->search_box()->GetAccessibleName(), u"");
+}
+
 // Tests that the black Google icon is used for an inactive Google search.
 TEST_F(SearchBoxViewTest, SearchBoxInactiveSearchBoxGoogle) {
   SetSearchEngineIsGoogle(true);
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
       kGoogleBlackIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
-  view()->ModelChanged();
 
   const gfx::ImageSkia actual_icon =
       view()->get_search_icon_for_test()->GetImage();
@@ -270,7 +285,6 @@ TEST_F(SearchBoxViewTest, SearchBoxActiveSearchEngineGoogle) {
   SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
       kGoogleColorIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
-  view()->ModelChanged();
 
   const gfx::ImageSkia actual_icon =
       view()->get_search_icon_for_test()->GetImage();
@@ -285,7 +299,6 @@ TEST_F(SearchBoxViewTest, SearchBoxInactiveSearchEngineNotGoogle) {
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
       kSearchEngineNotGoogleIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
-  view()->ModelChanged();
 
   const gfx::ImageSkia actual_icon =
       view()->get_search_icon_for_test()->GetImage();
@@ -300,7 +313,6 @@ TEST_F(SearchBoxViewTest, SearchBoxActiveSearchEngineNotGoogle) {
   SetSearchBoxActive(true, ui::ET_UNKNOWN);
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
       kSearchEngineNotGoogleIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
-  view()->ModelChanged();
 
   const gfx::ImageSkia actual_icon =
       view()->get_search_icon_for_test()->GetImage();
@@ -640,7 +652,7 @@ TEST_F(SearchBoxViewTest, NavigateSuggestedContentInfo) {
   view_delegate()->SetShouldShowSuggestedContentInfo(true);
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
-  contents_view->Init(view_delegate()->GetModel());
+  contents_view->Init();
   SetContentsView(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
@@ -695,7 +707,7 @@ TEST_F(SearchBoxViewTest, KeyboardEventClosesSuggestedContentInfo) {
   view_delegate()->SetShouldShowSuggestedContentInfo(true);
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
-  contents_view->Init(view_delegate()->GetModel());
+  contents_view->Init();
   SetContentsView(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
@@ -726,7 +738,7 @@ TEST_F(SearchBoxViewTest, SuggestedContentActionNotOverriddenByNewResults) {
   view_delegate()->SetShouldShowSuggestedContentInfo(true);
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
-  contents_view->Init(view_delegate()->GetModel());
+  contents_view->Init();
   SetContentsView(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
@@ -769,7 +781,7 @@ TEST_F(SearchBoxViewTest, SuggestedContentSelectionDoesNotChangeSearchBoxText) {
   view_delegate()->SetShouldShowSuggestedContentInfo(true);
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
-  contents_view->Init(view_delegate()->GetModel());
+  contents_view->Init();
   SetContentsView(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
@@ -807,17 +819,19 @@ TEST_F(SearchBoxViewTest, SuggestedContentSelectionDoesNotChangeSearchBoxText) {
 class SearchBoxViewAssistantButtonTest : public SearchBoxViewTest {
  public:
   SearchBoxViewAssistantButtonTest() = default;
+
+  SearchBoxViewAssistantButtonTest(const SearchBoxViewAssistantButtonTest&) =
+      delete;
+  SearchBoxViewAssistantButtonTest& operator=(
+      const SearchBoxViewAssistantButtonTest&) = delete;
+
   ~SearchBoxViewAssistantButtonTest() override = default;
 
   // Overridden from testing::Test
   void SetUp() override {
     SearchBoxViewTest::SetUp();
-    view_delegate()->GetSearchModel()->search_box()->SetShowAssistantButton(
-        true);
+    GetSearchModel()->search_box()->SetShowAssistantButton(true);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxViewAssistantButtonTest);
 };
 
 // Tests that the assistant button is visible by default.
@@ -840,6 +854,11 @@ TEST_F(SearchBoxViewAssistantButtonTest,
 class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
  public:
   SearchBoxViewAutocompleteTest() = default;
+
+  SearchBoxViewAutocompleteTest(const SearchBoxViewAutocompleteTest&) = delete;
+  SearchBoxViewAutocompleteTest& operator=(
+      const SearchBoxViewAutocompleteTest&) = delete;
+
   ~SearchBoxViewAutocompleteTest() override = default;
 
   void ProcessAutocomplete() {
@@ -855,12 +874,12 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
       // Search box autocomplete suggestion is accepted, but it should not
       // trigger another query, thus it is not reflected in Search Model.
       EXPECT_EQ(u"hello world!", view()->search_box()->GetText());
-      EXPECT_EQ(u"he", view_delegate()->GetSearchModel()->search_box()->text());
+      EXPECT_EQ(u"he", GetSearchModel()->search_box()->text());
     } else {
       // Search box autocomplete suggestion is removed and is reflected in
       // SearchModel.
       EXPECT_EQ(view()->search_box()->GetText(),
-                view_delegate()->GetSearchModel()->search_box()->text());
+                GetSearchModel()->search_box()->text());
       EXPECT_EQ(u"he", view()->search_box()->GetText());
       // ProcessAutocomplete should be a no-op.
       ProcessAutocomplete();
@@ -950,9 +969,6 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
     // Reset search box text and SearchResults for next test.
     ResetAutocompleteBehaviorTest();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxViewAutocompleteTest);
 };
 
 // Tests that autocomplete suggestions are consistent with top SearchResult list
@@ -1122,22 +1138,22 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
 }
 
 // TODO(crbug.com/1216082): Refactor the above tests to use AshTestBase, then
-// parameterize them based on the AppListBubble flag.
+// parameterize them based on the ProductivityLauncher flag.
 class SearchBoxViewAppListBubbleTest : public AshTestBase {
  public:
   SearchBoxViewAppListBubbleTest() {
-    scoped_features_.InitAndEnableFeature(features::kAppListBubble);
+    scoped_features_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ~SearchBoxViewAppListBubbleTest() override = default;
 
   static void AddSearchResult(const std::string& id,
                               const std::u16string& title) {
-    SearchModel::SearchResults* search_results =
-        Shell::Get()->app_list_controller()->GetSearchModel()->results();
+    SearchModel::SearchResults* search_results = GetSearchModel()->results();
     auto search_result = std::make_unique<TestSearchResult>();
     search_result->set_result_id(id);
     search_result->set_display_type(SearchResultDisplayType::kList);
     search_result->set_title(title);
+    search_result->set_best_match(true);
     search_results->Add(std::move(search_result));
   }
 
@@ -1187,6 +1203,15 @@ TEST_F(SearchBoxViewAppListBubbleTest, ResultSelection) {
   SearchResult* result2 = controller->selected_result()->result();
   ASSERT_TRUE(result2);
   EXPECT_EQ(u"title2", result2->title());
+}
+
+TEST_F(SearchBoxViewAppListBubbleTest, HasAccessibilityHintWhenActive) {
+  GetAppListTestHelper()->ShowAppList();
+  SearchBoxView* view = GetAppListTestHelper()->GetBubbleSearchBoxView();
+  EXPECT_TRUE(view->is_search_box_active());
+  EXPECT_EQ(view->search_box()->GetAccessibleName(),
+            l10n_util::GetStringUTF16(
+                IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL));
 }
 
 }  // namespace

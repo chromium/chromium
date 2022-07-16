@@ -83,7 +83,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   // successful.
   bool DecodeAndScale(SegmentReader*,
                       bool all_data_received,
-                      size_t index,
+                      wtf_size_t index,
                       const SkImageInfo&,
                       void* pixels,
                       size_t row_bytes,
@@ -96,11 +96,11 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   // ImageDecoder needs something analogous to its ImageFrame cache to hold
   // partial planes, and the GPU code needs to handle them.
   bool DecodeToYUV(SegmentReader*,
-                   size_t index,
+                   wtf_size_t index,
                    SkColorType color_type,
                    const SkISize component_sizes[cc::kNumYUVPlanes],
                    void* planes[cc::kNumYUVPlanes],
-                   const size_t row_bytes[cc::kNumYUVPlanes]);
+                   const wtf_size_t row_bytes[cc::kNumYUVPlanes]);
 
   const SkISize& GetFullSize() const { return full_size_; }
 
@@ -112,7 +112,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
     return decode_failed_;
   }
 
-  bool HasAlpha(size_t index);
+  bool HasAlpha(wtf_size_t index);
 
   // TODO(crbug.com/943519): Do not call unless the SkROBuffer has all the data.
   bool GetYUVAInfo(
@@ -148,7 +148,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
     image_decoder_factory_ = std::move(factory);
   }
 
-  void SetHasAlpha(size_t index, bool has_alpha);
+  void SetHasAlpha(wtf_size_t index, bool has_alpha);
 
   const SkISize full_size_;
   // Parameters used to create internal ImageDecoder objects.
@@ -159,7 +159,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   mutable Mutex generator_mutex_;
   bool decode_failed_ GUARDED_BY(generator_mutex_) = false;
   bool yuv_decoding_failed_ GUARDED_BY(generator_mutex_) = false;
-  size_t frame_count_ GUARDED_BY(generator_mutex_) = 0u;
+  wtf_size_t frame_count_ GUARDED_BY(generator_mutex_) = 0u;
   Vector<bool> has_alpha_ GUARDED_BY(generator_mutex_);
 
   struct ClientMutex {

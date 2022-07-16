@@ -15,8 +15,17 @@ namespace ui {
 class WaylandConnection;
 class WaylandDataDevice;
 
-class WaylandDataDeviceManager {
+class WaylandDataDeviceManager
+    : public wl::GlobalObjectRegistrar<WaylandDataDeviceManager> {
  public:
+  static constexpr char kInterfaceName[] = "wl_data_device_manager";
+
+  static void Instantiate(WaylandConnection* connection,
+                          wl_registry* registry,
+                          uint32_t name,
+                          const std::string& interface,
+                          uint32_t version);
+
   using DataSource = WaylandDataSource;
   using DataDevice = WaylandDataDevice;
 

@@ -57,6 +57,9 @@ class ProcessManagerTest : public ExtensionsTest {
  public:
   ProcessManagerTest() {}
 
+  ProcessManagerTest(const ProcessManagerTest&) = delete;
+  ProcessManagerTest& operator=(const ProcessManagerTest&) = delete;
+
   ~ProcessManagerTest() override {}
 
   void SetUp() override {
@@ -78,8 +81,6 @@ class ProcessManagerTest : public ExtensionsTest {
   std::unique_ptr<ExtensionRegistry>
       extension_registry_;  // Shared between BrowserContexts.
   TestProcessManagerDelegate process_manager_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessManagerTest);
 };
 
 // Test that startup background hosts are created when the extension system

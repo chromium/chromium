@@ -4,3 +4,8 @@ jimmyxgong@chromium.org
 khorimoto@chromium.org
 michaelpg@chromium.org
 zentaro@chromium.org
+
+# For APAC timezone build file related changes only.
+per-file BUILD.gn=file://chrome/browser/resources/settings/chromeos/os_apps_page/OWNERS
+per-file os_settings.gni=file://chrome/browser/resources/settings/chromeos/os_apps_page/OWNERS
+per-file os_settings.js=file://chrome/browser/resources/settings/chromeos/os_apps_page/OWNERS

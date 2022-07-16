@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -49,8 +49,8 @@ def DiffResults(chartjson, base_results, diff_results):
     base_results: The chartjson-formatted size results of the base APK.
     diff_results: The chartjson-formatted size results of the diff APK.
   """
-  for graph_title, graph in base_results['charts'].iteritems():
-    for trace_title, trace in graph.iteritems():
+  for graph_title, graph in base_results['charts'].items():
+    for trace_title, trace in graph.items():
       perf_tests_results_helper.ReportPerfResult(
           chartjson, graph_title, trace_title,
           diff_results['charts'][graph_title][trace_title]['value']
@@ -67,8 +67,8 @@ def AddIntermediateResults(chartjson, base_results, diff_results):
     base_results: The chartjson-formatted size results of the base APK.
     diff_results: The chartjson-formatted size results of the diff APK.
   """
-  for graph_title, graph in base_results['charts'].iteritems():
-    for trace_title, trace in graph.iteritems():
+  for graph_title, graph in base_results['charts'].items():
+    for trace_title, trace in graph.items():
       perf_tests_results_helper.ReportPerfResult(
           chartjson, graph_title + '_base_apk', trace_title,
           trace['value'], trace['units'], trace['improvement_direction'],
@@ -76,8 +76,8 @@ def AddIntermediateResults(chartjson, base_results, diff_results):
 
   # Both base_results and diff_results should have the same charts/traces, but
   # loop over them separately in case they don't
-  for graph_title, graph in diff_results['charts'].iteritems():
-    for trace_title, trace in graph.iteritems():
+  for graph_title, graph in diff_results['charts'].items():
+    for trace_title, trace in graph.items():
       perf_tests_results_helper.ReportPerfResult(
           chartjson, graph_title + '_diff_apk', trace_title,
           trace['value'], trace['units'], trace['improvement_direction'],

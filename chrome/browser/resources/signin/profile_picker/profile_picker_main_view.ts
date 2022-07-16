@@ -13,26 +13,28 @@ import './profile_card.js';
 import './profile_picker_shared_css.js';
 import './strings.m.js';
 
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
-import {navigateTo, NavigationMixin, NavigationMixinInterface, Routes} from './navigation_mixin.js';
+import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
 import {isAskOnStartupAllowed, isGuestModeEnabled, isProfileCreationAllowed} from './policy_helper.js';
 
 export interface ProfilePickerMainViewElement {
   $: {
     addProfile: HTMLElement,
+    askOnStartup: CrCheckboxElement,
     'product-logo': HTMLElement,
     browseAsGuestButton: HTMLElement,
     profilesContainer: HTMLElement,
+    wrapper: HTMLElement,
   };
 }
 
 const ProfilePickerMainViewElementBase =
-    mixinBehaviors([WebUIListenerBehavior], NavigationMixin(PolymerElement)) as
-    {new (): PolymerElement & WebUIListenerBehavior & NavigationMixinInterface};
+    WebUIListenerMixin(NavigationMixin(PolymerElement));
 
 export class ProfilePickerMainViewElement extends
     ProfilePickerMainViewElementBase {
@@ -177,6 +179,12 @@ export class ProfilePickerMainViewElement extends
   private computeHideAskOnStartup_(): boolean {
     return !isAskOnStartupAllowed() || !this.profilesList_ ||
         this.profilesList_.length < 2;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'profile-picker-main-view': ProfilePickerMainViewElement;
   }
 }
 

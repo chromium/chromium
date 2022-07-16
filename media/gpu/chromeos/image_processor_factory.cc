@@ -15,6 +15,11 @@
 #include "media/gpu/chromeos/libyuv_image_processor_backend.h"
 #include "media/gpu/macros.h"
 
+#if BUILDFLAG(USE_VAAPI)
+#include "media/gpu/vaapi/vaapi_image_processor_backend.h"
+#include "media/gpu/vaapi/vaapi_wrapper.h"
+#endif  // BUILDFLAG(USE_VAAPI)
+
 #if BUILDFLAG(USE_V4L2_CODEC)
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
@@ -24,6 +29,55 @@
 namespace media {
 
 namespace {
+
+#if BUILDFLAG(USE_VAAPI)
+std::unique_ptr<ImageProcessor> CreateVaapiImageProcessorWithInputCandidates(
+    const std::vector<std::pair<Fourcc, gfx::Size>>& input_candidates,
+    const gfx::Rect& input_visible_rect,
+    const gfx::Size& output_size,
+    scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+    ImageProcessorFactory::PickFormatCB out_format_picker,
+    ImageProcessor::ErrorCB error_cb) {
+  std::vector<Fourcc> vpp_supported_formats =
+      VaapiWrapper::GetVppSupportedFormats();
+  absl::optional<std::pair<Fourcc, gfx::Size>> chosen_input_candidate;
+  for (const auto& input_candidate : input_candidates) {
+    if (base::Contains(vpp_supported_formats, input_candidate.first) &&
+        VaapiWrapper::IsVppResolutionAllowed(input_candidate.second)) {
+      chosen_input_candidate = input_candidate;
+      break;
+    }
+  }
+  if (!chosen_input_candidate)
+    return nullptr;
+
+  // Note that we pick the first input candidate as the preferred output format.
+  // The reason is that in practice, the VaapiVideoDecoder will make
+  // |input_candidates| either {NV12} or {P010} depending on the bitdepth. So
+  // choosing the first (and only) element will keep the bitdepth of the frame
+  // which is needed to display HDR content.
+  auto chosen_output_format =
+      out_format_picker.Run(/*candidates=*/vpp_supported_formats,
+                            /*preferred_fourcc=*/input_candidates[0].first);
+  if (!chosen_output_format)
+    return nullptr;
+
+  // Note: the VaapiImageProcessorBackend doesn't use the ColorPlaneLayouts in
+  // the PortConfigs, so we just pass an empty list of plane layouts.
+  ImageProcessor::PortConfig input_config(
+      /*fourcc=*/chosen_input_candidate->first,
+      /*size=*/chosen_input_candidate->second, /*planes=*/{},
+      input_visible_rect, {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
+  ImageProcessor::PortConfig output_config(
+      /*fourcc=*/*chosen_output_format, /*size=*/output_size, /*planes=*/{},
+      /*visible_rect=*/gfx::Rect(output_size),
+      {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
+  return ImageProcessor::Create(
+      base::BindRepeating(&VaapiImageProcessorBackend::Create), input_config,
+      output_config, {ImageProcessor::OutputMode::IMPORT}, VIDEO_ROTATION_0,
+      std::move(error_cb), std::move(client_task_runner));
+}
+#endif  // BUILDFLAG(USE_VAAPI)
 
 #if BUILDFLAG(USE_V4L2_CODEC)
 std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
@@ -46,7 +100,8 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
       supported_fourccs.push_back(*fourcc);
   }
 
-  const auto output_fourcc = out_format_picker.Run(supported_fourccs);
+  const auto output_fourcc = out_format_picker.Run(
+      /*candidates=*/supported_fourccs, /*preferred_fourcc=*/absl::nullopt);
   if (!output_fourcc)
     return nullptr;
 
@@ -92,9 +147,9 @@ std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
     ImageProcessor::ErrorCB error_cb) {
   std::vector<ImageProcessor::CreateBackendCB> create_funcs;
 #if BUILDFLAG(USE_VAAPI)
-  NOTIMPLEMENTED();
-#endif  // BUILDFLAG(USE_VAAPI)
-#if BUILDFLAG(USE_V4L2_CODEC)
+  create_funcs.push_back(
+      base::BindRepeating(&VaapiImageProcessorBackend::Create));
+#elif BUILDFLAG(USE_V4L2_CODEC)
   create_funcs.push_back(base::BindRepeating(
       &V4L2ImageProcessorBackend::Create, V4L2Device::Create(), num_buffers));
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
@@ -117,21 +172,32 @@ std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
 std::unique_ptr<ImageProcessor>
 ImageProcessorFactory::CreateWithInputCandidates(
     const std::vector<std::pair<Fourcc, gfx::Size>>& input_candidates,
-    const gfx::Size& visible_size,
+    const gfx::Rect& input_visible_rect,
+    const gfx::Size& output_size,
     size_t num_buffers,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     PickFormatCB out_format_picker,
     ImageProcessor::ErrorCB error_cb) {
-#if BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(USE_VAAPI)
+  auto processor = CreateVaapiImageProcessorWithInputCandidates(
+      input_candidates, input_visible_rect, output_size, client_task_runner,
+      out_format_picker, error_cb);
+  if (processor)
+    return processor;
+#elif BUILDFLAG(USE_V4L2_CODEC)
+  // TODO(andrescj): we need to pass the |input_visible_rect| along for the V4L2
+  // ImageProcessor.
   auto processor = CreateV4L2ImageProcessorWithInputCandidates(
-      input_candidates, visible_size, num_buffers, client_task_runner,
+      input_candidates, output_size, num_buffers, client_task_runner,
       out_format_picker, error_cb);
   if (processor)
     return processor;
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
 
-  // TODO(crbug.com/1004727): Implement LibYUVImageProcessorBackend and
-  // VaapiImageProcessorBackend.
+  // TODO(crbug.com/1004727): Implement LibYUVImageProcessorBackend. When doing
+  // so, we must keep in mind that it might not be desirable to fallback to
+  // libyuv if the hardware image processor fails (e.g., in the case of
+  // protected content).
   return nullptr;
 }
 

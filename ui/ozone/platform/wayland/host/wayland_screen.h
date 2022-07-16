@@ -41,7 +41,7 @@ class WaylandScreen : public PlatformScreen {
 
   void OnOutputAddedOrUpdated(uint32_t output_id,
                               const gfx::Rect& bounds,
-                              int32_t output_scale,
+                              float output_scale,
                               int32_t output_transform);
   void OnOutputRemoved(uint32_t output_id);
 
@@ -71,12 +71,11 @@ class WaylandScreen : public PlatformScreen {
   void RemoveObserver(display::DisplayObserver* observer) override;
   std::vector<base::Value> GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info) override;
-  void SetDeviceScaleFactor(float scale) override;
 
  private:
   void AddOrUpdateDisplay(uint32_t output_id,
                           const gfx::Rect& bounds,
-                          int32_t scale,
+                          float scale,
                           int32_t transform);
 
   WaylandConnection* connection_ = nullptr;
@@ -92,15 +91,6 @@ class WaylandScreen : public PlatformScreen {
   mutable std::unique_ptr<OrgGnomeMutterIdleMonitor>
       org_gnome_mutter_idle_monitor_;
 #endif
-
-  // Fractional part of additional scale. By default, GNOME also provides scale
-  // factor for Wayland, but it uses the biggest scale factor if multiple
-  // displays are available. In contrast, wl_output.scale sends scale factor for
-  // each of the displays and we adapt accordingly. However, wl_output.scale
-  // doesn't send fractional parts, while GNOME does send that when "Large text"
-  // feature is enabled. Thus, store only this decimal part and updates displays
-  // accordingly.
-  float additional_scale_ = 0.f;
 
   wl::Object<zwp_idle_inhibitor_v1> idle_inhibitor_;
 

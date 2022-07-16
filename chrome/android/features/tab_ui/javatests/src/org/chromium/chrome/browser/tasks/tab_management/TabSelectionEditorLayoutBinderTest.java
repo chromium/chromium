@@ -27,11 +27,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -42,11 +42,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class TabSelectionEditorLayoutBinderTest extends DummyUiChromeActivityTestCase {
+public class TabSelectionEditorLayoutBinderTest extends DummyUiActivityTestCase {
     private TabSelectionEditorLayout mEditorLayoutView;
-    private PropertyModel mModel = new PropertyModel(TabSelectionEditorProperties.ALL_KEYS);
+    private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
-    private SelectionDelegate<Integer> mSelectionDelegate = new SelectionDelegate<>();
+    private SelectionDelegate<Integer> mSelectionDelegate;
     private ViewGroup mParentView;
 
     @Override
@@ -56,6 +56,8 @@ public class TabSelectionEditorLayoutBinderTest extends DummyUiChromeActivityTes
         mParentView = new LinearLayout(getActivity());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel = new PropertyModel(TabSelectionEditorProperties.ALL_KEYS);
+            mSelectionDelegate = new SelectionDelegate<>();
             getActivity().setContentView(mParentView);
             mEditorLayoutView =
                     (TabSelectionEditorLayout) getActivity().getLayoutInflater().inflate(
@@ -85,7 +87,7 @@ public class TabSelectionEditorLayoutBinderTest extends DummyUiChromeActivityTes
 
     @Override
     public void tearDownTest() throws Exception {
-        mMCP.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
         super.tearDownTest();
     }
 

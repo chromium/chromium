@@ -10,7 +10,6 @@
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/create_options.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/window.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -35,7 +34,7 @@ const char kErrorNoExistingWindow[] = "No open window to close.";
 const char kErrorNotOnLoginOrLockScreen[] =
     "Windows can only be created on the login and lock screen.";
 
-const char kExtensionNameImprivata[] = "Imprivata";
+const char kExtensionNameImprivata[] = "Imprivata OneSign";
 const char kExtensionNameImprivataTest[] = "LoginScreenUi test extension";
 const char kExtensionNameUnknown[] = "UNKNOWN EXTENSION";
 

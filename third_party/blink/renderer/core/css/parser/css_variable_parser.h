@@ -23,14 +23,12 @@ class CORE_EXPORT CSSVariableParser {
   static bool ContainsValidVariableReferences(CSSParserTokenRange);
 
   static CSSCustomPropertyDeclaration* ParseDeclarationValue(
-      const AtomicString&,
       const CSSTokenizedValue&,
       bool is_animation_tainted,
       const CSSParserContext&);
-  static CSSVariableReferenceValue* ParseRegisteredPropertyValue(
+  static CSSVariableReferenceValue* ParseVariableReferenceValue(
       CSSParserTokenRange,
       const CSSParserContext&,
-      bool require_var_reference,
       bool is_animation_tainted);
 
   static bool IsValidVariableName(const CSSParserToken&);

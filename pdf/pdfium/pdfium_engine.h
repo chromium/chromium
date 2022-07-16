@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -258,6 +260,12 @@ class PDFiumEngine : public PDFEngine,
   friend class PDFiumTestBase;
   friend class SelectionChangeInvalidator;
 
+  gfx::Size plugin_size() const {
+    // TODO(crbug.com/1237952): Just use .value() after fixing call sites.
+    DCHECK(plugin_size_.has_value());
+    return plugin_size_.value_or(gfx::Size());
+  }
+
   // We finished getting the pdf file, so load it. This will complete
   // asynchronously (due to password fetching) and may be run multiple times.
   void LoadDocument();
@@ -285,7 +293,7 @@ class PDFiumEngine : public PDFEngine,
   // This should only be called after `doc_` has been loaded and the document is
   // fully downloaded.
   // If this has been run once, it will not notify the client again.
-  void FinishLoadingDocument();
+  void FinishLoadingDocument(int32_t /*unused_but_required*/);
 
   // Loads information about the pages in the document and performs layout.
   void LoadPageInfo();
@@ -547,9 +555,8 @@ class PDFiumEngine : public PDFEngine,
   // within form text fields.
   void SetSelecting(bool selecting);
 
-  // Sets whether or not focus is in form text field or form combobox text
-  // field.
-  void SetInFormTextArea(bool in_form_text_area);
+  // Sets the type of field that has focus.
+  void SetFieldFocus(PDFEngine::FocusFieldType type);
 
   // Sets whether or not left mouse button is currently being held down.
   void SetMouseLeftButtonDown(bool is_mouse_left_button_down);
@@ -631,12 +638,16 @@ class PDFiumEngine : public PDFEngine,
   bool HandleTabForward(int modifiers);
   bool HandleTabBackward(int modifiers);
 
-  // Updates the currently focused object stored in `focus_item_type_`. Notifies
-  // `client_` about document focus change, if any.
-  void UpdateFocusItemType(FocusElementType focus_item_type);
+  // Updates the currently focused object stored in `focus_element_type_`.
+  // Notifies `client_` about document focus change, if any.
+  void UpdateFocusElementType(FocusElementType focus_element_type);
 
   void UpdateLinkUnderCursor(const std::string& target_url);
   void SetLinkUnderCursorForAnnotation(FPDF_ANNOTATION annot, int page_index);
+
+  // Checks whether a given `page_index` exists in `pending_thumbnails_`. If so,
+  // requests the thumbnail for that page.
+  void MaybeRequestPendingThumbnail(int page_index);
 
   // Keeps track of the most recently used plugin instance.
   // TODO(crbug.com/702993): Remove when PPAPI is gone.
@@ -655,7 +666,7 @@ class PDFiumEngine : public PDFEngine,
   // The offset of the page into the viewport.
   gfx::Vector2d page_offset_;
   // The plugin size in screen coordinates.
-  gfx::Size plugin_size_;
+  absl::optional<gfx::Size> plugin_size_;
   double current_zoom_ = 1.0;
   // The caret position and bound in plugin viewport coordinates.
   gfx::Rect caret_rect_;
@@ -673,6 +684,7 @@ class PDFiumEngine : public PDFEngine,
   PDFiumFormFiller form_filler_;
 
   std::unique_ptr<PDFiumDocument> document_;
+  bool document_pending_ = false;
   bool document_loaded_ = false;
 
   // The page(s) of the document.
@@ -701,13 +713,6 @@ class PDFiumEngine : public PDFEngine,
 
   // Text selection within form text fields and form combobox text fields.
   std::string selected_form_text_;
-
-  // True if focus is in form text field or form combobox text field.
-  bool in_form_text_area_ = false;
-
-  // True if the form text area currently in focus is not read only, and is a
-  // form text field or user-editable form combobox text field.
-  bool editable_form_text_area_ = false;
 
   // True if left mouse button is currently being held down.
   bool mouse_left_button_down_ = false;
@@ -747,11 +752,18 @@ class PDFiumEngine : public PDFEngine,
   // Set to true when updating plugin focus.
   bool updating_focus_ = false;
 
-  // The focus item type for the currently focused object.
-  FocusElementType focus_item_type_ = FocusElementType::kNone;
+  // True if `focus_field_type_` is currently set to `FocusFieldType::kText` and
+  // the focused form text area is not read-only.
+  bool editable_form_text_area_ = false;
 
-  // Stores the last focused object's focus item type before PDF loses focus.
-  FocusElementType last_focused_item_type_ = FocusElementType::kNone;
+  // The type of the currently focused form field.
+  FocusFieldType focus_field_type_ = FocusFieldType::kNoFocus;
+
+  // The focus element type for the currently focused object.
+  FocusElementType focus_element_type_ = FocusElementType::kNone;
+
+  // Stores the last focused object's focus element type before PDF loses focus.
+  FocusElementType last_focused_element_type_ = FocusElementType::kNone;
 
   // Stores the last focused annotation's index before PDF loses focus.
   int last_focused_annot_index_ = -1;
@@ -818,6 +830,20 @@ class PDFiumEngine : public PDFEngine,
 
   // Shadow matrix for generating the page shadow bitmap.
   std::unique_ptr<draw_utils::ShadowMatrix> page_shadow_;
+
+  // Pending thumbnail requests.
+  struct PendingThumbnail {
+    PendingThumbnail();
+    PendingThumbnail(PendingThumbnail&& that);
+    PendingThumbnail& operator=(PendingThumbnail&& that);
+    ~PendingThumbnail();
+
+    float device_pixel_ratio = 1.0f;
+    SendThumbnailCallback send_callback;
+  };
+
+  // Map of page indices to pending thumbnail requests.
+  base::flat_map<int, PendingThumbnail> pending_thumbnails_;
 
   // A list of information of document attachments.
   std::vector<DocumentAttachmentInfo> doc_attachment_info_list_;

@@ -149,8 +149,7 @@ public class ChromeActionModeHandlerUnitTest {
         }
 
         // Mock intent for querying web browsers.
-        packageManager.addResolveInfoForIntent(
-                PackageManagerUtils.getQueryInstalledBrowsersIntent(), browsersList);
+        packageManager.addResolveInfoForIntent(PackageManagerUtils.BROWSER_INTENT, browsersList);
 
         // Mock intent for querying home launchers.
         packageManager.addResolveInfoForIntent(

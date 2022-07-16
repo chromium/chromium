@@ -4,20 +4,23 @@
 
 #include "chrome/browser/share/share_history.h"
 
-#include "base/android/jni_string.h"
 #include "base/containers/flat_map.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/share/proto/share_history_message.pb.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/public/browser/storage_partition.h"
 
+#if defined(OS_ANDROID)
+#include "base/android/jni_string.h"
+#include "chrome/browser/profiles/profile_android.h"
+
 #include "chrome/browser/share/jni_headers/ShareHistoryBridge_jni.h"
 
 using base::android::JavaParamRef;
+#endif
 
 namespace sharing {
 
@@ -40,9 +43,19 @@ std::unique_ptr<ShareHistory::BackingDb> MakeDefaultDbForProfile(
       ->GetProtoDatabaseProvider()
       ->GetDB<mojom::ShareHistory>(
           leveldb_proto::ProtoDbType::SHARE_HISTORY_DATABASE,
-          profile->GetPath().Append(kShareHistoryFolder),
+          profile->GetPath().AppendASCII(kShareHistoryFolder),
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+}
+
+bool DayOverlapsTimeRange(base::Time day_start,
+                          base::Time start,
+                          base::Time end) {
+  const base::Time epoch = base::Time::UnixEpoch();
+  int day = (day_start - epoch).InDays();
+  int start_day = (start - epoch).InDays();
+  int end_day = (end - epoch).InDays();
+  return day >= start_day && day <= end_day;
 }
 
 }  // namespace
@@ -137,6 +150,22 @@ void ShareHistory::GetFlatShareHistory(GetFlatHistoryCallback callback,
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
+void ShareHistory::Clear(const base::Time& start, const base::Time& end) {
+  google::protobuf::RepeatedPtrField<mojom::DayShareHistory> histories_to_keep;
+  for (const auto& day : history_.day_histories()) {
+    base::Time day_start = base::Time::UnixEpoch() + base::Days(day.day());
+    if (!DayOverlapsTimeRange(day_start, start, end)) {
+      mojom::DayShareHistory this_day;
+      this_day.CopyFrom(day);
+      histories_to_keep.Add(std::move(this_day));
+    }
+  }
+
+  history_.mutable_day_histories()->Swap(&histories_to_keep);
+
+  FlushToBackingDb();
+}
+
 void ShareHistory::Init() {
   db_->Init(
       base::BindOnce(&ShareHistory::OnInitDone, weak_factory_.GetWeakPtr()));
@@ -209,6 +238,7 @@ mojom::TargetShareHistory* ShareHistory::TargetShareHistoryByName(
 
 }  // namespace sharing
 
+#if defined(OS_ANDROID)
 void JNI_ShareHistoryBridge_AddShareEntry(JNIEnv* env,
                                           const JavaParamRef<jobject>& jprofile,
                                           const JavaParamRef<jstring>& name) {
@@ -217,3 +247,4 @@ void JNI_ShareHistoryBridge_AddShareEntry(JNIEnv* env,
   if (instance)
     instance->AddShareEntry(base::android::ConvertJavaStringToUTF8(env, name));
 }
+#endif

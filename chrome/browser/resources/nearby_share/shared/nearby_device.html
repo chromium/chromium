@@ -11,8 +11,8 @@
     <style>
       #wrapper {
         align-items: center;
-        background-color: rgb(255, 255, 255);
-        border: 1px solid rgba(216, 216, 216, 0.76);
+        background-color: var(--cr-card-background-color);
+        border: 1px solid var(--cros-button-stroke-color-secondary);
         border-radius: 8px;
         box-sizing: border-box;
         cursor: pointer;
@@ -29,12 +29,13 @@
         outline: none;
       }
 
-      :host(:focus) #wrapper {
-        border-color: var(--google-grey-refresh-700);
+      :host(:focus) #wrapper,
+      :host([is-selected]:focus) #wrapper {
+        border-color: var(--cros-color-secondary);
       }
 
       :host([is-selected]) #wrapper {
-        border-color: var(--google-blue-refresh-500);
+        border-color: var(--cros-button-icon-color-secondary);
       }
 
       :host([is-selected]) #done {
@@ -42,11 +43,11 @@
       }
 
       :host([is-selected]) #name {
-        color: var(--google-blue-600);
+        color: var(--cros-text-color-prominent);
       }
 
       #done {
-        color: var(--google-blue-600);
+        color: var(--cros-text-color-prominent);
         display: none;
         flex-shrink: 0;
         height: 17px;
@@ -70,7 +71,7 @@
       }
 
       #name {
-        color: rgb(95, 99, 104);
+        color: var(--cros-text-color-secondary);
         flex-grow: 1;
         font-size: 11px;
         font-weight: 500;

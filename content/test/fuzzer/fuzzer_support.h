@@ -19,6 +19,9 @@ class RenderViewTestAdapter : public RenderViewTest {
  public:
   RenderViewTestAdapter();
 
+  RenderViewTestAdapter(const RenderViewTestAdapter&) = delete;
+  RenderViewTestAdapter& operator=(const RenderViewTestAdapter&) = delete;
+
   void TestBody() override {}
   // make SetUp visible.
   void SetUp() override;
@@ -31,8 +34,6 @@ class RenderViewTestAdapter : public RenderViewTest {
 
  private:
   const base::test::ScopedRunLoopTimeout increased_timeout_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewTestAdapter);
 };
 
 // Static environment. Initialized only once.

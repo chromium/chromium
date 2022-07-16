@@ -150,7 +150,7 @@ Additions to the protocol that specify backward-compatible default values (often
 with a semantic meaning of "unknown") do not need to increase the protocol
 version. Removals of values with specified defaults from the protocol do not
 need to increase the protocol version, since the default value can be assumed by
-compatible enpoints. All other changes to the protocol may require a new version
+compatible endpoints. All other changes to the protocol may require a new version
 number.
 
 ### Timing & Backoff
@@ -388,8 +388,6 @@ following members:
  *   `lang`: The language of the application installation, in BCP 47
      representation, or "" if unknown or not applicable. Default: "".
  *   `ping`: A `ping` object.
- *   `rollback_allowed`: true if the client will accept a version downgrade.
-     Typically used in conjunction with a targetversionprefix. Default: false.
  *   `tag`: A string, representing arbitrary application-specific data that the
      client wishes to disclose to the server. Clients should prefer to extend
      this protocol with additional attributes rather than use this field, but in
@@ -441,13 +439,14 @@ causes for a disabled state may exist.
 #### `updatecheck` Objects (Update Check Request)
 An updatecheck object represents the actual intent to update. It has the
 following members:
+ *   `rollback_allowed`: true if the client will accept a version downgrade.
+     Typically used in conjunction with a targetversionprefix. Default: false.
  *   `targetversionprefix`: A component-wise prefix of a version number, or a
-     complete version number suffixed with the `$` character. The server SHOULD
-     NOT return an update instruction to a version number that does not match
-     the prefix or complete version number. The prefix is interpreted a
-     dotted-tuple that specifies the exactly-matching elements; it is not a
-     lexical prefix. (For example, "1.2.3" matches "1.2.3.4" but not "1.2.34".)
-     Default: "".
+     complete version number. The server SHOULD NOT return an update
+     instruction to a version number that does not match the prefix or complete
+     version number. The prefix is interpreted a dotted-tuple that specifies
+     the exactly-matching elements; it is not a lexical prefix. (For example,
+     "1.2.3" matches "1.2.3.4" but not "1.2.34".) Default: "".
  *   `updatedisabled`: An indication of whether the client will honor an update
      response, if it receives one. Legal values are "true" (indicating that the
      client will ignore any update instruction) and "false" (indicating that the

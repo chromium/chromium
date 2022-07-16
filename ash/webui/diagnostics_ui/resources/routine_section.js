@@ -15,11 +15,13 @@ import './strings.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PowerRoutineResult, RoutineType, StandardRoutineResult, SystemRoutineControllerInterface} from './diagnostics_types.js';
 import {getSystemRoutineController} from './mojo_interface_provider.js';
-import {ExecutionProgress, RoutineListExecutor} from './routine_list_executor.js';
+import {RoutineGroup} from './routine_group.js';
+import {ExecutionProgress, ResultStatusItem, RoutineListExecutor, TestSuiteStatus} from './routine_list_executor.js';
 import {getRoutineType, getSimpleResult} from './routine_result_entry.js';
 import {BadgeType} from './text_badge.js';
 
@@ -43,16 +45,26 @@ Polymer({
 
   /**
    * Boolean whether last run had at least one failure,
-   * @type {boolean}
+   * @type {?RoutineType}
    * @private
    */
-  hasTestFailure_: false,
+  failedTest_: null,
 
   /** @private {?SystemRoutineControllerInterface} */
   systemRoutineController_: null,
 
   properties: {
-    /** @type {!Array<!RoutineType>} */
+    /**
+     * Added to support testing of announce behavior.
+     * @private
+     * @type {string}
+     */
+    announcedText_: {
+      type: String,
+      value: '',
+    },
+
+    /** @type {!Array<RoutineGroup|RoutineType>} */
     routines: {
       type: Array,
       value: () => [],
@@ -95,9 +107,10 @@ Polymer({
       value: '',
     },
 
-    /** @type {boolean} */
-    isTestRunning: {
-      type: Boolean,
+    /** @type {!TestSuiteStatus} */
+    testSuiteStatus: {
+      type: Number,
+      value: TestSuiteStatus.kNotRunning,
       notify: true,
     },
 
@@ -178,15 +191,10 @@ Polymer({
     },
 
     /** @type {boolean} */
-    runTestsAutomatically: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @type {boolean} */
     hideRoutineStatus: {
       type: Boolean,
       value: false,
+      reflectToAttribute: true,
     },
 
     /** @type {boolean} */
@@ -200,13 +208,25 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @type {boolean} */
+    usingRoutineGroups: {
+      type: Boolean,
+      value: false,
+      computed: 'getUsingRoutineGroupsVal_(routines.*)',
+    },
   },
 
   observers: [
     'routineStatusChanged_(executionStatus_, currentTestName_,' +
         'additionalMessage)',
-    'onActivePageChanged_(isActive)',
+    'onActivePageChanged_(isActive)'
   ],
+
+  /** @override */
+  attached() {
+    IronA11yAnnouncer.requestAvailability();
+  },
 
   /**
    * @param {string} buttonText
@@ -217,87 +237,169 @@ Polymer({
     return this.initialButtonText_ || buttonText;
   },
 
+  /**
+   * @return {boolean}
+   * @private
+   */
+  getUsingRoutineGroupsVal_() {
+    if (this.routines.length === 0) {
+      return false;
+    }
+    return this.routines[0] instanceof RoutineGroup;
+  },
+
   /** @private */
   getResultListElem_() {
     return /** @type {!RoutineResultListElement} */ (
         this.$$('routine-result-list'));
   },
 
-  /** @private */
-  runTests_() {
-    this.isTestRunning = true;
-    this.hasTestFailure_ = false;
+
+  /**
+   *  @private
+   *  @return {!Promise<!Array<!RoutineType>>}
+   */
+  async getSupportedRoutines_() {
+    const supported =
+        await this.systemRoutineController_.getSupportedRoutines();
+    const filteredRoutineTypes = this.routines.filter(
+        routine =>
+            supported.routines.includes(/** @type {!RoutineType} */ (routine)));
+    return filteredRoutineTypes;
+  },
+
+  /**
+   *  @private
+   *  @return {!Promise<!Array<!RoutineGroup>>}
+   */
+  async getSupportedRoutineGroups_() {
+    const supported =
+        await this.systemRoutineController_.getSupportedRoutines();
+    const filteredRoutineGroups = [];
+    for (const routineGroup of this.routines) {
+      routineGroup.routines = routineGroup.routines.filter(
+          routine => supported.routines.includes(routine));
+      if (routineGroup.routines.length > 0) {
+        filteredRoutineGroups.push(routineGroup.clone());
+      }
+    }
+    return filteredRoutineGroups;
+  },
+
+  async runTests() {
+    // Do not attempt to run tests when no routines available to run.
+    if (this.routines.length === 0) {
+      return;
+    }
+    this.testSuiteStatus = TestSuiteStatus.kRunning;
+    this.failedTest_ = null;
 
     this.systemRoutineController_ = getSystemRoutineController();
     const resultListElem = this.getResultListElem_();
-    this.systemRoutineController_.getSupportedRoutines().then((supported) => {
-      const filteredRoutines =
-          this.routines.filter(routine => supported.routines.includes(routine));
+    const routines = this.usingRoutineGroups ?
+        await this.getSupportedRoutineGroups_() :
+        await this.getSupportedRoutines_();
+    resultListElem.initializeTestRun(routines);
 
-      resultListElem.initializeTestRun(filteredRoutines);
+    // Expand result list by default.
+    if (!this.shouldHideReportList_()) {
+      this.$.collapse.show();
+    }
 
-      // Expand result list by default.
-      if (!this.shouldHideReportList_()) {
-        this.$.collapse.show();
+    if (this.bannerMessage) {
+      this.showCautionBanner_();
+    }
+
+    this.routineStartTimeMs_ = performance.now();
+
+    // Set initial status badge text.
+    this.setRunningStatusBadgeText_();
+
+    const remainingTimeUpdaterId =
+        setInterval(() => this.setRunningStatusBadgeText_(), 1000);
+    const executor =
+        new RoutineListExecutor(assert(this.systemRoutineController_));
+    this.executor_ = executor;
+    if (!this.usingRoutineGroups) {
+      const status = await executor.runRoutines(
+          routines,
+          (routineStatus) =>
+              this.handleRunningRoutineStatus_(routineStatus, resultListElem));
+      this.handleRoutinesCompletedStatus_(status);
+      clearInterval(remainingTimeUpdaterId);
+      return;
+    }
+
+    for (let i = 0; i < routines.length; i++) {
+      const routineGroup = routines[i];
+      const status = await executor.runRoutines(
+          routineGroup.routines,
+          (routineStatus) =>
+              this.handleRunningRoutineStatus_(routineStatus, resultListElem));
+      const isLastRoutineGroup = i === routines.length - 1;
+      if (isLastRoutineGroup) {
+        this.handleRoutinesCompletedStatus_(status);
+        clearInterval(remainingTimeUpdaterId);
       }
+    }
+  },
 
-      if (this.bannerMessage) {
-        this.showCautionBanner_();
-      }
+  /** @private */
+  announceRoutinesComplete_() {
+    this.announcedText_ =
+        loadTimeData.getString('testOnRoutinesCompletedText');
+    this.fire('iron-announce', {text: `${this.announcedText_}`});
+  },
 
-      this.routineStartTimeMs_ = performance.now();
+  /** @param {!ExecutionProgress} status */
+  handleRoutinesCompletedStatus_(status) {
+    this.executionStatus_ = status;
+    this.testSuiteStatus = status === ExecutionProgress.kCancelled ?
+        TestSuiteStatus.kNotRunning :
+        TestSuiteStatus.kCompleted;
+    this.routineStartTimeMs_ = -1;
+    this.runTestsButtonText = loadTimeData.getString('runAgainButtonText');
+    this.getResultListElem_().resetIgnoreStatusUpdatesFlag();
+    this.cleanUp_();
+    if (status === ExecutionProgress.kCancelled) {
+      this.badgeText_ = loadTimeData.getString('testStoppedBadgeText');
+    } else {
+      this.badgeText_ = this.failedTest_ ?
+          loadTimeData.getString('testFailedBadgeText') :
+          loadTimeData.getString('testSucceededBadgeText');
+      this.announceRoutinesComplete_();
+    }
+  },
 
-      // Set initial status badge text.
-      this.setRunningStatusBadgeText_();
+  /**
+   * @param {!ResultStatusItem} status
+   * @param {!RoutineResultListElement} resultListElem
+   * @private
+   */
+  handleRunningRoutineStatus_(status, resultListElem) {
+    if (this.ignoreRoutineStatusUpdates) {
+      return;
+    }
 
-      const remainingTimeUpdaterId =
-          setInterval(() => this.setRunningStatusBadgeText_(), 1000);
+    if (status.result && status.result.powerResult) {
+      this.powerRoutineResult_ = status.result.powerResult;
+    }
 
-      this.executor_ =
-          new RoutineListExecutor(assert(this.systemRoutineController_));
-      this.executor_
-          .runRoutines(
-              filteredRoutines,
-              (status) => {
-                if (status.result && status.result.powerResult) {
-                  this.powerRoutineResult_ = status.result.powerResult;
-                }
+    if (status.result &&
+        getSimpleResult(status.result) === StandardRoutineResult.kTestFailed &&
+        !this.failedTest_) {
+      this.failedTest_ = status.routine;
+    }
 
-                if (status.result &&
-                    getSimpleResult(status.result) !==
-                        StandardRoutineResult.kTestPassed) {
-                  this.hasTestFailure_ = true;
-                }
+    // Execution progress is checked here to avoid overwriting
+    // the test name shown in the status text.
+    if (status.progress !== ExecutionProgress.kCancelled) {
+      this.currentTestName_ = getRoutineType(status.routine);
+    }
 
-                // Execution progress is checked here to avoid overwriting the
-                // test name shown in the status text.
-                if (status.progress !== ExecutionProgress.kCancelled) {
-                  this.currentTestName_ = getRoutineType(status.routine);
-                }
+    this.executionStatus_ = status.progress;
 
-                this.executionStatus_ = status.progress;
-
-                resultListElem.onStatusUpdate.call(resultListElem, status);
-              })
-          .then((/** @type {!ExecutionProgress} */ status) => {
-            this.executionStatus_ = status;
-            this.isTestRunning = false;
-            this.routineStartTimeMs_ = -1;
-            this.runTestsButtonText =
-                loadTimeData.getString('runAgainButtonText');
-            clearInterval(remainingTimeUpdaterId);
-
-            if (status === ExecutionProgress.kCancelled) {
-              this.badgeText_ = loadTimeData.getString('testStoppedBadgeText')
-            } else {
-              this.badgeText_ = this.hasTestFailure_ ?
-                  loadTimeData.getString('testFailedBadgeText') :
-                  loadTimeData.getString('testSucceededBadgeText');
-            }
-
-            this.cleanUp_();
-          });
-    });
+    resultListElem.onStatusUpdate.call(resultListElem, status);
   },
 
   /** @private */
@@ -314,8 +416,7 @@ Polymer({
     this.systemRoutineController_ = null;
   },
 
-  /** @protected */
-  stopTests_() {
+  stopTests() {
     if (this.executor_) {
       this.executor_.cancel();
     }
@@ -411,7 +512,7 @@ Polymer({
         break;
       case ExecutionProgress.kCompleted:
         const isPowerRoutine = this.isPowerRoutine || this.powerRoutineResult_;
-        if (this.hasTestFailure_) {
+        if (this.failedTest_) {
           this.setBadgeAndStatusText_(
               BadgeType.ERROR, loadTimeData.getString('testFailure'));
         } else {
@@ -431,6 +532,7 @@ Polymer({
    * @return {string}
    */
   getPowerRoutineString_() {
+    assert(!this.usingRoutineGroups);
     const stringId = this.routines.includes(RoutineType.kBatteryCharge) ?
         'chargeTestResultText' :
         'dischargeTestResultText';
@@ -456,8 +558,16 @@ Polymer({
    * @protected
    * @return {boolean}
    */
+  isTestRunning_() {
+    return this.testSuiteStatus === TestSuiteStatus.kRunning;
+  },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
   isRunTestsButtonHidden_() {
-    return this.isTestRunning &&
+    return this.isTestRunning_() &&
         this.executionStatus_ === ExecutionProgress.kRunning;
   },
 
@@ -474,7 +584,7 @@ Polymer({
    * @return {boolean}
    */
   isRunTestsButtonDisabled_() {
-    return this.isTestRunning || this.additionalMessage != '';
+    return this.isTestRunning_() || this.additionalMessage != '';
   },
 
   /**
@@ -519,6 +629,7 @@ Polymer({
     this.currentTestName_ = '';
     this.executionStatus_ = ExecutionProgress.kNotStarted;
     this.$.collapse.hide();
+    this.ignoreRoutineStatusUpdates = false;
   },
 
   /**
@@ -529,13 +640,9 @@ Polymer({
    */
   onActivePageChanged_() {
     if (!this.isActive) {
-      this.stopTests_();
+      this.stopTests();
       this.resetRoutineState_();
       return;
-    }
-
-    if (this.runTestsAutomatically && !this.isTestRunning) {
-      this.runTests_();
     }
   },
 
@@ -554,4 +661,12 @@ Polymer({
 
   /** @override */
   created() {},
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  hideRoutineSection() {
+    return this.routines.length === 0;
+  },
 });

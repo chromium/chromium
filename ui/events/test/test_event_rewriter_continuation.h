@@ -15,10 +15,12 @@ namespace test {
 class TestEventRewriterContinuation : public ui::EventRewriterContinuation {
  public:
   TestEventRewriterContinuation() = default;
-  ~TestEventRewriterContinuation() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestEventRewriterContinuation);
+  TestEventRewriterContinuation(const TestEventRewriterContinuation&) = delete;
+  TestEventRewriterContinuation& operator=(
+      const TestEventRewriterContinuation&) = delete;
+
+  ~TestEventRewriterContinuation() override = default;
 };
 
 }  // namespace test

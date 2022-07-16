@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SIGNIN_SIGNIN_PROFILE_ATTRIBUTES_UPDATER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
@@ -25,6 +24,11 @@ class SigninProfileAttributesUpdater
       ProfileAttributesStorage* profile_attributes_storage,
       const base::FilePath& profile_path,
       PrefService* prefs);
+
+  SigninProfileAttributesUpdater(const SigninProfileAttributesUpdater&) =
+      delete;
+  SigninProfileAttributesUpdater& operator=(
+      const SigninProfileAttributesUpdater&) = delete;
 
   ~SigninProfileAttributesUpdater() override;
 
@@ -46,8 +50,6 @@ class SigninProfileAttributesUpdater
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SigninProfileAttributesUpdater);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_PROFILE_ATTRIBUTES_UPDATER_H_

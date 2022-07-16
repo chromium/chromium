@@ -21,6 +21,7 @@
 namespace blink {
 
 namespace {
+
 bool IsValidityStateFlagsValid(const ValidityStateFlags* flags) {
   if (!flags)
     return true;
@@ -31,7 +32,8 @@ bool IsValidityStateFlagsValid(const ValidityStateFlags* flags) {
     return false;
   return true;
 }
-}  // anonymous namespace
+
+}  // namespace
 
 ElementInternals::ElementInternals(HTMLElement& target) : target_(target) {
 }
@@ -234,7 +236,10 @@ ShadowRoot* ElementInternals::shadowRoot() const {
 
 const AtomicString& ElementInternals::FastGetAttribute(
     const QualifiedName& attribute) const {
-  return accessibility_semantics_map_.at(attribute);
+  const auto it = accessibility_semantics_map_.find(attribute);
+  if (it == accessibility_semantics_map_.end())
+    return g_null_atom;
+  return it->value;
 }
 
 const HashMap<QualifiedName, AtomicString>& ElementInternals::GetAttributes()
@@ -286,39 +291,37 @@ void ElementInternals::SetElementAttribute(const QualifiedName& name,
 }
 
 Element* ElementInternals::GetElementAttribute(const QualifiedName& name) {
-  HeapLinkedHashSet<WeakMember<Element>>* stored_elements =
-      explicitly_set_attr_elements_map_.at(name);
-  if (!stored_elements)
+  const auto& iter = explicitly_set_attr_elements_map_.find(name);
+  if (iter == explicitly_set_attr_elements_map_.end())
     return nullptr;
+  HeapLinkedHashSet<WeakMember<Element>>* stored_elements = iter->value;
   DCHECK_EQ(stored_elements->size(), 1u);
   return *(stored_elements->begin());
 }
 
-absl::optional<HeapVector<Member<Element>>>
-ElementInternals::GetElementArrayAttribute(const QualifiedName& name) const {
+HeapVector<Member<Element>>* ElementInternals::GetElementArrayAttribute(
+    const QualifiedName& name) const {
   const auto& iter = explicitly_set_attr_elements_map_.find(name);
-  if (iter == explicitly_set_attr_elements_map_.end()) {
-    return absl::nullopt;
-  }
+  if (iter == explicitly_set_attr_elements_map_.end())
+    return nullptr;
+  HeapLinkedHashSet<WeakMember<Element>>* stored_elements = iter->value;
 
   // Convert from our internal HeapLinkedHashSet of weak references to a
   // HeapVector of strong references so that V8 can implicitly convert to a
   // FrozenArray.
   HeapVector<Member<Element>>* results =
-      MakeGarbageCollected<HeapVector<Member<Element>>>();
-
-  blink::HeapLinkedHashSet<blink::WeakMember<blink::Element>>* stored_elements =
-      iter->value;
+      MakeGarbageCollected<HeapVector<Member<Element>>>(
+          stored_elements->size());
   for (auto item : *stored_elements) {
     results->push_back(item);
   }
 
-  return *results;
+  return results;
 }
 
 void ElementInternals::SetElementArrayAttribute(
     const QualifiedName& name,
-    const absl::optional<HeapVector<Member<Element>>>& given_elements) {
+    const HeapVector<Member<Element>>* given_elements) {
   if (!given_elements) {
     explicitly_set_attr_elements_map_.erase(name);
     return;
@@ -335,7 +338,7 @@ void ElementInternals::SetElementArrayAttribute(
     stored_elements.stored_value->value->clear();
   }
 
-  for (auto element : given_elements.value()) {
+  for (auto element : *given_elements) {
     stored_elements.stored_value->value->insert(element);
   }
 }

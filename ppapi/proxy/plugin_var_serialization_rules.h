@@ -22,6 +22,11 @@ class PluginVarSerializationRules : public VarSerializationRules {
   // handle object refcounting and string conversion.
   explicit PluginVarSerializationRules(
       const base::WeakPtr<PluginDispatcher>& dispatcher);
+
+  PluginVarSerializationRules(const PluginVarSerializationRules&) = delete;
+  PluginVarSerializationRules& operator=(const PluginVarSerializationRules&) =
+      delete;
+
   ~PluginVarSerializationRules();
 
   // VarSerialization implementation.
@@ -44,8 +49,6 @@ class PluginVarSerializationRules : public VarSerializationRules {
   // If that happens, we may leak references to object vars. Considering that
   // scripting has been deprecated, this may not be a big issue.
   base::WeakPtr<PluginDispatcher> dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVarSerializationRules);
 };
 
 }  // namespace proxy

@@ -105,12 +105,12 @@ void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
     pointer_event_init->setMovementX(
         base::saturated_cast<int>(web_pointer_event.PositionInScreen().x() *
                                   device_scale_factor) -
-        base::saturated_cast<int>(last_global_position.X() *
+        base::saturated_cast<int>(last_global_position.x() *
                                   device_scale_factor));
     pointer_event_init->setMovementY(
         base::saturated_cast<int>(web_pointer_event.PositionInScreen().y() *
                                   device_scale_factor) -
-        base::saturated_cast<int>(last_global_position.Y() *
+        base::saturated_cast<int>(last_global_position.y() *
                                   device_scale_factor));
   }
 
@@ -125,8 +125,8 @@ void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
     FloatSize point_shape = FloatSize(web_pointer_event_in_root_frame.width,
                                       web_pointer_event_in_root_frame.height)
                                 .ScaledBy(scale_factor);
-    pointer_event_init->setWidth(point_shape.Width());
-    pointer_event_init->setHeight(point_shape.Height());
+    pointer_event_init->setWidth(point_shape.width());
+    pointer_event_init->setHeight(point_shape.height());
   }
   pointer_event_init->setPressure(GetPointerEventPressure(
       web_pointer_event.force, pointer_event_init->buttons()));

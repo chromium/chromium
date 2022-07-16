@@ -45,8 +45,8 @@ void DisplayChangeNotifier::NotifyDisplaysChanged(
     const std::vector<Display>& new_displays) {
   bool did_remove_displays = false;
   // Display present in old_displays but not in new_displays has been removed.
-  auto old_it = old_displays.begin();
-  for (; old_it != old_displays.end(); ++old_it) {
+  for (auto old_it = old_displays.begin(); old_it != old_displays.end();
+       ++old_it) {
     if (std::find_if(new_displays.begin(), new_displays.end(),
                      DisplayComparator(*old_it)) == new_displays.end()) {
       did_remove_displays = true;

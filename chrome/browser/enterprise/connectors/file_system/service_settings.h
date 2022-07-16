@@ -47,29 +47,36 @@ class FileSystemServiceSettings {
     std::set<std::string> mime_types;
   };
 
-  // Map from an ID representing a specific matched pattern to its settings.
-  using PatternSettings =
-      std::map<url_matcher::URLMatcherConditionSet::ID, URLPatternSettings>;
+  using URLMatchingID = url_matcher::URLMatcherConditionSet::ID;
+
+  // Map from a url matching ID (representing a specific url matching pattern)
+  // to its URLPatternSettings.
+  using PatternSettings = std::map<URLMatchingID, URLPatternSettings>;
 
   // Accessors for the pattern setting maps.
   static absl::optional<URLPatternSettings> GetPatternSettings(
       const PatternSettings& patterns,
-      url_matcher::URLMatcherConditionSet::ID match);
+      URLMatchingID match);
 
   // Returns true if the settings were initialized correctly. If this returns
   // false, then GetSettings will always return absl::nullopt.
   bool IsValid() const;
 
   // Updates the states of |matcher_|, |enabled_patterns_settings_| and/or
-  // |disabled_patterns_settings_| from a policy value.
-  void AddUrlPatternSettings(const base::Value& url_settings_value,
-                             bool enabled,
-                             url_matcher::URLMatcherConditionSet::ID* id);
+  // |disabled_patterns_settings_| from per-provider policy.
+  bool AddUrlsDisabledByServiceProvider(URLMatchingID* id);
 
-  // Return mime types found in |enabled_patterns_settings| corresponding to the
-  // matches while excluding the ones in |disable_patterns_settings|.
-  std::set<std::string> GetMimeTypes(
-      const std::set<url_matcher::URLMatcherConditionSet::ID>& matches) const;
+  // Updates the states of |matcher_|, |enabled_patterns_settings_| and/or
+  // |disabled_patterns_settings_| from a policy value.
+  bool AddUrlPatternSettings(const base::Value& url_settings_value,
+                             bool enabled,
+                             URLMatchingID* id);
+
+  // Return mime types corresponded `matches` and whether they are for enabling
+  // the File System Connector.
+  using MimeTypesFilter = std::pair<std::set<std::string>, bool>;
+  MimeTypesFilter GetMimeTypesFilterFromUrlMatches(
+      const std::set<URLMatchingID>& matches) const;
 
   // The service provider name.
   std::string service_provider_name_;
@@ -83,7 +90,7 @@ class FileSystemServiceSettings {
   // condition set IDs returned after matching against a URL can be used to
   // check |enabled_patterns_settings| and |disable_patterns_settings| to
   // obtain URL-specific settings.
-  std::unique_ptr<url_matcher::URLMatcher> matcher_;
+  std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
 
   // These members map URL patterns to corresponding settings.  If an entry in
   // the "enabled" or "disabled" lists contains more than one pattern in its
@@ -96,6 +103,7 @@ class FileSystemServiceSettings {
   // work and avoid having the two maps cover an overlap of matches.
   PatternSettings enabled_patterns_settings_;
   PatternSettings disabled_patterns_settings_;
+  bool filters_validated_ = false;
 
   // When signing in to the service provider, only accounts that belong to this
   // enterprise are accepted.  This prevents people from connecting arbitrary

@@ -5,8 +5,14 @@
 #ifndef BASE_MESSAGE_LOOP_MESSAGE_PUMP_FOR_UI_H_
 #define BASE_MESSAGE_LOOP_MESSAGE_PUMP_FOR_UI_H_
 
-// This header is a forwarding header to coalesce the various platform specific
-// implementations of MessagePumpForUI.
+// This header is a forwarding header to coalesce the various platform
+// specific implementations of MessagePumpForUI.
+// 此头文件是一个转发头文件，用于合并 MessagePumpForUI 的各种平台特定实现。
+
+// 这里的跨平台手法值得学习：
+// 有这么一种情况，.h文件中的接口也不能跨平台，那么就需要各平台有自己的头文件，即需
+// 要下面代码中的这种方式来统一各平台的对外类名，这样使用方可以直接include这个头文
+// 件，各平台也能统一使用同一个类名：MessagePumpForUI
 
 #include "build/build_config.h"
 

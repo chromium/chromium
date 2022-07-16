@@ -125,7 +125,7 @@ void DeviceSettingsTestBase::InitOwner(const AccountId& account_id,
       OwnerSettingsServiceAshFactory::GetForBrowserContext(profile_.get());
   CHECK(service);
   if (tpm_is_ready)
-    service->OnTPMTokenReady(true /* token is enabled */);
+    service->OnTPMTokenReady();
 }
 
 }  // namespace ash

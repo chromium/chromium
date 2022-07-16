@@ -67,6 +67,9 @@ class GPU_EXPORT CommandBuffer {
 
   CommandBuffer() = default;
 
+  CommandBuffer(const CommandBuffer&) = delete;
+  CommandBuffer& operator=(const CommandBuffer&) = delete;
+
   virtual ~CommandBuffer() = default;
 
   // Check if a value is between a start and end value, inclusive, allowing
@@ -124,9 +127,6 @@ class GPU_EXPORT CommandBuffer {
   // An ordering barrier must be placed after any commands that use the buffer
   // before it is safe to call this function to destroy it.
   virtual void DestroyTransferBuffer(int32_t id) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CommandBuffer);
 };
 
 }  // namespace gpu

@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/tts.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tts_platform.h"
 

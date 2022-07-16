@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
@@ -23,17 +24,26 @@ ReadableStreamBYOBReader::ReadIntoRequest::ReadIntoRequest(
 void ReadableStreamBYOBReader::ReadIntoRequest::ChunkSteps(
     ScriptState* script_state,
     DOMArrayBufferView* chunk) const {
-  resolver_->Resolve(script_state,
-                     ReadableStream::CreateReadResult(
-                         script_state, ToV8(chunk, script_state), false, true));
+  resolver_->Resolve(script_state, ReadableStream::CreateReadResult(
+                                       script_state,
+                                       ToV8Traits<DOMArrayBufferView>::ToV8(
+                                           script_state, chunk)
+                                           .ToLocalChecked(),
+                                       false, true));
 }
 
 void ReadableStreamBYOBReader::ReadIntoRequest::CloseSteps(
     ScriptState* script_state,
     DOMArrayBufferView* chunk) const {
-  resolver_->Resolve(script_state,
-                     ReadableStream::CreateReadResult(
-                         script_state, ToV8(chunk, script_state), true, true));
+  resolver_->Resolve(
+      script_state,
+      ReadableStream::CreateReadResult(
+          script_state,
+          chunk ? ToV8Traits<DOMArrayBufferView>::ToV8(script_state, chunk)
+                      .ToLocalChecked()
+                : static_cast<v8::Local<v8::Value>>(
+                      v8::Undefined(script_state->GetIsolate())),
+          true, true));
 }
 
 void ReadableStreamBYOBReader::ReadIntoRequest::ErrorSteps(
@@ -89,7 +99,16 @@ ScriptPromise ReadableStreamBYOBReader::read(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // 3. If this.[[stream]] is undefined, return a promise rejected with a
+  // 3. If ! IsDetachedBuffer(view.[[ViewedArrayBuffer]]) is true, return a
+  // promise rejected with a TypeError exception.
+  if (view->buffer()->IsDetached()) {
+    exception_state.ThrowTypeError(
+        "This readable stream reader cannot be used to read as the viewed "
+        "array buffer is detached");
+    return ScriptPromise();
+  }
+
+  // 4. If this.[[stream]] is undefined, return a promise rejected with a
   // TypeError exception.
   if (!owner_readable_stream_) {
     exception_state.ThrowTypeError(
@@ -98,10 +117,10 @@ ScriptPromise ReadableStreamBYOBReader::read(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // 4. Let promise be a new promise.
+  // 5. Let promise be a new promise.
   auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state);
 
-  // 5. Let readIntoRequest be a new read-into request with the following items:
+  // 6. Let readIntoRequest be a new read-into request with the following items:
   //    chunk steps, given chunk
   //      1. Resolve promise with «[ "value" → chunk, "done" → false ]».
   //    close steps, given chunk
@@ -110,9 +129,9 @@ ScriptPromise ReadableStreamBYOBReader::read(ScriptState* script_state,
   //      1. Reject promise with e.
   auto* read_into_request = MakeGarbageCollected<ReadIntoRequest>(promise);
 
-  // 6. Perform ! ReadableStreamBYOBReaderRead(this, view, readIntoRequest).
+  // 7. Perform ! ReadableStreamBYOBReaderRead(this, view, readIntoRequest).
   Read(script_state, this, view, read_into_request, exception_state);
-  // 7. Return promise.
+  // 8. Return promise.
   return promise->GetScriptPromise(script_state);
 }
 

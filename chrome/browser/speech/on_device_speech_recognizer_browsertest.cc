@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
@@ -97,6 +98,11 @@ class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
   OnDeviceSpeechRecognizerTest& operator=(const OnDeviceSpeechRecognizerTest&) =
       delete;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kOnDeviceSpeechRecognition);
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     // Replaces normal CrosSpeechRecognitionService with a fake one.
@@ -109,9 +115,7 @@ class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
     mock_speech_delegate_ =
         std::make_unique<testing::StrictMock<MockSpeechRecognizerDelegate>>();
     // Fake that SODA is installed.
-    static_cast<speech::SodaInstallerImplChromeOS*>(
-        speech::SodaInstaller::GetInstance())
-        ->set_soda_installed_for_test(true);
+    speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   }
 
   void TearDownOnMainThread() override {
@@ -164,6 +168,8 @@ class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
 
   // Unowned.
   speech::FakeSpeechRecognitionService* fake_service_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest, SetsUpServiceConnection) {

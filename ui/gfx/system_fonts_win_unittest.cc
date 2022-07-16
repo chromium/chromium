@@ -19,6 +19,9 @@ class SystemFontsWinTest : public testing::Test {
  public:
   SystemFontsWinTest() = default;
 
+  SystemFontsWinTest(const SystemFontsWinTest&) = delete;
+  SystemFontsWinTest& operator=(const SystemFontsWinTest&) = delete;
+
  protected:
   void SetUp() override {
 #if defined(OS_WIN)
@@ -29,9 +32,6 @@ class SystemFontsWinTest : public testing::Test {
     win::ResetSystemFontsForTesting();
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemFontsWinTest);
 };
 
 LOGFONT CreateLOGFONT(const wchar_t* name, LONG height) {

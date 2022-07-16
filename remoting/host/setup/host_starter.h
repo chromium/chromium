@@ -36,6 +36,9 @@ class HostStarter : public gaia::GaiaOAuthClient::Delegate,
 
   typedef base::OnceCallback<void(Result)> CompletionCallback;
 
+  HostStarter(const HostStarter&) = delete;
+  HostStarter& operator=(const HostStarter&) = delete;
+
   ~HostStarter() override;
 
   // Creates a HostStarter.
@@ -122,8 +125,6 @@ class HostStarter : public gaia::GaiaOAuthClient::Delegate,
 
   base::WeakPtr<HostStarter> weak_ptr_;
   base::WeakPtrFactory<HostStarter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostStarter);
 };
 
 }  // namespace remoting

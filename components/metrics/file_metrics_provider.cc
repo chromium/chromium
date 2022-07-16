@@ -23,10 +23,10 @@
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/strings/string_piece.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner.h"
-#include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -61,27 +61,29 @@ enum : int {
 };
 
 constexpr SourceOptions kSourceOptions[] = {
-  // SOURCE_HISTOGRAMS_ATOMIC_FILE
-  {
-    // Ensure that no other process reads this at the same time.
-    STD_OPEN | base::File::FLAG_EXCLUSIVE_READ,
-    base::MemoryMappedFile::READ_ONLY,
-    true
-  },
-  // SOURCE_HISTOGRAMS_ATOMIC_DIR
-  {
-    // Ensure that no other process reads this at the same time.
-    STD_OPEN | base::File::FLAG_EXCLUSIVE_READ,
-    base::MemoryMappedFile::READ_ONLY,
-    true
-  },
-  // SOURCE_HISTOGRAMS_ACTIVE_FILE
-  {
-    // Allow writing (updated "logged" values) to the file.
-    STD_OPEN | base::File::FLAG_WRITE,
-    base::MemoryMappedFile::READ_WRITE,
-    false
-  }
+    // SOURCE_HISTOGRAMS_ATOMIC_FILE
+    {
+        // Ensure that no other process reads this at the same time.
+        STD_OPEN | base::File::FLAG_EXCLUSIVE_READ,
+        base::MemoryMappedFile::READ_ONLY,
+        true,
+    },
+    // SOURCE_HISTOGRAMS_ATOMIC_DIR
+    {
+        // Ensure that no other process reads this at the same time.
+        STD_OPEN | base::File::FLAG_EXCLUSIVE_READ,
+        base::MemoryMappedFile::READ_ONLY,
+        true,
+    },
+    // SOURCE_HISTOGRAMS_ACTIVE_FILE
+    {
+        // Allow writing to the file. This is needed so we can keep track of
+        // deltas that have been uploaded (by modifying the file), while the
+        // file may still be open by an external process (e.g. Crashpad).
+        STD_OPEN | base::File::FLAG_WRITE,
+        base::MemoryMappedFile::READ_WRITE,
+        false,
+    },
 };
 
 void DeleteFileWhenPossible(const base::FilePath& path) {
@@ -132,6 +134,10 @@ struct FileMetricsProvider::SourceInfo {
         break;
     }
   }
+
+  SourceInfo(const SourceInfo&) = delete;
+  SourceInfo& operator=(const SourceInfo&) = delete;
+
   ~SourceInfo() {}
 
   struct FoundFile {
@@ -181,9 +187,6 @@ struct FileMetricsProvider::SourceInfo {
   // Once a file has been recognized as needing to be read, it is mapped
   // into memory and assigned to an |allocator| object.
   std::unique_ptr<base::PersistentHistogramAllocator> allocator;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SourceInfo);
 };
 
 FileMetricsProvider::Params::Params(const base::FilePath& path,
@@ -576,13 +579,6 @@ void FileMetricsProvider::MergeHistogramDeltasFromSource(SourceInfo* source) {
     if (!histogram)
       break;
 
-    // Keep track of which histograms are getting merged from other sources.
-    // TODO(crbug.com/1176977): Consider removing this after bug is fixed.
-    base::UmaHistogramSparse(
-        read_only ? "UMA.FileMetricsProvider.MergeHistogram.ReadOnly"
-                  : "UMA.FileMetricsProvider.MergeHistogram.NotReadOnly",
-        static_cast<base::HistogramBase::Sample>(histogram->name_hash()));
-
     if (read_only) {
       source->allocator->MergeHistogramFinalDeltaToStatisticsRecorder(
           histogram.get());
@@ -941,7 +937,7 @@ bool FileMetricsProvider::SimulateIndependentMetrics() {
       mutable_list[0].GetInt() + count);
   pref_service_->SetInteger(
       metrics::prefs::kStabilityFileMetricsUnsentFilesCount,
-      list_value->GetSize() - 1);
+      list_value->GetList().size() - 1);
   list_value->EraseListIter(mutable_list.begin());
 
   return true;

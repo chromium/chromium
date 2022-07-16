@@ -22,6 +22,11 @@ namespace variations {
 class SyntheticTrialRegistryTest : public ::testing::Test {
  public:
   SyntheticTrialRegistryTest() { InitCrashKeys(); }
+
+  SyntheticTrialRegistryTest(const SyntheticTrialRegistryTest&) = delete;
+  SyntheticTrialRegistryTest& operator=(const SyntheticTrialRegistryTest&) =
+      delete;
+
   ~SyntheticTrialRegistryTest() override { ClearCrashKeysInstanceForTesting(); }
 
   // Returns true if there is a synthetic trial in the given vector that matches
@@ -42,7 +47,7 @@ class SyntheticTrialRegistryTest : public ::testing::Test {
   // take between 1-15ms per the documented resolution of base::TimeTicks.
   void WaitUntilTimeChanges(const base::TimeTicks& value) {
     while (base::TimeTicks::Now() == value) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+      base::PlatformThread::Sleep(base::Milliseconds(1));
     }
   }
 
@@ -57,8 +62,6 @@ class SyntheticTrialRegistryTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticTrialRegistryTest);
 };
 
 TEST_F(SyntheticTrialRegistryTest, RegisterSyntheticTrial) {
@@ -190,8 +193,8 @@ TEST_F(SyntheticTrialRegistryTest, RegisterExternalExperiments_WithAllowlist) {
 TEST_F(SyntheticTrialRegistryTest, GetSyntheticFieldTrialActiveGroups) {
   SyntheticTrialRegistry registry;
 
-  // Instantiate and setup the corresponding singleton observer which tracks the
-  // creation of all SyntheticTrialGroups.
+  // Instantiate and set up the corresponding singleton observer which tracks
+  // the creation of all SyntheticTrialGroups.
   registry.AddSyntheticTrialObserver(
       SyntheticTrialsActiveGroupIdProvider::GetInstance());
 

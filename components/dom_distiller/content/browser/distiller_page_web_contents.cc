@@ -88,10 +88,8 @@ void DistillerPageWebContents::DistillPageImpl(const GURL& url,
   script_ = script;
 
   if (source_page_handle_ && source_page_handle_->web_contents() &&
-      source_page_handle_->web_contents()->GetLastCommittedURL() == url) {
-    if (source_page_handle_->web_contents()
-            ->GetMainFrame()
-            ->IsDOMContentLoaded()) {
+      TargetRenderFrameHost().GetLastCommittedURL() == url) {
+    if (TargetRenderFrameHost().IsDOMContentLoaded()) {
       // Main frame has already loaded for the current WebContents, so execute
       // JavaScript immediately.
       ExecuteJavaScript();
@@ -143,8 +141,7 @@ gfx::Size DistillerPageWebContents::GetSizeForNewRenderView(
 
 void DistillerPageWebContents::DOMContentLoaded(
     content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host ==
-      source_page_handle_->web_contents()->GetMainFrame()) {
+  if (render_frame_host == &TargetRenderFrameHost()) {
     ExecuteJavaScript();
   }
 }
@@ -162,9 +159,6 @@ void DistillerPageWebContents::DidFailLoad(
 }
 
 void DistillerPageWebContents::ExecuteJavaScript() {
-  content::RenderFrameHost* frame =
-      source_page_handle_->web_contents()->GetMainFrame();
-  DCHECK(frame);
   DCHECK_EQ(LOADING_PAGE, state_);
   state_ = EXECUTING_JAVASCRIPT;
   content::WebContentsObserver::Observe(nullptr);
@@ -173,7 +167,7 @@ void DistillerPageWebContents::ExecuteJavaScript() {
   source_page_handle_->web_contents()->Stop();
   DVLOG(1) << "Beginning distillation";
   RunIsolatedJavaScript(
-      frame, script_,
+      &TargetRenderFrameHost(), script_,
       base::BindOnce(&DistillerPageWebContents::OnWebContentsDistillationDone,
                      weak_factory_.GetWeakPtr(),
                      source_page_handle_->web_contents()->GetLastCommittedURL(),
@@ -195,6 +189,17 @@ void DistillerPageWebContents::OnWebContentsDistillationDone(
   }
 
   DistillerPage::OnDistillationDone(page_url, &value);
+}
+
+content::RenderFrameHost& DistillerPageWebContents::TargetRenderFrameHost() {
+  // Distiller is invoked through an explicit user gesture. We don't have code
+  // path for triggering this on non-primary pages.
+  // We target the currently visible primary page's main document to run the
+  // distiller script, thus `GetPrimaryPage().GetMainDocument()` usage is valid
+  // here.
+  return source_page_handle_->web_contents()
+      ->GetPrimaryPage()
+      .GetMainDocument();
 }
 
 }  // namespace dom_distiller

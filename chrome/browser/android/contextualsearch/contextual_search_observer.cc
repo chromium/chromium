@@ -29,6 +29,6 @@ void ContextualSearchObserver::SetHandlerForWebContents(
   contextual_search_observer->set_api_handler(handler);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextualSearchObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextualSearchObserver);
 
 }  // namespace contextual_search

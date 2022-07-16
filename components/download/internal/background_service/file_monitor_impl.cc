@@ -8,53 +8,13 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/stl_util.h"
-#include "base/system/sys_info.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 
 namespace download {
 
 namespace {
-
-// Helper function to calculate total file size in a directory, the total
-// disk space and free disk space of the volume that contains that directory.
-// Returns false if failed to query disk space or total disk space is empty.
-bool CalculateDiskUtilization(const base::FilePath& file_dir,
-                              int64_t& total_disk_space,
-                              int64_t& free_disk_space,
-                              int64_t& files_size) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  base::FileEnumerator file_enumerator(file_dir, false /* recursive */,
-                                       base::FileEnumerator::FILES);
-
-  int64_t size = 0;
-  // Compute the total size of all files in |file_dir|.
-  for (base::FilePath path = file_enumerator.Next(); !path.value().empty();
-       path = file_enumerator.Next()) {
-    if (!base::GetFileSize(path, &size)) {
-      DVLOG(1) << "File size query failed.";
-      return false;
-    }
-    files_size += size;
-  }
-
-  // Disk space of the volume that |file_dir| belongs to.
-  total_disk_space = base::SysInfo::AmountOfTotalDiskSpace(file_dir);
-  free_disk_space = base::SysInfo::AmountOfFreeDiskSpace(file_dir);
-  if (total_disk_space == -1 || free_disk_space == -1) {
-    DVLOG(1) << "System disk space query failed.";
-    return false;
-  }
-
-  if (total_disk_space == 0) {
-    DVLOG(1) << "Empty total system disk space.";
-    return false;
-  }
-  return true;
-}
 
 // Creates the download directory if it doesn't exist.
 bool InitializeAndCreateDownloadDirectory(const base::FilePath& dir_path) {
@@ -66,16 +26,6 @@ bool InitializeAndCreateDownloadDirectory(const base::FilePath& dir_path) {
     if (!success)
       stats::LogsFileDirectoryCreationError(error);
   }
-  // Records disk utilization histograms.
-  if (success) {
-    int64_t files_size = 0, total_disk_space = 0, free_disk_space = 0;
-    if (CalculateDiskUtilization(dir_path, total_disk_space, free_disk_space,
-                                 files_size)) {
-      stats::LogFileDirDiskUtilization(total_disk_space, free_disk_space,
-                                       files_size);
-    }
-  }
-
   return success;
 }
 
@@ -145,10 +95,8 @@ bool HardRecoverOnFileThread(const base::FilePath& directory) {
 
 FileMonitorImpl::FileMonitorImpl(
     const base::FilePath& download_file_dir,
-    const scoped_refptr<base::SequencedTaskRunner>& file_thread_task_runner,
-    base::TimeDelta file_keep_alive_time)
+    const scoped_refptr<base::SequencedTaskRunner>& file_thread_task_runner)
     : download_file_dir_(download_file_dir),
-      file_keep_alive_time_(file_keep_alive_time),
       file_thread_task_runner_(file_thread_task_runner) {}
 
 FileMonitorImpl::~FileMonitorImpl() = default;
@@ -162,7 +110,8 @@ void FileMonitorImpl::Initialize(InitCallback callback) {
 
 void FileMonitorImpl::DeleteUnknownFiles(
     const Model::EntryList& known_entries,
-    const std::vector<DriverEntry>& known_driver_entries) {
+    const std::vector<DriverEntry>& known_driver_entries,
+    base::OnceClosure completion_callback) {
   std::set<base::FilePath> download_file_paths;
   for (Entry* entry : known_entries) {
     download_file_paths.insert(entry->target_file_path);
@@ -172,9 +121,11 @@ void FileMonitorImpl::DeleteUnknownFiles(
     download_file_paths.insert(driver_entry.current_file_path);
   }
 
-  file_thread_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&DeleteUnknownFilesOnFileThread,
-                                download_file_dir_, download_file_paths));
+  file_thread_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&DeleteUnknownFilesOnFileThread, download_file_dir_,
+                     download_file_paths),
+      std::move(completion_callback));
 }
 
 void FileMonitorImpl::CleanupFilesForCompletedEntries(

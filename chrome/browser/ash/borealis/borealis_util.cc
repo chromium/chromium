@@ -6,8 +6,11 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "components/crx_file/id_util.h"
+#include "components/exo/shell_surface_util.h"
 #include "net/base/url_util.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -19,6 +22,8 @@ const char kBorealisDlcName[] = "borealis-dlc";
 // TODO(b/174282035): Potentially update regex when other strings
 // are updated.
 const char kBorealisAppIdRegex[] = "([^/]+\\d+)";
+
+namespace {
 
 // Base feedback form URL, without query parameters for prefilling.
 static constexpr char kFeedbackUrl[] =
@@ -33,7 +38,11 @@ static constexpr char kSpecsKey[] = "entry.1341753442";
 static constexpr char kPlatformVersionKey[] = "entry.1193918294";
 static constexpr char kAppIdKey[] = "entry.2112096055";
 
-// App IDs containing this are unidentified and probably aren't games.
+// App IDs prefixed with this are identified with a numeric "Borealis ID".
+const base::StringPiece kBorealisWindowWithIdPrefix(
+    "org.chromium.borealis.xprop.");
+
+// App IDs prefixed with this are unidentified and probably aren't games.
 // Don't prompt for feedback for them.
 static constexpr char kNonGameWindowPrefix[] = "org.chromium.borealis.xid.";
 
@@ -43,32 +52,7 @@ static constexpr char kNonGameIdHash1[] = "hnfpbccfbbbjkmcalgjofgokpgjjppon";
 static constexpr char kNonGameIdHash2[] = "kooplpnkalpdpoohnhmlmfebokjkgnlb";
 static constexpr char kNonGameIdHash3[] = "bmhgcnboebpgmobfgfjcfplecleopefa";
 
-absl::optional<int> GetBorealisAppId(std::string exec) {
-  int app_id;
-  if (RE2::PartialMatch(exec, kBorealisAppIdRegex, &app_id)) {
-    return app_id;
-  } else {
-    return absl::nullopt;
-  }
-}
-
-GURL FeedbackFormUrl(const guest_os::GuestOsRegistryService* registry_service,
-                     const std::string& app_id,
-                     const std::string& window_title) {
-  // Exclude windows that aren't games.
-  if (app_id.find(kNonGameWindowPrefix) != std::string::npos ||
-      app_id == kBorealisMainAppId) {
-    return GURL();
-  }
-
-  std::string hash = crx_file::id_util::GenerateId(app_id);
-  if (hash == kNonGameIdHash1 || hash == kNonGameIdHash2 ||
-      hash == kNonGameIdHash3) {
-    return GURL();
-  }
-
-  GURL url(kFeedbackUrl);
-  url = net::AppendQueryParameter(url, kAppNameKey, window_title);
+GURL GetSysInfoForUrlAsync(GURL url) {
   url = net::AppendQueryParameter(url, kBoardKey,
                                   base::SysInfo::HardwareModelName());
   url = net::AppendQueryParameter(
@@ -79,6 +63,53 @@ GURL FeedbackFormUrl(const guest_os::GuestOsRegistryService* registry_service,
                          base::SysInfo::CPUModelName().c_str()));
   url = net::AppendQueryParameter(url, kPlatformVersionKey,
                                   base::SysInfo::OperatingSystemVersion());
+
+  return url;
+}
+
+}  // namespace
+
+absl::optional<int> GetBorealisAppId(std::string exec) {
+  int app_id;
+  if (RE2::PartialMatch(exec, kBorealisAppIdRegex, &app_id)) {
+    return app_id;
+  } else {
+    return absl::nullopt;
+  }
+}
+
+absl::optional<int> GetBorealisAppId(const aura::Window* window) {
+  const std::string* id = exo::GetShellApplicationId(window);
+  if (id && base::StartsWith(*id, kBorealisWindowWithIdPrefix)) {
+    int borealis_id;
+    if (base::StringToInt(id->substr(kBorealisWindowWithIdPrefix.size()),
+                          &borealis_id)) {
+      return borealis_id;
+    }
+  }
+  return absl::nullopt;
+}
+
+void FeedbackFormUrl(const guest_os::GuestOsRegistryService* registry_service,
+                     const std::string& app_id,
+                     const std::string& window_title,
+                     base::OnceCallback<void(GURL)> url_callback) {
+  // Exclude windows that aren't games.
+  if (app_id.find(kNonGameWindowPrefix) != std::string::npos ||
+      app_id == kBorealisMainAppId) {
+    std::move(url_callback).Run(GURL());
+    return;
+  }
+
+  std::string hash = crx_file::id_util::GenerateId(app_id);
+  if (hash == kNonGameIdHash1 || hash == kNonGameIdHash2 ||
+      hash == kNonGameIdHash3) {
+    std::move(url_callback).Run(GURL());
+    return;
+  }
+
+  GURL url(kFeedbackUrl);
+  url = net::AppendQueryParameter(url, kAppNameKey, window_title);
 
   // Attempt to get the Borealis app ID.
   // TODO(b/173977876): Implement this in a more reliable way.
@@ -92,7 +123,9 @@ GURL FeedbackFormUrl(const guest_os::GuestOsRegistryService* registry_service,
     }
   }
 
-  return url;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, base::MayBlock(), base::BindOnce(&GetSysInfoForUrlAsync, url),
+      std::move(url_callback));
 }
 
 }  // namespace borealis

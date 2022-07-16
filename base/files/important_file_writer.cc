@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/critical_closure.h"
 #include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
@@ -23,13 +24,12 @@
 #include "base/files/important_file_writer_cleaner.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
@@ -41,7 +41,7 @@ namespace base {
 
 namespace {
 
-constexpr auto kDefaultCommitInterval = TimeDelta::FromSeconds(10);
+constexpr auto kDefaultCommitInterval = Seconds(10);
 #if defined(OS_WIN)
 // This is how many times we will retry ReplaceFile on Windows.
 constexpr int kReplaceRetries = 5;
@@ -49,41 +49,8 @@ constexpr int kReplaceRetries = 5;
 // It should stay constant even if we change kReplaceRetries.
 constexpr int kReplaceRetryFailure = 10;
 static_assert(kReplaceRetryFailure > kReplaceRetries, "No overlap allowed");
-constexpr auto kReplacePauseInterval = TimeDelta::FromMilliseconds(100);
+constexpr auto kReplacePauseInterval = Milliseconds(100);
 #endif
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum TempFileFailure {
-  FAILED_CREATING = 0,
-  // FAILED_OPENING = 1,
-  // FAILED_CLOSING = 2,
-  FAILED_WRITING = 3,
-  FAILED_RENAMING = 4,
-  FAILED_FLUSHING = 5,
-  TEMP_FILE_FAILURE_MAX
-};
-
-// Helper function to write samples to a histogram with a dynamically assigned
-// histogram name.  Works with different error code types convertible to int
-// which is the actual argument type of UmaHistogramExactLinear.
-template <typename SampleType>
-void UmaHistogramExactLinearWithSuffix(const char* histogram_name,
-                                       StringPiece histogram_suffix,
-                                       SampleType add_sample,
-                                       SampleType max_sample) {
-  static_assert(std::is_convertible<SampleType, int>::value,
-                "SampleType should be convertible to int");
-  DCHECK(histogram_name);
-  std::string histogram_full_name(histogram_name);
-  if (!histogram_suffix.empty()) {
-    histogram_full_name.append(".");
-    histogram_full_name.append(histogram_suffix.data(),
-                               histogram_suffix.length());
-  }
-  UmaHistogramExactLinear(histogram_full_name, static_cast<int>(add_sample),
-                          static_cast<int>(max_sample));
-}
 
 void UmaHistogramTimesWithSuffix(const char* histogram_name,
                                  StringPiece histogram_suffix,
@@ -98,26 +65,14 @@ void UmaHistogramTimesWithSuffix(const char* histogram_name,
   UmaHistogramTimes(histogram_full_name, sample);
 }
 
-void LogFailure(const FilePath& path,
-                StringPiece histogram_suffix,
-                TempFileFailure failure_code,
-                StringPiece message) {
-  UmaHistogramExactLinearWithSuffix("ImportantFile.TempFileFailures",
-                                    histogram_suffix, failure_code,
-                                    TEMP_FILE_FAILURE_MAX);
-  DPLOG(WARNING) << "temp file failure: " << path.value() << " : " << message;
-}
-
 // Deletes the file named |tmp_file_path| (which may be open as |tmp_file|),
 // retrying on the same sequence after some delay in case of error. It is sadly
 // common that third-party software on Windows may open the temp file and map it
 // into its own address space, which prevents others from marking it for
-// deletion (even if opening it for deletion was possible). |histogram_suffix|
-// is a (possibly empty) suffix for metrics. |attempt| is the number of failed
-// previous attempts to the delete the file (defaults to 0).
+// deletion (even if opening it for deletion was possible). |attempt| is the
+// number of failed previous attempts to the delete the file (defaults to 0).
 void DeleteTmpFileWithRetry(File tmp_file,
                             const FilePath& tmp_file_path,
-                            StringPiece histogram_suffix,
                             int attempt = 0) {
 #if defined(OS_WIN)
   // Mark the file for deletion when it is closed and then close it implicitly.
@@ -132,40 +87,19 @@ void DeleteTmpFileWithRetry(File tmp_file,
   }
 #endif
 
-  // Retry every 250ms for up to two seconds. These values were pulled out of
-  // thin air, and may be adjusted in the future based on the metrics collected.
-  static constexpr int kMaxDeleteAttempts = 8;
-  static constexpr TimeDelta kDeleteFileRetryDelay =
-      TimeDelta::FromMilliseconds(250);
+  // Retry every 250ms for up to two seconds. Metrics indicate that this is a
+  // reasonable number of retries -- the failures after all attempts generally
+  // point to access denied. The ImportantFileWriterCleaner should clean these
+  // up in the next process.
+  constexpr int kMaxDeleteAttempts = 8;
+  constexpr TimeDelta kDeleteFileRetryDelay = Milliseconds(250);
 
-  if (!DeleteFile(tmp_file_path)) {
-    const auto last_file_error = File::GetLastFileError();
-    if (++attempt >= kMaxDeleteAttempts) {
-      // All retries have been exhausted; record the final error.
-      UmaHistogramExactLinearWithSuffix(
-          "ImportantFile.FileDeleteRetryExceededError", histogram_suffix,
-          -last_file_error, -File::FILE_ERROR_MAX);
-    } else if (!SequencedTaskRunnerHandle::IsSet() ||
-               !SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-                   FROM_HERE,
-                   BindOnce(&DeleteTmpFileWithRetry, base::File(),
-                            tmp_file_path,
-                            // Pass the suffix as a std::string rather than a
-                            // StringPiece since the latter references memory
-                            // owned by this function's caller.
-                            std::string(histogram_suffix), attempt),
-                   kDeleteFileRetryDelay)) {
-      // Retries are not possible, so record the simple delete error.
-      UmaHistogramExactLinearWithSuffix("ImportantFile.FileDeleteNoRetryError",
-                                        histogram_suffix, -last_file_error,
-                                        -File::FILE_ERROR_MAX);
-    }
-  } else if (attempt) {
-    // Record the number of attempts to reach success only if more than one was
-    // needed.
-    UmaHistogramExactLinearWithSuffix(
-        "ImportantFile.FileDeleteRetrySuccessCount", histogram_suffix, attempt,
-        kMaxDeleteAttempts);
+  if (!DeleteFile(tmp_file_path) && ++attempt < kMaxDeleteAttempts &&
+      SequencedTaskRunnerHandle::IsSet()) {
+    SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        BindOnce(&DeleteTmpFileWithRetry, base::File(), tmp_file_path, attempt),
+        kDeleteFileRetryDelay);
   }
 }
 
@@ -247,11 +181,7 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
   File tmp_file =
       CreateAndOpenTemporaryFileInDir(path.DirName(), &tmp_file_path);
   if (!tmp_file.IsValid()) {
-    UmaHistogramExactLinearWithSuffix(
-        "ImportantFile.FileCreateError", histogram_suffix,
-        -tmp_file.error_details(), -File::FILE_ERROR_MAX);
-    LogFailure(path, histogram_suffix, FAILED_CREATING,
-               "could not create temporary file");
+    DPLOG(WARNING) << "Failed to create temporary file to update " << path;
     return false;
   }
 
@@ -265,22 +195,17 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
     const int write_amount = std::min(kMaxWriteAmount, end - scan);
     bytes_written = tmp_file.WriteAtCurrentPos(scan, write_amount);
     if (bytes_written != write_amount) {
-      UmaHistogramExactLinearWithSuffix(
-          "ImportantFile.FileWriteError", histogram_suffix,
-          -File::GetLastFileError(), -File::FILE_ERROR_MAX);
-      LogFailure(
-          path, histogram_suffix, FAILED_WRITING,
-          "error writing, bytes_written=" + NumberToString(bytes_written));
-      DeleteTmpFileWithRetry(std::move(tmp_file), tmp_file_path,
-                             histogram_suffix);
+      DPLOG(WARNING) << "Failed to write " << write_amount << " bytes to temp "
+                     << "file to update " << path
+                     << " (bytes_written=" << bytes_written << ")";
+      DeleteTmpFileWithRetry(std::move(tmp_file), tmp_file_path);
       return false;
     }
   }
 
   if (!tmp_file.Flush()) {
-    LogFailure(path, histogram_suffix, FAILED_FLUSHING, "error flushing");
-    DeleteTmpFileWithRetry(std::move(tmp_file), tmp_file_path,
-                           histogram_suffix);
+    DPLOG(WARNING) << "Failed to flush temp file to update " << path;
+    DeleteTmpFileWithRetry(std::move(tmp_file), tmp_file_path);
     return false;
   }
 
@@ -324,18 +249,14 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
 #endif  // defined(OS_WIN)
 
   if (!result) {
-    UmaHistogramExactLinearWithSuffix("ImportantFile.FileRenameError",
-                                      histogram_suffix, -replace_file_error,
-                                      -File::FILE_ERROR_MAX);
 #if defined(OS_WIN)
     // Restore the error code from ReplaceFile so that it will be available for
-    // LogFailure, otherwise failures in SetCurrrentThreadPriority may be
+    // the log message, otherwise failures in SetCurrentThreadPriority may be
     // reported instead.
     ::SetLastError(last_error);
 #endif
-    LogFailure(path, histogram_suffix, FAILED_RENAMING,
-               "could not rename temporary file");
-    DeleteTmpFileWithRetry(File(), tmp_file_path, histogram_suffix);
+    DPLOG(WARNING) << "Failed to replace " << path << " with " << tmp_file_path;
+    DeleteTmpFileWithRetry(File(), tmp_file_path);
   }
 
   return result;

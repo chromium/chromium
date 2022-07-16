@@ -13,8 +13,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -123,11 +123,11 @@ class FlocComponentInstallerTest : public PlatformTest {
 
   void LoadFlocComponent(const std::string& content_version,
                          int format_version) {
-    auto manifest = std::make_unique<base::DictionaryValue>();
-    manifest->SetInteger(federated_learning::kManifestFlocComponentFormatKey,
-                         format_version);
+    base::Value manifest(base::Value::Type::DICTIONARY);
+    manifest.SetIntKey(federated_learning::kManifestFlocComponentFormatKey,
+                       format_version);
 
-    if (!policy_->VerifyInstallation(*manifest, component_install_dir()))
+    if (!policy_->VerifyInstallation(manifest, component_install_dir()))
       return;
 
     policy_->ComponentReady(base::Version(content_version),

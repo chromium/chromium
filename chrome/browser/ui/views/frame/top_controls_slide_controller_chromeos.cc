@@ -155,6 +155,10 @@ class TopControlsSlideTabObserver
       permission_manager->AddObserver(this);
   }
 
+  TopControlsSlideTabObserver(const TopControlsSlideTabObserver&) = delete;
+  TopControlsSlideTabObserver& operator=(const TopControlsSlideTabObserver&) =
+      delete;
+
   ~TopControlsSlideTabObserver() override {
     auto* permission_manager =
         permissions::PermissionRequestManager::FromWebContents(web_contents());
@@ -176,7 +180,8 @@ class TopControlsSlideTabObserver
   }
 
   // content::WebContentsObserver:
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     // There is no renderer to communicate with, so just ensure top-chrome
     // is shown. Also the render may have crashed before resetting the gesture
     // in progress bit.
@@ -268,8 +273,6 @@ class TopControlsSlideTabObserver
   // right before the final layout of the BrowserView.
   // https://crbug.com/885223.
   bool shrink_renderer_size_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TopControlsSlideTabObserver);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -594,8 +597,8 @@ void TopControlsSlideControllerChromeOS::UpdateBrowserControlsStateShown(
 
   const cc::BrowserControlsState current_state =
       cc::BrowserControlsState::kShown;
-  main_frame->UpdateBrowserControlsState(constraints_state, current_state,
-                                         animate);
+  web_contents->UpdateBrowserControlsState(constraints_state, current_state,
+                                           animate);
 }
 
 bool TopControlsSlideControllerChromeOS::CanEnable(
@@ -697,7 +700,7 @@ void TopControlsSlideControllerChromeOS::Refresh() {
 
   for (auto* layer : layers) {
     ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(0));
+    settings.SetTransitionDuration(base::Milliseconds(0));
     settings.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET);
     layer->SetTransform(trans);

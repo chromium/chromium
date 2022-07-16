@@ -22,6 +22,13 @@
 
 namespace android_webview {
 
+namespace {
+
+// Persisted to logs, should never change.
+constexpr char kOriginTrialsComponentMetricsSuffix[] = "OriginTrials";
+
+}  // namespace
+
 OriginTrialsComponentLoaderPolicy::OriginTrialsComponentLoaderPolicy() =
     default;
 
@@ -38,16 +45,21 @@ void OriginTrialsComponentLoaderPolicy::ComponentLoaded(
   // browser defaults.
   embedder_support::ReadOriginTrialsConfigAndPopulateLocalState(
       android_webview::AwBrowserProcess::GetInstance()->local_state(),
-      std::move(manifest));
+      manifest ? std::move(*manifest.get())
+               : base::Value(base::Value::Type::DICTIONARY));
 }
 
 void OriginTrialsComponentLoaderPolicy::ComponentLoadFailed(
-    component_updater::ComponentLoadError /*error*/) {}
+    component_updater::ComponentLoadResult /*error*/) {}
 
 void OriginTrialsComponentLoaderPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   component_updater::OriginTrialsComponentInstallerPolicy::GetComponentHash(
       hash);
+}
+
+std::string OriginTrialsComponentLoaderPolicy::GetMetricsSuffix() const {
+  return kOriginTrialsComponentMetricsSuffix;
 }
 
 }  // namespace android_webview

@@ -10,14 +10,15 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/renderer_settings_creation.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/viz/privileged/mojom/compositing/renderer_settings.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -158,6 +159,32 @@ void HostFrameSinkManager::CreateCompositorFrameSink(
     const FrameSinkId& frame_sink_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
     mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
+  CreateFrameSink(frame_sink_id, /*bundle_id=*/absl::nullopt,
+                  std::move(receiver), std::move(client));
+}
+
+void HostFrameSinkManager::CreateFrameSinkBundle(
+    const FrameSinkBundleId& bundle_id,
+    mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,
+    mojo::PendingRemote<mojom::FrameSinkBundleClient> client) {
+  frame_sink_manager_->CreateFrameSinkBundle(bundle_id, std::move(receiver),
+                                             std::move(client));
+}
+
+void HostFrameSinkManager::CreateBundledCompositorFrameSink(
+    const FrameSinkId& frame_sink_id,
+    const FrameSinkBundleId& bundle_id,
+    mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
+    mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
+  CreateFrameSink(frame_sink_id, bundle_id, std::move(receiver),
+                  std::move(client));
+}
+
+void HostFrameSinkManager::CreateFrameSink(
+    const FrameSinkId& frame_sink_id,
+    absl::optional<FrameSinkBundleId> bundle_id,
+    mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
+    mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
   FrameSinkData& data = frame_sink_data_map_[frame_sink_id];
   DCHECK(data.IsFrameSinkRegistered());
 
@@ -172,7 +199,7 @@ void HostFrameSinkManager::CreateCompositorFrameSink(
   data.has_created_compositor_frame_sink = true;
 
   frame_sink_manager_->CreateCompositorFrameSink(
-      frame_sink_id, std::move(receiver), std::move(client));
+      frame_sink_id, bundle_id, std::move(receiver), std::move(client));
 }
 
 void HostFrameSinkManager::OnFrameTokenChanged(
@@ -381,6 +408,15 @@ void HostFrameSinkManager::EvictCachedBackBuffer(uint32_t cache_id) {
   // platform window is destroyed.
   mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync_call;
   frame_sink_manager_remote_->EvictBackBuffer(cache_id);
+}
+
+void HostFrameSinkManager::CreateHitTestQueryForSynchronousCompositor(
+    const FrameSinkId& frame_sink_id) {
+  display_hit_test_query_[frame_sink_id] = std::make_unique<HitTestQuery>();
+}
+void HostFrameSinkManager::EraseHitTestQueryForSynchronousCompositor(
+    const FrameSinkId& frame_sink_id) {
+  display_hit_test_query_.erase(frame_sink_id);
 }
 
 void HostFrameSinkManager::UpdateDebugRendererSettings(

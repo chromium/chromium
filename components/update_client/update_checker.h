@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/update_client/component.h"
 #include "components/update_client/protocol_parser.h"
@@ -35,6 +34,9 @@ class UpdateChecker {
       std::unique_ptr<UpdateChecker> (*)(scoped_refptr<Configurator> config,
                                          PersistedData* persistent);
 
+  UpdateChecker(const UpdateChecker&) = delete;
+  UpdateChecker& operator=(const UpdateChecker&) = delete;
+
   virtual ~UpdateChecker() = default;
 
   // Initiates an update check for the components specified by their ids.
@@ -57,9 +59,6 @@ class UpdateChecker {
 
  protected:
   UpdateChecker() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpdateChecker);
 };
 
 }  // namespace update_client

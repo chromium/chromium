@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/macros.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/navigation_subresource_loader_params.h"
@@ -44,6 +45,11 @@ void TestNavigationURLLoader::FollowRedirect(
   redirect_count_++;
 }
 
+bool TestNavigationURLLoader::SetNavigationTimeout(base::TimeDelta timeout) {
+  // Do nothing. `false` here means no timeout was started.
+  return false;
+}
+
 void TestNavigationURLLoader::SimulateServerRedirect(const GURL& redirect_url) {
   DCHECK_EQ(loader_type_, NavigationURLLoader::LoaderType::kRegular);
   net::RedirectInfo redirect_info;
@@ -68,7 +74,7 @@ void TestNavigationURLLoader::SimulateErrorWithStatus(
 }
 
 void TestNavigationURLLoader::SimulateEarlyHintsPreloadLinkHeaderReceived() {
-  was_early_hints_preload_link_header_received_ = true;
+  was_resource_hints_received_ = true;
 }
 
 void TestNavigationURLLoader::CallOnRequestRedirected(
@@ -82,7 +88,8 @@ void TestNavigationURLLoader::CallOnRequestRedirected(
 }
 
 void TestNavigationURLLoader::CallOnResponseStarted(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle response_body) {
   if (!response_head->parsed_headers)
     response_head->parsed_headers = network::mojom::ParsedHeaders::New();
   // Create a bidirectionnal communication pipe between a URLLoader and a
@@ -97,13 +104,11 @@ void TestNavigationURLLoader::CallOnResponseStarted(
           url_loader_client_remote.InitWithNewPipeAndPassReceiver());
 
   NavigationURLLoaderDelegate::EarlyHints early_hints;
-  early_hints.was_preload_link_header_received =
-      was_early_hints_preload_link_header_received_;
+  early_hints.was_resource_hints_received = was_resource_hints_received_;
 
   delegate_->OnResponseStarted(
       std::move(url_loader_client_endpoints), std::move(response_head),
-      mojo::ScopedDataPipeConsumerHandle(),
-      GlobalRequestID::MakeBrowserInitiated(), false,
+      std::move(response_body), GlobalRequestID::MakeBrowserInitiated(), false,
       blink::NavigationDownloadPolicy(),
       request_info_->isolation_info.network_isolation_key(), absl::nullopt,
       std::move(early_hints));

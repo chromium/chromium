@@ -19,6 +19,10 @@ namespace extensions {
 class WorkerIdSet {
  public:
   WorkerIdSet();
+
+  WorkerIdSet(const WorkerIdSet&) = delete;
+  WorkerIdSet& operator=(const WorkerIdSet&) = delete;
+
   ~WorkerIdSet();
 
   void Add(const WorkerId& worker_id);
@@ -34,8 +38,6 @@ class WorkerIdSet {
 
  private:
   std::set<WorkerId> workers_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerIdSet);
 };
 
 }  // namespace extensions

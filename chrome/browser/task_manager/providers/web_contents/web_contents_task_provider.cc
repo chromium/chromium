@@ -148,7 +148,7 @@ RendererTask* WebContentsTaskProvider::WebContentsEntry::GetTaskForFrame(
     return nullptr;
 
   // Only local roots are in the frame list.
-  if (!itr->second.frames.count(render_frame_host))
+  if (!itr->second.frames.count(FindLocalRoot(render_frame_host)))
     return nullptr;
 
   return itr->second.renderer_task.get();
@@ -412,18 +412,15 @@ void WebContentsTaskProvider::WebContentsEntry::ClearTaskForFrame(
 
 void WebContentsTaskProvider::WebContentsEntry::ClearTasksForDescendantsOf(
     RenderFrameHost* ancestor) {
-  // 1) Collect descendants.
-  base::flat_set<RenderFrameHost*> descendants;
-  for (const auto& site_instance_pair : site_instance_infos_) {
-    for (auto* frame : site_instance_pair.second.frames) {
-      if (frame->IsDescendantOf(ancestor))
-        descendants.insert(frame);
-    }
-  }
-
-  // 2) Delete them.
-  for (RenderFrameHost* rfh : descendants)
-    ClearTaskForFrame(rfh);
+  ancestor->ForEachRenderFrameHost(base::BindRepeating(
+      [](WebContentsTaskProvider::WebContentsEntry* provider,
+         content::RenderFrameHost* ancestor,
+         content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host == ancestor)
+          return;
+        provider->ClearTaskForFrame(render_frame_host);
+      },
+      this, ancestor));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

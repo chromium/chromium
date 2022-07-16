@@ -34,6 +34,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -524,7 +526,14 @@ TEST_F(WebUsbServiceImplTest, AllowlistedImprivataExtension) {
           .SetID("dhodapiemamlmhlhblgcibabhdkohlen")
           .Build();
   ASSERT_TRUE(extension);
-  extensions::ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
+
+  extensions::TestExtensionSystem* extension_system =
+      static_cast<extensions::TestExtensionSystem*>(
+          extensions::ExtensionSystem::Get(profile()));
+  extensions::ExtensionService* extension_service =
+      extension_system->CreateExtensionService(
+          base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
+  extension_service->AddExtension(extension.get());
 
   const GURL imprivata_url = extension->GetResourceURL("index.html");
   const auto imprivata_origin = url::Origin::Create(imprivata_url);

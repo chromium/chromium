@@ -25,8 +25,9 @@ public class PolicyCacheUpdater {
     //  3) Any error set by ConfigurationPolicyHandler.
     static List<Pair<String, PolicyCache.Type>> sPolicies =
             Arrays.asList(Pair.create("BrowserSignin", PolicyCache.Type.Integer),
-                    Pair.create("URLBlocklist", PolicyCache.Type.List),
-                    Pair.create("URLAllowlist", PolicyCache.Type.List));
+                    Pair.create("CloudManagementEnrollmentToken", PolicyCache.Type.String),
+                    Pair.create("URLAllowlist", PolicyCache.Type.List),
+                    Pair.create("URLBlocklist", PolicyCache.Type.List));
 
     @CalledByNative
     public static void cachePolicies(PolicyMap policyMap) {

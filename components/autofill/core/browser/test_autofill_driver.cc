@@ -29,6 +29,10 @@ bool TestAutofillDriver::IsInMainFrame() const {
   return is_in_main_frame_;
 }
 
+bool TestAutofillDriver::IsPrerendering() const {
+  return false;
+}
+
 bool TestAutofillDriver::CanShowAutofillUi() const {
   return true;
 }
@@ -48,7 +52,7 @@ bool TestAutofillDriver::RendererIsAvailable() {
 }
 
 #if !defined(OS_IOS)
-InternalAuthenticator*
+webauthn::InternalAuthenticator*
 TestAutofillDriver::GetOrCreateCreditCardInternalAuthenticator() {
   return test_authenticator_.get();
 }
@@ -123,7 +127,7 @@ void TestAutofillDriver::SetSharedURLLoaderFactory(
 
 #if !defined(OS_IOS)
 void TestAutofillDriver::SetAuthenticator(
-    InternalAuthenticator* authenticator_) {
+    webauthn::InternalAuthenticator* authenticator_) {
   test_authenticator_.reset(authenticator_);
 }
 #endif

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
@@ -54,6 +53,10 @@ class DeviceSyncClientImpl : public DeviceSyncClient,
   };
 
   DeviceSyncClientImpl();
+
+  DeviceSyncClientImpl(const DeviceSyncClientImpl&) = delete;
+  DeviceSyncClientImpl& operator=(const DeviceSyncClientImpl&) = delete;
+
   ~DeviceSyncClientImpl() override;
 
   void Initialize(scoped_refptr<base::TaskRunner> task_runner) override;
@@ -137,12 +140,17 @@ class DeviceSyncClientImpl : public DeviceSyncClient,
   absl::optional<std::string> local_legacy_device_id_;
 
   base::WeakPtrFactory<DeviceSyncClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncClientImpl);
 };
 
 }  // namespace device_sync
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace device_sync {
+using ::chromeos::device_sync::DeviceSyncClientImpl;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_DEVICE_SYNC_CLIENT_IMPL_H_

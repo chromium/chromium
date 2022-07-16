@@ -32,8 +32,13 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
-#include "v8/include/v8.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 namespace content {
 
@@ -72,10 +77,8 @@ std::unique_ptr<Picture> ParsePictureStr(v8::Isolate* isolate,
   if (!picture_value)
     return nullptr;
   // Decode the picture from base64.
-  std::string encoded;
-  if (!picture_value->GetAsString(&encoded))
-    return nullptr;
-  return CreatePictureFromEncodedString(encoded);
+  const std::string* encoded = picture_value->GetIfString();
+  return encoded ? CreatePictureFromEncodedString(*encoded) : nullptr;
 }
 
 std::unique_ptr<Picture> ParsePictureHash(v8::Isolate* isolate,
@@ -183,8 +186,9 @@ void SkiaBenchmarking::Rasterize(gin::Arguments* args) {
 
     const base::DictionaryValue* params_dict = nullptr;
     if (params_value.get() && params_value->GetAsDictionary(&params_dict)) {
-      params_dict->GetDouble("scale", &scale);
-      params_dict->GetInteger("stop", &stop_index);
+      scale = params_dict->FindDoubleKey("scale").value_or(scale);
+      if (absl::optional<int> stop = params_dict->FindIntKey("stop"))
+        stop_index = *stop;
 
       const base::Value* clip_value = nullptr;
       if (params_dict->Get("clip", &clip_value))

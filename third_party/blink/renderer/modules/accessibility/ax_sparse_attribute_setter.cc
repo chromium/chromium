@@ -48,6 +48,8 @@ void SetStringAttribute(ax::mojom::blink::StringAttribute attribute,
                         AXObject* object,
                         ui::AXNodeData* node_data,
                         const AtomicString& value) {
+  if (object->IsProhibited(attribute))
+    return;
   node_data->AddStringAttribute(attribute, value.Utf8());
 }
 
@@ -56,6 +58,9 @@ void SetObjectAttribute(ax::mojom::blink::IntAttribute attribute,
                         AXObject* object,
                         ui::AXNodeData* node_data,
                         const AtomicString& value) {
+  if (object->IsProhibited(attribute))
+    return;
+
   Element* element = object->GetElement();
   if (!element)
     return;
@@ -84,13 +89,13 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
   Element* element = object->GetElement();
   if (!element)
     return;
-  absl::optional<HeapVector<Member<Element>>> attr_associated_elements =
+  HeapVector<Member<Element>>* attr_associated_elements =
       element->GetElementArrayAttribute(qualified_name);
-  if (!attr_associated_elements || attr_associated_elements.value().IsEmpty())
+  if (!attr_associated_elements || attr_associated_elements->IsEmpty())
     return;
   std::vector<int32_t> ax_ids;
 
-  for (const auto& associated_element : attr_associated_elements.value()) {
+  for (const auto& associated_element : *attr_associated_elements) {
     AXObject* ax_element =
         object->AXObjectCache().GetOrCreate(associated_element);
     if (!ax_element)

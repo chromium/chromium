@@ -50,7 +50,6 @@ namespace {
 
 NSString* const kEnableMetricKit = @"EnableMetricKit";
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 void ReportExitReason(base::HistogramBase* histogram,
                       MetricKitExitReason bucket,
                       NSUInteger count) {
@@ -59,7 +58,6 @@ void ReportExitReason(base::HistogramBase* histogram,
   }
   histogram->AddCount(bucket, count);
 }
-#endif
 
 void ReportLongDuration(const char* histogram_name,
                         NSMeasurement* measurement) {
@@ -69,10 +67,9 @@ void ReportLongDuration(const char* histogram_name,
   double value =
       [measurement measurementByConvertingToUnit:NSUnitDuration.seconds]
           .doubleValue;
-  base::UmaHistogramCustomTimes(
-      histogram_name, base::TimeDelta::FromSecondsD(value),
-      base::TimeDelta::FromSeconds(1),
-      base::TimeDelta::FromSeconds(86400 /* secs per day */), 50);
+  base::UmaHistogramCustomTimes(histogram_name, base::Seconds(value),
+                                base::Seconds(1),
+                                base::Seconds(86400 /* secs per day */), 50);
 }
 
 void ReportMemory(const char* histogram_name, NSMeasurement* measurement) {
@@ -114,7 +111,6 @@ void WriteMetricPayloads(NSArray<MXMetricPayload*>* payloads) {
   }
 }
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 void WriteDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads)
     API_AVAILABLE(ios(14.0)) {
   NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
@@ -204,7 +200,6 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
     SendDiagnosticPayloads(payloads);
   }
 }
-#endif
 
 }  // namespace
 
@@ -250,8 +245,7 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
   // It should take less than 1 minute to startup.
   // Histogram is defined in millisecond granularity.
   base::HistogramBase* histogramUMA = base::Histogram::FactoryTimeGet(
-      histogramUMAName, base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromMinutes(1), 50,
+      histogramUMAName, base::Milliseconds(1), base::Minutes(1), 50,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   MXHistogramBucket* bucket;
   NSEnumerator* enumerator = [histogram bucketEnumerator];
@@ -281,7 +275,6 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
   }
 }
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 - (void)logForegroundExit:(MXForegroundExitData*)exitData
     API_AVAILABLE(ios(14.0)) {
   base::HistogramBase* histogramUMA = base::LinearHistogram::FactoryGet(
@@ -329,7 +322,6 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
   ReportExitReason(histogramUMA, kBackgroundTaskAssertionTimeoutExit,
                    exitData.cumulativeBackgroundTaskAssertionTimeoutExitCount);
 }
-#endif
 
 - (void)processPayload:(MXMetricPayload*)payload {
   // TODO(crbug.com/1140474): See related bug for why |bundleVersion| comes from
@@ -370,15 +362,10 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
   [self logStartupDurationMXHistogram:histogrammedApplicationHangTime
                        toUMAHistogram:"IOS.MetricKit.ApplicationHangTime"];
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    [self logForegroundExit:payload.applicationExitMetrics.foregroundExitData];
-    [self logBackgroundExit:payload.applicationExitMetrics.backgroundExitData];
-  }
-#endif
+  [self logForegroundExit:payload.applicationExitMetrics.foregroundExitData];
+  [self logBackgroundExit:payload.applicationExitMetrics.backgroundExitData];
 }
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 - (void)didReceiveDiagnosticPayloads:(NSArray<MXDiagnosticPayload*>*)payloads
     API_AVAILABLE(ios(14.0)) {
   NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
@@ -395,6 +382,5 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
                        sendPayloads));
   }
 }
-#endif
 
 @end

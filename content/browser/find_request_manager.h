@@ -35,6 +35,10 @@ class WebContentsImpl;
 class CONTENT_EXPORT FindRequestManager {
  public:
   explicit FindRequestManager(WebContentsImpl* web_contents);
+
+  FindRequestManager(const FindRequestManager&) = delete;
+  FindRequestManager& operator=(const FindRequestManager&) = delete;
+
   ~FindRequestManager();
 
   // Initiates a find operation for |search_text| with the options specified in
@@ -107,6 +111,14 @@ class CONTENT_EXPORT FindRequestManager {
   }
 
   gfx::Rect GetSelectionRectForTesting() { return selection_rect_; }
+
+  using CreateFindInPageClientFunction = std::unique_ptr<FindInPageClient> (*)(
+      FindRequestManager* find_request_manager,
+      RenderFrameHostImpl* rfh);
+  void SetCreateFindInPageClientFunctionForTesting(
+      CreateFindInPageClientFunction create_func) {
+    create_find_in_page_client_for_testing_ = create_func;
+  }
 
  private:
   // An invalid ID. This value is invalid for any render process ID, render
@@ -192,6 +204,15 @@ class CONTENT_EXPORT FindRequestManager {
   // expected for a previous find request, then the outgoing find reply issued
   // from this function will not be marked final.
   void FinalUpdateReceived(int request_id, RenderFrameHost* rfh);
+
+  std::unique_ptr<FindInPageClient> CreateFindInPageClient(
+      RenderFrameHostImpl* rfh);
+
+  using FrameIterationCallback =
+      base::RepeatingCallback<void(RenderFrameHostImpl*)>;
+  // Traverses all RenderFrameHosts added for find-in-page and invokes the
+  // callback if the each RenderFrameHost is alive and active.
+  void ForEachAddedFindInPageRenderFrameHost(FrameIterationCallback callback);
 
 #if defined(OS_ANDROID)
   // Called when a nearest find result reply is no longer pending for a frame.
@@ -334,7 +355,15 @@ class CONTENT_EXPORT FindRequestManager {
   // WebContentses.
   std::vector<std::unique_ptr<FrameObserver>> frame_observers_;
 
-  DISALLOW_COPY_AND_ASSIGN(FindRequestManager);
+  // last_time_typed_ and last_searched_text_ are used to measure how long the
+  // user takes between keystrokes.
+  // TODO(crbug.com/1250158): Remove these when we decide how long the
+  // find-in-page delay should be.
+  base::TimeTicks last_time_typed_;
+  std::u16string last_searched_text_;
+
+  CreateFindInPageClientFunction create_find_in_page_client_for_testing_ =
+      nullptr;
 };
 
 }  // namespace content

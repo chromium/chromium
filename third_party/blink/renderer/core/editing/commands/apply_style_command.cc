@@ -1484,13 +1484,10 @@ void ApplyStyleCommand::RemoveInlineStyle(EditingStyle* style,
   Node* node = start.AnchorNode();
   while (node) {
     Node* next_to_process = nullptr;
-    if (EditingIgnoresContent(*node)) {
-      DCHECK(node == end.AnchorNode() || !node->contains(end.AnchorNode()))
-          << node << " " << end;
-      next_to_process = NodeTraversal::NextSkippingChildren(*node);
-    } else {
+    if (!EditingIgnoresContent(*node))
       next_to_process = NodeTraversal::Next(*node);
-    }
+    else if (!node->contains(end.AnchorNode()))
+      next_to_process = NodeTraversal::NextSkippingChildren(*node);
     auto* elem = DynamicTo<HTMLElement>(node);
     if (elem && ElementFullySelected(*elem, start, end)) {
       Node* prev = NodeTraversal::PreviousPostOrder(*elem);
@@ -1508,12 +1505,16 @@ void ApplyStyleCommand::RemoveInlineStyle(EditingStyle* style,
         return;
       if (!elem->isConnected()) {
         if (s.AnchorNode() == elem) {
-          // Since elem must have been fully selected, and it is at the start
-          // of the selection, it is clear we can set the new s offset to 0.
-          DCHECK(s.IsBeforeAnchor() || s.IsBeforeChildren() ||
-                 s.OffsetInContainerNode() <= 0)
-              << s;
-          s = next ? FirstPositionInOrBeforeNode(*next) : Position();
+          if (s == e) {
+            s = e = Position::BeforeNode(*next).ToOffsetInAnchor();
+          } else {
+            // Since elem must have been fully selected, and it is at the start
+            // of the selection, it is clear we can set the new s offset to 0.
+            DCHECK(s.IsBeforeAnchor() || s.IsBeforeChildren() ||
+                   s.OffsetInContainerNode() <= 0)
+                << s;
+            s = next ? FirstPositionInOrBeforeNode(*next) : Position();
+          }
         }
         if (e.AnchorNode() == elem) {
           // Since elem must have been fully selected, and it is at the end

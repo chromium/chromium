@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/cast/logging/logging_defines.h"
 #include "media/cast/logging/raw_event_subscriber.h"
@@ -26,6 +25,9 @@ class LogEventDispatcher {
  public:
   // |env| outlives this instance (and generally owns this instance).
   explicit LogEventDispatcher(CastEnvironment* env);
+
+  LogEventDispatcher(const LogEventDispatcher&) = delete;
+  LogEventDispatcher& operator=(const LogEventDispatcher&) = delete;
 
   ~LogEventDispatcher();
 
@@ -51,6 +53,9 @@ class LogEventDispatcher {
    public:
     Impl();
 
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
+
     void DispatchFrameEvent(std::unique_ptr<FrameEvent> event) const;
     void DispatchPacketEvent(std::unique_ptr<PacketEvent> event) const;
     void DispatchBatchOfEvents(
@@ -65,14 +70,10 @@ class LogEventDispatcher {
     ~Impl();
 
     std::vector<RawEventSubscriber*> subscribers_;
-
-    DISALLOW_COPY_AND_ASSIGN(Impl);
   };
 
   CastEnvironment* const env_;  // Owner of this instance.
   const scoped_refptr<Impl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogEventDispatcher);
 };
 
 }  // namespace cast

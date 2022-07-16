@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -64,6 +63,12 @@ class SubresourceFilterContentSettingsManager {
  public:
   explicit SubresourceFilterContentSettingsManager(
       HostContentSettingsMap* settings_map);
+
+  SubresourceFilterContentSettingsManager(
+      const SubresourceFilterContentSettingsManager&) = delete;
+  SubresourceFilterContentSettingsManager& operator=(
+      const SubresourceFilterContentSettingsManager&) = delete;
+
   ~SubresourceFilterContentSettingsManager();
 
   ContentSetting GetSitePermission(const GURL& url) const;
@@ -121,11 +126,10 @@ class SubresourceFilterContentSettingsManager {
   // Time before showing the UI again on a domain.
   // TODO(csharrison): Consider setting this via a finch param.
   static constexpr base::TimeDelta kDelayBeforeShowingInfobarAgain =
-      base::TimeDelta::FromHours(24);
+      base::Hours(24);
 
   // Maximum duration to persist metadata for.
-  static constexpr base::TimeDelta kMaxPersistMetadataDuration =
-      base::TimeDelta::FromDays(7);
+  static constexpr base::TimeDelta kMaxPersistMetadataDuration = base::Days(7);
 
   // Overwrites existing site metadata for testing.
   void SetSiteMetadataForTesting(const GURL& url,
@@ -150,8 +154,6 @@ class SubresourceFilterContentSettingsManager {
   std::unique_ptr<base::Clock> clock_;
 
   bool should_use_smart_ui_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterContentSettingsManager);
 };
 
 }  // namespace subresource_filter

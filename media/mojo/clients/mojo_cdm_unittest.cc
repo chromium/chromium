@@ -70,6 +70,10 @@ class MojoCdmTest : public ::testing::Test {
   };
 
   MojoCdmTest() = default;
+
+  MojoCdmTest(const MojoCdmTest&) = delete;
+  MojoCdmTest& operator=(const MojoCdmTest&) = delete;
+
   ~MojoCdmTest() override = default;
 
   void Initialize(ExpectedResult expected_result) {
@@ -376,9 +380,6 @@ class MojoCdmTest : public ::testing::Test {
 #if defined(OS_WIN)
   bool requires_media_foundation_renderer_ = false;
 #endif
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoCdmTest);
 };
 
 TEST_F(MojoCdmTest, Create_Success) {

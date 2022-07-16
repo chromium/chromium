@@ -6,7 +6,7 @@
 
 // Minimal VideoConfiguration that will be allowed per spec. All optional
 // properties are missing.
-var minimalVideoConfiguration = {
+const minimalVideoConfiguration = {
   contentType: 'video/VP9; profile-level="0"',
   width: 800,
   height: 600,
@@ -16,7 +16,7 @@ var minimalVideoConfiguration = {
 
 // Minimal AudioConfiguration that will be allowed per spec. All optional
 // properties are missing.
-var minimalAudioConfiguration = {
+const minimalAudioConfiguration = {
   contentType: 'audio/opus',
 };
 
@@ -149,11 +149,11 @@ promise_test(t => {
   });
 }, "Test that decodingInfo returns supported, smooth, and powerEfficient set to false for non-webrtc audio content type.");
 
-var validAudioCodecs = (() => {
+const validAudioCodecs = (() => {
   // Some codecs that are returned by getCapabilities() are not real codecs,
   // exclude these from the test.
-  var excludeList = [ 'audio/CN', 'audio/telephone-event' ];
-  var audioCodecs = [];
+  const excludeList = [ 'audio/CN', 'audio/telephone-event', 'audio/red' ];
+  const audioCodecs = [];
   RTCRtpReceiver.getCapabilities("audio")['codecs'].forEach(codec => {
     if (excludeList.indexOf(codec.mimeType) < 0 &&
         audioCodecs.indexOf(codec.mimeType) < 0) {
@@ -176,16 +176,16 @@ validAudioCodecs.forEach(codec => {
 }, "Test that decodingInfo returns supported true for the codec " + codec + " returned by RTCRtpReceiver.getCapabilities()")}
 );
 
-var validVideoCodecs = (() => {
+const validVideoCodecs = (() => {
   // Some codecs that are returned by getCapabilities() are not real codecs but
   // only used for error correction, exclude these from the test.
-  var excludeList = [ 'video/rtx', 'video/red', 'video/ulpfec',
+  const excludeList = [ 'video/rtx', 'video/red', 'video/ulpfec',
                       'video/flexfec-03' ];
-  var videoCodecs = [];
+  const videoCodecs = [];
 
   RTCRtpReceiver.getCapabilities("video")['codecs'].forEach(codec => {
     if (excludeList.indexOf(codec.mimeType) < 0) {
-      var mimeType = codec.mimeType;
+      let mimeType = codec.mimeType;
       if ('sdpFmtpLine' in codec) {
         mimeType += "; " + codec.sdpFmtpLine;
       }

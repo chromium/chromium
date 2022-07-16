@@ -104,12 +104,21 @@ source_set("geolocation") {
       "wifi_data_provider_chromeos.h",
     ]
     deps += [ "//chromeos/network" ]
-  } else if ((is_linux || is_chromeos_lacros) && use_dbus) {
+  } else if (is_linux && use_dbus) {
     sources += [
       "wifi_data_provider_linux.cc",
       "wifi_data_provider_linux.h",
     ]
     deps += [ "//dbus" ]
+  } else if (is_chromeos_lacros) {
+    sources += [
+      "wifi_data_provider_lacros.cc",
+      "wifi_data_provider_lacros.h",
+    ]
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
   } else if (is_mac) {
     frameworks += [
       "CoreWLAN.framework",

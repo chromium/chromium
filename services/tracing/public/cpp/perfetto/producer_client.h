@@ -43,6 +43,10 @@ class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
       public mojom::ProducerClient {
  public:
   explicit ProducerClient(base::tracing::PerfettoTaskRunner*);
+
+  ProducerClient(const ProducerClient&) = delete;
+  ProducerClient& operator=(const ProducerClient&) = delete;
+
   ~ProducerClient() override;
 
   void Connect(mojo::PendingRemote<mojom::PerfettoService> perfetto_service);
@@ -96,6 +100,7 @@ class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
   perfetto::SharedMemory* shared_memory() const override;
   void NotifyFlushComplete(perfetto::FlushRequestID) override;
   void RegisterDataSource(const perfetto::DataSourceDescriptor&) override;
+  void UpdateDataSource(const perfetto::DataSourceDescriptor&) override;
   void UnregisterDataSource(const std::string& name) override;
   void NotifyDataSourceStopped(perfetto::DataSourceInstanceID) override;
   void NotifyDataSourceStarted(perfetto::DataSourceInstanceID) override;
@@ -145,7 +150,6 @@ class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<ProducerClient> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ProducerClient);
 };
 
 }  // namespace tracing

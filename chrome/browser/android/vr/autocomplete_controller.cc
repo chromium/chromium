@@ -102,7 +102,7 @@ void AutocompleteController::OnResultChanged(
         base::BindOnce(suggestion_callback_, std::move(suggestions)));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, suggestions_timeout_.callback(),
-        base::TimeDelta::FromMilliseconds(kSuggestionThrottlingDelayMs));
+        base::Milliseconds(kSuggestionThrottlingDelayMs));
   } else {
     suggestion_callback_.Run(std::move(suggestions));
   }

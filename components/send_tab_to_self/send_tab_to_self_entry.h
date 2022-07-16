@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
 
@@ -17,7 +16,7 @@ class SendTabToSelfSpecifics;
 
 namespace send_tab_to_self {
 
-constexpr base::TimeDelta kExpiryTime = base::TimeDelta::FromDays(10);
+constexpr base::TimeDelta kExpiryTime = base::Days(10);
 
 class SendTabToSelfLocal;
 
@@ -38,6 +37,10 @@ class SendTabToSelfEntry {
                      base::Time original_navigation_time,
                      const std::string& device_name,
                      const std::string& target_device_sync_cache_guid);
+
+  SendTabToSelfEntry(const SendTabToSelfEntry&);
+  SendTabToSelfEntry& operator=(const SendTabToSelfEntry&) = delete;
+
   ~SendTabToSelfEntry();
 
   // The unique random id for the entry.
@@ -98,8 +101,6 @@ class SendTabToSelfEntry {
   base::Time original_navigation_time_;
   bool notification_dismissed_;
   bool opened_;
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfEntry);
 };
 
 }  // namespace send_tab_to_self

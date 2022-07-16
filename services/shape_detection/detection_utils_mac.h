@@ -36,6 +36,9 @@ class API_AVAILABLE(macos(10.13)) VisionAPIAsyncRequestMac {
   using Callback =
       base::RepeatingCallback<void(VNRequest* request, NSError* error)>;
 
+  VisionAPIAsyncRequestMac(const VisionAPIAsyncRequestMac&) = delete;
+  VisionAPIAsyncRequestMac& operator=(const VisionAPIAsyncRequestMac&) = delete;
+
   ~VisionAPIAsyncRequestMac();
 
   // Creates an VisionAPIAsyncRequestMac instance which sets |callback| to be
@@ -57,8 +60,6 @@ class API_AVAILABLE(macos(10.13)) VisionAPIAsyncRequestMac {
 
   base::scoped_nsobject<VNRequest> request_;
   const Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(VisionAPIAsyncRequestMac);
 };
 
 }  // namespace shape_detection

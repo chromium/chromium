@@ -36,6 +36,10 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
       : context_provider_(context_provider) {
     context_provider_->AddObserver(this);
   }
+
+  ContextLostRunLoop(const ContextLostRunLoop&) = delete;
+  ContextLostRunLoop& operator=(const ContextLostRunLoop&) = delete;
+
   ~ContextLostRunLoop() override { context_provider_->RemoveObserver(this); }
 
   void RunUntilContextLost() { run_loop_.Run(); }
@@ -46,8 +50,6 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
 
   viz::ContextProvider* const context_provider_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextLostRunLoop);
 };
 
 class ContextTestBase : public content::ContentBrowserTest {

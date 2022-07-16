@@ -42,39 +42,31 @@ SmbHandler::SmbHandler(Profile* profile,
 SmbHandler::~SmbHandler() = default;
 
 void SmbHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "smbMount",
       base::BindRepeating(&SmbHandler::HandleSmbMount, base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "startDiscovery", base::BindRepeating(&SmbHandler::HandleStartDiscovery,
                                             base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "updateCredentials",
       base::BindRepeating(&SmbHandler::HandleUpdateCredentials,
                           base::Unretained(this)));
 }
 
 void SmbHandler::HandleSmbMount(const base::ListValue* args) {
-  CHECK_EQ(8U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK_EQ(8U, args->GetList().size());
 
-  std::string mount_url;
-  std::string mount_name;
-  std::string username;
-  std::string password;
-  bool use_kerberos;
-  bool should_open_file_manager_after_mount;
-  bool save_credentials;
-  CHECK(args->GetString(1, &mount_url));
-  CHECK(args->GetString(2, &mount_name));
-  CHECK(args->GetString(3, &username));
-  CHECK(args->GetString(4, &password));
-  CHECK(args->GetBoolean(5, &use_kerberos));
-  CHECK(args->GetBoolean(6, &should_open_file_manager_after_mount));
-  CHECK(args->GetBoolean(7, &save_credentials));
+  std::string callback_id = args->GetList()[0].GetString();
+  std::string mount_url = args->GetList()[1].GetString();
+  std::string mount_name = args->GetList()[2].GetString();
+  std::string username = args->GetList()[3].GetString();
+  std::string password = args->GetList()[4].GetString();
+  bool use_kerberos = args->GetList()[5].GetBool();
+  bool should_open_file_manager_after_mount = args->GetList()[6].GetBool();
+  bool save_credentials = args->GetList()[7].GetBool();
 
   smb_client::SmbService* const service = GetSmbService(profile_);
   if (!service) {
@@ -135,15 +127,11 @@ void SmbHandler::HandleGatherSharesResponse(
 }
 
 void SmbHandler::HandleUpdateCredentials(const base::ListValue* args) {
-  CHECK_EQ(3U, args->GetSize());
+  CHECK_EQ(3U, args->GetList().size());
 
-  std::string mount_id;
-  std::string username;
-  std::string password;
-
-  CHECK(args->GetString(0, &mount_id));
-  CHECK(args->GetString(1, &username));
-  CHECK(args->GetString(2, &password));
+  std::string mount_id = args->GetList()[0].GetString();
+  std::string username = args->GetList()[1].GetString();
+  std::string password = args->GetList()[2].GetString();
 
   DCHECK(update_cred_callback_);
   std::move(update_cred_callback_).Run(username, password);

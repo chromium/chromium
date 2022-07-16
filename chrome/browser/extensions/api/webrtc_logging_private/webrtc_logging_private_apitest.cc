@@ -152,8 +152,10 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
     request_info->SetInteger(
         "tabId", extensions::ExtensionTabUtil::GetTabId(web_contents()));
     parameters->Append(std::move(request_info));
-    parameters->AppendString(
-        web_contents()->GetLastCommittedURL().GetOrigin().spec());
+    parameters->Append(web_contents()
+                           ->GetLastCommittedURL()
+                           .DeprecatedGetOriginAsURL()
+                           .spec());
   }
 
   // This function implicitly expects the function to succeed (test failure
@@ -263,8 +265,8 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   bool StartRtpDump(bool incoming, bool outgoing) {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendBoolean(incoming);
-    params.AppendBoolean(outgoing);
+    params.Append(incoming);
+    params.Append(outgoing);
     constexpr bool value_expected = false;
     std::unique_ptr<base::Value> value =
         RunFunction<WebrtcLoggingPrivateStartRtpDumpFunction>(params);
@@ -279,8 +281,8 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   bool StopRtpDump(bool incoming, bool outgoing) {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendBoolean(incoming);
-    params.AppendBoolean(outgoing);
+    params.Append(incoming);
+    params.Append(outgoing);
     constexpr bool value_expected = false;
     std::unique_ptr<base::Value> value =
         RunFunction<WebrtcLoggingPrivateStopRtpDumpFunction>(params);
@@ -295,7 +297,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   bool StoreLog(const std::string& log_id) {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendString(log_id);
+    params.Append(log_id);
     constexpr bool value_expected = false;
     std::unique_ptr<base::Value> value =
         RunFunction<WebrtcLoggingPrivateStoreFunction>(params);
@@ -310,7 +312,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   bool UploadStoredLog(const std::string& log_id, std::string* report_id) {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendString(log_id);
+    params.Append(log_id);
     constexpr bool value_expected = true;
     std::unique_ptr<base::Value> value =
         RunFunction<WebrtcLoggingPrivateUploadStoredFunction>(params);
@@ -328,7 +330,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   bool StartAudioDebugRecordings(int seconds) {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendInteger(seconds);
+    params.Append(seconds);
     constexpr bool value_expected = true;
     std::unique_ptr<base::Value> value =
         RunFunction<WebrtcLoggingPrivateStartAudioDebugRecordingsFunction>(
@@ -365,10 +367,10 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
 
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendString(session_id);
-    params.AppendInteger(max_log_size_bytes);
-    params.AppendInteger(output_period_ms);
-    params.AppendInteger(web_app_id);
+    params.Append(session_id);
+    params.Append(max_log_size_bytes);
+    params.Append(output_period_ms);
+    params.Append(web_app_id);
 
     if (expect_success) {
       scoped_refptr<WebrtcLoggingPrivateStartEventLoggingFunction> function(
@@ -581,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest, TestStartStopRtpDump) {
 IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest, TestStoreWithoutLog) {
   base::ListValue parameters;
   AppendTabIdAndUrl(&parameters);
-  parameters.AppendString("MyLogId");
+  parameters.Append("MyLogId");
   scoped_refptr<WebrtcLoggingPrivateStoreFunction> store(
       CreateFunction<WebrtcLoggingPrivateStoreFunction>());
   const std::string error = utils::RunFunctionAndReturnError(

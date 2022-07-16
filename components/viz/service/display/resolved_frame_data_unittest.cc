@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -16,6 +15,7 @@
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/test_surface_id_allocator.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace viz {
@@ -88,7 +88,8 @@ class ResolvedFrameDataTest : public testing::Test {
   }
 
   ServerSharedBitmapManager shared_bitmap_manager_;
-  FrameSinkManagerImpl frame_sink_manager_{&shared_bitmap_manager_};
+  FrameSinkManagerImpl frame_sink_manager_{
+      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
 
   TestSurfaceIdAllocator surface_id_{FrameSinkId(1, 1)};
   std::unique_ptr<CompositorFrameSinkSupport> support_;
@@ -118,13 +119,13 @@ TEST_F(ResolvedFrameDataTest, UpdateActiveFrame) {
   resolved_frame.UpdateForActiveFrame(child_to_parent_map_,
                                       render_pass_id_generator_);
   EXPECT_TRUE(resolved_frame.is_valid());
-  EXPECT_EQ(resolved_frame.RenderPassCount(), 3u);
+  EXPECT_THAT(resolved_frame.GetResolvedPasses(), testing::SizeIs(3));
 
   // Looking up ResolvedPassData by CompositorRenderPassId should work.
   for (auto& render_pass : surface->GetActiveFrame().render_pass_list) {
     const ResolvedPassData& resolved_pass =
         resolved_frame.GetRenderPassDataById(render_pass->id);
-    EXPECT_EQ(resolved_pass.render_pass, render_pass.get());
+    EXPECT_EQ(&resolved_pass.render_pass(), render_pass.get());
   }
 
   // Check invalidation also works.

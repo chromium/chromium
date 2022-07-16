@@ -18,7 +18,7 @@ TEST(ResourceCoordinatorUsageClock, UsageClock) {
 
   {
     base::SimpleTestTickClock clock;
-    clock.Advance(base::TimeDelta::FromMinutes(42));
+    clock.Advance(base::Minutes(42));
     ScopedSetTickClockForTesting scoped_set_tick_clock_for_testing(&clock);
 
     metrics::DesktopSessionDurationTracker::Initialize();
@@ -33,28 +33,28 @@ TEST(ResourceCoordinatorUsageClock, UsageClock) {
     EXPECT_TRUE(usage_clock.IsInUse());
 
     // Verify that time advances when Chrome is in use.
-    clock.Advance(base::TimeDelta::FromMinutes(1));
-    EXPECT_EQ(usage_clock.GetTotalUsageTime(), base::TimeDelta::FromMinutes(1));
-    clock.Advance(base::TimeDelta::FromMinutes(1));
-    EXPECT_EQ(usage_clock.GetTotalUsageTime(), base::TimeDelta::FromMinutes(2));
+    clock.Advance(base::Minutes(1));
+    EXPECT_EQ(usage_clock.GetTotalUsageTime(), base::Minutes(1));
+    clock.Advance(base::Minutes(1));
+    EXPECT_EQ(usage_clock.GetTotalUsageTime(), base::Minutes(2));
 
     // Verify that time is updated when Chrome stops being used.
-    clock.Advance(base::TimeDelta::FromMinutes(1));
+    clock.Advance(base::Minutes(1));
     tracker->OnVisibilityChanged(false, base::TimeDelta());
     EXPECT_FALSE(tracker->in_session());
     EXPECT_FALSE(usage_clock.IsInUse());
-    EXPECT_EQ(usage_clock.GetTotalUsageTime(), base::TimeDelta::FromMinutes(3));
+    EXPECT_EQ(usage_clock.GetTotalUsageTime(), base::Minutes(3));
 
     // Verify that time stays still when Chrome is not in use.
-    clock.Advance(base::TimeDelta::FromMinutes(1));
-    EXPECT_EQ(usage_clock.GetTotalUsageTime(), base::TimeDelta::FromMinutes(3));
+    clock.Advance(base::Minutes(1));
+    EXPECT_EQ(usage_clock.GetTotalUsageTime(), base::Minutes(3));
 
     // Verify that time advances again when Chrome is in use.
     tracker->OnVisibilityChanged(true, base::TimeDelta());
     EXPECT_TRUE(tracker->in_session());
     EXPECT_TRUE(usage_clock.IsInUse());
-    clock.Advance(base::TimeDelta::FromMinutes(1));
-    EXPECT_EQ(usage_clock.GetTotalUsageTime(), base::TimeDelta::FromMinutes(4));
+    clock.Advance(base::Minutes(1));
+    EXPECT_EQ(usage_clock.GetTotalUsageTime(), base::Minutes(4));
   }
 
   // Must be after UsageClock destruction.

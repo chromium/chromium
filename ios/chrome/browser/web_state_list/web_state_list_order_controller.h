@@ -18,6 +18,11 @@ class WebState;
 class WebStateListOrderController {
  public:
   explicit WebStateListOrderController(WebStateList* web_state_list);
+
+  WebStateListOrderController(const WebStateListOrderController&) = delete;
+  WebStateListOrderController& operator=(const WebStateListOrderController&) =
+      delete;
+
   ~WebStateListOrderController();
 
   // Determines where to place a newly opened WebState given its opener.
@@ -37,8 +42,6 @@ class WebStateListOrderController {
   int GetValidIndex(int index, int removing_index) const;
 
   WebStateList* web_state_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateListOrderController);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_ORDER_CONTROLLER_H_

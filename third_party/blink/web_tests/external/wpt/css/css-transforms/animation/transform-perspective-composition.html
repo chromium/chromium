@@ -13,7 +13,7 @@
 // Addition and accumulation of perspective values are very similar, but not
 // identical. We can test the difference by constructing a scenario where a
 // perspective parameter would go negative in one case (and thus be clamped
-// to 1), and would not go negative in the other case.
+// to 0), and would not go negative in the other case.
 //
 // In the test below, the values differ at 1.5 progress. The reason for this
 // is that at 1.5 progress, the addition case (which uses concatenation)
@@ -23,7 +23,7 @@
 //
 // Since perspective cannot go negative, this is clamped to:
 //
-//   perspective(10px) perspective(1px)
+//   perspective(10px) perspective(none)
 //
 // The accumulation case, on the other hand, combines the components
 // and so ends up blending from perspective(5px) to perspective(8.33...px) at
@@ -44,7 +44,7 @@ test_composition({
   {at: 0.5, expect: 'perspective(6.15px)'},
   {at: 0.75, expect: 'perspective(7.06px)'},
   {at: 1, expect: 'perspective(8.33px)'},
-  {at: 1.5, expect: 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -1.1, 0, 0, 0, 1)'},
+  {at: 1.5, expect: 'perspective(10px)'},
 ]);
 
 // ------------ Accumulation tests --------------

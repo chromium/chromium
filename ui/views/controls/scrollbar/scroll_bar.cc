@@ -164,8 +164,8 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
   // Update the |scroll_status_| to |kScrollEnded| in case the gesture sequence
   // ends incorrectly.
   if (event->type() == ui::ET_GESTURE_END &&
-      scroll_status_ == ScrollStatus::kScrollInEnding &&
-      scroll_status_ == ScrollStatus::kScrollEnded) {
+      scroll_status_ != ScrollStatus::kScrollInEnding &&
+      scroll_status_ != ScrollStatus::kScrollEnded) {
     scroll_status_ = ScrollStatus::kScrollEnded;
     controller()->OnScrollEnded();
   }

@@ -19,7 +19,7 @@ using base::android::ScopedJavaLocalRef;
 #endif
 
 namespace weblayer {
-PAGE_USER_DATA_KEY_IMPL(PageImpl)
+PAGE_USER_DATA_KEY_IMPL(PageImpl);
 
 PageImpl::PageImpl(content::Page& page)
     : content::PageUserData<PageImpl>(page) {}

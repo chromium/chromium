@@ -11,9 +11,9 @@
 #include "base/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -50,8 +50,7 @@ const char kUserAgent[] = "user-agent";
 #endif  // defined(OS_ANDROID)
 class MAYBE_SyncHttpBridgeTest : public testing::Test {
  public:
-  MAYBE_SyncHttpBridgeTest()
-      : bridge_for_race_test_(nullptr), io_thread_("IO thread") {
+  MAYBE_SyncHttpBridgeTest() : io_thread_("IO thread") {
     test_server_.AddDefaultHandlers(base::FilePath(kDocRoot));
   }
 
@@ -63,9 +62,7 @@ class MAYBE_SyncHttpBridgeTest : public testing::Test {
     HttpBridge::SetIOCapableTaskRunnerForTest(io_thread_.task_runner());
   }
 
-  void TearDown() override {
-    io_thread_.Stop();
-  }
+  void TearDown() override { io_thread_.Stop(); }
 
   HttpBridge* BuildBridge() { return new CustomHttpBridge(); }
 
@@ -95,7 +92,7 @@ class MAYBE_SyncHttpBridgeTest : public testing::Test {
         : HttpBridge(kUserAgent, nullptr /*PendingSharedURLLoaderFactory*/) {}
 
    protected:
-    ~CustomHttpBridge() override {}
+    ~CustomHttpBridge() override = default;
 
     void MakeAsynchronousPost() override {
       set_url_loader_factory_for_testing(
@@ -108,7 +105,7 @@ class MAYBE_SyncHttpBridgeTest : public testing::Test {
     }
   };
 
-  HttpBridge* bridge_for_race_test_;
+  HttpBridge* bridge_for_race_test_ = nullptr;
 
   base::test::TaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -144,7 +141,7 @@ class ShuntedHttpBridge : public HttpBridge {
   }
 
  private:
-  ~ShuntedHttpBridge() override {}
+  ~ShuntedHttpBridge() override = default;
 
   void CallOnURLFetchComplete() {
     ASSERT_TRUE(test_->GetIOThreadTaskRunner()->BelongsToCurrentThread());

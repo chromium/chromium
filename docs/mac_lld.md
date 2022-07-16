@@ -1,7 +1,7 @@
 # LLD for Mac builds
 
-Like on most other platforms, Chromium uses the LLD linker on macOS.
-This is a recent change. If things go well, it will ship in m93,
+Like on most other platforms, Chromium uses the LLD linker on iOS and macOS.
+This is a recent change. If things go well, it will ship in m95,
 but we might discover showstopper bugs that delay things a bit.
 
 
@@ -37,8 +37,7 @@ LLD has advantages unrelated to speed, too:
   codebases, they all use LLVM libraries. That gives them similar behavior.
   Using LLD unifies the build across platforms somewhat.
 
-For that reason, we moved to LLD for macOS builds (not for iOS builds,
-that's intentionally not in scope at the moment).
+For that reason, we moved to LLD for iOS and macOS builds.
 
 Just like the LLD ELF port tries to be commandline-compatible with other ELF
 linkers and the LLD COFF port tries to be commandline-compatible with the
@@ -48,14 +47,13 @@ different platforms.
 
 ## Current status and known issues
 
-LLD is used by default in all build configurations except for PGO
-profile collection builds ([bug](https://crbug.com/1220128)). All
+LLD is used by default in almost all build configurations. All
 tests on all bots are passing, both Intel and Arm.
 
 There are a few open issues:
 
-- LLD implements deduplication (aka "ICF"), but it's not enabled by
-  default. We don't turn it on yet.
+- LLD implements deduplication (aka "ICF"), but we don't yet
+  enable it in arm builds ([bug](https://crbug.com/1253924)).
 - LLD doesn't yet implement call graph profile sort.
 - LTO support in LLD/macOS isn't complete yet, and we don't use LTO
   on macOS yet for that reason.

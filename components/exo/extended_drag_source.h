@@ -18,6 +18,10 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 
+namespace ash {
+class DragDropTracker;
+}
+
 namespace aura {
 class Window;
 }
@@ -69,16 +73,25 @@ class ExtendedDragSource : public DataSourceObserver,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  void Drag(Surface* surface, const gfx::Vector2d& offset);
-
   bool IsActive() const;
+
+  void Drag(Surface* surface, const gfx::Vector2d& offset);
 
   // ash::ToplevelWindowDragDelegate:
   void OnToplevelWindowDragStarted(const gfx::PointF& start_location,
-                                   ui::mojom::DragEventSource source) override;
+                                   ui::mojom::DragEventSource source,
+                                   aura::Window* drag_source_window) override;
   ui::mojom::DragOperation OnToplevelWindowDragDropped() override;
   void OnToplevelWindowDragCancelled() override;
   void OnToplevelWindowDragEvent(ui::LocatedEvent* event) override;
+  bool TakeCapture(aura::Window* root_window,
+                   aura::Window* source_window,
+                   ash::ToplevelWindowDragDelegate::CancelDragDropCallback
+                       callback) override;
+  aura::Window* GetTarget(const ui::LocatedEvent& event) override;
+  ui::LocatedEvent* ConvertEvent(aura::Window* target,
+                                 const ui::LocatedEvent& event) override;
+  aura::Window* capture_window() override;
 
   // DataSourceObserver:
   void OnDataSourceDestroying(DataSource* source) override;
@@ -93,7 +106,7 @@ class ExtendedDragSource : public DataSourceObserver,
   void UnlockCursor();
   void StartDrag(aura::Window* toplevel,
                  const gfx::PointF& pointer_location_in_screen);
-  void OnDraggedWindowVisibilityChanging(bool visible);
+  void OnDraggedWindowVisibilityChanged(bool visible);
   gfx::Point CalculateOrigin(aura::Window* target) const;
   void Cleanup();
 
@@ -111,6 +124,9 @@ class ExtendedDragSource : public DataSourceObserver,
 
   std::unique_ptr<DraggedWindowHolder> dragged_window_holder_;
   std::unique_ptr<aura::ScopedWindowEventTargetingBlocker> event_blocker_;
+  aura::Window* drag_source_window_ = nullptr;
+
+  std::unique_ptr<ash::DragDropTracker> drag_drop_tracker_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

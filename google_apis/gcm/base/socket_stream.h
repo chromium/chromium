@@ -65,6 +65,10 @@ class GCM_EXPORT SocketInputStream
 
   // |socket| should already be connected.
   explicit SocketInputStream(mojo::ScopedDataPipeConsumerHandle stream);
+
+  SocketInputStream(const SocketInputStream&) = delete;
+  SocketInputStream& operator=(const SocketInputStream&) = delete;
+
   ~SocketInputStream() override;
 
   // ZeroCopyInputStream implementation.
@@ -129,8 +133,6 @@ class GCM_EXPORT SocketInputStream
   net::Error last_error_;
 
   base::WeakPtrFactory<SocketInputStream> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SocketInputStream);
 };
 
 // A helper class for writing to a mojo producer handle with protobuf encoded
@@ -161,6 +163,10 @@ class GCM_EXPORT SocketOutputStream
   };
 
   explicit SocketOutputStream(mojo::ScopedDataPipeProducerHandle stream);
+
+  SocketOutputStream(const SocketOutputStream&) = delete;
+  SocketOutputStream& operator=(const SocketOutputStream&) = delete;
+
   ~SocketOutputStream() override;
 
   // ZeroCopyOutputStream implementation.
@@ -202,8 +208,6 @@ class GCM_EXPORT SocketOutputStream
   net::Error last_error_;
 
   base::WeakPtrFactory<SocketOutputStream> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SocketOutputStream);
 };
 
 }  // namespace gcm

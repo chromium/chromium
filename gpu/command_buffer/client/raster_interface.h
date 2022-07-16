@@ -74,6 +74,13 @@ class RasterInterface : public InterfaceBase {
       SkYUVAInfo::Subsampling subsampling,
       const gpu::Mailbox yuva_plane_mailboxes[]) = 0;
 
+  virtual void ConvertRGBAToYUVAMailboxes(
+      SkYUVColorSpace planes_yuv_color_space,
+      SkYUVAInfo::PlaneConfig plane_config,
+      SkYUVAInfo::Subsampling subsampling,
+      const gpu::Mailbox yuva_plane_mailboxes[],
+      const gpu::Mailbox& source_mailbox) = 0;
+
   // OOP-Raster
 
   // msaa_sample_count has no effect unless msaa_mode is set to kMSAA
@@ -96,7 +103,8 @@ class RasterInterface : public InterfaceBase {
                               const gfx::Vector2dF& post_translate,
                               const gfx::Vector2dF& post_scale,
                               bool requires_clear,
-                              size_t* max_op_size_hint) = 0;
+                              size_t* max_op_size_hint,
+                              bool preserve_recording = true) = 0;
 
   // Schedules a hardware-accelerated image decode and a sync token that's
   // released when the image decode is complete. If the decode could not be

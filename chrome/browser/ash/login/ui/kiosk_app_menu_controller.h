@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_KIOSK_APP_MENU_CONTROLLER_H_
 
 #include "ash/public/cpp/kiosk_app_menu.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
@@ -18,6 +17,10 @@ namespace ash {
 class KioskAppMenuController : public KioskAppManagerObserver {
  public:
   KioskAppMenuController();
+
+  KioskAppMenuController(const KioskAppMenuController&) = delete;
+  KioskAppMenuController& operator=(const KioskAppMenuController&) = delete;
+
   ~KioskAppMenuController() override;
 
   // Manually dispatch kiosk app data to Ash.
@@ -37,8 +40,6 @@ class KioskAppMenuController : public KioskAppManagerObserver {
       kiosk_observations_{this};
 
   base::WeakPtrFactory<KioskAppMenuController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppMenuController);
 };
 
 }  // namespace ash

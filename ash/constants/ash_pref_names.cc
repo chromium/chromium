@@ -140,10 +140,6 @@ const char kSuggestedContentEnabled[] = "settings.suggested_content_enabled";
 // the Chrome OS launcher.
 const char kLauncherResultEverLaunched[] = "launcher.result_ever_launched";
 
-// Whether the status of the platform app version of camera app is migrated to
-// SWA.
-const char kHasCameraAppMigratedToSWA[] = "camera.has_migrated_to_swa";
-
 // Dictioanry pref to store data on the distribution of provider relevance
 // scores for the launcher normalizer.
 const char kLauncherSearchNormalizerParameters[] =
@@ -295,6 +291,19 @@ const char kAccessibilityDictationEnabled[] = "settings.a11y.dictation";
 // A string pref which determines the locale used for dictation speech
 // recognition. Should be BCP-47 format, e.g. "en-US" or "es-ES".
 const char kAccessibilityDictationLocale[] = "settings.a11y.dictation_locale";
+// A dictionary pref which keeps track of which locales the user has seen an
+// offline dictation upgrade nudge. A nudge will be shown once whenever a
+// new language becomes available offline in the background, without repeating
+// showing nudges where the language was already available. A locale code will
+// map to a value of true if the nudge has been shown, false if it needs to be
+// shown upon download completion, and will be absent from the map otherwise.
+// Locales match kAccessibilityDictationLocale and are in BCP-47 format.
+const char kAccessibilityDictationLocaleOfflineNudge[] =
+    "settings.a11y.dictation_locale_offline_nudge";
+// A boolean pref which determines whether the enhanced network voices feature
+// in select-to-speak is allowed. This pref can only be set by policy.
+const char kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed[] =
+    "settings.a11y.enhanced_network_voices_in_select_to_speak_allowed";
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
 const char kShouldAlwaysShowAccessibilityMenu[] = "settings.a11y.enable_menu";
@@ -421,6 +430,11 @@ const char kCanCellularSetupNotificationBeShown[] =
 // should be displayed or not.
 const char kManagedGuestSessionPrivacyWarningsEnabled[] =
     "managed_session.privacy_warning_enabled";
+
+// Boolean pref indicating whether the user has enabled detection of snooping
+// over their shoulder.
+const char kSnoopingProtectionEnabled[] =
+    "ash.privacy.snooping_protection_enabled";
 
 // A string pref storing the type of lock screen notification mode.
 // "show" -> show notifications on the lock screen
@@ -601,6 +615,11 @@ const char kShelfAlignmentLocal[] = "shelf_alignment_local";
 // String value corresponding to ash::ShelfAutoHideBehavior (e.g. "Never").
 const char kShelfAutoHideBehavior[] = "auto_hide_behavior";
 const char kShelfAutoHideBehaviorLocal[] = "auto_hide_behavior_local";
+
+// Dictionary value that determines when the launcher navigation nudge should
+// show to the users.
+const char kShelfLauncherNudge[] = "ash.shelf.launcher_nudge";
+
 // Dictionary value that holds per-display preference of shelf alignment and
 // auto-hide behavior. Key of the dictionary is the id of the display, and
 // its value is a dictionary whose keys are kShelfAlignment and
@@ -625,25 +644,12 @@ const char kSuggestLogoutAfterClosingLastWindow[] =
 // A dictionary pref that maps usernames to wallpaper info.
 const char kUserWallpaperInfo[] = "user_wallpaper_info";
 
-// A boolean pref that indicates whether the user has used desks recently.
-// A user has `used` desks means that there are desks added, removed or renamed
-// by the user. `Recently` means the `used` action happens between 07/27/2021
-// and 09/07/2021. Only the users that used desks in this period of time will be
-// included in the experiment of bento bar and overview button. Note, this pref
-// will not be set to false once it has been set to true. But this perf could be
-// removed after the experiment.
-const char kUserHasUsedDesksRecently[] = "ash.user_has_used_desks_recently";
-
 // A dictionary pref that maps usernames to wallpaper info.
 // This is for wallpapers that are syncable across devices.
 const char kSyncableWallpaperInfo[] = "syncable_wallpaper_info";
 
 // A dictionary pref that maps wallpaper file paths to their prominent colors.
 const char kWallpaperColors[] = "ash.wallpaper.prominent_colors";
-
-// String pref storing the collection_id used to query for new wallpapers when
-// daily refresh is enabled.
-const char kWallpaperCollectionId[] = "ash.wallpaper.collection_id";
 
 // Boolean pref indicating whether a user has enabled the bluetooth adapter.
 const char kUserBluetoothAdapterEnabled[] =
@@ -831,10 +837,39 @@ const char kLastUsedImeShortcutReminderDismissed[] =
 const char kNextImeShortcutReminderDismissed[] =
     "ash.shortcut_reminders.next_ime_dismissed";
 
+// Boolean pref to indicate whether to use i18n shortcut mapping and deprecate
+// legacy shortcuts.
+const char kDeviceI18nShortcutsEnabled[] = "ash.device_i18n_shortcuts_enabled";
+
 // An integet pref that tracks how many times the user has been shown the
 // notification about shortcuts changing.
 const char kImprovedShortcutsNotificationShownCount[] =
     "ash.improved_shortcuts_notification_shown_count";
+
+// If a user installs an extension which controls the proxy settings in the
+// primary profile of Chrome OS, this dictionary will contain information about
+// the extension controlling the proxy (name, id and if it can be disabled by
+// the user). Used to show the name and icon of the extension in the "Proxy"
+// section of the OS Settings>Network dialog.
+const char kLacrosProxyControllingExtension[] =
+    "ash.lacros_proxy_controlling_extension";
+
+// A boolean pref which is true if Fast Pair is enabled.
+const char kFastPairEnabled[] = "ash.fast_pair.enabled";
+
+// A boolean pref that controls whether the user is allowed to use the Desk
+// Templates feature - including creating Desks templates and using predefined
+// Desks templates.
+const char kDeskTemplatesEnabled[] = "ash.desk_templates_enabled";
+
+// A string pref which contains download URLs and hashes for files containing
+// predefined Desks templates configured by policy administrators.
+const char kPreconfiguredDeskTemplates[] = "ash.preconfigured_desk_templates";
+
+// A boolean pref that tracks whether the user has enabled Projector creation
+// flow during onboarding.
+const char kProjectorCreationFlowEnabled[] =
+    "ash.projector.creationFlowEnabled";
 
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.

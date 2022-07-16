@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
@@ -37,6 +38,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
  private:
   // HoldingSpaceItemView:
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
+  std::u16string GetTooltipText(const gfx::Point& point) const override;
   void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
                                  uint32_t updated_fields) override;
   void OnPrimaryActionVisibilityChanged(bool visible) override;
@@ -66,7 +68,9 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   views::ImageButton* secondary_action_pause_ = nullptr;
   views::ImageButton* secondary_action_resume_ = nullptr;
 
-  base::CallbackListSubscription image_subscription_;
+  base::CallbackListSubscription image_skia_changed_subscription_;
+  HoldingSpaceAnimationRegistry::ProgressRingAnimationChangedCallbackList::
+      Subscription progress_ring_animation_changed_subscription_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

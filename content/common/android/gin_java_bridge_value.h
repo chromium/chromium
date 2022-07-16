@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
@@ -34,6 +33,9 @@ class GinJavaBridgeValue {
     TYPE_UINT32,
     TYPE_LAST_VALUE
   };
+
+  GinJavaBridgeValue(const GinJavaBridgeValue&) = delete;
+  GinJavaBridgeValue& operator=(const GinJavaBridgeValue&) = delete;
 
   // Serialization
   CONTENT_EXPORT static std::unique_ptr<base::Value> CreateUndefinedValue();
@@ -65,8 +67,6 @@ class GinJavaBridgeValue {
   std::unique_ptr<base::Value> SerializeToBinaryValue();
 
   base::Pickle pickle_;
-
-  DISALLOW_COPY_AND_ASSIGN(GinJavaBridgeValue);
 };
 
 }  // namespace content

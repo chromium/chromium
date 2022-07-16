@@ -8,7 +8,6 @@
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -37,6 +36,9 @@ class ProfileSet : public std::set<Profile*> {
  public:
   ProfileSet() {}
 
+  ProfileSet(const ProfileSet&) = delete;
+  ProfileSet& operator=(const ProfileSet&) = delete;
+
   virtual ~ProfileSet() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
   static ProfileSet* Get();
@@ -45,8 +47,6 @@ class ProfileSet : public std::set<Profile*> {
   friend struct ::base::LazyInstanceTraitsBase<ProfileSet>;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileSet);
 };
 
 // Set of all of profiles for which restore session is in progress.

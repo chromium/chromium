@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_NIGHT_LIGHT_NIGHT_LIGHT_FEATURE_POD_CONTROLLER_H_
 
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -17,6 +16,12 @@ class NightLightFeaturePodController : public FeaturePodControllerBase {
  public:
   explicit NightLightFeaturePodController(
       UnifiedSystemTrayController* tray_controller);
+
+  NightLightFeaturePodController(const NightLightFeaturePodController&) =
+      delete;
+  NightLightFeaturePodController& operator=(
+      const NightLightFeaturePodController&) = delete;
+
   ~NightLightFeaturePodController() override;
 
   // FeaturePodControllerBase:
@@ -31,8 +36,6 @@ class NightLightFeaturePodController : public FeaturePodControllerBase {
   UnifiedSystemTrayController* const tray_controller_;
 
   FeaturePodButton* button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NightLightFeaturePodController);
 };
 
 }  // namespace ash

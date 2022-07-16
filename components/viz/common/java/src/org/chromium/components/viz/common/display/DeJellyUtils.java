@@ -8,15 +8,19 @@ import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
+import android.os.Build;
 import android.provider.Settings.Global;
 import android.view.Display;
 import android.view.Surface;
+import android.view.WindowManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.compat.ApiHelperForR;
 
 import java.lang.reflect.Field;
 
@@ -89,9 +93,15 @@ public class DeJellyUtils implements DisplayManager.DisplayListener, ComponentCa
         int rotation = display.getRotation();
         mRotationOk = rotation == Surface.ROTATION_0;
 
-        Point realSize = new Point();
-        display.getRealSize(realSize);
-        mScreenWidth = realSize.x;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Rect realSize = ApiHelperForR.getMaximumWindowMetricsBounds(
+                    ContextUtils.getApplicationContext().getSystemService(WindowManager.class));
+            mScreenWidth = realSize.width();
+        } else {
+            Point realSize = new Point();
+            display.getRealSize(realSize);
+            mScreenWidth = realSize.x;
+        }
     }
     @Override
     public void onDisplayRemoved(int displayId) {}

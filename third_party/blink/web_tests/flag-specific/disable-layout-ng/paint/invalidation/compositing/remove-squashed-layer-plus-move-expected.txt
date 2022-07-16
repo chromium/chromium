@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1418, 1008],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -9,34 +9,42 @@
     {
       "name": "LayoutBlockFlow (positioned) DIV",
       "bounds": [1000, 1000],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV class='mv-tile')",
-      "bounds": [1000, 105],
+      "name": "LayoutBlockFlow (relative positioned) DIV class='mv-tile'",
+      "position": [8, 8],
+      "bounds": [100, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#ADD8E6",
       "invalidations": [
-        [0, 55, 100, 50],
         [0, 0, 100, 50]
-      ],
-      "transform": 1
+      ]
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='mv-tile'",
+      "position": [8, 63],
+      "bounds": [1000, 50],
+      "contentsOpaqueForText": true,
+      "drawsContent": false
+    },
+    {
+      "name": "HorizontalScrollbar",
       "position": [0, 585],
-      "bounds": [785, 15],
-      "contentsOpaque": true
+      "bounds": [785, 15]
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 585],
-      "contentsOpaque": true
+      "bounds": [15, 585]
     },
     {
-      "name": "Scroll Corner Layer",
+      "name": "Scroll corner of LayoutView #document",
       "position": [785, 585],
-      "bounds": [15, 15]
+      "bounds": [15, 15],
+      "contentsOpaque": true
     }
   ],
   "transforms": [

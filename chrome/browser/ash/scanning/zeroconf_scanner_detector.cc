@@ -29,10 +29,13 @@ namespace ash {
 // Supported service types for scanners.
 const char ZeroconfScannerDetector::kEsclServiceType[] = "_uscan._tcp.local";
 const char ZeroconfScannerDetector::kEsclsServiceType[] = "_uscans._tcp.local";
+const char ZeroconfScannerDetector::kGenericScannerServiceType[] =
+    "_scanner._tcp.local";
 
-constexpr std::array<const char*, 2> kServiceTypes = {
+constexpr std::array<const char*, 3> kServiceTypes = {
     ZeroconfScannerDetector::kEsclsServiceType,
     ZeroconfScannerDetector::kEsclServiceType,
+    ZeroconfScannerDetector::kGenericScannerServiceType,
 };
 
 namespace {
@@ -92,9 +95,9 @@ absl::optional<chromeos::Scanner> CreateScanner(
   PRINTER_LOG(EVENT) << "Found zeroconf " << service_type
                      << " scanner: " << service_description.instance_name();
 
-  return CreateSaneAirscanScanner(
-      service_description.instance_name(), service_type, metadata.rs(),
-      service_description.ip_address, service_description.address.port());
+  return CreateSaneScanner(service_description.instance_name(), service_type,
+                           metadata.rs(), service_description.ip_address,
+                           service_description.address.port());
 }
 
 class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
@@ -218,6 +221,10 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
         } else if (scanner->device_names.find(chromeos::ScanProtocol::kEscl) !=
                    scanner->device_names.end()) {
           protocol = chromeos::ScanProtocol::kEscl;
+        } else if (scanner->device_names.find(
+                       chromeos::ScanProtocol::kLegacyNetwork) !=
+                   scanner->device_names.end()) {
+          protocol = chromeos::ScanProtocol::kLegacyNetwork;
         } else {
           NOTREACHED() << "Zeroconf scanner with unknown protocol.";
         }

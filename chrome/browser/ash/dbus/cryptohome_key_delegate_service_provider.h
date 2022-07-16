@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_DBUS_CRYPTOHOME_KEY_DELEGATE_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_DBUS_CRYPTOHOME_KEY_DELEGATE_SERVICE_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
@@ -28,6 +27,12 @@ class CryptohomeKeyDelegateServiceProvider final
     : public CrosDBusService::ServiceProviderInterface {
  public:
   CryptohomeKeyDelegateServiceProvider();
+
+  CryptohomeKeyDelegateServiceProvider(
+      const CryptohomeKeyDelegateServiceProvider&) = delete;
+  CryptohomeKeyDelegateServiceProvider& operator=(
+      const CryptohomeKeyDelegateServiceProvider&) = delete;
+
   ~CryptohomeKeyDelegateServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -41,8 +46,6 @@ class CryptohomeKeyDelegateServiceProvider final
   // Must be the last member.
   base::WeakPtrFactory<CryptohomeKeyDelegateServiceProvider> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptohomeKeyDelegateServiceProvider);
 };
 
 }  // namespace ash

@@ -19,7 +19,6 @@
 #include <sys/types.h>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/safe_math.h"
 #include "snapshot/memory_snapshot.h"
 #include "util/misc/address_types.h"
@@ -35,6 +34,10 @@ namespace internal {
 class MemorySnapshotGeneric final : public MemorySnapshot {
  public:
   MemorySnapshotGeneric() = default;
+
+  MemorySnapshotGeneric(const MemorySnapshotGeneric&) = delete;
+  MemorySnapshotGeneric& operator=(const MemorySnapshotGeneric&) = delete;
+
   ~MemorySnapshotGeneric() = default;
 
   //! \brief Initializes the object.
@@ -110,8 +113,6 @@ class MemorySnapshotGeneric final : public MemorySnapshot {
   VMAddress address_;
   size_t size_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemorySnapshotGeneric);
 };
 
 }  // namespace internal

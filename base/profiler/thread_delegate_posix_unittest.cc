@@ -4,6 +4,7 @@
 
 #include "base/profiler/thread_delegate_posix.h"
 
+#include "base/numerics/clamped_math.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -12,8 +13,7 @@
 namespace base {
 
 // ASAN moves local variables outside of the stack extents.
-// Test is flaky on ChromeOS. crbug.com/1133434.
-#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(ADDRESS_SANITIZER)
 #define MAYBE_CurrentThreadBase DISABLED_CurrentThreadBase
 #else
 #define MAYBE_CurrentThreadBase CurrentThreadBase
@@ -26,7 +26,7 @@ TEST(ThreadDelegatePosixTest, MAYBE_CurrentThreadBase) {
   EXPECT_GT(base, 0u);
   uintptr_t stack_addr = reinterpret_cast<uintptr_t>(&base);
   // Check that end of stack is within 4MiB of a current stack address.
-  EXPECT_LE(base, stack_addr + 4 * 1024 * 1024);
+  EXPECT_LE(base, ClampAdd(stack_addr, 4 * 1024 * 1024));
 }
 
 #if defined(OS_ANDROID)

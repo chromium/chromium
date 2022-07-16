@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ANDROID_INFOBARS_SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/infobars/android/infobar_android.h"
 
 class SearchGeolocationDisclosureInfoBarDelegate;
@@ -15,6 +14,12 @@ class SearchGeolocationDisclosureInfoBar : public infobars::InfoBarAndroid {
  public:
   explicit SearchGeolocationDisclosureInfoBar(
       std::unique_ptr<SearchGeolocationDisclosureInfoBarDelegate> delegate);
+
+  SearchGeolocationDisclosureInfoBar(
+      const SearchGeolocationDisclosureInfoBar&) = delete;
+  SearchGeolocationDisclosureInfoBar& operator=(
+      const SearchGeolocationDisclosureInfoBar&) = delete;
+
   ~SearchGeolocationDisclosureInfoBar() override;
 
  private:
@@ -27,8 +32,6 @@ class SearchGeolocationDisclosureInfoBar : public infobars::InfoBarAndroid {
   void ProcessButton(int action) override;
 
   SearchGeolocationDisclosureInfoBarDelegate* GetDelegate();
-
-  DISALLOW_COPY_AND_ASSIGN(SearchGeolocationDisclosureInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_H_

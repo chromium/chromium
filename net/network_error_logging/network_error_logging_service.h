@@ -219,6 +219,10 @@ class NET_EXPORT NetworkErrorLoggingService {
   static std::unique_ptr<NetworkErrorLoggingService> Create(
       PersistentNelStore* store);
 
+  NetworkErrorLoggingService(const NetworkErrorLoggingService&) = delete;
+  NetworkErrorLoggingService& operator=(const NetworkErrorLoggingService&) =
+      delete;
+
   virtual ~NetworkErrorLoggingService();
 
   // Ingests a "NEL:" header received for |network_isolation_key| and |origin|
@@ -289,9 +293,6 @@ class NET_EXPORT NetworkErrorLoggingService {
   const base::Clock* clock_;
   ReportingService* reporting_service_;
   bool shut_down_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkErrorLoggingService);
 };
 
 // Persistent storage for NEL policies.
@@ -301,6 +302,10 @@ class NET_EXPORT NetworkErrorLoggingService::PersistentNelStore {
       base::OnceCallback<void(std::vector<NelPolicy>)>;
 
   PersistentNelStore() = default;
+
+  PersistentNelStore(const PersistentNelStore&) = delete;
+  PersistentNelStore& operator=(const PersistentNelStore&) = delete;
+
   virtual ~PersistentNelStore() = default;
 
   // Initializes the store and retrieves stored NEL policies. This will be
@@ -318,9 +323,6 @@ class NET_EXPORT NetworkErrorLoggingService::PersistentNelStore {
 
   // Flushes the store.
   virtual void Flush() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PersistentNelStore);
 };
 
 }  // namespace net

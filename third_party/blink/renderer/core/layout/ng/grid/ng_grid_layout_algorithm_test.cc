@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_properties.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -45,28 +46,37 @@ class NGGridLayoutAlgorithmTest
 
   void BuildGridItemsAndTrackCollections(
       const NGGridLayoutAlgorithm& algorithm) {
-    // Measure items.
-    algorithm.ConstructAndAppendGridItems(&grid_items_, &out_of_flow_items_);
-
     NGGridPlacement grid_placement(
         algorithm.Style(), algorithm.ComputeAutomaticRepetitions(kForColumns),
         algorithm.ComputeAutomaticRepetitions(kForRows));
 
+    // Measure items.
+    NGGridProperties grid_properties;
+    algorithm.ConstructAndAppendGridItems(
+        &grid_items_, &grid_placement, &grid_properties, &out_of_flow_items_);
+
     // Build block track collections.
     NGGridBlockTrackCollection column_block_track_collection(kForColumns);
     NGGridBlockTrackCollection row_block_track_collection(kForRows);
-    algorithm.BuildBlockTrackCollections(
-        &grid_items_, &column_block_track_collection,
-        &row_block_track_collection, &grid_placement);
+    algorithm.BuildBlockTrackCollections(grid_placement, &grid_items_,
+                                         &column_block_track_collection,
+                                         &row_block_track_collection);
 
     // Build algorithm track collections from the block track collections.
     column_track_collection_ = NGGridLayoutAlgorithmTrackCollection(
         column_block_track_collection,
-        algorithm.grid_available_size_.inline_size == kIndefiniteSize);
+        algorithm.grid_available_size_.inline_size == kIndefiniteSize,
+        &grid_properties);
 
     row_track_collection_ = NGGridLayoutAlgorithmTrackCollection(
         row_block_track_collection,
-        algorithm.grid_available_size_.block_size == kIndefiniteSize);
+        algorithm.grid_available_size_.block_size == kIndefiniteSize,
+        &grid_properties);
+
+    for (auto& grid_item : grid_items_) {
+      grid_item.ComputeSetIndices(column_track_collection_);
+      grid_item.ComputeSetIndices(row_track_collection_);
+    }
 
     // Cache track span properties for grid items.
     algorithm.CacheGridItemsTrackSpanProperties(column_track_collection_,
@@ -74,23 +84,20 @@ class NGGridLayoutAlgorithmTest
     algorithm.CacheGridItemsTrackSpanProperties(row_track_collection_,
                                                 &grid_items_);
 
-    for (auto& grid_item : grid_items_) {
-      grid_item.ComputeSetIndices(column_track_collection_);
-      grid_item.ComputeSetIndices(row_track_collection_);
-    }
-
     grid_geometry_ = {algorithm.InitializeTrackSizes(&column_track_collection_),
                       algorithm.InitializeTrackSizes(&row_track_collection_)};
 
     // Resolve inline size.
-    bool unused;
-    algorithm.ComputeUsedTrackSizes(
-        NGGridLayoutAlgorithm::SizingConstraint::kLayout, grid_geometry_,
-        &column_track_collection_, &grid_items_, &unused);
+    grid_geometry_.column_geometry = algorithm.ComputeUsedTrackSizes(
+        grid_geometry_, grid_properties,
+        NGGridLayoutAlgorithm::SizingConstraint::kLayout,
+        &column_track_collection_, &grid_items_);
+
     // Resolve block size.
-    algorithm.ComputeUsedTrackSizes(
-        NGGridLayoutAlgorithm::SizingConstraint::kLayout, grid_geometry_,
-        &row_track_collection_, &grid_items_, &unused);
+    grid_geometry_.row_geometry = algorithm.ComputeUsedTrackSizes(
+        grid_geometry_, grid_properties,
+        NGGridLayoutAlgorithm::SizingConstraint::kLayout,
+        &row_track_collection_, &grid_items_);
   }
 
   NGGridLayoutAlgorithmTrackCollection& TrackCollection(
@@ -190,13 +197,13 @@ class NGGridLayoutAlgorithmTest
     return fragment->DumpFragmentTree(flags);
   }
 
-  NGGridLayoutAlgorithm::GridItems grid_items_;
-  Vector<NGGridLayoutAlgorithm::GridItemData> out_of_flow_items_;
+  GridItems grid_items_;
+  GridItemStorageVector out_of_flow_items_;
 
   NGGridLayoutAlgorithmTrackCollection column_track_collection_;
   NGGridLayoutAlgorithmTrackCollection row_track_collection_;
 
-  NGGridLayoutAlgorithm::GridGeometry grid_geometry_;
+  NGGridGeometry grid_geometry_;
 };
 
 TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmBaseSetSizes) {
@@ -234,11 +241,11 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmBaseSetSizes) {
 
   NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   BuildGridItemsAndTrackCollections(algorithm);
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 0), kIndefiniteSize);
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 1), kIndefiniteSize);
+  EXPECT_EQ(BaseRowSizeForChild(algorithm, 0), LayoutUnit(0));
+  EXPECT_EQ(BaseRowSizeForChild(algorithm, 1), LayoutUnit(110));
   EXPECT_EQ(BaseRowSizeForChild(algorithm, 2), LayoutUnit(210));
   EXPECT_EQ(BaseRowSizeForChild(algorithm, 3), LayoutUnit(100));
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 4), kIndefiniteSize);
+  EXPECT_EQ(BaseRowSizeForChild(algorithm, 4), LayoutUnit(110));
 }
 
 TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRanges) {

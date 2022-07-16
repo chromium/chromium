@@ -9,7 +9,7 @@ namespace syncer {
 MockNudgeHandler::MockNudgeHandler()
     : num_initial_nudges_(0), num_commit_nudges_(0) {}
 
-MockNudgeHandler::~MockNudgeHandler() {}
+MockNudgeHandler::~MockNudgeHandler() = default;
 
 void MockNudgeHandler::NudgeForInitialDownload(ModelType type) {
   num_initial_nudges_++;

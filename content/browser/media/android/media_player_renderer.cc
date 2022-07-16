@@ -45,10 +45,8 @@ MediaPlayerRenderer::MediaPlayerRenderer(
       volume_(kDefaultVolume),
       renderer_extension_receiver_(this,
                                    std::move(renderer_extension_receiver)) {
-  DCHECK_EQ(static_cast<RenderFrameHostImpl*>(
-                RenderFrameHost::FromID(process_id, routing_id))
-                ->delegate()
-                ->GetAsWebContents(),
+  DCHECK_EQ(WebContents::FromRenderFrameHost(
+                RenderFrameHost::FromID(process_id, routing_id)),
             web_contents);
 
   WebContentsImpl* web_contents_impl =

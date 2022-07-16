@@ -10,10 +10,9 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/cast/cast_config.h"
 #include "media/video/fake_video_encode_accelerator.h"
 
@@ -26,6 +25,12 @@ class FakeVideoEncodeAcceleratorFactory {
  public:
   explicit FakeVideoEncodeAcceleratorFactory(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
+
+  FakeVideoEncodeAcceleratorFactory(const FakeVideoEncodeAcceleratorFactory&) =
+      delete;
+  FakeVideoEncodeAcceleratorFactory& operator=(
+      const FakeVideoEncodeAcceleratorFactory&) = delete;
+
   ~FakeVideoEncodeAcceleratorFactory();
 
   int vea_response_count() const {
@@ -56,8 +61,6 @@ class FakeVideoEncodeAcceleratorFactory {
   std::unique_ptr<media::VideoEncodeAccelerator> next_response_vea_;
   ReceiveVideoEncodeAcceleratorCallback vea_response_callback_;
   int vea_response_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVideoEncodeAcceleratorFactory);
 };
 
 }  // namespace cast

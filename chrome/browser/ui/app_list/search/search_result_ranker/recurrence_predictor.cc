@@ -321,8 +321,7 @@ const char* HourBinPredictor::GetPredictorName() const {
 }
 
 int HourBinPredictor::GetBinFromHourDifference(int hour_difference) const {
-  base::Time shifted_time =
-      base::Time::Now() + base::TimeDelta::FromHours(hour_difference);
+  base::Time shifted_time = base::Time::Now() + base::Hours(hour_difference);
   base::Time::Exploded exploded_time;
   shifted_time.LocalExplode(&exploded_time);
 

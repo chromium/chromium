@@ -163,7 +163,7 @@ void PlatformAppBrowserTest::LaunchPlatformApp(const Extension* extension) {
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceTest));
+          apps::mojom::LaunchSource::kFromTest));
 }
 
 void PlatformAppBrowserTest::LaunchHostedApp(const Extension* extension) {
@@ -172,7 +172,7 @@ void PlatformAppBrowserTest::LaunchHostedApp(const Extension* extension) {
       ->LaunchAppWithParams(CreateAppLaunchParamsUserContainer(
           browser()->profile(), extension,
           WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          apps::mojom::AppLaunchSource::kSourceCommandLine));
+          apps::mojom::LaunchSource::kFromCommandLine));
 }
 
 WebContents* PlatformAppBrowserTest::GetFirstAppWindowWebContents() {
@@ -208,7 +208,7 @@ size_t PlatformAppBrowserTest::RunGetWindowsFunctionForExtension(
   std::unique_ptr<base::ListValue> result(
       utils::ToList(utils::RunFunctionAndReturnSingleResult(function.get(),
                                                             "[]", browser())));
-  return result->GetSize();
+  return result->GetList().size();
 }
 
 bool PlatformAppBrowserTest::RunGetWindowFunctionForExtension(

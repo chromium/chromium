@@ -188,11 +188,10 @@ void FillProcessData(
 ////////////////////////////////////////////////////////////////////////////////
 
 ProcessesEventRouter::ProcessesEventRouter(content::BrowserContext* context)
-    : task_manager::TaskManagerObserver(base::TimeDelta::FromSeconds(1),
+    : task_manager::TaskManagerObserver(base::Seconds(1),
                                         task_manager::REFRESH_TYPE_NONE),
       browser_context_(context),
-      listeners_(0) {
-}
+      listeners_(0) {}
 
 ProcessesEventRouter::~ProcessesEventRouter() {
 }
@@ -462,7 +461,7 @@ ProcessesEventRouter* ProcessesAPI::processes_event_router() {
 ExtensionFunction::ResponseAction ProcessesGetProcessIdForTabFunction::Run() {
   // For this function, the task manager doesn't even need to be running.
   std::unique_ptr<api::processes::GetProcessIdForTab::Params> params(
-      api::processes::GetProcessIdForTab::Params::Create(*args_));
+      api::processes::GetProcessIdForTab::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   const int tab_id = params->tab_id;
@@ -492,7 +491,7 @@ ExtensionFunction::ResponseAction ProcessesTerminateFunction::Run() {
 
   // For this function, the task manager doesn't even need to be running.
   std::unique_ptr<api::processes::Terminate::Params> params(
-      api::processes::Terminate::Params::Create(*args_));
+      api::processes::Terminate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   child_process_host_id_ = params->process_id;
@@ -577,13 +576,12 @@ ProcessesTerminateFunction::TerminateIfAllowed(base::ProcessHandle handle) {
 
 ProcessesGetProcessInfoFunction::ProcessesGetProcessInfoFunction()
     : task_manager::TaskManagerObserver(
-          base::TimeDelta::FromSeconds(1),
-          GetRefreshTypesFlagOnlyEssentialData()) {
-}
+          base::Seconds(1),
+          GetRefreshTypesFlagOnlyEssentialData()) {}
 
 ExtensionFunction::ResponseAction ProcessesGetProcessInfoFunction::Run() {
   std::unique_ptr<api::processes::GetProcessInfo::Params> params(
-      api::processes::GetProcessInfo::Params::Create(*args_));
+      api::processes::GetProcessInfo::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   if (params->process_ids.as_integer)
     process_host_ids_.push_back(*params->process_ids.as_integer);

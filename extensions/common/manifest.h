@@ -12,10 +12,14 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/values.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/hashed_extension_id.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+
+namespace base {
+class DictionaryValue;
+class Value;
+}  // namespace base
 
 namespace extensions {
 struct InstallWarning;
@@ -121,6 +125,10 @@ class Manifest final {
   Manifest(mojom::ManifestLocation location,
            std::unique_ptr<base::DictionaryValue> value,
            ExtensionId extension_id);
+
+  Manifest(const Manifest&) = delete;
+  Manifest& operator=(const Manifest&) = delete;
+
   ~Manifest();
 
   const ExtensionId& extension_id() const { return extension_id_; }
@@ -179,15 +187,7 @@ class Manifest final {
                      const base::DictionaryValue** out_value) const;
   bool GetDictionary(const std::string& path,
                      const base::Value** out_value) const;
-  // Deprecated: Use the GetList() overload that accepts a base::Value output
-  // parameter instead.
-  bool GetList(const std::string& path,
-               const base::ListValue** out_value) const;
   bool GetList(const std::string& path, const base::Value** out_value) const;
-
-  bool GetPathOfType(const std::string& path,
-                     base::Value::Type type,
-                     const base::Value** out_value) const;
 
   // Returns true if this equals the |other| manifest.
   bool EqualsForTesting(const Manifest& other) const;
@@ -230,8 +230,6 @@ class Manifest final {
   const Type type_;
 
   const int manifest_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(Manifest);
 };
 
 }  // namespace extensions

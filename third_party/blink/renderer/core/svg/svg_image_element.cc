@@ -188,7 +188,7 @@ bool SVGImageElement::SelfHasRelativeLengths() const {
 
 LayoutObject* SVGImageElement::CreateLayoutObject(const ComputedStyle&,
                                                   LegacyLayout) {
-  return new LayoutSVGImage(this);
+  return MakeGarbageCollected<LayoutSVGImage>(this);
 }
 
 bool SVGImageElement::HaveLoadedRequiredResources() {

@@ -56,7 +56,8 @@ JNI_DomDistillerTabUtils_GetFormattedUrlFromOriginalDistillerUrl(
   auto url = *url::GURLAndroid::ToNativeGURL(env, j_url);
 
   if (url.spec().length() > content::kMaxURLDisplayChars)
-    url = url.IsStandard() ? url.GetOrigin() : GURL(url.scheme() + ":");
+    url = url.IsStandard() ? url.DeprecatedGetOriginAsURL()
+                           : GURL(url.scheme() + ":");
 
   // Note that we can't unescape spaces here, because if the user copies this
   // and pastes it into another program, that program may think the URL ends at

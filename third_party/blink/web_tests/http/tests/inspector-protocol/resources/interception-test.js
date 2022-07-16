@@ -48,6 +48,10 @@
     this._testRunner.completeTest();
   }
 
+  setSilentFrameStoppedLoading(silent = true) {
+    this.silentFrameStoppedLoading = silent;
+  }
+
   async startInterceptionTest(requestInterceptedDict, numConsoleLogsToWaitFor, interceptionStage = 'Request') {
     if (typeof numConsoleLogsToWaitFor === 'undefined')
       numConsoleLogsToWaitFor = 0;
@@ -130,7 +134,9 @@
       // completion a bit.
       setTimeout(() => {
         frameStoppedLoading = true;
-        this._log(this._getNextId(), 'Page.frameStoppedLoading');
+        if (!this.silentFrameStoppedLoading) {
+          this._log(this._getNextId(), 'Page.frameStoppedLoading');
+        }
         maybeCompleteTest();
       }, 0);
     });

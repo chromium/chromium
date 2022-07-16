@@ -5,7 +5,6 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,27 +30,34 @@
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/skia_util.h"
 
 namespace content {
 
 class RenderViewHostTestBrowserClient : public TestContentBrowserClient {
  public:
   RenderViewHostTestBrowserClient() {}
+
+  RenderViewHostTestBrowserClient(const RenderViewHostTestBrowserClient&) =
+      delete;
+  RenderViewHostTestBrowserClient& operator=(
+      const RenderViewHostTestBrowserClient&) = delete;
+
   ~RenderViewHostTestBrowserClient() override {}
 
   bool IsHandledURL(const GURL& url) override {
     return url.scheme() == url::kFileScheme;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderViewHostTestBrowserClient);
 };
 
 class RenderViewHostTest : public RenderViewHostImplTestHarness {
  public:
   RenderViewHostTest() : old_browser_client_(nullptr) {}
+
+  RenderViewHostTest(const RenderViewHostTest&) = delete;
+  RenderViewHostTest& operator=(const RenderViewHostTest&) = delete;
+
   ~RenderViewHostTest() override {}
 
   void SetUp() override {
@@ -67,8 +73,6 @@ class RenderViewHostTest : public RenderViewHostImplTestHarness {
  private:
   RenderViewHostTestBrowserClient test_browser_client_;
   ContentBrowserClient* old_browser_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewHostTest);
 };
 
 // Ensure we do not grant bindings to a process shared with unprivileged views.
@@ -224,7 +228,7 @@ TEST_F(RenderViewHostTest, NavigationWithBadHistoryItemFiles) {
 
 TEST_F(RenderViewHostTest, RoutingIdSane) {
   RenderFrameHostImpl* root_rfh =
-      contents()->GetFrameTree()->root()->current_frame_host();
+      contents()->GetPrimaryFrameTree().root()->current_frame_host();
   EXPECT_EQ(contents()->GetMainFrame(), root_rfh);
   EXPECT_EQ(test_rvh()->GetProcess(), root_rfh->GetProcess());
   EXPECT_NE(test_rvh()->GetRoutingID(), root_rfh->routing_id());

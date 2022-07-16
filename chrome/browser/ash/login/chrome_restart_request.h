@@ -13,7 +13,7 @@ namespace base {
 class CommandLine;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Keep in sync with RestartJobReason in
 // chromeos/dbus/session_manager/session_manager_client.h
@@ -35,13 +35,6 @@ void GetOffTheRecordCommandLine(const GURL& start_url,
 void RestartChrome(const base::CommandLine& command_line,
                    RestartChromeReason reason);
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::GetOffTheRecordCommandLine;
-using ::chromeos::RestartChromeReason;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_CHROME_RESTART_REQUEST_H_

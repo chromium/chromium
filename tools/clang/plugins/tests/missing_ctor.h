@@ -7,6 +7,7 @@
 
 #include <string>
 #include "base/memory/checked_ptr.h"
+#include "base/memory/raw_ptr.h"
 
 struct MyString {
   MyString();
@@ -168,6 +169,50 @@ class TenCheckedPtrWarns {
   CheckedPtr<TenCheckedPtrWarns> eight_;
   CheckedPtr<TenCheckedPtrWarns> nine_;
   CheckedPtr<TenCheckedPtrWarns> ten_;
+};
+
+class RawPtrDoesNotWarn {
+ public:
+  RawPtrDoesNotWarn() = default;
+  ~RawPtrDoesNotWarn() = default;
+
+ private:
+  raw_ptr<RawPtrDoesNotWarn> foo_;
+};
+
+class NineRawPtrDoesNotWarn {
+ public:
+  NineRawPtrDoesNotWarn() = default;
+  ~NineRawPtrDoesNotWarn() = default;
+
+ private:
+  raw_ptr<NineRawPtrDoesNotWarn> one_;
+  raw_ptr<NineRawPtrDoesNotWarn> two_;
+  raw_ptr<NineRawPtrDoesNotWarn> three_;
+  raw_ptr<NineRawPtrDoesNotWarn> four_;
+  raw_ptr<NineRawPtrDoesNotWarn> five_;
+  raw_ptr<NineRawPtrDoesNotWarn> six_;
+  raw_ptr<NineRawPtrDoesNotWarn> seven_;
+  raw_ptr<NineRawPtrDoesNotWarn> eight_;
+  raw_ptr<NineRawPtrDoesNotWarn> nine_;
+};
+
+class TenRawPtrWarns {
+ public:
+  TenRawPtrWarns() = default;
+  ~TenRawPtrWarns() = default;
+
+ private:
+  raw_ptr<TenRawPtrWarns> one_;
+  raw_ptr<TenRawPtrWarns> two_;
+  raw_ptr<TenRawPtrWarns> three_;
+  raw_ptr<TenRawPtrWarns> four_;
+  raw_ptr<TenRawPtrWarns> five_;
+  raw_ptr<TenRawPtrWarns> six_;
+  raw_ptr<TenRawPtrWarns> seven_;
+  raw_ptr<TenRawPtrWarns> eight_;
+  raw_ptr<TenRawPtrWarns> nine_;
+  raw_ptr<TenRawPtrWarns> ten_;
 };
 
 #endif  // MISSING_CTOR_H_

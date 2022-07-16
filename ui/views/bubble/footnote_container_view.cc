@@ -9,10 +9,11 @@
 
 #include "cc/paint/paint_flags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
@@ -28,6 +29,12 @@ class HalfRoundedRectBackground : public Background {
       : radius_(radius) {
     SetNativeControlColor(color);
   }
+
+  HalfRoundedRectBackground() = delete;
+  HalfRoundedRectBackground(const HalfRoundedRectBackground&) = delete;
+  HalfRoundedRectBackground& operator=(const HalfRoundedRectBackground&) =
+      delete;
+
   ~HalfRoundedRectBackground() override = default;
 
   // Background:
@@ -46,8 +53,6 @@ class HalfRoundedRectBackground : public Background {
 
  private:
   float radius_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(HalfRoundedRectBackground);
 };
 
 }  // namespace
@@ -84,8 +89,8 @@ void FootnoteContainerView::ChildVisibilityChanged(View* child) {
 void FootnoteContainerView::ResetBackground() {
   if (!GetWidget())
     return;
-  SkColor background_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_BubbleFooterBackground);
+  SkColor background_color =
+      GetColorProvider()->GetColor(ui::kColorBubbleFooterBackground);
   SetBackground(std::make_unique<HalfRoundedRectBackground>(background_color,
                                                             corner_radius_));
 }
@@ -94,8 +99,7 @@ void FootnoteContainerView::ResetBorder() {
   if (!GetWidget())
     return;
   SetBorder(CreateSolidSidedBorder(
-      1, 0, 0, 0, GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_FootnoteContainerBorder)));
+      1, 0, 0, 0, GetColorProvider()->GetColor(ui::kColorBubbleFooterBorder)));
 }
 
 BEGIN_METADATA(FootnoteContainerView, View)

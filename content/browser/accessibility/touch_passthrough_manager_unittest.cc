@@ -96,13 +96,16 @@ class TestTouchPassthroughManager : public TouchPassthroughManager {
 class TouchPassthroughManagerTest : public testing::Test {
  public:
   TouchPassthroughManagerTest() = default;
+
+  TouchPassthroughManagerTest(const TouchPassthroughManagerTest&) = delete;
+  TouchPassthroughManagerTest& operator=(const TouchPassthroughManagerTest&) =
+      delete;
+
   ~TouchPassthroughManagerTest() override = default;
 
  protected:
  private:
   void SetUp() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(TouchPassthroughManagerTest);
 };
 
 TEST_F(TouchPassthroughManagerTest, TapOutsidePassthroughRegion) {

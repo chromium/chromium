@@ -6,7 +6,6 @@
 #define UI_BASE_MODELS_SIMPLE_COMBOBOX_MODEL_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/image_model.h"
 
@@ -38,6 +37,10 @@ class COMPONENT_EXPORT(UI_BASE) SimpleComboboxModel : public ComboboxModel {
   };
 
   explicit SimpleComboboxModel(std::vector<Item> items);
+
+  SimpleComboboxModel(const SimpleComboboxModel&) = delete;
+  SimpleComboboxModel& operator=(const SimpleComboboxModel&) = delete;
+
   ~SimpleComboboxModel() override;
 
   // ui::ComboboxModel:
@@ -50,8 +53,6 @@ class COMPONENT_EXPORT(UI_BASE) SimpleComboboxModel : public ComboboxModel {
 
  private:
   const std::vector<Item> items_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleComboboxModel);
 };
 
 }  // namespace ui

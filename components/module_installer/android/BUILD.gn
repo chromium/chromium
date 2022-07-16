@@ -12,7 +12,6 @@ android_library("module_installer_java") {
     "java/src/org/chromium/components/module_installer/builder/ModuleEngine.java",
     "java/src/org/chromium/components/module_installer/engine/ApkEngine.java",
     "java/src/org/chromium/components/module_installer/engine/EngineFactory.java",
-    "java/src/org/chromium/components/module_installer/engine/FakeEngine.java",
     "java/src/org/chromium/components/module_installer/engine/InstallEngine.java",
     "java/src/org/chromium/components/module_installer/engine/InstallListener.java",
     "java/src/org/chromium/components/module_installer/engine/SplitCompatEngine.java",
@@ -35,8 +34,8 @@ android_library("module_installer_java") {
   deps = [
     "//base:base_java",
     "//components/crash/android:java",
+    "//third_party/android_deps:com_google_android_play_core_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/google_android_play_core:com_google_android_play_core_java",
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -59,7 +58,7 @@ junit_binary("module_installer_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//third_party/google_android_play_core:com_google_android_play_core_java",
+    "//third_party/android_deps:com_google_android_play_core_java",
     "//third_party/hamcrest:hamcrest_java",
   ]
 }

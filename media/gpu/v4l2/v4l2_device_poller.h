@@ -8,8 +8,8 @@
 #include <atomic>
 #include "base/callback_forward.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 
 namespace media {

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "net/android/network_library.h"
 #include "net/base/net_export.h"
@@ -24,8 +23,7 @@ namespace internal {
 // constructed on a different sequence than which it's later called on.
 class NET_EXPORT_PRIVATE DnsConfigServiceAndroid : public DnsConfigService {
  public:
-  static constexpr base::TimeDelta kConfigChangeDelay =
-      base::TimeDelta::FromMilliseconds(50);
+  static constexpr base::TimeDelta kConfigChangeDelay = base::Milliseconds(50);
 
   DnsConfigServiceAndroid();
   ~DnsConfigServiceAndroid() override;
@@ -50,7 +48,7 @@ class NET_EXPORT_PRIVATE DnsConfigServiceAndroid : public DnsConfigService {
   class ConfigReader;
 
   std::unique_ptr<Watcher> watcher_;
-  scoped_refptr<ConfigReader> config_reader_;
+  std::unique_ptr<ConfigReader> config_reader_;
   android::DnsServerGetter dns_server_getter_;
 };
 

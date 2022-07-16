@@ -18,6 +18,10 @@ namespace metrics {
 class DelegatingProvider final : public MetricsProvider {
  public:
   DelegatingProvider();
+
+  DelegatingProvider(const DelegatingProvider&) = delete;
+  DelegatingProvider& operator=(const DelegatingProvider&) = delete;
+
   ~DelegatingProvider() override;
 
   // Registers an additional MetricsProvider to forward calls to.
@@ -45,6 +49,7 @@ class DelegatingProvider final : public MetricsProvider {
       ChromeUserMetricsExtension* uma_proto) override;
   void ProvideCurrentSessionData(
       ChromeUserMetricsExtension* uma_proto) override;
+  void ProvideCurrentSessionUKMData() override;
   void ClearSavedStabilityMetrics() override;
   void RecordHistogramSnapshots(
       base::HistogramSnapshotManager* snapshot_manager) override;
@@ -53,8 +58,6 @@ class DelegatingProvider final : public MetricsProvider {
 
  private:
   std::vector<std::unique_ptr<MetricsProvider>> metrics_providers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegatingProvider);
 };
 
 }  // namespace metrics

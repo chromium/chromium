@@ -35,6 +35,11 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
  public:
   explicit SystemMediaControlsNotifier(
       system_media_controls::SystemMediaControls* system_media_controls);
+
+  SystemMediaControlsNotifier(const SystemMediaControlsNotifier&) = delete;
+  SystemMediaControlsNotifier& operator=(const SystemMediaControlsNotifier&) =
+      delete;
+
   ~SystemMediaControlsNotifier() override;
 
   // media_session::mojom::MediaControllerObserver implementation.
@@ -96,8 +101,6 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
       media_controller_image_observer_receiver_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMediaControlsNotifier);
 };
 
 }  // namespace content

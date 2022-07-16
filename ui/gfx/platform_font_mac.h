@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/platform_font.h"
@@ -44,6 +43,9 @@ class GFX_EXPORT PlatformFontMac : public PlatformFont {
   PlatformFontMac(sk_sp<SkTypeface> typeface,
                   int font_size_pixels,
                   const absl::optional<FontRenderParams>& params);
+
+  PlatformFontMac(const PlatformFontMac&) = delete;
+  PlatformFontMac& operator=(const PlatformFontMac&) = delete;
 
   // Overridden from PlatformFont:
   Font DeriveFont(int size_delta,
@@ -111,8 +113,6 @@ class GFX_EXPORT PlatformFontMac : public PlatformFont {
 
   // Details about how the font should be rendered.
   FontRenderParams render_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformFontMac);
 };
 
 }  // namespace gfx

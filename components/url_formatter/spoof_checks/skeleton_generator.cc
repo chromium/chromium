@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
@@ -115,15 +116,27 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
 
 SkeletonGenerator::~SkeletonGenerator() = default;
 
+void SkeletonGenerator::MaybeRemoveDiacritics(icu::UnicodeString& hostname) {
+  // If input has any characters outside Latin-Greek-Cyrillic and [0-9._-],
+  // there is no point in getting rid of diacritics because combining marks
+  // attached to non-LGC characters are already blocked.
+  if (ShouldRemoveDiacriticsFromLabel(hostname))
+    diacritic_remover_->transliterate(hostname);
+}
+
+std::u16string SkeletonGenerator::MaybeRemoveDiacritics(
+    base::StringPiece16 hostname) {
+  size_t hostname_length = hostname.length() - (hostname.back() == '.' ? 1 : 0);
+  icu::UnicodeString host(false, hostname.data(), hostname_length);
+  MaybeRemoveDiacritics(host);
+  return base::i18n::UnicodeStringToString16(host);
+}
+
 Skeletons SkeletonGenerator::GetSkeletons(base::StringPiece16 hostname) {
   Skeletons skeletons;
   size_t hostname_length = hostname.length() - (hostname.back() == '.' ? 1 : 0);
   icu::UnicodeString host(false, hostname.data(), hostname_length);
-  // If input has any characters outside Latin-Greek-Cyrillic and [0-9._-],
-  // there is no point in getting rid of diacritics because combining marks
-  // attached to non-LGC characters are already blocked.
-  if (ShouldRemoveDiacriticsFromLabel(host))
-    diacritic_remover_->transliterate(host);
+  MaybeRemoveDiacritics(host);
   extra_confusable_mapper_->transliterate(host);
 
   UErrorCode status = U_ZERO_ERROR;

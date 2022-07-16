@@ -42,6 +42,8 @@ const char kPciePeripheralGuestModeNotSupportedNotificationId[] =
     "cros_pcie_peripheral_guest_mode_not_supported_notifcation_id";
 const char kPciePeripheralDeviceBlockedNotificationId[] =
     "cros_pcie_peripheral_device_blocked_notifcation_id";
+const char kPciePeripheralBillboardDeviceNotificationId[] =
+    "cros_pcie_peripheral_billboard_device_notifcation_id";
 
 // Represents the buttons in the notification.
 enum ButtonIndex { kSettings, kLearnMore };
@@ -99,16 +101,16 @@ void OnPeripheralLimitedNotificationClicked(absl::optional<int> button_index) {
       UpdateNotificationPrefCount(/*clicked_settings=*/true);
       break;
     case ButtonIndex::kLearnMore:
-      NewWindowDelegate::GetInstance()->NewTabWithUrl(
-          GURL(kLearnMoreHelpUrl), /*from_user_interaction=*/true);
+      NewWindowDelegate::GetInstance()->OpenUrl(GURL(kLearnMoreHelpUrl),
+                                                /*from_user_interaction=*/true);
       break;
   }
   RemoveNotification(kPciePeripheralLimitedPerformanceNotificationId);
 }
 
 void OnGuestNotificationClicked(bool is_thunderbolt_only) {
-  NewWindowDelegate::GetInstance()->NewTabWithUrl(
-      GURL(kLearnMoreHelpUrl), /*from_user_interaction=*/true);
+  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kLearnMoreHelpUrl),
+                                            /*from_user_interaction=*/true);
 
   if (is_thunderbolt_only) {
     RemoveNotification(kPciePeripheralGuestModeNotSupportedNotificationId);
@@ -119,9 +121,15 @@ void OnGuestNotificationClicked(bool is_thunderbolt_only) {
 }
 
 void OnPeripheralBlockedNotificationClicked() {
-  NewWindowDelegate::GetInstance()->NewTabWithUrl(
-      GURL(kLearnMoreHelpUrl), /*from_user_interaction=*/true);
+  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kLearnMoreHelpUrl),
+                                            /*from_user_interaction=*/true);
   RemoveNotification(kPciePeripheralDeviceBlockedNotificationId);
+}
+
+void OnBillboardNotificationClicked() {
+  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kLearnMoreHelpUrl),
+                                            /*from_user_interaction=*/true);
+  RemoveNotification(kPciePeripheralBillboardDeviceNotificationId);
 }
 
 // We only display notifications for active user sessions (signed-in/guest with
@@ -150,6 +158,27 @@ void PciePeripheralNotificationController::
   DCHECK(ash::PciePeripheralManager::IsInitialized());
 
   ash::PciePeripheralManager::Get()->AddObserver(this);
+}
+
+void PciePeripheralNotificationController::NotifyBillboardDevice() {
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          kPciePeripheralBillboardDeviceNotificationId,
+          /*title=*/std::u16string(),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_BILLBOARD_DEVICE),
+          /*display_source=*/std::u16string(), GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kNotifierPciePeripheral),
+          message_center::RichNotificationData(),
+          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+              base::BindRepeating(&OnBillboardNotificationClicked)),
+          kSettingsIcon,
+          message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
+
+  message_center_->AddNotification(std::move(notification));
 }
 
 void PciePeripheralNotificationController::NotifyLimitedPerformance() {
@@ -254,6 +283,10 @@ void PciePeripheralNotificationController::OnGuestModeNotificationReceived(
 
 void PciePeripheralNotificationController::OnPeripheralBlockedReceived() {
   NotifyPeripheralBlockedNotification();
+}
+
+void PciePeripheralNotificationController::OnBillboardDeviceConnected() {
+  NotifyBillboardDevice();
 }
 
 // static

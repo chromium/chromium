@@ -17,7 +17,6 @@ source_set("browser") {
     "//components/google/core/common",
     "//components/prefs",
     "//components/signin/core/browser",
-    "//components/signin/public/base",
     "//google_apis",
     "//ios/net",
     "//ios/web/common:web_view_creation_util",

@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "chromecast/app/grit/chromecast_settings.h"
-#include "chromecast/common/cast_content_client.h"
+#include "chromecast/common/user_agent.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/http/http_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -66,7 +66,7 @@ std::string CastHttpUserAgentSettings::GetAcceptLanguage() const {
 }
 
 std::string CastHttpUserAgentSettings::GetUserAgent() const {
-  return chromecast::shell::GetUserAgent();
+  return chromecast::GetUserAgent();
 }
 
 std::string CastHttpUserAgentSettings::AcceptLanguage() {

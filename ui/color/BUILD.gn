@@ -11,6 +11,7 @@ source_set("color_headers") {
   sources = [
     "color_id.h",
     "color_id_macros.inc",
+    "color_id_map_macros.inc",
     "color_mixer.h",
     "color_provider.h",
     "color_provider_manager.h",
@@ -28,6 +29,10 @@ component("color") {
   sources = [
     "color_mixer.cc",
     "color_provider.cc",
+    "color_provider_source.cc",
+    "color_provider_source.h",
+    "color_provider_source_observer.cc",
+    "color_provider_source_observer.h",
     "color_provider_utils.cc",
     "color_provider_utils.h",
     "color_recipe.cc",
@@ -70,7 +75,9 @@ test("color_unittests") {
   sources = [
     "color_mixer_unittest.cc",
     "color_provider_manager_unittest.cc",
+    "color_provider_source_observer_unittest.cc",
     "color_provider_unittest.cc",
+    "color_provider_utils_unittest.cc",
     "color_recipe_unittest.cc",
     "color_transform_unittest.cc",
     "run_all_unittests.cc",
@@ -87,11 +94,16 @@ test("color_unittests") {
 
 component("mixers") {
   sources = [
+    "color_mixers.cc",
     "color_mixers.h",
     "color_provider_manager.cc",
     "color_provider_manager.h",
     "core_default_color_mixer.cc",
+    "core_default_color_mixer.h",
+    "native_color_mixers.cc",
+    "native_color_mixers.h",
     "ui_color_mixer.cc",
+    "ui_color_mixer.h",
   ]
 
   defines = [ "IS_COLOR_IMPL" ]
@@ -105,22 +117,14 @@ component("mixers") {
 
   public_deps = [ "//base" ]
 
-  if (is_chromeos_ash) {
-    sources += [ "cros/native_color_mixers.cc" ]
-  } else if (is_fuchsia) {
-    sources += [ "fuchsia/native_color_mixers.cc" ]
-  } else if (is_linux || is_chromeos) {
-    sources += [ "linux/native_color_mixers.cc" ]
-  } else if (is_mac) {
+  if (is_mac) {
     frameworks = [ "AppKit.framework" ]
     sources += [
-      "mac/native_color_mixers.mm",
+      "mac/native_color_mixers_mac.mm",
       "mac/scoped_current_nsappearance.h",
       "mac/scoped_current_nsappearance.mm",
     ]
-  } else if (is_ios) {
-    sources += [ "ios/native_color_mixers.mm" ]
   } else if (is_win) {
-    sources += [ "win/native_color_mixers.cc" ]
+    sources += [ "win/native_color_mixers_win.cc" ]
   }
 }

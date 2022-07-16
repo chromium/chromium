@@ -222,7 +222,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
       // selection requestor indicates this by deleting |property|.
       base::TimeTicks timeout =
           base::TimeTicks::Now() +
-          base::TimeDelta::FromMilliseconds(kIncrementalTransferTimeoutMs);
+          base::Milliseconds(kIncrementalTransferTimeoutMs);
       incremental_transfers_.emplace_back(
           requestor, target, property,
           std::make_unique<x11::XScopedEventSelector>(
@@ -234,9 +234,8 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
       // the data transfer.
       if (!incremental_transfer_abort_timer_.IsRunning()) {
         incremental_transfer_abort_timer_.Start(
-            FROM_HERE,
-            base::TimeDelta::FromMilliseconds(KSelectionOwnerTimerPeriodMs),
-            this, &SelectionOwner::AbortStaleIncrementalTransfers);
+            FROM_HERE, base::Milliseconds(KSelectionOwnerTimerPeriodMs), this,
+            &SelectionOwner::AbortStaleIncrementalTransfers);
       }
     } else {
       auto& mem = it->second;
@@ -258,9 +257,8 @@ void SelectionOwner::ProcessIncrementalTransfer(IncrementalTransfer* transfer) {
   std::vector<uint8_t> buf(data, data + chunk_length);
   SetArrayProperty(transfer->window, transfer->property, transfer->target, buf);
   transfer->offset += chunk_length;
-  transfer->timeout =
-      base::TimeTicks::Now() +
-      base::TimeDelta::FromMilliseconds(kIncrementalTransferTimeoutMs);
+  transfer->timeout = base::TimeTicks::Now() +
+                      base::Milliseconds(kIncrementalTransferTimeoutMs);
 
   // When offset == data->size(), we still need to transfer a zero-sized chunk
   // to notify the selection requestor that the transfer is complete. Clear

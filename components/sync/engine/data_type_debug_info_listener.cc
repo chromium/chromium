@@ -12,6 +12,6 @@ DataTypeConfigurationStats::DataTypeConfigurationStats()
 DataTypeConfigurationStats::DataTypeConfigurationStats(
     const DataTypeConfigurationStats& other) = default;
 
-DataTypeConfigurationStats::~DataTypeConfigurationStats() {}
+DataTypeConfigurationStats::~DataTypeConfigurationStats() = default;
 
 }  // namespace syncer

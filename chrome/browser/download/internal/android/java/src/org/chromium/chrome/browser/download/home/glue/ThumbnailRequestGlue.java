@@ -22,7 +22,7 @@ import org.chromium.ui.display.DisplayAndroid;
  * thumbnail work to the {@link ThumbnailProvider} via a custom {@link ThumbnailProviderImpl}.
  */
 public class ThumbnailRequestGlue implements ThumbnailRequest {
-    private final OfflineContentProviderGlue mProvider;
+    private final OfflineContentProvider mProvider;
     private final OfflineItem mItem;
     private final int mIconWidthPx;
     private final int mIconHeightPx;
@@ -30,9 +30,8 @@ public class ThumbnailRequestGlue implements ThumbnailRequest {
     private final VisualsCallback mCallback;
 
     /** Creates a {@link ThumbnailRequestGlue} instance. */
-    public ThumbnailRequestGlue(OfflineContentProviderGlue provider, OfflineItem item,
-            int iconWidthPx, int iconHeightPx, float maxThumbnailScaleFactor,
-            VisualsCallback callback) {
+    public ThumbnailRequestGlue(OfflineContentProvider provider, OfflineItem item, int iconWidthPx,
+            int iconHeightPx, float maxThumbnailScaleFactor, VisualsCallback callback) {
         mProvider = provider;
         mItem = item;
 
@@ -77,7 +76,7 @@ public class ThumbnailRequestGlue implements ThumbnailRequest {
 
     @Override
     public boolean getThumbnail(Callback<Bitmap> callback) {
-        return mProvider.getVisualsForItem(mItem.id, (id, visuals) -> {
+        mProvider.getVisualsForItem(mItem.id, (id, visuals) -> {
             if (visuals == null || visuals.icon == null) {
                 callback.onResult(null);
             } else {
@@ -106,6 +105,7 @@ public class ThumbnailRequestGlue implements ThumbnailRequest {
                 callback.onResult(bitmap);
             }
         });
+        return true;
     }
 
     /**

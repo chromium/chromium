@@ -12,7 +12,6 @@
 #include "base/supports_user_data.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/sessions/core/session_id.h"
@@ -68,42 +67,46 @@ struct NavigationEventList {
 
   ~NavigationEventList();
 
-  // Finds the most recent navigation event that navigated to |target_url| and
-  // its associated |target_main_frame_url| in the tab with ID |target_tab_id|.
+  // Finds the index of the most recent navigation event that navigated to
+  // |target_url| and  its associated |target_main_frame_url| in the tab with
+  // ID |target_tab_id|. Returns -1 if event is not found.
   // If navigation happened in the main frame, |target_url| and
   // |target_main_frame_url| are the same.
   // If |target_url| is empty, we use its main frame url (a.k.a.
   // |target_main_frame_url|) to search for navigation events.
   // If |target_tab_id| is invalid, we look for all tabs for the most
   // recent navigation to |target_url| or |target_main_frame_url|.
-  // For some cases, the most recent navigation to |target_url| may not be
-  // relevant.
-  // For example, url1 in window A opens url2 in window B, url1 then opens an
-  // about:blank page window C and injects script code in it to trigger a
-  // delayed event (e.g. a download) in Window D. Before the event occurs, url2
-  // in window B opens a different about:blank page in window C.
+  // This method starts traversing the list in reverse order of events starting
+  // from |start_index| to prevent infinite loops.
+  // For some cases, the most recent navigation to |target_url| may not
+  // be relevant. For example, url1 in window A opens url2 in window B, url1
+  // then opens an about:blank page window C and injects script code in it to
+  // trigger a delayed event (e.g. a download) in Window D. Before the event
+  // occurs, url2 in window B opens a different about:blank page in window C.
   // A ---- C - D
   //   \   /
   //     B
   // In this case, FindNavigationEvent() will think url2 in Window B is the
   // referrer of about::blank in Window C since this navigation is more recent.
   // However, it does not prevent us to attribute url1 in Window A as the cause
-  // of all these navigations.
-  NavigationEvent* FindNavigationEvent(const base::Time& last_event_timestamp,
-                                       const GURL& target_url,
-                                       const GURL& target_main_frame_url,
-                                       SessionID target_tab_id);
+  // of all these navigations. Returns -1 if an event is not found.
+  size_t FindNavigationEvent(const base::Time& last_event_timestamp,
+                             const GURL& target_url,
+                             const GURL& target_main_frame_url,
+                             SessionID target_tab_id,
+                             size_t start_index);
 
   // Finds the the navigation event in the |pending_navigation_events_| map that
   // has the same destination URL as the |target_url|. If there are multiple
   // matches, returns the one with the latest updated time.
   NavigationEvent* FindPendingNavigationEvent(const GURL& target_url);
 
-  // Finds the most recent retargeting NavigationEvent that satisfies the
-  // |target_tab_id|.
-  NavigationEvent* FindRetargetingNavigationEvent(
-      const base::Time& last_event_timestamp,
-      SessionID target_tab_id);
+  // Finds the index of the most recent retargeting NavigationEvent index in the
+  // list that satisfies the |target_tab_id| and is not the same NavigationEvent
+  // stored in |start_index|. Returns -1 if event is not found.
+  size_t FindRetargetingNavigationEvent(const base::Time& last_event_timestamp,
+                                        SessionID target_tab_id,
+                                        size_t start_index);
 
   void RecordNavigationEvent(std::unique_ptr<NavigationEvent> nav_event);
 
@@ -168,17 +171,22 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   // entries for these cases in the maps.
   static GURL ClearURLRef(const GURL& url);
 
-  // Checks if we should enable observing navigations for safe browsing purpose.
-  // Return true if the safe browsing safe browsing service is enabled and
-  // initialized.
-  static bool IsEnabledAndReady(
-      PrefService* prefs,
-      SafeBrowsingServiceInterface* safe_browsing_service);
+  // Checks if we should enable observing navigations for safe browsing
+  // purposes. Returns true if safe browsing is enabled and the safe browsing
+  // service is present in the embedder.
+  static bool IsEnabledAndReady(PrefService* prefs,
+                                bool has_safe_browsing_service);
 
   // Sanitize referrer chain by only keeping origin information of all URLs.
   static void SanitizeReferrerChain(ReferrerChain* referrer_chain);
 
   explicit SafeBrowsingNavigationObserverManager(PrefService* pref_service);
+
+  SafeBrowsingNavigationObserverManager(
+      const SafeBrowsingNavigationObserverManager&) = delete;
+  SafeBrowsingNavigationObserverManager& operator=(
+      const SafeBrowsingNavigationObserverManager&) = delete;
+
   ~SafeBrowsingNavigationObserverManager() override;
 
   // Adds |nav_event| to |navigation_event_list_|. Object pointed to by
@@ -282,7 +290,7 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   friend class TestNavigationObserverManager;
   friend class SBNavigationObserverBrowserTest;
   friend class SBNavigationObserverTest;
-  friend class ClientSideDetectionDelegateTest;
+  friend class ChromeClientSideDetectionHostDelegateTest;
 
   struct GurlHash {
     std::size_t operator()(const GURL& url) const {
@@ -323,12 +331,27 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
 
   // Helper function to get the remaining referrer chain when we've already
   // traced back |current_user_gesture_count| number of user gestures.
+  // This method uses a |last_nav_event_traced_index| to check where to start
+  // in |navigation_events_|.
   // This function modifies the |out_referrer_chain| and |out_result|.
-  void GetRemainingReferrerChain(NavigationEvent* last_nav_event_traced,
+  void GetRemainingReferrerChain(size_t last_nav_event_traced_index,
                                  int current_user_gesture_count,
                                  int user_gesture_count_limit,
                                  ReferrerChain* out_referrer_chain,
                                  AttributionResult* out_result);
+
+  // Helper function to get the remaining referrer chain when we've already
+  // traced back |current_user_gesture_count| number of user gestures.
+  // This method uses a |last_nav_event_traced_index| to check where to start
+  // in |navigation_events_| and the |last_nav_event_traced| to get the next
+  // entry. This function modifies the |out_referrer_chain| and |out_result|.
+  void GetRemainingReferrerChainForNavEvent(
+      NavigationEvent* last_nav_event_traced,
+      size_t last_nav_event_traced_index,
+      int current_user_gesture_count,
+      int user_gesture_count_limit,
+      ReferrerChain* out_referrer_chain,
+      AttributionResult* out_result);
 
   // Removes URLs in |out_referrer_chain| that match the Safe Browsing allowlist
   // domains.
@@ -357,8 +380,6 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   PrefService* pref_service_;
 
   base::OneShotTimer cleanup_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingNavigationObserverManager);
 };
 }  // namespace safe_browsing
 

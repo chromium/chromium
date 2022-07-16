@@ -25,6 +25,14 @@
 
 using java_script_dialog_overlays::JavaScriptDialogRequest;
 
+namespace {
+
+int GetTabId(const web::WebState* const web_state) {
+  return BreadcrumbManagerTabHelper::FromWebState(web_state)->GetUniqueId();
+}
+
+}  // namespace
+
 const char kBreadcrumbOverlay[] = "Overlay";
 const char kBreadcrumbOverlayActivated[] = "#activated";
 const char kBreadcrumbOverlayHttpAuth[] = "#http-auth";
@@ -85,33 +93,29 @@ void BreadcrumbManagerBrowserAgent::WebStateInsertedAt(
     return;
   }
 
-  int web_state_id =
-      BreadcrumbManagerTabHelper::FromWebState(web_state)->GetUniqueId();
   const char* activating_string = activating ? "active" : "inactive";
   LogEvent(base::StringPrintf("Insert %s Tab%d at %d", activating_string,
-                              web_state_id, index));
+                              GetTabId(web_state), index));
 }
+
 void BreadcrumbManagerBrowserAgent::WebStateMoved(WebStateList* web_state_list,
                                                   web::WebState* web_state,
                                                   int from_index,
                                                   int to_index) {
-  int web_state_id =
-      BreadcrumbManagerTabHelper::FromWebState(web_state)->GetUniqueId();
-  LogEvent(base::StringPrintf("Moved Tab%d from %d to %d", web_state_id,
+  LogEvent(base::StringPrintf("Moved Tab%d from %d to %d", GetTabId(web_state),
                               from_index, to_index));
 }
+
 void BreadcrumbManagerBrowserAgent::WebStateReplacedAt(
     WebStateList* web_state_list,
     web::WebState* old_web_state,
     web::WebState* new_web_state,
     int index) {
-  int old_web_state_id =
-      BreadcrumbManagerTabHelper::FromWebState(old_web_state)->GetUniqueId();
-  int new_web_state_id =
-      BreadcrumbManagerTabHelper::FromWebState(new_web_state)->GetUniqueId();
   LogEvent(base::StringPrintf("Replaced Tab%d with Tab%d at %d",
-                              old_web_state_id, new_web_state_id, index));
+                              GetTabId(old_web_state), GetTabId(new_web_state),
+                              index));
 }
+
 void BreadcrumbManagerBrowserAgent::WillCloseWebStateAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
@@ -122,10 +126,9 @@ void BreadcrumbManagerBrowserAgent::WillCloseWebStateAt(
     return;
   }
 
-  int web_state_id =
-      BreadcrumbManagerTabHelper::FromWebState(web_state)->GetUniqueId();
-  LogEvent(base::StringPrintf("Close Tab%d at %d", web_state_id, index));
+  LogEvent(base::StringPrintf("Close Tab%d at %d", GetTabId(web_state), index));
 }
+
 void BreadcrumbManagerBrowserAgent::WebStateActivatedAt(
     WebStateList* web_state_list,
     web::WebState* old_web_state,
@@ -138,15 +141,11 @@ void BreadcrumbManagerBrowserAgent::WebStateActivatedAt(
 
   std::vector<std::string> event = {"Switch"};
   if (old_web_state) {
-    event.push_back(base::StringPrintf(
-        "from Tab%d", BreadcrumbManagerTabHelper::FromWebState(old_web_state)
-                          ->GetUniqueId()));
+    event.push_back(base::StringPrintf("from Tab%d", GetTabId(old_web_state)));
   }
   if (new_web_state) {
-    event.push_back(base::StringPrintf(
-        "to Tab%d at %d",
-        BreadcrumbManagerTabHelper::FromWebState(new_web_state)->GetUniqueId(),
-        active_index));
+    event.push_back(base::StringPrintf("to Tab%d at %d",
+                                       GetTabId(new_web_state), active_index));
   }
 
   LogEvent(base::JoinString(event, " "));

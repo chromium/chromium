@@ -22,8 +22,7 @@ namespace content {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultMinCapturePeriod =
-    base::TimeDelta::FromMilliseconds(10);
+constexpr base::TimeDelta kDefaultMinCapturePeriod = base::Milliseconds(10);
 
 // Frame size can change every frame.
 constexpr base::TimeDelta kDefaultMinPeriod = base::TimeDelta();
@@ -91,7 +90,7 @@ void DevToolsVideoConsumer::SetFrameSinkId(
         frame_sink_id_.is_valid()
             ? absl::make_optional<viz::FrameSinkId>(frame_sink_id_)
             : absl::nullopt,
-        viz::SubtreeCaptureId());
+        nullptr);
   }
 }
 
@@ -133,7 +132,7 @@ void DevToolsVideoConsumer::InnerStartCapture(
                                       kDefaultUseFixedAspectRatio);
   capturer_->SetFormat(pixel_format_, color_space_);
   if (frame_sink_id_.is_valid())
-    capturer_->ChangeTarget(frame_sink_id_, viz::SubtreeCaptureId());
+    capturer_->ChangeTarget(frame_sink_id_, nullptr);
 
   capturer_->Start(this);
 }

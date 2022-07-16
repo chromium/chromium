@@ -24,6 +24,7 @@ extern const base::Feature kNtpRepeatableQueries;
 extern const base::Feature kOneGoogleBarModalOverlays;
 extern const base::Feature kRealboxMatchOmniboxTheme;
 extern const base::Feature kRealboxUseGoogleGIcon;
+extern const base::Feature kNtpOneGoogleBar;
 extern const base::Feature kNtpLogo;
 extern const base::Feature kNtpShortcuts;
 extern const base::Feature kNtpMiddleSlotPromo;
@@ -35,9 +36,8 @@ extern const base::Feature kNtpChromeCartModule;
 extern const base::Feature kNtpModulesRedesigned;
 extern const base::Feature kNtpDriveModule;
 extern const base::Feature kNtpPhotosModule;
+extern const base::Feature kNtpSafeBrowsingModule;
 extern const base::Feature kNtpModulesDragAndDrop;
-extern const base::Feature kSearchSuggestChips;
-extern const base::Feature kDisableSearchSuggestChips;
 
 extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly;
 
@@ -59,9 +59,11 @@ extern const char kNtpChromeCartModuleDataParam[];
 extern const char kNtpChromeCartModuleAbandonedCartDiscountParam[];
 // Parameter for enabling the abandoned cart discount with utm_source tag to
 // indicate the feature state.
-extern const char NtpChromeCartModuleAbandonedCartDiscountUseUtmParam[];
+extern const char kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam[];
 // Parameter for enabling the cart heuristics improvement.
 extern const char kNtpChromeCartModuleHeuristicsImprovementParam[];
+// Parameter for enabling coupons on the Cart module.
+extern const char kNtpChromeCartModuleCouponParam[];
 // Parameter determining the type of Drive data to render.
 extern const char kNtpDriveModuleDataParam[];
 // Parameter for enabling the Drive module for managed users only.
@@ -71,6 +73,13 @@ extern const char kNtpDriveModuleCacheMaxAgeSParam[];
 // Parameter for communicating the experiment group of the Drive module
 // experiment.
 extern const char kNtpDriveModuleExperimentGroupParam[];
+// Parameter determining the type of Photos data to render.
+extern const char kNtpPhotosModuleDataParam[];
+// Parameter determining the number of times a module is shown to a user
+// before cooldown starts.
+extern const char kNtpSafeBrowsingModuleCountMaxParam[];
+// Parameter determining the cooldown period (in days) for a target user.
+extern const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[];
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();

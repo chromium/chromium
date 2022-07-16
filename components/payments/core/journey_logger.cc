@@ -75,9 +75,9 @@ bool ValidateExclusiveBitVector(const std::vector<bool>& bit_vector) {
 // since the payment handler window times out after 5 minutes.
 void RecordTimeToCheckoutUmaHistograms(const std::string name,
                                        const base::TimeDelta time_to_checkout) {
-  UmaHistogramCustomTimes(
-      name, time_to_checkout, base::TimeDelta::FromMilliseconds(1) /* min */,
-      base::TimeDelta::FromMinutes(5) /* max */, 100 /*bucket count*/);
+  UmaHistogramCustomTimes(name, time_to_checkout,
+                          base::Milliseconds(1) /* min */,
+                          base::Minutes(5) /* max */, 100 /*bucket count*/);
 }
 
 }  // namespace
@@ -647,6 +647,10 @@ void JourneyLogger::SetTriggerTime() {
 void JourneyLogger::SetPaymentAppUkmSourceId(
     ukm::SourceId payment_app_source_id) {
   payment_app_source_id_ = payment_app_source_id;
+}
+
+base::WeakPtr<JourneyLogger> JourneyLogger::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace payments

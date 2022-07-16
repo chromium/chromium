@@ -46,6 +46,10 @@ class FtlMessagingClient final : public MessagingClient {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       RegistrationManager* registration_manager,
       SignalingTracker* signaling_tracker = nullptr);
+
+  FtlMessagingClient(const FtlMessagingClient&) = delete;
+  FtlMessagingClient& operator=(const FtlMessagingClient&) = delete;
+
   ~FtlMessagingClient() override;
 
   // MessagingClient implementations.
@@ -101,8 +105,6 @@ class FtlMessagingClient final : public MessagingClient {
   std::unique_ptr<MessageReceptionChannel> reception_channel_;
   MessageCallbackList callback_list_;
   MessageTracker message_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(FtlMessagingClient);
 };
 
 }  // namespace remoting

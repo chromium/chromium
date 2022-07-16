@@ -47,6 +47,10 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GpuTaskSchedulerHelper {
   // This constructor is used for command buffer GLOutputSurface.
   explicit GpuTaskSchedulerHelper(
       CommandBufferTaskExecutor* command_buffer_task_executor);
+
+  GpuTaskSchedulerHelper(const GpuTaskSchedulerHelper&) = delete;
+  GpuTaskSchedulerHelper& operator=(const GpuTaskSchedulerHelper&) = delete;
+
   ~GpuTaskSchedulerHelper();
 
   // This function sets up the |command_buffer_helper| which flushes the command
@@ -102,8 +106,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GpuTaskSchedulerHelper {
   // chance to post any pending tasks and maintains the ordering between command
   // buffer and other user tasks.
   CommandBufferHelper* command_buffer_helper_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuTaskSchedulerHelper);
 };
 
 }  // namespace gpu

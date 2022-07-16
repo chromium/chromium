@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/device_sync/cryptauth_key.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
@@ -41,6 +40,9 @@ class CryptAuthKeyCreatorImpl : public CryptAuthKeyCreator {
    private:
     static Factory* test_factory_;
   };
+
+  CryptAuthKeyCreatorImpl(const CryptAuthKeyCreatorImpl&) = delete;
+  CryptAuthKeyCreatorImpl& operator=(const CryptAuthKeyCreatorImpl&) = delete;
 
   ~CryptAuthKeyCreatorImpl() override;
 
@@ -78,8 +80,6 @@ class CryptAuthKeyCreatorImpl : public CryptAuthKeyCreator {
   CreateKeysCallback create_keys_callback_;
 
   std::unique_ptr<multidevice::SecureMessageDelegate> secure_message_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthKeyCreatorImpl);
 };
 
 }  // namespace device_sync

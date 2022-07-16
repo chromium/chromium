@@ -53,8 +53,7 @@ class MODULES_EXPORT WebSocketMessageChunkAccumulator final {
   bool IsTimerActiveForTesting() const { return timer_.IsActive(); }
 
   static constexpr size_t kSegmentSize = 16 * 1024;
-  static constexpr base::TimeDelta kFreeDelay =
-      base::TimeDelta::FromMilliseconds(100);
+  static constexpr base::TimeDelta kFreeDelay = base::Milliseconds(100);
 
  private:
   struct SegmentDeleter {

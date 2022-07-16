@@ -119,6 +119,10 @@ class TestStorageMonitorLinux : public StorageMonitorLinux {
       : StorageMonitorLinux(path) {
     SetGetDeviceInfoCallbackForTest(base::BindRepeating(&GetDeviceInfo));
   }
+
+  TestStorageMonitorLinux(const TestStorageMonitorLinux&) = delete;
+  TestStorageMonitorLinux& operator=(const TestStorageMonitorLinux&) = delete;
+
   ~TestStorageMonitorLinux() override = default;
 
  private:
@@ -135,8 +139,6 @@ class TestStorageMonitorLinux : public StorageMonitorLinux {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestStorageMonitorLinux);
 };
 
 class StorageMonitorLinuxTest : public testing::Test {
@@ -156,6 +158,10 @@ class StorageMonitorLinuxTest : public testing::Test {
   };
 
   StorageMonitorLinuxTest() = default;
+
+  StorageMonitorLinuxTest(const StorageMonitorLinuxTest&) = delete;
+  StorageMonitorLinuxTest& operator=(const StorageMonitorLinuxTest&) = delete;
+
   ~StorageMonitorLinuxTest() override = default;
 
  protected:
@@ -307,8 +313,6 @@ class StorageMonitorLinuxTest : public testing::Test {
   base::FilePath mtab_file_;
 
   std::unique_ptr<TestStorageMonitorLinux> monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageMonitorLinuxTest);
 };
 
 // Simple test case where we attach and detach a media device.

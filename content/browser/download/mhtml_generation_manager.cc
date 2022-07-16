@@ -10,13 +10,12 @@
 #include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/download/public/common/download_task_runner.h"
@@ -113,6 +112,9 @@ class MHTMLGenerationManager::Job {
       WebContents* web_contents,
       const MHTMLGenerationParams& params,
       MHTMLGenerationResult::GenerateMHTMLCallback callback);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
 
  private:
   Job(WebContents* web_contents,
@@ -299,8 +301,6 @@ class MHTMLGenerationManager::Job {
   std::unique_ptr<crypto::SecureHash> secure_hash_;
 
   base::WeakPtrFactory<Job> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 MHTMLGenerationManager::Job::Job(
@@ -595,8 +595,8 @@ void MHTMLGenerationManager::Job::MarkAsFinished() {
 
 void MHTMLGenerationManager::Job::ReportRendererMainThreadTime(
     base::TimeDelta renderer_main_thread_time) {
-  DCHECK(renderer_main_thread_time > base::TimeDelta());
-  if (renderer_main_thread_time > base::TimeDelta())
+  DCHECK(renderer_main_thread_time.is_positive());
+  if (renderer_main_thread_time.is_positive())
     all_renderers_main_thread_time_ += renderer_main_thread_time;
   if (renderer_main_thread_time > longest_renderer_main_thread_time_)
     longest_renderer_main_thread_time_ = renderer_main_thread_time;

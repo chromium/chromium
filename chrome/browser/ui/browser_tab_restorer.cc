@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -34,6 +33,9 @@ class BrowserTabRestorer : public sessions::TabRestoreServiceObserver,
                            public BrowserListObserver,
                            public base::SupportsUserData::Data {
  public:
+  BrowserTabRestorer(const BrowserTabRestorer&) = delete;
+  BrowserTabRestorer& operator=(const BrowserTabRestorer&) = delete;
+
   ~BrowserTabRestorer() override;
 
   static void CreateIfNecessary(Browser* browser);
@@ -51,8 +53,6 @@ class BrowserTabRestorer : public sessions::TabRestoreServiceObserver,
 
   Browser* browser_;
   sessions::TabRestoreService* tab_restore_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserTabRestorer);
 };
 
 BrowserTabRestorer::~BrowserTabRestorer() {

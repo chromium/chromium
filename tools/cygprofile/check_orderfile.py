@@ -57,9 +57,7 @@ def _VerifySymbolOrder(orderfile_symbols, symbol_infos, threshold):
 def main():
   parser = optparse.OptionParser(usage=
       'usage: %prog [options] <binary> <orderfile>')
-  parser.add_option('--target-arch', action='store', dest='arch', default='arm',
-                    choices=['arm', 'arm64', 'x86', 'x86_64', 'x64', 'mips'],
-                    help='The target architecture for the binary.')
+  parser.add_option('--target-arch', help='Unused')
   parser.add_option('--threshold',
                     action='store',
                     dest='threshold',
@@ -72,7 +70,6 @@ def main():
     return 1
   (binary_filename, orderfile_filename) = argv[1:]
 
-  symbol_extractor.SetArchitecture(options.arch)
   symbol_infos = symbol_extractor.SymbolInfosFromBinary(binary_filename)
 
   if not _VerifySymbolOrder([sym.strip() for sym in file(orderfile_filename)],

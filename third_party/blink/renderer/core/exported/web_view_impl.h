@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -64,7 +65,6 @@
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/page/page_widget_delegate.h"
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/apply_viewport_changes.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace cc {
 class ScopedDeferMainFrameUpdate;
@@ -116,6 +117,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       mojom::blink::PageVisibilityState visibility,
       bool is_prerendering,
       bool is_inside_portal,
+      bool is_fenced_frame,
       bool compositing_enabled,
       bool widgets_never_composited,
       WebViewImpl* opener,
@@ -362,7 +364,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       const IntRect& caret_bounds_in_document,
       bool zoom_into_legible_scale);
 
-  bool StartPageScaleAnimation(const IntPoint& target_position,
+  bool StartPageScaleAnimation(const gfx::Point& target_position,
                                bool use_anchor,
                                float new_scale,
                                base::TimeDelta duration);
@@ -439,7 +441,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       float padding,
       float default_scale_when_already_legible,
       float& scale,
-      IntPoint& scroll);
+      gfx::Point& scroll);
   Node* BestTapNode(const GestureEventWithHitTestResults& targeted_tap_event);
   void EnableTapHighlightAtPoint(
       const GestureEventWithHitTestResults& targeted_tap_event);
@@ -448,7 +450,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   bool FakeDoubleTapAnimationPendingForTesting() const {
     return double_tap_zoom_pending_;
   }
-  IntPoint FakePageScaleAnimationTargetPositionForTesting() const {
+  gfx::Point FakePageScaleAnimationTargetPositionForTesting() const {
     return fake_page_scale_animation_target_position_;
   }
   float FakePageScaleAnimationPageScaleForTesting() const {
@@ -561,6 +563,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SendWindowRectToMainFrameHost(const gfx::Rect& bounds,
                                      base::OnceClosure ack_callback);
 
+  // Tells the browser that another page has accessed the DOM of the initial
+  // empty document of a main frame.
+  void DidAccessInitialMainDocument();
+
   // TODO(crbug.com/1149992): This is called from the associated widget and this
   // code should eventually move out of WebView into somewhere else.
   void ApplyViewportChanges(const ApplyViewportChangesArgs& args);
@@ -644,6 +650,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       mojom::blink::PageVisibilityState visibility,
       bool is_prerendering,
       bool is_inside_portal,
+      bool is_fenced_frame,
       bool does_composite,
       bool widgets_never_composite,
       WebViewImpl* opener,
@@ -693,7 +700,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       const IntRect& caret_bounds_in_document,
       bool zoom_into_legible_scale,
       float& scale,
-      IntPoint& scroll,
+      gfx::Point& scroll,
       bool& need_animation);
 
   // Sends any outstanding TrackedFeaturesUpdate messages to the browser.
@@ -787,7 +794,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   // Used for testing purposes.
   bool enable_fake_page_scale_animation_for_testing_ = false;
-  IntPoint fake_page_scale_animation_target_position_;
+  gfx::Point fake_page_scale_animation_target_position_;
   float fake_page_scale_animation_page_scale_factor_ = 0.f;
   bool fake_page_scale_animation_use_anchor_ = false;
 

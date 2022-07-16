@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder.h"
@@ -33,9 +32,15 @@ class FFmpegDecodingLoop;
 
 class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
  public:
+  FFmpegAudioDecoder() = delete;
+
   FFmpegAudioDecoder(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       MediaLog* media_log);
+
+  FFmpegAudioDecoder(const FFmpegAudioDecoder&) = delete;
+  FFmpegAudioDecoder& operator=(const FFmpegAudioDecoder&) = delete;
+
   ~FFmpegAudioDecoder() override;
 
   // AudioDecoder implementation.
@@ -73,12 +78,7 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
   //     A decoding error occurs and decoding needs to stop.
   // (any state) -> kNormal:
   //     Any time Reset() is called.
-  enum DecoderState {
-    kUninitialized,
-    kNormal,
-    kDecodeFinished,
-    kError
-  };
+  enum class DecoderState { kUninitialized, kNormal, kDecodeFinished, kError };
 
   // Reset decoder and call |reset_cb_|.
   void DoReset();
@@ -121,8 +121,6 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
   scoped_refptr<AudioBufferMemoryPool> pool_;
 
   std::unique_ptr<FFmpegDecodingLoop> decoding_loop_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(FFmpegAudioDecoder);
 };
 
 }  // namespace media

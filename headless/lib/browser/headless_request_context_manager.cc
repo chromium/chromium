@@ -5,7 +5,6 @@
 #include "headless/lib/browser/headless_request_context_manager.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -121,6 +120,10 @@ class HeadlessProxyConfigMonitor
                                   base::Unretained(this)));
   }
 
+  HeadlessProxyConfigMonitor(const HeadlessProxyConfigMonitor&) = delete;
+  HeadlessProxyConfigMonitor& operator=(const HeadlessProxyConfigMonitor&) =
+      delete;
+
   ~HeadlessProxyConfigMonitor() override {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
     proxy_config_service_->RemoveObserver(this);
@@ -174,8 +177,6 @@ class HeadlessProxyConfigMonitor
   mojo::Receiver<::network::mojom::ProxyConfigPollerClient> poller_receiver_{
       this};
   mojo::Remote<::network::mojom::ProxyConfigClient> proxy_config_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessProxyConfigMonitor);
 };
 
 // static
@@ -188,19 +189,9 @@ HeadlessRequestContextManager::CreateSystemContext(
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   auto auth_params = ::network::mojom::HttpAuthDynamicParams::New();
 
-  // Support both current and deprecated switches for now, with the current
-  // switch value overriding the deprecated one. Expect the deprecated switch
-  // support to be removed soon, see crbug/1142696.
   if (command_line->HasSwitch(switches::kAuthServerAllowlist)) {
     auth_params->server_allowlist =
         command_line->GetSwitchValueASCII(switches::kAuthServerAllowlist);
-  } else if (command_line->HasSwitch(
-                 switches::kAuthServerAllowlistDeprecated)) {
-    LOG(ERROR) << "'" << switches::kAuthServerAllowlistDeprecated
-               << "' is deprecated and will be removed soon. Please use '"
-               << switches::kAuthServerAllowlist << "' instead.";
-    auth_params->server_allowlist = command_line->GetSwitchValueASCII(
-        switches::kAuthServerAllowlistDeprecated);
   }
 
   auto* network_service = content::GetNetworkService();
@@ -286,8 +277,11 @@ void HeadlessRequestContextManager::ConfigureNetworkContextParamsInternal(
 
   if (!user_data_path_.empty()) {
     context_params->enable_encrypted_cookies = cookie_encryption_enabled_;
-    context_params->cookie_path =
-        user_data_path_.Append(FILE_PATH_LITERAL("Cookies"));
+    context_params->file_paths =
+        ::network::mojom::NetworkContextFilePaths::New();
+    context_params->file_paths->data_path = user_data_path_;
+    context_params->file_paths->cookie_database_name =
+        base::FilePath(FILE_PATH_LITERAL("Cookies"));
   }
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDiskCacheDir)) {

@@ -1,4 +1,1 @@
-monorail: {
-  component: "UI>Browser>Downloads"
-}
-team_email: "chrome-downloads@chromium.org"
+mixins: "//components/offline_items_collection/COMMON_METADATA"

@@ -33,6 +33,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
@@ -75,6 +76,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
@@ -87,6 +89,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8-profiler.h"
 #include "v8/include/v8.h"
+
+#if defined(V8_USE_EXTERNAL_STARTUP_DATA)
+#include "gin/public/v8_snapshot_file_type.h"
+#endif
 
 namespace blink {
 
@@ -448,9 +454,8 @@ CodeGenerationCheckCallbackInMainThread(v8::Local<v8::Context> context,
   return {true, std::move(stringified_source)};
 }
 
-static bool WasmCodeGenerationCheckCallbackInMainThread(
-    v8::Local<v8::Context> context,
-    v8::Local<v8::String> source) {
+bool V8Initializer::WasmCodeGenerationCheckCallbackInMainThread(v8::Local<v8::Context> context,
+                                                 v8::Local<v8::String> source) {
   if (ExecutionContext* execution_context = ToExecutionContext(context)) {
     if (ContentSecurityPolicy* policy =
             execution_context->GetContentSecurityPolicy()) {
@@ -485,12 +490,18 @@ static bool WasmExceptionsEnabledCallback(v8::Local<v8::Context> context) {
       execution_context);
 }
 
-static bool WasmSimdEnabledCallback(v8::Local<v8::Context> context) {
+static bool WasmDynamicTieringEnabledCallback(v8::Local<v8::Context> context) {
   ExecutionContext* execution_context = ToExecutionContext(context);
   if (!execution_context)
     return false;
 
-  return RuntimeEnabledFeatures::WebAssemblySimdEnabled(execution_context);
+  bool result = RuntimeEnabledFeatures::WebAssemblyDynamicTieringEnabled(
+      execution_context);
+  if (result) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kWebAssemblyDynamicTiering);
+  }
+  return result;
 }
 
 v8::Local<v8::Value> NewRangeException(v8::Isolate* isolate,
@@ -553,7 +564,8 @@ static bool WasmInstanceOverride(
 
 static v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
     v8::Local<v8::Context> context,
-    v8::Local<v8::ScriptOrModule> v8_referrer,
+    v8::Local<v8::Data> v8_host_defined_options,
+    v8::Local<v8::Value> v8_referrer_resource_url,
     v8::Local<v8::String> v8_specifier,
     v8::Local<v8::FixedArray> v8_import_assertions) {
   ScriptState* script_state = ScriptState::From(context);
@@ -590,8 +602,6 @@ static v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
   }
 
   String specifier = ToCoreStringWithNullCheck(v8_specifier);
-  v8::Local<v8::Value> v8_referrer_resource_url =
-      v8_referrer->GetResourceName();
   KURL referrer_resource_url;
   if (v8_referrer_resource_url->IsString()) {
     String referrer_resource_url_str =
@@ -608,12 +618,11 @@ static v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
 
   ReferrerScriptInfo referrer_info =
       ReferrerScriptInfo::FromV8HostDefinedOptions(
-          context, v8_referrer->GetHostDefinedOptions());
+          context, v8_host_defined_options, referrer_resource_url);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  modulator->ResolveDynamically(module_request, referrer_resource_url,
-                                referrer_info, resolver);
+  modulator->ResolveDynamically(module_request, referrer_info, resolver);
   return v8::Local<v8::Promise>::Cast(promise.V8Value());
 }
 
@@ -654,10 +663,12 @@ static void InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetSharedArrayBufferConstructorEnabledCallback(
       SharedArrayBufferConstructorEnabledCallback);
   isolate->SetWasmExceptionsEnabledCallback(WasmExceptionsEnabledCallback);
-  isolate->SetWasmSimdEnabledCallback(WasmSimdEnabledCallback);
+  isolate->SetWasmDynamicTieringEnabledCallback(
+      WasmDynamicTieringEnabledCallback);
   isolate->SetHostImportModuleDynamicallyCallback(HostImportModuleDynamically);
   isolate->SetHostInitializeImportMetaObjectCallback(
       HostGetImportMetaProperties);
+  isolate->SetMetricsRecorder(std::make_shared<V8MetricsRecorder>(isolate));
 
   V8ContextSnapshot::EnsureInterfaceTemplates(isolate);
 
@@ -726,29 +737,63 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
   size_t max_allocation_;
 };
 
+V8PerIsolateData::V8ContextSnapshotMode GetV8ContextSnapshotMode() {
+#if defined(USE_V8_CONTEXT_SNAPSHOT)
+  if (Platform::Current()->IsTakingV8ContextSnapshot())
+    return V8PerIsolateData::V8ContextSnapshotMode::kTakeSnapshot;
+  if (gin::GetLoadedSnapshotFileType() ==
+      gin::V8SnapshotFileType::kWithAdditionalContext) {
+    return V8PerIsolateData::V8ContextSnapshotMode::kUseSnapshot;
+  }
+#endif  // USE_V8_CONTEXT_SNAPSHOT
+  return V8PerIsolateData::V8ContextSnapshotMode::kDontUseSnapshot;
+}
+
+void AddHistogramSample(void* hist, int sample) {
+  base::Histogram* histogram = static_cast<base::Histogram*>(hist);
+  histogram->Add(sample);
+}
+
+void* CreateHistogram(const char* name, int min, int max, size_t buckets) {
+  // Each histogram has an implicit '0' bucket (for underflow), so we can always
+  // bump the minimum to 1.
+  DCHECK_LE(0, min);
+  min = std::max(1, min);
+
+  // For boolean histograms, always include an overflow bucket [2, infinity).
+  if (max == 1 && buckets == 2) {
+    max = 2;
+    buckets = 3;
+  }
+
+  const std::string histogram_name =
+      Platform::Current()->GetNameForHistogram(name);
+  return base::Histogram::FactoryGet(
+      histogram_name, min, max, static_cast<uint32_t>(buckets),
+      base::Histogram::kUmaTargetedHistogramFlag);
+}
+
 }  // namespace
 
-void V8Initializer::InitializeMainThread(const intptr_t* reference_table) {
+void V8Initializer::InitializeMainThread(
+    const intptr_t* reference_table,
+    const std::string js_command_line_flags) {
   DCHECK(IsMainThread());
 
   DEFINE_STATIC_LOCAL(ArrayBufferAllocator, array_buffer_allocator, ());
   gin::IsolateHolder::Initialize(gin::IsolateHolder::kNonStrictMode,
-                                 &array_buffer_allocator, reference_table);
+                                 &array_buffer_allocator, reference_table,
+                                 js_command_line_flags);
 
   ThreadScheduler* scheduler = ThreadScheduler::Current();
 
-#if defined(USE_V8_CONTEXT_SNAPSHOT)
-  V8PerIsolateData::V8ContextSnapshotMode v8_context_snapshot_mode =
-      Platform::Current()->IsTakingV8ContextSnapshot()
-          ? V8PerIsolateData::V8ContextSnapshotMode::kTakeSnapshot
-          : V8PerIsolateData::V8ContextSnapshotMode::kUseSnapshot;
-#else
-  V8PerIsolateData::V8ContextSnapshotMode v8_context_snapshot_mode =
-      V8PerIsolateData::V8ContextSnapshotMode::kDontUseSnapshot;
-#endif  // USE_V8_CONTEXT_SNAPSHOT
-
-  v8::Isolate* isolate = V8PerIsolateData::Initialize(scheduler->V8TaskRunner(),
-                                                      v8_context_snapshot_mode);
+  v8::Isolate* isolate;
+  {
+    SCOPED_BLINK_UMA_HISTOGRAM_TIMER("Blink.V8.InitPerIsolateData");
+    isolate = V8PerIsolateData::Initialize(scheduler->V8TaskRunner(),
+                                           GetV8ContextSnapshotMode(),
+                                           CreateHistogram, AddHistogramSample);
+  }
   scheduler->SetV8Isolate(isolate);
 
   // ThreadState::isolate_ needs to be set before setting the EmbedderHeapTracer
@@ -779,10 +824,13 @@ void V8Initializer::InitializeMainThread(const intptr_t* reference_table) {
 
   isolate->SetPromiseRejectCallback(PromiseRejectHandlerInMainThread);
 
-  isolate->SetMetricsRecorder(std::make_shared<V8MetricsRecorder>(isolate));
-
   V8PerIsolateData::From(isolate)->SetThreadDebugger(
       std::make_unique<MainThreadDebugger>(isolate));
+
+  // The ArrayBuffer partition is placed inside V8's virtual memory cage if it
+  // is enabled. For that reason, the partition can only be initialized after V8
+  // has been initialized.
+  WTF::Partitions::InitializeArrayBufferPartition();
 }
 
 static void ReportFatalErrorInWorker(const char* location,
@@ -811,6 +859,8 @@ void V8Initializer::InitializeWorker(v8::Isolate* isolate) {
   isolate->SetPromiseRejectCallback(PromiseRejectHandlerInWorker);
   isolate->SetModifyCodeGenerationFromStringsCallback(
       CodeGenerationCheckCallbackInMainThread);
+  isolate->SetAllowWasmCodeGenerationCallback(
+      WasmCodeGenerationCheckCallbackInMainThread);
 }
 
 }  // namespace blink

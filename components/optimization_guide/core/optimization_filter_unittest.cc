@@ -4,7 +4,6 @@
 
 #include "components/optimization_guide/core/optimization_filter.h"
 
-#include "base/macros.h"
 #include "components/optimization_guide/core/bloom_filter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -131,6 +130,8 @@ TEST(OptimizationFilterTest, TestMatchesMinSuffix) {
 
   // Note: full host will match even if less than min size.
   EXPECT_TRUE(opt_filter.Matches(GURL("https://xy.tv")));
+
+  EXPECT_FALSE(opt_filter.Matches(GURL("http://.../foo")));
 }
 
 }  // namespace

@@ -16,13 +16,14 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
 #include "storage/browser/file_system/obfuscated_file_util.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 
 namespace storage {
@@ -49,10 +50,10 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
         usage_(0),
         quota_(0) {}
 
+  MockQuotaManagerProxy(const MockQuotaManagerProxy&) = delete;
+  MockQuotaManagerProxy& operator=(const MockQuotaManagerProxy&) = delete;
+
   // We don't mock them.
-  void NotifyStorageKeyInUse(const blink::StorageKey& storage_key) override {}
-  void NotifyStorageKeyNoLongerInUse(
-      const blink::StorageKey& storage_key) override {}
   void SetUsageCacheEnabled(QuotaClientType client_id,
                             const blink::StorageKey& storage_key,
                             blink::mojom::StorageType type,
@@ -95,8 +96,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   int storage_modified_count_;
   int64_t usage_;
   int64_t quota_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockQuotaManagerProxy);
 };
 
 }  // namespace
@@ -107,6 +106,9 @@ class QuotaBackendImplTest : public testing::Test,
   QuotaBackendImplTest()
       : file_system_usage_cache_(is_incognito()),
         quota_manager_proxy_(base::MakeRefCounted<MockQuotaManagerProxy>()) {}
+
+  QuotaBackendImplTest(const QuotaBackendImplTest&) = delete;
+  QuotaBackendImplTest& operator=(const QuotaBackendImplTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
@@ -137,8 +139,8 @@ class QuotaBackendImplTest : public testing::Test,
     std::string type_string =
         SandboxFileSystemBackendDelegate::GetTypeString(type);
     base::File::Error error = base::File::FILE_ERROR_FAILED;
-    base::FilePath path = file_util_->GetDirectoryForOriginAndType(
-        origin, type_string, true /* create */, &error);
+    base::FilePath path = file_util_->GetDirectoryForStorageKeyAndType(
+        blink::StorageKey(origin), type_string, true /* create */, &error);
     ASSERT_EQ(base::File::FILE_OK, error);
 
     ASSERT_TRUE(file_system_usage_cache_.UpdateUsage(
@@ -165,9 +167,6 @@ class QuotaBackendImplTest : public testing::Test,
   FileSystemUsageCache file_system_usage_cache_;
   scoped_refptr<MockQuotaManagerProxy> quota_manager_proxy_;
   std::unique_ptr<QuotaBackendImpl> backend_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QuotaBackendImplTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, QuotaBackendImplTest, testing::Bool());

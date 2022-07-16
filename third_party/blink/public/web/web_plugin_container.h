@@ -35,7 +35,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace cc {
 class Layer;

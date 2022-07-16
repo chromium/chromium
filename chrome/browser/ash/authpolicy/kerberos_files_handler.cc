@@ -102,25 +102,28 @@ KerberosFilesHandler::KerberosFilesHandler(
     base::RepeatingClosure get_kerberos_files)
     : get_kerberos_files_(std::move(get_kerberos_files)) {
   // Set environment variables for GSSAPI library.
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  // TODO(https://crbug.com/1259918): Calling base::Environment::SetVar here is
+  // unsafe and should be avoided.
   base::FilePath path;
   CHECK(base::PathService::Get(base::DIR_HOME, &path));
   path = path.Append(kKrb5Directory);
   std::string krb5cc_env_value =
       kKrb5CCFilePrefix + path.Append(kKrb5CCFile).value();
   std::string krb5conf_env_value = path.Append(kKrb5ConfFile).value();
-  env->SetVar(kKrb5CCEnvName, krb5cc_env_value);
-  env->SetVar(kKrb5ConfEnvName, krb5conf_env_value);
 
-  // Send the environment variables to the network service if it's running
-  // out of process.
   if (content::IsOutOfProcessNetworkService()) {
+    // Send the environment variables to the network service if it's running
+    // out of process.
     std::vector<network::mojom::EnvironmentVariablePtr> environment;
     environment.push_back(network::mojom::EnvironmentVariable::New(
         kKrb5CCEnvName, krb5cc_env_value));
     environment.push_back(network::mojom::EnvironmentVariable::New(
         kKrb5ConfEnvName, krb5conf_env_value));
     content::GetNetworkService()->SetEnvironment(std::move(environment));
+  } else {
+    std::unique_ptr<base::Environment> env(base::Environment::Create());
+    env->SetVar(kKrb5CCEnvName, krb5cc_env_value);
+    env->SetVar(kKrb5ConfEnvName, krb5conf_env_value);
   }
 
   // Listen to kDisableAuthNegotiateCnameLookup pref. It might change the

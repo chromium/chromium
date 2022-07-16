@@ -159,7 +159,7 @@ empty string language, "text/javascript" type executed
 "bogus" language, "text/javascript" type executed
 "livescript" language, "text/javascript" type executed
 "javascript1.2" language, "text/javascript" type executed
+empty string type, "bogus" language executed
 These scripts should not execute
 "javascript" language, "bogus" type
-empty string type, "bogus" language
 empty string language, "bogus" type

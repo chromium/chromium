@@ -158,7 +158,7 @@ void TabLoadTracker::StopTracking(content::WebContents* web_contents) {
     observer.OnStopTracking(web_contents, loading_state);
 }
 
-void TabLoadTracker::DidReceiveResponse(content::WebContents* web_contents) {
+void TabLoadTracker::PrimaryPageChanged(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Only observe top-level navigation to a different document.

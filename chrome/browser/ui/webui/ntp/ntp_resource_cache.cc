@@ -56,7 +56,7 @@
 #include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #endif
 
@@ -264,14 +264,33 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
       l10n_util::GetStringUTF8(reading_list::switches::IsReadingListEnabled()
                                    ? IDS_NEW_TAB_OTR_SUBTITLE_WITH_READING_LIST
                                    : IDS_NEW_TAB_OTR_SUBTITLE);
-  replacements["incognitoTabHeading"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_TITLE);
-  replacements["incognitoTabWarning"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_VISIBLE);
-  replacements["learnMore"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_LEARN_MORE_LINK);
-  replacements["incognitoTabFeatures"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_NOT_SAVED);
+
+  bool use_revamped_ui =
+      base::FeatureList::IsEnabled(features::kIncognitoNtpRevamp);
+  if (use_revamped_ui) {
+    replacements["incognitoTabHeading"] =
+        l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_TITLE);
+    replacements["incognitoDoesHeader"] =
+        l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_DOES_HEADER);
+    replacements["incognitoDoesDescription"] =
+        l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_DOES_DESCRIPTION);
+    replacements["incognitoDoesNotHeader"] =
+        l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_DOES_NOT_HEADER);
+    replacements["incognitoDoesNotDescription"] = l10n_util::GetStringUTF8(
+        IDS_REVAMPED_INCOGNITO_NTP_DOES_NOT_DESCRIPTION);
+    replacements["learnMore"] =
+        l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_LEARN_MORE);
+  } else {
+    replacements["incognitoTabHeading"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_TITLE);
+    replacements["incognitoTabWarning"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_VISIBLE);
+    replacements["incognitoTabFeatures"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_NOT_SAVED);
+    replacements["learnMore"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_LEARN_MORE_LINK);
+  }
+
   replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
   replacements["title"] = l10n_util::GetStringUTF8(
       base::FeatureList::IsEnabled(
@@ -304,10 +323,13 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &replacements);
 
+  int incognito_tab_html_resource_id = use_revamped_ui
+                                           ? IDR_REVAMPED_INCOGNITO_TAB_HTML
+                                           : IDR_INCOGNITO_TAB_HTML;
   static const base::NoDestructor<scoped_refptr<base::RefCountedMemory>>
       incognito_tab_html(
           ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
-              IDR_INCOGNITO_TAB_HTML));
+              incognito_tab_html_resource_id));
   CHECK(*incognito_tab_html);
 
   std::string full_html =
@@ -329,8 +351,8 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   guest_tab_idr = IDR_GUEST_SESSION_TAB_HTML;
 
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
 
   if (connector->IsDeviceEnterpriseManaged()) {
     localized_strings.SetString("enterpriseInfoVisible", "true");

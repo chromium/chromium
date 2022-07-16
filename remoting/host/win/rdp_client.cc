@@ -14,8 +14,8 @@
 #include "base/check_op.h"
 #include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "remoting/base/typed_buffer.h"
@@ -43,6 +43,9 @@ class RdpClient::Core
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       RdpClient::EventHandler* event_handler);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
 
   // Initiates a loopback RDP connection.
   void Connect(const ScreenResolution& resolution,
@@ -86,8 +89,6 @@ class RdpClient::Core
 
   // A self-reference to keep the object alive during connection shutdown.
   scoped_refptr<Core> self_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 RdpClient::RdpClient(

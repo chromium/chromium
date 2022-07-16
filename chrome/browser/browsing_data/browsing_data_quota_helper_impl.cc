@@ -29,8 +29,9 @@ using content::BrowserThread;
 using content::BrowserContext;
 
 // static
-BrowsingDataQuotaHelper* BrowsingDataQuotaHelper::Create(Profile* profile) {
-  return new BrowsingDataQuotaHelperImpl(
+scoped_refptr<BrowsingDataQuotaHelper> BrowsingDataQuotaHelper::Create(
+    Profile* profile) {
+  return base::MakeRefCounted<BrowsingDataQuotaHelperImpl>(
       profile->GetDefaultStoragePartition()->GetQuotaManager());
 }
 
@@ -78,18 +79,18 @@ void BrowsingDataQuotaHelperImpl::FetchQuotaInfoOnIOThread(
                      base::Owned(pending_hosts)));
 
   for (const StorageType& type : types) {
-    quota_manager_->GetStorageKeysModifiedBetween(
-        type, base::Time(), base::Time::Max(),
-        base::BindOnce(&BrowsingDataQuotaHelperImpl::GotStorageKeys,
-                       weak_factory_.GetWeakPtr(), pending_hosts, completion));
+    quota_manager_->GetStorageKeysForType(
+        type, base::BindOnce(&BrowsingDataQuotaHelperImpl::GotStorageKeys,
+                             weak_factory_.GetWeakPtr(), pending_hosts,
+                             completion, type));
   }
 }
 
 void BrowsingDataQuotaHelperImpl::GotStorageKeys(
     PendingHosts* pending_hosts,
     base::OnceClosure completion,
-    const std::set<blink::StorageKey>& storage_keys,
-    StorageType type) {
+    StorageType type,
+    const std::set<blink::StorageKey>& storage_keys) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   for (const blink::StorageKey& storage_key : storage_keys) {
     if (!browsing_data::IsWebScheme(storage_key.origin().scheme()))

@@ -51,6 +51,9 @@ class IpcTestBridge : public IpcFileOperations::RequestHandler,
             std::make_unique<LocalFileOperations>(std::move(ui_task_runner))),
         file_operations_(ipc_file_operations_factory_.CreateFileOperations()) {}
 
+  IpcTestBridge(const IpcTestBridge&) = delete;
+  IpcTestBridge& operator=(const IpcTestBridge&) = delete;
+
   ~IpcTestBridge() override = default;
 
   // IpcFileOperations::RequestHandler implementation.
@@ -98,8 +101,6 @@ class IpcTestBridge : public IpcFileOperations::RequestHandler,
   IpcFileOperationsFactory ipc_file_operations_factory_;
   SessionFileOperationsHandler session_file_operations_handler_;
   std::unique_ptr<FileOperations> file_operations_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcTestBridge);
 };
 
 }  // namespace
@@ -107,6 +108,10 @@ class IpcTestBridge : public IpcFileOperations::RequestHandler,
 class IpcFileOperationsTest : public testing::Test {
  public:
   IpcFileOperationsTest();
+
+  IpcFileOperationsTest(const IpcFileOperationsTest&) = delete;
+  IpcFileOperationsTest& operator=(const IpcFileOperationsTest&) = delete;
+
   ~IpcFileOperationsTest() override;
 
  protected:
@@ -125,8 +130,6 @@ class IpcFileOperationsTest : public testing::Test {
   base::ScopedPathOverride scoped_path_override_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FileOperations> file_operations_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcFileOperationsTest);
 };
 
 IpcFileOperationsTest::IpcFileOperationsTest()

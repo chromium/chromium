@@ -12,8 +12,8 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -40,6 +40,10 @@ namespace {
 absl::optional<VideoFrameMetadata::CopyMode> GetVideoFrameCopyMode(
     bool enable_threaded_texture_mailboxes) {
   if (!enable_threaded_texture_mailboxes)
+    return absl::nullopt;
+
+  // If we can run thread-safe, we don't need to copy.
+  if (features::NeedThreadSafeAndroidMedia())
     return absl::nullopt;
 
   return features::IsWebViewZeroCopyVideoEnabled()
@@ -99,8 +103,10 @@ VideoFrameFactoryImpl::VideoFrameFactoryImpl(
     const gpu::GpuPreferences& gpu_preferences,
     std::unique_ptr<SharedImageVideoProvider> image_provider,
     std::unique_ptr<MaybeRenderEarlyManager> mre_manager,
-    std::unique_ptr<FrameInfoHelper> frame_info_helper)
-    : image_provider_(std::move(image_provider)),
+    std::unique_ptr<FrameInfoHelper> frame_info_helper,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock)
+    : gpu::RefCountedLockHelperDrDc(std::move(drdc_lock)),
+      image_provider_(std::move(image_provider)),
       gpu_task_runner_(std::move(gpu_task_runner)),
       copy_mode_(GetVideoFrameCopyMode(
           gpu_preferences.enable_threaded_texture_mailboxes)),
@@ -167,7 +173,7 @@ void VideoFrameFactoryImpl::CreateVideoFrame(
   gfx::Rect visible_rect(coded_size);
 
   auto output_buffer_renderer = std::make_unique<CodecOutputBufferRenderer>(
-      std::move(output_buffer), codec_buffer_wait_coordinator_);
+      std::move(output_buffer), codec_buffer_wait_coordinator_, GetDrDcLock());
 
   // The pixel format doesn't matter here as long as it's valid for texture
   // frames. But SkiaRenderer wants to ensure that the format of the resource
@@ -218,6 +224,7 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnFrameInfoReady(
   // all RequestImage, so skip updating image_spec_ in this case.
   if (output_buffer_renderer) {
     image_spec_.coded_size = frame_info.coded_size;
+    image_spec_.color_space = output_buffer_renderer->color_space();
   } else {
     // It is possible that we come here from RunAfterPendingVideoFrames before
     // CreateVideoFrame was called. In this case we don't have coded_size, but
@@ -257,6 +264,8 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
   if (!thiz)
     return;
 
+  gfx::ColorSpace color_space = output_buffer_renderer->color_space();
+
   // Initialize the CodecImage to use this output buffer.  Note that we're not
   // on the gpu main thread here, but it's okay since CodecImage is not being
   // used at this point.  Alternatively, we could post it, or hand it off to the
@@ -286,6 +295,8 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
 
   // For Vulkan.
   frame->set_ycbcr_info(frame_info.ycbcr_info);
+
+  frame->set_color_space(color_space);
 
   // If, for some reason, we failed to create a frame, then fail.  Note that we
   // don't need to call |release_cb|; dropping it is okay since the api says so.

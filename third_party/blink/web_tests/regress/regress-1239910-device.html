@@ -1,0 +1,38 @@
+<title>Regression tests for crbug.com/1239910 - requestDevice part</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<script>
+  promise_test(async (test) => {
+    // {navigator.gpu} is required for this test, but it only exists when
+    // WebGPU is enabled. Early out if it isn't present. Also early out if no
+    // adapter could be created.
+    const adapter = await navigator.gpu?.requestAdapter();
+    if (!adapter) {
+       test.done();
+       return;
+    }
+
+    var first_time = true;
+    Object.prototype.__defineGetter__("then", function() {
+      if (!first_time) {
+        return;
+      }
+      first_time = false;
+
+      // Request a lot of devices to force an reallocation of the map that
+      // translate request IDs to the request's data.
+      for (var i = 0; i < 10; i++) {
+        adapter.requestDevice();
+      }
+    });
+
+    // Request a single device. When it gets resolved the browser will try to
+    // access Promise.then that will call the function above, invalidating the
+    // iterator into the request map. The regression was that the iterator was
+    // used after .then is accessed.
+    adapter.requestDevice();
+
+    test.done();
+  }, 'Regression test for crbug.com/1239910 - requestDevice part');
+</script>

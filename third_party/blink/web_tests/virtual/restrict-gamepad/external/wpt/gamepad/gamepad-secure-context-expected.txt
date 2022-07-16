@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Gamepad API is not exposed in insecure contexts assert_false: not in prototype expected false got true
-Harness: the test ran to completion.
-

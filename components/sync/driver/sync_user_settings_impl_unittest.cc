@@ -32,10 +32,10 @@ namespace {
 ModelTypeSet GetUserTypes() {
   ModelTypeSet user_types = UserTypes();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // These types only exist when SplitSettingsSync is enabled.
-  if (!chromeos::features::IsSplitSettingsSyncEnabled()) {
-    user_types.RemoveAll({OS_PREFERENCES, OS_PRIORITY_PREFERENCES,
-                          WIFI_CONFIGURATIONS, WORKSPACE_DESK});
+  // These types only exist when SyncSettingsCategorization is enabled.
+  if (!chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+    user_types.RemoveAll(
+        {OS_PREFERENCES, OS_PRIORITY_PREFERENCES, WIFI_CONFIGURATIONS});
   }
 #else
   // Ignore all Chrome OS types on non-Chrome OS platforms.
@@ -112,7 +112,8 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+  feature_list.InitAndEnableFeature(
+      chromeos::features::kSyncSettingsCategorization);
 
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
@@ -135,7 +136,7 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotKeepEverythingSynced) {
       /*sync_everything=*/false,
       /*selected_types=*/UserSelectableTypeSet());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     // GetPreferredUserTypes() returns ModelTypes, which includes both browser
     // and OS types. However, this test exercises browser UserSelectableTypes,
     // so disable OS selectable types.
@@ -164,7 +165,8 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotKeepEverythingSynced) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncUserSettingsImplTest, PreferredTypesNotAllOsTypesSynced) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+  feature_list.InitAndEnableFeature(
+      chromeos::features::kSyncSettingsCategorization);
 
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
@@ -245,7 +247,8 @@ TEST_F(SyncUserSettingsImplTest, UserConsents) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncUserSettingsImplTest, AlwaysPreferredTypes_ChromeOS) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+  feature_list.InitAndEnableFeature(
+      chromeos::features::kSyncSettingsCategorization);
 
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
@@ -268,7 +271,8 @@ TEST_F(SyncUserSettingsImplTest, AlwaysPreferredTypes_ChromeOS) {
 
 TEST_F(SyncUserSettingsImplTest, AppsAreHandledByOsSettings) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+  feature_list.InitAndEnableFeature(
+      chromeos::features::kSyncSettingsCategorization);
 
   std::unique_ptr<SyncUserSettingsImpl> settings =
       MakeSyncUserSettings(GetUserTypes());

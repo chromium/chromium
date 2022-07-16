@@ -122,7 +122,7 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
 
   const GURL search_url = secondary_search->GenerateSearchURL(
       template_url_service->search_terms_data());
-  const GURL origin = search_url.GetOrigin();
+  const GURL origin = search_url.DeprecatedGetOriginAsURL();
   if (google_util::IsGoogleSearchUrl(search_url))
     return {SecondarySearchInfo::Type::kGoogle, origin};
 
@@ -250,7 +250,7 @@ GetSearchOverriddenParams(Profile* profile) {
   // dialog to the user. That's likely good if any extension is doing something
   // as crazy as using filesystem: URLs as a search engine.
   if (!secondary_search.origin.is_empty() &&
-      secondary_search.origin == search_url.GetOrigin()) {
+      secondary_search.origin == search_url.DeprecatedGetOriginAsURL()) {
     return absl::nullopt;
   }
 

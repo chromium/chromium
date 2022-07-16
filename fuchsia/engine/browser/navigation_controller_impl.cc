@@ -4,6 +4,10 @@
 
 #include "fuchsia/engine/browser/navigation_controller_impl.h"
 
+#include <fuchsia/mem/cpp/fidl.h>
+#include <lib/fpromise/result.h>
+
+#include "base/bits.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/memory/page_size.h"
 #include "base/strings/strcat.h"
@@ -209,11 +213,10 @@ void NavigationControllerImpl::MaybeSendNavigationEvent() {
 void NavigationControllerImpl::LoadUrl(std::string url,
                                        fuchsia::web::LoadUrlParams params,
                                        LoadUrlCallback callback) {
-  fuchsia::web::NavigationController_LoadUrl_Result result;
   GURL validated_url(url);
   if (!validated_url.is_valid()) {
-    result.set_err(fuchsia::web::NavigationControllerError::INVALID_URL);
-    callback(std::move(result));
+    callback(
+        fpromise::error(fuchsia::web::NavigationControllerError::INVALID_URL));
     return;
   }
 
@@ -226,8 +229,8 @@ void NavigationControllerImpl::LoadUrl(std::string url,
       base::StringPiece header_value = cr_fuchsia::BytesAsString(header.value);
       if (!net::HttpUtil::IsValidHeaderName(header_name) ||
           !net::HttpUtil::IsValidHeaderValue(header_value)) {
-        result.set_err(fuchsia::web::NavigationControllerError::INVALID_HEADER);
-        callback(std::move(result));
+        callback(fpromise::error(
+            fuchsia::web::NavigationControllerError::INVALID_HEADER));
         return;
       }
 
@@ -249,8 +252,7 @@ void NavigationControllerImpl::LoadUrl(std::string url,
   }
 
   web_contents_->GetController().LoadURLWithParams(params_converted);
-  result.set_response(fuchsia::web::NavigationController_LoadUrl_Response());
-  callback(std::move(result));
+  callback(fpromise::ok());
 }
 
 void NavigationControllerImpl::GoBack() {
@@ -312,7 +314,7 @@ void NavigationControllerImpl::DidFinishLoad(
   OnNavigationEntryChanged();
 }
 
-void NavigationControllerImpl::RenderProcessGone(
+void NavigationControllerImpl::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   // If the current RenderProcess terminates then trigger a NavigationState
   // change to let the caller know that something is wrong.

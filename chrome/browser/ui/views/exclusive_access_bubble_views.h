@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
@@ -41,6 +40,11 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
       const GURL& url,
       ExclusiveAccessBubbleType bubble_type,
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback);
+
+  ExclusiveAccessBubbleViews(const ExclusiveAccessBubbleViews&) = delete;
+  ExclusiveAccessBubbleViews& operator=(const ExclusiveAccessBubbleViews&) =
+      delete;
+
   ~ExclusiveAccessBubbleViews() override;
 
   // |force_update| indicates the caller wishes to show the bubble contents
@@ -117,8 +121,6 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
 
   base::ScopedObservation<FullscreenController, FullscreenObserver>
       fullscreen_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExclusiveAccessBubbleViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXCLUSIVE_ACCESS_BUBBLE_VIEWS_H_

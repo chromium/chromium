@@ -26,6 +26,8 @@ component("services") {
     "media_service_factory.h",
     "mojo_audio_decoder_service.cc",
     "mojo_audio_decoder_service.h",
+    "mojo_audio_encoder_service.cc",
+    "mojo_audio_encoder_service.h",
     "mojo_audio_input_stream.cc",
     "mojo_audio_input_stream.h",
     "mojo_audio_output_stream.cc",
@@ -70,9 +72,6 @@ component("services") {
 
   defines = [ "MEDIA_MOJO_IMPLEMENTATION" ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   public_deps = [
     "//base",
     "//media",
@@ -112,8 +111,7 @@ component("services") {
   } else if (use_vaapi || use_v4l2_codec) {
     sources += [ "gpu_mojo_media_client_cros.cc" ]
 
-    if (is_chromeos_ash) {
-      sources += [ "gpu_mojo_media_client_cros_ash.cc" ]
+    if (is_chromeos) {
       deps +=
           [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
     }
@@ -176,6 +174,16 @@ component("services") {
       "media_foundation_service_broker.h",
     ]
     deps += [ "//media/base/win:media_foundation_util" ]
+  }
+
+  if (is_chromeos_ash || is_linux) {
+    sources += [
+      "stable_video_decoder_factory_service.cc",
+      "stable_video_decoder_factory_service.h",
+    ]
+
+    public_deps +=
+        [ "//media/mojo/mojom/stable:stable_video_decoder_cpp_sources" ]
   }
 }
 

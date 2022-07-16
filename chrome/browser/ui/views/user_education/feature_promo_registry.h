@@ -6,10 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_REGISTRY_H_
 
 #include <map>
+#include <utility>
 
-#include "base/callback.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chrome/browser/ui/user_education/feature_promo_specification.h"
 
 class BrowserView;
 
@@ -27,35 +26,26 @@ class View;
 // feasible.
 class FeaturePromoRegistry {
  public:
-  using GetAnchorViewCallback =
-      base::RepeatingCallback<views::View*(BrowserView*)>;
-
   FeaturePromoRegistry();
   ~FeaturePromoRegistry();
 
   static FeaturePromoRegistry* GetInstance();
 
-  // Returns a complete FeaturePromoBubbleParams object to start IPH for
+  // Returns the FeaturePromoSpecification to start an IPH for
   // the given feature. |iph_feature| is the feature to show for.
   // |browser_view| is the window it should show in.
   //
   // The params must be used immediately since it contains a View
   // pointer that may become stale. This may return nothing in which
   // case the promo shouldn't show.
-  absl::optional<FeaturePromoBubbleParams> GetParamsForFeature(
-      const base::Feature& iph_feature,
-      BrowserView* browser_view);
+  const FeaturePromoSpecification* GetParamsForFeature(
+      const base::Feature& iph_feature);
 
-  // Registers a feature promo. |iph_feature| is the feature. |params|
-  // are normal bubble params except the anchor_view member should be
-  // null. |get_anchor_view_callback| specifies how to get the bubble's
-  // anchor view for an arbitrary browser window.
+  // Registers a feature promo.
   //
   // Prefer putting these calls in the body of RegisterKnownFeatures()
   // when possible.
-  void RegisterFeature(const base::Feature& iph_feature,
-                       const FeaturePromoBubbleParams& params,
-                       GetAnchorViewCallback get_anchor_view_callback);
+  void RegisterFeature(FeaturePromoSpecification spec);
 
   void ClearFeaturesForTesting();
   void ReinitializeForTesting();
@@ -65,18 +55,7 @@ class FeaturePromoRegistry {
   // Chrome codebase, you can put your call in here.
   void RegisterKnownFeatures();
 
-  struct FeaturePromoData {
-    FeaturePromoData();
-    FeaturePromoData(FeaturePromoData&&);
-    ~FeaturePromoData();
-
-    // The params for a promo, minus the anchor view.
-    FeaturePromoBubbleParams params;
-
-    GetAnchorViewCallback get_anchor_view_callback;
-  };
-
-  std::map<const base::Feature*, FeaturePromoData> feature_promo_data_;
+  std::map<const base::Feature*, FeaturePromoSpecification> feature_promo_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_REGISTRY_H_

@@ -5,7 +5,6 @@
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -15,8 +14,7 @@
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_extension_helper.h"
 #include "chrome/browser/sync/test/integration/sync_extension_installer.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
-#include "chrome/browser/web_applications/test/web_app_install_observer.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -33,32 +31,37 @@ std::string CreateFakeAppName(int index) {
   return "fakeapp" + base::NumberToString(index);
 }
 
-std::unique_ptr<web_app::WebAppInstallObserver>
+std::unique_ptr<web_app::WebAppTestInstallObserver>
 SetupSyncInstallObserverForProfile(Profile* profile) {
-  auto apps_to_be_sync_installed = web_app::WebAppProvider::Get(profile)
+  auto apps_to_be_sync_installed = web_app::WebAppProvider::GetForTest(profile)
                                        ->install_manager()
                                        .GetEnqueuedInstallAppIdsForTesting();
 
   if (apps_to_be_sync_installed.empty()) {
     return nullptr;
   }
-  return web_app::WebAppInstallObserver::CreateInstallListener(
-      profile, apps_to_be_sync_installed);
+
+  auto install_observer =
+      std::make_unique<web_app::WebAppTestInstallObserver>(profile);
+  install_observer->BeginListening(apps_to_be_sync_installed);
+  return install_observer;
 }
 
-std::unique_ptr<web_app::WebAppInstallObserver>
+std::unique_ptr<web_app::WebAppTestUninstallObserver>
 SetupSyncUninstallObserverForProfile(Profile* profile) {
   std::set<web_app::AppId> apps_in_sync_uninstall =
-      web_app::WebAppProvider::Get(profile)
-          ->registry_controller()
-          .AsWebAppSyncBridge()
-          ->GetAppsInSyncUninstallForTest();
+      web_app::WebAppProvider::GetForTest(profile)
+          ->sync_bridge()
+          .GetAppsInSyncUninstallForTest();
 
   if (apps_in_sync_uninstall.empty()) {
     return nullptr;
   }
-  return web_app::WebAppInstallObserver::CreateUninstallListener(
-      profile, apps_in_sync_uninstall);
+
+  auto uninstall_observer =
+      std::make_unique<web_app::WebAppTestUninstallObserver>(profile);
+  uninstall_observer->BeginListening(apps_in_sync_uninstall);
+  return uninstall_observer;
 }
 
 }  // namespace
@@ -83,15 +86,12 @@ bool AllProfilesHaveSameApps() {
 
 std::string InstallHostedApp(Profile* profile, int index) {
   return SyncExtensionHelper::GetInstance()->InstallExtension(
-      profile,
-      CreateFakeAppName(index),
-      extensions::Manifest::TYPE_HOSTED_APP);
+      profile, CreateFakeAppName(index), extensions::Manifest::TYPE_HOSTED_APP);
 }
 
 std::string InstallPlatformApp(Profile* profile, int index) {
   return SyncExtensionHelper::GetInstance()->InstallExtension(
-      profile,
-      CreateFakeAppName(index),
+      profile, CreateFakeAppName(index),
       extensions::Manifest::TYPE_PLATFORM_APP);
 }
 
@@ -152,8 +152,7 @@ void WaitForAppService(Profile* profile) {
       ->FlushMojoCallsForTesting();
 }
 
-syncer::StringOrdinal GetPageOrdinalForApp(Profile* profile,
-                                           int app_index) {
+syncer::StringOrdinal GetPageOrdinalForApp(Profile* profile, int app_index) {
   return SyncAppHelper::GetInstance()->GetPageOrdinalForApp(
       profile, CreateFakeAppName(app_index));
 }
@@ -181,8 +180,8 @@ void SetAppLaunchOrdinalForApp(
 
 void CopyNTPOrdinals(Profile* source, Profile* destination, int index) {
   SetPageOrdinalForApp(destination, index, GetPageOrdinalForApp(source, index));
-  SetAppLaunchOrdinalForApp(
-      destination, index, GetAppLaunchOrdinalForApp(source, index));
+  SetAppLaunchOrdinalForApp(destination, index,
+                            GetAppLaunchOrdinalForApp(source, index));
 }
 
 void FixNTPOrdinalCollisions(Profile* profile) {
@@ -194,13 +193,12 @@ void AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
     auto install_observer = SetupSyncInstallObserverForProfile(profile);
     // This actually waits for all observed apps to be installed.
     if (install_observer)
-      install_observer->AwaitNextInstall();
+      install_observer->Wait();
 
     auto uninstall_observer = SetupSyncUninstallObserverForProfile(profile);
     // This actually waits for all observed apps to be installed.
     if (uninstall_observer) {
-      web_app::WebAppInstallObserver::AwaitNextUninstall(
-          uninstall_observer.get());
+      uninstall_observer->Wait();
     }
   }
 
@@ -211,17 +209,15 @@ void AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
     // happens asynchronously after the observer gets OnWebAppInstalled. And
     // some installs might not have OS hooks installed but they will be in the
     // registry.
-    ASSERT_TRUE(web_app::WebAppProvider::Get(profile)
+    ASSERT_TRUE(web_app::WebAppProvider::GetForTest(profile)
                     ->registrar()
-                    .AsWebAppRegistrar()
-                    ->GetAppsFromSyncAndPendingInstallation()
+                    .GetAppsFromSyncAndPendingInstallation()
                     .empty());
 
     std::set<web_app::AppId> apps_in_sync_uninstall =
-        web_app::WebAppProvider::Get(profile)
-            ->registry_controller()
-            .AsWebAppSyncBridge()
-            ->GetAppsInSyncUninstallForTest();
+        web_app::WebAppProvider::GetForTest(profile)
+            ->sync_bridge()
+            .GetAppsInSyncUninstallForTest();
     ASSERT_TRUE(apps_in_sync_uninstall.empty());
   }
 }
@@ -230,9 +226,10 @@ web_app::AppId InstallWebApp(Profile* profile, const WebApplicationInfo& info) {
   DCHECK(info.start_url.is_valid());
   base::RunLoop run_loop;
   web_app::AppId app_id;
-  auto* provider = web_app::WebAppProvider::Get(profile);
+  auto* provider = web_app::WebAppProvider::GetForTest(profile);
   provider->install_manager().InstallWebAppFromInfo(
       std::make_unique<WebApplicationInfo>(info),
+      /*overwrite_existing_manifest_fields=*/true,
       web_app::ForInstallableSite::kYes,
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       base::BindLambdaForTesting(

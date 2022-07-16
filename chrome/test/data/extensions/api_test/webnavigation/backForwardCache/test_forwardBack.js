@@ -73,7 +73,7 @@ onload = async function() {
                      processId: 1,
                      tabId: 0,
                      timeStamp: 0,
-                     transitionQualifiers: ["client_redirect"],
+                     transitionQualifiers: [],
                      transitionType: "link",
                      url: URL_B }},
         { label: "b-onDOMContentLoaded",

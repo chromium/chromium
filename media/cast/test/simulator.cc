@@ -43,6 +43,7 @@
 #include "base/at_exit.h"
 #include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
@@ -52,7 +53,6 @@
 #include "base/files/scoped_file.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
@@ -143,6 +143,9 @@ class TransportClient : public CastTransport::Client {
       : log_event_dispatcher_(log_event_dispatcher),
         packet_proxy_(packet_proxy) {}
 
+  TransportClient(const TransportClient&) = delete;
+  TransportClient& operator=(const TransportClient&) = delete;
+
   void OnStatusChanged(CastTransportStatus status) final {
     LOG(INFO) << "Cast transport status: " << status;
   }
@@ -161,8 +164,6 @@ class TransportClient : public CastTransport::Client {
  private:
   LogEventDispatcher* const log_event_dispatcher_;  // Not owned by this class.
   PacketProxy* const packet_proxy_;                 // Not owned by this class.
-
-  DISALLOW_COPY_AND_ASSIGN(TransportClient);
 };
 
 // Maintains a queue of encoded video frames.
@@ -170,15 +171,19 @@ class TransportClient : public CastTransport::Client {
 // If a video frame is detected to be encoded it transfers a frame
 // from FakeMediaSource to its internal queue. Otherwise it drops a
 // frame from FakeMediaSource.
-class EncodedVideoFrameTracker : public RawEventSubscriber {
+class EncodedVideoFrameTracker final : public RawEventSubscriber {
  public:
   EncodedVideoFrameTracker(FakeMediaSource* media_source)
       : media_source_(media_source),
         last_frame_event_type_(UNKNOWN) {}
-  ~EncodedVideoFrameTracker() final {}
+
+  EncodedVideoFrameTracker(const EncodedVideoFrameTracker&) = delete;
+  EncodedVideoFrameTracker& operator=(const EncodedVideoFrameTracker&) = delete;
+
+  ~EncodedVideoFrameTracker() override = default;
 
   // RawEventSubscriber implementations.
-  void OnReceiveFrameEvent(const FrameEvent& frame_event) final {
+  void OnReceiveFrameEvent(const FrameEvent& frame_event) override {
     // This method only cares about video FRAME_CAPTURE_END and
     // FRAME_ENCODED events.
     if (frame_event.media_type != VIDEO_EVENT) {
@@ -200,7 +205,7 @@ class EncodedVideoFrameTracker : public RawEventSubscriber {
     last_frame_event_type_ = frame_event.type;
   }
 
-  void OnReceivePacketEvent(const PacketEvent& packet_event) final {
+  void OnReceivePacketEvent(const PacketEvent& packet_event) override {
     // Don't care.
   }
 
@@ -215,8 +220,6 @@ class EncodedVideoFrameTracker : public RawEventSubscriber {
   FakeMediaSource* media_source_;
   CastLoggingEvent last_frame_event_type_;
   base::queue<scoped_refptr<media::VideoFrame>> video_frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(EncodedVideoFrameTracker);
 };
 
 // Appends a YUV frame in I420 format to the file located at |path|.
@@ -300,7 +303,7 @@ void RunSimulation(const base::FilePath& source_path,
                    const NetworkSimulationModel& model) {
   // Fake clock. Make sure start time is non zero.
   base::SimpleTestTickClock testing_clock;
-  testing_clock.Advance(base::TimeDelta::FromSeconds(1));
+  testing_clock.Advance(base::Seconds(1));
 
   // Task runner.
   scoped_refptr<FakeSingleThreadTaskRunner> task_runner =
@@ -326,8 +329,8 @@ void RunSimulation(const base::FilePath& source_path,
   // Audio sender config.
   FrameSenderConfig audio_sender_config = GetDefaultAudioSenderConfig();
   audio_sender_config.min_playout_delay =
-      audio_sender_config.max_playout_delay = base::TimeDelta::FromMilliseconds(
-          GetIntegerSwitchValue(kTargetDelay, 400));
+      audio_sender_config.max_playout_delay =
+          base::Milliseconds(GetIntegerSwitchValue(kTargetDelay, 400));
 
   // Audio receiver config.
   FrameReceiverConfig audio_receiver_config =
@@ -359,7 +362,7 @@ void RunSimulation(const base::FilePath& source_path,
 
   // Cast receiver.
   std::unique_ptr<CastTransport> transport_receiver(new CastTransportImpl(
-      &testing_clock, base::TimeDelta::FromSeconds(1),
+      &testing_clock, base::Seconds(1),
       std::make_unique<TransportClient>(receiver_env->logger(), &packet_proxy),
       base::WrapUnique(receiver_to_sender), task_runner));
   std::unique_ptr<CastReceiver> cast_receiver(
@@ -370,7 +373,7 @@ void RunSimulation(const base::FilePath& source_path,
 
   // Cast sender and transport sender.
   std::unique_ptr<CastTransport> transport_sender(new CastTransportImpl(
-      &testing_clock, base::TimeDelta::FromSeconds(1),
+      &testing_clock, base::Seconds(1),
       std::make_unique<TransportClient>(sender_env->logger(), nullptr),
       base::WrapUnique(sender_to_receiver), task_runner));
   std::unique_ptr<CastSender> cast_sender(
@@ -468,10 +471,10 @@ void RunSimulation(const base::FilePath& source_path,
   // by using --run-time= flag.
   base::TimeDelta elapsed_time;
   const base::TimeDelta desired_run_time =
-      base::TimeDelta::FromSeconds(GetIntegerSwitchValue(kRunTime, 180));
+      base::Seconds(GetIntegerSwitchValue(kRunTime, 180));
   while (elapsed_time < desired_run_time) {
     // Each step is 100us.
-    base::TimeDelta step = base::TimeDelta::FromMicroseconds(100);
+    base::TimeDelta step = base::Microseconds(100);
     task_runner->Sleep(step);
     elapsed_time += step;
   }

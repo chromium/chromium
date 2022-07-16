@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace extensions {
@@ -20,6 +19,11 @@ class ChromeOSExtensionCacheDelegate {
   ChromeOSExtensionCacheDelegate();
   explicit ChromeOSExtensionCacheDelegate(const base::FilePath& cache_dir);
 
+  ChromeOSExtensionCacheDelegate(const ChromeOSExtensionCacheDelegate&) =
+      delete;
+  ChromeOSExtensionCacheDelegate& operator=(
+      const ChromeOSExtensionCacheDelegate&) = delete;
+
   const base::FilePath& GetCacheDir() const;
   size_t GetMinimumCacheSize() const;
   size_t GetMaximumCacheSize() const;
@@ -27,8 +31,6 @@ class ChromeOSExtensionCacheDelegate {
 
  private:
   const base::FilePath cache_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOSExtensionCacheDelegate);
 };
 
 }  // namespace extensions

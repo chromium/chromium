@@ -13,12 +13,13 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-class AffineTransform;
 class ComputedStyle;
+struct AutoDarkMode;
 class FrameSelection;
 class LayoutObject;
 class NGFragmentItem;
@@ -39,9 +40,15 @@ class CORE_EXPORT NGHighlightPainter {
     STACK_ALLOCATED();
 
    public:
-    explicit SelectionPaintState(const NGInlineCursor& containing_block);
-    explicit SelectionPaintState(const NGInlineCursor& containing_block,
-                                 const FrameSelection&);
+    explicit SelectionPaintState(
+        const NGInlineCursor& containing_block,
+        const PhysicalOffset& box_offset,
+        const absl::optional<AffineTransform> writing_mode_rotation = {});
+    explicit SelectionPaintState(
+        const NGInlineCursor& containing_block,
+        const PhysicalOffset& box_offset,
+        const absl::optional<AffineTransform> writing_mode_rotation,
+        const FrameSelection&);
 
     const LayoutSelectionStatus& Status() const { return selection_status_; }
 
@@ -59,7 +66,12 @@ class CORE_EXPORT NGHighlightPainter {
                                const PaintInfo& paint_info,
                                const TextPaintStyle& text_style);
 
-    PhysicalRect ComputeSelectionRect(const PhysicalOffset& box_offset);
+    // When painting text fragments in a vertical writing-mode, we sometimes
+    // need to rotate the canvas into a line-relative coordinate space. Paint
+    // ops done while rotated need coordinates in this rotated space, but ops
+    // done outside of these rotations need the original physical rect.
+    const PhysicalRect& RectInPhysicalSpace();
+    const PhysicalRect& RectInWritingModeSpace();
 
     void PaintSelectionBackground(
         GraphicsContext& context,
@@ -68,12 +80,11 @@ class CORE_EXPORT NGHighlightPainter {
         const ComputedStyle& style,
         const absl::optional<AffineTransform>& rotation);
 
-    void MapSelectionRectIntoRotatedSpace(const AffineTransform& rotation);
-
     void PaintSelectedText(NGTextPainter& text_painter,
                            unsigned length,
                            const TextPaintStyle& text_style,
-                           DOMNodeId node_id);
+                           DOMNodeId node_id,
+                           const AutoDarkMode& auto_dark_mode);
 
     void PaintSuppressingTextProperWhereSelected(
         NGTextPainter& text_painter,
@@ -81,15 +92,27 @@ class CORE_EXPORT NGHighlightPainter {
         unsigned end_offset,
         unsigned length,
         const TextPaintStyle& text_style,
-        DOMNodeId node_id);
+        DOMNodeId node_id,
+        const AutoDarkMode& auto_dark_mode);
 
    private:
+    struct SelectionRect {
+      PhysicalRect physical;
+      PhysicalRect rotated;
+    };
+
+    // Lazy init |selection_rect_| only when needed, such as when we need to
+    // record selection bounds or actually paint the selection. There are many
+    // subtle conditions where we won’t ever need this field.
+    void ComputeSelectionRectIfNeeded();
+
     const LayoutSelectionStatus selection_status_;
-    TextPaintStyle selection_style_;
     const SelectionState state_;
-    absl::optional<PhysicalRect> selection_rect_;
-    absl::optional<PhysicalRect> selection_rect_before_rotation_;
     const NGInlineCursor& containing_block_;
+    const PhysicalOffset& box_offset_;
+    const absl::optional<AffineTransform> writing_mode_rotation_;
+    absl::optional<SelectionRect> selection_rect_;
+    TextPaintStyle selection_style_;
     bool paint_selected_text_only_;
   };
 
@@ -99,18 +122,13 @@ class CORE_EXPORT NGHighlightPainter {
                               const NGFragmentItem& fragment_item,
                               const PhysicalOffset& box_origin,
                               const ComputedStyle& style,
-                              absl::optional<SelectionPaintState>,
+                              SelectionPaintState*,
                               bool is_printing);
 
   enum Phase { kBackground, kForeground };
   void Paint(Phase phase);
 
-  absl::optional<SelectionPaintState>& Selection() { return selection_; }
-  absl::optional<AppliedTextDecoration> SelectionDecoration() {
-    return selection_
-               ? selection_->GetSelectionStyle().selection_text_decoration
-               : absl::nullopt;
-  }
+  SelectionPaintState* Selection() { return selection_; }
 
  private:
   NGTextPainter& text_painter_;
@@ -119,7 +137,7 @@ class CORE_EXPORT NGHighlightPainter {
   const NGFragmentItem& fragment_item_;
   const PhysicalOffset& box_origin_;
   const ComputedStyle& style_;
-  absl::optional<SelectionPaintState> selection_;
+  SelectionPaintState* selection_;
   const LayoutObject* layout_object_;
   Node* node_;
   const DocumentMarkerVector markers_;

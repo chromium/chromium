@@ -22,6 +22,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -162,7 +163,8 @@ class AppContextMenuTest : public AppListTestBase {
         profile(), base::BindRepeating(&MenuManagerFactory));
     controller_ = std::make_unique<FakeAppListControllerDelegate>();
     menu_delegate_ = std::make_unique<FakeAppContextMenuDelegate>();
-    model_updater_ = std::make_unique<FakeAppListModelUpdater>();
+    model_updater_ = std::make_unique<FakeAppListModelUpdater>(
+        /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     ChromeAppListItem::OverrideAppListControllerDelegateForTesting(
         controller());
   }
@@ -481,7 +483,7 @@ TEST_F(AppContextMenuTest, ArcMenu) {
 
   // No app available case.
   menu = GetContextMenuModel(item.get());
-  EXPECT_EQ(0, menu->GetItemCount());
+  EXPECT_EQ(nullptr, menu);
 }
 
 TEST_F(AppContextMenuTest, ArcMenuShortcut) {
@@ -512,12 +514,12 @@ TEST_F(AppContextMenuTest, ArcMenuShortcut) {
   ValidateItemState(menu.get(), index++, MenuState(ash::SHOW_APP_INFO));
   // Test that arc app shortcuts provided by arc::FakeAppInstance have a
   // separator between each app shortcut.
-    EXPECT_EQ(ui::DOUBLE_SEPARATOR, menu->GetSeparatorTypeAt(index++));
-    for (int shortcut_index = 0; index < menu->GetItemCount(); ++index) {
-      EXPECT_EQ(base::StringPrintf("ShortLabel %d", shortcut_index++),
-                base::UTF16ToUTF8(menu->GetLabelAt(index++)));
-      if (index < menu->GetItemCount())
-        EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
+  EXPECT_EQ(ui::DOUBLE_SEPARATOR, menu->GetSeparatorTypeAt(index++));
+  for (int shortcut_index = 0; index < menu->GetItemCount(); ++index) {
+    EXPECT_EQ(base::StringPrintf("ShortLabel %d", shortcut_index++),
+              base::UTF16ToUTF8(menu->GetLabelAt(index++)));
+    if (index < menu->GetItemCount())
+      EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
   }
 
   // This makes all apps non-ready. Shortcut is still uninstall-able.
@@ -618,12 +620,12 @@ TEST_F(AppContextMenuTest, ArcMenuSuspendedItem) {
 
   // Test that arc app shortcuts provided by arc::FakeAppInstance have a
   // separator between each app shortcut.
-    EXPECT_EQ(ui::DOUBLE_SEPARATOR, menu->GetSeparatorTypeAt(index++));
-    for (int shortcut_index = 0; index < menu->GetItemCount(); ++index) {
-      EXPECT_EQ(base::StringPrintf("ShortLabel %d", shortcut_index++),
-                base::UTF16ToUTF8(menu->GetLabelAt(index++)));
-      if (index < menu->GetItemCount())
-        EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
+  EXPECT_EQ(ui::DOUBLE_SEPARATOR, menu->GetSeparatorTypeAt(index++));
+  for (int shortcut_index = 0; index < menu->GetItemCount(); ++index) {
+    EXPECT_EQ(base::StringPrintf("ShortLabel %d", shortcut_index++),
+              base::UTF16ToUTF8(menu->GetLabelAt(index++)));
+    if (index < menu->GetItemCount())
+      EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
   }
 }
 
@@ -668,6 +670,7 @@ class AppContextMenuLacrosTest : public AppContextMenuTest {
  public:
   AppContextMenuLacrosTest() {
     feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+    crosapi::browser_util::SetProfileMigrationCompletedForTest(true);
   }
   AppContextMenuLacrosTest(const AppContextMenuLacrosTest&) = delete;
   AppContextMenuLacrosTest& operator=(const AppContextMenuLacrosTest&) = delete;

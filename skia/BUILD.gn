@@ -25,21 +25,25 @@ if (current_cpu == "mipsel" || current_cpu == "mips64el") {
 
 skia_support_gpu = !is_ios
 skia_support_pdf = !is_ios && enable_basic_printing
-skia_support_skottie = true
 
 declare_args() {
   enable_skia_wuffs_gif = true
 }
 
-# Generate a buildflag header for compile-time checking of Dawn support.
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "SKIA_USE_DAWN=$skia_use_dawn" ]
+  flags = [
+    "SKIA_SUPPORT_SKOTTIE=$skia_support_skottie",
+    "SKIA_USE_DAWN=$skia_use_dawn",
+  ]
 }
 
 # External-facing config for dependent code.
 config("skia_config") {
-  defines = [ "SK_UNTIL_CRBUG_1187654_IS_FIXED" ]
+  defines = [
+    "SK_UNTIL_CRBUG_1187654_IS_FIXED",
+    "SK_WIN_FONTMGR_NO_SIMULATIONS",
+  ]
   include_dirs = [ "//third_party/skia" ]
 
   if (!is_ios) {
@@ -80,10 +84,7 @@ config("skia_config") {
     }
   }
   if (enable_vulkan) {
-    defines += [
-      "SK_VULKAN_HEADER=\"../../skia/config/SkVulkanConfig.h\"",
-      "SK_VULKAN=1",
-    ]
+    defines += [ "SK_VULKAN=1" ]
   }
   if (skia_use_dawn) {
     defines += [ "SK_DAWN" ]
@@ -130,6 +131,11 @@ config("skia_config") {
 # Internal-facing config for Skia library code.
 config("skia_library_config") {
   defines = []
+
+  # Skia uses C++17 language features in its internal code. Previously Skia was built with
+  # "-std=c++17". See http://crbug.com/1257145 for why this was a bad idea.
+  cflags_cc = [ "-Wno-c++17-extensions" ]
+  cflags_objcc = [ "-Wno-c++17-extensions" ]
 
   if (!is_ios && !use_system_freetype) {
     defines += [ "SK_FREETYPE_MINIMUM_RUNTIME_VERSION=(((FREETYPE_MAJOR) * 0x01000000) | ((FREETYPE_MINOR) * 0x00010000) | ((FREETYPE_PATCH) * 0x00000100))" ]
@@ -187,25 +193,6 @@ config("skia_library_config") {
       # fairly small size. http://crbug.com/314387
       "SK_DEFAULT_FONT_CACHE_COUNT_LIMIT=256",
     ]
-
-    cflags = [
-      "/wd4244",  # conversion from 'type1( __int64)' to 'type2 (unsigned int)'
-      "/wd4267",  # conversion from 'size_t' (64 bit) to 'type'(32 bit).
-      "/wd4341",  # signed value is out of range for enum constant.
-      "/wd4345",  # Object is default-initialized if initialization is omitted.
-      "/wd4390",  # ';'empty statement found in looping;is it what was intended?
-      "/wd4554",  # 'operator' : check operator precedence for possible error
-      "/wd4748",  # compiler will disable optimizations if a function has inline
-                  # assembly code contains flow control(jmp or jcc) statements.
-
-      "/wd4800",  # forcing value to bool 'true/false'(assigning int to bool).
-      "/wd5041",  # out-of-line definition for constexpr static data member is
-                  # not needed and is deprecated in C++17
-    ]
-    cflags_cc = [ "/std:c++17" ]
-  } else {
-    cflags_cc = [ "-std=c++17" ]
-    cflags_objcc = [ "-std=c++17" ]
   }
 }
 
@@ -602,6 +589,7 @@ component("skia") {
     sources += skia_gpu_sources
     sources += skia_null_gpu_sources
     sources += skia_sksl_gpu_sources
+    sources += skia_shared_gpu_sources
     if (skia_use_gl) {
       sources += skia_gl_gpu_sources
     }

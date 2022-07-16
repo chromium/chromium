@@ -69,6 +69,7 @@ LibassistantService::LibassistantService(
           &audio_input_controller_),
       display_controller_(&speech_recognition_observers_),
       speaker_id_enrollment_controller_(&audio_input_controller_) {
+  service_controller_.AddAndFireAssistantClientObserver(&platform_api_);
   service_controller_.AddAndFireAssistantClientObserver(
       &conversation_controller_);
   service_controller_.AddAndFireAssistantClientObserver(

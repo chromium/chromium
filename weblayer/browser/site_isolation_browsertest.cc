@@ -34,9 +34,9 @@ class SiteIsolationBrowserTest : public WebLayerBrowserTest {
  public:
   SiteIsolationBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{site_isolation::features::kSitePerProcessOnlyForHighMemoryClients,
+        {{site_isolation::features::kSiteIsolationMemoryThresholds,
           {{site_isolation::features::
-                kSitePerProcessOnlyForHighMemoryClientsParamName,
+                kPartialSiteIsolationMemoryThresholdParamName,
             "128"}}},
          {site_isolation::features::kSiteIsolationForPasswordSites, {}}},
         {});
@@ -107,8 +107,16 @@ class SiteIsolationBrowserTest : public WebLayerBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Failing on Android, see https://crbug.com/1254509.
+#if defined(ANDROID)
+#define MAYBE_SiteIsIsolatedAfterEnteringPassword \
+  DISABLED_SiteIsIsolatedAfterEnteringPassword
+#else
+#define MAYBE_SiteIsIsolatedAfterEnteringPassword \
+  SiteIsIsolatedAfterEnteringPassword
+#endif
 IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
-                       SiteIsIsolatedAfterEnteringPassword) {
+                       MAYBE_SiteIsIsolatedAfterEnteringPassword) {
   GURL url = embedded_test_server()->GetURL("sub.foo.com",
                                             "/simple_password_form.html");
   NavigateAndWaitForCompletion(url, shell());
@@ -212,10 +220,19 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest, IsolatedSiteIsSavedOnlyOnce) {
               UnorderedElementsAre("http://saved.com"));
 }
 
+// Failing on Android, see https://crbug.com/1254509.
+#if defined(ANDROID)
+#define MAYBE_ClearSiteDataHeaderDoesNotClearSavedIsolatedSites \
+  DISABLED_ClearSiteDataHeaderDoesNotClearSavedIsolatedSites
+#else
+#define MAYBE_ClearSiteDataHeaderDoesNotClearSavedIsolatedSites \
+  ClearSiteDataHeaderDoesNotClearSavedIsolatedSites
+#endif
 // Verify that serving a Clear-Site-Data header does not clear saved isolated
 // sites. Saved isolated sites should only be cleared by user-initiated actions.
-IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
-                       ClearSiteDataHeaderDoesNotClearSavedIsolatedSites) {
+IN_PROC_BROWSER_TEST_F(
+    SiteIsolationBrowserTest,
+    MAYBE_ClearSiteDataHeaderDoesNotClearSavedIsolatedSites) {
   // Start an HTTPS server, as Clear-Site-Data is only available on HTTPS URLs.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(
@@ -247,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
   base::RunLoop run_loop;
   base::Time now = base::Time::Now();
   GetProfile()->ClearBrowsingData({BrowsingDataType::COOKIES_AND_SITE_DATA},
-                                  now - base::TimeDelta::FromDays(1), now,
+                                  now - base::Days(1), now,
                                   run_loop.QuitClosure());
   run_loop.Run();
 

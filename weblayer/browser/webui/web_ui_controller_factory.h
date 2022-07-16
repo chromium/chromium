@@ -13,6 +13,9 @@ namespace weblayer {
 
 class WebUIControllerFactory : public content::WebUIControllerFactory {
  public:
+  WebUIControllerFactory(const WebUIControllerFactory&) = delete;
+  WebUIControllerFactory& operator=(const WebUIControllerFactory&) = delete;
+
   static WebUIControllerFactory* GetInstance();
 
   // content::WebUIControllerFactory overrides
@@ -29,8 +32,6 @@ class WebUIControllerFactory : public content::WebUIControllerFactory {
 
   WebUIControllerFactory();
   ~WebUIControllerFactory() override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIControllerFactory);
 };
 
 }  // namespace weblayer

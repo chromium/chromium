@@ -14,6 +14,7 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -30,76 +31,80 @@ using PReason = PrinterStatus::PrinterReason::Reason;
 using PSeverity = PrinterStatus::PrinterReason::Severity;
 
 // printer attributes
-const char kPrinterUri[] = "printer-uri";
-const char kPrinterState[] = "printer-state";
-const char kPrinterStateReasons[] = "printer-state-reasons";
-const char kPrinterStateMessage[] = "printer-state-message";
+constexpr char kPrinterUri[] = "printer-uri";
+constexpr char kPrinterState[] = "printer-state";
+constexpr char kPrinterStateReasons[] = "printer-state-reasons";
+constexpr char kPrinterStateMessage[] = "printer-state-message";
 
-const char kPrinterMakeAndModel[] = "printer-make-and-model";
-const char kIppVersionsSupported[] = "ipp-versions-supported";
-const char kIppFeaturesSupported[] = "ipp-features-supported";
-const char kDocumentFormatSupported[] = "document-format-supported";
+constexpr char kPrinterMakeAndModel[] = "printer-make-and-model";
+constexpr char kIppVersionsSupported[] = "ipp-versions-supported";
+constexpr char kIppFeaturesSupported[] = "ipp-features-supported";
+constexpr char kDocumentFormatSupported[] = "document-format-supported";
 
 // job attributes
-const char kJobUri[] = "job-uri";
-const char kJobId[] = "job-id";
-const char kJobState[] = "job-state";
-const char kJobStateReasons[] = "job-state-reasons";
-const char kJobStateMessage[] = "job-state-message";
-const char kJobImpressionsCompleted[] = "job-impressions-completed";
-const char kTimeAtProcessing[] = "time-at-processing";
+constexpr char kJobUri[] = "job-uri";
+constexpr char kJobId[] = "job-id";
+constexpr char kJobState[] = "job-state";
+constexpr char kJobStateReasons[] = "job-state-reasons";
+constexpr char kJobStateMessage[] = "job-state-message";
+constexpr char kJobImpressionsCompleted[] = "job-impressions-completed";
+constexpr char kTimeAtProcessing[] = "time-at-processing";
 
 // request parameters
-const char kRequestedAttributes[] = "requested-attributes";
-const char kWhichJobs[] = "which-jobs";
-const char kLimit[] = "limit";
+constexpr char kRequestedAttributes[] = "requested-attributes";
+constexpr char kWhichJobs[] = "which-jobs";
+constexpr char kLimit[] = "limit";
 
 // request values
-const char kCompleted[] = "completed";
-const char kNotCompleted[] = "not-completed";
+constexpr char kCompleted[] = "completed";
+constexpr char kNotCompleted[] = "not-completed";
 
 // ipp features
-const char kIppEverywhere[] = "ipp-everywhere";
+constexpr char kIppEverywhere[] = "ipp-everywhere";
+
+// job state reason values
+constexpr char kJobCompletedWithErrors[] = "job-completed-with-errors";
+constexpr char kCupsHeldForAuthentication[] = "cups-held-for-authentication";
 
 // printer state severities
-const char kSeverityReport[] = "report";
-const char kSeverityWarn[] = "warning";
-const char kSeverityError[] = "error";
+constexpr char kSeverityReport[] = "report";
+constexpr char kSeverityWarn[] = "warning";
+constexpr char kSeverityError[] = "error";
 
 // printer state reason values
-const char kNone[] = "none";
-const char kMediaNeeded[] = "media-needed";
-const char kMediaJam[] = "media-jam";
-const char kMovingToPaused[] = "moving-to-paused";
-const char kPaused[] = "paused";
-const char kShutdown[] = "shutdown";
-const char kConnectingToDevice[] = "connecting-to-device";
-const char kTimedOut[] = "timed-out";
-const char kStopping[] = "stopping";
-const char kStoppedPartly[] = "stopped-partly";
-const char kTonerLow[] = "toner-low";
-const char kTonerEmpty[] = "toner-empty";
-const char kSpoolAreaFull[] = "spool-area-full";
-const char kCoverOpen[] = "cover-open";
-const char kInterlockOpen[] = "interlock-open";
-const char kDoorOpen[] = "door-open";
-const char kInputTrayMissing[] = "input-tray-missing";
-const char kMediaLow[] = "media-low";
-const char kMediaEmpty[] = "media-empty";
-const char kOutputTrayMissing[] = "output-tray-missing";
-const char kOutputAreaAlmostFull[] = "output-area-almost-full";
-const char kOutputAreaFull[] = "output-area-full";
-const char kMarkerSupplyLow[] = "marker-supply-low";
-const char kMarkerSupplyEmpty[] = "marker-supply-empty";
-const char kMarkerWasteAlmostFull[] = "marker-waste-almost-full";
-const char kMarkerWasteFull[] = "marker-waste-full";
-const char kFuserOverTemp[] = "fuser-over-temp";
-const char kFuserUnderTemp[] = "fuser-under-temp";
-const char kOpcNearEol[] = "opc-near-eol";
-const char kOpcLifeOver[] = "opc-life-over";
-const char kDeveloperLow[] = "developer-low";
-const char kDeveloperEmpty[] = "developer-empty";
-const char kInterpreterResourceUnavailable[] =
+constexpr char kNone[] = "none";
+constexpr char kMediaNeeded[] = "media-needed";
+constexpr char kMediaJam[] = "media-jam";
+constexpr char kMovingToPaused[] = "moving-to-paused";
+constexpr char kPaused[] = "paused";
+constexpr char kShutdown[] = "shutdown";
+constexpr char kConnectingToDevice[] = "connecting-to-device";
+constexpr char kTimedOut[] = "timed-out";
+constexpr char kStopping[] = "stopping";
+constexpr char kStoppedPartly[] = "stopped-partly";
+constexpr char kTonerLow[] = "toner-low";
+constexpr char kTonerEmpty[] = "toner-empty";
+constexpr char kSpoolAreaFull[] = "spool-area-full";
+constexpr char kCoverOpen[] = "cover-open";
+constexpr char kInterlockOpen[] = "interlock-open";
+constexpr char kDoorOpen[] = "door-open";
+constexpr char kInputTrayMissing[] = "input-tray-missing";
+constexpr char kMediaLow[] = "media-low";
+constexpr char kMediaEmpty[] = "media-empty";
+constexpr char kOutputTrayMissing[] = "output-tray-missing";
+constexpr char kOutputAreaAlmostFull[] = "output-area-almost-full";
+constexpr char kOutputAreaFull[] = "output-area-full";
+constexpr char kMarkerSupplyLow[] = "marker-supply-low";
+constexpr char kMarkerSupplyEmpty[] = "marker-supply-empty";
+constexpr char kMarkerWasteAlmostFull[] = "marker-waste-almost-full";
+constexpr char kMarkerWasteFull[] = "marker-waste-full";
+constexpr char kFuserOverTemp[] = "fuser-over-temp";
+constexpr char kFuserUnderTemp[] = "fuser-under-temp";
+constexpr char kOpcNearEol[] = "opc-near-eol";
+constexpr char kOpcLifeOver[] = "opc-life-over";
+constexpr char kDeveloperLow[] = "developer-low";
+constexpr char kDeveloperEmpty[] = "developer-empty";
+constexpr char kInterpreterResourceUnavailable[] =
     "interpreter-resource-unavailable";
 
 constexpr char kIppScheme[] = "ipp";
@@ -367,9 +372,24 @@ CupsJob::CupsJob(const CupsJob& other) = default;
 
 CupsJob::~CupsJob() = default;
 
+bool CupsJob::ContainsStateReason(CupsJob::JobStateReason reason) const {
+  return base::Contains(state_reasons, ToJobStateReasonString(reason));
+}
+
 PrinterInfo::PrinterInfo() = default;
 
 PrinterInfo::~PrinterInfo() = default;
+
+const base::StringPiece ToJobStateReasonString(
+    CupsJob::JobStateReason state_reason) {
+  switch (state_reason) {
+    case CupsJob::JobStateReason::kJobCompletedWithErrors:
+      return kJobCompletedWithErrors;
+    case CupsJob::JobStateReason::kCupsHeldForAuthentication:
+      return kCupsHeldForAuthentication;
+  }
+  return "";
+}
 
 std::string PrinterUriFromName(const std::string& id) {
   return base::StringPrintf("ipp://localhost/printers/%s", id.c_str());

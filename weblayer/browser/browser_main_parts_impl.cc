@@ -16,8 +16,8 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
-#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
@@ -57,6 +57,7 @@
 #include "components/javascript_dialogs/android/app_modal_dialog_view_android.h"  // nogncheck
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"  // nogncheck
 #include "components/metrics/metrics_service.h"
+#include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -67,15 +68,13 @@
 #include "weblayer/browser/java/jni/MojoInterfaceRegistrar_jni.h"
 #include "weblayer/browser/media/local_presentation_manager_factory.h"
 #include "weblayer/browser/media/media_router_factory.h"
+#include "weblayer/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
+#include "weblayer/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "weblayer/browser/webapps/weblayer_webapps_client.h"
 #include "weblayer/browser/weblayer_factory_impl_android.h"
 #include "weblayer/common/features.h"
 #endif
 
-#if defined(USE_AURA) && defined(USE_X11)
-#include "ui/base/ui_base_features.h"
-#include "ui/events/devices/x11/touch_factory_x11.h"  // nogncheck
-#endif
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
 #if defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -128,6 +127,8 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   NoStatePrefetchManagerFactory::GetInstance();
   SubresourceFilterProfileContextFactory::GetInstance();
 #if defined(OS_ANDROID)
+  SafeBrowsingMetricsCollectorFactory::GetInstance();
+  SafeBrowsingNavigationObserverManagerFactory::GetInstance();
   if (MediaRouterFactory::IsFeatureEnabled()) {
     LocalPresentationManagerFactory::GetInstance();
     MediaRouterFactory::GetInstance();
@@ -139,7 +140,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
 void StopMessageLoop(base::OnceClosure quit_closure) {
   for (auto it = content::RenderProcessHost::AllHostsIterator(); !it.IsAtEnd();
        it.Advance()) {
-    it.GetCurrentValue()->DisableKeepAliveRefCount();
+    it.GetCurrentValue()->DisableRefCounts();
   }
 
   std::move(quit_closure).Run();
@@ -149,10 +150,10 @@ void StopMessageLoop(base::OnceClosure quit_closure) {
 
 BrowserMainPartsImpl::BrowserMainPartsImpl(
     MainParams* params,
-    const content::MainFunctionParams& main_function_params,
+    content::MainFunctionParams main_function_params,
     std::unique_ptr<PrefService> local_state)
     : params_(params),
-      main_function_params_(main_function_params),
+      main_function_params_(std::move(main_function_params)),
       local_state_(std::move(local_state)) {}
 
 BrowserMainPartsImpl::~BrowserMainPartsImpl() = default;
@@ -171,25 +172,22 @@ int BrowserMainPartsImpl::PreCreateThreads() {
 
   // WebLayer initializes the MetricsService once consent is determined.
   // Determining consent is async and potentially slow. VariationsIdsProvider
-  // is responsible for updating the X-Client-Data header. To ensure the header
-  // is always provided, VariationsIdsProvider is registered now.
+  // is responsible for updating the X-Client-Data header.
+  // SyntheticTrialsActiveGroupIdProvider is responsible for updating the
+  // variations crash keys. To ensure the header and crash keys are always
+  // provided, they are registered now.
   //
-  // Chrome registers the VariationsIdsProvider from PreCreateThreads() as well.
-  auto* metrics_client = WebLayerMetricsServiceClient::GetInstance();
-  metrics_client->GetMetricsService()
-      ->synthetic_trial_registry()
-      ->AddSyntheticTrialObserver(
-          variations::VariationsIdsProvider::GetInstance());
+  // Chrome registers these providers from PreCreateThreads() as well.
+  auto* synthetic_trial_registry = WebLayerMetricsServiceClient::GetInstance()
+                                       ->GetMetricsService()
+                                       ->synthetic_trial_registry();
+  synthetic_trial_registry->AddSyntheticTrialObserver(
+      variations::VariationsIdsProvider::GetInstance());
+  synthetic_trial_registry->AddSyntheticTrialObserver(
+      variations::SyntheticTrialsActiveGroupIdProvider::GetInstance());
 #endif
 
   return content::RESULT_CODE_NORMAL_EXIT;
-}
-
-void BrowserMainPartsImpl::PreCreateMainMessageLoop() {
-#if defined(USE_AURA) && defined(USE_X11)
-  if (!features::IsUsingOzonePlatform())
-    ui::TouchFactory::SetTouchDeviceListFromCommandLine();
-#endif
 }
 
 int BrowserMainPartsImpl::PreEarlyInitialization() {
@@ -213,7 +211,10 @@ int BrowserMainPartsImpl::PreEarlyInitialization() {
 void BrowserMainPartsImpl::PostCreateThreads() {
   performance_manager_lifetime_ =
       std::make_unique<performance_manager::PerformanceManagerLifetime>(
-          performance_manager::Decorators::kMinimal, base::DoNothing());
+          performance_manager::GraphFeatures::WithMinimal()
+              // Reports performance-related UMA/UKM.
+              .EnableMetricsCollector(),
+          base::DoNothing());
 
   translate::TranslateDownloadManager* download_manager =
       translate::TranslateDownloadManager::GetInstance();
@@ -250,12 +251,6 @@ int BrowserMainPartsImpl::PreMainMessageLoopRun() {
           FROM_HERE,
           base::BindOnce(&PublishSubresourceFilterRulesetFromResourceBundle));
 
-  if (main_function_params_.ui_task) {
-    std::move(*main_function_params_.ui_task).Run();
-    delete main_function_params_.ui_task;
-    run_message_loop_ = false;
-  }
-
 #if defined(OS_ANDROID)
   // On Android, retrieve the application start time from Java and record it. On
   // other platforms, the application start time was already recorded in the
@@ -289,14 +284,10 @@ int BrowserMainPartsImpl::PreMainMessageLoopRun() {
 
 void BrowserMainPartsImpl::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {
-  if (run_message_loop_) {
-    // Wrap the method that stops the message loop so we can do other shutdown
-    // cleanup inside content.
-    params_->delegate->SetMainMessageLoopQuitClosure(
-        base::BindOnce(StopMessageLoop, run_loop->QuitClosure()));
-  } else {
-    run_loop.reset();
-  }
+  // Wrap the method that stops the message loop so we can do other shutdown
+  // cleanup inside content.
+  params_->delegate->SetMainMessageLoopQuitClosure(
+      base::BindOnce(StopMessageLoop, run_loop->QuitClosure()));
 }
 
 void BrowserMainPartsImpl::OnFirstIdle() {

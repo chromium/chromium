@@ -5,9 +5,7 @@
 #include "components/optimization_guide/core/store_update_data.h"
 
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -106,8 +104,7 @@ TEST(StoreUpdateDataTest,
     proto::StoreEntry store_entry = entry.second;
     if (store_entry.entry_type() == proto::FETCHED_HINT) {
       base::Time expected_expiry_time =
-          base::Time::Now() +
-          base::TimeDelta::FromSeconds(max_cache_duration_secs);
+          base::Time::Now() + base::Seconds(max_cache_duration_secs);
       EXPECT_EQ(expected_expiry_time.ToDeltaSinceWindowsEpoch().InSeconds(),
                 store_entry.expiry_time_secs());
       break;

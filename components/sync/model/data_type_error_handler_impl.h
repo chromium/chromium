@@ -8,9 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sync/model/data_type_error_handler.h"
 
 namespace syncer {
@@ -24,6 +23,10 @@ class DataTypeErrorHandlerImpl : public DataTypeErrorHandler {
       const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
       const base::RepeatingClosure& dump_stack,
       const ErrorCallback& sync_callback);
+
+  DataTypeErrorHandlerImpl(const DataTypeErrorHandlerImpl&) = delete;
+  DataTypeErrorHandlerImpl& operator=(const DataTypeErrorHandlerImpl&) = delete;
+
   ~DataTypeErrorHandlerImpl() override;
 
   void OnUnrecoverableError(const SyncError& error) override;
@@ -43,8 +46,6 @@ class DataTypeErrorHandlerImpl : public DataTypeErrorHandler {
 
   // The callback used to inform sync of the error on the |ui_thread_|.
   ErrorCallback sync_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataTypeErrorHandlerImpl);
 };
 
 }  // namespace syncer

@@ -25,6 +25,11 @@ namespace remoting {
 class SecurityKeyMessageHandlerTest : public testing::Test {
  public:
   SecurityKeyMessageHandlerTest();
+
+  SecurityKeyMessageHandlerTest(const SecurityKeyMessageHandlerTest&) = delete;
+  SecurityKeyMessageHandlerTest& operator=(
+      const SecurityKeyMessageHandlerTest&) = delete;
+
   ~SecurityKeyMessageHandlerTest() override;
 
   // Passed to the object used for testing to be called back to signal
@@ -56,8 +61,6 @@ class SecurityKeyMessageHandlerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyMessageHandlerTest);
 };
 
 SecurityKeyMessageHandlerTest::SecurityKeyMessageHandlerTest() = default;

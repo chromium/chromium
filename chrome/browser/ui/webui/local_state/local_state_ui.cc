@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -38,6 +37,10 @@ namespace {
 class LocalStateUIHandler : public content::WebUIMessageHandler {
  public:
   LocalStateUIHandler();
+
+  LocalStateUIHandler(const LocalStateUIHandler&) = delete;
+  LocalStateUIHandler& operator=(const LocalStateUIHandler&) = delete;
+
   ~LocalStateUIHandler() override;
 
   // content::WebUIMessageHandler:
@@ -47,8 +50,6 @@ class LocalStateUIHandler : public content::WebUIMessageHandler {
   // Called from JS when the page has loaded. Serializes local state prefs and
   // sends them to the page.
   void HandleRequestJson(const base::ListValue* args);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalStateUIHandler);
 };
 
 LocalStateUIHandler::LocalStateUIHandler() {
@@ -58,7 +59,7 @@ LocalStateUIHandler::~LocalStateUIHandler() {
 }
 
 void LocalStateUIHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestJson",
       base::BindRepeating(&LocalStateUIHandler::HandleRequestJson,
                           base::Unretained(this)));

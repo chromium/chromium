@@ -11,29 +11,18 @@ class PrefService;
 
 // Tracks Nearby Share feature usage for the Standard Feature Usage Logging
 // (SFUL) framework.
-class NearbyShareFeatureUsageMetrics
+class NearbyShareFeatureUsageMetrics final
     : public feature_usage::FeatureUsageMetrics::Delegate {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused. If entries are added, kMaxValue
-  // should be updated.
-  enum class NearbyShareEnabledState {
-    kEnabledAndOnboarded = 0,
-    kEnabledAndNotOnboarded = 1,
-    kDisabledAndOnboarded = 2,
-    kDisabledAndNotOnboarded = 3,
-    kDisallowedByPolicy = 4,
-    kMaxValue = kDisallowedByPolicy
-  };
-
   explicit NearbyShareFeatureUsageMetrics(PrefService* pref_service);
-  ~NearbyShareFeatureUsageMetrics() final;
+  NearbyShareFeatureUsageMetrics(NearbyShareFeatureUsageMetrics&) = delete;
+  NearbyShareFeatureUsageMetrics& operator=(NearbyShareFeatureUsageMetrics&) =
+      delete;
+  ~NearbyShareFeatureUsageMetrics() override;
 
   // feature_usage::FeatureUsageMetrics::Delegate:
-  bool IsEligible() const final;
-  bool IsEnabled() const final;
-
-  NearbyShareEnabledState GetNearbyShareEnabledState() const;
+  bool IsEligible() const override;
+  bool IsEnabled() const override;
   void RecordUsage(bool success);
 
  private:

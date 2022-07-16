@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "chromecast/media/cdm/cast_cdm_context.h"
@@ -38,6 +38,9 @@ class DecryptContextImpl;
 class CastCdm : public ::media::ContentDecryptionModule {
  public:
   explicit CastCdm(MediaResourceTracker* media_resource_tracker);
+
+  CastCdm(const CastCdm&) = delete;
+  CastCdm& operator=(const CastCdm&) = delete;
 
   void Initialize(
       const ::media::SessionMessageCB& session_message_cb,
@@ -109,8 +112,6 @@ class CastCdm : public ::media::ContentDecryptionModule {
       event_callbacks_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastCdm);
 };
 
 }  // namespace media

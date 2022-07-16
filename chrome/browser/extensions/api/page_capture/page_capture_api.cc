@@ -88,7 +88,7 @@ void PageCaptureSaveAsMHTMLFunction::SetTestDelegate(TestDelegate* delegate) {
 }
 
 ExtensionFunction::ResponseAction PageCaptureSaveAsMHTMLFunction::Run() {
-  params_ = SaveAsMHTML::Params::Create(*args_);
+  params_ = SaveAsMHTML::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
   // Add a reference, extending the lifespan of this extension function until

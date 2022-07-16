@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/proximity_auth/proximity_auth_pref_names.h"
@@ -114,6 +113,19 @@ bool ProximityAuthLocalStatePrefManager::IsChromeOSLoginAllowed() const {
     }
   }
   PA_LOG(VERBOSE) << "Failed to get is_chrome_login_allowed, not disallowing";
+  return true;
+}
+
+bool ProximityAuthLocalStatePrefManager::IsSmartLockEligible() const {
+  const base::DictionaryValue* user_prefs = GetActiveUserPrefsDictionary();
+  if (user_prefs) {
+    absl::optional<bool> pref_value =
+        user_prefs->FindBoolKey(prefs::kSmartLockEligiblePrefName);
+    if (pref_value.has_value()) {
+      return pref_value.value();
+    }
+  }
+  PA_LOG(ERROR) << "Failed to get smart_lock_eligible.";
   return true;
 }
 

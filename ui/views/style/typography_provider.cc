@@ -10,7 +10,8 @@
 #include "build/build_config.h"
 #include "ui/base/default_style.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/native_theme/native_theme.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
@@ -33,60 +34,60 @@ gfx::Font::Weight GetValueBolderThan(gfx::Font::Weight weight) {
   }
 }
 
-ui::NativeTheme::ColorId GetDisabledColorId(int context) {
+ui::ColorId GetDisabledColorId(int context) {
   switch (context) {
     case style::CONTEXT_BUTTON_MD:
-      return ui::NativeTheme::kColorId_ButtonDisabledColor;
+      return ui::kColorButtonForegroundDisabled;
     case style::CONTEXT_TEXTFIELD:
-      return ui::NativeTheme::kColorId_TextfieldReadOnlyColor;
+      return ui::kColorTextfieldForegroundDisabled;
     case style::CONTEXT_MENU:
     case style::CONTEXT_TOUCH_MENU:
-      return ui::NativeTheme::kColorId_DisabledMenuItemForegroundColor;
+      return ui::kColorMenuItemForegroundDisabled;
     default:
-      return ui::NativeTheme::kColorId_LabelDisabledColor;
+      return ui::kColorLabelForegroundDisabled;
   }
 }
 
-ui::NativeTheme::ColorId GetMenuColorId(int style) {
+ui::ColorId GetMenuColorId(int style) {
   switch (style) {
     case style::STYLE_SECONDARY:
-      return ui::NativeTheme::kColorId_MenuItemMinorTextColor;
+      return ui::kColorMenuItemForegroundSecondary;
     case style::STYLE_SELECTED:
-      return ui::NativeTheme::kColorId_SelectedMenuItemForegroundColor;
+      return ui::kColorMenuItemForegroundSelected;
     case style::STYLE_HIGHLIGHTED:
-      return ui::NativeTheme::kColorId_HighlightedMenuItemForegroundColor;
+      return ui::kColorMenuItemForegroundHighlighted;
     default:
-      return ui::NativeTheme::kColorId_EnabledMenuItemForegroundColor;
+      return ui::kColorMenuItemForeground;
   }
 }
 
-ui::NativeTheme::ColorId GetHintColorId(int context) {
+ui::ColorId GetHintColorId(int context) {
   return (context == style::CONTEXT_TEXTFIELD)
-             ? ui::NativeTheme::kColorId_TextfieldPlaceholderColor
-             : ui::NativeTheme::kColorId_LabelSecondaryColor;
+             ? ui::kColorTextfieldForegroundPlaceholder
+             : ui::kColorLabelForegroundSecondary;
 }
 
-ui::NativeTheme::ColorId GetColorId(int context, int style) {
+ui::ColorId GetColorId(int context, int style) {
   if (style == style::STYLE_DIALOG_BUTTON_DEFAULT)
-    return ui::NativeTheme::kColorId_TextOnProminentButtonColor;
+    return ui::kColorButtonForegroundProminent;
   if (style == style::STYLE_DISABLED)
     return GetDisabledColorId(context);
   if (style == style::STYLE_LINK)
-    return ui::NativeTheme::kColorId_LinkEnabled;
+    return ui::kColorLinkForeground;
   if (style == style::STYLE_HINT)
     return GetHintColorId(context);
   if (context == style::CONTEXT_BUTTON_MD)
-    return ui::NativeTheme::kColorId_ButtonEnabledColor;
+    return ui::kColorButtonForeground;
   if (context == style::CONTEXT_LABEL && style == style::STYLE_SECONDARY)
-    return ui::NativeTheme::kColorId_LabelSecondaryColor;
+    return ui::kColorLabelForegroundSecondary;
   if (context == style::CONTEXT_DIALOG_BODY_TEXT &&
       (style == style::STYLE_PRIMARY || style == style::STYLE_SECONDARY))
-    return ui::NativeTheme::kColorId_DialogForeground;
+    return ui::kColorDialogForeground;
   if (context == style::CONTEXT_TEXTFIELD)
-    return ui::NativeTheme::kColorId_TextfieldDefaultColor;
+    return ui::kColorTextfieldForeground;
   if (context == style::CONTEXT_MENU || context == style::CONTEXT_TOUCH_MENU)
     return GetMenuColorId(style);
-  return ui::NativeTheme::kColorId_LabelEnabledColor;
+  return ui::kColorLabelForeground;
 }
 
 }  // namespace
@@ -138,7 +139,7 @@ const gfx::FontList& TypographyProvider::GetFont(int context, int style) const {
 SkColor TypographyProvider::GetColor(const View& view,
                                      int context,
                                      int style) const {
-  return view.GetNativeTheme()->GetSystemColor(GetColorId(context, style));
+  return view.GetColorProvider()->GetColor(GetColorId(context, style));
 }
 
 int TypographyProvider::GetLineHeight(int context, int style) const {

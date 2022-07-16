@@ -44,6 +44,9 @@ constexpr bool IsSubset(unsigned sub, unsigned super) {
 // Helper class to parse the url filter of a Declarative Net Request API rule.
 class UrlFilterParser {
  public:
+  UrlFilterParser(const UrlFilterParser&) = delete;
+  UrlFilterParser& operator=(const UrlFilterParser&) = delete;
+
   // This sets the |url_pattern_type|, |anchor_left|, |anchor_right| and
   // |url_pattern| fields on the |indexed_rule_|.
   static void Parse(std::unique_ptr<std::string> url_filter,
@@ -125,8 +128,6 @@ class UrlFilterParser {
   const size_t url_filter_len_;
   size_t index_;
   IndexedRule* indexed_rule_;  // Must outlive this instance.
-
-  DISALLOW_COPY_AND_ASSIGN(UrlFilterParser);
 };
 
 bool IsCaseSensitive(const dnr_api::Rule& parsed_rule) {
@@ -196,6 +197,10 @@ flat_rule::ElementType GetElementType(dnr_api::ResourceType resource_type) {
       return flat_rule::ElementType_MEDIA;
     case dnr_api::RESOURCE_TYPE_WEBSOCKET:
       return flat_rule::ElementType_WEBSOCKET;
+    case dnr_api::RESOURCE_TYPE_WEBTRANSPORT:
+      return flat_rule::ElementType_WEBTRANSPORT;
+    case dnr_api::RESOURCE_TYPE_WEBBUNDLE:
+      return flat_rule::ElementType_WEBBUNDLE;
     case dnr_api::RESOURCE_TYPE_OTHER:
       return flat_rule::ElementType_OTHER;
   }
@@ -209,6 +214,8 @@ flat_rule::RequestMethod GetRequestMethod(
     case dnr_api::REQUEST_METHOD_NONE:
       NOTREACHED();
       return flat_rule::RequestMethod_NONE;
+    case dnr_api::REQUEST_METHOD_CONNECT:
+      return flat_rule::RequestMethod_CONNECT;
     case dnr_api::REQUEST_METHOD_DELETE:
       return flat_rule::RequestMethod_DELETE;
     case dnr_api::REQUEST_METHOD_GET:
@@ -421,7 +428,8 @@ ParseResult ParseRedirect(dnr_api::Redirect redirect,
     GURL redirect_url = base_url.Resolve(*redirect.extension_path);
 
     // Sanity check that Resolve works as expected.
-    DCHECK_EQ(base_url.GetOrigin(), redirect_url.GetOrigin());
+    DCHECK_EQ(base_url.DeprecatedGetOriginAsURL(),
+              redirect_url.DeprecatedGetOriginAsURL());
 
     if (!redirect_url.is_valid())
       return ParseResult::ERROR_INVALID_EXTENSION_PATH;

@@ -104,19 +104,6 @@ public class AssistantLoginSection extends AssistantCollectUserDataSection<Login
             }
         }
 
-        // Preselect login option according to priority. This will implicitly select the first
-        // option if all options have the same (default) priority.
-        if (indexToSelect == -1) {
-            int highestPriority = Integer.MAX_VALUE;
-            for (int i = 0; i < options.size(); i++) {
-                int priority = options.get(i).mOption.getPriority();
-                if (priority < highestPriority) {
-                    highestPriority = priority;
-                    indexToSelect = i;
-                }
-            }
-        }
-
         setItems(options, indexToSelect);
     }
 }

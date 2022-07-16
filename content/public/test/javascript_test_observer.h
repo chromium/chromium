@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
@@ -59,6 +58,9 @@ class JavascriptTestObserver : public NotificationObserver {
   JavascriptTestObserver(WebContents* web_contents,
                          TestMessageHandler* handler);
 
+  JavascriptTestObserver(const JavascriptTestObserver&) = delete;
+  JavascriptTestObserver& operator=(const JavascriptTestObserver&) = delete;
+
   ~JavascriptTestObserver() override;
 
   // Pump the message loop until the message handler indicates the Javascript
@@ -85,8 +87,6 @@ class JavascriptTestObserver : public NotificationObserver {
   bool running_;
   bool finished_;
   NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavascriptTestObserver);
 };
 
 }  // namespace content

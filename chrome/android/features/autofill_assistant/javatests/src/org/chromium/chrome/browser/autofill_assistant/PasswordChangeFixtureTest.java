@@ -92,29 +92,27 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
         Log.i(TAG, "[Test started]");
 
         mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(),
-                mTestRule.getTestServer().getURL(mParameters.getDomainUrl().getSpec())));
+                InstrumentationRegistry.getTargetContext(), mParameters.getDomainUrl().getSpec()));
 
         /**
          * PasswordStoreBridge requests credentials from the password store on initialization. The
          * request needs to be posted from the main thread.
          */
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mPasswordStoreBridge = new PasswordStoreBridge(this); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mPasswordStoreBridge = new PasswordStoreBridge(this);
+            // Load initial credentials.
+            PasswordStoreCredential[] seedCredentials = mParameters.getSeedCredentials();
+            for (int i = 0; i < seedCredentials.length; i++) {
+                mPasswordStoreBridge.insertPasswordCredential(seedCredentials[i]);
+            }
+        });
 
-        // Load initial credentials.
-        PasswordStoreCredential[] seedCredentials = mParameters.getSeedCredentials();
-        for (int i = 0; i < seedCredentials.length; i++) {
-            mPasswordStoreBridge.insertPasswordCredential(seedCredentials[i]);
-        }
         // Wait until operation finishes and credentials cache is updated.
-        waitUntil(() -> mCredentials.length == seedCredentials.length);
+        waitUntil(() -> mCredentials.length == mParameters.getSeedCredentials().length);
     }
 
     @After
     public void tearDown() {
-        mPasswordStoreBridge.clearAllPasswords();
-        waitUntil(() -> mPasswordStoreBridge.getPasswordStoreCredentialsCount() == 0);
         TestThreadUtils.runOnUiThreadBlocking(() -> { mPasswordStoreBridge.destroy(); });
     }
 
@@ -283,7 +281,9 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
         waitUntilViewMatchesCondition(
                 withText("Changing password..."), isDisplayed(), MAX_WAIT_TIME_IN_MS);
 
-        mPasswordStoreBridge.editPassword(initialCredential, "wrongpassword");
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mPasswordStoreBridge.editPassword(initialCredential, "wrongpassword"); });
+
         // Requesting authorization to change the password.
         waitUntilViewMatchesCondition(
                 withText("Use suggested password?"), isDisplayed(), MAX_WAIT_TIME_IN_MS);

@@ -136,7 +136,34 @@ struct HandwritingFeatureQueryResult {
   HandwritingFeatureStatus segmentation_result = kNotQueried;
 };
 
-// Used in creating recognizer.
+enum HandwritingRecognitionType {
+  kText,
+};
+
+enum HandwritingInputType {
+  kMouse,
+  kStylus,
+  kTouch,
+};
+
+// The description of supported hints.
+// Corresponds to handwriting_recognizer_query_result.idl
+struct HandwritingHintsQueryResult {
+  array<HandwritingRecognitionType> recognition_type;
+  array<HandwritingInputType> input_type;
+  bool text_context;
+  bool alternatives;
+};
+
+// The recognizer query result.
+// Corresponds to handwriting_recognizer_query_result.idl
+struct QueryHandwritingRecognizerResult {
+  bool text_alternatives;
+  bool text_segmentation;
+  HandwritingHintsQueryResult hints;
+};
+
+// Used in querying and creating recognizer.
 // Corresponds to handwriting_model_constraint.idl.
 struct HandwritingModelConstraint {
   // Languages are IETF BCP 47 language tags, e.g., "en", "zh-CN", "zh-Hans".
@@ -173,6 +200,11 @@ interface HandwritingRecognitionService {
   // `blink::HandwritingRecognitionService::queryHandwritingRecognizerSupport`.
   QueryHandwritingRecognizerSupport(HandwritingFeatureQuery query)
     => (HandwritingFeatureQueryResult? result);
+
+  // Queries the features of the best recognizer satisfying `constraint`.
+  // `blink::HandwritingRecognitionService::queryHandwritingRecognizer`.
+  QueryHandwritingRecognizer(HandwritingModelConstraint? constraint)
+    => (QueryHandwritingRecognizerResult? result);
 };
 
 enum CreateHandwritingRecognizerResult {

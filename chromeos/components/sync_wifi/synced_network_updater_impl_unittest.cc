@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/network_config_service.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -74,6 +73,10 @@ class SyncedNetworkUpdaterImplTest : public testing::Test {
         remote_cros_network_config_.BindNewPipeAndPassReceiver());
   }
 
+  SyncedNetworkUpdaterImplTest(const SyncedNetworkUpdaterImplTest&) = delete;
+  SyncedNetworkUpdaterImplTest& operator=(const SyncedNetworkUpdaterImplTest&) =
+      delete;
+
   ~SyncedNetworkUpdaterImplTest() override { local_test_helper_.reset(); }
 
   void SetUp() override {
@@ -132,8 +135,6 @@ class SyncedNetworkUpdaterImplTest : public testing::Test {
 
   NetworkIdentifier fred_network_id_ = GeneratePskNetworkId(kFredSsid);
   NetworkIdentifier mango_network_id_ = GeneratePskNetworkId(kMangoSsid);
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedNetworkUpdaterImplTest);
 };
 
 TEST_F(SyncedNetworkUpdaterImplTest, TestAdd_OneNetwork) {

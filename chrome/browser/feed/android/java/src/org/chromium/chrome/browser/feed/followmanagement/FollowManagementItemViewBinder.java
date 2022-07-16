@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.feed.followmanagement;
 
-import android.view.View;
-
-import org.chromium.base.Log;
-import org.chromium.chrome.browser.feed.webfeed.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -22,17 +18,11 @@ class FollowManagementItemViewBinder {
         } else if (FollowManagementItemProperties.STATUS_KEY == propertyKey) {
             view.setStatus(model.get(FollowManagementItemProperties.STATUS_KEY));
         } else if (FollowManagementItemProperties.ON_CLICK_KEY == propertyKey) {
-            // Set the click handler on the checkbox, and only the checkbox.  We will assume
-            // in the mediator that the view is a checkbox when the click event arrives.
-            View checkbox = view.findViewById(R.id.follow_management_subscribed_checkbox);
-            if (checkbox != null) {
-                checkbox.setOnClickListener(model.get(FollowManagementItemProperties.ON_CLICK_KEY));
-            } else {
-                Log.d(TAG, "XML item layout did not have the checkbox we expected.");
-            }
+            view.setCheckboxClickListener(model.get(FollowManagementItemProperties.ON_CLICK_KEY));
         } else if (FollowManagementItemProperties.SUBSCRIBED_KEY == propertyKey) {
-            view.setSubscribed(
-                    model.get(FollowManagementItemProperties.SUBSCRIBED_KEY).booleanValue());
+            view.setSubscribed(model.get(FollowManagementItemProperties.SUBSCRIBED_KEY));
+        } else if (FollowManagementItemProperties.CHECKBOX_ENABLED_KEY == propertyKey) {
+            view.setCheckboxEnabled(model.get(FollowManagementItemProperties.CHECKBOX_ENABLED_KEY));
         } else if (FollowManagementItemProperties.FAVICON_KEY == propertyKey) {
             view.setFavicon(model.get(FollowManagementItemProperties.FAVICON_KEY));
         }

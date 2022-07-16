@@ -180,7 +180,7 @@ void DelayedTasksTest(TaskEnvironment::TimeSource time_source) {
 
   subtle::Atomic32 counter = 0;
 
-  constexpr base::TimeDelta kShortTaskDelay = TimeDelta::FromDays(1);
+  constexpr base::TimeDelta kShortTaskDelay = Days(1);
   // Should run only in MOCK_TIME environment when time is fast-forwarded.
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -199,7 +199,7 @@ void DelayedTasksTest(TaskEnvironment::TimeSource time_source) {
                                   Unretained(&counter)),
                               kShortTaskDelay);
 
-  constexpr base::TimeDelta kLongTaskDelay = TimeDelta::FromDays(7);
+  constexpr base::TimeDelta kLongTaskDelay = Days(7);
   // Same as first task, longer delays to exercise
   // FastForwardUntilNoTasksRemain().
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -209,7 +209,7 @@ void DelayedTasksTest(TaskEnvironment::TimeSource time_source) {
             subtle::NoBarrier_AtomicIncrement(counter, 8);
           },
           Unretained(&counter)),
-      TimeDelta::FromDays(5));
+      Days(5));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       BindOnce(
@@ -271,7 +271,7 @@ void DelayedTasksTest(TaskEnvironment::TimeSource time_source) {
     const TimeTicks start_time = task_environment.NowTicks();
 
     // Delay inferior to the delay of the first posted task.
-    constexpr base::TimeDelta kInferiorTaskDelay = TimeDelta::FromSeconds(1);
+    constexpr base::TimeDelta kInferiorTaskDelay = Seconds(1);
     static_assert(kInferiorTaskDelay < kShortTaskDelay,
                   "|kInferiorTaskDelay| should be "
                   "set to a value inferior to the first posted task's delay.");
@@ -391,7 +391,7 @@ TEST_F(TaskEnvironmentTest,
         auto ret = write(pipe_fds_[1], &x, sizeof(x));
         ASSERT_EQ(static_cast<size_t>(ret), sizeof(x));
       }),
-      TimeDelta::FromHours(1));
+      Hours(1));
 
   auto controller = FileDescriptorWatcher::WatchReadable(
       pipe_fds_[0], run_loop.QuitClosure());
@@ -412,11 +412,11 @@ TEST_F(TaskEnvironmentTest, FastForwardAdvancesTickClock) {
       TaskEnvironment::TimeSource::MOCK_TIME,
       TaskEnvironment::ThreadPoolExecutionMode::QUEUED);
 
-  constexpr base::TimeDelta kShortTaskDelay = TimeDelta::FromDays(1);
+  constexpr base::TimeDelta kShortTaskDelay = Days(1);
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, base::DoNothing(),
                                                  kShortTaskDelay);
 
-  constexpr base::TimeDelta kLongTaskDelay = TimeDelta::FromDays(7);
+  constexpr base::TimeDelta kLongTaskDelay = Days(7);
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, base::DoNothing(),
                                                  kLongTaskDelay);
 
@@ -438,7 +438,7 @@ TEST_F(TaskEnvironmentTest, FastForwardAdvancesTickClock) {
 }
 
 TEST_F(TaskEnvironmentTest, FastForwardAdvancesMockClock) {
-  constexpr base::TimeDelta kDelay = TimeDelta::FromSeconds(42);
+  constexpr base::TimeDelta kDelay = Seconds(42);
   TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
 
   const Clock* clock = task_environment.GetMockClock();
@@ -449,7 +449,7 @@ TEST_F(TaskEnvironmentTest, FastForwardAdvancesMockClock) {
 }
 
 TEST_F(TaskEnvironmentTest, FastForwardAdvancesTime) {
-  constexpr base::TimeDelta kDelay = TimeDelta::FromSeconds(42);
+  constexpr base::TimeDelta kDelay = Seconds(42);
   TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
 
   const Time start_time = base::Time::Now();
@@ -458,7 +458,7 @@ TEST_F(TaskEnvironmentTest, FastForwardAdvancesTime) {
 }
 
 TEST_F(TaskEnvironmentTest, FastForwardAdvancesTimeTicks) {
-  constexpr base::TimeDelta kDelay = TimeDelta::FromSeconds(42);
+  constexpr base::TimeDelta kDelay = Seconds(42);
   TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
 
   const TimeTicks start_time = base::TimeTicks::Now();
@@ -467,7 +467,7 @@ TEST_F(TaskEnvironmentTest, FastForwardAdvancesTimeTicks) {
 }
 
 TEST_F(TaskEnvironmentTest, AdvanceClockAdvancesTickClock) {
-  constexpr base::TimeDelta kDelay = TimeDelta::FromSeconds(42);
+  constexpr base::TimeDelta kDelay = Seconds(42);
   TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
 
   const base::TickClock* tick_clock = task_environment.GetMockTickClock();
@@ -478,7 +478,7 @@ TEST_F(TaskEnvironmentTest, AdvanceClockAdvancesTickClock) {
 }
 
 TEST_F(TaskEnvironmentTest, AdvanceClockAdvancesMockClock) {
-  constexpr base::TimeDelta kDelay = TimeDelta::FromSeconds(42);
+  constexpr base::TimeDelta kDelay = Seconds(42);
   TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
 
   const Clock* clock = task_environment.GetMockClock();
@@ -489,7 +489,7 @@ TEST_F(TaskEnvironmentTest, AdvanceClockAdvancesMockClock) {
 }
 
 TEST_F(TaskEnvironmentTest, AdvanceClockAdvancesTime) {
-  constexpr base::TimeDelta kDelay = TimeDelta::FromSeconds(42);
+  constexpr base::TimeDelta kDelay = Seconds(42);
   TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
 
   const Time start_time = base::Time::Now();
@@ -498,7 +498,7 @@ TEST_F(TaskEnvironmentTest, AdvanceClockAdvancesTime) {
 }
 
 TEST_F(TaskEnvironmentTest, AdvanceClockAdvancesTimeTicks) {
-  constexpr base::TimeDelta kDelay = TimeDelta::FromSeconds(42);
+  constexpr base::TimeDelta kDelay = Seconds(42);
   TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
 
   const TimeTicks start_time = base::TimeTicks::Now();
@@ -509,7 +509,7 @@ TEST_F(TaskEnvironmentTest, AdvanceClockAdvancesTimeTicks) {
 TEST_F(TaskEnvironmentTest, AdvanceClockDoesNotRunTasks) {
   TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
 
-  constexpr base::TimeDelta kTaskDelay = TimeDelta::FromDays(1);
+  constexpr base::TimeDelta kTaskDelay = Days(1);
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, base::DoNothing(),
                                                  kTaskDelay);
 
@@ -528,7 +528,7 @@ TEST_F(TaskEnvironmentTest, AdvanceClockSchedulesRipeDelayedTasks) {
 
   bool ran = false;
 
-  constexpr base::TimeDelta kTaskDelay = TimeDelta::FromDays(1);
+  constexpr base::TimeDelta kTaskDelay = Days(1);
   ThreadPool::PostDelayedTask(
       FROM_HERE, base::BindLambdaForTesting([&]() { ran = true; }), kTaskDelay);
 
@@ -546,8 +546,8 @@ TEST_F(TaskEnvironmentTest, FastForwardOnlyAdvancesWhenIdle) {
 
   const TimeTicks start_time = base::TimeTicks::Now();
 
-  constexpr base::TimeDelta kDelay = TimeDelta::FromSeconds(42);
-  constexpr base::TimeDelta kFastForwardUntil = TimeDelta::FromSeconds(100);
+  constexpr base::TimeDelta kDelay = Seconds(42);
+  constexpr base::TimeDelta kFastForwardUntil = Seconds(100);
   ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, BindLambdaForTesting(
                      [&]() { EXPECT_EQ(start_time, base::TimeTicks::Now()); }));
@@ -584,7 +584,7 @@ TEST_F(TaskEnvironmentTest, FastForwardZero) {
 TEST_F(TaskEnvironmentTest, NestedFastForwardBy) {
   TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
 
-  constexpr TimeDelta kDelayPerTask = TimeDelta::FromMilliseconds(1);
+  constexpr TimeDelta kDelayPerTask = Milliseconds(1);
   const TimeTicks start_time = task_environment.NowTicks();
 
   int max_nesting_level = 0;
@@ -607,7 +607,7 @@ TEST_F(TaskEnvironmentTest, NestedFastForwardBy) {
 TEST_F(TaskEnvironmentTest, NestedRunInFastForwardBy) {
   TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
 
-  constexpr TimeDelta kDelayPerTask = TimeDelta::FromMilliseconds(1);
+  constexpr TimeDelta kDelayPerTask = Milliseconds(1);
   const TimeTicks start_time = task_environment.NowTicks();
 
   std::vector<RunLoop*> run_loops;
@@ -646,7 +646,7 @@ TEST_F(TaskEnvironmentTest,
 
   // Post tasks delayd between 0 and 999 seconds.
   for (int i = 0; i < 1000; ++i) {
-    const TimeDelta delay = TimeDelta::FromSeconds(i);
+    const TimeDelta delay = Seconds(i);
     ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         BindOnce(
@@ -671,7 +671,7 @@ TEST_F(TaskEnvironmentTest,
   }
   first_reply_is_incoming.Wait();
 
-  task_environment.FastForwardBy(TimeDelta::FromSeconds(1000));
+  task_environment.FastForwardBy(Seconds(1000));
 
   // If this test flakes it's because there's an error with MockTimeDomain.
   EXPECT_EQ(count, 1000);
@@ -683,9 +683,9 @@ TEST_F(TaskEnvironmentTest,
 TEST_F(TaskEnvironmentTest, MultiThreadedMockTime) {
   TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
 
-  constexpr TimeDelta kOneMs = TimeDelta::FromMilliseconds(1);
+  constexpr TimeDelta kOneMs = Milliseconds(1);
   const TimeTicks start_time = task_environment.NowTicks();
-  const TimeTicks end_time = start_time + TimeDelta::FromMilliseconds(1'000);
+  const TimeTicks end_time = start_time + Milliseconds(1'000);
 
   // Last TimeTicks::Now() seen from either contexts.
   TimeTicks last_main_thread_ticks = start_time;
@@ -762,14 +762,12 @@ TEST_F(TaskEnvironmentTest, MultiThreadedFastForwardBy) {
   // The 1s delayed task in the pool should run but not the 5s delayed task on
   // the main thread and fast-forward by should be capped at +2s.
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE),
-      TimeDelta::FromSeconds(5));
+      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), Seconds(5));
   ThreadPool::PostDelayedTask(FROM_HERE, {}, MakeExpectedRunClosure(FROM_HERE),
-                              TimeDelta::FromSeconds(1));
-  task_environment.FastForwardBy(TimeDelta::FromSeconds(2));
+                              Seconds(1));
+  task_environment.FastForwardBy(Seconds(2));
 
-  EXPECT_EQ(task_environment.NowTicks(),
-            start_time + TimeDelta::FromSeconds(2));
+  EXPECT_EQ(task_environment.NowTicks(), start_time + Seconds(2));
 }
 
 // Verify that ThreadPoolExecutionMode::QUEUED doesn't prevent running tasks and
@@ -788,9 +786,8 @@ TEST_F(TaskEnvironmentTest, MultiThreadedMockTimeAndThreadPoolQueuedMode) {
   // ThreadPoolExecutionMode::QUEUED.
   ThreadPool::PostTask(FROM_HERE,
                        BindLambdaForTesting([&]() { count += 128; }));
-  ThreadPool::PostDelayedTask(FROM_HERE, {},
-                              BindLambdaForTesting([&]() { count += 256; }),
-                              TimeDelta::FromSeconds(5));
+  ThreadPool::PostDelayedTask(
+      FROM_HERE, {}, BindLambdaForTesting([&]() { count += 256; }), Seconds(5));
 
   // Time should auto-advance to +500s in RunLoop::Run() without having to run
   // the above forcefully QUEUED tasks.
@@ -801,7 +798,7 @@ TEST_F(TaskEnvironmentTest, MultiThreadedMockTimeAndThreadPoolQueuedMode) {
                                                    count += 2;
                                                    run_loop.Quit();
                                                  }),
-                                                 TimeDelta::FromSeconds(500));
+                                                 Seconds(500));
 
   int expected_value = 0;
   EXPECT_EQ(expected_value, count);
@@ -809,8 +806,7 @@ TEST_F(TaskEnvironmentTest, MultiThreadedMockTimeAndThreadPoolQueuedMode) {
   expected_value += 1;
   expected_value += 2;
   EXPECT_EQ(expected_value, count);
-  EXPECT_EQ(task_environment.NowTicks() - start_time,
-            TimeDelta::FromSeconds(500));
+  EXPECT_EQ(task_environment.NowTicks() - start_time, Seconds(500));
 
   // Fast-forward through all remaining tasks, this should unblock QUEUED tasks
   // in the thread pool but shouldn't need to advance time to process them.
@@ -818,18 +814,15 @@ TEST_F(TaskEnvironmentTest, MultiThreadedMockTimeAndThreadPoolQueuedMode) {
   expected_value += 128;
   expected_value += 256;
   EXPECT_EQ(expected_value, count);
-  EXPECT_EQ(task_environment.NowTicks() - start_time,
-            TimeDelta::FromSeconds(500));
+  EXPECT_EQ(task_environment.NowTicks() - start_time, Seconds(500));
 
   // Test advancing time to a QUEUED task in the future.
-  ThreadPool::PostDelayedTask(FROM_HERE,
-                              BindLambdaForTesting([&]() { count += 512; }),
-                              TimeDelta::FromSeconds(5));
-  task_environment.FastForwardBy(TimeDelta::FromSeconds(7));
+  ThreadPool::PostDelayedTask(
+      FROM_HERE, BindLambdaForTesting([&]() { count += 512; }), Seconds(5));
+  task_environment.FastForwardBy(Seconds(7));
   expected_value += 512;
   EXPECT_EQ(expected_value, count);
-  EXPECT_EQ(task_environment.NowTicks() - start_time,
-            TimeDelta::FromSeconds(507));
+  EXPECT_EQ(task_environment.NowTicks() - start_time, Seconds(507));
 
   // Confirm that QUEUED mode is still active after the above fast forwarding
   // (only the main thread task should run from RunLoop).
@@ -837,12 +830,11 @@ TEST_F(TaskEnvironmentTest, MultiThreadedMockTimeAndThreadPoolQueuedMode) {
                        BindLambdaForTesting([&]() { count += 1024; }));
   ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, BindLambdaForTesting([&]() { count += 2048; }));
-  PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
+  PlatformThread::Sleep(Milliseconds(1));
   RunLoop().RunUntilIdle();
   expected_value += 2048;
   EXPECT_EQ(expected_value, count);
-  EXPECT_EQ(task_environment.NowTicks() - start_time,
-            TimeDelta::FromSeconds(507));
+  EXPECT_EQ(task_environment.NowTicks() - start_time, Seconds(507));
 
   // Run the remaining task to avoid use-after-free on |count| from
   // ~TaskEnvironment().
@@ -988,19 +980,19 @@ TEST_F(TaskEnvironmentTest, Basic) {
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       BindOnce([](int* counter) { *counter += 256; }, Unretained(&counter)),
-      TimeDelta::FromSeconds(3));
+      Seconds(3));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       BindOnce([](int* counter) { *counter += 64; }, Unretained(&counter)),
-      TimeDelta::FromSeconds(1));
+      Seconds(1));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       BindOnce([](int* counter) { *counter += 1024; }, Unretained(&counter)),
-      TimeDelta::FromMinutes(20));
+      Minutes(20));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       BindOnce([](int* counter) { *counter += 4096; }, Unretained(&counter)),
-      TimeDelta::FromDays(20));
+      Days(20));
 
   int expected_value = 0;
   EXPECT_EQ(expected_value, counter);
@@ -1012,11 +1004,11 @@ TEST_F(TaskEnvironmentTest, Basic) {
   task_environment.RunUntilIdle();
   EXPECT_EQ(expected_value, counter);
 
-  task_environment.FastForwardBy(TimeDelta::FromSeconds(1));
+  task_environment.FastForwardBy(Seconds(1));
   expected_value += 64;
   EXPECT_EQ(expected_value, counter);
 
-  task_environment.FastForwardBy(TimeDelta::FromSeconds(5));
+  task_environment.FastForwardBy(Seconds(5));
   expected_value += 256;
   EXPECT_EQ(expected_value, counter);
 
@@ -1042,22 +1034,22 @@ TEST_F(TaskEnvironmentTest, RunLoopDriveable) {
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 256; },
                      Unretained(&counter)),
-      TimeDelta::FromSeconds(3));
+      Seconds(3));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 64; },
                      Unretained(&counter)),
-      TimeDelta::FromSeconds(1));
+      Seconds(1));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 1024; },
                      Unretained(&counter)),
-      TimeDelta::FromMinutes(20));
+      Minutes(20));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 4096; },
                      Unretained(&counter)),
-      TimeDelta::FromDays(20));
+      Days(20));
 
   int expected_value = 0;
   EXPECT_EQ(expected_value, counter);
@@ -1072,12 +1064,12 @@ TEST_F(TaskEnvironmentTest, RunLoopDriveable) {
   {
     RunLoop run_loop;
     ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TimeDelta::FromSeconds(1));
+        FROM_HERE, run_loop.QuitClosure(), Seconds(1));
     ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce([](int* counter) { *counter += 8192; },
                        Unretained(&counter)),
-        TimeDelta::FromSeconds(1));
+        Seconds(1));
 
     // The QuitClosure() should be ordered between the 64 and the 8192
     // increments and should preempt the latter.
@@ -1095,12 +1087,12 @@ TEST_F(TaskEnvironmentTest, RunLoopDriveable) {
   {
     RunLoop run_loop;
     ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitWhenIdleClosure(), TimeDelta::FromSeconds(5));
+        FROM_HERE, run_loop.QuitWhenIdleClosure(), Seconds(5));
     ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce([](int* counter) { *counter += 16384; },
                        Unretained(&counter)),
-        TimeDelta::FromSeconds(5));
+        Seconds(5));
 
     // The QuitWhenIdleClosure() shouldn't preempt equally delayed tasks and as
     // such the 16384 increment should be processed before quitting.
@@ -1121,7 +1113,7 @@ TEST_F(TaskEnvironmentTest, RunLoopDriveable) {
 
   RunLoop run_loop;
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitWhenIdleClosure(), TimeDelta::FromDays(50));
+      FROM_HERE, run_loop.QuitWhenIdleClosure(), Days(50));
 
   run_loop.Run();
   expected_value += 1024;
@@ -1136,11 +1128,10 @@ TEST_F(TaskEnvironmentTest, CancelPendingTask) {
 
   CancelableOnceClosure task1(BindOnce([]() {}));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, task1.callback(),
-                                                 TimeDelta::FromSeconds(1));
+                                                 Seconds(1));
   EXPECT_TRUE(task_environment.MainThreadIsIdle());
   EXPECT_EQ(1u, task_environment.GetPendingMainThreadTaskCount());
-  EXPECT_EQ(TimeDelta::FromSeconds(1),
-            task_environment.NextMainThreadPendingTaskDelay());
+  EXPECT_EQ(Seconds(1), task_environment.NextMainThreadPendingTaskDelay());
   EXPECT_TRUE(task_environment.MainThreadIsIdle());
   task1.Cancel();
   EXPECT_TRUE(task_environment.MainThreadIsIdle());
@@ -1149,20 +1140,20 @@ TEST_F(TaskEnvironmentTest, CancelPendingTask) {
 
   CancelableRepeatingClosure task2(BindRepeating([]() {}));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, task2.callback(),
-                                                 TimeDelta::FromSeconds(1));
+                                                 Seconds(1));
   task2.Cancel();
   EXPECT_EQ(0u, task_environment.GetPendingMainThreadTaskCount());
 
   CancelableRepeatingClosure task3(BindRepeating([]() {}));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, task3.callback(),
-                                                 TimeDelta::FromSeconds(1));
+                                                 Seconds(1));
   task3.Cancel();
   EXPECT_EQ(TimeDelta::Max(),
             task_environment.NextMainThreadPendingTaskDelay());
 
   CancelableRepeatingClosure task4(BindRepeating([]() {}));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, task4.callback(),
-                                                 TimeDelta::FromSeconds(1));
+                                                 Seconds(1));
   task4.Cancel();
   EXPECT_TRUE(task_environment.MainThreadIsIdle());
 }
@@ -1187,9 +1178,8 @@ TEST_F(TaskEnvironmentTest, NoFastForwardToCancelledTask) {
   TimeTicks start_time = task_environment.NowTicks();
   CancelableRepeatingClosure task(BindRepeating([]() {}));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, task.callback(),
-                                                 TimeDelta::FromSeconds(1));
-  EXPECT_EQ(TimeDelta::FromSeconds(1),
-            task_environment.NextMainThreadPendingTaskDelay());
+                                                 Seconds(1));
+  EXPECT_EQ(Seconds(1), task_environment.NextMainThreadPendingTaskDelay());
   task.Cancel();
   task_environment.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(start_time, task_environment.NowTicks());
@@ -1201,13 +1191,13 @@ TEST_F(TaskEnvironmentTest, NextTaskIsDelayed) {
   EXPECT_FALSE(task_environment.NextTaskIsDelayed());
   CancelableRepeatingClosure task(BindRepeating([]() {}));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, task.callback(),
-                                                 TimeDelta::FromSeconds(1));
+                                                 Seconds(1));
   EXPECT_TRUE(task_environment.NextTaskIsDelayed());
   task.Cancel();
   EXPECT_FALSE(task_environment.NextTaskIsDelayed());
 
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, BindOnce([]() {}),
-                                                 TimeDelta::FromSeconds(2));
+                                                 Seconds(2));
   EXPECT_TRUE(task_environment.NextTaskIsDelayed());
   task_environment.FastForwardUntilNoTasksRemain();
   EXPECT_FALSE(task_environment.NextTaskIsDelayed());
@@ -1233,7 +1223,7 @@ TEST_F(TaskEnvironmentTest, TimeSourceMockTimeAlsoMocksNow) {
 
   const Time start_time = Time::Now();
 
-  constexpr TimeDelta kDelay = TimeDelta::FromSeconds(10);
+  constexpr TimeDelta kDelay = Seconds(10);
   task_environment.FastForwardBy(kDelay);
   EXPECT_EQ(TimeTicks::Now(), start_ticks + kDelay);
   EXPECT_EQ(Time::Now(), start_time + kDelay);
@@ -1260,7 +1250,7 @@ TEST_F(TaskEnvironmentTest, SingleThreadMockTime) {
 
   const TimeTicks start_time = TimeTicks::Now();
 
-  constexpr TimeDelta kDelay = TimeDelta::FromSeconds(100);
+  constexpr TimeDelta kDelay = Seconds(100);
 
   int counter = 0;
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(

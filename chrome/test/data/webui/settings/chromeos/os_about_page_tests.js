@@ -6,12 +6,13 @@
 // #import {TestAboutPageBrowserProxyChromeOS} from './test_about_page_browser_proxy_chromeos.m.js';
 // #import {TestDeviceNameBrowserProxy} from './test_device_name_browser_proxy.m.js';
 // #import {BrowserChannel,UpdateStatus,Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {AboutPageBrowserProxyImpl,DeviceNameBrowserProxyImpl,LifetimeBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {AboutPageBrowserProxyImpl,DeviceNameBrowserProxyImpl,DeviceNameState,LifetimeBrowserProxyImpl, SetDeviceNameResult} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.m.js';
-// #import {eventToPromise,flushTasks,waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {eventToPromise,flushTasks,waitAfterNextRender} from 'chrome://test/test_util.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// #import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
 // clang-format on
 
 cr.define('settings_about_page', function() {
@@ -28,7 +29,7 @@ cr.define('settings_about_page', function() {
 
     setup(function() {
       lifetimeBrowserProxy = new settings.TestLifetimeBrowserProxy();
-      settings.LifetimeBrowserProxyImpl.instance_ = lifetimeBrowserProxy;
+      settings.LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
 
       aboutBrowserProxy = new TestAboutPageBrowserProxyChromeOS();
       settings.AboutPageBrowserProxyImpl.instance_ = aboutBrowserProxy;
@@ -565,6 +566,17 @@ cr.define('settings_about_page', function() {
       const {checkForUpdates} = page.$;
       assertFalse(checkForUpdates.hidden);
     });
+
+    test('Update button click moves focus', async () => {
+      await initNewPage();
+
+      const {checkForUpdates, updateStatusMessageInner} = page.$;
+      checkForUpdates.click();
+      await aboutBrowserProxy.whenCalled('requestUpdate');
+      assertEquals(
+          updateStatusMessageInner, getDeepActiveElement(),
+          'Update status message should be focused.');
+    });
   });
 
   suite('DetailedBuildInfoTest', function() {
@@ -704,18 +716,295 @@ cr.define('settings_about_page', function() {
       checkCopyBuildDetailsButton();
     });
 
-    test('DeviceName', async () => {
+    test('Deep link to change device name', async () => {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+      });
+      page = document.createElement('settings-detailed-build-info');
+      document.body.appendChild(page);
+
+      const params = new URLSearchParams;
+      params.append('settingId', '1708');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.DETAILED_BUILD_INFO, params);
+
+      Polymer.dom.flush();
+
+      const deepLinkElement = page.$$('cr-icon-button');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Change device name button should be focused for settingId=1708.');
+    });
+
+    function flushAsync() {
+      Polymer.dom.flush();
+      // Use setTimeout to wait for the next macrotask.
+      return new Promise(resolve => setTimeout(resolve));
+    }
+
+    /**
+     * Checks whether the "edit device name" button state (enabled/disabled)
+     * correctly reflects whether the user is allowed to edit the name.
+     * @param {string} testDeviceName
+     * @param {DeviceNameState} deviceNameState
+     * @return {!Promise}
+     */
+    function checkDeviceNameMetadata(testDeviceName, deviceNameState) {
+      cr.webUIListenerCallback(
+          'settings.updateDeviceNameMetadata',
+          {deviceName: testDeviceName, deviceNameState: deviceNameState});
+
+      assertEquals(page.$$('#deviceName').innerText, testDeviceName);
+
+      let canEditDeviceName = null;
+      switch (deviceNameState) {
+        case (DeviceNameState.CAN_BE_MODIFIED):
+          canEditDeviceName = true;
+          break;
+        default:
+          canEditDeviceName = false;
+      }
+
+      const canEditDeviceNameButton = page.$$('cr-icon-button');
+      assertTrue(!!canEditDeviceNameButton);
+      assertEquals(canEditDeviceName, !canEditDeviceNameButton.disabled);
+
+      flushAsync();
+      const policyIndicator = page.$$('#editHostnamePolicyIndicator');
+      if (deviceNameState === DeviceNameState.CAN_BE_MODIFIED) {
+        assertFalse(!!policyIndicator);
+      } else if (
+          deviceNameState ===
+          DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_OF_POLICIES) {
+        assertTrue(!!policyIndicator);
+        assertEquals(
+            CrPolicyIndicatorType.DEVICE_POLICY, policyIndicator.indicatorType);
+      } else if (
+          deviceNameState ===
+          DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_NOT_DEVICE_OWNER) {
+        assertTrue(!!policyIndicator);
+        assertEquals(
+            CrPolicyIndicatorType.OWNER, policyIndicator.indicatorType);
+      }
+    }
+
+    test('DeviceNameMetadata', async () => {
       loadTimeData.overrideValues({
         isHostnameSettingEnabled: true,
       });
 
-      deviceNameBrowserProxy.setDeviceName('TestDeviceName');
-
       page = document.createElement('settings-detailed-build-info');
       document.body.appendChild(page);
-      await deviceNameBrowserProxy.whenCalled('getDeviceNameMetadata');
 
-      assertEquals(page.$$('#deviceName').innerText, 'TestDeviceName');
+      await deviceNameBrowserProxy.whenCalled('notifyReadyForDeviceName');
+      checkDeviceNameMetadata(
+          'TestDeviceName1', DeviceNameState.CAN_BE_MODIFIED);
+
+      // Verify that we can still make changes to device name metadata even
+      // if notifyReadyForDeviceName() is not called again.
+      checkDeviceNameMetadata(
+          'TestDeviceName2',
+          DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_OF_POLICIES);
+      checkDeviceNameMetadata(
+          'TestDeviceName3',
+          DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_NOT_DEVICE_OWNER);
+    });
+  });
+
+  suite('EditHostnameDialogTest', function() {
+    let dialog = null;
+    let deviceNameBrowserProxy = null;
+
+    setup(function() {
+      deviceNameBrowserProxy = new TestDeviceNameBrowserProxy();
+      DeviceNameBrowserProxyImpl.instance_ = deviceNameBrowserProxy;
+      PolymerTest.clearBody();
+    });
+
+    teardown(function() {
+      dialog.remove();
+      dialog = null;
+      settings.Router.getInstance().resetRouteForTesting();
+    });
+
+    function flushAsync() {
+      Polymer.dom.flush();
+      // Use setTimeout to wait for the next macrotask.
+      return new Promise(resolve => setTimeout(resolve));
+    }
+
+    test('OpenAndCloseDialog', async () => {
+      loadTimeData.overrideValues({
+        isHostnameSettingEnabled: true,
+      });
+
+      const page = document.createElement('settings-detailed-build-info');
+      document.body.appendChild(page);
+
+      await deviceNameBrowserProxy.whenCalled('notifyReadyForDeviceName');
+      const editHostnameButton = page.$$('#editHostnameButton');
+      assertTrue(!!editHostnameButton);
+      editHostnameButton.click();
+      Polymer.dom.flush();
+
+      dialog = page.$$('edit-hostname-dialog');
+      assertTrue(!!dialog);
+      assertTrue(dialog.$.dialog.open);
+
+      dialog.$$('#cancel').click();
+      Polymer.dom.flush();
+      assertFalse(dialog.$.dialog.open);
+    });
+
+    /**
+     * @param {string} value The value of the input
+     * @param {boolean} invalid If the input is invalid or not
+     * @param {string} inputCount The length of value in string format
+     */
+    function assertInput(value, invalid, valueLength) {
+      const inputBox = dialog.$$('#deviceName');
+      const inputCount = dialog.$$('#inputCount');
+      assertTrue(!!inputBox);
+      assertTrue(!!inputCount);
+
+      assertEquals(inputBox.value, value);
+      assertEquals(inputBox.invalid, invalid);
+      assertEquals(inputCount.textContent.trim(), valueLength + '/15');
+
+      // Done button should be disabled when input is invalid and cancel button
+      // should be always enabled.
+      const doneButton = dialog.$$('#done');
+      const cancelButton = dialog.$$('#cancel');
+      assertTrue(!!doneButton);
+      assertTrue(!!cancelButton);
+      assertEquals(invalid, doneButton.disabled);
+      assertTrue(!cancelButton.disabled);
+
+      // Verify A11y labels and descriptions.
+      assertEquals(
+          inputBox.ariaLabel, dialog.i18n('aboutDeviceNameInputA11yLabel'));
+      assertEquals(
+          inputBox.ariaDescription,
+          dialog.i18n('aboutDeviceNameConstraintsA11yDescription'));
+      assertEquals(
+          doneButton.ariaLabel,
+          dialog.i18n('aboutDeviceNameDoneBtnA11yLabel', value));
+    }
+
+    test('CheckInputSanitizationAndValidity', async function() {
+      loadTimeData.overrideValues({
+        isHostnameSettingEnabled: true,
+      });
+
+      dialog = document.createElement('edit-hostname-dialog');
+      document.body.appendChild(dialog);
+      const inputBox = dialog.$$('#deviceName');
+      assertTrue(!!inputBox);
+
+      // Test empty name, which is the value on opening dialog.
+      assertInput(
+          /*value=*/ '', /*invalid=*/ true, /*valueLength=*/ '0');
+
+      // Test name with no emojis, under character limit.
+      inputBox.value = '123456789';
+      assertInput(
+          /*value=*/ '123456789', /*invalid=*/ false,
+          /*valueLength=*/ '9');
+
+      // Test name with emojis, under character limit.
+      inputBox.value = '1234🦤56789🧟';
+      assertInput(
+          /*value=*/ '123456789', /*invalid=*/ false,
+          /*valueLength=*/ '9');
+
+      // Test name with only emojis, under character limit.
+      inputBox.value = '🦤🦤🦤🦤🦤';
+      assertInput(
+          /*value=*/ '', /*invalid=*/ true, /*valueLength=*/ '0');
+
+      // Test name with no emojis, at character limit.
+      inputBox.value = '123456789012345';
+      assertInput(
+          /*value=*/ '123456789012345', /*invalid=*/ false,
+          /*valueLength=*/ '15');
+
+      // Test name with emojis, at character limit.
+      inputBox.value = '123456789012345🧟';
+      assertInput(
+          /*value=*/ '123456789012345', /*invalid=*/ false,
+          /*valueLength=*/ '15');
+
+      // Test name with only emojis, at character limit.
+      inputBox.value =
+          '🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤';
+      assertInput(
+          /*value=*/ '', /*invalid=*/ true, /*valueLength=*/ '0');
+
+      // Test name with no emojis, above character limit.
+      inputBox.value = '1234567890123456';
+      assertInput(
+          /*value=*/ '123456789012345', /*invalid=*/ true,
+          /*valueLength=*/ '15');
+
+      // Make sure input is not invalid once its value changes to a string below
+      // the character limit. (Simulates the user pressing backspace once
+      // they've reached the limit).
+      inputBox.value = '12345678901234';
+      assertInput(
+          /*value=*/ '12345678901234', /*invalid=*/ false,
+          /*valueLength=*/ '14');
+
+      // Test name with emojis, above character limit.
+      inputBox.value = '123456789012345🧟';
+      assertInput(
+          /*value=*/ '123456789012345', /*invalid=*/ false,
+          /*valueLength=*/ '15');
+
+      // Test name with only emojis, above character limit.
+      inputBox.value =
+          '🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤';
+      assertInput(
+          /*value=*/ '', /*invalid=*/ true, /*valueLength=*/ '0');
+
+      // Test invalid name because of empty space character.
+      inputBox.value = 'Device Name';
+      assertInput(
+          /*value=*/ 'Device Name', /*invalid=*/ true, /*valueLength=*/ '11');
+
+      // Test invalid name because of special characters.
+      inputBox.value = 'Device&(#@!';
+      assertInput(
+          /*value=*/ 'Device&(#@!', /*invalid=*/ true, /*valueLength=*/ '11');
+
+      // Test valid name with letters and numbers.
+      inputBox.value = 'Device123';
+      assertInput(
+          /*value=*/ 'Device123', /*invalid=*/ false, /*valueLength=*/ '9');
+
+      // Test valid name with letters and numbers and hyphens.
+      inputBox.value = '-Device1-';
+      assertInput(
+          /*value=*/ '-Device1-', /*invalid=*/ false, /*valueLength=*/ '9');
+    });
+
+    test('SetDeviceName', async () => {
+      loadTimeData.overrideValues({
+        isHostnameSettingEnabled: true,
+      });
+
+      dialog = document.createElement('edit-hostname-dialog');
+      document.body.appendChild(dialog);
+
+      deviceNameBrowserProxy.setDeviceNameResult(
+          SetDeviceNameResult.UPDATE_SUCCESSFUL);
+      dialog.$$('#deviceName').value = 'TestName';
+      dialog.$$('#done').click();
+      Polymer.dom.flush();
+
+      await deviceNameBrowserProxy.whenCalled('attemptSetDeviceName');
+      assertEquals(deviceNameBrowserProxy.getDeviceName(), 'TestName');
+      assertFalse(dialog.$.dialog.open);
     });
   });
 

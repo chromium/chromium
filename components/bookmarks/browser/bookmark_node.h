@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
@@ -55,8 +54,14 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   static const char kMobileBookmarksNodeGuid[];
   static const char kManagedNodeGuid[];
 
+  // A bug in sync caused some problematic GUIDs to be produced.
+  static const char kBannedGuidDueToPastSyncBug[];
+
   // Creates a new node with |id|, |guid| and |url|.
   BookmarkNode(int64_t id, const base::GUID& guid, const GURL& url);
+
+  BookmarkNode(const BookmarkNode&) = delete;
+  BookmarkNode& operator=(const BookmarkNode&) = delete;
 
   ~BookmarkNode() override;
 
@@ -213,8 +218,6 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   std::unique_ptr<MetaInfoMap> meta_info_map_;
 
   const bool is_permanent_node_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkNode);
 };
 
 // BookmarkPermanentNode -------------------------------------------------------
@@ -225,6 +228,9 @@ class BookmarkPermanentNode : public BookmarkNode {
   // Permanent nodes are well-known, it's not allowed to create arbitrary ones.
   static std::unique_ptr<BookmarkPermanentNode> CreateManagedBookmarks(
       int64_t id);
+
+  BookmarkPermanentNode(const BookmarkPermanentNode&) = delete;
+  BookmarkPermanentNode& operator=(const BookmarkPermanentNode&) = delete;
 
   ~BookmarkPermanentNode() override;
 
@@ -254,8 +260,6 @@ class BookmarkPermanentNode : public BookmarkNode {
                         bool visible_when_empty);
 
   const bool visible_when_empty_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkPermanentNode);
 };
 
 // If you are looking for gMock printing via PrintTo(), please check

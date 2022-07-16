@@ -26,6 +26,9 @@ class WebState;
 // TODO(crbug.com/782269): Remove this class.
 class GlobalWebStateObserver {
  public:
+  GlobalWebStateObserver(const GlobalWebStateObserver&) = delete;
+  GlobalWebStateObserver& operator=(const GlobalWebStateObserver&) = delete;
+
   // Called when |web_state| has started loading a page.
   // DEPRECATED. Use WebStateObserver's |DidStartLoading| instead.
   // TODO(crbug.com/782269): Remove this method.
@@ -57,9 +60,6 @@ class GlobalWebStateObserver {
  protected:
   GlobalWebStateObserver();
   virtual ~GlobalWebStateObserver();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GlobalWebStateObserver);
 };
 
 }  // namespace web

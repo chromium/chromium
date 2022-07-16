@@ -17,14 +17,15 @@ namespace ClipboardHistoryUtil {
 
 namespace {
 
-constexpr std::array<ui::ClipboardInternalFormat, 7> kAllFormats = {
+constexpr std::array<ui::ClipboardInternalFormat, 8> kAllFormats = {
     ui::ClipboardInternalFormat::kPng,
     ui::ClipboardInternalFormat::kHtml,
     ui::ClipboardInternalFormat::kText,
     ui::ClipboardInternalFormat::kRtf,
     ui::ClipboardInternalFormat::kBookmark,
     ui::ClipboardInternalFormat::kCustom,
-    ui::ClipboardInternalFormat::kWeb};
+    ui::ClipboardInternalFormat::kWeb,
+    ui::ClipboardInternalFormat::kFilenames};
 
 // Helpers ---------------------------------------------------------------------
 
@@ -50,6 +51,7 @@ TEST_F(ClipboardHistoryUtilTest, CalculateMainFormat) {
       ui::ClipboardInternalFormat::kHtml,
       ui::ClipboardInternalFormat::kText,
       ui::ClipboardInternalFormat::kRtf,
+      ui::ClipboardInternalFormat::kFilenames,
       ui::ClipboardInternalFormat::kBookmark,
       ui::ClipboardInternalFormat::kWeb,
       ui::ClipboardInternalFormat::kCustom,
@@ -83,8 +85,15 @@ TEST_F(ClipboardHistoryUtilTest, ContainsFileSystemData) {
   EXPECT_FALSE(ContainsFileSystemData(builder.Build().data()));
 
   SetAllFormats(&builder);
+  builder.ClearFormat(ui::ClipboardInternalFormat::kFilenames);
   EXPECT_FALSE(ContainsFileSystemData(builder.Build().data()));
 
+  // Outside the Files app, file system sources are written to filenames.
+  builder.SetFormat(ui::ClipboardInternalFormat::kFilenames);
+  EXPECT_TRUE(ContainsFileSystemData(builder.Build().data()));
+  builder.ClearFormat(ui::ClipboardInternalFormat::kFilenames);
+
+  // Within the Files app, file system sources are written to custom data.
   builder.SetFileSystemData({u"/path/to/My%20File.txt"});
   EXPECT_TRUE(ContainsFileSystemData(builder.Build().data()));
 }
@@ -95,26 +104,62 @@ TEST_F(ClipboardHistoryUtilTest, GetFileSystemSources) {
   EXPECT_TRUE(GetFileSystemSources(builder.Build().data()).empty());
 
   SetAllFormats(&builder);
+  builder.ClearFormat(ui::ClipboardInternalFormat::kFilenames);
   EXPECT_TRUE(GetFileSystemSources(builder.Build().data()).empty());
 
+  // Outside the Files app, file system sources are written to filenames.
+  builder.SetFilenames({ui::FileInfo(base::FilePath("/path/to/My%20File.txt"),
+                                     base::FilePath("My%20File.txt"))});
+  EXPECT_EQ(GetFileSystemSources(builder.Build().data()),
+            u"/path/to/My%20File.txt");
+  builder.ClearFilenames();
+
+  // Within the Files app, file system sources are written to custom data.
   builder.SetFileSystemData({u"/path/to/My%20File.txt"});
   EXPECT_EQ(GetFileSystemSources(builder.Build().data()),
             u"/path/to/My%20File.txt");
 }
 
 TEST_F(ClipboardHistoryUtilTest, GetSplitFileSystemData) {
-  const std::u16string file_name1(u"File1.txt"), file_name2(u"File2.txt");
+  const std::string file_name1("File1.txt"), file_name2("File2.txt");
+  const std::u16string file_name1_16(base::UTF8ToUTF16(file_name1)),
+      file_name2_16(base::UTF8ToUTF16(file_name2));
+
   ClipboardHistoryItemBuilder builder;
-  builder.SetFileSystemData({file_name1, file_name2});
   std::u16string sources;
   std::vector<base::StringPiece16> source_list;
+
+  // Outside the Files app, file system sources are written to filenames.
+  builder.SetFilenames(
+      {ui::FileInfo(base::FilePath(file_name1), base::FilePath(file_name1)),
+       ui::FileInfo(base::FilePath(file_name2), base::FilePath(file_name2))});
   GetSplitFileSystemData(builder.Build().data(), &source_list, &sources);
-  EXPECT_EQ(file_name1, source_list[0]);
-  EXPECT_EQ(file_name2, source_list[1]);
+  EXPECT_EQ(file_name1_16, source_list[0]);
+  EXPECT_EQ(file_name2_16, source_list[1]);
+  builder.ClearFilenames();
+
+  sources.clear();
+  source_list.clear();
+
+  // Within the Files app, file system sources are written to custom data.
+  builder.SetFileSystemData({file_name1_16, file_name2_16});
+  GetSplitFileSystemData(builder.Build().data(), &source_list, &sources);
+  EXPECT_EQ(file_name1_16, source_list[0]);
+  EXPECT_EQ(file_name2_16, source_list[1]);
 }
 
 TEST_F(ClipboardHistoryUtilTest, GetFilesCount) {
   ClipboardHistoryItemBuilder builder;
+
+  // Outside the Files app, file system sources are written to filenames.
+  builder.SetFilenames({ui::FileInfo(base::FilePath("/path/to/My%20File1.txt"),
+                                     base::FilePath("My%20File1.txt")),
+                        ui::FileInfo(base::FilePath("/path/to/My%20File2.txt"),
+                                     base::FilePath("My%20File2.txt"))});
+  EXPECT_EQ(2u, GetCountOfCopiedFiles(builder.Build().data()));
+  builder.ClearFilenames();
+
+  // Within the Files app, file system sources are written to custom data.
   builder.SetFileSystemData(
       {u"/path/to/My%20File1.txt", u"/path/to/My%20File2.txt"});
   EXPECT_EQ(2u, GetCountOfCopiedFiles(builder.Build().data()));

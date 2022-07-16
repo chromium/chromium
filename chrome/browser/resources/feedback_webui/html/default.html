@@ -16,6 +16,9 @@
     <textarea id="description-text" aria-labelledby="free-form-text"
       aria-required="true">
     </textarea>
+    <div id="questionnaire-notification" aria-live="polite"
+      class="off-screen">
+    </div>
     <p id="description-empty-error" class="description-empty-notification"
        aria-hidden="true" hidden>$i18n{noDescription}</p>
     <div>
@@ -90,7 +93,8 @@
           class="white-button">$i18n{cancel}
       </button>
       <button id="send-report-button" type="submit"
-          class="blue-button">$i18n{sendReport}
+          class="blue-button" aria-describedby="questionnaire-notification">
+        $i18n{sendReport}
       </button>
     </div>
   </div>

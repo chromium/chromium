@@ -2,13 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/common/device.h"
-
-#include <ostream>
-
-#include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_key_pair.h"
-#include "base/strings/string_number_conversions.h"
 
 namespace ash {
 namespace quick_pair {
@@ -17,6 +11,8 @@ namespace fast_pair_encryption {
 KeyPair::KeyPair(std::array<uint8_t, kPrivateKeyByteSize> private_key,
                  std::array<uint8_t, kPublicKeyByteSize> public_key)
     : private_key(std::move(private_key)), public_key(std::move(public_key)) {}
+
+KeyPair::KeyPair(const KeyPair&) = default;
 
 KeyPair::KeyPair(KeyPair&&) = default;
 

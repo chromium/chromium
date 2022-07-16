@@ -24,7 +24,7 @@ class WebContentsAttachedClass1
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsAttachedClass1)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsAttachedClass1);
 
 class WebContentsAttachedClass2
     : public WebContentsUserData<WebContentsAttachedClass2> {
@@ -37,7 +37,7 @@ class WebContentsAttachedClass2
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsAttachedClass2)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsAttachedClass2);
 
 typedef RenderViewHostTestHarness WebContentsUserDataTest;
 
@@ -149,7 +149,7 @@ class AttachedClassWithParams
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AttachedClassWithParams)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AttachedClassWithParams);
 
 TEST_F(WebContentsUserDataTest, CreateWithParameters) {
   ASSERT_EQ(nullptr, AttachedClassWithParams::FromWebContents(web_contents()));

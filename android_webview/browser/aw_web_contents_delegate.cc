@@ -19,9 +19,9 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "content/public/browser/file_select_listener.h"
@@ -92,8 +92,7 @@ void AwWebContentsDelegate::RendererResponsive(
 
 content::JavaScriptDialogManager*
 AwWebContentsDelegate::GetJavaScriptDialogManager(WebContents* source) {
-  static base::NoDestructor<AwJavaScriptDialogManager>
-      javascript_dialog_manager;
+  static base::NoDestructor<AwJavaScriptDialogManager> javascript_dialog_manager;
   return javascript_dialog_manager.get();
 }
 

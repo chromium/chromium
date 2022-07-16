@@ -33,6 +33,11 @@ class NewTabPageThirdPartyHandler
       mojo::PendingRemote<new_tab_page_third_party::mojom::Page> pending_page,
       Profile* profile,
       content::WebContents* web_contents);
+
+  NewTabPageThirdPartyHandler(const NewTabPageThirdPartyHandler&) = delete;
+  NewTabPageThirdPartyHandler& operator=(const NewTabPageThirdPartyHandler&) =
+      delete;
+
   ~NewTabPageThirdPartyHandler() override;
 
   // new_tab_page_third_party::mojom::PageHandler:
@@ -56,8 +61,6 @@ class NewTabPageThirdPartyHandler
   mojo::Receiver<new_tab_page_third_party::mojom::PageHandler> receiver_;
 
   base::WeakPtrFactory<NewTabPageThirdPartyHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NewTabPageThirdPartyHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_THIRD_PARTY_NEW_TAB_PAGE_THIRD_PARTY_HANDLER_H_

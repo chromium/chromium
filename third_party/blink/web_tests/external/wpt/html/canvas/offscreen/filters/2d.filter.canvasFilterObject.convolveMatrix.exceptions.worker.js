@@ -16,18 +16,17 @@ t.step(function() {
 var offscreenCanvas = new OffscreenCanvas(100, 50);
 var ctx = offscreenCanvas.getContext('2d');
 
-assert_throws_js(TypeError, function() { new CanvasFilter({convolveMatrix: {}}); });
-assert_throws_js(TypeError, function() { new CanvasFilter({convolveMatrix: null}); });
-assert_throws_js(TypeError, function() { new CanvasFilter({convolveMatrix: {divisor: 2}}); });
-assert_throws_js(TypeError, function() { new CanvasFilter({convolveMatrix: {kernelMatrix: null}}); });
-assert_throws_js(TypeError, function() { new CanvasFilter({convolveMatrix: {kernelMatrix: 1}}); });
-assert_throws_js(TypeError, function() { new CanvasFilter({convolveMatrix: {kernelMatrix: [[1, 0], [0]]}}); });
-assert_throws_js(TypeError, function() { new CanvasFilter({convolveMatrix: {kernelMatrix: [[1, "a"], [0]]}}); });
-assert_throws_js(TypeError, function() { new CanvasFilter({convolveMatrix: {kernelMatrix: [[1, 0], 0]}}); });
-assert_throws_js(TypeError, function() { new CanvasFilter({convolveMatrix: {kernelMatrix: [[1, 0], [0, Infinity]]}}); });
-assert_throws_js(TypeError, function() { new CanvasFilter({convolveMatrix: {kernelMatrix: []}}); });
+assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatrix"}); });
+assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatrix", divisor: 2}); });
+assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatrix", kernelMatrix: null}); });
+assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatrix", kernelMatrix: 1}); });
+assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatrix", kernelMatrix: [[1, 0], [0]]}); });
+assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatrix", kernelMatrix: [[1, "a"], [0]]}); });
+assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatrix", kernelMatrix: [[1, 0], 0]}); });
+assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatrix", kernelMatrix: [[1, 0], [0, Infinity]]}); });
+assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatrix", kernelMatrix: []}); });
 // This should not throw an error
-ctx.filter = new CanvasFilter({convolveMatrix: {kernelMatrix: [[]]}});
+ctx.filter = new CanvasFilter({filter: "convolveMatrix", kernelMatrix: [[]]});
 t.done();
 
 });

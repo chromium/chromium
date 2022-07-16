@@ -10,6 +10,9 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -36,7 +39,7 @@ class RendererStartupHelper;
 // extensions for a BrowserContext. It uses the ExtensionRegistry to track
 // extension states. Other classes may query the ExtensionRegistry directly,
 // but eventually only ExtensionRegistrar will be able to make changes to it.
-class ExtensionRegistrar {
+class ExtensionRegistrar : public ProcessManagerObserver {
  public:
   // How to surface an extension load error, e.g. showing an error dialog. The
   // actual behavior is up to the embedder.
@@ -49,6 +52,10 @@ class ExtensionRegistrar {
   class Delegate {
    public:
     Delegate() = default;
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate() = default;
 
     // Called before |extension| is added. |old_extension| is the extension
@@ -79,15 +86,16 @@ class ExtensionRegistrar {
 
     // Returns true if the extension should be blocked.
     virtual bool ShouldBlockExtension(const Extension* extension) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // The provided Delegate should outlive this object.
   ExtensionRegistrar(content::BrowserContext* browser_context,
                      Delegate* delegate);
-  virtual ~ExtensionRegistrar();
+
+  ExtensionRegistrar(const ExtensionRegistrar&) = delete;
+  ExtensionRegistrar& operator=(const ExtensionRegistrar&) = delete;
+
+  ~ExtensionRegistrar() override;
 
   // Adds the extension to the ExtensionRegistry. The extension will be added to
   // the enabled, disabled, blocklisted or blocked set. If the extension is
@@ -169,6 +177,9 @@ class ExtensionRegistrar {
   // necessary.
   void MaybeSpinUpLazyBackgroundPage(const Extension* extension);
 
+  // ProcessManagerObserver overrides
+  void OnServiceWorkerRegistered(const WorkerId& worker_id) override;
+
   content::BrowserContext* const browser_context_;
 
   // Delegate provided in the constructor. Should outlive this object.
@@ -183,7 +194,8 @@ class ExtensionRegistrar {
   // Map of DevToolsAgentHost instances that are detached,
   // waiting for an extension to be reloaded.
   using OrphanedDevTools =
-      std::map<std::string, scoped_refptr<content::DevToolsAgentHost>>;
+      std::map<std::string,
+               std::vector<scoped_refptr<content::DevToolsAgentHost>>>;
   OrphanedDevTools orphaned_dev_tools_;
 
   // Map unloaded extensions' ids to their paths. When a temporarily loaded
@@ -200,9 +212,9 @@ class ExtensionRegistrar {
   // reload.
   std::set<base::FilePath> failed_to_reload_unpacked_extensions_;
 
+  base::ScopedObservation<ProcessManager, ProcessManagerObserver>
+      process_manager_observation_{this};
   base::WeakPtrFactory<ExtensionRegistrar> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionRegistrar);
 };
 
 }  // namespace extensions

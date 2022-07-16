@@ -34,6 +34,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) U2fSignOperation
   U2fSignOperation(FidoDevice* device,
                    const CtapGetAssertionRequest& request,
                    DeviceResponseCallback callback);
+
+  U2fSignOperation(const U2fSignOperation&) = delete;
+  U2fSignOperation& operator=(const U2fSignOperation&) = delete;
+
   ~U2fSignOperation() override;
 
   // DeviceOperation:
@@ -57,8 +61,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) U2fSignOperation
   ApplicationParameterType app_param_type_ = ApplicationParameterType::kPrimary;
   bool canceled_ = false;
   base::WeakPtrFactory<U2fSignOperation> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(U2fSignOperation);
 };
 
 }  // namespace device

@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/components/smbfs/smbfs_host.h"
+#include "ash/components/smbfs/smbfs_mounter.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
@@ -18,8 +20,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/smb_url.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/components/smbfs/smbfs_host.h"
-#include "chromeos/components/smbfs/smbfs_mounter.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/disks/mount_point.h"
 #include "content/public/test/browser_task_environment.h"
@@ -339,7 +339,7 @@ TEST_F(SmbFsShareTest, DisallowCredentialsDialogAfterTimeout) {
   share.AllowCredentialsRequest();
   // Fast-forward time for the allow state to timeout. The timeout is 5 seconds,
   // so moving forward by 6 will ensure the timeout runs.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(6));
+  task_environment_.FastForwardBy(base::Seconds(6));
 
   base::RunLoop run_loop;
   delegate->RequestCredentials(base::BindLambdaForTesting(

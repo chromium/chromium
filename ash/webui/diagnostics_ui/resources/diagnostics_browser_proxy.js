@@ -10,10 +10,19 @@
 
 import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
+import {NavigationView} from './diagnostics_types.js';
+import {getNavigationViewForPageId} from './diagnostics_utils.js';
+
 /** @interface */
 export class DiagnosticsBrowserProxy {
   /** Initialize SessionLogHandler. */
   initialize() {}
+
+  /**
+   * Reports navigation events to message handler.
+   * @param {string} currentView Label matching ID for view lookup
+   */
+  recordNavigation(currentView) {}
 
   /**
    * Saves the session log to the selected location.
@@ -32,9 +41,33 @@ export class DiagnosticsBrowserProxy {
 
 /** @implements {DiagnosticsBrowserProxy} */
 export class DiagnosticsBrowserProxyImpl {
+  constructor() {
+    /**
+     * View which 'recordNavigation' is leaving.
+     * @private
+     * @type {?NavigationView}
+     */
+    this.previousView_ = null;
+  }
+
   /** @override */
   initialize() {
     chrome.send('initialize');
+  }
+
+  /** @override */
+  recordNavigation(currentView) {
+    // First time the function is called will be when the UI is initializing
+    // which does not trigger a message as navigation has not occurred.
+    if (this.previousView_ === null) {
+      this.previousView_ = getNavigationViewForPageId(currentView);
+      return;
+    }
+
+    /* @type {NavigationView} */
+    const currentViewId = getNavigationViewForPageId(currentView);
+    chrome.send('recordNavigation', [this.previousView_, currentViewId]);
+    this.previousView_ = currentViewId;
   }
 
   /** @override */

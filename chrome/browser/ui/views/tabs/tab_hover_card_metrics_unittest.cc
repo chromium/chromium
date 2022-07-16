@@ -52,12 +52,9 @@ const TabHoverCardMetrics::TabHandle kTabHandle3 =
 constexpr int kShortDelayMS = 200;
 constexpr int kMediumDelayMS = 500;
 constexpr int kLongDelayMS = 1000;
-constexpr base::TimeDelta kShortDelay =
-    base::TimeDelta::FromMilliseconds(kShortDelayMS);
-constexpr base::TimeDelta kMediumDelay =
-    base::TimeDelta::FromMilliseconds(kMediumDelayMS);
-constexpr base::TimeDelta kLongDelay =
-    base::TimeDelta::FromMilliseconds(kLongDelayMS);
+constexpr base::TimeDelta kShortDelay = base::Milliseconds(kShortDelayMS);
+constexpr base::TimeDelta kMediumDelay = base::Milliseconds(kMediumDelayMS);
+constexpr base::TimeDelta kLongDelay = base::Milliseconds(kLongDelayMS);
 
 std::string GetFullHistogramName(const char* prefix, size_t tab_count) {
   return TabHoverCardMetrics::GetBucketHistogramName(

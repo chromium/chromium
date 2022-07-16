@@ -144,8 +144,8 @@ class PathBuilderPkitsTestDelegate {
     base::Time verify_time;
     ASSERT_TRUE(der::GeneralizedTimeToTime(info.time, &verify_time));
     CrlCheckingPathBuilderDelegate path_builder_delegate(
-        crl_ders, verify_time, /*max_age=*/base::TimeDelta::FromDays(365 * 2),
-        1024, SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
+        crl_ders, verify_time, /*max_age=*/base::Days(365 * 2), 1024,
+        SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
 
     base::StringPiece test_number = info.test_number;
     if (test_number == "4.4.19" || test_number == "4.5.3" ||

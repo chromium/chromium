@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/cros_speech_recognition_service.h"
@@ -18,7 +19,6 @@
 #include "media/audio/audio_system.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/bind_to_current_loop.h"
-#include "media/base/media_switches.h"
 
 namespace {
 
@@ -61,11 +61,10 @@ media::AudioParameters GetAudioParameters(
 bool OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
     const std::string& language) {
   // kUseSodaForLiveCaption is used to track SODA availability on-device.
-  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
+  if (!base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition))
     return false;
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  return soda_installer->IsSodaInstalled() &&
-         soda_installer->IsLanguageInstalled(language);
+  return soda_installer->IsSodaInstalled(speech::GetLanguageCode(language));
 }
 
 OnDeviceSpeechRecognizer::OnDeviceSpeechRecognizer(

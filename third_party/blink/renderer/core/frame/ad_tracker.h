@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_AD_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_AD_TRACKER_H_
 
+#include <stdint.h>
+
 #include "base/feature_list.h"
 #include "third_party/blink/renderer/core/probe/async_task_id.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -119,7 +121,7 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // an ad script. Each time the script or function finishes, it pops the stack.
   Vector<bool> stack_frame_is_ad_;
 
-  uint32_t num_ads_in_stack_ = 0;
+  int num_ads_in_stack_ = 0;
 
   // The set of ad scripts detected outside of ad-frame contexts. Scripts are
   // identified by name (i.e. resource URL). Scripts with no name (i.e. inline
@@ -127,7 +129,7 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   HeapHashMap<WeakMember<ExecutionContext>, HashSet<String>> known_ad_scripts_;
 
   // The number of ad-related async tasks currently running in the stack.
-  uint32_t running_ad_async_tasks_ = 0;
+  int running_ad_async_tasks_ = 0;
 
   // True if the AdTracker looks not only at the current V8 stack for ad script
   // but also at the previous asynchronous stacks that caused this current

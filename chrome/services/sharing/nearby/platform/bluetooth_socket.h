@@ -5,13 +5,13 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLUETOOTH_SOCKET_H_
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLUETOOTH_SOCKET_H_
 
+#include "base/memory/scoped_refptr.h"
+#include "chrome/services/sharing/nearby/platform/bidirectional_stream.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/src/cpp/platform/api/bluetooth_classic.h"
-#include "third_party/nearby/src/cpp/platform/base/input_stream.h"
-#include "third_party/nearby/src/cpp/platform/base/output_stream.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -39,14 +39,6 @@ namespace chrome {
 //
 // api::BluetoothSocket is a synchronous interface, so this implementation
 // consumes the synchronous signatures of bluetooth::mojom::Socket methods.
-//
-// api::BluetoothSocket's subclasses are also synchronous interfaces, but the
-// Mojo DataPipes they consume only provide asynchronous interfaces. This is
-// reconciled by blocking on the caller thread when waiting (via a
-// mojo::SimpleWatcher) for the DataPipes to become readable or writable (this
-// is expected by the callers of api::BluetoothSocket's subclasses). Mojo
-// DataPipe operations are handled on a separate task runner (see
-// |task_runner_|) so that blocking on the calling thread will not deadlock.
 class BluetoothSocket : public api::BluetoothSocket {
  public:
   BluetoothSocket(bluetooth::mojom::DeviceInfoPtr device,
@@ -69,20 +61,6 @@ class BluetoothSocket : public api::BluetoothSocket {
   api::BluetoothDevice* GetRemoteDevice() override;
 
  private:
-  void InitializeStreams(mojo::ScopedDataPipeConsumerHandle receive_stream,
-                         mojo::ScopedDataPipeProducerHandle send_stream);
-
-  // These methods must be run on |task_runner_|, because the
-  // mojo::SimpleWatcher members of |input_stream_| and |output_stream_| expect
-  // to be created on the same sequence they are later run on. See
-  // |task_runner_|.
-  void CreateInputStream(mojo::ScopedDataPipeConsumerHandle receive_stream,
-                         base::OnceClosure callback);
-  void DestroyInputStream(base::OnceClosure callback);
-  void CreateOutputStream(mojo::ScopedDataPipeProducerHandle send_stream,
-                          base::OnceClosure callback);
-  void DestroyOutputStream(base::OnceClosure callback);
-
   // If this BluetoothSocket is created by connecting to a discovered device, a
   // reference to that device will be provided to set |remote_device_ref_|, and
   // |remote_device_| will be left unset.
@@ -93,19 +71,9 @@ class BluetoothSocket : public api::BluetoothSocket {
   absl::optional<chrome::BluetoothDevice> remote_device_;
   api::BluetoothDevice& remote_device_ref_;
 
-  // The public methods which are overridden by BluetoothSocket's subclasses
-  // InputStreamImpl and OutputStreamImpl are expected to block the caller
-  // thread. While that thread is blocked, |task_runner_| handles read and write
-  // operations on |input_stream_| and |output_stream_|. Because of that,
-  // |input_stream_| (and its mojo::SimpleWatcher) and |output_stream_| (and
-  // its mojo::SimpleWatcher), must be created and destroyed on |task_runner_|
-  // (see respective helper Create* and Destroy* methods).
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  // These properties must be created on |task_runner_|. See |task_runner_|.
   mojo::SharedRemote<bluetooth::mojom::Socket> socket_;
-  std::unique_ptr<InputStream> input_stream_;
-  std::unique_ptr<OutputStream> output_stream_;
+  BidirectionalStream bidirectional_stream_;
 };
 
 }  // namespace chrome

@@ -5,6 +5,7 @@ include_rules = [
   "+base",
   "+chromeos/dbus",
   "+components/prefs",
+  "+device/bluetooth",
   "+media",
   "+mojo/public/cpp/bindings",
   "+services/media_session/public",

@@ -7,7 +7,6 @@
 
 #include "components/download/internal/background_service/file_monitor.h"
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace download {
@@ -17,14 +16,18 @@ namespace download {
 class EmptyFileMonitor : public FileMonitor {
  public:
   EmptyFileMonitor();
+
+  EmptyFileMonitor(const EmptyFileMonitor&) = delete;
+  EmptyFileMonitor& operator=(const EmptyFileMonitor&) = delete;
+
   ~EmptyFileMonitor() override;
 
  private:
   // FileMonitor implementation.
   void Initialize(InitCallback callback) override;
-  void DeleteUnknownFiles(
-      const Model::EntryList& known_entries,
-      const std::vector<DriverEntry>& known_driver_entries) override;
+  void DeleteUnknownFiles(const Model::EntryList& known_entries,
+                          const std::vector<DriverEntry>& known_driver_entries,
+                          base::OnceClosure completion_callback) override;
   void CleanupFilesForCompletedEntries(
       const Model::EntryList& entries,
       base::OnceClosure completion_callback) override;
@@ -33,8 +36,6 @@ class EmptyFileMonitor : public FileMonitor {
   void HardRecover(InitCallback callback) override;
 
   base::WeakPtrFactory<EmptyFileMonitor> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EmptyFileMonitor);
 };
 
 }  // namespace download

@@ -66,6 +66,7 @@
 <translation id="133801305381959373">Det finns inga fler redigerbara textfält</translation>
 <translation id="1342835525016946179">artikel</translation>
 <translation id="1346059596910821859">Tips</translation>
+<translation id="1354356357730355833">kopiera</translation>
 <translation id="135978014023467274">Du har uppdaterat till ChromeVox 63.</translation>
 <translation id="1360699455582016846">Klicka på objektet under markörhämtaren <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1377925789329510816">Det här är den sista rubriken. Tryck på söktangenten + H för fortsätta runt tillbaka till den första rubriken eller på söktangenten + Skift + H för att fortsätta till den andra rubriken på den här sidan.</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">uppdatera</translation>
 <translation id="2675533876313964202">Chartreuse</translation>
 <translation id="2684412629217766642">Stäng självstudiekursen för ChromeVox</translation>
+<translation id="2692503699962701720">Ändra tonhöjd när elementtyper och formaterad text läses upp.</translation>
 <translation id="2697408785920771974">autoslutför på raden</translation>
 <translation id="2697786971245905543">Kandidat för textkonvertering</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{vänsterparentes}other{# vänsterparenteser}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">stående</translation>
 <translation id="3286390186030710347">Skjutreglage</translation>
 <translation id="3300348286427369683">Stöd för Rich Text. ChromeVox har nu stöd för fält med Rich Text, till exempel hoppkommandon, dirigering av punktskriftsmarkören, urval med mera.</translation>
+<translation id="3300733168898541351">ångra</translation>
 <translation id="3307886118343381874">Flytta till slutet av tabellen</translation>
 <translation id="3312997241656799641">Nästa länk som har besökts</translation>
 <translation id="3313245066383501820">ChromeVox-specialtangenten</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">Visa formulärlistan</translation>
 <translation id="3414400929511680526">Isblå</translation>
 <translation id="3418936350470374046">Det finns inga celler nedanför den här</translation>
+<translation id="3419269701801640163">klistra in</translation>
 <translation id="3435494200763325275">Mer om tabbnavigering</translation>
 <translation id="344800400831402066">Perubrun</translation>
 <translation id="3457000393508828486">Delvis nedtryckt</translation>
@@ -425,6 +429,7 @@
 <translation id="3813387282697781382">Ljust korallröd</translation>
 <translation id="3816633764618089385">Nästa media</translation>
 <translation id="3840823741487267909">Förkortning</translation>
+<translation id="3841319830220785495">Naturlig standardröst</translation>
 <translation id="385383972552776628">Öppna alternativsidan</translation>
 <translation id="3856075812838139784">Skrivskyddat</translation>
 <translation id="3857141338659865495">Mellanturkos</translation>
@@ -451,7 +456,9 @@
 <translation id="4006140876663370126">bild</translation>
 <translation id="4021716437419160885">Rulla ned</translation>
 <translation id="4035381225449278841">Vår</translation>
+<translation id="4038098586530338813">gör om</translation>
 <translation id="4047216625641135770">Markering</translation>
+<translation id="4047910800766704982">Du kan använda en naturlig, människoliknande röst när enheten är online. Texten skickas till Google för bearbetning. Det här går att stänga av när som helst i Inställningar.</translation>
 <translation id="4053520724192563562">Limegrön</translation>
 <translation id="4054936709456751127">status</translation>
 <translation id="4058278702844053247">En sida som håller på att läsas in</translation>
@@ -605,6 +612,7 @@
 <translation id="5170206230005240598">Textning med punktskrift har aktiverats</translation>
 <translation id="5183440668879371625">Punktskrift på föregående rad</translation>
 <translation id="5189244881767082992">Rad</translation>
+<translation id="5234747236692380506">skriv <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">Majssilkebrun</translation>
 <translation id="5263344797180442561">rubr2</translation>
 <translation id="528468243742722775">Avsluta</translation>
@@ -687,6 +695,7 @@
 <translation id="5748623122140342504">Föregående rubrik på nivå 5</translation>
 <translation id="5760594853119905566">Bilaga</translation>
 <translation id="5761219715606611783">Bra gjort! Nu kan du grunderna i att använda ChromeVox med tryckinmatning. Du kan gå igenom självstudierna på nytt eller avsluta dem med knapparna nedan.</translation>
+<translation id="5776001898637896684">Text till tal-tillägget Google Enhanced Network</translation>
 <translation id="5805940204952508776">Tryck med två fingrar</translation>
 <translation id="5819072574982403430">Trädobjekt</translation>
 <translation id="5822819874379903994">Mörkt turkos</translation>
@@ -731,6 +740,7 @@
 <translation id="6034000775414344507">Ljusgrå</translation>
 <translation id="6036135911048686884">Tryck och dra för att utforska</translation>
 <translation id="6037602951055904232">Panorera framåt</translation>
+<translation id="604240746417122825">grammatikfel</translation>
 <translation id="6082768461603900813">Grundläggande navigering</translation>
 <translation id="609281021724813947">Det finns inget föregående skjutreglage</translation>
 <translation id="6100239002225743044">Flytta uppåt en rad</translation>
@@ -787,6 +797,7 @@
 <translation id="6544923685317771506">Snäckskalsvit</translation>
 <translation id="6551185905438378412">Elfenbensvit</translation>
 <translation id="6561818612645211875">Flytta till början av den aktuella raden</translation>
+<translation id="6563126228219321999">Inget giltigt objekt</translation>
 <translation id="6579990219486187401">Ljusrosa</translation>
 <translation id="6583174818554398774">Flytta till nästa på detaljnivå</translation>
 <translation id="6584162722998608255">Nu ska vi gå igenom hur du flyttar dig på skärmen. Du kan fortsätta till nästa objekt genom att svepa från vänster till höger med ett finger. Testa att fortsätta till nästa steg nu.</translation>
@@ -817,6 +828,7 @@
 <translation id="6815255864998354418">Gulbrun</translation>
 <translation id="6816066673340002913">Blekt gullrisgul</translation>
 <translation id="6826226459053491773">Svep nedåt med två fingrar</translation>
+<translation id="6826669432862053130">Nästa giltiga objekt</translation>
 <translation id="6833103209700200188">Sidfot</translation>
 <translation id="6837853484260746864">Välj en röst:</translation>
 <translation id="6858047746862060282">Prolog</translation>
@@ -830,6 +842,7 @@
 <translation id="6910211073230771657">Borttagen</translation>
 <translation id="6910969481785184048">På, av och stopp</translation>
 <translation id="6919104639734799681">Visa tabellistan</translation>
+<translation id="692135145298539227">radera</translation>
 <translation id="6945221475159498467">Välj</translation>
 <translation id="6949846980769640811">Mellanmörk akvamarin</translation>
 <translation id="6951482098621102657">Det finns inga fler rubriker på nivå 5</translation>
@@ -909,7 +922,7 @@
 <translation id="743783356331413498">Exempel</translation>
 <translation id="7439060726180460871">Katalog</translation>
 <translation id="744163271241493234">lösenordsfält</translation>
-<translation id="7484805699335881122">Ändra tonhöjd när elementtyper och text i fetstil, inom parentes, skriven med versaler, citeras eller raderas läses upp.</translation>
+<translation id="7465123027577412805">Vill du använda en naturlig röst?</translation>
 <translation id="7491962110804786152">tabb</translation>
 <translation id="7492497529767769458">Navigera till nästa avsnitt, till exempel statusfältet eller översikten.</translation>
 <translation id="7505149250476994901">Säg ”stort” före bokstaven</translation>
@@ -979,6 +992,7 @@
 <translation id="7968340748835037139">Mörkgrön</translation>
 <translation id="7972507042926081808">Chokladbrun</translation>
 <translation id="7974390230414479278">Menyalternativ</translation>
+<translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Röst <ph name="COUNT" /></translation>
 <translation id="8004507136466386272">Ord</translation>
 <translation id="8004512796067398576">Öka</translation>
 <translation id="8007540374018858731">rubr3</translation>
@@ -1004,8 +1018,10 @@
 <translation id="8126386426083591964">Det finns ingen föregående rubrik på nivå 5</translation>
 <translation id="812886159861361726">Nedladdningen stoppades <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Det finns inga celler ovanför den här</translation>
+<translation id="8132248161074464367">Föregående giltiga objekt</translation>
 <translation id="8138880386467279117">Trycka</translation>
 <translation id="8146613869421949343">I nästa steg får du lära dig om Sök-tangenten. Sök-tangenten används tillsammans med andra tangenter för olika ChromeVox-kommandon. Sök-tangenten sitter precis ovanför den vänstra Skift-tangenten. Tryck på Sök-tangenten för att fortsätta.</translation>
+<translation id="8158033275290782295">markera alla</translation>
 <translation id="816818801578874684">Det här är den första rubriken. Tryck på Sök + H för att fortsätta till nästa rubrik.</translation>
 <translation id="8173092779156526980">Svep åt vänster med fyra fingrar</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{understreck}other{# understreck}}</translation>
@@ -1121,6 +1137,7 @@
 <translation id="9077305471618729969">Ljust havsgrön</translation>
 <translation id="9080299285199342830">Hoppa till slutet</translation>
 <translation id="9089864840575085222">eko för inmatning</translation>
+<translation id="9099429023611373837">klipp ut</translation>
 <translation id="9108370397979208512">matte</translation>
 <translation id="9108589040018540527">rullningslist</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{procenttecken}other{# procenttecken}}</translation>

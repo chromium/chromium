@@ -55,10 +55,13 @@ class Transaction {
   // volatile is not enough for that, but it should be a good hint.
   Transaction(volatile disk_cache::LruData* data, disk_cache::Addr addr,
               Operation op, int list);
+
+  Transaction(const Transaction&) = delete;
+  Transaction& operator=(const Transaction&) = delete;
+
   ~Transaction();
  private:
   volatile disk_cache::LruData* data_;
-  DISALLOW_COPY_AND_ASSIGN(Transaction);
 };
 
 Transaction::Transaction(volatile disk_cache::LruData* data,
@@ -838,8 +841,7 @@ int Rankings::CheckListSection(List list, Addr end1, Addr end2, bool forward,
     (*num_items)++;
 
     if (next_addr == prev_addr) {
-      Addr last = forward ? tails_[list] : heads_[list];
-      if (next_addr == last)
+      if (next_addr == (forward ? tails_[list] : heads_[list]))
         return ERR_NO_ERROR;
       return ERR_INVALID_TAIL;
     }

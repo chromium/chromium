@@ -10,8 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace base {
 namespace i18n {
 class UTF16CharIterator;
@@ -31,6 +29,10 @@ class TermBreakIterator {
  public:
   // Note that |word| must out live this iterator.
   explicit TermBreakIterator(const std::u16string& word);
+
+  TermBreakIterator(const TermBreakIterator&) = delete;
+  TermBreakIterator& operator=(const TermBreakIterator&) = delete;
+
   ~TermBreakIterator();
 
   // Advance to the next term. Returns false if at the end of the word.
@@ -64,8 +66,6 @@ class TermBreakIterator {
 
   std::unique_ptr<base::i18n::UTF16CharIterator> iter_;
   State state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TermBreakIterator);
 };
 
 }  // namespace string_matching

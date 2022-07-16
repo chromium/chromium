@@ -14,9 +14,14 @@
 class TabLoaderTester {
  public:
   using TabVector = TabLoader::TabVector;
+  using TabSet = TabLoader::TabSet;
 
   TabLoaderTester();
   explicit TabLoaderTester(TabLoader* tab_loader);
+
+  TabLoaderTester(const TabLoaderTester&) = delete;
+  TabLoaderTester& operator=(const TabLoaderTester&) = delete;
+
   ~TabLoaderTester();
 
   void SetTabLoader(TabLoader*);
@@ -42,6 +47,7 @@ class TabLoaderTester {
   base::TimeTicks force_load_time() const;
   base::OneShotTimer& force_load_timer();
   const TabVector& tabs_to_load() const;
+  const TabSet& tabs_load_initiated() const;
   size_t scheduled_to_load_count() const;
   static TabLoader* shared_tab_loader();
 
@@ -55,8 +61,6 @@ class TabLoaderTester {
 
  private:
   TabLoader* tab_loader_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TabLoaderTester);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_TAB_LOADER_TESTER_H_

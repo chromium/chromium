@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_PLATFORM_X11_X11_EVENT_WATCHER_FDWATCH_H_
 #define UI_EVENTS_PLATFORM_X11_X11_EVENT_WATCHER_FDWATCH_H_
 
-#include "base/macros.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 
@@ -17,6 +16,10 @@ class X11EventWatcherFdWatch : public X11EventWatcher,
                                public base::MessagePumpForUI::FdWatcher {
  public:
   explicit X11EventWatcherFdWatch(X11EventSource* source);
+
+  X11EventWatcherFdWatch(const X11EventWatcherFdWatch&) = delete;
+  X11EventWatcherFdWatch& operator=(const X11EventWatcherFdWatch&) = delete;
+
   ~X11EventWatcherFdWatch() override;
 
   // X11EventWatcher:
@@ -32,8 +35,6 @@ class X11EventWatcherFdWatch : public X11EventWatcher,
 
   base::MessagePumpForUI::FdWatchController watcher_controller_;
   bool started_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(X11EventWatcherFdWatch);
 };
 
 }  // namespace ui

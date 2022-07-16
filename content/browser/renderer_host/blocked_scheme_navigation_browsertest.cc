@@ -6,7 +6,6 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
@@ -167,6 +166,11 @@ class BlockedSchemeNavigationBrowserTest
 #else
   BlockedSchemeNavigationBrowserTest() {}
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
+
+  BlockedSchemeNavigationBrowserTest(
+      const BlockedSchemeNavigationBrowserTest&) = delete;
+  BlockedSchemeNavigationBrowserTest& operator=(
+      const BlockedSchemeNavigationBrowserTest&) = delete;
 
  protected:
   void SetUpOnMainThread() override {
@@ -560,8 +564,6 @@ class BlockedSchemeNavigationBrowserTest
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
   GURL data_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockedSchemeNavigationBrowserTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -629,12 +631,16 @@ class DataUrlNavigationBrowserTestWithFeatureFlag
     scoped_feature_list_.InitAndEnableFeature(
         features::kAllowContentInitiatedDataUrlNavigations);
   }
+
+  DataUrlNavigationBrowserTestWithFeatureFlag(
+      const DataUrlNavigationBrowserTestWithFeatureFlag&) = delete;
+  DataUrlNavigationBrowserTestWithFeatureFlag& operator=(
+      const DataUrlNavigationBrowserTestWithFeatureFlag&) = delete;
+
   ~DataUrlNavigationBrowserTestWithFeatureFlag() override {}
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataUrlNavigationBrowserTestWithFeatureFlag);
 };
 
 // Tests that a content initiated navigation to a data URL is allowed if
@@ -851,7 +857,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
 
 // Test window.open to a data URL with binary mimetype.
 IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
-                       DataUrl_OctetStream_WindowOpen) {
+                       MAYBE_DataUrl_OctetStream_WindowOpen) {
   Navigate(embedded_test_server()->GetURL(
       base::StringPrintf("/data_url_navigations.html")));
   // Navigations to data URLs with unknown mime types should end up as

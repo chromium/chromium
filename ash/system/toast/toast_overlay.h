@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
+#include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/events/event.h"
@@ -21,6 +22,7 @@ class Rect;
 }
 
 namespace views {
+class LabelButton;
 class Widget;
 }
 
@@ -28,7 +30,6 @@ namespace ash {
 
 class ToastManagerImplTest;
 class ToastOverlayView;
-class ToastOverlayButton;
 
 class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
                                 public KeyboardControllerObserver {
@@ -46,12 +47,18 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // |dismiss_text| is the message for the button to dismiss the toast message.
   // If |dismiss_text| is null, no dismiss button will be shown. If
   // |dismiss_text| has a value but the string is empty, the default text is
-  // used. If |is_managed| is true, a managed icon will be added to the toast.
+  // used. |dismiss_callback| will be called when the button is pressed.
+  // If |is_managed| is true, a managed icon will be added to the toast.
   ToastOverlay(Delegate* delegate,
                const std::u16string& text,
                absl::optional<std::u16string> dismiss_text,
                bool show_on_lock_screen,
-               bool is_managed);
+               bool is_managed,
+               base::RepeatingClosure dismiss_callback);
+
+  ToastOverlay(const ToastOverlay&) = delete;
+  ToastOverlay& operator=(const ToastOverlay&) = delete;
+
   ~ToastOverlay() override;
 
   // Shows or hides the overlay.
@@ -68,6 +75,9 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // Returns the current bounds of the overlay, which is based on visibility.
   gfx::Rect CalculateOverlayBounds();
 
+  // Executed the callback and closes the toast.
+  void OnButtonClicked();
+
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsScheduled() override;
   void OnImplicitAnimationsCompleted() override;
@@ -76,8 +86,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   void OnKeyboardOccludedBoundsChanged(const gfx::Rect& new_bounds) override;
 
   views::Widget* widget_for_testing();
-  ToastOverlayButton* dismiss_button_for_testing();
-  void ClickDismissButtonForTesting(const ui::Event& event);
+  views::LabelButton* dismiss_button_for_testing();
 
   Delegate* const delegate_;
   const std::u16string text_;
@@ -85,10 +94,9 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   std::unique_ptr<views::Widget> overlay_widget_;
   std::unique_ptr<ToastOverlayView> overlay_view_;
   std::unique_ptr<ToastDisplayObserver> display_observer_;
+  base::RepeatingClosure dismiss_callback_;
 
   gfx::Size widget_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ToastOverlay);
 };
 
 }  // namespace ash

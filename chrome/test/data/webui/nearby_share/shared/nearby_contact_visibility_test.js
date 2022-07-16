@@ -10,7 +10,7 @@
 // #import {FakeContactManager} from './fake_nearby_contact_manager.m.js';
 // #import {FakeNearbyShareSettings} from './fake_nearby_share_settings.m.js';
 // #import {assertEquals, assertTrue, assertFalse} from '../../chai_assert.js';
-// #import {waitAfterNextRender, isChildVisible} from '../../test_util.m.js';
+// #import {waitAfterNextRender, isChildVisible} from '../../test_util.js';
 // clang-format on
 
 suite('nearby-contact-visibility', () => {
@@ -29,6 +29,9 @@ suite('nearby-contact-visibility', () => {
 
     visibilityElement.settings = {
       enabled: false,
+      fastInitiationNotificationState:
+          nearbyShare.mojom.FastInitiationNotificationState.kEnabled,
+      isFastInitiationHardwareSupported: true,
       deviceName: 'deviceName',
       dataUsage: nearbyShare.mojom.DataUsage.kOnline,
       visibility: nearbyShare.mojom.Visibility.kUnknown,

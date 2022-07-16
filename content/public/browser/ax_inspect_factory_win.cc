@@ -18,7 +18,7 @@ namespace content {
 // static
 std::unique_ptr<ui::AXTreeFormatter>
 AXInspectFactory::CreatePlatformFormatter() {
-  return CreateFormatter(kWinIA2);
+  return CreateFormatter(ui::AXApiType::kWinIA2);
 }
 
 // static
@@ -26,19 +26,20 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreatePlatformRecorder(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector) {
-  return AXInspectFactory::CreateRecorder(kWinIA2, manager, pid, selector);
+  return AXInspectFactory::CreateRecorder(ui::AXApiType::kWinIA2, manager, pid,
+                                          selector);
 }
 
 // static
 std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
-    AXInspectFactory::Type type) {
+    ui::AXApiType::Type type) {
   switch (type) {
-    case kBlink:
+    case ui::AXApiType::kBlink:
       return std::make_unique<AccessibilityTreeFormatterBlink>();
-    case kWinIA2:
+    case ui::AXApiType::kWinIA2:
       base::win::AssertComInitialized();
       return std::make_unique<AccessibilityTreeFormatterWin>();
-    case kWinUIA:
+    case ui::AXApiType::kWinUIA:
       base::win::AssertComInitialized();
       return std::make_unique<AccessibilityTreeFormatterUia>();
     default:
@@ -49,7 +50,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
 
 // static
 std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
-    AXInspectFactory::Type type,
+    ui::AXApiType::Type type,
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector) {
@@ -59,10 +60,10 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
   }
 
   switch (type) {
-    case kWinIA2:
+    case ui::AXApiType::kWinIA2:
       return std::make_unique<AccessibilityEventRecorderWin>(manager, pid,
                                                              selector);
-    case kWinUIA:
+    case ui::AXApiType::kWinUIA:
       return std::make_unique<AccessibilityEventRecorderUia>(manager, pid,
                                                              selector.pattern);
     default:

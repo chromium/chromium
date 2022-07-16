@@ -20,6 +20,10 @@ class API_AVAILABLE(ios(14.0)) ScreenTimeHistoryDeleter
       public history::HistoryServiceObserver {
  public:
   explicit ScreenTimeHistoryDeleter(history::HistoryService* history_service);
+
+  ScreenTimeHistoryDeleter(const ScreenTimeHistoryDeleter&) = delete;
+  ScreenTimeHistoryDeleter& operator=(const ScreenTimeHistoryDeleter&) = delete;
+
   ~ScreenTimeHistoryDeleter() override;
 
   // KeyedService:
@@ -36,8 +40,6 @@ class API_AVAILABLE(ios(14.0)) ScreenTimeHistoryDeleter
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenTimeHistoryDeleter);
 };
 
 #endif  // IOS_CHROME_BROWSER_SCREEN_TIME_SCREEN_TIME_HISTORY_DELETER_H_

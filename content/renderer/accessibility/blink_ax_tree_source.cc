@@ -70,16 +70,6 @@ namespace {
 const int kMinImageAnnotationWidth = 16;
 const int kMinImageAnnotationHeight = 16;
 
-void AddIntListAttributeFromWebObjects(ax::mojom::IntListAttribute attr,
-                                       const WebVector<WebAXObject>& objects,
-                                       ui::AXNodeData* dst) {
-  std::vector<int32_t> ids;
-  for (size_t i = 0; i < objects.size(); i++)
-    ids.push_back(objects[i].AxID());
-  if (!ids.empty())
-    dst->AddIntListAttribute(attr, ids);
-}
-
 #if DCHECK_IS_ON()
 WebAXObject ParentObjectUnignored(WebAXObject child) {
   WebAXObject parent = child.ParentObject();
@@ -411,11 +401,6 @@ void BlinkAXTreeSource::GetChildren(
     parent.LoadInlineTextBoxes();
   }
 
-  bool is_iframe = false;
-  WebNode node = parent.GetNode();
-  if (!node.IsNull() && node.IsElementNode())
-    is_iframe = node.To<WebElement>().HasHTMLTagName("iframe");
-
   for (unsigned i = 0; i < parent.ChildCount(); i++) {
     WebAXObject child = parent.ChildAt(i);
 
@@ -519,7 +504,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
                ui::ToString(dst->role), "id", dst->id);
 
   if (accessibility_mode_.has_mode(ui::AXMode::kPDF)) {
-    SerializeNameAndDescriptionAttributes(src, dst);
     // Return early. None of the following attributes are needed for PDFs.
     return;
   }
@@ -533,27 +517,11 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   // verbalizations can be made if they actually receive focus.
   if (src.AccessibilityIsIgnored() &&
       !dst->HasState(ax::mojom::State::kFocusable)) {
-    // The name is important for exposing the selection around ignored nodes.
-    // TODO(accessibility) Remove this and still pass this content_browsertest:
-    // All/DumpAccessibilityTreeTest.AccessibilityIgnoredSelection/blink
-    if (src.Role() == ax::mojom::Role::kStaticText)
-      SerializeNameAndDescriptionAttributes(src, dst);
     return;
   }
 
-  SerializeNameAndDescriptionAttributes(src, dst);
-
   if (accessibility_mode_.has_mode(ui::AXMode::kScreenReader)) {
-    if (src.IsInLiveRegion())
-      SerializeLiveRegionAttributes(src, dst);
     SerializeOtherScreenReaderAttributes(src, dst);
-  }
-
-  WebNode node = src.GetNode();
-  bool is_iframe = false;
-  if (!node.IsNull() && node.IsElementNode()) {
-    WebElement element = node.To<WebElement>();
-    is_iframe = element.HasHTMLTagName("iframe");
   }
 
   if (dst->id == image_data_node_id_) {
@@ -579,160 +547,9 @@ void BlinkAXTreeSource::SerializeBoundingBoxAttributes(
   }
 }
 
-void BlinkAXTreeSource::SerializeNameAndDescriptionAttributes(
-    WebAXObject src,
-    ui::AXNodeData* dst) const {
-  ax::mojom::NameFrom name_from;
-  blink::WebVector<WebAXObject> name_objects;
-  blink::WebString web_name = src.GetName(name_from, name_objects);
-  if ((!web_name.IsEmpty() && !web_name.IsNull()) ||
-      name_from == ax::mojom::NameFrom::kAttributeExplicitlyEmpty) {
-    int max_length = dst->role == ax::mojom::Role::kStaticText
-                         ? kMaxStaticTextLength
-                         : kMaxStringAttributeLength;
-    TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kName,
-                                  web_name.Utf8(), max_length);
-    dst->SetNameFrom(name_from);
-    AddIntListAttributeFromWebObjects(
-        ax::mojom::IntListAttribute::kLabelledbyIds, name_objects, dst);
-  }
-
-  ax::mojom::DescriptionFrom description_from;
-  blink::WebVector<WebAXObject> description_objects;
-  blink::WebString web_description =
-      src.Description(name_from, description_from, description_objects);
-  if (!web_description.IsEmpty()) {
-    TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kDescription,
-                                  web_description.Utf8());
-    dst->SetDescriptionFrom(description_from);
-    AddIntListAttributeFromWebObjects(
-        ax::mojom::IntListAttribute::kDescribedbyIds, description_objects, dst);
-  }
-
-  blink::WebString web_title = src.Title(name_from);
-  if (!web_title.IsEmpty()) {
-    TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kTooltip,
-                                  web_title.Utf8());
-  }
-
-  if (accessibility_mode_.has_mode(ui::AXMode::kScreenReader)) {
-    blink::WebString web_placeholder = src.Placeholder(name_from);
-    if (!web_placeholder.IsEmpty())
-      TruncateAndAddStringAttribute(dst,
-                                    ax::mojom::StringAttribute::kPlaceholder,
-                                    web_placeholder.Utf8());
-  }
-}
-
-void BlinkAXTreeSource::SerializeInlineTextBoxAttributes(
-    WebAXObject src,
-    ui::AXNodeData* dst) const {
-  DCHECK_EQ(ax::mojom::Role::kInlineTextBox, dst->role);
-
-  WebVector<int> src_character_offsets;
-  src.CharacterOffsets(src_character_offsets);
-  dst->AddIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets,
-                           src_character_offsets.ReleaseVector());
-
-  WebVector<int> src_word_starts;
-  WebVector<int> src_word_ends;
-  src.GetWordBoundaries(src_word_starts, src_word_ends);
-  dst->AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
-                           src_word_starts.ReleaseVector());
-  dst->AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
-                           src_word_ends.ReleaseVector());
-}
-
-void BlinkAXTreeSource::SerializeLiveRegionAttributes(
-    WebAXObject src,
-    ui::AXNodeData* dst) const {
-  DCHECK(src.IsInLiveRegion());
-
-  dst->AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic,
-                        src.LiveRegionAtomic());
-  if (!src.LiveRegionStatus().IsEmpty()) {
-    TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kLiveStatus,
-                                  src.LiveRegionStatus().Utf8());
-  }
-  TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kLiveRelevant,
-                                src.LiveRegionRelevant().Utf8());
-  // If we are not at the root of an atomic live region.
-  if (src.ContainerLiveRegionAtomic() && !src.LiveRegionRoot().IsDetached() &&
-      !src.LiveRegionAtomic()) {
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kMemberOfId,
-                         src.LiveRegionRoot().AxID());
-  }
-  dst->AddBoolAttribute(ax::mojom::BoolAttribute::kContainerLiveAtomic,
-                        src.ContainerLiveRegionAtomic());
-  dst->AddBoolAttribute(ax::mojom::BoolAttribute::kContainerLiveBusy,
-                        src.ContainerLiveRegionBusy());
-  TruncateAndAddStringAttribute(
-      dst, ax::mojom::StringAttribute::kContainerLiveStatus,
-      src.ContainerLiveRegionStatus().Utf8());
-  TruncateAndAddStringAttribute(
-      dst, ax::mojom::StringAttribute::kContainerLiveRelevant,
-      src.ContainerLiveRegionRelevant().Utf8());
-}
-
 void BlinkAXTreeSource::SerializeOtherScreenReaderAttributes(
     WebAXObject src,
     ui::AXNodeData* dst) const {
-  if (dst->role == ax::mojom::Role::kColorWell)
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kColorValue,
-                         src.ColorValue());
-
-  if (dst->role == ax::mojom::Role::kLink) {
-    WebAXObject target = src.InPageLinkTarget();
-    if (!target.IsNull()) {
-      int32_t target_id = target.AxID();
-      dst->AddIntAttribute(ax::mojom::IntAttribute::kInPageLinkTargetId,
-                           target_id);
-    }
-  }
-
-  if (dst->role == ax::mojom::Role::kRadioButton) {
-    AddIntListAttributeFromWebObjects(
-        ax::mojom::IntListAttribute::kRadioGroupIds, src.RadioButtonsInGroup(),
-        dst);
-  }
-
-  if (src.AriaCurrentState() != ax::mojom::AriaCurrentState::kNone) {
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState,
-                         static_cast<int32_t>(src.AriaCurrentState()));
-  }
-
-  if (src.InvalidState() != ax::mojom::InvalidState::kNone)
-    dst->SetInvalidState(src.InvalidState());
-  if (src.InvalidState() == ax::mojom::InvalidState::kOther &&
-      src.AriaInvalidValue().length()) {
-    TruncateAndAddStringAttribute(dst,
-                                  ax::mojom::StringAttribute::kAriaInvalidValue,
-                                  src.AriaInvalidValue().Utf8());
-  }
-
-  if (src.CheckedState() != ax::mojom::CheckedState::kNone) {
-    dst->SetCheckedState(src.CheckedState());
-  }
-
-  if (dst->role == ax::mojom::Role::kInlineTextBox) {
-    SerializeInlineTextBoxAttributes(src, dst);
-  }
-
-  if (src.AccessKey().length()) {
-    TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kAccessKey,
-                                  src.AccessKey().Utf8());
-  }
-
-  if (src.AutoComplete().length()) {
-    TruncateAndAddStringAttribute(dst,
-                                  ax::mojom::StringAttribute::kAutoComplete,
-                                  src.AutoComplete().Utf8());
-  }
-
-  if (src.Action() != ax::mojom::DefaultActionVerb::kNone) {
-    dst->SetDefaultActionVerb(src.Action());
-  }
-
   blink::WebString display_style = src.ComputedStyleDisplay();
   if (!display_style.IsEmpty()) {
     TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kDisplay,
@@ -746,66 +563,9 @@ void BlinkAXTreeSource::SerializeOtherScreenReaderAttributes(
                                   src.KeyboardShortcut().Utf8());
   }
 
-  if (!src.NextOnLine().IsDetached()) {
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
-                         src.NextOnLine().AxID());
-  }
-
-  if (!src.PreviousOnLine().IsDetached()) {
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
-                         src.PreviousOnLine().AxID());
-  }
-
   if (!src.AriaActiveDescendant().IsDetached()) {
     dst->AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
                          src.AriaActiveDescendant().AxID());
-  }
-
-  if (!src.ErrorMessage().IsDetached()) {
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kErrormessageId,
-                         src.ErrorMessage().AxID());
-  }
-
-  if (ui::SupportsHierarchicalLevel(dst->role) && src.HierarchicalLevel()) {
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
-                         src.HierarchicalLevel());
-  }
-
-  if (src.CanvasHasFallbackContent())
-    dst->AddBoolAttribute(ax::mojom::BoolAttribute::kCanvasHasFallback, true);
-
-  if (dst->role == ax::mojom::Role::kProgressIndicator ||
-      dst->role == ax::mojom::Role::kMeter ||
-      dst->role == ax::mojom::Role::kScrollBar ||
-      dst->role == ax::mojom::Role::kSlider ||
-      dst->role == ax::mojom::Role::kSpinButton ||
-      (dst->role == ax::mojom::Role::kSplitter &&
-       dst->HasState(ax::mojom::State::kFocusable))) {
-    float value;
-    if (src.ValueForRange(&value))
-      dst->AddFloatAttribute(ax::mojom::FloatAttribute::kValueForRange, value);
-
-    float max_value;
-    if (src.MaxValueForRange(&max_value)) {
-      dst->AddFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange,
-                             max_value);
-    }
-
-    float min_value;
-    if (src.MinValueForRange(&min_value)) {
-      dst->AddFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange,
-                             min_value);
-    }
-
-    float step_value;
-    if (src.StepValueForRange(&step_value)) {
-      dst->AddFloatAttribute(ax::mojom::FloatAttribute::kStepValueForRange,
-                             step_value);
-    }
-  }
-
-  if (ui::IsDialog(dst->role)) {
-    dst->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, src.IsModal());
   }
 
   if (ui::IsImage(dst->role))
@@ -828,15 +588,6 @@ void BlinkAXTreeSource::SerializeOtherScreenReaderAttributes(
     if (element.HasHTMLTagName("input") && element.HasAttribute("type")) {
       TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kInputType,
                                     element.GetAttribute("type").Utf8());
-    }
-  }
-
-  // aria-dropeffect is deprecated in WAI-ARIA 1.1.
-  WebVector<ax::mojom::Dropeffect> src_dropeffects;
-  src.Dropeffects(src_dropeffects);
-  if (!src_dropeffects.empty()) {
-    for (auto&& dropeffect : src_dropeffects) {
-      dst->AddDropeffect(dropeffect);
     }
   }
 }
@@ -881,9 +632,6 @@ void BlinkAXTreeSource::TruncateAndAddStringAttribute(
 
 void BlinkAXTreeSource::AddImageAnnotations(blink::WebAXObject& src,
                                             ui::AXNodeData* dst) const {
-  if (!base::FeatureList::IsEnabled(features::kExperimentalAccessibilityLabels))
-    return;
-
   // Reject ignored objects
   if (src.AccessibilityIsIgnored()) {
     return;

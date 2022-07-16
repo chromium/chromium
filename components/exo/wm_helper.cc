@@ -37,6 +37,19 @@ WMHelper::~WMHelper() {
   g_instance = nullptr;
 }
 
+void WMHelper::AddExoWindowObserver(ExoWindowObserver* observer) {
+  exo_window_observers_.AddObserver(observer);
+}
+
+void WMHelper::RemoveExoWindowObserver(ExoWindowObserver* observer) {
+  exo_window_observers_.RemoveObserver(observer);
+}
+
+void WMHelper::NotifyExoWindowCreated(aura::Window* window) {
+  for (auto& obs : exo_window_observers_)
+    obs.OnExoWindowCreated(window);
+}
+
 // static
 WMHelper* WMHelper::GetInstance() {
   DCHECK(g_instance);

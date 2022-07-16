@@ -13,12 +13,25 @@ namespace ash {
 
 OcclusionTrackerPauser::OcclusionTrackerPauser() = default;
 
-OcclusionTrackerPauser::~OcclusionTrackerPauser() = default;
+OcclusionTrackerPauser::~OcclusionTrackerPauser() {
+  DCHECK(!observations_.IsObservingAnySource());
+}
 
-void OcclusionTrackerPauser::PauseUntilAnimationsEnd(
-    const base::TimeDelta& extra_pause_duration) {
+void OcclusionTrackerPauser::PauseUntilAnimationsEnd(base::TimeDelta timeout) {
   for (auto* root : Shell::GetAllRootWindows())
-    Pause(root->GetHost()->compositor(), extra_pause_duration);
+    Pause(root->GetHost()->compositor());
+
+  if (!scoped_pause_) {
+    scoped_pause_ =
+        std::make_unique<aura::WindowOcclusionTracker::ScopedPause>();
+  }
+
+  timer_.Stop();
+  if (!timeout.is_zero()) {
+    timer_.Start(FROM_HERE, timeout,
+                 base::BindOnce(&OcclusionTrackerPauser::Timeout,
+                                base::Unretained(this)));
+  }
 }
 
 void OcclusionTrackerPauser::OnLastAnimationEnded(ui::Compositor* compositor) {
@@ -30,44 +43,31 @@ void OcclusionTrackerPauser::OnCompositingShuttingDown(
   OnFinish(compositor);
 }
 
-void OcclusionTrackerPauser::Pause(
-    ui::Compositor* compositor,
-    const base::TimeDelta& extra_pause_duration) {
-  timer_.Stop();
-
-  if (extra_pause_duration_ < extra_pause_duration)
-    extra_pause_duration_ = extra_pause_duration;
-
+void OcclusionTrackerPauser::Pause(ui::Compositor* compositor) {
   if (!observations_.IsObservingSource(compositor))
     observations_.AddObservation(compositor);
-
-  if (!scoped_pause_) {
-    scoped_pause_ =
-        std::make_unique<aura::WindowOcclusionTracker::ScopedPause>();
-  }
 }
 
 void OcclusionTrackerPauser::OnFinish(ui::Compositor* compositor) {
   if (!observations_.IsObservingSource(compositor))
     return;
+
   observations_.RemoveObservation(compositor);
 
   if (observations_.IsObservingAnySource())
     return;
 
-  if (extra_pause_duration_.is_zero()) {
-    Unpause();
-  } else {
-    timer_.Start(FROM_HERE, extra_pause_duration_,
-                 base::BindOnce(&OcclusionTrackerPauser::Unpause,
-                                base::Unretained(this)));
-    extra_pause_duration_ = base::TimeDelta();
-  }
+  DCHECK(scoped_pause_);
+  timer_.Stop();
+  scoped_pause_.reset();
 }
 
-void OcclusionTrackerPauser::Unpause() {
+void OcclusionTrackerPauser::Timeout() {
   DCHECK(scoped_pause_);
+  LOG(WARNING) << "Unpausing because animations didn't start and end in time";
+
   scoped_pause_.reset();
+  observations_.RemoveAllObservations();
 }
 
 }  // namespace ash

@@ -4,17 +4,19 @@
 
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 
+#include <string.h>
+
 #include <memory>
 #include <string>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
@@ -27,7 +29,7 @@ namespace {
 const char kEventSeparator[] = "\n";
 
 // Minimum time between breadcrumb writes to disk.
-constexpr auto kMinDelayBetweenWrites = base::TimeDelta::FromMilliseconds(250);
+constexpr auto kMinDelayBetweenWrites = base::Milliseconds(250);
 
 // Writes |events| to |file_path| at |position|.
 void DoInsertEventsIntoMemoryMappedFile(const base::FilePath& file_path,
@@ -42,7 +44,7 @@ void DoInsertEventsIntoMemoryMappedFile(const base::FilePath& file_path,
 
   if (file_valid) {
     char* data = reinterpret_cast<char*>(file->data());
-    std::strcpy(&data[position], events.data());
+    strcpy(&data[position], events.data());
   }
 }
 
@@ -58,7 +60,7 @@ void DoWriteEventsToFile(const base::FilePath& file_path,
 
   if (file_valid) {
     char* data = reinterpret_cast<char*>(file.data());
-    std::strcpy(data, events.data());
+    strcpy(data, events.data());
   }
 }
 

@@ -15,10 +15,8 @@
 #include <unistd.h>
 
 #include <memory>
-#include <vector>
 
 #include "base/check_op.h"
-#include "base/clang_profiling_buildflags.h"
 #include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -53,10 +51,6 @@
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-
-#if BUILDFLAG(CLANG_PROFILING)
-#include "base/test/clang_profiling.h"
-#endif
 
 #if defined(USE_SYMBOLIZE)
 #include "base/third_party/symbolize/symbolize.h"
@@ -297,7 +291,7 @@ void DebugBreak() {
 #else
     volatile int go = 0;
     while (!go)
-      PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
+      PlatformThread::Sleep(Milliseconds(100));
 #endif
   }
 }
@@ -309,11 +303,7 @@ void DebugBreak() {
 #error "Don't know how to debug break on this architecture/OS"
 #endif
 
-void BreakDebugger() {
-#if BUILDFLAG(CLANG_PROFILING)
-  WriteClangProfilingProfile();
-#endif
-
+void BreakDebuggerAsyncSafe() {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 

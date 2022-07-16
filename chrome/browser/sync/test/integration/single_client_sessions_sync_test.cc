@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/base64.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -38,8 +37,11 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/time.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/test/fake_server/sessions_hierarchy.h"
 #include "components/sync_sessions/session_store.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -230,6 +232,11 @@ class FaviconForPageUrlAvailableChecker : public StatusChangeChecker {
 class SingleClientSessionsSyncTest : public SyncTest {
  public:
   SingleClientSessionsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+
+  SingleClientSessionsSyncTest(const SingleClientSessionsSyncTest&) = delete;
+  SingleClientSessionsSyncTest& operator=(const SingleClientSessionsSyncTest&) =
+      delete;
+
   ~SingleClientSessionsSyncTest() override {}
 
   void ExpectNavigationChain(const std::vector<GURL>& urls) {
@@ -281,9 +288,6 @@ class SingleClientSessionsSyncTest : public SyncTest {
         accounts, run_loop.QuitClosure());
     run_loop.Run();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientSessionsSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
@@ -646,8 +650,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   const SessionID kWindowId = SessionID::FromSerializedValue(5);
   const SessionID kTabId1 = SessionID::FromSerializedValue(1);
   const SessionID kTabId2 = SessionID::FromSerializedValue(2);
-  const base::Time kLastModifiedTime =
-      base::Time::Now() - base::TimeDelta::FromDays(100);
+  const base::Time kLastModifiedTime = base::Time::Now() - base::Days(100);
 
   SessionSyncTestHelper helper;
 
@@ -700,8 +703,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   const SessionID kWindowId = SessionID::FromSerializedValue(5);
   const SessionID kTabId1 = SessionID::FromSerializedValue(1);
   const SessionID kTabId2 = SessionID::FromSerializedValue(2);
-  const base::Time kLastModifiedTime =
-      base::Time::Now() - base::TimeDelta::FromDays(100);
+  const base::Time kLastModifiedTime = base::Time::Now() - base::Days(100);
 
   SessionSyncTestHelper helper;
 
@@ -844,7 +846,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CookieJarMismatch) {
   // something is already running or scheduled to run on the sync thread. We
   // want to block here until we know the cookie jar stats have been updated.
   UpdateCookieJarAccountsAndWait(
-      {GetClient(0)->service()->GetAuthenticatedAccountInfo().account_id},
+      {GetClient(0)->service()->GetAccountInfo().account_id},
       /*expected_cookie_jar_mismatch=*/false);
 
   // Trigger a sync and wait for it.
@@ -884,6 +886,12 @@ class SingleClientSessionsSyncTestWithFaviconTestServer
  public:
   SingleClientSessionsSyncTestWithFaviconTestServer()
       : SingleClientSessionsSyncTest() {}
+
+  SingleClientSessionsSyncTestWithFaviconTestServer(
+      const SingleClientSessionsSyncTestWithFaviconTestServer&) = delete;
+  SingleClientSessionsSyncTestWithFaviconTestServer& operator=(
+      const SingleClientSessionsSyncTestWithFaviconTestServer&) = delete;
+
   ~SingleClientSessionsSyncTestWithFaviconTestServer() override = default;
 
  protected:
@@ -894,9 +902,6 @@ class SingleClientSessionsSyncTestWithFaviconTestServer
     ASSERT_TRUE(embedded_test_server()->Start());
     SingleClientSessionsSyncTest::SetUpOnMainThread();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientSessionsSyncTestWithFaviconTestServer);
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTestWithFaviconTestServer,

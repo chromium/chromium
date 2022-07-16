@@ -69,8 +69,7 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
                                         WindowOpenDisposition::SWITCH_TO_TAB);
   if (log.completed_length != std::u16string::npos)
     omnibox_event->set_completed_length(log.completed_length);
-  const base::TimeDelta default_time_delta =
-      base::TimeDelta::FromMilliseconds(-1);
+  const base::TimeDelta default_time_delta = base::Milliseconds(-1);
   if (log.elapsed_time_since_user_first_modified_omnibox !=
       default_time_delta) {
     // Only upload the typing duration if it is set/valid.
@@ -106,7 +105,7 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
       suggestion->set_result_subtype_identifier(*i->subtypes.begin());
     }
 
-    suggestion->set_has_tab_match(i->has_tab_match);
+    suggestion->set_has_tab_match(i->has_tab_match.value_or(false));
     suggestion->set_is_keyword_suggestion(i->from_keyword);
   }
   for (auto i(log.providers_info.begin()); i != log.providers_info.end(); ++i) {

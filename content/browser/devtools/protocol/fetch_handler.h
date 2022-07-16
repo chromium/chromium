@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_FETCH_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_FETCH_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
@@ -34,6 +33,10 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
 
   FetchHandler(DevToolsIOContext* io_context,
                UpdateLoaderFactoriesCallback update_loader_factories_callback);
+
+  FetchHandler(const FetchHandler&) = delete;
+  FetchHandler& operator=(const FetchHandler&) = delete;
+
   ~FetchHandler() override;
 
   static std::vector<FetchHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
@@ -73,12 +76,20 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
       Maybe<String> method,
       Maybe<protocol::Binary> postData,
       Maybe<Array<Fetch::HeaderEntry>> headers,
+      Maybe<bool> interceptResponse,
       std::unique_ptr<ContinueRequestCallback> callback) override;
   void ContinueWithAuth(
       const String& fetchId,
       std::unique_ptr<protocol::Fetch::AuthChallengeResponse>
           authChallengeResponse,
       std::unique_ptr<ContinueWithAuthCallback> callback) override;
+  void ContinueResponse(
+      const String& fetchId,
+      Maybe<int> responseCode,
+      Maybe<String> responsePhrase,
+      Maybe<Array<Fetch::HeaderEntry>> responseHeaders,
+      Maybe<Binary> binaryResponseHeaders,
+      std::unique_ptr<ContinueResponseCallback> callback) override;
   void GetResponseBody(
       const String& fetchId,
       std::unique_ptr<GetResponseBodyCallback> callback) override;
@@ -99,8 +110,6 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
   std::unique_ptr<DevToolsURLLoaderInterceptor> interceptor_;
   UpdateLoaderFactoriesCallback update_loader_factories_callback_;
   base::WeakPtrFactory<FetchHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FetchHandler);
 };
 
 }  // namespace protocol

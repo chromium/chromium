@@ -6,34 +6,22 @@
 
 #include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/values_test_util.h"
 #include "components/version_info/channel.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_invocation_errors.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace extensions {
 
 using StorageAreaTest = NativeExtensionBindingsSystemUnittest;
-
-// A specialization of StorageAreaTest that pretends it's running
-// on version_info::Channel::UNKNOWN.
-class StorageAreaTrunkTest : public StorageAreaTest {
- public:
-  StorageAreaTrunkTest() = default;
-  ~StorageAreaTrunkTest() override = default;
-  StorageAreaTrunkTest(const StorageAreaTrunkTest& other) = delete;
-  StorageAreaTrunkTest& operator=(const StorageAreaTrunkTest& other) = delete;
-
- private:
-  // TODO(crbug.com/1185226): Remove unknown channel when chrome.storage.session
-  // is released in stable.
-  ScopedCurrentChannel current_channel_{version_info::Channel::UNKNOWN};
-};
 
 // Test that trying to use StorageArea.get without a StorageArea `this` fails
 // (with a helpful error message).
@@ -130,7 +118,7 @@ TEST_F(StorageAreaTest, InvalidInvocationError) {
               "No matching signature."));
 }
 
-TEST_F(StorageAreaTrunkTest, HasOnChanged) {
+TEST_F(StorageAreaTest, HasOnChanged) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo")
           .SetManifestKey("manifest_version", 3)
@@ -168,6 +156,92 @@ TEST_F(StorageAreaTrunkTest, HasOnChanged) {
     EXPECT_EQ("\"foo\"", GetStringPropertyFromObject(context->Global(), context,
                                                      "change"));
   }
+}
+
+TEST_F(StorageAreaTest, PromiseBasedFunctionsForManifestV3) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("foo")
+          .SetManifestKey("manifest_version", 3)
+          .AddPermission("storage")
+          .Build();
+  RegisterExtension(extension);
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  ScriptContext* script_context = CreateScriptContext(
+      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+  script_context->set_url(extension->url());
+
+  bindings_system()->UpdateBindingsForContext(script_context);
+
+  v8::Local<v8::Value> storage =
+      V8ValueFromScriptSource(context, "chrome.storage.local");
+  ASSERT_TRUE(storage->IsObject());
+
+  constexpr char kRunStorageGet[] =
+      "(function(storage) { return storage.get('foo'); });";
+  v8::Local<v8::Function> run_storage_get =
+      FunctionFromString(context, kRunStorageGet);
+  v8::Local<v8::Value> args[] = {storage};
+  v8::Local<v8::Value> return_value =
+      RunFunctionOnGlobal(run_storage_get, context, base::size(args), args);
+
+  ASSERT_TRUE(return_value->IsPromise());
+  v8::Local<v8::Promise> promise = return_value.As<v8::Promise>();
+
+  EXPECT_EQ(v8::Promise::kPending, promise->State());
+
+  EXPECT_EQ(extension->id(), last_params().extension_id);
+  EXPECT_EQ("storage.get", last_params().name);
+  EXPECT_EQ(extension->url(), last_params().source_url);
+  // We treat returning a promise as having a callback in the request params.
+  EXPECT_TRUE(last_params().has_callback);
+  EXPECT_THAT(last_params().arguments,
+              base::test::IsJson(R"(["local", "foo"])"));
+
+  bindings_system()->HandleResponse(last_params().request_id, /*success=*/true,
+                                    *ListValueFromString(R"([{"foo": 42}])"),
+                                    /*error=*/std::string());
+
+  EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
+  EXPECT_EQ(R"({"foo":42})", V8ToString(promise->Result(), context));
+}
+
+TEST_F(StorageAreaTest, PromiseBasedFunctionsDisallowedForManifestV2) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("foo")
+          .SetManifestKey("manifest_version", 2)
+          .AddPermission("storage")
+          .Build();
+  RegisterExtension(extension);
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  ScriptContext* script_context = CreateScriptContext(
+      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+  script_context->set_url(extension->url());
+
+  bindings_system()->UpdateBindingsForContext(script_context);
+
+  v8::Local<v8::Value> storage =
+      V8ValueFromScriptSource(context, "chrome.storage.local");
+  ASSERT_TRUE(storage->IsObject());
+
+  constexpr char kRunStorageGet[] =
+      "(function(storage) { this.returnValue = storage.get('foo'); });";
+  v8::Local<v8::Function> run_storage_get =
+      FunctionFromString(context, kRunStorageGet);
+  v8::Local<v8::Value> args[] = {storage};
+  auto expected_error =
+      "Uncaught TypeError: " +
+      api_errors::InvocationError(
+          "storage.get",
+          "optional [string|array|object] keys, function callback",
+          api_errors::NoMatchingSignature());
+  RunFunctionAndExpectError(run_storage_get, context, base::size(args), args,
+                            expected_error);
 }
 
 }  // namespace extensions

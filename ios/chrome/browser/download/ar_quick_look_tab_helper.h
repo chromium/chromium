@@ -18,10 +18,6 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace net {
-class URLFetcherFileWriter;
-}  // namespace net
-
 namespace web {
 class DownloadTask;
 class WebState;
@@ -61,6 +57,10 @@ class ARQuickLookTabHelper
       public web::WebStateUserData<ARQuickLookTabHelper> {
  public:
   ARQuickLookTabHelper(web::WebState* web_state);
+
+  ARQuickLookTabHelper(const ARQuickLookTabHelper&) = delete;
+  ARQuickLookTabHelper& operator=(const ARQuickLookTabHelper&) = delete;
+
   ~ARQuickLookTabHelper() override;
 
   // Creates TabHelper. |delegate| is not retained by this instance. |web_state|
@@ -95,11 +95,6 @@ class ARQuickLookTabHelper
                                   web::DownloadTask* download_task,
                                   bool directory_created);
 
-  // Asynchronously starts download operation with |writer|.
-  void DownloadWithWriter(std::unique_ptr<net::URLFetcherFileWriter> writer,
-                          web::DownloadTask* download_task,
-                          int writer_initialization_status);
-
   // Previews the downloaded USDZ file or confirms the download if download has
   // not started.
   void ConfirmOrPreviewDownload(web::DownloadTask* download_task);
@@ -110,8 +105,6 @@ class ARQuickLookTabHelper
   std::unique_ptr<web::DownloadTask> download_task_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ARQuickLookTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_AR_QUICK_LOOK_TAB_HELPER_H_

@@ -11,6 +11,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
+#include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/android/media_crypto_context.h"
@@ -39,14 +40,16 @@ struct PendingDecode {
   static PendingDecode CreateEos();
   PendingDecode(scoped_refptr<DecoderBuffer> buffer,
                 VideoDecoder::DecodeCB decode_cb);
+
+  PendingDecode(const PendingDecode&) = delete;
+  PendingDecode& operator=(const PendingDecode&) = delete;
+
   PendingDecode(PendingDecode&& other);
+
   ~PendingDecode();
 
   scoped_refptr<DecoderBuffer> buffer;
   VideoDecoder::DecodeCB decode_cb;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PendingDecode);
 };
 
 // An Android VideoDecoder that delegates to MediaCodec.
@@ -60,9 +63,14 @@ struct PendingDecode {
 // playbacks that need them.
 // TODO: Lazy initialization should be handled at a higher layer of the media
 // stack for both simplicity and cross platform support.
-class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final : public VideoDecoder {
+class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
+    : public VideoDecoder,
+      public gpu::RefCountedLockHelperDrDc {
  public:
   static std::vector<SupportedVideoDecoderConfig> GetSupportedConfigs();
+
+  MediaCodecVideoDecoder(const MediaCodecVideoDecoder&) = delete;
+  MediaCodecVideoDecoder& operator=(const MediaCodecVideoDecoder&) = delete;
 
   ~MediaCodecVideoDecoder() override;
   static void DestroyAsync(std::unique_ptr<MediaCodecVideoDecoder>);
@@ -76,7 +84,8 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final : public VideoDecoder {
       std::unique_ptr<AndroidVideoSurfaceChooser> surface_chooser,
       AndroidOverlayMojoFactoryCB overlay_factory_cb,
       RequestOverlayInfoCB request_overlay_info_cb,
-      std::unique_ptr<VideoFrameFactory> video_frame_factory);
+      std::unique_ptr<VideoFrameFactory> video_frame_factory,
+      scoped_refptr<gpu::RefCountedLock> drdc_lock);
 
   // VideoDecoder implementation:
   VideoDecoderType GetDecoderType() const override;
@@ -105,7 +114,8 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final : public VideoDecoder {
       std::unique_ptr<AndroidVideoSurfaceChooser> surface_chooser,
       AndroidOverlayMojoFactoryCB overlay_factory_cb,
       RequestOverlayInfoCB request_overlay_info_cb,
-      std::unique_ptr<VideoFrameFactory> video_frame_factory);
+      std::unique_ptr<VideoFrameFactory> video_frame_factory,
+      scoped_refptr<gpu::RefCountedLock> drdc_lock);
 
   // Set up |cdm_context| as part of initialization.  Guarantees that |init_cb|
   // will be called depending on the outcome, though not necessarily before this
@@ -345,8 +355,6 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final : public VideoDecoder {
   base::WeakPtrFactory<MediaCodecVideoDecoder> weak_factory_{this};
   base::WeakPtrFactory<MediaCodecVideoDecoder> codec_allocator_weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCodecVideoDecoder);
 };
 
 }  // namespace media

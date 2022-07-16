@@ -8,17 +8,18 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/new_tab_page/promos/promo_service.h"
+#include "chrome/browser/new_tab_page/promos/promo_service_observer.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
-#include "chrome/browser/search/instant_service_observer.h"
-#include "chrome/browser/search/promos/promo_service.h"
-#include "chrome/browser/search/promos/promo_service_observer.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
-#include "chrome/common/search/instant_types.h"
 #include "chrome/common/search/ntp_logging_events.h"
 #include "components/search_provider_logos/logo_common.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -27,10 +28,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_observer.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 class GURL;
-class InstantService;
 class NtpBackgroundService;
 class Profile;
 class NTPUserDataLogger;
@@ -43,8 +45,14 @@ namespace search_provider_logos {
 class LogoService;
 }  // namespace search_provider_logos
 
+namespace ui {
+class ThemeProvider;
+}  // namespace ui
+
 class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
-                          public InstantServiceObserver,
+                          public ui::NativeThemeObserver,
+                          public ThemeServiceObserver,
+                          public NtpCustomBackgroundServiceObserver,
                           public NtpBackgroundServiceObserver,
                           public ui::SelectFileDialog::Listener,
                           public PromoServiceObserver {
@@ -53,9 +61,16 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                         pending_page_handler,
                     mojo::PendingRemote<new_tab_page::mojom::Page> pending_page,
                     Profile* profile,
-                    InstantService* instant_service,
+                    NtpCustomBackgroundService* ntp_custom_background_service,
+                    ThemeService* theme_service,
+                    search_provider_logos::LogoService* logo_service,
+                    const ui::ThemeProvider* theme_provider,
                     content::WebContents* web_contents,
                     const base::Time& ntp_navigation_start_time);
+
+  NewTabPageHandler(const NewTabPageHandler&) = delete;
+  NewTabPageHandler& operator=(const NewTabPageHandler&) = delete;
+
   ~NewTabPageHandler() override;
 
   // Histograms being recorded when a module is dismissed or restored.
@@ -73,6 +88,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                           const GURL& image_url) override;
   void SetDailyRefreshCollectionId(const std::string& collection_id) override;
   void SetNoBackgroundImage() override;
+  void RevertBackgroundChanges() override;
+  void ConfirmBackgroundChanges() override;
   void GetBackgroundCollections(
       GetBackgroundCollectionsCallback callback) override;
   void GetBackgroundImages(const std::string& collection_id,
@@ -107,9 +124,15 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void OnPromoLinkClicked() override;
 
  private:
-  // InstantServiceObserver:
-  void NtpThemeChanged(const NtpTheme& theme) override;
-  void MostVisitedInfoChanged(const InstantMostVisitedInfo& info) override;
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+
+  // ThemeServiceObserver:
+  void OnThemeChanged() override;
+
+  // NtpCustomBackgroundServiceObserver:
+  void OnCustomBackgroundImageUpdated() override;
+  void OnNtpCustomBackgroundServiceShuttingDown() override;
 
   // NtpBackgroundServiceObserver:
   void OnCollectionInfoAvailable() override;
@@ -149,9 +172,11 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   bool IsShortcutsVisible() const;
 
   ChooseLocalCustomBackgroundCallback choose_local_custom_background_callback_;
-  InstantService* instant_service_;
   NtpBackgroundService* ntp_background_service_;
+  NtpCustomBackgroundService* ntp_custom_background_service_;
   search_provider_logos::LogoService* logo_service_;
+  const ui::ThemeProvider* theme_provider_;
+  ThemeService* theme_service_;
   GURL last_blocklisted_;
   GetBackgroundCollectionsCallback background_collections_callback_;
   base::TimeTicks background_collections_request_start_time_;
@@ -169,6 +194,13 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       loader_map_;
   std::vector<GetPromoCallback> promo_callbacks_;
   PromoService* promo_service_;
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      native_theme_observation_{this};
+  base::ScopedObservation<ThemeService, ThemeServiceObserver>
+      theme_service_observation_{this};
+  base::ScopedObservation<NtpCustomBackgroundService,
+                          NtpCustomBackgroundServiceObserver>
+      ntp_custom_background_service_observation_{this};
   base::ScopedObservation<PromoService, PromoServiceObserver>
       promo_service_observation_{this};
   absl::optional<base::TimeTicks> promo_load_start_time_;
@@ -179,8 +211,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   mojo::Receiver<new_tab_page::mojom::PageHandler> receiver_;
 
   base::WeakPtrFactory<NewTabPageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NewTabPageHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_HANDLER_H_

@@ -16,7 +16,7 @@ String CSSGridAutoRepeatValue::CustomCSSText() const {
   result.Append(", ");
   result.Append(CSSValueList::CustomCSSText());
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 bool CSSGridAutoRepeatValue::Equals(const CSSGridAutoRepeatValue& other) const {

@@ -50,6 +50,12 @@ class FakeRemoteDeviceProviderFactory
 }  // namespace
 
 class AsynchronousShutdownObjectContainerImplTest : public testing::Test {
+ public:
+  AsynchronousShutdownObjectContainerImplTest(
+      const AsynchronousShutdownObjectContainerImplTest&) = delete;
+  AsynchronousShutdownObjectContainerImplTest& operator=(
+      const AsynchronousShutdownObjectContainerImplTest&) = delete;
+
  protected:
   AsynchronousShutdownObjectContainerImplTest()
       : test_device_(multidevice::CreateRemoteDeviceRefListForTest(1u)[0]) {}
@@ -115,9 +121,6 @@ class AsynchronousShutdownObjectContainerImplTest : public testing::Test {
   bool was_shutdown_callback_invoked_;
 
   std::unique_ptr<AsynchronousShutdownObjectContainerImpl> container_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AsynchronousShutdownObjectContainerImplTest);
 };
 
 TEST_F(AsynchronousShutdownObjectContainerImplTest,

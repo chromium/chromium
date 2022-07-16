@@ -16,8 +16,6 @@ std::unique_ptr<ScopedThrottlingToken> ScopedThrottlingToken::MaybeCreate(
     const absl::optional<base::UnguessableToken>& throttling_profile_id) {
   if (!throttling_profile_id)
     return nullptr;
-  if (!ThrottlingController::HasInterceptor(*throttling_profile_id))
-    return nullptr;
   return base::WrapUnique(
       new ScopedThrottlingToken(net_log_source_id, *throttling_profile_id));
 }

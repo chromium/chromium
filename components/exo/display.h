@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/seat.h"
@@ -64,6 +63,9 @@ class Display {
       std::unique_ptr<ToastSurfaceManager> toast_surface_manager,
       std::unique_ptr<DataExchangeDelegate> data_exchange_delegate);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  Display(const Display&) = delete;
+  Display& operator=(const Display&) = delete;
 
   ~Display();
 
@@ -151,8 +153,6 @@ class Display {
 #if defined(USE_OZONE)
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
 #endif  // defined(USE_OZONE)
-
-  DISALLOW_COPY_AND_ASSIGN(Display);
 };
 
 }  // namespace exo

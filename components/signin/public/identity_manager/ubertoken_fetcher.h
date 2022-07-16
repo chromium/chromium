@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 
 class GoogleServiceAuthError;
 
@@ -24,10 +23,11 @@ class UbertokenFetcher {
 
   // Constructs an instance and start fetching the token for |account_id|.
   UbertokenFetcher() = default;
-  virtual ~UbertokenFetcher() = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(UbertokenFetcher);
+  UbertokenFetcher(const UbertokenFetcher&) = delete;
+  UbertokenFetcher& operator=(const UbertokenFetcher&) = delete;
+
+  virtual ~UbertokenFetcher() = 0;
 };
 
 }  // namespace signin

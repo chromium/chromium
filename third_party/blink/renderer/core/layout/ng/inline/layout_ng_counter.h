@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_LAYOUT_NG_COUNTER_H_
 
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_span.h"
 
 namespace blink {
 
@@ -25,17 +26,22 @@ class CORE_EXPORT LayoutNGCounter final : public LayoutCounter {
     return true;
   }
 
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(inline_items_);
+    LayoutCounter::Trace(visitor);
+  }
+
  private:
-  const base::span<NGInlineItem>* GetNGInlineItems() const final {
+  const NGInlineItemSpan* GetNGInlineItems() const final {
     NOT_DESTROYED();
     return &inline_items_;
   }
-  base::span<NGInlineItem>* GetNGInlineItems() final {
+  NGInlineItemSpan* GetNGInlineItems() final {
     NOT_DESTROYED();
     return &inline_items_;
   }
 
-  base::span<NGInlineItem> inline_items_;
+  NGInlineItemSpan inline_items_;
 };
 
 }  // namespace blink

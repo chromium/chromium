@@ -119,9 +119,9 @@ void NetworkQualityTracker::OnNetworkQualityChanged(
     return;
 
   // If the RTT values are unavailable, set them to value 0.
-  if (http_rtt < base::TimeDelta())
+  if (http_rtt.is_negative())
     http_rtt = base::TimeDelta();
-  if (transport_rtt < base::TimeDelta())
+  if (transport_rtt.is_negative())
     transport_rtt = base::TimeDelta();
 
   // If the bandwidth value is unavailable, set it to the maximum possible

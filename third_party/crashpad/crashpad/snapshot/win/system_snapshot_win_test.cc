@@ -35,6 +35,9 @@ class SystemSnapshotWinTest : public testing::Test {
         system_snapshot_() {
   }
 
+  SystemSnapshotWinTest(const SystemSnapshotWinTest&) = delete;
+  SystemSnapshotWinTest& operator=(const SystemSnapshotWinTest&) = delete;
+
   const internal::SystemSnapshotWin& system_snapshot() const {
     return system_snapshot_;
   }
@@ -49,8 +52,6 @@ class SystemSnapshotWinTest : public testing::Test {
  private:
   ProcessReaderWin process_reader_;
   internal::SystemSnapshotWin system_snapshot_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemSnapshotWinTest);
 };
 
 TEST_F(SystemSnapshotWinTest, GetCPUArchitecture) {

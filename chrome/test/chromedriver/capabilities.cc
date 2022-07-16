@@ -74,7 +74,7 @@ Status ParseTimeDelta(base::TimeDelta* to_set,
     return Status(kInvalidArgument, "must be an integer");
   if (option.GetInt() < 0)
     return Status(kInvalidArgument, "must be positive or zero");
-  *to_set = base::TimeDelta::FromMilliseconds(option.GetInt());
+  *to_set = base::Milliseconds(option.GetInt());
   return Status(kOk);
 }
 
@@ -244,7 +244,7 @@ Status ParseTimeouts(const base::Value& option, Capabilities* capabilities) {
           timeout_ms_int64 < 0)
         return Status(kInvalidArgument, "value must be a non-negative integer");
       else
-        timeout = base::TimeDelta::FromMilliseconds(timeout_ms_int64);
+        timeout = base::Milliseconds(timeout_ms_int64);
     }
     if (type == "script") {
       capabilities->script_timeout = timeout;
@@ -262,32 +262,29 @@ Status ParseTimeouts(const base::Value& option, Capabilities* capabilities) {
 
 Status ParseSwitches(const base::Value& option,
                      Capabilities* capabilities) {
-  const base::ListValue* switches_list = NULL;
-  if (!option.GetAsList(&switches_list))
+  if (!option.is_list())
     return Status(kInvalidArgument, "must be a list");
-  for (size_t i = 0; i < switches_list->GetSize(); ++i) {
-    std::string arg_string;
-    if (!switches_list->GetString(i, &arg_string))
+  for (const base::Value& arg : option.GetList()) {
+    if (!arg.is_string())
       return Status(kInvalidArgument, "each argument must be a string");
+    std::string arg_string = arg.GetString();
     base::TrimWhitespaceASCII(arg_string, base::TRIM_ALL, &arg_string);
     if (arg_string.empty() || arg_string == "--")
       return Status(kInvalidArgument, "argument is empty");
-    capabilities->switches.SetUnparsedSwitch(arg_string);
+    capabilities->switches.SetUnparsedSwitch(std::move(arg_string));
   }
   return Status(kOk);
 }
 
 Status ParseExtensions(const base::Value& option, Capabilities* capabilities) {
-  const base::ListValue* extensions = NULL;
-  if (!option.GetAsList(&extensions))
+  if (!option.is_list())
     return Status(kInvalidArgument, "must be a list");
-  for (size_t i = 0; i < extensions->GetSize(); ++i) {
-    std::string extension;
-    if (!extensions->GetString(i, &extension)) {
+  for (const base::Value& extension : option.GetList()) {
+    if (!extension.is_string()) {
       return Status(kInvalidArgument,
                     "each extension must be a base64 encoded string");
     }
-    capabilities->extensions.push_back(extension);
+    capabilities->extensions.push_back(extension.GetString());
   }
   return Status(kOk);
 }
@@ -391,18 +388,17 @@ Status ParseProxy(bool w3c_compliant,
 
 Status ParseExcludeSwitches(const base::Value& option,
                             Capabilities* capabilities) {
-  const base::ListValue* switches = NULL;
-  if (!option.GetAsList(&switches))
+  if (!option.is_list())
     return Status(kInvalidArgument, "must be a list");
-  for (size_t i = 0; i < switches->GetSize(); ++i) {
-    std::string switch_name;
-    if (!switches->GetString(i, &switch_name)) {
+  for (const base::Value& switch_value : option.GetList()) {
+    if (!switch_value.is_string()) {
       return Status(kInvalidArgument,
                     "each switch to be removed must be a string");
     }
+    std::string switch_name = switch_value.GetString();
     if (switch_name.substr(0, 2) == "--")
       switch_name = switch_name.substr(2);
-    capabilities->exclude_switches.insert(switch_name);
+    capabilities->exclude_switches.insert(std::move(switch_name));
   }
   return Status(kOk);
 }
@@ -531,17 +527,15 @@ Status ParseDevToolsEventsLoggingPrefs(const base::Value& option,
 }
 
 Status ParseWindowTypes(const base::Value& option, Capabilities* capabilities) {
-  const base::ListValue* window_types = NULL;
-  if (!option.GetAsList(&window_types))
+  if (!option.is_list())
     return Status(kInvalidArgument, "must be a list");
   std::set<WebViewInfo::Type> window_types_tmp;
-  for (size_t i = 0; i < window_types->GetSize(); ++i) {
-    std::string window_type;
-    if (!window_types->GetString(i, &window_type)) {
+  for (const base::Value& window_type : option.GetList()) {
+    if (!window_type.is_string()) {
       return Status(kInvalidArgument, "each window type must be a string");
     }
     WebViewInfo::Type type;
-    Status status = ParseType(window_type, &type);
+    Status status = ParseType(window_type.GetString(), &type);
     if (status.IsError())
       return status;
     window_types_tmp.insert(type);
@@ -590,6 +584,8 @@ Status ParseChromeOptions(
         base::BindRepeating(&ParseString, &capabilities->android_device_socket);
     parser_map["androidUseRunningApp"] = base::BindRepeating(
         &ParseBoolean, &capabilities->android_use_running_app);
+    parser_map["androidKeepAppDataDir"] = base::BindRepeating(
+        &ParseBoolean, &capabilities->android_keep_app_data_dir);
     parser_map["androidDevToolsPort"] = base::BindRepeating(
         &ParsePortNumber, &capabilities->android_devtools_port);
     parser_map["args"] = base::BindRepeating(&ParseSwitches);
@@ -779,7 +775,7 @@ Capabilities::Capabilities()
       strict_file_interactability(false),
       android_use_running_app(false),
       detach(false),
-      extension_load_timeout(base::TimeDelta::FromSeconds(10)),
+      extension_load_timeout(base::Seconds(10)),
       network_emulation_enabled(false) {}
 
 Capabilities::~Capabilities() {}
@@ -886,7 +882,6 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
   LoggingPrefs::const_iterator iter = logging_prefs.find(
       WebDriverLog::kPerformanceType);
   if (iter == logging_prefs.end() || iter->second == Log::kOff) {
-    const base::DictionaryValue* chrome_options = nullptr;
     if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
         chrome_options->FindKey("perfLoggingPrefs")) {
       return Status(kInvalidArgument,
@@ -898,7 +893,6 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
       WebDriverLog::kDevToolsType);
   if (dt_events_logging_iter == logging_prefs.end()
       || dt_events_logging_iter->second == Log::kOff) {
-    const base::DictionaryValue* chrome_options = nullptr;
     if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
         chrome_options->FindKey("devToolsEventsToLog")) {
       return Status(kInvalidArgument,

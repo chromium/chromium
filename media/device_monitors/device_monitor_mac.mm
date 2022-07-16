@@ -11,8 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_checker.h"
 
 namespace {
@@ -56,6 +55,10 @@ class DeviceMonitorMacImpl {
     // devices were added nor removed and not notifying the |monitor_|.
     cached_devices_.push_back(DeviceInfo("invalid", DeviceInfo::kInvalid));
   }
+
+  DeviceMonitorMacImpl(const DeviceMonitorMacImpl&) = delete;
+  DeviceMonitorMacImpl& operator=(const DeviceMonitorMacImpl&) = delete;
+
   virtual ~DeviceMonitorMacImpl() {}
 
   virtual void OnDeviceChanged() = 0;
@@ -74,9 +77,6 @@ class DeviceMonitorMacImpl {
   // Handles to NSNotificationCenter block observers.
   id device_arrival_;
   id device_removal_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceMonitorMacImpl);
 };
 
 void DeviceMonitorMacImpl::ConsolidateDevicesListAndNotify(
@@ -290,6 +290,10 @@ class AVFoundationMonitorImpl : public DeviceMonitorMacImpl {
   AVFoundationMonitorImpl(
       media::DeviceMonitorMac* monitor,
       const scoped_refptr<base::SingleThreadTaskRunner>& device_task_runner);
+
+  AVFoundationMonitorImpl(const AVFoundationMonitorImpl&) = delete;
+  AVFoundationMonitorImpl& operator=(const AVFoundationMonitorImpl&) = delete;
+
   ~AVFoundationMonitorImpl() override;
 
   void OnDeviceChanged() override;
@@ -303,8 +307,6 @@ class AVFoundationMonitorImpl : public DeviceMonitorMacImpl {
   base::ThreadChecker main_thread_checker_;
 
   scoped_refptr<SuspendObserverDelegate> suspend_observer_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AVFoundationMonitorImpl);
 };
 
 AVFoundationMonitorImpl::AVFoundationMonitorImpl(

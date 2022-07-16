@@ -19,7 +19,7 @@ namespace {
 // The maximum number of time an animation can be delayed before it is reset to
 // start from the beginning, instead of fast-forwarding to catch up to the
 // desired frame.
-const base::TimeDelta kAnimationResyncCutoff = base::TimeDelta::FromMinutes(5);
+const base::TimeDelta kAnimationResyncCutoff = base::Minutes(5);
 
 // Given the |desired_frame_time|, returns the time of the tick it should be
 // snapped to.

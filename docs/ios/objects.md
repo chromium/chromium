@@ -86,10 +86,6 @@ The WebStateList also has a delegate that is invoked when a WebState
 when WebStates are added to or removed from the WebStateList. This is
 used to attach all necessary tab helpers to the WebState.
 
-There is a legacy interface (TabModel) that is used to represent a list of
-Tabs and added some behaviour. This interface is obsolete and is slowly
-being removed, prefer to use WebStateList if possible.
-
 The corresponding object on desktop is TabStripModel.
 
 # WebStateListDelegate

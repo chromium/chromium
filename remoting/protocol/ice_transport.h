@@ -41,6 +41,10 @@ class IceTransport : public Transport,
   // |transport_context| must outlive the session.
   IceTransport(scoped_refptr<TransportContext> transport_context,
                EventHandler* event_handler);
+
+  IceTransport(const IceTransport&) = delete;
+  IceTransport& operator=(const IceTransport&) = delete;
+
   ~IceTransport() override;
 
   MessageChannelFactory* GetChannelFactory();
@@ -107,12 +111,9 @@ class IceTransport : public Transport,
   base::OneShotTimer transport_info_timer_;
 
   base::WeakPtrFactory<IceTransport> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IceTransport);
 };
 
 }  // namespace protocol
 }  // namespace remoting
 
 #endif  // REMOTING_PROTOCOL_ICE_TRANSPORT_H_
-

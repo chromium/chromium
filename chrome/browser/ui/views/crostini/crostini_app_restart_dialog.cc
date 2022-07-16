@@ -48,6 +48,7 @@ std::unique_ptr<views::View> MakeCrostiniAppRestartView() {
 std::unique_ptr<views::DialogDelegate> MakeCrostiniAppRestartDelegate(
     std::unique_ptr<views::View> contents) {
   auto delegate = std::make_unique<views::DialogDelegate>();
+  delegate->set_internal_name("CrostiniAppRestart");
   delegate->SetButtons(ui::DIALOG_BUTTON_OK);
   delegate->SetContentsView(std::move(contents));
   delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);

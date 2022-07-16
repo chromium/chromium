@@ -45,7 +45,7 @@ class LayoutSVGResourceFilter final : public LayoutSVGResourceContainer {
 
   void RemoveAllClientsFromCache() override;
 
-  FloatRect ResourceBoundingBox(const FloatRect& reference_box) const;
+  FloatRect ResourceBoundingBox(const gfx::RectF& reference_box) const;
 
   SVGUnitTypes::SVGUnitType FilterUnits() const;
   SVGUnitTypes::SVGUnitType PrimitiveUnits() const;

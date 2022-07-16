@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
@@ -30,6 +29,10 @@ namespace ash {
 class TokenHandleUtil {
  public:
   TokenHandleUtil();
+
+  TokenHandleUtil(const TokenHandleUtil&) = delete;
+  TokenHandleUtil& operator=(const TokenHandleUtil&) = delete;
+
   ~TokenHandleUtil();
 
   enum TokenHandleStatus { VALID, INVALID, UNKNOWN };
@@ -58,6 +61,8 @@ class TokenHandleUtil {
   static void StoreTokenHandle(const AccountId& account_id,
                                const std::string& handle);
 
+  static void ClearTokenHandle(const AccountId& account_id);
+
   static void SetInvalidTokenForTesting(const char* token);
 
   static void SetLastCheckedPrefForTesting(const AccountId& account_id,
@@ -73,6 +78,10 @@ class TokenHandleUtil {
         const std::string& token,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         TokenValidationCallback callback);
+
+    TokenDelegate(const TokenDelegate&) = delete;
+    TokenDelegate& operator=(const TokenDelegate&) = delete;
+
     ~TokenDelegate() override;
 
     void OnOAuthError() override;
@@ -88,8 +97,6 @@ class TokenHandleUtil {
     base::TimeTicks tokeninfo_response_start_time_;
     TokenValidationCallback callback_;
     gaia::GaiaOAuthClient gaia_client_;
-
-    DISALLOW_COPY_AND_ASSIGN(TokenDelegate);
   };
 
   void OnValidationComplete(const std::string& token);
@@ -99,8 +106,6 @@ class TokenHandleUtil {
       validation_delegates_;
 
   base::WeakPtrFactory<TokenHandleUtil> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TokenHandleUtil);
 };
 
 }  // namespace ash

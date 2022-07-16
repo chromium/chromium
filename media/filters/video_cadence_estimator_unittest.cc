@@ -20,8 +20,7 @@
 namespace media {
 
 // See VideoCadenceEstimator header for more details.
-constexpr auto kMinimumAcceptableTimeBetweenGlitches =
-    base::TimeDelta::FromSeconds(8);
+constexpr auto kMinimumAcceptableTimeBetweenGlitches = base::Seconds(8);
 
 // Slows down the given |fps| according to NTSC field reduction standards; see
 // http://en.wikipedia.org/wiki/Frame_rate#Digital_video_and_television
@@ -30,7 +29,7 @@ static double NTSC(double fps) {
 }
 
 static base::TimeDelta Interval(double hertz) {
-  return base::TimeDelta::FromSecondsD(1.0 / hertz);
+  return base::Seconds(1.0 / hertz);
 }
 
 std::vector<int> CreateCadenceFromString(const std::string& cadence) {
@@ -176,7 +175,7 @@ TEST(VideoCadenceEstimatorTest, CadenceCalculationWithLargeDrift) {
   VideoCadenceEstimator estimator(kMinimumAcceptableTimeBetweenGlitches);
   estimator.set_cadence_hysteresis_threshold_for_testing(base::TimeDelta());
 
-  base::TimeDelta drift = base::TimeDelta::FromHours(1);
+  base::TimeDelta drift = base::Hours(1);
   VerifyCadenceVectorWithCustomDrift(&estimator, 1, NTSC(60), drift, "[60]");
 
   VerifyCadenceVectorWithCustomDrift(&estimator, 30, 60, drift, "[2]");
@@ -199,7 +198,7 @@ TEST(VideoCadenceEstimatorTest, CadenceCalculationWithLargeDeviation) {
   VideoCadenceEstimator estimator(kMinimumAcceptableTimeBetweenGlitches);
   estimator.set_cadence_hysteresis_threshold_for_testing(base::TimeDelta());
 
-  const base::TimeDelta deviation = base::TimeDelta::FromMilliseconds(30);
+  const base::TimeDelta deviation = base::Milliseconds(30);
   VerifyCadenceVectorWithCustomDeviation(&estimator, 1, 60, deviation, "[]");
   VerifyCadenceVectorWithCustomDeviation(&estimator, 30, 60, deviation, "[]");
   VerifyCadenceVectorWithCustomDeviation(&estimator, 25, 60, deviation, "[]");
@@ -307,7 +306,7 @@ void VerifyCadenceSequence(VideoCadenceEstimator* estimator,
   const base::TimeDelta frame_interval = Interval(frame_rate);
   const base::TimeDelta acceptable_drift =
       frame_interval < render_interval ? render_interval : frame_interval;
-  const base::TimeDelta test_runtime = base::TimeDelta::FromSeconds(10 * 60);
+  const base::TimeDelta test_runtime = base::Seconds(10 * 60);
   const int test_frames = base::ClampFloor(test_runtime / frame_interval);
 
   estimator->Reset();
@@ -334,7 +333,7 @@ void VerifyCadenceSequence(VideoCadenceEstimator* estimator,
 TEST(VideoCadenceEstimatorTest, BresenhamCadencePatterns) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(media::kBresenhamCadence);
-  VideoCadenceEstimator estimator(base::TimeDelta::FromSeconds(1));
+  VideoCadenceEstimator estimator(base::Seconds(1));
   estimator.set_cadence_hysteresis_threshold_for_testing(base::TimeDelta());
 
   VerifyCadenceSequence(&estimator, 30, 60,
@@ -366,8 +365,7 @@ TEST(VideoCadenceEstimatorTest, BresenhamCadencePatterns) {
 
   // Frame rate deviation is too high, refuse to provide cadence.
   EXPECT_TRUE(estimator.UpdateCadenceEstimate(
-      Interval(60), Interval(30), base::TimeDelta::FromMilliseconds(20),
-      base::TimeDelta::FromSeconds(100)));
+      Interval(60), Interval(30), base::Milliseconds(20), base::Seconds(100)));
   EXPECT_FALSE(estimator.has_cadence());
 
   // No cadence change for neglegable rate changes
@@ -381,7 +379,7 @@ TEST(VideoCadenceEstimatorTest, BresenhamCadencePatterns) {
 TEST(VideoCadenceEstimatorTest, BresenhamCadenceChange) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(media::kBresenhamCadence);
-  VideoCadenceEstimator estimator(base::TimeDelta::FromSeconds(1));
+  VideoCadenceEstimator estimator(base::Seconds(1));
   estimator.set_cadence_hysteresis_threshold_for_testing(base::TimeDelta());
 
   base::TimeDelta render_interval = Interval(60);
@@ -394,7 +392,7 @@ TEST(VideoCadenceEstimatorTest, BresenhamCadenceChange) {
   for (double t = 0.0; t < 10.0; t += 0.1) {
     // +-100us drift of the rendering interval, a totally realistic thing.
     base::TimeDelta new_render_interval =
-        render_interval + base::TimeDelta::FromMicrosecondsD(std::sin(t) * 100);
+        render_interval + base::Microseconds(std::sin(t) * 100);
 
     EXPECT_FALSE(
         estimator.UpdateCadenceEstimate(new_render_interval, frame_duration,

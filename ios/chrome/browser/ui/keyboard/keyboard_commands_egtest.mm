@@ -126,7 +126,9 @@ using chrome_test_util::SettingsDoneButton;
     // Tap on the HUD.
     id<GREYMatcher> edit = chrome_test_util::ButtonWithAccessibilityLabelId(
         IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON);
-    [[EarlGrey selectElementWithMatcher:edit] performAction:grey_tap()];
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(edit, grey_sufficientlyVisible(),
+                                            nil)] performAction:grey_tap()];
 
     [self waitForSingleBookmarkEditorToDisplay];
 

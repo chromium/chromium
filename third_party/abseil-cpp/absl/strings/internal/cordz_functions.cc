@@ -21,8 +21,8 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
-#include "absl/base/internal/exponential_biased.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/profiling/internal/exponential_biased.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -48,7 +48,7 @@ constexpr int64_t kIntervalIfDisabled = 1 << 16;
 
 ABSL_ATTRIBUTE_NOINLINE bool cordz_should_profile_slow() {
 
-  thread_local absl::base_internal::ExponentialBiased
+  thread_local absl::profiling_internal::ExponentialBiased
       exponential_biased_generator;
   int32_t mean_interval = get_cordz_mean_interval();
 

@@ -19,6 +19,10 @@ namespace {
 class X509CertificatePrivate : public PPB_X509Certificate_Private_Shared {
  public:
   X509CertificatePrivate(PP_Instance instance);
+
+  X509CertificatePrivate(const X509CertificatePrivate&) = delete;
+  X509CertificatePrivate& operator=(const X509CertificatePrivate&) = delete;
+
   ~X509CertificatePrivate() override;
 
   bool ParseDER(const std::vector<char>& der,
@@ -26,8 +30,6 @@ class X509CertificatePrivate : public PPB_X509Certificate_Private_Shared {
 
  private:
   void SendToBrowser(IPC::Message* msg);
-
-  DISALLOW_COPY_AND_ASSIGN(X509CertificatePrivate);
 };
 
 X509CertificatePrivate::X509CertificatePrivate(PP_Instance instance)

@@ -22,6 +22,11 @@
 class CanonicalURLRetrieverTest : public web::WebTestWithWebState {
  public:
   CanonicalURLRetrieverTest() = default;
+
+  CanonicalURLRetrieverTest(const CanonicalURLRetrieverTest&) = delete;
+  CanonicalURLRetrieverTest& operator=(const CanonicalURLRetrieverTest&) =
+      delete;
+
   ~CanonicalURLRetrieverTest() override = default;
 
  protected:
@@ -46,9 +51,6 @@ class CanonicalURLRetrieverTest : public web::WebTestWithWebState {
 
   // Used to verify histogram logging.
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CanonicalURLRetrieverTest);
 };
 
 // Validates that if the canonical URL is different from the visible URL, it is

@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 
 namespace dbus {
@@ -24,6 +23,9 @@ namespace chromeos {
 // initializes the DBusThreadManager instance.
 class COMPONENT_EXPORT(UPSTART_CLIENT) UpstartClient {
  public:
+  UpstartClient(const UpstartClient&) = delete;
+  UpstartClient& operator=(const UpstartClient&) = delete;
+
   virtual ~UpstartClient();
 
   // Creates and initializes the global instance. |bus| must not be null.
@@ -100,9 +102,6 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) UpstartClient {
  protected:
   // Initialize() should be used instead.
   UpstartClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpstartClient);
 };
 
 }  // namespace chromeos

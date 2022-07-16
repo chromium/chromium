@@ -60,12 +60,17 @@ LayoutImage::LayoutImage(Element* element)
       image_device_pixel_ratio_(1.0f) {}
 
 LayoutImage* LayoutImage::CreateAnonymous(PseudoElement& pseudo) {
-  LayoutImage* image = new LayoutImage(nullptr);
+  LayoutImage* image = MakeGarbageCollected<LayoutImage>(nullptr);
   image->SetDocumentForAnonymous(&pseudo.GetDocument());
   return image;
 }
 
 LayoutImage::~LayoutImage() = default;
+
+void LayoutImage::Trace(Visitor* visitor) const {
+  visitor->Trace(image_resource_);
+  LayoutReplaced::Trace(visitor);
+}
 
 void LayoutImage::WillBeDestroyed() {
   NOT_DESTROYED();
@@ -121,8 +126,14 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
 
   // If error occurred, image marker should be replaced by a LayoutText.
   // NotifyOfSubtreeChange to make list item updating its marker content.
-  if (IsListMarkerImage() && image_resource_->ErrorOccurred())
-    NotifyOfSubtreeChange();
+  if (IsListMarkerImage() && image_resource_->ErrorOccurred()) {
+    LayoutObject* item = this;
+    while (item->IsAnonymous())
+      item = item->Parent();
+    DCHECK(item);
+    if (item->NotifyOfSubtreeChange())
+      item->GetNode()->MarkAncestorsWithChildNeedsStyleRecalc();
+  }
 
   // Per the spec, we let the server-sent header override srcset/other sources
   // of dpr.
@@ -321,10 +332,10 @@ FloatSize LayoutImage::ImageSizeOverriddenByIntrinsicSize(
   FloatSize overridden_intrinsic_size(kDefaultWidth, kDefaultHeight);
   if (multiplier != 1) {
     overridden_intrinsic_size.Scale(multiplier);
-    if (overridden_intrinsic_size.Width() < 1.0f)
-      overridden_intrinsic_size.SetWidth(1.0f);
-    if (overridden_intrinsic_size.Height() < 1.0f)
-      overridden_intrinsic_size.SetHeight(1.0f);
+    if (overridden_intrinsic_size.width() < 1.0f)
+      overridden_intrinsic_size.set_width(1.0f);
+    if (overridden_intrinsic_size.height() < 1.0f)
+      overridden_intrinsic_size.set_height(1.0f);
   }
 
   return overridden_intrinsic_size;
@@ -364,10 +375,10 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
       if (aspect_ratio.GetType() == EAspectRatioType::kRatio ||
           (aspect_ratio.GetType() == EAspectRatioType::kAutoAndRatio &&
            intrinsic_sizing_info.aspect_ratio.IsEmpty())) {
-        intrinsic_sizing_info.aspect_ratio.SetWidth(
-            aspect_ratio.GetRatio().Width());
-        intrinsic_sizing_info.aspect_ratio.SetHeight(
-            aspect_ratio.GetRatio().Height());
+        intrinsic_sizing_info.aspect_ratio.set_width(
+            aspect_ratio.GetRatio().width());
+        intrinsic_sizing_info.aspect_ratio.set_height(
+            aspect_ratio.GetRatio().height());
       }
 
       if (!IsHorizontalWritingMode())
@@ -383,18 +394,18 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
         !image_resource_->HasIntrinsicSize() && !IsListMarkerImage()) {
       if (HasOverrideContainingBlockContentLogicalWidth() &&
           HasOverrideContainingBlockContentLogicalHeight()) {
-        intrinsic_sizing_info.size.SetWidth(
+        intrinsic_sizing_info.size.set_width(
             OverrideContainingBlockContentLogicalWidth().ToFloat());
-        intrinsic_sizing_info.size.SetHeight(
+        intrinsic_sizing_info.size.set_height(
             OverrideContainingBlockContentLogicalHeight().ToFloat());
       } else {
         LayoutObject* containing_block =
             IsOutOfFlowPositioned() ? Container() : ContainingBlock();
         if (containing_block->IsBox()) {
           auto* box = To<LayoutBox>(containing_block);
-          intrinsic_sizing_info.size.SetWidth(
+          intrinsic_sizing_info.size.set_width(
               box->AvailableLogicalWidth().ToFloat());
-          intrinsic_sizing_info.size.SetHeight(
+          intrinsic_sizing_info.size.set_height(
               box->AvailableLogicalHeight(kIncludeMarginBorderPadding)
                   .ToFloat());
         }

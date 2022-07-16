@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
@@ -75,6 +74,10 @@ class SpellcheckService : public KeyedService,
   };
 
   explicit SpellcheckService(content::BrowserContext* context);
+
+  SpellcheckService(const SpellcheckService&) = delete;
+  SpellcheckService& operator=(const SpellcheckService&) = delete;
+
   ~SpellcheckService() override;
 
   base::WeakPtr<SpellcheckService> GetWeakPtr();
@@ -324,8 +327,6 @@ class SpellcheckService : public KeyedService,
   bool dictionaries_loaded_ = false;
 
   base::WeakPtrFactory<SpellcheckService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckService);
 };
 
 #endif  // CHROME_BROWSER_SPELLCHECKER_SPELLCHECK_SERVICE_H_

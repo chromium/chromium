@@ -8,13 +8,16 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace diagnostics {
 
 // Basic harness to acquire and release the Diagnostic model object.
 class DiagnosticsModelTest : public testing::Test {
+ public:
+  DiagnosticsModelTest(const DiagnosticsModelTest&) = delete;
+  DiagnosticsModelTest& operator=(const DiagnosticsModelTest&) = delete;
+
  protected:
   DiagnosticsModelTest() : cmdline_(base::CommandLine::NO_PROGRAM) {}
 
@@ -29,8 +32,6 @@ class DiagnosticsModelTest : public testing::Test {
 
   std::unique_ptr<DiagnosticsModel> model_;
   base::CommandLine cmdline_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiagnosticsModelTest);
 };
 
 // The test observer is used to know if the callbacks are being called.
@@ -42,6 +43,9 @@ class UTObserver: public DiagnosticsModel::Observer {
         num_tested_(0),
         num_recovered_(0) {
   }
+
+  UTObserver(const UTObserver&) = delete;
+  UTObserver& operator=(const UTObserver&) = delete;
 
   void OnTestFinished(int index, DiagnosticsModel* model) override {
     EXPECT_TRUE(model != NULL);
@@ -80,8 +84,6 @@ class UTObserver: public DiagnosticsModel::Observer {
   bool recovery_done_;
   int num_tested_;
   int num_recovered_;
-
-  DISALLOW_COPY_AND_ASSIGN(UTObserver);
 };
 
 // Test that the initial state is correct.

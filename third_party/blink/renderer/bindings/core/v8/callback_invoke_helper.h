@@ -29,15 +29,15 @@ enum class CallbackInvokeHelperMode {
 // functions and IDL callback interfaces.  This class implements the following
 // algorithms of Web IDL.
 //
-// https://heycam.github.io/webidl/#call-a-user-objects-operation
+// https://webidl.spec.whatwg.org/#call-a-user-objects-operation
 // 3.11. Callback interfaces
 // To call a user object's operation
 //
-// https://heycam.github.io/webidl/#invoke-a-callback-function
+// https://webidl.spec.whatwg.org/#invoke-a-callback-function
 // 3.12. Invoking callback functions
 // To invoke a callback function type value
 //
-// https://heycam.github.io/webidl/#construct-a-callback-function
+// https://webidl.spec.whatwg.org/#construct-a-callback-function
 // 3.12. Invoking callback functions
 // To construct a callback functions type value
 template <class CallbackBase,

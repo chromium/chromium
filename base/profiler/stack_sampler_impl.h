@@ -6,6 +6,7 @@
 #define BASE_PROFILER_STACK_SAMPLER_IMPL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/base_export.h"
 #include "base/callback.h"

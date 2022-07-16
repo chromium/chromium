@@ -45,10 +45,6 @@ source_set("blink") {
     "//ui/latency",
   ]
 
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
-  }
-
   if (is_win) {
     sources += [
       "web_input_event_builders_win.cc",

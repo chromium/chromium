@@ -47,12 +47,6 @@ namespace WTF {
 
 struct StringHash;
 
-enum UTF8ConversionMode {
-  kLenientUTF8Conversion,
-  kStrictUTF8Conversion,
-  kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD
-};
-
 #define DISPATCH_CASE_OP(caseSensitivity, op, args)     \
   ((caseSensitivity == kTextCaseSensitive)              \
        ? op args                                        \
@@ -87,10 +81,12 @@ class WTF_EXPORT String {
   // Construct a string with latin1 data.
   String(const LChar* characters, unsigned length);
   String(const char* characters, unsigned length);
+  explicit String(const std::string& s) : String(s.c_str(), s.length()) {}
 
 #if defined(ARCH_CPU_64_BITS)
-  // Only define a size_t constructor if size_t is 64 bit otherwise
+  // Only define size_t constructors if size_t is 64 bit otherwise
   // we'd have a duplicate define.
+  String(const UChar* characters, size_t length);
   String(const char* characters, size_t length);
 #endif  // defined(ARCH_CPU_64_BITS)
 
@@ -177,10 +173,12 @@ class WTF_EXPORT String {
 
   std::string Ascii() const WARN_UNUSED_RESULT;
   std::string Latin1() const WARN_UNUSED_RESULT;
-  std::string Utf8(UTF8ConversionMode = kLenientUTF8Conversion) const
-      WARN_UNUSED_RESULT;
+  std::string Utf8(UTF8ConversionMode mode = kLenientUTF8Conversion) const
+      WARN_UNUSED_RESULT {
+    return StringView(*this).Utf8(mode);
+  }
 
-  UChar operator[](unsigned index) const {
+  UChar operator[](wtf_size_t index) const {
     if (!impl_ || index >= impl_->length())
       return 0;
     return (*impl_)[index];
@@ -202,17 +200,17 @@ class WTF_EXPORT String {
       WARN_UNUSED_RESULT;
 
   // Find characters.
-  wtf_size_t find(UChar c, unsigned start = 0) const {
+  wtf_size_t find(UChar c, wtf_size_t start = 0) const {
     return impl_ ? impl_->Find(c, start) : kNotFound;
   }
-  wtf_size_t find(LChar c, unsigned start = 0) const {
+  wtf_size_t find(LChar c, wtf_size_t start = 0) const {
     return impl_ ? impl_->Find(c, start) : kNotFound;
   }
-  wtf_size_t find(char c, unsigned start = 0) const {
+  wtf_size_t find(char c, wtf_size_t start = 0) const {
     return find(static_cast<LChar>(c), start);
   }
   wtf_size_t Find(CharacterMatchFunctionPtr match_function,
-                  unsigned start = 0) const {
+                  wtf_size_t start = 0) const {
     return impl_ ? impl_->Find(match_function, start) : kNotFound;
   }
   wtf_size_t Find(base::RepeatingCallback<bool(UChar)> match_callback,
@@ -221,7 +219,7 @@ class WTF_EXPORT String {
   // Find substrings.
   wtf_size_t Find(
       const StringView& value,
-      unsigned start = 0,
+      wtf_size_t start = 0,
       TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
     return impl_
                ? DISPATCH_CASE_OP(case_sensitivity, impl_->Find, (value, start))

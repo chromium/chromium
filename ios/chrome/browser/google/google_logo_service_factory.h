@@ -24,6 +24,9 @@ class GoogleLogoServiceFactory : public BrowserStateKeyedServiceFactory {
 
   static GoogleLogoServiceFactory* GetInstance();
 
+  GoogleLogoServiceFactory(const GoogleLogoServiceFactory&) = delete;
+  GoogleLogoServiceFactory& operator=(const GoogleLogoServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<GoogleLogoServiceFactory>;
 
@@ -35,8 +38,6 @@ class GoogleLogoServiceFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(GoogleLogoServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_GOOGLE_GOOGLE_LOGO_SERVICE_FACTORY_H_

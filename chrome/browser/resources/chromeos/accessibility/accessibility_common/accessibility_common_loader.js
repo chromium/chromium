@@ -42,24 +42,28 @@ export class AccessibilityCommon {
    */
   init_() {
     chrome.accessibilityFeatures.autoclick.get(
-        {}, this.onAutoclickUpdated_.bind(this));
+        {}, details => this.onAutoclickUpdated_(details));
     chrome.accessibilityFeatures.autoclick.onChange.addListener(
-        this.onAutoclickUpdated_.bind(this));
+        details => this.onAutoclickUpdated_(details));
 
     chrome.accessibilityFeatures.screenMagnifier.get(
-        {}, this.onMagnifierUpdated_.bind(this, Magnifier.Type.FULL_SCREEN));
+        {},
+        details =>
+            this.onMagnifierUpdated_(Magnifier.Type.FULL_SCREEN, details));
     chrome.accessibilityFeatures.screenMagnifier.onChange.addListener(
-        this.onMagnifierUpdated_.bind(this, Magnifier.Type.FULL_SCREEN));
+        details =>
+            this.onMagnifierUpdated_(Magnifier.Type.FULL_SCREEN, details));
 
     chrome.accessibilityFeatures.dockedMagnifier.get(
-        {}, this.onMagnifierUpdated_.bind(this, Magnifier.Type.DOCKED));
+        {},
+        details => this.onMagnifierUpdated_(Magnifier.Type.DOCKED, details));
     chrome.accessibilityFeatures.dockedMagnifier.onChange.addListener(
-        this.onMagnifierUpdated_.bind(this, Magnifier.Type.DOCKED));
+        details => this.onMagnifierUpdated_(Magnifier.Type.DOCKED, details));
 
     chrome.accessibilityFeatures.dictation.get(
-        {}, this.onDictationUpdated_.bind(this));
+        {}, details => this.onDictationUpdated_(details));
     chrome.accessibilityFeatures.dictation.onChange.addListener(
-        this.onDictationUpdated_.bind(this));
+        details => this.onDictationUpdated_(details));
 
     // AccessibilityCommon is an IME so it shows in the input methods list
     // when it starts up. Remove from this list, Dictation will add it back

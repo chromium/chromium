@@ -27,27 +27,32 @@ class GPUCanvasContext : public CanvasRenderingContext {
 
  public:
   class Factory : public CanvasRenderingContextFactory {
-    DISALLOW_COPY_AND_ASSIGN(Factory);
 
    public:
     Factory();
+
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
     ~Factory() override;
 
     CanvasRenderingContext* Create(
         CanvasRenderingContextHost*,
         const CanvasContextCreationAttributesCore&) override;
-    CanvasRenderingContext::ContextType GetContextType() const override;
+    CanvasRenderingContext::CanvasRenderingAPI GetRenderingAPI() const override;
   };
 
   GPUCanvasContext(CanvasRenderingContextHost*,
                    const CanvasContextCreationAttributesCore&);
+
+  GPUCanvasContext(const GPUCanvasContext&) = delete;
+  GPUCanvasContext& operator=(const GPUCanvasContext&) = delete;
+
   ~GPUCanvasContext() override;
 
   void Trace(Visitor*) const override;
-  const IntSize& CanvasSize() const;
 
   // CanvasRenderingContext implementation
-  ContextType GetContextType() const override;
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
   scoped_refptr<StaticBitmapImage> GetImage() final;
@@ -84,19 +89,7 @@ class GPUCanvasContext : public CanvasRenderingContext {
   String getPreferredFormat(const GPUAdapter* adapter);
   GPUTexture* getCurrentTexture(ExceptionState&);
 
-  // gpu_canvas_context.idl (Deprecated)
-  GPUSwapChain* configureSwapChain(const GPUCanvasConfiguration* descriptor,
-                                   ExceptionState&);
-  String getSwapChainPreferredFormat(ExecutionContext* execution_context,
-                                     GPUAdapter* adapter);
-
  private:
-  DISALLOW_COPY_AND_ASSIGN(GPUCanvasContext);
-
-  void ConfigureInternal(const GPUCanvasConfiguration* descriptor,
-                         ExceptionState&,
-                         bool deprecated_resize_behavior = false);
-
   cc::PaintFlags::FilterQuality filter_quality_ =
       cc::PaintFlags::FilterQuality::kLow;
   Member<GPUSwapChain> swapchain_;

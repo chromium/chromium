@@ -45,6 +45,8 @@ class FileHandlingPermissionRequestDialogTestApi;
 //   checkbox is presented to the user with text akin to "don't ask again" and
 //   is checked by default.
 // * it doesn't coalesce with other permission requests
+//
+// TODO(estade): remove when kDesktopPWAsFileHandlingSettingsGated is default.
 class FileHandlingPermissionRequestDialog
     : public views::DialogDelegateView,
       public permissions::PermissionPrompt {

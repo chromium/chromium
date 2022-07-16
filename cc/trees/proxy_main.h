@@ -85,7 +85,6 @@ class CC_EXPORT ProxyMain : public Proxy {
   void SetNeedsUpdateLayers() override;
   void SetNeedsCommit() override;
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;
-  void SetNextCommitWaitsForActivation() override;
   void SetTargetLocalSurfaceId(
       const viz::LocalSurfaceId& target_local_surface_id) override;
   bool RequestedAnimatePending() override;
@@ -113,6 +112,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override;
   void SetEnableFrameRateThrottling(bool enable_frame_rate_throttling) override;
+  uint32_t GetAverageThroughput() const override;
 
   // Returns |true| if the request was actually sent, |false| if one was
   // already outstanding.
@@ -143,8 +143,6 @@ class CC_EXPORT ProxyMain : public Proxy {
   // The final_pipeline_stage_ that was requested before the last commit was
   // deferred.
   CommitPipelineStage deferred_final_pipeline_stage_;
-
-  bool commit_waits_for_activation_;
 
   // Set when the Proxy is started using Proxy::Start() and reset when it is
   // stopped using Proxy::Stop().

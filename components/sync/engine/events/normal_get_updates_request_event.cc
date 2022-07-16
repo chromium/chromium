@@ -41,7 +41,7 @@ std::unique_ptr<ProtocolEvent> NormalGetUpdatesRequestEvent::Clone() const {
       is_retry_, request_);
 }
 
-NormalGetUpdatesRequestEvent::~NormalGetUpdatesRequestEvent() {}
+NormalGetUpdatesRequestEvent::~NormalGetUpdatesRequestEvent() = default;
 
 base::Time NormalGetUpdatesRequestEvent::GetTimestamp() const {
   return timestamp_;

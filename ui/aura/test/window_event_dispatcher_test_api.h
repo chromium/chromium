@@ -5,8 +5,6 @@
 #ifndef UI_AURA_TEST_WINDOW_EVENT_DISPATCHER_TEST_API_H_
 #define UI_AURA_TEST_WINDOW_EVENT_DISPATCHER_TEST_API_H_
 
-#include "base/macros.h"
-
 namespace aura {
 
 class WindowEventDispatcher;
@@ -17,6 +15,10 @@ class WindowEventDispatcherTestApi {
  public:
   explicit WindowEventDispatcherTestApi(WindowEventDispatcher* dispatcher);
 
+  WindowEventDispatcherTestApi(const WindowEventDispatcherTestApi&) = delete;
+  WindowEventDispatcherTestApi& operator=(const WindowEventDispatcherTestApi&) =
+      delete;
+
   bool HoldingPointerMoves() const;
 
   // If pointer moves are being held, this method waits until they're
@@ -25,8 +27,6 @@ class WindowEventDispatcherTestApi {
 
  private:
   WindowEventDispatcher* dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowEventDispatcherTestApi);
 };
 
 }  // namespace test

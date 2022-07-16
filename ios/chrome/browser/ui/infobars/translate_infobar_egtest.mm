@@ -266,6 +266,12 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that different language signals are detected correctly.
 - (void)testLanguageDetection {
+// TODO(crbug.com/1235979): test failing on ipad device
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
+  }
+#endif
   const GURL URL =
       web::test::HttpServer::MakeUrl("http://scenarioLanguageDetection");
   std::map<GURL, std::string> responses;
@@ -721,12 +727,8 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that the target language can be changed. TODO(crbug.com/1046629):
 // implement test for changing source language.
-- (void)testInfobarChangeTargetLanguage {
-  // TODO(crbug.com/1116012): This test is failing flaky on iOS14.
-  if (@available(iOS 14, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS14.");
-  }
-
+// TODO(crbug.com/1116012): This test is failing flaky on iOS14.
+- (void)DISABLED_testInfobarChangeTargetLanguage {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));

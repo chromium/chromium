@@ -4,4 +4,13 @@ include_rules = [
   "+base",
   "+chromeos/dbus",
   "+testing",
+  "+services/device/public",
+  "+ash/test",
+  "+ash/constants",
 ]
+
+specific_include_rules = {
+  "pcie_peripheral_manager_unittest\.cc": [
+    "+ash/test/ash_test_base.h",
+  ]
+}

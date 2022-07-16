@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_CUSTOM_HANDLERS_REGISTER_PROTOCOL_HANDLER_PERMISSION_REQUEST_H_
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
-#include "chrome/common/custom_handlers/protocol_handler.h"
 #include "components/permissions/permission_request.h"
+#include "content/public/common/custom_handlers/protocol_handler.h"
 
 namespace permissions {
 enum class RequestType;
 }  // namespace permissions
+
+using content::ProtocolHandler;
 
 class GURL;
 class ProtocolHandlerRegistry;
@@ -27,6 +28,12 @@ class RegisterProtocolHandlerPermissionRequest
       const ProtocolHandler& handler,
       GURL url,
       base::ScopedClosureRunner fullscreen_block);
+
+  RegisterProtocolHandlerPermissionRequest(
+      const RegisterProtocolHandlerPermissionRequest&) = delete;
+  RegisterProtocolHandlerPermissionRequest& operator=(
+      const RegisterProtocolHandlerPermissionRequest&) = delete;
+
   ~RegisterProtocolHandlerPermissionRequest() override;
 
  private:
@@ -44,8 +51,6 @@ class RegisterProtocolHandlerPermissionRequest
   // TODO(avi): Move to either permissions::PermissionRequest or the
   // PermissionRequestManager?
   base::ScopedClosureRunner fullscreen_block_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegisterProtocolHandlerPermissionRequest);
 };
 
 #endif  // CHROME_BROWSER_CUSTOM_HANDLERS_REGISTER_PROTOCOL_HANDLER_PERMISSION_REQUEST_H_

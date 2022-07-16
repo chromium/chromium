@@ -67,7 +67,7 @@ class SubtreeLayoutScope {
   LayoutObject& root_;
 
 #if DCHECK_IS_ON()
-  HashSet<LayoutObject*> layout_objects_to_layout_;
+  HeapHashSet<Member<LayoutObject>> layout_objects_to_layout_;
 #endif
 };
 

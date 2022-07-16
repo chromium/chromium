@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -59,6 +58,9 @@ class TopSitesQuerier {
  public:
   TopSitesQuerier() : number_of_callbacks_(0), waiting_(false) {}
 
+  TopSitesQuerier(const TopSitesQuerier&) = delete;
+  TopSitesQuerier& operator=(const TopSitesQuerier&) = delete;
+
   // Queries top sites. If `wait` is true a nested run loop is run until the
   // callback is notified.
   void QueryTopSites(TopSitesImpl* top_sites, bool wait) {
@@ -96,8 +98,6 @@ class TopSitesQuerier {
   int number_of_callbacks_;
   bool waiting_;
   base::WeakPtrFactory<TopSitesQuerier> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TopSitesQuerier);
 };
 
 }  // namespace
@@ -105,6 +105,9 @@ class TopSitesQuerier {
 class TopSitesImplTest : public HistoryUnitTestBase {
  public:
   TopSitesImplTest() {}
+
+  TopSitesImplTest(const TopSitesImplTest&) = delete;
+  TopSitesImplTest& operator=(const TopSitesImplTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
@@ -250,13 +253,14 @@ class TopSitesImplTest : public HistoryUnitTestBase {
 
   // To cancel TopSitesBackend tasks.
   base::CancelableTaskTracker top_sites_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopSitesImplTest);
 };  // Class TopSitesImplTest
 
 class MockTopSitesObserver : public TopSitesObserver {
  public:
   MockTopSitesObserver() {}
+
+  MockTopSitesObserver(const MockTopSitesObserver&) = delete;
+  MockTopSitesObserver& operator=(const MockTopSitesObserver&) = delete;
 
   // history::TopSitesObserver:
   void TopSitesLoaded(TopSites* top_sites) override {}
@@ -270,8 +274,6 @@ class MockTopSitesObserver : public TopSitesObserver {
 
  private:
   bool is_notified_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTopSitesObserver);
 };
 
 // Tests DoTitlesDiffer.
@@ -499,11 +501,11 @@ TEST_F(TopSitesImplTest, RealDatabase) {
   url2_redirects.push_back(google2_url);
   url2_redirects.push_back(google3_url);
 
-  AddPageToHistory(google3_url, url2.title,
-                   add_time - base::TimeDelta::FromMinutes(1), url2_redirects);
+  AddPageToHistory(google3_url, url2.title, add_time - base::Minutes(1),
+                   url2_redirects);
   // Add google twice so that it becomes the first visited site.
-  AddPageToHistory(google3_url, url2.title,
-                   add_time - base::TimeDelta::FromMinutes(2), url2_redirects);
+  AddPageToHistory(google3_url, url2.title, add_time - base::Minutes(2),
+                   url2_redirects);
 
   RefreshTopSitesAndRecreate();
 

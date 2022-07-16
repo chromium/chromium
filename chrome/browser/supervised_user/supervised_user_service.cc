@@ -15,8 +15,11 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -30,13 +33,11 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
-#include "chrome/browser/supervised_user/supervised_user_filtering_switches.h"
+#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_site_list.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -59,9 +60,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/settings/cros_settings_names.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/supervised_user_manager.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -86,9 +87,16 @@ namespace {
 
 // The URL from which to download a host denylist if no local one exists yet.
 const char kDenylistURL[] =
-    "https://www.gstatic.com/chrome/supervised_user/blacklist-20141001-1k.bin";
-// The filename under which we'll store the denylist (in the user data dir).
-const char kDenylistFilename[] = "su-blacklist.bin";
+    "https://www.gstatic.com/chrome/supervised_user/denylist-20141001-1k.bin";
+// The filename under which we'll store the denylist (in the user data dir). The
+// old file will be used as a backup in case the new file has not been loaded
+// yet.
+const char kDenylistPrefix[] = "su-deny";
+// TODO(crbug/1243379): Remove references to the old denylist
+const char kOldDenylistPrefix[] = "su-black";
+const char kDenylistSuffix[] = "list.bin";
+
+const char kDenylistSourceHistogramName[] = "FamilyUser.DenylistSource";
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // These extensions are allowed for supervised users for internal development
@@ -112,16 +120,10 @@ const char* const kCustodianInfoPrefs[] = {
     prefs::kSupervisedUserSecondCustodianProfileURL,
 };
 
-void CreateURLAccessRequest(const GURL& url,
-                            PermissionRequestCreator* creator,
-                            SupervisedUserService::SuccessCallback callback) {
-  creator->CreateURLAccessRequest(url, std::move(callback));
-}
-
-base::FilePath GetDenylistPath() {
+base::FilePath GetDenylistPath(base::StringPiece filePrefix) {
   base::FilePath denylist_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &denylist_dir);
-  return denylist_dir.AppendASCII(kDenylistFilename);
+  return denylist_dir.AppendASCII(base::StrCat({filePrefix, kDenylistSuffix}));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -162,6 +164,18 @@ void SupervisedUserService::RegisterProfilePrefs(
   }
 }
 
+// static
+const char* SupervisedUserService::GetDenylistSourceHistogramForTesting() {
+  return kDenylistSourceHistogramName;
+}
+
+// static
+base::FilePath SupervisedUserService::GetDenylistPathForTesting(
+    bool isOldPath) {
+  return isOldPath ? GetDenylistPath(kOldDenylistPrefix)
+                   : GetDenylistPath(kDenylistPrefix);
+}
+
 void SupervisedUserService::Init() {
   DCHECK(!did_init_);
   did_init_ = true;
@@ -190,21 +204,6 @@ void SupervisedUserService::SetDelegate(Delegate* delegate) {
 
 SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() {
   return &url_filter_;
-}
-
-bool SupervisedUserService::AccessRequestsEnabled() {
-  return FindEnabledPermissionRequestCreator(0) < permissions_creators_.size();
-}
-
-void SupervisedUserService::AddURLAccessRequest(const GURL& url,
-                                                SuccessCallback callback) {
-  GURL effective_url = policy::url_util::GetEmbeddedURL(url);
-  if (!effective_url.is_valid())
-    effective_url = url;
-  AddPermissionRequestInternal(
-      base::BindRepeating(CreateURLAccessRequest,
-                          policy::url_util::Normalize(effective_url)),
-      std::move(callback), 0);
 }
 
 // static
@@ -278,9 +277,7 @@ std::u16string SupervisedUserService::GetExtensionsLockedMessage() const {
 
 // static
 std::string SupervisedUserService::GetEduCoexistenceLoginUrl() {
-  return base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2)
-             ? chrome::kChromeUIEDUCoexistenceLoginURLV2
-             : chrome::kChromeUIEDUCoexistenceLoginURLV1;
+  return chrome::kChromeUIEDUCoexistenceLoginURLV2;
 }
 
 bool SupervisedUserService::IsChild() const {
@@ -302,11 +299,6 @@ void SupervisedUserService::RemoveObserver(
   observer_list_.RemoveObserver(observer);
 }
 
-void SupervisedUserService::AddPermissionRequestCreator(
-    std::unique_ptr<PermissionRequestCreator> creator) {
-  permissions_creators_.push_back(std::move(creator));
-}
-
 SupervisedUserService::SupervisedUserService(Profile* profile)
     : profile_(profile),
       active_(false),
@@ -319,18 +311,6 @@ SupervisedUserService::SupervisedUserService(Profile* profile)
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile));
 #endif
-}
-
-void SupervisedUserService::SetPrimaryPermissionCreatorForTest(
-    std::unique_ptr<PermissionRequestCreator> permission_creator) {
-  if (permissions_creators_.empty()) {
-    permissions_creators_.push_back(std::move(permission_creator));
-    return;
-  }
-
-  // Else there are other permission creators.
-  permissions_creators_.insert(permissions_creators_.begin(),
-                               std::move(permission_creator));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -501,7 +481,7 @@ void SupervisedUserService::SetActive(bool active) {
     BrowserList::AddObserver(this);
 #endif
   } else {
-    permissions_creators_.clear();
+    web_approvals_manager_.ClearRemoteApprovalRequestsCreators();
 
     pref_change_registrar_.Remove(
         prefs::kDefaultSupervisedUserFilteringBehavior);
@@ -542,46 +522,6 @@ PrefService* SupervisedUserService::GetPrefService() {
   return pref_service;
 }
 
-size_t SupervisedUserService::FindEnabledPermissionRequestCreator(
-    size_t start) {
-  for (size_t i = start; i < permissions_creators_.size(); ++i) {
-    if (permissions_creators_[i]->IsEnabled())
-      return i;
-  }
-  return permissions_creators_.size();
-}
-
-void SupervisedUserService::AddPermissionRequestInternal(
-    const CreatePermissionRequestCallback& create_request,
-    SuccessCallback callback,
-    size_t index) {
-  // Find a permission request creator that is enabled.
-  size_t next_index = FindEnabledPermissionRequestCreator(index);
-  if (next_index >= permissions_creators_.size()) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  create_request.Run(
-      permissions_creators_[next_index].get(),
-      base::BindOnce(&SupervisedUserService::OnPermissionRequestIssued,
-                     weak_ptr_factory_.GetWeakPtr(), create_request,
-                     std::move(callback), next_index));
-}
-
-void SupervisedUserService::OnPermissionRequestIssued(
-    const CreatePermissionRequestCallback& create_request,
-    SuccessCallback callback,
-    size_t index,
-    bool success) {
-  if (success) {
-    std::move(callback).Run(true);
-    return;
-  }
-
-  AddPermissionRequestInternal(create_request, std::move(callback), index + 1);
-}
-
 void SupervisedUserService::OnSupervisedUserIdChanged() {
   SetActive(IsChild());
 }
@@ -608,11 +548,16 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+bool SupervisedUserService::IsSafeSitesEnabled() const {
+  return profile_->IsChild() &&
+         profile_->GetPrefs()->GetBoolean(prefs::kSupervisedUserSafeSites);
+}
+
 void SupervisedUserService::OnSafeSitesSettingChanged() {
-  bool use_denylist = supervised_users::IsSafeSitesDenylistEnabled(profile_);
+  bool use_denylist = IsSafeSitesEnabled();
   if (use_denylist != url_filter_.HasDenylist()) {
     if (use_denylist && denylist_state_ == DenylistLoadState::NOT_LOADED) {
-      LoadDenylist(GetDenylistPath(), GURL(kDenylistURL));
+      LoadDenylist(GetDenylistPath(kDenylistPrefix), GURL(kDenylistURL));
     } else if (!use_denylist || denylist_state_ == DenylistLoadState::LOADED) {
       // Either the denylist was turned off, or it was turned on but has
       // already been loaded previously. Just update the setting.
@@ -642,7 +587,7 @@ void SupervisedUserService::UpdateAsyncUrlChecker() {
       SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
 
   bool use_online_check =
-      supervised_users::IsSafeSitesOnlineCheckEnabled(profile_) ||
+      IsSafeSitesEnabled() ||
       behavior == SupervisedUserURLFilter::FilteringBehavior::BLOCK;
 
   if (use_online_check != url_filter_.HasAsyncURLChecker()) {
@@ -675,6 +620,8 @@ void SupervisedUserService::OnDenylistFileChecked(const base::FilePath& path,
   DCHECK(denylist_state_ == DenylistLoadState::LOAD_STARTED);
   if (file_exists) {
     LoadDenylistFromFile(path);
+    base::UmaHistogramEnumeration(kDenylistSourceHistogramName,
+                                  DenylistSource::kDenylist);
     return;
   }
 
@@ -682,7 +629,7 @@ void SupervisedUserService::OnDenylistFileChecked(const base::FilePath& path,
 
   // Create traffic annotation tag.
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("supervised_users_blacklist", R"(
+      net::DefineNetworkTrafficAnnotation("supervised_users_denylist", R"(
         semantics {
           sender: "Supervised Users"
           description:
@@ -734,11 +681,34 @@ void SupervisedUserService::OnDenylistDownloadDone(
   DCHECK(denylist_state_ == DenylistLoadState::LOAD_STARTED);
   if (FileDownloader::IsSuccess(result)) {
     LoadDenylistFromFile(path);
+    base::UmaHistogramEnumeration(kDenylistSourceHistogramName,
+                                  DenylistSource::kDenylist);
   } else {
-    LOG(WARNING) << "Denylist download failed";
+    LOG(WARNING) << "Denylist download failed, trying to load the old denylist";
+    const base::FilePath& filePath = GetDenylistPath(kOldDenylistPrefix);
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(&base::PathExists, filePath),
+        base::BindOnce(&SupervisedUserService::TryLoadingOldDenylist,
+                       weak_ptr_factory_.GetWeakPtr(), filePath));
     // TODO(treib): Retry downloading after some time?
   }
   denylist_downloader_.reset();
+}
+
+void SupervisedUserService::TryLoadingOldDenylist(const base::FilePath& path,
+                                                  bool file_exists) {
+  if (!file_exists) {
+    LOG(WARNING) << "Old denylist is not available";
+    base::UmaHistogramEnumeration(kDenylistSourceHistogramName,
+                                  DenylistSource::kNoSource);
+    return;
+  }
+  LoadDenylistFromFile(path);
+  base::UmaHistogramEnumeration(kDenylistSourceHistogramName,
+                                DenylistSource::kOldDenylist);
 }
 
 void SupervisedUserService::OnDenylistLoaded() {
@@ -748,8 +718,7 @@ void SupervisedUserService::OnDenylistLoaded() {
 }
 
 void SupervisedUserService::UpdateDenylist() {
-  bool use_denylist = supervised_users::IsSafeSitesDenylistEnabled(profile_);
-  url_filter_.SetDenylist(use_denylist ? &denylist_ : nullptr);
+  url_filter_.SetDenylist(IsSafeSitesEnabled() ? &denylist_ : nullptr);
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnURLFilterChanged();
 }

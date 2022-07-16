@@ -75,28 +75,29 @@ void TrustedVaultClientAndroid::FetchKeysCompleted(
   std::move(ongoing_fetch_keys.callback).Run(converted_keys);
 }
 
-void TrustedVaultClientAndroid::MarkLocalKeysAsStaleCompleted(JNIEnv* env,
-                                                              jint request_id,
-                                                              jboolean result) {
+void TrustedVaultClientAndroid::MarkLocalKeysAsStaleCompleted(
+    JNIEnv* env,
+    jint request_id,
+    jboolean succeeded) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
 
   std::move(absl::get<OngoingMarkLocalKeysAsStale>(ongoing_request).callback)
-      .Run(!!result);
+      .Run(!!succeeded);
 }
 
 void TrustedVaultClientAndroid::GetIsRecoverabilityDegradedCompleted(
     JNIEnv* env,
     jint request_id,
-    jboolean result) {
+    jboolean is_degraded) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
 
   std::move(
       absl::get<OngoingGetIsRecoverabilityDegraded>(ongoing_request).callback)
-      .Run(!!result);
+      .Run(!!is_degraded);
 }
 
 void TrustedVaultClientAndroid::NotifyKeysChanged(JNIEnv* env) {
@@ -134,8 +135,7 @@ void TrustedVaultClientAndroid::FetchKeys(
 
   // Trigger the fetching keys from the implementation in Java, which will
   // eventually call FetchKeysCompleted().
-  Java_TrustedVaultClient_fetchKeys(env, reinterpret_cast<intptr_t>(this),
-                                    request_id, java_account_info);
+  Java_TrustedVaultClient_fetchKeys(env, request_id, java_account_info);
 }
 
 void TrustedVaultClientAndroid::StoreKeys(
@@ -163,8 +163,8 @@ void TrustedVaultClientAndroid::MarkLocalKeysAsStale(
 
   // The Java implementation will eventually call
   // MarkLocalKeysAsStaleCompleted().
-  Java_TrustedVaultClient_markLocalKeysAsStale(
-      env, reinterpret_cast<intptr_t>(this), request_id, java_account_info);
+  Java_TrustedVaultClient_markLocalKeysAsStale(env, request_id,
+                                               java_account_info);
 }
 
 void TrustedVaultClientAndroid::GetIsRecoverabilityDegraded(
@@ -184,8 +184,8 @@ void TrustedVaultClientAndroid::GetIsRecoverabilityDegraded(
 
   // The Java implementation will eventually call
   // MarkLocalKeysAsStaleCompleted().
-  Java_TrustedVaultClient_getIsRecoverabilityDegraded(
-      env, reinterpret_cast<intptr_t>(this), request_id, java_account_info);
+  Java_TrustedVaultClient_getIsRecoverabilityDegraded(env, request_id,
+                                                      java_account_info);
 }
 
 void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(

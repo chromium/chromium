@@ -14,14 +14,15 @@ class WifiDataProviderWin : public WifiDataProviderCommon {
  public:
   WifiDataProviderWin();
 
+  WifiDataProviderWin(const WifiDataProviderWin&) = delete;
+  WifiDataProviderWin& operator=(const WifiDataProviderWin&) = delete;
+
  private:
   ~WifiDataProviderWin() override;
 
   // WifiDataProviderCommon implementation
   std::unique_ptr<WlanApiInterface> CreateWlanApi() override;
   std::unique_ptr<WifiPollingPolicy> CreatePollingPolicy() override;
-
-  DISALLOW_COPY_AND_ASSIGN(WifiDataProviderWin);
 };
 
 }  // namespace device

@@ -236,9 +236,8 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     const wtf_size_t rowspan = cell.TableCellRowspan();
     NGTableTypes::CellBlockConstraint cell_block_constraint =
         NGTableTypes::CreateCellBlockConstraint(
-            cell, fragment.BlockSize(), fragment.FirstBaselineOrSynthesize(),
-            cell_borders, row_index, colspan_cell_tabulator->CurrentColumn(),
-            rowspan);
+            cell, fragment.BlockSize(), cell_borders, row_index,
+            colspan_cell_tabulator->CurrentColumn(), rowspan);
     colspan_cell_tabulator->ProcessCell(cell);
     cell_block_constraints->push_back(cell_block_constraint);
     is_constrained |= cell_block_constraint.is_constrained && rowspan == 1;
@@ -689,10 +688,10 @@ void NGRowBaselineTabulator::ProcessCell(
     const bool is_rowspanned,
     const bool descendant_depends_on_percentage_block_size) {
   if (is_parallel && is_baseline_aligned &&
-      fragment.HasDescendantsForTablePart()) {
+      fragment.HasDescendantsForTablePart() && fragment.FirstBaseline()) {
     max_cell_baseline_depends_on_percentage_block_descendant_ |=
         descendant_depends_on_percentage_block_size;
-    const LayoutUnit cell_baseline = fragment.FirstBaselineOrSynthesize();
+    const LayoutUnit cell_baseline = *fragment.FirstBaseline();
     max_cell_ascent_ =
         std::max(max_cell_ascent_.value_or(LayoutUnit::Min()), cell_baseline);
     if (is_rowspanned) {

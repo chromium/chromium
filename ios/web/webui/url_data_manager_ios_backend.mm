@@ -14,9 +14,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -54,7 +54,6 @@ const char kChromeURLContentSecurityPolicyHeaderBase[] =
 const char kXFrameOptions[] = "X-Frame-Options";
 const char kChromeURLXFrameOptionsHeader[] = "DENY";
 
-const std::string kWebUIResources = "/ui/webui/resources";
 const char kWebUIResourcesHost[] = "resources";
 
 // Returns whether |url| passes some sanity checks and is a valid GURL.
@@ -89,6 +88,7 @@ void URLToRequestPath(const GURL& url, std::string* path) {
 // The use of x/../../../../ui/webui/resources is mapped by webkit to
 // x/ui/webui/resources so to not go out of scope of the module.
 GURL RedirectWebUIResources(const GURL url) {
+  static std::string kWebUIResources = "/ui/webui/resources";
   if (base::StartsWith(url.path(), kWebUIResources,
                        base::CompareCase::SENSITIVE)) {
     GURL::Replacements replacements;
@@ -111,6 +111,9 @@ class URLRequestChromeJob : public net::URLRequestJob {
   URLRequestChromeJob(net::URLRequest* request,
                       BrowserState* browser_state,
                       bool is_incognito);
+
+  URLRequestChromeJob(const URLRequestChromeJob&) = delete;
+  URLRequestChromeJob& operator=(const URLRequestChromeJob&) = delete;
 
   ~URLRequestChromeJob() override;
 
@@ -216,8 +219,6 @@ class URLRequestChromeJob : public net::URLRequestJob {
   URLDataManagerIOSBackend* backend_;
 
   base::WeakPtrFactory<URLRequestChromeJob> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestChromeJob);
 };
 
 URLRequestChromeJob::URLRequestChromeJob(net::URLRequest* request,
@@ -415,6 +416,10 @@ class ChromeProtocolHandler
   // |is_incognito| should be set for incognito profiles.
   ChromeProtocolHandler(BrowserState* browser_state, bool is_incognito)
       : browser_state_(browser_state), is_incognito_(is_incognito) {}
+
+  ChromeProtocolHandler(const ChromeProtocolHandler&) = delete;
+  ChromeProtocolHandler& operator=(const ChromeProtocolHandler&) = delete;
+
   ~ChromeProtocolHandler() override {}
 
   std::unique_ptr<net::URLRequestJob> CreateJob(
@@ -434,8 +439,6 @@ class ChromeProtocolHandler
 
   // True when generated from an incognito profile.
   const bool is_incognito_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeProtocolHandler);
 };
 
 }  // namespace

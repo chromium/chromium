@@ -54,10 +54,10 @@ class CONTENT_EXPORT PeerConnectionTrackerHostObserver
   //
   // There are many possible values for |type| and |value|. Here are a couple
   // examples:
-  // |type| == "iceConnectionStateChange" && |value| == "connected":
+  // |type| == "connectionstatechange" && |value| == "connected":
   //   A connection was established with another peer.
-  // |type| == "stop" && |value| == "":
-  //   An estasblished connection with another peer was stopped.
+  // |type| == "close" && |value| == "":
+  //   An established connection with another peer was closed.
   virtual void OnPeerConnectionUpdated(
       GlobalRenderFrameHostId render_frame_host_id,
       int lid,

@@ -7,10 +7,9 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller_delegate.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 class LayerAnimator;
@@ -29,6 +28,10 @@ class InkDropHighlightTestApi
       public ui::test::MultiLayerAnimatorTestControllerDelegate {
  public:
   explicit InkDropHighlightTestApi(InkDropHighlight* ink_drop_highlight);
+
+  InkDropHighlightTestApi(const InkDropHighlightTestApi&) = delete;
+  InkDropHighlightTestApi& operator=(const InkDropHighlightTestApi&) = delete;
+
   ~InkDropHighlightTestApi() override;
 
   // MultiLayerAnimatorTestControllerDelegate:
@@ -47,8 +50,6 @@ class InkDropHighlightTestApi
  private:
   // The InkDropHighlight to provide internal access to.
   InkDropHighlight* ink_drop_highlight_;
-
-  DISALLOW_COPY_AND_ASSIGN(InkDropHighlightTestApi);
 };
 
 }  // namespace test

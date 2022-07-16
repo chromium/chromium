@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
@@ -58,6 +57,10 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
       PrefService* pref_service,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       syncer::OnceModelTypeStoreFactory create_store_callback);
+
+  WifiConfigurationBridge(const WifiConfigurationBridge&) = delete;
+  WifiConfigurationBridge& operator=(const WifiConfigurationBridge&) = delete;
+
   ~WifiConfigurationBridge() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -80,7 +83,7 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
   void OnFirstConnectionToNetwork(const std::string& guid) override;
   void OnNetworkCreated(const std::string& guid) override;
   void OnNetworkUpdate(const std::string& guid,
-                       base::DictionaryValue* set_properties) override;
+                       const base::Value* set_properties) override;
 
   // NetworkConfigurationObserver::
   void OnBeforeConfigurationRemoved(const std::string& service_path,
@@ -163,8 +166,6 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
   base::WeakPtr<NetworkMetadataStore> network_metadata_store_;
 
   base::WeakPtrFactory<WifiConfigurationBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WifiConfigurationBridge);
 };
 
 }  // namespace sync_wifi

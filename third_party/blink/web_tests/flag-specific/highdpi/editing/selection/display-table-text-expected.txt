@@ -7,7 +7,7 @@ layer at (0,0) size 1200x900
       LayoutNGTable {DIV} at (0,0) size 537x27
         LayoutNGTableSection (anonymous) at (0,0) size 537x27
           LayoutNGTableRow (anonymous) at (0,0) size 537x27
-            LayoutNGTableCellNew (anonymous) at (0,0) size 537x27 [r=0 c=0 rs=1 cs=1]
+            LayoutNGTableCell (anonymous) at (0,0) size 537x27 [r=0 c=0 rs=1 cs=1]
               LayoutText {#text} at (0,0) size 537x26
                 text run at (0,0) width 537: "Only the third word in this sentence should be selected."
 selection start: position 9 of child 0 {#text} of child 1 {DIV} of body

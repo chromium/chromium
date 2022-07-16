@@ -9,11 +9,11 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/arc/mojom/anr.mojom.h"
 #include "components/arc/mojom/power.mojom.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -42,15 +42,22 @@ class ArcPowerBridge : public KeyedService,
   class Observer : public base::CheckedObserver {
    public:
     // Notifies that wakefulness mode is changed.
-    virtual void OnWakefulnessChanged(mojom::WakefulnessMode mode) = 0;
+    virtual void OnWakefulnessChanged(mojom::WakefulnessMode mode) {}
+    virtual void OnPreAnr(mojom::AnrType type) {}
   };
 
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcPowerBridge* GetForBrowserContext(content::BrowserContext* context);
+  static ArcPowerBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcPowerBridge(content::BrowserContext* context,
                  ArcBridgeService* bridge_service);
+
+  ArcPowerBridge(const ArcPowerBridge&) = delete;
+  ArcPowerBridge& operator=(const ArcPowerBridge&) = delete;
+
   ~ArcPowerBridge() override;
 
   void AddObserver(Observer* observer);
@@ -86,6 +93,8 @@ class ArcPowerBridge : public KeyedService,
   void IsDisplayOn(IsDisplayOnCallback callback) override;
   void OnScreenBrightnessUpdateRequest(double percent) override;
   void OnWakefulnessChanged(mojom::WakefulnessMode mode) override;
+  void OnPreAnr(mojom::AnrType type) override;
+  void OnAnrRecoveryFailed(::arc::mojom::AnrType type) override;
 
   void SetWakeLockProviderForTesting(
       mojo::Remote<device::mojom::WakeLockProvider> provider) {
@@ -147,8 +156,6 @@ class ArcPowerBridge : public KeyedService,
   bool is_suspending_ = false;
 
   base::WeakPtrFactory<ArcPowerBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPowerBridge);
 };
 
 }  // namespace arc

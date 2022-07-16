@@ -8,11 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge.h"
-#include "chrome/browser/chromeos/input_method/input_method_engine.h"
+#include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "components/arc/mojom/input_method_manager.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -24,9 +23,13 @@ namespace arc {
 // each text field and accepts text edit commands from the ARC container.
 class InputConnectionImpl : public mojom::InputConnection {
  public:
-  InputConnectionImpl(chromeos::InputMethodEngine* ime_engine,
+  InputConnectionImpl(ash::input_method::InputMethodEngine* ime_engine,
                       ArcInputMethodManagerBridge* imm_bridge,
                       int input_context_id);
+
+  InputConnectionImpl(const InputConnectionImpl&) = delete;
+  InputConnectionImpl& operator=(const InputConnectionImpl&) = delete;
+
   ~InputConnectionImpl() override;
 
   // Binds this class to a passed pending remote.
@@ -60,15 +63,13 @@ class InputConnectionImpl : public mojom::InputConnection {
 
   void SendControlKeyEvent(const std::u16string& text);
 
-  chromeos::InputMethodEngine* const ime_engine_;  // Not owned
+  ash::input_method::InputMethodEngine* const ime_engine_;  // Not owned
   ArcInputMethodManagerBridge* const imm_bridge_;  // Not owned
   const int input_context_id_;
 
   mojo::Receiver<mojom::InputConnection> receiver_{this};
 
   base::OneShotTimer state_update_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputConnectionImpl);
 };
 
 }  // namespace arc

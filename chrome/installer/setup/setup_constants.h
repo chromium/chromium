@@ -37,9 +37,9 @@ extern const char kZucchini[];
 
 namespace switches {
 
-extern const char kDelay[];
 extern const char kSetDisplayVersionProduct[];
 extern const char kSetDisplayVersionValue[];
+extern const char kStartupEventHandle[];
 extern const char kUserExperiment[];
 
 extern const char kCleanupForDowngradeOperation[];

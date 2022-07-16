@@ -26,7 +26,7 @@ const int kDefaultDpi = 96;
 
 // The default interval for processes to send resource usage to network process.
 constexpr base::TimeDelta kDefaultProcessStatsInterval =
-    base::TimeDelta::FromMilliseconds(2000);
+    base::Milliseconds(2000);
 
 // The video frame rate.
 constexpr int kTargetFrameRate = 30;

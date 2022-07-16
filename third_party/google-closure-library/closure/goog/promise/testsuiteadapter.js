@@ -1,16 +1,8 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Test adapter for testing Closure Promises against the
@@ -20,6 +12,7 @@
  * compiled with the Closure Compiler to pull in the required dependencies.
  *
  * @see https://npmjs.org/package/promises-aplus-tests
+ * @suppress {undefinedVars} Node.js's process and require
  */
 
 goog.provide('goog.promise.testSuiteAdapter');
@@ -46,8 +39,10 @@ goog.promise.testSuiteAdapter = {
 
   /** @return {!Object} */
   'deferred': function() {
+    'use strict';
     var promiseObj = {};
     promiseObj['promise'] = new goog.Promise(function(resolve, reject) {
+      'use strict';
       promiseObj['resolve'] = resolve;
       promiseObj['reject'] = reject;
     });
@@ -68,6 +63,7 @@ goog.Promise.setUnhandledRejectionHandler(goog.nullFunction);
 
 // Run the tests, exiting with a failure code if any of the tests fail.
 promisesAplusTests(goog.promise.testSuiteAdapter, function(err) {
+  'use strict';
   if (err) {
     process.exit(1);
   }

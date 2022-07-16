@@ -40,6 +40,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SessionCleanupCookieStore
   explicit SessionCleanupCookieStore(
       const scoped_refptr<net::SQLitePersistentCookieStore>& cookie_store);
 
+  SessionCleanupCookieStore(const SessionCleanupCookieStore&) = delete;
+  SessionCleanupCookieStore& operator=(const SessionCleanupCookieStore&) =
+      delete;
+
   // net::CookieMonster::PersistentCookieStore:
   void Load(LoadedCallback loaded_callback,
             const net::NetLogWithSource& net_log) override;
@@ -76,8 +80,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SessionCleanupCookieStore
   bool force_keep_session_state_ = false;
 
   net::NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionCleanupCookieStore);
 };
 
 }  // namespace network

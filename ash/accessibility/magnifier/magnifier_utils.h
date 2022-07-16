@@ -8,13 +8,9 @@
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 
-namespace aura {
-class Window;
-}
-
-namespace ui {
-class InputMethod;
-}
+namespace gfx {
+class Point;
+}  // namespace gfx
 
 namespace ash {
 namespace magnifier_utils {
@@ -43,8 +39,7 @@ constexpr int kLeftEdgeContextPadding = 32;
 // (~16ms assuming 60hz screen updates), however most importantly keep it short,
 // so e.g. when user focuses an element, and then starts typing, the viewport
 // quickly moves to the caret position.
-constexpr base::TimeDelta kPauseCaretUpdateDuration =
-    base::TimeDelta::FromMilliseconds(15);
+constexpr base::TimeDelta kPauseCaretUpdateDuration = base::Milliseconds(15);
 
 // Calculates the new scale if it were to be adjusted exponentially by the
 // given |linear_offset|. This allows linear changes in scroll offset
@@ -74,8 +69,10 @@ float ASH_EXPORT GetNextMagnifierScaleValue(int delta_index,
                                             float min_scale,
                                             float max_scale);
 
-// Returns the active InputMethod, or that associated with |root_window|.
-ui::InputMethod* GetInputMethod(aura::Window* root_window);
+// If either of the fullscreen or docked magnifier is enabled, its focus will be
+// updated to center around the given `point_in_screen`. Note that both
+// magnifiers are mutually exclusive.
+void MaybeUpdateActiveMagnifierFocus(const gfx::Point& point_in_screen);
 
 }  // namespace magnifier_utils
 }  // namespace ash

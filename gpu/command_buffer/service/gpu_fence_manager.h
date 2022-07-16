@@ -31,6 +31,10 @@ class GPU_GLES2_EXPORT GpuFenceManager {
   class GPU_GLES2_EXPORT GpuFenceEntry {
    public:
     GpuFenceEntry();
+
+    GpuFenceEntry(const GpuFenceEntry&) = delete;
+    GpuFenceEntry& operator=(const GpuFenceEntry&) = delete;
+
     ~GpuFenceEntry();
 
     GpuFenceEntry(GpuFenceEntry&& other);
@@ -44,12 +48,14 @@ class GPU_GLES2_EXPORT GpuFenceManager {
     // at the time the wait is issued.
     gfx::GpuFenceHandle fence_handle_;
     std::unique_ptr<gl::GLFence> gl_fence_;
-
-    DISALLOW_COPY_AND_ASSIGN(GpuFenceEntry);
   };
 
  public:
   GpuFenceManager();
+
+  GpuFenceManager(const GpuFenceManager&) = delete;
+  GpuFenceManager& operator=(const GpuFenceManager&) = delete;
+
   ~GpuFenceManager();
 
   bool CreateGpuFence(uint32_t client_id);
@@ -71,8 +77,6 @@ class GPU_GLES2_EXPORT GpuFenceManager {
   using GpuFenceEntryMap =
       base::flat_map<uint32_t, std::unique_ptr<GpuFenceEntry>>;
   GpuFenceEntryMap gpu_fence_entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuFenceManager);
 };
 
 }  // namespace gles2

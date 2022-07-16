@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "media/cast/logging/raw_event_subscriber.h"
 
@@ -22,6 +21,9 @@ namespace cast {
 class SimpleEventSubscriber final : public RawEventSubscriber {
  public:
   SimpleEventSubscriber();
+
+  SimpleEventSubscriber(const SimpleEventSubscriber&) = delete;
+  SimpleEventSubscriber& operator=(const SimpleEventSubscriber&) = delete;
 
   ~SimpleEventSubscriber() final;
 
@@ -43,8 +45,6 @@ class SimpleEventSubscriber final : public RawEventSubscriber {
 
   // All functions must be called on the main thread.
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleEventSubscriber);
 };
 
 }  // namespace cast

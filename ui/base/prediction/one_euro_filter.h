@@ -6,7 +6,6 @@
 #define UI_BASE_PREDICTION_ONE_EURO_FILTER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "third_party/one_euro_filter/src/one_euro_filter.h"
 #include "ui/base/prediction/input_filter.h"
 
@@ -19,6 +18,10 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) OneEuroFilter : public InputFilter {
  public:
   OneEuroFilter(double mincutoff = kDefaultMincutoff,
                 double beta = kDefaultBeta);
+
+  OneEuroFilter(const OneEuroFilter&) = delete;
+  OneEuroFilter& operator=(const OneEuroFilter&) = delete;
+
   ~OneEuroFilter() override;
 
   bool Filter(const base::TimeTicks& timestamp,
@@ -43,8 +46,6 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) OneEuroFilter : public InputFilter {
  private:
   std::unique_ptr<one_euro_filter::OneEuroFilter> x_filter_;
   std::unique_ptr<one_euro_filter::OneEuroFilter> y_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(OneEuroFilter);
 };
 
 }  // namespace ui

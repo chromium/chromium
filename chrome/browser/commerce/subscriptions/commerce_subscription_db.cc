@@ -16,7 +16,7 @@
 #include "chrome/browser/commerce/subscriptions/android/jni_headers/CommerceSubscriptionsStorage_jni.h"
 #include "chrome/browser/commerce/subscriptions/commerce_subscription_db_content.pb.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
-#include "components/embedder_support/android/browser_context/browser_context_handle.h"
+#include "content/public/browser/android/browser_context_handle.h"
 
 namespace {
 
@@ -243,5 +243,5 @@ static void JNI_CommerceSubscriptionsStorage_Init(
   Java_CommerceSubscriptionsStorage_setNativePtr(
       env, obj,
       reinterpret_cast<intptr_t>(new CommerceSubscriptionDB(
-          browser_context::BrowserContextFromJavaHandle(jprofile))));
+          content::BrowserContextFromJavaHandle(jprofile))));
 }

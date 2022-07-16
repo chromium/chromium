@@ -22,6 +22,9 @@ class IOSWebViewSigninClient : public SigninClient {
   IOSWebViewSigninClient(PrefService* pref_service,
                          ios_web_view::WebViewBrowserState* browser_state);
 
+  IOSWebViewSigninClient(const IOSWebViewSigninClient&) = delete;
+  IOSWebViewSigninClient& operator=(const IOSWebViewSigninClient&) = delete;
+
   ~IOSWebViewSigninClient() override;
 
   // KeyedService implementation.
@@ -53,8 +56,6 @@ class IOSWebViewSigninClient : public SigninClient {
   PrefService* pref_service_;
   // The browser_state_ associated with this service.
   ios_web_view::WebViewBrowserState* browser_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSWebViewSigninClient);
 };
 
 #endif  // IOS_WEB_VIEW_INTERNAL_SIGNIN_IOS_WEB_VIEW_SIGNIN_CLIENT_H_

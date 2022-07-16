@@ -115,7 +115,7 @@ public class TabGridDialogMenuCoordinator {
 
         mMenuWindow = new AnchoredPopupWindow(mContext, decorView,
                 ApiCompatibilityUtils.getDrawable(
-                        mContext.getResources(), R.drawable.popup_bg_tinted),
+                        mContext.getResources(), R.drawable.menu_bg_tinted),
                 contentView, rectProvider);
         mMenuWindow.setFocusable(true);
         mMenuWindow.setHorizontalOverlapAnchor(true);
@@ -146,9 +146,11 @@ public class TabGridDialogMenuCoordinator {
         itemList.add(new ListItem(ListItemType.MENU_ITEM,
                 buildPropertyModel(context, R.string.tab_grid_dialog_toolbar_remove_from_group,
                         R.id.ungroup_tab)));
-        itemList.add(new ListItem(ListItemType.MENU_ITEM,
-                buildPropertyModel(context, R.string.tab_grid_dialog_toolbar_share_group,
-                        R.id.share_tab_group)));
+        if (TabUiFeatureUtilities.ENABLE_TAB_GROUP_SHARING.getValue()) {
+            itemList.add(new ListItem(ListItemType.MENU_ITEM,
+                    buildPropertyModel(context, R.string.tab_grid_dialog_toolbar_share_group,
+                            R.id.share_tab_group)));
+        }
         if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
             itemList.add(new ListItem(ListItemType.MENU_ITEM,
                     buildPropertyModel(context, R.string.tab_grid_dialog_toolbar_edit_group_name,

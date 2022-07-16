@@ -43,6 +43,10 @@ class AudioFocusManager : public mojom::AudioFocusManager,
                           public mojom::MediaControllerManager {
  public:
   AudioFocusManager();
+
+  AudioFocusManager(const AudioFocusManager&) = delete;
+  AudioFocusManager& operator=(const AudioFocusManager&) = delete;
+
   ~AudioFocusManager() override;
 
   // TODO(beccahughes): Remove this.
@@ -188,8 +192,6 @@ class AudioFocusManager : public mojom::AudioFocusManager,
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<AudioFocusManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioFocusManager);
 };
 
 }  // namespace media_session

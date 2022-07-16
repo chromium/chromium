@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.FindInPageCallback;
 import org.chromium.weblayer.Tab;
@@ -143,6 +144,7 @@ public class FindInPageTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1248187")
     public void testHideOnNewTab() {
         setUp("new_browser.html");
 

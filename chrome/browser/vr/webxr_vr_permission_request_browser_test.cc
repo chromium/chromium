@@ -40,7 +40,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
   auto utils = UiUtils::Create();
   utils->PerformActionAndWaitForVisibilityStatus(
       UserFriendlyElementName::kWebXrExternalPromptNotification,
-      true /* visible */, base::DoNothing::Once());
+      true /* visible */, base::DoNothing());
 }
 
 // TODO(https://crbug.com/920697): Add tests verifying the notification

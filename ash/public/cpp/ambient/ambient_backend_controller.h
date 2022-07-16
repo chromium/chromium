@@ -127,11 +127,6 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
   virtual void UpdateSettings(const AmbientSettings& settings,
                               UpdateSettingsCallback callback) = 0;
 
-  // Fetch preview images for live album.
-  virtual void FetchSettingPreview(int preview_width,
-                                   int preview_height,
-                                   OnSettingPreviewFetchedCallback) = 0;
-
   virtual void FetchPersonalAlbums(int banner_width,
                                    int banner_height,
                                    int num_albums,

@@ -68,7 +68,7 @@ public class AutofillAssistantMetrics {
     /**
      * Returns histogram suffix for given intent.
      */
-    private static String getHistogramSuffixForIntent(String intent) {
+    private static String getHistogramSuffixForIntent(@Nullable String intent) {
         if (intent == null) {
             // Intent is not set.
             return "NotSet";

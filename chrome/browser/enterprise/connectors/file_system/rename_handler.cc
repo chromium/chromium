@@ -12,6 +12,7 @@
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_dialog_delegate.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_experience.h"
+#include "chrome/browser/enterprise/connectors/file_system/uma_metrics_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -43,28 +44,36 @@ using download::ConvertNetErrorToInterruptReason;
 
 }  // namespace
 
-using InterruptReason = download::DownloadInterruptReason;
-constexpr auto kBrowserFailure = download::DOWNLOAD_INTERRUPT_REASON_CRASH;
-constexpr auto kCredentialUpdateFailure = kBrowserFailure;
-// download::DOWNLOAD_INTERRUPT_REASON_CREDENTIALS_UPDATE_FAILED;
-constexpr auto kSignInCancellation =
-    download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED;
-
 // static
 std::unique_ptr<download::DownloadItemRenameHandler>
 FileSystemRenameHandler::CreateIfNeeded(download::DownloadItem* download_item) {
   if (download_item->GetState() == download::DownloadItem::COMPLETE) {
-    return download_item->GetRerouteInfo().IsInitialized()
-               ? std::make_unique<FileSystemRenameHandler>(download_item)
-               : nullptr;
+    auto rename_handler =
+        download_item->GetRerouteInfo().IsInitialized()
+            ? std::make_unique<FileSystemRenameHandler>(download_item)
+            : nullptr;
+    return rename_handler;
   }
   // TODO(https://crbug.com/1213761) Resume upload if state is IN_PROGRESS, and
   // perhaps also INTERRUPTED and CANCELLED.
   absl::optional<FileSystemSettings> settings =
       GetFileSystemSettings(download_item);
-  return settings.has_value() ? std::make_unique<FileSystemRenameHandler>(
-                                    download_item, std::move(settings.value()))
-                              : nullptr;
+  auto rename_handler = settings.has_value()
+                            ? std::make_unique<FileSystemRenameHandler>(
+                                  download_item, std::move(settings.value()))
+                            : nullptr;
+  if (!rename_handler) {
+    UmaLogDownloadsRoutingDestination(
+        EnterpriseFileSystemDownloadsRoutingDestination::NOT_ROUTED);
+  } else if (rename_handler->settings_.service_provider ==
+             kFileSystemServiceProviderPrefNameBox) {
+    UmaLogDownloadsRoutingDestination(
+        EnterpriseFileSystemDownloadsRoutingDestination::ROUTED_TO_BOX);
+  } else {
+    NOTREACHED() << "Unsupported service provider: "
+                 << rename_handler->settings_.service_provider;
+  }
+  return rename_handler;
 }
 
 // The only permitted use of |download_item| in this class other than the ctor
@@ -95,6 +104,8 @@ void FileSystemRenameHandler::Start(ProgressUpdateCallback progress_update_cb,
       base::BindRepeating(&FileSystemRenameHandler::OnApiAuthenticationError,
                           weak_factory_.GetWeakPtr()),
       std::move(progress_update_cb), std::move(upload_complete_cb), GetPrefs());
+  for (auto& observer : observers_)
+    observer.OnStart();
   StartInternal();
 }
 
@@ -106,7 +117,7 @@ void FileSystemRenameHandler::TryUploaderTask(content::BrowserContext* context,
 void FileSystemRenameHandler::PromptUserSignInForAuthorization(
     content::WebContents* contents) {
   StartFileSystemConnectorSigninExperienceForDownloadItem(
-      contents, settings_,
+      contents, settings_, GetPrefs(),
       base::BindOnce(&FileSystemRenameHandler::OnAuthorization,
                      weak_factory_.GetWeakPtr()),
       signin_observer_);
@@ -210,8 +221,7 @@ void FileSystemRenameHandler::StartInternal(std::string access_token) {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 FileSystemRenameHandler::GetURLLoaderFactory(content::BrowserContext* context) {
-  content::StoragePartition* partition =
-      context->GetStoragePartitionForUrl(settings_.home);
+  content::StoragePartition* partition = context->GetDefaultStoragePartition();
   return partition->GetURLLoaderFactoryForBrowserProcess();
 }
 
@@ -333,6 +343,22 @@ void FileSystemRenameHandler::TestObserver::OnDestruction() {
 BoxUploader* FileSystemRenameHandler::TestObserver::GetBoxUploader(
     FileSystemRenameHandler* rename_handler) {
   return rename_handler->uploader_.get();
+}
+
+// RenameStartObserver
+RenameStartObserver::RenameStartObserver(
+    FileSystemRenameHandler* rename_handler)
+    : FileSystemRenameHandler::TestObserver(rename_handler) {}
+
+void RenameStartObserver::OnStart() {
+  started_ = true;
+  if (run_loop_.running())
+    run_loop_.Quit();
+}
+
+void RenameStartObserver::WaitForStart() {
+  if (!started_)
+    run_loop_.Run();
 }
 
 // BoxFetchAccessTokenTestObserver

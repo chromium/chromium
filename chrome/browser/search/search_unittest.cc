@@ -17,10 +17,13 @@
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/search_test_utils.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -130,6 +133,13 @@ class SearchTest : public BrowserWithTestWindowTest {
        false, !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(),
        true},
   };
+
+  // BrowserWithTestWindowTest:
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {{ChromeSigninClientFactory::GetInstance(),
+             base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                 test_url_loader_factory())}};
+  }
 };
 
 struct SearchTestCase {

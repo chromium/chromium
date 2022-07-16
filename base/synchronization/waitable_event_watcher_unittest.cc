@@ -120,7 +120,7 @@ TEST_P(WaitableEventWatcherTest, CancelAfterSet) {
   event.Signal();
 
   // Let the background thread do its business
-  PlatformThread::Sleep(TimeDelta::FromMilliseconds(30));
+  PlatformThread::Sleep(Milliseconds(30));
 
   watcher.StopWatching();
 
@@ -328,7 +328,7 @@ TEST_P(WaitableEventWatcherDeletionTest, DeleteUnder) {
       // and gives some time to run to a created background thread.
       // Unfortunately, that thread is under OS control and we can't
       // manipulate it directly.
-      PlatformThread::Sleep(TimeDelta::FromMilliseconds(30));
+      PlatformThread::Sleep(Milliseconds(30));
     }
 
     delete event;
@@ -362,7 +362,7 @@ TEST_P(WaitableEventWatcherDeletionTest, SignalAndDelete) {
       // and gives some time to run to a created background thread.
       // Unfortunately, that thread is under OS control and we can't
       // manipulate it directly.
-      PlatformThread::Sleep(TimeDelta::FromMilliseconds(30));
+      PlatformThread::Sleep(Milliseconds(30));
     }
 
     // Wait for the watcher callback.
@@ -409,8 +409,8 @@ TEST_P(WaitableEventWatcherDeletionTest, DeleteWatcherBeforeCallback) {
                         BindOnce(&WaitableEvent::Signal, Unretained(&event)));
   task_runner->DeleteSoon(FROM_HERE, std::move(watcher));
   if (delay_after_delete) {
-    task_runner->PostTask(FROM_HERE, BindOnce(&PlatformThread::Sleep,
-                                              TimeDelta::FromMilliseconds(30)));
+    task_runner->PostTask(FROM_HERE,
+                          BindOnce(&PlatformThread::Sleep, Milliseconds(30)));
   }
 
   RunLoop().RunUntilIdle();

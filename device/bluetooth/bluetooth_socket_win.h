@@ -13,7 +13,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_service_record_win.h"
 #include "device/bluetooth/bluetooth_socket.h"
@@ -34,6 +34,9 @@ class BluetoothSocketWin : public BluetoothSocketNet {
   static scoped_refptr<BluetoothSocketWin> CreateBluetoothSocket(
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<BluetoothSocketThread> socket_thread);
+
+  BluetoothSocketWin(const BluetoothSocketWin&) = delete;
+  BluetoothSocketWin& operator=(const BluetoothSocketWin&) = delete;
 
   // Connect to the peer device and calls |success_callback| when the
   // connection has been established successfully. If an error occurs, calls
@@ -96,8 +99,6 @@ class BluetoothSocketWin : public BluetoothSocketNet {
   std::unique_ptr<ServiceRegData> service_reg_data_;
   std::unique_ptr<net::TCPSocket> accept_socket_;
   net::IPEndPoint accept_address_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketWin);
 };
 
 }  // namespace device

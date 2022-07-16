@@ -39,9 +39,6 @@ const base::Feature kChromeCleanupInBrowserPromptFeature{
 const base::Feature kChromeCleanupDistributionFeature{
     "ChromeCleanupDistribution", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kResetShortcutsFeature{"ChromeCleanupResetShortcuts",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 bool IsSRTPromptFeatureEnabled() {
   return base::FeatureList::IsEnabled(kChromeCleanupInBrowserPromptFeature);
 }
@@ -90,11 +87,6 @@ std::string GetIncomingSRTSeed() {
 
 std::string GetSRTPromptGroupName() {
   return kSRTPromptGroupNameParam.Get();
-}
-
-void RecordPromptShownWithTypeHistogram(PromptTypeHistogramValue value) {
-  UMA_HISTOGRAM_ENUMERATION("SoftwareReporter.PromptShownWithType", value,
-                            PROMPT_TYPE_MAX);
 }
 
 void RecordPromptNotShownWithReasonHistogram(

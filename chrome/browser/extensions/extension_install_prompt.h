@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -100,6 +99,10 @@ class ExtensionInstallPrompt {
   class Prompt {
    public:
     explicit Prompt(PromptType type);
+
+    Prompt(const Prompt&) = delete;
+    Prompt& operator=(const Prompt&) = delete;
+
     ~Prompt();
 
     void AddPermissionSet(const extensions::PermissionSet& permissions);
@@ -239,8 +242,6 @@ class ExtensionInstallPrompt {
     std::vector<std::u16string> retained_device_messages_;
 
     base::ObserverList<Observer> observers_;
-
-    DISALLOW_COPY_AND_ASSIGN(Prompt);
   };
 
   static const int kMinExtensionRating = 0;
@@ -297,6 +298,9 @@ class ExtensionInstallPrompt {
   // active browser window (or a new browser window if there are no browser
   // windows) is used if a new tab needs to be opened.
   ExtensionInstallPrompt(Profile* profile, gfx::NativeWindow native_window);
+
+  ExtensionInstallPrompt(const ExtensionInstallPrompt&) = delete;
+  ExtensionInstallPrompt& operator=(const ExtensionInstallPrompt&) = delete;
 
   virtual ~ExtensionInstallPrompt();
 
@@ -401,8 +405,6 @@ class ExtensionInstallPrompt {
   bool did_call_show_dialog_;
 
   base::WeakPtrFactory<ExtensionInstallPrompt> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallPrompt);
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_INSTALL_PROMPT_H_

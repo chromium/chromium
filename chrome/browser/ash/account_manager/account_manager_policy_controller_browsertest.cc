@@ -6,7 +6,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
@@ -20,8 +19,9 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/pref_names.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +36,12 @@ constexpr char kFakeSecondaryGaiaId[] = "fake-secondary-gaia-id";
 class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
  public:
   AccountManagerPolicyControllerTest() = default;
+
+  AccountManagerPolicyControllerTest(
+      const AccountManagerPolicyControllerTest&) = delete;
+  AccountManagerPolicyControllerTest& operator=(
+      const AccountManagerPolicyControllerTest&) = delete;
+
   ~AccountManagerPolicyControllerTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -125,7 +131,6 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
       identity_test_environment_adaptor_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   AccountId primary_account_id_;
-  DISALLOW_COPY_AND_ASSIGN(AccountManagerPolicyControllerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AccountManagerPolicyControllerTest,
@@ -178,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(
                 ->GetUserByProfile(profile())
                 ->GetAccountId()
                 .GetGaiaId(),
-            accounts[0].key.id);
+            accounts[0].key.id());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -211,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(
                 ->GetUserByProfile(profile())
                 ->GetAccountId()
                 .GetGaiaId(),
-            accounts[0].key.id);
+            accounts[0].key.id());
 }
 
 }  // namespace ash

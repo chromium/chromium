@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -56,13 +56,13 @@
   // Decide cell.textLabel.textColor in order:
   //   1. this.textColor;
   //   2. styler.cellTitleColor;
-  //   3. UIColor.cr_labelColor.
+  //   3. [UIColor colorNamed:kTextPrimaryColor].
   if (self.textColor) {
     cell.textLabel.textColor = self.textColor;
   } else if (styler.cellTitleColor) {
     cell.textLabel.textColor = styler.cellTitleColor;
   } else {
-    cell.textLabel.textColor = UIColor.cr_labelColor;
+    cell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   }
   cell.textLabel.textAlignment =
       self.textAlignment ? self.textAlignment : NSTextAlignmentNatural;

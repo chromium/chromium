@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/click_to_call/phone_number_regex.h"
 #include "chrome/browser/sharing/sharing_constants.h"
@@ -77,6 +78,7 @@ SharingServiceFactory::SharingServiceFactory()
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
   DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SharingMessageBridgeFactory::GetInstance());
 }
@@ -93,7 +95,6 @@ KeyedService* SharingServiceFactory::BuildServiceInstanceFor(
     return nullptr;
 
 #if BUILDFLAG(ENABLE_CLICK_TO_CALL)
-  // TODO(knollr): Find a better place for this.
   PrecompilePhoneNumberRegexesAsync();
 #endif  // BUILDFLAG(ENABLE_CLICK_TO_CALL)
 

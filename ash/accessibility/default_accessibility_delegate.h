@@ -7,13 +7,17 @@
 
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace ash {
 
 class ASH_EXPORT DefaultAccessibilityDelegate : public AccessibilityDelegate {
  public:
   DefaultAccessibilityDelegate();
+
+  DefaultAccessibilityDelegate(const DefaultAccessibilityDelegate&) = delete;
+  DefaultAccessibilityDelegate& operator=(const DefaultAccessibilityDelegate&) =
+      delete;
+
   ~DefaultAccessibilityDelegate() override;
 
   void SetMagnifierEnabled(bool enabled) override;
@@ -24,8 +28,6 @@ class ASH_EXPORT DefaultAccessibilityDelegate : public AccessibilityDelegate {
 
  private:
   bool screen_magnifier_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultAccessibilityDelegate);
 };
 
 }  // namespace ash

@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -40,6 +39,9 @@ std::vector<uint8_t> ReadFileContents(const base::FilePath& file_path) {
 class IndexingToolTest : public ::testing::Test {
  public:
   IndexingToolTest() {}
+
+  IndexingToolTest(const IndexingToolTest&) = delete;
+  IndexingToolTest& operator=(const IndexingToolTest&) = delete;
 
  protected:
   void SetUp() override { ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir()); }
@@ -76,8 +78,6 @@ class IndexingToolTest : public ::testing::Test {
   base::ScopedTempDir scoped_temp_dir_;
   testing::TestRulesetCreator test_ruleset_creator_;
   testing::TestRulesetPair test_ruleset_pair_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexingToolTest);
 };
 
 TEST_F(IndexingToolTest, UnindexedFileDoesNotExist) {

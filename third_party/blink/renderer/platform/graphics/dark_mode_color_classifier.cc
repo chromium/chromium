@@ -80,20 +80,20 @@ int DarkModeColorClassifier::CalculateColorBrightness(SkColor color) {
 }
 
 std::unique_ptr<DarkModeColorClassifier>
-DarkModeColorClassifier::MakeTextColorClassifier(
+DarkModeColorClassifier::MakeForegroundColorClassifier(
     const DarkModeSettings& settings) {
-  DCHECK_LE(settings.text_brightness_threshold, 256);
-  DCHECK_GE(settings.text_brightness_threshold, 0);
+  DCHECK_LE(settings.foreground_brightness_threshold, 256);
+  DCHECK_GE(settings.foreground_brightness_threshold, 0);
 
   // The value should be between 0 and 256, but check for values outside that
   // range here to preserve correct behavior in non-debug builds.
-  if (settings.text_brightness_threshold >= 256)
+  if (settings.foreground_brightness_threshold >= 256)
     return SimpleColorClassifier::AlwaysInvert();
-  if (settings.text_brightness_threshold <= 0)
+  if (settings.foreground_brightness_threshold <= 0)
     return SimpleColorClassifier::NeverInvert();
 
   return std::make_unique<InvertLowBrightnessColorsClassifier>(
-      settings.text_brightness_threshold);
+      settings.foreground_brightness_threshold);
 }
 
 std::unique_ptr<DarkModeColorClassifier>

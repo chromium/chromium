@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/cpp/login_screen.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/ash/test_login_screen_model.h"
 
 namespace ash {
@@ -21,6 +20,10 @@ enum class SupervisedAction;
 class TestLoginScreen : public ash::LoginScreen {
  public:
   TestLoginScreen();
+
+  TestLoginScreen(const TestLoginScreen&) = delete;
+  TestLoginScreen& operator=(const TestLoginScreen&) = delete;
+
   ~TestLoginScreen() override;
 
   // ash::LoginScreen:
@@ -48,8 +51,6 @@ class TestLoginScreen : public ash::LoginScreen {
 
  private:
   TestLoginScreenModel test_screen_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLoginScreen);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TEST_LOGIN_SCREEN_H_

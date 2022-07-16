@@ -6,7 +6,6 @@
 #define CHROME_RENDERER_SUPERVISED_USER_SUPERVISED_USER_ERROR_PAGE_CONTROLLER_DELEGATE_IMPL_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/supervised_user_commands.mojom.h"
 #include "chrome/renderer/supervised_user/supervised_user_error_page_controller_delegate.h"
@@ -26,6 +25,12 @@ class SupervisedUserErrorPageControllerDelegateImpl
  public:
   explicit SupervisedUserErrorPageControllerDelegateImpl(
       content::RenderFrame* render_frame);
+
+  SupervisedUserErrorPageControllerDelegateImpl(
+      const SupervisedUserErrorPageControllerDelegateImpl&) = delete;
+  SupervisedUserErrorPageControllerDelegateImpl& operator=(
+      const SupervisedUserErrorPageControllerDelegateImpl&) = delete;
+
   ~SupervisedUserErrorPageControllerDelegateImpl() override;
 
   // Notifies us that a navigation error has occurred and will be committed.
@@ -33,7 +38,9 @@ class SupervisedUserErrorPageControllerDelegateImpl
 
   // SupervisedUserErrorPageControllerDelegate:
   void GoBack() override;
-  void RequestPermission(base::OnceCallback<void(bool)> callback) override;
+  void RequestUrlAccessRemote(UrlAccessRequestInitiated callback) override;
+  void RequestUrlAccessLocal(UrlAccessRequestInitiated callback) override;
+
   void Feedback() override;
 
   // content::RenderFrameObserver:
@@ -54,8 +61,6 @@ class SupervisedUserErrorPageControllerDelegateImpl
 
   base::WeakPtrFactory<SupervisedUserErrorPageControllerDelegate>
       weak_supervised_user_error_controller_delegate_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserErrorPageControllerDelegateImpl);
 };
 
 #endif  // CHROME_RENDERER_SUPERVISED_USER_SUPERVISED_USER_ERROR_PAGE_CONTROLLER_DELEGATE_IMPL_H_

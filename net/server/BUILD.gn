@@ -11,15 +11,17 @@ static_library("http_server") {
   # This target is being deprecated. Use //services/network/public/cpp/server
   # instead.
   visibility = [
-    ":net_http_server_fuzzer",
+    ":net_http_server_fuzzer_deps",
     ":tests",
     "//chrome/browser/devtools",
     "//chrome/test/chromedriver/*",
     "//content/browser",
+    "//net:net_web_socket_encoder_fuzzer_deps",
   ]
 
   friend = [
     ":net_http_server_fuzzer",
+    "//net:net_web_socket_encoder_fuzzer",
     ":tests",
     "//chrome/browser/devtools",
     "//chrome/test/chromedriver/*",
@@ -68,16 +70,32 @@ source_set("tests") {
   }
 }
 
-if (enable_websockets) {
-  fuzzer_test("net_http_server_fuzzer") {
-    sources = [ "http_server_fuzzer.cc" ]
-    deps = [
+if (enable_websockets && use_fuzzing_engine) {
+  # This is a separate target because //net/server:http_server
+  # wants to limit its visibility to a select number of target, but the
+  # "fuzzer_test" template expands on iOS to many targets that need to
+  # have the "deps" information propagated in order to support "fat"
+  # binaries.
+  source_set("net_http_server_fuzzer_deps") {
+    testonly = true
+    visibility = [
+      ":net_http_server_fuzzer",
+      ":net_http_server_fuzzer_arch_executable",
+      ":net_http_server_fuzzer_arch_executable_sources",
+      ":run_net_http_server_fuzzer",
+    ]
+    public_deps = [
       ":http_server",
       "//base",
       "//net",
       "//net:net_fuzzer_test_support",
       "//net:test_support",
     ]
+  }
+
+  fuzzer_test("net_http_server_fuzzer") {
+    sources = [ "http_server_fuzzer.cc" ]
+    deps = [ ":net_http_server_fuzzer_deps" ]
     dict = "//net/data/fuzzer_dictionaries/net_http_server_fuzzer.dict"
     seed_corpus = "//net/data/fuzzer_data/http_server_requests/"
   }

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -30,7 +30,8 @@ from pylib.instrumentation import instrumentation_test_instance
 _CRBUG_ID_PATTERN = re.compile(r'crbug(?:.com)?/(\d+)')
 _EXPORT_TIME_FORMAT = '%Y%m%dT%H%M%S'
 _GIT_LOG_TIME_PATTERN = re.compile(r'\d+')
-_GIT_LOG_MESSAGE_PATTERN = r'Cr-Commit-Position: refs/heads/master@{#(\d+)}'
+_GIT_LOG_MESSAGE_PATTERN = (
+    r'Cr-Commit-Position: refs/heads/(?:master|main)@{#(\d+)}')
 _GIT_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 
@@ -38,7 +39,7 @@ def _GetBugId(test_annotations):
   """Find and return the test bug id from its annoation message elements"""
   # TODO(yolandyan): currently the script only supports on bug id per method,
   # add support for multiple bug id
-  for content in test_annotations.itervalues():
+  for content in test_annotations.items():
     if content and content.get('message'):
       search_result = re.search(_CRBUG_ID_PATTERN, content.get('message'))
       if search_result is not None:

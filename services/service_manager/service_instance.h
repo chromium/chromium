@@ -23,7 +23,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "sandbox/policy/sandbox_type.h"
 #include "services/service_manager/public/cpp/identity.h"
 #include "services/service_manager/public/cpp/manifest.h"
 #include "services/service_manager/public/mojom/connector.mojom.h"
@@ -31,6 +30,12 @@
 #include "services/service_manager/public/mojom/service_control.mojom.h"
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace sandbox {
+namespace mojom {
+enum class Sandbox;
+}
+}  // namespace sandbox
 
 namespace service_manager {
 
@@ -51,6 +56,10 @@ class ServiceInstance : public mojom::Connector,
   ServiceInstance(service_manager::ServiceManager* service_manager,
                   const Identity& identity,
                   const Manifest& manifest);
+
+  ServiceInstance(const ServiceInstance&) = delete;
+  ServiceInstance& operator=(const ServiceInstance&) = delete;
+
   ~ServiceInstance() override;
 
   const Identity& identity() const { return identity_; }
@@ -65,7 +74,7 @@ class ServiceInstance : public mojom::Connector,
 #if !defined(OS_IOS)
   // Starts this instance from a path to a service executable on disk.
   bool StartWithProcessHost(std::unique_ptr<ServiceProcessHost> host,
-                            sandbox::policy::SandboxType sandbox_type);
+                            sandbox::mojom::Sandbox sandbox_type);
 #endif  // !defined(OS_IOS)
 
   // Binds an endpoint for this instance to receive metadata about its
@@ -200,8 +209,6 @@ class ServiceInstance : public mojom::Connector,
   int pending_service_connections_ = 0;
 
   base::WeakPtrFactory<ServiceInstance> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceInstance);
 };
 
 }  // namespace service_manager

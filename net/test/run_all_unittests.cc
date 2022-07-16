@@ -21,7 +21,7 @@ bool VerifyBuildIsTimely() {
   // days old. Moreover, operating on the assumption that tests are run against
   // recently compiled builds, this also serves as a sanity check for the
   // system clock, which should be close to the build date.
-  base::TimeDelta kMaxAge = base::TimeDelta::FromDays(70);
+  base::TimeDelta kMaxAge = base::Days(70);
 
   base::Time build_time = base::GetBuildTime();
   base::Time now = base::Time::Now();

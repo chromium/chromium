@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "chrome/common/sync_encryption_keys_extension.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -27,11 +27,22 @@ class SyncEncryptionKeysTabHelper
  public:
   static void CreateForWebContents(content::WebContents* web_contents);
 
+  static void BindSyncEncryptionKeysExtension(
+      mojo::PendingAssociatedReceiver<
+          chrome::mojom::SyncEncryptionKeysExtension> receiver,
+      content::RenderFrameHost* rfh);
+
+  SyncEncryptionKeysTabHelper(const SyncEncryptionKeysTabHelper&) = delete;
+  SyncEncryptionKeysTabHelper& operator=(const SyncEncryptionKeysTabHelper&) =
+      delete;
+
   ~SyncEncryptionKeysTabHelper() override;
 
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+
+  bool IsEncryptionKeysApiBoundForTesting();
 
  private:
   friend class content::WebContentsUserData<SyncEncryptionKeysTabHelper>;
@@ -48,8 +59,6 @@ class SyncEncryptionKeysTabHelper
   std::unique_ptr<EncryptionKeyApi> encryption_key_api_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEncryptionKeysTabHelper);
 };
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_ENCRYPTION_KEYS_TAB_HELPER_H_

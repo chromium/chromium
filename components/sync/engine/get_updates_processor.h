@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_ENGINE_GET_UPDATES_PROCESSOR_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/syncer_error.h"
 #include "components/sync/engine/model_type_registry.h"
@@ -32,6 +31,10 @@ class GetUpdatesProcessor {
  public:
   explicit GetUpdatesProcessor(UpdateHandlerMap* update_handler_map,
                                const GetUpdatesDelegate& delegate);
+
+  GetUpdatesProcessor(const GetUpdatesProcessor&) = delete;
+  GetUpdatesProcessor& operator=(const GetUpdatesProcessor&) = delete;
+
   ~GetUpdatesProcessor();
 
   // Downloads and processes a batch of updates for the specified types.
@@ -56,17 +59,10 @@ class GetUpdatesProcessor {
                                      SyncCycle* cycle,
                                      sync_pb::ClientToServerMessage* msg);
 
-  // Helper function for processing responses from the server.  Defined here for
-  // testing.
+  // Processes a GetUpdates response for each type.
   SyncerError ProcessResponse(const sync_pb::GetUpdatesResponse& gu_response,
-                              const ModelTypeSet& proto_request_types,
-                              StatusController* status);
-
-  // Processes a GetUpdates responses for each type.
-  SyncerError ProcessGetUpdatesResponse(
-      const ModelTypeSet& gu_types,
-      const sync_pb::GetUpdatesResponse& gu_response,
-      StatusController* status_controller);
+                              const ModelTypeSet& gu_types,
+                              StatusController* status_controller);
 
   FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, BookmarkNudge);
   FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, NotifyMany);
@@ -88,8 +84,6 @@ class GetUpdatesProcessor {
   UpdateHandlerMap* update_handler_map_;
 
   const GetUpdatesDelegate& delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetUpdatesProcessor);
 };
 
 }  // namespace syncer

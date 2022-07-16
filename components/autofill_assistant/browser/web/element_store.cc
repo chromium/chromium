@@ -4,7 +4,6 @@
 
 #include "components/autofill_assistant/browser/web/element_store.h"
 
-#include "base/containers/flat_map.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"

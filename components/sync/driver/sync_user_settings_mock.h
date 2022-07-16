@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_DRIVER_SYNC_USER_SETTINGS_MOCK_H_
 
 #include <string>
-#include <vector>
 
 #include "build/chromeos_buildflags.h"
 #include "components/sync/driver/sync_user_settings.h"

@@ -36,12 +36,13 @@ void FrameCallback(void* data, wl_callback* callback, uint32_t time) {
 class SubSurfaceClient : public ClientBase {
  public:
   SubSurfaceClient() = default;
+
+  SubSurfaceClient(const SubSurfaceClient&) = delete;
+  SubSurfaceClient& operator=(const SubSurfaceClient&) = delete;
+
   ~SubSurfaceClient() override = default;
 
   void Run(const ClientBase::InitParams& params);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SubSurfaceClient);
 };
 
 void SubSurfaceClient::Run(const ClientBase::InitParams& params) {

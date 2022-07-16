@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -41,7 +41,6 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_mask.h"
-#include "ui/views/animation/installable_ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -65,8 +64,7 @@ SkColor GetDefaultTextColor(const ui::ThemeProvider* theme_provider) {
 }
 
 // Cycle duration of ink drop pulsing animation used for in-product help.
-constexpr base::TimeDelta kFeaturePromoPulseDuration =
-    base::TimeDelta::FromMilliseconds(800);
+constexpr base::TimeDelta kFeaturePromoPulseDuration = base::Milliseconds(800);
 
 // Max inset for pulsing animation.
 constexpr float kFeaturePromoPulseInsetDip = 3.0f;
@@ -163,21 +161,6 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
 
   set_context_menu_controller(this);
 
-  if (base::FeatureList::IsEnabled(views::kInstallableInkDropFeature)) {
-    installable_ink_drop_ = std::make_unique<views::InstallableInkDrop>(this);
-    installable_ink_drop_->SetConfig(GetToolbarInstallableInkDropConfig(this));
-    views::InkDrop::Get(this)->SetCreateInkDropCallback(base::BindRepeating(
-        [](Button* host) -> std::unique_ptr<views::InkDrop> {
-          // Ensure this doesn't get called when InstallableInkDrops are
-          // enabled.
-          DCHECK(
-              !base::FeatureList::IsEnabled(views::kInstallableInkDropFeature));
-          return views::InkDrop::CreateInkDropForFloodFillRipple(
-              views::InkDrop::Get(host));
-        },
-        this));
-  }
-
   views::InkDrop::Get(this)->SetCreateMaskCallback(base::BindRepeating(
       [](ToolbarButton* host) -> std::unique_ptr<views::InkDropMask> {
         if (host->has_in_product_help_promo_) {
@@ -199,9 +182,6 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
       this));
   views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
       [](ToolbarButton* host) {
-        // Ensure this doesn't get called when InstallableInkDrops are enabled.
-        DCHECK(
-            !base::FeatureList::IsEnabled(views::kInstallableInkDropFeature));
         if (host->has_in_product_help_promo_)
           return GetFeaturePromoHighlightColorForToolbar(
               host->GetThemeProvider());
@@ -303,7 +283,7 @@ void ToolbarButton::UpdateColorsAndInsets() {
 
   absl::optional<SkColor> border_color =
       highlight_color_animation_.GetBorderColor();
-  if (!border() || target_insets != current_insets ||
+  if (!GetBorder() || target_insets != current_insets ||
       last_border_color_ != border_color ||
       last_paint_insets_ != paint_insets) {
     if (border_color) {
@@ -406,7 +386,8 @@ void ToolbarButton::SetLabelSideSpacing(int spacing) {
             ? gfx::Insets(0, spacing, 0, 0)
             : gfx::Insets(0, 0, 0, spacing);
   }
-  if (!label()->border() || label_insets != label()->border()->GetInsets()) {
+  if (!label()->GetBorder() ||
+      label_insets != label()->GetBorder()->GetInsets()) {
     label()->SetBorder(views::CreateEmptyBorder(label_insets));
     // Forces LabelButton to dump the cached preferred size and recompute it.
     PreferredSizeChanged();
@@ -463,9 +444,6 @@ void ToolbarButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
 void ToolbarButton::OnThemeChanged() {
   UpdateColorsAndInsets();
-
-  if (installable_ink_drop_)
-    installable_ink_drop_->SetConfig(GetToolbarInstallableInkDropConfig(this));
   UpdateIcon();
 
   // Call this after UpdateIcon() to properly reset images.
@@ -501,7 +479,7 @@ bool ToolbarButton::OnMousePressed(const ui::MouseEvent& event) {
         base::BindOnce(&ToolbarButton::ShowDropDownMenu,
                        show_menu_factory_.GetWeakPtr(),
                        ui::GetMenuSourceTypeForEvent(event)),
-        base::TimeDelta::FromMilliseconds(500));
+        base::Milliseconds(500));
   }
 
   return LabelButton::OnMousePressed(event);
@@ -596,7 +574,8 @@ void ToolbarButton::SetHasInProductHelpPromo(bool has_in_product_help_promo) {
   views::InkDrop::Get(this)->GetInkDrop()->HostSizeChanged(size());
 
   views::InkDropState next_state;
-  if (has_in_product_help_promo_ || GetVisible()) {
+  if (has_in_product_help_promo_ ||
+      (ShouldShowInkdropAfterIphInteraction() && GetVisible())) {
     // If we are showing a promo, we must use the ACTIVATED state to show the
     // highlight. Otherwise, if the menu is currently showing, we need to keep
     // the ink drop in the ACTIVATED state.
@@ -657,6 +636,10 @@ SkColor ToolbarButton::GetDefaultBorderColor(views::View* host_view) {
 
 bool ToolbarButton::ShouldShowMenu() {
   return model_ != nullptr;
+}
+
+bool ToolbarButton::ShouldShowInkdropAfterIphInteraction() {
+  return true;
 }
 
 void ToolbarButton::ShowDropDownMenu(ui::MenuSourceType source_type) {
@@ -733,8 +716,7 @@ namespace {
 // to make a big contrast difference.
 // TODO(crbug.com/967317): This needs to be consistent with the duration of the
 // border animation in ToolbarIconContainerView.
-constexpr base::TimeDelta kHighlightAnimationDuration =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kHighlightAnimationDuration = base::Milliseconds(300);
 constexpr SkAlpha kBackgroundBaseLayerAlpha = 204;
 
 SkColor FadeWithAnimation(SkColor color, const gfx::Animation& animation) {

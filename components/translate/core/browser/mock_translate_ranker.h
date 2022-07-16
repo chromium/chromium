@@ -23,6 +23,10 @@ namespace testing {
 class MockTranslateRanker : public TranslateRanker {
  public:
   MockTranslateRanker();
+
+  MockTranslateRanker(const MockTranslateRanker&) = delete;
+  MockTranslateRanker& operator=(const MockTranslateRanker&) = delete;
+
   ~MockTranslateRanker() override;
 
   void set_is_logging_enabled(bool val) { is_logging_enabled_ = val; }
@@ -63,8 +67,6 @@ class MockTranslateRanker : public TranslateRanker {
   bool is_decision_override_enabled_ = false;
   bool model_version_ = 0;
   bool should_offer_translation_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTranslateRanker);
 };
 
 }  // namespace testing

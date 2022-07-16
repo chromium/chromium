@@ -23,8 +23,8 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
@@ -484,6 +484,7 @@ void CompositorImpl::TearDownDisplayAndUnregisterRootFrameSink() {
   // before it can be reset.
   display_private_.reset();
   GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_);
+  display_client_.reset();
 }
 
 void CompositorImpl::RegisterRootFrameSink() {
@@ -691,7 +692,7 @@ void CompositorImpl::DidLoseLayerTreeFrameSink() {
   client_->DidSwapFrame(0);
 }
 
-void CompositorImpl::DidCommit(base::TimeTicks) {
+void CompositorImpl::DidCommit(base::TimeTicks, base::TimeTicks) {
   root_window_->OnCompositingDidCommit();
 }
 
@@ -846,6 +847,15 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   GetHostFrameSinkManager()->CreateRootCompositorFrameSink(
       std::move(root_params));
 
+  display_private_->SetSwapCompletionCallbackEnabled(
+      enable_swap_completion_callbacks_);
+  display_private_->SetDisplayVisible(true);
+  display_private_->Resize(size_);
+  display_private_->SetDisplayColorSpaces(display_color_spaces_);
+  display_private_->SetVSyncPaused(vsync_paused_);
+  display_private_->SetSupportedRefreshRates(
+      root_window_->GetSupportedRefreshRates());
+
   // Create LayerTreeFrameSink with the browser end of CompositorFrameSink.
   cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
   params.compositor_task_runner = task_runner;
@@ -858,12 +868,6 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
           std::move(context_provider), nullptr, &params);
   host_->SetLayerTreeFrameSink(std::move(layer_tree_frame_sink));
-  display_private_->SetDisplayVisible(true);
-  display_private_->Resize(size_);
-  display_private_->SetDisplayColorSpaces(display_color_spaces_);
-  display_private_->SetVSyncPaused(vsync_paused_);
-  display_private_->SetSupportedRefreshRates(
-      root_window_->GetSupportedRefreshRates());
 }
 
 viz::LocalSurfaceId CompositorImpl::GenerateLocalSurfaceId() {
@@ -920,6 +924,16 @@ void CompositorImpl::PreserveChildSurfaceControls() {
 void CompositorImpl::RequestPresentationTimeForNextFrame(
     PresentationTimeCallback callback) {
   host_->RequestPresentationTimeForNextFrame(std::move(callback));
+}
+
+void CompositorImpl::SetDidSwapBuffersCallbackEnabled(bool enable) {
+  if (enable_swap_completion_callbacks_ == enable)
+    return;
+  enable_swap_completion_callbacks_ = enable;
+  if (display_private_) {
+    display_private_->SetSwapCompletionCallbackEnabled(
+        enable_swap_completion_callbacks_);
+  }
 }
 
 void CompositorImpl::DecrementPendingReadbacks() {

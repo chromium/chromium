@@ -172,10 +172,6 @@ const CGFloat kToolsMenuOffset = -7;
   return nil;
 }
 
-- (ToolbarButton*)bookmarkButton {
-  return nil;
-}
-
 - (MDCProgressView*)progressBar {
   return nil;
 }

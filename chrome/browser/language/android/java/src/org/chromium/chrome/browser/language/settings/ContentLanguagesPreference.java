@@ -65,8 +65,8 @@ public class ContentLanguagesPreference extends Preference {
                 ListItem item = buildMenuListItemWithEndIcon(
                         R.string.languages_item_option_offer_to_translate, 0, endIconResId,
                         info.isTranslateSupported());
-                item.model.set(
-                        ListMenuItemProperties.TINT_COLOR_ID, R.color.default_icon_color_blue);
+                item.model.set(ListMenuItemProperties.TINT_COLOR_ID,
+                        R.color.default_icon_color_accent1_tint_list);
 
                 // Add checked icon at the end.
                 menuItems.add(item);
@@ -162,8 +162,13 @@ public class ContentLanguagesPreference extends Preference {
         mRecyclerView = (RecyclerView) holder.findViewById(R.id.language_list);
         LinearLayoutManager layoutMangager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(layoutMangager);
-        mRecyclerView.addItemDecoration(
-                new DividerItemDecoration(getContext(), layoutMangager.getOrientation()));
+
+        // If the RecyclerView is re-bound, adding item decoration a second time adds extra padding
+        // and dividers. Only add the item decoration once.
+        if (mRecyclerView.getItemDecorationCount() == 0) {
+            mRecyclerView.addItemDecoration(
+                    new DividerItemDecoration(getContext(), layoutMangager.getOrientation()));
+        }
 
         // We do not want the RecyclerView to be announced by screen readers every time
         // the view is bound.

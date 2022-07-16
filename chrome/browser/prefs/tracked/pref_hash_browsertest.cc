@@ -364,12 +364,12 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
         EXPECT_EQ(protection_level_ > PROTECTION_DISABLED_ON_PLATFORM,
                   num_tracked_prefs_ > 0);
 
-        int num_split_tracked_prefs = GetTrackedPrefHistogramCount(
+        int split_tracked_prefs = GetTrackedPrefHistogramCount(
             user_prefs::tracked::kTrackedPrefHistogramUnchanged,
             user_prefs::tracked::kTrackedPrefRegistryValidationSuffix,
             BEGIN_ALLOW_SINGLE_BUCKET + 5);
         EXPECT_EQ(protection_level_ > PROTECTION_DISABLED_ON_PLATFORM ? 1 : 0,
-                  num_split_tracked_prefs);
+                  split_tracked_prefs);
       }
 
       num_tracked_prefs_ += num_split_tracked_prefs;
@@ -742,7 +742,7 @@ class PrefHashBrowserTestChangedAtomic : public PrefHashBrowserTestBase {
 
     ListPrefUpdate update(profile()->GetPrefs(),
                           prefs::kURLsToRestoreOnStartup);
-    update->AppendString("http://example.com");
+    update->Append("http://example.com");
   }
 
   void AttackPreferencesOnDisk(
@@ -758,8 +758,8 @@ class PrefHashBrowserTestChangedAtomic : public PrefHashBrowserTestBase {
     EXPECT_TRUE(
         selected_prefs->GetList(prefs::kURLsToRestoreOnStartup, &startup_urls));
     EXPECT_TRUE(startup_urls);
-    EXPECT_EQ(1U, startup_urls->GetSize());
-    startup_urls->AppendString("http://example.org");
+    EXPECT_EQ(1U, startup_urls->GetList().size());
+    startup_urls->Append("http://example.org");
   }
 
   void VerifyReactionToPrefAttack() override {
@@ -795,7 +795,8 @@ class PrefHashBrowserTestChangedAtomic : public PrefHashBrowserTestBase {
               profile()
                   ->GetPrefs()
                   ->GetList(prefs::kURLsToRestoreOnStartup)
-                  ->GetSize());
+                  ->GetList()
+                  .size());
 #endif
 
     // Nothing else should have triggered.
@@ -864,9 +865,9 @@ class PrefHashBrowserTestChangedSplitPref : public PrefHashBrowserTestBase {
 
     // Drop a fake extension (for the purpose of this test, dropped settings
     // don't need to be valid extension settings).
-    auto fake_extension = std::make_unique<base::DictionaryValue>();
-    fake_extension->SetString("name", "foo");
-    extensions_dict->Set(std::string(32, 'a'), std::move(fake_extension));
+    base::DictionaryValue fake_extension;
+    fake_extension.SetString("name", "foo");
+    extensions_dict->SetKey(std::string(32, 'a'), std::move(fake_extension));
   }
 
   void VerifyReactionToPrefAttack() override {

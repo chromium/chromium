@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
@@ -37,10 +36,11 @@ class TwoClientPreferencesSyncTest : public SyncTest {
  public:
   TwoClientPreferencesSyncTest() : SyncTest(TWO_CLIENT) {}
 
-  ~TwoClientPreferencesSyncTest() override {}
+  TwoClientPreferencesSyncTest(const TwoClientPreferencesSyncTest&) = delete;
+  TwoClientPreferencesSyncTest& operator=(const TwoClientPreferencesSyncTest&) =
+      delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientPreferencesSyncTest);
+  ~TwoClientPreferencesSyncTest() override {}
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(Sanity)) {
@@ -154,8 +154,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest,
   ASSERT_TRUE(IntegerPrefMatchChecker(prefs::kRestoreOnStartup).Wait());
 
   base::ListValue urls;
-  urls.AppendString("http://www.google.com/");
-  urls.AppendString("http://www.flickr.com/");
+  urls.Append("http://www.google.com/");
+  urls.Append("http://www.flickr.com/");
   ChangeIntegerPref(0, prefs::kRestoreOnStartup, 4);
   ChangeListPref(0, prefs::kURLsToRestoreOnStartup, urls);
   ASSERT_TRUE(IntegerPrefMatchChecker(prefs::kRestoreOnStartup).Wait());

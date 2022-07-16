@@ -78,8 +78,8 @@ class ParkableStringTest : public ::testing::Test {
     if (base::FeatureList::IsEnabled(features::kCompressParkableStrings)) {
       EXPECT_GT(task_environment_.GetPendingMainThreadTaskCount(), 0u);
     }
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(
-        ParkableStringManager::kAgingIntervalInSeconds));
+    task_environment_.FastForwardBy(
+        base::Seconds(ParkableStringManager::kAgingIntervalInSeconds));
   }
 
   void WaitForDelayedParking() {
@@ -223,32 +223,32 @@ TEST_F(ParkableStringTest, Simple) {
 
 TEST_F(ParkableStringTest, Park) {
   {
-    ParkableString parkable(MakeLargeString('a').ReleaseImpl());
-    EXPECT_TRUE(parkable.may_be_parked());
-    EXPECT_FALSE(parkable.Impl()->is_parked());
-    EXPECT_TRUE(ParkAndWait(parkable));
-    EXPECT_TRUE(parkable.Impl()->is_parked());
+    ParkableString parkable_a(MakeLargeString('a').ReleaseImpl());
+    EXPECT_TRUE(parkable_a.may_be_parked());
+    EXPECT_FALSE(parkable_a.Impl()->is_parked());
+    EXPECT_TRUE(ParkAndWait(parkable_a));
+    EXPECT_TRUE(parkable_a.Impl()->is_parked());
   }
 
   String large_string = MakeLargeString('b');
-  ParkableString parkable(large_string.Impl());
-  EXPECT_TRUE(parkable.may_be_parked());
+  ParkableString parkable_b(large_string.Impl());
+  EXPECT_TRUE(parkable_b.may_be_parked());
   // Not the only one to have a reference to the string.
-  EXPECT_FALSE(ParkAndWait(parkable));
+  EXPECT_FALSE(ParkAndWait(parkable_b));
   large_string = String();
-  EXPECT_TRUE(ParkAndWait(parkable));
+  EXPECT_TRUE(ParkAndWait(parkable_b));
 
   {
-    ParkableString parkable(MakeLargeString('c').ReleaseImpl());
-    EXPECT_TRUE(parkable.may_be_parked());
-    EXPECT_FALSE(parkable.Impl()->is_parked());
+    ParkableString parkable_c(MakeLargeString('c').ReleaseImpl());
+    EXPECT_TRUE(parkable_c.may_be_parked());
+    EXPECT_FALSE(parkable_c.Impl()->is_parked());
     EXPECT_TRUE(
-        parkable.Impl()->Park(ParkableStringImpl::ParkingMode::kCompress));
+        parkable_c.Impl()->Park(ParkableStringImpl::ParkingMode::kCompress));
     // Should not crash, it is allowed to call |Park()| twice in a row.
     EXPECT_TRUE(
-        parkable.Impl()->Park(ParkableStringImpl::ParkingMode::kCompress));
-    parkable = ParkableString();  // Release the reference.
-    RunPostedTasks();             // Should not crash.
+        parkable_c.Impl()->Park(ParkableStringImpl::ParkingMode::kCompress));
+    parkable_c = ParkableString();  // Release the reference.
+    RunPostedTasks();               // Should not crash.
   }
 }
 
@@ -633,9 +633,13 @@ TEST_F(ParkableStringTest, ToAndFromDisk) {
   histogram_tester.ExpectTotalCount("Memory.ParkableString.Read.Latency", 1);
   histogram_tester.ExpectTotalCount("Memory.ParkableString.Read.ThroughputMBps",
                                     1);
+  histogram_tester.ExpectTotalCount(
+      "Memory.ParkableString.Read.SinceLastDiskWrite", 1);
 }
 
 TEST_F(ParkableStringTest, UnparkWhileWritingToDisk) {
+  base::HistogramTester histogram_tester;
+
   ParkableString parkable(MakeLargeString('a').ReleaseImpl());
   ParkableStringImpl* impl = parkable.Impl();
 
@@ -657,6 +661,10 @@ TEST_F(ParkableStringTest, UnparkWhileWritingToDisk) {
   EXPECT_FALSE(impl->is_on_disk());
   EXPECT_TRUE(impl->has_on_disk_data());
   EXPECT_EQ(ParkableStringImpl::Age::kYoung, impl->age_for_testing());
+
+  // No data point recorded, since writing to disk was aborted.
+  histogram_tester.ExpectTotalCount(
+      "Memory.ParkableString.Read.SinceLastDiskWrite", 0);
 }
 
 TEST_F(ParkableStringTest, NoCompetingWritingToDisk) {
@@ -690,6 +698,8 @@ TEST_F(ParkableStringTest, NoCompetingWritingToDisk) {
 }
 
 TEST_F(ParkableStringTest, SynchronousToDisk) {
+  base::HistogramTester histogram_tester;
+
   ParkableString parkable(MakeLargeString('a').ReleaseImpl());
   ParkableStringImpl* impl = parkable.Impl();
 
@@ -707,6 +717,8 @@ TEST_F(ParkableStringTest, SynchronousToDisk) {
 
   parkable.ToString();
   EXPECT_FALSE(impl->is_on_disk());
+  histogram_tester.ExpectTotalCount(
+      "Memory.ParkableString.Read.SinceLastDiskWrite", 1);
 
   impl->MaybeAgeOrParkString();
   impl->MaybeAgeOrParkString();
@@ -715,6 +727,10 @@ TEST_F(ParkableStringTest, SynchronousToDisk) {
   EXPECT_FALSE(impl->is_on_disk());
   impl->MaybeAgeOrParkString();
   EXPECT_TRUE(impl->is_on_disk());  // Synchronous writing.
+
+  parkable.ToString();
+  histogram_tester.ExpectTotalCount(
+      "Memory.ParkableString.Read.SinceLastDiskWrite", 2);
 }
 
 TEST_F(ParkableStringTest, OnPurgeMemory) {
@@ -1064,10 +1080,6 @@ TEST_F(ParkableStringTest, ReportTotalUnparkingTime) {
 TEST_F(ParkableStringTest, ReportTotalDiskTime) {
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers;
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {features::kCompressParkableStrings, features::kParkableStringsToDisk},
-      {});
   ASSERT_TRUE(features::IsParkableStringsToDiskEnabled());
 
   ParkableString parkable(MakeLargeString().ReleaseImpl());
@@ -1135,8 +1147,7 @@ TEST_F(ParkableStringTestWithQueuedThreadPool, AgingParkingInProgress) {
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromSeconds(
-          ParkableStringManager::kAgingIntervalInSeconds));
+      base::Seconds(ParkableStringManager::kAgingIntervalInSeconds));
   run_loop.Run();
 
   // The aging task is rescheduled.

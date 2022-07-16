@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
 
@@ -26,6 +25,12 @@ class PageLoadMetricsObserverTestHarness
   static const char kResourceUrl[];
 
   PageLoadMetricsObserverTestHarness();
+
+  PageLoadMetricsObserverTestHarness(
+      const PageLoadMetricsObserverTestHarness&) = delete;
+  PageLoadMetricsObserverTestHarness& operator=(
+      const PageLoadMetricsObserverTestHarness&) = delete;
+
   ~PageLoadMetricsObserverTestHarness() override;
 
   void SetUp() override;
@@ -37,8 +42,6 @@ class PageLoadMetricsObserverTestHarness
 
  private:
   std::unique_ptr<PageLoadMetricsObserverTester> tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageLoadMetricsObserverTestHarness);
 };
 
 }  // namespace page_load_metrics

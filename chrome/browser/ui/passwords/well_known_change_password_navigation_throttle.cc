@@ -81,7 +81,7 @@ class WebContentsLifetimeHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsLifetimeHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsLifetimeHelper);
 
 }  // namespace
 
@@ -190,7 +190,7 @@ void WellKnownChangePasswordNavigationThrottle::OnProcessingFinished(
     Redirect(redirect_url);
   } else {
     RecordMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
-    Redirect(request_url_.GetOrigin());
+    Redirect(request_url_.DeprecatedGetOriginAsURL());
   }
   CancelDeferredNavigation(NavigationThrottle::CANCEL);
 }

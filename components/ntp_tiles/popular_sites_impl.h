@@ -8,10 +8,8 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/ntp_tiles/popular_sites.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -44,6 +42,9 @@ class PopularSitesImpl : public PopularSites {
       const TemplateURLService* template_url_service,
       variations::VariationsService* variations_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  PopularSitesImpl(const PopularSitesImpl&) = delete;
+  PopularSitesImpl& operator=(const PopularSitesImpl&) = delete;
 
   ~PopularSitesImpl() override;
 
@@ -88,8 +89,6 @@ class PopularSitesImpl : public PopularSites {
   int version_in_pending_url_;
 
   base::WeakPtrFactory<PopularSitesImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PopularSitesImpl);
 };
 
 }  // namespace ntp_tiles

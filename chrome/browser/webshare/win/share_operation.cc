@@ -5,7 +5,6 @@
 #include "chrome/browser/webshare/win/share_operation.h"
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/webshare/win/show_share_ui_for_window_operation.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -23,6 +23,8 @@
 #include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_writer_delegate.h"
 #include "storage/common/file_system/file_system_mount_option.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/views/win/hwnd_util.h"
 #include "url/gurl.h"
 
@@ -37,6 +39,7 @@
 #include <wrl/event.h>
 
 using ABI::Windows::ApplicationModel::DataTransfer::IDataPackage;
+using ABI::Windows::ApplicationModel::DataTransfer::IDataPackage2;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataPackagePropertySet;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataRequest;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataRequestDeferral;
@@ -372,12 +375,16 @@ void ShareOperation::Run(blink::mojom::ShareService::ShareCallback callback) {
   DCHECK(!callback_);
   callback_ = std::move(callback);
 
-  // If the required WinRT functionality is not available, or the corresponding
-  // web_contents have already been cleaned up, cancel the operation
-  const bool winrt_environment_ok =
-      base::win::ResolveCoreWinRTDelayload() &&
-      base::win::ScopedHString::ResolveCoreWinRTStringDelayload();
-  if (!winrt_environment_ok || !web_contents()) {
+  // Ensure that the required WinRT functionality is available/loaded.
+  if (!base::win::ResolveCoreWinRTDelayload() ||
+      !base::win::ScopedHString::ResolveCoreWinRTStringDelayload()) {
+    Complete(blink::mojom::ShareError::INTERNAL_ERROR);
+    return;
+  }
+
+  // If the corresponding web_contents have already been cleaned up, cancel
+  // the operation.
+  if (!web_contents()) {
     Complete(blink::mojom::ShareError::CANCELED);
     return;
   }
@@ -420,8 +427,34 @@ void ShareOperation::Run(blink::mojom::ShareService::ShareCallback callback) {
     }
   }
 
-  HWND hwnd =
-      views::HWNDForNativeWindow(web_contents()->GetTopLevelNativeWindow());
+  // Attempt to fetch the accessibility HWND for these WebContents. For the
+  // sake of better communication with screen readers this HWND is (virtually)
+  // scoped to just the WebContents (rather than the entire actual window), so
+  // allows the resulting Share dialog to also better position/associate itself
+  // with the WebContents.
+  HWND hwnd = nullptr;
+  content::RenderWidgetHostView* host_view =
+      web_contents()->GetRenderWidgetHostView();
+  if (host_view) {
+    ui::AXPlatformNode* platform_node =
+        ui::AXPlatformNode::FromNativeViewAccessible(
+            host_view->GetNativeViewAccessible());
+    if (platform_node) {
+      ui::AXPlatformNodeDelegate* delegate = platform_node->GetDelegate();
+      if (delegate) {
+        hwnd = delegate->GetTargetForNativeAccessibilityEvent();
+      }
+    }
+  }
+  // If we were unable to fetch the accessibility HWND, fall-back to the
+  // top-level HWND, which will still function appropriately, it just may not
+  // position as nicely. This is unexpected in most cases, but can happen if,
+  // for example, Windows has explicitly destroyed said HWND.
+  if (!hwnd) {
+    hwnd =
+        views::HWNDForNativeWindow(web_contents()->GetTopLevelNativeWindow());
+  }
+
   show_share_ui_for_window_operation_ =
       std::make_unique<ShowShareUIForWindowOperation>(hwnd);
   show_share_ui_for_window_operation_->Run(base::BindOnce(
@@ -432,14 +465,12 @@ void ShareOperation::OnDataRequested(IDataRequestedEventArgs* event_args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   blink::mojom::ShareError share_result;
-  if (!event_args || !web_contents()) {
+  if (!web_contents()) {
     share_result = blink::mojom::ShareError::CANCELED;
+  } else if (PutShareContentInEventArgs(event_args)) {
+    share_result = blink::mojom::ShareError::OK;
   } else {
-    if (PutShareContentInEventArgs(event_args)) {
-      share_result = blink::mojom::ShareError::OK;
-    } else {
-      share_result = blink::mojom::ShareError::INTERNAL_ERROR;
-    }
+    share_result = blink::mojom::ShareError::INTERNAL_ERROR;
   }
 
   // If the share operation failed or is not being deferred, mark it as complete
@@ -450,6 +481,8 @@ void ShareOperation::OnDataRequested(IDataRequestedEventArgs* event_args) {
 bool ShareOperation::PutShareContentInEventArgs(
     IDataRequestedEventArgs* event_args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!event_args)
+    return false;
 
   ComPtr<IDataRequest> data_request;
   if (FAILED(event_args->get_Request(&data_request)))
@@ -495,7 +528,11 @@ bool ShareOperation::PutShareContentInDataPackage(IDataRequest* data_request) {
     if (FAILED(uri_factory->CreateUri(url_h.get(), &uri)))
       return false;
 
-    if (FAILED(data_package_->SetUri(uri.Get())))
+    ComPtr<IDataPackage2> data_package_2;
+    if (FAILED(data_package_.As(&data_package_2)))
+      return false;
+
+    if (FAILED(data_package_2->SetWebLink(uri.Get())))
       return false;
   }
 
@@ -547,8 +584,7 @@ bool ShareOperation::PutShareContentInDataPackage(IDataRequest* data_request) {
                 operation->WriteStream(
                     stream,
                     base::BindOnce(
-                        base::DoNothing::Once<
-                            scoped_refptr<OutputStreamWriteOperation>>(),
+                        [](scoped_refptr<OutputStreamWriteOperation>) {},
                         operation));
                 return S_OK;
               });

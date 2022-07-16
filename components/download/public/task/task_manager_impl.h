@@ -23,6 +23,10 @@ using TaskFinishedCallback = base::OnceCallback<void(bool)>;
 class TaskManagerImpl : public TaskManager {
  public:
   explicit TaskManagerImpl(std::unique_ptr<TaskScheduler> task_scheduler);
+
+  TaskManagerImpl(const TaskManagerImpl&) = delete;
+  TaskManagerImpl& operator=(const TaskManagerImpl&) = delete;
+
   ~TaskManagerImpl() override;
 
   // Called to schedule a new task. Overwrites the params if a task of the same
@@ -72,8 +76,6 @@ class TaskManagerImpl : public TaskManager {
   // Contains the callbacks passed through the OnStartScheduledTask(). These
   // will be cleared when the task is completed or stopped by the system.
   std::map<DownloadTaskType, TaskFinishedCallback> task_finished_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerImpl);
 };
 
 }  // namespace download

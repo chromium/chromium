@@ -19,15 +19,15 @@ class FileTasksNotifierFactory : public BrowserContextKeyedServiceFactory {
  public:
   FileTasksNotifierFactory();
 
+  FileTasksNotifierFactory(const FileTasksNotifierFactory&) = delete;
+  FileTasksNotifierFactory& operator=(const FileTasksNotifierFactory&) = delete;
+
   static FileTasksNotifierFactory* GetInstance();
 
   FileTasksNotifier* GetForProfile(Profile* profile);
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileTasksNotifierFactory);
 };
 
 }  // namespace file_tasks

@@ -45,6 +45,10 @@ class ManagementPolicy {
   class Provider {
    public:
     Provider() {}
+
+    Provider(const Provider&) = delete;
+    Provider& operator=(const Provider&) = delete;
+
     virtual ~Provider() {}
 
     // A human-readable name for this provider, for use in debug messages.
@@ -105,12 +109,13 @@ class ManagementPolicy {
     // uninstalled.
     virtual bool ShouldForceUninstall(const Extension* extension,
                                       std::u16string* error) const;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Provider);
   };
 
   ManagementPolicy();
+
+  ManagementPolicy(const ManagementPolicy&) = delete;
+  ManagementPolicy& operator=(const ManagementPolicy&) = delete;
+
   ~ManagementPolicy();
 
   // Registers or unregisters a provider, causing it to be added to or removed
@@ -200,8 +205,6 @@ class ManagementPolicy {
   // This stores raw pointers to Provider.
   // TODO(lazyboy): Consider making ManagementPolicy own these providers.
   ProviderList providers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementPolicy);
 };
 
 }  // namespace extensions

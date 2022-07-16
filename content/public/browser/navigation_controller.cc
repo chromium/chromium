@@ -36,7 +36,8 @@ NavigationController::LoadURLParams::LoadURLParams(const OpenURLParams& input)
       blob_url_loader_factory(input.blob_url_loader_factory),
       href_translate(input.href_translate),
       reload_type(input.reload_type),
-      impression(input.impression) {
+      impression(input.impression),
+      is_pdf(input.is_pdf) {
 #if DCHECK_IS_ON()
   DCHECK(input.Valid());
 #endif

@@ -41,7 +41,7 @@ class AccessoryController {
   // in the content area.
   virtual void OnFillingTriggered(
       autofill::FieldGlobalId focused_field_id,
-      const autofill::UserInfo::Field& selection) = 0;
+      const autofill::AccessorySheetField& selection) = 0;
 
   // Triggered when a user selects an option.
   virtual void OnOptionSelected(autofill::AccessoryAction selected_action) = 0;

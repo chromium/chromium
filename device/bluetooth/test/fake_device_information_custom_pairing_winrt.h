@@ -13,7 +13,12 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "device/bluetooth/test/fake_device_information_pairing_winrt.h"
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 namespace device {
 
@@ -26,6 +31,12 @@ class FakeDeviceInformationCustomPairingWinrt
   FakeDeviceInformationCustomPairingWinrt(
       Microsoft::WRL::ComPtr<FakeDeviceInformationPairingWinrt> pairing,
       std::string pin);
+
+  FakeDeviceInformationCustomPairingWinrt(
+      const FakeDeviceInformationCustomPairingWinrt&) = delete;
+  FakeDeviceInformationCustomPairingWinrt& operator=(
+      const FakeDeviceInformationCustomPairingWinrt&) = delete;
+
   ~FakeDeviceInformationCustomPairingWinrt() override;
 
   // IDeviceInformationCustomPairing:
@@ -79,7 +90,7 @@ class FakeDeviceInformationCustomPairingWinrt
       ABI::Windows::Devices::Enumeration::DevicePairingRequestedEventArgs*>>
       pairing_requested_handler_;
 
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceInformationCustomPairingWinrt);
+  scoped_refptr<base::SequencedTaskRunner> pair_task_runner_;
 };
 
 }  // namespace device

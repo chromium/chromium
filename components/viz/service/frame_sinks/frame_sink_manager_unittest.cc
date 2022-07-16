@@ -61,8 +61,14 @@ struct RootCompositorFrameSinkData {
 class FrameSinkManagerTest : public testing::Test {
  public:
   FrameSinkManagerTest()
-      : manager_(&shared_bitmap_manager_, &output_surface_provider_) {}
+      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_,
+                                                  &output_surface_provider_)) {}
   ~FrameSinkManagerTest() override = default;
+
+  RootCompositorFrameSinkImpl* GetRootCompositorFrameSinkImpl() {
+    auto it = manager_.root_sink_map_.find(kFrameSinkIdRoot);
+    return it == manager_.root_sink_map_.end() ? nullptr : it->second.get();
+  }
 
   std::unique_ptr<CompositorFrameSinkSupport> CreateCompositorFrameSinkSupport(
       const FrameSinkId& frame_sink_id) {
@@ -140,7 +146,8 @@ TEST_F(FrameSinkManagerTest, CreateCompositorFrameSink) {
   MockCompositorFrameSinkClient compositor_frame_sink_client;
   mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
   manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      kFrameSinkIdA, /*bundle_id=*/absl::nullopt,
+      compositor_frame_sink.BindNewPipeAndPassReceiver(),
       compositor_frame_sink_client.BindInterfaceRemote());
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
@@ -156,7 +163,8 @@ TEST_F(FrameSinkManagerTest, CompositorFrameSinkConnectionLost) {
   MockCompositorFrameSinkClient compositor_frame_sink_client;
   mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
   manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      kFrameSinkIdA, /*bundle_id=*/absl::nullopt,
+      compositor_frame_sink.BindNewPipeAndPassReceiver(),
       compositor_frame_sink_client.BindInterfaceRemote());
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
@@ -432,7 +440,7 @@ TEST_F(FrameSinkManagerTest, Throttle) {
   manager_.RegisterFrameSinkHierarchy(client_c->frame_sink_id(),
                                       client_d->frame_sink_id());
 
-  constexpr base::TimeDelta interval = base::TimeDelta::FromHz(20);
+  constexpr base::TimeDelta interval = base::Hertz(20);
 
   std::vector<FrameSinkId> ids{kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB,
                                kFrameSinkIdC, kFrameSinkIdD};
@@ -480,7 +488,7 @@ TEST_F(FrameSinkManagerTest, NoThrottleOnFrameSinksBeingCaptured) {
   manager_.RegisterFrameSinkHierarchy(client_b->frame_sink_id(),
                                       client_c->frame_sink_id());
 
-  constexpr base::TimeDelta interval = base::TimeDelta::FromHz(20);
+  constexpr base::TimeDelta interval = base::Hertz(20);
 
   std::vector<FrameSinkId> ids{kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB,
                                kFrameSinkIdC};
@@ -540,7 +548,7 @@ TEST_F(FrameSinkManagerTest, ThrottleUponHierarchyChange) {
   manager_.RegisterFrameSinkHierarchy(client_a->frame_sink_id(),
                                       client_b->frame_sink_id());
 
-  constexpr base::TimeDelta interval = base::TimeDelta::FromHz(20);
+  constexpr base::TimeDelta interval = base::Hertz(20);
 
   std::vector<FrameSinkId> ids{kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB};
 
@@ -569,6 +577,79 @@ TEST_F(FrameSinkManagerTest, ThrottleUponHierarchyChange) {
                                         client_a->frame_sink_id());
   manager_.UnregisterFrameSinkHierarchy(client_a->frame_sink_id(),
                                         client_b->frame_sink_id());
+}
+
+TEST_F(FrameSinkManagerTest, EvictRootSurfaceId) {
+  manager_.RegisterFrameSinkId(kFrameSinkIdRoot, true /* report_activation */);
+
+  // Create a RootCompositorFrameSinkImpl.
+  RootCompositorFrameSinkData root_data;
+  manager_.CreateRootCompositorFrameSink(
+      root_data.BuildParams(kFrameSinkIdRoot));
+
+  ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  const LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
+  const SurfaceId surface_id(kFrameSinkIdRoot, local_surface_id);
+  GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
+      local_surface_id, MakeDefaultCompositorFrame(), absl::nullopt, 0);
+  EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
+  manager_.EvictSurfaces({surface_id});
+  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
+  manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
+}
+
+TEST_F(FrameSinkManagerTest, EvictNewerRootSurfaceId) {
+  manager_.RegisterFrameSinkId(kFrameSinkIdRoot, true /* report_activation */);
+
+  // Create a RootCompositorFrameSinkImpl.
+  RootCompositorFrameSinkData root_data;
+  manager_.CreateRootCompositorFrameSink(
+      root_data.BuildParams(kFrameSinkIdRoot));
+
+  ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  const LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
+  const SurfaceId surface_id(kFrameSinkIdRoot, local_surface_id);
+  GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
+      local_surface_id, MakeDefaultCompositorFrame(), absl::nullopt, 0);
+  EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
+  allocator.GenerateId();
+  const LocalSurfaceId next_local_surface_id =
+      allocator.GetCurrentLocalSurfaceId();
+  manager_.EvictSurfaces({{kFrameSinkIdRoot, next_local_surface_id}});
+  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
+  manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
+}
+
+TEST_F(FrameSinkManagerTest, SubmitCompositorFrameWithEvictedSurfaceId) {
+  manager_.RegisterFrameSinkId(kFrameSinkIdRoot, true /* report_activation */);
+
+  // Create a RootCompositorFrameSinkImpl.
+  RootCompositorFrameSinkData root_data;
+  manager_.CreateRootCompositorFrameSink(
+      root_data.BuildParams(kFrameSinkIdRoot));
+
+  ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  const LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
+  const SurfaceId surface_id(kFrameSinkIdRoot, local_surface_id);
+  allocator.GenerateId();
+  const LocalSurfaceId local_surface_id2 = allocator.GetCurrentLocalSurfaceId();
+  const SurfaceId surface_id2(kFrameSinkIdRoot, local_surface_id2);
+  GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
+      local_surface_id, MakeDefaultCompositorFrame(), absl::nullopt, 0);
+  EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
+  manager_.EvictSurfaces({surface_id, surface_id2});
+  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
+  GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
+      local_surface_id2, MakeDefaultCompositorFrame(), absl::nullopt, 0);
+
+  // Even though `surface_id2` was just submitted, Display should not reference
+  // it because it was evicted.
+  EXPECT_NE(surface_id2, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
+
+  manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
 }
 
 namespace {

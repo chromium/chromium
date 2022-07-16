@@ -44,10 +44,7 @@ class PLATFORM_EXPORT PlaceholderImage final : public Image {
             const cc::PaintFlags&,
             const FloatRect& dest_rect,
             const FloatRect& src_rect,
-            const SkSamplingOptions&,
-            RespectImageOrientationEnum,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const ImageDrawOptions&) override;
 
   void DestroyDecodedData() override;
 
@@ -73,7 +70,7 @@ class PLATFORM_EXPORT PlaceholderImage final : public Image {
                    const cc::PaintFlags&,
                    const FloatRect& dest_rect,
                    const ImageTilingInfo& tiling_info,
-                   RespectImageOrientationEnum) override;
+                   const ImageDrawOptions& draw_options) override;
 
   // SetData does nothing, and the passed in buffer is ignored.
   SizeAvailability SetData(scoped_refptr<SharedBuffer>, bool) override;

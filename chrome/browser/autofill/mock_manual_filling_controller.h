@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOFILL_MOCK_MANUAL_FILLING_CONTROLLER_H_
 #define CHROME_BROWSER_AUTOFILL_MOCK_MANUAL_FILLING_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -14,6 +13,11 @@ class MockManualFillingController
       public base::SupportsWeakPtr<MockManualFillingController> {
  public:
   MockManualFillingController();
+
+  MockManualFillingController(const MockManualFillingController&) = delete;
+  MockManualFillingController& operator=(const MockManualFillingController&) =
+      delete;
+
   ~MockManualFillingController() override;
 
   MOCK_METHOD1(RefreshSuggestions, void(const autofill::AccessorySheetData&));
@@ -27,7 +31,7 @@ class MockManualFillingController
   MOCK_METHOD1(ShowAccessorySheetTab, void(const autofill::AccessoryTabType&));
   MOCK_METHOD2(OnFillingTriggered,
                void(autofill::AccessoryTabType type,
-                    const autofill::UserInfo::Field&));
+                    const autofill::AccessorySheetField&));
   MOCK_CONST_METHOD1(OnOptionSelected,
                      void(autofill::AccessoryAction selected_action));
   MOCK_CONST_METHOD2(OnToggleChanged,
@@ -38,9 +42,6 @@ class MockManualFillingController
       void(autofill::AccessoryTabType,
            base::OnceCallback<void(const autofill::AccessorySheetData&)>));
   MOCK_CONST_METHOD0(container_view, gfx::NativeView());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockManualFillingController);
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_MOCK_MANUAL_FILLING_CONTROLLER_H_

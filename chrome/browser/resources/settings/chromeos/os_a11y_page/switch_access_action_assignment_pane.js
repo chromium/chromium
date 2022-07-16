@@ -9,12 +9,24 @@
  * UI.
  */
 
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import '../os_icons.m.js';
+import {actionToPref, AUTO_SCAN_SPEED_RANGE_MS, AssignmentContext, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
+import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
+
 /**
  * Different states of the assignment flow dictating which overall view should
  * be shown.
  * @enum {number}
  */
-/* #export */ const AssignmentState = {
+export const AssignmentState = {
   WAIT_FOR_CONFIRMATION_REMOVAL: 0,
   WAIT_FOR_CONFIRMATION: 1,
   WAIT_FOR_KEY: 2,
@@ -29,7 +41,7 @@
  * Various icons representing the state of a given key assignment.
  * @enum {string}
  */
-/* #export */ const AssignmentIcon = {
+export const AssignmentIcon = {
   ASSIGNED: 'assigned',
   ADD_ASSIGNMENT: 'add-assignment',
   REMOVE_ASSIGNMENT: 'remove-assignment',
@@ -53,7 +65,7 @@ let SwitchAccessKeyAssignmentInfoMapping;
  * @param {!SwitchAccessDeviceType} deviceType
  * @return {string}
  */
-/* #export */ function getLabelForDeviceType(deviceType) {
+export function getLabelForDeviceType(deviceType) {
   switch (deviceType) {
     case SwitchAccessDeviceType.INTERNAL:
       return I18nBehavior.i18nAdvanced(
@@ -76,7 +88,7 @@ let SwitchAccessKeyAssignmentInfoMapping;
  * @param {{key: string, device: !SwitchAccessDeviceType}} assignment
  * @return {string}
  */
-/* #export */ function getLabelForAssignment(assignment) {
+export function getLabelForAssignment(assignment) {
   return I18nBehavior.i18nAdvanced('switchAndDeviceType', {
     substitutions: [assignment.key, getLabelForDeviceType(assignment.device)]
   });
@@ -85,6 +97,7 @@ let SwitchAccessKeyAssignmentInfoMapping;
 // TODO(crbug.com/1222452): Convert to use Polymer's class based syntax (e.g.
 // https://crrev.com/c/2808034).
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-switch-access-action-assignment-pane',
 
   behaviors: [
@@ -199,10 +212,10 @@ Polymer({
 
     this.addWebUIListener(
         'switch-access-got-key-press-for-assignment',
-        this.onKeyDown_.bind(this));
+        event => this.onKeyDown_(event));
     this.addWebUIListener(
         'switch-access-assignments-changed',
-        this.onAssignmentsChanged_.bind(this));
+        value => this.onAssignmentsChanged_(value));
     this.switchAccessBrowserProxy_
         .notifySwitchAccessActionAssignmentPaneActive();
 

@@ -4,10 +4,21 @@
 
 #include "third_party/blink/renderer/extensions/chromeos/chromeos.h"
 
+#include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window_management.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+
 namespace blink {
 
-bool ChromeOS::myEmbedderFunction(bool testArg) {
-  return !testArg;
+ChromeOS::ChromeOS()
+    : window_management_(MakeGarbageCollected<CrosWindowManagement>()) {}
+
+CrosWindowManagement* ChromeOS::windowManager() {
+  return window_management_;
+}
+
+void ChromeOS::Trace(Visitor* visitor) const {
+  ScriptWrappable::Trace(visitor);
+  visitor->Trace(window_management_);
 }
 
 }  // namespace blink

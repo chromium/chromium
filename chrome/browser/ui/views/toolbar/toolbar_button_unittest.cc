@@ -213,7 +213,7 @@ TEST_F(ToolbarButtonUITest, TestBorderUpdateColorChange) {
   for (SkColor border_color : {SK_ColorRED, SK_ColorGREEN, SK_ColorBLUE}) {
     EXPECT_FALSE(button_->did_border_update());
     button_->SetHighlight(std::u16string(), border_color);
-    EXPECT_EQ(button_->border()->color(), border_color);
+    EXPECT_EQ(button_->GetBorder()->color(), border_color);
     EXPECT_TRUE(button_->did_border_update());
     button_->ResetBorderUpdateFlag();
   }

@@ -32,21 +32,19 @@ enum class DarkModeImagePolicy {
 struct DarkModeSettings {
   DarkModeInversionAlgorithm mode =
       DarkModeInversionAlgorithm::kInvertLightnessLAB;
-  bool grayscale = false;
-  float image_grayscale_percent = 0.0;  // Valid range from 0.0 to 1.0
   float contrast = 0.0;                 // Valid range from -1.0 to 1.0
   DarkModeImagePolicy image_policy = DarkModeImagePolicy::kFilterNone;
 
-  // Text colors with brightness below this threshold will be inverted, and
-  // above it will be left as in the original, non-dark-mode page.  Set to 256
-  // to always invert text color or to 0 to never invert text color.
-  int text_brightness_threshold = 256;
+  // Foreground colors with brightness below this threshold will be inverted,
+  // and above it will be left as in the original, non-dark-mode page.  Set to
+  // 256 to always invert foreground color or to 0 to never invert text color.
+  int foreground_brightness_threshold = 256;
 
   // Background elements with brightness above this threshold will be inverted,
   // and below it will be left as in the original, non-dark-mode page.  Set to
   // 256 to never invert the color or to 0 to always invert it.
   //
-  // Warning: This behavior is the opposite of text_brightness_threshold!
+  // Warning: This behavior is the opposite of foreground_brightness_threshold!
   int background_brightness_threshold = 0;
 
   // True if text contrast should be increased by painting an outline.

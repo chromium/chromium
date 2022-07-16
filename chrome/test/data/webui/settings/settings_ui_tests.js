@@ -4,10 +4,10 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrDrawerElement, CrSettingsPrefs, CrToolbarElement, CrToolbarSearchFieldElement, Router, routes, SettingsMenuElement, SettingsUiElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, Router, routes, SettingsMenuElement, SettingsUiElement} from 'chrome://settings/settings.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for the Settings layout. */

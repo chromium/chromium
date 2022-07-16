@@ -11,9 +11,8 @@
 #include <list>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "build/build_config.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/public/browser/browser_associated_interface.h"
@@ -55,6 +54,9 @@ class CONTENT_EXPORT RenderMessageFilter
                       BrowserContext* browser_context,
                       RenderWidgetHelper* render_widget_helper,
                       MediaInternals* media_internals);
+
+  RenderMessageFilter(const RenderMessageFilter&) = delete;
+  RenderMessageFilter& operator=(const RenderMessageFilter&) = delete;
 
   // BrowserMessageFilter methods:
   bool OnMessageReceived(const IPC::Message& message) override;
@@ -99,8 +101,6 @@ class CONTENT_EXPORT RenderMessageFilter
   MediaInternals* media_internals_;
 
   base::WeakPtrFactory<RenderMessageFilter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderMessageFilter);
 };
 
 }  // namespace content

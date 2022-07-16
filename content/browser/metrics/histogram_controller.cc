@@ -15,7 +15,6 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
@@ -29,14 +28,6 @@ HistogramController* HistogramController::GetInstance() {
 HistogramController::HistogramController() : subscriber_(nullptr) {}
 
 HistogramController::~HistogramController() {}
-
-void HistogramController::OnPendingProcesses(int sequence_number,
-                                             int pending_processes,
-                                             bool end) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (subscriber_)
-    subscriber_->OnPendingProcesses(sequence_number, pending_processes, end);
-}
 
 void HistogramController::OnHistogramDataCollected(
     int sequence_number,
@@ -134,13 +125,25 @@ void HistogramController::RemoveChildHistogramFetcherInterface(T* host) {
   GetChildHistogramFetcherMap<T>().erase(host);
 }
 
-void HistogramController::GetHistogramDataFromChildProcesses(
-    int sequence_number) {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? BrowserThread::UI
-                          : BrowserThread::IO);
+void HistogramController::GetHistogramData(int sequence_number) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   int pending_processes = 0;
+  for (RenderProcessHost::iterator it(RenderProcessHost::AllHostsIterator());
+       !it.IsAtEnd() && it.GetCurrentValue()->IsReady(); it.Advance()) {
+    if (auto* child_histogram_fetcher =
+            GetChildHistogramFetcherInterface(it.GetCurrentValue())) {
+      child_histogram_fetcher->GetChildNonPersistentHistogramData(
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              base::BindOnce(&HistogramController::OnHistogramDataCollected,
+                             base::Unretained(this), sequence_number),
+              std::vector<std::string>()));
+      ++pending_processes;
+    }
+  }
+
+  // TODO(rtenneti): Enable getting histogram data for other processes like
+  // PPAPI and NACL.
   for (BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
     const ChildProcessData& data = iter.GetData();
 
@@ -166,37 +169,9 @@ void HistogramController::GetHistogramDataFromChildProcesses(
       ++pending_processes;
     }
   }
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&HistogramController::OnPendingProcesses,
-                                base::Unretained(this), sequence_number,
-                                pending_processes, true));
-}
 
-void HistogramController::GetHistogramData(int sequence_number) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  int pending_processes = 0;
-  for (RenderProcessHost::iterator it(RenderProcessHost::AllHostsIterator());
-       !it.IsAtEnd() && it.GetCurrentValue()->IsReady(); it.Advance()) {
-    if (auto* child_histogram_fetcher =
-            GetChildHistogramFetcherInterface(it.GetCurrentValue())) {
-      child_histogram_fetcher->GetChildNonPersistentHistogramData(
-          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-              base::BindOnce(&HistogramController::OnHistogramDataCollected,
-                             base::Unretained(this), sequence_number),
-              std::vector<std::string>()));
-      ++pending_processes;
-    }
-  }
-  OnPendingProcesses(sequence_number, pending_processes, false);
-
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? content::GetUIThreadTaskRunner({})
-                         : content::GetIOThreadTaskRunner({});
-  task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&HistogramController::GetHistogramDataFromChildProcesses,
-                     base::Unretained(this), sequence_number));
+  if (subscriber_)
+    subscriber_->OnPendingProcesses(sequence_number, pending_processes, true);
 }
 
 }  // namespace content

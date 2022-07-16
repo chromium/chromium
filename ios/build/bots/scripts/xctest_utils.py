@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import json
-import os
 import re
-import tempfile
+
+from test_result_util import ResultCollection, TestResult, TestStatus
 
 
 # These labels should match the ones output by gtest's JSON.
@@ -21,6 +20,9 @@ class XCTestLogParser(object):
   """This helper class process XCTest test output."""
 
   def __init__(self):
+    # Test results from the parser.
+    self._result_collection = ResultCollection()
+
     # State tracking for log parsing
     self.completed = False
     self._current_test = ''
@@ -57,7 +59,10 @@ class XCTestLogParser(object):
     self._test_fail = re.compile(
         r'Test Case \'' + test_name_regexp +
           '\' failed\s+\(\d+\.\d+\s+seconds\)?.')
-    self._test_passed = re.compile(r'\*\*\s+TEST\s+EXECUTE\s+SUCCEEDED\s+\*\*')
+    self._test_execute_succeeded = re.compile(
+        r'\*\*\s+TEST\s+EXECUTE\s+SUCCEEDED\s+\*\*')
+    self._test_execute_failed = re.compile(
+        r'\*\*\s+TEST\s+EXECUTE\s+FAILED\s+\*\*')
     self._retry_message = re.compile('RETRYING FAILED TESTS:')
     self.retrying_failed = False
 
@@ -71,6 +76,22 @@ class XCTestLogParser(object):
       'timeout': TEST_TIMEOUT_LABEL,
       'warning': TEST_WARNING_LABEL
     }
+
+  def Finalize(self):
+    """Finalize for |self._result_collection|.
+
+    Called at the end to add unfinished tests and crash status for
+        self._result_collection.
+    """
+    for test in self.RunningTests():
+      self._result_collection.add_test_result(
+          TestResult(test[0], TestStatus.CRASH, test_log='Did not complete.'))
+
+    if not self.completed:
+      self._result_collection.crashed = True
+
+  def GetResultCollection(self):
+    return self._result_collection
 
   def GetCurrentTest(self):
     return self._current_test
@@ -162,7 +183,7 @@ class XCTestLogParser(object):
 
   def CompletedWithoutFailure(self):
     """Returns True if all tests completed and no tests failed unexpectedly."""
-    return self.completed
+    return self.completed and not self.FailedTests()
 
   def SystemAlertPresent(self):
     """Returns a bool indicating whether a system alert is shown on device."""
@@ -183,10 +204,11 @@ class XCTestLogParser(object):
     # List of regexps that parses expects to find at the start of a line but
     # which can be somewhere in the middle.
     gtest_regexps = [
-      self._test_start,
-      self._test_ok,
-      self._test_fail,
-      self._test_passed,
+        self._test_start,
+        self._test_ok,
+        self._test_fail,
+        self._test_execute_failed,
+        self._test_execute_succeeded,
     ]
 
     for regexp in gtest_regexps:
@@ -206,9 +228,10 @@ class XCTestLogParser(object):
     Will recognize newly started tests, OK or FAILED statuses, timeouts, etc.
     """
 
-    # Is it a line declaring all tests passed?
-    results = self._test_passed.match(line)
-    if results:
+    # Is it a line declaring end of all tests?
+    succeeded = self._test_execute_succeeded.match(line)
+    failed = self._test_execute_failed.match(line)
+    if succeeded or failed:
       self.completed = True
       self._current_test = ''
       return
@@ -227,6 +250,11 @@ class XCTestLogParser(object):
         if self._test_status[self._current_test][0] == 'started':
           self._test_status[self._current_test] = (
               'timeout', self._failure_description)
+          self._result_collection.add_test_result(
+              TestResult(
+                  self._current_test,
+                  TestStatus.ABORT,
+                  test_log='\n'.join(self._failure_description)))
       test_name = '%s/%s' % (results.group(1), results.group(2))
       self._test_status[test_name] = ('started', ['Did not complete.'])
       self._current_test = test_name
@@ -246,8 +274,17 @@ class XCTestLogParser(object):
         self._RecordError(line, 'success while in status %s' % status)
       if self.retrying_failed:
         self._test_status[test_name] = ('warning', self._failure_description)
+        # This is a passed result. Previous failures were reported in separate
+        # TestResult objects.
+        self._result_collection.add_test_result(
+            TestResult(
+                test_name,
+                TestStatus.PASS,
+                test_log='\n'.join(self._failure_description)))
       else:
         self._test_status[test_name] = ('OK', [])
+        self._result_collection.add_test_result(
+            TestResult(test_name, TestStatus.PASS))
       self._failure_description = []
       self._current_test = ''
       return
@@ -259,11 +296,23 @@ class XCTestLogParser(object):
       status = self._StatusOfTest(test_name)
       if status not in ('started', 'failed', 'timeout'):
         self._RecordError(line, 'failure while in status %s' % status)
+      if self._current_test != test_name:
+        if self._current_test:
+          self._RecordError(
+              line,
+              '%s failure while in test %s' % (test_name, self._current_test))
+        return
       # Don't overwrite the failure description when a failing test is listed a
       # second time in the summary, or if it was already recorded as timing
       # out.
       if status not in ('failed', 'timeout'):
         self._test_status[test_name] = ('failed', self._failure_description)
+      # Add to |test_results| regardless whether the test ran before.
+      self._result_collection.add_test_result(
+          TestResult(
+              test_name,
+              TestStatus.FAIL,
+              test_log='\n'.join(self._failure_description)))
       self._failure_description = []
       self._current_test = ''
       return

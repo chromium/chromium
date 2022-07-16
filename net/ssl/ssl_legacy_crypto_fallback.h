@@ -19,15 +19,14 @@ namespace net {
 enum class SSLLegacyCryptoFallback {
   // The connection did not use the fallback.
   kNoFallback = 0,
-  // The connection used the fallback and negotiated 3DES.
-  kUsed3DES = 1,
+  // No longer used.
+  //   kUsed3DES = 1,
   // The connection used the fallback and negotiated SHA-1.
   kUsedSHA1 = 2,
   // The connection used the fallback and sent a SHA-1 certificate.
   kSentSHA1Cert = 3,
-  // The connection used the fallback, negotiated 3DES, and sent a SHA-1
-  // certificate.
-  kSentSHA1CertAndUsed3DES = 4,
+  // No longer used.
+  //   kSentSHA1CertAndUsed3DES = 4,
   // The connection used the fallback, negotiated SHA-1, and sent a SHA-1
   // certificate.
   kSentSHA1CertAndUsedSHA1 = 5,

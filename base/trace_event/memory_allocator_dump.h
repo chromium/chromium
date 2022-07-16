@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/gtest_prod_util.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/unguessable_token.h"

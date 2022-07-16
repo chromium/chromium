@@ -10,22 +10,20 @@ import '../../foo.mojom-lite.js';
  * and receiving the browser response.
  */
 
-/** @type {FooProxy} */
-let instance = null;
+/** @type {?foo.mojom.FooHandlerRemote} */
+let handler = null;
 
 export class FooProxy {
-  /** @return {!FooProxy} */
-  static getInstance() {
-    return instance || (instance = new FooProxy());
+  /** @return {!foo.mojom.FooHandlerRemote} */
+  static getHandler() {
+    return handler || (handler = foo.mojom.FooHandler.getRemote());
   }
 
-  /** @param {FooProxy} newInstance */
-  static setInstance(newInstance) {
-    instance = newInstance;
+  /** @param {!foo.mojom.FooHandlerRemote} newHandler */
+  static setHandler(newHandler) {
+    handler = newHandler;
   }
 
-  constructor() {
-    /** @type {!foo.mojom.FooHandlerRemote} */
-    this.handler = foo.mojom.FooHandler.getRemote();
-  }
+  /** @private */
+  constructor() {}
 }

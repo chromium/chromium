@@ -45,18 +45,7 @@ bool PrivacyScreenController::IsManaged() const {
 }
 
 bool PrivacyScreenController::GetEnabled() const {
-  if (!active_user_pref_service_)
-    return dlp_enforced_;
-  const bool actual_user_pref = active_user_pref_service_->GetBoolean(
-      prefs::kDisplayPrivacyScreenEnabled);
-  // If managed by policy, return the pref value.
-  if (active_user_pref_service_->IsManagedPreference(
-          prefs::kDisplayPrivacyScreenEnabled)) {
-    return actual_user_pref;
-  }
-  // Otherwise return true if enforced by DLP or return the last state set by
-  // the user.
-  return dlp_enforced_ || actual_user_pref;
+  return current_status_;
 }
 
 void PrivacyScreenController::SetEnabled(bool enabled,
@@ -71,7 +60,8 @@ void PrivacyScreenController::SetEnabled(bool enabled,
   if (IsManaged()) {
     const bool currently_enabled = GetEnabled();
     for (Observer& observer : observers_)
-      observer.OnPrivacyScreenSettingChanged(currently_enabled);
+      observer.OnPrivacyScreenSettingChanged(currently_enabled,
+                                             /*notify_ui=*/true);
     return;
   }
 
@@ -101,8 +91,10 @@ void PrivacyScreenController::RemoveObserver(Observer* observer) {
 }
 
 void PrivacyScreenController::SetEnforced(bool enforced) {
+  // Only send a toast to the user if policy has changed the state of the
+  // privacy screen.
   dlp_enforced_ = enforced;
-  OnStateChanged(true);
+  OnStateChanged(/*from_user_pref_init=*/false);
 }
 
 void PrivacyScreenController::OnActiveUserPrefServiceChanged(
@@ -133,20 +125,38 @@ void PrivacyScreenController::OnDisplayModeChanged(
   }
 }
 
-void PrivacyScreenController::OnStateChanged(bool notify_observers) {
+bool PrivacyScreenController::CalculateCurrentStatus() const {
+  if (!active_user_pref_service_)
+    return dlp_enforced_;
+  const bool actual_user_pref = GetStateFromActiveUserPreference();
+  // If managed by policy, return the pref value.
+  if (active_user_pref_service_->IsManagedPreference(
+          prefs::kDisplayPrivacyScreenEnabled)) {
+    return actual_user_pref;
+  }
+  // Otherwise return true if enforced by DLP or return the last state set by
+  // the user.
+  return dlp_enforced_ || actual_user_pref;
+}
+
+void PrivacyScreenController::OnStateChanged(bool from_user_pref_init) {
   const int64_t display_id = GetSupportedDisplayId();
   if (display_id == display::kInvalidDisplayId)
     return;
 
-  const bool is_enabled = GetEnabled();
-  Shell::Get()->display_configurator()->SetPrivacyScreen(display_id,
-                                                         is_enabled);
+  const bool enable_screen = CalculateCurrentStatus();
 
-  if (!notify_observers)
+  if (enable_screen == current_status_)
     return;
 
+  current_status_ = enable_screen;
+  const bool notify_observers = ShouldNotifyObservers(from_user_pref_init);
+
+  Shell::Get()->display_configurator()->SetPrivacyScreen(display_id,
+                                                         enable_screen);
+
   for (Observer& observer : observers_)
-    observer.OnPrivacyScreenSettingChanged(is_enabled);
+    observer.OnPrivacyScreenSettingChanged(enable_screen, notify_observers);
 }
 
 void PrivacyScreenController::InitFromUserPrefs() {
@@ -158,11 +168,14 @@ void PrivacyScreenController::InitFromUserPrefs() {
       prefs::kDisplayPrivacyScreenEnabled,
       base::BindRepeating(&PrivacyScreenController::OnStateChanged,
                           base::Unretained(this),
-                          /*notify_observers=*/true));
+                          /*from_user_pref_init=*/false));
 
-  // We don't want to notify observers upon initialization or on account change
-  // because changes will trigger a toast to show up.
-  OnStateChanged(/*notify_observers=*/false);
+  OnStateChanged(/*from_user_pref_init=*/true);
+}
+
+bool PrivacyScreenController::GetStateFromActiveUserPreference() const {
+  return active_user_pref_service_ && active_user_pref_service_->GetBoolean(
+                                          prefs::kDisplayPrivacyScreenEnabled);
 }
 
 int64_t PrivacyScreenController::GetSupportedDisplayId() const {
@@ -178,6 +191,13 @@ int64_t PrivacyScreenController::GetSupportedDisplayId() const {
   }
 
   return display::kInvalidDisplayId;
+}
+
+bool PrivacyScreenController::ShouldNotifyObservers(
+    bool from_user_pref_init) const {
+  // We don't want to notify observers upon initialization or on account change
+  // because changes will trigger a toast to show up.
+  return !from_user_pref_init;
 }
 
 }  // namespace ash

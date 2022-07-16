@@ -114,4 +114,28 @@ ui::NativeTheme::SystemThemeColor NativeSystemThemeColor(
   }
 }
 
+WebThemeEngine::SystemThemeColor WebThemeSystemThemeColor(
+    ui::NativeTheme::SystemThemeColor theme_color) {
+  switch (theme_color) {
+    case ui::NativeTheme::SystemThemeColor::kButtonFace:
+      return WebThemeEngine::SystemThemeColor::kButtonFace;
+    case ui::NativeTheme::SystemThemeColor::kButtonText:
+      return WebThemeEngine::SystemThemeColor::kButtonText;
+    case ui::NativeTheme::SystemThemeColor::kGrayText:
+      return WebThemeEngine::SystemThemeColor::kGrayText;
+    case ui::NativeTheme::SystemThemeColor::kHighlight:
+      return WebThemeEngine::SystemThemeColor::kHighlight;
+    case ui::NativeTheme::SystemThemeColor::kHighlightText:
+      return WebThemeEngine::SystemThemeColor::kHighlightText;
+    case ui::NativeTheme::SystemThemeColor::kHotlight:
+      return WebThemeEngine::SystemThemeColor::kHotlight;
+    case ui::NativeTheme::SystemThemeColor::kWindow:
+      return WebThemeEngine::SystemThemeColor::kWindow;
+    case ui::NativeTheme::SystemThemeColor::kWindowText:
+      return WebThemeEngine::SystemThemeColor::kWindowText;
+    default:
+      return WebThemeEngine::SystemThemeColor::kNotSupported;
+  }
+}
+
 }  // namespace blink

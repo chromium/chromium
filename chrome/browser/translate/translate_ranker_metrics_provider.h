@@ -15,6 +15,12 @@ class TranslateRankerMetricsProvider : public metrics::MetricsProvider,
                                        public ProfileManagerObserver {
  public:
   TranslateRankerMetricsProvider();
+
+  TranslateRankerMetricsProvider(const TranslateRankerMetricsProvider&) =
+      delete;
+  TranslateRankerMetricsProvider& operator=(
+      const TranslateRankerMetricsProvider&) = delete;
+
   ~TranslateRankerMetricsProvider() override;
 
   // From metrics::MetricsProvider.
@@ -32,8 +38,6 @@ class TranslateRankerMetricsProvider : public metrics::MetricsProvider,
 
   // The current state of logging.
   bool logging_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateRankerMetricsProvider);
 };
 
 }  // namespace translate

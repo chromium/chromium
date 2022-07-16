@@ -33,9 +33,9 @@ bool IsListAllDisplayModesEnabled() {
   return base::FeatureList::IsEnabled(kListAllDisplayModes);
 }
 
-// TODO(crbug.com/1161556): Add a flag to control hardware mirroring as the
-// first step towards permanently disabling hardware mirroring. This will be
-// removed once no critical regression is seen by removing HW mirroring.
+// A temporary flag to control hardware mirroring until it is decided whether to
+// permanently remove hardware mirroring support. See crbug.com/1161556 for
+// details.
 const base::Feature kEnableHardwareMirrorMode{
     "EnableHardwareMirrorMode", base::FEATURE_DISABLED_BY_DEFAULT};
 

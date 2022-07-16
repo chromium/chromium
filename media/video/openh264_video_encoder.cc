@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/svc_scalability_mode.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 
@@ -45,7 +46,23 @@ Status SetUpOpenH264Params(const VideoEncoder::Options& options,
     params->iRCMode = RC_OFF_MODE;
   }
 
-  params->iTemporalLayerNum = options.temporal_layers;
+  int num_temporal_layers = 1;
+  if (options.scalability_mode) {
+    switch (options.scalability_mode.value()) {
+      case SVCScalabilityMode::kL1T2:
+        num_temporal_layers = 2;
+        break;
+      case SVCScalabilityMode::kL1T3:
+        num_temporal_layers = 3;
+        break;
+      default:
+        NOTREACHED() << "Unsupported SVC: "
+                     << GetScalabilityModeName(
+                            options.scalability_mode.value());
+    }
+  }
+
+  params->iTemporalLayerNum = num_temporal_layers;
   params->iSpatialLayerNum = 1;
   params->sSpatialLayers[0].fFrameRate = params->fMaxFrameRate;
   params->sSpatialLayers[0].iMaxSpatialBitrate = params->iTargetBitrate;

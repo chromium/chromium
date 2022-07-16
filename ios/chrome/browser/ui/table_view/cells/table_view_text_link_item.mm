@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "net/base/mac/url_conversions.h"
 #include "url/gurl.h"
@@ -65,7 +64,7 @@
     _textView.translatesAutoresizingMaskIntoConstraints = NO;
     _textView.font =
         [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
-    _textView.textColor = UIColor.cr_secondaryLabelColor;
+    _textView.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
     // Add subviews to View Hierarchy.
     [self.contentView addSubview:_textView];

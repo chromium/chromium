@@ -7,8 +7,21 @@
 #include <d3d11.h>
 
 #include "base/check_op.h"
+#include "base/win/windows_version.h"
 
 namespace media {
+
+namespace {
+
+// ID3D11DeviceChild, IDXGIObject and ID3D11Device implement SetPrivateData with
+// the exact same parameters.
+template <typename T>
+HRESULT SetDebugNameInternal(T* d3d11_object, const char* debug_string) {
+  return d3d11_object->SetPrivateData(WKPDID_D3DDebugObjectName,
+                                      strlen(debug_string), debug_string);
+}
+
+}  // namespace
 
 Microsoft::WRL::ComPtr<IMFSample> CreateEmptySampleWithBuffer(
     uint32_t buffer_length,
@@ -70,8 +83,15 @@ HRESULT CopyCoTaskMemWideString(LPCWSTR in_string, LPWSTR* out_string) {
 
 HRESULT SetDebugName(ID3D11DeviceChild* d3d11_device_child,
                      const char* debug_string) {
-  return d3d11_device_child->SetPrivateData(WKPDID_D3DDebugObjectName,
-                                            strlen(debug_string), debug_string);
+  return SetDebugNameInternal(d3d11_device_child, debug_string);
+}
+
+HRESULT SetDebugName(ID3D11Device* d3d11_device, const char* debug_string) {
+  return SetDebugNameInternal(d3d11_device, debug_string);
+}
+
+HRESULT SetDebugName(IDXGIObject* dxgi_object, const char* debug_string) {
+  return SetDebugNameInternal(dxgi_object, debug_string);
 }
 
 }  // namespace media

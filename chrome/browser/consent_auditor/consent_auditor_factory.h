@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CONSENT_AUDITOR_CONSENT_AUDITOR_FACTORY_H_
 #define CHROME_BROWSER_CONSENT_AUDITOR_CONSENT_AUDITOR_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
@@ -31,6 +30,9 @@ class ConsentAuditorFactory : public BrowserContextKeyedServiceFactory {
   // Returns the ContextAuditor associated with |profile|.
   static consent_auditor::ConsentAuditor* GetForProfile(Profile* profile);
 
+  ConsentAuditorFactory(const ConsentAuditorFactory&) = delete;
+  ConsentAuditorFactory& operator=(const ConsentAuditorFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<ConsentAuditorFactory>;
 
@@ -42,8 +44,6 @@ class ConsentAuditorFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ConsentAuditorFactory);
 };
 
 #endif  // CHROME_BROWSER_CONSENT_AUDITOR_CONSENT_AUDITOR_FACTORY_H_

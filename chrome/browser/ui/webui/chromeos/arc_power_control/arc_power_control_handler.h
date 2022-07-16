@@ -12,7 +12,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/throttle_service.h"
+#include "chrome/browser/ash/throttle_service.h"
 #include "components/arc/mojom/power.mojom.h"
 #include "components/arc/power/arc_power_bridge.h"
 #include "content/public/browser/web_ui_message_handler.h"

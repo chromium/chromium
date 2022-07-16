@@ -84,11 +84,15 @@ def set_executable(path):
 
 def run_command(args, **kwargs):
     logger.info('Running command: %s', args)
+    if 'stderr' not in kwargs:
+        kwargs['stderr'] = subprocess.STDOUT
     subprocess.check_call(args, **kwargs)
 
 
 def run_command_output(args, **kwargs):
     logger.info('Running command: %s', args)
+    if 'stderr' not in kwargs:
+        kwargs['stderr'] = subprocess.STDOUT
     return subprocess.check_output(args, **kwargs)
 
 

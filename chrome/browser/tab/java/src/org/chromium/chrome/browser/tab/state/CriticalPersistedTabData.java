@@ -142,8 +142,10 @@ public class CriticalPersistedTabData extends PersistedTabData {
      */
     public static void from(Tab tab, Callback<CriticalPersistedTabData> callback) {
         PersistedTabData.from(tab,
-                (data, storage, id)
-                        -> { return new CriticalPersistedTabData(tab, data, storage, id); },
+                (data, storage, id, factoryCallback)
+                        -> {
+                    factoryCallback.onResult(new CriticalPersistedTabData(tab, data, storage, id));
+                },
                 (supplierCallback)
                         -> supplierCallback.onResult(
                                 tab.isInitialized() ? CriticalPersistedTabData.build(tab) : null),
@@ -192,9 +194,9 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * as the storage/retrieval method
      */
     public static void build(Tab tab, ByteBuffer serialized, boolean isStorageRetrievalEnabled) {
-        CriticalPersistedTabData res = PersistedTabData.build(tab, (data, storage, id) -> {
-            return new CriticalPersistedTabData(tab, data, storage, id);
-        }, serialized, CriticalPersistedTabData.class);
+        PersistedTabData.build(tab, (data, storage, id, callback) -> {
+            callback.onResult(new CriticalPersistedTabData(tab, data, storage, id));
+        }, serialized, CriticalPersistedTabData.class, (res) -> {});
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -281,6 +283,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
                 return TabLaunchType.FROM_TAB_GROUP_UI;
             case FROM_LONGPRESS_BACKGROUND_IN_GROUP:
                 return TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP;
+            case FROM_APP_WIDGET:
+                return TabLaunchType.FROM_APP_WIDGET;
             case SIZE:
                 return TabLaunchType.SIZE;
             default:
@@ -331,6 +335,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
             case TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP:
                 return CriticalPersistedTabDataProto.LaunchTypeAtCreation
                         .FROM_LONGPRESS_BACKGROUND_IN_GROUP;
+            case TabLaunchType.FROM_APP_WIDGET:
+                return CriticalPersistedTabDataProto.LaunchTypeAtCreation.FROM_APP_WIDGET;
             case TabLaunchType.SIZE:
                 return CriticalPersistedTabDataProto.LaunchTypeAtCreation.SIZE;
             default:

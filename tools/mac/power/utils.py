@@ -3,52 +3,119 @@
 # found in the LICENSE file.
 
 SCENARIOS = [{
-    "name": "idle"
+    "name": "chromium_navigation",
+    "driver_script": "chromium_navigation",
+    "browser": "Chromium",
+    "extra_args": [],
+    "skip": False
+}, {
+    "name": "idle",
+    "driver_script": "idle",
+    "browser": None,
+    "extra_args": [],
+    "skip": True
 }, {
     "name": "canary_idle_on_youtube_slack",
-    "browser": "Canary"
+    "driver_script": "canary_idle_on_youtube",
+    "browser": "Canary",
+    "extra_args": ["--enable-features=LudicrousTimerSlack"],
+    "skip": True
 }, {
     "name": "canary_idle_on_youtube_noslack",
-    "browser": "Canary"
+    "driver_script": "canary_idle_on_youtube",
+    "browser": "Canary",
+    "extra_args": [],
+    "skip": True
 }, {
     "name": "safari_idle_on_youtube",
-    "browser": "Safari"
+    "driver_script": "safari_idle_on_youtube",
+    "browser": "Safari",
+    "extra_args": [],
+    "skip": True
 }, {
     "name": "canary_idle_on_wiki_slack",
-    "browser": "Canary"
+    "driver_script": "canary_idle_on_wiki",
+    "browser": "Canary",
+    "extra_args": ["--enable-features=LudicrousTimerSlack"],
+    "skip": True
 }, {
     "name": "canary_idle_on_wiki_noslack",
-    "browser": "Canary"
+    "driver_script": "canary_idle_on_wiki",
+    "browser": "Canary",
+    "extra_args": [],
+    "skip": True
 }, {
     "name": "chrome_navigation",
-    "browser": "Chrome"
+    "driver_script": "chrome_navigation",
+    "browser": "Chrome",
+    "extra_args": [],
+    "skip": True
 }, {
     "name": "safari_navigation",
-    "browser": "Safari"
+    "driver_script": "safari_navigation",
+    "browser": "Safari",
+    "extra_args": [],
+    "skip": True
 }, {
     "name": "chrome_idle_on_wiki",
-    "browser": "Chrome"
+    "driver_script": "chrome_idle_on_wiki",
+    "browser": "Chrome",
+    "extra_args": [],
+    "skip": True
 }, {
     "name": "safari_idle_on_wiki",
-    "browser": "Safari"
+    "driver_script": "safari_idle_on_wiki",
+    "browser": "Safari",
+    "extra_args": [],
+    "skip": True
 }, {
     "name": "chrome_idle_on_wiki_hidden",
-    "browser": "Chrome"
+    "driver_script": "chrome_idle_on_wiki_hidden",
+    "browser": "Chrome",
+    "extra_args": [],
+    "skip": True
 }, {
     "name": "safari_idle_on_wiki_hidden",
-    "browser": "Safari"
+    "driver_script": "safari_idle_on_wiki_hidden",
+    "browser": "Safari",
+    "extra_args": [],
+    "skip": True
 }, {
     "name": "chrome_idle_on_youtube",
-    "browser": "Chrome"
+    "driver_script": "chrome_idle_on_youtube",
+    "browser": "Chrome",
+    "extra_args": [],
+    "skip": True
 }, {
     "name": "safari_idle_on_youtube",
-    "browser": "Safari"
+    "driver_script": "safari_idle_on_youtube",
+    "browser": "Safari",
+    "extra_args": [],
+    "skip": True
 }, {
     "name": "chrome_zero_window",
-    "browser": "Chrome"
+    "driver_script": "chrome_zero_window",
+    "browser": "Chrome",
+    "extra_args": [],
+    "skip": True
 }, {
     "name": "safari_zero_window",
-    "browser": "Safari"
+    "driver_script": "safari_zero_window",
+    "browser": "Safari",
+    "extra_args": [],
+    "skip": True
+}, {
+    "name": "chrome_meet",
+    "driver_script": "chrome_meet",
+    "browser": "Chrome",
+    "extra_args": [],
+    "skip": True
+}, {
+    "name": "safari_meet",
+    "driver_script": "safari_meet",
+    "browser": "Safari",
+    "extra_args": [],
+    "skip": True
 }]
 
 BROWSERS_DEFINITION = {
@@ -78,3 +145,11 @@ BROWSERS_DEFINITION = {
         "identifier": "com.apple.Safari"
     }
 }
+
+
+def get_browser_property(browser, property_name):
+  return BROWSERS_DEFINITION[browser][property_name]
+
+
+def get_browser_process_names():
+  return BROWSERS_DEFINITION.keys()

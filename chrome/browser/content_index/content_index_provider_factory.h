@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CONTENT_INDEX_CONTENT_INDEX_PROVIDER_FACTORY_H_
 #define CHROME_BROWSER_CONTENT_INDEX_CONTENT_INDEX_PROVIDER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -16,6 +15,10 @@ class ContentIndexProviderFactory : public BrowserContextKeyedServiceFactory {
  public:
   static ContentIndexProviderImpl* GetForProfile(Profile* profile);
   static ContentIndexProviderFactory* GetInstance();
+
+  ContentIndexProviderFactory(const ContentIndexProviderFactory&) = delete;
+  ContentIndexProviderFactory& operator=(const ContentIndexProviderFactory&) =
+      delete;
 
  private:
   friend struct base::DefaultSingletonTraits<ContentIndexProviderFactory>;
@@ -28,8 +31,6 @@ class ContentIndexProviderFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentIndexProviderFactory);
 };
 
 #endif  // CHROME_BROWSER_CONTENT_INDEX_CONTENT_INDEX_PROVIDER_FACTORY_H_

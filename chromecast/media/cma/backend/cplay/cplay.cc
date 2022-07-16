@@ -100,6 +100,9 @@ class WavMixerInputSource : public MixerInput::Source {
               << "s.";
   }
 
+  WavMixerInputSource(const WavMixerInputSource&) = delete;
+  WavMixerInputSource& operator=(const WavMixerInputSource&) = delete;
+
   ~WavMixerInputSource() override = default;
 
   bool AtEnd() { return input_handler_->AtEnd(cursor_); }
@@ -154,8 +157,6 @@ class WavMixerInputSource : public MixerInput::Source {
   size_t cursor_ = 0;
   const std::string device_id_;
   const size_t bytes_per_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(WavMixerInputSource);
 };
 
 // OutputHandler interface to allow switching between alsa and file output.
@@ -184,6 +185,9 @@ class WavOutputHandler : public OutputHandler {
                                 sizeof(header_));
   }
 
+  WavOutputHandler(const WavOutputHandler&) = delete;
+  WavOutputHandler& operator=(const WavOutputHandler&) = delete;
+
   ~WavOutputHandler() override {
     // Update size and re-write header. We only really need to overwrite 8 bytes
     // but it is easy and cheap to overwrite the whole header.
@@ -211,13 +215,15 @@ class WavOutputHandler : public OutputHandler {
   WavHeader header_;
   base::File wav_file_;
   const int num_channels_;
-
-  DISALLOW_COPY_AND_ASSIGN(WavOutputHandler);
 };
 
 class AudioMetrics {
  public:
   AudioMetrics(int num_channels) : num_channels_(num_channels) {}
+
+  AudioMetrics(const AudioMetrics&) = delete;
+  AudioMetrics& operator=(const AudioMetrics&) = delete;
+
   ~AudioMetrics() = default;
 
   void ProcessFrames(float* data, int num_frames) {
@@ -248,8 +254,6 @@ class AudioMetrics {
   int total_samples_ = 0;
   float largest_sample_ = 0.0f;
   double squared_sum_ = 0.0;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioMetrics);
 };
 
 Parameters ReadArgs(int argc, char* argv[]) {

@@ -59,6 +59,10 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
   explicit ShellNativeCursorManager(
       ShellDesktopControllerAura* desktop_controller)
       : desktop_controller_(desktop_controller) {}
+
+  ShellNativeCursorManager(const ShellNativeCursorManager&) = delete;
+  ShellNativeCursorManager& operator=(const ShellNativeCursorManager&) = delete;
+
   ~ShellNativeCursorManager() override {}
 
   // wm::NativeCursorManager overrides.
@@ -116,21 +120,20 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
   ShellDesktopControllerAura* desktop_controller_;  // Not owned.
 
   ui::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
-
-  DISALLOW_COPY_AND_ASSIGN(ShellNativeCursorManager);
 };
 
 class AppsFocusRules : public wm::BaseFocusRules {
  public:
   AppsFocusRules() {}
+
+  AppsFocusRules(const AppsFocusRules&) = delete;
+  AppsFocusRules& operator=(const AppsFocusRules&) = delete;
+
   ~AppsFocusRules() override {}
 
   bool SupportsChildActivation(const aura::Window* window) const override {
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppsFocusRules);
 };
 
 }  // namespace

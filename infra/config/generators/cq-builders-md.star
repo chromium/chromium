@@ -24,7 +24,7 @@ using common assumptions about how builders are configured.
 
 _REQUIRED_HEADER = """\
 These builders must pass before a CL may land that affects files outside of
-//infra/config.
+//docs and //infra/config.
 """
 
 _OPTIONAL_HEADER = """\
@@ -49,7 +49,7 @@ _TRY_BUILDER_VIEW_URL = "https://ci.chromium.org/p/chromium/builders/try"
 _REGEX_PREFIX = ".+/[+]/"
 
 def _get_main_config_group_builders(ctx):
-    cq_cfg = ctx.output["commit-queue.cfg"]
+    cq_cfg = ctx.output["luci/commit-queue.cfg"]
 
     for c in cq_cfg.config_groups:
         if len(c.gerrit) != 1:
@@ -110,12 +110,8 @@ def _group_builders_by_section(builders):
         optional = optional,
     )
 
-def _codesearch_query(*atoms, package = None):
+def _codesearch_query(*atoms):
     query = ["https://cs.chromium.org/search?q="]
-    if package != None:
-        query.append("package:%5E")  # %5E -> encoded ^
-        query.append(package)
-        query.append("$")
     for atom in atoms:
         query.append("+")
         query.append(atom)
@@ -128,7 +124,7 @@ def _get_regex_line_details(regex):
     if regex.endswith(".+"):
         regex = regex[:-len(".+")]
 
-    url = _codesearch_query("file:" + regex, package = "chromium")
+    url = _codesearch_query("file:" + regex)
 
     # If the regex doesn't have any interesting characters that might be part of a
     # regex, assume the regex is targeting a single path and direct link to it
@@ -162,18 +158,23 @@ def _generate_cq_builders_md(ctx):
 
         for b in builders:
             name = b.name.rsplit("/", 1)[-1]
+
+            # Some builders share a common prefix (android-marshmallow-x86-rel
+            # and android-marshmallow-x86-rel-non-cq for example). The quotes
+            # below ensure codesearch links find the exact builder name, rather
+            # than everything with a common prefix. Two sets of quotes are
+            # needed because the first set is interpreted by codesearch.
+            quoted_name = "\"\"{name}\"\"".format(name = name)
             lines.append((
                 "* [{name}]({try_builder_view}/{name}) " +
-                "([definition]({definition_query}+{name})) " +
-                "([matching builders]({trybot_query}+{name}))"
+                "([definition]({definition_query}+{quoted_name})) " +
+                "([matching builders]({trybot_query}+{quoted_name}))"
             ).format(
                 name = name,
+                quoted_name = quoted_name,
                 try_builder_view = _TRY_BUILDER_VIEW_URL,
                 definition_query = _codesearch_query(
-                    "file:/cq.star$",
-                    "-file:/beta/",
-                    "-file:/stable/",
-                    package = "chromium",
+                    "file:/try.star$",
                 ),
                 trybot_query = _codesearch_query("file:trybots.py"),
             ))

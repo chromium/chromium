@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <style name="Base.V21.Theme.BrowserUI" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Color palettes -->
+        <item name="colorPrimary">@color/baseline_primary_600</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorOnPrimary">@color/baseline_primary_0</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
+        <item name="colorAccent">@color/default_control_color_active</item>
+        <item name="android:colorBackground">@color/baseline_neutral_0</item>
+        <item name="colorOnBackground">@color/baseline_neutral_900</item>
+        <item name="colorSurface">@color/baseline_neutral_0</item>
+        <item name="colorOnSurface">@color/baseline_neutral_900</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_100</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_700</item>
+        <item name="colorOnSurfaceInverse">@color/baseline_neutral_50</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_500</item>
+        <item name="colorError">@color/baseline_error_600</item>
+
+        <!-- Text colors-->
+        <item name="android:textColorPrimary">@color/default_text_color_list</item>
+        <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
+        <item name="android:textColorLink">@color/default_text_color_link</item>
+        <item name="android:textColorHighlight">@color/text_highlight_color</item>
+        <item name="android:textColorHint">@color/default_text_color_hint_list</item>
+
+        <!-- Widget colors: checkboxes, switches, buttons, etc. -->
+        <item name="colorControlNormal">@color/control_normal_color</item>
+        <item name="colorControlActivated">@color/default_control_color_active</item>
+        <item name="colorControlHighlight">@color/control_highlight_color</item>
+
+        <!-- Elevation overlays -->
+        <item name="elevationOverlayEnabled">true</item>
+        <item name="elevationOverlayColor">@color/baseline_neutral_600</item>
+        <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
+
+        <!-- Custom roles -->
+        <!-- Dynamic roles -->
+        <item name="colorSwitchThumbNormal">?attr/colorSurface</item>
+        <item name="colorSwitchThumbDisabled">?attr/colorSurface</item>
+        <item name="colorSwitchTrackNormal">?attr/colorSurfaceVariant</item>
+        <!-- Non-dynamic roles for switches -->
+        <item name="colorPrimaryNonDynamic">@color/baseline_primary_600</item>
+        <item name="colorPrimaryContainerNonDynamic">@color/baseline_primary_100</item>
+        <item name="colorSwitchThumbDisabledNonDynamic">@color/baseline_neutral_0</item>
+        <item name="colorSwitchThumbNormalNonDynamic">@color/baseline_neutral_0</item>
+        <item name="colorSwitchTrackNormalNonDynamic">@color/baseline_neutral_variant_100</item>
+
+        <!-- Custom semantic names -->
+        <!-- Will support dynamic colors in the future. -->
+        <item name="default_bg_color">@color/default_bg_color</item>
+        <item name="divider_line_bg_color">@color/divider_line_bg_color</item>
+        <!-- Supports dynamic colors now. -->
+        <item name="default_bg_color_dynamic">?attr/colorSurface</item>
+        <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
+        <!-- Common icon colors for drawables. -->
+        <item name="default_icon_color">@color/default_icon_color_dark</item>
+        <item name="default_icon_color_inverse">@color/default_icon_color_light</item>
+        <item name="default_icon_color_secondary">@color/default_icon_color_secondary_dark</item>
+        <item name="default_icon_color_disabled">@color/default_icon_color_disabled_dark</item>
+        <item name="default_icon_color_disabled_inverse">@color/default_icon_color_disabled_light</item>
+    </style>
+
+    <style name="Base.V31.Theme.BrowserUI" parent="Base.V21.Theme.BrowserUI" />
+    <style name="Base.Theme.BrowserUI" parent="Base.V31.Theme.BrowserUI" />
+
+    <!-- Theme overlays -->
+
+    <!-- Fullscreen -->
+    <style name="Base.ThemeOverlay.BrowserUI.Fullscreen" parent="">
+        <!-- android:windowContentTransitions is set to true in Theme.Chromium.WithWindowAnimation,
+             which causes a cryptic crash in EditorDialog. See: https://crbug.com/1254821. -->
+        <item name="android:windowContentTransitions">false</item>
+    </style>
+    <style name="ThemeOverlay.BrowserUI.Fullscreen"
+        parent="Base.ThemeOverlay.BrowserUI.Fullscreen" />
+
+    <!-- Color overlays -->
+
+    <!-- Indirection to allow downstream to add attributes. -->
+    <style name="ColorOverlay" parent="Base.ColorOverlay"/>
+    <!-- TODO(https://crbug.com/1216642): Inconsistent naming style. Remove
+         after downstream stops using. -->
+    <style name="Base.ColorOverlay" parent="ColorOverlay.BrowserUi"/>
+    <style name="ColorOverlay.BrowserUi" parent="ColorOverlay.BrowserUi.DayNight">
+        <item name="android:colorBackground">@color/baseline_neutral_0</item>
+        <item name="colorError">@color/baseline_error_600</item>
+        <item name="colorOnBackground">@color/baseline_neutral_900</item>
+        <item name="colorOnPrimary">@color/baseline_primary_0</item>
+        <item name="colorOnSurface">@color/baseline_neutral_900</item>
+        <item name="colorOnSurfaceInverse">@color/baseline_neutral_50</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_700</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_500</item>
+        <item name="colorPrimary">@color/baseline_primary_600</item>
+        <item name="colorSurface">@color/baseline_neutral_0</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_100</item>
+
+        <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
+        <item name="elevationOverlayColor">@color/baseline_neutral_600</item>
+        <item name="elevationOverlayEnabled">true</item>
+
+        <item name="colorSwitchThumbNormal">?attr/colorSurface</item>
+        <item name="colorSwitchThumbDisabled">?attr/colorSurface</item>
+        <item name="colorSwitchTrackNormal">?attr/colorSurfaceVariant</item>
+
+        <!-- Non-dynamic roles for switches. -->
+        <item name="colorPrimaryNonDynamic">@color/baseline_primary_600</item>
+        <item name="colorPrimaryContainerNonDynamic">@color/baseline_primary_100</item>
+        <item name="colorSwitchThumbDisabledNonDynamic">@color/baseline_neutral_0</item>
+        <item name="colorSwitchThumbNormalNonDynamic">@color/baseline_neutral_0</item>
+        <item name="colorSwitchTrackNormalNonDynamic">@color/baseline_neutral_variant_100</item>
+    </style>
+    <style name="ColorOverlay.BrowserUi.DayNight" parent="ColorOverlay.Ui">
+        <item name="android:textColorPrimary">@color/default_text_color_list</item>
+        <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
+        <!-- Will support dynamic colors in the future. -->
+        <item name="default_bg_color">@color/default_bg_color</item>
+        <item name="divider_line_bg_color">@color/divider_line_bg_color</item>
+        <!-- Supports dynamic colors now. -->
+        <item name="default_bg_color_dynamic">?attr/colorSurface</item>
+        <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
+    </style>
+
+    <!-- It's logically backward, but this is applied to SettingsActivity when
+         THEME_REFACTOR_ANDROID is disabled. -->
+    <style name="ThemeRefactorOverlay.Disabled.Settings" parent="">
+        <item name="elevationOverlayEnabled">false</item>
+    </style>
+    <!-- This is applied to view of MaterialCardViewNoShadow
+        in SettingsActivity. -->
+    <style name="ThemeRefactorOverlay.Enabled.SettingsPromo" parent="">
+        <item name="elevationOverlayEnabled">true</item>
+    </style>
+    <!-- Applied after the dynamic colors to override the undesired overrides done by the dynamic
+         color overlay, e.g. android:textColorHighlight. -->
+    <style name="ThemeOverlay.DynamicColorOverrides" parent="">
+        <item name="android:textColorHighlight">@color/text_highlight_color</item>
+    </style>
+</resources>

@@ -122,8 +122,8 @@ void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,
       content::ConvertResourceRequestBodyToJavaObject(env, params->post_data);
   Java_TabModelJniBridge_openNewTab(
       env, jobj, parent->GetJavaObject(), jurl, jinitiator_origin, jheaders,
-      jpost_data, static_cast<int>(disposition), params->created_with_opener,
-      params->is_renderer_initiated);
+      jpost_data, static_cast<int>(disposition),
+      params->opened_by_another_window, params->is_renderer_initiated);
 }
 
 WebContents* TabModelJniBridge::GetWebContentsAt(int index) const {

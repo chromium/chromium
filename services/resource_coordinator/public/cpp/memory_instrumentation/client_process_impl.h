@@ -7,8 +7,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -36,6 +36,9 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
       mojo::PendingReceiver<mojom::ClientProcess> receiver,
       mojo::PendingRemote<mojom::Coordinator> coordinator,
       bool is_browser_process = false);
+
+  ClientProcessImpl(const ClientProcessImpl&) = delete;
+  ClientProcessImpl& operator=(const ClientProcessImpl&) = delete;
 
  private:
   friend std::default_delete<ClientProcessImpl>;  // For testing
@@ -96,12 +99,13 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   mojo::Remote<mojom::Coordinator> coordinator_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
+  // Only browser process is allowed to request memory dumps.
+  const bool is_browser_process_;
+
   // TODO(crbug.com/728199): The observer is only used to setup and tear down
   // MemoryDumpManager in each process. Setting up MemoryDumpManager should
   // be moved away from TracingObserver.
   std::unique_ptr<TracingObserver> tracing_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientProcessImpl);
 };
 
 }  // namespace memory_instrumentation

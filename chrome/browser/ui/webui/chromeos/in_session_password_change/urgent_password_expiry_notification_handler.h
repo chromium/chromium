@@ -15,6 +15,12 @@ class UrgentPasswordExpiryNotificationHandler
     : public content::WebUIMessageHandler {
  public:
   UrgentPasswordExpiryNotificationHandler();
+
+  UrgentPasswordExpiryNotificationHandler(
+      const UrgentPasswordExpiryNotificationHandler&) = delete;
+  UrgentPasswordExpiryNotificationHandler& operator=(
+      const UrgentPasswordExpiryNotificationHandler&) = delete;
+
   ~UrgentPasswordExpiryNotificationHandler() override;
 
   // content::WebUIMessageHandler:
@@ -29,7 +35,6 @@ class UrgentPasswordExpiryNotificationHandler
  private:
   base::WeakPtrFactory<UrgentPasswordExpiryNotificationHandler> weak_factory_{
       this};
-  DISALLOW_COPY_AND_ASSIGN(UrgentPasswordExpiryNotificationHandler);
 };
 
 }  // namespace chromeos

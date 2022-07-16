@@ -11,7 +11,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/navigation_controller_android.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
@@ -33,6 +32,10 @@ class WebContentsImpl;
 class CONTENT_EXPORT WebContentsAndroid {
  public:
   explicit WebContentsAndroid(WebContentsImpl* web_contents);
+
+  WebContentsAndroid(const WebContentsAndroid&) = delete;
+  WebContentsAndroid& operator=(const WebContentsAndroid&) = delete;
+
   ~WebContentsAndroid();
 
   WebContentsImpl* web_contents() const { return web_contents_; }
@@ -314,8 +317,6 @@ class CONTENT_EXPORT WebContentsAndroid {
   base::ObserverList<DestructionObserver> destruction_observers_;
 
   base::WeakPtrFactory<WebContentsAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsAndroid);
 };
 
 }  // namespace content

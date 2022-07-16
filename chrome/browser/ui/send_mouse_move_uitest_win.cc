@@ -4,7 +4,6 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -16,11 +15,12 @@
 #include "ui/gfx/geometry/rect.h"
 
 class SendMouseMoveUITest : public InProcessBrowserTest {
+ public:
+  SendMouseMoveUITest(const SendMouseMoveUITest&) = delete;
+  SendMouseMoveUITest& operator=(const SendMouseMoveUITest&) = delete;
+
  protected:
   SendMouseMoveUITest() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SendMouseMoveUITest);
 };
 
 // This test positions the mouse at every point on the screen. It is not meant

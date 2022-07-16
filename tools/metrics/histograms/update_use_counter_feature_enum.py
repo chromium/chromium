@@ -19,10 +19,10 @@ from update_histogram_enum import ReadHistogramValues
 from update_histogram_enum import UpdateHistogramEnum
 
 
-def PrintEnumForDashboard(enum_dict):
-  """Prints enum_items formatted for use in uma.py of Chromium dashboard."""
-  for key in sorted(enum_dict.iterkeys()):
-    print('  %d: \'%s\',' % (key, enum_dict[key]))
+def PrintEnumForDashboard(dictionary):
+  """Prints dictionary formatted for use in uma.py of Chromium dashboard."""
+  for key, value in sorted(dictionary.items()):
+    print('  %d: \'%s\',' % (key, value))
 
 
 if __name__ == '__main__':
@@ -40,8 +40,10 @@ if __name__ == '__main__':
   END_MARKER = '^kNumberOfFeatures'
 
   if options.dashboard:
-    enum_dict, ignored = ReadHistogramValues(source_path, START_MARKER,
-        END_MARKER, strip_k_prefix=True)
+    enum_dict = ReadHistogramValues(source_path,
+                                    START_MARKER,
+                                    END_MARKER,
+                                    strip_k_prefix=True)
     PrintEnumForDashboard(enum_dict)
   else:
     UpdateHistogramEnum(

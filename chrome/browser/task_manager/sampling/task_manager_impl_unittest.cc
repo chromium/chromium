@@ -61,8 +61,7 @@ class FakeTask : public Task {
 class TaskManagerImplTest : public testing::Test, public TaskManagerObserver {
  public:
   TaskManagerImplTest()
-      : TaskManagerObserver(base::TimeDelta::FromSeconds(1),
-                            REFRESH_TYPE_NONE) {
+      : TaskManagerObserver(base::Seconds(1), REFRESH_TYPE_NONE) {
     TaskManagerImpl::GetInstance()->AddObserver(this);
   }
   TaskManagerImplTest(const TaskManagerImplTest&) = delete;

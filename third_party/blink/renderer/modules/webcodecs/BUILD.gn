@@ -10,6 +10,7 @@ import("//third_party/protobuf/proto_library.gni")
 
 blink_modules_sources("webcodecs") {
   sources = [
+    "allow_shared_buffer_source_util.h",
     "audio_data.cc",
     "audio_data.h",
     "audio_data_attachment.cc",
@@ -32,8 +33,6 @@ blink_modules_sources("webcodecs") {
     "decoder_selector.h",
     "decoder_template.cc",
     "decoder_template.h",
-    "dom_rect_util.cc",
-    "dom_rect_util.h",
     "encoded_audio_chunk.cc",
     "encoded_audio_chunk.h",
     "encoded_video_chunk.cc",
@@ -54,6 +53,8 @@ blink_modules_sources("webcodecs") {
     "image_track_list.h",
     "parsed_copy_to_options.cc",
     "parsed_copy_to_options.h",
+    "reclaimable_codec.cc",
+    "reclaimable_codec.h",
     "video_color_space.cc",
     "video_color_space.h",
     "video_decoder.cc",
@@ -68,14 +69,19 @@ blink_modules_sources("webcodecs") {
     "video_frame_attachment.h",
     "video_frame_handle.cc",
     "video_frame_handle.h",
+    "video_frame_init_util.cc",
+    "video_frame_init_util.h",
     "video_frame_monitor.cc",
     "video_frame_monitor.h",
+    "video_frame_rect_util.cc",
+    "video_frame_rect_util.h",
     "video_frame_transfer_list.cc",
     "video_frame_transfer_list.h",
     "webcodecs_logger.cc",
     "webcodecs_logger.h",
   ]
   deps = [
+    "//build:os_buildflags",
     "//media",
     "//media/mojo:buildflags",
     "//media/mojo/clients",
@@ -101,10 +107,12 @@ source_set("unit_tests") {
   sources = [
     "audio_data_test.cc",
     "audio_decoder_broker_test.cc",
+    "audio_encoder_test.cc",
     "decoder_selector_test.cc",
     "decoder_template_test.cc",
     "encoded_video_chunk_test.cc",
     "image_decoder_external_test.cc",
+    "reclaimable_codec_test.cc",
     "video_decoder_broker_test.cc",
     "video_encoder_test.cc",
     "video_frame_monitor_test.cc",

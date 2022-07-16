@@ -9,11 +9,10 @@
 
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_export.h"
+#include "media/base/status.h"
 #include "media/base/status_codes.h"
 
 namespace media {
-
-class Status;
 
 // TODO(crbug.com/1129662): This is temporary, to allow DecodeStatus::OK to
 // work, while we replace DecodeStatus with actual status codes.
@@ -37,6 +36,10 @@ class MEDIA_EXPORT ScopedDecodeTrace {
   ScopedDecodeTrace(const char* trace_name,
                     bool is_key_frame,
                     base::TimeDelta timestamp);
+
+  ScopedDecodeTrace(const ScopedDecodeTrace&) = delete;
+  ScopedDecodeTrace& operator=(const ScopedDecodeTrace&) = delete;
+
   ~ScopedDecodeTrace();
 
   // Completes the Decode() trace with the given status.
@@ -45,8 +48,6 @@ class MEDIA_EXPORT ScopedDecodeTrace {
  private:
   const char* trace_name_;
   bool closed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDecodeTrace);
 };
 
 }  // namespace media

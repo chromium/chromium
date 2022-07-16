@@ -9,7 +9,7 @@
 import './album_list.js';
 import './art_album_dialog.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
-import '../localized_link/localized_link.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
 import '../../settings_shared_css.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
@@ -18,8 +18,9 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
 import {AmbientModeBrowserProxy, AmbientModeBrowserProxyImpl} from './ambient_mode_browser_proxy.js';
 import {AmbientModeAlbum, AmbientModeSettings, AmbientModeTopicSource} from './constants.js';

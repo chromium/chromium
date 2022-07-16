@@ -6,13 +6,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_DEVICES_H_
 
 #include "base/callback.h"
+#include "base/gtest_prod_util.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_htmldivelement_htmliframeelement.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediastream/media_device_info.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -60,12 +64,12 @@ class MODULES_EXPORT MediaDevices final
                                 const MediaStreamConstraints*,
                                 ExceptionState&);
 
-  ScriptPromise getCurrentBrowsingContextMedia(ScriptState*,
-                                               const MediaStreamConstraints*,
-                                               ExceptionState&);
-
   void setCaptureHandleConfig(ScriptState*,
                               const CaptureHandleConfig*,
+                              ExceptionState&);
+
+  ScriptPromise produceCropId(ScriptState*,
+                              V8UnionHTMLDivElementOrHTMLIFrameElement*,
                               ExceptionState&);
 
   // EventTarget overrides.
@@ -127,6 +131,17 @@ class MODULES_EXPORT MediaDevices final
   void OnDispatcherHostConnectionError();
   const mojo::Remote<mojom::blink::MediaDevicesDispatcherHost>&
   GetDispatcherHost(LocalFrame*);
+
+#if !defined(OS_ANDROID)
+  // Manage the window of opportunity that occurs immediately after
+  // display-capture starts. The application can call MediaStreamTrack.focus()
+  // on the microtask where the Promise<MediaStream> was resolved; later calls
+  // raise an exception.
+  // |id| identifies the source, and therefore the track, on the browser-side.
+  void EnqueueMicrotaskToCloseFocusWindowOfOpportunity(const String&,
+                                                       MediaStreamTrack*);
+  void CloseFocusWindowOfOpportunity(const String&, MediaStreamTrack*);
+#endif
 
   bool stopped_;
   // Async runner may be null when there is no valid execution context.

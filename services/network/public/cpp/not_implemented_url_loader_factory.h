@@ -26,6 +26,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) NotImplementedURLLoaderFactory final
   // method).
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create();
 
+  NotImplementedURLLoaderFactory(const NotImplementedURLLoaderFactory&) =
+      delete;
+  NotImplementedURLLoaderFactory& operator=(
+      const NotImplementedURLLoaderFactory&) = delete;
+
   ~NotImplementedURLLoaderFactory() override;
 
  private:
@@ -44,8 +49,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) NotImplementedURLLoaderFactory final
   // as receivers that connect via the Clone method).
   explicit NotImplementedURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
-
-  DISALLOW_COPY_AND_ASSIGN(NotImplementedURLLoaderFactory);
 };
 
 }  // namespace network

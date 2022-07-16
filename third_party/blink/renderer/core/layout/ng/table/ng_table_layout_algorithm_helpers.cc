@@ -732,10 +732,12 @@ void DistributeExcessBlockSizeToRows(
                row->has_rowspan_start;
       };
 
-  auto IsEmptyRow = [](const NGTableTypes::Row* row) {
-    return row->block_size == LayoutUnit() &&
-           (!row->percent || *row->percent == 0);
-  };
+  auto IsEmptyRow =
+      [&percentage_resolution_block_size](const NGTableTypes::Row* row) {
+        bool is_percent = percentage_resolution_block_size != kIndefiniteSize &&
+                          row->percent && *row->percent != 0;
+        return row->block_size == LayoutUnit() && !is_percent;
+      };
 
   unsigned percent_rows_with_deficit_count = 0;
   unsigned rows_with_originating_rowspan = 0;

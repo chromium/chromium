@@ -7,7 +7,7 @@
  */
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {getImage} from 'chrome://resources/js/icon.m.js';
+import {getImage} from 'chrome://resources/js/icon.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
 import {createElementFromDictionary, createElementFromText} from './utils.js';

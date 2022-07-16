@@ -91,7 +91,7 @@ class RebaselineTest(AbstractRebaseliningCommand):
         if suffix == 'png' and port.reference_files(test_name):
             _log.warning('Cannot rebaseline image result for reftest: %s',
                          test_name)
-            data = ''
+            data = b''
             # Still continue in case we can remove extra -expected.png.
         else:
             _log.debug('Retrieving source %s for target %s.', source_baseline,
@@ -106,7 +106,7 @@ class RebaselineTest(AbstractRebaseliningCommand):
             _log.debug(
                 'Writing empty result %s which may be removed during optimization.',
                 target_baseline)
-            data = ''
+            data = b''
 
         filesystem = self._tool.filesystem
         filesystem.maybe_make_directory(filesystem.dirname(target_baseline))

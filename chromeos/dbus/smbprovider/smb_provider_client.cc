@@ -53,6 +53,9 @@ class SmbProviderClientImpl : public SmbProviderClient {
  public:
   SmbProviderClientImpl() = default;
 
+  SmbProviderClientImpl(const SmbProviderClientImpl&) = delete;
+  SmbProviderClientImpl& operator=(const SmbProviderClientImpl&) = delete;
+
   ~SmbProviderClientImpl() override {}
 
   void GetShares(const base::FilePath& server_url,
@@ -218,8 +221,6 @@ class SmbProviderClientImpl : public SmbProviderClient {
   }
 
   dbus::ObjectProxy* proxy_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SmbProviderClientImpl);
 };
 
 }  // namespace

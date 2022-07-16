@@ -180,8 +180,8 @@ def _UpdateCompileCommandsIfNeeded(compile_commands, files_list,
   else:
     filtered_compile_commands = compile_commands
 
-  return compile_db.ProcessCompileDatabaseIfNeeded(filtered_compile_commands,
-                                                   target_os)
+  return compile_db.ProcessCompileDatabase(filtered_compile_commands, [],
+                                           target_os)
 
 
 def _ExecuteTool(toolname, tool_args, build_directory, compdb_entry):

@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/web_test/renderer/web_ax_object_proxy.h"
 #include "third_party/blink/public/web/web_ax_object.h"
@@ -33,6 +32,10 @@ class WebFrameTestProxy;
 class AccessibilityController {
  public:
   explicit AccessibilityController(WebFrameTestProxy* web_frame_test_proxy);
+
+  AccessibilityController(const AccessibilityController&) = delete;
+  AccessibilityController& operator=(const AccessibilityController&) = delete;
+
   ~AccessibilityController();
 
   void Reset();
@@ -78,8 +81,6 @@ class AccessibilityController {
   std::unique_ptr<blink::WebAXContext> ax_context_;
 
   base::WeakPtrFactory<AccessibilityController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityController);
 };
 
 }  // namespace content

@@ -15,10 +15,9 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/sequenced_task_runner.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -60,6 +59,10 @@ class ExtensionAssetsManagerHelper {
     ExtensionAssetsManager::InstallExtensionCallback callback;
   };
   typedef std::vector<PendingInstallInfo> PendingInstallList;
+
+  ExtensionAssetsManagerHelper(const ExtensionAssetsManagerHelper&) = delete;
+  ExtensionAssetsManagerHelper& operator=(const ExtensionAssetsManagerHelper&) =
+      delete;
 
   static ExtensionAssetsManagerHelper* GetInstance() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -113,8 +116,6 @@ class ExtensionAssetsManagerHelper {
   typedef std::map<InstallItem, std::vector<PendingInstallInfo> > InstallQueue;
 
   InstallQueue install_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionAssetsManagerHelper);
 };
 
 }  // namespace
@@ -310,7 +311,7 @@ void ExtensionAssetsManagerChromeOS::CheckSharedExtension(
       version_info->GetString(kSharedExtensionPath, &shared_path) &&
       version_info->GetList(kSharedExtensionUsers, &users)) {
     // This extension version already in shared location.
-    size_t users_size = users->GetSize();
+    size_t users_size = users->GetList().size();
     bool user_found = false;
     for (size_t i = 0; i < users_size; i++) {
       std::string temp;
@@ -321,7 +322,7 @@ void ExtensionAssetsManagerChromeOS::CheckSharedExtension(
       }
     }
     if (!user_found)
-      users->AppendString(user_id);
+      users->Append(user_id);
 
     // unpacked_extension_root will be deleted by CrxInstaller.
     GetExtensionFileTaskRunner()->PostTask(
@@ -518,7 +519,7 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
       return false;
     }
 
-    size_t num_users = users->GetSize();
+    size_t num_users = users->GetList().size();
     for (size_t i = 0; i < num_users; i++) {
       std::string user_id;
       if (!users->GetString(i, &user_id)) {

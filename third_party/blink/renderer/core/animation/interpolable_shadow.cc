@@ -133,11 +133,12 @@ ShadowData InterpolableShadow::CreateShadowData(
     const StyleResolverState& state) const {
   const CSSToLengthConversionData& conversion_data =
       state.CssToLengthConversionData();
-  Length shadow_x = x_->CreateLength(conversion_data, kValueRangeAll);
-  Length shadow_y = y_->CreateLength(conversion_data, kValueRangeAll);
+  Length shadow_x = x_->CreateLength(conversion_data, Length::ValueRange::kAll);
+  Length shadow_y = y_->CreateLength(conversion_data, Length::ValueRange::kAll);
   Length shadow_blur =
-      blur_->CreateLength(conversion_data, kValueRangeNonNegative);
-  Length shadow_spread = spread_->CreateLength(conversion_data, kValueRangeAll);
+      blur_->CreateLength(conversion_data, Length::ValueRange::kNonNegative);
+  Length shadow_spread =
+      spread_->CreateLength(conversion_data, Length::ValueRange::kAll);
   DCHECK(shadow_x.IsFixed() && shadow_y.IsFixed() && shadow_blur.IsFixed() &&
          shadow_spread.IsFixed());
   return ShadowData(

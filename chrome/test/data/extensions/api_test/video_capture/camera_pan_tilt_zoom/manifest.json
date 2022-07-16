@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,
+  "name": "Test the camera pan tilt zoom API",
+  "version": "1.0",
+  "app": {
+    "background": {
+      "scripts": ["runtest.js"]
+    }
+  },
+  "kiosk_only": true,
+  "kiosk_enabled": true,
+  "permissions": ["videoCapture"],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAywGD6GOQFvQcv6TTIZ60ErNBMRU/7NzEafAsFECOwvAflcUF/QByLW2uB1o4JJ2jHVtq3Auq5Ak55LnPfpjQQKfGqFr3G/W5j8r1dYqNJnLIuhUlJICEqWonQgpYU+BtI4oMNAU05x74+Ib03S5M+DEr5op6kemSrGmEBlUNdju3CCrCCFqTyEy2Jaafot4ANZWSjT/Apb5LE3fTQmwTQt0s5Gg5uAU9+DtZz5XcRcApj7GG7qbqngz579OGoD2PA1r3oFFYtLIq9ZrzM9zplIW2cK/wn4CAuWyOHpFBohj7MNr/JxykwkKZh1keSyTa7nFCiYRMZD068h7eKuaJZwIDAQAB"
+}

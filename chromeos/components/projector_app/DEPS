@@ -1,6 +1,0 @@
-include_rules = [
-  "-chrome",
-  "+content/public/browser",
-  "+content/public/common",
-  "+ui/webui",
-]

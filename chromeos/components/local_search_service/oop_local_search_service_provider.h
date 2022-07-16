@@ -6,7 +6,7 @@
 #define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_OOP_LOCAL_SEARCH_SERVICE_PROVIDER_H_
 
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_provider.h"
-
+#include "chromeos/components/local_search_service/public/mojom/local_search_service.mojom-forward.h"
 namespace chromeos {
 namespace local_search_service {
 

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -134,6 +133,10 @@ class MenuBuilder {
         browser_(browser),
         menu_manager_(menu_manager),
         cur_id_(0) {}
+
+  MenuBuilder(const MenuBuilder&) = delete;
+  MenuBuilder& operator=(const MenuBuilder&) = delete;
+
   ~MenuBuilder() {}
 
   std::unique_ptr<ExtensionContextMenuModel> BuildMenu() {
@@ -177,8 +180,6 @@ class MenuBuilder {
   Browser* browser_;
   MenuManager* menu_manager_;
   int cur_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuBuilder);
 };
 
 // Returns the number of extension menu items that show up in |model|.
@@ -240,6 +241,10 @@ class ExtensionContextMenuModelTest : public ExtensionServiceTestBase {
 
   ExtensionContextMenuModelTest();
 
+  ExtensionContextMenuModelTest(const ExtensionContextMenuModelTest&) = delete;
+  ExtensionContextMenuModelTest& operator=(
+      const ExtensionContextMenuModelTest&) = delete;
+
   // Build an extension to pass to the menu constructor, with the action
   // specified by |action_key|.
   const Extension* AddExtension(const std::string& name,
@@ -280,8 +285,6 @@ class ExtensionContextMenuModelTest : public ExtensionServiceTestBase {
   std::unique_ptr<Browser> browser_;
   display::test::TestScreen test_screen_;
   std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionContextMenuModelTest);
 };
 
 ExtensionContextMenuModelTest::ExtensionContextMenuModelTest() {}

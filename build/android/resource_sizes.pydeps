@@ -43,8 +43,12 @@
 ../../third_party/catapult/tracing/tracing/value/convert_chart_json.py
 ../../third_party/catapult/tracing/tracing_project.py
 ../gn_helpers.py
+../util/lib/__init__.py
 ../util/lib/common/perf_result_data_type.py
 ../util/lib/common/perf_tests_results_helper.py
+../util/lib/results/__init__.py
+../util/lib/results/result_sink.py
+../util/lib/results/result_types.py
 devil_chromium.py
 gyp/util/__init__.py
 gyp/util/build_utils.py

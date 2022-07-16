@@ -19,16 +19,12 @@
 #if defined(USE_AURA)
 #include "ui/aura/test/ui_controls_factory_aura.h"
 #include "ui/base/test/ui_controls_aura.h"
-#if defined(USE_OZONE) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-#include "ui/base/ui_base_features.h"
+#if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/views/test/ui_controls_factory_desktop_aura_ozone.h"
-#endif
-#if defined(USE_X11)
-#include "ui/views/test/ui_controls_factory_desktop_aurax11.h"
-#endif
-#endif
+#endif  // defined(USE_OZONE)
+#endif  // defined(USE_AURA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ui_controls_factory_ash.h"
@@ -38,7 +34,6 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "chrome/test/base/always_on_top_window_killer_win.h"
-#include "chrome/test/base/test_switches.h"
 #endif
 
 class InteractiveUITestSuite : public ChromeTestSuite {
@@ -57,33 +52,16 @@ class InteractiveUITestSuite : public ChromeTestSuite {
     com_initializer_ = std::make_unique<base::win::ScopedCOMInitializer>();
     ui_controls::InstallUIControlsAura(
         aura::test::CreateUIControlsAura(nullptr));
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#if defined(USE_OZONE)
-    if (features::IsUsingOzonePlatform()) {
-      // Notifies the platform that test config is needed. For Wayland, for
-      // example, makes it possible to use emulated input.
-      ui::test::EnableTestConfigForPlatformWindows();
+#elif defined(USE_OZONE)
+    // Notifies the platform that test config is needed. For Wayland, for
+    // example, makes it possible to use emulated input.
+    ui::test::EnableTestConfigForPlatformWindows();
 
-      ui::OzonePlatform::InitParams params;
-      params.single_process = true;
-      ui::OzonePlatform::InitializeForUI(params);
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-      // TODO(1134495): when ozone/wayland implements ui controls test helper,
-      // make lacros also use the ui controls created below.
-      //
-      // ui controls implementation for Ozone desktop.
-      ui_controls::InstallUIControlsAura(
-          views::test::CreateUIControlsDesktopAuraOzone());
-      return;
-#endif
-    }
-#endif
-#if defined(USE_X11)
-    DCHECK(!features::IsUsingOzonePlatform());
+    ui::OzonePlatform::InitParams params;
+    params.single_process = true;
+    ui::OzonePlatform::InitializeForUI(params);
     ui_controls::InstallUIControlsAura(
-        views::test::CreateUIControlsDesktopAura());
-#endif
+        views::test::CreateUIControlsDesktopAuraOzone());
 #else
     ui_controls::EnableUIControls();
 #endif
@@ -179,10 +157,7 @@ int main(int argc, char** argv) {
       &ui_test_utils::BringBrowserWindowToFront);
 
 #if defined(OS_WIN)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableHighDpiSupport)) {
-    base::win::EnableHighDPISupport();
-  }
+  base::win::EnableHighDPISupport();
 #endif  // OS_WIN
 
   // Run interactive_ui_tests serially, they do not support running in parallel.

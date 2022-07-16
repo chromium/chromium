@@ -14,6 +14,12 @@ struct IPConfigProperties {
   string? ip_address;
 };
 
+// Ethernet Authentication types.
+enum AuthenticationType {
+  kNone,
+  k8021x,
+};
+
 // Connection state of visible networks.
 enum NetworkState {
   kOnline,
@@ -21,6 +27,7 @@ enum NetworkState {
   kPortal,
   kConnecting,
   kNotConnected,
+  kDisabled,
 };
 
 // The network technology type.
@@ -31,14 +38,50 @@ enum NetworkType {
   kUnsupported,
 };
 
-// TODO(michaelcheco): Add Cellular properties.
-struct CellularStateProperties {
-
+// The roaming status of the cellular modem on the current network.
+enum RoamingState {
+  kNone,
+  kRoaming,
+  kHome,
 };
 
-// TODO(michaelcheco): Add Ethernet properties.
-struct EthernetStateProperties {
+// Specifies the type of SIM lock in effect.
+enum LockType {
+  kNone,
+  kSimPin,
+  kSimPuk,
+};
 
+struct CellularStateProperties {
+  // The Integrated Circuit Card Identifier of the SIM card installed in the
+  // device.
+  string iccid;
+  // The Embedded Universal Integrated Circuit Card Identifier of the eSIM card
+  // installed in the device.
+  string eid;
+  // The network technology currently in use (EDGE, LTE, etc).
+  string network_technology;
+  // True when in a roaming state and the provider is not always roaming.
+  bool roaming;
+  RoamingState roaming_state;
+  // The current signal strength for this network in the range [0, 100].
+  int32 signal_strength;
+  // True when a SIM is present and locked.
+  bool sim_locked;
+  LockType lock_type;
+};
+
+struct EthernetStateProperties {
+  AuthenticationType authentication;
+};
+
+// The security type for WiFi Ethernet networks.
+enum SecurityType {
+  kNone,
+  kWep8021x,
+  kWepPsk,
+  kWpaEap,
+  kWpaPsk,
 };
 
 // Contains network properties related to WiFi connections.
@@ -49,6 +92,7 @@ struct WiFiStateProperties {
   int32 frequency;
   string ssid;
   string bssid;
+  SecurityType security;
 };
 
 // Contains network properties specific to a network type.
@@ -63,8 +107,8 @@ union NetworkTypeProperties {
 struct Network {
   NetworkState state;
   NetworkType type;
-  NetworkTypeProperties type_properties;
-  string guid;
+  NetworkTypeProperties? type_properties;
+  string observer_guid;
   string name;
   // May be null if no MAC address is available for the network's
   // corresponding device.

@@ -13,7 +13,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/host/ash_window_tree_host_mirroring_delegate.h"
-#include "base/macros.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/display/manager/display_manager.h"
@@ -43,6 +42,10 @@ class ASH_EXPORT MirrorWindowController
       public AshWindowTreeHostMirroringDelegate {
  public:
   MirrorWindowController();
+
+  MirrorWindowController(const MirrorWindowController&) = delete;
+  MirrorWindowController& operator=(const MirrorWindowController&) = delete;
+
   ~MirrorWindowController() override;
 
   // Updates the root window's bounds using |display_info|.
@@ -103,8 +106,6 @@ class ASH_EXPORT MirrorWindowController
   int64_t reflecting_source_id_ = display::kInvalidDisplayId;
 
   std::unique_ptr<aura::client::ScreenPositionClient> screen_position_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(MirrorWindowController);
 };
 
 }  // namespace ash

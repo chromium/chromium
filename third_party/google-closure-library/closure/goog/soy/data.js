@@ -1,16 +1,8 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Soy data primitives.
@@ -19,6 +11,7 @@
  * as known to be "safe".
  */
 
+goog.provide('goog.soy.data');
 goog.provide('goog.soy.data.SanitizedContent');
 goog.provide('goog.soy.data.SanitizedContentKind');
 goog.provide('goog.soy.data.SanitizedCss');
@@ -108,6 +101,7 @@ goog.soy.data.SanitizedContentKind = {
  * @constructor
  */
 goog.soy.data.SanitizedContent = function() {
+  'use strict';
   throw new Error('Do not instantiate directly');
 };
 
@@ -139,12 +133,14 @@ goog.soy.data.SanitizedContent.prototype.content;
  * @return {string}
  */
 goog.soy.data.SanitizedContent.prototype.getContent = function() {
+  'use strict';
   return this.content;
 };
 
 
 /** @override */
 goog.soy.data.SanitizedContent.prototype.toString = function() {
+  'use strict';
   return this.content;
 };
 
@@ -155,6 +151,7 @@ goog.soy.data.SanitizedContent.prototype.toString = function() {
  * @throws {!Error} when the content kind is not HTML.
  */
 goog.soy.data.SanitizedContent.prototype.toSafeHtml = function() {
+  'use strict';
   if (this.contentKind !== goog.soy.data.SanitizedContentKind.HTML) {
     throw new Error('Sanitized content was not of kind HTML.');
   }
@@ -173,6 +170,7 @@ goog.soy.data.SanitizedContent.prototype.toSafeHtml = function() {
  * @throws {Error} when the content kind is not URI.
  */
 goog.soy.data.SanitizedContent.prototype.toSafeUrl = function() {
+  'use strict';
   if (this.contentKind !== goog.soy.data.SanitizedContentKind.URI) {
     throw new Error('Sanitized content was not of kind URI.');
   }
@@ -199,6 +197,7 @@ goog.soy.data.SanitizedContent.prototype.toSafeUrl = function() {
  * @constructor
  */
 goog.soy.data.SanitizedHtml = function() {
+  'use strict';
   goog.soy.data.SanitizedHtml.base(this, 'constructor');
 };
 goog.inherits(goog.soy.data.SanitizedHtml, goog.soy.data.SanitizedContent);
@@ -215,9 +214,9 @@ goog.soy.data.SanitizedHtml.prototype.contentKind =
  * @return {boolean}
  */
 goog.soy.data.SanitizedHtml.isCompatibleWith = function(value) {
+  'use strict';
   return typeof value === 'string' ||
-      value instanceof goog.soy.data.SanitizedHtml ||
-      value instanceof goog.html.SafeHtml;
+      goog.soy.data.SanitizedHtml.isCompatibleWithStrict(value);
 };
 
 
@@ -228,6 +227,7 @@ goog.soy.data.SanitizedHtml.isCompatibleWith = function(value) {
  * @return {boolean}
  */
 goog.soy.data.SanitizedHtml.isCompatibleWithStrict = function(value) {
+  'use strict';
   return value instanceof goog.soy.data.SanitizedHtml ||
       value instanceof goog.html.SafeHtml;
 };
@@ -243,6 +243,7 @@ goog.soy.data.SanitizedHtml.isCompatibleWithStrict = function(value) {
  * @constructor
  */
 goog.soy.data.SanitizedJs = function() {
+  'use strict';
   goog.soy.data.SanitizedJs.base(this, 'constructor');
 };
 goog.inherits(goog.soy.data.SanitizedJs, goog.soy.data.SanitizedContent);
@@ -263,9 +264,9 @@ goog.soy.data.SanitizedJs.prototype.contentDir = goog.i18n.bidi.Dir.LTR;
  * @return {boolean}
  */
 goog.soy.data.SanitizedJs.isCompatibleWith = function(value) {
+  'use strict';
   return typeof value === 'string' ||
-      value instanceof goog.soy.data.SanitizedJs ||
-      value instanceof goog.html.SafeScript;
+      goog.soy.data.SanitizedJs.isCompatibleWithStrict(value);
 };
 
 /**
@@ -275,9 +276,26 @@ goog.soy.data.SanitizedJs.isCompatibleWith = function(value) {
  * @return {boolean}
  */
 goog.soy.data.SanitizedJs.isCompatibleWithStrict = function(value) {
+  'use strict';
   return value instanceof goog.soy.data.SanitizedJs ||
-      value instanceof goog.html.SafeHtml;
+      value instanceof goog.html.SafeScript;
 };
+
+
+/**
+ * Converts sanitized content of kind JS into SafeScript without modification.
+ * @return {!goog.html.SafeScript}
+ */
+goog.soy.data.SanitizedJs.prototype.toSafeScript = function() {
+  'use strict';
+  return goog.html.uncheckedconversions
+      .safeScriptFromStringKnownToSatisfyTypeContract(
+          goog.string.Const.from(
+              'Soy SanitizedContent of kind JS produces ' +
+              'SafeScript-contract-compliant value.'),
+          this.toString());
+};
+
 
 
 /**
@@ -290,6 +308,7 @@ goog.soy.data.SanitizedJs.isCompatibleWithStrict = function(value) {
  * @constructor
  */
 goog.soy.data.SanitizedUri = function() {
+  'use strict';
   goog.soy.data.SanitizedUri.base(this, 'constructor');
 };
 goog.inherits(goog.soy.data.SanitizedUri, goog.soy.data.SanitizedContent);
@@ -309,11 +328,9 @@ goog.soy.data.SanitizedUri.prototype.contentDir = goog.i18n.bidi.Dir.LTR;
  * @return {boolean}
  */
 goog.soy.data.SanitizedUri.isCompatibleWith = function(value) {
+  'use strict';
   return typeof value === 'string' ||
-      value instanceof goog.soy.data.SanitizedUri ||
-      value instanceof goog.html.SafeUrl ||
-      value instanceof goog.html.TrustedResourceUrl ||
-      value instanceof goog.Uri;
+      goog.soy.data.SanitizedUri.isCompatibleWithStrict(value);
 };
 
 
@@ -324,6 +341,7 @@ goog.soy.data.SanitizedUri.isCompatibleWith = function(value) {
  * @return {boolean}
  */
 goog.soy.data.SanitizedUri.isCompatibleWithStrict = function(value) {
+  'use strict';
   return value instanceof goog.soy.data.SanitizedUri ||
       value instanceof goog.html.SafeUrl ||
       value instanceof goog.html.TrustedResourceUrl ||
@@ -343,6 +361,7 @@ goog.soy.data.SanitizedUri.isCompatibleWithStrict = function(value) {
  * @constructor
  */
 goog.soy.data.SanitizedTrustedResourceUri = function() {
+  'use strict';
   goog.soy.data.SanitizedTrustedResourceUri.base(this, 'constructor');
 };
 goog.inherits(
@@ -365,6 +384,7 @@ goog.soy.data.SanitizedTrustedResourceUri.prototype.contentDir =
  */
 goog.soy.data.SanitizedTrustedResourceUri.prototype.toTrustedResourceUrl =
     function() {
+  'use strict';
   return goog.html.uncheckedconversions
       .trustedResourceUrlFromStringKnownToSatisfyTypeContract(
           goog.string.Const.from(
@@ -380,9 +400,9 @@ goog.soy.data.SanitizedTrustedResourceUri.prototype.toTrustedResourceUrl =
  * @return {boolean}
  */
 goog.soy.data.SanitizedTrustedResourceUri.isCompatibleWith = function(value) {
+  'use strict';
   return typeof value === 'string' ||
-      value instanceof goog.soy.data.SanitizedTrustedResourceUri ||
-      value instanceof goog.html.TrustedResourceUrl;
+      goog.soy.data.SanitizedTrustedResourceUri.isCompatibleWithStrict(value);
 };
 
 
@@ -394,6 +414,7 @@ goog.soy.data.SanitizedTrustedResourceUri.isCompatibleWith = function(value) {
  */
 goog.soy.data.SanitizedTrustedResourceUri.isCompatibleWithStrict = function(
     value) {
+  'use strict';
   return value instanceof goog.soy.data.SanitizedTrustedResourceUri ||
       value instanceof goog.html.TrustedResourceUrl;
 };
@@ -410,6 +431,7 @@ goog.soy.data.SanitizedTrustedResourceUri.isCompatibleWithStrict = function(
  * @constructor
  */
 goog.soy.data.SanitizedHtmlAttribute = function() {
+  'use strict';
   goog.soy.data.SanitizedHtmlAttribute.base(this, 'constructor');
 };
 goog.inherits(
@@ -432,8 +454,9 @@ goog.soy.data.SanitizedHtmlAttribute.prototype.contentDir =
  * @return {boolean}
  */
 goog.soy.data.SanitizedHtmlAttribute.isCompatibleWith = function(value) {
+  'use strict';
   return typeof value === 'string' ||
-      value instanceof goog.soy.data.SanitizedHtmlAttribute;
+      goog.soy.data.SanitizedHtmlAttribute.isCompatibleWithStrict(value);
 };
 
 
@@ -444,6 +467,7 @@ goog.soy.data.SanitizedHtmlAttribute.isCompatibleWith = function(value) {
  * @return {boolean}
  */
 goog.soy.data.SanitizedHtmlAttribute.isCompatibleWithStrict = function(value) {
+  'use strict';
   return value instanceof goog.soy.data.SanitizedHtmlAttribute;
 };
 
@@ -459,6 +483,7 @@ goog.soy.data.SanitizedHtmlAttribute.isCompatibleWithStrict = function(value) {
  * @constructor
  */
 goog.soy.data.SanitizedCss = function() {
+  'use strict';
   goog.soy.data.SanitizedCss.base(this, 'constructor');
 };
 goog.inherits(goog.soy.data.SanitizedCss, goog.soy.data.SanitizedContent);
@@ -479,10 +504,9 @@ goog.soy.data.SanitizedCss.prototype.contentDir = goog.i18n.bidi.Dir.LTR;
  * @return {boolean}
  */
 goog.soy.data.SanitizedCss.isCompatibleWith = function(value) {
+  'use strict';
   return typeof value === 'string' ||
-      value instanceof goog.soy.data.SanitizedCss ||
-      value instanceof goog.html.SafeStyle ||
-      value instanceof goog.html.SafeStyleSheet;
+      goog.soy.data.SanitizedCss.isCompatibleWithStrict(value);
 };
 
 
@@ -493,6 +517,7 @@ goog.soy.data.SanitizedCss.isCompatibleWith = function(value) {
  * @return {boolean}
  */
 goog.soy.data.SanitizedCss.isCompatibleWithStrict = function(value) {
+  'use strict';
   return value instanceof goog.soy.data.SanitizedCss ||
       value instanceof goog.html.SafeStyle ||
       value instanceof goog.html.SafeStyleSheet;
@@ -507,6 +532,7 @@ goog.soy.data.SanitizedCss.isCompatibleWithStrict = function(value) {
  * @return {!goog.html.SafeStyleSheet}
  */
 goog.soy.data.SanitizedCss.prototype.toSafeStyleSheet = function() {
+  'use strict';
   var value = this.toString();
   goog.asserts.assert(
       /[@{]|^\s*$/.test(value),

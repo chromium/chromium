@@ -21,7 +21,7 @@ class CroshSystemAppDelegate : public web_app::SystemWebAppDelegate {
   // web_app::SystemWebAppDelegate overrides:
   std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
   bool ShouldShowInLauncher() const override;
-  bool ShouldBeSingleWindow() const override;
+  bool ShouldReuseExistingWindow() const override;
   bool ShouldShowInSearch() const override;
   bool ShouldHaveTabStrip() const override;
 };

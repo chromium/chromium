@@ -1,16 +1,8 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 
 ////////////////////////// NOTE ABOUT EDITING THIS FILE ///////////////////////
@@ -49,6 +41,7 @@ goog.require('goog.vec');
  * @return {!goog.vec.vec2d.Type} The new vec2d.
  */
 goog.vec.vec2d.create = function() {
+  'use strict';
   return new Float64Array(2);
 };
 
@@ -60,7 +53,8 @@ goog.vec.vec2d.create = function() {
  * @return {!goog.vec.vec2d.Type} The new vec2d.
  */
 goog.vec.vec2d.createFromArray = function(vec) {
-  var newVec = goog.vec.vec2d.create();
+  'use strict';
+  const newVec = goog.vec.vec2d.create();
   goog.vec.vec2d.setFromArray(newVec, vec);
   return newVec;
 };
@@ -74,7 +68,8 @@ goog.vec.vec2d.createFromArray = function(vec) {
  * @return {!goog.vec.vec2d.Type} The new vector.
  */
 goog.vec.vec2d.createFromValues = function(v0, v1) {
-  var vec = goog.vec.vec2d.create();
+  'use strict';
+  const vec = goog.vec.vec2d.create();
   goog.vec.vec2d.setFromValues(vec, v0, v1);
   return vec;
 };
@@ -87,7 +82,8 @@ goog.vec.vec2d.createFromValues = function(v0, v1) {
  * @return {!goog.vec.vec2d.Type} The new cloned vec2d.
  */
 goog.vec.vec2d.clone = function(vec) {
-  var newVec = goog.vec.vec2d.create();
+  'use strict';
+  const newVec = goog.vec.vec2d.create();
   goog.vec.vec2d.setFromVec2d(newVec, vec);
   return newVec;
 };
@@ -103,6 +99,7 @@ goog.vec.vec2d.clone = function(vec) {
  *     chained together.
  */
 goog.vec.vec2d.setFromValues = function(vec, v0, v1) {
+  'use strict';
   vec[0] = v0;
   vec[1] = v1;
   return vec;
@@ -118,6 +115,7 @@ goog.vec.vec2d.setFromValues = function(vec, v0, v1) {
  *     chained together.
  */
 goog.vec.vec2d.setFromVec2d = function(vec, src) {
+  'use strict';
   vec[0] = src[0];
   vec[1] = src[1];
   return vec;
@@ -134,6 +132,7 @@ goog.vec.vec2d.setFromVec2d = function(vec, src) {
  *     chained together.
  */
 goog.vec.vec2d.setFromVec2f = function(vec, src) {
+  'use strict';
   vec[0] = src[0];
   vec[1] = src[1];
   return vec;
@@ -149,6 +148,7 @@ goog.vec.vec2d.setFromVec2f = function(vec, src) {
  *     chained together.
  */
 goog.vec.vec2d.setFromArray = function(vec, src) {
+  'use strict';
   vec[0] = src[0];
   vec[1] = src[1];
   return vec;
@@ -167,6 +167,7 @@ goog.vec.vec2d.setFromArray = function(vec, src) {
  *     chained together.
  */
 goog.vec.vec2d.add = function(vec0, vec1, resultVec) {
+  'use strict';
   resultVec[0] = vec0[0] + vec1[0];
   resultVec[1] = vec0[1] + vec1[1];
   return resultVec;
@@ -185,6 +186,7 @@ goog.vec.vec2d.add = function(vec0, vec1, resultVec) {
  *     chained together.
  */
 goog.vec.vec2d.subtract = function(vec0, vec1, resultVec) {
+  'use strict';
   resultVec[0] = vec0[0] - vec1[0];
   resultVec[1] = vec0[1] - vec1[1];
   return resultVec;
@@ -203,6 +205,7 @@ goog.vec.vec2d.subtract = function(vec0, vec1, resultVec) {
  *     chained together.
  */
 goog.vec.vec2d.componentMultiply = function(vec0, vec1, resultVec) {
+  'use strict';
   resultVec[0] = vec0[0] * vec1[0];
   resultVec[1] = vec0[1] * vec1[1];
   return resultVec;
@@ -221,6 +224,7 @@ goog.vec.vec2d.componentMultiply = function(vec0, vec1, resultVec) {
  *     chained together.
  */
 goog.vec.vec2d.componentDivide = function(vec0, vec1, resultVec) {
+  'use strict';
   resultVec[0] = vec0[0] / vec1[0];
   resultVec[1] = vec0[1] / vec1[1];
   return resultVec;
@@ -237,6 +241,7 @@ goog.vec.vec2d.componentDivide = function(vec0, vec1, resultVec) {
  *     chained together.
  */
 goog.vec.vec2d.negate = function(vec0, resultVec) {
+  'use strict';
   resultVec[0] = -vec0[0];
   resultVec[1] = -vec0[1];
   return resultVec;
@@ -254,6 +259,7 @@ goog.vec.vec2d.negate = function(vec0, resultVec) {
  *     chained together.
  */
 goog.vec.vec2d.abs = function(vec0, resultVec) {
+  'use strict';
   resultVec[0] = Math.abs(vec0[0]);
   resultVec[1] = Math.abs(vec0[1]);
   return resultVec;
@@ -272,6 +278,7 @@ goog.vec.vec2d.abs = function(vec0, resultVec) {
  *     chained together.
  */
 goog.vec.vec2d.scale = function(vec0, scalar, resultVec) {
+  'use strict';
   resultVec[0] = vec0[0] * scalar;
   resultVec[1] = vec0[1] * scalar;
   return resultVec;
@@ -285,7 +292,10 @@ goog.vec.vec2d.scale = function(vec0, scalar, resultVec) {
  * @return {number} The magnitude of the vector.
  */
 goog.vec.vec2d.magnitudeSquared = function(vec0) {
-  var x = vec0[0], y = vec0[1];
+  'use strict';
+  const x = vec0[0];
+  const y = vec0[1];
+
   return x * x + y * y;
 };
 
@@ -297,7 +307,10 @@ goog.vec.vec2d.magnitudeSquared = function(vec0) {
  * @return {number} The magnitude of the vector.
  */
 goog.vec.vec2d.magnitude = function(vec0) {
-  var x = vec0[0], y = vec0[1];
+  'use strict';
+  const x = vec0[0];
+  const y = vec0[1];
+
   return Math.sqrt(x * x + y * y);
 };
 
@@ -312,8 +325,11 @@ goog.vec.vec2d.magnitude = function(vec0) {
  *     chained together.
  */
 goog.vec.vec2d.normalize = function(vec0, resultVec) {
-  var x = vec0[0], y = vec0[1];
-  var ilen = 1 / Math.sqrt(x * x + y * y);
+  'use strict';
+  const x = vec0[0];
+  const y = vec0[1];
+
+  const ilen = 1 / Math.sqrt(x * x + y * y);
   resultVec[0] = x * ilen;
   resultVec[1] = y * ilen;
   return resultVec;
@@ -328,6 +344,7 @@ goog.vec.vec2d.normalize = function(vec0, resultVec) {
  * @return {number} The scalar product.
  */
 goog.vec.vec2d.dot = function(vec0, vec1) {
+  'use strict';
   return vec0[0] * vec1[0] + vec0[1] * vec1[1];
 };
 
@@ -340,8 +357,9 @@ goog.vec.vec2d.dot = function(vec0, vec1) {
  * @return {number} The squared distance between the points.
  */
 goog.vec.vec2d.distanceSquared = function(vec0, vec1) {
-  var x = vec0[0] - vec1[0];
-  var y = vec0[1] - vec1[1];
+  'use strict';
+  const x = vec0[0] - vec1[0];
+  const y = vec0[1] - vec1[1];
   return x * x + y * y;
 };
 
@@ -354,6 +372,7 @@ goog.vec.vec2d.distanceSquared = function(vec0, vec1) {
  * @return {number} The distance between the points.
  */
 goog.vec.vec2d.distance = function(vec0, vec1) {
+  'use strict';
   return Math.sqrt(goog.vec.vec2d.distanceSquared(vec0, vec1));
 };
 
@@ -370,9 +389,10 @@ goog.vec.vec2d.distance = function(vec0, vec1) {
  *     chained together.
  */
 goog.vec.vec2d.direction = function(vec0, vec1, resultVec) {
-  var x = vec1[0] - vec0[0];
-  var y = vec1[1] - vec0[1];
-  var d = Math.sqrt(x * x + y * y);
+  'use strict';
+  const x = vec1[0] - vec0[0];
+  const y = vec1[1] - vec0[1];
+  let d = Math.sqrt(x * x + y * y);
   if (d) {
     d = 1 / d;
     resultVec[0] = x * d;
@@ -397,7 +417,10 @@ goog.vec.vec2d.direction = function(vec0, vec1, resultVec) {
  *     chained together.
  */
 goog.vec.vec2d.lerp = function(vec0, vec1, f, resultVec) {
-  var x = vec0[0], y = vec0[1];
+  'use strict';
+  const x = vec0[0];
+  const y = vec0[1];
+
   resultVec[0] = (vec1[0] - x) * f + x;
   resultVec[1] = (vec1[1] - y) * f + y;
   return resultVec;
@@ -416,6 +439,7 @@ goog.vec.vec2d.lerp = function(vec0, vec1, f, resultVec) {
  *     chained together.
  */
 goog.vec.vec2d.max = function(vec0, limit, resultVec) {
+  'use strict';
   if (typeof limit === 'number') {
     resultVec[0] = Math.max(vec0[0], limit);
     resultVec[1] = Math.max(vec0[1], limit);
@@ -439,6 +463,7 @@ goog.vec.vec2d.max = function(vec0, limit, resultVec) {
  *     chained together.
  */
 goog.vec.vec2d.min = function(vec0, limit, resultVec) {
+  'use strict';
   if (typeof limit === 'number') {
     resultVec[0] = Math.min(vec0[0], limit);
     resultVec[1] = Math.min(vec0[1], limit);
@@ -458,5 +483,6 @@ goog.vec.vec2d.min = function(vec0, limit, resultVec) {
  * @return {boolean} True if the vectors are equal, false otherwise.
  */
 goog.vec.vec2d.equals = function(vec0, vec1) {
+  'use strict';
   return vec0.length == vec1.length && vec0[0] == vec1[0] && vec0[1] == vec1[1];
 };

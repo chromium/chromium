@@ -169,8 +169,8 @@ class TwoDisplays
  public:
   TwoDisplays() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoDisplays);
+  TwoDisplays(const TwoDisplays&) = delete;
+  TwoDisplays& operator=(const TwoDisplays&) = delete;
 };
 
 }  // namespace
@@ -521,8 +521,10 @@ class TwoDisplaysBottomRightReference
  public:
   TwoDisplaysBottomRightReference() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoDisplaysBottomRightReference);
+  TwoDisplaysBottomRightReference(const TwoDisplaysBottomRightReference&) =
+      delete;
+  TwoDisplaysBottomRightReference& operator=(
+      const TwoDisplaysBottomRightReference&) = delete;
 };
 
 }  // namespace

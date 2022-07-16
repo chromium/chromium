@@ -5,8 +5,8 @@
 #include "components/arc/memory/arc_memory_bridge.h"
 
 #include "base/test/bind.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_memory_instance.h"
 #include "components/arc/test/test_browser_context.h"

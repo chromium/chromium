@@ -54,6 +54,10 @@ class GPU_IPC_SERVICE_EXPORT ImageDecodeAcceleratorStub
                              GpuChannel* channel,
                              int32_t route_id);
 
+  ImageDecodeAcceleratorStub(const ImageDecodeAcceleratorStub&) = delete;
+  ImageDecodeAcceleratorStub& operator=(const ImageDecodeAcceleratorStub&) =
+      delete;
+
   // Processes a decode request. Must be called on the IO thread.
   void ScheduleImageDecode(mojom::ScheduleImageDecodeParamsPtr params,
                            uint64_t release_count);
@@ -100,8 +104,6 @@ class GPU_IPC_SERVICE_EXPORT ImageDecodeAcceleratorStub
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDecodeAcceleratorStub);
 };
 
 }  // namespace gpu

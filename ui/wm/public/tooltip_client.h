@@ -36,6 +36,9 @@ class WM_PUBLIC_EXPORT TooltipClient {
   virtual void UpdateTooltipFromKeyboard(const gfx::Rect& bounds,
                                          aura::Window* target) = 0;
 
+  // Returns true if the tooltip was set from a keyboard action.
+  virtual bool IsTooltipSetFromKeyboard(aura::Window* target) = 0;
+
   // Sets the time after which the tooltip is hidden for Window |target|. If
   // |timeout_in_ms| is <= 0, the tooltip is shown indefinitely.
   virtual void SetHideTooltipTimeout(aura::Window* target,

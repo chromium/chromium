@@ -20,7 +20,7 @@ TEST(DownloadScheduleTest, CtorAndCopy) {
   EXPECT_EQ(download_schedule.start_time(), absl::nullopt);
 
   auto time = absl::make_optional(
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromDays(1)));
+      base::Time::FromDeltaSinceWindowsEpoch(base::Days(1)));
   download_schedule = DownloadSchedule(false, time);
   EXPECT_FALSE(download_schedule.only_on_wifi());
   EXPECT_EQ(download_schedule.start_time(), time);

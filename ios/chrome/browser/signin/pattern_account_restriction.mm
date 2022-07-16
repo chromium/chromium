@@ -55,10 +55,11 @@ bool Pattern::Match(base::StringPiece string) const {
   return string_offset + last_chunk.size() <= string.size();
 }
 
+PatternAccountRestriction::PatternAccountRestriction() = default;
 PatternAccountRestriction::PatternAccountRestriction(
     std::vector<Pattern> patterns)
     : patterns_(std::move(patterns)) {}
-PatternAccountRestriction::~PatternAccountRestriction() {}
+PatternAccountRestriction::~PatternAccountRestriction() = default;
 
 PatternAccountRestriction::PatternAccountRestriction(
     PatternAccountRestriction&& from) = default;

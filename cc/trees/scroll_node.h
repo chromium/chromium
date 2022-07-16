@@ -36,6 +36,9 @@ struct CC_EXPORT ScrollNode {
 
   // Size of the container area that the contents scrolls in, not including
   // non-overlay scrollbars. Overlay scrollbars do not affect these bounds.
+  // Note, use the ScrollTree::container_bounds function for the viewport
+  // scroll nodes to include the current bounds change due to top controls
+  // hiding / showing.
   gfx::Size container_bounds;
 
   // Size of the content that is scrolled within the container bounds.

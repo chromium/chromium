@@ -7,10 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -271,7 +270,7 @@ void ExternalPolicyDataFetcher::CancelJob(Job* job) {
   // OnJobFinished() callback may still be pending for the canceled |job|.
   job_task_runner_->PostTaskAndReply(
       FROM_HERE, base::BindOnce(&Job::Cancel, base::Unretained(job)),
-      base::BindOnce(base::DoNothing::Once<Job*>(), base::Owned(job)));
+      base::BindOnce([](Job*) {}, base::Owned(job)));
 }
 
 void ExternalPolicyDataFetcher::OnJobFinished(

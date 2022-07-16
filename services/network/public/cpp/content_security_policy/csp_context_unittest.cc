@@ -44,8 +44,9 @@ class CSPContextTest : public CSPContext {
       network::mojom::SourceLocation* source_location) const override {
     if (!sanitize_data_for_use_in_csp_violation_)
       return;
-    *blocked_url = blocked_url->GetOrigin();
-    source_location->url = GURL(source_location->url).GetOrigin().spec();
+    *blocked_url = blocked_url->DeprecatedGetOriginAsURL();
+    source_location->url =
+        GURL(source_location->url).DeprecatedGetOriginAsURL().spec();
     source_location->line = 0u;
     source_location->column = 0u;
   }
@@ -227,7 +228,8 @@ TEST(CSPContextTest, SanitizeDataForUseInCspViolation) {
         policies, CSPDirectiveName::FrameSrc, blocked_url, original_url, false,
         false, source_location, CSPContext::CHECK_ALL_CSP, false));
     ASSERT_EQ(3u, context.violations().size());
-    EXPECT_EQ(context.violations()[2]->blocked_url, blocked_url.GetOrigin());
+    EXPECT_EQ(context.violations()[2]->blocked_url,
+              blocked_url.DeprecatedGetOriginAsURL());
     EXPECT_EQ(context.violations()[2]->source_location->url, "http://a.com/");
     EXPECT_EQ(context.violations()[2]->source_location->line, 0u);
     EXPECT_EQ(context.violations()[2]->source_location->column, 0u);

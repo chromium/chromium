@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {dashToCamelCase, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ImportDataBrowserProxyImpl, ImportDataStatus} from 'chrome://settings/lazy_load.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // clang-format on
 
 /** @implements {ImportDataBrowserProxy} */
@@ -102,7 +102,7 @@ suite('ImportDataDialog', function() {
   setup(function() {
     browserProxy = new TestImportDataBrowserProxy();
     browserProxy.setBrowserProfiles(browserProfiles);
-    ImportDataBrowserProxyImpl.instance_ = browserProxy;
+    ImportDataBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     dialog = document.createElement('settings-import-data-dialog');
     dialog.set('prefs', prefs);
@@ -176,16 +176,16 @@ suite('ImportDataDialog', function() {
     assertFalse(dialog.$.cancel.hidden);
     assertTrue(dialog.$.cancel.disabled);
     assertTrue(dialog.$.done.hidden);
-    assertTrue(dialog.$$('paper-spinner-lite').active);
-    assertFalse(dialog.$$('paper-spinner-lite').hidden);
+    assertTrue(dialog.shadowRoot.querySelector('paper-spinner-lite').active);
+    assertFalse(dialog.shadowRoot.querySelector('paper-spinner-lite').hidden);
   }
 
   function assertSucceededButtons() {
     assertTrue(dialog.$.import.hidden);
     assertTrue(dialog.$.cancel.hidden);
     assertFalse(dialog.$.done.hidden);
-    assertFalse(dialog.$$('paper-spinner-lite').active);
-    assertTrue(dialog.$$('paper-spinner-lite').hidden);
+    assertFalse(dialog.shadowRoot.querySelector('paper-spinner-lite').active);
+    assertTrue(dialog.shadowRoot.querySelector('paper-spinner-lite').hidden);
   }
 
   /** @param {!ImportDataStatus} status */
@@ -204,7 +204,8 @@ suite('ImportDataDialog', function() {
       assertSucceededButtons();
 
       assertFalse(dialog.$.successIcon.parentElement.hidden);
-      assertFalse(dialog.$$('settings-toggle-button').parentElement.hidden);
+      assertFalse(dialog.shadowRoot.querySelector('settings-toggle-button')
+                      .parentElement.hidden);
     });
   });
 
@@ -229,7 +230,8 @@ suite('ImportDataDialog', function() {
       assertSucceededButtons();
 
       assertFalse(dialog.$.successIcon.parentElement.hidden);
-      assertTrue(dialog.$$('settings-toggle-button').parentElement.hidden);
+      assertTrue(dialog.shadowRoot.querySelector('settings-toggle-button')
+                     .parentElement.hidden);
     });
   });
 

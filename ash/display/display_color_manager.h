@@ -13,7 +13,6 @@
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "skia/ext/skia_matrix_44.h"
@@ -52,7 +51,11 @@ class ASH_EXPORT DisplayColorManager
     kMaxValue = kAll,
   };
 
-  DisplayColorManager(display::DisplayConfigurator* configurator);
+  explicit DisplayColorManager(display::DisplayConfigurator* configurator);
+
+  DisplayColorManager(const DisplayColorManager&) = delete;
+  DisplayColorManager& operator=(const DisplayColorManager&) = delete;
+
   ~DisplayColorManager() override;
 
   DisplayCtmSupport displays_ctm_support() const {
@@ -170,8 +173,6 @@ class ASH_EXPORT DisplayColorManager
 
   // Factory for callbacks.
   base::WeakPtrFactory<DisplayColorManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayColorManager);
 };
 
 }  // namespace ash

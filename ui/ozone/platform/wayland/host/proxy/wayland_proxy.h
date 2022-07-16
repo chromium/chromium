@@ -37,8 +37,10 @@ class COMPONENT_EXPORT(WAYLAND_PROXY) WaylandProxy {
     // from the list of windows stored by WaylandWindowManager.
     virtual void OnWindowRemoved(gfx::AcceleratedWidget widget) = 0;
 
-    // Invoked when an existing surface is configured.
-    virtual void OnWindowConfigured(gfx::AcceleratedWidget widget) = 0;
+    // Invoked when an existing surface is configured or it's no longer
+    // configured (wl_surface lost its role and is going to be reconfigured).
+    virtual void OnWindowConfigured(gfx::AcceleratedWidget widget,
+                                    bool is_configured) = 0;
 
    protected:
     virtual ~Delegate() = default;

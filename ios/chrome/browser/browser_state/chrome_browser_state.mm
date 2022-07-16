@@ -9,7 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "ios/chrome/browser/chrome_url_constants.h"

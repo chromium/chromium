@@ -28,6 +28,12 @@ static const char kFileName[] = "event.log";
 }  // namespace
 
 class SingleArcAppInstallEventLogTest : public testing::Test {
+ public:
+  SingleArcAppInstallEventLogTest(const SingleArcAppInstallEventLogTest&) =
+      delete;
+  SingleArcAppInstallEventLogTest& operator=(
+      const SingleArcAppInstallEventLogTest&) = delete;
+
  protected:
   SingleArcAppInstallEventLogTest() {}
 
@@ -56,9 +62,6 @@ class SingleArcAppInstallEventLogTest : public testing::Test {
   em::AppInstallReport report_;
   std::unique_ptr<base::ScopedTempDir> temp_dir_;
   std::unique_ptr<base::File> file_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleArcAppInstallEventLogTest);
 };
 
 // Verify that the package name is returned correctly.

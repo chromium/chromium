@@ -42,6 +42,8 @@ cast_source_set("loopback") {
     "//chromecast/media/audio:libcast_external_audio_pipeline_1.0",
     "//chromecast/media/audio/mixer_service:common",
     "//chromecast/media/audio/mixer_service:proto",
+    "//chromecast/media/audio/net:common",
+    "//chromecast/media/audio/net:proto",
     "//chromecast/net:io_buffer_pool",
     "//chromecast/public/media",
   ]
@@ -94,6 +96,8 @@ cast_source_set("mixer") {
     "//chromecast/media/audio/mixer_service:proto",
     "//chromecast/media/audio/mixer_service:redirected_audio_connection",
     "//chromecast/media/audio/mixer_service/receiver",
+    "//chromecast/media/audio/net:common",
+    "//chromecast/media/audio/net:proto",
     "//chromecast/media/base",
     "//chromecast/media/base:slew_volume",
     "//chromecast/media/cma/backend:cast_audio_json",

@@ -49,20 +49,16 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromStringWKResult) {
 TEST_F(WebViewJsUtilsTest, ValueResultFromIntegerWKResult) {
   std::unique_ptr<base::Value> value(web::ValueResultFromWKResult(@1));
   EXPECT_TRUE(value);
-  EXPECT_EQ(base::Value::Type::DOUBLE, value->type());
-  double converted_result = 0;
-  value->GetAsDouble(&converted_result);
-  EXPECT_EQ(1, converted_result);
+  ASSERT_EQ(base::Value::Type::DOUBLE, value->type());
+  EXPECT_EQ(1, value->GetDouble());
 }
 
 // Tests that ValueResultFromWKResult converts double to Value::Type::DOUBLE.
 TEST_F(WebViewJsUtilsTest, ValueResultFromDoubleWKResult) {
   std::unique_ptr<base::Value> value(web::ValueResultFromWKResult(@3.14));
   EXPECT_TRUE(value);
-  EXPECT_EQ(base::Value::Type::DOUBLE, value->type());
-  double converted_result = 0;
-  value->GetAsDouble(&converted_result);
-  EXPECT_EQ(3.14, converted_result);
+  ASSERT_EQ(base::Value::Type::DOUBLE, value->type());
+  EXPECT_EQ(3.14, value->GetDouble());
 }
 
 // Tests that ValueResultFromWKResult converts bool to Value::Type::BOOLEAN.
@@ -104,9 +100,7 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromDictionaryWKResult) {
   dictionary->GetDictionary("Key2", &inner_dictionary);
   EXPECT_NE(nullptr, inner_dictionary);
 
-  double value3;
-  inner_dictionary->GetDouble("Key3", &value3);
-  EXPECT_EQ(42, value3);
+  EXPECT_EQ(42, *inner_dictionary->FindDoubleKey("Key3"));
 }
 
 // Tests that ValueResultFromWKResult converts NSArray to properly

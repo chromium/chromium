@@ -19,14 +19,15 @@ class ONCDevicePolicyValueValidator
  public:
   ONCDevicePolicyValueValidator();
 
+  ONCDevicePolicyValueValidator(const ONCDevicePolicyValueValidator&) = delete;
+  ONCDevicePolicyValueValidator& operator=(
+      const ONCDevicePolicyValueValidator&) = delete;
+
  protected:
   // ONCPolicyValueValidatorBase:
   absl::optional<std::string> GetONCStringFromPayload(
       const enterprise_management::ChromeDeviceSettingsProto& policy_payload)
       const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ONCDevicePolicyValueValidator);
 };
 
 }  // namespace policy

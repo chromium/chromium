@@ -5,7 +5,6 @@
 #ifndef CHROME_TEST_PERMISSIONS_PERMISSION_REQUEST_MANAGER_TEST_API_H_
 #define CHROME_TEST_PERMISSIONS_PERMISSION_REQUEST_MANAGER_TEST_API_H_
 
-#include "base/macros.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/request_type.h"
@@ -30,6 +29,11 @@ class PermissionRequestManagerTestApi {
   // Wraps the PermissionRequestManager for the active tab in |browser|.
   explicit PermissionRequestManagerTestApi(Browser* browser);
 
+  PermissionRequestManagerTestApi(const PermissionRequestManagerTestApi&) =
+      delete;
+  PermissionRequestManagerTestApi& operator=(
+      const PermissionRequestManagerTestApi&) = delete;
+
   permissions::PermissionRequestManager* manager() { return manager_; }
 
   // Add a "simple" permission request originating from the given frame. One
@@ -46,8 +50,6 @@ class PermissionRequestManagerTestApi {
 
  private:
   permissions::PermissionRequestManager* manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionRequestManagerTestApi);
 };
 
 }  // namespace test

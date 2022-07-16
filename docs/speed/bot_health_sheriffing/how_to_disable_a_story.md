@@ -1,5 +1,7 @@
 # How to disable a failing test/story on the perf waterfall
 
+**Important**: When making changes to this document, also update duplicate files under the [internal docs](http://goto.google.com/perf-bot-health-sheriffs).
+
 To disable a failing test/story, the first step is to figure
 out if the failing thing is gtest or Telemetry, then you can
 follow the below directions to disable the failing test/story.

@@ -39,6 +39,8 @@
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
+namespace ash {
+
 namespace {
 
 constexpr char kExtensionId[] = "ecmhnokcdiianioonpgakiooenfnonid";
@@ -132,9 +134,10 @@ bool RsaSignRawData(crypto::RSAPrivateKey* key,
                         input.size()) != 0;
 }
 
-void SendReplyToJs(extensions::TestSendMessageFunction* function,
+void SendReplyToJs(ExtensionTestMessageListener* message_listener,
                    const base::Value& response) {
-  function->Reply(ConvertValueToJson(response));
+  message_listener->Reply(ConvertValueToJson(response));
+  message_listener->Reset();
 }
 
 std::unique_ptr<crypto::RSAPrivateKey> LoadPrivateKeyFromFile(
@@ -190,13 +193,17 @@ TestCertificateProviderExtension::TestCertificateProviderExtension(
     : browser_context_(browser_context),
       certificate_(GetCertificate()),
       private_key_(LoadPrivateKeyFromFile(net::GetTestCertsDirectory().Append(
-          FILE_PATH_LITERAL("client_1.pk8")))) {
+          FILE_PATH_LITERAL("client_1.pk8")))),
+      message_listener_(/*will_reply=*/true) {
   DCHECK(browser_context_);
   CHECK(certificate_);
   CHECK(private_key_);
-  notification_registrar_.Add(this,
-                              extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
-                              content::NotificationService::AllSources());
+  // Ignore messages targeted to other extensions or browser contexts.
+  message_listener_.set_extension_id(kExtensionId);
+  message_listener_.set_browser_context(browser_context);
+  message_listener_.SetOnRepeatedlySatisfied(
+      base::BindRepeating(&TestCertificateProviderExtension::HandleMessage,
+                          base::Unretained(this)));
 }
 
 TestCertificateProviderExtension::~TestCertificateProviderExtension() = default;
@@ -219,25 +226,8 @@ void TestCertificateProviderExtension::TriggerSetCertificates() {
       ->DispatchEventToExtension(extension_id(), std::move(event));
 }
 
-void TestCertificateProviderExtension::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE, type);
-
-  extensions::TestSendMessageFunction* function =
-      content::Source<extensions::TestSendMessageFunction>(source).ptr();
-  if (!function->extension() || function->extension_id() != kExtensionId ||
-      function->browser_context() != browser_context_) {
-    // Ignore messages targeted to other extensions.
-    return;
-  }
-
-  const auto typed_details =
-      content::Details<std::pair<std::string, bool*>>(details);
-  const std::string& message = typed_details->first;
-  bool* const listener_will_respond = typed_details->second;
-
+void TestCertificateProviderExtension::HandleMessage(
+    const std::string& message) {
   // Handle the request and reply to it (possibly, asynchronously).
   base::Value message_value = ParseJsonToValue(message);
   CHECK(message_value.is_list());
@@ -245,8 +235,7 @@ void TestCertificateProviderExtension::Observe(
   CHECK(message_value.GetList()[0].is_string());
   const std::string& request_type = message_value.GetList()[0].GetString();
   ReplyToJsCallback send_reply_to_js_callback =
-      base::BindOnce(&SendReplyToJs, base::Unretained(function));
-  *listener_will_respond = true;
+      base::BindOnce(&SendReplyToJs, &message_listener_);
   if (request_type == "getCertificates") {
     CHECK_EQ(message_value.GetList().size(), 1U);
     HandleCertificatesRequest(std::move(send_reply_to_js_callback));
@@ -366,3 +355,5 @@ void TestCertificateProviderExtension::HandleSignatureRequest(
   response.SetKey("signature", ConvertBytesToValue(signature));
   std::move(callback).Run(response);
 }
+
+}  // namespace ash

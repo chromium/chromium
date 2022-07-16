@@ -16,6 +16,9 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/sync/base/time.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -24,15 +27,17 @@ namespace {
 
 class SingleClientSendTabToSelfSyncTest : public SyncTest {
  public:
-  SingleClientSendTabToSelfSyncTest() : SyncTest(SINGLE_CLIENT) {
-  }
+  SingleClientSendTabToSelfSyncTest() : SyncTest(SINGLE_CLIENT) {}
+
+  SingleClientSendTabToSelfSyncTest(const SingleClientSendTabToSelfSyncTest&) =
+      delete;
+  SingleClientSendTabToSelfSyncTest& operator=(
+      const SingleClientSendTabToSelfSyncTest&) = delete;
 
   ~SingleClientSendTabToSelfSyncTest() override {}
 
  private:
   base::test::ScopedFeatureList scoped_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleClientSendTabToSelfSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
@@ -50,8 +55,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
   fake_server_->InjectEntity(
       syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
           "non_unique_name", kGuid, specifics,
-          /*creation_time=*/base::Time::Now().ToTimeT(),
-          /*last_modified_time=*/base::Time::Now().ToTimeT()));
+          /*creation_time=*/syncer::TimeToProtoTime(base::Time::Now()),
+          /*last_modified_time=*/syncer::TimeToProtoTime(base::Time::Now())));
 
   ASSERT_TRUE(SetupSync());
 
@@ -103,8 +108,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
   fake_server_->InjectEntity(
       syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
           "non_unique_name", kGuid, specifics,
-          /*creation_time=*/base::Time::Now().ToTimeT(),
-          /*last_modified_time=*/base::Time::Now().ToTimeT()));
+          /*creation_time=*/syncer::TimeToProtoTime(base::Time::Now()),
+          /*last_modified_time=*/syncer::TimeToProtoTime(base::Time::Now())));
 
   ASSERT_TRUE(SetupSync());
 

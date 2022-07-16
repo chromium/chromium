@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
-#include "third_party/blink/renderer/core/css/css_property_id_templates.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
@@ -171,7 +170,7 @@ const Vector<AtomicString>* CSSComputedStyleDeclaration::GetVariableNames()
   return nullptr;
 }
 
-size_t CSSComputedStyleDeclaration::GetVariableNamesCount() const {
+wtf_size_t CSSComputedStyleDeclaration::GetVariableNamesCount() const {
   if (auto* style = ComputeComputedStyle())
     return style->GetVariableNamesCount();
   return 0;
@@ -211,7 +210,7 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
 }
 
 const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
-    AtomicString custom_property_name) const {
+    const AtomicString& custom_property_name) const {
   return GetPropertyCSSValue(CSSPropertyName(custom_property_name));
 }
 
@@ -314,7 +313,7 @@ unsigned CSSComputedStyleDeclaration::length() const {
   if (!node_ || !node_->InActiveDocument())
     return 0;
 
-  size_t variable_count = 0;
+  wtf_size_t variable_count = 0;
 
   if (RuntimeEnabledFeatures::CSSEnumeratedCustomPropertiesEnabled()) {
     UpdateStyleAndLayoutTreeIfNeeded(nullptr /* property_name */);
@@ -446,7 +445,7 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValueInternal(
 }
 
 const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValueInternal(
-    AtomicString custom_property_name) {
+    const AtomicString& custom_property_name) {
   DCHECK_EQ(CSSPropertyID::kVariable,
             CssPropertyID(GetExecutionContext(), custom_property_name));
   return GetPropertyCSSValue(custom_property_name);

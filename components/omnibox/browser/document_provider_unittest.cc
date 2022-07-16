@@ -155,14 +155,14 @@ void DocumentProviderTest::InitClient() {
 
 TEST_F(DocumentProviderTest, IsDocumentProviderAllowed) {
   // Setup so that all checks pass.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kDocumentProvider);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kDocumentProvider);
   InitClient();
-  AutocompleteInput input = AutocompleteInput(
+  AutocompleteInput ac_input = AutocompleteInput(
       u"text text", metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
 
   // Check |IsDocumentProviderAllowed()| returns true when all conditions pass.
-  EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), input));
+  EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
 
   // Fail each condition individually and ensure |IsDocumentProviderAllowed()|
   // returns false.
@@ -171,41 +171,41 @@ TEST_F(DocumentProviderTest, IsDocumentProviderAllowed) {
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(omnibox::kDocumentProvider);
-    EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), input));
+    EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
   }
 
   // Search suggestions must be enabled.
   EXPECT_CALL(*client_.get(), IsSyncActive()).WillOnce(Return(false));
-  EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), input));
+  EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
   EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(true));
-  EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), input));
+  EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
 
   // Client-side toggle must be enabled. This should be enabled by default; i.e.
   // we didn't explicitly enable this above.
   PrefService* fake_prefs = client_->GetPrefs();
   fake_prefs->SetBoolean(omnibox::kDocumentSuggestEnabled, false);
-  EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), input));
+  EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
   fake_prefs->SetBoolean(omnibox::kDocumentSuggestEnabled, true);
-  EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), input));
+  EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
 
   // Should not be an incognito window.
   EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillOnce(Return(true));
-  EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), input));
+  EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
   EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillRepeatedly(Return(false));
-  EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), input));
+  EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
 
   // Sync should be enabled.
   EXPECT_CALL(*client_.get(), IsSyncActive()).WillOnce(Return(false));
-  EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), input));
+  EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
   EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(true));
-  EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), input));
+  EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
 
   // |backoff_for_session_| should be false. This should be the case by default;
   // i.e. we didn't explicitly set this to false above.
   provider_->backoff_for_session_ = true;
-  EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), input));
+  EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
   provider_->backoff_for_session_ = false;
-  EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), input));
+  EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
 
   // Google should be the default search provider. This should be the case by
   // default; i.e. we didn't explicitly set this above.
@@ -218,11 +218,11 @@ TEST_F(DocumentProviderTest, IsDocumentProviderAllowed) {
       template_url_service->Add(std::make_unique<TemplateURL>(data));
   template_url_service->SetUserSelectedDefaultSearchProvider(
       new_default_provider);
-  EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), input));
+  EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
   template_url_service->SetUserSelectedDefaultSearchProvider(
       default_template_url_);
   template_url_service->Remove(new_default_provider);
-  EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), input));
+  EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
 
   // Should not be in explicit keyword mode unless the keyword is the default or
   // drive.google.com.
@@ -756,9 +756,9 @@ TEST_F(DocumentProviderTest, GenerateLastModifiedString) {
   base::Time local_now;
   EXPECT_TRUE(base::Time::FromLocalExploded(local_exploded, &local_now));
 
-  base::Time modified_today = local_now + base::TimeDelta::FromHours(-1);
-  base::Time modified_this_year = local_now + base::TimeDelta::FromDays(-8);
-  base::Time modified_last_year = local_now + base::TimeDelta::FromDays(-365);
+  base::Time modified_today = local_now + base::Hours(-1);
+  base::Time modified_this_year = local_now + base::Days(-8);
+  base::Time modified_last_year = local_now + base::Days(-365);
 
   // GenerateLastModifiedString should accept any parsable timestamp, but use
   // ISO8601 UTC timestamp strings since the service returns them in practice.

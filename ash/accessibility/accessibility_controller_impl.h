@@ -13,7 +13,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -44,6 +43,7 @@ class AccessibilityConfirmationDialog;
 class AccessibilityEventRewriter;
 class AccessibilityHighlightController;
 class AccessibilityObserver;
+class DictationNudgeController;
 class FloatingAccessibilityController;
 class PointScanController;
 class ScopedBacklightsForcedOff;
@@ -57,6 +57,26 @@ enum AccessibilityNotificationVisibility {
   A11Y_NOTIFICATION_SHOW,
 };
 
+// Used to indicate which accessibility notification should be shown.
+enum class A11yNotificationType {
+  // No accessibility notification.
+  kNone,
+  // Shown when spoken feedback is set enabled with A11Y_NOTIFICATION_SHOW.
+  kSpokenFeedbackEnabled,
+  // Shown when braille display is connected while spoken feedback is enabled.
+  kBrailleDisplayConnected,
+  // Shown when braille display is connected while spoken feedback is not
+  // enabled yet. Note: in this case braille display connected would enable
+  // spoken feedback.
+  kSpokenFeedbackBrailleEnabled,
+  // Shown when Switch Access is enabled.
+  kSwitchAccessEnabled,
+  // Shown when speech recognition files download successfully.
+  kSpeechRecognitionFilesDownloaded,
+  // Shown when speech recognition files download fails.
+  kSpeechRecognitionFilesFailed,
+};
+
 // The controller for accessibility features in ash. Features can be enabled
 // in chrome's webui settings or the system tray menu (see TrayAccessibility).
 // Uses preferences to communicate with chrome to support mash.
@@ -67,21 +87,22 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   enum FeatureType {
     kAutoclick = 0,
     kCaretHighlight,
-    KCursorHighlight,
+    kCursorColor,
+    kCursorHighlight,
     kDictation,
+    kDockedMagnifier,
     kFloatingMenu,
     kFocusHighlight,
     kFullscreenMagnifier,
-    kDockedMagnifier,
     kHighContrast,
     kLargeCursor,
+    kLiveCaption,
     kMonoAudio,
-    kSpokenFeedback,
     kSelectToSpeak,
+    kSpokenFeedback,
     kStickyKeys,
     kSwitchAccess,
     kVirtualKeyboard,
-    kCursorColor,
 
     kFeatureCount,
     kNoConflictingFeature
@@ -161,7 +182,24 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     Dialog dialog_;
   };
 
+  // Contains data used to give an accessibility-related notification.
+  struct A11yNotificationWrapper {
+    A11yNotificationWrapper();
+    A11yNotificationWrapper(A11yNotificationType type_in,
+                            std::vector<std::u16string> replacements_in);
+    ~A11yNotificationWrapper();
+    A11yNotificationWrapper(const A11yNotificationWrapper&);
+
+    A11yNotificationType type = A11yNotificationType::kNone;
+    std::vector<std::u16string> replacements;
+  };
+
   AccessibilityControllerImpl();
+
+  AccessibilityControllerImpl(const AccessibilityControllerImpl&) = delete;
+  AccessibilityControllerImpl& operator=(const AccessibilityControllerImpl&) =
+      delete;
+
   ~AccessibilityControllerImpl() override;
 
   // See Shell::RegisterProfilePrefs().
@@ -178,13 +216,14 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   Feature& autoclick() const;
   Feature& caret_highlight() const;
   Feature& cursor_highlight() const;
-  FeatureWithDialog& dictation() const;
+  Feature& dictation() const;
   Feature& floating_menu() const;
   Feature& focus_highlight() const;
   FeatureWithDialog& fullscreen_magnifier() const;
   FeatureWithDialog& docked_magnifier() const;
   FeatureWithDialog& high_contrast() const;
   Feature& large_cursor() const;
+  Feature& live_caption() const;
   Feature& mono_audio() const;
   Feature& spoken_feedback() const;
   Feature& select_to_speak() const;
@@ -240,6 +279,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   bool IsLargeCursorSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForLargeCursor();
+
+  bool IsLiveCaptionSettingVisibleInTray();
+  bool IsEnterpriseIconVisibleForLiveCaption();
 
   bool IsMonoAudioSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForMonoAudio();
@@ -382,6 +424,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
       int point_scan_speed_dips_per_second) override;
   void SetDictationActive(bool is_active) override;
   void ToggleDictationFromSource(DictationToggleSource source) override;
+  void ShowDictationLanguageUpgradedNudge(
+      const std::string& dictation_locale,
+      const std::string& application_locale) override;
   void HandleAutoclickScrollableBoundsFound(
       gfx::Rect& bounds_in_screen) override;
   std::u16string GetBatteryDescription() const override;
@@ -398,6 +443,11 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
                               base::OnceClosure on_accept_callback,
                               base::OnceClosure on_cancel_callback,
                               base::OnceClosure on_close_callback) override;
+  void UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
+      int download_progress) override;
+  void ShowSpeechRecognitionDownloadNotificationForDictation(
+      bool succeeded,
+      const std::u16string& display_language) override;
 
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;
@@ -420,6 +470,13 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   bool enable_chromevox_volume_slide_gesture() {
     return enable_chromevox_volume_slide_gesture_;
+  }
+  DictationNudgeController* GetDictationNudgeControllerForTest() {
+    return dictation_nudge_controller_.get();
+  }
+
+  int dictation_soda_download_progress() {
+    return dictation_soda_download_progress_;
   }
 
  private:
@@ -448,6 +505,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void UpdateAutoclickMenuPositionFromPref();
   void UpdateFloatingMenuPositionFromPref();
   void UpdateLargeCursorFromPref();
+  void UpdateLiveCaptionFromPref();
   void UpdateCursorColorFromPrefs();
   void UpdateSwitchAccessKeyCodesFromPref(SwitchAccessCommand command);
   void UpdateSwitchAccessAutoScanEnabledFromPref();
@@ -464,6 +522,10 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void DeactivateSwitchAccess();
   void SyncSwitchAccessPrefsToSignInProfile();
   void UpdateKeyCodesAfterSwitchAccessEnabled();
+
+  // Dictation's SODA download progress. Values are between 0 and 100. Tracked
+  // for testing purposes only.
+  int dictation_soda_download_progress_ = 0;
 
   // Client interface in chrome browser.
   AccessibilityControllerClient* client_ = nullptr;
@@ -513,6 +575,11 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // Used to force the backlights off to darken the screen.
   std::unique_ptr<ScopedBacklightsForcedOff> scoped_backlights_forced_off_;
 
+  // Used to show the offline dictation language upgrade nudge. This is created
+  // with ShowDictationLanguageUpgradedNudge() and reset at Shutdown() or when
+  // the Dictation feature is disabled.
+  std::unique_ptr<DictationNudgeController> dictation_nudge_controller_;
+
   // True if ChromeVox should enable its volume slide gesture.
   bool enable_chromevox_volume_slide_gesture_ = false;
 
@@ -530,8 +597,6 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   base::WeakPtr<AccessibilityConfirmationDialog> confirmation_dialog_;
 
   base::WeakPtrFactory<AccessibilityControllerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityControllerImpl);
 };
 
 }  // namespace ash

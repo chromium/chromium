@@ -41,6 +41,12 @@ class MockDeviceOrientationController final
       : PlatformEventController(window),
         did_change_device_orientation_(false),
         orientation_pump_(orientation_pump) {}
+
+  MockDeviceOrientationController(const MockDeviceOrientationController&) =
+      delete;
+  MockDeviceOrientationController& operator=(
+      const MockDeviceOrientationController&) = delete;
+
   ~MockDeviceOrientationController() override {}
 
   void Trace(Visitor* visitor) const override {
@@ -80,13 +86,16 @@ class MockDeviceOrientationController final
  private:
   bool did_change_device_orientation_;
   Member<DeviceOrientationEventPump> orientation_pump_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDeviceOrientationController);
 };
 
 class DeviceOrientationEventPumpTest : public testing::Test {
  public:
   DeviceOrientationEventPumpTest() = default;
+
+  DeviceOrientationEventPumpTest(const DeviceOrientationEventPumpTest&) =
+      delete;
+  DeviceOrientationEventPumpTest& operator=(
+      const DeviceOrientationEventPumpTest&) = delete;
 
  protected:
   void SetUp() override {
@@ -134,8 +143,6 @@ class DeviceOrientationEventPumpTest : public testing::Test {
   Persistent<MockDeviceOrientationController> controller_;
   std::unique_ptr<DummyPageHolder> page_holder_;
   FakeSensorProvider sensor_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceOrientationEventPumpTest);
 };
 
 TEST_F(DeviceOrientationEventPumpTest, SensorIsActive) {
@@ -493,6 +500,11 @@ class DeviceAbsoluteOrientationEventPumpTest : public testing::Test {
  public:
   DeviceAbsoluteOrientationEventPumpTest() = default;
 
+  DeviceAbsoluteOrientationEventPumpTest(
+      const DeviceAbsoluteOrientationEventPumpTest&) = delete;
+  DeviceAbsoluteOrientationEventPumpTest& operator=(
+      const DeviceAbsoluteOrientationEventPumpTest&) = delete;
+
  protected:
   void SetUp() override {
     page_holder_ = std::make_unique<DummyPageHolder>();
@@ -532,8 +544,6 @@ class DeviceAbsoluteOrientationEventPumpTest : public testing::Test {
   Persistent<MockDeviceOrientationController> controller_;
   std::unique_ptr<DummyPageHolder> page_holder_;
   FakeSensorProvider sensor_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceAbsoluteOrientationEventPumpTest);
 };
 
 TEST_F(DeviceAbsoluteOrientationEventPumpTest, SensorIsActive) {

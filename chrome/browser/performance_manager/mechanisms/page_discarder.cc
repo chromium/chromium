@@ -23,32 +23,44 @@ namespace performance_manager {
 namespace mechanism {
 namespace {
 
-// Discards a page on the UI thread.
-bool DiscardPageOnUIThread(const WebContentsProxy& contents_proxy) {
+// Discards pages on the UI thread. Returns true if at least 1 page is
+// discarded.
+// TODO(crbug/1241049): Returns the remaining reclaim target so
+// UrgentlyDiscardMultiplePages can keep reclaiming until the reclaim target is
+// met or there is no discardable page.
+bool DiscardPagesOnUIThread(const std::vector<WebContentsProxy>& proxies) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::WebContents* const contents = contents_proxy.Get();
-  if (!contents)
-    return false;
+  bool result = false;
+  for (auto proxy : proxies) {
+    content::WebContents* const contents = proxy.Get();
+    if (!contents)
+      continue;
 
-  auto* lifecycle_unit =
-      resource_coordinator::TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
-          contents);
-  if (!lifecycle_unit)
-    return false;
+    auto* lifecycle_unit = resource_coordinator::TabLifecycleUnitSource::
+        GetTabLifecycleUnitExternal(contents);
+    if (!lifecycle_unit)
+      continue;
 
-  return lifecycle_unit->DiscardTab(
-      resource_coordinator::LifecycleUnitDiscardReason::URGENT);
+    if (lifecycle_unit->DiscardTab(
+            resource_coordinator::LifecycleUnitDiscardReason::URGENT)) {
+      result = true;
+    }
+  }
+  return result;
 }
 
 }  // namespace
 
-void PageDiscarder::DiscardPageNode(
-    const PageNode* page_node,
+void PageDiscarder::DiscardPageNodes(
+    const std::vector<const PageNode*>& page_nodes,
     base::OnceCallback<void(bool)> post_discard_cb) {
-  DCHECK(page_node);
+  std::vector<WebContentsProxy> proxies;
+  proxies.reserve(page_nodes.size());
+  for (auto* page_node : page_nodes) {
+    proxies.push_back(page_node->GetContentsProxy());
+  }
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&DiscardPageOnUIThread, page_node->GetContentsProxy()),
+      FROM_HERE, base::BindOnce(&DiscardPagesOnUIThread, std::move(proxies)),
       std::move(post_discard_cb));
 }
 

@@ -13,22 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
-#include "components/sync/protocol/app_setting_specifics.pb.h"
-#include "components/sync/protocol/app_specifics.pb.h"
-#include "components/sync/protocol/autofill_specifics.pb.h"
-#include "components/sync/protocol/bookmark_specifics.pb.h"
-#include "components/sync/protocol/extension_setting_specifics.pb.h"
-#include "components/sync/protocol/extension_specifics.pb.h"
-#include "components/sync/protocol/nigori_specifics.pb.h"
-#include "components/sync/protocol/password_specifics.pb.h"
-#include "components/sync/protocol/preference_specifics.pb.h"
-#include "components/sync/protocol/reading_list_specifics.pb.h"
-#include "components/sync/protocol/search_engine_specifics.pb.h"
-#include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
-#include "components/sync/protocol/session_specifics.pb.h"
-#include "components/sync/protocol/sync.pb.h"
-#include "components/sync/protocol/theme_specifics.pb.h"
-#include "components/sync/protocol/typed_url_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 
 namespace syncer {
 
@@ -429,7 +414,7 @@ ModelTypeSet EncryptableUserTypes() {
   // Proxy types have no sync representation and are therefore not encrypted.
   // Note however that proxy types map to one or more protocol types, which
   // may or may not be encrypted themselves.
-  encryptable_user_types.RemoveAll(ProxyTypes());
+  encryptable_user_types.RetainAll(ProtocolTypes());
   return encryptable_user_types;
 }
 
@@ -510,7 +495,7 @@ ModelTypeSet ModelTypeSetFromString(const std::string& model_types_string) {
 std::unique_ptr<base::ListValue> ModelTypeSetToValue(ModelTypeSet model_types) {
   std::unique_ptr<base::ListValue> value(new base::ListValue());
   for (ModelType type : model_types) {
-    value->AppendString(ModelTypeToString(type));
+    value->Append(ModelTypeToString(type));
   }
   return value;
 }
@@ -518,10 +503,11 @@ std::unique_ptr<base::ListValue> ModelTypeSetToValue(ModelTypeSet model_types) {
 // TODO(zea): remove all hardcoded tags in model associators and have them use
 // this instead.
 std::string ModelTypeToRootTag(ModelType type) {
-  if (IsProxyType(type))
-    return std::string();
+  DCHECK(ProtocolTypes().Has(type));
   DCHECK(IsRealDataType(type));
-  return "google_chrome_" + std::string(kModelTypeInfoMap[type].root_tag);
+  const std::string root_tag = std::string(kModelTypeInfoMap[type].root_tag);
+  DCHECK(!root_tag.empty());
+  return "google_chrome_" + root_tag;
 }
 
 const char* GetModelTypeRootTag(ModelType model_type) {
@@ -560,10 +546,6 @@ bool IsRealDataType(ModelType model_type) {
          model_type <= LAST_REAL_MODEL_TYPE;
 }
 
-bool IsProxyType(ModelType model_type) {
-  return model_type >= FIRST_PROXY_TYPE && model_type <= LAST_PROXY_TYPE;
-}
-
 bool IsActOnceDataType(ModelType model_type) {
   return model_type == HISTORY_DELETE_DIRECTIVES;
 }
@@ -575,14 +557,6 @@ bool IsTypeWithServerGeneratedRoot(ModelType model_type) {
 bool IsTypeWithClientGeneratedRoot(ModelType model_type) {
   return IsRealDataType(model_type) &&
          !IsTypeWithServerGeneratedRoot(model_type);
-}
-
-bool TypeSupportsHierarchy(ModelType model_type) {
-  return model_type == BOOKMARKS;
-}
-
-bool TypeSupportsOrdering(ModelType model_type) {
-  return model_type == BOOKMARKS;
 }
 
 }  // namespace syncer

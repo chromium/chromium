@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -119,6 +120,15 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   // suspend scheduled for a certain frame. Accessing to this must be
   // protected by the offline context lock.
   SuspendMap scheduled_suspends_;
+
+  // Protects |scheduled_suspend_frames_|.
+  Mutex suspend_frames_lock_;
+
+  // Holds copies of |quantizedFrame| in |schedueld_suspends_| to ensure
+  // a safe access from the audio thread.
+  HashSet<size_t,
+          WTF::DefaultHash<size_t>::Hash,
+          WTF::UnsignedWithZeroKeyHashTraits<size_t>> scheduled_suspend_frames_;
 
   Member<ScriptPromiseResolver> complete_resolver_;
 

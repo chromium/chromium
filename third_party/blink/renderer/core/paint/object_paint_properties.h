@@ -225,7 +225,8 @@ class CORE_EXPORT ObjectPaintProperties {
 
  public:
 #if DCHECK_IS_ON()
-  // Used by FindPropertiesNeedingUpdate.h for verifying state doesn't change.
+  // Used by find_properties_needing_update.h for verifying state doesn't
+  // change.
   void SetImmutable() const { is_immutable_ = true; }
   bool IsImmutable() const { return is_immutable_; }
   void SetMutable() const { is_immutable_ = false; }

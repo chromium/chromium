@@ -73,6 +73,10 @@ class HostScannerImpl : public HostScanner,
       HostScanCache* host_scan_cache,
       ConnectionPreserver* connection_preserver,
       base::Clock* clock);
+
+  HostScannerImpl(const HostScannerImpl&) = delete;
+  HostScannerImpl& operator=(const HostScannerImpl&) = delete;
+
   ~HostScannerImpl() override;
 
   // HostScanner:
@@ -138,8 +142,6 @@ class HostScannerImpl : public HostScanner,
 
   base::ObserverList<Observer>::Unchecked observer_list_;
   base::WeakPtrFactory<HostScannerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostScannerImpl);
 };
 
 }  // namespace tether

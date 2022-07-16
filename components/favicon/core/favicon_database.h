@@ -238,6 +238,10 @@ class FaviconDatabase {
   class IconMappingEnumerator {
    public:
     IconMappingEnumerator();
+
+    IconMappingEnumerator(const IconMappingEnumerator&) = delete;
+    IconMappingEnumerator& operator=(const IconMappingEnumerator&) = delete;
+
     ~IconMappingEnumerator();
 
     // Get the next icon mapping, return false if no more are available.
@@ -249,8 +253,6 @@ class FaviconDatabase {
     // Used to query database and return the data for filling IconMapping in
     // each call of GetNextIconMapping().
     sql::Statement statement_;
-
-    DISALLOW_COPY_AND_ASSIGN(IconMappingEnumerator);
   };
 
   // Return all icon mappings of the given |icon_type|.

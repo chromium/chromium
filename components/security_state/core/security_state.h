@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "net/base/url_util.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/sct_status_flags.h"

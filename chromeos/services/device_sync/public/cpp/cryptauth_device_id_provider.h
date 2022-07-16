@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace chromeos {
 
 namespace device_sync {
@@ -19,12 +17,14 @@ namespace device_sync {
 class CryptAuthDeviceIdProvider {
  public:
   CryptAuthDeviceIdProvider() = default;
+
+  CryptAuthDeviceIdProvider(const CryptAuthDeviceIdProvider&) = delete;
+  CryptAuthDeviceIdProvider& operator=(const CryptAuthDeviceIdProvider&) =
+      delete;
+
   virtual ~CryptAuthDeviceIdProvider() = default;
 
   virtual std::string GetDeviceId() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceIdProvider);
 };
 
 }  // namespace device_sync

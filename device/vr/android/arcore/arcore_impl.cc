@@ -29,8 +29,8 @@
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 using base::android::JavaRef;
 
@@ -39,7 +39,7 @@ namespace {
 // Anchor creation requests that are older than 3 seconds are considered
 // outdated and should be failed.
 constexpr base::TimeDelta kOutdatedAnchorCreationRequestThreshold =
-    base::TimeDelta::FromSeconds(3);
+    base::Seconds(3);
 
 // Helper, returns new VRPosePtr with position and orientation set to match the
 // position and orientation of passed in |pose|.
@@ -1054,7 +1054,7 @@ base::TimeDelta ArCoreImpl::GetFrameTimestamp() {
   int64_t out_timestamp_ns;
   ArFrame_getTimestamp(arcore_session_.get(), arcore_frame_.get(),
                        &out_timestamp_ns);
-  return base::TimeDelta::FromNanoseconds(out_timestamp_ns);
+  return base::Nanoseconds(out_timestamp_ns);
 }
 
 mojom::XRPlaneDetectionDataPtr ArCoreImpl::GetDetectedPlanesData() {
@@ -1856,7 +1856,7 @@ mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {
 
   int64_t timestamp_ns;
   ArImage_getTimestamp(arcore_session_.get(), ar_image.get(), &timestamp_ns);
-  base::TimeDelta time_delta = base::TimeDelta::FromNanoseconds(timestamp_ns);
+  base::TimeDelta time_delta = base::Nanoseconds(timestamp_ns);
   DVLOG(3) << __func__ << ": depth image time_delta=" << time_delta;
 
   // The image returned from ArFrame_acquireDepthImage() is documented to have

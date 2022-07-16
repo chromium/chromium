@@ -393,7 +393,7 @@ cursors.Cursor = class {
               }
             }
             if (goog.isDef(start)) {
-              // Succesfully found the next word stop within the same text
+              // Successfully found the next word stop within the same text
               // node.
               newIndex = start;
             } else {

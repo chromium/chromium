@@ -9,7 +9,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
@@ -28,7 +31,17 @@ namespace {
 constexpr char kTextFragmentUrlClassifier[] = "#:~:text=";
 
 // Indicates how long context menu should wait for link generation result.
-constexpr base::TimeDelta kTimeoutMs = base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kTimeoutMs = base::Milliseconds(500);
+
+// Removes the highlight from the frame.
+void RemoveHighlightsInFrame(content::RenderFrameHost* render_frame_host) {
+  mojo::Remote<blink::mojom::TextFragmentReceiver> remote;
+
+  // A TextFragmentReceiver is created lazily for each frame
+  render_frame_host->GetRemoteInterfaces()->GetInterface(
+      remote.BindNewPipeAndPassReceiver());
+  remote->RemoveFragments();
+}
 }  // namespace
 
 // static
@@ -114,12 +127,13 @@ void LinkToTextMenuObserver::ExecuteCommand(int command_id) {
       }
     }
   } else if (command_id == IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT) {
-    RemoveHighlight();
+    RemoveHighlights();
   }
 }
 
 void LinkToTextMenuObserver::OnRequestLinkGenerationCompleted(
     const std::string& selector) {
+  is_generation_complete_ = true;
   if (ShouldPreemptivelyGenerateLink()) {
     if (selector.empty()) {
       // If there is no valid selector, leave the item disabled.
@@ -179,7 +193,7 @@ void LinkToTextMenuObserver::RequestLinkGeneration() {
 
   base::TimeDelta timeout_length_ms =
       ShouldPreemptivelyGenerateLink()
-          ? base::TimeDelta::FromMilliseconds(
+          ? base::Milliseconds(
                 shared_highlighting::GetPreemptiveLinkGenTimeoutLengthMs())
           : kTimeoutMs;
 
@@ -211,12 +225,17 @@ void LinkToTextMenuObserver::CopyLinkToClipboard() {
   LogDesktopLinkGenerationCopiedLinkType(
       shared_highlighting::LinkGenerationCopiedLinkType::
           kCopiedFromNewGeneration);
+
+  // Record usage for Shared Highlighting promo.
+  feature_engagement::TrackerFactory::GetForBrowserContext(
+      proxy_->GetWebContents()->GetBrowserContext())
+      ->NotifyEvent("iph_desktop_shared_highlighting_used");
 }
 
 void LinkToTextMenuObserver::Timeout() {
   DCHECK(remote_.is_bound());
   DCHECK(remote_.is_connected());
-  if (generated_link_.has_value())
+  if (is_generation_complete_)
     return;
   remote_->Cancel();
   remote_.reset();
@@ -258,8 +277,10 @@ void LinkToTextMenuObserver::OnGetExistingSelectorsComplete(
           kCopiedFromExistingHighlight);
 }
 
-void LinkToTextMenuObserver::RemoveHighlight() {
-  GetRemote()->RemoveFragments();
+void LinkToTextMenuObserver::RemoveHighlights() {
+  // Remove highlights from all frames in the primary page.
+  proxy_->GetWebContents()->GetMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating(RemoveHighlightsInFrame));
 }
 
 mojo::Remote<blink::mojom::TextFragmentReceiver>&

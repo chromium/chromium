@@ -46,13 +46,15 @@ using Samples = std::vector<Sample>;
 
 // Helper function that uses sensible defaults for irrelevant fields of
 // NTPTileImpression.
-ntp_tiles::NTPTileImpression MakeNTPTileImpression(int index,
-                                                   TileSource source,
-                                                   TileTitleSource title_source,
-                                                   TileVisualType visual_type) {
+ntp_tiles::NTPTileImpression MakeNTPTileImpression(
+    int index,
+    TileSource source,
+    TileTitleSource title_source,
+    TileVisualType visual_type,
+    GURL url_for_rapper = GURL()) {
   return ntp_tiles::NTPTileImpression(index, source, title_source, visual_type,
                                       favicon_base::IconType::kInvalid,
-                                      /*url_for_rappor=*/GURL());
+                                      url_for_rapper);
 }
 
 // Helper function that populates a list of expected impressions, each with the
@@ -96,7 +98,7 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordNumberOfTiles) {
   // Ensure non-zero statistics.
   TestNTPUserDataLogger logger(GURL("chrome://newtab/"));
 
-  const base::TimeDelta delta = base::TimeDelta::FromMilliseconds(73);
+  const base::TimeDelta delta = base::Milliseconds(73);
 
   for (int i = 0; i < ntp_tiles::kMaxNumTiles; ++i) {
     logger.LogMostVisitedImpression(MakeNTPTileImpression(
@@ -108,11 +110,54 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordNumberOfTiles) {
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.NumberOfTiles"),
               ElementsAre(Bucket(ntp_tiles::kMaxNumTiles, 1)));
 
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("NewTabPage.NumberOfPreinstalledApps"),
+      ElementsAre(Bucket(0, 1)));
+
   // We should not log again for the same NTP.
   logger.LogMostVisitedLoaded(delta, /*using_most_visited=*/true,
                               /*is_visible=*/true);
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.NumberOfTiles"),
               ElementsAre(Bucket(ntp_tiles::kMaxNumTiles, 1)));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("NewTabPage.NumberOfPreinstalledApps"),
+      ElementsAre(Bucket(0, 1)));
+}
+
+TEST_F(NTPUserDataLoggerTest, ShouldRecordPreinstalledApps) {
+  base::HistogramTester histogram_tester;
+
+  // Impressions increment the associated bins.
+  // Ensure non-zero statistics.
+  TestNTPUserDataLogger logger(GURL("chrome://newtab/"));
+
+  const base::TimeDelta delta = base::Milliseconds(73);
+
+  GURL gmail_extension_url(
+      "chrome-extension://pjkljhegncpnkpknbcohdijeoejaedia/index.html");
+  logger.LogMostVisitedImpression(
+      MakeNTPTileImpression(0, TileSource::TOP_SITES, TileTitleSource::INFERRED,
+                            TileVisualType::ICON_REAL, gmail_extension_url));
+
+  for (int i = 1; i < ntp_tiles::kMaxNumTiles; ++i) {
+    logger.LogMostVisitedImpression(MakeNTPTileImpression(
+        i, TileSource::TOP_SITES, TileTitleSource::UNKNOWN,
+        TileVisualType::ICON_REAL));
+  }
+  logger.LogMostVisitedLoaded(delta, /*using_most_visited=*/true,
+                              /*is_visible=*/true);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("NewTabPage.NumberOfPreinstalledApps"),
+      ElementsAre(Bucket(1, 1)));
+
+  // We should not log again for the same NTP.
+  logger.LogMostVisitedLoaded(delta, /*using_most_visited=*/true,
+                              /*is_visible=*/true);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("NewTabPage.NumberOfPreinstalledApps"),
+      ElementsAre(Bucket(1, 1)));
 }
 
 TEST_F(NTPUserDataLoggerTest, ShouldNotRecordImpressionsBeforeAllTilesLoaded) {
@@ -173,7 +218,7 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordImpressions) {
       TileVisualType::ICON_REAL));
 
   // This should trigger emitting histograms.
-  logger.LogMostVisitedLoaded(base::TimeDelta::FromMilliseconds(73),
+  logger.LogMostVisitedLoaded(base::Milliseconds(73),
                               /*using_most_visited=*/true, /*is_visible=*/true);
 
   EXPECT_THAT(
@@ -253,7 +298,7 @@ TEST_F(NTPUserDataLoggerTest, ShouldNotRecordRepeatedImpressions) {
                             TileVisualType::ICON_REAL));
 
   // This should trigger emitting histograms.
-  logger.LogMostVisitedLoaded(base::TimeDelta::FromMilliseconds(73),
+  logger.LogMostVisitedLoaded(base::Milliseconds(73),
                               /*using_most_visited=*/true, /*is_visible=*/true);
 
   EXPECT_THAT(
@@ -295,7 +340,7 @@ TEST_F(NTPUserDataLoggerTest, ShouldNotRecordImpressionsForBinsBeyondMax) {
       TileTitleSource::UNKNOWN, TileVisualType::ICON_DEFAULT));
 
   // This should trigger emitting histograms.
-  logger.LogMostVisitedLoaded(base::TimeDelta::FromMilliseconds(73),
+  logger.LogMostVisitedLoaded(base::Milliseconds(73),
                               /*using_most_visited=*/true, /*is_visible=*/true);
 
   std::vector<base::Bucket> expectedImpressions =
@@ -470,7 +515,7 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordMostVisitedLoadTime) {
 
   TestNTPUserDataLogger logger(GURL("chrome://newtab/"));
 
-  base::TimeDelta delta_tiles_loaded = base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta delta_tiles_loaded = base::Milliseconds(100);
 
   // Log a TOP_SITES impression (for the .MostVisited vs .MostLikely split in
   // the time histograms).
@@ -500,43 +545,13 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordMostVisitedLoadTime) {
                                          delta_tiles_loaded, 1);
 }
 
-TEST_F(NTPUserDataLoggerTest, ShouldRecordLoadTimeRemoteNTPOther) {
-  base::HistogramTester histogram_tester;
-
-  TestNTPUserDataLogger logger(GURL("https://www.notgoogle.com/newtab"));
-  logger.is_google_ = false;
-
-  base::TimeDelta delta_tiles_loaded = base::TimeDelta::FromMilliseconds(100);
-
-  // This should trigger emitting histograms.
-  logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/true,
-                              /*is_visible=*/true);
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime"), SizeIs(1));
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.LocalNTP"),
-              IsEmpty());
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.Web"),
-              SizeIs(1));
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.Web.Google"),
-              IsEmpty());
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.Web.Other"),
-              SizeIs(1));
-
-  histogram_tester.ExpectTimeBucketCount("NewTabPage.LoadTime",
-                                         delta_tiles_loaded, 1);
-  histogram_tester.ExpectTimeBucketCount("NewTabPage.LoadTime.Web",
-                                         delta_tiles_loaded, 1);
-  histogram_tester.ExpectTimeBucketCount("NewTabPage.LoadTime.Web.Other",
-                                         delta_tiles_loaded, 1);
-}
-
 TEST_F(NTPUserDataLoggerTest, ShouldRecordImpressionsAge) {
   base::HistogramTester histogram_tester;
 
   // Ensure non-zero statistics.
   TestNTPUserDataLogger logger(GURL("chrome://newtab/"));
 
-  constexpr base::TimeDelta delta = base::TimeDelta::FromMilliseconds(0);
+  constexpr base::TimeDelta delta = base::Milliseconds(0);
 
   logger.LogMostVisitedImpression(ntp_tiles::NTPTileImpression(
       0, TileSource::TOP_SITES, TileTitleSource::UNKNOWN,
@@ -553,7 +568,7 @@ TEST_F(NTPUserDataLoggerTest,
   TestNTPUserDataLogger logger(GURL("https://www.notgoogle.com/newtab"));
   logger.is_google_ = false;
 
-  base::TimeDelta delta_tiles_loaded = base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta delta_tiles_loaded = base::Milliseconds(100);
 
   // This should trigger emitting histograms.
   logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/false,
@@ -570,7 +585,7 @@ TEST_F(NTPUserDataLoggerTest,
   TestNTPUserDataLogger logger(GURL("https://www.notgoogle.com/newtab"));
   logger.is_google_ = false;
 
-  base::TimeDelta delta_tiles_loaded = base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta delta_tiles_loaded = base::Milliseconds(100);
 
   // This should trigger emitting histograms.
   logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/true,
@@ -586,7 +601,7 @@ TEST_F(NTPUserDataLoggerTest, ShouldNotRecordCustomizationActionFromNTPOther) {
   TestNTPUserDataLogger logger(GURL("https://www.notgoogle.com/newtab"));
   logger.is_google_ = false;
 
-  base::TimeDelta delta_tiles_loaded = base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta delta_tiles_loaded = base::Milliseconds(100);
 
   // This should trigger emitting histograms.
   logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/true,
@@ -597,21 +612,8 @@ TEST_F(NTPUserDataLoggerTest, ShouldNotRecordCustomizationActionFromNTPOther) {
   logger.LogEvent(NTP_CUSTOMIZE_CHROME_BACKGROUNDS_CLICKED, delta_tiles_loaded);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime"), SizeIs(1));
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.LocalNTP"),
+  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.WebUINTP"),
               IsEmpty());
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.Web"),
-              SizeIs(1));
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.Web.Google"),
-              IsEmpty());
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.Web.Other"),
-              SizeIs(1));
-
-  histogram_tester.ExpectTimeBucketCount("NewTabPage.LoadTime",
-                                         delta_tiles_loaded, 1);
-  histogram_tester.ExpectTimeBucketCount("NewTabPage.LoadTime.Web",
-                                         delta_tiles_loaded, 1);
-  histogram_tester.ExpectTimeBucketCount("NewTabPage.LoadTime.Web.Other",
-                                         delta_tiles_loaded, 1);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.CustomizeAction"),
               IsEmpty());

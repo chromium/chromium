@@ -26,6 +26,10 @@ class FaviconLoader : public KeyedService {
   typedef void (^FaviconAttributesCompletionBlock)(FaviconAttributes*);
 
   explicit FaviconLoader(favicon::LargeIconService* large_icon_service);
+
+  FaviconLoader(const FaviconLoader&) = delete;
+  FaviconLoader& operator=(const FaviconLoader&) = delete;
+
   ~FaviconLoader() override;
 
   // Tries to find a FaviconAttributes in |favicon_cache_| with |page_url|:
@@ -85,8 +89,6 @@ class FaviconLoader : public KeyedService {
   // removed during low-memory conditions based on its inherent LRU removal
   // algorithm. Keyed by NSString of URL (page URL or icon URL) spec.
   NSCache<NSString*, FaviconAttributes*>* favicon_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconLoader);
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_FAVICON_LOADER_H_

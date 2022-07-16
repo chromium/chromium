@@ -19,6 +19,9 @@ class DecoderBufferClear : public DecoderBufferBase {
  public:
   explicit DecoderBufferClear(scoped_refptr<DecoderBufferBase> buffer);
 
+  DecoderBufferClear(const DecoderBufferClear&) = delete;
+  DecoderBufferClear& operator=(const DecoderBufferClear&) = delete;
+
   // DecoderBufferBase implementation.
   StreamId stream_id() const override;
   int64_t timestamp() const override;
@@ -33,8 +36,6 @@ class DecoderBufferClear : public DecoderBufferBase {
   ~DecoderBufferClear() override;
 
   const scoped_refptr<DecoderBufferBase> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecoderBufferClear);
 };
 
 using BufferDecryptedCB =

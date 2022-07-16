@@ -14,7 +14,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "ash/touch/touch_devices_controller.h"
-#include "base/macros.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/test/touch_transform_controller_test_api.h"
@@ -34,6 +33,9 @@ class TestObserver : public ScreenBacklightObserver {
       : backlights_forced_off_setter_(backlights_forced_off_setter) {
     scoped_observation_.Observe(backlights_forced_off_setter);
   }
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
 
   ~TestObserver() override = default;
 
@@ -57,8 +59,6 @@ class TestObserver : public ScreenBacklightObserver {
 
   base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace
@@ -66,6 +66,11 @@ class TestObserver : public ScreenBacklightObserver {
 class BacklightsForcedOffSetterTest : public AshTestBase {
  public:
   BacklightsForcedOffSetterTest() = default;
+
+  BacklightsForcedOffSetterTest(const BacklightsForcedOffSetterTest&) = delete;
+  BacklightsForcedOffSetterTest& operator=(
+      const BacklightsForcedOffSetterTest&) = delete;
+
   ~BacklightsForcedOffSetterTest() override = default;
 
   void SetUp() override {
@@ -96,9 +101,6 @@ class BacklightsForcedOffSetterTest : public AshTestBase {
       screen_backlight_resetter_;
   std::unique_ptr<BacklightsForcedOffSetter> backlights_forced_off_setter_;
   std::unique_ptr<TestObserver> backlights_forced_off_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BacklightsForcedOffSetterTest);
 };
 
 TEST_F(BacklightsForcedOffSetterTest, SingleForcedOffRequest) {

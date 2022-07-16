@@ -161,6 +161,24 @@ NetLogWithSource NetLogWithSource::Make(NetLog* net_log,
   return NetLogWithSource(source, net_log);
 }
 
+// static
+NetLogWithSource NetLogWithSource::Make(NetLogSourceType source_type) {
+  return NetLogWithSource::Make(NetLog::Get(), source_type);
+}
+
+// static
+NetLogWithSource NetLogWithSource::Make(NetLog* net_log,
+                                        const NetLogSource& source) {
+  if (!net_log || !source.IsValid())
+    return NetLogWithSource();
+  return NetLogWithSource(source, net_log);
+}
+
+// static
+NetLogWithSource NetLogWithSource::Make(const NetLogSource& source) {
+  return NetLogWithSource::Make(NetLog::Get(), source);
+}
+
 NetLog* NetLogWithSource::net_log() const {
   if (source_.IsValid())
     return non_null_net_log_;

@@ -32,7 +32,10 @@ class MockCertDbInitializer : public CertDbInitializer {
  public:
   MOCK_METHOD(base::CallbackListSubscription,
               WaitUntilReady,
-              (ReadyCallback callback));
+              (base::OnceClosure callback));
+  MOCK_METHOD(NssCertDatabaseGetter,
+              CreateNssCertDatabaseGetterForIOThread,
+              ());
 };
 
 class ClientCertStoreLacrosTest : public ::testing::Test {
@@ -67,12 +70,11 @@ class ClientCertStoreLacrosTest : public ::testing::Test {
 // Captures callback from `CertDbInitializer::WaitUntilReady(...)` and allows
 // to imitate the "ready" notification by calling the `callback`.
 struct DbInitCallbackHolder {
-  base::CallbackListSubscription SaveCallback(
-      CertDbInitializer::ReadyCallback cb) {
+  base::CallbackListSubscription SaveCallback(base::OnceClosure cb) {
     callback = std::move(cb);
     return {};
   }
-  CertDbInitializer::ReadyCallback callback;
+  base::OnceClosure callback;
 };
 
 // Provides callback for `ClientCertStore::GetClientCerts(...)` and allows to
@@ -124,7 +126,7 @@ TEST_F(ClientCertStoreLacrosTest, WaitsForInitialization) {
 
   // Imitate signal from cert_db_initializer_ that the initialization is done.
   // Even if it failed, the cert store should try to continue.
-  std::move(db_init_callback_holder.callback).Run(/*is_success=*/false);
+  std::move(db_init_callback_holder.callback).Run();
   get_certs_callback_observer.WaitUntilGotCerts();
 }
 
@@ -143,7 +145,7 @@ TEST_F(ClientCertStoreLacrosTest, RunsImmediatelyIfReady) {
 
   // Imitate signal from cert_db_initializer_ that the initialization is
   // done before calling `GetClientCerts`.
-  std::move(db_init_callback_holder.callback).Run(/*is_success=*/true);
+  std::move(db_init_callback_holder.callback).Run();
 
   EXPECT_CALL(*underlying_store,
               GetClientCerts(AddressEq(cert_request_.get()), /*callback=*/_))
@@ -198,7 +200,7 @@ TEST_F(ClientCertStoreLacrosTest, QueueMultupleRequests) {
       .WillOnce(Invoke(this, &ClientCertStoreLacrosTest::FakeGetClientCerts));
 
   // Imitate signal from cert_db_initializer_ that the initialization is done.
-  std::move(db_init_callback_holder.callback).Run(/*is_success=*/true);
+  std::move(db_init_callback_holder.callback).Run();
 
   get_certs_callback_observer_1.WaitUntilGotCerts();
   get_certs_callback_observer_2.WaitUntilGotCerts();
@@ -248,7 +250,7 @@ TEST_F(ClientCertStoreLacrosTest, DeletedFromLastCallback) {
 
   // Imitate signal from cert_db_initializer_ that the initialization is
   // done.
-  std::move(db_init_callback_holder.callback).Run(/*is_success=*/true);
+  std::move(db_init_callback_holder.callback).Run();
 
   get_certs_callback_observer_1.WaitUntilGotCerts();
   get_certs_callback_observer_2.WaitUntilGotCerts();
@@ -293,7 +295,7 @@ TEST_F(ClientCertStoreLacrosTest, HandlesReentrancy) {
           Invoke(this, &ClientCertStoreLacrosTest::FakeGetClientCerts));
 
   // Imitate signal from cert_db_initializer_ that the initialization is done.
-  std::move(db_init_callback_holder.callback).Run(/*is_success=*/true);
+  std::move(db_init_callback_holder.callback).Run();
 
   // Verify that both callbacks are called.
   get_certs_callback_observer_1.WaitUntilGotCerts();

@@ -51,8 +51,8 @@ std::unique_ptr<content::NavigationSimulator> NavigateAndKeepLoading(
 class TestTabLoadTracker : public TabLoadTracker {
  public:
   using TabLoadTracker::DetermineLoadingState;
-  using TabLoadTracker::DidReceiveResponse;
   using TabLoadTracker::OnPageStoppedLoading;
+  using TabLoadTracker::PrimaryPageChanged;
   using TabLoadTracker::RenderProcessGone;
   using TabLoadTracker::StartTracking;
   using TabLoadTracker::StopTracking;
@@ -81,6 +81,10 @@ class TestTabLoadTracker : public TabLoadTracker {
 class LenientMockObserver : public TabLoadTracker::Observer {
  public:
   LenientMockObserver() {}
+
+  LenientMockObserver(const LenientMockObserver&) = delete;
+  LenientMockObserver& operator=(const LenientMockObserver&) = delete;
+
   ~LenientMockObserver() override {}
 
   // TabLoadTracker::Observer implementation:
@@ -88,9 +92,6 @@ class LenientMockObserver : public TabLoadTracker::Observer {
   MOCK_METHOD3(OnLoadingStateChange,
                void(content::WebContents*, LoadingState, LoadingState));
   MOCK_METHOD2(OnStopTracking, void(content::WebContents*, LoadingState));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LenientMockObserver);
 };
 using MockObserver = testing::StrictMock<LenientMockObserver>;
 
@@ -105,10 +106,11 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   ~TestWebContentsObserver() override {}
 
   // content::WebContentsObserver:
-  void DidReceiveResponse() override {
-    tracker_->DidReceiveResponse(web_contents());
+  void PrimaryPageChanged(content::Page& page) override {
+    tracker_->PrimaryPageChanged(web_contents());
   }
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     tracker_->RenderProcessGone(web_contents(), status);
   }
 
@@ -322,7 +324,7 @@ TEST_F(TabLoadTrackerTest, StateTransitionsNonUiTabs) {
   StateTransitionsTest(true /* use_non_ui_tabs */);
 }
 
-TEST_F(TabLoadTrackerTest, PrerenderContentsDoesNotChangeUiTabCounts) {
+TEST_F(TabLoadTrackerTest, NoStatePrefetchContentsDoesNotChangeUiTabCounts) {
   NavigateAndKeepLoading(contents1(), GURL("http://baz.com"));
 
   // Add the contents to the tracker.
@@ -340,13 +342,13 @@ TEST_F(TabLoadTrackerTest, PrerenderContentsDoesNotChangeUiTabCounts) {
   TestWebContentsObserver observer1(contents1(), &tracker());
   TestWebContentsObserver observer2(contents2(), &tracker());
 
-  // Prerender some contents.
+  // Prefetch some contents.
   prerender::NoStatePrefetchManager* no_state_prefetch_manager =
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile());
   GURL url("http://www.example.com");
   const gfx::Size kSize(640, 480);
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle(
-      no_state_prefetch_manager->AddPrerenderFromOmnibox(
+      no_state_prefetch_manager->StartPrefetchingFromOmnibox(
           url, contents1()->GetController().GetDefaultSessionStorageNamespace(),
           kSize));
   EXPECT_NE(nullptr, no_state_prefetch_handle);
@@ -354,10 +356,10 @@ TEST_F(TabLoadTrackerTest, PrerenderContentsDoesNotChangeUiTabCounts) {
       no_state_prefetch_manager->GetAllNoStatePrefetchingContentsForTesting();
   ASSERT_EQ(1U, contentses.size());
 
-  // Prerendering should not change the UI tab counts, but should increase
+  // Prefetching should not change the UI tab counts, but should increase
   // overall tab count. Note, contentses[0] is UNLOADED since it is not a test
   // web contents and therefore hasn't started receiving data.
-  TestWebContentsObserver prerender_observer(contentses[0], &tracker());
+  TestWebContentsObserver prefetch_observer(contentses[0], &tracker());
   EXPECT_CALL(observer(),
               OnStartTracking(contentses[0], LoadingState::UNLOADED));
   tracker().StartTracking(contentses[0]);

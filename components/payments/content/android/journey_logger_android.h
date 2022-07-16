@@ -6,7 +6,6 @@
 #define COMPONENTS_PAYMENTS_CONTENT_ANDROID_JOURNEY_LOGGER_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/payments/core/journey_logger.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -16,6 +15,10 @@ namespace payments {
 class JourneyLoggerAndroid {
  public:
   JourneyLoggerAndroid(bool is_incognito, ukm::SourceId source_id);
+
+  JourneyLoggerAndroid(const JourneyLoggerAndroid&) = delete;
+  JourneyLoggerAndroid& operator=(const JourneyLoggerAndroid&) = delete;
+
   ~JourneyLoggerAndroid();
 
   // Message from Java to destroy this object.
@@ -88,8 +91,6 @@ class JourneyLoggerAndroid {
 
  private:
   JourneyLogger journey_logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(JourneyLoggerAndroid);
 };
 
 }  // namespace payments

@@ -13,8 +13,10 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/guid.h"
 #include "base/mac/scoped_nsobject.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mac_notifications {
 
@@ -26,7 +28,9 @@ namespace mac_notifications {
 // buttons.
 class API_AVAILABLE(macos(10.14)) NotificationCategoryManager {
  public:
-  using Buttons = std::vector<std::u16string>;
+  using Button = std::pair</*title*/ std::u16string,
+                           /*placeholder*/ absl::optional<std::u16string>>;
+  using Buttons = std::vector<Button>;
 
   explicit NotificationCategoryManager(
       UNUserNotificationCenter* notification_center);
@@ -35,6 +39,11 @@ class API_AVAILABLE(macos(10.14)) NotificationCategoryManager {
       delete;
   ~NotificationCategoryManager();
 
+  // Initializes notification categories from displayed notifications.
+  void InitializeExistingCategories(
+      base::scoped_nsobject<NSArray<UNNotification*>> notifications,
+      base::scoped_nsobject<NSSet<UNNotificationCategory*>> categories);
+
   // Gets an existing category identifier that matches the given action buttons
   // or creates a new one. The returned identifier will stay valid until all
   // notifications using that category have been closed.
@@ -42,22 +51,31 @@ class API_AVAILABLE(macos(10.14)) NotificationCategoryManager {
                                 const Buttons& buttons,
                                 bool settings_button);
 
-  // Releases the category used for |notification_id|. This needs to be called
-  // once the notification has been closed to clean up unused categories.
-  void ReleaseCategory(const std::string& notification_id);
+  // Releases the category used for |notification_ids|. This needs to be called
+  // once the notifications have been closed to clean up unused categories.
+  void ReleaseCategories(const std::vector<std::string>& notification_ids);
+
+  // Releases all categories managed for |notification_center_|.
+  void ReleaseAllCategories();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(MacNotificationServiceUNTest,
+                           InitializeDeliveredNotifications);
+  FRIEND_TEST_ALL_PREFIXES(NotificationCategoryManagerTest,
+                           InitializeExistingCategories);
+
   // Synchronizes the set of currently used notification categories with the
   // system NotificationCenter.
   void UpdateNotificationCenterCategories();
 
-  // Creates a new notification category that shows the given |buttons|.
-  UNNotificationCategory* CreateCategory(const Buttons& buttons,
-                                         bool settings_button);
-
   using CategoryKey = std::pair<Buttons, /*settings_button*/ bool>;
   using CategoryEntry = std::pair<base::scoped_nsobject<UNNotificationCategory>,
                                   /*refcount*/ int>;
+
+  // Creates a new category that shows the buttons given via |key|.
+  static UNNotificationCategory* CreateCategory(const CategoryKey& key);
+  // Gets the CategoryKey used to create |category|.
+  static CategoryKey GetCategoryKey(UNNotificationCategory* category);
 
   // Maps the set of notification action buttons to a category.
   base::flat_map<CategoryKey, CategoryEntry> buttons_category_map_;

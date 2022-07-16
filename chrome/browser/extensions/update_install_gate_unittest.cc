@@ -107,6 +107,9 @@ class UpdateInstallGateTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
   }
 
+  UpdateInstallGateTest(const UpdateInstallGateTest&) = delete;
+  UpdateInstallGateTest& operator=(const UpdateInstallGateTest&) = delete;
+
   // testing::Test
   void SetUp() override {
     // Must be called from ::testing::Test::SetUp.
@@ -226,8 +229,6 @@ class UpdateInstallGateTest : public testing::Test {
   scoped_refptr<const Extension> new_app_;
   scoped_refptr<const Extension> new_persistent_;
   scoped_refptr<const Extension> new_none_persistent_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateInstallGateTest);
 };
 
 TEST_F(UpdateInstallGateTest, InstallOnServiceNotReady) {

@@ -28,6 +28,9 @@ class LoginHandler;
 class LoginTabHelper : public content::WebContentsObserver,
                        public content::WebContentsUserData<LoginTabHelper> {
  public:
+  LoginTabHelper(const LoginTabHelper&) = delete;
+  LoginTabHelper& operator=(const LoginTabHelper&) = delete;
+
   ~LoginTabHelper() override;
 
   std::unique_ptr<content::LoginDelegate> CreateAndStartMainFrameLoginDelegate(
@@ -120,8 +123,6 @@ class LoginTabHelper : public content::WebContentsObserver,
   base::WeakPtrFactory<LoginTabHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(LoginTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_LOGIN_LOGIN_TAB_HELPER_H_

@@ -26,7 +26,8 @@ public class TabStateDirectory {
     private static final String BASE_STATE_FOLDER = "tabs";
 
     /** The name of the directory where the state for tabbed mode is saved. */
-    private static final String TABBED_MODE_DIRECTORY = "0";
+    @VisibleForTesting
+    public static final String TABBED_MODE_DIRECTORY = "0";
 
     /** The name of the directory where the state for custom tabs is saved. */
     public static final String CUSTOM_TABS_DIRECTORY = "custom_tabs";

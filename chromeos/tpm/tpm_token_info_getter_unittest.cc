@@ -13,8 +13,8 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
@@ -51,6 +51,9 @@ class FakeTaskRunner : public base::TaskRunner {
   // |delays|: Vector to which the dalays seen by the task runner are saved.
   explicit FakeTaskRunner(std::vector<int64_t>* delays) : delays_(delays) {}
 
+  FakeTaskRunner(const FakeTaskRunner&) = delete;
+  FakeTaskRunner& operator=(const FakeTaskRunner&) = delete;
+
   // base::TaskRunner overrides:
   bool PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
@@ -66,8 +69,6 @@ class FakeTaskRunner : public base::TaskRunner {
  private:
   // The vector of delays.
   std::vector<int64_t>* delays_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTaskRunner);
 };
 
 // Implementation of CryptohomePkcs11Client used in these tests.
@@ -82,6 +83,10 @@ class TestCryptohomePkcs11Client : public chromeos::FakeCryptohomePkcs11Client {
         get_tpm_token_info_failure_count_(0),
         get_tpm_token_info_not_set_count_(0),
         get_tpm_token_info_succeeded_(false) {}
+
+  TestCryptohomePkcs11Client(const TestCryptohomePkcs11Client&) = delete;
+  TestCryptohomePkcs11Client& operator=(const TestCryptohomePkcs11Client&) =
+      delete;
 
   ~TestCryptohomePkcs11Client() override = default;
 
@@ -170,8 +175,6 @@ class TestCryptohomePkcs11Client : public chromeos::FakeCryptohomePkcs11Client {
   chromeos::DBusMethodCallback<::user_data_auth::Pkcs11GetTpmTokenInfoReply>
       pending_get_tpm_token_info_callback_;
   absl::optional<TpmTokenInfo> tpm_token_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCryptohomePkcs11Client);
 };
 
 class SystemTPMTokenInfoGetterTest : public testing::Test {
@@ -179,6 +182,11 @@ class SystemTPMTokenInfoGetterTest : public testing::Test {
   SystemTPMTokenInfoGetterTest() {
     chromeos::TpmManagerClient::Get()->InitializeFake();
   }
+
+  SystemTPMTokenInfoGetterTest(const SystemTPMTokenInfoGetterTest&) = delete;
+  SystemTPMTokenInfoGetterTest& operator=(const SystemTPMTokenInfoGetterTest&) =
+      delete;
+
   ~SystemTPMTokenInfoGetterTest() override {
     chromeos::TpmManagerClient::Get()->Shutdown();
   }
@@ -199,8 +207,6 @@ class SystemTPMTokenInfoGetterTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemTPMTokenInfoGetterTest);
 };
 
 class UserTPMTokenInfoGetterTest : public testing::Test {
@@ -209,6 +215,11 @@ class UserTPMTokenInfoGetterTest : public testing::Test {
       : account_id_(AccountId::FromUserEmail("user@gmail.com")) {
     chromeos::TpmManagerClient::Get()->InitializeFake();
   }
+
+  UserTPMTokenInfoGetterTest(const UserTPMTokenInfoGetterTest&) = delete;
+  UserTPMTokenInfoGetterTest& operator=(const UserTPMTokenInfoGetterTest&) =
+      delete;
+
   ~UserTPMTokenInfoGetterTest() override {
     chromeos::TpmManagerClient::Get()->Shutdown();
   }
@@ -230,8 +241,6 @@ class UserTPMTokenInfoGetterTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserTPMTokenInfoGetterTest);
 };
 
 TEST_F(SystemTPMTokenInfoGetterTest, BasicFlow) {

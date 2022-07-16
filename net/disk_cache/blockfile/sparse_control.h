@@ -44,6 +44,10 @@ class SparseControl {
   };
 
   explicit SparseControl(EntryImpl* entry);
+
+  SparseControl(const SparseControl&) = delete;
+  SparseControl& operator=(const SparseControl&) = delete;
+
   ~SparseControl();
 
   // Initializes the object for the current entry. If this entry already stores
@@ -173,8 +177,6 @@ class SparseControl {
   int child_offset_;  // Offset to use for the current child.
   int child_len_;  // Bytes to read or write for this child.
   int result_;
-
-  DISALLOW_COPY_AND_ASSIGN(SparseControl);
 };
 
 }  // namespace disk_cache

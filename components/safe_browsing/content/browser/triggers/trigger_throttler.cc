@@ -22,7 +22,7 @@ const char kTriggerTypeAndQuotaParam[] = "trigger_type_and_quota_csv";
 
 namespace {
 const size_t kUnlimitedTriggerQuota = std::numeric_limits<size_t>::max();
-constexpr base::TimeDelta kOneDayTimeDelta = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kOneDayTimeDelta = base::Days(1);
 
 // Predicate used to search |trigger_type_and_quota_list_| by trigger type.
 class TriggerTypeIs {

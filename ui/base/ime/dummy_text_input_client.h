@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/ime/text_input_client.h"
@@ -23,6 +22,10 @@ class DummyTextInputClient : public TextInputClient {
   explicit DummyTextInputClient(TextInputType text_input_type);
   DummyTextInputClient(TextInputType text_input_type,
                        TextInputMode text_input_mode);
+
+  DummyTextInputClient(const DummyTextInputClient&) = delete;
+  DummyTextInputClient& operator=(const DummyTextInputClient&) = delete;
+
   ~DummyTextInputClient() override;
 
   // Overriden from TextInputClient.
@@ -60,7 +63,7 @@ class DummyTextInputClient : public TextInputClient {
   ukm::SourceId GetClientSourceForMetrics() const override;
   bool ShouldDoLearning() override;
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   bool SetCompositionFromExistingText(
       const gfx::Range& range,
       const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) override;
@@ -77,10 +80,12 @@ class DummyTextInputClient : public TextInputClient {
       const std::vector<GrammarFragment>& fragments) override;
 #endif
 
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
   void GetActiveTextInputControlLayoutBounds(
       absl::optional<gfx::Rect>* control_bounds,
       absl::optional<gfx::Rect>* selection_bounds) override;
+#endif
+#if defined(OS_WIN)
   void SetActiveCompositionForAccessibility(
       const gfx::Range& range,
       const std::u16string& active_composition_text,
@@ -105,8 +110,6 @@ class DummyTextInputClient : public TextInputClient {
 
   TextInputType text_input_type_;
   TextInputMode text_input_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyTextInputClient);
 
  private:
   int insert_char_count_;

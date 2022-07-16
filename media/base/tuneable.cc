@@ -43,9 +43,9 @@ base::TimeDelta GetParam<base::TimeDelta>(const char* name,
                                           base::TimeDelta minimum_value,
                                           base::TimeDelta default_value,
                                           base::TimeDelta maximum_value) {
-  return base::TimeDelta::FromMilliseconds(GetParam<int>(
-      name, minimum_value.InMilliseconds(), default_value.InMilliseconds(),
-      maximum_value.InMilliseconds()));
+  return base::Milliseconds(GetParam<int>(name, minimum_value.InMilliseconds(),
+                                          default_value.InMilliseconds(),
+                                          maximum_value.InMilliseconds()));
 }
 
 }  // namespace

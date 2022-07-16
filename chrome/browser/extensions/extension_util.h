@@ -26,8 +26,6 @@ namespace gfx {
 class ImageSkia;
 }
 
-class GURL;
-
 class Profile;
 
 namespace extensions {
@@ -35,13 +33,6 @@ namespace extensions {
 class Extension;
 
 namespace util {
-
-// Returns true if the site URL corresponds to an extension or app which
-// has isolated storage. This can be either because it is an app that
-// requested this in its manifest, or because it is a policy-installed app or
-// extension running on the Chrome OS sign-in profile.
-bool IsExtensionSiteWithIsolatedStorage(const GURL& site_url,
-                                        content::BrowserContext* context);
 
 // Returns true if the extension associated with |extension_id| has isolated
 // storage. This can be either because it is an app that requested this in its

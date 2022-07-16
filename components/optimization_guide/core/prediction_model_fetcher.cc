@@ -23,6 +23,7 @@
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -52,7 +53,7 @@ bool PredictionModelFetcher::FetchOptimizationGuideServiceModels(
     proto::RequestContext request_context,
     const std::string& locale,
     ModelsFetchedCallback models_fetched_callback) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (network_connection_tracker_->IsOffline()) {
     std::move(models_fetched_callback).Run(absl::nullopt);

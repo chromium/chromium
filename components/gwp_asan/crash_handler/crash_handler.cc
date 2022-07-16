@@ -26,13 +26,16 @@ class BufferExtensionStreamDataSource final
  public:
   BufferExtensionStreamDataSource(uint32_t stream_type, const Crash& crash);
 
+  BufferExtensionStreamDataSource(const BufferExtensionStreamDataSource&) =
+      delete;
+  BufferExtensionStreamDataSource& operator=(
+      const BufferExtensionStreamDataSource&) = delete;
+
   size_t StreamDataSize() override;
   bool ReadStreamData(Delegate* delegate) override;
 
  private:
   std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferExtensionStreamDataSource);
 };
 
 BufferExtensionStreamDataSource::BufferExtensionStreamDataSource(

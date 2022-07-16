@@ -53,6 +53,10 @@ content::SpeechRecognitionManager* GetSpeechRecognitionManager() {
 class SpeechRecognizerOnIO : public content::SpeechRecognitionEventListener {
  public:
   SpeechRecognizerOnIO();
+
+  SpeechRecognizerOnIO(const SpeechRecognizerOnIO&) = delete;
+  SpeechRecognizerOnIO& operator=(const SpeechRecognizerOnIO&) = delete;
+
   ~SpeechRecognizerOnIO() override;
 
   // |pending_shared_url_loader_factory| must be non-null for the first call to
@@ -109,8 +113,6 @@ class SpeechRecognizerOnIO : public content::SpeechRecognitionEventListener {
   std::u16string last_result_str_;
 
   base::WeakPtrFactory<SpeechRecognizerOnIO> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognizerOnIO);
 };
 
 SpeechRecognizerOnIO::SpeechRecognizerOnIO()
@@ -186,8 +188,7 @@ void SpeechRecognizerOnIO::NotifyRecognitionStateChanged(
 
 void SpeechRecognizerOnIO::StartSpeechTimeout(int timeout_seconds) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  speech_timeout_->Start(FROM_HERE,
-                         base::TimeDelta::FromSeconds(timeout_seconds),
+  speech_timeout_->Start(FROM_HERE, base::Seconds(timeout_seconds),
                          base::BindOnce(&SpeechRecognizerOnIO::SpeechTimeout,
                                         weak_factory_.GetWeakPtr()));
 }

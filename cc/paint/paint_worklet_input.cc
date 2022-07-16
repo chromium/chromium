@@ -74,4 +74,8 @@ void PaintWorkletInput::PropertyValue::reset() {
   color_value.reset();
 }
 
+bool PaintWorkletInput::KnownToBeOpaque() const {
+  return false;
+}
+
 }  // namespace cc

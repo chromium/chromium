@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
@@ -32,6 +31,11 @@ class SourceUrlRecorderWebStateObserver
     : public web::WebStateObserver,
       public web::WebStateUserData<SourceUrlRecorderWebStateObserver> {
  public:
+  SourceUrlRecorderWebStateObserver(const SourceUrlRecorderWebStateObserver&) =
+      delete;
+  SourceUrlRecorderWebStateObserver& operator=(
+      const SourceUrlRecorderWebStateObserver&) = delete;
+
   ~SourceUrlRecorderWebStateObserver() override;
 
   // web::WebStateObserver
@@ -56,8 +60,6 @@ class SourceUrlRecorderWebStateObserver
   SourceId last_committed_source_id_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SourceUrlRecorderWebStateObserver);
 };
 
 WEB_STATE_USER_DATA_KEY_IMPL(SourceUrlRecorderWebStateObserver)

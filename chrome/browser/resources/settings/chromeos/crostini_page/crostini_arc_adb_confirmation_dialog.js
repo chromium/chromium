@@ -7,7 +7,20 @@
  * to confirm for enabling or disabling adb sideloading. After the confirmation,
  * reboot will happens.
  */
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '../../settings_shared_css.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-crostini-arc-adb-confirmation-dialog',
 
   properties: {
@@ -46,11 +59,11 @@ Polymer({
   /** @private */
   onRestartTap_() {
     if (this.isEnabling_()) {
-      settings.CrostiniBrowserProxyImpl.getInstance().enableArcAdbSideload();
-      settings.recordSettingChange();
+      CrostiniBrowserProxyImpl.getInstance().enableArcAdbSideload();
+      recordSettingChange();
     } else if (this.isDisabling_()) {
-      settings.CrostiniBrowserProxyImpl.getInstance().disableArcAdbSideload();
-      settings.recordSettingChange();
+      CrostiniBrowserProxyImpl.getInstance().disableArcAdbSideload();
+      recordSettingChange();
     } else {
       assertNotReached();
     }

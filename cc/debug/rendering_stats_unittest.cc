@@ -25,21 +25,21 @@ TEST(RenderingStatsTest, TimeDeltaListEmpty) {
 
 TEST(RenderingStatsTest, TimeDeltaListNonEmpty) {
   RenderingStats::TimeDeltaList time_delta_list;
-  time_delta_list.Append(base::TimeDelta::FromMilliseconds(234));
-  time_delta_list.Append(base::TimeDelta::FromMilliseconds(827));
+  time_delta_list.Append(base::Milliseconds(234));
+  time_delta_list.Append(base::Milliseconds(827));
 
   EXPECT_EQ("{\"list_value\":[234.0,827.0]}", ToString(time_delta_list));
 }
 
 TEST(RenderingStatsTest, TimeDeltaListAdd) {
   RenderingStats::TimeDeltaList time_delta_list_a;
-  time_delta_list_a.Append(base::TimeDelta::FromMilliseconds(810));
-  time_delta_list_a.Append(base::TimeDelta::FromMilliseconds(32));
+  time_delta_list_a.Append(base::Milliseconds(810));
+  time_delta_list_a.Append(base::Milliseconds(32));
 
   RenderingStats::TimeDeltaList time_delta_list_b;
-  time_delta_list_b.Append(base::TimeDelta::FromMilliseconds(43));
-  time_delta_list_b.Append(base::TimeDelta::FromMilliseconds(938));
-  time_delta_list_b.Append(base::TimeDelta::FromMilliseconds(2));
+  time_delta_list_b.Append(base::Milliseconds(43));
+  time_delta_list_b.Append(base::Milliseconds(938));
+  time_delta_list_b.Append(base::Milliseconds(2));
 
   time_delta_list_a.Add(time_delta_list_b);
   EXPECT_EQ("{\"list_value\":[810.0,32.0,43.0,938.0,2.0]}",

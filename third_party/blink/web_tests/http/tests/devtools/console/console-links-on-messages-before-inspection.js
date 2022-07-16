@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests a handling of a click on the link in a message, which had been shown before its originating script was added.\n`);
 
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -35,7 +35,7 @@
       return;
 
     TestRunner.addResult('script was added');
-    var message = Console.ConsoleView.instance()._visibleViewMessages[0];
+    var message = Console.ConsoleView.instance().visibleViewMessages[0];
     var anchorElement = message.element().querySelector('.devtools-link');
     anchorElement.click();
   }
@@ -45,10 +45,10 @@
     TestRunner.completeTest();
   };
 
-  UI.inspectorView._tabbedPane.addEventListener(UI.TabbedPane.Events.TabSelected, panelChanged);
+  UI.inspectorView.tabbedPane.addEventListener(UI.TabbedPane.Events.TabSelected, panelChanged);
 
   function panelChanged() {
-    TestRunner.addResult('Panel ' + UI.inspectorView._tabbedPane._currentTab.id + ' was opened');
+    TestRunner.addResult('Panel ' + UI.inspectorView.tabbedPane.currentTab.id + ' was opened');
     TestRunner.completeTest();
   }
 })();

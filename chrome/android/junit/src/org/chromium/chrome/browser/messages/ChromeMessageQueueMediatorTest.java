@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.messages;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.os.Handler;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,11 +28,14 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.TokenHolder;
 
 /**
  * Unit tests for {@link ChromeMessageQueueMediator}.
@@ -56,6 +63,12 @@ public class ChromeMessageQueueMediatorTest {
     @Mock
     private ActivityTabProvider mActivityTabProvider;
 
+    @Mock
+    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+
+    @Mock
+    private Handler mQueueHandler;
+
     private ChromeMessageQueueMediator mMediator;
 
     @Before
@@ -73,9 +86,11 @@ public class ChromeMessageQueueMediatorTest {
                 new ObservableSupplierImpl<>();
         mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
                 mMessageContainerCoordinator, mActivityTabProvider,
-                layoutStateProviderOneShotSupplier, modalDialogManagerSupplier, mMessageDispatcher);
+                layoutStateProviderOneShotSupplier, modalDialogManagerSupplier,
+                mActivityLifecycleDispatcher, mMessageDispatcher);
         layoutStateProviderOneShotSupplier.set(mLayoutStateProvider);
         modalDialogManagerSupplier.set(mModalDialogManager);
+        mMediator.setQueueHandlerForTesting(mQueueHandler);
     }
 
     /**
@@ -109,6 +124,21 @@ public class ChromeMessageQueueMediatorTest {
     }
 
     /**
+     * Test the queue can be suspended and resumed correctly when app is paused and resumed.
+     */
+    @Test
+    public void testActivityStateChange() {
+        final ArgumentCaptor<PauseResumeWithNativeObserver> observer =
+                ArgumentCaptor.forClass(PauseResumeWithNativeObserver.class);
+        doNothing().when(mActivityLifecycleDispatcher).register(observer.capture());
+        initMediator();
+        observer.getValue().onPauseWithNative();
+        verify(mMessageDispatcher).suspend();
+        observer.getValue().onResumeWithNative();
+        verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
+    }
+
+    /**
      * Test NPE is not thrown when supplier offers a null value.
      */
     @Test
@@ -121,10 +151,32 @@ public class ChromeMessageQueueMediatorTest {
                 new ObservableSupplierImpl<>();
         mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
                 mMessageContainerCoordinator, mActivityTabProvider,
-                layoutStateProviderOneShotSupplier, modalDialogManagerSupplier, mMessageDispatcher);
+                layoutStateProviderOneShotSupplier, modalDialogManagerSupplier,
+                mActivityLifecycleDispatcher, mMessageDispatcher);
         layoutStateProviderOneShotSupplier.set(mLayoutStateProvider);
         // To offer a null value, we have to offer a value other than null first.
         modalDialogManagerSupplier.set(mModalDialogManager);
         modalDialogManagerSupplier.set(null);
+    }
+
+    /**
+     * Test the queue can be suspended and resumed correctly on omnibox focus events.
+     */
+    @Test
+    public void testUrlFocusChange() {
+        initMediator();
+        // Omnibox is focused.
+        mMediator.onUrlFocusChange(true);
+        verify(mMessageDispatcher).suspend();
+        verify(mQueueHandler).removeCallbacksAndMessages(null);
+        // Omnibox is out of focus.
+        mMediator.onUrlFocusChange(false);
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        // Verify that the queue is resumed 1s after the omnibox loses focus.
+        verify(mQueueHandler).postDelayed(captor.capture(), eq(1000L));
+        captor.getValue().run();
+        verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
+        Assert.assertEquals("mUrlFocusToken should be invalidated.", TokenHolder.INVALID_TOKEN,
+                mMediator.getUrlFocusTokenForTesting());
     }
 }

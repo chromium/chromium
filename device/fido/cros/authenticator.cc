@@ -24,8 +24,10 @@
 namespace device {
 
 ChromeOSAuthenticator::ChromeOSAuthenticator(
-    base::RepeatingCallback<uint32_t()> generate_request_id_callback)
+    base::RepeatingCallback<uint32_t()> generate_request_id_callback,
+    ChromeOSAuthenticator::Config config)
     : generate_request_id_callback_(std::move(generate_request_id_callback)),
+      config_(config),
       weak_factory_(this) {}
 
 ChromeOSAuthenticator::~ChromeOSAuthenticator() {}
@@ -73,10 +75,11 @@ void ChromeOSAuthenticator::MakeCredential(
     MakeCredentialOptions request_options,
     MakeCredentialCallback callback) {
   u2f::MakeCredentialRequest req;
-  // Requests with UserPresence get upgraded to UserVerification unless
-  // verification is explicitly discouraged.
+  // Requests will be UserPresence if uv is not available or discouraged,
+  // and be UserVerification otherwise.
   req.set_verification_type(
-      (request.user_verification == UserVerificationRequirement::kDiscouraged)
+      (request.user_verification == UserVerificationRequirement::kDiscouraged &&
+       config_.power_button_enabled)
           ? u2f::VERIFICATION_USER_PRESENCE
           : u2f::VERIFICATION_USER_VERIFICATION);
   req.set_rp_id(request.rp.id);
@@ -185,10 +188,11 @@ void ChromeOSAuthenticator::GetAssertion(CtapGetAssertionRequest request,
                                          CtapGetAssertionOptions options,
                                          GetAssertionCallback callback) {
   u2f::GetAssertionRequest req;
-  // Requests with UserPresence get upgraded to UserVerification unless
-  // verification is explicitly discouraged.
+  // Requests will be UserPresence if uv is not available or discouraged,
+  // and be UserVerification otherwise.
   req.set_verification_type(
-      (request.user_verification == UserVerificationRequirement::kDiscouraged)
+      (request.user_verification == UserVerificationRequirement::kDiscouraged &&
+       config_.power_button_enabled)
           ? u2f::VERIFICATION_USER_PRESENCE
           : u2f::VERIFICATION_USER_VERIFICATION);
   req.set_rp_id(request.rp_id);
@@ -340,15 +344,24 @@ void ChromeOSAuthenticator::OnCancelResponse(
 }
 
 void ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(
-    base::OnceCallback<void(bool is_available)> callback) {
-  chromeos::U2FClient::Get()->IsUvpaa(
-      u2f::IsUvpaaRequest(),
-      base::BindOnce(
-          [](base::OnceCallback<void(bool is_available)> callback,
-             absl::optional<u2f::IsUvpaaResponse> response) {
-            std::move(callback).Run(response && response->available());
-          },
-          std::move(callback)));
+    base::OnceCallback<void(bool is_uvpaa)> callback) {
+  chromeos::U2FClient::IsU2FServiceAvailable(base::BindOnce(
+      [](base::OnceCallback<void(bool is_uvpaa)> callback,
+         bool is_u2f_service_available) {
+        if (!is_u2f_service_available) {
+          std::move(callback).Run(false);
+          return;
+        }
+        chromeos::U2FClient::Get()->IsUvpaa(
+            u2f::IsUvpaaRequest(),
+            base::BindOnce(
+                [](base::OnceCallback<void(bool is_available)> callback,
+                   absl::optional<u2f::IsUvpaaResponse> response) {
+                  std::move(callback).Run(response && response->available());
+                },
+                std::move(callback)));
+      },
+      std::move(callback)));
 }
 
 void ChromeOSAuthenticator::IsPowerButtonModeEnabled(

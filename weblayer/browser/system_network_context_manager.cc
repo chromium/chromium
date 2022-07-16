@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/net_log/net_export_file_writer.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
@@ -109,9 +110,6 @@ network::mojom::NetworkContextParamsPtr
 SystemNetworkContextManager::CreateSystemNetworkContextManagerParams() {
   network::mojom::NetworkContextParamsPtr network_context_params =
       CreateDefaultNetworkContextParams(user_agent_);
-
-  network_context_params->context_name = std::string("system");
-
   return network_context_params;
 }
 
@@ -130,6 +128,14 @@ SystemNetworkContextManager::GetSharedURLLoaderFactory() {
             url_loader_factory_.get());
   }
   return shared_url_loader_factory_;
+}
+
+net_log::NetExportFileWriter*
+SystemNetworkContextManager::GetNetExportFileWriter() {
+  if (!net_export_file_writer_) {
+    net_export_file_writer_ = std::make_unique<net_log::NetExportFileWriter>();
+  }
+  return net_export_file_writer_.get();
 }
 
 }  // namespace weblayer

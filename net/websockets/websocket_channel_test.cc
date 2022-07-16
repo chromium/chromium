@@ -20,12 +20,14 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
+#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -532,13 +534,13 @@ class ReadableFakeWebSocketStream : public FakeWebSocketStream {
              std::vector<std::unique_ptr<WebSocketFrame>> frames)
         : async(async), error(error), frames(std::move(frames)) {}
 
+    // Bad things will happen if we attempt to copy or assign |frames|.
+    Response(const Response&) = delete;
+    Response& operator=(const Response&) = delete;
+
     IsSync async;
     int error;
     std::vector<std::unique_ptr<WebSocketFrame>> frames;
-
-   private:
-    // Bad things will happen if we attempt to copy or assign |frames|.
-    DISALLOW_COPY_AND_ASSIGN(Response);
   };
   std::vector<std::unique_ptr<Response>> responses_;
 
@@ -729,22 +731,22 @@ class MockWebSocketStreamRequest : public WebSocketStreamRequest {
 
 struct WebSocketStreamCreationCallbackArgumentSaver {
   std::unique_ptr<WebSocketStreamRequest> Create(
-      const GURL& socket_url,
+      const GURL& new_socket_url,
       const std::vector<std::string>& requested_subprotocols,
-      const url::Origin& origin,
-      const SiteForCookies& site_for_cookies,
-      const IsolationInfo& isolation_info,
+      const url::Origin& new_origin,
+      const SiteForCookies& new_site_for_cookies,
+      const IsolationInfo& new_isolation_info,
       const HttpRequestHeaders& additional_headers,
-      URLRequestContext* url_request_context,
+      URLRequestContext* new_url_request_context,
       const NetLogWithSource& net_log,
       NetworkTrafficAnnotationTag traffic_annotation,
-      std::unique_ptr<WebSocketStream::ConnectDelegate> connect_delegate) {
-    this->socket_url = socket_url;
-    this->origin = origin;
-    this->site_for_cookies = site_for_cookies;
-    this->isolation_info = isolation_info;
-    this->url_request_context = url_request_context;
-    this->connect_delegate = std::move(connect_delegate);
+      std::unique_ptr<WebSocketStream::ConnectDelegate> new_connect_delegate) {
+    socket_url = new_socket_url;
+    origin = new_origin;
+    site_for_cookies = new_site_for_cookies;
+    isolation_info = new_isolation_info;
+    url_request_context = new_url_request_context;
+    connect_delegate = std::move(new_connect_delegate);
     return std::make_unique<MockWebSocketStreamRequest>();
   }
 
@@ -1696,9 +1698,9 @@ TEST_F(WebSocketChannelEventInterfaceTest,
   // set an expectation on it. Instead the tests need to infer that the timeout
   // was fired by the behaviour of the WebSocketChannel object.
   channel_->SetClosingHandshakeTimeoutForTesting(
-      TimeDelta::FromMilliseconds(kVeryTinyTimeoutMillis));
+      base::Milliseconds(kVeryTinyTimeoutMillis));
   channel_->SetUnderlyingConnectionCloseTimeoutForTesting(
-      TimeDelta::FromMilliseconds(kVeryBigTimeoutMillis));
+      base::Milliseconds(kVeryBigTimeoutMillis));
   ASSERT_EQ(CHANNEL_ALIVE,
             channel_->StartClosingHandshake(kWebSocketNormalClosure, ""));
   checkpoint.Call(1);
@@ -1728,9 +1730,9 @@ TEST_F(WebSocketChannelEventInterfaceTest,
   }
   CreateChannelAndConnectSuccessfully();
   channel_->SetClosingHandshakeTimeoutForTesting(
-      TimeDelta::FromMilliseconds(kVeryBigTimeoutMillis));
+      base::Milliseconds(kVeryBigTimeoutMillis));
   channel_->SetUnderlyingConnectionCloseTimeoutForTesting(
-      TimeDelta::FromMilliseconds(kVeryTinyTimeoutMillis));
+      base::Milliseconds(kVeryTinyTimeoutMillis));
   checkpoint.Call(1);
   completion.WaitForResult();
 }
@@ -2687,9 +2689,9 @@ class WebSocketChannelStreamTimeoutTest : public WebSocketChannelStreamTest {
     set_stream(std::move(mock_stream_));
     CreateChannelAndConnect();
     channel_->SetClosingHandshakeTimeoutForTesting(
-        TimeDelta::FromMilliseconds(kVeryTinyTimeoutMillis));
+        base::Milliseconds(kVeryTinyTimeoutMillis));
     channel_->SetUnderlyingConnectionCloseTimeoutForTesting(
-        TimeDelta::FromMilliseconds(kVeryTinyTimeoutMillis));
+        base::Milliseconds(kVeryTinyTimeoutMillis));
     connect_data_.argument_saver.connect_delegate->OnSuccess(
         std::move(stream_), std::make_unique<WebSocketHandshakeResponseInfo>(
                                 GURL(), nullptr, IPEndPoint(), base::Time()));

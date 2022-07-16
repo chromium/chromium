@@ -6,9 +6,10 @@
 #define BASE_CONTAINERS_STACK_CONTAINER_H_
 
 #include <stddef.h>
-
+#include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -45,7 +46,9 @@ class StackAllocator : public std::allocator<T> {
     }
 
     // Casts the buffer in its right type.
+    NO_SANITIZE("cfi-unrelated-cast")
     T* stack_buffer() { return reinterpret_cast<T*>(stack_buffer_); }
+    NO_SANITIZE("cfi-unrelated-cast")
     const T* stack_buffer() const {
       return reinterpret_cast<const T*>(&stack_buffer_);
     }

@@ -38,7 +38,7 @@ class ReportSchedulerDesktop : public ReportScheduler::Delegate,
   // BuildStateObserver implementation.
   void OnUpdate(const BuildState* build_state) override;
 
-  void TriggerExtensionRequest();
+  void TriggerExtensionRequest(Profile* profile);
 
  private:
   ExtensionRequestObserverFactory extension_request_observer_factory_;

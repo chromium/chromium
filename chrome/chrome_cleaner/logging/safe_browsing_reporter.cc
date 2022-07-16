@@ -21,8 +21,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -88,6 +88,10 @@ GURL GetSafeBrowsingReportUrl(const std::string& default_url) {
 class NetworkCheckerImpl : public NetworkChecker {
  public:
   NetworkCheckerImpl() = default;
+
+  NetworkCheckerImpl(const NetworkCheckerImpl&) = delete;
+  NetworkCheckerImpl& operator=(const NetworkCheckerImpl&) = delete;
+
   ~NetworkCheckerImpl() override = default;
 
   // TODO(olivierli) Make upload_url a member variable
@@ -186,8 +190,6 @@ class NetworkCheckerImpl : public NetworkChecker {
   // Manual-reset event, which will remain set once set.
   base::win::ScopedHandle cancel_wait_event_;
   base::Lock cancel_wait_event_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkCheckerImpl);
 };
 
 NetworkChecker* current_network_checker{nullptr};
@@ -284,8 +286,7 @@ void SafeBrowsingReporter::UploadWithRetry(
   std::unique_ptr<ChromeFoilResponse> response(new ChromeFoilResponse);
   Result result = Result::UPLOAD_NO_NETWORK;
   if (GetNetworkChecker()->WaitForSafeBrowsing(
-          upload_url_,
-          base::TimeDelta::FromSeconds(kNetworkPresenceTimeoutSeconds))) {
+          upload_url_, base::Seconds(kNetworkPresenceTimeoutSeconds))) {
     result = PerformUploadWithRetries(serialized_report, response.get(),
                                       traffic_annotation);
     if (result != Result::UPLOAD_SUCCESS) {
@@ -309,8 +310,7 @@ SafeBrowsingReporter::Result SafeBrowsingReporter::PerformUploadWithRetries(
 
   SafeBrowsingReporter::Result result = Result::UPLOAD_INTERNAL_ERROR;
   for (unsigned int attempt = 0; attempt < kMaxUploadAttempts; ++attempt) {
-    sleep_callback_.Run(
-        base::TimeDelta::FromSeconds(kUploadAttemptDelaySeconds[attempt]));
+    sleep_callback_.Run(base::Seconds(kUploadAttemptDelaySeconds[attempt]));
     result = PerformUpload(serialized_report, response, traffic_annotation);
     if (result == Result::UPLOAD_SUCCESS)
       break;

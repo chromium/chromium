@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/formats/mp2t/es_parser_adts.h"
@@ -25,11 +24,11 @@ class EsParserAdtsTest : public EsParserTestBase,
  public:
   EsParserAdtsTest();
 
+  EsParserAdtsTest(const EsParserAdtsTest&) = delete;
+  EsParserAdtsTest& operator=(const EsParserAdtsTest&) = delete;
+
  protected:
   bool Process(const std::vector<Packet>& pes_packets, bool sbr_in_mimetype);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EsParserAdtsTest);
 };
 
 EsParserAdtsTest::EsParserAdtsTest() {
@@ -60,7 +59,7 @@ TEST_F(EsParserAdtsTest, SinglePts) {
   LoadStream("bear.adts");
 
   std::vector<Packet> pes_packets = GenerateFixedSizePesPacket(512);
-  pes_packets.front().pts = base::TimeDelta::FromSeconds(10);
+  pes_packets.front().pts = base::Seconds(10);
 
   EXPECT_TRUE(Process(pes_packets, false /* sbr_in_mimetype */));
   EXPECT_EQ(1u, config_count_);
@@ -70,7 +69,7 @@ TEST_F(EsParserAdtsTest, SinglePts) {
 TEST_F(EsParserAdtsTest, AacLcAdts) {
   LoadStream("sfx.adts");
   std::vector<Packet> pes_packets = GenerateFixedSizePesPacket(512);
-  pes_packets.front().pts = base::TimeDelta::FromSeconds(1);
+  pes_packets.front().pts = base::Seconds(1);
   EXPECT_TRUE(Process(pes_packets, false /* sbr_in_mimetype */));
   EXPECT_EQ(1u, config_count_);
   EXPECT_EQ(14u, buffer_count_);
@@ -80,7 +79,7 @@ TEST_F(EsParserAdtsTest, AacSampleRate) {
   std::vector<Packet> pes_packets =
       LoadPacketsFromFiles("aac-44100-packet-%d", 4);
 
-  pes_packets.front().pts = base::TimeDelta::FromSeconds(0);
+  pes_packets.front().pts = base::Seconds(0);
   EXPECT_TRUE(Process(pes_packets, true /* sbr_in_mimetype */));
   EXPECT_EQ(4u, buffer_count_);
   EXPECT_EQ(kAac44100PacketTimestamp, buffer_timestamps_);

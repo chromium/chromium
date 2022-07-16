@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/video_protected_buffer_allocator.mojom.h"
 #include "mojo/public/cpp/system/handle.h"
@@ -24,6 +23,11 @@ class ProtectedBufferManager;
 class GpuArcVideoProtectedBufferAllocator
     : public mojom::VideoProtectedBufferAllocator {
  public:
+  GpuArcVideoProtectedBufferAllocator(
+      const GpuArcVideoProtectedBufferAllocator&) = delete;
+  GpuArcVideoProtectedBufferAllocator& operator=(
+      const GpuArcVideoProtectedBufferAllocator&) = delete;
+
   ~GpuArcVideoProtectedBufferAllocator() override;
 
   static std::unique_ptr<GpuArcVideoProtectedBufferAllocator> Create(
@@ -48,7 +52,6 @@ class GpuArcVideoProtectedBufferAllocator
   const std::unique_ptr<ProtectedBufferAllocator> protected_buffer_allocator_;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(GpuArcVideoProtectedBufferAllocator);
 };
 }  // namespace arc
 

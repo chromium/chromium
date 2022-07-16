@@ -66,6 +66,7 @@
 <translation id="133801305381959373">No next editable text field</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">Tip</translation>
+<translation id="1354356357730355833">copy</translation>
 <translation id="135978014023467274">You've been updated to ChromeVox 63!</translation>
 <translation id="1360699455582016846">Click the item under routing key <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1377925789329510816">This is the last heading. Press Search+H to wrap to the first heading, or Search+Shift+H to go to the second heading on this page.</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">refresh</translation>
 <translation id="2675533876313964202">Chartreuse</translation>
 <translation id="2684412629217766642">Close ChromeVox Tutorial</translation>
+<translation id="2692503699962701720">Change pitch when speaking element types and formatted text</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">Text conversion candidate</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{open paren}other{# open parens}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">portrait</translation>
 <translation id="3286390186030710347">Slider</translation>
 <translation id="3300348286427369683">Rich text support. ChromeVox now supports rich text fields including jump commands, braille cursor routing, selection and more.</translation>
+<translation id="3300733168898541351">undo</translation>
 <translation id="3307886118343381874">Go to end of table</translation>
 <translation id="3312997241656799641">Next visited link</translation>
 <translation id="3313245066383501820">The ChromeVox modifier key</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">Show forms list</translation>
 <translation id="3414400929511680526">Alice blue</translation>
 <translation id="3418936350470374046">No cell below</translation>
+<translation id="3419269701801640163">paste</translation>
 <translation id="3435494200763325275">Tab navigation continued</translation>
 <translation id="344800400831402066">Peru</translation>
 <translation id="3457000393508828486">Partially pressed</translation>
@@ -425,6 +429,7 @@
 <translation id="3813387282697781382">Light Coral</translation>
 <translation id="3816633764618089385">Next media</translation>
 <translation id="3840823741487267909">Abbreviation</translation>
+<translation id="3841319830220785495">Default natural voice</translation>
 <translation id="385383972552776628">Open options page</translation>
 <translation id="3856075812838139784">Read only</translation>
 <translation id="3857141338659865495">Medium Turquoise</translation>
@@ -451,6 +456,7 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">Scroll down</translation>
 <translation id="4035381225449278841">Spring</translation>
+<translation id="4038098586530338813">redo</translation>
 <translation id="4047216625641135770">Mark</translation>
 <translation id="4047910800766704982">You can use a natural, human-like voice when your device is online. Text will be sent to Google for processing. You can turn this off at any time in Settings.</translation>
 <translation id="4053520724192563562">Lime Green</translation>
@@ -606,6 +612,7 @@
 <translation id="5170206230005240598">Braille captions enabled</translation>
 <translation id="5183440668879371625">Braille previous Line</translation>
 <translation id="5189244881767082992">Line</translation>
+<translation id="5234747236692380506">type <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">Cornsilk</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">End</translation>
@@ -688,6 +695,7 @@
 <translation id="5748623122140342504">Previous level 5 heading</translation>
 <translation id="5760594853119905566">Appendix</translation>
 <translation id="5761219715606611783">Well done! You’ve learned the basics of ChromeVox touch. You can go through the tutorial again or exit this tutorial using the buttons below.</translation>
+<translation id="5776001898637896684">Google enhanced network text-to-speech extension</translation>
 <translation id="5805940204952508776">Tap with two fingers</translation>
 <translation id="5819072574982403430">Tree item</translation>
 <translation id="5822819874379903994">Dark Turquoise</translation>
@@ -732,6 +740,7 @@
 <translation id="6034000775414344507">Light grey</translation>
 <translation id="6036135911048686884">Touch explore</translation>
 <translation id="6037602951055904232">Pan forward</translation>
+<translation id="604240746417122825">grammar error</translation>
 <translation id="6082768461603900813">Basic Navigation</translation>
 <translation id="609281021724813947">No previous slider</translation>
 <translation id="6100239002225743044">Move up one line</translation>
@@ -788,6 +797,7 @@
 <translation id="6544923685317771506">Sea shell</translation>
 <translation id="6551185905438378412">Ivory</translation>
 <translation id="6561818612645211875">Go to beginning of the current row</translation>
+<translation id="6563126228219321999">No invalid item</translation>
 <translation id="6579990219486187401">Light pink</translation>
 <translation id="6583174818554398774">Move to next at granularity</translation>
 <translation id="6584162722998608255">Next, you’ll learn how to move around the screen. You can swipe one finger from left to right to move to the next item. Try it now to move to the next step.</translation>
@@ -818,6 +828,7 @@
 <translation id="6815255864998354418">Lemon Chiffon</translation>
 <translation id="6816066673340002913">Pale Goldenrod</translation>
 <translation id="6826226459053491773">Swipe two fingers down</translation>
+<translation id="6826669432862053130">Next invalid item</translation>
 <translation id="6833103209700200188">Footer</translation>
 <translation id="6837853484260746864">Select a voice:</translation>
 <translation id="6858047746862060282">Prologue</translation>
@@ -831,6 +842,7 @@
 <translation id="6910211073230771657">Deleted</translation>
 <translation id="6910969481785184048">On, Off and Stop</translation>
 <translation id="6919104639734799681">Show tables list</translation>
+<translation id="692135145298539227">delete</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6949846980769640811">Medium Aqua Marine</translation>
 <translation id="6951482098621102657">No next level 5 heading</translation>
@@ -852,7 +864,7 @@
 <translation id="7062635574500127092">Teal</translation>
 <translation id="7086377898680121060">Brightness up</translation>
 <translation id="7088743565397416204">Double-tap to activate what is focused</translation>
-<translation id="7088960765736518739">Switch access</translation>
+<translation id="7088960765736518739">Switch Access</translation>
 <translation id="7090715360595433170">It can also be more efficient than swiping left and right with one finger.</translation>
 <translation id="7091296112653361280">Navajo White</translation>
 <translation id="7095834689119144465">Edit text numeric only</translation>
@@ -911,7 +923,6 @@
 <translation id="7439060726180460871">Directory</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">Use a natural voice?</translation>
-<translation id="7484805699335881122">Change pitch when speaking element types and quoted, deleted, bolded, parenthesised or capitalised text.</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Move to next section. Examples include the Status Tray and Launcher.</translation>
 <translation id="7505149250476994901">Say 'cap' before letter</translation>
@@ -981,6 +992,7 @@
 <translation id="7968340748835037139">Dark Green</translation>
 <translation id="7972507042926081808">Chocolate</translation>
 <translation id="7974390230414479278">Menu item</translation>
+<translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Voice <ph name="COUNT" /></translation>
 <translation id="8004507136466386272">Words</translation>
 <translation id="8004512796067398576">Increment</translation>
 <translation id="8007540374018858731">h3</translation>
@@ -1006,8 +1018,10 @@
 <translation id="8126386426083591964">No previous level 5 heading</translation>
 <translation id="812886159861361726">Download stopped <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">No cell above</translation>
+<translation id="8132248161074464367">Previous invalid item</translation>
 <translation id="8138880386467279117">Tap</translation>
 <translation id="8146613869421949343">Next, you’ll learn about the search key. The search key is used in combination with other keys for ChromeVox commands. The search key is immediately above the left shift key. To continue, press the search key.</translation>
+<translation id="8158033275290782295">select all</translation>
 <translation id="816818801578874684">This is the first heading. Press Search + H to go to the next heading.</translation>
 <translation id="8173092779156526980">Swipe four fingers left</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{underscore}other{# underscores}}</translation>
@@ -1123,6 +1137,7 @@
 <translation id="9077305471618729969">Light Sea Green</translation>
 <translation id="9080299285199342830">Jump to end</translation>
 <translation id="9089864840575085222">Cycle typing echo</translation>
+<translation id="9099429023611373837">cut</translation>
 <translation id="9108370397979208512">math</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{percent}other{# percent signs}}</translation>

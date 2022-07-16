@@ -139,12 +139,6 @@ std::string platform() {
 
 // Tests the platform when the page is inside an iframe.
 - (void)testIFrameNavigation {
-  // This test fails in iOS 13.4 but is fixed in iOS 14. See crbug.com//1076233.
-  if (base::ios::IsRunningOnOrLater(13, 4, 0) &&
-      !base::ios::IsRunningOnIOS14OrLater()) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 13.4 but enabled in iOS 14");
-  }
-
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kIFramePage)];
   [ChromeEarlGrey tapWebStateElementInIFrameWithID:kLinkPageLinkID];
 

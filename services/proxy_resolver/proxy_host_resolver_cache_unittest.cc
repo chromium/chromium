@@ -64,13 +64,13 @@ TEST_F(ProxyHostResolverCacheTest, NoResultForExpiredLookup) {
                     /*is_ex_operation=*/false, {kResult});
 
   task_environment_.FastForwardBy(ProxyHostResolverCache::kTtl -
-                                  base::TimeDelta::FromMilliseconds(5));
+                                  base::Milliseconds(5));
   EXPECT_EQ(cache_.GetSizeForTesting(), 1u);
   ASSERT_THAT(cache_.LookupEntry("host.test", net::NetworkIsolationKey(),
                                  /*is_ex_operation=*/false),
               testing::Pointee(testing::ElementsAre(kResult)));
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(10));
+  task_environment_.FastForwardBy(base::Milliseconds(10));
   EXPECT_FALSE(cache_.LookupEntry("host.test", net::NetworkIsolationKey(),
                                   /*is_ex_operation=*/false));
 
@@ -86,7 +86,7 @@ TEST_F(ProxyHostResolverCacheTest, EvictsOldestEntriesWhenFull) {
                    /*is_ex_operation=*/false, /*results=*/{});
 
   // Fill to max capacity
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(5));
+  task_environment_.FastForwardBy(base::Milliseconds(5));
   cache.StoreEntry("other1.test", net::NetworkIsolationKey(),
                    /*is_ex_operation=*/false, /*results=*/{});
   cache.StoreEntry("other2.test", net::NetworkIsolationKey(),
@@ -139,13 +139,13 @@ TEST_F(ProxyHostResolverCacheTest, EntryUpdateRefreshesExpiration) {
   // Insert two entries, with "to-be-refreshed.test" as the older one.
   cache.StoreEntry("to-be-refreshed.test", net::NetworkIsolationKey(),
                    /*is_ex_operation=*/false, /*results=*/{});
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(5));
+  task_environment_.FastForwardBy(base::Milliseconds(5));
   cache.StoreEntry("to-be-evicted.test", net::NetworkIsolationKey(),
                    /*is_ex_operation=*/false, /*results=*/{});
   ASSERT_EQ(cache.GetSizeForTesting(), 2u);
 
   // Update "to-be-refreshed.test" to refresh its expiration.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(5));
+  task_environment_.FastForwardBy(base::Milliseconds(5));
   cache.StoreEntry("to-be-refreshed.test", net::NetworkIsolationKey(),
                    /*is_ex_operation=*/false, /*results=*/{});
   ASSERT_EQ(cache.GetSizeForTesting(), 2u);
@@ -172,13 +172,13 @@ TEST_F(ProxyHostResolverCacheTest, EntryCanBeEvictedAfterUpdate) {
   cache.StoreEntry("host.test", net::NetworkIsolationKey(),
                    /*is_ex_operation=*/false, /*results=*/{});
   ASSERT_EQ(cache.GetSizeForTesting(), 1u);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(5));
+  task_environment_.FastForwardBy(base::Milliseconds(5));
   cache.StoreEntry("host.test", net::NetworkIsolationKey(),
                    /*is_ex_operation=*/false, /*results=*/{});
   ASSERT_EQ(cache.GetSizeForTesting(), 1u);
 
   // Add another entry to force an eviction.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(5));
+  task_environment_.FastForwardBy(base::Milliseconds(5));
   cache.StoreEntry("evictor.test", net::NetworkIsolationKey(),
                    /*is_ex_operation=*/false, /*results=*/{});
 

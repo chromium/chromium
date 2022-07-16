@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -45,6 +44,9 @@ class CONTENT_EXPORT OriginPolicyThrottle : public NavigationThrottle {
   // This will exempt the entire origin, rather than only the given URL.
   static void AddExceptionFor(BrowserContext* browser_context, const GURL& url);
 
+  OriginPolicyThrottle(const OriginPolicyThrottle&) = delete;
+  OriginPolicyThrottle& operator=(const OriginPolicyThrottle&) = delete;
+
   ~OriginPolicyThrottle() override;
 
   ThrottleCheckResult WillStartRequest() override;
@@ -59,8 +61,6 @@ class CONTENT_EXPORT OriginPolicyThrottle : public NavigationThrottle {
   explicit OriginPolicyThrottle(NavigationHandle* handle);
 
   static absl::optional<network::OriginPolicy>& GetTestOriginPolicy();
-
-  DISALLOW_COPY_AND_ASSIGN(OriginPolicyThrottle);
 };
 
 }  // namespace content

@@ -19,10 +19,10 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -315,8 +315,8 @@ TEST_F(ChromePromptChannelTest, VersionIsTooLarge) {
   channel_->ConnectToCleaner(std::move(mock_cleaner_process_));
 
   // Invalid version
-  constexpr uint8_t kVersion = 128;
-  PostWriteByValue(kVersion);
+  constexpr uint8_t kInvalidVersion = 128;
+  PostWriteByValue(kInvalidVersion);
   WaitForDisconnect();
 
   // We expect the the handshake to have failed because of the version.
@@ -331,8 +331,8 @@ TEST_F(ChromePromptChannelTest, VersionIsZero) {
   channel_->ConnectToCleaner(std::move(mock_cleaner_process_));
 
   // Invalid version
-  constexpr uint8_t kVersion = 0;
-  PostWriteByValue(kVersion);
+  constexpr uint8_t kInvalidVersion = 0;
+  PostWriteByValue(kInvalidVersion);
   WaitForDisconnect();
 
   // We expect the the handshake to have failed because of the version.

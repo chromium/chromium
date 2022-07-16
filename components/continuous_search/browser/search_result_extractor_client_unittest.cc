@@ -36,8 +36,7 @@ mojom::CategoryResultsPtr GenerateValidResults(const GURL& document_url) {
   expected_results->category_type = mojom::Category::kOrganic;
   {
     mojom::ResultGroupPtr result_group = mojom::ResultGroup::New();
-    result_group->label = "Group 1";
-    result_group->is_ad_group = false;
+    result_group->type = mojom::ResultType::kSearchResults;
     {
       mojom::SearchResultPtr result = mojom::SearchResult::New();
       result->link = GURL("https://www.bar.com/");
@@ -94,7 +93,7 @@ TEST_F(SearchResultExtractorClientRenderViewHostTest, RequestDataSuccess) {
   SearchResultExtractorClient client;
   base::RunLoop loop;
   client.RequestData(
-      web_contents(),
+      web_contents(), {mojom::ResultType::kSearchResults},
       base::BindOnce(CheckResponse, SearchResultExtractorClientStatus::kSuccess,
                      std::move(expected_results), loop.QuitClosure()));
   loop.Run();
@@ -105,7 +104,7 @@ TEST_F(SearchResultExtractorClientRenderViewHostTest,
   SearchResultExtractorClient client;
   base::RunLoop loop;
   client.RequestData(
-      nullptr,
+      nullptr, {mojom::ResultType::kSearchResults},
       base::BindOnce(CheckResponse,
                      SearchResultExtractorClientStatus::kWebContentsGone,
                      mojom::CategoryResults::New(), loop.QuitClosure()));
@@ -122,7 +121,7 @@ TEST_F(SearchResultExtractorClientRenderViewHostTest, RequestDataFailed) {
   SearchResultExtractorClient client;
   base::RunLoop loop;
   client.RequestData(
-      web_contents(),
+      web_contents(), {mojom::ResultType::kSearchResults},
       base::BindOnce(CheckResponse,
                      SearchResultExtractorClientStatus::kNoResults,
                      mojom::CategoryResults::New(), loop.QuitClosure()));
@@ -140,7 +139,7 @@ TEST_F(SearchResultExtractorClientRenderViewHostTest, RequestDataUrlMismatch) {
   SearchResultExtractorClient client;
   base::RunLoop loop;
   client.RequestData(
-      web_contents(),
+      web_contents(), {mojom::ResultType::kSearchResults},
       base::BindOnce(CheckResponse,
                      SearchResultExtractorClientStatus::kUnexpectedUrl,
                      mojom::CategoryResults::New(), loop.QuitClosure()));
@@ -153,7 +152,7 @@ TEST_F(SearchResultExtractorClientRenderViewHostTest, NonSrpUrl) {
   SearchResultExtractorClient client;
   base::RunLoop loop;
   client.RequestData(
-      web_contents(),
+      web_contents(), {mojom::ResultType::kSearchResults},
       base::BindOnce(
           CheckResponse,
           SearchResultExtractorClientStatus::kWebContentsHasNonSrpUrl,

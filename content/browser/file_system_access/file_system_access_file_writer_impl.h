@@ -7,12 +7,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
-#include "components/download/public/common/quarantine_connection.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
+#include "content/browser/file_system_access/safe_move_helper.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/file_system_access_permission_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -36,7 +35,7 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
   // materializes the changes in the target file URL only after `Close`
   // is invoked and successfully completes. Assumes that swap_url represents a
   // file, and is valid.
-  // If no |quarantine_connection_callback| is passed in no quarantine is done,
+  // If no `quarantine_connection_callback` is passed in no quarantine is done,
   // other than setting source information directly if on windows.
   // FileWriters should only be created via the FileSystemAccessManagerImpl.
   FileSystemAccessFileWriterImpl(
@@ -45,6 +44,7 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
       const BindingContext& context,
       const storage::FileSystemURL& url,
       const storage::FileSystemURL& swap_url,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       const SharedHandleState& handle_state,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessFileWriter> receiver,
       bool has_transient_user_activation,
@@ -70,12 +70,6 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
   void Close(CloseCallback callback) override;
   // The writer will be destroyed upon completion.
   void Abort(AbortCallback callback) override;
-
-  using HashCallback = base::OnceCallback<
-      void(base::File::Error error, const std::string& hash, int64_t size)>;
-  void ComputeHashForSwapFileForTesting(HashCallback callback) {
-    ComputeHashForSwapFile(std::move(callback));
-  }
 
  private:
   // State that is kept for the duration of a write operation, to keep track of
@@ -103,29 +97,9 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
   void TruncateImpl(uint64_t length, TruncateCallback callback);
   void CloseImpl(CloseCallback callback);
   void AbortImpl(AbortCallback callback);
-  void DoAfterWriteCheck(base::File::Error hash_result,
-                         const std::string& hash,
-                         int64_t size);
-  void DidAfterWriteCheck(
-      FileSystemAccessPermissionContext::AfterWriteCheckResult result);
-  void DidSwapFileSkipQuarantine(base::File::Error result);
-  void DidSwapFileDoQuarantine(
-      const storage::FileSystemURL& target_url,
-      const GURL& referrer_url,
-      mojo::Remote<quarantine::mojom::Quarantine> quarantine_remote,
-      base::File::Error result);
-  void DidAnnotateFile(
-      mojo::Remote<quarantine::mojom::Quarantine> quarantine_remote,
-      quarantine::mojom::QuarantineFileResult result);
-
-  // After write and quarantine checks should apply to paths on all filesystems
-  // except temporary file systems.
-  // TOOD(crbug.com/1103076): Extend this check to non-native paths.
-  bool RequireSecurityChecks() const {
-    return url().type() != storage::kFileSystemTypeTemporary;
-  }
-
-  void ComputeHashForSwapFile(HashCallback callback);
+  void DidReplaceSwapFile(
+      std::unique_ptr<content::SafeMoveHelper> safe_move_helper,
+      blink::mojom::FileSystemAccessErrorPtr result);
 
   bool is_close_pending() const { return !close_callback_.is_null(); }
 
@@ -133,6 +107,9 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
   // execute a move operation from the swap URL to the target URL at `url_`. In
   // most filesystems, this move operation is atomic.
   storage::FileSystemURL swap_url_;
+
+  // Shared write lock on the file. It is released on destruction.
+  scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock_;
 
   CloseCallback close_callback_;
 

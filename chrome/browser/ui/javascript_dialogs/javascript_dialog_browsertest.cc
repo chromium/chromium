@@ -6,6 +6,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
@@ -15,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
+#include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -23,7 +25,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -33,6 +37,13 @@ using DismissalCause =
     javascript_dialogs::TabModalDialogManager::DismissalCause;
 
 class JavaScriptDialogTest : public InProcessBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
  private:
   friend class JavaScriptDialogDismissalCauseTester;
 };
@@ -359,9 +370,8 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, NoDismissalAlertTabHidden) {
 
 IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, DismissalCauseUkm) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  EXPECT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   JavaScriptDialogDismissalCauseTester tester(this);
   tester.PopupDialog(content::JAVASCRIPT_DIALOG_TYPE_CONFIRM);
@@ -378,17 +388,66 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, DismissalCauseUkm) {
       static_cast<int64_t>(DismissalCause::kDialogButtonClicked));
 }
 
+class JavaScriptDialogOriginTest
+    : public JavaScriptDialogTest,
+      public testing::WithParamInterface<const char*> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    JavaScriptDialogOriginTest,
+    ::testing::Values("data:text/html,<p></p>",
+                      "javascript:undefined",
+                      "about:blank"));
+
+// Tests that the title for a dialog generated from a page with a non-HTTP URL
+// that was spawned by an HTTP URL has that HTTP URL used for the title.
+IN_PROC_BROWSER_TEST_P(JavaScriptDialogOriginTest, TitleForNonHTTPOrigin) {
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Create a subframe.
+  content::TestNavigationObserver nav_observer(tab);
+  GURL test_url(GetParam());
+  std::string script = content::JsReplace(R"(
+      var iframe = document.createElement('iframe');
+      iframe.src = $1;
+      document.body.appendChild(iframe);)",
+                                          test_url);
+  ASSERT_TRUE(content::ExecJs(tab, script));
+  if (!test_url.SchemeIs("javascript")) {
+    // content::TestNavigationObserver times out if asked to wait for the
+    // loading of a javascript: URL.
+    nav_observer.Wait();
+  }
+
+  content::RenderFrameHost* subframe =
+      content::ChildFrameAt(tab->GetMainFrame(), 0);
+  ASSERT_TRUE(subframe);
+
+  // Verify the title that would be used for a dialog spawned by that subframe.
+  javascript_dialogs::AppModalDialogManager* dialog_manager =
+      javascript_dialogs::AppModalDialogManager::GetInstance();
+  EXPECT_EQ(base::UTF8ToUTF16(base::StringPrintf(
+                "a.com:%d says", embedded_test_server()->port())),
+            dialog_manager->GetTitle(tab, subframe->GetLastCommittedOrigin()));
+}
+
 class JavaScriptDialogForPrerenderTest : public JavaScriptDialogTest {
  public:
   JavaScriptDialogForPrerenderTest()
       : prerender_helper_(
             base::BindRepeating(&JavaScriptDialogForPrerenderTest::web_contents,
-                                base::Unretained(this))) {
-    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
+                                base::Unretained(this))) {}
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    JavaScriptDialogTest::SetUp();
   }
+
   void SetUpOnMainThread() override {
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     JavaScriptDialogTest::SetUpOnMainThread();
   }
 
@@ -397,13 +456,11 @@ class JavaScriptDialogForPrerenderTest : public JavaScriptDialogTest {
  protected:
   content::WebContents* web_contents_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(JavaScriptDialogForPrerenderTest, NoDismissalDialog) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/empty.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   javascript_dialogs::TabModalDialogManager* js_helper =
       javascript_dialogs::TabModalDialogManager::FromWebContents(web_contents_);

@@ -26,6 +26,11 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
                                   const UrlPatternIndexList* index_list,
                                   const ExtensionMetadataList* metadata_list);
 
+  ExtensionUrlPatternIndexMatcher(const ExtensionUrlPatternIndexMatcher&) =
+      delete;
+  ExtensionUrlPatternIndexMatcher& operator=(
+      const ExtensionUrlPatternIndexMatcher&) = delete;
+
   // RulesetMatcherBase override:
   ~ExtensionUrlPatternIndexMatcher() override;
   std::vector<RequestAction> GetModifyHeadersActions(
@@ -68,8 +73,6 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
   const bool is_extra_headers_matcher_;
 
   const size_t rules_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionUrlPatternIndexMatcher);
 };
 
 }  // namespace declarative_net_request

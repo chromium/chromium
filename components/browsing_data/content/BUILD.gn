@@ -4,8 +4,6 @@
 
 static_library("content") {
   sources = [
-    "appcache_helper.cc",
-    "appcache_helper.h",
     "browsing_data_helper.cc",
     "browsing_data_helper.h",
     "cache_storage_helper.cc",
@@ -32,8 +30,6 @@ static_library("content") {
     "shared_worker_helper.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     "//base",
     "//components/browsing_data/core",
@@ -52,7 +48,6 @@ static_library("content") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "appcache_helper_unittest.cc",
     "browsing_data_helper_unittest.cc",
     "cache_storage_helper_unittest.cc",
     "cookie_helper_unittest.cc",
@@ -77,8 +72,6 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "mock_appcache_helper.cc",
-    "mock_appcache_helper.h",
     "mock_cache_storage_helper.cc",
     "mock_cache_storage_helper.h",
     "mock_cookie_helper.cc",

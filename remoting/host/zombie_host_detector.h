@@ -20,11 +20,10 @@ class ZombieHostDetector final : public HeartbeatSender::Observer,
                                  public SignalingTracker {
  public:
   static constexpr base::TimeDelta kZombieStateDetectionInterval =
-      base::TimeDelta::FromMinutes(5);
-  static constexpr base::TimeDelta kMaxHeartbeatInterval =
-      base::TimeDelta::FromMinutes(15);
+      base::Minutes(5);
+  static constexpr base::TimeDelta kMaxHeartbeatInterval = base::Minutes(15);
   static constexpr base::TimeDelta kMaxSignalingActiveInterval =
-      base::TimeDelta::FromMinutes(1);
+      base::Minutes(1);
 
   explicit ZombieHostDetector(base::OnceClosure on_zombie_state_detected);
   ~ZombieHostDetector() override;

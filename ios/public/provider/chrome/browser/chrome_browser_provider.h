@@ -17,18 +17,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 
-class AppDistributionProvider;
-class BrandedImageProvider;
-class BrowserURLRewriterProvider;
 class DiscoverFeedProvider;
-class FullscreenProvider;
 class MailtoHandlerProvider;
-class OmahaServiceProvider;
-class OverridesProvider;
-class SpotlightProvider;
-class TextZoomProvider;
 class UserFeedbackProvider;
-class VoiceSearchProvider;
 
 namespace base {
 class CommandLine;
@@ -48,8 +39,6 @@ namespace ios {
 class ChromeBrowserProvider;
 class ChromeIdentityService;
 class ChromeTrustedVaultService;
-class SigninErrorProvider;
-class SigninResourcesProvider;
 
 // Getter and setter for the provider. The provider should be set early, before
 // any browser code is called (as the getter will fail if the provider has not
@@ -72,6 +61,10 @@ class ChromeBrowserProvider {
   class Observer {
    public:
     Observer() {}
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     // Called when a new ChromeIdentityService has been installed.
@@ -80,9 +73,6 @@ class ChromeBrowserProvider {
 
     // Called when the ChromeBrowserProvider will be destroyed.
     virtual void OnChromeBrowserProviderWillBeDestroyed() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   // The constructor is called before web startup.
@@ -97,43 +87,25 @@ class ChromeBrowserProvider {
   // This is called after web startup.
   virtual void Initialize() const;
 
-  // Returns an instance of a signing error provider.
-  virtual SigninErrorProvider* GetSigninErrorProvider();
-  // Returns an instance of a signin resources provider.
-  virtual SigninResourcesProvider* GetSigninResourcesProvider();
   // Sets the current instance of Chrome identity service. Used for testing.
-  virtual void SetChromeIdentityServiceForTesting(
+  void SetChromeIdentityServiceForTesting(
       std::unique_ptr<ChromeIdentityService> service);
   // Returns an instance of a Chrome identity service.
-  virtual ChromeIdentityService* GetChromeIdentityService();
+  ChromeIdentityService* GetChromeIdentityService();
   // Returns an instance of a Chrome trusted vault service.
   virtual ChromeTrustedVaultService* GetChromeTrustedVaultService();
-  // Returns risk data used in Wallet requests.
-  virtual std::string GetRiskData();
   // Creates and returns a new styled text field.
   virtual UITextField* CreateStyledTextField() const NS_RETURNS_RETAINED;
 
   // Attaches any embedder-specific browser agents to the given |browser|.
   virtual void AttachBrowserAgents(Browser* browser) const;
 
-  // Returns an instance of the voice search provider, if one exists.
-  virtual VoiceSearchProvider* GetVoiceSearchProvider() const;
-
-  // Returns an instance of the app distribution provider.
-  virtual AppDistributionProvider* GetAppDistributionProvider() const;
-
   virtual id<LogoVendor> CreateLogoVendor(Browser* browser,
                                           web::WebState* web_state) const
       NS_RETURNS_RETAINED;
 
-  // Returns an instance of the omaha service provider.
-  virtual OmahaServiceProvider* GetOmahaServiceProvider() const;
-
   // Returns an instance of the user feedback provider.
   virtual UserFeedbackProvider* GetUserFeedbackProvider() const;
-
-  // Returns an instance of the branded image provider.
-  virtual BrandedImageProvider* GetBrandedImageProvider() const;
 
   // Hides immediately the modals related to this provider.
   virtual void HideModalViewStack() const;
@@ -142,25 +114,11 @@ class ChromeBrowserProvider {
   // not dismiss them.
   virtual void LogIfModalViewsArePresented() const;
 
-  // Returns an instance of the spotlight provider.
-  virtual SpotlightProvider* GetSpotlightProvider() const;
-
   // Returns a valid non-null instance of the mailto handler provider.
   virtual MailtoHandlerProvider* GetMailtoHandlerProvider() const;
 
-  // Returns an instance of the fullscreen provider.
-  virtual FullscreenProvider* GetFullscreenProvider() const;
-
-  // Returns an instance of the BrowserURLRewriter provider.
-  virtual BrowserURLRewriterProvider* GetBrowserURLRewriterProvider() const;
-
-  // Returns an instance of the Overrides provider;
-  virtual OverridesProvider* GetOverridesProvider() const;
-
   // Returns an instance of the DiscoverFeed provider;
   virtual DiscoverFeedProvider* GetDiscoverFeedProvider() const;
-
-  virtual TextZoomProvider* GetTextZoomProvider() const;
 
   // Adds and removes observers.
   void AddObserver(Observer* observer);
@@ -170,10 +128,15 @@ class ChromeBrowserProvider {
   // Fires |OnChromeIdentityServiceDidChange| on all observers.
   void FireChromeIdentityServiceDidChange(ChromeIdentityService* new_service);
 
+  // Creates a ChromeIdentityService. This methods has to be be implemented
+  // in subclasses.
+  virtual std::unique_ptr<ios::ChromeIdentityService>
+  CreateChromeIdentityService() = 0;
+
  private:
   base::ObserverList<Observer, true>::Unchecked observer_list_;
   std::unique_ptr<MailtoHandlerProvider> mailto_handler_provider_;
-  std::unique_ptr<TextZoomProvider> text_zoom_provider_;
+  std::unique_ptr<ios::ChromeIdentityService> chrome_identity_service_;
 };
 
 }  // namespace ios

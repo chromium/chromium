@@ -11,15 +11,11 @@
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
 
 using extensions::Extension;
@@ -34,10 +30,10 @@ AppLoadService::PostReloadAction::PostReloadAction()
 
 AppLoadService::AppLoadService(content::BrowserContext* context)
     : context_(context) {
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-                 content::NotificationService::AllSources());
   extensions::ExtensionRegistry::Get(context_)->AddObserver(this);
+
+  host_registry_observation_.Observe(
+      extensions::ExtensionHostRegistry::Get(context_));
 }
 
 AppLoadService::~AppLoadService() = default;
@@ -94,12 +90,9 @@ AppLoadService* AppLoadService::Get(content::BrowserContext* context) {
   return apps::AppLoadServiceFactory::GetForBrowserContext(context);
 }
 
-void AppLoadService::Observe(int type,
-                             const content::NotificationSource& source,
-                             const content::NotificationDetails& details) {
-  DCHECK_EQ(type, extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD);
-  extensions::ExtensionHost* host =
-      content::Details<extensions::ExtensionHost>(details).ptr();
+void AppLoadService::OnExtensionHostCompletedFirstLoad(
+    content::BrowserContext* browser_context,
+    extensions::ExtensionHost* host) {
   const Extension* extension = host->extension();
   // It is possible for an extension to be unloaded before it stops loading.
   if (!extension)

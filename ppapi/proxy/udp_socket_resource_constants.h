@@ -14,6 +14,10 @@ namespace proxy {
 
 class UDPSocketResourceConstants {
  public:
+  UDPSocketResourceConstants(const UDPSocketResourceConstants&) = delete;
+  UDPSocketResourceConstants& operator=(const UDPSocketResourceConstants&) =
+      delete;
+
   // The maximum number of bytes that each
   // PpapiPluginMsg_PPBUDPSocket_PushRecvResult message is allowed to carry.
   enum { kMaxReadSize = 128 * 1024 };
@@ -38,9 +42,6 @@ class UDPSocketResourceConstants {
   // The maximum number of buffers that we allow instances of this class to be
   // sending before we block the plugin.
   enum { kPluginSendBufferSlots = 8u };
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UDPSocketResourceConstants);
 };
 
 }  // namespace proxy

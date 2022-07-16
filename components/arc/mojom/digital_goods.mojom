@@ -11,6 +11,7 @@ import "third_party/blink/public/mojom/digital_goods/digital_goods.mojom";
 // Allows the browser process to forward calls for the Digital Goods API to
 // ARC++
 // Next method ID: 3
+[Stable]
 interface DigitalGoodsInstance {
   // Queries a specific package for SKU details by item IDs.
   [MinVersion=0] GetDetails@0(string package_name,

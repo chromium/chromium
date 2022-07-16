@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "content/common/web_ui.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
@@ -26,10 +25,12 @@ class WebUIExtensionData
   static void Create(RenderFrame* render_frame,
                      mojo::PendingAssociatedReceiver<mojom::WebUI> receiver,
                      mojo::PendingAssociatedRemote<mojom::WebUIHost> remote);
-  // TODO(dcheng): Why is this ctor public?
-  explicit WebUIExtensionData(
-      RenderFrame* render_frame,
-      mojo::PendingAssociatedRemote<mojom::WebUIHost> remote);
+
+  WebUIExtensionData() = delete;
+
+  WebUIExtensionData(const WebUIExtensionData&) = delete;
+  WebUIExtensionData& operator=(const WebUIExtensionData&) = delete;
+
   ~WebUIExtensionData() override;
 
   // Returns value for a given |key|. Will return an empty string if no such key
@@ -40,17 +41,19 @@ class WebUIExtensionData
                    std::unique_ptr<base::ListValue> args);
 
  private:
-  // mojom::WebUI
+  // Use Create() instead.
+  WebUIExtensionData(RenderFrame* render_frame,
+                     mojo::PendingAssociatedRemote<mojom::WebUIHost> remote);
+
+  // mojom::WebUI:
   void SetProperty(const std::string& name, const std::string& value) override;
 
-  // RenderFrameObserver
-  void OnDestruct() override {}
+  // RenderFrameObserver:
+  void OnDestruct() override;
 
   std::map<std::string, std::string> variable_map_;
 
   mojo::AssociatedRemote<mojom::WebUIHost> remote_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebUIExtensionData);
 };
 
 }  // namespace content

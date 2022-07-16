@@ -128,11 +128,7 @@ void ConfigureHttp2Params(const base::CommandLine& command_line,
   if (command_line.HasSwitch(switches::kHttp2GreaseSettings) ||
       GetVariationParam(http2_trial_params, "http2_grease_settings") ==
           "true") {
-    spdy::SpdySettingsId id = 0x0a0a + 0x1000 * base::RandGenerator(0xf + 1) +
-                              0x0010 * base::RandGenerator(0xf + 1);
-    uint32_t value = base::RandGenerator(
-        static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) + 1);
-    params->http2_settings.insert(std::make_pair(id, value));
+    params->enable_http2_settings_grease = true;
   }
 
   // Optionally define a frame of reserved type to "grease" frame types, see
@@ -510,8 +506,9 @@ bool AreQuicParamsValid(const base::CommandLine& command_line,
     // Failed to parse epoch as int.
     return false;
   }
-  if (epoch < 20201019) {
-    // All channels currently have an epoch of at least 20201019.
+  if (epoch < 20211025) {
+    // All channels currently have an epoch of at least this value. This
+    // can be confirmed by checking the internal QUIC field trial config file.
     return false;
   }
   return true;
@@ -558,28 +555,26 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
         GetQuicIdleConnectionTimeoutSeconds(quic_trial_params);
     if (idle_connection_timeout_seconds != 0) {
       quic_params->idle_connection_timeout =
-          base::TimeDelta::FromSeconds(idle_connection_timeout_seconds);
+          base::Seconds(idle_connection_timeout_seconds);
     }
     int reduced_ping_timeout_seconds =
         GetQuicReducedPingTimeoutSeconds(quic_trial_params);
     if (reduced_ping_timeout_seconds > 0 &&
         reduced_ping_timeout_seconds < quic::kPingTimeoutSecs) {
       quic_params->reduced_ping_timeout =
-          base::TimeDelta::FromSeconds(reduced_ping_timeout_seconds);
+          base::Seconds(reduced_ping_timeout_seconds);
     }
     int max_time_before_crypto_handshake_seconds =
         GetQuicMaxTimeBeforeCryptoHandshakeSeconds(quic_trial_params);
     if (max_time_before_crypto_handshake_seconds > 0) {
       quic_params->max_time_before_crypto_handshake =
-          base::TimeDelta::FromSeconds(
-              max_time_before_crypto_handshake_seconds);
+          base::Seconds(max_time_before_crypto_handshake_seconds);
     }
     int max_idle_time_before_crypto_handshake_seconds =
         GetQuicMaxIdleTimeBeforeCryptoHandshakeSeconds(quic_trial_params);
     if (max_idle_time_before_crypto_handshake_seconds > 0) {
       quic_params->max_idle_time_before_crypto_handshake =
-          base::TimeDelta::FromSeconds(
-              max_idle_time_before_crypto_handshake_seconds);
+          base::Seconds(max_idle_time_before_crypto_handshake_seconds);
     }
     quic_params->estimate_initial_rtt =
         ShouldQuicEstimateInitialRtt(quic_trial_params);
@@ -599,8 +594,7 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
         GetQuicInitialRttForHandshakeMilliseconds(quic_trial_params);
     if (initial_rtt_for_handshake_milliseconds > 0) {
       quic_params->initial_rtt_for_handshake =
-          base::TimeDelta::FromMilliseconds(
-              initial_rtt_for_handshake_milliseconds);
+          base::Milliseconds(initial_rtt_for_handshake_milliseconds);
     }
 
     quic_params->disable_tls_zero_rtt =
@@ -613,8 +607,7 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
         GetQuicRetransmittableOnWireTimeoutMilliseconds(quic_trial_params);
     if (retransmittable_on_wire_timeout_milliseconds > 0) {
       quic_params->retransmittable_on_wire_timeout =
-          base::TimeDelta::FromMilliseconds(
-              retransmittable_on_wire_timeout_milliseconds);
+          base::Milliseconds(retransmittable_on_wire_timeout_milliseconds);
     }
     quic_params->migrate_idle_sessions =
         ShouldQuicMigrateIdleSessions(quic_trial_params);
@@ -622,13 +615,13 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
         GetQuicIdleSessionMigrationPeriodSeconds(quic_trial_params);
     if (idle_session_migration_period_seconds > 0) {
       quic_params->idle_session_migration_period =
-          base::TimeDelta::FromSeconds(idle_session_migration_period_seconds);
+          base::Seconds(idle_session_migration_period_seconds);
     }
     int max_time_on_non_default_network_seconds =
         GetQuicMaxTimeOnNonDefaultNetworkSeconds(quic_trial_params);
     if (max_time_on_non_default_network_seconds > 0) {
       quic_params->max_time_on_non_default_network =
-          base::TimeDelta::FromSeconds(max_time_on_non_default_network_seconds);
+          base::Seconds(max_time_on_non_default_network_seconds);
     }
     int max_migrations_to_non_default_network_on_write_error =
         GetQuicMaxNumMigrationsToNonDefaultNetworkOnWriteError(

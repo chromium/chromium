@@ -48,6 +48,9 @@ class SenderRtcpSession : public RtcpSession {
                     uint32_t local_ssrc,
                     uint32_t remote_ssrc);
 
+  SenderRtcpSession(const SenderRtcpSession&) = delete;
+  SenderRtcpSession& operator=(const SenderRtcpSession&) = delete;
+
   ~SenderRtcpSession() override;
 
   // If greater than zero, this is the last measured network round trip time.
@@ -128,8 +131,6 @@ class SenderRtcpSession : public RtcpSession {
   // when last report is received from RTP receiver.
   RtcpSendTimeMap last_reports_sent_map_;
   RtcpSendTimeQueue last_reports_sent_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(SenderRtcpSession);
 };
 
 }  // namespace cast

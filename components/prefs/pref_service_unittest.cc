@@ -251,8 +251,8 @@ TEST(PrefServiceTest, SetTimeValue_NullTime) {
   TestingPrefServiceSimple prefs;
 
   // Register a non-null time as the default.
-  const base::Time default_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(12345));
+  const base::Time default_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(12345));
   prefs.registry()->RegisterTimePref(kPrefName, default_time);
   EXPECT_FALSE(prefs.GetTime(kPrefName).is_null());
 
@@ -279,8 +279,7 @@ TEST(PrefServiceTest, SetTimeDeltaValue_ZeroTimeDelta) {
   TestingPrefServiceSimple prefs;
 
   // Register a non-zero time delta as the default.
-  const base::TimeDelta default_delta =
-      base::TimeDelta::FromMicroseconds(12345);
+  const base::TimeDelta default_delta = base::Microseconds(12345);
   prefs.registry()->RegisterTimeDeltaPref(kPrefName, default_delta);
   EXPECT_FALSE(prefs.GetTimeDelta(kPrefName).is_zero());
 
@@ -473,7 +472,7 @@ TEST_F(PrefServiceSetValueTest, SetListValue) {
   Mock::VerifyAndClearExpectations(&observer_);
 
   base::ListValue new_value;
-  new_value.AppendString(kValue);
+  new_value.Append(kValue);
   observer_.Expect(kName, &new_value);
   prefs_.Set(kName, new_value);
   Mock::VerifyAndClearExpectations(&observer_);

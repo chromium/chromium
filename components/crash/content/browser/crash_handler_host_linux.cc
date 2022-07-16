@@ -350,7 +350,7 @@ void CrashHandlerHostLinux::FindCrashingThreadAndDump(
                        std::move(asan_report),
 #endif
                        uptime, oom_size, signal_fd, attempt),
-        base::TimeDelta::FromMilliseconds(kRetryIntervalTranslatingTidInMs));
+        base::Milliseconds(kRetryIntervalTranslatingTidInMs));
     return;
   }
 

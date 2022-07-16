@@ -15,6 +15,9 @@ class EventRouter;
 
 class EventRouterFactory : public BrowserContextKeyedServiceFactory {
  public:
+  EventRouterFactory(const EventRouterFactory&) = delete;
+  EventRouterFactory& operator=(const EventRouterFactory&) = delete;
+
   static EventRouter* GetForBrowserContext(content::BrowserContext* context);
   static EventRouterFactory* GetInstance();
 
@@ -29,8 +32,6 @@ class EventRouterFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(EventRouterFactory);
 };
 
 }  // namespace extensions

@@ -22,6 +22,10 @@ namespace proxy {
 class PPAPI_PROXY_EXPORT InterfaceList {
  public:
   InterfaceList();
+
+  InterfaceList(const InterfaceList&) = delete;
+  InterfaceList& operator=(const InterfaceList&) = delete;
+
   ~InterfaceList();
 
   static InterfaceList* GetInstance();
@@ -58,6 +62,9 @@ class PPAPI_PROXY_EXPORT InterfaceList {
           sent_to_uma_(false) {
     }
 
+    InterfaceInfo(const InterfaceInfo&) = delete;
+    InterfaceInfo& operator=(const InterfaceInfo&) = delete;
+
     const void* iface() { return iface_; }
 
     // Permission required to return non-null for this interface. This will
@@ -71,8 +78,6 @@ class PPAPI_PROXY_EXPORT InterfaceList {
     void LogWithUmaOnce(const std::string& name);
 
    private:
-    DISALLOW_COPY_AND_ASSIGN(InterfaceInfo);
-
     const void* const iface_;
     const Permission required_permission_;
 
@@ -102,12 +107,9 @@ class PPAPI_PROXY_EXPORT InterfaceList {
   NameToInterfaceInfoMap name_to_plugin_info_;
 
   InterfaceProxy::Factory id_to_factory_[API_ID_COUNT];
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceList);
 };
 
 }  // namespace proxy
 }  // namespace ppapi
 
 #endif  // PPAPI_PROXY_INTERFACE_LIST_H_
-

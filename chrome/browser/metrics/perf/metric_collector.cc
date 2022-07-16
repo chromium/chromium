@@ -31,8 +31,7 @@ const int kMinIntervalBetweenSessionRestoreCollectionsInSec = 30;
 base::TimeDelta RandomTimeDelta(base::TimeDelta max) {
   if (max.is_zero())
     return max;
-  return base::TimeDelta::FromMicroseconds(
-      base::RandGenerator(max.InMicroseconds()));
+  return base::Microseconds(base::RandGenerator(max.InMicroseconds()));
 }
 
 // PerfDataProto is defined elsewhere with more fields than the definition in
@@ -151,8 +150,8 @@ void MetricCollector::ScheduleSessionRestoreCollection(int num_tabs_restored) {
     return;
   }
 
-  const auto min_interval = base::TimeDelta::FromSeconds(
-      kMinIntervalBetweenSessionRestoreCollectionsInSec);
+  const auto min_interval =
+      base::Seconds(kMinIntervalBetweenSessionRestoreCollectionsInSec);
   const base::TimeDelta time_since_last_collection =
       (base::TimeTicks::Now() - last_session_restore_collection_time_);
   // Do not collect if there hasn't been enough elapsed time since the last

@@ -27,12 +27,14 @@ class APIResponseValidator {
         base::RepeatingCallback<void(const std::string&, const std::string&)>;
 
     explicit TestHandler(HandlerMethod method);
+
+    TestHandler(const TestHandler&) = delete;
+    TestHandler& operator=(const TestHandler&) = delete;
+
     ~TestHandler();
 
    private:
     HandlerMethod method_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestHandler);
   };
 
   // The origin of the callback passed to the response.
@@ -49,6 +51,10 @@ class APIResponseValidator {
   };
 
   explicit APIResponseValidator(const APITypeReferenceMap* type_refs);
+
+  APIResponseValidator(const APIResponseValidator&) = delete;
+  APIResponseValidator& operator=(const APIResponseValidator&) = delete;
+
   ~APIResponseValidator();
 
   // Validates a response against the expected schema. By default, this will
@@ -63,8 +69,6 @@ class APIResponseValidator {
  private:
   // The type reference map; guaranteed to outlive this object.
   const APITypeReferenceMap* type_refs_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIResponseValidator);
 };
 
 }  // namespace extensions

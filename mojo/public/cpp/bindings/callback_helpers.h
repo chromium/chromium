@@ -82,6 +82,9 @@ class CallbackWithDeleteHelper<void(Args...)> {
       : callback_(std::move(callback)),
         delete_callback_(std::move(delete_callback)) {}
 
+  CallbackWithDeleteHelper(const CallbackWithDeleteHelper&) = delete;
+  CallbackWithDeleteHelper& operator=(const CallbackWithDeleteHelper&) = delete;
+
   ~CallbackWithDeleteHelper() {
     if (delete_callback_)
       std::move(delete_callback_).Run();
@@ -95,8 +98,6 @@ class CallbackWithDeleteHelper<void(Args...)> {
  private:
   CallbackType callback_;
   base::OnceClosure delete_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackWithDeleteHelper);
 };
 
 }  // namespace internal

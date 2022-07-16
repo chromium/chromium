@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PARSER_SCHEDULER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/renderer/core/html/parser/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
@@ -45,12 +45,14 @@ class SpeculationsPumpSession : public NestingLevelIncrementer {
   ~SpeculationsPumpSession();
 
   base::TimeDelta ElapsedTime() const { return start_time_.Elapsed(); }
-  void AddedElementTokens(size_t count);
-  size_t ProcessedElementTokens() const { return processed_element_tokens_; }
+  void AddedElementTokens(wtf_size_t count);
+  wtf_size_t ProcessedElementTokens() const {
+    return processed_element_tokens_;
+  }
 
  private:
   base::ElapsedTimer start_time_;
-  size_t processed_element_tokens_;
+  wtf_size_t processed_element_tokens_;
 };
 
 class HTMLParserScheduler final : public GarbageCollected<HTMLParserScheduler> {

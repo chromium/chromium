@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <deque>
 #include <type_traits>
 #include <vector>
 
@@ -69,7 +70,7 @@ inline int IncrementForAlignCeil4(T pos) {
 
 // Sorts values in |container| and removes duplicates.
 template <class T>
-void SortAndUniquify(std::vector<T>* container) {
+void SortAndUniquify(std::deque<T>* container) {
   std::sort(container->begin(), container->end());
   container->erase(std::unique(container->begin(), container->end()),
                    container->end());

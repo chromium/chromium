@@ -19,14 +19,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -152,11 +151,18 @@ class StoragePartitionRemovalTestStoragePartition
   StoragePartitionRemovalTestStoragePartition() {
     set_network_context(&network_context_);
   }
+
+  StoragePartitionRemovalTestStoragePartition(
+      const StoragePartitionRemovalTestStoragePartition&) = delete;
+  StoragePartitionRemovalTestStoragePartition& operator=(
+      const StoragePartitionRemovalTestStoragePartition&) = delete;
+
   ~StoragePartitionRemovalTestStoragePartition() override = default;
 
   void ClearDataForOrigin(uint32_t remove_mask,
                           uint32_t quota_storage_remove_mask,
-                          const GURL& storage_origin) override {}
+                          const GURL& storage_origin,
+                          base::OnceClosure callback) override {}
 
   void ClearData(uint32_t remove_mask,
                  uint32_t quota_storage_remove_mask,
@@ -216,8 +222,6 @@ class StoragePartitionRemovalTestStoragePartition
  private:
   std::vector<StoragePartitionRemovalData> storage_partition_removal_data_;
   network::TestNetworkContext network_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(StoragePartitionRemovalTestStoragePartition);
 };
 
 // Custom matcher to test the equivalence of two URL filters. Since those are
@@ -277,7 +281,7 @@ ProbablySameFilter(const base::RepeatingCallback<bool(const GURL&)>& filter) {
 }
 
 base::Time AnHourAgo() {
-  return base::Time::Now() - base::TimeDelta::FromHours(1);
+  return base::Time::Now() - base::Hours(1);
 }
 
 bool FilterMatchesCookie(const CookieDeletionFilterPtr& filter,
@@ -339,14 +343,15 @@ class RemoveDownloadsTester {
     EXPECT_CALL(*download_manager_, Shutdown());
   }
 
+  RemoveDownloadsTester(const RemoveDownloadsTester&) = delete;
+  RemoveDownloadsTester& operator=(const RemoveDownloadsTester&) = delete;
+
   ~RemoveDownloadsTester() = default;
 
   MockDownloadManager* download_manager() { return download_manager_; }
 
  private:
   MockDownloadManager* download_manager_;  // Owned by browser context.
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveDownloadsTester);
 };
 
 // Test Class ----------------------------------------------------------------
@@ -357,6 +362,10 @@ class BrowsingDataRemoverImplTest : public testing::Test {
     remover_ = static_cast<BrowsingDataRemoverImpl*>(
         browser_context_->GetBrowsingDataRemover());
   }
+
+  BrowsingDataRemoverImplTest(const BrowsingDataRemoverImplTest&) = delete;
+  BrowsingDataRemoverImplTest& operator=(const BrowsingDataRemoverImplTest&) =
+      delete;
 
   ~BrowsingDataRemoverImplTest() override = default;
 
@@ -485,8 +494,6 @@ class BrowsingDataRemoverImplTest : public testing::Test {
   std::vector<StoragePartitionRemovalData> storage_partition_removal_data_;
 
   scoped_refptr<storage::MockSpecialStoragePolicy> mock_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverImplTest);
 };
 
 // Tests ---------------------------------------------------------------------
@@ -654,7 +661,7 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveLocalStorageForLastWeek) {
   CreateMockPolicy();
 
   BlockUntilBrowsingDataRemoved(
-      base::Time::Now() - base::TimeDelta::FromDays(7), base::Time::Max(),
+      base::Time::Now() - base::Days(7), base::Time::Max(),
       BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE, false);
 
   EXPECT_EQ(BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE, GetRemovalMask());
@@ -977,7 +984,7 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveQuotaManagedDataForLastHour) {
 
 TEST_F(BrowsingDataRemoverImplTest, RemoveQuotaManagedDataForLastWeek) {
   BlockUntilBrowsingDataRemoved(
-      base::Time::Now() - base::TimeDelta::FromDays(7), base::Time::Max(),
+      base::Time::Now() - base::Days(7), base::Time::Max(),
       BrowsingDataRemover::DATA_TYPE_FILE_SYSTEMS |
           BrowsingDataRemover::DATA_TYPE_WEB_SQL |
           BrowsingDataRemover::DATA_TYPE_APP_CACHE |
@@ -1665,9 +1672,9 @@ TEST_F(BrowsingDataRemoverImplTest, ClearsTrustTokensForSiteDespiteTimeRange) {
   // Since Trust Tokens data is not associated with particular timestamps, we
   // should observe the same clearing behavior with a non-default time range as
   // with the default time range.
-  BlockUntilOriginDataRemoved(
-      base::Time(), base::Time() + base::TimeDelta::FromSeconds(1),
-      BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS, std::move(builder));
+  BlockUntilOriginDataRemoved(base::Time(), base::Time() + base::Seconds(1),
+                              BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
+                              std::move(builder));
 }
 
 TEST_F(BrowsingDataRemoverImplTest, DeferCookieDeletion) {

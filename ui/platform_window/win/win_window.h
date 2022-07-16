@@ -6,7 +6,6 @@
 #define UI_PLATFORM_WINDOW_WIN_WIN_WINDOW_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/win/msg_util.h"
@@ -24,6 +23,10 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
                                     public gfx::WindowImpl {
  public:
   WinWindow(PlatformWindowDelegate* delegate, const gfx::Rect& bounds);
+
+  WinWindow(const WinWindow&) = delete;
+  WinWindow& operator=(const WinWindow&) = delete;
+
   ~WinWindow() override;
 
  private:
@@ -112,8 +115,6 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
   scoped_refptr<WinCursor> cursor_;
 
   CR_MSG_MAP_CLASS_DECLARATIONS(WinWindow)
-
-  DISALLOW_COPY_AND_ASSIGN(WinWindow);
 };
 
 namespace test {

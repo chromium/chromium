@@ -262,11 +262,13 @@ void AudioScheduledSourceHandler::NotifyEnded() {
   // let DispatchEvent take are of sending the event to the right
   // place,
   DCHECK(IsMainThread());
-  if (!Context() || !Context()->GetExecutionContext())
-    return;
-  if (GetNode())
-    GetNode()->DispatchEvent(*Event::Create(event_type_names::kEnded));
 
+  if (GetNode()) {
+    DispatchEventResult result =
+        GetNode()->DispatchEvent(*Event::Create(event_type_names::kEnded));
+    if (result == DispatchEventResult::kCanceledBeforeDispatch)
+      return;
+  }
   on_ended_notification_pending_ = false;
 }
 

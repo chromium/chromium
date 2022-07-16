@@ -101,6 +101,10 @@ struct PassthroughResources {
         std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
             representation);
     SharedImageData(SharedImageData&& other);
+
+    SharedImageData(const SharedImageData&) = delete;
+    SharedImageData& operator=(const SharedImageData&) = delete;
+
     ~SharedImageData();
     SharedImageData& operator=(SharedImageData&& other);
 
@@ -122,7 +126,6 @@ struct PassthroughResources {
         representation_;
     std::unique_ptr<SharedImageRepresentationGLTexturePassthrough::ScopedAccess>
         scoped_access_;
-    DISALLOW_COPY_AND_ASSIGN(SharedImageData);
   };
   // Mapping of client texture IDs to
   // SharedImageRepresentationGLTexturePassthroughs.
@@ -717,9 +720,14 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // Pending async ReadPixels calls
   struct PendingReadPixels {
     PendingReadPixels();
-    ~PendingReadPixels();
+
+    PendingReadPixels(const PendingReadPixels&) = delete;
+    PendingReadPixels& operator=(const PendingReadPixels&) = delete;
+
     PendingReadPixels(PendingReadPixels&&);
     PendingReadPixels& operator=(PendingReadPixels&&);
+
+    ~PendingReadPixels();
 
     std::unique_ptr<gl::GLFence> fence;
     GLuint buffer_service_id = 0;
@@ -732,21 +740,23 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     // Service IDs of GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM queries waiting for
     // this read pixels operation to complete
     base::flat_set<GLuint> waiting_async_pack_queries;
-
-    DISALLOW_COPY_AND_ASSIGN(PendingReadPixels);
   };
   base::circular_deque<PendingReadPixels> pending_read_pixels_;
 
   struct BufferShadowUpdate {
     BufferShadowUpdate();
-    ~BufferShadowUpdate();
+
+    BufferShadowUpdate(const BufferShadowUpdate&) = delete;
+    BufferShadowUpdate& operator=(const BufferShadowUpdate&) = delete;
+
     BufferShadowUpdate(BufferShadowUpdate&&);
     BufferShadowUpdate& operator=(BufferShadowUpdate&&);
+
+    ~BufferShadowUpdate();
 
     scoped_refptr<gpu::Buffer> shm;
     GLuint shm_offset = 0;
     GLuint size = 0;
-    DISALLOW_COPY_AND_ASSIGN(BufferShadowUpdate);
   };
   BufferShadowUpdateMap buffer_shadow_updates_;
 
@@ -774,6 +784,10 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     explicit EmulatedColorBuffer(
         gl::GLApi* api,
         const EmulatedDefaultFramebufferFormat& format_in);
+
+    EmulatedColorBuffer(const EmulatedColorBuffer&) = delete;
+    EmulatedColorBuffer& operator=(const EmulatedColorBuffer&) = delete;
+
     ~EmulatedColorBuffer();
 
     void Resize(const gfx::Size& new_size);
@@ -785,8 +799,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
     gfx::Size size;
     EmulatedDefaultFramebufferFormat format;
-
-    DISALLOW_COPY_AND_ASSIGN(EmulatedColorBuffer);
   };
 
   struct EmulatedDefaultFramebuffer {
@@ -795,6 +807,11 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
         const EmulatedDefaultFramebufferFormat& format_in,
         const FeatureInfo* feature_info,
         bool supports_separate_fbo_bindings);
+
+    EmulatedDefaultFramebuffer(const EmulatedDefaultFramebuffer&) = delete;
+    EmulatedDefaultFramebuffer& operator=(const EmulatedDefaultFramebuffer&) =
+        delete;
+
     ~EmulatedDefaultFramebuffer();
 
     // Set a new color buffer, return the old one
@@ -830,8 +847,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
     gfx::Size size;
     EmulatedDefaultFramebufferFormat format;
-
-    DISALLOW_COPY_AND_ASSIGN(EmulatedDefaultFramebuffer);
   };
   EmulatedDefaultFramebufferFormat emulated_default_framebuffer_format_;
   std::unique_ptr<EmulatedDefaultFramebuffer> emulated_back_buffer_;

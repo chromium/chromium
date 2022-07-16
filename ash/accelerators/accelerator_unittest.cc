@@ -34,6 +34,10 @@ namespace {
 class TestNetworkObserver : public NetworkObserver {
  public:
   TestNetworkObserver() = default;
+
+  TestNetworkObserver(const TestNetworkObserver&) = delete;
+  TestNetworkObserver& operator=(const TestNetworkObserver&) = delete;
+
   ~TestNetworkObserver() override = default;
 
   // ash::NetworkObserver:
@@ -45,8 +49,6 @@ class TestNetworkObserver : public NetworkObserver {
 
  private:
   bool wifi_enabled_status_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkObserver);
 };
 
 }  // namespace
@@ -60,6 +62,9 @@ class TestNetworkObserver : public NetworkObserver {
 class AcceleratorTest : public AshTestBase, public OverviewObserver {
  public:
   AcceleratorTest() : is_in_overview_mode_(false) {}
+
+  AcceleratorTest(const AcceleratorTest&) = delete;
+  AcceleratorTest& operator=(const AcceleratorTest&) = delete;
 
   void SetUp() override {
     ui_controls::InstallUIControlsAura(test::CreateAshUIControls());
@@ -96,9 +101,6 @@ class AcceleratorTest : public AshTestBase, public OverviewObserver {
 
  protected:
   bool is_in_overview_mode_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AcceleratorTest);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

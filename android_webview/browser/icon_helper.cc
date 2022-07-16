@@ -90,7 +90,7 @@ void IconHelper::DidUpdateFaviconURL(
         web_contents()->DownloadImage(
             candidate->icon_url,
             true,              // Is a favicon
-            0,                 // No preferred size
+            gfx::Size(),       // No preferred size
             kLargestIconSize,  // Max bitmap size
             false,             // Normal cache policy
             base::BindOnce(&IconHelper::DownloadFaviconCallback,

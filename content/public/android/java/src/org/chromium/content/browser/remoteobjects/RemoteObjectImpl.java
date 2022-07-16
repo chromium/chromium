@@ -154,12 +154,12 @@ class RemoteObjectImpl implements RemoteObject {
     }
 
     @Override
-    public void hasMethod(String name, HasMethodResponse callback) {
+    public void hasMethod(String name, HasMethod_Response callback) {
         callback.call(mMethods.containsKey(name));
     }
 
     @Override
-    public void getMethods(GetMethodsResponse callback) {
+    public void getMethods(GetMethods_Response callback) {
         if (!mAllowInspection) {
             callback.call(new String[0]);
             return;
@@ -170,7 +170,7 @@ class RemoteObjectImpl implements RemoteObject {
 
     @Override
     public void invokeMethod(
-            String name, RemoteInvocationArgument[] arguments, InvokeMethodResponse callback) {
+            String name, RemoteInvocationArgument[] arguments, InvokeMethod_Response callback) {
         Object target = mTarget.get();
         ObjectIdAllocator objectIdAllocator = mObjectIdAllocator.get();
         if (target == null || objectIdAllocator == null) {

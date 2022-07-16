@@ -31,6 +31,20 @@
 // All the readings are freely available online.
 
 namespace ui {
+
+// Window property on the source window and message used by the XDS protocol.
+// This atom name intentionally includes the XDS protocol version (0).
+// After the source sends the XdndDrop message, this property stores the
+// (path-less) name of the file to be saved, and has the type text/plain, with
+// an optional charset attribute.
+// When receiving an XdndDrop event, the target needs to check for the
+// XdndDirectSave property on the source window. The target then modifies the
+// XdndDirectSave on the source window, and sends an XdndDirectSave message to
+// the source.
+// After the target sends the XdndDirectSave message, this property stores an
+// URL indicating the location where the source should save the file.
+const char kXdndDirectSave0[] = "XdndDirectSave0";
+
 namespace {
 
 using mojom::DragOperation;
@@ -69,19 +83,6 @@ const char kXdndActionDirectSave[] = "XdndActionDirectSave";
 // Window property that contains the possible actions that will be presented to
 // the user when the drag and drop action is kXdndActionAsk.
 const char kXdndActionList[] = "XdndActionList";
-
-// Window property on the source window and message used by the XDS protocol.
-// This atom name intentionally includes the XDS protocol version (0).
-// After the source sends the XdndDrop message, this property stores the
-// (path-less) name of the file to be saved, and has the type text/plain, with
-// an optional charset attribute.
-// When receiving an XdndDrop event, the target needs to check for the
-// XdndDirectSave property on the source window. The target then modifies the
-// XdndDirectSave on the source window, and sends an XdndDirectSave message to
-// the source.
-// After the target sends the XdndDirectSave message, this property stores an
-// URL indicating the location where the source should save the file.
-const char kXdndDirectSave0[] = "XdndDirectSave0";
 
 // Window property pointing to a proxy window to receive XDND target messages.
 // The XDND source must check the proxy window must for the XdndAware property,
@@ -507,8 +508,8 @@ void XDragDropClient::StopRepeatMouseMoveTimer() {
 }
 
 void XDragDropClient::StartEndMoveLoopTimer() {
-  end_move_loop_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1000),
-                             this, &XDragDropClient::EndMoveLoop);
+  end_move_loop_timer_.Start(FROM_HERE, base::Milliseconds(1000), this,
+                             &XDragDropClient::EndMoveLoop);
 }
 
 void XDragDropClient::StopEndMoveLoopTimer() {
@@ -672,7 +673,7 @@ void XDragDropClient::SendXdndPosition(x11::Window dest_window,
   // the Xdnd protocol both recommend that drag events should be sent
   // periodically.
   repeat_mouse_move_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(350),
+      FROM_HERE, base::Milliseconds(350),
       base::BindOnce(&XDragDropClient::ProcessMouseMove, base::Unretained(this),
                      screen_point, event_time));
 }

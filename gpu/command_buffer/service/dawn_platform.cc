@@ -104,8 +104,7 @@ uint64_t DawnPlatform::AddTraceEvent(
     const unsigned char* arg_types,
     const uint64_t* arg_values,
     unsigned char flags) {
-  base::TimeTicks timestamp_tt =
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(timestamp);
+  base::TimeTicks timestamp_tt = base::TimeTicks() + base::Seconds(timestamp);
 
   base::trace_event::TraceArguments args(
       num_args, arg_names, arg_types,

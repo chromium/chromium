@@ -6,17 +6,22 @@
 #define CHROME_BROWSER_PRINTING_PRINT_JOB_WORKER_H_
 
 #include <memory>
+#include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_number.h"
 #include "printing/printing_context.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/services/printing/public/mojom/print_backend_service.mojom-forward.h"
+#endif
 
 namespace content {
 class WebContents;
@@ -37,9 +42,13 @@ class PrintJobWorker {
  public:
   using SettingsCallback =
       base::OnceCallback<void(std::unique_ptr<PrintSettings>,
-                              PrintingContext::Result)>;
+                              mojom::ResultCode)>;
 
   PrintJobWorker(int render_process_id, int render_frame_id);
+
+  PrintJobWorker(const PrintJobWorker&) = delete;
+  PrintJobWorker& operator=(const PrintJobWorker&) = delete;
+
   virtual ~PrintJobWorker();
 
   void SetPrintJob(PrintJob* print_job);
@@ -115,6 +124,13 @@ class PrintJobWorker {
   // notifications are sent this way.
   class NotificationTask;
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  // Local callback wrapper for Print Backend Service mojom call.
+  void OnDidUpdatePrintSettings(const std::string& device_name,
+                                SettingsCallback callback,
+                                mojom::PrintSettingsResultPtr print_settings);
+#endif
+
   // Posts a task to call OnNewPage(). Used to wait for pages/document to be
   // available.
   void PostWaitForPage();
@@ -157,8 +173,7 @@ class PrintJobWorker {
 #endif
 
   // Reports settings back to |callback|.
-  void GetSettingsDone(SettingsCallback callback,
-                       PrintingContext::Result result);
+  void GetSettingsDone(SettingsCallback callback, mojom::ResultCode result);
 
   // Use the default settings. When using GTK+ or Mac, this can still end up
   // displaying a dialog. So this needs to happen from the UI thread on these
@@ -189,8 +204,6 @@ class PrintJobWorker {
 
   // Used to generate a WeakPtr for callbacks.
   base::WeakPtrFactory<PrintJobWorker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJobWorker);
 };
 
 }  // namespace printing

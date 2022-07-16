@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -31,12 +30,19 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
                                     public syncer::SyncServiceObserver {
  public:
   AvatarToolbarButtonDelegate(AvatarToolbarButton* button, Profile* profile);
+
+  AvatarToolbarButtonDelegate(const AvatarToolbarButtonDelegate&) = delete;
+  AvatarToolbarButtonDelegate& operator=(const AvatarToolbarButtonDelegate&) =
+      delete;
+
   ~AvatarToolbarButtonDelegate() override;
 
-  // Called by the AvatarToolbarButton to get information about the profile.
+  // Methods called by the AvatarToolbarButton to get profile information.
   std::u16string GetProfileName() const;
   std::u16string GetShortProfileName() const;
   gfx::Image GetGaiaAccountImage() const;
+  // Must only be called in states which have an avatar image (i.e. not
+  // kGuestSession and not kIncognitoProfile).
   gfx::Image GetProfileAvatarImage(gfx::Image gaia_account_image,
                                    int preferred_size) const;
 
@@ -141,8 +147,6 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   absl::optional<AvatarSyncErrorType> last_avatar_error_;
 
   base::WeakPtrFactory<AvatarToolbarButtonDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AvatarToolbarButtonDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_DELEGATE_H_

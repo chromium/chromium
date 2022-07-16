@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/timestamp_constants.h"
@@ -23,6 +22,10 @@ class MEDIA_EXPORT MovingAverage {
  public:
   // Creates a MovingAverage instance with space for |depth| samples.
   explicit MovingAverage(size_t depth);
+
+  MovingAverage(const MovingAverage&) = delete;
+  MovingAverage& operator=(const MovingAverage&) = delete;
+
   ~MovingAverage();
 
   // Adds a new sample to the average; replaces the oldest sample if |depth_|
@@ -59,8 +62,6 @@ class MEDIA_EXPORT MovingAverage {
 
   // Maximum value ever seen.
   base::TimeDelta max_ = kNoTimestamp;
-
-  DISALLOW_COPY_AND_ASSIGN(MovingAverage);
 };
 
 }  // namespace media

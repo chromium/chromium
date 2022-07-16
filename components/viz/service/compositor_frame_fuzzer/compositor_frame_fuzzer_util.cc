@@ -15,7 +15,7 @@
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/mask_filter_info.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 
 namespace viz {
 namespace {
@@ -100,6 +100,11 @@ void ExpandToMinSize(gfx::Rect* rect, int min_size) {
 class FuzzedCompositorFrameBuilder {
  public:
   FuzzedCompositorFrameBuilder() = default;
+
+  FuzzedCompositorFrameBuilder(const FuzzedCompositorFrameBuilder&) = delete;
+  FuzzedCompositorFrameBuilder& operator=(const FuzzedCompositorFrameBuilder&) =
+      delete;
+
   ~FuzzedCompositorFrameBuilder() = default;
 
   FuzzedData Build(const proto::CompositorRenderPass& render_pass_spec);
@@ -150,8 +155,6 @@ class FuzzedCompositorFrameBuilder {
 
   // Frame and data being built.
   FuzzedData data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuzzedCompositorFrameBuilder);
 };
 
 FuzzedData FuzzedCompositorFrameBuilder::Build(

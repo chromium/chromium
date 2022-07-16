@@ -18,6 +18,11 @@ namespace blink {
 class XrEnterFullscreenObserver : public NativeEventListener {
  public:
   XrEnterFullscreenObserver();
+
+  XrEnterFullscreenObserver(const XrEnterFullscreenObserver&) = delete;
+  XrEnterFullscreenObserver& operator=(const XrEnterFullscreenObserver&) =
+      delete;
+
   ~XrEnterFullscreenObserver() override;
 
   // NativeEventListener
@@ -34,7 +39,6 @@ class XrEnterFullscreenObserver : public NativeEventListener {
  private:
   Member<Element> fullscreen_element_;
   base::OnceCallback<void(bool)> on_completed_;
-  DISALLOW_COPY_AND_ASSIGN(XrEnterFullscreenObserver);
 };
 
 }  // namespace blink

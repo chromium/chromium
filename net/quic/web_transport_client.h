@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "net/base/network_isolation_key.h"
 #include "net/quic/web_transport_error.h"
@@ -19,6 +20,7 @@
 
 namespace net {
 
+class HttpResponseHeaders;
 class URLRequestContext;
 
 // Diagram of allowed state transitions:
@@ -31,7 +33,7 @@ class URLRequestContext;
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
 // "QuicTransportClientState" in src/tools/metrics/histograms/enums.xml.
-enum WebTransportState {
+enum class WebTransportState {
   // The client object has been created but Connect() has not been called.
   NEW,
   // Connection establishment is in progress.  No application data can be sent
@@ -49,6 +51,22 @@ enum WebTransportState {
   NUM_STATES,
 };
 
+NET_EXPORT std::ostream& operator<<(std::ostream& os, WebTransportState state);
+// https://datatracker.ietf.org/doc/html/draft-ietf-webtrans-http3/#section-5
+struct NET_EXPORT WebTransportCloseInfo final {
+  WebTransportCloseInfo();
+  WebTransportCloseInfo(uint32_t code, base::StringPiece reason);
+  ~WebTransportCloseInfo();
+
+  uint32_t code = 0;
+  std::string reason;
+
+  bool operator==(const WebTransportCloseInfo& other) const;
+};
+
+// Returns the string representation of `state`.
+const char* WebTransportStateString(WebTransportState state);
+
 // A visitor that gets notified about events that happen to a WebTransport
 // client.
 class NET_EXPORT WebTransportClientVisitor {
@@ -56,10 +74,16 @@ class NET_EXPORT WebTransportClientVisitor {
   virtual ~WebTransportClientVisitor();
 
   // State change notifiers.
-  virtual void OnConnected() = 0;         // CONNECTING -> CONNECTED
-  virtual void OnConnectionFailed() = 0;  // CONNECTING -> FAILED
-  virtual void OnClosed() = 0;            // CONNECTED -> CLOSED
-  virtual void OnError() = 0;             // CONNECTED -> FAILED
+  // CONNECTING -> CONNECTED
+  virtual void OnConnected(
+      scoped_refptr<HttpResponseHeaders> response_headers) = 0;
+  // CONNECTING -> FAILED
+  virtual void OnConnectionFailed(const WebTransportError& error) = 0;
+  // CONNECTED -> CLOSED
+  virtual void OnClosed(
+      const absl::optional<WebTransportCloseInfo>& close_info) = 0;
+  // CONNECTED -> FAILED
+  virtual void OnError(const WebTransportError& error) = 0;
 
   virtual void OnIncomingBidirectionalStreamAvailable() = 0;
   virtual void OnIncomingUnidirectionalStreamAvailable() = 0;
@@ -99,9 +123,14 @@ class NET_EXPORT WebTransportClient {
   // OnConnected() or OnConnectionFailed() is called on the Visitor.
   virtual void Connect() = 0;
 
+  // Starts the client-initiated termination process. This can be called only
+  // when the state is CONNECTED. The associated visitor is still waiting for
+  // OnClosed or OnError to be called.
+  virtual void Close(
+      const absl::optional<WebTransportCloseInfo>& close_info) = 0;
+
   // session() can be nullptr in states other than CONNECTED.
   virtual quic::WebTransportSession* session() = 0;
-  virtual const WebTransportError& error() const = 0;
 };
 
 // Creates a WebTransport client for |url| accessed from |origin| with the

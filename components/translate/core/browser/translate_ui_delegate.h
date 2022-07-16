@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
@@ -42,6 +41,10 @@ class TranslateUIDelegate {
   TranslateUIDelegate(const base::WeakPtr<TranslateManager>& translate_manager,
                       const std::string& source_language,
                       const std::string& target_language);
+
+  TranslateUIDelegate(const TranslateUIDelegate&) = delete;
+  TranslateUIDelegate& operator=(const TranslateUIDelegate&) = delete;
+
   virtual ~TranslateUIDelegate();
 
   // Handles when an error message is shown.
@@ -115,12 +118,12 @@ class TranslateUIDelegate {
 
   // Returns true if the site of the current webpage can be put on the never
   // prompt list.
-  bool CanAddToNeverPromptList() const;
+  bool CanAddSiteToNeverPromptList() const;
 
   // Sets the never-prompt state for the host of the current page. If
   // value is true, the current host will be blocklisted and translation
   // prompts will not show for that site.
-  void SetNeverPrompt(bool value);
+  void SetNeverPromptSite(bool value);
 
   // Returns true if the webpage in the current source language should be
   // translated into the current target language automatically.
@@ -193,8 +196,6 @@ class TranslateUIDelegate {
 
   // Listens to accept languages changes.
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateUIDelegate);
 };
 
 }  // namespace translate

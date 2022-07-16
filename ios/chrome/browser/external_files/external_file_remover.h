@@ -13,14 +13,15 @@
 class ExternalFileRemover : public KeyedService {
  public:
   ExternalFileRemover() = default;
+
+  ExternalFileRemover(const ExternalFileRemover&) = delete;
+  ExternalFileRemover& operator=(const ExternalFileRemover&) = delete;
+
   ~ExternalFileRemover() override = default;
   // Post a delayed task to clean up the files received from other applications.
   // |callback| is called when the clean up has finished; it may be null.
   virtual void RemoveAfterDelay(base::TimeDelta delay,
                                 base::OnceClosure callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExternalFileRemover);
 };
 
 #endif  // IOS_CHROME_BROWSER_EXTERNAL_FILES_EXTERNAL_FILE_REMOVER_H_

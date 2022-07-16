@@ -8,7 +8,6 @@
 
 #import "base/mac/mac_util.h"
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "ui/base/test/ui_controls.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
@@ -31,6 +30,11 @@ class NativeWidgetMacInteractiveUITest
 
   NativeWidgetMacInteractiveUITest() = default;
 
+  NativeWidgetMacInteractiveUITest(const NativeWidgetMacInteractiveUITest&) =
+      delete;
+  NativeWidgetMacInteractiveUITest& operator=(
+      const NativeWidgetMacInteractiveUITest&) = delete;
+
   // WidgetTest:
   void SetUp() override {
     SetUpForInteractiveTests();
@@ -46,15 +50,15 @@ class NativeWidgetMacInteractiveUITest
   std::unique_ptr<Observer> observer_;
   int activation_count_ = 0;
   int deactivation_count_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NativeWidgetMacInteractiveUITest);
 };
 
 class NativeWidgetMacInteractiveUITest::Observer : public TestWidgetObserver {
  public:
   Observer(NativeWidgetMacInteractiveUITest* parent, Widget* widget)
       : TestWidgetObserver(widget), parent_(parent) {}
+
+  Observer(const Observer&) = delete;
+  Observer& operator=(const Observer&) = delete;
 
   void OnWidgetActivationChanged(Widget* widget, bool active) override {
     if (active)
@@ -65,8 +69,6 @@ class NativeWidgetMacInteractiveUITest::Observer : public TestWidgetObserver {
 
  private:
   NativeWidgetMacInteractiveUITest* parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(Observer);
 };
 
 // Test that showing a window causes it to attain global keyWindow status.
@@ -180,8 +182,8 @@ class TestBubbleView : public BubbleDialogDelegateView {
     SetAnchorView(parent->GetContentsView());
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestBubbleView);
+  TestBubbleView(const TestBubbleView&) = delete;
+  TestBubbleView& operator=(const TestBubbleView&) = delete;
 };
 
 }  // namespace

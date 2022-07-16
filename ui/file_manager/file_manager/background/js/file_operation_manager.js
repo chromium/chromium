@@ -450,6 +450,13 @@ export class FileOperationManagerImpl {
    *     than moved to trash.
    */
   deleteEntries(entries, permanentlyDelete = false) {
+    if (permanentlyDelete) {
+      if (window.isSWA) {
+        chrome.fileManagerPrivate.startIOTask(
+            chrome.fileManagerPrivate.IOTaskType.DELETE, entries, {});
+        return;
+      }
+    }
     this.deleteOrRestore_(
         util.FileOperationType.DELETE, entries, permanentlyDelete);
   }
@@ -659,6 +666,30 @@ export class FileOperationManagerImpl {
     zipTask.initialize(() => {
       this.pendingCopyTasks_.push(zipTask);
       this.serviceAllTasks_();
+    });
+  }
+
+  /**
+   * Writes file to destination dir. This function is called when an image is
+   * dragged from a web page. In this case there is no FileSystem Entry to copy
+   * or move, just the JS File object with attached Blob. This operation does
+   * not use EventRouter or queue the task since it is not possible to track
+   * progress of the FileWriter.write().
+   *
+   * @param {!File} file The file entry to be written.
+   * @param {!DirectoryEntry} dir The destination directory to write to.
+   * @return {!Promise<!FileEntry>}
+   */
+  async writeFile(file, dir) {
+    const name = await fileOperationUtil.deduplicatePath(dir, file.name);
+    return new Promise((resolve, reject) => {
+      dir.getFile(name, {create: true, exclusive: true}, f => {
+        f.createWriter(writer => {
+          writer.onwriteend = () => resolve(f);
+          writer.onerror = reject;
+          writer.write(file);
+        }, reject);
+      }, reject);
     });
   }
 

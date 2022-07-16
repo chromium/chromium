@@ -234,7 +234,7 @@ bool Video::Load(const size_t max_frames) {
 }
 
 bool Video::Decode() {
-  if (codec_ != VideoCodec::kCodecVP9) {
+  if (codec_ != VideoCodec::kVP9) {
     LOG(ERROR) << "Decoding is currently only supported for VP9 videos";
     return false;
   }
@@ -268,7 +268,7 @@ bool Video::Decode() {
   // data will be replaced with the decompressed video stream.
   pixel_format_ = VideoPixelFormat::PIXEL_FORMAT_I420;
   profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
-  codec_ = kUnknownVideoCodec;
+  codec_ = VideoCodec::kUnknown;
   data_ = std::move(decompressed_data);
   return true;
 }
@@ -326,8 +326,8 @@ gfx::Rect Video::VisibleRect() const {
 }
 
 base::TimeDelta Video::GetDuration() const {
-  return base::TimeDelta::FromSecondsD(static_cast<double>(num_frames_) /
-                                       static_cast<double>(frame_rate_));
+  return base::Seconds(static_cast<double>(num_frames_) /
+                       static_cast<double>(frame_rate_));
 }
 
 const std::vector<std::string>& Video::FrameChecksums() const {
@@ -649,15 +649,15 @@ absl::optional<VideoCodecProfile> Video::ConvertStringtoProfile(
 absl::optional<VideoCodec> Video::ConvertProfileToCodec(
     VideoCodecProfile profile) {
   if (profile >= H264PROFILE_MIN && profile <= H264PROFILE_MAX) {
-    return kCodecH264;
+    return VideoCodec::kH264;
   } else if (profile >= VP8PROFILE_MIN && profile <= VP8PROFILE_MAX) {
-    return kCodecVP8;
+    return VideoCodec::kVP8;
   } else if (profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX) {
-    return kCodecVP9;
+    return VideoCodec::kVP9;
   } else if (profile >= AV1PROFILE_MIN && profile <= AV1PROFILE_MAX) {
-    return kCodecAV1;
+    return VideoCodec::kAV1;
   } else if (profile >= HEVCPROFILE_MIN && profile <= HEVCPROFILE_MAX) {
-    return kCodecHEVC;
+    return VideoCodec::kHEVC;
   } else {
     VLOG(2) << GetProfileName(profile) << " is not supported";
     return absl::nullopt;

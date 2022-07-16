@@ -22,19 +22,18 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/hash/sha1.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/thread_test_helper.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
@@ -51,7 +50,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -162,17 +161,17 @@ class QuasiWebSocketHttpResponse : public net::test_server::HttpResponse {
   }
   ~QuasiWebSocketHttpResponse() override {}
 
-  void SendResponse(const net::test_server::SendBytesCallback& send,
-                    net::test_server::SendCompleteCallback done) override {
-    const auto response_headers = base::StringPrintf(
-        "HTTP/1.1 101 WebSocket Protocol Handshake\r\n"
-        "Upgrade: WebSocket\r\n"
-        "Connection: Upgrade\r\n"
-        "Sec-WebSocket-Accept: %s\r\n"
-        "\r\n",
-        accept_hash_.c_str());
-    send.Run(response_headers, base::DoNothing());
-    // Never call done(). The connection should stay open.
+  void SendResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
+    base::StringPairs response_headers = {
+        {"Upgrade", "WebSocket"},
+        {"Connection", "Upgrade"},
+        {"Sec-WebSocket-Accept", accept_hash_}};
+
+    delegate->SendResponseHeaders(net::HTTP_SWITCHING_PROTOCOLS,
+                                  "WebSocket Protocol Handshake",
+                                  response_headers);
+    // Never call FinishResponse(). The connection should stay open.
   }
 
  private:
@@ -273,7 +272,7 @@ std::string JsRequestTestNavigateAndWaitForTitle(Browser* browser,
       browser->tab_strip_model()->GetActiveWebContents(), expected_title);
   title_watcher.AlsoWaitForTitle(u"NOT BLOCKED");
 
-  ui_test_utils::NavigateToURL(browser, url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   return base::UTF16ToUTF8(title_watcher.WaitAndGetTitle());
 }
 
@@ -334,6 +333,9 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
   TestSBClient()
       : threat_type_(SB_THREAT_TYPE_SAFE),
         safe_browsing_service_(g_browser_process->safe_browsing_service()) {}
+
+  TestSBClient(const TestSBClient&) = delete;
+  TestSBClient& operator=(const TestSBClient&) = delete;
 
   SBThreatType GetThreatType() const { return threat_type_; }
 
@@ -434,8 +436,6 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
   SBThreatType threat_type_;
   std::string threat_hash_;
   SafeBrowsingService* safe_browsing_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSBClient);
 };
 
 }  // namespace
@@ -444,6 +444,10 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
 class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
  public:
   V4SafeBrowsingServiceTest() {}
+
+  V4SafeBrowsingServiceTest(const V4SafeBrowsingServiceTest&) = delete;
+  V4SafeBrowsingServiceTest& operator=(const V4SafeBrowsingServiceTest&) =
+      delete;
 
   void SetUp() override {
     sb_factory_ = std::make_unique<TestSafeBrowsingServiceFactory>();
@@ -596,8 +600,6 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
   // bug is fixed.
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(V4SafeBrowsingServiceTest);
 };
 
 // Ensures that if an image is marked as UwS, the main page doesn't show an
@@ -610,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, UnwantedImgIgnored) {
   // page.
   MarkUrlForUwsUnexpired(img_url);
 
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   EXPECT_FALSE(ShowingInterstitialPage());
   EXPECT_FALSE(got_hit_report());
@@ -626,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MalwareWithAllowlist) {
   MarkUrlForMalwareUnexpired(url);
   EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(url))).Times(1);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   Mock::VerifyAndClearExpectations(&observer_);
   // There should be an InterstitialPage.
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -646,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MalwareWithAllowlist) {
 
   // Navigate to kEmptyPage again -- should hit the allowlist this time.
   EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(url))).Times(0);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_FALSE(ShowingInterstitialPage());
 }
 
@@ -661,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, Prefetch) {
   // only malware was a prefetch target.
   MarkUrlForMalwareUnexpired(malware_url);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_FALSE(ShowingInterstitialPage());
   EXPECT_FALSE(got_hit_report());
   Mock::VerifyAndClear(&observer_);
@@ -670,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, Prefetch) {
   // the interstitial.
   EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(malware_url)))
       .Times(1);
-  ui_test_utils::NavigateToURL(browser(), malware_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), malware_url));
   EXPECT_TRUE(ShowingInterstitialPage());
   EXPECT_TRUE(got_hit_report());
   Mock::VerifyAndClear(&observer_);
@@ -684,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MainFrameHitWithReferrer) {
   MarkUrlForMalwareUnexpired(bad_url);
 
   // Navigate to first, safe page.
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   EXPECT_FALSE(ShowingInterstitialPage());
   EXPECT_FALSE(got_hit_report());
   Mock::VerifyAndClear(&observer_);
@@ -715,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
   MarkUrlForMalwareUnexpired(bad_url);
 
   // Navigate to first, safe page.
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   EXPECT_FALSE(ShowingInterstitialPage());
   EXPECT_FALSE(got_hit_report());
   Mock::VerifyAndClear(&observer_);
@@ -747,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
   MarkUrlForMalwareUnexpired(bad_url);
 
   // Navigate to first, safe page.
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   EXPECT_FALSE(ShowingInterstitialPage());
   EXPECT_FALSE(got_hit_report());
   Mock::VerifyAndClear(&observer_);
@@ -797,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
   MarkUrlForMalwareUnexpired(bad_url);
 
   // Navigate to first, safe page.
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   EXPECT_FALSE(ShowingInterstitialPage());
   EXPECT_FALSE(got_hit_report());
   Mock::VerifyAndClear(&observer_);
@@ -1041,7 +1043,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceWithAutoReloadTest,
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
   MarkUrlForMalwareUnexpired(url);
   EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(url))).Times(1);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_TRUE(ShowingInterstitialPage());
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -1085,7 +1087,7 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestInterstitialTest,
 
   EXPECT_CALL(observer_,
               OnSafeBrowsingHit(IsUnsafeResourceFor(js_request_url)));
-  ui_test_utils::NavigateToURL(browser(), page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
 
   // If the interstitial fails to be displayed, the test will hang here.
   load_stop_observer.Wait();
@@ -1242,8 +1244,10 @@ class V4SafeBrowsingServiceMetadataTest
  public:
   V4SafeBrowsingServiceMetadataTest() {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(V4SafeBrowsingServiceMetadataTest);
+  V4SafeBrowsingServiceMetadataTest(const V4SafeBrowsingServiceMetadataTest&) =
+      delete;
+  V4SafeBrowsingServiceMetadataTest& operator=(
+      const V4SafeBrowsingServiceMetadataTest&) = delete;
 };
 
 // Irrespective of the threat_type classification, if the main frame URL is
@@ -1254,7 +1258,7 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceMetadataTest, MalwareMainFrame) {
 
   EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(url))).Times(1);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // All types should show the interstitial.
   EXPECT_TRUE(ShowingInterstitialPage());
 
@@ -1277,7 +1281,7 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceMetadataTest, MalwareIFrame) {
   EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(iframe_url)))
       .Times(1);
 
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   // All types should show the interstitial.
   EXPECT_TRUE(ShowingInterstitialPage());
 
@@ -1310,7 +1314,7 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceMetadataTest, MalwareImg) {
       break;
   }
 
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   // Subresource which is tagged as a landing page should not show an
   // interstitial, the other types should.

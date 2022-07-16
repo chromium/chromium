@@ -43,7 +43,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingAllowedDefaults) {
 
   // Policy allows overriding - navigate to an SSL error page and expect the
   // proceed link.
-  ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           https_server_expired.GetURL("/")));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   WaitForInterstitial(tab);
@@ -88,7 +89,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingAllowedEnabled) {
 
   // Policy allows overriding - navigate to an SSL error page and expect the
   // proceed link.
-  ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           https_server_expired.GetURL("/")));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   WaitForInterstitial(tab);
@@ -122,7 +124,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingAllowedDisabled) {
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
-  ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           https_server_expired.GetURL("/")));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   WaitForInterstitial(tab);
@@ -178,7 +181,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
-  ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           https_server_expired.GetURL("/")));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   WaitForInterstitial(tab);
@@ -231,7 +235,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingForOriginsBadInput) {
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
-  ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           https_server_expired.GetURL("/")));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   WaitForInterstitial(tab);
@@ -281,7 +286,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingForOriginsEmptyList) {
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
-  ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           https_server_expired.GetURL("/")));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   WaitForInterstitial(tab);
@@ -337,7 +343,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingAllowedForOrigins) {
 
   // Policy allows overriding - navigate to an SSL error page and expect the
   // proceed link.
-  ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           https_server_expired.GetURL("/")));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   WaitForInterstitial(tab);

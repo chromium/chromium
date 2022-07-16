@@ -33,6 +33,8 @@ class CORE_EXPORT AppHistoryEntry final : public EventTargetWithInlineData,
 
   ScriptValue getState() const;
 
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(dispose, kDispose)
+
   HistoryItem* GetItem() { return item_; }
 
   // EventTargetWithInlineData overrides:

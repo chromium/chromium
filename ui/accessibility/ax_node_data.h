@@ -16,8 +16,8 @@
 #include "base/strings/string_split.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_node_text_styles.h"
 #include "ui/accessibility/ax_relative_bounds.h"
+#include "ui/accessibility/ax_text_attributes.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace ui {
@@ -144,9 +144,10 @@ struct AX_BASE_EXPORT AXNodeData {
   void RemoveStringListAttribute(ax::mojom::StringListAttribute attribute);
 
   //
-  // Text styles.
+  // Text attributes, such as spelling markers and style information.
   //
-  AXNodeTextStyles GetTextStyles() const;
+
+  AXTextAttributes GetTextAttributes() const;
 
   //
   // Convenience functions.
@@ -281,6 +282,13 @@ struct AX_BASE_EXPORT AXNodeData {
   // created using the CSS "user-modify" property, or the "contenteditable"
   // attribute.
   bool IsNonAtomicTextField() const;
+
+  // Some spinners are text fields, and some are not. For example, an ordinary
+  // <input type="number"> allows caret movement and behaves like a textfield,
+  // but the <input type="number"> used inside date, datetime, datetime-local,
+  // month, time, and week types does not allow this. In either type, pressing
+  // up/down arrow will change the value to the previous/next allowed value.
+  bool IsSpinnerTextField() const;
 
   // Helper to determine if |GetRestriction| is either ReadOnly or Disabled.
   // By default, all nodes that can't be edited are readonly.

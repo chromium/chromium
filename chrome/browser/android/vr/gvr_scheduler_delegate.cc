@@ -22,6 +22,7 @@
 #include "components/webxr/mailbox_to_surface_bridge_impl.h"
 #include "content/public/common/content_features.h"
 #include "device/vr/android/gvr/gvr_delegate.h"
+#include "device/vr/android/gvr/gvr_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
@@ -47,8 +48,7 @@ constexpr int kWebVrSpinnerTimeoutSeconds = 2;
 
 // Heuristic time limit to detect overstuffed GVR buffers for a
 // >60fps capable web app.
-constexpr base::TimeDelta kWebVrSlowAcquireThreshold =
-    base::TimeDelta::FromMilliseconds(2);
+constexpr base::TimeDelta kWebVrSlowAcquireThreshold = base::Milliseconds(2);
 
 // If running too fast, allow dropping frames occasionally to let GVR catch up.
 // Drop at most one frame in MaxDropRate.
@@ -56,14 +56,13 @@ constexpr int kWebVrUnstuffMaxDropRate = 7;
 
 // Timeout for checking for the WebVR rendering GL fence. If the timeout is
 // reached, yield to let other tasks execute before rechecking.
-constexpr base::TimeDelta kWebVRFenceCheckTimeout =
-    base::TimeDelta::FromMicroseconds(2000);
+constexpr base::TimeDelta kWebVRFenceCheckTimeout = base::Microseconds(2000);
 
 // Polling interval for checking for the WebVR rendering GL fence. Used as
 // an alternative to kWebVRFenceCheckTimeout if the GPU workaround is active.
 // The actual interval may be longer due to PostDelayedTask's resolution.
 constexpr base::TimeDelta kWebVRFenceCheckPollInterval =
-    base::TimeDelta::FromMicroseconds(500);
+    base::Microseconds(500);
 
 bool ValidateRect(const gfx::RectF& bounds) {
   // Bounds should be between 0 and 1, with positive width/height.
@@ -985,10 +984,12 @@ void GvrSchedulerDelegate::SendVSync(device::mojom::VRPosePtr pose,
     frame_data->mojo_space_reset |= last_event.type == GVR_EVENT_RECENTER;
   }
 
+  frame_data->views = device::gvr_utils::CreateViews(gvr_api_, pose.get());
+
   TRACE_EVENT0("gpu", "GvrSchedulerDelegate::XRInput");
   frame_data->input_state = std::move(input_states_);
 
-  frame_data->pose = std::move(pose);
+  frame_data->mojo_from_viewer = std::move(pose);
 
   device::WebXrFrame* frame = webxr_.GetAnimatingFrame();
   frame->head_pose = head_mat;
@@ -1120,7 +1121,7 @@ void GvrSchedulerDelegate::GetFrameData(
   TRACE_EVENT0("gpu", __func__);
   if (!get_frame_data_callback_.is_null()) {
     DLOG(WARNING) << ": previous get_frame_data_callback_ was not used yet";
-    mojo::ReportBadMessage(
+    frame_data_receiver_.ReportBadMessage(
         "Requested VSync before waiting for response to previous request.");
     ClosePresentationBindings();
     return;
@@ -1195,7 +1196,7 @@ void GvrSchedulerDelegate::SubmitFrameDrawnIntoTexture(
     DCHECK(sync_token.verified_flush());
     buffer->mailbox_holder.sync_token = sync_token;
   } else {
-    mojo::ReportBadMessage(
+    presentation_receiver_.ReportBadMessage(
         "SubmitFrameDrawnIntoTexture called while using the wrong transport "
         "mode");
     ClosePresentationBindings();
@@ -1212,14 +1213,16 @@ void GvrSchedulerDelegate::UpdateLayerBounds(int16_t frame_index,
                                              const gfx::RectF& right_bounds,
                                              const gfx::Size& source_size) {
   if (!ValidateRect(left_bounds) || !ValidateRect(right_bounds)) {
-    mojo::ReportBadMessage("UpdateLayerBounds called with invalid bounds");
+    presentation_receiver_.ReportBadMessage(
+        "UpdateLayerBounds called with invalid bounds");
     ClosePresentationBindings();
     return;
   }
 
   if (frame_index >= 0 && !webxr_.HaveAnimatingFrame()) {
     // The optional UpdateLayerBounds call must happen before SubmitFrame.
-    mojo::ReportBadMessage("UpdateLayerBounds called without animating frame");
+    presentation_receiver_.ReportBadMessage(
+        "UpdateLayerBounds called without animating frame");
     ClosePresentationBindings();
     return;
   }
@@ -1249,7 +1252,8 @@ bool GvrSchedulerDelegate::IsSubmitFrameExpected(int16_t frame_index) {
   if (animating_frame->index != frame_index) {
     DVLOG(1) << __func__ << ": wrong frame index, got " << frame_index
              << ", expected " << animating_frame->index;
-    mojo::ReportBadMessage("SubmitFrame called with wrong frame index");
+    presentation_receiver_.ReportBadMessage(
+        "SubmitFrame called with wrong frame index");
     ClosePresentationBindings();
     return false;
   }
@@ -1275,10 +1279,10 @@ bool GvrSchedulerDelegate::SubmitFrameCommon(int16_t frame_index,
 
   // The JavaScript wait time is supplied externally and not trustworthy. Clamp
   // to a reasonable range to avoid math errors.
-  if (time_waited < base::TimeDelta())
+  if (time_waited.is_negative())
     time_waited = base::TimeDelta();
-  if (time_waited > base::TimeDelta::FromSeconds(1))
-    time_waited = base::TimeDelta::FromSeconds(1);
+  if (time_waited > base::Seconds(1))
+    time_waited = base::Seconds(1);
   webvr_js_wait_time_.AddSample(time_waited);
   TRACE_COUNTER1("gpu", "WebVR JS wait (ms)",
                  webvr_js_wait_time_.GetAverage().InMilliseconds());
@@ -1372,14 +1376,15 @@ void GvrSchedulerDelegate::GetEnvironmentIntegrationProvider(
         device::mojom::XREnvironmentIntegrationProvider> environment_provider) {
   // Environment integration is not supported. This call should not
   // be made on this device.
-  mojo::ReportBadMessage("Environment integration is not supported.");
+  frame_data_receiver_.ReportBadMessage(
+      "Environment integration is not supported.");
 }
 
 void GvrSchedulerDelegate::SetInputSourceButtonListener(
     mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>) {
   // Input eventing is not supported. This call should not
   // be made on this device.
-  mojo::ReportBadMessage("Input eventing is not supported.");
+  frame_data_receiver_.ReportBadMessage("Input eventing is not supported.");
 }
 
 }  // namespace vr

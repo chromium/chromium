@@ -222,7 +222,7 @@ public class ProbabilisticCryptidRenderer {
      * enterprise policies are active).
      */
     private boolean isBlocked(Profile profile) {
-        return profile.isOffTheRecord() || ManagedBrowserUtils.hasBrowserPoliciesApplied(profile);
+        return profile.isOffTheRecord() || ManagedBrowserUtils.isBrowserManaged(profile);
     }
 
     /**

@@ -82,13 +82,13 @@ class LayoutRubyRun : public LayoutBlockFlow {
     return "LayoutRubyRun";
   }
 
+  // The argument must be nullptr.
+  explicit LayoutRubyRun(Element*);
+
  protected:
   LayoutRubyBase* CreateRubyBase() const;
 
  private:
-  // The argument must be nullptr.
-  explicit LayoutRubyRun(Element*);
-
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
     return type == kLayoutObjectRubyRun || LayoutBlockFlow::IsOfType(type);

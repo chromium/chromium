@@ -122,13 +122,18 @@ PhysicalOffset StickyPositionScrollingConstraints::GetOffsetForStickyPosition(
          AncestorStickyBoxOffset(constraints_map);
 }
 
+void StickyPositionScrollingConstraints::Trace(Visitor* visitor) const {
+  visitor->Trace(nearest_sticky_layer_shifting_sticky_box);
+  visitor->Trace(nearest_sticky_layer_shifting_containing_block);
+}
+
 PhysicalOffset StickyPositionScrollingConstraints::AncestorStickyBoxOffset(
     const StickyConstraintsMap& constraints_map) const {
   if (!nearest_sticky_layer_shifting_sticky_box)
     return PhysicalOffset();
   DCHECK(constraints_map.Contains(nearest_sticky_layer_shifting_sticky_box));
   return constraints_map.at(nearest_sticky_layer_shifting_sticky_box)
-      .total_sticky_box_sticky_offset;
+      ->total_sticky_box_sticky_offset;
 }
 
 PhysicalOffset
@@ -140,7 +145,7 @@ StickyPositionScrollingConstraints::AncestorContainingBlockOffset(
   DCHECK(
       constraints_map.Contains(nearest_sticky_layer_shifting_containing_block));
   return constraints_map.at(nearest_sticky_layer_shifting_containing_block)
-      .total_containing_block_sticky_offset;
+      ->total_containing_block_sticky_offset;
 }
 
 }  // namespace blink

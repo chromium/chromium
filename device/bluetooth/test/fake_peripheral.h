@@ -28,6 +28,10 @@ namespace bluetooth {
 class FakePeripheral : public device::BluetoothDevice {
  public:
   FakePeripheral(FakeCentral* fake_central, const std::string& address);
+
+  FakePeripheral(const FakePeripheral&) = delete;
+  FakePeripheral& operator=(const FakePeripheral&) = delete;
+
   ~FakePeripheral() override;
 
   // Changes the name of the device.
@@ -165,8 +169,6 @@ class FakePeripheral : public device::BluetoothDevice {
   // Mutable because IsGattServicesDiscoveryComplete needs to post a task but
   // is const.
   mutable base::WeakPtrFactory<FakePeripheral> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakePeripheral);
 };
 
 }  // namespace bluetooth

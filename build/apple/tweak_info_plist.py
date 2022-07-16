@@ -289,9 +289,6 @@ def Main(argv):
                     type='int',
                     default=False,
                     help='Add GTM metadata [1 or 0]')
-  # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
-  parser.add_option('--lock-to-version',
-                    help='Set CFBundleVersion to given value + @MAJOR@@PATH@')
   parser.add_option(
       '--version-overrides',
       action='append',
@@ -359,25 +356,10 @@ def Main(argv):
         'CFBundleVersion': '@BUILD@.@PATCH@',
     }
   else:
-    # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
-    if options.lock_to_version:
-      # Pull in the PATCH number and format it to 3 digits.
-      VERSION_TOOL = os.path.join(TOP, 'build/util/version.py')
-      VERSION_FILE = os.path.join(TOP, 'chrome/VERSION')
-      (stdout,
-       retval) = _GetOutput([VERSION_TOOL, '-f', VERSION_FILE, '-t', '@PATCH@'])
-      if retval != 0:
-        return 2
-      patch = '{:03d}'.format(int(stdout))
-      version_format_for_key = {
-          'CFBundleShortVersionString': '@MAJOR@.@BUILD@.@PATCH@',
-          'CFBundleVersion': options.lock_to_version + '.@MAJOR@' + patch
-      }
-    else:
-      version_format_for_key = {
-          'CFBundleShortVersionString': '@MAJOR@.@BUILD@.@PATCH@',
-          'CFBundleVersion': '@MAJOR@.@MINOR@.@BUILD@.@PATCH@'
-      }
+    version_format_for_key = {
+        'CFBundleShortVersionString': '@MAJOR@.@BUILD@.@PATCH@',
+        'CFBundleVersion': '@MAJOR@.@MINOR@.@BUILD@.@PATCH@'
+    }
 
   if options.use_breakpad:
     version_format_for_key['BreakpadVersion'] = \

@@ -7,7 +7,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
@@ -34,6 +33,9 @@ class WebApkUpdateDataFetcher : public content::WebContentsObserver {
                           jobject obj,
                           const GURL& scope,
                           const GURL& web_manifest_url);
+
+  WebApkUpdateDataFetcher(const WebApkUpdateDataFetcher&) = delete;
+  WebApkUpdateDataFetcher& operator=(const WebApkUpdateDataFetcher&) = delete;
 
   // Replaces the WebContents that is being observed.
   void ReplaceWebContents(
@@ -92,8 +94,6 @@ class WebApkUpdateDataFetcher : public content::WebContentsObserver {
   bool is_splash_icon_maskable_;
 
   base::WeakPtrFactory<WebApkUpdateDataFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebApkUpdateDataFetcher);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_UPDATE_DATA_FETCHER_H_

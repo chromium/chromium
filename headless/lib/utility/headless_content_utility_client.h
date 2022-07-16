@@ -23,6 +23,11 @@ class HEADLESS_EXPORT HeadlessContentUtilityClient
       NetworkBinderCreationCallback callback);
 
   explicit HeadlessContentUtilityClient(const std::string& user_agent);
+
+  HeadlessContentUtilityClient(const HeadlessContentUtilityClient&) = delete;
+  HeadlessContentUtilityClient& operator=(const HeadlessContentUtilityClient&) =
+      delete;
+
   ~HeadlessContentUtilityClient() override;
 
   // content::ContentUtilityClient:
@@ -32,8 +37,6 @@ class HEADLESS_EXPORT HeadlessContentUtilityClient
 
  private:
   const std::string user_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessContentUtilityClient);
 };
 
 }  // namespace headless

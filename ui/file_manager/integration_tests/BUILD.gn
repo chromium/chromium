@@ -7,27 +7,62 @@ import("//third_party/closure_compiler/compile_js.gni")
 js_type_check("closure_compile") {
   testonly = true
   deps = [
+    ":allowed_paths",
+    ":dialog_type",
+    ":element_object",
+    ":files_app_state",
+    ":key_modifiers",
+    ":metadata_stats_type",
     ":remote_call",
     ":test_util",
+    ":volume_manager_common_volume_type",
   ]
-  closure_flags = strict_error_checking_closure_args + [
-                    "js_module_root=./gen/ui",
-                    "js_module_root=../../ui",
-                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=../file_manager/\"",
-
-                    "hide_warnings_for=third_party/",
-                  ]
+  closure_flags =
+      strict_error_checking_closure_args + [
+        "js_module_root=./gen/ui",
+        "js_module_root=../../ui",
+        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "hide_warnings_for=third_party/",
+      ]
 }
 
 js_library("remote_call") {
   testonly = true
   deps = [
+    ":element_object",
+    ":key_modifiers",
     ":test_util",
-    "//ui/file_manager/file_manager/background/js:runtime_loaded_test_util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    ":volume_manager_common_volume_type",
   ]
-  externs_list = [ "$externs_path/command_line_private.js" ]
+  externs_list = [
+    "$externs_path/command_line_private.js",
+    "$externs_path/file_manager_private.js",
+  ]
+}
+
+js_library("allowed_paths") {
+}
+
+js_library("dialog_type") {
+}
+
+js_library("element_object") {
+}
+
+js_library("files_app_state") {
+  deps = [
+    ":allowed_paths",
+    ":dialog_type",
+  ]
+}
+
+js_library("key_modifiers") {
+}
+
+js_library("metadata_stats_type") {
+}
+
+js_library("volume_manager_common_volume_type") {
 }
 
 js_library("test_util") {

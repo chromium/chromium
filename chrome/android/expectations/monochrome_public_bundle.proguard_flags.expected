@@ -52,9 +52,6 @@
 -keepclassmembers class * extends android.app.Fragment {
   public <init>();
 }
--keepclassmembers class * extends android.support.v4.app.Fragment {
-  public <init>();
-}
 -keepclassmembers class * extends androidx.fragment.app.Fragment {
   public <init>();
 }
@@ -79,7 +76,7 @@
   public <init>(...);
 }
 
-# Referenced by android.support.v7.preference.PreferenceInflater.
+# Referenced by androidx.preference.PreferenceInflater.
 -keep public class androidx.preference.SwitchPreference {}
 
 # Don't obfuscate Parcelables as they might be marshalled outside Chrome.
@@ -120,10 +117,15 @@
   int intValue() return 0;
 }
 
+# Makes try-with-resources less inefficient. Saved 3.8kb when added.
+-assumenosideeffects class java.lang.Throwable {
+  void addSuppressed(...);
+}
+
 # This is to workaround crbug.com/1204690 - an old GMS app version crashes when
 # ObjectWrapper contains > 1 fields, and this prevents R8 from inserting a
 # synthetic field.
--keep class com.google.android.gms.dynamic.ObjectWrapper {
+-keep,allowaccessmodification class com.google.android.gms.dynamic.ObjectWrapper {
   <fields>;
 }
 
@@ -157,7 +159,6 @@
 -keep @interface org.chromium.base.annotations.CalledByNative
 -keep @interface org.chromium.base.annotations.CalledByNativeUnchecked
 -keep @interface org.chromium.base.annotations.DoNotInline
--keep @interface org.chromium.base.annotations.RemovableInRelease
 -keep @interface org.chromium.base.annotations.UsedByReflection
 -keep @interface org.chromium.base.annotations.IdentifierNameString
 
@@ -165,52 +166,44 @@
 # which we want to keep.
 -keep @interface androidx.annotation.Keep
 -keep @androidx.annotation.Keep class *
--keepclasseswithmembers class * {
+-keepclasseswithmembers,allowaccessmodification class * {
   @androidx.annotation.Keep <fields>;
 }
--keepclasseswithmembers class * {
+-keepclasseswithmembers,allowaccessmodification class * {
   @androidx.annotation.Keep <methods>;
 }
 
 # Keeps for class level annotations.
--keep @org.chromium.base.annotations.UsedByReflection class ** {}
+-keep,allowaccessmodification @org.chromium.base.annotations.UsedByReflection class ** {}
 
 # Keeps for method level annotations.
--keepclasseswithmembers class ** {
+-keepclasseswithmembers,allowaccessmodification class ** {
   @org.chromium.base.annotations.AccessedByNative <fields>;
 }
--keepclasseswithmembers,includedescriptorclasses class ** {
+-keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
   @org.chromium.base.annotations.CalledByNative <methods>;
 }
--keepclasseswithmembers,includedescriptorclasses class ** {
+-keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
   @org.chromium.base.annotations.CalledByNativeUnchecked <methods>;
 }
--keepclasseswithmembers class ** {
+-keepclasseswithmembers,allowaccessmodification class ** {
   @org.chromium.base.annotations.UsedByReflection <methods>;
 }
--keepclasseswithmembers class ** {
+-keepclasseswithmembers,allowaccessmodification class ** {
   @org.chromium.base.annotations.UsedByReflection <fields>;
 }
 # Even unused methods kept due to explicit jni registration:
 # https://crbug.com/688465.
--keepclasseswithmembers,includedescriptorclasses class !org.chromium.base.library_loader.**,** {
+-keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class !org.chromium.base.library_loader.**,** {
   native <methods>;
 }
--keepclasseswithmembernames,includedescriptorclasses class org.chromium.base.library_loader.** {
+-keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class org.chromium.base.library_loader.** {
   native <methods>;
 }
 
--assumenosideeffects class ** {
-  # Remove @RemovableInRelease methods so long as return values are unused.
-  @org.chromium.base.annotations.RemovableInRelease <methods>;
-  # Remove object @RemovableInRelease methods even when return value is used.
-  # Note: * in return type does not match primitives.
-  @org.chromium.base.annotations.RemovableInRelease * *(...) return null;
-  # Remove boolean @RemovableInRelease methods even when return value is used.
-  @org.chromium.base.annotations.RemovableInRelease boolean *(...) return false;
-}
-
--assumenosideeffects class org.chromium.base.Log {
+# Use assumevalues block instead of assumenosideeffects block because Google3 proguard cannot parse
+# assumenosideeffects blocks which overwrite return value.
+-assumevalues class org.chromium.base.Log {
   static boolean isDebug() return false;
 }
 
@@ -221,13 +214,13 @@
 -if @org.chromium.base.annotations.DoNotInline class * {
     *** *(...);
 }
--keep,allowobfuscation class <1> {
+-keep,allowobfuscation,allowaccessmodification class <1> {
     *** <2>(...);
 }
--keepclassmembers,allowobfuscation class * {
+-keepclassmembers,allowobfuscation,allowaccessmodification class * {
    @org.chromium.base.annotations.DoNotInline <methods>;
 }
--keepclassmembers,allowobfuscation class * {
+-keepclassmembers,allowobfuscation,allowaccessmodification class * {
    @org.chromium.base.annotations.DoNotInline <fields>;
 }
 
@@ -240,7 +233,7 @@
 # If we annotated all Parcelables that get put into Bundles other than
 # for saveInstanceState (e.g. PendingIntents), then we could actually keep the
 # names of just those ones. For now, we'll just keep them all.
--keepnames class org.chromium.** implements android.os.Parcelable {}
+-keepnames,allowaccessmodification class org.chromium.** implements android.os.Parcelable {}
 
 # Keep all enum values and valueOf methods. See
 # http://proguard.sourceforge.net/index.html#manual/examples.html
@@ -268,11 +261,6 @@
   @org.chromium.base.annotations.CheckDiscard *;
 }
 
-# Ensure @RemovableInRelease actually works.
--checkdiscard class ** {
-  @org.chromium.base.annotations.RemovableInRelease *;
-}
-
 # File: ../../chrome/android/proguard/main.flags
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -293,28 +281,6 @@
 }
 -keep class org.chromium.content.app.PrivilegedProcessService {
   public <init>();
-}
-
-# SearchView is used in website_preferences_menu.xml and is constructed by
-# Android using reflection.
-# TODO(bjoyce): Remove after verifying AndroidX migration is sound.
--keep class android.support.v7.widget.SearchView {
-  public <init>(...);
-}
-
-# This class member is referenced in BottomSheetBottomNav as a temporary
-# measure until the support library contains a solution for disabling shifting
-# mode. TODO(twellington): remove once support library has a fix and is rolled.
-# TODO(bjoyce): Remove after verifying AndroidX migration is sound.
--keepclassmembers class android.support.design.internal.BottomNavigationMenuView {
-    boolean mShiftingMode;
-}
-
-# This class member is referenced in BottomSheetBottomNav as a temporary
-# measure until the support library contains a solution for disabling shifting
-# mode. TODO(twellington): remove once support library has a fix and is rolled.
--keepclassmembers class com.google.android.material.bottomnavigation.BottomNavigationMenuView {
-    boolean mShiftingMode;
 }
 
 # Let proguard know CastMediaOptions in CastOptions is always null, so it can
@@ -338,6 +304,18 @@
 # reflection.
 -keep,allowobfuscation public class ** extends org.chromium.chrome.browser.base.SplitCompat*$Impl {
   public <init>();
+}
+
+# File: ../../third_party/android_deps/material_design.flags
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# We're setting ignore_proguard_configs to avoid a rule keeping Behaviour
+# subclasses, but we need this one still.
+-if class androidx.appcompat.app.AppCompatViewInflater
+-keep class com.google.android.material.theme.MaterialComponentsViewInflater {
+    <init>();
 }
 
 # File: ../../third_party/gvr-android-sdk/proguard-gvr-chromium.txt
@@ -396,19 +374,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# To fix crbug/1017396. This is because AppBarLayout$ScrollingViewBehavior
-# is instantiated via java.lang.reflect.Constructor in CoordinatorLayout.java.
-# Note that AppBarLayout$Behavior is needed to keep the scrolling behavior.
-# TODO(bjoyce): Remove the android support library keep after verifying
-#     AndroidX migration is sound.
--keep class android.support.design.widget.AppBarLayout$Behavior {
-    public <init>(android.content.Context, android.util.AttributeSet);
-    public <init>();
-}
--keep class android.support.design.widget.AppBarLayout$ScrollingViewBehavior {
-    public <init>(android.content.Context, android.util.AttributeSet);
-    public <init>();
-}
 
 # To fix crbug/1017396. This is because AppBarLayout$ScrollingViewBehavior
 # is instantiated via java.lang.reflect.Constructor in CoordinatorLayout.java.
@@ -746,6 +711,9 @@
     @com.google.vr.dynamite.client.UsedByReflection *;
 }
 
+# File: obj/third_party/android_deps/com_google_android_play_core_java/proguard.txt
+-keepnames class com.google.android.play.core.review.ReviewInfo
+
 # File: obj/third_party/android_deps/google_android_datatransport_transport_api_java/proguard.txt
 -dontwarn com.google.auto.value.AutoValue
 -dontwarn com.google.auto.value.AutoValue$Builder
@@ -879,6 +847,37 @@
 -keepclassmembers class * extends com.google.android.gms.internal.vision.zzfy {
   <fields>;
 }
+
+# File: ../../third_party/android_deps/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.5.0.jar:META-INF/proguard/coroutines.pro
+# Files in this directory will be ignored starting with Android Gradle Plugin 3.6.0+
+
+# When editing this file, update the following files as well for AGP 3.6.0+:
+# - META-INF/com.android.tools/proguard/coroutines.pro
+# - META-INF/com.android.tools/r8-upto-1.6.0/coroutines.pro
+
+-keep class kotlinx.coroutines.android.AndroidDispatcherFactory {*;}
+
+# File: ../../third_party/android_deps/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.5.0.jar:META-INF/proguard/coroutines.pro
+# ServiceLoader support
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+
+# Most of volatile fields are updated with AFU and should not be mangled
+-keepclassmembers class kotlinx.coroutines.** {
+    volatile <fields>;
+}
+
+# Same story for the standard library's SafeContinuation that also uses AtomicReferenceFieldUpdater
+-keepclassmembers class kotlin.coroutines.SafeContinuation {
+    volatile <fields>;
+}
+
+# These classes are only required by kotlinx.coroutines.debug.AgentPremain, which is only loaded when
+# kotlinx-coroutines-core is used as a Java agent, so these are not needed in contexts where ProGuard is used.
+-dontwarn java.lang.instrument.ClassFileTransformer
+-dontwarn sun.misc.SignalHandler
+-dontwarn java.lang.instrument.Instrumentation
+-dontwarn sun.misc.Signal
 
 # File: //build/android/gyp/proguard.py (generated rules)
 -ignorewarnings

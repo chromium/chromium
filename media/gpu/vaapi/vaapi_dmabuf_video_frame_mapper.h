@@ -22,6 +22,10 @@ class MEDIA_GPU_EXPORT VaapiDmaBufVideoFrameMapper : public VideoFrameMapper {
  public:
   static std::unique_ptr<VideoFrameMapper> Create(VideoPixelFormat format);
 
+  VaapiDmaBufVideoFrameMapper(const VaapiDmaBufVideoFrameMapper&) = delete;
+  VaapiDmaBufVideoFrameMapper& operator=(const VaapiDmaBufVideoFrameMapper&) =
+      delete;
+
   ~VaapiDmaBufVideoFrameMapper() override;
 
   // VideoFrameMapper override.
@@ -33,8 +37,6 @@ class MEDIA_GPU_EXPORT VaapiDmaBufVideoFrameMapper : public VideoFrameMapper {
 
   // Vaapi components for mapping.
   const scoped_refptr<VaapiWrapper> vaapi_wrapper_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiDmaBufVideoFrameMapper);
 };
 
 }  // namespace media

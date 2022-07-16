@@ -52,11 +52,14 @@ class LoadTimingInfo;
 }
 }  // namespace network
 
+namespace net {
+class SSLInfo;
+}
+
 namespace blink {
 
 class ResourceResponse;
 class WebHTTPHeaderVisitor;
-class WebHTTPLoadInfo;
 class WebURL;
 
 class WebURLResponse {
@@ -67,83 +70,6 @@ class WebURLResponse {
     kHTTPVersion_1_0,
     kHTTPVersion_1_1,
     kHTTPVersion_2_0
-  };
-
-  struct SignedCertificateTimestamp {
-    SignedCertificateTimestamp() = default;
-    SignedCertificateTimestamp(WebString status,
-                               WebString origin,
-                               WebString log_description,
-                               WebString log_id,
-                               int64_t timestamp,
-                               WebString hash_algorithm,
-                               WebString signature_algorithm,
-                               WebString signature_data)
-        : status(status),
-          origin(origin),
-          log_description(log_description),
-          log_id(log_id),
-          timestamp(timestamp),
-          hash_algorithm(hash_algorithm),
-          signature_algorithm(signature_algorithm),
-          signature_data(signature_data) {}
-    WebString status;
-    WebString origin;
-    WebString log_description;
-    WebString log_id;
-    int64_t timestamp;
-    WebString hash_algorithm;
-    WebString signature_algorithm;
-    WebString signature_data;
-  };
-
-  using SignedCertificateTimestampList = WebVector<SignedCertificateTimestamp>;
-
-  struct WebSecurityDetails {
-    WebSecurityDetails(const WebString& protocol,
-                       const WebString& key_exchange,
-                       const WebString& key_exchange_group,
-                       const WebString& cipher,
-                       const WebString& mac,
-                       const WebString& subject_name,
-                       const WebVector<WebString>& san_list,
-                       const WebString& issuer,
-                       double valid_from,
-                       double valid_to,
-                       const WebVector<WebString>& certificate,
-                       const SignedCertificateTimestampList& sct_list)
-        : protocol(protocol),
-          key_exchange(key_exchange),
-          key_exchange_group(key_exchange_group),
-          cipher(cipher),
-          mac(mac),
-          subject_name(subject_name),
-          san_list(san_list),
-          issuer(issuer),
-          valid_from(valid_from),
-          valid_to(valid_to),
-          certificate(certificate),
-          sct_list(sct_list) {}
-    // All strings are human-readable values.
-    WebString protocol;
-    // keyExchange is the empty string if not applicable for the connection's
-    // protocol.
-    WebString key_exchange;
-    // keyExchangeGroup is the empty string if not applicable for the
-    // connection's key exchange.
-    WebString key_exchange_group;
-    WebString cipher;
-    // mac is the empty string when the connection cipher suite does not
-    // have a separate MAC value (i.e. if the cipher suite is AEAD).
-    WebString mac;
-    WebString subject_name;
-    WebVector<WebString> san_list;
-    WebString issuer;
-    double valid_from;
-    double valid_to;
-    // DER-encoded X509Certificate certificate chain.
-    WebVector<WebString> certificate;
-    SignedCertificateTimestampList sct_list;
   };
 
   BLINK_PLATFORM_EXPORT ~WebURLResponse();
@@ -179,8 +105,6 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT void SetLoadTiming(
       const network::mojom::LoadTimingInfo&);
 
-  BLINK_PLATFORM_EXPORT void SetHTTPLoadInfo(const WebHTTPLoadInfo&);
-
   BLINK_PLATFORM_EXPORT base::Time ResponseTime() const;
   BLINK_PLATFORM_EXPORT void SetResponseTime(base::Time);
 
@@ -204,6 +128,9 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT WebString HttpStatusText() const;
   BLINK_PLATFORM_EXPORT void SetHttpStatusText(const WebString&);
 
+  BLINK_PLATFORM_EXPORT bool EmittedExtraInfo() const;
+  BLINK_PLATFORM_EXPORT void SetEmittedExtraInfo(bool);
+
   BLINK_PLATFORM_EXPORT WebString HttpHeaderField(const WebString& name) const;
   BLINK_PLATFORM_EXPORT void SetHttpHeaderField(const WebString& name,
                                                 const WebString& value);
@@ -211,12 +138,6 @@ class WebURLResponse {
                                                 const WebString& value);
   BLINK_PLATFORM_EXPORT void ClearHttpHeaderField(const WebString& name);
   BLINK_PLATFORM_EXPORT void VisitHttpHeaderFields(WebHTTPHeaderVisitor*) const;
-
-  BLINK_PLATFORM_EXPORT int64_t AppCacheID() const;
-  BLINK_PLATFORM_EXPORT void SetAppCacheID(int64_t);
-
-  BLINK_PLATFORM_EXPORT WebURL AppCacheManifestURL() const;
-  BLINK_PLATFORM_EXPORT void SetAppCacheManifestURL(const WebURL&);
 
   BLINK_PLATFORM_EXPORT void SetHasMajorCertificateErrors(bool);
   BLINK_PLATFORM_EXPORT void SetCTPolicyCompliance(net::ct::CTPolicyCompliance);
@@ -226,9 +147,7 @@ class WebURLResponse {
 
   BLINK_PLATFORM_EXPORT void SetSecurityStyle(SecurityStyle);
 
-  BLINK_PLATFORM_EXPORT void SetSecurityDetails(const WebSecurityDetails&);
-  BLINK_PLATFORM_EXPORT absl::optional<WebSecurityDetails>
-  SecurityDetailsForTesting();
+  BLINK_PLATFORM_EXPORT void SetSSLInfo(const net::SSLInfo&);
 
   BLINK_PLATFORM_EXPORT void SetAsyncRevalidationRequested(bool);
   BLINK_PLATFORM_EXPORT void SetNetworkAccessed(bool);
@@ -356,6 +275,8 @@ class WebURLResponse {
   // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
   BLINK_PLATFORM_EXPORT void SetRequestIncludeCredentials(bool);
   BLINK_PLATFORM_EXPORT bool RequestIncludeCredentials() const;
+
+  BLINK_PLATFORM_EXPORT void SetWasFetchedViaCache(bool);
 
 #if INSIDE_BLINK
  protected:

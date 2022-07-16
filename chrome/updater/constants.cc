@@ -30,6 +30,12 @@ const char kInitDoneNotifierSwitch[] = "init-done-notifier";
 const char kNoRateLimitSwitch[] = "no-rate-limit";
 const char kEnableLoggingSwitch[] = "enable-logging";
 const char kLoggingModuleSwitch[] = "vmodule";
+const char kLoggingModuleSwitchValue[] =
+#if defined(OS_WIN)
+    "*/chrome/updater/*=2,*/components/winhttp/*=2";
+#else
+    "*/chrome/updater/*=2,*/components/update_client/*=2";
+#endif  // OS_WIN
 const char kAppIdSwitch[] = "app-id";
 const char kAppVersionSwitch[] = "app-version";
 const char kWakeSwitch[] = "wake";

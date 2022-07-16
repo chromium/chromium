@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_POLICY_NETWORKING_USER_NETWORK_CONFIGURATION_UPDATER_FACTORY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
@@ -35,6 +34,11 @@ class UserNetworkConfigurationUpdaterFactory
 
   static UserNetworkConfigurationUpdaterFactory* GetInstance();
 
+  UserNetworkConfigurationUpdaterFactory(
+      const UserNetworkConfigurationUpdaterFactory&) = delete;
+  UserNetworkConfigurationUpdaterFactory& operator=(
+      const UserNetworkConfigurationUpdaterFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       UserNetworkConfigurationUpdaterFactory>;
@@ -49,8 +53,6 @@ class UserNetworkConfigurationUpdaterFactory
   bool ServiceIsNULLWhileTesting() const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(UserNetworkConfigurationUpdaterFactory);
 };
 
 }  // namespace policy

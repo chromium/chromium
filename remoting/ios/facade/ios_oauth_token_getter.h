@@ -17,6 +17,10 @@ namespace remoting {
 class IosOauthTokenGetter : public OAuthTokenGetter {
  public:
   IosOauthTokenGetter();
+
+  IosOauthTokenGetter(const IosOauthTokenGetter&) = delete;
+  IosOauthTokenGetter& operator=(const IosOauthTokenGetter&) = delete;
+
   ~IosOauthTokenGetter() override;
 
   // OAuthTokenGetter overrides.
@@ -28,7 +32,6 @@ class IosOauthTokenGetter : public OAuthTokenGetter {
  private:
   base::WeakPtr<IosOauthTokenGetter> weak_ptr_;
   base::WeakPtrFactory<IosOauthTokenGetter> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(IosOauthTokenGetter);
 };
 
 }  // namespace remoting

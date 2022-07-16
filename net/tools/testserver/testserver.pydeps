@@ -6,7 +6,7 @@
 ../../../third_party/pywebsocket3/src/mod_pywebsocket/dispatch.py
 ../../../third_party/pywebsocket3/src/mod_pywebsocket/extensions.py
 ../../../third_party/pywebsocket3/src/mod_pywebsocket/handshake/__init__.py
-../../../third_party/pywebsocket3/src/mod_pywebsocket/handshake/_base.py
+../../../third_party/pywebsocket3/src/mod_pywebsocket/handshake/base.py
 ../../../third_party/pywebsocket3/src/mod_pywebsocket/handshake/hybi.py
 ../../../third_party/pywebsocket3/src/mod_pywebsocket/http_header_util.py
 ../../../third_party/pywebsocket3/src/mod_pywebsocket/memorizingfile.py
@@ -74,7 +74,5 @@
 ../../../third_party/tlslite/tlslite/verifierdb.py
 ../../../third_party/tlslite/tlslite/x509.py
 ../../../third_party/tlslite/tlslite/x509certchain.py
-asn1.py
-minica.py
 testserver.py
 testserver_base.py

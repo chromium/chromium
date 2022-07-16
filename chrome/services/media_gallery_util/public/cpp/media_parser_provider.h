@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_MEDIA_PARSER_PROVIDER_H_
 #define CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_MEDIA_PARSER_PROVIDER_H_
 
-#include "base/macros.h"
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -15,6 +14,10 @@
 class MediaParserProvider {
  public:
   MediaParserProvider();
+
+  MediaParserProvider(const MediaParserProvider&) = delete;
+  MediaParserProvider& operator=(const MediaParserProvider&) = delete;
+
   virtual ~MediaParserProvider();
 
  protected:
@@ -45,8 +48,6 @@ class MediaParserProvider {
 
   mojo::Remote<chrome::mojom::MediaParserFactory> remote_media_parser_factory_;
   mojo::Remote<chrome::mojom::MediaParser> remote_media_parser_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaParserProvider);
 };
 
 #endif  // CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_MEDIA_PARSER_PROVIDER_H_

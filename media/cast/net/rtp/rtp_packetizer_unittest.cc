@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/cast/net/pacing/paced_sender.h"
@@ -38,6 +37,9 @@ class TestRtpPacketTransport : public PacketTransport {
         expected_number_of_packets_(0),
         expected_packet_id_(0),
         expected_frame_id_(FrameId::first() + 1) {}
+
+  TestRtpPacketTransport(const TestRtpPacketTransport&) = delete;
+  TestRtpPacketTransport& operator=(const TestRtpPacketTransport&) = delete;
 
   void VerifyRtpHeader(const RtpCastHeader& rtp_header) {
     VerifyCommonRtpHeader(rtp_header);
@@ -104,12 +106,13 @@ class TestRtpPacketTransport : public PacketTransport {
   int expected_packet_id_;
   FrameId expected_frame_id_;
   RtpTimeTicks expected_rtp_timestamp_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestRtpPacketTransport);
 };
 
 class RtpPacketizerTest : public ::testing::Test {
+ public:
+  RtpPacketizerTest(const RtpPacketizerTest&) = delete;
+  RtpPacketizerTest& operator=(const RtpPacketizerTest&) = delete;
+
  protected:
   RtpPacketizerTest()
       : task_runner_(new FakeSingleThreadTaskRunner(&testing_clock_)) {
@@ -134,7 +137,7 @@ class RtpPacketizerTest : public ::testing::Test {
   void RunTasks(int during_ms) {
     for (int i = 0; i < during_ms; ++i) {
       // Call process the timers every 1 ms.
-      testing_clock_.Advance(base::TimeDelta::FromMilliseconds(1));
+      testing_clock_.Advance(base::Milliseconds(1));
       task_runner_->RunTasks();
     }
   }
@@ -147,9 +150,6 @@ class RtpPacketizerTest : public ::testing::Test {
   std::unique_ptr<TestRtpPacketTransport> transport_;
   std::unique_ptr<PacedSender> pacer_;
   std::unique_ptr<RtpPacketizer> rtp_packetizer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RtpPacketizerTest);
 };
 
 TEST_F(RtpPacketizerTest, SendStandardPackets) {
@@ -157,7 +157,7 @@ TEST_F(RtpPacketizerTest, SendStandardPackets) {
   transport_->set_expected_number_of_packets(expected_num_of_packets);
   transport_->set_rtp_timestamp(video_frame_.rtp_timestamp);
 
-  testing_clock_.Advance(base::TimeDelta::FromMilliseconds(kTimestampMs));
+  testing_clock_.Advance(base::Milliseconds(kTimestampMs));
   video_frame_.reference_time = testing_clock_.NowTicks();
   rtp_packetizer_->SendFrameAsPackets(video_frame_);
   RunTasks(33 + 1);
@@ -169,7 +169,7 @@ TEST_F(RtpPacketizerTest, SendPacketsWithAdaptivePlayoutExtension) {
   transport_->set_expected_number_of_packets(expected_num_of_packets);
   transport_->set_rtp_timestamp(video_frame_.rtp_timestamp);
 
-  testing_clock_.Advance(base::TimeDelta::FromMilliseconds(kTimestampMs));
+  testing_clock_.Advance(base::Milliseconds(kTimestampMs));
   video_frame_.reference_time = testing_clock_.NowTicks();
   video_frame_.new_playout_delay_ms = 500;
   rtp_packetizer_->SendFrameAsPackets(video_frame_);
@@ -185,7 +185,7 @@ TEST_F(RtpPacketizerTest, Stats) {
   transport_->set_expected_number_of_packets(expected_num_of_packets);
   transport_->set_rtp_timestamp(video_frame_.rtp_timestamp);
 
-  testing_clock_.Advance(base::TimeDelta::FromMilliseconds(kTimestampMs));
+  testing_clock_.Advance(base::Milliseconds(kTimestampMs));
   video_frame_.reference_time = testing_clock_.NowTicks();
   rtp_packetizer_->SendFrameAsPackets(video_frame_);
   RunTasks(33 + 1);

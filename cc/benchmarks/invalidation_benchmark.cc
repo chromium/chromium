@@ -8,7 +8,7 @@
 
 #include <algorithm>
 #include <limits>
-#include <memory>
+#include <string>
 #include <utility>
 
 #include "base/rand_util.h"
@@ -17,6 +17,7 @@
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/layer_tree_host.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace cc {
@@ -28,27 +29,26 @@ const char* kDefaultInvalidationMode = "viewport";
 }  // namespace
 
 InvalidationBenchmark::InvalidationBenchmark(
-    std::unique_ptr<base::Value> value,
+    base::Value settings,
     MicroBenchmark::DoneCallback callback)
     : MicroBenchmark(std::move(callback)), seed_(0) {
-  base::DictionaryValue* settings = nullptr;
-  value->GetAsDictionary(&settings);
-  if (!settings)
+  if (!settings.is_dict())
     return;
 
   std::string mode_string = kDefaultInvalidationMode;
 
-  if (settings->HasKey("mode"))
-    settings->GetString("mode", &mode_string);
+  auto* mode_string_from_settings = settings.FindStringKey("mode");
+  if (mode_string_from_settings)
+    mode_string = *mode_string_from_settings;
 
   if (mode_string == "fixed_size") {
     mode_ = FIXED_SIZE;
-    CHECK(settings->HasKey("width"))
-        << "Must provide a width for fixed_size mode.";
-    CHECK(settings->HasKey("height"))
-        << "Must provide a height for fixed_size mode.";
-    settings->GetInteger("width", &width_);
-    settings->GetInteger("height", &height_);
+    auto width = settings.FindIntKey("width");
+    auto height = settings.FindIntKey("height");
+    CHECK(width.has_value()) << "Must provide a width for fixed_size mode.";
+    CHECK(height.has_value()) << "Must provide a height for fixed_size mode.";
+    width_ = *width;
+    height_ = *height;
   } else if (mode_string == "layer") {
     mode_ = LAYER;
   } else if (mode_string == "random") {
@@ -113,17 +113,14 @@ void InvalidationBenchmark::RunOnLayer(PictureLayer* layer) {
   }
 }
 
-bool InvalidationBenchmark::ProcessMessage(std::unique_ptr<base::Value> value) {
-  base::DictionaryValue* message = nullptr;
-  value->GetAsDictionary(&message);
-  if (!message)
+bool InvalidationBenchmark::ProcessMessage(base::Value message) {
+  if (!message.is_dict())
     return false;
 
-  bool notify_done;
-  if (message->HasKey("notify_done")) {
-    message->GetBoolean("notify_done", &notify_done);
-    if (notify_done)
-      NotifyDone(std::make_unique<base::Value>());
+  auto notify_done = message.FindBoolKey("notify_done");
+  if (notify_done.has_value()) {
+    if (*notify_done)
+      NotifyDone(base::Value());
     return true;
   }
   return false;

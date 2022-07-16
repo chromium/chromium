@@ -164,6 +164,6 @@ void SaveUpdateAddressProfileBubbleControllerImpl::DoShowBubble() {
   DCHECK(bubble_view());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveUpdateAddressProfileBubbleControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveUpdateAddressProfileBubbleControllerImpl);
 
 }  // namespace autofill

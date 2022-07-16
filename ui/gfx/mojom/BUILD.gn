@@ -22,6 +22,7 @@ mojom("mojom") {
     "hdr_metadata.mojom",
     "hdr_static_metadata.mojom",
     "mask_filter_info.mojom",
+    "overlay_priority_hint.mojom",
     "overlay_transform.mojom",
     "presentation_feedback.mojom",
     "rrect_f.mojom",
@@ -39,7 +40,7 @@ mojom("mojom") {
   ]
 
   enabled_features = []
-  if (use_x11 || ozone_platform_x11) {
+  if (ozone_platform_x11) {
     enabled_features += [ "enable_x11_params" ]
   }
 
@@ -269,6 +270,16 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "gfx.mojom.OverlayPriorityHint"
+          cpp = "::gfx::OverlayPriorityHint"
+        },
+      ]
+      traits_headers = [ "overlay_priority_hint_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gfx" ]
+    },
+    {
+      types = [
+        {
           mojom = "gfx.mojom.RRectF"
           cpp = "::gfx::RRectF"
         },
@@ -327,6 +338,10 @@ mojom("native_handle_types") {
 
   shared_cpp_typemap = {
     types = [
+      {
+        mojom = "gfx.mojom.DXGIHandleToken"
+        cpp = "::gfx::DXGIHandleToken"
+      },
       {
         mojom = "gfx.mojom.NativePixmapHandle"
         cpp = "::gfx::NativePixmapHandle"

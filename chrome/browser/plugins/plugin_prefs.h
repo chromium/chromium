@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -42,6 +41,9 @@ class PluginPrefs : public RefcountedKeyedService {
   // This method overrides that for a given TestingProfile, returning the newly
   // created PluginPrefs object.
   static scoped_refptr<PluginPrefs> GetForTestingProfile(Profile* profile);
+
+  PluginPrefs(const PluginPrefs&) = delete;
+  PluginPrefs& operator=(const PluginPrefs&) = delete;
 
   // Creates a new instance. This method should only be used for testing.
   PluginPrefs();
@@ -85,8 +87,6 @@ class PluginPrefs : public RefcountedKeyedService {
   PrefService* prefs_ = nullptr;
 
   PrefChangeRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginPrefs);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_PREFS_H_

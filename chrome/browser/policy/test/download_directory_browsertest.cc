@@ -50,7 +50,7 @@ void DownloadAndVerifyFile(Browser* browser,
   GURL url(embedded_test_server.GetURL("/" + file.MaybeAsASCII()));
   base::FilePath downloaded = dir.Append(file);
   EXPECT_FALSE(base::PathExists(downloaded));
-  ui_test_utils::NavigateToURL(browser, url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   observer.WaitForFinished();
   EXPECT_EQ(1u,
             observer.NumDownloadsSeenInState(download::DownloadItem::COMPLETE));

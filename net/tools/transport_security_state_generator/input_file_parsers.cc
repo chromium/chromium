@@ -102,7 +102,7 @@ bool MatchCertificateName(base::StringPiece name, base::StringPiece pin_name) {
     if (word == "Class" && (i + 1) < words.size()) {
       std::string class_name = base::StrCat({word, words[i + 1]});
 
-      size_t pos = pin_name.find(class_name);
+      pos = pin_name.find(class_name);
       if (pos == std::string::npos) {
         LOG(ERROR)
             << "Certficate class specification doesn't appear in the variable "
@@ -111,14 +111,14 @@ bool MatchCertificateName(base::StringPiece name, base::StringPiece pin_name) {
         return false;
       }
     } else if (word.size() == 1 && word[0] >= '0' && word[0] <= '9') {
-      size_t pos = pin_name.find(word);
+      pos = pin_name.find(word);
       if (pos == std::string::npos) {
         LOG(ERROR) << "Number doesn't appear in the certificate variable name ("
                    << pin_name << ")";
         return false;
       }
     } else if (IsImportantWordInCertificateName(word)) {
-      size_t pos = pin_name.find(word);
+      pos = pin_name.find(word);
       if (pos == std::string::npos) {
         LOG(ERROR) << std::string(word) +
                           " doesn't appear in the certificate variable name ("
@@ -187,7 +187,6 @@ bool ParseCertificatesFile(base::StringPiece certs_input, Pinsets* pinsets) {
     return false;
   }
 
-  std::string line;
   CertificateParserState current_state = CertificateParserState::PRE_NAME;
 
   const base::CompareCase& compare_mode = base::CompareCase::INSENSITIVE_ASCII;

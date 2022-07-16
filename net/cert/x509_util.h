@@ -109,6 +109,12 @@ NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
 NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
     const char* invalid_data);
 
+// Creates a CRYPTO_BUFFER in the same pool returned by GetBufferPool backed by
+// |data| without copying. |data| must be immutable and last for the lifetime
+// of the address space.
+NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER>
+CreateCryptoBufferFromStaticDataUnsafe(base::span<const uint8_t> data);
+
 // Compares two CRYPTO_BUFFERs and returns true if they have the same contents.
 NET_EXPORT bool CryptoBufferEqual(const CRYPTO_BUFFER* a,
                                   const CRYPTO_BUFFER* b);
@@ -117,10 +123,22 @@ NET_EXPORT bool CryptoBufferEqual(const CRYPTO_BUFFER* a,
 NET_EXPORT base::StringPiece CryptoBufferAsStringPiece(
     const CRYPTO_BUFFER* buffer);
 
+// Returns a span pointing to the data in |buffer|.
+NET_EXPORT base::span<const uint8_t> CryptoBufferAsSpan(
+    const CRYPTO_BUFFER* buffer);
+
 // Creates a new X509Certificate from the chain in |buffers|, which must have at
 // least one element.
 NET_EXPORT scoped_refptr<X509Certificate> CreateX509CertificateFromBuffers(
     const STACK_OF(CRYPTO_BUFFER) * buffers);
+
+// Parses certificates from a PKCS#7 SignedData structure, appending them to
+// |handles|. Returns true on success (in which case zero or more elements were
+// added to |handles|) and false on error (in which case |handles| is
+// unmodified).
+NET_EXPORT bool CreateCertBuffersFromPKCS7Bytes(
+    base::span<const uint8_t> data,
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>* handles);
 
 // Returns the default ParseCertificateOptions for the net stack.
 NET_EXPORT ParseCertificateOptions DefaultParseCertificateOptions();

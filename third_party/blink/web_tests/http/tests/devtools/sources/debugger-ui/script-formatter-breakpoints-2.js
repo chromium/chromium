@@ -4,11 +4,11 @@
 
 (async function() {
   TestRunner.addResult(`Tests the script formatting is working fine with breakpoints.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('../debugger/resources/unformatted2.js');
 
-  Bindings.breakpointManager._storage._breakpoints = new Map();
+  Bindings.breakpointManager.storage.breakpoints = new Map();
   var panel = UI.panels.sources;
   var scriptFormatter;
   var formattedSourceFrame;
@@ -26,7 +26,7 @@
 
       function didShowScriptSource(frame) {
         TestRunner.addSniffer(
-            Sources.ScriptFormatterEditorAction.prototype, '_updateButton', uiSourceCodeScriptFormatted);
+            Sources.ScriptFormatterEditorAction.prototype, 'updateButton', uiSourceCodeScriptFormatted);
         scriptFormatter.toggleFormatScriptSource();
       }
 

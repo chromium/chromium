@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -31,15 +30,18 @@ namespace {
 class KeywordExtensionsDelegateImplTest : public ExtensionServiceTestBase {
  public:
   KeywordExtensionsDelegateImplTest() {}
+
+  KeywordExtensionsDelegateImplTest(const KeywordExtensionsDelegateImplTest&) =
+      delete;
+  KeywordExtensionsDelegateImplTest& operator=(
+      const KeywordExtensionsDelegateImplTest&) = delete;
+
   ~KeywordExtensionsDelegateImplTest() override {}
 
  protected:
   void SetUp() override;
 
   void RunTest(bool incognito);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeywordExtensionsDelegateImplTest);
 };
 
 void KeywordExtensionsDelegateImplTest::SetUp() {

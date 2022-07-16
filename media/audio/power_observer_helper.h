@@ -7,10 +7,9 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -25,6 +24,9 @@ class MEDIA_EXPORT PowerObserverHelper : public base::PowerSuspendObserver {
   PowerObserverHelper(scoped_refptr<base::SequencedTaskRunner> task_runner,
                       base::RepeatingClosure suspend_callback,
                       base::RepeatingClosure resume_callback);
+
+  PowerObserverHelper(const PowerObserverHelper&) = delete;
+  PowerObserverHelper& operator=(const PowerObserverHelper&) = delete;
 
   ~PowerObserverHelper() override;
 
@@ -66,8 +68,6 @@ class MEDIA_EXPORT PowerObserverHelper : public base::PowerSuspendObserver {
   bool is_suspending_ = false;
 
   base::WeakPtrFactory<PowerObserverHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PowerObserverHelper);
 };
 
 }  // namespace media

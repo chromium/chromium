@@ -12,12 +12,11 @@
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -76,6 +75,12 @@ class MockExternalPolicyProviderVisitor
     : public extensions::ExternalProviderInterface::VisitorInterface {
  public:
   MockExternalPolicyProviderVisitor();
+
+  MockExternalPolicyProviderVisitor(const MockExternalPolicyProviderVisitor&) =
+      delete;
+  MockExternalPolicyProviderVisitor& operator=(
+      const MockExternalPolicyProviderVisitor&) = delete;
+
   virtual ~MockExternalPolicyProviderVisitor();
 
   MOCK_METHOD1(OnExternalExtensionFileFound,
@@ -89,9 +94,6 @@ class MockExternalPolicyProviderVisitor
                     const std::vector<ExternalInstallInfoUpdateUrl>&,
                     const std::vector<ExternalInstallInfoFile>&,
                     const std::set<std::string>& removed_extensions));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockExternalPolicyProviderVisitor);
 };
 
 MockExternalPolicyProviderVisitor::MockExternalPolicyProviderVisitor() {

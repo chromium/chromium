@@ -61,7 +61,10 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         boolean androidSSplashSuccess = false;
-        if (isAtLeastS()) {
+        if (isAtLeastS() && getIntent().hasCategory("android.intent.category.LAUNCHER")) {
+            // When launched with a data Intent, the splash screen is created, but
+            // SplashScreen.OnExitAnimationListener#onSplashScreenExit is not called.
+            // Fall back to manually creating out own splash screen in that case.
             androidSSplashSuccess =
                     SplashUtilsForS.listenForSplashScreen(this, getWindow(), (view, bitmap) -> {
                         mSplashView = view;
@@ -168,7 +171,12 @@ public class SplashActivity extends Activity {
             setRequestedOrientation(orientation);
         }
 
-        mSplashView = SplashUtils.createSplashView(this);
+        if (isAtLeastS()) {
+            // This case will be hit when we are launched by a data intent.
+            mSplashView = SplashUtilsForS.createSplashView(this);
+        } else {
+            mSplashView = SplashUtils.createSplashView(this);
+        }
         mSplashView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override

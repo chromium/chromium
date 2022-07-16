@@ -66,6 +66,9 @@ class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
                 ShouldNotifyRTTCallback should_notify_rtt_callback,
                 const base::TickClock* tick_clock);
 
+  SocketWatcher(const SocketWatcher&) = delete;
+  SocketWatcher& operator=(const SocketWatcher&) = delete;
+
   ~SocketWatcher() override;
 
   // SocketPerformanceWatcher implementation:
@@ -106,8 +109,6 @@ class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
 
   // A unique identifier for the remote host that this socket connects to.
   const absl::optional<IPHash> host_;
-
-  DISALLOW_COPY_AND_ASSIGN(SocketWatcher);
 };
 
 }  // namespace internal

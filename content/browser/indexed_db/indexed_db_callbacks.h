@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
@@ -45,6 +44,9 @@ class CONTENT_EXPORT IndexedDBCallbacks
                      mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
                          pending_callbacks,
                      scoped_refptr<base::SequencedTaskRunner> idb_runner);
+
+  IndexedDBCallbacks(const IndexedDBCallbacks&) = delete;
+  IndexedDBCallbacks& operator=(const IndexedDBCallbacks&) = delete;
 
   virtual void OnError(const IndexedDBDatabaseError& error);
 
@@ -102,8 +104,6 @@ class CONTENT_EXPORT IndexedDBCallbacks
   mojo::AssociatedRemote<blink::mojom::IDBCallbacks> callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBCallbacks);
 };
 
 }  // namespace content

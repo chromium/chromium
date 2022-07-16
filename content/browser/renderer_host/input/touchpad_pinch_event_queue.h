@@ -48,6 +48,10 @@ class CONTENT_EXPORT TouchpadPinchEventQueue {
  public:
   // The |client| must outlive the TouchpadPinchEventQueue.
   TouchpadPinchEventQueue(TouchpadPinchEventQueueClient* client);
+
+  TouchpadPinchEventQueue(const TouchpadPinchEventQueue&) = delete;
+  TouchpadPinchEventQueue& operator=(const TouchpadPinchEventQueue&) = delete;
+
   ~TouchpadPinchEventQueue();
 
   // Adds the given touchpad pinch |event| to the queue. The event may be
@@ -71,8 +75,6 @@ class CONTENT_EXPORT TouchpadPinchEventQueue {
   base::circular_deque<std::unique_ptr<QueuedTouchpadPinchEvent>> pinch_queue_;
   std::unique_ptr<QueuedTouchpadPinchEvent> pinch_event_awaiting_ack_;
   absl::optional<bool> first_event_prevented_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchpadPinchEventQueue);
 };
 
 }  // namespace content

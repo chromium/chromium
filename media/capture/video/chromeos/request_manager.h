@@ -99,6 +99,8 @@ class CAPTURE_EXPORT RequestManager final
     int32_t orientation;
   };
 
+  RequestManager() = delete;
+
   RequestManager(const std::string& device_id,
                  mojo::PendingReceiver<cros::mojom::Camera3CallbackOps>
                      callback_ops_receiver,
@@ -109,6 +111,10 @@ class CAPTURE_EXPORT RequestManager final
                  BlobifyCallback blobify_callback,
                  scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
                  uint32_t device_api_version);
+
+  RequestManager(const RequestManager&) = delete;
+  RequestManager& operator=(const RequestManager&) = delete;
+
   ~RequestManager() override;
 
   // Sets up the stream context and allocate buffers according to the
@@ -382,8 +388,6 @@ class CAPTURE_EXPORT RequestManager final
   uint32_t device_api_version_;
 
   base::WeakPtrFactory<RequestManager> weak_ptr_factory_{this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(RequestManager);
 };
 
 }  // namespace media

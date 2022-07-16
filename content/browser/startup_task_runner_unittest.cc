@@ -11,8 +11,8 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -224,8 +224,7 @@ TEST_F(StartupTaskRunnerTest, AsynchronousExecution) {
   scoped_refptr<TaskRunnerProxy> proxy = new TaskRunnerProxy(&mock_runner);
 
   EXPECT_CALL(mock_runner, PostDelayedTask(_, _)).Times(0);
-  EXPECT_CALL(mock_runner, PostNonNestableDelayedTask(
-                               _, base::TimeDelta::FromMilliseconds(0)))
+  EXPECT_CALL(mock_runner, PostNonNestableDelayedTask(_, base::Milliseconds(0)))
       .Times(testing::Between(2, 3))
       .WillRepeatedly(testing::Return(true));
 
@@ -270,8 +269,7 @@ TEST_F(StartupTaskRunnerTest, AsynchronousExecutionFailedTask) {
   scoped_refptr<TaskRunnerProxy> proxy = new TaskRunnerProxy(&mock_runner);
 
   EXPECT_CALL(mock_runner, PostDelayedTask(_, _)).Times(0);
-  EXPECT_CALL(mock_runner, PostNonNestableDelayedTask(
-                               _, base::TimeDelta::FromMilliseconds(0)))
+  EXPECT_CALL(mock_runner, PostNonNestableDelayedTask(_, base::Milliseconds(0)))
       .Times(testing::Between(1, 2))
       .WillRepeatedly(testing::Return(true));
 

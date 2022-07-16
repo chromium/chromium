@@ -18,6 +18,9 @@ struct Result {
   // Which provider this result came from.
   string result_type;
 
+  // The type that is reported in UMA metrics for this result.
+  string metrics_type;
+
   // Which UI surface the result is displayed in.
   string display_type;
 

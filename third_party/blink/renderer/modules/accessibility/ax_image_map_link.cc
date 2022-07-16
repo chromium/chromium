@@ -122,7 +122,8 @@ void AXImageMapLink::GetRelativeBounds(AXObject** out_container,
   if (!layout_object)
     return;
 
-  out_bounds_in_container = area->GetPath(layout_object).BoundingRect();
+  out_bounds_in_container =
+      FloatRect(area->GetPath(layout_object).BoundingRect());
   *out_container = AXObjectCache().GetOrCreate(layout_object);
 }
 

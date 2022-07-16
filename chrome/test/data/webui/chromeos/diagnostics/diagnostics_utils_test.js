@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {convertFrequencyToChannel, convertKibToGibDecimalString, getSubnetMaskFromRoutingPrefix} from 'chrome://diagnostics/diagnostics_utils.js';
-import {assertEquals} from '../../chai_assert.js';
+import {NetworkType, RoutineType} from 'chrome://diagnostics/diagnostics_types.js';
+import {convertKibToGibDecimalString, getNetworkCardTitle, getRoutineGroups, getSignalStrength, getSubnetMaskFromRoutingPrefix, setDisplayStateInTitleForTesting} from 'chrome://diagnostics/diagnostics_utils.js';
+import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 export function diagnosticsUtilsTestSuite() {
   test('ProperlyConvertsKibToGib', () => {
@@ -20,6 +24,8 @@ export function diagnosticsUtilsTestSuite() {
   });
 
   test('ConvertRoutingPrefixToSubnetMask', () => {
+    // '0' indicates an unset value.
+    assertEquals(getSubnetMaskFromRoutingPrefix(0), '');
     assertEquals(getSubnetMaskFromRoutingPrefix(1), '128.0.0.0');
     assertEquals(getSubnetMaskFromRoutingPrefix(2), '192.0.0.0');
     assertEquals(getSubnetMaskFromRoutingPrefix(3), '224.0.0.0');
@@ -54,27 +60,74 @@ export function diagnosticsUtilsTestSuite() {
     assertEquals(getSubnetMaskFromRoutingPrefix(32), '255.255.255.255');
   });
 
-  test('ConvertFrequencyToChannel', () => {
-    assertEquals(convertFrequencyToChannel(0), null);
-    assertEquals(convertFrequencyToChannel(2411), null);
-    // Calculates 2.4GHz channels.
-    assertEquals(convertFrequencyToChannel(2412), 1);
-    assertEquals(convertFrequencyToChannel(2417), 2);
-    assertEquals(convertFrequencyToChannel(2422), 3);
-    assertEquals(convertFrequencyToChannel(2427), 4);
-    assertEquals(convertFrequencyToChannel(2432), 5);
-    assertEquals(convertFrequencyToChannel(2437), 6);
-    assertEquals(convertFrequencyToChannel(2442), 7);
-    assertEquals(convertFrequencyToChannel(2447), 8);
-    assertEquals(convertFrequencyToChannel(2452), 9);
-    assertEquals(convertFrequencyToChannel(2457), 10);
-    assertEquals(convertFrequencyToChannel(2462), 11);
-    assertEquals(convertFrequencyToChannel(2467), 12);
-    assertEquals(convertFrequencyToChannel(2472), 13);
-    // Special 2.4GHz channel range for Japan
-    assertEquals(convertFrequencyToChannel(2484), 14);
-    assertEquals(convertFrequencyToChannel(2495), 14);
-    // TODO(ashleydp): Fix expectation when 5GHz algorithm is ready.
-    assertEquals(convertFrequencyToChannel(2496), null);
+  test('AllRoutineGroupsPresent', () => {
+    loadTimeData.overrideValues({enableArcNetworkDiagnostics: true});
+    let isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
+    let routineGroups = getRoutineGroups(NetworkType.kWiFi, isArcEnabled);
+    let [
+      localNetworkGroup,
+       nameResolutionGroup,
+       wifiGroup,
+       internetConnectivityGroup,
+      ]
+      = routineGroups;
+
+    // All groups should be present.
+    assertEquals(routineGroups.length, 4);
+
+    // WiFi group should exist and all three WiFi routines should be present.
+    assertEquals(wifiGroup.routines.length, 3);
+    assertEquals(wifiGroup.groupName, 'wifiGroupLabel');
+
+    // ARC routines should be present in their categories.
+    assertTrue(
+        nameResolutionGroup.routines.includes(RoutineType.kArcDnsResolution));
+
+    assertTrue(localNetworkGroup.routines.includes(RoutineType.kArcPing));
+    assertTrue(
+        internetConnectivityGroup.routines.includes(RoutineType.kArcHttp));
+  });
+
+  test('NetworkTypeIsNotWiFi', () => {
+    let isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
+    let routineGroups = getRoutineGroups(NetworkType.kEthernet, isArcEnabled);
+    // WiFi group should be missing.
+    assertEquals(routineGroups.length, 3);
+    let groupNames = routineGroups.map(group => group.groupName);
+    assertFalse(groupNames.includes('wifiGroupLabel'));
+  });
+
+  test('ArcRoutinesDisabled', () => {
+    loadTimeData.overrideValues({enableArcNetworkDiagnostics: false});
+    let isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
+    let routineGroups = getRoutineGroups(NetworkType.kEthernet, isArcEnabled);
+    let [localNetworkGroup, nameResolutionGroup, internetConnectivityGroup] =
+        routineGroups;
+    assertFalse(
+        nameResolutionGroup.routines.includes(RoutineType.kArcDnsResolution));
+
+    assertFalse(localNetworkGroup.routines.includes(RoutineType.kArcPing));
+    assertFalse(
+        internetConnectivityGroup.routines.includes(RoutineType.kArcHttp));
+  });
+
+  test('GetNetworkCardTitle', () => {
+    // Force connection state into title by setting displayStateInTitle to true.
+    setDisplayStateInTitleForTesting(true);
+    assertEquals(
+        'Ethernet (Online)', getNetworkCardTitle('Ethernet', 'Online'));
+
+    // Default state is to not display connection details in title.
+    setDisplayStateInTitleForTesting(false);
+    assertEquals('Ethernet', getNetworkCardTitle('Ethernet', 'Online'));
+  });
+
+  test('GetSignalStrength', () => {
+    assertEquals(getSignalStrength(0), '');
+    assertEquals(getSignalStrength(1), '');
+    assertEquals(getSignalStrength(14), 'Weak (14)');
+    assertEquals(getSignalStrength(33), 'Average (33)');
+    assertEquals(getSignalStrength(63), 'Good (63)');
+    assertEquals(getSignalStrength(98), 'Excellent (98)');
   });
 }

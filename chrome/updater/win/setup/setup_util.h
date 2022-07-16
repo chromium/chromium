@@ -23,8 +23,8 @@ namespace updater {
 
 enum class UpdaterScope;
 
-bool RegisterWakeTask(const base::CommandLine& run_command);
-void UnregisterWakeTask();
+bool RegisterWakeTask(const base::CommandLine& run_command, UpdaterScope scope);
+void UnregisterWakeTask(UpdaterScope scope);
 
 std::wstring GetComServerClsidRegistryPath(REFCLSID clsid);
 std::wstring GetComServerAppidRegistryPath(REFGUID appid);

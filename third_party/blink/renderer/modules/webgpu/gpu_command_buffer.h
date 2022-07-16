@@ -16,8 +16,8 @@ class GPUCommandBuffer : public DawnObject<WGPUCommandBuffer> {
   explicit GPUCommandBuffer(GPUDevice* device,
                             WGPUCommandBuffer command_buffer);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUCommandBuffer);
+  GPUCommandBuffer(const GPUCommandBuffer&) = delete;
+  GPUCommandBuffer& operator=(const GPUCommandBuffer&) = delete;
 };
 
 }  // namespace blink

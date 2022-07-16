@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 
 template <class T>
 class scoped_refptr;

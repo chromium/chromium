@@ -20,7 +20,7 @@ DumpDatabaseHandler::DumpDatabaseHandler(Profile* profile)
 DumpDatabaseHandler::~DumpDatabaseHandler() {}
 
 void DumpDatabaseHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getDatabaseDump",
       base::BindRepeating(&DumpDatabaseHandler::HandleGetDatabaseDump,
                           base::Unretained(this)));

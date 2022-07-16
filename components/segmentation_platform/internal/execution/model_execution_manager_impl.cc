@@ -12,12 +12,11 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
-#include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
@@ -29,6 +28,7 @@
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/internal/stats.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -78,6 +78,8 @@ struct ModelExecutionManagerImpl::ExecutionState {
   std::deque<proto::Feature> features;
   std::vector<float> input_tensor;
   base::Time end_time;
+  base::Time total_execution_start_time;
+  base::Time model_execution_start_time;
 };
 
 ModelExecutionManagerImpl::ModelExecutionTraceEvent::ModelExecutionTraceEvent(
@@ -110,7 +112,7 @@ struct ModelExecutionManagerImpl::FeatureState {
 };
 
 ModelExecutionManagerImpl::ModelExecutionManagerImpl(
-    std::vector<OptimizationTarget> segment_ids,
+    const base::flat_set<OptimizationTarget>& segment_ids,
     ModelHandlerCreator model_handler_creator,
     base::Clock* clock,
     SegmentInfoDatabase* segment_database,
@@ -146,6 +148,7 @@ void ModelExecutionManagerImpl::ExecuteModel(OptimizationTarget segment_id,
   state->segment_id = segment_id;
   state->model_handler = (*model_handler_it).second.get();
   state->callback = std::move(callback);
+  state->total_execution_start_time = clock_->Now();
 
   ModelExecutionTraceEvent trace_event(
       "ModelExecutionManagerImpl::ExecuteModel", *state);
@@ -165,10 +168,11 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForExecution(
   ModelExecutionTraceEvent trace_event(
       "ModelExecutionManagerImpl::OnSegmentInfoFetchedForExecution", *state);
   // It is required to have a valid and well formed segment info.
-  if (!segment_info || metadata_utils::ValidateSegmentInfo(*segment_info) !=
-                           metadata_utils::VALIDATION_SUCCESS) {
-    RunModelExecutionCallback(std::move(state->callback), 0,
-                              ModelExecutionStatus::INVALID_METADATA);
+  if (!segment_info ||
+      metadata_utils::ValidateSegmentInfo(*segment_info) !=
+          metadata_utils::ValidationResult::kValidationSuccess) {
+    RunModelExecutionCallback(std::move(state), 0,
+                              ModelExecutionStatus::kInvalidMetadata);
     return;
   }
 
@@ -211,9 +215,9 @@ void ModelExecutionManagerImpl::ProcessFeatures(
 
     // Validate the proto::Feature metadata.
     if (metadata_utils::ValidateMetadataFeature(feature) !=
-        metadata_utils::VALIDATION_SUCCESS) {
-      RunModelExecutionCallback(std::move(state->callback), 0,
-                                ModelExecutionStatus::INVALID_METADATA);
+        metadata_utils::ValidationResult::kValidationSuccess) {
+      RunModelExecutionCallback(std::move(state), 0,
+                                ModelExecutionStatus::kInvalidMetadata);
       return;
     }
   } while (feature.bucket_count() == 0);  // Skip collection-only features.
@@ -269,6 +273,7 @@ void ModelExecutionManagerImpl::OnGetSamplesForFeature(
     std::vector<SignalDatabase::Sample> samples) {
   ModelExecutionTraceEvent trace_event(
       "ModelExecutionManagerImpl::OnGetSamplesForFeature", *state);
+  base::Time process_start_time = clock_->Now();
   // HISTOGRAM_ENUM features might require us to filter out the result to only
   // keep enum values that match the accepted list. If the accepted list is'
   // empty, all histogram enum values are kept.
@@ -292,6 +297,9 @@ void ModelExecutionManagerImpl::OnGetSamplesForFeature(
   state->input_tensor.insert(state->input_tensor.end(), feature_data.begin(),
                              feature_data.end());
 
+  stats::RecordModelExecutionDurationFeatureProcessing(
+      state->segment_id, clock_->Now() - process_start_time);
+
   // Continue with the rest of the features.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -308,12 +316,21 @@ void ModelExecutionManagerImpl::ExecuteModel(
 
   SegmentationModelHandler* handler = (*it).second.get();
   if (!handler->ModelAvailable()) {
-    RunModelExecutionCallback(std::move(state->callback), 0,
-                              ModelExecutionStatus::EXECUTION_ERROR);
+    RunModelExecutionCallback(std::move(state), 0,
+                              ModelExecutionStatus::kExecutionError);
     return;
   }
 
+  if (VLOG_IS_ON(1)) {
+    std::stringstream log_input;
+    for (unsigned i = 0; i < state->input_tensor.size(); ++i)
+      log_input << " feature " << i << ": " << state->input_tensor[i];
+    VLOG(1) << "Segmentation model input: " << log_input.str();
+  }
   const std::vector<float>& const_input_tensor = std::move(state->input_tensor);
+  stats::RecordModelExecutionZeroValuePercent(state->segment_id,
+                                              const_input_tensor);
+  state->model_execution_start_time = clock_->Now();
   handler->ExecuteModelWithInput(
       base::BindOnce(&ModelExecutionManagerImpl::OnModelExecutionComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(state)),
@@ -325,20 +342,30 @@ void ModelExecutionManagerImpl::OnModelExecutionComplete(
     const absl::optional<float>& result) {
   ModelExecutionTraceEvent trace_event(
       "ModelExecutionManagerImpl::OnModelExecutionComplete", *state);
+  stats::RecordModelExecutionDurationModel(
+      state->segment_id, result.has_value(),
+      clock_->Now() - state->model_execution_start_time);
   if (result.has_value()) {
-    RunModelExecutionCallback(std::move(state->callback), *result,
-                              ModelExecutionStatus::SUCCESS);
+    VLOG(1) << "Segmentation model result: " << *result;
+    stats::RecordModelExecutionResult(state->segment_id, result.value());
+    RunModelExecutionCallback(std::move(state), *result,
+                              ModelExecutionStatus::kSuccess);
   } else {
-    RunModelExecutionCallback(std::move(state->callback), 0,
-                              ModelExecutionStatus::EXECUTION_ERROR);
+    VLOG(1) << "Segmentation model returned no result.";
+    RunModelExecutionCallback(std::move(state), 0,
+                              ModelExecutionStatus::kExecutionError);
   }
 }
 
 void ModelExecutionManagerImpl::RunModelExecutionCallback(
-    ModelExecutionCallback callback,
+    std::unique_ptr<ExecutionState> state,
     float result,
     ModelExecutionStatus status) {
-  std::move(callback).Run(std::make_pair(result, status));
+  stats::RecordModelExecutionDurationTotal(
+      state->segment_id, status,
+      clock_->Now() - state->total_execution_start_time);
+  stats::RecordModelExecutionStatus(state->segment_id, status);
+  std::move(state->callback).Run(std::make_pair(result, status));
 }
 
 void ModelExecutionManagerImpl::OnSegmentationModelUpdated(
@@ -346,17 +373,20 @@ void ModelExecutionManagerImpl::OnSegmentationModelUpdated(
     proto::SegmentationModelMetadata metadata) {
   TRACE_EVENT("segmentation_platform",
               "ModelExecutionManagerImpl::OnSegmentationModelUpdated");
+  stats::RecordModelDeliveryReceived(segment_id);
   if (segment_id == optimization_guide::proto::OptimizationTarget::
                         OPTIMIZATION_TARGET_UNKNOWN) {
-    // TODO(nyquist): Add metrics for this.
     return;
   }
 
+  // Set or overwrite name hashes for metadata features based on the name field.
+  metadata_utils::SetFeatureNameHashesFromName(&metadata);
+
   auto validation = metadata_utils::ValidateMetadataAndFeatures(metadata);
-  if (validation != metadata_utils::ValidationResult::VALIDATION_SUCCESS) {
-    // TODO(nyquist): Add metrics for this.
+  stats::RecordModelDeliveryMetadataValidation(
+      segment_id, /* processed = */ false, validation);
+  if (validation != metadata_utils::ValidationResult::kValidationSuccess)
     return;
-  }
 
   segment_database_->GetSegmentInfo(
       segment_id,
@@ -383,9 +413,9 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
     // If does not match, we should just overwrite the old entry with one
     // that has a matching segment ID, otherwise we will keep ignoring it
     // forever and never be able to clean it up.
-    if (new_segment_info.segment_id() != old_segment_info->segment_id()) {
-      // TODO(nyquist): Add metrics for this.
-    }
+    stats::RecordModelDeliverySegmentIdMatches(
+        new_segment_info.segment_id(),
+        new_segment_info.segment_id() == old_segment_info->segment_id());
 
     if (old_segment_info->has_prediction_result()) {
       // If we have an old PredictionResult, we need to keep it around in the
@@ -402,15 +432,17 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
   // We have a valid segment id, and the new metadata was valid, therefore the
   // new metadata should be valid. We are not allowed to invoke the callback
   // unless the metadata is valid.
-  if (metadata_utils::ValidateSegmentInfoMetadataAndFeatures(
-          new_segment_info) !=
-      metadata_utils::ValidationResult::VALIDATION_SUCCESS) {
-    // TODO(nyquist): Add metrics for this.
+  auto validation =
+      metadata_utils::ValidateSegmentInfoMetadataAndFeatures(new_segment_info);
+  stats::RecordModelDeliveryMetadataValidation(
+      segment_id, /* processed = */ true, validation);
+  if (validation != metadata_utils::ValidationResult::kValidationSuccess)
     return;
-  }
 
-  // Now that we've merged the old and the new SegmentInfo, we want to store
-  // the new version in the database.
+  stats::RecordModelDeliveryMetadataFeatureCount(
+      segment_id, new_segment_info.model_metadata().features_size());
+  // Now that we've merged the old and the new SegmentInfo, we want to store the
+  // new version in the database.
   segment_database_->UpdateSegment(
       segment_id, absl::make_optional(new_segment_info),
       base::BindOnce(&ModelExecutionManagerImpl::OnUpdatedSegmentInfoStored,
@@ -422,10 +454,9 @@ void ModelExecutionManagerImpl::OnUpdatedSegmentInfoStored(
     bool success) {
   TRACE_EVENT("segmentation_platform",
               "ModelExecutionManagerImpl::OnUpdatedSegmentInfoStored");
-  if (!success) {
-    // TODO(nyquist): Add metrics for this.
+  stats::RecordModelDeliverySaveResult(segment_info.segment_id(), success);
+  if (!success)
     return;
-  }
 
   // We are now ready to receive requests for execution, so invoke the callback.
   model_updated_callback_.Run(std::move(segment_info));

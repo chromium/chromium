@@ -11,6 +11,10 @@
 namespace nacl_io {
 
 class PassthroughFs : public Filesystem {
+ public:
+  PassthroughFs(const PassthroughFs&) = delete;
+  PassthroughFs& operator=(const PassthroughFs&) = delete;
+
  protected:
   PassthroughFs();
 
@@ -29,7 +33,6 @@ class PassthroughFs : public Filesystem {
 
  private:
   friend class TypedFsFactory<PassthroughFs>;
-  DISALLOW_COPY_AND_ASSIGN(PassthroughFs);
 };
 
 }  // namespace nacl_io

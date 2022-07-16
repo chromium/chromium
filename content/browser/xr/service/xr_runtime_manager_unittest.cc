@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
 #include "content/browser/xr/service/vr_service_impl.h"
@@ -25,6 +24,10 @@
 namespace content {
 
 class XRRuntimeManagerTest : public testing::Test {
+ public:
+  XRRuntimeManagerTest(const XRRuntimeManagerTest&) = delete;
+  XRRuntimeManagerTest& operator=(const XRRuntimeManagerTest&) = delete;
+
  protected:
   XRRuntimeManagerTest() = default;
   ~XRRuntimeManagerTest() override = default;
@@ -82,8 +85,6 @@ class XRRuntimeManagerTest : public testing::Test {
  private:
   device::FakeVRDeviceProvider* provider_ = nullptr;
   scoped_refptr<XRRuntimeManagerImpl> xr_runtime_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(XRRuntimeManagerTest);
 };
 
 TEST_F(XRRuntimeManagerTest, InitializationTest) {

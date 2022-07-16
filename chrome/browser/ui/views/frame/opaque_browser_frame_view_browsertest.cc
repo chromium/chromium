@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 
 #include "base/files/file_util.h"
+#include "base/macros.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -15,17 +16,19 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/hit_test.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/view_utils.h"
@@ -35,6 +38,12 @@
 class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
  public:
   WebAppOpaqueBrowserFrameViewTest() = default;
+
+  WebAppOpaqueBrowserFrameViewTest(const WebAppOpaqueBrowserFrameViewTest&) =
+      delete;
+  WebAppOpaqueBrowserFrameViewTest& operator=(
+      const WebAppOpaqueBrowserFrameViewTest&) = delete;
+
   ~WebAppOpaqueBrowserFrameViewTest() override = default;
 
   static GURL GetAppURL() { return GURL("https://test.org"); }
@@ -53,11 +62,9 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
     Browser* app_browser =
         web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
 
+    browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser);
     views::NonClientFrameView* frame_view =
-        BrowserView::GetBrowserViewForBrowser(app_browser)
-            ->GetWidget()
-            ->non_client_view()
-            ->frame_view();
+        browser_view_->GetWidget()->non_client_view()->frame_view();
 
     // Not all platform configurations use OpaqueBrowserFrameView for their
     // browser windows, see |CreateBrowserNonClientFrameView()|.
@@ -101,11 +108,13 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
               theme_mode == ThemeMode::kDefault);
   }
 
+  BrowserView* browser_view_ = nullptr;
   OpaqueBrowserFrameView* opaque_browser_frame_view_ = nullptr;
   WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAppOpaqueBrowserFrameViewTest);
+  // Disable animations.
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode_{
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, NoThemeColor) {
@@ -189,12 +198,92 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, StaticTitleBarHeight) {
   EXPECT_EQ(title_bar_height, GetRestoredTitleBarHeight());
 }
 
+// Tests for the appearance of the origin text in the titlebar. The origin text
+// shows and then hides both when the window is first opened and any time the
+// titlebar's appearance changes.
+IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, OriginTextVisibility) {
+  ui_test_utils::UrlLoadObserver url_observer(
+      GetAppURL(), content::NotificationService::AllSources());
+
+  if (!InstallAndLaunchWebApp())
+    return;
+
+  views::View* web_app_origin_text =
+      web_app_frame_toolbar_->GetViewByID(VIEW_ID_WEB_APP_ORIGIN_TEXT);
+  // Keep track of the number of times the view is made visible or hidden.
+  int visible_count = 0, hidden_count = 0;
+  auto visibility_change_counter = [](views::View* view, int* visible_count,
+                                      int* hidden_count) {
+    if (view->GetVisible())
+      (*visible_count)++;
+    else
+      (*hidden_count)++;
+  };
+  auto subscription = web_app_origin_text->AddVisibleChangedCallback(
+      base::BindRepeating(visibility_change_counter, web_app_origin_text,
+                          &visible_count, &hidden_count));
+
+  // Starts off visible, then animates out.
+  {
+    EXPECT_TRUE(web_app_origin_text->GetVisible());
+    base::RunLoop view_hidden_runloop;
+    auto callback_subscription = web_app_origin_text->AddVisibleChangedCallback(
+        view_hidden_runloop.QuitClosure());
+    view_hidden_runloop.Run();
+    EXPECT_EQ(0, visible_count);
+    EXPECT_EQ(1, hidden_count);
+    EXPECT_FALSE(web_app_origin_text->GetVisible());
+  }
+
+  // The app changes the theme. The origin text should show again and then hide.
+  {
+    base::RunLoop view_hidden_runloop;
+    base::RunLoop view_shown_runloop;
+    auto quit_runloop = base::BindLambdaForTesting(
+        [&web_app_origin_text, &view_hidden_runloop, &view_shown_runloop]() {
+          if (web_app_origin_text->GetVisible())
+            view_shown_runloop.Quit();
+          else
+            view_hidden_runloop.Quit();
+        });
+    auto callback_subscription =
+        web_app_origin_text->AddVisibleChangedCallback(quit_runloop);
+    // Make sure the navigation has finished before proceeding.
+    url_observer.Wait();
+    ASSERT_TRUE(ExecJs(
+        browser_view_->GetActiveWebContents()->GetMainFrame(),
+        "var meta = document.head.appendChild(document.createElement('meta'));"
+        "meta.name = 'theme-color';"
+        "meta.content = '#123456';"));
+    view_shown_runloop.Run();
+    EXPECT_EQ(1, visible_count);
+    view_hidden_runloop.Run();
+    EXPECT_EQ(2, hidden_count);
+    EXPECT_FALSE(web_app_origin_text->GetVisible());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, Fullscreen) {
+  if (!InstallAndLaunchWebApp())
+    return;
+
+  opaque_browser_frame_view_->frame()->SetFullscreen(true);
+  browser_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Verify that all children except the ClientView are hidden when the window
+  // is fullscreened.
+  for (views::View* child : opaque_browser_frame_view_->children()) {
+    EXPECT_EQ(views::IsViewClass<views::ClientView>(child),
+              child->GetVisible());
+  }
+}
+
+#if defined(OS_WIN)
 class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     : public InProcessBrowserTest {
  public:
   WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest() {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitAndEnableFeature(
+    scoped_feature_list_.InitAndEnableFeature(
         features::kWebAppWindowControlsOverlay);
   }
   WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest(
@@ -213,50 +302,19 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     InProcessBrowserTest::SetUp();
   }
 
-  GURL LoadTestPageWithDataAndGetURL() {
-    // Write |data| to a temporary file that can be later reached at
-    // http://127.0.0.1/test_file_*.html.
-    static int s_test_file_number = 1;
+  void InstallAndLaunchWebAppWithWindowControlsOverlay() {
+    GURL start_url = web_app_frame_toolbar_helper_
+                         .LoadWindowControlsOverlayTestPageWithDataAndGetURL(
+                             embedded_test_server(), &temp_dir_);
 
-    constexpr char kTestHTML[] =
-        "<!DOCTYPE html>"
-        "<style>"
-        "  #target {"
-        "    -webkit-app-region: drag;"
-        "     height: 100px;"
-        "     width: 100px;"
-        "     padding-left: env(titlebar-area-x);"
-        "     padding-right: env(titlebar-area-width);"
-        "     padding-top: env(titlebar-area-y);"
-        "     padding-bottom: env(titlebar-area-height);"
-        "  }"
-        "</style>"
-        "<div id=target></div>";
-
-    base::FilePath file_path = temp_dir_.GetPath().AppendASCII(
-        base::StringPrintf("test_file_%d.html", s_test_file_number++));
-
-    base::ScopedAllowBlockingForTesting allow_temp_file_writing;
-    base::WriteFile(file_path, kTestHTML);
-
-    GURL url = embedded_test_server()->GetURL(
-        "/" + file_path.BaseName().AsUTF8Unsafe());
-
-    return url;
-  }
-
-  bool InstallAndLaunchWebAppWithWindowControlsOverlay() {
-    GURL start_url = LoadTestPageWithDataAndGetURL();
-    std::vector<blink::mojom::DisplayMode> display_overrides;
-    display_overrides.emplace_back(
-        blink::mojom::DisplayMode::kWindowControlsOverlay);
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
-    web_app_info->open_as_window = true;
+    web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
     web_app_info->title = u"A Web App";
-    web_app_info->display_override = display_overrides;
+    web_app_info->display_override = {
+        blink::mojom::DisplayMode::kWindowControlsOverlay};
 
     web_app::AppId app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));
@@ -270,416 +328,90 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     views::NonClientFrameView* frame_view =
         browser_view_->GetWidget()->non_client_view()->frame_view();
 
-    // Not all platform configurations use OpaqueBrowserFrameView for their
-    // browser windows, see |CreateBrowserNonClientFrameView()|.
-    bool is_opaque_browser_frame_view =
-        views::IsViewClass<OpaqueBrowserFrameView>(frame_view);
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-    !BUILDFLAG(IS_CHROMEOS_LACROS)
-    DCHECK(is_opaque_browser_frame_view);
-#else
-    if (!is_opaque_browser_frame_view)
-      return false;
-#endif
-
     opaque_browser_frame_view_ =
         static_cast<OpaqueBrowserFrameView*>(frame_view);
     auto* web_app_frame_toolbar =
         opaque_browser_frame_view_->web_app_frame_toolbar_for_testing();
     DCHECK(web_app_frame_toolbar);
     DCHECK(web_app_frame_toolbar->GetVisible());
-
-    return true;
   }
 
-  void RunCallbackAndWaitForGeometryChangeEvent(base::OnceClosure callback) {
+  void ToggleWindowControlsOverlayEnabledAndWait() {
     auto* web_contents = browser_view_->GetActiveWebContents();
-    EXPECT_TRUE(
-        ExecJs(web_contents->GetMainFrame(),
-               "geometrychangeCount = 0;"
-               "document.title = 'beforegeometrychange';"
-               "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
-               "  geometrychangeCount++;"
-               "  overlay_rect_from_event = e.boundingRect;"
-               "  overlay_visible_from_event = e.visible;"
-               "  document.title = 'ongeometrychange';"
-               "}"));
-
-    std::move(callback).Run();
+    web_app_frame_toolbar_helper_.SetupGeometryChangeCallback(web_contents);
+    browser_view_->ToggleWindowControlsOverlayEnabled();
     content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
     ignore_result(title_watcher.WaitAndGetTitle());
   }
 
-  void ToggleWindowControlsOverlayEnabledAndWait() {
-    RunCallbackAndWaitForGeometryChangeEvent(base::BindLambdaForTesting(
-        [this]() { browser_view_->ToggleWindowControlsOverlayEnabled(); }));
-  }
-
-  void ResizeWindowBoundsAndWait(const gfx::Rect& new_bounds) {
-    // Changing the width of widget should trigger a "geometrychange" event.
-    EXPECT_NE(new_bounds.width(), browser_view_->GetLocalBounds().width());
-    RunCallbackAndWaitForGeometryChangeEvent(base::BindLambdaForTesting(
-        [&]() { browser_view_->GetWidget()->SetBounds(new_bounds); }));
-  }
-
-  gfx::Rect GetWindowControlOverlayBoundingClientRectFromEvent() {
-    auto* web_contents = browser_view_->GetActiveWebContents();
-    return gfx::Rect(
-        EvalJs(web_contents, "overlay_rect_from_event.x").ExtractInt(),
-        EvalJs(web_contents, "overlay_rect_from_event.y").ExtractInt(),
-        EvalJs(web_contents, "overlay_rect_from_event.width").ExtractInt(),
-        EvalJs(web_contents, "overlay_rect_from_event.height").ExtractInt());
-  }
-
-  gfx::Rect GetWindowControlOverlayBoundingClientRect() {
-    auto* web_contents = browser_view_->GetActiveWebContents();
-    return gfx::Rect(
-        EvalJs(web_contents,
-               "navigator.windowControlsOverlay.getBoundingClientRect().x")
-            .ExtractInt(),
-        EvalJs(web_contents,
-               "navigator.windowControlsOverlay.getBoundingClientRect().y")
-            .ExtractInt(),
-        EvalJs(web_contents,
-               "navigator.windowControlsOverlay.getBoundingClientRect().width")
-            .ExtractInt(),
-        EvalJs(web_contents,
-               "navigator.windowControlsOverlay.getBoundingClientRect().height")
-            .ExtractInt());
-  }
-
-  bool GetWindowControlOverlayVisibility() {
-    auto* web_contents = browser_view_->GetActiveWebContents();
-    return EvalJs(web_contents,
-                  "window.navigator.windowControlsOverlay.visible")
-        .ExtractBool();
-  }
-
-  bool GetWindowControlOverlayVisibilityFromEvent() {
-    auto* web_contents = browser_view_->GetActiveWebContents();
-    return EvalJs(web_contents, "overlay_visible_from_event").ExtractBool();
-  }
-
-  int GetFrameTopBorder() {
-    return opaque_browser_frame_view_->layout()->FrameBorderInsets(false).top();
-  }
-
   BrowserView* browser_view_ = nullptr;
   OpaqueBrowserFrameView* opaque_browser_frame_view_ = nullptr;
+  WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 
  private:
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
-                       WindowControlsOverlay) {
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
-    return;
+                       CaptionButtonsTooltip) {
+  InstallAndLaunchWebAppWithWindowControlsOverlay();
 
-  // Toggle overlay on, and validate JS API reflects the expected
-  // values.
+  auto* minimize_button = static_cast<const views::Button*>(
+      opaque_browser_frame_view_->GetViewByID(VIEW_ID_MINIMIZE_BUTTON));
+  auto* maximize_button = static_cast<const views::Button*>(
+      opaque_browser_frame_view_->GetViewByID(VIEW_ID_MAXIMIZE_BUTTON));
+  auto* restore_button = static_cast<const views::Button*>(
+      opaque_browser_frame_view_->GetViewByID(VIEW_ID_RESTORE_BUTTON));
+  auto* close_button = static_cast<const views::Button*>(
+      opaque_browser_frame_view_->GetViewByID(VIEW_ID_CLOSE_BUTTON));
+
+  // Verify tooltip text was first empty.
+  EXPECT_EQ(minimize_button->GetTooltipText(), u"");
+  EXPECT_EQ(maximize_button->GetTooltipText(), u"");
+  EXPECT_EQ(restore_button->GetTooltipText(), u"");
+  EXPECT_EQ(close_button->GetTooltipText(), u"");
+
   ToggleWindowControlsOverlayEnabledAndWait();
 
-  // Validate there is a top border so the window is resizable.
-  EXPECT_EQ(GetFrameTopBorder(), browser_view_->bounds().y());
+  // Verify tooltip text has been updated.
+  EXPECT_EQ(minimize_button->GetTooltipText(),
+            minimize_button->GetAccessibleName());
+  EXPECT_EQ(maximize_button->GetTooltipText(),
+            maximize_button->GetAccessibleName());
+  EXPECT_EQ(restore_button->GetTooltipText(),
+            restore_button->GetAccessibleName());
+  EXPECT_EQ(close_button->GetTooltipText(), close_button->GetAccessibleName());
 
-  gfx::Rect bounds = GetWindowControlOverlayBoundingClientRect();
-  EXPECT_TRUE(GetWindowControlOverlayVisibility());
-  EXPECT_EQ(gfx::Point(), bounds.origin());
-  EXPECT_FALSE(bounds.IsEmpty());
-
-  // Toggle overlay off, and validate JS API reflects the expected
-  // values.
   ToggleWindowControlsOverlayEnabledAndWait();
-  bounds = GetWindowControlOverlayBoundingClientRect();
-  EXPECT_FALSE(GetWindowControlOverlayVisibility());
-  EXPECT_EQ(gfx::Rect(), bounds);
+
+  // Verify tooltip text has been cleared when the feature is toggled off.
+  EXPECT_EQ(minimize_button->GetTooltipText(), u"");
+  EXPECT_EQ(maximize_button->GetTooltipText(), u"");
+  EXPECT_EQ(restore_button->GetTooltipText(), u"");
+  EXPECT_EQ(close_button->GetTooltipText(), u"");
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
-                       GeometryChangeEvent) {
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
-    return;
+                       CaptionButtonHitTest) {
+  InstallAndLaunchWebAppWithWindowControlsOverlay();
+
+  opaque_browser_frame_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Avoid the top right resize corner.
+  constexpr int kInset = 10;
+  const gfx::Point kPoint(opaque_browser_frame_view_->width() - kInset, kInset);
+
+  EXPECT_EQ(opaque_browser_frame_view_->NonClientHitTest(kPoint), HTCLOSE);
 
   ToggleWindowControlsOverlayEnabledAndWait();
 
-  // Store the initial bounding client rect for comparison later.
-  const gfx::Rect initial_js_overlay_bounds =
-      GetWindowControlOverlayBoundingClientRect();
-  gfx::Rect new_bounds = browser_view_->GetLocalBounds();
-  new_bounds.set_width(new_bounds.width() - 1);
-  ResizeWindowBoundsAndWait(new_bounds);
-
-  // Validate both the event payload and JS bounding client rect reflect
-  // the new size.
-  const gfx::Rect resized_js_overlay_bounds =
-      GetWindowControlOverlayBoundingClientRect();
-  const gfx::Rect resized_js_overlay_event_bounds =
-      GetWindowControlOverlayBoundingClientRectFromEvent();
-  EXPECT_EQ(
-      1, EvalJs(browser_view_->GetActiveWebContents(), "geometrychangeCount"));
-  EXPECT_TRUE(GetWindowControlOverlayVisibility());
-  EXPECT_TRUE(GetWindowControlOverlayVisibilityFromEvent());
-  EXPECT_EQ(resized_js_overlay_bounds, resized_js_overlay_event_bounds);
-  EXPECT_EQ(initial_js_overlay_bounds.origin(),
-            resized_js_overlay_bounds.origin());
-  EXPECT_NE(initial_js_overlay_bounds.width(),
-            resized_js_overlay_bounds.width());
-  EXPECT_EQ(initial_js_overlay_bounds.height(),
-            resized_js_overlay_bounds.height());
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
-                       NoGeometryChangeEventIfOverlayIsOff) {
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
-    return;
-
-  constexpr char kTestScript[] =
-      "document.title = 'beforeevent';"
-      "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
-      "  document.title = 'ongeometrychange';"
-      "};"
-      "window.onresize = (e) => {"
-      "  document.title = 'onresize';"
-      "};";
-
-  // Window Control Overlay is off by default.
-  auto* web_contents = browser_view_->GetActiveWebContents();
-  gfx::Rect new_bounds = browser_view_->GetLocalBounds();
-  new_bounds.set_width(new_bounds.width() + 10);
-  EXPECT_TRUE(ExecJs(web_contents->GetMainFrame(), kTestScript));
-  browser_view_->GetWidget()->SetBounds(new_bounds);
-  content::TitleWatcher title_watcher(web_contents, u"onresize");
-  title_watcher.AlsoWaitForTitle(u"ongeometrychange");
-  EXPECT_EQ(u"onresize", title_watcher.WaitAndGetTitle());
-
-  // Toggle Window Control Ovleray on and then off.
-  ToggleWindowControlsOverlayEnabledAndWait();
-  ToggleWindowControlsOverlayEnabledAndWait();
-
-  // Validate event is not fired.
-  new_bounds.set_width(new_bounds.width() - 10);
-  EXPECT_TRUE(ExecJs(web_contents->GetMainFrame(), kTestScript));
-  browser_view_->GetWidget()->SetBounds(new_bounds);
-  content::TitleWatcher title_watcher2(web_contents, u"onresize");
-  title_watcher2.AlsoWaitForTitle(u"ongeometrychange");
-  EXPECT_EQ(u"onresize", title_watcher2.WaitAndGetTitle());
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
-                       WindowControlsOverlayDraggableRegions) {
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
-    return;
+  // Verify the component updates on toggle.
+  EXPECT_EQ(opaque_browser_frame_view_->NonClientHitTest(kPoint), HTCLIENT);
 
   ToggleWindowControlsOverlayEnabledAndWait();
 
-  constexpr gfx::Point kPoint(50, 50);
-  EXPECT_EQ(opaque_browser_frame_view_->NonClientHitTest(kPoint), HTCAPTION);
-  EXPECT_FALSE(browser_view_->ShouldDescendIntoChildForEventHandling(
-      browser_view_->GetWidget()->GetNativeView(), kPoint));
-
-  // Validate that a point at the border is not marked as draggable.
-  constexpr gfx::Point kBorderPoint(50, 1);
-  EXPECT_NE(opaque_browser_frame_view_->NonClientHitTest(kBorderPoint),
-            HTCAPTION);
-  EXPECT_TRUE(browser_view_->ShouldDescendIntoChildForEventHandling(
-      browser_view_->GetWidget()->GetNativeView(), kBorderPoint));
-
-  // Validate that the draggable region is reset on navigation and the point is
-  // no longer draggable.
-  ui_test_utils::NavigateToURL(browser_view_->browser(),
-                               GURL("http://example.test/"));
-  EXPECT_NE(opaque_browser_frame_view_->NonClientHitTest(kPoint), HTCAPTION);
-  EXPECT_TRUE(browser_view_->ShouldDescendIntoChildForEventHandling(
-      browser_view_->GetWidget()->GetNativeView(), kPoint));
+  // Verify the component clears when the feature is turned off.
+  EXPECT_EQ(opaque_browser_frame_view_->NonClientHitTest(kPoint), HTCLOSE);
 }
-
-IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
-                       WindowControlsOverlayRTL) {
-  base::i18n::SetICUDefaultLocale("ar");
-  ASSERT_TRUE(base::i18n::IsRTL());
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
-    return;
-
-  ToggleWindowControlsOverlayEnabledAndWait();
-
-  const gfx::Rect bounds = GetWindowControlOverlayBoundingClientRect();
-  EXPECT_TRUE(GetWindowControlOverlayVisibility());
-  EXPECT_NE(0, bounds.x());
-  EXPECT_EQ(0, bounds.y());
-  EXPECT_FALSE(bounds.IsEmpty());
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
-                       CSSRectTestLTR) {
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
-    return;
-
-  ToggleWindowControlsOverlayEnabledAndWait();
-
-  constexpr char kTestScript[] =
-      "var element = document.getElementById('target');"
-      "var titlebarAreaX = "
-      "    getComputedStyle(element).getPropertyValue('padding-left');"
-      "var titlebarAreaXInt = parseInt(titlebarAreaX.split('px')[0]);"
-      "var titlebarAreaY = "
-      "    getComputedStyle(element).getPropertyValue('padding-top');"
-      "var titlebarAreaYInt = parseInt(titlebarAreaY.split('px')[0]);"
-      "var titlebarAreaWidthRect = "
-      "    getComputedStyle(element).getPropertyValue('padding-right');"
-      "var titlebarAreaWidthRectInt = "
-      "    parseInt(titlebarAreaWidthRect.split('px')[0]);"
-      "var titlebarAreaHeightRect = "
-      "    getComputedStyle(element).getPropertyValue('padding-bottom');"
-      "var titlebarAreaHeightRectInt = "
-      "    parseInt(titlebarAreaHeightRect.split('px')[0]);";
-
-  auto* web_contents = browser_view_->GetActiveWebContents();
-  EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), kTestScript));
-
-  const int initial_x_value =
-      EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
-  const int initial_y_value =
-      EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
-  const int initial_width_value =
-      EvalJs(web_contents, "titlebarAreaWidthRectInt").ExtractInt();
-  const int initial_height_value =
-      EvalJs(web_contents, "titlebarAreaHeightRectInt").ExtractInt();
-
-  EXPECT_EQ(0, initial_x_value);
-  EXPECT_EQ(0, initial_y_value);
-  EXPECT_NE(0, initial_width_value);
-  EXPECT_NE(0, initial_height_value);
-
-  // Change bounds so new values get sent.
-  gfx::Rect new_bounds = browser_view_->GetLocalBounds();
-  new_bounds.set_width(new_bounds.width() + 20);
-  new_bounds.set_height(new_bounds.height() + 20);
-  ResizeWindowBoundsAndWait(new_bounds);
-
-  EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), kTestScript));
-
-  const int updated_x_value =
-      EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
-  const int updated_y_value =
-      EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
-  const int updated_width_value =
-      EvalJs(web_contents, "titlebarAreaWidthRectInt").ExtractInt();
-  const int updated_height_value =
-      EvalJs(web_contents, "titlebarAreaHeightRectInt").ExtractInt();
-
-  // Changing the window dimensions should only change the overlay width. The
-  // overlay height should remain the same.
-  EXPECT_EQ(initial_x_value, updated_x_value);
-  EXPECT_EQ(initial_y_value, updated_y_value);
-  EXPECT_NE(initial_width_value, updated_width_value);
-  EXPECT_EQ(initial_height_value, updated_height_value);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
-                       CSSRectTestRTL) {
-  base::i18n::SetICUDefaultLocale("ar");
-  ASSERT_TRUE(base::i18n::IsRTL());
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
-    return;
-
-  ToggleWindowControlsOverlayEnabledAndWait();
-
-  constexpr char kTestScript[] =
-      "var element = document.getElementById('target');"
-      "var titlebarAreaX = "
-      "    getComputedStyle(element).getPropertyValue('padding-left');"
-      "var titlebarAreaXInt = parseInt(titlebarAreaX.split('px')[0]);"
-      "var titlebarAreaY = "
-      "    getComputedStyle(element).getPropertyValue('padding-top');"
-      "var titlebarAreaYInt = parseInt(titlebarAreaY.split('px')[0]);"
-      "var titlebarAreaWidthRect = "
-      "    getComputedStyle(element).getPropertyValue('padding-right');"
-      "var titlebarAreaWidthRectInt = "
-      "    parseInt(titlebarAreaWidthRect.split('px')[0]);"
-      "var titlebarAreaHeightRect = "
-      "    getComputedStyle(element).getPropertyValue('padding-bottom');"
-      "var titlebarAreaHeightRectInt = "
-      "    parseInt(titlebarAreaHeightRect.split('px')[0]);";
-
-  auto* web_contents = browser_view_->GetActiveWebContents();
-  EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), kTestScript));
-
-  const int initial_x_value =
-      EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
-  const int initial_y_value =
-      EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
-  const int initial_width_value =
-      EvalJs(web_contents, "titlebarAreaWidthRectInt").ExtractInt();
-  const int initial_height_value =
-      EvalJs(web_contents, "titlebarAreaHeightRectInt").ExtractInt();
-
-  EXPECT_NE(0, initial_x_value);
-  EXPECT_EQ(0, initial_y_value);
-  EXPECT_NE(0, initial_width_value);
-  EXPECT_NE(0, initial_height_value);
-
-  // Change bounds so new values get sent.
-  gfx::Rect new_bounds = browser_view_->GetLocalBounds();
-  new_bounds.set_width(new_bounds.width() + 15);
-  new_bounds.set_height(new_bounds.height() + 15);
-  ResizeWindowBoundsAndWait(new_bounds);
-
-  EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), kTestScript));
-
-  const int updated_x_value =
-      EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
-  const int updated_y_value =
-      EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
-  const int updated_width_value =
-      EvalJs(web_contents, "titlebarAreaWidthRectInt").ExtractInt();
-  const int updated_height_value =
-      EvalJs(web_contents, "titlebarAreaHeightRectInt").ExtractInt();
-
-  // Changing the window dimensions should only change the overlay width. The
-  // overlay height should remain the same.
-  EXPECT_EQ(initial_x_value, updated_x_value);
-  EXPECT_EQ(initial_y_value, updated_y_value);
-  EXPECT_NE(initial_width_value, updated_width_value);
-  EXPECT_EQ(initial_height_value, updated_height_value);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
-                       ToggleWindowControlsOverlay) {
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
-    return;
-
-  // Make sure the app launches in standalone mode by default.
-  EXPECT_FALSE(browser_view_->IsWindowControlsOverlayEnabled());
-  EXPECT_TRUE(browser_view_->AppUsesWindowControlsOverlay());
-
-  // Toggle WCO on, and verify that the UI updates accordingly.
-  browser_view_->ToggleWindowControlsOverlayEnabled();
-  EXPECT_TRUE(browser_view_->IsWindowControlsOverlayEnabled());
-  EXPECT_TRUE(browser_view_->AppUsesWindowControlsOverlay());
-
-  // Toggle WCO off, and verify that the app returns to 'standalone' mode.
-  browser_view_->ToggleWindowControlsOverlayEnabled();
-  EXPECT_FALSE(browser_view_->IsWindowControlsOverlayEnabled());
-  EXPECT_TRUE(browser_view_->AppUsesWindowControlsOverlay());
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
-                       OpenInChrome) {
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
-    return;
-
-  // Toggle overlay on, and validate JS API reflects the expected
-  // values.
-  ToggleWindowControlsOverlayEnabledAndWait();
-
-  // Validate non-empty bounds are being sent.
-  EXPECT_TRUE(GetWindowControlOverlayVisibility());
-
-  chrome::ExecuteCommand(browser_view_->browser(), IDC_OPEN_IN_CHROME);
-
-  // Validate bounds are cleared.
-  EXPECT_EQ(false, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                          "window.navigator.windowControlsOverlay.visible"));
-}
+#endif

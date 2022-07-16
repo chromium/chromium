@@ -1,0 +1,3 @@
+-SetuidSandboxClient.SandboxedClientAPI
+-SetuidSandboxHost.GetSandboxBinaryPath
+-SetuidSandboxHost.SetupLaunchEnvironment

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/optimization_guide/core/top_host_provider.h"
 
 namespace optimization_guide {
@@ -22,6 +21,11 @@ class CommandLineTopHostProvider : public TopHostProvider {
   // Creates a TopHostProvider if the flag for overriding top hosts has been
   // enabled.
   static std::unique_ptr<CommandLineTopHostProvider> CreateIfEnabled();
+
+  CommandLineTopHostProvider(const CommandLineTopHostProvider&) = delete;
+  CommandLineTopHostProvider& operator=(const CommandLineTopHostProvider&) =
+      delete;
+
   ~CommandLineTopHostProvider() override;
 
   // TopHostProvider implementation:
@@ -32,8 +36,6 @@ class CommandLineTopHostProvider : public TopHostProvider {
       const std::vector<std::string>& top_hosts);
 
   std::vector<std::string> top_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommandLineTopHostProvider);
 };
 
 }  // namespace optimization_guide

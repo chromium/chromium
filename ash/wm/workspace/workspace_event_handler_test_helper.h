@@ -7,13 +7,17 @@
 
 #include "ash/wm/workspace/workspace_event_handler.h"
 
-#include "base/macros.h"
-
 namespace ash {
 
 class WorkspaceEventHandlerTestHelper {
  public:
   explicit WorkspaceEventHandlerTestHelper(WorkspaceEventHandler* handler);
+
+  WorkspaceEventHandlerTestHelper(const WorkspaceEventHandlerTestHelper&) =
+      delete;
+  WorkspaceEventHandlerTestHelper& operator=(
+      const WorkspaceEventHandlerTestHelper&) = delete;
+
   ~WorkspaceEventHandlerTestHelper();
 
   MultiWindowResizeController* resize_controller() {
@@ -22,8 +26,6 @@ class WorkspaceEventHandlerTestHelper {
 
  private:
   WorkspaceEventHandler* handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkspaceEventHandlerTestHelper);
 };
 
 }  // namespace ash

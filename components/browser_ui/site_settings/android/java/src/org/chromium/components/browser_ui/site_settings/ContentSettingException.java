@@ -9,7 +9,8 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 import androidx.annotation.Nullable;
 
 import org.chromium.components.content_settings.ContentSettingValues;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.io.Serializable;
 
@@ -17,7 +18,7 @@ import java.io.Serializable;
  * Exception information for a given origin.
  */
 public class ContentSettingException implements Serializable {
-    private final int mContentSettingType;
+    private final @ContentSettingsType int mContentSettingType;
     private final String mPrimaryPattern;
     private final String mSecondaryPattern;
     private final @ContentSettingValues @Nullable Integer mContentSetting;
@@ -31,8 +32,9 @@ public class ContentSettingException implements Serializable {
      * @param setting The setting for this exception, e.g. ALLOW or BLOCK.
      * @param source The source for this exception, e.g. "policy".
      */
-    public ContentSettingException(int type, String primaryPattern, String secondaryPattern,
-            @ContentSettingValues @Nullable Integer setting, String source) {
+    public ContentSettingException(@ContentSettingsType int type, String primaryPattern,
+            String secondaryPattern, @ContentSettingValues @Nullable Integer setting,
+            String source) {
         mContentSettingType = type;
         mPrimaryPattern = primaryPattern;
         mSecondaryPattern = secondaryPattern;
@@ -44,7 +46,7 @@ public class ContentSettingException implements Serializable {
      * Construct a ContentSettingException.
      * Same as above but defaults secondaryPattern to wildcard.
      */
-    public ContentSettingException(int type, String primaryPattern,
+    public ContentSettingException(@ContentSettingsType int type, String primaryPattern,
             @ContentSettingValues @Nullable Integer setting, String source) {
         this(type, primaryPattern, SITE_WILDCARD, setting, source);
     }
@@ -65,7 +67,7 @@ public class ContentSettingException implements Serializable {
         return mContentSetting;
     }
 
-    public int getContentSettingType() {
+    public @ContentSettingsType int getContentSettingType() {
         return mContentSettingType;
     }
 
@@ -74,7 +76,7 @@ public class ContentSettingException implements Serializable {
      */
     public void setContentSetting(
             BrowserContextHandle browserContextHandle, @ContentSettingValues int value) {
-        WebsitePreferenceBridge.setContentSettingForPattern(browserContextHandle,
+        WebsitePreferenceBridge.setContentSettingCustomScope(browserContextHandle,
                 mContentSettingType, mPrimaryPattern, mSecondaryPattern, value);
     }
 }

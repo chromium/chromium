@@ -5,9 +5,9 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/sync/test/integration/os_sync_test.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
+#include "chrome/browser/sync/test/integration/sync_settings_categorization_sync_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,9 +19,11 @@ using preferences_helper::GetRegistry;
 
 namespace {
 
-class TwoClientOsPreferencesSyncTest : public OsSyncTest {
+class TwoClientOsPreferencesSyncTest
+    : public SyncSettingsCategorizationSyncTest {
  public:
-  TwoClientOsPreferencesSyncTest() : OsSyncTest(TWO_CLIENT) {}
+  TwoClientOsPreferencesSyncTest()
+      : SyncSettingsCategorizationSyncTest(TWO_CLIENT) {}
   ~TwoClientOsPreferencesSyncTest() override = default;
 
   // Needed for AwaitQuiescence().

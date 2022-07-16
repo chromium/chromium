@@ -10,7 +10,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -125,6 +124,9 @@ class TestWallpaperObserver : public ash::WallpaperControllerObserver {
     WallpaperControllerClientImpl::Get()->AddObserver(this);
   }
 
+  TestWallpaperObserver(const TestWallpaperObserver&) = delete;
+  TestWallpaperObserver& operator=(const TestWallpaperObserver&) = delete;
+
   ~TestWallpaperObserver() override {
     WallpaperControllerClientImpl::Get()->RemoveObserver(this);
   }
@@ -145,8 +147,6 @@ class TestWallpaperObserver : public ash::WallpaperControllerObserver {
 
  private:
   bool finished_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWallpaperObserver);
 };
 
 }  // namespace
@@ -155,6 +155,12 @@ class CustomizationWallpaperDownloaderBrowserTest
     : public InProcessBrowserTest {
  public:
   CustomizationWallpaperDownloaderBrowserTest() {}
+
+  CustomizationWallpaperDownloaderBrowserTest(
+      const CustomizationWallpaperDownloaderBrowserTest&) = delete;
+  CustomizationWallpaperDownloaderBrowserTest& operator=(
+      const CustomizationWallpaperDownloaderBrowserTest&) = delete;
+
   ~CustomizationWallpaperDownloaderBrowserTest() override {}
 
   // InProcessBrowserTest overrides:
@@ -191,7 +197,7 @@ class CustomizationWallpaperDownloaderBrowserTest
         ServicesCustomizationDocument::GetInstance();
     customization->wallpaper_downloader_for_testing()
         ->set_retry_delay_for_testing(
-            base::TimeDelta::FromMilliseconds(kDownloadRetryIntervalMS));
+            base::Milliseconds(kDownloadRetryIntervalMS));
 
     attempts_.push_back(base::TimeTicks::Now());
     if (attempts_.size() > 1) {
@@ -199,10 +205,9 @@ class CustomizationWallpaperDownloaderBrowserTest
       const base::TimeDelta current_delay =
           customization->wallpaper_downloader_for_testing()
               ->retry_current_delay_for_testing();
-      const double base_interval = base::TimeDelta::FromMilliseconds(
-                                       kDownloadRetryIntervalMS).InSecondsF();
-      EXPECT_GE(current_delay,
-                base::TimeDelta::FromSecondsD(base_interval * retry * retry))
+      const double base_interval =
+          base::Milliseconds(kDownloadRetryIntervalMS).InSecondsF();
+      EXPECT_GE(current_delay, base::Seconds(base_interval * retry * retry))
           << "Retry too fast. Actual interval " << current_delay.InSecondsF()
           << " seconds, but expected at least " << base_interval
           << " * (retry=" << retry
@@ -227,8 +232,6 @@ class CustomizationWallpaperDownloaderBrowserTest
 
   // Number of retries required.
   size_t required_retries_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomizationWallpaperDownloaderBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CustomizationWallpaperDownloaderBrowserTest,

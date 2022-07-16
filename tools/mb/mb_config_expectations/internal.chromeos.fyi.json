@@ -1,16 +1,4 @@
 {
-  "chromeos-betty-arc-r-chrome": {
-    "args_file": "//build/args/chromeos/betty-arc-r.gni",
-    "gn_args": {
-      "exclude_unwind_tables": false,
-      "is_chrome_branded": true,
-      "is_chromeos_device": true,
-      "is_official_build": true,
-      "ozone_platform_headless": true,
-      "use_goma": true,
-      "use_real_dbus_clients": false
-    }
-  },
   "chromeos-betty-pi-arc-chrome-dchecks": {
     "args_file": "//build/args/chromeos/betty-pi-arc.gni",
     "gn_args": {
@@ -24,23 +12,13 @@
       "use_real_dbus_clients": false
     }
   },
-  "chromeos-eve-arc-r-chrome": {
-    "args_file": "//build/args/chromeos/eve-arc-r.gni",
-    "gn_args": {
-      "exclude_unwind_tables": false,
-      "is_chrome_branded": true,
-      "is_chromeos_device": true,
-      "is_official_build": true,
-      "ozone_platform_headless": true,
-      "use_goma": true
-    }
-  },
   "lacros-amd64-generic-chrome-fyi": {
     "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
     "gn_args": {
       "chromeos_is_browser_only": true,
       "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
       "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "dcheck_always_on": false,
       "is_cfi": true,
       "is_chrome_branded": true,
       "is_chromeos_device": true,
@@ -59,6 +37,7 @@
       "chromeos_is_browser_only": true,
       "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
       "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_i386-sysroot",
+      "dcheck_always_on": false,
       "is_cfi": true,
       "is_chrome_branded": true,
       "is_chromeos_device": true,

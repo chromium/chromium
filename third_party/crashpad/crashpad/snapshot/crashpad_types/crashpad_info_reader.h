@@ -19,7 +19,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "util/misc/address_types.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/misc/tri_state.h"
@@ -32,6 +31,10 @@ namespace crashpad {
 class CrashpadInfoReader {
  public:
   CrashpadInfoReader();
+
+  CrashpadInfoReader(const CrashpadInfoReader&) = delete;
+  CrashpadInfoReader& operator=(const CrashpadInfoReader&) = delete;
+
   ~CrashpadInfoReader();
 
   //! \brief Initializes this object.
@@ -66,8 +69,6 @@ class CrashpadInfoReader {
   std::unique_ptr<InfoContainer> container_;
   bool is_64_bit_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashpadInfoReader);
 };
 
 }  // namespace crashpad

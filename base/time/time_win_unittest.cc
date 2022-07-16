@@ -26,7 +26,7 @@ namespace {
 // For TimeDelta::ConstexprInitialization
 constexpr int kExpectedDeltaInMilliseconds = 10;
 constexpr TimeDelta kConstexprTimeDelta =
-    TimeDelta::FromMilliseconds(kExpectedDeltaInMilliseconds);
+    Milliseconds(kExpectedDeltaInMilliseconds);
 
 class MockTimeTicks : public TimeTicks {
  public:
@@ -83,9 +83,8 @@ unsigned __stdcall RolloverTestThreadMain(void* param) {
 // results.
 TimeTicks GetTSC() {
   // Using a fake cycle counter frequency for test purposes.
-  return TimeTicks() +
-         TimeDelta::FromMicroseconds(ReadCycleCounter() *
-                                     Time::kMicrosecondsPerSecond / 10000000);
+  return TimeTicks() + Microseconds(ReadCycleCounter() *
+                                    Time::kMicrosecondsPerSecond / 10000000);
 }
 
 }  // namespace
@@ -354,14 +353,13 @@ TEST(TimeDelta, FromFileTime) {
   ft.dwHighDateTime = 0;
 
   // 100100 ns ~= 100 us.
-  EXPECT_EQ(TimeDelta::FromMicroseconds(100), TimeDelta::FromFileTime(ft));
+  EXPECT_EQ(Microseconds(100), TimeDelta::FromFileTime(ft));
 
   ft.dwLowDateTime = 0;
   ft.dwHighDateTime = 1;
 
   // 2^32 * 100 ns ~= 2^32 * 10 us.
-  EXPECT_EQ(TimeDelta::FromMicroseconds((1ull << 32) / 10),
-            TimeDelta::FromFileTime(ft));
+  EXPECT_EQ(Microseconds((1ull << 32) / 10), TimeDelta::FromFileTime(ft));
 }
 
 TEST(TimeDelta, FromWinrtDateTime) {
@@ -374,17 +372,16 @@ TEST(TimeDelta, FromWinrtDateTime) {
   dt.UniversalTime = 101;
 
   // 101 * 100 ns ~= 10.1 microseconds.
-  EXPECT_EQ(TimeDelta::FromMicrosecondsD(10.1),
-            TimeDelta::FromWinrtDateTime(dt));
+  EXPECT_EQ(Microseconds(10.1), TimeDelta::FromWinrtDateTime(dt));
 }
 
 TEST(TimeDelta, ToWinrtDateTime) {
-  auto time_delta = TimeDelta::FromSeconds(0);
+  auto time_delta = Seconds(0);
 
   // No delta since epoch = 0 DateTime.
   EXPECT_EQ(0, time_delta.ToWinrtDateTime().UniversalTime);
 
-  time_delta = TimeDelta::FromMicrosecondsD(10);
+  time_delta = Microseconds(10);
 
   // 10 microseconds = 100 * 100 ns.
   EXPECT_EQ(100, time_delta.ToWinrtDateTime().UniversalTime);

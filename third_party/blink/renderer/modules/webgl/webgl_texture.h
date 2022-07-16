@@ -69,10 +69,10 @@ class WebGLTexture : public WebGLSharedPlatform3DObject {
   void ClearLastUploadedFrame() { last_uploaded_video_frame_metadata_ = {}; }
 
   unsigned lastUploadedVideoWidth() const {
-    return last_uploaded_video_frame_metadata_.visible_rect.Width();
+    return last_uploaded_video_frame_metadata_.visible_rect.width();
   }
   unsigned lastUploadedVideoHeight() const {
-    return last_uploaded_video_frame_metadata_.visible_rect.Height();
+    return last_uploaded_video_frame_metadata_.visible_rect.height();
   }
   double lastUploadedVideoTimestamp() const {
     return last_uploaded_video_frame_metadata_.timestamp.InSecondsF();

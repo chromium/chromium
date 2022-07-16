@@ -22,18 +22,22 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.childaccounts.ChildAccountService;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
+import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.ChildAccountStatus;
+import org.chromium.components.signin.ChildAccountStatus.Status;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.List;
 
@@ -49,9 +53,93 @@ import java.util.List;
 public abstract class FirstRunFlowSequencer  {
     private static final String TAG = "firstrun";
 
+    /**
+     * A delegate class to determine if first run promo pages should be shown based on various
+     * signals. Some methods may be overridden by tests to fake desired behavior.
+     */
+    @VisibleForTesting
+    public static class FirstRunFlowSequencerDelegate {
+        /** Returns true if the sync consent promo page should be shown. */
+        boolean shouldShowSyncConsentPage(
+                Activity activity, List<Account> accounts, @Status int childAccountStatus) {
+            if (ChildAccountStatus.isChild(childAccountStatus)) {
+                // Always show the sync consent page for child account.
+                return true;
+            }
+            final IdentityManager identityManager =
+                    IdentityServicesProvider.get().getIdentityManager(
+                            Profile.getLastUsedRegularProfile());
+            if (identityManager.hasPrimaryAccount(ConsentLevel.SYNC) || !isSyncAllowed()) {
+                // No need to show the sync consent page if users already consented to sync or
+                // if sync is not allowed.
+                return false;
+            }
+            if (FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
+                // Show the sync consent page only to the signed-in users.
+                return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+            } else {
+                // We show the sync consent page if sync is allowed, and not signed in, and
+                // - "skip the first use hints" is not set, or
+                // - "skip the first use hints" is set, but there is at least one account.
+                return !shouldSkipFirstUseHints(activity) || !accounts.isEmpty();
+            }
+        }
+
+        /**
+         * @param openAdvancedSyncSettings Whether the user wants to open the advanced sync
+         *         settings.
+         * @return true if the Data Reduction promo page should be shown.
+         */
+        boolean shouldShowDataReductionPage(boolean openAdvancedSyncSettings) {
+            if (FREMobileIdentityConsistencyFieldTrial.isEnabled() && openAdvancedSyncSettings) {
+                // Skip the data reduction page when the user wants to open the advanced sync
+                // settings.
+                return false;
+            }
+            return !DataReductionProxySettings.getInstance().isDataReductionProxyManaged()
+                    && DataReductionProxySettings.getInstance()
+                               .isDataReductionProxyFREPromoAllowed();
+        }
+
+        /** @return true if the Search Engine promo page should be shown. */
+        @VisibleForTesting
+        public boolean shouldShowSearchEnginePage() {
+            @SearchEnginePromoType
+            int searchPromoType = LocaleManager.getInstance().getSearchEnginePromoShowType();
+            return searchPromoType == SearchEnginePromoType.SHOW_NEW
+                    || searchPromoType == SearchEnginePromoType.SHOW_EXISTING;
+        }
+
+        /** @return true if Sync is allowed for the current user. */
+        @VisibleForTesting
+        protected boolean isSyncAllowed() {
+            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
+                    Profile.getLastUsedRegularProfile());
+            return FirstRunUtils.canAllowSync() && !signinManager.isSigninDisabledByPolicy()
+                    && signinManager.isSigninSupported();
+        }
+
+        /** @return true if first use hints should be skipped. */
+        @VisibleForTesting
+        protected boolean shouldSkipFirstUseHints(Activity activity) {
+            return Settings.Secure.getInt(
+                           activity.getContentResolver(), Settings.Secure.SKIP_FIRST_USE_HINTS, 0)
+                    != 0;
+        }
+    }
+
     private final Activity mActivity;
     private @ChildAccountStatus.Status int mChildAccountStatus;
     private List<Account> mGoogleAccounts;
+
+    /**
+     * The delegate to be used by the Sequencer. By default, it's an instance of
+     * {@link FirstRunFlowSequencerDelegate}, unless it's overridden by {@code sDelegateForTesting}.
+     */
+    private FirstRunFlowSequencerDelegate mDelegate;
+
+    /** If not null, overrides {@code mDelegate} for this object during tests. */
+    private static FirstRunFlowSequencerDelegate sDelegateForTesting;
 
     /**
      * Callback that is called once the flow is determined.
@@ -63,67 +151,41 @@ public abstract class FirstRunFlowSequencer  {
 
     public FirstRunFlowSequencer(Activity activity) {
         mActivity = activity;
+        mDelegate = sDelegateForTesting != null ? sDelegateForTesting
+                                                : new FirstRunFlowSequencerDelegate();
     }
 
     /**
      * Starts determining parameters for the First Run.
      * Once finished, calls onFlowIsKnown().
      */
-    public void start() {
+    void start() {
         long childAccountStatusStart = SystemClock.elapsedRealtime();
         AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
-            ChildAccountService.checkChildAccountStatus(accounts, status -> {
-                RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
-                        SystemClock.elapsedRealtime() - childAccountStatusStart);
-                initializeSharedState(status, accounts);
-                processFreEnvironmentPreNative();
-            });
+            AccountUtils.checkChildAccountStatus(AccountManagerFacadeProvider.getInstance(),
+                    accounts, (status, childAccount) -> {
+                        RecordHistogram.recordCountHistogram(
+                                "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE",
+                                Math.min(accounts.size(), 2));
+                        RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
+                                SystemClock.elapsedRealtime() - childAccountStatusStart);
+                        initializeSharedState(status, accounts);
+                        processFreEnvironmentPreNative();
+                    });
         });
     }
 
-    @VisibleForTesting
-    protected boolean isFirstRunFlowComplete() {
-        return FirstRunStatus.getFirstRunFlowComplete();
-    }
-
-    @VisibleForTesting
-    protected boolean isSignedIn() {
-        return IdentityServicesProvider.get()
-                .getIdentityManager(Profile.getLastUsedRegularProfile())
-                .hasPrimaryAccount();
-    }
-
-    @VisibleForTesting
-    protected boolean isSyncAllowed() {
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
-        return FirstRunUtils.canAllowSync() && !signinManager.isSigninDisabledByPolicy()
-                && signinManager.isSigninSupported();
-    }
-
-    @VisibleForTesting
-    protected boolean shouldSkipFirstUseHints() {
-        return Settings.Secure.getInt(
-                       mActivity.getContentResolver(), Settings.Secure.SKIP_FIRST_USE_HINTS, 0)
-                != 0;
-    }
-
-    @VisibleForTesting
-    protected boolean isFirstRunEulaAccepted() {
-        return FirstRunUtils.isFirstRunEulaAccepted();
-    }
-
-    protected boolean shouldShowDataReductionPage() {
-        return !DataReductionProxySettings.getInstance().isDataReductionProxyManaged()
-                && DataReductionProxySettings.getInstance().isDataReductionProxyFREPromoAllowed();
+    private boolean shouldShowDataReductionPage(boolean openAdvancedSyncSettings) {
+        return mDelegate.shouldShowDataReductionPage(openAdvancedSyncSettings);
     }
 
     @VisibleForTesting
     protected boolean shouldShowSearchEnginePage() {
-        @SearchEnginePromoType
-        int searchPromoType = LocaleManager.getInstance().getSearchEnginePromoShowType();
-        return searchPromoType == SearchEnginePromoType.SHOW_NEW
-                || searchPromoType == SearchEnginePromoType.SHOW_EXISTING;
+        return mDelegate.shouldShowSearchEnginePage();
+    }
+
+    private boolean shouldShowSyncConsentPage() {
+        return mDelegate.shouldShowSyncConsentPage(mActivity, mGoogleAccounts, mChildAccountStatus);
     }
 
     @VisibleForTesting
@@ -131,14 +193,13 @@ public abstract class FirstRunFlowSequencer  {
         FirstRunSignInProcessor.setFirstRunFlowSignInComplete(true);
     }
 
-    @VisibleForTesting
-    void initializeSharedState(
+    private void initializeSharedState(
             @ChildAccountStatus.Status int childAccountStatus, List<Account> accounts) {
         mChildAccountStatus = childAccountStatus;
         mGoogleAccounts = accounts;
     }
 
-    void processFreEnvironmentPreNative() {
+    private void processFreEnvironmentPreNative() {
         Bundle freProperties = new Bundle();
         freProperties.putInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, mChildAccountStatus);
 
@@ -153,25 +214,23 @@ public abstract class FirstRunFlowSequencer  {
      * no on-device policies.
      * @param freProperties Resulting FRE properties bundle.
      */
-    public void onNativeAndPoliciesInitialized(Bundle freProperties) {
-        // We show the sign-in page if sync is allowed, and not signed in, and
-        // - no "skip the first use hints" is set, or
-        // - "skip the first use hints" is set, but there is at least one account.
-        boolean offerSignInOk = isSyncAllowed() && !isSignedIn()
-                && (!shouldSkipFirstUseHints() || !mGoogleAccounts.isEmpty());
-        freProperties.putBoolean(FirstRunActivity.SHOW_SIGNIN_PAGE, offerSignInOk);
+    public void updateFirstRunProperties(Bundle freProperties) {
         freProperties.putBoolean(
-                FirstRunActivity.SHOW_DATA_REDUCTION_PAGE, shouldShowDataReductionPage());
+                FirstRunActivity.SHOW_SYNC_CONSENT_PAGE, shouldShowSyncConsentPage());
+        freProperties.putBoolean(FirstRunActivity.SHOW_DATA_REDUCTION_PAGE,
+                shouldShowDataReductionPage(
+                        freProperties.getBoolean(FirstRunActivity.OPEN_ADVANCED_SYNC_SETTINGS)));
         freProperties.putBoolean(
                 FirstRunActivity.SHOW_SEARCH_ENGINE_PAGE, shouldShowSearchEnginePage());
     }
 
     /**
      * Marks a given flow as completed.
-     * @param signInAccountName The account name for the pending sign-in request. (Or null)
-     * @param showSignInSettings Whether the user selected to see the settings once signed in.
+     * @param syncConsentAccountName The account name for the pending sign-in request. (Or null)
+     * @param showAdvancedSyncSettings Whether the user selected to see the settings once signed in.
      */
-    public static void markFlowAsCompleted(String signInAccountName, boolean showSignInSettings) {
+    public static void markFlowAsCompleted(
+            String syncConsentAccountName, boolean showAdvancedSyncSettings) {
         // When the user accepts ToS in the Setup Wizard, we do not show the ToS page to the user
         // because the user has already accepted one outside FRE.
         if (!FirstRunUtils.isFirstRunEulaAccepted()) {
@@ -179,7 +238,8 @@ public abstract class FirstRunFlowSequencer  {
         }
 
         // Mark the FRE flow as complete and set the sign-in flow preferences if necessary.
-        FirstRunSignInProcessor.finalizeFirstRunFlowState(signInAccountName, showSignInSettings);
+        FirstRunSignInProcessor.finalizeFirstRunFlowState(
+                syncConsentAccountName, showAdvancedSyncSettings);
     }
 
     /**
@@ -282,5 +342,11 @@ public abstract class FirstRunFlowSequencer  {
             IntentUtils.safeStartActivity(caller, newIntent);
         }
         return true;
+    }
+
+    /** Defines an alternative delegate for testing. Must be reset on {@code tearDown}. */
+    @VisibleForTesting
+    public static void setDelegateForTesting(FirstRunFlowSequencerDelegate delegate) {
+        sDelegateForTesting = delegate;
     }
 }

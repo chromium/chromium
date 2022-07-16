@@ -7,7 +7,6 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 
-// Enabled with |signin::kMobileIdentityConsistency| experiment flag.
 // Coordinates various Identity options in Chrome including signing in
 // using accounts on the device, opening Incognito, and adding an account.
 @interface ConsistencyPromoSigninCoordinator : SigninCoordinator

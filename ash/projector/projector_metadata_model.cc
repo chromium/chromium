@@ -19,7 +19,7 @@ constexpr base::StringPiece kStartOffsetKey = "startOffset";
 constexpr base::StringPiece kEndOffsetKey = "endOffset";
 constexpr base::StringPiece kTextKey = "text";
 constexpr base::StringPiece kHypothesisPartsKey = "hypothesisParts";
-constexpr base::StringPiece kNameKey = "name";
+constexpr base::StringPiece kCaptionLanguage = "captionLanguage";
 constexpr base::StringPiece kCaptionsKey = "captions";
 constexpr base::StringPiece kKeyIdeasKey = "tableOfContent";
 constexpr base::StringPiece kOffset = "offset";
@@ -125,6 +125,10 @@ base::Value ProjectorTranscript::ToJson() {
 ProjectorMetadata::ProjectorMetadata() = default;
 ProjectorMetadata::~ProjectorMetadata() = default;
 
+void ProjectorMetadata::SetCaptionLanguage(const std::string& language) {
+  caption_language_ = language;
+}
+
 void ProjectorMetadata::AddTranscript(
     std::unique_ptr<ProjectorTranscript> transcript) {
   if (should_mark_key_idea_) {
@@ -139,10 +143,6 @@ void ProjectorMetadata::MarkKeyIdea() {
   should_mark_key_idea_ = true;
 }
 
-void ProjectorMetadata::SetName(const std::string& name) {
-  name_ = name;
-}
-
 std::string ProjectorMetadata::Serialize() {
   std::string metadata_str;
   base::JSONWriter::Write(ToJson(), &metadata_str);
@@ -151,7 +151,7 @@ std::string ProjectorMetadata::Serialize() {
 
 // The JSON we generate looks like this:
 //  {
-//    "name": "Constructivist Learning Theory"
+//    "captionLanguage": "en"
 //    "captions": [{
 //      "startOffset": 100
 //      "endOffset": 2100
@@ -171,9 +171,9 @@ std::string ProjectorMetadata::Serialize() {
 //    }],
 //    "tableOfContent": [
 //      {
-//        "text": "Making a creation",
+//        "endOffset" : 4500,
 //        "startOffset": 4400,
-//        "encodingFormat": "text/markdown",
+//        "text": "Making a creation",
 //      },
 //    ]
 //  }
@@ -183,10 +183,11 @@ std::string ProjectorMetadata::Serialize() {
 //   "@type": STRING
 //   "text": STRING
 //   "captions": LIST
+//   "captionLanguage": STRING
 //   "tableOfContent": LIST
 base::Value ProjectorMetadata::ToJson() {
   base::Value metadata(base::Value::Type::DICTIONARY);
-  metadata.SetStringKey(kNameKey, name_);
+  metadata.SetStringKey(kCaptionLanguage, caption_language_);
 
   base::Value captions_value(base::Value::Type::LIST);
   for (auto& transcript : transcripts_)

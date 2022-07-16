@@ -19,6 +19,10 @@ namespace quick_unlock {
 namespace {
 
 class PinStoragePrefsUnitTest : public testing::Test {
+ public:
+  PinStoragePrefsUnitTest(const PinStoragePrefsUnitTest&) = delete;
+  PinStoragePrefsUnitTest& operator=(const PinStoragePrefsUnitTest&) = delete;
+
  protected:
   PinStoragePrefsUnitTest() : profile_(std::make_unique<TestingProfile>()) {}
   ~PinStoragePrefsUnitTest() override = default;
@@ -35,8 +39,6 @@ class PinStoragePrefsUnitTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(PinStoragePrefsUnitTest);
 };
 
 }  // namespace
@@ -47,6 +49,9 @@ class PinStoragePrefsTestApi {
   // Does *not* take ownership over `pin_storage`.
   explicit PinStoragePrefsTestApi(PinStoragePrefs* pin_storage)
       : pin_storage_(pin_storage) {}
+
+  PinStoragePrefsTestApi(const PinStoragePrefsTestApi&) = delete;
+  PinStoragePrefsTestApi& operator=(const PinStoragePrefsTestApi&) = delete;
 
   std::string PinSalt() const { return pin_storage_->PinSalt(); }
 
@@ -61,8 +66,6 @@ class PinStoragePrefsTestApi {
 
  private:
   PinStoragePrefs* pin_storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(PinStoragePrefsTestApi);
 };
 
 // Verifies that:

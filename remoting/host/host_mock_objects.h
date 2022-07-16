@@ -19,6 +19,7 @@
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/host_status_observer.h"
 #include "remoting/host/input_injector.h"
+#include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/screen_controls.h"
 #include "remoting/host/screen_resolution.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
@@ -40,6 +41,8 @@ class MockDesktopEnvironment : public DesktopEnvironment {
   MockDesktopEnvironment();
   ~MockDesktopEnvironment() override;
 
+  // TODO(yuweih): Use new MOCK_METHOD style and remove the Ptr dance:
+  //   MOCK_METHOD(ReturnType, MethodName, (Args...), (const, override))
   MOCK_METHOD0(CreateActionExecutorPtr, ActionExecutor*());
   MOCK_METHOD0(CreateAudioCapturerPtr, AudioCapturer*());
   MOCK_METHOD0(CreateInputInjectorPtr, InputInjector*());
@@ -56,6 +59,11 @@ class MockDesktopEnvironment : public DesktopEnvironment {
   MOCK_CONST_METHOD0(GetDesktopSessionId, uint32_t());
   MOCK_METHOD0(CreateComposingVideoCapturerPtr,
                DesktopAndCursorConditionalComposer*());
+
+  MOCK_METHOD(std::unique_ptr<UrlForwarderConfigurator>,
+              CreateUrlForwarderConfigurator,
+              (),
+              (override));
 
   // DesktopEnvironment implementation.
   std::unique_ptr<ActionExecutor> CreateActionExecutor() override;
@@ -76,6 +84,10 @@ class MockDesktopEnvironment : public DesktopEnvironment {
 class MockClientSessionControl : public ClientSessionControl {
  public:
   MockClientSessionControl();
+
+  MockClientSessionControl(const MockClientSessionControl&) = delete;
+  MockClientSessionControl& operator=(const MockClientSessionControl&) = delete;
+
   ~MockClientSessionControl() override;
 
   MOCK_CONST_METHOD0(client_jid, const std::string&());
@@ -87,26 +99,29 @@ class MockClientSessionControl : public ClientSessionControl {
   MOCK_METHOD0(ResetVideoPipeline, void());
   MOCK_METHOD1(OnDesktopDisplayChanged,
                void(std::unique_ptr<protocol::VideoLayout>));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockClientSessionControl);
 };
 
 class MockClientSessionDetails : public ClientSessionDetails {
  public:
   MockClientSessionDetails();
+
+  MockClientSessionDetails(const MockClientSessionDetails&) = delete;
+  MockClientSessionDetails& operator=(const MockClientSessionDetails&) = delete;
+
   ~MockClientSessionDetails() override;
 
   MOCK_METHOD0(session_control, ClientSessionControl*());
   MOCK_CONST_METHOD0(desktop_session_id, uint32_t());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockClientSessionDetails);
 };
 
 class MockClientSessionEventHandler : public ClientSession::EventHandler {
  public:
   MockClientSessionEventHandler();
+
+  MockClientSessionEventHandler(const MockClientSessionEventHandler&) = delete;
+  MockClientSessionEventHandler& operator=(
+      const MockClientSessionEventHandler&) = delete;
+
   ~MockClientSessionEventHandler() override;
 
   MOCK_METHOD1(OnSessionAuthenticating, void(ClientSession* client));
@@ -118,14 +133,16 @@ class MockClientSessionEventHandler : public ClientSession::EventHandler {
       ClientSession* client,
       const std::string& channel_name,
       const protocol::TransportRoute& route));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockClientSessionEventHandler);
 };
 
 class MockDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
  public:
   MockDesktopEnvironmentFactory();
+
+  MockDesktopEnvironmentFactory(const MockDesktopEnvironmentFactory&) = delete;
+  MockDesktopEnvironmentFactory& operator=(
+      const MockDesktopEnvironmentFactory&) = delete;
+
   ~MockDesktopEnvironmentFactory() override;
 
   MOCK_METHOD0(CreatePtr, DesktopEnvironment*());
@@ -134,14 +151,15 @@ class MockDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
   std::unique_ptr<DesktopEnvironment> Create(
       base::WeakPtr<ClientSessionControl> client_session_control,
       const DesktopEnvironmentOptions& options) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDesktopEnvironmentFactory);
 };
 
 class MockInputInjector : public InputInjector {
  public:
   MockInputInjector();
+
+  MockInputInjector(const MockInputInjector&) = delete;
+  MockInputInjector& operator=(const MockInputInjector&) = delete;
+
   ~MockInputInjector() override;
 
   MOCK_METHOD1(InjectClipboardEvent,
@@ -155,9 +173,6 @@ class MockInputInjector : public InputInjector {
 
   void Start(
       std::unique_ptr<protocol::ClipboardStub> client_clipboard) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInputInjector);
 };
 
 class MockHostStatusObserver : public HostStatusObserver {
@@ -180,6 +195,11 @@ class MockHostStatusObserver : public HostStatusObserver {
 class MockSecurityKeyAuthHandler : public SecurityKeyAuthHandler {
  public:
   MockSecurityKeyAuthHandler();
+
+  MockSecurityKeyAuthHandler(const MockSecurityKeyAuthHandler&) = delete;
+  MockSecurityKeyAuthHandler& operator=(const MockSecurityKeyAuthHandler&) =
+      delete;
+
   ~MockSecurityKeyAuthHandler() override;
 
   MOCK_METHOD0(CreateSecurityKeyConnection, void());
@@ -196,20 +216,34 @@ class MockSecurityKeyAuthHandler : public SecurityKeyAuthHandler {
 
  private:
   SecurityKeyAuthHandler::SendMessageCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSecurityKeyAuthHandler);
 };
 
 class MockMouseCursorMonitor : public webrtc::MouseCursorMonitor {
  public:
   MockMouseCursorMonitor();
+
+  MockMouseCursorMonitor(const MockMouseCursorMonitor&) = delete;
+  MockMouseCursorMonitor& operator=(const MockMouseCursorMonitor&) = delete;
+
   ~MockMouseCursorMonitor() override;
 
   MOCK_METHOD2(Init, void(Callback* callback, Mode mode));
   MOCK_METHOD0(Capture, void());
+};
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockMouseCursorMonitor);
+class MockUrlForwarderConfigurator final : public UrlForwarderConfigurator {
+ public:
+  MockUrlForwarderConfigurator();
+  ~MockUrlForwarderConfigurator() override;
+
+  MOCK_METHOD(void,
+              IsUrlForwarderSetUp,
+              (IsUrlForwarderSetUpCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              SetUpUrlForwarder,
+              (const SetUpUrlForwarderCallback& callback),
+              (override));
 };
 
 }  // namespace remoting

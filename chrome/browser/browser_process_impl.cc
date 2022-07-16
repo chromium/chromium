@@ -19,13 +19,12 @@
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
@@ -89,6 +88,11 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "components/breadcrumbs/core/application_breadcrumbs_logger.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_util.h"
+#include "components/breadcrumbs/core/features.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/timer_update_scheduler.h"
 #include "components/crash/core/common/crash_key.h"
@@ -194,6 +198,10 @@
 #include "content/public/browser/plugin_service.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+#include "chrome/browser/sessions/exit_type_service.h"
+#endif
+
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/first_run/upgrade_util.h"
 #include "chrome/browser/ui/profile_picker.h"
@@ -208,19 +216,22 @@
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/chromeos/extensions/telemetry/chromeos_telemetry_extensions_browser_api_provider.h"
+#endif
+
 #if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 // How often to check if the persistent instance of Chrome needs to restart
 // to install an update.
 static const int kUpdateCheckIntervalHours = 6;
 #endif
 
-#if defined(USE_X11) || defined(OS_WIN) || defined(USE_OZONE)
+#if defined(OS_WIN) || defined(USE_OZONE)
 // How long to wait for the File thread to complete during EndSession, on Linux
 // and Windows. We have a timeout here because we're unable to run the UI
 // messageloop and there's some deadlock risk. Our only option is to exit
 // anyway.
-static constexpr base::TimeDelta kEndSessionTimeout =
-    base::TimeDelta::FromSeconds(10);
+static constexpr base::TimeDelta kEndSessionTimeout = base::Seconds(10);
 #endif
 
 using content::BrowserThread;
@@ -284,7 +295,14 @@ void BrowserProcessImpl::Init() {
   extensions_browser_client_->AddAPIProvider(
       std::make_unique<chrome_apps::ChromeAppsBrowserAPIProvider>());
   extensions::ExtensionsBrowserClient::Set(extensions_browser_client_.get());
-#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  extensions_browser_client_->AddAPIProvider(
+      std::make_unique<
+          chromeos::ChromeOSTelemetryExtensionsBrowserAPIProvider>());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   message_center::MessageCenter::Initialize();
@@ -470,6 +488,11 @@ void BrowserProcessImpl::StartTearDown() {
 
   // This expects to be destroyed before the task scheduler is torn down.
   SystemNetworkContextManager::DeleteInstance();
+
+  // The ApplicationBreadcrumbsLogger logs a shutdown event via a task when it
+  // is destroyed, so it should be destroyed before the task scheduler is torn
+  // down.
+  application_breadcrumbs_logger_.reset();
 }
 
 void BrowserProcessImpl::PostDestroyThreads() {
@@ -500,6 +523,9 @@ class RundownTaskCounter :
  public:
   RundownTaskCounter();
 
+  RundownTaskCounter(const RundownTaskCounter&) = delete;
+  RundownTaskCounter& operator=(const RundownTaskCounter&) = delete;
+
   // Increments |count_| and returns a closure bound to Decrement(). All
   // closures returned by this RundownTaskCounter's GetRundownClosure() method
   // must be invoked for TimedWait() to complete its wait without timing
@@ -522,8 +548,6 @@ class RundownTaskCounter :
   // until TimedWait is called.
   base::AtomicRefCount count_{1};
   base::WaitableEvent waitable_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(RundownTaskCounter);
 };
 
 RundownTaskCounter::RundownTaskCounter() = default;
@@ -581,12 +605,15 @@ void BrowserProcessImpl::FlushLocalStateAndReply(base::OnceClosure reply) {
 void BrowserProcessImpl::EndSession() {
   // Mark all the profiles as clean.
   ProfileManager* pm = profile_manager();
-  std::vector<Profile*> profiles(pm->GetLoadedProfiles());
   scoped_refptr<RundownTaskCounter> rundown_counter =
       base::MakeRefCounted<RundownTaskCounter>();
-  for (size_t i = 0; i < profiles.size(); ++i) {
-    Profile* profile = profiles[i];
-    profile->SetExitType(Profile::EXIT_SESSION_ENDED);
+  for (Profile* profile : pm->GetLoadedProfiles()) {
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+    ExitTypeService* exit_type_service =
+        ExitTypeService::GetInstanceForProfile(profile);
+    if (exit_type_service)
+      exit_type_service->SetCurrentSessionExitType(ExitType::kForcedShutdown);
+#endif
     if (profile->GetPrefs()) {
       profile->GetPrefs()->CommitPendingWrite(
           base::OnceClosure(), rundown_counter->GetRundownClosure());
@@ -617,7 +644,7 @@ void BrowserProcessImpl::EndSession() {
   //
   // If you change the condition here, be sure to also change
   // ProfileBrowserTests to match.
-#if defined(USE_X11) || defined(OS_WIN) || defined(USE_OZONE)
+#if defined(OS_WIN) || defined(USE_OZONE)
   // Do a best-effort wait on the successful countdown of rundown tasks. Note
   // that if we don't complete "quickly enough", Windows will terminate our
   // process.
@@ -932,6 +959,14 @@ BuildState* BrowserProcessImpl::GetBuildState() {
 #endif
 }
 
+breadcrumbs::BreadcrumbPersistentStorageManager*
+BrowserProcessImpl::GetBreadcrumbPersistentStorageManager() {
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  return application_breadcrumbs_logger_
+             ? application_breadcrumbs_logger_->GetPersistentStorageManager()
+             : nullptr;
+}
+
 // static
 void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDefaultBrowserSettingEnabled,
@@ -1027,10 +1062,8 @@ StartupData* BrowserProcessImpl::startup_data() {
 // complete.
 #if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 void BrowserProcessImpl::StartAutoupdateTimer() {
-  autoupdate_timer_.Start(FROM_HERE,
-      base::TimeDelta::FromHours(kUpdateCheckIntervalHours),
-      this,
-      &BrowserProcessImpl::OnAutoupdateTimer);
+  autoupdate_timer_.Start(FROM_HERE, base::Hours(kUpdateCheckIntervalHours),
+                          this, &BrowserProcessImpl::OnAutoupdateTimer);
 }
 #endif
 
@@ -1192,6 +1225,24 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   soda_installer_impl_ = std::make_unique<speech::SodaInstallerImplChromeOS>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
+    breadcrumb_manager_ = std::make_unique<breadcrumbs::BreadcrumbManager>(
+        breadcrumbs::GetStartTime());
+    application_breadcrumbs_logger_ =
+        std::make_unique<breadcrumbs::ApplicationBreadcrumbsLogger>(
+            breadcrumb_manager_.get());
+
+    base::FilePath storage_dir;
+    bool result = base::PathService::Get(chrome::DIR_USER_DATA, &storage_dir);
+    DCHECK(result);
+
+    auto breadcrumb_persistent_storage_manager =
+        std::make_unique<breadcrumbs::BreadcrumbPersistentStorageManager>(
+            storage_dir);
+    application_breadcrumbs_logger_->SetPersistentStorageManager(
+        std::move(breadcrumb_persistent_storage_manager));
+  }
 }
 
 void BrowserProcessImpl::CreateIconManager() {

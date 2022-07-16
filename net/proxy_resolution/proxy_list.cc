@@ -11,11 +11,11 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace net {
@@ -37,7 +37,7 @@ void ProxyList::Set(const std::string& proxy_uri_list) {
   base::StringTokenizer str_tok(proxy_uri_list, ";");
   while (str_tok.GetNext()) {
     ProxyServer uri =
-        ProxyServer::FromURI(str_tok.token_piece(), ProxyServer::SCHEME_HTTP);
+        ProxyUriToProxyServer(str_tok.token_piece(), ProxyServer::SCHEME_HTTP);
     // Silently discard malformed inputs.
     if (uri.is_valid())
       proxies_.push_back(uri);
@@ -64,7 +64,7 @@ void ProxyList::DeprioritizeBadProxies(
 
   std::vector<ProxyServer>::const_iterator iter = proxies_.begin();
   for (; iter != proxies_.end(); ++iter) {
-    auto bad_proxy = proxy_retry_info.find(iter->ToURI());
+    auto bad_proxy = proxy_retry_info.find(ProxyServerToProxyUri(*iter));
     if (bad_proxy != proxy_retry_info.end()) {
       // This proxy is bad. Check if it's time to retry.
       if (bad_proxy->second.bad_until >= TimeTicks::Now()) {
@@ -125,7 +125,7 @@ void ProxyList::SetFromPacString(const std::string& pac_string) {
   base::StringTokenizer entry_tok(pac_string, ";");
   proxies_.clear();
   while (entry_tok.GetNext()) {
-    ProxyServer uri = ProxyServer::FromPacString(entry_tok.token_piece());
+    ProxyServer uri = PacResultElementToProxyServer(entry_tok.token_piece());
     // Silently discard malformed inputs.
     if (uri.is_valid())
       proxies_.push_back(uri);
@@ -144,7 +144,7 @@ std::string ProxyList::ToPacString() const {
   for (; iter != proxies_.end(); ++iter) {
     if (!proxy_list.empty())
       proxy_list += ";";
-    proxy_list += iter->ToPacString();
+    proxy_list += ProxyServerToPacResultElement(*iter);
   }
   return proxy_list.empty() ? std::string() : proxy_list;
 }
@@ -152,7 +152,7 @@ std::string ProxyList::ToPacString() const {
 base::Value ProxyList::ToValue() const {
   base::Value list(base::Value::Type::LIST);
   for (const auto& proxy : proxies_)
-    list.Append(proxy.ToURI());
+    list.Append(ProxyServerToProxyUri(proxy));
   return list;
 }
 
@@ -164,7 +164,7 @@ bool ProxyList::Fallback(ProxyRetryInfoMap* proxy_retry_info,
     return false;
   }
   // By default, proxies are not retried for 5 minutes.
-  UpdateRetryInfoOnFallback(proxy_retry_info, TimeDelta::FromMinutes(5), true,
+  UpdateRetryInfoOnFallback(proxy_retry_info, base::Minutes(5), true,
                             std::vector<ProxyServer>(), net_error, net_log);
 
   // Remove this proxy from our list.
@@ -180,7 +180,7 @@ void ProxyList::AddProxyToRetryList(ProxyRetryInfoMap* proxy_retry_info,
                                     const NetLogWithSource& net_log) const {
   // Mark this proxy as bad.
   TimeTicks bad_until = TimeTicks::Now() + retry_delay;
-  std::string proxy_key = proxy_to_retry.ToURI();
+  std::string proxy_key = ProxyServerToProxyUri(proxy_to_retry);
   auto iter = proxy_retry_info->find(proxy_key);
   if (iter == proxy_retry_info->end() || bad_until > iter->second.bad_until) {
     ProxyRetryInfo retry_info;

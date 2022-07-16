@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
@@ -24,8 +23,8 @@ using themes_helper::UsingSystemTheme;
 
 namespace {
 
-// TODO(crbug.com/1170798): Write better tests. The current ones basically verify that committing
-// doesn't affect the local state.
+// TODO(crbug.com/1170798): Write better tests. The current ones basically
+// verify that committing doesn't affect the local state.
 class SingleClientThemesSyncTest : public SyncTest {
  public:
   SingleClientThemesSyncTest() : SyncTest(SINGLE_CLIENT) {}
@@ -70,7 +69,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DefaultTheme) {
 
   SetCustomTheme(GetProfile(0));
   EXPECT_FALSE(UsingDefaultTheme(GetProfile(0)));
-
 
   EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   UseDefaultTheme(GetProfile(0));

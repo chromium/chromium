@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/time/clock.h"
@@ -218,11 +217,15 @@ void StandaloneTrustedVaultBackend::StoreKeys(
   }
 
   WriteToDisk(data_, file_path_);
-  MaybeRegisterDevice();
+  // This codepath doesn't record Sync.TrustedVaultDeviceRegistrationState, so
+  // it's safe to pass any value for |has_persistent_auth_error_for_uma|.
+  MaybeRegisterDevice(
+      /*has_persistent_auth_error_for_uma=*/false);
 }
 
 void StandaloneTrustedVaultBackend::SetPrimaryAccount(
-    const absl::optional<CoreAccountInfo>& primary_account) {
+    const absl::optional<CoreAccountInfo>& primary_account,
+    bool has_persistent_auth_error) {
   if (primary_account == primary_account_) {
     // Still need to complete deferred deletion, e.g. if primary account was
     // cleared before browser shutdown but not handled here.
@@ -246,14 +249,13 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     per_user_vault->set_gaia_id(primary_account->gaia);
   }
 
-  const absl::optional<DeviceRegistrationStateForUMA> registration_state =
-      MaybeRegisterDevice();
+  const absl::optional<TrustedVaultDeviceRegistrationStateForUMA>
+      registration_state = MaybeRegisterDevice(has_persistent_auth_error);
 
   if (registration_state.has_value() &&
       !device_registration_state_recorded_to_uma_) {
     device_registration_state_recorded_to_uma_ = true;
-    base::UmaHistogramEnumeration("Sync.TrustedVaultDeviceRegistrationState",
-                                  *registration_state);
+    RecordTrustedVaultDeviceRegistrationState(*registration_state);
   }
 
   if (pending_trusted_recovery_method_.has_value()) {
@@ -420,8 +422,9 @@ void StandaloneTrustedVaultBackend::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
 }
 
-absl::optional<StandaloneTrustedVaultBackend::DeviceRegistrationStateForUMA>
-StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
+absl::optional<TrustedVaultDeviceRegistrationStateForUMA>
+StandaloneTrustedVaultBackend::MaybeRegisterDevice(
+    bool has_persistent_auth_error_for_uma) {
   // TODO(crbug.com/1102340): in case of transient failure this function is
   // likely to be not called until the browser restart; implement retry logic.
   if (!connection_) {
@@ -448,17 +451,17 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
   }
 
   if (per_user_vault->local_device_registration_info().device_registered()) {
-    return DeviceRegistrationStateForUMA::kAlreadyRegistered;
+    return TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegistered;
   }
 
   if (per_user_vault->keys_are_stale()) {
     // Client already knows that existing vault keys (or their absence) isn't
     // sufficient for device registration. Fresh keys should be obtained first.
-    return DeviceRegistrationStateForUMA::kLocalKeysAreStale;
+    return TrustedVaultDeviceRegistrationStateForUMA::kLocalKeysAreStale;
   }
 
   if (AreConnectionRequestsThrottled()) {
-    return DeviceRegistrationStateForUMA::kThrottledClientSide;
+    return TrustedVaultDeviceRegistrationStateForUMA::kThrottledClientSide;
   }
 
   std::unique_ptr<SecureBoxKeyPair> key_pair;
@@ -507,10 +510,13 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
   }
 
   DCHECK(ongoing_connection_request_);
-
-  return had_generated_key_pair ? DeviceRegistrationStateForUMA::
+  if (has_persistent_auth_error_for_uma) {
+    return TrustedVaultDeviceRegistrationStateForUMA::
+        kAttemptingRegistrationWithPersistentAuthError;
+  }
+  return had_generated_key_pair ? TrustedVaultDeviceRegistrationStateForUMA::
                                       kAttemptingRegistrationWithExistingKeyPair
-                                : DeviceRegistrationStateForUMA::
+                                : TrustedVaultDeviceRegistrationStateForUMA::
                                       kAttemptingRegistrationWithNewKeyPair;
 }
 
@@ -541,6 +547,9 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
       return;
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
       per_user_vault->set_keys_are_stale(true);
+      return;
+    case TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure:
+      // Request wasn't sent to the server, so there is no need for throttling.
       return;
     case TrustedVaultRegistrationStatus::kOtherError:
       RecordFailedConnectionRequestForThrottling();
@@ -587,6 +596,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys(
         // WriteToDisk() will be called by OnDeviceRegistered().
       }
       break;
+    case TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure:
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
     case TrustedVaultRegistrationStatus::kOtherError:
       break;
@@ -629,6 +639,9 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
       WriteToDisk(data_, file_path_);
       break;
     }
+    case TrustedVaultDownloadKeysStatus::kAccessTokenFetchingFailure:
+      // Request wasn't sent to the server, so there is no need for throttling.
+      break;
     case TrustedVaultDownloadKeysStatus::kOtherError:
       RecordFailedConnectionRequestForThrottling();
       break;

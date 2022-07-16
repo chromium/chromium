@@ -23,6 +23,7 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_test_utils.h"
@@ -146,6 +147,11 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
  public:
   SubresourceFilterSafeBrowsingActivationThrottleTest() {}
 
+  SubresourceFilterSafeBrowsingActivationThrottleTest(
+      const SubresourceFilterSafeBrowsingActivationThrottleTest&) = delete;
+  SubresourceFilterSafeBrowsingActivationThrottleTest& operator=(
+      const SubresourceFilterSafeBrowsingActivationThrottleTest&) = delete;
+
   ~SubresourceFilterSafeBrowsingActivationThrottleTest() override {}
 
   void SetUp() override {
@@ -166,10 +172,9 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
     auto* contents = RenderViewHostTestHarness::web_contents();
     throttle_manager_test_support_ =
         std::make_unique<ThrottleManagerTestSupport>(contents);
-    throttle_manager_ =
-        std::make_unique<ContentSubresourceFilterThrottleManager>(
-            throttle_manager_test_support_->profile_context(),
-            /*database_manager=*/nullptr, ruleset_dealer_.get(), contents);
+    ContentSubresourceFilterWebContentsHelper::CreateForWebContents(
+        contents, throttle_manager_test_support_->profile_context(),
+        /*database_manager=*/nullptr, ruleset_dealer_.get());
     fake_safe_browsing_database_ = new FakeSafeBrowsingDatabaseManager();
     NavigateAndCommit(GURL("https://test.com"));
     Observe(contents);
@@ -211,8 +216,10 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
               fake_safe_browsing_database_));
     }
     std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
-    throttle_manager_->MaybeAppendNavigationThrottles(navigation_handle,
-                                                      &throttles);
+
+    ContentSubresourceFilterThrottleManager::FromNavigationHandle(
+        *navigation_handle)
+        ->MaybeAppendNavigationThrottles(navigation_handle, &throttles);
     for (auto& it : throttles) {
       navigation_handle->RegisterThrottleForTesting(std::move(it));
     }
@@ -364,15 +371,11 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
   TestSafeBrowsingActivationThrottleDelegate delegate_;
   std::unique_ptr<VerifiedRulesetDealer::Handle> ruleset_dealer_;
 
-  std::unique_ptr<ContentSubresourceFilterThrottleManager> throttle_manager_;
-
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
   std::unique_ptr<ThrottleManagerTestSupport> throttle_manager_test_support_;
   std::unique_ptr<TestSubresourceFilterObserver> observer_;
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
   base::HistogramTester tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterSafeBrowsingActivationThrottleTest);
 };
 
 class SubresourceFilterSafeBrowsingActivationThrottleParamTest
@@ -380,6 +383,12 @@ class SubresourceFilterSafeBrowsingActivationThrottleParamTest
       public ::testing::WithParamInterface<ActivationListTestData> {
  public:
   SubresourceFilterSafeBrowsingActivationThrottleParamTest() {}
+
+  SubresourceFilterSafeBrowsingActivationThrottleParamTest(
+      const SubresourceFilterSafeBrowsingActivationThrottleParamTest&) = delete;
+  SubresourceFilterSafeBrowsingActivationThrottleParamTest& operator=(
+      const SubresourceFilterSafeBrowsingActivationThrottleParamTest&) = delete;
+
   ~SubresourceFilterSafeBrowsingActivationThrottleParamTest() override {}
 
   void Configure() override {
@@ -396,10 +405,6 @@ class SubresourceFilterSafeBrowsingActivationThrottleParamTest
     metadata.subresource_filter_match = test_data.match;
     ConfigureForMatch(url, test_data.threat_type, metadata);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      SubresourceFilterSafeBrowsingActivationThrottleParamTest);
 };
 
 class SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling
@@ -411,6 +416,14 @@ class SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling
   SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling() {
     std::tie(throttle_method_, result_sync_) = GetParam();
   }
+
+  SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling(
+      const SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling&) =
+      delete;
+  SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling& operator=(
+      const SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling&) =
+      delete;
+
   ~SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling()
       override {}
 
@@ -434,9 +447,6 @@ class SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling
  private:
   content::TestNavigationThrottle::ThrottleMethod throttle_method_;
   content::TestNavigationThrottle::ResultSynchrony result_sync_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling);
 };
 
 struct ActivationScopeTestData {
@@ -463,11 +473,13 @@ class SubresourceFilterSafeBrowsingActivationThrottleScopeTest
       public ::testing::WithParamInterface<ActivationScopeTestData> {
  public:
   SubresourceFilterSafeBrowsingActivationThrottleScopeTest() {}
-  ~SubresourceFilterSafeBrowsingActivationThrottleScopeTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      SubresourceFilterSafeBrowsingActivationThrottleScopeTest);
+  SubresourceFilterSafeBrowsingActivationThrottleScopeTest(
+      const SubresourceFilterSafeBrowsingActivationThrottleScopeTest&) = delete;
+  SubresourceFilterSafeBrowsingActivationThrottleScopeTest& operator=(
+      const SubresourceFilterSafeBrowsingActivationThrottleScopeTest&) = delete;
+
+  ~SubresourceFilterSafeBrowsingActivationThrottleScopeTest() override {}
 };
 
 TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest, NoConfigs) {
@@ -871,6 +883,11 @@ TEST_P(SubresourceFilterSafeBrowsingActivationThrottleParamTest,
   const GURL url(kURL);
   ConfigureForMatchParam(url);
   SimulateStartAndExpectProceed(url);
+  navigation_simulator()->SetReferrer(blink::mojom::Referrer::New(
+      RenderViewHostTestHarness::web_contents()
+          ->GetMainFrame()
+          ->GetLastCommittedURL(),
+      network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
   SimulateCommitAndExpectProceed();
   EXPECT_EQ(mojom::ActivationLevel::kEnabled,
             *observer()->GetPageActivationForLastCommittedLoad());
@@ -948,7 +965,7 @@ TEST_P(SubresourceFilterSafeBrowsingActivationThrottleParamTest,
                               1);
 
   tester().ExpectTimeBucketCount(kSafeBrowsingNavigationDelay,
-                                 base::TimeDelta::FromMilliseconds(0), 1);
+                                 base::Milliseconds(0), 1);
 }
 
 // Flaky on Win, Chromium and Linux. http://crbug.com/748524
@@ -973,7 +990,7 @@ TEST_P(SubresourceFilterSafeBrowsingActivationThrottleParamTest,
                               1);
 
   tester().ExpectTimeBucketCount(kSafeBrowsingNavigationDelay,
-                                 base::TimeDelta::FromMilliseconds(0), 1);
+                                 base::Milliseconds(0), 1);
   tester().ExpectTotalCount(kSafeBrowsingCheckTime, 2);
 }
 
@@ -1097,7 +1114,7 @@ TEST_P(SubresourceFilterSafeBrowsingActivationThrottleParamTest,
   EXPECT_EQ(mojom::ActivationLevel::kDisabled,
             *observer()->GetPageActivationForLastCommittedLoad());
   tester().ExpectTimeBucketCount(kSafeBrowsingNavigationDelay,
-                                 base::TimeDelta::FromMilliseconds(0), 1);
+                                 base::Milliseconds(0), 1);
 }
 
 TEST_P(SubresourceFilterSafeBrowsingActivationThrottleTestWithCancelling,

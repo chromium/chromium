@@ -7,6 +7,7 @@
 #include <cstring>
 
 #include "base/check_op.h"
+#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "mojo/public/c/system/message_pipe.h"
@@ -89,7 +90,7 @@ size_t Buffer::Allocate(size_t num_bytes) {
   return block_start;
 }
 
-void Buffer::AttachHandles(std::vector<ScopedHandle>* handles) {
+bool Buffer::AttachHandles(std::vector<ScopedHandle>* handles) {
   DCHECK(message_.is_valid());
 
   uint32_t new_size = 0;
@@ -97,11 +98,13 @@ void Buffer::AttachHandles(std::vector<ScopedHandle>* handles) {
       message_.value(), 0, reinterpret_cast<MojoHandle*>(handles->data()),
       static_cast<uint32_t>(handles->size()), nullptr, &data_, &new_size);
   if (rv != MOJO_RESULT_OK)
-    return;
+    return false;
 
   size_ = new_size;
   for (auto& handle : *handles)
     ignore_result(handle.release());
+  handles->clear();
+  return true;
 }
 
 void Buffer::Seal() {

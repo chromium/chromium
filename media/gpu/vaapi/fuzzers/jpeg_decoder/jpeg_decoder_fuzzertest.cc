@@ -245,7 +245,7 @@ struct Environment {
 };
 
 DEFINE_PROTO_FUZZER(const JpegImageList& image_list) {
-  static const base::NoDestructor<Environment> env;
+  static const Environment env;
   VaapiJpegDecoderWrapper decoder_wrapper;
   if (!decoder_wrapper.Initialize()) {
     LOG(ERROR) << "Cannot initialize the VaapiJpegDecoder";

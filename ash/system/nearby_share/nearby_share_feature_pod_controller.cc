@@ -22,8 +22,8 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kOneMinute = base::TimeDelta::FromMinutes(1);
-constexpr base::TimeDelta kOneSecond = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kOneMinute = base::Minutes(1);
+constexpr base::TimeDelta kOneSecond = base::Seconds(1);
 
 std::u16string RemainingTimeString(base::TimeDelta remaining_time) {
   if (remaining_time > kOneMinute) {
@@ -125,8 +125,7 @@ void NearbyShareFeaturePodController::UpdateButton(bool enabled) {
 base::TimeDelta NearbyShareFeaturePodController::RemainingHighVisibilityTime()
     const {
   base::TimeTicks now = base::TimeTicks::Now();
-  return shutoff_time_ > now ? shutoff_time_ - now
-                             : base::TimeDelta::FromSeconds(0);
+  return shutoff_time_ > now ? shutoff_time_ - now : base::Seconds(0);
 }
 
 }  // namespace ash

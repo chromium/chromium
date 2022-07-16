@@ -152,6 +152,11 @@ Status StubWebView::DispatchKeyEvents(const std::vector<KeyEvent>& events,
   return Status(kOk);
 }
 
+Status StubWebView::InsertText(const std::string& text,
+                               bool async_dispatch_events) {
+  return Status(kOk);
+}
+
 Status StubWebView::GetCookies(std::unique_ptr<base::ListValue>* cookies,
                                const std::string& current_page_url) {
   return Status(kOk);

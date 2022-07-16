@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_DBUS_VM_VM_DISK_MANAGEMENT_SERVICE_PROVIDER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"

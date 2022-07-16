@@ -26,9 +26,10 @@ IncognitoClearBrowsingDataDialog* g_incognito_cbd_dialog = nullptr;
 
 // static
 void IncognitoClearBrowsingDataDialog::Show(views::View* anchor_view,
-                                            Profile* incognito_profile) {
-  g_incognito_cbd_dialog =
-      new IncognitoClearBrowsingDataDialog(anchor_view, incognito_profile);
+                                            Profile* incognito_profile,
+                                            Type type) {
+  g_incognito_cbd_dialog = new IncognitoClearBrowsingDataDialog(
+      anchor_view, incognito_profile, type);
   views::Widget* const widget =
       BubbleDialogDelegateView::CreateBubble(g_incognito_cbd_dialog);
   widget->Show();
@@ -63,7 +64,8 @@ IncognitoClearBrowsingDataDialog::~IncognitoClearBrowsingDataDialog() {
 
 IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
     views::View* anchor_view,
-    Profile* incognito_profile)
+    Profile* incognito_profile,
+    Type type)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
       incognito_profile_(incognito_profile) {
   DCHECK(incognito_profile_);
@@ -89,6 +91,14 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
   header_view_ = header_view.get();
   AddChildView(std::move(header_view));
 
+  // Set bubble regarding to the type.
+  if (type == kHistoryDisclaimerBubble)
+    SetDialogForHistoryDisclaimerBubbleType();
+  else
+    SetDialogForDefaultBubbleType();
+}
+
+void IncognitoClearBrowsingDataDialog::SetDialogForDefaultBubbleType() {
   // Text
   AddChildView(views::Builder<views::Label>()
                    .SetText(l10n_util::GetStringUTF16(
@@ -120,6 +130,46 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
   SetCancelCallback(
       base::BindOnce(&IncognitoClearBrowsingDataDialog::OnCancelButtonClicked,
                      base::Unretained(this)));
+}
+
+void IncognitoClearBrowsingDataDialog::
+    SetDialogForHistoryDisclaimerBubbleType() {
+  // Text
+  AddChildView(views::Builder<views::Label>()
+                   .SetText(l10n_util::GetStringUTF16(
+                       IDS_INCOGNITO_HISTORY_BUBBLE_PRIMARY_TEXT))
+                   .SetFontList(views::style::GetFont(
+                       views::style::CONTEXT_LABEL, STYLE_EMPHASIZED))
+                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                   .Build());
+
+  views::Label* label = AddChildView(
+      views::Builder<views::Label>()
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_INCOGNITO_HISTORY_BUBBLE_SECONDARY_TEXT))
+          .SetFontList(views::style::GetFont(views::style::CONTEXT_LABEL,
+                                             views::style::STYLE_SECONDARY))
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetMultiLine(true)
+          .Build());
+  label->SizeToFit(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+
+  // Buttons
+  SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                 l10n_util::GetStringUTF16(
+                     IDS_INCOGNITO_HISTORY_BUBBLE_CANCEL_BUTTON_TEXT));
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                 l10n_util::GetStringUTF16(
+                     IDS_INCOGNITO_HISTORY_BUBBLE_CLOSE_INCOGNITO_BUTTON_TEXT));
+
+  SetAcceptCallback(
+      base::BindOnce(&IncognitoClearBrowsingDataDialog::OnCancelButtonClicked,
+                     base::Unretained(this)));
+  SetCancelCallback(base::BindOnce(
+      &IncognitoClearBrowsingDataDialog::OnCloseWindowsButtonClicked,
+      base::Unretained(this)));
 }
 
 void IncognitoClearBrowsingDataDialog::OnCloseWindowsButtonClicked() {

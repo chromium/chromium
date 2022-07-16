@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/style_offset_rotation.h"
@@ -174,7 +175,8 @@ void CSSOffsetRotateInterpolationType::ApplyStandardPropertyValue(
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
   state.Style()->SetOffsetRotate(StyleOffsetRotation(
-      clampTo<float>(To<InterpolableNumber>(interpolable_value).Value()),
+      CSSValueClampingUtils::ClampAngle(
+          To<InterpolableNumber>(interpolable_value).Value()),
       To<CSSOffsetRotationNonInterpolableValue>(*non_interpolable_value)
           .RotationType()));
 }

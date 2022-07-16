@@ -118,7 +118,7 @@ std::unique_ptr<DeviceInfo> GetLocalDeviceInfo(const std::string& extension_id,
 
 ExtensionFunction::ResponseAction SignedInDevicesGetFunction::Run() {
   std::unique_ptr<api::signed_in_devices::Get::Params> params(
-      api::signed_in_devices::Get::Params::Create(*args_));
+      api::signed_in_devices::Get::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   bool is_local = params->is_local.get() ? *params->is_local : false;

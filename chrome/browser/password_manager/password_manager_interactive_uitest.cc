@@ -251,8 +251,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
 }
 
+// TODO(crbug.com/1241462):
+#if defined(OS_WIN)
+#define MAYBE_PromptForFetchWithNewPasswordsWithoutOnSubmit \
+  DISABLED_PromptForFetchWithNewPasswordsWithoutOnSubmit
+#else
+#define MAYBE_PromptForFetchWithNewPasswordsWithoutOnSubmit \
+  PromptForFetchWithNewPasswordsWithoutOnSubmit
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       PromptForFetchWithNewPasswordsWithoutOnSubmit) {
+                       MAYBE_PromptForFetchWithNewPasswordsWithoutOnSubmit) {
   NavigateToFile("/password/password_fetch_submit.html");
 
   // Verify that if Fetch navigation occurs and the form is properly filled out,

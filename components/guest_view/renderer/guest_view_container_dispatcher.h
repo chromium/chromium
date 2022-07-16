@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_GUEST_VIEW_RENDERER_GUEST_VIEW_CONTAINER_DISPATCHER_H_
 #define COMPONENTS_GUEST_VIEW_RENDERER_GUEST_VIEW_CONTAINER_DISPATCHER_H_
 
-#include "base/macros.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "ipc/ipc_message.h"
 
@@ -15,6 +14,11 @@ namespace guest_view {
 class GuestViewContainerDispatcher : public content::RenderThreadObserver {
  public:
   GuestViewContainerDispatcher();
+
+  GuestViewContainerDispatcher(const GuestViewContainerDispatcher&) = delete;
+  GuestViewContainerDispatcher& operator=(const GuestViewContainerDispatcher&) =
+      delete;
+
   ~GuestViewContainerDispatcher() override;
 
  protected:
@@ -23,9 +27,6 @@ class GuestViewContainerDispatcher : public content::RenderThreadObserver {
 
   // content::RenderThreadObserver implementation.
   bool OnControlMessageReceived(const IPC::Message& message) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GuestViewContainerDispatcher);
 };
 
 }  // namespace guest_view

@@ -4,49 +4,64 @@
 
 #include "base/power_monitor/thermal_state_observer_mac.h"
 
+#import <Foundation/Foundation.h>
+#include <IOKit/pwr_mgt/IOPMLib.h>
+#include <notify.h>
 #include <memory>
 #include <queue>
 
-#import <Foundation/Foundation.h>
-
+#include "base/bind.h"
+#include "base/logging.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
+#include "base/synchronization/waitable_event.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using DeviceThermalState = base::PowerThermalObserver::DeviceThermalState;
+using ::testing::MockFunction;
+using ::testing::Mock;
+using ::testing::Invoke;
 
 namespace base {
-
-class ThermalStateObserverMacTest : public testing::Test {
- public:
-  ThermalStateObserverMacTest() = default;
-  ~ThermalStateObserverMacTest() override = default;
-
-  void OnStateChange(DeviceThermalState state) { state_history_.push(state); }
-
-  std::queue<DeviceThermalState> state_history_;
-  std::unique_ptr<ThermalStateObserverMac> thermal_state_observer_;
-};
+void IgnoreStateChange(DeviceThermalState state) {}
+void IgnoreSpeedLimitChange(int speed_limit) {}
 
 // Verifies that a NSProcessInfoThermalStateDidChangeNotification produces the
 // adequate OnStateChange() call.
-TEST_F(ThermalStateObserverMacTest, StateChange) NS_AVAILABLE_MAC(10_10_3) {
-  EXPECT_TRUE(state_history_.empty());
-
+TEST(ThermalStateObserverMacTest, StateChange) NS_AVAILABLE_MAC(10_10_3) {
+  MockFunction<void(DeviceThermalState)> function;
   // ThermalStateObserverMac sends the current thermal state on construction.
-  thermal_state_observer_ =
-      std::make_unique<ThermalStateObserverMac>(BindRepeating(
-          &ThermalStateObserverMacTest::OnStateChange, Unretained(this)));
-  EXPECT_EQ(state_history_.size(), 1u);
-  state_history_.pop();
-
-  thermal_state_observer_->state_for_testing_ = DeviceThermalState::kCritical;
+  EXPECT_CALL(function, Call);
+  ThermalStateObserverMac observer(
+      BindRepeating(&MockFunction<void(DeviceThermalState)>::Call,
+                    Unretained(&function)),
+      BindRepeating(IgnoreSpeedLimitChange), "ignored key");
+  Mock::VerifyAndClearExpectations(&function);
+  EXPECT_CALL(function, Call(DeviceThermalState::kCritical));
+  observer.state_for_testing_ = DeviceThermalState::kCritical;
   [NSNotificationCenter.defaultCenter
       postNotificationName:NSProcessInfoThermalStateDidChangeNotification
                     object:nil
                   userInfo:nil];
-  EXPECT_EQ(state_history_.size(), 1u);
-  EXPECT_EQ(state_history_.front(), DeviceThermalState::kCritical);
 }
 
+TEST(ThermalStateObserverMacTest, SpeedChange) {
+  MockFunction<void(int)> function;
+  // ThermalStateObserverMac sends the current speed limit state on
+  // construction.
+  static constexpr const char* kTestNotificationKey =
+      "ThermalStateObserverMacTest_SpeedChange";
+  EXPECT_CALL(function, Call);
+  ThermalStateObserverMac observer(
+      BindRepeating(IgnoreStateChange),
+      BindRepeating(&MockFunction<void(int)>::Call, Unretained(&function)),
+      kTestNotificationKey);
+  Mock::VerifyAndClearExpectations(&function);
+  EXPECT_CALL(function, Call).WillOnce(Invoke([] {
+    CFRunLoopStop(CFRunLoopGetCurrent());
+  }));
+  notify_post(kTestNotificationKey);
+  CFRunLoopRun();
+}
 }  // namespace base

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
 #include "chrome/common/safe_browsing/crx_info.pb.h"
 
@@ -17,6 +16,10 @@ namespace extensions {
 class TestBlocklistStateFetcher {
  public:
   explicit TestBlocklistStateFetcher(BlocklistStateFetcher* fetcher);
+
+  TestBlocklistStateFetcher(const TestBlocklistStateFetcher&) = delete;
+  TestBlocklistStateFetcher& operator=(const TestBlocklistStateFetcher&) =
+      delete;
 
   ~TestBlocklistStateFetcher();
 
@@ -35,8 +38,6 @@ class TestBlocklistStateFetcher {
 
   // Dummy URLLoaderFactory not used for responses but avoids crashes.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBlocklistStateFetcher);
 };
 
 }  // namespace extensions

@@ -137,13 +137,11 @@ static __weak TooltipView* _active;
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 13, *)) {
-    if ([self.traitCollection
-            hasDifferentColorAppearanceComparedToTraitCollection:
-                previousTraitCollection]) {
-      self.backgroundLayer.fillColor =
-          [UIColor colorNamed:kTextPrimaryColor].CGColor;
-    }
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    self.backgroundLayer.fillColor =
+        [UIColor colorNamed:kTextPrimaryColor].CGColor;
   }
 }
 

@@ -39,6 +39,9 @@ class SystemFonts {
     return instance.get();
   }
 
+  SystemFonts(const SystemFonts&) = delete;
+  SystemFonts& operator=(const SystemFonts&) = delete;
+
   void ResetForTesting() {
     SystemFonts::is_initialized_ = false;
     SystemFonts::adjust_font_callback_ = nullptr;
@@ -232,8 +235,6 @@ class SystemFonts {
 
   // Minimum size callback.
   static GetMinimumFontSizeCallback get_minimum_font_size_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemFonts);
 };
 
 // static

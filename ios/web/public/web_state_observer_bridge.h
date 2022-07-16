@@ -12,7 +12,11 @@
 #include "base/macros.h"
 #include "ios/web/public/web_state_observer.h"
 
-// Observes page lifecyle events from Objective-C. To use as a
+namespace web {
+class NavigationContext;
+}
+
+// Observes page lifecycle events from Objective-C. To use as a
 // web::WebStateObserver, wrap in a web::WebStateObserverBridge.
 @protocol CRWWebStateObserver <NSObject>
 @optional
@@ -25,11 +29,21 @@
 
 // Invoked by WebStateObserverBridge::DidStartNavigation.
 - (void)webState:(web::WebState*)webState
-    didStartNavigation:(web::NavigationContext*)navigation;
+    didStartNavigation:(web::NavigationContext*)navigationContext;
+
+// Invoked by WebStateObserverBridge::DidRedirectNavigation.
+- (void)webState:(web::WebState*)webState
+    didRedirectNavigation:(web::NavigationContext*)navigationContext;
 
 // Invoked by WebStateObserverBridge::DidFinishNavigation.
 - (void)webState:(web::WebState*)webState
-    didFinishNavigation:(web::NavigationContext*)navigation;
+    didFinishNavigation:(web::NavigationContext*)navigationContext;
+
+// Invoked by WebStateObserverBridge::DidStartLoading.
+- (void)webStateDidStartLoading:(web::WebState*)webState;
+
+// Invoked by WebStateObserverBridge::DidStopLoading.
+- (void)webStateDidStopLoading:(web::WebState*)webState;
 
 // Invoked by WebStateObserverBridge::PageLoaded.
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success;
@@ -54,24 +68,21 @@
 
 // Invoked by WebStateObserverBridge::WebFrameDidBecomeAvailable.
 - (void)webState:(web::WebState*)webState
-    frameDidBecomeAvailable:(web::WebFrame*)web_frame;
+    frameDidBecomeAvailable:(web::WebFrame*)webFrame;
 
 // Invoked by WebStateObserverBridge::WebFrameWillBecomeUnavailable.
 - (void)webState:(web::WebState*)webState
-    frameWillBecomeUnavailable:(web::WebFrame*)web_frame;
+    frameWillBecomeUnavailable:(web::WebFrame*)webFrame;
 
 // Invoked by WebStateObserverBridge::RenderProcessGone.
 - (void)renderProcessGoneForWebState:(web::WebState*)webState;
 
+// Invoked by WebStateObserverBridge::WebStateRealized.
+- (void)webStateRealized:(web::WebState*)webState;
+
 // Note: after |webStateDestroyed:| is invoked, the WebState being observed
 // is no longer valid.
 - (void)webStateDestroyed:(web::WebState*)webState;
-
-// Invoked by WebStateObserverBridge::DidStopLoading.
-- (void)webStateDidStopLoading:(web::WebState*)webState;
-
-// Invoked by WebStateObserverBridge::DidStartLoading.
-- (void)webStateDidStartLoading:(web::WebState*)webState;
 
 @end
 
@@ -83,6 +94,10 @@ class WebStateObserverBridge : public web::WebStateObserver {
   // It it the responsibility of calling code to add/remove the instance
   // from the WebStates observer lists.
   WebStateObserverBridge(id<CRWWebStateObserver> observer);
+
+  WebStateObserverBridge(const WebStateObserverBridge&) = delete;
+  WebStateObserverBridge& operator=(const WebStateObserverBridge&) = delete;
+
   ~WebStateObserverBridge() override;
 
   // web::WebStateObserver methods.
@@ -90,8 +105,13 @@ class WebStateObserverBridge : public web::WebStateObserver {
   void WasHidden(web::WebState* web_state) override;
   void DidStartNavigation(web::WebState* web_state,
                           NavigationContext* navigation_context) override;
+  void DidRedirectNavigation(
+      web::WebState* web_state,
+      web::NavigationContext* navigation_context) override;
   void DidFinishNavigation(web::WebState* web_state,
                            NavigationContext* navigation_context) override;
+  void DidStartLoading(web::WebState* web_state) override;
+  void DidStopLoading(web::WebState* web_state) override;
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
@@ -106,13 +126,11 @@ class WebStateObserverBridge : public web::WebStateObserver {
   void WebFrameWillBecomeUnavailable(WebState* web_state,
                                      WebFrame* web_frame) override;
   void RenderProcessGone(web::WebState* web_state) override;
+  void WebStateRealized(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
-  void DidStartLoading(web::WebState* web_state) override;
-  void DidStopLoading(web::WebState* web_state) override;
 
  private:
   __weak id<CRWWebStateObserver> observer_ = nil;
-  DISALLOW_COPY_AND_ASSIGN(WebStateObserverBridge);
 };
 
 }  // namespace web

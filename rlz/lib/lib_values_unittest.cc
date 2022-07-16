@@ -34,8 +34,8 @@ TEST(LibValuesUnittest, GetAccessPointFromName) {
 
   for (int ap = rlz_lib::NO_ACCESS_POINT + 1;
        ap < rlz_lib::LAST_ACCESS_POINT; ++ap) {
-    rlz_lib::AccessPoint point = static_cast<rlz_lib::AccessPoint>(ap);
-    EXPECT_TRUE(GetAccessPointName(point) != NULL);
+    EXPECT_TRUE(GetAccessPointName(static_cast<rlz_lib::AccessPoint>(ap)) !=
+                NULL);
   }
 }
 

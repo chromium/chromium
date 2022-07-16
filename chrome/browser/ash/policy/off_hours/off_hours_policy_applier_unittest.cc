@@ -83,11 +83,14 @@ void SetOffHoursPolicyToProto(em::ChromeDeviceSettingsProto* proto,
 }  // namespace
 
 class ApplyOffHoursPolicyToProtoTest : public testing::Test {
+ public:
+  ApplyOffHoursPolicyToProtoTest(const ApplyOffHoursPolicyToProtoTest&) =
+      delete;
+  ApplyOffHoursPolicyToProtoTest& operator=(
+      const ApplyOffHoursPolicyToProtoTest&) = delete;
+
  protected:
   ApplyOffHoursPolicyToProtoTest() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ApplyOffHoursPolicyToProtoTest);
 };
 
 TEST_F(ApplyOffHoursPolicyToProtoTest, Test) {

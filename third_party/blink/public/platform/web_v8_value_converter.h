@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace base {
 class Value;

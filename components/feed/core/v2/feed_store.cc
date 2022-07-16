@@ -437,11 +437,8 @@ void FeedStore::UpdateFullStreamData(
     base::OnceCallback<void(bool)> callback) {
   // Set up a filter to delete all stream-related data.
   // But we need to exclude keys being written right now.
-  std::vector<std::string> key_vector(updates->size());
-  for (size_t i = 0; i < key_vector.size(); ++i) {
-    key_vector[i] = (*updates)[i].first;
-  }
-  base::flat_set<std::string> updated_keys(std::move(key_vector));
+  auto updated_keys = base::MakeFlatSet<std::string>(
+      *updates, {}, &std::pair<std::string, feedstore::Record>::first);
   StreamKeyMatcher key_matcher(stream_type);
   auto filter = [](const StreamKeyMatcher& key_matcher,
                    const base::flat_set<std::string>& updated_keys,

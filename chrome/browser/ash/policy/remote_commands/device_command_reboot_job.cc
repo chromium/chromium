@@ -9,9 +9,9 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -46,7 +46,7 @@ void DeviceCommandRebootJob::RunImpl(CallbackWithResult succeeded_callback,
   // If the reboot command was issued before the system booted, we inform the
   // server that the reboot succeeded. Otherwise, the reboot must still be
   // performed and we invoke it.
-  if (delta > base::TimeDelta()) {
+  if (delta.is_positive()) {
     SYSLOG(WARNING) << "Ignoring reboot command issued " << delta
                     << " before current boot time";
     base::ThreadTaskRunnerHandle::Get()->PostTask(

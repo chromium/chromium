@@ -39,7 +39,7 @@
 #include "chromeos/login/login_state/login_state.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
@@ -50,11 +50,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes_util.h"
-#include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #else
 #include "chrome/browser/ui/signin_view_controller.h"
 #endif
@@ -228,11 +228,13 @@ void ShowBookmarkManagerForNode(Browser* browser, int64_t node_id) {
 }
 
 void ShowHistory(Browser* browser) {
-  // History UI should not be shown in Incognito mode. Also this prevents
-  // history keyboard shortcts open History UI in Incognito.
+  // History UI should not be shown in Incognito mode, instead history
+  // disclaimer bubble should show up. This also updates the behavior of history
+  // keyboard shortcts in Incognito.
   if (browser->profile()->IsOffTheRecord() &&
       base::FeatureList::IsEnabled(
           features::kUpdateHistoryEntryPointsInIncognito)) {
+    browser->window()->ShowIncognitoHistoryDisclaimerDialog();
     return;
   }
 

@@ -741,10 +741,17 @@ void NativeIOFileManager::OpenImpl(String name,
   if (!script_state->ContextIsValid())
     return;
 
+  if (!backend_.is_bound()) {
+    blink::RejectNativeIOWithError(
+        resolver, mojom::blink::NativeIOError::New(
+                      mojom::blink::NativeIOErrorType::kInvalidState,
+                      "NativeIOHost backend went away"));
+    return;
+  }
+
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   HeapMojoRemote<mojom::blink::NativeIOFileHost> backend_file(
       execution_context);
-
   mojo::PendingReceiver<mojom::blink::NativeIOFileHost> backend_file_receiver =
       backend_file.BindNewPipeAndPassReceiver(receiver_task_runner_);
 
@@ -762,6 +769,18 @@ void NativeIOFileManager::DeleteImpl(String name,
   DCHECK(storage_access_allowed_.value())
       << "called even though storage access was denied";
 
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid())
+    return;
+
+  if (!backend_.is_bound()) {
+    blink::RejectNativeIOWithError(
+        resolver, mojom::blink::NativeIOError::New(
+                      mojom::blink::NativeIOErrorType::kInvalidState,
+                      "NativeIOHost backend went away"));
+    return;
+  }
+
   backend_->DeleteFile(
       name, WTF::Bind(&NativeIOFileManager::OnDeleteResult,
                       WrapPersistent(this), WrapPersistent(resolver)));
@@ -772,6 +791,18 @@ void NativeIOFileManager::GetAllImpl(ScriptPromiseResolver* resolver) {
       << "called without checking if storage access was allowed";
   DCHECK(storage_access_allowed_.value())
       << "called even though storage access was denied";
+
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid())
+    return;
+
+  if (!backend_.is_bound()) {
+    blink::RejectNativeIOWithError(
+        resolver, mojom::blink::NativeIOError::New(
+                      mojom::blink::NativeIOErrorType::kInvalidState,
+                      "NativeIOHost backend went away"));
+    return;
+  }
 
   backend_->GetAllFileNames(
       WTF::Bind(&OnGetAllResult, WrapPersistent(resolver)));
@@ -785,6 +816,18 @@ void NativeIOFileManager::RenameImpl(String old_name,
   DCHECK(storage_access_allowed_.value())
       << "called even though storage access was denied";
 
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid())
+    return;
+
+  if (!backend_.is_bound()) {
+    blink::RejectNativeIOWithError(
+        resolver, mojom::blink::NativeIOError::New(
+                      mojom::blink::NativeIOErrorType::kInvalidState,
+                      "NativeIOHost backend went away"));
+    return;
+  }
+
   backend_->RenameFile(old_name, new_name,
                        WTF::Bind(&OnRenameResult, WrapPersistent(resolver)));
 }
@@ -795,6 +838,18 @@ void NativeIOFileManager::RequestCapacityImpl(uint64_t requested_capacity,
       << "called without checking if storage access was allowed";
   DCHECK(storage_access_allowed_.value())
       << "called even though storage access was denied";
+
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid())
+    return;
+
+  if (!backend_.is_bound()) {
+    blink::RejectNativeIOWithError(
+        resolver, mojom::blink::NativeIOError::New(
+                      mojom::blink::NativeIOErrorType::kInvalidState,
+                      "NativeIOHost backend went away"));
+    return;
+  }
 
   backend_->RequestCapacityChange(
       requested_capacity,
@@ -813,6 +868,14 @@ void NativeIOFileManager::ReleaseCapacityImpl(uint64_t requested_release,
   if (!script_state->ContextIsValid())
     return;
   ScriptState::Scope scope(script_state);
+
+  if (!backend_.is_bound()) {
+    blink::RejectNativeIOWithError(
+        resolver, mojom::blink::NativeIOError::New(
+                      mojom::blink::NativeIOErrorType::kInvalidState,
+                      "NativeIOHost backend went away"));
+    return;
+  }
 
   if (!base::IsValueInRangeForNumericType<int64_t>(requested_release)) {
     blink::RejectNativeIOWithError(

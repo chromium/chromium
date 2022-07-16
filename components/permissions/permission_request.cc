@@ -103,7 +103,15 @@ std::u16string PermissionRequest::GetDialogMessageText() const {
 #endif
 
 #if !defined(OS_ANDROID)
-absl::optional<std::u16string> PermissionRequest::GetChipText() const {
+IconId PermissionRequest::GetIconForChip() {
+  return permissions::GetIconId(request_type_);
+}
+
+IconId PermissionRequest::GetBlockedIconForChip() {
+  return permissions::GetBlockedIconId(request_type_);
+}
+
+absl::optional<std::u16string> PermissionRequest::GetRequestChipText() const {
   int message_id;
   switch (request_type_) {
     case RequestType::kArSession:
@@ -137,6 +145,21 @@ absl::optional<std::u16string> PermissionRequest::GetChipText() const {
       // TODO(bsep): We don't actually want to support having no string in the
       // long term, but writing them takes time. In the meantime, we fall back
       // to the existing UI when the string is missing.
+      return absl::nullopt;
+  }
+  return l10n_util::GetStringUTF16(message_id);
+}
+
+absl::optional<std::u16string> PermissionRequest::GetQuietChipText() const {
+  int message_id;
+  switch (request_type_) {
+    case RequestType::kGeolocation:
+      message_id = IDS_GEOLOCATION_PERMISSION_BLOCKED_CHIP;
+      break;
+    case RequestType::kNotifications:
+      message_id = IDS_NOTIFICATION_PERMISSIONS_BLOCKED_CHIP;
+      break;
+    default:
       return absl::nullopt;
   }
   return l10n_util::GetStringUTF16(message_id);
@@ -202,6 +225,9 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
       break;
     case RequestType::kSecurityAttestation:
       message_id = IDS_SECURITY_KEY_ATTESTATION_PERMISSION_FRAGMENT;
+      break;
+    case RequestType::kU2fApiRequest:
+      message_id = IDS_U2F_API_PERMISSION_FRAGMENT;
       break;
     case RequestType::kVrSession:
       message_id = IDS_VR_PERMISSION_FRAGMENT;

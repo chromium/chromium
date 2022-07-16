@@ -33,6 +33,9 @@ class GPU_GLES2_EXPORT WebGPUDecoder : public DecoderContext,
                                gles2::Outputter* outputter,
                                const GpuPreferences& gpu_preferences);
 
+  WebGPUDecoder(const WebGPUDecoder&) = delete;
+  WebGPUDecoder& operator=(const WebGPUDecoder&) = delete;
+
   ~WebGPUDecoder() override;
 
   // WebGPU-specific initialization that's different than DecoderContext's
@@ -49,9 +52,6 @@ class GPU_GLES2_EXPORT WebGPUDecoder : public DecoderContext,
   WebGPUDecoder(DecoderClient* client,
                 CommandBufferServiceBase* command_buffer_service,
                 gles2::Outputter* outputter);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebGPUDecoder);
 };
 
 }  // namespace webgpu

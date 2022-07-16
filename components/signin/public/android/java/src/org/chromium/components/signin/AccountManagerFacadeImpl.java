@@ -23,6 +23,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -58,7 +59,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     static final String CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS = "gi2tklldmfya";
 
     private final AccountManagerDelegate mDelegate;
-    private final AccountRestrictionPatternReceiver mAccountRestrictionPatternReceiver;
 
     private final ObserverList<AccountsChangeObserver> mObservers = new ObserverList<>();
 
@@ -79,14 +79,13 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         ThreadUtils.assertOnUiThread();
         mDelegate = delegate;
         mDelegate.attachAccountsChangeObserver(this::onAccountsUpdated);
-        mAccountRestrictionPatternReceiver =
-                new AccountRestrictionPatternReceiver(this::onAccountRestrictionPatternsUpdated);
+        new AccountRestrictionPatternReceiver(this::onAccountRestrictionPatternsUpdated);
 
         getAccounts().then(accounts -> {
             RecordHistogram.recordExactLinearHistogram(
                     "Signin.AndroidNumberOfDeviceAccounts", accounts.size(), 50);
         });
-        new InitializeTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        onAccountsUpdated();
     }
 
     /**
@@ -175,7 +174,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
             @Override
             public void onPostExecute(@ChildAccountStatus.Status Integer status) {
-                listener.onStatusReady(status);
+                // TODO(crbug.com/1258563): rework this interface to avoid passing a null account.
+                listener.onStatusReady(status, ChildAccountStatus.isChild(status) ? account : null);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -194,6 +194,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
      */
     @Override
     public void createAddAccountIntent(Callback<Intent> callback) {
+        RecordUserAction.record("Signin_AddAccountToDevice");
         mDelegate.createAddAccountIntent(callback);
     }
 
@@ -205,15 +206,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     public void updateCredentials(
             Account account, Activity activity, @Nullable Callback<Boolean> callback) {
         mDelegate.updateCredentials(account, activity, callback);
-    }
-
-    /**
-     * Gets profile data source.
-     * @return {@link ProfileDataSource} if it is supported by implementation, null otherwise.
-     */
-    @Override
-    public ProfileDataSource getProfileDataSource() {
-        return mDelegate.getProfileDataSource();
     }
 
     /**
@@ -236,7 +228,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             for (Account account : accounts) {
                 canOfferExtendedSyncPromos.put(AccountUtils.canonicalizeName(account.name),
                         mDelegate.hasCapability(account, CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS)
-                                != CapabilityResponse.NO);
+                                == CapabilityResponse.YES);
             }
             mCanOfferExtendedSyncPromos.set(canOfferExtendedSyncPromos);
         });
@@ -244,7 +236,18 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     private void onAccountsUpdated() {
         ThreadUtils.assertOnUiThread();
-        new UpdateAccountsTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        new AsyncTask<List<Account>>() {
+            @Override
+            protected List<Account> doInBackground() {
+                return Collections.unmodifiableList(Arrays.asList(mDelegate.getAccounts()));
+            }
+
+            @Override
+            protected void onPostExecute(List<Account> allAccounts) {
+                mAllAccounts.set(allAccounts);
+                updateAccounts();
+            }
+        }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
     private void onAccountRestrictionPatternsUpdated(List<PatternMatcher> patternMatchers) {
@@ -254,6 +257,9 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     @MainThread
     private void updateAccounts() {
+        if (mAllAccounts.get() == null || mAccountRestrictionPatterns.get() == null) {
+            return;
+        }
         final List<Account> newAccounts = getFilteredAccounts();
         updateCanOfferExtendedSyncPromos(newAccounts);
         if (mAccountsPromise.isFulfilled()) {
@@ -280,37 +286,5 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             }
         }
         return Collections.unmodifiableList(filteredAccounts);
-    }
-
-    private List<Account> getAllAccounts() {
-        return Collections.unmodifiableList(Arrays.asList(mDelegate.getAccounts()));
-    }
-
-    private class InitializeTask extends AsyncTask<Void> {
-        @Override
-        protected Void doInBackground() {
-            mAccountRestrictionPatterns.set(
-                    mAccountRestrictionPatternReceiver.getRestrictionPatterns());
-            mAllAccounts.set(getAllAccounts());
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void v) {
-            updateAccounts();
-        }
-    }
-
-    private class UpdateAccountsTask extends AsyncTask<List<Account>> {
-        @Override
-        protected List<Account> doInBackground() {
-            return getAllAccounts();
-        }
-
-        @Override
-        protected void onPostExecute(List<Account> allAccounts) {
-            mAllAccounts.set(allAccounts);
-            updateAccounts();
-        }
     }
 }

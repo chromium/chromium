@@ -6,7 +6,8 @@
 
 #include <utility>
 
-#include "chrome/browser/web_applications/components/policy/web_app_policy_constants.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"

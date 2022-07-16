@@ -7,8 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/json/values_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
 #include "chrome/browser/profiles/profile.h"
@@ -59,13 +59,12 @@ void PrefetchProxyOriginDecider::ReportOriginRetryAfter(
     const GURL& url,
     base::TimeDelta retry_after) {
   // Ignore negative times.
-  if (retry_after < base::TimeDelta()) {
+  if (retry_after.is_negative()) {
     return;
   }
 
   UMA_HISTOGRAM_CUSTOM_TIMES("PrefetchProxy.Prefetch.Mainframe.RetryAfter",
-                             retry_after, base::TimeDelta::FromSeconds(1),
-                             base::TimeDelta::FromDays(7), 100);
+                             retry_after, base::Seconds(1), base::Days(7), 100);
 
   // Cap values at a maximum per experiment.
   if (retry_after > PrefetchProxyMaxRetryAfterDelta()) {
@@ -93,7 +92,7 @@ void PrefetchProxyOriginDecider::LoadFromPrefs() {
       continue;
     }
 
-    absl::optional<base::Time> retry_after = util::ValueToTime(element.second);
+    absl::optional<base::Time> retry_after = base::ValueToTime(element.second);
     if (!retry_after) {
       // This may happen in the case of corrupted prefs, or otherwise. Handle
       // gracefully.
@@ -110,7 +109,7 @@ void PrefetchProxyOriginDecider::SaveToPrefs() const {
   base::DictionaryValue dictionary;
   for (const auto& element : origin_retry_afters_) {
     std::string key = element.first.GetURL().spec();
-    base::Value value = util::TimeToValue(element.second);
+    base::Value value = base::TimeToValue(element.second);
     dictionary.SetKey(std::move(key), std::move(value));
   }
   pref_service_->Set(prefetch::prefs::kRetryAfterPrefPath, dictionary);

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/bit_reader.h"
@@ -31,6 +30,11 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   MPEGAudioStreamParserBase(uint32_t start_code_mask,
                             AudioCodec audio_codec,
                             int codec_delay);
+
+  MPEGAudioStreamParserBase(const MPEGAudioStreamParserBase&) = delete;
+  MPEGAudioStreamParserBase& operator=(const MPEGAudioStreamParserBase&) =
+      delete;
+
   ~MPEGAudioStreamParserBase() override;
 
   // StreamParser implementation.
@@ -152,8 +156,6 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   const uint32_t start_code_mask_;
   const AudioCodec audio_codec_;
   const int codec_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(MPEGAudioStreamParserBase);
 };
 
 }  // namespace media

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -48,6 +47,10 @@ class ChromeRequestAdapter : public RequestAdapter {
                        const net::HttpRequestHeaders& original_headers,
                        net::HttpRequestHeaders* modified_headers,
                        std::vector<std::string>* headers_to_remove);
+
+  ChromeRequestAdapter(const ChromeRequestAdapter&) = delete;
+  ChromeRequestAdapter& operator=(const ChromeRequestAdapter&) = delete;
+
   ~ChromeRequestAdapter() override;
 
   virtual content::WebContents::Getter GetWebContentsGetter() const = 0;
@@ -62,14 +65,15 @@ class ChromeRequestAdapter : public RequestAdapter {
   // request is complete (including any redirects). If a callback was already
   // registered this function does nothing.
   virtual void SetDestructionCallback(base::OnceClosure closure) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeRequestAdapter);
 };
 
 class ResponseAdapter {
  public:
   ResponseAdapter();
+
+  ResponseAdapter(const ResponseAdapter&) = delete;
+  ResponseAdapter& operator=(const ResponseAdapter&) = delete;
+
   virtual ~ResponseAdapter();
 
   virtual content::WebContents::Getter GetWebContentsGetter() const = 0;
@@ -82,9 +86,6 @@ class ResponseAdapter {
   virtual void SetUserData(
       const void* key,
       std::unique_ptr<base::SupportsUserData::Data> data) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResponseAdapter);
 };
 
 // When Dice is enabled, the AccountReconcilor is blocked for a short delay

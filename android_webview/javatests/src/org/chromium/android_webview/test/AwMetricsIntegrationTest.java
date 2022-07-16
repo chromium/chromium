@@ -15,6 +15,7 @@ import android.support.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Description;
+import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,14 +28,15 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.metrics.AndroidMetricsLogUploader;
 import org.chromium.components.metrics.AndroidMetricsServiceClient;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
 import org.chromium.components.metrics.MetricsSwitches;
@@ -45,8 +47,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -70,63 +70,30 @@ public class AwMetricsIntegrationTest {
     private AwTestContainerView mTestContainerView;
     private AwContents mAwContents;
     private TestAwContentsClient mContentsClient;
-    private TestPlatformServiceBridge mPlatformServiceBridge;
+    private MetricsTestPlatformServiceBridge mPlatformServiceBridge;
 
     // Some short interval, arbitrarily chosen.
     private static final long UPLOAD_INTERVAL_MS = 10;
-
-    private static class TestPlatformServiceBridge extends PlatformServiceBridge {
-        private final BlockingQueue<byte[]> mQueue;
-
-        public TestPlatformServiceBridge() {
-            mQueue = new LinkedBlockingQueue<>();
-        }
-
-        @Override
-        public boolean canUseGms() {
-            return true;
-        }
-
-        @Override
-        public void queryMetricsSetting(Callback<Boolean> callback) {
-            ThreadUtils.assertOnUiThread();
-            callback.onResult(true /* enabled */);
-        }
-
-        @Override
-        public void logMetrics(byte[] data) {
-            mQueue.add(data);
-        }
-
-        /**
-         * Gets the latest metrics log we've received.
-         */
-        public ChromeUserMetricsExtension waitForNextMetricsLog() throws Exception {
-            byte[] data = AwActivityTestRule.waitForNextQueueElement(mQueue);
-            return ChromeUserMetricsExtension.parseFrom(data);
-        }
-
-        /**
-         * Asserts there are no more metrics logs queued up.
-         */
-        public void assertNoMetricsLogs() throws Exception {
-            // Assert the size is zero (rather than the queue is empty), so if this fails we have
-            // some hint as to how many logs were queued up.
-            Assert.assertEquals("Expected no metrics logs to be in the queue", 0, mQueue.size());
-        }
-    }
 
     @Before
     public void setUp() throws Exception {
         mContentsClient = new TestAwContentsClient();
         mTestContainerView = mRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mTestContainerView.getAwContents();
-        // Kick off the metrics consent-fetching process. TestPlatformServiceBridge mocks out user
-        // consent for when we query it with AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(),
-        // so metrics consent is guaranteed to be granted.
-        mPlatformServiceBridge = new TestPlatformServiceBridge();
+        // Kick off the metrics consent-fetching process. MetricsTestPlatformServiceBridge mocks out
+        // user consent for when we query it with
+        // AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(), so metrics consent is guaranteed
+        // to be granted.
+        mPlatformServiceBridge = new MetricsTestPlatformServiceBridge();
         PlatformServiceBridge.injectInstance(mPlatformServiceBridge);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Explicitly send the data to PlatformServiceBridge and avoid sending the data via
+            // MetricsUploadService to avoid unexpected failures due to service connections, IPCs
+            // ... etc in tests as testing the service behaviour is outside the scope of these
+            // integeration tests.
+            AndroidMetricsLogUploader.setUploader(
+                    (byte[] data) -> { PlatformServiceBridge.getInstance().logMetrics(data); });
+
             // Need to configure the metrics delay first, because
             // handleMinidumpsAndSetMetricsConsent() triggers MetricsService initialization. The
             // first upload for each test case will be triggered with minimal latency, and
@@ -590,12 +557,21 @@ public class AwMetricsIntegrationTest {
             // MetricsProvider::ProvideCurrentSessionData().
             mPlatformServiceBridge.waitForNextMetricsLog();
 
-            final String histogramName = "Android.WebView.WebViewOpenWebVisible.ScreenPortion";
-            int totalSamples = RecordHistogram.getHistogramTotalCountForTesting(histogramName);
-            Assert.assertNotEquals("There should be at least one sample recorded", 0, totalSamples);
+            final String histogramName = "Android.WebView.WebViewOpenWebVisible.ScreenPortion2";
 
-            int zeroBucketSamples =
-                    RecordHistogram.getHistogramValueCountForTesting(histogramName, 0);
+            // The histogram records whole seconds that the WebView has been on screen, we need to
+            // leave enough time for something to be recorded.
+            CriteriaHelper.pollUiThread(() -> {
+                int totalSamples = RecordHistogram.getHistogramTotalCountForTesting(histogramName);
+                Criteria.checkThat("There were no samples recorded", totalSamples, Matchers.not(0));
+            });
+
+            int totalSamples = RecordHistogram.getHistogramTotalCountForTesting(histogramName);
+
+            // Based on VisibilityMetricsLogger::WebViewOpenWebScreenPortion.
+            final int histogramZeroBucket = 11;
+            int zeroBucketSamples = RecordHistogram.getHistogramValueCountForTesting(
+                    histogramName, histogramZeroBucket);
             Assert.assertNotEquals("There should be at least one sample in a non-zero bucket",
                     zeroBucketSamples, totalSamples);
         } finally {

@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.AnnotationRule;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -89,7 +90,7 @@ public class Features {
     }
 
     private void applyForJUnit() {
-        ChromeFeatureList.setTestFeatures(mRegisteredState);
+        FeatureList.setTestFeatures(mRegisteredState);
         CachedFeatureFlags.setFeaturesForTesting(mRegisteredState);
     }
 
@@ -124,11 +125,14 @@ public class Features {
     }
 
     /** Resets Features-related state that might persist in between tests. */
-    private static void reset() {
+    private static void reset(boolean forInstrumentation) {
         sInstance = null;
-        ChromeFeatureList.setTestFeatures(null);
+        FeatureList.setTestFeatures(null);
         ChromeFeatureList.resetTestCanUseDefaultsForTesting();
         CachedFeatureFlags.resetFlagsForTesting();
+        if (forInstrumentation) {
+            CachedFeatureFlags.resetDiskForTesting();
+        }
         FieldTrials.getInstance().reset();
     }
 
@@ -142,6 +146,11 @@ public class Features {
         protected void applyFeatures() {
             getInstance().applyForJUnit();
         }
+
+        @Override
+        protected void after() {
+            reset(/*forInstrumentation=*/false);
+        }
     }
 
     /**
@@ -153,6 +162,11 @@ public class Features {
         @Override
         protected void applyFeatures() {
             getInstance().applyForInstrumentation();
+        }
+
+        @Override
+        protected void after() {
+            reset(/*forInstrumentation=*/true);
         }
     }
 
@@ -170,11 +184,6 @@ public class Features {
         protected void before() {
             collectFeatures();
             applyFeatures();
-        }
-
-        @Override
-        protected void after() {
-            reset();
         }
 
         protected abstract void applyFeatures();

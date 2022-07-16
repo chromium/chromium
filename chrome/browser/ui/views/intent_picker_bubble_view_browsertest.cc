@@ -5,9 +5,11 @@
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
@@ -16,13 +18,16 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/favicon_size.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
@@ -30,10 +35,9 @@ class IntentPickerBubbleViewBrowserTest
     : public web_app::WebAppNavigationBrowserTest,
       public ::testing::WithParamInterface<std::string> {
  public:
-  void SetUp() override {
+  IntentPickerBubbleViewBrowserTest() {
     // TODO(schenney): Stop disabling Paint Holding. crbug.com/1001189
     scoped_feature_list_.InitAndDisableFeature(blink::features::kPaintHolding);
-    web_app::WebAppNavigationBrowserTest::SetUp();
   }
 
   void OpenNewTab(const GURL& url) {
@@ -265,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTest, DoubleClickOpensApp) {
 
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  ui_test_utils::NavigateToURL(browser(), in_scope_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "IntentPickerBubbleView");
@@ -291,3 +295,113 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     IntentPickerBubbleViewBrowserTest,
     testing::Values("", "noopener", "noreferrer", "nofollow"));
+
+class IntentPickerBubbleViewPrerenderingBrowserTest
+    : public IntentPickerBubbleViewBrowserTest {
+ public:
+  IntentPickerBubbleViewPrerenderingBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &IntentPickerBubbleViewPrerenderingBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~IntentPickerBubbleViewPrerenderingBrowserTest() override = default;
+  IntentPickerBubbleViewPrerenderingBrowserTest(
+      const IntentPickerBubbleViewPrerenderingBrowserTest&) = delete;
+
+  IntentPickerBubbleViewPrerenderingBrowserTest& operator=(
+      const IntentPickerBubbleViewPrerenderingBrowserTest&) = delete;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    IntentPickerBubbleViewBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    IntentPickerBubbleViewBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewPrerenderingBrowserTest,
+                       PrerenderingShouldNotShowIntentPicker) {
+  InstallTestWebApp();
+
+  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
+
+  const GURL initial_url =
+      https_server().GetURL(GetAppUrlHost(), "/empty.html");
+  OpenNewTab(initial_url);
+  EXPECT_FALSE(intent_picker_view->GetVisible());
+
+  // Load a prerender page and prerendering should not try to show the
+  // intent picker.
+  const GURL prerender_url = https_server().GetURL(
+      GetAppUrlHost(), std::string(GetAppScopePath()) + "index1.html");
+  int host_id = prerender_test_helper().AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+  EXPECT_FALSE(intent_picker_view->GetVisible());
+
+  // Activate the prerender page.
+  prerender_test_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
+
+  // After activation, IntentPickerTabHelper should show the
+  // intent picker.
+  EXPECT_TRUE(intent_picker_view->GetVisible());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IntentPickerBubbleViewPrerenderingBrowserTest,
+    testing::Values("", "noopener", "noreferrer", "nofollow"));
+
+class IntentPickerDialogTest : public DialogBrowserTest {
+ public:
+  IntentPickerDialogTest() = default;
+  IntentPickerDialogTest(const IntentPickerDialogTest&) = delete;
+  IntentPickerDialogTest& operator=(const IntentPickerDialogTest&) = delete;
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override {
+    PageActionIconView* anchor =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar_button_provider()
+            ->GetPageActionIconView(PageActionIconType::kIntentPicker);
+    std::vector<apps::IntentPickerAppInfo> app_info;
+    const auto add_entry = [&app_info](const std::string& str) {
+      app_info.emplace_back(
+          apps::PickerEntryType::kUnknown,
+          ui::ImageModel::FromImage(
+              gfx::Image::CreateFrom1xBitmap(favicon::GenerateMonogramFavicon(
+                  GURL("https://" + str + ".com"), gfx::kFaviconSize,
+                  gfx::kFaviconSize))),
+          "Launch name " + str, "Display name " + str);
+    };
+    add_entry("a");
+    add_entry("b");
+    add_entry("c");
+    add_entry("d");
+    IntentPickerBubbleView::ShowBubble(
+        anchor, anchor, PageActionIconType::kIntentPicker,
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        std::move(app_info), true, true,
+        url::Origin::Create(GURL("https://c.com")), base::DoNothing());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(IntentPickerDialogTest, InvokeUi_default) {
+  ShowAndVerifyUi();
+}

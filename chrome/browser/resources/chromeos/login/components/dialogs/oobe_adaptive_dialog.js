@@ -25,14 +25,14 @@ Polymer({
       return;
     }
 
-    var scrollContainer = this.$$('#scrollContainer');
-    var contentContainer = this.$$('#contentContainer');
+    var scrollContainer = this.shadowRoot.querySelector('#scrollContainer');
+    var contentContainer = this.shadowRoot.querySelector('#contentContainer');
     if (!scrollContainer || !contentContainer) {
       return;
     }
 
     this.resizeObserver_ =
-        new ResizeObserver(this.applyScrollClassTags_.bind(this));
+        new ResizeObserver(() => void this.applyScrollClassTags_());
     this.resizeObserver_.observe(scrollContainer);
     this.resizeObserver_.observe(contentContainer);
   },
@@ -41,7 +41,7 @@ Polymer({
    * Applies the class tags to scrollContainer that control the shadows.
    */
   applyScrollClassTags_() {
-    var el = this.$$('#scrollContainer');
+    var el = this.shadowRoot.querySelector('#scrollContainer');
     el.classList.toggle('can-scroll', el.clientHeight < el.scrollHeight);
     el.classList.toggle('is-scrolled', el.scrollTop > 0);
     el.classList.toggle(
@@ -60,8 +60,7 @@ Polymer({
   },
 
   onBeforeShow() {
-    document.documentElement.setAttribute('new-layout', '');
-    this.$$('#lazy').get();
+    this.shadowRoot.querySelector('#lazy').get();
     this.observeScrolling_();
   },
 
@@ -69,7 +68,7 @@ Polymer({
    * Scroll to the bottom of footer container.
    */
   scrollToBottom() {
-    var el = this.$$('#scrollContainer');
+    var el = this.shadowRoot.querySelector('#scrollContainer');
     el.scrollTop = el.scrollHeight;
   },
 
@@ -113,6 +112,6 @@ Polymer({
   /** @private */
   onNoLazyChanged_() {
     if (this.noLazy)
-      this.$$('#lazy').get();
+      this.shadowRoot.querySelector('#lazy').get();
   }
 });

@@ -19,6 +19,8 @@
 #include "components/arc/session/connection_holder.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_app_instance.h"
+#include "components/sync/protocol/arc_package_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 
 namespace arc {
 

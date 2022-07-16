@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "url/origin.h"
 
@@ -24,6 +23,11 @@ class CONTENT_EXPORT NavigationControllerAndroid {
  public:
   explicit NavigationControllerAndroid(
       NavigationControllerImpl* navigation_controller);
+
+  NavigationControllerAndroid(const NavigationControllerAndroid&) = delete;
+  NavigationControllerAndroid& operator=(const NavigationControllerAndroid&) =
+      delete;
+
   ~NavigationControllerAndroid();
 
   NavigationControllerImpl* navigation_controller() const {
@@ -147,12 +151,8 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       jint index);
 
  private:
-  url::Origin OriginFromPackageName(const std::string& package);
-
   NavigationControllerImpl* navigation_controller_;
   base::android::ScopedJavaGlobalRef<jobject> obj_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationControllerAndroid);
 };
 
 }  // namespace content

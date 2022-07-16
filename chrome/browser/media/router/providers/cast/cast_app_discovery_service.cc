@@ -21,8 +21,7 @@ constexpr char kLoggerComponent[] = "CastAppDiscoveryService";
 
 // The minimum time that must elapse before an app availability result can be
 // force refreshed.
-static constexpr base::TimeDelta kRefreshThreshold =
-    base::TimeDelta::FromMinutes(1);
+static constexpr base::TimeDelta kRefreshThreshold = base::Minutes(1);
 
 }  // namespace
 

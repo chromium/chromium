@@ -115,6 +115,10 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   };
 
   AnimatingLayoutManager();
+
+  AnimatingLayoutManager(const AnimatingLayoutManager&) = delete;
+  AnimatingLayoutManager& operator=(const AnimatingLayoutManager&) = delete;
+
   ~AnimatingLayoutManager() override;
 
   BoundsAnimationMode bounds_animation_mode() const {
@@ -224,9 +228,8 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   class AnimationDelegate;
   friend class AnimationDelegate;
 
-  // Cleans up after an animation, runs delayed actions, and sends
-  // notifications.
-  void OnAnimationEnded();
+  // Cleans up after an animation and readies actions to be posted.
+  void EndAnimation();
 
   // Equivalent to calling ResetLayoutToSize(GetAvailableTargetLayoutSize()).
   // Convenience method.
@@ -293,7 +296,7 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
 
   // How long each animation takes. Depending on how far along an animation is,
   // a new target layout will either cause the animation to restart or redirect.
-  base::TimeDelta animation_duration_ = base::TimeDelta::FromMilliseconds(250);
+  base::TimeDelta animation_duration_ = base::Milliseconds(250);
 
   // The motion curve of the animation to perform.
   gfx::Tween::Type tween_type_ = gfx::Tween::EASE_IN_OUT;
@@ -353,13 +356,15 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   std::vector<base::OnceClosure> queued_actions_;
   std::vector<base::OnceClosure> queued_actions_to_run_;
 
+  // Signal that we want to post queued actions at the end of the next layout
+  // cycle.
+  bool hold_queued_actions_for_layout_ = false;
+
   // True when there's a pending PostTask() to RunQueuedActions(). Used to avoid
   // scheduling redundant tasks.
   bool run_queued_actions_is_pending_ = false;
 
   base::WeakPtrFactory<AnimatingLayoutManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AnimatingLayoutManager);
 };
 
 }  // namespace views

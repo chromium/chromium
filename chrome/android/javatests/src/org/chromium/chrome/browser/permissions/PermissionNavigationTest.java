@@ -14,12 +14,14 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Test suite for interaction between permissions requests and navigation.
@@ -53,6 +55,7 @@ public class PermissionNavigationTest {
     @Test
     @MediumTest
     @Feature({"Permissions"})
+    @FlakyTest(message = "https://crbug.com/1236419")
     public void testNavigationDismissesModalPermissionPrompt() throws Exception {
         mPermissionRule.setUpUrl(TEST_FILE);
         mPermissionRule.runJavaScriptCodeInCurrentTab("requestGeolocationPermission()");
@@ -68,9 +71,9 @@ public class PermissionNavigationTest {
                 callbackHelper.notifyCalled();
             }
         };
-        tab.addObserver(navigationWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(navigationWaiter));
         callbackHelper.waitForCallback(0);
-        tab.removeObserver(navigationWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(navigationWaiter));
 
         mPermissionRule.waitForDialogShownState(false);
     }

@@ -14,6 +14,9 @@
 // A tab helper that handles Universal 2nd Factory (U2F) requests.
 class U2FTabHelper : public web::WebStateUserData<U2FTabHelper> {
  public:
+  U2FTabHelper(const U2FTabHelper&) = delete;
+  U2FTabHelper& operator=(const U2FTabHelper&) = delete;
+
   ~U2FTabHelper() override;
 
   // Checks if the given |url| is U2F call URL.
@@ -46,8 +49,6 @@ class U2FTabHelper : public web::WebStateUserData<U2FTabHelper> {
   U2FController* second_factor_controller_ = nil;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(U2FTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_U2F_U2F_TAB_HELPER_H_

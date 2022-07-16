@@ -9,7 +9,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_icon_observer.h"
 #include "chrome/browser/ui/views/status_icons/status_icon_win.h"
@@ -23,6 +22,11 @@ class FakeStatusTrayStateChangerProxy : public StatusTrayStateChangerProxy {
  public:
   FakeStatusTrayStateChangerProxy()
       : enqueue_called_(false), icon_id_(0), window_(NULL) {}
+
+  FakeStatusTrayStateChangerProxy(const FakeStatusTrayStateChangerProxy&) =
+      delete;
+  FakeStatusTrayStateChangerProxy& operator=(
+      const FakeStatusTrayStateChangerProxy&) = delete;
 
   void EnqueueChange(UINT icon_id, HWND window) override {
     enqueue_called_ = true;
@@ -38,8 +42,6 @@ class FakeStatusTrayStateChangerProxy : public StatusTrayStateChangerProxy {
   bool enqueue_called_;
   UINT icon_id_;
   HWND window_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeStatusTrayStateChangerProxy);
 };
 
 class FakeStatusIconObserver : public StatusIconObserver {

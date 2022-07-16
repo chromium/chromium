@@ -28,6 +28,9 @@ class CursorView : public fast_ink::FastInkView,
                    public viz::DelayBasedTimeSourceClient,
                    public ui::CursorController::CursorObserver {
  public:
+  CursorView(const CursorView&) = delete;
+  CursorView& operator=(const CursorView&) = delete;
+
   ~CursorView() override;
 
   static views::UniqueWidgetPtr Create(const gfx::Point& initial_location,
@@ -96,8 +99,6 @@ class CursorView : public fast_ink::FastInkView,
   ui::Compositor* compositor_ = nullptr;
   SEQUENCE_CHECKER(ui_sequence_checker_);
   base::WeakPtrFactory<CursorView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CursorView);
 };
 
 }  // namespace cursor

@@ -89,6 +89,8 @@ MountOptions::MountOptions(const std::string& file_system_id,
 
 MountOptions::MountOptions(const MountOptions& source) = default;
 
+MountOptions& MountOptions::operator=(const MountOptions& source) = default;
+
 ProvidedFileSystemInfo::ProvidedFileSystemInfo()
     : writable_(false),
       supports_notify_tag_(false),

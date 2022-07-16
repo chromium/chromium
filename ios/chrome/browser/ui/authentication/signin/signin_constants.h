@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "url/gurl.h"
-
 @class ChromeIdentity;
 
 // Sign-in result returned Sign-in result.
@@ -56,17 +54,17 @@ extern NSString* const kWebSigninAccessibilityIdentifier;
 // Name of accessiblity identifier for "Continue As..." button that signs in
 // the primary account user for the web sign-in consistency sheet.
 extern NSString* const kWebSigninContinueAsButtonAccessibilityIdentifier;
+// Name of accessibility identifier for "Skip" button in the web sign-in
+// consistency sheet.
+extern NSString* const kWebSigninSkipButtonAccessibilityIdentifier;
 
-// Action that is required to do to complete the sign-in. This action is in
-// charge of the SigninCoordinator's owner.
+// Action that is required to do to complete the sign-in, or instead of sign-in.
+// This action is in charge of the SigninCoordinator's owner.
 typedef NS_ENUM(NSUInteger, SigninCompletionAction) {
   // No action needed.
   SigninCompletionActionNone,
-  // The advanced settings sign-in view is needed to finish the sign-in.
-  // This case is only used for the first run sign-in.
-  SigninCompletionActionShowAdvancedSettingsSignin,
-  // The completion URL needs to be opened.
-  SigninCompletionActionOpenCompletionURL,
+  // The user tapped the manager, learn more, link and sign-in was cancelled.
+  SigninCompletionActionShowManagedLearnMore,
 };
 
 // Intent for TrustedVaultReauthenticationCoordinator to display either
@@ -78,5 +76,9 @@ typedef NS_ENUM(NSUInteger, SigninTrustedVaultDialogIntent) {
   // recovery factors).
   SigninTrustedVaultDialogIntentDegradedRecoverability,
 };
+
+// Max dismissal count for web sign-in consistency dialog (the dismissal value
+// is reset as soon as the user shows sign-in intent).
+extern const int kDefaultWebSignInDismissalCount;
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_SIGNIN_CONSTANTS_H_

@@ -4,7 +4,8 @@
 
 #include "remoting/host/desktop_resizer_x11.h"
 
-#include <string.h>
+#include <memory>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
@@ -298,6 +299,11 @@ void DesktopResizerX11::SwitchToMode(const char* name) {
       .rotation = x11::RandR::Rotation::Rotate_0,
       .outputs = outputs,
   });
+}
+
+// static
+std::unique_ptr<DesktopResizer> DesktopResizer::Create() {
+  return std::make_unique<DesktopResizerX11>();
 }
 
 }  // namespace remoting

@@ -264,7 +264,7 @@ void MessageTransferOperation::StartTimerForDevice(
   remote_device_to_timer_map_.emplace(remote_device,
                                       timer_factory_->CreateOneShotTimer());
   remote_device_to_timer_map_[remote_device]->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(timeout_seconds),
+      FROM_HERE, base::Seconds(timeout_seconds),
       base::BindOnce(&MessageTransferOperation::OnTimeout,
                      weak_ptr_factory_.GetWeakPtr(), remote_device));
 }

@@ -144,12 +144,15 @@
 //   class MyData : public base::trace_event::ConvertableToTraceFormat {
 //    public:
 //     MyData() {}
+//
+//     MyData(const MyData&) = delete;
+//     MyData& operator=(const MyData&) = delete;
+//
 //     void AppendAsTraceFormat(std::string* out) const override {
 //       out->append("{\"foo\":1}");
 //     }
 //    private:
 //     ~MyData() override {}
-//     DISALLOW_COPY_AND_ASSIGN(MyData);
 //   };
 //
 //   TRACE_EVENT1("foo", "bar", "data",
@@ -203,6 +206,7 @@
 
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 // Export Perfetto symbols in the same way as //base symbols.
 #define PERFETTO_COMPONENT_EXPORT BASE_EXPORT
@@ -219,12 +223,6 @@
 // to keep instrumentation overhead low. These macros give each temporary
 // variable a unique name based on the line number to prevent name collisions.
 #define INTERNAL_TRACE_EVENT_UID(name_prefix) PERFETTO_UID(name_prefix)
-
-// Special trace event macro to trace task execution with the location where it
-// was posted from.
-// TODO(skyostil): Convert this into a regular typed trace event.
-#define TRACE_TASK_EXECUTION(run_function, task) \
-  INTERNAL_TRACE_TASK_EXECUTION(run_function, task)
 
 // Special trace event macro to trace log messages.
 // TODO(skyostil): Convert this into a regular typed trace event.
@@ -260,6 +258,11 @@ namespace legacy {
 template <>
 perfetto::ThreadTrack BASE_EXPORT
 ConvertThreadId(const ::base::PlatformThreadId& thread);
+
+#if defined(OS_WIN)
+template <>
+perfetto::ThreadTrack BASE_EXPORT ConvertThreadId(const int& thread);
+#endif  // defined(OS_WIN)
 
 }  // namespace legacy
 
@@ -392,12 +395,15 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
                            TRACE_EVENT_FLAG_COPY, arg1_name, arg1_val,     \
                            arg2_name, arg2_val)
 
-// Similar to TRACE_EVENT_BEGINx but with a custom |at| timestamp provided.
+// Similar to TRACE_EVENT_BEGINx but with a custom |timestamp| provided.
 // - |id| is used to match the _BEGIN event with the _END event.
 //   Events are considered to match if their category_group, name and id values
 //   all match. |id| must either be a pointer or an integer value up to 64 bits.
 //   If it's a pointer, the bits will be xored with a hash of the process ID so
 //   that the same pointer on two different processes will not collide.
+// - |timestamp| must be non-null or it crashes. Use DCHECK(timestamp) before
+//   calling this to detect an invalid timestamp even when tracing is not
+//   enabled, as the commit queue doesn't run all tests with tracing enabled.
 #define TRACE_EVENT_BEGIN_WITH_ID_TID_AND_TIMESTAMP0(category_group, name, id, \
                                                      thread_id, timestamp)     \
   INTERNAL_TRACE_EVENT_ADD_WITH_ID_TID_AND_TIMESTAMP(                          \
@@ -448,6 +454,10 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
                            TRACE_EVENT_FLAG_COPY, arg1_name, arg1_val,   \
                            arg2_name, arg2_val)
 
+// Adds a trace event with the given |name| and |timestamp|. |timestamp| must be
+// non-null or it crashes. Use DCHECK(timestamp) before calling this to detect
+// an invalid timestamp even when tracing is not enabled, as the commit queue
+// doesn't run all tests with tracing enabled.
 #define TRACE_EVENT_MARK_WITH_TIMESTAMP0(category_group, name, timestamp) \
   INTERNAL_TRACE_EVENT_ADD_WITH_TIMESTAMP(                                \
       TRACE_EVENT_PHASE_MARK, category_group, name, timestamp,            \
@@ -478,12 +488,15 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
       TRACE_EVENT_PHASE_MARK, category_group, name, timestamp,                \
       TRACE_EVENT_FLAG_COPY)
 
-// Similar to TRACE_EVENT_ENDx but with a custom |at| timestamp provided.
+// Similar to TRACE_EVENT_ENDx but with a custom |timestamp| provided.
 // - |id| is used to match the _BEGIN event with the _END event.
 //   Events are considered to match if their category_group, name and id values
 //   all match. |id| must either be a pointer or an integer value up to 64 bits.
 //   If it's a pointer, the bits will be xored with a hash of the process ID so
 //   that the same pointer on two different processes will not collide.
+// - |timestamp| must be non-null or it crashes. Use DCHECK(timestamp) before
+//   calling this to detect an invalid timestamp even when tracing is not
+//   enabled, as the commit queue doesn't run all tests with tracing enabled.
 #define TRACE_EVENT_END_WITH_ID_TID_AND_TIMESTAMP0(category_group, name, id, \
                                                    thread_id, timestamp)     \
   INTERNAL_TRACE_EVENT_ADD_WITH_ID_TID_AND_TIMESTAMP(                        \
@@ -542,6 +555,9 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
                            static_cast<int>(value2_val))
 
 // Similar to TRACE_COUNTERx, but with a custom |timestamp| provided.
+// - |timestamp| must be non-null or it crashes. Use DCHECK(timestamp) before
+//   calling this to detect an invalid timestamp even when tracing is not
+//   enabled, as the commit queue doesn't run all tests with tracing enabled.
 #define TRACE_COUNTER_WITH_TIMESTAMP1(category_group, name, timestamp, value) \
   INTERNAL_TRACE_EVENT_ADD_WITH_TIMESTAMP(                                    \
       TRACE_EVENT_PHASE_COUNTER, category_group, name, timestamp,             \
@@ -963,11 +979,6 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
                                    category_group, name, id,             \
                                    TRACE_EVENT_FLAG_COPY, arg1_name, arg1_val)
 
-// Special trace event macro to trace task execution with the location where it
-// was posted from.
-#define TRACE_TASK_EXECUTION(run_function, task) \
-  INTERNAL_TRACE_TASK_EXECUTION(run_function, task)
-
 // Special trace event macro to trace log messages.
 #define TRACE_LOG_MESSAGE(file, message, line) \
   INTERNAL_TRACE_LOG_MESSAGE(file, message, line)
@@ -1106,9 +1117,6 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
 #define TRACE_EVENT_FLAG_HAS_PROCESS_ID (static_cast<unsigned int>(1 << 10))
 #define TRACE_EVENT_FLAG_HAS_LOCAL_ID (static_cast<unsigned int>(1 << 11))
 #define TRACE_EVENT_FLAG_HAS_GLOBAL_ID (static_cast<unsigned int>(1 << 12))
-// TODO(eseckler): Remove once we have native support for typed proto events in
-// TRACE_EVENT macros.
-#define TRACE_EVENT_FLAG_TYPED_PROTO_ARGS (static_cast<unsigned int>(1 << 15))
 #define TRACE_EVENT_FLAG_JAVA_STRING_LITERALS \
   (static_cast<unsigned int>(1 << 16))
 

@@ -6,7 +6,6 @@
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_WINDOW_EVENT_FILTER_LINUX_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/base/hit_test.h"
 #include "ui/views/views_export.h"
 
@@ -26,6 +25,10 @@ class VIEWS_EXPORT WindowEventFilterLinux {
  public:
   WindowEventFilterLinux(DesktopWindowTreeHostLinux* desktop_window_tree_host,
                          ui::WmMoveResizeHandler* handler);
+
+  WindowEventFilterLinux(const WindowEventFilterLinux&) = delete;
+  WindowEventFilterLinux& operator=(const WindowEventFilterLinux&) = delete;
+
   ~WindowEventFilterLinux();
 
   void HandleLocatedEventWithHitTest(int hit_test, ui::LocatedEvent* event);
@@ -64,8 +67,6 @@ class VIEWS_EXPORT WindowEventFilterLinux {
   // initial click. Acting on a double click should only occur for matching
   // components.
   int click_component_ = HTNOWHERE;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowEventFilterLinux);
 };
 
 }  // namespace views

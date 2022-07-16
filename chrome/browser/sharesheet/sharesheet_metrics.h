@@ -7,6 +7,17 @@
 
 namespace sharesheet {
 
+extern const char kSharesheetUserActionResultHistogram[];
+extern const char kSharesheetAppCountAllResultHistogram[];
+extern const char kSharesheetAppCountArcResultHistogram[];
+extern const char kSharesheetAppCountWebResultHistogram[];
+extern const char kSharesheetShareActionResultHistogram[];
+extern const char kSharesheetFormFactorResultHistogram[];
+extern const char kSharesheetLaunchSourceResultHistogram[];
+extern const char kSharesheetFileCountResultHistogram[];
+extern const char kSharesheetIsDriveFolderResultHistogram[];
+extern const char kSharesheetIsImagePressedResultHistogram[];
+
 class SharesheetMetrics {
  public:
   // The action taken by a user after the sharesheet is invoked.
@@ -20,7 +31,8 @@ class SharesheetMetrics {
                                 // keyboard.
     kWeb,                       // Opened a web app.
     kDriveAction,               // User selected the drive share action.
-    kMaxValue = kDriveAction,
+    kCopyAction,                // User selected the copy share action.
+    kMaxValue = kCopyAction,
   };
 
   // Device form factor when sharesheet is invoked.

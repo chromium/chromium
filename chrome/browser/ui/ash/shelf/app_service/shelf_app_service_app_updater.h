@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/ash/shelf/shelf_app_updater.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
@@ -22,6 +21,11 @@ class ShelfAppServiceAppUpdater : public ShelfAppUpdater,
  public:
   ShelfAppServiceAppUpdater(Delegate* delegate,
                             content::BrowserContext* browser_context);
+
+  ShelfAppServiceAppUpdater(const ShelfAppServiceAppUpdater&) = delete;
+  ShelfAppServiceAppUpdater& operator=(const ShelfAppServiceAppUpdater&) =
+      delete;
+
   ~ShelfAppServiceAppUpdater() override;
 
   // apps::AppRegistryCache::Observer overrides:
@@ -32,8 +36,6 @@ class ShelfAppServiceAppUpdater : public ShelfAppUpdater,
  private:
   void OnShowInShelfChanged(const std::string& app_id, bool show_in_shelf);
   std::set<std::string> installed_apps_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfAppServiceAppUpdater);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_APP_SERVICE_SHELF_APP_SERVICE_APP_UPDATER_H_

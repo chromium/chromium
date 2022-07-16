@@ -12,6 +12,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -37,8 +39,7 @@ class LayoutPanel : public View {
   void OnThemeChanged() override {
     View::OnThemeChanged();
     SetBorder(CreateSolidBorder(
-        1, GetNativeTheme()->GetSystemColor(
-               ui::NativeTheme::kColorId_UnfocusedBorderColor)));
+        1, GetColorProvider()->GetColor(ui::kColorFocusableBorderUnfocused)));
   }
 };
 
@@ -64,6 +65,14 @@ std::unique_ptr<Textfield> CreateCommonTextfield(
   textfield->SetText(u"0");
   textfield->set_controller(container);
   return textfield;
+}
+
+std::unique_ptr<Textfield> CreateCommonTextfieldWithAXName(
+    TextfieldController* container,
+    std::u16string name) {
+  auto text_field = CreateCommonTextfield(container);
+  text_field->SetAccessibleName(name);
+  return text_field;
 }
 
 }  // namespace
@@ -134,9 +143,9 @@ int LayoutExampleBase::ChildPanel::GetFlex() const {
 void LayoutExampleBase::ChildPanel::OnThemeChanged() {
   View::OnThemeChanged();
   SetBorder(CreateSolidBorder(
-      1, GetNativeTheme()->GetSystemColor(
-             selected_ ? ui::NativeTheme::kColorId_FocusedBorderColor
-                       : ui::NativeTheme::kColorId_UnfocusedBorderColor)));
+      1, GetColorProvider()->GetColor(
+             selected_ ? ui::kColorFocusableBorderFocused
+                       : ui::kColorFocusableBorderUnfocused)));
 }
 
 void LayoutExampleBase::ChildPanel::ContentsChanged(
@@ -200,6 +209,7 @@ Combobox* LayoutExampleBase::CreateAndAddCombobox(
   auto* const combobox = row->AddChildView(std::make_unique<Combobox>(
       std::make_unique<ExampleComboboxModel>(items, count)));
   combobox->SetCallback(std::move(combobox_callback));
+  combobox->SetAccessibleName(label_text);
   return combobox;
 }
 
@@ -209,18 +219,19 @@ Textfield* LayoutExampleBase::CreateAndAddTextfield(
   row->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kLayoutExampleVerticalSpacing));
-  row->AddChildView(std::make_unique<Label>(label_text));
-  return row->AddChildView(CreateCommonTextfield(this));
+  auto* label = row->AddChildView(std::make_unique<Label>(label_text));
+  auto* text_field = row->AddChildView(CreateCommonTextfield(this));
+  text_field->SetAssociatedLabel(label);
+  return text_field;
 }
 
-void LayoutExampleBase::CreateMarginsTextFields(
-    const std::u16string& label_text,
-    InsetTextfields* textfields) {
+void LayoutExampleBase::CreateMarginsTextFields(const std::u16string& label,
+                                                InsetTextfields* textfields) {
   auto* const row = control_panel_->AddChildView(std::make_unique<View>());
   row->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kLayoutExampleVerticalSpacing));
-  row->AddChildView(std::make_unique<Label>(label_text));
+  row->AddChildView(std::make_unique<Label>(label));
 
   auto* const container = row->AddChildView(std::make_unique<View>());
   container
@@ -228,14 +239,22 @@ void LayoutExampleBase::CreateMarginsTextFields(
           BoxLayout::Orientation::kVertical, gfx::Insets(),
           kLayoutExampleVerticalSpacing))
       ->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
-  textfields->top = container->AddChildView(CreateCommonTextfield(this));
+  textfields->top = container->AddChildView(CreateCommonTextfieldWithAXName(
+      this,
+      label + u" " + l10n_util::GetStringUTF16(IDS_LAYOUT_BASE_TOP_LABEL)));
   auto* const middle_row = container->AddChildView(std::make_unique<View>());
   middle_row->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kLayoutExampleVerticalSpacing));
-  textfields->left = middle_row->AddChildView(CreateCommonTextfield(this));
-  textfields->right = middle_row->AddChildView(CreateCommonTextfield(this));
-  textfields->bottom = container->AddChildView(CreateCommonTextfield(this));
+  textfields->left = middle_row->AddChildView(CreateCommonTextfieldWithAXName(
+      this,
+      label + u" " + l10n_util::GetStringUTF16(IDS_LAYOUT_BASE_LEFT_LABEL)));
+  textfields->right = middle_row->AddChildView(CreateCommonTextfieldWithAXName(
+      this,
+      label + u" " + l10n_util::GetStringUTF16(IDS_LAYOUT_BASE_RIGHT_LABEL)));
+  textfields->bottom = container->AddChildView(CreateCommonTextfieldWithAXName(
+      this,
+      label + u" " + l10n_util::GetStringUTF16(IDS_LAYOUT_BASE_BOTTOM_LABEL)));
 }
 
 Checkbox* LayoutExampleBase::CreateAndAddCheckbox(
@@ -271,11 +290,13 @@ void LayoutExampleBase::CreateExampleView(View* container) {
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_LAYOUT_BASE_ADD_LABEL)));
 
-  preferred_width_view_ = row->AddChildView(CreateCommonTextfield(this));
+  preferred_width_view_ = row->AddChildView(CreateCommonTextfieldWithAXName(
+      this, l10n_util::GetStringUTF16(IDS_LAYOUT_BASE_PREFERRED_WIDTH_LABEL)));
   preferred_width_view_->SetText(
       base::NumberToString16(kLayoutExampleDefaultChildSize.width()));
 
-  preferred_height_view_ = row->AddChildView(CreateCommonTextfield(this));
+  preferred_height_view_ = row->AddChildView(CreateCommonTextfieldWithAXName(
+      this, l10n_util::GetStringUTF16(IDS_LAYOUT_BASE_PREFERRED_HEIGHT_LABEL)));
   preferred_height_view_->SetText(
       base::NumberToString16(kLayoutExampleDefaultChildSize.height()));
 

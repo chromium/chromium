@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "apps/ui/views/app_window_frame_view.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura.h"
@@ -27,6 +26,10 @@ class ShapedAppWindowTargeterTest : public views::ViewsTestBase {
   ShapedAppWindowTargeterTest()
       : web_view_(NULL) {
   }
+
+  ShapedAppWindowTargeterTest(const ShapedAppWindowTargeterTest&) = delete;
+  ShapedAppWindowTargeterTest& operator=(const ShapedAppWindowTargeterTest&) =
+      delete;
 
   ~ShapedAppWindowTargeterTest() override {}
 
@@ -69,8 +72,6 @@ class ShapedAppWindowTargeterTest : public views::ViewsTestBase {
   views::WebView web_view_;
   std::unique_ptr<views::Widget> widget_;
   ChromeNativeAppWindowViewsAura app_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShapedAppWindowTargeterTest);
 };
 
 TEST_F(ShapedAppWindowTargeterTest, HitTestBasic) {

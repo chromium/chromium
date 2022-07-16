@@ -80,9 +80,9 @@ void HistoryCounter::Count() {
 
   web_counting_finished_ = false;
 
-  web_history_timeout_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kWebHistoryTimeoutSeconds), this,
-      &HistoryCounter::OnWebHistoryTimeout);
+  web_history_timeout_.Start(FROM_HERE,
+                             base::Seconds(kWebHistoryTimeoutSeconds), this,
+                             &HistoryCounter::OnWebHistoryTimeout);
 
   history::QueryOptions options;
   options.max_count = 1;

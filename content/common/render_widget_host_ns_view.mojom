@@ -10,7 +10,7 @@ import "third_party/blink/public/mojom/webshare/share_error.mojom";
 import "ui/base/mojom/attributed_string.mojom";
 import "ui/base/cursor/mojom/cursor.mojom";
 import "ui/base/ime/mojom/ime_types.mojom";
-import "ui/display/mojom/display_list.mojom";
+import "ui/display/mojom/screen_infos.mojom";
 import "ui/events/mojom/event.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/ca_layer_params.mojom";
@@ -140,7 +140,7 @@ interface RenderWidgetHostNSViewHost {
       gfx.mojom.Rect window_frame_in_screen_dip);
 
   // Indicate changes to the NSScreen hosting the NSView, or other NSScreens.
-  OnDisplaysChanged(display.mojom.DisplayList display_list);
+  OnScreenInfosChanged(display.mojom.ScreenInfos screen_infos);
 
   // Indicate the begin and end block of a keyboard event. The beginning of this
   // block will record the active RenderWidgetHost, and will forward all

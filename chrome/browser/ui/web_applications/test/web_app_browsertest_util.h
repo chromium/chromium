@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
 
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "url/gurl.h"
 
 class Browser;
@@ -18,6 +18,10 @@ struct ExternalInstallOptions;
 enum class InstallResultCode;
 
 // For InstallWebAppFromInfo see web_app_install_test_utils.h
+
+// Reads an icon file (.ico/.png/.icns) and returns the color at the
+// top left color.
+SkColor GetIconTopLeftColor(const base::FilePath& shortcut_path);
 
 // Navigates to |app_url| and installs app without any installability checks.
 // Always selects to open app in its own window.
@@ -80,13 +84,6 @@ using UninstallWebAppCallback = base::OnceCallback<void(bool uninstalled)>;
 void UninstallWebAppWithCallback(Profile* profile,
                                  const AppId& app_id,
                                  UninstallWebAppCallback callback);
-
-// Synchronous read of an app icon pixel.
-SkColor ReadAppIconPixel(Profile* profile,
-                         const AppId& app_id,
-                         SquareSizePx size,
-                         int x,
-                         int y);
 
 }  // namespace web_app
 

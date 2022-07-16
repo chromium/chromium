@@ -93,6 +93,9 @@ class HookManager {
     return hook_manager;
   }
 
+  HookManager(const HookManager&) = delete;
+  HookManager& operator=(const HookManager&) = delete;
+
   void RegisterHook() {
     AutoLock auto_lock(lock_);
     ++init_count_;
@@ -316,8 +319,6 @@ class HookManager {
   StructuredHotpatch structured_hotpatch_;
   static decltype(
       ::CoCreateInstance)* original_co_create_instance_body_function_;
-
-  DISALLOW_COPY_AND_ASSIGN(HookManager);
 };
 
 decltype(::CoCreateInstance)*

@@ -92,6 +92,9 @@ class DnsClientImpl : public DnsClient {
         socket_factory_(socket_factory),
         rand_int_callback_(rand_int_callback) {}
 
+  DnsClientImpl(const DnsClientImpl&) = delete;
+  DnsClientImpl& operator=(const DnsClientImpl&) = delete;
+
   ~DnsClientImpl() override = default;
 
   bool CanUseSecureDnsTransactions() const override {
@@ -281,8 +284,6 @@ class DnsClientImpl : public DnsClient {
 
   ClientSocketFactory* socket_factory_;
   const RandIntCallback rand_int_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsClientImpl);
 };
 
 }  // namespace

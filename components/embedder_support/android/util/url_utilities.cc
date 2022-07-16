@@ -130,7 +130,8 @@ static jboolean JNI_UrlUtilities_IsUrlWithinScope(
     const JavaParamRef<jstring>& scope_url) {
   GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
   GURL gscope_url = JNI_UrlUtilities_ConvertJavaStringToGURL(env, scope_url);
-  return gurl.GetOrigin() == gscope_url.GetOrigin() &&
+  return gurl.DeprecatedGetOriginAsURL() ==
+             gscope_url.DeprecatedGetOriginAsURL() &&
          base::StartsWith(gurl.path(), gscope_url.path(),
                           base::CompareCase::SENSITIVE);
 }

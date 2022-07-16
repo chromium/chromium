@@ -1,62 +1,41 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared"></style>
 
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="android_apps_browser_proxy.html">
-<link rel="import" href="../../i18n_setup.html">
-<link rel="import" href="../../prefs/prefs_behavior.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../../settings_shared_css.html">
+<template is="dom-if" if="[[androidAppsInfo.settingsAppAvailable]]" restamp>
+  <cr-link-row id="manageApps" label="$i18n{androidAppsManageApps}"
+      on-click="onManageAndroidAppsTap_" external
+      deep-link-focus-id$="[[Setting.kManageAndroidPreferences]]">
+  </cr-link-row>
+</template>
 
-<dom-module id="settings-android-apps-subpage">
-  <template>
-    <style include="settings-shared"></style>
+<!-- Use 'restamp' so tests can check if the row exists. -->
+<template is="dom-if" if="[[allowRemove_(prefs.arc.enabled.*)]]" restamp>
+  <div id="remove" class="settings-box">
+    <div id="androidRemoveLabel" class="start">
+      $i18n{androidAppsRemove}
+    </div>
+    <cr-button on-click="onRemoveTap_"
+        aria-labelledby="androidRemoveLabel"
+        deep-link-focus-id$="[[Setting.kRemovePlayStore]]">
+      $i18n{androidAppsRemoveButton}
+    </cr-button>
+  </div>
+</template>
 
-    <template is="dom-if" if="[[androidAppsInfo.settingsAppAvailable]]" restamp>
-      <cr-link-row id="manageApps" label="$i18n{androidAppsManageApps}"
-          on-click="onManageAndroidAppsTap_" external
-          deep-link-focus-id$="[[Setting.kManageAndroidPreferences]]">
-      </cr-link-row>
-    </template>
+<!-- Confirm disable android apps dialog -->
+<cr-dialog id="confirmDisableDialog" close-text="$i18n{close}"
+    on-cancel="onConfirmDisableDialogCancel_"
+    on-close="onConfirmDisableDialogClose_">
+  <div slot="title">$i18n{androidAppsDisableDialogTitle}</div>
+  <div slot="body" inner-h-t-m-l="[[dialogBody_]]"></div>
+  <div slot="button-container">
+    <cr-button class="cancel-button"
+        on-click="onConfirmDisableDialogCancel_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button"
+        on-click="onConfirmDisableDialogConfirm_">
+      $i18n{androidAppsDisableDialogRemove}
+    </cr-button>
+  </div>
+</cr-dialog>
 
-    <!-- Use 'restamp' so tests can check if the row exists. -->
-    <template is="dom-if" if="[[allowRemove_(prefs.arc.enabled.*)]]" restamp>
-      <div id="remove" class="settings-box">
-        <div id="androidRemoveLabel" class="start">
-            $i18n{androidAppsRemove}
-        </div>
-        <cr-button on-click="onRemoveTap_"
-          aria-labelledby="androidRemoveLabel"
-          deep-link-focus-id$="[[Setting.kRemovePlayStore]]">
-           $i18n{androidAppsRemoveButton}
-        </cr-button>
-      </div>
-    </template>
-
-    <!-- Confirm disable android apps dialog -->
-    <cr-dialog id="confirmDisableDialog" close-text="$i18n{close}"
-        on-cancel="onConfirmDisableDialogCancel_"
-        on-close="onConfirmDisableDialogClose_">
-      <div slot="title">$i18n{androidAppsDisableDialogTitle}</div>
-      <div slot="body" inner-h-t-m-l="[[dialogBody_]]"></div>
-      <div slot="button-container">
-        <cr-button class="cancel-button"
-            on-click="onConfirmDisableDialogCancel_">
-          $i18n{cancel}
-        </cr-button>
-        <cr-button class="action-button"
-            on-click="onConfirmDisableDialogConfirm_">
-          $i18n{androidAppsDisableDialogRemove}
-        </cr-button>
-      </div>
-    </cr-dialog>
-
-  </template>
-  <script src="android_apps_subpage.js"></script>
-</dom-module>

@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
 #include "chrome/browser/sync_file_system/file_change.h"
@@ -46,6 +45,10 @@ class LocalToRemoteSyncer : public SyncTask {
                       const FileChange& local_change,
                       const base::FilePath& local_path,
                       const storage::FileSystemURL& url);
+
+  LocalToRemoteSyncer(const LocalToRemoteSyncer&) = delete;
+  LocalToRemoteSyncer& operator=(const LocalToRemoteSyncer&) = delete;
+
   ~LocalToRemoteSyncer() override;
   void RunPreflight(std::unique_ptr<SyncTaskToken> token) override;
 
@@ -126,8 +129,6 @@ class LocalToRemoteSyncer : public SyncTask {
   std::unique_ptr<FolderCreator> folder_creator_;
 
   base::WeakPtrFactory<LocalToRemoteSyncer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LocalToRemoteSyncer);
 };
 
 }  // namespace drive_backend

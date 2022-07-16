@@ -26,6 +26,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncEventWatcher {
  public:
   SyncEventWatcher(base::WaitableEvent* event, base::RepeatingClosure callback);
 
+  SyncEventWatcher(const SyncEventWatcher&) = delete;
+  SyncEventWatcher& operator=(const SyncEventWatcher&) = delete;
+
   ~SyncEventWatcher();
 
   // Registers |event_| with SyncHandleRegistry, so that when others perform
@@ -65,8 +68,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncEventWatcher {
   scoped_refptr<base::RefCountedData<bool>> destroyed_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEventWatcher);
 };
 
 }  // namespace mojo

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
@@ -28,8 +29,15 @@ namespace password_manager {
 template <class Context, class Store>
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(Context* context) {
   scoped_refptr<password_manager::PasswordStore> store(new Store);
-  if (!store->Init(nullptr))
+  if (!store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr))
     return nullptr;
+  return store;
+}
+
+template <class Context, class Store>
+scoped_refptr<RefcountedKeyedService> BuildPasswordStoreInterface(
+    Context* context) {
+  scoped_refptr<password_manager::PasswordStoreInterface> store(new Store);
   return store;
 }
 
@@ -43,9 +51,20 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStoreWithArgs(
     Context* context) {
   scoped_refptr<password_manager::PasswordStore> store(
       new Store(std::forward<Args>(args)...));
-  if (!store->Init(nullptr))
+  if (!store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr))
     return nullptr;
   return store;
+}
+
+// Helper function that builds a real password store with a fake backend.
+// Context is the browser context prescribed by TestingFactory.
+template <class Context>
+scoped_refptr<RefcountedKeyedService> BuildPasswordStoreWithFakeBackend(
+    Context* context) {
+  return password_manager::BuildPasswordStoreWithArgs<
+      Context, password_manager::PasswordStore,
+      std::unique_ptr<password_manager::FakePasswordStoreBackend>>(
+      std::make_unique<password_manager::FakePasswordStoreBackend>(), context);
 }
 
 // Struct used for creation of PasswordForms from static arrays of data.
@@ -137,6 +156,10 @@ class PasswordHashDataMatcher
     : public ::testing::MatcherInterface<absl::optional<PasswordHashData>> {
  public:
   explicit PasswordHashDataMatcher(absl::optional<PasswordHashData> expected);
+
+  PasswordHashDataMatcher(const PasswordHashDataMatcher&) = delete;
+  PasswordHashDataMatcher& operator=(const PasswordHashDataMatcher&) = delete;
+
   ~PasswordHashDataMatcher() override = default;
 
   // ::testing::MatcherInterface overrides
@@ -147,8 +170,6 @@ class PasswordHashDataMatcher
 
  private:
   const absl::optional<PasswordHashData> expected_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordHashDataMatcher);
 };
 
 ::testing::Matcher<absl::optional<PasswordHashData>> Matches(

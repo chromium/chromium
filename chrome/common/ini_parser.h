@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 
 // Parses INI files in a string. Users should in inherit from this class.
@@ -46,6 +45,10 @@ class INIParser {
 class DictionaryValueINIParser : public INIParser {
  public:
   DictionaryValueINIParser();
+
+  DictionaryValueINIParser(const DictionaryValueINIParser&) = delete;
+  DictionaryValueINIParser& operator=(const DictionaryValueINIParser&) = delete;
+
   ~DictionaryValueINIParser() override;
 
   const base::DictionaryValue& root() const { return root_; }
@@ -57,8 +60,6 @@ class DictionaryValueINIParser : public INIParser {
                      base::StringPiece value) override;
 
   base::DictionaryValue root_;
-
-  DISALLOW_COPY_AND_ASSIGN(DictionaryValueINIParser);
 };
 
 #endif  // CHROME_COMMON_INI_PARSER_H_

@@ -235,9 +235,9 @@ FAIL CSSMathClamp interface object name assert_own_property: self does not have 
 FAIL CSSMathClamp interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
 FAIL CSSMathClamp interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
 FAIL CSSMathClamp interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
-FAIL CSSMathClamp interface: attribute min assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
-FAIL CSSMathClamp interface: attribute val assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
-FAIL CSSMathClamp interface: attribute max assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+FAIL CSSMathClamp interface: attribute lower assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+FAIL CSSMathClamp interface: attribute value assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+FAIL CSSMathClamp interface: attribute upper assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
 PASS CSSNumericArray interface: existence and properties of interface object
 PASS CSSNumericArray interface object length
 PASS CSSNumericArray interface object name

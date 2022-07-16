@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/media/webrtc/test_stats_dictionary.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -61,6 +60,9 @@ class WebRtcTestBase : public InProcessBrowserTest {
     INDIVIDUAL_STREAMS
   };
 
+  WebRtcTestBase(const WebRtcTestBase&) = delete;
+  WebRtcTestBase& operator=(const WebRtcTestBase&) = delete;
+
  protected:
   WebRtcTestBase();
   ~WebRtcTestBase() override;
@@ -90,6 +92,9 @@ class WebRtcTestBase : public InProcessBrowserTest {
       content::WebContents* tab_contents) const;
   void GetUserMedia(content::WebContents* tab_contents,
                     const std::string& constraints) const;
+  void GetUserMediaReturnsFalseIfWaitIsTooLong(
+      content::WebContents* tab_contents,
+      const std::string& constraints) const;
 
   // Convenience method which opens the page at url, calls GetUserMediaAndAccept
   // and returns the new tab.
@@ -254,8 +259,6 @@ class WebRtcTestBase : public InProcessBrowserTest {
 
   bool detect_errors_in_javascript_;
   scoped_refptr<const extensions::Extension> desktop_capture_extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcTestBase);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_BROWSERTEST_BASE_H_

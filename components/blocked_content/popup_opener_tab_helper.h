@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -36,6 +35,9 @@ class PopupOpenerTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<PopupOpenerTabHelper> {
  public:
+  PopupOpenerTabHelper(const PopupOpenerTabHelper&) = delete;
+  PopupOpenerTabHelper& operator=(const PopupOpenerTabHelper&) = delete;
+
   ~PopupOpenerTabHelper() override;
 
   void OnOpenedPopup(PopupTracker* popup_tracker);
@@ -93,8 +95,6 @@ class PopupOpenerTabHelper
   HostContentSettingsMap* settings_map_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PopupOpenerTabHelper);
 };
 
 }  // namespace blocked_content

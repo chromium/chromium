@@ -14,3 +14,5 @@ binaries running on iOS.
 Local Modifications:
 2021.06.09: https://github.com/facebook/fishhook/pull/84/files:  If hooking in
 __DATA_CONST or __AUTH_CONST, promise writable before trying to write.
+
+2021.08.18: Unlock mutex on early return, and include better error logging.

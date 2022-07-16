@@ -19,6 +19,10 @@ constexpr char kDMToken[] = "dm_token";
 class MockAuthPolicyClient : public chromeos::FakeAuthPolicyClient {
  public:
   MockAuthPolicyClient() { SetStarted(true); }
+
+  MockAuthPolicyClient(const MockAuthPolicyClient&) = delete;
+  MockAuthPolicyClient& operator=(const MockAuthPolicyClient&) = delete;
+
   ~MockAuthPolicyClient() override = default;
 
   void JoinAdDomain(const authpolicy::JoinDomainRequest& request,
@@ -49,8 +53,6 @@ class MockAuthPolicyClient : public chromeos::FakeAuthPolicyClient {
   bool join_ad_domain_called_ = false;
   bool refresh_device_policy_called_ = false;
   std::string dm_token_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAuthPolicyClient);
 };
 
 }  // namespace

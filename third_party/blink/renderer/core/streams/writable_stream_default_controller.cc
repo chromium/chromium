@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
@@ -13,17 +14,20 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
 WritableStreamDefaultController* WritableStreamDefaultController::From(
+    ScriptState* script_state,
     ScriptValue controller) {
-  DCHECK(controller.IsObject());
-  return V8WritableStreamDefaultController::ToImpl(
-      controller.V8Value().As<v8::Object>());
+  CHECK(controller.IsObject());
+  auto* controller_impl =
+      V8WritableStreamDefaultController::ToImplWithTypeCheck(
+          script_state->GetIsolate(), controller.V8Value().As<v8::Object>());
+  CHECK(controller_impl);
+  return controller_impl;
 }
 
 // Only used internally. Not reachable from JavaScript.
@@ -227,7 +231,9 @@ void WritableStreamDefaultController::SetUpFromUnderlyingSink(
   // This method is only called when a WritableStream is being constructed by
   // JavaScript. So the execution context should be valid and this call should
   // not crash.
-  auto controller_value = ToV8(controller, script_state);
+  auto controller_value = ToV8Traits<WritableStreamDefaultController>::ToV8(
+                              script_state, controller)
+                              .ToLocalChecked();
 
   //  3. Let startAlgorithm be the following steps:
   //      a. Return ? InvokeOrNoop(underlyingSink, "start", « controller »).

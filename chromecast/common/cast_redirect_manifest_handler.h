@@ -19,6 +19,10 @@ namespace chromecast {
 class CastRedirectHandler : public extensions::ManifestHandler {
  public:
   CastRedirectHandler();
+
+  CastRedirectHandler(const CastRedirectHandler&) = delete;
+  CastRedirectHandler& operator=(const CastRedirectHandler&) = delete;
+
   ~CastRedirectHandler() override;
 
   bool Parse(extensions::Extension* extension, std::u16string* error) override;
@@ -33,8 +37,6 @@ class CastRedirectHandler : public extensions::ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CastRedirectHandler);
 };
 
 }  // namespace chromecast

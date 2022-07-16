@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/os_crypt/key_storage_linux.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -23,6 +22,10 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageKeyring : public KeyStorageLinux {
   KeyStorageKeyring(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
       std::string application_name);
+
+  KeyStorageKeyring(const KeyStorageKeyring&) = delete;
+  KeyStorageKeyring& operator=(const KeyStorageKeyring&) = delete;
+
   ~KeyStorageKeyring() override;
 
  protected:
@@ -39,8 +42,6 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageKeyring : public KeyStorageLinux {
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner_;
 
   const std::string application_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyStorageKeyring);
 };
 
 #endif  // COMPONENTS_OS_CRYPT_KEY_STORAGE_KEYRING_H_

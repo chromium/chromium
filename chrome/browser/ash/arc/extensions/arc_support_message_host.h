@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
@@ -27,6 +26,9 @@ class ArcSupportMessageHost : public extensions::NativeMessageHost {
    protected:
     virtual ~Observer() = default;
   };
+
+  ArcSupportMessageHost(const ArcSupportMessageHost&) = delete;
+  ArcSupportMessageHost& operator=(const ArcSupportMessageHost&) = delete;
 
   static const char kHostName[];
   static const char* const kHostOrigin[];
@@ -57,8 +59,6 @@ class ArcSupportMessageHost : public extensions::NativeMessageHost {
 
   Observer* observer_ = nullptr;
   Client* client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSupportMessageHost);
 };
 
 }  // namespace arc

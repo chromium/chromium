@@ -16,6 +16,7 @@ enum PermissionState {
     Exposed=(Window,Worker),
     RuntimeEnabled=Permissions
 ] interface PermissionStatus : EventTarget {
+    readonly attribute PermissionName name;
     readonly attribute PermissionState state;
              attribute EventHandler onchange;
 };

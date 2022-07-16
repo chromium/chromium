@@ -143,6 +143,7 @@ void FakeAdapter::SetName(const std::string& name, SetNameCallback callback) {
 }
 
 void FakeAdapter::StartDiscoverySession(
+    const std::string& client_name,
     StartDiscoverySessionCallback callback) {
   DCHECK(!discovery_session_);
 

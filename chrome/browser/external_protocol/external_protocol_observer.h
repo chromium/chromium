@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTERNAL_PROTOCOL_EXTERNAL_PROTOCOL_OBSERVER_H_
 #define CHROME_BROWSER_EXTERNAL_PROTOCOL_EXTERNAL_PROTOCOL_OBSERVER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -15,6 +14,9 @@ class ExternalProtocolObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<ExternalProtocolObserver> {
  public:
+  ExternalProtocolObserver(const ExternalProtocolObserver&) = delete;
+  ExternalProtocolObserver& operator=(const ExternalProtocolObserver&) = delete;
+
   ~ExternalProtocolObserver() override;
 
   // content::WebContentsObserver overrides.
@@ -25,8 +27,6 @@ class ExternalProtocolObserver
   friend class content::WebContentsUserData<ExternalProtocolObserver>;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalProtocolObserver);
 };
 
 #endif  // CHROME_BROWSER_EXTERNAL_PROTOCOL_EXTERNAL_PROTOCOL_OBSERVER_H_

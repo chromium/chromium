@@ -37,11 +37,11 @@ bool ApproximatelyEqual(const float& a, const float& b) {
 }
 
 bool ApproximatelyEqual(const FloatBox& a, const FloatBox& b) {
-  if (!ApproximatelyEqual(a.X(), b.X()) || !ApproximatelyEqual(a.Y(), b.Y()) ||
-      !ApproximatelyEqual(a.Z(), b.Z()) ||
-      !ApproximatelyEqual(a.Width(), b.Width()) ||
-      !ApproximatelyEqual(a.Height(), b.Height()) ||
-      !ApproximatelyEqual(a.Depth(), b.Depth())) {
+  if (!ApproximatelyEqual(a.x(), b.x()) || !ApproximatelyEqual(a.y(), b.y()) ||
+      !ApproximatelyEqual(a.z(), b.z()) ||
+      !ApproximatelyEqual(a.width(), b.width()) ||
+      !ApproximatelyEqual(a.height(), b.height()) ||
+      !ApproximatelyEqual(a.depth(), b.depth())) {
     return false;
   }
   return true;

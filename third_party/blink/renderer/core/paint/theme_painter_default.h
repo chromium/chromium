@@ -106,10 +106,10 @@ class ThemePainterDefault final : public ThemePainter {
                           const IntRect&,
                           WebThemeEngine::ExtraParams&);
 
-  IntRect ApplyZoomToRect(const IntRect&,
-                          const PaintInfo&,
-                          GraphicsContextStateSaver&,
-                          float zoom_level);
+  gfx::Rect ApplyZoomToRect(const IntRect&,
+                            const PaintInfo&,
+                            GraphicsContextStateSaver&,
+                            float zoom_level);
 
   // ThemePaintDefault is a part object of m_theme.
   LayoutThemeDefault& theme_;

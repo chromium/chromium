@@ -268,7 +268,7 @@ KbExplorer = class {
     ChromeVox.tts.speak(
         text,
         KbExplorer.shouldFlushSpeech_ ?
-            window.backgroundWindow.QueueMode.FLUSH :
+            window.backgroundWindow.QueueMode.CATEGORY_FLUSH :
             window.backgroundWindow.QueueMode.QUEUE,
         {endCallback: opt_speakCallback});
     ChromeVox.braille.write(new NavBraille({text: new Spannable(text)}));

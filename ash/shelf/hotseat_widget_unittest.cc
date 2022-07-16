@@ -146,7 +146,7 @@ class HotseatWidgetTest
     GetAppListTestHelper()->WaitUntilIdle();
 
     // Advance clock to make sure long press gesture is triggered.
-    task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(5));
+    task_environment()->AdvanceClock(base::Seconds(5));
     GetAppListTestHelper()->WaitUntilIdle();
 
     GetEventGenerator()->ReleaseTouch();
@@ -225,6 +225,11 @@ class DisplayWorkAreaChangeCounter : public display::DisplayObserver {
   DisplayWorkAreaChangeCounter() {
     Shell::Get()->display_manager()->AddObserver(this);
   }
+
+  DisplayWorkAreaChangeCounter(const DisplayWorkAreaChangeCounter&) = delete;
+  DisplayWorkAreaChangeCounter& operator=(const DisplayWorkAreaChangeCounter&) =
+      delete;
+
   ~DisplayWorkAreaChangeCounter() override {
     Shell::Get()->display_manager()->RemoveObserver(this);
   }
@@ -239,8 +244,6 @@ class DisplayWorkAreaChangeCounter : public display::DisplayObserver {
 
  private:
   int work_area_change_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayWorkAreaChangeCounter);
 };
 
 // Watches the shelf for state changes.
@@ -454,7 +457,7 @@ TEST_P(HotseatWidgetTest, InAppShelfShowingContextMenu) {
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(long_press_delay_ms));
+      base::Milliseconds(long_press_delay_ms));
   run_loop.Run();
   GetEventGenerator()->ReleaseTouch();
 
@@ -545,7 +548,7 @@ TEST_P(HotseatWidgetTest, SwipeUpInAppShelfShowsHotseat) {
       GetPrimaryShelf()->hotseat_widget()->GetWindowBoundsInScreen();
   gfx::Point start = hotseat_bounds.top_center();
   gfx::Point end = start + gfx::Vector2d(0, 80);
-  const base::TimeDelta kTimeDelta = base::TimeDelta::FromMilliseconds(100);
+  const base::TimeDelta kTimeDelta = base::Milliseconds(100);
   const int kNumScrollSteps = 4;
 
   GetEventGenerator()->GestureScrollSequence(start, end, kTimeDelta,
@@ -638,7 +641,7 @@ TEST_P(HotseatWidgetTest, SwipeUpOnHotseatBackgroundDoesNothing) {
                        ->GetWindowBoundsInScreen()
                        .top_center());
   const gfx::Point end(start + gfx::Vector2d(0, -300));
-  const base::TimeDelta kTimeDelta = base::TimeDelta::FromMilliseconds(100);
+  const base::TimeDelta kTimeDelta = base::Milliseconds(100);
   const int kNumScrollSteps = 4;
   GetEventGenerator()->GestureScrollSequence(start, end, kTimeDelta,
                                              kNumScrollSteps);
@@ -742,8 +745,8 @@ TEST_P(HotseatWidgetTest, GestureDraggingActiveWindowHidesHotseat) {
   start.Offset(0, -200);
   gfx::Point end = start;
   end.Offset(0, -200);
-  GetEventGenerator()->GestureScrollSequence(
-      start, end, base::TimeDelta::FromMilliseconds(10), 4);
+  GetEventGenerator()->GestureScrollSequence(start, end, base::Milliseconds(10),
+                                             4);
 
   EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
   if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways)
@@ -889,7 +892,7 @@ TEST_P(HotseatWidgetTest, ReleasingSlowDragBelowThreshold) {
                                ->GetWindowBoundsInScreen()
                                .height();
   const gfx::Point end(start + gfx::Vector2d(0, -hotseat_size / 2 + 1));
-  const base::TimeDelta kTimeDelta = base::TimeDelta::FromMilliseconds(1000);
+  const base::TimeDelta kTimeDelta = base::Milliseconds(1000);
   const int kNumScrollSteps = 4;
   GetEventGenerator()->GestureScrollSequence(start, end, kTimeDelta,
                                              kNumScrollSteps);
@@ -925,7 +928,7 @@ TEST_P(HotseatWidgetTest, ReleasingSlowDragAboveThreshold) {
                                ->GetWindowBoundsInScreen()
                                .height();
   const gfx::Point end(start + gfx::Vector2d(0, -hotseat_size * 3.0f / 2.0f));
-  const base::TimeDelta kTimeDelta = base::TimeDelta::FromMilliseconds(1000);
+  const base::TimeDelta kTimeDelta = base::Milliseconds(1000);
   const int kNumScrollSteps = 4;
   GetEventGenerator()->GestureScrollSequence(start, end, kTimeDelta,
                                              kNumScrollSteps);
@@ -1418,7 +1421,7 @@ TEST_P(HotseatWidgetTest, SwipeDownOnFocusedHotseat) {
   gfx::Point start = hotseat_bounds.top_center();
   gfx::Point end = start + gfx::Vector2d(0, 80);
   GetEventGenerator()->GestureScrollSequence(
-      start, end, base::TimeDelta::FromMilliseconds(100), 4 /*scroll_steps*/);
+      start, end, base::Milliseconds(100), 4 /*scroll_steps*/);
   EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
 
   // Focus to the next element in the hotseat. The hotseat should show again.
@@ -1938,7 +1941,7 @@ TEST_P(HotseatWidgetTest, HotseatHidesWhenSwipedToBezel) {
   const gfx::Point end =
       gfx::Point(shelf_widget_bounds.x() + shelf_widget_bounds.width() / 2,
                  shelf_widget_bounds.bottom() + 1);
-  const base::TimeDelta kTimeDelta = base::TimeDelta::FromMilliseconds(100);
+  const base::TimeDelta kTimeDelta = base::Milliseconds(100);
   const int kNumScrollSteps = 4;
 
   GetEventGenerator()->GestureScrollSequence(start, end, kTimeDelta,
@@ -2305,7 +2308,7 @@ TEST_P(HotseatWidgetTest, InitialAnimationPositionWithNonIdentityTransform) {
 
     // Set up an animation to identity transform.
     ui::ScopedLayerAnimationSettings animation(layer->GetAnimator());
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(300));
+    animation.SetTransitionDuration(base::Milliseconds(300));
     layer->SetTransform(gfx::Transform());
   };
 

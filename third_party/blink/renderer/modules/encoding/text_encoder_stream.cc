@@ -34,6 +34,9 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
       : encoder_(NewTextCodec(WTF::TextEncoding("utf-8"))),
         script_state_(script_state) {}
 
+  Transformer(const Transformer&) = delete;
+  Transformer& operator=(const Transformer&) = delete;
+
   // Implements the "encode and enqueue a chunk" algorithm. For efficiency, only
   // the characters at the end of chunks are special-cased.
   ScriptPromise Transform(v8::Local<v8::Value> chunk,
@@ -160,8 +163,6 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
   // TextEncoderStream can only be accessed from the world that created it.
   Member<ScriptState> script_state_;
   absl::optional<UChar> pending_high_surrogate_;
-
-  DISALLOW_COPY_AND_ASSIGN(Transformer);
 };
 
 TextEncoderStream* TextEncoderStream::Create(ScriptState* script_state,

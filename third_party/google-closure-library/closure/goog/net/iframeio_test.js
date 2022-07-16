@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.net.IframeIoTest');
 goog.setTestOnly('goog.net.IframeIoTest');
@@ -20,7 +12,6 @@ const Event = goog.require('goog.testing.events.Event');
 const EventType = goog.require('goog.events.EventType');
 const IframeIo = goog.require('goog.net.IframeIo');
 const Level = goog.require('goog.log.Level');
-const LogManager = goog.require('goog.debug.LogManager');
 const TEST_ONLY = goog.require('goog.net.IframeIo.TEST_ONLY');
 const TagName = goog.require('goog.dom.TagName');
 const debug = goog.require('goog.debug');
@@ -35,7 +26,7 @@ const userAgent = goog.require('goog.userAgent');
 // Server
 
 // Set up a logger to track responses
-LogManager.getRoot().setLevel(Level.INFO);
+log.setLevel(log.getRootLogger(), Level.INFO);
 let logconsole;
 const testLogger = log.getLogger('test');
 
@@ -63,6 +54,7 @@ function getTestIframeIo() {
  * Checks for error strings returned by the GSE and error variables that
  * the Gmail server and GFE set on certain errors.
  * @param {!Document} doc
+ * @suppress {strictMissingProperties} suppression added to enable type checking
  */
 function checkForError(doc) {
   const win = dom.getWindow(doc);
@@ -94,6 +86,7 @@ function logStatus(i) {
 
 /**
  * @param {!Event} e
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function onSuccess(e) {
   log.warning(testLogger, 'Request Succeeded');
@@ -102,6 +95,8 @@ function onSuccess(e) {
 
 /**
  * @param {!Event} e
+ * @suppress {strictMissingProperties,checkTypes} suppression added to enable
+ * type checking
  */
 function onError(e) {
   log.warning(testLogger, 'Request Errored: ' + e.target.getLastError());
@@ -110,6 +105,7 @@ function onError(e) {
 
 /**
  * @param {!Event} e
+ * @suppress {strictMissingProperties} suppression added to enable type checking
  */
 function onReady(e) {
   log.info(testLogger, 'Test finished and iframe ready, disposing test object');
@@ -132,6 +128,7 @@ function simplePost() {
 
 /**
  * @param {!Event} e
+ * @suppress {strictMissingProperties} suppression added to enable type checking
  */
 function onSimpleTestComplete(e) {
   log.info(testLogger, 'ResponseText: ' + e.target.getResponseText());
@@ -177,14 +174,20 @@ function jsonEcho(method) {
 
 /**
  * @param {!Event} e
+ * @suppress {strictMissingProperties} suppression added to enable type checking
  */
 function onJsonComplete(e) {
   log.info(testLogger, 'ResponseText: ' + e.target.getResponseText());
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
   const json = e.target.getResponseJson();
   log.info(testLogger, 'ResponseJson:\n' + debug.deepExpose(json, true));
 }
 
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 function sendFromForm() {
   const io = getTestIframeIo();
   events.listen(io, 'success', onUploadSuccess);
@@ -194,6 +197,7 @@ function sendFromForm() {
 
 /**
  * @param {!Event} e
+ * @suppress {strictMissingProperties} suppression added to enable type checking
  */
 function onUploadSuccess(e) {
   log.log(testLogger, Level.SHOUT, 'Upload Succeeded');
@@ -202,6 +206,7 @@ function onUploadSuccess(e) {
 
 /**
  * @param {!Event} e
+ * @suppress {strictMissingProperties} suppression added to enable type checking
  */
 function onUploadError(e) {
   log.log(testLogger, Level.SHOUT, 'Upload Errored');
@@ -238,6 +243,7 @@ function localUrl2() {
 
 /**
  * @param {!Event} e
+ * @suppress {strictMissingProperties} suppression added to enable type checking
  */
 function onLocalSuccess(e) {
   log.info(testLogger, 'The file was found:\n' + e.target.getResponseText());
@@ -251,6 +257,7 @@ function getServerTime(noCache) {
 
 /**
  * @param {!Event} e
+ * @suppress {strictMissingProperties} suppression added to enable type checking
  */
 function onTestCacheSuccess(e) {
   log.info(testLogger, 'Date reported: ' + e.target.getResponseText());
@@ -265,6 +272,7 @@ function errorGmail() {
 
 /**
  * @param {!Event} e
+ * @suppress {strictMissingProperties} suppression added to enable type checking
  */
 function onGmailError(e) {
   log.info(testLogger, 'Gmail error: ' + e.target.getLastError());
@@ -279,6 +287,7 @@ function errorGfe() {
 
 /**
  * @param {!Event} e
+ * @suppress {strictMissingProperties} suppression added to enable type checking
  */
 function onGfeError(e) {
   log.info(testLogger, 'GFE error: ' + e.target.getLastError());
@@ -297,6 +306,7 @@ window['P'] = function(iframe, data) {
 };
 
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 function postForm() {
   const io = getTestIframeIo();
   events.listen(io, 'complete', onJsonComplete);
@@ -317,12 +327,15 @@ testSuite({
 
 
   testGetForm() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const frm1 = TEST_ONLY.getForm();
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const frm2 = TEST_ONLY.getForm();
     assertEquals(frm1, frm2);
   },
 
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testAddFormInputs() {
     const form = dom.createElement(TagName.FORM);
     IframeIo.addFormInputs_(form, {'a': 1, 'b': 2, 'c': 3});
@@ -335,6 +348,7 @@ testSuite({
     }
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testAddFormArrayInputs() {
     const form = dom.createElement(TagName.FORM);
     const data = {'a': ['blue', 'green'], 'b': ['red', 'pink', 'white']};

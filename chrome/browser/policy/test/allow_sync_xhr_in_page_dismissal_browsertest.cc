@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestSyncXHR, CheckAllowSyncXHRInPageDismissal) {
   EXPECT_TRUE(prefs->GetBoolean(prefs::kAllowSyncXHRInPageDismissal));
 
   GURL url(embedded_test_server()->GetURL("/empty.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   constexpr char kScript[] =
       R"({
            window.addEventListener('unload', function() {

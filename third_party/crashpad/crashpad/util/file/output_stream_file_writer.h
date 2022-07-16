@@ -17,7 +17,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "util/file/file_writer.h"
 
 namespace crashpad {
@@ -31,6 +30,10 @@ class OutputStreamFileWriter : public FileWriterInterface {
   //! \param[in] output_stream The output stream that this object writes to.
   explicit OutputStreamFileWriter(
       std::unique_ptr<OutputStreamInterface> output_stream);
+
+  OutputStreamFileWriter(const OutputStreamFileWriter&) = delete;
+  OutputStreamFileWriter& operator=(const OutputStreamFileWriter&) = delete;
+
   ~OutputStreamFileWriter() override;
 
   // FileWriterInterface:
@@ -53,8 +56,6 @@ class OutputStreamFileWriter : public FileWriterInterface {
   std::unique_ptr<OutputStreamInterface> output_stream_;
   bool flush_needed_;
   bool flushed_;
-
-  DISALLOW_COPY_AND_ASSIGN(OutputStreamFileWriter);
 };
 
 }  // namespace crashpad

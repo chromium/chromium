@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_CONNECT_TO_DEVICE_OPERATION_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/connect_to_device_operation.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -29,6 +28,10 @@ class FakeConnectToDeviceOperation
       : ConnectToDeviceOperation<FailureDetailType>(std::move(success_callback),
                                                     std::move(failure_callback),
                                                     connection_priority) {}
+
+  FakeConnectToDeviceOperation(const FakeConnectToDeviceOperation&) = delete;
+  FakeConnectToDeviceOperation& operator=(const FakeConnectToDeviceOperation&) =
+      delete;
 
   ~FakeConnectToDeviceOperation() override = default;
 
@@ -69,8 +72,6 @@ class FakeConnectToDeviceOperation
   absl::optional<ConnectionPriority> updated_priority_;
   base::OnceClosure destructor_callback_;
   base::OnceClosure cancel_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectToDeviceOperation);
 };
 
 }  // namespace secure_channel

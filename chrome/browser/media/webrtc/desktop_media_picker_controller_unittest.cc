@@ -24,6 +24,15 @@ using testing::Return;
 using testing::ReturnRef;
 using testing::WithArg;
 
+namespace {
+
+DesktopMediaList::WebContentsFilter GetDefaultFilter() {
+  return base::BindRepeating(
+      [](content::WebContents* web_contents) { return true; });
+}
+
+}  // namespace
+
 class MockDesktopMediaPicker : public DesktopMediaPicker {
  public:
   MOCK_METHOD3(Show,
@@ -39,6 +48,8 @@ class MockDesktopMediaList : public DesktopMediaList {
   MOCK_METHOD1(SetViewDialogWindowId, void(content::DesktopMediaID dialog_id));
   MOCK_METHOD1(StartUpdating, void(DesktopMediaListObserver* observer));
   MOCK_METHOD1(Update, void(UpdateCallback callback));
+  MOCK_METHOD1(SetPreviewedSource,
+               void(const absl::optional<content::DesktopMediaID>& id));
   MOCK_CONST_METHOD0(GetSourceCount, int());
   MOCK_CONST_METHOD1(GetSource, Source&(int index));
   MOCK_CONST_METHOD0(GetMediaListType, DesktopMediaList::Type());
@@ -49,10 +60,12 @@ class MockDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
   MOCK_METHOD1(CreatePicker,
                std::unique_ptr<DesktopMediaPicker>(
                    const content::MediaStreamRequest* request));
-  MOCK_METHOD2(CreateMediaList,
-               std::vector<std::unique_ptr<DesktopMediaList>>(
-                   const std::vector<DesktopMediaList::Type>& types,
-                   content::WebContents* web_contents));
+  MOCK_METHOD3(
+      CreateMediaList,
+      std::vector<std::unique_ptr<DesktopMediaList>>(
+          const std::vector<DesktopMediaList::Type>& types,
+          content::WebContents* web_contents,
+          DesktopMediaList::WebContentsFilter includable_web_contents_filter));
 };
 
 class DesktopMediaPickerControllerTest : public testing::Test {
@@ -63,12 +76,14 @@ class DesktopMediaPickerControllerTest : public testing::Test {
           return std::unique_ptr<DesktopMediaPicker>(std::move(picker_));
         });
     ON_CALL(factory_, CreateMediaList)
-        .WillByDefault(
-            [this](const auto& types, content::WebContents* web_contents) {
-              std::vector<std::unique_ptr<DesktopMediaList>> lists;
-              lists.push_back(std::move(media_list_));
-              return lists;
-            });
+        .WillByDefault([this](const auto& types,
+                              content::WebContents* web_contents,
+                              DesktopMediaList::WebContentsFilter
+                                  includable_web_contents_filter) {
+          std::vector<std::unique_ptr<DesktopMediaList>> lists;
+          lists.push_back(std::move(media_list_));
+          return lists;
+        });
   }
 
  protected:
@@ -86,8 +101,9 @@ class DesktopMediaPickerControllerTest : public testing::Test {
 
 // Test that the picker dialog is shown and the selected media ID is returned.
 TEST_F(DesktopMediaPickerControllerTest, ShowPicker) {
+  auto filter = GetDefaultFilter();
   EXPECT_CALL(factory_, CreatePicker(nullptr));
-  EXPECT_CALL(factory_, CreateMediaList(source_types_, nullptr));
+  EXPECT_CALL(factory_, CreateMediaList(source_types_, nullptr, filter));
   EXPECT_CALL(done_, Run("", media_id_));
   EXPECT_CALL(*picker_, Show)
       .WillOnce(WithArg<2>([&](DesktopMediaPicker::DoneCallback cb) {
@@ -96,23 +112,25 @@ TEST_F(DesktopMediaPickerControllerTest, ShowPicker) {
   EXPECT_CALL(*media_list_, Update).Times(0);
 
   DesktopMediaPickerController controller(&factory_);
-  controller.Show(picker_params_, source_types_, done_.Get());
+  controller.Show(picker_params_, source_types_, filter, done_.Get());
 }
 
 // Test that a null result is returned in response to WebContentsDestroyed().
 TEST_F(DesktopMediaPickerControllerTest, WebContentsDestroyed) {
+  auto filter = GetDefaultFilter();
   EXPECT_CALL(factory_, CreatePicker(nullptr));
-  EXPECT_CALL(factory_, CreateMediaList(source_types_, nullptr));
+  EXPECT_CALL(factory_, CreateMediaList(source_types_, nullptr, filter));
   EXPECT_CALL(done_, Run("", content::DesktopMediaID()));
   EXPECT_CALL(*picker_, Show);
 
   DesktopMediaPickerController controller(&factory_);
-  controller.Show(picker_params_, source_types_, done_.Get());
+  controller.Show(picker_params_, source_types_, filter, done_.Get());
   controller.WebContentsDestroyed();
 }
 
 // Test that the picker dialog can be bypassed.
 TEST_F(DesktopMediaPickerControllerTest, ShowSingleScreen) {
+  auto filter = GetDefaultFilter();
   picker_params_.select_only_screen = true;
 
   DesktopMediaList::Source source;
@@ -120,7 +138,7 @@ TEST_F(DesktopMediaPickerControllerTest, ShowSingleScreen) {
   source.name = u"fake name";
 
   EXPECT_CALL(factory_, CreatePicker(nullptr)).Times(0);
-  EXPECT_CALL(factory_, CreateMediaList(source_types_, nullptr));
+  EXPECT_CALL(factory_, CreateMediaList(source_types_, nullptr, filter));
   EXPECT_CALL(done_, Run("", source.id));
   EXPECT_CALL(*picker_, Show).Times(0);
   EXPECT_CALL(*media_list_, Update)
@@ -134,7 +152,7 @@ TEST_F(DesktopMediaPickerControllerTest, ShowSingleScreen) {
       .WillRepeatedly(ReturnRef(source));
 
   DesktopMediaPickerController controller(&factory_);
-  controller.Show(picker_params_, source_types_, done_.Get());
+  controller.Show(picker_params_, source_types_, filter, done_.Get());
 }
 
 // Test that an error is reported when no sources are found.
@@ -145,7 +163,8 @@ TEST_F(DesktopMediaPickerControllerTest, EmptySourceList) {
   EXPECT_CALL(done_, Run(Ne(""), content::DesktopMediaID()));
 
   DesktopMediaPickerController controller(&factory_);
-  controller.Show(picker_params_, source_types_, done_.Get());
+  controller.Show(picker_params_, source_types_, GetDefaultFilter(),
+                  done_.Get());
 }
 
 // Test that an error is reported when no picker can be created.
@@ -156,5 +175,6 @@ TEST_F(DesktopMediaPickerControllerTest, NoPicker) {
   EXPECT_CALL(factory_, CreateMediaList).Times(AnyNumber());
 
   DesktopMediaPickerController controller(&factory_);
-  controller.Show(picker_params_, source_types_, done_.Get());
+  controller.Show(picker_params_, source_types_, GetDefaultFilter(),
+                  done_.Get());
 }

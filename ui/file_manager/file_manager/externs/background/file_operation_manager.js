@@ -91,6 +91,15 @@ export class FileOperationManager extends EventTarget {
   zipSelection(selectionEntries, dirEntry) {}
 
   /**
+   * Writes file to destination dir.
+   *
+   * @param {!File} file The file entry to be written.
+   * @param {!DirectoryEntry} destination The destination dir.
+   * @return {!Promise<!FileEntry>}
+   */
+  async writeFile(file, destination) {}
+
+  /**
    * Generates new task ID.
    *
    * @return {string} New task ID.

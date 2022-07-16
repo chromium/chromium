@@ -128,8 +128,8 @@ TEST_F(PdfNavigationThrottleTest, WillStartRequest) {
                                                    run_loop.QuitClosure());
   run_loop.Run();
 
-  auto navigation_simulator =
-      content::NavigationSimulator::CreateFromPending(web_contents());
+  auto navigation_simulator = content::NavigationSimulator::CreateFromPending(
+      web_contents()->GetController());
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       ui::PAGE_TRANSITION_AUTO_SUBFRAME,
       navigation_simulator->GetNavigationHandle()->GetPageTransition()));

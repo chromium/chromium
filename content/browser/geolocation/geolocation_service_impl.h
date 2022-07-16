@@ -27,6 +27,11 @@ class GeolocationServiceImplContext {
  public:
   explicit GeolocationServiceImplContext(
       PermissionControllerImpl* permission_controller);
+
+  GeolocationServiceImplContext(const GeolocationServiceImplContext&) = delete;
+  GeolocationServiceImplContext& operator=(
+      const GeolocationServiceImplContext&) = delete;
+
   ~GeolocationServiceImplContext();
   using PermissionCallback =
       base::OnceCallback<void(blink::mojom::PermissionStatus)>;
@@ -42,8 +47,6 @@ class GeolocationServiceImplContext {
                               blink::mojom::PermissionStatus permission_status);
 
   base::WeakPtrFactory<GeolocationServiceImplContext> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationServiceImplContext);
 };
 
 class CONTENT_EXPORT GeolocationServiceImpl
@@ -51,6 +54,10 @@ class CONTENT_EXPORT GeolocationServiceImpl
  public:
   GeolocationServiceImpl(device::mojom::GeolocationContext* geolocation_context,
                          RenderFrameHost* render_frame_host);
+
+  GeolocationServiceImpl(const GeolocationServiceImpl&) = delete;
+  GeolocationServiceImpl& operator=(const GeolocationServiceImpl&) = delete;
+
   ~GeolocationServiceImpl() override;
 
   // Binds to the GeolocationService.
@@ -81,8 +88,6 @@ class CONTENT_EXPORT GeolocationServiceImpl
   mojo::ReceiverSet<blink::mojom::GeolocationService,
                     std::unique_ptr<GeolocationServiceImplContext>>
       receiver_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationServiceImpl);
 };
 
 }  // namespace content

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -81,6 +80,9 @@ class DemoSession : public session_manager::SessionManagerObserver,
       "us", "be", "ca", "dk", "fi", "fr", "de", "ie",
       "it", "jp", "lu", "nl", "no", "es", "se", "gb"};
 
+  DemoSession(const DemoSession&) = delete;
+  DemoSession& operator=(const DemoSession&) = delete;
+
   static std::string DemoConfigToString(DemoModeConfig config);
 
   // Whether the device is set up to run demo sessions.
@@ -124,9 +126,14 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // Returns the id of the screensaver app based on the board name.
   static std::string GetScreensaverAppId();
 
-  // Returns whether the app with `app_id` should be displayed in app launcher
-  // in demo mode. Returns true for all apps in non-demo mode.
-  static bool ShouldDisplayInAppLauncher(const std::string& app_id);
+  // Returns whether the chrome extension app with `app_id` should be displayed
+  // in app launcher in demo mode. Returns true for all apps in non-demo mode.
+  static bool ShouldShowExtensionInAppLauncher(const std::string& app_id);
+
+  // Returns whether the Web app with `app_id` should be shown in demo mode,
+  // in any of launcher, search and shelf.
+  // Returns true for the app in non-demo mode.
+  static bool ShouldShowWebApp(const std::string& app_id);
 
   // Returns the list of countries that Demo Mode supports. Each country is
   // denoted by:
@@ -144,10 +151,11 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // `load_callback` will be run once the offline resource load finishes.
   void EnsureOfflineResourcesLoaded(base::OnceClosure load_callback);
 
-  // Returns true if the Chrome app or ARC++ package, which is normally pinned
+  // Returns false if the Chrome app or ARC++ package, which is normally pinned
   // by policy, should actually not be force-pinned because the device is
   // in Demo Mode and offline.
-  bool ShouldIgnorePinPolicy(const std::string& app_id_or_package);
+  bool ShouldShowAndroidOrChromeAppInShelf(
+      const std::string& app_id_or_package);
 
   // Sets `extensions_external_loader_` and starts installing the screensaver.
   void SetExtensionsExternalLoader(
@@ -215,7 +223,8 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // Whether demo session has been started.
   bool started_ = false;
 
-  // Apps that ShouldIgnorePinPolicy() will check for if the device is offline.
+  // Apps that ShouldShowAndroidOrChromeAppInShelf() will check for if the
+  // device is offline.
   std::vector<std::string> ignore_pin_policy_offline_apps_;
 
   std::unique_ptr<DemoResources> demo_resources_;
@@ -242,8 +251,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
   bool screensaver_activated_ = false;
 
   base::WeakPtrFactory<DemoSession> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSession);
 };
 
 }  // namespace ash

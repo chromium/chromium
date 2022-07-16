@@ -24,7 +24,7 @@ using user_manager::UserManager;
 
 namespace {
 
-class SystemMenuModelBuilderMultiUserTest : public chromeos::LoginManagerTest {
+class SystemMenuModelBuilderMultiUserTest : public ash::LoginManagerTest {
  public:
   SystemMenuModelBuilderMultiUserTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(2);
@@ -36,7 +36,7 @@ class SystemMenuModelBuilderMultiUserTest : public chromeos::LoginManagerTest {
  protected:
   AccountId account_id1_;
   AccountId account_id2_;
-  chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
 };
 
 // Regression test for https://crbug.com/1023043
@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderMultiUserTest,
   // Install the Settings App.
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(
       UserManager::Get()->FindUser(account_id1_));
-  web_app::WebAppProvider::Get(profile)
+  web_app::WebAppProvider::GetForTest(profile)
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
 

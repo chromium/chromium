@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
@@ -37,6 +36,10 @@ class MockMessengerObserver : public MessengerObserver {
   explicit MockMessengerObserver(Messenger* messenger) : messenger_(messenger) {
     messenger_->AddObserver(this);
   }
+
+  MockMessengerObserver(const MockMessengerObserver&) = delete;
+  MockMessengerObserver& operator=(const MockMessengerObserver&) = delete;
+
   virtual ~MockMessengerObserver() { messenger_->RemoveObserver(this); }
 
   MOCK_METHOD1(OnUnlockEventSent, void(bool success));
@@ -54,8 +57,6 @@ class MockMessengerObserver : public MessengerObserver {
  private:
   // The messenger that |this| instance observes.
   Messenger* const messenger_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMessengerObserver);
 };
 
 class TestMessenger : public MessengerImpl {
@@ -63,15 +64,22 @@ class TestMessenger : public MessengerImpl {
   TestMessenger(
       std::unique_ptr<chromeos::secure_channel::ClientChannel> channel)
       : MessengerImpl(std::move(channel)) {}
-  ~TestMessenger() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestMessenger);
+  TestMessenger(const TestMessenger&) = delete;
+  TestMessenger& operator=(const TestMessenger&) = delete;
+
+  ~TestMessenger() override {}
 };
 
 }  // namespace
 
 class ProximityAuthMessengerImplTest : public testing::Test {
+ public:
+  ProximityAuthMessengerImplTest(const ProximityAuthMessengerImplTest&) =
+      delete;
+  ProximityAuthMessengerImplTest& operator=(
+      const ProximityAuthMessengerImplTest&) = delete;
+
  protected:
   ProximityAuthMessengerImplTest() = default;
 
@@ -101,10 +109,6 @@ class ProximityAuthMessengerImplTest : public testing::Test {
   std::unique_ptr<TestMessenger> messenger_;
 
   std::unique_ptr<MockMessengerObserver> observer_;
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthMessengerImplTest);
 };
 
 TEST_F(ProximityAuthMessengerImplTest,

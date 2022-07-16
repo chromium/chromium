@@ -29,6 +29,9 @@ class MockHttpResponse : public chrome_cleaner::HttpResponse {
     DCHECK(config);
   }
 
+  MockHttpResponse(const MockHttpResponse&) = delete;
+  MockHttpResponse& operator=(const MockHttpResponse&) = delete;
+
   ~MockHttpResponse() override = default;
 
   // chrome_cleaner::HttpResponse:
@@ -75,8 +78,6 @@ class MockHttpResponse : public chrome_cleaner::HttpResponse {
 
  private:
   MockHttpAgentConfig* config_{nullptr};
-
-  DISALLOW_COPY_AND_ASSIGN(MockHttpResponse);
 };
 
 // Class that acts as an HttpAgent based on how the MockHttpAgentConfig is
@@ -86,6 +87,9 @@ class MockHttpAgent : public chrome_cleaner::HttpAgent {
   explicit MockHttpAgent(MockHttpAgentConfig* config) : config_(config) {
     DCHECK(config);
   }
+
+  MockHttpAgent(const MockHttpAgent&) = delete;
+  MockHttpAgent& operator=(const MockHttpAgent&) = delete;
 
   ~MockHttpAgent() override = default;
 
@@ -137,8 +141,6 @@ class MockHttpAgent : public chrome_cleaner::HttpAgent {
 
  private:
   MockHttpAgentConfig* config_{nullptr};
-
-  DISALLOW_COPY_AND_ASSIGN(MockHttpAgent);
 };
 
 }  // namespace

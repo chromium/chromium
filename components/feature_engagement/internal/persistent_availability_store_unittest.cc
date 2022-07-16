@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/feature_engagement/internal/proto/availability.pb.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -50,6 +49,11 @@ class PersistentAvailabilityStoreTest : public testing::Test {
     load_callback_ = base::BindOnce(
         &PersistentAvailabilityStoreTest::LoadCallback, base::Unretained(this));
   }
+
+  PersistentAvailabilityStoreTest(const PersistentAvailabilityStoreTest&) =
+      delete;
+  PersistentAvailabilityStoreTest& operator=(
+      const PersistentAvailabilityStoreTest&) = delete;
 
   ~PersistentAvailabilityStoreTest() override = default;
 
@@ -87,9 +91,6 @@ class PersistentAvailabilityStoreTest : public testing::Test {
 
   // Constant test data.
   base::FilePath storage_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PersistentAvailabilityStoreTest);
 };
 
 }  // namespace

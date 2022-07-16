@@ -21,8 +21,7 @@ using phone_hub_metrics::QuickAction;
 
 // Time to wait until we check the state of the phone to prevent showing wrong
 // state
-constexpr base::TimeDelta kWaitForRequestTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kWaitForRequestTimeout = base::Seconds(10);
 
 }  // namespace
 

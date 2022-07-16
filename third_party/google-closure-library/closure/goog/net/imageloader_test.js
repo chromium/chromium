@@ -1,22 +1,16 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.net.ImageLoaderTest');
 goog.setTestOnly();
 
+const EventHandler = goog.require('goog.events.EventHandler');
 const EventType = goog.require('goog.events.EventType');
 const GoogEvent = goog.require('goog.events.Event');
+const GoogEventTarget = goog.require('goog.events.EventTarget');
 const GoogPromise = goog.require('goog.Promise');
 const ImageLoader = goog.require('goog.net.ImageLoader');
 const NetEventType = goog.require('goog.net.EventType');
@@ -80,6 +74,7 @@ function makeLoaderSynchronous(loader) {
     originalLoadImage.call(this, request, id);
 
     const event = new GoogEvent(EventType.LOAD);
+    /** @suppress {globalThis} suppression added to enable type checking */
     event.currentTarget = this.imageIdToImageMap_[id];
     loader.onNetworkEvent_(event);
   };
@@ -95,7 +90,7 @@ testSuite({
   },
 
   setUp() {
-    startTime = goog.now();
+    startTime = Date.now();
 
     loader = new ImageLoader();
 
@@ -289,6 +284,46 @@ testSuite({
   },
 
   /**
+   * Verifies order of event dispatch when events are handled by a client of
+   * {@link goog.net.ImageLoader}.
+   */
+  testImageLoaderClientEventDispatchOrder() {
+    const clientLoader = new ImageLoader();
+    makeLoaderSynchronous(clientLoader);
+
+    // Creates a testing client that will dispose of the image loader on the
+    // final propagated LOAD event.
+    const testingClientImageLoader = new TestingClientImageLoader(clientLoader);
+
+    let i = 0;
+    for (const key in TEST_IMAGES) {
+      const imageId = 'img_' + i++;
+      testingClientImageLoader.addImage(imageId, key);
+    }
+
+    // Add more images once the first images finishes loading, and call start()
+    // to get them going.
+    events.listenOnce(testingClientImageLoader, EventType.LOAD, (e) => {
+      testingClientImageLoader.addImage('extra_image', 'extra_image.gif');
+      testingClientImageLoader.addImage('extra_image2', 'extra_image2.gif');
+      testingClientImageLoader.start();
+    });
+
+    // Start testing.
+    testingClientImageLoader.start();
+
+    assertEquals(
+        'All images should have dispatched a LOAD call before disposing.',
+        googObject.getCount(TEST_IMAGES), testingClientImageLoader.loadCount);
+    assertEquals(
+        'COMPLETE should never be dispatched if we dispose the instance on image removal.',
+        0, testingClientImageLoader.completeCount);
+    assertEquals(
+        'There should be no references to images in the image loader at time of dispose.',
+        testingClientImageLoader.imageLoaderRemainingSize, 0);
+  },
+
+  /**
      Verifies that the correct image attribute is set when using CORS requests.
    */
   testSetsCorsAttribute() {
@@ -317,3 +352,62 @@ testSuite({
     loader.start();
   },
 });
+
+/**
+ * Represents an example client that uses {@link goog.net.ImageLoader} and
+ * consumes the events it emits.
+ */
+class TestingClientImageLoader extends GoogEventTarget {
+  constructor(imageLoader) {
+    super();
+
+    /** @private @const {!ImageLoader} */
+    this.imageLoader_ = imageLoader;
+    this.eventHandler_ = new EventHandler(this);
+
+    this.imagesRemaining = 0;
+    this.imageLoaderRemainingSize = 0;
+    this.loadCount = 0;
+    this.completeCount = 0;
+
+    // Handles events dispatched from ImageLoad
+    this.eventHandler_.listen(
+        this.imageLoader_, [EventType.LOAD, NetEventType.COMPLETE],
+        this.handleImageLoaderEvent_);
+  }
+
+  addImage(id, url) {
+    this.imagesRemaining += 1;
+    this.imageLoader_.addImage(id, url);
+  }
+
+  start() {
+    this.imageLoader_.start();
+  }
+
+  /**
+   * Disposes the image loader when handling the final image, prior to
+   * dispatching the COMPLETE event. This allows verification that the state of
+   * the ImageLoader is clean before the original event is dispatched to any
+   * clients.
+   * @private
+   */
+  handleImageLoaderEvent_(e) {
+    switch (e.type) {
+      case NetEventType.COMPLETE:
+        this.completeCount += 1;
+
+      case EventType.LOAD:
+        this.loadCount += 1;
+        this.imagesRemaining -= 1;
+    }
+
+    /** @suppress {visibility} suppression added to enable type checking */
+    this.imageLoaderRemainingSize =
+        googObject.getKeys(this.imageLoader_.imageIdToRequestMap_).length;
+
+    if (this.imagesRemaining == 0) {
+      this.imageLoader_.disposeInternal();
+    }
+  }
+}

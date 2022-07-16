@@ -28,6 +28,9 @@ class CONTENT_EXPORT ContentIndexContextImpl
       BrowserContext* browser_context,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
 
+  ContentIndexContextImpl(const ContentIndexContextImpl&) = delete;
+  ContentIndexContextImpl& operator=(const ContentIndexContextImpl&) = delete;
+
   void Shutdown();
 
   // Queries the provider for the icon sizes needed to display the info.
@@ -57,8 +60,6 @@ class CONTENT_EXPORT ContentIndexContextImpl
 
   ContentIndexProvider* provider_;
   ContentIndexDatabase content_index_database_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentIndexContextImpl);
 };
 
 }  // namespace content

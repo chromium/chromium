@@ -764,7 +764,7 @@ class LayerTreeHostMaskAsBlendingPixelTest
       // ARM Windows, macOS, and Fuchsia has some pixels difference
       // Affected tests: RotatedClippedCircle, RotatedClippedCircleUnderflow
       // crbug.com/1030244, crbug.com/1048249, crbug.com/1128443
-      percentage_pixels_error = 6.2f;
+      percentage_pixels_error = 7.f;
       average_error_allowed_in_bad_pixels = 5.f;
       large_error_allowed = 20;
 #else

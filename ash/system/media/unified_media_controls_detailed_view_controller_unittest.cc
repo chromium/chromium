@@ -4,7 +4,7 @@
 
 #include "ash/system/media/unified_media_controls_detailed_view_controller.h"
 
-#include "ash/public/cpp/media_notification_provider.h"
+#include "ash/system/media/media_notification_provider.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -22,9 +22,10 @@ namespace ash {
 
 namespace {
 
-class MockMediaNotificationProvider : MediaNotificationProvider {
+class MockMediaNotificationProvider : public MediaNotificationProvider {
  public:
-  MockMediaNotificationProvider() {
+  MockMediaNotificationProvider()
+      : old_provider_(MediaNotificationProvider::Get()) {
     MediaNotificationProvider::Set(this);
 
     ON_CALL(*this, GetMediaNotificationListView(_)).WillByDefault([](auto) {
@@ -33,7 +34,7 @@ class MockMediaNotificationProvider : MediaNotificationProvider {
   }
 
   ~MockMediaNotificationProvider() override {
-    MediaNotificationProvider::Set(nullptr);
+    MediaNotificationProvider::Set(old_provider_);
   }
 
   // MediaNotificationProvider implementations.
@@ -48,6 +49,9 @@ class MockMediaNotificationProvider : MediaNotificationProvider {
   bool HasFrozenNotifications() override { return true; }
   void SetColorTheme(
       const media_message_center::NotificationTheme& color_theme) override {}
+
+ private:
+  MediaNotificationProvider* const old_provider_;
 };
 
 }  // namespace
@@ -58,8 +62,9 @@ class UnifiedMediaControlsDetailedViewControllerTest : public AshTestBase {
   ~UnifiedMediaControlsDetailedViewControllerTest() override = default;
 
   void SetUp() override {
-    provider_ = std::make_unique<MockMediaNotificationProvider>();
     AshTestBase::SetUp();
+
+    provider_ = std::make_unique<MockMediaNotificationProvider>();
 
     // Ensure media tray is not pinned to shelf so that media controls
     // show up in quick settings.
@@ -71,8 +76,8 @@ class UnifiedMediaControlsDetailedViewControllerTest : public AshTestBase {
   }
 
   void TearDown() override {
-    AshTestBase::TearDown();
     provider_.reset();
+    AshTestBase::TearDown();
   }
 
   void SimulateTransitionToMainMenu() {

@@ -21,6 +21,10 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
+namespace network {
+struct ResourceRequest;
+}  // namespace network
+
 class PrefService;
 
 namespace safe_browsing {
@@ -52,9 +56,12 @@ base::TimeDelta GetDelayFromPref(PrefService* prefs, const char* pref_name);
 // (6) Its hostname is less than 4 characters.
 bool CanGetReputationOfUrl(const GURL& url);
 
-// Util for UMA logging to get ResourceType from RequestDestination.
-ResourceType GetResourceTypeFromRequestDestination(
-    network::mojom::RequestDestination request_destination);
+// Set |access_token| in |resource_request|. Remove cookies in the request
+// since we only need one identifier.
+void SetAccessTokenAndClearCookieInResourceRequest(
+    network::ResourceRequest* resource_request,
+    const std::string& access_token);
+
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_UTILS_H_

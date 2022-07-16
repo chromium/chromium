@@ -7,8 +7,10 @@ import './repair_component_chip.js';
 import './shimless_rma_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {Component, ComponentRepairStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
@@ -16,6 +18,7 @@ import {Component, ComponentRepairStatus, ComponentType, ShimlessRmaServiceInter
  * @typedef {{
  *   component: !ComponentType,
  *   id: string,
+ *   uniqueId: string,
  *   name: string,
  *   checked: boolean,
  *   disabled: boolean
@@ -24,61 +27,22 @@ import {Component, ComponentRepairStatus, ComponentType, ShimlessRmaServiceInter
 let ComponentCheckbox;
 
 /**
- * @type {!Object<!ComponentType, string>}
- */
-const ComponentTypeToName = {
-  [ComponentType.kAudioCodec]: 'Audio',
-  [ComponentType.kBattery]: 'Battery',
-  [ComponentType.kStorage]: 'Storage',
-  [ComponentType.kVpdCached]: 'Vpd Cached',
-  [ComponentType.kNetwork]: 'Network',
-  [ComponentType.kCamera]: 'Camera',
-  [ComponentType.kStylus]: 'Stylus',
-  [ComponentType.kTouchpad]: 'Touchpad',
-  [ComponentType.kTouchsreen]: 'Touchscreen',
-  [ComponentType.kDram]: 'Memory',
-  [ComponentType.kDisplayPanel]: 'Display',
-  [ComponentType.kCellular]: 'Cellular',
-  [ComponentType.kEthernet]: 'Ethernet',
-  [ComponentType.kWireless]: 'Wireless',
-  [ComponentType.kGyroscope]: 'Gyroscope',
-  [ComponentType.kAccelerometer]: 'Accelerometer',
-  [ComponentType.kScreen]: 'Screen',
-  [ComponentType.kKeyboard]: 'Keyboard',
-  [ComponentType.kPowerButton]: 'Power Button'
-};
-
-/**
- * @type {!Object<!ComponentType, string>}
- */
-const ComponentTypeToId = {
-  [ComponentType.kAudioCodec]: 'componentAudio',
-  [ComponentType.kBattery]: 'componentBattery',
-  [ComponentType.kStorage]: 'componentStorage',
-  [ComponentType.kVpdCached]: 'componentVpd Cached',
-  [ComponentType.kNetwork]: 'componentNetwork',
-  [ComponentType.kCamera]: 'componentCamera',
-  [ComponentType.kStylus]: 'componentStylus',
-  [ComponentType.kTouchpad]: 'componentTouchpad',
-  [ComponentType.kTouchsreen]: 'componentTouchscreen',
-  [ComponentType.kDram]: 'componentDram',
-  [ComponentType.kDisplayPanel]: 'componentDisplayPanel',
-  [ComponentType.kCellular]: 'componentCellular',
-  [ComponentType.kEthernet]: 'componentEthernet',
-  [ComponentType.kWireless]: 'componentWireless',
-  [ComponentType.kGyroscope]: 'componentGyroscope',
-  [ComponentType.kAccelerometer]: 'componentAccelerometer',
-  [ComponentType.kScreen]: 'componentScreen',
-  [ComponentType.kKeyboard]: 'componentKeyboard',
-  [ComponentType.kPowerButton]: 'componentPowerButton'
-};
-
-/**
  * @fileoverview
  * 'onboarding-select-components-page' is the page for selecting the components
  * that were replaced during repair.
  */
-export class OnboardingSelectComponentsPageElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const OnboardingSelectComponentsPageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class OnboardingSelectComponentsPageElement extends
+    OnboardingSelectComponentsPageElementBase {
   static get is() {
     return 'onboarding-select-components-page';
   }
@@ -89,25 +53,32 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {?ShimlessRmaServiceInterface} */
-      shimlessRmaService_: {
-        type: Object,
-        value: null,
-      },
-
-      /** @private {!Array<!ComponentCheckbox>} */
+      /** @protected {!Array<!ComponentCheckbox>} */
       componentCheckboxes_: {
         type: Array,
         value: () => [],
       },
+
+      /** @private {string} */
+      reworkFlowLinkText_: {type: String, value: ''},
     };
+  }
+
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
+    this.shimlessRmaService_ = getShimlessRmaService();
   }
 
   /** @override */
   ready() {
     super.ready();
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.setReworkFlowLink_();
     this.getComponents_();
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: false},
+        ));
   }
 
   /** @private */
@@ -119,19 +90,18 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
         return;
       }
 
-      let componentList = [];
-      result.components.forEach(item => {
+      this.componentCheckboxes_ = result.components.map(item => {
         const component = assert(item.component);
-
-        componentList.push({
+        return {
           component: item.component,
           id: ComponentTypeToId[item.component],
-          name: ComponentTypeToName[item.component],
+          // TODO(gavinwill): Source |uniqueId| from proto.
+          uniqueId: '',
+          name: this.i18n(ComponentTypeToId[item.component]),
           checked: item.state === ComponentRepairStatus.kReplaced,
           disabled: item.state === ComponentRepairStatus.kMissing
-        });
+        };
       });
-      this.componentCheckboxes_ = componentList;
     });
   }
 
@@ -153,12 +123,18 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
   }
 
   /** @protected */
-  onReworkFlowButtonClicked_(e) {
+  onReworkFlowLinkClicked_(e) {
     e.preventDefault();
-    console.log('Rework flow clicked');
-    // TODO(gavindodd): call
-    // this.shimlessRmaService_.reworkMainboard().then((state)
-    //     => shimlessRma.loadNextState_(state));
+    this.dispatchEvent(new CustomEvent(
+        'transition-state',
+        {
+          bubbles: true,
+          composed: true,
+          detail: (() => {
+            return this.shimlessRmaService_.reworkMainboard();
+          })
+        },
+        ));
   }
 
   /** @return {!Promise<!StateResult>} */
@@ -166,7 +142,17 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
     return this.shimlessRmaService_.setComponentList(
         this.getComponentRepairStateList_());
   }
-};
+
+  /** @protected */
+  setReworkFlowLink_() {
+    this.reworkFlowLinkText_ =
+        this.i18nAdvanced('reworkFlowLinkText', {attrs: ['id']});
+    const linkElement = this.shadowRoot.querySelector('#reworkFlowLink');
+    linkElement.setAttribute('href', '#');
+    linkElement.addEventListener(
+        'click', e => this.onReworkFlowLinkClicked_(e));
+  }
+}
 
 customElements.define(
     OnboardingSelectComponentsPageElement.is,

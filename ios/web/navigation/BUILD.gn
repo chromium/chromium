@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//ios/build/config.gni")
 import("//ios/features.gni")
+import("//ios/web/js_compile.gni")
 
 buildflag_header("block_universal_links_buildflags") {
   header = "block_universal_links_buildflags.h"
@@ -32,6 +33,7 @@ source_set("navigation") {
     "//ios/web/session",
     "//ios/web/web_state:user_interaction",
     "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_state/ui:web_view_handler",
     "//ios/web/web_view:util",
     "//net",
@@ -80,7 +82,6 @@ source_set("core") {
     "//ios/web/common:user_agent",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
-    "//ios/web/public/deprecated:deprecated_navigation_util",
     "//ios/web/public/security",
     "//ios/web/web_state/ui:crw_web_view_navigation_proxy",
     "//ui/base",
@@ -93,8 +94,6 @@ source_set("core") {
     "navigation_context_impl.mm",
     "navigation_item_impl.h",
     "navigation_item_impl.mm",
-    "navigation_item_impl_list.h",
-    "navigation_item_impl_list.mm",
     "navigation_manager_delegate.h",
     "navigation_manager_impl.h",
     "navigation_manager_impl.mm",
@@ -102,6 +101,51 @@ source_set("core") {
     "time_smoother.h",
   ]
 
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("navigation_feature") {
+  deps = [
+    ":navigation_js",
+    ":navigation_listeners_js",
+    "//base",
+    "//ios/web/public/js_messaging",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
+  ]
+  sources = [
+    "navigation_java_script_feature.h",
+    "navigation_java_script_feature.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+js_compile_bundle("navigation_js") {
+  visibility = [ ":navigation_feature" ]
+  closure_entry_point = "__crWeb.navigation"
+
+  sources = [ "resources/navigation.js" ]
+}
+
+js_compile_bundle("navigation_listeners_js") {
+  visibility = [ ":navigation_feature" ]
+  closure_entry_point = "__crWeb.navigationListeners"
+
+  sources = [ "resources/navigation_listeners.js" ]
+}
+
+source_set("session_restore_feature") {
+  deps = [
+    "//base",
+    "//ios/web/js_messaging",
+    "//ios/web/js_messaging:scoped_wk_script_message_handler",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+  sources = [
+    "session_restore_java_script_feature.h",
+    "session_restore_java_script_feature.mm",
+  ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 

@@ -81,6 +81,14 @@ Polymer({
       },
     },
 
+    /** @private */
+    shouldShowLanguagePacksNotice_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('languagePacksHandwritingEnabled');
+      },
+    },
+
     /**
      * Whether the shortcut reminder for the last used IME is currently showing.
      * @private
@@ -563,6 +571,12 @@ Polymer({
     return !update2Enabled || spellCheckOn;
   },
 
+  /** @private */
+  onLanguagePackNoticeLinkClick_() {
+    this.languagesMetricsProxy_.recordInteraction(
+        settings.LanguagesPageInteraction.OPEN_LANGUAGE_PACKS_LEARN_MORE);
+  },
+
   /**
    * @return {boolean}
    * @private
@@ -615,6 +629,19 @@ Polymer({
 
   /** @private */
   onShortcutReminderDismiss_() {
+    // Record the metric - assume that both reminders were dismissed unless one
+    // of them wasn't shown.
+    assert(
+        this.showLastUsedIMEShortcutReminder_ ||
+        this.showNextIMEShortcutReminder_);
+    let dismissedState = InputsShortcutReminderState.LAST_USED_IME_AND_NEXT_IME;
+    if (!this.showLastUsedIMEShortcutReminder_) {
+      dismissedState = InputsShortcutReminderState.NEXT_IME;
+    } else if (!this.showNextIMEShortcutReminder_) {
+      dismissedState = InputsShortcutReminderState.LAST_USED_IME;
+    }
+    this.languagesMetricsProxy_.recordShortcutReminderDismissed(dismissedState);
+
     if (this.showLastUsedIMEShortcutReminder_) {
       this.setPrefValue('ash.shortcut_reminders.last_used_ime_dismissed', true);
     }

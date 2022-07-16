@@ -14,7 +14,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -258,7 +258,7 @@ TEST_F(ImportantFileWriterTest, CallbackRunsOnWriterThread) {
 }
 
 TEST_F(ImportantFileWriterTest, ScheduleWrite) {
-  constexpr TimeDelta kCommitInterval = TimeDelta::FromSeconds(12345);
+  constexpr TimeDelta kCommitInterval = Seconds(12345);
   MockOneShotTimer timer;
   ImportantFileWriter writer(file_, ThreadTaskRunnerHandle::Get(),
                              kCommitInterval);
@@ -364,7 +364,7 @@ TEST_F(ImportantFileWriterTest, ScheduleWriteWithBackgroundDataSerializer) {
   base::HistogramTester histogram_tester;
   base::Thread file_writer_thread("ImportantFileWriter test thread");
   file_writer_thread.Start();
-  constexpr TimeDelta kCommitInterval = TimeDelta::FromSeconds(12345);
+  constexpr TimeDelta kCommitInterval = Seconds(12345);
   MockOneShotTimer timer;
   ImportantFileWriter writer(file_, file_writer_thread.task_runner(),
                              kCommitInterval);
@@ -400,7 +400,7 @@ TEST_F(ImportantFileWriterTest,
   base::HistogramTester histogram_tester;
   base::Thread file_writer_thread("ImportantFileWriter test thread");
   file_writer_thread.Start();
-  constexpr TimeDelta kCommitInterval = TimeDelta::FromSeconds(12345);
+  constexpr TimeDelta kCommitInterval = Seconds(12345);
   MockOneShotTimer timer;
   ImportantFileWriter writer(file_, file_writer_thread.task_runner(),
                              kCommitInterval);
@@ -428,26 +428,6 @@ TEST_F(ImportantFileWriterTest,
   // We record the foreground serialization metric despite later failure in
   // background sequence.
   histogram_tester.ExpectTotalCount("ImportantFile.SerializationDuration", 1);
-}
-
-TEST_F(ImportantFileWriterTest, WriteFileAtomicallyHistogramSuffixTest) {
-  base::HistogramTester histogram_tester;
-  EXPECT_FALSE(PathExists(file_));
-  EXPECT_TRUE(ImportantFileWriter::WriteFileAtomically(file_, "baz", "test"));
-  EXPECT_TRUE(PathExists(file_));
-  EXPECT_EQ("baz", GetFileContent(file_));
-  histogram_tester.ExpectTotalCount("ImportantFile.FileCreateError", 0);
-  histogram_tester.ExpectTotalCount("ImportantFile.FileCreateError.test", 0);
-
-  FilePath invalid_file_ = FilePath().AppendASCII("bad/../non_existent/path");
-  EXPECT_FALSE(PathExists(invalid_file_));
-  EXPECT_FALSE(ImportantFileWriter::WriteFileAtomically(invalid_file_, ""));
-  histogram_tester.ExpectTotalCount("ImportantFile.FileCreateError", 1);
-  histogram_tester.ExpectTotalCount("ImportantFile.FileCreateError.test", 0);
-  EXPECT_FALSE(
-      ImportantFileWriter::WriteFileAtomically(invalid_file_, "", "test"));
-  histogram_tester.ExpectTotalCount("ImportantFile.FileCreateError", 1);
-  histogram_tester.ExpectTotalCount("ImportantFile.FileCreateError.test", 1);
 }
 
 // Test that the chunking to avoid very large writes works.

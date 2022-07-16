@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_SELECTION_DIALOG_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_SELECTION_DIALOG_CONTROLLER_IMPL_H_
 
-#include "base/macros.h"
+#include <string>
+#include <vector>
+
 #include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog_controller.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
@@ -18,10 +19,13 @@ class VirtualCardSelectionDialogView;
 // VirtualCardSelectionDialogView. Lazily initialized when used.
 class VirtualCardSelectionDialogControllerImpl
     : public VirtualCardSelectionDialogController,
-      public content::WebContentsObserver,
       public content::WebContentsUserData<
           VirtualCardSelectionDialogControllerImpl> {
  public:
+  VirtualCardSelectionDialogControllerImpl(
+      const VirtualCardSelectionDialogControllerImpl&) = delete;
+  VirtualCardSelectionDialogControllerImpl& operator=(
+      const VirtualCardSelectionDialogControllerImpl&) = delete;
   ~VirtualCardSelectionDialogControllerImpl() override;
 
   void ShowDialog(const std::vector<CreditCard*>& candidates,
@@ -63,8 +67,6 @@ class VirtualCardSelectionDialogControllerImpl
   VirtualCardSelectionDialogView* dialog_view_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualCardSelectionDialogControllerImpl);
 };
 
 }  // namespace autofill

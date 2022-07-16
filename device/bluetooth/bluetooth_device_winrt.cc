@@ -199,7 +199,7 @@ BluetoothDeviceWinrt::~BluetoothDeviceWinrt() {
 }
 
 uint32_t BluetoothDeviceWinrt::GetBluetoothClass() const {
-  NOTIMPLEMENTED();
+  // No logging - called too frequenty.
   return 0;
 }
 
@@ -234,7 +234,7 @@ uint16_t BluetoothDeviceWinrt::GetDeviceID() const {
 }
 
 uint16_t BluetoothDeviceWinrt::GetAppearance() const {
-  NOTIMPLEMENTED();
+  // No logging - called too frequenty.
   return 0;
 }
 

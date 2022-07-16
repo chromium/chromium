@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_ENTRY_PICKER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_ENTRY_PICKER_H_
 
-#include "base/macros.h"
 #include "extensions/browser/extension_function.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -34,6 +33,9 @@ class EntryPicker : public ui::SelectFileDialog::Listener {
               const ui::SelectFileDialog::FileTypeInfo& info,
               int file_type_index);
 
+  EntryPicker(const EntryPicker&) = delete;
+  EntryPicker& operator=(const EntryPicker&) = delete;
+
   // Allow picker UI to be skipped in testing.
   static void SkipPickerAndAlwaysSelectPathForTest(base::FilePath* path);
   static void SkipPickerAndAlwaysCancelForTest();
@@ -53,8 +55,6 @@ class EntryPicker : public ui::SelectFileDialog::Listener {
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   EntryPickerClient* client_;
-
-  DISALLOW_COPY_AND_ASSIGN(EntryPicker);
 };
 
 }  // namespace api

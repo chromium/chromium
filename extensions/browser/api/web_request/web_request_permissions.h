@@ -39,6 +39,10 @@ class WebRequestPermissions {
     REQUIRE_ALL_URLS
   };
 
+  WebRequestPermissions() = delete;
+  WebRequestPermissions(const WebRequestPermissions&) = delete;
+  WebRequestPermissions& operator=(const WebRequestPermissions&) = delete;
+
   // Returns true if the request shall not be reported to extensions.
   static bool HideRequest(extensions::PermissionHelper* permission_helper,
                           const extensions::WebRequestInfo& request);
@@ -65,8 +69,6 @@ class WebRequestPermissions {
       const absl::optional<url::Origin>& initiator,
       int tab_id,
       bool crosses_incognito);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebRequestPermissions);
 };
 
 #endif  // EXTENSIONS_BROWSER_API_WEB_REQUEST_WEB_REQUEST_PERMISSIONS_H_

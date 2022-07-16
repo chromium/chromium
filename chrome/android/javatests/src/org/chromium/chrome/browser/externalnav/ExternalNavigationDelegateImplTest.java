@@ -11,11 +11,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Function;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -24,6 +26,7 @@ import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
@@ -36,11 +39,11 @@ import org.chromium.url.Origin;
  * Instrumentation tests for {@link ExternalNavigationHandler}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags
-        .Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-        @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
-                ChromeFeatureList.AUTOFILL_ASSISTANT_CHROME_ENTRY})
-        public class ExternalNavigationDelegateImplTest {
+@Batch(Batch.PER_CLASS)
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Features.DisableFeatures(
+        {ChromeFeatureList.AUTOFILL_ASSISTANT, ChromeFeatureList.AUTOFILL_ASSISTANT_CHROME_ENTRY})
+public class ExternalNavigationDelegateImplTest {
     private static final String AUTOFILL_ASSISTANT_INTENT_URL =
             "intent://www.example.com#Intent;scheme=https;"
             + "B.org.chromium.chrome.browser.autofill_assistant.ENABLED=true;"
@@ -124,17 +127,21 @@ import org.chromium.url.Origin;
         Assert.assertEquals(initiatorOrigin, metadata.getInitiatorOrigin());
     }
 
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private ExternalNavigationDelegateImpl mExternalNavigationDelegateImpl;
     private ExternalNavigationDelegateImplForTesting mExternalNavigationDelegateImplForTesting;
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         Tab tab = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getActivityTab());
+                () -> sActivityTestRule.getActivity().getActivityTab());
         mExternalNavigationDelegateImpl = TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> new ExternalNavigationDelegateImpl(tab));
         mExternalNavigationDelegateImplForTesting =

@@ -7,6 +7,7 @@ module content.mojom;
 import "content/common/associated_interfaces.mojom";
 import "content/common/frame.mojom";
 import "content/common/native_types.mojom";
+import "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
@@ -71,7 +72,7 @@ interface AgentSchedulingGroup {
   // exactly once for each invocation of CreateView. |view_id| is synonymous
   // with |routing_id|. A callback is provided so the browser receives
   // notification the destruction is complete.
-  DestroyView(int32 view_id) => ();
+  DestroyView(int32 view_id);
 
   // Tells the renderer to create a new RenderFrame.
   CreateFrame(CreateFrameParams params);
@@ -108,4 +109,9 @@ interface AgentSchedulingGroup {
                    mojo_base.mojom.UnguessableToken devtools_frame_token,
                    RemoteMainFrameInterfaces remote_main_frame_interfaces);
 
+  // Tells the renderer process to create a thread that exclusively hosts the
+  // shared storage worklet service.
+  CreateSharedStorageWorkletService(
+      pending_receiver<shared_storage_worklet.mojom.SharedStorageWorkletService>
+          receiver);
 };

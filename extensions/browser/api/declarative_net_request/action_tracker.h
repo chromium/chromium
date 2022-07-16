@@ -37,8 +37,7 @@ class ActionTracker {
  public:
   // The lifespan of matched rules in |rules_matched_| not associated with an
   // active document,
-  static constexpr base::TimeDelta kNonActiveTabRuleLifespan =
-      base::TimeDelta::FromMinutes(5);
+  static constexpr base::TimeDelta kNonActiveTabRuleLifespan = base::Minutes(5);
 
   explicit ActionTracker(content::BrowserContext* browser_context);
   ~ActionTracker();

@@ -18,6 +18,9 @@ class MouseCursorMonitorAura : public webrtc::MouseCursorMonitor {
  public:
   MouseCursorMonitorAura();
 
+  MouseCursorMonitorAura(const MouseCursorMonitorAura&) = delete;
+  MouseCursorMonitorAura& operator=(const MouseCursorMonitorAura&) = delete;
+
   // webrtc::MouseCursorMonitor implementation.
   void Init(Callback* callback, Mode mode) override;
   void Capture() override;
@@ -29,8 +32,6 @@ class MouseCursorMonitorAura : public webrtc::MouseCursorMonitor {
   Mode mode_;
   ui::Cursor last_cursor_;
   gfx::Point last_mouse_location_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseCursorMonitorAura);
 };
 
 }  // namespace remoting

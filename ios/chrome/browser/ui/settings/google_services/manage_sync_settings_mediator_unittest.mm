@@ -7,11 +7,10 @@
 #import <UIKit/UIKit.h>
 
 #import "base/mac/foundation_util.h"
-#include "base/test/scoped_feature_list.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/signin/public/base/account_consistency_method.h"
+#include "components/sync/base/pref_names.h"
 #import "components/sync/driver/mock_sync_service.h"
 #include "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -25,6 +24,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
@@ -58,6 +58,14 @@ PrefService* SetPrefService() {
   PrefRegistrySimple* registry = prefs->registry();
   registry->RegisterBooleanPref(autofill::prefs::kAutofillWalletImportEnabled,
                                 true);
+  registry->RegisterBooleanPref(syncer::prefs::kSyncAutofill, true);
+  registry->RegisterBooleanPref(syncer::prefs::kSyncBookmarks, true);
+  registry->RegisterBooleanPref(syncer::prefs::kSyncTypedUrls, true);
+  registry->RegisterBooleanPref(syncer::prefs::kSyncTabs, true);
+  registry->RegisterBooleanPref(syncer::prefs::kSyncPasswords, true);
+  registry->RegisterBooleanPref(syncer::prefs::kSyncReadingList, true);
+  registry->RegisterBooleanPref(syncer::prefs::kSyncPreferences, true);
+
   return prefs;
 }
 }  // namespace
@@ -161,57 +169,28 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 
 // Tests for Advanced Settings items.
 
-// Tests that encryption is not accessible when Sync settings have not been
+// Tests that encryption is  accessible even when Sync settings have not been
 // confirmed.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSetupNotCommitted) {
   FirstSetupSyncOff();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
-      .WillByDefault(Return(SyncSetupService::kSyncSettingsNotConfirmed));
+      .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
-  // "Turn off Sync" item only available in
-  // |signin::kMobileIdentityConsistency|.
-  ASSERT_FALSE([mediator_.consumer.tableViewModel
+  ASSERT_TRUE([mediator_.consumer.tableViewModel
       hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
                                          SignOutSectionIdentifier]);
 
-  // Encryption item is disabled.
+  // Encryption item is enabled.
   NSArray* advanced_settings_items = [mediator_.consumer.tableViewModel
       itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
                                        AdvancedSettingsSectionIdentifier];
-  ASSERT_EQ(3UL, advanced_settings_items.count);
+  ASSERT_EQ(2UL, advanced_settings_items.count);
 
   TableViewImageItem* encryption_item = advanced_settings_items[0];
   ASSERT_EQ(encryption_item.type, SyncSettingsItemType::EncryptionItemType);
-  ASSERT_FALSE(encryption_item.enabled);
-}
-
-// Tests that encryption is not accessible when Sync is disabled by the
-// administrator.
-TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledByAdministrator) {
-  FirstSetupSyncOff();
-  ON_CALL(*sync_service_mock_, GetDisableReasons())
-      .WillByDefault(
-          Return(syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY));
-
-  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
-
-  // "Turn off Sync" item only available in
-  // |signin::kMobileIdentityConsistency|.
-  ASSERT_FALSE([mediator_.consumer.tableViewModel
-      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
-                                         SignOutSectionIdentifier]);
-
-  // Encryption item is disabled.
-  NSArray* advanced_settings_items = [mediator_.consumer.tableViewModel
-      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
-                                       AdvancedSettingsSectionIdentifier];
-  ASSERT_EQ(3UL, advanced_settings_items.count);
-
-  TableViewImageItem* encryption_item = advanced_settings_items[0];
-  ASSERT_EQ(encryption_item.type, SyncSettingsItemType::EncryptionItemType);
-  ASSERT_FALSE(encryption_item.enabled);
+  ASSERT_TRUE(encryption_item.enabled);
 }
 
 // Tests that encryption is accessible when there is a Sync error due to a
@@ -256,9 +235,6 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabledWithEncryption) {
 
 // Tests that "Turn off Sync" is hidden when Sync is disabled.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledWithTurnOffSync) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   FirstSetupSyncOff();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
@@ -274,9 +250,6 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledWithTurnOffSync) {
 
 // Tests that "Turn off Sync" is accessible when Sync is enabled.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabledWithTurnOffSync) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   FirstSetupSyncOnWithConsentEnabled();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
@@ -290,12 +263,36 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabledWithTurnOffSync) {
   ASSERT_EQ(1UL, sign_out_items.count);
 }
 
+// Tests that the policy info is shown below the "Turn off Sync" item when the
+// forced sign-in policy is enabled.
+TEST_F(ManageSyncSettingsMediatorTest,
+       SyncServiceEnabledWithTurnOffSyncWithForcedSigninPolicy) {
+  FirstSetupSyncOnWithConsentEnabled();
+  ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
+      .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
+
+  mediator_.forcedSigninEnabled = YES;
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // "Turn off Sync" item is shown.
+  NSArray* sign_out_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                       SignOutSectionIdentifier];
+  ASSERT_EQ(1UL, sign_out_items.count);
+
+  // The footer below "Turn off Sync" is shown.
+  ListItem* footer = [mediator_.consumer.tableViewModel
+      footerForSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                         SignOutSectionIdentifier];
+  TableViewLinkHeaderFooterItem* footerTextItem =
+      base::mac::ObjCCastStrict<TableViewLinkHeaderFooterItem>(footer);
+  ASSERT_GT([footerTextItem.text length], 0UL);
+}
+
 // Tests that a Sync error that occurs after the user has loaded the Settings
 // page once will update the full page.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSuccessThenDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   FirstSetupSyncOnWithConsentEnabled();
   EXPECT_CALL(*sync_service_mock_, GetDisableReasons())
       .WillOnce(Return(syncer::MockSyncService::DisableReasonSet()))
@@ -318,9 +315,6 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSuccessThenDisabled) {
 // Tests that Sync errors display a single error message when loaded one after
 // the other.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceMultipleErrors) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   FirstSetupSyncOnWithConsentEnabled();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kSyncServiceNeedsPassphrase));
@@ -352,13 +346,10 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceMultipleErrors) {
 // hiding to showing the item.
 TEST_F(ManageSyncSettingsMediatorTest,
        SyncServiceSetupTransitionForTurnOffSync) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   // Set Sync disabled expectations.
   FirstSetupSyncOff();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
-      .WillByDefault(Return(SyncSetupService::kSyncSettingsNotConfirmed));
+      .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
@@ -385,13 +376,10 @@ TEST_F(ManageSyncSettingsMediatorTest,
 
 // Tests Signout is shown when first setup is complete and sync engine is off.
 TEST_F(ManageSyncSettingsMediatorTest, SyncEngineOffSignOutVisible) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   // Set Sync disabled expectations.
   FirstSetupSyncOnWithConsentDisabled();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
-      .WillByDefault(Return(SyncSetupService::kSyncSettingsNotConfirmed));
+      .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
@@ -406,19 +394,53 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncEngineOffSignOutVisible) {
 // is off.
 TEST_F(ManageSyncSettingsMediatorTest,
        SyncEngineOffSyncEverythingAndDataTypeEditable) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   // Set Sync disabled expectations.
   FirstSetupSyncOnWithConsentDisabled();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
-      .WillByDefault(Return(SyncSetupService::kSyncSettingsNotConfirmed));
+      .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
   NSArray* items = [mediator_.consumer.tableViewModel
       itemsInSectionWithIdentifier:SyncDataTypeSectionIdentifier];
   for (TableViewItem* item in items) {
+    SyncSwitchItem* switch_item =
+        base::mac::ObjCCastStrict<SyncSwitchItem>(item);
+    if (switch_item.type == AutocompleteWalletItemType) {
+      ASSERT_FALSE(switch_item.enabled);
+    } else {
+      ASSERT_TRUE(switch_item.enabled);
+    }
+  }
+}
+
+// Tests that the items are correct when a sync type list is managed.
+TEST_F(ManageSyncSettingsMediatorTest,
+       CheckItemsWhenSyncTypeListHasEnabledItems) {
+  FirstSetupSyncOnWithConsentEnabled();
+
+  TestingPrefServiceSimple* pref_service =
+      static_cast<TestingPrefServiceSimple*>(pref_service_);
+  pref_service->SetManagedPref(syncer::prefs::kSyncBookmarks,
+                               std::make_unique<base::Value>(true));
+  pref_service->SetManagedPref(syncer::prefs::kSyncPasswords,
+                               std::make_unique<base::Value>(true));
+
+  // Loads the Sync page.
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // Check sync switches.
+  NSArray* items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncDataTypeSectionIdentifier];
+  for (TableViewItem* item in items) {
+    if (item.type == SyncEverythingItemType) {
+      ASSERT_FALSE([item isKindOfClass:[SyncSwitchItem class]]);
+      continue;
+    } else if (item.type == BookmarksDataTypeItemType ||
+               item.type == PasswordsDataTypeItemType) {
+      ASSERT_TRUE([item isKindOfClass:[TableViewInfoButtonItem class]]);
+      continue;
+    }
     SyncSwitchItem* switch_item =
         base::mac::ObjCCastStrict<SyncSwitchItem>(item);
     if (switch_item.type == AutocompleteWalletItemType) {

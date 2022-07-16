@@ -9,10 +9,11 @@ import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {flush,Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ChooserType,ContentSetting,ContentSettingsTypes,SiteSettingSource,SiteSettingsPrefsBrowserProxyImpl,WebsiteUsageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Route,Router,routes} from 'chrome://settings/settings.js';
-import {TestSiteSettingsPrefsBrowserProxy} from 'chrome://test/settings/test_site_settings_prefs_browser_proxy.js';
-import {createContentSettingTypeToValuePair,createRawChooserException,createRawSiteException,createSiteSettingsPrefs} from 'chrome://test/settings/test_util.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {createContentSettingTypeToValuePair,createRawChooserException,createRawSiteException,createSiteSettingsPrefs} from './test_util.js';
 
 // clang-format on
 
@@ -178,11 +179,11 @@ suite('SiteDetails', function() {
         ]);
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.instance_ = testMetricsBrowserProxy;
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     websiteUsageProxy = new TestWebsiteUsageBrowserProxy();
-    WebsiteUsageBrowserProxyImpl.instance_ = websiteUsageProxy;
+    WebsiteUsageBrowserProxyImpl.setInstance(websiteUsageProxy);
 
     PolymerTest.clearBody();
   });
@@ -201,20 +202,23 @@ suite('SiteDetails', function() {
     browserProxy.setPrefs(prefs);
     testElement = createSiteDetails('https://foo.com:443');
     flush();
-    assertTrue(!!testElement.$$('#usage'));
+    assertTrue(!!testElement.shadowRoot.querySelector('#usage'));
 
     // When there's no usage, there should be a string that says so.
     assertEquals('', testElement.storedData_);
-    assertFalse(testElement.$$('#noStorage').hidden);
-    assertTrue(testElement.$$('#storage').hidden);
+    assertFalse(testElement.shadowRoot.querySelector('#noStorage').hidden);
+    assertTrue(testElement.shadowRoot.querySelector('#storage').hidden);
     assertTrue(
-        testElement.$$('#usage').innerText.indexOf('No usage data') !== -1);
+        testElement.shadowRoot.querySelector('#usage').innerText.indexOf(
+            'No usage data') !== -1);
 
     // If there is, check the correct amount of usage is specified.
     testElement.storedData_ = '1 KB';
-    assertTrue(testElement.$$('#noStorage').hidden);
-    assertFalse(testElement.$$('#storage').hidden);
-    assertTrue(testElement.$$('#usage').innerText.indexOf('1 KB') !== -1);
+    assertTrue(testElement.shadowRoot.querySelector('#noStorage').hidden);
+    assertFalse(testElement.shadowRoot.querySelector('#storage').hidden);
+    assertTrue(
+        testElement.shadowRoot.querySelector('#usage').innerText.indexOf(
+            '1 KB') !== -1);
   });
 
   test('storage gets trashed properly', function() {
@@ -237,10 +241,12 @@ suite('SiteDetails', function() {
           webUIListenerCallback(
               'usage-total-changed', hostRequested, '1 KB', '10 cookies');
           assertEquals('1 KB', testElement.storedData_);
-          assertTrue(testElement.$$('#noStorage').hidden);
-          assertFalse(testElement.$$('#storage').hidden);
+          assertTrue(testElement.shadowRoot.querySelector('#noStorage').hidden);
+          assertFalse(testElement.shadowRoot.querySelector('#storage').hidden);
 
-          testElement.$$('#confirmClearStorageNew .action-button').click();
+          testElement.shadowRoot
+              .querySelector('#confirmClearStorage .action-button')
+              .click();
           return websiteUsageProxy.whenCalled('clearUsage');
         })
         .then(originCleared => {
@@ -268,10 +274,12 @@ suite('SiteDetails', function() {
           webUIListenerCallback(
               'usage-total-changed', hostRequested, '1 KB', '10 cookies');
           assertEquals('10 cookies', testElement.numCookies_);
-          assertTrue(testElement.$$('#noStorage').hidden);
-          assertFalse(testElement.$$('#storage').hidden);
+          assertTrue(testElement.shadowRoot.querySelector('#noStorage').hidden);
+          assertFalse(testElement.shadowRoot.querySelector('#storage').hidden);
 
-          testElement.$$('#confirmClearStorageNew .action-button').click();
+          testElement.shadowRoot
+              .querySelector('#confirmClearStorage .action-button')
+              .click();
           return websiteUsageProxy.whenCalled('clearUsage');
         })
         .then(originCleared => {
@@ -372,7 +380,7 @@ suite('SiteDetails', function() {
 
     // Check both cancelling and accepting the dialog closes it.
     ['cancel-button', 'action-button'].forEach(buttonType => {
-      testElement.$$('#resetSettingsButton').click();
+      testElement.shadowRoot.querySelector('#resetSettingsButton').click();
       assertTrue(testElement.$.confirmResetSettings.open);
       const actionButtonList =
           testElement.$.confirmResetSettings.getElementsByClassName(buttonType);
@@ -396,15 +404,14 @@ suite('SiteDetails', function() {
 
     // Check both cancelling and accepting the dialog closes it.
     ['cancel-button', 'action-button'].forEach(buttonType => {
-      testElement.$$('#usage cr-button').click();
-      assertTrue(testElement.$.confirmClearStorageNew.open);
+      testElement.shadowRoot.querySelector('#usage cr-button').click();
+      assertTrue(testElement.$.confirmClearStorage.open);
       const actionButtonList =
-          testElement.$.confirmClearStorageNew.getElementsByClassName(
-              buttonType);
+          testElement.$.confirmClearStorage.getElementsByClassName(buttonType);
       assertEquals(1, actionButtonList.length);
       testElement.storedData_ = '';
       actionButtonList[0].click();
-      assertFalse(testElement.$.confirmClearStorageNew.open);
+      assertFalse(testElement.$.confirmClearStorage.open);
     });
   });
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -22,6 +21,9 @@ class LogoServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static LogoServiceFactory* GetInstance();
 
+  LogoServiceFactory(const LogoServiceFactory&) = delete;
+  LogoServiceFactory& operator=(const LogoServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<LogoServiceFactory>;
 
@@ -31,8 +33,6 @@ class LogoServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(LogoServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_FACTORY_H_

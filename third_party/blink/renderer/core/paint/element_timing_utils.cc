@@ -14,12 +14,12 @@
 namespace blink {
 
 // static
-FloatRect ElementTimingUtils::ComputeIntersectionRect(
+gfx::RectF ElementTimingUtils::ComputeIntersectionRect(
     LocalFrame* frame,
-    const IntRect& int_visual_rect,
+    const gfx::Rect& int_visual_rect,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties) {
   // Compute the visible part of the image rect.
-  FloatClipRect visual_rect = FloatClipRect(FloatRect(int_visual_rect));
+  FloatClipRect visual_rect((gfx::RectF(int_visual_rect)));
   GeometryMapper::LocalToAncestorVisualRect(current_paint_chunk_properties,
                                             frame->View()
                                                 ->GetLayoutView()
@@ -29,7 +29,7 @@ FloatRect ElementTimingUtils::ComputeIntersectionRect(
   WebFrameWidgetImpl* widget =
       WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
   DCHECK(widget);
-  return FloatRect(widget->BlinkSpaceToDIPs(visual_rect.Rect()));
+  return widget->BlinkSpaceToDIPs(visual_rect.Rect());
 }
 
 }  // namespace blink

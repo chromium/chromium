@@ -6,5 +6,5 @@ include_rules = [
   "+components/prefs",
   "+third_party/perfetto",
   "+third_party/tflite",
-  "+third_party/tflite-support",
+  "+third_party/tflite_support",
 ]

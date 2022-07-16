@@ -5,7 +5,6 @@
 #ifndef MEDIA_CAST_TEST_FAKE_RECEIVER_TIME_OFFSET_ESTIMATOR_H_
 #define MEDIA_CAST_TEST_FAKE_RECEIVER_TIME_OFFSET_ESTIMATOR_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/threading/thread_checker.h"
 #include "media/cast/logging/logging_defines.h"
@@ -22,6 +21,11 @@ class FakeReceiverTimeOffsetEstimator final
  public:
   FakeReceiverTimeOffsetEstimator(base::TimeDelta offset);
 
+  FakeReceiverTimeOffsetEstimator(const FakeReceiverTimeOffsetEstimator&) =
+      delete;
+  FakeReceiverTimeOffsetEstimator& operator=(
+      const FakeReceiverTimeOffsetEstimator&) = delete;
+
   ~FakeReceiverTimeOffsetEstimator() final;
 
   // RawReventSubscriber implementations.
@@ -34,7 +38,6 @@ class FakeReceiverTimeOffsetEstimator final
 
  private:
   const base::TimeDelta offset_;
-  DISALLOW_COPY_AND_ASSIGN(FakeReceiverTimeOffsetEstimator);
 };
 
 }  // namespace test

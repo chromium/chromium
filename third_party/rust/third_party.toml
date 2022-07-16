@@ -1,0 +1,16 @@
+# This file lists all dependencies used from first-party code. It should not
+# include transitive dependencies, as those will be determined from Cargo.
+#
+# All versions should be specified as a version epoch (a single non-zero version
+# component such as "2" or "0.3").
+#   e.g.
+#   santas-workshop = "2"
+#
+# Any features used by first-party code must be declared here in order to ensure
+# they are included in the crate when it is built.
+#   e.g.
+#   santas-workshop = { version = "3", features = [ "candycanes" ] }
+
+[dependencies]
+cxxbridge-cmd = "1"
+cxx = "1"

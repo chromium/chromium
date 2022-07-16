@@ -318,9 +318,18 @@ IN_PROC_BROWSER_TEST_F(
   RunsAudioAndVideoCallCollectingMetricsWithVideoCodec("VP9");
 }
 
+// TODO(crbug.com/1241344): test fails on some mac bots.
+#if defined(OS_MAC)
+#define MAYBE_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2 \
+  DISABLED_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2
+#else
+#define MAYBE_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2 \
+  MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2
+#endif
+
 IN_PROC_BROWSER_TEST_F(
     WebRtcStatsPerfBrowserTest,
-    MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2) {
+    MAYBE_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   RunsAudioAndVideoCallCollectingMetricsWithVideoCodec(
       "VP9", true /* prefer_hw_video_codec */,

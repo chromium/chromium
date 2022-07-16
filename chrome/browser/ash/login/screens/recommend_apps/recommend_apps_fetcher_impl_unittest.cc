@@ -68,6 +68,10 @@ class TestCrosDisplayConfig : public mojom::CrosDisplayConfigController {
   explicit TestCrosDisplayConfig(
       mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  TestCrosDisplayConfig(const TestCrosDisplayConfig&) = delete;
+  TestCrosDisplayConfig& operator=(const TestCrosDisplayConfig&) = delete;
+
   ~TestCrosDisplayConfig() override = default;
 
   void Flush() {
@@ -117,8 +121,6 @@ class TestCrosDisplayConfig : public mojom::CrosDisplayConfigController {
   mojo::Receiver<mojom::CrosDisplayConfigController> receiver_;
 
   GetDisplayUnitInfoListCallback get_display_unit_info_list_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCrosDisplayConfig);
 };
 
 // Helper class to extract relevant information from the app list request

@@ -7,10 +7,10 @@
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 
-namespace chromeos {
-
-class NetworkPortalDetectorTestImpl;
+namespace ash {
 
 // An InBrowserProcessTestMixin that provides utility methods for faking
 // network captive portal detector state.
@@ -51,11 +51,12 @@ class NetworkPortalDetectorMixin : public InProcessBrowserTestMixin {
   NetworkPortalDetectorTestImpl* network_portal_detector_ = nullptr;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::NetworkPortalDetectorMixin;
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::NetworkPortalDetectorMixin;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_NETWORK_PORTAL_DETECTOR_MIXIN_H_

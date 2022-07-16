@@ -555,7 +555,7 @@ TEST_F(RequestQueueTest, MarkAttemptCompleted) {
 TEST_F(RequestQueueTest, CleanStaleRequests) {
   // Create a request that is already expired.
   base::Time creation_time =
-      OfflineTimeNow() - base::TimeDelta::FromSeconds(2 * kOneWeekInSeconds);
+      OfflineTimeNow() - base::Seconds(2 * kOneWeekInSeconds);
 
   SavePageRequest original_request(kRequestId, GURL("http://example.com"),
                                    kClientId, creation_time, kUserRequested);

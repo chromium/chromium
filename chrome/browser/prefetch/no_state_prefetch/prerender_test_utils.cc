@@ -549,7 +549,7 @@ PrerenderInProcessBrowserTest::NavigateWithPrerenders(
 
   // Navigate to the loader URL and then wait for the first prerender to be
   // created.
-  ui_test_utils::NavigateToURL(current_browser(), loader_url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(current_browser(), loader_url));
   prerenders[0]->WaitForCreate();
 
   return prerenders;

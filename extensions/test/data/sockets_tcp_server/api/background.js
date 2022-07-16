@@ -43,6 +43,11 @@ var testSocketListening = function() {
   function onServerSocketCreate(socketInfo) {
     console.log("Server socket created: sd=" + socketInfo.socketId);
     socketId = socketInfo.socketId;
+    chrome.sockets.tcpServer.getInfo(socketId, onGetInfo);
+  }
+
+  function onGetInfo(socketInfo) {
+    chrome.test.assertEq(socketInfo.socketId, socketId);
     chrome.sockets.tcpServer.listen(socketId, address, port, onListen);
   }
 

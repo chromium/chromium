@@ -12,12 +12,4 @@
 
 @implementation AutofillEditItem
 
-- (instancetype)initWithType:(NSInteger)type {
-  self = [super initWithType:type];
-  if (self) {
-    self.hideIcon = !base::FeatureList::IsEnabled(kSettingsRefresh);
-  }
-  return self;
-}
-
 @end

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/events/event_targeter.h"
@@ -24,6 +23,10 @@ namespace views {
 class TestingView : public View, public ViewTargeterDelegate {
  public:
   TestingView() = default;
+
+  TestingView(const TestingView&) = delete;
+  TestingView& operator=(const TestingView&) = delete;
+
   ~TestingView() override = default;
 
   // Reset all test state.
@@ -33,15 +36,16 @@ class TestingView : public View, public ViewTargeterDelegate {
   bool TestDoesIntersectRect(const View* target, const gfx::Rect& rect) const {
     return DoesIntersectRect(target, rect);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestingView);
 };
 
 // A derived class of View having a triangular-shaped hit test mask.
 class TestMaskedView : public View, public MaskedTargeterDelegate {
  public:
   TestMaskedView() = default;
+
+  TestMaskedView(const TestMaskedView&) = delete;
+  TestMaskedView& operator=(const TestMaskedView&) = delete;
+
   ~TestMaskedView() override = default;
 
   // A call-through function to MaskedTargeterDelegate::DoesIntersectRect().
@@ -63,8 +67,6 @@ class TestMaskedView : public View, public MaskedTargeterDelegate {
     mask->close();
     return true;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestMaskedView);
 };
 
 namespace test {
@@ -75,6 +77,10 @@ namespace test {
 class ViewTargeterTest : public ViewsTestBase {
  public:
   ViewTargeterTest() = default;
+
+  ViewTargeterTest(const ViewTargeterTest&) = delete;
+  ViewTargeterTest& operator=(const ViewTargeterTest&) = delete;
+
   ~ViewTargeterTest() override = default;
 
   void SetGestureHandler(internal::RootView* root_view, View* handler) {
@@ -85,9 +91,6 @@ class ViewTargeterTest : public ViewsTestBase {
                                             bool set) {
     root_view->gesture_handler_set_before_processing_ = set;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ViewTargeterTest);
 };
 
 namespace {

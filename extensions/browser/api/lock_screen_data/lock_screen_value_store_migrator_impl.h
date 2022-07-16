@@ -43,6 +43,12 @@ class LockScreenValueStoreMigratorImpl : public LockScreenValueStoreMigrator {
                                    ValueStoreCache* target_store,
                                    base::SequencedTaskRunner* task_runner,
                                    const std::string& crypto_key);
+
+  LockScreenValueStoreMigratorImpl(const LockScreenValueStoreMigratorImpl&) =
+      delete;
+  LockScreenValueStoreMigratorImpl& operator=(
+      const LockScreenValueStoreMigratorImpl&) = delete;
+
   ~LockScreenValueStoreMigratorImpl() override;
 
   // LockScreenValueStorageMigrator:
@@ -141,8 +147,6 @@ class LockScreenValueStoreMigratorImpl : public LockScreenValueStoreMigrator {
 
   base::WeakPtrFactory<LockScreenValueStoreMigratorImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenValueStoreMigratorImpl);
 };
 
 }  // namespace lock_screen_data

@@ -57,7 +57,7 @@ class VideoFrameTest : public testing::Test {
     return MakeGarbageCollected<VideoFrame>(std::move(handle));
   }
   scoped_refptr<media::VideoFrame> CreateDefaultBlackMediaVideoFrame() {
-    return CreateBlackMediaVideoFrame(base::TimeDelta::FromMicroseconds(1000),
+    return CreateBlackMediaVideoFrame(base::Microseconds(1000),
                                       media::PIXEL_FORMAT_I420,
                                       gfx::Size(112, 208) /* coded_size */,
                                       gfx::Size(100, 200) /* visible_size */);
@@ -85,7 +85,7 @@ TEST_F(VideoFrameTest, ConstructorAndAttributes) {
   V8TestingScope scope;
 
   scoped_refptr<media::VideoFrame> media_frame = CreateBlackMediaVideoFrame(
-      base::TimeDelta::FromMicroseconds(1000), media::PIXEL_FORMAT_I420,
+      base::Microseconds(1000), media::PIXEL_FORMAT_I420,
       gfx::Size(112, 208) /* coded_size */,
       gfx::Size(100, 200) /* visible_size */);
   VideoFrame* blink_frame =
@@ -264,9 +264,8 @@ TEST_F(VideoFrameTest, VideoFrameFromGPUImageBitmap) {
   V8TestingScope scope;
 
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
-  CanvasResourceParams resource_params;
   auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-      IntSize(100, 100), cc::PaintFlags::FilterQuality::kLow, resource_params,
+      SkImageInfo::MakeN32Premul(100, 100), cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
       RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);
@@ -423,7 +422,7 @@ TEST_F(VideoFrameTest, VideoFrameMonitoring) {
       MakeGarbageCollected<VideoFrame>(std::move(non_monitored_handle));
   verify_expectations(1u, 2);
 
-  auto* clone = frame1->clone(scope.GetExceptionState());
+  frame1->clone(scope.GetExceptionState());
   verify_expectations(1u, 3);
 
   auto* non_monitored_clone = non_monitored1->clone(scope.GetExceptionState());
@@ -442,7 +441,6 @@ TEST_F(VideoFrameTest, VideoFrameMonitoring) {
 
   // Garbage-collecting a non-closed monitored frame should reclaim it and
   // update the monitor.
-  clone = nullptr;
   blink::WebHeap::CollectAllGarbageForTesting();
   EXPECT_TRUE(monitor.IsEmpty());
 }

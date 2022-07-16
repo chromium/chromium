@@ -9,8 +9,8 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/browsing_data/content/local_storage_helper.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace browsing_data {
 
@@ -21,16 +21,20 @@ class MockLocalStorageHelper : public browsing_data::LocalStorageHelper {
  public:
   explicit MockLocalStorageHelper(content::BrowserContext* context);
 
+  MockLocalStorageHelper(const MockLocalStorageHelper&) = delete;
+  MockLocalStorageHelper& operator=(const MockLocalStorageHelper&) = delete;
+
   // browsing_data::LocalStorageHelper implementation.
   void StartFetching(FetchCallback callback) override;
-  void DeleteOrigin(const url::Origin& origin,
-                    base::OnceClosure callback) override;
+  void DeleteStorageKey(const blink::StorageKey& storage_key,
+                        base::OnceClosure callback) override;
 
   // Adds some LocalStorageInfo samples.
   void AddLocalStorageSamples();
 
-  // Add a LocalStorageInfo entry for a single origin.
-  void AddLocalStorageForOrigin(const url::Origin& origin, int64_t size);
+  // Add a LocalStorageInfo entry for a single `storage_key`.
+  void AddLocalStorageForStorageKey(const blink::StorageKey& storage_key,
+                                    int64_t size);
 
   // Notifies the callback.
   void Notify();
@@ -42,18 +46,16 @@ class MockLocalStorageHelper : public browsing_data::LocalStorageHelper {
   // invocation.
   bool AllDeleted();
 
-  url::Origin last_deleted_origin_;
+  blink::StorageKey last_deleted_storage_key_;
 
  private:
   ~MockLocalStorageHelper() override;
 
   FetchCallback callback_;
 
-  std::map<const url::Origin, bool> origins_;
+  std::map<const blink::StorageKey, bool> storage_keys_;
 
   std::list<content::StorageUsageInfo> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockLocalStorageHelper);
 };
 
 }  // namespace browsing_data

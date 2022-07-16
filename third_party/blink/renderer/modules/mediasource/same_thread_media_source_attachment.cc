@@ -66,14 +66,14 @@ void SameThreadMediaSourceAttachment::NotifyDurationChanged(
   element->DurationChanged(duration, request_seek);
 }
 
-double SameThreadMediaSourceAttachment::GetRecentMediaTime(
+base::TimeDelta SameThreadMediaSourceAttachment::GetRecentMediaTime(
     MediaSourceTracer* tracer) {
   DVLOG(1) << __func__ << " this=" << this;
 
   VerifyCalledWhileContextsAliveForDebugging();
 
   HTMLMediaElement* element = GetMediaElement(tracer);
-  double result = element->currentTime();
+  base::TimeDelta result = base::Seconds(element->currentTime());
 
   DVLOG(2) << __func__ << " this=" << this
            << " -> recent time=" << recent_element_time_

@@ -61,6 +61,7 @@ void RenderParamsFromPrintSettings(const PrintSettings& settings,
   params->dpi = settings.dpi_size();
   params->scale_factor = settings.scale_factor();
   params->rasterize_pdf = settings.rasterize_pdf();
+  params->rasterize_pdf_dpi = settings.rasterize_pdf_dpi();
   // Always use an invalid cookie.
   params->document_cookie = 0;
   params->selection_only = settings.selection_only();

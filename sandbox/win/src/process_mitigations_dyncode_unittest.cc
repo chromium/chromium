@@ -169,6 +169,9 @@ class DynamicCodeOptOutThread {
         file_path_(path),
         return_code_(sandbox::SBOX_TEST_NOT_FOUND) {}
 
+  DynamicCodeOptOutThread(const DynamicCodeOptOutThread&) = delete;
+  DynamicCodeOptOutThread& operator=(const DynamicCodeOptOutThread&) = delete;
+
   ~DynamicCodeOptOutThread() {
     if (thread_) {
       ::CloseHandle(thread_);
@@ -238,8 +241,6 @@ class DynamicCodeOptOutThread {
   DynCodeAPI which_api_test_;
   wchar_t* file_path_;
   int return_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(DynamicCodeOptOutThread);
 };
 
 //------------------------------------------------------------------------------

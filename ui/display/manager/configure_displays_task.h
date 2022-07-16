@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/native_display_observer.h"
@@ -75,6 +74,10 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   ConfigureDisplaysTask(NativeDisplayDelegate* delegate,
                         const std::vector<DisplayConfigureRequest>& requests,
                         ResponseCallback callback);
+
+  ConfigureDisplaysTask(const ConfigureDisplaysTask&) = delete;
+  ConfigureDisplaysTask& operator=(const ConfigureDisplaysTask&) = delete;
+
   ~ConfigureDisplaysTask() override;
 
   // Starts the configuration task.
@@ -135,8 +138,6 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   Status task_status_;
 
   base::WeakPtrFactory<ConfigureDisplaysTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigureDisplaysTask);
 };
 
 }  // namespace display

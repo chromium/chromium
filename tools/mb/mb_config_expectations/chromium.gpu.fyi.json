@@ -25,7 +25,8 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "use_static_angle": true
     }
   },
@@ -39,7 +40,8 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "use_static_angle": true
     }
   },
@@ -54,21 +56,8 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true,
-      "use_static_angle": true
-    }
-  },
-  "Android FYI Release (Nexus 6)": {
-    "gn_args": {
-      "blink_enable_generated_code_formatting": false,
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_os": "android",
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "use_static_angle": true
     }
   },
@@ -83,7 +72,8 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "use_static_angle": true
     }
   },
@@ -97,7 +87,8 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "use_static_angle": true
     }
   },
@@ -111,7 +102,8 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "use_static_angle": true
     }
   },
@@ -126,7 +118,8 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "use_static_angle": true
     }
   },
@@ -140,7 +133,8 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "use_static_angle": true
     }
   },
@@ -159,7 +153,7 @@
     }
   },
   "ChromeOS FYI Release (amd64-generic)": {
-    "args_file": "//build/args/chromeos/amd64-generic.gni",
+    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": false,
@@ -196,18 +190,17 @@
       "is_component_build": false,
       "is_debug": false,
       "ozone_platform": "headless",
+      "ozone_platform_x11": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_bundled_weston": true,
       "use_goma": true,
-      "use_ozone": true,
-      "use_x11": false
+      "use_ozone": true
     }
   },
   "GPU FYI Linux Builder": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -215,6 +208,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -222,13 +216,13 @@
   },
   "GPU FYI Linux Builder (dbg)": {
     "gn_args": {
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
       "internal_gles2_conform_tests": true,
       "is_component_build": true,
       "is_debug": true,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -247,7 +241,6 @@
   "GPU FYI Mac Builder": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -255,6 +248,24 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "GPU FYI Mac Builder (asan)": {
+    "gn_args": {
+      "blink_enable_generated_code_formatting": false,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "enable_nacl": false,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_asan": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -262,22 +273,21 @@
   },
   "GPU FYI Mac Builder (dbg)": {
     "gn_args": {
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
       "internal_gles2_conform_tests": true,
       "is_component_build": true,
       "is_debug": true,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
     }
   },
-  "GPU FYI Win Builder": {
+  "GPU FYI Mac arm64 Builder": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -285,6 +295,24 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
+  "GPU FYI Win Builder": {
+    "gn_args": {
+      "blink_enable_generated_code_formatting": false,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "enable_nacl": false,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "x86",
@@ -294,7 +322,6 @@
   "GPU FYI Win x64 Builder": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -302,6 +329,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -309,13 +337,13 @@
   },
   "GPU FYI Win x64 Builder (dbg)": {
     "gn_args": {
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
       "internal_gles2_conform_tests": true,
       "is_component_build": true,
       "is_debug": true,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -324,7 +352,6 @@
   "GPU FYI Win x64 DX12 Vulkan Builder": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -333,6 +360,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -340,7 +368,6 @@
   },
   "GPU FYI Win x64 DX12 Vulkan Builder (dbg)": {
     "gn_args": {
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "enable_nacl": false,
       "enable_vulkan": true,
@@ -348,6 +375,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": true,
       "is_debug": true,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -356,7 +384,6 @@
   "GPU FYI XR Win x64 Builder": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -364,6 +391,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -372,7 +400,6 @@
   "Linux FYI GPU TSAN Release": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -380,6 +407,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "is_tsan": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
@@ -397,40 +425,6 @@
       "proprietary_codecs": true,
       "skia_use_dawn": true,
       "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "Mac FYI GPU ASAN Release": {
-    "gn_args": {
-      "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "ffmpeg_branding": "Chrome",
-      "internal_gles2_conform_tests": true,
-      "is_asan": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "Mac FYI arm64 Release (Apple DTK)": {
-    "gn_args": {
-      "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "ffmpeg_branding": "Chrome",
-      "internal_gles2_conform_tests": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
       "use_goma": true
     }
   },

@@ -72,6 +72,9 @@ enum VisibilityPriority {
 interface CastContentWindowObserver {
   // Called after the visibility state of the window changes.
   OnVisibilityChange(VisibilityType visibility_type);
+
+  // Notifies window destruction.
+  OnWindowDestroyed();
 };
 
 // Represents a platform-agnostic window interface for content::WebContents.
@@ -80,6 +83,9 @@ interface CastContentWindow {
   // granted.|z_order| is provided so that windows which share the same parent
   // have a well-defined order.
   CreateWindow(ZOrder z_order, VisibilityPriority priority);
+
+  // Add a window observer.
+  AddObserver(pending_remote<CastContentWindowObserver> observer);
 
   // Allows the window to be shown on the screen. The window cannot be shown on
   // the screen until this is called.

@@ -1,0 +1,128 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_folder = "preprocessed"
+
+# When adding a new file to personalization app, add it to one of the lists
+# below.  `static_js_files` are plain javascript files, `polymer_js_files` are
+# polymer based js files that need to be processed first,
+# `static_resource_files` are non-js files, e.g. image, html, css
+static_js_files = [
+  "common/constants.ts",
+  "common/icons.ts",
+  "common/iframe_api.js",
+  "common/styles.ts",
+  "common/utils.js",
+
+  "trusted/mojo_interface_provider.js",
+  "trusted/personalization_actions.js",
+  "trusted/personalization_app.js",
+  "trusted/personalization_controller.js",
+  "trusted/personalization_message_handler.js",
+  "trusted/personalization_reducers.js",
+  "trusted/personalization_store.js",
+  "trusted/personalization_test_api.js",
+  "trusted/styles.js",
+  "trusted/utils.js",
+
+  "untrusted/setup.js",
+  "untrusted/styles.ts",
+]
+
+polymer_js_files = [
+  "trusted/google_photos_element.js",
+  "trusted/local_images_element.js",
+  "trusted/personalization_grid_item_element.js",
+  "trusted/personalization_router_element.js",
+  "trusted/personalization_toast_element.js",
+  "trusted/wallpaper_breadcrumb_element.js",
+  "trusted/wallpaper_collections_element.js",
+  "trusted/wallpaper_error_element.js",
+  "trusted/wallpaper_fullscreen_element.js",
+  "trusted/wallpaper_images_element.js",
+  "trusted/wallpaper_selected_element.js",
+
+  "untrusted/collections_grid.js",
+  "untrusted/images_grid.js",
+]
+
+static_resource_files = [
+  "icon_192.png",
+
+  "common/base.css",
+  "common/no_images.svg",
+
+  "trusted/index.html",
+
+  "untrusted/collections.html",
+  "untrusted/images.html",
+]
+
+html_to_js("web_components") {
+  js_files = polymer_js_files
+}
+
+preprocess_if_expr("preprocess") {
+  deps = []
+  in_folder = "."
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = static_js_files
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [
+    ":web_components",
+    "untrusted:shared_vars_css_module",
+  ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = polymer_js_files + [ "untrusted/untrusted_shared_vars_css.js" ]
+}
+
+copy("copy_mojo_to_trusted") {
+  deps = [ "../mojom:mojom_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/ash/webui/personalization_app/mojom/personalization_app.mojom-webui.js" ]
+  outputs =
+      [ "$target_gen_dir/$preprocess_folder/trusted/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+
+  in_files = static_js_files + polymer_js_files + [
+               "trusted/personalization_app.mojom-webui.js",
+               "untrusted/untrusted_shared_vars_css.js",
+             ]
+
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+
+  definitions = []
+
+  extra_deps = [
+    ":copy_mojo_to_trusted",
+    ":preprocess",
+    ":preprocess_generated",
+  ]
+}
+
+generate_grd("build_grd") {
+  deps = [ ":build_ts" ]
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = static_resource_files
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  grd_prefix = "ash_personalization_app"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}

@@ -7,85 +7,116 @@
  * screen.
  */
 
-'use strict';
-
-(function() {
+/* #js_imports_placeholder */
 
 /**
  * UI mode for the dialog.
  * @enum {string}
  */
-const UIState = {
+const DemoSetupUIState = {
   PROGRESS: 'progress',
   ERROR: 'error',
 };
 
-Polymer({
-  is: 'demo-setup-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+const DemoSetupScreenBase = Polymer.mixinBehaviors(
+    [
+      OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior,
+      MultiStepBehavior
+    ],
+    Polymer.Element);
 
-  behaviors: [
-    OobeI18nBehavior,
-    OobeDialogHostBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+/**
+ * @polymer
+ */
+class DemoSetupScreen extends DemoSetupScreenBase {
+  static get is() {
+    return 'demo-setup-element';
+  }
 
-  EXTERNAL_API: ['setCurrentSetupStep', 'onSetupSucceeded', 'onSetupFailed'],
+  /* #html_template_placeholder */
 
-  properties: {
-    /** Object mapping step strings to step indices */
-    setupSteps_: {
-      type: Object,
-      value() {
-        return /** @type {!Object} */ (loadTimeData.getValue('demoSetupSteps'));
-      }
-    },
+  static get properties() {
+    return {
+      /** Object mapping step strings to step indices */
+      setupSteps_: {
+        type: Object,
+        value() {
+          return /** @type {!Object} */ (
+              loadTimeData.getValue('demoSetupSteps'));
+        }
+      },
 
-    /** Which step index is currently running in Demo Mode setup. */
-    currentStepIndex_: {
-      type: Number,
-      value: -1,
-    },
+      /** Which step index is currently running in Demo Mode setup. */
+      currentStepIndex_: {
+        type: Number,
+        value: -1,
+      },
 
-    /** Error message displayed on demoSetupErrorDialog screen. */
-    errorMessage_: {
-      type: String,
-      value: '',
-    },
+      /** Error message displayed on demoSetupErrorDialog screen. */
+      errorMessage_: {
+        type: String,
+        value: '',
+      },
 
-    /** Whether powerwash is required in case of a setup error. */
-    isPowerwashRequired_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /** Whether powerwash is required in case of a setup error. */
+      isPowerwashRequired_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  defaultUIStep() {
-    return UIState.PROGRESS;
-  },
+  constructor() {
+    super();
+  }
 
-  UI_STEPS: UIState,
-
+  /** @override */
   ready() {
+    super.ready();
     this.initializeLoginScreen('DemoSetupScreen', {
       resetAllowed: false,
     });
-  },
+  }
+
+  defaultUIStep() {
+    return DemoSetupUIState.PROGRESS;
+  }
+
+  get UI_STEPS() {
+    return DemoSetupUIState;
+  }
+
+  /** Overridden from LoginScreenBehavior. */
+  // clang-format off
+  get EXTERNAL_API() {
+    return ['setCurrentSetupStep',
+            'onSetupSucceeded',
+            'onSetupFailed'];
+  }
+  // clang-format on
+
 
   onBeforeShow() {
     this.reset();
-  },
+  }
 
   /** Resets demo setup flow to the initial screen and starts setup. */
   reset() {
-    this.setUIStep(UIState.PROGRESS);
+    this.setUIStep(DemoSetupUIState.PROGRESS);
     this.userActed('start-setup');
-  },
+  }
 
   /** Called after resources are updated. */
   updateLocalizedContent() {
     this.i18nUpdateLocale();
-  },
+  }
 
   /**
    * Called at the beginning of a setup step.
@@ -96,12 +127,12 @@ Polymer({
     if (this.setupSteps_.hasOwnProperty(currentStep)) {
       this.currentStepIndex_ = this.setupSteps_[currentStep];
     }
-  },
+  }
 
   /** Called when demo mode setup succeeded. */
   onSetupSucceeded() {
     this.errorMessage_ = '';
-  },
+  }
 
   /**
    * Called when demo mode setup failed.
@@ -112,8 +143,8 @@ Polymer({
   onSetupFailed(message, isPowerwashRequired) {
     this.errorMessage_ = message;
     this.isPowerwashRequired_ = isPowerwashRequired;
-    this.setUIStep(UIState.ERROR);
-  },
+    this.setUIStep(DemoSetupUIState.ERROR);
+  }
 
   /**
    * Retry button click handler.
@@ -121,7 +152,7 @@ Polymer({
    */
   onRetryClicked_() {
     this.reset();
-  },
+  }
 
   /**
    * Powerwash button click handler.
@@ -129,7 +160,7 @@ Polymer({
    */
   onPowerwashClicked_() {
     this.userActed('powerwash');
-  },
+  }
 
   /**
    * Close button click handler.
@@ -140,7 +171,7 @@ Polymer({
     if (this.isPowerwashRequired_)
       return;
     this.userActed('close-setup');
-  },
+  }
 
   /**
    * Whether a given step should be rendered on the UI.
@@ -150,7 +181,7 @@ Polymer({
    */
   shouldShowStep_(stepName, setupSteps) {
     return setupSteps.hasOwnProperty(stepName);
-  },
+  }
 
   /**
    * Whether a given step is active.
@@ -160,8 +191,8 @@ Polymer({
    * @private
    */
   stepIsActive_(stepName, setupSteps, currentStepIndex) {
-    return currentStepIndex == setupSteps[stepName];
-  },
+    return currentStepIndex === setupSteps[stepName];
+  }
 
   /**
    * Whether a given step is completed.
@@ -172,7 +203,7 @@ Polymer({
    */
   stepIsCompleted_(stepName, setupSteps, currentStepIndex) {
     return currentStepIndex > setupSteps[stepName];
-  },
+  }
+}
 
-});
-})();
+customElements.define(DemoSetupScreen.is, DemoSetupScreen);

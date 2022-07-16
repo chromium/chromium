@@ -1,3 +1,1 @@
-monorail: {
-  component: "Internals>Plugins>PDF"
-}
+mixins: "//pdf/COMMON_METADATA"

@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 
 namespace app_list {
 namespace {

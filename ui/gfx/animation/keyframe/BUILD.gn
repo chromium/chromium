@@ -41,9 +41,9 @@ component("keyframe") {
   deps = [
     "//base",
     "//skia",
-    "//ui/gfx:geometry_skia",
     "//ui/gfx/animation",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
   ]
 
   configs += keyframe_animation_add_configs

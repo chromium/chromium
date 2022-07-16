@@ -14,9 +14,9 @@ namespace ash {
 namespace {
 
 // Estimation time needed for each stage to complete in seconds.
-constexpr base::TimeDelta kDownloadTime = base::TimeDelta::FromMinutes(50);
-constexpr base::TimeDelta kVerifyingTime = base::TimeDelta::FromMinutes(5);
-constexpr base::TimeDelta kFinalizingTime = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kDownloadTime = base::Minutes(50);
+constexpr base::TimeDelta kVerifyingTime = base::Minutes(5);
+constexpr base::TimeDelta kFinalizingTime = base::Minutes(5);
 
 // Progress in percent falls on a stage. Should be 100 in total.
 const int kDownloadProgress = 90;
@@ -40,7 +40,7 @@ constexpr StageTimeExpectationProgress kStages[] = {
 };
 
 // Minimum timestep between two consecutive measurements for the download rates.
-constexpr const base::TimeDelta kMinTimeStep = base::TimeDelta::FromSeconds(1);
+constexpr const base::TimeDelta kMinTimeStep = base::Seconds(1);
 
 // Smooth factor that is used for the average downloading speed
 // estimation.
@@ -52,7 +52,7 @@ const double kDownloadSpeedSmoothFactor = 0.1;
 const double kDownloadAverageSpeedDropBound = 1e-8;
 
 // An upper bound for possible downloading time left estimations.
-constexpr const base::TimeDelta kMaxTimeLeft = base::TimeDelta::FromDays(1);
+constexpr const base::TimeDelta kMaxTimeLeft = base::Days(1);
 
 }  // anonymous namespace
 
@@ -184,8 +184,7 @@ void UpdateTimeEstimator::UpdateForDownloadingTimeLeftEstimation(
   time_left = std::min(time_left, kMaxTimeLeft.InSecondsF());
 
   has_download_time_estimation_ = true;
-  download_time_left_ =
-      base::TimeDelta::FromSeconds(static_cast<int>(round(time_left)));
+  download_time_left_ = base::Seconds(static_cast<int>(round(time_left)));
 }
 
 }  // namespace ash

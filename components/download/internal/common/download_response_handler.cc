@@ -11,6 +11,7 @@
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/download_utils.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 
 namespace download {
@@ -76,6 +77,7 @@ DownloadResponseHandler::DownloadResponseHandler(
       request_origin_(request_origin),
       download_source_(download_source),
       has_strong_validators_(false),
+      credentials_mode_(resource_request->credentials_mode),
       is_partial_request_(save_info_->offset > 0),
       completed_(false),
       abort_reason_(DOWNLOAD_INTERRUPT_REASON_NONE),
@@ -85,6 +87,9 @@ DownloadResponseHandler::DownloadResponseHandler(
   }
   if (resource_request->request_initiator.has_value())
     request_initiator_ = resource_request->request_initiator;
+
+  if (resource_request->trusted_params)
+    isolation_info_ = resource_request->trusted_params->isolation_info;
 }
 
 DownloadResponseHandler::~DownloadResponseHandler() = default;
@@ -151,6 +156,8 @@ DownloadResponseHandler::CreateDownloadCreateInfo(
   create_info->request_origin = request_origin_;
   create_info->download_source = download_source_;
   create_info->request_initiator = request_initiator_;
+  create_info->credentials_mode = credentials_mode_;
+  create_info->isolation_info = isolation_info_;
 
   HandleResponseHeaders(head.headers.get(), create_info.get());
   return create_info;

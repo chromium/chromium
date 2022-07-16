@@ -15,8 +15,8 @@ without changes to the corresponding grd file. -->
     <includes>
       <if expr="chromeos">
         <include name="IDR_WEBUI_CROS_COLORS_CSS"
-                 file="${root_gen_dir}/ui/chromeos/colors/cros_colors.generated.css"
-                 resource_path="chromeos/colors/cros_colors.generated.css"
+                 file="${root_gen_dir}/ui/chromeos/styles/cros_styles.css"
+                 resource_path="chromeos/colors/cros_styles.css"
                  type="chrome_html"
                  use_base_dir="false" />
       </if>

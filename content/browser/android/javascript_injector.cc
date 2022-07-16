@@ -76,6 +76,6 @@ jlong JNI_JavascriptInjectorImpl_Init(
   return reinterpret_cast<intptr_t>(injector);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(JavascriptInjector)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(JavascriptInjector);
 
 }  // namespace content

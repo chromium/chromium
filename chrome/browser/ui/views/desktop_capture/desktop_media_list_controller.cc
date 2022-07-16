@@ -112,8 +112,12 @@ void DesktopMediaListController::SetThumbnailSize(const gfx::Size& size) {
   media_list_->SetThumbnailSize(size);
 }
 
-void DesktopMediaListController::OnSourceAdded(DesktopMediaList* list,
-                                               int index) {
+void DesktopMediaListController::SetPreviewedSource(
+    const absl::optional<content::DesktopMediaID>& id) {
+  media_list_->SetPreviewedSource(id);
+}
+
+void DesktopMediaListController::OnSourceAdded(int index) {
   if (view_) {
     view_->GetSourceListListener()->OnSourceAdded(
         base::checked_cast<size_t>(index));
@@ -133,36 +137,36 @@ void DesktopMediaListController::OnSourceAdded(DesktopMediaList* list,
   }
 }
 
-void DesktopMediaListController::OnSourceRemoved(DesktopMediaList* list,
-                                                 int index) {
+void DesktopMediaListController::OnSourceRemoved(int index) {
   if (view_) {
     view_->GetSourceListListener()->OnSourceRemoved(
         base::checked_cast<size_t>(index));
   }
 }
 
-void DesktopMediaListController::OnSourceMoved(DesktopMediaList* list,
-                                               int old_index,
-                                               int new_index) {
+void DesktopMediaListController::OnSourceMoved(int old_index, int new_index) {
   if (view_) {
     view_->GetSourceListListener()->OnSourceMoved(
         base::checked_cast<size_t>(old_index),
         base::checked_cast<size_t>(new_index));
   }
 }
-void DesktopMediaListController::OnSourceNameChanged(DesktopMediaList* list,
-                                                     int index) {
+void DesktopMediaListController::OnSourceNameChanged(int index) {
   if (view_) {
     view_->GetSourceListListener()->OnSourceNameChanged(
         base::checked_cast<size_t>(index));
   }
 }
-void DesktopMediaListController::OnSourceThumbnailChanged(
-    DesktopMediaList* list,
-    int index) {
+void DesktopMediaListController::OnSourceThumbnailChanged(int index) {
   if (view_) {
     view_->GetSourceListListener()->OnSourceThumbnailChanged(
         base::checked_cast<size_t>(index));
+  }
+}
+
+void DesktopMediaListController::OnSourcePreviewChanged(size_t index) {
+  if (view_) {
+    view_->GetSourceListListener()->OnSourcePreviewChanged(index);
   }
 }
 

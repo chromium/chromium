@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/credentialmanager/federated_credential.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_init.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -67,6 +69,25 @@ FederatedCredential::FederatedCredential(
 
 bool FederatedCredential::IsFederatedCredential() const {
   return true;
+}
+
+ScriptPromise FederatedCredential::logout(
+    ScriptState* script_state,
+    const HeapVector<Member<WebIdLogoutRequest>>&) {
+  // TODO(goto): actually implement this.
+  return ScriptPromise::RejectWithDOMException(
+      script_state,
+      MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
+                                         "Logout API not yet implemented"));
+}
+
+ScriptPromise FederatedCredential::revoke(ScriptState* script_state,
+                                          String account_id) {
+  // TODO(goto): actually implement this.
+  return ScriptPromise::RejectWithDOMException(
+      script_state,
+      MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
+                                         "Revocation API not yet implemented"));
 }
 
 }  // namespace blink

@@ -20,6 +20,7 @@ extern const char kBorealisDiskStartupAvailableSpaceHistogram[];
 extern const char kBorealisDiskStartupExpandableSpaceHistogram[];
 extern const char kBorealisDiskStartupResultHistogram[];
 extern const char kBorealisDiskStartupTotalSpaceHistogram[];
+extern const char kBorealisGameModeResultHistogram[];
 extern const char kBorealisInstallNumAttemptsHistogram[];
 extern const char kBorealisInstallResultHistogram[];
 extern const char kBorealisInstallOverallTimeHistogram[];
@@ -128,6 +129,14 @@ enum class BorealisShutdownResult {
   kMaxValue = kFailed,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BorealisGameModeResult {
+  kAttempted = 0,
+  kFailed = 1,
+  kMaxValue = kFailed,
+};
+
 void RecordBorealisInstallNumAttemptsHistogram();
 void RecordBorealisInstallResultHistogram(BorealisInstallResult install_result);
 void RecordBorealisInstallOverallTimeHistogram(base::TimeDelta install_time);
@@ -157,6 +166,8 @@ void RecordBorealisDiskStartupExpandableSpaceHistogram(
 void RecordBorealisDiskStartupTotalSpaceHistogram(uint64_t total_bytes);
 void RecordBorealisDiskStartupResultHistogram(
     BorealisSyncDiskSizeResult disk_result);
+void RecordBorealisGameModeResultHistogram(
+    BorealisGameModeResult game_mode_result);
 
 }  // namespace borealis
 

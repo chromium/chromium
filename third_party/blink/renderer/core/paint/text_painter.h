@@ -46,7 +46,8 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
              unsigned end_offset,
              unsigned length,
              const TextPaintStyle&,
-             DOMNodeId node_id);
+             DOMNodeId node_id,
+             const AutoDarkMode& auto_dark_mode);
 
   void PaintDecorationsExceptLineThrough(const TextDecorationOffsetBase&,
                                          TextDecorationInfo&,
@@ -64,13 +65,15 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
   void PaintInternalRun(TextRunPaintInfo&,
                         unsigned from,
                         unsigned to,
-                        DOMNodeId node_id);
+                        DOMNodeId node_id,
+                        const AutoDarkMode& auto_dark_mode);
 
   template <PaintInternalStep step>
   void PaintInternal(unsigned start_offset,
                      unsigned end_offset,
                      unsigned truncation_point,
-                     DOMNodeId node_id);
+                     DOMNodeId node_id,
+                     const AutoDarkMode& auto_dark_mode);
 
   const TextRun& run_;
   LayoutTextCombine* combined_text_ = nullptr;

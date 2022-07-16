@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that blackboxed script will be skipped while stepping on worker.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function installWorker()

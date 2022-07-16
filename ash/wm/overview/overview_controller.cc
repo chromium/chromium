@@ -44,12 +44,12 @@ namespace {
 // triggered animation observer is drawn. Wait 50ms in attempt to let its draw
 // and swap finish.
 constexpr base::TimeDelta kOcclusionPauseDurationForStart =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 
 // Wait longer when exiting overview mode in case when a user may re-enter
 // overview mode immediately, contents are ready.
 constexpr base::TimeDelta kOcclusionPauseDurationForEnd =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 
 bool IsSplitViewDividerDraggedOrAnimated() {
   SplitViewController* split_view_controller =
@@ -202,8 +202,9 @@ void OverviewController::AddExitAnimationObserver(
     std::unique_ptr<DelayedAnimationObserver> animation_observer) {
   // No delayed animations should be created when overview mode is set to exit
   // immediately.
-  DCHECK_NE(overview_session_->enter_exit_overview_type(),
-            OverviewEnterExitType::kImmediateExit);
+  DCHECK(IsCompletingShutdownAnimations() ||
+         overview_session_->enter_exit_overview_type() !=
+             OverviewEnterExitType::kImmediateExit);
 
   animation_observer->SetOwner(this);
   delayed_animations_.push_back(std::move(animation_observer));

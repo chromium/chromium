@@ -62,12 +62,6 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
 
     remover_ = profile()->GetBrowsingDataRemover();
     remover_->SetEmbedderDelegate(&delegate_);
-
-    // TODO(crbug.com/1182630): This can be removed once crbug.com/1182630 is
-    // fixed. Make sure quota manager for storage partition is finished
-    // initializing.
-    profile()->GetDefaultStoragePartition();
-    task_environment()->RunUntilIdle();
   }
 
   void TearDown() override {
@@ -90,9 +84,9 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
   uint64_t GetAsMask(const base::DictionaryValue* dict,
                      std::string path,
                      uint64_t mask_value) {
-    bool result;
-    EXPECT_TRUE(dict->GetBoolean(path, &result)) << "for " << path;
-    return result ? mask_value : 0;
+    absl::optional<bool> result = dict->FindBoolPath(path);
+    EXPECT_TRUE(result.has_value()) << "for " << path;
+    return result.value() ? mask_value : 0;
   }
 
   void RunBrowsingDataRemoveFunctionAndCompareRemovalMask(
@@ -154,8 +148,8 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     EXPECT_TRUE(result_value->GetAsDictionary(&result));
     base::DictionaryValue* options;
     EXPECT_TRUE(result->GetDictionary("options", &options));
-    double since;
-    EXPECT_TRUE(options->GetDouble("since", &since));
+    absl::optional<double> since = options->FindDoubleKey("since");
+    ASSERT_TRUE(since);
 
     double expected_since = 0;
     if (since_pref != browsing_data::TimePeriod::ALL_TIME) {
@@ -167,7 +161,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     // second, so we'll make sure the requested start time is within 10 seconds.
     // Since the smallest selectable period is an hour, that should be
     // sufficient.
-    EXPECT_LE(expected_since, since + 10.0 * 1000.0);
+    EXPECT_LE(expected_since, *since + 10.0 * 1000.0);
   }
 
   void SetPrefsAndVerifySettings(int data_type_flags,

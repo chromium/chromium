@@ -6,15 +6,29 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
+#include "base/feature_list.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_styles.h"
+
+namespace {
+
+SkColor GetBgColor(bool use_dark_mode) {
+  return cros_styles::ResolveColor(
+      cros_styles::ColorName::kBgColor, use_dark_mode,
+      base::FeatureList::IsEnabled(
+          ash::features::kSemanticColorsDebugOverride));
+}
+
+}  // namespace
 
 std::unique_ptr<WebApplicationInfo>
 CreateWebAppInfoForOSSettingsSystemWebApp() {
@@ -30,10 +44,12 @@ CreateWebAppInfoForOSSettingsSystemWebApp() {
 
       },
       *info);
-  info->theme_color = 0xffffffff;
-  info->background_color = 0xffffffff;
+  info->theme_color = GetBgColor(/*use_dark_mode=*/false);
+  info->dark_mode_theme_color = GetBgColor(/*use_dark_mode=*/true);
+  info->background_color = info->theme_color;
+  info->dark_mode_background_color = info->dark_mode_theme_color;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->open_as_window = true;
+  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
   return info;
 }
 

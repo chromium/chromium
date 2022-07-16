@@ -28,8 +28,7 @@ constexpr int kAudioSampleRate = 48000;
 
 // This is the preferred opus buffer duration (60 ms), which corresponds to a
 // value of 2880 frames per buffer (|kOpusFramesPerBuffer|).
-constexpr base::TimeDelta kOpusBufferDuration =
-    base::TimeDelta::FromMilliseconds(60);
+constexpr base::TimeDelta kOpusBufferDuration = base::Milliseconds(60);
 constexpr int kOpusFramesPerBuffer = kOpusBufferDuration.InMicroseconds() *
                                      kAudioSampleRate /
                                      base::Time::kMicrosecondsPerSecond;
@@ -130,7 +129,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
   // by ProduceAudioAndEncode().
   std::unique_ptr<AudioBus> current_audio_bus_;
 
-  base::TimeDelta buffer_duration_ = base::TimeDelta::FromMilliseconds(10);
+  base::TimeDelta buffer_duration_ = base::Milliseconds(10);
 };
 
 TEST_P(AudioEncodersTest, OpusTimestamps) {
@@ -169,7 +168,7 @@ TEST_P(AudioEncodersTest, OpusTimestamps) {
     current_timestamp = base::TimeTicks();
     for (auto& ts : timestamps) {
       auto drift = (current_timestamp - ts).magnitude();
-      EXPECT_LE(drift, base::TimeDelta::FromMicroseconds(1));
+      EXPECT_LE(drift, base::Microseconds(1));
       current_timestamp += kOpusBufferDuration;
     }
   }
@@ -216,7 +215,7 @@ TEST_P(AudioEncodersTest, OpusExtraData) {
 //   2. timestamps of buffers coming immediately after Flush() calls.
 TEST_P(AudioEncodersTest, OpusTimeContinuityBreak) {
   base::TimeTicks current_timestamp = base::TimeTicks::Now();
-  base::TimeDelta gap = base::TimeDelta::FromMicroseconds(1500);
+  base::TimeDelta gap = base::Microseconds(1500);
   buffer_duration_ = kOpusBufferDuration;
   std::vector<base::TimeTicks> timestamps;
 

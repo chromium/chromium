@@ -71,7 +71,8 @@ class FakeAdaptiveIconDelegate : public AdaptiveIconDelegate {
           icon->icon_png_data->foreground_icon_png_data) {
         auto png_data(icon->icon_png_data->foreground_icon_png_data.value());
         png_data_.emplace_back(std::string(png_data.begin(), png_data.end()));
-        result.emplace_back(gfx::ImageSkia());
+        result.emplace_back(
+            gfx::ImageSkia(gfx::ImageSkiaRep(gfx::Size(20, 20), 0.0f)));
       }
     }
     std::move(callback).Run(std::move(result));

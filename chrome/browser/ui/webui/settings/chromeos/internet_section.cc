@@ -614,21 +614,15 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"internetConfigName", IDS_SETTINGS_INTERNET_CONFIG_NAME},
       {"internetDetailPageTitle", IDS_SETTINGS_INTERNET_DETAIL},
       {"internetDeviceEnabling", IDS_SETTINGS_INTERNET_DEVICE_ENABLING},
-      {"internetDeviceDisabling", IDS_SETTINGS_INTERNET_DEVICE_DISABLING},
-      {"internetDeviceInitializing", IDS_SETTINGS_INTERNET_DEVICE_INITIALIZING},
       {"internetDeviceBusy", IDS_SETTINGS_INTERNET_DEVICE_BUSY},
       {"internetJoinType", IDS_SETTINGS_INTERNET_JOIN_TYPE},
       {"internetKnownNetworksPageTitle", IDS_SETTINGS_INTERNET_KNOWN_NETWORKS},
-      {"internetMobileSearching", IDS_SETTINGS_INTERNET_MOBILE_SEARCH},
       {"internetNoNetworks", IDS_SETTINGS_INTERNET_NO_NETWORKS},
       {"internetPageTitle", IDS_SETTINGS_INTERNET},
       {"internetSummaryButtonA11yLabel",
        IDS_SETTINGS_INTERNET_SUMMARY_BUTTON_ACCESSIBILITY_LABEL},
       {"internetToggleMobileA11yLabel",
        IDS_SETTINGS_INTERNET_TOGGLE_MOBILE_ACCESSIBILITY_LABEL},
-      {"internetToggleTetherLabel", IDS_SETTINGS_INTERNET_TOGGLE_TETHER_LABEL},
-      {"internetToggleTetherSubtext",
-       IDS_SETTINGS_INTERNET_TOGGLE_TETHER_SUBTEXT},
       {"internetToggleWiFiA11yLabel",
        IDS_SETTINGS_INTERNET_TOGGLE_WIFI_ACCESSIBILITY_LABEL},
       {"knownNetworksAll", IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_ALL},
@@ -645,6 +639,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"mobileNetworkScanningLabel", IDS_MOBILE_NETWORK_SCANNING_MESSAGE},
       {"networkAllowDataRoaming",
        IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING},
+      {"networkAllowDataRoamingRequired",
+       IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING_REQUIRED},
       {"networkAllowDataRoamingEnabledHome",
        IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING_ENABLED_HOME},
       {"networkAllowDataRoamingEnabledRoaming",
@@ -826,13 +822,12 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   ui::network_element::AddConfigLocalizedStrings(html_source);
   ui::network_element::AddErrorLocalizedStrings(html_source);
   cellular_setup::AddNonStringLoadTimeData(html_source);
-  if (features::IsCellularActivationUiEnabled()) {
-    cellular_setup::AddLocalizedStrings(html_source);
-  }
+  cellular_setup::AddLocalizedStrings(html_source);
 
-  html_source->AddBoolean("allowPerNetworkRoaming",
-                          base::FeatureList::IsEnabled(
-                              ash::features::kCellularAllowPerNetworkRoaming));
+  html_source->AddBoolean(
+      "bypassConnectivityCheck",
+      base::FeatureList::IsEnabled(
+          ash::features::kCellularBypassESimInstallationConnectivityCheck));
   html_source->AddBoolean("showTechnologyBadge",
                           !ash::features::IsSeparateNetworkIconsEnabled());
   html_source->AddBoolean(
@@ -1081,7 +1076,7 @@ void InternetSection::OnDeviceList(
         // check is in OnNetworkList().
         if (device->device_state == DeviceStateType::kEnabled) {
           updater.AddSearchTags(GetCellularOnSearchConcepts());
-          if (features::IsCellularActivationUiEnabled() && IsESimCapable())
+          if (IsESimCapable())
             updater.AddSearchTags(GetCellularESimCapableSearchTerms());
         } else if (device->device_state == DeviceStateType::kDisabled) {
           updater.AddSearchTags(GetCellularOffSearchConcepts());
@@ -1150,10 +1145,7 @@ void InternetSection::OnNetworkList(
           active_cellular_iccid_.has_value() &&
           network->type_state->get_cellular()->iccid == *active_cellular_iccid_;
 
-      if (!features::IsCellularActivationUiEnabled()) {
-        active_cellular_guid_ = network->guid;
-        updater.AddSearchTags(GetCellularSearchConcepts());
-      } else if (is_primary_cellular_network) {
+      if (is_primary_cellular_network) {
         active_cellular_guid_ = network->guid;
         updater.AddSearchTags(GetCellularSearchConcepts());
 

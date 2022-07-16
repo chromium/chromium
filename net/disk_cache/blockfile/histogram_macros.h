@@ -43,9 +43,9 @@
       counter->AddTime(sample); \
     } while (0)
 
-#define CACHE_HISTOGRAM_TIMES(name, sample) CACHE_HISTOGRAM_CUSTOM_TIMES( \
-    name, sample, base::TimeDelta::FromMilliseconds(1), \
-    base::TimeDelta::FromSeconds(10), 50)
+#define CACHE_HISTOGRAM_TIMES(name, sample)                         \
+  CACHE_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
+                               base::Seconds(10), 50)
 
 #define CACHE_HISTOGRAM_ENUMERATION(name, sample, boundary_value) do { \
     base::HistogramBase* counter = base::LinearHistogram::FactoryGet( \
@@ -104,6 +104,7 @@
         break;                                                       \
       case net::GENERATED_BYTE_CODE_CACHE:                           \
       case net::GENERATED_NATIVE_CODE_CACHE:                         \
+      case net::GENERATED_WEBUI_BYTE_CODE_CACHE:                     \
         break;                                                       \
     }                                                                \
   }

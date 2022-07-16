@@ -15,6 +15,10 @@ namespace remoting {
 class AudioPlaybackStream::Core {
  public:
   explicit Core(std::unique_ptr<AudioPlaybackSink> audio_sink);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core();
 
   void AddAudioPacket(std::unique_ptr<AudioPacket> packet);
@@ -25,8 +29,6 @@ class AudioPlaybackStream::Core {
   // |jitter_buffer_| must outlive |audio_sink_|.
   std::unique_ptr<AudioJitterBuffer> jitter_buffer_;
   std::unique_ptr<AudioPlaybackSink> audio_sink_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 AudioPlaybackStream::Core::Core(std::unique_ptr<AudioPlaybackSink> audio_sink) {

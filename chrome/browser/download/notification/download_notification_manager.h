@@ -21,6 +21,11 @@ class DownloadNotificationManager : public DownloadUIController::Delegate,
                                     public DownloadItemNotification::Observer {
  public:
   explicit DownloadNotificationManager(Profile* profile);
+
+  DownloadNotificationManager(const DownloadNotificationManager&) = delete;
+  DownloadNotificationManager& operator=(const DownloadNotificationManager&) =
+      delete;
+
   ~DownloadNotificationManager() override;
 
   // DownloadUIController::Delegate overrides.
@@ -35,8 +40,6 @@ class DownloadNotificationManager : public DownloadUIController::Delegate,
   Profile* profile_;
   std::map<ContentId, DownloadItemNotification::DownloadItemNotificationPtr>
       items_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadNotificationManager);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_NOTIFICATION_DOWNLOAD_NOTIFICATION_MANAGER_H_

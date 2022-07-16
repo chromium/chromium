@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/performance_manager/public/persistence/site_data/feature_usage.h"
@@ -23,6 +22,9 @@ class SiteDataImpl;
 
 class SiteDataReader {
  public:
+  SiteDataReader(const SiteDataReader&) = delete;
+  SiteDataReader& operator=(const SiteDataReader&) = delete;
+
   ~SiteDataReader();
 
   // Accessors for the site characteristics usage.
@@ -67,8 +69,6 @@ class SiteDataReader {
 
   // Used for invalidating callbacks.
   base::WeakPtrFactory<SiteDataReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataReader);
 };
 
 }  // namespace performance_manager

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
@@ -27,6 +26,9 @@ class MetricsRecorder {
     if (histogram)
       base_samples_ = histogram->SnapshotSamples();
   }
+
+  MetricsRecorder(const MetricsRecorder&) = delete;
+  MetricsRecorder& operator=(const MetricsRecorder&) = delete;
 
   void CheckInitiationStatus(
       int expected_disabled_by_prefs,
@@ -256,8 +258,6 @@ class MetricsRecorder {
   std::string key_;
   std::unique_ptr<HistogramSamples> base_samples_;
   std::unique_ptr<HistogramSamples> samples_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsRecorder);
 };
 
 TEST(TranslateBrowserMetricsTest, ReportInitiationStatus) {

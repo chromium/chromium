@@ -20,6 +20,11 @@
 class CrashMemoryMetricsCollector : public base::SupportsUserData::Data {
  public:
   explicit CrashMemoryMetricsCollector(content::RenderProcessHost* host);
+
+  CrashMemoryMetricsCollector(const CrashMemoryMetricsCollector&) = delete;
+  CrashMemoryMetricsCollector& operator=(const CrashMemoryMetricsCollector&) =
+      delete;
+
   ~CrashMemoryMetricsCollector() override;
 
   // Key used to attach the handler to the RenderProcessHost.
@@ -33,8 +38,6 @@ class CrashMemoryMetricsCollector : public base::SupportsUserData::Data {
 
  private:
   base::WritableSharedMemoryMapping metrics_mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashMemoryMetricsCollector);
 };
 
 #endif  // COMPONENTS_CRASH_CONTENT_BROWSER_CRASH_MEMORY_METRICS_COLLECTOR_ANDROID_H_

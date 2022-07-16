@@ -84,7 +84,9 @@ public class MapsGoFirstRunTest {
                 if (mWebappActivity == null) mWebappActivity = activity;
             }
         };
-        ApplicationStatus.registerStateListenerForAllActivities(mActivityStateListener);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ApplicationStatus.registerStateListenerForAllActivities(mActivityStateListener);
+        });
     }
 
     @After
@@ -92,7 +94,9 @@ public class MapsGoFirstRunTest {
         WebApkValidator.setDisableValidationForTesting(false);
         FirstRunUtils.setDisableDelayOnExitFreForTest(false);
         LightweightFirstRunActivity.setSupportSkippingTos(true);
-        ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
+        });
     }
 
     @Test

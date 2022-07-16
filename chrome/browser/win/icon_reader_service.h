@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WIN_ICON_READER_SERVICE_H_
 #define CHROME_BROWSER_WIN_ICON_READER_SERVICE_H_
 
-#include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
+#include "chrome/services/util_win/public/mojom/util_read_icon.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 // Spawns a new isolated instance of the Windows icon utility service and

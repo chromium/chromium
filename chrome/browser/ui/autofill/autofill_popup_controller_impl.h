@@ -47,6 +47,10 @@ class ContentAutofillDriver;
 // other, public functions are available to its instantiator.
 class AutofillPopupControllerImpl : public AutofillPopupController {
  public:
+  AutofillPopupControllerImpl(const AutofillPopupControllerImpl&) = delete;
+  AutofillPopupControllerImpl& operator=(const AutofillPopupControllerImpl&) =
+      delete;
+
   // Creates a new |AutofillPopupControllerImpl|, or reuses |previous| if the
   // construction arguments are the same. |previous| may be invalidated by this
   // call. The controller will listen for keyboard input routed to
@@ -197,8 +201,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   absl::optional<int> selected_line_;
 
   base::WeakPtrFactory<AutofillPopupControllerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillPopupControllerImpl);
 };
 
 }  // namespace autofill

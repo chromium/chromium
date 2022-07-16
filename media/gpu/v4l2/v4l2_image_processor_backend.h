@@ -14,12 +14,11 @@
 #include <linux/videodev2.h>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
@@ -53,6 +52,10 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
       ErrorCB error_cb,
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
 
+  V4L2ImageProcessorBackend(const V4L2ImageProcessorBackend&) = delete;
+  V4L2ImageProcessorBackend& operator=(const V4L2ImageProcessorBackend&) =
+      delete;
+
   // ImageProcessor implementation.
   void Process(scoped_refptr<VideoFrame> input_frame,
                scoped_refptr<VideoFrame> output_frame,
@@ -82,6 +85,8 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
                               size_t* num_planes);
 
  private:
+  friend struct std::default_delete<V4L2ImageProcessorBackend>;
+
   // Callback for initialization.
   using InitCB = base::OnceCallback<void(bool)>;
 
@@ -189,10 +194,16 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
   base::WeakPtrFactory<V4L2ImageProcessorBackend> backend_weak_this_factory_{
       this};
   base::WeakPtrFactory<V4L2ImageProcessorBackend> poll_weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2ImageProcessorBackend);
 };
 
 }  // namespace media
+
+namespace std {
+
+template <>
+struct default_delete<media::V4L2ImageProcessorBackend>
+    : public default_delete<media::ImageProcessorBackend> {};
+
+}  // namespace std
 
 #endif  // MEDIA_GPU_V4L2_V4L2_IMAGE_PROCESSOR_BACKEND_H_

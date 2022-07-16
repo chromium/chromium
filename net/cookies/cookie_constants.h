@@ -78,8 +78,22 @@ enum class CookieSameSiteString {
   kMaxValue = kExtended
 };
 
-// What rules to apply when determining whether access to a particular cookie is
-// allowed.
+// What SameSite rules to apply when determining whether access to a particular
+// cookie is allowed.
+//
+// At present, NONLEGACY semantics enforces the following:
+//  1) SameSite=Lax by default: A cookie that does not specify a SameSite
+//     attribute will be treated as if it were Lax (except allowing unsafe
+//     top-level requests for 2 minutes after its creation; see
+//     "lax-allowing-unsafe" or "Lax+POST").
+//  2) SameSite=None requires Secure: A cookie specifying SameSite=None must
+//     also specify Secure.
+//  3) Schemeful Same-Site: When determining what requests are considered
+//     same-site or cross-site, a "site" is considered to be a registrable
+//     domain with a scheme (as opposed to just a registrable domain).
+//
+// When the semantics is LEGACY, these three behaviors are disabled. When the
+// semantics is UNKNOWN, the behavior may or may not depend on base::Features.
 enum class CookieAccessSemantics {
   // Has not been checked yet or there is no way to check.
   UNKNOWN = -1,
@@ -338,6 +352,23 @@ CookieSourceSchemeName GetSchemeNameEnum(const GURL& url);
 //
 // Empty string was chosen because it is the smallest, non-null value.
 NET_EXPORT extern const char kEmptyCookiePartitionKey[];
+
+// Used for a histogram that measures which character caused the cookie
+// string to be truncated.
+//
+// Do not reorder or renumber. Used for metrics.
+enum class TruncatingCharacterInCookieStringType {
+  // No truncating character in the cookie line.
+  kTruncatingCharNone = 0,
+  // Cookie line truncated because of \x0.
+  kTruncatingCharNull = 1,
+  // Cookie line truncated because of \xD.
+  kTruncatingCharNewline = 2,
+  // Cookie line truncated because of \xA.
+  kTruncatingCharLineFeed = 3,
+
+  kMaxValue = kTruncatingCharLineFeed,  // Keep as the last value.
+};
 
 }  // namespace net
 

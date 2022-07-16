@@ -23,6 +23,10 @@ namespace internal {
 class SystemMediaControlsWin : public SystemMediaControls {
  public:
   SystemMediaControlsWin();
+
+  SystemMediaControlsWin(const SystemMediaControlsWin&) = delete;
+  SystemMediaControlsWin& operator=(const SystemMediaControlsWin&) = delete;
+
   ~SystemMediaControlsWin() override;
 
   static SystemMediaControlsWin* GetInstance();
@@ -97,8 +101,6 @@ class SystemMediaControlsWin : public SystemMediaControls {
   bool initialized_ = false;
 
   base::ObserverList<SystemMediaControlsObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMediaControlsWin);
 };
 
 }  // namespace internal

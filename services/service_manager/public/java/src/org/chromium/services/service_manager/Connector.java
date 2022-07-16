@@ -19,7 +19,7 @@ public class Connector implements ConnectionErrorHandler {
     private org.chromium.service_manager.mojom.Connector.Proxy mConnector;
 
     private static class ConnectorBindInterfaceResponseImpl
-            implements org.chromium.service_manager.mojom.Connector.BindInterfaceResponse {
+            implements org.chromium.service_manager.mojom.Connector.BindInterface_Response {
         @Override
         public void call(Integer result, Identity identity) {}
     }
@@ -41,7 +41,7 @@ public class Connector implements ConnectionErrorHandler {
         ServiceFilter filter = new ServiceFilter();
         filter.serviceName = serviceName;
 
-        org.chromium.service_manager.mojom.Connector.BindInterfaceResponse callback =
+        org.chromium.service_manager.mojom.Connector.BindInterface_Response callback =
                 new ConnectorBindInterfaceResponseImpl();
         mConnector.bindInterface(filter, interfaceName, request.passHandle(),
                 org.chromium.service_manager.mojom.BindInterfacePriority.IMPORTANT, callback);

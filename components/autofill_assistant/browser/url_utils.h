@@ -31,6 +31,11 @@ bool IsSamePublicSuffixDomain(const GURL& url1, const GURL& url2);
 // string for invalid urls.
 std::string GetOrganizationIdentifyingDomain(const GURL& url);
 
+// This checks if the schema transition is allowed. If the schemas are equal
+// this returns true. If the schema goes from http to https this returns true.
+// Returns false otherwise.
+bool IsAllowedSchemaTransition(const GURL& from, const GURL& to);
+
 }  // namespace url_utils
 }  // namespace autofill_assistant
 

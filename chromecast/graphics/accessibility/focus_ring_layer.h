@@ -23,6 +23,10 @@ class FocusRingLayer : public AccessibilityLayer {
  public:
   explicit FocusRingLayer(aura::Window* root_window,
                           AccessibilityLayerDelegate* delegate);
+
+  FocusRingLayer(const FocusRingLayer&) = delete;
+  FocusRingLayer& operator=(const FocusRingLayer&) = delete;
+
   ~FocusRingLayer() override;
 
   // AccessibilityLayer overrides:
@@ -42,8 +46,6 @@ class FocusRingLayer : public AccessibilityLayer {
   void OnPaintLayer(const ui::PaintContext& context) override;
 
   absl::optional<SkColor> custom_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusRingLayer);
 };
 
 }  // namespace chromecast

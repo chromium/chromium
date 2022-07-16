@@ -705,10 +705,12 @@ void GlassBrowserFrameView::LayoutTitleBar() {
   }
 
   if (web_app_frame_toolbar()) {
+    const int web_app_titlebar_height =
+        caption_button_container_->size().height();
     std::pair<int, int> remaining_bounds =
-        web_app_frame_toolbar()->LayoutInContainer(next_leading_x,
-                                                   next_trailing_x, window_top,
-                                                   titlebar_visual_height);
+        web_app_frame_toolbar()->LayoutInContainer(
+            next_leading_x, next_trailing_x, WindowTopY(),
+            web_app_titlebar_height);
     next_leading_x = remaining_bounds.first;
     next_trailing_x = remaining_bounds.second;
   }
@@ -738,7 +740,7 @@ void GlassBrowserFrameView::LayoutCaptionButtons() {
     return;
   }
 
-  caption_button_container_->SetVisible(true);
+  caption_button_container_->SetVisible(!frame()->IsFullscreen());
 
   const gfx::Size preferred_size =
       caption_button_container_->GetPreferredSize();
@@ -747,9 +749,7 @@ void GlassBrowserFrameView::LayoutCaptionButtons() {
   // is smaller than our preferred button size.
   if (IsWebUITabStrip() && IsMaximized()) {
     height = std::min(height, TitlebarMaximizedVisualHeight());
-  } else if (browser_view()->IsWindowControlsOverlayEnabled()) {
-    // When the WCO is enabled, the caption button container should be the same
-    // height as the WebAppFrameToolbar for a seamless overlay.
+  } else if (web_app_frame_toolbar()) {
     height = IsMaximized() ? TitlebarMaximizedVisualHeight()
                            : TitlebarHeight(false) - WindowTopY();
   }
@@ -779,9 +779,10 @@ void GlassBrowserFrameView::LayoutWindowControlsOverlay() {
 
 void GlassBrowserFrameView::LayoutClientView() {
   client_view_bounds_ = GetLocalBounds();
-  int top_inset = browser_view()->IsWindowControlsOverlayEnabled()
-                      ? WindowTopY()
-                      : GetTopInset(false);
+  int top_inset = GetTopInset(false);
+  if (browser_view()->IsWindowControlsOverlayEnabled()) {
+    top_inset = frame()->IsFullscreen() ? 0 : WindowTopY();
+  }
   client_view_bounds_.Inset(0, top_inset, 0, 0);
 }
 
@@ -808,7 +809,7 @@ void GlassBrowserFrameView::StopThrobber() {
     HICON big_icon = nullptr;
 
     gfx::ImageSkia icon = views::GetImageSkiaFromImageModel(
-        browser_view()->GetWindowIcon(), GetNativeTheme());
+        browser_view()->GetWindowIcon(), GetColorProvider());
 
     if (!icon.isNull()) {
       // Keep previous icons alive as long as they are referenced by the HWND.

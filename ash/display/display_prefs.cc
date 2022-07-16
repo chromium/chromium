@@ -72,15 +72,13 @@ constexpr char kDisplayPowerInternalOnExternalOff[] =
 // TODO(mukai): fix base::JSONValueConverter and use it here.
 bool ValueToInsets(const base::DictionaryValue& value, gfx::Insets* insets) {
   DCHECK(insets);
-  int top = 0;
-  int left = 0;
-  int bottom = 0;
-  int right = 0;
-  if (value.GetInteger(kInsetsTopKey, &top) &&
-      value.GetInteger(kInsetsLeftKey, &left) &&
-      value.GetInteger(kInsetsBottomKey, &bottom) &&
-      value.GetInteger(kInsetsRightKey, &right)) {
-    insets->Set(top, left, bottom, right);
+
+  absl::optional<int> top = value.FindIntKey(kInsetsTopKey);
+  absl::optional<int> left = value.FindIntKey(kInsetsLeftKey);
+  absl::optional<int> bottom = value.FindIntKey(kInsetsBottomKey);
+  absl::optional<int> right = value.FindIntKey(kInsetsRightKey);
+  if (top && left && bottom && right) {
+    insets->Set(*top, *left, *bottom, *right);
     return true;
   }
   return false;
@@ -137,12 +135,12 @@ bool ValueToTouchData(const base::DictionaryValue& value,
   if (!ParseTouchCalibrationStringValue(str, point_pair_quad))
     return false;
 
-  int width, height;
-  if (!value.GetInteger(kTouchCalibrationWidth, &width) ||
-      !value.GetInteger(kTouchCalibrationHeight, &height)) {
+  absl::optional<int> width = value.FindIntKey(kTouchCalibrationWidth);
+  absl::optional<int> height = value.FindIntKey(kTouchCalibrationHeight);
+  if (!width || !height) {
     return false;
   }
-  touch_calibration_data->bounds = gfx::Size(width, height);
+  touch_calibration_data->bounds = gfx::Size(*width, *height);
   return true;
 }
 
@@ -235,23 +233,23 @@ void LoadDisplayProperties(PrefService* local_state) {
         id == display::kInvalidDisplayId) {
       continue;
     }
-    display::Display::Rotation rotation = display::Display::ROTATE_0;
     const gfx::Insets* insets_to_set = nullptr;
 
-    int rotation_value = 0;
-    if (dict_value->GetInteger("rotation", &rotation_value)) {
-      rotation = static_cast<display::Display::Rotation>(rotation_value);
+    display::Display::Rotation rotation = display::Display::ROTATE_0;
+    if (absl::optional<int> rotation_value =
+            dict_value->FindIntKey("rotation")) {
+      rotation = static_cast<display::Display::Rotation>(*rotation_value);
     }
 
-    int width = 0, height = 0;
-    dict_value->GetInteger("width", &width);
-    dict_value->GetInteger("height", &height);
+    int width = dict_value->FindIntKey("width").value_or(0);
+    int height = dict_value->FindIntKey("height").value_or(0);
     gfx::Size resolution_in_pixels(width, height);
 
     float device_scale_factor = 1.0;
-    int dsf_value = 0;
-    if (dict_value->GetInteger("device-scale-factor", &dsf_value))
-      device_scale_factor = static_cast<float>(dsf_value) / 1000.0f;
+    if (absl::optional<int> dsf_value =
+            dict_value->FindIntKey("device-scale-factor")) {
+      device_scale_factor = static_cast<float>(*dsf_value) / 1000.0f;
+    }
 
     // Default refresh rate is 60 Hz, until
     // DisplayManager::OnNativeDisplaysChanged() updates us with the actual
@@ -259,16 +257,18 @@ void LoadDisplayProperties(PrefService* local_state) {
     double refresh_rate = 60.0;
     bool is_interlaced = false;
     if (display::features::IsListAllDisplayModesEnabled()) {
-      dict_value->GetDouble("refresh-rate", &refresh_rate);
-      dict_value->GetBoolean("interlaced", &is_interlaced);
+      refresh_rate =
+          dict_value->FindDoubleKey("refresh-rate").value_or(refresh_rate);
+      absl::optional<bool> is_interlaced_opt =
+          dict_value->FindBoolKey("interlaced");
+      is_interlaced = is_interlaced_opt.value_or(false);
     }
 
     gfx::Insets insets;
     if (ValueToInsets(*dict_value, &insets))
       insets_to_set = &insets;
 
-    double display_zoom = 1.0;
-    dict_value->GetDouble(kDisplayZoom, &display_zoom);
+    double display_zoom = dict_value->FindDoubleKey(kDisplayZoom).value_or(1.0);
 
     GetDisplayManager()->RegisterDisplayProperty(
         id, rotation, insets_to_set, resolution_in_pixels, device_scale_factor,
@@ -409,12 +409,12 @@ void LoadExternalDisplayMirrorInfo(PrefService* local_state) {
       local_state->Get(prefs::kExternalDisplayMirrorInfo);
   std::set<int64_t> external_display_mirror_info;
   for (const auto& it : pref_data->GetList()) {
-    std::string display_id_str;
-    if (!it.GetAsString(&display_id_str))
+    const std::string* display_id_str = it.GetIfString();
+    if (!display_id_str)
       continue;
 
     int64_t display_id;
-    if (!base::StringToInt64(display_id_str, &display_id))
+    if (!base::StringToInt64(*display_id_str, &display_id))
       continue;
 
     external_display_mirror_info.emplace(display_id);

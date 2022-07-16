@@ -16,7 +16,7 @@ namespace media {
 constexpr uint32_t kADTSStartCodeMask = 0xfff00000;
 
 ADTSStreamParser::ADTSStreamParser()
-    : MPEGAudioStreamParserBase(kADTSStartCodeMask, kCodecAAC, 0) {}
+    : MPEGAudioStreamParserBase(kADTSStartCodeMask, AudioCodec::kAAC, 0) {}
 
 ADTSStreamParser::~ADTSStreamParser() = default;
 

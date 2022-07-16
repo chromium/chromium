@@ -22,6 +22,9 @@ class Snapshot : public base::trace_event::ConvertableToTraceFormat {
  public:
   static std::unique_ptr<Snapshot> Create(const ContextState* state);
 
+  Snapshot(const Snapshot&) = delete;
+  Snapshot& operator=(const Snapshot&) = delete;
+
   ~Snapshot() override = default;
 
   // Save a screenshot of the currently bound framebuffer.
@@ -37,8 +40,6 @@ class Snapshot : public base::trace_event::ConvertableToTraceFormat {
 
   std::vector<unsigned char> screenshot_pixels_;
   gfx::Size screenshot_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(Snapshot);
 };
 
 }  // namespace

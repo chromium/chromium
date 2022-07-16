@@ -26,6 +26,9 @@ class DownloadManagerTabHelper
       public web::WebStateObserver,
       public web::DownloadTaskObserver {
  public:
+  DownloadManagerTabHelper(const DownloadManagerTabHelper&) = delete;
+  DownloadManagerTabHelper& operator=(const DownloadManagerTabHelper&) = delete;
+
   ~DownloadManagerTabHelper() override;
 
   // Creates TabHelper. |delegate| is not retained by TabHelper. |web_state|
@@ -68,8 +71,6 @@ class DownloadManagerTabHelper
   std::unique_ptr<web::DownloadTask> task_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadManagerTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_DOWNLOAD_MANAGER_TAB_HELPER_H_

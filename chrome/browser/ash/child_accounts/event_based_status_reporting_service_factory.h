@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_EVENT_BASED_STATUS_REPORTING_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_EVENT_BASED_STATUS_REPORTING_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -27,6 +26,11 @@ class EventBasedStatusReportingServiceFactory
 
   static EventBasedStatusReportingServiceFactory* GetInstance();
 
+  EventBasedStatusReportingServiceFactory(
+      const EventBasedStatusReportingServiceFactory&) = delete;
+  EventBasedStatusReportingServiceFactory& operator=(
+      const EventBasedStatusReportingServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<EventBasedStatusReportingServiceFactory>;
 
@@ -36,8 +40,6 @@ class EventBasedStatusReportingServiceFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(EventBasedStatusReportingServiceFactory);
 };
 
 }  // namespace ash

@@ -7,7 +7,7 @@
  */
 
 // clang-format off
- // #import {assert} from 'chrome://resources/js/assert.m.js';
+ // #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
  // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
  // #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 // clang-format on
@@ -75,6 +75,9 @@
     /** @private {!Array<chromeos.networkConfig.mojom.VpnProvider>} */
     this.vpnProviders_ = [];
 
+    /** @private {!Map<string, !Array<!Object>>} */
+    this.trafficCountersMap_ = new Map();
+
     this.resetForTest();
   }
 
@@ -110,9 +113,10 @@
 
     this.globalPolicy_ =
         /** @type {!chromeos.networkConfig.mojom.GlobalPolicy} */ ({
+          allow_only_policy_cellular_networks: false,
           allow_only_policy_networks_to_autoconnect: false,
-          allow_only_policy_networks_to_connect: false,
-          allow_only_policy_networks_to_connect_if_available: false,
+          allow_only_policy_wifi_networks_to_connect: false,
+          allow_only_policy_wifi_networks_to_connect_if_available: false,
           blocked_hex_ssids: [],
         });
 
@@ -138,6 +142,9 @@
      'startConnect',
      'configureNetwork',
      'getAlwaysOnVpn',
+     'getSupportedVpnTypes',
+     'requestTrafficCounters',
+     'resetTrafficCounters',
     ].forEach((methodName) => {
       this.resolverMap_.set(methodName, new PromiseResolver());
     });
@@ -225,6 +232,36 @@
     const managed = this.managedProperties_.get(guid);
     if (managed) {
       managed.connectionState = state;
+    }
+    this.onActiveNetworksChanged();
+  }
+
+  /**
+   * @param {string} guid
+   * @param {!Array<!Object>} trafficCounters counters for guid
+   */
+  setTrafficCountersForTest(guid, trafficCounters) {
+    const network = this.networkStates_.find(state => {
+      return state.guid === guid;
+    });
+    assert(!!network, 'Network not found: ' + guid);
+
+    this.trafficCountersMap_.set(guid, trafficCounters);
+  }
+
+  /**
+   * @param {string} guid
+   * @param {?mojoBase.mojom.Time} lastResetTime last reset
+   * time for network with guid
+   */
+  setLastResetTimeForTest(guid, lastResetTime) {
+    const network = this.networkStates_.find(state => {
+      return state.guid === guid;
+    });
+    assert(!!network, 'Network not found: ' + guid);
+    const managed = this.managedProperties_.get(guid);
+    if (managed) {
+      managed.trafficCounterResetTime = lastResetTime;
     }
     this.onActiveNetworksChanged();
   }
@@ -358,18 +395,48 @@
   }
 
   /**
+   * @param {!chromeos.networkConfig.mojom.ConnectionStateType} connectionState
+   * @param {!chromeos.networkConfig.mojom.FilterType} filterType
+   * @return {boolean} Whether the connectionState type is not filtered out.
+   */
+  passFilter(connectionState, filterType) {
+    switch (filterType) {
+      case chromeos.networkConfig.mojom.FilterType.kActive:
+        return connectionState !==
+            chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected;
+      case chromeos.networkConfig.mojom.FilterType.kVisible:
+        return true;
+      case chromeos.networkConfig.mojom.FilterType.kConfigured:
+        return true;
+      case chromeos.networkConfig.mojom.FilterType.kAll:
+        return true;
+    }
+    assertNotReached('Failed to find filterType: ' + filterType.toString());
+  }
+
+  /**
    * @param {!chromeos.networkConfig.mojom.NetworkFilter} filter
    * @return {!Promise<{result:
    *     !Array<!chromeos.networkConfig.mojom.NetworkStateProperties>}>}
    */
   getNetworkStateList(filter) {
     return new Promise(resolve => {
-      const type = filter.networkType;
+      const networkType = filter.networkType;
+      const filterType = filter.filter;
+      const limit = filter.limit;
       let result;
-      if (type === chromeos.networkConfig.mojom.NetworkType.kAll) {
-        result = this.networkStates_.slice();
+      if (networkType === chromeos.networkConfig.mojom.NetworkType.kAll) {
+        result = this.networkStates_.filter(
+            state => this.passFilter(state.connectionState, filterType));
       } else {
-        result = this.networkStates_.filter(state => state.type === type);
+        result = this.networkStates_.filter(
+            state =>
+                (state.type === networkType &&
+                 this.passFilter(state.connectionState, filterType)));
+      }
+
+      if (limit !== chromeos.networkConfig.mojom.NO_LIMIT) {
+        result = result.slice(0, limit);
       }
       this.methodCalled('getNetworkStateList');
       resolve({result: result});
@@ -520,6 +587,19 @@
   }
 
   /**
+   * @return {!Promise<{result: !Array<string>}>}
+   */
+  getSupportedVpnTypes() {
+    return new Promise(resolve => {
+      this.methodCalled('getSupportedVpnTypes');
+      resolve({
+        vpnTypes:
+            ['l2tpipsec', 'openvpn', 'thirdpartyvpn', 'arcvpn', 'wireguard']
+      });
+    });
+  }
+
+  /**
    * @return {!Promise<{
    *     serverCas: !Array<!chromeos.networkConfig.mojom.NetworkCertificate>,
    *     userCerts: !Array<!chromeos.networkConfig.mojom.NetworkCertificate>}>}
@@ -547,5 +627,29 @@
    */
   setAlwaysOnVpn(properties) {
     this.alwaysOnVpnProperties_ = properties;
+  }
+
+  /**
+   * @param {string} guid
+   * @return {!Promise<!Array<!Object>>} traffic counters for network with guid
+   */
+  requestTrafficCounters(guid) {
+    return new Promise(resolve => {
+      this.methodCalled('requestTrafficCounters');
+      resolve({trafficCounters: this.trafficCountersMap_.get(guid)});
+    });
+  }
+
+  /**
+   * @param {string} guid
+   */
+  resetTrafficCounters(guid) {
+    const trafficCounters = this.trafficCountersMap_.get(guid);
+    assert(!!trafficCounters, 'Network not found: ' + guid);
+    trafficCounters.forEach(function(counter) {
+      counter.rxBytes = 0;
+      counter.txBytes = 0;
+    });
+    this.methodCalled('resetTrafficCounters');
   }
 }

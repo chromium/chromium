@@ -20,7 +20,7 @@ using base::UserMetricsAction;
 class FirstUserActionRecorderTest : public PlatformTest {
  protected:
   void SetUp() override {
-    base::TimeDelta delta = base::TimeDelta::FromSeconds(60);
+    base::TimeDelta delta = base::Seconds(60);
     recorder_.reset(new FirstUserActionRecorder(delta));
 
     histogram_tester_.reset(new base::HistogramTester());

@@ -46,6 +46,7 @@ public class MerchantTrustMessageContextTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn("fake_host").when(mMockGurl).getHost();
+        doReturn("fake_spec").when(mMockGurl).getSpec();
         doReturn(mMockGurl).when(mMockNavigationHandle).getUrl();
     }
 
@@ -91,10 +92,18 @@ public class MerchantTrustMessageContextTest {
 
     @Test
     public void testGetHostName() {
-        assertEquals("", (new MerchantTrustMessageContext(null, mMockWebContents)).getHostName());
+        assertEquals(null, (new MerchantTrustMessageContext(null, mMockWebContents)).getHostName());
         assertEquals("fake_host",
                 (new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents))
                         .getHostName());
+    }
+
+    @Test
+    public void testGetUrl() {
+        assertEquals(null, (new MerchantTrustMessageContext(null, mMockWebContents)).getUrl());
+        assertEquals("fake_spec",
+                (new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents))
+                        .getUrl());
     }
 
     @Test

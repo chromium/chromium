@@ -6,6 +6,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
+#include "base/process/launch.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -148,18 +149,20 @@ class MediaEngagementAutoplayBrowserTest
 
     // Write JSON file with the server origin in it.
     base::ListValue list;
-    list.AppendString(origin.Serialize());
+    list.Append(origin.Serialize());
     std::string json_data;
     base::JSONWriter::Write(list, &json_data);
     EXPECT_TRUE(base::WriteFile(input_path, json_data));
 
-    // Get the path to the "generator" binary in the module path.
-    base::FilePath module_dir;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_MODULE, &module_dir));
+    // Get the path to the "generator" script. As it is copied by
+    // //tools/media_engagement_preload/BUILD.gn, it is generated test data.
+    base::FilePath generator_dir;
+    EXPECT_TRUE(
+        base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &generator_dir));
 
     // Launch the generator and wait for it to finish.
     base::CommandLine cmd(GetPythonPath());
-    cmd.AppendArgPath(module_dir.Append(
+    cmd.AppendArgPath(generator_dir.Append(
         FILE_PATH_LITERAL("tools/media_engagement_preload/make_dafsa.py")));
     cmd.AppendArgPath(input_path);
     cmd.AppendArgPath(output_path);

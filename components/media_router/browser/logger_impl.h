@@ -6,6 +6,7 @@
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_LOGGER_IMPL_H_
 
 #include "base/containers/circular_deque.h"
+#include "base/gtest_prod_util.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/media_router/common/mojom/logger.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

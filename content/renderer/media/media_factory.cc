@@ -14,10 +14,12 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "build/chromecast_buildflags.h"
+#include "build/os_buildflags.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -82,7 +84,6 @@
 #endif
 
 #if defined(OS_FUCHSIA)
-#include "content/renderer/media/fuchsia_renderer_factory.h"
 #include "media/fuchsia/cdm/client/fuchsia_cdm_util.h"
 #elif BUILDFLAG(ENABLE_MOJO_CDM)
 #include "media/mojo/clients/mojo_cdm_factory.h"  // nogncheck
@@ -107,8 +108,13 @@
 #if BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
 // Enable libcast streaming receiver.
 #include "components/cast_streaming/public/cast_streaming_url.h"  // nogncheck
+#include "media/cast/receiver/cast_streaming_renderer_controller_proxy.h"  // nogncheck
 #include "media/cast/receiver/cast_streaming_renderer_factory.h"  // nogncheck
 #endif
+
+#if BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
+#include "content/renderer/media/cast_renderer_factory.h"
+#endif  // BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
 
 #if BUILDFLAG(IS_CHROMECAST)
 // Enable remoting receiver
@@ -117,24 +123,19 @@
 #include "media/remoting/remoting_renderer_factory.h"  // nogncheck
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+#include "content/renderer/media/win/dcomp_texture_wrapper_impl.h"
+#include "media/base/win/mf_feature_checks.h"
 #include "media/cdm/win/media_foundation_cdm.h"
 #include "media/mojo/clients/win/media_foundation_renderer_client_factory.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
-// This limit corresponds to the per-platform 99.9th %ile of the number of
-// WebMediaPlayers used by a single frame, as measured in March 2021. This
-// tries to balance minimizing web platform breakage and preventing abusive
-// API usage. See http://crbug.com/1144736#c49
-constexpr size_t kDefaultMaxWebMediaPlayers =
-#if defined(OS_ANDROID)
-    40;
-#else
-    // All desktop platforms share the same value.
-    75;
-#endif
+// This limit is much higher than it needs to be right now, because the logic
+// is also capping audio-only media streams, and it is quite normal for their
+// to be many of those. See http://crbug.com/1232649
+constexpr size_t kDefaultMaxWebMediaPlayers = 1000;
 
 size_t GetMaxWebMediaPlayers() {
   static const size_t kMaxWebMediaPlayers = []() {
@@ -156,6 +157,10 @@ class FrameFetchContext : public blink::ResourceFetchContext {
   explicit FrameFetchContext(blink::WebLocalFrame* frame) : frame_(frame) {
     DCHECK(frame_);
   }
+
+  FrameFetchContext(const FrameFetchContext&) = delete;
+  FrameFetchContext& operator=(const FrameFetchContext&) = delete;
+
   ~FrameFetchContext() override = default;
 
   blink::WebLocalFrame* frame() const { return frame_; }
@@ -168,7 +173,6 @@ class FrameFetchContext : public blink::ResourceFetchContext {
 
  private:
   blink::WebLocalFrame* frame_;
-  DISALLOW_COPY_AND_ASSIGN(FrameFetchContext);
 };
 
 // Obtains the media ContextProvider and calls the given callback on the same
@@ -232,9 +236,8 @@ void LogRoughness(
       measurement.frame_size.height() > 700) {
     base::UmaHistogramCustomTimes(
         base::JoinString({kRoughnessHistogramName, suffix}, "."),
-        base::TimeDelta::FromMillisecondsD(measurement.roughness),
-        base::TimeDelta::FromMilliseconds(1),
-        base::TimeDelta::FromMilliseconds(99), 100);
+        base::Milliseconds(measurement.roughness), base::Milliseconds(1),
+        base::Milliseconds(99), 100);
     // TODO(liberato): Record freezing, once we're sure that we're computing the
     // score we want.  For now, don't record anything so we don't have a mis-
     // match of UMA values.
@@ -607,8 +610,18 @@ MediaFactory::CreateRendererFactorySelector(
     return nullptr;
 
   auto factory_selector = std::make_unique<media::RendererFactorySelector>();
-  bool use_default_renderer_factory = true;
+  bool is_base_renderer_factory_set = false;
   bool use_media_player_renderer = false;
+
+  auto factory = GetContentClient()->renderer()->GetBaseRendererFactory(
+      render_frame_, media_log, decoder_factory,
+      base::BindRepeating(&RenderThreadImpl::GetGpuFactories,
+                          base::Unretained(render_thread)));
+  if (factory) {
+    is_base_renderer_factory_set = true;
+    factory_selector->AddBaseFactory(RendererType::kContentEmbedderDefined,
+                                     std::move(factory));
+  }
 
 #if defined(OS_ANDROID)
   use_media_player_renderer = UseMediaPlayerRenderer(url);
@@ -627,10 +640,10 @@ MediaFactory::CreateRendererFactorySelector(
               render_thread->GetStreamTexureFactory(),
               render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia)));
 
-  if (use_media_player_renderer) {
+  if (!is_base_renderer_factory_set && use_media_player_renderer) {
     factory_selector->AddBaseFactory(RendererType::kMediaPlayer,
                                      std::move(media_player_factory));
-    use_default_renderer_factory = false;
+    is_base_renderer_factory_set = true;
   } else {
     // Always give |factory_selector| a MediaPlayerRendererClient factory. WMPI
     // might fallback to it if the final redirected URL is an HLS url.
@@ -659,8 +672,9 @@ MediaFactory::CreateRendererFactorySelector(
 
 #if BUILDFLAG(ENABLE_MOJO_RENDERER)
   DCHECK(!use_media_player_renderer);
-  if (renderer_media_playback_options.is_mojo_renderer_enabled()) {
-    use_default_renderer_factory = false;
+  if (!is_base_renderer_factory_set &&
+      renderer_media_playback_options.is_mojo_renderer_enabled()) {
+    is_base_renderer_factory_set = true;
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
     factory_selector->AddBaseFactory(
         RendererType::kCast, std::make_unique<CastRendererClientFactory>(
@@ -677,24 +691,17 @@ MediaFactory::CreateRendererFactorySelector(
   }
 #endif  // BUILDFLAG(ENABLE_MOJO_RENDERER)
 
-#if defined(OS_FUCHSIA)
-  use_default_renderer_factory = false;
+#if BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
+  DCHECK(!is_base_renderer_factory_set && !use_media_player_renderer);
+  is_base_renderer_factory_set = true;
   factory_selector->AddBaseFactory(
-      RendererType::kFuchsia,
-      std::make_unique<FuchsiaRendererFactory>(
+      RendererType::kCast,
+      std::make_unique<CastRendererFactory>(
           media_log, decoder_factory,
           base::BindRepeating(&RenderThreadImpl::GetGpuFactories,
                               base::Unretained(render_thread)),
           render_frame_->GetBrowserInterfaceBroker()));
-#endif  // defined(OS_FUCHSIA)
-
-  if (use_default_renderer_factory) {
-    DCHECK(!use_media_player_renderer);
-    auto default_factory = CreateDefaultRendererFactory(
-        media_log, decoder_factory, render_thread, render_frame_);
-    factory_selector->AddBaseFactory(RendererType::kDefault,
-                                     std::move(default_factory));
-  }
+#endif  // BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
   mojo::PendingRemote<media::mojom::RemotingSource> remoting_source;
@@ -721,16 +728,34 @@ MediaFactory::CreateRendererFactorySelector(
       RendererType::kCourier, std::move(courier_factory), is_remoting_cb);
 #endif
 
-#if defined(OS_WIN)
-  // Only use MediaFoundationRenderer when MediaFoundationCdm is available.
-  if (media::MediaFoundationCdm::IsAvailable()) {
+#if BUILDFLAG(IS_WIN)
+  bool use_mf_for_clear = media::SupportMediaFoundationClearPlayback();
+  // Only use MediaFoundationRenderer when MediaFoundationCdm is available or
+  // MediaFoundation for Clear is supported.
+  if (media::MediaFoundationCdm::IsAvailable() || use_mf_for_clear) {
+    auto dcomp_texture_creation_cb =
+        base::BindRepeating(&DCOMPTextureWrapperImpl::Create,
+                            render_thread->GetDCOMPTextureFactory(),
+                            render_thread->GetMediaThreadTaskRunner());
+
     factory_selector->AddFactory(
         RendererType::kMediaFoundation,
         std::make_unique<media::MediaFoundationRendererClientFactory>(
-            render_thread->compositor_task_runner(),
+            media_log, std::move(dcomp_texture_creation_cb),
             CreateMojoRendererFactory()));
+
+    if (use_mf_for_clear) {
+      // We want to use Media Foundation even for non-explicit Media Foundation
+      // clients, register Media Foundation as the base renderer type.
+      // We don't use AddBaseFactory here because if ENABLE_MOJO_RENDERER
+      // is set then we may have already called it previously and it is
+      // expected that AddBaseFactory will only be called when there is not
+      // already a base factory type set. Instead manually set the new base
+      // factory type with SetBaseRendererType.
+      factory_selector->SetBaseRendererType(RendererType::kMediaFoundation);
+    }
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMECAST)
   if (renderer_media_playback_options.is_remoting_renderer_enabled()) {
@@ -759,6 +784,9 @@ MediaFactory::CreateRendererFactorySelector(
 
 #if BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
   if (cast_streaming::IsCastStreamingMediaSourceUrl(url)) {
+    DCHECK(!is_base_renderer_factory_set);
+    DCHECK(!use_media_player_renderer);
+    is_base_renderer_factory_set = true;
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
     auto default_factory_cast_streaming =
         std::make_unique<CastRendererClientFactory>(
@@ -772,15 +800,31 @@ MediaFactory::CreateRendererFactorySelector(
         media_log, decoder_factory, render_thread, render_frame_);
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
+    auto* renderer_controller_proxy =
+        media::cast::CastStreamingRendererControllerProxy::GetInstance();
+    DCHECK(renderer_controller_proxy);
     auto cast_streaming_renderer_factory =
         std::make_unique<media::cast::CastStreamingRendererFactory>(
-            std::move(default_factory_cast_streaming));
+            std::move(default_factory_cast_streaming),
+            renderer_controller_proxy->GetReceiver(render_frame_));
     factory_selector->AddBaseFactory(
         RendererType::kCastStreaming,
         std::move(cast_streaming_renderer_factory));
   }
 #endif  // BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
 #endif  // BUILDFLAG(IS_CHROMECAST)
+
+  if (!is_base_renderer_factory_set) {
+    // TODO(crbug.com/1265448): These sorts of checks shouldn't be necessary if
+    // this method were significantly refactored to split things up by
+    // Android/non-Android/Cast/etc...
+    DCHECK(!use_media_player_renderer);
+    is_base_renderer_factory_set = true;
+    auto default_factory = CreateDefaultRendererFactory(
+        media_log, decoder_factory, render_thread, render_frame_);
+    factory_selector->AddBaseFactory(RendererType::kDefault,
+                                     std::move(default_factory));
+  }
 
   return factory_selector;
 }

@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_native_library.h"
@@ -65,6 +64,9 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
       const SessionKeysChangeCB& session_keys_change_cb,
       const SessionExpirationUpdateCB& session_expiration_update_cb,
       CdmCreatedCB cdm_created_cb);
+
+  CdmAdapter(const CdmAdapter&) = delete;
+  CdmAdapter& operator=(const CdmAdapter&) = delete;
 
   // Returns the version of the CDM interface that the created CDM uses. Must
   // only be called after the CDM is successfully initialized.
@@ -265,8 +267,6 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<CdmAdapter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CdmAdapter);
 };
 
 }  // namespace media

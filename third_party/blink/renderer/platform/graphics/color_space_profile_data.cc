@@ -99,14 +99,16 @@ void Bt709ColorProfileData(Vector<char>& data) {
   DCHECK(WTF::IsMainThread());
   DCHECK(data.IsEmpty());
 
-  data.Append(bt709ColorProfile::data(), bt709ColorProfile::size());
+  data.Append(bt709ColorProfile::data(),
+              static_cast<wtf_size_t>(bt709ColorProfile::size()));
 }
 
 void Bt601ColorProfileData(Vector<char>& data) {
   DCHECK(WTF::IsMainThread());
   DCHECK(data.IsEmpty());
 
-  data.Append(bt601ColorProfile::data(), bt601ColorProfile::size());
+  data.Append(bt601ColorProfile::data(),
+              static_cast<wtf_size_t>(bt601ColorProfile::size()));
 }
 
 }  // namespace blink

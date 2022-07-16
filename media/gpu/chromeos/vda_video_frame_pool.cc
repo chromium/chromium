@@ -29,7 +29,7 @@ VdaVideoFramePool::~VdaVideoFramePool() {
   weak_this_factory_.InvalidateWeakPtrs();
 }
 
-absl::optional<GpuBufferLayout> VdaVideoFramePool::Initialize(
+CroStatus::Or<GpuBufferLayout> VdaVideoFramePool::Initialize(
     const Fourcc& fourcc,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -41,16 +41,16 @@ absl::optional<GpuBufferLayout> VdaVideoFramePool::Initialize(
 
   if (use_protected) {
     LOG(ERROR) << "Cannot allocated protected buffers for VDA";
-    return absl::nullopt;
+    return CroStatus::Codes::kProtectedContentUnsupported;
   }
 
   visible_rect_ = visible_rect;
   natural_size_ = natural_size;
 
-  if (max_num_frames_ == max_num_frames && fourcc_ && *fourcc_ == fourcc &&
-      coded_size_ == coded_size) {
+  if (layout_ && max_num_frames_ == max_num_frames && fourcc_ &&
+      *fourcc_ == fourcc && coded_size_ == coded_size) {
     DVLOGF(3) << "Arguments related to frame layout are not changed, skip.";
-    return layout_;
+    return *layout_;
   }
 
   // Invalidate weak pointers so the re-import callbacks of the frames we are
@@ -58,49 +58,52 @@ absl::optional<GpuBufferLayout> VdaVideoFramePool::Initialize(
   weak_this_factory_.InvalidateWeakPtrs();
   weak_this_ = weak_this_factory_.GetWeakPtr();
 
-  max_num_frames_ = max_num_frames;
-  fourcc_ = fourcc;
-  coded_size_ = coded_size;
-
   // Clear the pool and reset the layout to prevent previous frames are recycled
   // back to the pool.
   frame_pool_ = {};
+  max_num_frames_ = 0;
   layout_ = absl::nullopt;
+  fourcc_ = absl::nullopt;
+  coded_size_ = gfx::Size();
 
-  // Receive the layout from the callback. |layout_| is accessed on
-  // |parent_task_runner_| except OnRequestFramesDone(). However, we block
-  // |parent_task_runner_| until OnRequestFramesDone() returns. So we don't need
-  // a lock to protect |layout_|.
-  // Also it's safe to use base::Unretained() here because we block here, |this|
-  // must be alive during the callback.
+  CroStatus::Or<GpuBufferLayout> status_or_layout =
+      CroStatus::Codes::kResetRequired;
   base::WaitableEvent done;
   vda_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VdaDelegate::RequestFrames, vda_, fourcc, coded_size,
                      visible_rect, max_num_frames,
                      base::BindOnce(&VdaVideoFramePool::OnRequestFramesDone,
-                                    base::Unretained(this), &done),
+                                    &done, &status_or_layout),
                      base::BindRepeating(&VdaVideoFramePool::ImportFrameThunk,
                                          parent_task_runner_, weak_this_)));
   done.Wait();
 
-  return layout_;
+  if (status_or_layout.has_error())
+    return status_or_layout;
+
+  GpuBufferLayout layout = std::move(status_or_layout).value();
+  if (layout.fourcc() != fourcc ||
+      layout.size().height() < coded_size.height() ||
+      layout.size().width() < coded_size.width()) {
+    return CroStatus::Codes::kFailedToGetFrameLayout;
+  }
+
+  max_num_frames_ = max_num_frames;
+  layout_ = std::move(layout);
+  fourcc_ = fourcc;
+  coded_size_ = coded_size;
+  return *layout_;
 }
 
+// static
 void VdaVideoFramePool::OnRequestFramesDone(
     base::WaitableEvent* done,
-    absl::optional<GpuBufferLayout> value) {
+    CroStatus::Or<GpuBufferLayout>* layout,
+    CroStatus::Or<GpuBufferLayout> layout_value) {
   DVLOGF(3);
-  // RequestFrames() is blocked on |parent_task_runner_| to wait for this method
-  // finishes, so this method must not be run on the same sequence.
-  DCHECK(!parent_task_runner_->RunsTasksInCurrentSequence());
 
-  DCHECK(fourcc_);
-  DCHECK_EQ(value->fourcc(), *fourcc_);
-  DCHECK_GE(value->size().height(), coded_size_.height());
-  DCHECK_GE(value->size().width(), coded_size_.width());
-
-  layout_ = value;
+  *layout = std::move(layout_value);
   done->Signal();
 }
 
@@ -164,6 +167,12 @@ void VdaVideoFramePool::NotifyWhenFrameAvailable(base::OnceClosure cb) {
 
   frame_available_cb_ = std::move(cb);
   CallFrameAvailableCbIfNeeded();
+}
+
+void VdaVideoFramePool::ReleaseAllFrames() {
+  // TODO(jkardatzke): Implement this when we do protected content on Android
+  // for Intel platforms.
+  NOTREACHED();
 }
 
 void VdaVideoFramePool::CallFrameAvailableCbIfNeeded() {

@@ -8,12 +8,12 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -100,6 +100,11 @@ class AppLaunchSplashScreenHandler
       JSCallsContainer* js_calls_container,
       const scoped_refptr<NetworkStateInformer>& network_state_informer,
       ErrorScreen* error_screen);
+
+  AppLaunchSplashScreenHandler(const AppLaunchSplashScreenHandler&) = delete;
+  AppLaunchSplashScreenHandler& operator=(const AppLaunchSplashScreenHandler&) =
+      delete;
+
   ~AppLaunchSplashScreenHandler() override;
 
   // BaseScreenHandler implementation:
@@ -132,8 +137,10 @@ class AppLaunchSplashScreenHandler
   void HandleCancelAppLaunch();
   void HandleContinueAppLaunch();
   void HandleNetworkConfigRequested();
+  void DoToggleNetworkConfig(bool visible);
 
   Delegate* delegate_ = nullptr;
+  bool is_shown_ = false;
   bool show_on_init_ = false;
   AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 
@@ -143,7 +150,9 @@ class AppLaunchSplashScreenHandler
   // Whether network configure UI is being shown.
   bool network_config_shown_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(AppLaunchSplashScreenHandler);
+  // If this has value it will be populated through ToggleNetworkConfig(value)
+  // after screen is shown. Cleared after screen was shown.
+  absl::optional<bool> toggle_network_config_on_show_;
 };
 
 }  // namespace chromeos

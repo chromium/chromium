@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "url/gurl.h"
@@ -23,6 +23,17 @@ AccuracyTipSafeBrowsingClient::AccuracyTipSafeBrowsingClient(
       io_task_runner_(std::move(io_task_runner)) {}
 
 AccuracyTipSafeBrowsingClient::~AccuracyTipSafeBrowsingClient() = default;
+
+void AccuracyTipSafeBrowsingClient::CheckAccuracyStatus(
+    const GURL& url,
+    AccuracyCheckCallback callback) {
+  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &AccuracyTipSafeBrowsingClient::CheckAccuracyStatusOnIOThread, this,
+          url, std::move(callback)));
+}
 
 void AccuracyTipSafeBrowsingClient::CheckAccuracyStatusOnIOThread(
     const GURL& url,
@@ -54,6 +65,12 @@ void AccuracyTipSafeBrowsingClient::ReplyOnUIThread(
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   ui_task_runner_->PostTask(FROM_HERE,
                             base::BindOnce(std::move(callback), status));
+}
+
+void AccuracyTipSafeBrowsingClient::Shutdown() {
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AccuracyTipSafeBrowsingClient::ShutdownOnIOThread, this));
 }
 
 void AccuracyTipSafeBrowsingClient::ShutdownOnIOThread() {

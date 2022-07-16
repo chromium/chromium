@@ -21,7 +21,7 @@ void* __real_malloc(size_t);
 void* __real_calloc(size_t, size_t);
 void* __real_realloc(void*, size_t);
 void* __real_memalign(size_t, size_t);
-void* __real_free(void*);
+void __real_free(void*);
 }  // extern "C"
 
 namespace {

@@ -37,6 +37,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
@@ -57,8 +58,8 @@ constexpr uint32_t kDndActionWindowDrag =
 
 class WaylandWindowDragController::ExtendedDragSource {
  public:
-  ExtendedDragSource(const WaylandConnection& connection,
-                     wl_data_source* source) {
+  ExtendedDragSource(WaylandConnection& connection, wl_data_source* source)
+      : connection_(connection) {
     DCHECK(connection.extended_drag_v1());
     uint32_t options = ZCR_EXTENDED_DRAG_V1_OPTIONS_ALLOW_SWALLOW |
                        ZCR_EXTENDED_DRAG_V1_OPTIONS_ALLOW_DROP_NO_TARGET |
@@ -73,10 +74,12 @@ class WaylandWindowDragController::ExtendedDragSource {
     auto* surface = window ? window->root_surface()->surface() : nullptr;
     zcr_extended_drag_source_v1_drag(source_.get(), surface, offset.x(),
                                      offset.y());
+    connection_.ScheduleFlush();
   }
 
  private:
   wl::Object<zcr_extended_drag_source_v1> source_;
+  WaylandConnection& connection_;
 };
 
 WaylandWindowDragController::WaylandWindowDragController(
@@ -101,22 +104,29 @@ bool WaylandWindowDragController::StartDragSession() {
   if (state_ != State::kIdle)
     return true;
 
-  origin_window_ = window_manager_->GetCurrentFocusedWindow();
+  origin_window_ = window_manager_->GetCurrentPointerOrTouchFocusedWindow();
   if (!origin_window_) {
     LOG(ERROR) << "Failed to get origin window.";
     return false;
   }
 
+  auto serial = connection_->serial_tracker().GetSerial(
+      {wl::SerialType::kTouchPress, wl::SerialType::kMousePress});
+  if (!serial.has_value()) {
+    LOG(ERROR) << "Failed to retrieve touch/mouse press serial.";
+    return false;
+  }
+
   VLOG(1) << "Starting DND session.";
   state_ = State::kAttached;
-  drag_source_ = connection_->event_serial().event_type == ET_TOUCH_PRESSED
+  drag_source_ = serial->type == wl::SerialType::kTouchPress
                      ? DragSource::kTouch
                      : DragSource::kMouse;
 
   DCHECK(!data_source_);
   data_source_ = data_device_manager_->CreateSource(this);
   data_source_->Offer({kMimeTypeChromiumWindow});
-  data_source_->SetAction(DragDropTypes::DRAG_MOVE);
+  data_source_->SetDndActions(kDndActionWindowDrag);
 
   if (IsExtendedDragAvailable()) {
     extended_drag_source_ = std::make_unique<ExtendedDragSource>(
@@ -126,7 +136,7 @@ bool WaylandWindowDragController::StartDragSession() {
                << "Window/Tab dragging won't be fully functional.";
   }
 
-  data_device_->StartDrag(*data_source_, *origin_window_,
+  data_device_->StartDrag(*data_source_, *origin_window_, serial->value,
                           /*icon_surface=*/nullptr, this);
   pointer_grab_owner_ = origin_window_;
   should_process_drag_event_ = false;
@@ -167,7 +177,8 @@ void WaylandWindowDragController::StopDragging() {
   // snapped into a tab strip. So switch to |kAttached| state, store the focused
   // window as the pointer grabber and ask to quit the nested loop.
   state_ = State::kAttaching;
-  pointer_grab_owner_ = window_manager_->GetCurrentFocusedWindow();
+  pointer_grab_owner_ =
+      window_manager_->GetCurrentPointerOrTouchFocusedWindow();
   DCHECK(pointer_grab_owner_);
   QuitLoop();
 }
@@ -202,7 +213,12 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
   // as WaylandScreen, are able to properly retrieve focus related info during
   // window dragging sesstions.
   pointer_location_ = location;
-  pointer_delegate_->OnPointerFocusChanged(window, location);
+
+  DCHECK(drag_source_.has_value());
+  if (*drag_source_ == DragSource::kMouse)
+    pointer_delegate_->OnPointerFocusChanged(window, location);
+  else
+    touch_delegate_->OnTouchFocusChanged(window);
 
   VLOG(1) << "OnEnter. widget=" << window->GetWidget();
 
@@ -217,7 +233,7 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
   DCHECK_EQ(data_offer_->mime_types().front(), kMimeTypeChromiumWindow);
 
   // Accept the offer and set the dnd action.
-  data_offer_->SetActions(kDndActionWindowDrag);
+  data_offer_->SetDndActions(kDndActionWindowDrag);
   data_offer_->Accept(serial, kMimeTypeChromiumWindow);
 }
 
@@ -311,9 +327,14 @@ void WaylandWindowDragController::OnDataSourceFinish(bool completed) {
   // before the drag session, we must reset focus to it, otherwise it would be
   // wrongly kept to the latest surface received through wl_data_device::enter
   // (see OnDragEnter function).
+  // In case of touch, though, we simply reset the focus altogether.
   if (IsExtendedDragAvailable() && dragged_window_) {
-    pointer_delegate_->OnPointerFocusChanged(dragged_window_,
-                                             pointer_location_);
+    if (*drag_source_ == DragSource::kMouse) {
+      pointer_delegate_->OnPointerFocusChanged(dragged_window_,
+                                               pointer_location_);
+    } else {
+      touch_delegate_->OnTouchFocusChanged(nullptr);
+    }
   }
   dragged_window_ = nullptr;
 

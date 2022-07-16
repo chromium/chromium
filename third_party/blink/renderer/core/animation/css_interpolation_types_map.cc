@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/animation/css_image_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_image_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_image_slice_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_intrinsic_length_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_length_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_length_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_length_pair_interpolation_type.h"
@@ -178,6 +179,12 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
         applicable_types->push_back(
             std::make_unique<CSSAspectRatioInterpolationType>(used_property));
         break;
+      case CSSPropertyID::kContainIntrinsicWidth:
+      case CSSPropertyID::kContainIntrinsicHeight:
+        applicable_types->push_back(
+            std::make_unique<CSSIntrinsicLengthInterpolationType>(
+                used_property));
+        break;
       case CSSPropertyID::kFlexGrow:
       case CSSPropertyID::kFlexShrink:
       case CSSPropertyID::kFillOpacity:
@@ -299,7 +306,6 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kBorderBottomRightRadius:
       case CSSPropertyID::kBorderTopLeftRadius:
       case CSSPropertyID::kBorderTopRightRadius:
-      case CSSPropertyID::kContainIntrinsicSize:
         applicable_types->push_back(
             std::make_unique<CSSLengthPairInterpolationType>(used_property));
         break;

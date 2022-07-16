@@ -55,6 +55,7 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
       int frame_id,
       const url::Origin& origin,
       uint32_t options,
+      absl::optional<base::UnguessableToken> throttling_profile_id,
       const GURL& url,
       std::vector<network::mojom::HttpHeaderPtr> additional_headers,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>

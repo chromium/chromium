@@ -1,16 +1,8 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Base class for SHA-2 cryptographic hash.
@@ -40,6 +32,7 @@ goog.require('goog.crypt.Hash');
  * @struct
  */
 goog.crypt.Sha2 = function(numHashBlocks, initHashBlocks) {
+  'use strict';
   goog.crypt.Sha2.base(this, 'constructor');
 
   this.blockSize = goog.crypt.Sha2.BLOCKSIZE_;
@@ -125,6 +118,7 @@ goog.crypt.Sha2.PADDING_ = goog.array.concat(
 
 /** @override */
 goog.crypt.Sha2.prototype.reset = function() {
+  'use strict';
   this.inChunk_ = 0;
   this.total_ = 0;
   this.hash_ = goog.global['Int32Array'] ?
@@ -138,6 +132,7 @@ goog.crypt.Sha2.prototype.reset = function() {
  * @private
  */
 goog.crypt.Sha2.prototype.computeChunk_ = function() {
+  'use strict';
   var chunk = this.chunk_;
   goog.asserts.assert(chunk.length == this.blockSize);
   var rounds = 64;
@@ -217,6 +212,7 @@ goog.crypt.Sha2.prototype.computeChunk_ = function() {
 
 /** @override */
 goog.crypt.Sha2.prototype.update = function(message, opt_length) {
+  'use strict';
   if (opt_length === undefined) {
     opt_length = message.length;
   }
@@ -264,6 +260,7 @@ goog.crypt.Sha2.prototype.update = function(message, opt_length) {
 
 /** @override */
 goog.crypt.Sha2.prototype.digest = function() {
+  'use strict';
   var digest = [];
   var totalBits = this.total_ * 8;
 

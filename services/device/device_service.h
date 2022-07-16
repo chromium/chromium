@@ -114,6 +114,10 @@ class DeviceService : public mojom::DeviceService {
  public:
   DeviceService(std::unique_ptr<DeviceServiceParams> params,
                 mojo::PendingReceiver<mojom::DeviceService> receiver);
+
+  DeviceService(const DeviceService&) = delete;
+  DeviceService& operator=(const DeviceService&) = delete;
+
   ~DeviceService() override;
 
   void AddReceiver(mojo::PendingReceiver<mojom::DeviceService> receiver);
@@ -250,8 +254,6 @@ class DeviceService : public mojom::DeviceService {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<MtpDeviceManager> mtp_device_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceService);
 };
 
 }  // namespace device

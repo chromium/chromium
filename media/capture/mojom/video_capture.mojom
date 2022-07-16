@@ -7,6 +7,7 @@ module media.mojom;
 import "media/capture/mojom/video_capture_buffer.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // This file decribes the communication between a given Renderer Host interface
@@ -97,6 +98,14 @@ interface VideoCaptureHost {
   Resume(mojo_base.mojom.UnguessableToken device_id,
          mojo_base.mojom.UnguessableToken session_id,
          VideoCaptureParams params);
+
+  // Start/stop cropping the video track.
+  // Non-empty |crop_id| sets (or changes) the crop-target.
+  // Empty |crop_id| reverts the capture to its original, uncropped state.
+  // The callback reports success/failure.
+  Crop(mojo_base.mojom.UnguessableToken device_id,
+       mojo_base.mojom.Token crop_id)
+    => (CropRequestResult crop_result);
 
   // Requests that the video capturer send a frame "soon" (e.g., to resolve
   // picture loss or quality issues).

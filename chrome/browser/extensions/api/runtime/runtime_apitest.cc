@@ -33,21 +33,10 @@ using ContextType = ExtensionBrowserTest::ContextType;
 class RuntimeApiTest : public ExtensionApiTest,
                        public testing::WithParamInterface<ContextType> {
  public:
-  RuntimeApiTest() = default;
+  RuntimeApiTest() : ExtensionApiTest(GetParam()) {}
   ~RuntimeApiTest() override = default;
   RuntimeApiTest(const RuntimeApiTest&) = delete;
   RuntimeApiTest& operator=(const RuntimeApiTest&) = delete;
-
-  const Extension* LoadExtensionWithParamOptions(const base::FilePath& path) {
-    return LoadExtension(path, {.load_as_service_worker =
-                                    GetParam() == ContextType::kServiceWorker});
-  }
-
-  bool RunTestWithParamOptions(const char* extension_name) {
-    return RunExtensionTest(
-        extension_name, {},
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -60,19 +49,19 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 
 // Tests the privileged components of chrome.runtime.
 IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimePrivileged) {
-  ASSERT_TRUE(RunTestWithParamOptions("runtime/privileged")) << message_;
+  ASSERT_TRUE(RunExtensionTest("runtime/privileged")) << message_;
 }
 
 // Tests the unprivileged components of chrome.runtime.
 IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUnprivileged) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(LoadExtensionWithParamOptions(
-      test_data_dir_.AppendASCII("runtime/content_script")));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("runtime/content_script")));
 
   // The content script runs on this page.
   extensions::ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_TRUE(catcher.GetNextResult()) << message_;
 }
 
@@ -89,16 +78,15 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUninstallURL) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
   ExtensionTestMessageListener ready_listener("ready", false);
-  ASSERT_TRUE(
-      LoadExtensionWithParamOptions(test_data_dir_.AppendASCII("runtime")
-                                        .AppendASCII("uninstall_url")
-                                        .AppendASCII("sets_uninstall_url")));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("runtime")
+                                .AppendASCII("uninstall_url")
+                                .AppendASCII("sets_uninstall_url")));
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
-  ASSERT_TRUE(RunTestWithParamOptions("runtime/uninstall_url")) << message_;
+  ASSERT_TRUE(RunExtensionTest("runtime/uninstall_url")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(RuntimeApiTest, GetPlatformInfo) {
-  ASSERT_TRUE(RunTestWithParamOptions("runtime/get_platform_info")) << message_;
+  ASSERT_TRUE(RunExtensionTest("runtime/get_platform_info")) << message_;
 }
 
 namespace {
@@ -115,6 +103,9 @@ std::string GetActiveUrl(Browser* browser) {
 class RuntimeAPIUpdateTest : public ExtensionApiTest {
  public:
   RuntimeAPIUpdateTest() {}
+
+  RuntimeAPIUpdateTest(const RuntimeAPIUpdateTest&) = delete;
+  RuntimeAPIUpdateTest& operator=(const RuntimeAPIUpdateTest&) = delete;
 
  protected:
   void SetUpOnMainThread() override {
@@ -155,8 +146,6 @@ class RuntimeAPIUpdateTest : public ExtensionApiTest {
 
  private:
   base::ScopedTempDir scoped_temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(RuntimeAPIUpdateTest);
 };
 
 }  // namespace
@@ -173,10 +162,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeGetPlatformInfo) {
   std::unique_ptr<base::Value> result(
       extension_function_test_utils::RunFunctionAndReturnSingleResult(
           new RuntimeGetPlatformInfoFunction(), "[]", browser()));
-  ASSERT_TRUE(result.get() != NULL);
-  base::DictionaryValue* dict =
-      extension_function_test_utils::ToDictionary(result.get());
-  ASSERT_TRUE(dict != NULL);
+  ASSERT_TRUE(result);
+  std::unique_ptr<base::DictionaryValue> dict =
+      extension_function_test_utils::ToDictionary(std::move(result));
+  ASSERT_TRUE(dict != nullptr);
   EXPECT_TRUE(dict->HasKey("os"));
   EXPECT_TRUE(dict->HasKey("arch"));
   EXPECT_TRUE(dict->HasKey("nacl_arch"));
@@ -338,9 +327,9 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
   ExtensionTestMessageListener ready_listener("ready", false);
   // Load an extension that has set an uninstall url.
   scoped_refptr<const extensions::Extension> extension =
-      LoadExtensionWithParamOptions(test_data_dir_.AppendASCII("runtime")
-                                        .AppendASCII("uninstall_url")
-                                        .AppendASCII("sets_uninstall_url"));
+      LoadExtension(test_data_dir_.AppendASCII("runtime")
+                        .AppendASCII("uninstall_url")
+                        .AppendASCII("sets_uninstall_url"));
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
   ASSERT_TRUE(extension.get());
   extension_service()->AddExtension(extension.get());
@@ -363,10 +352,9 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
 
   // Load the same extension again, except blocklist it after installation.
   ExtensionTestMessageListener ready_listener_reload("ready", false);
-  extension =
-      LoadExtensionWithParamOptions(test_data_dir_.AppendASCII("runtime")
-                                        .AppendASCII("uninstall_url")
-                                        .AppendASCII("sets_uninstall_url"));
+  extension = LoadExtension(test_data_dir_.AppendASCII("runtime")
+                                .AppendASCII("uninstall_url")
+                                .AppendASCII("sets_uninstall_url"));
   EXPECT_TRUE(ready_listener_reload.WaitUntilSatisfied());
   extension_service()->AddExtension(extension.get());
   ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension->id()));

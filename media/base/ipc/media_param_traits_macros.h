@@ -53,7 +53,7 @@
 IPC_ENUM_TRAITS_MAX_VALUE(blink::WebFullscreenVideoStatus,
                           blink::WebFullscreenVideoStatus::kMaxValue)
 
-IPC_ENUM_TRAITS_MAX_VALUE(media::AudioCodec, media::AudioCodec::kAudioCodecMax)
+IPC_ENUM_TRAITS_MAX_VALUE(media::AudioCodec, media::AudioCodec::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(media::AudioCodecProfile,
                           media::AudioCodecProfile::kMaxValue)
 
@@ -117,7 +117,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::PipelineStatus,
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::SampleFormat, media::kSampleFormatMax)
 
-IPC_ENUM_TRAITS_MAX_VALUE(media::VideoCodec, media::kVideoCodecMax)
+IPC_ENUM_TRAITS_MAX_VALUE(media::VideoCodec, media::VideoCodec::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::WaitingReason, media::WaitingReason::kMaxValue)
 

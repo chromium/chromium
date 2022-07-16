@@ -12,10 +12,16 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_context.h"
+
+namespace mojo {
+struct HandleSignalsState;
+class SimpleWatcher;
+}  // namespace mojo
 
 namespace arc {
 
@@ -70,11 +76,14 @@ class ShareInfoFileStreamAdapter
 
   // Used to stream content to file.
   void StartFileStreaming();
-  // Used to stream content to data pipe.
-  void StartDataPipeStreaming();
   void PerformReadFileStream();
   void WriteToFile(int bytes_read);
-  void WriteToPipe(int bytes_read);
+
+  // Called by |simple_watcher_| to notify that |producer_stream_|'s state has
+  // changed and streaming should either resume or cancel.
+  void OnProducerStreamUpdate(MojoResult result,
+                              const mojo::HandleSignalsState& state);
+  void WriteToPipe();
 
   // Called when intermediate read transfers actual size of |bytes_read|.
   void OnReadFile(int bytes_read);
@@ -97,6 +106,12 @@ class ShareInfoFileStreamAdapter
   // Use task runner for blocking IO.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<net::IOBufferWithSize> net_iobuf_;
+
+  std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
+  // Size of the pending write in |net_iobuf_|, in bytes, used when writing to a
+  // pipe.
+  uint32_t pipe_write_size_;
+  uint32_t pipe_write_offset_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

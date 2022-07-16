@@ -31,6 +31,10 @@ namespace mac {
 class BASE_EXPORT ScopedSendingEvent {
  public:
   ScopedSendingEvent();
+
+  ScopedSendingEvent(const ScopedSendingEvent&) = delete;
+  ScopedSendingEvent& operator=(const ScopedSendingEvent&) = delete;
+
   ~ScopedSendingEvent();
 
  private:
@@ -38,8 +42,6 @@ class BASE_EXPORT ScopedSendingEvent {
   // sure the |handling_| setting is restored appropriately.
   NSObject<CrAppControlProtocol>* app_;
   BOOL handling_;  // Value of -[app_ handlingSendEvent] at construction.
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSendingEvent);
 };
 
 }  // namespace mac

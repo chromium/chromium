@@ -21,7 +21,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 using predictors::AutocompleteActionPredictorTable;
 
 namespace predictors {

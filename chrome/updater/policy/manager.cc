@@ -4,7 +4,45 @@
 
 #include "chrome/updater/policy/manager.h"
 
+#include "chrome/updater/constants.h"
+
 namespace updater {
+
+UpdatesSuppressedTimes::UpdatesSuppressedTimes() = default;
+
+UpdatesSuppressedTimes::~UpdatesSuppressedTimes() = default;
+
+bool UpdatesSuppressedTimes::operator==(
+    const UpdatesSuppressedTimes& other) const {
+  return start_hour_ == other.start_hour_ &&
+         start_minute_ == other.start_minute_ &&
+         duration_minute_ == other.duration_minute_;
+}
+
+bool UpdatesSuppressedTimes::operator!=(
+    const UpdatesSuppressedTimes& other) const {
+  return !(*this == other);
+}
+
+bool UpdatesSuppressedTimes::valid() const {
+  return start_hour_ != kPolicyNotSet && start_minute_ != kPolicyNotSet &&
+         duration_minute_ != kPolicyNotSet;
+}
+
+bool UpdatesSuppressedTimes::contains(int hour, int minute) const {
+  int elapsed_minutes = (hour - start_hour_) * 60 + (minute - start_minute_);
+  if (elapsed_minutes >= 0 && elapsed_minutes < duration_minute_) {
+    // The given time is in the suppression period that started today.
+    // This can be off by up to an hour on the day of a DST transition.
+    return true;
+  }
+  if (elapsed_minutes < 0 && elapsed_minutes + 60 * 24 < duration_minute_) {
+    // The given time is in the suppression period that started yesterday.
+    // This can be off by up to an hour on the day after a DST transition.
+    return true;
+  }
+  return false;
+}
 
 // TODO: crbug 1070833.
 // The DefaultPolicyManager is just a stub manager at the moment that returns

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -64,6 +63,11 @@ class KidsChromeManagementClientForTesting : public KidsChromeManagementClient {
       content::BrowserContext* context)
       : KidsChromeManagementClient(static_cast<Profile*>(context)) {}
 
+  KidsChromeManagementClientForTesting(
+      const KidsChromeManagementClientForTesting&) = delete;
+  KidsChromeManagementClientForTesting& operator=(
+      const KidsChromeManagementClientForTesting&) = delete;
+
   ~KidsChromeManagementClientForTesting() override = default;
 
   void ClassifyURL(
@@ -84,8 +88,6 @@ class KidsChromeManagementClientForTesting : public KidsChromeManagementClient {
  private:
   std::unique_ptr<ClassifyUrlResponse> response_proto_;
   KidsChromeManagementClient::ErrorCode error_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(KidsChromeManagementClientForTesting);
 };
 
 std::unique_ptr<KeyedService> CreateKidsChromeManagementClient(
@@ -98,6 +100,12 @@ std::unique_ptr<KeyedService> CreateKidsChromeManagementClient(
 class KidsManagementURLCheckerClientTest : public testing::Test {
  public:
   KidsManagementURLCheckerClientTest() = default;
+
+  KidsManagementURLCheckerClientTest(
+      const KidsManagementURLCheckerClientTest&) = delete;
+  KidsManagementURLCheckerClientTest& operator=(
+      const KidsManagementURLCheckerClientTest&) = delete;
+
   void SetUp() override {
     test_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -166,8 +174,6 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
         url, base::BindOnce(&KidsManagementURLCheckerClientTest::OnCheckDone,
                             base::Unretained(this)));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(KidsManagementURLCheckerClientTest);
 };
 
 TEST_F(KidsManagementURLCheckerClientTest, Simple) {

@@ -80,8 +80,7 @@ void RenderFrameHostTester::CommitPendingLoad(
   // (rather than WebContentsImpl directly). It is not trivial to make
   // that change, so for now we have this extra function for
   // non-TestWebContents.
-  auto navigation = NavigationSimulator::CreateFromPending(
-      controller->DeprecatedGetWebContents());
+  auto navigation = NavigationSimulator::CreateFromPending(*controller);
   navigation->Commit();
 }
 
@@ -216,8 +215,8 @@ RenderViewHostTestHarness::CreateTestWebContents() {
 }
 void RenderViewHostTestHarness::FocusWebContentsOnMainFrame() {
   TestWebContents* contents = static_cast<TestWebContents*>(web_contents());
-  auto* root = contents->GetFrameTree()->root();
-  contents->GetFrameTree()->SetFocusedFrame(
+  auto* root = contents->GetPrimaryFrameTree().root();
+  contents->GetPrimaryFrameTree().SetFocusedFrame(
       root, root->current_frame_host()->GetSiteInstance());
 }
 
@@ -244,9 +243,7 @@ void RenderViewHostTestHarness::SetUp() {
 
   consistency_checker_ = std::make_unique<ContentBrowserConsistencyChecker>();
 
-#if !defined(OS_ANDROID)
   network_change_notifier_ = net::test::MockNetworkChangeNotifier::Create();
-#endif
 
   DCHECK(!browser_context_);
   browser_context_ = CreateBrowserContext();

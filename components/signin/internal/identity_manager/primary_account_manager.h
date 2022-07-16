@@ -20,14 +20,13 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 
 class AccountTrackerService;
@@ -64,6 +63,10 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
       ProfileOAuth2TokenService* token_service,
       AccountTrackerService* account_tracker_service,
       std::unique_ptr<PrimaryAccountPolicyManager> policy_manager);
+
+  PrimaryAccountManager(const PrimaryAccountManager&) = delete;
+  PrimaryAccountManager& operator=(const PrimaryAccountManager&) = delete;
+
   ~PrimaryAccountManager() override;
 
   // Registers per-profile prefs.
@@ -142,19 +145,16 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   void SetPrimaryAccountInternal(const CoreAccountInfo& account_info,
                                  bool consented_to_sync);
 
-  // Starts the sign out process. If |assert_signout_allowed| is true then
-  // the sign out process will DCHECK if user sign out is not allowed.
+  // Starts the sign out process.
   void StartSignOut(signin_metrics::ProfileSignout signout_source_metric,
                     signin_metrics::SignoutDelete signout_delete_metric,
-                    RemoveAccountsOption remove_option,
-                    bool assert_signout_allowed = false);
+                    RemoveAccountsOption remove_option);
 
   // The sign out process which is started by SigninClient::PreSignOut()
   void OnSignoutDecisionReached(
       signin_metrics::ProfileSignout signout_source_metric,
       signin_metrics::SignoutDelete signout_delete_metric,
       RemoveAccountsOption remove_option,
-      bool assert_signout_allowed,
       SigninClient::SignoutDecision signout_decision);
 
   // Returns the current state of the primary account.
@@ -188,8 +188,6 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
 
   std::unique_ptr<PrimaryAccountPolicyManager> policy_manager_;
   base::ObserverList<Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrimaryAccountManager);
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MANAGER_H_

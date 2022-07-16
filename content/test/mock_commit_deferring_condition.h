@@ -21,6 +21,12 @@ class MockCommitDeferringCondition;
 class MockCommitDeferringConditionWrapper {
  public:
   explicit MockCommitDeferringConditionWrapper(bool is_ready_to_commit);
+
+  MockCommitDeferringConditionWrapper(
+      const MockCommitDeferringConditionWrapper&) = delete;
+  MockCommitDeferringConditionWrapper& operator=(
+      const MockCommitDeferringConditionWrapper&) = delete;
+
   ~MockCommitDeferringConditionWrapper();
   std::unique_ptr<MockCommitDeferringCondition> PassToDelegate();
   void CallResumeClosure();
@@ -40,7 +46,6 @@ class MockCommitDeferringConditionWrapper {
   bool did_call_will_commit_navigation_ = false;
 
   base::WeakPtrFactory<MockCommitDeferringConditionWrapper> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MockCommitDeferringConditionWrapper);
 };
 
 class MockCommitDeferringCondition : public CommitDeferringCondition {

@@ -61,7 +61,7 @@ PrerenderHandle* PrerenderHandle::Create(
   attributes->referrer = mojom::blink::Referrer::New(
       KURL(NullURL(), referrer.referrer), referrer.referrer_policy);
   attributes->view_size =
-      gfx::Size(document.GetFrame()->GetMainFrameViewportSize());
+      ToGfxSize(document.GetFrame()->GetMainFrameViewportSize());
 
   HeapMojoRemote<mojom::blink::NoStatePrefetchProcessor> prefetch_processor(
       context);

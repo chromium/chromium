@@ -34,8 +34,8 @@
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace {
 
@@ -321,7 +321,7 @@ void DirectRenderer::DrawFrame(
       current_frame()->output_surface_plane =
           overlay_processor_->ProcessOutputSurfaceAsOverlay(
               device_viewport_size, surface_resource_size, frame_buffer_format,
-              frame_color_space, frame_has_alpha,
+              frame_color_space, frame_has_alpha, 1.0f /*opacity*/,
               output_surface_->GetOverlayMailbox());
       primary_plane = &(current_frame()->output_surface_plane.value());
     }
@@ -338,8 +338,8 @@ void DirectRenderer::DrawFrame(
         &current_frame()->root_content_bounds);
     auto overlay_processing_time = overlay_processing_timer.Elapsed();
 
-    constexpr auto kMinTime = base::TimeDelta::FromMicroseconds(5);
-    constexpr auto kMaxTime = base::TimeDelta::FromMilliseconds(10);
+    constexpr auto kMinTime = base::Microseconds(5);
+    constexpr auto kMaxTime = base::Milliseconds(10);
     constexpr int kTimeBuckets = 50;
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Compositing.DirectRenderer.OverlayProcessingUs",
@@ -459,10 +459,7 @@ gfx::Rect DirectRenderer::DeviceViewportRectInDrawSpace() const {
 gfx::Rect DirectRenderer::OutputSurfaceRectInDrawSpace() const {
   if (current_frame()->current_render_pass ==
       current_frame()->root_render_pass) {
-    gfx::Rect output_surface_rect(current_frame()->device_viewport_size);
-    output_surface_rect -= current_viewport_rect_.OffsetFromOrigin();
-    output_surface_rect += current_draw_rect_.OffsetFromOrigin();
-    return output_surface_rect;
+    return DeviceViewportRectInDrawSpace();
   } else {
     return current_frame()->current_render_pass->output_rect;
   }
@@ -625,10 +622,6 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
 
   bool is_root_render_pass =
       current_frame()->current_render_pass == current_frame()->root_render_pass;
-  if (is_root_render_pass) {
-    render_pass_scissor_in_draw_space.Intersect(
-        DeviceViewportRectInDrawSpace());
-  }
 
   if (use_partial_swap_) {
     render_pass_scissor_in_draw_space.Intersect(
@@ -932,7 +925,7 @@ gfx::Size DirectRenderer::CalculateSizeForOutputSurface(
   // OutputSurface size to |device_viewport_size_|.
   if (device_viewport_size_ == requested_viewport_size &&
       (base::TimeTicks::Now() - last_viewport_resize_time_) >=
-          base::TimeDelta::FromSeconds(1)) {
+          base::Seconds(1)) {
     return requested_viewport_size;
   }
 

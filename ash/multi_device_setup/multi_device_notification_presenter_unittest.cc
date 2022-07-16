@@ -40,6 +40,10 @@ const char16_t kTestDeviceType[] = u"Chrome device";
 class TestMessageCenter : public message_center::FakeMessageCenter {
  public:
   TestMessageCenter() = default;
+
+  TestMessageCenter(const TestMessageCenter&) = delete;
+  TestMessageCenter& operator=(const TestMessageCenter&) = delete;
+
   ~TestMessageCenter() override = default;
 
   // message_center::FakeMessageCenter:
@@ -92,8 +96,6 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
 
  private:
   std::unique_ptr<message_center::Notification> notification_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMessageCenter);
 };
 
 }  // namespace
@@ -101,6 +103,11 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
 class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
  public:
   MultiDeviceNotificationPresenterTest() = default;
+
+  MultiDeviceNotificationPresenterTest(
+      const MultiDeviceNotificationPresenterTest&) = delete;
+  MultiDeviceNotificationPresenterTest& operator=(
+      const MultiDeviceNotificationPresenterTest&) = delete;
 
   void SetUp() override {
     fake_multidevice_setup_ =
@@ -332,8 +339,6 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
     EXPECT_EQ(title, kVisibleNotification->title());
     EXPECT_EQ(message, kVisibleNotification->message());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceNotificationPresenterTest);
 };
 
 TEST_F(MultiDeviceNotificationPresenterTest, NotSignedIntoAccount) {

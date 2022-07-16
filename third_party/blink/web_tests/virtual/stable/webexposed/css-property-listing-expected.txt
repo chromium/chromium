@@ -2,7 +2,6 @@ This test documents Blink's web-exposed CSS properties.
 All changes to this list should go through Blink's feature review process: http://www.chromium.org/blink#new-features
 
 [LONGHANDS]
-    -webkit-app-region
     -webkit-border-horizontal-spacing
     -webkit-border-image
     -webkit-border-vertical-spacing
@@ -56,6 +55,7 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-user-drag
     -webkit-user-modify
     -webkit-writing-mode
+    accent-color
     align-content
     align-items
     align-self
@@ -69,6 +69,7 @@ All changes to this list should go through Blink's feature review process: http:
     animation-name
     animation-play-state
     animation-timing-function
+    app-region
     appearance
     aspect-ratio
     backdrop-filter
@@ -151,7 +152,10 @@ All changes to this list should go through Blink's feature review process: http:
     column-span
     column-width
     contain
-    contain-intrinsic-size
+    contain-intrinsic-block-size
+    contain-intrinsic-height
+    contain-intrinsic-inline-size
+    contain-intrinsic-width
     content
     content-visibility
     counter-increment
@@ -184,6 +188,9 @@ All changes to this list should go through Blink's feature review process: http:
     font-size
     font-stretch
     font-style
+    font-synthesis-small-caps
+    font-synthesis-style
+    font-synthesis-weight
     font-variant-caps
     font-variant-east-asian
     font-variant-ligatures
@@ -550,6 +557,9 @@ All changes to this list should go through Blink's feature review process: http:
     columns
         column-count
         column-width
+    contain-intrinsic-size
+        contain-intrinsic-height
+        contain-intrinsic-width
     flex
         flex-basis
         flex-grow
@@ -568,6 +578,10 @@ All changes to this list should go through Blink's feature review process: http:
         font-variant-numeric
         font-weight
         line-height
+    font-synthesis
+        font-synthesis-small-caps
+        font-synthesis-style
+        font-synthesis-weight
     font-variant
         font-variant-caps
         font-variant-east-asian
@@ -751,6 +765,8 @@ All changes to this list should go through Blink's feature review process: http:
         animation-play-state
     -webkit-animation-timing-function
         animation-timing-function
+    -webkit-app-region
+        app-region
     -webkit-appearance
         appearance
     -webkit-backface-visibility

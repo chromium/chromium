@@ -44,7 +44,7 @@ SYNC_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByCharacter', function() {
     }
   };
 
-  Output.prototype.withRichSpeechAndBraille = function(...args) {
+  Output.prototype.withRichSpeech = function(...args) {
     calls.push(['withRichSpeechAndBraille', ...args]);
     return this;
   };

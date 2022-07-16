@@ -1,0 +1,20 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/extensions/extensions.gni")
+
+blink_extensions_chromeos_sources("cros_window_management") {
+  sources = [
+    "cros_window.cc",
+    "cros_window.h",
+    "cros_window_management.cc",
+    "cros_window_management.h",
+  ]
+
+  deps = [
+    "//third_party/blink/renderer/bindings:generate_bindings_all",
+    "//third_party/blink/renderer/platform",
+    "//v8",
+  ]
+}

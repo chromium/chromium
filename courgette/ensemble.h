@@ -41,6 +41,9 @@ class Element {
           Ensemble* ensemble,
           const Region& region);
 
+  Element(const Element&) = delete;
+  Element& operator=(const Element&) = delete;
+
   virtual ~Element();
 
   ExecutableType kind() const { return kind_; }
@@ -57,8 +60,6 @@ class Element {
   ExecutableType kind_;
   Ensemble* ensemble_;
   Region region_;
-
-  DISALLOW_COPY_AND_ASSIGN(Element);
 };
 
 
@@ -66,6 +67,10 @@ class Ensemble {
  public:
   Ensemble(const Region& region, const char* name)
       : region_(region), name_(name) {}
+
+  Ensemble(const Ensemble&) = delete;
+  Ensemble& operator=(const Ensemble&) = delete;
+
   ~Ensemble();
 
   const Region& region() const { return region_; }
@@ -85,8 +90,6 @@ class Ensemble {
 
   std::vector<Element*> elements_;        // Embedded elements discovered.
   std::vector<Element*> owned_elements_;  // For deallocation.
-
-  DISALLOW_COPY_AND_ASSIGN(Ensemble);
 };
 
 inline size_t Element::offset_in_ensemble() const {

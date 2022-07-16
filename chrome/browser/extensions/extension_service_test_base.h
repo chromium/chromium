@@ -13,7 +13,6 @@
 #include "base/at_exit.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -78,6 +77,9 @@ class ExtensionServiceTestBase : public testing::Test {
     ExtensionServiceInitParams();
     ExtensionServiceInitParams(const ExtensionServiceInitParams& other);
   };
+
+  ExtensionServiceTestBase(const ExtensionServiceTestBase&) = delete;
+  ExtensionServiceTestBase& operator=(const ExtensionServiceTestBase&) = delete;
 
   // Public because parameterized test cases need it to be, or else the compiler
   // barfs.
@@ -226,8 +228,6 @@ class ExtensionServiceTestBase : public testing::Test {
   // An override that ignores CRX3 publisher signatures.
   SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionServiceTestBase);
 };
 
 }  // namespace extensions

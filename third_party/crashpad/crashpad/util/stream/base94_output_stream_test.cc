@@ -20,7 +20,6 @@
 #include <sstream>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
@@ -49,6 +48,9 @@ std::string DumpInput(const uint8_t* input, size_t size) {
 class Base94OutputStreamTest : public testing::Test {
  public:
   Base94OutputStreamTest() {}
+
+  Base94OutputStreamTest(const Base94OutputStreamTest&) = delete;
+  Base94OutputStreamTest& operator=(const Base94OutputStreamTest&) = delete;
 
  protected:
   void SetUp() override {
@@ -127,8 +129,6 @@ class Base94OutputStreamTest : public testing::Test {
   TestOutputStream* round_trip_test_output_stream_;
   std::unique_ptr<uint8_t[]> input_;
   std::unique_ptr<uint8_t[]> deterministic_input_;
-
-  DISALLOW_COPY_AND_ASSIGN(Base94OutputStreamTest);
 };
 
 TEST_F(Base94OutputStreamTest, Encoding) {

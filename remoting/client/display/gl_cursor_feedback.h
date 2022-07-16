@@ -24,6 +24,10 @@ class GlRenderLayer;
 class GlCursorFeedback : public Drawable {
  public:
   GlCursorFeedback();
+
+  GlCursorFeedback(const GlCursorFeedback&) = delete;
+  GlCursorFeedback& operator=(const GlCursorFeedback&) = delete;
+
   ~GlCursorFeedback() override;
 
   void StartAnimation(float x, float y, float diameter);
@@ -43,8 +47,6 @@ class GlCursorFeedback : public Drawable {
 
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<Drawable> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GlCursorFeedback);
 };
 
 }  // namespace remoting

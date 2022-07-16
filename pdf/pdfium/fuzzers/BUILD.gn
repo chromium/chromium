@@ -83,7 +83,10 @@ group("pdf_fuzzers") {
     }
   }
   if (is_clang) {
-    deps += [ ":pdf_nametree_fuzzer" ]
+    deps += [
+      ":pdf_cpdf_tounicodemap_fuzzer",
+      ":pdf_nametree_fuzzer",
+    ]
   }
 }
 
@@ -265,6 +268,9 @@ if (pdf_enable_v8) {
 }
 
 if (is_clang) {
+  pdfium_fuzzer_test("pdf_cpdf_tounicodemap_fuzzer") {
+  }
+
   pdfium_fuzzer_test("pdf_nametree_fuzzer") {
   }
 }

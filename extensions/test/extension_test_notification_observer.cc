@@ -21,19 +21,9 @@
 
 namespace extensions {
 
-namespace {
-
 // A callback that returns true if the condition has been met and takes no
 // arguments.
 using ConditionCallback = base::RepeatingCallback<bool(void)>;
-
-const Extension* GetNonTerminatedExtensions(const std::string& id,
-                                            content::BrowserContext* context) {
-  return ExtensionRegistry::Get(context)->GetExtensionById(
-      id, ExtensionRegistry::EVERYTHING & ~ExtensionRegistry::TERMINATED);
-}
-
-}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // NotificationSet::ForwardingWebContentsObserver
@@ -133,24 +123,6 @@ void ExtensionTestNotificationObserver::WaitForNotification(
   content::WindowedNotificationObserver(
       notification_type, content::NotificationService::AllSources())
       .Wait();
-}
-
-bool ExtensionTestNotificationObserver::WaitForExtensionCrash(
-    const std::string& extension_id) {
-  if (!GetNonTerminatedExtensions(extension_id, context_)) {
-    // The extension is already unloaded, presumably due to a crash.
-    return true;
-  }
-
-  content::WindowedNotificationObserver(
-      NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
-      content::NotificationService::AllSources())
-      .Wait();
-  // GetNonTerminatedExtensions consults ExtensionRegistry which gets updated
-  // asynchronously in a task posted when
-  // NOTIFICATION_EXTENSION_PROCESS_TERMINATED is handled, so let this task run.
-  base::RunLoop().RunUntilIdle();
-  return (GetNonTerminatedExtensions(extension_id, context_) == NULL);
 }
 
 bool ExtensionTestNotificationObserver::WaitForCrxInstallerDone() {

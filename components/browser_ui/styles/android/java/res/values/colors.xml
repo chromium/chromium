@@ -8,7 +8,6 @@
     <color name="default_primary_color">#F2F2F2</color>
     <color name="input_underline_error_color">#D32F2F</color>
     <color name="explanation_text_color">#909090</color>
-    <color name="text_highlight_color">@color/highlight_color_on_dark_text</color>
 
     <!-- Toolbar colors -->
     <!-- Same as ?attr/colorSurface. -->
@@ -16,7 +15,7 @@
     <color name="toolbar_background_primary_dark">@color/default_bg_color_dark</color>
 
     <!-- Infobar colors -->
-    <color name="infobar_icon_drawable_color">@color/default_icon_color_blue</color>
+    <color name="infobar_icon_drawable_color">@color/default_icon_color_accent1_tint_list</color>
 
     <!-- Control colors for toggles, checkboxes, ratio buttons, list item highlight, and accent.
      Note that these should NOT be used for icon tint. -->
@@ -30,5 +29,10 @@
 
     <!-- Navigation bar colors -->
     <color name="bottom_system_nav_color">@color/toolbar_background_primary</color>
-    <color name="bottom_system_nav_divider_color">@color/hairline_stroke_color</color>
+    <color name="bottom_system_nav_divider_color">@color/divider_line_bg_color</color>
+    <color name="bottom_system_nav_divider_color_light">@color/divider_line_bg_color_light</color>
+
+    <!-- This is the color that will appear on the system recents UI. It is a neutral background
+         color that adapts to dark/light modes but not a dynamic color. -->
+    <color name="default_task_description_color">@color/default_bg_color</color>
 </resources>

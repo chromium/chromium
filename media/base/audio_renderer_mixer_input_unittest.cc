@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_latency.h"
@@ -45,6 +44,10 @@ class AudioRendererMixerInputTest : public testing::Test,
     fake_callback_ = std::make_unique<FakeAudioRenderCallback>(0, kSampleRate);
     audio_bus_ = AudioBus::Create(audio_parameters_);
   }
+
+  AudioRendererMixerInputTest(const AudioRendererMixerInputTest&) = delete;
+  AudioRendererMixerInputTest& operator=(const AudioRendererMixerInputTest&) =
+      delete;
 
   void CreateMixerInput(const std::string& device_id) {
     mixer_input_ = new AudioRendererMixerInput(this, kFrameToken, device_id,
@@ -112,9 +115,6 @@ class AudioRendererMixerInputTest : public testing::Test,
   scoped_refptr<AudioRendererMixerInput> mixer_input_;
   std::unique_ptr<FakeAudioRenderCallback> fake_callback_;
   std::unique_ptr<AudioBus> audio_bus_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererMixerInputTest);
 };
 
 // Test that getting and setting the volume work as expected.  The volume is

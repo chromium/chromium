@@ -64,7 +64,7 @@ void CameraDeviceContext::SetErrorState(media::VideoCaptureError error,
                                         const std::string& reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_ = State::kError;
-  LOG(ERROR) << reason;
+  LOG(ERROR) << from_here.ToString() << ": " << reason;
   base::AutoLock lock(client_lock_);
   for (const auto& client : clients_) {
     client.second->OnError(error, from_here, reason);

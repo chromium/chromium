@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO(joeltine): Remove promise module when stable node version supports it
-// natively.
-var Promise = require('promise');
 var allTests = require('./alltests');
 
 // Timeout for individual test package to complete.

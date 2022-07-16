@@ -55,13 +55,14 @@ class AwTraceDataEndpoint
       : received_chunk_callback_(std::move(received_chunk_callback)),
         completed_callback_(std::move(completed_callback)) {}
 
+  AwTraceDataEndpoint(const AwTraceDataEndpoint&) = delete;
+  AwTraceDataEndpoint& operator=(const AwTraceDataEndpoint&) = delete;
+
  private:
   ~AwTraceDataEndpoint() override {}
 
   ReceivedChunkCallback received_chunk_callback_;
   base::OnceClosure completed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwTraceDataEndpoint);
 };
 
 }  // namespace

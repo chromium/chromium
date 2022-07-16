@@ -12,6 +12,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
@@ -75,7 +76,7 @@ void NotifyInitializationDoneForTesting() {
     // immediately reset. Wait at most 5 seconds for the test to signal that
     // it's ready using the same event before continuing. If the test takes
     // longer than that stop waiting to prevent hangs.
-    notifier_event->TimedWait(base::TimeDelta::FromSeconds(5));
+    notifier_event->TimedWait(base::Seconds(5));
   }
 }
 

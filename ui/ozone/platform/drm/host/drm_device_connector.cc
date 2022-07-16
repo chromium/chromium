@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "ui/ozone/platform/drm/host/host_drm_device.h"
@@ -28,8 +29,6 @@ void DrmDeviceConnector::OnChannelDestroyed(int host_id) {
 
 void DrmDeviceConnector::OnGpuServiceLaunched(
     int host_id,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> process_host_runner,
     GpuHostBindInterfaceCallback binder,
     GpuHostTerminateCallback terminate_callback) {
   // We need to preserve |binder| to let us bind interfaces later.
@@ -39,21 +38,14 @@ void DrmDeviceConnector::OnGpuServiceLaunched(
   mojo::PendingRemote<ui::ozone::mojom::DrmDevice> drm_device;
   BindInterfaceDrmDevice(&drm_device);
 
-  if (ui_runner->BelongsToCurrentThread()) {
-    // If the GpuProcessHost lives on the UI thread this method will be called
-    // before ash::Shell::Init which breaks assumptions since the displays
-    // won't be marked as dummy but we don't have the active list yet from the
-    // GPU process. Simulate the old behavior by inserting a PostTask.
-    // TODO(rjkroege): simplify this code path once GpuProcessHost always lives
-    // on the UI thread.
-    ui_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HostDrmDevice::OnGpuServiceLaunchedOnProcessThread,
-                       host_drm_device_, std::move(drm_device), ui_runner));
-  } else {
-    host_drm_device_->OnGpuServiceLaunchedOnProcessThread(std::move(drm_device),
-                                                          ui_runner);
-  }
+  // This method is called before ash::Shell::Init which breaks assumptions
+  // since the displays won't be marked as dummy but we don't have the active
+  // list yet from the GPU process.
+  // TODO(rjkroege): simplify this code path once GpuProcessHost always lives
+  // on the UI thread.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&HostDrmDevice::OnGpuServiceLaunched,
+                                host_drm_device_, std::move(drm_device)));
 }
 
 void DrmDeviceConnector::BindInterfaceDrmDevice(
@@ -64,8 +56,7 @@ void DrmDeviceConnector::BindInterfaceDrmDevice(
 
 void DrmDeviceConnector::ConnectSingleThreaded(
     mojo::PendingRemote<ui::ozone::mojom::DrmDevice> drm_device) {
-  host_drm_device_->OnGpuServiceLaunchedOnProcessThread(
-      std::move(drm_device), base::ThreadTaskRunnerHandle::Get());
+  host_drm_device_->OnGpuServiceLaunched(std::move(drm_device));
 }
 
 }  // namespace ui

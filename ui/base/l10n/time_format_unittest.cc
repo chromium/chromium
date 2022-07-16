@@ -17,60 +17,59 @@ using base::ASCIIToUTF16;
 namespace ui {
 namespace {
 
-using base::TimeDelta;
 
 class TimeFormatTest : public ::testing::Test {
  public:
   TimeFormatTest()
-      : delta_0s_(TimeDelta::FromSeconds(0)),
-        delta_1ms_(TimeDelta::FromMilliseconds(1)),
-        delta_499ms_(TimeDelta::FromMilliseconds(499)),
-        delta_500ms_(TimeDelta::FromMilliseconds(500)),
-        delta_999ms_(TimeDelta::FromMilliseconds(999)),
-        delta_1s_(TimeDelta::FromSeconds(1)),
+      : delta_0s_(base::Seconds(0)),
+        delta_1ms_(base::Milliseconds(1)),
+        delta_499ms_(base::Milliseconds(499)),
+        delta_500ms_(base::Milliseconds(500)),
+        delta_999ms_(base::Milliseconds(999)),
+        delta_1s_(base::Seconds(1)),
         delta_1s499ms_(delta_1s_ + delta_499ms_),
         delta_1s500ms_(delta_1s_ + delta_500ms_),
-        delta_2s_(TimeDelta::FromSeconds(2)),
-        delta_29s_(TimeDelta::FromSeconds(29)),
-        delta_30s_(TimeDelta::FromSeconds(30)),
-        delta_59s_(TimeDelta::FromSeconds(59)),
+        delta_2s_(base::Seconds(2)),
+        delta_29s_(base::Seconds(29)),
+        delta_30s_(base::Seconds(30)),
+        delta_59s_(base::Seconds(59)),
         delta_59s499ms_(delta_59s_ + delta_499ms_),
         delta_59s500ms_(delta_59s_ + delta_500ms_),
-        delta_1m_(TimeDelta::FromMinutes(1)),
+        delta_1m_(base::Minutes(1)),
         delta_1m2s_(delta_1m_ + delta_2s_),
         delta_1m29s999ms_(delta_1m_ + delta_29s_ + delta_999ms_),
         delta_1m30s_(delta_1m_ + delta_30s_),
-        delta_2m_(TimeDelta::FromMinutes(2)),
+        delta_2m_(base::Minutes(2)),
         delta_2m1s_(delta_2m_ + delta_1s_),
-        delta_29m_(TimeDelta::FromMinutes(29)),
-        delta_30m_(TimeDelta::FromMinutes(30)),
-        delta_59m_(TimeDelta::FromMinutes(59)),
+        delta_29m_(base::Minutes(29)),
+        delta_30m_(base::Minutes(30)),
+        delta_59m_(base::Minutes(59)),
         delta_59m29s999ms_(delta_59m_ + delta_29s_ + delta_999ms_),
         delta_59m30s_(delta_59m_ + delta_30s_),
         delta_59m59s499ms_(delta_59m_ + delta_59s_ + delta_499ms_),
         delta_59m59s500ms_(delta_59m_ + delta_59s_ + delta_500ms_),
-        delta_1h_(TimeDelta::FromHours(1)),
+        delta_1h_(base::Hours(1)),
         delta_1h2m_(delta_1h_ + delta_2m_),
         delta_1h29m59s999ms_(delta_1h_ + delta_29m_ + delta_59s_ +
                              delta_999ms_),
         delta_1h30m_(delta_1h_ + delta_30m_),
-        delta_2h_(TimeDelta::FromHours(2)),
+        delta_2h_(base::Hours(2)),
         delta_2h1m_(delta_2h_ + delta_1m_),
-        delta_11h_(TimeDelta::FromHours(11)),
-        delta_12h_(TimeDelta::FromHours(12)),
-        delta_23h_(TimeDelta::FromHours(23)),
+        delta_11h_(base::Hours(11)),
+        delta_12h_(base::Hours(12)),
+        delta_23h_(base::Hours(23)),
         delta_23h29m59s999ms_(delta_23h_ + delta_29m_ + delta_59s_ +
                               delta_999ms_),
         delta_23h30m_(delta_23h_ + delta_30m_),
         delta_23h59m29s999ms_(delta_23h_ + delta_59m_ + delta_29s_ +
                               delta_999ms_),
         delta_23h59m30s_(delta_23h_ + delta_59m_ + delta_30s_),
-        delta_1d_(TimeDelta::FromDays(1)),
+        delta_1d_(base::Days(1)),
         delta_1d2h_(delta_1d_ + delta_2h_),
-        delta_1d11h59m59s999ms_(
-            delta_1d_ + delta_11h_ + delta_59m_ + delta_29s_ + delta_999ms_),
+        delta_1d11h59m59s999ms_(delta_1d_ + delta_11h_ + delta_59m_ +
+                                delta_29s_ + delta_999ms_),
         delta_1d12h_(delta_1d_ + delta_12h_),
-        delta_2d_(TimeDelta::FromDays(2)),
+        delta_2d_(base::Days(2)),
         delta_2d1h_(delta_2d_ + delta_1h_),
         delta_1y_(delta_1d_ * 365),
         delta_2y_(delta_1y_ * 2),
@@ -313,57 +312,57 @@ class TimeFormatTest : public ::testing::Test {
                                    TimeFormat::LENGTH_LONG, 3, delta_2d1h_));
   }
 
-  TimeDelta delta_0s_;
-  TimeDelta delta_1ms_;
-  TimeDelta delta_499ms_;
-  TimeDelta delta_500ms_;
-  TimeDelta delta_999ms_;
-  TimeDelta delta_1s_;
-  TimeDelta delta_1s499ms_;
-  TimeDelta delta_1s500ms_;
-  TimeDelta delta_2s_;
-  TimeDelta delta_29s_;
-  TimeDelta delta_30s_;
-  TimeDelta delta_59s_;
-  TimeDelta delta_59s499ms_;
-  TimeDelta delta_59s500ms_;
-  TimeDelta delta_1m_;
-  TimeDelta delta_1m2s_;
-  TimeDelta delta_1m29s999ms_;
-  TimeDelta delta_1m30s_;
-  TimeDelta delta_2m_;
-  TimeDelta delta_2m1s_;
-  TimeDelta delta_29m_;
-  TimeDelta delta_30m_;
-  TimeDelta delta_59m_;
-  TimeDelta delta_59m29s999ms_;
-  TimeDelta delta_59m30s_;
-  TimeDelta delta_59m59s499ms_;
-  TimeDelta delta_59m59s500ms_;
-  TimeDelta delta_1h_;
-  TimeDelta delta_1h2m_;
-  TimeDelta delta_1h29m59s999ms_;
-  TimeDelta delta_1h30m_;
-  TimeDelta delta_2h_;
-  TimeDelta delta_2h1m_;
-  TimeDelta delta_11h_;
-  TimeDelta delta_12h_;
-  TimeDelta delta_23h_;
-  TimeDelta delta_23h29m59s999ms_;
-  TimeDelta delta_23h30m_;
-  TimeDelta delta_23h59m29s999ms_;
-  TimeDelta delta_23h59m30s_;
-  TimeDelta delta_1d_;
-  TimeDelta delta_1d2h_;
-  TimeDelta delta_1d11h59m59s999ms_;
-  TimeDelta delta_1d12h_;
-  TimeDelta delta_2d_;
-  TimeDelta delta_2d1h_;
-  TimeDelta delta_1y_;
-  TimeDelta delta_2y_;
-  TimeDelta delta_1mo_;
-  TimeDelta delta_2mo_;
-  TimeDelta delta_1mo10d_;
+  base::TimeDelta delta_0s_;
+  base::TimeDelta delta_1ms_;
+  base::TimeDelta delta_499ms_;
+  base::TimeDelta delta_500ms_;
+  base::TimeDelta delta_999ms_;
+  base::TimeDelta delta_1s_;
+  base::TimeDelta delta_1s499ms_;
+  base::TimeDelta delta_1s500ms_;
+  base::TimeDelta delta_2s_;
+  base::TimeDelta delta_29s_;
+  base::TimeDelta delta_30s_;
+  base::TimeDelta delta_59s_;
+  base::TimeDelta delta_59s499ms_;
+  base::TimeDelta delta_59s500ms_;
+  base::TimeDelta delta_1m_;
+  base::TimeDelta delta_1m2s_;
+  base::TimeDelta delta_1m29s999ms_;
+  base::TimeDelta delta_1m30s_;
+  base::TimeDelta delta_2m_;
+  base::TimeDelta delta_2m1s_;
+  base::TimeDelta delta_29m_;
+  base::TimeDelta delta_30m_;
+  base::TimeDelta delta_59m_;
+  base::TimeDelta delta_59m29s999ms_;
+  base::TimeDelta delta_59m30s_;
+  base::TimeDelta delta_59m59s499ms_;
+  base::TimeDelta delta_59m59s500ms_;
+  base::TimeDelta delta_1h_;
+  base::TimeDelta delta_1h2m_;
+  base::TimeDelta delta_1h29m59s999ms_;
+  base::TimeDelta delta_1h30m_;
+  base::TimeDelta delta_2h_;
+  base::TimeDelta delta_2h1m_;
+  base::TimeDelta delta_11h_;
+  base::TimeDelta delta_12h_;
+  base::TimeDelta delta_23h_;
+  base::TimeDelta delta_23h29m59s999ms_;
+  base::TimeDelta delta_23h30m_;
+  base::TimeDelta delta_23h59m29s999ms_;
+  base::TimeDelta delta_23h59m30s_;
+  base::TimeDelta delta_1d_;
+  base::TimeDelta delta_1d2h_;
+  base::TimeDelta delta_1d11h59m59s999ms_;
+  base::TimeDelta delta_1d12h_;
+  base::TimeDelta delta_2d_;
+  base::TimeDelta delta_2d1h_;
+  base::TimeDelta delta_1y_;
+  base::TimeDelta delta_2y_;
+  base::TimeDelta delta_1mo_;
+  base::TimeDelta delta_2mo_;
+  base::TimeDelta delta_1mo10d_;
 };
 
 TEST_F(TimeFormatTest, SimpleAndDetailedRounding) {
@@ -498,16 +497,16 @@ TEST_F(TimeFormatTest, RelativeDate) {
   std::u16string today_str = TimeFormat::RelativeDate(now, NULL);
   EXPECT_EQ(u"Today", today_str);
 
-  base::Time yesterday = now - TimeDelta::FromDays(1);
+  base::Time yesterday = now - base::Days(1);
   std::u16string yesterday_str = TimeFormat::RelativeDate(yesterday, NULL);
   EXPECT_EQ(u"Yesterday", yesterday_str);
 
-  base::Time two_days_ago = now - TimeDelta::FromDays(2);
+  base::Time two_days_ago = now - base::Days(2);
   std::u16string two_days_ago_str =
       TimeFormat::RelativeDate(two_days_ago, NULL);
   EXPECT_TRUE(two_days_ago_str.empty());
 
-  base::Time a_week_ago = now - TimeDelta::FromDays(7);
+  base::Time a_week_ago = now - base::Days(7);
   std::u16string a_week_ago_str = TimeFormat::RelativeDate(a_week_ago, NULL);
   EXPECT_TRUE(a_week_ago_str.empty());
 }

@@ -18,6 +18,7 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
@@ -61,6 +62,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
   // been successfully started.
   using NotifySessionCallback =
       base::OnceCallback<void(std::unique_ptr<BluetoothGattNotifySession>)>;
+
+  BluetoothRemoteGattCharacteristic(const BluetoothRemoteGattCharacteristic&) =
+      delete;
+  BluetoothRemoteGattCharacteristic& operator=(
+      const BluetoothRemoteGattCharacteristic&) = delete;
 
   ~BluetoothRemoteGattCharacteristic() override;
 
@@ -257,16 +263,19 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
    public:
     using ExecuteCallback = base::OnceCallback<void(CommandStatus)>;
 
-    ExecuteCallback execute_callback_;
-    base::OnceClosure cancel_callback_;
-
     NotifySessionCommand(ExecuteCallback execute_callback,
                          base::OnceClosure cancel_callback);
+    NotifySessionCommand(NotifySessionCommand&& other);
     ~NotifySessionCommand();
 
+    bool IsExecuted() const;
     void Execute();
     void Execute(CommandStatus previous_command);
     void Cancel();
+
+   private:
+    ExecuteCallback execute_callback_;
+    base::OnceClosure cancel_callback_;
   };
 
   void StartNotifySessionInternal(
@@ -296,15 +305,21 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
       const absl::optional<NotificationType>& notification_type);
 
   // Pending StartNotifySession / StopNotifySession calls.
-  base::queue<std::unique_ptr<NotifySessionCommand>> pending_notify_commands_;
+  // The front will either be awaiting execution, or in the process of being
+  // executed. Items are popped upon completion (success or error) of the
+  // currently executing command.
+  base::queue<NotifySessionCommand> pending_notify_commands_;
+
+  // Is there a NotifySessionCommand currently executing?
+  bool notify_command_running_ = false;
 
   // Set of active notify sessions.
   std::set<BluetoothGattNotifySession*> notify_sessions_;
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   base::WeakPtrFactory<BluetoothRemoteGattCharacteristic> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattCharacteristic);
 };
 
 }  // namespace device

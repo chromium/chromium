@@ -31,8 +31,9 @@ FileManagerPrivateInternalGetContentMimeTypeFunction::
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetContentMimeTypeFunction::Run() {
-  std::string blob_uuid;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &blob_uuid));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  const std::string& blob_uuid = args()[0].GetString();
 
   if (blob_uuid.empty()) {
     return RespondNow(Error("fileEntry.file() blob error."));
@@ -83,7 +84,7 @@ FileManagerPrivateInternalGetContentMetadataFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetContentMetadataFunction::Run() {
   using api::file_manager_private_internal::GetContentMetadata::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->blob_uuid.empty()) {

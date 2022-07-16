@@ -5,6 +5,7 @@
 #include "ash/drag_drop/tab_drag_drop_delegate.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
@@ -129,14 +130,21 @@ void TabDragDropDelegate::DragUpdate(const gfx::Point& location_in_screen) {
   tab_dragging_recorder_->RequestNext();
 }
 
-void TabDragDropDelegate::Drop(const gfx::Point& location_in_screen,
-                               const ui::OSExchangeData& drop_data) {
+void TabDragDropDelegate::DropAndDeleteSelf(
+    const gfx::Point& location_in_screen,
+    const ui::OSExchangeData& drop_data) {
   tab_dragging_recorder_.reset();
 
-  aura::Window* const new_window =
-      Shell::Get()->shell_delegate()->CreateBrowserForTabDrop(source_window_,
-                                                              drop_data);
-  DCHECK(new_window);
+  auto closure = base::BindOnce(&TabDragDropDelegate::OnNewBrowserWindowCreated,
+                                base::Owned(this), location_in_screen);
+  NewWindowDelegate::GetPrimary()->NewWindowForDetachingTab(
+      source_window_, drop_data, std::move(closure));
+}
+
+void TabDragDropDelegate::OnNewBrowserWindowCreated(
+    const gfx::Point& location_in_screen,
+    aura::Window* new_window) {
+  DCHECK(new_window) << "New browser window creation for tab detaching failed.";
 
   const gfx::Rect area =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(

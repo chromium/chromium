@@ -13,7 +13,6 @@ namespace internal {
 // service.
 // This enum is used for histograms and should not be renumbered.
 enum class TaskQueueSelectorLogic {
-
   // Selected due to priority rules.
   kControlPriorityLogic = 0,
   kHighestPriorityLogic = 1,

@@ -138,7 +138,7 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
         ->PostDelayedTask(FROM_HERE,
                           WTF::Bind(&WebTestWebFrameWidgetImpl::AnimateNow,
                                     WrapWeakPersistent(this)),
-                          base::TimeDelta::FromMilliseconds(1));
+                          base::Milliseconds(1));
   }
 }
 

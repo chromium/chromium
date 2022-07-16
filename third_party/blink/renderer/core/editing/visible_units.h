@@ -33,11 +33,14 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
+namespace gfx {
+class Point;
+}
+
 namespace blink {
 
 class LayoutObject;
 class Node;
-class IntPoint;
 class IntRect;
 class LocalFrame;
 
@@ -135,6 +138,7 @@ CORE_EXPORT PositionWithAffinity NextWordPosition(
 CORE_EXPORT PositionInFlatTreeWithAffinity NextWordPosition(
     const PositionInFlatTree&,
     PlatformWordBehavior = PlatformWordBehavior::kWordDontSkipSpaces);
+bool IsWordBreak(UChar);
 
 // sentences
 CORE_EXPORT Position StartOfSentencePosition(const Position&);
@@ -241,7 +245,8 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(const LayoutObject*);
 // Returns a hit-tested PositionWithAffinity for the given point in
 // contents-space coordinates.
 CORE_EXPORT PositionWithAffinity
-PositionForContentsPointRespectingEditingBoundary(const IntPoint&, LocalFrame*);
+PositionForContentsPointRespectingEditingBoundary(const gfx::Point&,
+                                                  LocalFrame*);
 
 CORE_EXPORT bool RendersInDifferentPosition(const Position&, const Position&);
 

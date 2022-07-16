@@ -83,8 +83,11 @@ unsigned NthIndexCache::NthChildIndex(Element& element) {
     return 1;
   NthIndexCache* nth_index_cache = element.GetDocument().GetNthIndexCache();
   NthIndexData* nth_index_data = nullptr;
-  if (nth_index_cache && nth_index_cache->parent_map_)
-    nth_index_data = nth_index_cache->parent_map_->at(element.parentNode());
+  if (nth_index_cache && nth_index_cache->parent_map_) {
+    auto it = nth_index_cache->parent_map_->find(element.parentNode());
+    if (it != nth_index_cache->parent_map_->end())
+      nth_index_data = it->value;
+  }
   if (nth_index_data)
     return nth_index_data->NthIndex(element);
   unsigned index = UncachedNthChildIndex(element);
@@ -98,8 +101,11 @@ unsigned NthIndexCache::NthLastChildIndex(Element& element) {
     return 1;
   NthIndexCache* nth_index_cache = element.GetDocument().GetNthIndexCache();
   NthIndexData* nth_index_data = nullptr;
-  if (nth_index_cache && nth_index_cache->parent_map_)
-    nth_index_data = nth_index_cache->parent_map_->at(element.parentNode());
+  if (nth_index_cache && nth_index_cache->parent_map_) {
+    auto it = nth_index_cache->parent_map_->find(element.parentNode());
+    if (it != nth_index_cache->parent_map_->end())
+      nth_index_data = it->value;
+  }
   if (nth_index_data)
     return nth_index_data->NthLastIndex(element);
   unsigned index = UncachedNthLastChildIndex(element);
@@ -112,8 +118,14 @@ NthIndexData* NthIndexCache::NthTypeIndexDataForParent(Element& element) const {
   DCHECK(element.parentNode());
   if (!parent_map_for_type_)
     return nullptr;
-  if (const IndexByType* map = parent_map_for_type_->at(element.parentNode()))
-    return map->at(element.tagName());
+  auto it_parent = parent_map_for_type_->find(element.parentNode());
+  const IndexByType* map =
+      it_parent != parent_map_for_type_->end() ? it_parent->value : nullptr;
+  if (map) {
+    auto it_map = map->find(element.tagName());
+    if (it_map != map->end())
+      return it_map->value;
+  }
   return nullptr;
 }
 

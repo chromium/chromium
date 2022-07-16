@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FilesAppState} from '../../common/js/files_app_state.js';
 import {util} from '../../common/js/util.js';
 
 import {AppWindowWrapper} from './app_window_wrapper.js';
@@ -70,21 +71,15 @@ launcher.setInitializationPromise = (promise) => {
 
 
 /**
- * @param {Object=} opt_appState App state.
- * @param {number=} opt_id Window id.
- * @param {LaunchType=} opt_type Launch type. Default: ALWAYS_CREATE.
+ * @param {!FilesAppState=} appState App state.
+ * @param {number=} id Window id.
+ * @param {!LaunchType=} type Launch type. Default: ALWAYS_CREATE.
  * @return {!Promise<chrome.app.window.AppWindow|string>} Resolved with the App
  *     ID.
  */
-launcher.launchFileManager = async (opt_appState, opt_id, opt_type) => {
-  const type = opt_type || LaunchType.ALWAYS_CREATE;
-  opt_appState =
-      /**
-       * @type {(undefined|
-       *         {currentDirectoryURL: (string|undefined),
-       *          selectionURL: (string|undefined)})}
-       */
-      (opt_appState);
+launcher.launchFileManager = async (
+    appState = undefined, id = undefined, type = LaunchType.ALWAYS_CREATE) => {
+  type = type || LaunchType.ALWAYS_CREATE;
 
   // Serialize concurrent calls to launchFileManager.
   if (!launcher.initializationPromise_) {
@@ -100,7 +95,7 @@ launcher.launchFileManager = async (opt_appState, opt_id, opt_type) => {
 
   // Check if there is already a window with the same URL. If so, then
   // reuse it instead of opening a new one.
-  if (opt_appState &&
+  if (appState &&
       (type == LaunchType.FOCUS_SAME_OR_CREATE ||
        type == LaunchType.FOCUS_ANY_OR_CREATE)) {
     for (const [key, appWindow] of filesWindows) {
@@ -110,14 +105,14 @@ launcher.launchFileManager = async (opt_appState, opt_id, opt_type) => {
       }
 
       // Different current directories.
-      if (opt_appState.currentDirectoryURL !==
+      if (appState.currentDirectoryURL !==
           contentWindow.appState.currentDirectoryURL) {
         continue;
       }
 
       // Selection URL specified, and it is different.
-      if (opt_appState.selectionURL &&
-          opt_appState.selectionURL !== contentWindow.appState.selectionURL) {
+      if (appState.selectionURL &&
+          appState.selectionURL !== contentWindow.appState.selectionURL) {
         continue;
       }
 
@@ -159,14 +154,14 @@ launcher.launchFileManager = async (opt_appState, opt_id, opt_type) => {
 
   // Create a new instance in case of ALWAYS_CREATE type, or as a fallback
   // for other types.
-  const id = opt_id || nextFileManagerWindowID;
+  id = id || nextFileManagerWindowID;
   nextFileManagerWindowID = Math.max(nextFileManagerWindowID, id + 1);
   const appId = FILES_ID_PREFIX + id;
 
   const appWindow = new AppWindowWrapper(
       'main.html', appId, FILE_MANAGER_WINDOW_CREATE_OPTIONS);
 
-  await appWindow.launch(opt_appState || {}, false);
+  await appWindow.launch(appState || {}, false);
   if (!appWindow.rawAppWindow) {
     return null;
   }

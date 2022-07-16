@@ -20,6 +20,12 @@ var MockAccessibilityPrivate = {
     SOLID: 'solid',
   },
 
+  AccessibilityFeature: {
+    DICTATION_COMMANDS: 'dictation_commands',
+  },
+
+  SyntheticKeyboardEventType: {KEYDOWN: 'keydown', KEYUP: 'keyup,'},
+
   /** @private {function<number, number>} */
   boundsListener_: null,
 
@@ -54,6 +60,9 @@ var MockAccessibilityPrivate = {
 
   /** @private {boolean} */
   dictationActivated_: false,
+
+  /** @private {Set<string>} */
+  enabledFeatures_: new Set(),
 
   // Methods from AccessibilityPrivate API. //
 
@@ -181,6 +190,22 @@ var MockAccessibilityPrivate = {
         !MockAccessibilityPrivate.dictationActivated_;
   },
 
+  /**
+   * Whether a feature is enabled. This doesn't look at command line flags; set
+   * enabled state with MockAccessibilityPrivate::enableFeatureForTest.
+   * @param {AccessibilityFeature} feature
+   * @param {function(boolean): void} callback
+   */
+  isFeatureEnabled(feature, callback) {
+    callback(this.enabledFeatures_.has(feature));
+  },
+
+  /**
+   * Creates a synthetic keyboard event.
+   * @param {Object} unused
+   */
+  sendSyntheticKeyEvent(unused) {},
+
   // Methods for testing. //
 
   /**
@@ -293,5 +318,19 @@ var MockAccessibilityPrivate = {
    */
   getDictationActive() {
     return MockAccessibilityPrivate.dictationActivated_;
+  },
+
+  /**
+   * Enables or disables a feature for testing, causing
+   * MockAccessibilityPrivate.isFeatureEnabled to consider it enabled.
+   * @param {AccessibilityFeature} feature
+   * @param {boolean} enabled
+   */
+  enableFeatureForTest(feature, enabled) {
+    if (enabled) {
+      this.enabledFeatures_.add(feature);
+    } else if (this.enabledFeatures_.has(feature)) {
+      this.enabledFeatures_.delete(feature);
+    }
   },
 };

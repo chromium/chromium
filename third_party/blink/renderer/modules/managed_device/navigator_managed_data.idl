@@ -14,9 +14,14 @@
   attribute EventHandler onmanagedconfigurationchange;
 
   // Device Attributes API.
-  [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes] Promise<DOMString> getDirectoryId();
-  [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes] Promise<DOMString> getHostname();
-  [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes] Promise<DOMString> getSerialNumber();
-  [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes] Promise<DOMString> getAnnotatedAssetId();
-  [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes] Promise<DOMString> getAnnotatedLocation();
+  [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes, Measure]
+  Promise<DOMString> getDirectoryId();
+  [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes, Measure]
+  Promise<DOMString> getHostname();
+  [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes, Measure]
+  Promise<DOMString> getSerialNumber();
+  [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes, Measure]
+  Promise<DOMString> getAnnotatedAssetId();
+  [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes, Measure]
+  Promise<DOMString> getAnnotatedLocation();
 };

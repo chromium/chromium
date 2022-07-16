@@ -44,6 +44,10 @@ class TestSafeBrowsingService : public SafeBrowsingService,
                                 public ServicesDelegate::ServicesCreator {
  public:
   TestSafeBrowsingService();
+
+  TestSafeBrowsingService(const TestSafeBrowsingService&) = delete;
+  TestSafeBrowsingService& operator=(const TestSafeBrowsingService&) = delete;
+
   // SafeBrowsingService overrides
   V4ProtocolConfig GetV4ProtocolConfig() const override;
 
@@ -93,7 +97,6 @@ class TestSafeBrowsingService : public SafeBrowsingService,
 #endif
   IncidentReportingService* CreateIncidentReportingService() override;
 
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* browser_context) override;
 
@@ -105,13 +108,17 @@ class TestSafeBrowsingService : public SafeBrowsingService,
   bool use_test_url_loader_factory_ = false;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSafeBrowsingService);
 };
 
 class TestSafeBrowsingServiceFactory : public SafeBrowsingServiceFactory {
  public:
   TestSafeBrowsingServiceFactory();
+
+  TestSafeBrowsingServiceFactory(const TestSafeBrowsingServiceFactory&) =
+      delete;
+  TestSafeBrowsingServiceFactory& operator=(
+      const TestSafeBrowsingServiceFactory&) = delete;
+
   ~TestSafeBrowsingServiceFactory() override;
 
   // Creates test safe browsing service, and configures test UI manager,
@@ -136,8 +143,6 @@ class TestSafeBrowsingServiceFactory : public SafeBrowsingServiceFactory {
   scoped_refptr<TestSafeBrowsingDatabaseManager> test_database_manager_;
   scoped_refptr<TestSafeBrowsingUIManager> test_ui_manager_;
   bool use_v4_local_db_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSafeBrowsingServiceFactory);
 };
 
 // This is an implemenation of SafeBrowsingUIManager without actually
@@ -148,6 +153,11 @@ class TestSafeBrowsingUIManager : public SafeBrowsingUIManager {
   TestSafeBrowsingUIManager();
   explicit TestSafeBrowsingUIManager(
       std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory);
+
+  TestSafeBrowsingUIManager(const TestSafeBrowsingUIManager&) = delete;
+  TestSafeBrowsingUIManager& operator=(const TestSafeBrowsingUIManager&) =
+      delete;
+
   void SendSerializedThreatDetails(content::BrowserContext* browser_context,
                                    const std::string& serialized) override;
   std::list<std::string>* GetThreatDetails();
@@ -155,8 +165,6 @@ class TestSafeBrowsingUIManager : public SafeBrowsingUIManager {
  protected:
   ~TestSafeBrowsingUIManager() override;
   std::list<std::string> details_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSafeBrowsingUIManager);
 };
 
 }  // namespace safe_browsing

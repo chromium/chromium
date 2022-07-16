@@ -157,7 +157,6 @@ static const char* const kFontFamiliesWithInvalidCharWidth[] = {
 // number of Mac fonts, but, in order to get similar rendering across platforms,
 // we do this check for all platforms.
 bool LayoutTextControl::HasValidAvgCharWidth(const Font& font) {
-  const AtomicString family = font.GetFontDescription().Family().Family();
   const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
@@ -172,6 +171,7 @@ bool LayoutTextControl::HasValidAvgCharWidth(const Font& font) {
   static HashSet<AtomicString>* font_families_with_invalid_char_width_map =
       nullptr;
 
+  const AtomicString& family = font.GetFontDescription().Family().FamilyName();
   if (family.IsEmpty())
     return false;
 
@@ -190,11 +190,18 @@ bool LayoutTextControl::HasValidAvgCharWidth(const Font& font) {
 float LayoutTextControl::GetAvgCharWidth(const ComputedStyle& style) {
   const Font& font = style.GetFont();
   const SimpleFontData* primary_font = font.PrimaryFont();
-  if (primary_font && HasValidAvgCharWidth(font))
-    return roundf(primary_font->AvgCharWidth());
+  if (primary_font && HasValidAvgCharWidth(font)) {
+    const float width = primary_font->AvgCharWidth();
+    // We apply roundf() only if the fractional part of |width| is >= 0.5
+    // because:
+    // * We have done it for a long time.
+    // * Removing roundf() would make the intrinsic width smaller, and it
+    //   would have a compatibility risk.
+    return std::max(width, roundf(width));
+  }
 
   const UChar kCh = '0';
-  const String str = String(&kCh, 1);
+  const String str = String(&kCh, 1u);
   TextRun text_run =
       ConstructTextRun(font, str, style, TextRun::kAllowTrailingExpansion);
   return font.Width(text_run);

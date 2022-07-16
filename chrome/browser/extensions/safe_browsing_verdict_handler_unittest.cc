@@ -427,7 +427,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest, AcknowledgedStateBackFilled) {
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood0));
 
   // To simulate an old Chrome version, the acknowledged state is cleared.
-  blocklist_prefs::ClearAcknowledgedBlocklistStates(
+  blocklist_prefs::ClearAcknowledgedGreylistStates(
       kGood0, ExtensionPrefs::Get(profile()));
   // The browser is restarted.
   service()->safe_browsing_verdict_handler_.Init();

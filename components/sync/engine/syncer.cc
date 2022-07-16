@@ -35,7 +35,7 @@ void HandleCycleBegin(SyncCycle* cycle) {
 Syncer::Syncer(CancelationSignal* cancelation_signal)
     : cancelation_signal_(cancelation_signal), is_syncing_(false) {}
 
-Syncer::~Syncer() {}
+Syncer::~Syncer() = default;
 
 bool Syncer::IsSyncing() const {
   return is_syncing_;
@@ -73,7 +73,7 @@ bool Syncer::ConfigureSyncShare(const ModelTypeSet& request_types,
   // it happens we should adjust set of types to download to only include
   // registered types.
   ModelTypeSet still_enabled_types =
-      Intersection(request_types, cycle->context()->GetEnabledTypes());
+      Intersection(request_types, cycle->context()->GetConnectedTypes());
   VLOG(1) << "Configuring types " << ModelTypeSetToString(still_enabled_types);
   HandleCycleBegin(cycle);
   DownloadAndApplyUpdates(&still_enabled_types, cycle,
@@ -146,7 +146,7 @@ SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
   // However, it doesn't hurt to check it anyway.
   while (!ExitRequested()) {
     std::unique_ptr<Commit> commit(Commit::Init(
-        cycle->context()->GetEnabledTypes(),
+        cycle->context()->GetConnectedTypes(),
         cycle->context()->proxy_tabs_datatype_enabled(),
         cycle->context()->max_commit_batch_size(),
         cycle->context()->account_name(), cycle->context()->cache_guid(),

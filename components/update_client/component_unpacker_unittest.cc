@@ -11,12 +11,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/crx_file/crx_verifier.h"
@@ -32,15 +31,16 @@ namespace {
 class TestCallback {
  public:
   TestCallback();
+
+  TestCallback(const TestCallback&) = delete;
+  TestCallback& operator=(const TestCallback&) = delete;
+
   virtual ~TestCallback() = default;
   void Set(update_client::UnpackerError error, int extra_code);
 
   update_client::UnpackerError error_;
   int extra_code_;
   bool called_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestCallback);
 };
 
 TestCallback::TestCallback()

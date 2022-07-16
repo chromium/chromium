@@ -27,14 +27,17 @@
     </div>
   </div>
 </template>
-<template is="dom-if"
-    if="[[shouldShowExtensionIndicator_(managedProperties)]]">
+
+<!-- In the case when the Ash-Browser and the Lacros-Browser run side by side,
+  the proxy configuration set in the Ash-Browser has priority. -->
+<template is="dom-if" if="[[isProxySetByExtension_(
+  isProxySetByLacrosExtension_, managedProperties)]]">
   <div class="settings-box">
     <extension-controlled-indicator
-        extension-id="[[prefs.proxy.extensionId]]"
-        extension-name="[[prefs.proxy.controlledByName]]"
-        extension-can-be-disabled="[[prefs.proxy.extensionCanBeDisabled]]">
-    </extension-controlled-indicator>
+      extension-id="[[extensionInfo_.id]]"
+      extension-name="[[extensionInfo_.name]]"
+      extension-can-be-disabled="[[extensionInfo_.canBeDisabled]]"
+    ></extension-controlled-indicator>
   </div>
 </template>
 

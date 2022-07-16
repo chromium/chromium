@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -31,6 +30,9 @@ class ASH_PUBLIC_EXPORT PresentationTimeRecorder {
    public:
     explicit TestApi(PresentationTimeRecorder* recorder);
 
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
     void OnCompositingDidCommit(ui::Compositor* compositor);
     void OnPresented(int count,
                      base::TimeTicks requested_time,
@@ -42,11 +44,14 @@ class ASH_PUBLIC_EXPORT PresentationTimeRecorder {
 
    private:
     PresentationTimeRecorder* recorder_;
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
 
   explicit PresentationTimeRecorder(
       std::unique_ptr<PresentationTimeRecorderInternal> internal);
+
+  PresentationTimeRecorder(const PresentationTimeRecorder&) = delete;
+  PresentationTimeRecorder& operator=(const PresentationTimeRecorder&) = delete;
+
   ~PresentationTimeRecorder();
 
   // Start recording next frame. It skips requesting next frame and returns
@@ -59,8 +64,6 @@ class ASH_PUBLIC_EXPORT PresentationTimeRecorder {
 
  private:
   std::unique_ptr<PresentationTimeRecorderInternal> recorder_internal_;
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationTimeRecorder);
 };
 
 // Creates a PresentationTimeRecorder that records timing histograms of

@@ -57,8 +57,8 @@ class NewTabUIBrowserTest : public InProcessBrowserTest {
 
 // Navigate to incognito NTP. Fails if there are console errors.
 IN_PROC_BROWSER_TEST_F(NewTabUIBrowserTest, ShowIncognito) {
-  ui_test_utils::NavigateToURL(CreateIncognitoBrowser(),
-                               GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(CreateIncognitoBrowser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
 }
 
 class NewTabUIProcessPerTabTest : public NewTabUIBrowserTest {
@@ -76,7 +76,8 @@ class NewTabUIProcessPerTabTest : public NewTabUIBrowserTest {
 // If this flakes, use http://crbug.com/87200
 IN_PROC_BROWSER_TEST_F(NewTabUIProcessPerTabTest, NavBeforeNTPCommits) {
   // Bring up a new tab page.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
 
   // Navigate to chrome://hang/ to stall the process.
   ui_test_utils::NavigateToURLWithDisposition(

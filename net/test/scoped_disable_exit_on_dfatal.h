@@ -20,6 +20,11 @@ namespace test {
 class ScopedDisableExitOnDFatal {
  public:
   ScopedDisableExitOnDFatal();
+
+  ScopedDisableExitOnDFatal(const ScopedDisableExitOnDFatal&) = delete;
+  ScopedDisableExitOnDFatal& operator=(const ScopedDisableExitOnDFatal&) =
+      delete;
+
   ~ScopedDisableExitOnDFatal();
 
  private:
@@ -31,8 +36,6 @@ class ScopedDisableExitOnDFatal {
                                const base::StringPiece stack_trace);
 
   logging::ScopedLogAssertHandler assert_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDisableExitOnDFatal);
 };
 
 }  // namespace test

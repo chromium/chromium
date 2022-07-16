@@ -9,9 +9,10 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -31,8 +32,7 @@ using MetricRefreshFrequencies =
 SystemMonitor* g_system_metrics_monitor = nullptr;
 
 // The default interval at which the metrics are refreshed.
-constexpr base::TimeDelta kDefaultRefreshInterval =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kDefaultRefreshInterval = base::Seconds(2);
 
 }  // namespace
 
@@ -242,13 +242,16 @@ void SystemMonitor::NotifyObservers(SystemMonitor::MetricVector metrics) {
 std::unique_ptr<MetricEvaluatorsHelper>
 SystemMonitor::CreateMetricEvaluatorsHelper() {
 #if defined(OS_WIN)
-  MetricEvaluatorsHelper* helper = new MetricEvaluatorsHelperWin();
+  return base::WrapUnique(new MetricEvaluatorsHelperWin());
 #elif defined(OS_POSIX)
-  MetricEvaluatorsHelper* helper = new MetricEvaluatorsHelperPosix();
+  return std::make_unique<MetricEvaluatorsHelperPosix>();
+#elif defined(OS_FUCHSIA)
+  // TODO(crbug.com/1235293)
+  NOTIMPLEMENTED_LOG_ONCE();
+  return nullptr;
 #else
 #error Unsupported platform
 #endif
-  return base::WrapUnique(helper);
 }
 
 SystemMonitor::MetricEvaluator::MetricEvaluator(Type type) : type_(type) {}

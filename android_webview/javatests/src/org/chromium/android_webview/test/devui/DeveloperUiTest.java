@@ -31,13 +31,12 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
 
+import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +44,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
@@ -61,25 +61,36 @@ public class DeveloperUiTest {
     public static final String TEST_WEBVIEW_APPLICATION_LABEL = "AwShellApplication";
 
     @Rule
-    public IntentsTestRule mRule = new IntentsTestRule<MainActivity>(MainActivity.class);
+    public BaseActivityTestRule mRule = new BaseActivityTestRule<MainActivity>(MainActivity.class);
 
-    @Before
-    public void setUp() throws Exception {
-        // Stub all external intents, to avoid launching other apps (ex. system browser).
+    private void launchHomeFragment() {
+        mRule.launchActivity(null);
+
+        // Only start recording intents after launching the MainActivity.
+        Intents.init();
+
+        // Stub all external intents, to avoid launching other apps (ex. system browser), has to be
+        // done after launching the activity.
         intending(not(IntentMatchers.isInternal()))
                 .respondWith(new ActivityResult(Activity.RESULT_OK, null));
     }
 
     @After
     public void tearDown() throws Exception {
-        // Tests are responsible for verifyhing every Intent they trigger.
-        assertNoUnverifiedIntents();
+        // Activity is launched, i.e the test is not skipped.
+        if (mRule.getActivity() != null) {
+            // Tests are responsible for verifying every Intent they trigger.
+            assertNoUnverifiedIntents();
+            Intents.release();
+        }
     }
 
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testOpensHomeFragmentByDefault() throws Throwable {
+        launchHomeFragment();
+
         onView(withId(R.id.fragment_home)).check(matches(isDisplayed()));
         onView(withId(R.id.navigation_home))
                 .check(matches(hasTextColor(R.color.navigation_selected)));
@@ -93,6 +104,8 @@ public class DeveloperUiTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testNavigateBetweenFragments() throws Throwable {
+        launchHomeFragment();
+
         // HomeFragment -> CrashesListFragment
         onView(withId(R.id.navigation_crash_ui)).perform(click());
         onView(withId(R.id.fragment_home)).check(doesNotExist());
@@ -134,6 +147,8 @@ public class DeveloperUiTest {
         Assume.assumeTrue("This test verifies behavior introduced in Nougat and above",
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
 
+        launchHomeFragment();
+
         openActionBarOverflowOrOptionsMenu(
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
         onView(withText("Change WebView Provider")).check(matches(isDisplayed()));
@@ -147,6 +162,9 @@ public class DeveloperUiTest {
     public void testMenuOptions_switchProvider_notShown() throws Throwable {
         Assume.assumeTrue("This test verifies pre-Nougat behavior",
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.N);
+
+        launchHomeFragment();
+
         openActionBarOverflowOrOptionsMenu(
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
         onView(withId(R.id.options_menu_switch_provider)).check(doesNotExist());
@@ -156,6 +174,8 @@ public class DeveloperUiTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testMenuOptions_reportBug() throws Throwable {
+        launchHomeFragment();
+
         openActionBarOverflowOrOptionsMenu(
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
 
@@ -174,6 +194,8 @@ public class DeveloperUiTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testMenuOptions_checkUpdates_withPlayStore() throws Throwable {
+        launchHomeFragment();
+
         // Stub out the Intent to the Play Store, to verify the case where the Play Store Intent
         // resolves.
         // TODO(ntfschr): figure out how to stub startActivity to throw an exception, to verify the
@@ -200,6 +222,8 @@ public class DeveloperUiTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testMenuOptions_aboutDevTools() throws Throwable {
+        launchHomeFragment();
+
         openActionBarOverflowOrOptionsMenu(
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
 
@@ -210,5 +234,20 @@ public class DeveloperUiTest {
                 IntentMatchers.hasData(hasHost("chromium.googlesource.com")),
                 IntentMatchers.hasData(
                         hasPath("/chromium/src/+/HEAD/android_webview/docs/developer-ui.md"))));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMenuOptions_components() throws Throwable {
+        launchHomeFragment();
+
+        openActionBarOverflowOrOptionsMenu(
+                InstrumentationRegistry.getInstrumentation().getTargetContext());
+
+        onView(withText("Components")).check(matches(isDisplayed()));
+        onView(withText("Components")).perform(click());
+
+        onView(withId(R.id.fragment_components_list)).check(matches(isDisplayed()));
     }
 }

@@ -100,7 +100,7 @@ String CSSStyleRule::cssText() const {
   if (!decls.IsEmpty())
     result.Append(' ');
   result.Append('}');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 void CSSStyleRule::Reattach(StyleRuleBase* rule) {

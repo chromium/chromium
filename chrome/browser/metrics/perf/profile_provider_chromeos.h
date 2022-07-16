@@ -27,6 +27,10 @@ class ProfileProvider : public chromeos::PowerManagerClient::Observer,
                         public content::JankMonitor::Observer {
  public:
   ProfileProvider();
+
+  ProfileProvider(const ProfileProvider&) = delete;
+  ProfileProvider& operator=(const ProfileProvider&) = delete;
+
   ~ProfileProvider() override;
 
   void Init();
@@ -52,7 +56,7 @@ class ProfileProvider : public chromeos::PowerManagerClient::Observer,
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // Called when a session restore has finished.
-  void OnSessionRestoreDone(int num_tabs_restored);
+  void OnSessionRestoreDone(Profile* profile, int num_tabs_restored);
 
   // Called when a jank is observed by the JankMonitor. Note that these 2
   // methods don't run on the UI thread.
@@ -88,8 +92,6 @@ class ProfileProvider : public chromeos::PowerManagerClient::Observer,
 
   // To pass around the "this" pointer across threads safely.
   base::WeakPtrFactory<ProfileProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileProvider);
 };
 
 }  // namespace metrics

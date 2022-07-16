@@ -11,7 +11,6 @@
 #include "chromeos/components/multidevice/debug_webui/url_constants.h"
 #include "chromeos/grit/chromeos_resources.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
-#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -24,7 +23,6 @@ namespace multidevice {
 ProximityAuthUI::ProximityAuthUI(
     content::WebUI* web_ui,
     device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client,
     MultiDeviceSetupBinder multidevice_setup_binder)
     : ui::MojoWebUIController(web_ui, true /* enable_chrome_send */),
       multidevice_setup_binder_(std::move(multidevice_setup_binder)) {
@@ -44,8 +42,8 @@ ProximityAuthUI::ProximityAuthUI(
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, source);
-  web_ui->AddMessageHandler(std::make_unique<ProximityAuthWebUIHandler>(
-      device_sync_client, secure_channel_client));
+  web_ui->AddMessageHandler(
+      std::make_unique<ProximityAuthWebUIHandler>(device_sync_client));
 }
 
 ProximityAuthUI::~ProximityAuthUI() = default;

@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_RENDER_FRAME_PROXY_H_
 #define CONTENT_RENDERER_RENDER_FRAME_PROXY_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "cc/paint/paint_canvas.h"
 #include "content/common/content_export.h"
@@ -114,6 +113,9 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   // be null, nor will this method return null.
   static RenderFrameProxy* FromWebFrame(blink::WebRemoteFrame* web_frame);
 
+  RenderFrameProxy(const RenderFrameProxy&) = delete;
+  RenderFrameProxy& operator=(const RenderFrameProxy&) = delete;
+
   ~RenderFrameProxy() override;
 
   // IPC::Sender
@@ -167,8 +169,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   service_manager::BinderRegistry binder_registry_;
   blink::AssociatedInterfaceRegistry associated_interfaces_;
   std::unique_ptr<BlinkInterfaceRegistryImpl> blink_interface_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameProxy);
 };
 
 }  // namespace content

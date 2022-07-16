@@ -38,6 +38,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementMac
       BluetoothAdapter::AdvertisementErrorCallback error_callback,
       BluetoothLowEnergyAdvertisementManagerMac* advertisement_manager);
 
+  BluetoothAdvertisementMac(const BluetoothAdvertisementMac&) = delete;
+  BluetoothAdvertisementMac& operator=(const BluetoothAdvertisementMac&) =
+      delete;
+
   // BluetoothAdvertisement overrides:
   void Unregister(SuccessCallback success_callback,
                   ErrorCallback error_callback) override;
@@ -72,8 +76,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementMac
   BluetoothAdapter::AdvertisementErrorCallback error_callback_;
   BluetoothLowEnergyAdvertisementManagerMac* advertisement_manager_;
   Status status_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdvertisementMac);
 };
 
 }  // namespace device

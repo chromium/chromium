@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -37,6 +36,10 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
       Profile* profile,
       const std::unordered_map<std::string, int>& string_to_grd_id_map,
       Browser* browser = nullptr);
+
+  SyncConfirmationHandler(const SyncConfirmationHandler&) = delete;
+  SyncConfirmationHandler& operator=(const SyncConfirmationHandler&) = delete;
+
   ~SyncConfirmationHandler() override;
 
   // content::WebUIMessageHandler:
@@ -110,8 +113,6 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   Browser* browser_;
 
   signin::IdentityManager* identity_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncConfirmationHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SYNC_CONFIRMATION_HANDLER_H_

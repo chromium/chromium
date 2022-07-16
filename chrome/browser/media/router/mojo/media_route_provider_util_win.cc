@@ -10,9 +10,9 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "chrome/installer/util/firewall_manager_win.h"
 
 namespace media_router {

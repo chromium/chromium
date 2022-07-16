@@ -7,11 +7,15 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/quota_client.mojom-forward.h"
 #include "content/browser/native_io/native_io_quota_client.h"
@@ -116,51 +120,33 @@ class CONTENT_EXPORT NativeIOManager {
 
   // Called when a receiver is disconnected from a NativeIOHost.
   //
-  // `host` must be owned by this manager. This method should only be called by
-  // NativeIOHost.
-  void OnHostReceiverDisconnect(NativeIOHost* host);
+  // `host` must be owned by this manager. `host` may be deleted.
+  void OnHostReceiverDisconnect(NativeIOHost* host,
+                                base::PassKey<NativeIOHost>);
 
-  // Callback function when DeleteStorageKeyData has completed.
+  // Called when a NativeIOHost finishes processing a data deletion request.
   //
-  // `host` must be owned by this manager.
-  void OnDeleteStorageKeyDataCompleted(
-      storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback,
-      base::File::Error result,
-      NativeIOHost* host);
+  // `host` must be owned by this manager. `host` may be deleted.
+  void DidDeleteHostData(NativeIOHost* host, base::PassKey<NativeIOHost>);
 
   storage::QuotaManagerProxy* quota_manager_proxy() const {
     return quota_manager_proxy_.get();
   }
 
  private:
-  SEQUENCE_CHECKER(sequence_checker_);
+  // Adds and binds receiver on default bucket retrieval to ensure that a bucket
+  // always exists for the storage key.
+  void BindReceiverWithBucketInfo(
+      const blink::StorageKey& storage_key,
+      mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver,
+      storage::QuotaErrorOr<storage::BucketInfo> result);
 
   // Deletes the NativeIOHost if it serves no further purpose.
   //
   // `host` must be owned by this manager.
   void MaybeDeleteHost(NativeIOHost* host);
 
-  // Called after the I/O part of GetStorageKeysForType() completed.
-  void DidGetStorageKeysForType(
-      storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
-      std::vector<blink::StorageKey> storage_keys);
-
-  // Called after the I/O part of GetStorageKeysForHost() completed.
-  void DidGetStorageKeysForHost(
-      storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
-      const std::string& host,
-      std::vector<blink::StorageKey> storage_keys);
-
-  // Called after the I/O part of GetStorageKeyUsage() completed.
-  void DidGetStorageKeyUsage(
-      storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback,
-      int64_t usage);
-
-  // Called after the I/O part of GetStorageKeyUsageMap() completed.
-  void DidGetStorageKeyUsageMap(
-      base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>
-          callback,
-      const std::map<blink::StorageKey, int64_t>& usage_map);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Points to the root directory for NativeIO files.
   //
@@ -176,16 +162,18 @@ class CONTENT_EXPORT NativeIOManager {
 
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
-  std::map<blink::StorageKey, std::unique_ptr<NativeIOHost>> hosts_;
+  std::map<blink::StorageKey, std::unique_ptr<NativeIOHost>> hosts_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  NativeIOQuotaClient quota_client_;
+  NativeIOQuotaClient quota_client_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Once the QuotaClient receiver is destroyed, the underlying mojo connection
   // is closed. Callbacks associated with mojo calls received over this
   // connection may only be dropped after the connection is closed. For this
   // reason, it's preferable to have the receiver be destroyed as early as
   // possible during the NativeIOManager destruction process.
-  mojo::Receiver<storage::mojom::QuotaClient> quota_client_receiver_;
+  mojo::Receiver<storage::mojom::QuotaClient> quota_client_receiver_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<NativeIOManager> weak_factory_{this};
 };

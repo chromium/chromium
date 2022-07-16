@@ -36,6 +36,10 @@ class MOJO_SYSTEM_IMPL_EXPORT DataPipeProducerDispatcher final
       const MojoCreateDataPipeOptions& options,
       uint64_t pipe_id);
 
+  DataPipeProducerDispatcher(const DataPipeProducerDispatcher&) = delete;
+  DataPipeProducerDispatcher& operator=(const DataPipeProducerDispatcher&) =
+      delete;
+
   // Dispatcher:
   Type GetType() const override;
   MojoResult Close() override;
@@ -107,8 +111,6 @@ class MOJO_SYSTEM_IMPL_EXPORT DataPipeProducerDispatcher final
 
   uint32_t write_offset_ = 0;
   uint32_t available_capacity_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeProducerDispatcher);
 };
 
 }  // namespace core

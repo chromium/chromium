@@ -67,6 +67,12 @@ class ViewTreeHostRootView::LayerTreeViewTreeFrameSinkHolder
       : view_(view), frame_sink_(std::move(frame_sink)) {
     frame_sink_->BindToClient(this);
   }
+
+  LayerTreeViewTreeFrameSinkHolder(const LayerTreeViewTreeFrameSinkHolder&) =
+      delete;
+  LayerTreeViewTreeFrameSinkHolder& operator=(
+      const LayerTreeViewTreeFrameSinkHolder&) = delete;
+
   ~LayerTreeViewTreeFrameSinkHolder() override {
     if (frame_sink_)
       frame_sink_->DetachFromClient();
@@ -216,8 +222,6 @@ class ViewTreeHostRootView::LayerTreeViewTreeFrameSinkHolder
   float last_frame_device_scale_factor_ = 1.0f;
   aura::Window* root_window_ = nullptr;
   bool delete_pending_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerTreeViewTreeFrameSinkHolder);
 };
 
 ViewTreeHostRootView::ViewTreeHostRootView(views::Widget* widget)

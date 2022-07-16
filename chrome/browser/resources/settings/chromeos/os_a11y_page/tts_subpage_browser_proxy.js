@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 /** @interface */
-/* #export */ class TtsSubpageBrowserProxy {
+export class TtsSubpageBrowserProxy {
   /**
    * Requests the updated voice data. Returned by the 'all-voice-data-updated'
    * WebUI Listener event.
@@ -37,7 +37,7 @@
 /**
  * @implements {TtsSubpageBrowserProxy}
  */
-/* #export */ class TtsSubpageBrowserProxyImpl {
+export class TtsSubpageBrowserProxyImpl {
   /** @override */
   getAllTtsVoiceData() {
     chrome.send('getAllTtsVoiceData');
@@ -61,4 +61,4 @@
 
 // The singleton instance_ is replaced with a test version of this wrapper
 // during testing.
-cr.addSingletonGetter(TtsSubpageBrowserProxyImpl);
+addSingletonGetter(TtsSubpageBrowserProxyImpl);

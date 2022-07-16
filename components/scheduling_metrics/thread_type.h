@@ -22,7 +22,7 @@ enum class ThreadType {
   // Aggregate them into a single item for clarity and split out if necessary.
   kRendererOtherBlinkThread = 6,
 
-  kCount = 7,
+  kMaxValue = kRendererOtherBlinkThread,
 };
 
 }  // namespace scheduling_metrics

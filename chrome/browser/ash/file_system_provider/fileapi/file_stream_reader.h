@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
@@ -34,6 +33,9 @@ class FileStreamReader : public storage::FileStreamReader {
                    const storage::FileSystemURL& url,
                    int64_t initial_offset,
                    const base::Time& expected_modification_time);
+
+  FileStreamReader(const FileStreamReader&) = delete;
+  FileStreamReader& operator=(const FileStreamReader&) = delete;
 
   ~FileStreamReader() override;
 
@@ -109,7 +111,6 @@ class FileStreamReader : public storage::FileStreamReader {
   State state_;
 
   base::WeakPtrFactory<FileStreamReader> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FileStreamReader);
 };
 
 }  // namespace file_system_provider

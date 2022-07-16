@@ -7,7 +7,7 @@
 
 #include "base/ios/ios_util.h"
 #include "base/macros.h"
-#import "ios/web/public/test/web_js_test.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -18,10 +18,12 @@
 #endif
 
 // Test fixture for accessibility.js testing.
-class FontSizeJsTest : public web::WebJsTest<web::WebTestWithWebState> {
+class FontSizeJsTest : public web::WebTestWithWebState {
  public:
-  FontSizeJsTest()
-      : web::WebJsTest<web::WebTestWithWebState>(@[ @"font_size_js" ]) {}
+  FontSizeJsTest() : web::WebTestWithWebState() {}
+
+  FontSizeJsTest(const FontSizeJsTest&) = delete;
+  FontSizeJsTest& operator=(const FontSizeJsTest&) = delete;
 
   // Find DOM element by |element_id| and get computed font size in px.
   float GetElementFontSize(NSString* element_id) {
@@ -40,12 +42,16 @@ class FontSizeJsTest : public web::WebJsTest<web::WebTestWithWebState> {
   // viewport and '-webkit-text-size-adjust=auto'). Setting
   // '-webkit-text-size-adjust=none' also works.
   void LoadHtml(NSString* html) {
-    LoadHtmlAndInject(
+    web::WebTestWithWebState::LoadHtml(
         [NSString stringWithFormat:@"<html><style>"
                                    @"html { -webkit-text-size-adjust: none }"
                                    @"</style><meta name='viewport' "
                                    @"content='initial-scale=1.0'>%@</html>",
                                    html]);
+
+    // Main web injection should have occurred.
+    ASSERT_NSEQ(@"object", ExecuteJavaScript(@"typeof __gCrWeb"));
+    ExecuteJavaScript(web::test::GetPageScript(@"font_size_js"));
   }
 
   // Executes JavaScript "__gCrWeb.font_size.adjustFontSize(|scale|)" to
@@ -57,19 +63,10 @@ class FontSizeJsTest : public web::WebJsTest<web::WebTestWithWebState> {
                          scale]);
     return [script_result isEqual:@YES];
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FontSizeJsTest);
 };
 
 // Tests that __gCrWeb.font_size.adjustFontSize works for any scale.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForScale) {
-  // TODO(crbug.com/983776): This test fails on iOS 13 ipad due to a
-  // simulator bug. Re-enable once iOS 13 support is dropped.
-  if (!base::ios::IsRunningOnIOS14OrLater() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-
   float original_size = 0;
   float current_size = 0;
 
@@ -184,13 +181,6 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForScale) {
 
 // Tests that __gCrWeb.font_size.adjustFontSize works for any CSS unit.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForUnit) {
-  // TODO(crbug.com/983776): This test fails on iOS 13 ipad due to a
-  // simulator bug. Re-enable once iOS 13 support is dropped.
-  if (!base::ios::IsRunningOnIOS14OrLater() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-
   float original_size = 0;
   float current_size = 0;
 
@@ -257,13 +247,6 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForUnit) {
 
 // Tests that __gCrWeb.font_size.adjustFontSize works for nested elements.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
-  // TODO(crbug.com/983776): This test fails on iOS 13 ipad due to a
-  // simulator bug. Re-enable once iOS 13 support is dropped.
-  if (!base::ios::IsRunningOnIOS14OrLater() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-
   float original_size_1 = 0;
   float original_size_2 = 0;
   float current_size_1 = 0;

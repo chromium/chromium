@@ -444,7 +444,7 @@ TEST_F(DisplayAlignmentControllerTest, DragDisplayHideOldNeighbors) {
 }
 
 TEST_F(DisplayAlignmentControllerTest, DragDisplayNewNeighbor) {
-  UpdateDisplay("1000x1000,1000x1000,1000x100");
+  UpdateDisplay("1000x900,1000x900,1000x100");
   const auto& display_1 = display_manager()->GetDisplayAt(0);
   const auto& display_2 = display_manager()->GetDisplayAt(1);
   const auto& display_3 = display_manager()->GetDisplayAt(2);

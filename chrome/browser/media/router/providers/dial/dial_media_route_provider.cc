@@ -71,12 +71,6 @@ void DialMediaRouteProvider::Init(
 
   message_sender_ =
       std::make_unique<BufferedMessageSender>(media_router_.get());
-
-  // TODO(crbug.com/816702): This needs to be set properly according to sinks
-  // discovered.
-  media_router_->OnSinkAvailabilityUpdated(
-      mojom::MediaRouteProviderId::DIAL,
-      mojom::MediaRouter::SinkAvailability::PER_SOURCE);
 }
 
 DialMediaRouteProvider::~DialMediaRouteProvider() {
@@ -695,7 +689,10 @@ std::vector<url::Origin> DialMediaRouteProvider::GetOrigins(
       base::flat_map<std::string, std::vector<url::Origin>>>
       origin_allowlist(
           {{"YouTube",
-            {CreateOrigin("https://tv.youtube.com"),
+            {CreateOrigin("https://music.youtube.com/"),
+             CreateOrigin("https://music-green-qa.youtube.com/"),
+             CreateOrigin("https://music-release-qa.youtube.com/"),
+             CreateOrigin("https://tv.youtube.com"),
              CreateOrigin("https://tv-green-qa.youtube.com"),
              CreateOrigin("https://tv-release-qa.youtube.com"),
              CreateOrigin("https://web-green-qa.youtube.com"),

@@ -75,7 +75,8 @@ find components-chromium/ -name '*.js' -exec sed -i \
 
 # Undo any changes in paper-ripple, since Chromium's implementation is a fork of
 # the original paper-ripple.
-git checkout -- components-chromium/paper-ripple/*
+echo 'Undo changes in paper-ripple.'
+git checkout -- components-chromium/paper-ripple/
 
 new=$(git status --porcelain components-chromium | grep '^??' | \
       cut -d' ' -f2 | egrep '\.(js|css)$' || true)

@@ -8,6 +8,8 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -23,6 +25,64 @@ namespace file_manager {
 namespace file_manager_private = extensions::api::file_manager_private;
 
 class DriveFsEventRouter;
+
+// Status of mounted removable devices.
+enum SystemNotificationManagerMountStatus {
+  // Initial state.
+  MOUNT_STATUS_NO_RESULT,
+  // No errors on the device.
+  MOUNT_STATUS_SUCCESS,
+  // Parent errors exist that may be overridden by child partitions.
+  MOUNT_STATUS_ONLY_PARENT_ERROR,
+  // A single child partition error.
+  MOUNT_STATUS_CHILD_ERROR,
+  // Multiple child partitions with at least one in error.
+  MOUNT_STATUS_MULTIPART_ERROR,
+};
+
+// Enum of possible UMA values for histogram Notification.Show.
+// Keep the order of this in sync with FileManagerNotificationType in
+// tools/metrics/histograms/enums.xml.
+enum class DeviceNotificationUmaType {
+  DEVICE_NAVIGATION_ALLOW_APP_ACCESS = 0,
+  DEVICE_NAVIGATION_APPS_HAVE_ACCESS = 1,
+  DEVICE_NAVIGATION = 2,
+  DEVICE_NAVIGATION_READONLY_POLICY = 3,
+  DEVICE_IMPORT = 4,
+  DEVICE_FAIL = 5,
+  DEVICE_FAIL_UNKNOWN = 6,
+  DEVICE_FAIL_UNKNOWN_READONLY = 7,
+  DEVICE_EXTERNAL_STORAGE_DISABLED = 8,
+  DEVICE_HARD_UNPLUGGED = 9,
+  FORMAT_START = 10,
+  FORMAT_SUCCESS = 11,
+  FORMAT_FAIL = 12,
+  RENAME_FAIL = 13,
+  PARTITION_START = 14,
+  PARTITION_SUCCESS = 15,
+  PARTITION_FAIL = 16,
+  kMaxValue = PARTITION_FAIL,
+};
+
+// Enum of possible UMA values for histogram Notification.UserAction.
+// Keep the order of this in sync with FileManagerNotificationUserAction in
+// tools/metrics/histograms/enums.xml.
+enum class DeviceNotificationUserActionUmaType {
+  OPEN_SETTINGS_FOR_ARC_STORAGE = 0,  // OPEN_EXTERNAL_STORAGE_PREFERENCES.
+  OPEN_MEDIA_DEVICE_NAVIGATION = 1,
+  OPEN_MEDIA_DEVICE_NAVIGATION_ARC = 2,
+  OPEN_MEDIA_DEVICE_FAIL = 3,
+  OPEN_MEDIA_DEVICE_IMPORT = 4,
+  kMaxValue = OPEN_MEDIA_DEVICE_IMPORT,
+};
+
+// Histogram name for Notification.Show.
+constexpr char kNotificationShowHistogramName[] =
+    "FileBrowser.Notification.Show";
+
+// Histogram name for Notification.UserAction.
+constexpr char kNotificationUserActionHistogramName[] =
+    "FileBrowser.Notification.UserAction";
 
 // Manages creation/deletion and update of system notifications on behalf
 // of the File Manager application.
@@ -43,6 +103,34 @@ class SystemNotificationManager {
   void HandleDeviceEvent(const file_manager_private::DeviceEvent& event);
 
   /**
+   *  Returns an instance of an 'ash' Notification with a bound click callback.
+   */
+  std::unique_ptr<message_center::Notification> CreateNotification(
+      const std::string& notification_id,
+      const std::u16string& title,
+      const std::u16string& message,
+      const base::RepeatingClosure& click_callback);
+
+  /**
+   *  Returns an instance of an 'ash' Notification with title and message
+   *  specified by string ID values (for 110n) with a bound click delegate.
+   */
+  std::unique_ptr<message_center::Notification> CreateNotification(
+      const std::string& notification_id,
+      int title_id,
+      int message_id,
+      const scoped_refptr<message_center::NotificationDelegate>& delegate);
+
+  /**
+   *  Returns an instance of an 'ash' Notification with a bound click delegate.
+   */
+  std::unique_ptr<message_center::Notification> CreateNotification(
+      const std::string& notification_id,
+      const std::u16string& title,
+      const std::u16string& message,
+      const scoped_refptr<message_center::NotificationDelegate>& delegate);
+
+  /**
    *  Returns an instance of an 'ash' Notification.
    */
   std::unique_ptr<message_center::Notification> CreateNotification(
@@ -58,6 +146,24 @@ class SystemNotificationManager {
       const std::u16string& title,
       const std::u16string& message,
       int progress);
+
+  /**
+   * Returns an instance of an 'ash' Notification with progress value and Cancel
+   * button bound to CancelTaskId(task_id, ...);
+   */
+  std::unique_ptr<message_center::Notification>
+  CreateIOTaskProgressNotification(file_manager::io_task::IOTaskId task_id,
+                                   const std::string& notification_id,
+                                   const std::u16string& title,
+                                   const std::u16string& message,
+                                   int progress);
+
+  /**
+   * Click handler for the IO Task progress notification. Cancels the IO Task.
+   */
+  void CancelTaskId(file_manager::io_task::IOTaskId task_id,
+                    const std::string& notification_id,
+                    absl::optional<int> button_index);
 
   /**
    *  Returns an instance of an 'ash' Notification with title and message
@@ -86,6 +192,20 @@ class SystemNotificationManager {
                        file_manager_private::CopyOrMoveProgressStatus& status);
 
   /**
+   * Processes progress event from IOTaskController.
+   */
+  void HandleIOTaskProgress(
+      const file_manager::io_task::ProgressStatus& status);
+
+  /**
+   * Stores and updates the state of a device based on mount events for the top
+   * level or any child partitions.
+   */
+  enum SystemNotificationManagerMountStatus UpdateDeviceMountStatus(
+      file_manager_private::MountCompletedEvent& event,
+      const Volume& volume);
+
+  /**
    * Processes volume mount completed events.
    */
   void HandleMountCompletedEvent(
@@ -101,6 +221,13 @@ class SystemNotificationManager {
    * Stores a reference to the DriveFS event router instance.
    */
   void SetDriveFSEventRouter(DriveFsEventRouter* drivefs_event_router);
+
+  /**
+   * Stores a pointer to the IOTaskController instance to be able to cancel
+   * tasks.
+   */
+  void SetIOTaskController(
+      file_manager::io_task::IOTaskController* io_task_controller);
 
  private:
   /**
@@ -123,10 +250,36 @@ class SystemNotificationManager {
                                      base::Value::ListView& event_arguments);
 
   /**
+   * Update/remove Drive sync progress notification.
+   * |event| is the event object delivered from EventRouter and
+   * |event_arguments| contains ListView serialized version of
+   * file_manager_private::FileTransferStatus.
+   */
+  std::unique_ptr<message_center::Notification> UpdateDriveSyncNotification(
+      const extensions::Event& event,
+      base::Value::ListView& event_arguments);
+
+  /**
    * Click handler for the removable device notification.
    */
-  void HandleRemovableNotificationClick(const std::string& path,
-                                        absl::optional<int> button_index);
+  void HandleRemovableNotificationClick(
+      const std::string& path,
+      const std::vector<DeviceNotificationUserActionUmaType>&
+          uma_types_for_buttons,
+      absl::optional<int> button_index);
+
+  /**
+   * Click handler for the progress notification.
+   */
+  void HandleProgressClick(const std::string& notification_id,
+                           absl::optional<int> button_index);
+
+  /**
+   * Makes a notification instance for mount errors.
+   */
+  std::unique_ptr<message_center::Notification> MakeMountErrorNotification(
+      file_manager_private::MountCompletedEvent& event,
+      const Volume& volume);
 
   /**
    * Makes a notification instance for removable devices.
@@ -145,9 +298,27 @@ class SystemNotificationManager {
    */
   std::map<int, double> required_copy_space_;
 
+  /**
+   * Maps device paths to their mount status.
+   * This is used for removable devices with single/multiple partitions.
+   * e.g. the same device path could have 2 partitions that each generate a
+   * mount event. One partition could have a known file system and the other an
+   *      unknown file system. Different combinations of known/unknown file
+   *      systems on a multi-partition devices require this map to generate
+   *      the correct system notification when errors occur.
+   */
+  std::map<std::string, enum SystemNotificationManagerMountStatus>
+      mount_status_;
+
   Profile* const profile_;
   // Reference to non-owned DriveFS event router.
   DriveFsEventRouter* drivefs_event_router_;
+
+  // IOTaskController is owned by VolumeManager.
+  file_manager::io_task::IOTaskController* io_task_controller_;
+
+  // Cache the application name (used for notification display source).
+  std::u16string app_name_;
 
   // Caches the SWA feature flag.
   bool swa_enabled_;

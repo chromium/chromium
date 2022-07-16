@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -33,6 +32,11 @@ const std::u16string kTestDone = std::u16string(u"DONE");
 
 // Tests end to end behaviors on CORS preflight and its cache.
 class CorsPreflightCacheBrowserTest : public ContentBrowserTest {
+ public:
+  CorsPreflightCacheBrowserTest(const CorsPreflightCacheBrowserTest&) = delete;
+  CorsPreflightCacheBrowserTest& operator=(
+      const CorsPreflightCacheBrowserTest&) = delete;
+
  protected:
   CorsPreflightCacheBrowserTest() = default;
   ~CorsPreflightCacheBrowserTest() override = default;
@@ -86,8 +90,6 @@ class CorsPreflightCacheBrowserTest : public ContentBrowserTest {
 
   size_t options_count_ GUARDED_BY(lock_) = 0;
   size_t get_count_ GUARDED_BY(lock_) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CorsPreflightCacheBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CorsPreflightCacheBrowserTest, Default) {

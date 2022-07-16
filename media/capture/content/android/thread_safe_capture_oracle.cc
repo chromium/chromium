@@ -46,7 +46,7 @@ ThreadSafeCaptureOracle::ThreadSafeCaptureOracle(
     const VideoCaptureParams& params)
     : client_(std::move(client)), oracle_(false), params_(params) {
   DCHECK_GE(params.requested_format.frame_rate, 1e-6f);
-  oracle_.SetMinCapturePeriod(base::TimeDelta::FromMicroseconds(
+  oracle_.SetMinCapturePeriod(base::Microseconds(
       static_cast<int64_t>(1000000.0 / params.requested_format.frame_rate +
                            0.5 /* to round to nearest int */)));
   const auto constraints = params.SuggestConstraints();

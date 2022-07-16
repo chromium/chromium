@@ -58,6 +58,10 @@ struct TraceMarker {
 class GPU_GLES2_EXPORT GPUTracer {
  public:
   explicit GPUTracer(DecoderContext* decoder, bool context_is_gl = true);
+
+  GPUTracer(const GPUTracer&) = delete;
+  GPUTracer& operator=(const GPUTracer&) = delete;
+
   virtual ~GPUTracer();
 
   void Destroy(bool have_context);
@@ -110,8 +114,6 @@ class GPU_GLES2_EXPORT GPUTracer {
   int64_t disjoint_time_ = 0;
   bool gpu_executing_ = false;
   bool began_device_traces_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUTracer);
 };
 
 class GPU_GLES2_EXPORT Outputter {
@@ -137,6 +139,10 @@ class GPU_GLES2_EXPORT TraceOutputter : public Outputter {
  public:
   TraceOutputter();
   explicit TraceOutputter(const std::string& name);
+
+  TraceOutputter(const TraceOutputter&) = delete;
+  TraceOutputter& operator=(const TraceOutputter&) = delete;
+
   ~TraceOutputter() override;
 
   void TraceDevice(GpuTracerSource source,
@@ -160,8 +166,6 @@ class GPU_GLES2_EXPORT TraceOutputter : public Outputter {
   uint64_t local_trace_service_id_ = 0;
 
   base::stack<uint64_t> trace_service_id_stack_[NUM_TRACER_SOURCES];
-
-  DISALLOW_COPY_AND_ASSIGN(TraceOutputter);
 };
 
 class GPU_GLES2_EXPORT GPUTrace : public base::RefCounted<GPUTrace> {
@@ -173,6 +177,9 @@ class GPU_GLES2_EXPORT GPUTrace : public base::RefCounted<GPUTrace> {
            const std::string& name,
            const bool tracing_service,
            const bool tracing_device);
+
+  GPUTrace(const GPUTrace&) = delete;
+  GPUTrace& operator=(const GPUTrace&) = delete;
 
   void Destroy(bool have_context);
 
@@ -197,8 +204,6 @@ class GPU_GLES2_EXPORT GPUTrace : public base::RefCounted<GPUTrace> {
   std::unique_ptr<gl::GPUTimer> gpu_timer_;
   const bool service_enabled_ = false;
   const bool device_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUTrace);
 };
 
 class ScopedGPUTrace {

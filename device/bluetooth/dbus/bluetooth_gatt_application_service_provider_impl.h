@@ -39,6 +39,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattApplicationServiceProviderImpl
       const dbus::ObjectPath& object_path,
       const std::map<dbus::ObjectPath, BluetoothLocalGattServiceBlueZ*>&
           services);
+
+  BluetoothGattApplicationServiceProviderImpl(
+      const BluetoothGattApplicationServiceProviderImpl&) = delete;
+  BluetoothGattApplicationServiceProviderImpl& operator=(
+      const BluetoothGattApplicationServiceProviderImpl&) = delete;
+
   ~BluetoothGattApplicationServiceProviderImpl() override;
 
  private:
@@ -98,8 +104,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattApplicationServiceProviderImpl
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothGattApplicationServiceProviderImpl>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattApplicationServiceProviderImpl);
 };
 
 }  // namespace bluez

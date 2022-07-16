@@ -29,7 +29,7 @@ ANDROID_ARM_NDK_TOOL_PREFIX = os.path.join(TOOLS_SRC_ROOT, 'third_party',
                                            'arm-linux-androideabi-')
 
 
-class _PathFinder(object):
+class _PathFinder:
   def __init__(self, name, value):
     self._status = _STATUS_DETECTED if value is not None else 0
     self._name = name
@@ -61,8 +61,7 @@ class _PathFinder(object):
 
 class OutputDirectoryFinder(_PathFinder):
   def __init__(self, value=None, any_path_within_output_directory=None):
-    super(OutputDirectoryFinder, self).__init__(
-        name='output-directory', value=value)
+    super().__init__(name='output-directory', value=value)
     self._any_path_within_output_directory = any_path_within_output_directory
 
   def Detect(self):
@@ -91,8 +90,7 @@ class OutputDirectoryFinder(_PathFinder):
 
 class ToolPrefixFinder(_PathFinder):
   def __init__(self, value=None, output_directory=None, linker_name=None):
-    super(ToolPrefixFinder, self).__init__(
-        name='tool-prefix', value=value)
+    super().__init__(name='tool-prefix', value=value)
     self._output_directory = output_directory
     self._linker_name = linker_name;
 
@@ -119,12 +117,11 @@ class ToolPrefixFinder(_PathFinder):
         # Check for output directories that have a stale build_vars.json
         if os.path.isfile(ret + _SAMPLE_TOOL_SUFFIX):
           return ret
-        else:
-          err_lines = ['tool-prefix not found: %s' % ret]
-          if ret.endswith('llvm-'):
-            err_lines.append('Probably need to run: '
-                             'tools/clang/scripts/update.py --package=objdump')
-          raise Exception('\n'.join(err_lines))
+        err_lines = ['tool-prefix not found: %s' % ret]
+        if ret.endswith('llvm-'):
+          err_lines.append('Probably need to run: '
+                           'tools/clang/scripts/update.py --package=objdump')
+        raise Exception('\n'.join(err_lines))
     from_path = distutils.spawn.find_executable(_SAMPLE_TOOL_SUFFIX)
     if from_path:
       return from_path[:-7]
@@ -194,6 +191,10 @@ def GetCppFiltPath(tool_prefix):
   if tool_prefix[-5:] == 'llvm-':
     return tool_prefix + 'cxxfilt'
   return tool_prefix + 'c++filt'
+
+
+def GetDwarfdumpPath(tool_prefix):
+  return tool_prefix + 'dwarfdump'
 
 
 def GetStripPath(tool_prefix):

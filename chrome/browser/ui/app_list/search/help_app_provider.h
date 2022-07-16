@@ -8,12 +8,12 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "ash/webui/help_app_ui/search/search.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
-#include "chromeos/components/help_app_ui/search/search.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -21,15 +21,11 @@
 
 class Profile;
 
-namespace apps {
-class AppServiceProxyChromeOs;
-}  // namespace apps
-
-namespace chromeos {
+namespace ash {
 namespace help_app {
 class SearchHandler;
 }  // namespace help_app
-}  // namespace chromeos
+}  // namespace ash
 
 namespace gfx {
 class ImageSkia;
@@ -48,7 +44,7 @@ class HelpAppResult : public ChromeSearchResult {
   // Constructor for a list result.
   HelpAppResult(const float& relevance,
                 Profile* profile,
-                const chromeos::help_app::mojom::SearchResultPtr& result,
+                const ash::help_app::mojom::SearchResultPtr& result,
                 const gfx::ImageSkia& icon,
                 const std::u16string& query);
 
@@ -68,10 +64,9 @@ class HelpAppResult : public ChromeSearchResult {
 
 // Provides results from the Help App based on the search query. Also provides
 // zero-state results.
-class HelpAppProvider
-    : public SearchProvider,
-      public apps::AppRegistryCache::Observer,
-      public chromeos::help_app::mojom::SearchResultsObserver {
+class HelpAppProvider : public SearchProvider,
+                        public apps::AppRegistryCache::Observer,
+                        public ash::help_app::mojom::SearchResultsObserver {
  public:
   explicit HelpAppProvider(Profile* profile);
   ~HelpAppProvider() override;
@@ -97,18 +92,18 @@ class HelpAppProvider
   void OnSearchReturned(
       const std::u16string& query,
       const base::TimeTicks& start_time,
-      std::vector<chromeos::help_app::mojom::SearchResultPtr> results);
+      std::vector<ash::help_app::mojom::SearchResultPtr> results);
   void OnLoadIcon(apps::mojom::IconValuePtr icon_value);
   void LoadIcon();
 
   Profile* const profile_;
-  chromeos::help_app::SearchHandler* search_handler_;
-  apps::AppServiceProxyChromeOs* app_service_proxy_;
+  ash::help_app::SearchHandler* search_handler_;
+  apps::AppServiceProxy* app_service_proxy_;
   gfx::ImageSkia icon_;
 
   // Last search query. It is reset when the view is closed.
   std::u16string last_query_;
-  mojo::Receiver<chromeos::help_app::mojom::SearchResultsObserver>
+  mojo::Receiver<ash::help_app::mojom::SearchResultsObserver>
       search_results_observer_receiver_{this};
 
   base::WeakPtrFactory<HelpAppProvider> weak_factory_{this};

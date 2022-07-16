@@ -251,10 +251,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [self setupTopToolbar];
   [self setupBottomToolbar];
-  if (@available(iOS 14, *)) {
-    if (IsTabsBulkActionsEnabled())
-      [self setupEditButton];
-  }
+  if (IsTabsBulkActionsEnabled())
+    [self setupEditButton];
 
   // Hide the toolbars and the floating button, so they can fade in the first
   // time there's a transition into this view controller.
@@ -461,10 +459,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [self.regularTabsViewController contentWillAppearAnimated:animated];
 
-  if (@available(iOS 13.0, *)) {
-    self.remoteTabsViewController.session =
-        self.view.window.windowScene.session;
-  }
+  self.remoteTabsViewController.session = self.view.window.windowScene.session;
 
   self.remoteTabsViewController.preventUpdates = NO;
 }
@@ -498,11 +493,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.remoteTabsViewController.preventUpdates = YES;
 }
 
-- (void)closeAllTabsConfirmationClosed {
-  self.closeAllConfirmationDisplayed = NO;
-  [self configureButtonsForActiveAndCurrentPage];
-}
-
 - (void)dismissModals {
   [self.regularTabsConsumer dismissModals];
   [self.incognitoTabsConsumer dismissModals];
@@ -519,6 +509,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     (id<GridImageDataSource>)regularTabsImageDataSource {
   self.regularTabsViewController.imageDataSource = regularTabsImageDataSource;
   _regularTabsImageDataSource = regularTabsImageDataSource;
+}
+
+- (void)setPriceCardDataSource:(id<PriceCardDataSource>)priceCardDataSource {
+  self.regularTabsViewController.priceCardDataSource = priceCardDataSource;
+  _priceCardDataSource = priceCardDataSource;
 }
 
 - (id<GridConsumer>)incognitoTabsConsumer {
@@ -589,6 +584,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.incognitoTabsViewController.menuProvider = provider;
 }
 
+- (void)setReauthAgent:(IncognitoReauthSceneAgent*)reauthAgent {
+  if (_reauthAgent) {
+    [_reauthAgent removeObserver:self];
+  }
+
+  _reauthAgent = reauthAgent;
+
+  [_reauthAgent addObserver:self];
+}
+
 #pragma mark - TabGridPaging
 
 - (void)setActivePage:(TabGridPage)activePage {
@@ -599,6 +604,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - TabGridMode
 
 - (void)setTabGridMode:(TabGridMode)mode {
+  if (_tabGridMode == mode) {
+    return;
+  }
+
   _tabGridMode = mode;
 
   self.bottomToolbar.mode = self.tabGridMode;
@@ -606,6 +615,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.incognitoTabsViewController.mode = self.tabGridMode;
   self.topToolbar.mode = self.tabGridMode;
   self.scrollView.scrollEnabled = (self.tabGridMode != TabGridModeSelection);
+  if (mode == TabGridModeSelection)
+    [self updateSelectionModeToolbars];
 }
 
 #pragma mark - LayoutSwitcherProvider
@@ -932,7 +943,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [self.scrollView setContentOffset:targetOffset animated:YES];
       // |self.currentPage| is set in scrollViewDidEndScrollingAnimation:
     } else {
+      BOOL changed = self.currentPage != targetPage;
       self.currentPage = targetPage;
+      if (changed) {
+        // When there is no scrolling and the page changed, it can be due to
+        // the user dragging the slider and dropping it right on the spot.
+        // Something easy to reproduce with the two edges (incognito / recent
+        // tabs), but also possible with middle position (normal).
+        [self arriveAtCurrentPage];
+        [self broadcastIncognitoContentVisibility];
+        [self configureButtonsForActiveAndCurrentPage];
+      }
     }
   }
 
@@ -1304,29 +1325,31 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.bottomToolbar.mode = self.tabGridMode;
   self.topToolbar.mode = self.tabGridMode;
 
-  if (@available(iOS 14, *)) {
-    GridViewController* gridViewController =
-        [self gridViewControllerForPage:self.currentPage];
-    UIMenu* menu = nil;
-    switch (self.currentPage) {
-      case TabGridPageIncognitoTabs:
-        menu = [UIMenu
-            menuWithChildren:[self.incognitoTabsDelegate
-                                 addToButtonMenuElementsForGridViewController:
-                                     gridViewController]];
-        break;
-      case TabGridPageRegularTabs:
-        menu = [UIMenu
-            menuWithChildren:[self.regularTabsDelegate
-                                 addToButtonMenuElementsForGridViewController:
-                                     gridViewController]];
-        break;
-      case TabGridPageRemoteTabs:
-        // No-op, Add To button inaccessible in remote tabs page.
-        break;
-    }
-    [self.bottomToolbar setAddToButtonMenu:menu];
+  GridViewController* gridViewController =
+      [self gridViewControllerForPage:self.currentPage];
+  NSArray<NSString*>* items =
+      gridViewController.selectedShareableItemIDsForEditing;
+  UIMenu* menu = nil;
+  switch (self.currentPage) {
+    case TabGridPageIncognitoTabs:
+      menu =
+          [UIMenu menuWithChildren:[self.incognitoTabsDelegate
+                                       addToButtonMenuElementsForItems:items]];
+      break;
+    case TabGridPageRegularTabs:
+      menu =
+          [UIMenu menuWithChildren:[self.regularTabsDelegate
+                                       addToButtonMenuElementsForItems:items]];
+      break;
+    case TabGridPageRemoteTabs:
+      // No-op, Add To button inaccessible in remote tabs page.
+      break;
   }
+  [self.bottomToolbar setAddToButtonMenu:menu];
+  BOOL incognitoTabsNeedsAuth =
+      (self.currentPage == TabGridPageIncognitoTabs &&
+       self.incognitoTabsViewController.contentNeedsAuthentication);
+  [self.bottomToolbar setAddToButtonEnabled:!incognitoTabsNeedsAuth];
 
   // When current page is a remote tabs page.
   if (self.currentPage == TabGridPageRemoteTabs) {
@@ -1356,6 +1379,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return;
   }
 
+  [self updateSelectionModeToolbars];
   [self configureDoneButtonBasedOnPage:self.currentPage];
   [self configureNewTabButtonBasedOnContentPermissions];
   [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
@@ -1540,8 +1564,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [currentGridViewController.selectedShareableItemIDsForEditing count];
   self.topToolbar.selectedTabsCount = selectedItemsCount;
   self.bottomToolbar.selectedTabsCount = selectedItemsCount;
-  [self.bottomToolbar setShareTabsButtonEnabled:sharableSelectedItemsCount > 0];
-  [self.bottomToolbar setAddToButtonEnabled:sharableSelectedItemsCount > 0];
+
+  BOOL incognitoTabsNeedsAuth =
+      (self.currentPage == TabGridPageIncognitoTabs &&
+       self.incognitoTabsViewController.contentNeedsAuthentication);
+  BOOL enableMultipleItemsSharing =
+      !incognitoTabsNeedsAuth && sharableSelectedItemsCount > 0;
+  [self.bottomToolbar setShareTabsButtonEnabled:enableMultipleItemsSharing];
+  [self.bottomToolbar setAddToButtonEnabled:enableMultipleItemsSharing];
+  [self.bottomToolbar
+      setCloseTabsButtonEnabled:!incognitoTabsNeedsAuth && selectedItemsCount];
+  [self.topToolbar setSelectAllButtonEnabled:!incognitoTabsNeedsAuth];
 
   if (currentGridViewController.allItemsSelectedForEditing) {
     [self.topToolbar configureDeselectAllButtonTitle];
@@ -1825,6 +1858,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)didChangeLastItemVisibilityInGridViewController:
     (GridViewController*)gridViewController {
+  self.plusSignButton.plusSignVerticalOffset =
+      gridViewController.gridView.adjustedContentInset.top -
+      kGridExpectedTopContentInset;
+
   CGFloat lastItemVisiblity = gridViewController.fractionVisibleOfLastItem;
   self.plusSignButton.alpha = 1 - lastItemVisiblity;
   self.plusSignButton.plusSignImage.transform =
@@ -1846,6 +1883,28 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
   [self.incognitoPopupMenuHandler dismissPopupMenuAnimated:YES];
   [self.regularPopupMenuHandler dismissPopupMenuAnimated:YES];
+}
+
+- (void)gridViewControllerDragSessionWillBegin:
+    (GridViewController*)gridViewController {
+  // Actions on both bars should be disabled during dragging.
+  [self.topToolbar setDoneButtonEnabled:NO];
+  [self.bottomToolbar setDoneButtonEnabled:NO];
+  [self.topToolbar setNewTabButtonEnabled:NO];
+  [self.topToolbar setSelectAllButtonEnabled:NO];
+  [self.topToolbar setEditButtonEnabled:NO];
+  [self.bottomToolbar setEditButtonEnabled:NO];
+  [self.bottomToolbar setAddToButtonEnabled:NO];
+  [self.bottomToolbar setShareTabsButtonEnabled:NO];
+  [self.bottomToolbar setCloseTabsButtonEnabled:NO];
+}
+
+- (void)gridViewControllerDragSessionDidEnd:
+    (GridViewController*)gridViewController {
+  [self configureDoneButtonBasedOnPage:self.currentPage];
+  [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
+  [self configureNewTabButtonBasedOnContentPermissions];
+  [self updateSelectionModeToolbars];
 }
 
 #pragma mark - Control actions
@@ -1901,35 +1960,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self updateSelectionModeToolbars];
 }
 
-// Shows an action sheet that asks for confirmation when 'Close All' button is
-// tapped.
-- (void)closeAllButtonTappedShowConfirmation {
-  // Sets the action sheet anchor on the to the anchor item of the top
-  // toolbar in order to avoid alignment issues when changing the device
-  // orientation to landscape in multi window mode.
-  UIBarButtonItem* buttonAnchor = self.topToolbar.anchorItem;
-  self.closeAllConfirmationDisplayed = YES;
-  self.topToolbar.pageControl.userInteractionEnabled = NO;
-  switch (self.currentPage) {
-    case TabGridPageIncognitoTabs:
-      [self.incognitoTabsDelegate
-          showCloseAllConfirmationActionSheetWithAnchor:buttonAnchor];
-      break;
-    case TabGridPageRegularTabs:
-      [self.regularTabsDelegate
-          showCloseAllConfirmationActionSheetWithAnchor:buttonAnchor];
-      break;
-    case TabGridPageRemoteTabs:
-      NOTREACHED() << "It is invalid to call close all tabs on remote tabs.";
-      break;
-  }
-}
-
 - (void)closeAllButtonTapped:(id)sender {
-  if (IsCloseAllTabsConfirmationEnabled()) {
-    [self closeAllButtonTappedShowConfirmation];
-    return;
-  }
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:
       [self.incognitoTabsDelegate closeAllItems];
@@ -2069,6 +2100,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)didTapLinkWithURL:(const GURL&)URL {
   [self.delegate openLinkWithURL:URL];
+}
+
+#pragma mark - IncognitoReauthObserver
+
+- (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
+    didUpdateAuthenticationRequirement:(BOOL)isRequired {
+  if (isRequired) {
+    self.tabGridMode = TabGridModeNormal;
+  }
 }
 
 #pragma mark - UIResponder

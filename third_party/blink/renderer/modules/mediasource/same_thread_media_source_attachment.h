@@ -31,9 +31,14 @@ class SameThreadMediaSourceAttachment final
   SameThreadMediaSourceAttachment(MediaSource* media_source,
                                   base::PassKey<URLMediaSource>);
 
+  SameThreadMediaSourceAttachment(const SameThreadMediaSourceAttachment&) =
+      delete;
+  SameThreadMediaSourceAttachment& operator=(
+      const SameThreadMediaSourceAttachment&) = delete;
+
   // MediaSourceAttachmentSupplement
   void NotifyDurationChanged(MediaSourceTracer* tracer, double duration) final;
-  double GetRecentMediaTime(MediaSourceTracer* tracer) final;
+  base::TimeDelta GetRecentMediaTime(MediaSourceTracer* tracer) final;
   bool GetElementError(MediaSourceTracer* tracer) final;
   AudioTrackList* CreateAudioTrackList(MediaSourceTracer* tracer) final;
   VideoTrackList* CreateVideoTrackList(MediaSourceTracer* tracer) final;
@@ -85,8 +90,6 @@ class SameThreadMediaSourceAttachment final
   bool element_has_error_;               // See OnElementError().
   bool element_context_destroyed_;       // See OnElementContextDestroyed().
   bool media_source_context_destroyed_;  // See OnMediaSourceContextDestroyed().
-
-  DISALLOW_COPY_AND_ASSIGN(SameThreadMediaSourceAttachment);
 };
 
 }  // namespace blink

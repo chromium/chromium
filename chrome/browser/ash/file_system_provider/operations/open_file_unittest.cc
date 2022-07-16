@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/operations/test_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -40,6 +39,10 @@ class CallbackLogger {
    public:
     Event(int file_handle, base::File::Error result)
         : file_handle_(file_handle), result_(result) {}
+
+    Event(const Event&) = delete;
+    Event& operator=(const Event&) = delete;
+
     virtual ~Event() {}
 
     int file_handle() { return file_handle_; }
@@ -48,11 +51,13 @@ class CallbackLogger {
    private:
     int file_handle_;
     base::File::Error result_;
-
-    DISALLOW_COPY_AND_ASSIGN(Event);
   };
 
   CallbackLogger() {}
+
+  CallbackLogger(const CallbackLogger&) = delete;
+  CallbackLogger& operator=(const CallbackLogger&) = delete;
+
   virtual ~CallbackLogger() {}
 
   void OnOpenFile(int file_handle, base::File::Error result) {
@@ -63,8 +68,6 @@ class CallbackLogger {
 
  private:
   std::vector<std::unique_ptr<Event>> events_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackLogger);
 };
 
 }  // namespace
@@ -106,10 +109,10 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, Execute) {
       extensions::api::file_system_provider::OnOpenFileRequested::kEventName,
       event->event_name);
   base::ListValue* event_args = event->event_args.get();
-  ASSERT_EQ(1u, event_args->GetSize());
+  ASSERT_EQ(1u, event_args->GetList().size());
 
-  const base::DictionaryValue* options_as_value = NULL;
-  ASSERT_TRUE(event_args->GetDictionary(0, &options_as_value));
+  const base::Value* options_as_value = &event_args->GetList()[0];
+  ASSERT_TRUE(options_as_value->is_dict());
 
   OpenFileRequestedOptions options;
   ASSERT_TRUE(OpenFileRequestedOptions::Populate(*options_as_value, &options));

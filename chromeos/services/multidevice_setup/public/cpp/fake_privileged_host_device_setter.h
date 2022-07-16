@@ -19,6 +19,12 @@ namespace multidevice_setup {
 class FakePrivilegedHostDeviceSetter : public PrivilegedHostDeviceSetterBase {
  public:
   FakePrivilegedHostDeviceSetter();
+
+  FakePrivilegedHostDeviceSetter(const FakePrivilegedHostDeviceSetter&) =
+      delete;
+  FakePrivilegedHostDeviceSetter& operator=(
+      const FakePrivilegedHostDeviceSetter&) = delete;
+
   ~FakePrivilegedHostDeviceSetter() override;
 
   std::vector<std::pair<std::string, SetHostDeviceCallback>>& set_host_args() {
@@ -31,8 +37,6 @@ class FakePrivilegedHostDeviceSetter : public PrivilegedHostDeviceSetterBase {
                      SetHostDeviceCallback callback) override;
 
   std::vector<std::pair<std::string, SetHostDeviceCallback>> set_host_args_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePrivilegedHostDeviceSetter);
 };
 
 }  // namespace multidevice_setup

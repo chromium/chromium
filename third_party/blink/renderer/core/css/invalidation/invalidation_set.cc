@@ -417,7 +417,7 @@ String InvalidationSet::ToString() const {
       builder.Append(suffix);
     }
 
-    return builder.ToString();
+    return builder.ReleaseString();
   };
 
   StringBuilder features;
@@ -471,7 +471,7 @@ String InvalidationSet::ToString() const {
   }
   main.Append(" }");
 
-  return main.ToString();
+  return main.ReleaseString();
 }
 
 SiblingInvalidationSet::SiblingInvalidationSet(

@@ -16,6 +16,12 @@ namespace ash {
 class SessionLimitNotificationControllerTest : public AshTestBase {
  public:
   SessionLimitNotificationControllerTest() = default;
+
+  SessionLimitNotificationControllerTest(
+      const SessionLimitNotificationControllerTest&) = delete;
+  SessionLimitNotificationControllerTest& operator=(
+      const SessionLimitNotificationControllerTest&) = delete;
+
   ~SessionLimitNotificationControllerTest() override = default;
 
  protected:
@@ -23,7 +29,7 @@ class SessionLimitNotificationControllerTest : public AshTestBase {
 
   void UpdateSessionLengthLimitInMin(int mins) {
     Shell::Get()->session_controller()->SetSessionLengthLimit(
-        base::TimeDelta::FromMinutes(mins), base::Time::Now());
+        base::Minutes(mins), base::Time::Now());
   }
 
   message_center::Notification* GetNotification() {
@@ -48,9 +54,6 @@ class SessionLimitNotificationControllerTest : public AshTestBase {
         SessionLimitNotificationController::kNotificationId,
         false /* by_user */);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionLimitNotificationControllerTest);
 };
 
 TEST_F(SessionLimitNotificationControllerTest, Notification) {
@@ -166,8 +169,10 @@ class SessionLimitNotificationControllerLoginTest
  public:
   SessionLimitNotificationControllerLoginTest() { set_start_session(false); }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionLimitNotificationControllerLoginTest);
+  SessionLimitNotificationControllerLoginTest(
+      const SessionLimitNotificationControllerLoginTest&) = delete;
+  SessionLimitNotificationControllerLoginTest& operator=(
+      const SessionLimitNotificationControllerLoginTest&) = delete;
 };
 
 TEST_F(SessionLimitNotificationControllerLoginTest,

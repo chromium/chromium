@@ -87,7 +87,7 @@ void ThermalResource::ReportMeasurementWhileHoldingLock(size_t measurement_id) {
       FROM_HERE,
       base::BindOnce(&ThermalResource::ReportMeasurement,
                      scoped_refptr<ThermalResource>(this), measurement_id),
-      base::TimeDelta::FromSeconds(kReportIntervalSeconds));
+      base::Seconds(kReportIntervalSeconds));
 }
 
 }  // namespace blink

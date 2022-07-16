@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
@@ -105,13 +106,18 @@ void PositionView(UIView* view, CGPoint point) {
                    forControlEvents:UIControlEventTouchUpInside];
     closeTapTargetButton.accessibilityIdentifier =
         kGridCellCloseButtonIdentifier;
-
     [contentView addSubview:topBar];
     [contentView addSubview:snapshotView];
+    PriceCardView* priceCardView;
+    if (IsPriceAlertsEnabled()) {
+      priceCardView = [[PriceCardView alloc] init];
+      [snapshotView addSubview:priceCardView];
+    }
     [contentView addSubview:closeTapTargetButton];
     _topBar = topBar;
     _snapshotView = snapshotView;
     _closeTapTargetButton = closeTapTargetButton;
+    _priceCardView = priceCardView;
 
     self.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     self.snapshotView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
@@ -119,13 +125,14 @@ void PositionView(UIView* view, CGPoint point) {
     self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     self.closeIconView.tintColor = [UIColor colorNamed:kCloseButtonColor];
 
+    self.layer.cornerRadius = kGridCellCornerRadius;
     self.layer.shadowColor = [UIColor blackColor].CGColor;
     self.layer.shadowOffset = CGSizeMake(0, 0);
     self.layer.shadowRadius = 4.0f;
     self.layer.shadowOpacity = 0.5f;
     self.layer.masksToBounds = NO;
-
-    NSArray* constraints = @[
+    NSMutableArray* constraints = [[NSMutableArray alloc] init];
+    [constraints addObjectsFromArray:@[
       [topBar.topAnchor constraintEqualToAnchor:contentView.topAnchor],
       [topBar.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor],
       [topBar.trailingAnchor
@@ -145,7 +152,17 @@ void PositionView(UIView* view, CGPoint point) {
           constraintEqualToConstant:kGridCellCloseTapTargetWidthHeight],
       [closeTapTargetButton.heightAnchor
           constraintEqualToConstant:kGridCellCloseTapTargetWidthHeight],
-    ];
+    ]];
+    if (IsPriceAlertsEnabled()) {
+      [constraints addObjectsFromArray:@[
+        [priceCardView.topAnchor
+            constraintEqualToAnchor:snapshotView.topAnchor
+                           constant:kGridCellPriceDropTopSpacing],
+        [priceCardView.leadingAnchor
+            constraintEqualToAnchor:snapshotView.leadingAnchor
+                           constant:kGridCellPriceDropLeadingSpacing]
+      ]];
+    }
     [NSLayoutConstraint activateConstraints:constraints];
   }
   return self;
@@ -180,6 +197,7 @@ void PositionView(UIView* view, CGPoint point) {
   self.icon = nil;
   self.snapshot = nil;
   self.selected = NO;
+  self.priceCardView.hidden = YES;
 }
 
 #pragma mark - UIAccessibility
@@ -191,7 +209,13 @@ void PositionView(UIView* view, CGPoint point) {
 }
 
 - (NSArray*)accessibilityCustomActions {
-  // Each cell has 2 custom actions, which is accessible through swiping. The
+  if (IsTabsBulkActionsEnabled() && self.isInSelectionMode) {
+    // If the cell is in tab grid selection mode, only allow toggling the
+    // selection state.
+    return nil;
+  }
+
+  // In normal cell mode, there are 2 actions, accessible through swiping. The
   // default is to select the cell. Another is to close the cell.
   return @[ [[UIAccessibilityCustomAction alloc]
       initWithName:l10n_util::GetNSString(IDS_IOS_TAB_SWITCHER_CLOSE_TAB)
@@ -238,6 +262,19 @@ void PositionView(UIView* view, CGPoint point) {
 - (void)setSnapshot:(UIImage*)snapshot {
   self.snapshotView.image = snapshot;
   _snapshot = snapshot;
+}
+
+- (void)setPriceDrop:(NSString*)price previousPrice:(NSString*)previousPrice {
+  [self.priceCardView setPriceDrop:price previousPrice:previousPrice];
+  // Only append PriceCardView accessibility text if it doesn't already exist in
+  // the accessibility label.
+  if ([self.accessibilityLabel
+          rangeOfString:self.priceCardView.accessibilityLabel]
+          .location == NSNotFound) {
+    self.accessibilityLabel =
+        [@[ self.accessibilityLabel, self.priceCardView.accessibilityLabel ]
+            componentsJoinedByString:@". "];
+  }
 }
 
 - (void)setTitle:(NSString*)title {
@@ -288,11 +325,10 @@ void PositionView(UIView* view, CGPoint point) {
   if (IsTabsBulkActionsEnabled()) {
     UIImageView* selectIconView = [[UIImageView alloc] init];
     selectIconView.translatesAutoresizingMaskIntoConstraints = NO;
-    selectIconView.contentMode = UIViewContentModeCenter;
+    selectIconView.contentMode = UIViewContentModeScaleAspectFit;
     selectIconView.hidden = !self.isInSelectionMode;
 
-    selectIconView.image = [[self selectIconImageForCurrentState]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    selectIconView.image = [self selectIconImageForCurrentState];
 
     [topBar addSubview:selectIconView];
     _selectIconView = selectIconView;
@@ -342,6 +378,10 @@ void PositionView(UIView* view, CGPoint point) {
 
   if (_selectIconView) {
     _selectIconConstraints = @[
+      [_selectIconView.heightAnchor
+          constraintEqualToConstant:kGridCellSelectIconSize],
+      [_selectIconView.widthAnchor
+          constraintEqualToConstant:kGridCellSelectIconSize],
       [titleLabel.trailingAnchor
           constraintEqualToAnchor:_selectIconView.leadingAnchor
                          constant:-kGridCellTitleLabelContentInset],
@@ -349,7 +389,7 @@ void PositionView(UIView* view, CGPoint point) {
           constraintEqualToAnchor:_selectIconView.centerYAnchor],
       [_selectIconView.trailingAnchor
           constraintEqualToAnchor:topBar.trailingAnchor
-                         constant:-kGridCellCloseButtonContentInset],
+                         constant:-kGridCellSelectIconContentInset],
 
     ];
   }
@@ -384,12 +424,12 @@ void PositionView(UIView* view, CGPoint point) {
 }
 
 - (UIImage*)selectIconImageForCurrentState {
-  if (@available(iOS 13, *)) {
-    if (_state == GridCellStateEditingUnselected) {
-      return [UIImage systemImageNamed:@"circle"];
-    }
-    return [UIImage systemImageNamed:@"checkmark.circle.fill"];
+  if (_state == GridCellStateEditingUnselected) {
+    return [[UIImage systemImageNamed:@"circle"]
+        imageWithTintColor:UIColor.systemGray3Color
+             renderingMode:UIImageRenderingModeAlwaysOriginal];
   }
+  return [UIImage systemImageNamed:@"checkmark.circle.fill"];
   NOTREACHED();
   return nil;
 }
@@ -437,10 +477,17 @@ void PositionView(UIView* view, CGPoint point) {
   }
 
   _state = state;
-
+  if (_state == GridCellStateEditingSelected) {
+    self.accessibilityValue =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_CELL_SELECTED);
+  } else if (_state == GridCellStateEditingUnselected) {
+    self.accessibilityValue =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_CELL_DESELECTED);
+  } else {
+    self.accessibilityValue = nil;
+  }
   _closeTapTargetButton.enabled = !self.isInSelectionMode;
-  self.selectIconView.image = [[self selectIconImageForCurrentState]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  self.selectIconView.image = [self selectIconImageForCurrentState];
 
   [self configureCloseOrSelectIconConstraints];
   self.border.hidden = self.isInSelectionMode;
@@ -528,6 +575,7 @@ void PositionView(UIView* view, CGPoint point) {
   proxy.snapshot = cell.snapshot;
   proxy.title = cell.title;
   proxy.titleHidden = cell.titleHidden;
+  proxy.priceCardView = cell.priceCardView;
   return proxy;
 }
 #pragma mark - GridToTabTransitionView properties.

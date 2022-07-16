@@ -10,14 +10,17 @@
 class AssistantServiceMetricsProvider : public metrics::MetricsProvider {
  public:
   AssistantServiceMetricsProvider();
+
+  AssistantServiceMetricsProvider(const AssistantServiceMetricsProvider&) =
+      delete;
+  AssistantServiceMetricsProvider& operator=(
+      const AssistantServiceMetricsProvider&) = delete;
+
   ~AssistantServiceMetricsProvider() override;
 
   // metrics::MetricsProvider:
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto_unused) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantServiceMetricsProvider);
 };
 
 #endif  // CHROME_BROWSER_METRICS_ASSISTANT_SERVICE_METRICS_PROVIDER_H_

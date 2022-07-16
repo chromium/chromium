@@ -22,6 +22,7 @@ bool Action::ShouldInterruptOnPause() const {
 
 void Action::ProcessAction(ProcessActionCallback callback) {
   action_stopwatch_.StartActiveTime();
+  delegate_->GetLogInfo().Clear();
   processed_action_proto_ = std::make_unique<ProcessedActionProto>();
   InternalProcessAction(base::BindOnce(&Action::RecordActionTimes,
                                        weak_ptr_factory_.GetWeakPtr(),
@@ -52,6 +53,9 @@ void Action::UpdateProcessedAction(const ClientStatus& status) {
   // Safety check in case process action is run twice.
   *processed_action_proto_->mutable_action() = proto_;
   status.FillProto(processed_action_proto_.get());
+
+  auto& log_info = delegate_->GetLogInfo();
+  processed_action_proto_->mutable_status_details()->MergeFrom(log_info);
 }
 
 void Action::OnWaitForElementTimed(
@@ -96,6 +100,9 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kTell:
       out << "Tell";
       break;
+    case ActionProto::ActionInfoCase::kUpdateClientSettings:
+      out << "UpdateClientSettings";
+      break;
     case ActionProto::ActionInfoCase::kShowCast:
       out << "ShowCast";
       break;
@@ -113,9 +120,6 @@ std::ostream& operator<<(std::ostream& out,
       break;
     case ActionProto::ActionInfoCase::kShowProgressBar:
       out << "ShowProgressBar";
-      break;
-    case ActionProto::ActionInfoCase::kHighlightElement:
-      out << "HighlightElement";
       break;
     case ActionProto::ActionInfoCase::kShowDetails:
       out << "ShowDetails";

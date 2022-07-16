@@ -206,9 +206,9 @@ class PLATFORM_EXPORT ExceptionState {
 
   const String& Message() const { return message_; }
 
-  v8::Local<v8::Value> GetException() {
+  virtual v8::Local<v8::Value> GetException() {
     DCHECK(!exception_.IsEmpty());
-    return exception_.NewLocal(isolate_);
+    return exception_.Get(isolate_);
   }
 
   // Returns the context of what Web API is currently being executed.
@@ -223,12 +223,6 @@ class PLATFORM_EXPORT ExceptionState {
       return context_stack_top_->GetContext();
     return main_context_;
   }
-
-  // Deprecated APIs to get information about where this ExceptionState has
-  // been created.
-  ContextType Context() const { return GetContext().GetContext(); }
-  const char* PropertyName() const { return GetContext().GetPropertyName(); }
-  const char* InterfaceName() const { return GetContext().GetClassName(); }
 
  protected:
   void SetException(ExceptionCode, const String&, v8::Local<v8::Value>);
@@ -325,6 +319,9 @@ class PLATFORM_EXPORT DummyExceptionStateForTesting final
   void ThrowWasmCompileError(const String& message) override;
   void RethrowV8Exception(v8::Local<v8::Value>) override;
   ExceptionState& ReturnThis() { return *this; }
+  v8::Local<v8::Value> GetException() override {
+    return v8::Local<v8::Value>();
+  }
 };
 
 // Syntax sugar for DummyExceptionStateForTesting.

@@ -19,9 +19,9 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/base/cast_paths.h"
 #include "chromecast/base/pref_names.h"
@@ -223,6 +223,15 @@ bool MinidumpUploader::DoWork() {
     crashdump_data.minidump_pathname = dump_path.value();
     crashdump_data.crash_server = upload_location_;
 
+    // set upload_file parameter based on exec_name
+    std::string upload_filename;
+    if (dump.params().exec_name == "kernel") {
+      upload_filename = "upload_file_ramoops";
+    } else {
+      upload_filename = "upload_file_minidump";
+    }
+    crashdump_data.upload_filename = std::move(upload_filename);
+
     // Depending on if a testing CastCrashdumpUploader object has been set,
     // assign |g| as a reference to the correct object.
     CastCrashdumpUploader vanilla(crashdump_data);
@@ -268,6 +277,9 @@ bool MinidumpUploader::DoWork() {
     }
     if (!dump.params().reason.empty()) {
       g.SetParameter("reason", dump.params().reason);
+    }
+    if (!dump.params().exec_name.empty()) {
+      g.SetParameter("exec_name", dump.params().exec_name);
     }
     if (!dump.params().stadia_session_id.empty()) {
       g.SetParameter("stadia_session_id", dump.params().stadia_session_id);

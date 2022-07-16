@@ -60,7 +60,8 @@ static_library("test_support") {
   deps = [
     ":drive",
     "//base",
-    "//google_apis/drive:test_support",
+    "//google_apis/common:test_support",
+    "//google_apis/drive",
     "//net:net",
   ]
 }
@@ -85,7 +86,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/invalidation/impl:test_support",
     "//content/test:test_support",
-    "//google_apis/drive:test_support",
+    "//google_apis/common:test_support",
+    "//google_apis/drive",
     "//testing/gtest",
   ]
 

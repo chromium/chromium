@@ -125,7 +125,7 @@ bool ParseUrlHandler(const std::string& handler_id,
 
   const base::ListValue* manif_patterns = NULL;
   if (!handler_info.GetList(mkeys::kMatches, &manif_patterns) ||
-      manif_patterns->GetSize() == 0) {
+      manif_patterns->GetList().size() == 0) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         merrors::kInvalidURLHandlerPattern, handler_id);
     return false;
@@ -159,11 +159,6 @@ bool ParseUrlHandler(const std::string& handler_id,
 }
 
 bool UrlHandlersParser::Parse(Extension* extension, std::u16string* error) {
-  if (extension->GetType() == Manifest::TYPE_HOSTED_APP &&
-      !extension->from_bookmark()) {
-    *error = base::ASCIIToUTF16(merrors::kUrlHandlersInHostedApps);
-    return false;
-  }
   std::unique_ptr<UrlHandlers> info(new UrlHandlers);
   const base::DictionaryValue* all_handlers = NULL;
   if (!extension->manifest()->GetDictionary(
@@ -172,7 +167,7 @@ bool UrlHandlersParser::Parse(Extension* extension, std::u16string* error) {
     return false;
   }
 
-  DCHECK(extension->is_platform_app() || extension->from_bookmark());
+  DCHECK(extension->is_platform_app());
 
   for (base::DictionaryValue::Iterator iter(*all_handlers); !iter.IsAtEnd();
        iter.Advance()) {

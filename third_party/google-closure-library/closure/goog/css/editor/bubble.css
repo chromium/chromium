@@ -7,8 +7,9 @@
 
 /*
  * Bubble styles.
- *
  */
+
+@provide 'goog.css.editor.bubble';
 
 div.tr_bubble {
   position: absolute;

@@ -8,7 +8,7 @@ module payments.mojom;
 import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/payments/payment_credential.mojom";
-import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
 import "third_party/blink/public/mojom/webauthn/authenticator.mojom";
 
 struct PaymentResponse {
@@ -36,6 +36,8 @@ struct PaymentResponse {
 struct SecurePaymentConfirmationResponse {
   blink.mojom.CommonCredentialInfo credential_info;
   array<uint8> signature;
+  bool has_transport;
+  blink.mojom.AuthenticatorTransport transport;
   array<uint8>? user_handle;
 };
 
@@ -52,6 +54,7 @@ enum PaymentErrorReason {
   NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL,
   ALREADY_SHOWING,
   INVALID_DATA_FROM_RENDERER,
+  NOT_ALLOWED_ERROR,
 };
 
 enum CanMakePaymentQueryResult {
@@ -126,29 +129,8 @@ enum BasicCardNetwork {
   VISA
 };
 
-struct GooglePaymentMethodData {
-  // A JSON string built by the renderer from the same merchant-provided
-  // JavaScript object used to build |stringified_data| in the containing
-  // PaymentMethodData. The renderer interprets the JavaScript object as a GPay
-  // API object and sets additional parameters to request contact and shipping
-  // information from the GPay payment app. The renderer uses
-  // blink::JSONObject::toJSONString() to generate this string from the modified
-  // JavaScript object. The browser does not parse the string and passes it
-  // as-is directly to the GPay payment app.
-  string stringified_data;
-  // Each of the following flags is true if the corresponding piece of data was
-  // not requested in |stringified_data| in the containing PaymentMethodDatabut
-  // is now set in |stringified_data| above. The Android browser process uses
-  // these flags to redact the response from the native GPay SDK before
-  // returning it to the renderer.
-  bool phone_requested;
-  bool name_requested;
-  bool email_requested;
-  bool shipping_requested;
-};
-
 // Parameters for the "secure-payment-confirmation" payment method identifier.
-// https://github.com/rsolomakhin/secure-payment-confirmation
+// https://w3c.github.io/secure-payment-confirmation
 struct SecurePaymentConfirmationRequest {
   // A list of WebAuthn credential identifiers. These values will be looked up
   // in "secure_payment_confirmation_instrument" table. Upon user gesture, one
@@ -156,17 +138,20 @@ struct SecurePaymentConfirmationRequest {
   array<array<uint8>> credential_ids;
 
   // An indefinite-length blob passed from the relying party server, to be sent
-  // to an authenticator for signing together with the price and merchant
-  // origin.
+  // to an authenticator for signing.
   array<uint8> challenge;
 
-  // The name and icon to display to the user and to be sent to the authenticator
-  // device for signing.
-  PaymentCredentialInstrument instrument;
+  // The name and icon of the payment instrument to display to the user and to
+  // be sent to the authenticator device for signing.
+  blink.mojom.PaymentCredentialInstrument instrument;
 
   // Time to wait for an authenticator to complete an operation provided by the
   // relying party.
   mojo_base.mojom.TimeDelta? timeout;
+
+  // The origin of the payee that will be displayed in the payment confirmation
+  // dialog and will be sent to the authenticator device for signing.
+  url.mojom.Origin payee_origin;
 };
 
 struct PaymentMethodData {
@@ -181,12 +166,6 @@ struct PaymentMethodData {
   //
   // {"gateway": "stripe"}
   string stringified_data;
-
-  // Data specific to the skip-to-GPay experimental flow. This field is only set
-  // if |supported_method| is Google Pay and if the current request is eligible
-  // for the skip-to-GPay experimental flow.
-  [EnableIf=is_android]
-  GooglePaymentMethodData? gpay_bridge_data;
 
   // Android Pay specific method data is parsed in the renderer.
   // https://developers.google.com/web/fundamentals/getting-started/primers/payment-request/android-pay
@@ -251,7 +230,6 @@ enum PaymentComplete {
   UNKNOWN
 };
 
-
 // Implemented in the browser process. Not sandboxed. Deals with trusted data.
 // Android implementation (Clank, WebLayer):
 //   components/payments/content/android/java/src/org/chromium/components/payments/MojoPaymentRequestGateKeeper.java
@@ -260,14 +238,10 @@ enum PaymentComplete {
 interface PaymentRequest {
   // Instantiates the renderer-browser connection with the information from the
   // JavaScript constructor of PaymentRequest.
-  // |google_pay_bridge_eligible| is true when the renderer process deems the
-  // current request eligible for the skip-to-GPay experimental flow. It is
-  // ultimately up to the browser process to determine whether to trigger it.
   Init(pending_remote<PaymentRequestClient> client,
        array<PaymentMethodData> method_data,
        PaymentDetails details,
-       PaymentOptions options,
-       [EnableIf=is_android] bool google_pay_bridge_eligible);
+       PaymentOptions options);
 
   // Shows the user interface with the payment details.
   // |is_user_gesture|: Whether the show is triggered from a user gesture.

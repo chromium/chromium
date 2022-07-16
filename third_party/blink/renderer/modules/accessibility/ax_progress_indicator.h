@@ -34,6 +34,9 @@ class AXProgressIndicator final : public AXLayoutObject {
  public:
   AXProgressIndicator(LayoutProgress*, AXObjectCacheImpl&);
 
+  AXProgressIndicator(const AXProgressIndicator&) = delete;
+  AXProgressIndicator& operator=(const AXProgressIndicator&) = delete;
+
  private:
   ax::mojom::blink::Role NativeRoleIgnoringAria() const final;
 
@@ -45,8 +48,6 @@ class AXProgressIndicator final : public AXLayoutObject {
 
   HTMLProgressElement* GetProgressElement() const;
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AXProgressIndicator);
 };
 
 }  // namespace blink

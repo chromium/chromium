@@ -229,6 +229,8 @@ void DesktopMediaListView::OnSourceThumbnailChanged(size_t index) {
   source_view->SetThumbnail(source.thumbnail);
 }
 
+void DesktopMediaListView::OnSourcePreviewChanged(size_t index) {}
+
 void DesktopMediaListView::SetStyle(DesktopMediaSourceViewStyle* style) {
   active_style_ = style;
   controller_->SetThumbnailSize(style->image_rect.size());

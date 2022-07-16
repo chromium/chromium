@@ -16,10 +16,13 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/models/simple_menu_model.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep_default.h"
+
+#if defined(OS_LINUX)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace {
 
@@ -320,12 +323,12 @@ TEST(MenuPropertyListTest, ComputePropertiesIcon) {
   EXPECT_EQ(menu->ComputeProperties(), props);
 }
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_LINUX)
 TEST(MenuPropertyListTest, ComputePropertiesAccelerator) {
-  if (features::IsUsingOzonePlatform())
-    return;
+  // TODO(1136791): fix for Ozone/Wayland.
+  if (ui::OzonePlatform::GetPlatformNameForTest() != "x11")
+    GTEST_SKIP();
+
   auto builder = TestMenuModelBuilder();
 
   // No accelerator.

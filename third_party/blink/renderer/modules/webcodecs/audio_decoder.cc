@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
@@ -16,12 +16,13 @@
 #include "media/base/waiting.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_support.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder_broker.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
@@ -39,14 +40,14 @@ bool IsValidConfig(const AudioDecoderConfig& config,
   // Match codec strings from the codec registry:
   // https://www.w3.org/TR/webcodecs-codec-registry/#audio-codec-registry
   if (config.codec() == "ulaw") {
-    out_audio_type = {media::kCodecPCM_MULAW};
+    out_audio_type = {media::AudioCodec::kPCM_MULAW};
     return true;
   } else if (config.codec() == "alaw") {
-    out_audio_type = {media::kCodecPCM_ALAW};
+    out_audio_type = {media::AudioCodec::kPCM_ALAW};
     return true;
   }
 
-  media::AudioCodec codec = media::kUnknownAudioCodec;
+  media::AudioCodec codec = media::AudioCodec::kUnknown;
   bool is_codec_ambiguous = true;
   const bool parse_succeeded = ParseAudioCodecString(
       "", config.codec().Utf8(), &is_codec_ambiguous, &codec);
@@ -71,10 +72,13 @@ AudioDecoderConfig* CopyConfig(const AudioDecoderConfig& config) {
   copy->setSampleRate(config.sampleRate());
   copy->setNumberOfChannels(config.numberOfChannels());
   if (config.hasDescription()) {
-    DOMArrayPiece buffer(config.description());
-    DOMArrayBuffer* buffer_copy =
-        DOMArrayBuffer::Create(buffer.Data(), buffer.ByteLength());
-    copy->setDescription(MakeGarbageCollected<V8BufferSource>(buffer_copy));
+    auto desc_wrapper = AsSpan<const uint8_t>(config.description());
+    if (!desc_wrapper.empty()) {
+      DOMArrayBuffer* buffer_copy =
+          DOMArrayBuffer::Create(desc_wrapper.data(), desc_wrapper.size());
+      copy->setDescription(
+          MakeGarbageCollected<AllowSharedBufferSource>(buffer_copy));
+    }
   }
   return copy;
 }
@@ -102,8 +106,8 @@ void AudioDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
       std::vector<MediaConfigType>{media_config});
   MEDIA_LOG(INFO, media_log)
       << "Initialized AudioDecoder: " << media_config.AsHumanReadableString();
-  UMA_HISTOGRAM_ENUMERATION("Blink.WebCodecs.AudioDecoder.Codec",
-                            media_config.codec(), media::kAudioCodecMax + 1);
+  base::UmaHistogramEnumeration("Blink.WebCodecs.AudioDecoder.Codec",
+                                media_config.codec());
 }
 
 // static
@@ -182,7 +186,9 @@ ScriptPromise AudioDecoder::isConfigSupported(ScriptState* script_state,
   support->setSupported(media::IsSupportedAudioType(audio_type));
   support->setConfig(CopyConfig(*config));
 
-  return ScriptPromise::Cast(script_state, ToV8(support, script_state));
+  return ScriptPromise::Cast(
+      script_state, ToV8Traits<AudioDecoderSupport>::ToV8(script_state, support)
+                        .ToLocalChecked());
 }
 
 // static
@@ -197,10 +203,13 @@ CodecConfigEval AudioDecoder::MakeMediaAudioDecoderConfig(
 
   std::vector<uint8_t> extra_data;
   if (config.hasDescription()) {
-    DOMArrayPiece buffer(config.description());
-    uint8_t* start = static_cast<uint8_t*>(buffer.Data());
-    size_t size = buffer.ByteLength();
-    extra_data.assign(start, start + size);
+    // TODO(crbug.com/1179970): This should throw if description is detached.
+    auto desc_wrapper = AsSpan<const uint8_t>(config.description());
+    if (!desc_wrapper.empty()) {
+      const uint8_t* start = desc_wrapper.data();
+      const size_t size = desc_wrapper.size();
+      extra_data.assign(start, start + size);
+    }
   }
 
   media::ChannelLayout channel_layout =

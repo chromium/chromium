@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace metrics {
 
 // Provides machine characteristics used as a machine id. The implementation is
@@ -17,6 +15,10 @@ namespace metrics {
 // platform.
 class MachineIdProvider {
  public:
+  MachineIdProvider() = delete;
+  MachineIdProvider(const MachineIdProvider&) = delete;
+  MachineIdProvider& operator=(const MachineIdProvider&) = delete;
+
   // Returns true if this platform provides a non-empty GetMachineId(). This is
   // useful to avoid an async call to GetMachineId() on platforms with no
   // implementation.
@@ -28,9 +30,6 @@ class MachineIdProvider {
   // model name. Should not be called if HasId() returns false.
   // The return value should not be stored to disk or transmitted.
   static std::string GetMachineId();
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(MachineIdProvider);
 };
 
 }  //  namespace metrics

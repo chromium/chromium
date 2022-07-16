@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
@@ -40,6 +39,10 @@ class TestNetworkConnectionObserver
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     tracker_->AddNetworkConnectionObserver(this);
   }
+
+  TestNetworkConnectionObserver(const TestNetworkConnectionObserver&) = delete;
+  TestNetworkConnectionObserver& operator=(
+      const TestNetworkConnectionObserver&) = delete;
 
   ~TestNetworkConnectionObserver() override {
     tracker_->RemoveNetworkConnectionObserver(this);
@@ -77,8 +80,6 @@ class TestNetworkConnectionObserver
   network::mojom::ConnectionType connection_type_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkConnectionObserver);
 };
 
 }  // namespace

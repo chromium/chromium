@@ -69,49 +69,91 @@ extern const base::FeatureParam<std::string>
 //
 // E.g.:
 //  * "1, 2" : Matches all surfaces with types kWebFeature and kCanvasReadback.
+//
+// From 03/2021 the code no longer supports revoking a surface that was once
+// blocked either via "BlockedHashes" or "BlockedTypes".
 extern const base::FeatureParam<std::string> kIdentifiabilityStudyBlockedTypes;
 
-// Base selection rate for surfaces that don't have a per-surface selection
-// rate. Rates are always represented as the denominator of a 1-in-N selection.
+// Number of expected identifiable surfaces that will be sampled.
+//
+// Each site you visit implicitly or explicitly observes various identifiable
+// bits of information. This is the number of potentially identifiable surfaces
+// that we expect will be sampled per client.
 //
 // Parameter name: "Rho"
 // Parameter type: int
-extern const base::FeatureParam<int> kIdentifiabilityStudySurfaceSelectionRate;
+extern const base::FeatureParam<int> kIdentifiabilityStudyExpectedSurfaceCount;
 
-// Largest meaningful sampling denominator. Picked out of hat.
-constexpr int kMaxIdentifiabilityStudySurfaceSelectionRate = 1000000;
+// Largest meaningful surface count. Based on observed data. In very rare cases
+// the overall number of surfaces will exceed this limit, but based on prior
+// measurements these cases account for a tiny fraction of the entire
+// population.
+constexpr int kMaxIdentifiabilityStudyExpectedSurfaceCount = 1500;
 
-// The maximum number of surfaces that can be included in the identifiability
-// study.
+// The limit for the optimistic naive budget for the identifiability study.
+//
+// Each surface that's reported back via metrics reduces the available budget.
+// No report sent back should exceed this budget. The unit of measurement for
+// the budget is currently one _median_ identifiable surface. Some surfaces may
+// be more expensive and some may be less expensive.
+//
+// This value cannot exceed kMaxIdentifiabilityStudyActiveSurfaceBudget.
 //
 // Parameter name: "Max"
 // Parameter type: int
-extern const base::FeatureParam<int> kIdentifiabilityStudyMaxSurfaces;
+extern const base::FeatureParam<int> kIdentifiabilityStudyActiveSurfaceBudget;
 
-// This is a hardcoded maximum for the number of identifiable surfaces that
-// can be reported for a user. The actual ceiling for active surfaces cannot
-// exceed this value even if it's sent via a server-side configuration.
+// This is a hardcoded maximum for the identifiability study budget. The actual
+// budget cannot exceed this value even if it's sent via a server-side
+// configuration.
 //
-// In other words this is the maximum value that can be configured via
-// `kIdentifiabilityStudyMaxSurfaces`. Hence it's the
-// `kMaxIdentifiabilityStudyMaxSurfaces`.
-constexpr int kMaxIdentifiabilityStudyMaxSurfaces = 40;
+// I.e. the following is always true:
+//
+//     active_surface_budget_ <= kMaxIdentifiabilityStudyActiveSurfaceBudget
+//
+// This restriction prevents `active_surface_budget_` being increased past this
+// hardcoded limit from a server-side configuration.
+constexpr int kMaxIdentifiabilityStudyActiveSurfaceBudget = 40;
 
+// Relative cost of individual surfaces.
+//
+// Parameter name: "HashCost"
+// Parameter type: Comma separated list of <surface-hash-in-decimal;cost-factor>
+//                 pairs.
+//
+// By default all surfaces cost 1 _average_ surface. Exceptions are noted
+// individually and by type. This parameter contains the per-surface costs.
+//
+// Costs are always specified in units of _average_ surface. The value can be
+// a float expressed in decimal.
+//
+// When specifying these values on the command-line, the commas and semicolons
+// should be escaped using URL encoding. I.e. '1;2,3;4' -> '1%3B2%2C3%3B4'.
+//
+// E.g.:
+//   * "257;0.5" : Sets the relative cost of 0.5 for
+//                 IdentifiableSurface::FromTypeAndToken(kWebFeature, 1).
+extern const base::FeatureParam<std::string> kIdentifiabilityStudyPerHashCost;
+
+// Selection rate for clusters of related surfaces.
 // Surface equivalence classes.
 //
 // Parameter name: "Classes"
 // Parameter type: Comma separated list of classes. Each class is a semicolon
 //                 separated list of surfaces. See examples below.
 //
-//                 NOTE: The first surface in the list is the representative
-//                 surface that forms the basis for determining the cost for
-//                 the entire class. I.e. the cost of the first surface in the
-//                 list is assumed to be the cost of _any subset_ of surfaces
-//                 in the set.
+// The first surface in the list is the representative surface that forms the
+// basis for determining the cost for the entire class. I.e. the cost of the
+// first surface in the list is assumed to be the cost of _any subset_ of
+// surfaces in the set.
 //
 // Every surface in an equivalence class is assumed to be pairwise perfectly
 // correlated with all other surfaces in the set. For more details see
 // definition of SurfaceSetValuation::EquivalenceClassIdentifierMap.
+//
+// It is an error for a surface to appear in more than one equivalence class.
+//
+// For more details see `SurfaceSetValuation`.
 //
 // E.g.:
 //   * "1;2;3,4;5;6" : Defines two classes: {1,2,3} and {4,5,6}. The surface
@@ -121,27 +163,77 @@ constexpr int kMaxIdentifiabilityStudyMaxSurfaces = 40;
 extern const base::FeatureParam<std::string>
     kIdentifiabilityStudySurfaceEquivalenceClasses;
 
-// Selection rate for clusters of related surfaces.
-//
-// Parameter name: "HashRate"
-// Parameter type: Comma separated list of <filter-string>;<rate> pairs.
-//
-// E.g.:
-//   * "257;800" : Sets the selection rate to 1-in-800 for
-//                 IdentifiableSurface::FromTypeAndToken(kWebFeature, 1).
-extern const base::FeatureParam<std::string>
-    kIdentifiabilityStudyPerSurfaceSettings;
-
 // Selection rate for clusters of related surface types.
 //
-// Parameter name: "TypeRate"
-// Parameter type: Comma separated list of <filter-string>;<rate> pairs.
+// Parameter name: "TypeCost"
+// Parameter type: Comma separated list of <surface-type-in-decimal;cost-factor>
+//                 pairs.
+//
+// By default all surfaces cost 1 _average_ surface. Exceptions are noted
+// individually and by type. This parameter contains the per-type costs.
+//
+// Costs are always specified in units of _average_ surface. The value can be
+// a float expressed in decimal.
+//
+// When specifying these values on the command-line, the commas and semicolons
+// should be escaped using URL encoding. I.e. '1;2,3;4' -> '1%3B2%2C3%3B4'.
 //
 // E.g.:
-//   * "2;1000" : Sets the selection rate to 1-in-1000 for *all* surfaces with
-//                type kCanvasReadback.
-extern const base::FeatureParam<std::string>
-    kIdentifiabilityStudyPerTypeSettings;
+//   * "1;0.5" : Sets the relative cost of 0.5 for all surfaces of type
+//               kWebFeature.
+extern const base::FeatureParam<std::string> kIdentifiabilityStudyPerTypeCost;
+
+// Surface Sampling Blocks.
+//
+// Parameter name: "Blocks"
+// Parameter type: Comma separated list of blocks. Each block is a semicolon
+//                 separated list of surfaces. See examples below.
+//
+// If this parameter specifies more than one block then at the start of an
+// experiment generation the browser picks one of the blocks at random (see
+// `BlockWeights` for details on the random distribution). All surfaces in the
+// selected block are considered to be in the active set.
+//
+// * It is valid for a single surface to be a member of multiple blocks. The
+//   study only uses one block.
+//
+// * The index of the selected block is persisted. If a new configuration has
+//   the same generation (Gen) but a different value for the `Blocks` parameter,
+//   the client will select the block at the same offset as the one it
+//   previously selected.
+//
+// * Specifying a surface that is blocked (either via `BlockedHashes` or
+//   `BlockedTypes`) is an error.
+//
+// E.g.:
+//   * "1;2;3,4;5;6,7;8;9" : Defines three blocks: {1,2,3}, {4,5,6}, and
+//     {7,8,9}.
+extern const base::FeatureParam<std::string> kIdentifiabilityStudyBlocks;
+
+// Selection Weights for Blocks.
+//
+// Parameter name: "BlockWeights"
+// Parameter type: Comma separated list of relative weights expressed as
+//                 integers.
+//
+// If this parameter is specified then it must specify a weight for each block
+// that is defined using the `Blocks` parameter. Each integer defines the
+// relative weight assigned to the block of surfaces at the corresponding index.
+// Random selection of a block uses the multinomial distribution resulting from
+// normalizing the weights.
+//
+// * All weights must be non-zero positive integers.
+//
+// * There must be exactly as many weights as there are blocks. If not, the
+//   client assumes that the distribution should be uniform.
+//
+// * If this parameter is not specified, then the client assumes that the blocks
+//   are to be selected based on a uniform distribution.
+//
+// E.g.:
+//   * "5,7,3" assigns the probabilities ⅓, 7/15, ⅕ respectively to the three
+//     blocks defined in `Blocks`.
+extern const base::FeatureParam<std::string> kIdentifiabilityStudyBlockWeights;
 
 // Per surface relative cost.
 //
@@ -156,6 +248,8 @@ extern const base::FeatureParam<std::string>
 //
 // When specifying these values on the command-line, the commas and semicolons
 // should be escaped using URL encoding. I.e. '1;2,3;4' -> '1%3B2%2C3%3B4'.
+//
+// See SurfaceSetValuation for details on the costing model.
 //
 // E.g.:
 //   * "261;0.5" : Sets the relative cost of 0.5 for surface with ID 261, which
@@ -176,10 +270,25 @@ extern const base::FeatureParam<std::string> kIdentifiabilityStudyPerHashCost;
 // When specifying these values on the command-line, the commas and semicolons
 // should be escaped using URL encoding. I.e. '1;2,3;4' -> '1%3B2%2C3%3B4'.
 //
+// See SurfaceSetValuation for details on the costing model.
+//
 // E.g.:
 //   * "1;0.5" : Sets the relative cost of 0.5 for all surfaces of type
 //               kWebFeature.
 extern const base::FeatureParam<std::string> kIdentifiabilityStudyPerTypeCost;
+
+// This is a hardcoded maximum for the probability of any single surface to be
+// reported as part of the experiment.
+//
+// For example, given the following parameters:
+//     kIdentifiabilityStudyBlocks = "1;2,1;3,4;5"
+//     kIdentifiabilityStudyBlockWeights = "1,1,1"
+// the surface 1 has probability 2/3 to be chosen.
+//
+// If, in the finch client configuration, a surface appears with total
+// probability higher than this threshold, the study will be deactivated for
+// this client and this client will not report any surface.
+constexpr double kMaxProbabilityPerSurface = 0.5;
 
 }  // namespace features
 

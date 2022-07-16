@@ -8,6 +8,7 @@ import json
 import logging
 import re
 
+from test_result_util import ResultCollection, TestResult, TestStatus
 
 LOGGER = logging.getLogger(__name__)
 
@@ -16,12 +17,16 @@ LOGGER = logging.getLogger(__name__)
 TEST_UNKNOWN_LABEL = 'UNKNOWN'
 TEST_SUCCESS_LABEL = 'SUCCESS'
 TEST_FAILURE_LABEL = 'FAILURE'
+TEST_SKIPPED_LABEL = 'SKIPPED'
 TEST_TIMEOUT_LABEL = 'TIMEOUT'
 TEST_WARNING_LABEL = 'WARNING'
 
 
 class GTestResult(object):
   """A result of gtest.
+
+  The class will be depreacated soon. Please use
+  |test_result_util.ResultCollection| instead. (crbug.com/1132476)
 
   Properties:
     command: The command argv.
@@ -138,6 +143,9 @@ class GTestLogParser(object):
   """This helper class process GTest test output."""
 
   def __init__(self):
+    # Test results from the parser.
+    self._result_collection = ResultCollection()
+
     # State tracking for log parsing
     self.completed = False
     self._current_test = ''
@@ -181,6 +189,7 @@ class GTestLogParser(object):
     self._test_ok = re.compile(r'\[\s+OK\s+\] ' + test_name_regexp)
     self._test_fail = re.compile(r'\[\s+FAILED\s+\] ' + test_name_regexp)
     self._test_passed = re.compile(r'\[\s+PASSED\s+\] \d+ tests?.')
+    self._test_skipped = re.compile(r'\[\s+SKIPPED\s+\] ' + test_name_regexp)
     self._run_test_cases_line = re.compile(
         r'\[\s*\d+\/\d+\]\s+[0-9\.]+s ' + test_name_regexp + ' .+')
     self._test_timeout = re.compile(
@@ -195,14 +204,18 @@ class GTestLogParser(object):
         '.*Wrote compiled tests to file: (\S+)')
 
     self.TEST_STATUS_MAP = {
-      'OK': TEST_SUCCESS_LABEL,
-      'failed': TEST_FAILURE_LABEL,
-      'timeout': TEST_TIMEOUT_LABEL,
-      'warning': TEST_WARNING_LABEL
+        'OK': TEST_SUCCESS_LABEL,
+        'failed': TEST_FAILURE_LABEL,
+        'skipped': TEST_SKIPPED_LABEL,
+        'timeout': TEST_TIMEOUT_LABEL,
+        'warning': TEST_WARNING_LABEL
     }
 
   def GetCurrentTest(self):
     return self._current_test
+
+  def GetResultCollection(self):
+    return self._result_collection
 
   def _StatusOfTest(self, test):
     """Returns the status code for the given test, or 'not known'."""
@@ -275,6 +288,10 @@ class GTestLogParser(object):
             self._TestsByStatus('warning', include_fails, include_flaky) +
             self.RunningTests())
 
+  def SkippedTests(self, include_fails=False, include_flaky=False):
+    """Returns list of tests that were skipped"""
+    return self._TestsByStatus('skipped', include_fails, include_flaky)
+
   def TriesForTest(self, test):
     """Returns a list containing the state for all tries of the given test.
     This parser doesn't support retries so a single result is returned."""
@@ -314,9 +331,22 @@ class GTestLogParser(object):
     """Returns True if all tests completed and no tests failed unexpectedly."""
     return self.completed and not self.FailedTests()
 
+  def Finalize(self):
+    """Finalize for |self._result_collection|.
+
+    Called at the end to add unfinished tests and crash status for
+        self._result_collection.
+    """
+    for test in self.RunningTests():
+      self._result_collection.add_test_result(
+          TestResult(test, TestStatus.CRASH, test_log='Did not complete.'))
+      self._result_collection.crashed = True
+
+    if not self.completed:
+      self._result_collection.crashed = True
+
   def ProcessLine(self, line):
     """This is called once with each line of the test log."""
-
     # Track line number for error messages.
     self._line_number += 1
 
@@ -329,10 +359,11 @@ class GTestLogParser(object):
     # List of regexps that parses expects to find at the start of a line but
     # which can be somewhere in the middle.
     gtest_regexps = [
-      self._test_start,
-      self._test_ok,
-      self._test_fail,
-      self._test_passed,
+        self._test_start,
+        self._test_ok,
+        self._test_fail,
+        self._test_passed,
+        self._test_skipped,
     ]
 
     for regexp in gtest_regexps:
@@ -351,7 +382,6 @@ class GTestLogParser(object):
 
     Will recognize newly started tests, OK or FAILED statuses, timeouts, etc.
     """
-
     # Note: When sharding, the number of disabled and flaky tests will be read
     # multiple times, so this will only show the most recent values (but they
     # should all be the same anyway).
@@ -369,6 +399,11 @@ class GTestLogParser(object):
         if self._test_status[self._current_test][0] == 'started':
           self._test_status[self._current_test] = (
               'timeout', self._failure_description)
+          self._result_collection.add_test_result(
+              TestResult(
+                  self._current_test,
+                  TestStatus.ABORT,
+                  test_log='\n'.join(self._failure_description)))
       self._current_test = ''
       self._failure_description = []
       return
@@ -417,6 +452,11 @@ class GTestLogParser(object):
         if self._test_status[self._current_test][0] == 'started':
           self._test_status[self._current_test] = (
               'timeout', self._failure_description)
+          self._result_collection.add_test_result(
+              TestResult(
+                  self._current_test,
+                  TestStatus.ABORT,
+                  test_log='\n'.join(self._failure_description)))
       test_name = results.group(1)
       self._test_status[test_name] = ('started', ['Did not complete.'])
       self._current_test = test_name
@@ -436,8 +476,36 @@ class GTestLogParser(object):
         self._RecordError(line, 'success while in status %s' % status)
       if self.retrying_failed:
         self._test_status[test_name] = ('warning', self._failure_description)
+        # This is a passed result. Previous failures were reported in separate
+        # TestResult objects.
+        self._result_collection.add_test_result(
+            TestResult(
+                test_name,
+                TestStatus.PASS,
+                test_log='\n'.join(self._failure_description)))
       else:
         self._test_status[test_name] = ('OK', [])
+        self._result_collection.add_test_result(
+            TestResult(test_name, TestStatus.PASS))
+      self._failure_description = []
+      self._current_test = ''
+      return
+
+    # Is it a test skipped line?
+    results = self._test_skipped.match(line)
+    if results:
+      test_name = results.group(1)
+      status = self._StatusOfTest(test_name)
+      # Skipped tests are listed again in the summary.
+      if status not in ('started', 'skipped'):
+        self._RecordError(line, 'skipped while in status %s' % status)
+      self._test_status[test_name] = ('skipped', [])
+      self._result_collection.add_test_result(
+          TestResult(
+              test_name,
+              TestStatus.SKIP,
+              expected_status=TestStatus.SKIP,
+              test_log='Test skipped when running suite.'))
       self._failure_description = []
       self._current_test = ''
       return
@@ -449,11 +517,23 @@ class GTestLogParser(object):
       status = self._StatusOfTest(test_name)
       if status not in ('started', 'failed', 'timeout'):
         self._RecordError(line, 'failure while in status %s' % status)
+      if self._current_test != test_name:
+        if self._current_test:
+          self._RecordError(
+              line,
+              '%s failure while in test %s' % (test_name, self._current_test))
+        return
       # Don't overwrite the failure description when a failing test is listed a
       # second time in the summary, or if it was already recorded as timing
       # out.
       if status not in ('failed', 'timeout'):
         self._test_status[test_name] = ('failed', self._failure_description)
+      # Add to |test_results| regardless whether the test ran before.
+      self._result_collection.add_test_result(
+          TestResult(
+              test_name,
+              TestStatus.FAIL,
+              test_log='\n'.join(self._failure_description)))
       self._failure_description = []
       self._current_test = ''
       return
@@ -467,6 +547,11 @@ class GTestLogParser(object):
         self._RecordError(line, 'timeout while in status %s' % status)
       self._test_status[test_name] = (
           'timeout', self._failure_description + ['Killed (timed out).'])
+      self._result_collection.add_test_result(
+          TestResult(
+              test_name,
+              TestStatus.ABORT,
+              test_log='\n'.join(self._failure_description)))
       self._failure_description = []
       self._current_test = ''
       return
@@ -492,8 +577,14 @@ class GTestLogParser(object):
             test_name = single_test.get('test_name')
             if test_case_name and test_name and test_name.startswith(
                 'DISABLED_'):
-              disabled_tests_from_json.append('%s/%s' %
-                                              (test_case_name, test_name))
+              full_test_name = str('%s/%s' % (test_case_name, test_name))
+              disabled_tests_from_json.append(full_test_name)
+              self._result_collection.add_test_result(
+                  TestResult(
+                      test_name,
+                      TestStatus.SKIP,
+                      expected_status=TestStatus.SKIP,
+                      test_log='Test disabled.'))
           self._disabled_tests_from_compiled_tests_file = (
               disabled_tests_from_json)
       except Exception as e:
@@ -517,8 +608,11 @@ class GTestLogParser(object):
         test_name = results.group(1)
         status = self._StatusOfTest(test_name)
         if status in ('not known', 'OK'):
-          self._test_status[test_name] = (
-              'failed', ['Unknown error, see stdio log.'])
+          unknown_error_log = 'Unknown error, see stdio log.'
+          self._test_status[test_name] = ('failed', [unknown_error_log])
+          self._result_collection.add_test_result(
+              TestResult(
+                  test_name, TestStatus.FAIL, test_log=unknown_error_log))
       else:
         self._parsing_failures = False
     elif line.startswith('Failing tests:'):

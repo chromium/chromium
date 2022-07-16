@@ -11,7 +11,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 
 namespace device {

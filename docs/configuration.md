@@ -141,4 +141,4 @@ someone who can't read or write code want to change this?"
 [fieldtrial-config]: https://cs.chromium.org/chromium/src/testing/variations/fieldtrial_testing_config.json
 [flag-metadata]: https://cs.chromium.org/chromium/src/chrome/browser/flag-metadata.json
 [prefs]: https://www.chromium.org/developers/design-documents/preferences
-[profile-register]: https://cs.chromium.org/chromium/src/chrome/browser/profiles/profile.cc?type=cs&g=0&l=138
+[profile-register]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/profiles/profile.h;l=189;drc=b0378e4b67a5dbdb15acf0341ccd51acda81c8e0

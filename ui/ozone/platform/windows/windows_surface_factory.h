@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/ozone/public/gl_ozone.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
@@ -18,6 +17,10 @@ namespace ui {
 class WindowsSurfaceFactory : public SurfaceFactoryOzone {
  public:
   WindowsSurfaceFactory();
+
+  WindowsSurfaceFactory(const WindowsSurfaceFactory&) = delete;
+  WindowsSurfaceFactory& operator=(const WindowsSurfaceFactory&) = delete;
+
   ~WindowsSurfaceFactory() override;
 
   // SurfaceFactoryOzone:
@@ -26,8 +29,6 @@ class WindowsSurfaceFactory : public SurfaceFactoryOzone {
 
  private:
   std::unique_ptr<GLOzone> egl_implementation_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowsSurfaceFactory);
 };
 
 }  // namespace ui

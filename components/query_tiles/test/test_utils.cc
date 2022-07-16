@@ -33,7 +33,7 @@ void ResetTestEntry(Tile* entry) {
 }
 
 void ResetTestGroup(TileGroup* group) {
-  ResetTestGroup(group, base::Time::Now() - base::TimeDelta::FromDays(7));
+  ResetTestGroup(group, base::Time::Now() - base::Days(7));
 }
 
 void ResetTestGroup(TileGroup* group, base::Time last_updated_ts) {
@@ -42,8 +42,8 @@ void ResetTestGroup(TileGroup* group, base::Time last_updated_ts) {
   // Convert time due to precision we used in proto message conversion.
   int64_t milliseconds =
       last_updated_ts.ToDeltaSinceWindowsEpoch().InMilliseconds();
-  group->last_updated_ts = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMilliseconds(milliseconds));
+  group->last_updated_ts =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Milliseconds(milliseconds));
   group->tiles.clear();
   auto test_entry_1 = std::make_unique<Tile>();
   ResetTestEntry(test_entry_1.get());

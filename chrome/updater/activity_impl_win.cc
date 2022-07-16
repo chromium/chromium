@@ -16,6 +16,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
+#include "chrome/updater/win/win_util.h"
 
 namespace updater {
 namespace {
@@ -26,12 +27,12 @@ using ProcessActiveBitUnderKeyCallback =
 constexpr wchar_t kDidRun[] = L"dr";
 
 std::wstring GetAppClientStateKey(const std::string& id) {
-  return base::ASCIIToWide(base::StrCat({CLIENT_STATE_KEY, id}));
+  return base::StrCat({CLIENT_STATE_KEY, base::ASCIIToWide(id)});
 }
 
 bool GetActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
   base::win::RegKey key;
-  if (key.Open(rootkey, key_name.c_str(), KEY_QUERY_VALUE | KEY_WOW64_32KEY) ==
+  if (key.Open(rootkey, key_name.c_str(), Wow6432(KEY_QUERY_VALUE)) ==
       ERROR_SUCCESS) {
     // We support both string and DWORD formats for backward compatibility.
     std::wstring value;
@@ -50,8 +51,7 @@ bool GetActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
 bool ClearActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
   base::win::RegKey key;
   if (key.Open(rootkey, key_name.c_str(),
-               KEY_QUERY_VALUE | KEY_SET_VALUE | KEY_WOW64_32KEY) !=
-      ERROR_SUCCESS) {
+               Wow6432(KEY_QUERY_VALUE | KEY_SET_VALUE)) != ERROR_SUCCESS) {
     VLOG(2) << "Failed to open activity key with write for " << key_name;
     return false;
   }
@@ -104,7 +104,7 @@ bool ProcessUserActiveBit(ProcessActiveBitUnderKeyCallback callback,
 bool ProcessSystemActiveBit(ProcessActiveBitUnderKeyCallback callback,
                             const std::string& id) {
   // Clear the active bit under each user in HKU\<sid>.
-  for (base::win::RegistryKeyIterator it(HKEY_USERS, L"", KEY_WOW64_32KEY);
+  for (base::win::RegistryKeyIterator it(HKEY_USERS, L"", Wow6432(0));
        it.Valid(); ++it) {
     const std::wstring sid = it.Name();
     if (ProcessActiveBit(callback, HKEY_USERS, sid, id))

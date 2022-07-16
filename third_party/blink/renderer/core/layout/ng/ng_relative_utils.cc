@@ -142,4 +142,31 @@ LogicalOffset ComputeRelativeOffsetForInline(const NGConstraintSpace& space,
   return relative_offset;
 }
 
+LogicalOffset ComputeRelativeOffsetForOOFInInline(
+    const NGConstraintSpace& space,
+    const ComputedStyle& child_style) {
+  if (child_style.GetPosition() != EPosition::kRelative)
+    return LogicalOffset();
+
+  // The confliction resolution rules work based off the block's writing-mode
+  // and direction, not the child's container. E.g.
+  // <span style="direction: rtl;">
+  //   <span style="position: relative; left: 100px; right: -50px;"></span>
+  // </span>
+  // In the above example "left" wins.
+  const WritingDirectionMode writing_direction = space.GetWritingDirection();
+  LogicalOffset relative_offset = ComputeRelativeOffset(
+      child_style, writing_direction, space.AvailableSize());
+
+  // Lines are built in a line-logical coordinate system:
+  // https://drafts.csswg.org/css-writing-modes-3/#line-directions
+  // Reverse the offset direction if we are in a RTL. We skip adjusting for
+  // flipped writing-mode when applying the relative position to an OOF
+  // positioned element.
+  if (writing_direction.IsRtl())
+    relative_offset.inline_offset = -relative_offset.inline_offset;
+
+  return relative_offset;
+}
+
 }  // namespace blink

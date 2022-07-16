@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.editor.rangeTest');
 goog.setTestOnly();
@@ -416,6 +408,10 @@ testSuite({
         'offset should point to the img tag', 0, range.getStartOffset());
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testPlaceCursorNextTo_rightOfFirstOfTwoImgTags() {
     const div = $('parentNode');
     div.innerHTML =
@@ -588,7 +584,10 @@ testSuite({
     testingDom.assertRangeEquals(ghiText, 1, mnoText, 2, newRange);
   },
 
-  /** Branched from the tests for dom.SavedCaretRange. */
+  /**
+   * Branched from the tests for dom.SavedCaretRange.
+   * @suppress {visibility} suppression added to enable type checking
+   */
   testSavedCaretRange() {
     let def = $('def-1');
     let jkl = $('jkl-1');
@@ -750,6 +749,7 @@ testSuite({
     testingDom.assertRangeEquals(def.firstChild, 1, jkl.firstChild, 2, range);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSelectionPreservingNormalizeAfterPlaceCursorNextTo() {
     const parent = $('normalizeTest-with-div');
     editorRange.placeCursorNextTo(parent.firstChild);
@@ -764,18 +764,9 @@ testSuite({
 
     editorRange.selectNodeStart(div);
     const range = Range.createFromWindow(window);
-    // Gotta love browsers and their inconsistencies with selection
-    // representations.  What we are trying to achieve is that when we type
-    // the text will go into the P node.  In Gecko, the selection is at the
-    // start of the text node, as you'd expect, but in pre-530 Webkit, it has
-    // been normalized to the visible position of P:0.
-    if (userAgent.GECKO || userAgent.IE || userAgent.EDGE ||
-        (userAgent.WEBKIT && userAgent.isVersionOrHigher('530'))) {
-      testingDom.assertRangeEquals(
-          div.firstChild.firstChild, 0, div.firstChild.firstChild, 0, range);
-    } else {
-      testingDom.assertRangeEquals(div.firstChild, 0, div.firstChild, 0, range);
-    }
+
+    testingDom.assertRangeEquals(
+        div.firstChild.firstChild, 0, div.firstChild.firstChild, 0, range);
   },
 
   testSelectNodeStartBr() {
@@ -864,6 +855,10 @@ testSuite({
     assertFalse(editorRange.intersectsTag(range, TagName.U));
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testNormalizeNode() {
     let div = dom.createDom(TagName.DIV, null, 'a', 'b', 'c');
     assertEquals(3, div.childNodes.length);

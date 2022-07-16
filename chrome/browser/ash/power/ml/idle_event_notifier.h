@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -42,12 +42,10 @@ class IdleEventNotifier : public PowerManagerClient::Observer,
   // If suspend duration is greater than this, we reset timestamps used to calc
   // |ActivityData::recent_time_active|. We also merge video-playing sessions
   // that have a pause shorter than this.
-  static constexpr base::TimeDelta kIdleDelay =
-      base::TimeDelta::FromSeconds(30);
+  static constexpr base::TimeDelta kIdleDelay = base::Seconds(30);
 
   // Count number of key, mouse and touch events in the past hour.
-  static constexpr auto kUserInputEventsDuration =
-      base::TimeDelta::FromHours(1);
+  static constexpr auto kUserInputEventsDuration = base::Hours(1);
 
   // Granularity of input events is per minute.
   static constexpr int kNumUserInputEventsBuckets =
@@ -94,6 +92,10 @@ class IdleEventNotifier : public PowerManagerClient::Observer,
       PowerManagerClient* power_client,
       ui::UserActivityDetector* detector,
       mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver);
+
+  IdleEventNotifier(const IdleEventNotifier&) = delete;
+  IdleEventNotifier& operator=(const IdleEventNotifier&) = delete;
+
   ~IdleEventNotifier() override;
 
   // chromeos::PowerManagerClient::Observer overrides:
@@ -169,8 +171,6 @@ class IdleEventNotifier : public PowerManagerClient::Observer,
   std::unique_ptr<RecentEventsCounter> key_counter_;
   std::unique_ptr<RecentEventsCounter> mouse_counter_;
   std::unique_ptr<RecentEventsCounter> touch_counter_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleEventNotifier);
 };
 
 }  // namespace ml

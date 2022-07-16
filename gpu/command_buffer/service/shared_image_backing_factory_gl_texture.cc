@@ -135,12 +135,16 @@ bool SharedImageBackingFactoryGLTexture::IsSupported(
     return false;
   }
 
-  bool needs_interop_factory = (gr_context_type == GrContextType::kVulkan &&
-                                (usage & SHARED_IMAGE_USAGE_DISPLAY)) ||
-                               (usage & SHARED_IMAGE_USAGE_WEBGPU) ||
-                               (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE) ||
-                               (usage & SHARED_IMAGE_USAGE_SCANOUT);
-  if (needs_interop_factory) {
+  // Doesn't support contexts other than GL for OOPR Canvas
+  if (gr_context_type != GrContextType::kGL &&
+      ((usage & SHARED_IMAGE_USAGE_DISPLAY) ||
+       (usage & SHARED_IMAGE_USAGE_RASTER))) {
+    return false;
+  }
+  // Needs interop factory
+  if ((usage & SHARED_IMAGE_USAGE_WEBGPU) ||
+      (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE) ||
+      (usage & SHARED_IMAGE_USAGE_SCANOUT)) {
     return false;
   }
 
@@ -222,6 +226,14 @@ SharedImageBackingFactoryGLTexture::CreateSharedImageInternal(
                         format_info.adjusted_format, format_info.gl_type,
                         pixel_data.data());
   }
+
+  if (gl::g_current_gl_driver->ext.b_GL_KHR_debug) {
+    const std::string label =
+        "SharedImage_GLTexture" + CreateLabelForSharedImageUsage(usage);
+    api->glObjectLabelFn(GL_TEXTURE, result->GetGLServiceId(), -1,
+                         label.c_str());
+  }
+
   result->SetCompatibilitySwizzle(format_info.swizzle);
   return std::move(result);
 }

@@ -6,9 +6,9 @@ import {changeFolderOpen, Command, selectFolder} from 'chrome://bookmarks/bookma
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {TestCommandManager} from 'chrome://test/bookmarks/test_command_manager.js';
-import {TestStore} from 'chrome://test/bookmarks/test_store.js';
-import {createFolder, createItem, findFolderNode, getAllFoldersOpenState, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
+import {TestCommandManager} from './test_command_manager.js';
+import {TestStore} from './test_store.js';
+import {createFolder, createItem, findFolderNode, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
 
 suite('<bookmarks-folder-node>', function() {
   let rootNode;

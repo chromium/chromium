@@ -29,3 +29,13 @@ enum WindowOpenDisposition {
   // NEW_FOREGROUND_TAB when no existing tab is found.
   SWITCH_TO_TAB,
 };
+
+// Click information needed to determine user's desired window disposition using
+// ui::DispositionFromClick().
+struct ClickModifiers {
+  bool middle_button;
+  bool alt_key;
+  bool ctrl_key;
+  bool meta_key;
+  bool shift_key;
+};

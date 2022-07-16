@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -48,6 +48,9 @@ class MockConnectClientSocket : public TransportClientSocket {
       : connected_(false),
         addrlist_(addrlist),
         net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {}
+
+  MockConnectClientSocket(const MockConnectClientSocket&) = delete;
+  MockConnectClientSocket& operator=(const MockConnectClientSocket&) = delete;
 
   // TransportClientSocket implementation.
   int Bind(const net::IPEndPoint& local_addr) override {
@@ -112,8 +115,6 @@ class MockConnectClientSocket : public TransportClientSocket {
   bool connected_;
   const AddressList addrlist_;
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockConnectClientSocket);
 };
 
 class MockFailingClientSocket : public TransportClientSocket {
@@ -121,6 +122,9 @@ class MockFailingClientSocket : public TransportClientSocket {
   MockFailingClientSocket(const AddressList& addrlist, net::NetLog* net_log)
       : addrlist_(addrlist),
         net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {}
+
+  MockFailingClientSocket(const MockFailingClientSocket&) = delete;
+  MockFailingClientSocket& operator=(const MockFailingClientSocket&) = delete;
 
   // TransportClientSocket implementation.
   int Bind(const net::IPEndPoint& local_addr) override {
@@ -181,8 +185,6 @@ class MockFailingClientSocket : public TransportClientSocket {
  private:
   const AddressList addrlist_;
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFailingClientSocket);
 };
 
 class MockTriggerableClientSocket : public TransportClientSocket {
@@ -196,6 +198,10 @@ class MockTriggerableClientSocket : public TransportClientSocket {
         is_connected_(false),
         addrlist_(addrlist),
         net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {}
+
+  MockTriggerableClientSocket(const MockTriggerableClientSocket&) = delete;
+  MockTriggerableClientSocket& operator=(const MockTriggerableClientSocket&) =
+      delete;
 
   // Call this method to get a closure which will trigger the connect callback
   // when called. The closure can be called even after the socket is deleted; it
@@ -323,8 +329,6 @@ class MockTriggerableClientSocket : public TransportClientSocket {
   ConnectionAttempts connection_attempts_;
 
   base::WeakPtrFactory<MockTriggerableClientSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockTriggerableClientSocket);
 };
 
 }  // namespace
@@ -374,8 +378,8 @@ MockTransportClientSocketFactory::MockTransportClientSocketFactory(
       client_socket_types_(nullptr),
       client_socket_index_(0),
       client_socket_index_max_(0),
-      delay_(base::TimeDelta::FromMilliseconds(
-          ClientSocketPool::kMaxConnectRetryIntervalMs)) {}
+      delay_(base::Milliseconds(ClientSocketPool::kMaxConnectRetryIntervalMs)) {
+}
 
 MockTransportClientSocketFactory::~MockTransportClientSocketFactory() = default;
 

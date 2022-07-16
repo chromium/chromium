@@ -13,6 +13,9 @@ namespace nearby {
 namespace chrome {
 
 namespace {
+// Client name for logging in BLE scanning.
+constexpr char kScanClientName[] = "Nearby Connections";
+
 void LogStartAdvertisingResult(bool success) {
   base::UmaHistogramBoolean(
       "Nearby.Connections.Bluetooth.LEMedium.StartAdvertising.Result", success);
@@ -148,7 +151,8 @@ bool BleMedium::StartScanning(
     }
 
     mojo::PendingRemote<bluetooth::mojom::DiscoverySession> discovery_session;
-    success = adapter_->StartDiscoverySession(&discovery_session);
+    success =
+        adapter_->StartDiscoverySession(kScanClientName, &discovery_session);
 
     if (!success || !discovery_session.is_valid()) {
       adapter_observer_.reset();

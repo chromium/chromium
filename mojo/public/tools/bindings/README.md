@@ -188,8 +188,8 @@ struct StringPair {
 };
 
 enum AnEnum {
-  YES,
-  NO
+  kYes,
+  kNo
 };
 
 interface SampleInterface {
@@ -209,7 +209,7 @@ struct AllTheThings {
   uint64 unsigned_64bit_value;
   float float_value_32bit;
   double float_value_64bit;
-  AnEnum enum_value = AnEnum.YES;
+  AnEnum enum_value = AnEnum.kYes;
 
   // Strings may be nullable.
   string? maybe_a_string_maybe_not;
@@ -300,20 +300,23 @@ within a module or nested within the namespace of some struct or interface:
 module business.mojom;
 
 enum Department {
-  SALES = 0,
-  DEV,
+  kSales = 0,
+  kDev,
 };
 
 struct Employee {
   enum Type {
-    FULL_TIME,
-    PART_TIME,
+    kFullTime,
+    kPartTime,
   };
 
   Type type;
   // ...
 };
 ```
+
+C++ constant-style enum value names are preferred as specified in the
+[Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html#Enumerator_Names).
 
 Similar to C-style enums, individual values may be explicitly assigned within an
 enum definition. By default, values are based at zero and increment by
@@ -336,8 +339,8 @@ struct Employee {
   const uint64 kInvalidId = 0;
 
   enum Type {
-    FULL_TIME,
-    PART_TIME,
+    kFullTime,
+    kPartTime,
   };
 
   uint64 id = kInvalidId;
@@ -448,7 +451,26 @@ interesting attributes supported today.
   matching `value` in the list of `enabled_features`, the definition will be
   disabled. This is useful for mojom definitions that only make sense on one
   platform. Note that the `EnableIf` attribute can only be set once per
-  definition.
+  definition and cannot be set at the same time as `EnableIfNot`. Also be aware
+  that only one condition can be tested, `EnableIf=value,xyz` introduces a new
+  `xyz` attribute. `xyz` is not part of the `EnableIf` condition that depends
+  only on the feature `value`. Complex conditions can be introduced via
+  enabled_features in `build.gn` files.
+
+* **`[EnableIfNot=value]`**:
+  The `EnableIfNot` attribute is used to conditionally enable definitions when
+  the mojom is parsed. If the `mojom` target in the GN file includes the
+  matching `value` in the list of `enabled_features`, the definition will be
+  disabled. This is useful for mojom definitions that only make sense on all but
+  one platform. Note that the `EnableIfNot` attribute can only be set once per
+  definition and cannot be set at the same time as `EnableIf`.
+
+* **`[ServiceSandbox=value]`**:
+  The `ServiceSandbox` attribute is used in Chromium to tag which sandbox a
+  service hosting an implementation of interface will be launched in. This only
+  applies to `C++` bindings. `value` should match a constant defined in an
+  imported `sandbox.mojom.Sandbox` enum (for Chromium this is
+  `//sandbox/policy/mojom/sandbox.mojom`), such as `kService`.
 
 ## Generated Code For Target Languages
 
@@ -495,9 +517,9 @@ values. For example if a Mojom declares the enum:
 
 ``` cpp
 enum AdvancedBoolean {
-  TRUE = 0,
-  FALSE = 1,
-  FILE_NOT_FOUND = 2,
+  kTrue = 0,
+  kFalse = 1,
+  kFileNotFound = 2,
 };
 ```
 
@@ -599,8 +621,8 @@ struct Employee {
 
 *** note
 **NOTE:** Mojo object or handle types added with a `MinVersion` **MUST** be
-optional (nullable). See [Primitive Types](#Primitive-Types) for details on
-nullable values.
+optional (nullable) or primitive. See [Primitive Types](#Primitive-Types) for
+details on nullable values.
 ***
 
 By default, fields belong to version 0. New fields must be appended to the
@@ -630,10 +652,10 @@ the following hard constraints:
 * For any given struct or interface, if any field or method explicitly specifies
     an ordinal value, all fields or methods must explicitly specify an ordinal
     value.
-* For an *N*-field struct or *N*-method interface, the set of explicitly
-    assigned ordinal values must be limited to the range *[0, N-1]*. Interfaces
-    should include placeholder methods to fill the ordinal positions of removed
-    methods (for example "Unused_Message_7@7()" or "RemovedMessage@42()", etc).
+* For an *N*-field struct, the set of explicitly assigned ordinal values must be
+    limited to the range *[0, N-1]*. Structs should include placeholder fields
+    to fill the ordinal positions of removed fields (for example "Unused_Field"
+    or "RemovedField", etc).
 
 You may reorder fields, but you must ensure that the ordinal values of existing
 fields remain unchanged. For example, the following struct remains
@@ -718,8 +740,8 @@ If you want an enum to be extensible in the future, you can apply the
 ``` cpp
 [Extensible]
 enum Department {
-  SALES,
-  DEV,
+  kSales,
+  kDev,
 };
 ```
 
@@ -728,9 +750,9 @@ And later you can extend this enum without breaking backwards compatibility:
 ``` cpp
 [Extensible]
 enum Department {
-  SALES,
-  DEV,
-  [MinVersion=1] RESEARCH,
+  kSales,
+  kDev,
+  [MinVersion=1] kResearch,
 };
 ```
 

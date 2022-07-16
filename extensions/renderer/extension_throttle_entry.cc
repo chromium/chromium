@@ -43,8 +43,7 @@ const int ExtensionThrottleEntry::kDefaultMaximumBackoffMs = 15 * 60 * 1000;
 const int ExtensionThrottleEntry::kDefaultEntryLifetimeMs = 2 * 60 * 1000;
 
 ExtensionThrottleEntry::ExtensionThrottleEntry(const std::string& url_id)
-    : sliding_window_period_(
-          base::TimeDelta::FromMilliseconds(kDefaultSlidingWindowPeriodMs)),
+    : sliding_window_period_(base::Milliseconds(kDefaultSlidingWindowPeriodMs)),
       max_send_threshold_(kDefaultMaxSendThreshold),
       is_backoff_disabled_(false),
       backoff_entry_(&backoff_policy_),
@@ -55,8 +54,7 @@ ExtensionThrottleEntry::ExtensionThrottleEntry(const std::string& url_id)
 ExtensionThrottleEntry::ExtensionThrottleEntry(
     const std::string& url_id,
     const net::BackoffEntry::Policy* backoff_policy)
-    : sliding_window_period_(
-          base::TimeDelta::FromMilliseconds(kDefaultSlidingWindowPeriodMs)),
+    : sliding_window_period_(base::Milliseconds(kDefaultSlidingWindowPeriodMs)),
       max_send_threshold_(kDefaultMaxSendThreshold),
       is_backoff_disabled_(false),
       backoff_entry_(&backoff_policy_),

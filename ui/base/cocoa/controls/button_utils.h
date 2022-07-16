@@ -14,8 +14,7 @@ COMPONENT_EXPORT(UI_BASE)
 
 // These methods are a polyfill for convenience constructors that exist on
 // NSButton in macOS 10.12+.
-// TODO(ellyjones): once we target only 10.12+, delete these and migrate callers
-// over to NSButton directly.
+// TODO(https://crbug.com/1241080): once we target only 10.12+, delete these.
 + (NSButton*)buttonWithTitle:(NSString*)title
                       action:(SEL)action
                       target:(id)target;

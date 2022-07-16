@@ -82,7 +82,7 @@ ScrollTimelineOffset* ScrollTimelineOffset::Create(
       const auto* value =
           To<CSSPrimitiveValue>(offset->GetAsCSSNumericValue()->ToCSSValue());
       bool matches_length_percentage =
-          value->IsLength() || value->IsPercentage() ||
+          !value || value->IsLength() || value->IsPercentage() ||
           value->IsCalculatedPercentageWithLength();
       if (!matches_length_percentage)
         return nullptr;

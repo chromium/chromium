@@ -15,7 +15,7 @@
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessControlBrowserTest, StopViaWmQuit) {
     }
 
     // |process| did not stop running. Wait.
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+    base::PlatformThread::Sleep(base::Seconds(1));
   }
 
   // |process| still did not stop running after |kRetries|.

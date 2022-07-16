@@ -31,6 +31,10 @@ namespace ipc_fuzzer {
 class ReplayProcess : public IPC::Listener {
  public:
   ReplayProcess();
+
+  ReplayProcess(const ReplayProcess&) = delete;
+  ReplayProcess& operator=(const ReplayProcess&) = delete;
+
   ~ReplayProcess() override;
 
   // Set up command line, logging, IO thread. Returns true on success, false
@@ -62,8 +66,6 @@ class ReplayProcess : public IPC::Listener {
   base::WaitableEvent shutdown_event_;
   MessageVector messages_;
   size_t message_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReplayProcess);
 };
 
 }  // namespace ipc_fuzzer

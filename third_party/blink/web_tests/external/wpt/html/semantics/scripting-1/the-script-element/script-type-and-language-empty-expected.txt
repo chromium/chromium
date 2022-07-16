@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS A script with empty type and no language should run
-FAIL A script with empty type and a random language should run assert_true: expected true got false
-PASS A script with empty type and empty language should run
-PASS A script with no type and empty language should run
-Harness: the test ran to completion.
-

@@ -18,6 +18,10 @@ class PopupTouchHandleDrawable : public ui::TouchHandleDrawable {
   PopupTouchHandleDrawable(JNIEnv* env,
                            jobject obj,
                            float horizontal_padding_ratio);
+
+  PopupTouchHandleDrawable(const PopupTouchHandleDrawable&) = delete;
+  PopupTouchHandleDrawable& operator=(const PopupTouchHandleDrawable&) = delete;
+
   ~PopupTouchHandleDrawable() override;
 
   // ui::TouchHandleDrawable implementation.
@@ -34,8 +38,6 @@ class PopupTouchHandleDrawable : public ui::TouchHandleDrawable {
   JavaObjectWeakGlobalRef java_ref_;
 
   const float drawable_horizontal_padding_ratio_;
-
-  DISALLOW_COPY_AND_ASSIGN(PopupTouchHandleDrawable);
 };
 
 }  // namespace android_webview

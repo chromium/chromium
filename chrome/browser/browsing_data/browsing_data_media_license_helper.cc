@@ -9,8 +9,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -18,6 +17,7 @@
 #include "storage/browser/file_system/file_system_quota_util.h"
 #include "storage/browser/file_system/plugin_private_file_system_backend.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 using content::BrowserThread;
@@ -33,6 +33,12 @@ class BrowsingDataMediaLicenseHelperImpl final
   // BrowsingDataMediaLicenseHelper implementation
   explicit BrowsingDataMediaLicenseHelperImpl(
       storage::FileSystemContext* filesystem_context);
+
+  BrowsingDataMediaLicenseHelperImpl(
+      const BrowsingDataMediaLicenseHelperImpl&) = delete;
+  BrowsingDataMediaLicenseHelperImpl& operator=(
+      const BrowsingDataMediaLicenseHelperImpl&) = delete;
+
   void StartFetching(FetchCallback callback) final;
   void DeleteMediaLicenseOrigin(const GURL& origin) final;
 
@@ -56,8 +62,6 @@ class BrowsingDataMediaLicenseHelperImpl final
   // Keep a reference to the FileSystemContext object for the current profile
   // for use on the file task runner.
   scoped_refptr<storage::FileSystemContext> filesystem_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataMediaLicenseHelperImpl);
 };
 
 BrowsingDataMediaLicenseHelperImpl::BrowsingDataMediaLicenseHelperImpl(
@@ -97,20 +101,21 @@ void BrowsingDataMediaLicenseHelperImpl::FetchMediaLicenseInfoOnFileTaskRunner(
       static_cast<storage::PluginPrivateFileSystemBackend*>(
           filesystem_context_->GetFileSystemBackend(kType));
 
-  // Determine the set of origins used.
-  std::vector<url::Origin> origins =
-      backend->GetOriginsForTypeOnFileTaskRunner(kType);
+  // Determine the set of StorageKeys used.
+  std::vector<blink::StorageKey> storage_keys =
+      backend->GetStorageKeysForTypeOnFileTaskRunner(kType);
   std::list<MediaLicenseInfo> result;
-  for (const auto& origin : origins) {
-    if (!browsing_data::HasWebScheme(origin.GetURL()))
+  for (const auto& storage_key : storage_keys) {
+    if (!browsing_data::HasWebScheme(storage_key.origin().GetURL()))
       continue;  // Non-websafe state is not considered browsing data.
 
     int64_t size;
     base::Time last_modified_time;
-    backend->GetOriginDetailsOnFileTaskRunner(filesystem_context_.get(), origin,
-                                              &size, &last_modified_time);
-    result.push_back(
-        MediaLicenseInfo(origin.GetURL(), size, last_modified_time));
+    backend->GetOriginDetailsOnFileTaskRunner(filesystem_context_.get(),
+                                              storage_key.origin(), &size,
+                                              &last_modified_time);
+    result.emplace_back(storage_key.origin().GetURL(), size,
+                                      last_modified_time);
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -125,9 +130,11 @@ void BrowsingDataMediaLicenseHelperImpl::
   storage::FileSystemBackend* backend =
       filesystem_context_->GetFileSystemBackend(kType);
   storage::FileSystemQuotaUtil* quota_util = backend->GetQuotaUtil();
-  quota_util->DeleteOriginDataOnFileTaskRunner(
+  // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
+  // file system will be partitioned and use the appropriate StorageKey.
+  quota_util->DeleteStorageKeyDataOnFileTaskRunner(
       filesystem_context_.get(), filesystem_context_->quota_manager_proxy(),
-      url::Origin::Create(origin), kType);
+      blink::StorageKey(url::Origin::Create(origin)), kType);
 }
 
 }  // namespace

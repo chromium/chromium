@@ -19,13 +19,10 @@ class MODULES_EXPORT BatteryStatus final {
 
  public:
   BatteryStatus()
-      : charging_(true),
-        charging_time_(0),
-        discharging_time_(std::numeric_limits<double>::infinity()),
-        level_(1) {}
+      : charging_(true), discharging_time_(base::TimeDelta::Max()), level_(1) {}
   BatteryStatus(bool charging,
-                double charging_time,
-                double discharging_time,
+                base::TimeDelta charging_time,
+                base::TimeDelta discharging_time,
                 double level)
       : charging_(charging),
         charging_time_(charging_time),
@@ -35,8 +32,8 @@ class MODULES_EXPORT BatteryStatus final {
   BatteryStatus& operator=(const BatteryStatus&) = default;
 
   bool Charging() const { return charging_; }
-  double charging_time() const { return charging_time_; }
-  double discharging_time() const { return discharging_time_; }
+  base::TimeDelta charging_time() const { return charging_time_; }
+  base::TimeDelta discharging_time() const { return discharging_time_; }
   double Level() const { return level_; }
 
  private:
@@ -52,8 +49,8 @@ class MODULES_EXPORT BatteryStatus final {
   }
 
   bool charging_;
-  double charging_time_;
-  double discharging_time_;
+  base::TimeDelta charging_time_;
+  base::TimeDelta discharging_time_;
   double level_;
 };
 

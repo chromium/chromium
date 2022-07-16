@@ -19,6 +19,10 @@ class CacheCounter : public browsing_data::BrowsingDataCounter {
     CacheResult(const CacheCounter* source,
                 int64_t cache_size,
                 bool is_upper_limit);
+
+    CacheResult(const CacheResult&) = delete;
+    CacheResult& operator=(const CacheResult&) = delete;
+
     ~CacheResult() override;
 
     int64_t cache_size() const { return cache_size_; }
@@ -27,8 +31,6 @@ class CacheCounter : public browsing_data::BrowsingDataCounter {
    private:
     int64_t cache_size_;
     bool is_upper_limit_;
-
-    DISALLOW_COPY_AND_ASSIGN(CacheResult);
   };
 
   explicit CacheCounter(Profile* profile);

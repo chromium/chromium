@@ -25,6 +25,8 @@ class NavigatorPlugins final : public GarbageCollected<NavigatorPlugins>,
 
   static DOMPluginArray* plugins(Navigator&);
   static DOMMimeTypeArray* mimeTypes(Navigator&);
+  static bool pdfViewerEnabled(Navigator&);
+
   static bool javaEnabled(Navigator&);
 
   explicit NavigatorPlugins(Navigator&);
@@ -34,6 +36,9 @@ class NavigatorPlugins final : public GarbageCollected<NavigatorPlugins>,
  private:
   DOMPluginArray* plugins(LocalDOMWindow*) const;
   DOMMimeTypeArray* mimeTypes(LocalDOMWindow*) const;
+  bool pdfViewerEnabled(LocalDOMWindow* window) const;
+
+  const bool should_return_fixed_plugin_data_;
 
   mutable Member<DOMPluginArray> plugins_;
   mutable Member<DOMMimeTypeArray> mime_types_;

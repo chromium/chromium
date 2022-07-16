@@ -7,8 +7,8 @@
 
 #include "base/callback.h"
 #include "components/reporting/client/report_queue.h"
-#include "components/reporting/proto/record.pb.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -27,6 +27,12 @@ class MockReportQueue : public ReportQueue {
               (const override));
 
   MOCK_METHOD(void, Flush, (Priority, ReportQueue::FlushCallback), (override));
+
+  MOCK_METHOD(
+      (base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>),
+      PrepareToAttachActualQueue,
+      (),
+      (const override));
 };
 
 }  // namespace reporting

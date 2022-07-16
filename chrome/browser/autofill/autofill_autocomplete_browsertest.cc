@@ -200,7 +200,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
   void GetAutocompleteSuggestions(const std::string& input_name,
                                   const std::string& prefix,
                                   autofill::MockSuggestionsHandler& handler) {
-    autocomplete_history_manager()->OnGetAutocompleteSuggestions(
+    autocomplete_history_manager()->OnGetSingleFieldSuggestions(
         1, true, false, ASCIIToUTF16(input_name), ASCIIToUTF16(prefix), "input",
         handler.GetWeakPtr());
 
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   // Go back in time, far enough so that we'll expire the entry.
   TestAutofillClock test_clock;
   base::TimeDelta days_delta =
-      base::TimeDelta::FromDays(2 * kAutocompleteRetentionPolicyPeriodInDays);
+      base::Days(2 * kAutocompleteRetentionPolicyPeriodInDays);
   test_clock.SetNow(AutofillClock::Now() - days_delta);
 
   // Add an entry.
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   // Go back in time, but not far enough so that we'd expire the entry.
   TestAutofillClock test_clock;
   base::TimeDelta days_delta =
-      base::TimeDelta::FromDays(kAutocompleteRetentionPolicyPeriodInDays - 2);
+      base::Days(kAutocompleteRetentionPolicyPeriodInDays - 2);
   test_clock.SetNow(AutofillClock::Now() - days_delta);
 
   // Add an entry.

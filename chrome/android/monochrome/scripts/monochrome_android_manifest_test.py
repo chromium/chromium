@@ -12,8 +12,8 @@ class MonochromeAndroidManifestCheckerTest(typ.TestCase):
   def testManifest(self):
     monochrome_apk = self.context.monochrome_apk
     cmd = [
-        build_tools.GetPath('aapt'), 'dump', 'xmltree', monochrome_apk,
-           'AndroidManifest.xml']
+        build_tools.GetPath('aapt2'), 'dump', 'xmltree', monochrome_apk,
+           '--file', 'AndroidManifest.xml']
     status, manifest = cmd_helper.GetCmdStatusAndOutput(cmd)
     self.assertEquals(status, 0)
     # Check that AndroidManifest.xml does not have any <uses-library> tags.

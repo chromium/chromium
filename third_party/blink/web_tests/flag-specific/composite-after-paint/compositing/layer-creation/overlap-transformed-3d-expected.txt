@@ -48,7 +48,7 @@ After:
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='green-box' class='box green center composited rotated-3d'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='green-box' class='box green center composited'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

@@ -54,7 +54,7 @@ base::Process LongRunningProcess(base::CommandLine* cmd) {
   launch_options.handles_to_inherit.push_back(init_done_event->handle());
   base::Process result = base::LaunchProcess(command_line, launch_options);
 
-  if (!init_done_event->TimedWait(base::TimeDelta::FromSeconds(10))) {
+  if (!init_done_event->TimedWait(base::Seconds(10))) {
     LOG(ERROR) << "Process did not signal";
     result.Terminate(/*exit_code=*/1, /*wait=*/false);
     return base::Process();

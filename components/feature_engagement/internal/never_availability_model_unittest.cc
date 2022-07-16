@@ -24,6 +24,10 @@ class NeverAvailabilityModelTest : public ::testing::Test {
  public:
   NeverAvailabilityModelTest() = default;
 
+  NeverAvailabilityModelTest(const NeverAvailabilityModelTest&) = delete;
+  NeverAvailabilityModelTest& operator=(const NeverAvailabilityModelTest&) =
+      delete;
+
   void OnInitializedCallback(bool success) { success_ = success; }
 
  protected:
@@ -32,8 +36,6 @@ class NeverAvailabilityModelTest : public ::testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(NeverAvailabilityModelTest);
 };
 
 }  // namespace

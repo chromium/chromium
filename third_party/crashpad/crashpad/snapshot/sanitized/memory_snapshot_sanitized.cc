@@ -32,6 +32,9 @@ class MemorySanitizer : public MemorySnapshot::Delegate {
         address_(address),
         is_64_bit_(is_64_bit) {}
 
+  MemorySanitizer(const MemorySanitizer&) = delete;
+  MemorySanitizer& operator=(const MemorySanitizer&) = delete;
+
   ~MemorySanitizer() = default;
 
   bool MemorySnapshotDelegateRead(void* data, size_t size) override {
@@ -77,8 +80,6 @@ class MemorySanitizer : public MemorySnapshot::Delegate {
   RangeSet* ranges_;
   VMAddress address_;
   bool is_64_bit_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemorySanitizer);
 };
 
 }  // namespace

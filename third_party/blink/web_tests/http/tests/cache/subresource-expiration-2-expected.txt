@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 32: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 Cache-control: max-age=10, no-store; (result=Uncached expected=Uncached) PASS
 Cache-control: max-age=10, no-cache="Set-Cookie"; (result=Cached expected=Cached) PASS
 Cache-control: max-age=10, must-revalidate; (result=Cached expected=Cached) PASS

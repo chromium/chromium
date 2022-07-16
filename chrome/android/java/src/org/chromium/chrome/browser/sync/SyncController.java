@@ -92,7 +92,7 @@ public class SyncController
             // On sign-out, Sync.StopSource is already recorded in the native code, so only
             // record it here if there's still a primary (syncing) account.
             // TODO(crbug.com/1105795): Revisit how these metrics are recorded.
-            if (mSyncService.isAuthenticatedAccountPrimary()) {
+            if (mSyncService.hasSyncConsent()) {
                 int source = !AndroidSyncSettings.get().doesMasterSyncSettingAllowChromeSync()
                         ? StopSource.ANDROID_MASTER_SYNC
                         : StopSource.ANDROID_CHROME_SYNC;

@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/unguessable_token.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/rand_callback.h"
 #include "net/reporting/reporting_cache.h"
@@ -23,6 +24,7 @@
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -38,7 +40,7 @@ class Origin;
 
 namespace net {
 
-class NetworkIsolationKey;
+class IsolationInfo;
 struct ReportingEndpoint;
 class ReportingGarbageCollector;
 
@@ -73,6 +75,10 @@ class TestReportingUploader : public ReportingUploader {
   };
 
   TestReportingUploader();
+
+  TestReportingUploader(const TestReportingUploader&) = delete;
+  TestReportingUploader& operator=(const TestReportingUploader&) = delete;
+
   ~TestReportingUploader() override;
 
   const std::vector<std::unique_ptr<PendingUpload>>& pending_uploads() const {
@@ -83,9 +89,10 @@ class TestReportingUploader : public ReportingUploader {
 
   void StartUpload(const url::Origin& report_origin,
                    const GURL& url,
-                   const NetworkIsolationKey& network_isolation_key,
+                   const IsolationInfo& isolation_info,
                    const std::string& json,
                    int max_depth,
+                   bool eligible_for_credentials,
                    UploadCallback callback) override;
 
   void OnShutdown() override;
@@ -94,8 +101,6 @@ class TestReportingUploader : public ReportingUploader {
 
  private:
   std::vector<std::unique_ptr<PendingUpload>> pending_uploads_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestReportingUploader);
 };
 
 // Allows all permissions unless set_disallow_report_uploads is called; uses
@@ -104,6 +109,9 @@ class TestReportingUploader : public ReportingUploader {
 class TestReportingDelegate : public ReportingDelegate {
  public:
   TestReportingDelegate();
+
+  TestReportingDelegate(const TestReportingDelegate&) = delete;
+  TestReportingDelegate& operator=(const TestReportingDelegate&) = delete;
 
   // ReportingDelegate implementation:
 
@@ -139,8 +147,6 @@ class TestReportingDelegate : public ReportingDelegate {
   mutable std::set<url::Origin> saved_origins_;
   mutable base::OnceCallback<void(std::set<url::Origin>)>
       permissions_check_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestReportingDelegate);
 };
 
 // A test implementation of ReportingContext that uses test versions of
@@ -152,6 +158,10 @@ class TestReportingContext : public ReportingContext {
       const base::TickClock* tick_clock,
       const ReportingPolicy& policy,
       ReportingCache::PersistentReportingStore* store = nullptr);
+
+  TestReportingContext(const TestReportingContext&) = delete;
+  TestReportingContext& operator=(const TestReportingContext&) = delete;
+
   ~TestReportingContext();
 
   base::MockOneShotTimer* test_delivery_timer() { return delivery_timer_; }
@@ -171,13 +181,15 @@ class TestReportingContext : public ReportingContext {
 
   base::MockOneShotTimer* delivery_timer_;
   base::MockOneShotTimer* garbage_collection_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestReportingContext);
 };
 
 // A unit test base class that provides a TestReportingContext and shorthand
 // getters.
 class ReportingTestBase : public TestWithTaskEnvironment {
+ public:
+  ReportingTestBase(const ReportingTestBase&) = delete;
+  ReportingTestBase& operator=(const ReportingTestBase&) = delete;
+
  protected:
   ReportingTestBase();
   ~ReportingTestBase() override;
@@ -202,6 +214,13 @@ class ReportingTestBase : public TestWithTaskEnvironment {
       OriginSubdomains include_subdomains = OriginSubdomains::DEFAULT,
       int priority = ReportingEndpoint::EndpointInfo::kDefaultPriority,
       int weight = ReportingEndpoint::EndpointInfo::kDefaultWeight);
+
+  // Sets an endpoint with the given group_key and url as origin in the document
+  // endpoints map using |reporting_source| as key.
+  void SetV1EndpointInCache(const ReportingEndpointGroupKey& group_key,
+                            const base::UnguessableToken& reporting_source,
+                            const IsolationInfo& isolation_info,
+                            const GURL& url);
 
   // Returns whether an endpoint with the given properties exists in the cache.
   bool EndpointExistsInCache(const ReportingEndpointGroupKey& group_key,
@@ -272,14 +291,14 @@ class ReportingTestBase : public TestWithTaskEnvironment {
   base::SimpleTestTickClock tick_clock_;
   std::unique_ptr<TestReportingContext> context_;
   ReportingCache::PersistentReportingStore* store_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingTestBase);
 };
 
 class TestReportingService : public ReportingService {
  public:
   struct Report {
     Report();
+
+    Report(const Report&) = delete;
 
     Report(Report&& other);
 
@@ -300,12 +319,12 @@ class TestReportingService : public ReportingService {
     std::string type;
     std::unique_ptr<const base::Value> body;
     int depth;
-
-   private:
-    DISALLOW_COPY(Report);
   };
 
   TestReportingService();
+
+  TestReportingService(const TestReportingService&) = delete;
+  TestReportingService& operator=(const TestReportingService&) = delete;
 
   const std::vector<Report>& reports() const { return reports_; }
 
@@ -314,19 +333,25 @@ class TestReportingService : public ReportingService {
   ~TestReportingService() override;
 
   void SetDocumentReportingEndpoints(
+      const base::UnguessableToken& reporting_source,
       const url::Origin& origin,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const IsolationInfo& isolation_info,
       const base::flat_map<std::string, std::string>& endpoints) override {}
 
-  void QueueReport(const GURL& url,
-                   const NetworkIsolationKey& network_isolation_key,
-                   const std::string& user_agent,
-                   const std::string& group,
-                   const std::string& type,
-                   std::unique_ptr<const base::Value> body,
-                   int depth) override;
+  void SendReportsAndRemoveSource(
+      const base::UnguessableToken& reporting_source) override {}
 
-  void ProcessReportToHeader(const GURL& url,
+  void QueueReport(
+      const GURL& url,
+      const absl::optional<base::UnguessableToken>& reporting_source,
+      const NetworkIsolationKey& network_isolation_key,
+      const std::string& user_agent,
+      const std::string& group,
+      const std::string& type,
+      std::unique_ptr<const base::Value> body,
+      int depth) override;
+
+  void ProcessReportToHeader(const url::Origin& url,
                              const NetworkIsolationKey& network_isolation_key,
                              const std::string& header_value) override;
 
@@ -342,11 +367,13 @@ class TestReportingService : public ReportingService {
 
   ReportingContext* GetContextForTesting() const override;
 
+  std::vector<const ReportingReport*> GetReports() const override;
+  void AddReportingCacheObserver(ReportingCacheObserver* observer) override;
+  void RemoveReportingCacheObserver(ReportingCacheObserver* observer) override;
+
  private:
   std::vector<Report> reports_;
   ReportingPolicy dummy_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestReportingService);
 };
 
 }  // namespace net

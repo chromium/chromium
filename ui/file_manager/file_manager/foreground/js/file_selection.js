@@ -241,9 +241,9 @@ export class FileSelectionHandler extends EventTarget {
         indexes.length <
             FileSelectionHandler.NUMBER_OF_ITEMS_HEAVY_TO_COMPUTE) {
       // The previous selection change happened a while ago and there is few
-      // selected items, so computation is lightweight. Update the UI without
-      // delay.
-      updateDelay = 0;
+      // selected items, so computation is lightweight. Update the UI with
+      // 1 millisecond of delay.
+      updateDelay = 1;
     }
 
     const selection = this.selection;

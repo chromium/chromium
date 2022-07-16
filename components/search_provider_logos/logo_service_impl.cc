@@ -12,13 +12,12 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
@@ -55,6 +54,11 @@ const int kDecodeLogoTimeoutSeconds = 30;
 // out a better way, now that it isn't.
 class ImageDecodedHandlerWithTimeout {
  public:
+  ImageDecodedHandlerWithTimeout(const ImageDecodedHandlerWithTimeout&) =
+      delete;
+  ImageDecodedHandlerWithTimeout& operator=(
+      const ImageDecodedHandlerWithTimeout&) = delete;
+
   static base::OnceCallback<void(const gfx::Image&)> Wrap(
       base::OnceCallback<void(const SkBitmap&)> image_decoded_callback) {
     auto* handler =
@@ -63,7 +67,7 @@ class ImageDecodedHandlerWithTimeout {
         FROM_HERE,
         base::BindOnce(&ImageDecodedHandlerWithTimeout::OnImageDecoded,
                        handler->weak_ptr_factory_.GetWeakPtr(), gfx::Image()),
-        base::TimeDelta::FromSeconds(kDecodeLogoTimeoutSeconds));
+        base::Seconds(kDecodeLogoTimeoutSeconds));
     return base::BindOnce(&ImageDecodedHandlerWithTimeout::OnImageDecoded,
                           handler->weak_ptr_factory_.GetWeakPtr());
   }
@@ -80,8 +84,6 @@ class ImageDecodedHandlerWithTimeout {
 
   base::OnceCallback<void(const SkBitmap&)> image_decoded_callback_;
   base::WeakPtrFactory<ImageDecodedHandlerWithTimeout> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDecodedHandlerWithTimeout);
 };
 
 void ObserverOnLogoAvailable(LogoObserver* observer,
@@ -130,8 +132,7 @@ void RunCallbacksWithDisabled(LogoCallbacks callbacks) {
 // OK to show, i.e. it's not expired or it's allowed to be shown temporarily
 // after expiration.
 bool IsLogoOkToShow(const LogoMetadata& metadata, base::Time now) {
-  base::TimeDelta offset =
-      base::TimeDelta::FromMilliseconds(kMaxTimeToLiveMS * 3 / 2);
+  base::TimeDelta offset = base::Milliseconds(kMaxTimeToLiveMS * 3 / 2);
   base::Time distant_past = now - offset;
   // Sanity check so logos aren't accidentally cached forever.
   if (metadata.expiration_time < distant_past) {
@@ -264,7 +265,7 @@ void LogoServiceImpl::GetLogo(LogoCallbacks callbacks, bool for_webui_ntp) {
     } else {
       doodle_url = template_url->doodle_url();
     }
-    base_url = doodle_url.GetOrigin();
+    base_url = doodle_url.DeprecatedGetOriginAsURL();
   }
 
   if (!logo_url.is_valid() && !doodle_url.is_valid()) {

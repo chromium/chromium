@@ -226,7 +226,7 @@ void StubNotificationDisplayService::GetDisplayed(
 }
 
 void StubNotificationDisplayService::ProcessNotificationOperation(
-    NotificationCommon::Operation operation,
+    NotificationOperation operation,
     NotificationHandler::Type notification_type,
     const GURL& origin,
     const std::string& notification_id,

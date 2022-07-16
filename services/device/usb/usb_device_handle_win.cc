@@ -146,6 +146,9 @@ class UsbDeviceHandleWin::Request : public base::win::ObjectWatcher::Delegate {
     overlapped_.hEvent = event_.Get();
   }
 
+  Request(const Request&) = delete;
+  Request& operator=(const Request&) = delete;
+
   ~Request() override = default;
 
   // Starts watching for completion of the overlapped event.
@@ -193,8 +196,6 @@ class UsbDeviceHandleWin::Request : public base::win::ObjectWatcher::Delegate {
   base::win::ScopedHandle event_;
   base::win::ObjectWatcher watcher_;
   base::OnceCallback<void(Request*, DWORD, size_t)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Request);
 };
 
 UsbDeviceHandleWin::Interface::Interface() = default;
@@ -220,8 +221,7 @@ void UsbDeviceHandleWin::Close() {
     // after any queued operations have completed.
     blocking_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(base::DoNothing::Once<base::win::ScopedHandle>(),
-                       std::move(hub_handle_)));
+        base::BindOnce([](base::win::ScopedHandle) {}, std::move(hub_handle_)));
   }
 
   for (auto& map_entry : interfaces_) {
@@ -631,12 +631,14 @@ UsbDeviceHandleWin::UsbDeviceHandleWin(scoped_refptr<UsbDeviceWin> device)
   }
 }
 
-UsbDeviceHandleWin::UsbDeviceHandleWin(scoped_refptr<UsbDeviceWin> device,
-                                       base::win::ScopedHandle handle)
+UsbDeviceHandleWin::UsbDeviceHandleWin(
+    scoped_refptr<UsbDeviceWin> device,
+    base::win::ScopedHandle handle,
+    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
     : device_(std::move(device)),
       hub_handle_(std::move(handle)),
       task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      blocking_task_runner_(UsbService::CreateBlockingTaskRunner()) {}
+      blocking_task_runner_(std::move(blocking_task_runner)) {}
 
 UsbDeviceHandleWin::~UsbDeviceHandleWin() = default;
 

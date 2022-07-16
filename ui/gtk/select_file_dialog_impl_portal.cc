@@ -194,24 +194,26 @@ void SelectFileDialogImplPortal::SelectFileImpl(
   // and returned to listeners later.
   filters_ = filter_set.filters;
 
-  auto parent_handle_callback = base::BindOnce(
-      &SelectFileDialogImplPortal::SelectFileImplWithParentHandle,
-      base::Unretained(this),
-      // We don't move info, because it will be needed below to cancel the open
-      // on error.
-      info, std::move(title), std::move(default_path), std::move(filter_set),
-      std::move(default_extension));
-
   if (info->parent) {
-    if (!GtkUi::GetPlatform()->ExportWindowHandle(
-            *info->parent, std::move(parent_handle_callback))) {
-      LOG(ERROR) << "Failed to export window handle for portal select dialog";
-      CancelOpenOnMainThread(std::move(info));
+    if (GtkUi::GetPlatform()->ExportWindowHandle(
+            *info->parent,
+            base::BindOnce(
+                &SelectFileDialogImplPortal::SelectFileImplWithParentHandle,
+                // Note that we can't move any of the parameters, as the
+                // fallback case below requires them to all still be available.
+                this, info, title, default_path, filter_set,
+                default_extension))) {
+      // Return early to skip the fallback below.
+      return;
+    } else {
+      LOG(WARNING) << "Failed to export window handle for portal select dialog";
     }
-  } else {
-    // No parent, so just use a blank parent handle.
-    std::move(parent_handle_callback).Run("");
   }
+
+  // No parent, so just use a blank parent handle.
+  SelectFileImplWithParentHandle(std::move(info), std::move(title),
+                                 std::move(default_path), std::move(filter_set),
+                                 std::move(default_extension), "");
 }
 
 bool SelectFileDialogImplPortal::HasMultipleFileTypeChoicesImpl() {
@@ -406,7 +408,7 @@ void SelectFileDialogImplPortal::SelectFileImplWithParentHandle(
   dbus_thread_linux::GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&SelectFileDialogImplPortal::SelectFileImplOnBusThread,
-                     base::Unretained(this), std::move(info), std::move(title),
+                     this, std::move(info), std::move(title),
                      std::move(default_path), std::move(filter_set),
                      std::move(default_extension), std::move(parent_handle)));
 }
@@ -483,8 +485,8 @@ void SelectFileDialogImplPortal::SelectFileImplOnBusThread(
       bus->GetObjectProxy(kXdgPortalService, portal_path);
   portal->CallMethodWithErrorResponse(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&SelectFileDialogImplPortal::OnCallResponse,
-                     base::Unretained(this), base::Unretained(bus), info));
+      base::BindOnce(&SelectFileDialogImplPortal::OnCallResponse, this,
+                     base::Unretained(bus), info));
 }
 
 void SelectFileDialogImplPortal::AppendOptions(
@@ -601,9 +603,9 @@ void SelectFileDialogImplPortal::ConnectToHandle(
   info->response_handle->ConnectToSignal(
       kXdgPortalRequestInterfaceName, kXdgPortalResponseSignal,
       base::BindRepeating(&SelectFileDialogImplPortal::OnResponseSignalEmitted,
-                          base::Unretained(this), info),
+                          this, info),
       base::BindOnce(&SelectFileDialogImplPortal::OnResponseSignalConnected,
-                     base::Unretained(this), info));
+                     this, info));
 }
 
 void SelectFileDialogImplPortal::CompleteOpen(scoped_refptr<DialogInfo> info,
@@ -613,16 +615,15 @@ void SelectFileDialogImplPortal::CompleteOpen(scoped_refptr<DialogInfo> info,
   info->main_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&SelectFileDialogImplPortal::CompleteOpenOnMainThread,
-                     base::Unretained(this), info, std::move(paths),
-                     std::move(current_filter)));
+                     this, info, std::move(paths), std::move(current_filter)));
 }
 
 void SelectFileDialogImplPortal::CancelOpen(scoped_refptr<DialogInfo> info) {
   info->response_handle->Detach();
   info->main_task_runner->PostTask(
       FROM_HERE,
-      base::BindOnce(&SelectFileDialogImplPortal::CancelOpenOnMainThread,
-                     base::Unretained(this), info));
+      base::BindOnce(&SelectFileDialogImplPortal::CancelOpenOnMainThread, this,
+                     info));
 }
 
 void SelectFileDialogImplPortal::CompleteOpenOnMainThread(

@@ -97,7 +97,9 @@ AppServiceProxyFactory::~AppServiceProxyFactory() = default;
 
 KeyedService* AppServiceProxyFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new AppServiceProxy(Profile::FromBrowserContext(context));
+  auto* proxy = new AppServiceProxy(Profile::FromBrowserContext(context));
+  proxy->Initialize();
+  return proxy;
 }
 
 content::BrowserContext* AppServiceProxyFactory::GetBrowserContextToUse(

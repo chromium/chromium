@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/gtest_util.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
@@ -18,6 +17,12 @@ namespace chromeos {
 namespace secure_channel {
 
 class SecureChannelSharedResourceSchedulerTest : public testing::Test {
+ public:
+  SecureChannelSharedResourceSchedulerTest(
+      const SecureChannelSharedResourceSchedulerTest&) = delete;
+  SecureChannelSharedResourceSchedulerTest& operator=(
+      const SecureChannelSharedResourceSchedulerTest&) = delete;
+
  protected:
   SecureChannelSharedResourceSchedulerTest() = default;
   ~SecureChannelSharedResourceSchedulerTest() override = default;
@@ -38,8 +43,6 @@ class SecureChannelSharedResourceSchedulerTest : public testing::Test {
 
  private:
   std::unique_ptr<SharedResourceScheduler> scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelSharedResourceSchedulerTest);
 };
 
 TEST_F(SecureChannelSharedResourceSchedulerTest, OneRequest) {

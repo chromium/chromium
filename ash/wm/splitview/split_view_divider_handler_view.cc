@@ -36,6 +36,9 @@ class SplitViewDividerHandlerView::SelectionAnimation
     SetTweenType(gfx::Tween::EASE_IN);
   }
 
+  SelectionAnimation(const SelectionAnimation&) = delete;
+  SelectionAnimation& operator=(const SelectionAnimation&) = delete;
+
   ~SelectionAnimation() override = default;
 
   void UpdateWhiteHandlerBounds() {
@@ -56,8 +59,6 @@ class SplitViewDividerHandlerView::SelectionAnimation
   }
 
   SplitViewDividerHandlerView* white_handler_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectionAnimation);
 };
 
 class SplitViewDividerHandlerView::SpawningAnimation
@@ -75,6 +76,9 @@ class SplitViewDividerHandlerView::SpawningAnimation
     SetSlideDuration(kSplitviewDividerSpawnDuration);
     SetTweenType(gfx::Tween::LINEAR_OUT_SLOW_IN);
   }
+
+  SpawningAnimation(const SpawningAnimation&) = delete;
+  SpawningAnimation& operator=(const SpawningAnimation&) = delete;
 
   ~SpawningAnimation() override = default;
 
@@ -113,8 +117,6 @@ class SplitViewDividerHandlerView::SpawningAnimation
   SplitViewDividerHandlerView* white_handler_view_;
   int spawn_signed_offset_;
   base::OneShotTimer delay_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpawningAnimation);
 };
 
 SplitViewDividerHandlerView::SplitViewDividerHandlerView()

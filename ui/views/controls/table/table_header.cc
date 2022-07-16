@@ -16,10 +16,11 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/text_utils.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -102,16 +103,16 @@ void TableHeader::UpdateFocusState() {
 }
 
 void TableHeader::OnPaint(gfx::Canvas* canvas) {
-  ui::NativeTheme* theme = GetNativeTheme();
+  ui::ColorProvider* color_provider = GetColorProvider();
   const SkColor text_color =
-      theme->GetSystemColor(ui::NativeTheme::kColorId_TableHeaderText);
+      color_provider->GetColor(ui::kColorTableHeaderForeground);
   const SkColor separator_color =
-      theme->GetSystemColor(ui::NativeTheme::kColorId_TableHeaderSeparator);
+      color_provider->GetColor(ui::kColorTableHeaderSeparator);
   // Paint the background and a separator at the bottom. The separator color
   // matches that of the border around the scrollview.
   OnPaintBackground(canvas);
   SkColor border_color =
-      theme->GetSystemColor(ui::NativeTheme::kColorId_UnfocusedBorderColor);
+      color_provider->GetColor(ui::kColorFocusableBorderUnfocused);
   canvas->DrawSharpLine(gfx::PointF(0, height() - 1),
                         gfx::PointF(width(), height() - 1), border_color);
 
@@ -285,8 +286,8 @@ void TableHeader::OnGestureEvent(ui::GestureEvent* event) {
 
 void TableHeader::OnThemeChanged() {
   View::OnThemeChanged();
-  SetBackground(CreateSolidBackground(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_TableHeaderBackground)));
+  SetBackground(CreateSolidBackground(
+      GetColorProvider()->GetColor(ui::kColorTableHeaderBackground)));
 }
 
 void TableHeader::ResizeColumnViaKeyboard(

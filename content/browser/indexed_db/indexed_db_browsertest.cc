@@ -19,8 +19,8 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/thread_test_helper.h"
 #include "base/threading/thread_restrictions.h"
@@ -57,6 +57,7 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -74,6 +75,9 @@ class IndexedDBBrowserTest : public ContentBrowserTest,
                              public ::testing::WithParamInterface<const char*> {
  public:
   IndexedDBBrowserTest() = default;
+
+  IndexedDBBrowserTest(const IndexedDBBrowserTest&) = delete;
+  IndexedDBBrowserTest& operator=(const IndexedDBBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
     // Some tests need more space than the default used for browser tests.
@@ -280,8 +284,6 @@ class IndexedDBBrowserTest : public ContentBrowserTest,
 
  private:
   mojo::Remote<storage::mojom::MockFailureInjector> failure_injector_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CursorTest) {
@@ -427,13 +429,15 @@ class IndexedDBBrowserTestWithLowQuota : public IndexedDBBrowserTest {
  public:
   IndexedDBBrowserTestWithLowQuota() = default;
 
+  IndexedDBBrowserTestWithLowQuota(const IndexedDBBrowserTestWithLowQuota&) =
+      delete;
+  IndexedDBBrowserTestWithLowQuota& operator=(
+      const IndexedDBBrowserTestWithLowQuota&) = delete;
+
   void SetUpOnMainThread() override {
     const int kInitialQuotaKilobytes = 5000;
     SetQuota(kInitialQuotaKilobytes);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBBrowserTestWithLowQuota);
 };
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithLowQuota, QuotaTest) {
@@ -448,12 +452,15 @@ class IndexedDBBrowserTestWithGCExposed : public IndexedDBBrowserTest {
  public:
   IndexedDBBrowserTestWithGCExposed() = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose-gc");
-  }
+  IndexedDBBrowserTestWithGCExposed(const IndexedDBBrowserTestWithGCExposed&) =
+      delete;
+  IndexedDBBrowserTestWithGCExposed& operator=(
+      const IndexedDBBrowserTestWithGCExposed&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBBrowserTestWithGCExposed);
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--expose-gc");
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithGCExposed,
@@ -507,6 +514,12 @@ static void CopyLevelDBToProfile(
 class IndexedDBBrowserTestWithPreexistingLevelDB : public IndexedDBBrowserTest {
  public:
   IndexedDBBrowserTestWithPreexistingLevelDB() = default;
+
+  IndexedDBBrowserTestWithPreexistingLevelDB(
+      const IndexedDBBrowserTestWithPreexistingLevelDB&) = delete;
+  IndexedDBBrowserTestWithPreexistingLevelDB& operator=(
+      const IndexedDBBrowserTestWithPreexistingLevelDB&) = delete;
+
   void SetUpOnMainThread() override {
     base::RunLoop loop;
     auto control_test = GetControlTest();
@@ -524,9 +537,6 @@ class IndexedDBBrowserTestWithPreexistingLevelDB : public IndexedDBBrowserTest {
   virtual std::vector<BlobModificationTime> CustomModificationTimes() {
     return std::vector<BlobModificationTime>();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBBrowserTestWithPreexistingLevelDB);
 };
 
 class IndexedDBBrowserTestWithVersion0Schema : public
@@ -1233,7 +1243,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
   SimpleTest(embedded_test_server()->GetURL(test_file));
   int64_t next_blob_number = GetNextBlobNumber(kTestStorageKey, 1);
 
-  base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath first_blob =
       PathForBlob(kTestStorageKey, 1, next_blob_number - 1);
   base::FilePath corrupt_blob =

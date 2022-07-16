@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAssertion;
@@ -30,7 +31,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 
@@ -215,8 +215,8 @@ public class ViewUtils {
                 this.mContext = imageView.getContext();
                 Drawable background = imageView.getBackground();
                 if (!(background instanceof ColorDrawable)) return false;
-                int expectedColor =
-                        ApiCompatibilityUtils.getColor(mContext.getResources(), colorResId);
+                int expectedColor = AppCompatResources.getColorStateList(mContext, colorResId)
+                                            .getDefaultColor();
                 return ((ColorDrawable) background).getColor() == expectedColor;
             }
 

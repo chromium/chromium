@@ -19,14 +19,19 @@ class NGConstraintSpace;
 // calling FindLayoutOpportunity, or AllLayoutOpportunities.
 //
 // Its coordinates are relative to the BFC.
-struct CORE_EXPORT NGLayoutOpportunity {
+struct CORE_EXPORT NGLayoutOpportunity final {
+  DISALLOW_NEW();
+
+ public:
   NGLayoutOpportunity()
       : rect(NGBfcOffset(LayoutUnit::Min(), LayoutUnit::Min()),
              NGBfcOffset(LayoutUnit::Max(), LayoutUnit::Max())) {}
-  NGLayoutOpportunity(
+  explicit NGLayoutOpportunity(
       const NGBfcRect& rect,
-      scoped_refptr<const NGShapeExclusions> shape_exclusions = nullptr)
-      : rect(rect), shape_exclusions(std::move(shape_exclusions)) {}
+      const NGShapeExclusions* shape_exclusions = nullptr)
+      : rect(rect), shape_exclusions(shape_exclusions) {}
+
+  void Trace(Visitor* visitor) const { visitor->Trace(shape_exclusions); }
 
   // Rectangle in BFC coordinates that represents this opportunity.
   NGBfcRect rect;
@@ -34,11 +39,11 @@ struct CORE_EXPORT NGLayoutOpportunity {
   // The shape exclusions hold all of the adjacent exclusions which may affect
   // the line layout opportunity when queried. May be null if no shapes are
   // present.
-  scoped_refptr<const NGShapeExclusions> shape_exclusions;
+  Member<const NGShapeExclusions> shape_exclusions;
 
   // Returns if the opportunity has any shapes which may affect a line layout
   // opportunity.
-  bool HasShapeExclusions() const { return shape_exclusions.get(); }
+  bool HasShapeExclusions() const { return shape_exclusions; }
 
   // Returns if the given delta (relative to the start of the opportunity) will
   // be below any shapes.
@@ -67,5 +72,7 @@ struct CORE_EXPORT NGLayoutOpportunity {
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGLayoutOpportunity)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_EXCLUSIONS_NG_LAYOUT_OPPORTUNITY_H_

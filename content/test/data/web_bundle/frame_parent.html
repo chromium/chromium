@@ -3,7 +3,7 @@
 <script>
   (async () => {
       const params = new URL(location.href).searchParams;
-      const frame_url = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';
+      const frame_url = params.get('frame');
       const link = document.createElement('link');
       link.rel = 'webbundle';
       link.href = params.get('wbn');

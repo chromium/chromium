@@ -273,20 +273,6 @@ public abstract class PaymentApp extends EditableOption {
     /** Cleans up any resources held by the payment app. For example, closes server connections. */
     public abstract void dismissInstrument();
 
-    /** @return Whether the payment app is ready for a minimal UI flow. */
-    public boolean isReadyForMinimalUI() {
-        return false;
-    }
-
-    /** @return Account balance for minimal UI flow. */
-    @Nullable
-    public String accountBalance() {
-        return null;
-    }
-
-    /** Disable opening a window for this payment app. */
-    public void disableShowingOwnUI() {}
-
     /**
      * @return The identifier for another payment app that should be hidden when this payment app is
      * present.

@@ -77,7 +77,7 @@ void UserImageSyncObserver::OnProfileGained(Profile* profile) {
       kUserImageInfo,
       base::BindRepeating(&UserImageSyncObserver::OnPreferenceChanged,
                           base::Unretained(this)));
-  is_synced_ = chromeos::features::IsSplitSettingsSyncEnabled()
+  is_synced_ = chromeos::features::IsSyncSettingsCategorizationEnabled()
                    ? prefs_->AreOsPriorityPrefsSyncing()
                    : prefs_->IsPrioritySyncing();
   if (!is_synced_) {
@@ -89,12 +89,10 @@ void UserImageSyncObserver::OnProfileGained(Profile* profile) {
 
 void UserImageSyncObserver::OnInitialSync() {
   int synced_index;
-  bool local_image_updated = false;
   if (!GetSyncedImageIndex(&synced_index) || local_image_changed_) {
     UpdateSyncedImageFromLocal();
   } else if (IsIndexSupported(synced_index)) {
     UpdateLocalImageFromSynced();
-    local_image_updated = true;
   }
 }
 
@@ -127,7 +125,7 @@ void UserImageSyncObserver::OnUserImageChanged(const user_manager::User& user) {
 }
 
 void UserImageSyncObserver::OnIsSyncingChanged() {
-  is_synced_ = chromeos::features::IsSplitSettingsSyncEnabled()
+  is_synced_ = chromeos::features::IsSyncSettingsCategorizationEnabled()
                    ? prefs_->AreOsPriorityPrefsSyncing()
                    : prefs_->IsPrioritySyncing();
   if (is_synced_) {

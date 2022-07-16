@@ -14,8 +14,8 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -88,6 +88,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
+#include "mojo/public/cpp/system/platform_handle.h"
+#include "ui/gl/dcomp_surface_registry.h"
 #include "ui/gl/direct_composition_surface_win.h"
 #endif
 
@@ -299,7 +301,8 @@ void GetVideoCapabilities(const gpu::GpuPreferences& gpu_preferences,
   gpu_info->video_encode_accelerator_supported_profiles =
       media::GpuVideoAcceleratorUtil::ConvertMediaToGpuEncodeProfiles(
           media::GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
-              gpu_preferences, gpu_workarounds));
+              gpu_preferences, gpu_workarounds,
+              /*populate_extended_info=*/false));
 #endif
 }
 
@@ -557,6 +560,8 @@ void GpuServiceImpl::InitializeWithHost(
     // corresponding to a mailbox.
     const bool display_context_on_another_thread = features::IsDrDcEnabled();
     bool thread_safe_manager = display_context_on_another_thread;
+    // Raw draw needs to access shared image backing on the compositor thread.
+    thread_safe_manager |= features::IsUsingRawDraw();
 #if defined(USE_OZONE)
     thread_safe_manager |= features::ShouldUseRealBuffersForPageFlipTest();
 #endif
@@ -754,6 +759,22 @@ void GpuServiceImpl::CreateJpegEncodeAccelerator(
       std::move(jea_receiver));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if defined(OS_WIN)
+void GpuServiceImpl::RegisterDCOMPSurfaceHandle(
+    mojo::PlatformHandle surface_handle,
+    RegisterDCOMPSurfaceHandleCallback callback) {
+  auto token =
+      gl::DCOMPSurfaceRegistry::GetInstance()->RegisterDCOMPSurfaceHandle(
+          surface_handle.TakeHandle());
+  std::move(callback).Run(token);
+}
+
+void GpuServiceImpl::UnregisterDCOMPSurfaceHandle(
+    const base::UnguessableToken& token) {
+  gl::DCOMPSurfaceRegistry::GetInstance()->UnregisterDCOMPSurfaceHandle(token);
+}
+#endif  // defined(OS_WIN)
 
 void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
     mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
@@ -1062,6 +1083,9 @@ void GpuServiceImpl::GpuSwitched(gl::GpuPreference active_gpu_heuristic) {
   }
   DVLOG(1) << "GPU: GPU has switched";
 
+  if (watchdog_thread_)
+    watchdog_thread_->ReportProgress();
+
   if (!in_host_process()) {
     ui::GpuSwitchingManager::GetInstance()->NotifyGpuSwitched(
         active_gpu_heuristic);
@@ -1148,8 +1172,13 @@ void GpuServiceImpl::OnBackgrounded() {
 void GpuServiceImpl::OnBackgroundedOnMainThread() {
   gpu_channel_manager_->OnApplicationBackgrounded();
 
-  if (visibility_changed_callback_)
+  if (visibility_changed_callback_) {
     visibility_changed_callback_.Run(false);
+    if (gpu_preferences_.enable_gpu_benchmarking_extension) {
+      ++gpu_info_.visibility_callback_call_count;
+      UpdateGPUInfoGL();
+    }
+  }
 }
 
 void GpuServiceImpl::OnForegrounded() {
@@ -1165,8 +1194,13 @@ void GpuServiceImpl::OnForegrounded() {
 }
 
 void GpuServiceImpl::OnForegroundedOnMainThread() {
-  if (visibility_changed_callback_)
+  if (visibility_changed_callback_) {
     visibility_changed_callback_.Run(true);
+    if (gpu_preferences_.enable_gpu_benchmarking_extension) {
+      ++gpu_info_.visibility_callback_call_count;
+      UpdateGPUInfoGL();
+    }
+  }
 }
 
 #if !defined(OS_ANDROID)

@@ -66,6 +66,35 @@
 #include "absl/base/options.h"
 #include "absl/base/policy_checks.h"
 
+// Abseil long-term support (LTS) releases will define
+// `ABSL_LTS_RELEASE_VERSION` to the integer representing the date string of the
+// LTS release version, and will define `ABSL_LTS_RELEASE_PATCH_LEVEL` to the
+// integer representing the patch-level for that release.
+//
+// For example, for LTS release version "20300401.2", this would give us
+// ABSL_LTS_RELEASE_VERSION == 20300401 && ABSL_LTS_RELEASE_PATCH_LEVEL == 2
+//
+// These symbols will not be defined in non-LTS code.
+//
+// Abseil recommends that clients live-at-head. Therefore, if you are using
+// these symbols to assert a minimum version requirement, we recommend you do it
+// as
+//
+// #if defined(ABSL_LTS_RELEASE_VERSION) && ABSL_LTS_RELEASE_VERSION < 20300401
+// #error Project foo requires Abseil LTS version >= 20300401
+// #endif
+//
+// The `defined(ABSL_LTS_RELEASE_VERSION)` part of the check excludes
+// live-at-head clients from the minimum version assertion.
+//
+// See https://abseil.io/about/releases for more information on Abseil release
+// management.
+//
+// LTS releases can be obtained from
+// https://github.com/abseil/abseil-cpp/releases.
+#undef ABSL_LTS_RELEASE_VERSION
+#undef ABSL_LTS_RELEASE_PATCH_LEVEL
+
 // Helper macro to convert a CPP variable to a string literal.
 #define ABSL_INTERNAL_DO_TOKEN_STR(x) #x
 #define ABSL_INTERNAL_TOKEN_STR(x) ABSL_INTERNAL_DO_TOKEN_STR(x)
@@ -214,15 +243,17 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 //
 // Checks whether `std::is_trivially_copy_assignable<T>` is supported.
 
-// Notes: Clang with libc++ supports these features, as does gcc >= 5.1 with
-// either libc++ or libstdc++, and Visual Studio (but not NVCC).
+// Notes: Clang with libc++ supports these features, as does gcc >= 7.4 with
+// libstdc++, or gcc >= 8.2 with libc++, and Visual Studio (but not NVCC).
 #if defined(ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE)
 #error ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE cannot be directly set
 #elif defined(ABSL_HAVE_STD_IS_TRIVIALLY_ASSIGNABLE)
 #error ABSL_HAVE_STD_IS_TRIVIALLY_ASSIGNABLE cannot directly set
-#elif (defined(__clang__) && defined(_LIBCPP_VERSION)) ||                \
-    (!defined(__clang__) && ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(7, 4) && \
-     (defined(_LIBCPP_VERSION) || defined(__GLIBCXX__))) ||              \
+#elif (defined(__clang__) && defined(_LIBCPP_VERSION)) ||                    \
+    (!defined(__clang__) &&                                                  \
+     ((ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(7, 4) && defined(__GLIBCXX__)) || \
+      (ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(8, 2) &&                          \
+       defined(_LIBCPP_VERSION)))) ||                                        \
     (defined(_MSC_VER) && !defined(__NVCC__))
 #define ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE 1
 #define ABSL_HAVE_STD_IS_TRIVIALLY_ASSIGNABLE 1
@@ -379,10 +410,11 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 // POSIX.1-2001.
 #ifdef ABSL_HAVE_MMAP
 #error ABSL_HAVE_MMAP cannot be directly set
-#elif defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__) ||   \
-    defined(__ros__) || defined(__native_client__) || defined(__asmjs__) || \
-    defined(__wasm__) || defined(__Fuchsia__) || defined(__sun) || \
-    defined(__ASYLO__) || defined(__myriad2__)
+#elif defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__) || \
+    defined(_AIX) || defined(__ros__) || defined(__native_client__) ||    \
+    defined(__asmjs__) || defined(__wasm__) || defined(__Fuchsia__) ||    \
+    defined(__sun) || defined(__ASYLO__) || defined(__myriad2__) ||       \
+    defined(__HAIKU__)
 #define ABSL_HAVE_MMAP 1
 #endif
 
@@ -393,7 +425,7 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #ifdef ABSL_HAVE_PTHREAD_GETSCHEDPARAM
 #error ABSL_HAVE_PTHREAD_GETSCHEDPARAM cannot be directly set
 #elif defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__) || \
-    defined(__ros__)
+    defined(_AIX) || defined(__ros__)
 #define ABSL_HAVE_PTHREAD_GETSCHEDPARAM 1
 #endif
 
@@ -488,22 +520,41 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #error "absl endian detection needs to be set up for your compiler"
 #endif
 
-// macOS 10.13 and iOS 10.11 don't let you use <any>, <optional>, or <variant>
-// even though the headers exist and are publicly noted to work.  See
-// https://github.com/abseil/abseil-cpp/issues/207 and
+// macOS < 10.13 and iOS < 11 don't let you use <any>, <optional>, or <variant>
+// even though the headers exist and are publicly noted to work, because the
+// libc++ shared library shipped on the system doesn't have the requisite
+// exported symbols.  See https://github.com/abseil/abseil-cpp/issues/207 and
 // https://developer.apple.com/documentation/xcode_release_notes/xcode_10_release_notes
+//
 // libc++ spells out the availability requirements in the file
 // llvm-project/libcxx/include/__config via the #define
 // _LIBCPP_AVAILABILITY_BAD_OPTIONAL_ACCESS.
-#if defined(__APPLE__) && defined(_LIBCPP_VERSION) && \
-  ((defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) && \
-   __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 101400) || \
-  (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) && \
-   __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ < 120000) || \
-  (defined(__ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__) && \
-   __ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__ < 50000) || \
-  (defined(__ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__) && \
-   __ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__ < 120000))
+//
+// Unfortunately, Apple initially mis-stated the requirements as macOS < 10.14
+// and iOS < 12 in the libc++ headers. This was corrected by
+// https://github.com/llvm/llvm-project/commit/7fb40e1569dd66292b647f4501b85517e9247953
+// which subsequently made it into the XCode 12.5 release. We need to match the
+// old (incorrect) conditions when built with old XCode, but can use the
+// corrected earlier versions with new XCode.
+#if defined(__APPLE__) && defined(_LIBCPP_VERSION) &&               \
+    ((_LIBCPP_VERSION >= 11000 && /* XCode 12.5 or later: */        \
+      ((defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) &&   \
+        __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 101300) ||  \
+       (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) &&  \
+        __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ < 110000) || \
+       (defined(__ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__) &&   \
+        __ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__ < 40000) ||   \
+       (defined(__ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__) &&      \
+        __ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__ < 110000))) ||   \
+     (_LIBCPP_VERSION < 11000 && /* Pre-XCode 12.5: */              \
+      ((defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) &&   \
+        __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 101400) ||  \
+       (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) &&  \
+        __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ < 120000) || \
+       (defined(__ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__) &&   \
+        __ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__ < 50000) ||   \
+       (defined(__ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__) &&      \
+        __ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__ < 120000))))
 #define ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE 1
 #else
 #define ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE 0

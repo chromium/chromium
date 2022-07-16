@@ -31,6 +31,10 @@ class WebviewClient : public exo::wayland::clients::ClientBase {
   };
 
   WebviewClient();
+
+  WebviewClient(const WebviewClient&) = delete;
+  WebviewClient& operator=(const WebviewClient&) = delete;
+
   ~WebviewClient() override;
   bool HasAvailableBuffer();
   void Run(const InitParams& params, const std::string& channel_directory);
@@ -135,7 +139,6 @@ class WebviewClient : public exo::wayland::clients::ClientBase {
   base::RunLoop run_loop_;
 
   std::unique_ptr<chromecast::webview::PlatformViewsService::Stub> stub_;
-  DISALLOW_COPY_AND_ASSIGN(WebviewClient);
 };
 
 }  // namespace client

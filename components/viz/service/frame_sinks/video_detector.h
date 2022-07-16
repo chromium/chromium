@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_DETECTOR_H_
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_DETECTOR_H_
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -33,6 +33,10 @@ class VIZ_SERVICE_EXPORT VideoDetector : public SurfaceObserver {
       SurfaceManager* surface_manager,
       const base::TickClock* tick_clock = base::DefaultTickClock::GetInstance(),
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
+
+  VideoDetector(const VideoDetector&) = delete;
+  VideoDetector& operator=(const VideoDetector&) = delete;
+
   ~VideoDetector() override;
 
   // Adds an observer. The observer can be removed by closing the mojo
@@ -60,13 +64,11 @@ class VIZ_SERVICE_EXPORT VideoDetector : public SurfaceObserver {
   static constexpr int kMinFramesPerSecond = 15;
 
   // Timeout after which video is no longer considered to be playing.
-  static constexpr base::TimeDelta kVideoTimeout =
-      base::TimeDelta::FromMilliseconds(1000);
+  static constexpr base::TimeDelta kVideoTimeout = base::Milliseconds(1000);
 
   // Duration video must be playing in a client before it is reported to
   // observers.
-  static constexpr base::TimeDelta kMinVideoDuration =
-      base::TimeDelta::FromMilliseconds(3000);
+  static constexpr base::TimeDelta kMinVideoDuration = base::Milliseconds(3000);
 
   // If no video activity is detected for |kVideoTimeout|, this
   // method will be called by |video_inactive_timer_|;
@@ -101,8 +103,6 @@ class VIZ_SERVICE_EXPORT VideoDetector : public SurfaceObserver {
   mojo::RemoteSet<mojom::VideoDetectorObserver> observers_;
 
   SurfaceManager* const surface_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDetector);
 };
 
 }  // namespace viz

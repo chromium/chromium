@@ -12,8 +12,8 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/components/external_install_options.h"
-#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "url/gurl.h"
 
@@ -54,6 +54,7 @@ class PreinstalledWebAppManager {
   static const char* kHistogramConfigErrorCount;
   static const char* kHistogramInstallResult;
   static const char* kHistogramUninstallAndReplaceCount;
+  static const char* kHistogramAppToReplaceStillInstalledCount;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -61,7 +62,7 @@ class PreinstalledWebAppManager {
   static void BypassOfflineManifestRequirementForTesting();
   static void SetConfigDirForTesting(const base::FilePath* config_dir);
   static void SetConfigsForTesting(const std::vector<base::Value>* configs);
-  static void SetFileUtilsForTesting(const FileUtilsWrapper* file_utils);
+  static void SetFileUtilsForTesting(FileUtilsWrapper* file_utils);
 
   explicit PreinstalledWebAppManager(Profile* profile);
   PreinstalledWebAppManager(const PreinstalledWebAppManager&) = delete;

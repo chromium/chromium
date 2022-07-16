@@ -18,8 +18,7 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace {
-constexpr base::TimeDelta kNotificationTimeout =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kNotificationTimeout = base::Seconds(2);
 }  // namespace
 
 namespace ash {

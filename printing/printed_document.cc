@@ -91,8 +91,7 @@ void DebugDumpDataTask(const std::u16string& doc_name,
 
 void DebugDumpSettings(const std::u16string& doc_name,
                        const PrintSettings& settings) {
-  base::DictionaryValue job_settings;
-  PrintSettingsToJobSettingsDebug(settings, &job_settings);
+  base::Value job_settings = PrintSettingsToJobSettingsDebug(settings);
   std::string settings_str;
   base::JSONWriter::WriteWithOptions(
       job_settings, base::JSONWriter::OPTIONS_PRETTY_PRINT, &settings_str);

@@ -46,14 +46,15 @@ View* CreateViewWithLayer(const gfx::Rect& bounds, const char* layer_name) {
 class ViewAuraTest : public ViewsTestBase {
  public:
   ViewAuraTest() = default;
+
+  ViewAuraTest(const ViewAuraTest&) = delete;
+  ViewAuraTest& operator=(const ViewAuraTest&) = delete;
+
   ~ViewAuraTest() override = default;
 
   const View::Views& GetViewsWithLayers(Widget* widget) {
     return widget->GetViewsWithLayers();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ViewAuraTest);
 };
 
 // Test that wm::RecreateLayers() recreates the layers for all child windows and

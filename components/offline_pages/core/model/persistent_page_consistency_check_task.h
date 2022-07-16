@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/offline_page_archive_publisher.h"
 #include "components/offline_pages/core/offline_store_types.h"
@@ -44,6 +43,12 @@ class PersistentPageConsistencyCheckTask : public Task {
       ArchiveManager* archive_manager,
       base::Time check_time,
       PersistentPageConsistencyCheckCallback callback);
+
+  PersistentPageConsistencyCheckTask(
+      const PersistentPageConsistencyCheckTask&) = delete;
+  PersistentPageConsistencyCheckTask& operator=(
+      const PersistentPageConsistencyCheckTask&) = delete;
+
   ~PersistentPageConsistencyCheckTask() override;
 
  private:
@@ -62,7 +67,6 @@ class PersistentPageConsistencyCheckTask : public Task {
 
   base::WeakPtrFactory<PersistentPageConsistencyCheckTask> weak_ptr_factory_{
       this};
-  DISALLOW_COPY_AND_ASSIGN(PersistentPageConsistencyCheckTask);
 };
 
 }  // namespace offline_pages

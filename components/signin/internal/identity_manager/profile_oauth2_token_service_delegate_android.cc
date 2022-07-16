@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/signin/public/android/jni_headers/ProfileOAuth2TokenServiceDelegate_jni.h"
@@ -48,6 +47,11 @@ class AndroidAccessTokenFetcher : public OAuth2AccessTokenFetcher {
       ProfileOAuth2TokenServiceDelegateAndroid* oauth2_token_service_delegate,
       OAuth2AccessTokenConsumer* consumer,
       const std::string& account_id);
+
+  AndroidAccessTokenFetcher(const AndroidAccessTokenFetcher&) = delete;
+  AndroidAccessTokenFetcher& operator=(const AndroidAccessTokenFetcher&) =
+      delete;
+
   ~AndroidAccessTokenFetcher() override;
 
   // Overrides from OAuth2AccessTokenFetcher:
@@ -68,8 +72,6 @@ class AndroidAccessTokenFetcher : public OAuth2AccessTokenFetcher {
   std::string account_id_;
   bool request_was_cancelled_;
   base::WeakPtrFactory<AndroidAccessTokenFetcher> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidAccessTokenFetcher);
 };
 
 AndroidAccessTokenFetcher::AndroidAccessTokenFetcher(

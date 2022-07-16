@@ -16,12 +16,14 @@ namespace {
 class SchemeHostPortTest : public testing::Test {
  public:
   SchemeHostPortTest() = default;
+
+  SchemeHostPortTest(const SchemeHostPortTest&) = delete;
+  SchemeHostPortTest& operator=(const SchemeHostPortTest&) = delete;
+
   ~SchemeHostPortTest() override = default;
 
  private:
   url::ScopedSchemeRegistryForTests scoped_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchemeHostPortTest);
 };
 
 void ExpectParsedUrlsEqual(const GURL& a, const GURL& b) {

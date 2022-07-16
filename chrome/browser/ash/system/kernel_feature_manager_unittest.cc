@@ -11,6 +11,7 @@
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ash {
 namespace {
 
 class TestFakeDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
@@ -100,7 +101,7 @@ TEST_F(KernelFeatureManagerTest, EnableIfDeviceSupports) {
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial3->trial_name()));
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial4->trial_name()));
 
-  chromeos::KernelFeatureManager manager(&debug_daemon_client_);
+  KernelFeatureManager manager(&debug_daemon_client_);
   debug_daemon_client_.SetServiceIsAvailable(true);
   task_environment_.RunUntilIdle();
 
@@ -111,3 +112,4 @@ TEST_F(KernelFeatureManagerTest, EnableIfDeviceSupports) {
 }
 
 }  // namespace
+}  // namespace ash

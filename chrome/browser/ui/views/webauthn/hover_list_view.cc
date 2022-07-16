@@ -14,11 +14,12 @@
 #include "chrome/browser/ui/views/webauthn/webauthn_hover_button.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
@@ -89,8 +90,7 @@ class ListItemHoverButton : public WebAuthnHoverButton {
     if (item_type_ != ItemType::kPlaceholder)
       return;
     SetTitleTextStyle(views::style::STYLE_DISABLED,
-                      GetNativeTheme()->GetSystemColor(
-                          ui::NativeTheme::kColorId_BubbleBackground));
+                      GetColorProvider()->GetColor(ui::kColorBubbleBackground));
   }
 
  private:

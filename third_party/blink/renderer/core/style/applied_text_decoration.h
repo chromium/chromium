@@ -13,7 +13,7 @@
 
 namespace blink {
 
-class AppliedTextDecoration {
+class CORE_EXPORT AppliedTextDecoration {
   DISALLOW_NEW();
 
  public:

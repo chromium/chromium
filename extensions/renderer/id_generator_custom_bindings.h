@@ -6,6 +6,7 @@
 #define EXTENSIONS_RENDERER_ID_GENERATOR_CUSTOM_BINDINGS_H_
 
 #include "extensions/renderer/object_backed_native_handler.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 class ScriptContext;

@@ -13,7 +13,7 @@ namespace secure_channel {
 namespace {
 
 static constexpr base::TimeDelta kEffectiveSuccessRateTimeout =
-    base::TimeDelta::FromMinutes(1);
+    base::Minutes(1);
 
 void RecordEffectiveConnectionResult(bool success) {
   base::UmaHistogramBoolean(

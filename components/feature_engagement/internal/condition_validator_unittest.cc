@@ -89,4 +89,16 @@ TEST(ConditionValidatorResultTest, TestMultipleErrors) {
   EXPECT_FALSE(result.NoErrors());
 }
 
+TEST(ConditionValidatorResultTest, TestSnoozeExpirationFailed) {
+  ConditionValidator::Result result(true);
+  result.snooze_expiration_ok = false;
+  EXPECT_FALSE(result.NoErrors());
+}
+
+TEST(ConditionValidatorResultTest, TestShouldShowSnoozeFailed) {
+  ConditionValidator::Result result(true);
+  result.should_show_snooze = false;
+  EXPECT_TRUE(result.NoErrors());
+}
+
 }  // namespace feature_engagement

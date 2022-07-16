@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
@@ -30,11 +29,16 @@ namespace ash {
 class ScopedDeviceSettingsTestHelper {
  public:
   ScopedDeviceSettingsTestHelper();
+
+  ScopedDeviceSettingsTestHelper(const ScopedDeviceSettingsTestHelper&) =
+      delete;
+  ScopedDeviceSettingsTestHelper& operator=(
+      const ScopedDeviceSettingsTestHelper&) = delete;
+
   ~ScopedDeviceSettingsTestHelper();
 
  private:
   FakeSessionManagerClient session_manager_client_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedDeviceSettingsTestHelper);
 };
 
 // A convenience test base class that initializes a DeviceSettingsService
@@ -42,6 +46,10 @@ class ScopedDeviceSettingsTestHelper {
 // settings. |device_settings_service_| starts out in uninitialized state, so
 // startup code gets tested as well.
 class DeviceSettingsTestBase : public testing::Test {
+ public:
+  DeviceSettingsTestBase(const DeviceSettingsTestBase&) = delete;
+  DeviceSettingsTestBase& operator=(const DeviceSettingsTestBase&) = delete;
+
  protected:
   DeviceSettingsTestBase();
   explicit DeviceSettingsTestBase(base::test::TaskEnvironment::TimeSource time);
@@ -81,8 +89,6 @@ class DeviceSettingsTestBase : public testing::Test {
 
  private:
   bool teardown_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSettingsTestBase);
 };
 
 }  // namespace ash

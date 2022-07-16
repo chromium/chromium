@@ -36,6 +36,10 @@ constexpr char kTestBluetoothDisplayName[] = "device_name";
 class MockObserver : public FidoRequestHandlerBase::Observer {
  public:
   MockObserver() = default;
+
+  MockObserver(const MockObserver&) = delete;
+  MockObserver& operator=(const MockObserver&) = delete;
+
   ~MockObserver() override = default;
 
   MOCK_METHOD1(OnTransportAvailabilityEnumerated,
@@ -57,9 +61,6 @@ class MockObserver : public FidoRequestHandlerBase::Observer {
   MOCK_METHOD1(OnRetryUserVerification, void(int));
   MOCK_METHOD0(OnInternalUserVerificationLocked, void());
   MOCK_METHOD1(SetMightCreateResidentCredential, void(bool));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockObserver);
 };
 
 class FakeFidoRequestHandlerBase : public FidoRequestHandlerBase {
@@ -72,6 +73,10 @@ class FakeFidoRequestHandlerBase : public FidoRequestHandlerBase {
     set_observer(observer);
     Start();
   }
+
+  FakeFidoRequestHandlerBase(const FakeFidoRequestHandlerBase&) = delete;
+  FakeFidoRequestHandlerBase& operator=(const FakeFidoRequestHandlerBase&) =
+      delete;
 
   void SimulateFidoRequestHandlerHasAuthenticator(bool simulate_authenticator) {
     simulate_authenticator_ = simulate_authenticator;
@@ -86,8 +91,6 @@ class FakeFidoRequestHandlerBase : public FidoRequestHandlerBase {
   }
 
   bool simulate_authenticator_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFidoRequestHandlerBase);
 };
 
 }  // namespace

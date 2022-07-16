@@ -6,7 +6,6 @@
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_NAVIGATION_MANAGER_H_
 
 #include "base/callback.h"
-#include "ios/web/public/deprecated/navigation_item_list.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ui/base/page_transition_types.h"
@@ -42,8 +41,8 @@ class FakeNavigationManager : public NavigationManager {
   void GoToIndex(int index) override;
   void Reload(ReloadType reload_type, bool check_for_reposts) override;
   void ReloadWithUserAgentType(UserAgentType user_agent_type) override;
-  NavigationItemList GetBackwardItems() const override;
-  NavigationItemList GetForwardItems() const override;
+  std::vector<NavigationItem*> GetBackwardItems() const override;
+  std::vector<NavigationItem*> GetForwardItems() const override;
   void Restore(int last_committed_item_index,
                std::vector<std::unique_ptr<NavigationItem>> items) override;
   bool IsRestoreSessionInProgress() const override;
@@ -85,7 +84,7 @@ class FakeNavigationManager : public NavigationManager {
 
  private:
   // A list of items constructed by calling AddItem().
-  web::ScopedNavigationItemList items_;
+  std::vector<std::unique_ptr<NavigationItem>> items_;
   int items_index_;
   // Individual backing instance variables for Set* test set up methods.
   NavigationItem* pending_item_;

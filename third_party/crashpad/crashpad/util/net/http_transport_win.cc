@@ -131,12 +131,13 @@ using ScopedHINTERNET = base::ScopedGeneric<HINTERNET, ScopedHINTERNETTraits>;
 class HTTPTransportWin final : public HTTPTransport {
  public:
   HTTPTransportWin();
+
+  HTTPTransportWin(const HTTPTransportWin&) = delete;
+  HTTPTransportWin& operator=(const HTTPTransportWin&) = delete;
+
   ~HTTPTransportWin() override;
 
   bool ExecuteSynchronously(std::string* response_body) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HTTPTransportWin);
 };
 
 HTTPTransportWin::HTTPTransportWin() : HTTPTransport() {

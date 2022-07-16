@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_worker_interface.h"
@@ -42,6 +41,10 @@ class SyncEngineContext;
 class FakeSyncWorker : public SyncWorkerInterface {
  public:
   FakeSyncWorker();
+
+  FakeSyncWorker(const FakeSyncWorker&) = delete;
+  FakeSyncWorker& operator=(const FakeSyncWorker&) = delete;
+
   ~FakeSyncWorker() override;
 
   // SyncWorkerInterface overrides.
@@ -95,8 +98,6 @@ class FakeSyncWorker : public SyncWorkerInterface {
 
   base::ObserverList<Observer>::Unchecked observers_;
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSyncWorker);
 };
 
 }  // namespace drive_backend

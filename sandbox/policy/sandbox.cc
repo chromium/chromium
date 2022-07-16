@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 
 #if defined(OS_ANDROID)
@@ -30,7 +31,7 @@ namespace sandbox {
 namespace policy {
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-bool Sandbox::Initialize(SandboxType sandbox_type,
+bool Sandbox::Initialize(sandbox::mojom::Sandbox sandbox_type,
                          SandboxLinux::PreSandboxHook hook,
                          const SandboxLinux::Options& options) {
   return SandboxLinux::GetInstance()->InitializeSandbox(
@@ -39,7 +40,7 @@ bool Sandbox::Initialize(SandboxType sandbox_type,
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 #if defined(OS_WIN)
-bool Sandbox::Initialize(SandboxType sandbox_type,
+bool Sandbox::Initialize(sandbox::mojom::Sandbox sandbox_type,
                          SandboxInterfaceInfo* sandbox_info) {
   BrokerServices* broker_services = sandbox_info->broker_services;
   if (broker_services) {

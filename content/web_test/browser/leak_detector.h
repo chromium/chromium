@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom.h"
@@ -20,6 +19,10 @@ class RenderProcessHost;
 class LeakDetector {
  public:
   LeakDetector();
+
+  LeakDetector(const LeakDetector&) = delete;
+  LeakDetector& operator=(const LeakDetector&) = delete;
+
   ~LeakDetector();
 
   struct LeakDetectionReport {
@@ -43,8 +46,6 @@ class LeakDetector {
   blink::mojom::LeakDetectionResultPtr previous_result_;
   ReportCallback callback_;
   base::WeakPtrFactory<LeakDetector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LeakDetector);
 };
 
 }  // namespace content

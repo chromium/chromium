@@ -12,7 +12,7 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/byte_queue.h"
@@ -35,8 +35,12 @@ class PidState;
 
 class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
  public:
-  explicit Mp2tStreamParser(const std::vector<std::string>& allowed_codecs,
+  explicit Mp2tStreamParser(base::span<const std::string> allowed_codecs,
                             bool sbr_in_mimetype);
+
+  Mp2tStreamParser(const Mp2tStreamParser&) = delete;
+  Mp2tStreamParser& operator=(const Mp2tStreamParser&) = delete;
+
   ~Mp2tStreamParser() override;
 
   // StreamParser implementation.
@@ -184,8 +188,6 @@ class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
   // provide a better way to access the last values seen in a ECM packet.
   std::unique_ptr<DecryptConfig> decrypt_config_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(Mp2tStreamParser);
 };
 
 }  // namespace mp2t

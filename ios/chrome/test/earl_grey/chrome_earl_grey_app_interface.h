@@ -13,6 +13,7 @@
 #include "third_party/metrics_proto/user_demographics.pb.h"
 
 @class ElementSelector;
+@class FakeChromeIdentity;
 @class NamedGuide;
 
 // ChromeEarlGreyAppInterface contains the app-side implementation for helpers
@@ -107,7 +108,7 @@
 + (NSUInteger)evictedMainTabCount WARN_UNUSED_RESULT;
 
 // Evicts the tabs associated with the non-current browser mode.
-+ (void)evictOtherTabModelTabs;
++ (void)evictOtherBrowserTabs;
 
 // Sets the normal tabs as 'cold start' tabs
 // If not succeed returns an NSError indicating  why the
@@ -173,12 +174,6 @@
 
 // Returns the index of active tab in normal mode.
 + (NSUInteger)indexOfActiveNormalTab;
-
-// Resets Close All Tabs Confirmation feature to its default value.
-+ (void)resetCloseAllTabsConfirmation;
-
-// Disables Close All Tabs Confirmation feature.
-+ (void)disableCloseAllTabsConfirmation;
 
 #pragma mark - Window utilities (EG2)
 
@@ -307,7 +302,7 @@
 // navigation will not use a cached page. Browsers don't have to use a fresh
 // version for back/forward navigation for HTTP pages and may serve a version
 // from the cache even if the Cache-Control response header says otherwise.
-+ (void)purgeCachedWebViewPages;
++ (NSError*)purgeCachedWebViewPages;
 
 // Returns YES if the current WebState's navigation manager is currently
 // restoring session state.
@@ -345,11 +340,8 @@
 // Clears fake sync server data if the server is running.
 + (void)clearSyncServerData;
 
-// Removes Sync consent for the primary account.
-+ (void)revokeSyncConsent;
-
-// Clears the first sync setup preference.
-+ (void)clearSyncFirstSetupComplete;
+// Signs in with |identity| without sync consent.
++ (void)signInWithoutSyncWithIdentity:(FakeChromeIdentity*)identity;
 
 // Starts the sync server. The server should not be running when calling this.
 + (void)startSync;
@@ -504,9 +496,6 @@
 // with custom WebKit frameworks.
 + (BOOL)isCustomWebKitLoadedIfRequested WARN_UNUSED_RESULT;
 
-// Returns YES if collections are presented in cards.
-+ (BOOL)isCollectionsCardPresentationStyleEnabled WARN_UNUSED_RESULT;
-
 // Returns whether the mobile version of the websites are requested by default.
 + (BOOL)isMobileModeByDefault WARN_UNUSED_RESULT;
 
@@ -514,8 +503,11 @@
 // can, open multiple windows.
 + (BOOL)areMultipleWindowsSupported;
 
-// Returns whether the Close All Tabs Confirmation feature is enabled.
-+ (BOOL)isCloseAllTabsConfirmationEnabled;
+// Returns whether the ContextMenuActionsRefresh feature is enabled.
++ (BOOL)isContextMenuActionsRefreshEnabled;
+
+// Returns whether the TabGridBulkActions feature is enabled.
++ (BOOL)isTabGridBulkActionsEnabled;
 
 #pragma mark - Popup Blocking
 
@@ -534,6 +526,11 @@
 // returns a Value of type NONE.
 + (NSString*)localStatePrefValue:(NSString*)prefName;
 
+// Sets the integer values for the local state pref with |prefName|. |value|
+// can be either a casted enum or any other numerical value. Local State
+// contains the preferences that are shared between all browser states.
++ (void)setIntegerValue:(int)value forLocalStatePref:(NSString*)prefName;
+
 // Gets the value of a user pref in the original browser state. Returns a
 // base::Value encoded as a JSON string. If the pref was not registered,
 // returns a Value of type NONE.
@@ -541,6 +538,9 @@
 
 // Sets the value of a boolean user pref in the original browser state.
 + (void)setBoolValue:(BOOL)value forUserPref:(NSString*)prefName;
+
+// Sets the value of a integer user pref in the original browser state.
++ (void)setIntegerValue:(int)value forUserPref:(NSString*)prefName;
 
 // Resets the BrowsingDataPrefs, which defines if its selected or not when
 // clearing Browsing data.

@@ -75,6 +75,11 @@ TEST(MiniInstallerTest, GetTempDir) {
 
 // A test harness for GetPreviousSetupExePath.
 class GetPreviousSetupExePathTest : public ::testing::Test {
+ public:
+  GetPreviousSetupExePathTest(const GetPreviousSetupExePathTest&) = delete;
+  GetPreviousSetupExePathTest& operator=(const GetPreviousSetupExePathTest&) =
+      delete;
+
  protected:
   GetPreviousSetupExePathTest() = default;
   ~GetPreviousSetupExePathTest() override = default;
@@ -103,7 +108,6 @@ class GetPreviousSetupExePathTest : public ::testing::Test {
  private:
   registry_util::RegistryOverrideManager registry_override_manager_;
   FakeConfiguration configuration_;
-  DISALLOW_COPY_AND_ASSIGN(GetPreviousSetupExePathTest);
 };
 
 // Tests that the path is returned.

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
@@ -26,8 +25,13 @@ struct Rule {
        base::Value value,
        base::Time expiration,
        SessionModel session_model);
+
+  Rule(const Rule&) = delete;
+  Rule& operator=(const Rule&) = delete;
+
   Rule(Rule&& other);
   Rule& operator=(Rule&& other);
+
   ~Rule();
 
   ContentSettingsPattern primary_pattern;
@@ -35,8 +39,6 @@ struct Rule {
   base::Value value;
   base::Time expiration;
   SessionModel session_model;
-
-  DISALLOW_COPY_AND_ASSIGN(Rule);
 };
 
 class RuleIterator {

@@ -65,7 +65,8 @@ bool WebHTTPBody::ElementAt(size_t index, Element& result) const {
   if (index >= private_->Elements().size())
     return false;
 
-  const FormDataElement& element = private_->Elements()[index];
+  const FormDataElement& element =
+      private_->Elements()[static_cast<wtf_size_t>(index)];
 
   result.data.Reset();
   result.file_path.Reset();
@@ -109,11 +110,11 @@ void WebHTTPBody::AppendData(const WebData& data) {
   EnsureMutable();
   // FIXME: FormDataElement::m_data should be a SharedBuffer<char>.  Then we
   // could avoid this buffer copy.
-  data.ForEachSegment(
-      [this](const char* segment, size_t segment_size, size_t segment_offset) {
-        private_->AppendData(segment, segment_size);
-        return true;
-      });
+  data.ForEachSegment([this](const char* segment, size_t segment_size,
+                             size_t segment_offset) {
+    private_->AppendData(segment, base::checked_cast<wtf_size_t>(segment_size));
+    return true;
+  });
 }
 
 void WebHTTPBody::AppendFileRange(

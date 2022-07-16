@@ -14,14 +14,16 @@
 class BrowserWebStateListDelegate : public WebStateListDelegate {
  public:
   BrowserWebStateListDelegate();
+
+  BrowserWebStateListDelegate(const BrowserWebStateListDelegate&) = delete;
+  BrowserWebStateListDelegate& operator=(const BrowserWebStateListDelegate&) =
+      delete;
+
   ~BrowserWebStateListDelegate() override;
 
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) override;
   void WebStateDetached(web::WebState* web_state) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserWebStateListDelegate);
 };
 
 #endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_WEB_STATE_LIST_DELEGATE_H_

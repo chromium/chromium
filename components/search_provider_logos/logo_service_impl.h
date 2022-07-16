@@ -11,10 +11,9 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/search_provider_logos/logo_common.h"
@@ -51,6 +50,9 @@ class LogoServiceImpl : public LogoService,
       std::unique_ptr<image_fetcher::ImageDecoder> image_decoder,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::RepeatingCallback<bool()> want_gray_logo_getter);
+
+  LogoServiceImpl(const LogoServiceImpl&) = delete;
+  LogoServiceImpl& operator=(const LogoServiceImpl&) = delete;
 
   ~LogoServiceImpl() override;
 
@@ -229,8 +231,6 @@ class LogoServiceImpl : public LogoService,
   base::Clock* clock_ = nullptr;
 
   base::WeakPtrFactory<LogoServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LogoServiceImpl);
 };
 
 }  // namespace search_provider_logos

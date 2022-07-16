@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/media/offscreen_tab.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/test/browser_test_utils.h"
@@ -23,7 +24,8 @@
 namespace media_router {
 
 // The Test MediaRouteProvider class is used for integration browser test.
-class TestMediaRouteProvider : public mojom::MediaRouteProvider {
+class TestMediaRouteProvider : public mojom::MediaRouteProvider,
+                               public OffscreenTab::Owner {
  public:
   static const mojom::MediaRouteProviderId kProviderId;
   TestMediaRouteProvider(
@@ -105,18 +107,22 @@ class TestMediaRouteProvider : public mojom::MediaRouteProvider {
   void CaptureOffScreenTab(content::WebContents* web_contents,
                            GURL source_urn,
                            std::string& presentation_id);
+  void TearDown();
 
  private:
   base::WeakPtr<TestMediaRouteProvider> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // OffscreenTab::Owner overrides
+  void DestroyTab(OffscreenTab* tab) override;
+
   std::vector<MediaRoute> GetMediaRoutes();
   void SetSinks();
   void CreateRouteTimeOut(CreateRouteCallback callback);
 
   bool close_route_with_error_on_send_ = false;
-  base::TimeDelta delay_ = base::TimeDelta::FromSeconds(0);
+  base::TimeDelta delay_ = base::Seconds(0);
   std::string route_error_message_;
   std::map<std::string, MediaRoute> presentation_ids_to_routes_;
   std::map<MediaRoute::Id, MediaRoute> routes_;
@@ -127,6 +133,8 @@ class TestMediaRouteProvider : public mojom::MediaRouteProvider {
   mojo::Receiver<mojom::MediaRouteProvider> receiver_;
   // Mojo remote to the Media Router.
   mojo::Remote<mojom::MediaRouter> media_router_;
+
+  std::unique_ptr<OffscreenTab> offscreen_tab_;
 
   base::WeakPtrFactory<TestMediaRouteProvider> weak_ptr_factory_{this};
 };

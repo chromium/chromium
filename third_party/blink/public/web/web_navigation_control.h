@@ -54,13 +54,14 @@ class WebNavigationControl : public WebLocalFrame {
       bool is_client_redirect,
       bool has_transient_user_activation,
       const WebSecurityOrigin& initiator_origin,
+      bool is_browser_initiated,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) = 0;
 
-  // Override the normal rules for whether a load has successfully committed
-  // in this frame. Used to propagate state when this frame has navigated
-  // cross process.
-  virtual void SetCommittedFirstRealLoad() = 0;
-  virtual bool HasCommittedFirstRealLoad() = 0;
+  // Override the normal rules that determine whether the frame is on the
+  // initial empty document or not. Used to propagate state when this frame has
+  // navigated cross process.
+  virtual void SetIsNotOnInitialEmptyDocument() = 0;
+  virtual bool IsOnInitialEmptyDocument() = 0;
 
   // Marks the frame as loading, before WebLocalFrameClient issues a navigation
   // request through the browser process on behalf of the frame.

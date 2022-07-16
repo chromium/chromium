@@ -19,14 +19,15 @@ namespace {
 class DisconnectWindowAura : public HostWindow {
  public:
   DisconnectWindowAura();
+
+  DisconnectWindowAura(const DisconnectWindowAura&) = delete;
+  DisconnectWindowAura& operator=(const DisconnectWindowAura&) = delete;
+
   ~DisconnectWindowAura() override;
 
   // HostWindow interface.
   void Start(const base::WeakPtr<ClientSessionControl>& client_session_control)
       override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisconnectWindowAura);
 };
 
 DisconnectWindowAura::DisconnectWindowAura() = default;

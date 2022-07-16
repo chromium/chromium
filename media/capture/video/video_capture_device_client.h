@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_collision_warner.h"
 #include "build/chromeos_buildflags.h"
@@ -55,6 +54,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
                            std::unique_ptr<VideoFrameReceiver> receiver,
                            scoped_refptr<VideoCaptureBufferPool> buffer_pool);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  VideoCaptureDeviceClient(const VideoCaptureDeviceClient&) = delete;
+  VideoCaptureDeviceClient& operator=(const VideoCaptureDeviceClient&) = delete;
+
   ~VideoCaptureDeviceClient() override;
 
   static Buffer MakeBufferStruct(
@@ -144,8 +147,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
   // concurrently. Producers are allowed to call from multiple threads, but not
   // concurrently.
   DFAKE_MUTEX(call_from_producer_);
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceClient);
 };
 
 }  // namespace media

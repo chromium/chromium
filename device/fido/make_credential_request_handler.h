@@ -77,6 +77,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
       CtapMakeCredentialRequest request_parameter,
       const MakeCredentialOptions& options,
       CompletionCallback completion_callback);
+
+  MakeCredentialRequestHandler(const MakeCredentialRequestHandler&) = delete;
+  MakeCredentialRequestHandler& operator=(const MakeCredentialRequestHandler&) =
+      delete;
+
   ~MakeCredentialRequestHandler() override;
 
  private:
@@ -170,8 +175,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
 
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<MakeCredentialRequestHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MakeCredentialRequestHandler);
 };
 
 }  // namespace device

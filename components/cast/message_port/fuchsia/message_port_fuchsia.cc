@@ -4,11 +4,13 @@
 
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 
+#include <lib/fpromise/result.h>
+
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
-#include "fuchsia/base/mem_buffer_util.h"
 
 namespace cast_api_bindings {
 namespace {
@@ -185,9 +187,7 @@ class MessagePortFuchsiaServer : public MessagePortFuchsia,
       return;
     }
 
-    fuchsia::web::MessagePort_PostMessage_Result result;
-    result.set_response(fuchsia::web::MessagePort_PostMessage_Response());
-    callback(std::move(result));
+    callback(fpromise::ok());
   }
 
   void ReceiveMessage(ReceiveMessageCallback callback) final {
@@ -242,7 +242,7 @@ fuchsia::web::WebMessage MessagePortFuchsia::CreateWebMessage(
     base::StringPiece message,
     std::vector<std::unique_ptr<MessagePort>> ports) {
   fuchsia::web::WebMessage message_fidl;
-  message_fidl.set_data(cr_fuchsia::MemBufferFromString(message, message));
+  message_fidl.set_data(base::MemBufferFromString(message, message));
   if (!ports.empty()) {
     PortType expected_port_type = FromMessagePort(ports[0].get())->port_type_;
     std::vector<fuchsia::web::IncomingTransferable> incoming_transferables;
@@ -297,8 +297,8 @@ MessagePortFuchsia::ExtractAndHandleMessageFromFidl(
     return fuchsia::web::FrameError::NO_DATA_IN_MESSAGE;
   }
 
-  std::string data;
-  if (!cr_fuchsia::StringFromMemBuffer(message.data(), &data)) {
+  absl::optional<std::string> data = base::StringFromMemBuffer(message.data());
+  if (!data) {
     return fuchsia::web::FrameError::BUFFER_NOT_UTF8;
   }
 
@@ -317,7 +317,7 @@ MessagePortFuchsia::ExtractAndHandleMessageFromFidl(
     }
   }
 
-  if (!receiver_->OnMessage(std::move(data), std::move(ports))) {
+  if (!receiver_->OnMessage(std::move(*data), std::move(ports))) {
     return fuchsia::web::FrameError::INTERNAL_ERROR;
   }
 

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -35,7 +34,7 @@ class NetworkContext;
 class SharedURLLoaderFactory;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Returns bounds of the screen to use for login wizard.
 // The rect is centered within the default monitor and sized accordingly if
@@ -61,6 +60,10 @@ bool LoginScrollIntoViewEnabled();
 class NetworkStateHelper {
  public:
   NetworkStateHelper();
+
+  NetworkStateHelper(const NetworkStateHelper&) = delete;
+  NetworkStateHelper& operator=(const NetworkStateHelper&) = delete;
+
   virtual ~NetworkStateHelper();
 
   // Returns name of the currently connected network.
@@ -81,8 +84,6 @@ class NetworkStateHelper {
                              network_handler::ErrorCallback error_callback,
                              const std::string& service_path,
                              const std::string& guid) const;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateHelper);
 };
 
 //
@@ -116,14 +117,13 @@ base::TimeDelta TimeToOnlineSignIn(base::Time last_online_signin,
                                    base::TimeDelta offline_signin_limit);
 
 }  // namespace login
-
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace ash {
-namespace login = ::chromeos::login;
-using ::chromeos::CalculateScreenBounds;
-using ::chromeos::GetCurrentUserImageSize;
-}  // namespace ash
+namespace chromeos {
+namespace login {
+using ::ash::login::NetworkStateHelper;
+}
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_HELPER_H_

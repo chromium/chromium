@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
@@ -36,6 +35,10 @@ class PluginMetricsProvider;
 class Profile;
 class PrefRegistrySimple;
 
+namespace network_time {
+class NetworkTimeTracker;
+}  // namespace network_time
+
 namespace metrics {
 class MetricsService;
 class MetricsStateManager;
@@ -48,6 +51,10 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
                                    public ukm::HistoryDeleteObserver,
                                    public ukm::UkmConsentStateObserver {
  public:
+  ChromeMetricsServiceClient(const ChromeMetricsServiceClient&) = delete;
+  ChromeMetricsServiceClient& operator=(const ChromeMetricsServiceClient&) =
+      delete;
+
   ~ChromeMetricsServiceClient() override;
 
   // Factory function.
@@ -64,6 +71,7 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   void SetMetricsClientId(const std::string& client_id) override;
   int32_t GetProduct() override;
   std::string GetApplicationLocale() override;
+  const network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   bool GetBrand(std::string* brand_code) override;
   metrics::SystemProfileProto::Channel GetChannel() override;
   bool IsExtendedStableChannel() override;
@@ -78,6 +86,7 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
       const metrics::MetricsLogUploader::UploadCallback& on_upload_complete)
       override;
   base::TimeDelta GetStandardUploadInterval() override;
+  void LoadingStateChanged(bool is_loading) override;
   void OnPluginLoadingError(const base::FilePath& plugin_path) override;
   bool IsReportingPolicyManaged() override;
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
@@ -209,8 +218,6 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 #endif
 
   base::WeakPtrFactory<ChromeMetricsServiceClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeMetricsServiceClient);
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_METRICS_SERVICE_CLIENT_H_

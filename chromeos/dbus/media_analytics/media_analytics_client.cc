@@ -32,6 +32,9 @@ class MediaAnalyticsClientImpl : public MediaAnalyticsClient {
  public:
   MediaAnalyticsClientImpl() = default;
 
+  MediaAnalyticsClientImpl(const MediaAnalyticsClientImpl&) = delete;
+  MediaAnalyticsClientImpl& operator=(const MediaAnalyticsClientImpl&) = delete;
+
   ~MediaAnalyticsClientImpl() override = default;
 
   void AddObserver(Observer* observer) override {
@@ -174,8 +177,6 @@ class MediaAnalyticsClientImpl : public MediaAnalyticsClient {
   dbus::ObjectProxy* dbus_proxy_ = nullptr;
   base::ObserverList<Observer>::Unchecked observer_list_;
   base::WeakPtrFactory<MediaAnalyticsClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaAnalyticsClientImpl);
 };
 
 MediaAnalyticsClient::MediaAnalyticsClient() {

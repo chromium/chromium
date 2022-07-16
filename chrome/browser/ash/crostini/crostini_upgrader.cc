@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/crostini/crostini_upgrader.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/system/sys_info.h"
@@ -282,10 +284,17 @@ void CrostiniUpgrader::Upgrade(const ContainerId& container_id) {
               return;
             }
 
+            ContainerVersion target_version;
+            if (base::FeatureList::IsEnabled(
+                    chromeos::features::kCrostiniBullseyeUpgrade)) {
+              target_version = ContainerVersion::BULLSEYE;
+            } else {
+              target_version = ContainerVersion::BUSTER;
+            }
+
             CrostiniManager::GetForProfile(weak_this->profile_)
                 ->UpgradeContainer(
-                    weak_this->container_id_, ContainerVersion::STRETCH,
-                    ContainerVersion::BUSTER,
+                    weak_this->container_id_, target_version,
                     base::BindOnce(&CrostiniUpgrader::OnUpgrade, weak_this));
           },
           weak_ptr_factory_.GetWeakPtr()));

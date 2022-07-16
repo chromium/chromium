@@ -25,7 +25,6 @@
 #include <unordered_set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"
@@ -63,6 +62,11 @@ class PhishingTermFeatureExtractor {
       uint32_t murmurhash3_seed,
       size_t max_shingles_per_page,
       size_t shingle_size);
+
+  PhishingTermFeatureExtractor(const PhishingTermFeatureExtractor&) = delete;
+  PhishingTermFeatureExtractor& operator=(const PhishingTermFeatureExtractor&) =
+      delete;
+
   ~PhishingTermFeatureExtractor();
 
   // Begins extracting features from |page_text| into the given FeatureMap.
@@ -159,8 +163,6 @@ class PhishingTermFeatureExtractor {
   // Used in scheduling ExtractFeaturesWithTimeout tasks.
   // These pointers are invalidated if extraction is cancelled.
   base::WeakPtrFactory<PhishingTermFeatureExtractor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PhishingTermFeatureExtractor);
 };
 
 }  // namespace safe_browsing

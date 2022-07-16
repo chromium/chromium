@@ -90,8 +90,7 @@ void SyntheticGestureController::QueueSyntheticGesture(
 
 void SyntheticGestureController::StartTimer(bool high_frequency) {
   dispatch_timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromMicroseconds(high_frequency ? 8333 : 16666),
+      FROM_HERE, base::Microseconds(high_frequency ? 8333 : 16666),
       base::BindRepeating(
           [](base::WeakPtr<SyntheticGestureController> weak_ptr) {
             if (weak_ptr)

@@ -32,7 +32,7 @@ const char kAlsaDefaultDeviceName[] = "default";
 const char kAlsaDefaultVolumeElementName[] = "Master";
 const char kAlsaMuteMixerElementName[] = "Mute";
 
-constexpr base::TimeDelta kPowerSaveCheckTime = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kPowerSaveCheckTime = base::Minutes(5);
 
 }  // namespace
 

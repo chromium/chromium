@@ -9,8 +9,8 @@
 #include "cc/paint/element_id.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/scroll_offset.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace base {
 namespace trace_event {
@@ -116,7 +116,7 @@ struct CC_EXPORT TransformNode {
   // Set to true, if the node or it's parent |will_change_transform| is true.
   bool node_or_ancestors_will_change_transform : 1;
 
-  gfx::ScrollOffset scroll_offset;
+  gfx::Vector2dF scroll_offset;
 
   // This value stores the snapped amount whenever we snap. If the snap is due
   // to a scroll, we need it to calculate fixed-pos elements adjustment, even

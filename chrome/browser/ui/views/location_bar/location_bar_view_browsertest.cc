@@ -58,6 +58,10 @@ class LocationBarViewBrowserTest : public InProcessBrowserTest {
  public:
   LocationBarViewBrowserTest() = default;
 
+  LocationBarViewBrowserTest(const LocationBarViewBrowserTest&) = delete;
+  LocationBarViewBrowserTest& operator=(const LocationBarViewBrowserTest&) =
+      delete;
+
   LocationBarView* GetLocationBarView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
@@ -69,9 +73,6 @@ class LocationBarViewBrowserTest : public InProcessBrowserTest {
         ->toolbar_button_provider()
         ->GetPageActionIconView(PageActionIconType::kZoom);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocationBarViewBrowserTest);
 };
 
 // Ensure the location bar decoration is added when zooming, and is removed when
@@ -207,14 +208,14 @@ class SecurityIndicatorTest : public InProcessBrowserTest {
 
   SecurityIndicatorTest() = default;
 
+  SecurityIndicatorTest(const SecurityIndicatorTest&) = delete;
+  SecurityIndicatorTest& operator=(const SecurityIndicatorTest&) = delete;
+
   LocationBarView* GetLocationBarView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     return browser_view->GetLocationBarView();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecurityIndicatorTest);
 };
 
 // Check that the security indicator text is not shown for HTTPS and "Not
@@ -238,12 +239,12 @@ IN_PROC_BROWSER_TEST_F(SecurityIndicatorTest, CheckIndicatorText) {
   ASSERT_TRUE(helper);
   LocationBarView* location_bar_view = GetLocationBarView();
 
-  ui_test_utils::NavigateToURL(browser(), kMockSecureURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kMockSecureURL));
   EXPECT_EQ(security_state::SECURE, helper->GetSecurityLevel());
   EXPECT_FALSE(location_bar_view->location_icon_view()->ShouldShowLabel());
   EXPECT_TRUE(location_bar_view->location_icon_view()->GetText().empty());
 
-  ui_test_utils::NavigateToURL(browser(), kMockNonsecureURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kMockNonsecureURL));
   EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
   EXPECT_TRUE(location_bar_view->location_icon_view()->ShouldShowLabel());
   EXPECT_TRUE(base::LowerCaseEqualsASCII(
@@ -407,7 +408,7 @@ class LockIconPolicyTest : public policy::PolicyTest {
 
   void NavigateAndExpectIcon(const GURL& url,
                              const gfx::VectorIcon& expected_vector_icon) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
         expected_vector_icon, gfx::kFaviconSize, gfx::kPlaceholderColor);
     gfx::ImageSkia icon =

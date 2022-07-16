@@ -101,6 +101,8 @@ api::automation::MarkerType ConvertMarkerTypeFromAXToAutomation(
       return api::automation::MARKER_TYPE_ACTIVESUGGESTION;
     case ax::mojom::MarkerType::kSuggestion:
       return api::automation::MARKER_TYPE_SUGGESTION;
+    case ax::mojom::MarkerType::kHighlight:
+      return api::automation::MARKER_TYPE_HIGHLIGHT;
   }
 }
 
@@ -551,6 +553,9 @@ class AutomationMessageFilter : public IPC::MessageFilter {
     content::RenderThread::Get()->AddFilter(this);
   }
 
+  AutomationMessageFilter(const AutomationMessageFilter&) = delete;
+  AutomationMessageFilter& operator=(const AutomationMessageFilter&) = delete;
+
   void Detach() {
     owner_ = nullptr;
     Remove();
@@ -589,8 +594,6 @@ class AutomationMessageFilter : public IPC::MessageFilter {
   AutomationInternalCustomBindings* owner_;
   bool removed_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationMessageFilter);
 };
 
 AutomationInternalCustomBindings::AutomationInternalCustomBindings(
@@ -1525,6 +1528,46 @@ void AutomationInternalCustomBindings::AddRoutes() {
             v8::String::NewFromUtf8(isolate, current_state_string.c_str())
                 .ToLocalChecked());
       });
+  RouteNodeIDFunction(
+      "GetInvalidState",
+      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
+        ax::mojom::InvalidState invalid_state = node->GetInvalidState();
+        if (invalid_state == ax::mojom::InvalidState::kNone)
+          return;
+        const std::string& invalid_state_string = ui::ToString(invalid_state);
+        result.Set(
+            v8::String::NewFromUtf8(isolate, invalid_state_string.c_str())
+                .ToLocalChecked());
+      });
+  RouteNodeIDFunction(
+      "GetIsButton",
+      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
+        bool value = ui::IsButton(node->GetRole());
+        result.Set(v8::Boolean::New(isolate, value));
+      });
+  RouteNodeIDFunction(
+      "GetIsCheckBox",
+      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
+        bool value = ui::IsCheckBox(node->GetRole());
+        result.Set(v8::Boolean::New(isolate, value));
+      });
+  RouteNodeIDFunction(
+      "GetIsComboBox",
+      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
+        bool value = ui::IsComboBox(node->GetRole());
+        result.Set(v8::Boolean::New(isolate, value));
+      });
+  RouteNodeIDFunction(
+      "GetIsImage",
+      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
+        bool value = ui::IsImage(node->GetRole());
+        result.Set(v8::Boolean::New(isolate, value));
+      });
   RouteNodeIDPlusStringBoolFunction(
       "GetNextTextMatch",
       [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
@@ -2095,8 +2138,10 @@ void AutomationInternalCustomBindings::UpdateOverallTreeChangeObserverFilter() {
 
 ui::AXNode* AutomationInternalCustomBindings::GetParent(
     ui::AXNode* node,
-    AutomationAXTreeWrapper** in_out_tree_wrapper) const {
-  if (node->HasStringAttribute(ax::mojom::StringAttribute::kAppId)) {
+    AutomationAXTreeWrapper** in_out_tree_wrapper,
+    bool should_use_app_id) const {
+  if (should_use_app_id &&
+      node->HasStringAttribute(ax::mojom::StringAttribute::kAppId)) {
     ui::AXNode* parent_app_node =
         AutomationAXTreeWrapper::GetParentTreeNodeForAppID(
             node->GetStringAttribute(ax::mojom::StringAttribute::kAppId), this);
@@ -2248,13 +2293,6 @@ ui::AXNode* AutomationInternalCustomBindings::GetPreviousInTreeOrder(
     }
   }
   return walker;
-}
-
-float AutomationInternalCustomBindings::GetDeviceScaleFactor() const {
-  // |context| and/or its RenderFrame might be nullptr in tests.
-  if (device_scale_factor_for_test_)
-    return *device_scale_factor_for_test_;
-  return context()->GetRenderFrame()->GetDeviceScaleFactor();
 }
 
 void AutomationInternalCustomBindings::RouteTreeIDFunction(
@@ -2430,6 +2468,11 @@ bool AutomationInternalCustomBindings::SendTreeChangeEvent(
     if (!tree_wrapper || !tree_wrapper->tree()->data().loaded)
       SendChildTreeIDEvent(child_tree_id);
   }
+
+  // At this point, don't bother dispatching to js if the node is ignored. A js
+  // client shouldn't process ignored nodes.
+  if (node->IsIgnored())
+    return false;
 
   bool has_filter = false;
   if (tree_change_observer_overall_filter_ &
@@ -2841,9 +2884,10 @@ gfx::Rect AutomationInternalCustomBindings::ComputeGlobalNodeBounds(
     bounds = tree_wrapper->tree()->RelativeToTreeBounds(node, bounds, offscreen,
                                                         clip_bounds);
 
+    bool should_use_app_id = tree_wrapper->tree()->root() == node;
     AutomationAXTreeWrapper* previous_tree_wrapper = tree_wrapper;
-    ui::AXNode* parent_of_root =
-        GetParent(tree_wrapper->tree()->root(), &tree_wrapper);
+    ui::AXNode* parent_of_root = GetParent(tree_wrapper->tree()->root(),
+                                           &tree_wrapper, should_use_app_id);
     if (parent_of_root == node)
       break;
 
@@ -2872,7 +2916,10 @@ gfx::Rect AutomationInternalCustomBindings::ComputeGlobalNodeBounds(
     // that does not, unscale by the device scale factor.
     if (previous_tree_wrapper->HasDeviceScaleFactor() &&
         !tree_wrapper->HasDeviceScaleFactor()) {
-      float scale_factor = GetDeviceScaleFactor();
+      // TODO(crbug/1234225): This calculation should be included in
+      // |AXRelativeBounds::transform|.
+      const float scale_factor = parent_of_root->data().GetFloatAttribute(
+          ax::mojom::FloatAttribute::kChildTreeScale);
       if (scale_factor > 0)
         bounds.Scale(1.0 / scale_factor);
     }

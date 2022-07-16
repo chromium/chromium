@@ -27,8 +27,9 @@
 using content::MockNavigationHandle;
 using content::NavigationThrottle;
 
-using ::testing::Return;
 using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::Return;
 
 namespace browser_switcher {
 
@@ -69,7 +70,7 @@ class BrowserSwitcherNavigationThrottleTest
 
   std::unique_ptr<MockNavigationHandle> CreateMockNavigationHandle(
       const GURL& url) {
-    return std::make_unique<MockNavigationHandle>(url, main_rfh());
+    return std::make_unique<NiceMock<MockNavigationHandle>>(url, main_rfh());
   }
 
   std::unique_ptr<NavigationThrottle> CreateNavigationThrottle(
@@ -79,15 +80,20 @@ class BrowserSwitcherNavigationThrottleTest
 
   MockBrowserSwitcherSitelist* sitelist() { return sitelist_; }
 
+  Decision stay() { return {kStay, kDefault, nullptr}; }
+
+  Decision go() { return {kGo, kSitelist, bogus_rule_.get()}; }
+
  private:
   MockBrowserSwitcherSitelist* sitelist_;
+
+  std::unique_ptr<Rule> bogus_rule_ =
+      CanonicalizeRule("//example.com/", ParsingMode::kDefault);
 };
 
-Decision STAY = {kStay, kDefault, ""};
-Decision GO = {kGo, kSitelist, "example.com"};
 
 TEST_F(BrowserSwitcherNavigationThrottleTest, ShouldIgnoreNavigation) {
-  EXPECT_CALL(*sitelist(), GetDecision(_)).WillOnce(Return(STAY));
+  EXPECT_CALL(*sitelist(), GetDecision(_)).WillOnce(Return(stay()));
   std::unique_ptr<MockNavigationHandle> handle =
       CreateMockNavigationHandle(GURL("https://example.com/"));
   std::unique_ptr<NavigationThrottle> throttle =
@@ -96,7 +102,7 @@ TEST_F(BrowserSwitcherNavigationThrottleTest, ShouldIgnoreNavigation) {
 }
 
 TEST_F(BrowserSwitcherNavigationThrottleTest, LaunchesOnStartRequest) {
-  EXPECT_CALL(*sitelist(), GetDecision(_)).WillOnce(Return(GO));
+  EXPECT_CALL(*sitelist(), GetDecision(_)).WillOnce(Return(go()));
   std::unique_ptr<MockNavigationHandle> handle =
       CreateMockNavigationHandle(GURL("https://example.com/"));
   std::unique_ptr<NavigationThrottle> throttle =
@@ -108,8 +114,8 @@ TEST_F(BrowserSwitcherNavigationThrottleTest, LaunchesOnStartRequest) {
 
 TEST_F(BrowserSwitcherNavigationThrottleTest, LaunchesOnRedirectRequest) {
   EXPECT_CALL(*sitelist(), GetDecision(_))
-      .WillOnce(Return(STAY))
-      .WillOnce(Return(GO));
+      .WillOnce(Return(stay()))
+      .WillOnce(Return(go()));
   std::unique_ptr<MockNavigationHandle> handle =
       CreateMockNavigationHandle(GURL("https://yahoo.com/"));
   std::unique_ptr<NavigationThrottle> throttle =

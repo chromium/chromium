@@ -31,7 +31,7 @@ content::WebUIDataSource* CreateQuotaInternalsHTMLSource() {
   source->AddResourcePath("", IDR_QUOTA_INTERNALS_MAIN_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types cr-ui-tree-js-static;");
+      "trusted-types static-types;");
   return source;
 }
 

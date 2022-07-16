@@ -35,7 +35,7 @@
 
 namespace blink {
 
-void AudioChannel::ResizeSmaller(size_t new_length) {
+void AudioChannel::ResizeSmaller(uint32_t new_length) {
   DCHECK_LE(new_length, length_);
   length_ = new_length;
 }

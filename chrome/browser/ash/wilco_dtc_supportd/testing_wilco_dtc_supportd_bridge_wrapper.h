@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/services/wilco_dtc_supportd/public/mojom/wilco_dtc_supportd.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -36,6 +35,11 @@ class TestingWilcoDtcSupportdBridgeWrapper final {
           mojo_wilco_dtc_supportd_service,
       std::unique_ptr<WilcoDtcSupportdNetworkContext> network_context,
       std::unique_ptr<WilcoDtcSupportdBridge>* bridge);
+
+  TestingWilcoDtcSupportdBridgeWrapper(
+      const TestingWilcoDtcSupportdBridgeWrapper&) = delete;
+  TestingWilcoDtcSupportdBridgeWrapper& operator=(
+      const TestingWilcoDtcSupportdBridgeWrapper&) = delete;
 
   ~TestingWilcoDtcSupportdBridgeWrapper();
 
@@ -92,8 +96,6 @@ class TestingWilcoDtcSupportdBridgeWrapper final {
           chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdService>
           mojo_wilco_dtc_supportd_service_receiver)>
       mojo_get_service_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingWilcoDtcSupportdBridgeWrapper);
 };
 
 }  // namespace ash

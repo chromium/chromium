@@ -95,9 +95,14 @@ installation path of Visual Studio 2017 or 19, like
 `set vs2019_install=C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional`
 for Visual Studio 2019.
 
-From a cmd.exe shell, run the command gclient (without arguments). On first
-run, gclient will install all the Windows-specific bits needed to work with
-the code, including msysgit and python.
+From a cmd.exe shell, run:
+
+```shell
+$ gclient
+```
+
+On first run, gclient will install all the Windows-specific bits needed to work
+with the code, including msysgit and python.
 
 * If you run gclient from a non-cmd shell (e.g., cygwin, PowerShell),
   it may appear to run properly, but msysgit, python, and other tools

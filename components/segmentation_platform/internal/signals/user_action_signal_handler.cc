@@ -6,16 +6,14 @@
 
 #include "base/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/time/clock.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 
 namespace segmentation_platform {
 
 UserActionSignalHandler::UserActionSignalHandler(
-    SignalDatabase* signal_database,
-    base::Clock* clock)
-    : db_(signal_database), clock_(clock), metrics_enabled_(false) {
+    SignalDatabase* signal_database)
+    : db_(signal_database), metrics_enabled_(false) {
   action_callback_ = base::BindRepeating(&UserActionSignalHandler::OnUserAction,
                                          weak_ptr_factory_.GetWeakPtr());
 }
@@ -53,7 +51,7 @@ void UserActionSignalHandler::OnUserAction(const std::string& user_action,
     return;
 
   db_->WriteSample(proto::SignalType::USER_ACTION, user_action_hash,
-                   absl::nullopt, clock_->Now(), base::DoNothing());
+                   absl::nullopt, base::DoNothing());
 }
 
 }  // namespace segmentation_platform

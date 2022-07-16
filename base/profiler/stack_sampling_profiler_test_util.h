@@ -6,6 +6,7 @@
 #define BASE_PROFILER_STACK_SAMPLING_PROFILER_TEST_UTIL_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
@@ -25,6 +26,10 @@ class ModuleCache;
 class TargetThread : public PlatformThread::Delegate {
  public:
   TargetThread(OnceClosure to_run);
+
+  TargetThread(const TargetThread&) = delete;
+  TargetThread& operator=(const TargetThread&) = delete;
+
   ~TargetThread() override;
 
   // PlatformThread::Delegate:
@@ -35,8 +40,6 @@ class TargetThread : public PlatformThread::Delegate {
  private:
   SamplingProfilerThreadToken thread_token_ = {0};
   OnceClosure to_run_;
-
-  DISALLOW_COPY_AND_ASSIGN(TargetThread);
 };
 
 // Addresses near the start and end of a function.

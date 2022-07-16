@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -32,6 +31,10 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   AutocompleteControllerAndroid(
       Profile* profile,
       std::unique_ptr<ChromeAutocompleteProviderClient> client);
+
+  AutocompleteControllerAndroid(const AutocompleteControllerAndroid&) = delete;
+  AutocompleteControllerAndroid& operator=(
+      const AutocompleteControllerAndroid&) = delete;
 
   // Methods that forward to AutocompleteController:
   void Start(JNIEnv* env,
@@ -70,15 +73,15 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       const base::android::JavaParamRef<jobject>& j_web_contents);
   void DeleteSuggestion(JNIEnv* env, jint selected_index);
   base::android::ScopedJavaLocalRef<jobject>
-  UpdateMatchDestinationURLWithQueryFormulationTime(
+  UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
       JNIEnv* env,
       jint selected_index,
       jlong elapsed_time_since_input_change,
       const base::android::JavaParamRef<jstring>& jnew_query_text,
       const base::android::JavaParamRef<jobjectArray>& jnew_query_params);
-  base::android::ScopedJavaLocalRef<jobject> FindMatchingTabWithUrl(
+  base::android::ScopedJavaLocalRef<jobject> GetMatchingTabForSuggestion(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_gurl);
+      jint index);
 
   // KeyedService:
   void Shutdown() override;
@@ -169,8 +172,6 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // Retained throughout the lifetime of the AutocompleteControllerAndroid.
   const base::WeakPtrFactory<AutocompleteControllerAndroid> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteControllerAndroid);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_OMNIBOX_AUTOCOMPLETE_CONTROLLER_ANDROID_H_

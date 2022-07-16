@@ -17,11 +17,14 @@ namespace payments {
 
 class PaymentRequestShippingOptionViewControllerTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestShippingOptionViewControllerTest(
+      const PaymentRequestShippingOptionViewControllerTest&) = delete;
+  PaymentRequestShippingOptionViewControllerTest& operator=(
+      const PaymentRequestShippingOptionViewControllerTest&) = delete;
+
  protected:
   PaymentRequestShippingOptionViewControllerTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestShippingOptionViewControllerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestShippingOptionViewControllerTest,

@@ -10,7 +10,7 @@ import 'chrome://print/pdf/elements/viewer-page-indicator.js';
 import {PDFCreateOutOfProcessPlugin} from 'chrome://print/pdf/pdf_scripting_api.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise, waitAfterNextRender} from '../test_util.m.js';
+import {eventToPromise, waitAfterNextRender} from '../test_util.js';
 
 window.pdf_viewer_test = {};
 pdf_viewer_test.suiteName = 'PdfViewerTest';
@@ -27,7 +27,7 @@ suite(pdf_viewer_test.suiteName, function() {
 
   test(assert(pdf_viewer_test.TestNames.Basic), async () => {
     const plugin = PDFCreateOutOfProcessPlugin(
-        'chrome://print/test.pdf', 'chrome://print/pdf');
+        'chrome-untrusted://print/test.pdf', 'chrome://print/pdf');
 
     const loaded = eventToPromise('load', plugin);
     document.body.appendChild(plugin);

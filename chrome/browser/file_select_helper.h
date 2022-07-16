@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
@@ -53,6 +52,9 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
                          public content::RenderWidgetHostObserver,
                          private net::DirectoryLister::DirectoryListerDelegate {
  public:
+  FileSelectHelper(const FileSelectHelper&) = delete;
+  FileSelectHelper& operator=(const FileSelectHelper&) = delete;
+
   // Show the file chooser dialog.
   static void RunFileChooser(
       content::RenderFrameHost* render_frame_host,
@@ -311,8 +313,6 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
 
   // Set to false in unit tests since there is no WebContents.
   bool abort_on_missing_web_contents_in_tests_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSelectHelper);
 };
 
 #endif  // CHROME_BROWSER_FILE_SELECT_HELPER_H_

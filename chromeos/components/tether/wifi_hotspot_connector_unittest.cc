@@ -39,8 +39,7 @@ const char kOtherWifiServiceGuid[] = "otherWifiServiceGuid";
 const char kTetherNetworkGuid[] = "tetherNetworkGuid";
 const char kTetherNetworkGuid2[] = "tetherNetworkGuid2";
 
-constexpr base::TimeDelta kConnectionToHotspotTime =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kConnectionToHotspotTime = base::Seconds(20);
 
 std::string CreateConfigurationJsonString(const std::string& guid) {
   std::stringstream ss;
@@ -141,6 +140,10 @@ class WifiHotspotConnectorTest : public testing::Test {
   };
 
   WifiHotspotConnectorTest() = default;
+
+  WifiHotspotConnectorTest(const WifiHotspotConnectorTest&) = delete;
+  WifiHotspotConnectorTest& operator=(const WifiHotspotConnectorTest&) = delete;
+
   ~WifiHotspotConnectorTest() override = default;
 
   void SetUp() override {
@@ -191,8 +194,7 @@ class WifiHotspotConnectorTest : public testing::Test {
 
   void VerifyTimerSet() {
     EXPECT_TRUE(mock_timer_->IsRunning());
-    EXPECT_EQ(base::TimeDelta::FromSeconds(
-                  WifiHotspotConnector::kConnectionTimeoutSeconds),
+    EXPECT_EQ(base::Seconds(WifiHotspotConnector::kConnectionTimeoutSeconds),
               mock_timer_->GetCurrentDelay());
   }
 
@@ -315,9 +317,6 @@ class WifiHotspotConnectorTest : public testing::Test {
   std::unique_ptr<WifiHotspotConnector> wifi_hotspot_connector_;
 
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WifiHotspotConnectorTest);
 };
 
 TEST_F(WifiHotspotConnectorTest, TestConnect_NetworkDoesNotBecomeConnectable) {
@@ -501,7 +500,7 @@ TEST_F(WifiHotspotConnectorTest,
   // Pass some arbitrary time -- this should not affect the
   // recorded duration because the start time should be reset
   // for a new network attempt.
-  test_clock_.Advance(base::TimeDelta::FromSeconds(13));
+  test_clock_.Advance(base::Seconds(13));
 
   // Before network becomes connectable, start the new connection.
   EXPECT_EQ(0u, connection_callback_responses_.size());
@@ -560,7 +559,7 @@ TEST_F(WifiHotspotConnectorTest,
   // Pass some arbitrary time -- this should not affect the
   // recorded duration because the start time should be reset
   // for a new network attempt.
-  test_clock_.Advance(base::TimeDelta::FromSeconds(13));
+  test_clock_.Advance(base::Seconds(13));
 
   std::string wifi_guid1 = VerifyLastConfiguration("ssid1", "password1");
   EXPECT_FALSE(wifi_guid1.empty());
@@ -775,7 +774,7 @@ TEST_F(WifiHotspotConnectorTest,
   // Pass some arbitrary time -- this should not affect the
   // recorded duration because the start time should be reset
   // for a new network attempt.
-  test_clock_.Advance(base::TimeDelta::FromSeconds(13));
+  test_clock_.Advance(base::Seconds(13));
 
   EXPECT_FALSE(test_network_connect_->last_configuration());
 

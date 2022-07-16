@@ -59,7 +59,7 @@ class CORE_EXPORT ValueWrapperSyntheticModuleScript final
                                     const TextPosition& start_position);
 
   // <specdef
-  // href="https://heycam.github.io/webidl/#synthetic-module-record">
+  // href="https://webidl.spec.whatwg.org/#synthetic-module-record">
   // An abstract operation that will be performed upon evaluation of the module,
   // taking the Synthetic Module Record as its sole argument. These will usually
   // set up the exported values, by using SetSyntheticModuleExport. They must

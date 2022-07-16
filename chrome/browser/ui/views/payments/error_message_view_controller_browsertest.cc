@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
@@ -17,11 +16,14 @@
 namespace payments {
 
 class PaymentRequestErrorMessageTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestErrorMessageTest(const PaymentRequestErrorMessageTest&) =
+      delete;
+  PaymentRequestErrorMessageTest& operator=(
+      const PaymentRequestErrorMessageTest&) = delete;
+
  protected:
   PaymentRequestErrorMessageTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestErrorMessageTest);
 };
 
 // Testing the use of the complete('fail') JS API and the error message.

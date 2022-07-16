@@ -1,11 +1,11 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View
-++++android.widget.Spinner role_description='pop up button' clickable focusable name='Placeholder option'
-++++android.widget.Spinner role_description='pop up button' clickable focusable name='Option 2'
-++++android.widget.Spinner role_description='pop up button' clickable focusable name='Option 1'
-++++android.widget.Spinner role_description='pop up button' clickable focusable multiselectable name='0 selected' state_description='multiselectable, none selected.'
-++++android.widget.Spinner role_description='pop up button' clickable focusable
-++++++android.view.View clickable invisible
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable name='Placeholder option'
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable name='Option 2'
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable name='Option 1'
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable multiselectable name='0 selected'
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable
+++++++android.view.View invisible
 ++++++++android.view.View clickable focusable invisible name='Option 1'
 ++++++++android.view.View clickable focusable invisible name='Option 2' item_index=1 row_index=1
 ++++++++android.view.View clickable focusable invisible name='Option 3' item_index=2 row_index=2

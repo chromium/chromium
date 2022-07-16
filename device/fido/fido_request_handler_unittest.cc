@@ -72,6 +72,10 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
       FidoRequestHandlerBase::TransportAvailabilityInfo>;
 
   TestObserver() = default;
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   FidoRequestHandlerBase::TransportAvailabilityInfo
@@ -126,8 +130,6 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
  private:
   TransportAvailabilityNotificationReceiver
       transport_availability_notification_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 // Fake FidoTask implementation that sends an empty byte array to the device
@@ -412,7 +414,7 @@ TEST_F(FidoRequestHandlerTest, TestRequestWithMultipleSuccessResponses) {
   EXPECT_CALL(*device0, GetId()).WillRepeatedly(testing::Return("device0"));
   device0->ExpectRequestAndRespondWith(std::vector<uint8_t>(),
                                        CreateFakeSuccessDeviceResponse(),
-                                       base::TimeDelta::FromMicroseconds(1));
+                                       base::Microseconds(1));
 
   // Represents a device that returns a success response after a longer time
   // delay.
@@ -423,7 +425,7 @@ TEST_F(FidoRequestHandlerTest, TestRequestWithMultipleSuccessResponses) {
   EXPECT_CALL(*device1, GetId()).WillRepeatedly(testing::Return("device1"));
   device1->ExpectRequestAndRespondWith(std::vector<uint8_t>(),
                                        CreateFakeSuccessDeviceResponse(),
-                                       base::TimeDelta::FromMicroseconds(10));
+                                       base::Microseconds(10));
   // Cancel command is invoked after receiving response from |device0|.
   EXPECT_CALL(*device1, Cancel(_));
 
@@ -468,7 +470,7 @@ TEST_F(FidoRequestHandlerTest, TestRequestWithMultipleFailureResponses) {
       .WillRepeatedly(testing::Return(std::string()));
   device1->ExpectRequestAndRespondWith(std::vector<uint8_t>(),
                                        CreateFakeUserPresenceVerifiedError(),
-                                       base::TimeDelta::FromMicroseconds(1));
+                                       base::Microseconds(1));
 
   // Represents a device that returns an UP verified failure response after a
   // big time delay.
@@ -481,7 +483,7 @@ TEST_F(FidoRequestHandlerTest, TestRequestWithMultipleFailureResponses) {
       .WillRepeatedly(testing::Return(std::string()));
   device2->ExpectRequestAndRespondWith(std::vector<uint8_t>(),
                                        CreateFakeDeviceProcesssingError(),
-                                       base::TimeDelta::FromMicroseconds(10));
+                                       base::Microseconds(10));
   EXPECT_CALL(*device2, Cancel(_));
 
   discovery()->AddDevice(std::move(device0));
@@ -506,7 +508,7 @@ TEST_F(FidoRequestHandlerTest,
   device0->SetDeviceTransport(FidoTransportProtocol::kInternal);
   device0->ExpectRequestAndRespondWith(std::vector<uint8_t>(),
                                        CreateFakeOperationDeniedError(),
-                                       base::TimeDelta::FromMicroseconds(10));
+                                       base::Microseconds(10));
 
   ForgeNextHidDiscovery();
   auto* platform_discovery =

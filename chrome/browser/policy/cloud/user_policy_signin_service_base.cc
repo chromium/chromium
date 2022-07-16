@@ -9,11 +9,16 @@
 #include "base/bind.h"
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/common/chrome_content_client.h"
@@ -95,7 +100,15 @@ void UserPolicySigninServiceBase::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    profile()->GetPrefs()->ClearPref(prefs::kUserAcceptedAccountManagement);
+    if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
+      ProfileManager* profile_manager = g_browser_process->profile_manager();
+      DCHECK(profile_manager);
+      ProfileAttributesEntry* entry =
+          profile_manager->GetProfileAttributesStorage()
+              .GetProfileAttributesWithPath(profile_->GetPath());
+      if (entry)
+        entry->SetUserAcceptedAccountManagement(false);
+    }
     ShutdownUserCloudPolicyManager();
   } else if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
                  signin::PrimaryAccountChangeEvent::Type::kCleared &&
@@ -179,7 +192,7 @@ UserPolicySigninServiceBase::CreateClientForRegistrationOnly(
 
   // If the user should not get policy, just bail out.
   if (!policy_manager() || !ShouldLoadPolicyForUser(username)) {
-    DVLOG(1) << "Signed in user is not in the whitelist";
+    DVLOG(1) << "Signed in user is not in the allowlist";
     return nullptr;
   }
 
@@ -288,8 +301,7 @@ bool UserPolicySigninServiceBase::CanApplyPoliciesForSignedInUser(
                       signin::ConsentLevel::kSignin)
                 : identity_manager()->HasPrimaryAccount(
                       signin::ConsentLevel::kSignin)) &&
-           profile()->GetPrefs()->GetBoolean(
-               prefs::kUserAcceptedAccountManagement);
+           chrome::enterprise_util::ProfileCanBeManaged(profile());
   }
 
   return check_for_refresh_token

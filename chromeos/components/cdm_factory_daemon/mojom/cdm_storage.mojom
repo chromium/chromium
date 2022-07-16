@@ -13,6 +13,7 @@ module chromeos.cdm.mojom;
 // version management so we can handle version diffs between Chrome and
 // Chrome OS.
 // Next Method ID: 5
+[Stable, Uuid="aaecebab-df8e-4047-a6ff-87fd251bf8c6"]
 interface CdmStorage {
   // Reads the contents of |file_name| and return them in |data|. Returns
   // true and the file contents if successful. Errors reading the file or

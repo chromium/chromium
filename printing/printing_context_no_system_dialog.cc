@@ -20,7 +20,8 @@ namespace printing {
 
 #if !defined(USE_CUPS)
 // static
-std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
+std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
+    Delegate* delegate) {
   return std::make_unique<PrintingContextNoSystemDialog>(delegate);
 }
 #endif  // !defined(USE_CUPS)
@@ -38,10 +39,10 @@ void PrintingContextNoSystemDialog::AskUserForSettings(
     bool is_scripted,
     PrintSettingsCallback callback) {
   // We don't want to bring up a dialog here.  Ever.  Just signal the callback.
-  std::move(callback).Run(OK);
+  std::move(callback).Run(mojom::ResultCode::kSuccess);
 }
 
-PrintingContext::Result PrintingContextNoSystemDialog::UseDefaultSettings() {
+mojom::ResultCode PrintingContextNoSystemDialog::UseDefaultSettings() {
   DCHECK(!in_print_job_);
 
   ResetSettings();
@@ -51,7 +52,7 @@ PrintingContext::Result PrintingContextNoSystemDialog::UseDefaultSettings() {
   gfx::Rect printable_area(0, 0, physical_size.width(), physical_size.height());
   DCHECK_EQ(settings_->device_units_per_inch(), kDefaultPdfDpi);
   settings_->SetPrinterPrintableArea(physical_size, printable_area, true);
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
 gfx::Size PrintingContextNoSystemDialog::GetPdfPaperSizeDeviceUnits() {
@@ -78,7 +79,7 @@ gfx::Size PrintingContextNoSystemDialog::GetPdfPaperSizeDeviceUnits() {
   return gfx::Size(width, height);
 }
 
-PrintingContext::Result PrintingContextNoSystemDialog::UpdatePrinterSettings(
+mojom::ResultCode PrintingContextNoSystemDialog::UpdatePrinterSettings(
     bool external_preview,
     bool show_system_dialog,
     int page_count) {
@@ -87,44 +88,44 @@ PrintingContext::Result PrintingContextNoSystemDialog::UpdatePrinterSettings(
   if (settings_->dpi() == 0)
     UseDefaultSettings();
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextNoSystemDialog::NewDocument(
+mojom::ResultCode PrintingContextNoSystemDialog::NewDocument(
     const std::u16string& document_name) {
   DCHECK(!in_print_job_);
   in_print_job_ = true;
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextNoSystemDialog::NewPage() {
+mojom::ResultCode PrintingContextNoSystemDialog::NewPage() {
   if (abort_printing_)
-    return CANCEL;
+    return mojom::ResultCode::kCanceled;
   DCHECK(in_print_job_);
 
   // Intentional No-op.
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextNoSystemDialog::PageDone() {
+mojom::ResultCode PrintingContextNoSystemDialog::PageDone() {
   if (abort_printing_)
-    return CANCEL;
+    return mojom::ResultCode::kCanceled;
   DCHECK(in_print_job_);
 
   // Intentional No-op.
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextNoSystemDialog::DocumentDone() {
+mojom::ResultCode PrintingContextNoSystemDialog::DocumentDone() {
   if (abort_printing_)
-    return CANCEL;
+    return mojom::ResultCode::kCanceled;
   DCHECK(in_print_job_);
 
   ResetSettings();
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
 void PrintingContextNoSystemDialog::Cancel() {

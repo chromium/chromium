@@ -19,6 +19,7 @@ constexpr int kPrintExpectationDelayMs = 3000;
 }  // namespace
 
 SpeechMonitor::SpeechMonitor() {
+  content::TtsController::SkipAddNetworkChangeObserverForTests(true);
   content::TtsController::GetInstance()->SetTtsPlatform(this);
 }
 
@@ -241,7 +242,7 @@ void SpeechMonitor::MaybeContinueReplay() {
         FROM_HERE,
         base::BindOnce(&SpeechMonitor::MaybePrintExpectations,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kPrintExpectationDelayMs));
+        base::Milliseconds(kPrintExpectationDelayMs));
 
     if (!replay_loop_runner_.get()) {
       replay_loop_runner_ = new content::MessageLoopRunner();

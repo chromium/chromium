@@ -16,6 +16,7 @@ altimin@chromium.org
 arthursonzogni@chromium.org
 creis@chromium.org
 nasko@chromium.org
+rakina@chromium.org
 
 # Aura platform code.
 per-file *aura*=sadrul@chromium.org
@@ -33,6 +34,10 @@ per-file embedded_frame_sink*.*=kylechar@chromium.org
 # DirectWrite font code.
 per-file dwrite_*=drott@chromium.org
 
+# BackForwardCache.
+per-file back_forward_cache*=altimin@chromium.org
+per-file back_forward_cache*=rakina@chromium.org
+
 # Clipboard
 per-file *clipboard_host_impl*=mek@chromium.org
 per-file *clipboard_host_impl*=pwnall@chromium.org
@@ -43,3 +48,6 @@ per-file agent_scheduling_group*=talp@chromium.org
 per-file agent_scheduling_group*=dom@chromium.org
 per-file agent_scheduling_group*=kouhei@chromium.org
 per-file agent_scheduling_group*=haraken@chromium.org
+
+per-file *_sandboxed*.*=set noparent
+per-file *_sandboxed*.*=file://ipc/SECURITY_OWNERS

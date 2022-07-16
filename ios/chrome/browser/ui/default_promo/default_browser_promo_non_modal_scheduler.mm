@@ -39,6 +39,9 @@ const int64_t kShowPromoPostShareWaitTime = 1;
 // Number of times to show the promo to a user.
 const int kPromoShownTimesLimit = 2;
 
+// Timeout before the promo is dismissed.
+const double kPromoTimeout = 45;
+
 bool PromoCanBeDisplayed() {
   return !IsChromeLikelyDefaultBrowser() && !UserInPromoCooldown() &&
          UserInteractionWithNonModalPromoCount() < kPromoShownTimesLimit;
@@ -55,16 +58,12 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
   switch (reason) {
     case PromoReasonNone:
       return NonModalPromoTriggerType::kUnknown;
-      break;
     case PromoReasonOmniboxPaste:
       return NonModalPromoTriggerType::kPastedLink;
-      break;
     case PromoReasonExternalLink:
       return NonModalPromoTriggerType::kGrowthKitOpen;
-      break;
     case PromoReasonShare:
       return NonModalPromoTriggerType::kShare;
-      break;
 
     default:
       NOTREACHED();
@@ -195,17 +194,10 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
   self.promoShownTime = base::TimeTicks();
   LogUserInteractionWithNonModalPromo();
 
-  if (NonModalPromosInstructionsEnabled()) {
-    id<ApplicationSettingsCommands> handler =
-        HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands);
-    [handler showDefaultBrowserSettingsFromViewController:nil];
-  } else {
-    NSURL* settingsURL =
-        [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-    [[UIApplication sharedApplication] openURL:settingsURL
-                                       options:{}
-                             completionHandler:nil];
-  }
+  NSURL* settingsURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+  [[UIApplication sharedApplication] openURL:settingsURL
+                                     options:@{}
+                           completionHandler:nil];
 }
 
 - (void)logUserDismissedPromo {
@@ -370,8 +362,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
   __weak __typeof(self) weakSelf = self;
   _showPromoTimer = std::make_unique<base::OneShotTimer>();
-  _showPromoTimer->Start(FROM_HERE,
-                         base::TimeDelta::FromSeconds(promoTimeInterval),
+  _showPromoTimer->Start(FROM_HERE, base::Seconds(promoTimeInterval),
                          base::BindOnce(^{
                            [weakSelf showPromoTimerFinished];
                          }));
@@ -407,11 +398,10 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
   __weak __typeof(self) weakSelf = self;
   _dismissPromoTimer = std::make_unique<base::OneShotTimer>();
-  _dismissPromoTimer->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(NonModalPromosTimeout()),
-      base::BindOnce(^{
-        [weakSelf dismissPromoTimerFinished];
-      }));
+  _dismissPromoTimer->Start(FROM_HERE, base::Seconds(kPromoTimeout),
+                            base::BindOnce(^{
+                              [weakSelf dismissPromoTimerFinished];
+                            }));
 }
 
 - (void)cancelDismissPromoTimer {

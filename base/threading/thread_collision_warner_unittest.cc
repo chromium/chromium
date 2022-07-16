@@ -128,6 +128,9 @@ TEST(ThreadCollisionTest, MTBookCriticalSectionTest) {
         : push_pop_(asserter) {
     }
 
+    NonThreadSafeQueue(const NonThreadSafeQueue&) = delete;
+    NonThreadSafeQueue& operator=(const NonThreadSafeQueue&) = delete;
+
     void push(int value) {
       DFAKE_SCOPED_LOCK_THREAD_LOCKED(push_pop_);
     }
@@ -139,8 +142,6 @@ TEST(ThreadCollisionTest, MTBookCriticalSectionTest) {
 
    private:
     DFAKE_MUTEX(push_pop_);
-
-    DISALLOW_COPY_AND_ASSIGN(NonThreadSafeQueue);
   };
 
   class QueueUser : public base::DelegateSimpleThread::Delegate {
@@ -184,9 +185,12 @@ TEST(ThreadCollisionTest, MTScopedBookCriticalSectionTest) {
         : push_pop_(asserter) {
     }
 
+    NonThreadSafeQueue(const NonThreadSafeQueue&) = delete;
+    NonThreadSafeQueue& operator=(const NonThreadSafeQueue&) = delete;
+
     void push(int value) {
       DFAKE_SCOPED_LOCK(push_pop_);
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(5));
+      base::PlatformThread::Sleep(base::Seconds(5));
     }
 
     int pop() {
@@ -196,8 +200,6 @@ TEST(ThreadCollisionTest, MTScopedBookCriticalSectionTest) {
 
    private:
     DFAKE_MUTEX(push_pop_);
-
-    DISALLOW_COPY_AND_ASSIGN(NonThreadSafeQueue);
   };
 
   class QueueUser : public base::DelegateSimpleThread::Delegate {
@@ -241,9 +243,12 @@ TEST(ThreadCollisionTest, MTSynchedScopedBookCriticalSectionTest) {
         : push_pop_(asserter) {
     }
 
+    NonThreadSafeQueue(const NonThreadSafeQueue&) = delete;
+    NonThreadSafeQueue& operator=(const NonThreadSafeQueue&) = delete;
+
     void push(int value) {
       DFAKE_SCOPED_LOCK(push_pop_);
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(2));
+      base::PlatformThread::Sleep(base::Seconds(2));
     }
 
     int pop() {
@@ -253,8 +258,6 @@ TEST(ThreadCollisionTest, MTSynchedScopedBookCriticalSectionTest) {
 
    private:
     DFAKE_MUTEX(push_pop_);
-
-    DISALLOW_COPY_AND_ASSIGN(NonThreadSafeQueue);
   };
 
   // This time the QueueUser class protects the non thread safe queue with
@@ -309,10 +312,13 @@ TEST(ThreadCollisionTest, MTSynchedScopedRecursiveBookCriticalSectionTest) {
         : push_pop_(asserter) {
     }
 
+    NonThreadSafeQueue(const NonThreadSafeQueue&) = delete;
+    NonThreadSafeQueue& operator=(const NonThreadSafeQueue&) = delete;
+
     void push(int) {
       DFAKE_SCOPED_RECURSIVE_LOCK(push_pop_);
       bar();
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(2));
+      base::PlatformThread::Sleep(base::Seconds(2));
     }
 
     int pop() {
@@ -326,8 +332,6 @@ TEST(ThreadCollisionTest, MTSynchedScopedRecursiveBookCriticalSectionTest) {
 
    private:
     DFAKE_MUTEX(push_pop_);
-
-    DISALLOW_COPY_AND_ASSIGN(NonThreadSafeQueue);
   };
 
   // This time the QueueUser class protects the non thread safe queue with

@@ -18,7 +18,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "util/linux/address_types.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/process/process_memory_range.h"
@@ -48,6 +47,10 @@ class DebugRendezvous {
   };
 
   DebugRendezvous();
+
+  DebugRendezvous(const DebugRendezvous&) = delete;
+  DebugRendezvous& operator=(const DebugRendezvous&) = delete;
+
   ~DebugRendezvous();
 
   //! \brief Initializes this object by reading an `r_debug` struct from a
@@ -79,8 +82,6 @@ class DebugRendezvous {
   std::vector<LinkEntry> modules_;
   LinkEntry executable_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(DebugRendezvous);
 };
 
 }  // namespace crashpad

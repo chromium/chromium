@@ -14,9 +14,9 @@
 #include "base/location.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -49,6 +49,9 @@ class DataPipeProducer::SequenceState
         callback_task_runner_(std::move(callback_task_runner)),
         producer_handle_(std::move(producer_handle)),
         callback_(std::move(callback)) {}
+
+  SequenceState(const SequenceState&) = delete;
+  SequenceState& operator=(const SequenceState&) = delete;
 
   void Cancel() {
     base::AutoLock lock(lock_);
@@ -171,8 +174,6 @@ class DataPipeProducer::SequenceState
 
   base::Lock lock_;
   bool is_cancelled_ GUARDED_BY(lock_) = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SequenceState);
 };
 
 DataPipeProducer::DataPipeProducer(ScopedDataPipeProducerHandle producer)

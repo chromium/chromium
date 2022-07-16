@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
-#import "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
 #import "ios/chrome/browser/history/history_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/itunes_urls_handler_tab_helper.h"
 #include "ios/chrome/browser/pref_names.h"
@@ -191,9 +190,8 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
     reset_timer.reset();
   };
 
-  reset_timer->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kMaximumCancelledWebStateDelay),
-      base::BindOnce(reset_block));
+  reset_timer->Start(FROM_HERE, base::Seconds(kMaximumCancelledWebStateDelay),
+                     base::BindOnce(reset_block));
 
   block_web_state->GetNavigationManager()->AddRestoreCompletionCallback(
       base::BindOnce(^{
@@ -567,8 +565,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 #pragma mark - CRWWebStatePolicyDecider
 
 - (void)shouldAllowRequest:(NSURLRequest*)request
-               requestInfo:
-                   (const WebStatePolicyDecider::RequestInfo&)requestInfo
+               requestInfo:(WebStatePolicyDecider::RequestInfo)requestInfo
            decisionHandler:(PolicyDecisionHandler)decisionHandler {
   GURL requestURL = net::GURLWithNSURL(request.URL);
   // Don't allow preloading for requests that are handled by opening another

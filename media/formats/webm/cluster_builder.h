@@ -9,13 +9,17 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace media {
 
 class Cluster {
  public:
+  Cluster() = delete;
+
   Cluster(std::unique_ptr<uint8_t[]> data, int size);
+
+  Cluster(const Cluster&) = delete;
+  Cluster& operator=(const Cluster&) = delete;
+
   ~Cluster();
 
   const uint8_t* data() const { return data_.get(); }
@@ -24,13 +28,15 @@ class Cluster {
  private:
   std::unique_ptr<uint8_t[]> data_;
   int size_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Cluster);
 };
 
 class ClusterBuilder {
  public:
   ClusterBuilder();
+
+  ClusterBuilder(const ClusterBuilder&) = delete;
+  ClusterBuilder& operator=(const ClusterBuilder&) = delete;
+
   ~ClusterBuilder();
 
   void SetClusterTimecode(int64_t cluster_timecode);
@@ -79,8 +85,6 @@ class ClusterBuilder {
   int buffer_size_;
   int bytes_used_;
   int64_t cluster_timecode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClusterBuilder);
 };
 
 }  // namespace media

@@ -11,6 +11,9 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/wm/desks/desks_util.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
+#include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -91,8 +94,13 @@ void BrowserShortcutShelfItemController::ItemSelected(
     ash::ShelfLaunchSource source,
     ItemSelectedCallback callback,
     const ItemFilterPredicate& filter_predicate) {
+  Profile* profile = ChromeShelfController::instance()->profile();
+  ash::full_restore::FullRestoreService::MaybeCloseNotification(profile);
+
   if (event && (event->flags() & ui::EF_CONTROL_DOWN)) {
-    ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/false);
+    ash::NewWindowDelegate::GetInstance()->NewWindow(
+        /*incognito=*/false,
+        /*should_trigger_session_restore=*/true);
     std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
     return;
   }
@@ -107,7 +115,6 @@ void BrowserShortcutShelfItemController::ItemSelected(
     return;
   }
 
-  Profile* profile = ChromeShelfController::instance()->profile();
   Browser* last_browser = chrome::FindTabbedBrowser(profile, true);
 
   if (last_browser && !filter_predicate.is_null() &&
@@ -116,7 +123,9 @@ void BrowserShortcutShelfItemController::ItemSelected(
   }
 
   if (!last_browser) {
-    ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/false);
+    ash::NewWindowDelegate::GetInstance()->NewWindow(
+        /*incognito=*/false,
+        /*should_trigger_session_restore=*/true);
     std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
     return;
   }
@@ -159,6 +168,8 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
     if (browser->is_type_normal())
       found_tabbed_browser = true;
     if (!(event_flags & ui::EF_SHIFT_DOWN)) {
+      base::RecordAction(base::UserMetricsAction(
+          "Shelf_BrowserShortcutShelfItem_ShowWindows"));
       app_menu_items.push_back({browser, kNoTab});
       auto* tab = tab_strip->GetActiveWebContents();
       const gfx::Image& icon =
@@ -169,6 +180,8 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
       items.push_back({static_cast<int>(app_menu_items.size() - 1),
                        controller->GetAppMenuTitle(tab), icon.AsImageSkia()});
     } else {
+      base::RecordAction(
+          base::UserMetricsAction("Shelf_BrowserShortcutShelfItem_ShowTabs"));
       for (int i = 0; i < tab_strip->count(); ++i) {
         auto* tab = tab_strip->GetWebContentsAt(i);
         app_menu_items.push_back({browser, i});
@@ -254,7 +267,9 @@ BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
   }
   // If there are no suitable browsers we create a new one.
   if (items.empty()) {
-    ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/false);
+    ash::NewWindowDelegate::GetInstance()->NewWindow(
+        /*incognito=*/false,
+        /*should_trigger_session_restore=*/true);
     return ash::SHELF_ACTION_NEW_WINDOW_CREATED;
   }
   Browser* browser = BrowserList::GetInstance()->GetLastActive();

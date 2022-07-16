@@ -33,7 +33,9 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -64,11 +66,20 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   using TreeScope::SetDocument;
   using TreeScope::SetParentTreeScope;
 
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(slotchange, kSlotchange)
+
   Element& host() const {
     DCHECK(ParentOrShadowHostNode());
     return *To<Element>(ParentOrShadowHostNode());
   }
   ShadowRootType GetType() const { return static_cast<ShadowRootType>(type_); }
+  void UpdateType(ShadowRootType type) {
+    DCHECK(GetType() == ShadowRootType::kUserAgent);
+    DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+    DCHECK(IsA<HTMLSelectMenuElement>(host()))
+        << "Updating the type is only supported for <selectmenu> elements";
+    type_ = static_cast<unsigned>(type);
+  }
   String mode() const {
     switch (GetType()) {
       case ShadowRootType::kUserAgent:
@@ -87,11 +98,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
 
   bool IsOpen() const { return GetType() == ShadowRootType::kOpen; }
   bool IsUserAgent() const { return GetType() == ShadowRootType::kUserAgent; }
-
-  // TODO(crbug.com/1179356) This tracks adding name based slot assignment
-  // support for user-agent Shadow DOM.
-  void EnableNameBasedSlotAssignment();
-  bool SupportsNameBasedSlotAssignment() const;
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
@@ -137,6 +143,10 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   bool IsManualSlotting() const {
     return slot_assignment_mode_ ==
            static_cast<unsigned>(SlotAssignmentMode::kManual);
+  }
+  bool IsNamedSlotting() const {
+    return slot_assignment_mode_ ==
+           static_cast<unsigned>(SlotAssignmentMode::kNamed);
   }
   SlotAssignmentMode GetSlotAssignmentMode() const {
     return static_cast<SlotAssignmentMode>(slot_assignment_mode_);
@@ -198,8 +208,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   unsigned is_declarative_shadow_root_ : 1;
   unsigned available_to_element_internals_ : 1;
   unsigned needs_dir_auto_attribute_update_ : 1;
-  unsigned supports_name_based_slot_assignment_ : 1;
-  unsigned unused_ : 7;
+  unsigned unused_ : 8;
 };
 
 inline Element* ShadowRoot::ActiveElement() const {

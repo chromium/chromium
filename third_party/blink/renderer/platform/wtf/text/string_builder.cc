@@ -35,29 +35,29 @@
 
 namespace WTF {
 
+String StringBuilder::ReleaseString() {
+  if (!length_)
+    return g_empty_string;
+  if (string_.IsNull())
+    BuildString<String>();
+  String string = std::move(string_);
+  Clear();
+  return string;
+}
+
 String StringBuilder::ToString() {
   if (!length_)
     return g_empty_string;
-  if (string_.IsNull()) {
-    if (is_8bit_)
-      string_ = String(Characters8(), length_);
-    else
-      string_ = String(Characters16(), length_);
-    ClearBuffer();
-  }
+  if (string_.IsNull())
+    BuildString<String>();
   return string_;
 }
 
 AtomicString StringBuilder::ToAtomicString() {
   if (!length_)
     return g_empty_atom;
-  if (string_.IsNull()) {
-    if (is_8bit_)
-      string_ = AtomicString(Characters8(), length_);
-    else
-      string_ = AtomicString(Characters16(), length_);
-    ClearBuffer();
-  }
+  if (string_.IsNull())
+    BuildString<AtomicString>();
   return AtomicString(string_);
 }
 

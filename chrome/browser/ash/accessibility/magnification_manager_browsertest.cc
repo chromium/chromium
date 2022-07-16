@@ -10,7 +10,6 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/login/helper.h"
@@ -121,6 +120,10 @@ class MockMagnificationObserver {
             base::Unretained(this)));
   }
 
+  MockMagnificationObserver(const MockMagnificationObserver&) = delete;
+  MockMagnificationObserver& operator=(const MockMagnificationObserver&) =
+      delete;
+
   virtual ~MockMagnificationObserver() {}
 
   bool observed() const { return observed_; }
@@ -142,13 +145,15 @@ class MockMagnificationObserver {
   bool observed_enabled_ = false;
 
   base::CallbackListSubscription accessibility_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMagnificationObserver);
 };
 
 class MagnificationManagerTest : public InProcessBrowserTest {
  protected:
   MagnificationManagerTest() {}
+
+  MagnificationManagerTest(const MagnificationManagerTest&) = delete;
+  MagnificationManagerTest& operator=(const MagnificationManagerTest&) = delete;
+
   ~MagnificationManagerTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -165,8 +170,6 @@ class MagnificationManagerTest : public InProcessBrowserTest {
 
   const AccountId test_account_id_ =
       AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
-
-  DISALLOW_COPY_AND_ASSIGN(MagnificationManagerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MagnificationManagerTest, PRE_LoginOffToOff) {

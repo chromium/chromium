@@ -11,10 +11,10 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/sys_byteorder.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -298,13 +298,13 @@ void FakeGCMClient::SendFinished(const std::string& app_id,
         base::BindOnce(&FakeGCMClient::MessageSendError,
                        weak_ptr_factory_.GetWeakPtr(), app_id,
                        send_error_details),
-        base::TimeDelta::FromMilliseconds(200));
+        base::Milliseconds(200));
   } else if(message.id.find("ack") != std::string::npos) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&FakeGCMClient::SendAcknowledgement,
                        weak_ptr_factory_.GetWeakPtr(), app_id, message.id),
-        base::TimeDelta::FromMilliseconds(200));
+        base::Milliseconds(200));
   }
 }
 

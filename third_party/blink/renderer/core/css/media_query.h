@@ -33,6 +33,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -41,6 +42,7 @@
 
 namespace blink {
 class MediaQueryExp;
+class MediaQueryExpNode;
 
 using ExpressionHeapVector = Vector<MediaQueryExp>;
 
@@ -52,12 +54,15 @@ class CORE_EXPORT MediaQuery {
 
   static std::unique_ptr<MediaQuery> CreateNotAll();
 
-  MediaQuery(RestrictorType, String media_type, ExpressionHeapVector);
+  MediaQuery(RestrictorType,
+             String media_type,
+             std::unique_ptr<MediaQueryExpNode>);
   MediaQuery(const MediaQuery&);
   ~MediaQuery();
 
   RestrictorType Restrictor() const { return restrictor_; }
-  const ExpressionHeapVector& Expressions() const { return expressions_; }
+  PhysicalAxes QueriedAxes() const;
+  const MediaQueryExpNode* ExpNode() const { return exp_node_.get(); }
   const String& MediaType() const { return media_type_; }
   bool operator==(const MediaQuery& other) const;
   String CssText() const;
@@ -71,7 +76,7 @@ class CORE_EXPORT MediaQuery {
 
   RestrictorType restrictor_;
   String media_type_;
-  ExpressionHeapVector expressions_;
+  std::unique_ptr<MediaQueryExpNode> exp_node_;
   String serialization_cache_;
 
   String Serialize() const;

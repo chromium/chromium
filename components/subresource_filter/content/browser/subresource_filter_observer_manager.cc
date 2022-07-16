@@ -56,6 +56,6 @@ void SubresourceFilterObserverManager::NotifyIsAdSubframeChanged(
     observer.OnIsAdSubframeChanged(render_frame_host, is_ad_subframe);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SubresourceFilterObserverManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SubresourceFilterObserverManager);
 
 }  // namespace subresource_filter

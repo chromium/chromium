@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterDnsAliasResourceLoaderBrowserTest,
   EXPECT_TRUE(NavigateToURL(web_contents, url));
 
   content::RenderFrameHost* child_rfh =
-      web_contents->GetMainFrame()->GetFramesInSubtree().back();
+      ChildFrameAt(web_contents->GetMainFrame(), 0u);
 
   if (level == ActivationLevel::kEnabled)
     EXPECT_FALSE(WasParsedScriptElementLoaded(child_rfh));
@@ -195,7 +195,8 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterDnsAliasFilteringThrottleBrowserTest,
   EXPECT_TRUE(NavigateToURL(web_contents, url));
 
   content::RenderFrameHost* main_rfh = web_contents->GetMainFrame();
-  content::RenderFrameHost* child_rfh = main_rfh->GetFramesInSubtree().back();
+  content::RenderFrameHost* child_rfh =
+      ChildFrameAt(web_contents->GetMainFrame(), 0u);
 
   if (level == ActivationLevel::kEnabled) {
     EXPECT_EQ(GURL(), child_rfh->GetLastCommittedURL());

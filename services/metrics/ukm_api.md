@@ -219,7 +219,7 @@ void DidGetBackgroundSourceId(absl::optional<ukm::SourceId> source_id) {
 }
 ```
 
-For the remaining cases you may need to temporarily create your own IDs and associate the URL with them. However we currently prefer that this method is not used, and if you need to setup the URL yourself, please email us first at ukm-team@google.com.
+For the remaining cases you may need to temporarily create your own IDs and associate the URL with them. However we currently prefer that this method is not used, and if you need to setup the URL yourself, please email the OWNERS of components/ukm.
 Example:
 
 ```cpp
@@ -254,6 +254,10 @@ Build Chromium and run it with '--force-enable-metrics-reporting --metrics-uploa
 ## Unit Testing
 
 You can pass your code a TestUkmRecorder (see [//components/ukm/test_ukm_recorder.h](https://cs.chromium.org/chromium/src/components/ukm/test_ukm_recorder.h)) and then use the methods it provides to test that your data records correctly.
+
+## Adding UKMs every report
+
+Certain information may be useful to be included on every UKM upload. This may be applicable if your information is always "available" in some sense, as opposed to triggered/computed at a particular instance, which is the default. In this case, the best way to proceed is to setup a [MetricsProvider](https://source.chromium.org/chromium/src/components/metrics/metrics_provider.h). The new Provider should implement the ProvideCurrentSessionUKMData() method. Record a UKM Event within that implementation, and it will be recorded exactly once per UKM report, immediately before the information is uploaded.
 
 ## Recording Information about Subframes URLs via Categorization
 

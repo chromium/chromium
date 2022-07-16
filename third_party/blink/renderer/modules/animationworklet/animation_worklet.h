@@ -24,6 +24,10 @@ class LocalDOMWindow;
 class MODULES_EXPORT AnimationWorklet final : public Worklet {
  public:
   explicit AnimationWorklet(LocalDOMWindow&);
+
+  AnimationWorklet(const AnimationWorklet&) = delete;
+  AnimationWorklet& operator=(const AnimationWorklet&) = delete;
+
   ~AnimationWorklet() override;
 
   WorkletAnimationId NextWorkletAnimationId();
@@ -40,8 +44,6 @@ class MODULES_EXPORT AnimationWorklet final : public Worklet {
   WorkletGlobalScopeProxy* CreateGlobalScope() final;
 
   Member<AnimationWorkletProxyClient> proxy_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationWorklet);
 };
 
 }  // namespace blink

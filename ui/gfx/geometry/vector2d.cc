@@ -25,6 +25,10 @@ void Vector2d::Subtract(const Vector2d& other) {
   y_ = base::ClampSub(y_, other.y_);
 }
 
+Vector2d operator-(const Vector2d& v) {
+  return Vector2d(-base::MakeClampedNum(v.x()), -base::MakeClampedNum(v.y()));
+}
+
 int64_t Vector2d::LengthSquared() const {
   return static_cast<int64_t>(x_) * x_ + static_cast<int64_t>(y_) * y_;
 }

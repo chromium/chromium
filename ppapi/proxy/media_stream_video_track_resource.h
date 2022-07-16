@@ -31,6 +31,10 @@ class PPAPI_PROXY_EXPORT MediaStreamVideoTrackResource
 
   MediaStreamVideoTrackResource(Connection connection, PP_Instance instance);
 
+  MediaStreamVideoTrackResource(const MediaStreamVideoTrackResource&) = delete;
+  MediaStreamVideoTrackResource& operator=(
+      const MediaStreamVideoTrackResource&) = delete;
+
   ~MediaStreamVideoTrackResource() override;
 
   // Resource overrides:
@@ -72,8 +76,6 @@ class PPAPI_PROXY_EXPORT MediaStreamVideoTrackResource
   scoped_refptr<TrackedCallback> get_frame_callback_;
 
   scoped_refptr<TrackedCallback> configure_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamVideoTrackResource);
 };
 
 }  // namespace proxy

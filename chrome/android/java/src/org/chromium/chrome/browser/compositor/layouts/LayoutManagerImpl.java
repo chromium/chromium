@@ -193,7 +193,8 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
             if (type == TabLaunchType.FROM_RESTORE || type == TabLaunchType.FROM_REPARENTING
                     || type == TabLaunchType.FROM_EXTERNAL_APP
                     || type == TabLaunchType.FROM_LAUNCHER_SHORTCUT
-                    || type == TabLaunchType.FROM_STARTUP) {
+                    || type == TabLaunchType.FROM_STARTUP
+                    || type == TabLaunchType.FROM_APP_WIDGET) {
                 return;
             }
 
@@ -782,8 +783,8 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
         layoutTab.initFromHost(topUiTheme.getBackgroundColor(tab), shouldStall(tab),
                 canUseLiveTexture, topUiTheme.getSceneLayerBackground(tab),
-                ThemeUtils.getTextBoxColorForToolbarBackground(mContext.getResources(), tab,
-                        topUiTheme.calculateColor(tab, tab.getThemeColor())),
+                ThemeUtils.getTextBoxColorForToolbarBackground(
+                        mContext, tab, topUiTheme.calculateColor(tab, tab.getThemeColor())),
                 topUiTheme.getTextBoxBackgroundAlpha(tab));
 
         mHost.requestRender();

@@ -11,8 +11,8 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "extensions/renderer/native_handler.h"
+#include "v8/include/v8-forward.h"
 #include "v8/include/v8-util.h"
-#include "v8/include/v8.h"
 
 namespace extensions {
 class ScriptContext;
@@ -24,6 +24,11 @@ class ScriptContext;
 class ObjectBackedNativeHandler : public NativeHandler {
  public:
   explicit ObjectBackedNativeHandler(ScriptContext* context);
+
+  ObjectBackedNativeHandler(const ObjectBackedNativeHandler&) = delete;
+  ObjectBackedNativeHandler& operator=(const ObjectBackedNativeHandler&) =
+      delete;
+
   ~ObjectBackedNativeHandler() override;
 
   // NativeHandler:
@@ -126,8 +131,6 @@ class ObjectBackedNativeHandler : public NativeHandler {
   ScriptContext* context_;
 
   v8::Global<v8::ObjectTemplate> object_template_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObjectBackedNativeHandler);
 };
 
 }  // namespace extensions

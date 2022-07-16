@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -173,7 +173,7 @@ bool ProfileDestroyer::ResetPendingDestroyers(Profile* const profile) {
 }
 
 ProfileDestroyer::ProfileDestroyer(Profile* const profile, HostSet* hosts)
-    : num_hosts_(0), profile_(profile) {
+    : profile_(profile) {
   TRACE_EVENT("shutdown", "ProfileDestroyer::ProfileDestroyer",
               [&](perfetto::EventContext ctx) {
                 auto* proto =
@@ -190,7 +190,7 @@ ProfileDestroyer::ProfileDestroyer(Profile* const profile, HostSet* hosts)
   // If we are going to wait for render process hosts, we don't want to do it
   // for longer than kTimerDelaySeconds.
   if (observations_.IsObservingAnySource()) {
-    timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(kTimerDelaySeconds),
+    timer_.Start(FROM_HERE, base::Seconds(kTimerDelaySeconds),
                  base::BindOnce(&ProfileDestroyer::DestroyProfile,
                                 weak_ptr_factory_.GetWeakPtr()));
   }
@@ -203,7 +203,8 @@ ProfileDestroyer::~ProfileDestroyer() {
                     ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                         ->set_chrome_profile_destroyer();
                 proto->set_profile_ptr(reinterpret_cast<uint64_t>(profile_));
-                proto->set_host_count_at_destruction(num_hosts_);
+                proto->set_host_count_at_destruction(
+                    observations_.GetSourcesCount());
               });
 
   // Check again, in case other render hosts were added while we were
@@ -215,9 +216,11 @@ ProfileDestroyer::~ProfileDestroyer() {
   // Note: this can happen, but if so, it's better to crash here than wait
   // for the host to dereference a deleted Profile. http://crbug.com/248625
   UMA_HISTOGRAM_ENUMERATION("Profile.Destroyer.OffTheRecord",
-                            num_hosts_
+                            observations_.IsObservingAnySource()
                                 ? ProfileDestructionType::kDelayedAndCrashed
                                 : ProfileDestructionType::kDelayed);
+  // If this is crashing, a renderer process host is not destroyed fast enough
+  // during shutdown of the browser and deletion of the profile.
   CHECK(!observations_.IsObservingAnySource())
       << "Some render process hosts were not destroyed early enough!";
   DCHECK(pending_destroyers_);

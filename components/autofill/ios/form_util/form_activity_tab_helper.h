@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_ACTIVITY_TAB_HELPER_H_
 #define COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_ACTIVITY_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
+
+namespace base {
+class DictionaryValue;
+}
 
 namespace web {
 class ScriptMessage;
@@ -17,6 +20,7 @@ class WebState;
 
 namespace autofill {
 
+struct BaseFormActivityParams;
 class FormActivityObserver;
 
 // Processes user activity messages for web page forms and forwards the form
@@ -24,6 +28,9 @@ class FormActivityObserver;
 class FormActivityTabHelper
     : public web::WebStateUserData<FormActivityTabHelper> {
  public:
+  FormActivityTabHelper(const FormActivityTabHelper&) = delete;
+  FormActivityTabHelper& operator=(const FormActivityTabHelper&) = delete;
+
   ~FormActivityTabHelper() override;
 
   static FormActivityTabHelper* GetOrCreateForWebState(
@@ -51,16 +58,24 @@ class FormActivityTabHelper
   void HandleFormActivity(web::WebState* web_state,
                           const web::ScriptMessage& message);
 
+  // Handler for form removal.
+  void HandleFormRemoval(web::WebState* web_state,
+                         const web::ScriptMessage& message);
+
   // Handler for the submission of a form.
   void FormSubmissionHandler(web::WebState* web_state,
                              const web::ScriptMessage& message);
+
+  bool GetBaseFormActivityParams(web::WebState* web_state,
+                                 const web::ScriptMessage& message,
+                                 base::DictionaryValue** message_body,
+                                 BaseFormActivityParams* form_activity,
+                                 web::WebFrame** sender_frame);
 
   // The observers.
   base::ObserverList<FormActivityObserver>::Unchecked observers_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(FormActivityTabHelper);
 };
 
 }  // namespace autofill

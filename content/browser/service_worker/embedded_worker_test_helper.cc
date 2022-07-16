@@ -36,8 +36,13 @@ EmbeddedWorkerTestHelper::EmbeddedWorkerTestHelper(
           std::make_unique<MockRenderProcessHost>(browser_context_.get())),
       new_render_process_host_(
           std::make_unique<MockRenderProcessHost>(browser_context_.get())),
+      quota_manager_(base::MakeRefCounted<storage::MockQuotaManager>(
+          /*is_cognito=*/false,
+          user_data_directory,
+          base::ThreadTaskRunnerHandle::Get(),
+          special_storage_policy)),
       quota_manager_proxy_(base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-          nullptr,
+          quota_manager_.get(),
           base::SequencedTaskRunnerHandle::Get())),
       wrapper_(base::MakeRefCounted<ServiceWorkerContextWrapper>(
           browser_context_.get())),

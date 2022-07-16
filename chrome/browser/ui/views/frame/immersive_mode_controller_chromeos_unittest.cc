@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/ash/window_pin_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
@@ -35,6 +34,12 @@ class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
  public:
   ImmersiveModeControllerChromeosTest()
       : TestWithBrowserView(Browser::TYPE_NORMAL) {}
+
+  ImmersiveModeControllerChromeosTest(
+      const ImmersiveModeControllerChromeosTest&) = delete;
+  ImmersiveModeControllerChromeosTest& operator=(
+      const ImmersiveModeControllerChromeosTest&) = delete;
+
   ~ImmersiveModeControllerChromeosTest() override {}
 
   // TestWithBrowserView override:
@@ -97,8 +102,6 @@ class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
   ImmersiveModeController* controller_;
 
   std::unique_ptr<ImmersiveRevealedLock> revealed_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerChromeosTest);
 };
 
 // Test the layout and visibility of the tabstrip, toolbar and TopContainerView
@@ -191,6 +194,22 @@ TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
   EXPECT_FALSE(controller()->IsRevealed());
   EXPECT_TRUE(tabstrip->GetVisible());
   EXPECT_TRUE(toolbar->GetVisible());
+}
+
+// Verifies that transitioning from fullscreen to trusted pinned disables the
+// immersive controls.
+TEST_F(ImmersiveModeControllerChromeosTest, FullscreenToLockedTransition) {
+  AddTab(browser(), GURL("about:blank"));
+  // Start in fullscreen.
+  ToggleFullscreen();
+  // ImmersiveController is enabled in fullscreen.
+  EXPECT_TRUE(controller()->IsEnabled());
+
+  // Transition to locked fullscreen.
+  PinWindow(browser_view()->GetWidget()->GetNativeWindow(), /*trusted=*/true);
+  // ImmersiveController is disabled in TrustedPinned so that it cannot be
+  // exited.
+  EXPECT_FALSE(controller()->IsEnabled());
 }
 
 // Test that the browser commands which are usually disabled in fullscreen are

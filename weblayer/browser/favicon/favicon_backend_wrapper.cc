@@ -6,7 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/favicon/core/favicon_backend.h"
 #include "components/favicon/core/favicon_database.h"
 
@@ -19,7 +19,7 @@ namespace weblayer {
 // entries that can be removed, so the timer is restarted with a shorter time
 // out (|kTimeDeltaForRunningExpireWithRemainingWork|).
 constexpr base::TimeDelta kTimeDeltaForRunningExpireNoRemainingWork =
-    base::TimeDelta::FromHours(1);
+    base::Hours(1);
 constexpr int kMaxNumberOfEntriesToRemoveAtATime = 100;
 
 FaviconBackendWrapper::FaviconBackendWrapper(
@@ -167,7 +167,7 @@ FaviconBackendWrapper::~FaviconBackendWrapper() = default;
 void FaviconBackendWrapper::ScheduleCommit() {
   if (!commit_timer_.IsRunning()) {
     // 10 seconds matches that of HistoryBackend.
-    commit_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(10), this,
+    commit_timer_.Start(FROM_HERE, base::Seconds(10), this,
                         &FaviconBackendWrapper::Commit);
   }
 }

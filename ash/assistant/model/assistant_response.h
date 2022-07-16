@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
@@ -42,6 +41,9 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantResponse
   };
 
   AssistantResponse();
+
+  AssistantResponse(const AssistantResponse&) = delete;
+  AssistantResponse& operator=(const AssistantResponse&) = delete;
 
   // Adds/removes the specified |observer|.
   // NOTE: only the AssistantInteractionController is able to obtain non-const
@@ -120,8 +122,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantResponse
   mutable base::ObserverList<AssistantResponseObserver> observers_;
 
   base::WeakPtrFactory<AssistantResponse> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantResponse);
 };
 
 }  // namespace ash

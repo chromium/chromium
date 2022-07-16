@@ -46,14 +46,14 @@ class PLATFORM_EXPORT UpSampler {
   USING_FAST_MALLOC(UpSampler);
 
  public:
-  explicit UpSampler(size_t input_block_size);
+  explicit UpSampler(unsigned input_block_size);
   UpSampler(const UpSampler&) = delete;
   UpSampler& operator=(const UpSampler&) = delete;
 
   // The destination buffer |destP| is of size sourceFramesToProcess * 2.
   void Process(const float* source_p,
                float* dest_p,
-               size_t source_frames_to_process);
+               uint32_t source_frames_to_process);
 
   void Reset();
 
@@ -63,7 +63,7 @@ class PLATFORM_EXPORT UpSampler {
  private:
   enum { kDefaultKernelSize = 128 };
 
-  size_t input_block_size_;
+  unsigned input_block_size_;
 
   // Computes the odd sample-frames of the output.
   std::unique_ptr<DirectConvolver> direct_convolver_;

@@ -128,10 +128,6 @@ static_library("app") {
   if (is_ios) {
     sources += [ "crashpad_ios.mm" ]
   }
-
-  if (is_linux || is_chromeos) {
-    data_deps = [ "//third_party/crashpad/crashpad/handler:crashpad_handler" ]
-  }
 }
 
 if (is_win) {
@@ -214,7 +210,7 @@ if (is_win) {
   }
 }
 
-if (is_mac || is_android) {
+if (is_mac || is_android || is_linux || is_chromeos) {
   # We build a chromium-specific crashpad_handler executable so that we can
   # define custom UserStreamDataSources.
   executable("chrome_crashpad_handler") {
@@ -225,13 +221,13 @@ if (is_mac || is_android) {
       "//third_party/crashpad/crashpad/handler",
     ]
 
-    if (is_mac && is_component_build) {
+    if (is_mac && (is_component_build || is_asan)) {
       ldflags = [
         # The handler is in
         # Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions/A/Helpers/
         # or
         # Content Shell.app/Contents/Frameworks/Content Shell Framework.framework/Versions/C/Helpers/
-        # so set rpath up to the base.
+        # so set rpath up to the base. This is the only case needed for is_asan.
         "-Wl,-rpath,@loader_path/../../../../../../..",
 
         # The handler can also be executed in an unbundled framework at

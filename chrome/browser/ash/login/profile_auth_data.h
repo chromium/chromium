@@ -6,18 +6,21 @@
 #define CHROME_BROWSER_ASH_LOGIN_PROFILE_AUTH_DATA_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 
 namespace content {
 class StoragePartition;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Helper class that transfers authentication-related data from a BrowserContext
 // used for authentication to the user's actual BrowserContext.
 class ProfileAuthData {
  public:
+  ProfileAuthData() = delete;
+  ProfileAuthData(const ProfileAuthData&) = delete;
+  ProfileAuthData& operator=(const ProfileAuthData&) = delete;
+
   // Transfers authentication-related data from `from_partition` to
   // `to_partition` and invokes `completion_callback` on the UI thread when the
   // operation has completed. The following data is transferred:
@@ -37,17 +40,8 @@ class ProfileAuthData {
                        bool transfer_auth_cookies_on_first_login,
                        bool transfer_saml_auth_cookies_on_subsequent_login,
                        base::OnceClosure completion_callback);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ProfileAuthData);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ProfileAuthData;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_PROFILE_AUTH_DATA_H_

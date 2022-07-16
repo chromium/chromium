@@ -199,11 +199,11 @@ void CSSFontVariationSettingsInterpolationType::ApplyStandardPropertyValue(
   scoped_refptr<FontVariationSettings> settings =
       FontVariationSettings::Create();
   wtf_size_t length = numbers.length();
-  // Do clampTo here, which follows the same logic as ConsumeFontVariationTag.
+  // Do ClampTo here, which follows the same logic as ConsumeFontVariationTag.
   for (wtf_size_t i = 0; i < length; ++i) {
     settings->Append(FontVariationAxis(
         tags[i],
-        clampTo<float>(To<InterpolableNumber>(numbers.Get(i))->Value())));
+        ClampTo<float>(To<InterpolableNumber>(numbers.Get(i))->Value())));
   }
   state.GetFontBuilder().SetVariationSettings(settings);
 }

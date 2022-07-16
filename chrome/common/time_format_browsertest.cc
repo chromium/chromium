@@ -18,7 +18,6 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/time_format.h"
 
-using base::TimeDelta;
 
 class TimeFormatBrowserTest : public InProcessBrowserTest {
  public:
@@ -36,8 +35,8 @@ IN_PROC_BROWSER_TEST_F(TimeFormatBrowserTest, DecimalPointNotDot) {
   // This showed up on the browser on estimated download time, for example.
   // http://crbug.com/60476
 
-  std::u16string one_min = ui::TimeFormat::Simple(
-      ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_SHORT,
-      TimeDelta::FromMinutes(1));
+  std::u16string one_min =
+      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                             ui::TimeFormat::LENGTH_SHORT, base::Minutes(1));
   EXPECT_EQ(u"1 min", one_min);
 }

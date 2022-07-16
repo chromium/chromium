@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"

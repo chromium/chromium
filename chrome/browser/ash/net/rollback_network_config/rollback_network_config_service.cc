@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config.h"
@@ -44,6 +45,11 @@ void BindToInProcessInstance(
   }
 
   GetInstance()->BindReceiver(std::move(receiver));
+}
+
+void OverrideInProcessInstanceForTesting(
+    std::unique_ptr<RollbackNetworkConfig> instance) {
+  g_rollback_network_config_instance = instance.release();
 }
 
 }  // namespace rollback_network_config

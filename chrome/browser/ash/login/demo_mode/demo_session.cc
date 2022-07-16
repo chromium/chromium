@@ -32,7 +32,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -58,8 +58,7 @@ namespace {
 
 // The splash screen should be removed either when this timeout passes or the
 // screensaver app is shown, whichever comes first.
-constexpr base::TimeDelta kRemoveSplashScreenTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kRemoveSplashScreenTimeout = base::Seconds(10);
 
 // Global DemoSession instance.
 DemoSession* g_demo_session = nullptr;
@@ -171,7 +170,7 @@ std::vector<LocaleInfo> GetSupportedLocales() {
        "nb", "nl", "sv"});
 
   const std::vector<std::string>& available_locales =
-      l10n_util::GetLocalesWithStrings();
+      l10n_util::GetUserFacingUILocaleList();
   const std::string current_locale_iso_code =
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetString(
           language::prefs::kApplicationLocale);
@@ -232,8 +231,8 @@ DemoSession::DemoModeConfig DemoSession::GetDemoConfig() {
   if (g_force_demo_config.has_value())
     return *g_force_demo_config;
 
-  const policy::BrowserPolicyConnectorChromeOS* const connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  const policy::BrowserPolicyConnectorAsh* const connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   bool is_demo_device_mode = connector->GetInstallAttributes()->GetMode() ==
                              policy::DeviceMode::DEVICE_MODE_DEMO;
   bool is_demo_device_domain =
@@ -337,11 +336,22 @@ std::string DemoSession::GetScreensaverAppId() {
 }
 
 // static
-bool DemoSession::ShouldDisplayInAppLauncher(const std::string& app_id) {
+bool DemoSession::ShouldShowExtensionInAppLauncher(const std::string& app_id) {
   if (!IsDeviceInDemoMode())
     return true;
   return app_id != GetScreensaverAppId() &&
          app_id != extensions::kWebStoreAppId;
+}
+
+// static
+bool DemoSession::ShouldShowWebApp(const std::string& app_id) {
+  if (IsDeviceInDemoMode() &&
+      content::GetNetworkConnectionTracker()->IsOffline()) {
+    GURL app_id_as_url(app_id);
+    return !app_id_as_url.SchemeIsHTTPOrHTTPS();
+  }
+
+  return true;
 }
 
 // static
@@ -380,16 +390,18 @@ void DemoSession::RecordAppLaunchSourceIfInDemoMode(AppLaunchSource source) {
     UMA_HISTOGRAM_ENUMERATION("DemoMode.AppLaunchSource", source);
 }
 
-bool DemoSession::ShouldIgnorePinPolicy(const std::string& app_id_or_package) {
+bool DemoSession::ShouldShowAndroidOrChromeAppInShelf(
+    const std::string& app_id_or_package) {
   if (!g_demo_session || !g_demo_session->started())
-    return false;
+    return true;
 
   // TODO(michaelpg): Update shelf when network status changes.
   // TODO(michaelpg): Also check for captive portal.
   if (!content::GetNetworkConnectionTracker()->IsOffline())
-    return false;
+    return true;
 
-  return base::Contains(ignore_pin_policy_offline_apps_, app_id_or_package);
+  // Ignore for specified chrome/android apps.
+  return !base::Contains(ignore_pin_policy_offline_apps_, app_id_or_package);
 }
 
 void DemoSession::SetExtensionsExternalLoader(
@@ -571,7 +583,7 @@ void DemoSession::OnExtensionInstalled(content::BrowserContext* browser_context,
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceChromeInternal));
+          apps::mojom::LaunchSource::kFromChromeInternal));
 }
 
 void DemoSession::OnAppWindowActivated(extensions::AppWindow* app_window) {

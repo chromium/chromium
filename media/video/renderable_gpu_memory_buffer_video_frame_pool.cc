@@ -11,9 +11,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/logging.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -32,7 +33,8 @@ class InternalRefCountedPool;
 class FrameResources {
  public:
   FrameResources(scoped_refptr<InternalRefCountedPool> pool,
-                 const gfx::Size& coded_size);
+                 const gfx::Size& coded_size,
+                 const gfx::ColorSpace& color_space);
   ~FrameResources();
   FrameResources(const FrameResources& other) = delete;
   FrameResources& operator=(const FrameResources& other) = delete;
@@ -42,7 +44,8 @@ class FrameResources {
 
   // Return true if these resources can be reused for a frame with the specified
   // parameters.
-  bool IsCompatibleWith(const gfx::Size& coded_size) const;
+  bool IsCompatibleWith(const gfx::Size& coded_size,
+                        const gfx::ColorSpace& color_space) const;
 
   // Create a VideoFrame using these resources. This will transfer ownership of
   // the GpuMemoryBuffer to the VideoFrame.
@@ -77,7 +80,9 @@ class InternalRefCountedPool : public base::RefCounted<InternalRefCountedPool> {
 
   // Create a VideoFrame with the specified parameters, reusing the resources
   // of a previous frame, if possible.
-  scoped_refptr<VideoFrame> MaybeCreateVideoFrame(const gfx::Size& coded_size);
+  scoped_refptr<VideoFrame> MaybeCreateVideoFrame(
+      const gfx::Size& coded_size,
+      const gfx::ColorSpace& color_space);
 
   // Indicate that the owner of `this` is being destroyed. This will eventually
   // cause `this` to be destroyed (once all of the FrameResources it created are
@@ -117,7 +122,8 @@ class RenderableGpuMemoryBufferVideoFramePoolImpl
           context);
 
   scoped_refptr<VideoFrame> MaybeCreateVideoFrame(
-      const gfx::Size& coded_size) override;
+      const gfx::Size& coded_size,
+      const gfx::ColorSpace& color_space) override;
 
   ~RenderableGpuMemoryBufferVideoFramePoolImpl() override;
 
@@ -128,10 +134,11 @@ class RenderableGpuMemoryBufferVideoFramePoolImpl
 // FrameResources
 
 FrameResources::FrameResources(scoped_refptr<InternalRefCountedPool> pool,
-                               const gfx::Size& coded_size)
+                               const gfx::Size& coded_size,
+                               const gfx::ColorSpace& color_space)
     : pool_(std::move(pool)),
       coded_size_(coded_size),
-      color_space_(gfx::ColorSpace::CreateREC709()) {}
+      color_space_(color_space) {}
 
 FrameResources::~FrameResources() {
   auto* context = pool_->GetContext();
@@ -145,10 +152,17 @@ FrameResources::~FrameResources() {
 bool FrameResources::Initialize() {
   auto* context = pool_->GetContext();
 
+  constexpr gfx::BufferUsage kBufferUsage =
+#if defined(OS_MAC) || defined(OS_CHROMEOS)
+      gfx::BufferUsage::SCANOUT_VEA_CPU_READ
+#else
+      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
+#endif
+      ;
+
   // Create the GpuMemoryBuffer.
   gpu_memory_buffer_ = context->CreateGpuMemoryBuffer(
-      coded_size_, gfx::BufferFormat::YUV_420_BIPLANAR,
-      gfx::BufferUsage::SCANOUT_VEA_CPU_READ);
+      coded_size_, gfx::BufferFormat::YUV_420_BIPLANAR, kBufferUsage);
   if (!gpu_memory_buffer_) {
     DLOG(ERROR) << "Failed to allocate GpuMemoryBuffer for frame.";
     return false;
@@ -158,23 +172,32 @@ bool FrameResources::Initialize() {
   constexpr size_t kNumPlanes = 2;
   constexpr gfx::BufferPlane kPlanes[kNumPlanes] = {gfx::BufferPlane::Y,
                                                     gfx::BufferPlane::UV};
-  constexpr uint32_t kUsage =
+  constexpr uint32_t kSharedImageUsage =
+#if defined(OS_MAC)
+      gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
+#endif
       gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
-      gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT |
-      gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
+      gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+
   for (size_t plane = 0; plane < kNumPlanes; ++plane) {
     context->CreateSharedImage(
         gpu_memory_buffer_.get(), kPlanes[plane], color_space_,
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kUsage,
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
         mailbox_holders_[plane].mailbox, mailbox_holders_[plane].sync_token);
     // TODO(https://crbug.com/1191956): This should be parameterized.
+#if defined(OS_MAC)
     mailbox_holders_[plane].texture_target = GL_TEXTURE_RECTANGLE_ARB;
+#else
+    mailbox_holders_[plane].texture_target = GL_TEXTURE_2D;
+#endif
   }
   return true;
 }
 
-bool FrameResources::IsCompatibleWith(const gfx::Size& coded_size) const {
-  return coded_size_ == coded_size;
+bool FrameResources::IsCompatibleWith(
+    const gfx::Size& coded_size,
+    const gfx::ColorSpace& color_space) const {
+  return coded_size_ == coded_size && color_space_ == color_space;
 }
 
 scoped_refptr<VideoFrame>
@@ -189,10 +212,17 @@ FrameResources::CreateVideoFrameAndTakeGpuMemoryBuffer() {
     return nullptr;
 
   video_frame->set_color_space(color_space_);
+
   // TODO(https://crbug.com/1191956): This should depend on the platform and
   // format.
   video_frame->metadata().allow_overlay = true;
-  video_frame->metadata().read_lock_fences_enabled = true;
+
+  // Only native (non shared memory) GMBs require waiting on GPU fences.
+  const bool has_native_gmb =
+      video_frame->HasGpuMemoryBuffer() &&
+      video_frame->GetGpuMemoryBuffer()->GetType() != gfx::SHARED_MEMORY_BUFFER;
+  video_frame->metadata().read_lock_fences_enabled = has_native_gmb;
+
   return video_frame;
 }
 
@@ -213,19 +243,21 @@ InternalRefCountedPool::InternalRefCountedPool(
     : context_(std::move(context)) {}
 
 scoped_refptr<VideoFrame> InternalRefCountedPool::MaybeCreateVideoFrame(
-    const gfx::Size& coded_size) {
+    const gfx::Size& coded_size,
+    const gfx::ColorSpace& color_space) {
   // Find or create a suitable FrameResources.
   std::unique_ptr<FrameResources> frame_resources;
   while (!available_frame_resources_.empty()) {
     frame_resources = std::move(available_frame_resources_.front());
     available_frame_resources_.pop_front();
-    if (!frame_resources->IsCompatibleWith(coded_size)) {
+    if (!frame_resources->IsCompatibleWith(coded_size, color_space)) {
       frame_resources = nullptr;
       continue;
     }
   }
   if (!frame_resources) {
-    frame_resources = std::make_unique<FrameResources>(this, coded_size);
+    frame_resources =
+        std::make_unique<FrameResources>(this, coded_size, color_space);
     if (!frame_resources->Initialize()) {
       DLOG(ERROR) << "Failed to initialize frame resources.";
       return nullptr;
@@ -295,8 +327,9 @@ RenderableGpuMemoryBufferVideoFramePoolImpl::
 
 scoped_refptr<VideoFrame>
 RenderableGpuMemoryBufferVideoFramePoolImpl::MaybeCreateVideoFrame(
-    const gfx::Size& coded_size) {
-  return pool_internal_->MaybeCreateVideoFrame(coded_size);
+    const gfx::Size& coded_size,
+    const gfx::ColorSpace& color_space) {
+  return pool_internal_->MaybeCreateVideoFrame(coded_size, color_space);
 }
 
 RenderableGpuMemoryBufferVideoFramePoolImpl::

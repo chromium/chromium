@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -23,6 +22,11 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
       bool has_alpha,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+
+  SkiaOutputDeviceOffscreen(const SkiaOutputDeviceOffscreen&) = delete;
+  SkiaOutputDeviceOffscreen& operator=(const SkiaOutputDeviceOffscreen&) =
+      delete;
+
   ~SkiaOutputDeviceOffscreen() override;
 
   // SkiaOutputDevice implementation:
@@ -55,8 +59,6 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
 
  private:
   uint64_t backbuffer_estimated_size_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaOutputDeviceOffscreen);
 };
 
 }  // namespace viz

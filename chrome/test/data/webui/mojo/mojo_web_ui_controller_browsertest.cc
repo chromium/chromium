@@ -49,6 +49,9 @@ class FooUI : public ui::MojoWebUIController, public ::test::mojom::Foo {
                                   data_source);
   }
 
+  FooUI(const FooUI&) = delete;
+  FooUI& operator=(const FooUI&) = delete;
+
   void BindInterface(mojo::PendingReceiver<::test::mojom::Foo> receiver) {
     foo_receiver_.Bind(std::move(receiver));
   }
@@ -62,8 +65,6 @@ class FooUI : public ui::MojoWebUIController, public ::test::mojom::Foo {
 
  private:
   mojo::Receiver<::test::mojom::Foo> foo_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(FooUI);
 };
 
 WEB_UI_CONTROLLER_TYPE_IMPL(FooUI)
@@ -86,6 +87,9 @@ class FooBarUI : public ui::MojoWebUIController,
     content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                   data_source);
   }
+
+  FooBarUI(const FooBarUI&) = delete;
+  FooBarUI& operator=(const FooBarUI&) = delete;
 
   void BindInterface(mojo::PendingReceiver<::test::mojom::Foo> receiver) {
     foo_receiver_.Bind(std::move(receiver));
@@ -110,8 +114,6 @@ class FooBarUI : public ui::MojoWebUIController,
  private:
   mojo::Receiver<::test::mojom::Foo> foo_receiver_;
   mojo::Receiver<::test::mojom::Bar> bar_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(FooBarUI);
 };
 
 WEB_UI_CONTROLLER_TYPE_IMPL(FooBarUI)
@@ -120,6 +122,10 @@ WEB_UI_CONTROLLER_TYPE_IMPL(FooBarUI)
 class TestWebUIControllerFactory : public content::WebUIControllerFactory {
  public:
   TestWebUIControllerFactory() = default;
+
+  TestWebUIControllerFactory(const TestWebUIControllerFactory&) = delete;
+  TestWebUIControllerFactory& operator=(const TestWebUIControllerFactory&) =
+      delete;
 
   std::unique_ptr<content::WebUIController> CreateWebUIControllerForURL(
       content::WebUI* web_ui,
@@ -144,9 +150,6 @@ class TestWebUIControllerFactory : public content::WebUIControllerFactory {
                       const GURL& url) override {
     return url.SchemeIs(content::kChromeUIScheme);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWebUIControllerFactory);
 };
 
 }  // namespace
@@ -163,7 +166,7 @@ class MojoWebUIControllerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pak_path));
     pak_path = pak_path.AppendASCII("browser_tests.pak");
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        pak_path, ui::SCALE_FACTOR_NONE);
+        pak_path, ui::kScaleFactorNone);
 
     content::SetBrowserClientForTesting(&test_content_browser_client_);
   }

@@ -31,6 +31,9 @@ class SkiaGpuTraceMemoryDump : public SkTraceMemoryDump {
         tracing_process_id_(base::trace_event::MemoryDumpManager::GetInstance()
                                 ->GetTracingProcessId()) {}
 
+  SkiaGpuTraceMemoryDump(const SkiaGpuTraceMemoryDump&) = delete;
+  SkiaGpuTraceMemoryDump& operator=(const SkiaGpuTraceMemoryDump&) = delete;
+
   ~SkiaGpuTraceMemoryDump() override = default;
 
   // Overridden from SkTraceMemoryDump:
@@ -129,8 +132,6 @@ class SkiaGpuTraceMemoryDump : public SkTraceMemoryDump {
   base::trace_event::ProcessMemoryDump* pmd_;
   absl::optional<uint64_t> share_group_tracing_guid_;
   uint64_t tracing_process_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaGpuTraceMemoryDump);
 };
 
 }  // namespace

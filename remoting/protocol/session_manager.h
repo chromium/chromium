@@ -97,6 +97,10 @@ class SessionManager {
       IncomingSessionCallback;
 
   SessionManager() {}
+
+  SessionManager(const SessionManager&) = delete;
+  SessionManager& operator=(const SessionManager&) = delete;
+
   virtual ~SessionManager() {}
 
   // Starts accepting incoming connections.
@@ -123,9 +127,6 @@ class SessionManager {
   // factory before all authenticators it created are deleted.
   virtual void set_authenticator_factory(
       std::unique_ptr<AuthenticatorFactory> authenticator_factory) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionManager);
 };
 
 }  // namespace protocol

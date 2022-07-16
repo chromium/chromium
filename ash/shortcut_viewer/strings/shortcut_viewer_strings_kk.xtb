@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">Жаңа терезені инкогнито режимінде ашу</translation>
 <translation id="152892567002884378">Дыбысты арттыру</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, одан кейін <ph name="ESC" /></translation>
-<translation id="1633761758045565086">Фокусты анықтама диалогтік терезесіне жылжыту</translation>
 <translation id="1652741121070700329">Алдыңғы сөздің басына ауысу</translation>
 <translation id="1679841710523778799">Жарықтықты арттыру</translation>
 <translation id="168356808214100546"><ph name="ALT" /> пернесін, одан кейін <ph name="TAB" /> пернесін басып тұрып, қажет терезеге ауысқанда жіберіңіз.</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">Бетті төмен қарай айналдыру</translation>
 <translation id="2530896289327917474">Пернелер арқылы навигациялауды қосу немесе өшіру</translation>
 <translation id="2574014812750545982">Беттегі масштабтау деңгейін бастапқы күйге қайтару</translation>
-<translation id="2596078834055697711">Терезенің скриншотын жасау</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, одан кейін <ph name="TAB" /> немесе <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Ағымдағы бетті қайта жүктеу</translation>
 <translation id="2764005613199379871">Фокусты мекенжай жолағына қою</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">Перне тіркесімдері</translation>
 <translation id="3084301071537457911">Сөредегі келесі элементті бөлектеу</translation>
 <translation id="309173601632226815">Сөредегі іске қосу түймесін бөлектеу</translation>
-<translation id="3105917916468784889">Скриншот түсіру</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Мекенжай жолағына өту</translation>
 <translation id="3256109297135787951">Сөредегі элементтің бөлектенуін өшіру</translation>
 <translation id="3288816184963444640">Ағымдағы терезені жабу</translation>
+<translation id="3350805006883559974">Белсенді терезені жоғары жылжыту</translation>
 <translation id="3407560819924487926">Тапсырма менеджерін ашу</translation>
 <translation id="3417835166382867856">Қойындыларды іздеу</translation>
 <translation id="3422679037938588196">Іздеу нәтижелеріндегі алдыңғы сәйкестікке өту</translation>
@@ -109,8 +107,7 @@
 <translation id="449214506787633354"><ph name="CTRL" />, сонан соң <ph name="LEFT" /> не <ph name="RIGHT" /> немесе <ph name="UP" /> не <ph name="DOWN" /></translation>
 <translation id="4556221320735744018">Пернелер тіркесімі анықтамалығын қарау</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> немесе <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
-<translation id="4628718545549558538">Күй аумағын (есептік жазбаңыздың суреті орналасқан жер) ашу</translation>
-<translation id="4642092649622328492">Экранның бір бөлігін түсіру</translation>
+<translation id="4628718545549558538">Күй аумағын (аккаунтыңыздың суреті орналасқан жер) ашу</translation>
 <translation id="4698850295812410683">Стилус құралдарын көрсету</translation>
 <translation id="4801989101741319327">Келесі сөздің соңына өту</translation>
 <translation id="4866066940972151697">Оң жақтағы жұмыс үстелін іске қосу</translation>
@@ -150,7 +147,7 @@
 <translation id="6276708887952587684">Бет дереккөзін көру</translation>
 <translation id="6321940490215594447">Тарих бетін ашу</translation>
 <translation id="6340769215862220182">Дисплейді ұлғайту</translation>
-<translation id="634687982629734605">Фокусты келесі аймақтар арасында ауыстыру: күй аумағы (есептік жазбаңыздың суреті орналасқан жер), іске қосу құралы, мекенжай жолағы, бетбелгілер жолағы (көрсетілген жағдайда), ашық веб-бет және жүктеп алынғандар жолағы (көрсетілген жағдайда). Егер ерекшеленетін диалогтік терезе көрсетілсе, оған фокусты жылжытыңыз.</translation>
+<translation id="634687982629734605">Фокусты келесі аймақтар арасында ауыстыру: күй аумағы (аккаунтыңыздың суреті орналасқан жер), іске қосу құралы, мекенжай жолағы, бетбелгілер жолағы (көрсетілген жағдайда), ашық веб-бет және жүктеп алынғандар жолағы (көрсетілген жағдайда). Егер ерекшеленетін диалогтік терезе көрсетілсе, оған фокусты жылжытыңыз.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">Жолдың соңына енгізілетін мәтінді таңдау</translation>
 <translation id="6425378783626925378">Сөредегі 1-8 арасындағы белгішелерді басу</translation>
@@ -211,6 +208,7 @@
 <translation id="8881584919399569791">Іске қосулы терезені сол жақтағы жұмыс үстеліне жылжыту</translation>
 <translation id="88986195241502842">Төменгі бетке өту</translation>
 <translation id="8924883688469390268">Алдыңғы пайдаланушыға ауысу</translation>
+<translation id="8941626538514548667">Браузердегі веб-мазмұнды ерекшелеу</translation>
 <translation id="8977648847395357314">Мекенжай жолағындағы мазмұнды таңдау</translation>
 <translation id="8982190978301344584">Қолжетімді IME құралдарының тізімін шығаратын мәзірді көрсету</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1-ден 8-ге дейін</translation>

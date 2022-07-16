@@ -69,8 +69,7 @@ feedstore::Metadata::StreamMetadata::ContentLifetime TranslateContentLifetime(
 }
 
 base::TimeDelta TranslateDuration(const feedwire::Duration& v) {
-  return base::TimeDelta::FromSeconds(v.seconds()) +
-         base::TimeDelta::FromNanoseconds(v.nanos());
+  return base::Seconds(v.seconds()) + base::Nanoseconds(v.nanos());
 }
 
 absl::optional<RequestSchedule> TranslateRequestSchedule(

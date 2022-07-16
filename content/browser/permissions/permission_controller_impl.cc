@@ -81,7 +81,7 @@ void NotifySchedulerAboutPermissionRequest(RenderFrameHost* render_frame_host,
     return;
 
   static_cast<RenderFrameHostImpl*>(render_frame_host)
-      ->OnSchedulerTrackedFeatureUsed(feature.value());
+      ->OnBackForwardCacheDisablingStickyFeatureUsed(feature.value());
 }
 
 // Calls |original_cb|, a callback expecting the PermissionStatus of a set of

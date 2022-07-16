@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/disassembler.h"
@@ -27,6 +26,7 @@ class Rel32FinderX86;
 class Rel32FinderX64;
 
 struct Win32X86Traits {
+  static constexpr uint16_t kVersion = 1;
   static constexpr Bitness kBitness = kBit32;
   static constexpr ExecutableType kExeType = kExeTypeWin32X86;
   enum : uint16_t { kMagic = 0x10B };
@@ -40,6 +40,7 @@ struct Win32X86Traits {
 };
 
 struct Win32X64Traits {
+  static constexpr uint16_t kVersion = 1;
   static constexpr Bitness kBitness = kBit64;
   static constexpr ExecutableType kExeType = kExeTypeWin32X64;
   enum : uint16_t { kMagic = 0x20B };
@@ -52,9 +53,11 @@ struct Win32X64Traits {
   using Address = uint64_t;
 };
 
-template <class Traits>
+template <class TRAITS>
 class DisassemblerWin32 : public Disassembler {
  public:
+  using Traits = TRAITS;
+  static constexpr uint16_t kVersion = Traits::kVersion;
   enum ReferenceType : uint8_t { kReloc, kAbs32, kRel32, kTypeCount };
 
   // Applies quick checks to determine whether |image| *may* point to the start
@@ -62,6 +65,8 @@ class DisassemblerWin32 : public Disassembler {
   static bool QuickDetect(ConstBufferView image);
 
   DisassemblerWin32();
+  DisassemblerWin32(const DisassemblerWin32&) = delete;
+  const DisassemblerWin32& operator=(const DisassemblerWin32&) = delete;
   ~DisassemblerWin32() override;
 
   // Disassembler:
@@ -119,8 +124,6 @@ class DisassemblerWin32 : public Disassembler {
   bool has_parsed_relocs_ = false;
   bool has_parsed_abs32_ = false;
   bool has_parsed_rel32_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DisassemblerWin32);
 };
 
 using DisassemblerWin32X86 = DisassemblerWin32<Win32X86Traits>;

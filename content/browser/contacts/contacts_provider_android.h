@@ -20,6 +20,10 @@ class RenderFrameHostImpl;
 class ContactsProviderAndroid : public ContactsProvider {
  public:
   explicit ContactsProviderAndroid(RenderFrameHostImpl* render_frame_host);
+
+  ContactsProviderAndroid(const ContactsProviderAndroid&) = delete;
+  ContactsProviderAndroid& operator=(const ContactsProviderAndroid&) = delete;
+
   ~ContactsProviderAndroid() override;
 
   // ContactsProvider:
@@ -62,8 +66,6 @@ class ContactsProviderAndroid : public ContactsProvider {
   // The origin that the contacts data will be shared with. Formatted for
   // display with the scheme omitted.
   std::u16string formatted_origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContactsProviderAndroid);
 };
 
 }  // namespace content

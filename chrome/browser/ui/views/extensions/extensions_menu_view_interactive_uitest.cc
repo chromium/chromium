@@ -30,11 +30,14 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/notification_types.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
@@ -52,13 +55,6 @@ using ::testing::ElementsAre;
 class ExtensionsMenuViewInteractiveUITest
     : public ExtensionsToolbarBrowserTest {
  public:
-  enum class ExtensionRemovalMethod {
-    kDisable,
-    kUninstall,
-    kBlocklist,
-    kTerminate,
-  };
-
   static base::flat_set<ExtensionsMenuItemView*> GetExtensionsMenuItemViews() {
     return ExtensionsMenuView::GetExtensionsMenuViewForTesting()
         ->extensions_menu_items_for_testing();
@@ -255,60 +251,6 @@ class ExtensionsMenuViewInteractiveUITest
 
   void ClickExtensionsMenuButton() { ClickExtensionsMenuButton(browser()); }
 
-  void RemoveExtension(ExtensionRemovalMethod method,
-                       const std::string& extension_id) {
-    extensions::ExtensionService* const extension_service =
-        extensions::ExtensionSystem::Get(browser()->profile())
-            ->extension_service();
-    switch (method) {
-      case ExtensionRemovalMethod::kDisable:
-        extension_service->DisableExtension(
-            extension_id, extensions::disable_reason::DISABLE_USER_ACTION);
-        break;
-      case ExtensionRemovalMethod::kUninstall:
-        extension_service->UninstallExtension(
-            extension_id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-        break;
-      case ExtensionRemovalMethod::kBlocklist:
-        extension_service->BlocklistExtensionForTest(extension_id);
-        break;
-      case ExtensionRemovalMethod::kTerminate:
-        extension_service->TerminateExtension(extension_id);
-        break;
-    }
-
-    // Removing an extension can result in the container changing visibility.
-    // Allow it to finish laying out appropriately.
-    auto* container = GetExtensionsToolbarContainer();
-    container->GetWidget()->LayoutRootViewIfNecessary();
-  }
-
-  void VerifyContainerVisibility(ExtensionRemovalMethod method,
-                                 bool expected_visibility) {
-    // An empty container should not be shown.
-    EXPECT_FALSE(GetExtensionsToolbarContainer()->GetVisible());
-
-    // Loading the first extension should show the button (and container).
-    LoadTestExtension("extensions/uitest/long_name");
-    EXPECT_TRUE(GetExtensionsToolbarContainer()->IsDrawn());
-
-    // Add another extension so we can make sure that removing some don't change
-    // the visibility.
-    LoadTestExtension("extensions/uitest/window_open");
-
-    // Remove 1/2 extensions, should still be drawn.
-    RemoveExtension(method, extensions()[0]->id());
-    EXPECT_TRUE(GetExtensionsToolbarContainer()->IsDrawn());
-
-    // Removing the last extension. All actions now have the same state.
-    RemoveExtension(method, extensions()[1]->id());
-
-    // Container should remain visible during the removal animation.
-    EXPECT_TRUE(GetExtensionsToolbarContainer()->IsDrawn());
-    views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
-    EXPECT_EQ(expected_visibility, GetExtensionsToolbarContainer()->IsDrawn());
-  }
-
   std::string ui_test_name_;
 };
 
@@ -317,31 +259,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest, InvokeUi_default) {
   LoadTestExtension("extensions/uitest/window_open");
 
   ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
-                       InvisibleWithoutExtension_Disable) {
-  VerifyContainerVisibility(ExtensionRemovalMethod::kDisable, false);
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
-                       InvisibleWithoutExtension_Uninstall) {
-  VerifyContainerVisibility(ExtensionRemovalMethod::kUninstall, false);
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
-                       InvisibleWithoutExtension_Blocklist) {
-  VerifyContainerVisibility(ExtensionRemovalMethod::kBlocklist, false);
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
-                       InvisibleWithoutExtension_Terminate) {
-  // TODO(pbos): Keep the container visible when extensions are terminated
-  // (crash). This lets users find and restart them. Then update this test
-  // expectation to be kept visible by terminated extensions. Also update the
-  // test name to reflect that the container should be visible with only
-  // terminated extensions.
-  VerifyContainerVisibility(ExtensionRemovalMethod::kTerminate, false);
 }
 
 // Invokes the UI shown when a user has to reload a page in order to run an
@@ -388,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   {
     content::TestNavigationObserver observer(tab);
     GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_TRUE(observer.last_navigation_succeeded());
   }
 
@@ -710,10 +627,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }
 
+#if defined(OS_LINUX)
+// TODO(crbug.com/1251961): Flaky on Linux (CFI)
+#define MAYBE_ClickingContextMenuButton DISABLED_ClickingContextMenuButton
+#else
+#define MAYBE_ClickingContextMenuButton ClickingContextMenuButton
+#endif
+
 // Tests that clicking on the context menu button of an extension item opens the
 // context menu.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
-                       ClickingContextMenuButton) {
+                       MAYBE_ClickingContextMenuButton) {
   LoadTestExtension("extensions/uitest/window_open");
   ClickExtensionsMenuButton();
 
@@ -783,6 +707,109 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   // https://crbug.com/1070305 is fixed.
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
+                       MenuGetsUpdatedAfterPermissionsChange) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+           "name": "All Urls Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "host_permissions": ["<all_urls>"]
+         })");
+  AppendExtension(
+      extensions::ChromeTestExtensionLoader(profile()).LoadExtension(
+          test_dir.UnpackedPath()));
+  ASSERT_EQ(1u, extensions().size());
+
+  GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Open the extension menu so we can test the UI when permissions
+  // change.
+  ClickExtensionsMenuButton();
+  auto menu_items = GetExtensionsMenuItemViews();
+  ASSERT_EQ(1u, menu_items.size());
+  auto* item_button =
+      (*menu_items.begin())->primary_action_button_for_testing();
+  ASSERT_TRUE(item_button);
+
+  // The extension should have access to the site by default.
+  EXPECT_EQ(u"All Urls Extension\n" +
+                l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE),
+            item_button->GetTooltipText());
+
+  EXPECT_EQ(base::JoinString(
+                {u"All Urls Extension",
+                 l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE)},
+                u"\n"),
+            item_button->GetTooltipText());
+
+  std::vector<ExtensionsMenuItemView*> active_menu_items =
+      ExtensionsMenuView::GetSortedItemsForSectionForTesting(
+          ToolbarActionViewController::PageInteractionStatus::kActive);
+  ASSERT_EQ(1u, active_menu_items.size());
+  EXPECT_EQ(u"All Urls Extension", active_menu_items[0]
+                                       ->primary_action_button_for_testing()
+                                       ->label_text_for_testing());
+
+  // Change the extension permissions to run on click using the context menu.
+  auto* context_menu = static_cast<extensions::ExtensionContextMenuModel*>(
+      GetExtensionsToolbarContainer()
+          ->GetActionForId(extensions()[0]->id())
+          ->GetContextMenu());
+  ASSERT_TRUE(context_menu);
+  {
+    content::WindowedNotificationObserver permissions_observer(
+        extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
+        content::NotificationService::AllSources());
+    context_menu->ExecuteCommand(
+        extensions::ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_CLICK,
+        /*event_flags=*/0);
+    permissions_observer.Wait();
+  }
+
+  // The extension should not have access to the website.
+  EXPECT_EQ(
+      base::JoinString(
+          {u"All Urls Extension",
+           l10n_util::GetStringUTF16(IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE)},
+          u"\n"),
+      item_button->GetTooltipText());
+  std::vector<ExtensionsMenuItemView*> pending_menu_items =
+      ExtensionsMenuView::GetSortedItemsForSectionForTesting(
+          ToolbarActionViewController::PageInteractionStatus::kPending);
+  ASSERT_EQ(1u, pending_menu_items.size());
+  EXPECT_EQ(u"All Urls Extension", pending_menu_items[0]
+                                       ->primary_action_button_for_testing()
+                                       ->label_text_for_testing());
+
+  // Change the extension permissions to run on site using the context menu.
+  {
+    content::WindowedNotificationObserver permissions_observer(
+        extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
+        content::NotificationService::AllSources());
+    context_menu->ExecuteCommand(
+        extensions::ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_SITE,
+        /*event_flags=*/0);
+    permissions_observer.Wait();
+  }
+
+  // The extension should have access to the site by default.
+  EXPECT_EQ(base::JoinString(
+                {u"All Urls Extension",
+                 l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE)},
+                u"\n"),
+            item_button->GetTooltipText());
+  active_menu_items = ExtensionsMenuView::GetSortedItemsForSectionForTesting(
+      ToolbarActionViewController::PageInteractionStatus::kActive);
+  ASSERT_EQ(1u, active_menu_items.size());
+  EXPECT_EQ(u"All Urls Extension", active_menu_items[0]
+                                       ->primary_action_button_for_testing()
+                                       ->label_text_for_testing());
+}
+
 class ActivateWithReloadExtensionsMenuInteractiveUITest
     : public ExtensionsMenuViewInteractiveUITest,
       public ::testing::WithParamInterface<bool> {};
@@ -795,8 +822,8 @@ IN_PROC_BROWSER_TEST_P(ActivateWithReloadExtensionsMenuInteractiveUITest,
   extensions::ScriptingPermissionsModifier modifier(profile(), extension);
   modifier.SetWithholdHostPermissions(true);
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("example.com", "/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("example.com", "/empty.html")));
 
   ShowUi("");
   VerifyUi();

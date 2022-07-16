@@ -21,7 +21,6 @@
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
-#include "extensions/common/guest_view/extensions_guest_view_messages.h"
 #include "extensions/renderer/script_context.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/web/web_custom_element.h"

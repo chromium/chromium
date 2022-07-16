@@ -7,7 +7,6 @@
 
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
@@ -38,15 +37,16 @@ class ThreatDetails;
 struct DataCollectorsContainer {
  public:
   DataCollectorsContainer();
+
+  DataCollectorsContainer(const DataCollectorsContainer&) = delete;
+  DataCollectorsContainer& operator=(const DataCollectorsContainer&) = delete;
+
   ~DataCollectorsContainer();
 
   // Note: new data collection types should be added below as additional fields.
 
   // Collects ThreatDetails which contains resource URLs and partial DOM.
   std::unique_ptr<ThreatDetails> threat_details;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DataCollectorsContainer);
 };
 
 // Stores the data collectors that are active on each WebContents (ie: browser
@@ -88,6 +88,10 @@ enum class TriggerManagerReason {
 class TriggerManager {
  public:
   TriggerManager(BaseUIManager* ui_manager, PrefService* local_state_prefs);
+
+  TriggerManager(const TriggerManager&) = delete;
+  TriggerManager& operator=(const TriggerManager&) = delete;
+
   virtual ~TriggerManager();
 
   // Returns a SBErrorDisplayOptions struct containing user state that is
@@ -189,7 +193,6 @@ class TriggerManager {
 
   base::WeakPtrFactory<TriggerManager> weak_factory_{this};
   // WeakPtrFactory should be last, don't add any members below it.
-  DISALLOW_COPY_AND_ASSIGN(TriggerManager);
 };
 
 // A helper class that listens for events happening on a WebContents and can

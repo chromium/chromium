@@ -8,12 +8,13 @@
 #include <utility>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/compute_pressure/compute_pressure_test_support.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/test/fake_mojo_message_dispatch_context.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,8 +30,8 @@ class ComputePressureManagerTest : public RenderViewHostImplTestHarness {
     NavigateAndCommit(kTestUrl);
 
     SetManager(ComputePressureManager::CreateForTesting(
-        std::make_unique<FakeCpuProbe>(), base::TimeDelta::FromMilliseconds(1),
-        base::TimeDelta::FromMilliseconds(1)));
+        std::make_unique<FakeCpuProbe>(), base::Milliseconds(1),
+        base::Milliseconds(1)));
   }
 
   void TearDown() override {
@@ -78,7 +79,15 @@ class ComputePressureManagerTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<ComputePressureHostSync> main_host_sync_;
 };
 
-TEST_F(ComputePressureManagerTest, OneObserver) {
+// Disabled on Fuchsia arm64 debug builds: https://crbug.com/1250654
+#if defined(OS_FUCHSIA) && defined(_DEBUG) && defined(ARCH_CPU_ARM64)
+#define MAYBE_OneObserver DISABLED_OneObserver
+#elif defined(OS_LINUX) && defined(USE_OZONE)  // https://crbug.com/1226086
+#define MAYBE_OneObserver DISABLED_OneObserver
+#else
+#define MAYBE_OneObserver OneObserver
+#endif
+TEST_F(ComputePressureManagerTest, MAYBE_OneObserver) {
   FakeComputePressureObserver observer;
   ASSERT_EQ(main_host_sync_->AddObserver(kQuantization,
                                          observer.BindNewPipeAndPassRemote()),
@@ -91,7 +100,15 @@ TEST_F(ComputePressureManagerTest, OneObserver) {
       testing::Contains(blink::mojom::ComputePressureState(0.35, 0.75)));
 }
 
-TEST_F(ComputePressureManagerTest, ThreeObservers) {
+// Disabled on Fuchsia arm64 debug builds: https://crbug.com/1250654
+#if defined(OS_FUCHSIA) && defined(_DEBUG) && defined(ARCH_CPU_ARM64)
+#define MAYBE_ThreeObservers DISABLED_ThreeObservers
+#elif defined(OS_LINUX) && defined(USE_OZONE)  // https://crbug.com/1226086
+#define MAYBE_ThreeObservers DISABLED_ThreeObservers
+#else
+#define MAYBE_ThreeObservers ThreeObservers
+#endif
+TEST_F(ComputePressureManagerTest, MAYBE_ThreeObservers) {
   FakeComputePressureObserver observer1;
   ASSERT_EQ(main_host_sync_->AddObserver(kQuantization,
                                          observer1.BindNewPipeAndPassRemote()),
@@ -188,7 +205,7 @@ TEST_F(ComputePressureManagerTest, AddObserver_InvalidQuantization) {
 
 TEST_F(ComputePressureManagerTest, AddObserver_InsecureOrigin) {
   {
-    FakeMojoMessageDispatchContext fake_dispatch_context;
+    mojo::FakeMessageDispatchContext fake_dispatch_context;
     mojo::test::BadMessageObserver bad_message_observer;
     mojo::Remote<blink::mojom::ComputePressureHost> insecure_host;
     manager_->BindReceiver(kInsecureOrigin, main_frame_id_,
@@ -205,8 +222,7 @@ TEST_F(ComputePressureManagerTest, AddObserver_InsecureOrigin) {
 
 TEST_F(ComputePressureManagerTest, AddObserver_NoProbe) {
   SetManager(ComputePressureManager::CreateForTesting(
-      /*cpu_probe=*/nullptr, base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromMilliseconds(1)));
+      /*cpu_probe=*/nullptr, base::Milliseconds(1), base::Milliseconds(1)));
 
   FakeComputePressureObserver observer;
   EXPECT_EQ(main_host_sync_->AddObserver(kQuantization,
@@ -218,7 +234,7 @@ TEST_F(ComputePressureManagerTest, AddObserver_NoFeature) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndDisableFeature(blink::features::kComputePressure);
 
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
   mojo::Remote<blink::mojom::ComputePressureHost> insecure_host;
   manager_->BindReceiver(kInsecureOrigin, main_frame_id_,

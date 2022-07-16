@@ -29,12 +29,6 @@ template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
 
-// TODO(https://crbug.com/1164001): remove when
-// ExistingUserControllerActiveDirectoryTest is moved to ash.
-namespace chromeos {
-class ExistingUserControllerActiveDirectoryTest;
-}  // namespace chromeos
-
 namespace dbus {
 class Signal;
 }
@@ -48,6 +42,11 @@ class AuthPolicyCredentialsManager
       public chromeos::NetworkStateHandlerObserver {
  public:
   explicit AuthPolicyCredentialsManager(Profile* profile);
+
+  AuthPolicyCredentialsManager(const AuthPolicyCredentialsManager&) = delete;
+  AuthPolicyCredentialsManager& operator=(const AuthPolicyCredentialsManager&) =
+      delete;
+
   ~AuthPolicyCredentialsManager() override;
 
   // KeyedService overrides.
@@ -122,7 +121,6 @@ class AuthPolicyCredentialsManager
   base::CancelableOnceClosure scheduled_get_user_status_call_;
 
   base::WeakPtrFactory<AuthPolicyCredentialsManager> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AuthPolicyCredentialsManager);
 };
 
 // Singleton that owns all AuthPolicyCredentialsManagers and associates them
@@ -132,11 +130,16 @@ class AuthPolicyCredentialsManagerFactory
  public:
   static AuthPolicyCredentialsManagerFactory* GetInstance();
 
+  AuthPolicyCredentialsManagerFactory(
+      const AuthPolicyCredentialsManagerFactory&) = delete;
+  AuthPolicyCredentialsManagerFactory& operator=(
+      const AuthPolicyCredentialsManagerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       AuthPolicyCredentialsManagerFactory>;
   friend class AuthPolicyCredentialsManagerTest;
-  friend class ::chromeos::ExistingUserControllerActiveDirectoryTest;
+  friend class ExistingUserControllerActiveDirectoryTest;
 
   AuthPolicyCredentialsManagerFactory();
   ~AuthPolicyCredentialsManagerFactory() override;
@@ -147,8 +150,6 @@ class AuthPolicyCredentialsManagerFactory
   // valid AuthPolicyCredentialsManager.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthPolicyCredentialsManagerFactory);
 };
 
 }  // namespace ash

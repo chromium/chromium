@@ -35,6 +35,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -459,6 +460,11 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
     @Override
     public String getUmaTag() {
         return "File";
+    }
+
+    @Override
+    public void performMaintenance(List<Integer> tabIds, String dataId) {
+        assert false : "Maintenance is not available in FilePersistedTabDataStorage";
     }
 
     /**

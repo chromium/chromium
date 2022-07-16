@@ -79,55 +79,19 @@ ParsedCertificate::~ParsedCertificate() = default;
 
 // static
 scoped_refptr<ParsedCertificate> ParsedCertificate::Create(
-    bssl::UniquePtr<CRYPTO_BUFFER> cert_data,
-    const ParseCertificateOptions& options,
-    CertErrors* errors) {
-  return CreateInternal(std::move(cert_data), der::Input(), options, errors);
-}
-
-// static
-bool ParsedCertificate::CreateAndAddToVector(
-    bssl::UniquePtr<CRYPTO_BUFFER> cert_data,
-    const ParseCertificateOptions& options,
-    std::vector<scoped_refptr<net::ParsedCertificate>>* chain,
-    CertErrors* errors) {
-  scoped_refptr<ParsedCertificate> cert(
-      Create(std::move(cert_data), options, errors));
-  if (!cert)
-    return false;
-  chain->push_back(std::move(cert));
-  return true;
-}
-
-// static
-scoped_refptr<ParsedCertificate> ParsedCertificate::CreateWithoutCopyingUnsafe(
-    const uint8_t* data,
-    size_t length,
-    const ParseCertificateOptions& options,
-    CertErrors* errors) {
-  return CreateInternal(nullptr, der::Input(data, length), options, errors);
-}
-
-// static
-scoped_refptr<ParsedCertificate> ParsedCertificate::CreateInternal(
     bssl::UniquePtr<CRYPTO_BUFFER> backing_data,
-    der::Input static_data,
     const ParseCertificateOptions& options,
     CertErrors* errors) {
-  if (!errors) {
-    CertErrors unused_errors;
-    return CreateInternal(std::move(backing_data), static_data, options,
-                          &unused_errors);
-  }
+  // |errors| is an optional parameter, but to keep the code simpler, use a
+  // dummy object when one wasn't provided.
+  CertErrors unused_errors;
+  if (!errors)
+    errors = &unused_errors;
 
   scoped_refptr<ParsedCertificate> result(new ParsedCertificate);
-  if (backing_data) {
-    result->cert_data_ = std::move(backing_data);
-    result->cert_ = der::Input(CRYPTO_BUFFER_data(result->cert_data_.get()),
-                               CRYPTO_BUFFER_len(result->cert_data_.get()));
-  } else {
-    result->cert_ = static_data;
-  }
+  result->cert_data_ = std::move(backing_data);
+  result->cert_ = der::Input(CRYPTO_BUFFER_data(result->cert_data_.get()),
+                             CRYPTO_BUFFER_len(result->cert_data_.get()));
 
   if (!ParseCertificate(result->cert_, &result->tbs_certificate_tlv_,
                         &result->signature_algorithm_tlv_,
@@ -316,6 +280,20 @@ scoped_refptr<ParsedCertificate> ParsedCertificate::CreateInternal(
   }
 
   return result;
+}
+
+// static
+bool ParsedCertificate::CreateAndAddToVector(
+    bssl::UniquePtr<CRYPTO_BUFFER> cert_data,
+    const ParseCertificateOptions& options,
+    std::vector<scoped_refptr<net::ParsedCertificate>>* chain,
+    CertErrors* errors) {
+  scoped_refptr<ParsedCertificate> cert(
+      Create(std::move(cert_data), options, errors));
+  if (!cert)
+    return false;
+  chain->push_back(std::move(cert));
+  return true;
 }
 
 }  // namespace net

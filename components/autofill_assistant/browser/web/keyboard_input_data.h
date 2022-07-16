@@ -40,4 +40,4 @@ DevToolsDispatchKeyEventParams GetDevToolsDispatchKeyEventParamsForCodepoint(
 }  // namespace keyboard_input_data
 }  // namespace autofill_assistant
 
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_SEND_KEYBOARD_INPUT_WORKER_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_KEYBOARD_INPUT_DATA_H_

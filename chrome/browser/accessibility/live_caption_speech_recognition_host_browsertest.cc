@@ -7,13 +7,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/accessibility/live_caption_controller.h"
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/caption_bubble_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/live_caption/caption_bubble_controller.h"
+#include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
 #include "components/soda/soda_installer.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -170,7 +170,8 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
   base::RunLoop().RunUntilIdle();
   ExpectIsWidgetVisible(true);
 
-  ui_test_utils::NavigateToURL(browser(), GURL("http://www.google.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("http://www.google.com")));
   content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents());
   content::RenderFrameHost* new_frame_host =

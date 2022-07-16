@@ -59,12 +59,13 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   // Data from Chrome sync.
   DataFromChromeSync,
   // Sync errors.
-  RestartAuthenticationFlowErrorItemType,
   ReauthDialogAsSyncIsInAuthErrorItemType,
   ShowPassphraseDialogErrorItemType,
   SyncNeedsTrustedVaultKeyErrorItemType,
   SyncTrustedVaultRecoverabilityDegradedErrorItemType,
   SyncDisabledByAdministratorErrorItemType,
+  // Sign out item footer.
+  SignOutItemFooterType,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_CONSTANTS_H_

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/device_sync/cryptauth_enroller.h"
 #include "chromeos/services/device_sync/network_request_error.h"
@@ -40,6 +39,10 @@ class CryptAuthEnrollerImpl : public CryptAuthEnroller {
   CryptAuthEnrollerImpl(CryptAuthClientFactory* client_factory,
                         std::unique_ptr<multidevice::SecureMessageDelegate>
                             secure_message_delegate);
+
+  CryptAuthEnrollerImpl(const CryptAuthEnrollerImpl&) = delete;
+  CryptAuthEnrollerImpl& operator=(const CryptAuthEnrollerImpl&) = delete;
+
   ~CryptAuthEnrollerImpl() override;
 
   // CryptAuthEnroller:
@@ -103,8 +106,6 @@ class CryptAuthEnrollerImpl : public CryptAuthEnroller {
   std::string symmetric_key_;
 
   base::WeakPtrFactory<CryptAuthEnrollerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthEnrollerImpl);
 };
 
 }  // namespace device_sync

@@ -19,9 +19,9 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -75,10 +75,8 @@ const int kMediaDuckFadeMs = 150;
 const int kMediaUnduckFadeMs = 700;
 const int kDefaultFilterFrameAlignment = 64;
 
-constexpr base::TimeDelta kMixerThreadCheckTimeout =
-    base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kHealthCheckInterval =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kMixerThreadCheckTimeout = base::Seconds(10);
+constexpr base::TimeDelta kHealthCheckInterval = base::Seconds(5);
 
 int GetFixedOutputSampleRate() {
   int fixed_sample_rate = GetSwitchValueNonNegativeInt(
@@ -103,7 +101,7 @@ base::TimeDelta GetNoInputCloseTimeout() {
   if (close_timeout_ms < 0) {
     return base::TimeDelta::Max();
   }
-  return base::TimeDelta::FromMilliseconds(close_timeout_ms);
+  return base::Milliseconds(close_timeout_ms);
 }
 
 void UseHighPriority() {

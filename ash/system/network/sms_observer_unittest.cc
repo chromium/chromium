@@ -8,7 +8,6 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -42,12 +41,13 @@ std::unique_ptr<base::DictionaryValue> CreateMessage(
 class SmsObserverTest : public AshTestBase {
  public:
   SmsObserverTest() = default;
+
+  SmsObserverTest(const SmsObserverTest&) = delete;
+  SmsObserverTest& operator=(const SmsObserverTest&) = delete;
+
   ~SmsObserverTest() override = default;
 
   SmsObserver* GetSmsObserver() { return Shell::Get()->sms_observer_.get(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SmsObserverTest);
 };
 
 // Verify if notification is received after receiving a sms message with

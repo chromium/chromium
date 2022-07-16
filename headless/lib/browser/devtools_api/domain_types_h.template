@@ -29,7 +29,12 @@ namespace {{domain.domain | camelcase_to_hacker_style}} {
 class HEADLESS_EXPORT {{type.id}} {
  public:
   static {{resolve_type(type).pass_type}} Parse(const base::Value& value, ErrorReporter* errors);
+
+  {{type.id}}(const {{type.id}}&) = delete;
+  {{type.id}}& operator=(const {{type.id}}&) = delete;
+
   ~{{type.id}}() { }
+
   {% for property in type.properties %}
 
   {% if property.description %}
@@ -107,8 +112,6 @@ class HEADLESS_EXPORT {{type.id}} {
   {{resolve_type(property).type}} {{property.name | camelcase_to_hacker_style}}_;
     {% endif %}
   {% endfor %}
-
-  DISALLOW_COPY_AND_ASSIGN({{type.id}});
 };
 
 {% endfor %}

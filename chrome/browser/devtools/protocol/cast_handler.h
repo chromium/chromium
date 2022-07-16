@@ -30,6 +30,10 @@ class CastHandler : public protocol::Cast::Backend,
  public:
   CastHandler(content::WebContents* web_contents,
               protocol::UberDispatcher* dispatcher);
+
+  CastHandler(const CastHandler&) = delete;
+  CastHandler& operator=(const CastHandler&) = delete;
+
   ~CastHandler() override;
 
   // protocol::Cast::Backend:
@@ -103,8 +107,6 @@ class CastHandler : public protocol::Cast::Backend,
   std::unique_ptr<protocol::Cast::Frontend> frontend_;
 
   base::WeakPtrFactory<CastHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastHandler);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_PROTOCOL_CAST_HANDLER_H_

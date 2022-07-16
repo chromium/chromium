@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -37,7 +36,6 @@ namespace {
 using QuietUiReason = ContextualNotificationPermissionUiSelector::QuietUiReason;
 using WarningReason = ContextualNotificationPermissionUiSelector::WarningReason;
 using Decision = ContextualNotificationPermissionUiSelector::Decision;
-using SiteReputation = chrome_browser_crowd_deny::SiteReputation;
 
 constexpr char kTestDomainUnknown[] = "unknown.com";
 constexpr char kTestDomainAcceptable[] = "acceptable.com";
@@ -79,6 +77,12 @@ class ContextualNotificationPermissionUiSelectorTest : public testing::Test {
  public:
   ContextualNotificationPermissionUiSelectorTest()
       : testing_profile_(std::make_unique<TestingProfile>()) {}
+
+  ContextualNotificationPermissionUiSelectorTest(
+      const ContextualNotificationPermissionUiSelectorTest&) = delete;
+  ContextualNotificationPermissionUiSelectorTest& operator=(
+      const ContextualNotificationPermissionUiSelectorTest&) = delete;
+
   ~ContextualNotificationPermissionUiSelectorTest() override = default;
 
  protected:
@@ -222,8 +226,6 @@ class ContextualNotificationPermissionUiSelectorTest : public testing::Test {
       safe_browsing_factory_;
 
   ContextualNotificationPermissionUiSelector contextual_selector_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextualNotificationPermissionUiSelectorTest);
 };
 
 // With all the field trials enabled, test all combinations of:

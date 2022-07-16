@@ -4,6 +4,7 @@
 
 #include "content/public/test/policy_container_utils.h"
 
+#include "base/macros.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 
 namespace content {

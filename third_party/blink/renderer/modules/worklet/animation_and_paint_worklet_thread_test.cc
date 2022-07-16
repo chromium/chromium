@@ -83,7 +83,7 @@ class AnimationAndPaintWorkletThreadTest : public PageTestBase,
     ScriptState::Scope scope(script_state);
     const KURL js_url("https://example.com/foo.js");
     v8::Local<v8::Module> module = ModuleTestBase::CompileModule(
-        script_state->GetIsolate(), "var counter = 0; ++counter;", js_url);
+        script_state, "var counter = 0; ++counter;", js_url);
     EXPECT_FALSE(module.IsEmpty());
     ScriptValue exception =
         ModuleRecord::Instantiate(script_state, module, js_url);

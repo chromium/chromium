@@ -51,12 +51,12 @@ bool ShouldIncludeForRequestUrl(NSHTTPCookie* cookie, const GURL& url) {
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   net::CookieAccessSemantics cookie_access_semantics =
       net::CookieAccessSemantics::LEGACY;
-  if (@available(iOS 13, *)) {
-    // Using |UNKNOWN| semantics to allow the experiment to switch between non
-    // legacy (where cookies that don't have a specific same-site access policy
-    // and not secure will not be included), and legacy mode.
-    cookie_access_semantics = net::CookieAccessSemantics::UNKNOWN;
-  }
+
+  // Using |UNKNOWN| semantics to allow the experiment to switch between non
+  // legacy (where cookies that don't have a specific same-site access policy
+  // and not secure will not be included), and legacy mode.
+  cookie_access_semantics = net::CookieAccessSemantics::UNKNOWN;
+
   // No extra trustworthy URLs.
   bool delegate_treats_url_as_trustworthy = false;
   net::CookieAccessParams params = {

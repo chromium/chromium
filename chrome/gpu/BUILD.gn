@@ -24,9 +24,12 @@ static_library("gpu") {
     "chrome_content_gpu_client.h",
   ]
 
+  if (is_chromeos) {
+    deps +=
+        [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
+  }
   if (is_chromeos_ash) {
     deps += [
-      "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu",
       "//components/arc/mojom:media",
       "//components/arc/video_accelerator",
       "//gpu/command_buffer/service",

@@ -10,6 +10,8 @@ import sys
 import time
 
 from telemetry.core import exceptions
+from telemetry.internal.results import artifact_compatibility_wrapper as acw
+from telemetry.internal.results import artifact_logger
 from telemetry.testing import tab_test_case
 from telemetry import decorators
 
@@ -40,6 +42,18 @@ def ContainsAtLeastOne(expected_values, checked_value):
 
 
 class BrowserMinidumpTest(tab_test_case.TabTestCase):
+  def setUp(self):
+    # If something is wrong with minidump symbolization, we want to get all the
+    # debugging information we can from the bots since it may be difficult to
+    # reproduce the issue locally. So, use the full logger implementation.
+    artifact_logger.RegisterArtifactImplementation(
+        acw.FullLoggingArtifactImpl())
+    super(BrowserMinidumpTest, self).setUp()
+
+  def tearDown(self):
+    super(BrowserMinidumpTest, self).tearDown()
+    artifact_logger.RegisterArtifactImplementation(None)
+
   def assertContainsAtLeastOne(self, expected_values, checked_value):
     self.assertTrue(ContainsAtLeastOne(expected_values, checked_value),
                     'None of %s found in %s' % (expected_values, checked_value))
@@ -48,7 +62,6 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   # Minidump symbolization doesn't work in ChromeOS local mode if the rootfs is
   # still read-only, so skip the test in that case.
   @decorators.Disabled(
-      'android',  # https://crbug.com/1218560
       'chromeos-local',
       'win7'  # https://crbug.com/1084931
   )
@@ -94,7 +107,6 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   # Minidump symbolization doesn't work in ChromeOS local mode if the rootfs is
   # still read-only, so skip the test in that case.
   @decorators.Disabled(
-      'android',  # https://crbug.com/1218560
       'chromeos-local',
       'win7'  # https://crbug.com/1084931
   )
@@ -188,6 +200,7 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   # Minidump symbolization doesn't work in ChromeOS local mode if the rootfs is
   # still read-only, so skip the test in that case.
   @decorators.Disabled(
+      'chromeos',  # https://crbug.com/1247948
       'chromeos-local',
       'win7'  # https://crbug.com/1084931
   )

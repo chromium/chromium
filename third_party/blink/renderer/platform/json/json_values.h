@@ -231,6 +231,12 @@ class PLATFORM_EXPORT JSONArray : public JSONValue {
     return static_cast<JSONArray*>(value);
   }
 
+  static const JSONArray* Cast(const JSONValue* value) {
+    if (!value || value->GetType() != kTypeArray)
+      return nullptr;
+    return static_cast<const JSONArray*>(value);
+  }
+
   static std::unique_ptr<JSONArray> From(std::unique_ptr<JSONValue> value) {
     auto maybe_array = base::WrapUnique(JSONArray::Cast(value.get()));
     if (maybe_array)

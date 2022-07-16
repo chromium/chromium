@@ -60,4 +60,16 @@ bool StructTraits<
 }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(USE_OZONE)
 
+#if defined(OS_WIN)
+bool StructTraits<gfx::mojom::DXGIHandleTokenDataView, gfx::DXGIHandleToken>::
+    Read(gfx::mojom::DXGIHandleTokenDataView& input,
+         gfx::DXGIHandleToken* output) {
+  base::UnguessableToken token;
+  if (!input.ReadValue(&token))
+    return false;
+  *output = gfx::DXGIHandleToken(token);
+  return true;
+}
+#endif  // defined(OS_WIN)
+
 }  // namespace mojo

@@ -246,8 +246,7 @@ def main(args, stderr):
     server.start()
 
     try:
-        run_web_tests.main(forwarded_args, stderr)
-
+        return run_web_tests.main(forwarded_args, stderr)
     finally:
         logging.info('Stopping expectations server...')
         server.stop()

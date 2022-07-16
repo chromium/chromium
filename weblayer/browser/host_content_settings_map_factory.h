@@ -17,6 +17,10 @@ namespace weblayer {
 class HostContentSettingsMapFactory
     : public RefcountedBrowserContextKeyedServiceFactory {
  public:
+  HostContentSettingsMapFactory(const HostContentSettingsMapFactory&) = delete;
+  HostContentSettingsMapFactory& operator=(
+      const HostContentSettingsMapFactory&) = delete;
+
   static HostContentSettingsMap* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
@@ -33,8 +37,6 @@ class HostContentSettingsMapFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(HostContentSettingsMapFactory);
 };
 
 }  // namespace weblayer

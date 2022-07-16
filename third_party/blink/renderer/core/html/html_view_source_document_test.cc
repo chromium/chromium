@@ -37,7 +37,8 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource1) {
   )HTML");
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
-      "<html><head></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
       "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
@@ -91,7 +92,8 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource2) {
   )HTML");
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
-      "<html><head></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
       "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
@@ -144,7 +146,8 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource3) {
   )HTML");
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
-      "<html><head></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
       "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
@@ -210,7 +213,8 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource4) {
   )HTML");
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
-      "<html><head></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
       "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
@@ -279,7 +283,8 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource5) {
   )HTML");
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
-      "<html><head></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
       "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
@@ -312,7 +317,8 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource6) {
   std::string many_spaces(32760, ' ');
   LoadMainResource((many_spaces + std::string("       <b>A</b>  ")).c_str());
   std::string expected_beginning(
-      "<html><head></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
       "</form><table><tbody><tr><td class=\"line-number\" value=\"1\">"
@@ -328,8 +334,10 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource6) {
 
 TEST_F(HTMLViewSourceDocumentTest, ViewSource7) {
   LoadMainResource("1234567");
-  EXPECT_EQ(GetDocument().documentElement()->outerHTML(),
-      "<html><head></head><body><div class=\"line-gutter-backdrop\"></div><form "
+  EXPECT_EQ(
+      GetDocument().documentElement()->outerHTML(),
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
       "</form><table><tbody><tr><td class=\"line-number\" value=\"1\">"
@@ -352,7 +360,8 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource8) {
   )HTML");
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
-      "<html><head></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
       "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
@@ -420,7 +429,8 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource9) {
   )HTML");
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
-      "<html><head></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
       "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
@@ -452,7 +462,8 @@ TEST_F(HTMLViewSourceDocumentTest, IncompleteToken) {
   )HTML");
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
-      "<html><head></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
       "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
@@ -475,7 +486,8 @@ TEST_F(HTMLViewSourceDocumentTest, UnfinishedTextarea) {
   )HTML");
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
-      "<html><head></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
       "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td>"
@@ -492,7 +504,8 @@ TEST_F(HTMLViewSourceDocumentTest, UnfinishedScript) {
   )HTML");
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
-      "<html><head></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
       "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td>"

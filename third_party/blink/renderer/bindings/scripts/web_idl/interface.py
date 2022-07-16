@@ -29,7 +29,7 @@ from .user_defined_type import UserDefinedType
 
 class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
                 WithExposure, WithComponent, WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-interfaces"""
+    """https://webidl.spec.whatwg.org/#idl-interfaces"""
 
     class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
              WithExposure, WithComponent, WithDebugInfo):
@@ -265,7 +265,7 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
         """
         Returns the list of inclusive inherited interfaces.
 
-        https://heycam.github.io/webidl/#interface-inclusive-inherited-interfaces
+        https://webidl.spec.whatwg.org/#interface-inclusive-inherited-interfaces
         """
         result = []
         interface = self
@@ -413,8 +413,8 @@ class IndexedAndNamedProperties(WithOwner):
     """
     Represents a set of indexed/named getter/setter/deleter.
 
-    https://heycam.github.io/webidl/#idl-indexed-properties
-    https://heycam.github.io/webidl/#idl-named-properties
+    https://webidl.spec.whatwg.org/#idl-indexed-properties
+    https://webidl.spec.whatwg.org/#idl-named-properties
     """
 
     def __init__(self, operations, owner):
@@ -523,7 +523,7 @@ class IndexedAndNamedProperties(WithOwner):
 
 
 class Stringifier(WithOwner):
-    """https://heycam.github.io/webidl/#idl-stringifiers"""
+    """https://webidl.spec.whatwg.org/#idl-stringifiers"""
 
     def __init__(self, operation, attribute, owner):
         assert isinstance(operation, Operation)
@@ -544,7 +544,7 @@ class Stringifier(WithOwner):
 
 
 class Iterable(WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-iterable"""
+    """https://webidl.spec.whatwg.org/#idl-iterable"""
 
     class IR(WithDebugInfo):
         def __init__(self,
@@ -618,7 +618,7 @@ class Iterable(WithDebugInfo):
 
 
 class Maplike(WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-maplike"""
+    """https://webidl.spec.whatwg.org/#idl-maplike"""
 
     class IR(WithDebugInfo):
         def __init__(self,
@@ -712,7 +712,7 @@ class Maplike(WithDebugInfo):
 
 
 class Setlike(WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-setlike"""
+    """https://webidl.spec.whatwg.org/#idl-setlike"""
 
     class IR(WithDebugInfo):
         def __init__(self,

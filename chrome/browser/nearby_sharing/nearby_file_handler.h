@@ -12,7 +12,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom-forward.h"
 
 // This class manages async File IO for Nearby Share file payloads. Opening and

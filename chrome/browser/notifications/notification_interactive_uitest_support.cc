@@ -198,7 +198,7 @@ bool NotificationsTest::RequestAndDismissPermission(Browser* browser) {
 
 bool NotificationsTest::RequestPermissionAndWait(Browser* browser) {
   content::WebContents* web_contents = GetActiveWebContents(browser);
-  ui_test_utils::NavigateToURL(browser, GetTestPageURL());
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, GetTestPageURL()));
   permissions::PermissionRequestObserver observer(web_contents);
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(

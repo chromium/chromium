@@ -653,6 +653,10 @@ class GPU_GLES2_EXPORT ProgramManager {
                  const GpuPreferences& gpu_preferences,
                  FeatureInfo* feature_info,
                  gl::ProgressReporter* progress_reporter);
+
+  ProgramManager(const ProgramManager&) = delete;
+  ProgramManager& operator=(const ProgramManager&) = delete;
+
   ~ProgramManager();
 
   // Must call before destruction.
@@ -752,8 +756,6 @@ class GPU_GLES2_EXPORT ProgramManager {
   // preventing time-outs when destruction takes a long time. May be null when
   // using in-process command buffer.
   gl::ProgressReporter* progress_reporter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgramManager);
 };
 
 inline const FeatureInfo& Program::feature_info() const {

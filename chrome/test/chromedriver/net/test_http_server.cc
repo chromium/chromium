@@ -7,11 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -60,7 +61,7 @@ void TestHttpServer::Stop() {
 }
 
 bool TestHttpServer::WaitForConnectionsToClose() {
-  return all_closed_event_.TimedWait(base::TimeDelta::FromSeconds(10));
+  return all_closed_event_.TimedWait(base::Seconds(10));
 }
 
 void TestHttpServer::SetRequestAction(WebSocketRequestAction action) {
@@ -126,9 +127,16 @@ void TestHttpServer::OnWebSocketMessage(int connection_id, std::string data) {
       server_->SendOverWebSocket(connection_id, data,
                                  TRAFFIC_ANNOTATION_FOR_TESTS);
       break;
+
     case kCloseOnMessage:
       server_->Close(connection_id);
       break;
+
+    case kEchoRawMessage:
+      std::string decoded_data;
+      base::Base64Decode(data, &decoded_data);
+      server_->SendRaw(connection_id, decoded_data,
+                       TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 }
 

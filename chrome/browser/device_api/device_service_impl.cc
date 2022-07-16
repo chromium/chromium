@@ -10,12 +10,14 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/device_api/device_attribute_api.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/policy/web_app_policy_constants.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -23,6 +25,10 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "components/user_manager/user_manager.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
 namespace {
@@ -86,6 +92,8 @@ bool IsAffiliatedUser() {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
   return user && user->IsAffiliated();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return policy::PolicyLoaderLacros::IsMainUserAffiliated();
 #else
   return false;
 #endif
@@ -114,7 +122,7 @@ bool IsTrustedContext(content::RenderFrameHost* host,
 DeviceServiceImpl::DeviceServiceImpl(
     content::RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver)
-    : DocumentServiceBase(host, std::move(receiver)), host_(host) {
+    : DocumentService(host, std::move(receiver)), host_(host) {
   pref_change_registrar_.Init(
       Profile::FromBrowserContext(host->GetBrowserContext())->GetPrefs());
   pref_change_registrar_.Add(
@@ -135,14 +143,13 @@ void DeviceServiceImpl::Create(
     mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!IsTrustedContext(host,
-                        url::Origin::Create(host->GetLastCommittedURL()))) {
+  if (!IsTrustedContext(host, host->GetMainFrame()->GetLastCommittedOrigin())) {
     // Not sending bad message here since the API is always exposed to the end
     // user.
     return;
   }
   // The object is bound to the lifetime of |host| and the mojo
-  // connection. See DocumentServiceBase for details.
+  // connection. See DocumentService for details.
   new DeviceServiceImpl(host, std::move(receiver));
 }
 

@@ -83,7 +83,7 @@ public class NfcImpl implements Nfc {
 
     /**
      * Object that contains data that was passed to method
-     * #push(NdefMessage message, NdefWriteOptions options, PushResponse callback)
+     * #push(NdefMessage message, NdefWriteOptions options, Push_Response callback)
      * @see PendingPushOperation
      */
     private PendingPushOperation mPendingPushOperation;
@@ -171,7 +171,7 @@ public class NfcImpl implements Nfc {
     /**
      * Sets NfcClient. NfcClient interface is used to notify mojo NFC service client when NFC
      * device is in proximity and has NdefMessage.
-     * @see Nfc#watch(int id, WatchResponse callback)
+     * @see Nfc#watch(int id, Watch_Response callback)
      *
      * @param client @see NfcClient
      */
@@ -188,7 +188,7 @@ public class NfcImpl implements Nfc {
      * @param callback that is used to notify when push operation is completed.
      */
     @Override
-    public void push(NdefMessage message, NdefWriteOptions options, PushResponse callback) {
+    public void push(NdefMessage message, NdefWriteOptions options, Push_Response callback) {
         if (!checkIfReady(callback)) return;
 
         if (mOperationsSuspended) {
@@ -232,7 +232,7 @@ public class NfcImpl implements Nfc {
      * @param callback that is used to notify caller when watch() is completed.
      */
     @Override
-    public void watch(int id, WatchResponse callback) {
+    public void watch(int id, Watch_Response callback) {
         if (!checkIfReady(callback)) return;
         // We received a duplicate |id| here that should never happen, in such a case we should
         // report a bad message to Mojo but unfortunately Mojo bindings for Java does not support
@@ -296,10 +296,10 @@ public class NfcImpl implements Nfc {
     private static class PendingPushOperation {
         public final NdefMessage ndefMessage;
         public final NdefWriteOptions ndefWriteOptions;
-        private final PushResponse mPushResponseCallback;
+        private final Push_Response mPushResponseCallback;
 
         public PendingPushOperation(
-                NdefMessage message, NdefWriteOptions options, PushResponse callback) {
+                NdefMessage message, NdefWriteOptions options, Push_Response callback) {
             ndefMessage = message;
             ndefWriteOptions = options;
             mPushResponseCallback = callback;

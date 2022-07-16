@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import android.graphics.Bitmap;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
@@ -88,5 +90,26 @@ public class AccountInfoServiceImplTest {
 
         mService.onExtendedAccountInfoUpdated(mAccountInfoWithAvatar);
         verify(mObserverMock, never()).onAccountInfoUpdated(mAccountInfoWithAvatar);
+    }
+
+    @Test
+    public void testGetPromiseInvokedBeforeInitialization() {
+        AccountInfoServiceProvider.resetForTests();
+
+        final Promise<AccountInfoService> promise = AccountInfoServiceProvider.getPromise();
+
+        Assert.assertFalse(promise.isFulfilled());
+        AccountInfoServiceProvider.init(mIdentityManagerMock, mAccountTrackerServiceMock);
+        Assert.assertTrue(promise.isFulfilled());
+    }
+
+    @Test
+    public void testGetPromiseInvokedAfterInitialization() {
+        AccountInfoServiceProvider.resetForTests();
+        AccountInfoServiceProvider.init(mIdentityManagerMock, mAccountTrackerServiceMock);
+
+        final Promise<AccountInfoService> promise = AccountInfoServiceProvider.getPromise();
+
+        Assert.assertTrue(promise.isFulfilled());
     }
 }

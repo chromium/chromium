@@ -6,10 +6,8 @@
 #define COMPONENTS_VIZ_HOST_HOST_DISPLAY_CLIENT_H_
 
 #include <memory>
-#include <vector>
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/host/viz_host_export.h"
@@ -27,6 +25,10 @@ class LayeredWindowUpdaterImpl;
 class VIZ_HOST_EXPORT HostDisplayClient : public mojom::DisplayClient {
  public:
   explicit HostDisplayClient(gfx::AcceleratedWidget widget);
+
+  HostDisplayClient(const HostDisplayClient&) = delete;
+  HostDisplayClient& operator=(const HostDisplayClient&) = delete;
+
   ~HostDisplayClient() override;
 
   mojo::PendingRemote<mojom::DisplayClient> GetBoundRemote(
@@ -58,8 +60,6 @@ class VIZ_HOST_EXPORT HostDisplayClient : public mojom::DisplayClient {
 #if defined(OS_WIN)
   std::unique_ptr<LayeredWindowUpdaterImpl> layered_window_updater_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(HostDisplayClient);
 };
 
 }  // namespace viz

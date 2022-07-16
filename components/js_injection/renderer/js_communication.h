@@ -29,6 +29,10 @@ class JsCommunication
       public content::RenderFrameObserverTracker<JsCommunication> {
  public:
   explicit JsCommunication(content::RenderFrame* render_frame);
+
+  JsCommunication(const JsCommunication&) = delete;
+  JsCommunication& operator=(const JsCommunication&) = delete;
+
   ~JsCommunication() override;
 
   // mojom::JsCommunication implementation
@@ -67,8 +71,6 @@ class JsCommunication
 
   // Associated with legacy IPC channel.
   mojo::AssociatedReceiver<mojom::JsCommunication> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JsCommunication);
 };
 
 }  // namespace js_injection

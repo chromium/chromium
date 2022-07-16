@@ -56,6 +56,10 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
   WebDialogViewUnitTest()
       : views::test::WidgetTest(std::unique_ptr<base::test::TaskEnvironment>(
             std::make_unique<content::BrowserTaskEnvironment>())) {}
+
+  WebDialogViewUnitTest(const WebDialogViewUnitTest&) = delete;
+  WebDialogViewUnitTest& operator=(const WebDialogViewUnitTest&) = delete;
+
   ~WebDialogViewUnitTest() override = default;
 
   // testing::Test
@@ -140,8 +144,6 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
 
   std::unique_ptr<TestWebDialogViewWebDialogDelegate> web_dialog_delegate_;
   std::unique_ptr<content::TestWebContents> web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDialogViewUnitTest);
 };
 
 TEST_F(WebDialogViewUnitTest, WebDialogViewClosedOnEscape) {

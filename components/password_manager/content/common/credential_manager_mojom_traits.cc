@@ -78,6 +78,7 @@ bool EnumTraits<blink::mojom::CredentialManagerError,
       *output = password_manager::CredentialManagerError::SUCCESS;
       return true;
     case blink::mojom::CredentialManagerError::PENDING_REQUEST:
+    case blink::mojom::CredentialManagerError::PENDING_REQUEST_WEBAUTHN:
       *output = password_manager::CredentialManagerError::PENDING_REQUEST;
       return true;
     case blink::mojom::CredentialManagerError::PASSWORD_STORE_UNAVAILABLE:
@@ -93,7 +94,6 @@ bool EnumTraits<blink::mojom::CredentialManagerError,
     case blink::mojom::CredentialManagerError::INVALID_DOMAIN:
     case blink::mojom::CredentialManagerError::INVALID_ICON_URL:
     case blink::mojom::CredentialManagerError::CREDENTIAL_EXCLUDED:
-    case blink::mojom::CredentialManagerError::CREDENTIAL_NOT_RECOGNIZED:
     case blink::mojom::CredentialManagerError::NOT_IMPLEMENTED:
     case blink::mojom::CredentialManagerError::NOT_FOCUSED:
     case blink::mojom::CredentialManagerError::RESIDENT_CREDENTIALS_UNSUPPORTED:
@@ -105,6 +105,8 @@ bool EnumTraits<blink::mojom::CredentialManagerError,
     case blink::mojom::CredentialManagerError::CANNOT_READ_AND_WRITE_LARGE_BLOB:
     case blink::mojom::CredentialManagerError::
         INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB:
+    case blink::mojom::CredentialManagerError::
+        FAILED_TO_SAVE_CREDENTIAL_ID_FOR_PAYMENT_EXTENSION:
     case blink::mojom::CredentialManagerError::UNKNOWN:
       *output = password_manager::CredentialManagerError::UNKNOWN;
       return true;

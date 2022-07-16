@@ -16,6 +16,10 @@ namespace extensions {
 class ShellAudioController : public ash::CrasAudioHandler::AudioObserver {
  public:
   ShellAudioController();
+
+  ShellAudioController(const ShellAudioController&) = delete;
+  ShellAudioController& operator=(const ShellAudioController&) = delete;
+
   ~ShellAudioController() override;
 
   // ash::CrasAudioHandler::Observer implementation:
@@ -25,8 +29,6 @@ class ShellAudioController : public ash::CrasAudioHandler::AudioObserver {
   // Gets the current device list from CRAS, chooses the best input and output
   // device, and activates them if they aren't already active.
   void ActivateDevices();
-
-  DISALLOW_COPY_AND_ASSIGN(ShellAudioController);
 };
 
 }  // namespace extensions

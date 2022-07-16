@@ -29,6 +29,7 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
     document.body.innerHTML = '';
     moduleHeader = new ModuleHeaderElement();
     document.body.appendChild(moduleHeader);
+    render(moduleHeader);
   });
 
   test('setting text shows text', () => {
@@ -92,5 +93,14 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
     assertEquals(
         'chrome://new-tab-page/icons/module_logo.svg',
         $$(moduleHeader, '.module-icon').src);
+  });
+
+  test('can hide menu button', () => {
+    // Act.
+    moduleHeader.hideMenuButton = true;
+    render(moduleHeader);
+
+    // Assert.
+    assertFalse(!!$$(moduleHeader, '#menuButton'));
   });
 });

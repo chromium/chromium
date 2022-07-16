@@ -40,6 +40,7 @@ class PLATFORM_EXPORT CustomFontData : public RefCounted<CustomFontData> {
   virtual bool IsLoadingFallback() const { return false; }
   virtual bool ShouldSkipDrawing() const { return false; }
   virtual void ClearFontFaceSource() {}
+  virtual bool IsPendingDataUrl() const { return false; }
 
  protected:
   CustomFontData() = default;

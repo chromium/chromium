@@ -6,8 +6,10 @@ import './app_windows.js';
 
 import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 
+import {openWindow} from '../../common/js/api.js';
 import {appUtil} from '../../common/js/app_util.js';
 import {AsyncUtil} from '../../common/js/async_util.js';
+import {FilesAppState} from '../../common/js/files_app_state.js';
 import {xfm} from '../../common/js/xfm.js';
 
 /**
@@ -35,6 +37,7 @@ export class AppWindowWrapper {
     this.options_ = /** @type {!chrome.app.window.CreateWindowOptions} */ (
         JSON.parse(JSON.stringify(options)));
     this.window_ = null;
+    /** @private {?FilesAppState} */
     this.appState_ = null;
     this.openingOrOpened_ = false;
 
@@ -98,26 +101,27 @@ export class AppWindowWrapper {
    * @return {!Promise}
    */
   async getWindowPreferences_() {
-    return new Promise(resolve => {
-      const boundsKey = AppWindowWrapper.makeGeometryKey(this.url_);
-      const maximizedKey = AppWindowWrapper.MAXIMIZED_KEY_;
+    const boundsKey = AppWindowWrapper.makeGeometryKey(this.url_);
+    const maximizedKey = AppWindowWrapper.MAXIMIZED_KEY_;
 
-      let lastBounds;
-      let isMaximized = false;
-      xfm.storage.local.get([boundsKey, maximizedKey], preferences => {
-        if (!chrome.runtime.lastError) {
-          lastBounds = preferences[boundsKey];
-          isMaximized = preferences[maximizedKey];
-        }
-        resolve({lastBounds: lastBounds, isMaximized: isMaximized});
-      });
-    });
+    let lastBounds;
+    let isMaximized = false;
+    const preferences =
+        await xfm.storage.local.getAsync([boundsKey, maximizedKey]);
+    if (preferences) {
+      if (!chrome.runtime.lastError) {
+        lastBounds = preferences[boundsKey];
+        isMaximized = preferences[maximizedKey];
+      }
+      return {lastBounds: lastBounds, isMaximized: isMaximized};
+    }
   }
 
   /**
    * @return {!Promise<?chrome.app.window.AppWindow>}
+   * @private
    */
-  async createWindow_(reopen) {
+  async createWindowLegacy_(reopen) {
     return await new Promise((resolve, reject) => {
       // Create a window.
       chrome.app.window.create(this.url_, this.options_, appWindow => {
@@ -184,7 +188,7 @@ export class AppWindowWrapper {
   /**
    * Opens the window.
    *
-   * @param {Object} appState App state.
+   * @param {!FilesAppState} appState App state.
    * @param {boolean} reopen True if the launching is triggered automatically.
    *     False otherwise.
    * @return {Promise} Resolved when the window is launched.
@@ -199,6 +203,10 @@ export class AppWindowWrapper {
 
     // Save application state.
     this.appState_ = appState;
+
+    if (window.isSWA) {
+      return this.launchSWA_();
+    }
 
     // Get similar windows, it means with the same initial url, eg. different
     // main windows of the Files app.
@@ -220,7 +228,7 @@ export class AppWindowWrapper {
       }
 
       // Closure creating the window, once all preprocessing tasks are finished.
-      const appWindow = await this.createWindow_(reopen);
+      const appWindow = await this.createWindowLegacy_(reopen);
 
       // Exit full screen state if it's created as a full screen window.
       if (appWindow.isFullscreen()) {
@@ -247,14 +255,47 @@ export class AppWindowWrapper {
   }
 
   /**
+   * Opens a new window for the SWA.
+   *
+   * @return {Promise} Resolved when the window is launched.
+   * @private
+   */
+  async launchSWA_() {
+    const unlock = await this.getLaunchLock();
+    try {
+      await this.createWindowSWA_();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      unlock();
+    }
+  }
+
+  /**
+   * @return {Promise} Resolved when the new window is opened.
+   * @private
+   */
+  async createWindowSWA_() {
+    const url = this.appState_.currentDirectoryURL || '';
+    const result = await openWindow({
+      currentDirectoryURL: url,
+      selectionURL: this.appState_.selectionURL,
+    });
+
+    if (!result) {
+      throw new Error(`Failed to create window for ${url}`);
+    }
+  }
+
+  /**
    * Handles the onClosed extension API event.
    * @private
    */
-  onClosed_() {
+  async onClosed_() {
     // Remember the last window state (maximized or normal).
     const preferences = {};
     preferences[AppWindowWrapper.MAXIMIZED_KEY_] = this.window_.isMaximized();
-    xfm.storage.local.set(preferences);
+    xfm.storage.local.setAsync(preferences);
 
     // Unload the window.
     const appWindow = this.window_;
@@ -286,7 +327,7 @@ export class AppWindowWrapper {
       const preferences = {};
       preferences[AppWindowWrapper.makeGeometryKey(this.url_)] =
           this.window_.getBounds();
-      xfm.storage.local.set(preferences);
+      xfm.storage.local.setAsync(preferences);
     }
   }
 }
@@ -336,7 +377,7 @@ export class SingletonAppWindowWrapper extends AppWindowWrapper {
    *
    * Activates an existing window or creates a new one.
    *
-   * @param {Object} appState App state.
+   * @param {!FilesAppState} appState App state.
    * @param {boolean} reopen True if the launching is triggered automatically.
    *     False otherwise.
    * @return {Promise} Resolved when the window is launched.
@@ -373,23 +414,23 @@ export class SingletonAppWindowWrapper extends AppWindowWrapper {
    * Reopen a window if its state is saved in the local xfm.storage.
    * @param {function()=} opt_callback Completion callback.
    */
-  reopen(opt_callback) {
-    xfm.storage.local.get(this.id_, items => {
-      const value = items[this.id_];
-      if (!value) {
-        opt_callback && opt_callback();
-        return;  // No app state persisted.
-      }
+  async reopen(opt_callback) {
+    const items = await xfm.storage.local.getAsync(this.id_);
+    const value = /** @type {string} */ (items[this.id_]);
+    if (!value) {
+      opt_callback && opt_callback();
+      return;  // No app state persisted.
+    }
 
-      let appState;
-      try {
-        appState = assertInstanceof(JSON.parse(value), Object);
-      } catch (e) {
-        console.error('Corrupt launch data for ' + this.id_, value);
-        opt_callback && opt_callback();
-        return;
-      }
-      this.launch(appState, true).then(() => opt_callback && opt_callback());
-    });
+    let appState;
+    try {
+      appState = assertInstanceof(JSON.parse(value), Object);
+    } catch (e) {
+      console.error('Corrupt launch data for ' + this.id_, value);
+      opt_callback && opt_callback();
+      return;
+    }
+    await this.launch(appState, true);
+    opt_callback && opt_callback();
   }
 }

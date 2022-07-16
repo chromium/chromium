@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/widget/widget.h"
 
@@ -18,12 +17,14 @@ class NativeViewHostTestBase::NativeViewHostTesting : public NativeViewHost {
  public:
   explicit NativeViewHostTesting(NativeViewHostTestBase* owner)
       : owner_(owner) {}
+
+  NativeViewHostTesting(const NativeViewHostTesting&) = delete;
+  NativeViewHostTesting& operator=(const NativeViewHostTesting&) = delete;
+
   ~NativeViewHostTesting() override { owner_->host_destroyed_count_++; }
 
  private:
   NativeViewHostTestBase* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHostTesting);
 };
 
 NativeViewHostTestBase::NativeViewHostTestBase() = default;

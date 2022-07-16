@@ -50,6 +50,9 @@ class StatsReportingController
   static void Shutdown();
   static StatsReportingController* Get();
 
+  StatsReportingController(const StatsReportingController&) = delete;
+  StatsReportingController& operator=(const StatsReportingController&) = delete;
+
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Store the new value of |enabled|. This will happen straight away if
@@ -157,8 +160,6 @@ class StatsReportingController
   base::OnceClosure on_device_settings_stored_callback_;
 
   base::WeakPtrFactory<StatsReportingController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StatsReportingController);
 };
 
 }  // namespace ash

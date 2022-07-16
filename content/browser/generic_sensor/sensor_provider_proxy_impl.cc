@@ -78,7 +78,8 @@ void SensorProviderProxyImpl::GetSensor(SensorType type,
 
   permission_controller_->RequestPermission(
       PermissionType::SENSORS, render_frame_host_,
-      render_frame_host_->GetLastCommittedURL().GetOrigin(), false,
+      render_frame_host_->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
+      false,
       base::BindOnce(&SensorProviderProxyImpl::OnPermissionRequestCompleted,
                      weak_factory_.GetWeakPtr(), type, std::move(callback)));
 }
@@ -104,7 +105,7 @@ void SensorProviderProxyImpl::OnPermissionRequestCompleted(
       break;
     default:
       static_cast<RenderFrameHostImpl*>(render_frame_host_)
-          ->OnSchedulerTrackedFeatureUsed(
+          ->OnBackForwardCacheDisablingStickyFeatureUsed(
               blink::scheduler::WebSchedulerTrackedFeature::
                   kRequestedBackForwardCacheBlockedSensors);
   }

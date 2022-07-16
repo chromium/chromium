@@ -23,6 +23,11 @@ class SerialDeviceEnumeratorLinux : public SerialDeviceEnumerator,
 
   explicit SerialDeviceEnumeratorLinux(
       const base::FilePath& tty_driver_info_path);
+
+  SerialDeviceEnumeratorLinux(const SerialDeviceEnumeratorLinux&) = delete;
+  SerialDeviceEnumeratorLinux& operator=(const SerialDeviceEnumeratorLinux&) =
+      delete;
+
   ~SerialDeviceEnumeratorLinux() override;
 
   // UdevWatcher::Observer
@@ -36,8 +41,6 @@ class SerialDeviceEnumeratorLinux : public SerialDeviceEnumerator,
   std::unique_ptr<UdevWatcher> watcher_;
   const base::FilePath tty_driver_info_path_;
   std::map<std::string, base::UnguessableToken> paths_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerialDeviceEnumeratorLinux);
 };
 
 }  // namespace device

@@ -16,6 +16,11 @@ namespace proxy {
 class HostVarSerializationRules : public VarSerializationRules {
  public:
   HostVarSerializationRules();
+
+  HostVarSerializationRules(const HostVarSerializationRules&) = delete;
+  HostVarSerializationRules& operator=(const HostVarSerializationRules&) =
+      delete;
+
   ~HostVarSerializationRules();
 
   // VarSerialization implementation.
@@ -26,9 +31,6 @@ class HostVarSerializationRules : public VarSerializationRules {
   virtual PP_Var BeginSendPassRef(const PP_Var& var);
   virtual void EndSendPassRef(const PP_Var& var);
   virtual void ReleaseObjectRef(const PP_Var& var);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostVarSerializationRules);
 };
 
 }  // namespace proxy

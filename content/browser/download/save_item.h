@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "content/browser/download/save_types.h"
 #include "content/public/common/referrer.h"
 #include "url/gurl.h"
@@ -33,6 +32,9 @@ class SaveItem {
            SaveFileCreateInfo::SaveFileSource save_source,
            int frame_tree_node_id,
            int container_frame_tree_node_id);
+
+  SaveItem(const SaveItem&) = delete;
+  SaveItem& operator=(const SaveItem&) = delete;
 
   ~SaveItem();
 
@@ -103,8 +105,6 @@ class SaveItem {
 
   // Our owning object.
   SavePackage* package_;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveItem);
 };
 
 }  // namespace content

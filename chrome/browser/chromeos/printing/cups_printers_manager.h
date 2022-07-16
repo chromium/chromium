@@ -20,19 +20,22 @@ class PrefRegistrySimple;
 class PrefService;
 class Profile;
 
+namespace ash {
+class EnterprisePrintersProvider;
+class SyncedPrintersManager;
+class PrinterEventTracker;
+class UsbPrinterNotificationController;
+}  // namespace ash
+
 namespace user_prefs {
 class PrefRegistrySyncable;
-}
+}  // namespace user_prefs
 
 namespace chromeos {
 
-class EnterprisePrintersProvider;
 class PpdProvider;
 class PrinterConfigurer;
 class PrinterDetector;
-class PrinterEventTracker;
-class SyncedPrintersManager;
-class UsbPrinterNotificationController;
 
 // Returns true if |printer_uri| is an IPP uri.
 bool IsIppUri(const Uri& printer_uri);
@@ -65,16 +68,17 @@ class CupsPrintersManager : public PrinterInstallationManager,
   // Factory function that allows injected dependencies, for testing.  Ownership
   // is not taken of any of the raw-pointer arguments.
   static std::unique_ptr<CupsPrintersManager> CreateForTesting(
-      SyncedPrintersManager* synced_printers_manager,
+      ash::SyncedPrintersManager* synced_printers_manager,
       std::unique_ptr<PrinterDetector> usb_printer_detector,
       std::unique_ptr<PrinterDetector> zeroconf_printer_detector,
       scoped_refptr<PpdProvider> ppd_provider,
       std::unique_ptr<PrinterConfigurer> printer_configurer,
-      std::unique_ptr<UsbPrinterNotificationController>
+      std::unique_ptr<ash::UsbPrinterNotificationController>
           usb_notification_controller,
       std::unique_ptr<PrintServersManager> print_servers_manager,
-      std::unique_ptr<EnterprisePrintersProvider> enterprise_printers_provider,
-      PrinterEventTracker* event_tracker,
+      std::unique_ptr<ash::EnterprisePrintersProvider>
+          enterprise_printers_provider,
+      ash::PrinterEventTracker* event_tracker,
       PrefService* pref_service);
 
   // Register the profile printing preferences with the |registry|.

@@ -194,6 +194,10 @@ struct AllocatorMemDump {
   // The entries for the allocator which are of scalar types (i.e. not strings).
   // Examples include: effective_size, size, object_count.
   map<string, uint64> numeric_entries;
+
+  // If details were requested for this allocator to include descendants then
+  // |children| describes the immediate child nodes.
+  map<string, AllocatorMemDump> children;
 };
 
 // This struct is used for the public-facing API
@@ -202,8 +206,8 @@ struct ProcessMemoryDump {
   ProcessType process_type;
   OSMemDump os_dump;
 
-  // The chrome allocator dumps specified by the input args.
-  // (See GlobalRequestArgs.allocator_dump_names).
+  // Details for each of the Chrome allocators specified by the input args.
+  // See the |RequestGlobalMemoryDump()| argument |allocator_dump_names|.
   map<string, AllocatorMemDump> chrome_allocator_dumps;
 
   // |pid| is necessary to correlate a ProcessMemoryDump with the URLs for the
@@ -306,13 +310,17 @@ interface HeapProfilerHelper {
 // processes and polls them whenever a global dump is required.
 interface Coordinator {
   // Broadcasts a dump request to all registered client processes and returns a
-  // global dump which includes allocator dumps specified in |allocator_dump_names|.
-  // For example, given an allocator dump name such as "malloc" or "cc/resource_memory",
-  // this method returns all information corresponding to this name including numeric
-  // entries which contain fields such as "size" and "effective_size".
+  // global dump with details.
+  // If |dump_type| is SUMMARY_ONLY then details will additionally be returned
+  // for allocators listed in |allocator_dump_names|. If an entry has a trailing
+  // "/*" then details will be returned for the named node, and all descendents.
+  // e.g. { "malloc", "v8/*" } will include details for "malloc", and might
+  // also include "v8", "v8/main/heap", etc.
+  // Allocator dumps provide a set of numeric values such as "size",
+  // "effective_size", etc.
   RequestGlobalMemoryDump(DumpType dump_type,
                           LevelOfDetail level_of_detail,
-                          Determinism determinsm,
+                          Determinism determinism,
                           array<string> allocator_dump_names) =>
       (bool success, GlobalMemoryDump? global_memory_dump);
 

@@ -24,16 +24,18 @@ class PrepareDirectoryTask;
 
 namespace arc {
 
+class ProgressBarDialogView;
+
 // Implementation of NearbyShareSession interface.
 class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
                                public aura::WindowObserver,
                                public aura::EnvObserver {
  public:
-  using SessionFinishedCallback = base::OnceCallback<void(int32_t)>;
+  using SessionFinishedCallback = base::OnceCallback<void(uint32_t)>;
 
   NearbyShareSessionImpl(
       Profile* profile,
-      int32_t task_id,
+      uint32_t task_id,
       mojom::ShareIntentInfoPtr share_info,
       mojo::PendingRemote<mojom::NearbyShareSessionInstance> session_instance,
       mojo::PendingReceiver<mojom::NearbyShareSessionHost> session_receiver,
@@ -42,6 +44,9 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   NearbyShareSessionImpl(const NearbyShareSessionImpl&) = delete;
   NearbyShareSessionImpl& operator=(const NearbyShareSessionImpl&) = delete;
   ~NearbyShareSessionImpl() override;
+
+  // Gets the temporary path to use for file preparation.
+  static base::FilePath GetUserCacheFilePath(const Profile* profile);
 
   // Called when Nearby Share is closed.
   void OnNearbyShareClosed(views::Widget::ClosedReason reason);
@@ -64,27 +69,52 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   void OnNearbyShareBubbleShown(sharesheet::SharesheetResult result);
 
   // Called when top level directory for Nearby Share cache files is created.
-  void OnPreparedDirectory(aura::Window* const arc_window,
-                           base::File::Error result);
+  void OnPreparedDirectory(base::File::Error result);
+
+  // Called once streaming shared files to local filesystem is started. At this
+  // point we show the progress bar UI to the user.
+  void OnFileStreamingStarted();
+
+  // Called when Share Intent Info object is converted to Intent mojom object.
+  void OnConvertedShareIntentInfoToIntent(apps::mojom::IntentPtr intent);
 
   // Calls |SharesheetService.ShowNearbyShareBubble()| to start the Chrome
   // Nearby Share user flow and display bubble in ARC window.
   void ShowNearbyShareBubbleInArcWindow(
-      aura::Window* const arc_window,
       absl::optional<base::File::Error> result = absl::nullopt);
 
   // Called back once the session duration exceeds the maximum duration.
   void OnTimerFired();
 
+  // Called back if the progress bar has not updated within the update
+  // interval period.
+  void OnProgressBarIntervalElapsed();
+
   // Called when progress bar UI update is available.
   void OnProgressBarUpdate(double value);
 
-  // Called when the |session_receiver_| is disconnected, and closes the
-  // Nearby Share bubble.
-  void OnSessionDisconnected();
+  // Clean up session and attempt to delete any existing cached files. If
+  // |should_cleanup_files| is false, clean up session without deleting files.
+  void CleanupSession(bool should_cleanup_files);
+
+  // Finish destroying the session by cleaning up the Android activity and
+  // destroying the session object from the map owned by ArcNearbyShareBridge.
+  void FinishSession();
+
+  // Shows an error dialog for non-actionable errors, and calls
+  // |NearbyShareSessionImpl::CleanupSession()| on close.
+  void ShowErrorDialog();
+
+  // Shows the LowDiskSpaeDialogView.
+  void OnShowLowDiskSpaceDialog(int64_t required_disk_space);
+
+  // Call back when the |LowDiskStorageDialogView| is closed. If
+  // |should_open_storage_settings| is true, then show the "Storage management"
+  // settings page.
+  void OnLowStorageDialogClosed(bool should_open_storage_settings);
 
   // Android activity's task ID
-  int32_t task_id_;
+  uint32_t task_id_;
 
   // Used to send messages to ARC.
   mojo::Remote<mojom::NearbyShareSessionInstance> session_instance_;
@@ -99,14 +129,24 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Unowned pointer.
   Profile* profile_;
 
+  // Unowned pointer
+  aura::Window* arc_window_ = nullptr;
+
   // Created and lives on the UI thread but is destructed on the IO thread.
   scoped_refptr<ShareInfoFileHandler> file_handler_;
 
   std::unique_ptr<webshare::PrepareDirectoryTask> prepare_directory_task_;
+  std::unique_ptr<ProgressBarDialogView> progress_bar_view_;
 
   // Timer used to wait for the ARC window to be asynchronously initialized and
   // visible.
   base::OneShotTimer window_initialization_timer_;
+
+  // Timer used to interpolate values between updates to smooth animation.
+  base::RepeatingTimer progress_bar_update_timer_;
+
+  // Sequenced task runner for executing backend file IO cleanup tasks.
+  const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   // Observes the ARC window.
   base::ScopedObservation<aura::Window, aura::WindowObserver>

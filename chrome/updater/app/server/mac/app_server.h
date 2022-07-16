@@ -10,6 +10,7 @@
 #include <xpc/xpc.h>
 
 #include "base/atomic_ref_count.h"
+#include "base/callback_forward.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,11 +19,11 @@
 #include "chrome/updater/app/server/mac/service_delegate.h"
 #import "chrome/updater/configurator.h"
 #import "chrome/updater/mac/xpc_service_names.h"
-#include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service_impl.h"
 
 namespace base {
 class SequencedTaskRunner;
+struct RegistrationRequest;
 }
 
 namespace updater {
@@ -48,6 +49,9 @@ class AppServerMac : public AppServer {
   void ActiveDutyInternal(
       scoped_refptr<UpdateServiceInternal> update_service_internal) override;
   bool SwapRPCInterfaces() override;
+  bool ConvertLegacyUpdaters(
+      base::RepeatingCallback<void(const RegistrationRequest&)>
+          register_callback) override;
   void UninstallSelf() override;
 
   void MarkTaskStarted();

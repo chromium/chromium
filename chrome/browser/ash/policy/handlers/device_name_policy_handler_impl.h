@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
@@ -29,6 +28,11 @@ class DeviceNamePolicyHandlerImpl
       public chromeos::NetworkStateHandlerObserver {
  public:
   explicit DeviceNamePolicyHandlerImpl(ash::CrosSettings* cros_settings);
+
+  DeviceNamePolicyHandlerImpl(const DeviceNamePolicyHandlerImpl&) = delete;
+  DeviceNamePolicyHandlerImpl& operator=(const DeviceNamePolicyHandlerImpl&) =
+      delete;
+
   ~DeviceNamePolicyHandlerImpl() override;
 
   // DeviceNamePolicyHandler:
@@ -67,14 +71,12 @@ class DeviceNamePolicyHandlerImpl
   ash::CrosSettings* cros_settings_;
   chromeos::system::StatisticsProvider* statistics_provider_;
   chromeos::NetworkStateHandler* handler_;
+  DeviceNamePolicy device_name_policy_;
 
-  DeviceNamePolicy device_name_policy_ = DeviceNamePolicy::kNoPolicy;
   base::CallbackListSubscription template_policy_subscription_;
   base::CallbackListSubscription configurable_policy_subscription_;
   std::string hostname_;
   base::WeakPtrFactory<DeviceNamePolicyHandlerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceNamePolicyHandlerImpl);
 };
 
 std::ostream& operator<<(

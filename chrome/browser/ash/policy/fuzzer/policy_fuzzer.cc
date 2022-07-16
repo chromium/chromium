@@ -13,7 +13,9 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
+#include "base/syslog_logging.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_decoder.h"
@@ -32,6 +34,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_proto_decoders.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -41,10 +44,28 @@ namespace policy {
 
 namespace {
 
+constexpr logging::LogSeverity kLogSeverity = logging::LOG_FATAL;
+
+// A log handler that discards messages whose severity is lower than the
+// threshold. It's needed in order to suppress unneeded syslog logging (which by
+// default is exempt from the level set by `logging::SetMinLogLevel()`).
+bool VoidifyingLogHandler(int severity,
+                          const char* /*file*/,
+                          int /*line*/,
+                          size_t /*message_start*/,
+                          const std::string& /*str*/) {
+  return severity < kLogSeverity;
+}
+
 struct Environment {
   Environment() {
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    // Discard all log messages, including the syslog ones, below the threshold.
+    logging::SetMinLogLevel(kLogSeverity);
+    logging::SetSyslogLoggingForTesting(/*logging_enabled=*/false);
+    logging::SetLogMessageHandler(&VoidifyingLogHandler);
+
     base::CommandLine::Init(0, nullptr);
+    TestTimeouts::Initialize();
     CHECK(scoped_temp_dir.CreateUniqueTempDir());
     CHECK(base::PathService::Override(chrome::DIR_USER_DATA,
                                       scoped_temp_dir.GetPath()));
@@ -59,7 +80,7 @@ struct Environment {
     base::FilePath pak_path = base::PathService::CheckedGet(base::DIR_MODULE);
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         pak_path.AppendASCII("components_tests_resources.pak"),
-        ui::SCALE_FACTOR_NONE);
+        ui::kScaleFactorNone);
   }
 
   ~Environment() { ui::ResourceBundle::CleanupSharedInstance(); }
@@ -84,6 +105,24 @@ struct PerInputEnvironment {
   base::test::TaskEnvironment task_environment;
   std::unique_ptr<ConfigurationPolicyHandlerList> policy_handler_list;
 };
+
+void CheckPolicyMap(const PolicyMap& policy_map,
+                    PolicyScope expected_policy_scope,
+                    bool expected_is_device_policy) {
+  for (const auto& it : policy_map) {
+    const std::string& policy_name = it.first;
+    const PolicyMap::Entry& entry = it.second;
+    CHECK(entry.value()) << "Policy " << policy_name << " has an empty value";
+    CHECK_EQ(entry.scope, expected_policy_scope)
+        << "Policy " << policy_name << " has wrong scope";
+
+    const PolicyDetails* policy_details = GetChromePolicyDetails(policy_name);
+    CHECK(policy_details) << "Policy " << policy_name
+                          << " has no policy details";
+    CHECK_EQ(policy_details->is_device_policy, expected_is_device_policy)
+        << "Policy " << policy_name << " is of unexpected type";
+  }
+}
 
 void CheckPolicyToPrefTranslation(const PolicyMap& policy_map,
                                   const PerInputEnvironment& per_input_env) {
@@ -121,14 +160,8 @@ DEFINE_PROTO_FUZZER(const PolicyFuzzerProto& proto) {
     PolicyMap policy_map;
     DecodeDevicePolicy(chrome_device_settings, data_manager, &policy_map);
 
-    for (const auto& it : policy_map) {
-      const std::string& policy_name = it.first;
-      const PolicyMap::Entry& entry = it.second;
-      CHECK(entry.value()) << "Policy " << policy_name << " has an empty value";
-      CHECK_EQ(entry.scope, POLICY_SCOPE_MACHINE)
-          << "Policy " << policy_name << " has not machine scope";
-    }
-
+    CheckPolicyMap(policy_map, POLICY_SCOPE_MACHINE,
+                   /*expected_is_device_policy=*/true);
     CheckPolicyToPrefTranslation(policy_map, per_input_env);
     CheckPolicyToCrosSettingsTranslation(chrome_device_settings);
   }
@@ -143,14 +176,8 @@ DEFINE_PROTO_FUZZER(const PolicyFuzzerProto& proto) {
                       PolicyScope::POLICY_SCOPE_USER, &policy_map,
                       PolicyPerProfileFilter::kAny);
 
-    for (const auto& it : policy_map) {
-      const std::string& policy_name = it.first;
-      const PolicyMap::Entry& entry = it.second;
-      CHECK(entry.value()) << "Policy " << policy_name << " has an empty value";
-      CHECK_EQ(entry.scope, POLICY_SCOPE_USER)
-          << "Policy " << policy_name << " has not user scope";
-    }
-
+    CheckPolicyMap(policy_map, POLICY_SCOPE_USER,
+                   /*expected_is_device_policy=*/false);
     CheckPolicyToPrefTranslation(policy_map, per_input_env);
   }
 }

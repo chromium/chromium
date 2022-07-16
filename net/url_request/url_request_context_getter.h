@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 
@@ -33,6 +33,9 @@ class NET_EXPORT URLRequestContextGetter
     : public base::RefCountedThreadSafe<URLRequestContextGetter,
                                         URLRequestContextGetterTraits> {
  public:
+  URLRequestContextGetter(const URLRequestContextGetter&) = delete;
+  URLRequestContextGetter& operator=(const URLRequestContextGetter&) = delete;
+
   // Returns the URLRequestContextGetter's URLRequestContext. Must only be
   // called on the network task runner. Once NotifyContextShuttingDown() is
   // invoked, must always return nullptr. Does not transfer ownership of
@@ -84,8 +87,6 @@ class NET_EXPORT URLRequestContextGetter
   void OnDestruct() const;
 
   base::ObserverList<URLRequestContextGetterObserver>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestContextGetter);
 };
 
 struct URLRequestContextGetterTraits {

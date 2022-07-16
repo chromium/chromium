@@ -12,7 +12,6 @@
 #include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
@@ -48,6 +47,9 @@ class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {
       const base::FilePath& file_path,
       std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support = nullptr);
 
+  FileVideoCaptureDevice(const FileVideoCaptureDevice&) = delete;
+  FileVideoCaptureDevice& operator=(const FileVideoCaptureDevice&) = delete;
+
   // VideoCaptureDevice implementation, class methods.
   ~FileVideoCaptureDevice() override;
   void AllocateAndStart(
@@ -68,8 +70,10 @@ class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {
       VideoCaptureFormat* video_format);
 
   // Crops frame with respect to PTZ settings.
-  std::unique_ptr<uint8_t[]> CropPTZRegion(const uint8_t* frame,
-                                           size_t frame_buffer_size);
+  std::unique_ptr<uint8_t[]> CropPTZRegion(
+      const uint8_t* frame,
+      size_t frame_buffer_size,
+      VideoPixelFormat* final_pixel_format);
 
   // Called on the |capture_thread_|.
   void OnAllocateAndStart(const VideoCaptureParams& params,
@@ -121,8 +125,6 @@ class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {
   // on the main thread and |capture_thread_|.
   base::Lock lock_;
   base::queue<TakePhotoCallback> take_photo_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileVideoCaptureDevice);
 };
 
 }  // namespace media

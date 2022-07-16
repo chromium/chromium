@@ -65,6 +65,22 @@ compiled_action("generate_top_domains_test_trie") {
       rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
 }
 
+# TODO(crbug/915921): Combine this and the previous one into a
+# compiled_action_foreach target.
+compiled_action("generate_top_domains_browsertest_trie") {
+  tool = ":top_domain_generator"
+
+  # Inputs in order expected by the command line of the tool.
+  inputs = [
+    "//components/url_formatter/spoof_checks/top_domains/browsertest_domains.skeletons",
+    "//components/url_formatter/spoof_checks/top_domains/top_domains_trie.template",
+  ]
+  outputs = [ "$target_gen_dir/browsertest_domains-trie-inc.cc" ]
+
+  args =
+      rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
+}
+
 executable("make_top_domain_list_variables") {
   sources = [ "make_top_domain_list_variables.cc" ]
   deps = [
@@ -109,8 +125,20 @@ compiled_action("generate_top_domain_list_variables_file") {
   inputs =
       [ "//components/url_formatter/spoof_checks/top_domains/domains.list" ]
   outputs = [ "$target_gen_dir/top500-domains-inc.cc" ]
-  args =
-      rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
+  args = rebase_path(inputs, root_build_dir) + [ "top500_domains" ] +
+         rebase_path(outputs, root_build_dir)
+}
+
+# TODO(crbug/915921): Combine this and the previous one into a
+# compiled_action_foreach target.
+compiled_action("generate_browsertest_top_domain_list_variables_file") {
+  tool = ":make_top_domain_list_variables"
+
+  # Inputs in order expected by the command line of the tool.
+  inputs = [ "//components/url_formatter/spoof_checks/top_domains/browsertest_domains.list" ]
+  outputs = [ "$target_gen_dir/browsertest-top500-domains-inc.cc" ]
+  args = rebase_path(inputs, root_build_dir) + [ "test_top500_domains" ] +
+         rebase_path(outputs, root_build_dir)
 }
 
 # top500_domains and top500_domains_header are intentionally separated to remove
@@ -130,4 +158,20 @@ source_set("top500_domains") {
 
 source_set("top500_domains_header") {
   sources = [ "top500_domains.h" ]
+}
+
+source_set("browsertest_top500_domains") {
+  # This empty public is intentional to remove unnecessary build dependency.
+  public = []
+
+  sources = [ "$target_gen_dir/browsertest-top500-domains-inc.cc" ]
+
+  deps = [
+    ":browsertest_top500_domains_header",
+    ":generate_browsertest_top_domain_list_variables_file",
+  ]
+}
+
+source_set("browsertest_top500_domains_header") {
+  sources = [ "test_top500_domains.h" ]
 }

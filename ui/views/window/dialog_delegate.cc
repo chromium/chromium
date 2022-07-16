@@ -237,6 +237,13 @@ void DialogDelegate::WindowWillClose() {
   already_started_close_ = true;
 }
 
+bool DialogDelegate::EscShouldCancelDialog() const {
+  // Use cancel as the Esc action if there's no defined "close" action. If the
+  // delegate has either specified a closing action or a close-x they can expect
+  // it to be called on Esc.
+  return !close_callback_ && !ShouldShowCloseButton();
+}
+
 // static
 std::unique_ptr<NonClientFrameView> DialogDelegate::CreateDialogFrameView(
     Widget* widget) {
@@ -415,9 +422,12 @@ void DialogDelegate::AcceptDialog() {
 }
 
 void DialogDelegate::CancelDialog() {
-  // Note: don't DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_CANCEL)) here;
-  // CancelDialog() is *always* reachable via Esc closing the dialog, even if
-  // the cancel button is disabled or there is no cancel button at all.
+  // If there's a close button available, this callback should only be reachable
+  // if the cancel button is available. Otherwise this can be reached through
+  // closing the dialog via Esc.
+  if (ShouldShowCloseButton())
+    DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_CANCEL));
+
   if (already_started_close_ || !Cancel())
     return;
 

@@ -12,10 +12,12 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_ash.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
 class It2MeNativeMessageHostAsh;
+struct ChromeOsEnterpriseParams;
 
 // This class represents a remote support host instance which can be connected
 // to and controlled over an IPC channel. It wraps a remote support host
@@ -38,8 +40,10 @@ class RemoteSupportHostAsh {
 
   // Allows the caller to start a new remote support session.  |callback| is
   // called with the result.
-  void StartSession(mojom::SupportSessionParamsPtr params,
-                    StartSessionCallback callback);
+  void StartSession(
+      mojom::SupportSessionParamsPtr params,
+      const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
+      StartSessionCallback callback);
 
  private:
   void OnSessionDisconnected();

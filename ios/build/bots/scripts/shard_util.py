@@ -8,7 +8,7 @@ import os
 import re
 import subprocess
 
-import test_runner as tr
+import test_runner_errors
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,21 +18,45 @@ LOGGER = logging.getLogger(__name__)
 # Regex to parse all compiled EG tests, including disabled (prepended with
 # DISABLED_ or FLAKY_).
 TEST_NAMES_DEBUG_APP_PATTERN = re.compile(
-    'imp +(?:0[xX][0-9a-fA-F]+ )?-\[(?P<testSuite>[A-Za-z_][A-Za-z0-9_]'
+    'imp .*-\[(?P<testSuite>[A-Z][A-Za-z0-9_]'
     '*Test[Case]*) (?P<testMethod>(?:DISABLED_|FLAKY_)?test[A-Za-z0-9_]*)\]')
 TEST_CLASS_RELEASE_APP_PATTERN = re.compile(
     r'name +0[xX]\w+ '
-    '(?P<testSuite>[A-Za-z_][A-Za-z0-9_]*Test(?:Case|))\n')
+    '(?P<testSuite>[A-Z][A-Za-z0-9_]*Test(?:Case|))\n')
 # Regex to parse all compiled EG tests, including disabled (prepended with
 # DISABLED_ or FLAKY_).
 TEST_NAME_RELEASE_APP_PATTERN = re.compile(
-    r'name +0[xX]\w+ (?P<testCase>(?:DISABLED_|FLAKY_)?test[A-Za-z0-9_]+)\n')
+    r'name +0[xX].+ (?P<testCase>(?:DISABLED_|FLAKY_)?test[A-Za-z0-9_]+)\n')
 # 'ChromeTestCase' and 'BaseEarlGreyTestCase' are parent classes
 # of all EarlGrey/EarlGrey2 test classes. 'appConfigurationForTestCase' is a
 # class method. They have no real tests.
 IGNORED_CLASSES = [
-    'BaseEarlGreyTestCase', 'ChromeTestCase', 'appConfigurationForTestCase'
+    'BaseEarlGreyTestCase', 'ChromeTestCase', 'appConfigurationForTestCase',
+    'setUpForTestCase', 'GREYTest'
 ]
+
+
+class OtoolError(test_runner_errors.Error):
+  """OTool non-zero error code"""
+
+  def __init__(self, code):
+    super(OtoolError,
+          self).__init__('otool returned a non-zero return code: %s' % code)
+
+
+class ShardingError(test_runner_errors.Error):
+  """Error related with sharding logic."""
+  pass
+
+
+def shard_index():
+  """Returns shard index in environment, or 0 if not in sharding environment."""
+  return int(os.getenv('GTEST_SHARD_INDEX', 0))
+
+
+def total_shards():
+  """Returns total shard count in environment, or 1 if not in environment."""
+  return int(os.getenv('GTEST_TOTAL_SHARDS', 1))
 
 
 def determine_app_path(app, host_app=None, release=False):
@@ -82,7 +106,7 @@ def _execute(cmd):
   retcode = process.returncode
   LOGGER.info('otool return status code: {}'.format(retcode))
   if retcode:
-    raise tr.OtoolError(retcode)
+    raise OtoolError(retcode)
 
   return stdout
 
@@ -106,15 +130,29 @@ def fetch_test_names_for_release(stdout):
   # 1. Parse test class names.
   # 2. If they are not in ignored list, parse test method names.
   # 3. Calculate test count per test class.
-  test_counts = {}
   res = re.split(TEST_CLASS_RELEASE_APP_PATTERN, stdout)
   # Ignore 1st element in split since it does not have any test class data
   test_classes_output = res[1:]
   test_names = []
-  for test_class, class_output in zip(test_classes_output[0::2],
-                                      test_classes_output[1::2]):
+  output_size = len(test_classes_output)
+  # TEST_CLASS_RELEASE_APP_PATTERN appears twice for each TestCase. First time
+  # is for class definition followed by instance methods. Second time is for
+  # meta class definition followed by class methods. Lines in between the two
+  # contain testMethods for it. Thus, index 0, 4, 8... are test class names.
+  # Index 1, 5, 9... are outputs including corresponding test methods.
+  for group_index in range(output_size // 4):
+    class_index = group_index * 4
+    if (class_index + 2 >= output_size or test_classes_output[class_index] !=
+        test_classes_output[class_index + 2]):
+      raise ShardingError('Incorrect otool output in which a test class name '
+                          'doesn\'t appear in group of 2. Test class: %s' %
+                          test_classes_output[class_index])
+
+    test_class = test_classes_output[class_index]
     if test_class in IGNORED_CLASSES:
       continue
+
+    class_output = test_classes_output[class_index + 1]
     methods = TEST_NAME_RELEASE_APP_PATTERN.findall(class_output)
     test_names.extend((test_class, test_method) for test_method in methods)
   return test_names

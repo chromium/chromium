@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.Function;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
@@ -107,7 +108,7 @@ public class AutofillAssistantFacade {
             }
         }
 
-        String intent = triggerContext.getParameters().get("INTENT");
+        String intent = triggerContext.getIntent();
         // Have an "attempted starts" baseline for the drop out histogram.
         AutofillAssistantMetrics.recordDropOut(DropOutReason.AA_START, intent);
         waitForTab((ChromeActivity) activity,
@@ -123,10 +124,10 @@ public class AutofillAssistantFacade {
             Activity activity, AutofillAssistantModuleEntry module) {
         assert activity instanceof ChromeActivity;
         ChromeActivity chromeActivity = (ChromeActivity) activity;
+        Supplier<CompositorViewHolder> cvh = chromeActivity.getCompositorViewHolderSupplier();
         return module.createDependencies(
                 BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()),
-                chromeActivity.getBrowserControlsManager(),
-                chromeActivity.getCompositorViewHolder(), chromeActivity,
+                chromeActivity.getBrowserControlsManager(), cvh.get(), chromeActivity,
                 chromeActivity.getCurrentWebContents(),
                 chromeActivity.getWindowAndroid().getKeyboardDelegate(),
                 chromeActivity.getWindowAndroid().getApplicationBottomInsetProvider(),

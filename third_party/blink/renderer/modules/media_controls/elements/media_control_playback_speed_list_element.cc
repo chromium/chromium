@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_playback_speed_list_element.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_scrollintoviewoptions.h"
@@ -23,6 +24,23 @@
 namespace blink {
 
 namespace {
+
+// This enum is used to record histograms. Do not reorder.
+enum class MediaControlsPlaybackSpeed {
+  k0_25X = 0,
+  k0_5X,
+  k0_75X,
+  k1X,
+  k1_25X,
+  k1_5X,
+  k1_75X,
+  k2X,
+  kMaxValue = k2X,
+};
+
+void RecordPlaybackSpeedUMA(MediaControlsPlaybackSpeed playback_speed) {
+  base::UmaHistogramEnumeration("Media.Controls.PlaybackSpeed", playback_speed);
+}
 
 struct PlaybackSpeed {
   const int display_name;
@@ -111,6 +129,26 @@ void MediaControlPlaybackSpeedListElement::DefaultEventHandler(Event& event) {
         To<Element>(target)->GetFloatingPointAttribute(PlaybackRateAttrName());
     MediaElement().setDefaultPlaybackRate(playback_rate);
     MediaElement().setPlaybackRate(playback_rate);
+
+    if (playback_rate == 0.25) {
+      RecordPlaybackSpeedUMA(MediaControlsPlaybackSpeed::k0_25X);
+    } else if (playback_rate == 0.5) {
+      RecordPlaybackSpeedUMA(MediaControlsPlaybackSpeed::k0_5X);
+    } else if (playback_rate == 0.75) {
+      RecordPlaybackSpeedUMA(MediaControlsPlaybackSpeed::k0_75X);
+    } else if (playback_rate == 1.0) {
+      RecordPlaybackSpeedUMA(MediaControlsPlaybackSpeed::k1X);
+    } else if (playback_rate == 1.25) {
+      RecordPlaybackSpeedUMA(MediaControlsPlaybackSpeed::k1_25X);
+    } else if (playback_rate == 1.5) {
+      RecordPlaybackSpeedUMA(MediaControlsPlaybackSpeed::k1_5X);
+    } else if (playback_rate == 1.75) {
+      RecordPlaybackSpeedUMA(MediaControlsPlaybackSpeed::k1_75X);
+    } else if (playback_rate == 2.0) {
+      RecordPlaybackSpeedUMA(MediaControlsPlaybackSpeed::k2X);
+    } else {
+      NOTREACHED();
+    }
 
     // Close the playback speed list.
     SetIsWanted(false);

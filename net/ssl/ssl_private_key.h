@@ -35,6 +35,9 @@ class NET_EXPORT SSLPrivateKey
 
   SSLPrivateKey() {}
 
+  SSLPrivateKey(const SSLPrivateKey&) = delete;
+  SSLPrivateKey& operator=(const SSLPrivateKey&) = delete;
+
   // Returns a human-readable name of the provider that backs this
   // SSLPrivateKey, for debugging. If not applicable or available, return the
   // empty string.
@@ -69,7 +72,6 @@ class NET_EXPORT SSLPrivateKey
 
  private:
   friend class base::RefCountedThreadSafe<SSLPrivateKey>;
-  DISALLOW_COPY_AND_ASSIGN(SSLPrivateKey);
 };
 
 }  // namespace net

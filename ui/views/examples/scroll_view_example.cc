@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -54,6 +53,9 @@ class ScrollViewExample::ScrollableView : public View {
     layout_manager->SetDefaultFlex(1);
   }
 
+  ScrollableView(const ScrollableView&) = delete;
+  ScrollableView& operator=(const ScrollableView&) = delete;
+
   void SetColor(SkColor from, SkColor to) {
     from_color_ = from;
     to_color_ = to;
@@ -70,8 +72,6 @@ class ScrollViewExample::ScrollableView : public View {
  private:
   SkColor from_color_;
   SkColor to_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollableView);
 };
 
 ScrollViewExample::ScrollViewExample()

@@ -239,7 +239,7 @@ static void SetShouldInvalidateIfNeeded(LayoutObject* layout_object) {
        parent = parent->Parent()) {
     if (parent->IsSVGRoot())
       return;
-    if (parent->IsSVGText()) {
+    if (parent->IsSVGText() || parent->IsNGSVGText()) {
       if (!parent->ShouldInvalidateSelection())
         parent->SetShouldInvalidateSelection();
       return;

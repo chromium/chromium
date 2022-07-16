@@ -16,24 +16,25 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_device_info/device_info_util.h"
 
 namespace syncer {
 
 using base::Time;
-using base::TimeDelta;
 using sync_pb::DeviceInfoSpecifics;
-using sync_pb::EntitySpecifics;
 using sync_pb::FeatureSpecificFields;
 using sync_pb::ModelTypeState;
 using sync_pb::SharingSpecificFields;
@@ -46,7 +47,7 @@ using ClientIdToSpecifics =
 
 namespace {
 
-constexpr base::TimeDelta kExpirationThreshold = base::TimeDelta::FromDays(56);
+constexpr base::TimeDelta kExpirationThreshold = base::Days(56);
 
 // Find the timestamp for the last time this |device_info| was edited.
 Time GetLastUpdateTime(const DeviceInfoSpecifics& specifics) {
@@ -57,14 +58,15 @@ Time GetLastUpdateTime(const DeviceInfoSpecifics& specifics) {
   }
 }
 
-TimeDelta GetPulseIntervalFromSpecifics(const DeviceInfoSpecifics& specifics) {
+base::TimeDelta GetPulseIntervalFromSpecifics(
+    const DeviceInfoSpecifics& specifics) {
   if (specifics.has_pulse_interval_in_minutes()) {
-    return TimeDelta::FromMinutes(specifics.pulse_interval_in_minutes());
+    return base::Minutes(specifics.pulse_interval_in_minutes());
   }
   // If the interval is not set on the specifics it must be an old device, so we
   // fall back to the value used by old devices. We really do not want to use
   // the default int value of 0.
-  return TimeDelta::FromDays(1);
+  return base::Days(1);
 }
 
 absl::optional<DeviceInfo::SharingInfo> SpecificsToSharingInfo(
@@ -463,9 +465,14 @@ absl::optional<ModelError> DeviceInfoSyncBridge::ApplySyncChanges(
     device_info_synced_callback_list_.clear();
   }
 
-  if (has_tombstone_for_local_device && !reuploaded_on_tombstone_) {
-    SendLocalData();
-    reuploaded_on_tombstone_ = true;
+  if (has_tombstone_for_local_device) {
+    const bool should_reupload_device_info = !reuploaded_on_tombstone_;
+    base::UmaHistogramBoolean("Sync.LocalDeviceInfoDeletionReuploaded",
+                              should_reupload_device_info);
+    if (should_reupload_device_info) {
+      SendLocalData();
+      reuploaded_on_tombstone_ = true;
+    }
   }
 
   return absl::nullopt;
@@ -549,9 +556,9 @@ std::unique_ptr<DeviceInfo> DeviceInfoSyncBridge::GetDeviceInfo(
 std::vector<std::unique_ptr<DeviceInfo>>
 DeviceInfoSyncBridge::GetAllDeviceInfo() const {
   std::vector<std::unique_ptr<DeviceInfo>> list;
-  for (auto iter = all_data_.begin(); iter != all_data_.end(); ++iter) {
-    if (IsChromeClient(*iter->second)) {
-      list.push_back(SpecificsToModel(*iter->second));
+  for (const auto& id_and_specifics : all_data_) {
+    if (IsChromeClient(*id_and_specifics.second)) {
+      list.push_back(SpecificsToModel(*id_and_specifics.second));
     }
   }
   return list;
@@ -563,10 +570,6 @@ void DeviceInfoSyncBridge::AddObserver(Observer* observer) {
 
 void DeviceInfoSyncBridge::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-int DeviceInfoSyncBridge::CountActiveDevices() const {
-  return CountActiveDevices(Time::Now());
 }
 
 bool DeviceInfoSyncBridge::IsRecentLocalCacheGuid(
@@ -775,7 +778,7 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
       return false;
     }
 
-    const TimeDelta pulse_delay(DeviceInfoUtil::CalculatePulseDelay(
+    const base::TimeDelta pulse_delay(DeviceInfoUtil::CalculatePulseDelay(
         GetLastUpdateTime(*iter->second), Time::Now()));
     if (!pulse_delay.is_zero()) {
       pulse_timer_.Start(FROM_HERE, pulse_delay,
@@ -835,7 +838,8 @@ void DeviceInfoSyncBridge::CommitAndNotify(std::unique_ptr<WriteBatch> batch,
   }
 }
 
-int DeviceInfoSyncBridge::CountActiveDevices(const Time now) const {
+std::map<sync_pb::SyncEnums_DeviceType, int>
+DeviceInfoSyncBridge::CountActiveDevicesByType() const {
   // The algorithm below leverages sync timestamps to give a tight lower bound
   // (modulo clock skew) on how many distinct devices are currently active
   // (where active means being used recently enough as specified by
@@ -848,6 +852,7 @@ int DeviceInfoSyncBridge::CountActiveDevices(const Time now) const {
 
   // The series of relevant events over time, the value being +1 when a device
   // was seen for the first time, and -1 when a device was seen last.
+  const base::Time now = base::Time::Now();
   std::map<sync_pb::SyncEnums_DeviceType, std::multimap<base::Time, int>>
       relevant_events;
 
@@ -871,7 +876,7 @@ int DeviceInfoSyncBridge::CountActiveDevices(const Time now) const {
     }
   }
 
-  int max_overlapping_sum = 0;
+  std::map<sync_pb::SyncEnums_DeviceType, int> device_count_by_type;
   for (const auto& type_and_events : relevant_events) {
     int max_overlapping = 0;
     int overlapping = 0;
@@ -880,11 +885,11 @@ int DeviceInfoSyncBridge::CountActiveDevices(const Time now) const {
       DCHECK_LE(0, overlapping);
       max_overlapping = std::max(max_overlapping, overlapping);
     }
+    device_count_by_type[type_and_events.first] = max_overlapping;
     DCHECK_EQ(overlapping, 0);
-    max_overlapping_sum += max_overlapping;
   }
 
-  return max_overlapping_sum;
+  return device_count_by_type;
 }
 
 void DeviceInfoSyncBridge::ExpireOldEntries() {

@@ -12,14 +12,15 @@
 class FakeWebStateListDelegate : public WebStateListDelegate {
  public:
   FakeWebStateListDelegate();
+
+  FakeWebStateListDelegate(const FakeWebStateListDelegate&) = delete;
+  FakeWebStateListDelegate& operator=(const FakeWebStateListDelegate&) = delete;
+
   ~FakeWebStateListDelegate() override;
 
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) override;
   void WebStateDetached(web::WebState* web_state) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeWebStateListDelegate);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_FAKE_WEB_STATE_LIST_DELEGATE_H_

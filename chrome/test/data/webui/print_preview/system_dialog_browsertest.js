@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, NativeLayer, NativeLayerImpl, PluginProxyImpl, whenReady} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, NativeLayerImpl, PluginProxyImpl, PrintPreviewLinkContainerElement, PrintPreviewSidebarElement, whenReady} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
-import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
-import {getCddTemplate, getDefaultInitialSettings, selectOption} from 'chrome://test/print_preview/print_preview_test_utils.js';
-import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
-import {eventToPromise, waitBeforeNextRender} from 'chrome://test/test_util.m.js';
+import {eventToPromise, waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
+import {NativeLayerStub} from './native_layer_stub.js';
+import {getCddTemplate, getDefaultInitialSettings, selectOption} from './print_preview_test_utils.js';
+import {TestPluginProxy} from './test_plugin_proxy.js';
 
 window.system_dialog_browsertest = {};
 system_dialog_browsertest.suiteName = 'SystemDialogBrowserTest';
@@ -37,7 +37,7 @@ suite(system_dialog_browsertest.suiteName, function() {
   /** @override */
   setup(function() {
     nativeLayer = new NativeLayerStub();
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     document.body.innerHTML = '';
 
     const initialSettings = getDefaultInitialSettings();
@@ -45,12 +45,12 @@ suite(system_dialog_browsertest.suiteName, function() {
     nativeLayer.setLocalDestinations(
         [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
     const pluginProxy = new TestPluginProxy();
-    PluginProxyImpl.instance_ = pluginProxy;
+    PluginProxyImpl.setInstance(pluginProxy);
 
     const page = document.createElement('print-preview-app');
     document.body.appendChild(page);
     const previewArea = page.$.previewArea;
-    sidebar = page.$$('print-preview-sidebar');
+    sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
     return Promise
         .all([
           waitBeforeNextRender(page),
@@ -59,14 +59,15 @@ suite(system_dialog_browsertest.suiteName, function() {
           nativeLayer.whenCalled('getPrinterCapabilities'),
         ])
         .then(function() {
-          linkContainer = sidebar.$$('print-preview-link-container');
+          linkContainer =
+              sidebar.shadowRoot.querySelector('print-preview-link-container');
           return nativeLayer.whenCalled('getPreview');
         })
         .then(function() {
           assertEquals('FooDevice', page.destination_.id);
           link = isWindows ? linkContainer.$.systemDialogLink :
                              linkContainer.$.openPdfInPreviewLink;
-          printTicketKey = isWindows ? 'showSystemDialog' : 'OpenPDFInPreview';
+          printTicketKey = isWindows ? 'showSystemDialog' : 'openPDFInPreview';
         });
   });
 
@@ -89,9 +90,11 @@ suite(system_dialog_browsertest.suiteName, function() {
         assertFalse(linkContainer.disabled);
         assertFalse(link.hidden);
 
-        const moreSettingsElement = sidebar.$$('print-preview-more-settings');
+        const moreSettingsElement =
+            sidebar.shadowRoot.querySelector('print-preview-more-settings');
         moreSettingsElement.$.label.click();
-        const scalingSettings = sidebar.$$('print-preview-scaling-settings');
+        const scalingSettings =
+            sidebar.shadowRoot.querySelector('print-preview-scaling-settings');
         assertFalse(scalingSettings.hidden);
         nativeLayer.resetResolver('getPreview');
         let previewCalls = 0;
@@ -105,7 +108,8 @@ suite(system_dialog_browsertest.suiteName, function() {
 
               // Set an invalid input.
               const scalingSettingsInput =
-                  scalingSettings.$$('print-preview-number-settings-section')
+                  scalingSettings.shadowRoot
+                      .querySelector('print-preview-number-settings-section')
                       .$.userValue.inputElement;
               scalingSettingsInput.value = '0';
               scalingSettingsInput.dispatchEvent(
@@ -115,8 +119,10 @@ suite(system_dialog_browsertest.suiteName, function() {
             })
             .then(() => {
               // Expect disabled print button
-              const parentElement = sidebar.$$('print-preview-button-strip');
-              const printButton = parentElement.$$('.action-button');
+              const parentElement = sidebar.shadowRoot.querySelector(
+                  'print-preview-button-strip');
+              const printButton =
+                  parentElement.shadowRoot.querySelector('.action-button');
               assertTrue(printButton.disabled);
               assertTrue(linkContainer.disabled);
               assertFalse(link.hidden);

@@ -12,10 +12,8 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_base.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
@@ -27,10 +25,15 @@
 class PrefService;
 
 namespace base {
+class Clock;
 class HistogramFlattener;
 class HistogramSamples;
 class HistogramSnapshotManager;
 }  // namespace base
+
+namespace network_time {
+class NetworkTimeTracker;
+}  // namespace network_time
 
 namespace metrics {
 
@@ -80,6 +83,11 @@ class MetricsLog {
   class IndependentMetricsLoader {
    public:
     explicit IndependentMetricsLoader(std::unique_ptr<MetricsLog> log);
+
+    IndependentMetricsLoader(const IndependentMetricsLoader&) = delete;
+    IndependentMetricsLoader& operator=(const IndependentMetricsLoader&) =
+        delete;
+
     ~IndependentMetricsLoader();
 
     // Call ProvideIndependentMetrics (which may execute on a background thread)
@@ -97,8 +105,6 @@ class MetricsLog {
     std::unique_ptr<MetricsLog> log_;
     std::unique_ptr<base::HistogramFlattener> flattener_;
     std::unique_ptr<base::HistogramSnapshotManager> snapshot_manager_;
-
-    DISALLOW_COPY_AND_ASSIGN(IndependentMetricsLoader);
   };
 
   // Creates a new metrics log of the specified type.
@@ -113,6 +119,18 @@ class MetricsLog {
              int session_id,
              LogType log_type,
              MetricsServiceClient* client);
+  // As above, with a |clock| and |network_clock| to use to vend Now() calls. As
+  // with |client|, the caller must ensure both remain valid for the lifetime of
+  // this class.
+  MetricsLog(const std::string& client_id,
+             int session_id,
+             LogType log_type,
+             base::Clock* clock,
+             const network_time::NetworkTimeTracker* network_clock,
+             MetricsServiceClient* client);
+
+  MetricsLog(const MetricsLog&) = delete;
+  MetricsLog& operator=(const MetricsLog&) = delete;
   virtual ~MetricsLog();
 
   // Registers local state prefs used by this class.
@@ -162,11 +180,13 @@ class MetricsLog {
       DelegatingProvider* delegating_provider);
 
   // Loads the environment proto that was saved by the last RecordEnvironment()
-  // call from prefs. On success, returns true and |app_version| contains the
-  // recovered version. Otherwise (if there was no saved environment in prefs
-  // or it could not be decoded), returns false and |app_version| is empty.
-  bool LoadSavedEnvironmentFromPrefs(PrefService* local_state,
-                                     std::string* app_version);
+  // call from prefs. On success, returns true. Otherwise, (if there was no
+  // saved environment in prefs or it could not be decoded), returns false.
+  bool LoadSavedEnvironmentFromPrefs(PrefService* local_state);
+
+  // Records the log_written_by_app_version system_profile field if the client's
+  // version is different from the system_profile's app_version.
+  void RecordLogWrittenByAppVersionIfNeeded();
 
   // Record data from providers about the previous session into the log.
   void RecordPreviousSessionData(DelegatingProvider* delegating_provider);
@@ -240,7 +260,13 @@ class MetricsLog {
   // Optional metadata associated with the log.
   LogMetadata log_metadata_;
 
-  DISALLOW_COPY_AND_ASSIGN(MetricsLog);
+  // The clock used to vend Time::Now().  Note that this is not used for the
+  // static function MetricsLog::GetCurrentTime(). Can be overridden for tests.
+  base::Clock* clock_;
+
+  // The NetworkTimeTracker used to provide higher-quality wall clock times than
+  // |clock_| (when available). Can be overridden for tests.
+  const network_time::NetworkTimeTracker* network_clock_;
 };
 
 }  // namespace metrics

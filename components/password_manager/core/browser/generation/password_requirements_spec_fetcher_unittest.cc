@@ -233,8 +233,7 @@ TEST(PasswordRequirementsSpecFetcherTest, FetchData) {
     if (test.timeout == kMagicTimeout) {
       // Make sure that the request takes longer than the timeout and gets
       // killed by the timer.
-      environment.FastForwardBy(
-          base::TimeDelta::FromMilliseconds(2 * kMagicTimeout));
+      environment.FastForwardBy(base::Milliseconds(2 * kMagicTimeout));
       environment.RunUntilIdle();
     }
 
@@ -295,8 +294,7 @@ TEST(PasswordRequirementsSpecFetcherTest, FetchDataInterleaved) {
     EXPECT_EQ(1, loader_factory.NumPending());
 
     if (simulate_timeout) {
-      environment.FastForwardBy(
-          base::TimeDelta::FromMilliseconds(2 * kTimeout));
+      environment.FastForwardBy(base::Milliseconds(2 * kTimeout));
       environment.RunUntilIdle();
       EXPECT_FALSE(spec_for_a.has_min_length());
       EXPECT_FALSE(spec_for_b.has_min_length());

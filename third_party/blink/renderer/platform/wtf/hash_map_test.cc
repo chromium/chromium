@@ -32,7 +32,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
 
@@ -624,7 +627,17 @@ TEST(HashMapTest, InitializerList) {
 }
 
 TEST(HashMapTest, IsValidKey) {
-  bool is_deleted;
+  static_assert(DefaultHash<int>::Hash::safe_to_compare_to_empty_or_deleted,
+                "type should be comparable to empty or deleted");
+  static_assert(DefaultHash<int*>::Hash::safe_to_compare_to_empty_or_deleted,
+                "type should be comparable to empty or deleted");
+  static_assert(DefaultHash<scoped_refptr<DummyRefCounted>>::Hash::
+                    safe_to_compare_to_empty_or_deleted,
+                "type should be comparable to empty or deleted");
+  static_assert(
+      !DefaultHash<AtomicString>::Hash::safe_to_compare_to_empty_or_deleted,
+      "type should not be comparable to empty or deleted");
+
   EXPECT_FALSE((HashMap<int, int>::IsValidKey(0)));
   EXPECT_FALSE((HashMap<int, int>::IsValidKey(-1)));
   EXPECT_TRUE((HashMap<int, int>::IsValidKey(-2)));
@@ -632,10 +645,15 @@ TEST(HashMapTest, IsValidKey) {
   EXPECT_FALSE((HashMap<int*, int>::IsValidKey(nullptr)));
   EXPECT_TRUE((HashMap<int*, int>::IsValidKey(std::make_unique<int>().get())));
 
+  bool is_deleted;
   auto p = base::MakeRefCounted<DummyRefCounted>(is_deleted);
   EXPECT_TRUE((HashMap<scoped_refptr<DummyRefCounted>, int>::IsValidKey(p)));
   EXPECT_FALSE(
       (HashMap<scoped_refptr<DummyRefCounted>, int>::IsValidKey(nullptr)));
+
+  // Test IsValidKey() on a type that is NOT comparable to empty or deleted.
+  EXPECT_TRUE((HashMap<AtomicString, int>::IsValidKey(AtomicString("foo"))));
+  EXPECT_FALSE((HashMap<AtomicString, int>::IsValidKey(AtomicString())));
 }
 
 static_assert(!IsTraceable<HashMap<int, int>>::value,

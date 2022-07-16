@@ -12,14 +12,11 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner.h"
+#include "base/task/task_runner_util.h"
 
 namespace {
-
-void FileDeleter(base::File file) {
-}
-
+void FileDeleter(base::File file) {}
 }  // namespace
 
 namespace base {
@@ -125,7 +122,7 @@ class CreateTemporaryHelper : public FileHelper {
       return;
     }
 
-    uint32_t file_flags = File::FLAG_WRITE | File::FLAG_TEMPORARY |
+    uint32_t file_flags = File::FLAG_WRITE | File::FLAG_WIN_TEMPORARY |
                           File::FLAG_CREATE_ALWAYS | additional_file_flags;
 
     file_.Initialize(file_path_, file_flags);

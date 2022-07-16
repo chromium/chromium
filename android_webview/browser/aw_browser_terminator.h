@@ -16,14 +16,15 @@ namespace android_webview {
 class AwBrowserTerminator : public crash_reporter::ChildExitObserver::Client {
  public:
   AwBrowserTerminator();
+
+  AwBrowserTerminator(const AwBrowserTerminator&) = delete;
+  AwBrowserTerminator& operator=(const AwBrowserTerminator&) = delete;
+
   ~AwBrowserTerminator() override;
 
   // crash_reporter::ChildExitObserver::Client
   void OnChildExit(
       const crash_reporter::ChildExitObserver::TerminationInfo& info) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AwBrowserTerminator);
 };
 
 }  // namespace android_webview

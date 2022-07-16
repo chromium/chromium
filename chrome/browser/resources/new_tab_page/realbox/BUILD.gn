@@ -21,6 +21,13 @@ js_library("realbox") {
   ]
 }
 
+js_library("realbox_action") {
+  deps = [
+    "../:utils",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("realbox_browser_proxy") {
   deps = [
     "//chrome/browser/ui/webui/realbox:mojo_bindings_js_library_for_compile",
@@ -47,6 +54,7 @@ js_library("realbox_icon") {
 
 js_library("realbox_match") {
   deps = [
+    ":realbox_action",
     ":realbox_icon",
     "..:i18n_setup",
     "../:utils",
@@ -60,6 +68,7 @@ html_to_js("web_components_local") {
     "realbox_dropdown.js",
     "realbox_icon.js",
     "realbox_match.js",
+    "realbox_action.js",
     "realbox.js",
   ]
 }
@@ -91,6 +100,7 @@ preprocess_if_expr("preprocess_gen") {
     "realbox_dropdown.js",
     "realbox_icon.js",
     "realbox_match.js",
+    "realbox_action.js",
     "realbox.js",
   ]
   deps = [ ":web_components" ]

@@ -65,14 +65,6 @@ enum class AutofillAssistantState {
   // Next states: RUNNING, TRACKING, STOPPED
   PROMPT,
 
-  // Autofill assistant is waiting for the user to make the first choice.
-  //
-  // When autostartable scripts are expected, this is only triggered as a
-  // fallback if there are non-autostartable scripts to choose from instead.
-  //
-  // Next states: RUNNING, STOPPED
-  AUTOSTART_FALLBACK_PROMPT,
-
   // Autofill assistant is expecting a modal dialog, such as the one asking for
   // CVC.
   //
@@ -129,9 +121,6 @@ inline std::ostream& operator<<(std::ostream& out,
       break;
     case AutofillAssistantState::PROMPT:
       out << "PROMPT";
-      break;
-    case AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT:
-      out << "AUTOSTART_FALLBACK_PROMPT";
       break;
     case AutofillAssistantState::MODAL_DIALOG:
       out << "MODAL_DIALOG";

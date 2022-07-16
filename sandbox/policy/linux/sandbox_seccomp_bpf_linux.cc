@@ -19,10 +19,11 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/trap_registry.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 #include "sandbox/sandbox_buildflags.h"
 
@@ -167,46 +168,47 @@ bool SandboxSeccompBPF::SupportsSandboxWithTsync() {
 }
 
 std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
-    SandboxType sandbox_type,
+    sandbox::mojom::Sandbox sandbox_type,
     const SandboxSeccompBPF::Options& options) {
   switch (sandbox_type) {
-    case SandboxType::kGpu:
+    case sandbox::mojom::Sandbox::kGpu:
       return GetGpuProcessSandbox(options.use_amd_specific_policies);
-    case SandboxType::kRenderer:
+    case sandbox::mojom::Sandbox::kRenderer:
       return std::make_unique<RendererProcessPolicy>();
-    case SandboxType::kPpapi:
+#if BUILDFLAG(ENABLE_PLUGINS)
+    case sandbox::mojom::Sandbox::kPpapi:
       return std::make_unique<PpapiProcessPolicy>();
-    case SandboxType::kUtility:
+#endif
+    case sandbox::mojom::Sandbox::kUtility:
       return std::make_unique<UtilityProcessPolicy>();
-    case SandboxType::kCdm:
+    case sandbox::mojom::Sandbox::kCdm:
       return std::make_unique<CdmProcessPolicy>();
-    case SandboxType::kPrintCompositor:
+    case sandbox::mojom::Sandbox::kPrintCompositor:
       return std::make_unique<PrintCompositorProcessPolicy>();
-#if BUILDFLAG(ENABLE_PRINTING)
-    case SandboxType::kPrintBackend:
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    case sandbox::mojom::Sandbox::kPrintBackend:
       return std::make_unique<PrintBackendProcessPolicy>();
 #endif
-    case SandboxType::kNetwork:
+    case sandbox::mojom::Sandbox::kNetwork:
       return std::make_unique<NetworkProcessPolicy>();
-    case SandboxType::kAudio:
+    case sandbox::mojom::Sandbox::kAudio:
       return std::make_unique<AudioProcessPolicy>();
-    case SandboxType::kService:
+    case sandbox::mojom::Sandbox::kService:
       return std::make_unique<ServiceProcessPolicy>();
-    case SandboxType::kSpeechRecognition:
+    case sandbox::mojom::Sandbox::kSpeechRecognition:
       return std::make_unique<SpeechRecognitionProcessPolicy>();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    case SandboxType::kIme:
+    case sandbox::mojom::Sandbox::kIme:
       return std::make_unique<ImeProcessPolicy>();
-    case SandboxType::kTts:
+    case sandbox::mojom::Sandbox::kTts:
       return std::make_unique<TtsProcessPolicy>();
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-    case SandboxType::kLibassistant:
+    case sandbox::mojom::Sandbox::kLibassistant:
       return std::make_unique<LibassistantProcessPolicy>();
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    case SandboxType::kZygoteIntermediateSandbox:
-    case SandboxType::kNoSandbox:
-    case SandboxType::kVideoCapture:
+    case sandbox::mojom::Sandbox::kZygoteIntermediateSandbox:
+    case sandbox::mojom::Sandbox::kNoSandbox:
       NOTREACHED();
       return nullptr;
   }
@@ -214,14 +216,16 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
 
 // If a BPF policy is engaged for |process_type|, run a few sanity checks.
 void SandboxSeccompBPF::RunSandboxSanityChecks(
-    SandboxType sandbox_type,
+    sandbox::mojom::Sandbox sandbox_type,
     const SandboxSeccompBPF::Options& options) {
   switch (sandbox_type) {
-    case SandboxType::kRenderer:
-    case SandboxType::kGpu:
-    case SandboxType::kPpapi:
-    case SandboxType::kPrintCompositor:
-    case SandboxType::kCdm: {
+    case sandbox::mojom::Sandbox::kRenderer:
+    case sandbox::mojom::Sandbox::kGpu:
+#if BUILDFLAG(ENABLE_PLUGINS)
+    case sandbox::mojom::Sandbox::kPpapi:
+#endif
+    case sandbox::mojom::Sandbox::kPrintCompositor:
+    case sandbox::mojom::Sandbox::kCdm: {
       int syscall_ret;
       errno = 0;
 
@@ -236,7 +240,12 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
       // open() must be restricted.
       syscall_ret = open("/etc/passwd", O_RDONLY);
       CHECK_EQ(-1, syscall_ret);
-      CHECK_EQ(BPFBasePolicy::GetFSDeniedErrno(), errno);
+      // The broker used with the GPU process sandbox uses EACCES for
+      // invalid filesystem access. See crbug.com/1233028 for more info.
+      CHECK_EQ(sandbox_type == sandbox::mojom::Sandbox::kGpu
+                   ? EACCES
+                   : BPFBasePolicy::GetFSDeniedErrno(),
+               errno);
 
       // We should never allow the creation of netlink sockets.
       syscall_ret = socket(AF_NETLINK, SOCK_DGRAM, 0);
@@ -245,23 +254,22 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
 #endif  // !defined(NDEBUG)
     } break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    case SandboxType::kIme:
-    case SandboxType::kTts:
+    case sandbox::mojom::Sandbox::kIme:
+    case sandbox::mojom::Sandbox::kTts:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-    case SandboxType::kLibassistant:
+    case sandbox::mojom::Sandbox::kLibassistant:
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    case SandboxType::kAudio:
-    case SandboxType::kService:
-    case SandboxType::kSpeechRecognition:
-    case SandboxType::kNetwork:
-#if BUILDFLAG(ENABLE_PRINTING)
-    case SandboxType::kPrintBackend:
+    case sandbox::mojom::Sandbox::kAudio:
+    case sandbox::mojom::Sandbox::kService:
+    case sandbox::mojom::Sandbox::kSpeechRecognition:
+    case sandbox::mojom::Sandbox::kNetwork:
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    case sandbox::mojom::Sandbox::kPrintBackend:
 #endif
-    case SandboxType::kUtility:
-    case SandboxType::kNoSandbox:
-    case SandboxType::kVideoCapture:
-    case SandboxType::kZygoteIntermediateSandbox:
+    case sandbox::mojom::Sandbox::kUtility:
+    case sandbox::mojom::Sandbox::kNoSandbox:
+    case sandbox::mojom::Sandbox::kZygoteIntermediateSandbox:
       // Otherwise, no checks required.
       break;
   }

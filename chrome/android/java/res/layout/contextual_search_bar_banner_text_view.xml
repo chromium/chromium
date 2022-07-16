@@ -18,7 +18,7 @@
         android:id="@+id/contextual_search_iph_tap_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary.Light"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline.Light"
         android:text="@string/contextual_search_iph_tap"
         />
 </LinearLayout>

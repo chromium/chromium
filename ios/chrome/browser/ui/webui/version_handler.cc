@@ -17,7 +17,7 @@ VersionHandler::VersionHandler() {}
 VersionHandler::~VersionHandler() {}
 
 void VersionHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       version_ui::kRequestVariationInfo,
       base::BindRepeating(&VersionHandler::HandleRequestVariationInfo,
                           base::Unretained(this)));
@@ -26,11 +26,11 @@ void VersionHandler::RegisterMessages() {
 void VersionHandler::HandleRequestVariationInfo(const base::ListValue* args) {
   // Respond with the variations info immediately.
   std::string callback_id;
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   CHECK(args->GetString(0, &callback_id));
 
   base::Value response(base::Value::Type::DICTIONARY);
   response.SetKey(version_ui::kKeyVariationsList,
-                  std::move(*version_ui::GetVariationsList()));
+                  version_ui::GetVariationsList());
   web_ui()->ResolveJavascriptCallback(base::Value(callback_id), response);
 }

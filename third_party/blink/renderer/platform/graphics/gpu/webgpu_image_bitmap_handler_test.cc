@@ -59,13 +59,11 @@ bool GPUUploadingPathSupported() {
 class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
  public:
   MockWebGPUInterface() {
-    procs_ = {};
-
     // WebGPU functions the tests will call. No-op them since we don't have a
     // real WebGPU device.
-    procs_.deviceReference = [](WGPUDevice) {};
-    procs_.deviceRelease = [](WGPUDevice) {};
-    procs_.textureRelease = [](WGPUTexture) {};
+    procs()->deviceReference = [](WGPUDevice) {};
+    procs()->deviceRelease = [](WGPUDevice) {};
+    procs()->textureRelease = [](WGPUTexture) {};
   }
 
   MOCK_METHOD(gpu::webgpu::ReservedTexture,
@@ -78,15 +76,11 @@ class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
                GLuint id,
                GLuint generation,
                GLuint usage,
+               gpu::webgpu::MailboxFlags flags,
                const GLbyte* mailbox));
   MOCK_METHOD(void,
               DissociateMailbox,
               (GLuint texture_id, GLuint texture_generation));
-
-  const DawnProcTable& GetProcs() const override { return procs_; }
-
- private:
-  DawnProcTable procs_;
 };
 
 // The six reference pixels are: red, green, blue, white, black.
@@ -247,12 +241,12 @@ class WebGPUImageBitmapHandlerTest : public testing::Test {
     // Compare content and results
     uint32_t bytes_per_row = wgpu_info.wgpu_bytes_per_row;
     uint32_t content_row_index =
-        (copy_rect.Y() * width + copy_rect.X()) * bytes_per_pixel;
+        (copy_rect.y() * width + copy_rect.x()) * bytes_per_pixel;
     uint32_t result_row_index = 0;
-    for (int i = 0; i < copy_rect.Height(); ++i) {
+    for (int i = 0; i < copy_rect.height(); ++i) {
       EXPECT_EQ(0, memcmp(&expected_value[content_row_index],
                           &results[result_row_index],
-                          copy_rect.Width() * bytes_per_pixel));
+                          copy_rect.width() * bytes_per_pixel));
       content_row_index += width * bytes_per_pixel;
       result_row_index += bytes_per_row;
     }
@@ -403,18 +397,19 @@ TEST_F(WebGPUMailboxTextureTest, VerifyAccessTexture) {
       .WillOnce(Return(reservation));
   EXPECT_CALL(*webgpu_,
               AssociateMailbox(2, 3, reservation.id, reservation.generation,
-                               WGPUTextureUsage_CopySrc, _))
+                               WGPUTextureUsage_CopySrc, _, _))
       .WillOnce(
-          testing::Invoke(testing::WithArg<5>([&](const GLbyte* mailbox_bytes) {
+          testing::Invoke(testing::WithArg<6>([&](const GLbyte* mailbox_bytes) {
             mailbox = gpu::Mailbox::FromVolatile(
                 *reinterpret_cast<const volatile gpu::Mailbox*>(mailbox_bytes));
           })));
 
+  SkImageInfo image_info = bitmap->PaintImageForCurrentFrame().GetSkImageInfo();
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromStaticBitmapImage(
-          dawn_control_client_, fake_device_, WGPUTextureUsage_CopySrc, bitmap);
+          dawn_control_client_, fake_device_, WGPUTextureUsage_CopySrc, bitmap,
+          CanvasColorSpace::kSRGB, image_info.colorType());
 
-  EXPECT_TRUE(mailbox == bitmap->GetMailboxHolder().mailbox);
   EXPECT_NE(mailbox_texture->GetTexture(), nullptr);
   EXPECT_EQ(mailbox_texture->GetTextureIdForTest(), 1u);
   EXPECT_EQ(mailbox_texture->GetTextureGenerationForTest(), 1u);

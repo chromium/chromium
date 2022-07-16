@@ -70,6 +70,10 @@ void FakeAccessibilityController::SetDictationActive(bool is_active) {}
 void FakeAccessibilityController::ToggleDictationFromSource(
     ash::DictationToggleSource source) {}
 
+void FakeAccessibilityController::ShowDictationLanguageUpgradedNudge(
+    const std::string& dictation_locale,
+    const std::string& application_locale) {}
+
 void FakeAccessibilityController::HandleAutoclickScrollableBoundsFound(
     gfx::Rect& bounds_in_screen) {}
 
@@ -91,3 +95,12 @@ bool FakeAccessibilityController::IsAccessibilityFeatureVisibleInTrayMenu(
 
 void FakeAccessibilityController::
     DisableSwitchAccessDisableConfirmationDialogTesting() {}
+
+void FakeAccessibilityController::
+    UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
+        int download_progress) {}
+
+void FakeAccessibilityController::
+    ShowSpeechRecognitionDownloadNotificationForDictation(
+        bool succeeded,
+        const std::u16string& display_language) {}

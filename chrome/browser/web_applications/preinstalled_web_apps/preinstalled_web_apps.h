@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "chrome/browser/web_applications/components/external_install_options.h"
+#include "chrome/browser/web_applications/external_install_options.h"
 
 namespace web_app {
 

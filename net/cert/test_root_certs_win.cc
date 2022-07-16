@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "crypto/scoped_capi_types.h"
 #include "net/cert/test_root_certs.h"
 
 #include <stdint.h>
@@ -164,9 +165,11 @@ void TestRootCerts::ClearImpl() {
     CertDeleteCertificateFromStore(prev_cert);
 }
 
-HCERTCHAINENGINE TestRootCerts::GetChainEngine() const {
-  if (IsEmpty())
-    return nullptr;  // Default chain engine will suffice.
+crypto::ScopedHCERTCHAINENGINE TestRootCerts::GetChainEngine() const {
+  if (IsEmpty()) {
+    // Default chain engine will suffice.
+    return crypto::ScopedHCERTCHAINENGINE();
+  }
 
   // Windows versions before 8 don't accept the struct size for later versions.
   // We report the size of the old struct since we don't need the new members.
@@ -187,8 +190,10 @@ HCERTCHAINENGINE TestRootCerts::GetChainEngine() const {
   engine_config.dwFlags =
       CERT_CHAIN_ENABLE_CACHE_AUTO_UPDATE |
       CERT_CHAIN_ENABLE_SHARE_STORE;
-  HCERTCHAINENGINE chain_engine = nullptr;
-  BOOL ok = CertCreateCertificateChainEngine(&engine_config, &chain_engine);
+  crypto::ScopedHCERTCHAINENGINE chain_engine;
+  BOOL ok = CertCreateCertificateChainEngine(
+      &engine_config,
+      crypto::ScopedHCERTCHAINENGINE::Receiver(chain_engine).get());
   DCHECK(ok);
   return chain_engine;
 }

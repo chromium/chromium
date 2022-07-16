@@ -27,7 +27,7 @@ namespace media {
 
 namespace {
 
-constexpr base::TimeDelta kRenderBufferSize = base::TimeDelta::FromSeconds(4);
+constexpr base::TimeDelta kRenderBufferSize = base::Seconds(4);
 
 }  // namespace
 
@@ -202,9 +202,9 @@ void CmaAudioOutputStream::PushBuffer() {
     // The rendering delay to account for buffering is not included in
     // rendering_delay.delay_microseconds but is in delay_timestamp which isn't
     // used by AudioOutputStreamImpl.
-    delay = base::TimeDelta::FromMicroseconds(
-        rendering_delay.delay_microseconds +
-        rendering_delay.timestamp_microseconds - MonotonicClockNow());
+    delay = base::Microseconds(rendering_delay.delay_microseconds +
+                               rendering_delay.timestamp_microseconds -
+                               MonotonicClockNow());
     if (delay.InMicroseconds() < 0) {
       delay = base::TimeDelta();
     }
@@ -256,7 +256,7 @@ void CmaAudioOutputStream::OnPushBufferComplete(BufferStatus status) {
     last_push_complete_time_ = now;
 
     if (render_buffer_size_estimate_ >= buffer_duration_) {
-      delay = base::TimeDelta::FromSeconds(0);
+      delay = base::Seconds(0);
     } else {
       delay = buffer_duration_;
     }

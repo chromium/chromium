@@ -6,12 +6,13 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ChromeCleanupProxy, ChromeCleanupProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ChromeCleanupProxyImpl} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus, SafetyCheckIconStatus, SafetyCheckInteractions, SettingsSafetyCheckChromeCleanerChildElement} from 'chrome://settings/settings.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
+import {TestChromeCleanupProxy} from './test_chrome_cleanup_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
@@ -95,20 +96,12 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
   /** @type {!SettingsSafetyCheckChromeCleanerChildElement} */
   let page;
 
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      safetyCheckChromeCleanerChildEnabled: true,
-    });
-  });
-
   setup(function() {
-    chromeCleanupBrowserProxy = TestBrowserProxy.fromClass(ChromeCleanupProxy);
-    chromeCleanupBrowserProxy.setResultFor(
-        'restartComputer', Promise.resolve(0));
-    ChromeCleanupProxyImpl.instance_ = chromeCleanupBrowserProxy;
+    chromeCleanupBrowserProxy = new TestChromeCleanupProxy();
+    ChromeCleanupProxyImpl.setInstance(chromeCleanupBrowserProxy);
 
     metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.instance_ = metricsBrowserProxy;
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     document.body.innerHTML = '';
     page = /** @type {!SettingsSafetyCheckChromeCleanerChildElement} */ (
@@ -308,36 +301,5 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
         'Settings.SafetyCheck.ChromeCleanerCaretNavigation');
     // Ensure the correct Settings page is shown.
     assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
-  });
-});
-
-suite('SafetyCheckChromeCleanerFlagDisabledTests', function() {
-  /** @type {!SettingsSafetyCheckChromeCleanerChildElement} */
-  let page;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      safetyCheckChromeCleanerChildEnabled: false,
-    });
-  });
-
-  setup(function() {
-    document.body.innerHTML = '';
-    page = /** @type {!SettingsSafetyCheckChromeCleanerChildElement} */ (
-        document.createElement('settings-safety-check-chrome-cleaner-child'));
-    document.body.appendChild(page);
-    flush();
-  });
-
-  teardown(function() {
-    page.remove();
-    Router.getInstance().navigateTo(routes.BASIC);
-  });
-
-  test('testChromeCleanerNotPresent', function() {
-    fireSafetyCheckChromeCleanerEvent(SafetyCheckChromeCleanerStatus.INFECTED);
-    flush();
-    // The UI is not visible.
-    assertFalse(!!page.shadowRoot.querySelector('#safetyCheckChild'));
   });
 });

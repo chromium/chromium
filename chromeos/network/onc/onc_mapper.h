@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace base {
 class DictionaryValue;
@@ -38,6 +37,10 @@ struct OncValueSignature;
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) Mapper {
  public:
   Mapper();
+
+  Mapper(const Mapper&) = delete;
+  Mapper& operator=(const Mapper&) = delete;
+
   virtual ~Mapper();
 
  protected:
@@ -105,9 +108,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Mapper {
       const OncValueSignature& signature,
       const base::Value& onc_value,
       bool* error);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Mapper);
 };
 
 }  // namespace onc

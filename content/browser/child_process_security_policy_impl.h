@@ -15,7 +15,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
@@ -50,6 +49,7 @@ namespace content {
 class BrowserContext;
 class IsolationContext;
 class ResourceContext;
+class SiteInfo;
 
 // ProcessLock is a core part of Site Isolation, which is used to determine
 // which documents are allowed to load in a process and which site data the
@@ -84,16 +84,14 @@ class CONTENT_EXPORT ProcessLock {
       const StoragePartitionConfig& storage_partition_config,
       const WebExposedIsolationInfo& web_exposed_isolation_info);
 
-  // Create a lock for a specific UrlInfo and WebExposedIsolationInfo. This
-  // method can be called from both the UI and IO threads. Locks created with
-  // the same parameters must always be considered equal independent of what
-  // thread they are called on. Special care must be taken since SiteInfos
-  // created on different threads don't always have the same contents for
-  // all their fields (e.g. site_url field is thread dependent).
-  static ProcessLock Create(
-      const IsolationContext& isolation_context,
-      const UrlInfo& url_info,
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
+  // Create a lock for a specific UrlInfo. This method can be called from both
+  // the UI and IO threads. Locks created with the same parameters must always
+  // be considered equal independent of what thread they are called on. Special
+  // care must be taken since SiteInfos created on different threads don't
+  // always have the same contents for all their fields (e.g. site_url field is
+  // thread dependent).
+  static ProcessLock Create(const IsolationContext& isolation_context,
+                            const UrlInfo& url_info);
 
   ProcessLock();
   explicit ProcessLock(const SiteInfo& site_info);
@@ -137,6 +135,9 @@ class CONTENT_EXPORT ProcessLock {
   bool is_origin_keyed() const {
     return site_info_.has_value() && site_info_->is_origin_keyed();
   }
+
+  // Returns whether this ProcessLock is specific to PDF contents.
+  bool is_pdf() const { return site_info_.has_value() && site_info_->is_pdf(); }
 
   // Returns the StoragePartitionConfig that corresponds to the SiteInfo the
   // lock is used with.
@@ -258,6 +259,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // AddFutureIsolatedOrigins and AddIsolatedOriginForBrowsingInstance).
     bool CanAccessDataForOrigin(const url::Origin& origin);
 
+    // Returns the original `child_id` used to create the handle.
+    int child_id() { return child_id_; }
+
    private:
     friend class ChildProcessSecurityPolicyImpl;
     // |child_id| - The ID of the process that this Handle is being created
@@ -273,6 +277,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // ChildProcessHost::kInvalidUniqueID if the handle is no longer valid.
     int child_id_;
   };
+
+  ChildProcessSecurityPolicyImpl(const ChildProcessSecurityPolicyImpl&) =
+      delete;
+  ChildProcessSecurityPolicyImpl& operator=(
+      const ChildProcessSecurityPolicyImpl&) = delete;
 
   // Object can only be created through GetInstance() so the constructor is
   // private.
@@ -339,20 +348,18 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                 IsolatedOriginSource source) override;
   void ClearIsolatedOriginsForTesting() override;
 
-  // Determines if the combination of |origin|, |url|, and
-  // |web_exposed_isolation_info| is safe to commit to the process
-  // associated with |child_id|.
+  // Determines if the combination of origin, url and web_exposed_isolation_info
+  // bundled in `url_info` are safe to commit to the process associated with
+  // `child_id`.
   //
-  // Returns CAN_COMMIT_ORIGIN_AND_URL if it is safe to commit the |origin| and
-  // |url| combination to the process associated with |child_id|.
-  // Returns CANNOT_COMMIT_URL if |url| is not safe to commit.
-  // Returns CANNOT_COMMIT_ORIGIN if |origin| is not safe to commit.
+  // Returns CAN_COMMIT_ORIGIN_AND_URL if it is safe to commit `url_info` origin
+  // and `url_info`'s url combination to the process associated with `child_id`.
+  // Returns CANNOT_COMMIT_URL if `url_info` url is not safe to commit.
+  // Returns CANNOT_COMMIT_ORIGIN if `url_info` origin is not safe to commit.
   CanCommitStatus CanCommitOriginAndUrl(
       int child_id,
       const IsolationContext& isolation_context,
-      const url::Origin& origin,
-      const UrlInfo& url_info,
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
+      const UrlInfo& url_info);
 
   // This function will check whether |origin| requires process isolation
   // within |isolation_context|, and if so, it will return true and put the
@@ -656,8 +663,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Allows tests to modify the delay in cleaning up BrowsingInstanceIds. If the
   // delay is set to zero, cleanup happens immediately.
   void SetBrowsingInstanceCleanupDelayForTesting(int64_t delay_in_seconds) {
-    browsing_instance_cleanup_delay_ =
-        base::TimeDelta::FromSeconds(delay_in_seconds);
+    browsing_instance_cleanup_delay_ = base::Seconds(delay_in_seconds);
   }
 
  private:
@@ -1022,8 +1028,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // improvement, and with it the BrowsingInstance cleanup here can also be
   // improved.
   base::TimeDelta browsing_instance_cleanup_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessSecurityPolicyImpl);
 };
 
 }  // namespace content

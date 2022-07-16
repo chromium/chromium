@@ -31,6 +31,11 @@ class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
   using RunExclusivelyCB = base::OnceCallback<void(ExclusiveKey)>;
   using SourceBufferPassKey = base::PassKey<SourceBuffer>;
 
+  MediaSourceAttachmentSupplement(const MediaSourceAttachmentSupplement&) =
+      delete;
+  MediaSourceAttachmentSupplement& operator=(
+      const MediaSourceAttachmentSupplement&) = delete;
+
   // Communicates a change in the media resource duration to the attached media
   // element. In a same-thread attachment, communicates this information
   // synchronously. In a cross-thread attachment, underlying WebMediaSource
@@ -48,7 +53,7 @@ class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
   // (via |tracer| in a same thread implementation) or rely on a "recent"
   // currentTime pumped by the attached element via the MediaSourceAttachment
   // interface (in a cross-thread implementation).
-  virtual double GetRecentMediaTime(MediaSourceTracer* tracer) = 0;
+  virtual base::TimeDelta GetRecentMediaTime(MediaSourceTracer* tracer) = 0;
 
   // Retrieves whether or not the media element currently has an error.
   // Implementations may choose to either directly, synchronously consult the
@@ -130,13 +135,18 @@ class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
   // cross-thread mutex is held.
   virtual void AssertCrossThreadMutexIsAcquiredForDebugging();
 
+  // No-op for same-thread attachmenets. For cross-thread attachments,
+  // calculates current buffered and seekable on the worker thread, then posts
+  // the results to the main thread to service media element queries of that
+  // information with latency and causality similar to app postMessage() from
+  // worker to main thread.
+  virtual void SendUpdatedInfoToMainThreadCache();
+
  protected:
   MediaSourceAttachmentSupplement();
   ~MediaSourceAttachmentSupplement() override;
 
   ExclusiveKey GetExclusiveKey() const;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSourceAttachmentSupplement);
 };
 
 }  // namespace blink

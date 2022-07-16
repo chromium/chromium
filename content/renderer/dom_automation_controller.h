@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "content/common/dom_automation_controller.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "gin/wrappable.h"
@@ -37,6 +36,9 @@ class DomAutomationController : public gin::Wrappable<DomAutomationController>,
  public:
   static gin::WrapperInfo kWrapperInfo;
 
+  DomAutomationController(const DomAutomationController&) = delete;
+  DomAutomationController& operator=(const DomAutomationController&) = delete;
+
   static void Install(RenderFrame* render_frame, blink::WebLocalFrame* frame);
 
   // Makes the renderer send a javascript value to the app.
@@ -63,8 +65,6 @@ class DomAutomationController : public gin::Wrappable<DomAutomationController>,
 
   mojo::AssociatedRemote<mojom::DomAutomationControllerHost>
       dom_automation_controller_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(DomAutomationController);
 };
 
 }  // namespace content

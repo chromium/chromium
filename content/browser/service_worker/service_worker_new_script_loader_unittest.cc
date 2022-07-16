@@ -459,19 +459,8 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Error_NoMimeType) {
   histogram_tester.ExpectTotalCount(kHistogramWriteResponseResult, 0);
 }
 
-class ServiceWorkerNewScriptLoaderTestWithLegacyTLSEnforced
-    : public ServiceWorkerNewScriptLoaderTest {
- public:
-  ServiceWorkerNewScriptLoaderTestWithLegacyTLSEnforced() {
-    feature_list_.InitAndEnableFeature(net::features::kLegacyTLSEnforced);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests that service workers fail to load over a connection with legacy TLS.
-TEST_F(ServiceWorkerNewScriptLoaderTestWithLegacyTLSEnforced, Error_LegacyTLS) {
+TEST_F(ServiceWorkerNewScriptLoaderTest, Error_LegacyTLS) {
   base::HistogramTester histogram_tester;
 
   std::unique_ptr<network::TestURLLoaderClient> client;

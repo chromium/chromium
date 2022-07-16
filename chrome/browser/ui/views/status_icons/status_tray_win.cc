@@ -11,9 +11,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/win/windows_types.h"
 #include "base/win/wrapped_window_proc.h"
@@ -47,6 +46,11 @@ class StatusTrayStateChangerProxyImpl : public StatusTrayStateChangerProxy {
       : pending_requests_(0), worker_thread_("StatusIconCOMWorkerThread") {
     worker_thread_.init_com_with_mta(false);
   }
+
+  StatusTrayStateChangerProxyImpl(const StatusTrayStateChangerProxyImpl&) =
+      delete;
+  StatusTrayStateChangerProxyImpl& operator=(
+      const StatusTrayStateChangerProxyImpl&) = delete;
 
   ~StatusTrayStateChangerProxyImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -93,8 +97,6 @@ class StatusTrayStateChangerProxyImpl : public StatusTrayStateChangerProxy {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<StatusTrayStateChangerProxyImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StatusTrayStateChangerProxyImpl);
 };
 
 StatusTrayWin::StatusTrayWin()

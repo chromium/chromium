@@ -44,6 +44,11 @@ bool ProgrammaticScriptInjector::IsUserGesture() const {
   return params_->injection->get_js()->user_gesture;
 }
 
+mojom::ExecutionWorld ProgrammaticScriptInjector::GetExecutionWorld() const {
+  DCHECK(params_->injection->is_js());
+  return params_->injection->get_js()->world;
+}
+
 mojom::CSSOrigin ProgrammaticScriptInjector::GetCssOrigin() const {
   DCHECK(params_->injection->is_css());
   return params_->injection->get_css()->css_origin;

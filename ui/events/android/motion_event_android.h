@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/events/events_export.h"
 #include "ui/events/gesture_detection/motion_event.h"

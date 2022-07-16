@@ -25,7 +25,7 @@ TEST_F(TransientAllowFullscreenTest, Basic) {
   EXPECT_TRUE(transient_allow_fullscreen.IsActive());
 
   // Test the activation state immediately before expiration.
-  const base::TimeDelta kEpsilon = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kEpsilon = base::Milliseconds(10);
   task_environment.FastForwardBy(TransientAllowFullscreen::kActivationLifespan -
                                  kEpsilon);
   EXPECT_TRUE(transient_allow_fullscreen.IsActive());

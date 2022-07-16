@@ -5,9 +5,9 @@
 #include "chrome/browser/vr/elements/scrollable_element.h"
 
 #include "base/cxx17_backports.h"
-#include "cc/test/geometry_test_utils.h"
 #include "chrome/browser/vr/input_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace vr {
 
@@ -113,13 +113,13 @@ TEST(ScrollableElement, MaxSpan) {
   child->SetSize(1.0f, 2.0f);
   element->AddScrollingChild(std::move(child));
   element->SizeAndLayOut();
-  EXPECT_SIZE_EQ(gfx::SizeF(1.0f, 1.0f), element->size());
+  EXPECT_SIZEF_EQ(gfx::SizeF(1.0f, 1.0f), element->size());
   EXPECT_TRUE(element->scrollable());
 
   // Make the max span bigger so that it can fit the entire child.
   element->set_max_span(3.0f);
   element->SizeAndLayOut();
-  EXPECT_SIZE_EQ(gfx::SizeF(1.0f, 2.0f), element->size());
+  EXPECT_SIZEF_EQ(gfx::SizeF(1.0f, 2.0f), element->size());
   EXPECT_FALSE(element->scrollable());
 }
 

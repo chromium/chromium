@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/biod/biod_client.h"
 #include "dbus/object_path.h"
@@ -27,6 +26,10 @@ namespace chromeos {
 class COMPONENT_EXPORT(BIOD_CLIENT) FakeBiodClient : public BiodClient {
  public:
   FakeBiodClient();
+
+  FakeBiodClient(const FakeBiodClient&) = delete;
+  FakeBiodClient& operator=(const FakeBiodClient&) = delete;
+
   ~FakeBiodClient() override;
 
   // Checks that a FakeBiodClient instance was initialized and returns it.
@@ -102,8 +105,6 @@ class COMPONENT_EXPORT(BIOD_CLIENT) FakeBiodClient : public BiodClient {
   FingerprintSession current_session_ = FingerprintSession::NONE;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBiodClient);
 };
 
 }  // namespace chromeos

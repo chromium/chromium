@@ -234,7 +234,6 @@ bool Zygote::HandleRequestFromBrowser(int fd) {
     // coverage for the Zygote. Currently it's not possible because of
     // confusion over who is responsible for closing the file descriptor.
     _exit(0);
-    return false;
   }
 
   if (len == -1) {

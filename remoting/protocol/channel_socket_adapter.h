@@ -37,6 +37,11 @@ class TransportChannelSocketAdapter : public P2PDatagramSocket,
   // this adapter.
   explicit TransportChannelSocketAdapter(
       cricket::IceTransportInternal* ice_transport);
+
+  TransportChannelSocketAdapter(const TransportChannelSocketAdapter&) = delete;
+  TransportChannelSocketAdapter& operator=(
+      const TransportChannelSocketAdapter&) = delete;
+
   ~TransportChannelSocketAdapter() override;
 
   // Sets callback that should be called when the adapter is being
@@ -81,8 +86,6 @@ class TransportChannelSocketAdapter : public P2PDatagramSocket,
   int write_buffer_size_;
 
   int closed_error_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransportChannelSocketAdapter);
 };
 
 }  // namespace protocol

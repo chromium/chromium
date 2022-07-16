@@ -51,7 +51,8 @@ def _CommonChecks(input_api, output_api):
   result.extend(_CheckTextAppearance(input_api, output_api))
   result.extend(_CheckLineSpacingAttribute(input_api, output_api))
   result.extend(_CheckButtonCompatWidgetUsage(input_api, output_api))
-  result.extend(_CheckStringResourcePunctuations(input_api, output_api))
+  result.extend(_CheckStringResourceQuotesPunctuations(input_api, output_api))
+  result.extend(_CheckStringResourceEllipsisPunctuations(input_api, output_api))
   # Add more checks here
   return result
 
@@ -470,14 +471,65 @@ def _CheckButtonCompatWidgetUsage(input_api, output_api):
 
 
 ### String resource check ###
-def _CheckStringResourcePunctuations(input_api, output_api):
+def _CheckStringResourceQuotesPunctuations(input_api, output_api):
+  """Check whether inappropriate quotes are used"""
+  warning = '''
+  Android String Resources Check failed:
+    Your new string is using one or more of generic quotes(\u0022 \\u0022, \u0027 \\u0027,
+    \u0060 \\u0060, \u00B4 \\u00B4), which is not encouraged. Instead, quotations marks
+    (\u201C \\u201C, \u201D \\u201D, \u2018 \\u2018, \u2019 \\u2019) are usually preferred.
+
+    Use prime (\u2032 \\u2032) only in abbreviations for feet, arcminutes, and minutes.
+    Use Double-prime (\u2033 \\u2033) only in abbreviations for inches, arcminutes, and minutes.
+
+    Please reach out to the UX designer/writer in your team to double check
+    which punctuation should be correctly used. Ignore this warning if UX has confirmed.
+
+    Reach out to writing-strings@chromium.org if you have any question about writing strings.
+  '''
+  return _checkStringResourcePunctuations(
+      re.compile(u'[\u0022\u0027\u0060\u00B4]'), warning, input_api, output_api)
+
+
+def _CheckStringResourceEllipsisPunctuations(input_api, output_api):
+  """Check whether inappropriate ellipsis are used"""
+  warning = '''
+  Android String Resources Check failed:
+    Your new string appears to use three periods(\u002E \\u002E) to represent
+    an ellipsis, which is not encouraged. Instead, an ellipsis mark
+    (\u2026 \\u2026) is usually preferred.
+
+    Please reach out to the UX designer/writer in your team to double check
+    which punctuation should be correctly used. Ignore this warning if UX has confirmed.
+
+    Reach out to writing-strings@chromium.org if you have any question about writing strings.
+  '''
+  return _checkStringResourcePunctuations(re.compile(u'[\u002E]{3}'), warning,
+                                          input_api, output_api)
+
+
+### helpers ###
+def _colorXml2Dict(content):
+  dct = dict()
+  tree = ET.fromstring(content)
+  for child in tree:
+    dct[child.attrib['name']] = child.text
+  return dct
+
+
+def _removePrefix(color, prefix='@color/'):
+  if color.startswith(prefix):
+    return color[len(prefix):]
+  return color
+
+
+def _checkStringResourcePunctuations(regex, warning, input_api, output_api):
   """Check whether inappropriate punctuations are used"""
   warnings = []
   result = []
   # Removing placeholders for parsing purpose:
   # placeholders will be parsed as children of the parent node.
   ph = re.compile(r'<ph>.*</ph>')
-  quote_re = re.compile(u'[\u0022\u0027\u0060\u00B4]')
   for f in IncludedFiles(input_api, helpers.INCLUDED_GRD_PATHS):
     contents = input_api.ReadFile(f)
 
@@ -496,7 +548,7 @@ def _CheckStringResourcePunctuations(input_api, output_api):
     for child in messages:
       if child.tag == 'message':
         lines = child.text.split('\n')
-        quotes.update(l for l in lines if quote_re.search(l))
+        quotes.update(l for l in lines if regex.search(l))
 
     # Only report the lines in the changed contents of the current workspace
     for line_number, line in f.ChangedContents():
@@ -506,36 +558,5 @@ def _CheckStringResourcePunctuations(input_api, output_api):
                         (f.LocalPath(), line_number, line))
 
   if warnings:
-    result += [
-        output_api.PresubmitPromptWarning(
-            '''
-  Android String Resources Check failed:
-    Your new string is using one or more of generic quotes(\u0022 \\u0022, \u0027 \\u0027,
-    \u0060 \\u0060, \u00B4 \\u00B4), which is not encouraged. Instead, quotations marks
-    (\u201C \\u201C, \u201D \\u201D, \u2018 \\u2018, \u2019 \\u2019) are usually preferred.
-
-    Use prime (\u2032 \\u2032) only in abbreviations for feet, arcminutes, and minutes.
-    Use Double-prime (\u2033 \\u2033) only in abbreviations for inches, arcminutes, and minutes.
-
-    Please reach out to the UX designer/writer in your team to double check
-    which punctuation should be correctly used. Ignore this warning if UX has confirmed.
-
-    Reach out to writing-strings@chromium.org if you have any question about writing strings.
-  ''', warnings)
-    ]
+    result += [output_api.PresubmitPromptWarning(warning, warnings)]
   return result
-
-
-### helpers ###
-def _colorXml2Dict(content):
-  dct = dict()
-  tree = ET.fromstring(content)
-  for child in tree:
-    dct[child.attrib['name']] = child.text
-  return dct
-
-
-def _removePrefix(color, prefix='@color/'):
-  if color.startswith(prefix):
-    return color[len(prefix):]
-  return color

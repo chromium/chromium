@@ -247,10 +247,10 @@ std::string TestSurfaceBase::CurrentState() {
 }
 
 bool TestSurfaceBase::IsInitialLoadSpinnerUpdate(
-    const feedui::StreamUpdate& update) {
-  return update.updated_slices().size() == 1 &&
-         update.updated_slices()[0].has_slice() &&
-         update.updated_slices()[0].slice().has_loading_spinner_slice();
+    const feedui::StreamUpdate& stream_update) {
+  return stream_update.updated_slices().size() == 1 &&
+         stream_update.updated_slices()[0].has_slice() &&
+         stream_update.updated_slices()[0].slice().has_loading_spinner_slice();
 }
 
 TestForYouSurface::TestForYouSurface(FeedStream* stream)
@@ -387,7 +387,7 @@ void TestFeedNetwork::SendQueryRequest(
     result.response_info.status_code = http_status_code;
 
   result.response_info.response_body_bytes = 100;
-  result.response_info.fetch_duration = base::TimeDelta::FromMilliseconds(42);
+  result.response_info.fetch_duration = base::Milliseconds(42);
   result.response_info.was_signed_in = true;
   if (injected_response_) {
     result.response_body = std::make_unique<feedwire::Response>(
@@ -690,7 +690,8 @@ void TestMetricsReporter::OnLoadStream(
     bool is_initial_load,
     bool loaded_new_content_from_network,
     base::TimeDelta stored_content_age,
-    int content_count,
+    const ContentStats& content_stats,
+    const RequestMetadata& request_metadata,
     std::unique_ptr<LoadLatencyTimes> latencies) {
   load_stream_from_store_status = load_from_store_status;
   load_stream_status = final_status;
@@ -698,17 +699,19 @@ void TestMetricsReporter::OnLoadStream(
             << " (store status: " << load_from_store_status << ")";
   MetricsReporter::OnLoadStream(
       stream_type, load_from_store_status, final_status, is_initial_load,
-      loaded_new_content_from_network, stored_content_age, content_count,
-      std::move(latencies));
+      loaded_new_content_from_network, stored_content_age, content_stats,
+      request_metadata, std::move(latencies));
 }
 void TestMetricsReporter::OnLoadMoreBegin(const StreamType& stream_type,
                                           SurfaceId surface_id) {
   load_more_surface_id = surface_id;
   MetricsReporter::OnLoadMoreBegin(stream_type, surface_id);
 }
-void TestMetricsReporter::OnLoadMore(LoadStreamStatus final_status) {
+void TestMetricsReporter::OnLoadMore(const StreamType& stream_type,
+                                     LoadStreamStatus final_status,
+                                     const ContentStats& content_stats) {
   load_more_status = final_status;
-  MetricsReporter::OnLoadMore(final_status);
+  MetricsReporter::OnLoadMore(stream_type, final_status, content_stats);
 }
 void TestMetricsReporter::OnBackgroundRefresh(const StreamType& stream_type,
                                               LoadStreamStatus final_status) {
@@ -727,9 +730,9 @@ TestMetricsReporter::StreamMetrics& TestMetricsReporter::Stream(
   return for_you;
 }
 
-void TestMetricsReporter::OnClearAll(base::TimeDelta time_since_last_clear) {
-  this->time_since_last_clear = time_since_last_clear;
-  MetricsReporter::OnClearAll(time_since_last_clear);
+void TestMetricsReporter::OnClearAll(base::TimeDelta since_last_clear) {
+  time_since_last_clear = since_last_clear;
+  MetricsReporter::OnClearAll(time_since_last_clear.value());
 }
 void TestMetricsReporter::OnUploadActions(UploadActionsStatus status) {
   upload_action_status = status;
@@ -791,6 +794,11 @@ bool FeedApiTest::IsOffline() {
 std::string FeedApiTest::GetSyncSignedInGaia() {
   return signed_in_gaia_;
 }
+void FeedApiTest::RegisterFollowingFeedFollowCountFieldTrial(
+    size_t follow_count) {
+  register_following_feed_follow_count_field_trial_calls_.push_back(
+      follow_count);
+}
 DisplayMetrics FeedApiTest::GetDisplayMetrics() {
   DisplayMetrics result;
   result.density = 200;
@@ -813,10 +821,12 @@ void FeedApiTest::PrefetchImage(const GURL& url) {
   prefetch_image_call_count_++;
 }
 
-void FeedApiTest::CreateStream(bool wait_for_initialization) {
+void FeedApiTest::CreateStream(bool wait_for_initialization,
+                               bool start_surface) {
   ChromeInfo chrome_info;
   chrome_info.channel = version_info::Channel::STABLE;
   chrome_info.version = base::Version({99, 1, 9911, 2});
+  chrome_info.start_surface = start_surface;
   stream_ = std::make_unique<FeedStream>(
       &refresh_scheduler_, metrics_reporter_.get(), this, &profile_prefs_,
       &network_, image_fetcher_.get(), store_.get(),

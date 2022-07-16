@@ -6,10 +6,12 @@
 
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/exo/wm_helper.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace arc {
 
@@ -124,6 +126,13 @@ void AccessibilityWindowInfoDataWrapper::Serialize(
     out_data->SetNameFrom(ax::mojom::NameFrom::kTitle);
   }
 
+  if (GetProperty(mojom::AccessibilityWindowBooleanProperty::
+                      IN_PICTURE_IN_PICTURE_MODE)) {
+    out_data->AddStringAttribute(
+        ax::mojom::StringAttribute::kDescription,
+        l10n_util::GetStringUTF8(IDS_ARC_ACCESSIBILITY_WINDOW_TITLE_IN_PIP));
+  }
+
   if (root->GetId() == GetId()) {
     // Make the root window of each ARC task modal unless it's notification.
     if (!tree_source_->is_notification())
@@ -135,17 +144,7 @@ void AccessibilityWindowInfoDataWrapper::Serialize(
     out_data->AddState(ax::mojom::State::kFocusable);
   }
 
-  // Not all properties are currently used in Chrome Accessibility.
-
-  // Boolean properties:
-  // Someday we may want to have a IN_PICTURE_IN_PICTURE_MODE state or a
-  // WINDOW_ACTIVE state, or to map the FOCUSED (i.e. has input focus) or
-  // ACCESSIBILITY_FOCUSED (i.e. some node within this window has accessibility
-  // focus) to new types.
-
-  // Integer properties:
-  // We could reflect ARC++ window properties like ANCHOR_NODE_ID,
-  // and LAYER_ORDER in ax::mojom::IntAttributes.
+  // Note that not all properties are currently used in Chrome Accessibility.
 }
 
 std::string AccessibilityWindowInfoDataWrapper::ComputeAXName(

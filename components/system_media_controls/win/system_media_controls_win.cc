@@ -251,21 +251,22 @@ void SystemMediaControlsWin::SetThumbnail(const SkBitmap& bitmap) {
             status == ABI::Windows::Foundation::AsyncStatus::Completed) {
           Microsoft::WRL::ComPtr<IRandomAccessStreamReferenceStatics>
               reference_statics;
-          HRESULT hr = base::win::GetActivationFactory<
+          HRESULT result = base::win::GetActivationFactory<
               IRandomAccessStreamReferenceStatics,
               RuntimeClass_Windows_Storage_Streams_RandomAccessStreamReference>(
               &reference_statics);
-          DCHECK(SUCCEEDED(hr));
+          DCHECK(SUCCEEDED(result));
 
-          hr = reference_statics->CreateFromStream(icon_stream_.Get(),
-                                                   &icon_stream_reference_);
-          DCHECK(SUCCEEDED(hr));
+          result = reference_statics->CreateFromStream(icon_stream_.Get(),
+                                                       &icon_stream_reference_);
+          DCHECK(SUCCEEDED(result));
 
-          hr = display_updater_->put_Thumbnail(icon_stream_reference_.Get());
-          DCHECK(SUCCEEDED(hr));
+          result =
+              display_updater_->put_Thumbnail(icon_stream_reference_.Get());
+          DCHECK(SUCCEEDED(result));
 
-          hr = display_updater_->Update();
-          DCHECK(SUCCEEDED(hr));
+          result = display_updater_->Update();
+          DCHECK(SUCCEEDED(result));
         }
         return hr;
       });

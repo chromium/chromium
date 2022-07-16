@@ -20,8 +20,8 @@
 #include "chrome/browser/ui/webui/signin/signin_error_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/signin_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
@@ -71,12 +71,12 @@ void SigninErrorUI::Initialize(Browser* browser, bool is_system_profile) {
   source->DisableTrustedTypesCSP();
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
-  source->SetDefaultResource(IDR_SIGNIN_ERROR_HTML);
+  source->SetDefaultResource(IDR_SIGNIN_SIGNIN_ERROR_SIGNIN_ERROR_HTML);
   static constexpr webui::ResourcePath kResources[] = {
-      {"signin_error_app.js", IDR_SIGNIN_ERROR_APP_JS},
-      {"signin_error.js", IDR_SIGNIN_ERROR_JS},
-      {"signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS},
-      {"signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS},
+      {"signin_error_app.js", IDR_SIGNIN_SIGNIN_ERROR_SIGNIN_ERROR_APP_JS},
+      {"signin_error.js", IDR_SIGNIN_SIGNIN_ERROR_SIGNIN_ERROR_JS},
+      {"signin_shared_css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
+      {"signin_vars_css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
   };
   source->AddResourcePaths(kResources);
   source->AddBoolean("isSystemProfile", is_system_profile);

@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/ui/webui/extensions/extensions_internals_source.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/value_store/value_store_factory_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
@@ -52,12 +53,10 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/info_map.h"
 #include "extensions/browser/quota_service.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/browser/service_worker_manager.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/updater/uninstall_ping_sender.h"
 #include "extensions/browser/user_script_manager.h"
-#include "extensions/browser/value_store/value_store_factory_impl.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_url_handlers.h"
@@ -106,17 +105,20 @@ ExtensionSystemImpl::Shared::~Shared() {
 }
 
 void ExtensionSystemImpl::Shared::InitPrefs() {
-  store_factory_ =
-      base::MakeRefCounted<ValueStoreFactoryImpl>(profile_->GetPath());
+  store_factory_ = base::MakeRefCounted<value_store::ValueStoreFactoryImpl>(
+      profile_->GetPath());
 
-  // Two state stores. The latter, which contains declarative rules, must be
-  // loaded immediately so that the rules are ready before we issue network
-  // requests.
+  // Three state stores. Two stores, which contain declarative rules and dynamic
+  // user scripts respectively, must be loaded immediately so that the
+  // rules/scripts are ready before we issue network requests.
   state_store_ = std::make_unique<StateStore>(
-      profile_, store_factory_, ValueStoreFrontend::BackendType::STATE, true);
+      profile_, store_factory_, StateStore::BackendType::STATE, true);
 
   rules_store_ = std::make_unique<StateStore>(
-      profile_, store_factory_, ValueStoreFrontend::BackendType::RULES, false);
+      profile_, store_factory_, StateStore::BackendType::RULES, false);
+
+  dynamic_user_scripts_store_ = std::make_unique<StateStore>(
+      profile_, store_factory_, StateStore::BackendType::SCRIPTS, false);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // We can not perform check for Signin Profile here, as it would result in
@@ -199,10 +201,6 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
   service_worker_manager_ = std::make_unique<ServiceWorkerManager>(profile_);
 
   user_script_manager_ = std::make_unique<UserScriptManager>(profile_);
-
-  // ExtensionService depends on RuntimeData.
-  runtime_data_ =
-      std::make_unique<RuntimeData>(ExtensionRegistry::Get(profile_));
 
   bool autoupdate_enabled = !profile_->IsGuestSession() &&
                             !profile_->IsSystemProfile();
@@ -315,17 +313,17 @@ StateStore* ExtensionSystemImpl::Shared::rules_store() {
   return rules_store_.get();
 }
 
-scoped_refptr<ValueStoreFactory> ExtensionSystemImpl::Shared::store_factory()
-    const {
+StateStore* ExtensionSystemImpl::Shared::dynamic_user_scripts_store() {
+  return dynamic_user_scripts_store_.get();
+}
+
+scoped_refptr<value_store::ValueStoreFactory>
+ExtensionSystemImpl::Shared::store_factory() const {
   return store_factory_;
 }
 
 ExtensionService* ExtensionSystemImpl::Shared::extension_service() {
   return extension_service_.get();
-}
-
-RuntimeData* ExtensionSystemImpl::Shared::runtime_data() {
-  return runtime_data_.get();
 }
 
 ManagementPolicy* ExtensionSystemImpl::Shared::management_policy() {
@@ -388,10 +386,6 @@ ExtensionService* ExtensionSystemImpl::extension_service() {
   return shared_->extension_service();
 }
 
-RuntimeData* ExtensionSystemImpl::runtime_data() {
-  return shared_->runtime_data();
-}
-
 ManagementPolicy* ExtensionSystemImpl::management_policy() {
   return shared_->management_policy();
 }
@@ -412,7 +406,12 @@ StateStore* ExtensionSystemImpl::rules_store() {
   return shared_->rules_store();
 }
 
-scoped_refptr<ValueStoreFactory> ExtensionSystemImpl::store_factory() {
+StateStore* ExtensionSystemImpl::dynamic_user_scripts_store() {
+  return shared_->dynamic_user_scripts_store();
+}
+
+scoped_refptr<value_store::ValueStoreFactory>
+ExtensionSystemImpl::store_factory() {
   return shared_->store_factory();
 }
 

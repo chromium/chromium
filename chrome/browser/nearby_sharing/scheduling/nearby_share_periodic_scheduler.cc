@@ -31,10 +31,10 @@ NearbySharePeriodicScheduler::TimeUntilRecurringRequest(base::Time now) const {
 
   // Immediately run a first-time request.
   if (!last_success_time)
-    return base::TimeDelta::FromSeconds(0);
+    return base::Seconds(0);
 
   base::TimeDelta time_elapsed_since_last_success = now - *last_success_time;
 
-  return std::max(base::TimeDelta::FromSeconds(0),
+  return std::max(base::Seconds(0),
                   request_period_ - time_elapsed_since_last_success);
 }

@@ -24,6 +24,11 @@ namespace viz {
 class RasterContextProvider;
 }
 
+namespace cc {
+class PaintCanvas;
+class PaintFlags;
+}  // namespace cc
+
 namespace blink {
 class CanvasResourceProvider;
 class StaticBitmapImage;
@@ -89,6 +94,12 @@ PLATFORM_EXPORT bool DrawVideoFrameIntoResourceProvider(
     viz::RasterContextProvider* raster_context_provider,
     const gfx::Rect& dest_rect,
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
+    bool ignore_video_transformation = false);
+
+PLATFORM_EXPORT void DrawVideoFrameIntoCanvas(
+    scoped_refptr<media::VideoFrame> frame,
+    cc::PaintCanvas* canvas,
+    cc::PaintFlags& flags,
     bool ignore_video_transformation = false);
 
 // Creates a CanvasResourceProvider which is appropriate for drawing VideoFrame

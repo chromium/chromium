@@ -14,16 +14,16 @@ namespace extensions {
 class ExtensionSet;
 }
 
-// Returns true if the extension (or an imported module if any) is whitelisted.
+// Returns true if the extension (or an imported module if any) is allowed.
 // Module imports are at most one level deep (ie, a module that exports cannot
 // import another extension).  The extension is identified by the host of |url|
 // (if it is a chrome-extension URL).  |extension_set| is the list of installed
-// and enabled extensions for a given profile.  |whitelist| is a set of
+// and enabled extensions for a given profile.  |allowlist| is a set of
 // (possibly hashed) extension IDs to check against.
-bool IsExtensionOrSharedModuleWhitelisted(
+bool IsExtensionOrSharedModuleAllowed(
     const GURL& url,
     const extensions::ExtensionSet* extension_set,
-    const std::set<std::string>& whitelist);
+    const std::set<std::string>& allowlist);
 
 // Checks whether the host of |url| is allowed by |command_line_switch|.
 //

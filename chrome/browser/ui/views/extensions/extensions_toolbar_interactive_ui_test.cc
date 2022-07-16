@@ -11,10 +11,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_utils.h"
-#include "extensions/browser/notification_types.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
@@ -70,14 +68,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarInteractiveUiTest,
   EXPECT_TRUE(view_controller->IsShowingPopup());
   EXPECT_EQ(view_controller, container->popup_owner_for_testing());
 
-  // TODO(devlin): Update this use an ExtensionHostObserver, rather than the
-  // deprecated notifications system.
-  content::WindowedNotificationObserver observer(
-      extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-      content::NotificationService::AllSources());
+  extensions::ExtensionHostTestHelper host_helper(profile(), extension->id());
   EXPECT_TRUE(
       ui_test_utils::SendMouseEventsSync(ui_controls::LEFT, ui_controls::DOWN));
-  observer.Wait();
+  host_helper.WaitForHostDestroyed();
 
   EXPECT_FALSE(view_controller->IsShowingPopup());
   EXPECT_EQ(nullptr, container->popup_owner_for_testing());

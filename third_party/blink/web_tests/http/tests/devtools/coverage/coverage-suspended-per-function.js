@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the coverage list view after suspending the coverage model.\n`);
-  await TestRunner.loadModule('panels/coverage'); await TestRunner.loadTestModule('coverage_test_runner');
+  await TestRunner.loadLegacyModule('panels/coverage'); await TestRunner.loadTestModule('coverage_test_runner');
   await TestRunner.loadHTML(`
       <p class="class">
       </p>
@@ -31,7 +31,7 @@
   await CoverageTestRunner.resumeCoverageModel();
 
   var coverageView = Coverage.CoverageView.instance();
-  coverageView._clear();
+  coverageView.clear();
 
   await CoverageTestRunner.startCoverage(false);
   await TestRunner.evaluateInPagePromise('performActions()');

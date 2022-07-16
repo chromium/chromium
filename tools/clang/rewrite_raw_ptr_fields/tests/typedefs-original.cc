@@ -4,11 +4,11 @@
 
 class SomeClass;
 
-// Expected rewrite: typedef CheckedPtr<SomeClass> SomeClassPtrTypedef.
+// Expected rewrite: typedef raw_ptr<SomeClass> SomeClassPtrTypedef.
 // TODO(lukasza): Handle rewriting typedefs.
 typedef SomeClass* SomeClassPtrTypedef;
 
-// Expected rewrite: using SomeClassPtrTypeAlias = CheckedPtr<SomeClass>;
+// Expected rewrite: using SomeClassPtrTypeAlias = raw_ptr<SomeClass>;
 // TODO(lukasza): Handle rewriting type aliases.
 using SomeClassPtrTypeAlias = SomeClass*;
 
@@ -19,8 +19,8 @@ struct MyStruct {
 
   // Only "shallow" rewrite expected here (without unsugaring/inlining the type
   // aliases).  So:
-  // Expected rewrite: CheckedPtr<SomeClassPtrTypedef> field3;
+  // Expected rewrite: raw_ptr<SomeClassPtrTypedef> field3;
   SomeClassPtrTypedef* field3;
-  // Expected rewrite: CheckedPtr<SomeClassPtrTypeAlias> field4;
+  // Expected rewrite: raw_ptr<SomeClassPtrTypeAlias> field4;
   SomeClassPtrTypeAlias* field4;
 };

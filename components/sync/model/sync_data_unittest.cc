@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted_memory.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using std::string;

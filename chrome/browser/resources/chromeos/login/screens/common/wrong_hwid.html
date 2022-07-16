@@ -1,0 +1,45 @@
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<link rel="import" href="../../components/display_manager_types.html">
+<link rel="import" href="../../components/html_echo.html">
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_text_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+
+<dom-module id="wrong-hwid-element">
+  <template>
+    <style include="oobe-dialog-host-styles"></style>
+    <oobe-adaptive-dialog role="dialog">
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'wrongHWIDScreenHeader')]]
+      </h1>
+      <p slot="content">
+        <html-echo content="[[formattedFirstPart_(locale)]]"></html-echo>
+      </p>
+      <p slot="content">
+        [[i18nDynamic(locale, 'wrongHWIDMessageSecondPart')]]
+      </p>
+      <div slot="content" class="flex layout vertical center center-justified">
+        <img src="images/error.svg" class="oobe-illustration">
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="skipButton" inverse
+            text-key="wrongHWIDScreenSkipLink" on-click="onSkip_">
+        </oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+  </template>
+  <script src="wrong_hwid.js"></script>
+</dom-module>

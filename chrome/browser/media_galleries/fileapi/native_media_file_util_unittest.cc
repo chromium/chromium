@@ -37,6 +37,8 @@
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 #define FPL(x) FILE_PATH_LITERAL(x)
@@ -123,6 +125,9 @@ class NativeMediaFileUtilTest : public testing::Test {
  public:
   NativeMediaFileUtilTest() = default;
 
+  NativeMediaFileUtilTest(const NativeMediaFileUtilTest&) = delete;
+  NativeMediaFileUtilTest& operator=(const NativeMediaFileUtilTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(base::CreateDirectory(root_path()));
@@ -159,8 +164,8 @@ class NativeMediaFileUtilTest : public testing::Test {
 
   FileSystemURL CreateURL(const base::FilePath::CharType* test_case_path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(origin()), storage::kFileSystemTypeIsolated,
-        GetVirtualPath(test_case_path));
+        blink::StorageKey(url::Origin::Create(origin())),
+        storage::kFileSystemTypeIsolated, GetVirtualPath(test_case_path));
   }
 
   storage::IsolatedContext* isolated_context() {
@@ -194,8 +199,6 @@ class NativeMediaFileUtilTest : public testing::Test {
 
   std::string filesystem_id_;
   storage::IsolatedContext::ScopedFSHandle filesystem_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeMediaFileUtilTest);
 };
 
 TEST_F(NativeMediaFileUtilTest, DirectoryExistsAndFileExistsFiltering) {
@@ -297,7 +300,7 @@ TEST_F(NativeMediaFileUtilTest, CopySourceFiltering) {
         expectation = base::File::FILE_ERROR_INVALID_OPERATION;
       }
       operation_runner()->Copy(
-          url, dest_url, storage::FileSystemOperation::OPTION_NONE,
+          url, dest_url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
           storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
           storage::FileSystemOperation::CopyOrMoveProgressCallback(),
           base::BindOnce(&ExpectEqHelper, test_name, expectation));
@@ -360,7 +363,7 @@ TEST_F(NativeMediaFileUtilTest, CopyDestFiltering) {
         }
       }
       operation_runner()->Copy(
-          src_url, url, storage::FileSystemOperation::OPTION_NONE,
+          src_url, url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
           storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
           storage::FileSystemOperation::CopyOrMoveProgressCallback(),
           base::BindOnce(&ExpectEqHelper, test_name, expectation));
@@ -399,7 +402,7 @@ TEST_F(NativeMediaFileUtilTest, MoveSourceFiltering) {
         expectation = base::File::FILE_ERROR_INVALID_OPERATION;
       }
       operation_runner()->Move(
-          url, dest_url, storage::FileSystemOperation::OPTION_NONE,
+          url, dest_url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
           storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
           storage::FileSystemOperation::CopyOrMoveProgressCallback(),
           base::BindOnce(&ExpectEqHelper, test_name, expectation));
@@ -463,7 +466,7 @@ TEST_F(NativeMediaFileUtilTest, MoveDestFiltering) {
         }
       }
       operation_runner()->Move(
-          src_url, url, storage::FileSystemOperation::OPTION_NONE,
+          src_url, url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
           storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
           storage::FileSystemOperation::CopyOrMoveProgressCallback(),
           base::BindOnce(&ExpectEqHelper, test_name, expectation));

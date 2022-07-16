@@ -4,12 +4,12 @@
 
 #include "fuchsia/base/test/frame_test_util.h"
 
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
-#include "fuchsia/base/mem_buffer_util.h"
+#include "base/test/test_future.h"
 #include "fuchsia/base/test/fit_adapter.h"
-#include "fuchsia/base/test/result_receiver.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
 
 namespace cr_fuchsia {
@@ -19,14 +19,12 @@ bool LoadUrlAndExpectResponse(
     fuchsia::web::LoadUrlParams load_url_params,
     base::StringPiece url) {
   DCHECK(navigation_controller);
-  base::RunLoop run_loop;
-  ResultReceiver<fuchsia::web::NavigationController_LoadUrl_Result> result(
-      run_loop.QuitClosure());
-  navigation_controller->LoadUrl(
-      std::string(url), std::move(load_url_params),
-      CallbackToFitFunction(result.GetReceiveCallback()));
-  run_loop.Run();
-  return result->is_response();
+  base::test::TestFuture<fuchsia::web::NavigationController_LoadUrl_Result>
+      result;
+  navigation_controller->LoadUrl(std::string(url), std::move(load_url_params),
+                                 CallbackToFitFunction(result.GetCallback()));
+  DCHECK(result.Wait());
+  return result.Get().is_response();
 }
 
 bool LoadUrlAndExpectResponse(
@@ -38,22 +36,20 @@ bool LoadUrlAndExpectResponse(
 
 absl::optional<base::Value> ExecuteJavaScript(fuchsia::web::Frame* frame,
                                               base::StringPiece script) {
-  base::RunLoop run_loop;
-  ResultReceiver<fuchsia::web::Frame_ExecuteJavaScript_Result> result(
-      run_loop.QuitClosure());
-  frame->ExecuteJavaScript({"*"}, MemBufferFromString(script, "test"),
-                           CallbackToFitFunction(result.GetReceiveCallback()));
-  run_loop.Run();
+  base::test::TestFuture<fuchsia::web::Frame_ExecuteJavaScript_Result> result;
+  frame->ExecuteJavaScript({"*"}, base::MemBufferFromString(script, "test"),
+                           CallbackToFitFunction(result.GetCallback()));
 
-  if (!result.has_value() || !result->is_response())
+  if (!result.Wait() || !result.Get().is_response())
     return {};
 
-  std::string result_json;
-  if (!StringFromMemBuffer(result->response().result, &result_json)) {
+  absl::optional<std::string> result_json =
+      base::StringFromMemBuffer(result.Get().response().result);
+  if (!result_json) {
     return {};
   }
 
-  return base::JSONReader::Read(result_json);
+  return base::JSONReader::Read(*result_json);
 }
 
 fuchsia::web::LoadUrlParams CreateLoadUrlParamsWithUserActivation() {

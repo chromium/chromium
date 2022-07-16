@@ -11,28 +11,41 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.SparseBooleanArray;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,27 +53,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-class MultiInstanceManagerApi31 extends MultiInstanceManager {
+class MultiInstanceManagerApi31 extends MultiInstanceManager implements ActivityStateListener {
     public static final int INVALID_INSTANCE_ID = MultiWindowUtils.INVALID_INSTANCE_ID;
-    public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
+    public static final int INVALID_TASK_ID = MultiWindowUtils.INVALID_TASK_ID;
+
+    private static final String EMPTY_DATA = "";
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected final int mMaxInstances;
+    private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     // Instance ID for the activity associated with this manager.
-    private int mInstanceId;
+    private int mInstanceId = INVALID_INSTANCE_ID;
 
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private Tab mActiveTab;
     private TabObserver mActiveTabObserver = new EmptyTabObserver() {
         @Override
         public void onTitleUpdated(Tab tab) {
-            writeTitle(mInstanceId, tab.getTitle());
+            if (!tab.isIncognito()) writeTitle(mInstanceId, tab);
         }
 
         @Override
         public void onUrlUpdated(Tab tab) {
-            writeUrl(mInstanceId, tab.getOriginalUrl().getSpec());
+            if (!tab.isIncognito()) writeUrl(mInstanceId, tab);
         }
     };
 
@@ -68,37 +84,81 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
             ObservableSupplier<TabModelOrchestrator> tabModelOrchestratorSupplier,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController) {
         super(activity, tabModelOrchestratorSupplier, multiWindowModeStateDispatcher,
                 activityLifecycleDispatcher, menuOrKeyboardActionController);
         mMaxInstances = MultiWindowUtils.getMaxInstances();
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
     @Override
     public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
+        // clang-format off
         if (id == org.chromium.chrome.R.id.manage_all_windows_menu_id) {
-            InstanceSwitcherCoordinator.showDialog(
-                    mActivity, this::openInstance, this::closeInstance, getInstanceInfo());
+            List<InstanceInfo> info = getInstanceInfo();
+            InstanceSwitcherCoordinator.showDialog(mActivity, mModalDialogManagerSupplier.get(),
+                    new LargeIconBridge(getProfile()),
+                    (item) -> openInstance(item.instanceId, item.taskId),
+                    (item) -> closeInstance(item.instanceId, item.taskId),
+                    () -> openNewWindow("Android.WindowManager.NewWindow"),
+                    info.size() < MultiWindowUtils.getMaxInstances(), info);
+            RecordUserAction.record("MobileMenuWindowManager");
+            Tracker tracker = TrackerFactory.getTrackerForProfile(getProfile());
+            assert tracker.isInitialized();
+            tracker.notifyEvent(EventConstants.INSTANCE_SWITCHER_IPH_USED);
             return true;
         }
+        // clang-format on
         return super.handleMenuOrKeyboardAction(id, fromMenu);
     }
 
     @Override
     protected void moveTabToOtherWindow(Tab tab) {
-        // TODO: Implement the target instance selection UI. Make it possible to move tabs
-        //       to uninstantiated activity too.
+        TargetSelectorCoordinator.showDialog(mActivity, mModalDialogManagerSupplier.get(),
+                new LargeIconBridge(getProfile()),
+                (instanceInfo) -> moveTabAction(instanceInfo, tab), getInstanceInfo());
+    }
+
+    private void moveTabAction(InstanceInfo info, Tab tab) {
+        Activity targetActivity = getActivityById(info.instanceId);
+        if (targetActivity != null) {
+            reparentTabToRunningActivity((ChromeTabbedActivity) targetActivity, tab);
+        } else {
+            onMultiInstanceModeStarted();
+            Intent intent = MultiWindowUtils.createNewWindowIntent(
+                    mActivity, info.instanceId, /*preferNew=*/false, /*openAdjacently=*/true);
+            ReparentingTask.from(tab).begin(mActivity, intent,
+                    mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions(), null);
+        }
+    }
+
+    private void reparentTabToRunningActivity(ChromeTabbedActivity targetActivity, Tab tab) {
+        assert targetActivity != null;
+        Intent intent = new Intent();
+        Context appContext = ContextUtils.getApplicationContext();
+        intent.setClassName(appContext, ChromeTabbedActivity.class.getName());
+        MultiWindowUtils.setOpenInOtherWindowIntentExtras(
+                intent, mActivity, targetActivity.getClass());
+        onMultiInstanceModeStarted();
+        RecordUserAction.record("MobileMenuMoveToOtherWindow");
+
+        ReparentingTask.from(tab).setupIntent(mActivity, intent, null);
+
+        targetActivity.onNewIntent(intent);
+        bringTaskForeground(targetActivity.getTaskId());
     }
 
     @Override
-    protected void openNewWindow() {
-        // TODO: Check if we already reached the maximum # of instances.
+    protected void openNewWindow(String umaAction) {
         Intent intent = new Intent(mActivity, ChromeTabbedActivity.class);
         onMultiInstanceModeStarted();
         MultiWindowUtils.setOpenInOtherWindowIntentExtras(
                 intent, mActivity, ChromeTabbedActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
+        IntentUtils.addTrustedIntentExtras(intent);
         if (mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiDisplayMode()) {
@@ -108,16 +168,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         } else {
             mActivity.startActivity(intent);
         }
-        RecordUserAction.record("MobileMenuNewWindow");
+        RecordUserAction.record(umaAction);
     }
 
     @Override
     public List<InstanceInfo> getInstanceInfo() {
-        removeInvalidEntriesFromTaskMap();
+        removeInvalidInstanceData();
         List<InstanceInfo> result = new ArrayList<>();
+        SparseBooleanArray visibleTasks = MultiWindowUtils.getVisibleTasks();
+        int currentItemPos = -1;
         for (int i = 0; i < mMaxInstances; ++i) {
-            String url = readUrl(i);
-            if (url == null) continue;
+            if (!instanceEntryExists(i)) continue;
             @InstanceInfo.Type
             int type = InstanceInfo.Type.OTHER;
             Activity a = getActivityById(i);
@@ -126,32 +187,39 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
                 assert getTaskFromMap(i) == a.getTaskId();
                 if (a == mActivity) {
                     type = InstanceInfo.Type.CURRENT;
-                } else if (isRunningInAdjacentWindow(a)) {
+                    currentItemPos = result.size();
+                } else if (isRunningInAdjacentWindow(visibleTasks, a)) {
                     type = InstanceInfo.Type.ADJACENT;
                 }
             }
 
             int taskId = getTaskFromMap(i);
-            result.add(new InstanceInfo(i, taskId, type, url, readTitle(i), readTabCount(i)));
+            result.add(new InstanceInfo(i, taskId, type, readUrl(i), readTitle(i), readTabCount(i),
+                    readIncognitoTabCount(i), readIncognitoSelected(i)));
         }
+
+        // Move the current instance always to the top of the list.
+        assert currentItemPos != -1;
+        if (currentItemPos != 0 && result.size() > 1) result.add(0, result.remove(currentItemPos));
         return result;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected boolean isRunningInAdjacentWindow(Activity activity) {
+    protected boolean isRunningInAdjacentWindow(
+            SparseBooleanArray visibleTasks, Activity activity) {
         assert activity != mActivity;
-        // TODO: Do more rigorous check to detect the adjacent instance.
-        return ApplicationStatus.getStateForActivity(activity) == ActivityState.RESUMED;
+        return visibleTasks.get(activity.getTaskId());
     }
 
     @Override
-    public int allocInstanceId(int windowId, int taskId) {
-        removeInvalidEntriesFromTaskMap();
+    public int allocInstanceId(int windowId, int taskId, boolean preferNew) {
+        removeInvalidInstanceData();
 
-        // Explicitly specific window ID should be preferred. This comes from user selecting
+        // Explicitly specified window ID should be preferred. This comes from user selecting
         // a certain instance on UI. This method would never be called if there were an instance
-        // already mapped to the task. Check it with an assert.
-        if (windowId != INVALID_INSTANCE_ID) {
+        // already mapped to the task. Check it with an assert. When out of range, ignore the ID
+        // and apply the normal allocation logic below.
+        if (windowId >= 0 && windowId < mMaxInstances) {
             assert getInstanceByTask(taskId) == INVALID_INSTANCE_ID;
             return windowId;
         }
@@ -162,21 +230,36 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         int instanceId = getInstanceByTask(taskId);
         if (instanceId != INVALID_INSTANCE_ID) return instanceId;
 
-        for (int i = 0; i < mMaxInstances; ++i) {
-            // The index is available for the assignment if:
-            // 1) the corresponding state does not exist, or
-            // 2) there is no associated task.
-            // TODO: Prefer 2 to 1, and consider returning the most recently used one.
-            if (readUrl(i) == null || getTaskFromMap(i) == INVALID_TASK_ID) return i;
+        // If asked to always create a fresh new instance, not from persistent state, do it here.
+        if (preferNew) {
+            for (int i = 0; i < mMaxInstances; ++i) {
+                if (!instanceEntryExists(i)) return i;
+            }
+            return INVALID_INSTANCE_ID;
         }
-        return INVALID_INSTANCE_ID;
+
+        // Search for an unassigned ID. The index is available for the assignment if:
+        // a) there is no associated task, or
+        // b) the corresponding persistent state does not exist.
+        // Prefer a over b. Pick the MRU instance if there is more than one. Type b returns 0
+        // for |readLastAccessedTime|, so can be regarded as the least favored.
+        int id = INVALID_INSTANCE_ID;
+        for (int i = 0; i < mMaxInstances; ++i) {
+            if (getTaskFromMap(i) != INVALID_TASK_ID) continue;
+            if (id == INVALID_INSTANCE_ID || readLastAccessedTime(i) > readLastAccessedTime(id)) {
+                id = i;
+            }
+        }
+        return id;
     }
 
     @Override
     public void initialize(int instanceId, int taskId) {
         mInstanceId = instanceId;
-        SharedPreferencesManager.getInstance().writeInt(taskMapKey(instanceId), taskId);
+        updateTaskMap(instanceId, taskId);
         installTabModelObserver();
+        recordInstanceCountHistogram();
+        recordActivityCountHistogram();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -190,26 +273,42 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
                 mActiveTab = tab;
                 if (mActiveTab != null) {
                     mActiveTab.addObserver(mActiveTabObserver);
-                    // TODO: Store incognito-related info.
-                    writeUrl(mInstanceId, mActiveTab.getOriginalUrl().getSpec());
-                    writeTitle(mInstanceId, mActiveTab.getTitle());
+                    writeIncognitoSelected(mInstanceId, mActiveTab);
+                    // When an incognito tab is focused, keep the normal active tab info.
+                    Tab urlTab = mActiveTab.isIncognito()
+                            ? TabModelUtils.getCurrentTab(selector.getModel(false))
+                            : mActiveTab;
+                    if (urlTab != null) {
+                        writeUrl(mInstanceId, urlTab);
+                        writeTitle(mInstanceId, urlTab);
+                    } else {
+                        writeUrl(mInstanceId, EMPTY_DATA);
+                        writeTitle(mInstanceId, EMPTY_DATA);
+                    }
                 }
             }
 
             @Override
             public void didAddTab(Tab tab, int type, int creationState) {
-                writeTabCount(mInstanceId, selector.getTotalTabCount());
+                writeTabCount(mInstanceId, selector);
             }
 
             @Override
-            public void tabClosureCommitted(Tab tab) {
-                writeTabCount(mInstanceId, selector.getTotalTabCount());
+            public void didCloseTab(Tab tab) {
+                // didCloseTab is called for both normal/incognito tabs, whereas tabClosureCommitted
+                // is called for normal tabs only.
+                writeTabCount(mInstanceId, selector);
+            }
+
+            @Override
+            public void tabRemoved(Tab tab) {
+                // Updates the tab count of the src activity a reparented tab gets detached from.
+                writeTabCount(mInstanceId, selector);
             }
         };
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected static int getTaskFromMap(int index) {
+    static int getTaskFromMap(int index) {
         return SharedPreferencesManager.getInstance().readInt(taskMapKey(index), INVALID_TASK_ID);
     }
 
@@ -217,14 +316,26 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         return ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP.createKey(String.valueOf(index));
     }
 
-    private void removeInvalidEntriesFromTaskMap() {
-        // Remove tasks that do not exist any more.
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static void updateTaskMap(int instanceId, int taskId) {
+        SharedPreferencesManager.getInstance().writeInt(taskMapKey(instanceId), taskId);
+    }
+
+    private void removeInvalidInstanceData() {
+        // Remove tasks that do not exist any more from the task map
         Set<Integer> validTasks = getAllChromeTasks();
         Map<String, Integer> taskMap = SharedPreferencesManager.getInstance().readIntsWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
         for (Map.Entry<String, Integer> entry : taskMap.entrySet()) {
             if (!validTasks.contains(entry.getValue())) {
                 SharedPreferencesManager.getInstance().removeKey(entry.getKey());
+            }
+        }
+
+        // Remove persistent data for unrecoverable instances.
+        for (int i = 0; i < mMaxInstances; ++i) {
+            if (instanceEntryExists(i) && !MultiWindowUtils.isRestorableInstance(i)) {
+                removeInstanceInfo(i);
             }
         }
     }
@@ -268,50 +379,132 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         return false;
     }
 
+    private void recordActivityCountHistogram() {
+        int numActivities = 0;
+        List<Activity> activities = getAllRunningActivities();
+        for (Activity activity : activities) {
+            if (activity instanceof ChromeTabbedActivity) numActivities++;
+        }
+        RecordHistogram.recordExactLinearHistogram(
+                "Android.MultiInstance.NumActivities", numActivities, mMaxInstances + 1);
+    }
+
+    private void recordInstanceCountHistogram() {
+        // Ensure we have instance info entry for the current one.
+        writeLastAccessedTime(mInstanceId);
+
+        RecordHistogram.recordExactLinearHistogram("Android.MultiInstance.NumInstances",
+                MultiWindowUtils.getInstanceCount(), mMaxInstances + 1);
+    }
+
+    private static String incognitoSelectedKey(int index) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_IS_INCOGNITO_SELECTED.createKey(
+                String.valueOf(index));
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static void writeIncognitoSelected(int index, Tab tab) {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                incognitoSelectedKey(index), tab.isIncognito());
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static boolean readIncognitoSelected(int index) {
+        return SharedPreferencesManager.getInstance().readBoolean(
+                incognitoSelectedKey(index), false);
+    }
+
     private static String urlKey(int index) {
         return ChromePreferenceKeys.MULTI_INSTANCE_URL.createKey(String.valueOf(index));
     }
 
-    private static String readUrl(int index) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static String readUrl(int index) {
         return SharedPreferencesManager.getInstance().readString(urlKey(index), null);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected static void writeUrl(int index, String url) {
+    static void writeUrl(int index, String url) {
         SharedPreferencesManager.getInstance().writeString(urlKey(index), url);
+    }
+
+    private static void writeUrl(int index, Tab tab) {
+        assert !tab.isIncognito();
+        writeUrl(index, tab.getOriginalUrl().getSpec());
     }
 
     private static String titleKey(int index) {
         return ChromePreferenceKeys.MULTI_INSTANCE_TITLE.createKey(String.valueOf(index));
     }
 
-    private static String readTitle(int index) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static String readTitle(int index) {
         return SharedPreferencesManager.getInstance().readString(titleKey(index), null);
+    }
+
+    private static void writeTitle(int index, Tab tab) {
+        assert !tab.isIncognito();
+        writeTitle(index, tab.getTitle());
     }
 
     private static void writeTitle(int index, String title) {
         SharedPreferencesManager.getInstance().writeString(titleKey(index), title);
     }
 
-    private static String tabCountKey(int index) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static String tabCountKey(int index) {
         return ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT.createKey(String.valueOf(index));
     }
 
-    private static int readTabCount(int index) {
+    static int readTabCount(int index) {
         return SharedPreferencesManager.getInstance().readInt(tabCountKey(index));
     }
 
-    private static void writeTabCount(int index, int tabCount) {
-        SharedPreferencesManager.getInstance().writeInt(tabCountKey(index), tabCount);
+    private static String incognitoTabCountKey(int index) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_INCOGNITO_TAB_COUNT.createKey(
+                String.valueOf(index));
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static int readIncognitoTabCount(int index) {
+        return SharedPreferencesManager.getInstance().readInt(incognitoTabCountKey(index));
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static void writeTabCount(int index, TabModelSelector selector) {
+        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        int tabCount = selector.getModel(false).getCount();
+        prefs.writeInt(tabCountKey(index), tabCount);
+        prefs.writeInt(incognitoTabCountKey(index), selector.getModel(true).getCount());
+        if (tabCount == 0) {
+            writeUrl(index, EMPTY_DATA);
+            writeTitle(index, EMPTY_DATA);
+        }
+    }
+
+    static boolean instanceEntryExists(int index) {
+        return readLastAccessedTime(index) != 0;
+    }
+
+    private static String lastAccessedTimeKey(int index) {
+        return MultiWindowUtils.lastAccessedTimeKey(index);
+    }
+
+    private static long readLastAccessedTime(int index) {
+        return MultiWindowUtils.readLastAccessedTime(index);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static void writeLastAccessedTime(int index) {
+        MultiWindowUtils.writeLastAccessedTime(index);
     }
 
     /**
      * Open or launch a given instance.
      * @param instanceId ID of the instance to open.
      * @param taskId ID of the task the instance resides in.
-     * @param openAdjacently Whether the instance should be launched in the adjacent window.
      */
-    private void openInstance(int instanceId, int taskId, boolean openAdjacently) {
+    private void openInstance(int instanceId, int taskId) {
+        RecordUserAction.record("Android.WindowManager.SelectWindow");
         if (taskId != INVALID_TASK_ID) {
             // Just bring the task foreground if it is alive. This either completes the opening
             // of the instance or leads to creating a new activity.
@@ -321,8 +514,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
             return;
         }
         onMultiInstanceModeStarted();
-        Intent intent =
-                MultiWindowUtils.createNewWindowIntent(mActivity, instanceId, openAdjacently);
+        // TODO: Pass this flag from UI to control the window to open.
+        boolean openAdjacently = true;
+        Intent intent = MultiWindowUtils.createNewWindowIntent(
+                mActivity, instanceId, /*preferNew=*/false, openAdjacently);
         if (openAdjacently) {
             mActivity.startActivity(
                     intent, mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions());
@@ -339,7 +534,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected void closeInstance(int instanceId, int taskId) {
         removeInstanceInfo(instanceId);
-        // TODO: Delete persistent instance/tab state files too.
+        mTabModelOrchestratorSupplier.get().cleanupInstance(instanceId);
         Activity activity = getActivityById(instanceId);
         if (activity != null) ApiCompatibilityUtils.finishAndRemoveTask(activity);
     }
@@ -349,9 +544,19 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         am.moveTaskToFront(taskId, 0);
     }
 
+    private Profile getProfile() {
+        return mTabModelOrchestratorSupplier.get()
+                .getTabModelSelector()
+                .getCurrentModel()
+                .getProfile();
+    }
+
     @Override
     public void onDestroy() {
         if (mTabModelObserver != null) mTabModelObserver.destroy();
+        // This handles a case where an instance is deleted within Chrome but not through
+        // Window manager UI, and the task is removed by system. See https://crbug.com/1241719.
+        removeInvalidInstanceData();
         super.onDestroy();
     }
 
@@ -360,5 +565,27 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         prefs.removeKey(urlKey(index));
         prefs.removeKey(titleKey(index));
         prefs.removeKey(tabCountKey(index));
+        prefs.removeKey(incognitoTabCountKey(index));
+        prefs.removeKey(incognitoSelectedKey(index));
+        prefs.removeKey(lastAccessedTimeKey(index));
+    }
+
+    @Override
+    public void onResumeWithNative() {
+        super.onResumeWithNative();
+        writeLastAccessedTime(mInstanceId);
+    }
+
+    @Override
+    public void onActivityStateChange(Activity activity, int newState) {
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
+        // TODO: Update UMA metrics:
+        //       - instance/task count
+        //       - multi-instance session (enter/exit/duration)
+    }
+
+    @VisibleForTesting
+    TabModelSelectorTabModelObserver getTabModelObserverForTesting() {
+        return mTabModelObserver;
     }
 }

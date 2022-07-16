@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/services/multidevice_setup/account_status_change_delegate_notifier.h"
 #include "chromeos/services/multidevice_setup/host_status_provider.h"
 #include "chromeos/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
@@ -61,6 +60,11 @@ class AccountStatusChangeDelegateNotifierImpl
   };
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  AccountStatusChangeDelegateNotifierImpl(
+      const AccountStatusChangeDelegateNotifierImpl&) = delete;
+  AccountStatusChangeDelegateNotifierImpl& operator=(
+      const AccountStatusChangeDelegateNotifierImpl&) = delete;
 
   ~AccountStatusChangeDelegateNotifierImpl() override;
 
@@ -126,8 +130,6 @@ class AccountStatusChangeDelegateNotifierImpl
   HostDeviceTimestampManager* host_device_timestamp_manager_;
   OobeCompletionTracker* oobe_completion_tracker_;
   base::Clock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountStatusChangeDelegateNotifierImpl);
 };
 
 }  // namespace multidevice_setup

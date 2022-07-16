@@ -77,10 +77,11 @@ AccessibilityNotificationWaiter::~AccessibilityNotificationWaiter() = default;
 
 void AccessibilityNotificationWaiter::ListenToAllFrames(
     WebContents* web_contents) {
+  if (event_to_wait_for_)
+    VLOG(1) << "Waiting for AccessibilityEvent " << *event_to_wait_for_;
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
-  FrameTree* frame_tree = web_contents_impl->GetFrameTree();
-  for (FrameTreeNode* node : frame_tree->Nodes())
+  for (FrameTreeNode* node : web_contents_impl->GetPrimaryFrameTree().Nodes())
     ListenToFrame(node->current_frame_host());
 
   BrowserPluginGuestManager* guest_manager =
@@ -153,7 +154,7 @@ void AccessibilityNotificationWaiter::OnAccessibilityEvent(
   if (IsAboutBlank())
     return;
 
-  LOG(INFO) << "OnAccessibilityEvent " << event_type;
+  VLOG(1) << "OnAccessibilityEvent " << event_type;
 
   if (event_to_wait_for_ == ax::mojom::Event::kNone ||
       event_to_wait_for_ == event_type) {

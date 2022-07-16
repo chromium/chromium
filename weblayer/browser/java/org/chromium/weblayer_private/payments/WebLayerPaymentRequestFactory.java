@@ -6,7 +6,6 @@ package org.chromium.weblayer_private.payments;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.InvalidPaymentRequest;
 import org.chromium.components.payments.MojoPaymentRequestGateKeeper;
@@ -18,6 +17,7 @@ import org.chromium.components.payments.PaymentRequestServiceUtil;
 import org.chromium.components.payments.PrefsStrings;
 import org.chromium.components.payments.SslValidityChecker;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;

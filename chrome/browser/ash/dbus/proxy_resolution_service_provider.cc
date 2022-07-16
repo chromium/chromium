@@ -9,12 +9,11 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/net/system_proxy_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -63,6 +62,9 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
     network_context->LookUpProxyForURL(source_url, network_isolation_key,
                                        std::move(proxy_lookup_client));
   }
+
+  ProxyLookupRequest(const ProxyLookupRequest&) = delete;
+  ProxyLookupRequest& operator=(const ProxyLookupRequest&) = delete;
 
   ~ProxyLookupRequest() override = default;
 
@@ -115,7 +117,6 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
   mojo::Receiver<network::mojom::ProxyLookupClient> receiver_{this};
   ProxyResolutionServiceProvider::NotifyCallback notify_callback_;
   chromeos::SystemProxyOverride system_proxy_override_;
-  DISALLOW_COPY_AND_ASSIGN(ProxyLookupRequest);
 };
 
 }  // namespace

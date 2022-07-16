@@ -15,7 +15,7 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxNextE2ETest {
   testGenCppIncludes() {
     super.testGenCppIncludes();
     GEN(`
-      #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+      #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
       #include "chrome/browser/web_applications/web_app_provider.h"
     `);
   }
@@ -23,7 +23,7 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   testGenPreamble() {
     GEN(`
-    web_app::WebAppProvider::Get(browser()->profile())
+    web_app::WebAppProvider::GetForTest(browser()->profile())
         ->system_web_app_manager()
         .InstallSystemAppsForTesting();
   `);

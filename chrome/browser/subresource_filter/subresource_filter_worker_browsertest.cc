@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
@@ -25,6 +24,12 @@ class SubresourceFilterWorkerFetchBrowserTest
     : public SubresourceFilterBrowserTest {
  public:
   SubresourceFilterWorkerFetchBrowserTest() = default;
+
+  SubresourceFilterWorkerFetchBrowserTest(
+      const SubresourceFilterWorkerFetchBrowserTest&) = delete;
+  SubresourceFilterWorkerFetchBrowserTest& operator=(
+      const SubresourceFilterWorkerFetchBrowserTest&) = delete;
+
   ~SubresourceFilterWorkerFetchBrowserTest() override = default;
 
  protected:
@@ -46,7 +51,7 @@ class SubresourceFilterWorkerFetchBrowserTest
           fetch_succeeded_title);
       title_watcher.AlsoWaitForTitle(fetch_failed_title);
       title_watcher.AlsoWaitForTitle(fetch_partially_failed_title);
-      ui_test_utils::NavigateToURL(browser(), url);
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
       EXPECT_EQ(fetch_succeeded_title, title_watcher.WaitAndGetTitle());
     }
     ClearTitle();
@@ -60,7 +65,7 @@ class SubresourceFilterWorkerFetchBrowserTest
           fetch_succeeded_title);
       title_watcher.AlsoWaitForTitle(fetch_failed_title);
       title_watcher.AlsoWaitForTitle(fetch_partially_failed_title);
-      ui_test_utils::NavigateToURL(browser(), url);
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
       EXPECT_EQ(fetch_failed_title, title_watcher.WaitAndGetTitle());
     }
     ClearTitle();
@@ -70,9 +75,6 @@ class SubresourceFilterWorkerFetchBrowserTest
     ASSERT_TRUE(content::ExecJs(web_contents()->GetMainFrame(),
                                 "document.title = \"\";"));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterWorkerFetchBrowserTest);
 };
 
 // TODO(https://crbug.com/1011208): Add more tests for workers like top-level

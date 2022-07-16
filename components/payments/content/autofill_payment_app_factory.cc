@@ -13,6 +13,7 @@
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/core/features.h"
+#include "content/public/common/content_features.h"
 
 namespace payments {
 
@@ -61,12 +62,15 @@ void AutofillPaymentAppFactory::Create(base::WeakPtr<Delegate> delegate) {
     return;
   }
 
+  if (!base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard)) {
+    delegate->OnDoneCreatingPaymentApps();
+    return;
+  }
+
   const std::vector<autofill::CreditCard*>& cards =
       delegate->GetPaymentRequestDelegate()
           ->GetPersonalDataManager()
-          ->GetCreditCardsToSuggest(
-              /*include_server_cards=*/base::FeatureList::IsEnabled(
-                  features::kReturnGooglePayInBasicCard));
+          ->GetCreditCardsToSuggest(/*include_server_cards=*/false);
 
   for (autofill::CreditCard* card : cards) {
     auto app = ConvertCardToPaymentAppIfSupportedNetwork(*card, delegate);

@@ -5,7 +5,6 @@
 #include "chromeos/services/federated/public/cpp/service_connection.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "chromeos/dbus/federated/federated_client.h"

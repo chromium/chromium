@@ -52,8 +52,11 @@ class ModeKeyedModel(object):
 
         if isinstance(value_obj, dict):
             for mode in value_obj:
+                value = self._CreateValue(value_obj[mode])
+                if mode == 'default':
+                    mode = Modes.DEFAULT
                 assert mode in Modes.ALL
-                self.variables[name][mode] = self._CreateValue(value_obj[mode])
+                self.variables[name][mode] = value
         else:
             self.variables[name][Modes.DEFAULT] = self._CreateValue(value_obj)
 

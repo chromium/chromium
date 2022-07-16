@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_FEED_CORE_V2_PUBLIC_WEB_FEED_SUBSCRIPTIONS_H_
 #define COMPONENTS_FEED_CORE_V2_PUBLIC_WEB_FEED_SUBSCRIPTIONS_H_
 
+#include <ostream>
 #include <string>
+
 #include "base/callback.h"
 #include "components/feed/core/v2/public/types.h"
 
@@ -19,6 +21,8 @@ class WebFeedSubscriptions {
         WebFeedSubscriptionRequestStatus::kUnknown;
     // If followed, the metadata for the followed feed.
     WebFeedMetadata web_feed_metadata;
+    // Number of subscriptions the user has after the Follow operation.
+    int subscription_count = 0;
   };
   // Follow a web feed given information about a web page. Calls `callback` when
   // complete. The callback parameter reports whether the url is now considered
@@ -35,6 +39,8 @@ class WebFeedSubscriptions {
   struct UnfollowWebFeedResult {
     WebFeedSubscriptionRequestStatus request_status =
         WebFeedSubscriptionRequestStatus::kUnknown;
+    // Number of subscriptions the user has after the Unfollow operation.
+    int subscription_count = 0;
   };
 
   // Follow a web feed given a URL. Calls `callback` when complete. The callback
@@ -72,10 +78,22 @@ class WebFeedSubscriptions {
   virtual void RefreshSubscriptions(
       base::OnceCallback<void(RefreshResult)> callback) = 0;
 
+  // Force a refresh of the server-recommended web feeds.
+  virtual void RefreshRecommendedFeeds() = 0;
+
   // Whether the user has subscribed to at least one web feed. May require
   // fetching data from the server if cached data is not fresh. If fetching
   // fails, returns the last-known state.
   virtual void IsWebFeedSubscriber(base::OnceCallback<void(bool)> callback) = 0;
+
+  // How many web feeds for which the user is subscribed. May require
+  // fetching data from the server if cached data is not fresh. If fetching
+  // fails, returns the last-known state.
+  virtual void SubscribedWebFeedCount(
+      base::OnceCallback<void(int)> callback) = 0;
+
+  // Output debugging information for snippets-internals.
+  virtual void DumpStateForDebugging(std::ostream& ss) {}
 };
 
 }  // namespace feed

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chromeos/services/device_sync/network_request_error.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 

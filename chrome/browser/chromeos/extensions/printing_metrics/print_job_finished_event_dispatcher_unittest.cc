@@ -8,10 +8,10 @@
 
 #include "base/bind.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/printing/history/mock_print_job_history_service.h"
-#include "chrome/browser/chromeos/printing/history/print_job_history_service_factory.h"
+#include "chrome/browser/ash/printing/history/mock_print_job_history_service.h"
+#include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
+#include "chrome/browser/ash/printing/history/test_print_job_history_service_observer.h"
 #include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
-#include "chrome/browser/chromeos/printing/history/test_print_job_history_service_observer.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/extensions/api/printing_metrics.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -48,7 +48,7 @@ GetPrintJobFinishedEventValue(
 // Creates a new MockPrintJobHistoryService for the given |context|.
 std::unique_ptr<KeyedService> BuildPrintJobHistoryService(
     content::BrowserContext* context) {
-  return std::make_unique<chromeos::MockPrintJobHistoryService>();
+  return std::make_unique<ash::MockPrintJobHistoryService>();
 }
 
 // Creates a new EventRouter for the given |context|.
@@ -64,6 +64,12 @@ namespace extensions {
 class PrintJobFinishedEventDispatcherUnittest : public testing::Test {
  public:
   PrintJobFinishedEventDispatcherUnittest() {}
+
+  PrintJobFinishedEventDispatcherUnittest(
+      const PrintJobFinishedEventDispatcherUnittest&) = delete;
+  PrintJobFinishedEventDispatcherUnittest& operator=(
+      const PrintJobFinishedEventDispatcherUnittest&) = delete;
+
   ~PrintJobFinishedEventDispatcherUnittest() override = default;
 
   void SetUp() override {
@@ -73,7 +79,7 @@ class PrintJobFinishedEventDispatcherUnittest : public testing::Test {
     testing_profile_ =
         profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
 
-    chromeos::PrintJobHistoryServiceFactory::GetInstance()->SetTestingFactory(
+    ash::PrintJobHistoryServiceFactory::GetInstance()->SetTestingFactory(
         testing_profile_, base::BindRepeating(&BuildPrintJobHistoryService));
 
     EventRouterFactory::GetInstance()->SetTestingFactory(
@@ -101,8 +107,6 @@ class PrintJobFinishedEventDispatcherUnittest : public testing::Test {
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<PrintJobFinishedEventDispatcher> dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJobFinishedEventDispatcherUnittest);
 };
 
 // Test that |OnPrintJobFinished| is dispatched when the print job is saved by
@@ -112,11 +116,11 @@ TEST_F(PrintJobFinishedEventDispatcherUnittest, EventIsDispatched) {
   constexpr int kPagesNumber = 3;
 
   base::RunLoop run_loop;
-  chromeos::MockPrintJobHistoryService* print_job_history_service =
-      static_cast<chromeos::MockPrintJobHistoryService*>(
-          chromeos::PrintJobHistoryServiceFactory::GetForBrowserContext(
+  ash::MockPrintJobHistoryService* print_job_history_service =
+      static_cast<ash::MockPrintJobHistoryService*>(
+          ash::PrintJobHistoryServiceFactory::GetForBrowserContext(
               testing_profile_));
-  chromeos::TestPrintJobHistoryServiceObserver observer(
+  ash::TestPrintJobHistoryServiceObserver observer(
       print_job_history_service, run_loop.QuitWhenIdleClosure());
 
   chromeos::printing::proto::PrintJobInfo print_job_info_proto;

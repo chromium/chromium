@@ -5,10 +5,14 @@
 #include "services/network/cors/preflight_cache.h"
 
 #include <iterator>
+#include <string>
 
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
+#include "base/values.h"
+#include "net/log/net_log_event_type.h"
+#include "net/log/net_log_with_source.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -32,8 +36,32 @@ enum class CacheMetric {
   kMaxValue = kStale,
 };
 
-void ReportCacheMetric(CacheMetric metric) {
+base::Value NetLogCacheStatusParams(const CacheMetric metric) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  std::string cache_status;
+  switch (metric) {
+    case CacheMetric::kHitAndPass:
+      cache_status = "hit-and-pass";
+      break;
+    case CacheMetric::kHitAndFail:
+      cache_status = "hit-and-fail";
+      break;
+    case CacheMetric::kMiss:
+      cache_status = "miss";
+      break;
+    case CacheMetric::kStale:
+      cache_status = "stale";
+      break;
+  }
+  dict.SetStringKey("status", cache_status);
+  return dict;
+}
+
+void ReportCacheMetricAndRecordNetLog(CacheMetric metric,
+                                      const net::NetLogWithSource& net_log) {
   UMA_HISTOGRAM_ENUMERATION("Net.Cors.PreflightCacheResult", metric);
+  net_log.AddEvent(net::NetLogEventType::CHECK_CORS_PREFLIGHT_CACHE,
+                   [&] { return NetLogCacheStatusParams(metric); });
 }
 
 }  // namespace
@@ -74,12 +102,13 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
     mojom::CredentialsMode credentials_mode,
     const std::string& method,
     const net::HttpRequestHeaders& request_headers,
-    bool is_revalidating) {
+    bool is_revalidating,
+    const net::NetLogWithSource& net_log) {
   // Check if the entry exists in the cache.
   auto key = std::make_tuple(origin, url.spec(), network_isolation_key);
   auto cache_entry = cache_.find(key);
   if (cache_entry == cache_.end()) {
-    ReportCacheMetric(CacheMetric::kMiss);
+    ReportCacheMetricAndRecordNetLog(CacheMetric::kMiss, net_log);
     return false;
   }
 
@@ -89,16 +118,19 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
     // skip CORS-preflight.
     if (cache_entry->second->EnsureAllowedRequest(
             credentials_mode, method, request_headers, is_revalidating,
-            PreflightResult::WithNonWildcardRequestHeadersSupport(true))) {
+            NonWildcardRequestHeadersSupport(true))) {
       // Note that we always use the "with non-wildcard request headers"
       // variant, because it is hard to generate the correct error information
       // from here, and cache miss is in most case recoverable.
-      ReportCacheMetric(CacheMetric::kHitAndPass);
+      ReportCacheMetricAndRecordNetLog(CacheMetric::kHitAndPass, net_log);
+      net_log.AddEvent(
+          net::NetLogEventType::CORS_PREFLIGHT_CACHED_RESULT,
+          [&cache_entry] { return cache_entry->second->NetLogParams(); });
       return true;
     }
-    ReportCacheMetric(CacheMetric::kHitAndFail);
+    ReportCacheMetricAndRecordNetLog(CacheMetric::kHitAndFail, net_log);
   } else {
-    ReportCacheMetric(CacheMetric::kStale);
+    ReportCacheMetricAndRecordNetLog(CacheMetric::kStale, net_log);
   }
 
   // The cache entry is either stale or not sufficient. Remove the item from the

@@ -28,7 +28,7 @@ scoped_refptr<const NGLayoutResult> NGReplacedLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGReplacedLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) const {
+    const MinMaxSizesFloatInput&) {
   // Most layouts are interested in the min/max content contribution which will
   // call |ComputeReplacedSize| directly. (Which doesn't invoke the code below).
   // This is only used by flex, which expects inline-lengths to be ignored for

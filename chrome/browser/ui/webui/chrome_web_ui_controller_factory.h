@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "content/public/browser/web_ui.h"
@@ -27,6 +26,10 @@ class Origin;
 
 class ChromeWebUIControllerFactory : public content::WebUIControllerFactory {
  public:
+  ChromeWebUIControllerFactory(const ChromeWebUIControllerFactory&) = delete;
+  ChromeWebUIControllerFactory& operator=(const ChromeWebUIControllerFactory&) =
+      delete;
+
   static ChromeWebUIControllerFactory* GetInstance();
 
   // http://crbug.com/829412
@@ -67,8 +70,6 @@ class ChromeWebUIControllerFactory : public content::WebUIControllerFactory {
   base::RefCountedMemory* GetFaviconResourceBytes(
       const GURL& page_url,
       ui::ResourceScaleFactor scale_factor) const;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebUIControllerFactory);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROME_WEB_UI_CONTROLLER_FACTORY_H_

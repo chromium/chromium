@@ -13,13 +13,13 @@ android_library("java") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenu.java",
-    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuAdapter.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuButtonHelperImpl.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuCoordinatorFactory.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuCoordinatorImpl.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuDragHelper.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuHandlerImpl.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemIcon.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemViewBinder.java",
   ]
 
   deps = [
@@ -45,7 +45,6 @@ android_resources("java_resources") {
     "java/res/layout/menu_item_start_with_icon.xml",
     "java/res/layout/title_button_menu_item.xml",
     "java/res/values/dimens.xml",
-    "java/res/values/ids.xml",
   ]
 
   # Include resource dependencies needed by :java so that resources may
@@ -61,8 +60,7 @@ android_library("javatests") {
 
   resources_package = "org.chromium.chrome.browser.ui.appmenu.test"
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuAdapterRenderTest.java",
-    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuAdapterTest.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemViewBinderTest.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuTest.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/TestAppMenuDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/TestAppMenuPropertiesDelegate.java",

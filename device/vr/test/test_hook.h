@@ -7,7 +7,7 @@
 
 #include "base/check.h"
 #include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 #include <cstdint>
 

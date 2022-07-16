@@ -106,4 +106,8 @@ bool FakeStarterPlatformDelegate::GetIsCustomTab() const {
   return is_custom_tab_;
 }
 
+bool FakeStarterPlatformDelegate::GetIsTabCreatedByGSA() const {
+  return is_tab_created_by_gsa_;
+}
+
 }  // namespace autofill_assistant

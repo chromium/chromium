@@ -337,6 +337,10 @@ void ProducerClient::RegisterDataSource(const perfetto::DataSourceDescriptor&) {
   NOTREACHED();
 }
 
+void ProducerClient::UpdateDataSource(const perfetto::DataSourceDescriptor&) {
+  NOTREACHED();
+}
+
 void ProducerClient::UnregisterDataSource(const std::string& name) {
   NOTREACHED();
 }
@@ -395,7 +399,8 @@ bool ProducerClient::InitSharedMemoryIfNeeded() {
 
   // The shared memory buffer is always provided by the ProducerClient, but only
   // created upon the first tracing request.
-  shared_memory_ = std::make_unique<MojoSharedMemory>(kSMBSizeBytes);
+  shared_memory_ =
+      std::make_unique<MojoSharedMemory>(GetPreferredSmbSizeBytes());
 
   // TODO(crbug/1057614): We see shared memory buffer creation fail on windows
   // in the field. Investigate why this can happen. Gather statistics on

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_HISTORY_REPORT_HISTORIC_VISITS_MIGRATION_TASK_H_
 #define CHROME_BROWSER_ANDROID_HISTORY_REPORT_HISTORIC_VISITS_MIGRATION_TASK_H_
 
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/history/core/browser/history_db_task.h"
 
@@ -17,6 +16,10 @@ class HistoricVisitsMigrationTask : public history::HistoryDBTask {
   HistoricVisitsMigrationTask(base::WaitableEvent* event,
                               UsageReportsBufferService* report_buffer_service);
 
+  HistoricVisitsMigrationTask(const HistoricVisitsMigrationTask&) = delete;
+  HistoricVisitsMigrationTask& operator=(const HistoricVisitsMigrationTask&) =
+      delete;
+
   bool RunOnDBThread(history::HistoryBackend* backend,
                              history::HistoryDatabase* db) override;
   void DoneRunOnMainThread() override {}
@@ -26,8 +29,6 @@ class HistoricVisitsMigrationTask : public history::HistoryDBTask {
 
   base::WaitableEvent* wait_event_;
   UsageReportsBufferService* usage_reports_buffer_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoricVisitsMigrationTask);
 };
 
 }  // namespace history_report

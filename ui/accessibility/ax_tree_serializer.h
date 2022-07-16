@@ -67,7 +67,8 @@ struct ClientTreeNode;
 template <typename AXSourceNode>
 class AXTreeSerializer {
  public:
-  explicit AXTreeSerializer(AXTreeSource<AXSourceNode>* tree);
+  explicit AXTreeSerializer(AXTreeSource<AXSourceNode>* tree,
+                            bool crash_on_error = true);
   ~AXTreeSerializer();
 
   // Throw out the internal state that keeps track of the nodes the client
@@ -231,6 +232,9 @@ class AXTreeSerializer {
   // explicitly set node_id_to_clear to ensure that the next serialized
   // tree is treated as a completely new tree and not a partial update.
   bool did_reset_ = false;
+
+  // Whether to crash the process on serialization error or not.
+  const bool crash_on_error_;
 };
 
 // In order to keep track of what nodes the client knows about, we keep a
@@ -248,8 +252,9 @@ struct AX_EXPORT ClientTreeNode {
 
 template <typename AXSourceNode>
 AXTreeSerializer<AXSourceNode>::AXTreeSerializer(
-    AXTreeSource<AXSourceNode>* tree)
-    : tree_(tree) {}
+    AXTreeSource<AXSourceNode>* tree,
+    bool crash_on_error)
+    : tree_(tree), crash_on_error_(crash_on_error) {}
 
 template <typename AXSourceNode>
 AXTreeSerializer<AXSourceNode>::~AXTreeSerializer() {
@@ -423,7 +428,13 @@ ClientTreeNode* AXTreeSerializer<AXSourceNode>::GetClientTreeNodeParent(
         "ax_ts_missing_parent_err", base::debug::CrashKeySize::Size256);
     base::debug::SetCrashKeyString(missing_parent_err,
                                    error.str().substr(0, 230));
-    CHECK(false) << error.str();
+    if (crash_on_error_) {
+      CHECK(false) << error.str();
+    } else {
+      LOG(ERROR) << error.str();
+      // Different from other errors, not calling Reset() here to avoid breaking
+      // the internal state of this class.
+    }
   }
   return parent;
 }
@@ -470,6 +481,11 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChanges(
       if (!tree_->IsValid(lca)) {
         // If there's no LCA, just tell the client to destroy the whole
         // tree and then we'll serialize everything from the new root.
+        // Cases where this occurs:
+        // - A new document is loaded (main or iframe)
+        // - document.body.innerHTML is changed
+        // - A modal <dialog> is opened
+        // - Full screen mode is toggled
         out_update->node_id_to_clear = client_root_->id;
         InternalReset();
       } else if (need_delete) {
@@ -535,6 +551,17 @@ void AXTreeSerializer<AXSourceNode>::DeleteClientSubtree(
     ClientTreeNode* client_node) {
   if (client_node == client_root_) {
     Reset();  // Do not try to reuse a bad root later.
+    // A heuristic for this condition rather than an explicit Reset() from a
+    // caller makes it difficult to debug whether extra resets / lost virtual
+    // buffer positions are occurring because of this code. Therefore, a DCHECK
+    // has been added in order to debug if or when this condition may occur.
+#if defined(AX_FAIL_FAST_BUILD)
+    CHECK(!crash_on_error_)
+        << "Attempt to delete entire client subtree, including the root.";
+#else
+    DCHECK(!crash_on_error_)
+        << "Attempt to delete entire client subtree, including the root.";
+#endif
   } else {
     DeleteDescendants(client_node);
     tree_->SerializerClearedNode(client_node->id);
@@ -565,13 +592,24 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
 
   // First, find the ClientTreeNode for this id in our data structure where
   // we keep track of what accessibility objects the client already knows
-  // about. If we don't find it, then this must be the new root of the
-  // accessibility tree.
+  // about.
+  // If we don't find it, then the intention may be to use it as the
+  // new root of the accessibility tree. A heuristic for this condition rather
+  // than an explicit Reset() from a caller makes it difficult to debug whether
+  // extra resets / lost virtual buffer positions are occurring because of this
+  // code. Therefore, a DCHECK has been added in order to debug if or when this
+  // condition may occur.
   int id = tree_->GetId(node);
   ClientTreeNode* client_node = ClientTreeNodeById(id);
   if (!client_node) {
-    if (client_root_)
+    if (client_root_) {
       Reset();
+#if defined(AX_FAIL_FAST_BUILD)
+      CHECK(!crash_on_error_) << "Missing client node for serialization.";
+#else
+      DCHECK(!crash_on_error_) << "Missing client node for serialization.";
+#endif
+    }
     client_root_ = new ClientTreeNode();
     client_node = client_root_;
     client_node->id = id;
@@ -641,7 +679,12 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
       static auto* reparent_err = base::debug::AllocateCrashKeyString(
           "ax_ts_reparent_err", base::debug::CrashKeySize::Size256);
       base::debug::SetCrashKeyString(reparent_err, error.str().substr(0, 230));
-      CHECK(false) << error.str();
+      if (crash_on_error_) {
+        CHECK(false) << error.str();
+      } else {
+        LOG(ERROR) << error.str();
+        Reset();
+      }
       return false;
     }
   }
@@ -734,7 +777,12 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
         static auto* dupe_id_err = base::debug::AllocateCrashKeyString(
             "ax_ts_dupe_id_err", base::debug::CrashKeySize::Size256);
         base::debug::SetCrashKeyString(dupe_id_err, error.str().substr(0, 230));
-        CHECK(false) << error.str();
+        if (crash_on_error_) {
+          CHECK(false) << error.str();
+        } else {
+          LOG(ERROR) << error.str();
+          Reset();
+        }
         return false;
       }
       client_id_map_[child_id] = new_child;

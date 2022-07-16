@@ -6,6 +6,7 @@
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
@@ -29,11 +30,11 @@ extensions::MessagingDelegate::PolicyPermission IsNativeMessagingHostAllowed(
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistSelective) {
-  base::ListValue blacklist;
-  blacklist.AppendString("host.name");
+  base::ListValue blocklist;
+  blocklist.Append("host.name");
   PolicyMap policies;
   policies.Set(key::kNativeMessagingBlocklist, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blacklist.Clone(),
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blocklist.Clone(),
                nullptr);
   UpdateProviderPolicy(policies);
 
@@ -45,11 +46,11 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistSelective) {
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistWildcard) {
-  base::ListValue blacklist;
-  blacklist.AppendString("*");
+  base::ListValue blocklist;
+  blocklist.Append("*");
   PolicyMap policies;
   policies.Set(key::kNativeMessagingBlocklist, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blacklist.Clone(),
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blocklist.Clone(),
                nullptr);
   UpdateProviderPolicy(policies);
 
@@ -61,13 +62,13 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistWildcard) {
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingAllowlist) {
-  base::ListValue blacklist;
-  blacklist.AppendString("*");
+  base::ListValue blocklist;
+  blocklist.Append("*");
   base::ListValue allowlist;
-  allowlist.AppendString("host.name");
+  allowlist.Append("host.name");
   PolicyMap policies;
   policies.Set(key::kNativeMessagingBlocklist, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blacklist.Clone(),
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blocklist.Clone(),
                nullptr);
   policies.Set(key::kNativeMessagingAllowlist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, allowlist.Clone(),

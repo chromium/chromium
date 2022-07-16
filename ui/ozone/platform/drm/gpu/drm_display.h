@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/color_space.h"
@@ -31,6 +30,10 @@ class HardwareDisplayControllerInfo;
 class DrmDisplay {
  public:
   explicit DrmDisplay(const scoped_refptr<DrmDevice>& drm);
+
+  DrmDisplay(const DrmDisplay&) = delete;
+  DrmDisplay& operator=(const DrmDisplay&) = delete;
+
   ~DrmDisplay();
 
   int64_t display_id() const { return display_id_; }
@@ -41,7 +44,7 @@ class DrmDisplay {
 
   std::unique_ptr<display::DisplaySnapshot> Update(
       HardwareDisplayControllerInfo* info,
-      size_t device_index);
+      uint8_t device_index);
 
   void SetOrigin(const gfx::Point origin) { origin_ = origin; }
   bool GetHDCPState(display::HDCPState* state,
@@ -71,8 +74,6 @@ class DrmDisplay {
   gfx::Point origin_;
   bool is_hdr_capable_ = false;
   gfx::ColorSpace current_color_space_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmDisplay);
 };
 
 }  // namespace ui

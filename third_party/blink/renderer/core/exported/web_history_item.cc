@@ -93,7 +93,7 @@ gfx::PointF WebHistoryItem::VisualViewportScrollOffset() const {
       scroll_and_view_state
           ? scroll_and_view_state->visual_viewport_scroll_offset_
           : ScrollOffset();
-  return gfx::PointF(offset.Width(), offset.Height());
+  return gfx::PointF(offset.width(), offset.height());
 }
 
 void WebHistoryItem::SetVisualViewportScrollOffset(
@@ -106,7 +106,7 @@ gfx::Point WebHistoryItem::GetScrollOffset() const {
   ScrollOffset offset = scroll_and_view_state
                             ? scroll_and_view_state->scroll_offset_
                             : ScrollOffset();
-  return gfx::Point(offset.Width(), offset.Height());
+  return gfx::Point(offset.width(), offset.height());
 }
 
 void WebHistoryItem::SetScrollOffset(const gfx::Point& scroll_offset) {
@@ -189,7 +189,7 @@ WebVector<WebString> WebHistoryItem::GetReferencedFilePaths() const {
   HashSet<String> file_paths;
   const EncodedFormData* form_data = private_->FormData();
   if (form_data) {
-    for (size_t i = 0; i < form_data->Elements().size(); ++i) {
+    for (wtf_size_t i = 0; i < form_data->Elements().size(); ++i) {
       const FormDataElement& element = form_data->Elements()[i];
       if (element.type_ == FormDataElement::kEncodedFile)
         file_paths.insert(element.filename_);
@@ -198,7 +198,7 @@ WebVector<WebString> WebHistoryItem::GetReferencedFilePaths() const {
 
   const Vector<String>& referenced_file_paths =
       private_->GetReferencedFilePaths();
-  for (size_t i = 0; i < referenced_file_paths.size(); ++i)
+  for (wtf_size_t i = 0; i < referenced_file_paths.size(); ++i)
     file_paths.insert(referenced_file_paths[i]);
 
   Vector<String> results;

@@ -2,17 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BackgroundGraphicsModeRestriction, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewPluralStringProxyImpl} from 'chrome://print/print_preview.js';
+import {BackgroundGraphicsModeRestriction, DuplexMode, getInstance, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintPreviewPluralStringProxyImpl} from 'chrome://print/print_preview.js';
+// <if expr="chromeos or lacros">
+import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from 'chrome://print/print_preview.js';
+// </if>
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
-import {getCddTemplate, getDefaultInitialSettings} from 'chrome://test/print_preview/print_preview_test_utils.js';
-import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
-import {TestPluralStringProxy} from 'chrome://test/test_plural_string_proxy.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 
 // <if expr="chromeos or lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
+
+import {NativeLayerStub} from './native_layer_stub.js';
+import {getDefaultInitialSettings} from './print_preview_test_utils.js';
+import {TestPluginProxy} from './test_plugin_proxy.js';
+
 
 window.policy_tests = {};
 policy_tests.suiteName = 'PolicyTest';
@@ -22,7 +27,22 @@ policy_tests.TestNames = {
   CssBackgroundPolicy: 'css background policy',
   MediaSizePolicy: 'media size policy',
   SheetsPolicy: 'sheets policy',
+  ColorPolicy: 'color policy',
+  DuplexPolicy: 'duplex policy',
+  PinPolicy: 'pin policy',
+  PrintPdfAsImageAvailability: 'print as image available for PDF policy',
+  PrintPdfAsImageDefault: 'print as image option default for PDF policy'
 };
+
+/**
+ * @typedef {{
+ *   settingName: string,
+ *   serializedSettingName: string,
+ *   allowedMode: *,
+ *   defaultMode: *,
+ * }}
+ */
+let AllowedDefaultModePolicySetup;
 
 class PolicyTestPluralStringProxy extends TestPluralStringProxy {
   /** override */
@@ -51,12 +71,12 @@ suite(policy_tests.suiteName, function() {
     nativeLayer.setLocalDestinations(
         [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
     nativeLayer.setPageCount(3);
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="chromeos or lacros">
     setNativeLayerCrosInstance();
     // </if>
     const pluginProxy = new TestPluginProxy();
-    PluginProxyImpl.instance_ = pluginProxy;
+    PluginProxyImpl.setInstance(pluginProxy);
 
     page = document.createElement('print-preview-app');
     document.body.appendChild(page);
@@ -75,33 +95,40 @@ suite(policy_tests.suiteName, function() {
   /**
    * Sets up the Print Preview app, and loads initial settings with the given
    * policy.
-   * @param {string} settingName Name of the setting to set up.
-   * @param {string} serializedSettingName Name of the serialized setting.
-   * @param {*} allowedMode Allowed value for the given setting.
-   * @param {*} defaultMode Default value for the given setting.
+   * @param {!Array<!AllowedDefaultModePolicySetup>} policies Policies to set
+   *     up.
+   * @param {boolean} isPdf If settings are for previewing a PDF.
    * @return {!Promise} A Promise that resolves once initial settings are done
    *     loading.
    */
-  function doAllowedDefaultModePolicySetup(
-      settingName, serializedSettingName, allowedMode, defaultMode) {
-    const initialSettings = getDefaultInitialSettings();
+  function doAllowedDefaultModePoliciesSetup(policies, isPdf = false) {
+    const initialSettings = getDefaultInitialSettings(isPdf);
+    const appState = {version: 2};
+    let setSerializedAppState = false;
 
-    if (allowedMode !== undefined || defaultMode !== undefined) {
-      const policy = {};
-      if (allowedMode !== undefined) {
-        policy.allowedMode = allowedMode;
+    initialSettings.policies = {};
+
+    policies.forEach(setup => {
+      if (setup.allowedMode !== undefined || setup.defaultMode !== undefined) {
+        const policy = {};
+        if (setup.allowedMode !== undefined) {
+          policy.allowedMode = setup.allowedMode;
+        }
+        if (setup.defaultMode !== undefined) {
+          policy.defaultMode = setup.defaultMode;
+        }
+        initialSettings.policies[setup.settingName] = policy;
       }
-      if (defaultMode !== undefined) {
-        policy.defaultMode = defaultMode;
+      if (setup.defaultMode !== undefined &&
+          setup.serializedSettingName !== undefined) {
+        // We want to make sure sticky settings get overridden.
+        appState[setup.serializedSettingName] = !setup.defaultMode;
+        setSerializedAppState = true;
       }
-      initialSettings.policies = {[settingName]: policy};
-    }
-    if (defaultMode !== undefined && serializedSettingName !== undefined) {
-      // We want to make sure sticky settings get overridden.
-      initialSettings.serializedAppStateStr = JSON.stringify({
-        version: 2,
-        [serializedSettingName]: !defaultMode,
-      });
+    });
+
+    if (setSerializedAppState) {
+      initialSettings.serializedAppStateStr = JSON.stringify(appState);
     }
     return loadInitialSettings(initialSettings);
   }
@@ -127,17 +154,18 @@ suite(policy_tests.suiteName, function() {
 
   function toggleMoreSettings() {
     const moreSettingsElement =
-        page.$$('print-preview-sidebar').$$('print-preview-more-settings');
+        page.shadowRoot.querySelector('print-preview-sidebar')
+            .shadowRoot.querySelector('print-preview-more-settings');
     moreSettingsElement.$.label.click();
   }
 
   function getCheckbox(settingName) {
-    return page.$$('print-preview-sidebar')
-        .$$('print-preview-other-options-settings')
-        .$$(`#${settingName}`);
+    return page.shadowRoot.querySelector('print-preview-sidebar')
+        .shadowRoot.querySelector('print-preview-other-options-settings')
+        .shadowRoot.querySelector(`#${settingName}`);
   }
 
-  /** Tests different scenarios of applying header/footer policy. */
+  // Tests different scenarios of applying header/footer policy.
   test(assert(policy_tests.TestNames.HeaderFooterPolicy), async () => {
     const tests = [
       {
@@ -177,9 +205,12 @@ suite(policy_tests.suiteName, function() {
       }
     ];
     for (const subtestParams of tests) {
-      await doAllowedDefaultModePolicySetup(
-          'headerFooter', 'isHeaderFooterEnabled', subtestParams.allowedMode,
-          subtestParams.defaultMode);
+      await doAllowedDefaultModePoliciesSetup([{
+        settingName: 'headerFooter',
+        serializedSettingName: 'isHeaderFooterEnabled',
+        allowedMode: subtestParams.allowedMode,
+        defaultMode: subtestParams.defaultMode
+      }]);
       toggleMoreSettings();
       const checkbox = getCheckbox('headerFooter');
       assertEquals(subtestParams.expectedDisabled, checkbox.disabled);
@@ -187,7 +218,7 @@ suite(policy_tests.suiteName, function() {
     }
   });
 
-  /** Tests different scenarios of applying background graphics policy. */
+  // Tests different scenarios of applying background graphics policy.
   test(assert(policy_tests.TestNames.CssBackgroundPolicy), async () => {
     const tests = [
       {
@@ -229,9 +260,12 @@ suite(policy_tests.suiteName, function() {
       }
     ];
     for (const subtestParams of tests) {
-      await doAllowedDefaultModePolicySetup(
-          'cssBackground', 'isCssBackgroundEnabled', subtestParams.allowedMode,
-          subtestParams.defaultMode);
+      await doAllowedDefaultModePoliciesSetup([{
+        settingName: 'cssBackground',
+        serializedSettingName: 'isCssBackgroundEnabled',
+        allowedMode: subtestParams.allowedMode,
+        defaultMode: subtestParams.defaultMode
+      }]);
       toggleMoreSettings();
       const checkbox = getCheckbox('cssBackground');
       assertEquals(subtestParams.expectedDisabled, checkbox.disabled);
@@ -239,7 +273,7 @@ suite(policy_tests.suiteName, function() {
     }
   });
 
-  /** Tests different scenarios of applying default paper policy. */
+  // Tests different scenarios of applying default paper policy.
   test(assert(policy_tests.TestNames.MediaSizePolicy), async () => {
     const tests = [
       {
@@ -259,14 +293,18 @@ suite(policy_tests.suiteName, function() {
       }
     ];
     for (const subtestParams of tests) {
-      await doAllowedDefaultModePolicySetup(
-          'mediaSize', /*serializedSettingName=*/ undefined,
-          /*allowedMode=*/ undefined, subtestParams.defaultMode);
+      await doAllowedDefaultModePoliciesSetup([{
+        settingName: 'mediaSize',
+        serializedSettingName: undefined,
+        allowedMode: undefined,
+        defaultMode: subtestParams.defaultMode
+      }]);
       toggleMoreSettings();
-      const mediaSettingsSelect = page.$$('print-preview-sidebar')
-                                      .$$('print-preview-media-size-settings')
-                                      .$$('print-preview-settings-select')
-                                      .$$('select');
+      const mediaSettingsSelect =
+          page.shadowRoot.querySelector('print-preview-sidebar')
+              .shadowRoot.querySelector('print-preview-media-size-settings')
+              .shadowRoot.querySelector('print-preview-settings-select')
+              .shadowRoot.querySelector('select');
       assertEquals(
           subtestParams.expectedName,
           JSON.parse(mediaSettingsSelect.value).name);
@@ -328,17 +366,484 @@ suite(policy_tests.suiteName, function() {
         const {_, itemCount} = await pluralString.whenCalled('getPluralString');
         assertEquals(subtestParams.maxSheets, itemCount);
       }
-      const printButton = page.$$('print-preview-sidebar')
-                              .$$('print-preview-button-strip')
-                              .$$('cr-button.action-button');
-      const errorMessage = page.$$('print-preview-sidebar')
-                               .$$('print-preview-button-strip')
-                               .$$('div.error-message');
+      const printButton =
+          page.shadowRoot.querySelector('print-preview-sidebar')
+              .shadowRoot.querySelector('print-preview-button-strip')
+              .shadowRoot.querySelector('cr-button.action-button');
+      const errorMessage =
+          page.shadowRoot.querySelector('print-preview-sidebar')
+              .shadowRoot.querySelector('print-preview-button-strip')
+              .shadowRoot.querySelector('div.error-message');
       assertEquals(subtestParams.expectedDisabled, printButton.disabled);
       assertEquals(subtestParams.expectedHidden, errorMessage.hidden);
       assertEquals(
           subtestParams.expectedNonEmptyErrorMessage,
           !errorMessage.hidden && !!errorMessage.innerText);
+    }
+  });
+
+  // <if expr="chromeos or lacros">
+  // Tests different scenarios of color printing policy.
+  test(assert(policy_tests.TestNames.ColorPolicy), async () => {
+    const tests = [
+      {
+        // No policies.
+        allowedMode: undefined,
+        defaultMode: undefined,
+        expectedDisabled: false,
+        expectedValue: 'color',
+      },
+      {
+        // Print in color by default.
+        allowedMode: undefined,
+        defaultMode: ColorModeRestriction.COLOR,
+        expectedDisabled: false,
+        expectedValue: 'color',
+      },
+      {
+        // Print in black and white by default.
+        allowedMode: undefined,
+        defaultMode: ColorModeRestriction.MONOCHROME,
+        expectedDisabled: false,
+        expectedValue: 'bw',
+      },
+      {
+        // Allowed and default policies unset.
+        allowedMode: ColorModeRestriction.UNSET,
+        defaultMode: ColorModeRestriction.UNSET,
+        expectedDisabled: false,
+        expectedValue: 'bw',
+      },
+      {
+        // Allowed unset, default set to color printing.
+        allowedMode: ColorModeRestriction.UNSET,
+        defaultMode: ColorModeRestriction.COLOR,
+        expectedDisabled: false,
+        expectedValue: 'color',
+      },
+      {
+        // Enforce color printing.
+        allowedMode: ColorModeRestriction.COLOR,
+        defaultMode: ColorModeRestriction.UNSET,
+        expectedDisabled: true,
+        expectedValue: 'color',
+      },
+      {
+        // Enforce black and white printing.
+        allowedMode: ColorModeRestriction.MONOCHROME,
+        defaultMode: undefined,
+        expectedDisabled: true,
+        expectedValue: 'bw',
+      },
+      {
+        // Enforce color printing, default is ignored.
+        allowedMode: ColorModeRestriction.COLOR,
+        defaultMode: ColorModeRestriction.MONOCHROME,
+        expectedDisabled: true,
+        expectedValue: 'color',
+      },
+    ];
+    for (const subtestParams of tests) {
+      await doAllowedDefaultModePoliciesSetup([{
+        settingName: 'color',
+        serializedSettingName: 'isColorEnabled',
+        allowedMode: subtestParams.allowedMode,
+        defaultMode: subtestParams.defaultMode
+      }]);
+      const colorSettingsSelect =
+          page.shadowRoot.querySelector('print-preview-sidebar')
+              .shadowRoot.querySelector('print-preview-color-settings')
+              .shadowRoot.querySelector('select');
+      assertEquals(
+          subtestParams.expectedDisabled, colorSettingsSelect.disabled);
+      assertEquals(subtestParams.expectedValue, colorSettingsSelect.value);
+    }
+  });
+
+  // Tests different scenarios of duplex printing policy.
+  test(assert(policy_tests.TestNames.DuplexPolicy), async () => {
+    const tests = [
+      {
+        // No policies.
+        allowedMode: undefined,
+        defaultMode: undefined,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // No restriction, default set to SIMPLEX.
+        allowedMode: undefined,
+        defaultMode: DuplexModeRestriction.SIMPLEX,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // No restriction, default set to UNSET.
+        allowedMode: undefined,
+        defaultMode: DuplexModeRestriction.UNSET,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // Allowed mode set to UNSET.
+        allowedMode: DuplexModeRestriction.UNSET,
+        defaultMode: undefined,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // No restriction, default set to LONG_EDGE.
+        allowedMode: undefined,
+        defaultMode: DuplexModeRestriction.LONG_EDGE,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // No restriction, default set to SHORT_EDGE.
+        allowedMode: undefined,
+        defaultMode: DuplexModeRestriction.SHORT_EDGE,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.SHORT_EDGE,
+      },
+      {
+        // No restriction, default set to DUPLEX.
+        allowedMode: undefined,
+        defaultMode: DuplexModeRestriction.DUPLEX,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // No restriction, default set to SHORT_EDGE.
+        allowedMode: DuplexModeRestriction.SIMPLEX,
+        defaultMode: undefined,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // Restricted to LONG_EDGE.
+        allowedMode: DuplexModeRestriction.LONG_EDGE,
+        defaultMode: undefined,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: true,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // Restricted to SHORT_EDGE.
+        allowedMode: DuplexModeRestriction.SHORT_EDGE,
+        defaultMode: undefined,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: true,
+        expectedValue: DuplexMode.SHORT_EDGE,
+      },
+      {
+        // Restricted to DUPLEX.
+        allowedMode: DuplexModeRestriction.DUPLEX,
+        defaultMode: undefined,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // Restricted to SHORT_EDGE, default is ignored.
+        allowedMode: DuplexModeRestriction.SHORT_EDGE,
+        defaultMode: DuplexModeRestriction.LONG_EDGE,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: true,
+        expectedValue: DuplexMode.SHORT_EDGE,
+      },
+    ];
+    for (const subtestParams of tests) {
+      await doAllowedDefaultModePoliciesSetup([{
+        settingName: 'duplex',
+        serializedSettingName: 'isDuplexEnabled',
+        allowedMode: subtestParams.allowedMode,
+        defaultMode: subtestParams.defaultMode
+      }]);
+      toggleMoreSettings();
+      const duplexSettingsSection =
+          page.shadowRoot.querySelector('print-preview-sidebar')
+              .shadowRoot.querySelector('print-preview-duplex-settings');
+      const checkbox =
+          duplexSettingsSection.shadowRoot.querySelector('cr-checkbox');
+      const collapse =
+          duplexSettingsSection.shadowRoot.querySelector('iron-collapse');
+      const select = duplexSettingsSection.shadowRoot.querySelector('select');
+      const expectedValue = subtestParams.expectedValue.toString();
+      assertEquals(subtestParams.expectedChecked, checkbox.checked);
+      assertEquals(subtestParams.expectedOpened, collapse.opened);
+      assertEquals(subtestParams.expectedDisabled, select.disabled);
+      assertEquals(expectedValue, select.value);
+    }
+  });
+
+  // Tests different scenarios of pin printing policy.
+  test(assert(policy_tests.TestNames.PinPolicy), async () => {
+    const tests = [
+      {
+        // No policies.
+        allowedMode: undefined,
+        defaultMode: undefined,
+        expectedCheckboxDisabled: false,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedInputDisabled: true,
+      },
+      {
+        // No restriction, default set to UNSET.
+        allowedMode: undefined,
+        defaultMode: PinModeRestriction.UNSET,
+        expectedCheckboxDisabled: false,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedInputDisabled: true,
+      },
+      {
+        // No restriction, default set to PIN.
+        allowedMode: undefined,
+        defaultMode: PinModeRestriction.PIN,
+        expectedCheckboxDisabled: false,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedInputDisabled: false,
+      },
+      {
+        // No restriction, default set to NO_PIN.
+        allowedMode: undefined,
+        defaultMode: PinModeRestriction.NO_PIN,
+        expectedCheckboxDisabled: false,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedInputDisabled: true,
+      },
+      {
+        // Restriction se to UNSET.
+        allowedMode: PinModeRestriction.UNSET,
+        defaultMode: undefined,
+        expectedCheckboxDisabled: false,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedInputDisabled: true,
+      },
+      {
+        // Restriction set to PIN.
+        allowedMode: PinModeRestriction.PIN,
+        defaultMode: undefined,
+        expectedCheckboxDisabled: true,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedInputDisabled: false,
+      },
+      {
+        // Restriction set to NO_PIN.
+        allowedMode: PinModeRestriction.NO_PIN,
+        defaultMode: undefined,
+        expectedCheckboxDisabled: true,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedInputDisabled: true,
+      },
+      {
+        // Restriction set to PIN, default is ignored.
+        allowedMode: PinModeRestriction.NO_PIN,
+        defaultMode: PinModeRestriction.PIN,
+        expectedCheckboxDisabled: true,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedInputDisabled: true,
+      },
+    ];
+    for (const subtestParams of tests) {
+      const initialSettings = getDefaultInitialSettings();
+
+      if (subtestParams.allowedMode !== undefined ||
+          subtestParams.defaultMode !== undefined) {
+        const policy = {};
+        if (subtestParams.allowedMode !== undefined) {
+          policy.allowedMode = subtestParams.allowedMode;
+        }
+        if (subtestParams.defaultMode !== undefined) {
+          policy.defaultMode = subtestParams.defaultMode;
+        }
+        initialSettings.policies = {"pin": policy};
+      }
+
+      const appState = {version: 2, "pinValue": "0000"};
+      if (subtestParams.defaultMode !== undefined) {
+        appState.isPinEnabled = !subtestParams.defaultMode;
+      }
+      initialSettings.serializedAppStateStr = JSON.stringify(appState);
+
+      await loadInitialSettings(initialSettings);
+
+      const pinSettingsSection =
+          page.shadowRoot.querySelector('print-preview-sidebar')
+              .shadowRoot.querySelector('print-preview-pin-settings');
+      const checkbox =
+          pinSettingsSection.shadowRoot.querySelector('cr-checkbox');
+      const collapse =
+          pinSettingsSection.shadowRoot.querySelector('iron-collapse');
+      const input = pinSettingsSection.shadowRoot.querySelector('cr-input');
+      assertEquals(subtestParams.expectedCheckboxDisabled, checkbox.disabled);
+      assertEquals(subtestParams.expectedChecked, checkbox.checked);
+      assertEquals(subtestParams.expectedOpened, collapse.opened);
+      assertEquals(subtestParams.expectedInputDisabled, input.disabled);
+    }
+  });
+  // </if>
+
+  // <if expr="is_win or is_macosx">
+  // Tests different scenarios of PDF print as image option policy.
+  // Should be available only for PDF when the policy explicitly allows print
+  // as image, and hidden the rest of the cases.
+  test(assert(policy_tests.TestNames.PrintPdfAsImageAvailability), async () => {
+    const tests = [
+      {
+        // No policies with modifiable content.
+        allowedMode: undefined,
+        isPdf: false,
+        expectedHidden: true,
+      },
+      {
+        // No policies with PDF content.
+        allowedMode: undefined,
+        isPdf: true,
+        expectedHidden: true,
+      },
+      {
+        // Explicitly restrict "Print as image" option for modifiable content.
+        allowedMode: false,
+        isPdf: false,
+        expectedHidden: true,
+      },
+      {
+        // Explicitly restrict "Print as image" option for PDF content.
+        allowedMode: false,
+        isPdf: true,
+        expectedHidden: true,
+      },
+      {
+        // Explicitly enable "Print as image" option for modifiable content.
+        allowedMode: true,
+        isPdf: false,
+        expectedHidden: true,
+      },
+      {
+        // Explicitly enable "Print as image" option for PDF content.
+        allowedMode: true,
+        isPdf: true,
+        expectedHidden: false,
+      },
+    ];
+    for (const subtestParams of tests) {
+      await doAllowedDefaultModePoliciesSetup(
+          [{
+            settingName: 'printPdfAsImageAvailability',
+            serializedSettingName: 'isRasterizeEnabled',
+            allowedMode: subtestParams.allowedMode,
+            defaultMode: undefined
+          }],
+          /*isPdf=*/ subtestParams.isPdf);
+      toggleMoreSettings();
+      const checkbox = getCheckbox('rasterize');
+      expectEquals(
+          subtestParams.expectedHidden, checkbox.parentNode.parentNode.hidden);
+    }
+  });
+  // </if>
+
+  // Tests different scenarios of PDF "Print as image" option default policy.
+  // Default only has an effect when the "Print as image" option is available.
+  // The policy controls if it defaults to set.Test behavior varies by platform
+  // since the option's availability is policy controlled for Windows and macOS
+  // but is always available for Linux and ChromeOS.
+  test(assert(policy_tests.TestNames.PrintPdfAsImageDefault), async () => {
+    const tests = [
+      // <if expr="is_linux or chromeos">
+      {
+        // `availableAllowedMode` is irrelevant, option is always present.
+        // No policy for default of "Print as image" option.
+        availableAllowedMode: undefined,
+        selectedDefaultMode: undefined,
+        expectedChecked: false,
+      },
+      {
+        // `availableAllowedMode` is irrelevant, option is always present.
+        // Explicitly default "Print as image" to unset for PDF content.
+        availableAllowedMode: undefined,
+        selectedDefaultMode: false,
+        expectedChecked: false,
+      },
+      {
+        // `availableAllowedMode` is irrelevant, option is always present.
+        // Explicitly default "Print as image" to set for PDF content.
+        availableAllowedMode: undefined,
+        selectedDefaultMode: true,
+        expectedChecked: true,
+      },
+      // </if>
+      {
+        // Explicitly enable "Print as image" option for PDF content.
+        // No policy for default of "Print as image" option.
+        availableAllowedMode: true,
+        selectedDefaultMode: undefined,
+        expectedChecked: false,
+      },
+      {
+        // Explicitly enable "Print as image" option for PDF content.
+        // Explicitly default "Print as image" to unset.
+        availableAllowedMode: true,
+        selectedDefaultMode: false,
+        expectedChecked: false,
+      },
+      {
+        // Explicitly enable "Print as image" option for PDF content.
+        // Explicitly default "Print as image" to set.
+        availableAllowedMode: true,
+        selectedDefaultMode: true,
+        expectedChecked: true,
+      },
+    ];
+    for (const subtestParams of tests) {
+      await doAllowedDefaultModePoliciesSetup(
+          [
+            {
+              settingName: 'printPdfAsImageAvailability',
+              serializedSettingName: 'isRasterizeEnabled',
+              allowedMode: subtestParams.availableAllowedMode,
+              defaultMode: undefined,
+            },
+            {
+              settingName: 'printPdfAsImage',
+              serializedSettingName: undefined,
+              allowedMode: undefined,
+              defaultMode: subtestParams.selectedDefaultMode,
+            }
+          ],
+          /*isPdf=*/ true);
+      toggleMoreSettings();
+      const checkbox = getCheckbox('rasterize');
+      assertFalse(checkbox.parentNode.parentNode.hidden);
+      expectEquals(subtestParams.expectedChecked, checkbox.checked);
     }
   });
 });

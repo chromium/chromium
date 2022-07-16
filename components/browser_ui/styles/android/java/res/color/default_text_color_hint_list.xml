@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<!-- Color state lists don't work well with attributes on Lollipop. See https://crbug.com/1245235.
+     There is an attr version of this in color-v23.
+     TODO(https://crbug.com/1239289): Delete this once the min API is 23. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:alpha="@dimen/default_disabled_alpha" android:color="@color/default_text_color_baseline"
+        android:state_enabled="false"/>
+    <item android:color="@color/default_text_color_secondary" />
+</selector>

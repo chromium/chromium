@@ -7,7 +7,6 @@
 
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;
@@ -19,6 +18,10 @@ namespace ash {
 class BaseState : public WindowState::State {
  public:
   explicit BaseState(chromeos::WindowStateType initial_state_type);
+
+  BaseState(const BaseState&) = delete;
+  BaseState& operator=(const BaseState&) = delete;
+
   ~BaseState() override;
 
   // WindowState::State:
@@ -68,9 +71,6 @@ class BaseState : public WindowState::State {
 
   // The current type of the window.
   chromeos::WindowStateType state_type_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BaseState);
 };
 
 }  // namespace ash

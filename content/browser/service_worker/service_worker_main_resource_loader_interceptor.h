@@ -19,6 +19,7 @@
 #include "content/public/common/child_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/isolation_info.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -52,9 +53,15 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   // worker.
   static std::unique_ptr<NavigationLoaderInterceptor> CreateForWorker(
       const network::ResourceRequest& resource_request,
+      const net::IsolationInfo& isolation_info,
       int process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
       base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle);
+
+  ServiceWorkerMainResourceLoaderInterceptor(
+      const ServiceWorkerMainResourceLoaderInterceptor&) = delete;
+  ServiceWorkerMainResourceLoaderInterceptor& operator=(
+      const ServiceWorkerMainResourceLoaderInterceptor&) = delete;
 
   ~ServiceWorkerMainResourceLoaderInterceptor() override;
 
@@ -83,7 +90,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
       bool are_ancestors_secure,
       int frame_tree_node_id,
       int process_id,
-      const DedicatedOrSharedWorkerToken* worker_token);
+      const DedicatedOrSharedWorkerToken* worker_token,
+      const net::IsolationInfo& isolation_info);
 
   // Returns true if a ServiceWorkerMainResourceLoaderInterceptor should be
   // created for a navigation to |url|.
@@ -111,6 +119,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   const network::mojom::RequestDestination request_destination_;
   const bool skip_service_worker_;
 
+  // Updated on redirects.
+  net::IsolationInfo isolation_info_;
+
   // For window clients:
   // Whether all ancestor frames of the frame that is navigating have a secure
   // origin. True for main frames.
@@ -129,8 +140,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
 
   // Handles a single request. Set to a new instance on redirects.
   std::unique_ptr<ServiceWorkerControlleeRequestHandler> request_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerMainResourceLoaderInterceptor);
 };
 
 }  // namespace content

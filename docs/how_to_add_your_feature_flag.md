@@ -30,6 +30,14 @@ Also, this patch added a virtual test for running web tests with the flag.
 When you add a flag, you can consider to use that.
 
 ## Step 2: Adding the feature flag to the chrome://flags UI.
+
+*** promo
+**Tip:** Android WebView has its own flag UI. The WebView team recommends adding
+your features there too if they are supported on WebView. Follow
+[these steps](/android_webview/docs/developer-ui.md#Adding-your-flags-and-features-to-the-UI)
+for WebView flags.
+***
+
 You have to modify these five files in total.
 
 * [chrome/browser/about_flags.cc](https://cs.chromium.org/chromium/src/chrome/browser/about_flags.cc)

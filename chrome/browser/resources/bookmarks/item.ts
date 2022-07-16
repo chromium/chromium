@@ -12,22 +12,17 @@ import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
-import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
+import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {selectItem} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {Command, MenuSource} from './constants.js';
-import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
-import {BookmarkNode, BookmarksPageState} from './types.js';
+import {StoreClientMixin} from './store_client_mixin.js';
+import {BookmarkNode} from './types.js';
 
-const BookmarksItemElementBase =
-    mixinBehaviors(StoreClient, PolymerElement) as {
-  new (): PolymerElement & BookmarksStoreClientInterface &
-      StoreObserver<BookmarksPageState>
-}
+const BookmarksItemElementBase = StoreClientMixin(PolymerElement);
 
 export interface BookmarksItemElement {
   $: {
@@ -98,17 +93,16 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
 
   connectedCallback() {
     super.connectedCallback();
-    this.watch('item_', state => {
-      return (state as BookmarksPageState).nodes[this.itemId];
-    });
-    this.watch('isSelectedItem_', state => {
-      return (state as BookmarksPageState).selection.items.has(this.itemId);
-    });
-    this.watch('isMultiSelect_', state => {
-      return (state as BookmarksPageState).selection.items.size > 1;
-    });
+    this.watch('item_', state => state.nodes[this.itemId]);
+    this.watch(
+        'isSelectedItem_', state => state.selection.items.has(this.itemId));
+    this.watch('isMultiSelect_', state => state.selection.items.size > 1);
 
     this.updateFromStore();
+  }
+
+  setIsSelectedItemForTesting(selected: boolean) {
+    this.isSelectedItem_ = selected;
   }
 
   focusMenuButton() {
@@ -176,6 +170,10 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
       range: false,
       toggle: false,
     }));
+  }
+
+  private getItemUrl_(): string {
+    return this.item_.url || '';
   }
 
   private onItemIdChanged_() {
@@ -290,6 +288,12 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
    */
   private isMultiSelectMenu_(): boolean {
     return this.isSelectedItem_ && this.isMultiSelect_;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'bookmarks-item': BookmarksItemElement;
   }
 }
 

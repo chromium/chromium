@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL scheduler: SVG script adding src attribute  assert_array_equals: lengths differ, expected array ["external script #1"] length 1, got [] length 0
-Harness: the test ran to completion.
-

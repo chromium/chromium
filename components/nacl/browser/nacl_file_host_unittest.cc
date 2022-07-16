@@ -6,7 +6,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
@@ -35,6 +34,10 @@ class FileHostTestNaClBrowserDelegate : public TestNaClBrowserDelegate {
 };
 
 class NaClFileHostTest : public testing::Test {
+ public:
+  NaClFileHostTest(const NaClFileHostTest&) = delete;
+  NaClFileHostTest& operator=(const NaClFileHostTest&) = delete;
+
  protected:
   NaClFileHostTest();
   ~NaClFileHostTest() override;
@@ -55,7 +58,6 @@ class NaClFileHostTest : public testing::Test {
 
  private:
   FileHostTestNaClBrowserDelegate* nacl_browser_delegate_;
-  DISALLOW_COPY_AND_ASSIGN(NaClFileHostTest);
 };
 
 NaClFileHostTest::NaClFileHostTest() : nacl_browser_delegate_(nullptr) {}

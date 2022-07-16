@@ -7,8 +7,6 @@
 
 #include <cstdint>
 
-#include "base/macros.h"
-
 namespace base {
 class Clock;
 }  // namespace base
@@ -26,6 +24,10 @@ class PrefetchDownloaderQuota {
   static const int64_t kDefaultMaxDailyQuotaBytes;
 
   PrefetchDownloaderQuota(sql::Database* db, const base::Clock* clock);
+
+  PrefetchDownloaderQuota(const PrefetchDownloaderQuota&) = delete;
+  PrefetchDownloaderQuota& operator=(const PrefetchDownloaderQuota&) = delete;
+
   ~PrefetchDownloaderQuota();
 
   // Gets the max daily quota from Finch.
@@ -45,8 +47,6 @@ class PrefetchDownloaderQuota {
 
   // Clock used for time related calculation and quota updates in DB. Not owned.
   const base::Clock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchDownloaderQuota);
 };
 }  // namespace offline_pages
 

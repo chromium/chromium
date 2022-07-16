@@ -79,7 +79,7 @@ def _RunValidationScript(
     extra_args = None,
     block_on_failure = None):
   results = []
-  vpython = 'vpython.bat' if input_api.is_windows else 'vpython'
+  vpython = 'vpython3.bat' if input_api.is_windows else 'vpython3'
   perf_dir = input_api.PresubmitLocalPath()
   script_abs_path = input_api.os_path.join(perf_dir, script_path)
   extra_args = extra_args if extra_args else []

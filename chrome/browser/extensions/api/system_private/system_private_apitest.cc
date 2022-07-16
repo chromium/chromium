@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -36,6 +35,9 @@ class GetUpdateStatusApiTest : public ExtensionApiTest {
  public:
   GetUpdateStatusApiTest() : fake_update_engine_client_(NULL) {}
 
+  GetUpdateStatusApiTest(const GetUpdateStatusApiTest&) = delete;
+  GetUpdateStatusApiTest& operator=(const GetUpdateStatusApiTest&) = delete;
+
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
     fake_update_engine_client_ = new chromeos::FakeUpdateEngineClient;
@@ -49,9 +51,6 @@ class GetUpdateStatusApiTest : public ExtensionApiTest {
 
  protected:
   chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GetUpdateStatusApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(GetUpdateStatusApiTest, Progress) {

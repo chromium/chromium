@@ -8,18 +8,13 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
-class NotificationDetails;
-class NotificationSource;
 }
 
 namespace extensions {
@@ -27,11 +22,14 @@ class Extension;
 class ExtensionPrefs;
 class ExternalInstallError;
 
-class ExternalInstallManager : public ExtensionRegistryObserver,
-                               public content::NotificationObserver {
+class ExternalInstallManager : public ExtensionRegistryObserver {
  public:
   ExternalInstallManager(content::BrowserContext* browser_context,
                          bool is_first_run);
+
+  ExternalInstallManager(const ExternalInstallManager&) = delete;
+  ExternalInstallManager& operator=(const ExternalInstallManager&) = delete;
+
   ~ExternalInstallManager() override;
 
   // Called when the associated profile will be destroyed.
@@ -81,11 +79,6 @@ class ExternalInstallManager : public ExtensionRegistryObserver,
                               const Extension* extension,
                               extensions::UninstallReason reason) override;
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // Adds a global error informing the user that an external extension was
   // installed. If |is_new_profile| is true, then this error is from the first
   // time our profile checked for new extensions.
@@ -118,12 +111,8 @@ class ExternalInstallManager : public ExtensionRegistryObserver,
   // The error that is currently showing an alert dialog/bubble.
   ExternalInstallError* currently_visible_install_alert_;
 
-  content::NotificationRegistrar registrar_;
-
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalInstallManager);
 };
 
 }  // namespace extensions

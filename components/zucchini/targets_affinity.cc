@@ -21,8 +21,8 @@ TargetsAffinity::~TargetsAffinity() = default;
 
 void TargetsAffinity::InferFromSimilarities(
     const EquivalenceMap& equivalences,
-    const std::vector<offset_t>& old_targets,
-    const std::vector<offset_t>& new_targets) {
+    const std::deque<offset_t>& old_targets,
+    const std::deque<offset_t>& new_targets) {
   forward_association_.assign(old_targets.size(), {});
   backward_association_.assign(new_targets.size(), {});
 

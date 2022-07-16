@@ -11,6 +11,23 @@ static_library("constants") {
   ]
 }
 
+static_library("file_manager_untrusted_ui") {
+  sources = [
+    "file_manager_untrusted_ui.cc",
+    "file_manager_untrusted_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+  deps = [
+    "//ash/webui/file_manager/untrusted_resources:file_manager_untrusted_resources",
+    "//base",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/webui",
+    "//url",
+  ]
+}
+
 static_library("file_manager_ui") {
   sources = [
     "file_manager_page_handler.cc",
@@ -18,18 +35,32 @@ static_library("file_manager_ui") {
     "file_manager_ui.cc",
     "file_manager_ui.h",
     "file_manager_ui_delegate.h",
+    "resource_loader.cc",
+    "resource_loader.h",
     "url_constants.cc",
     "url_constants.h",
   ]
 
   deps = [
     ":constants",
+    ":file_manager_untrusted_ui",
     "//ash/webui/file_manager/mojom",
     "//ash/webui/file_manager/resources:file_manager_swa_resources",
     "//base",
     "//content/public/browser",
     "//ui/file_manager:file_manager_gen_resources",
     "//ui/file_manager:resources",
-    "//ui/webui",
+    "//ui/web_dialogs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "resource_loader_unittest.cc" ]
+
+  deps = [
+    ":file_manager_ui",
+    "//content/test:test_support",
   ]
 }

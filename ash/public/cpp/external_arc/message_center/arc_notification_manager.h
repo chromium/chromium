@@ -34,6 +34,10 @@ class ArcNotificationManager
   static void SetCustomNotificationViewFactory();
 
   ArcNotificationManager();
+
+  ArcNotificationManager(const ArcNotificationManager&) = delete;
+  ArcNotificationManager& operator=(const ArcNotificationManager&) = delete;
+
   ~ArcNotificationManager() override;
 
   void SetInstance(
@@ -116,8 +120,6 @@ class ArcNotificationManager
   base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<ArcNotificationManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationManager);
 };
 
 }  // namespace ash

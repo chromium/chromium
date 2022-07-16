@@ -58,7 +58,7 @@ bool HeavyAdBlocklist::ShouldUseHostPolicy(base::TimeDelta* duration,
   const int kDefaultHostDurationHours = 24;
   const int kDefaultHostThreshold = 5;
   *max_hosts = GetBlocklistParamValue(kHostsInMemory, kDefaultHostsInMemory);
-  *duration = base::TimeDelta::FromHours(
+  *duration = base::Hours(
       GetBlocklistParamValue(kHostDurationHours, kDefaultHostDurationHours));
   *history = GetBlocklistParamValue(kHostThreshold, kDefaultHostThreshold);
   *threshold = GetBlocklistParamValue(kHostThreshold, kDefaultHostThreshold);

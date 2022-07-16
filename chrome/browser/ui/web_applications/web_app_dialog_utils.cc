@@ -16,13 +16,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/components/install_manager.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/navigation_entry.h"
@@ -31,17 +32,16 @@ namespace web_app {
 
 namespace {
 
-void WebAppInstallDialogCallback(
+void OnWebAppInstallShowInstallDialog(
     webapps::WebappInstallSource install_source,
     chrome::PwaInProductHelpState iph_state,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebApplicationInfo> web_app_info,
     ForInstallableSite for_installable_site,
-    InstallManager::WebAppInstallationAcceptanceCallback
-        web_app_acceptance_callback) {
+    WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
   DCHECK(web_app_info);
   if (for_installable_site == ForInstallableSite::kYes) {
-    web_app_info->open_as_window = true;
+    web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
     chrome::ShowPWAInstallBubble(
         initiator_web_contents, std::move(web_app_info),
         std::move(web_app_acceptance_callback), iph_state);
@@ -112,7 +112,7 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
 
   provider->install_manager().InstallWebAppFromManifestWithFallback(
       web_contents, force_shortcut_app, install_source,
-      base::BindOnce(WebAppInstallDialogCallback, install_source,
+      base::BindOnce(OnWebAppInstallShowInstallDialog, install_source,
                      chrome::PwaInProductHelpState::kNotShown),
       base::BindOnce(OnWebAppInstalled, std::move(callback)));
 }
@@ -128,7 +128,8 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
 
   provider->install_manager().InstallWebAppFromManifest(
       web_contents, bypass_service_worker_check, install_source,
-      base::BindOnce(WebAppInstallDialogCallback, install_source, iph_state),
+      base::BindOnce(OnWebAppInstallShowInstallDialog, install_source,
+                     iph_state),
       base::BindOnce(OnWebAppInstalled, std::move(installed_callback)));
   return true;
 }

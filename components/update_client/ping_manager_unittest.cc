@@ -24,6 +24,7 @@
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/protocol_serializer.h"
 #include "components/update_client/test_configurator.h"
+#include "components/update_client/update_client.h"
 #include "components/update_client/update_engine.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -140,7 +141,7 @@ TEST_P(PingManagerTest, SendPing) {
       ASSERT_TRUE(request);
       EXPECT_TRUE(request->FindKey("@os"));
       EXPECT_EQ("fake_prodid", request->FindKey("@updater")->GetString());
-      EXPECT_EQ("crx2,crx3", request->FindKey("acceptformat")->GetString());
+      EXPECT_EQ("crx3", request->FindKey("acceptformat")->GetString());
       EXPECT_TRUE(request->FindKey("arch"));
       EXPECT_EQ("cr", request->FindKey("dedup")->GetString());
       EXPECT_LT(0, request->FindPath({"hw", "physmemory"})->GetInt());
@@ -292,8 +293,9 @@ TEST_P(PingManagerTest, SendPing) {
     // Test a valid |previouversion| and |next_version| = base::Version("0")
     // are serialized correctly under <event...> for uninstall.
     Component component(*update_context, "abc");
-    component.crx_component_ = CrxComponent();
-    component.Uninstall(base::Version("1.2.3.4"), 0);
+    CrxComponent crx_component;
+    crx_component.version = base::Version("1.2.3.4");
+    component.Uninstall(crx_component, 0);
     component.AppendEvent(component.MakeEventUninstalled());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
@@ -319,8 +321,9 @@ TEST_P(PingManagerTest, SendPing) {
   {
     // Test registrationEvent.
     Component component(*update_context, "abc");
-    component.crx_component_ = CrxComponent();
-    component.Registration(base::Version("1.2.3.4"));
+    CrxComponent crx_component;
+    crx_component.version = base::Version("1.2.3.4");
+    component.Registration(crx_component);
     component.AppendEvent(component.MakeEventRegistration());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));

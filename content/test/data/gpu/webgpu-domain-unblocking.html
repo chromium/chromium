@@ -1,0 +1,63 @@
+<script type="text/javascript">
+var deviceLostReceived = false;
+
+function reportProgress(msg) {
+  if (window.domAutomationController) {
+    window.domAutomationController.send(msg);
+  }
+  console.log(msg);
+}
+
+async function init()
+{
+  const adapter = await navigator.gpu.requestAdapter();
+  if (!adapter) {
+    reportProgress('FAILED');
+    console.log('TEST FAILED - requestAdapter() failed unexpectedly');
+    return;
+  }
+
+  let device;
+  try {
+    device = await adapter.requestDevice();
+  } catch {
+    reportProgress('FAILED');
+    console.log('TEST FAILED - requestDevice() failed unexpectedly');
+    return;
+  }
+
+  reportProgress('SUCCESS');
+  reportProgress('LOADED');
+
+  console.log('Waiting for a GPU crash to cause device loss');
+  const {reason} = await device.lost;
+  if (reason !== undefined) {
+    console.log('TEST FAILED - Expected undefined device lost reason');
+    reportProgress('FAILED');
+    return;
+  }
+
+  try {
+    // First check that the previously acquired adapter can't get another device.
+    // This should throw an exception.
+    await adapter.requestDevice();
+    reportProgress('FAILED');
+    console.log('TEST FAILED - WebGPU device request should have failed on ' +
+                'stale GPUAdapter');
+  } catch {
+    console.log('Device request failed as expected');
+  }
+
+  // Also check that we can't get another adapter.
+  const newAdapter = await navigator.gpu.requestAdapter();
+  if (newAdapter !== null) {
+    reportProgress('FAILED');
+    console.log(
+        'TEST FAILED - WebGPU adapter request should have been blocked');
+  }
+
+  deviceLostReceived = true;
+}
+
+init();
+</script>

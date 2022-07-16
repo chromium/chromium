@@ -10,95 +10,31 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
+import androidx.annotation.Nullable;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
-import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.sync.TrustedVaultClient;
-import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
-import org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.chrome.browser.sync.ui.SyncErrorPromptUtils;
+import org.chromium.chrome.browser.sync.ui.SyncErrorPromptUtils.SyncErrorPromptAction;
+import org.chromium.chrome.browser.sync.ui.SyncErrorPromptUtils.SyncErrorPromptType;
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarLayout;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.content_public.browser.WebContents;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.TimeUnit;
 
 /**
  * An {@link InfoBar} that shows sync errors and prompts the user to open settings page.
  */
 public class SyncErrorInfoBar
         extends ConfirmInfoBar implements SyncService.SyncStateChangedListener {
-    private static final String TAG = "SyncErrorInfoBar";
-    // Preference key to save the latest time this infobar is viewed.
-    @VisibleForTesting
-    static final String PREF_SYNC_ERROR_INFOBAR_SHOWN_AT_TIME =
-            "sync_error_infobar_shown_shown_at_time";
-    @VisibleForTesting
-    static final long MINIMAL_DURATION_BETWEEN_INFOBARS_MS =
-            TimeUnit.MILLISECONDS.convert(24, TimeUnit.HOURS);
-
-    @IntDef({SyncErrorInfoBarType.NOT_SHOWN, SyncErrorInfoBarType.AUTH_ERROR,
-            SyncErrorInfoBarType.PASSPHRASE_REQUIRED, SyncErrorInfoBarType.SYNC_SETUP_INCOMPLETE,
-            SyncErrorInfoBarType.CLIENT_OUT_OF_DATE,
-            SyncErrorInfoBarType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING,
-            SyncErrorInfoBarType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS,
-            SyncErrorInfoBarType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING,
-            SyncErrorInfoBarType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface SyncErrorInfoBarType {
-        int NOT_SHOWN = -1;
-        int AUTH_ERROR = 0;
-        int PASSPHRASE_REQUIRED = 1;
-        int SYNC_SETUP_INCOMPLETE = 2;
-        int CLIENT_OUT_OF_DATE = 3;
-        int TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING = 4;
-        int TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS = 5;
-        int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING = 6;
-        int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS = 7;
-    }
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({SyncErrorInfoBarAction.SHOWN, SyncErrorInfoBarAction.DISMISSED,
-            SyncErrorInfoBarAction.BUTTON_CLICKED, SyncErrorInfoBarAction.NUM_ENTRIES})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface SyncErrorInfoBarAction {
-        int SHOWN = 0;
-        int DISMISSED = 1;
-        int BUTTON_CLICKED = 2;
-        int NUM_ENTRIES = 3;
-    }
-
-    private final @SyncErrorInfoBarType int mType;
+    private final @SyncErrorPromptType int mType;
     private final String mDetailsMessage;
 
-    private static String getPrimaryButtonText(Context context, @SyncError int error) {
-        switch (error) {
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                return context.getString(R.string.trusted_vault_error_card_button);
-            default:
-                return context.getString(R.string.open_settings_button);
-        }
-    }
 
     /**
      * This function is called after maybeLaunchSyncErrorInfoBar sends launch signal to the native
@@ -109,120 +45,41 @@ public class SyncErrorInfoBar
         Context context = getApplicationContext();
         @SyncError
         int error = SyncSettingsUtils.getSyncError();
-        String errorMessage = (error == SyncError.SYNC_SETUP_INCOMPLETE)
-                ? context.getString(R.string.sync_settings_not_confirmed_title)
-                : SyncSettingsUtils.getSyncErrorHint(context, error);
-        String title = SyncSettingsUtils.getSyncErrorCardTitle(context, error);
-        String primaryButtonText = getPrimaryButtonText(context, error);
+        String errorMessage = SyncErrorPromptUtils.getErrorMessage(context, error);
+        String title = SyncErrorPromptUtils.getTitle(context, error);
+        String primaryButtonText = SyncErrorPromptUtils.getPrimaryButtonText(context, error);
 
-        return new SyncErrorInfoBar(
-                getSyncErrorInfoBarType(), title, errorMessage, primaryButtonText);
-    }
-
-    private void openTrustedVaultKeyRetrievalActivity() {
-        CoreAccountInfo primaryAccountInfo = getPrimaryAccountInfo();
-        if (primaryAccountInfo == null) {
-            return;
-        }
-        TrustedVaultClient.get()
-                .createKeyRetrievalIntent(primaryAccountInfo)
-                .then(
-                        (intent)
-                                -> {
-                            IntentUtils.safeStartActivity(getApplicationContext(),
-                                    SyncTrustedVaultProxyActivity.createKeyRetrievalProxyIntent(
-                                            intent,
-                                            TrustedVaultUserActionTriggerForUMA
-                                                    .NEW_TAB_PAGE_INFOBAR));
-                        },
-                        (exception)
-                                -> Log.w(TAG, "Error creating trusted vault key retrieval intent: ",
-                                        exception));
-    }
-
-    private void openTrustedVaultRecoverabilityDegradedActivity() {
-        CoreAccountInfo primaryAccountInfo = getPrimaryAccountInfo();
-        if (primaryAccountInfo == null) {
-            return;
-        }
-        TrustedVaultClient.get()
-                .createRecoverabilityDegradedIntent(primaryAccountInfo)
-                .then(
-                        (intent)
-                                -> {
-                            IntentUtils.safeStartActivity(getApplicationContext(),
-                                    SyncTrustedVaultProxyActivity
-                                            .createRecoverabilityDegradedProxyIntent(intent,
-                                                    TrustedVaultUserActionTriggerForUMA
-                                                            .NEW_TAB_PAGE_INFOBAR));
-                        },
-                        (exception)
-                                -> Log.w(TAG,
-                                        "Error creating trusted vault recoverability intent: ",
-                                        exception));
+        return new SyncErrorInfoBar(SyncErrorPromptUtils.getSyncErrorUiType(error), title,
+                errorMessage, primaryButtonText);
     }
 
     @CalledByNative
     private void accept() {
         SyncService.get().removeSyncStateChangedListener(this);
-        recordHistogram(mType, SyncErrorInfoBarAction.BUTTON_CLICKED);
-
-        switch (mType) {
-            case SyncErrorInfoBarType.NOT_SHOWN:
-                assert false;
-                break;
-
-            case SyncErrorInfoBarType.AUTH_ERROR:
-            case SyncErrorInfoBarType.PASSPHRASE_REQUIRED:
-            case SyncErrorInfoBarType.SYNC_SETUP_INCOMPLETE:
-            case SyncErrorInfoBarType.CLIENT_OUT_OF_DATE:
-                SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                settingsLauncher.launchSettingsActivity(getApplicationContext(),
-                        ManageSyncSettings.class, ManageSyncSettings.createArguments(false));
-                break;
-
-            case SyncErrorInfoBarType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
-            case SyncErrorInfoBarType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
-                openTrustedVaultKeyRetrievalActivity();
-                break;
-
-            case SyncErrorInfoBarType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-            case SyncErrorInfoBarType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                openTrustedVaultRecoverabilityDegradedActivity();
-                break;
-        }
+        recordHistogram(SyncErrorPromptAction.BUTTON_CLICKED);
+        SyncErrorPromptUtils.onUserAccepted(mType);
     }
 
     @CalledByNative
     private void dismissed() {
         SyncService.get().removeSyncStateChangedListener(this);
-        recordHistogram(mType, SyncErrorInfoBarAction.DISMISSED);
+        recordHistogram(SyncErrorPromptAction.DISMISSED);
     }
 
-    private CoreAccountInfo getPrimaryAccountInfo() {
-        if (!SyncService.get().isAuthenticatedAccountPrimary()) {
-            return null;
-        }
-        return SyncService.get().getAuthenticatedAccountInfo();
-    }
-
-    private SyncErrorInfoBar(@SyncErrorInfoBarType int type, String title, String detailsMessage,
+    private SyncErrorInfoBar(@SyncErrorPromptType int type, String title, String detailsMessage,
             String primaryButtonText) {
         super(R.drawable.ic_sync_error_legacy_40dp, R.color.default_red, null, title, null,
                 primaryButtonText, null);
         mType = type;
         mDetailsMessage = detailsMessage;
         SyncService.get().addSyncStateChangedListener(this);
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putLong(PREF_SYNC_ERROR_INFOBAR_SHOWN_AT_TIME, System.currentTimeMillis())
-                .apply();
-        recordHistogram(mType, SyncErrorInfoBarAction.SHOWN);
+        SyncErrorPromptUtils.updateLastShownTime();
+        recordHistogram(SyncErrorPromptAction.SHOWN);
     }
 
     @Override
     public void syncStateChanged() {
-        if (mType != getSyncErrorInfoBarType()) {
+        if (mType != SyncErrorPromptUtils.getSyncErrorUiType(SyncSettingsUtils.getSyncError())) {
             onCloseButtonClicked();
         }
     }
@@ -244,99 +101,30 @@ public class SyncErrorInfoBar
         super.onStartedHiding();
         if (!isFrontInfoBar()) {
             // SyncErrorInfoBar was not visible to the user, so we need to reset this pref that is
-            // used to block SyncErrorInfoBars from appearing within
-            // |MINIMAL_DURATION_BETWEEN_INFOBARS_MS|
-            ContextUtils.getAppSharedPreferences()
-                    .edit()
-                    .remove(SyncErrorInfoBar.PREF_SYNC_ERROR_INFOBAR_SHOWN_AT_TIME)
-                    .apply();
+            // used to block SyncErrorInfoBars from appearing within the minimal interval.
+            SyncErrorPromptUtils.resetLastShownTime();
         }
     }
 
     /**
      * Calls native side code to create an infobar.
      */
-    public static void maybeLaunchSyncErrorInfoBar(WebContents webContents) {
+    public static void maybeLaunchSyncErrorInfoBar(@Nullable WebContents webContents) {
         if (webContents == null) {
             return;
         }
-        @SyncErrorInfoBarType
-        int type = getSyncErrorInfoBarType();
-        if (hasMinimalIntervalPassed() && type != SyncErrorInfoBarType.NOT_SHOWN) {
-            SyncErrorInfoBarJni.get().launch(webContents);
+        if (!SyncErrorPromptUtils.shouldShowPrompt(
+                    SyncErrorPromptUtils.getSyncErrorUiType(SyncSettingsUtils.getSyncError()))) {
+            return;
         }
+        SyncErrorInfoBarJni.get().launch(webContents);
     }
 
-    private static boolean hasMinimalIntervalPassed() {
-        long lastShownTime = ContextUtils.getAppSharedPreferences().getLong(
-                PREF_SYNC_ERROR_INFOBAR_SHOWN_AT_TIME, 0);
-        return System.currentTimeMillis() - lastShownTime > MINIMAL_DURATION_BETWEEN_INFOBARS_MS;
-    }
-
-    @SyncErrorInfoBarType
-    private static int getSyncErrorInfoBarType() {
-        @SyncError
-        int error = SyncSettingsUtils.getSyncError();
-        switch (error) {
-            case SyncError.AUTH_ERROR:
-                return SyncErrorInfoBarType.AUTH_ERROR;
-            case SyncError.PASSPHRASE_REQUIRED:
-                return SyncErrorInfoBarType.PASSPHRASE_REQUIRED;
-            case SyncError.SYNC_SETUP_INCOMPLETE:
-                return SyncErrorInfoBarType.SYNC_SETUP_INCOMPLETE;
-            case SyncError.CLIENT_OUT_OF_DATE:
-                return SyncErrorInfoBarType.CLIENT_OUT_OF_DATE;
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
-                return SyncErrorInfoBarType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING;
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
-                return SyncErrorInfoBarType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS;
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-                return SyncErrorInfoBarType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING;
-            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                return SyncErrorInfoBarType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS;
-            default:
-                return SyncErrorInfoBarType.NOT_SHOWN;
-        }
-    }
-
-    private static String getSyncErrorInfoBarHistogramName(@SyncErrorInfoBarType int type) {
-        assert type != SyncErrorInfoBarType.NOT_SHOWN;
-        String name = "Signin.SyncErrorInfoBar.";
-        switch (type) {
-            case SyncErrorInfoBarType.AUTH_ERROR:
-                name += "AuthError";
-                break;
-            case SyncErrorInfoBarType.PASSPHRASE_REQUIRED:
-                name += "PassphraseRequired";
-                break;
-            case SyncErrorInfoBarType.SYNC_SETUP_INCOMPLETE:
-                name += "SyncSetupIncomplete";
-                break;
-            case SyncErrorInfoBarType.CLIENT_OUT_OF_DATE:
-                name += "ClientOutOfDate";
-                break;
-            case SyncErrorInfoBarType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
-                name += "TrustedVaultKeyRequiredForEverything";
-                break;
-            case SyncErrorInfoBarType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
-                name += "TrustedVaultKeyRequiredForPasswords";
-                break;
-            case SyncErrorInfoBarType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-                name += "TrustedVaultRecoverabilityDegradedForEverything";
-                break;
-            case SyncErrorInfoBarType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                name += "TrustedVaultRecoverabilityDegradedForPasswords";
-                break;
-            default:
-                assert false;
-        }
-        return name;
-    }
-
-    private static void recordHistogram(
-            @SyncErrorInfoBarType int type, @SyncErrorInfoBarAction int action) {
-        String name = getSyncErrorInfoBarHistogramName(type);
-        RecordHistogram.recordEnumeratedHistogram(name, action, SyncErrorInfoBarAction.NUM_ENTRIES);
+    private void recordHistogram(@SyncErrorPromptAction int action) {
+        assert mType != SyncErrorPromptType.NOT_SHOWN;
+        String name = "Signin.SyncErrorInfoBar."
+                + SyncErrorPromptUtils.getSyncErrorPromptUiHistogramSuffix(mType);
+        RecordHistogram.recordEnumeratedHistogram(name, action, SyncErrorPromptAction.NUM_ENTRIES);
     }
 
     @NativeMethods

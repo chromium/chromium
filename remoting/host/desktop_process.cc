@@ -11,17 +11,16 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/chromoting_messages.h"
+#include "remoting/host/crash_process.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/desktop_session_agent.h"
 
@@ -61,10 +60,18 @@ void DesktopProcess::OnNetworkProcessDisconnected() {
   OnChannelError();
 }
 
+void DesktopProcess::CrashNetworkProcess(const base::Location& location) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  LOG(ERROR) << "Asking the daemon process to crash the network process. "
+             << "Request originated from: " << location.ToString();
+  desktop_session_request_handler_->CrashNetworkProcess();
+}
+
 void DesktopProcess::InjectSas() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  daemon_channel_->Send(new ChromotingDesktopDaemonMsg_InjectSas());
+  desktop_session_request_handler_->InjectSecureAttentionSequence();
 }
 
 void DesktopProcess::LockWorkstation() {
@@ -109,6 +116,7 @@ void DesktopProcess::OnChannelError() {
     desktop_agent_->Stop();
     desktop_agent_ = nullptr;
   }
+  desktop_session_request_handler_.reset();
 
   caller_task_runner_ = nullptr;
   input_task_runner_ = nullptr;
@@ -151,9 +159,12 @@ bool DesktopProcess::Start(
       daemon_channel_handle_.release(), IPC::Channel::MODE_CLIENT, this,
       io_task_runner_, base::ThreadTaskRunnerHandle::Get());
 
+  daemon_channel_->GetRemoteAssociatedInterface(
+      &desktop_session_request_handler_);
+
   // Pass |desktop_pipe| to the daemon.
-  daemon_channel_->Send(
-      new ChromotingDesktopDaemonMsg_DesktopAttached(desktop_pipe.release()));
+  desktop_session_request_handler_->ConnectDesktopChannel(
+      std::move(desktop_pipe));
 
   return true;
 }
@@ -161,14 +172,8 @@ bool DesktopProcess::Start(
 void DesktopProcess::OnCrash(const std::string& function_name,
                              const std::string& file_name,
                              const int& line_number) {
-  char message[1024];
-  base::snprintf(message, sizeof(message),
-                 "Requested by %s at %s, line %d.",
-                 function_name.c_str(), file_name.c_str(), line_number);
-  base::debug::Alias(message);
-
   // The daemon requested us to crash the process.
-  CHECK(false) << message;
+  CrashProcess(function_name, file_name, line_number);
 }
 
 } // namespace remoting

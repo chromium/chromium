@@ -11,11 +11,11 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
@@ -23,6 +23,8 @@
 #include "chrome/browser/metrics/variations/ui_string_overrider_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/browser_otr_state.h"
+#include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/metrics/enabled_state_provider.h"
@@ -30,12 +32,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if defined(OS_ANDROID)
+#include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
@@ -52,11 +56,19 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
+#include "components/metrics/structured/neutrino_logging.h"       // nogncheck
+#include "components/metrics/structured/neutrino_logging_util.h"  // nogncheck
+#include "components/metrics/structured/recorder.h"               // nogncheck
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-namespace metrics {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
+namespace metrics {
 namespace internal {
+
 // Metrics reporting feature. This feature, along with user consent, controls if
 // recording and reporting are enabled. If the feature is enabled, but no
 // consent is given, then there will be no recording or reporting.
@@ -105,6 +117,16 @@ bool IsClientInSampleImpl(PrefService* local_state) {
 void OnCrosMetricsReportingSettingChange() {
   bool enable_metrics = ash::StatsReportingController::Get()->IsEnabled();
   ChangeMetricsReportingState(enable_metrics);
+
+  // TODO(crbug.com/1234538): This call ensures that structured metrics' state
+  // is deleted when the reporting state is disabled. Long-term this should
+  // happen via a call to all MetricsProviders eg. OnClientStateCleared. This is
+  // temporarily called here because it is close to the settings UI, and doesn't
+  // greatly affect the logging in crbug.com/1227585.
+  auto* recorder = metrics::structured::Recorder::GetInstance();
+  if (recorder) {
+    recorder->OnReportingStateChanged(enable_metrics);
+  }
 }
 #endif
 
@@ -126,6 +148,11 @@ class ChromeMetricsServicesManagerClient::ChromeEnabledStateProvider
  public:
   explicit ChromeEnabledStateProvider(PrefService* local_state)
       : local_state_(local_state) {}
+
+  ChromeEnabledStateProvider(const ChromeEnabledStateProvider&) = delete;
+  ChromeEnabledStateProvider& operator=(const ChromeEnabledStateProvider&) =
+      delete;
+
   ~ChromeEnabledStateProvider() override {}
 
   bool IsConsentGiven() const override {
@@ -140,8 +167,6 @@ class ChromeMetricsServicesManagerClient::ChromeEnabledStateProvider
 
  private:
   PrefService* const local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeEnabledStateProvider);
 };
 
 ChromeMetricsServicesManagerClient::ChromeMetricsServicesManagerClient(
@@ -153,6 +178,11 @@ ChromeMetricsServicesManagerClient::ChromeMetricsServicesManagerClient(
 }
 
 ChromeMetricsServicesManagerClient::~ChromeMetricsServicesManagerClient() {}
+
+metrics::MetricsStateManager*
+ChromeMetricsServicesManagerClient::GetMetricsStateManagerForTesting() {
+  return GetMetricsStateManager();
+}
 
 // static
 void ChromeMetricsServicesManagerClient::CreateFallbackSamplingTrial(
@@ -234,6 +264,11 @@ ChromeMetricsServicesManagerClient::GetEnabledStateProviderForTesting() {
 std::unique_ptr<variations::VariationsService>
 ChromeMetricsServicesManagerClient::CreateVariationsService() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  metrics::structured::NeutrinoDevicesLogWithLocalState(
+      local_state_,
+      metrics::structured::NeutrinoDevicesLocation::kCreateVariationsService);
+#endif
   return variations::VariationsService::Create(
       std::make_unique<ChromeVariationsServiceClient>(), local_state_,
       GetMetricsStateManager(), switches::kDisableBackgroundNetworking,
@@ -244,6 +279,11 @@ ChromeMetricsServicesManagerClient::CreateVariationsService() {
 std::unique_ptr<metrics::MetricsServiceClient>
 ChromeMetricsServicesManagerClient::CreateMetricsServiceClient() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  metrics::structured::NeutrinoDevicesLogWithLocalState(
+      local_state_, metrics::structured::NeutrinoDevicesLocation::
+                        kCreateMetricsServiceClient);
+#endif
   return ChromeMetricsServiceClient::Create(GetMetricsStateManager());
 }
 
@@ -251,10 +291,32 @@ metrics::MetricsStateManager*
 ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!metrics_state_manager_) {
+    base::FilePath user_data_dir;
+    base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+
+    metrics::StartupVisibility startup_visibility;
+#if defined(OS_ANDROID)
+    startup_visibility = UmaSessionStats::HasVisibleActivity()
+                             ? metrics::StartupVisibility::kForeground
+                             : metrics::StartupVisibility::kBackground;
+#else
+    startup_visibility = metrics::StartupVisibility::kForeground;
+#endif  // defined(OS_ANDROID)
+
+    std::string client_id;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Read metrics service client id from ash chrome if it's present.
+    auto* init_params = chromeos::LacrosService::Get()->init_params();
+    if (init_params->metrics_service_client_id.has_value())
+      client_id = init_params->metrics_service_client_id.value();
+#endif
+
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), GetRegistryBackupKey(),
+        user_data_dir, startup_visibility, chrome::GetChannel(),
         base::BindRepeating(&PostStoreMetricsClientInfo),
-        base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo));
+        base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo),
+        client_id);
   }
   return metrics_state_manager_.get();
 }

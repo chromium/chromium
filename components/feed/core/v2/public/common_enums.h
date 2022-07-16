@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FEED_CORE_V2_PUBLIC_COMMON_ENUMS_H_
 #define COMPONENTS_FEED_CORE_V2_PUBLIC_COMMON_ENUMS_H_
 
+#include <iosfwd>
+
 // Unlike most code from feed/core, these enums are used by both iOS and
 // Android.
 namespace feed {
@@ -110,8 +112,35 @@ enum class FeedUserActionType {
   // After following an active web feed, the user tapped to dismiss the
   // post-follow help dialog.
   kTappedDismissPostFollowActiveHelp = 38,
+  // After long-pressing on the feed and seeing the preview, the user tapped
+  // on the preview.
+  kTappedDiscoverFeedPreview = 39,
+  // User tapped "Settings" link to open feed autoplay settings.
+  kOpenedAutoplaySettings = 40,
+  // User tapped "Add to Reading List" in the context menu.
+  kTappedAddToReadingList = 41,
 
-  kMaxValue = kTappedDismissPostFollowActiveHelp,
+  kMaxValue = kTappedAddToReadingList,
+};
+
+// For testing and debugging only.
+std::ostream& operator<<(std::ostream& out, FeedUserActionType value);
+
+// Values for the UMA
+// ContentSuggestions.Feed.WebFeed.RefreshContentOrder histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This must be kept in sync with
+// FeedContentOrder in enums.xml.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.v2
+enum class ContentOrder : int {
+  // Content order is not specified.
+  kUnspecified = 0,
+  // Content is grouped by provider.
+  kGrouped = 1,
+  // Content is ungrouped, and arranged in reverse chronological order.
+  kReverseChron = 2,
+
+  kMaxValue = kReverseChron,
 };
 
 }  // namespace feed

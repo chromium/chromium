@@ -63,4 +63,4 @@ class TouchPoint {
 
 }  // namespace pp
 
-#endif  /* PPAPI_CPP_TOUCH_POINT_H_ */
+#endif  // PPAPI_CPP_TOUCH_POINT_H_

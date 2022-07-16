@@ -125,6 +125,9 @@ class ProfileHandler {
   // Initializes and returns the ProfileHandler singleton.
   static ProfileHandler* Instance();
 
+  ProfileHandler(const ProfileHandler&) = delete;
+  ProfileHandler& operator=(const ProfileHandler&) = delete;
+
  private:
   ProfileHandler();
   ~ProfileHandler();
@@ -212,8 +215,6 @@ class ProfileHandler {
 
   // Signal handler. Iterates over and calls all the registered callbacks.
   static void SignalHandler(int sig, siginfo_t* sinfo, void* ucontext);
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileHandler);
 };
 
 ProfileHandler* ProfileHandler::instance_ = NULL;

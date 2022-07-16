@@ -22,6 +22,11 @@ class MediaPlayerRendererWebContentsObserver
     : public WebContentsObserver,
       public WebContentsUserData<MediaPlayerRendererWebContentsObserver> {
  public:
+  MediaPlayerRendererWebContentsObserver(
+      const MediaPlayerRendererWebContentsObserver&) = delete;
+  MediaPlayerRendererWebContentsObserver& operator=(
+      const MediaPlayerRendererWebContentsObserver&) = delete;
+
   ~MediaPlayerRendererWebContentsObserver() override;
 
   void AddMediaPlayerRenderer(MediaPlayerRenderer* player);
@@ -38,8 +43,6 @@ class MediaPlayerRendererWebContentsObserver
   base::flat_set<MediaPlayerRenderer*> players_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPlayerRendererWebContentsObserver);
 };
 
 }  // namespace content

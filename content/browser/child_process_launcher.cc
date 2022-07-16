@@ -208,28 +208,25 @@ void ChildProcessLauncher::RecordProcessLifetimeMetrics() {
   const base::TimeDelta process_total_cpu_use =
       process_metrics->GetCumulativeCPUUsage();
 
-  constexpr base::TimeDelta kShortLifetime = base::TimeDelta::FromMinutes(1);
+  constexpr base::TimeDelta kShortLifetime = base::Minutes(1);
   if (process_lifetime <= kShortLifetime) {
     // Bucketing chosen by looking at AverageCPU2.RendererProcess in UMA. Only
     // a renderer at the 99.9th percentile of this metric would overflow.
     UMA_HISTOGRAM_CUSTOM_TIMES("Renderer.TotalCPUUse2.ShortLived",
-                               process_total_cpu_use,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromSeconds(30), 100);
+                               process_total_cpu_use, base::Milliseconds(1),
+                               base::Seconds(30), 100);
   } else {
     // Bucketing chosen by looking at AverageCPU2.RendererProcess and
     // Renderer.ProcessLifetime values in UMA. Only a renderer at the 99th
     // percentile of both of those values combined will overflow.
     UMA_HISTOGRAM_CUSTOM_TIMES("Renderer.TotalCPUUse2.LongLived",
-                               process_total_cpu_use,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromHours(3), 100);
+                               process_total_cpu_use, base::Milliseconds(1),
+                               base::Hours(3), 100);
   }
 
   // Global measurement. Bucketing identical to LongLivedRenders.
   UMA_HISTOGRAM_CUSTOM_TIMES("Renderer.TotalCPUUse2", process_total_cpu_use,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromHours(3), 100);
+                             base::Milliseconds(1), base::Hours(3), 100);
 }
 
 // static

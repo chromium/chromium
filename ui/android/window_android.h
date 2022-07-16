@@ -12,7 +12,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/android/ui_android_export.h"
@@ -43,6 +42,9 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
                 int display_id,
                 float scroll_factor,
                 bool window_is_wide_color_gamut);
+
+  WindowAndroid(const WindowAndroid&) = delete;
+  WindowAndroid& operator=(const WindowAndroid&) = delete;
 
   ~WindowAndroid() override;
 
@@ -148,8 +150,6 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   TestHooks* test_hooks_ = nullptr;
 
   int selection_handles_active_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowAndroid);
 };
 
 }  // namespace ui

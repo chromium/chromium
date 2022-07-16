@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom-forward.h"
@@ -130,6 +129,10 @@ class SiteEngagementScore {
                       const GURL& origin,
                       HostContentSettingsMap* settings);
   SiteEngagementScore(SiteEngagementScore&& other);
+
+  SiteEngagementScore(const SiteEngagementScore&) = delete;
+  SiteEngagementScore& operator=(const SiteEngagementScore&) = delete;
+
   ~SiteEngagementScore();
 
   SiteEngagementScore& operator=(SiteEngagementScore&& other);
@@ -237,8 +240,6 @@ class SiteEngagementScore {
 
   // The settings to write this score to when Commit() is called.
   HostContentSettingsMap* settings_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteEngagementScore);
 };
 
 }  // namespace site_engagement

@@ -259,15 +259,17 @@ std::string TestTCPSocketPrivate::TestSSLHandshakeHangs() {
 
 std::string TestTCPSocketPrivate::TestSSLWriteFails() {
   pp::TCPSocketPrivate socket(instance_);
-  TestCompletionCallback cb(instance_->pp_instance(), callback_type());
+  {
+    TestCompletionCallback cb(instance_->pp_instance(), callback_type());
 
-  cb.WaitForResult(socket.Connect("foo.test", 443, cb.GetCallback()));
-  CHECK_CALLBACK_BEHAVIOR(cb);
-  ASSERT_EQ(PP_OK, cb.result());
+    cb.WaitForResult(socket.Connect("foo.test", 443, cb.GetCallback()));
+    CHECK_CALLBACK_BEHAVIOR(cb);
+    ASSERT_EQ(PP_OK, cb.result());
 
-  cb.WaitForResult(socket.SSLHandshake("foo.test", 443, cb.GetCallback()));
-  CHECK_CALLBACK_BEHAVIOR(cb);
-  ASSERT_EQ(PP_OK, cb.result());
+    cb.WaitForResult(socket.SSLHandshake("foo.test", 443, cb.GetCallback()));
+    CHECK_CALLBACK_BEHAVIOR(cb);
+    ASSERT_EQ(PP_OK, cb.result());
+  }
 
   // Write to the socket until there's an error. Some writes may succeed, since
   // Mojo writes complete before the socket tries to send data.

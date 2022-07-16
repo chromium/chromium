@@ -127,12 +127,16 @@ PROCESS_TYPE_STRUCT_BEGIN(dyld_all_image_infos)
   // preceding the padding in the 32-bit structure that would natively be
   // addressed at index 4 of |reserved|. Treat reserved_4_32 as only available
   // in version 16 of the structure.
+  // In the 12.0 SDK, 2 of the trailing UIntPtrs on 64-bit and
+  // 4 of them on 32-bit were replaced by two uint64_ts. On 32-bit, that
+  // awkwardly straddles end_v14. Since macOS 12.0 is 64-bit only, the proctype
+  // version of this struct only has these uint64_ts in the 64-bit version.
   PROCESS_TYPE_STRUCT_MEMBER(UIntPtr, reserved, [4])
   PROCESS_TYPE_STRUCT_MEMBER(Reserved64_64Only, reserved_4_64)
   PROCESS_TYPE_STRUCT_MEMBER(Reserved64_64Only, reserved_5)
   PROCESS_TYPE_STRUCT_MEMBER(Reserved64_64Only, reserved_6)
-  PROCESS_TYPE_STRUCT_MEMBER(Reserved64_64Only, reserved_7)
-  PROCESS_TYPE_STRUCT_MEMBER(Reserved64_64Only, reserved_8)
+  PROCESS_TYPE_STRUCT_MEMBER(Reserved64_64Only, shared_cache_fs_id)
+  PROCESS_TYPE_STRUCT_MEMBER(Reserved64_64Only, shared_cache_fs_obj_id)
   PROCESS_TYPE_STRUCT_MEMBER(Nothing, end_v14)
   PROCESS_TYPE_STRUCT_MEMBER(Reserved32_32Only, reserved_4_32)
 

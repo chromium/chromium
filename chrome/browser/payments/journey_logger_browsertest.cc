@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/payments/core/journey_logger.h"
@@ -15,6 +14,9 @@ namespace payments {
 class JourneyLoggerTest : public PaymentRequestPlatformBrowserTestBase {
  public:
   JourneyLoggerTest() : gpay_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  JourneyLoggerTest(const JourneyLoggerTest&) = delete;
+  JourneyLoggerTest& operator=(const JourneyLoggerTest&) = delete;
 
   ~JourneyLoggerTest() override = default;
 
@@ -55,8 +57,6 @@ class JourneyLoggerTest : public PaymentRequestPlatformBrowserTestBase {
   GURL main_frame_url_;
   GURL gpay_scope_url_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(JourneyLoggerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(JourneyLoggerTest, NoPaymentMethodSupported) {

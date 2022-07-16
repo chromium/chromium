@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller_impl.h"
-#include "base/macros.h"
 
 namespace views {
 class Widget;
@@ -26,6 +25,11 @@ class ASH_EXPORT LockScreenActionBackgroundControllerImplTestApi {
       LockScreenActionBackgroundControllerImpl* controller)
       : controller_(controller) {}
 
+  LockScreenActionBackgroundControllerImplTestApi(
+      const LockScreenActionBackgroundControllerImplTestApi&) = delete;
+  LockScreenActionBackgroundControllerImplTestApi& operator=(
+      const LockScreenActionBackgroundControllerImplTestApi&) = delete;
+
   ~LockScreenActionBackgroundControllerImplTestApi() = default;
 
   views::Widget* GetWidget() { return controller_->background_widget_; }
@@ -36,8 +40,6 @@ class ASH_EXPORT LockScreenActionBackgroundControllerImplTestApi {
 
  private:
   LockScreenActionBackgroundControllerImpl* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenActionBackgroundControllerImplTestApi);
 };
 
 }  // namespace ash

@@ -52,6 +52,21 @@ void InternalAuthenticatorAndroid::SetEffectiveOrigin(
                                                 origin.CreateJavaObject());
 }
 
+void InternalAuthenticatorAndroid::SetPaymentOptions(
+    blink::mojom::PaymentOptionsPtr payment) {
+  JNIEnv* env = AttachCurrentThread();
+  JavaRef<jobject>& obj = GetJavaObject();
+  DCHECK(!obj.is_null());
+
+  std::vector<uint8_t> byte_vector =
+      blink::mojom::PaymentOptions::Serialize(&payment);
+  ScopedJavaLocalRef<jobject> byte_buffer = ScopedJavaLocalRef<jobject>(
+      env, env->NewDirectByteBuffer(byte_vector.data(), byte_vector.size()));
+  base::android::CheckException(env);
+
+  Java_InternalAuthenticator_setPaymentOptions(env, obj, byte_buffer);
+}
+
 void InternalAuthenticatorAndroid::MakeCredential(
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     blink::mojom::Authenticator::MakeCredentialCallback callback) {

@@ -30,11 +30,8 @@ NetworkChangeNotifierFuchsia::NetworkChangeNotifierFuchsia(
       require_wlan_(require_wlan) {
   DCHECK(handle);
 
-  watcher_.set_error_handler(
-      [](zx_status_t status) {
-        ZX_LOG(FATAL, status)
-            << "Lost connection to fuchsia.net.interfaces/Watcher.";
-      });
+  watcher_.set_error_handler(base::LogFidlErrorAndExitProcess(
+      FROM_HERE, "fuchsia.net.interfaces.Watcher"));
 
   fuchsia::net::interfaces::WatcherSyncPtr watcher = handle.BindSync();
   absl::optional<internal::ExistingInterfaceProperties> interfaces =

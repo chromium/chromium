@@ -4,7 +4,9 @@
      found in the LICENSE file. -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.WebLayer.Settings" parent="Theme.BrowserUI">
+    <style name="Theme.WebLayer" parent="Theme.BrowserUI.DayNight" />
+
+    <style name="Theme.WebLayer.Settings" parent="Theme.WebLayer">
         <item name="preferenceTheme">@style/PreferenceTheme</item>
         <item name="alertDialogTheme">@style/Theme.Chromium.AlertDialog</item>
 
@@ -12,4 +14,7 @@
         <item name="android:textAppearanceListItem">@style/TextAppearance.TextLarge.Primary</item>
         <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
     </style>
+
+    <style name="ColorOverlay.WebLayer" parent="ColorOverlay.WebLayer.DayNight" />
+    <style name="ColorOverlay.WebLayer.DayNight" parent="ColorOverlay.BrowserUi" />
 </resources>

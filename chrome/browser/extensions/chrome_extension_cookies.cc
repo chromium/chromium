@@ -74,15 +74,23 @@ void ChromeExtensionCookies::CreateRestrictedCookieManager(
                                 isolation_info, std::move(receiver)));
 }
 
-void ChromeExtensionCookies::ClearCookies(const GURL& origin) {
+void ChromeExtensionCookies::ClearCookies(const GURL& origin,
+                                          base::OnceClosure done_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!io_data_)  // null after shutdown.
     return;
 
+  auto callback_wrapper = [](base::OnceClosure done_callback, uint32_t result) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                 std::move(done_callback));
+  };
   // Safe since |io_data_| is non-null so no IOData deletion is queued.
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&IOData::ClearCookies,
-                                base::Unretained(io_data_.get()), origin));
+      FROM_HERE,
+      base::BindOnce(
+          &IOData::ClearCookies, base::Unretained(io_data_.get()), origin,
+          base::BindOnce(callback_wrapper, std::move(done_callback))));
 }
 
 net::CookieStore* ChromeExtensionCookies::GetCookieStoreForTesting() {
@@ -116,20 +124,22 @@ void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
   restricted_cookie_managers_.Add(
       std::make_unique<network::RestrictedCookieManager>(
           network::mojom::RestrictedCookieManagerRole::SCRIPT,
-          GetOrCreateCookieStore(), &network_cookie_settings_, origin,
+          GetOrCreateCookieStore(), network_cookie_settings_, origin,
           isolation_info,
           /* null cookies_observer disables logging */
           mojo::NullRemote()),
       std::move(receiver));
 }
 
-void ChromeExtensionCookies::IOData::ClearCookies(const GURL& origin) {
+void ChromeExtensionCookies::IOData::ClearCookies(
+    const GURL& origin,
+    net::CookieStore::DeleteCallback done_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   net::CookieDeletionInfo delete_info;
   delete_info.host = origin.host();
   GetOrCreateCookieStore()->DeleteAllMatchingInfoAsync(
-      std::move(delete_info), net::CookieStore::DeleteCallback());
+      std::move(delete_info), std::move(done_callback));
 }
 
 void ChromeExtensionCookies::IOData::OnContentSettingChanged(
@@ -161,15 +171,13 @@ void ChromeExtensionCookies::IOData::UpdateNetworkCookieSettings() {
 void ChromeExtensionCookies::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsTypeSet content_type_set) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!io_data_)  // null after shutdown.
     return;
 
-  if (content_type != ContentSettingsType::COOKIES &&
-      content_type != ContentSettingsType::DEFAULT) {
+  if (!content_type_set.Contains(ContentSettingsType::COOKIES))
     return;
-  }
 
   ContentSettingsForOneType settings;
   HostContentSettingsMapFactory::GetForProfile(profile_)->GetSettingsForOneType(

@@ -22,6 +22,7 @@ from blinkpy.w3c.wpt_manifest import (
     WPTManifest, BASE_MANIFEST_NAME, MANIFEST_NAME)
 
 from blinkpy.web_tests.builder_list import BuilderList
+from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
 from blinkpy.web_tests.port.factory_mock import MockPortFactory
 
@@ -66,6 +67,12 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             'MOCK Try Win7': {
                 'port_name': 'test-win-win7',
                 'specifiers': ['Win7', 'Release'],
+                'is_try_builder': True,
+            },
+            'MOCK highdpi': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
+                'flag_specific': 'highdpi',
                 'is_try_builder': True,
             },
         })
@@ -433,6 +440,85 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 SimpleTestResult('PASS', 'FAIL', 'bug'),
                 test_name='external/wpt/webdriver/foo/a'), {'Failure'})
 
+    def test_remove_configurations(self):
+        host = self.mock_host()
+
+        initial_expectations = (
+            '# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.15 Mac11 Win Win7 Win10 ]\n'
+            + '# results: [ Timeout Crash Pass Failure Skip ]\n' +
+            'crbug.com/1234 test/foo.html [ Failure ]\n' +
+            'crbug.com/1235 [ Win ] test/bar.html [ Timeout ]\n')
+
+        final_expectations = (
+            '# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.15 Mac11 Win Win7 Win10 ]\n'
+            + '# results: [ Timeout Crash Pass Failure Skip ]\n' +
+            'crbug.com/1234 [ Linux ] test/foo.html [ Failure ]\n' +
+            'crbug.com/1234 [ Mac ] test/foo.html [ Failure ]\n' +
+            'crbug.com/1234 [ Win10 ] test/foo.html [ Failure ]\n' +
+            'crbug.com/1235 [ Win10 ] test/bar.html [ Timeout ]\n')
+
+        # Fill in an initial value for TestExpectations
+        expectations_path = \
+            host.port_factory.get().path_to_generic_test_expectations_file()
+        host.filesystem.write_text_file(expectations_path, initial_expectations)
+
+        updater = WPTExpectationsUpdater(host)
+        configs_to_remove = {
+            'test/foo.html': set(['win7']),
+            'test/bar.html': set(['win7'])
+        }
+        updater.remove_configurations(configs_to_remove)
+
+        value = host.filesystem.read_text_file(expectations_path)
+        self.assertMultiLineEqual(value, final_expectations)
+
+    def test_create_line_dict_for_flag_specific(self):
+        # In this example, there are three unexpected results for wpt tests.
+        # One of them has match results in generic test expectations,
+        # another one has non-match results, and the last one has no
+        # corresponding line in generic test expectations.
+        host = self.mock_host()
+        port = host.port_factory.get()
+
+        # Fill in an initial value for TestExpectations
+        expectations_path = port.path_to_generic_test_expectations_file()
+        content = (
+            "# results: [ Timeout Crash Pass Failure Skip ]\n"
+            "external/wpt/reftest.html [ Failure ]\n"
+            "external/wpt/test/path.html [ Failure ]\n")
+        host.filesystem.write_text_file(expectations_path, content)
+
+        updater = WPTExpectationsUpdater(host)
+
+        results = {
+            'external/wpt/reftest.html': {
+                tuple([DesktopConfig(port_name='one')]):
+                SimpleTestResult(
+                    expected='FAIL', actual='FAIL', bug='crbug.com/test'),
+            },
+            'external/wpt/test/path.html': {
+                tuple([DesktopConfig(port_name='one')]):
+                SimpleTestResult(
+                    expected='FAIL', actual='CRASH', bug='crbug.com/test'),
+            },
+            'external/wpt/test/zzzz.html': {
+                tuple([DesktopConfig(port_name='one')]):
+                SimpleTestResult(
+                    expected='PASS', actual='CRASH', bug='crbug.com/test'),
+            }
+        }
+        generic_expectations = TestExpectations(port)
+        line_dict, configs_to_remove = updater.create_line_dict_for_flag_specific(
+            results,
+            generic_expectations)
+        self.assertEqual(
+            line_dict, {
+                'external/wpt/test/path.html': [
+                    'crbug.com/test external/wpt/test/path.html [ Crash ]'],
+                'external/wpt/test/zzzz.html': [
+                    'crbug.com/test external/wpt/test/zzzz.html [ Crash ]']})
+        self.assertEqual(configs_to_remove, {})
+
     def test_create_line_dict_old_tests(self):
         # In this example, there are two failures that are not in wpt.
         updater = WPTExpectationsUpdater(self.mock_host())
@@ -446,7 +532,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     expected='FAIL', actual='PASS', bug='crbug.com/test'),
             }
         }
-        self.assertEqual(updater.create_line_dict(results), {})
+        line_dict, configs_to_remove = updater.create_line_dict(results)
+        self.assertEqual(line_dict, {})
+        self.assertEqual(configs_to_remove, {})
 
     def test_create_line_dict_new_tests(self):
         # In this example, there are three unexpected results for wpt tests.
@@ -472,8 +560,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     expected='FAIL', actual='PASS', bug='crbug.com/test'),
             },
         }
+        line_dict, configs_to_remove = updater.create_line_dict(results)
         self.assertEqual(
-            updater.create_line_dict(results), {
+            line_dict, {
                 'external/wpt/test/zzzz.html': [
                     'crbug.com/test [ Mac10.10 ] external/wpt/test/zzzz.html [ Failure ]'
                 ],
@@ -481,6 +570,11 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     'crbug.com/test [ Trusty ] virtual/foo/external/wpt/test/zzzz.html [ Pass ]',
                     'crbug.com/test [ Mac10.11 ] virtual/foo/external/wpt/test/zzzz.html [ Timeout ]',
                 ],
+            })
+        self.assertEqual(
+            configs_to_remove, {
+                'external/wpt/test/zzzz.html': set(['Mac10.10']),
+                'virtual/foo/external/wpt/test/zzzz.html': set(['Trusty', 'Mac10.11'])
             })
 
     def test_create_line_dict_with_manual_tests(self):
@@ -496,8 +590,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     expected='FAIL', actual='TIMEOUT', bug='crbug.com/test'),
             },
         }
+        line_dict, _ = updater.create_line_dict(results)
         self.assertEqual(
-            updater.create_line_dict(results), {
+            line_dict, {
                 'virtual/foo/external/wpt/test/aa-manual.html': [
                     'crbug.com/test [ Trusty ] virtual/foo/external/wpt/test/aa-manual.html [ Skip ]',
                     'crbug.com/test [ Mac10.11 ] virtual/foo/external/wpt/test/aa-manual.html [ Skip ]',
@@ -515,8 +610,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     expected='PASS', actual='FAIL', bug='crbug.com/test'),
             },
         }
+        line_dict, _ = updater.create_line_dict(results)
         self.assertEqual(
-            updater.create_line_dict(results), {
+            line_dict, {
                 'external/wpt/html/dom/interfaces.https.html?exclude=(Document.*|HTML.*)':
                 [
                     'crbug.com/test [ Trusty ] external/wpt/html/dom/interfaces.https.html?exclude=(Document.\*|HTML.\*) [ Failure ]',
@@ -549,7 +645,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(host)
         self.assertEqual(
             updater.skipped_specifiers('external/wpt/test.html'),
-            ['Precise', 'Trusty'])
+            ['Precise', 'Trusty', 'Trusty'])
 
     def test_specifiers_can_extend_to_all_platforms(self):
         host = self.mock_host()
@@ -785,7 +881,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             if '--diff-filter=D' in cmd:
                 return 'external/wpt/fake/file/deleted_path.html'
             if '--diff-filter=R' in cmd:
-                return 'C external/wpt/fake/some_test.html external/wpt/fake/new.html'
+                return 'C\texternal/wpt/fake/some_test.html\texternal/wpt/fake/new.html'
             return ''
 
         updater.git.run = _git_command_return_val
@@ -875,7 +971,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             if '--diff-filter=D' in cmd:
                 return 'external/wpt/fake/file/deleted_path.html'
             if '--diff-filter=R' in cmd:
-                return 'C external/wpt/fake/some_test.html external/wpt/fake/new.html'
+                return 'C\texternal/wpt/fake/some_test.html\texternal/wpt/fake/new.html'
             return ''
 
         updater.git.run = _git_command_return_val
@@ -1244,8 +1340,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         }
         tests_to_rebaseline, _ = updater.get_tests_to_rebaseline(results)
         self.assertEqual(tests_to_rebaseline, [])
+        line_dict, _ = updater.create_line_dict(results)
         self.assertEqual(
-            updater.create_line_dict(results), {
+            line_dict, {
                 'external/wpt/x-manual.html':
                 ['crbug.com/test external/wpt/x-manual.html [ Skip ]']
             })
@@ -1272,8 +1369,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater.configs_with_no_results = [
             DesktopConfig(port_name='test-mac-mac10.10')
         ]
+        line_dict, _ = updater.create_line_dict(results)
         self.assertEqual(
-            updater.create_line_dict(results), {
+            line_dict, {
                 'external/wpt/x.html': [
                     'crbug.com/test [ Linux ] external/wpt/x.html [ Failure ]',
                     'crbug.com/test [ Mac10.10 ] external/wpt/x.html [ Failure ]',
@@ -1318,6 +1416,30 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             ('# results: [ Failure ]\n'
              '# line below should exist in new file\n'
              'some/test/d.html [ Failure ]\n'))
+
+    def test_skip_slow_timeout_tests(self):
+        host = MockHost()
+        host.filesystem.write_text_file(
+            MOCK_WEB_TESTS + 'SlowTests',
+            ('# results: [ Slow ]\n'
+             'foo/slow_timeout.html [ Slow ]\n'
+             'bar/slow.html [ Slow ]\n'))
+        data = ('# results: [ Pass Failure Crash Timeout Skip ]\n'
+                'foo/failure.html [ Failure ]\n'
+                'foo/slow_timeout.html [ Timeout ]\n'
+                'bar/text.html [ Pass ]\n')
+        host.filesystem.write_text_file(
+            MOCK_WEB_TESTS + 'TestExpectations', data)
+        for path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
+            host.filesystem.write_text_file(path, '')
+        newdata = data.replace('foo/slow_timeout.html [ Timeout ]',
+                               'foo/slow_timeout.html [ Skip Timeout ]')
+        updater = WPTExpectationsUpdater(host)
+        rv = updater.skip_slow_timeout_tests(host.port_factory.get())
+        self.assertTrue(rv)
+        self.assertEqual(
+            newdata,
+            host.filesystem.read_text_file(MOCK_WEB_TESTS + 'TestExpectations'))
 
     def test_cleanup_all_test_expectations_files(self):
         host = MockHost()
@@ -1394,8 +1516,9 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     expected='PASS', actual='TEXT', bug='crbug.com/test')
             }
         }
+        line_dict, _ = updater.create_line_dict(results)
         self.assertEqual(
-            updater.create_line_dict(results), {
+            line_dict, {
                 'external/wpt/x.html': [
                     'crbug.com/test [ Linux ] external/wpt/x.html [ Failure ]',
                     'crbug.com/test [ Mac ] external/wpt/x.html [ Failure ]',

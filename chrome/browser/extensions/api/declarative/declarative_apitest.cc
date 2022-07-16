@@ -129,7 +129,8 @@ class DeclarativeApiTestWithOriginPolicy : public DeclarativeApiTest {
  protected:
   std::u16string NavigateToAndReturnTitle(const char* url) {
     EXPECT_TRUE(server());
-    ui_test_utils::NavigateToURL(browser(), GURL(server()->GetURL(url)));
+    EXPECT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(server()->GetURL(url))));
     std::u16string title;
     ui_test_utils::GetCurrentTabTitle(browser(), &title);
     return title;
@@ -194,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, PRE_PersistRules) {
 IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, PersistRules) {
   // Wait for declarative rules to be set up from PRE test.
   profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
-  ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl)));
   EXPECT_EQ(kTestTitle, GetTitle());
 }
 
@@ -218,20 +219,20 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, ExtensionLifetimeRulesHandling) {
   profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   std::string extension_id(extension->id());
   ASSERT_TRUE(ready.WaitUntilSatisfied());
-  ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl)));
   EXPECT_EQ(kTestTitle, GetTitle());
   EXPECT_EQ(1u, NumberOfRegisteredRules(extension_id));
 
   // 2. Disable the extension. Rules are no longer active, but are still
   // registered.
   DisableExtension(extension_id);
-  ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl)));
   EXPECT_NE(kTestTitle, GetTitle());
   EXPECT_EQ(1u, NumberOfRegisteredRules(extension_id));
 
   // 3. Enable the extension again. Rules are active again.
   EnableExtension(extension_id);
-  ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl)));
   EXPECT_EQ(kTestTitle, GetTitle());
   EXPECT_EQ(1u, NumberOfRegisteredRules(extension_id));
 
@@ -248,19 +249,19 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, ExtensionLifetimeRulesHandling) {
   EXPECT_TRUE(UpdateExtension(
       extension_id, ext_dir.Pack(), 0 /*no new installed extension*/));
   ASSERT_TRUE(ready_after_update.WaitUntilSatisfied());
-  ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl)));
   EXPECT_EQ(kTestTitle, GetTitle());
   EXPECT_EQ(1u, NumberOfRegisteredRules(extension_id));
 
   // 5. Reload the extension. Rules remain active.
   ReloadExtension(extension_id);
-  ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl)));
   EXPECT_EQ(kTestTitle, GetTitle());
   EXPECT_EQ(1u, NumberOfRegisteredRules(extension_id));
 
   // 6. Uninstall the extension. Rules are gone.
   UninstallExtension(extension_id);
-  ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl)));
   EXPECT_NE(kTestTitle, GetTitle());
   EXPECT_EQ(0u, NumberOfRegisteredRules(extension_id));
 }
@@ -287,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, NoTracesAfterUninstalling) {
   profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   std::string extension_id(extension->id());
   ASSERT_TRUE(ready.WaitUntilSatisfied());
-  ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl)));
   EXPECT_EQ(kTestTitle, GetTitle());
   EXPECT_EQ(1u, NumberOfRegisteredRules(extension_id));
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser()->profile());
@@ -297,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, NoTracesAfterUninstalling) {
   UninstallExtension(extension_id);
   // Wait for declarative rules to be removed.
   profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
-  ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl)));
   EXPECT_NE(kTestTitle, GetTitle());
   EXPECT_EQ(0u, NumberOfRegisteredRules(extension_id));
   EXPECT_FALSE(extension_prefs->HasPrefForExtension(extension_id));

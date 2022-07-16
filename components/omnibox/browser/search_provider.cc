@@ -627,8 +627,7 @@ void SearchProvider::Run(bool query_is_private) {
     }
     default_loader_ = CreateSuggestLoader(
         providers_.GetDefaultProviderURL(), input_,
-        timeout_ms > 0 ? base::TimeDelta::FromMilliseconds(timeout_ms)
-                       : base::TimeDelta());
+        timeout_ms > 0 ? base::Milliseconds(timeout_ms) : base::TimeDelta());
   }
   keyword_loader_ = CreateSuggestLoader(providers_.GetKeywordProviderURL(),
                                         keyword_input_, base::TimeDelta());
@@ -697,7 +696,7 @@ base::TimeDelta SearchProvider::GetSuggestQueryDelay() const {
   OmniboxFieldTrial::GetSuggestPollingStrategy(&from_last_keystroke,
                                                &polling_delay_ms);
 
-  base::TimeDelta delay(base::TimeDelta::FromMilliseconds(polling_delay_ms));
+  base::TimeDelta delay(base::Milliseconds(polling_delay_ms));
   if (from_last_keystroke)
     return delay;
 
@@ -984,7 +983,7 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
 
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
-  if (timeout > base::TimeDelta())
+  if (timeout.is_positive())
     loader->SetTimeoutDuration(timeout);
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       client()->GetURLLoaderFactory().get(),

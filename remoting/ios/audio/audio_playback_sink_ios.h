@@ -18,6 +18,10 @@ namespace remoting {
 class AudioPlaybackSinkIos : public AudioPlaybackSink {
  public:
   AudioPlaybackSinkIos();
+
+  AudioPlaybackSinkIos(const AudioPlaybackSinkIos&) = delete;
+  AudioPlaybackSinkIos& operator=(const AudioPlaybackSinkIos&) = delete;
+
   ~AudioPlaybackSinkIos() override;
 
   // AudioPlaybackSink implementations.
@@ -90,8 +94,6 @@ class AudioPlaybackSinkIos : public AudioPlaybackSink {
   State state_ = State::STOPPED;
 
   base::WeakPtrFactory<AudioPlaybackSinkIos> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPlaybackSinkIos);
 };
 
 }  // namespace remoting

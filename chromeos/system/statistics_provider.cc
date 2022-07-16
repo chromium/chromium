@@ -20,7 +20,6 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/path_service.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/atomic_flag.h"
@@ -28,9 +27,10 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -124,8 +124,8 @@ bool JoinListValuesToString(const base::Value& dictionary,
   std::string buffer;
   bool first = true;
   for (const auto& v : list_value->GetList()) {
-    std::string value;
-    if (!v.GetAsString(&value))
+    const std::string* value = v.GetIfString();
+    if (!value)
       return false;
 
     if (first)
@@ -133,7 +133,7 @@ bool JoinListValuesToString(const base::Value& dictionary,
     else
       buffer += ',';
 
-    buffer += value;
+    buffer += *value;
   }
   if (result != nullptr)
     *result = buffer;
@@ -251,6 +251,9 @@ class StatisticsProviderImpl : public StatisticsProvider {
 
   static StatisticsProviderImpl* GetInstance();
 
+  StatisticsProviderImpl(const StatisticsProviderImpl&) = delete;
+  StatisticsProviderImpl& operator=(const StatisticsProviderImpl&) = delete;
+
  private:
   typedef std::map<std::string, bool> MachineFlags;
   typedef bool (*RegionDataExtractor)(const base::Value&, std::string*);
@@ -306,8 +309,6 @@ class StatisticsProviderImpl : public StatisticsProvider {
   std::vector<
       std::pair<base::OnceClosure, scoped_refptr<base::SequencedTaskRunner>>>
       statistics_loaded_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatisticsProviderImpl);
 };
 
 void StatisticsProviderImpl::SignalStatisticsLoaded() {
@@ -323,8 +324,7 @@ void StatisticsProviderImpl::SignalStatisticsLoaded() {
     // and unblock pending WaitForStatisticsLoaded() calls.
     statistics_loaded_.Signal();
 
-    // TODO(crbug.com/1123153): Downgrade to VLOG(1) after the bug is fixed.
-    LOG(WARNING) << "Finished loading statistics.";
+    VLOG(1) << "Finished loading statistics.";
   }
 
   // Schedule callbacks that were in |statistics_loaded_callbacks_|.
@@ -341,7 +341,7 @@ bool StatisticsProviderImpl::WaitForStatisticsLoaded() {
   // happen except during OOBE.
   base::Time start_time = base::Time::Now();
   base::ScopedAllowBaseSyncPrimitives allow_wait;
-  statistics_loaded_.TimedWait(base::TimeDelta::FromSeconds(kTimeoutSecs));
+  statistics_loaded_.TimedWait(base::Seconds(kTimeoutSecs));
 
   base::TimeDelta dtime = base::Time::Now() - start_time;
   if (statistics_loaded_.IsSignaled()) {
@@ -385,25 +385,11 @@ bool StatisticsProviderImpl::GetMachineStatistic(const std::string& name,
     return false;
   }
 
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  std::string cros_regions_mode;
-  if (command_line->HasSwitch(chromeos::switches::kCrosRegionsMode)) {
-    cros_regions_mode =
-        command_line->GetSwitchValueASCII(chromeos::switches::kCrosRegionsMode);
-  }
-
-  // These two modes override existing machine statistics keys.
-  // By default (cros_regions_mode is empty), the same keys are emulated if
-  // they do not exist in machine statistics.
-  if (cros_regions_mode == chromeos::switches::kCrosRegionsModeOverride ||
-      cros_regions_mode == chromeos::switches::kCrosRegionsModeHide) {
-    if (GetRegionalInformation(name, result))
-      return true;
-  }
-
-  if (cros_regions_mode == chromeos::switches::kCrosRegionsModeHide &&
-      GetRegionalDataExtractor(name)) {
-    return false;
+  // Test region should override VPD values.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kCrosRegion) &&
+      GetRegionalInformation(name, result)) {
+    return true;
   }
 
   NameValuePairsParser::NameValueMap::iterator iter = machine_info_.find(name);
@@ -622,8 +608,7 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
     region_ =
         command_line->GetSwitchValueASCII(chromeos::switches::kCrosRegion);
     machine_info_[kRegionKey] = region_;
-    // TODO(crbug.com/1123153): Downgrade to VLOG(1) after the bug is fixed.
-    LOG(WARNING) << "CrOS region set to '" << region_ << "'";
+    VLOG(1) << "CrOS region set to '" << region_ << "'";
   }
 
   LoadRegionsFile(base::FilePath(kCrosRegions));
@@ -676,8 +661,7 @@ void StatisticsProviderImpl::LoadOemManifestFromFile(
   machine_flags_[kOemKeyboardDrivenOobeKey] = oem_manifest.keyboard_driven_oobe;
 
   oem_manifest_loaded_ = true;
-  // TODO(crbug.com/1123153): Downgrade to VLOG(1) after the bug is fixed.
-  LOG(WARNING) << "Loaded OEM Manifest statistics from " << file.value();
+  VLOG(1) << "Loaded OEM Manifest statistics from " << file.value();
 }
 
 StatisticsProviderImpl* StatisticsProviderImpl::GetInstance() {

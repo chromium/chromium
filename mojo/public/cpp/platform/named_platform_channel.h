@@ -66,6 +66,10 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
 
   NamedPlatformChannel(const Options& options);
   NamedPlatformChannel(NamedPlatformChannel&& other);
+
+  NamedPlatformChannel(const NamedPlatformChannel&) = delete;
+  NamedPlatformChannel& operator=(const NamedPlatformChannel&) = delete;
+
   ~NamedPlatformChannel();
 
   NamedPlatformChannel& operator=(NamedPlatformChannel&& other);
@@ -114,8 +118,6 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
 
   ServerName server_name_;
   PlatformChannelServerEndpoint server_endpoint_;
-
-  DISALLOW_COPY_AND_ASSIGN(NamedPlatformChannel);
 };
 
 }  // namespace mojo

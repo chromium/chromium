@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/infobars/android/confirm_infobar.h"
 namespace autofill {
 class AutofillOfferNotificationInfoBarDelegateMobile;

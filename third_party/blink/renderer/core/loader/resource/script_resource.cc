@@ -32,6 +32,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_memory_allocator_dump.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
@@ -111,9 +113,15 @@ ScriptResource::ScriptResource(
                    ResourceType::kScript,
                    options,
                    decoder_options),
+      consume_cache_state_(ConsumeCacheState::kWaitingForCache),
       initial_request_script_type_(initial_request_script_type) {
   static bool script_streaming_enabled =
       base::FeatureList::IsEnabled(features::kScriptStreaming);
+  // TODO(leszeks): This could be static to avoid the cost of feature flag
+  // lookup on every ScriptResource creation, but it has to be re-calculated for
+  // unit tests.
+  bool consume_code_cache_off_thread_enabled =
+      base::FeatureList::IsEnabled(features::kConsumeCodeCacheOffThread);
 
   if (!script_streaming_enabled) {
     DisableStreaming(
@@ -123,6 +131,13 @@ ScriptResource::ScriptResource(
   } else if (!Url().ProtocolIsInHTTPFamily()) {
     DisableStreaming(ScriptStreamer::NotStreamingReason::kNotHTTP);
   }
+
+  if (!consume_code_cache_off_thread_enabled) {
+    DisableOffThreadConsumeCache();
+  } else if (initial_request_script_type == mojom::blink::ScriptType::kModule) {
+    // TODO(leszeks): Enable off-thread cache consumption for modules.
+    DisableOffThreadConsumeCache();
+  }
 }
 
 ScriptResource::~ScriptResource() = default;
@@ -130,6 +145,7 @@ ScriptResource::~ScriptResource() = default;
 void ScriptResource::Trace(Visitor* visitor) const {
   visitor->Trace(streamer_);
   visitor->Trace(cached_metadata_handler_);
+  visitor->Trace(cache_consumer_);
   TextResource::Trace(visitor);
 }
 
@@ -198,13 +214,44 @@ void ScriptResource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
   if (cached_metadata_handler_) {
     cached_metadata_handler_->SetSerializedCachedMetadata(std::move(data));
   }
+  if (consume_cache_state_ == ConsumeCacheState::kWaitingForCache &&
+      V8CodeCache::HasCodeCache(
+          cached_metadata_handler_,
+          // It's safe to access unchecked cached metadata here, because the
+          // ScriptCacheConsumer result will be ignored if the cached metadata
+          // check fails later.
+          SingleCachedMetadataHandler::kAllowUnchecked)) {
+    cache_consumer_ = MakeGarbageCollected<ScriptCacheConsumer>(
+        V8CodeCache::GetCachedMetadata(
+            CacheHandler(), SingleCachedMetadataHandler::kAllowUnchecked),
+        Url(), InspectorId());
+    AdvanceConsumeCacheState(ConsumeCacheState::kRunningOffThread);
+  } else {
+    DisableOffThreadConsumeCache();
+  }
+}
+
+bool ScriptResource::CodeCacheHashRequired() const {
+  if (cached_metadata_handler_) {
+    bool result = cached_metadata_handler_->HashRequired();
+    if (result) {
+      DCHECK(SchemeRegistry::SchemeSupportsCodeCacheWithHashing(
+          GetResourceRequest().Url().Protocol()));
+    }
+    return result;
+  }
+  return false;
 }
 
 void ScriptResource::DestroyDecodedDataIfPossible() {
   if (cached_metadata_handler_) {
+    // Since we are clearing locally we don't need a CodeCacheHost interface
+    // here. It just clears the data in the cached_metadata_handler.
     cached_metadata_handler_->ClearCachedMetadata(
-        CachedMetadataHandler::kClearLocally);
+        /*code_cache_host*/ nullptr, CachedMetadataHandler::kClearLocally);
   }
+  cache_consumer_ = nullptr;
+  DisableOffThreadConsumeCache();
 }
 
 void ScriptResource::DestroyDecodedDataForFailedRevalidation() {
@@ -213,7 +260,9 @@ void ScriptResource::DestroyDecodedDataForFailedRevalidation() {
   DCHECK(!streamer_);
   DCHECK_EQ(streaming_state_, StreamingState::kStreamingDisabled);
   SetDecodedSize(0);
+  DCHECK(!cache_consumer_);
   cached_metadata_handler_ = nullptr;
+  DisableOffThreadConsumeCache();
 }
 
 void ScriptResource::SetRevalidatingRequest(
@@ -259,16 +308,31 @@ void ScriptResource::ResponseReceived(const ResourceResponse& response) {
   }
 
   cached_metadata_handler_ = nullptr;
-  // Currently we support the metadata caching only for HTTP family.
-  if (GetResourceRequest().Url().ProtocolIsInHTTPFamily() &&
-      response.CurrentRequestUrl().ProtocolIsInHTTPFamily()) {
-    cached_metadata_handler_ =
-        MakeGarbageCollected<ScriptCachedMetadataHandler>(
-            Encoding(), CachedMetadataSender::Create(
-                            response, mojom::blink::CodeCacheType::kJavascript,
-                            GetResourceRequest().RequestorOrigin()));
+  // Currently we support the metadata caching only for HTTP family and any
+  // schemes defined by SchemeRegistry as requiring a hash check.
+  bool http_family = GetResourceRequest().Url().ProtocolIsInHTTPFamily() &&
+                     response.CurrentRequestUrl().ProtocolIsInHTTPFamily();
+  bool code_cache_with_hashing_supported =
+      SchemeRegistry::SchemeSupportsCodeCacheWithHashing(
+          GetResourceRequest().Url().Protocol()) &&
+      GetResourceRequest().Url().ProtocolIs(
+          response.CurrentRequestUrl().Protocol());
+  bool code_cache_supported = http_family || code_cache_with_hashing_supported;
+  if (code_cache_supported) {
+    std::unique_ptr<CachedMetadataSender> sender = CachedMetadataSender::Create(
+        response, mojom::blink::CodeCacheType::kJavascript,
+        GetResourceRequest().RequestorOrigin());
+    if (code_cache_with_hashing_supported) {
+      cached_metadata_handler_ =
+          MakeGarbageCollected<ScriptCachedMetadataHandlerWithHashing>(
+              Encoding(), std::move(sender));
+    } else {
+      cached_metadata_handler_ =
+          MakeGarbageCollected<ScriptCachedMetadataHandler>(Encoding(),
+                                                            std::move(sender));
+    }
   }
-}  // namespace blink
+}
 
 void ScriptResource::ResponseBodyReceived(
     ResponseBodyLoaderDrainableInterface& body_loader,
@@ -397,6 +461,59 @@ void ScriptResource::CheckStreamingState() const {
       CHECK(!streamer_);
       CHECK_NE(no_streamer_reason_,
                ScriptStreamer::NotStreamingReason::kInvalid);
+      break;
+  }
+}
+
+ScriptCacheConsumer* ScriptResource::TakeCacheConsumer() {
+  CHECK(IsLoaded());
+  CheckConsumeCacheState();
+  if (!cache_consumer_)
+    return nullptr;
+  CHECK_EQ(consume_cache_state_, ConsumeCacheState::kRunningOffThread);
+
+  ScriptCacheConsumer* cache_consumer = cache_consumer_;
+  // A second use of the cache consumer is not possible, so we null it out and
+  // disable off-thread cache consumption for subsequent uses.
+  cache_consumer_ = nullptr;
+  DisableOffThreadConsumeCache();
+  return cache_consumer;
+}
+
+void ScriptResource::DisableOffThreadConsumeCache() {
+  AdvanceConsumeCacheState(ConsumeCacheState::kOffThreadConsumeCacheDisabled);
+}
+
+void ScriptResource::AdvanceConsumeCacheState(ConsumeCacheState new_state) {
+  switch (consume_cache_state_) {
+    case ConsumeCacheState::kWaitingForCache:
+      CHECK(new_state == ConsumeCacheState::kRunningOffThread ||
+            new_state == ConsumeCacheState::kOffThreadConsumeCacheDisabled);
+      break;
+    case ConsumeCacheState::kRunningOffThread:
+      CHECK_EQ(new_state, ConsumeCacheState::kOffThreadConsumeCacheDisabled);
+      break;
+    case ConsumeCacheState::kOffThreadConsumeCacheDisabled:
+      CHECK_EQ(new_state, ConsumeCacheState::kOffThreadConsumeCacheDisabled);
+      break;
+  }
+
+  consume_cache_state_ = new_state;
+  CheckConsumeCacheState();
+}
+
+void ScriptResource::CheckConsumeCacheState() const {
+  // TODO(leszeks): Eventually convert these CHECKs into DCHECKs once the logic
+  // is a bit more baked in.
+  switch (consume_cache_state_) {
+    case ConsumeCacheState::kWaitingForCache:
+      CHECK(!cache_consumer_);
+      break;
+    case ConsumeCacheState::kRunningOffThread:
+      CHECK(cache_consumer_);
+      break;
+    case ConsumeCacheState::kOffThreadConsumeCacheDisabled:
+      CHECK(!cache_consumer_);
       break;
   }
 }

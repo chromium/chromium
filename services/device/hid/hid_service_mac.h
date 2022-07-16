@@ -14,7 +14,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_ionotificationportref.h"
 #include "base/mac/scoped_ioobject.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "services/device/hid/hid_service.h"
@@ -24,10 +23,13 @@ namespace device {
 class HidServiceMac : public HidService {
  public:
   HidServiceMac();
+  HidServiceMac(const HidServiceMac&) = delete;
+  HidServiceMac& operator=(const HidServiceMac&) = delete;
   ~HidServiceMac() override;
 
   void Connect(const std::string& device_id,
                bool allow_protected_reports,
+               bool allow_fido_reports,
                ConnectCallback connect) override;
   base::WeakPtr<HidService> GetWeakPtr() override;
 
@@ -36,6 +38,7 @@ class HidServiceMac : public HidService {
       scoped_refptr<HidDeviceInfo> device_info);
   void DeviceOpened(scoped_refptr<HidDeviceInfo> device_info,
                     bool allow_protected_reports,
+                    bool allow_fido_reports,
                     ConnectCallback callback,
                     base::ScopedCFTypeRef<IOHIDDeviceRef> hid_device);
 
@@ -52,8 +55,6 @@ class HidServiceMac : public HidService {
   base::mac::ScopedIOObject<io_iterator_t> devices_removed_iterator_;
 
   base::WeakPtrFactory<HidServiceMac> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(HidServiceMac);
 };
 
 }  // namespace device

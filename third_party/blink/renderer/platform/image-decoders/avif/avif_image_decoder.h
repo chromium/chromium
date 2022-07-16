@@ -22,7 +22,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   AVIFImageDecoder(AlphaOption,
                    HighBitDepthDecodingOption,
                    const ColorBehavior&,
-                   size_t max_decoded_bytes,
+                   wtf_size_t max_decoded_bytes,
                    AnimationOption);
   AVIFImageDecoder(const AVIFImageDecoder&) = delete;
   AVIFImageDecoder& operator=(const AVIFImageDecoder&) = delete;
@@ -34,13 +34,13 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   void OnSetData(SegmentReader* data) override;
   cc::YUVSubsampling GetYUVSubsampling() const override;
   IntSize DecodedYUVSize(cc::YUVIndex) const override;
-  size_t DecodedYUVWidthBytes(cc::YUVIndex) const override;
+  wtf_size_t DecodedYUVWidthBytes(cc::YUVIndex) const override;
   SkYUVColorSpace GetYUVColorSpace() const override;
   uint8_t GetYUVBitDepth() const override;
   void DecodeToYUV() override;
   int RepetitionCount() const override;
-  bool FrameIsReceivedAtIndex(size_t) const override;
-  base::TimeDelta FrameDurationAtIndex(size_t) const override;
+  bool FrameIsReceivedAtIndex(wtf_size_t) const override;
+  base::TimeDelta FrameDurationAtIndex(wtf_size_t) const override;
   bool ImageHasBothStillAndAnimatedSubImages() const override;
 
   // Returns true if the data in fast_reader begins with a valid FileTypeBox
@@ -60,10 +60,10 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
 
   // ImageDecoder:
   void DecodeSize() override;
-  size_t DecodeFrameCount() override;
-  void InitializeNewFrame(size_t) override;
-  void Decode(size_t) override;
-  bool CanReusePreviousFrameBuffer(size_t) const override;
+  wtf_size_t DecodeFrameCount() override;
+  void InitializeNewFrame(wtf_size_t) override;
+  void Decode(wtf_size_t) override;
+  bool CanReusePreviousFrameBuffer(wtf_size_t) const override;
 
   // Implements avifIOReadFunc, the |read| function in the avifIO struct.
   static avifResult ReadFromSegmentReader(avifIO* io,
@@ -78,7 +78,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   // Decodes the frame at index |index| and checks if the frame's size, bit
   // depth, and YUV format matches those reported by the container. The decoded
   // frame is available in decoder_->image.
-  avifResult DecodeImage(size_t index);
+  avifResult DecodeImage(wtf_size_t index);
 
   // Updates or creates |color_transform_| for YUV-to-RGB conversion.
   void UpdateColorTransform(const gfx::ColorSpace& frame_cs, int bit_depth);
@@ -97,9 +97,10 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   bool decode_to_half_float_ = false;
   uint8_t chroma_shift_x_ = 0;
   uint8_t chroma_shift_y_ = 0;
+  bool progressive_ = false;
   // The YUV format from the container.
   avifPixelFormat avif_yuv_format_ = AVIF_PIXEL_FORMAT_NONE;
-  size_t decoded_frame_count_ = 0;
+  wtf_size_t decoded_frame_count_ = 0;
   SkYUVColorSpace yuv_color_space_ = SkYUVColorSpace::kIdentity_SkYUVColorSpace;
   std::unique_ptr<avifDecoder, void (*)(avifDecoder*)> decoder_{nullptr,
                                                                 nullptr};

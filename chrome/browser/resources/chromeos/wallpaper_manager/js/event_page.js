@@ -230,7 +230,13 @@ chrome.app.runtime.onLaunched.addListener(function() {
   });
 });
 
+// TODO(qasid): run git cl format --js to indent this appropriately. Didn't do
+// so the first time to make the diff easier to review.
 chrome.syncFileSystem.onFileStatusChanged.addListener(function(detail) {
+chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
+  if (swaEnabled)
+    return;
+
   WallpaperUtil.enabledSyncThemesCallback(function(syncEnabled) {
     if (!syncEnabled)
       return;
@@ -265,8 +271,13 @@ chrome.syncFileSystem.onFileStatusChanged.addListener(function(detail) {
     }
   });
 });
+});
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
+chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
+  if (swaEnabled)
+    return;
+
   WallpaperUtil.enabledSyncThemesCallback(function(syncEnabled) {
     var updateDailyRefreshStates = key => {
       if (!changes[key])
@@ -458,13 +469,23 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
     }
   });
 });
+});
 
 chrome.alarms.onAlarm.addListener(function() {
+chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
+  if (swaEnabled)
+    return;
+
   SurpriseWallpaper.getInstance().next();
+});
 });
 
 chrome.wallpaperPrivate.onWallpaperChangedBy3rdParty.addListener(function(
     wallpaper, thumbnail, layout, appName) {
+chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
+  if (swaEnabled)
+    return;
+
   WallpaperUtil.saveToLocalStorage(
       Constants.AccessLocalSurpriseMeEnabledKey, false, function() {
         WallpaperUtil.saveToSyncStorage(
@@ -489,10 +510,16 @@ chrome.wallpaperPrivate.onWallpaperChangedBy3rdParty.addListener(function(
       wallpaperPickerWindow.contentWindow.dispatchEvent(event);
     }
 });
+});
 
 chrome.wallpaperPrivate.onClosePreviewWallpaper.addListener(function() {
+chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
+  if (swaEnabled)
+    return;
+
   if (wallpaperPickerWindow) {
     var event = new CustomEvent(Constants.ClosePreviewWallpaper);
     wallpaperPickerWindow.contentWindow.dispatchEvent(event);
   }
+});
 });

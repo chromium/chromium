@@ -41,7 +41,7 @@ TEST_F(PrefetchProxyOriginDeciderTest, NegativeIgnored) {
   GURL url("http://foo.com");
 
   auto decider = NewDecider();
-  decider->ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(-1));
+  decider->ReportOriginRetryAfter(url, base::Seconds(-1));
   EXPECT_TRUE(decider->IsOriginOutsideRetryAfterWindow(url));
 }
 
@@ -54,13 +54,12 @@ TEST_F(PrefetchProxyOriginDeciderTest, MaxCap) {
 
   auto decider = NewDecider();
 
-  decider->ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(15));
+  decider->ReportOriginRetryAfter(url, base::Seconds(15));
   EXPECT_FALSE(decider->IsOriginOutsideRetryAfterWindow(url));
   histogram_tester()->ExpectUniqueTimeSample(
-      "PrefetchProxy.Prefetch.Mainframe.RetryAfter",
-      base::TimeDelta::FromSeconds(15), 1);
+      "PrefetchProxy.Prefetch.Mainframe.RetryAfter", base::Seconds(15), 1);
 
-  clock()->Advance(base::TimeDelta::FromSeconds(11));
+  clock()->Advance(base::Seconds(11));
   EXPECT_TRUE(decider->IsOriginOutsideRetryAfterWindow(url));
 }
 
@@ -69,14 +68,13 @@ TEST_F(PrefetchProxyOriginDeciderTest, WaitsForDelta) {
 
   auto decider = NewDecider();
 
-  decider->ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(15));
+  decider->ReportOriginRetryAfter(url, base::Seconds(15));
   histogram_tester()->ExpectUniqueTimeSample(
-      "PrefetchProxy.Prefetch.Mainframe.RetryAfter",
-      base::TimeDelta::FromSeconds(15), 1);
+      "PrefetchProxy.Prefetch.Mainframe.RetryAfter", base::Seconds(15), 1);
 
   for (size_t i = 0; i <= 15; i++) {
     EXPECT_FALSE(decider->IsOriginOutsideRetryAfterWindow(url));
-    clock()->Advance(base::TimeDelta::FromSeconds(1));
+    clock()->Advance(base::Seconds(1));
   }
 
   EXPECT_TRUE(decider->IsOriginOutsideRetryAfterWindow(url));
@@ -85,11 +83,9 @@ TEST_F(PrefetchProxyOriginDeciderTest, WaitsForDelta) {
 TEST_F(PrefetchProxyOriginDeciderTest, ByOrigin) {
   auto decider = NewDecider();
 
-  decider->ReportOriginRetryAfter(GURL("http://foo.com"),
-                                  base::TimeDelta::FromSeconds(1));
+  decider->ReportOriginRetryAfter(GURL("http://foo.com"), base::Seconds(1));
   histogram_tester()->ExpectUniqueTimeSample(
-      "PrefetchProxy.Prefetch.Mainframe.RetryAfter",
-      base::TimeDelta::FromSeconds(1), 1);
+      "PrefetchProxy.Prefetch.Mainframe.RetryAfter", base::Seconds(1), 1);
 
   // Any url for the origin should be ineligible.
   for (const GURL& url : {
@@ -117,10 +113,9 @@ TEST_F(PrefetchProxyOriginDeciderTest, Clear) {
 
   auto decider = NewDecider();
 
-  decider->ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(1));
+  decider->ReportOriginRetryAfter(url, base::Seconds(1));
   histogram_tester()->ExpectUniqueTimeSample(
-      "PrefetchProxy.Prefetch.Mainframe.RetryAfter",
-      base::TimeDelta::FromSeconds(1), 1);
+      "PrefetchProxy.Prefetch.Mainframe.RetryAfter", base::Seconds(1), 1);
   EXPECT_FALSE(decider->IsOriginOutsideRetryAfterWindow(url));
 
   decider->OnBrowsingDataCleared();
@@ -132,20 +127,17 @@ TEST_F(PrefetchProxyOriginDeciderTest, PersistentPrefs) {
     auto decider = NewDecider();
 
     decider->ReportOriginRetryAfter(GURL("http://expired.com"),
-                                    base::TimeDelta::FromSeconds(1));
-    decider->ReportOriginRetryAfter(GURL("http://foo.com"),
-                                    base::TimeDelta::FromSeconds(3));
+                                    base::Seconds(1));
+    decider->ReportOriginRetryAfter(GURL("http://foo.com"), base::Seconds(3));
     histogram_tester()->ExpectTimeBucketCount(
-        "PrefetchProxy.Prefetch.Mainframe.RetryAfter",
-        base::TimeDelta::FromSeconds(1), 1);
+        "PrefetchProxy.Prefetch.Mainframe.RetryAfter", base::Seconds(1), 1);
     histogram_tester()->ExpectTimeBucketCount(
-        "PrefetchProxy.Prefetch.Mainframe.RetryAfter",
-        base::TimeDelta::FromSeconds(3), 1);
+        "PrefetchProxy.Prefetch.Mainframe.RetryAfter", base::Seconds(3), 1);
     histogram_tester()->ExpectTotalCount(
         "PrefetchProxy.Prefetch.Mainframe.RetryAfter", 2);
   }
 
-  clock()->Advance(base::TimeDelta::FromSeconds(2));
+  clock()->Advance(base::Seconds(2));
 
   {
     auto decider = NewDecider();

@@ -49,18 +49,9 @@ Polymer({
     fileSavedTextContent_: String,
 
     /** @private {boolean} */
-    scanAppMediaLinkEnabled_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('scanAppMediaLinkEnabled');
-      }
-    },
-
-    /** @private {boolean} */
     showEditButton_: {
       type: Boolean,
-      computed:
-          'computeShowEditButton_(scanAppMediaLinkEnabled_, selectedFileType)',
+      computed: 'computeShowEditButton_(selectedFileType)',
     },
 
     /** @private {string} */
@@ -157,14 +148,13 @@ Polymer({
 
   /** @private */
   computeShowEditButton_() {
-    return this.scanAppMediaLinkEnabled_ &&
-        this.selectedFileType !==
+    return this.selectedFileType !==
         ash.scanning.mojom.FileType.kPdf.toString();
   },
 
   /** @private */
   openMediaApp_() {
-    assert(this.scanAppMediaLinkEnabled_ && this.scannedFilePaths.length !== 0);
+    assert(this.scannedFilePaths.length !== 0);
 
     this.browserProxy_.recordScanCompleteAction(
         ScanCompleteAction.MEDIA_APP_OPENED);

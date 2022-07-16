@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
@@ -81,6 +80,9 @@ class TestMetricCollector : public MetricCollector {
   explicit TestMetricCollector(const CollectionParams& collection_params)
       : MetricCollector("Test", collection_params) {}
 
+  TestMetricCollector(const TestMetricCollector&) = delete;
+  TestMetricCollector& operator=(const TestMetricCollector&) = delete;
+
   const char* ToolName() const override { return "Test"; }
   base::WeakPtr<MetricCollector> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
@@ -109,13 +111,10 @@ class TestMetricCollector : public MetricCollector {
 
  private:
   base::WeakPtrFactory<TestMetricCollector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestMetricCollector);
 };
 
-const base::TimeDelta kPeriodicCollectionInterval =
-    base::TimeDelta::FromHours(1);
-const base::TimeDelta kMaxCollectionDelay = base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kPeriodicCollectionInterval = base::Hours(1);
+const base::TimeDelta kMaxCollectionDelay = base::Seconds(1);
 
 }  // namespace
 
@@ -124,6 +123,9 @@ class MetricCollectorTest : public testing::Test {
   MetricCollectorTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         perf_data_proto_(GetExamplePerfDataProto()) {}
+
+  MetricCollectorTest(const MetricCollectorTest&) = delete;
+  MetricCollectorTest& operator=(const MetricCollectorTest&) = delete;
 
   void SaveProfile(std::unique_ptr<SampledProfile> sampled_profile) {
     cached_profile_data_.resize(cached_profile_data_.size() + 1);
@@ -166,8 +168,6 @@ class MetricCollectorTest : public testing::Test {
 
   // Store sample perf data protobuf for testing.
   PerfDataProto perf_data_proto_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricCollectorTest);
 };
 
 TEST_F(MetricCollectorTest, CheckSetup) {
@@ -418,7 +418,7 @@ TEST_F(MetricCollectorTest, StopTimer) {
 }
 
 TEST_F(MetricCollectorTest, ScheduleSuspendDoneCollection) {
-  const auto kSuspendDuration = base::TimeDelta::FromMinutes(3);
+  const auto kSuspendDuration = base::Minutes(3);
 
   metric_collector_->ScheduleSuspendDoneCollection(kSuspendDuration);
 
@@ -559,8 +559,7 @@ TEST_F(MetricCollectorTest, ZeroSamplingFactorDisablesTrigger) {
 
   // Calling ScheduleSuspendDoneCollection or ScheduleSessionRestoreCollection
   // should not start the timer that triggers collection.
-  metric_collector_->ScheduleSuspendDoneCollection(
-      base::TimeDelta::FromMinutes(10));
+  metric_collector_->ScheduleSuspendDoneCollection(base::Minutes(10));
   EXPECT_FALSE(metric_collector_->IsRunning());
 
   metric_collector_->ScheduleSessionRestoreCollection(100);
@@ -570,7 +569,7 @@ TEST_F(MetricCollectorTest, ZeroSamplingFactorDisablesTrigger) {
 TEST_F(MetricCollectorTest, ZeroPeriodicIntervalDisablesCollection) {
   // Define params with zero periodic interval.
   CollectionParams test_params;
-  test_params.periodic_interval = base::TimeDelta::FromMilliseconds(0);
+  test_params.periodic_interval = base::Milliseconds(0);
 
   metric_collector_ = std::make_unique<TestMetricCollector>(test_params);
   metric_collector_->Init();
@@ -581,7 +580,7 @@ TEST_F(MetricCollectorTest, ZeroPeriodicIntervalDisablesCollection) {
 
   // Advance the clock by 10 hours. We should have no profile and timer is not
   // running.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(10));
+  task_environment_.FastForwardBy(base::Hours(10));
 
   EXPECT_FALSE(metric_collector_->IsRunning())
       << "Sanity: timer should not be running.";

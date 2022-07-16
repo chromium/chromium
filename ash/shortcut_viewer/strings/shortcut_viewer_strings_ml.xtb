@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
 <translation id="1036550831858290950">നിങ്ങളുടെ നിലവിലെ ടാബ് ഒരു ബുക്ക്‌മാർക്ക് ആയി സംരക്ഷിക്കുക</translation>
-<translation id="104962181688258143">'ഫയലുകൾ' ആപ്പ് തുറക്കുക</translation>
+<translation id="104962181688258143">Files ആപ്പ് തുറക്കുക</translation>
 <translation id="1122869341872663659"><ph name="QUERY" /> എന്നതിനായി <ph name="N" /> തിരയൽ ഫലങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="1195667586424773550">ടാബിന്റെ വിലാസ ബാറിലേക്ക് ലിങ്ക് വലിച്ചിടുക</translation>
 <translation id="1251638888133819822">പൂർണ്ണ സ്‌ക്രീൻ മാഗ്നിഫയർ ഓണോ ഓഫോ ആക്കുക</translation>
@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">അദൃശ്യ മോഡിൽ പുതിയൊരു വിൻഡോ തുറക്കുക</translation>
 <translation id="152892567002884378">ശബ്ദം കൂട്ടുക</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, തുടർന്ന് <ph name="ESC" /></translation>
-<translation id="1633761758045565086">സഹായ ഡയലോഗിലേക്ക് ഫോക്കസ് നീക്കുക</translation>
 <translation id="1652741121070700329">മുമ്പത്തെ വാക്കിന്റെ ആരംഭത്തിലേക്ക് നീക്കുക</translation>
 <translation id="1679841710523778799">തെളിച്ചം കൂട്ടുക</translation>
 <translation id="168356808214100546">നിങ്ങൾ തുറക്കാൻ ആഗ്രഹിക്കുന്ന വിന്‍ഡോയിലേക്ക് എത്തുന്നത് വരെ <ph name="ALT" /> അമർത്തിപ്പിടിച്ച്, <ph name="TAB" /> ടാപ്പ് ചെയ്യുക, തുടർന്ന് സ്വതന്ത്രമാക്കുക.</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">വെബ് പേജ് താഴേയ്‌ക്ക് സ്‌ക്രോൾ ചെയ്യുക</translation>
 <translation id="2530896289327917474">ക്രമീകരണത്തിൽ കാരറ്റ് ബ്രൗസ് ചെയ്യൽ ഓണാക്കാനോ ഓഫാക്കാനോ കഴിയും</translation>
 <translation id="2574014812750545982">പേജിൽ സൂം നില പുനഃസജ്ജീകരിക്കുക</translation>
-<translation id="2596078834055697711">വിൻഡോ സ്ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, തുടർന്ന് <ph name="TAB" /> അല്ലെങ്കിൽ <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">നിങ്ങളുടെ നിലവിലെ പേജ് വീണ്ടും ലോഡ് ചെയ്യുക</translation>
 <translation id="2764005613199379871">തിരയൽ വിലാസബാറിൽ ഫോക്കസ് ചെയ്യുക</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">കുറുക്കുവഴികൾ</translation>
 <translation id="3084301071537457911">നിങ്ങളുടെ ഷെൽഫിലെ അടുത്ത ഇനം ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="309173601632226815">നിങ്ങളുടെ ഷെൽഫിലെ ലോഞ്ചർ ബട്ടൺ ഹൈലൈറ്റ് ചെയ്യുക</translation>
-<translation id="3105917916468784889">സ്ക്രീന്‍ഷോട്ട് എടുക്കുക</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">വിലാസ ബാര്‍ ഫോക്കസ് ചെയ്യുക</translation>
 <translation id="3256109297135787951">നിങ്ങളുടെ ഷെൽഫിലെ ഒരു ഇനത്തിൽ നിന്ന് ഹൈലൈറ്റ് നീക്കം ചെയ്യുക</translation>
 <translation id="3288816184963444640">നിലവിലെ വിൻഡോ അടയ്‌ക്കുക</translation>
+<translation id="3350805006883559974">സജീവ വിൻഡോ മുകളിൽ ഫ്ലോട്ട് ചെയ്യുക</translation>
 <translation id="3407560819924487926">ടാസ്‌ക് മാനേജർ ഉപയോഗപ്പെടുത്തുക</translation>
 <translation id="3417835166382867856">ടാബുകൾ തിരയുക</translation>
 <translation id="3422679037938588196">നിങ്ങളുടെ തിരയലിനായി മുമ്പത്തെ പൊരുത്തത്തിലേക്ക് പോവുക</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">കീബോഡ് കുറുക്കുവഴി സഹായി കാണുക</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> അല്ലെങ്കിൽ <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">സ്‌റ്റാറ്റസ് ഏരിയ തുറക്കുക (നിങ്ങളുടെ അക്കൗണ്ട് ചിത്രം ദൃശ്യമാകുന്ന സ്ഥലം)</translation>
-<translation id="4642092649622328492">ഭാഗിക സ്‌ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="4698850295812410683">സ്റ്റൈലസ് ടൂളുകൾ കാണിക്കുക</translation>
 <translation id="4801989101741319327">അടുത്ത വാക്കിന്റെ അവസാനത്തിലേക്ക് നീങ്ങുക</translation>
 <translation id="4866066940972151697">വലതുവശത്ത് ഡെസ്‌ക് സജീവമാക്കുക</translation>
@@ -164,7 +161,7 @@
 <translation id="6671538777808758331">നിങ്ങളുടെ തിരയലിനായി അടുത്ത പൊരുത്തതിലേക്ക് പോവുക</translation>
 <translation id="6681606577947445973"><ph name="REFRESH" /> അല്ലെങ്കിൽ <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="R" /></translation>
 <translation id="6690765639083431875">ഇടത് വശത്ത് ഒരു വിൻഡോ ഡോക്ക് ചെയ്യുക</translation>
-<translation id="6692847073476874842">'ഫയലുകൾ' ആപ്പിൽ ഒരു ഫയൽ പ്രിവ്യൂ ചെയ്യുക</translation>
+<translation id="6692847073476874842">Files ആപ്പിൽ ഒരു ഫയൽ പ്രിവ്യൂ ചെയ്യുക</translation>
 <translation id="671928215901716392">സ്‌ക്രീൻ ലോക്കുചെയ്യുക</translation>
 <translation id="6727005317916125192">മുമ്പത്തെ പാൻ</translation>
 <translation id="6740781404993465795">അടുത്ത വാക്ക് അല്ലെങ്കിൽ അക്ഷരം തിരഞ്ഞെടുക്കുക</translation>
@@ -204,13 +201,14 @@
 <translation id="8537650670971624753">തിരയൽ മോഡിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="85690795166292698">പുതിയ ടാബിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="8609384513243082612">പുതിയ ടാബ് തുറക്കുക</translation>
-<translation id="8644639153978066712">'ഫയലുകൾ' ആപ്പിലെ അദൃശ്യമായ ഫയലുകൾ പ്രദർശിപ്പിക്കുക</translation>
+<translation id="8644639153978066712">Files ആപ്പിലെ അദൃശ്യമായ ഫയലുകൾ പ്രദർശിപ്പിക്കുക</translation>
 <translation id="8717459106217102612">മുമ്പത്തെ വാക്കോ അക്ഷരമോ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8727232706774971183">നിങ്ങളുടെ അറിയിപ്പുകൾ കാണുക</translation>
 <translation id="8855885154700222542">പൂർണ്ണ സ്‌ക്രീൻ കീ</translation>
 <translation id="8881584919399569791">സജീവമായ വിൻഡോ ഇടതുവശത്തെ ഡെസ്‌ക്കിലേക്ക് നീക്കുക</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8924883688469390268">മുമ്പത്തെ ഉപയോക്താവിലേക്ക് മാറുക</translation>
+<translation id="8941626538514548667">ബ്രൗസറിലെ വെബ് ഉള്ളടക്കത്തിൽ ഫോക്കസ് ചെയ്യുക</translation>
 <translation id="8977648847395357314">വിലാസ ബാറിലെ ഉള്ളടക്കം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8982190978301344584">ലഭ്യമായ IME-കളുടെ ഒരു ലിസ്റ്റ് ദൃശ്യമാക്കുന്ന മെനു കാണിക്കുക</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 മുതൽ 8 വരെ</translation>

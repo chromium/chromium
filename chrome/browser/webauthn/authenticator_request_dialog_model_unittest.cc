@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -53,18 +52,23 @@ class MockDialogModelObserver
  public:
   MockDialogModelObserver() = default;
 
+  MockDialogModelObserver(const MockDialogModelObserver&) = delete;
+  MockDialogModelObserver& operator=(const MockDialogModelObserver&) = delete;
+
   MOCK_METHOD1(OnModelDestroyed, void(AuthenticatorRequestDialogModel*));
   MOCK_METHOD0(OnStepTransition, void());
   MOCK_METHOD0(OnCancelRequest, void());
   MOCK_METHOD0(OnBluetoothPoweredStateChanged, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDialogModelObserver);
 };
 
 class BluetoothAdapterPowerOnCallbackReceiver {
  public:
   BluetoothAdapterPowerOnCallbackReceiver() = default;
+
+  BluetoothAdapterPowerOnCallbackReceiver(
+      const BluetoothAdapterPowerOnCallbackReceiver&) = delete;
+  BluetoothAdapterPowerOnCallbackReceiver& operator=(
+      const BluetoothAdapterPowerOnCallbackReceiver&) = delete;
 
   base::RepeatingClosure GetCallback() {
     return base::BindRepeating(
@@ -81,8 +85,6 @@ class BluetoothAdapterPowerOnCallbackReceiver {
   }
 
   bool was_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterPowerOnCallbackReceiver);
 };
 
 base::StringPiece RequestTypeToString(RequestType req_type) {
@@ -130,12 +132,14 @@ class AuthenticatorRequestDialogModelTest : public ::testing::Test {
 
   AuthenticatorRequestDialogModelTest() = default;
 
+  AuthenticatorRequestDialogModelTest(
+      const AuthenticatorRequestDialogModelTest&) = delete;
+  AuthenticatorRequestDialogModelTest& operator=(
+      const AuthenticatorRequestDialogModelTest&) = delete;
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestDialogModelTest);
 };
 
 TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
@@ -651,9 +655,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
   EXPECT_TRUE(model.should_dialog_be_hidden());
   EXPECT_EQ(num_called, 0);
 
-  // After selecting an account, the request should be dispatched to the
+  // After preselecting an account, the request should be dispatched to the
   // platform authenticator.
-  model.OnAccountSelected(0);
+  model.OnAccountPreselected({1, 2, 3, 4});
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(num_called, 1);
 

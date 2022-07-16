@@ -26,7 +26,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "ui/gfx/geometry/size.h"
@@ -47,9 +46,7 @@ InstallablePaymentAppCrawler::InstallablePaymentAppCrawler(
     : log_(content::WebContents::FromRenderFrameHost(
           initiator_render_frame_host)),
       merchant_origin_(merchant_origin),
-      initiator_frame_routing_id_(content::GlobalRenderFrameHostId(
-          initiator_render_frame_host->GetProcess()->GetID(),
-          initiator_render_frame_host->GetRoutingID())),
+      initiator_frame_routing_id_(initiator_render_frame_host->GetGlobalId()),
       downloader_(downloader),
       parser_(parser),
       number_of_payment_method_manifest_to_download_(0),
@@ -190,8 +187,8 @@ void InstallablePaymentAppCrawler::OnPaymentMethodManifestParsed(
 
     if (permission_controller->GetPermissionStatus(
             content::PermissionType::PAYMENT_HANDLER,
-            web_app_manifest_url.GetOrigin(),
-            web_app_manifest_url.GetOrigin()) !=
+            web_app_manifest_url.DeprecatedGetOriginAsURL(),
+            web_app_manifest_url.DeprecatedGetOriginAsURL()) !=
         blink::mojom::PermissionStatus::GRANTED) {
       // Do not download the web app manifest if it is blocked.
       continue;

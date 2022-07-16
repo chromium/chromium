@@ -21,7 +21,7 @@ apps::AppLaunchParams CreateAppLaunchParamsUserContainer(
     Profile* profile,
     const extensions::Extension* extension,
     WindowOpenDisposition disposition,
-    apps::mojom::AppLaunchSource source);
+    apps::mojom::LaunchSource launch_source);
 
 // Helper to create AppLaunchParams, falling back to
 // extensions::GetLaunchContainer() with no modifiers.
@@ -29,7 +29,7 @@ apps::AppLaunchParams CreateAppLaunchParamsWithEventFlags(
     Profile* profile,
     const extensions::Extension* extension,
     int event_flags,
-    apps::mojom::AppLaunchSource source,
+    apps::mojom::LaunchSource launch_source,
     int64_t display_id);
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_APP_LAUNCH_PARAMS_H_

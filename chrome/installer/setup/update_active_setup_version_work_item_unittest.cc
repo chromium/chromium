@@ -8,7 +8,6 @@
 
 #include <ostream>
 
-#include "base/macros.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,6 +77,11 @@ class UpdateActiveSetupVersionWorkItemTest
  public:
   UpdateActiveSetupVersionWorkItemTest() {}
 
+  UpdateActiveSetupVersionWorkItemTest(
+      const UpdateActiveSetupVersionWorkItemTest&) = delete;
+  UpdateActiveSetupVersionWorkItemTest& operator=(
+      const UpdateActiveSetupVersionWorkItemTest&) = delete;
+
   void SetUp() override {
     ASSERT_NO_FATAL_FAILURE(
         registry_override_manager_.OverrideRegistry(kActiveSetupRoot));
@@ -85,8 +89,6 @@ class UpdateActiveSetupVersionWorkItemTest
 
  private:
   registry_util::RegistryOverrideManager registry_override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateActiveSetupVersionWorkItemTest);
 };
 
 TEST_P(UpdateActiveSetupVersionWorkItemTest, Execute) {

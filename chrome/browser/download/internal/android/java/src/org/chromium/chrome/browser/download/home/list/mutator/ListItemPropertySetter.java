@@ -15,6 +15,7 @@ import java.util.List;
  * Post processes the items in the list and sets properties for UI as appropriate. The properties
  * being set are:
  * - Image item span width.
+ * - Margins between {@link OfflineItemFilter} types (image, document, etc.).
  */
 public class ListItemPropertySetter implements ListConsumer {
     private final DownloadManagerUiConfig mConfig;

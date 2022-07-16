@@ -13,23 +13,29 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "components/value_store/value_store_frontend.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "extensions/browser/value_store/value_store_frontend.h"
 
 namespace content {
 class BrowserContext;
 }
 
-namespace extensions {
-
+namespace value_store {
+class ValueStore;
 class ValueStoreFactory;
+}  // namespace value_store
+
+namespace extensions {
 
 // A storage area for per-extension state that needs to be persisted to disk.
 class StateStore : public base::SupportsWeakPtr<StateStore>,
                    public ExtensionRegistryObserver {
  public:
-  typedef ValueStoreFrontend::ReadCallback ReadCallback;
+  typedef value_store::ValueStoreFrontend::ReadCallback ReadCallback;
+
+  // The kind of extensions data stored in a backend.
+  enum class BackendType { RULES, STATE, SCRIPTS };
 
   class TestObserver {
    public:
@@ -41,12 +47,16 @@ class StateStore : public base::SupportsWeakPtr<StateStore>,
   // If |deferred_load| is true, we will defer the database loading until the
   // application is less busy on startup.
   StateStore(content::BrowserContext* context,
-             const scoped_refptr<ValueStoreFactory>& store_factory,
-             ValueStoreFrontend::BackendType backend_type,
+             const scoped_refptr<value_store::ValueStoreFactory>& store_factory,
+             BackendType backend_type,
              bool deferred_load);
   // This variant is useful for testing (using a mock ValueStore).
   StateStore(content::BrowserContext* context,
-             std::unique_ptr<ValueStore> store);
+             std::unique_ptr<value_store::ValueStore> store);
+
+  StateStore(const StateStore&) = delete;
+  StateStore& operator=(const StateStore&) = delete;
+
   ~StateStore() override;
 
   // Register a key for removal upon extension install/uninstall. We remove
@@ -96,7 +106,7 @@ class StateStore : public base::SupportsWeakPtr<StateStore>,
                                   const std::string& old_name) override;
 
   // The store that holds our key/values.
-  std::unique_ptr<ValueStoreFrontend> store_;
+  std::unique_ptr<value_store::ValueStoreFrontend> store_;
 
   // List of all known keys. They will be cleared for each extension when it is
   // (un)installed.
@@ -109,8 +119,6 @@ class StateStore : public base::SupportsWeakPtr<StateStore>,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StateStore);
 };
 
 }  // namespace extensions

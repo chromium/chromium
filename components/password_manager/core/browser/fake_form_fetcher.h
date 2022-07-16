@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -22,6 +21,9 @@ struct InteractionsStats;
 class FakeFormFetcher : public FormFetcher {
  public:
   FakeFormFetcher();
+
+  FakeFormFetcher(const FakeFormFetcher&) = delete;
+  FakeFormFetcher& operator=(const FakeFormFetcher&) = delete;
 
   ~FakeFormFetcher() override;
 
@@ -88,8 +90,6 @@ class FakeFormFetcher : public FormFetcher {
   std::vector<InsecureCredential> insecure_credentials_;
   const PasswordForm* preferred_match_ = nullptr;
   bool is_blocklisted_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFormFetcher);
 };
 
 }  // namespace password_manager

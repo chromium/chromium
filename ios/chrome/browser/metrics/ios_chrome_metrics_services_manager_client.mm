@@ -9,13 +9,15 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
-#include "ios/chrome/browser/chrome_switches.h"
+#include "ios/chrome/browser/chrome_paths.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
@@ -24,33 +26,27 @@
 #include "ios/chrome/browser/variations/ios_chrome_variations_service_client.h"
 #include "ios/chrome/browser/variations/ios_ui_string_overrider_factory.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#include "ios/chrome/common/channel_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-void PostStoreMetricsClientInfo(const metrics::ClientInfo& client_info) {}
-
-std::unique_ptr<metrics::ClientInfo> LoadMetricsClientInfo() {
-  return nullptr;
-}
-
-}  // namespace
-
 class IOSChromeMetricsServicesManagerClient::IOSChromeEnabledStateProvider
     : public metrics::EnabledStateProvider {
  public:
   IOSChromeEnabledStateProvider() {}
+
+  IOSChromeEnabledStateProvider(const IOSChromeEnabledStateProvider&) = delete;
+  IOSChromeEnabledStateProvider& operator=(
+      const IOSChromeEnabledStateProvider&) = delete;
+
   ~IOSChromeEnabledStateProvider() override {}
 
   bool IsConsentGiven() const override {
     return IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeEnabledStateProvider);
 };
 
 IOSChromeMetricsServicesManagerClient::IOSChromeMetricsServicesManagerClient(
@@ -89,10 +85,11 @@ metrics::MetricsStateManager*
 IOSChromeMetricsServicesManagerClient::GetMetricsStateManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!metrics_state_manager_) {
+    base::FilePath user_data_dir;
+    base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir);
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), std::wstring(),
-        base::BindRepeating(&PostStoreMetricsClientInfo),
-        base::BindRepeating(&LoadMetricsClientInfo));
+        user_data_dir, metrics::StartupVisibility::kUnknown, GetChannel());
   }
   return metrics_state_manager_.get();
 }

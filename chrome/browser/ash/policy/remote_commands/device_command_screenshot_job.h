@@ -12,11 +12,10 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "chrome/browser/ash/policy/uploading/upload_job.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "ui/snapshot/snapshot.h"
@@ -87,6 +86,11 @@ class DeviceCommandScreenshotJob : public RemoteCommandJob,
 
   explicit DeviceCommandScreenshotJob(
       std::unique_ptr<Delegate> screenshot_delegate);
+
+  DeviceCommandScreenshotJob(const DeviceCommandScreenshotJob&) = delete;
+  DeviceCommandScreenshotJob& operator=(const DeviceCommandScreenshotJob&) =
+      delete;
+
   ~DeviceCommandScreenshotJob() override;
 
   // RemoteCommandJob:
@@ -133,8 +137,6 @@ class DeviceCommandScreenshotJob : public RemoteCommandJob,
   std::unique_ptr<UploadJob> upload_job_;
 
   base::WeakPtrFactory<DeviceCommandScreenshotJob> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandScreenshotJob);
 };
 
 }  // namespace policy

@@ -55,6 +55,8 @@ namespace version_loader {
 using ::chromeos::version_loader::GetFirmware;
 using ::chromeos::version_loader::GetVersion;
 using ::chromeos::version_loader::VERSION_FULL;
+using ::chromeos::version_loader::VERSION_SHORT;
+using ::chromeos::version_loader::VERSION_SHORT_WITH_DATE;
 }  // namespace version_loader
 }  // namespace ash
 

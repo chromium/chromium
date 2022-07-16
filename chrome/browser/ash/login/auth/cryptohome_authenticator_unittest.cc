@@ -128,6 +128,10 @@ bool CreateOwnerKeyInSlot(PK11SlotInfo* slot) {
 class TestUserDataAuthClient : public ::chromeos::FakeUserDataAuthClient {
  public:
   TestUserDataAuthClient() = default;
+
+  TestUserDataAuthClient(const TestUserDataAuthClient&) = delete;
+  TestUserDataAuthClient& operator=(const TestUserDataAuthClient&) = delete;
+
   ~TestUserDataAuthClient() override = default;
 
   void set_expected_id(const cryptohome::AccountIdentifier& id) {
@@ -248,8 +252,6 @@ class TestUserDataAuthClient : public ::chromeos::FakeUserDataAuthClient {
   bool mount_guest_should_succeed_ = false;
   bool remove_should_succeed_ = false;
   bool unmount_should_succeed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUserDataAuthClient);
 };
 
 }  // namespace

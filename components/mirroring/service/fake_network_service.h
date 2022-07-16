@@ -23,6 +23,10 @@ class MockUdpSocket final : public network::mojom::UDPSocket {
   MockUdpSocket(
       mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
       mojo::PendingRemote<network::mojom::UDPSocketListener> listener);
+
+  MockUdpSocket(const MockUdpSocket&) = delete;
+  MockUdpSocket& operator=(const MockUdpSocket&) = delete;
+
   ~MockUdpSocket() override;
 
   MOCK_METHOD0(OnSend, void());
@@ -65,14 +69,16 @@ class MockUdpSocket final : public network::mojom::UDPSocket {
   mojo::Remote<network::mojom::UDPSocketListener> listener_;
   std::unique_ptr<media::cast::Packet> sending_packet_;
   int num_ask_for_receive_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MockUdpSocket);
 };
 
 class MockNetworkContext : public network::TestNetworkContext {
  public:
   explicit MockNetworkContext(
       mojo::PendingReceiver<network::mojom::NetworkContext> receiver);
+
+  MockNetworkContext(const MockNetworkContext&) = delete;
+  MockNetworkContext& operator=(const MockNetworkContext&) = delete;
+
   ~MockNetworkContext() override;
 
   MOCK_METHOD0(OnUDPSocketCreated, void());
@@ -90,7 +96,6 @@ class MockNetworkContext : public network::TestNetworkContext {
  private:
   mojo::Receiver<network::mojom::NetworkContext> receiver_;
   std::unique_ptr<MockUdpSocket> udp_socket_;
-  DISALLOW_COPY_AND_ASSIGN(MockNetworkContext);
 };
 
 }  // namespace mirroring

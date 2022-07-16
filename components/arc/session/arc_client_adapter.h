@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "components/arc/session/arc_start_params.h"
@@ -49,6 +48,10 @@ class ArcClientAdapter {
 
   // Creates a default instance of ArcClientAdapter.
   static std::unique_ptr<ArcClientAdapter> Create();
+
+  ArcClientAdapter(const ArcClientAdapter&) = delete;
+  ArcClientAdapter& operator=(const ArcClientAdapter&) = delete;
+
   virtual ~ArcClientAdapter();
 
   // StartMiniArc starts ARC with only a handful of ARC processes for Chrome OS
@@ -88,9 +91,6 @@ class ArcClientAdapter {
   ArcClientAdapter();
 
   base::ObserverList<Observer>::Unchecked observer_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcClientAdapter);
 };
 
 }  // namespace arc

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/performance_manager/persistence/site_data/site_data_writer.h"
 #include "components/performance_manager/persistence/site_data/tab_visibility.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
@@ -19,6 +18,10 @@ namespace performance_manager {
 class SiteDataCache {
  public:
   SiteDataCache() = default;
+
+  SiteDataCache(const SiteDataCache&) = delete;
+  SiteDataCache& operator=(const SiteDataCache&) = delete;
+
   virtual ~SiteDataCache() = default;
 
   // Returns a SiteDataReader for the given origin.
@@ -35,9 +38,6 @@ class SiteDataCache {
 
   // Returns the number of element in the cache.
   virtual int Size() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SiteDataCache);
 };
 
 }  // namespace performance_manager

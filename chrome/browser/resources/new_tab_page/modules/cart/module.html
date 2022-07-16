@@ -40,7 +40,7 @@
 
   #cartCarousel {
     display: inline-block;
-    overflow-x: hidden;
+    overflow: hidden;
     padding-top: 24px;
     white-space: nowrap;
     z-index: 0;
@@ -51,7 +51,7 @@
   }
 
   #consentCard,
-  .cart-item {
+  .cart-container {
     border: 1px solid var(--ntp-border-color);
     border-radius: 4px;
     display: inline-flex;
@@ -60,8 +60,17 @@
     margin: 0 4px;
   }
 
+  .cart-container {
+    outline: none;
+    position: relative;
+    width: 118px;
+  }
+
   .cart-item {
     cursor: pointer;
+    display: inline-flex;
+    flex-direction: column;
+    text-decoration: none;
   }
 
   #consentCard {
@@ -124,13 +133,6 @@
     transform: translateX(-50%);
     width: 102px;
     z-index: 1;
-  }
-
-  .cart-item {
-    outline: none;
-    position: relative;
-    text-decoration: none;
-    width: 118px;
   }
 
   :host-context(.focus-outline-visible) .cart-item:focus {
@@ -207,7 +209,7 @@
     right: unset;
   }
 
-  .cart-item cr-icon-button {
+  .cart-container cr-icon-button {
     --cr-icon-button-icon-size: 16px;
     --cr-icon-button-size: 24px;
     margin: 4px 4px;
@@ -319,46 +321,48 @@
         </div>
       </template>
       <template id="cartItemRepeat" is="dom-repeat" items="[[cartItems]]">
-        <a class="cart-item" title="[[item.merchant]]"
-            href="[[item.cartUrl.url]]" on-click="onCartItemClick_"
-            on-auxclick="onCartItemClick_"
-            on-contextmenu="onCartItemContextMenuClick_">
-          <template is="dom-if" if="[[item.discountText]]">
-            <div class="discount-chip">[[item.discountText]]</div>
-          </template>
+        <div class="cart-container">
+          <a class="cart-item" title="[[item.merchant]]"
+              href="[[item.cartUrl.url]]" on-click="onCartItemClick_"
+              on-auxclick="onCartItemClick_"
+              on-contextmenu="onCartItemContextMenuClick_">
+            <template is="dom-if" if="[[item.discountText]]">
+              <div class="discount-chip">[[item.discountText]]</div>
+            </template>
+            <img class="favicon-image" is="cr-auto-img"
+                auto-src="[[getFaviconUrl_(item.cartUrl.url)]]"></img>
+            <div class="cart-title">
+              <span class="merchant">[[item.merchant]]</span>
+              <template is="dom-if" if="[[item.productImageUrls.length]]">
+                <span class="item-count">
+                  &nbsp•&nbsp[[item.productImageUrls.length]]
+                </span>
+              </template>
+            </div>
+            <div class="thumbnail-container">
+              <template is="dom-if"
+                  if="[[item.productImageUrls.length]]">
+                <ul class="thumbnail-list">
+                  <template is="dom-repeat"
+                      items="[[getImagesToShow_(item.productImageUrls)]]">
+                    <li>
+                      <img class="thumbnail-img" is="cr-auto-img"
+                          auto-src="[[item.url]]"></img>
+                    </li>
+                  </template>
+                </ul>
+              </template>
+              <template id="thumbnailFallback" is="dom-if"
+                  if="[[!item.productImageUrls.length]]">
+                <img class="thumbnail-fallback"
+                    src="modules/cart/icons/cart_fallback.svg">
+              </template>
+            </div>
+          </a>
           <cr-icon-button class="icon-more-vert"
               title="[[i18n('moreActions')]]" on-click="onCartMenuButtonClick_">
           </cr-icon-button>
-          <img class="favicon-image" is="cr-auto-img"
-              auto-src="[[getFaviconUrl_(item.cartUrl.url)]]"></img>
-          <div class="cart-title">
-            <span class="merchant">[[item.merchant]]</span>
-            <template is="dom-if" if="[[item.productImageUrls.length]]">
-              <span class="item-count">
-                &nbsp•&nbsp[[item.productImageUrls.length]]
-              </span>
-            </template>
-          </div>
-          <div class="thumbnail-container">
-            <template is="dom-if"
-                if="[[item.productImageUrls.length]]">
-              <ul class="thumbnail-list">
-                <template is="dom-repeat"
-                    items="[[getImagesToShow_(item.productImageUrls)]]">
-                  <li>
-                    <img class="thumbnail-img" is="cr-auto-img"
-                        auto-src="[[item.url]]"></img>
-                  </li>
-                </template>
-              </ul>
-            </template>
-            <template id="thumbnailFallback" is="dom-if"
-                if="[[!item.productImageUrls.length]]">
-              <img class="thumbnail-fallback"
-                  src="modules/cart/icons/cart_fallback.svg">
-            </template>
-          </div>
-        </a>
+        </div>
       </template>
       <div id="rightProbe" class="probe"></div>
     </div>

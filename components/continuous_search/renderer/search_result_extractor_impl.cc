@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/continuous_search/common/title_validator.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -96,25 +96,6 @@ bool ExtractResultCards(blink::WebElement node, mojom::ResultGroupPtr& group) {
   return had_results;
 }
 
-bool ExtractAds(blink::WebDocument document,
-                mojom::CategoryResultsPtr& results) {
-  // Top ads ignoring carousels.
-  blink::WebElement ads = document.GetElementById("tads");
-  if (ads.IsNull()) {
-    return false;
-  }
-
-  auto group = mojom::ResultGroup::New();
-  group->is_ad_group = true;
-  group->label = "Ads";
-  if (!ExtractResultCards(ads, group)) {
-    return false;
-  }
-
-  results->groups.push_back(std::move(group));
-  return true;
-}
-
 bool ExtractResults(blink::WebDocument document,
                     mojom::CategoryResultsPtr& results) {
   blink::WebElement cards = document.GetElementById("rso");
@@ -123,9 +104,80 @@ bool ExtractResults(blink::WebDocument document,
   }
 
   auto group = mojom::ResultGroup::New();
-  group->is_ad_group = false;
-  group->label = "Search Results";
+  group->type = mojom::ResultType::kSearchResults;
   if (!ExtractResultCards(cards, group)) {
+    return false;
+  }
+
+  results->category_type = mojom::Category::kOrganic;
+  results->groups.push_back(std::move(group));
+  return true;
+}
+
+bool ExtractRelatedSearches(blink::WebDocument document,
+                            mojom::CategoryResultsPtr& results) {
+  auto group = mojom::ResultGroup::New();
+  group->type = mojom::ResultType::kRelatedSearches;
+
+  blink::WebElement container = document.GetElementById("w3bYAd");
+  if (container.IsNull()) {
+    return false;
+  }
+
+  blink::WebElementCollection anchors = container.GetElementsByHTMLTagName("a");
+  if (anchors.IsNull()) {
+    return false;
+  }
+
+  // Loop through the anchors inside id="w3bYAd" and extract urls and titles.
+  // This only works on Desktop SRP. Related Searches anchor elements use a
+  // different class name on Mobile. To enable this on Mobile, either check for
+  // the additional class name or remove the class name check for the anchors.
+  for (blink::WebElement anchor = anchors.FirstItem(); !anchor.IsNull();
+       anchor = anchors.NextItem()) {
+    if (!anchor.HasAttribute("class") ||
+        !base::Contains(anchor.GetAttribute("class").Utf8(), "k8XOCe")) {
+      continue;
+    }
+
+    blink::WebString string_url = anchor.GetAttribute("href");
+    if (string_url.IsNull() || string_url.IsEmpty()) {
+      continue;
+    }
+
+    GURL url = GURL(document.CompleteURL(string_url));
+    if (!url.is_valid() || url.is_empty() || !url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+
+    std::u16string title;
+    blink::WebElementCollection inner_divs =
+        anchor.GetElementsByHTMLTagName("div");
+    if (inner_divs.IsNull()) {
+      continue;
+    }
+    for (blink::WebElement inner_div = inner_divs.FirstItem();
+         !inner_div.IsNull(); inner_div = inner_divs.NextItem()) {
+      if (!inner_div.HasAttribute("class") ||
+          !base::Contains(inner_div.GetAttribute("class").Utf8(), "s75CSd")) {
+        continue;
+      }
+      title = inner_div.TextContent().Utf16();
+      break;
+    }
+
+    title = base::CollapseWhitespace(title, true);
+    if (title.empty()) {
+      continue;
+    }
+
+    auto result = mojom::SearchResult::New();
+    result->link = url;
+    result->title = ValidateTitle(title);
+    group->results.push_back(std::move(result));
+  }
+
+  if (group->results.empty()) {
     return false;
   }
 
@@ -154,17 +206,34 @@ SearchResultExtractorImpl::SearchResultExtractorImpl(
 SearchResultExtractorImpl::~SearchResultExtractorImpl() = default;
 
 void SearchResultExtractorImpl::ExtractCurrentSearchResults(
+    const std::vector<mojom::ResultType>& result_types,
     ExtractCurrentSearchResultsCallback callback) {
   auto category_result = mojom::CategoryResults::New();
 
   blink::WebDocument document = render_frame()->GetWebFrame()->GetDocument();
   category_result->document_url = GURL(document.Url());
 
-  ExtractAds(document, category_result);
-  if (!ExtractResults(document, category_result)) {
-    std::move(callback).Run(mojom::SearchResultExtractor::Status::kNoResults,
-                            std::move(category_result));
-    return;
+  for (const auto& result_type : result_types) {
+    switch (result_type) {
+      case mojom::ResultType::kSearchResults:
+        if (!ExtractResults(document, category_result)) {
+          // Extracting search results is a requirement, if requested.
+          std::move(callback).Run(
+              mojom::SearchResultExtractor::Status::kNoResults,
+              std::move(category_result));
+          return;
+        }
+        break;
+      case mojom::ResultType::kRelatedSearches:
+        if (!ExtractRelatedSearches(document, category_result)) {
+          // Extracting related searches is a requirement, if requested.
+          std::move(callback).Run(
+              mojom::SearchResultExtractor::Status::kNoResults,
+              std::move(category_result));
+          return;
+        }
+        break;
+    }
   }
 
   std::move(callback).Run(mojom::SearchResultExtractor::Status::kSuccess,

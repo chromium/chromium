@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -18,10 +17,11 @@ namespace content {
 class CONTENT_EXPORT WebContentsAccessibility {
  public:
   WebContentsAccessibility() {}
-  virtual ~WebContentsAccessibility() {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebContentsAccessibility);
+  WebContentsAccessibility(const WebContentsAccessibility&) = delete;
+  WebContentsAccessibility& operator=(const WebContentsAccessibility&) = delete;
+
+  virtual ~WebContentsAccessibility() {}
 };
 }  // namespace content
 

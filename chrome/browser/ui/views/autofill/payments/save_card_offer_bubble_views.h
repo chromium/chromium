@@ -32,6 +32,9 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
                            content::WebContents* web_contents,
                            SaveCardBubbleController* controller);
 
+  SaveCardOfferBubbleViews(const SaveCardOfferBubbleViews&) = delete;
+  SaveCardOfferBubbleViews& operator=(const SaveCardOfferBubbleViews&) = delete;
+
   // SaveCardBubbleViews:
   void Init() override;
   bool Accept() override;
@@ -61,8 +64,6 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
   views::Combobox* year_input_dropdown_ = nullptr;
   MonthComboboxModel month_combobox_model_;
   YearComboboxModel year_combobox_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveCardOfferBubbleViews);
 };
 
 }  // namespace autofill

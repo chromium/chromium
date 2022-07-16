@@ -27,6 +27,9 @@ class LogSourceResource : public ApiResource {
   LogSourceResource(const std::string& extension_id,
                     std::unique_ptr<system_logs::SystemLogsSource> source);
 
+  LogSourceResource(const LogSourceResource&) = delete;
+  LogSourceResource& operator=(const LogSourceResource&) = delete;
+
   ~LogSourceResource() override;
 
   system_logs::SystemLogsSource* GetLogSource() const { return source_.get(); }
@@ -44,8 +47,6 @@ class LogSourceResource : public ApiResource {
   // This unregisters the LogSourceResource from a LogSourceAccessManager when
   // this resource is cleaned up.
   base::OnceClosure unregister_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogSourceResource);
 };
 
 }  // namespace extensions

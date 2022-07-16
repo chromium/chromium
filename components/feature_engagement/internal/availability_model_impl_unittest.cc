@@ -6,11 +6,9 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/feature_engagement/internal/persistent_availability_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,6 +32,10 @@ class AvailabilityModelImplTest : public testing::Test {
     initialized_callback_ = base::BindOnce(
         &AvailabilityModelImplTest::OnInitialized, base::Unretained(this));
   }
+
+  AvailabilityModelImplTest(const AvailabilityModelImplTest&) = delete;
+  AvailabilityModelImplTest& operator=(const AvailabilityModelImplTest&) =
+      delete;
 
   ~AvailabilityModelImplTest() override = default;
 
@@ -65,9 +67,6 @@ class AvailabilityModelImplTest : public testing::Test {
   AvailabilityModel::OnInitializedCallback initialized_callback_;
   absl::optional<bool> success_;
   absl::optional<uint32_t> current_day_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AvailabilityModelImplTest);
 };
 
 }  // namespace

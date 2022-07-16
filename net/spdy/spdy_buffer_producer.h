@@ -25,10 +25,10 @@ class NET_EXPORT_PRIVATE SpdyBufferProducer {
   // Produces the buffer to be written. Will be called at most once.
   virtual std::unique_ptr<SpdyBuffer> ProduceBuffer() = 0;
 
-  virtual ~SpdyBufferProducer();
+  SpdyBufferProducer(const SpdyBufferProducer&) = delete;
+  SpdyBufferProducer& operator=(const SpdyBufferProducer&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SpdyBufferProducer);
+  virtual ~SpdyBufferProducer();
 };
 
 // A simple wrapper around a single SpdyBuffer.
@@ -36,14 +36,15 @@ class NET_EXPORT_PRIVATE SimpleBufferProducer : public SpdyBufferProducer {
  public:
   explicit SimpleBufferProducer(std::unique_ptr<SpdyBuffer> buffer);
 
+  SimpleBufferProducer(const SimpleBufferProducer&) = delete;
+  SimpleBufferProducer& operator=(const SimpleBufferProducer&) = delete;
+
   ~SimpleBufferProducer() override;
 
   std::unique_ptr<SpdyBuffer> ProduceBuffer() override;
 
  private:
   std::unique_ptr<SpdyBuffer> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleBufferProducer);
 };
 
 }  // namespace net

@@ -27,28 +27,28 @@ QueryTilesInternalsUIMessageHandler::~QueryTilesInternalsUIMessageHandler() =
     default;
 
 void QueryTilesInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "startFetch", base::BindRepeating(
                         &QueryTilesInternalsUIMessageHandler::HandleStartFetch,
                         base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "purgeDb",
       base::BindRepeating(&QueryTilesInternalsUIMessageHandler::HandlePurgeDb,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getServiceStatus",
       base::BindRepeating(
           &QueryTilesInternalsUIMessageHandler::HandleGetServiceStatus,
           weak_ptr_factory_.GetWeakPtr()));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getTileData",
       base::BindRepeating(
           &QueryTilesInternalsUIMessageHandler::HandleGetTileData,
           weak_ptr_factory_.GetWeakPtr()));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setServerUrl",
       base::BindRepeating(
           &QueryTilesInternalsUIMessageHandler::HandleSetServerUrl,

@@ -160,7 +160,7 @@ namespace extensions {
 
 ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
   std::unique_ptr<api::autofill_private::SaveAddress::Params> parameters =
-      api::autofill_private::SaveAddress::Params::Create(*args_);
+      api::autofill_private::SaveAddress::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   autofill::PersonalDataManager* personal_data =
@@ -310,7 +310,7 @@ ExtensionFunction::ResponseAction
 AutofillPrivateGetAddressComponentsFunction::Run() {
   std::unique_ptr<api::autofill_private::GetAddressComponents::Params>
       parameters =
-          api::autofill_private::GetAddressComponents::Params::Create(*args_);
+          api::autofill_private::GetAddressComponents::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> lines;
@@ -361,7 +361,7 @@ ExtensionFunction::ResponseAction AutofillPrivateGetAddressListFunction::Run() {
 
 ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
   std::unique_ptr<api::autofill_private::SaveCreditCard::Params> parameters =
-      api::autofill_private::SaveCreditCard::Params::Create(*args_);
+      api::autofill_private::SaveCreditCard::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   autofill::PersonalDataManager* personal_data =
@@ -442,7 +442,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
 
 ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
   std::unique_ptr<api::autofill_private::RemoveEntry::Params> parameters =
-      api::autofill_private::RemoveEntry::Params::Create(*args_);
+      api::autofill_private::RemoveEntry::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   autofill::PersonalDataManager* personal_data =
@@ -463,7 +463,7 @@ ExtensionFunction::ResponseAction
 AutofillPrivateValidatePhoneNumbersFunction::Run() {
   std::unique_ptr<api::autofill_private::ValidatePhoneNumbers::Params>
       parameters =
-          api::autofill_private::ValidatePhoneNumbers::Params::Create(*args_);
+          api::autofill_private::ValidatePhoneNumbers::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   api::autofill_private::ValidatePhoneParams* params = &parameters->params;
@@ -485,7 +485,7 @@ AutofillPrivateValidatePhoneNumbersFunction::Run() {
 
 ExtensionFunction::ResponseAction AutofillPrivateMaskCreditCardFunction::Run() {
   std::unique_ptr<api::autofill_private::MaskCreditCard::Params> parameters =
-      api::autofill_private::MaskCreditCard::Params::Create(*args_);
+      api::autofill_private::MaskCreditCard::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   autofill::PersonalDataManager* personal_data =
@@ -591,7 +591,7 @@ AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction::Run() {
   std::unique_ptr<
       api::autofill_private::SetCreditCardFIDOAuthEnabledState::Params>
       parameters = api::autofill_private::SetCreditCardFIDOAuthEnabledState::
-          Params::Create(*args_);
+          Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   credit_card_access_manager->OnSettingsPageFIDOAuthToggled(

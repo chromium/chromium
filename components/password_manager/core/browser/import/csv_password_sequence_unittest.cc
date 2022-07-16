@@ -7,7 +7,6 @@
 #include <iterator>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"

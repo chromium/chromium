@@ -13,7 +13,7 @@ std::ostream& operator<<(std::ostream& stream, AccountKeyFailure failure) {
       stream << "[Failed to find the Account Key GATT characteristic]";
       break;
 
-    case AccountKeyFailure::kKeyBasedPairingCharacteristicWrite:
+    case AccountKeyFailure::kAccountKeyCharacteristicWrite:
       stream << "[Failed to write to the Account Key GATT characteristic]";
       break;
   }

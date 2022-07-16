@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -40,6 +39,10 @@ class TermsOfServiceScreen : public BaseScreen {
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   TermsOfServiceScreen(TermsOfServiceScreenView* view,
                        const ScreenExitCallback& exit_callback);
+
+  TermsOfServiceScreen(const TermsOfServiceScreen&) = delete;
+  TermsOfServiceScreen& operator=(const TermsOfServiceScreen&) = delete;
+
   ~TermsOfServiceScreen() override;
 
   // Called when the user declines the Terms of Service.
@@ -55,9 +58,7 @@ class TermsOfServiceScreen : public BaseScreen {
   void OnViewDestroyed(TermsOfServiceScreenView* view);
 
   // Set callback to wait for file saving in tests.
-  void set_tos_saved_callback_for_testing(base::OnceClosure callback) {
-    tos_saved_for_testing_ = std::move(callback);
-  }
+  static void SetTosSavedCallbackForTesting(base::OnceClosure callback);
 
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
     exit_callback_ = exit_callback;
@@ -96,7 +97,6 @@ class TermsOfServiceScreen : public BaseScreen {
 
   TermsOfServiceScreenView* view_;
   ScreenExitCallback exit_callback_;
-  base::OnceClosure tos_saved_for_testing_;
 
   std::unique_ptr<network::SimpleURLLoader> terms_of_service_loader_;
 
@@ -105,8 +105,6 @@ class TermsOfServiceScreen : public BaseScreen {
   base::OneShotTimer download_timer_;
 
   base::WeakPtrFactory<TermsOfServiceScreen> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TermsOfServiceScreen);
 };
 
 }  // namespace ash

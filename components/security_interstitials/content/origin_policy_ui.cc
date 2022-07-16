@@ -50,7 +50,7 @@ absl::optional<std::string> OriginPolicyUI::GetErrorPageAsHTML(
   // The page object is "associated" with the web contents, and this is how
   // the interstitial infrastructure will find this instance again.
   security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
-      handle->GetWebContents(), handle->GetNavigationId(), std::move(page));
+      handle, std::move(page));
 
   return html;
 }

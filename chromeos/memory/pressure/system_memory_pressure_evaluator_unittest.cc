@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
@@ -43,7 +42,7 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
  public:
   TestSystemMemoryPressureEvaluator(
       bool for_testing,
-      std::unique_ptr<util::MemoryPressureVoter> voter)
+      std::unique_ptr<memory_pressure::MemoryPressureVoter> voter)
       : SystemMemoryPressureEvaluator(for_testing, std::move(voter)) {}
 
   void OnMemoryPressure(PressureLevel level,
@@ -51,10 +50,12 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
     SystemMemoryPressureEvaluator::OnMemoryPressure(level, reclaim_target_kb);
   }
 
-  ~TestSystemMemoryPressureEvaluator() override = default;
+  TestSystemMemoryPressureEvaluator(const TestSystemMemoryPressureEvaluator&) =
+      delete;
+  TestSystemMemoryPressureEvaluator& operator=(
+      const TestSystemMemoryPressureEvaluator&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestSystemMemoryPressureEvaluator);
+  ~TestSystemMemoryPressureEvaluator() override = default;
 };
 
 TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
@@ -70,7 +71,7 @@ TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   auto listener = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE, base::BindRepeating(&PressureCallback, &pressure_events));
 
-  util::MultiSourceMemoryPressureMonitor monitor;
+  memory_pressure::MultiSourceMemoryPressureMonitor monitor;
   monitor.ResetSystemEvaluatorForTesting();
 
   auto evaluator = std::make_unique<TestSystemMemoryPressureEvaluator>(

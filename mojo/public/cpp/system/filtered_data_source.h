@@ -44,6 +44,10 @@ class MOJO_CPP_SYSTEM_EXPORT FilteredDataSource final
 
   FilteredDataSource(std::unique_ptr<DataPipeProducer::DataSource> source,
                      std::unique_ptr<Filter> filter);
+
+  FilteredDataSource(const FilteredDataSource&) = delete;
+  FilteredDataSource& operator=(const FilteredDataSource&) = delete;
+
   ~FilteredDataSource() override;
 
  private:
@@ -54,8 +58,6 @@ class MOJO_CPP_SYSTEM_EXPORT FilteredDataSource final
 
   std::unique_ptr<DataPipeProducer::DataSource> source_;
   std::unique_ptr<Filter> filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilteredDataSource);
 };
 
 }  // namespace mojo

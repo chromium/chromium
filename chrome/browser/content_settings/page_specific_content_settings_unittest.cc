@@ -48,7 +48,7 @@ TEST_F(PageSpecificContentSettingsTest, HistogramTest) {
                                      ContentSettingsType::MEDIASTREAM_CAMERA,
                                      ContentSetting::CONTENT_SETTING_ALLOW);
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
 

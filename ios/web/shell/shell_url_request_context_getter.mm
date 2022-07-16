@@ -93,11 +93,14 @@ net::URLRequestContext* ShellURLRequestContextGetter::GetURLRequestContext() {
     storage_->set_ct_policy_enforcer(
         base::WrapUnique(new net::DefaultCTPolicyEnforcer));
     storage_->set_quic_context(std::make_unique<net::QuicContext>());
+    base::FilePath transport_security_state_file_path =
+        base_path_.Append(FILE_PATH_LITERAL("TransportSecurity"));
     transport_security_persister_ =
         std::make_unique<net::TransportSecurityPersister>(
-            url_request_context_->transport_security_state(), base_path_,
+            url_request_context_->transport_security_state(),
             base::ThreadPool::CreateSequencedTaskRunner(
-                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+            transport_security_state_file_path);
     storage_->set_http_server_properties(
         std::make_unique<net::HttpServerProperties>());
 

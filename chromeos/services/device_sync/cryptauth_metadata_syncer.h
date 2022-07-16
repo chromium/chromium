@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
 #include "chromeos/services/device_sync/cryptauth_key.h"
 #include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
@@ -79,6 +78,9 @@ class CryptAuthMetadataSyncer {
       const absl::optional<cryptauthv2::ClientDirective>&,
       CryptAuthDeviceSyncResult::ResultCode)>;
 
+  CryptAuthMetadataSyncer(const CryptAuthMetadataSyncer&) = delete;
+  CryptAuthMetadataSyncer& operator=(const CryptAuthMetadataSyncer&) = delete;
+
   virtual ~CryptAuthMetadataSyncer();
 
   // Starts the SyncMetadata portion of the CryptAuth v2 DeviceSync flow.
@@ -107,8 +109,6 @@ class CryptAuthMetadataSyncer {
  private:
   SyncMetadataAttemptFinishedCallback callback_;
   bool was_sync_metadata_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthMetadataSyncer);
 };
 
 }  // namespace device_sync

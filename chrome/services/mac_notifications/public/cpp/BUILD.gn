@@ -4,7 +4,9 @@
 
 source_set("cpp") {
   sources = [
-    "notification_constants_mac.h",
-    "notification_operation.h",
+    "mac_notification_metrics.h",
+    "mac_notification_metrics.mm",
   ]
+  deps = [ "//base" ]
+  frameworks = [ "Foundation.framework" ]
 }

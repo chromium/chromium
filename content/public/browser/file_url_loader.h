@@ -30,13 +30,14 @@ class CONTENT_EXPORT FileURLLoaderObserver
     : public mojo::FilteredDataSource::Filter {
  public:
   FileURLLoaderObserver() {}
+
+  FileURLLoaderObserver(const FileURLLoaderObserver&) = delete;
+  FileURLLoaderObserver& operator=(const FileURLLoaderObserver&) = delete;
+
   ~FileURLLoaderObserver() override {}
 
   virtual void OnStart() {}
   virtual void OnSeekComplete(int64_t result) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileURLLoaderObserver);
 };
 
 // Helper to create a self-owned URLLoader instance which fulfills |request|

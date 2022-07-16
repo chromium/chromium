@@ -21,14 +21,16 @@ class MockTpmChallengeKeySubtle : public TpmChallengeKeySubtle {
       delete;
   ~MockTpmChallengeKeySubtle() override;
 
-  MOCK_METHOD(void,
-              StartPrepareKeyStep,
-              (AttestationKeyType key_type,
-               bool will_register_key,
-               const std::string& key_name,
-               Profile* profile,
-               TpmChallengeKeyCallback callback),
-              (override));
+  MOCK_METHOD(
+      void,
+      StartPrepareKeyStep,
+      (AttestationKeyType key_type,
+       bool will_register_key,
+       const std::string& key_name,
+       Profile* profile,
+       TpmChallengeKeyCallback callback,
+       const absl::optional<::attestation::DeviceTrustSignals>& signals),
+      (override));
 
   MOCK_METHOD(void,
               StartSignChallengeStep,

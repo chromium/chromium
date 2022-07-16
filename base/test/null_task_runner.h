@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace base {
 
@@ -24,6 +24,9 @@ class NullTaskRunner : public base::SingleThreadTaskRunner {
  public:
   NullTaskRunner();
 
+  NullTaskRunner(const NullTaskRunner&) = delete;
+  NullTaskRunner& operator=(const NullTaskRunner&) = delete;
+
   bool PostDelayedTask(const Location& from_here,
                        base::OnceClosure task,
                        base::TimeDelta delay) override;
@@ -35,8 +38,6 @@ class NullTaskRunner : public base::SingleThreadTaskRunner {
 
  protected:
   ~NullTaskRunner() override;
-
-  DISALLOW_COPY_AND_ASSIGN(NullTaskRunner);
 };
 
 }  // namespace base

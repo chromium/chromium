@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/check.h"
 #include "content/public/common/drop_data.h"
 
 namespace content {
@@ -24,8 +25,12 @@ WebDragDestDelegate* WebContentsViewDelegate::GetDragDestDelegate() {
 }
 
 void WebContentsViewDelegate::ShowContextMenu(
-    RenderFrameHost* render_frame_host,
-    const ContextMenuParams& params) {
+    RenderFrameHost& render_frame_host,
+    const ContextMenuParams& params) {}
+
+void WebContentsViewDelegate::ExecuteCommandForTesting(int command_id,
+                                                       int event_flags) {
+  NOTREACHED();
 }
 
 void WebContentsViewDelegate::StoreFocus() {

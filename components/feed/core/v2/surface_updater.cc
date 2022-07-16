@@ -18,6 +18,7 @@
 #include "components/feed/core/v2/launch_reliability_logger.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
+#include "components/feed/core/v2/stream_surface_set.h"
 
 namespace feed {
 namespace {
@@ -131,6 +132,11 @@ StreamUpdateAndType MakeStreamUpdate(
     }
   }
 
+  if (model) {
+    update.stream_update.set_fetch_time_ms(
+        model->GetLastAddedTime().ToDeltaSinceWindowsEpoch().InMilliseconds());
+  }
+
   return update;
 }
 
@@ -196,9 +202,12 @@ bool SurfaceUpdater::DrawState::operator==(const DrawState& rhs) const {
          std::tie(rhs.loading_more, rhs.loading_initial, rhs.zero_state_type);
 }
 
-SurfaceUpdater::SurfaceUpdater(MetricsReporter* metrics_reporter)
+SurfaceUpdater::SurfaceUpdater(MetricsReporter* metrics_reporter,
+                               StreamSurfaceSet* surfaces)
     : metrics_reporter_(metrics_reporter),
-      launch_reliability_logger_(&surfaces_) {}
+      surfaces_(surfaces),
+      launch_reliability_logger_(surfaces) {}
+
 SurfaceUpdater::~SurfaceUpdater() = default;
 
 void SurfaceUpdater::SetModel(StreamModel* model) {
@@ -253,12 +262,9 @@ void SurfaceUpdater::SurfaceAdded(
     surface->ReplaceDataStoreEntry(datastore_entry.first,
                                    datastore_entry.second);
   }
-
-  surfaces_.AddObserver(surface);
 }
 
 void SurfaceUpdater::SurfaceRemoved(FeedStreamSurface* surface) {
-  surfaces_.RemoveObserver(surface);
 }
 
 void SurfaceUpdater::LoadStreamStarted(bool manual_refreshing) {
@@ -300,10 +306,6 @@ int SurfaceUpdater::GetSliceIndexFromSliceId(const std::string& slice_id) {
   return -1;
 }
 
-bool SurfaceUpdater::HasSurfaceAttached() const {
-  return !surfaces_.empty();
-}
-
 void SurfaceUpdater::SetLoadingMore(bool is_loading) {
   DCHECK(!loading_initial_)
       << "SetLoadingMore while still loading the initial state";
@@ -332,15 +334,14 @@ void SurfaceUpdater::SendStreamUpdateIfNeeded() {
 void SurfaceUpdater::SendStreamUpdate(
     const std::vector<std::string>& updated_shared_state_ids) {
   DrawState state = GetState();
-
   StreamUpdateAndType update =
       MakeStreamUpdate(updated_shared_state_ids, sent_content_, model_, state);
 
   if (load_stream_started_ && !loading_more_)
     launch_reliability_logger_.OnStreamUpdate(update.type);
 
-  for (FeedStreamSurface& surface : surfaces_)
-    SendUpdateToSurface(&surface, update.stream_update);
+  for (auto& entry : *surfaces_)
+    SendUpdateToSurface(entry.surface, update.stream_update);
 
   sent_content_ = GetContentSet(model_);
   last_draw_state_ = state;
@@ -380,16 +381,14 @@ void SurfaceUpdater::SetOfflinePageAvailability(const std::string& badge_id,
 void SurfaceUpdater::InsertDatastoreEntry(const std::string& key,
                                           const std::string& value) {
   xsurface_datastore_entries_[key] = value;
-  for (FeedStreamSurface& surface : surfaces_) {
-    surface.ReplaceDataStoreEntry(key, value);
-  }
+  for (auto& entry : *surfaces_)
+    entry.surface->ReplaceDataStoreEntry(key, value);
 }
 
 void SurfaceUpdater::RemoveDatastoreEntry(const std::string& key) {
   if (xsurface_datastore_entries_.erase(key) == 1) {
-    for (FeedStreamSurface& surface : surfaces_) {
-      surface.RemoveDataStoreEntry(key);
-    }
+    for (auto& entry : *surfaces_)
+      entry.surface->RemoveDataStoreEntry(key);
   }
 }
 

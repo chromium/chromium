@@ -36,6 +36,10 @@ class SSLBlockingPageBase
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client);
+
+  SSLBlockingPageBase(const SSLBlockingPageBase&) = delete;
+  SSLBlockingPageBase& operator=(const SSLBlockingPageBase&) = delete;
+
   ~SSLBlockingPageBase() override;
 
   // security_interstitials::SecurityInterstitialPage:
@@ -48,7 +52,6 @@ class SSLBlockingPageBase
 
  private:
   const std::unique_ptr<CertReportHelper> cert_report_helper_;
-  DISALLOW_COPY_AND_ASSIGN(SSLBlockingPageBase);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_BLOCKING_PAGE_BASE_H_

@@ -103,6 +103,13 @@ test("cast_media_unittests") {
     "//testing/gtest",
   ]
 
+  if (use_unix_sockets) {
+    deps += [
+      "//chromecast/media/audio/audio_output_service:unittests",
+      "//chromecast/media/audio/net:audio_socket_service_unittests",
+    ]
+  }
+
   if (is_android) {
     deps += [
       "//chromecast/media/cma/backend/android:audio_track_java",

@@ -4,10 +4,17 @@
 
 #include "content/browser/font_access/font_access_manager_impl.h"
 
+#include <limits>
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/types/pass_key.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -15,6 +22,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/font_access_delegate.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "third_party/blink/public/common/features.h"
@@ -24,22 +32,41 @@
 
 namespace content {
 
-FontAccessManagerImpl::FontAccessManagerImpl() {
-  ipc_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-  results_task_runner_ = content::GetUIThreadTaskRunner({});
+// static
+std::unique_ptr<FontAccessManagerImpl> FontAccessManagerImpl::Create() {
+  return std::make_unique<FontAccessManagerImpl>(
+      FontEnumerationCache::Create(), base::PassKey<FontAccessManagerImpl>());
 }
+
+// static
+std::unique_ptr<FontAccessManagerImpl> FontAccessManagerImpl::CreateForTesting(
+    base::SequenceBound<FontEnumerationCache> font_enumeration_cache) {
+  return std::make_unique<FontAccessManagerImpl>(
+      std::move(font_enumeration_cache),
+      base::PassKey<FontAccessManagerImpl>());
+}
+
+FontAccessManagerImpl::FontAccessManagerImpl(
+    base::SequenceBound<FontEnumerationCache> font_enumeration_cache,
+    base::PassKey<FontAccessManagerImpl>)
+    : font_enumeration_cache_(std::move(font_enumeration_cache)),
+      results_task_runner_(content::GetUIThreadTaskRunner({})) {}
 
 FontAccessManagerImpl::~FontAccessManagerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void FontAccessManagerImpl::BindReceiver(
-    const BindingContext& context,
+    url::Origin origin,
+    GlobalRenderFrameHostId frame_id,
     mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  receivers_.Add(this, std::move(receiver), context);
+  receivers_.Add(this, std::move(receiver),
+                 {
+                     .origin = std::move(origin),
+                     .frame_id = frame_id,
+                 });
 }
 
 void FontAccessManagerImpl::EnumerateLocalFonts(
@@ -101,8 +128,7 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
           PermissionType::FONT_ACCESS, rfh, context.origin.GetURL(),
           /*user_gesture=*/true,
           base::BindOnce(&FontAccessManagerImpl::DidRequestPermission,
-                         // Safe because this is an initialized singleton.
-                         base::Unretained(this), std::move(callback)));
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 #else
   std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,
                           base::ReadOnlySharedMemoryRegion());
@@ -147,38 +173,37 @@ void FontAccessManagerImpl::ChooseLocalFonts(
 
   FontAccessDelegate* delegate =
       GetContentClient()->browser()->GetFontAccessDelegate();
+  // TODO(pwnall): It may be possible to replace the WeakPtr below with
+  //               base::Unretained(), if the FontAccessChooser guarantees that
+  //               the callback isn't run after the chooser is destroyed.
   choosers_[context.frame_id] = delegate->RunChooser(
       rfh, selection,
       base::BindOnce(&FontAccessManagerImpl::DidChooseLocalFonts,
-                     base::Unretained(this), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), context.frame_id,
+                     std::move(callback)));
 #endif
 }
 
 void FontAccessManagerImpl::FindAllFonts(FindAllFontsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
 #if !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
   std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,
                           {});
 #else
-  // Obtain cached font enumeration.
-  ipc_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](FontAccessManagerImpl* impl, FindAllFontsCallback callback,
-             scoped_refptr<base::TaskRunner> results_task_runner) {
-            FontEnumerationCache::GetInstance()
-                ->QueueShareMemoryRegionWhenReady(
-                    results_task_runner,
-                    base::BindOnce(&FontAccessManagerImpl::DidFindAllFonts,
-                                   base::Unretained(impl),
-                                   std::move(callback)));
-          },
-          base::Unretained(this), std::move(callback), results_task_runner_));
+  font_enumeration_cache_
+      .AsyncCall(&FontEnumerationCache::GetFontEnumerationData)
+      .Then(base::BindOnce(&FontAccessManagerImpl::DidFindAllFonts,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(callback)));
 #endif
 }
 
 void FontAccessManagerImpl::DidRequestPermission(
     EnumerateLocalFontsCallback callback,
     blink::mojom::PermissionStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
 #if !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
   std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,
                           base::ReadOnlySharedMemoryRegion());
@@ -193,31 +218,27 @@ void FontAccessManagerImpl::DidRequestPermission(
 
 // Per-platform delegation for obtaining cached font enumeration data occurs
 // here, after the permission has been granted.
-  ipc_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](EnumerateLocalFontsCallback callback,
-                        scoped_refptr<base::TaskRunner> results_task_runner) {
-                       FontEnumerationCache::GetInstance()
-                           ->QueueShareMemoryRegionWhenReady(
-                               results_task_runner, std::move(callback));
-                     },
-                     std::move(callback), results_task_runner_));
+  font_enumeration_cache_
+      .AsyncCall(&FontEnumerationCache::GetFontEnumerationData)
+      .Then(base::BindOnce(
+          [](EnumerateLocalFontsCallback callback, FontEnumerationData data) {
+            std::move(callback).Run(data.status, std::move(data.font_data));
+          },
+          std::move(callback)));
 #endif
 }
 
-void FontAccessManagerImpl::DidFindAllFonts(
-    FindAllFontsCallback callback,
-    blink::mojom::FontEnumerationStatus status,
-    base::ReadOnlySharedMemoryRegion region) {
+void FontAccessManagerImpl::DidFindAllFonts(FindAllFontsCallback callback,
+                                            FontEnumerationData data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (status != blink::mojom::FontEnumerationStatus::kOk) {
-    std::move(callback).Run(status, {});
+  if (data.status != blink::mojom::FontEnumerationStatus::kOk) {
+    std::move(callback).Run(data.status, {});
     return;
   }
 
-  const base::ReadOnlySharedMemoryMapping mapping = region.Map();
-  if (mapping.size() > INT_MAX) {
+  const base::ReadOnlySharedMemoryMapping mapping = data.font_data.Map();
+  if (mapping.size() > std::numeric_limits<int>::max()) {
     std::move(callback).Run(
         blink::mojom::FontEnumerationStatus::kUnexpectedError, {});
     return;
@@ -226,27 +247,26 @@ void FontAccessManagerImpl::DidFindAllFonts(
   blink::FontEnumerationTable table;
   table.ParseFromArray(mapping.memory(), static_cast<int>(mapping.size()));
 
-  std::vector<blink::mojom::FontMetadata> data;
+  std::vector<blink::mojom::FontMetadata> font_data;
   for (const auto& element : table.fonts()) {
-    auto entry = blink::mojom::FontMetadata(
-        element.postscript_name(), element.full_name(), element.family(),
-        element.style(), element.italic(), element.stretch(), element.weight());
-    data.push_back(std::move(entry));
+    font_data.emplace_back(element.postscript_name(), element.full_name(),
+                           element.family(), element.style(), element.italic(),
+                           element.stretch(), element.weight());
   }
 
-  std::move(callback).Run(status, std::move(data));
+  std::move(callback).Run(data.status, std::move(font_data));
 }
 
 void FontAccessManagerImpl::DidChooseLocalFonts(
+    GlobalRenderFrameHostId frame_id,
     ChooseLocalFontsCallback callback,
     blink::mojom::FontEnumerationStatus status,
     std::vector<blink::mojom::FontMetadataPtr> fonts) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // The chooser has fulfilled its purpose. It's safe to dispose of it.
-  const BindingContext& context = receivers_.current_context();
-  int erased = choosers_.erase(context.frame_id);
-  DCHECK(erased == 1);
+  size_t erased = choosers_.erase(frame_id);
+  DCHECK_EQ(erased, 1u);
 
   std::move(callback).Run(std::move(status), std::move(fonts));
 }

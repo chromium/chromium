@@ -37,14 +37,6 @@ bool PaymentRequestTestController::ConfirmPayment() {
   return false;
 }
 
-bool PaymentRequestTestController::ConfirmMinimalUI() {
-  return ConfirmMinimalUIForTest();
-}
-
-bool PaymentRequestTestController::DismissMinimalUI() {
-  return DismissMinimalUIForTest();
-}
-
 bool PaymentRequestTestController::IsAndroidMarshmallowOrLollipop() {
   return IsAndroidMarshmallowOrLollipopForTest();
 }
@@ -80,7 +72,7 @@ void PaymentRequestTestController::SetUpOnMainThread() {
                           base::Unretained(this)),
       base::BindRepeating(&PaymentRequestTestController::OnCompleteCalled,
                           base::Unretained(this)),
-      base::BindRepeating(&PaymentRequestTestController::OnMinimalUIReady,
+      base::BindRepeating(&PaymentRequestTestController::OnUIDisplayed,
                           base::Unretained(this)));
 
   SetUseDelegateOnPaymentRequestForTesting(
@@ -129,9 +121,6 @@ void PaymentRequestTestController::SetTwaPackageName(
 }
 
 void PaymentRequestTestController::SetHasAuthenticator(bool has_authenticator) {
-  // TODO(https://crbug.com/1110320): Implement SetHasAuthenticator() for
-  // Android, so secure payment confirmation can be integration tested on
-  // Android as well.
   has_authenticator_ = has_authenticator;
 }
 
@@ -189,9 +178,9 @@ void PaymentRequestTestController::OnCompleteCalled() {
     observer_->OnCompleteCalled();
 }
 
-void PaymentRequestTestController::OnMinimalUIReady() {
+void PaymentRequestTestController::OnUIDisplayed() {
   if (observer_)
-    observer_->OnMinimalUIReady();
+    observer_->OnUIDisplayed();
 }
 
 }  // namespace payments

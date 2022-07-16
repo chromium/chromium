@@ -44,6 +44,7 @@ namespace blink {
 
 class EventTarget;
 class ExceptionState;
+class StructuredSerializeOptions;
 class ScriptState;
 class ScriptValue;
 class V8Function;
@@ -52,6 +53,8 @@ class CORE_EXPORT WindowOrWorkerGlobalScope {
   STATIC_ONLY(WindowOrWorkerGlobalScope);
 
  public:
+  static void reportError(ScriptState*, EventTarget&, const ScriptValue&);
+
   static String btoa(EventTarget&,
                      const String& string_to_encode,
                      ExceptionState&);
@@ -83,6 +86,12 @@ class CORE_EXPORT WindowOrWorkerGlobalScope {
   static void clearInterval(EventTarget&, int timeout_id);
 
   static bool crossOriginIsolated(const ExecutionContext&);
+
+  static ScriptValue structuredClone(ScriptState*,
+                                     EventTarget&,
+                                     const ScriptValue& message,
+                                     const StructuredSerializeOptions*,
+                                     ExceptionState&);
 };
 
 }  // namespace blink

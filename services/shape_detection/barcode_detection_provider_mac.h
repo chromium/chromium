@@ -26,6 +26,11 @@ class BarcodeDetectionProviderMac
  public:
   BarcodeDetectionProviderMac();
   explicit BarcodeDetectionProviderMac(std::unique_ptr<VisionAPIInterface>);
+
+  BarcodeDetectionProviderMac(const BarcodeDetectionProviderMac&) = delete;
+  BarcodeDetectionProviderMac& operator=(const BarcodeDetectionProviderMac&) =
+      delete;
+
   ~BarcodeDetectionProviderMac() override;
 
   // Binds BarcodeDetection provider receiver to the implementation of
@@ -38,9 +43,6 @@ class BarcodeDetectionProviderMac
       mojom::BarcodeDetectorOptionsPtr options) override;
   void EnumerateSupportedFormats(
       EnumerateSupportedFormatsCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BarcodeDetectionProviderMac);
 
   absl::optional<std::vector<mojom::BarcodeFormat>> supported_formats_;
   std::unique_ptr<VisionAPIInterface> vision_api_;

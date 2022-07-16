@@ -64,7 +64,7 @@ void InitializeRegistryOverrideForTesting(
   ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(L"enable_cloud_association",
                                           disable_cloud_association));
   ASSERT_EQ(ERROR_SUCCESS,
-            key.WriteValue(L"domains_allowed_to_login", L"test.com"));
+            key.WriteValue(L"domains_allowed_to_login", L"test.com,gmail.com"));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

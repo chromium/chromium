@@ -35,6 +35,9 @@ class ASH_EXPORT DeskActivationAnimation : public DeskAnimationBase {
   metrics_util::ReportCallback GetReportCallback() const override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(DeskActivationAnimationTest,
+                           AnimatingAfterFastSwipe);
+
   // Prepares the desk associated with |index| for taking a screenshot. Exits
   // overview and splitview if necessary and then activates the desk. Restores
   // splitview if necessary after activating the desk.

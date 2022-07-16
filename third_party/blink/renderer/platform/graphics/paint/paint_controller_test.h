@@ -18,6 +18,16 @@ namespace blink {
 
 class GraphicsContext;
 
+class CommitCycleScope : public PaintController::CycleScope {
+ public:
+  explicit CommitCycleScope(PaintController& controller)
+      : PaintController::CycleScope(controller, true) {}
+  ~CommitCycleScope() {
+    for (auto* controller : controllers_)
+      controller->CommitNewDisplayItems();
+  }
+};
+
 class PaintControllerTestBase : public testing::Test {
  public:
   static void DrawNothing(GraphicsContext& context,
@@ -25,23 +35,24 @@ class PaintControllerTestBase : public testing::Test {
                           DisplayItem::Type type) {
     if (DrawingRecorder::UseCachedDrawingIfPossible(context, client, type))
       return;
-    DrawingRecorder recorder(context, client, type, IntRect());
+    DrawingRecorder recorder(context, client, type, gfx::Rect());
   }
 
   static void DrawRect(GraphicsContext& context,
                        const DisplayItemClient& client,
                        DisplayItem::Type type,
-                       const IntRect& bounds) {
+                       const gfx::Rect& bounds) {
     if (DrawingRecorder::UseCachedDrawingIfPossible(context, client, type))
       return;
     DrawingRecorder recorder(context, client, type, bounds);
-    context.DrawRect(bounds);
+    context.DrawRect(IntRect(bounds), AutoDarkMode::Disabled());
   }
 
  protected:
   PaintControllerTestBase()
-      : root_paint_property_client_("root"),
-        root_paint_chunk_id_(root_paint_property_client_,
+      : root_paint_property_client_(
+            MakeGarbageCollected<FakeDisplayItemClient>("root")),
+        root_paint_chunk_id_(root_paint_property_client_->Id(),
                              DisplayItem::kUninitializedType),
         paint_controller_(std::make_unique<PaintController>()) {}
 
@@ -52,7 +63,9 @@ class PaintControllerTestBase : public testing::Test {
   void InitRootChunk() { InitRootChunk(GetPaintController()); }
   void InitRootChunk(PaintController& paint_controller) {
     paint_controller.UpdateCurrentPaintChunkProperties(
-        &root_paint_chunk_id_, DefaultPaintChunkProperties());
+        root_paint_chunk_id_, *root_paint_property_client_,
+        DefaultPaintChunkProperties());
+    paint_controller.RecordDebugInfo(*root_paint_property_client_);
   }
   const PaintChunk::Id DefaultRootChunkId() const {
     return root_paint_chunk_id_;
@@ -80,15 +93,10 @@ class PaintControllerTestBase : public testing::Test {
 
   void InvalidateAll() { paint_controller_->InvalidateAllForTesting(); }
 
-  void CommitAndFinishCycle() {
-    paint_controller_->CommitNewDisplayItems();
-    paint_controller_->FinishCycle();
-  }
-
   using SubsequenceMarkers = PaintController::SubsequenceMarkers;
   const SubsequenceMarkers* GetSubsequenceMarkers(
       const DisplayItemClient& client) {
-    return paint_controller_->GetSubsequenceMarkers(client);
+    return paint_controller_->GetSubsequenceMarkers(client.Id());
   }
 
   static bool ClientCacheIsValid(const PaintController& paint_controller,
@@ -101,7 +109,7 @@ class PaintControllerTestBase : public testing::Test {
   }
 
  private:
-  FakeDisplayItemClient root_paint_property_client_;
+  Persistent<FakeDisplayItemClient> root_paint_property_client_;
   PaintChunk::Id root_paint_chunk_id_;
   std::unique_ptr<PaintController> paint_controller_;
 };
@@ -113,11 +121,11 @@ class PaintControllerTestBase : public testing::Test {
 MATCHER_P(IsSameId, id, "") {
   return arg.GetId() == id;
 }
-MATCHER_P2(IsSameId, client, type, "") {
-  return arg.GetId() == DisplayItem::Id(*client, type);
+MATCHER_P2(IsSameId, client_id, type, "") {
+  return arg.GetId() == DisplayItem::Id(client_id, type);
 }
-MATCHER_P3(IsSameId, client, type, fragment, "") {
-  return arg.GetId() == DisplayItem::Id(*client, type, fragment);
+MATCHER_P3(IsSameId, client_id, type, fragment, "") {
+  return arg.GetId() == DisplayItem::Id(client_id, type, fragment);
 }
 
 // Matcher for checking paint chunks. Sample usage:
@@ -135,7 +143,7 @@ inline bool CheckChunk(const PaintChunk& chunk,
                        const PaintChunk::Id& id,
                        const PropertyTreeStateOrAlias& properties,
                        const HitTestData* hit_test_data = nullptr,
-                       const IntRect* bounds = nullptr) {
+                       const gfx::Rect* bounds = nullptr) {
   return chunk.begin_index == begin && chunk.end_index == end &&
          chunk.id == id && chunk.properties == properties &&
          ((!chunk.hit_test_data && !hit_test_data) ||

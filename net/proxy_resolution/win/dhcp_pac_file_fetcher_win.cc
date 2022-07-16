@@ -13,8 +13,8 @@
 #include "base/memory/free_deleter.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
@@ -57,6 +57,11 @@ bool IsDhcpCapableAdapter(IP_ADAPTER_ADDRESSES* adapter) {
 // GetCandidateAdapterNames() performed, for output to NetLog.
 struct DhcpAdapterNamesLoggingInfo {
   DhcpAdapterNamesLoggingInfo() = default;
+
+  DhcpAdapterNamesLoggingInfo(const DhcpAdapterNamesLoggingInfo&) = delete;
+  DhcpAdapterNamesLoggingInfo& operator=(const DhcpAdapterNamesLoggingInfo&) =
+      delete;
+
   ~DhcpAdapterNamesLoggingInfo() = default;
 
   // The error that iphlpapi!GetAdaptersAddresses returned.
@@ -79,9 +84,6 @@ struct DhcpAdapterNamesLoggingInfo {
   // The time when control returned to the origin thread
   // (OnGetCandidateAdapterNamesDone)
   base::TimeTicks origin_thread_end_time;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DhcpAdapterNamesLoggingInfo);
 };
 
 namespace {
@@ -104,14 +106,16 @@ constexpr int kMaxConcurrentDhcpLookupTasks = 12;
 // How long to wait at maximum after we get results (a PAC file or
 // knowledge that no PAC file is configured) from whichever network
 // adapter finishes first.
-constexpr base::TimeDelta kMaxWaitAfterFirstResult =
-    base::TimeDelta::FromMilliseconds(400);
+constexpr base::TimeDelta kMaxWaitAfterFirstResult = base::Milliseconds(400);
 
 // A TaskRunner that never schedules more than |kMaxConcurrentDhcpLookupTasks|
 // tasks concurrently.
 class TaskRunnerWithCap : public base::TaskRunner {
  public:
   TaskRunnerWithCap() = default;
+
+  TaskRunnerWithCap(const TaskRunnerWithCap&) = delete;
+  TaskRunnerWithCap& operator=(const TaskRunnerWithCap&) = delete;
 
   bool PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
@@ -195,8 +199,6 @@ class TaskRunnerWithCap : public base::TaskRunner {
 
   // Tasks that are waiting to be scheduled.
   base::queue<LocationAndTask> pending_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskRunnerWithCap);
 };
 
 base::Value NetLogGetAdaptersDoneParams(DhcpAdapterNamesLoggingInfo* info) {
@@ -420,12 +422,12 @@ void DhcpPacFileFetcherWin::OnFetcherDone(size_t fetcher_index,
        it != fetchers_.end();
        ++it) {
     bool did_finish = (*it)->DidFinish();
-    int result = (*it)->GetResult();
-    if (did_finish && result == OK) {
+    int fetch_result = (*it)->GetResult();
+    if (did_finish && fetch_result == OK) {
       TransitionToDone();
       return;
     }
-    if (!did_finish || result != ERR_PAC_NOT_IN_DHCP) {
+    if (!did_finish || fetch_result != ERR_PAC_NOT_IN_DHCP) {
       break;
     }
   }

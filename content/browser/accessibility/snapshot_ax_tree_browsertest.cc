@@ -4,7 +4,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/test/scoped_feature_list.h"
+#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -27,6 +28,9 @@ class AXTreeSnapshotWaiter {
  public:
   AXTreeSnapshotWaiter() : loop_runner_(new MessageLoopRunner()) {}
 
+  AXTreeSnapshotWaiter(const AXTreeSnapshotWaiter&) = delete;
+  AXTreeSnapshotWaiter& operator=(const AXTreeSnapshotWaiter&) = delete;
+
   void Wait() { loop_runner_->Run(); }
 
   const ui::AXTreeUpdate& snapshot() const { return snapshot_; }
@@ -39,8 +43,6 @@ class AXTreeSnapshotWaiter {
  private:
   ui::AXTreeUpdate snapshot_;
   scoped_refptr<MessageLoopRunner> loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXTreeSnapshotWaiter);
 };
 
 void DumpRolesAndNamesAsText(const ui::AXNode* node,
@@ -48,10 +50,9 @@ void DumpRolesAndNamesAsText(const ui::AXNode* node,
                              std::string* dst) {
   for (int i = 0; i < indent; i++)
     *dst += "  ";
-  *dst += ui::ToString(node->data().role);
-  if (node->data().HasStringAttribute(ax::mojom::StringAttribute::kName))
-    *dst += " '" +
-            node->data().GetStringAttribute(ax::mojom::StringAttribute::kName) +
+  *dst += ui::ToString(node->GetRole());
+  if (node->HasStringAttribute(ax::mojom::StringAttribute::kName))
+    *dst += " '" + node->GetStringAttribute(ax::mojom::StringAttribute::kName) +
             "'";
   *dst += "\n";
   for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i)
@@ -91,11 +92,76 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
   ui::AXTree tree(waiter.snapshot());
   ui::AXNode* root = tree.root();
   ASSERT_NE(nullptr, root);
-  ASSERT_EQ(ax::mojom::Role::kRootWebArea, root->data().role);
+  ASSERT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
   ui::AXNode* group = root->GetUnignoredChildAtIndex(0);
-  ASSERT_EQ(ax::mojom::Role::kGenericContainer, group->data().role);
+  ASSERT_EQ(ax::mojom::Role::kGenericContainer, group->GetRole());
   ui::AXNode* button = group->GetUnignoredChildAtIndex(0);
-  ASSERT_EQ(ax::mojom::Role::kButton, button->data().role);
+  ASSERT_EQ(ax::mojom::Role::kButton, button->GetRole());
+}
+
+class SnapshotAXTreeFencedFrameBrowserTest : public SnapshotAXTreeBrowserTest {
+ public:
+  SnapshotAXTreeFencedFrameBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    SnapshotAXTreeBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SnapshotAXTreeFencedFrameBrowserTest,
+                       SnapshotAccessibilityTreeFromMultipleFrames) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("fencedframe.test",
+                                              "/fenced_frames/basic.html")));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  RenderFrameHostImpl* primary_rfh = web_contents->GetMainFrame();
+  std::vector<FencedFrame*> fenced_frames = primary_rfh->GetFencedFrames();
+  EXPECT_EQ(1u, fenced_frames.size());
+
+  const GURL fenced_frame_url = embedded_test_server()->GetURL(
+      "fencedframe.test", "/fenced_frames/title1.html");
+  EXPECT_TRUE(ExecJs(
+      primary_rfh, JsReplace("document.querySelector('fencedframe').src = $1;",
+                             fenced_frame_url.spec())));
+  fenced_frames.at(0)->WaitForDidStopLoadingForTesting();
+
+  AXTreeSnapshotWaiter waiter;
+  web_contents->RequestAXTreeSnapshot(
+      base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
+                     base::Unretained(&waiter)),
+      ui::kAXModeComplete,
+      /* exclude_offscreen= */ false,
+      /* max_nodes= */ 0,
+      /* timeout= */ {});
+  waiter.Wait();
+
+  // Dump the whole tree if one of the assertions below fails
+  // to aid in debugging why it failed.
+  SCOPED_TRACE(waiter.snapshot().ToString());
+
+  ui::AXTree tree(waiter.snapshot());
+  ui::AXNode* root = tree.root();
+  std::string dump;
+  DumpRolesAndNamesAsText(root, 0, &dump);
+  EXPECT_EQ(
+      "rootWebArea\n"
+      "  genericContainer\n"
+      "    iframe\n"
+      "      rootWebArea\n"
+      "        genericContainer\n"
+      "          staticText 'This page has no title.'\n",
+      dump);
 }
 
 IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
@@ -108,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* root_frame = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root_frame = web_contents->GetPrimaryFrameTree().root();
 
   EXPECT_TRUE(NavigateToURLFromRenderer(root_frame->child_at(0),
                                         GURL("data:text/plain,Alpha")));
@@ -171,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* root_frame = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root_frame = web_contents->GetPrimaryFrameTree().root();
 
   EXPECT_TRUE(NavigateToURLFromRenderer(root_frame->child_at(0),
                                         GURL("data:text/plain,Alpha")));
@@ -180,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
       static_cast<WebContentsImpl*>(CreateAndAttachInnerContents(
           root_frame->child_at(1)->current_frame_host()));
   EXPECT_TRUE(NavigateToURLFromRenderer(
-      inner_contents->GetFrameTree()->root(),
+      inner_contents->GetPrimaryFrameTree().root(),
       embedded_test_server()->GetURL("/accessibility/snapshot/inner.html")));
 
   AXTreeSnapshotWaiter waiter;
@@ -358,34 +424,34 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, SnapshotPDFMode) {
   ui::AXTree tree(waiter.snapshot());
   ui::AXNode* root = tree.root();
   ASSERT_TRUE(root);
-  ASSERT_EQ(ax::mojom::Role::kRootWebArea, root->data().role);
+  ASSERT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
 
   // Img alt text should be present.
   ui::AXNode* image = root->GetUnignoredChildAtIndex(0);
   ASSERT_TRUE(image);
-  ASSERT_EQ(ax::mojom::Role::kImage, image->data().role);
-  ASSERT_EQ("Unicorns", image->data().GetStringAttribute(
-                            ax::mojom::StringAttribute::kName));
+  ASSERT_EQ(ax::mojom::Role::kImage, image->GetRole());
+  ASSERT_EQ("Unicorns",
+            image->GetStringAttribute(ax::mojom::StringAttribute::kName));
 
   // List attributes like posinset should be present.
   ui::AXNode* ul = root->GetUnignoredChildAtIndex(1);
   ASSERT_TRUE(ul);
-  ASSERT_EQ(ax::mojom::Role::kList, ul->data().role);
+  ASSERT_EQ(ax::mojom::Role::kList, ul->GetRole());
   ui::AXNode* li = ul->GetUnignoredChildAtIndex(0);
   ASSERT_TRUE(li);
-  ASSERT_EQ(ax::mojom::Role::kListItem, li->data().role);
+  ASSERT_EQ(ax::mojom::Role::kListItem, li->GetRole());
   EXPECT_EQ(5, *li->GetPosInSet());
 
   // Table attributes like colspan should be present.
   ui::AXNode* table = root->GetUnignoredChildAtIndex(2);
   ASSERT_TRUE(table);
-  ASSERT_EQ(ax::mojom::Role::kTable, table->data().role);
+  ASSERT_EQ(ax::mojom::Role::kTable, table->GetRole());
   ui::AXNode* tr = table->GetUnignoredChildAtIndex(0);
   ASSERT_TRUE(tr);
-  ASSERT_EQ(ax::mojom::Role::kRow, tr->data().role);
+  ASSERT_EQ(ax::mojom::Role::kRow, tr->GetRole());
   ui::AXNode* td = tr->GetUnignoredChildAtIndex(0);
   ASSERT_TRUE(td);
-  ASSERT_EQ(ax::mojom::Role::kCell, td->data().role);
+  ASSERT_EQ(ax::mojom::Role::kCell, td->GetRole());
   EXPECT_EQ(2, *td->GetTableCellColSpan());
 }
 
@@ -513,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, Timeout) {
         ui::kAXModeComplete,
         /* exclude_offscreen= */ false,
         /* max_nodes= */ 0,
-        /* timeout= */ base::TimeDelta::FromMilliseconds(1));
+        /* timeout= */ base::Milliseconds(1));
     waiter.Wait();
 
     nodes_with_timeout = waiter.snapshot().nodes.size();

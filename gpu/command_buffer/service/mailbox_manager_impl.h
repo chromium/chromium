@@ -22,6 +22,10 @@ namespace gles2 {
 class GPU_GLES2_EXPORT MailboxManagerImpl : public MailboxManager {
  public:
   MailboxManagerImpl();
+
+  MailboxManagerImpl(const MailboxManagerImpl&) = delete;
+  MailboxManagerImpl& operator=(const MailboxManagerImpl&) = delete;
+
   ~MailboxManagerImpl() override;
 
   // MailboxManager implementation:
@@ -40,12 +44,9 @@ class GPU_GLES2_EXPORT MailboxManagerImpl : public MailboxManager {
 
   MailboxToTextureMap mailbox_to_textures_;
   TextureToMailboxMap textures_to_mailboxes_;
-
-  DISALLOW_COPY_AND_ASSIGN(MailboxManagerImpl);
 };
 
 }  // namespage gles2
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_MAILBOX_MANAGER_IMPL_H_
-

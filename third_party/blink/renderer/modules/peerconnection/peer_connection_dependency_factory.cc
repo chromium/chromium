@@ -13,11 +13,14 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/cpu.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/openssl_util.h"
@@ -38,6 +41,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/peerconnection/execution_context_metronome_provider.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
@@ -57,6 +61,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "third_party/webrtc/api/call/call_factory_interface.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/api/rtc_event_log/rtc_event_log_factory.h"
@@ -68,6 +73,7 @@
 #include "third_party/webrtc/rtc_base/openssl_stream_adapter.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "third_party/webrtc/rtc_base/ssl_adapter.h"
+#include "third_party/webrtc_overrides/metronome_task_queue_factory.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
 
 namespace WTF {
@@ -219,39 +225,33 @@ class PeerConnectionStaticDeps {
  private:
   static void LogTaskLatencyWorker(base::TimeDelta sample) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "WebRTC.PeerConnection.Latency.Worker", sample,
-        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
-        50);
+        "WebRTC.PeerConnection.Latency.Worker", sample, base::Microseconds(1),
+        base::Seconds(10), 50);
   }
   static void LogTaskDurationWorker(base::TimeDelta sample) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "WebRTC.PeerConnection.Duration.Worker", sample,
-        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
-        50);
+        "WebRTC.PeerConnection.Duration.Worker", sample, base::Microseconds(1),
+        base::Seconds(10), 50);
   }
   static void LogTaskLatencyNetwork(base::TimeDelta sample) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "WebRTC.PeerConnection.Latency.Network", sample,
-        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
-        50);
+        "WebRTC.PeerConnection.Latency.Network", sample, base::Microseconds(1),
+        base::Seconds(10), 50);
   }
   static void LogTaskDurationNetwork(base::TimeDelta sample) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "WebRTC.PeerConnection.Duration.Network", sample,
-        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
-        50);
+        "WebRTC.PeerConnection.Duration.Network", sample, base::Microseconds(1),
+        base::Seconds(10), 50);
   }
   static void LogTaskLatencySignaling(base::TimeDelta sample) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "WebRTC.PeerConnection.Latency.Signaling", sample,
-        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
-        50);
+        base::Microseconds(1), base::Seconds(10), 50);
   }
   static void LogTaskDurationSignaling(base::TimeDelta sample) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "WebRTC.PeerConnection.Duration.Signaling", sample,
-        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
-        50);
+        base::Microseconds(1), base::Seconds(10), 50);
   }
 
   static void InitializeOnThread(
@@ -319,6 +319,88 @@ base::Thread* GetChromeWorkerThread() {
 }
 base::Thread& GetChromeNetworkThread() {
   return StaticDeps().GetChromeNetworkThread();
+}
+
+std::string GetTierName() {
+  int processors = base::SysInfo::NumberOfProcessors();
+  if (processors <= 2) {
+    base::CPU cpu;
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(const re2::RE2, low_tier_regexp,
+                                    ("Atom|Celeron|Pentium|AMD [AE][0-9]-"));
+    if (re2::RE2::PartialMatch(cpu.cpu_brand(), low_tier_regexp)) {
+      return "LOW";
+    }
+  }
+
+  if (processors < 4) {
+    return "MID";
+  }
+  return "HIGH_OR_ULTRA";
+}
+
+struct UmaVideoConfig {
+  webrtc::SdpVideoFormat format;
+  absl::optional<std::string> scalability_mode;
+  int decoder_weight;
+  int encoder_weight;
+};
+
+void ReportUmaEncodeDecodeCapabilities(
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    media::DecoderFactory* media_decoder_factory) {
+  const gfx::ColorSpace& render_color_space =
+      Platform::Current()->GetRenderingColorSpace();
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner =
+      Platform::Current()->MediaThreadTaskRunner();
+
+  // Create encoder/decoder factories.
+  std::unique_ptr<webrtc::VideoEncoderFactory> webrtc_encoder_factory =
+      blink::CreateWebrtcVideoEncoderFactory(gpu_factories);
+  std::unique_ptr<webrtc::VideoDecoderFactory> webrtc_decoder_factory =
+      blink::CreateWebrtcVideoDecoderFactory(
+          gpu_factories, media_decoder_factory, std::move(media_task_runner),
+          render_color_space);
+  if (webrtc_encoder_factory && webrtc_decoder_factory) {
+    using Sdp = webrtc::SdpVideoFormat;
+    // Query for encode/decode support for H264, VP8, VP9, VP9 k-SVC.
+    UmaVideoConfig video_configs[] = {
+        {Sdp{"H264", Sdp::Parameters{{"level-asymmetry-allowed", "1"},
+                                     {"packetization-mode", "1"},
+                                     {"profile-level-id", "42001f"}}},
+         absl::nullopt, 1, 32},
+        {Sdp{"H264", Sdp::Parameters{{"level-asymmetry-allowed", "1"},
+                                     {"packetization-mode", "1"},
+                                     {"profile-level-id", "4d0032"}}},
+         absl::nullopt, 2, 64},
+        {Sdp{"VP8"}, absl::nullopt, 4, 128},
+        {Sdp{"VP9"}, absl::nullopt, 8, 256},
+        {Sdp{"VP9"}, "L3T3_KEY", 16, 512}};
+    int uma_metric = 0;
+    for (const auto& config : video_configs) {
+      uma_metric += config.decoder_weight *
+                    webrtc_decoder_factory
+                        ->QueryCodecSupport(config.format,
+                                            config.scalability_mode.has_value())
+                        .is_power_efficient;
+
+      uma_metric +=
+          config.encoder_weight *
+          webrtc_encoder_factory
+              ->QueryCodecSupport(config.format, config.scalability_mode)
+              .is_power_efficient;
+    }
+
+    base::UmaHistogramSparse("WebRTC.Video.HwCapabilities." + GetTierName(),
+                             uma_metric);
+  }
+}
+
+void WaitForEncoderSupportReady(
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    media::DecoderFactory* media_decoder_factory) {
+  gpu_factories->NotifyEncoderSupportKnown(
+      base::BindOnce(&ReportUmaEncodeDecodeCapabilities, gpu_factories,
+                     media_decoder_factory));
 }
 
 }  // namespace
@@ -443,6 +525,19 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
   worker_thread_started_event.Wait();
   CHECK(!GetChromeWorkerThread() || GetWorkerThread());
 
+  if (!metronome_source_ &&
+      base::FeatureList::IsEnabled(kWebRtcMetronomeTaskQueue)) {
+    // Store a reference to the context's metronome provider so that it can be
+    // used when cleaning up peer connections, even while the context is being
+    // destroyed.
+    metronome_provider_ =
+        ExecutionContextMetronomeProvider::From(*GetExecutionContext())
+            .metronome_provider();
+    DCHECK(metronome_provider_);
+    metronome_source_ = base::MakeRefCounted<MetronomeSource>(
+        kWebRtcMetronomeTaskQueueTick.Get());
+  }
+
   base::WaitableEvent start_signaling_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
@@ -524,6 +619,17 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
           gpu_factories, media_decoder_factory, std::move(media_task_runner),
           render_color_space);
 
+  if (!encode_decode_capabilities_reported_) {
+    encode_decode_capabilities_reported_ = true;
+    if (gpu_factories) {
+      // Wait until decoder and encoder support are known.
+      gpu_factories->NotifyDecoderSupportKnown(base::BindOnce(
+          &WaitForEncoderSupportReady, gpu_factories, media_decoder_factory));
+    } else {
+      ReportUmaEncodeDecodeCapabilities(gpu_factories, media_decoder_factory);
+    }
+  }
+
   // Enable Multiplex codec in SDP optionally.
   if (base::FeatureList::IsEnabled(blink::features::kWebRtcMultiplexCodec)) {
     webrtc_encoder_factory = std::make_unique<webrtc::MultiplexEncoderFactory>(
@@ -544,7 +650,10 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
       GetWorkerThread() ? GetWorkerThread() : GetSignalingThread();
   pcf_deps.signaling_thread = GetSignalingThread();
   pcf_deps.network_thread = GetNetworkThread();
-  pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
+  pcf_deps.task_queue_factory =
+      !metronome_source_
+          ? CreateWebRtcTaskQueueFactory()
+          : CreateWebRtcMetronomeTaskQueueFactory(metronome_source_);
   pcf_deps.call_factory = webrtc::CreateCallFactory();
   pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>(
       pcf_deps.task_queue_factory.get());
@@ -580,19 +689,26 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
     blink::WebLocalFrame* web_frame,
     webrtc::PeerConnectionObserver* observer,
     ExceptionState& exception_state) {
-  CHECK(web_frame);
   CHECK(observer);
   if (!GetPcFactory().get())
     return nullptr;
 
-  rtc::SetAllowLegacyTLSProtocols(
-      web_frame->Client()->AllowRTCLegacyTLSProtocols());
   webrtc::PeerConnectionDependencies dependencies(observer);
-  dependencies.allocator = CreatePortAllocator(web_frame);
+  // |web_frame| may be null in tests, e.g. if
+  // RTCPeerConnectionHandler::InitializeForTest() is used.
+  if (web_frame) {
+    rtc::SetAllowLegacyTLSProtocols(
+        web_frame->Client()->AllowRTCLegacyTLSProtocols());
+    dependencies.allocator = CreatePortAllocator(web_frame);
+  }
   dependencies.async_resolver_factory = CreateAsyncResolverFactory();
   auto pc_or_error = GetPcFactory()->CreatePeerConnectionOrError(
       config, std::move(dependencies));
   if (pc_or_error.ok()) {
+    ++open_peer_connections_;
+    if (open_peer_connections_ == 1u && metronome_source_) {
+      metronome_provider_->OnStartUsingMetronome(metronome_source_);
+    }
     // Convert from rtc::scoped_refptr to scoped_refptr
     return pc_or_error.value().get();
   } else {
@@ -600,6 +716,23 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
     ThrowExceptionFromRTCError(pc_or_error.error(), exception_state);
     return nullptr;
   }
+}
+
+size_t PeerConnectionDependencyFactory::open_peer_connections() const {
+  return open_peer_connections_;
+}
+
+void PeerConnectionDependencyFactory::OnPeerConnectionClosed() {
+  DCHECK(open_peer_connections_);
+  --open_peer_connections_;
+  if (!open_peer_connections_ && metronome_source_) {
+    metronome_provider_->OnStopUsingMetronome();
+  }
+}
+
+scoped_refptr<MetronomeProvider>
+PeerConnectionDependencyFactory::metronome_provider() const {
+  return metronome_provider_;
 }
 
 std::unique_ptr<cricket::PortAllocator>
@@ -689,7 +822,7 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
   const GURL& requesting_origin =
       GURL(document_url.GetString().Utf8(), document_url.GetParsed(),
            document_url.IsValid())
-          .GetOrigin();
+          .DeprecatedGetOriginAsURL();
 
   std::unique_ptr<rtc::NetworkManager> network_manager;
   if (port_config.enable_multiple_routes) {

@@ -133,11 +133,11 @@ int GetFieldTrialParamByFeatureAsInt(const Feature& feature,
   int value_as_int = 0;
   if (!StringToInt(value_as_string, &value_as_int)) {
     if (!value_as_string.empty()) {
-      DLOG(WARNING) << "Failed to parse field trial param " << param_name
-                    << " with string value " << value_as_string
-                    << " under feature " << feature.name
-                    << " into an int. Falling back to default value of "
-                    << default_value;
+      NOTREACHED() << "Failed to parse field trial param " << param_name
+                   << " with string value " << value_as_string
+                   << " under feature " << feature.name
+                   << " into an int. Falling back to default value of "
+                   << default_value;
     }
     value_as_int = default_value;
   }
@@ -152,11 +152,11 @@ double GetFieldTrialParamByFeatureAsDouble(const Feature& feature,
   double value_as_double = 0;
   if (!StringToDouble(value_as_string, &value_as_double)) {
     if (!value_as_string.empty()) {
-      DLOG(WARNING) << "Failed to parse field trial param " << param_name
-                    << " with string value " << value_as_string
-                    << " under feature " << feature.name
-                    << " into a double. Falling back to default value of "
-                    << default_value;
+      NOTREACHED() << "Failed to parse field trial param " << param_name
+                   << " with string value " << value_as_string
+                   << " under feature " << feature.name
+                   << " into a double. Falling back to default value of "
+                   << default_value;
     }
     value_as_double = default_value;
   }
@@ -174,11 +174,11 @@ bool GetFieldTrialParamByFeatureAsBool(const Feature& feature,
     return false;
 
   if (!value_as_string.empty()) {
-    DLOG(WARNING) << "Failed to parse field trial param " << param_name
-                  << " with string value " << value_as_string
-                  << " under feature " << feature.name
-                  << " into a bool. Falling back to default value of "
-                  << default_value;
+    NOTREACHED() << "Failed to parse field trial param " << param_name
+                 << " with string value " << value_as_string
+                 << " under feature " << feature.name
+                 << " into a bool. Falling back to default value of "
+                 << default_value;
   }
   return default_value;
 }
@@ -195,12 +195,11 @@ base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
 
   absl::optional<base::TimeDelta> ret = TimeDeltaFromString(value_as_string);
   if (!ret.has_value()) {
-    DLOG(WARNING)
-        << "Failed to parse field trial param " << param_name
-        << " with string value " << value_as_string << " under feature "
-        << feature.name
-        << " into a base::TimeDelta. Falling back to default value of "
-        << default_value;
+    NOTREACHED() << "Failed to parse field trial param " << param_name
+                 << " with string value " << value_as_string
+                 << " under feature " << feature.name
+                 << " into a base::TimeDelta. Falling back to default value of "
+                 << default_value;
     return default_value;
   }
 
@@ -232,11 +231,11 @@ void LogInvalidEnumValue(const Feature& feature,
                          const std::string& param_name,
                          const std::string& value_as_string,
                          int default_value_as_int) {
-  DLOG(WARNING) << "Failed to parse field trial param " << param_name
-                << " with string value " << value_as_string << " under feature "
-                << feature.name
-                << " into an enum. Falling back to default value of "
-                << default_value_as_int;
+  NOTREACHED() << "Failed to parse field trial param " << param_name
+               << " with string value " << value_as_string << " under feature "
+               << feature.name
+               << " into an enum. Falling back to default value of "
+               << default_value_as_int;
 }
 
 }  // namespace base

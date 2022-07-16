@@ -55,6 +55,10 @@ class SetSinkIdResolver : public ScriptPromiseResolver {
                                    HTMLMediaElement&,
                                    const String& sink_id);
   SetSinkIdResolver(ScriptState*, HTMLMediaElement&, const String& sink_id);
+
+  SetSinkIdResolver(const SetSinkIdResolver&) = delete;
+  SetSinkIdResolver& operator=(const SetSinkIdResolver&) = delete;
+
   ~SetSinkIdResolver() override = default;
   void StartAsync();
 
@@ -69,8 +73,6 @@ class SetSinkIdResolver : public ScriptPromiseResolver {
 
   Member<HTMLMediaElement> element_;
   String sink_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetSinkIdResolver);
 };
 
 SetSinkIdResolver* SetSinkIdResolver::Create(ScriptState* script_state,

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -19,21 +18,23 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+using sessions_helper::CheckInitialState;
+using sessions_helper::OpenTab;
 using testing::Eq;
 using testing::Ge;
 using testing::Le;
-using sessions_helper::CheckInitialState;
-using sessions_helper::OpenTab;
 
 namespace {
 
 class SingleClientPollingSyncTest : public SyncTest {
  public:
   SingleClientPollingSyncTest() : SyncTest(SINGLE_CLIENT) {}
-  ~SingleClientPollingSyncTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientPollingSyncTest);
+  SingleClientPollingSyncTest(const SingleClientPollingSyncTest&) = delete;
+  SingleClientPollingSyncTest& operator=(const SingleClientPollingSyncTest&) =
+      delete;
+
+  ~SingleClientPollingSyncTest() override {}
 };
 
 // This test verifies that the poll interval in prefs gets initialized if no
@@ -104,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
   // Set small polling interval to make random delays introduced in
   // SyncSchedulerImpl::ComputeLastPollOnStart() negligible, but big enough to
   // avoid periodic polls during a test run.
-  remote_prefs.SetPollInterval(base::TimeDelta::FromSeconds(300));
+  remote_prefs.SetPollInterval(base::Seconds(300));
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 

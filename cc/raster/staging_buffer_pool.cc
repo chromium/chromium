@@ -59,8 +59,8 @@ void WaitForQueryResult(gpu::raster::RasterInterface* ri, GLuint query_id) {
     // be available in a finite amount of time.
     ri->ShallowFlushCHROMIUM();
 
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(
-        kCheckForQueryResultAvailableTickRateMs));
+    base::PlatformThread::Sleep(
+        base::Milliseconds(kCheckForQueryResultAvailableTickRateMs));
   }
 
   GLuint result = 0;
@@ -129,7 +129,7 @@ StagingBufferPool::StagingBufferPool(
       staging_buffer_usage_in_bytes_(0),
       free_staging_buffer_usage_in_bytes_(0),
       staging_buffer_expiration_delay_(
-          base::TimeDelta::FromMilliseconds(kStagingBufferExpirationDelayMs)),
+          base::Milliseconds(kStagingBufferExpirationDelayMs)),
       reduce_memory_usage_pending_(false) {
   DCHECK(worker_context_provider_);
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(

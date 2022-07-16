@@ -36,6 +36,10 @@ class HistogramTester {
 
   // Takes a snapshot of all current histograms counts.
   HistogramTester();
+
+  HistogramTester(const HistogramTester&) = delete;
+  HistogramTester& operator=(const HistogramTester&) = delete;
+
   ~HistogramTester();
 
   // We know the exact number of samples in a bucket, and that no other bucket
@@ -103,8 +107,6 @@ class HistogramTester {
   // when the instance is destroyed.
   std::map<std::string, std::unique_ptr<base::HistogramSamples>>
       histograms_snapshot_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistogramTester);
 };
 
 struct Bucket {

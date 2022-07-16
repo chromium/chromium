@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that you can click and hover on links in attributes.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <img id="linkify-1" srcset="./1x/googlelogo_color_272x92dp.png 1x, ./2x/googlelogo_color_272x92dp.png 2x">

@@ -85,13 +85,13 @@ std::string MediaBrowserTest::RunTest(const GURL& gurl,
       browser()->tab_strip_model()->GetActiveWebContents(),
       base::ASCIIToUTF16(expected_title));
   AddWaitForTitles(&title_watcher);
-  ui_test_utils::NavigateToURL(browser(), gurl);
+  CHECK(ui_test_utils::NavigateToURL(browser(), gurl));
   std::u16string result = title_watcher.WaitAndGetTitle();
   return base::UTF16ToASCII(result);
 }
 
 void MediaBrowserTest::AddWaitForTitles(content::TitleWatcher* title_watcher) {
-  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kEnded));
-  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kError));
-  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kFailed));
+  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kEndedTitle));
+  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kErrorTitle));
+  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kFailedTitle));
 }

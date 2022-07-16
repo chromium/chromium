@@ -31,6 +31,9 @@ class WebSocketStreamSocket final : public StreamSocket {
       : wrapped_socket_(std::move(wrapped_socket)),
         lock_releaser_(websocket_endpoint_lock_manager, address) {}
 
+  WebSocketStreamSocket(const WebSocketStreamSocket&) = delete;
+  WebSocketStreamSocket& operator=(const WebSocketStreamSocket&) = delete;
+
   ~WebSocketStreamSocket() override = default;
 
   // Socket implementation:
@@ -107,9 +110,6 @@ class WebSocketStreamSocket final : public StreamSocket {
   int64_t GetTotalReceivedBytes() const override {
     return wrapped_socket_->GetTotalReceivedBytes();
   }
-  void DumpMemoryStats(SocketMemoryStats* stats) const override {
-    wrapped_socket_->DumpMemoryStats(stats);
-  }
   void ApplySocketTag(const SocketTag& tag) override {
     wrapped_socket_->ApplySocketTag(tag);
   }
@@ -117,8 +117,6 @@ class WebSocketStreamSocket final : public StreamSocket {
  private:
   std::unique_ptr<StreamSocket> wrapped_socket_;
   WebSocketEndpointLockManager::LockReleaser lock_releaser_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketStreamSocket);
 };
 
 }  // namespace

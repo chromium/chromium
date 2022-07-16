@@ -53,7 +53,7 @@ TEST(PersistedDataTest, RegistrationRequest) {
   RegistrationRequest data;
   data.app_id = "someappid";
   data.brand_code = "somebrand";
-  data.tag = "arandom-tag=likethis";
+  data.ap = "arandom-ap=likethis";
   data.version = base::Version("1.0");
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
@@ -64,7 +64,7 @@ TEST(PersistedDataTest, RegistrationRequest) {
                metadata->GetProductVersion("someappid").GetString().c_str());
   EXPECT_EQ(FILE_PATH_LITERAL("some/file/path"),
             metadata->GetExistenceCheckerPath("someappid").value());
-  EXPECT_STREQ("arandom-tag=likethis", metadata->GetTag("someappid").c_str());
+  EXPECT_STREQ("arandom-ap=likethis", metadata->GetAP("someappid").c_str());
   EXPECT_STREQ("somebrand", metadata->GetBrandCode("someappid").c_str());
 }
 
@@ -92,7 +92,7 @@ TEST(PersistedDataTest, RemoveAppId) {
   RegistrationRequest data;
   data.app_id = "someappid";
   data.brand_code = "somebrand";
-  data.tag = "arandom-tag=likethis";
+  data.ap = "arandom-ap=likethis";
   data.version = base::Version("1.0");
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
@@ -101,7 +101,7 @@ TEST(PersistedDataTest, RemoveAppId) {
 
   data.app_id = "someappid2";
   data.brand_code = "somebrand";
-  data.tag = "arandom-tag=likethis";
+  data.ap = "arandom-ap=likethis";
   data.version = base::Version("2.0");
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));

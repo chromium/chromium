@@ -8,7 +8,8 @@
 
 namespace blink {
 
-ValueRange LengthPropertyFunctions::GetValueRange(const CSSProperty& property) {
+Length::ValueRange LengthPropertyFunctions::GetValueRange(
+    const CSSProperty& property) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kBorderBottomWidth:
     case CSSPropertyID::kBorderLeftWidth:
@@ -39,9 +40,9 @@ ValueRange LengthPropertyFunctions::GetValueRange(const CSSProperty& property) {
     case CSSPropertyID::kColumnWidth:
     case CSSPropertyID::kWidth:
     case CSSPropertyID::kTabSize:
-      return kValueRangeNonNegative;
+      return Length::ValueRange::kNonNegative;
     default:
-      return kValueRangeAll;
+      return Length::ValueRange::kAll;
   }
 }
 

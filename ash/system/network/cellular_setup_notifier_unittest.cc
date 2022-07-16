@@ -4,7 +4,6 @@
 
 #include "ash/system/network/cellular_setup_notifier.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -12,7 +11,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/shill/shill_clients.h"
@@ -45,10 +43,6 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
   ~CellularSetupNotifierTest() override = default;
 
   void SetUp() override {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        chromeos::features::kUpdatedCellularActivationUi);
-
     chromeos::SystemTokenCertDbStorage::Initialize();
     chromeos::NetworkCertLoader::Initialize();
     chromeos::shill_clients::InitializeFakes();

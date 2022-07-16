@@ -276,15 +276,15 @@ TEST_F(ExtensionDataCollectionTest, CollectExtensionDataWithExtension) {
 TEST_F(ExtensionDataCollectionTest, CollectsLastInstalledExtension) {
   std::string extension_id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
   std::string extension_name = "extension_2";
-  base::Time install_time = base::Time::Now() - base::TimeDelta::FromMinutes(3);
+  base::Time install_time = base::Time::Now() - base::Minutes(3);
 
   std::unique_ptr<ExtensionTestingProfile> profile =
       CreateProfile(SAFE_BROWSING_AND_EXTENDED_REPORTING);
   profile->AddExtension("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "extension_1",
-                        base::Time::Now() - base::TimeDelta::FromDays(2));
+                        base::Time::Now() - base::Days(2));
   profile->AddExtension(extension_id, extension_name, install_time);
   profile->AddExtension("cccccccccccccccccccccccccccccccc", "extension_3",
-                        base::Time::Now() - base::TimeDelta::FromHours(4));
+                        base::Time::Now() - base::Hours(4));
 
   ClientIncidentReport_ExtensionData data;
   CollectExtensionData(&data);
@@ -306,13 +306,13 @@ TEST_F(ExtensionDataCollectionTest, IgnoresExtensionsIfNoExtendedSafeBrowsing) {
       CreateProfile(SAFE_BROWSING_AND_EXTENDED_REPORTING);
 
   profile->AddExtension(extension_id, extension_name,
-                        base::Time::Now() - base::TimeDelta::FromDays(3));
+                        base::Time::Now() - base::Days(3));
 
   std::unique_ptr<ExtensionTestingProfile> profile_without_safe_browsing =
       CreateProfile(SAFE_BROWSING_ONLY);
   profile_without_safe_browsing->AddExtension(
       "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "extension_1",
-      base::Time::Now() - base::TimeDelta::FromDays(2));
+      base::Time::Now() - base::Days(2));
 
   ClientIncidentReport_ExtensionData data;
   CollectExtensionData(&data);

@@ -8,12 +8,11 @@
 #include "components/grpc_support/test/get_stream_engine.h"
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "components/grpc_support/include/bidirectional_stream_c.h"
 #include "net/base/host_port_pair.h"
@@ -42,6 +41,11 @@ class BidirectionalStreamTestURLRequestContextGetter
   BidirectionalStreamTestURLRequestContextGetter(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner)
       : task_runner_(task_runner) {}
+
+  BidirectionalStreamTestURLRequestContextGetter(
+      const BidirectionalStreamTestURLRequestContextGetter&) = delete;
+  BidirectionalStreamTestURLRequestContextGetter& operator=(
+      const BidirectionalStreamTestURLRequestContextGetter&) = delete;
 
   net::URLRequestContext* GetURLRequestContext() override {
     if (!request_context_) {
@@ -105,8 +109,6 @@ class BidirectionalStreamTestURLRequestContextGetter
   std::unique_ptr<net::MappedHostResolver> host_resolver_;
   std::unique_ptr<net::TestURLRequestContext> request_context_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(BidirectionalStreamTestURLRequestContextGetter);
 };
 
 base::LazyInstance<

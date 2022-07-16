@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/base/rand_callback.h"
 
@@ -45,6 +46,15 @@ class ReportingContext;
 // delivery attempt.
 class NET_EXPORT ReportingDeliveryAgent {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // They should also be kept in sync with the NetReportingUploadHeaderType
+  // enum in tools/metrics/histograms/enums.xml
+  enum class ReportingUploadHeaderType {
+    kReportTo = 0,
+    kReportingEndpoints = 1,
+    kMaxValue = kReportingEndpoints
+  };
   // Creates a ReportingDeliveryAgent. |context| must outlive the agent.
   static std::unique_ptr<ReportingDeliveryAgent> Create(
       ReportingContext* context,
@@ -57,6 +67,12 @@ class NET_EXPORT ReportingDeliveryAgent {
   // MockOneShotTimer.
   virtual void SetTimerForTesting(
       std::unique_ptr<base::OneShotTimer> timer) = 0;
+
+  // Bypasses the schedule to attempt delivery of all outstanding reports
+  // for a single `reporting_source`. Called when the source document or worker
+  // is being destroyed.
+  virtual void SendReportsForSource(
+      base::UnguessableToken reporting_source) = 0;
 };
 
 }  // namespace net

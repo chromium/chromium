@@ -378,10 +378,10 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // Wait for a maximum of 5 seconds from the first call to the timer since the
   // last journal cleaning.
   static constexpr const base::TimeDelta kMaxJournalCleaningWindowTime =
-      base::TimeDelta::FromSeconds(5);
+      base::Seconds(5);
   // Default to a 2 second timer delay before we clean up blobs.
   static constexpr const base::TimeDelta kInitialJournalCleaningWindowTime =
-      base::TimeDelta::FromSeconds(2);
+      base::Seconds(2);
 
   IndexedDBBackingStore(
       Mode backing_store_mode,

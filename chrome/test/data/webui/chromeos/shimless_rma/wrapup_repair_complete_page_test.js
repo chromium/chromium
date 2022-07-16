@@ -6,9 +6,8 @@ import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_se
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {WrapupRepairCompletePage} from 'chrome://shimless-rma/wrapup_repair_complete_page.js';
 
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
-import {FakeNetworkConfig} from '../fake_network_config_mojom.m.js';
+import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.js';
 
 export function wrapupRepairCompletePageTest() {
   /** @type {?WrapupRepairCompletePage} */

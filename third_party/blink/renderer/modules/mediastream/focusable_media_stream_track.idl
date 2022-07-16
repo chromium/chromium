@@ -1,0 +1,28 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/conditional-focus/
+enum CaptureStartFocusBehavior {
+  "focus-captured-surface",
+  "no-focus-change"
+};
+
+// https://wicg.github.io/conditional-focus/
+[
+    Exposed = Window,
+    RuntimeEnabled = ConditionalFocus
+]
+interface FocusableMediaStreamTrack : MediaStreamTrack {
+  // May only be called immediately upon the resolution of the Promise which
+  // produced this track.
+  // If |focus| is set to "focus-captured-surface", focus is handed off
+  // to the captured tab/window. Otherwise, focus is not handed off,
+  // and later calls to focus() would be an error.
+  // If this function is not called in the task in which the
+  // Promise<MediaStream> is resolved, or if the call comes too late due
+  // to processing delays, the user agent assumes an implicit call with |focus|
+  // set to a value decided by the user agent itself.
+  [CallWith = ExecutionContext, RaisesException, MeasureAs = ConditionalFocus]
+  void focus(CaptureStartFocusBehavior focus_behavior);
+};

@@ -8,6 +8,7 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
@@ -146,7 +147,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DeveloperToolsDisabledExtensionsDevMode) {
       "getControls().hasAttribute('expanded')";
 
   // Navigate to the extensions frame and enabled "Developer mode"
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIExtensionsURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIExtensionsURL)));
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();

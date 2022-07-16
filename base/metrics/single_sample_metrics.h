@@ -85,6 +85,11 @@ class BASE_EXPORT DefaultSingleSampleMetric : public SingleSampleMetric {
                             HistogramBase::Sample max,
                             uint32_t bucket_count,
                             int32_t flags);
+
+  DefaultSingleSampleMetric(const DefaultSingleSampleMetric&) = delete;
+  DefaultSingleSampleMetric& operator=(const DefaultSingleSampleMetric&) =
+      delete;
+
   ~DefaultSingleSampleMetric() override;
 
   // SingleSampleMetric:
@@ -96,8 +101,6 @@ class BASE_EXPORT DefaultSingleSampleMetric : public SingleSampleMetric {
   // The last sample provided to SetSample(). We use -1 as a sentinel value to
   // indicate no sample has been set.
   HistogramBase::Sample sample_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultSingleSampleMetric);
 };
 
 }  // namespace base

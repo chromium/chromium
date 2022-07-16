@@ -123,19 +123,7 @@ int main(int argc, char** argv) {
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   base::FilePath proto_path = command_line.GetSwitchValuePath("write-proto");
   base::FilePath cpp_path = command_line.GetSwitchValuePath("write-cpp");
-  if ((proto_path.empty() && cpp_path.empty()) ||
-      command_line.HasSwitch("help")) {
-    std::cerr << "Usage: root_store_tool "
-                 "[--root-store-dir=<relative-path>]
-                 "[--write-proto=PROTO_FILE] "
-                 "[--write-cpp=CPP_FILE]"
-              << std::endl;
-    return 1;
-  }
-
-  // Find root store directory. Assumptions:
-  //  - Root store directory is relative to base::DIR_SOURCE_ROOT
-  //
+  // Get root store directory. Assumptions:
   //  - $(ROOT_STORE_DIR)/root_store.textproto contains the textproto definition
   //    of the root store
   //
@@ -144,17 +132,17 @@ int main(int argc, char** argv) {
   //    $(ROOT_STORE_DIR)/certs/ subdirectory.
   base::FilePath root_store_dir =
       command_line.GetSwitchValuePath("root-store-dir");
-  base::FilePath source_root;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root));
-  if (root_store_dir.empty()) {
-    root_store_dir = source_root.AppendASCII("net")
-                         .AppendASCII("data")
-                         .AppendASCII("ssl")
-                         .AppendASCII("chrome_root_store")
-                         .AppendASCII("base");
-  } else {
-    root_store_dir = source_root.Append(root_store_dir);
+
+  if ((proto_path.empty() && cpp_path.empty()) || root_store_dir.empty() ||
+      command_line.HasSwitch("help")) {
+    std::cerr << "Usage: root_store_tool "
+              << "--root-store-dir=<path> "
+              << "[--write-proto=PROTO_FILE] "
+              << "[--write-cpp=CPP_FILE]" << std::endl;
+    return 1;
   }
+
+  root_store_dir = base::MakeAbsoluteFilePath(root_store_dir);
   absl::optional<RootStore> root_store = ReadTextRootStore(root_store_dir);
   if (!root_store) {
     return 1;

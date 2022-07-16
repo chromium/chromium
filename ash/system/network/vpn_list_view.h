@@ -10,7 +10,6 @@
 
 #include "ash/system/network/network_state_list_detailed_view.h"
 #include "ash/system/network/vpn_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 
@@ -42,11 +41,11 @@ class VPNListView : public NetworkStateListDetailedView,
   using VpnProviderPtr = chromeos::network_config::mojom::VpnProviderPtr;
 
   VPNListView(DetailedViewDelegate* delegate, LoginStatus login);
-  ~VPNListView() override;
 
-  // Make following functions publicly accessible for VPNListNetworkEntry.
-  using NetworkStateListDetailedView::SetupConnectedScrollListItem;
-  using NetworkStateListDetailedView::SetupConnectingScrollListItem;
+  VPNListView(const VPNListView&) = delete;
+  VPNListView& operator=(const VPNListView&) = delete;
+
+  ~VPNListView() override;
 
   // NetworkStateListDetailedView:
   void UpdateNetworkList() override;
@@ -100,8 +99,6 @@ class VPNListView : public NetworkStateListDetailedView,
   bool list_empty_ = true;
 
   base::WeakPtrFactory<VPNListView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VPNListView);
 };
 
 }  // namespace tray

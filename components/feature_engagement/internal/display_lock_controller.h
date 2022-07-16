@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace feature_engagement {
 class DisplayLockHandle;
 
@@ -17,6 +15,9 @@ class DisplayLockHandle;
 // held.
 class DisplayLockController {
  public:
+  DisplayLockController(const DisplayLockController&) = delete;
+  DisplayLockController& operator=(const DisplayLockController&) = delete;
+
   virtual ~DisplayLockController() = default;
 
   // Acquiring a display lock means that no in-product help can be displayed
@@ -28,9 +29,6 @@ class DisplayLockController {
 
  protected:
   DisplayLockController() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayLockController);
 };
 
 }  // namespace feature_engagement

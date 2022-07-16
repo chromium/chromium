@@ -11,7 +11,7 @@ hydrolysis/hydrolysis.js
 *.svg
 */test/
 *.ts
-@types
+@types/**/*
 *.woff
 *.yml
 Makefile

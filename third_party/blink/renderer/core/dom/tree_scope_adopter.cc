@@ -100,7 +100,7 @@ void TreeScopeAdopter::MoveShadowTreeToNewDocument(
   }
 
   if (!shadow_root.IsUserAgent()) {
-    new_document.SetShadowCascadeOrder(ShadowCascadeOrder::kShadowCascade);
+    new_document.SetContainsShadowRoot();
   }
   MoveTreeToNewDocument(shadow_root, old_document, new_document);
 }

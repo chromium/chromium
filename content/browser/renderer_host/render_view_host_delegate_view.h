@@ -13,8 +13,8 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
+#include "third_party/blink/public/mojom/drag/drag.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
-#include "third_party/blink/public/mojom/page/drag.mojom-forward.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
 namespace blink {
@@ -45,7 +45,11 @@ class CONTENT_EXPORT RenderViewHostDelegateView {
  public:
   // A context menu should be shown, to be built using the context information
   // provided in the supplied params.
-  virtual void ShowContextMenu(RenderFrameHost* render_frame_host,
+  //
+  // The |render_frame_host| represents the frame that requests the context menu
+  // (typically this frame is focused, but this is not necessarily the case -
+  // see https://crbug.com/1257907#c14).
+  virtual void ShowContextMenu(RenderFrameHost& render_frame_host,
                                const ContextMenuParams& params) {}
 
   // The user started dragging content of the specified type within the

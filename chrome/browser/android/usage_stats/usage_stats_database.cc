@@ -254,8 +254,7 @@ void UsageStatsDatabase::DeleteEventsWithMatchingDomains(
 }
 
 void UsageStatsDatabase::ExpireEvents(base::Time now) {
-  base::Time seven_days_ago =
-      now - base::TimeDelta::FromDays(EXPIRY_THRESHOLD_DAYS);
+  base::Time seven_days_ago = now - base::Days(EXPIRY_THRESHOLD_DAYS);
   DeleteEventsInRange(
       base::Time::FromDoubleT(1), seven_days_ago,
       base::BindOnce(&UsageStatsDatabase::OnWebsiteEventExpiryDone,

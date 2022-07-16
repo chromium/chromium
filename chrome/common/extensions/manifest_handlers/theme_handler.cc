@@ -109,17 +109,24 @@ bool LoadTints(const base::DictionaryValue* theme_value,
   // Validate that the tints are all reals.
   for (base::DictionaryValue::Iterator iter(*tints_value); !iter.IsAtEnd();
        iter.Advance()) {
-    const base::ListValue* tint_list = NULL;
-    double v = 0.0;
-    if (!iter.value().GetAsList(&tint_list) ||
-        tint_list->GetSize() != 3 ||
-        !tint_list->GetDouble(0, &v) ||
-        !tint_list->GetDouble(1, &v) ||
-        !tint_list->GetDouble(2, &v)) {
+    if (!iter.value().is_list()) {
+      *error = base::ASCIIToUTF16(errors::kInvalidThemeTints);
+      return false;
+    }
+
+    base::Value::ConstListView tint_list = iter.value().GetList();
+    if (tint_list.size() != 3) {
+      *error = base::ASCIIToUTF16(errors::kInvalidThemeTints);
+      return false;
+    }
+
+    if (!tint_list[0].GetIfDouble() || !tint_list[1].GetIfDouble() ||
+        !tint_list[2].GetIfDouble()) {
       *error = base::ASCIIToUTF16(errors::kInvalidThemeTints);
       return false;
     }
   }
+
   theme_info->theme_tints_.reset(tints_value->DeepCopy());
   return true;
 }
@@ -210,10 +217,10 @@ bool ThemeHandler::Validate(const Extension* extension,
     if (images_value) {
       for (base::DictionaryValue::Iterator iter(*images_value); !iter.IsAtEnd();
            iter.Advance()) {
-        std::string val;
-        if (iter.value().GetAsString(&val)) {
-          base::FilePath image_path = extension->path().Append(
-              base::FilePath::FromUTF8Unsafe(val));
+        const std::string* val = iter.value().GetIfString();
+        if (val) {
+          base::FilePath image_path =
+              extension->path().Append(base::FilePath::FromUTF8Unsafe(*val));
           if (!base::PathExists(image_path)) {
             *error =
                 l10n_util::GetStringFUTF8(IDS_EXTENSION_INVALID_IMAGE_PATH,

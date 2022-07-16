@@ -8,8 +8,6 @@ blink_core_sources_events = [
   "animation_event.h",
   "animation_playback_event.cc",
   "animation_playback_event.h",
-  "application_cache_error_event.cc",
-  "application_cache_error_event.h",
   "before_create_policy_event.cc",
   "before_create_policy_event.h",
   "before_print_event.h",

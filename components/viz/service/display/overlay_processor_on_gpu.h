@@ -44,6 +44,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOnGpu {
   explicit OverlayProcessorOnGpu(
       gpu::DisplayCompositorMemoryAndTaskControllerOnGpu*
           display_controller_on_gpu);
+
+  OverlayProcessorOnGpu(const OverlayProcessorOnGpu&) = delete;
+  OverlayProcessorOnGpu& operator=(const OverlayProcessorOnGpu&) = delete;
+
   ~OverlayProcessorOnGpu();
 
   // This function takes the overlay candidates, and schedule them for
@@ -63,8 +67,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOnGpu {
   std::unique_ptr<gpu::SharedImageRepresentationFactory>
       shared_image_representation_factory_;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayProcessorOnGpu);
 };
 
 }  // namespace viz

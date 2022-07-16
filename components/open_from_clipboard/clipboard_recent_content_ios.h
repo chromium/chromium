@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "url/gurl.h"
@@ -37,6 +36,10 @@ class ClipboardRecentContentIOS : public ClipboardRecentContent {
   explicit ClipboardRecentContentIOS(
       ClipboardRecentContentImplIOS* implementation);
 
+  ClipboardRecentContentIOS(const ClipboardRecentContentIOS&) = delete;
+  ClipboardRecentContentIOS& operator=(const ClipboardRecentContentIOS&) =
+      delete;
+
   ~ClipboardRecentContentIOS() override;
 
   // ClipboardRecentContent implementation.
@@ -59,8 +62,6 @@ class ClipboardRecentContentIOS : public ClipboardRecentContent {
 
   // The implementation instance.
   __strong ClipboardRecentContentImplIOS* implementation_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardRecentContentIOS);
 };
 
 #endif  // COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_IOS_H_

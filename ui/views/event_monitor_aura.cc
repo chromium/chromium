@@ -27,6 +27,10 @@ class WindowMonitorAura : public EventMonitorAura, public aura::WindowObserver {
         target_window_(target_window) {
     window_observation_.Observe(target_window);
   }
+
+  WindowMonitorAura(const WindowMonitorAura&) = delete;
+  WindowMonitorAura& operator=(const WindowMonitorAura&) = delete;
+
   ~WindowMonitorAura() override = default;
 
   // aura::WindowObserver:
@@ -42,8 +46,6 @@ class WindowMonitorAura : public EventMonitorAura, public aura::WindowObserver {
   aura::Window* target_window_;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WindowMonitorAura);
 };
 
 }  // namespace

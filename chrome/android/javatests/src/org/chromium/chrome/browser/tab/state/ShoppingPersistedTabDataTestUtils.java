@@ -22,16 +22,17 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.proto.PriceTracking.BuyableProduct;
-import org.chromium.chrome.browser.tab.proto.PriceTracking.PriceTrackingData;
-import org.chromium.chrome.browser.tab.proto.PriceTracking.ProductPrice;
-import org.chromium.chrome.browser.tab.proto.PriceTracking.ProductPriceUpdate;
+import org.chromium.components.commerce.PriceTracking.BuyableProduct;
+import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
+import org.chromium.components.commerce.PriceTracking.ProductPrice;
+import org.chromium.components.commerce.PriceTracking.ProductPriceUpdate;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.HintsProto;
@@ -64,6 +65,7 @@ public abstract class ShoppingPersistedTabDataTestUtils {
         int UNPARSEABLE = 6;
     }
 
+    static final GURL DEFAULT_GURL = new GURL("https://www.google.com");
     static final long PRICE_MICROS = 123456789012345L;
     static final long UPDATED_PRICE_MICROS = 287000000L;
     static final long HIGH_PRICE_MICROS = 141000000L;
@@ -151,7 +153,26 @@ public abstract class ShoppingPersistedTabDataTestUtils {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
         shoppingPersistedTabData.setCurrencyCode(UNITED_STATES_CURRENCY_CODE);
+        shoppingPersistedTabData.setPriceDropGurl(DEFAULT_GURL);
         return shoppingPersistedTabData;
+    }
+
+    static ShoppingPersistedTabData createSavedShoppingPersistedTabDataOnUiThread(Tab tab) {
+        AtomicReference<ShoppingPersistedTabData> res = new AtomicReference<>();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+            ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
+            supplier.set(true);
+            shoppingPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
+            shoppingPersistedTabData.enableSaving();
+            shoppingPersistedTabData.setPriceMicros(PRICE_MICROS);
+            shoppingPersistedTabData.setPreviousPriceMicros(UPDATED_PRICE_MICROS);
+            shoppingPersistedTabData.setLastUpdatedMs(System.currentTimeMillis());
+            shoppingPersistedTabData.setPriceDropGurl(DEFAULT_GURL);
+            shoppingPersistedTabData.save();
+            res.set(shoppingPersistedTabData);
+        });
+        return res.get();
     }
 
     static ShoppingPersistedTabData createShoppingPersistedTabDataWithCurrencyCode(
@@ -159,14 +180,16 @@ public abstract class ShoppingPersistedTabDataTestUtils {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 new ShoppingPersistedTabData(createTabOnUiThread(tabId, isIncognito));
         shoppingPersistedTabData.setCurrencyCode(currencyCode);
+        shoppingPersistedTabData.setPriceDropGurl(DEFAULT_GURL);
         return shoppingPersistedTabData;
     }
 
     static Tab createTabOnUiThread(int tabId, boolean isIncognito) {
         AtomicReference<Tab> res = new AtomicReference<>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            MockTab tab = (MockTab) MockTab.createAndInitialize(TAB_ID, IS_INCOGNITO);
+            MockTab tab = (MockTab) MockTab.createAndInitialize(tabId, isIncognito);
             tab.setIsInitialized(true);
+            tab.setGurlOverrideForTesting(DEFAULT_GURL);
             CriticalPersistedTabData.from(tab).setTimestampMillis(System.currentTimeMillis());
             res.set(tab);
         });
@@ -301,7 +324,7 @@ public abstract class ShoppingPersistedTabDataTestUtils {
     static void verifyEndpointFetcherCalled(EndpointFetcher.Natives endpointFetcher, int numTimes) {
         verify(endpointFetcher, times(numTimes))
                 .nativeFetchChromeAPIKey(any(Profile.class), anyString(), anyString(), anyString(),
-                        anyString(), anyLong(), any(String[].class), any(Callback.class));
+                        anyString(), anyLong(), any(String[].class), anyInt(), any(Callback.class));
     }
 
     static void verifyPriceTrackingOptimizationTypeCalled(

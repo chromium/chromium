@@ -62,11 +62,9 @@ class ASH_PUBLIC_EXPORT AppListClient {
                                 AppListLaunchType launch_type,
                                 int suggestion_index,
                                 bool launch_as_default) = 0;
-  // Invokes a custom action on a result with |result_id|.
-  // |action_index| corresponds to the index of an action on the search result,
-  // for example, installing. They are stored in SearchResult::actions_.
+  // Invokes a custom action |action| on a result with |result_id|.
   virtual void InvokeSearchResultAction(const std::string& result_id,
-                                        int action_index) = 0;
+                                        SearchResultActionType action) = 0;
   // Returns the context menu model for the search result with |result_id|, or
   // an empty array if there is currently no menu for the result.
   using GetSearchResultContextMenuModelCallback =
@@ -101,18 +99,6 @@ class ASH_PUBLIC_EXPORT AppListClient {
   virtual void GetContextMenuModel(int profile_id,
                                    const std::string& id,
                                    GetContextMenuModelCallback callback) = 0;
-  // Invoked when an item is added in Ash.
-  virtual void OnItemAdded(int profile_id,
-                           std::unique_ptr<AppListItemMetadata> item) = 0;
-  // Invoked when user changes a folder's name or an item's position.
-  virtual void OnItemUpdated(int profile_id,
-                             std::unique_ptr<AppListItemMetadata> folder) = 0;
-  // Invoked when a folder has only one item left and so gets removed.
-  virtual void OnFolderDeleted(int profile_id,
-                               std::unique_ptr<AppListItemMetadata> folder) = 0;
-  // Invoked when a "page break" item with |id| is deleted.
-  virtual void OnPageBreakItemDeleted(int profile_id,
-                                      const std::string& id) = 0;
   // Invoked when a "quick setting" is changed.
   virtual void OnQuickSettingsChanged(
       const std::string& setting_name,
@@ -136,6 +122,14 @@ class ASH_PUBLIC_EXPORT AppListClient {
 
   // Invoked to load an icon of the app identified by `app_id`.
   virtual void LoadIcon(int profile_id, const std::string& app_id) = 0;
+
+  // Invoked when app list sort is requested.
+  virtual void OnAppListSortRequested(int profile_id,
+                                      AppListSortOrder order) = 0;
+
+  // Invoked when the ash side requests to revert the app list temporary sort
+  // order (i.e. the order that has not been committed yet).
+  virtual void OnAppListSortRevertRequested(int profile_id) = 0;
 
  protected:
   virtual ~AppListClient() = default;

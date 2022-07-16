@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "components/arc/enterprise/arc_apps_tracker.h"
 #include "components/arc/enterprise/snapshot_hours_policy_service.h"
 #include "components/arc/enterprise/snapshot_reboot_controller.h"
@@ -43,6 +44,8 @@ extern const char kHeadless[];
 // The restart of frecon is needed only when system UI is shown (in BlockedUi
 // state).
 extern const char kRestartFreconEnv[];
+// TPM2 version number.
+extern const int kTpm2Version;
 
 // This class manages ARC data/ directory snapshots and controls the lifetime of
 // the arc-data-snapshotd daemon.
@@ -186,6 +189,7 @@ class ArcDataSnapshotdManager final
         PrefService* local_state,
         bool blocked_ui_mode,
         bool started,
+        absl::optional<int> tpm_version,
         std::unique_ptr<SnapshotInfo> last_snapshot,
         std::unique_ptr<SnapshotInfo> previous_snapshot);
 
@@ -221,10 +225,15 @@ class ArcDataSnapshotdManager final
     SnapshotInfo* last_snapshot() { return last_snapshot_.get(); }
     SnapshotInfo* previous_snapshot() { return previous_snapshot_.get(); }
 
+    void set_tpm_version(int tpm_version) { tpm_version_ = tpm_version; }
+    bool is_tpm_initialized() const { return tpm_version_.has_value(); }
+    bool is_tpm2() const { return tpm_version_ == kTpm2Version; }
+
    private:
     Snapshot(PrefService* local_state,
              bool blocked_ui_mode,
              bool started,
+             absl::optional<int> tpm_version,
              std::unique_ptr<SnapshotInfo> last_snapshot,
              std::unique_ptr<SnapshotInfo> previous_snapshot);
 
@@ -235,6 +244,7 @@ class ArcDataSnapshotdManager final
     // preference.
     bool blocked_ui_mode_ = false;
     bool started_ = false;
+    absl::optional<int> tpm_version_;
     std::unique_ptr<SnapshotInfo> last_snapshot_;
     std::unique_ptr<SnapshotInfo> previous_snapshot_;
   };
@@ -318,6 +328,12 @@ class ArcDataSnapshotdManager final
  private:
   // Local State initialization observer.
   void OnLocalStateInitialized(bool intialized);
+
+  // Completes initialization.
+  void CompleteInitialization();
+
+  // Sets a TPM version into local_state_.
+  void OnGetTpmVersion(const ::tpm_manager::GetVersionInfoReply& reply);
 
   // Attempts to arc-data-snapshotd daemon regardless of state of the class.
   // Runs |callback| once finished.

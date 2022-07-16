@@ -136,7 +136,7 @@ void CheckReportCertificateChain(
     const base::ListValue& chain) {
   std::vector<std::string> pem_encoded_chain;
   expected_cert->GetPEMEncodedChain(&pem_encoded_chain);
-  ASSERT_EQ(pem_encoded_chain.size(), chain.GetSize());
+  ASSERT_EQ(pem_encoded_chain.size(), chain.GetList().size());
 
   for (size_t i = 0; i < pem_encoded_chain.size(); i++) {
     std::string cert_pem;
@@ -171,26 +171,26 @@ net::ct::SignedCertificateTimestamp::Origin SCTOriginStringToOrigin(
     return ::testing::AssertionFailure() << "Failed to serialize SCT";
   }
 
-  for (size_t i = 0; i < report_list.GetSize(); i++) {
-    const base::DictionaryValue* report_sct;
-    if (!report_list.GetDictionary(i, &report_sct)) {
+  for (const base::Value& report_sct_value : report_list.GetList()) {
+    if (!report_sct_value.is_dict()) {
       return ::testing::AssertionFailure()
              << "Failed to get dictionary value from report SCT list";
     }
-
+    const base::DictionaryValue& report_sct =
+        base::Value::AsDictionaryValue(report_sct_value);
     std::string serialized_sct;
-    EXPECT_TRUE(report_sct->GetString("serialized_sct", &serialized_sct));
+    EXPECT_TRUE(report_sct.GetString("serialized_sct", &serialized_sct));
     std::string decoded_serialized_sct;
     EXPECT_TRUE(base::Base64Decode(serialized_sct, &decoded_serialized_sct));
     if (decoded_serialized_sct != expected_serialized_sct)
       continue;
 
     std::string source;
-    EXPECT_TRUE(report_sct->GetString("source", &source));
+    EXPECT_TRUE(report_sct.GetString("source", &source));
     EXPECT_EQ(expected_sct->origin, SCTOriginStringToOrigin(source));
 
     std::string report_status;
-    EXPECT_TRUE(report_sct->GetString("status", &report_status));
+    EXPECT_TRUE(report_sct.GetString("status", &report_status));
     switch (expected_status) {
       case net::ct::SCT_STATUS_LOG_UNKNOWN:
         EXPECT_EQ("unknown", report_status);
@@ -218,7 +218,7 @@ net::ct::SignedCertificateTimestamp::Origin SCTOriginStringToOrigin(
 void CheckReportSCTs(
     const net::SignedCertificateTimestampAndStatusList& expected_scts,
     const base::ListValue& scts) {
-  EXPECT_EQ(expected_scts.size(), scts.GetSize());
+  EXPECT_EQ(expected_scts.size(), scts.GetList().size());
   for (const auto& expected_sct : expected_scts) {
     ASSERT_TRUE(
         FindSCTInReportList(expected_sct.sct, expected_sct.status, scts));
@@ -282,6 +282,10 @@ class TestExpectCTNetworkDelegate : public net::NetworkDelegateImpl {
  public:
   TestExpectCTNetworkDelegate() = default;
 
+  TestExpectCTNetworkDelegate(const TestExpectCTNetworkDelegate&) = delete;
+  TestExpectCTNetworkDelegate& operator=(const TestExpectCTNetworkDelegate&) =
+      delete;
+
   using OnBeforeURLRequestCallback =
       base::RepeatingCallback<void(net::URLRequest* request)>;
 
@@ -311,8 +315,6 @@ class TestExpectCTNetworkDelegate : public net::NetworkDelegateImpl {
  private:
   OnBeforeURLRequestCallback on_before_url_request_callback_;
   base::RepeatingClosure url_request_destroyed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExpectCTNetworkDelegate);
 };
 
 // A test fixture that allows tests to send a report and wait until the
@@ -321,6 +323,9 @@ class ExpectCTReporterWaitTest : public ::testing::Test {
  public:
   ExpectCTReporterWaitTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+
+  ExpectCTReporterWaitTest(const ExpectCTReporterWaitTest&) = delete;
+  ExpectCTReporterWaitTest& operator=(const ExpectCTReporterWaitTest&) = delete;
 
   void SetUp() override {
     // Initializes URLRequestContext after the thread is set up.
@@ -357,8 +362,6 @@ class ExpectCTReporterWaitTest : public ::testing::Test {
   TestExpectCTNetworkDelegate network_delegate_;
   std::unique_ptr<net::TestURLRequestContext> context_;
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpectCTReporterWaitTest);
 };
 
 std::unique_ptr<net::test_server::HttpResponse> ReplyToPostWith200(

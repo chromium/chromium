@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -27,8 +27,7 @@
 
 namespace {
 #if defined(OS_WIN) || defined(OS_MAC)
-constexpr base::TimeDelta kMaxAuthorizationTimeout =
-    base::TimeDelta::FromSeconds(4);
+constexpr base::TimeDelta kMaxAuthorizationTimeout = base::Seconds(4);
 #else
 constexpr base::TimeDelta kMaxAuthorizationTimeout;  // No timeout.
 #endif
@@ -287,7 +286,7 @@ void PepperPlatformAudioOutputDev::RequestDeviceAuthorizationOnIOThread() {
   state_ = AUTHORIZING;
   ipc_->RequestDeviceAuthorization(this, session_id_, device_id_);
 
-  if (auth_timeout_ > base::TimeDelta()) {
+  if (auth_timeout_.is_positive()) {
     // Create the timer on the thread it's used on. It's guaranteed to be
     // deleted on the same thread since users must call ShutDown() before
     // deleting PepperPlatformAudioOutputDev; see ShutDownOnIOThread().

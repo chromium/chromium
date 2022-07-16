@@ -18,12 +18,12 @@ namespace quick_pair {
 class FastPairPresenter;
 struct Device;
 
-class COMPONENT_EXPORT(QUICK_PAIR_UI) UIBrokerImpl : public UIBroker {
+class COMPONENT_EXPORT(QUICK_PAIR_UI) UIBrokerImpl final : public UIBroker {
  public:
   UIBrokerImpl();
   UIBrokerImpl(const UIBrokerImpl&) = delete;
   UIBrokerImpl& operator=(const UIBrokerImpl&) = delete;
-  ~UIBrokerImpl() final;
+  ~UIBrokerImpl() override;
 
   // UIBroker:
   void AddObserver(Observer* observer) override;
@@ -33,6 +33,7 @@ class COMPONENT_EXPORT(QUICK_PAIR_UI) UIBrokerImpl : public UIBroker {
   void ShowPairingFailed(scoped_refptr<Device> device) override;
   void ShowAssociateAccount(scoped_refptr<Device> device) override;
   void ShowCompanionApp(scoped_refptr<Device> device) override;
+  void RemoveNotifications(scoped_refptr<Device> device) override;
 
  private:
   void NotifyDiscoveryAction(scoped_refptr<Device> device,

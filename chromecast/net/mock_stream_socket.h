@@ -20,6 +20,10 @@ namespace chromecast {
 class MockStreamSocket : public net::StreamSocket {
  public:
   MockStreamSocket();
+
+  MockStreamSocket(const MockStreamSocket&) = delete;
+  MockStreamSocket& operator=(const MockStreamSocket&) = delete;
+
   ~MockStreamSocket() override;
 
   MOCK_METHOD3(Read, int(net::IOBuffer*, int, net::CompletionOnceCallback));
@@ -50,8 +54,6 @@ class MockStreamSocket : public net::StreamSocket {
 
  private:
   net::NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockStreamSocket);
 };
 
 }  // namespace chromecast

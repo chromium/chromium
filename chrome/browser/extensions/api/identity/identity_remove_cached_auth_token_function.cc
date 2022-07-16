@@ -22,7 +22,7 @@ ExtensionFunction::ResponseAction IdentityRemoveCachedAuthTokenFunction::Run() {
     return RespondNow(Error(identity_constants::kOffTheRecord));
 
   std::unique_ptr<api::identity::RemoveCachedAuthToken::Params> params(
-      api::identity::RemoveCachedAuthToken::Params::Create(*args_));
+      api::identity::RemoveCachedAuthToken::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   IdentityAPI::GetFactoryInstance()
       ->Get(browser_context())

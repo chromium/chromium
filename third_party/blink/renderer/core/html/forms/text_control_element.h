@@ -77,7 +77,6 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   void UpdatePlaceholderVisibility();
 
   VisiblePosition VisiblePositionForIndex(int) const;
-  int IndexForVisiblePosition(const VisiblePosition&) const;
   unsigned selectionStart() const;
   unsigned selectionEnd() const;
   const AtomicString& selectionDirection() const;

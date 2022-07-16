@@ -327,7 +327,7 @@ void ContainerNode::InsertNodeVector(
       Node& child = *target_node;
       mutator(*this, child, next);
       ChildListMutationScope(*this).ChildAdded(child);
-      if (GetDocument().ContainsShadowTree())
+      if (GetDocument().MayContainShadowRoots())
         child.CheckSlotChangeAfterInserted();
       probe::DidInsertDOMNode(&child);
       NotifyNodeInsertedInternal(child, *post_insertion_notification_targets);
@@ -674,6 +674,36 @@ void ContainerNode::Trace(Visitor* visitor) const {
   Node::Trace(visitor);
 }
 
+static bool ShouldMergeCombinedTextAfterRemoval(const Node& old_child) {
+  DCHECK(!old_child.parentNode()->GetForceReattachLayoutTree());
+
+  auto* const layout_object = old_child.GetLayoutObject();
+  if (!layout_object)
+    return false;
+
+  // Request to merge previous and next |LayoutNGTextCombine| of |child|.
+  // See http:://crbug.com/1227066
+  auto* const previous_sibling = layout_object->PreviousSibling();
+  if (!previous_sibling)
+    return false;
+  auto* const next_sibling = layout_object->NextSibling();
+  if (!next_sibling)
+    return false;
+  if (UNLIKELY(IsA<LayoutNGTextCombine>(previous_sibling)) &&
+      UNLIKELY(IsA<LayoutNGTextCombine>(next_sibling)))
+    return true;
+
+  // Request to merge combined texts in anonymous block.
+  // See http://crbug.com/1233432
+  if (!previous_sibling->IsAnonymousBlock() ||
+      !next_sibling->IsAnonymousBlock())
+    return false;
+
+  return UNLIKELY(
+             IsA<LayoutNGTextCombine>(previous_sibling->SlowLastChild())) &&
+         UNLIKELY(IsA<LayoutNGTextCombine>(next_sibling->SlowFirstChild()));
+}
+
 Node* ContainerNode::RemoveChild(Node* old_child,
                                  ExceptionState& exception_state) {
   // NotFoundError: Raised if oldChild is not a child of this node.
@@ -719,22 +749,20 @@ Node* ContainerNode::RemoveChild(Node* old_child,
     return nullptr;
   }
 
-  if (auto* layout_object = child->GetLayoutObject()) {
-    // Request to merge previous and next |LayoutNGTextCombine| of |child|.
-    // See http:://crbug.com/1227066
-    if (UNLIKELY(IsA<LayoutNGTextCombine>(layout_object->PreviousSibling())) &&
-        UNLIKELY(IsA<LayoutNGTextCombine>(layout_object->NextSibling())))
-      SetForceReattachLayoutTree();
-  }
+  if (!GetForceReattachLayoutTree() &&
+      UNLIKELY(ShouldMergeCombinedTextAfterRemoval(*child)))
+    SetForceReattachLayoutTree();
 
   {
     HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
     TreeOrderedMap::RemoveScope tree_remove_scope;
+    StyleEngine& engine = GetDocument().GetStyleEngine();
+    StyleEngine::DetachLayoutTreeScope detach_scope(engine);
     Node* prev = child->previousSibling();
     Node* next = child->nextSibling();
     {
       SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(GetDocument());
-      StyleEngine::DOMRemovalScope style_scope(GetDocument().GetStyleEngine());
+      StyleEngine::DOMRemovalScope style_scope(engine);
       RemoveBetween(prev, next, *child);
       NotifyNodeRemoved(*child);
     }
@@ -791,11 +819,13 @@ void ContainerNode::ParserRemoveChild(Node& old_child) {
 
   HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
   TreeOrderedMap::RemoveScope tree_remove_scope;
+  StyleEngine& engine = GetDocument().GetStyleEngine();
+  StyleEngine::DetachLayoutTreeScope detach_scope(engine);
 
   Node* prev = old_child.previousSibling();
   Node* next = old_child.nextSibling();
   {
-    StyleEngine::DOMRemovalScope style_scope(GetDocument().GetStyleEngine());
+    StyleEngine::DOMRemovalScope style_scope(engine);
     RemoveBetween(prev, next, old_child);
     NotifyNodeRemoved(old_child);
   }
@@ -833,9 +863,11 @@ void ContainerNode::RemoveChildren(SubtreeModificationAction action) {
   {
     HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
     TreeOrderedMap::RemoveScope tree_remove_scope;
+    StyleEngine& engine = GetDocument().GetStyleEngine();
+    StyleEngine::DetachLayoutTreeScope detach_scope(engine);
     {
       SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(GetDocument());
-      StyleEngine::DOMRemovalScope style_scope(GetDocument().GetStyleEngine());
+      StyleEngine::DOMRemovalScope style_scope(engine);
       EventDispatchForbiddenScope assert_no_event_dispatch;
       ScriptForbiddenScope forbid_script;
 
@@ -935,7 +967,7 @@ void ContainerNode::NotifyNodeInserted(Node& root,
 #endif
   DCHECK(!root.IsShadowRoot());
 
-  if (GetDocument().ContainsShadowTree())
+  if (GetDocument().MayContainShadowRoots())
     root.CheckSlotChangeAfterInserted();
 
   probe::DidInsertDOMNode(&root);

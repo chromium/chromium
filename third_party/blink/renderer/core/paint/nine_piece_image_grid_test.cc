@@ -161,9 +161,9 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ScaleDownBorder) {
     NinePieceImageGrid::NinePieceDrawInfo draw_info =
         grid.GetNinePieceDrawInfo(piece);
     if (draw_info.is_corner_piece)
-      EXPECT_EQ(draw_info.destination.Size(), FloatSize(50, 50));
+      EXPECT_EQ(draw_info.destination.size(), FloatSize(50, 50));
     else
-      EXPECT_TRUE(draw_info.destination.Size().IsEmpty());
+      EXPECT_TRUE(draw_info.destination.size().IsEmpty());
   }
 
   // Like above, but also make sure to get a scale-down factor that requires
@@ -176,13 +176,13 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ScaleDownBorder) {
                             border_image_area, border_widths);
   NinePieceImageGrid::NinePieceDrawInfo draw_info =
       grid.GetNinePieceDrawInfo(kTopLeftPiece);
-  EXPECT_EQ(draw_info.destination.Size(), FloatSize(33, 33));
+  EXPECT_EQ(draw_info.destination.size(), FloatSize(33, 33));
   draw_info = grid.GetNinePieceDrawInfo(kTopRightPiece);
-  EXPECT_EQ(draw_info.destination.Size(), FloatSize(67, 33));
+  EXPECT_EQ(draw_info.destination.size(), FloatSize(67, 33));
   draw_info = grid.GetNinePieceDrawInfo(kBottomLeftPiece);
-  EXPECT_EQ(draw_info.destination.Size(), FloatSize(33, 67));
+  EXPECT_EQ(draw_info.destination.size(), FloatSize(33, 67));
   draw_info = grid.GetNinePieceDrawInfo(kBottomRightPiece);
-  EXPECT_EQ(draw_info.destination.Size(), FloatSize(67, 67));
+  EXPECT_EQ(draw_info.destination.size(), FloatSize(67, 67));
 
   // Set border slices that overlap in one dimension but not in the other, and
   // where the resulting width in the non-overlapping dimension will round to a
@@ -195,15 +195,15 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ScaleDownBorder) {
                             border_image_area, border_widths);
   NinePieceImageGrid::NinePieceDrawInfo tl_info =
       grid.GetNinePieceDrawInfo(kTopLeftPiece);
-  EXPECT_EQ(tl_info.destination.Size(), FloatSize(6, 50));
+  EXPECT_EQ(tl_info.destination.size(), FloatSize(6, 50));
   // The top-right, bottom-left and bottom-right pieces are the same size as
   // the top-left piece.
   draw_info = grid.GetNinePieceDrawInfo(kTopRightPiece);
-  EXPECT_EQ(tl_info.destination.Size(), draw_info.destination.Size());
+  EXPECT_EQ(tl_info.destination.size(), draw_info.destination.size());
   draw_info = grid.GetNinePieceDrawInfo(kBottomLeftPiece);
-  EXPECT_EQ(tl_info.destination.Size(), draw_info.destination.Size());
+  EXPECT_EQ(tl_info.destination.size(), draw_info.destination.size());
   draw_info = grid.GetNinePieceDrawInfo(kBottomRightPiece);
-  EXPECT_EQ(tl_info.destination.Size(), draw_info.destination.Size());
+  EXPECT_EQ(tl_info.destination.size(), draw_info.destination.size());
 }
 
 TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
@@ -393,28 +393,28 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
       if (!test_case.pieces[piece].is_drawable)
         continue;
 
-      EXPECT_EQ(test_case.pieces[piece].destination.X(),
-                draw_info.destination.X());
-      EXPECT_EQ(test_case.pieces[piece].destination.Y(),
-                draw_info.destination.Y());
-      EXPECT_EQ(test_case.pieces[piece].destination.Width(),
-                draw_info.destination.Width());
-      EXPECT_EQ(test_case.pieces[piece].destination.Height(),
-                draw_info.destination.Height());
-      EXPECT_EQ(test_case.pieces[piece].source.X(), draw_info.source.X());
-      EXPECT_EQ(test_case.pieces[piece].source.Y(), draw_info.source.Y());
-      EXPECT_EQ(test_case.pieces[piece].source.Width(),
-                draw_info.source.Width());
-      EXPECT_EQ(test_case.pieces[piece].source.Height(),
-                draw_info.source.Height());
+      EXPECT_EQ(test_case.pieces[piece].destination.x(),
+                draw_info.destination.x());
+      EXPECT_EQ(test_case.pieces[piece].destination.y(),
+                draw_info.destination.y());
+      EXPECT_EQ(test_case.pieces[piece].destination.width(),
+                draw_info.destination.width());
+      EXPECT_EQ(test_case.pieces[piece].destination.height(),
+                draw_info.destination.height());
+      EXPECT_EQ(test_case.pieces[piece].source.x(), draw_info.source.x());
+      EXPECT_EQ(test_case.pieces[piece].source.y(), draw_info.source.y());
+      EXPECT_EQ(test_case.pieces[piece].source.width(),
+                draw_info.source.width());
+      EXPECT_EQ(test_case.pieces[piece].source.height(),
+                draw_info.source.height());
 
       if (test_case.pieces[piece].is_corner_piece)
         continue;
 
       EXPECT_FLOAT_EQ(test_case.pieces[piece].tile_scale_horizontal,
-                      draw_info.tile_scale.Width());
+                      draw_info.tile_scale.width());
       EXPECT_FLOAT_EQ(test_case.pieces[piece].tile_scale_vertical,
-                      draw_info.tile_scale.Height());
+                      draw_info.tile_scale.height());
       EXPECT_EQ(test_case.pieces[piece].horizontal_rule,
                 draw_info.tile_rule.horizontal);
       EXPECT_EQ(test_case.pieces[piece].vertical_rule,
@@ -479,9 +479,9 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_Zoomed) {
     if (expected.is_corner_piece)
       continue;
 
-    EXPECT_FLOAT_EQ(draw_info.tile_scale.Width(),
+    EXPECT_FLOAT_EQ(draw_info.tile_scale.width(),
                     expected.tile_scale_horizontal);
-    EXPECT_FLOAT_EQ(draw_info.tile_scale.Height(),
+    EXPECT_FLOAT_EQ(draw_info.tile_scale.height(),
                     expected.tile_scale_vertical);
     EXPECT_EQ(draw_info.tile_rule.vertical, expected.vertical_rule);
     EXPECT_EQ(draw_info.tile_rule.horizontal, expected.horizontal_rule);
@@ -543,23 +543,23 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ZoomedNarrowSlices) {
     EXPECT_TRUE(draw_info.is_drawable);
 
     const auto& expected = expected_pieces[piece];
-    EXPECT_FLOAT_EQ(draw_info.destination.X(), expected.destination.X());
-    EXPECT_FLOAT_EQ(draw_info.destination.Y(), expected.destination.Y());
-    EXPECT_FLOAT_EQ(draw_info.destination.Width(),
-                    expected.destination.Width());
-    EXPECT_FLOAT_EQ(draw_info.destination.Height(),
-                    expected.destination.Height());
-    EXPECT_FLOAT_EQ(draw_info.source.X(), expected.source.X());
-    EXPECT_FLOAT_EQ(draw_info.source.Y(), expected.source.Y());
-    EXPECT_FLOAT_EQ(draw_info.source.Width(), expected.source.Width());
-    EXPECT_FLOAT_EQ(draw_info.source.Height(), expected.source.Height());
+    EXPECT_FLOAT_EQ(draw_info.destination.x(), expected.destination.x());
+    EXPECT_FLOAT_EQ(draw_info.destination.y(), expected.destination.y());
+    EXPECT_FLOAT_EQ(draw_info.destination.width(),
+                    expected.destination.width());
+    EXPECT_FLOAT_EQ(draw_info.destination.height(),
+                    expected.destination.height());
+    EXPECT_FLOAT_EQ(draw_info.source.x(), expected.source.x());
+    EXPECT_FLOAT_EQ(draw_info.source.y(), expected.source.y());
+    EXPECT_FLOAT_EQ(draw_info.source.width(), expected.source.width());
+    EXPECT_FLOAT_EQ(draw_info.source.height(), expected.source.height());
 
     if (expected.is_corner_piece)
       continue;
 
-    EXPECT_FLOAT_EQ(draw_info.tile_scale.Width(),
+    EXPECT_FLOAT_EQ(draw_info.tile_scale.width(),
                     expected.tile_scale_horizontal);
-    EXPECT_FLOAT_EQ(draw_info.tile_scale.Height(),
+    EXPECT_FLOAT_EQ(draw_info.tile_scale.height(),
                     expected.tile_scale_vertical);
     EXPECT_EQ(draw_info.tile_rule.vertical, expected.vertical_rule);
     EXPECT_EQ(draw_info.tile_rule.horizontal, expected.horizontal_rule);

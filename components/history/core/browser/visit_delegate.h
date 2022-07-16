@@ -7,8 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
-
 class GURL;
 
 namespace history {
@@ -20,6 +18,10 @@ class HistoryService;
 class VisitDelegate {
  public:
   VisitDelegate();
+
+  VisitDelegate(const VisitDelegate&) = delete;
+  VisitDelegate& operator=(const VisitDelegate&) = delete;
+
   virtual ~VisitDelegate();
 
   // Called once HistoryService initialization is complete. Returns true if the
@@ -37,9 +39,6 @@ class VisitDelegate {
 
   // Called when all URLs are removed from HistoryService.
   virtual void DeleteAllURLs() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VisitDelegate);
 };
 
 }  // namespace history

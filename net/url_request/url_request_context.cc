@@ -5,6 +5,7 @@
 #include "net/url_request/url_request_context.h"
 
 #include <inttypes.h>
+#include <stdint.h>
 
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
@@ -14,10 +15,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/trace_event/memory_allocator_dump.h"
-#include "base/trace_event/memory_dump_manager.h"
-#include "base/trace_event/memory_dump_request_args.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/cookies/cookie_store.h"
@@ -25,6 +22,7 @@
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_transaction_factory.h"
+#include "net/log/net_log_source.h"
 #include "net/socket/ssl_client_socket_impl.h"
 #include "net/url_request/url_request.h"
 
@@ -57,17 +55,12 @@ URLRequestContext::URLRequestContext()
       url_requests_(std::make_unique<std::set<const URLRequest*>>()),
       enable_brotli_(false),
       check_cleartext_permitted_(false),
-      require_network_isolation_key_(false),
-      name_("unknown") {
-  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "URLRequestContext", base::ThreadTaskRunnerHandle::Get());
+      require_network_isolation_key_(false) {
 }
 
 URLRequestContext::~URLRequestContext() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AssertNoURLRequests();
-  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
-      this);
 }
 
 const HttpNetworkSessionParams* URLRequestContext::GetNetworkSessionParams()
@@ -99,7 +92,8 @@ std::unique_ptr<URLRequest> URLRequestContext::CreateRequest(
     const GURL& url,
     RequestPriority priority,
     URLRequest::Delegate* delegate) const {
-  return CreateRequest(url, priority, delegate, MISSING_TRAFFIC_ANNOTATION);
+  return CreateRequest(url, priority, delegate, MISSING_TRAFFIC_ANNOTATION,
+                       /*is_for_websockets=*/false);
 }
 #endif
 
@@ -107,9 +101,12 @@ std::unique_ptr<URLRequest> URLRequestContext::CreateRequest(
     const GURL& url,
     RequestPriority priority,
     URLRequest::Delegate* delegate,
-    NetworkTrafficAnnotationTag traffic_annotation) const {
-  return base::WrapUnique(
-      new URLRequest(url, priority, delegate, this, traffic_annotation));
+    NetworkTrafficAnnotationTag traffic_annotation,
+    bool is_for_websockets,
+    const absl::optional<net::NetLogSource> net_log_source) const {
+  return base::WrapUnique(new URLRequest(url, priority, delegate, this,
+                                         traffic_annotation, is_for_websockets,
+                                         net_log_source));
 }
 
 void URLRequestContext::set_cookie_store(CookieStore* cookie_store) {
@@ -129,32 +126,6 @@ void URLRequestContext::AssertNoURLRequests() const {
     CHECK(false) << "Leaked " << num_requests << " URLRequest(s). First URL: "
                  << request->url().spec().c_str() << ".";
   }
-}
-
-bool URLRequestContext::OnMemoryDump(
-    const base::trace_event::MemoryDumpArgs& args,
-    base::trace_event::ProcessMemoryDump* pmd) {
-  std::string dump_name =
-      base::StringPrintf("net/url_request_context/%s/0x%" PRIxPTR,
-                         name_.c_str(), reinterpret_cast<uintptr_t>(this));
-  base::trace_event::MemoryAllocatorDump* dump =
-      pmd->CreateAllocatorDump(dump_name);
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
-                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
-                  url_requests_->size());
-  HttpTransactionFactory* transaction_factory = http_transaction_factory();
-  if (transaction_factory) {
-    HttpNetworkSession* network_session = transaction_factory->GetSession();
-    if (network_session)
-      network_session->DumpMemoryStats(pmd, dump->absolute_name());
-    HttpCache* http_cache = transaction_factory->GetCache();
-    if (http_cache)
-      http_cache->DumpMemoryStats(pmd, dump->absolute_name());
-  }
-  if (cookie_store_) {
-    cookie_store_->DumpMemoryStats(pmd, dump->absolute_name());
-  }
-  return true;
 }
 
 }  // namespace net

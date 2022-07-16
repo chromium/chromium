@@ -52,7 +52,7 @@ class PLATFORM_EXPORT AudioResamplerKernel {
   // process() is called.  framesToProcess must be less than or equal to
   // MaxFramesToProcess.
   float* GetSourcePointer(uint32_t frames_to_process,
-                          size_t* number_of_source_frames_needed);
+                          unsigned* number_of_source_frames_needed);
 
   // process() resamples framesToProcess frames from the source into
   // destination.  Each call to process() must be preceded by a call to

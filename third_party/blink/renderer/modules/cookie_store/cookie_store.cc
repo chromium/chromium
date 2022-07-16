@@ -151,14 +151,20 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
     same_site = net::CookieSameSite::NO_RESTRICTION;
   }
 
+  absl::optional<net::CookiePartitionKey> cookie_partition_key = absl::nullopt;
+  if (options->partitioned()) {
+    // We don't trust the renderer to determine the cookie partition key, so we
+    // use this factory to indicate we are using a temporary value here.
+    cookie_partition_key = net::CookiePartitionKey::FromScript();
+  }
+
   // TODO(crbug.com/1144187): Add support for SameParty attribute.
-  // TODO(crbug.com/1225444): Add support for Partitioned attrbute.
   return net::CanonicalCookie::CreateSanitizedCookie(
       cookie_url, name.Utf8(), value.Utf8(), domain.Utf8(), path.Utf8(),
       base::Time() /*creation*/, expires, base::Time() /*last_access*/,
       true /*secure*/, false /*http_only*/, same_site,
       net::CookiePriority::COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
-      absl::nullopt /*partition_key*/);
+      cookie_partition_key);
 }
 
 const KURL DefaultCookieURL(ExecutionContext* execution_context) {
@@ -226,8 +232,12 @@ scoped_refptr<SecurityOrigin> DefaultTopFrameOrigin(
     return window->document()->TopFrameOrigin()->IsolatedCopy();
   }
 
+  // TODO(crbug.com/1225444): This is a temporary solution until we can plumb
+  // BlinkStorageKey to ServiceWorkerGlobalScope. Once we do the top-frame
+  // origin should be BlinkStorageKey's top-frame site.
   auto* scope = To<ServiceWorkerGlobalScope>(execution_context);
-  return scope->GetSecurityOrigin()->IsolatedCopy();
+  return SecurityOrigin::CreateFromUrlOrigin(url::Origin::Create(
+      net::SchemefulSite(scope->GetSecurityOrigin()->ToUrlOrigin()).GetURL()));
 }
 
 }  // namespace
@@ -329,6 +339,7 @@ ScriptPromise CookieStore::Delete(ScriptState* script_state,
   set_options->setDomain(options->domain());
   set_options->setPath(options->path());
   set_options->setSameSite("strict");
+  set_options->setPartitioned(options->partitioned());
   return DoWrite(script_state, set_options, exception_state);
 }
 

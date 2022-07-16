@@ -179,6 +179,7 @@ h3 {
 }
 
 label.audio-focus-session,
+label.cdm,
 label.selectable-button {
   border: solid 1px #999;
   border-radius: 3px;
@@ -210,6 +211,7 @@ input.selectable-button:hover + label.selectable-button {
 }
 
 label.audio-focus-session,
+label.cdm,
 label.destructed-player {
   background-color: #EEE;
 }
@@ -235,5 +237,9 @@ label.destructed-player {
 }
 
 #audio-focus-session-list {
+  list-style: none;
+}
+
+#cdm-list {
   list-style: none;
 }

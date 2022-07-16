@@ -4,13 +4,11 @@
 
 #include "chrome/browser/ui/views/passwords/move_to_account_store_bubble_view.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_target.h"
 #include "ui/events/event_target_iterator.h"
@@ -20,9 +18,6 @@
 class MoveToAccountStoreBubbleViewTest : public PasswordBubbleViewTestBase {
  public:
   MoveToAccountStoreBubbleViewTest() {
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kEnablePasswordsAccountStorage);
-
     password_manager::PasswordForm pending_password;
     pending_password.url = GURL("www.example.com");
     ON_CALL(*model_delegate_mock(), GetPendingPassword)
@@ -35,7 +30,6 @@ class MoveToAccountStoreBubbleViewTest : public PasswordBubbleViewTestBase {
   void TearDown() override;
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   MoveToAccountStoreBubbleView* view_;
 };
 

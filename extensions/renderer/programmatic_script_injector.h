@@ -25,12 +25,18 @@ class ProgrammaticScriptInjector : public ScriptInjector {
   explicit ProgrammaticScriptInjector(
       mojom::ExecuteCodeParamsPtr params,
       mojom::LocalFrame::ExecuteCodeCallback callback);
+
+  ProgrammaticScriptInjector(const ProgrammaticScriptInjector&) = delete;
+  ProgrammaticScriptInjector& operator=(const ProgrammaticScriptInjector&) =
+      delete;
+
   ~ProgrammaticScriptInjector() override;
 
  private:
   // ScriptInjector implementation.
   mojom::InjectionType script_type() const override;
   bool IsUserGesture() const override;
+  mojom::ExecutionWorld GetExecutionWorld() const override;
   mojom::CSSOrigin GetCssOrigin() const override;
   mojom::CSSInjection::Operation GetCSSInjectionOperation() const override;
   bool ExpectsResults() const override;
@@ -81,8 +87,6 @@ class ProgrammaticScriptInjector : public ScriptInjector {
 
   // Whether or not this script injection has finished.
   bool finished_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgrammaticScriptInjector);
 };
 
 }  // namespace extensions

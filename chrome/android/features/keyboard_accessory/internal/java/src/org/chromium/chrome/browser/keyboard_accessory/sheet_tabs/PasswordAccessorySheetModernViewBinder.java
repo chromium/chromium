@@ -58,7 +58,7 @@ class PasswordAccessorySheetModernViewBinder {
             bindChipView(view.getUsername(), info.getFields().get(0));
             bindChipView(view.getPassword(), info.getFields().get(1));
 
-            view.getTitle().setVisibility(info.isPslMatch() ? View.VISIBLE : View.GONE);
+            view.getTitle().setVisibility(info.isExactMatch() ? View.GONE : View.VISIBLE);
             // Strip the trailing slash (for aesthetic reasons):
             view.getTitle().setText(stripScheme(info.getOrigin()).replaceFirst("/$", ""));
 

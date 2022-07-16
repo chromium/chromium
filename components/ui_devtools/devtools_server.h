@@ -10,8 +10,8 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "components/ui_devtools/DOM.h"
 #include "components/ui_devtools/Forward.h"
@@ -32,6 +32,9 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer
  public:
   // Network tags to be used for the UI devtools servers.
   static const net::NetworkTrafficAnnotationTag kUIDevtoolsServerTag;
+
+  UiDevToolsServer(const UiDevToolsServer&) = delete;
+  UiDevToolsServer& operator=(const UiDevToolsServer&) = delete;
 
   ~UiDevToolsServer() override;
 
@@ -126,8 +129,6 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer
 
   SEQUENCE_CHECKER(devtools_server_sequence_);
   base::WeakPtrFactory<UiDevToolsServer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UiDevToolsServer);
 };
 
 }  // namespace ui_devtools

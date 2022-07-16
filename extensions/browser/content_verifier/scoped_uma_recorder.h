@@ -17,6 +17,9 @@ class ScopedUMARecorder {
  public:
   ScopedUMARecorder() = default;
 
+  ScopedUMARecorder(const ScopedUMARecorder&) = delete;
+  ScopedUMARecorder& operator=(const ScopedUMARecorder&) = delete;
+
   ~ScopedUMARecorder() {
     if (recorded_)
       return;
@@ -37,7 +40,6 @@ class ScopedUMARecorder {
 
   bool recorded_ = false;
   base::ElapsedTimer timer_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedUMARecorder);
 };
 
 }  // namespace extensions

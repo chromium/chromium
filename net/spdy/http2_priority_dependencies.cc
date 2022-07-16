@@ -174,10 +174,4 @@ void Http2PriorityDependencies::OnStreamDestruction(spdy::SpdyStreamId id) {
   entry_by_stream_id_.erase(emit);
 }
 
-size_t Http2PriorityDependencies::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(id_priority_lists_);
-  // TODO(xunjieli): https://crbug.com/690015. Include |entry_by_stream_id_|
-  // when memory_usage_estimator.h supports std::list::iterator.
-}
-
 }  // namespace net

@@ -61,13 +61,13 @@ class SVGPathNormalizer {
   void EmitSegment(const PathSegmentData&);
 
  protected:
-  bool DecomposeArcToCubic(const FloatPoint& current_point,
+  bool DecomposeArcToCubic(const gfx::PointF& current_point,
                            const PathSegmentData&);
 
   SVGPathConsumer* consumer_;
-  FloatPoint control_point_;
-  FloatPoint current_point_;
-  FloatPoint sub_path_point_;
+  gfx::PointF control_point_;
+  gfx::PointF current_point_;
+  gfx::PointF sub_path_point_;
   SVGPathSegType last_command_;
 };
 
@@ -83,8 +83,8 @@ class SVGPathAbsolutizer {
 
  private:
   SVGPathConsumer* consumer_;
-  FloatPoint sub_path_point_;
-  FloatPoint current_point_;
+  gfx::PointF sub_path_point_;
+  gfx::PointF current_point_;
 };
 
 }  // namespace blink

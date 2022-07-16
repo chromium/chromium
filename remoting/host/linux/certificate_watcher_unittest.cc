@@ -12,7 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,7 +34,7 @@ class CertificateWatcherTest : public testing::Test {
         base::BindRepeating(&CertificateWatcherTest::OnRestart,
                             base::Unretained(this)),
         task_runner_);
-    watcher_->SetDelayForTests(base::TimeDelta::FromSeconds(0));
+    watcher_->SetDelayForTests(base::Seconds(0));
     watcher_->SetWatchPathForTests(temp_dir_.GetPath());
   }
 
@@ -99,8 +99,7 @@ class CertificateWatcherTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<CertificateWatcher> watcher_;
   int restart_count_ = 0;
-  base::TimeDelta loop_wait_ =
-      base::TimeDelta::FromMilliseconds(kMessageLoopWaitMsecs);
+  base::TimeDelta loop_wait_ = base::Milliseconds(kMessageLoopWaitMsecs);
   base::RepeatingClosure quit_loop_closure_;
 
  private:

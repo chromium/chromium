@@ -14,15 +14,14 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 using ui::test::MockMotionEvent;
 
 namespace ui {
 namespace {
 
-const TimeDelta kTenMillis = TimeDelta::FromMilliseconds(10);
-const TimeDelta kOneSecond = TimeDelta::FromSeconds(1);
+const base::TimeDelta kTenMillis = base::Milliseconds(10);
+const base::TimeDelta kOneSecond = base::Seconds(1);
 const float kEpsilson = .01f;
 
 const char* GetStrategyName(VelocityTracker::Strategy strategy) {
@@ -53,7 +52,7 @@ class VelocityTrackerTest : public testing::Test {
                                 const gfx::PointF& p0,
                                 TimeTicks t0,
                                 const gfx::Vector2dF& v,
-                                TimeDelta dt) {
+                                base::TimeDelta dt) {
     const gfx::PointF p = p0 + ScaleVector2d(v, dt.InSecondsF());
     return MockMotionEvent(action, t0 + dt, p.x(), p.y());
   }
@@ -62,7 +61,7 @@ class VelocityTrackerTest : public testing::Test {
                                     const gfx::PointF& p0,
                                     const gfx::Vector2dF& v,
                                     TimeTicks t0,
-                                    TimeDelta t,
+                                    base::TimeDelta t,
                                     size_t samples) {
     EXPECT_TRUE(samples);
     if (!samples)
@@ -77,7 +76,7 @@ class VelocityTrackerTest : public testing::Test {
                             const gfx::PointF& p0,
                             const gfx::Vector2dF& v,
                             TimeTicks t0,
-                            TimeDelta t,
+                            base::TimeDelta t,
                             size_t samples) {
     EXPECT_TRUE(samples);
     if (!samples)
@@ -229,7 +228,7 @@ TEST_F(VelocityTrackerTest, NoDirectionReversal) {
   VelocityTrackerState state_unrestricted(VelocityTracker::LSQ2);
   VelocityTrackerState state_restricted(VelocityTracker::LSQ2_RESTRICTED);
   const base::TimeTicks t0 = base::TimeTicks::Now();
-  const base::TimeDelta dt = base::TimeDelta::FromMilliseconds(1);
+  const base::TimeDelta dt = base::Milliseconds(1);
   const size_t samples = 60;
 
   gfx::PointF p(0, 0);

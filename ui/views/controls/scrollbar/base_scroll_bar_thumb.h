@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_SCROLLBAR_BASE_SCROLL_BAR_THUMB_H_
 #define UI_VIEWS_CONTROLS_SCROLLBAR_BASE_SCROLL_BAR_THUMB_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
@@ -32,6 +31,10 @@ class VIEWS_EXPORT BaseScrollBarThumb : public View {
   METADATA_HEADER(BaseScrollBarThumb);
 
   explicit BaseScrollBarThumb(ScrollBar* scroll_bar);
+
+  BaseScrollBarThumb(const BaseScrollBarThumb&) = delete;
+  BaseScrollBarThumb& operator=(const BaseScrollBarThumb&) = delete;
+
   ~BaseScrollBarThumb() override;
 
   // Sets the length (width or height) of the thumb to the specified value.
@@ -80,8 +83,6 @@ class VIEWS_EXPORT BaseScrollBarThumb : public View {
 
   // The current state of the thumb button.
   Button::ButtonState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseScrollBarThumb);
 };
 
 }  // namespace views

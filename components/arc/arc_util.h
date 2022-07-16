@@ -106,6 +106,10 @@ bool IsArcVmUseHugePages();
 // vm_tools/init/arcvm_dev.conf file are ignored during ARCVM start.
 bool IsArcVmDevConfIgnored();
 
+// Returns true if ureadahead is disabled completely, including host and guest
+// parts. See also |GetArcVmUreadaheadMode|.
+bool IsUreadaheadDisabled();
+
 // Returns mode of operation for ureadahead during the ARCVM boot flow.
 // Valid modes are readahead, generate, or disabled.
 ArcVmUreadaheadMode GetArcVmUreadaheadMode(SystemMemoryInfoCallback callback);
@@ -185,11 +189,6 @@ bool IsArcLocaleSyncDisabled();
 
 // Returns true in case ARC Play Auto Install flow is disabled.
 bool IsArcPlayAutoInstallDisabled();
-
-// Adjusts the amount of CPU the ARC instance is allowed to use. When
-// |cpu_restriction_state| is CPU_RESTRICTION_BACKGROUND, the limit is adjusted
-// so ARC can only use tightly restricted CPU resources.
-void SetArcCpuRestriction(CpuRestrictionState cpu_restriction_state);
 
 // Returns the Android density that should be used for the given device scale
 // factor used on chrome.

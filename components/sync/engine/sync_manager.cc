@@ -6,7 +6,7 @@
 
 namespace syncer {
 
-SyncManager::Observer::~Observer() {}
+SyncManager::Observer::~Observer() = default;
 
 SyncManager::InitArgs::InitArgs()
     : enable_local_sync_backend(false),
@@ -14,10 +14,10 @@ SyncManager::InitArgs::InitArgs()
       encryption_handler(nullptr),
       cancelation_signal(nullptr) {}
 
-SyncManager::InitArgs::~InitArgs() {}
+SyncManager::InitArgs::~InitArgs() = default;
 
-SyncManager::SyncManager() {}
+SyncManager::SyncManager() = default;
 
-SyncManager::~SyncManager() {}
+SyncManager::~SyncManager() = default;
 
 }  // namespace syncer

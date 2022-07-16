@@ -15,6 +15,7 @@
 #include "chrome/browser/unexpire_flags.h"
 #include "components/flags_ui/feature_entry_macros.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/controls/dot_indicator.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 
@@ -133,6 +134,17 @@ TEST_F(ChromeLabsButtonTest, ShouldButtonShowTest) {
   profile()->GetPrefs()->SetBoolean(chrome_labs_prefs::kBrowserLabsEnabled,
                                     false);
   EXPECT_FALSE(browser_view()->toolbar()->chrome_labs_button()->GetVisible());
+}
+
+TEST_F(ChromeLabsButtonTest, DotIndicatorTest) {
+  ChromeLabsButton* chrome_labs_button =
+      browser_view()->toolbar()->chrome_labs_button();
+  EXPECT_TRUE(chrome_labs_button->GetDotIndicatorVisibilityForTesting());
+  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(chrome_labs_button);
+  test_api.NotifyClick(e);
+  EXPECT_FALSE(chrome_labs_button->GetDotIndicatorVisibilityForTesting());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

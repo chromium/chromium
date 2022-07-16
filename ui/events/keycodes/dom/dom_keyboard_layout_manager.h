@@ -16,6 +16,10 @@ namespace ui {
 class DomKeyboardLayoutManager final {
  public:
   DomKeyboardLayoutManager();
+
+  DomKeyboardLayoutManager(const DomKeyboardLayoutManager&) = delete;
+  DomKeyboardLayoutManager& operator=(const DomKeyboardLayoutManager&) = delete;
+
   ~DomKeyboardLayoutManager();
 
   // Get the layout with the given id, or create a new one if it doesn't
@@ -30,8 +34,6 @@ class DomKeyboardLayoutManager final {
   std::vector<int> layout_order_;
 
   std::map<int, std::unique_ptr<DomKeyboardLayout>> layouts_;
-
-  DISALLOW_COPY_AND_ASSIGN(DomKeyboardLayoutManager);
 };
 
 }  // namespace ui

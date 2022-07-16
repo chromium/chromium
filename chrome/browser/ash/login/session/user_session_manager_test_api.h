@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 
 namespace ash {
@@ -17,6 +16,10 @@ namespace test {
 class UserSessionManagerTestApi {
  public:
   explicit UserSessionManagerTestApi(UserSessionManager* session_manager);
+
+  UserSessionManagerTestApi(const UserSessionManagerTestApi&) = delete;
+  UserSessionManagerTestApi& operator=(const UserSessionManagerTestApi&) =
+      delete;
 
   // Injects `user_context` that will be used to create StubAuthenticator
   // instance when UserSessionManager::CreateAuthenticator() is called.
@@ -41,8 +44,6 @@ class UserSessionManagerTestApi {
 
  private:
   UserSessionManager* session_manager_;  // not owned
-
-  DISALLOW_COPY_AND_ASSIGN(UserSessionManagerTestApi);
 };
 
 }  // namespace test

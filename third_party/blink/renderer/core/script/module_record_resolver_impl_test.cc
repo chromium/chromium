@@ -78,7 +78,8 @@ ModuleScript* CreateReferrerModuleScript(Modulator* modulator,
                                          V8TestingScope& scope) {
   KURL js_url("https://example.com/referrer.js");
   v8::Local<v8::Module> referrer_record = ModuleTestBase::CompileModule(
-      scope.GetIsolate(), "import './target.js'; export const a = 42;", js_url);
+      scope.GetScriptState(), "import './target.js'; export const a = 42;",
+      js_url);
   KURL referrer_url("https://example.com/referrer.js");
   auto* referrer_module_script =
       JSModuleScript::CreateForTest(modulator, referrer_record, referrer_url);
@@ -90,7 +91,7 @@ ModuleScript* CreateTargetModuleScript(Modulator* modulator,
                                        bool has_parse_error = false) {
   KURL js_url("https://example.com/target.js");
   v8::Local<v8::Module> record = ModuleTestBase::CompileModule(
-      scope.GetIsolate(), "export const pi = 3.14;", js_url);
+      scope.GetScriptState(), "export const pi = 3.14;", js_url);
   KURL url("https://example.com/target.js");
   auto* module_script = JSModuleScript::CreateForTest(modulator, record, url);
   if (has_parse_error) {

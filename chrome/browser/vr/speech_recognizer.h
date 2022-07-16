@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/vr/vr_base_export.h"
@@ -92,6 +91,10 @@ class VR_BASE_EXPORT SpeechRecognizer : public IOBrowserUIInterface {
                        pending_shared_url_loader_factory,
                    const std::string& accept_language,
                    const std::string& locale);
+
+  SpeechRecognizer(const SpeechRecognizer&) = delete;
+  SpeechRecognizer& operator=(const SpeechRecognizer&) = delete;
+
   ~SpeechRecognizer() override;
 
   // Start/stop the speech recognizer.
@@ -127,8 +130,6 @@ class VR_BASE_EXPORT SpeechRecognizer : public IOBrowserUIInterface {
   // Note that this object is destroyed on IO thread.
   std::unique_ptr<SpeechRecognizerOnIO> speech_recognizer_on_io_;
   base::WeakPtrFactory<SpeechRecognizer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognizer);
 };
 
 }  // namespace vr

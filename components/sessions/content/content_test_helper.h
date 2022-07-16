@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 
 namespace sessions {
@@ -15,15 +14,16 @@ namespace sessions {
 // Set of test functions to manipulate a SerializedNavigationEntry.
 class ContentTestHelper {
  public:
+  // Only static methods.
+  ContentTestHelper() = delete;
+  ContentTestHelper(const ContentTestHelper&) = delete;
+  ContentTestHelper& operator=(const ContentTestHelper&) = delete;
+
   // Creates a SerializedNavigationEntry with the given URL and title and some
   // common values for the other fields.
   static SerializedNavigationEntry CreateNavigation(
       const std::string& virtual_url,
       const std::string& title);
-
- private:
-  // Only static methods.
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ContentTestHelper);
 };
 
 }  // namespace sessions

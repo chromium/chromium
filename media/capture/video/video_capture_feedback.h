@@ -48,7 +48,7 @@ struct CAPTURE_EXPORT VideoCaptureFeedback {
   VideoCaptureFeedback& WithMaxFramerate(float max_framerate_fps);
   VideoCaptureFeedback& WithMaxPixels(int max_pixels);
   VideoCaptureFeedback& RequireMapped(bool require);
-  VideoCaptureFeedback& WithMappedSizes(std::vector<gfx::Size> mapped_sizes);
+  VideoCaptureFeedback& WithMappedSizes(std::vector<gfx::Size> sizes);
 
   // Combine constraints of two different sinks resulting in constraints fitting
   // both of them.

@@ -36,9 +36,13 @@ class AddressProfileSaveManager {
   // change of an existing profile that must be confirmed by the user, a UI
   // prompt will be initiated. At the end of the process, metrics will be
   // recorded.
+  // |allow_only_silent_updates| allows only for silent updates of profiles
+  // that have either a structured name or address or both but do not fulfill
+  // the import requirements.
   void ImportProfileFromForm(const AutofillProfile& profile,
                              const std::string& app_locale,
-                             const GURL& url);
+                             const GURL& url,
+                             bool allow_only_silent_updates);
 
  protected:
   // Initiates showing the prompt to the user.

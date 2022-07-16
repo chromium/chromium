@@ -12,9 +12,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/printing/printer_event_tracker.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/printing/server_printers_fetcher.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
-#include "chrome/browser/chromeos/printing/printer_event_tracker.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -38,9 +40,6 @@ class GURL;
 class Profile;
 
 namespace chromeos {
-
-class ServerPrintersFetcher;
-
 namespace settings {
 
 // Chrome OS CUPS printing settings page UI handler.
@@ -55,6 +54,10 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
       CupsPrintersManager* printers_manager);
 
   CupsPrintersHandler(Profile* profile, CupsPrintersManager* printers_manager);
+
+  CupsPrintersHandler(const CupsPrintersHandler&) = delete;
+  CupsPrintersHandler& operator=(const CupsPrintersHandler&) = delete;
+
   ~CupsPrintersHandler() override;
 
   // SettingsPageUIHandler overrides:
@@ -263,8 +266,6 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
       printers_manager_observation_{this};
 
   base::WeakPtrFactory<CupsPrintersHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CupsPrintersHandler);
 };
 
 }  // namespace settings

@@ -10,15 +10,12 @@
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/skia_color_space_util.h"
 #include "ui/gfx/test/icc_profiles.h"
-#include "ui/gfx/transform.h"
 
 namespace gfx {
-
-// Allowed pixel error.
-const float kPixelEpsilon = 1.5f / 255.f;
 
 // Allowed math error.
 const float kMathEpsilon = 0.001f;
@@ -349,6 +346,7 @@ TEST(SimpleColorSpace, ICCProfileOnlyColorSpin) {
 }
 
 TEST(SimpleColorSpace, GetColorSpace) {
+  const float kPixelEpsilon = 1.5f / 255.f;
   ICCProfile srgb_icc = ICCProfileForTestingSRGB();
   ColorSpace sRGB = srgb_icc.GetColorSpace();
   ColorSpace sRGB2 = sRGB;
@@ -382,6 +380,7 @@ TEST(SimpleColorSpace, GetColorSpace) {
 }
 
 TEST(SimpleColorSpace, Scale) {
+  const float kPixelEpsilon = 1.5f / 255.f;
   ColorSpace srgb = ColorSpace::CreateSRGB();
   ColorSpace srgb_scaled = srgb.GetScaledColorSpace(2.0f);
   std::unique_ptr<ColorTransform> t(
@@ -534,9 +533,8 @@ TEST(SimpleColorSpace, CanParseSkShaderSource) {
   for (const auto& src : common_color_spaces) {
     for (const auto& dst : common_color_spaces) {
       auto transform = ColorTransform::NewColorTransform(src, dst);
-      std::string source =
-          "half4 main(half4 color) {\n" +
-          transform->GetSkShaderSource() + " return color; }";
+      std::string source = "half4 main(half4 color) {\n" +
+                           transform->GetSkShaderSource() + " return color; }";
       SkRuntimeEffect::Result result = SkRuntimeEffect::MakeForColorFilter(
           SkString(source.c_str(), source.length()), /*options=*/{});
       EXPECT_NE(result.effect, nullptr);
@@ -579,7 +577,6 @@ TEST_P(TransferTest, basicTest) {
 INSTANTIATE_TEST_SUITE_P(ColorSpace,
                          TransferTest,
                          testing::ValuesIn(simple_transfers));
-
 
 class ExtendedTransferTest
     : public testing::TestWithParam<ColorSpace::TransferID> {};

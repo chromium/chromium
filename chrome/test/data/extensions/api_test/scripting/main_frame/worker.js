@@ -23,6 +23,18 @@ function echoArguments() {
   return args;
 }
 
+// A helper function to return "flags" set by scripts in the isolated and main
+// worlds. Note that the main world script flag is set by a script in the html
+// file.
+function getExecutionWorldFlags() {
+  // Note: We use '<none>' here because undefined and null values aren't
+  // preserved in return results from executeScript() calls.
+  return {
+    isolatedWorld: window.isolatedWorldFlag || '<none>',
+    mainWorld: window.mainWorldFlag || '<none>',
+  };
+}
+
 async function getSingleTab(query) {
   const tabs = await new Promise(resolve => {
     chrome.tabs.query(query, resolve);
@@ -163,6 +175,63 @@ chrome.test.runTests([
     // NOTE: We use `val === null` (rather than `assertEq(null, val)` because
     // assertEq will classify null and undefined as equal.
     chrome.test.assertTrue(results[0].result === null);
+    chrome.test.succeed();
+  },
+
+  async function scriptsInjectIntoSameIsolatedWorld() {
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    const target = {tabId: tab.id};
+    // When `world` is unspecified, it defaults to an isolated world.
+    await chrome.scripting.executeScript({
+      target: target,
+      func: () => { window.isolatedWorldFlag = 'from isolated world' },
+    });
+    let results = await chrome.scripting.executeScript({
+      target: target,
+      func: getExecutionWorldFlags,
+    });
+    chrome.test.assertEq(1, results.length);
+    chrome.test.assertEq(
+        {isolatedWorld: 'from isolated world', mainWorld: '<none>'},
+        results[0].result);
+
+    // Subsequent scripts should execute in the same isolated world.
+    results = await chrome.scripting.executeScript({
+      target: target,
+      func: getExecutionWorldFlags,
+      world: chrome.scripting.ExecutionWorld.ISOLATED,
+    });
+    chrome.test.assertEq(1, results.length);
+    chrome.test.assertEq(
+        {isolatedWorld: 'from isolated world', mainWorld: '<none>'},
+        results[0].result);
+
+    chrome.test.succeed();
+  },
+
+  async function scriptsCanRunInMainWorld() {
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    const target = {tabId: tab.id};
+    // Set a flag in the isolated world.
+    await chrome.scripting.executeScript({
+      target: target,
+      func: () => { window.isolatedWorldFlag = 'from isolated world' },
+    });
+
+    // The script executing in the main world should not see the flag from the
+    // isolated world, but should see the one the page set in the main world.
+    const results = await chrome.scripting.executeScript({
+      target: target,
+      func: getExecutionWorldFlags,
+      world: chrome.scripting.ExecutionWorld.MAIN,
+    });
+    chrome.test.assertEq(1, results.length);
+    chrome.test.assertEq(
+        {isolatedWorld: '<none>', mainWorld: 'from main world'},
+        results[0].result);
+
     chrome.test.succeed();
   },
 

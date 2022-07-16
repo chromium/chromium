@@ -27,6 +27,10 @@ class ManifestPermissionSet;
 class ManifestHandler {
  public:
   ManifestHandler();
+
+  ManifestHandler(const ManifestHandler&) = delete;
+  ManifestHandler& operator=(const ManifestHandler&) = delete;
+
   virtual ~ManifestHandler();
 
   // Attempts to parse the extension's manifest.
@@ -113,14 +117,14 @@ class ManifestHandler {
   // A convenience method for handlers that only register for 1 key,
   // so that they can define keys() { return SingleKey(kKey); }
   static const std::vector<std::string> SingleKey(const std::string& key);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ManifestHandler);
 };
 
 // The global registry for manifest handlers.
 class ManifestHandlerRegistry {
  public:
+  ManifestHandlerRegistry(const ManifestHandlerRegistry&) = delete;
+  ManifestHandlerRegistry& operator=(const ManifestHandlerRegistry&) = delete;
+
   // Get the one true instance.
   static ManifestHandlerRegistry* Get();
 
@@ -176,7 +180,7 @@ class ManifestHandlerRegistry {
   // Any new manifest handlers added may cause the small_map to overflow
   // to the backup std::unordered_map, which we don't want, as that would
   // defeat the optimization of using small_map.
-  static constexpr size_t kHandlerMax = 90;
+  static constexpr size_t kHandlerMax = 87;
   using FallbackMap = std::unordered_map<std::string, ManifestHandler*>;
   using ManifestHandlerMap = base::small_map<FallbackMap, kHandlerMax>;
   using FallbackPriorityMap = std::unordered_map<ManifestHandler*, int>;
@@ -197,8 +201,6 @@ class ManifestHandlerRegistry {
   ManifestHandlerPriorityMap priority_map_;
 
   bool is_finalized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestHandlerRegistry);
 };
 
 }  // namespace extensions

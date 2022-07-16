@@ -52,58 +52,64 @@ struct LocaleTestData {
     {"und-Thai", USCRIPT_THAI, "und-Thai"},
 
     // Common lang-region in East Asia.
-    {"ja-JP", USCRIPT_KATAKANA_OR_HIRAGANA, "ja", USCRIPT_KATAKANA_OR_HIRAGANA},
-    {"ko-KR", USCRIPT_HANGUL, "ko", USCRIPT_HANGUL},
-    {"zh", USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN},
-    {"zh-CN", USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN},
-    {"zh-HK", USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN},
-    {"zh-MO", USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN},
-    {"zh-SG", USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN},
-    {"zh-TW", USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN},
+#define EXPECT_JAPANESE \
+  USCRIPT_KATAKANA_OR_HIRAGANA, "ja", USCRIPT_KATAKANA_OR_HIRAGANA
+#define EXPECT_KOREAN USCRIPT_HANGUL, "ko", USCRIPT_HANGUL
+#define EXPECT_SIMPLIFIED_CHINESE \
+  USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN
+#define EXPECT_TRADITIONAL_CHINESE \
+  USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN
+    {"ja-JP", EXPECT_JAPANESE},
+    {"ko-KR", EXPECT_KOREAN},
+    {"zh", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-CN", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-HK", EXPECT_TRADITIONAL_CHINESE},
+    {"zh-MO", EXPECT_TRADITIONAL_CHINESE},
+    {"zh-SG", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-TW", EXPECT_TRADITIONAL_CHINESE},
 
     // Encompassed languages within the Chinese macrolanguage.
     // Both "lang" and "lang-extlang" should work.
-    {"nan", USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN},
-    {"wuu", USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN},
-    {"yue", USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN},
-    {"zh-nan", USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN},
-    {"zh-wuu", USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN},
-    {"zh-yue", USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN},
+    {"nan", EXPECT_TRADITIONAL_CHINESE},
+    {"wuu", EXPECT_SIMPLIFIED_CHINESE},
+    {"yue", EXPECT_TRADITIONAL_CHINESE},
+    {"zh-nan", EXPECT_TRADITIONAL_CHINESE},
+    {"zh-wuu", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-yue", EXPECT_TRADITIONAL_CHINESE},
 
     // Specified scripts is honored.
-    {"zh-Hans", USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN},
-    {"zh-Hant", USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN},
+    {"zh-Hans", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-Hant", EXPECT_TRADITIONAL_CHINESE},
 
     // Lowercase scripts should be capitalized.
     // |SkFontMgr_Android| uses case-sensitive match, and `fonts.xml` has
     // capitalized script names.
-    {"zh-hans", USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN},
-    {"zh-hant", USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN},
+    {"zh-hans", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-hant", EXPECT_TRADITIONAL_CHINESE},
 
     // Script has priority over other subtags.
-    {"en-Hans", USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN},
-    {"en-Hant", USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN},
-    {"en-Hans-TW", USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN},
-    {"en-Hant-CN", USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN},
-    {"en-TW-Hans", USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN},
-    {"en-CN-Hant", USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN},
-    {"wuu-Hant", USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN},
-    {"yue-Hans", USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN},
-    {"zh-wuu-Hant", USCRIPT_TRADITIONAL_HAN, "zh-Hant",
-     USCRIPT_TRADITIONAL_HAN},
-    {"zh-yue-Hans", USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN},
+    {"en-Hans", EXPECT_SIMPLIFIED_CHINESE},
+    {"en-Hant", EXPECT_TRADITIONAL_CHINESE},
+    {"en-Hans-TW", EXPECT_SIMPLIFIED_CHINESE},
+    {"en-Hant-CN", EXPECT_TRADITIONAL_CHINESE},
+    {"en-TW-Hans", EXPECT_SIMPLIFIED_CHINESE},
+    {"en-CN-Hant", EXPECT_TRADITIONAL_CHINESE},
+    {"wuu-Hant", EXPECT_TRADITIONAL_CHINESE},
+    {"yue-Hans", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-wuu-Hant", EXPECT_TRADITIONAL_CHINESE},
+    {"zh-yue-Hans", EXPECT_SIMPLIFIED_CHINESE},
 
     // Lang has priority over region.
     // icu::Locale::getDefault() returns other combinations if, for instance,
     // English Windows with the display language set to Japanese.
-    {"ja", USCRIPT_KATAKANA_OR_HIRAGANA, "ja", USCRIPT_KATAKANA_OR_HIRAGANA},
-    {"ja-US", USCRIPT_KATAKANA_OR_HIRAGANA, "ja", USCRIPT_KATAKANA_OR_HIRAGANA},
-    {"ko", USCRIPT_HANGUL, "ko", USCRIPT_HANGUL},
-    {"ko-US", USCRIPT_HANGUL, "ko", USCRIPT_HANGUL},
-    {"wuu-TW", USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN},
-    {"yue-CN", USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN},
-    {"zh-wuu-TW", USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN},
-    {"zh-yue-CN", USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN},
+    {"ja", EXPECT_JAPANESE},
+    {"ja-US", EXPECT_JAPANESE},
+    {"ko", EXPECT_KOREAN},
+    {"ko-US", EXPECT_KOREAN},
+    {"wuu-TW", EXPECT_SIMPLIFIED_CHINESE},
+    {"yue-CN", EXPECT_TRADITIONAL_CHINESE},
+    {"zh-wuu-TW", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-yue-CN", EXPECT_TRADITIONAL_CHINESE},
 
     // Region should not affect script, but it can influence scriptForHan.
     {"en-CN", USCRIPT_LATIN, "en"},
@@ -118,6 +124,10 @@ struct LocaleTestData {
     // selection.
     {"en-US-JP", USCRIPT_LATIN, "en", USCRIPT_KATAKANA_OR_HIRAGANA},
 };
+#undef EXPECT_JAPANESE
+#undef EXPECT_KOREAN
+#undef EXPECT_SIMPLIFIED_CHINESE
+#undef EXPECT_TRADITIONAL_CHINESE
 
 std::ostream& operator<<(std::ostream& os, const LocaleTestData& test) {
   return os << test.locale;

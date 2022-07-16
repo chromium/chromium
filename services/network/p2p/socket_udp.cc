@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -226,7 +227,7 @@ bool P2PSocketUdp::HandleReadResult(int result) {
 
     client_->DataReceived(
         recv_address_, data,
-        base::TimeTicks() + base::TimeDelta::FromNanoseconds(rtc::TimeNanos()));
+        base::TimeTicks() + base::Nanoseconds(rtc::TimeNanos()));
 
     delegate_->DumpPacket(
         base::make_span(reinterpret_cast<uint8_t*>(&data[0]), data.size()),
@@ -375,9 +376,8 @@ bool P2PSocketUdp::HandleSendResult(uint64_t packet_id,
 
   // UMA to track the histograms from 1ms to 1 sec for how long a packet spends
   // in the browser process.
-  UMA_HISTOGRAM_TIMES(
-      "WebRTC.SystemSendPacketDuration_UDP" /* name */,
-      base::TimeDelta::FromMilliseconds(rtc::TimeMillis() - send_time_ms));
+  UMA_HISTOGRAM_TIMES("WebRTC.SystemSendPacketDuration_UDP" /* name */,
+                      base::Milliseconds(rtc::TimeMillis() - send_time_ms));
 
   client_->SendComplete(
       P2PSendPacketMetrics(packet_id, transport_sequence_number, send_time_ms));

@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 29: addRange(): The given range isn't in document.
+CONSOLE WARNING: addRange(): The given range isn't in document.
 Test error handling of Selection.addRange().
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

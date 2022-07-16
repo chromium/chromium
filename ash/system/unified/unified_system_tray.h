@@ -9,8 +9,13 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/shell_observer.h"
+#include "ash/system/time/time_view.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -25,8 +30,10 @@ class NetworkTrayView;
 class TimeTrayItemView;
 }  // namespace tray
 
+class AshMessagePopupCollection;
 class CurrentLocaleView;
 class ImeModeView;
+class HpsNotifyView;
 class ManagedDeviceTrayItemView;
 class NotificationIconsController;
 class PrivacyScreenToastController;
@@ -50,10 +57,23 @@ class CameraMicTrayItemView;
 // after the user clicks on it. The UnifiedSystemTrayBubble is created and owned
 // by this class.
 class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
-                                     public ShelfConfig::Observer {
+                                     public ShelfConfig::Observer,
+                                     public ShellObserver {
  public:
   explicit UnifiedSystemTray(Shelf* shelf);
+
+  UnifiedSystemTray(const UnifiedSystemTray&) = delete;
+  UnifiedSystemTray& operator=(const UnifiedSystemTray&) = delete;
+
   ~UnifiedSystemTray() override;
+
+  // Adds a padding on top of the vertical clock if there are other visible
+  // icons in the tray, removes it if the clock is the only visible icon.
+  void MaybeUpdateVerticalClockPadding();
+
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view) override;
 
   // True if the bubble is shown. It does not include slider bubbles, and when
   // they're shown it still returns false.
@@ -152,11 +172,22 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   bool ShouldEnableExtraKeyboardAccessibility() override;
   views::Widget* GetBubbleWidget() const override;
   const char* GetClassName() const override;
+  absl::optional<AcceleratorAction> GetAcceleratorAction() const override;
+
+  // ShellObserver:
+  void OnShelfAlignmentChanged(aura::Window* root_window,
+                               ShelfAlignment old_alignment) override;
 
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;
 
+  // Repeating callback passed to TimeView which is called when an action is
+  // performed.
+  void OnTimeViewActionPerformed(const ui::Event& event);
+
   std::u16string GetAccessibleNameForQuickSettingsBubble();
+
+  AshMessagePopupCollection* GetMessagePopupCollection();
 
   UnifiedSystemTrayModel* model() { return model_.get(); }
   UnifiedSystemTrayBubble* bubble() { return bubble_.get(); }
@@ -168,6 +199,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
  private:
   static const base::TimeDelta kNotificationCountUpdateDelay;
 
+  friend class NotificationGroupingControllerTest;
   friend class SystemTrayTestApi;
   friend class UnifiedSystemTrayTest;
 
@@ -188,6 +220,12 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   // The container takes the ownership of |tray_item|.
   void AddTrayItemToContainer(TrayItemView* tray_item);
 
+  // Returns true if there is two or more tray items that are visible.
+  bool MoreThanOneVisibleTrayItem() const;
+
+  // Add observed tray item views.
+  void AddObservedTrayItem(TrayItemView* tray_item);
+
   const std::unique_ptr<UiDelegate> ui_delegate_;
 
   std::unique_ptr<UnifiedSystemTrayBubble> bubble_;
@@ -207,23 +245,31 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   const std::unique_ptr<NotificationIconsController>
       notification_icons_controller_;
 
+  HpsNotifyView* const hps_notify_view_;
   CurrentLocaleView* const current_locale_view_;
   ImeModeView* const ime_mode_view_;
   ManagedDeviceTrayItemView* const managed_device_view_;
   CameraMicTrayItemView* const camera_view_;
   CameraMicTrayItemView* const mic_view_;
-  tray::TimeTrayItemView* const time_view_;
+  tray::TimeTrayItemView* time_view_ = nullptr;
 
   tray::NetworkTrayView* network_tray_view_ = nullptr;
 
   // Contains all tray items views added to tray_container().
   std::list<TrayItemView*> tray_items_;
 
+  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
+      tray_items_observations_{this};
+
+  // Padding owned by the view hierarchy used to separate vertical
+  // clock from other tray icons.
+  views::View* vertical_clock_padding_ = nullptr;
+
   base::OneShotTimer timer_;
 
   bool first_interaction_recorded_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTray);
+  base::WeakPtrFactory<UnifiedSystemTray> weak_factory_{this};
 };
 
 }  // namespace ash

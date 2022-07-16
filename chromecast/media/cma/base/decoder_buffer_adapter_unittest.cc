@@ -18,7 +18,7 @@ static const int64_t kBufferTimestampUs = 31;
 scoped_refptr<media::DecoderBuffer> MakeDecoderBuffer() {
   scoped_refptr<media::DecoderBuffer> buffer =
       media::DecoderBuffer::CopyFrom(kBufferData, kBufferDataSize);
-  buffer->set_timestamp(base::TimeDelta::FromMicroseconds(kBufferTimestampUs));
+  buffer->set_timestamp(base::Microseconds(kBufferTimestampUs));
   return buffer;
 }
 }  // namespace
@@ -51,8 +51,7 @@ TEST(DecoderBufferAdapterTest, Timestamp) {
   EXPECT_EQ(kBufferTimestampUs, buffer_adapter->timestamp());
 
   const int64_t kTestTimestampUs = 62;
-  buffer_adapter->set_timestamp(
-      base::TimeDelta::FromMicroseconds(kTestTimestampUs));
+  buffer_adapter->set_timestamp(base::Microseconds(kTestTimestampUs));
   EXPECT_EQ(kTestTimestampUs, buffer_adapter->timestamp());
 }
 

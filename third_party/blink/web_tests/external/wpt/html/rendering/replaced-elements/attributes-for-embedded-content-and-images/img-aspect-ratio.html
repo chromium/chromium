@@ -18,6 +18,7 @@
 <img src="error.png" alt="Alt text" width=100 height=500>
 <script>
 let guard = async_test("Image width and height attributes are used to infer aspect-ratio");
+let cookie = Math.random();
 function assert_ratio(img, expected, description) {
   let epsilon = 0.001;
   assert_approx_equals(parseFloat(getComputedStyle(img).width, 10) / parseFloat(getComputedStyle(img).height, 10),
@@ -32,14 +33,16 @@ function test_computed_style(width, height, expected) {
 }
 
 // Create and append a new image and immediately check the ratio.
-// This is not racy because the spec requires the user agent to queue a task:
+// We append a random query to the URL(s) to avoid matching something in the 'list
+// of available images' (step 6 of the algorithm below) and thus have the actual
+// load run in a microtask.
 // https://html.spec.whatwg.org/multipage/images.html#updating-the-image-data
 test(function() {
   // This img will be tested again after loaded. In order to locate it correctly, body should append it first.
   var img = new Image();
   img.width = 250;
   img.height = 100;
-  img.src = "/images/blue.png";
+  img.src = "/images/blue.png?" + cookie;
   document.body.appendChild(img);
   assert_ratio(img, 2.5);
 }, "Create, append and test immediately: <img> with attributes width=250, height=100");
@@ -48,7 +51,7 @@ test(function () {
   img = new Image();
   img.setAttribute("width", "0.8");
   img.setAttribute("height", "0.2");
-  img.src = "/images/blue.png";
+  img.src = "/images/blue.png?" + (cookie + 1);
   document.body.appendChild(img);
   assert_ratio(img, 4);
 }, "Create, append and test immediately: <img> with attributes width=0.8, height=0.2");
@@ -57,7 +60,7 @@ test(function () {
   img = new Image();
   img.setAttribute("width", "50%");
   img.setAttribute("height", "25%");
-  img.src = "/images/blue.png";
+  img.src = "/images/blue.png?" + (cookie + 2);
   document.body.appendChild(img);
   // Percentages should be  ignored.
   assert_equals(getComputedStyle(img).height, "0px");
@@ -67,7 +70,7 @@ test(function () {
   img = new Image();
   img.setAttribute("width", "50pp");
   img.setAttribute("height", "25xx");
-  img.src = "/images/blue.png";
+  img.src = "/images/blue.png?" + (cookie + 3);
   document.body.appendChild(img);
   assert_ratio(img, 2);
 }, "Create, append and test immediately: <img> with invalid trailing attributes width=50pp height=25xx");

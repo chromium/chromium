@@ -26,6 +26,10 @@ class CookieControlsServiceObserver : public CookieControlsService::Observer {
     checked_ = false;
   }
 
+  CookieControlsServiceObserver(const CookieControlsServiceObserver&) = delete;
+  CookieControlsServiceObserver& operator=(
+      const CookieControlsServiceObserver&) = delete;
+
   ~CookieControlsServiceObserver() override = default;
 
   CookieControlsService* GetService() { return service_; }
@@ -40,8 +44,6 @@ class CookieControlsServiceObserver : public CookieControlsService::Observer {
  private:
   CookieControlsService* service_;
   bool checked_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieControlsServiceObserver);
 };
 
 class CookieControlsServiceTest : public ChromeRenderViewHostTestHarness {

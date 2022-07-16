@@ -8,6 +8,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -23,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -50,7 +53,8 @@ enum class ChromeLabsSelectedLab {
   kTabScrollingSelected = 3,
   kSidePanelSelected = 4,
   kLensRegionSearchSelected = 5,
-  kMaxValue = kLensRegionSearchSelected,
+  kWebUITabStripSelected = 6,
+  kMaxValue = kWebUITabStripSelected,
 };
 
 void EmitToHistogram(const std::u16string& selected_lab_state,
@@ -80,6 +84,11 @@ void EmitToHistogram(const std::u16string& selected_lab_state,
     } else if (internal_name ==
                flag_descriptions::kEnableLensRegionSearchFlagId) {
       return ChromeLabsSelectedLab::kLensRegionSearchSelected;
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && \
+    (defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH))
+    } else if (internal_name == flag_descriptions::kWebUITabStripFlagId) {
+      return ChromeLabsSelectedLab::kWebUITabStripSelected;
+#endif
     } else {
       return ChromeLabsSelectedLab::kUnspecifiedSelected;
     }
@@ -128,7 +137,7 @@ class ChromeLabsFooter : public views::View {
                      .SetProminent(true)
                      .Build());
     SetBackground(views::CreateThemedSolidBackground(
-        this, ui::NativeTheme::kColorId_BubbleFooterBackground));
+        this, ui::kColorBubbleFooterBackground));
     SetBorder(views::CreateEmptyBorder(
         views::LayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG)));
     SetProperty(
@@ -148,16 +157,14 @@ END_METADATA
 }  // namespace
 
 // static
-void ChromeLabsBubbleView::Show(views::View* anchor_view,
+void ChromeLabsBubbleView::Show(ChromeLabsButton* anchor_view,
                                 Browser* browser,
                                 const ChromeLabsBubbleViewModel* model,
                                 bool user_is_chromeos_owner) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (static_cast<ChromeLabsButton*>(anchor_view)->GetAshOwnerCheckTimer()) {
+  if (anchor_view->GetAshOwnerCheckTimer()) {
     UmaHistogramMediumTimes("Toolbar.ChromeLabs.AshOwnerCheckTime",
-                            static_cast<ChromeLabsButton*>(anchor_view)
-                                ->GetAshOwnerCheckTimer()
-                                ->Elapsed());
+                            anchor_view->GetAshOwnerCheckTimer()->Elapsed());
   }
 #endif
   g_chrome_labs_bubble = new ChromeLabsBubbleView(anchor_view, browser, model,
@@ -184,7 +191,7 @@ ChromeLabsBubbleView::~ChromeLabsBubbleView() {
 }
 
 ChromeLabsBubbleView::ChromeLabsBubbleView(
-    views::View* anchor_view,
+    ChromeLabsButton* anchor_view,
     Browser* browser,
     const ChromeLabsBubbleViewModel* model,
     bool user_is_chromeos_owner)
@@ -200,13 +207,11 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   set_margins(gfx::Insets(0));
   SetEnableArrowKeyTraversal(true);
-  // Previous role is kUnknown. This override makes ChromeVox draw accessibility
-  // focus on the entire content area instead of the first combobox. We are not
-  // using BubbleDialogDelegate::GetAccessibleWindowRole() which will return
-  // kAlertDialog for this case. kAlertDialog will tell screen readers to
-  // announce all contents of the bubble when it opens and previous
-  // accessibility feedback said that behavior was confusing.
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
+  // Set `kDialog` to avoid the BubbleDialogDelegate returning a default of
+  // `kAlertDialog` which would tell screen readers to announce all contents of
+  // the bubble when it opens and previous accessibility feedback said that
+  // behavior was confusing.
+  SetAccessibleRole(ax::mojom::Role::kDialog);
 
 // TODO(elainechien): Take care of additional cases 1) kSafeMode switch is
 // present 2) user is secondary user.
@@ -257,6 +262,9 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
   // ChromeLabsButton should not appear in the toolbar if there are no
   // experiments to show. Therefore ChromeLabsBubble should not be created.
   DCHECK(menu_item_container_->children().size() >= 1);
+
+  // Hide dot indicator once bubble has been opened.
+  anchor_view->HideDotIndicator();
 
   restart_prompt_ = AddChildView(std::make_unique<ChromeLabsFooter>(this));
   restart_prompt_->SetVisible(about_flags::IsRestartNeededToCommitChanges());

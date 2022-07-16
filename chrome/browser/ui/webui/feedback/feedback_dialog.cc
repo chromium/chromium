@@ -9,6 +9,7 @@
 
 #include "base/json/json_writer.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/webui/feedback/feedback_handler.h"
@@ -53,18 +54,21 @@ void FeedbackDialog::CreateOrShow(
     return;
   }
 
-  current_instance_ = new FeedbackDialog(info);
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  current_instance_ = new FeedbackDialog(profile, info);
   gfx::NativeWindow window =
-      chrome::ShowWebDialog(nullptr, ProfileManager::GetActiveUserProfile(),
-                            current_instance_, /*show=*/false);
+      chrome::ShowWebDialog(nullptr, profile, current_instance_,
+                            /*show=*/false);
   current_instance_->widget_ = views::Widget::GetWidgetForNativeWindow(window);
 }
 
 FeedbackDialog::FeedbackDialog(
+    Profile* profile,
     const extensions::api::feedback_private::FeedbackInfo& info)
     : feedback_info_(info.ToValue()),
       feedback_flow_(info.flow),
-      widget_(nullptr) {
+      widget_(nullptr),
+      profile_keep_alive_(profile, ProfileKeepAliveOrigin::kFeedbackDialog) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   set_can_resize(false);
   set_can_minimize(true);

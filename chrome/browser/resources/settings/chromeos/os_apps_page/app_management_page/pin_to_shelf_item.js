@@ -1,7 +1,19 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import './toggle_row.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
+
+import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementUserAction, OptionalBool} from './constants.js';
+import {convertOptionalBoolToBool, recordAppManagementUserAction, toggleOptionalBool} from './util.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-pin-to-shelf-item',
 
   properties: {
@@ -73,21 +85,18 @@ Polymer({
   },
 
   toggleSetting_() {
-    const newState =
-        assert(app_management.util.toggleOptionalBool(this.app.isPinned));
-    const newStateBool =
-        app_management.util.convertOptionalBoolToBool(newState);
+    const newState = assert(toggleOptionalBool(this.app.isPinned));
+    const newStateBool = convertOptionalBoolToBool(newState);
     assert(newStateBool === this.$['toggle-row'].isChecked());
-    app_management.BrowserProxy.getInstance().handler.setPinned(
+    BrowserProxy.getInstance().handler.setPinned(
         this.app.id,
         newState,
     );
-    settings.recordSettingChange();
+    recordSettingChange();
     const userAction = newStateBool ?
         AppManagementUserAction.PinToShelfTurnedOn :
         AppManagementUserAction.PinToShelfTurnedOff;
-    app_management.util.recordAppManagementUserAction(
-        this.app.type, userAction);
+    recordAppManagementUserAction(this.app.type, userAction);
   },
 
   /**

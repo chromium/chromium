@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -41,7 +40,6 @@ using ::testing::Return;
 
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 AccountInfo GetValidAccountInfo(std::string email,
                                 CoreAccountId account_id,
                                 std::string given_name,
@@ -63,8 +61,6 @@ AccountInfo GetValidAccountInfo(std::string email,
 const char kChromiumOrgDomain[] = "chromium.org";
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
 class GAIAInfoUpdateServiceTestBase : public testing::Test {
  protected:
   explicit GAIAInfoUpdateServiceTestBase(
@@ -74,6 +70,11 @@ class GAIAInfoUpdateServiceTestBase : public testing::Test {
                            /*pref_service=*/nullptr,
                            account_consistency,
                            /*test_signin_client=*/nullptr) {}
+
+  GAIAInfoUpdateServiceTestBase(const GAIAInfoUpdateServiceTestBase&) = delete;
+  GAIAInfoUpdateServiceTestBase& operator=(
+      const GAIAInfoUpdateServiceTestBase&) = delete;
+
   ~GAIAInfoUpdateServiceTestBase() override = default;
 
   void SetUp() override {
@@ -127,30 +128,23 @@ class GAIAInfoUpdateServiceTestBase : public testing::Test {
   TestingProfile* profile_ = nullptr;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<GAIAInfoUpdateService> service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GAIAInfoUpdateServiceTestBase);
 };
 
 class GAIAInfoUpdateServiceTest : public GAIAInfoUpdateServiceTestBase {
+ public:
+  GAIAInfoUpdateServiceTest(const GAIAInfoUpdateServiceTest&) = delete;
+  GAIAInfoUpdateServiceTest& operator=(const GAIAInfoUpdateServiceTest&) =
+      delete;
+
  protected:
   GAIAInfoUpdateServiceTest()
       : GAIAInfoUpdateServiceTestBase(
             signin::AccountConsistencyMethod::kDisabled) {}
   ~GAIAInfoUpdateServiceTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GAIAInfoUpdateServiceTest);
 };
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// This feature should never be enabled on ChromeOS.
-TEST_F(GAIAInfoUpdateServiceTest, ShouldUseGAIAProfileInfo) {
-  EXPECT_FALSE(GAIAInfoUpdateService::ShouldUseGAIAProfileInfo(profile()));
-}
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   AccountInfo info =
       identity_test_env()->MakeAccountAvailable("pat@example.com");
@@ -187,14 +181,16 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 namespace {
 class GAIAInfoUpdateServiceDiceTest : public GAIAInfoUpdateServiceTestBase {
+ public:
+  GAIAInfoUpdateServiceDiceTest(const GAIAInfoUpdateServiceDiceTest&) = delete;
+  GAIAInfoUpdateServiceDiceTest& operator=(
+      const GAIAInfoUpdateServiceDiceTest&) = delete;
+
  protected:
   GAIAInfoUpdateServiceDiceTest()
       : GAIAInfoUpdateServiceTestBase(signin::AccountConsistencyMethod::kDice) {
   }
   ~GAIAInfoUpdateServiceDiceTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GAIAInfoUpdateServiceDiceTest);
 };
 }  // namespace
 
@@ -410,5 +406,3 @@ TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
   EXPECT_FALSE(entry->GetGAIAPicture());
   EXPECT_TRUE(entry->GetHostedDomain().empty());
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -544,7 +544,7 @@ class MockMFCaptureEngine : public MockInterface<IMFCaptureEngine> {
         .WillByDefault(Return(MF_CAPTURE_ENGINE_INITIALIZED));
     // HW Cameras usually add about 500ms latency on init
     ON_CALL(*this, InitEventDelay)
-        .WillByDefault(Return(base::TimeDelta::FromMilliseconds(500)));
+        .WillByDefault(Return(base::Milliseconds(500)));
 
     base::TimeDelta event_delay = InitEventDelay();
 
@@ -554,8 +554,8 @@ class MockMFCaptureEngine : public MockInterface<IMFCaptureEngine> {
                        OnInitEventGuid(), OnInitStatus()),
         event_delay);
     // if zero is passed ensure event fires before wait starts
-    if (event_delay == base::TimeDelta::FromMilliseconds(0)) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+    if (event_delay == base::Milliseconds(0)) {
+      base::PlatformThread::Sleep(base::Milliseconds(200));
     }
 
     return S_OK;
@@ -1363,7 +1363,7 @@ TEST_F(VideoCaptureDeviceMFWinTest, CallClientOnFireCaptureEngineInitEarly) {
     return MF_CAPTURE_ENGINE_INITIALIZED;
   });
   EXPECT_CALL(*(engine.Get()), InitEventDelay).WillOnce([]() {
-    return base::TimeDelta::FromMilliseconds(0);
+    return base::Milliseconds(0);
   });
 
   EXPECT_CALL(*(engine.Get()), OnCorrectInitializeQueued());

@@ -29,6 +29,8 @@
 ./tools/certs/web-platform.test.pem
 ./tools/ci/__init__.py
 ./tools/ci/commands.json
+./tools/ci/requirements_build.txt
+./tools/ci/update_built.py
 ./tools/ci/tc/__init__.py
 ./tools/ci/tc/github_checks_output.py
 ./tools/conftest.py
@@ -219,6 +221,14 @@
 ./tools/webdriver/webdriver/transport.py
 ./tools/webdriver/webdriver/bidi/__init__.py
 ./tools/webdriver/webdriver/bidi/client.py
+./tools/webdriver/webdriver/bidi/error.py
+./tools/webtransport/README.md
+./tools/webtransport/__init__.py
+./tools/webtransport/requirements.txt
+./tools/webtransport/h3/__init__.py
+./tools/webtransport/h3/capsule.py
+./tools/webtransport/h3/handler.py
+./tools/webtransport/h3/webtransport_h3_server.py
 ./tools/wpt/__init__.py
 ./tools/wpt/android.py
 ./tools/wpt/browser.py

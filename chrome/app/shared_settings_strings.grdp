@@ -111,6 +111,12 @@
   <message name="IDS_SETTINGS_NEARBY_SHARE_EDIT_DEVICE_NAME" desc="Label for the button that opens the dialog which allows a user to set the name of their device which is shown to other devices for the Nearby Share feature.">
     Change device name
   </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_TITLE" desc="Title for the toggle that allows a user to turn fast initiation notifications on or off. Fast initiation notifications alert the user when devices nearby are trying to share.">
+    Show notification
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_DESCRIPTION" desc="Description for the toggle that allows a user to turn fast initiation notifications on or off. Fast initiation notifications alert the user when devices nearby are trying to share.">
+    When devices are sharing nearby
+  </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ARIA_DESCRIPTION" desc="Description for screen readers, not displayed in UI, specifying the current device name which is shown to other devices for the Nearby Share feature." is_accessibility_with_no_ui="true">
     Current device name is <ph name="DEVICE_NAME">$1<ex>Michael's Chromebook</ex></ph>
   </message>
@@ -354,6 +360,19 @@
   <message name="IDS_SETTINGS_SYNC_SETUP_CANCEL_DIALOG_BODY" desc="The body text of the dialog to confirm the sync cancellation.">
     You can turn on sync anytime in settings
   </message>
+    <if expr="chromeos">
+    <!-- TODO(crbug.com/1231500): Remove this string after Lacros side-by-side rollout stage. -->
+    <message name="IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_ASH" desc="The warning message that is shown when lacros side-by-side mode is enabled.">
+      Changes you make here apply only to Chrome Browser. To make changes to your Lacros Chrome Browser settings, open Lacros Chrome Browser and go to settings.
+    </message>
+  </if>
+
+  <if expr="lacros">
+    <!-- TODO(crbug.com/1231500): Remove this string after Lacros side-by-side rollout stage. -->
+    <message name="IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_LACROS" desc="The warning message that is shown when lacros side-by-side mode is enabled.">
+      Changes you make here apply only to Lacros Chrome Browser. To make changes to your Chrome Browser settings, open Chrome Browser and go to settings.
+    </message>
+  </if>
 
   <!-- About Subpage-->
   <message name="IDS_SETTINGS_ABOUT_UPGRADE_CHECK_STARTED" desc="Status label: About to start checking for updates">
@@ -368,6 +387,19 @@
   <if expr="not chromeos">
       <message name="IDS_SETTINGS_THEMES_AND_WALLPAPERS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing themes and wallpapers between multiple browser instances.">
         Theme
+    </message>
+  </if>
+
+  <!-- Password Prompt Dialog -->
+  <if expr="chromeos or lacros">
+    <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_TITLE" desc="Title of the password prompt dialog popup.">
+      Confirm your password
+    </message>
+    <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_PASSWORD_LABEL" desc="An input box label that tells the user to enter their password in that input box.">
+      Password
+    </message>
+    <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_INVALID_PASSWORD" desc="Text on a password field that tells the user the password is incorrect.">
+      Invalid password
     </message>
   </if>
 </grit-part>

@@ -77,6 +77,10 @@
 #include "absl/debugging/internal/vdso_support.h"
 #include "absl/strings/string_view.h"
 
+#if defined(__FreeBSD__) && !defined(ElfW)
+#define ElfW(x) __ElfN(x)
+#endif
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 

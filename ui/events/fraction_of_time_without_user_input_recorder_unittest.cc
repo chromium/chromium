@@ -48,8 +48,7 @@ class TestFractionOfTimeWithoutUserInputRecorder
 
 TEST(FractionOfTimeWithoutUserInputRecorderTest, IntervalIncludesIdleTimeout) {
   TestFractionOfTimeWithoutUserInputRecorder idle_fraction_recorder;
-  idle_fraction_recorder.set_idle_timeout_for_test(
-      base::TimeDelta::FromSecondsD(0.1));
+  idle_fraction_recorder.set_idle_timeout_for_test(base::Seconds(0.1));
 
   idle_fraction_recorder.RecordEventAtTime(EventTimeStampFromSeconds(0.5));
 
@@ -65,26 +64,25 @@ TEST(FractionOfTimeWithoutUserInputRecorderTest, IntervalIncludesIdleTimeout) {
 
 TEST(FractionOfTimeWithoutUserInputRecorderTest, TwoLongIntervals) {
   TestFractionOfTimeWithoutUserInputRecorder idle_fraction_recorder;
-  idle_fraction_recorder.set_idle_timeout_for_test(
-      base::TimeDelta::FromSecondsD(0.1));
+  idle_fraction_recorder.set_idle_timeout_for_test(base::Seconds(0.1));
 
   // Send events regularly between 0.1 seconds and 0.1 + 20 * 0.05 = 1.10
   // seconds.
-  base::TimeTicks time = base::TimeTicks() + base::TimeDelta::FromSecondsD(0.1);
+  base::TimeTicks time = base::TimeTicks() + base::Seconds(0.1);
   idle_fraction_recorder.RecordEventAtTime(time);
 
   for (int i = 0; i < 20; ++i) {
-    time += base::TimeDelta::FromSecondsD(0.05);
+    time += base::Seconds(0.05);
     idle_fraction_recorder.RecordEventAtTime(time);
   }
 
   // Send events regularly between 2.2 seconds and 2.2 + 20 * 0.05 = 3.20
   // seconds.
-  time = base::TimeTicks() + base::TimeDelta::FromSecondsD(2.2);
+  time = base::TimeTicks() + base::Seconds(2.2);
   idle_fraction_recorder.RecordEventAtTime(time);
 
   for (int i = 0; i < 20; ++i) {
-    time += base::TimeDelta::FromSecondsD(0.05);
+    time += base::Seconds(0.05);
     idle_fraction_recorder.RecordEventAtTime(time);
   }
 
@@ -101,8 +99,7 @@ TEST(FractionOfTimeWithoutUserInputRecorderTest, TwoLongIntervals) {
 
 TEST(FractionOfTimeWithoutUserInputRecorderTest, SingleShortRange) {
   TestFractionOfTimeWithoutUserInputRecorder idle_fraction_recorder;
-  idle_fraction_recorder.set_window_size_for_test(
-      base::TimeDelta::FromSecondsD(1));
+  idle_fraction_recorder.set_window_size_for_test(base::Seconds(1));
 
   base::HistogramTester tester;
   // Start window at 1 second.
@@ -121,8 +118,7 @@ TEST(FractionOfTimeWithoutUserInputRecorderTest, SingleShortRange) {
 
 TEST(FractionOfTimeWithoutUserInputRecorderTest, SingleLongRange) {
   TestFractionOfTimeWithoutUserInputRecorder idle_fraction_recorder;
-  idle_fraction_recorder.set_window_size_for_test(
-      base::TimeDelta::FromSecondsD(1));
+  idle_fraction_recorder.set_window_size_for_test(base::Seconds(1));
 
   base::HistogramTester tester;
 
@@ -144,8 +140,7 @@ TEST(FractionOfTimeWithoutUserInputRecorderTest, SingleLongRange) {
 
 TEST(FractionOfTimeWithoutUserInputRecorderTest, TwoLongRanges) {
   TestFractionOfTimeWithoutUserInputRecorder idle_fraction_recorder;
-  idle_fraction_recorder.set_window_size_for_test(
-      base::TimeDelta::FromSecondsD(1));
+  idle_fraction_recorder.set_window_size_for_test(base::Seconds(1));
 
   base::HistogramTester tester;
 

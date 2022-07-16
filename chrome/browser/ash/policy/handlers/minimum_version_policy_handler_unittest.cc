@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -23,7 +24,6 @@
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -182,7 +182,7 @@ base::Version MinimumVersionPolicyHandlerTest::GetCurrentVersion() const {
 
 void MinimumVersionPolicyHandlerTest::SetPolicyPref(base::Value value) {
   scoped_testing_cros_settings_.device_settings()->Set(
-      chromeos::kDeviceMinimumVersion, value);
+      ash::kDeviceMinimumVersion, value);
 }
 
 TEST_F(MinimumVersionPolicyHandlerTest, RequirementsNotMetState) {
@@ -348,7 +348,7 @@ TEST_F(MinimumVersionPolicyHandlerTest, DeadlineTimerExpired) {
   // Expire the timer and check that user is logged out of the session.
   EXPECT_CALL(*this, IsLoginSessionState()).Times(1);
   EXPECT_CALL(*this, RestartToLoginScreen()).Times(1);
-  const base::TimeDelta warning = base::TimeDelta::FromDays(kLongWarning);
+  const base::TimeDelta warning = base::Days(kLongWarning);
   task_environment.FastForwardBy(warning);
   EXPECT_FALSE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());

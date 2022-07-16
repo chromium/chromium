@@ -59,7 +59,7 @@ FloatRect FilterEffect::MapInputs(const FloatRect& rect) const {
   }
   FloatRect input_union;
   for (const auto& effect : input_effects_)
-    input_union.Unite(effect->MapRect(rect));
+    input_union.Union(effect->MapRect(rect));
   return input_union;
 }
 
@@ -74,7 +74,7 @@ FloatRect FilterEffect::ApplyBounds(const FloatRect& rect) const {
   FloatRect bounds = AbsoluteBounds();
   if (AffectsTransparentPixels())
     return bounds;
-  return Intersection(rect, bounds);
+  return IntersectRects(rect, bounds);
 }
 
 FloatRect FilterEffect::MapRect(const FloatRect& rect) const {

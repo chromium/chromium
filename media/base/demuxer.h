@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/container_names.h"
 #include "media/base/data_source.h"
@@ -80,6 +79,10 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
   };
 
   Demuxer();
+
+  Demuxer(const Demuxer&) = delete;
+  Demuxer& operator=(const Demuxer&) = delete;
+
   ~Demuxer() override;
 
   // Returns the name of the demuxer for logging purpose.
@@ -165,9 +168,6 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
       const std::vector<MediaTrack::Id>& track_ids,
       base::TimeDelta curr_time,
       TrackChangeCB change_completed_cb) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Demuxer);
 };
 
 }  // namespace media

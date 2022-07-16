@@ -28,7 +28,7 @@ namespace {
 // This stores the latest milestone with new Release Notes content. If the last
 // milestone the user has seen the notification is before this, a new
 // notification will be shown.
-constexpr int kLastChromeVersionWithReleaseNotes = 93;
+constexpr int kLastChromeVersionWithReleaseNotes = 96;
 constexpr int kTimesToShowSuggestionChip = 3;
 
 int GetMilestone() {
@@ -85,9 +85,6 @@ ReleaseNotesStorage::~ReleaseNotesStorage() = default;
 
 bool ReleaseNotesStorage::ShouldNotify() {
   // TODO(b/174514401): Make this server controlled.
-  if (!base::FeatureList::IsEnabled(features::kReleaseNotesNotification))
-    return false;
-
   if (!ShouldShowForCurrentChannel())
     return false;
 

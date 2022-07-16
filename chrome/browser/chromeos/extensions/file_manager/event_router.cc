@@ -6,15 +6,20 @@
 
 #include <stddef.h>
 
+#include <cmath>
 #include <memory>
 #include <set>
 #include <utility>
 
+#include "ash/components/drivefs/drivefs_host.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -24,23 +29,26 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/chromeos/extensions/file_manager/file_system_provider_metrics_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/components/drivefs/drivefs_host.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -76,6 +84,12 @@ namespace {
 
 // Frequency of sending onFileTransferUpdated.
 const int64_t kProgressEventFrequencyInMilliseconds = 1000;
+
+// Whether Files SWA has any open windows.
+bool DoFilesSwaWindowsExist(Profile* profile) {
+  return FindSystemWebAppBrowser(profile, web_app::SystemAppType::FILE_MANAGER,
+                                 Browser::TYPE_APP) != nullptr;
+}
 
 // Checks if the Recovery Tool is running. This is a temporary solution.
 // TODO(mtomasz): Replace with crbug.com/341902 solution.
@@ -203,8 +217,45 @@ CopyOrMoveProgressTypeToCopyOrMoveProgressStatusType(
   return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_NONE;
 }
 
+// Convert the IO Task State enum to the Private API enum.
+file_manager_private::IOTaskState GetIOTaskState(
+    file_manager::io_task::State state) {
+  switch (state) {
+    case file_manager::io_task::State::kQueued:
+      return file_manager_private::IO_TASK_STATE_QUEUED;
+    case file_manager::io_task::State::kInProgress:
+      return file_manager_private::IO_TASK_STATE_IN_PROGRESS;
+    case file_manager::io_task::State::kSuccess:
+      return file_manager_private::IO_TASK_STATE_SUCCESS;
+    case file_manager::io_task::State::kError:
+      return file_manager_private::IO_TASK_STATE_ERROR;
+    case file_manager::io_task::State::kCancelled:
+      return file_manager_private::IO_TASK_STATE_CANCELLED;
+    default:
+      NOTREACHED();
+      return file_manager_private::IO_TASK_STATE_ERROR;
+  }
+}
+
+// Convert the IO Task Type enum to the Private API enum.
+file_manager_private::IOTaskType GetIOTaskType(
+    file_manager::io_task::OperationType type) {
+  switch (type) {
+    case file_manager::io_task::OperationType::kCopy:
+      return file_manager_private::IO_TASK_TYPE_COPY;
+    case file_manager::io_task::OperationType::kMove:
+      return file_manager_private::IO_TASK_TYPE_MOVE;
+    case file_manager::io_task::OperationType::kDelete:
+      return file_manager_private::IO_TASK_TYPE_DELETE;
+    case file_manager::io_task::OperationType::kZip:
+      return file_manager_private::IO_TASK_TYPE_ZIP;
+    default:
+      NOTREACHED();
+      return file_manager_private::IO_TASK_TYPE_COPY;
+  }
+}
+
 std::string FileErrorToErrorName(base::File::Error error_code) {
-  namespace js = extensions::api::file_manager_private;
   switch (error_code) {
     case base::File::FILE_ERROR_NOT_FOUND:
       return "NotFoundError";
@@ -326,6 +377,9 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
                         Profile* profile)
       : DeviceEventRouter(notification_manager), profile_(profile) {}
 
+  DeviceEventRouterImpl(const DeviceEventRouterImpl&) = delete;
+  DeviceEventRouterImpl& operator=(const DeviceEventRouterImpl&) = delete;
+
   // DeviceEventRouter overrides.
   void OnDeviceEvent(file_manager_private::DeviceEventType type,
                      const std::string& device_path,
@@ -353,8 +407,6 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
 
  private:
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceEventRouterImpl);
 };
 
 class DriveFsEventRouterImpl : public DriveFsEventRouter {
@@ -432,6 +484,28 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
       file_watchers_;
 };
 
+// Records mounted File System Provider type if known otherwise UNKNOWN.
+void RecordFileSystemProviderMountMetrics(const Volume& volume) {
+  const ash::file_system_provider::ProviderId& provider_id =
+      volume.provider_id();
+  if (provider_id.GetType() != ash::file_system_provider::ProviderId::INVALID) {
+    using FileSystemProviderMountedTypeMap =
+        std::unordered_map<std::string, FileSystemProviderMountedType>;
+
+    const std::string fsp_key = provider_id.ToString();
+    FileSystemProviderMountedTypeMap fsp_sample_map =
+        GetUmaForFileSystemProvider();
+    FileSystemProviderMountedTypeMap::iterator sample =
+        fsp_sample_map.find(fsp_key);
+    if (sample != fsp_sample_map.end())
+      UMA_HISTOGRAM_ENUMERATION(kFileSystemProviderMountedMetricName,
+                                sample->second);
+    else
+      UMA_HISTOGRAM_ENUMERATION(kFileSystemProviderMountedMetricName,
+                                FileSystemProviderMountedType::UNKNOWN);
+  }
+}
+
 }  // namespace
 
 EventRouter::EventRouter(Profile* profile)
@@ -478,7 +552,7 @@ void EventRouter::Shutdown() {
   if (intent_helper)
     intent_helper->RemoveObserver(this);
 
-  chromeos::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  ash::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
 
   DLOG_IF(WARNING, !file_watchers_.empty())
       << "Not all file watchers are "
@@ -505,6 +579,9 @@ void EventRouter::Shutdown() {
   if (volume_manager) {
     volume_manager->RemoveObserver(this);
     volume_manager->RemoveObserver(device_event_router_.get());
+    auto* io_task_controller = volume_manager->io_task_controller();
+    if (io_task_controller)
+      io_task_controller->RemoveObserver(this);
   }
 
   chromeos::PowerManagerClient* const power_manager_client =
@@ -532,6 +609,11 @@ void EventRouter::ObserveEvents() {
   if (volume_manager) {
     volume_manager->AddObserver(this);
     volume_manager->AddObserver(device_event_router_.get());
+    auto* io_task_controller = volume_manager->io_task_controller();
+    if (io_task_controller) {
+      io_task_controller->AddObserver(this);
+      notification_manager_->SetIOTaskController(io_task_controller);
+    }
   }
 
   chromeos::PowerManagerClient* const power_manager_client =
@@ -582,7 +664,7 @@ void EventRouter::ObserveEvents() {
   pref_change_registrar_->Add(plugin_vm::prefs::kPluginVmImageExists,
                               plugin_vm_callback);
 
-  chromeos::system::TimezoneSettings::GetInstance()->AddObserver(this);
+  ash::system::TimezoneSettings::GetInstance()->AddObserver(this);
 
   auto* intent_helper =
       arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
@@ -878,6 +960,11 @@ void EventRouter::OnVolumeMounted(chromeos::MountError error_code,
       file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT, error_code,
       volume);
 
+  // If the Files SWA is enabled, record the UMA metrics for mounted FSPs.
+  if (ash::features::IsFileManagerSwaEnabled()) {
+    RecordFileSystemProviderMountMetrics(volume);
+  }
+
   // TODO(mtomasz): Move VolumeManager and part of the event router outside of
   // file_manager, so there is no dependency between File System API and the
   // file_manager code.
@@ -1126,6 +1213,61 @@ void EventRouter::OnDriveDialogResult(drivefs::mojom::DialogResult result) {
 
 base::WeakPtr<EventRouter> EventRouter::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
+  // If any Files app window exists we send the progress to all of them.
+  if (DoFilesSwaWindowsExist(profile_)) {
+    file_manager_private::ProgressStatus event_status;
+    event_status.task_id = status.task_id;
+    event_status.type = GetIOTaskType(status.type);
+    event_status.state = GetIOTaskState(status.state);
+
+    // Speedometer can produce infinite result which can't be serialized to JSON
+    // when sending the status via private API.
+    if (std::isfinite(status.remaining_seconds)) {
+      event_status.remaining_seconds = status.remaining_seconds;
+    }
+
+    GURL destination_folder_gurl(status.destination_folder.ToGURL());
+    if (destination_folder_gurl.is_valid()) {
+      event_status.destination_name =
+          util::GetDisplayableFileName(destination_folder_gurl);
+    }
+
+    size_t processed = 0;
+    for (const auto& file_status : status.outputs) {
+      if (file_status.error)
+        processed++;
+    }
+    event_status.num_remaining_items = status.sources.size() - processed;
+    event_status.item_count = status.sources.size();
+
+    // Get the last error occurrence in the `sources`.
+    for (auto it = status.sources.rbegin(); it != status.sources.rend(); it++) {
+      if (it->error && it->error.value() != base::File::FILE_OK) {
+        event_status.error_name = FileErrorToErrorName(it->error.value());
+      }
+    }
+
+    if (status.sources.size() > 0) {
+      event_status.source_name =
+          util::GetDisplayableFileName(status.sources.front().url);
+    }
+    event_status.bytes_transferred = status.bytes_transferred;
+    event_status.total_bytes = status.total_bytes;
+
+    BroadcastEvent(
+        profile_,
+        extensions::events::FILE_MANAGER_PRIVATE_ON_IO_TASK_PROGRESS_STATUS,
+        file_manager_private::OnIOTaskProgressStatus::kEventName,
+        file_manager_private::OnIOTaskProgressStatus::Create(event_status));
+    return;
+  }
+
+  // If no Files app window exists we send the progress to the system
+  // notification.
+  notification_manager_->HandleIOTaskProgress(status);
 }
 
 }  // namespace file_manager

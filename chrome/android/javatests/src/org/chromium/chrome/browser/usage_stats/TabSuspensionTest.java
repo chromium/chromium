@@ -119,7 +119,7 @@ public class TabSuspensionTest {
         mActivity = mActivityTestRule.getActivity();
         mTab = mActivity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPageViewObserver = new PageViewObserver(mActivity, mActivity.getTabModelSelector(),
+            mPageViewObserver = new PageViewObserver(mActivity, mActivity.getActivityTabProvider(),
                     mEventTracker, mTokenTracker, mSuspensionTracker,
                     mActivity.getTabContentManagerSupplier());
         });
@@ -250,7 +250,7 @@ public class TabSuspensionTest {
         // create a new one for the other window. This needs to be done on the UI thread since it
         // can trigger view manipulation.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPageViewObserver2 = new PageViewObserver(activity2, activity2.getTabModelSelector(),
+            mPageViewObserver2 = new PageViewObserver(activity2, activity2.getActivityTabProvider(),
                     mEventTracker, mTokenTracker, mSuspensionTracker,
                     activity2.getTabContentManagerSupplier());
         });

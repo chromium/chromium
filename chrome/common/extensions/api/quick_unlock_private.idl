@@ -10,8 +10,7 @@
 // used for all lock screen settings.
 // Note: This API can not be used to actually unlock the device.
 
-[platforms=("chromeos"),
- implemented_in="chrome/browser/chromeos/extensions/quick_unlock_private/quick_unlock_private_api.h"]
+[platforms=("chromeos", "lacros")]
 namespace quickUnlockPrivate {
   dictionary TokenInfo {
     // The authentication token that can be passed to $(ref:setModes) calls.
@@ -65,8 +64,8 @@ namespace quickUnlockPrivate {
     // Returns a token that can be used for future operations and the number
     // of seconds until the token expires.
     // |accountPassword|: The account password for the logged in user.
-    static void getAuthToken(DOMString accountPassword,
-                             TokenResultCallback onComplete);
+    [supportsPromises] static void getAuthToken(DOMString accountPassword,
+                                                TokenResultCallback onComplete);
 
     // Sets the lock screen enabled state. NOTE: The lock enabled state is
     // reflected in the settings.enable_screen_lock pref, which can be read
@@ -74,9 +73,10 @@ namespace quickUnlockPrivate {
     // policy information). This API must be used to change the pref.
     // |token|: The token returned by $(ref:getAuthToken).
     // |enabled|: Whether to enable the lock screen.
-    static void setLockScreenEnabled(DOMString token,
-                                     boolean enabled,
-                                     optional VoidResultCallback onComplete);
+    [platforms=("chromeos"), supportsPromises] static void setLockScreenEnabled(
+        DOMString token,
+        boolean enabled,
+        optional VoidResultCallback onComplete);
 
     // Sets the PIN auto submit enabled state. NOTE: The PIN autosubmit state is
     // reflected in the pin_unlock_autosubmit_enabled pref, which can be read
@@ -87,21 +87,27 @@ namespace quickUnlockPrivate {
     // |enabled|: Whether to enable PIN auto submit.
     // |onComplete|: Called with true if the quick unlock state was updated,
     //     false otherwise. The update is treated as a single atomic operation.
-    static void setPinAutosubmitEnabled(DOMString token,
-                                        DOMString pin,
-                                        boolean enabled,
-                                        BooleanResultCallback onComplete);
+    [platforms=("chromeos"), supportsPromises]
+    static void setPinAutosubmitEnabled(
+        DOMString token,
+        DOMString pin,
+        boolean enabled,
+        BooleanResultCallback onComplete);
 
     // Tests wether it is currently possible to authenticate using PIN.
-    static void canAuthenticatePin(BooleanResultCallback onComplete);
+    [platforms=("chromeos"), supportsPromises] static void canAuthenticatePin(
+        BooleanResultCallback onComplete);
 
     // Returns the set of quick unlock modes that are available for the user to
     // use. Some quick unlock modes may be disabled by policy.
-    static void getAvailableModes(ModesCallback onComplete);
+    [platforms=("chromeos"), supportsPromises] static void getAvailableModes(
+        ModesCallback onComplete);
 
     // Returns the quick unlock modes that are currently enabled and usable on
     // the lock screen.
+    [platforms=("chromeos"), supportsPromises]
     static void getActiveModes(ModesCallback onComplete);
+
 
     // Checks if the given credential can be used for the given unlock mode.
     // Enterprise policy can change credential requirements.
@@ -109,14 +115,16 @@ namespace quickUnlockPrivate {
     // |credential|: The given credential.
     // |onComplete|: Called with a list of warnings and errors the given
     //     |credential| has (or an empty list if there are none).
-    static void checkCredential(QuickUnlockMode mode,
-                                DOMString credential,
-                                CredentialCheckCallback onComplete);
+    [platforms=("chromeos"), supportsPromises] static void checkCredential(
+        QuickUnlockMode mode,
+        DOMString credential,
+        CredentialCheckCallback onComplete);
 
     // Gets the credential requirements for the given unlock mode.
     // |mode|: The quick unlock mode that is used.
     // |onComplete|: Called with the credential requirements of the given
     //     |mode|.
+    [platforms=("chromeos"), supportsPromises]
     static void getCredentialRequirements(
         QuickUnlockMode mode,
         CredentialRequirementsCallback onComplete);
@@ -128,6 +136,7 @@ namespace quickUnlockPrivate {
     //     credential the same for the associated mode, pass an empty string.
     // |onComplete|: Called with true if the quick unlock state was updated,
     //     false otherwise. The update is treated as a single atomic operation.
+    [platforms=("chromeos"), supportsPromises]
     static void setModes(DOMString token,
                          QuickUnlockMode[] modes,
                          DOMString[] credentials,

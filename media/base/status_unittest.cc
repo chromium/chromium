@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "media/base/media_serializers.h"
 #include "media/base/status.h"
 #include "media/base/test_helpers.h"
@@ -82,10 +81,8 @@ TEST_F(StatusTest, StaticOKMethodGivesCorrectSerialization) {
 TEST_F(StatusTest, SingleLayerError) {
   Status failed = FailEasily();
   base::Value actual = MediaSerialize(failed);
-  ASSERT_EQ(actual.DictSize(), 5ul);
-  ASSERT_EQ(actual.FindIntPath("status_code"),
-            static_cast<int32_t>(StatusCode::kCodeOnlyForTesting));
-  ASSERT_EQ(*actual.FindStringPath("status_message"), "Message");
+  ASSERT_EQ(actual.DictSize(), 6ul);
+  ASSERT_EQ(*actual.FindStringPath("message"), "Message");
   ASSERT_EQ(actual.FindListPath("stack")->GetList().size(), 1ul);
   ASSERT_EQ(actual.FindListPath("causes")->GetList().size(), 0ul);
   ASSERT_EQ(actual.FindDictPath("data")->DictSize(), 0ul);
@@ -94,7 +91,7 @@ TEST_F(StatusTest, SingleLayerError) {
   ASSERT_EQ(stack[0].DictSize(), 2ul);  // line and file
 
   // This is a bit fragile, since it's dependent on the file layout.
-  ASSERT_EQ(stack[0].FindIntPath("line").value_or(-1), 42);
+  ASSERT_EQ(stack[0].FindIntPath("line").value_or(-1), 41);
   ASSERT_THAT(*stack[0].FindStringPath("file"),
               HasSubstr("status_unittest.cc"));
 }
@@ -102,10 +99,8 @@ TEST_F(StatusTest, SingleLayerError) {
 TEST_F(StatusTest, MultipleErrorLayer) {
   Status failed = FailRecursively(3);
   base::Value actual = MediaSerialize(failed);
-  ASSERT_EQ(actual.DictSize(), 5ul);
-  ASSERT_EQ(actual.FindIntPath("status_code").value_or(-1),
-            static_cast<int32_t>(StatusCode::kCodeOnlyForTesting));
-  ASSERT_EQ(*actual.FindStringPath("status_message"), "Message");
+  ASSERT_EQ(actual.DictSize(), 6ul);
+  ASSERT_EQ(*actual.FindStringPath("message"), "Message");
   ASSERT_EQ(actual.FindListPath("stack")->GetList().size(), 4ul);
   ASSERT_EQ(actual.FindListPath("causes")->GetList().size(), 0ul);
   ASSERT_EQ(actual.FindDictPath("data")->DictSize(), 0ul);
@@ -117,10 +112,8 @@ TEST_F(StatusTest, MultipleErrorLayer) {
 TEST_F(StatusTest, CanHaveData) {
   Status failed = FailWithData("example", "data");
   base::Value actual = MediaSerialize(failed);
-  ASSERT_EQ(actual.DictSize(), 5ul);
-  ASSERT_EQ(actual.FindIntPath("status_code").value_or(-1),
-            static_cast<int32_t>(StatusCode::kCodeOnlyForTesting));
-  ASSERT_EQ(*actual.FindStringPath("status_message"), "Message");
+  ASSERT_EQ(actual.DictSize(), 6ul);
+  ASSERT_EQ(*actual.FindStringPath("message"), "Message");
   ASSERT_EQ(actual.FindListPath("stack")->GetList().size(), 1ul);
   ASSERT_EQ(actual.FindListPath("causes")->GetList().size(), 0ul);
   ASSERT_EQ(actual.FindDictPath("data")->DictSize(), 1ul);
@@ -134,10 +127,8 @@ TEST_F(StatusTest, CanHaveData) {
 TEST_F(StatusTest, CanUseCustomSerializer) {
   Status failed = FailWithData("example", UselessThingToBeSerialized("F"));
   base::Value actual = MediaSerialize(failed);
-  ASSERT_EQ(actual.DictSize(), 5ul);
-  ASSERT_EQ(actual.FindIntPath("status_code"),
-            static_cast<int32_t>(StatusCode::kCodeOnlyForTesting));
-  ASSERT_EQ(*actual.FindStringPath("status_message"), "Message");
+  ASSERT_EQ(actual.DictSize(), 6ul);
+  ASSERT_EQ(*actual.FindStringPath("message"), "Message");
   ASSERT_EQ(actual.FindListPath("stack")->GetList().size(), 1ul);
   ASSERT_EQ(actual.FindListPath("causes")->GetList().size(), 0ul);
   ASSERT_EQ(actual.FindDictPath("data")->DictSize(), 1ul);
@@ -151,22 +142,41 @@ TEST_F(StatusTest, CanUseCustomSerializer) {
 TEST_F(StatusTest, CausedByHasVector) {
   Status causal = FailWithCause();
   base::Value actual = MediaSerialize(causal);
-  ASSERT_EQ(actual.DictSize(), 5ul);
-  ASSERT_EQ(actual.FindIntPath("status_code").value_or(-1),
-            static_cast<int32_t>(StatusCode::kCodeOnlyForTesting));
-  ASSERT_EQ(*actual.FindStringPath("status_message"), "Message");
+  ASSERT_EQ(actual.DictSize(), 6ul);
+  ASSERT_EQ(*actual.FindStringPath("message"), "Message");
   ASSERT_EQ(actual.FindListPath("stack")->GetList().size(), 1ul);
   ASSERT_EQ(actual.FindListPath("causes")->GetList().size(), 1ul);
   ASSERT_EQ(actual.FindDictPath("data")->DictSize(), 0ul);
 
   base::Value& nested = actual.FindListPath("causes")->GetList()[0];
-  ASSERT_EQ(nested.DictSize(), 5ul);
-  ASSERT_EQ(nested.FindIntPath("status_code").value_or(-1),
-            static_cast<int32_t>(StatusCode::kCodeOnlyForTesting));
-  ASSERT_EQ(*nested.FindStringPath("status_message"), "Message");
+  ASSERT_EQ(nested.DictSize(), 6ul);
+  ASSERT_EQ(*nested.FindStringPath("message"), "Message");
   ASSERT_EQ(nested.FindListPath("stack")->GetList().size(), 1ul);
   ASSERT_EQ(nested.FindListPath("causes")->GetList().size(), 0ul);
   ASSERT_EQ(nested.FindDictPath("data")->DictSize(), 0ul);
+}
+
+TEST_F(StatusTest, CausedByCanAssignCopy) {
+  Status causal = FailWithCause();
+  Status copy_causal = causal;
+  base::Value causal_serialized = MediaSerialize(causal);
+  base::Value copy_causal_serialized = MediaSerialize(copy_causal);
+
+  base::Value& original =
+      causal_serialized.FindListPath("causes")->GetList()[0];
+  ASSERT_EQ(original.DictSize(), 6ul);
+  ASSERT_EQ(*original.FindStringPath("message"), "Message");
+  ASSERT_EQ(original.FindListPath("stack")->GetList().size(), 1ul);
+  ASSERT_EQ(original.FindListPath("causes")->GetList().size(), 0ul);
+  ASSERT_EQ(original.FindDictPath("data")->DictSize(), 0ul);
+
+  base::Value& copied =
+      copy_causal_serialized.FindListPath("causes")->GetList()[0];
+  ASSERT_EQ(copied.DictSize(), 6ul);
+  ASSERT_EQ(*copied.FindStringPath("message"), "Message");
+  ASSERT_EQ(copied.FindListPath("stack")->GetList().size(), 1ul);
+  ASSERT_EQ(copied.FindListPath("causes")->GetList().size(), 0ul);
+  ASSERT_EQ(copied.FindDictPath("data")->DictSize(), 0ul);
 }
 
 TEST_F(StatusTest, CanCopyEasily) {
@@ -174,19 +184,15 @@ TEST_F(StatusTest, CanCopyEasily) {
   Status withData = DoSomethingGiveItBack(failed);
 
   base::Value actual = MediaSerialize(failed);
-  ASSERT_EQ(actual.DictSize(), 5ul);
-  ASSERT_EQ(actual.FindIntPath("status_code"),
-            static_cast<int32_t>(StatusCode::kCodeOnlyForTesting));
-  ASSERT_EQ(*actual.FindStringPath("status_message"), "Message");
+  ASSERT_EQ(actual.DictSize(), 6ul);
+  ASSERT_EQ(*actual.FindStringPath("message"), "Message");
   ASSERT_EQ(actual.FindListPath("stack")->GetList().size(), 1ul);
   ASSERT_EQ(actual.FindListPath("causes")->GetList().size(), 0ul);
   ASSERT_EQ(actual.FindDictPath("data")->DictSize(), 0ul);
 
   actual = MediaSerialize(withData);
-  ASSERT_EQ(actual.DictSize(), 5ul);
-  ASSERT_EQ(actual.FindIntPath("status_code"),
-            static_cast<int32_t>(StatusCode::kCodeOnlyForTesting));
-  ASSERT_EQ(*actual.FindStringPath("status_message"), "Message");
+  ASSERT_EQ(actual.DictSize(), 6ul);
+  ASSERT_EQ(*actual.FindStringPath("message"), "Message");
   ASSERT_EQ(actual.FindListPath("stack")->GetList().size(), 1ul);
   ASSERT_EQ(actual.FindListPath("causes")->GetList().size(), 0ul);
   ASSERT_EQ(actual.FindDictPath("data")->DictSize(), 1ul);
@@ -243,9 +249,48 @@ TEST_F(StatusTest, StatusOrCodeIsOkWithValue) {
   EXPECT_EQ(status_or.code(), StatusCode::kOk);
 }
 
-TEST_F(StatusTest, StatusOrCodeIsNotOkWithoutValue) {
-  StatusOr<int> status_or(StatusCode::kCodeOnlyForTesting);
-  EXPECT_EQ(status_or.code(), StatusCode::kCodeOnlyForTesting);
+enum class NoDefaultType : StatusCodeType { kFoo = 0, kBar = 1, kBaz = 2 };
+
+struct NoDefaultTypeTraits {
+  using Codes = NoDefaultType;
+  static constexpr StatusGroupType Group() {
+    return "GroupWithNoDefaultTypeForTests";
+  }
+};
+
+TEST_F(StatusTest, TypedStatusWithNoDefault) {
+  using NDStatus = TypedStatus<NoDefaultTypeTraits>;
+
+  NDStatus foo = NoDefaultType::kFoo;
+  EXPECT_EQ(foo.code(), NoDefaultType::kFoo);
+
+  NDStatus bar = NoDefaultType::kBar;
+  EXPECT_EQ(bar.code(), NoDefaultType::kBar);
+
+  NDStatus::Or<std::string> err = NoDefaultType::kBaz;
+  NDStatus::Or<std::string> ok = std::string("kBaz");
+
+  EXPECT_TRUE(err.has_error());
+  EXPECT_EQ(err.code(), NoDefaultType::kBaz);
+  EXPECT_FALSE(ok.has_error());
+
+  base::Value actual = MediaSerialize(bar);
+  EXPECT_EQ(*actual.FindIntPath("code"), 1);
+}
+
+TEST_F(StatusTest, StatusOrEqOp) {
+  // Test the case of a non-default (non-ok) status
+  StatusOr<std::string> failed = FailEasily();
+  ASSERT_TRUE(failed == StatusCode::kCodeOnlyForTesting);
+  ASSERT_FALSE(failed == StatusCode::kOk);
+  ASSERT_TRUE(failed != StatusCode::kOk);
+  ASSERT_FALSE(failed != StatusCode::kCodeOnlyForTesting);
+
+  StatusOr<std::string> success = std::string("Kirkland > Seattle");
+  ASSERT_TRUE(success != StatusCode::kCodeOnlyForTesting);
+  ASSERT_FALSE(success != StatusCode::kOk);
+  ASSERT_TRUE(success == StatusCode::kOk);
+  ASSERT_FALSE(success == StatusCode::kCodeOnlyForTesting);
 }
 
 }  // namespace media

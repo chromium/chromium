@@ -20,7 +20,7 @@ const char kSyncKeepEverythingSynced[] = "sync.keep_everything_synced";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Boolean pref that records whether OS sync preferences were migrated due to
-// SplitSettingsSync rollout.
+// SyncSettingsCategorization rollout.
 const char kOsSyncPrefsMigrated[] = "sync.os_sync_prefs_migrated";
 
 // Boolean indicating that the user has enabled the Chrome OS system-setting

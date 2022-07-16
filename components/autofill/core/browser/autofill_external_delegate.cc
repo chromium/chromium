@@ -21,8 +21,8 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -267,7 +267,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     // User selected an Autocomplete, so we fill directly.
     driver_->RendererShouldFillFieldWithValue(query_field_.global_id(), value);
     AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(position);
-    manager_->OnAutocompleteEntrySelected(value);
+    manager_->OnSingleFieldSuggestionSelected(value);
   } else if (frontend_id == POPUP_ITEM_ID_SCAN_CREDIT_CARD) {
     manager_->client()->ScanCreditCard(base::BindOnce(
         &AutofillExternalDelegate::OnCreditCardScanned, GetWeakPtr()));
@@ -327,7 +327,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const std::u16string& value,
     return manager_->RemoveAutofillProfileOrCreditCard(frontend_id);
 
   if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
-    manager_->RemoveAutocompleteEntry(query_field_.name, value);
+    manager_->RemoveCurrentSingleFieldSuggestion(query_field_.name, value);
     return true;
   }
 
@@ -361,7 +361,9 @@ void AutofillExternalDelegate::RegisterDeletionCallback(
 }
 
 void AutofillExternalDelegate::Reset() {
-  manager_->client()->HideAutofillPopup(PopupHidingReason::kNavigation);
+  // We should not affect UI on the active page due to a prerendered page.
+  if (!manager_->driver()->IsPrerendering())
+    manager_->client()->HideAutofillPopup(PopupHidingReason::kNavigation);
 }
 
 base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {
@@ -421,13 +423,19 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
   // popup layout experiment.
   suggestions->push_back(Suggestion(GetSettingsSuggestionValue()));
   suggestions->back().frontend_id = POPUP_ITEM_ID_AUTOFILL_OPTIONS;
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUseConsistentPopupSettingsIcons)) {
+    suggestions->back().icon = "settingsIcon";
+  }
+
   // On Android and Desktop, Google Pay branding is shown along with Settings.
   // So Google Pay Icon is just attached to an existing menu item.
   if (is_all_server_suggestions) {
 #if defined(OS_ANDROID) || defined(OS_IOS)
     suggestions->back().icon = "googlePay";
 #else
-    suggestions->back().icon =
+    suggestions->back().store_indicator_icon =
         ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
             ? "googlePayDark"
             : "googlePay";

@@ -64,7 +64,8 @@ enum class LayoutTransitionState {
 // The progress of the animator.
 @property(nonatomic, assign) CGFloat progressWhenInterrupted;
 // Set of UI elements which are animated during view reveal transitions.
-@property(nonatomic, strong) NSHashTable<id<ViewRevealingAnimatee>>* animatees;
+@property(nonatomic, strong)
+    NSMutableOrderedSet<id<ViewRevealingAnimatee>>* animatees;
 // The current state tracking whether the revealed view is undergoing a
 // transition of layout. This is |::Inactive| initially. It is set to |::Active|
 // when the transition layout is created.  It is set to |::Finishing| when the
@@ -75,11 +76,16 @@ enum class LayoutTransitionState {
 // Whether new pan gestures should be handled. Set to NO when a pan gesture ends
 // and set to YES when a pan gesture starts while layoutInTransition is NO.
 @property(nonatomic, assign) BOOL gesturesEnabled;
-
+// YES if a drag gesture began but isn't active yet (thumbstrip-wise). If YES,
+// on each scroll, it checks if an overscroll occured, and if so makes the
+// gesture active. NO if gesture is active or if no check is required.
+@property(nonatomic, assign) BOOL deferredScrollEnabled;
 // The contentOffset during the previous call to -scrollViewDidScroll:. Used to
 // keep the contentOffset the same during successive calls to
 // -scrollViewDidScroll:.
 @property(nonatomic, assign) CGPoint lastScrollOffset;
+// The gesture vertical translation offset when transition started.
+@property(nonatomic, assign) CGFloat startTransitionY;
 
 // Holds the gesture recognizer that is currently in progess. Any other
 // gestures received while one is active will be ignored.
@@ -100,7 +106,7 @@ enum class LayoutTransitionState {
     _revealedHeight = baseViewHeight - revealedCoverHeight;
     _remainingHeight = _revealedHeight - peekedHeight;
     _currentState = initialState;
-    _animatees = [NSHashTable weakObjectsHashTable];
+    _animatees = [[NSMutableOrderedSet alloc] init];
     _layoutTransitionState = LayoutTransitionState::Inactive;
   }
   return self;
@@ -146,6 +152,12 @@ enum class LayoutTransitionState {
 }
 
 - (void)setNextState:(ViewRevealState)state animated:(BOOL)animated {
+  // Don't change animation if state is already currentState, it creates
+  // confusion.
+  if (self.currentState == state) {
+    return;
+  }
+
   self.nextState = state;
 
   // If the layout is currently finishing its transition, a new transition
@@ -515,25 +527,18 @@ enum class LayoutTransitionState {
   }
   switch (self.currentState) {
     case ViewRevealState::Hidden: {
-      // The transition out of hidden state can only start if the scroll view
-      // starts dragging from the top.
-      CGFloat contentOffsetY =
-          scrollView.contentOffset.y + scrollView.contentInset.top;
-      if (!AreCGFloatsEqual(contentOffsetY, 0.0)) {
-        return;
-      }
+      self.deferredScrollEnabled = YES;
       break;
     }
-    case ViewRevealState::Peeked:
+    case ViewRevealState::Peeked: {
+      [self startDraggingForPanHandlerScrollView:scrollView];
       break;
+    }
     case ViewRevealState::Revealed:
       // The scroll views should be covered in Revealed state, so should not
       // be able to be scrolled.
       NOTREACHED();
   }
-  self.currentRecognizer = scrollView.panGestureRecognizer;
-  [self panGestureBegan];
-  self.lastScrollOffset = scrollView.contentOffset;
 }
 
 - (void)panHandlerScrollViewDidScroll:(PanHandlerScrollView*)scrollView {
@@ -543,11 +548,13 @@ enum class LayoutTransitionState {
   // these methods are only approximating the actual pan gesture handling from
   // above. The second can happen if the user scrolls and uses one of the pan
   // gestures simultaneously.
-  if (self.currentRecognizer != scrollView.panGestureRecognizer) {
+  if (self.currentRecognizer != scrollView.panGestureRecognizer &&
+      ![self checkDeferredDraggingForPanHandlerScrollView:scrollView]) {
     return;
   }
   UIPanGestureRecognizer* gesture = scrollView.panGestureRecognizer;
-  CGFloat translationY = [gesture translationInView:gesture.view.superview].y;
+  CGFloat translationY = [gesture translationInView:gesture.view.superview].y -
+                         self.startTransitionY;
   // When in Peeked state, scrolling can only transition to Hidden state.
   if (self.currentState == ViewRevealState::Peeked && translationY > 0) {
     translationY = 0;
@@ -575,6 +582,8 @@ enum class LayoutTransitionState {
   // above. The second can happen if the user scrolls and uses one of the pan
   // gestures simultaneously.
   if (self.currentRecognizer != scrollView.panGestureRecognizer) {
+    // Stop monitoring for top overscroll
+    self.deferredScrollEnabled = NO;
     return;
   }
   self.currentRecognizer = nil;
@@ -583,14 +592,23 @@ enum class LayoutTransitionState {
     return;
   }
   UIPanGestureRecognizer* gesture = scrollView.panGestureRecognizer;
-  CGFloat translationY = [gesture translationInView:gesture.view.superview].y;
+  CGFloat translationY = [gesture translationInView:gesture.view.superview].y -
+                         self.startTransitionY;
   CGFloat velocityY = [gesture velocityInView:gesture.view.superview].y;
   // When in Peeked state, scrolling can only transition to Hidden state.
   if (self.currentState == ViewRevealState::Peeked && translationY > 0) {
     translationY = 0;
     velocityY = 0;
   }
-
+  // Sometimes when user changes direction, the translation and velocity ends
+  // up going in different direction, 'locking' the transition in mid step
+  // instead of completing it. Setting translation to 0 forces both to point
+  // in the same velocity direction, and lets the animator finish the
+  // transition.
+  if ((translationY < 0 && velocityY > 0) ||
+      (translationY > 0 && velocityY < 0)) {
+    translationY = 0;
+  }
   [self panGestureEndedWithTranslation:translationY velocity:velocityY];
 }
 
@@ -601,6 +619,36 @@ enum class LayoutTransitionState {
     return NO;
   }
   return YES;
+}
+
+#pragma mark - Private
+
+// If self.deferredScrollEnabled is YES, returns YES if the pan gesture should
+// be active for the given |scrollView| due to a top overscroll and sets up the
+// initial pan state.
+- (BOOL)checkDeferredDraggingForPanHandlerScrollView:
+    (PanHandlerScrollView*)scrollView {
+  if (!self.deferredScrollEnabled ||
+      self.currentState != ViewRevealState::Hidden) {
+    return NO;
+  }
+  // Check for overscroll at the top.
+  CGFloat contentOffsetY =
+      scrollView.contentOffset.y + scrollView.contentInset.top;
+  if (contentOffsetY <= 0.0) {
+    [self startDraggingForPanHandlerScrollView:scrollView];
+    return YES;
+  }
+  return NO;
+}
+
+- (void)startDraggingForPanHandlerScrollView:(PanHandlerScrollView*)scrollView {
+  UIPanGestureRecognizer* gesture = scrollView.panGestureRecognizer;
+  self.startTransitionY = [gesture translationInView:gesture.view.superview].y;
+  self.currentRecognizer = scrollView.panGestureRecognizer;
+  [self panGestureBegan];
+  self.lastScrollOffset = scrollView.contentOffset;
+  self.deferredScrollEnabled = NO;
 }
 
 @end

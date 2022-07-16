@@ -4,10 +4,14 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 
+#include <sys/mman.h>
+
+#include <cstddef>
+#include <cstring>
 #include <utility>
 
-#include "base/files/scoped_file.h"
-#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/logging.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/unguessable_token.h"
 #include "ui/base/buildflags.h"
 #include "ui/events/base_event_utils.h"
@@ -16,11 +20,13 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/ozone/keyboard/event_auto_repeat_handler.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 #if BUILDFLAG(USE_XKBCOMMON)
@@ -36,7 +42,7 @@ class WaylandKeyboard::ZCRExtendedKeyboard {
                       zcr_extended_keyboard_v1* extended_keyboard)
       : keyboard_(keyboard), obj_(extended_keyboard) {
     static constexpr zcr_extended_keyboard_v1_listener kListener = {
-        &ZCRExtendedKeyboard::PeekKey,
+        &PeekKey,
     };
     zcr_extended_keyboard_v1_add_listener(obj_.get(), &kListener, this);
   }
@@ -87,10 +93,8 @@ WaylandKeyboard::WaylandKeyboard(
       delegate_(delegate),
       auto_repeat_handler_(this),
       layout_engine_(static_cast<LayoutEngine*>(layout_engine)) {
-  static const wl_keyboard_listener listener = {
-      &WaylandKeyboard::Keymap,    &WaylandKeyboard::Enter,
-      &WaylandKeyboard::Leave,     &WaylandKeyboard::Key,
-      &WaylandKeyboard::Modifiers, &WaylandKeyboard::RepeatInfo,
+  static constexpr wl_keyboard_listener listener = {
+      &Keymap, &Enter, &Leave, &Key, &Modifiers, &RepeatInfo,
   };
 
   wl_keyboard_add_listener(obj_.get(), &listener, this);
@@ -111,26 +115,26 @@ WaylandKeyboard::~WaylandKeyboard() {
 void WaylandKeyboard::Keymap(void* data,
                              wl_keyboard* obj,
                              uint32_t format,
-                             int32_t keymap_fd,
+                             int32_t fd,
                              uint32_t size) {
   WaylandKeyboard* keyboard = static_cast<WaylandKeyboard*>(data);
   DCHECK(keyboard);
 
-  base::ScopedFD fd(keymap_fd);
-  auto length = size - 1;
-  auto shmen = base::subtle::PlatformSharedMemoryRegion::Take(
-      std::move(fd), base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
-      length, base::UnguessableToken::Create());
-  auto mapped_memory =
-      base::UnsafeSharedMemoryRegion::Deserialize(std::move(shmen)).Map();
-  const char* keymap = mapped_memory.GetMemoryAs<char>();
-
-  if (!keymap || format != WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1)
+  if (!data || format != WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1)
     return;
 
-  bool success = keyboard->layout_engine_->SetCurrentLayoutFromBuffer(
-      keymap, mapped_memory.size());
-  DCHECK(success) << "Failed to set the XKB keyboard mapping.";
+  void* keymap = mmap(nullptr, size, PROT_READ, MAP_SHARED, fd, 0);
+  if (keymap == MAP_FAILED) {
+    DPLOG(ERROR) << "Failed to map XKB keymap.";
+    return;
+  }
+
+  const char* keymap_string = static_cast<const char*>(keymap);
+  if (!keyboard->layout_engine_->SetCurrentLayoutFromBuffer(
+          keymap_string, strnlen(keymap_string, size))) {
+    DLOG(ERROR) << "Failed to set XKB keymap.";
+  }
+  munmap(keymap, size);
 }
 
 void WaylandKeyboard::Enter(void* data,
@@ -190,12 +194,24 @@ void WaylandKeyboard::RepeatInfo(void* data,
                                  wl_keyboard* obj,
                                  int32_t rate,
                                  int32_t delay) {
-  WaylandKeyboard* keyboard = static_cast<WaylandKeyboard*>(data);
-  DCHECK(keyboard);
+  // Negative values for either rate or delay are illegal.
+  if (rate < 0 || delay < 0) {
+    VLOG(1) << "Ignoring wl_keyboard.repeat_info event with illegal "
+            << "values (rate=" << rate << " delay=" << delay << ").";
+    return;
+  }
 
-  keyboard->auto_repeat_handler_.SetAutoRepeatRate(
-      base::TimeDelta::FromMilliseconds(delay),
-      base::TimeDelta::FromMilliseconds(rate));
+  DCHECK(data);
+  EventAutoRepeatHandler& handler =
+      static_cast<WaylandKeyboard*>(data)->auto_repeat_handler_;
+
+  // A rate of zero will disable any repeating.
+  handler.SetAutoRepeatEnabled(rate != 0);
+  if (handler.IsAutoRepeatEnabled()) {
+    // The rate is in characters per second.
+    handler.SetAutoRepeatRate(base::Milliseconds(delay),
+                              base::Seconds(1.0 / rate));
+  }
 }
 
 void WaylandKeyboard::FlushInput(base::OnceClosure closure) {
@@ -231,8 +247,10 @@ void WaylandKeyboard::OnKey(uint32_t serial,
                             uint32_t state,
                             KeyEventKind kind) {
   bool down = state == WL_KEYBOARD_KEY_STATE_PRESSED;
-  if (down)
-    connection_->set_serial(serial, ET_KEY_PRESSED);
+  if (down) {
+    connection_->serial_tracker().UpdateSerial(wl::SerialType::kKeyPress,
+                                               serial);
+  }
 
   if (kind == KeyEventKind::kKey) {
     auto_repeat_handler_.UpdateKeyRepeat(key, 0 /*scan_code*/, down,
@@ -272,8 +290,11 @@ void WaylandKeyboard::DispatchKey(unsigned int key,
       device_id, kind);
 
   if (extended_keyboard_) {
-    bool handled = result & POST_DISPATCH_STOP_PROPAGATION;
-    extended_keyboard_->AckKey(connection_->serial(), handled);
+    if (auto keypress_serial = connection_->serial_tracker().GetSerial(
+            wl::SerialType::kKeyPress)) {
+      bool handled = result & POST_DISPATCH_STOP_PROPAGATION;
+      extended_keyboard_->AckKey(keypress_serial->value, handled);
+    }
   }
 }
 

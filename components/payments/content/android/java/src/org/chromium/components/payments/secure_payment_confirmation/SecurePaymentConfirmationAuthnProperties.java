@@ -8,7 +8,7 @@ import android.graphics.drawable.Drawable;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
-import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /**
  * The properties of the SecurePaymentConfirmation Authn UI, which fully describe the state of the
@@ -16,7 +16,7 @@ import org.chromium.url.GURL;
  */
 /* package */ class SecurePaymentConfirmationAuthnProperties {
     /** The store value of the UI. */
-    /* package */ static final ReadableObjectPropertyKey<GURL> STORE_ORIGIN =
+    /* package */ static final ReadableObjectPropertyKey<Origin> STORE_ORIGIN =
             new ReadableObjectPropertyKey<>();
 
     /** The payment icon for the UI. */

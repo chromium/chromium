@@ -206,8 +206,11 @@ public class RuntimePermissionTest {
     @Test
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
+    @DisableIf.Build(message = "Failing on Android P, see crbug.com/1251332.",
+            sdk_is_greater_than = VERSION_CODES.O_MR1)
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
-    public void testDenyAndNeverAskMicrophone() throws Exception {
+    public void
+    testDenyAndNeverAskMicrophone() throws Exception {
         // First ask for mic and reply with "deny and never ask again";
         String[] requestablePermission = new String[] {Manifest.permission.RECORD_AUDIO};
         mTestAndroidPermissionDelegate = new TestAndroidPermissionDelegate(
@@ -232,8 +235,11 @@ public class RuntimePermissionTest {
     @Test
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
+    @DisableIf.Build(message = "Failing on Android P, see crbug.com/1251332.",
+            sdk_is_greater_than = VERSION_CODES.O_MR1)
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
-    public void testDenyAndNeverAskCamera() throws Exception {
+    public void
+    testDenyAndNeverAskCamera() throws Exception {
         // First ask for camera and reply with "deny and never ask again";
         String[] requestablePermission = new String[] {Manifest.permission.CAMERA};
         mTestAndroidPermissionDelegate = new TestAndroidPermissionDelegate(

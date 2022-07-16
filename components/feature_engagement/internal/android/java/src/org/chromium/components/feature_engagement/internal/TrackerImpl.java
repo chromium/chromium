@@ -13,6 +13,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.components.feature_engagement.TriggerState;
 import org.chromium.ui.UiSwitches;
 
@@ -83,6 +84,17 @@ public class TrackerImpl implements Tracker {
     }
 
     @Override
+    public TriggerDetails shouldTriggerHelpUIWithSnooze(String feature) {
+        // Disable all IPH if the UI is in screenshot mode. For context, see crbug.com/964012.
+        if (CommandLine.getInstance().hasSwitch(UiSwitches.ENABLE_SCREENSHOT_UI_MODE)) {
+            return new TriggerDetails(false, false);
+        }
+        assert mNativePtr != 0;
+        return TrackerImplJni.get().shouldTriggerHelpUIWithSnooze(
+                mNativePtr, TrackerImpl.this, feature);
+    }
+
+    @Override
     public boolean wouldTriggerHelpUI(String feature) {
         assert mNativePtr != 0;
         return TrackerImplJni.get().wouldTriggerHelpUI(mNativePtr, TrackerImpl.this, feature);
@@ -106,6 +118,13 @@ public class TrackerImpl implements Tracker {
     public void dismissed(String feature) {
         assert mNativePtr != 0;
         TrackerImplJni.get().dismissed(mNativePtr, TrackerImpl.this, feature);
+    }
+
+    @Override
+    public void dismissedWithSnooze(String feature, int snoozeAction) {
+        assert mNativePtr != 0;
+        TrackerImplJni.get().dismissedWithSnooze(
+                mNativePtr, TrackerImpl.this, feature, snoozeAction);
     }
 
     @Override
@@ -139,10 +158,18 @@ public class TrackerImpl implements Tracker {
         return mNativePtr;
     }
 
+    @CalledByNative
+    private static TriggerDetails createTriggerDetails(
+            boolean shouldTriggerIph, boolean shouldShowSnooze) {
+        return new TriggerDetails(shouldTriggerIph, shouldShowSnooze);
+    }
+
     @NativeMethods
     interface Natives {
         void notifyEvent(long nativeTrackerImplAndroid, TrackerImpl caller, String event);
         boolean shouldTriggerHelpUI(
+                long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
+        TriggerDetails shouldTriggerHelpUIWithSnooze(
                 long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
         boolean wouldTriggerHelpUI(
                 long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
@@ -150,6 +177,8 @@ public class TrackerImpl implements Tracker {
                 boolean fromWindow);
         int getTriggerState(long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
         void dismissed(long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
+        void dismissedWithSnooze(long nativeTrackerImplAndroid, TrackerImpl caller, String feature,
+                int snoozeAction);
         DisplayLockHandleAndroid acquireDisplayLock(
                 long nativeTrackerImplAndroid, TrackerImpl caller);
         boolean isInitialized(long nativeTrackerImplAndroid, TrackerImpl caller);

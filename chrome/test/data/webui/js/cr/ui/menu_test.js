@@ -3,15 +3,16 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {assertEquals, assertTrue, assertFalse} from '../../../chai_assert.js';
-// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-// #import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
 // clang-format on
 
-/** @type {cr.ui.Menu} */
-var menu;
+/** @type {Menu} */
+let menu;
 
 /**
  * @param {number} x The screenX coord of the mouseup event.
@@ -22,7 +23,7 @@ var menu;
  *     https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent
  */
 function mouseUpAt(x, y) {
-  var mouseUpEvent = new MouseEvent('mouseup', {
+  const mouseUpEvent = new MouseEvent('mouseup', {
     bubbles: true,
     cancelable: true,
     target: menu,
@@ -34,18 +35,18 @@ function mouseUpAt(x, y) {
 }
 
 function setUp() {
-  menu = new cr.ui.Menu;
+  menu = new Menu;
 }
 
 /** @suppress {visibility} Allow test to reach to private properties. */
 function testHandleMouseOver() {
-  var called = false;
+  let called = false;
   menu.findMenuItem_ = function() {
     called = true;
-    return cr.ui.Menu.prototype.findMenuItem_.apply(this, arguments);
+    return Menu.prototype.findMenuItem_.apply(this, arguments);
   };
 
-  var over =
+  const over =
       new MouseEvent('mouseover', {bubbles: true, target: document.body});
   assertFalse(called);
   menu.dispatchEvent(over);
@@ -53,7 +54,7 @@ function testHandleMouseOver() {
 }
 
 function testHandleMouseUp() {
-  var realNow = Date.now;
+  const realNow = Date.now;
   Date.now = function() {
     return 10;
   };
@@ -86,7 +87,7 @@ function testShowViaKeyboardIgnoresMouseUps() {
  */
 function testCommandMenuItem() {
   // Test 1: The case that the command label is set and other attributes copied.
-  var command = new cr.ui.Command();
+  const command = new Command();
   command.id = 'the-command';
   command.label = 'CommandLabel';
   command.disabled = true;
@@ -94,7 +95,7 @@ function testCommandMenuItem() {
   command.checked = true;
   document.body.appendChild(command);
 
-  var menuItem = new cr.ui.MenuItem();
+  const menuItem = new MenuItem();
   menuItem.command = '#the-command';
 
   // Confirms the label is copied from the command.
@@ -106,11 +107,11 @@ function testCommandMenuItem() {
 
   // Test 2: The case that the command label is not set, and other attributes
   // have default values.
-  var command2 = new cr.ui.Command();
+  const command2 = new Command();
   command2.id = 'the-command2';
   document.body.appendChild(command2);
 
-  var menuItem2 = new cr.ui.MenuItem();
+  const menuItem2 = new MenuItem();
   menuItem2.label = 'MenuLabel';
   menuItem2.command = '#the-command2';
 
@@ -127,10 +128,10 @@ function testCommandMenuItem() {
  * expected number of separators are visible.
  */
 function runSeparatorTest(items, hiddenItems, expectedSeparators) {
-  for (let item of menu.menuItems) {
+  for (const item of menu.menuItems) {
     item.hidden = false;
   }
-  for (let i of hiddenItems) {
+  for (const i of hiddenItems) {
     items[i].hidden = true;
   }
   menu.updateCommands();
@@ -173,7 +174,7 @@ function testSeparators() {
  */
 function testFocusSelectedItems() {
   const menu = document.createElement('div');
-  cr.ui.decorate(menu, cr.ui.Menu);
+  decorate(menu, Menu);
   const item1 = menu.addMenuItem({label: 'item1'});
   menu.addSeparator();
   const item2 = menu.addMenuItem({label: 'item2'});
@@ -221,7 +222,7 @@ function testFocusSelectedItems() {
 }
 
 /**
- * Tests that cr.ui.MenuItem defaults to tabindex=-1.
+ * Tests that MenuItem defaults to tabindex=-1.
  */
 function testMenuItemTabIndex() {
   // Defaults to -1.
@@ -231,7 +232,7 @@ function testMenuItemTabIndex() {
   // Keeps previously set tabindex.
   const itemDiv = document.createElement('div');
   itemDiv.setAttribute('tabindex', '0');
-  cr.ui.decorate(itemDiv, cr.ui.MenuItem);
+  decorate(itemDiv, MenuItem);
   assertEquals('0', itemDiv.getAttribute('tabindex'));
 
   // Separator doesn't get tabindex.

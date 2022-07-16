@@ -23,7 +23,9 @@
 #include "content/public/utility/content_utility_client.h"
 #include "content/utility/utility_thread_impl.h"
 #include "printing/buildflags/buildflags.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox.h"
+#include "sandbox/policy/sandbox_type.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
@@ -40,8 +42,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/services/ime/ime_sandbox_hook.h"
 #include "chromeos/assistant/buildflags.h"
-#include "chromeos/services/ime/ime_sandbox_hook.h"
 #include "chromeos/services/tts/tts_sandbox_hook.h"
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -63,16 +65,16 @@ sandbox::TargetServices* g_utility_target_services = nullptr;
 namespace content {
 
 // Mainline routine for running as the utility process.
-int UtilityMain(const MainFunctionParams& parameters) {
+int UtilityMain(MainFunctionParams parameters) {
   base::MessagePumpType message_pump_type =
-      parameters.command_line.HasSwitch(switches::kMessageLoopTypeUi)
+      parameters.command_line->HasSwitch(switches::kMessageLoopTypeUi)
           ? base::MessagePumpType::UI
           : base::MessagePumpType::DEFAULT;
 
 #if defined(OS_MAC)
   auto sandbox_type =
-      sandbox::policy::SandboxTypeFromCommandLine(parameters.command_line);
-  if (sandbox_type != sandbox::policy::SandboxType::kNoSandbox) {
+      sandbox::policy::SandboxTypeFromCommandLine(*parameters.command_line);
+  if (sandbox_type != sandbox::mojom::Sandbox::kNoSandbox) {
     // On Mac, the TYPE_UI pump for the main thread is an NSApplication loop.
     // In a sandboxed utility process, NSApp attempts to acquire more Mach
     // resources than a restrictive sandbox policy should allow. Services that
@@ -92,8 +94,8 @@ int UtilityMain(const MainFunctionParams& parameters) {
     message_pump_type = base::MessagePumpType::IO;
 #endif  // defined(OS_FUCHSIA)
 
-  if (parameters.command_line.HasSwitch(switches::kTimeZoneForTesting)) {
-    std::string time_zone = parameters.command_line.GetSwitchValueASCII(
+  if (parameters.command_line->HasSwitch(switches::kTimeZoneForTesting)) {
+    std::string time_zone = parameters.command_line->GetSwitchValueASCII(
         switches::kTimeZoneForTesting);
     icu::TimeZone::adoptDefault(
         icu::TimeZone::createTimeZone(icu::UnicodeString(time_zone.c_str())));
@@ -103,11 +105,11 @@ int UtilityMain(const MainFunctionParams& parameters) {
   base::SingleThreadTaskExecutor main_thread_task_executor(message_pump_type);
   base::PlatformThread::SetName("CrUtilityMain");
 
-  if (parameters.command_line.HasSwitch(switches::kUtilityStartupDialog)) {
-    auto dialog_match = parameters.command_line.GetSwitchValueASCII(
+  if (parameters.command_line->HasSwitch(switches::kUtilityStartupDialog)) {
+    auto dialog_match = parameters.command_line->GetSwitchValueASCII(
         switches::kUtilityStartupDialog);
     auto sub_type =
-        parameters.command_line.GetSwitchValueASCII(switches::kUtilitySubType);
+        parameters.command_line->GetSwitchValueASCII(switches::kUtilitySubType);
     if (dialog_match.empty() || dialog_match == sub_type) {
       WaitForDebugger(sub_type.empty() ? "Utility" : sub_type);
     }
@@ -118,33 +120,33 @@ int UtilityMain(const MainFunctionParams& parameters) {
   // TODO(jorgelo): move this after GTK initialization when we enable a strict
   // Seccomp-BPF policy.
   auto sandbox_type =
-      sandbox::policy::SandboxTypeFromCommandLine(parameters.command_line);
+      sandbox::policy::SandboxTypeFromCommandLine(*parameters.command_line);
   sandbox::policy::SandboxLinux::PreSandboxHook pre_sandbox_hook;
   switch (sandbox_type) {
-    case sandbox::policy::SandboxType::kNetwork:
+    case sandbox::mojom::Sandbox::kNetwork:
       pre_sandbox_hook = base::BindOnce(&network::NetworkPreSandboxHook);
       break;
-#if BUILDFLAG(ENABLE_PRINTING)
-    case sandbox::policy::SandboxType::kPrintBackend:
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    case sandbox::mojom::Sandbox::kPrintBackend:
       pre_sandbox_hook = base::BindOnce(&printing::PrintBackendPreSandboxHook);
       break;
-#endif  // BUILDFLAG(ENABLE_PRINTING)
-    case sandbox::policy::SandboxType::kAudio:
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
+    case sandbox::mojom::Sandbox::kAudio:
       pre_sandbox_hook = base::BindOnce(&audio::AudioPreSandboxHook);
       break;
-    case sandbox::policy::SandboxType::kSpeechRecognition:
+    case sandbox::mojom::Sandbox::kSpeechRecognition:
       pre_sandbox_hook =
           base::BindOnce(&speech::SpeechRecognitionPreSandboxHook);
       break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    case sandbox::policy::SandboxType::kIme:
+    case sandbox::mojom::Sandbox::kIme:
       pre_sandbox_hook = base::BindOnce(&chromeos::ime::ImePreSandboxHook);
       break;
-    case sandbox::policy::SandboxType::kTts:
+    case sandbox::mojom::Sandbox::kTts:
       pre_sandbox_hook = base::BindOnce(&chromeos::tts::TtsPreSandboxHook);
       break;
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-    case sandbox::policy::SandboxType::kLibassistant:
+    case sandbox::mojom::Sandbox::kLibassistant:
       pre_sandbox_hook =
           base::BindOnce(&chromeos::libassistant::LibassistantPreSandboxHook);
       break;
@@ -197,7 +199,7 @@ int UtilityMain(const MainFunctionParams& parameters) {
 
 #if defined(OS_WIN)
   auto sandbox_type =
-      sandbox::policy::SandboxTypeFromCommandLine(parameters.command_line);
+      sandbox::policy::SandboxTypeFromCommandLine(*parameters.command_line);
   DVLOG(1) << "Sandbox type: " << static_cast<int>(sandbox_type);
 
   // https://crbug.com/1076771 https://crbug.com/1075487 Premature unload of
@@ -206,8 +208,9 @@ int UtilityMain(const MainFunctionParams& parameters) {
   UNREFERENCED_PARAMETER(shell32_pin);
 
   if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type) &&
-      sandbox_type != sandbox::policy::SandboxType::kCdm &&
-      sandbox_type != sandbox::policy::SandboxType::kMediaFoundationCdm) {
+      sandbox_type != sandbox::mojom::Sandbox::kCdm &&
+      sandbox_type != sandbox::mojom::Sandbox::kMediaFoundationCdm &&
+      sandbox_type != sandbox::mojom::Sandbox::kWindowsSystemProxyResolver) {
     if (!g_utility_target_services)
       return false;
     char buffer;
@@ -215,16 +218,6 @@ int UtilityMain(const MainFunctionParams& parameters) {
     // base::RandBytes() will CHECK fail when v8 is initialized.
     base::RandBytes(&buffer, sizeof(buffer));
 
-    if (sandbox_type == sandbox::policy::SandboxType::kNetwork) {
-      // Network service process needs FWPUCLNT.DLL to be loaded before sandbox
-      // lockdown otherwise getaddrinfo fails.
-      HMODULE fwpuclnt_pin = ::LoadLibrary(L"FWPUCLNT.DLL");
-      UNREFERENCED_PARAMETER(fwpuclnt_pin);
-      // Network service process needs urlmon.dll to be loaded before sandbox
-      // lockdown otherwise CoInternetCreateSecurityManager fails.
-      HMODULE urlmon_pin = ::LoadLibrary(L"urlmon.dll");
-      UNREFERENCED_PARAMETER(urlmon_pin);
-    }
     g_utility_target_services->LowerToken();
   }
 #endif

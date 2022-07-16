@@ -7,8 +7,11 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/reporting/policy_info.h"
+#include "components/enterprise/browser/reporting/report_type.h"
+#include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/browser/policy_conversions.h"
 
@@ -39,37 +42,38 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
   }
 
   report_ = std::make_unique<em::ChromeUserProfileInfo>();
-  report_->set_id(path.AsUTF8Unsafe());
 
-  if (report_type == ReportType::kExtensionRequest) {
-    delegate_->GetExtensionRequest(report_.get());
-    report_->set_is_detail_available(true);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Extension request is aggregated at the user level on CrOS.
-    report_->set_name(name);
-    delegate_->GetSigninUserInfo(report_.get());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  } else {
-    report_->set_name(name);
-    report_->set_is_detail_available(true);
+  switch (report_type) {
+    case ReportType::kFull:
+      report_->set_id(path.AsUTF8Unsafe());
+      break;
+    case ReportType::kProfileReport:
+      report_->set_id(ObfuscateFilePath(path.AsUTF8Unsafe()));
+      break;
+    case ReportType::kBrowserVersion:
+      NOTREACHED();
+      break;
+  }
 
-    delegate_->GetSigninUserInfo(report_.get());
-    if (extensions_enabled_) {
-      delegate_->GetExtensionInfo(report_.get());
-    }
-    delegate_->GetExtensionRequest(report_.get());
+  report_->set_name(name);
+  report_->set_is_detail_available(true);
 
-    if (policies_enabled_) {
-      // TODO(crbug.com/983151): Upload policy error as their IDs.
-      auto client = delegate_->MakePolicyConversionsClient();
-      policies_ = policy::DictionaryPolicyConversions(std::move(client))
-                      .EnableConvertTypes(false)
-                      .EnablePrettyPrint(false)
-                      .ToValue();
-      GetChromePolicyInfo();
-      GetExtensionPolicyInfo();
-      GetPolicyFetchTimestampInfo();
-    }
+  delegate_->GetSigninUserInfo(report_.get());
+  if (extensions_enabled_) {
+    delegate_->GetExtensionInfo(report_.get());
+  }
+  delegate_->GetExtensionRequest(report_.get());
+
+  if (policies_enabled_) {
+    // TODO(crbug.com/983151): Upload policy error as their IDs.
+    auto client = delegate_->MakePolicyConversionsClient();
+    policies_ = policy::DictionaryPolicyConversions(std::move(client))
+                    .EnableConvertTypes(false)
+                    .EnablePrettyPrint(false)
+                    .ToValue();
+    GetChromePolicyInfo();
+    GetExtensionPolicyInfo();
+    GetPolicyFetchTimestampInfo();
   }
 
   return std::move(report_);

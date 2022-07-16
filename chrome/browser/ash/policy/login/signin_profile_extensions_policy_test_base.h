@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/version_info/channel.h"
@@ -20,6 +19,11 @@ namespace policy {
 // the device policy.
 class SigninProfileExtensionsPolicyTestBase
     : public DevicePolicyCrosBrowserTest {
+  SigninProfileExtensionsPolicyTestBase(
+      const SigninProfileExtensionsPolicyTestBase&) = delete;
+  SigninProfileExtensionsPolicyTestBase& operator=(
+      const SigninProfileExtensionsPolicyTestBase&) = delete;
+
  protected:
   explicit SigninProfileExtensionsPolicyTestBase(version_info::Channel channel);
 
@@ -40,8 +44,6 @@ class SigninProfileExtensionsPolicyTestBase
 
  private:
   const extensions::ScopedCurrentChannel scoped_current_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninProfileExtensionsPolicyTestBase);
 };
 
 }  // namespace policy

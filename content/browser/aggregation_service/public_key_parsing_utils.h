@@ -22,19 +22,18 @@ namespace aggregation_service {
 // The expected JSON schema is as follows.
 //
 // {
-//   <Version ID> : [
+//   "version" : "",
+//   "keys" : [
 //     {
 //        "id" : <arbitrary string identifying the key, e.g. a UUID>,
 //        "key" : <base64-encoded public key>,
-//        "not_before" : <when key become valid, encoded as a string
-//                      representation of an integer timestamp in milliseconds
-//                      since the Unix epoch>,
-//        "not_after" : <key expiry, encoded similarly to not_before>,
 //     },
 //     {  "id" : <different ID string>, ... },
 //     ...
 //   ]
 // }
+//
+// Currently version will be ignored and not validated.
 CONTENT_EXPORT std::vector<PublicKey> GetPublicKeys(base::Value& value);
 
 }  // namespace aggregation_service

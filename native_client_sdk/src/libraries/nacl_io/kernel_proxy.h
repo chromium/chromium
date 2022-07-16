@@ -45,6 +45,10 @@ class KernelProxy : protected KernelObject {
   typedef std::map<std::string, FsFactory*> FsFactoryMap_t;
 
   KernelProxy();
+
+  KernelProxy(const KernelProxy&) = delete;
+  KernelProxy& operator=(const KernelProxy&) = delete;
+
   virtual ~KernelProxy();
 
   // |ppapi| may be NULL. If so, no filesystem that uses pepper calls can be
@@ -256,7 +260,6 @@ class KernelProxy : protected KernelObject {
 #endif
 
   ScopedEventEmitter signal_emitter_;
-  DISALLOW_COPY_AND_ASSIGN(KernelProxy);
 };
 
 }  // namespace nacl_io

@@ -36,6 +36,10 @@ class ServiceInstance;
 class ServiceInstanceRegistry {
  public:
   ServiceInstanceRegistry();
+
+  ServiceInstanceRegistry(const ServiceInstanceRegistry&) = delete;
+  ServiceInstanceRegistry& operator=(const ServiceInstanceRegistry&) = delete;
+
   ~ServiceInstanceRegistry();
 
   // Registers |instance| with the registry. |instance| is not owned by the
@@ -108,8 +112,6 @@ class ServiceInstanceRegistry {
   RegularInstanceMap regular_instances_;
   SharedInstanceMap shared_instances_;
   SingletonInstanceMap singleton_instances_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceInstanceRegistry);
 };
 
 }  // namespace service_manager

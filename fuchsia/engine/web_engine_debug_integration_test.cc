@@ -13,10 +13,10 @@
 #include "base/fuchsia/file_utils.h"
 #include "base/macros.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "fuchsia/base/test/context_provider_test_connector.h"
 #include "fuchsia/base/test/fit_adapter.h"
 #include "fuchsia/base/test/frame_test_util.h"
-#include "fuchsia/base/test/result_receiver.h"
 #include "fuchsia/base/test/test_devtools_list_fetcher.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/test_debug_listener.h"
@@ -33,6 +33,10 @@ class WebEngineDebugIntegrationTest : public testing::Test {
  public:
   WebEngineDebugIntegrationTest()
       : dev_tools_listener_binding_(&dev_tools_listener_) {}
+
+  WebEngineDebugIntegrationTest(const WebEngineDebugIntegrationTest&) = delete;
+  WebEngineDebugIntegrationTest& operator=(
+      const WebEngineDebugIntegrationTest&) = delete;
 
   ~WebEngineDebugIntegrationTest() override = default;
 
@@ -113,8 +117,6 @@ class WebEngineDebugIntegrationTest : public testing::Test {
   base::OnceClosure on_url_fetch_complete_ack_;
 
   net::EmbeddedTestServer test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebEngineDebugIntegrationTest);
 };
 
 enum class UserModeDebugging { kEnabled = 0, kDisabled = 1 };
@@ -147,13 +149,15 @@ struct TestContextAndFrame {
       return;
     }
   }
+
+  TestContextAndFrame(const TestContextAndFrame&) = delete;
+  TestContextAndFrame& operator=(const TestContextAndFrame&) = delete;
+
   ~TestContextAndFrame() = default;
 
   fuchsia::web::ContextPtr context;
   fuchsia::web::FramePtr frame;
   fuchsia::web::NavigationControllerPtr controller;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContextAndFrame);
 };
 
 // Test the Debug service is properly started and accessible.
@@ -263,16 +267,14 @@ TEST_F(WebEngineDebugIntegrationTest, DebugAndUserService) {
   dev_tools_listener_.RunUntilNumberOfPortsIs(1u);
 
   // Check we are getting the same port on both the debug and user APIs.
-  base::RunLoop run_loop;
-  cr_fuchsia::ResultReceiver<
-      fuchsia::web::Context_GetRemoteDebuggingPort_Result>
-      port_receiver(run_loop.QuitClosure());
+  base::test::TestFuture<fuchsia::web::Context_GetRemoteDebuggingPort_Result>
+      port_receiver;
   frame_data.context->GetRemoteDebuggingPort(
-      cr_fuchsia::CallbackToFitFunction(port_receiver.GetReceiveCallback()));
-  run_loop.Run();
+      cr_fuchsia::CallbackToFitFunction(port_receiver.GetCallback()));
+  port_receiver.Wait();
 
-  ASSERT_TRUE(port_receiver->is_response());
-  uint16_t remote_debugging_port = port_receiver->response().port;
+  ASSERT_TRUE(port_receiver.Get().is_response());
+  uint16_t remote_debugging_port = port_receiver.Get().response().port;
   ASSERT_EQ(remote_debugging_port, *dev_tools_listener_.debug_ports().begin());
 
   // Test the debug information is correct.

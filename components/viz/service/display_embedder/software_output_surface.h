@@ -26,6 +26,10 @@ class VIZ_SERVICE_EXPORT SoftwareOutputSurface : public OutputSurface {
  public:
   explicit SoftwareOutputSurface(
       std::unique_ptr<SoftwareOutputDevice> software_device);
+
+  SoftwareOutputSurface(const SoftwareOutputSurface&) = delete;
+  SoftwareOutputSurface& operator=(const SoftwareOutputSurface&) = delete;
+
   ~SoftwareOutputSurface() override;
 
   // OutputSurface implementation.
@@ -78,8 +82,6 @@ class VIZ_SERVICE_EXPORT SoftwareOutputSurface : public OutputSurface {
 #endif
 
   base::WeakPtrFactory<SoftwareOutputSurface> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwareOutputSurface);
 };
 
 }  // namespace viz

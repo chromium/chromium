@@ -130,6 +130,9 @@ class SmartDimMlAgentTest : public testing::Test {
             base::test::TaskEnvironment::MainThreadType::IO,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
 
+  SmartDimMlAgentTest(const SmartDimMlAgentTest&) = delete;
+  SmartDimMlAgentTest& operator=(const SmartDimMlAgentTest&) = delete;
+
   void SetUp() override {
     MachineLearningClient::InitializeFake();
     chromeos::machine_learning::ServiceConnection::
@@ -151,7 +154,6 @@ class SmartDimMlAgentTest : public testing::Test {
 
  private:
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  DISALLOW_COPY_AND_ASSIGN(SmartDimMlAgentTest);
 };
 
 // This test covers two things:

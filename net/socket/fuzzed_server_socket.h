@@ -32,6 +32,10 @@ class FuzzedServerSocket : public ServerSocket {
   // must remain valid until after both this object and the StreamSocket
   // produced by Accept are destroyed.
   FuzzedServerSocket(FuzzedDataProvider* data_provider, net::NetLog* net_log);
+
+  FuzzedServerSocket(const FuzzedServerSocket&) = delete;
+  FuzzedServerSocket& operator=(const FuzzedServerSocket&) = delete;
+
   ~FuzzedServerSocket() override;
 
   int Listen(const IPEndPoint& address, int backlog) override;
@@ -52,7 +56,6 @@ class FuzzedServerSocket : public ServerSocket {
   bool listen_called_;
 
   base::WeakPtrFactory<FuzzedServerSocket> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FuzzedServerSocket);
 };
 
 }  // namespace net

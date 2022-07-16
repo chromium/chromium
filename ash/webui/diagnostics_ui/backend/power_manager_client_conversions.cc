@@ -71,8 +71,7 @@ std::u16string ConstructPowerTime(
     return std::u16string();
   }
 
-  const base::TimeDelta as_time_delta =
-      base::TimeDelta::FromSeconds(time_in_seconds);
+  const base::TimeDelta as_time_delta = base::Seconds(time_in_seconds);
 
   int hour = 0;
   int min = 0;

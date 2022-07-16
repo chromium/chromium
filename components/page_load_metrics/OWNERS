@@ -1,8 +1,3 @@
-# Please send significant changes to functionality and non-trivial changes to
-# core files like metrics_web_contents_observer.cc and
-# page_load_tracker.cc to bmcquade or skobes.
-
-skobes@chromium.org
 npm@chromium.org
 sullivan@chromium.org
 csharrison@chromium.org

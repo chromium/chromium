@@ -89,40 +89,26 @@ void BrowserChildProcessHostImpl::BindHostReceiver(
 #endif
 
   if (auto r = receiver.As<mojom::FieldTrialRecorder>()) {
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&FieldTrialRecorder::Create, std::move(r)));
+    FieldTrialRecorder::Create(std::move(r));
     return;
   }
 
   if (auto r = receiver.As<
                discardable_memory::mojom::DiscardableSharedMemoryManager>()) {
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              [](mojo::PendingReceiver<
-                  discardable_memory::mojom::DiscardableSharedMemoryManager>
-                     r) {
-                discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
-                    std::move(r));
-              },
-              std::move(r)));
-    } else {
-      discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
-          std::move(r));
-    }
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](mojo::PendingReceiver<
+                discardable_memory::mojom::DiscardableSharedMemoryManager> r) {
+              discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
+                  std::move(r));
+            },
+            std::move(r)));
     return;
   }
 
   if (auto r = receiver.As<device::mojom::PowerMonitor>()) {
-    // TODO(jam): When ProcessHostOnUI is the default just remove this PostTask.
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](mojo::PendingReceiver<device::mojom::PowerMonitor> r) {
-              GetDeviceService().BindPowerMonitor(std::move(r));
-            },
-            std::move(r)));
+    GetDeviceService().BindPowerMonitor(std::move(r));
     return;
   }
 

@@ -23,6 +23,7 @@ include_rules = [
 
   # The content_shell for aura must work with the views and aura
   "+ui/aura",
+  "+ui/color",
   "+ui/platform_window",
   "+ui/views",
 

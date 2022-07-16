@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_WEBUI_WEB_UI_CONTROLLER_FACTORY_REGISTRY_H_
 #define CONTENT_BROWSER_WEBUI_WEB_UI_CONTROLLER_FACTORY_REGISTRY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "content/public/browser/web_ui_controller_factory.h"
 
@@ -17,6 +16,11 @@ class CONTENT_EXPORT WebUIControllerFactoryRegistry
     : public WebUIControllerFactory {
  public:
   static WebUIControllerFactoryRegistry* GetInstance();
+
+  WebUIControllerFactoryRegistry(const WebUIControllerFactoryRegistry&) =
+      delete;
+  WebUIControllerFactoryRegistry& operator=(
+      const WebUIControllerFactoryRegistry&) = delete;
 
   // WebUIControllerFactory implementation. Each method loops through the same
   // method on all the factories.
@@ -39,8 +43,6 @@ class CONTENT_EXPORT WebUIControllerFactoryRegistry
 
   WebUIControllerFactoryRegistry();
   ~WebUIControllerFactoryRegistry() override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIControllerFactoryRegistry);
 };
 
 }  // namespace content

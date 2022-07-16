@@ -144,10 +144,12 @@ public class RippleBackgroundHelper {
         GradientDrawable mask = new GradientDrawable();
         mask.setCornerRadii(cornerRadii);
         mask.setColor(Color.WHITE);
-        return wrapDrawableWithInsets(
-                new RippleDrawable(convertToRippleDrawableColorList(rippleColorList),
-                        mBackgroundGradient, mask),
-                verticalInset);
+        // The RippledDrawable must wrap the InsetDrawable (which wraps the content).
+        // The InsetDrawable cannot wrap the RippleDrawable,
+        // otherwise it creates corner artifacts on Android S.
+        // Refer to crbug.com/1233720 for details.
+        return new RippleDrawable(convertToRippleDrawableColorList(rippleColorList),
+                wrapDrawableWithInsets(mBackgroundGradient, verticalInset), mask);
     }
 
     /**

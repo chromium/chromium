@@ -1,0 +1,20 @@
+<style include="cr-shared-style shimless-rma-shared">
+  .large-icon {
+    height: 200px;
+    width: 300px;
+  }
+</style>
+
+<base-page orientation="column">
+  <div slot="header">
+    <h1>[[i18n('shimlessSplashMessage')]]</h1>
+    <div>
+      <paper-spinner-lite id="busyIcon" active></paper-spinner-lite>
+    </div>
+  </div>
+  <div slot="body">
+    <!-- TODO(gavindodd): Replace with real image -->
+    <iron-icon icon="shimless:shimless-placeholder" class="large-icon">
+    </iron-icon>
+  </div>
+</base-page>

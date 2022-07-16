@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/download/public/common/download_export.h"
@@ -22,6 +21,7 @@
 #include "net/http/http_response_info.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -48,6 +48,10 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   DownloadCreateInfo(const base::Time& start_time,
                      std::unique_ptr<DownloadSaveInfo> save_info);
   DownloadCreateInfo();
+
+  DownloadCreateInfo(const DownloadCreateInfo&) = delete;
+  DownloadCreateInfo& operator=(const DownloadCreateInfo&) = delete;
+
   ~DownloadCreateInfo();
 
   bool is_new_download;
@@ -174,8 +178,12 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   // Whether download is initated by the content on the page.
   bool is_content_initiated;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadCreateInfo);
+  // The credentials mode for whether to expose the response headers to
+  // javascript, see Access-Control-Allow-Credentials header.
+  ::network::mojom::CredentialsMode credentials_mode;
+
+  // Isolation info for the download request, mainly for same site cookies.
+  absl::optional<net::IsolationInfo> isolation_info;
 };
 
 }  // namespace download

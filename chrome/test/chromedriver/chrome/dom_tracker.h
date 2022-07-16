@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 namespace base {
@@ -24,6 +23,10 @@ class Status;
 class DomTracker : public DevToolsEventListener {
  public:
   explicit DomTracker(DevToolsClient* client);
+
+  DomTracker(const DomTracker&) = delete;
+  DomTracker& operator=(const DomTracker&) = delete;
+
   ~DomTracker() override;
 
   Status GetFrameIdForNode(int node_id, std::string* frame_id);
@@ -35,12 +38,10 @@ class DomTracker : public DevToolsEventListener {
                  const base::DictionaryValue& params) override;
 
  private:
-  bool ProcessNodeList(const base::Value* nodes);
-  bool ProcessNode(const base::Value* node);
+  bool ProcessNodeList(const base::Value& nodes);
+  bool ProcessNode(const base::Value& node);
 
   std::map<int, std::string> node_to_frame_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(DomTracker);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_DOM_TRACKER_H_

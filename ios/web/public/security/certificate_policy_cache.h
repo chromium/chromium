@@ -25,6 +25,9 @@ class CertificatePolicyCache
   // Can be called from any thread:
   CertificatePolicyCache();
 
+  CertificatePolicyCache(const CertificatePolicyCache&) = delete;
+  CertificatePolicyCache& operator=(const CertificatePolicyCache&) = delete;
+
   // Everything from here on can only be called from the IO thread.
 
   // Records that |cert| is permitted to be used for |host| in the future.
@@ -48,8 +51,6 @@ class CertificatePolicyCache
 
   // Certificate policies for each host.
   std::map<std::string, CertPolicy> cert_policy_for_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificatePolicyCache);
 };
 
 }  // namespace web

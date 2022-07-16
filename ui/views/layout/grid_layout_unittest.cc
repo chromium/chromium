@@ -16,6 +16,8 @@
 
 namespace views {
 
+namespace {
+
 void ExpectViewBoundsEquals(int x, int y, int w, int h, const View* view) {
   EXPECT_EQ(x, view->x());
   EXPECT_EQ(y, view->y());
@@ -33,6 +35,10 @@ std::unique_ptr<View> CreateSizedView(const gfx::Size& size) {
 class MinSizeView : public View {
  public:
   explicit MinSizeView(const gfx::Size& min_size) : min_size_(min_size) {}
+
+  MinSizeView(const MinSizeView&) = delete;
+  MinSizeView& operator=(const MinSizeView&) = delete;
+
   ~MinSizeView() override = default;
 
   // View:
@@ -40,8 +46,6 @@ class MinSizeView : public View {
 
  private:
   const gfx::Size min_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinSizeView);
 };
 
 std::unique_ptr<MinSizeView> CreateViewWithMinAndPref(const gfx::Size& min,
@@ -56,6 +60,9 @@ std::unique_ptr<MinSizeView> CreateViewWithMinAndPref(const gfx::Size& min,
 class LayoutOnAddView : public View {
  public:
   LayoutOnAddView() { SetPreferredSize(gfx::Size(10, 10)); }
+
+  LayoutOnAddView(const LayoutOnAddView&) = delete;
+  LayoutOnAddView& operator=(const LayoutOnAddView&) = delete;
 
   void set_target_size(const gfx::Size& target_size) {
     target_size_ = target_size;
@@ -77,8 +84,6 @@ class LayoutOnAddView : public View {
 
  private:
   gfx::Size target_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayoutOnAddView);
 };
 
 // A view with fixed circumference that trades height for width.
@@ -97,6 +102,8 @@ class FlexibleView : public View {
  private:
   int circumference_;
 };
+
+}  // namespace
 
 class GridLayoutTest : public testing::Test {
  public:
@@ -520,8 +527,15 @@ TEST_F(GridLayoutTest, RowSpanWithPaddingRow) {
                  GridLayout::ColumnSize::kFixed, 10, 10);
 
   layout()->StartRow(0, 0);
-  layout()->AddView(CreateSizedView(gfx::Size(10, 10)), 1, 2);
+  auto* v1 = layout()->AddView(CreateSizedView(gfx::Size(10, 10)), 1, 2);
   layout()->AddPaddingRow(0, 10);
+
+  gfx::Size pref = GetPreferredSize();
+  EXPECT_EQ(gfx::Size(10, 10), pref);
+
+  host()->SetBounds(0, 0, 10, 20);
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 10, 10, v1);
 }
 
 TEST_F(GridLayoutTest, RowSpan) {
@@ -898,6 +912,11 @@ TEST_F(GridLayoutTest, TwoViewsBothColumnsResizableOneViewFixedWidthMin) {
 class SettablePreferredHeightView : public View {
  public:
   explicit SettablePreferredHeightView(int height) : pref_height_(height) {}
+
+  SettablePreferredHeightView(const SettablePreferredHeightView&) = delete;
+  SettablePreferredHeightView& operator=(const SettablePreferredHeightView&) =
+      delete;
+
   ~SettablePreferredHeightView() override = default;
 
   // View:
@@ -905,8 +924,6 @@ class SettablePreferredHeightView : public View {
 
  private:
   const int pref_height_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettablePreferredHeightView);
 };
 
 TEST_F(GridLayoutTest, HeightForWidthCalledWhenNotGivenPreferredWidth) {

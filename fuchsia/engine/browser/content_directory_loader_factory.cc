@@ -37,6 +37,7 @@
 #include "net/base/parse_number.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -110,10 +111,10 @@ bool GetRangeForRequest(const net::HttpRequestHeaders& headers,
 }
 
 // Copies data from a fuchsia.io.Node file into a URL response stream.
-class ContentDirectoryURLLoader : public network::mojom::URLLoader {
+class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
  public:
   ContentDirectoryURLLoader() = default;
-  ~ContentDirectoryURLLoader() final = default;
+  ~ContentDirectoryURLLoader() override = default;
 
   ContentDirectoryURLLoader(const ContentDirectoryURLLoader&) = delete;
   ContentDirectoryURLLoader& operator=(const ContentDirectoryURLLoader&) =
@@ -379,9 +380,9 @@ void ContentDirectoryLoaderFactory::CreateLoaderAndStart(
   requested_path.remove_prefix(1);
 
   fidl::InterfaceHandle<fuchsia::io::Node> file_handle;
-  net::Error open_result = OpenFileFromDirectory(request.url.GetOrigin().host(),
-                                                 base::FilePath(requested_path),
-                                                 file_handle.NewRequest());
+  net::Error open_result = OpenFileFromDirectory(
+      request.url.DeprecatedGetOriginAsURL().host(),
+      base::FilePath(requested_path), file_handle.NewRequest());
   if (open_result != net::OK) {
     mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
         ->OnComplete(network::URLLoaderCompletionStatus(open_result));
@@ -394,7 +395,7 @@ void ContentDirectoryLoaderFactory::CreateLoaderAndStart(
   // ContentDirectoryURLLoader::Start().
   fidl::InterfaceHandle<fuchsia::io::Node> metadata_handle;
   open_result = OpenFileFromDirectory(
-      request.url.GetOrigin().host(),
+      request.url.DeprecatedGetOriginAsURL().host(),
       base::FilePath(base::StrCat({requested_path, "._metadata"})),
       metadata_handle.NewRequest());
   if (open_result != net::OK) {

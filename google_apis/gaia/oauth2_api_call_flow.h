@@ -31,6 +31,9 @@ class OAuth2ApiCallFlow {
  public:
   OAuth2ApiCallFlow();
 
+  OAuth2ApiCallFlow(const OAuth2ApiCallFlow&) = delete;
+  OAuth2ApiCallFlow& operator=(const OAuth2ApiCallFlow&) = delete;
+
   virtual ~OAuth2ApiCallFlow();
 
   // Start the flow.
@@ -99,8 +102,6 @@ class OAuth2ApiCallFlow {
 
   State state_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2ApiCallFlow);
 };
 
 #endif  // GOOGLE_APIS_GAIA_OAUTH2_API_CALL_FLOW_H_

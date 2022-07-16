@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/browsing_data/content/database_helper.h"
 #include "content/public/browser/storage_usage_info.h"
 
@@ -22,6 +21,9 @@ namespace browsing_data {
 class MockDatabaseHelper : public DatabaseHelper {
  public:
   explicit MockDatabaseHelper(content::BrowserContext* browser_context);
+
+  MockDatabaseHelper(const MockDatabaseHelper&) = delete;
+  MockDatabaseHelper& operator=(const MockDatabaseHelper&) = delete;
 
   void StartFetching(FetchCallback callback) override;
 
@@ -53,8 +55,6 @@ class MockDatabaseHelper : public DatabaseHelper {
   std::map<const std::string, bool> databases_;
 
   std::list<content::StorageUsageInfo> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDatabaseHelper);
 };
 
 }  // namespace browsing_data

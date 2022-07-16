@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOCOMPLETE_DOCUMENT_SUGGESTIONS_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_AUTOCOMPLETE_DOCUMENT_SUGGESTIONS_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -19,6 +18,11 @@ class DocumentSuggestionsServiceFactory
                                                    bool create_if_necessary);
   static DocumentSuggestionsServiceFactory* GetInstance();
 
+  DocumentSuggestionsServiceFactory(const DocumentSuggestionsServiceFactory&) =
+      delete;
+  DocumentSuggestionsServiceFactory& operator=(
+      const DocumentSuggestionsServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<DocumentSuggestionsServiceFactory>;
 
@@ -28,8 +32,6 @@ class DocumentSuggestionsServiceFactory
   // Overrides from BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentSuggestionsServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_DOCUMENT_SUGGESTIONS_SERVICE_FACTORY_H_

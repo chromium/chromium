@@ -6,6 +6,7 @@
 #define CHROMECAST_BROWSER_NAMED_MESSAGE_PORT_CONNECTOR_CAST_H_
 
 #include "chromecast/browser/cast_web_contents.h"
+#include "chromecast/browser/cast_web_contents_observer.h"
 #include "components/cast/named_message_port_connector/named_message_port_connector.h"
 
 namespace chromecast {
@@ -14,7 +15,7 @@ namespace chromecast {
 // hosted by |cast_web_contents|.
 class NamedMessagePortConnectorCast
     : public cast_api_bindings::NamedMessagePortConnector,
-      public CastWebContents::Observer {
+      public CastWebContentsObserver {
  public:
   // |cast_web_contents|: The CastWebContents which will receive port connection
   //                      services. Must outlive |this|.
@@ -31,7 +32,7 @@ class NamedMessagePortConnectorCast
   // and its main frame finished loading with no further pending navigations.
   void OnPageLoaded();
 
-  // CastWebContents::Observer implementation.
+  // CastWebContentsObserver implementation.
   void PageStateChanged(PageState page_state) override;
 
   chromecast::CastWebContents* cast_web_contents_;

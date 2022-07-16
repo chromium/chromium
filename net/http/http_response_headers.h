@@ -89,6 +89,9 @@ class NET_EXPORT HttpResponseHeaders
   static scoped_refptr<HttpResponseHeaders> TryToCreate(
       base::StringPiece headers);
 
+  HttpResponseHeaders(const HttpResponseHeaders&) = delete;
+  HttpResponseHeaders& operator=(const HttpResponseHeaders&) = delete;
+
   // Appends a representation of this object to the given pickle.
   // The options argument can be a combination of PersistOptions.
   void Persist(base::Pickle* pickle, PersistOptions options);
@@ -437,8 +440,6 @@ class NET_EXPORT HttpResponseHeaders
 
   // The normalized http version (consistent with what GetStatusLine() returns).
   HttpVersion http_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpResponseHeaders);
 };
 
 using ResponseHeadersCallback =

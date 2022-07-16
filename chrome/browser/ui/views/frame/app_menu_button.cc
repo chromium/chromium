@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
@@ -24,9 +25,10 @@ AppMenuButton::AppMenuButton(PressedCallback callback)
   menu_button_controller_ = menu_button_controller.get();
   SetButtonController(std::move(menu_button_controller));
   SetProperty(views::kInternalPaddingKey, gfx::Insets());
+  SetProperty(views::kElementIdentifierKey, kAppMenuButtonElementId);
 }
 
-AppMenuButton::~AppMenuButton() {}
+AppMenuButton::~AppMenuButton() = default;
 
 void AppMenuButton::AddObserver(AppMenuButtonObserver* observer) {
   observer_list_.AddObserver(observer);

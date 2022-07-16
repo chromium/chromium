@@ -29,8 +29,5 @@ class UtilCCHelper(object):
   def GetIncludePath(self):
     return '#include "tools/json_schema_compiler/util.h"'
 
-  def GetValueTypeString(self, value, is_ptr=False):
-    call = '.type()'
-    if is_ptr:
-      call = '->type()'
-    return 'UTF8ToUTF16(base::Value::GetTypeName(%s%s))' % (value, call)
+  def GetValueTypeString(self, value):
+    return 'UTF8ToUTF16(base::Value::GetTypeName(%s.type()))' % value

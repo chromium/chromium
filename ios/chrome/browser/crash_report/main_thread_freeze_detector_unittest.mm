@@ -34,8 +34,7 @@ TEST_F(MainThreadFreezeDetectorTest, FileMoveSameModificationDate) {
       objectForKey:NSFileModificationDate];
   // Spin the run loop so, if the move below uses an updated modification date,
   // |date2| will not match (which would be a test failure).
-  base::test::ios::SpinRunLoopWithMinDelay(
-      base::TimeDelta::FromMilliseconds(40));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(40));
   ASSERT_TRUE([file_manager moveItemAtPath:original_file
                                     toPath:new_file
                                      error:nil]);

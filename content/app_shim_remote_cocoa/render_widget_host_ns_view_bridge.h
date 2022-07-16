@@ -29,6 +29,11 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
  public:
   RenderWidgetHostNSViewBridge(mojom::RenderWidgetHostNSViewHost* client,
                                RenderWidgetHostNSViewHostHelper* client_helper);
+
+  RenderWidgetHostNSViewBridge(const RenderWidgetHostNSViewBridge&) = delete;
+  RenderWidgetHostNSViewBridge& operator=(const RenderWidgetHostNSViewBridge&) =
+      delete;
+
   ~RenderWidgetHostNSViewBridge() override;
 
   // Bind to a remote receiver for a mojo interface.
@@ -106,8 +111,6 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
 
   // The receiver for this object (only used when remotely instantiated).
   mojo::AssociatedReceiver<mojom::RenderWidgetHostNSView> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostNSViewBridge);
 };
 
 }  // namespace remote_cocoa

@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/updater/setup.h"
-#include "chrome/updater/win/setup/setup.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/win/setup/setup.h"
 
 namespace updater {
 

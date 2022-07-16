@@ -37,7 +37,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_scrolltimelineautokeyword.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/animation_utils.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
@@ -200,7 +199,7 @@ Animation* Animation::Create(AnimationEffect* effect,
   }
   DCHECK(IsA<DocumentTimeline>(timeline) || timeline->IsScrollTimeline());
 
-  if (timeline->IsProgressBasedTimeline()) {
+  if (effect && timeline->IsScrollTimeline()) {
     if (effect->timing_.iteration_duration) {
       if (effect->timing_.iteration_duration->is_inf()) {
         exception_state.ThrowTypeError(
@@ -345,8 +344,8 @@ Document* Animation::GetDocument() const {
   return document_;
 }
 
-absl::optional<double> Animation::TimelineTime() const {
-  return timeline_ ? timeline_->CurrentTimeMilliseconds() : absl::nullopt;
+absl::optional<AnimationTimeDelta> Animation::TimelineTime() const {
+  return timeline_ ? timeline_->CurrentTime() : absl::nullopt;
 }
 
 bool Animation::ConvertCSSNumberishToTime(
@@ -364,7 +363,7 @@ bool Animation::ConvertCSSNumberishToTime(
     return true;
   }
 
-  if (timeline_ && timeline_->IsProgressBasedTimeline()) {
+  if (timeline_ && timeline_->IsScrollTimeline()) {
     // Progress based timeline
     if (numberish->IsCSSNumericValue()) {
       CSSUnitValue* numberish_as_percentage =
@@ -397,7 +396,7 @@ bool Animation::ConvertCSSNumberishToTime(
         CSSPrimitiveValue::UnitType::kNumber);
     if (numberish_as_number) {
       time =
-          AnimationTimeDelta::FromMillisecondsD(numberish_as_number->value());
+          ANIMATION_TIME_DELTA_FROM_MILLISECONDS(numberish_as_number->value());
       return true;
     }
 
@@ -405,7 +404,7 @@ bool Animation::ConvertCSSNumberishToTime(
         numberish->GetAsCSSNumericValue()->to(
             CSSPrimitiveValue::UnitType::kMilliseconds);
     if (numberish_as_milliseconds) {
-      time = AnimationTimeDelta::FromMillisecondsD(
+      time = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(
           numberish_as_milliseconds->value());
       return true;
     }
@@ -413,7 +412,7 @@ bool Animation::ConvertCSSNumberishToTime(
     CSSUnitValue* numberish_as_seconds = numberish->GetAsCSSNumericValue()->to(
         CSSPrimitiveValue::UnitType::kSeconds);
     if (numberish_as_seconds) {
-      time = AnimationTimeDelta::FromSecondsD(numberish_as_seconds->value());
+      time = ANIMATION_TIME_DELTA_FROM_SECONDS(numberish_as_seconds->value());
       return true;
     }
 
@@ -427,7 +426,7 @@ bool Animation::ConvertCSSNumberishToTime(
     return false;
   }
 
-  time = AnimationTimeDelta::FromMillisecondsD(numberish->GetAsDouble());
+  time = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(numberish->GetAsDouble());
   return true;
 }
 
@@ -521,11 +520,14 @@ V8CSSNumberish* Animation::startTime() const {
 }
 
 V8CSSNumberish* Animation::ConvertTimeToCSSNumberish(
-    AnimationTimeDelta time) const {
-  if (timeline_ && timeline_->IsProgressBasedTimeline()) {
-    return To<ScrollTimeline>(*timeline_).ConvertTimeToProgress(time);
+    absl::optional<AnimationTimeDelta> time) const {
+  if (time) {
+    if (timeline_ && timeline_->IsScrollTimeline()) {
+      return To<ScrollTimeline>(*timeline_).ConvertTimeToProgress(time.value());
+    }
+    return MakeGarbageCollected<V8CSSNumberish>(time.value().InMillisecondsF());
   }
-  return MakeGarbageCollected<V8CSSNumberish>(time.InMillisecondsF());
+  return nullptr;
 }
 
 // https://drafts.csswg.org/web-animations/#the-current-time-of-an-animation
@@ -1964,7 +1966,11 @@ void Animation::setPlaybackRate(double playback_rate,
 
   // Adds a UseCounter to check if setting playbackRate causes a compensatory
   // seek forcing a change in start_time_
-  if (start_time_before && start_time_ != start_time_before &&
+  // We use an epsilon (1 microsecond) to handle precision issue.
+  double epsilon = 1e-6;
+  if (start_time_before && start_time_ &&
+      fabs(start_time_.value().InMillisecondsF() -
+           start_time_before.value().InMillisecondsF()) > epsilon &&
       CalculateAnimationPlayState() != kFinished) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kAnimationSetPlaybackRateCompensatorySeek);
@@ -2059,7 +2065,7 @@ Animation::CheckCanStartAnimationOnCompositorInternal() const {
   // are in the compositor, the animation should be composited.
   if (timeline_ && timeline_->IsScrollTimeline() &&
       !CompositorAnimations::CheckUsesCompositedScrolling(
-          To<ScrollTimeline>(*timeline_).ResolvedScrollSource()))
+          To<ScrollTimeline>(*timeline_).ResolvedSource()))
     reasons |= CompositorAnimations::kTimelineSourceHasInvalidCompositingState;
 
   // An Animation without an effect cannot produce a visual, so there is no
@@ -2092,7 +2098,7 @@ base::TimeDelta Animation::ComputeCompositorTimeOffset() const {
   double time_offset_s =
       reversed ? EffectEnd().InSecondsF() - current_time.value().InSecondsF()
                : current_time.value().InSecondsF();
-  return base::TimeDelta::FromSecondsD(time_offset_s / fabs(playback_rate));
+  return base::Seconds(time_offset_s / fabs(playback_rate));
 }
 
 void Animation::MarkPendingIfCompositorPropertyAnimationChanges(
@@ -2228,6 +2234,44 @@ bool Animation::HasActiveAnimationsOnCompositor() {
   return keyframe_effect->HasActiveAnimationsOnCompositor();
 }
 
+bool Animation::AtScrollTimelineBoundary() {
+  // Based on changed defined in: https://github.com/w3c/csswg-drafts/pull/6702
+  // 1.  If any of the following conditions are true:
+  //     * the associated animation's timeline is not a progress-based timeline,
+  //     or
+  //     * the associated animation's timeline duration is unresolved or zero,
+  //     or
+  //     * the animation's playback rate is zero
+  //     return false
+  absl::optional<AnimationTimeDelta> timeline_duration =
+      timeline_ ? timeline_->GetDuration() : absl::nullopt;
+  if (!timeline_ || !timeline_->IsScrollTimeline() || !timeline_duration ||
+      timeline_duration->is_zero() || playback_rate_ == 0)
+    return false;
+
+  // 2.  Let effective start time be the animation's start time if resolved, or
+  // zero otherwise.
+  AnimationTimeDelta effective_start_time =
+      start_time_.value_or(AnimationTimeDelta());
+  // 3.  Let effective timeline time be (animation's current time / animation's
+  // playback rate) + effective start time
+  AnimationTimeDelta effective_timeline_time =
+      (CurrentTimeInternal().value_or(AnimationTimeDelta()) / playback_rate_) +
+      effective_start_time;
+  // 4.  Let effective timeline progress be (effective timeline time / timeline
+  // duration)
+  // 5.  If effective timeline progress is 0 or 1, return true,
+  // We avoid the division here but it is effectively the same as 4 & 5 above.
+  return effective_timeline_time.is_zero() ||
+         IsWithinAnimationTimeTolerance(effective_timeline_time,
+                                        timeline_duration.value());
+
+  // Issue: This procedure is not strictly correct for a paused
+  // animation if the animation's current time is explicitly set, as this can
+  // introduce a lead or lag, between the timeline's current time and
+  // animation's current time.
+}
+
 // Update current time of the animation. Refer to step 1 in:
 // https://drafts.csswg.org/web-animations/#update-animations-and-send-events
 bool Animation::Update(TimingUpdateReason reason) {
@@ -2253,12 +2297,14 @@ bool Animation::Update(TimingUpdateReason reason) {
       inherited_time = CurrentTimeInternal();
       // Special case for end-exclusivity when playing backwards.
       if (inherited_time == AnimationTimeDelta() && EffectivePlaybackRate() < 0)
-        inherited_time = AnimationTimeDelta::FromSecondsD(-1);
+        inherited_time = ANIMATION_TIME_DELTA_FROM_SECONDS(-1);
 
       inherited_phase = CurrentPhaseInternal();
     }
 
-    content_->UpdateInheritedTime(inherited_time, inherited_phase, reason);
+    content_->UpdateInheritedTime(inherited_time, inherited_phase,
+                                  AtScrollTimelineBoundary(), playback_rate_,
+                                  reason);
 
     // After updating the animation time if the animation is no longer current
     // blink will no longer composite the element (see
@@ -2293,14 +2339,8 @@ bool Animation::Update(TimingUpdateReason reason) {
 void Animation::QueueFinishedEvent() {
   const AtomicString& event_type = event_type_names::kFinish;
   if (GetExecutionContext() && HasEventListeners(event_type)) {
-    absl::optional<AnimationTimeDelta> event_current_time =
-        CurrentTimeInternal();
-    absl::optional<double> event_current_time_ms;
-    if (event_current_time)
-      event_current_time_ms = event_current_time.value().InMillisecondsF();
-    // TODO(crbug.com/916117): Handle NaN values for scroll-linked animations.
     pending_finished_event_ = MakeGarbageCollected<AnimationPlaybackEvent>(
-        event_type, event_current_time_ms, TimelineTime());
+        event_type, currentTime(), ConvertTimeToCSSNumberish(TimelineTime()));
     pending_finished_event_->SetTarget(this);
     pending_finished_event_->SetCurrentTarget(this);
     document_->EnqueueAnimationFrameEvent(pending_finished_event_);
@@ -2362,11 +2402,8 @@ void Animation::cancel() {
 
     const AtomicString& event_type = event_type_names::kCancel;
     if (GetExecutionContext() && HasEventListeners(event_type)) {
-      absl::optional<double> event_current_time = absl::nullopt;
-      // TODO(crbug.com/916117): Handle NaN values for scroll-linked
-      // animations.
       pending_cancelled_event_ = MakeGarbageCollected<AnimationPlaybackEvent>(
-          event_type, event_current_time, TimelineTime());
+          event_type, nullptr, ConvertTimeToCSSNumberish(TimelineTime()));
       pending_cancelled_event_->SetTarget(this);
       pending_cancelled_event_->SetCurrentTarget(this);
       document_->EnqueueAnimationFrameEvent(pending_cancelled_event_);
@@ -2457,9 +2494,10 @@ void Animation::DetachCompositedLayers() {
     compositor_animation_->GetAnimation()->DetachElement();
 }
 
-void Animation::NotifyAnimationStarted(double monotonic_time, int group) {
+void Animation::NotifyAnimationStarted(base::TimeDelta monotonic_time,
+                                       int group) {
   document_->GetPendingAnimations().NotifyCompositorAnimationStarted(
-      monotonic_time, group);
+      monotonic_time.InSecondsF(), group);
 }
 
 void Animation::AddedEventListener(
@@ -2484,7 +2522,7 @@ void Animation::PauseForTesting(AnimationTimeDelta pause_time) {
     DCHECK(current_time);
     To<KeyframeEffect>(content_.Get())
         ->PauseAnimationForTestingOnCompositor(
-            base::TimeDelta::FromSecondsD(current_time.value().InSecondsF()));
+            base::Seconds(current_time.value().InSecondsF()));
   }
 
   // Do not wait for animation ready to lock in the hold time. Otherwise,
@@ -2674,13 +2712,8 @@ void Animation::RemoveReplacedAnimation() {
   replace_state_ = kRemoved;
   const AtomicString& event_type = event_type_names::kRemove;
   if (GetExecutionContext() && HasEventListeners(event_type)) {
-    absl::optional<AnimationTimeDelta> event_current_time =
-        CurrentTimeInternal();
-    absl::optional<double> event_current_time_ms;
-    if (event_current_time)
-      event_current_time_ms = event_current_time.value().InMillisecondsF();
     pending_remove_event_ = MakeGarbageCollected<AnimationPlaybackEvent>(
-        event_type, event_current_time_ms, TimelineTime());
+        event_type, currentTime(), ConvertTimeToCSSNumberish(TimelineTime()));
     pending_remove_event_->SetTarget(this);
     pending_remove_event_->SetCurrentTarget(this);
     document_->EnqueueAnimationFrameEvent(pending_remove_event_);
@@ -2799,7 +2832,7 @@ bool Animation::IsInDisplayLockedSubtree() {
 
   if (last_display_lock_update_time_ < display_lock_update_timestamp) {
     const Element* element =
-        DisplayLockUtilities::NearestLockedExclusiveAncestor(*owning_element);
+        DisplayLockUtilities::LockedAncestorPreventingPaint(*owning_element);
     is_in_display_locked_subtree_ = !!element;
     last_display_lock_update_time_ = display_lock_update_timestamp;
   }

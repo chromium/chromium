@@ -34,6 +34,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
           config_client_receiver,
       mojo::PendingRemote<mojom::CustomProxyConnectionObserver>
           observer_remote);
+
+  NetworkServiceProxyDelegate(const NetworkServiceProxyDelegate&) = delete;
+  NetworkServiceProxyDelegate& operator=(const NetworkServiceProxyDelegate&) =
+      delete;
+
   ~NetworkServiceProxyDelegate() override;
 
   void SetProxyResolutionService(
@@ -69,7 +74,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
 
   // mojom::CustomProxyConfigClient implementation:
   void OnCustomProxyConfigUpdated(
-      mojom::CustomProxyConfigPtr proxy_config) override;
+      mojom::CustomProxyConfigPtr proxy_config,
+      OnCustomProxyConfigUpdatedCallback callback) override;
   void MarkProxiesAsBad(base::TimeDelta bypass_duration,
                         const net::ProxyList& bad_proxies,
                         MarkProxiesAsBadCallback callback) override;
@@ -80,8 +86,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   mojo::Remote<mojom::CustomProxyConnectionObserver> observer_;
 
   net::ProxyResolutionService* proxy_resolution_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceProxyDelegate);
 };
 
 }  // namespace network

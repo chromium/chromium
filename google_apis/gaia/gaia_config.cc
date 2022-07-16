@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "google_apis/gaia/gaia_config.h"
-#include <memory>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -13,65 +12,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
+#include "base/threading/thread_restrictions.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/google_api_keys.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-
-namespace {
-
-std::unique_ptr<GaiaConfig> ReadConfigFromString(
-    const std::string& config_contents) {
-  absl::optional<base::Value> dict = base::JSONReader::Read(config_contents);
-  if (!dict || !dict->is_dict()) {
-    LOG(FATAL) << "Couldn't parse Gaia config file";
-    return nullptr;
-  }
-
-  return std::make_unique<GaiaConfig>(std::move(dict.value()));
-}
-
-std::unique_ptr<GaiaConfig> ReadConfigFromDisk(
-    const base::FilePath& config_path) {
-  std::string config_contents;
-  if (!base::ReadFileToString(config_path, &config_contents)) {
-    LOG(FATAL) << "Couldn't read Gaia config file " << config_path;
-    return nullptr;
-  }
-  return ReadConfigFromString(config_contents);
-}
-
-std::unique_ptr<GaiaConfig> ReadConfigFromCommandLineSwitches(
-    const base::CommandLine* command_line) {
-  if (command_line->HasSwitch(switches::kGaiaConfigPath) &&
-      command_line->HasSwitch(switches::kGaiaConfigContents)) {
-    LOG(FATAL) << "Either a Gaia config file path or a config file contents "
-                  "can be provided; "
-               << "not both";
-    return nullptr;
-  }
-
-  if (command_line->HasSwitch(switches::kGaiaConfigContents)) {
-    return ReadConfigFromString(
-        command_line->GetSwitchValueASCII(switches::kGaiaConfigContents));
-  }
-
-  if (command_line->HasSwitch(switches::kGaiaConfigPath)) {
-    return ReadConfigFromDisk(
-        command_line->GetSwitchValuePath(switches::kGaiaConfigPath));
-  }
-
-  return nullptr;
-}
-
-std::unique_ptr<GaiaConfig>* GetGlobalConfig() {
-  static base::NoDestructor<std::unique_ptr<GaiaConfig>> config(
-      ReadConfigFromCommandLineSwitches(
-          base::CommandLine::ForCurrentProcess()));
-  return config.get();
-}
-
-}  // namespace
 
 // static
 GaiaConfig* GaiaConfig::GetInstance() {
@@ -142,4 +87,64 @@ std::unique_ptr<GaiaConfig> GaiaConfig::CreateFromCommandLineForTesting(
 void GaiaConfig::ResetInstanceForTesting() {
   *GetGlobalConfig() =
       ReadConfigFromCommandLineSwitches(base::CommandLine::ForCurrentProcess());
+}
+
+// static
+std::unique_ptr<GaiaConfig>* GaiaConfig::GetGlobalConfig() {
+  static base::NoDestructor<std::unique_ptr<GaiaConfig>> config(
+      ReadConfigFromCommandLineSwitches(
+          base::CommandLine::ForCurrentProcess()));
+  return config.get();
+}
+
+// static
+std::unique_ptr<GaiaConfig> GaiaConfig::ReadConfigFromString(
+    const std::string& config_contents) {
+  absl::optional<base::Value> dict = base::JSONReader::Read(config_contents);
+  if (!dict || !dict->is_dict()) {
+    LOG(FATAL) << "Couldn't parse Gaia config file";
+    return nullptr;
+  }
+
+  return std::make_unique<GaiaConfig>(std::move(dict.value()));
+}
+
+// static
+std::unique_ptr<GaiaConfig> GaiaConfig::ReadConfigFromDisk(
+    const base::FilePath& config_path) {
+  // Blocking is okay here because this code is executed only when the
+  // --gaia-config command line flag is specified. --gaia-config is only used
+  // for development.
+  base::ScopedAllowBlocking scoped_allow_blocking;
+
+  std::string config_contents;
+  if (!base::ReadFileToString(config_path, &config_contents)) {
+    LOG(FATAL) << "Couldn't read Gaia config file " << config_path;
+    return nullptr;
+  }
+  return ReadConfigFromString(config_contents);
+}
+
+// static
+std::unique_ptr<GaiaConfig> GaiaConfig::ReadConfigFromCommandLineSwitches(
+    const base::CommandLine* command_line) {
+  if (command_line->HasSwitch(switches::kGaiaConfigPath) &&
+      command_line->HasSwitch(switches::kGaiaConfigContents)) {
+    LOG(FATAL) << "Either a Gaia config file path or a config file contents "
+                  "can be provided; "
+               << "not both";
+    return nullptr;
+  }
+
+  if (command_line->HasSwitch(switches::kGaiaConfigContents)) {
+    return ReadConfigFromString(
+        command_line->GetSwitchValueASCII(switches::kGaiaConfigContents));
+  }
+
+  if (command_line->HasSwitch(switches::kGaiaConfigPath)) {
+    return ReadConfigFromDisk(
+        command_line->GetSwitchValuePath(switches::kGaiaConfigPath));
+  }
+
+  return nullptr;
 }

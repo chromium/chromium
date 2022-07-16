@@ -9,6 +9,7 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/resource_request.h"
 
 namespace content {
 

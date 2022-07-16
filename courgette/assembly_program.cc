@@ -22,6 +22,10 @@ class LabelReceptor : public InstructionReceptor {
   using VECTOR = CONTAINER<Label*>;
 
   LabelReceptor() = default;
+
+  LabelReceptor(const LabelReceptor&) = delete;
+  LabelReceptor& operator=(const LabelReceptor&) = delete;
+
   ~LabelReceptor() override = default;
 
   VECTOR* mutable_abs32_vector() { return &abs32_vector_; }
@@ -51,8 +55,6 @@ class LabelReceptor : public InstructionReceptor {
  private:
   VECTOR abs32_vector_;
   VECTOR rel32_vector_;
-
-  DISALLOW_COPY_AND_ASSIGN(LabelReceptor);
 };
 
 }  // namespace

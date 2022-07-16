@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_mouse_enter_exit_handler.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -25,6 +25,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 
+class OmniboxEditModel;
 class OmniboxMatchCellView;
 class OmniboxPopupContentsView;
 class OmniboxSuggestionButtonRowView;
@@ -46,6 +47,7 @@ class OmniboxResultView : public views::View,
  public:
   METADATA_HEADER(OmniboxResultView);
   OmniboxResultView(OmniboxPopupContentsView* popup_contents_view,
+                    OmniboxEditModel* model,
                     size_t model_index);
   OmniboxResultView(const OmniboxResultView&) = delete;
   OmniboxResultView& operator=(const OmniboxResultView&) = delete;
@@ -89,7 +91,7 @@ class OmniboxResultView : public views::View,
   // Stores the image in a local data member and schedules a repaint.
   void SetRichSuggestionImage(const gfx::ImageSkia& image);
 
-  void ButtonPressed(OmniboxPopupModel::LineState state,
+  void ButtonPressed(OmniboxPopupSelection::LineState state,
                      const ui::Event& event);
 
   // Helper to emit accessibility events (may only emit if conditions are met).
@@ -126,6 +128,9 @@ class OmniboxResultView : public views::View,
 
   // The parent view.
   OmniboxPopupContentsView* const popup_contents_view_;
+
+  // The model containing results.
+  OmniboxEditModel* model_;
 
   // This result's model index.
   size_t model_index_;

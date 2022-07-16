@@ -38,6 +38,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
@@ -231,10 +232,10 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /**
-     * Returns the currently signed in account.
+     * @return The primary account of the requested {@link ConsentLevel}.
      */
-    public CoreAccountInfo getCurrentSignedInAccount() {
-        return mAccountManagerTestRule.getCurrentSignedInAccount();
+    public CoreAccountInfo getPrimaryAccount(@ConsentLevel int consentLevel) {
+        return mAccountManagerTestRule.getPrimaryAccount(consentLevel);
     }
 
     /**
@@ -297,7 +298,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     public void signOut() {
         mAccountManagerTestRule.signOut();
-        Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
+        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
     }
 

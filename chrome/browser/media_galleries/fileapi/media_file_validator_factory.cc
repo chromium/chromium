@@ -5,7 +5,6 @@
 #include "chrome/browser/media_galleries/fileapi/media_file_validator_factory.h"
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/media_galleries/fileapi/supported_audio_video_checker.h"
 #include "chrome/browser/media_galleries/fileapi/supported_image_type_validator.h"
 #include "components/download/public/common/quarantine_connection.h"
@@ -16,6 +15,9 @@ namespace {
 
 class InvalidFileValidator : public storage::CopyOrMoveFileValidator {
  public:
+  InvalidFileValidator(const InvalidFileValidator&) = delete;
+  InvalidFileValidator& operator=(const InvalidFileValidator&) = delete;
+
   ~InvalidFileValidator() override {}
   void StartPreWriteValidation(storage::CopyOrMoveFileValidator::ResultCallback
                                    result_callback) override {
@@ -32,8 +34,6 @@ class InvalidFileValidator : public storage::CopyOrMoveFileValidator {
   friend class ::MediaFileValidatorFactory;
 
   InvalidFileValidator() {}
-
-  DISALLOW_COPY_AND_ASSIGN(InvalidFileValidator);
 };
 
 }  // namespace

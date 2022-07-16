@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.editor.plugins.RemoveFormattingTest');
 goog.setTestOnly();
@@ -33,8 +25,7 @@ let SAVED_HTML;
 let FIELDMOCK;
 let FORMATTER;
 let testHelper;
-let WEBKIT_BEFORE_CHROME_8;
-let WEBKIT_AFTER_CHROME_16;
+
 let WEBKIT_AFTER_CHROME_21;
 let insertImageBoldGarbage = '';
 let insertImageFontGarbage = '';
@@ -84,19 +75,13 @@ function runExpectingFailuresForUnimplementedBrowsers(func) {
 
 testSuite({
   shouldRunTests() {
-    // This test has not yet been updated to run on IE8 and up. See b/2997691.
-    return !userAgent.IE || !userAgent.isVersionOrHigher(8);
+    // This test has not yet been updated to run on IE8 and up. See
+    // b/2997691.
+    return !userAgent.IE;
   },
 
   setUpPage() {
-    WEBKIT_BEFORE_CHROME_8 =
-        userAgent.WEBKIT && !userAgent.isVersionOrHigher('534.10');
-
-    WEBKIT_AFTER_CHROME_16 =
-        userAgent.WEBKIT && userAgent.isVersionOrHigher('535.7');
-
-    WEBKIT_AFTER_CHROME_21 =
-        userAgent.WEBKIT && userAgent.isVersionOrHigher('537.1');
+    WEBKIT_AFTER_CHROME_21 = userAgent.WEBKIT;
     // On Chrome 16, execCommand('insertImage') inserts a garbage BR
     // after the image that we insert. We use this command to paste HTML
     // in-place, because it has better paragraph-preserving semantics.
@@ -106,9 +91,7 @@ testSuite({
     if (WEBKIT_AFTER_CHROME_21) {
       insertImageBoldGarbage = '<br>';
       insertImageFontGarbage = '<br>';
-    } else if (WEBKIT_AFTER_CHROME_16) {
-      insertImageBoldGarbage = '<b><br/></b>';
-      insertImageFontGarbage = '<font size="1"><br/></font>';
+
     } else if (userAgent.EDGE) {
       if (product.isVersion(14)) {
         insertImageFontGarbage = '<fontsize="-1"></fontsize="-1">';
@@ -117,13 +100,13 @@ testSuite({
             '<fontsize="-1"><font class="p" size="-1"></font></fontsize="-1">';
       }
     }
-    // Extra html to add to test html to make sure removeformatting is actually
-    // getting called when you're testing if it leaves certain styles alone
-    // (instead of not even running at all due to some other bug). However,
-    // adding this extra text into the node to be selected screws up IE. (e.g.
-    // <a><img></a><b>t</b> --> <a></a><a><img></a>t )
-    // TODO(user): Remove this special casing once http://b/3131117 is
-    // fixed.
+    // Extra html to add to test html to make sure removeformatting is
+    // actually getting called when you're testing if it leaves certain
+    // styles alone (instead of not even running at all due to some other
+    // bug). However, adding this extra text into the node to be selected
+    // screws up IE. (e.g. <a><img></a><b>t</b> --> <a></a><a><img></a>t )
+    // TODO(user): Remove this special casing once http://b/3131117
+    // is fixed.
     controlHtml = userAgent.IE ? '' : '<u>control</u>';
     controlCleanHtml = userAgent.IE ? '' : 'control';
     if (userAgent.EDGE) {
@@ -132,6 +115,10 @@ testSuite({
     expectedFailures = new ExpectedFailures();
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   setUp() {
     testHelper = new TestHelper(document.getElementById('html'));
     testHelper.setUpEditableElement();
@@ -142,6 +129,10 @@ testSuite({
     FIELDMOCK.$returns(document.getElementById('html'));
 
     FORMATTER = new RemoveFormatting();
+    /**
+     * @suppress {visibility,checkTypes} suppression added to enable type
+     * checking
+     */
     FORMATTER.fieldObject = FIELDMOCK;
 
     FIELDMOCK.$replay();
@@ -152,6 +143,7 @@ testSuite({
     testHelper.tearDownEditableElement();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testTableTagsAreNotRemoved() {
     setUpTableTests();
     let span;
@@ -222,22 +214,23 @@ testSuite({
       selection.addRange(range);
     }
 
-    expectedFailures.run(() => {
-      FORMATTER.removeFormatting_();
+    expectedFailures
+        .run(/**
+                @suppress {visibility} suppression added to enable type
+                checking
+              */
+             () => {
+               FORMATTER.removeFormatting_();
 
-      let span = document.getElementById('outerTr2');
-      assertEquals(
-          'Table data should not be removed',
-          '<td id="cell1">seven</td><td id="cell2">eight foo</td>',
-          span.innerHTML);
-    });
+               let span = document.getElementById('outerTr2');
+               assertEquals(
+                   'Table data should not be removed',
+                   '<td id="cell1">seven</td><td id="cell2">eight foo</td>',
+                   span.innerHTML);
+             });
   },
 
   testLinksAreNotRemoved() {
-    expectedFailures.expectFailureFor(
-        WEBKIT_BEFORE_CHROME_8,
-        'WebKit\'s removeFormatting command removes links.');
-
     let anchor;
     const div = document.getElementById('html');
     div.innerHTML = 'Foo<span id="link">Pre<a href="http://www.google.com">' +
@@ -247,15 +240,21 @@ testSuite({
     anchor = document.getElementById('link');
     Range.createFromNodeContents(anchor).select();
 
-    expectedFailures.run(() => {
-      FORMATTER.removeFormatting_();
-      assertHTMLEquals(
-          'link should not be removed',
-          'FooPre<a href="http://www.google.com/">Outside SpanInside Span</a>',
-          div.innerHTML);
-    });
+    expectedFailures
+        .run(/**
+                @suppress {visibility} suppression added to enable type
+                checking
+              */
+             () => {
+               FORMATTER.removeFormatting_();
+               assertHTMLEquals(
+                   'link should not be removed',
+                   'FooPre<a href="http://www.google.com/">Outside SpanInside Span</a>',
+                   div.innerHTML);
+             });
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testAlternateRemoveFormattingFunction() {
     const div = document.getElementById('html');
     div.innerHTML = 'Start<span id="remFormat">Foo<pre>Bar</pre>Baz</span>';
@@ -266,20 +265,16 @@ testSuite({
     FORMATTER.removeFormatting_();
     // Webkit will change all tags to non-formatted ones anyway.
     // Make sure 'Foo' was changed to 'Bar'
-    if (WEBKIT_BEFORE_CHROME_8) {
-      assertHTMLEquals(
-          'regular cleaner should not have run', 'StartBar<br>Bar<br>Baz',
-          div.innerHTML);
-    } else {
-      assertHTMLEquals(
-          'regular cleaner should not have run', 'StartBar<pre>Bar</pre>Baz',
-          div.innerHTML);
-    }
+
+    assertHTMLEquals(
+        'regular cleaner should not have run', 'StartBar<pre>Bar</pre>Baz',
+        div.innerHTML);
   },
 
   testGetValueForNode() {
     // Override getValueForNode to keep bold tags.
     const oldGetValue = RemoveFormatting.prototype.getValueForNode;
+    /** @suppress {visibility} suppression added to enable type checking */
     RemoveFormatting.prototype.getValueForNode = function(node) {
       if (node.nodeName == TagName.B) {
         return '<b>' + this.removeFormattingWorker_(node.innerHTML) + '</b>';
@@ -287,6 +282,7 @@ testSuite({
       return null;
     };
 
+    /** @suppress {visibility} suppression added to enable type checking */
     let html = FORMATTER.removeFormattingWorker_('<div>foo<b>bar</b></div>');
     assertHTMLEquals('B tags should remain', 'foo<b>bar</b>', html);
 
@@ -298,6 +294,7 @@ testSuite({
       return null;
     };
 
+    /** @suppress {visibility} suppression added to enable type checking */
     html = FORMATTER.removeFormattingWorker_('<div>foo<b>bar</b></div>');
     assertHTMLEquals('B tag and its contents should be removed', 'foo', html);
 
@@ -305,6 +302,7 @@ testSuite({
     RemoveFormatting.prototype.getValueForNode = oldGetValue;
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testRemoveFormattingAddsNoNbsps() {
     const div = document.getElementById('html');
     div.innerHTML = '"<span id="toStrip">Twin <b>Cinema</b></span>"';
@@ -323,18 +321,21 @@ testSuite({
 
   /** @bug 992795 */
   testRemoveFormattingNestedDivs() {
+    /** @suppress {visibility} suppression added to enable type checking */
     const html = FORMATTER.removeFormattingWorker_(
         '<div>1</div><div><div>2</div></div>');
 
     testingDom.assertHtmlMatches('1<br>2', html);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testTheJavascriptReplaceMetacharacters() {
     const div = document.getElementById('html');
     div.innerHTML = '123 $< $> $" $& $$ $` $\' 456';
     const expected = '123 $&lt; $&gt; $" $&amp; $$ $` $\' 456' +
         (product.SAFARI ? '<br>' : '');
-    // No idea why these <br> appear, but they're fairly insignificant anyways.
+    // No idea why these <br> appear, but they're fairly insignificant
+    // anyways.
 
     Range.createFromNodeContents(div).select();
 
@@ -354,11 +355,16 @@ testSuite({
     // <br>'s separate the start and end of a table.
     let html = '<table><tr><td>cell00</td><td>cell01</td></tr>' +
         '<tr><td>cell10</td><td>cell11</td></tr></table>';
+    /** @suppress {visibility} suppression added to enable type checking */
     html = FORMATTER.removeFormattingWorker_(html);
     assertHTMLEquals('<br>cell00 cell01<br>cell10 cell11<br>', html);
   },
 
-  /** @bug 1319715 */
+  /**
+   * @bug 1319715
+   * @suppress {visibility} suppression added to enable type
+   *      checking
+   */
   testRemoveFormattingDoesNotShrinkSelection() {
     const div = document.getElementById('html');
     div.innerHTML = '<div>l </div><div><br><b>a</b>foo bar</div>';
@@ -402,13 +408,19 @@ testSuite({
         'WebKit and Edge leave the "two" orphaned outside of an li but ' +
             'inside the ul (invalid HTML).');
 
-    expectedFailures.run(() => {
-      FORMATTER.removeFormatting_();
-      // Test that we split the list.
-      assertHTMLEquals(
-          '<ul><li>one</li></ul><br>two<ul><li>three</li></ul>', div.innerHTML);
-      FIELDMOCK.$verify();
-    });
+    expectedFailures
+        .run(/**
+                @suppress {visibility} suppression added to enable type
+                checking
+              */
+             () => {
+               FORMATTER.removeFormatting_();
+               // Test that we split the list.
+               assertHTMLEquals(
+                   '<ul><li>one</li></ul><br>two<ul><li>three</li></ul>',
+                   div.innerHTML);
+               FIELDMOCK.$verify();
+             });
   },
 
   testFullListRemoveFormat() {
@@ -424,12 +436,17 @@ testSuite({
         userAgent.IE,
         'IE combines everything into a single LI and leaves the UL.');
 
-    expectedFailures.run(() => {
-      FORMATTER.removeFormatting_();
-      // Test that we completely remove the list.
-      assertHTMLEquals('<br>one<br>two<br>threeafter', div.innerHTML);
-      FIELDMOCK.$verify();
-    });
+    expectedFailures.run(/**
+                            @suppress {visibility} suppression added to enable
+                            type checking
+                          */
+                         () => {
+                           FORMATTER.removeFormatting_();
+                           // Test that we completely remove the list.
+                           assertHTMLEquals(
+                               '<br>one<br>two<br>threeafter', div.innerHTML);
+                           FIELDMOCK.$verify();
+                         });
   },
 
   /** @bug 1440935 */
@@ -446,20 +463,25 @@ testSuite({
     expectedFailures.expectFailureFor(
         userAgent.WEBKIT, 'WebKit completely loses the "one".');
     if (userAgent.EDGE) {
-      // Edge leaves "two" and "threeafter" orphaned outside of an li but inside
-      // the ul (invalid HTML).
-      // Skip this test instead of using expectedFailures because this failure
-      // mode wrecks the DOM and causes later tests to fail as well.
+      // Edge leaves "two" and "threeafter" orphaned outside of an li but
+      // inside the ul (invalid HTML). Skip this test instead of using
+      // expectedFailures because this failure mode wrecks the DOM and
+      // causes later tests to fail as well.
       return;
     }
 
-    expectedFailures.run(() => {
-      FORMATTER.removeFormatting_();
-      // Test that we leave the list start alone.
-      assertHTMLEquals(
-          '<ul><li>one</li></ul><br>two<br>threeafter', div.innerHTML);
-      FIELDMOCK.$verify();
-    });
+    expectedFailures.run(/**
+                            @suppress {visibility} suppression added to enable
+                            type checking
+                          */
+                         () => {
+                           FORMATTER.removeFormatting_();
+                           // Test that we leave the list start alone.
+                           assertHTMLEquals(
+                               '<ul><li>one</li></ul><br>two<br>threeafter',
+                               div.innerHTML);
+                           FIELDMOCK.$verify();
+                         });
   },
 
   testBasicRemoveFormatting() {
@@ -477,11 +499,17 @@ testSuite({
         BrowserFeature.ADDS_NBSPS_IN_REMOVE_FORMAT,
         'The workaround for the nbsp bug adds an extra br at the end.');
 
-    expectedFailures.run(() => {
-      FORMATTER.removeFormatting_();
-      assertHTMLEquals(`bolditalic${insertImageBoldGarbage}`, div.innerHTML);
-      FIELDMOCK.$verify();
-    });
+    expectedFailures.run(/**
+                            @suppress {visibility} suppression added to enable
+                            type checking
+                          */
+                         () => {
+                           FORMATTER.removeFormatting_();
+                           assertHTMLEquals(
+                               `bolditalic${insertImageBoldGarbage}`,
+                               div.innerHTML);
+                           FIELDMOCK.$verify();
+                         });
   },
 
   /** @bug 1480260 */
@@ -495,19 +523,25 @@ testSuite({
             3)
         .select();
 
-    expectedFailures.expectFailureFor(
-        WEBKIT_BEFORE_CHROME_8,
-        'WebKit just gets this all wrong.  Everything stays bold and ' +
-            '"lditalic" gets italicised.');
 
-    expectedFailures.run(() => {
-      FORMATTER.removeFormatting_();
-      assertHTMLEquals('<b>bo</b>ldita<b><i>lic</i></b>', div.innerHTML);
-      FIELDMOCK.$verify();
-    });
+    expectedFailures.run(/**
+                            @suppress {visibility} suppression added to enable
+                            type checking
+                          */
+                         () => {
+                           FORMATTER.removeFormatting_();
+                           assertHTMLEquals(
+                               '<b>bo</b>ldita<b><i>lic</i></b>',
+                               div.innerHTML);
+                           FIELDMOCK.$verify();
+                         });
   },
 
-  /** @bug 3075557 */
+  /**
+   * @bug 3075557
+   * @suppress {visibility} suppression added to enable type
+   *      checking
+   */
   testRemoveFormattingLinkedImageBorderZero() {
     const testHtml = '<a href="http://www.google.com/">' +
         '<img src="http://www.google.com/images/logo.gif" border="0"></a>';
@@ -529,7 +563,11 @@ testSuite({
     });
   },
 
-  /** @bug 3075557 */
+  /**
+   * @bug 3075557
+   * @suppress {visibility} suppression added to enable type
+   *      checking
+   */
   testRemoveFormattingLinkedImageBorderNonzero() {
     const testHtml = '<a href="http://www.google.com/">' +
         '<img src="http://www.google.com/images/logo.gif" border="1"></a>';
@@ -553,7 +591,11 @@ testSuite({
     });
   },
 
-  /** @bug 3075557 */
+  /**
+   * @bug 3075557
+   * @suppress {visibility} suppression added to enable type
+   *      checking
+   */
   testRemoveFormattingUnlinkedImage() {
     const testHtml =
         '<img src="http://www.google.com/images/logo.gif" border="0">';
@@ -576,7 +618,11 @@ testSuite({
     });
   },
 
-  /** @bug 3075557 */
+  /**
+   * @bug 3075557
+   * @suppress {visibility} suppression added to enable type
+   *      checking
+   */
   testRemoveFormattingLinkedImageDeep() {
     const testHtml = '<a href="http://www.google.com/"><b>hello' +
         '<img src="http://www.google.com/images/logo.gif" border="0">' +
@@ -586,10 +632,6 @@ testSuite({
     Range.createFromNodeContents(div).select();
     FORMATTER.removeFormatting_();
 
-    expectedFailures.expectFailureFor(
-        WEBKIT_BEFORE_CHROME_8,
-        'WebKit removes the image entirely, see ' +
-            'https://bugs.webkit.org/show_bug.cgi?id=13125 .');
 
     expectedFailures.run(() => {
       assertHTMLEquals(
@@ -607,8 +649,8 @@ testSuite({
     // WebKit browsers, and now seems to be giving errors as it is trying
     // to perform remove formatting on the little expected failures window
     // instead of the dom we select.  WTF.  Since I'm gutting this code,
-    // I'm not going to look into this anymore right now.  For what its worth,
-    // I can't repro any issues in standalone TrogEdit.
+    // I'm not going to look into this anymore right now.  For what its
+    // worth, I can't repro any issues in standalone TrogEdit.
     if (userAgent.WEBKIT) {
       return;
     }
@@ -621,30 +663,38 @@ testSuite({
         'IE clobbers the editable node in case 2 (can\'t repro with real ' +
             'user selections). IE doesn\'t remove the table in case 1.');
 
-    expectedFailures.run(() => {
-      // When a full table is selected, we remove it completely.
-      div.innerHTML = 'foo<table><tr><td>bar</td></tr></table>baz1';
-      Range.createFromNodeContents(div.childNodes[1]).select();
-      FORMATTER.removeFormatting_();
-      assertHTMLEquals('foo<br>bar<br>baz1', div.innerHTML);
-      FIELDMOCK.$verify();
+    expectedFailures
+        .run(/**
+                @suppress {visibility} suppression added to enable type
+                checking
+              */
+             () => {
+               // When a full table is selected, we remove it completely.
+               div.innerHTML = 'foo<table><tr><td>bar</td></tr></table>baz1';
+               Range.createFromNodeContents(div.childNodes[1]).select();
+               FORMATTER.removeFormatting_();
+               assertHTMLEquals('foo<br>bar<br>baz1', div.innerHTML);
+               FIELDMOCK.$verify();
 
-      // Remove the full table when it is selected with additional
-      // contents too.
-      div.innerHTML = 'foo<table><tr><td>bar</td></tr></table>baz2';
-      Range.createFromNodes(div.firstChild, 0, div.lastChild, 1).select();
-      FORMATTER.removeFormatting_();
-      assertHTMLEquals('foo<br>bar<br>baz2', div.innerHTML);
-      FIELDMOCK.$verify();
+               // Remove the full table when it is selected with additional
+               // contents too.
+               div.innerHTML = 'foo<table><tr><td>bar</td></tr></table>baz2';
+               Range.createFromNodes(div.firstChild, 0, div.lastChild, 1)
+                   .select();
+               FORMATTER.removeFormatting_();
+               assertHTMLEquals('foo<br>bar<br>baz2', div.innerHTML);
+               FIELDMOCK.$verify();
 
-      // We should still remove the table, even if the selection is inside the
-      // table and it is fully selected.
-      div.innerHTML = 'foo<table><tr><td id=\'td\'>bar</td></tr></table>baz3';
-      Range.createFromNodeContents(dom.getElement('td').firstChild).select();
-      FORMATTER.removeFormatting_();
-      assertHTMLEquals('foo<br>bar<br>baz3', div.innerHTML);
-      FIELDMOCK.$verify();
-    });
+               // We should still remove the table, even if the selection is
+               // inside the table and it is fully selected.
+               div.innerHTML =
+                   'foo<table><tr><td id=\'td\'>bar</td></tr></table>baz3';
+               Range.createFromNodeContents(dom.getElement('td').firstChild)
+                   .select();
+               FORMATTER.removeFormatting_();
+               assertHTMLEquals('foo<br>bar<br>baz3', div.innerHTML);
+               FIELDMOCK.$verify();
+             });
   },
 
   testInsideTableRemoveFormatting() {
@@ -654,23 +704,22 @@ testSuite({
 
     Range.createFromNodeContents(dom.getElement('b')).select();
 
-    // Webkit adds some apple style span crap during execCommand("removeFormat")
-    // Our workaround for the nbsp bug removes these, but causes worse problems.
-    // See bugs.webkit.org/show_bug.cgi?id=29164 for more details.
-    expectedFailures.expectFailureFor(
-        WEBKIT_BEFORE_CHROME_8 && !BrowserFeature.ADDS_NBSPS_IN_REMOVE_FORMAT,
-        'Extra apple-style-spans');
 
-    expectedFailures.run(() => {
-      FORMATTER.removeFormatting_();
 
-      // Only remove styling from inside tables.
-      assertHTMLEquals(
-          `<table><tr><td>foo${insertImageBoldGarbage}` +
-              '</td></tr><tr><td>ba</td></tr></table>',
-          div.innerHTML);
-      FIELDMOCK.$verify();
-    });
+    expectedFailures.run(/**
+                            @suppress {visibility} suppression added to enable
+                            type checking
+                          */
+                         () => {
+                           FORMATTER.removeFormatting_();
+
+                           // Only remove styling from inside tables.
+                           assertHTMLEquals(
+                               `<table><tr><td>foo${insertImageBoldGarbage}` +
+                                   '</td></tr><tr><td>ba</td></tr></table>',
+                               div.innerHTML);
+                           FIELDMOCK.$verify();
+                         });
   },
 
   testPartialTableRemoveFormatting() {
@@ -695,28 +744,50 @@ testSuite({
     // All browsers currently clobber the table cells that are selected.
     expectedFailures.expectFailureFor(userAgent.WEBKIT);
 
-    expectedFailures.run(() => {
-      FORMATTER.removeFormatting_();
-      // Only remove styling from inside tables.
-      assertHTMLEquals(
-          'bar<table><tr><td><b id="b">f</b>oo</td></tr>' +
-              '<tr><td>banana</td></tr></table>baz',
-          div.innerHTML);
-      FIELDMOCK.$verify();
-    });
+    expectedFailures.run(/**
+                            @suppress {visibility} suppression added to enable
+                            type checking
+                          */
+                         () => {
+                           FORMATTER.removeFormatting_();
+                           // Only remove styling from inside tables.
+                           assertHTMLEquals(
+                               'bar<table><tr><td><b id="b">f</b>oo</td></tr>' +
+                                   '<tr><td>banana</td></tr></table>baz',
+                               div.innerHTML);
+                           FIELDMOCK.$verify();
+                         });
   },
 
   testTwoTablesSelectedFullyRemoveFormatting() {
-    runExpectingFailuresForUnimplementedBrowsers(() => {
-      const div = document.getElementById('html');
-      // When two tables are fully selected, we remove them completely.
-      div.innerHTML = '<table><tr><td>foo</td></tr></table>' +
-          '<table><tr><td>bar</td></tr></table>';
-      Range.createFromNodes(div.firstChild, 0, div.lastChild, 1).select();
-      FORMATTER.removeFormatting_();
-      assertHTMLEquals('<br>foo<br><br>bar<br>', div.innerHTML);
-      FIELDMOCK.$verify();
-    });
+    runExpectingFailuresForUnimplementedBrowsers(/**
+                                                    @suppress {visibility}
+                                                    suppression added to
+                                                    enable type checking
+                                                  */
+                                                 () => {
+                                                   const div =
+                                                       document.getElementById(
+                                                           'html');
+                                                   // When two tables are
+                                                   // fully selected, we
+                                                   // remove them
+                                                   // completely.
+                                                   div.innerHTML =
+                                                       '<table><tr><td>foo</td></tr></table>' +
+                                                       '<table><tr><td>bar</td></tr></table>';
+                                                   Range
+                                                       .createFromNodes(
+                                                           div.firstChild, 0,
+                                                           div.lastChild, 1)
+                                                       .select();
+                                                   FORMATTER
+                                                       .removeFormatting_();
+                                                   assertHTMLEquals(
+                                                       '<br>foo<br><br>bar<br>',
+                                                       div.innerHTML);
+                                                   FIELDMOCK.$verify();
+                                                 });
   },
 
   testTwoTablesSelectedFullyInsideRemoveFormatting() {
@@ -727,68 +798,126 @@ testSuite({
       return;
     }
 
-    runExpectingFailuresForUnimplementedBrowsers(() => {
-      const div = document.getElementById('html');
-      // When two tables are selected from inside but fully,
-      // also remove them completely.
-      div.innerHTML = '<table><tr><td id="td1">foo</td></tr></table>' +
-          '<table><tr><td id="td2">bar</td></tr></table>';
-      Range
-          .createFromNodes(
-              dom.getElement('td1').firstChild, 0,
-              dom.getElement('td2').firstChild, 3)
-          .select();
-      FORMATTER.removeFormatting_();
-      assertHTMLEquals('<br>foo<br><br>bar<br>', div.innerHTML);
-      FIELDMOCK.$verify();
-    });
+    runExpectingFailuresForUnimplementedBrowsers(/**
+                                                    @suppress {visibility}
+                                                    suppression added to
+                                                    enable type checking
+                                                  */
+                                                 () => {
+                                                   const div =
+                                                       document.getElementById(
+                                                           'html');
+                                                   // When two tables are
+                                                   // selected from inside
+                                                   // but fully, also remove
+                                                   // them completely.
+                                                   div.innerHTML =
+                                                       '<table><tr><td id="td1">foo</td></tr></table>' +
+                                                       '<table><tr><td id="td2">bar</td></tr></table>';
+                                                   Range
+                                                       .createFromNodes(
+                                                           dom.getElement('td1')
+                                                               .firstChild,
+                                                           0,
+                                                           dom.getElement('td2')
+                                                               .firstChild,
+                                                           3)
+                                                       .select();
+                                                   FORMATTER
+                                                       .removeFormatting_();
+                                                   assertHTMLEquals(
+                                                       '<br>foo<br><br>bar<br>',
+                                                       div.innerHTML);
+                                                   FIELDMOCK.$verify();
+                                                 });
   },
 
   testTwoTablesSelectedFullyAndPartiallyRemoveFormatting() {
-    runExpectingFailuresForUnimplementedBrowsers(() => {
-      const div = document.getElementById('html');
-      // Two tables selected, one fully, one partially. Remove
-      // only the fully selected one and remove styles only from
-      // partially selected one.
-      div.innerHTML = '<table><tr><td id="td1">foo</td></tr></table>' +
-          '<table><tr><td id="td2"><b>bar<b></td></tr></table>';
-      Range
-          .createFromNodes(
-              dom.getElement('td1').firstChild, 0,
-              dom.getElement('td2').firstChild.firstChild, 2)
-          .select();
-      FORMATTER.removeFormatting_();
-      let expectedHtml = '<br>foo<br>' +
-          '<table><tr><td id="td2">ba<b>r</b></td></tr></table>';
-      if (userAgent.EDGE) {
-        // TODO(sdh): Edge inserts an extra empty <b> tag but is otherwise
-        // correct
-        expectedHtml = expectedHtml.replace('</b>', '<b></b></b>');
-      }
-      assertHTMLEquals(expectedHtml, div.innerHTML);
-      FIELDMOCK.$verify();
-    });
+    runExpectingFailuresForUnimplementedBrowsers(/**
+                                                    @suppress {visibility}
+                                                    suppression added to
+                                                    enable type checking
+                                                  */
+                                                 () => {
+                                                   const div =
+                                                       document.getElementById(
+                                                           'html');
+                                                   // Two tables selected,
+                                                   // one fully, one
+                                                   // partially. Remove only
+                                                   // the fully selected one
+                                                   // and remove styles only
+                                                   // from partially
+                                                   // selected one.
+                                                   div.innerHTML =
+                                                       '<table><tr><td id="td1">foo</td></tr></table>' +
+                                                       '<table><tr><td id="td2"><b>bar<b></td></tr></table>';
+                                                   Range
+                                                       .createFromNodes(
+                                                           dom.getElement('td1')
+                                                               .firstChild,
+                                                           0,
+                                                           dom.getElement('td2')
+                                                               .firstChild
+                                                               .firstChild,
+                                                           2)
+                                                       .select();
+                                                   FORMATTER
+                                                       .removeFormatting_();
+                                                   let expectedHtml =
+                                                       '<br>foo<br>' +
+                                                       '<table><tr><td id="td2">ba<b>r</b></td></tr></table>';
+                                                   if (userAgent.EDGE) {
+                                                     // TODO(sdh): Edge
+                                                     // inserts an extra
+                                                     // empty <b> tag but is
+                                                     // otherwise correct
+                                                     expectedHtml =
+                                                         expectedHtml.replace(
+                                                             '</b>',
+                                                             '<b></b></b>');
+                                                   }
+                                                   assertHTMLEquals(
+                                                       expectedHtml,
+                                                       div.innerHTML);
+                                                   FIELDMOCK.$verify();
+                                                 });
   },
 
   testTwoTablesSelectedPartiallyRemoveFormatting() {
-    runExpectingFailuresForUnimplementedBrowsers(() => {
-      const div = document.getElementById('html');
-      // Two tables selected, both partially.  Don't remove tables,
-      // but remove styles.
-      div.innerHTML = '<table><tr><td id="td1">f<i>o</i>o</td></tr></table>' +
-          '<table><tr><td id="td2">b<b>a</b>r</td></tr></table>';
-      Range
-          .createFromNodes(
-              dom.getElement('td1').firstChild, 1,
-              dom.getElement('td2').childNodes[1], 1)
-          .select();
-      FORMATTER.removeFormatting_();
-      assertHTMLEquals(
-          '<table><tr><td id="td1">foo</td></tr></table>' +
-              '<table><tr><td id="td2">bar</td></tr></table>',
-          div.innerHTML);
-      FIELDMOCK.$verify();
-    });
+    runExpectingFailuresForUnimplementedBrowsers(/**
+                                                    @suppress {visibility}
+                                                    suppression added to
+                                                    enable type checking
+                                                  */
+                                                 () => {
+                                                   const div =
+                                                       document.getElementById(
+                                                           'html');
+                                                   // Two tables selected,
+                                                   // both partially.  Don't
+                                                   // remove tables, but
+                                                   // remove styles.
+                                                   div.innerHTML =
+                                                       '<table><tr><td id="td1">f<i>o</i>o</td></tr></table>' +
+                                                       '<table><tr><td id="td2">b<b>a</b>r</td></tr></table>';
+                                                   Range
+                                                       .createFromNodes(
+                                                           dom.getElement('td1')
+                                                               .firstChild,
+                                                           1,
+                                                           dom.getElement('td2')
+                                                               .childNodes[1],
+                                                           1)
+                                                       .select();
+                                                   FORMATTER
+                                                       .removeFormatting_();
+                                                   assertHTMLEquals(
+                                                       '<table><tr><td id="td1">foo</td></tr></table>' +
+                                                           '<table><tr><td id="td2">bar</td></tr></table>',
+                                                       div.innerHTML);
+                                                   FIELDMOCK.$verify();
+                                                 });
   },
 
   /**
@@ -848,42 +977,44 @@ testSuite({
     // Select it all.
     Range.createFromNodeContents(div).select();
 
-    expectedFailures.expectFailureFor(
-        WEBKIT_BEFORE_CHROME_8,
-        'WebKit barfs apple-style-spans all over the place, and removes links.');
-
-    expectedFailures.run(() => {
-      FORMATTER.removeFormatting_();
-      // Leave links and images alone, remove all other formatting.
-      assertHTMLEquals(
-          '<br><br><a href="http://www.washingtonpost.com/wp-dyn/' +
-              'content/article/2008/11/11/AR2008111101090.html"><img src="http://n' +
-              'ews.google.com/news?imgefp=4LFiNNP62TgJ&amp;imgurl=media3.washingto' +
-              'npost.com/wp-dyn/content/photo/2008/11/11/PH2008111101091.jpg"><br>' +
-              'Washington Post</a><br><a href="http://www.nme.com/news/britney-spe' +
-              'ars/40995">Britney\'s son released from hospital</a><br>NME.com - 5' +
-              '3 minutes ago<br>Britney Spears� youngest son Jayden James has been' +
-              ' released from hospital, having been admitted on Sunday after suffe' +
-              'ring a severe reaction to something he ingested.<br><a href="http:/' +
-              '/www.celebrity-gossip.net/celebrities/hollywood/britney-and-jamie-l' +
-              'ynn-spears-alligator-alley-208944/">Britney and Jamie Lynn Spears: ' +
-              'Alligator Alley!</a> The Gossip Girls<br><a href="http://foodconsum' +
-              'er.org/7777/8888/Other_N_ews_51/111101362008_Allergy_incident_could' +
-              '_spell_custody_trouble_for_Britney_Spears.shtml">Allergy incident c' +
-              'ould spell trouble for Britney Spears</a> Food Consumer<br><a href=' +
-              '"http://www.people.com/people/article/0,,20239458,00.html">People M' +
-              'agazine</a> - <a href="http://www.eonline.com/uberblog/b68226_hospi' +
-              'tal_run_could_cost_britney_custody.html">E! Online</a> - <a href="h' +
-              'ttp://justjared.buzznet.com/2008/11/11/britney-spears-alligator-far' +
-              'm/">Just Jared</a> - <a href="http://www.efluxmedia.com/news_Britne' +
-              'y_Spears_Son_Released_from_Hospital_28696.html">eFluxMedia</a><br><' +
-              'a href="http://news.google.com/news?ncl=1268233361&amp;hl=en">all 9' +
-              '50 news articles �</a>' + insertImageFontGarbage,
-          div.innerHTML);
-      FIELDMOCK.$verify();
-    });
+    expectedFailures
+        .run(/**
+                @suppress {visibility} suppression added to enable type
+                checking
+              */
+             () => {
+               FORMATTER.removeFormatting_();
+               // Leave links and images alone, remove all other formatting.
+               assertHTMLEquals(
+                   '<br><br><a href="http://www.washingtonpost.com/wp-dyn/' +
+                       'content/article/2008/11/11/AR2008111101090.html"><img src="http://n' +
+                       'ews.google.com/news?imgefp=4LFiNNP62TgJ&amp;imgurl=media3.washingto' +
+                       'npost.com/wp-dyn/content/photo/2008/11/11/PH2008111101091.jpg"><br>' +
+                       'Washington Post</a><br><a href="http://www.nme.com/news/britney-spe' +
+                       'ars/40995">Britney\'s son released from hospital</a><br>NME.com - 5' +
+                       '3 minutes ago<br>Britney Spears� youngest son Jayden James has been' +
+                       ' released from hospital, having been admitted on Sunday after suffe' +
+                       'ring a severe reaction to something he ingested.<br><a href="http:/' +
+                       '/www.celebrity-gossip.net/celebrities/hollywood/britney-and-jamie-l' +
+                       'ynn-spears-alligator-alley-208944/">Britney and Jamie Lynn Spears: ' +
+                       'Alligator Alley!</a> The Gossip Girls<br><a href="http://foodconsum' +
+                       'er.org/7777/8888/Other_N_ews_51/111101362008_Allergy_incident_could' +
+                       '_spell_custody_trouble_for_Britney_Spears.shtml">Allergy incident c' +
+                       'ould spell trouble for Britney Spears</a> Food Consumer<br><a href=' +
+                       '"http://www.people.com/people/article/0,,20239458,00.html">People M' +
+                       'agazine</a> - <a href="http://www.eonline.com/uberblog/b68226_hospi' +
+                       'tal_run_could_cost_britney_custody.html">E! Online</a> - <a href="h' +
+                       'ttp://justjared.buzznet.com/2008/11/11/britney-spears-alligator-far' +
+                       'm/">Just Jared</a> - <a href="http://www.efluxmedia.com/news_Britne' +
+                       'y_Spears_Son_Released_from_Hospital_28696.html">eFluxMedia</a><br><' +
+                       'a href="http://news.google.com/news?ncl=1268233361&amp;hl=en">all 9' +
+                       '50 news articles �</a>' + insertImageFontGarbage,
+                   div.innerHTML);
+               FIELDMOCK.$verify();
+             });
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testRangeDelimitedByRanges() {
     const abcde = dom.getElement('abcde').firstChild;
     const start = Range.createFromNodes(abcde, 1, abcde, 2);
@@ -894,6 +1025,7 @@ testSuite({
         RemoveFormatting.createRangeDelimitedByRanges_(start, end));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testGetTableAncestor() {
     const div = document.getElementById('html');
 
@@ -916,7 +1048,11 @@ testSuite({
         FORMATTER.getTableAncestor_(div.childNodes[0]));
   },
 
-  /** @bug 1272905 */
+  /**
+   * @bug 1272905
+   * @suppress {visibility} suppression added to enable type
+   *      checking
+   */
   testHardReturnsInHeadersPreserved() {
     const div = document.getElementById('html');
     div.innerHTML = '<h1>abcd</h1><h2>efgh</h2><h3>ijkl</h3>';
@@ -958,7 +1094,32 @@ testSuite({
     });
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testKeyboardShortcut_space() {
+    FIELDMOCK.$reset();
+
+    if (!userAgent.MAC) {
+      FIELDMOCK.execCommand(RemoveFormatting.REMOVE_FORMATTING_COMMAND);
+    }
+
+    FIELDMOCK.$replay();
+
+    const e = {};
+    const key = ' ';
+    const result = FORMATTER.handleKeyboardShortcut(e, key, true);
+    assertEquals(!userAgent.MAC, result);
+
+    FIELDMOCK.$verify();
+  },
+
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
+  testKeyboardShortcut_backslash() {
     FIELDMOCK.$reset();
 
     FIELDMOCK.execCommand(RemoveFormatting.REMOVE_FORMATTING_COMMAND);
@@ -966,7 +1127,7 @@ testSuite({
     FIELDMOCK.$replay();
 
     const e = {};
-    const key = ' ';
+    const key = '\\';
     const result = FORMATTER.handleKeyboardShortcut(e, key, true);
     assertTrue(result);
 
@@ -979,35 +1140,6 @@ testSuite({
 
     const e = {};
     const key = 'x';
-    const result = FORMATTER.handleKeyboardShortcut(e, key, true);
-    assertFalse(result);
-
-    FIELDMOCK.$verify();
-  },
-
-  testCustomKeyboardShortcut_custom() {
-    FIELDMOCK.$reset();
-
-    FIELDMOCK.execCommand(RemoveFormatting.REMOVE_FORMATTING_COMMAND);
-
-    FIELDMOCK.$replay();
-
-    const e = {};
-    const key = '\\';
-    FORMATTER.setKeyboardShortcutKey(key);
-    const result = FORMATTER.handleKeyboardShortcut(e, key, true);
-    assertTrue(result);
-
-    FIELDMOCK.$verify();
-  },
-
-  testCustomKeyboardShortcut_default() {
-    FIELDMOCK.$reset();
-    FIELDMOCK.$replay();
-
-    const e = {};
-    const key = ' ';
-    FORMATTER.setKeyboardShortcutKey('\\');
     const result = FORMATTER.handleKeyboardShortcut(e, key, true);
     assertFalse(result);
 

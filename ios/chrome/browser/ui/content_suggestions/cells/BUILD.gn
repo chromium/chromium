@@ -5,8 +5,6 @@
 source_set("cells") {
   sources = [
     "content_suggestions_gesture_commands.h",
-    "content_suggestions_item.h",
-    "content_suggestions_item.mm",
     "content_suggestions_most_visited_action_item.h",
     "content_suggestions_most_visited_action_item.mm",
     "content_suggestions_most_visited_item.h",
@@ -33,20 +31,10 @@ source_set("cells") {
 
 source_set("cells_ui") {
   sources = [
-    "content_suggestions_articles_header_item.h",
-    "content_suggestions_articles_header_item.mm",
-    "content_suggestions_cell.h",
-    "content_suggestions_cell.mm",
     "content_suggestions_discover_header_item.h",
     "content_suggestions_discover_header_item.mm",
-    "content_suggestions_discover_item.h",
-    "content_suggestions_discover_item.mm",
-    "content_suggestions_footer_item.h",
-    "content_suggestions_footer_item.mm",
     "content_suggestions_header_item.h",
     "content_suggestions_header_item.mm",
-    "content_suggestions_learn_more_item.h",
-    "content_suggestions_learn_more_item.mm",
     "content_suggestions_most_visited_action_cell.h",
     "content_suggestions_most_visited_action_cell.mm",
     "content_suggestions_most_visited_cell.h",
@@ -85,10 +73,7 @@ source_set("cells_ui") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "content_suggestions_footer_item_unittest.mm",
     "content_suggestions_header_item_unittest.mm",
-    "content_suggestions_item_unittest.mm",
-    "content_suggestions_learn_more_item_unittest.mm",
     "content_suggestions_most_visited_item_unittest.mm",
     "content_suggestions_whats_new_item_unittest.mm",
   ]

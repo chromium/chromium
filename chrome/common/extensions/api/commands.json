@@ -52,23 +52,21 @@
         "name": "getAll",
         "type": "function",
         "description": "Returns all the registered extension commands for this extension and their shortcut (if active).",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "commands",
-                "type": "array",
-                "items": {
-                  "$ref": "Command"
-                }
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called to return the registered commands.",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "commands",
+              "type": "array",
+              "items": {
+                "$ref": "Command"
               }
-            ],
-            "description": "Called to return the registered commands."
-          }
-        ]
+            }
+          ]
+        }
       }
     ]
   }

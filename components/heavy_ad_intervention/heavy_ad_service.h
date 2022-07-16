@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -25,6 +24,10 @@ class HeavyAdService : public KeyedService,
                        public blocklist::OptOutBlocklistDelegate {
  public:
   HeavyAdService();
+
+  HeavyAdService(const HeavyAdService&) = delete;
+  HeavyAdService& operator=(const HeavyAdService&) = delete;
+
   ~HeavyAdService() override;
 
   // Initializes the UI Service. |profile_path| is the path to user data on
@@ -58,8 +61,6 @@ class HeavyAdService : public KeyedService,
   base::OnceClosure on_blocklist_loaded_callback_;
   base::OnceClosure on_blocklist_cleared_callback_;
   bool blocklist_is_loaded_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(HeavyAdService);
 };
 
 }  // namespace heavy_ad_intervention

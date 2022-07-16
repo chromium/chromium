@@ -46,9 +46,17 @@ TEST_F(SyncTransportDataPrefsTest, InvalidationVersions) {
 
 TEST_F(SyncTransportDataPrefsTest, PollInterval) {
   EXPECT_TRUE(sync_prefs_->GetPollInterval().is_zero());
-  sync_prefs_->SetPollInterval(base::TimeDelta::FromMinutes(30));
+  sync_prefs_->SetPollInterval(base::Minutes(30));
   EXPECT_FALSE(sync_prefs_->GetPollInterval().is_zero());
   EXPECT_EQ(sync_prefs_->GetPollInterval().InMinutes(), 30);
+}
+
+TEST_F(SyncTransportDataPrefsTest, ResetsVeryShortPollInterval) {
+  // Set the poll interval to something unreasonably short.
+  sync_prefs_->SetPollInterval(base::Milliseconds(100));
+  // This should reset the pref to "empty", so that callers will use a
+  // reasonable default value.
+  EXPECT_TRUE(sync_prefs_->GetPollInterval().is_zero());
 }
 
 TEST_F(SyncTransportDataPrefsTest, LastSyncTime) {
@@ -60,16 +68,11 @@ TEST_F(SyncTransportDataPrefsTest, LastSyncTime) {
 
 TEST_F(SyncTransportDataPrefsTest, ClearAll) {
   sync_prefs_->SetLastSyncedTime(base::Time::Now());
-  sync_prefs_->SetKeystoreEncryptionBootstrapToken("keystore_token");
-
   ASSERT_NE(base::Time(), sync_prefs_->GetLastSyncedTime());
-  ASSERT_EQ("keystore_token",
-            sync_prefs_->GetKeystoreEncryptionBootstrapToken());
 
   sync_prefs_->ClearAll();
 
   EXPECT_EQ(base::Time(), sync_prefs_->GetLastSyncedTime());
-  EXPECT_TRUE(sync_prefs_->GetKeystoreEncryptionBootstrapToken().empty());
 }
 
 }  // namespace

@@ -55,6 +55,9 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
                     const RegexRulesList* regex_list,
                     const ExtensionMetadataList* metadata_list);
 
+  RegexRulesMatcher(const RegexRulesMatcher&) = delete;
+  RegexRulesMatcher& operator=(const RegexRulesMatcher&) = delete;
+
   // RulesetMatcherBase override:
   ~RegexRulesMatcher() override;
   std::vector<RequestAction> GetModifyHeadersActions(
@@ -113,8 +116,6 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
   // substring of S. Uses the Aho-Corasick algorithm internally. Will be null
   // iff IsEmpty() returns false.
   std::unique_ptr<url_matcher::SubstringSetMatcher> substring_matcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegexRulesMatcher);
 };
 
 }  // namespace declarative_net_request

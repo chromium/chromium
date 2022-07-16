@@ -25,8 +25,7 @@ const char kNotifierSessionLengthTimeout[] = "ash.session-length-timeout";
 // A notification is shown to the user only if the remaining session time falls
 // under this threshold. e.g. If the user has several days left in their
 // session, there is no use displaying a notification right now.
-constexpr base::TimeDelta kNotificationThreshold =
-    base::TimeDelta::FromMinutes(60);
+constexpr base::TimeDelta kNotificationThreshold = base::Minutes(60);
 
 }  // namespace
 

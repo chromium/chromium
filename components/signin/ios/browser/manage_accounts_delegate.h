@@ -24,7 +24,7 @@ class WebState;
 - (void)onAddAccount;
 
 // Called when the user taps a sign-in or add account button in a Google web
-// property with signin::kMobileIdentityConsistency enabled.
+// property.
 // |url| is the continuation URL received from the server. If it is valid,
 // then this delegate should navigate to |url|.
 - (void)onShowConsistencyPromo:(const GURL&)url

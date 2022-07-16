@@ -24,13 +24,11 @@ from target import FuchsiaTargetException
 
 
 # Virtual networking configuration data for QEMU.
-GUEST_NET = '192.168.3.0/24'
-GUEST_IP_ADDRESS = '192.168.3.9'
-HOST_IP_ADDRESS = '192.168.3.2'
+HOST_IP_ADDRESS = '10.0.2.2'
 GUEST_MAC_ADDRESS = '52:54:00:63:5e:7b'
 
 # Capacity of the system's blobstore volume.
-EXTENDED_BLOBSTORE_SIZE = 1073741824  # 1GB
+EXTENDED_BLOBSTORE_SIZE = 2147483648  # 2GB
 
 
 def GetTargetType():
@@ -40,25 +38,17 @@ def GetTargetType():
 class QemuTarget(emu_target.EmuTarget):
   EMULATOR_NAME = 'qemu'
 
-  def __init__(self,
-               out_dir,
-               target_cpu,
-               system_log_file,
-               cpu_cores,
-               require_kvm,
-               ram_size_mb,
-               fuchsia_out_dir=None):
-    super(QemuTarget, self).__init__(out_dir, target_cpu, system_log_file,
-                                     fuchsia_out_dir)
+  def __init__(self, out_dir, target_cpu, cpu_cores, require_kvm, ram_size_mb,
+               logs_dir):
+    super(QemuTarget, self).__init__(out_dir, target_cpu, logs_dir)
     self._cpu_cores=cpu_cores
     self._require_kvm=require_kvm
     self._ram_size_mb=ram_size_mb
 
   @staticmethod
   def CreateFromArgs(args):
-    return QemuTarget(args.out_dir, args.target_cpu, args.system_log_file,
-                      args.cpu_cores, args.require_kvm, args.ram_size_mb,
-                      args.fuchsia_out_dir)
+    return QemuTarget(args.out_dir, args.target_cpu, args.cpu_cores,
+                      args.require_kvm, args.ram_size_mb, args.logs_dir)
 
   def _IsKvmEnabled(self):
     kvm_supported = sys.platform.startswith('linux') and \
@@ -109,8 +99,10 @@ class QemuTarget(emu_target.EmuTarget):
         'file=%s,format=qcow2,if=none,id=blobstore,snapshot=on' %
         _EnsureBlobstoreQcowAndReturnPath(self._out_dir,
                                           self._GetTargetSdkArch()),
+        '-object',
+        'iothread,id=iothread0',
         '-device',
-        'virtio-blk-pci,drive=blobstore',
+        'virtio-blk-pci,drive=blobstore,iothread=iothread0',
 
         # Use stdio for the guest OS only; don't attach the QEMU interactive
         # monitor.
@@ -130,11 +122,9 @@ class QemuTarget(emu_target.EmuTarget):
           '-machine', 'q35',
       ])
 
-    # Configure virtual network. It is used in the tests to connect to
-    # testserver running on the host.
+    # Configure virtual network.
     netdev_type = 'virtio-net-pci'
-    netdev_config = 'user,id=net0,net=%s,dhcpstart=%s,host=%s' % \
-            (GUEST_NET, GUEST_IP_ADDRESS, HOST_IP_ADDRESS)
+    netdev_config = 'type=user,id=net0,restrict=off'
 
     self._host_ssh_port = common.GetAvailableTcpPort()
     netdev_config += ",hostfwd=tcp::%s-:22" % self._host_ssh_port
@@ -162,7 +152,7 @@ class QemuTarget(emu_target.EmuTarget):
 
     emu_command.extend(kvm_command)
 
-    kernel_args = boot_data.GetKernelArgs(self._out_dir)
+    kernel_args = boot_data.GetKernelArgs()
 
     # TERM=dumb tells the guest OS to not emit ANSI commands that trigger
     # noisy ANSI spew from the user's terminal emulator.

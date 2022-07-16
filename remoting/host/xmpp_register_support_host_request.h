@@ -41,6 +41,12 @@ class XmppRegisterSupportHostRequest : public RegisterSupportHostRequest,
   // received from the server. Callback is never called if the bot
   // malfunctions and doesn't respond to the request.
   explicit XmppRegisterSupportHostRequest(const std::string& directory_bot_jid);
+
+  XmppRegisterSupportHostRequest(const XmppRegisterSupportHostRequest&) =
+      delete;
+  XmppRegisterSupportHostRequest& operator=(
+      const XmppRegisterSupportHostRequest&) = delete;
+
   ~XmppRegisterSupportHostRequest() override;
 
   // RegisterSupportHostRequest implementation.
@@ -79,8 +85,6 @@ class XmppRegisterSupportHostRequest : public RegisterSupportHostRequest,
 
   std::unique_ptr<IqSender> iq_sender_;
   std::unique_ptr<IqRequest> request_;
-
-  DISALLOW_COPY_AND_ASSIGN(XmppRegisterSupportHostRequest);
 };
 
 }  // namespace remoting

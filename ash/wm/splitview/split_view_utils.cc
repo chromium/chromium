@@ -35,24 +35,18 @@ namespace {
 using ::chromeos::WindowStateType;
 
 // The animation speed at which the highlights fade in or out.
-constexpr base::TimeDelta kHighlightsFadeInOut =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kHighlightsFadeInOut = base::Milliseconds(250);
 // The animation speed which the other highlight fades in or out.
-constexpr base::TimeDelta kOtherFadeInOut =
-    base::TimeDelta::FromMilliseconds(133);
+constexpr base::TimeDelta kOtherFadeInOut = base::Milliseconds(133);
 // The delay before the other highlight starts fading in.
-constexpr base::TimeDelta kOtherFadeInDelay =
-    base::TimeDelta::FromMilliseconds(117);
+constexpr base::TimeDelta kOtherFadeInDelay = base::Milliseconds(117);
 // The animation speed at which the preview area fades out (when you snap a
 // window).
-constexpr base::TimeDelta kPreviewAreaFadeOut =
-    base::TimeDelta::FromMilliseconds(67);
+constexpr base::TimeDelta kPreviewAreaFadeOut = base::Milliseconds(67);
 // The time duration for the indicator label opacity animations.
-constexpr base::TimeDelta kLabelAnimation =
-    base::TimeDelta::FromMilliseconds(83);
+constexpr base::TimeDelta kLabelAnimation = base::Milliseconds(83);
 // The delay before the indicator labels start fading in.
-constexpr base::TimeDelta kLabelAnimationDelay =
-    base::TimeDelta::FromMilliseconds(167);
+constexpr base::TimeDelta kLabelAnimationDelay = base::Milliseconds(167);
 
 // Toast data.
 constexpr char kAppCannotSnapToastId[] = "split_view_app_cannot_snap";
@@ -251,7 +245,7 @@ void DoSplitviewTransformAnimation(
     ui::Layer* layer,
     SplitviewAnimationType type,
     const gfx::Transform& target_transform,
-    std::unique_ptr<ui::ImplicitAnimationObserver> animation_observer) {
+    const std::vector<ui::ImplicitAnimationObserver*>& animation_observers) {
   if (layer->GetTargetTransform() == target_transform)
     return;
 
@@ -277,8 +271,8 @@ void DoSplitviewTransformAnimation(
 
   ui::LayerAnimator* animator = layer->GetAnimator();
   ui::ScopedLayerAnimationSettings settings(animator);
-  if (animation_observer.get())
-    settings.AddObserver(animation_observer.release());
+  for (ui::ImplicitAnimationObserver* animation_observer : animation_observers)
+    settings.AddObserver(animation_observer);
   ApplyAnimationSettings(&settings, animator,
                          ui::LayerAnimationElement::TRANSFORM, duration, tween,
                          preemption_strategy, delay);
@@ -422,8 +416,8 @@ SplitViewController::SnapPosition GetSnapPositionForLocation(
   if (!ShouldAllowSplitView())
     return SplitViewController::NONE;
 
-  const bool horizontal = SplitViewController::IsLayoutHorizontal();
-  const bool right_side_up = SplitViewController::IsLayoutRightSideUp();
+  const bool horizontal = SplitViewController::IsLayoutHorizontal(root_window);
+  const bool right_side_up = SplitViewController::IsLayoutPrimary(root_window);
 
   // Check to see if the current event location |location_in_screen| is within
   // the drag indicators bounds.
@@ -477,7 +471,7 @@ SplitViewController::SnapPosition GetSnapPositionForLocation(
     const auto distance = location_in_screen - *initial_location_in_screen;
     const int primary_axis_distance = horizontal ? distance.x() : distance.y();
     const bool is_left_or_top =
-        SplitViewController::IsPhysicalLeftOrTop(snap_position);
+        SplitViewController::IsPhysicalLeftOrTop(snap_position, root_window);
     if ((is_left_or_top && primary_axis_distance > -minimum_drag_distance) ||
         (!is_left_or_top && primary_axis_distance < minimum_drag_distance)) {
       snap_position = SplitViewController::NONE;

@@ -60,7 +60,7 @@ bool FormatSupportChecker::Initialize() {
 }
 
 bool FormatSupportChecker::CheckOutputFormatSupport(DXGI_FORMAT format) const {
-  if (!device_)
+  if (!device_ || !enumerator_)
     return false;
 
   DCHECK(initialized_);

@@ -49,7 +49,7 @@ CompositingLayerAssigner::CompositingLayerAssigner(
 
 void CompositingLayerAssigner::Assign(
     PaintLayer* update_root,
-    Vector<PaintLayer*>& layers_needing_paint_invalidation) {
+    HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation) {
   TRACE_EVENT0("blink", "CompositingLayerAssigner::assign");
 
   SquashingState squashing_state;
@@ -66,7 +66,7 @@ void CompositingLayerAssigner::Assign(
 void CompositingLayerAssigner::SquashingState::
     UpdateSquashingStateForNewMapping(
         CompositedLayerMapping* new_composited_layer_mapping,
-        Vector<PaintLayer*>& layers_needing_paint_invalidation) {
+        HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation) {
   // The most recent backing is done accumulating any more squashing layers.
   if (most_recent_mapping) {
     most_recent_mapping->FinishAccumulatingSquashingLayers(
@@ -96,10 +96,10 @@ bool CompositingLayerAssigner::SquashingWouldExceedSparsityTolerance(
     const CompositingLayerAssigner::SquashingState& squashing_state) {
   IntRect bounds = candidate->ClippedAbsoluteBoundingBox();
   IntRect new_bounding_rect = squashing_state.bounding_rect;
-  new_bounding_rect.Unite(bounds);
-  const uint64_t new_bounding_rect_area = new_bounding_rect.Size().Area();
+  new_bounding_rect.Union(bounds);
+  const uint64_t new_bounding_rect_area = new_bounding_rect.size().Area();
   const uint64_t new_squashed_area =
-      squashing_state.total_area_of_squashed_rects + bounds.Size().Area();
+      squashing_state.total_area_of_squashed_rects + bounds.size().Area();
   return new_bounding_rect_area >
          kSquashingSparsityTolerance * new_squashed_area;
 }
@@ -252,7 +252,7 @@ void CompositingLayerAssigner::UpdateSquashingAssignment(
     PaintLayer* layer,
     SquashingState& squashing_state,
     const CompositingStateTransitionType composited_layer_update,
-    Vector<PaintLayer*>& layers_needing_paint_invalidation) {
+    HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation) {
   // NOTE: In the future as we generalize this, the background of this layer may
   // need to be assigned to a different backing than the squashed PaintLayer's
   // own primary contents. This would happen when we have a composited negative
@@ -306,7 +306,7 @@ void CompositingLayerAssigner::AssignLayersToBackingsInternal(
     PaintLayer* layer,
     PaintLayer* paint_invalidation_container,
     SquashingState& squashing_state,
-    Vector<PaintLayer*>& layers_needing_paint_invalidation) {
+    HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation) {
   if (layer->NeedsCompositingLayerAssignment()) {
     if (RequiresSquashing(layer->GetCompositingReasons())) {
       SquashingDisallowedReasons reasons_preventing_squashing =
@@ -331,16 +331,8 @@ void CompositingLayerAssigner::AssignLayersToBackingsInternal(
     }
 
     if (composited_layer_update != kNoCompositingStateChange) {
-      // A change in the compositing state of a ScrollTimeline's scroll source
-      // can cause the compositor's view of the scroll source to become out of
-      // date. We inform the WorkletAnimationController about any such changes
-      // so that it can schedule a compositing animations update.
-      Node* node = layer->GetLayoutObject().GetNode();
-      if (node && ScrollTimeline::HasActiveScrollTimeline(node)) {
-        node->GetDocument()
-            .GetWorkletAnimationController()
-            .ScrollSourceCompositingStateChanged(node);
-      }
+      if (Node* node = layer->GetLayoutObject().GetNode())
+        ScrollTimeline::InvalidateCompositingState(node);
     }
 
     // Add this layer to a squashing backing if needed.
@@ -360,8 +352,8 @@ void CompositingLayerAssigner::AssignLayersToBackingsInternal(
         squashing_state.next_layer_may_squash_into_scrolling_contents = false;
         IntRect layer_bounds = layer->ClippedAbsoluteBoundingBox();
         squashing_state.total_area_of_squashed_rects +=
-            layer_bounds.Size().Area();
-        squashing_state.bounding_rect.Unite(layer_bounds);
+            layer_bounds.size().Area();
+        squashing_state.bounding_rect.Union(layer_bounds);
       }
     }
   }
@@ -370,7 +362,7 @@ void CompositingLayerAssigner::AssignLayersToBackingsInternal(
     paint_invalidation_container = layer;
 
   if (layer->StackingDescendantNeedsCompositingLayerAssignment()) {
-    PaintLayerPaintOrderIterator iterator(*layer, kNegativeZOrderChildren);
+    PaintLayerPaintOrderIterator iterator(layer, kNegativeZOrderChildren);
     while (PaintLayer* child_node = iterator.Next()) {
       AssignLayersToBackingsInternal(child_node, paint_invalidation_container,
                                      squashing_state,
@@ -388,7 +380,7 @@ void CompositingLayerAssigner::AssignLayersToBackingsInternal(
   }
 
   if (layer->StackingDescendantNeedsCompositingLayerAssignment()) {
-    PaintLayerPaintOrderIterator iterator(*layer,
+    PaintLayerPaintOrderIterator iterator(layer,
                                           kNormalFlowAndPositiveZOrderChildren);
     while (PaintLayer* curr_layer = iterator.Next()) {
       AssignLayersToBackingsInternal(curr_layer, paint_invalidation_container,

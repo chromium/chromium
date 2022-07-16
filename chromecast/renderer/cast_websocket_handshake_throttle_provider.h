@@ -23,6 +23,10 @@ class CastWebSocketHandshakeThrottleProvider
  public:
   explicit CastWebSocketHandshakeThrottleProvider(
       CastActivityUrlFilterManager* url_filter_manager);
+
+  CastWebSocketHandshakeThrottleProvider& operator=(
+      const CastWebSocketHandshakeThrottleProvider&) = delete;
+
   ~CastWebSocketHandshakeThrottleProvider() override;
 
   // blink::WebSocketHandshakeThrottleProvider implementation:
@@ -41,8 +45,6 @@ class CastWebSocketHandshakeThrottleProvider
   CastActivityUrlFilterManager* const cast_activity_url_filter_manager_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_ASSIGN(CastWebSocketHandshakeThrottleProvider);
 };
 
 }  // namespace chromecast

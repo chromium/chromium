@@ -33,6 +33,9 @@ class AwBrowserContext;
 class AwQuotaManagerBridge
     : public base::RefCountedThreadSafe<AwQuotaManagerBridge> {
  public:
+  AwQuotaManagerBridge(const AwQuotaManagerBridge&) = delete;
+  AwQuotaManagerBridge& operator=(const AwQuotaManagerBridge&) = delete;
+
   static scoped_refptr<AwQuotaManagerBridge> Create(
       AwBrowserContext* browser_context);
 
@@ -89,8 +92,6 @@ class AwQuotaManagerBridge
   JavaObjectWeakGlobalRef java_ref_;
 
   base::WeakPtrFactory<AwQuotaManagerBridge> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AwQuotaManagerBridge);
 };
 
 }  // namespace android_webview

@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/scoped_observation.h"
@@ -95,6 +94,11 @@ class AdsPageLoadMetricsObserver
       const ApplicationLocaleGetter& application_local_getter,
       base::TickClock* clock = nullptr,
       heavy_ad_intervention::HeavyAdBlocklist* blocklist = nullptr);
+
+  AdsPageLoadMetricsObserver(const AdsPageLoadMetricsObserver&) = delete;
+  AdsPageLoadMetricsObserver& operator=(const AdsPageLoadMetricsObserver&) =
+      delete;
+
   ~AdsPageLoadMetricsObserver() override;
 
   // PageLoadMetricsObserver
@@ -128,7 +132,7 @@ class AdsPageLoadMetricsObserver
   void OnFrameIntersectionUpdate(
       content::RenderFrameHost* render_frame_host,
       const mojom::FrameIntersectionUpdate& intersection_update) override;
-  void OnFrameDeleted(int frame_tree_node_id) override;
+  void OnSubFrameDeleted(int frame_tree_node_id) override;
 
   void SetHeavyAdThresholdNoiseProviderForTesting(
       std::unique_ptr<HeavyAdThresholdNoiseProvider> noise_provider) {
@@ -190,7 +194,7 @@ class AdsPageLoadMetricsObserver
 
   void UpdateAdFrameData(content::NavigationHandle* navigation_handle,
                          bool is_adframe,
-                         bool should_ignored_detected_ad);
+                         bool should_ignore_detected_ad);
 
   // Gets the number of bytes that we may have not attributed to ad
   // resources due to the resource being reported as an ad late.
@@ -326,8 +330,6 @@ class AdsPageLoadMetricsObserver
 
   // Tracks number of memory updates received.
   int memory_update_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AdsPageLoadMetricsObserver);
 };
 
 }  // namespace page_load_metrics

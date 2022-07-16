@@ -71,7 +71,7 @@ class PolymerElementApi extends TestElementApi {
   /** @override */
   element() {
     assert(this.parent.element());
-    return this.parent.element().$$(this.query);
+    return this.parent.element().shadowRoot.querySelector(this.query);
   }
 
   /**
@@ -102,7 +102,7 @@ class TextFieldApi extends PolymerElementApi {
   }
 }
 
-class HIDDetectionScreen extends ScreenElementApi {
+class HIDDetectionScreenTester extends ScreenElementApi {
   constructor() {
     super('hid-detection');
     this.nextButton = new PolymerElementApi(this, '#hid-continue-button');
@@ -112,9 +112,29 @@ class HIDDetectionScreen extends ScreenElementApi {
   emulateDevicesConnected() {
     chrome.send('HIDDetectionScreen.emulateDevicesConnectedForTesting');
   }
+
+  touchscreenDetected() {
+    // Touchscreen entire row is only visible when touchscreen is detected.
+    let touchscreenRow = new PolymerElementApi(this, '#hid-touchscreen-entry');
+    return touchscreenRow.isVisible();
+  }
+
+  mouseDetected() {
+    let mouseTickIcon = new PolymerElementApi(this, '#mouse-tick');
+    return mouseTickIcon.isVisible();
+  }
+
+  keyboardDetected() {
+    let keyboardTickIcon = new PolymerElementApi(this, '#keyboard-tick');
+    return keyboardTickIcon.isVisible();
+  }
+
+  canClickNext() {
+    return this.nextButton.isEnabled();
+  }
 }
 
-class WelcomeScreen extends ScreenElementApi {
+class WelcomeScreenTester extends ScreenElementApi {
   constructor() {
     super('connect');
   }
@@ -123,14 +143,7 @@ class WelcomeScreen extends ScreenElementApi {
   clickNext() {
     if (!this.nextButton) {
       let mainStep = new PolymerElementApi(this, '#welcomeScreen');
-      const newLayout = loadTimeData.valueExists('newLayoutEnabled') &&
-          loadTimeData.getBoolean('newLayoutEnabled');
-
-      if (newLayout) {
-        this.nextButton = new PolymerElementApi(mainStep, '#getStarted');
-      } else {
-        this.nextButton = new PolymerElementApi(mainStep, '#welcomeNextButton');
-      }
+      this.nextButton = new PolymerElementApi(mainStep, '#getStarted');
     }
 
     assert(this.nextButton);
@@ -138,46 +151,74 @@ class WelcomeScreen extends ScreenElementApi {
   }
 }
 
-class NetworkScreen extends ScreenElementApi {
+class NetworkScreenTester extends ScreenElementApi {
   constructor() {
     super('network-selection');
     this.nextButton = new PolymerElementApi(this, '#nextButton');
   }
 }
 
-class EulaScreen extends ScreenElementApi {
+class EulaScreenTester extends ScreenElementApi {
   constructor() {
     super('oobe-eula-md');
+    this.eulaStep = new PolymerElementApi(this, '#eulaDialog');
     this.nextButton = new PolymerElementApi(this, '#acceptButton');
   }
 
   /** @override */
   shouldSkip() {
-    // Eula screen should be skipped when it is non-branded build.
-    return !loadTimeData.getBoolean('isBrandedBuild');
+    // Eula screen should skipped on non-branded build and on CfM devices.
+    return loadTimeData.getBoolean('testapi_shouldSkipEula');
+  }
+
+  /**
+   * Returns if the EULA Screen is ready for test interaction.
+   * @return {boolean}
+   */
+  isReadyForTesting() {
+    return this.isVisible() && this.eulaStep.isVisible() &&
+        this.nextButton.isVisible();
   }
 }
 
-class UpdateScreen extends ScreenElementApi {
+class UpdateScreenTester extends ScreenElementApi {
   constructor() {
     super('oobe-update');
   }
 }
 
-class UserCreationScreen extends ScreenElementApi {
+class EnrollmentScreenTester extends ScreenElementApi {
+  constructor() {
+    super('enterprise-enrollment');
+  }
+}
+
+class UserCreationScreenTester extends ScreenElementApi {
   constructor() {
     super('user-creation');
     this.nextButton = new PolymerElementApi(this, '#nextButton');
   }
 }
 
-class GaiaScreen extends ScreenElementApi {
+class GaiaScreenTester extends ScreenElementApi {
   constructor() {
     super('gaia-signin');
+    this.signinFrame = new PolymerElementApi(this, '#signin-frame-dialog');
+    this.gaiaDialog = new PolymerElementApi(this.signinFrame, '#gaiaDialog');
+    this.gaiaLoading = new PolymerElementApi(this, '#gaia-loading');
+  }
+
+  /**
+   * Returns if the Gaia Screen is ready for test interaction.
+   * @return {boolean}
+   */
+  isReadyForTesting() {
+    return this.isVisible() && !this.gaiaLoading.isVisible() &&
+        this.signinFrame.isVisible() && this.gaiaDialog.isVisible();
   }
 }
 
-class ConfirmSamlPasswordScreen extends ScreenElementApi {
+class ConfirmSamlPasswordScreenTester extends ScreenElementApi {
   constructor() {
     super('saml-confirm-password');
     this.passwordInput = new TextFieldApi(this, '#passwordInput');
@@ -200,7 +241,7 @@ class ConfirmSamlPasswordScreen extends ScreenElementApi {
   }
 }
 
-class PinSetupScreen extends ScreenElementApi {
+class PinSetupScreenTester extends ScreenElementApi {
   constructor() {
     super('pin-setup');
     this.skipButton = new PolymerElementApi(this, '#setupSkipButton');
@@ -234,18 +275,127 @@ class PinSetupScreen extends ScreenElementApi {
   }
 }
 
+class EnrollmentSignInStep extends PolymerElementApi {
+  constructor(parent) {
+    super(parent, '#step-signin');
+    this.signInFrame = new PolymerElementApi(this, '#signin-frame');
+    this.nextButton = new PolymerElementApi(this, '#primary-action-button');
+  }
+
+  /**
+   * Returns if the Enrollment Signing step is ready for test interaction.
+   * @return {boolean}
+   */
+  isReadyForTesting() {
+    return this.isVisible() && this.signInFrame.isVisible() &&
+        this.nextButton.isVisible();
+  }
+}
+
+class EnrollmentSuccessStep extends PolymerElementApi {
+  constructor(parent) {
+    super(parent, '#step-success');
+    this.nextButton = new PolymerElementApi(parent, '#successDoneButton');
+  }
+
+  /**
+   * Returns if the Enrollment Success step is ready for test interaction.
+   * @return {boolean}
+   */
+  isReadyForTesting() {
+    return this.isVisible() && this.nextButton.isVisible();
+  }
+
+  clickNext() {
+    this.nextButton.click();
+  }
+}
+
+class EnrollmentErrorStep extends PolymerElementApi {
+  constructor(parent) {
+    super(parent, '#step-error');
+    this.retryButton = new PolymerElementApi(parent, '#errorRetryButton');
+    this.errorMsgContainer = new PolymerElementApi(parent, '#errorMsg');
+  }
+
+  /**
+   * Returns if the Enrollment Error step is ready for test interaction.
+   * @return {boolean}
+   */
+  isReadyForTesting() {
+    return this.isVisible() && this.errorMsgContainer.isVisible();
+  }
+
+  /**
+   * Returns if enterprise enrollment can be retried.
+   * @return {boolean}
+   */
+  canRetryEnrollment() {
+    return this.retryButton.isVisible() && this.retryButton.isEnabled();
+  }
+
+  /**
+   * Click the Retry button on the enrollment error screen.
+   */
+  clickRetryButton() {
+    assert(this.canRetryEnrollment());
+    this.retryButton.click();
+  }
+
+  /**
+   * Returns the error text shown on the enrollment error screen.
+   * @return {string}
+   */
+  getErrorMsg() {
+    assert(this.isReadyForTesting());
+    return this.errorMsgContainer.element().innerText;
+  }
+}
+
+class EnterpriseEnrollmentScreenTester extends ScreenElementApi {
+  constructor() {
+    super('enterprise-enrollment');
+    this.signInStep = new EnrollmentSignInStep(this);
+    this.successStep = new EnrollmentSuccessStep(this);
+    this.errorStep = new EnrollmentErrorStep(this);
+    this.enrollmentInProgressDlg = new PolymerElementApi(this, '#step-working');
+  }
+
+  /**
+   * Returns if enrollment is in progress.
+   * @return {boolean}
+   */
+  isEnrollmentInProgress() {
+    return this.enrollmentInProgressDlg.isVisible();
+  }
+}
+
 class OobeApiProvider {
   constructor() {
     this.screens = {
-      HIDDetectionScreen: new HIDDetectionScreen(),
-      WelcomeScreen: new WelcomeScreen(),
-      NetworkScreen: new NetworkScreen(),
-      EulaScreen: new EulaScreen(),
-      UpdateScreen: new UpdateScreen(),
-      UserCreationScreen: new UserCreationScreen(),
-      GaiaScreen: new GaiaScreen(),
-      ConfirmSamlPasswordScreen: new ConfirmSamlPasswordScreen(),
-      PinSetupScreen: new PinSetupScreen(),
+      HIDDetectionScreen: new HIDDetectionScreenTester(),
+      WelcomeScreen: new WelcomeScreenTester(),
+      NetworkScreen: new NetworkScreenTester(),
+      EulaScreen: new EulaScreenTester(),
+      UpdateScreen: new UpdateScreenTester(),
+      EnrollmentScreen: new EnrollmentScreenTester(),
+      UserCreationScreen: new UserCreationScreenTester(),
+      GaiaScreen: new GaiaScreenTester(),
+      ConfirmSamlPasswordScreen: new ConfirmSamlPasswordScreenTester(),
+      PinSetupScreen: new PinSetupScreenTester(),
+      EnterpriseEnrollmentScreen: new EnterpriseEnrollmentScreenTester(),
+    };
+
+    this.loginWithPin = function(username, pin) {
+      chrome.send('OobeTestApi.loginWithPin', [username, pin]);
+    };
+
+    this.advanceToScreen = function(screen) {
+      chrome.send('OobeTestApi.advanceToScreen', [screen]);
+    };
+
+    this.skipPostLoginScreens = function() {
+      chrome.send('OobeTestApi.skipPostLoginScreens');
     };
   }
 }

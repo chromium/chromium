@@ -4,67 +4,23 @@
 
 #include "net/base/proxy_server.h"
 
-#include <algorithm>
+#include <stdint.h>
+
+#include <ostream>
+#include <string>
 
 #include "base/check_op.h"
-#include "base/notreached.h"
-#include "base/strings/string_util.h"
-#include "base/trace_event/memory_usage_estimator.h"
-#include "net/base/url_util.h"
-#include "net/http/http_util.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
+#include "net/base/proxy_string_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/third_party/mozilla/url_parse.h"
+#include "url/url_canon.h"
+#include "url/url_canon_stdstring.h"
 
 namespace net {
-
-namespace {
-
-// Parses the proxy type from a PAC string, to a ProxyServer::Scheme.
-// This mapping is case-insensitive. If no type could be matched
-// returns SCHEME_INVALID.
-ProxyServer::Scheme GetSchemeFromPacTypeInternal(base::StringPiece type) {
-  if (base::LowerCaseEqualsASCII(type, "proxy"))
-    return ProxyServer::SCHEME_HTTP;
-  if (base::LowerCaseEqualsASCII(type, "socks")) {
-    // Default to v4 for compatibility. This is because the SOCKS4 vs SOCKS5
-    // notation didn't originally exist, so if a client returns SOCKS they
-    // really meant SOCKS4.
-    return ProxyServer::SCHEME_SOCKS4;
-  }
-  if (base::LowerCaseEqualsASCII(type, "socks4"))
-    return ProxyServer::SCHEME_SOCKS4;
-  if (base::LowerCaseEqualsASCII(type, "socks5"))
-    return ProxyServer::SCHEME_SOCKS5;
-  if (base::LowerCaseEqualsASCII(type, "direct"))
-    return ProxyServer::SCHEME_DIRECT;
-  if (base::LowerCaseEqualsASCII(type, "https"))
-    return ProxyServer::SCHEME_HTTPS;
-  if (base::LowerCaseEqualsASCII(type, "quic"))
-    return ProxyServer::SCHEME_QUIC;
-
-  return ProxyServer::SCHEME_INVALID;
-}
-
-// Parses the proxy scheme from a URL-like representation, to a
-// ProxyServer::Scheme. This corresponds with the values used in
-// ProxyServer::ToURI(). If no type could be matched, returns SCHEME_INVALID.
-ProxyServer::Scheme GetSchemeFromURIInternal(base::StringPiece type) {
-  if (base::LowerCaseEqualsASCII(type, "http"))
-    return ProxyServer::SCHEME_HTTP;
-  if (base::LowerCaseEqualsASCII(type, "socks4"))
-    return ProxyServer::SCHEME_SOCKS4;
-  if (base::LowerCaseEqualsASCII(type, "socks"))
-    return ProxyServer::SCHEME_SOCKS5;
-  if (base::LowerCaseEqualsASCII(type, "socks5"))
-    return ProxyServer::SCHEME_SOCKS5;
-  if (base::LowerCaseEqualsASCII(type, "direct"))
-    return ProxyServer::SCHEME_DIRECT;
-  if (base::LowerCaseEqualsASCII(type, "https"))
-    return ProxyServer::SCHEME_HTTPS;
-  if (base::LowerCaseEqualsASCII(type, "quic"))
-    return ProxyServer::SCHEME_QUIC;
-  return ProxyServer::SCHEME_INVALID;
-}
-
-}  // namespace
 
 ProxyServer::ProxyServer(Scheme scheme, const HostPortPair& host_port_pair)
       : scheme_(scheme), host_port_pair_(host_port_pair) {
@@ -77,100 +33,86 @@ ProxyServer::ProxyServer(Scheme scheme, const HostPortPair& host_port_pair)
   }
 }
 
+// static
+ProxyServer ProxyServer::FromSchemeHostAndPort(Scheme scheme,
+                                               base::StringPiece host,
+                                               base::StringPiece port_str) {
+  // Create INVALID proxies directly using `ProxyServer()`.
+  DCHECK_NE(scheme, SCHEME_INVALID);
+
+  // Create DIRECT proxies directly using `Direct()`.
+  DCHECK_NE(scheme, SCHEME_DIRECT);
+
+  int port_number =
+      url::ParsePort(port_str.data(), url::Component(0, port_str.size()));
+  if (port_number == url::PORT_UNSPECIFIED)
+    return FromSchemeHostAndPort(scheme, host, absl::nullopt);
+  if (port_number == url::PORT_INVALID)
+    return ProxyServer();
+
+  DCHECK(base::IsValueInRangeForNumericType<uint16_t>(port_number));
+
+  return FromSchemeHostAndPort(scheme, host,
+                               static_cast<uint16_t>(port_number));
+}
+
+// static
+ProxyServer ProxyServer::FromSchemeHostAndPort(Scheme scheme,
+                                               base::StringPiece host,
+                                               absl::optional<uint16_t> port) {
+  // Create INVALID proxies directly using `ProxyServer()`.
+  DCHECK_NE(scheme, SCHEME_INVALID);
+
+  // Create DIRECT proxies directly using `Direct()`.
+  DCHECK_NE(scheme, SCHEME_DIRECT);
+
+  // Add brackets to IPv6 literals if missing, as required by url
+  // canonicalization.
+  std::string bracketed_host;
+  if (!host.empty() && host.front() != '[' &&
+      host.find(":") != base::StringPiece::npos) {
+    bracketed_host = base::StrCat({"[", host, "]"});
+    host = bracketed_host;
+  }
+
+  std::string canonicalized_host;
+  url::StdStringCanonOutput canonicalized_output(&canonicalized_host);
+  url::Component component_output;
+
+  if (!url::CanonicalizeHost(host.data(), url::Component(0, host.size()),
+                             &canonicalized_output, &component_output)) {
+    return ProxyServer();
+  }
+  if (!component_output.is_nonempty())
+    return ProxyServer();
+
+  canonicalized_output.Complete();
+
+  // Remove IPv6 literal bracketing, as required by HostPortPair.
+  base::StringPiece unbracketed_host = canonicalized_host;
+  if (canonicalized_host.front() == '[' && canonicalized_host.back() == ']')
+    unbracketed_host = unbracketed_host.substr(1, unbracketed_host.size() - 2);
+
+  // A uint16_t port is always valid and canonicalized.
+  uint16_t fixed_port = port.value_or(GetDefaultPortForScheme(scheme));
+
+  return ProxyServer(scheme, HostPortPair(unbracketed_host, fixed_port));
+}
+
+std::string ProxyServer::GetHost() const {
+  return host_port_pair().HostForURL();
+}
+
+uint16_t ProxyServer::GetPort() const {
+  return host_port_pair().port();
+}
+
 const HostPortPair& ProxyServer::host_port_pair() const {
   // Doesn't make sense to call this if the URI scheme doesn't
   // have concept of a host.
   DCHECK(is_valid());
   DCHECK(!is_direct());
   return host_port_pair_;
-}
-
-// static
-ProxyServer ProxyServer::FromURI(base::StringPiece uri, Scheme default_scheme) {
-  // We will default to |default_scheme| if no scheme specifier was given.
-  Scheme scheme = default_scheme;
-
-  // Trim the leading/trailing whitespace.
-  uri = HttpUtil::TrimLWS(uri);
-
-  // Check for [<scheme> "://"]
-  size_t colon = uri.find(':');
-  if (colon != base::StringPiece::npos && uri.size() - colon >= 3 &&
-      uri[colon + 1] == '/' && uri[colon + 2] == '/') {
-    scheme = GetSchemeFromURIInternal(uri.substr(0, colon));
-    uri = uri.substr(colon + 3);  // Skip past the "://"
-  }
-
-  // Now parse the <host>[":"<port>].
-  return FromSchemeHostAndPort(scheme, uri);
-}
-
-std::string ProxyServer::ToURI() const {
-  switch (scheme_) {
-    case SCHEME_DIRECT:
-      return "direct://";
-    case SCHEME_HTTP:
-      // Leave off "http://" since it is our default scheme.
-      return host_port_pair().ToString();
-    case SCHEME_SOCKS4:
-      return std::string("socks4://") + host_port_pair().ToString();
-    case SCHEME_SOCKS5:
-      return std::string("socks5://") + host_port_pair().ToString();
-    case SCHEME_HTTPS:
-      return std::string("https://") + host_port_pair().ToString();
-    case SCHEME_QUIC:
-      return std::string("quic://") + host_port_pair().ToString();
-    default:
-      // Got called with an invalid scheme.
-      NOTREACHED();
-      return std::string();
-  }
-}
-
-// static
-ProxyServer ProxyServer::FromPacString(base::StringPiece pac_string) {
-  // Trim the leading/trailing whitespace.
-  pac_string = HttpUtil::TrimLWS(pac_string);
-
-  // Input should match:
-  // "DIRECT" | ( <type> 1*(LWS) <host-and-port> )
-
-  // Start by finding the first space (if any).
-  size_t space = 0;
-  for (; space < pac_string.size(); space++) {
-    if (HttpUtil::IsLWS(pac_string[space])) {
-      break;
-    }
-  }
-
-  // Everything to the left of the space is the scheme.
-  Scheme scheme = GetSchemeFromPacTypeInternal(pac_string.substr(0, space));
-
-  // And everything to the right of the space is the
-  // <host>[":" <port>].
-  return FromSchemeHostAndPort(scheme, pac_string.substr(space));
-}
-
-std::string ProxyServer::ToPacString() const {
-  switch (scheme_) {
-    case SCHEME_DIRECT:
-      return "DIRECT";
-    case SCHEME_HTTP:
-      return std::string("PROXY ") + host_port_pair().ToString();
-    case SCHEME_SOCKS4:
-      // For compatibility send SOCKS instead of SOCKS4.
-      return std::string("SOCKS ") + host_port_pair().ToString();
-    case SCHEME_SOCKS5:
-      return std::string("SOCKS5 ") + host_port_pair().ToString();
-    case SCHEME_HTTPS:
-      return std::string("HTTPS ") + host_port_pair().ToString();
-    case SCHEME_QUIC:
-      return std::string("QUIC ") + host_port_pair().ToString();
-    default:
-      // Got called with an invalid scheme.
-      NOTREACHED();
-      return std::string();
-  }
 }
 
 // static
@@ -191,43 +133,8 @@ int ProxyServer::GetDefaultPortForScheme(Scheme scheme) {
   return -1;
 }
 
-// static
-ProxyServer::Scheme ProxyServer::GetSchemeFromURI(const std::string& scheme) {
-  return GetSchemeFromURIInternal(scheme);
-}
-
-size_t ProxyServer::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(host_port_pair_);
-}
-
-// static
-ProxyServer ProxyServer::FromSchemeHostAndPort(
-    Scheme scheme,
-    base::StringPiece host_and_port) {
-  // Trim leading/trailing space.
-  host_and_port = HttpUtil::TrimLWS(host_and_port);
-
-  if (scheme == SCHEME_DIRECT && !host_and_port.empty())
-    return ProxyServer();  // Invalid -- DIRECT cannot have a host/port.
-
-  HostPortPair host_port_pair;
-
-  if (scheme != SCHEME_INVALID && scheme != SCHEME_DIRECT) {
-    std::string host;
-    int port = -1;
-    // If the scheme has a host/port, parse it.
-    bool ok = ParseHostAndPort(host_and_port, &host, &port);
-    if (!ok)
-      return ProxyServer();  // Invalid -- failed parsing <host>[":"<port>]
-
-    // Choose a default port number if none was given.
-    if (port == -1)
-      port = GetDefaultPortForScheme(scheme);
-
-    host_port_pair = HostPortPair(host, static_cast<uint16_t>(port));
-  }
-
-  return ProxyServer(scheme, host_port_pair);
+std::ostream& operator<<(std::ostream& os, const ProxyServer& proxy_server) {
+  return os << ProxyServerToPacResultElement(proxy_server);
 }
 
 }  // namespace net

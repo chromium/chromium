@@ -14,6 +14,10 @@ class GLOutputSurfaceChromeOS : public GLOutputSurface {
   GLOutputSurfaceChromeOS(
       scoped_refptr<VizProcessContextProvider> context_provider,
       gpu::SurfaceHandle surface_handle);
+
+  GLOutputSurfaceChromeOS(const GLOutputSurfaceChromeOS&) = delete;
+  GLOutputSurfaceChromeOS& operator=(const GLOutputSurfaceChromeOS&) = delete;
+
   ~GLOutputSurfaceChromeOS() override;
 
   // GLOutputSurface:
@@ -22,8 +26,6 @@ class GLOutputSurfaceChromeOS : public GLOutputSurface {
 
  private:
   gfx::OverlayTransform display_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(GLOutputSurfaceChromeOS);
 };
 
 }  // namespace viz

@@ -29,8 +29,9 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace strings_internal {
 
-// Is a subclass of true_type or false_type, depending on whether or not
-// T has a __resize_default_init member.
+// In this type trait, we look for a __resize_default_init member function, and
+// we use it if available, otherwise, we use resize. We provide HasMember to
+// indicate whether __resize_default_init is present.
 template <typename string_type, typename = void>
 struct ResizeUninitializedTraits {
   using HasMember = std::false_type;
@@ -79,14 +80,36 @@ void STLStringReserveAmortized(string_type* s, size_t new_size) {
   }
 }
 
+// In this type trait, we look for an __append_default_init member function, and
+// we use it if available, otherwise, we use append.
+template <typename string_type, typename = void>
+struct AppendUninitializedTraits {
+  static void Append(string_type* s, size_t n) {
+    s->append(n, typename string_type::value_type());
+  }
+};
+
+template <typename string_type>
+struct AppendUninitializedTraits<
+    string_type, absl::void_t<decltype(std::declval<string_type&>()
+                                           .__append_default_init(237))> > {
+  static void Append(string_type* s, size_t n) {
+    s->__append_default_init(n);
+  }
+};
+
 // Like STLStringResizeUninitialized(str, new_size), except guaranteed to use
 // exponential growth so that the amortized complexity of increasing the string
 // size by a small amount is O(1), in contrast to O(str->size()) in the case of
 // precise growth.
 template <typename string_type>
 void STLStringResizeUninitializedAmortized(string_type* s, size_t new_size) {
-  STLStringReserveAmortized(s, new_size);
-  STLStringResizeUninitialized(s, new_size);
+  const size_t size = s->size();
+  if (new_size > size) {
+    AppendUninitializedTraits<string_type>::Append(s, new_size - size);
+  } else {
+    s->erase(new_size);
+  }
 }
 
 }  // namespace strings_internal

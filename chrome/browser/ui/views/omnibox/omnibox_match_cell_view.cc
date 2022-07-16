@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
@@ -15,8 +14,9 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_text_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "extensions/common/image_util.h"
+#include "content/public/common/color_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -24,11 +24,11 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/render_text.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/layout_provider.h"
@@ -225,38 +225,17 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
   } else {
     // Determine if we have a local icon (or else it will be downloaded).
     if (match.answer) {
-      switch (match.answer->type()) {
-        case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
-          apply_vector_icon(omnibox::kAnswerCurrencyIcon);
-          break;
-        case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
-          apply_vector_icon(omnibox::kAnswerDictionaryIcon);
-          break;
-        case SuggestionAnswer::ANSWER_TYPE_FINANCE:
-          apply_vector_icon(omnibox::kAnswerFinanceIcon);
-          break;
-        case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
-          apply_vector_icon(omnibox::kAnswerSunriseIcon);
-          break;
-        case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
-          apply_vector_icon(omnibox::kAnswerTranslationIcon);
-          break;
-        case SuggestionAnswer::ANSWER_TYPE_WEATHER:
-          // Weather icons are downloaded. We just need to set the correct size.
-          answer_image_view_->SetImageSize(
-              gfx::Size(kAnswerImageSize, kAnswerImageSize));
-          break;
-        case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
-          apply_vector_icon(omnibox::kAnswerWhenIsIcon);
-          break;
-        default:
-          apply_vector_icon(omnibox::kAnswerDefaultIcon);
-          break;
+      if (match.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER) {
+        // Weather icons are downloaded. We just need to set the correct size.
+        answer_image_view_->SetImageSize(
+            gfx::Size(kAnswerImageSize, kAnswerImageSize));
+      } else {
+        apply_vector_icon(
+            AutocompleteMatch::AnswerTypeToAnswerIcon(match.answer->type()));
       }
     } else {
       SkColor color = result_view->GetColor(OmniboxPart::RESULTS_BACKGROUND);
-      extensions::image_util::ParseHexColorString(match.image_dominant_color,
-                                                  &color);
+      content::ParseHexColorString(match.image_dominant_color, &color);
       color = SkColorSetA(color, 0x40);  // 25% transparency (arbitrary).
       constexpr gfx::Size size(kEntityImageSize, kEntityImageSize);
       answer_image_view_->SetImageSize(size);

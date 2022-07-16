@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -127,12 +128,13 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     return;
 #endif
 
-#if defined(OS_WIN)
-  if (base::FeatureList::IsEnabled(features::kWin10TabSearchCaptionButton))
-    return;
-#endif
   const Browser* browser = tab_strip_->controller()->GetBrowser();
-  if (browser && browser->is_type_normal()) {
+  if (!browser ||
+      WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(browser)) {
+    return;
+  }
+
+  if (browser->is_type_normal()) {
     auto tab_search_button = std::make_unique<TabSearchButton>(tab_strip_);
     tab_search_button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));

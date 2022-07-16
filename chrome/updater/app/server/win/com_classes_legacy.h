@@ -145,6 +145,35 @@ class LegacyOnDemandImpl
   absl::optional<UpdateService::Result> result_;
 };
 
+// This class implements the legacy Omaha3 IProcessLauncher interface as
+// expected by Chrome's setup client.
+class LegacyProcessLauncherImpl
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IProcessLauncher,
+          IProcessLauncher2> {
+ public:
+  LegacyProcessLauncherImpl();
+  LegacyProcessLauncherImpl(const LegacyProcessLauncherImpl&) = delete;
+  LegacyProcessLauncherImpl& operator=(const LegacyProcessLauncherImpl&) =
+      delete;
+
+  // Overrides for IProcessLauncher/IProcessLauncher2.
+  IFACEMETHODIMP LaunchCmdLine(const WCHAR* cmd_line) override;
+  IFACEMETHODIMP LaunchBrowser(DWORD browser_type, const WCHAR* url) override;
+  IFACEMETHODIMP LaunchCmdElevated(const WCHAR* app_guid,
+                                   const WCHAR* cmd_id,
+                                   DWORD caller_proc_id,
+                                   ULONG_PTR* proc_handle) override;
+  IFACEMETHODIMP LaunchCmdLineEx(const WCHAR* cmd_line,
+                                 DWORD* server_proc_id,
+                                 ULONG_PTR* proc_handle,
+                                 ULONG_PTR* stdout_handle) override;
+
+ private:
+  ~LegacyProcessLauncherImpl() override;
+};
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_APP_SERVER_WIN_COM_CLASSES_LEGACY_H_

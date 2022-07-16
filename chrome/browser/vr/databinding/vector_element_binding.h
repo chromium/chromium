@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/databinding/binding_base.h"
 
 namespace vr {
@@ -20,6 +19,10 @@ class VectorElementBinding : public BindingBase {
  public:
   VectorElementBinding(std::vector<M>* models, size_t index)
       : models_(models), index_(index) {}
+
+  VectorElementBinding(const VectorElementBinding&) = delete;
+  VectorElementBinding& operator=(const VectorElementBinding&) = delete;
+
   ~VectorElementBinding() override {}
 
   // This function will check if the getter is producing a different value than
@@ -54,8 +57,6 @@ class VectorElementBinding : public BindingBase {
   size_t index_ = 0;
   V* view_;
   std::vector<std::unique_ptr<BindingBase>> bindings_;
-
-  DISALLOW_COPY_AND_ASSIGN(VectorElementBinding);
 };
 
 }  // namespace vr

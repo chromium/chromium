@@ -39,6 +39,10 @@ class BackgroundFetchBridge final
   static BackgroundFetchBridge* From(ServiceWorkerRegistration* registration);
 
   explicit BackgroundFetchBridge(ServiceWorkerRegistration& registration);
+
+  BackgroundFetchBridge(const BackgroundFetchBridge&) = delete;
+  BackgroundFetchBridge& operator=(const BackgroundFetchBridge&) = delete;
+
   virtual ~BackgroundFetchBridge();
   void Trace(Visitor* visitor) const override;
 
@@ -79,8 +83,6 @@ class BackgroundFetchBridge final
 
   HeapMojoRemote<mojom::blink::BackgroundFetchService>
       background_fetch_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchBridge);
 };
 
 }  // namespace blink

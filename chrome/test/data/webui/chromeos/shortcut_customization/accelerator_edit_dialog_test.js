@@ -4,9 +4,11 @@
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorEditDialogElement} from 'chrome://shortcut-customization/accelerator_edit_dialog.js';
-import {ModifierKeys} from 'chrome://shortcut-customization/accelerator_view.js';
+import {AcceleratorInfo, AcceleratorKeys, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
+import {CreateUserAccelerator} from './shortcut_customization_test_util.js';
 
 export function acceleratorEditDialogTest() {
   /** @type {?AcceleratorEditDialogElement} */
@@ -24,19 +26,23 @@ export function acceleratorEditDialogTest() {
   });
 
   test('LoadsBasicDialog', async () => {
-    // TODO(jimmyxgong): Update the type of the test accelerator with the mojom
-    // version.
-    const accelerators = [
-      {
-        modifiers: ModifierKeys.SHIFT | ModifierKeys.CONTROL,
-        key: 'g',
-        rawKey: 0x0
-      },
-      {modifiers: ModifierKeys.CONTROL, key: 'c', rawKey: 0x0}
-    ];
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo1 = CreateUserAccelerator(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*key_display=*/ 'g');
+
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo2 = CreateUserAccelerator(
+        Modifier.CONTROL,
+        /*key=*/ 67,
+        /*key_display=*/ 'c');
+
+    const accelerators = [acceleratorInfo1, acceleratorInfo2];
+
     const description = 'test shortcut';
 
-    viewElement.accelerators = accelerators;
+    viewElement.acceleratorInfos = accelerators;
     viewElement.description = description;
     await flush();
     const dialog = viewElement.shadowRoot.querySelector('cr-dialog');
@@ -73,5 +79,66 @@ export function acceleratorEditDialogTest() {
     const button = dialog.querySelector('#doneButton');
     button.click();
     assertFalse(dialog.open);
+  });
+
+  test('AddShortcut', async () => {
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo1 = CreateUserAccelerator(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*key_display=*/ 'g');
+
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo2 = CreateUserAccelerator(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 67,
+        /*key_display=*/ 'c');
+
+    const acceleratorInfos = [acceleratorInfo1, acceleratorInfo2];
+    const description = 'test shortcut';
+
+    viewElement.acceleratorInfos = acceleratorInfos;
+    viewElement.description = description;
+    await flush();
+    const dialog = viewElement.shadowRoot.querySelector('cr-dialog');
+    assertTrue(dialog.open);
+
+    // The "Add Shortcut" button should be visible and the pending accelerator
+    // should not be visible.
+    const buttonContainer = dialog.querySelector('#addAcceleratorContainer');
+    assertFalse(buttonContainer.hidden);
+    let pendingAccelerator = dialog.querySelector('#pendingAccelerator');
+    assertFalse(!!pendingAccelerator);
+
+    // Clicking on the "Add Shortcut" button should hide the button and show
+    // the pending shortcut.
+    const addButton = dialog.querySelector('#addAcceleratorButton');
+    addButton.click();
+    await flush();
+    assertTrue(buttonContainer.hidden);
+    // Expected the dialog's "done" button to be disabled when adding a new
+    // accelerator.
+    const doneButton = dialog.querySelector('#doneButton');
+    assertTrue(doneButton.disabled);
+    const restoreButton = dialog.querySelector('#restoreDefault');
+    assertTrue(restoreButton.hidden);
+
+    // Re-query the stamped element.
+    pendingAccelerator = dialog.querySelector('#pendingAccelerator');
+    assertTrue(!!pendingAccelerator);
+
+    // Click on the cancel button, expect the "Add Shortcut" button to be
+    // visible and the pending accelerator to be hidden.
+    pendingAccelerator.shadowRoot.querySelector('#cancelButton').click();
+    await flush();
+
+    // "done" button should now be enabled.
+    assertFalse(doneButton.disabled);
+    assertFalse(restoreButton.hidden);
+
+    assertFalse(buttonContainer.hidden);
+    // Re-query the stamped element.
+    pendingAccelerator = dialog.querySelector('#pendingAccelerator');
+    assertFalse(!!pendingAccelerator);
   });
 }

@@ -12,7 +12,8 @@
 #include "base/memory/ref_counted.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-array-buffer.h"
+#include "v8/include/v8-forward.h"
 
 namespace gin {
 

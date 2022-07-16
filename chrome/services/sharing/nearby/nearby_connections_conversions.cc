@@ -122,6 +122,8 @@ mojom::Medium MediumToMojom(Medium medium) {
       return mojom::Medium::kWifiDirect;
     case Medium::WEB_RTC:
       return mojom::Medium::kWebRtc;
+    case Medium::BLE_L2CAP:
+      return mojom::Medium::kBleL2Cap;
   }
 }
 

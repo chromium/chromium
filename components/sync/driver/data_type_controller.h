@@ -21,33 +21,26 @@
 namespace syncer {
 
 struct ConfigureContext;
+struct DataTypeActivationResponse;
 struct TypeEntitiesCount;
-class ModelTypeConfigurer;
 class SyncError;
 
 // DataTypeControllers are responsible for managing the state of a single data
 // type. They are not thread safe and should only be used on the UI thread.
 class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
  public:
+  // TODO(crbug.com/967677): Should MODEL_LOADED be renamed to
+  // MODEL_READY_TO_CONNECT?
   enum State {
     NOT_RUNNING,     // The controller has never been started or has previously
                      // been stopped.  Must be in this state to start.
     MODEL_STARTING,  // The model is loading.
-    MODEL_LOADED,    // The model has finished loading and can start running.
+    MODEL_LOADED,    // The model has finished loading and is ready to connect.
     RUNNING,         // The controller is running and the data type is
                      // in sync with the cloud.
     STOPPING,        // The controller is in the process of stopping
                      // and is waiting for dependent services to stop.
     FAILED           // The controller was started but encountered an error.
-  };
-
-  // Returned from ActivateDataType.
-  enum ActivateDataTypeResult {
-    // Indicates that the initial download for this type is already complete, or
-    // wasn't needed in the first place (e.g. for proxy types).
-    TYPE_ALREADY_DOWNLOADED,
-    // Indicates that the initial download for this type still needs to be done.
-    TYPE_NOT_YET_DOWNLOADED,
   };
 
   // Note: This seems like it should be a OnceCallback, but it can actually be
@@ -76,15 +69,11 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   virtual void LoadModels(const ConfigureContext& configure_context,
                           const ModelLoadCallback& model_load_callback) = 0;
 
-  // Called by DataTypeManager once the local model has loaded, but before
-  // downloading initial data (if necessary). Returns whether the initial
-  // download for this type is already complete.
-  virtual ActivateDataTypeResult ActivateDataType(
-      ModelTypeConfigurer* configurer) = 0;
-
-  // Called by DataTypeManager to deactivate the controlled data type.
-  // See comments for ModelAssociationManager::OnSingleDataTypeWillStop.
-  virtual void DeactivateDataType(ModelTypeConfigurer* configurer) = 0;
+  // Called by DataTypeManager once the local model has loaded (MODEL_LOADED),
+  // in order to enable the sync engine's propagation of sync changes between
+  // the server and the local processor. Upon return, the controller assumes
+  // that the caller will take care of actually instrumenting the sync engine.
+  virtual std::unique_ptr<DataTypeActivationResponse> Connect() = 0;
 
   // Stops the data type. If LoadModels() has not completed it will enter
   // STOPPING state first and eventually STOPPED. Once stopped, |callback| will

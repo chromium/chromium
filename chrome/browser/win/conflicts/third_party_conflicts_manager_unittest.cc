@@ -31,6 +31,11 @@ class ThirdPartyConflictsManagerTest : public testing::Test,
   ThirdPartyConflictsManagerTest()
       : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
 
+  ThirdPartyConflictsManagerTest(const ThirdPartyConflictsManagerTest&) =
+      delete;
+  ThirdPartyConflictsManagerTest& operator=(
+      const ThirdPartyConflictsManagerTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
 
@@ -86,8 +91,6 @@ class ThirdPartyConflictsManagerTest : public testing::Test,
   base::test::ScopedFeatureList scoped_feature_list_;
 
   absl::optional<ThirdPartyConflictsManager::State> final_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyConflictsManagerTest);
 };
 
 std::pair<ModuleInfoKey, ModuleInfoData> CreateExeModuleInfo() {

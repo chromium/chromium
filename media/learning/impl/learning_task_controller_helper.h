@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "media/learning/common/learning_task_controller.h"
 #include "media/learning/impl/feature_provider.h"

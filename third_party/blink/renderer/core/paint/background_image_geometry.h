@@ -8,20 +8,22 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
+class ComputedStyle;
+class Document;
 class FillLayer;
+class ImageResourceObserver;
 class LayoutBox;
 class LayoutBoxModelObject;
+class LayoutNGTableCell;
 class LayoutObject;
 class LayoutTableCell;
 class LayoutView;
-class Document;
-class ComputedStyle;
-class ImageResourceObserver;
-class LayoutNGTableCell;
+class NGPhysicalBoxFragment;
 
 class BackgroundImageGeometry {
   STACK_ALLOCATED();
@@ -45,6 +47,8 @@ class BackgroundImageGeometry {
                           PhysicalOffset cell_offset,
                           const LayoutBox& table_part,
                           PhysicalSize table_part_size);
+
+  explicit BackgroundImageGeometry(const NGPhysicalBoxFragment&);
 
   void Calculate(const LayoutBoxModelObject* container,
                  PaintPhase,
@@ -179,7 +183,8 @@ class BackgroundImageGeometry {
   PhysicalSize positioning_size_override_;
 
   // The background image offset from within the background positioning area for
-  // non-fixed background attachment. Used for table cells and the view.
+  // non-fixed background attachment. Used for table cells and the view, and
+  // also when an element is block-fragmented.
   PhysicalOffset element_positioning_area_offset_;
 
   PhysicalRect unsnapped_dest_rect_;
@@ -191,6 +196,7 @@ class BackgroundImageGeometry {
   bool painting_view_ = false;
   bool painting_table_cell_ = false;
   bool cell_using_container_background_ = false;
+  bool box_has_multiple_fragments_ = false;
 };
 
 }  // namespace blink

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 218 tests; 134 PASS, 84 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 218 tests; 135 PASS, 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS URL: Setting <a://example.net>.protocol = 'b'
@@ -147,7 +147,7 @@ FAIL URL: Setting <sc://test@test/>.hostname = '' assert_equals: expected "test"
 FAIL URL: Setting <sc://test:12/>.hostname = '' assert_equals: expected "test:12" but got ""
 FAIL URL: Setting <non-spec:/.//p>.hostname = 'h' Drop /. from path assert_equals: expected "non-spec://h//p" but got "non-spec:/.//p"
 FAIL URL: Setting <non-spec:/.//p>.hostname = '' assert_equals: expected "non-spec:////p" but got "non-spec:/.//p"
-FAIL URL: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "http://example.com/" but got "http://bad.com/"
+PASS URL: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped
 FAIL URL: Setting <sc://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "sc:///" but got "sc://example.com/"
 PASS URL: Setting <http://example.net>.port = '8080'
 PASS URL: Setting <http://example.net:8080>.port = '' Port number is removed if empty is the new value
@@ -206,7 +206,7 @@ PASS URL: Setting <https://example.net?lang=en-US#nav>.search = ''
 PASS URL: Setting <https://example.net?lang=en-US>.search = ''
 PASS URL: Setting <https://example.net>.search = ''
 FAIL URL: Setting <a:/>.search = '\0	
-\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the query encode set. Tabs and newlines are removed. assert_equals: expected "a:/?%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "a:/?%00%01%1F !\"#$%&'()*+,-./09:;<=>?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
+\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the query encode set. Tabs and newlines are removed. assert_equals: expected "a:/?%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "a:/?%00%01%1F%20!%22%23$%&%27()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
 PASS URL: Setting <http://example.net>.search = '%c3%89té' Bytes already percent-encoded are left as-is
 PASS URL: Setting <https://example.net>.hash = 'main'
 PASS URL: Setting <https://example.net#nav>.hash = 'main'

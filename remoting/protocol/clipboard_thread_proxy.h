@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "remoting/protocol/clipboard_stub.h"
 
 namespace remoting {
@@ -18,6 +18,9 @@ namespace protocol {
 
 class ClipboardThreadProxy : public ClipboardStub {
  public:
+  ClipboardThreadProxy(const ClipboardThreadProxy&) = delete;
+  ClipboardThreadProxy& operator=(const ClipboardThreadProxy&) = delete;
+
   ~ClipboardThreadProxy() override;
 
   // Constructs a proxy for |clipboard_stub| which will trampoline invocations
@@ -38,8 +41,6 @@ class ClipboardThreadProxy : public ClipboardStub {
 
   base::WeakPtr<ClipboardStub> clipboard_stub_;
   scoped_refptr<base::TaskRunner> clipboard_stub_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardThreadProxy);
 };
 
 }  // namespace protocol

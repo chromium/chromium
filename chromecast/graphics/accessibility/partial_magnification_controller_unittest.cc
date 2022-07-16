@@ -14,6 +14,10 @@ namespace chromecast {
 class CastTestWindowDelegate : public aura::test::TestWindowDelegate {
  public:
   CastTestWindowDelegate() : key_code_(ui::VKEY_UNKNOWN) {}
+
+  CastTestWindowDelegate(const CastTestWindowDelegate&) = delete;
+  CastTestWindowDelegate& operator=(const CastTestWindowDelegate&) = delete;
+
   ~CastTestWindowDelegate() override {}
 
   // Overridden from TestWindowDelegate:
@@ -25,8 +29,6 @@ class CastTestWindowDelegate : public aura::test::TestWindowDelegate {
 
  private:
   ui::KeyboardCode key_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastTestWindowDelegate);
 };
 
 // Wrapper for PartialMagnificationController that exposes internal state to
@@ -36,6 +38,10 @@ class PartialMagnificationControllerTestApi {
   explicit PartialMagnificationControllerTestApi(
       PartialMagnificationController* controller)
       : controller_(controller) {}
+
+  PartialMagnificationControllerTestApi& operator=(
+      const PartialMagnificationControllerTestApi&) = delete;
+
   ~PartialMagnificationControllerTestApi() = default;
 
   bool is_enabled() const { return controller_->is_enabled_; }
@@ -49,13 +55,17 @@ class PartialMagnificationControllerTestApi {
 
  private:
   PartialMagnificationController* controller_;
-
-  DISALLOW_ASSIGN(PartialMagnificationControllerTestApi);
 };
 
 class PartialMagnificationControllerTest : public views::ViewsTestBase {
  public:
   PartialMagnificationControllerTest() = default;
+
+  PartialMagnificationControllerTest(
+      const PartialMagnificationControllerTest&) = delete;
+  PartialMagnificationControllerTest& operator=(
+      const PartialMagnificationControllerTest&) = delete;
+
   ~PartialMagnificationControllerTest() override = default;
 
   void SetUp() override {
@@ -95,8 +105,6 @@ class PartialMagnificationControllerTest : public views::ViewsTestBase {
 
   CastTestWindowDelegate test_window_delegate_;
   std::unique_ptr<PartialMagnificationController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(PartialMagnificationControllerTest);
 };
 
 // The magnifier should not show up immediately after being enabled.

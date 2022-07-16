@@ -7,6 +7,8 @@ package org.chromium.device.nfc;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import android.os.Build;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -18,7 +20,7 @@ import org.chromium.base.test.util.Feature;
  * Unit tests for the {@link NfcBlocklist} class.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = 21, manifest = Config.NONE)
+@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
 public class NfcBlocklistTest {
     // Static historical bytes
     private static final byte[] YUBIKEY_NEO_HISTORICAL_BYTES = new byte[] {

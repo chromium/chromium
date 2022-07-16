@@ -21,6 +21,10 @@
 #include "extensions/renderer/v8_helpers.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-persistent-handle.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 
@@ -56,6 +60,10 @@ class WakeEventPage::WakeEventPageNativeHandler
         base::BindRepeating(&WakeEventPageNativeHandler::DoWakeEventPage,
                             base::Unretained(this)));
   }
+
+  WakeEventPageNativeHandler(const WakeEventPageNativeHandler&) = delete;
+  WakeEventPageNativeHandler& operator=(const WakeEventPageNativeHandler&) =
+      delete;
 
   ~WakeEventPageNativeHandler() override {}
 
@@ -94,8 +102,6 @@ class WakeEventPage::WakeEventPageNativeHandler
 
   MakeRequestCallback make_request_;
   base::WeakPtrFactory<WakeEventPageNativeHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WakeEventPageNativeHandler);
 };
 
 // static

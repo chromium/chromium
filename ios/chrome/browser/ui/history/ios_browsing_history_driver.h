@@ -26,6 +26,10 @@ class IOSBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
  public:
   IOSBrowsingHistoryDriver(ChromeBrowserState* browser_state,
                            id<HistoryConsumer> consumer);
+
+  IOSBrowsingHistoryDriver(const IOSBrowsingHistoryDriver&) = delete;
+  IOSBrowsingHistoryDriver& operator=(const IOSBrowsingHistoryDriver&) = delete;
+
   ~IOSBrowsingHistoryDriver() override;
 
  private:
@@ -55,8 +59,6 @@ class IOSBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
 
   // Consumer for IOSBrowsingHistoryDriver. Serves as client for HistoryService.
   __weak id<HistoryConsumer> consumer_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSBrowsingHistoryDriver);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_HISTORY_IOS_BROWSING_HISTORY_DRIVER_H_

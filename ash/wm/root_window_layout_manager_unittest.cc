@@ -15,6 +15,9 @@ class WindowDeleter : public aura::WindowObserver {
  public:
   explicit WindowDeleter(aura::Window* window) : target_(window) {}
 
+  WindowDeleter(const WindowDeleter&) = delete;
+  WindowDeleter& operator=(const WindowDeleter&) = delete;
+
   // aura::WindowObserver::
   void OnWindowBoundsChanged(aura::Window* window,
                              const gfx::Rect& old_bounds,
@@ -25,8 +28,6 @@ class WindowDeleter : public aura::WindowObserver {
 
  private:
   aura::Window* target_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowDeleter);
 };
 
 }  // namespace

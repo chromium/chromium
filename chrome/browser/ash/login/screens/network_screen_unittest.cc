@@ -28,6 +28,10 @@ using ::testing::Return;
 class NetworkScreenUnitTest : public testing::Test {
  public:
   NetworkScreenUnitTest() = default;
+
+  NetworkScreenUnitTest(const NetworkScreenUnitTest&) = delete;
+  NetworkScreenUnitTest& operator=(const NetworkScreenUnitTest&) = delete;
+
   ~NetworkScreenUnitTest() override = default;
 
   // testing::Test:
@@ -72,8 +76,6 @@ class NetworkScreenUnitTest : public testing::Test {
 
   // More accessory objects needed by NetworkScreen.
   MockNetworkScreenView mock_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkScreenUnitTest);
 };
 
 TEST_F(NetworkScreenUnitTest, ContinuesAutomatically) {
@@ -87,7 +89,8 @@ TEST_F(NetworkScreenUnitTest, ContinuesAutomatically) {
   EXPECT_EQ(1, network_screen_->continue_attempts_);
 
   ASSERT_TRUE(last_screen_result_.has_value());
-  EXPECT_EQ(NetworkScreen::Result::CONNECTED, last_screen_result_.value());
+  EXPECT_EQ(NetworkScreen::Result::CONNECTED_REGULAR,
+            last_screen_result_.value());
 }
 
 TEST_F(NetworkScreenUnitTest, ContinuesOnlyOnce) {
@@ -106,7 +109,8 @@ TEST_F(NetworkScreenUnitTest, ContinuesOnlyOnce) {
   ASSERT_EQ(1, network_screen_->continue_attempts_);
 
   ASSERT_TRUE(last_screen_result_.has_value());
-  EXPECT_EQ(NetworkScreen::Result::CONNECTED, last_screen_result_.value());
+  EXPECT_EQ(NetworkScreen::Result::CONNECTED_REGULAR,
+            last_screen_result_.value());
 
   // Stop waiting for another network, net1.
   network_screen_->StopWaitingForConnection(u"net1");

@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/values.h"
@@ -56,6 +55,10 @@ WebUIDataSource* CreateHistogramsHTMLSource() {
 class HistogramsMessageHandler : public WebUIMessageHandler {
  public:
   HistogramsMessageHandler();
+
+  HistogramsMessageHandler(const HistogramsMessageHandler&) = delete;
+  HistogramsMessageHandler& operator=(const HistogramsMessageHandler&) = delete;
+
   ~HistogramsMessageHandler() override;
 
   // WebUIMessageHandler:
@@ -70,7 +73,6 @@ class HistogramsMessageHandler : public WebUIMessageHandler {
   JsParams AllowJavascriptAndUnpackParams(const base::ListValue& args);
 
   HistogramsMonitor histogram_monitor_;
-  DISALLOW_COPY_AND_ASSIGN(HistogramsMessageHandler);
 };
 
 HistogramsMessageHandler::HistogramsMessageHandler() {}
@@ -124,17 +126,17 @@ void HistogramsMessageHandler::RegisterMessages() {
 
   // We can use base::Unretained() here, as both the callback and this class are
   // owned by HistogramsInternalsUI.
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kHistogramsUIRequestHistograms,
       base::BindRepeating(&HistogramsMessageHandler::HandleRequestHistograms,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kHistogramsUIStartMonitoring,
       base::BindRepeating(&HistogramsMessageHandler::HandleStartMoninoring,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kHistogramsUIFetchDiff,
       base::BindRepeating(&HistogramsMessageHandler::HandleFetchDiff,
                           base::Unretained(this)));

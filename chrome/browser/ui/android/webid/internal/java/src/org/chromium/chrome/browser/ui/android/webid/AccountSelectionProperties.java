@@ -11,8 +11,10 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -54,15 +56,14 @@ class AccountSelectionProperties {
             }
         }
 
-        static final PropertyModel.WritableObjectPropertyKey<Avatar> AVATAR =
-                new PropertyModel.WritableObjectPropertyKey<>("avatar");
-        static final PropertyModel
-                .WritableObjectPropertyKey<FaviconOrFallback> FAVICON_OR_FALLBACK =
-                new PropertyModel.WritableObjectPropertyKey<>("favicon");
-        static final PropertyModel.ReadableObjectPropertyKey<Account> ACCOUNT =
-                new PropertyModel.ReadableObjectPropertyKey<>("account");
-        static final PropertyModel.ReadableObjectPropertyKey<Callback<Account>> ON_CLICK_LISTENER =
-                new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
+        static final WritableObjectPropertyKey<Avatar> AVATAR =
+                new WritableObjectPropertyKey<>("avatar");
+        static final WritableObjectPropertyKey<FaviconOrFallback> FAVICON_OR_FALLBACK =
+                new WritableObjectPropertyKey<>("favicon");
+        static final ReadableObjectPropertyKey<Account> ACCOUNT =
+                new ReadableObjectPropertyKey<>("account");
+        static final ReadableObjectPropertyKey<Callback<Account>> ON_CLICK_LISTENER =
+                new ReadableObjectPropertyKey<>("on_click_listener");
 
         static final PropertyKey[] ALL_KEYS = {
                 AVATAR, FAVICON_OR_FALLBACK, ACCOUNT, ON_CLICK_LISTENER};
@@ -75,12 +76,15 @@ class AccountSelectionProperties {
      * sheet.
      */
     static class HeaderProperties {
-        static final PropertyModel.ReadableBooleanPropertyKey SINGLE_ACCOUNT =
-                new PropertyModel.ReadableBooleanPropertyKey("single_account");
-        static final PropertyModel.ReadableObjectPropertyKey<String> FORMATTED_URL =
-                new PropertyModel.ReadableObjectPropertyKey<>("formatted_url");
+        public enum HeaderType { SINGLE_ACCOUNT, MULTIPLE_ACCOUNT, SIGN_IN }
+        static final ReadableObjectPropertyKey<String> FORMATTED_IDP_URL =
+                new ReadableObjectPropertyKey<>("formatted_idp_url");
+        static final ReadableObjectPropertyKey<String> FORMATTED_RP_URL =
+                new ReadableObjectPropertyKey<>("formatted_rp_url");
+        static final ReadableObjectPropertyKey<HeaderType> TYPE =
+                new ReadableObjectPropertyKey<>("type");
 
-        static final PropertyKey[] ALL_KEYS = {SINGLE_ACCOUNT, FORMATTED_URL};
+        static final PropertyKey[] ALL_KEYS = {FORMATTED_IDP_URL, FORMATTED_RP_URL, TYPE};
 
         private HeaderProperties() {}
     }
@@ -89,18 +93,53 @@ class AccountSelectionProperties {
      * Properties defined here reflect the state of the continue button in the AccountSelection
      * sheet.
      */
-    static class ContinueButtonProperties {
-        static final PropertyModel.ReadableObjectPropertyKey<Account> ACCOUNT =
-                new PropertyModel.ReadableObjectPropertyKey<>("account");
-        static final PropertyModel.ReadableObjectPropertyKey<Callback<Account>> ON_CLICK_LISTENER =
-                new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
+    static class DataSharingConsentProperties {
+        static class Properties {
+            public String mFormattedIdpUrl;
+            public String mFormattedRpUrl;
+            public String mTermsOfServiceUrl;
+            public String mPrivacyPolicyUrl;
+        }
 
-        static final PropertyKey[] ALL_KEYS = {ACCOUNT, ON_CLICK_LISTENER};
+        static final ReadableObjectPropertyKey<Properties> PROPERTIES =
+                new ReadableObjectPropertyKey<>("properties");
+
+        static final PropertyKey[] ALL_KEYS = {PROPERTIES};
+
+        private DataSharingConsentProperties() {}
+    }
+
+    /**
+     * Properties defined here reflect the state of the continue button in the AccountSelection
+     * sheet.
+     */
+    static class ContinueButtonProperties {
+        static final ReadableObjectPropertyKey<Account> ACCOUNT =
+                new ReadableObjectPropertyKey<>("account");
+        static final ReadableObjectPropertyKey<IdentityProviderMetadata> IDP_METADATA =
+                new ReadableObjectPropertyKey<>("idp_metadata");
+        static final ReadableObjectPropertyKey<Callback<Account>> ON_CLICK_LISTENER =
+                new ReadableObjectPropertyKey<>("on_click_listener");
+
+        static final PropertyKey[] ALL_KEYS = {ACCOUNT, IDP_METADATA, ON_CLICK_LISTENER};
 
         private ContinueButtonProperties() {}
     }
 
-    @IntDef({ItemType.HEADER, ItemType.ACCOUNT, ItemType.CONTINUE_BUTTON})
+    /**
+     * Properties defined here reflect the state of the cancel button used for auto sign in.
+     */
+    static class AutoSignInCancelButtonProperties {
+        static final ReadableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
+                new ReadableObjectPropertyKey<>("on_click_listener");
+
+        static final PropertyKey[] ALL_KEYS = {ON_CLICK_LISTENER};
+
+        private AutoSignInCancelButtonProperties() {}
+    }
+
+    @IntDef({ItemType.HEADER, ItemType.ACCOUNT, ItemType.CONTINUE_BUTTON,
+            ItemType.AUTO_SIGN_IN_CANCEL_BUTTON, ItemType.DATA_SHARING_CONSENT})
     @Retention(RetentionPolicy.SOURCE)
     @interface ItemType {
         /**
@@ -117,6 +156,17 @@ class AccountSelectionProperties {
          * The continue button at the end of the sheet when there is only one account.
          */
         int CONTINUE_BUTTON = 3;
+
+        /**
+         * The cancel button at the end of the sheet with auto sign in.
+         */
+        int AUTO_SIGN_IN_CANCEL_BUTTON = 4;
+
+        /**
+         * The user data sharing consent text when there is only one account and it is a sign-up
+         * moment.
+         */
+        int DATA_SHARING_CONSENT = 5;
     }
 
     private AccountSelectionProperties() {}

@@ -52,7 +52,7 @@ public class AutoSigninSnackbarController implements SnackbarManager.SnackbarCon
         snackbar.setSingleLine(false)
                 .setBackgroundColor(backgroundColor)
                 .setProfileImage(icon)
-                .setTextAppearance(R.style.TextAppearance_TextMedium_Primary_Light);
+                .setTextAppearance(R.style.TextAppearance_TextMedium_Primary_Baseline_Light);
         snackbarManager.showSnackbar(snackbar);
     }
 

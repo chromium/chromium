@@ -132,7 +132,6 @@ HprofParser::ParseResult HprofParser::ParseClassObjectDumpSubtag() {
 
     uint32_t type_index = hprof_buffer_->GetOneByte();
     DataType type = GetTypeFromIndex(type_index);
-    ObjectId object_id;
     if (type == DataType::OBJECT) {
       object_id = hprof_buffer_->GetId();
     } else {

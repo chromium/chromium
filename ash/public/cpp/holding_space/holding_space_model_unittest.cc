@@ -125,6 +125,83 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Tests -----------------------------------------------------------------------
 
+// Verifies that updating fields which affect accessible name WAI.
+TEST_P(HoldingSpaceModelTest, UpdateItem_AccessibleName) {
+  ScopedModelObservation observation(&model());
+
+  // Verify the `model()` is initially empty.
+  EXPECT_EQ(model().items().size(), 0u);
+
+  // Create a holding space `item`.
+  auto item = HoldingSpaceItem::CreateFileBackedItem(
+      /*type=*/GetParam(), base::FilePath("file_path"),
+      GURL("filesystem::file_system_url"),
+      HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100),
+      /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
+  auto* item_ptr = item.get();
+
+  // Add `item` to the `model()`.
+  model().AddItem(std::move(item));
+  EXPECT_EQ(model().items().size(), 1u);
+  EXPECT_EQ(model().items()[0].get(), item_ptr);
+
+  // Initially accessible name is the lossy display name of the backing file.
+  EXPECT_EQ(item_ptr->GetAccessibleName(), u"file_path");
+
+  // Update text. Because accessible name is not overridden, this should result
+  // in an update to the computed accessible name field.
+  model().UpdateItem(item_ptr->id())->SetText(u"text");
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_TRUE(observation.TakeLastUpdatedFields() &
+              UpdatedField::kAccessibleName);
+  EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
+  EXPECT_EQ(item_ptr->GetAccessibleName(), u"text");
+
+  // Update secondary text. Because accessible name is not overridden, this
+  // should result in an update to the computed accessible name field.
+  model().UpdateItem(item_ptr->id())->SetSecondaryText(u"secondary_text");
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_TRUE(observation.TakeLastUpdatedFields() &
+              UpdatedField::kAccessibleName);
+  EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
+  EXPECT_EQ(item_ptr->GetAccessibleName(), u"text, secondary_text");
+
+  // Update accessible name. Note that accessible name field is now overridden
+  // from its previously computed value.
+  model().UpdateItem(item_ptr->id())->SetAccessibleName(u"accessible_name");
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kAccessibleName);
+  EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
+  EXPECT_EQ(item_ptr->GetAccessibleName(), u"accessible_name");
+
+  // Update text. Because accessible name is overridden, this should *not*
+  // result in an update to the computed accessible name field.
+  model().UpdateItem(item_ptr->id())->SetText(u"updated_text");
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kText);
+  EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
+  EXPECT_EQ(item_ptr->GetAccessibleName(), u"accessible_name");
+
+  // Update secondary text. Because accessible name is overridden, this should
+  // *not* result in an update to the computed accessible name field.
+  model()
+      .UpdateItem(item_ptr->id())
+      ->SetSecondaryText(u"updated_secondary_text");
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kSecondaryText);
+  EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
+  EXPECT_EQ(item_ptr->GetAccessibleName(), u"accessible_name");
+
+  // Update accessible name. Note that accessible name field is no longer being
+  // overridden from its computed value.
+  model().UpdateItem(item_ptr->id())->SetAccessibleName(absl::nullopt);
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kAccessibleName);
+  EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
+  EXPECT_EQ(item_ptr->GetAccessibleName(),
+            u"updated_text, updated_secondary_text");
+}
+
 // Verifies that updating multiple item attributes is atomic.
 TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   ScopedModelObservation observation(&model());
@@ -144,6 +221,13 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   model().AddItem(std::move(item));
   EXPECT_EQ(model().items().size(), 1u);
   EXPECT_EQ(model().items()[0].get(), item_ptr);
+
+  // Update accessible name.
+  model().UpdateItem(item_ptr->id())->SetAccessibleName(u"accessible_name");
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kAccessibleName);
+  EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
+  EXPECT_EQ(item_ptr->GetAccessibleName(), u"accessible_name");
 
   // Update backing file.
   base::FilePath updated_file_path("updated_file_path");
@@ -193,7 +277,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   updated_file_system_url = GURL("filesystem::again_updated_file_system_url");
   model()
       .UpdateItem(item_ptr->id())
-      ->SetBackingFile(updated_file_path, updated_file_system_url)
+      ->SetAccessibleName(u"updated_accessible_name")
+      .SetBackingFile(updated_file_path, updated_file_system_url)
       .SetText(u"updated_text")
       .SetSecondaryText(u"updated_secondary_text")
       .SetPaused(false)
@@ -201,10 +286,11 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
           HoldingSpaceProgress(/*current_bytes=*/75, /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
   EXPECT_EQ(observation.TakeLastUpdatedFields(),
-            UpdatedField::kBackingFile | UpdatedField::kPaused |
-                UpdatedField::kProgress | UpdatedField::kSecondaryText |
-                UpdatedField::kText);
+            UpdatedField::kAccessibleName | UpdatedField::kBackingFile |
+                UpdatedField::kPaused | UpdatedField::kProgress |
+                UpdatedField::kSecondaryText | UpdatedField::kText);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
+  EXPECT_EQ(item_ptr->GetAccessibleName(), u"updated_accessible_name");
   EXPECT_EQ(item_ptr->file_path(), updated_file_path);
   EXPECT_EQ(item_ptr->file_system_url(), updated_file_system_url);
   EXPECT_FALSE(item_ptr->IsPaused());
@@ -239,7 +325,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Noop) {
   // Perform another no-op update. No observers should be notified.
   model()
       .UpdateItem(item_ptr->id())
-      ->SetBackingFile(item_ptr->file_path(), item_ptr->file_system_url())
+      ->SetAccessibleName(absl::nullopt)
+      .SetBackingFile(item_ptr->file_path(), item_ptr->file_system_url())
       .SetText(absl::nullopt)
       .SetSecondaryText(absl::nullopt)
       .SetPaused(item_ptr->IsPaused())

@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+#include <vector>
+
+#include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/json_schema_compiler/test/any.h"
 
@@ -26,30 +30,30 @@ TEST(JsonSchemaCompilerAnyTest, AnyTypePopulate) {
 
 TEST(JsonSchemaCompilerAnyTest, OptionalAnyParamsCreate) {
   {
-    auto params_value = std::make_unique<base::ListValue>();
+    std::vector<base::Value> params_value;
     std::unique_ptr<test::api::any::OptionalAny::Params> params(
-        test::api::any::OptionalAny::Params::Create(*params_value));
+        test::api::any::OptionalAny::Params::Create(params_value));
     EXPECT_TRUE(params.get());
     EXPECT_FALSE(params->any_name.get());
   }
   {
-    auto params_value = std::make_unique<base::ListValue>();
-    auto param = std::make_unique<base::Value>("asdf");
-    params_value->Append(param->CreateDeepCopy());
+    std::vector<base::Value> params_value;
+    base::Value param("asdf");
+    params_value.push_back(param.Clone());
     std::unique_ptr<test::api::any::OptionalAny::Params> params(
-        test::api::any::OptionalAny::Params::Create(*params_value));
+        test::api::any::OptionalAny::Params::Create(params_value));
     ASSERT_TRUE(params);
     ASSERT_TRUE(params->any_name);
-    EXPECT_TRUE(params->any_name->Equals(param.get()));
+    EXPECT_TRUE(params->any_name->Equals(&param));
   }
   {
-    auto params_value = std::make_unique<base::ListValue>();
-    auto param = std::make_unique<base::Value>(true);
-    params_value->Append(param->CreateDeepCopy());
+    std::vector<base::Value> params_value;
+    base::Value param(true);
+    params_value.push_back(param.Clone());
     std::unique_ptr<test::api::any::OptionalAny::Params> params(
-        test::api::any::OptionalAny::Params::Create(*params_value));
+        test::api::any::OptionalAny::Params::Create(params_value));
     ASSERT_TRUE(params);
     ASSERT_TRUE(params->any_name);
-    EXPECT_TRUE(params->any_name->Equals(param.get()));
+    EXPECT_TRUE(params->any_name->Equals(&param));
   }
 }

@@ -33,11 +33,11 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/platform_font.h"
 #include "ui/gfx/render_text_harfbuzz.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/utf16_indexing.h"
@@ -1105,6 +1105,7 @@ Rect RenderText::GetCursorBounds(const SelectionModel& caret,
   EnsureLayout();
   size_t caret_pos = caret.caret_pos();
   DCHECK(IsValidLogicalIndex(caret_pos));
+
   // In overtype mode, ignore the affinity and always indicate that we will
   // overtype the next character.
   LogicalCursorDirection caret_affinity =
@@ -1130,6 +1131,7 @@ Rect RenderText::GetCursorBounds(const SelectionModel& caret,
     size_t caret_end = IndexOfAdjacentGrapheme(caret_pos, caret_affinity);
     if (caret_end < caret_pos)
       std::swap(caret_end, caret_pos);
+
     const RangeF xspan = GetCursorSpan(Range(caret_pos, caret_end));
     if (insert_mode) {
       x = (caret_affinity == CURSOR_BACKWARD) ? xspan.end() : xspan.start();
@@ -1142,8 +1144,8 @@ Rect RenderText::GetCursorBounds(const SelectionModel& caret,
     }
   }
   Size line_size = gfx::ToCeiledSize(GetLineSizeF(caret));
-  return Rect(ToViewPoint(PointF(x, 0), caret_affinity),
-              Size(width, line_size.height()));
+  size_t line = GetLineContainingCaret(caret);
+  return Rect(ToViewPoint(PointF(x, 0), line), Size(width, line_size.height()));
 }
 
 const Rect& RenderText::GetUpdatedCursorBounds() {
@@ -1720,20 +1722,8 @@ const BreakList<size_t>& RenderText::GetLineBreaks() {
   return line_breaks_;
 }
 
-Point RenderText::ToViewPoint(const PointF& point,
-                              LogicalCursorDirection caret_affinity) {
-  const auto float_eq = [](float a, float b) {
-    return std::fabs(a - b) <= kFloatComparisonEpsilon;
-  };
-  const auto float_ge = [](float a, float b) {
-    return a > b || std::fabs(a - b) <= kFloatComparisonEpsilon;
-  };
-  const auto float_gt = [](float a, float b) {
-    return a - b > kFloatComparisonEpsilon;
-  };
-
-  const size_t num_lines = GetNumLines();
-  if (num_lines == 1) {
+Point RenderText::ToViewPoint(const PointF& point, size_t line) {
+  if (GetNumLines() == 1) {
     return Point(base::ClampCeil(Clamp(point.x())),
                  base::ClampRound(point.y())) +
            GetLineOffset(0);
@@ -1741,54 +1731,23 @@ Point RenderText::ToViewPoint(const PointF& point,
 
   const internal::ShapedText* shaped_text = GetShapedText();
   float x = point.x();
-  size_t line;
 
   if (GetDisplayTextDirection() == base::i18n::RIGHT_TO_LEFT) {
     // |xspan| returned from |GetCursorSpan| in |GetCursorBounds| starts to grow
     // from the last character in RTL. On the other hand, the last character is
     // positioned in the last line in RTL. So, traverse from the last line.
-    for (line = num_lines - 1;
-         line > 0 && float_ge(x, shaped_text->lines()[line].size.width());
-         --line) {
-      x -= shaped_text->lines()[line].size.width();
-    }
-
-    // Increment the |line| when |x| is at the newline character. The line is
-    // broken by word wrapping if the front edge of the line is not a newline
-    // character. In that case, the same caret position where the line is broken
-    // can be on both lines depending on the caret affinity.
-    if (line < num_lines - 1 &&
-        (IsNewlineSegment(shaped_text->lines()[line].segments.front()) ||
-         caret_affinity == CURSOR_FORWARD)) {
-      if (float_eq(x, 0))
-        x = shaped_text->lines()[++line].size.width();
-
-      // In RTL, the newline character is at the front of the line. Because the
-      // newline character is not drawn at the front of the line, |x| should be
-      // decreased by the width of the newline character. Check for a newline
-      // again because the line may have changed.
-      if (!shaped_text->lines()[line].segments.empty() &&
-          IsNewlineSegment(shaped_text->lines()[line].segments.front())) {
-        x -= shaped_text->lines()[line].segments.front().width();
-      }
+    for (size_t l = GetNumLines() - 1; l > line; --l) {
+      x -= shaped_text->lines()[l].size.width();
     }
   } else {
-    for (line = 0; line < num_lines &&
-                   float_gt(x, shaped_text->lines()[line].size.width());
-         ++line) {
-      x -= shaped_text->lines()[line].size.width();
-    }
-
-    if (line == num_lines) {
-      x = shaped_text->lines()[--line].size.width();
-    } else if (line < num_lines - 1 &&
-               float_eq(shaped_text->lines()[line].size.width(), x) &&
-               (IsNewlineSegment(shaped_text->lines()[line].segments.back()) ||
-                caret_affinity == CURSOR_FORWARD)) {
-      // If |x| is at the edge of the line end, move the cursor to the start of
-      // the next line.
-      ++line;
-      x = 0;
+    // TODO(crbug.com/1163587): This doesn't account for line breaks caused by
+    // wrapping, in which case the cursor may end up right after the trailing
+    // space on the top line instead of before the first character of the second
+    // line depending on which direction the cursor is moving. Both positions
+    // are "correct" but most text editors only allow one or the other for
+    // consistency.
+    for (size_t l = 0; l < line; ++l) {
+      x -= shaped_text->lines()[l].size.width();
     }
   }
 

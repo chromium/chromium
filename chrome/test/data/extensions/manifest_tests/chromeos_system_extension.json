@@ -6,5 +6,18 @@
     "name": "Test chromeos extension",
     "version": "1.0",
     "manifest_version": 3,
-    "chromeos_system_extension": {}
+    "permissions": [
+      "os.diagnostics",
+      "os.telemetry"
+    ],
+    "optional_permissions": [
+      "os.telemetry.serial_number"
+    ],
+    "chromeos_system_extension": {},
+    "externally_connectable": {
+      "matches": [
+        "*://www.google.com/*"
+      ]
+    },
+    "options_page": "options.html"
 }

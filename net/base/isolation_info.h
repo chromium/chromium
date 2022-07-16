@@ -6,7 +6,9 @@
 #define NET_BASE_ISOLATION_INFO_H_
 
 #include <set>
+#include <string>
 
+#include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
@@ -91,10 +93,10 @@ class NET_EXPORT IsolationInfo {
   // CreateForInternalRequest with a fresh opaque origin.
   static IsolationInfo CreateTransient();
 
-  // Creates a non-transient IsolationInfo. Just like a transient IsolationInfo
-  // (no SameSite cookies, opaque Origins), but does write data to disk, so this
-  // allows use of the disk cache with a transient NIK.
-  static IsolationInfo CreateOpaqueAndNonTransient();
+  // Creates an IsolationInfo from the serialized contents. Returns a nullopt
+  // if deserialization fails or if data is inconsistent.
+  static absl::optional<IsolationInfo> Deserialize(
+      const std::string& serialized);
 
   // Creates an IsolationInfo with the provided parameters. If the parameters
   // are inconsistent, DCHECKs. In particular:
@@ -107,7 +109,8 @@ class NET_EXPORT IsolationInfo {
   // * If |request_type| is kOther, |top_frame_origin| and
   //   |frame_origin| must be first party with respect to |site_for_cookies|, or
   //   |site_for_cookies| must be null.
-  // * If |party_context_| is not empty, |top_frame_origin| must not be null.
+  // * If |party_context| is not empty, |top_frame_origin| must not be null.
+  // * If |nonce| is specified, then |top_frame_origin| must not be null.
   //
   // Note that the |site_for_cookies| consistency checks are skipped when
   // |site_for_cookies| is not HTTP/HTTPS.
@@ -116,7 +119,8 @@ class NET_EXPORT IsolationInfo {
       const url::Origin& top_frame_origin,
       const url::Origin& frame_origin,
       const SiteForCookies& site_for_cookies,
-      absl::optional<std::set<SchemefulSite>> party_context = absl::nullopt);
+      absl::optional<std::set<SchemefulSite>> party_context = absl::nullopt,
+      const base::UnguessableToken* nonce = nullptr);
 
   // Create an IsolationInfos that may not be fully correct - in particular,
   // the SiteForCookies will always set to null, and if the NetworkIsolationKey
@@ -141,8 +145,8 @@ class NET_EXPORT IsolationInfo {
       const absl::optional<url::Origin>& top_frame_origin,
       const absl::optional<url::Origin>& frame_origin,
       const SiteForCookies& site_for_cookies,
-      bool opaque_and_non_transient,
-      absl::optional<std::set<SchemefulSite>> party_context = absl::nullopt);
+      absl::optional<std::set<SchemefulSite>> party_context = absl::nullopt,
+      const base::UnguessableToken* nonce = nullptr);
 
   // Create a new IsolationInfo for a redirect to the supplied origin. |this| is
   // unmodified.
@@ -177,6 +181,8 @@ class NET_EXPORT IsolationInfo {
     return network_isolation_key_;
   }
 
+  const absl::optional<base::UnguessableToken>& nonce() const { return nonce_; }
+
   // The value that should be consulted for the third-party cookie blocking
   // policy, as defined in Section 2.1.1 and 2.1.2 of
   // https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site.
@@ -184,8 +190,6 @@ class NET_EXPORT IsolationInfo {
   // WARNING: This value must only be used for the third-party cookie blocking
   //          policy. It MUST NEVER be used for any kind of SECURITY check.
   const SiteForCookies& site_for_cookies() const { return site_for_cookies_; }
-
-  bool opaque_and_non_transient() const { return opaque_and_non_transient_; }
 
   // Return |party_context| which exclude the top frame origin and the frame
   // origin.
@@ -198,12 +202,16 @@ class NET_EXPORT IsolationInfo {
 
   bool IsEqualForTesting(const IsolationInfo& other) const;
 
+  // Serialize the `IsolationInfo` into a string. Fails if transient, returning
+  // an empty string.
+  std::string Serialize() const;
+
  private:
   IsolationInfo(RequestType request_type,
                 const absl::optional<url::Origin>& top_frame_origin,
                 const absl::optional<url::Origin>& frame_origin,
                 const SiteForCookies& site_for_cookies,
-                bool opaque_and_non_transient,
+                const base::UnguessableToken* nonce,
                 absl::optional<std::set<SchemefulSite>> party_context);
 
   RequestType request_type_;
@@ -217,7 +225,9 @@ class NET_EXPORT IsolationInfo {
 
   SiteForCookies site_for_cookies_;
 
-  bool opaque_and_non_transient_ = false;
+  // Having a nonce is a way to force a transient opaque `IsolationInfo`
+  // for non-opaque origins.
+  absl::optional<base::UnguessableToken> nonce_;
 
   // This will hold the list of distinct sites in the form of SchemefulSite to
   // be used for First-Party-Sets check.

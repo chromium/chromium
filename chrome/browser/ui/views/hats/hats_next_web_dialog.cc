@@ -9,7 +9,7 @@
 #include "base/base64url.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/util/values/values_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -60,7 +60,7 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
   }
 
   // content::WebContentsDelegate:
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override {
     // Ignores context menu.
     return true;
@@ -125,15 +125,17 @@ HatsNextWebDialog::HatsNextWebDialog(
     const std::string& trigger_id,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    const std::map<std::string, bool>& product_specific_data)
+    const SurveyBitsData& product_specific_bits_data,
+    const SurveyStringData& product_specific_string_data)
     : HatsNextWebDialog(
           browser,
           trigger_id,
           GURL("https://storage.googleapis.com/chrome_hats_staging/index.html"),
-          base::TimeDelta::FromSeconds(10),
+          base::Seconds(10),
           std::move(success_callback),
           std::move(failure_callback),
-          product_specific_data) {}
+          product_specific_bits_data,
+          product_specific_string_data) {}
 
 gfx::Size HatsNextWebDialog::CalculatePreferredSize() const {
   gfx::Size preferred_size = views::View::CalculatePreferredSize();
@@ -154,7 +156,8 @@ HatsNextWebDialog::HatsNextWebDialog(
     const base::TimeDelta& timeout,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    const std::map<std::string, bool>& product_specific_data)
+    const SurveyBitsData& product_specific_bits_data,
+    const SurveyStringData& product_specific_string_data)
     : BubbleDialogDelegateView(
           browser->is_type_devtools()
               ? static_cast<views::View*>(
@@ -173,7 +176,8 @@ HatsNextWebDialog::HatsNextWebDialog(
       timeout_(timeout),
       success_callback_(std::move(success_callback)),
       failure_callback_(std::move(failure_callback)),
-      product_specific_data_(product_specific_data) {
+      product_specific_bits_data_(product_specific_bits_data),
+      product_specific_string_data_(product_specific_string_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   otr_profile_->AddObserver(this);
   set_close_on_deactivate(false);
@@ -222,8 +226,10 @@ GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
   // Append any Product Specific Data to the query. This will be interpreted
   // by the wrapper website and provided to the HaTS backend service.
   base::DictionaryValue dict;
-  for (const auto& field_value : product_specific_data_)
+  for (const auto& field_value : product_specific_bits_data_)
     dict.SetStringKey(field_value.first, field_value.second ? "true" : "false");
+  for (const auto& field_value : product_specific_string_data_)
+    dict.SetStringKey(field_value.first, field_value.second);
 
   std::string product_specific_data_json;
   base::JSONWriter::Write(dict, &product_specific_data_json);
@@ -231,10 +237,22 @@ GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
   param_url = net::AppendQueryParameter(param_url, "product_specific_data",
                                         product_specific_data_json);
 
+  // The HaTS backend service accepts a list of preferred languages, although
+  // only the application locale is provided here to ensure that the survey
+  // matches the native UI language.
+  base::ListValue language_list;
+  language_list.Append(g_browser_process->GetApplicationLocale());
+
+  std::string language_list_json;
+  base::JSONWriter::Write(language_list, &language_list_json);
+  param_url =
+      net::AppendQueryParameter(param_url, "languages", language_list_json);
+
   if (base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopDemo)) {
     param_url = net::AppendQueryParameter(param_url, "enable_testing", "true");
   }
+
   return param_url;
 }
 

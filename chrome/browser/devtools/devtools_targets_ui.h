@@ -10,12 +10,10 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
 
 namespace base {
-class ListValue;
-class DictionaryValue;
+class Value;
 }
 
 class Profile;
@@ -23,9 +21,13 @@ class Profile;
 class DevToolsTargetsUIHandler {
  public:
   using Callback =
-      base::RepeatingCallback<void(const std::string&, const base::ListValue&)>;
+      base::RepeatingCallback<void(const std::string&, const base::Value&)>;
 
   DevToolsTargetsUIHandler(const std::string& source_id, Callback callback);
+
+  DevToolsTargetsUIHandler(const DevToolsTargetsUIHandler&) = delete;
+  DevToolsTargetsUIHandler& operator=(const DevToolsTargetsUIHandler&) = delete;
+
   virtual ~DevToolsTargetsUIHandler();
 
   std::string source_id() const { return source_id_; }
@@ -49,9 +51,8 @@ class DevToolsTargetsUIHandler {
   virtual void ForceUpdate();
 
  protected:
-  std::unique_ptr<base::DictionaryValue> Serialize(
-      content::DevToolsAgentHost* host);
-  void SendSerializedTargets(const base::ListValue& list);
+  base::Value Serialize(content::DevToolsAgentHost* host);
+  void SendSerializedTargets(const base::Value& list);
 
   using TargetMap =
       std::map<std::string, scoped_refptr<content::DevToolsAgentHost>>;
@@ -60,8 +61,6 @@ class DevToolsTargetsUIHandler {
  private:
   const std::string source_id_;
   Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsTargetsUIHandler);
 };
 
 class PortForwardingStatusSerializer

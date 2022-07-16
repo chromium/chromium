@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -27,6 +26,11 @@
 class TestingDownloadCoreService : public DownloadCoreService {
  public:
   TestingDownloadCoreService() : download_count_(0) {}
+
+  TestingDownloadCoreService(const TestingDownloadCoreService&) = delete;
+  TestingDownloadCoreService& operator=(const TestingDownloadCoreService&) =
+      delete;
+
   ~TestingDownloadCoreService() override {}
 
   // All methods that aren't expected to be called in the execution of
@@ -75,8 +79,6 @@ class TestingDownloadCoreService : public DownloadCoreService {
 
  private:
   int download_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingDownloadCoreService);
 };
 
 static std::unique_ptr<KeyedService> CreateTestingDownloadCoreService(

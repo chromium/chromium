@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class HostContentSettingsMap;
@@ -32,6 +31,12 @@ class SubresourceFilterProfileContext : public KeyedService {
 
   explicit SubresourceFilterProfileContext(
       HostContentSettingsMap* settings_map);
+
+  SubresourceFilterProfileContext(const SubresourceFilterProfileContext&) =
+      delete;
+  SubresourceFilterProfileContext& operator=(
+      const SubresourceFilterProfileContext&) = delete;
+
   ~SubresourceFilterProfileContext() override;
 
   SubresourceFilterContentSettingsManager* settings_manager() {
@@ -60,8 +65,6 @@ class SubresourceFilterProfileContext : public KeyedService {
   // NOTE: Declared after the objects above to ensure that it is destroyed
   // before them.
   std::unique_ptr<EmbedderData> embedder_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterProfileContext);
 };
 
 }  // namespace subresource_filter

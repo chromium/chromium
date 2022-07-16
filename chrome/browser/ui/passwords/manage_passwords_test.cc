@@ -138,9 +138,9 @@ void ManagePasswordsTest::SetupAutoSignin(
 void ManagePasswordsTest::SetupSafeState() {
   browser()->profile()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
-      (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
+      (base::Time::Now() - base::Minutes(1)).ToDoubleT());
   SetupPendingPassword();
-  scoped_refptr<password_manager::PasswordStore> password_store =
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
       PasswordStoreFactory::GetForProfile(browser()->profile(),
                                           ServiceAccessType::IMPLICIT_ACCESS);
   password_store->AddLogin(password_form_);
@@ -156,15 +156,15 @@ void ManagePasswordsTest::SetupSafeState() {
 void ManagePasswordsTest::SetupMoreToFixState() {
   browser()->profile()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
-      (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
-  scoped_refptr<password_manager::PasswordStore> password_store =
+      (base::Time::Now() - base::Minutes(1)).ToDoubleT());
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
       PasswordStoreFactory::GetForProfile(browser()->profile(),
                                           ServiceAccessType::IMPLICIT_ACCESS);
   // This is an unrelated insecure credential that should still be fixed.
   password_manager::PasswordForm to_be_fixed = password_form_;
   to_be_fixed.signon_realm = "https://somesite.com/";
-  to_be_fixed.password_issues->insert({password_manager::InsecureType::kLeaked,
-                                       password_manager::InsecurityMetadata()});
+  to_be_fixed.password_issues.insert({password_manager::InsecureType::kLeaked,
+                                      password_manager::InsecurityMetadata()});
   password_store->AddLogin(to_be_fixed);
   password_store->AddLogin(password_form_);
   SetupPendingPassword();
@@ -218,7 +218,9 @@ std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager() {
   auto form_manager = std::make_unique<PasswordFormManager>(
       &client_, driver_.AsWeakPtr(), observed_form_, &fetcher_,
       std::make_unique<password_manager::PasswordSaveManagerImpl>(
-          base::WrapUnique(new password_manager::StubFormSaver)),
+          /*profile_form_saver=*/std::make_unique<
+              password_manager::StubFormSaver>(),
+          /*account_form_saver=*/nullptr),
       nullptr /*  metrics_recorder */);
 
   password_manager::InsecureCredential credential(

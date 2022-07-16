@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "services/device/public/mojom/hid.mojom-forward.h"
 
@@ -24,10 +23,11 @@ class CONTENT_EXPORT HidChooser {
       base::OnceCallback<void(std::vector<device::mojom::HidDeviceInfoPtr>)>;
 
   HidChooser() = default;
-  virtual ~HidChooser() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(HidChooser);
+  HidChooser(const HidChooser&) = delete;
+  HidChooser& operator=(const HidChooser&) = delete;
+
+  virtual ~HidChooser() = default;
 };
 
 }  // namespace content

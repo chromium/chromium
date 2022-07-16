@@ -121,7 +121,7 @@ void ClipboardHistory::OnClipboardDataChanged() {
       base::BindOnce(&ClipboardHistory::OnClipboardOperation,
                      clipboard_histogram_weak_factory_.GetWeakPtr(),
                      /*copy=*/true),
-      base::TimeDelta::FromMilliseconds(100));
+      base::Milliseconds(100));
 
   // We post commit |clipboard_data| at the end of the current task sequence to
   // debounce the case where multiple copies are programmatically performed.
@@ -153,7 +153,7 @@ void ClipboardHistory::OnClipboardDataRead() {
       base::BindOnce(&ClipboardHistory::OnClipboardOperation,
                      clipboard_histogram_weak_factory_.GetWeakPtr(),
                      /*copy=*/false),
-      base::TimeDelta::FromMilliseconds(100));
+      base::Milliseconds(100));
 }
 
 void ClipboardHistory::OnClipboardOperation(bool copy) {

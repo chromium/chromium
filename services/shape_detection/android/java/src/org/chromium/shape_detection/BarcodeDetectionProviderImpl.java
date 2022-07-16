@@ -35,7 +35,7 @@ public class BarcodeDetectionProviderImpl implements BarcodeDetectionProvider {
     }
 
     @Override
-    public void enumerateSupportedFormats(EnumerateSupportedFormatsResponse callback) {
+    public void enumerateSupportedFormats(EnumerateSupportedFormats_Response callback) {
         // Keep this list in sync with the constants defined in
         // com.google.android.gms.vision.barcode.Barcode and the format hints
         // supported by BarcodeDetectionImpl.

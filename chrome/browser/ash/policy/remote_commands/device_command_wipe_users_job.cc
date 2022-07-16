@@ -21,8 +21,7 @@ namespace {
 // and ready to be used again. Most schools use the cart model of deployment
 // where a given device might not be used in quite some time (eg. device at the
 // bottom of the pool would take quite some time to be turned on).
-constexpr base::TimeDelta kWipeUsersCommandExpirationTime =
-    base::TimeDelta::FromDays(180);
+constexpr base::TimeDelta kWipeUsersCommandExpirationTime = base::Days(180);
 
 }  // namespace
 

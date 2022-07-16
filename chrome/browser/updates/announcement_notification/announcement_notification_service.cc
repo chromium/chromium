@@ -77,6 +77,11 @@ class AnnouncementNotificationServiceImpl
       skip_first_run_after_ = base::Time();
   }
 
+  AnnouncementNotificationServiceImpl(
+      const AnnouncementNotificationServiceImpl&) = delete;
+  AnnouncementNotificationServiceImpl& operator=(
+      const AnnouncementNotificationServiceImpl&) = delete;
+
   ~AnnouncementNotificationServiceImpl() override = default;
 
  private:
@@ -219,8 +224,6 @@ class AnnouncementNotificationServiceImpl
 
   base::WeakPtrFactory<AnnouncementNotificationServiceImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AnnouncementNotificationServiceImpl);
 };
 
 const base::Feature kAnnouncementNotification{

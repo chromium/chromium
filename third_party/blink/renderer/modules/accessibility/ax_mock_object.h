@@ -44,6 +44,9 @@ class MODULES_EXPORT AXMockObject : public AXObject {
   explicit AXMockObject(AXObjectCacheImpl&);
 
  public:
+  AXMockObject(const AXMockObject&) = delete;
+  AXMockObject& operator=(const AXMockObject&) = delete;
+
   ~AXMockObject() override;
 
   // AXObject overrides.
@@ -54,8 +57,6 @@ class MODULES_EXPORT AXMockObject : public AXObject {
 
  private:
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AXMockObject);
 };
 
 template <>

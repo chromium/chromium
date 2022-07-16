@@ -18,15 +18,16 @@ class BluetoothSystemFactory : public mojom::BluetoothSystemFactory {
       mojo::PendingReceiver<mojom::BluetoothSystemFactory> receiver);
 
   BluetoothSystemFactory();
+
+  BluetoothSystemFactory(const BluetoothSystemFactory&) = delete;
+  BluetoothSystemFactory& operator=(const BluetoothSystemFactory&) = delete;
+
   ~BluetoothSystemFactory() override;
 
   // mojom::BluetoothSystemFactory
   void Create(
       mojo::PendingReceiver<mojom::BluetoothSystem> system_receiver,
       mojo::PendingRemote<mojom::BluetoothSystemClient> system_client) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSystemFactory);
 };
 
 }  // namespace device

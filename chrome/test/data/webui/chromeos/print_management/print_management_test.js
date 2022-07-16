@@ -9,7 +9,7 @@ import 'chrome://print-management/print_management.js';
 import {setMetadataProviderForTesting} from 'chrome://print-management/mojo_interface_provider.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {flushTasks} from 'chrome://test/test_util.js';
 
 const CompletionStatus = {
   FAILED: 0,
@@ -18,27 +18,26 @@ const CompletionStatus = {
 };
 
 const ActivePrintJobState =
-    chromeos.printing.printingManager.mojom.ActivePrintJobState;
+    ash.printing.printingManager.mojom.ActivePrintJobState;
 
 const PrinterErrorCode = {
-  NO_ERROR: chromeos.printing.printingManager.mojom.PrinterErrorCode.kNoError,
-  PAPER_JAM: chromeos.printing.printingManager.mojom.PrinterErrorCode.kPaperJam,
-  OUT_OF_PAPER:
-      chromeos.printing.printingManager.mojom.PrinterErrorCode.kOutOfPaper,
-  OUT_OF_INK:
-      chromeos.printing.printingManager.mojom.PrinterErrorCode.kOutOfPaper,
-  DOOR_OPEN: chromeos.printing.printingManager.mojom.PrinterErrorCode.kDoorOpen,
-  PRINTER_UNREACHABLE: chromeos.printing.printingManager.mojom.PrinterErrorCode
-                           .kPrinterUnreachable,
+  NO_ERROR: ash.printing.printingManager.mojom.PrinterErrorCode.kNoError,
+  PAPER_JAM: ash.printing.printingManager.mojom.PrinterErrorCode.kPaperJam,
+  OUT_OF_PAPER: ash.printing.printingManager.mojom.PrinterErrorCode.kOutOfPaper,
+  OUT_OF_INK: ash.printing.printingManager.mojom.PrinterErrorCode.kOutOfPaper,
+  DOOR_OPEN: ash.printing.printingManager.mojom.PrinterErrorCode.kDoorOpen,
+  PRINTER_UNREACHABLE:
+      ash.printing.printingManager.mojom.PrinterErrorCode.kPrinterUnreachable,
   TRAY_MISSING:
-      chromeos.printing.printingManager.mojom.PrinterErrorCode.kTrayMissing,
-  OUTPUT_FULL:
-      chromeos.printing.printingManager.mojom.PrinterErrorCode.kOutputFull,
-  STOPPED: chromeos.printing.printingManager.mojom.PrinterErrorCode.kStopped,
+      ash.printing.printingManager.mojom.PrinterErrorCode.kTrayMissing,
+  OUTPUT_FULL: ash.printing.printingManager.mojom.PrinterErrorCode.kOutputFull,
+  STOPPED: ash.printing.printingManager.mojom.PrinterErrorCode.kStopped,
   FILTER_FAILED:
-      chromeos.printing.printingManager.mojom.PrinterErrorCode.kFilterFailed,
+      ash.printing.printingManager.mojom.PrinterErrorCode.kFilterFailed,
   UNKNOWN_ERROR:
-      chromeos.printing.printingManager.mojom.PrinterErrorCode.kUnknownError,
+      ash.printing.printingManager.mojom.PrinterErrorCode.kUnknownError,
+  CLIENT_UNAUTHORIZED:
+      ash.printing.printingManager.mojom.PrinterErrorCode.kClientUnauthorized,
 };
 
 /**
@@ -80,9 +79,9 @@ function decodeString16(arr) {
  * @param {string} title
  * @param {number} date
  * @param {number} printerErrorCode
- * @param {?chromeos.printing.printingManager.mojom.CompletedPrintJobInfo}
+ * @param {?ash.printing.printingManager.mojom.CompletedPrintJobInfo}
  *     completedInfo
- * @param {?chromeos.printing.printingManager.mojom.ActivePrintJobInfo}
+ * @param {?ash.printing.printingManager.mojom.ActivePrintJobInfo}
  *     activeInfo
  * @return {!Object}
  */
@@ -95,6 +94,7 @@ function createJobEntry(
     'id': id,
     'title': strToMojoString16(title),
     'creationTime': {internalValue: date},
+    'printerId': 'printerId',
     'printerName': strToMojoString16('printerName'),
     'printerUri': {url: '192.168.1.1'},
     'numberOfPages': 4,
@@ -111,7 +111,7 @@ function createJobEntry(
 
 /**
  * @param {number} completionStatus
- * @return {!chromeos.printing.printingManager.mojom.CompletedPrintJobInfo}
+ * @return {!ash.printing.printingManager.mojom.CompletedPrintJobInfo}
  */
 function createCompletedPrintJobInfo(completionStatus) {
   let completedInfo = {'completionStatus': completionStatus};
@@ -121,9 +121,9 @@ function createCompletedPrintJobInfo(completionStatus) {
 /**
  *
  * @param {number} printedPages
- * @param {!chromeos.printing.printingManager.mojom.ActivePrintJobState}
+ * @param {!ash.printing.printingManager.mojom.ActivePrintJobState}
  *     activeState
- * @return {!chromeos.printing.printingManager.mojom.ActivePrintJobInfo}
+ * @return {!ash.printing.printingManager.mojom.ActivePrintJobInfo}
  */
 function createOngoingPrintJobInfo(printedPages, activeState) {
   let activeInfo = {
@@ -134,7 +134,7 @@ function createOngoingPrintJobInfo(printedPages, activeState) {
 }
 
 /**
- * @param{!Array<!chromeos.printing.printingManager.mojom.PrintJobInfo>}
+ * @param{!Array<!ash.printing.printingManager.mojom.PrintJobInfo>}
  *     expected
  * @param{!Array<!HTMLElement>} actual
  */
@@ -148,6 +148,7 @@ function verifyPrintJobs(expected, actual) {
     assertEquals(
         Number(expected[i].creationTime.internalValue),
         Number(actualJobInfo.creationTime.internalValue));
+    assertEquals(expected[i].printerId, actualJobInfo.printerId);
     assertEquals(
         decodeString16(expected[i].printerName),
         decodeString16(actualJobInfo.printerName));
@@ -195,7 +196,7 @@ class FakePrintingMetadataProvider {
     this.resolverMap_ = new Map();
 
     /**
-     * @private {!Array<chromeos.printing.printingManager.mojom.PrintJobInfo>}
+     * @private {!Array<ash.printing.printingManager.mojom.PrintJobInfo>}
      */
     this.printJobs_ = [];
 
@@ -205,7 +206,7 @@ class FakePrintingMetadataProvider {
 
     /**
      * @private
-     *     {?chromeos.printing.printingManager.mojom.PrintJobsObserverRemote}
+     *     {?ash.printing.printingManager.mojom.PrintJobsObserverRemote}
      */
     this.printJobsObserverRemote_;
 
@@ -265,14 +266,14 @@ class FakePrintingMetadataProvider {
 
   /**
    * @return
-   *      {chromeos.printing.printingManager.mojom.PrintJobsObserverRemote}
+   *      {ash.printing.printingManager.mojom.PrintJobsObserverRemote}
    */
   getObserverRemote() {
     return this.printJobsObserverRemote_;
   }
 
   /**
-   * @param {?Array<!chromeos.printing.printingManager.mojom.PrintJobInfo>}
+   * @param {?Array<!ash.printing.printingManager.mojom.PrintJobInfo>}
    *     printJobs
    */
   setPrintJobs(printJobs) {
@@ -299,7 +300,7 @@ class FakePrintingMetadataProvider {
   }
 
   /**
-   * @param {chromeos.printing.printingManager.mojom.PrintJobInfo} job
+   * @param {ash.printing.printingManager.mojom.PrintJobInfo} job
    */
   addPrintJob(job) {
     this.printJobs_ = this.printJobs_.concat(job);
@@ -311,7 +312,7 @@ class FakePrintingMetadataProvider {
   }
 
   /**
-   * @param {chromeos.printing.printingManager.mojom.PrintJobInfo} job
+   * @param {ash.printing.printingManager.mojom.PrintJobInfo} job
    */
   simulateUpdatePrintJob(job) {
     if (job.activePrintJobInfo.activeState ===
@@ -335,7 +336,7 @@ class FakePrintingMetadataProvider {
 
   /**
    * @return {!Promise<{printJobs:
-   *     !Array<chromeos.printing.printingManager.mojom.PrintJobInfo>}>}
+   *     !Array<ash.printing.printingManager.mojom.PrintJobInfo>}>}
    */
   getPrintJobs() {
     return new Promise(resolve => {
@@ -385,7 +386,7 @@ class FakePrintingMetadataProvider {
 
   /**
    * @param
-   * {!chromeos.printing.printingManager.mojom.PrintJobsObserverRemote} remote
+   * {!ash.printing.printingManager.mojom.PrintJobsObserverRemote} remote
    * @return {!Promise}
    */
   observePrintJobs(remote) {
@@ -403,7 +404,7 @@ suite('PrintManagementTest', () => {
 
   /**
    * @type {
-   *    ?chromeos.printing.printingManager.mojom.PrintingMetadataProviderRemote
+   *    ?ash.printing.printingManager.mojom.PrintingMetadataProviderRemote
    *  }
    */
   let mojoApi_;
@@ -424,7 +425,7 @@ suite('PrintManagementTest', () => {
   });
 
   /**
-   * @param {?Array<!chromeos.printing.printingManager.mojom.PrintJobInfo>}
+   * @param {?Array<!ash.printing.printingManager.mojom.PrintJobInfo>}
    *     printJobs
    * @return {!Promise}
    */
@@ -441,7 +442,7 @@ suite('PrintManagementTest', () => {
    * @param {!HtmlElement} jobEntryElement
    * @param {FakePrintingMetadataProvider} mojoApi
    * @param {boolean} shouldAttemptCancel
-   * @param {?Array<!chromeos.printing.printingManager.mojom.PrintJobInfo>}
+   * @param {?Array<!ash.printing.printingManager.mojom.PrintJobInfo>}
    *    expectedHistoryList
    * @return {!Promise}
    */
@@ -1003,7 +1004,7 @@ suite('PrintJobEntryTest', () => {
 
   /**
    * @type {
-   *    ?chromeos.printing.printingManager.mojom.PrintingMetadataProviderRemote
+   *    ?ash.printing.printingManager.mojom.PrintingMetadataProviderRemote
    *  }
    */
   let mojoApi_;

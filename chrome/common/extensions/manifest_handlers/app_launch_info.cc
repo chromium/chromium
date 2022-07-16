@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/common/chrome_switches.h"
@@ -159,7 +158,8 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
 
     // Ensure the launch path is a valid relative URL.
     GURL resolved = extension->url().Resolve(launch_path);
-    if (!resolved.is_valid() || resolved.GetOrigin() != extension->url()) {
+    if (!resolved.is_valid() ||
+        resolved.DeprecatedGetOriginAsURL() != extension->url()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidLaunchValue,
           keys::kLaunchLocalPath);

@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
@@ -37,6 +36,9 @@ class DeviceEventRouter : public VolumeManagerObserver,
   // |so that the tasks are executed by RunLoop::RunUntilIdle.
   DeviceEventRouter(SystemNotificationManager* notificaton_manager,
                     base::TimeDelta overriding_time_delta);
+
+  DeviceEventRouter(const DeviceEventRouter&) = delete;
+  DeviceEventRouter& operator=(const DeviceEventRouter&) = delete;
 
   ~DeviceEventRouter() override;
 
@@ -122,7 +124,6 @@ class DeviceEventRouter : public VolumeManagerObserver,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
   base::WeakPtrFactory<DeviceEventRouter> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DeviceEventRouter);
 };
 }  // namespace file_manager
 

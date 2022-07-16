@@ -1,3 +1,5 @@
 skym@chromium.org
 tedchoc@chromium.org
 twellington@chromium.org
+
+per-file *Incognito*=file://chrome/browser/incognito/OWNERS

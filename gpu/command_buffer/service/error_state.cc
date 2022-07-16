@@ -21,6 +21,10 @@ namespace gles2 {
 class ErrorStateImpl : public ErrorState {
  public:
   explicit ErrorStateImpl(ErrorStateClient* client, Logger* logger);
+
+  ErrorStateImpl(const ErrorStateImpl&) = delete;
+  ErrorStateImpl& operator=(const ErrorStateImpl&) = delete;
+
   ~ErrorStateImpl() override;
 
   uint32_t GetGLError() override;
@@ -70,8 +74,6 @@ class ErrorStateImpl : public ErrorState {
 
   ErrorStateClient* client_;
   Logger* logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorStateImpl);
 };
 
 ErrorState::ErrorState() = default;
@@ -219,4 +221,3 @@ void ErrorStateImpl::ClearRealGLErrors(
 
 }  // namespace gles2
 }  // namespace gpu
-

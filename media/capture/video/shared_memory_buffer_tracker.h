@@ -20,6 +20,11 @@ namespace media {
 class SharedMemoryBufferTracker final : public VideoCaptureBufferTracker {
  public:
   SharedMemoryBufferTracker();
+
+  SharedMemoryBufferTracker(const SharedMemoryBufferTracker&) = delete;
+  SharedMemoryBufferTracker& operator=(const SharedMemoryBufferTracker&) =
+      delete;
+
   ~SharedMemoryBufferTracker() override;
 
   // Implementation of VideoCaptureBufferTracker:
@@ -39,8 +44,6 @@ class SharedMemoryBufferTracker final : public VideoCaptureBufferTracker {
  private:
   base::UnsafeSharedMemoryRegion region_;
   base::WritableSharedMemoryMapping mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedMemoryBufferTracker);
 };
 
 }  // namespace media

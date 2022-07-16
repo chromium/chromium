@@ -286,13 +286,30 @@ class CSSChecker(object):
       return errors
 
     def one_selector_per_line(contents):
+      # Ignore all patterns nested in :any(), :is().
       any_reg = re.compile(
           r"""
           :(?:
           (?:-webkit-)?any     # :-webkit-any(a, b, i) selector
           |is                  # :is(...) selector
-          )\(.*?\)
+          )\(
           """, re.DOTALL | re.VERBOSE)
+      # Iteratively remove nested :is(), :any() patterns from |contents|.
+      while True:
+        m = re.search(any_reg, contents)
+        if m is None:
+          break
+        start, end = m.span()
+        # Find corresponding right parenthesis.
+        pcount = 1
+        while end < len(contents) and pcount > 0:
+          if contents[end] == '(':
+            pcount += 1
+          elif contents[end] == ')':
+            pcount -= 1
+          end += 1
+        contents = contents[:start] + contents[end:]
+
       multi_sels_reg = re.compile(r"""
           (?:}\s*)?            # ignore 0% { blah: blah; }, from @keyframes
           ([^,]+,(?=[^{}]+?{)  # selector junk {, not in a { rule }
@@ -300,7 +317,7 @@ class CSSChecker(object):
           """,
           re.MULTILINE | re.VERBOSE)
       errors = []
-      for b in re.finditer(multi_sels_reg, re.sub(any_reg, '', contents)):
+      for b in re.finditer(multi_sels_reg, contents):
         errors.append('    ' + b.group(1).strip().splitlines()[-1:][0])
       return errors
 

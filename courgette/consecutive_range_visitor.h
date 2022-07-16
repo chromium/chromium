@@ -30,6 +30,9 @@ class ConsecutiveRangeVisitor {
     advance();
   }
 
+  ConsecutiveRangeVisitor(const ConsecutiveRangeVisitor&) = delete;
+  ConsecutiveRangeVisitor& operator=(const ConsecutiveRangeVisitor&) = delete;
+
   // Returns whether there are more ranges to traverse.
   bool has_more() const { return tail_ != end_; }
 
@@ -50,8 +53,6 @@ class ConsecutiveRangeVisitor {
   InputIterator tail_;  // The trailing pionter of a range (inclusive).
   InputIterator head_;  // The leading pointer of a range (exclusive).
   InputIterator end_;   // Store the end pointer so we know when to stop.
-
-  DISALLOW_COPY_AND_ASSIGN(ConsecutiveRangeVisitor);
 };
 
 }  // namespace courgette

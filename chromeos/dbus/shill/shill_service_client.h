@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/shill/shill_client_helper.h"
 
 namespace base {
@@ -135,6 +134,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
   // Returns the global instance if initialized. May return null.
   static ShillServiceClient* Get();
 
+  ShillServiceClient(const ShillServiceClient&) = delete;
+  ShillServiceClient& operator=(const ShillServiceClient&) = delete;
+
   // Adds a property changed |observer| to the service at |service_path|.
   virtual void AddPropertyChangedObserver(
       const dbus::ObjectPath& service_path,
@@ -223,9 +225,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
 
   // Calls the RequestTrafficCounters method.
   // |callback| is called after the method call succeeds.
-  virtual void RequestTrafficCounters(const dbus::ObjectPath& service_path,
-                                      ListValueCallback callback,
-                                      ErrorCallback error_callback) = 0;
+  virtual void RequestTrafficCounters(
+      const dbus::ObjectPath& service_path,
+      DBusMethodCallback<base::Value> callback) = 0;
 
   // Calls the ResetTrafficCounters method.
   // |callback| is called after the method call succeeds.
@@ -242,9 +244,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
   // Initialize/Shutdown should be used instead.
   ShillServiceClient();
   virtual ~ShillServiceClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShillServiceClient);
 };
 
 }  // namespace chromeos

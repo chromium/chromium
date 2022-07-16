@@ -36,6 +36,10 @@ class AwSafeBrowsingBlockingPage : public safe_browsing::BaseBlockingPage {
 
   ~AwSafeBrowsingBlockingPage() override;
 
+  // safe_browsing::BaseBlockingPage:
+  void CreatedPostCommitErrorPageNavigation(
+      content::NavigationHandle* error_page_navigation_handle) override;
+
  protected:
   // Used to specify which BaseSafeBrowsingErrorUI to instantiate, and
   // parameters they require.

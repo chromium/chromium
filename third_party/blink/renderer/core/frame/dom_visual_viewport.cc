@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 
 namespace blink {
 
@@ -92,8 +93,8 @@ float DOMVisualViewport::pageLeft() const {
     return 0;
 
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-  float viewport_x = page->GetVisualViewport().GetScrollOffset().Width() +
-                     view->LayoutViewport()->GetScrollOffset().Width();
+  float viewport_x = page->GetVisualViewport().GetScrollOffset().width() +
+                     view->LayoutViewport()->GetScrollOffset().width();
   return AdjustForAbsoluteZoom::AdjustScroll(viewport_x,
                                              frame->PageZoomFactor());
 }
@@ -112,8 +113,8 @@ float DOMVisualViewport::pageTop() const {
     return 0;
 
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-  float viewport_y = page->GetVisualViewport().GetScrollOffset().Height() +
-                     view->LayoutViewport()->GetScrollOffset().Height();
+  float viewport_y = page->GetVisualViewport().GetScrollOffset().height() +
+                     view->LayoutViewport()->GetScrollOffset().height();
   return AdjustForAbsoluteZoom::AdjustScroll(viewport_y,
                                              frame->PageZoomFactor());
 }
@@ -129,8 +130,8 @@ double DOMVisualViewport::width() const {
         DocumentUpdateReason::kJavaScript);
     auto* scrollable_area = frame->View()->LayoutViewport();
     float width =
-        scrollable_area->VisibleContentRect(kExcludeScrollbars).Width();
-    return AdjustForAbsoluteZoom::AdjustInt(clampTo<int>(ceilf(width)),
+        scrollable_area->VisibleContentRect(kExcludeScrollbars).width();
+    return AdjustForAbsoluteZoom::AdjustInt(ClampTo<int>(ceilf(width)),
                                             frame->PageZoomFactor());
   }
 
@@ -151,8 +152,8 @@ double DOMVisualViewport::height() const {
         DocumentUpdateReason::kJavaScript);
     auto* scrollable_area = frame->View()->LayoutViewport();
     float height =
-        scrollable_area->VisibleContentRect(kExcludeScrollbars).Height();
-    return AdjustForAbsoluteZoom::AdjustInt(clampTo<int>(ceilf(height)),
+        scrollable_area->VisibleContentRect(kExcludeScrollbars).height();
+    return AdjustForAbsoluteZoom::AdjustInt(ClampTo<int>(ceilf(height)),
                                             frame->PageZoomFactor());
   }
 
@@ -174,6 +175,41 @@ double DOMVisualViewport::scale() const {
     return page->GetVisualViewport().ScaleForVisualViewport();
 
   return 0;
+}
+
+absl::optional<HeapVector<Member<DOMRect>>> DOMVisualViewport::segments()
+    const {
+  LocalFrame* frame = window_->GetFrame();
+  if (!frame || !frame->IsMainFrame())
+    return absl::nullopt;
+
+  WebVector<gfx::Rect> web_segments =
+      frame->GetWidgetForLocalRoot()->WindowSegments();
+
+  // If there is a single segment, return null as authors should use other
+  // properties on VisualViewport to determine the size.
+  if (web_segments.size() <= 1)
+    return absl::nullopt;
+
+  // The rect passed to us from content is in DIP, relative to the main
+  // frame/widget. This doesn't take the page's zoom factor into account so we
+  // must scale by the inverse of the page zoom in order to get correct client
+  // coordinates.
+  // Note that when use-zoom-for-dsf is enabled, WindowToViewportScalar will
+  // be the device scale factor, and PageZoomFactor will be the combination
+  // of the device scale factor and the zoom percent of the page.
+  HeapVector<Member<DOMRect>> viewport_segments;
+  const float dips_to_blink =
+      frame->GetWidgetForLocalRoot()->DIPsToBlinkSpace(1.0f);
+  const float page_zoom_factor = frame->PageZoomFactor();
+  const float scale_factor = dips_to_blink / page_zoom_factor;
+  for (auto const& web_segment : web_segments) {
+    blink::FloatQuad quad = blink::FloatQuad(IntRect(web_segment));
+    quad.Scale(scale_factor, scale_factor);
+    viewport_segments.push_back(DOMRect::FromFloatRect(quad.BoundingBox()));
+  }
+
+  return viewport_segments;
 }
 
 }  // namespace blink

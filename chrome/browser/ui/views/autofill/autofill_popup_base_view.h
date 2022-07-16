@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -74,8 +73,8 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // boundaries. Should be overridden together with CreateBorder.
   void UpdateClipPath();
 
-  // Returns the bounds of the containing window in screen space.
-  gfx::Rect GetWindowBounds() const;
+  // Returns the bounds of the containing browser window in screen space.
+  gfx::Rect GetTopWindowBounds() const;
 
   // Returns the bounds of the content area in screen space.
   gfx::Rect GetContentAreaBounds() const;
@@ -86,6 +85,9 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   virtual bool DoUpdateBoundsAndRedrawPopup();
 
   const AutofillPopupViewDelegate* delegate() const { return delegate_; }
+
+  // Returns the border to be applied to the popup.
+  virtual std::unique_ptr<views::Border> CreateBorder();
 
  private:
   friend class AutofillPopupBaseViewTest;
@@ -107,9 +109,6 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // Hide the controller of this view. This assumes that doing so will
   // eventually hide this view in the process.
   void HideController(PopupHidingReason reason);
-
-  // Returns the border to be applied to the popup.
-  std::unique_ptr<views::Border> CreateBorder();
 
   // Must return the container view for this popup.
   gfx::NativeView container_view();

@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/hash/hash.h"
-#include "base/macros.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database_index_interface.h"
 #include "chrome/browser/sync_file_system/drive_backend/tracker_id_set.h"
 
@@ -56,6 +55,9 @@ struct DatabaseContents {
 // Maintains indexes of MetadataDatabase on memory.
 class MetadataDatabaseIndex : public MetadataDatabaseIndexInterface {
  public:
+  MetadataDatabaseIndex(const MetadataDatabaseIndex&) = delete;
+  MetadataDatabaseIndex& operator=(const MetadataDatabaseIndex&) = delete;
+
   ~MetadataDatabaseIndex() override;
 
   static std::unique_ptr<MetadataDatabaseIndex> Create(LevelDBWrapper* db);
@@ -161,8 +163,6 @@ class MetadataDatabaseIndex : public MetadataDatabaseIndexInterface {
 
   DirtyTrackers dirty_trackers_;
   DirtyTrackers demoted_dirty_trackers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetadataDatabaseIndex);
 };
 
 }  // namespace drive_backend

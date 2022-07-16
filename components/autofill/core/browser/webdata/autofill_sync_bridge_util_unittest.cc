@@ -20,7 +20,9 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/entity_data.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/autofill_offer_specifics.pb.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -34,6 +36,9 @@ class TestAutofillTable : public AutofillTable {
   explicit TestAutofillTable(std::vector<CreditCard> cards_on_disk)
       : cards_on_disk_(cards_on_disk) {}
 
+  TestAutofillTable(const TestAutofillTable&) = delete;
+  TestAutofillTable& operator=(const TestAutofillTable&) = delete;
+
   ~TestAutofillTable() override {}
 
   bool GetServerCreditCards(
@@ -45,8 +50,6 @@ class TestAutofillTable : public AutofillTable {
 
  private:
   std::vector<CreditCard> cards_on_disk_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillTable);
 };
 
 EntityData SpecificsToEntity(const sync_pb::AutofillWalletSpecifics& specifics,
@@ -61,10 +64,12 @@ EntityData SpecificsToEntity(const sync_pb::AutofillWalletSpecifics& specifics,
 class AutofillSyncBridgeUtilTest : public testing::Test {
  public:
   AutofillSyncBridgeUtilTest() {}
-  ~AutofillSyncBridgeUtilTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillSyncBridgeUtilTest);
+  AutofillSyncBridgeUtilTest(const AutofillSyncBridgeUtilTest&) = delete;
+  AutofillSyncBridgeUtilTest& operator=(const AutofillSyncBridgeUtilTest&) =
+      delete;
+
+  ~AutofillSyncBridgeUtilTest() override {}
 };
 
 // Tests that PopulateWalletTypesFromSyncData behaves as expected.

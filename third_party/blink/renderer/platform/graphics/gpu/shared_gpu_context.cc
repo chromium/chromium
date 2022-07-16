@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"

@@ -13,6 +13,8 @@
 
 namespace cc {
 
+struct CommitState;
+
 class StubLayerTreeHostClient : public LayerTreeHostClient {
  public:
   ~StubLayerTreeHostClient() override;
@@ -40,8 +42,8 @@ class StubLayerTreeHostClient : public LayerTreeHostClient {
   void RequestNewLayerTreeFrameSink() override {}
   void DidInitializeLayerTreeFrameSink() override {}
   void DidFailToInitializeLayerTreeFrameSink() override {}
-  void WillCommit() override {}
-  void DidCommit(base::TimeTicks) override {}
+  void WillCommit(CommitState*) override {}
+  void DidCommit(base::TimeTicks, base::TimeTicks) override {}
   void DidCommitAndDrawFrame() override {}
   void DidObserveFirstScrollDelay(
       base::TimeDelta first_scroll_delay,

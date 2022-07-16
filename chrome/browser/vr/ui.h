@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/version.h"
 #include "chrome/browser/vr/assets_load_status.h"
@@ -64,6 +63,9 @@ class VR_UI_EXPORT Ui : public UiInterface,
      std::unique_ptr<TextInputDelegate> text_input_delegate,
      std::unique_ptr<AudioDelegate> audio_delegate,
      const UiInitialState& ui_initial_state);
+
+  Ui(const Ui&) = delete;
+  Ui& operator=(const Ui&) = delete;
 
   ~Ui() override;
 
@@ -235,8 +237,6 @@ class VR_UI_EXPORT Ui : public UiInterface,
   std::unique_ptr<AudioDelegate> audio_delegate_;
 
   base::WeakPtrFactory<Ui> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Ui);
 };
 
 }  // namespace vr

@@ -34,6 +34,9 @@ class RenderbufferAttachment
       : renderbuffer_(renderbuffer) {
   }
 
+  RenderbufferAttachment(const RenderbufferAttachment&) = delete;
+  RenderbufferAttachment& operator=(const RenderbufferAttachment&) = delete;
+
   GLsizei width() const override { return renderbuffer_->width(); }
 
   GLsizei height() const override { return renderbuffer_->height(); }
@@ -132,8 +135,6 @@ class RenderbufferAttachment
 
  private:
   scoped_refptr<Renderbuffer> renderbuffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderbufferAttachment);
 };
 
 class TextureAttachment
@@ -148,6 +149,9 @@ class TextureAttachment
         samples_(samples),
         layer_(layer) {
   }
+
+  TextureAttachment(const TextureAttachment&) = delete;
+  TextureAttachment& operator=(const TextureAttachment&) = delete;
 
   GLsizei width() const override {
     GLsizei temp_width = 0;
@@ -314,8 +318,6 @@ class TextureAttachment
   GLint level_;
   GLsizei samples_;
   GLint layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextureAttachment);
 };
 
 FramebufferManager::FramebufferManager(

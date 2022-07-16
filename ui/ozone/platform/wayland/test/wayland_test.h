@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/buildflags.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -38,6 +39,10 @@ class WaylandScreen;
 class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
  public:
   WaylandTest();
+
+  WaylandTest(const WaylandTest&) = delete;
+  WaylandTest& operator=(const WaylandTest&) = delete;
+
   ~WaylandTest() override;
 
   void SetUp() override;
@@ -71,6 +76,8 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   std::unique_ptr<WaylandScreen> screen_;
   std::unique_ptr<WaylandWindow> window_;
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
+  std::vector<base::Feature> enabled_features_{ui::kWaylandOverlayDelegation};
+  std::vector<base::Feature> disabled_features_;
 
  private:
   bool initialized_ = false;
@@ -81,8 +88,6 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
 
   std::unique_ptr<KeyboardLayoutEngine> keyboard_layout_engine_;
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandTest);
 };
 
 }  // namespace ui

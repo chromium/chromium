@@ -9,6 +9,7 @@
 #include "base/clang_profiling_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_restrictions.h"
@@ -27,6 +28,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
+#include "content/common/android/cpu_affinity_setter.h"
 #endif
 
 #if defined(OS_WIN)
@@ -87,6 +89,13 @@ void BrowserProcessIOThread::Run(base::RunLoop* run_loop) {
   if (!thread_name().empty()) {
     base::android::AttachCurrentThreadWithName(thread_name());
   }
+
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          features::kBigLittleScheduling,
+          features::kBigLittleSchedulingBrowserIOBigParam, false)) {
+    SetCpuAffinityForCurrentThread(base::CpuAffinityMode::kBigCoresOnly);
+  }
+
 #endif
 
   IOThreadRun(run_loop);
@@ -96,12 +105,8 @@ void BrowserProcessIOThread::CleanUp() {
   DCHECK_CALLED_ON_VALID_THREAD(browser_thread_checker_);
 
   // Run extra cleanup if this thread represents BrowserThread::IO.
-  if (BrowserThread::CurrentlyOn(BrowserThread::IO)) {
+  if (BrowserThread::CurrentlyOn(BrowserThread::IO))
     IOThreadCleanUp();
-
-    if (!base::FeatureList::IsEnabled(features::kProcessHostOnUI))
-      ProcessHostCleanUp();
-  }
 
   notification_service_.reset();
 
@@ -168,8 +173,7 @@ void BrowserProcessIOThread::ProcessHostCleanUp() {
       base::ScopedAllowBaseSyncPrimitives scoped_allow_base_sync_primitives;
       const base::TimeTicks start_time = base::TimeTicks::Now();
       process.WaitForExitWithTimeout(
-          base::TimeDelta::FromSeconds(kMaxSecondsToWaitForNetworkProcess),
-          nullptr);
+          base::Seconds(kMaxSecondsToWaitForNetworkProcess), nullptr);
       // Record time spent for the method call.
       base::TimeDelta network_wait_time = base::TimeTicks::Now() - start_time;
       UMA_HISTOGRAM_TIMES("NetworkService.ShutdownTime", network_wait_time);

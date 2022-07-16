@@ -18,6 +18,10 @@
 namespace base {
 namespace internal {
 
+namespace {
+constexpr int kPartitionNumSystemPagesPerSlotSpanBits = 8;
+}
+
 template <bool thread_safe>
 struct PartitionBucket {
   // Accessed most in hot path => goes first. Only nullptr for invalid buckets,
@@ -27,7 +31,8 @@ struct PartitionBucket {
   SlotSpanMetadata<thread_safe>* empty_slot_spans_head;
   SlotSpanMetadata<thread_safe>* decommitted_slot_spans_head;
   uint32_t slot_size;
-  uint32_t num_system_pages_per_slot_span : 8;
+  uint32_t num_system_pages_per_slot_span
+      : kPartitionNumSystemPagesPerSlotSpanBits;
   uint32_t num_full_slot_spans : 24;
 
   // `slot_size_reciprocal` is used to improve the performance of
@@ -67,11 +72,11 @@ struct PartitionBucket {
 
   ALWAYS_INLINE bool CanStoreRawSize() const {
     // For direct-map as well as single-slot slot spans (recognized by checking
-    // against |MaxSystemPagesPerSlotSpan()|), we have some spare metadata
-    // space in subsequent PartitionPage to store the raw size. It isn't only
-    // metadata space though, slot spans that have more than one slot can't have
-    // raw size stored, because we wouldn't know which slot it applies to.
-    if (LIKELY(slot_size <= MaxSystemPagesPerSlotSpan() * SystemPageSize()))
+    // against |MaxRegularSlotSpanSize()|), we have some spare metadata space in
+    // subsequent PartitionPage to store the raw size. It isn't only metadata
+    // space though, slot spans that have more than one slot can't have raw size
+    // stored, because we wouldn't know which slot it applies to.
+    if (LIKELY(slot_size <= MaxRegularSlotSpanSize()))
       return false;
 
     PA_DCHECK((slot_size % SystemPageSize()) == 0);
@@ -89,18 +94,17 @@ struct PartitionBucket {
     return !num_system_pages_per_slot_span;
   }
   ALWAYS_INLINE size_t get_bytes_per_span() const {
-    // TODO(ajwong): Change to CheckedMul. https://crbug.com/787153
-    // https://crbug.com/680657
-    return num_system_pages_per_slot_span * SystemPageSize();
+    // Cannot overflow, num_system_pages_per_slot_span is a bitfield, and 255
+    // pages fit in a size_t.
+    static_assert(kPartitionNumSystemPagesPerSlotSpanBits <= 8, "");
+    return num_system_pages_per_slot_span << SystemPageShift();
   }
   ALWAYS_INLINE uint16_t get_slots_per_span() const {
-    // TODO(ajwong): Change to CheckedMul. https://crbug.com/787153
-    // https://crbug.com/680657
-    return static_cast<uint16_t>(get_bytes_per_span() / slot_size);
+    return static_cast<uint16_t>(GetSlotNumber(get_bytes_per_span()));
   }
   // Returns a natural number of partition pages (calculated by
-  // get_system_pages_per_slot_span()) to allocate from the current
-  // super page when the bucket runs out of slots.
+  // ComputeSystemPagesPerSlotSpan()) to allocate from the current super page
+  // when the bucket runs out of slots.
   ALWAYS_INLINE uint16_t get_pages_per_slot_span() const {
     // Rounds up to nearest multiple of NumSystemPagesPerPartitionPage().
     return (num_system_pages_per_slot_span +
@@ -121,7 +125,7 @@ struct PartitionBucket {
   bool SetNewActiveSlotSpan();
 
   // Returns a slot number starting from the beginning of the slot span.
-  ALWAYS_INLINE size_t GetSlotNumber(size_t offset_in_slot_span) {
+  ALWAYS_INLINE size_t GetSlotNumber(size_t offset_in_slot_span) const {
     // See the static assertion for `kReciprocalShift` above.
     PA_DCHECK(offset_in_slot_span <= kMaxBucketed);
     PA_DCHECK(slot_size <= kMaxBucketed);
@@ -133,6 +137,9 @@ struct PartitionBucket {
     return offset_in_slot;
   }
 
+  // Sort the freelists of all slot spans.
+  void SortSlotSpanFreelists();
+
  private:
   static NOINLINE void OnFull();
 
@@ -142,7 +149,7 @@ struct PartitionBucket {
   // allocate for the given slot_size to minimize wasted space. It uses a
   // heuristic that looks at number of bytes wasted after the last slot and
   // attempts to account for the PTE usage of each system page.
-  uint8_t get_system_pages_per_slot_span();
+  static uint8_t ComputeSystemPagesPerSlotSpan(size_t slot_size);
 
   // Allocates a new slot span with size |num_partition_pages| from the
   // current extent. Metadata within this slot span will be initialized.
@@ -154,7 +161,8 @@ struct PartitionBucket {
 
   // Allocates a new super page from the current extent. All slot-spans will be
   // in the decommitted state. Returns nullptr on error.
-  ALWAYS_INLINE void* AllocNewSuperPage(PartitionRoot<thread_safe>* root)
+  ALWAYS_INLINE void* AllocNewSuperPage(PartitionRoot<thread_safe>* root,
+                                        int flags)
       EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   // Each bucket allocates a slot span when it runs out of slots.

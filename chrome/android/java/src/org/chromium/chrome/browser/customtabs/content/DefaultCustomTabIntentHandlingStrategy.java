@@ -9,12 +9,15 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandler;
+import org.chromium.chrome.browser.attribution_reporting.AttributionParameters;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabNavigationEventObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.content_public.browser.AttributionReporter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 
@@ -32,16 +35,21 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     private final CustomTabActivityNavigationController mNavigationController;
     private final CustomTabNavigationEventObserver mNavigationEventObserver;
     private final Lazy<CustomTabObserver> mCustomTabObserver;
+    private final AttributionReporter mAttributionReporter;
+    private final AttributionIntentHandler mAttributionIntentHandler;
 
     @Inject
     public DefaultCustomTabIntentHandlingStrategy(CustomTabActivityTabProvider tabProvider,
             CustomTabActivityNavigationController navigationController,
             CustomTabNavigationEventObserver navigationEventObserver,
-            Lazy<CustomTabObserver> customTabObserver) {
+            Lazy<CustomTabObserver> customTabObserver, AttributionReporter attributionReporter,
+            AttributionIntentHandler attributionIntentHandler) {
         mTabProvider = tabProvider;
         mNavigationController = navigationController;
         mNavigationEventObserver = navigationEventObserver;
         mCustomTabObserver = customTabObserver;
+        mAttributionReporter = attributionReporter;
+        mAttributionIntentHandler = attributionIntentHandler;
     }
 
     @Override
@@ -100,6 +108,19 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
                 mCustomTabObserver.get().onPageLoadStarted(tab, gurl);
                 mNavigationEventObserver.onPageLoadStarted(tab, gurl);
             }
+
+            if (initialTabCreationMode == TabCreationMode.HIDDEN) {
+                AttributionParameters attributionParams =
+                        mAttributionIntentHandler.getAndClearPendingAttributionParameters(
+                                intentDataProvider.getIntent());
+                if (attributionParams != null) {
+                    mAttributionReporter.reportAttributionForCurrentNavigation(tab.getWebContents(),
+                            attributionParams.getSourcePackageName(),
+                            attributionParams.getSourceEventId(),
+                            attributionParams.getDestination(), attributionParams.getReportTo(),
+                            attributionParams.getExpiry());
+                }
+            }
             return;
         }
 
@@ -111,6 +132,8 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
                 && UrlUtilities.urlsFragmentsDiffer(speculatedUrl, url)) {
             params.setShouldReplaceCurrentEntry(true);
         }
+
+        IntentHandler.setAttributionParamsFromIntent(params, intentDataProvider.getIntent());
 
         mNavigationController.navigate(params, getTimestamp(intentDataProvider));
     }

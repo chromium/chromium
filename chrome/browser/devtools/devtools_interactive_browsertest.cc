@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -29,8 +28,11 @@ class CheckWaiter {
   CheckWaiter(base::RepeatingCallback<bool()> callback, bool expected)
       : callback_(callback),
         expected_(expected),
-        timeout_(base::Time::NowFromSystemTime() +
-                 base::TimeDelta::FromSeconds(1)) {}
+        timeout_(base::Time::NowFromSystemTime() + base::Seconds(1)) {}
+
+  CheckWaiter(const CheckWaiter&) = delete;
+  CheckWaiter& operator=(const CheckWaiter&) = delete;
+
   ~CheckWaiter() = default;
 
   // Blocks until the browser window becomes maximized.
@@ -64,8 +66,6 @@ class CheckWaiter {
   base::Time timeout_;
   // The waiter's RunLoop quit closure.
   base::RepeatingClosure quit_;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckWaiter);
 };
 
 class DevToolsManagerDelegateTest : public InProcessBrowserTest {

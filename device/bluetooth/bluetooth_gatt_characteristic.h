@@ -86,6 +86,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristic {
   using ErrorCallback =
       base::OnceCallback<void(BluetoothGattService::GattErrorCode)>;
 
+  BluetoothGattCharacteristic(const BluetoothGattCharacteristic&) = delete;
+  BluetoothGattCharacteristic& operator=(const BluetoothGattCharacteristic&) =
+      delete;
+
   // Identifier used to uniquely identify a GATT characteristic object. This is
   // different from the characteristic UUID: while multiple characteristics with
   // the same UUID can exist on a Bluetooth device, the identifier returned from
@@ -105,9 +109,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristic {
  protected:
   BluetoothGattCharacteristic();
   virtual ~BluetoothGattCharacteristic();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattCharacteristic);
 };
 
 }  // namespace device

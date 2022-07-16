@@ -117,6 +117,10 @@ class ImeListView : public TrayDetailedView {
 class ASH_EXPORT ImeListViewTestApi {
  public:
   explicit ImeListViewTestApi(ImeListView* ime_list_view);
+
+  ImeListViewTestApi(const ImeListViewTestApi&) = delete;
+  ImeListViewTestApi& operator=(const ImeListViewTestApi&) = delete;
+
   virtual ~ImeListViewTestApi();
 
   views::View* GetToggleView() const;
@@ -127,8 +131,6 @@ class ASH_EXPORT ImeListViewTestApi {
 
  private:
   ImeListView* ime_list_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImeListViewTestApi);
 };
 
 }  // namespace ash

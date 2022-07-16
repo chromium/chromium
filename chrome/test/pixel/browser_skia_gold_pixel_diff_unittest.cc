@@ -47,8 +47,9 @@ class BrowserSkiaGoldPixelDiffTest : public views::test::WidgetTest {
     cmd_line->AppendSwitchASCII("git-revision", "test");
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserSkiaGoldPixelDiffTest);
+  BrowserSkiaGoldPixelDiffTest(const BrowserSkiaGoldPixelDiffTest&) = delete;
+  BrowserSkiaGoldPixelDiffTest& operator=(const BrowserSkiaGoldPixelDiffTest&) =
+      delete;
 };
 
 TEST_F(BrowserSkiaGoldPixelDiffTest, CompareScreenshotByView) {

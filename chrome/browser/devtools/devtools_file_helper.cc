@@ -11,13 +11,12 @@
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
+#include "base/json/values_util.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -28,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/download_manager.h"
@@ -39,8 +39,11 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -63,6 +66,9 @@ typedef base::OnceCallback<void(void)> CanceledCallback;
 
 class SelectFileDialog : public ui::SelectFileDialog::Listener {
  public:
+  SelectFileDialog(const SelectFileDialog&) = delete;
+  SelectFileDialog& operator=(const SelectFileDialog&) = delete;
+
   static void Show(SelectedCallback selected_callback,
                    CanceledCallback canceled_callback,
                    WebContents* web_contents,
@@ -123,8 +129,6 @@ class SelectFileDialog : public ui::SelectFileDialog::Listener {
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   SelectedCallback selected_callback_;
   CanceledCallback canceled_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialog);
 };
 
 void WriteToFile(const base::FilePath& path, const std::string& content) {
@@ -179,7 +183,7 @@ DevToolsFileHelper::FileSystem CreateFileSystemStruct(
     const std::string& type,
     const std::string& file_system_id,
     const std::string& file_system_path) {
-  const GURL origin = web_contents->GetURL().GetOrigin();
+  const GURL origin = web_contents->GetURL().DeprecatedGetOriginAsURL();
   std::string file_system_name =
       storage::GetIsolatedFileSystemName(origin, file_system_id);
   std::string root_url = storage::GetIsolatedFileSystemRootURIString(
@@ -249,7 +253,7 @@ void DevToolsFileHelper::Save(const std::string& url,
 
   const base::Value* path_value;
   if (file_map->Get(base::MD5String(url), &path_value)) {
-    absl::optional<base::FilePath> path = util::ValueToFilePath(*path_value);
+    absl::optional<base::FilePath> path = base::ValueToFilePath(*path_value);
     if (path)
       initial_path = std::move(*path);
   }
@@ -302,7 +306,7 @@ void DevToolsFileHelper::SaveAsFileSelected(const std::string& url,
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               prefs::kDevToolsEditedFiles);
   base::DictionaryValue* files_map = update.Get();
-  files_map->SetKey(base::MD5String(url), util::FilePathToValue(path));
+  files_map->SetKey(base::MD5String(url), base::FilePathToValue(path));
   std::string file_system_path = path.AsUTF8Unsafe();
   std::move(callback).Run(file_system_path);
   file_task_runner_->PostTask(FROM_HERE, BindOnce(&WriteToFile, path, content));
@@ -322,8 +326,9 @@ void DevToolsFileHelper::AddFileSystem(
 void DevToolsFileHelper::UpgradeDraggedFileSystemPermissions(
     const std::string& file_system_url,
     const ShowInfoBarCallback& show_info_bar_callback) {
-  storage::FileSystemURL root_url =
-      isolated_context()->CrackURL(GURL(file_system_url));
+  const GURL gurl(file_system_url);
+  storage::FileSystemURL root_url = isolated_context()->CrackURL(
+      gurl, blink::StorageKey(url::Origin::Create(gurl)));
   if (!root_url.is_valid() || !root_url.path().empty())
     return;
 
@@ -376,6 +381,14 @@ void DevToolsFileHelper::FailedToAddFileSystem(const std::string& error) {
   delegate_->FileSystemAdded(error, nullptr);
 }
 
+namespace {
+
+void RunOnUIThread(base::OnceClosure callback) {
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(callback));
+}
+
+}  // namespace
+
 std::vector<DevToolsFileHelper::FileSystem>
 DevToolsFileHelper::GetFileSystems() {
   file_system_paths_ = GetAddedFileSystemPaths(profile_);
@@ -385,10 +398,12 @@ DevToolsFileHelper::GetFileSystems() {
         base::BindRepeating(&DevToolsFileHelper::FilePathsChanged,
                             weak_factory_.GetWeakPtr()),
         base::SequencedTaskRunnerHandle::Get()));
+    auto change_handler_on_ui = base::BindRepeating(
+        &DevToolsFileHelper::FileSystemPathsSettingChangedOnUI,
+        weak_factory_.GetWeakPtr());
     pref_change_registrar_.Add(
         prefs::kDevToolsFileSystemPaths,
-        base::BindRepeating(&DevToolsFileHelper::FileSystemPathsSettingChanged,
-                            base::Unretained(this)));
+        base::BindRepeating(RunOnUIThread, change_handler_on_ui));
   }
   for (auto file_system_path : file_system_paths_) {
     base::FilePath path =
@@ -442,7 +457,8 @@ void DevToolsFileHelper::ShowItemInFolder(const std::string& file_system_path) {
                      weak_factory_.GetWeakPtr(), path));
 }
 
-void DevToolsFileHelper::FileSystemPathsSettingChanged() {
+void DevToolsFileHelper::FileSystemPathsSettingChangedOnUI() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PathToType remaining;
   remaining.swap(file_system_paths_);
   DCHECK(file_watcher_.get());

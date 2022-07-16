@@ -36,7 +36,6 @@ extern const base::Feature
     kSyncAllowWalletDataInTransportModeWithCustomPassphrase;
 extern const base::Feature kSyncAutofillWalletOfferData;
 extern const base::Feature kSyncWifiConfigurations;
-extern const base::Feature kDecoupleSyncFromAndroidMasterSync;
 
 extern const base::Feature kSyncRequiresPoliciesLoaded;
 extern const base::FeatureParam<base::TimeDelta> kSyncPolicyLoadTimeout;
@@ -48,6 +47,10 @@ extern const base::Feature kSyncTrustedVaultPassphraseiOSRPC;
 extern const base::Feature kSyncTrustedVaultPassphraseRecovery;
 
 extern const base::Feature kSyncTrustedVaultPassphrasePromo;
+
+#if defined(OS_CHROMEOS)
+extern const base::Feature kSyncSettingsShowLacrosSideBySideWarning;
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace switches
 

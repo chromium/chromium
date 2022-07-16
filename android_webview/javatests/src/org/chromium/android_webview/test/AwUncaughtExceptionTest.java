@@ -109,6 +109,7 @@ public class AwUncaughtExceptionTest {
     @Before
     public void setUp() throws Exception {
         disableLifecycleThreadAssertion();
+        ThreadUtils.setThreadAssertsDisabledForTesting(true);
         mDefaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         mBackgroundThread = new BackgroundThread("background");
         mBackgroundThread.start();

@@ -175,6 +175,10 @@ base::Value GetCellularNetworkInfoValue(const NetworkState* network,
 class MobileSetupUIHTMLSource : public content::URLDataSource {
  public:
   MobileSetupUIHTMLSource();
+
+  MobileSetupUIHTMLSource(const MobileSetupUIHTMLSource&) = delete;
+  MobileSetupUIHTMLSource& operator=(const MobileSetupUIHTMLSource&) = delete;
+
   ~MobileSetupUIHTMLSource() override {}
 
   // content::URLDataSource implementation.
@@ -193,8 +197,6 @@ class MobileSetupUIHTMLSource : public content::URLDataSource {
 
  private:
   base::WeakPtrFactory<MobileSetupUIHTMLSource> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MobileSetupUIHTMLSource);
 };
 
 // The handler for Javascript messages related to the "register" view.
@@ -203,6 +205,10 @@ class MobileSetupHandler : public content::WebUIMessageHandler,
                            public NetworkStateHandlerObserver {
  public:
   MobileSetupHandler();
+
+  MobileSetupHandler(const MobileSetupHandler&) = delete;
+  MobileSetupHandler& operator=(const MobileSetupHandler&) = delete;
+
   ~MobileSetupHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -255,8 +261,6 @@ class MobileSetupHandler : public content::WebUIMessageHandler,
   // Initial value is true.
   bool lte_portal_reachable_;
   base::WeakPtrFactory<MobileSetupHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MobileSetupHandler);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -420,19 +424,19 @@ void MobileSetupHandler::Reset() {
 }
 
 void MobileSetupHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kJsApiStartActivation,
       base::BindRepeating(&MobileSetupHandler::HandleStartActivation,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kJsApiSetTransactionStatus,
       base::BindRepeating(&MobileSetupHandler::HandleSetTransactionStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kJsApiPaymentPortalLoad,
       base::BindRepeating(&MobileSetupHandler::HandlePaymentPortalLoad,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kJsGetDeviceInfo,
       base::BindRepeating(&MobileSetupHandler::HandleGetDeviceInfo,
                           base::Unretained(this)));
@@ -463,12 +467,12 @@ void MobileSetupHandler::HandleSetTransactionStatus(
     return;
 
   const size_t kSetTransactionStatusParamCount = 1;
-  if (args->GetSize() != kSetTransactionStatusParamCount)
+  if (args->GetList().size() != kSetTransactionStatusParamCount)
     return;
   // Get change callback function name.
-  std::string status;
-  if (!args->GetString(0, &status))
+  if (!args->GetList()[0].is_string())
     return;
+  std::string status = args->GetList()[0].GetString();
 
   ash::MobileActivator::GetInstance()->OnSetTransactionStatus(
       base::LowerCaseEqualsASCII(status, kJsApiResultOK));
@@ -480,12 +484,12 @@ void MobileSetupHandler::HandlePaymentPortalLoad(const base::ListValue* args) {
     return;
 
   const size_t kPaymentPortalLoadParamCount = 1;
-  if (args->GetSize() != kPaymentPortalLoadParamCount)
+  if (args->GetList().size() != kPaymentPortalLoadParamCount)
     return;
   // Get change callback function name.
-  std::string result;
-  if (!args->GetString(0, &result))
+  if (!args->GetList()[0].is_string())
     return;
+  std::string result = args->GetList()[0].GetString();
 
   ash::MobileActivator::GetInstance()->OnPortalLoaded(
       base::LowerCaseEqualsASCII(result, kJsApiResultOK));

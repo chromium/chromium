@@ -65,7 +65,7 @@ void ExtractDirectoryAndVBAFromString(absl::string_view content,
 
 // Extract only VBA content from a file that will be read.
 void ExtractVBAFromFile(const std::string &filename, VBACodeChunks *code_chunks,
-                        std::string *error);
+                        std::string *error, bool xor_decode_file = false);
 
 // Same as ExtractVBAFromFile, but the content is passed as a string.
 void ExtractVBAFromString(absl::string_view content, VBACodeChunks *code_chunks,

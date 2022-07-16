@@ -10,12 +10,11 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
-#include "base/macros.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/transform.h"
 #include "ui/views/controls/image_view.h"
 
 namespace gfx {
@@ -30,6 +29,11 @@ namespace ash {
 class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
  public:
   explicit StatusAreaOverflowButtonTray(Shelf* shelf);
+
+  StatusAreaOverflowButtonTray(const StatusAreaOverflowButtonTray&) = delete;
+  StatusAreaOverflowButtonTray& operator=(const StatusAreaOverflowButtonTray&) =
+      delete;
+
   ~StatusAreaOverflowButtonTray() override;
 
   enum State { CLICK_TO_EXPAND = 0, CLICK_TO_COLLAPSE };
@@ -73,8 +77,6 @@ class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
   State state_ = CLICK_TO_EXPAND;
 
   IconView* const icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusAreaOverflowButtonTray);
 };
 
 }  // namespace ash

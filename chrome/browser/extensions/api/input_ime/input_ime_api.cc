@@ -9,13 +9,16 @@
 #include "base/lazy_instance.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/common/extensions/api/input_method_private.h"
 #include "extensions/browser/extension_registry.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
-#include "ui/base/ime/chromeos/ime_keymap.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/ime_keymap.h"
 #include "ui/base/ime/constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+
+namespace {
 
 namespace input_ime = extensions::api::input_ime;
 namespace KeyEventHandled = extensions::api::input_ime::KeyEventHandled;
@@ -23,12 +26,11 @@ namespace SetComposition = extensions::api::input_ime::SetComposition;
 namespace CommitText = extensions::api::input_ime::CommitText;
 namespace SendKeyEvents = extensions::api::input_ime::SendKeyEvents;
 
-namespace {
 const char kErrorRouterNotAvailable[] = "The router is not available.";
 const char kErrorSetKeyEventsFail[] = "Could not send key events.";
 
-using chromeos::InputMethodEngine;
-using chromeos::InputMethodEngineBase;
+using ::ash::input_method::InputMethodEngine;
+using ::ash::input_method::InputMethodEngineBase;
 
 InputMethodEngine* GetEngineIfActive(Profile* profile,
                                      const std::string& extension_id,
@@ -434,7 +436,7 @@ void InputImeEventRouterFactory::RemoveProfile(Profile* profile) {
 
 ExtensionFunction::ResponseAction InputImeKeyEventHandledFunction::Run() {
   std::unique_ptr<KeyEventHandled::Params> params(
-      KeyEventHandled::Params::Create(*args_));
+      KeyEventHandled::Params::Create(args()));
   std::string error;
   InputMethodEngine* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
@@ -453,7 +455,7 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
   std::unique_ptr<SetComposition::Params> parent_params(
-      SetComposition::Params::Create(*args_));
+      SetComposition::Params::Create(args()));
   const SetComposition::Params::Parameters& params = parent_params->parameters;
   std::vector<InputMethodEngineBase::SegmentInfo> segments;
   if (params.segments) {
@@ -499,7 +501,7 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
   std::unique_ptr<CommitText::Params> parent_params(
-      CommitText::Params::Create(*args_));
+      CommitText::Params::Create(args()));
   const CommitText::Params::Parameters& params = parent_params->parameters;
   if (!engine->CommitText(params.context_id, base::UTF8ToUTF16(params.text),
                           &error)) {
@@ -520,7 +522,7 @@ ExtensionFunction::ResponseAction InputImeSendKeyEventsFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
   std::unique_ptr<SendKeyEvents::Params> parent_params(
-      SendKeyEvents::Params::Create(*args_));
+      SendKeyEvents::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(parent_params);
   const SendKeyEvents::Params::Parameters& params = parent_params->parameters;
 
@@ -544,6 +546,9 @@ InputImeAPI::InputImeAPI(content::BrowserContext* context)
 
   EventRouter* event_router = EventRouter::Get(browser_context_);
   event_router->RegisterObserver(this, input_ime::OnFocus::kEventName);
+  event_router->RegisterObserver(
+      this, api::input_method_private::OnFocus::kEventName);
+  event_router->RegisterObserver(this, input_ime::OnKeyEvent::kEventName);
 }
 
 InputImeAPI::~InputImeAPI() = default;

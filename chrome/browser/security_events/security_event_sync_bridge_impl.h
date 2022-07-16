@@ -8,13 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/security_events/security_event_sync_bridge.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
-#include "components/sync/protocol/sync.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
@@ -23,6 +21,11 @@ class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
   SecurityEventSyncBridgeImpl(
       syncer::OnceModelTypeStoreFactory store_factory,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+
+  SecurityEventSyncBridgeImpl(const SecurityEventSyncBridgeImpl&) = delete;
+  SecurityEventSyncBridgeImpl& operator=(const SecurityEventSyncBridgeImpl&) =
+      delete;
+
   ~SecurityEventSyncBridgeImpl() override;
 
   void RecordSecurityEvent(sync_pb::SecurityEventSpecifics specifics) override;
@@ -69,8 +72,6 @@ class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
   base::WeakPtrFactory<SecurityEventSyncBridgeImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityEventSyncBridgeImpl);
 };
 
 #endif  // CHROME_BROWSER_SECURITY_EVENTS_SECURITY_EVENT_SYNC_BRIDGE_IMPL_H_

@@ -22,6 +22,9 @@
 // visible.
 - (void)recordDeviceOrientationChanged:(UIDeviceOrientation)orientation;
 
+// Record metrics for when the user has tapped on the feed preview.
+- (void)recordDiscoverFeedPreviewTapped;
+
 // Record metrics for when the user selects the 'Learn More' item in the feed
 // header menu.
 - (void)recordHeaderMenuLearnMoreTapped;

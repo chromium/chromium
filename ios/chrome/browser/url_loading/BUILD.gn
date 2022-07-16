@@ -90,6 +90,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/browser/web_state_list",

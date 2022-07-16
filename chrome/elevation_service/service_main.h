@@ -23,6 +23,9 @@ class ServiceMain {
  public:
   static ServiceMain* GetInstance();
 
+  ServiceMain(const ServiceMain&) = delete;
+  ServiceMain& operator=(const ServiceMain&) = delete;
+
   // This function parses the command line and selects the action routine.
   bool InitWithCommandLine(const base::CommandLine* command_line);
 
@@ -105,8 +108,6 @@ class ServiceMain {
   base::WaitableEvent exit_signal_;
 
   friend class base::NoDestructor<ServiceMain>;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceMain);
 };
 
 }  // namespace elevation_service

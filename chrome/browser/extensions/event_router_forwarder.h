@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,6 +29,9 @@ class EventRouterForwarder
     : public base::RefCountedThreadSafe<EventRouterForwarder> {
  public:
   EventRouterForwarder();
+
+  EventRouterForwarder(const EventRouterForwarder&) = delete;
+  EventRouterForwarder& operator=(const EventRouterForwarder&) = delete;
 
   // Calls
   //   DispatchEventToRenderers(event_name, event_args, profile, event_url)
@@ -82,8 +84,6 @@ class EventRouterForwarder
 
  private:
   friend class base::RefCountedThreadSafe<EventRouterForwarder>;
-
-  DISALLOW_COPY_AND_ASSIGN(EventRouterForwarder);
 };
 
 }  // namespace extensions

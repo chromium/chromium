@@ -21,7 +21,7 @@ namespace ash {
 class FeaturePodControllerBase;
 
 // A toggle button with an icon used by feature pods and in other places.
-class FeaturePodIconButton : public views::ImageButton {
+class ASH_EXPORT FeaturePodIconButton : public views::ImageButton {
  public:
   // Used to determine how the button will behave when disabled.
   enum class DisabledButtonBehavior {
@@ -33,6 +33,10 @@ class FeaturePodIconButton : public views::ImageButton {
   };
 
   FeaturePodIconButton(PressedCallback callback, bool is_togglable);
+
+  FeaturePodIconButton(const FeaturePodIconButton&) = delete;
+  FeaturePodIconButton& operator=(const FeaturePodIconButton&) = delete;
+
   ~FeaturePodIconButton() override;
 
   // Change the toggle state. See FeaturePodButton::SetToggled.
@@ -54,6 +58,9 @@ class FeaturePodIconButton : public views::ImageButton {
   bool toggled() const { return toggled_; }
 
  private:
+  // For unit tests.
+  friend class BluetoothFeaturePodControllerTest;
+
   // Updates vector icon. Called by SetToggled to update the icon's color on
   // toggle state.
   void UpdateVectorIcon();
@@ -67,14 +74,16 @@ class FeaturePodIconButton : public views::ImageButton {
   DisabledButtonBehavior button_behavior_ = DisabledButtonBehavior::kNone;
 
   const gfx::VectorIcon* icon_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FeaturePodIconButton);
 };
 
 // Button internally used in FeaturePodButton. Should not be used directly.
-class FeaturePodLabelButton : public views::Button {
+class ASH_EXPORT FeaturePodLabelButton : public views::Button {
  public:
   explicit FeaturePodLabelButton(PressedCallback callback);
+
+  FeaturePodLabelButton(const FeaturePodLabelButton&) = delete;
+  FeaturePodLabelButton& operator=(const FeaturePodLabelButton&) = delete;
+
   ~FeaturePodLabelButton() override;
 
   // Set the text of label shown below the icon. See FeaturePodButton::SetLabel.
@@ -110,8 +119,6 @@ class FeaturePodLabelButton : public views::Button {
       AddEnabledChangedCallback(
           base::BindRepeating(&FeaturePodLabelButton::OnEnabledChanged,
                               base::Unretained(this)));
-
-  DISALLOW_COPY_AND_ASSIGN(FeaturePodLabelButton);
 };
 
 // A button in FeaturePodsView. These buttons are main entry points of features
@@ -124,6 +131,10 @@ class ASH_EXPORT FeaturePodButton : public views::View {
  public:
   FeaturePodButton(FeaturePodControllerBase* controller,
                    bool is_togglable = true);
+
+  FeaturePodButton(const FeaturePodButton&) = delete;
+  FeaturePodButton& operator=(const FeaturePodButton&) = delete;
+
   ~FeaturePodButton() override;
 
   // Set the vector icon shown in a circle.
@@ -185,6 +196,10 @@ class ASH_EXPORT FeaturePodButton : public views::View {
   FeaturePodIconButton* icon_button() const { return icon_button_; }
 
  private:
+  // For unit tests.
+  friend class BluetoothFeaturePodControllerTest;
+  friend class NetworkFeaturePodControllerTest;
+
   void OnEnabledChanged();
 
   // Owned by views hierarchy.
@@ -202,8 +217,6 @@ class ASH_EXPORT FeaturePodButton : public views::View {
       AddEnabledChangedCallback(
           base::BindRepeating(&FeaturePodButton::OnEnabledChanged,
                               base::Unretained(this)));
-
-  DISALLOW_COPY_AND_ASSIGN(FeaturePodButton);
 };
 
 }  // namespace ash

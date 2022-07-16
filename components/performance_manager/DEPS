@@ -1,5 +1,7 @@
 include_rules = [
+  "+components/memory_pressure",
   "+components/services/storage/public/cpp",
+  "+components/ukm",
   "+content/public/common",
   "+content/public/browser",
   "+content/public/test",

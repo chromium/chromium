@@ -47,7 +47,8 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
   // Require CT for all hosts (in the absence of policy).
   SetRequireCTForTesting(true);
 
-  ui_test_utils::NavigateToURL(browser(), https_server_ok.GetURL("/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), https_server_ok.GetURL("/")));
 
   // The page should initially be blocked.
   content::WebContents* tab =
@@ -68,10 +69,10 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
                POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                std::move(disabled_urls), nullptr);
   UpdateProviderPolicy(policies);
-  FlushBlacklistPolicy();
+  FlushBlocklistPolicy();
 
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server_ok.GetURL("/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("/simple.html")));
 
   // There should be no interstitial after the page loads.
   EXPECT_FALSE(IsShowingInterstitial(tab));
@@ -82,14 +83,14 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
   if (!content::IsOutOfProcessNetworkService())
     return;
 
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server_ok.GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("/title1.html")));
 
   SimulateNetworkServiceCrash();
   SetRequireCTForTesting(true);
 
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server_ok.GetURL("/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("/simple.html")));
 
   // There should be no interstitial after the page loads.
   EXPECT_FALSE(IsShowingInterstitial(tab));
@@ -107,7 +108,8 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
   // Require CT for all hosts (in the absence of policy).
   SetRequireCTForTesting(true);
 
-  ui_test_utils::NavigateToURL(browser(), https_server_ok.GetURL("/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), https_server_ok.GetURL("/")));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -140,10 +142,10 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
                POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                std::move(disabled_spkis), nullptr);
   UpdateProviderPolicy(policies);
-  FlushBlacklistPolicy();
+  FlushBlocklistPolicy();
 
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server_ok.GetURL("/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("/simple.html")));
 
   // Check we are no longer in the interstitial.
   EXPECT_EQ(u"OK",

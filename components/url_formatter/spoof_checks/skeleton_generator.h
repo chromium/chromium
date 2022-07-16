@@ -45,6 +45,11 @@ class SkeletonGenerator {
   // removal is a slow operation and should be avoided when possible.
   bool ShouldRemoveDiacriticsFromLabel(const icu::UnicodeString& label) const;
 
+  // Removes diacritics from |hostname| and returns the new string if the input
+  // only contains Latin-Greek-Cyrillic characters. Otherwise, returns the
+  // input string.
+  std::u16string MaybeRemoveDiacritics(base::StringPiece16 hostname);
+
  private:
   // Adds an additional mapping from |src_char| to |mapped_char| when generating
   // skeletons: If |host| contains |src_char|, |skeletons| will contain a new
@@ -54,6 +59,7 @@ class SkeletonGenerator {
                           int32_t src_char,
                           int32_t mapped_char,
                           Skeletons* skeletons);
+  void MaybeRemoveDiacritics(icu::UnicodeString& hostname);
 
   icu::UnicodeSet lgc_letters_n_ascii_;
 

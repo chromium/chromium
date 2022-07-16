@@ -127,19 +127,19 @@ std::string MediaCodecUtil::CodecToAndroidMimeType(AudioCodec codec) {
     return kBitstreamAudioMimeType;
 
   switch (codec) {
-    case kCodecMP3:
+    case AudioCodec::kMP3:
       return kMp3MimeType;
-    case kCodecVorbis:
+    case AudioCodec::kVorbis:
       return kVorbisMimeType;
-    case kCodecFLAC:
+    case AudioCodec::kFLAC:
       return kFLACMimeType;
-    case kCodecOpus:
+    case AudioCodec::kOpus:
       return kOpusMimeType;
-    case kCodecAAC:
+    case AudioCodec::kAAC:
       return kAacMimeType;
-    case kCodecAC3:
+    case AudioCodec::kAC3:
       return kAc3MimeType;
-    case kCodecEAC3:
+    case AudioCodec::kEAC3:
       return kEac3MimeType;
     default:
       return std::string();
@@ -149,17 +149,17 @@ std::string MediaCodecUtil::CodecToAndroidMimeType(AudioCodec codec) {
 // static
 std::string MediaCodecUtil::CodecToAndroidMimeType(VideoCodec codec) {
   switch (codec) {
-    case kCodecH264:
+    case VideoCodec::kH264:
       return kAvcMimeType;
-    case kCodecHEVC:
+    case VideoCodec::kHEVC:
       return kHevcMimeType;
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       return kVp8MimeType;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       return kVp9MimeType;
-    case kCodecDolbyVision:
+    case VideoCodec::kDolbyVision:
       return kDolbyVisionMimeType;
-    case kCodecAV1:
+    case VideoCodec::kAV1:
       return kAv1MimeType;
     default:
       return std::string();
@@ -309,7 +309,7 @@ bool MediaCodecUtil::IsSetOutputSurfaceSupported() {
 
 // static
 bool MediaCodecUtil::IsPassthroughAudioFormat(AudioCodec codec) {
-  return codec == kCodecAC3 || codec == kCodecEAC3;
+  return codec == AudioCodec::kAC3 || codec == AudioCodec::kEAC3;
 }
 
 // static
@@ -376,7 +376,7 @@ bool MediaCodecUtil::IsKnownUnaccelerated(VideoCodec codec,
 
   // MediaTek hardware vp8 is known slower than the software implementation.
   if (base::StartsWith(codec_name, "OMX.MTK.", base::CompareCase::SENSITIVE)) {
-    if (codec == kCodecVP8) {
+    if (codec == VideoCodec::kVP8) {
       // We may still reject VP8 hardware decoding later on certain chipsets,
       // see isDecoderSupportedForDevice(). We don't have the the chipset ID
       // here to check now though.

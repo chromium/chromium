@@ -20,6 +20,10 @@ namespace base {
 class PerfTimeLogger {
  public:
   explicit PerfTimeLogger(const char* test_name);
+
+  PerfTimeLogger(const PerfTimeLogger&) = delete;
+  PerfTimeLogger& operator=(const PerfTimeLogger&) = delete;
+
   ~PerfTimeLogger();
 
   void Done();
@@ -28,8 +32,6 @@ class PerfTimeLogger {
   bool logged_;
   std::string test_name_;
   ElapsedTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerfTimeLogger);
 };
 
 }  // namespace base

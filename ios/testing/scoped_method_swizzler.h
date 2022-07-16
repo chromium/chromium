@@ -19,6 +19,9 @@ class ScopedMethodSwizzler {
                        SEL selector_to_replace,
                        SEL replacing_selector);
 
+  ScopedMethodSwizzler(const ScopedMethodSwizzler&) = delete;
+  ScopedMethodSwizzler& operator=(const ScopedMethodSwizzler&) = delete;
+
   // Destroys the ScopedMethodSwizzler object, removing the swizzled method and
   // reinstalling the original method implementation.
   virtual ~ScopedMethodSwizzler();
@@ -29,8 +32,6 @@ class ScopedMethodSwizzler {
 
   // The method that replaces the original method.
   Method replacing_method_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMethodSwizzler);
 };
 
 #endif  // IOS_TESTING_SCOPED_METHOD_SWIZZLER_H_

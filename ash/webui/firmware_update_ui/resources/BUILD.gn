@@ -1,0 +1,127 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocessed_dir = "preprocessed"
+preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
+
+polymer_element_files = [
+  "firmware_shared_css.js",
+  "firmware_shared_fonts.js",
+  "firmware_update_app.js",
+  "firmware_update_dialog.js",
+  "peripheral_updates_list.js",
+  "update_card.js",
+]
+
+generate_grd("build_grd") {
+  input_files = [
+    "app_icon_192.png",
+    "fake_data.js",
+    "fake_update_controller.js",
+    "fake_update_provider.js",
+    "firmware_update_types.js",
+    "index.html",
+    "mojo_interface_provider.js",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":preprocess_generated" ]
+  manifest_files = [ "$target_gen_dir/$preprocessed_gen_manifest" ]
+  grd_prefix = "ash_firmware_update_app"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args
+  deps = [
+    ":fake_data",
+    ":fake_update_controller",
+    ":fake_update_provider",
+    ":firmware_update_app",
+    ":firmware_update_types",
+    ":mojo_interface_provider",
+    ":peripheral_updates_list",
+    ":update_card",
+  ]
+}
+
+js_library("fake_data") {
+  deps = [ ":firmware_update_types" ]
+}
+
+js_library("fake_update_controller") {
+  deps = [
+    "//ash/webui/common/resources:fake_observables",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("fake_update_provider") {
+  deps = [
+    "//ash/webui/common/resources:fake_observables",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("firmware_update_app") {
+  deps = [
+    ":firmware_update_dialog",
+    ":peripheral_updates_list",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("firmware_update_dialog") {
+  deps = [
+    ":firmware_update_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("firmware_update_types") {
+}
+
+js_library("mojo_interface_provider") {
+  deps = [
+    ":fake_data",
+    ":fake_update_controller",
+    ":fake_update_provider",
+    ":firmware_update_types",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("peripheral_updates_list") {
+  deps = [
+    ":firmware_update_types",
+    ":mojo_interface_provider",
+    ":update_card",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("update_card") {
+  deps = [
+    ":firmware_update_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocessed_dir"
+  out_manifest = "$target_gen_dir/$preprocessed_gen_manifest"
+  in_files = polymer_element_files
+}
+
+html_to_js("web_components") {
+  js_files = polymer_element_files
+}

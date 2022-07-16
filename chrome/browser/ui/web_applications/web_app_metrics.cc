@@ -15,15 +15,14 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics_factory.h"
-#include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
-#include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
+#include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
-#include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
@@ -38,8 +37,7 @@ namespace {
 // Max amount of time to record as a session. If a session exceeds this length,
 // treat it as invalid (0 time).
 // TODO (crbug.com/1081187): Use an idle timeout instead.
-constexpr base::TimeDelta max_valid_session_delta_ =
-    base::TimeDelta::FromHours(12);
+constexpr base::TimeDelta max_valid_session_delta_ = base::Hours(12);
 
 void RecordEngagementHistogram(
     const std::string& histogram_name,
@@ -63,16 +61,6 @@ void RecordUserInstalledHistogram(
   RecordTabOrWindowHistogram(histogram_prefix, in_window, engagement_type);
 }
 
-optional<int> GetLatestWebAppInstallSource(const AppId& app_id,
-                                           PrefService* prefs) {
-  optional<int> value =
-      GetIntWebAppPref(prefs, app_id, kLatestWebAppInstallSource);
-  DCHECK_GE(value.value_or(0), 0);
-  DCHECK_LT(value.value_or(0),
-            static_cast<int>(webapps::WebappInstallSource::COUNT));
-  return value;
-}
-
 }  // namespace
 
 // static
@@ -89,7 +77,7 @@ WebAppMetrics::WebAppMetrics(Profile* profile)
   base::PowerMonitor::AddPowerSuspendObserver(this);
   BrowserList::AddObserver(this);
 
-  WebAppProvider* provider = WebAppProvider::Get(profile_);
+  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile_);
   DCHECK(provider);
   provider->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&WebAppMetrics::CountUserInstalledApps,
@@ -141,8 +129,9 @@ void WebAppMetrics::OnEngagementEvent(
 
   // No HostedAppBrowserController if app is running as a tab in common browser.
   const bool in_window = !!browser->app_controller();
-  const bool user_installed =
-      WebAppProvider::Get(profile_)->registrar().WasInstalledByUser(app_id);
+  const bool user_installed = WebAppProvider::GetForLocalAppsUnchecked(profile_)
+                                  ->registrar()
+                                  .WasInstalledByUser(app_id);
 
   // Record all web apps:
   RecordTabOrWindowHistogram("WebApp.Engagement", in_window, engagement_type);
@@ -303,7 +292,7 @@ void WebAppMetrics::CountUserInstalledAppsForTesting() {
 void WebAppMetrics::CountUserInstalledApps() {
   DCHECK_EQ(kNumUserInstalledAppsNotCounted, num_user_installed_apps_);
 
-  WebAppProvider* provider = WebAppProvider::Get(profile_);
+  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile_);
 
   num_user_installed_apps_ = provider->registrar().CountUserInstalledApps();
   DCHECK_NE(kNumUserInstalledAppsNotCounted, num_user_installed_apps_);
@@ -319,7 +308,7 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
   // May be null in unit tests.
   if (!app_banner_manager)
     return;
-  WebAppProvider* provider = WebAppProvider::Get(profile_);
+  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile_);
   // WebAppProvider may be removed after WebAppMetrics construction in tests.
   if (!provider)
     return;
@@ -333,7 +322,7 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
     features.start_url = provider->registrar().GetAppStartUrl(app_id);
     features.installed = true;
     features.install_source =
-        GetLatestWebAppInstallSource(app_id, profile_->GetPrefs());
+        GetWebAppInstallSource(profile_->GetPrefs(), app_id);
     DisplayMode display_mode =
         provider->registrar().GetAppEffectiveDisplayMode(app_id);
     features.effective_display_mode = static_cast<int>(display_mode);

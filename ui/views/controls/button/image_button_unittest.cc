@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ui/views/controls/button/image_button.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/layout.h"
 #include "ui/views/border.h"
@@ -22,6 +21,9 @@ class Parent : public views::View {
  public:
   Parent() = default;
 
+  Parent(const Parent&) = delete;
+  Parent& operator=(const Parent&) = delete;
+
   void ChildPreferredSizeChanged(views::View* view) override {
     pref_size_changed_calls_++;
   }
@@ -30,8 +32,6 @@ class Parent : public views::View {
 
  private:
   int pref_size_changed_calls_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(Parent);
 };
 
 }  // namespace

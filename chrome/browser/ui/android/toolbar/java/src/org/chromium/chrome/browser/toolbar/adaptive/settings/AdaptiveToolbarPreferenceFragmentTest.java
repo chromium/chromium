@@ -37,7 +37,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * Tests for {@link AdaptiveToolbarPreferenceFragment}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
 public class AdaptiveToolbarPreferenceFragmentTest {
     @Rule

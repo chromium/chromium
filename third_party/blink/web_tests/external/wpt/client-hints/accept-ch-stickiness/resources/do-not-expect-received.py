@@ -5,7 +5,7 @@ def main(request, response):
     verify_subresource_state() in accept-ch-test.js
     """
 
-    if b"device-memory" in request.headers:
+    if b"device-memory" in request.headers or b"sec-ch-device-memory" in request.headers:
       result = u"FAIL"
     else:
       result = u"PASS"

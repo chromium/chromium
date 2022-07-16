@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_CHROME_PROXIMITY_AUTH_CLIENT_H_
 #define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_CHROME_PROXIMITY_AUTH_CLIENT_H_
 
-#include "base/macros.h"
 #include "chromeos/components/proximity_auth/proximity_auth_client.h"
 
 class Profile;
@@ -17,10 +16,15 @@ namespace ash {
 class ChromeProximityAuthClient : public proximity_auth::ProximityAuthClient {
  public:
   explicit ChromeProximityAuthClient(Profile* profile);
+
+  ChromeProximityAuthClient(const ChromeProximityAuthClient&) = delete;
+  ChromeProximityAuthClient& operator=(const ChromeProximityAuthClient&) =
+      delete;
+
   ~ChromeProximityAuthClient() override;
 
   // proximity_auth::ProximityAuthClient:
-  void UpdateScreenlockState(proximity_auth::ScreenlockState state) override;
+  void UpdateSmartLockState(SmartLockState state) override;
   void FinalizeUnlock(bool success) override;
   void FinalizeSignin(const std::string& secret) override;
   void GetChallengeForUserAndDevice(
@@ -32,8 +36,6 @@ class ChromeProximityAuthClient : public proximity_auth::ProximityAuthClient {
 
  private:
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeProximityAuthClient);
 };
 
 }  // namespace ash

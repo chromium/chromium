@@ -289,6 +289,9 @@ var chrome = {
     getSurpriseMeImage: function(collectionId, resumeToken, callback) {
       callback(
           {imageUrl: TestConstants.wallpaperUrl}, null /*nextResumeToken=*/);
+    },
+    isSwaEnabled: function(callback) {
+      callback(false);
     }
   },
   runtime: {lastError: null}

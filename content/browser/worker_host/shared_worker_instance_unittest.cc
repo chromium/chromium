@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -19,6 +18,9 @@ namespace content {
 class SharedWorkerInstanceTest : public testing::Test {
  protected:
   SharedWorkerInstanceTest() {}
+
+  SharedWorkerInstanceTest(const SharedWorkerInstanceTest&) = delete;
+  SharedWorkerInstanceTest& operator=(const SharedWorkerInstanceTest&) = delete;
 
   SharedWorkerInstance CreateInstance(const GURL& script_url,
                                       const std::string& name,
@@ -42,9 +44,6 @@ class SharedWorkerInstanceTest : public testing::Test {
     }
     return instance.Matches(GURL(url), std::string(name), storage_key);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerInstanceTest);
 };
 
 TEST_F(SharedWorkerInstanceTest, MatchesTest) {

@@ -17,13 +17,21 @@
 
       #zoom-buttons {
         left: var(--button-position-offset);
+        opacity: 1;
         position: relative;
         right: auto;
+        transition: opacity 250ms;
+        transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
       }
 
       :host-context([dir='rtl']) #zoom-buttons {
         left: auto;
         right: var(--button-position-offset);
+      }
+
+      :host(:not([visible_])) #zoom-buttons {
+        opacity: 0;
+        transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
       }
 
       viewer-zoom-button {
@@ -42,7 +50,6 @@
     </style>
     <div id="zoom-buttons">
       <viewer-zoom-button id="fit-button" on-fabclick="fitToggle"
-          delay="100"
           tooltips="$i18n{tooltipFitToPage},$i18n{tooltipFitToWidth}"
           keyboard-navigation-active="[[keyboardNavigationActive_]]"
           icons="pdf:fullscreen-exit cr:fullscreen">
@@ -50,9 +57,9 @@
       <viewer-zoom-button id="zoom-in-button" icons="pdf:add"
           tooltips="$i18n{tooltipZoomIn}"
           keyboard-navigation-active="[[keyboardNavigationActive_]]"
-          on-fabclick="zoomIn" delay="50"></viewer-zoom-button>
+          on-fabclick="zoomIn"></viewer-zoom-button>
       <viewer-zoom-button id="zoom-out-button" icons="pdf:remove"
           tooltips="$i18n{tooltipZoomOut}"
           keyboard-navigation-active="[[keyboardNavigationActive_]]"
-          on-fabclick="zoomOut" delay="0"></viewer-zoom-button>
+          on-fabclick="zoomOut"></viewer-zoom-button>
     </div>

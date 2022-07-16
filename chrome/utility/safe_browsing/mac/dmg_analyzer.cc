@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -38,6 +37,10 @@ const double kDmgAnalysisTimeoutMs = 10000;
 class MachOFeatureExtractor {
  public:
   MachOFeatureExtractor();
+
+  MachOFeatureExtractor(const MachOFeatureExtractor&) = delete;
+  MachOFeatureExtractor& operator=(const MachOFeatureExtractor&) = delete;
+
   ~MachOFeatureExtractor();
 
   // Tests if the stream references a Mach-O image by examinig its magic
@@ -57,8 +60,6 @@ class MachOFeatureExtractor {
 
   scoped_refptr<BinaryFeatureExtractor> bfe_;
   std::vector<uint8_t> buffer_;  // Buffer that contains read stream data.
-
-  DISALLOW_COPY_AND_ASSIGN(MachOFeatureExtractor);
 };
 
 MachOFeatureExtractor::MachOFeatureExtractor()
@@ -153,7 +154,7 @@ void AnalyzeDMGFile(DMGIterator* iterator, ArchiveAnalyzerResults* results) {
     if (!stream)
       continue;
     if (base::Time::Now() - start_time >=
-        base::TimeDelta::FromMilliseconds(kDmgAnalysisTimeoutMs)) {
+        base::Milliseconds(kDmgAnalysisTimeoutMs)) {
       timeout = true;
       break;
     }

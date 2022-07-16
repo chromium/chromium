@@ -1,0 +1,6 @@
+Name: atty
+URL: https://crates.io/crates/atty
+Description: A simple interface for querying atty
+Version: 0.2.14
+Security Critical: no
+License: MIT

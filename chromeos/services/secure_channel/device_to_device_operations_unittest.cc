@@ -6,7 +6,6 @@
 
 #include "base/base64url.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/services/secure_channel/device_to_device_initiator_helper.h"
 #include "chromeos/services/secure_channel/device_to_device_responder_operations.h"
@@ -68,6 +67,12 @@ void SaveValidationResultWithSessionKeys(bool* out_success,
 }  // namespace
 
 class SecureChannelDeviceToDeviceOperationsTest : public testing::Test {
+ public:
+  SecureChannelDeviceToDeviceOperationsTest(
+      const SecureChannelDeviceToDeviceOperationsTest&) = delete;
+  SecureChannelDeviceToDeviceOperationsTest& operator=(
+      const SecureChannelDeviceToDeviceOperationsTest&) = delete;
+
  protected:
   SecureChannelDeviceToDeviceOperationsTest() {}
   ~SecureChannelDeviceToDeviceOperationsTest() override {}
@@ -150,8 +155,6 @@ class SecureChannelDeviceToDeviceOperationsTest : public testing::Test {
   SessionKeys session_keys_;
 
   std::unique_ptr<DeviceToDeviceInitiatorHelper> helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelDeviceToDeviceOperationsTest);
 };
 
 TEST_F(SecureChannelDeviceToDeviceOperationsTest,

@@ -101,6 +101,10 @@ class TouchpadPinchBrowserTest : public ContentBrowserTest,
           features::kTouchpadAsyncPinchEvents);
     }
   }
+
+  TouchpadPinchBrowserTest(const TouchpadPinchBrowserTest&) = delete;
+  TouchpadPinchBrowserTest& operator=(const TouchpadPinchBrowserTest&) = delete;
+
   ~TouchpadPinchBrowserTest() override = default;
 
  protected:
@@ -131,7 +135,6 @@ class TouchpadPinchBrowserTest : public ContentBrowserTest,
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(TouchpadPinchBrowserTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, TouchpadPinchBrowserTest, testing::Bool());

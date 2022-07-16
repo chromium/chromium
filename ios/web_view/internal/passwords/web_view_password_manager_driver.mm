@@ -84,7 +84,7 @@ WebViewPasswordManagerDriver::GetPasswordAutofillManager() {
   return nullptr;
 }
 
-bool WebViewPasswordManagerDriver::IsMainFrame() const {
+bool WebViewPasswordManagerDriver::IsInPrimaryMainFrame() const {
   // On IOS only processing of password forms in main frame is implemented.
   return true;
 }

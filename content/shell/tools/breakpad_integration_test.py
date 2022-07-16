@@ -77,7 +77,7 @@ def clear_android_dumps(options, device):
     print('Failed to list dumps in android crash dir %s' % pending)
 
 
-def get_android_dump(crash_dir):
+def get_android_dump(options, crash_dir, symbols_dir):
   global failure
 
   pending = os.path.join(ANDROID_CRASH_DIR, 'pending')
@@ -93,6 +93,21 @@ def get_android_dump(crash_dir):
     time.sleep(5)
 
   if len(dumps) != 1:
+    # TODO(crbug.com/861730): Temporary code to debug unexpected crash dumps.
+    minidump_stackwalk = os.path.join(options.build_dir, 'minidump_stackwalk')
+    failure = 'Failed to run minidump_stackwalk.'
+    for dump in dumps:
+      device.PullFile(os.path.join(pending, dump), crash_dir, as_root=True)
+      minidump = os.path.join(crash_dir, os.path.basename(dump))
+      cmd = [minidump_stackwalk, minidump, symbols_dir]
+      proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE)
+      stack = proc.communicate()[0]
+      print(stack)
+
+      device.RunShellCommand(['rm', os.path.join(pending, dump)],
+                             check_return=True, as_root=True)
+
     failure = 'Expected 1 crash dump, found %d.' % len(dumps)
     print(dumps)
     raise Exception(failure)
@@ -151,7 +166,7 @@ def run_test(options, crash_dir, symbols_dir, platform,
 
   print('# Retrieve crash dump.')
   if platform == 'android':
-    minidump = get_android_dump(crash_dir)
+    minidump = get_android_dump(options, crash_dir, symbols_dir)
   else:
     dmp_dir = crash_dir
     # TODO(crbug.com/782923): This test should not reach directly into the

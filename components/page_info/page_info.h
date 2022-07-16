@@ -8,17 +8,13 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_state/core/security_state.h"
-#include "content/public/browser/web_contents_observer.h"
-
-namespace content {
-class WebContents;
-}
+#include "content/public/browser/web_contents.h"
 
 namespace content_settings {
 class PageSpecificContentSettings;
@@ -46,11 +42,8 @@ class PageInfoUI;
 // information and allows users to change the permissions. |PageInfo|
 // objects must be created on the heap. They destroy themselves after the UI is
 // closed.
-class PageInfo : public content::WebContentsObserver {
+class PageInfo {
  public:
-  // TODO(palmer): Figure out if it is possible to unify SiteConnectionStatus
-  // and SiteIdentityStatus.
-  //
   // Status of a connection to a website.
   enum SiteConnectionStatus {
     SITE_CONNECTION_STATUS_UNKNOWN = 0,  // No status available.
@@ -151,6 +144,9 @@ class PageInfo : public content::WebContentsObserver {
     PAGE_INFO_SAFETY_TIP_HELP_OPENED = 24,
     PAGE_INFO_CHOOSER_OBJECT_DELETED = 25,
     PAGE_INFO_RESET_DECISIONS_CLICKED = 26,
+    PAGE_INFO_STORE_INFO_CLICKED = 27,
+    PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED = 28,
+    PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED = 29,
     PAGE_INFO_COUNT
   };
 
@@ -185,7 +181,11 @@ class PageInfo : public content::WebContentsObserver {
   PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
            content::WebContents* web_contents,
            const GURL& url);
-  ~PageInfo() override;
+
+  PageInfo(const PageInfo&) = delete;
+  PageInfo& operator=(const PageInfo&) = delete;
+
+  ~PageInfo();
 
   // Checks whether this permission is currently the factory default, as set by
   // Chrome. Specifically, that the following three conditions are true:
@@ -202,7 +202,7 @@ class PageInfo : public content::WebContentsObserver {
 
   // Initializes the current UI and calls present data methods on it to notify
   // the current UI about the data it is subscribed to.
-  void InitializeUiState(PageInfoUI* ui);
+  void InitializeUiState(PageInfoUI* ui, base::OnceClosure done);
 
   // This method is called to update the presenter's security state and forwards
   // that change on to the UI to be redrawn.
@@ -259,6 +259,10 @@ class PageInfo : public content::WebContentsObserver {
   permissions::ObjectPermissionContextBase* GetChooserContextFromUIInfo(
       const ChooserUIInfo& ui_info) const;
 
+  void SetAboutThisSiteShown(bool was_about_this_site_shown) {
+    was_about_this_site_shown_ = was_about_this_site_shown;
+  }
+
   // Accessors.
   const SiteConnectionStatus& site_connection_status() const {
     return site_connection_status_;
@@ -285,6 +289,8 @@ class PageInfo : public content::WebContentsObserver {
 
   PageInfoUI* ui_for_testing() const { return ui_; }
 
+  void SetSiteNameForTesting(const std::u16string& site_name);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
                            NonFactoryDefaultAndRecentlyChangedPermissionsShown);
@@ -298,8 +304,12 @@ class PageInfo : public content::WebContentsObserver {
   // Sets (presents) the information about the site's permissions in the |ui_|.
   void PresentSitePermissions();
 
+  // Helper function which `PresentSiteData` calls after the ignored empty
+  // storage keys have been updated.
+  void PresentSiteDataInternal(base::OnceClosure done);
+
   // Sets (presents) the information about the site's data in the |ui_|.
-  void PresentSiteData();
+  void PresentSiteData(base::OnceClosure done);
 
   // Sets (presents) the information about the site's identity and connection
   // in the |ui_|.
@@ -350,6 +360,9 @@ class PageInfo : public content::WebContentsObserver {
   // permissions (location, pop-up, plugin, etc. permissions) and site-specific
   // information (identity, connection status, etc.).
   PageInfoUI* ui_;
+
+  // A web contents getter used to retrieve the associated WebContents object.
+  base::WeakPtr<content::WebContents> web_contents_;
 
   // The delegate allows the embedder to customize |PageInfo|'s behavior.
   std::unique_ptr<PageInfoDelegate> delegate_;
@@ -430,7 +443,13 @@ class PageInfo : public content::WebContentsObserver {
   // MaliciousContentStatus isn't NONE.
   std::u16string safe_browsing_details_;
 
-  DISALLOW_COPY_AND_ASSIGN(PageInfo);
+  // Whether the "About this site" data was available for the site and "About
+  // this site" section was shown in the page info.
+  bool was_about_this_site_shown_ = false;
+
+  std::u16string site_name_for_testing_;
+
+  base::WeakPtrFactory<PageInfo> weak_factory_{this};
 };
 
 #endif  // COMPONENTS_PAGE_INFO_PAGE_INFO_H_

@@ -107,13 +107,11 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
  protected:
   ClipboardRecentContentIOSTest() {
     // By default, set that the device booted 10 days ago.
-    ResetClipboardRecentContent(kAppSpecificScheme,
-                                base::TimeDelta::FromDays(10));
+    ResetClipboardRecentContent(kAppSpecificScheme, base::Days(10));
   }
 
   void SimulateDeviceRestart() {
-    ResetClipboardRecentContent(kAppSpecificScheme,
-                                base::TimeDelta::FromSeconds(0));
+    ResetClipboardRecentContent(kAppSpecificScheme, base::Seconds(0));
   }
 
   void ResetClipboardRecentContent(const std::string& application_scheme,
@@ -225,7 +223,7 @@ TEST_F(ClipboardRecentContentIOSTest, SchemeFiltering) {
   VerifyClipboardURLExists(kAppSpecificURL);
 
   // Test URL without app specific scheme.
-  ResetClipboardRecentContent(std::string(), base::TimeDelta::FromDays(10));
+  ResetClipboardRecentContent(std::string(), base::Days(10));
 
   SetPasteboardContent(kAppSpecificURL);
   VerifiyClipboardURLIsInvalid();
@@ -246,8 +244,7 @@ TEST_F(ClipboardRecentContentIOSTest, PasteboardURLObsolescence) {
 
   // Tests that if chrome is relaunched, old pasteboard data is still
   // not provided.
-  ResetClipboardRecentContent(kAppSpecificScheme,
-                              base::TimeDelta::FromDays(10));
+  ResetClipboardRecentContent(kAppSpecificScheme, base::Days(10));
   VerifyClipboardTypeExists(ClipboardContentType::URL, false);
   VerifyClipboardTypeExists(ClipboardContentType::Text, false);
 
@@ -286,8 +283,7 @@ TEST_F(ClipboardRecentContentIOSTest, SuppressedPasteboardContent) {
   VerifyClipboardTypeExists(ClipboardContentType::URL, false);
 
   // Create a new clipboard content to test persistence.
-  ResetClipboardRecentContent(kAppSpecificScheme,
-                              base::TimeDelta::FromDays(10));
+  ResetClipboardRecentContent(kAppSpecificScheme, base::Days(10));
 
   // Check that the pasteboard content is still suppressed.
   VerifyClipboardTypeExists(ClipboardContentType::URL, false);
@@ -318,8 +314,7 @@ TEST_F(ClipboardRecentContentIOSTest, SuppressedPasteboardImage) {
   VerifyClipboardTypeExists(ClipboardContentType::Image, false);
 
   // Create a new clipboard content to test persistence.
-  ResetClipboardRecentContent(kAppSpecificScheme,
-                              base::TimeDelta::FromDays(10));
+  ResetClipboardRecentContent(kAppSpecificScheme, base::Days(10));
 
   // Check that the pasteboard content is still suppressed.
   VerifyClipboardTypeExists(ClipboardContentType::Image, false);

@@ -12,6 +12,7 @@
 
 #include "base/at_exit.h"
 #include "base/bind.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -256,7 +257,9 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
                                          visible_security_state_);
       page_info_ = std::make_unique<PageInfo>(std::move(delegate),
                                               web_contents(), url());
-      page_info_->InitializeUiState(mock_ui());
+      base::RunLoop run_loop;
+      page_info_->InitializeUiState(mock_ui(), run_loop.QuitClosure());
+      run_loop.Run();
     }
     return page_info_.get();
   }
@@ -289,7 +292,10 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
                                          visible_security_state_);
       incognito_page_info_ = std::make_unique<PageInfo>(
           std::move(delegate), incognito_web_contents_.get(), url());
-      incognito_page_info_->InitializeUiState(incognito_mock_ui_.get());
+      base::RunLoop run_loop;
+      incognito_page_info_->InitializeUiState(incognito_mock_ui_.get(),
+                                              run_loop.QuitClosure());
+      run_loop.Run();
     }
     return incognito_page_info_.get();
   }
@@ -342,6 +348,36 @@ void ExpectPermissionInfoList(
 }
 
 }  // namespace
+
+TEST_F(PageInfoTest, PermissionStringsHaveMidSentenceVersion) {
+  page_info();
+  for (const PageInfoUI::PermissionUIInfo& info :
+       PageInfoUI::GetContentSettingsUIInfoForTesting()) {
+    std::u16string normal = l10n_util::GetStringUTF16(info.string_id);
+    std::u16string mid_sentence =
+        l10n_util::GetStringUTF16(info.string_id_mid_sentence);
+    switch (info.type) {
+      case ContentSettingsType::MIDI_SYSEX:
+      case ContentSettingsType::NFC:
+      case ContentSettingsType::USB_GUARD:
+#if !defined(OS_ANDROID)
+      case ContentSettingsType::HID_GUARD:
+#endif
+        EXPECT_EQ(normal, mid_sentence);
+        break;
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+      case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
+        EXPECT_NE(normal, mid_sentence);
+        EXPECT_EQ(base::ToLowerASCII(normal), base::ToLowerASCII(mid_sentence));
+        break;
+#endif
+      default:
+        EXPECT_NE(normal, mid_sentence);
+        EXPECT_EQ(base::ToLowerASCII(normal), mid_sentence);
+        break;
+    }
+  }
+}
 
 TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
   page_info()->PresentSitePermissions();
@@ -967,9 +1003,6 @@ TEST_F(PageInfoTest, HTTPSSHA1) {
 
 // Tests that the site connection status is correctly set for Legacy TLS sites.
 TEST_F(PageInfoTest, LegacyTLS) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(net::features::kLegacyTLSEnforced);
-
   security_level_ = security_state::WARNING;
   visible_security_state_.url = GURL("https://scheme-is-cryptographic.test");
   visible_security_state_.certificate = cert();
@@ -1123,62 +1156,6 @@ TEST_F(PageInfoTest, ReEnableWarnings) {
   }
   // Test class expects PageInfo to exist during Teardown.
   page_info();
-}
-
-// Tests that metrics are recorded on a PageInfo for pages with
-// various security levels.
-TEST_F(PageInfoTest, SecurityLevelMetrics) {
-  struct TestCase {
-    const std::string url;
-    const security_state::SecurityLevel security_level;
-    const net::CertStatus cert_status;
-    const std::string histogram_name;
-  };
-  const char kGenericHistogram[] = "WebsiteSettings.Action";
-
-  const uint32_t kCertStatusNone = 0;
-  const TestCase kTestCases[] = {
-      {"https://example.test", security_state::SECURE, kCertStatusNone,
-       "Security.PageInfo.Action.HttpsUrl.ValidNonEV"},
-      {"https://example.test", security_state::SECURE, net::CERT_STATUS_IS_EV,
-       "Security.PageInfo.Action.HttpsUrl.ValidEV"},
-      {"https://example2.test", security_state::NONE, kCertStatusNone,
-       "Security.PageInfo.Action.HttpsUrl.Downgraded"},
-      {"https://example.test", security_state::DANGEROUS, kCertStatusNone,
-       "Security.PageInfo.Action.HttpsUrl.Dangerous"},
-      {"http://example.test", security_state::WARNING, kCertStatusNone,
-       "Security.PageInfo.Action.HttpUrl.Warning"},
-      {"http://example.test", security_state::DANGEROUS, kCertStatusNone,
-       "Security.PageInfo.Action.HttpUrl.Dangerous"},
-      {"http://example.test", security_state::NONE, kCertStatusNone,
-       "Security.PageInfo.Action.HttpUrl.Neutral"},
-  };
-
-  for (const auto& test : kTestCases) {
-    base::HistogramTester histograms;
-    SetURL(test.url);
-    security_level_ = test.security_level;
-    visible_security_state_.cert_status = test.cert_status;
-    ResetMockUI();
-    ClearPageInfo();
-    SetDefaultUIExpectations(mock_ui());
-
-    histograms.ExpectTotalCount(kGenericHistogram, 0);
-    histograms.ExpectTotalCount(test.histogram_name, 0);
-
-    page_info()->RecordPageInfoAction(PageInfo::PAGE_INFO_OPENED);
-
-    // RecordPageInfoAction() is called during PageInfo
-    // creation in addition to the explicit RecordPageInfoAction()
-    // call, so it is called twice in total.
-    histograms.ExpectTotalCount(kGenericHistogram, 2);
-    histograms.ExpectBucketCount(kGenericHistogram, PageInfo::PAGE_INFO_OPENED,
-                                 2);
-
-    histograms.ExpectTotalCount(test.histogram_name, 2);
-    histograms.ExpectBucketCount(test.histogram_name,
-                                 PageInfo::PAGE_INFO_OPENED, 2);
-  }
 }
 
 // Tests that the duration of time the PageInfo is open is recorded for pages
@@ -1420,8 +1397,10 @@ class UnifiedAutoplaySoundSettingsPageInfoTest
   }
 
   std::u16string GetDefaultSoundSettingString() {
-    auto delegate =
-        ChromePageInfoUiDelegate(profile(), GURL("http://www.example.com"));
+    auto web_contents =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    ChromePageInfoUiDelegate delegate(web_contents.get(),
+                                      GURL("http://www.example.com"));
     return PageInfoUI::PermissionActionToUIString(
         &delegate, ContentSettingsType::SOUND, CONTENT_SETTING_DEFAULT,
         default_setting_, content_settings::SettingSource::SETTING_SOURCE_USER,
@@ -1429,8 +1408,10 @@ class UnifiedAutoplaySoundSettingsPageInfoTest
   }
 
   std::u16string GetSoundSettingString(ContentSetting setting) {
-    auto delegate =
-        ChromePageInfoUiDelegate(profile(), GURL("http://www.example.com"));
+    auto web_contents =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    ChromePageInfoUiDelegate delegate(web_contents.get(),
+                                      GURL("http://www.example.com"));
     return PageInfoUI::PermissionActionToUIString(
         &delegate, ContentSettingsType::SOUND, setting, default_setting_,
         content_settings::SettingSource::SETTING_SOURCE_USER,
@@ -1521,8 +1502,10 @@ TEST_F(UnifiedAutoplaySoundSettingsPageInfoTest, DefaultBlock_PrefOff) {
 // This test checks that the string for a permission dropdown that is not the
 // sound setting is unaffected.
 TEST_F(UnifiedAutoplaySoundSettingsPageInfoTest, NotSoundSetting_Noop) {
-  auto delegate =
-      ChromePageInfoUiDelegate(profile(), GURL("http://www.example.com"));
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  ChromePageInfoUiDelegate delegate(web_contents.get(),
+                                    GURL("http://www.example.com"));
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_DEFAULT),
       PageInfoUI::PermissionActionToUIString(

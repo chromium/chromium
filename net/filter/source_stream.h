@@ -32,6 +32,9 @@ class NET_EXPORT_PRIVATE SourceStream {
   // |type| is the type of the SourceStream.
   explicit SourceStream(SourceType type);
 
+  SourceStream(const SourceStream&) = delete;
+  SourceStream& operator=(const SourceStream&) = delete;
+
   virtual ~SourceStream();
 
   // Initiaties a read from the stream.
@@ -64,8 +67,6 @@ class NET_EXPORT_PRIVATE SourceStream {
 
  private:
   SourceType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(SourceStream);
 };
 
 }  // namespace net

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_DICE_TAB_HELPER_H_
 #define CHROME_BROWSER_SIGNIN_DICE_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -18,6 +17,9 @@ class NavigationHandle;
 class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
                       public content::WebContentsObserver {
  public:
+  DiceTabHelper(const DiceTabHelper&) = delete;
+  DiceTabHelper& operator=(const DiceTabHelper&) = delete;
+
   ~DiceTabHelper() override;
 
   signin_metrics::AccessPoint signin_access_point() const {
@@ -90,8 +92,6 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
       SyncSigninFlowStatus::kNotStarted;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(DiceTabHelper);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_DICE_TAB_HELPER_H_

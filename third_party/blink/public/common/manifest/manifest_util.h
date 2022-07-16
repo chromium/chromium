@@ -7,12 +7,20 @@
 
 #include <string>
 
+#include "base/strings/string_piece.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 namespace blink {
+
+// Checks whether the manifest has no fields set.
+BLINK_COMMON_EXPORT bool IsEmptyManifest(const mojom::Manifest& manifest);
+BLINK_COMMON_EXPORT bool IsEmptyManifest(const mojom::ManifestPtr& manifest);
 
 // Converts a blink::mojom::DisplayMode to a string. Returns one of
 // https://www.w3.org/TR/appmanifest/#dfn-display-modes-values. Return values
@@ -51,6 +59,13 @@ WebScreenOrientationLockTypeFromString(const std::string& orientation);
 
 BLINK_COMMON_EXPORT mojom::CaptureLinks CaptureLinksFromString(
     const std::string& capture_links);
+
+BLINK_COMMON_EXPORT absl::optional<Manifest::LaunchHandler::RouteTo>
+RouteToFromString(const std::string& route_to);
+
+BLINK_COMMON_EXPORT
+absl::optional<Manifest::LaunchHandler::NavigateExistingClient>
+NavigateExistingClientFromString(const std::string& navigate_existing_client);
 
 }  // namespace blink
 

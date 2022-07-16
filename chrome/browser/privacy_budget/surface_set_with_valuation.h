@@ -34,11 +34,6 @@ class SurfaceSetWithValuation {
   using container_type = RepresentativeSurfaceSet;
   using key_type = container_type::key_type;
   using value_type = container_type::value_type;
-  using key_compare = container_type::key_compare;
-  using value_compare = container_type::value_compare;
-  using reference = container_type::reference;
-  using const_reference = container_type::const_reference;
-  using iterator = container_type::iterator;
   using const_iterator = container_type::const_iterator;
   using size_type = container_type::size_type;
 
@@ -79,10 +74,13 @@ class SurfaceSetWithValuation {
   //
   // If the surfaces in `container` exceed the cost set out in `budget`, then
   // this function removes random elements in `container` until the cost falls
-  // below or meets `budget`. The order in which elements are removed is
-  // random.
+  // below or meets `budget`.
   void AssignWithBudget(RepresentativeSurfaceSet&& container,
                         PrivacyBudgetCost budget);
+
+  // Assign a set of surfaces. Any existing surfaces in this container will be
+  // removed.
+  void Assign(RepresentativeSurfaceSet&& container);
 
   // Removes all surfaces from this container.
   void Clear();
@@ -93,11 +91,6 @@ class SurfaceSetWithValuation {
   // Acquire the underlying container.
   RepresentativeSurfaceSet Take() &&;
 
-  key_compare key_comp() const { return surfaces_.key_comp(); }
-  value_compare value_comp() const { return surfaces_.value_comp(); }
-
-  const_iterator find(const key_type& k) const { return surfaces_.find(k); }
-  size_type count(const key_type& k) const { return surfaces_.count(k); }
   bool contains(RepresentativeSurface k) const {
     return surfaces_.find(k) != surfaces_.end();
   }

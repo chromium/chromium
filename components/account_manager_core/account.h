@@ -23,18 +23,25 @@ enum class AccountType : int {
 };
 
 // Uniquely identifies an account.
-struct COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountKey {
-  // |id| is obfuscated GAIA id for |AccountType::kGaia|.
+class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountKey {
+ public:
+  // `id` cannot be empty.
+  AccountKey(const std::string& id, AccountType type);
+
+  // |id| is obfuscated GAIA id for |AccountType::kGaia|, and cannot be empty.
   // |id| is object GUID (|AccountId::GetObjGuid|) for
   // |AccountType::kActiveDirectory|.
-  std::string id;
-  AccountType account_type;
-
-  bool IsValid() const;
+  const std::string& id() const { return id_; }
+  AccountType account_type() const { return account_type_; }
 
   bool operator<(const AccountKey& other) const;
   bool operator==(const AccountKey& other) const;
   bool operator!=(const AccountKey& other) const;
+
+ private:
+  // Fields are not const to allow assignmenent operator.
+  std::string id_;
+  AccountType account_type_;
 };
 
 // Publicly viewable information about an account.

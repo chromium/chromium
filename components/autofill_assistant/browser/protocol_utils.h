@@ -6,11 +6,11 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PROTOCOL_UTILS_H_
 
 #include <deque>
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/script_parameters.h"

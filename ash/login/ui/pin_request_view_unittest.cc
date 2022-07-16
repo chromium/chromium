@@ -24,7 +24,6 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -49,6 +48,10 @@ namespace ash {
 
 class PinRequestViewTest : public LoginTestBase,
                            public PinRequestView::Delegate {
+ public:
+  PinRequestViewTest(const PinRequestViewTest&) = delete;
+  PinRequestViewTest& operator=(const PinRequestViewTest&) = delete;
+
  protected:
   PinRequestViewTest() {}
   ~PinRequestViewTest() override = default;
@@ -89,7 +92,7 @@ class PinRequestViewTest : public LoginTestBase,
     request.help_button_enabled = true;
     request.obscure_pin = false;
     request.pin_length = pin_length;
-    request.on_pin_request_done = base::DoNothing::Once<bool>();
+    request.on_pin_request_done = base::DoNothing();
     view_ = new PinRequestView(std::move(request), this);
 
     SetWidget(CreateWidgetWithContent(view_));
@@ -100,7 +103,7 @@ class PinRequestViewTest : public LoginTestBase,
     PinRequest request;
     request.help_button_enabled = true;
     request.pin_length = pin_length;
-    request.on_pin_request_done = base::DoNothing::Once<bool>();
+    request.on_pin_request_done = base::DoNothing();
     PinRequestWidget::Show(std::move(request), this);
     PinRequestWidget* widget = PinRequestWidget::Get();
     ASSERT_TRUE(widget);
@@ -174,9 +177,6 @@ class PinRequestViewTest : public LoginTestBase,
   bool will_authenticate_ = true;
 
   PinRequestView* view_ = nullptr;  // Owned by test widget view hierarchy.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PinRequestViewTest);
 };
 
 // Tests that back button works.

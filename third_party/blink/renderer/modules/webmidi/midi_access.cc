@@ -98,7 +98,7 @@ MIDIAccess::MIDIAccess(
       builder.AddToken(port.type);
     }
     IdentifiabilityMetricBuilder(execution_context->UkmSourceID())
-        .Set(surface, builder.GetToken())
+        .Add(surface, builder.GetToken())
         .Record(execution_context->UkmRecorder());
   }
 }

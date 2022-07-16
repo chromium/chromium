@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -21,6 +20,12 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceAndroid
       public ExternalBeginFrameSourceClient {
  public:
   ExternalBeginFrameSourceAndroid(uint32_t restart_id, float refresh_rate);
+
+  ExternalBeginFrameSourceAndroid(const ExternalBeginFrameSourceAndroid&) =
+      delete;
+  ExternalBeginFrameSourceAndroid& operator=(
+      const ExternalBeginFrameSourceAndroid&) = delete;
+
   ~ExternalBeginFrameSourceAndroid() override;
 
   void OnVSync(JNIEnv* env,
@@ -28,6 +33,11 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceAndroid
                jlong time_micros,
                jlong period_micros);
   void UpdateRefreshRate(float refresh_rate) override;
+
+  // BeginFrameSource:
+  void SetDynamicBeginFrameDeadlineOffsetSource(
+      DynamicBeginFrameDeadlineOffsetSource*
+          dynamic_begin_frame_deadline_offset_source) override;
 
  private:
   // ExternalBeginFrameSourceClient implementation.
@@ -37,8 +47,6 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceAndroid
 
   base::android::ScopedJavaGlobalRef<jobject> j_object_;
   BeginFrameArgsGenerator begin_frame_args_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalBeginFrameSourceAndroid);
 };
 
 }  // namespace viz

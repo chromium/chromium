@@ -19,19 +19,20 @@ namespace media {
 class SilentSinkSuspenderTest : public testing::Test {
  public:
   SilentSinkSuspenderTest()
-      : params_(AudioParameters::AUDIO_FAKE,
-                CHANNEL_LAYOUT_MONO,
-                44100,
-                128),
+      : params_(AudioParameters::AUDIO_FAKE, CHANNEL_LAYOUT_MONO, 44100, 128),
         mock_sink_(new testing::StrictMock<MockAudioRendererSink>()),
         fake_callback_(0.1, params_.sample_rate()),
         temp_bus_(AudioBus::Create(params_)),
         // Set a negative timeout so any silence will suspend immediately.
         suspender_(&fake_callback_,
-                   base::TimeDelta::FromSeconds(-1),
+                   base::Seconds(-1),
                    params_,
                    mock_sink_,
                    test_loop_.task_runner()) {}
+
+  SilentSinkSuspenderTest(const SilentSinkSuspenderTest&) = delete;
+  SilentSinkSuspenderTest& operator=(const SilentSinkSuspenderTest&) = delete;
+
   ~SilentSinkSuspenderTest() override = default;
 
  protected:
@@ -41,14 +42,11 @@ class SilentSinkSuspenderTest : public testing::Test {
   FakeAudioRenderCallback fake_callback_;
   std::unique_ptr<AudioBus> temp_bus_;
   SilentSinkSuspender suspender_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SilentSinkSuspenderTest);
 };
 
 TEST_F(SilentSinkSuspenderTest, BasicPassthough) {
   temp_bus_->Zero();
-  auto delay = base::TimeDelta::FromMilliseconds(20);
+  auto delay = base::Milliseconds(20);
   EXPECT_EQ(temp_bus_->frames(),
             suspender_.Render(delay, base::TimeTicks(), 0, temp_bus_.get()));
 

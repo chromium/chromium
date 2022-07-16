@@ -13,6 +13,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 
 // static
@@ -34,6 +35,7 @@ BackgroundContentsServiceFactory::BackgroundContentsServiceFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());
+  DependsOn(extensions::ExtensionHostRegistry::GetFactory());
 }
 
 BackgroundContentsServiceFactory::~BackgroundContentsServiceFactory() {}

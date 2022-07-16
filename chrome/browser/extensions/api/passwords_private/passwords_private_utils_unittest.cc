@@ -14,7 +14,7 @@ namespace extensions {
 TEST(CreateUrlCollectionFromFormTest, UrlsFromHtmlForm) {
   password_manager::PasswordForm html_form;
   html_form.url = GURL("http://example.com/LoginAuth");
-  html_form.signon_realm = html_form.url.GetOrigin().spec();
+  html_form.signon_realm = html_form.url.DeprecatedGetOriginAsURL().spec();
 
   api::passwords_private::UrlCollection html_urls =
       CreateUrlCollectionFromForm(html_form);
@@ -61,6 +61,15 @@ TEST(CreateUrlCollectionFromFormTest, UrlsFromAndroidFormWithAppName) {
   EXPECT_EQ("Example Android App", android_urls.shown);
   EXPECT_EQ("https://play.google.com/store/apps/details?id=com.example.android",
             android_urls.link);
+}
+
+TEST(CreateUrlCollectionFromGURLTest, UrlsFromGURL) {
+  GURL url = GURL("https://example.com/login");
+  api::passwords_private::UrlCollection urls = CreateUrlCollectionFromGURL(url);
+
+  EXPECT_EQ(urls.shown, "example.com");
+  EXPECT_EQ(urls.origin, "https://example.com/");
+  EXPECT_EQ(urls.link, "https://example.com/login");
 }
 
 TEST(IdGeneratorTest, GenerateIds) {

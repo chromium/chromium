@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"
@@ -29,6 +28,11 @@ using url_pattern_index::UrlPattern;
 class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
  public:
   SubresourceFilterIndexedRulesetTest() { Reset(); }
+
+  SubresourceFilterIndexedRulesetTest(
+      const SubresourceFilterIndexedRulesetTest&) = delete;
+  SubresourceFilterIndexedRulesetTest& operator=(
+      const SubresourceFilterIndexedRulesetTest&) = delete;
 
  protected:
   LoadPolicy GetLoadPolicy(base::StringPiece url,
@@ -98,9 +102,6 @@ class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
 
   std::unique_ptr<RulesetIndexer> indexer_;
   std::unique_ptr<IndexedRulesetMatcher> matcher_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterIndexedRulesetTest);
 };
 
 TEST_F(SubresourceFilterIndexedRulesetTest, EmptyRuleset) {

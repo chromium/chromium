@@ -63,6 +63,12 @@ class CORE_EXPORT FetchRequestData final
   void SetOrigin(scoped_refptr<const SecurityOrigin> origin) {
     origin_ = std::move(origin);
   }
+  const WTF::Vector<KURL>& NavigationRedirectChain() const {
+    return navigation_redirect_chain_;
+  }
+  void SetNavigationRedirectChain(const WTF::Vector<KURL>& value) {
+    navigation_redirect_chain_ = value;
+  }
   scoped_refptr<const SecurityOrigin> IsolatedWorldOrigin() const {
     return isolated_world_origin_;
   }
@@ -108,6 +114,15 @@ class CORE_EXPORT FetchRequestData final
   void SetIntegrity(const String& integrity) { integrity_ = integrity; }
   ResourceLoadPriority Priority() const { return priority_; }
   void SetPriority(ResourceLoadPriority priority) { priority_ = priority; }
+
+  // The original destination of a request passed through by a service worker.
+  void SetOriginalDestination(network::mojom::RequestDestination value) {
+    original_destination_ = value;
+  }
+  network::mojom::RequestDestination OriginalDestination() const {
+    return original_destination_;
+  }
+
   bool Keepalive() const { return keepalive_; }
   void SetKeepalive(bool b) { keepalive_ = b; }
   bool IsHistoryNavigation() const { return is_history_navigation_; }
@@ -153,6 +168,7 @@ class CORE_EXPORT FetchRequestData final
   // FIXME: Support m_skipServiceWorkerFlag;
   network::mojom::RequestDestination destination_;
   scoped_refptr<const SecurityOrigin> origin_;
+  WTF::Vector<KURL> navigation_redirect_chain_;
   scoped_refptr<const SecurityOrigin> isolated_world_origin_;
   // FIXME: Support m_forceOriginHeaderFlag;
   AtomicString referrer_string_;
@@ -174,6 +190,8 @@ class CORE_EXPORT FetchRequestData final
   String mime_type_;
   String integrity_;
   ResourceLoadPriority priority_;
+  network::mojom::RequestDestination original_destination_ =
+      network::mojom::RequestDestination::kEmpty;
   bool keepalive_;
   bool is_history_navigation_ = false;
   // A specific factory that should be used for this request instead of whatever

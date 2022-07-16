@@ -10,11 +10,11 @@
 #include "base/bind.h"
 #include "content/browser/android/text_suggestion_host_mojo_impl_android.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/android/content_jni_headers/SuggestionInfo_jni.h"
 #include "content/public/android/content_jni_headers/TextSuggestionHost_jni.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/gfx/android/view_configuration.h"
@@ -205,8 +205,8 @@ void TextSuggestionHostAndroid::ShowTextSuggestionMenu(
 
 void TextSuggestionHostAndroid::StartSuggestionMenuTimer() {
   suggestion_menu_timeout_.Stop();
-  suggestion_menu_timeout_.Start(base::TimeDelta::FromMilliseconds(
-      gfx::ViewConfiguration::GetDoubleTapTimeoutInMs()));
+  suggestion_menu_timeout_.Start(
+      base::Milliseconds(gfx::ViewConfiguration::GetDoubleTapTimeoutInMs()));
 }
 
 void TextSuggestionHostAndroid::OnKeyEvent() {
@@ -239,10 +239,7 @@ RenderFrameHost* TextSuggestionHostAndroid::GetFocusedFrame() {
     return nullptr;
   RenderWidgetHostImpl* rwh =
       RenderWidgetHostImpl::From(rwhva_->GetRenderWidgetHost());
-  if (!rwh || !rwh->delegate())
-    return nullptr;
-
-  if (auto* contents = rwh->delegate()->GetAsWebContents())
+  if (auto* contents = WebContentsImpl::FromRenderWidgetHostImpl(rwh))
     return contents->GetFocusedFrame();
 
   return nullptr;

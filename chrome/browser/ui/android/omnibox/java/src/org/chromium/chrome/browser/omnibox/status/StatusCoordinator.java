@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -15,10 +16,12 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -28,8 +31,10 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.permissions.PermissionDialogController;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -42,11 +47,14 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class StatusCoordinator implements View.OnClickListener, LocationBarDataProvider.Observer {
     /** Interface for displaying page info popup on omnibox. */
     public interface PageInfoAction {
+        // TODO(crbug.com/1257656): Create a class to pass highlight info instead of adding more
+        // parameters.
         /**
          * @param tab Tab containing the content to show page info for.
          * @param highlightedPermission The ContentSettingsType to be highlighted on the page.
+         * @param fromStoreIcon Whether user enters page info via the store icon in omnibox.
          */
-        void show(Tab tab, @ContentSettingsType int highlightedPermission);
+        void show(Tab tab, @ContentSettingsType int highlightedPermission, boolean fromStoreIcon);
     }
 
     // TODO(crbug.com/1109369): Do not store the StatusView
@@ -55,6 +63,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     private final PropertyModel mModel;
     private final boolean mIsTablet;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<Profile> mProfileSupplier;
     private final PageInfoAction mPageInfoAction;
     private final UserEducationHelper mUserEducationHelper;
     private LocationBarDataProvider mLocationBarDataProvider;
@@ -76,6 +85,9 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
      * @param pageInfoAction Displays page info popup.
      * @param userEducationHelper Helper to show in product help UI. Can be null if an in product
      *         help shouldn't be shown, such as when called from a search activity.
+     * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
+     *         MerchantTrustSignalsCoordinator}. Can be null if a store icon shouldn't be shown,
+     *         such as when called from a search activity.
      */
     public StatusCoordinator(boolean isTablet, StatusView statusView,
             UrlBarEditingTextStateProvider urlBarEditingTextStateProvider,
@@ -85,10 +97,13 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             SearchEngineLogoUtils searchEngineLogoUtils, Supplier<Profile> profileSupplier,
             WindowAndroid windowAndroid, PageInfoAction pageInfoAction,
-            UserEducationHelper userEducationHelper) {
+            UserEducationHelper userEducationHelper,
+            @Nullable Supplier<MerchantTrustSignalsCoordinator>
+                    merchantTrustSignalsCoordinatorSupplier) {
         mIsTablet = isTablet;
         mStatusView = statusView;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mProfileSupplier = profileSupplier;
         mLocationBarDataProvider = locationBarDataProvider;
         mPageInfoAction = pageInfoAction;
         mUserEducationHelper = userEducationHelper;
@@ -103,7 +118,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator = new StatusMediator(mModel, mStatusView.getResources(), mStatusView.getContext(),
                 urlBarEditingTextStateProvider, isTablet, locationBarDataProvider,
                 PermissionDialogController.getInstance(), searchEngineLogoUtils,
-                templateUrlServiceSupplier, profileSupplier, pageInfoIPHController, windowAndroid);
+                templateUrlServiceSupplier, profileSupplier, pageInfoIPHController, windowAndroid,
+                merchantTrustSignalsCoordinatorSupplier);
 
         Resources res = mStatusView.getResources();
         mMediator.setUrlMinWidth(res.getDimensionPixelSize(R.dimen.location_bar_min_url_width)
@@ -132,6 +148,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator.updateLocationBarIcon(StatusView.IconTransitionType.CROSSFADE);
         mMediator.setStatusClickListener(this);
         mMediator.updateStatusVisibility();
+        mMediator.setStoreIconController();
     }
 
     /** @param urlHasFocus Whether the url currently has focus. */
@@ -155,9 +172,12 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator.setUrlFocusChangePercent(percent);
     }
 
-    /**  @param useDarkColors Whether dark colors should be for the status icon and text. */
-    public void setUseDarkColors(boolean useDarkColors) {
-        mMediator.setUseDarkColors(useDarkColors);
+    /**
+     * @param useDarkForegroundColors Whether dark foreground colors should be for the status icon
+     *                                and text.
+     */
+    public void setUseDarkForegroundColors(boolean useDarkForegroundColors) {
+        mMediator.setUseDarkColors(useDarkForegroundColors);
 
         // TODO(ender): remove this once icon selection has complete set of
         // corresponding properties (for tinting etc).
@@ -192,13 +212,26 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
                 && mLocationBarDataProvider.getTab() != null
                 && UrlConstants.HTTPS_SCHEME.equals(
                         mLocationBarDataProvider.getTab().getUrl().getScheme())) {
-            mUserEducationHelper.requestShowIPH(
-                    new IPHCommandBuilder(mStatusView.getContext().getResources(),
+            // Also check lock icon enterprise policy.
+            boolean useLockIconEnabled = false;
+            if (mProfileSupplier.get() != null) {
+                PrefService prefService = UserPrefs.get(mProfileSupplier.get());
+                if (prefService.isManagedPreference(
+                            ChromePreferenceKeys.LOCK_ICON_IN_ADDRESS_BAR_ENABLED)) {
+                    useLockIconEnabled = prefService.getBoolean(
+                            ChromePreferenceKeys.LOCK_ICON_IN_ADDRESS_BAR_ENABLED);
+                }
+                if (!useLockIconEnabled) {
+                    mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(
+                            mStatusView.getContext().getResources(),
                             FeatureConstants.IPH_UPDATED_CONNECTION_SECURITY_INDICATORS_FEATURE,
                             R.string.iph_updated_connection_security_indicators,
                             R.string.iph_updated_connection_security_indicators)
-                            .setAnchorView(getSecurityIconView())
-                            .build());
+                                                                .setAnchorView(
+                                                                        getSecurityIconView())
+                                                                .build());
+                }
+            }
         }
     }
 
@@ -213,13 +246,13 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
 
     /** Returns the view displaying the security icon. */
     public View getSecurityIconView() {
-        return mStatusView.getSecurityButton();
+        return mStatusView.getSecurityView();
     }
 
     /** Returns {@code true} if the security button is currently being displayed. */
     @VisibleForTesting
-    public boolean isSecurityButtonShown() {
-        return mMediator.isSecurityButtonShown();
+    public boolean isSecurityViewShown() {
+        return mMediator.isSecurityViewShown();
     }
 
     /** Returns {@code true} if the search engine status is currently being displayed. */
@@ -266,7 +299,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             return;
         }
 
-        mPageInfoAction.show(mLocationBarDataProvider.getTab(), mMediator.getLastPermission());
+        mPageInfoAction.show(mLocationBarDataProvider.getTab(), mMediator.getLastPermission(),
+                mMediator.isStoreIconShowing());
         mMediator.onPageInfoOpened();
     }
 

@@ -127,7 +127,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID,
             ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION,
+            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
             ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR})
     @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
     public void
@@ -148,7 +148,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION,
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
             ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
             ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR})
     @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR,
@@ -172,7 +172,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR,
             ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID})
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void
     testIPHEvent() {
         doReturn(true).when(mTracker).shouldTriggerHelpUI(
@@ -186,7 +186,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
     public void isToolbarMicEnabled_adaptiveButtons_nonVoice() {
         ShadowChromeFeatureList.sParamValues.put("mode", AdaptiveToolbarFeatures.ALWAYS_NEW_TAB);
@@ -194,7 +194,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
     public void isToolbarMicEnabled_adaptiveButtons_voice() {
         ShadowChromeFeatureList.sParamValues.put("mode", AdaptiveToolbarFeatures.ALWAYS_VOICE);
@@ -202,7 +202,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION,
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
             ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
             ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR})
     @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})

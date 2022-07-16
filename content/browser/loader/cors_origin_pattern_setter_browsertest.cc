@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -42,6 +41,12 @@ const char kTestSubdomainHost[] = "subdomain.crossorigin.example.com";
 
 // Tests end to end functionality of CORS access origin allow lists.
 class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
+ public:
+  CorsOriginPatternSetterBrowserTest(
+      const CorsOriginPatternSetterBrowserTest&) = delete;
+  CorsOriginPatternSetterBrowserTest& operator=(
+      const CorsOriginPatternSetterBrowserTest&) = delete;
+
  protected:
   CorsOriginPatternSetterBrowserTest() = default;
 
@@ -84,7 +89,8 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
       base::RunLoop run_loop;
       CorsOriginPatternSetter::Set(
           web_contents()->GetBrowserContext(),
-          url::Origin::Create(embedded_test_server()->base_url().GetOrigin()),
+          url::Origin::Create(
+              embedded_test_server()->base_url().DeprecatedGetOriginAsURL()),
           std::move(list), std::vector<network::mojom::CorsOriginPatternPtr>(),
           run_loop.QuitClosure());
       run_loop.Run();
@@ -100,8 +106,9 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
       base::RunLoop run_loop;
       CorsOriginPatternSetter::Set(
           web_contents()->GetBrowserContext(),
-          url::Origin::Create(
-              embedded_test_server()->GetURL(kTestHost, "/").GetOrigin()),
+          url::Origin::Create(embedded_test_server()
+                                  ->GetURL(kTestHost, "/")
+                                  .DeprecatedGetOriginAsURL()),
           std::move(list), std::vector<network::mojom::CorsOriginPatternPtr>(),
           run_loop.QuitClosure());
       run_loop.Run();
@@ -132,8 +139,6 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
   const std::u16string pass_string_ = u"PASS";
   const std::u16string fail_string_ = u"FAIL";
   const std::u16string script_ = u"reason";
-
-  DISALLOW_COPY_AND_ASSIGN(CorsOriginPatternSetterBrowserTest);
 };
 
 // Tests if specifying only protocol allows all hosts to pass.

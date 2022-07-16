@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
-#include "base/macros.h"
 #include "components/arc/ime/arc_ime_bridge.h"
 #include "components/arc/ime/key_event_result_receiver.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -61,11 +60,13 @@ class ArcImeService : public KeyedService,
     virtual void UnregisterFocusObserver() = 0;
     virtual ui::InputMethod* GetInputMethodForWindow(
         aura::Window* window) const = 0;
-    virtual bool IsImeBlocked(aura::Window* window) const = 0;
   };
 
   ArcImeService(content::BrowserContext* context,
                 ArcBridgeService* bridge_service);
+
+  ArcImeService(const ArcImeService&) = delete;
+  ArcImeService& operator=(const ArcImeService&) = delete;
 
   ~ArcImeService() override;
 
@@ -79,9 +80,6 @@ class ArcImeService : public KeyedService,
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowRemovingFromRootWindow(aura::Window* window,
                                       aura::Window* new_root) override;
-  void OnWindowPropertyChanged(aura::Window* window,
-                               const void* key,
-                               intptr_t old) override;
   void OnWindowRemoved(aura::Window* removed_window) override;
 
   // Overridden from aura::client::FocusChangeObserver:
@@ -160,6 +158,9 @@ class ArcImeService : public KeyedService,
   bool AddGrammarFragments(
       const std::vector<ui::GrammarFragment>& fragments) override;
   void OnDispatchingKeyEventPostIME(ui::KeyEvent* event) override;
+  void GetActiveTextInputControlLayoutBounds(
+      absl::optional<gfx::Rect>* control_bounds,
+      absl::optional<gfx::Rect>* selection_bounds) override {}
 
   // Normally, the default device scale factor is used to convert from DPI to
   // physical pixels. This method provides a way to override it for testing.
@@ -207,15 +208,9 @@ class ArcImeService : public KeyedService,
   std::u16string text_in_range_;
   gfx::Range selection_range_;
 
-  // Return value of IsImeBlocked() last time OnWindowPropertyChanged() is
-  // called. It might not be the latest blocking state.
-  bool last_ime_blocked_ = false;
-
   aura::Window* focused_arc_window_ = nullptr;
 
   std::unique_ptr<KeyEventResultReceiver> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcImeService);
 };
 
 }  // namespace arc

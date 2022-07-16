@@ -22,7 +22,6 @@
 #include "ash/keyboard/ui/queued_display_change.h"
 #include "ash/public/cpp/keyboard/keyboard_config.h"
 #include "ash/public/cpp/keyboard/keyboard_types.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -61,6 +60,10 @@ class KEYBOARD_EXPORT KeyboardUIController
       public ContainerBehavior::Delegate {
  public:
   KeyboardUIController();
+
+  KeyboardUIController(const KeyboardUIController&) = delete;
+  KeyboardUIController& operator=(const KeyboardUIController&) = delete;
+
   ~KeyboardUIController() override;
 
   // Initialize the virtual keyboard controller with two delegates:
@@ -471,8 +474,6 @@ class KEYBOARD_EXPORT KeyboardUIController
   base::WeakPtrFactory<KeyboardUIController>
       weak_factory_report_lingering_state_{this};
   base::WeakPtrFactory<KeyboardUIController> weak_factory_will_hide_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardUIController);
 };
 
 }  // namespace keyboard

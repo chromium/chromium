@@ -13,12 +13,14 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/media_resource.h"
 #include "media/base/win/media_foundation_cdm_proxy.h"
 #include "media/renderers/win/media_foundation_stream_wrapper.h"
 
 namespace media {
+
+class MediaLog;
 
 // IMFMediaSource implementation
 // (https://docs.microsoft.com/en-us/windows/win32/api/mfidl/nn-mfidl-imfmediasource)
@@ -47,6 +49,7 @@ class MediaFoundationSourceWrapper
 
   HRESULT RuntimeClassInitialize(
       MediaResource* media_resource,
+      MediaLog* media_log,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Note: All COM interface (IMFXxx) methods are called on the MF threadpool

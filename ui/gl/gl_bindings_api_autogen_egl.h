@@ -161,6 +161,9 @@ EGLBoolean eglQueryContextFn(EGLDisplay dpy,
                              EGLint attribute,
                              EGLint* value) override;
 EGLBoolean eglQueryDebugKHRFn(EGLint attribute, EGLAttrib* value) override;
+EGLBoolean eglQueryDeviceAttribEXTFn(EGLDeviceEXT device,
+                                     EGLint attribute,
+                                     EGLAttrib* value) override;
 EGLBoolean eglQueryDevicesEXTFn(EGLint max_devices,
                                 EGLDeviceEXT* devices,
                                 EGLint* num_devices) override;
@@ -169,6 +172,9 @@ const char* eglQueryDeviceStringEXTFn(EGLDeviceEXT device,
 EGLBoolean eglQueryDisplayAttribANGLEFn(EGLDisplay dpy,
                                         EGLint attribute,
                                         EGLAttrib* value) override;
+EGLBoolean eglQueryDisplayAttribEXTFn(EGLDisplay dpy,
+                                      EGLint attribute,
+                                      EGLAttrib* value) override;
 EGLBoolean eglQueryStreamKHRFn(EGLDisplay dpy,
                                EGLStreamKHR stream,
                                EGLenum attribute,

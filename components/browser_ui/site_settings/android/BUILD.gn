@@ -5,17 +5,11 @@
 import("//build/config/android/rules.gni")
 
 generate_jni("site_settings_jni_headers") {
-  sources = [
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureList.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java",
-  ]
+  sources = [ "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java" ]
 }
 
 source_set("android") {
   sources = [
-    "features.cc",
-    "features.h",
-    "site_settings_feature_list.cc",
     "storage_info_fetcher.cc",
     "storage_info_fetcher.h",
     "website_preference_bridge.cc",
@@ -26,7 +20,6 @@ source_set("android") {
     "//components/browsing_data/content",
     "//components/cdm/browser",
     "//components/content_settings/core/browser",
-    "//components/embedder_support/android:browser_context",
     "//components/permissions",
     "//components/subresource_filter/android",
     "//components/user_prefs",
@@ -35,6 +28,7 @@ source_set("android") {
     "//services/network/public/mojom",
     "//storage/browser",
     "//url",
+    "//url:gurl_android",
   ]
 }
 
@@ -46,7 +40,6 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/ChosenObjectSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ClearWebsiteStorage.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ClearWebsiteStorageDialog.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/ContentSetting.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ContentSettingException.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ContentSettingsResources.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ForwardingManagedPreferenceDelegate.java",
@@ -63,7 +56,6 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsDelegate.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureList.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsPreferenceFragment.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsUtil.java",
     "java/src/org/chromium/components/browser_ui/site_settings/StorageInfo.java",
@@ -84,7 +76,6 @@ android_library("java") {
     "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/content_settings/android:java",
-    "//components/embedder_support/android:browser_context_java",
     "//components/embedder_support/android:util_java",
     "//components/location/android:location_java",
     "//components/permissions/android:java",
@@ -125,7 +116,6 @@ android_resources("java_resources") {
     "java/res/drawable-hdpi/permission_popups.png",
     "java/res/drawable-hdpi/permission_protected_media.png",
     "java/res/drawable-hdpi/settings_sensors.png",
-    "java/res/drawable-hdpi/settings_storage.png",
     "java/res/drawable-hdpi/web_asset.png",
     "java/res/drawable-mdpi/ic_volume_up_grey600_24dp.png",
     "java/res/drawable-mdpi/permission_background_sync.png",
@@ -133,7 +123,6 @@ android_resources("java_resources") {
     "java/res/drawable-mdpi/permission_popups.png",
     "java/res/drawable-mdpi/permission_protected_media.png",
     "java/res/drawable-mdpi/settings_sensors.png",
-    "java/res/drawable-mdpi/settings_storage.png",
     "java/res/drawable-mdpi/web_asset.png",
     "java/res/drawable-xhdpi/ic_volume_up_grey600_24dp.png",
     "java/res/drawable-xhdpi/permission_background_sync.png",
@@ -141,7 +130,6 @@ android_resources("java_resources") {
     "java/res/drawable-xhdpi/permission_popups.png",
     "java/res/drawable-xhdpi/permission_protected_media.png",
     "java/res/drawable-xhdpi/settings_sensors.png",
-    "java/res/drawable-xhdpi/settings_storage.png",
     "java/res/drawable-xhdpi/web_asset.png",
     "java/res/drawable-xxhdpi/ic_volume_up_grey600_24dp.png",
     "java/res/drawable-xxhdpi/permission_background_sync.png",
@@ -149,7 +137,6 @@ android_resources("java_resources") {
     "java/res/drawable-xxhdpi/permission_popups.png",
     "java/res/drawable-xxhdpi/permission_protected_media.png",
     "java/res/drawable-xxhdpi/settings_sensors.png",
-    "java/res/drawable-xxhdpi/settings_storage.png",
     "java/res/drawable-xxhdpi/web_asset.png",
     "java/res/drawable-xxxhdpi/ic_volume_up_grey600_24dp.png",
     "java/res/drawable-xxxhdpi/permission_background_sync.png",
@@ -157,7 +144,6 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/permission_popups.png",
     "java/res/drawable-xxxhdpi/permission_protected_media.png",
     "java/res/drawable-xxxhdpi/settings_sensors.png",
-    "java/res/drawable-xxxhdpi/settings_storage.png",
     "java/res/drawable-xxxhdpi/web_asset.png",
     "java/res/drawable/ic_person_24dp.xml",
     "java/res/drawable/settings_bluetooth.xml",

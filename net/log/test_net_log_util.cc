@@ -194,17 +194,4 @@ int GetNetErrorCodeFromParams(const NetLogEntry& entry) {
   return *result;
 }
 
-bool GetListValueFromParams(const NetLogEntry& entry,
-                            base::StringPiece path,
-                            const base::ListValue** value) {
-  if (!entry.params.is_dict())
-    return false;
-
-  const base::Value* list = entry.params.FindListPath(path);
-  if (!list)
-    return false;
-
-  return list->GetAsList(value);
-}
-
 }  // namespace net

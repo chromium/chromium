@@ -10,7 +10,6 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
@@ -29,6 +28,11 @@ namespace content {
 class CONTENT_EXPORT MediaPermissionDispatcher : public media::MediaPermission {
  public:
   explicit MediaPermissionDispatcher(RenderFrameImpl* render_frame);
+
+  MediaPermissionDispatcher(const MediaPermissionDispatcher&) = delete;
+  MediaPermissionDispatcher& operator=(const MediaPermissionDispatcher&) =
+      delete;
+
   ~MediaPermissionDispatcher() override;
 
   // Called when the frame owning this MediaPermissionDispatcher is navigated.
@@ -75,8 +79,6 @@ class CONTENT_EXPORT MediaPermissionDispatcher : public media::MediaPermission {
   base::WeakPtr<MediaPermissionDispatcher> weak_ptr_;
 
   base::WeakPtrFactory<MediaPermissionDispatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPermissionDispatcher);
 };
 
 }  // namespace content

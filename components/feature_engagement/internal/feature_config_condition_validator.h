@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 #include <map>
+#include <set>
 
-#include "base/macros.h"
 #include "components/feature_engagement/internal/condition_validator.h"
 
 namespace feature_engagement {
@@ -21,6 +21,12 @@ class EventModel;
 class FeatureConfigConditionValidator : public ConditionValidator {
  public:
   FeatureConfigConditionValidator();
+
+  FeatureConfigConditionValidator(const FeatureConfigConditionValidator&) =
+      delete;
+  FeatureConfigConditionValidator& operator=(
+      const FeatureConfigConditionValidator&) = delete;
+
   ~FeatureConfigConditionValidator() override;
 
   // ConditionValidator implementation.
@@ -30,6 +36,7 @@ class FeatureConfigConditionValidator : public ConditionValidator {
       const EventModel& event_model,
       const AvailabilityModel& availability_model,
       const DisplayLockController& display_lock_controller,
+      const Configuration* configuration,
       uint32_t current_day) const override;
   void NotifyIsShowing(
       const base::Feature& feature,
@@ -50,15 +57,18 @@ class FeatureConfigConditionValidator : public ConditionValidator {
   bool SessionRateMeetsConditions(const Comparator session_rate,
                                   const base::Feature& feature) const;
 
-  // Whether in-product help is currently being shown.
-  bool currently_showing_;
+  bool IsBlocked(const base::Feature& feature,
+                 const FeatureConfig& config,
+                 const Configuration* configuration) const;
+
+  // A set of currently showing features. Added to the set on
+  // ShouldTriggerHelpUi() and cleared during Dismissed() call.
+  std::set<std::string> currently_showing_features_;
 
   // Stores how many times features that impact a given feature have been shown.
   // By default, all features impact each other, but some features override this
   // through the use of |session_rate_impact|.
   std::map<std::string, uint32_t> times_shown_for_feature_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureConfigConditionValidator);
 };
 
 }  // namespace feature_engagement

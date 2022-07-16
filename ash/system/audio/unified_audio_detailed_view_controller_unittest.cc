@@ -4,11 +4,14 @@
 
 #include "ash/system/audio/unified_audio_detailed_view_controller.h"
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/components/audio/audio_devices_pref_handler.h"
 #include "ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "ash/system/audio/audio_detailed_view.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
+#include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
@@ -17,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/audio/cras_audio_client.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
+#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -121,7 +125,8 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
   void TearDown() override {
     MicGainSliderController::SetMapDeviceSliderCallbackForTest(nullptr);
     audio_pref_handler_ = nullptr;
-
+    audio_detailed_view_ = nullptr;
+    audio_detailed_view_.reset();
     audio_detailed_view_controller_.reset();
     tray_controller_.reset();
     tray_model_.reset();
@@ -138,9 +143,30 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
     toggles_map_[device_id] = view;
   }
 
+  void ToggleLiveCaption() {
+    audio_detailed_view()->HandleViewClicked(live_caption_view());
+  }
+
  protected:
   chromeos::FakeCrasAudioClient* fake_cras_audio_client() {
     return chromeos::FakeCrasAudioClient::Get();
+  }
+
+  tray::AudioDetailedView* audio_detailed_view() {
+    if (!audio_detailed_view_) {
+      audio_detailed_view_ =
+          base::WrapUnique(static_cast<tray::AudioDetailedView*>(
+              audio_detailed_view_controller_->CreateView()));
+    }
+    return audio_detailed_view_.get();
+  }
+
+  views::View* live_caption_view() {
+    return audio_detailed_view()->live_caption_view_;
+  }
+
+  bool live_caption_enabled() {
+    return Shell::Get()->accessibility_controller()->live_caption().enabled();
   }
 
   std::map<uint64_t, views::View*> sliders_map_;
@@ -155,10 +181,12 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
   std::unique_ptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<tray::AudioDetailedView> audio_detailed_view_;
 };
 
 TEST_F(UnifiedAudioDetailedViewControllerTest, OnlyOneVisibleSlider) {
-  audio_detailed_view_controller_->CreateView();
+  std::unique_ptr<views::View> view =
+      base::WrapUnique(audio_detailed_view_controller_->CreateView());
   fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
       GenerateAudioNodeList({kInternalMic, kMicJack}));
 
@@ -188,7 +216,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
   // Verify the device has dual internal mics.
   EXPECT_TRUE(cras_audio_handler_->HasDualInternalMic());
 
-  audio_detailed_view_controller_->CreateView();
+  std::unique_ptr<views::View> view =
+      base::WrapUnique(audio_detailed_view_controller_->CreateView());
 
   // Verify there is only 1 slider in the view.
   EXPECT_EQ(sliders_map_.size(), 1u);
@@ -209,7 +238,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
       AudioDevice(GenerateAudioNode(kInternalMic)), true,
       CrasAudioHandler::ACTIVATE_BY_USER);
 
-  audio_detailed_view_controller_->CreateView();
+  std::unique_ptr<views::View> view =
+      base::WrapUnique(audio_detailed_view_controller_->CreateView());
   EXPECT_EQ(0u, toggles_map_.size());
 }
 
@@ -226,7 +256,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
   cras_audio_handler_->SwitchToDevice(internal_mic, true,
                                       CrasAudioHandler::ACTIVATE_BY_USER);
 
-  audio_detailed_view_controller_->CreateView();
+  std::unique_ptr<views::View> view =
+      base::WrapUnique(audio_detailed_view_controller_->CreateView());
   EXPECT_EQ(1u, toggles_map_.size());
 
   views::ToggleButton* toggle =
@@ -249,7 +280,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
   cras_audio_handler_->SwitchToDevice(internal_mic, true,
                                       CrasAudioHandler::ACTIVATE_BY_USER);
 
-  audio_detailed_view_controller_->CreateView();
+  std::unique_ptr<views::View> view =
+      base::WrapUnique(audio_detailed_view_controller_->CreateView());
   EXPECT_EQ(1u, toggles_map_.size());
 
   views::ToggleButton* toggle =
@@ -288,7 +320,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
       AudioDevice(GenerateAudioNode(kInternalMic)), true,
       CrasAudioHandler::ACTIVATE_BY_USER);
 
-  audio_detailed_view_controller_->CreateView();
+  std::unique_ptr<views::View> view =
+      base::WrapUnique(audio_detailed_view_controller_->CreateView());
   EXPECT_EQ(0u, toggles_map_.size());
 }
 
@@ -307,7 +340,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 
   EXPECT_EQ(0u, fake_cras_audio_client()->GetNoiseCancellationEnabledCount());
 
-  audio_detailed_view_controller_->CreateView();
+  std::unique_ptr<views::View> view =
+      base::WrapUnique(audio_detailed_view_controller_->CreateView());
 
   EXPECT_EQ(1u, toggles_map_.size());
   // audio_detailed_view_controller_->CreateView() calls
@@ -318,6 +352,31 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
   cras_audio_handler_->SwitchToDevice(AudioDevice(GenerateAudioNode(kMicJack)),
                                       true, CrasAudioHandler::ACTIVATE_BY_USER);
   EXPECT_EQ(3u, fake_cras_audio_client()->GetNoiseCancellationEnabledCount());
+}
+
+TEST_F(UnifiedAudioDetailedViewControllerTest, ToggleLiveCaption) {
+  scoped_feature_list_.InitWithFeatures(
+      {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
+       ash::features::kOnDeviceSpeechRecognition},
+      {});
+
+  EXPECT_TRUE(live_caption_view());
+  EXPECT_FALSE(live_caption_enabled());
+
+  ToggleLiveCaption();
+  EXPECT_TRUE(live_caption_view());
+  EXPECT_TRUE(live_caption_enabled());
+
+  ToggleLiveCaption();
+  EXPECT_TRUE(live_caption_view());
+  EXPECT_FALSE(live_caption_enabled());
+}
+
+TEST_F(UnifiedAudioDetailedViewControllerTest, LiveCaptionNotAvailable) {
+  // If the Live Caption feature flags are not set, the Live Caption toggle will
+  // not appear in audio settings.
+  EXPECT_FALSE(live_caption_view());
+  EXPECT_FALSE(live_caption_enabled());
 }
 
 }  // namespace ash

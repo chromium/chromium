@@ -66,8 +66,7 @@ struct NET_EXPORT SendResult {
 };
 
 // Don't delay writes more than this.
-const base::TimeDelta kWriteAsyncMsThreshold =
-    base::TimeDelta::FromMilliseconds(1);
+const base::TimeDelta kWriteAsyncMsThreshold = base::Milliseconds(1);
 // Prefer local if number of writes is not more than this.
 const int kWriteAsyncMinBuffersThreshold = 2;
 // Don't allow more than this many outstanding async writes.
@@ -129,6 +128,10 @@ class NET_EXPORT UDPSocketPosix {
   class ReceivedActivityMonitor {
    public:
     ReceivedActivityMonitor() : bytes_(0), increments_(0) {}
+
+    ReceivedActivityMonitor(const ReceivedActivityMonitor&) = delete;
+    ReceivedActivityMonitor& operator=(const ReceivedActivityMonitor&) = delete;
+
     ~ReceivedActivityMonitor() = default;
     // Provided by sent/received subclass.
     // Update throughput, but batch to limit overhead of net::activity_monitor.
@@ -143,12 +146,15 @@ class NET_EXPORT UDPSocketPosix {
     uint32_t bytes_;
     uint32_t increments_;
     base::RepeatingTimer timer_;
-    DISALLOW_COPY_AND_ASSIGN(ReceivedActivityMonitor);
   };
 
   UDPSocketPosix(DatagramSocket::BindType bind_type,
                  net::NetLog* net_log,
                  const net::NetLogSource& source);
+
+  UDPSocketPosix(const UDPSocketPosix&) = delete;
+  UDPSocketPosix& operator=(const UDPSocketPosix&) = delete;
+
   virtual ~UDPSocketPosix();
 
   // Opens the socket.
@@ -384,6 +390,9 @@ class NET_EXPORT UDPSocketPosix {
     explicit WriteAsyncWatcher(UDPSocketPosix* socket)
         : socket_(socket), watching_(false) {}
 
+    WriteAsyncWatcher(const WriteAsyncWatcher&) = delete;
+    WriteAsyncWatcher& operator=(const WriteAsyncWatcher&) = delete;
+
     // MessagePumpForIO::FdWatcher methods
 
     void OnFileCanReadWithoutBlocking(int /* fd */) override {}
@@ -397,8 +406,6 @@ class NET_EXPORT UDPSocketPosix {
    private:
     UDPSocketPosix* const socket_;
     bool watching_;
-
-    DISALLOW_COPY_AND_ASSIGN(WriteAsyncWatcher);
   };
 
   void IncreaseWriteAsyncOutstanding(int increment) {
@@ -431,6 +438,9 @@ class NET_EXPORT UDPSocketPosix {
    public:
     explicit ReadWatcher(UDPSocketPosix* socket) : socket_(socket) {}
 
+    ReadWatcher(const ReadWatcher&) = delete;
+    ReadWatcher& operator=(const ReadWatcher&) = delete;
+
     // MessagePumpForIO::FdWatcher methods
 
     void OnFileCanReadWithoutBlocking(int /* fd */) override;
@@ -439,13 +449,14 @@ class NET_EXPORT UDPSocketPosix {
 
    private:
     UDPSocketPosix* const socket_;
-
-    DISALLOW_COPY_AND_ASSIGN(ReadWatcher);
   };
 
   class WriteWatcher : public base::MessagePumpForIO::FdWatcher {
    public:
     explicit WriteWatcher(UDPSocketPosix* socket) : socket_(socket) {}
+
+    WriteWatcher(const WriteWatcher&) = delete;
+    WriteWatcher& operator=(const WriteWatcher&) = delete;
 
     // MessagePumpForIO::FdWatcher methods
 
@@ -455,8 +466,6 @@ class NET_EXPORT UDPSocketPosix {
 
    private:
     UDPSocketPosix* const socket_;
-
-    DISALLOW_COPY_AND_ASSIGN(WriteWatcher);
   };
 
   int InternalWriteAsync(CompletionOnceCallback callback,
@@ -631,8 +640,6 @@ class NET_EXPORT UDPSocketPosix {
 
   // Used for alternate writes that are posted for concurrent execution.
   base::WeakPtrFactory<UDPSocketPosix> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UDPSocketPosix);
 };
 
 }  // namespace net

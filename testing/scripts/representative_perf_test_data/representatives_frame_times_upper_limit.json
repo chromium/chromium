@@ -28,7 +28,9 @@
     "aquarium_20k_fast_call": {
       "ci_095": 1.983,
       "avg": 113.445,
-      "cpu_wall_time_ratio": 0.418
+      "cpu_wall_time_ratio": 0.418,
+      "experimental": true,
+      "_comment": "crbug.com/1241039"
     },
     "aquarium_20k": {
       "ci_095": 3.727,

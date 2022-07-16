@@ -8,7 +8,7 @@
 #include "components/ukm/ukm_service.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
@@ -27,7 +27,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 }  // namespace
 
 @interface DemographicsTestCase : ChromeTestCase {
-  int testBirthYear_;
+  int birthYear_;
 }
 @end
 
@@ -45,8 +45,8 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   [MetricsAppInterface updateNetworkTime:now];
 
   // Get the maximum eligible birth year for reporting demographics.
-  testBirthYear_ = [MetricsAppInterface maximumEligibleBirthYearForTime:now];
-  [self addUserDemographicsToSyncServerWithBirthYear:testBirthYear_
+  birthYear_ = [MetricsAppInterface maximumEligibleBirthYearForTime:now];
+  [self addUserDemographicsToSyncServerWithBirthYear:birthYear_
                                               gender:kTestGender];
   [self signInAndSync];
   [self grantMetricsConsent];
@@ -191,7 +191,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 
   [self buildAndStoreUKMLog];
 
-  GREYAssertTrue([MetricsAppInterface UKMReportHasBirthYear:testBirthYear_
+  GREYAssertTrue([MetricsAppInterface UKMReportHasBirthYear:birthYear_
                                                      gender:kTestGender],
                  @"The report should contain the specified user demographics");
 
@@ -245,7 +245,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   GREYAssertTrue([MetricsAppInterface hasUnsentUMALogs],
                  @"The UKM service should have unsent logs.");
 
-  GREYAssertTrue([MetricsAppInterface UMALogHasBirthYear:testBirthYear_
+  GREYAssertTrue([MetricsAppInterface UMALogHasBirthYear:birthYear_
                                                   gender:kTestGender],
                  @"The report should contain the specified user demographics");
 

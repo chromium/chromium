@@ -6,7 +6,6 @@
 #define COMPONENTS_EXO_TOUCH_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "components/exo/surface_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -26,6 +25,10 @@ class TouchStylusDelegate;
 class Touch : public ui::EventHandler, public SurfaceObserver {
  public:
   Touch(TouchDelegate* delegate, Seat* seat);
+
+  Touch(const Touch&) = delete;
+  Touch& operator=(const Touch&) = delete;
+
   ~Touch() override;
 
   TouchDelegate* delegate() const { return delegate_; }
@@ -60,8 +63,6 @@ class Touch : public ui::EventHandler, public SurfaceObserver {
 
   // Map of a touched surface to the count of touch pointers on that surface.
   base::flat_map<Surface*, int> surface_touch_count_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(Touch);
 };
 
 }  // namespace exo

@@ -69,7 +69,7 @@ interface IronCollapseElement extends IronResizableBehavior, LegacyElementMixin,
   /**
    * Set opened to true to show the collapse element and to false to hide it.
    */
-  opened: boolean|null|undefined;
+  opened: boolean;
 
   /**
    * When true, the element is transitioning its opened state. When false,

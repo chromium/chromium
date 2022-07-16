@@ -48,16 +48,16 @@ absl::optional<OriginPolicyParsedHeader> OriginPolicyParsedHeader::FromString(
 
       const sh::Item& item = parameterized_item.item;
       if (item.is_string()) {
-        const std::string& string = item.GetString();
-        if (string.empty()) {
+        const std::string& item_string = item.GetString();
+        if (item_string.empty()) {
           return absl::nullopt;
         }
-        result = OriginPolicyAllowedValue::FromString(string);
+        result = OriginPolicyAllowedValue::FromString(item_string);
       } else if (item.is_token()) {
-        const std::string& string = item.GetString();
-        if (string == "null") {
+        const std::string& item_string = item.GetString();
+        if (item_string == "null") {
           result = OriginPolicyAllowedValue::Null();
-        } else if (string == "latest") {
+        } else if (item_string == "latest") {
           result = OriginPolicyAllowedValue::Latest();
         }
       } else {
@@ -78,14 +78,14 @@ absl::optional<OriginPolicyParsedHeader> OriginPolicyParsedHeader::FromString(
 
     const sh::Item& item = parsed_header.at("preferred").member[0].item;
     if (item.is_string()) {
-      const std::string& string = item.GetString();
-      if (string.empty()) {
+      const std::string& item_string = item.GetString();
+      if (item_string.empty()) {
         return absl::nullopt;
       }
-      preferred = OriginPolicyPreferredValue::FromString(string);
+      preferred = OriginPolicyPreferredValue::FromString(item_string);
     } else if (item.is_token()) {
-      const std::string& string = item.GetString();
-      if (string == "latest-from-network") {
+      const std::string& item_string = item.GetString();
+      if (item_string == "latest-from-network") {
         preferred = OriginPolicyPreferredValue::LatestFromNetwork();
       }
     } else {

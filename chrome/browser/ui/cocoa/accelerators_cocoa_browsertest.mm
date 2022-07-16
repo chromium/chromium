@@ -14,7 +14,7 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
 
-typedef InProcessBrowserTest AcceleratorsCocoaBrowserTest;
+using AcceleratorsCocoaBrowserTest = InProcessBrowserTest;
 
 namespace {
 
@@ -25,21 +25,38 @@ void AddAcceleratorItemsToArray(NSMenu* menu, NSMutableArray* array) {
     if (submenu)
       AddAcceleratorItemsToArray(submenu, array);
 
-    if (item.keyEquivalent.length > 0)
-      [array addObject:item];
+    // If the tag or key equivalent is zero, then either this is a macOS menu
+    // item that we don't care about, or it's a chrome accelerator with non
+    // standard selector. We don't have an easy way to distinguish between
+    // these, so we just ignore them. Also as of macOS Monterey the AppKit
+    // adds a tag to the Start Dictation... menu item - skip it as well.
+    if (item.tag == 0 || item.keyEquivalent.length == 0 ||
+        item.action == @selector(startDictation:))
+      continue;
+
+    [array addObject:item];
   }
+}
+
+// Checks that the |item|'s modifier mask matches |modifierMask|. The
+// NSEventModifierFlagShift may be stored as part of the key equivalent
+// (i.e. "a" + NSEventModifierFlagShift => "A").
+inline bool MenuItemHasModifierMask(NSMenuItem* item, NSUInteger modifierMask) {
+  return modifierMask == item.keyEquivalentModifierMask ||
+         (modifierMask & ~NSEventModifierFlagShift) ==
+             item.keyEquivalentModifierMask;
 }
 
 // Returns the NSMenuItem that has the given keyEquivalent and modifiers, or
 // nil.
 NSMenuItem* MenuContainsAccelerator(NSMenu* menu,
                                     NSString* key_equivalent,
-                                    NSUInteger modifiers) {
+                                    NSUInteger modifier_mask) {
   for (NSMenuItem* item in [menu itemArray]) {
     NSMenu* submenu = item.submenu;
     if (submenu) {
       NSMenuItem* result =
-          MenuContainsAccelerator(submenu, key_equivalent, modifiers);
+          MenuContainsAccelerator(submenu, key_equivalent, modifier_mask);
       if (result)
         return result;
     }
@@ -49,15 +66,12 @@ NSMenuItem* MenuContainsAccelerator(NSMenu* menu,
       // which are special.
       if (item.tag == IDC_SELECT_NEXT_TAB ||
           item.tag == IDC_SELECT_PREVIOUS_TAB) {
-        if (modifiers == item.keyEquivalentModifierMask)
+        if (modifier_mask == item.keyEquivalentModifierMask)
           return item;
         continue;
       }
 
-      BOOL maskEqual =
-          (modifiers == item.keyEquivalentModifierMask) ||
-          ((modifiers & (~NSShiftKeyMask)) == item.keyEquivalentModifierMask);
-      if (maskEqual)
+      if (MenuItemHasModifierMask(item, modifier_mask))
         return item;
     }
   }
@@ -73,22 +87,11 @@ IN_PROC_BROWSER_TEST_F(AcceleratorsCocoaBrowserTest,
   NSMenu* menu = [NSApp mainMenu];
   NSMutableArray* array = [NSMutableArray array];
   AddAcceleratorItemsToArray(menu, array);
+  AcceleratorsCocoa* keymap = AcceleratorsCocoa::GetInstance();
 
   for (NSMenuItem* item in array) {
-    NSInteger command_id = item.tag;
-    AcceleratorsCocoa* keymap = AcceleratorsCocoa::GetInstance();
-    const ui::Accelerator* accelerator;
-
-    // If the tag is zero, then either this is a macOS menu item that we don't
-    // care about, or it's a chrome accelerator with non-standard selector. We
-    // don't have an easy way to distinguish between these, so we just ignore
-    // them.
-    if (command_id == 0) {
-      continue;
-    }
-
-    // If the tag isn't zero, then it must correspond to an IDC_* command.
-    accelerator = keymap->GetAcceleratorForCommand(command_id);
+    const ui::Accelerator* accelerator =
+        keymap->GetAcceleratorForCommand(item.tag);
     EXPECT_TRUE(accelerator);
     if (!accelerator)
       continue;
@@ -104,13 +107,9 @@ IN_PROC_BROWSER_TEST_F(AcceleratorsCocoaBrowserTest,
     EXPECT_NSEQ(keyEquivalent, item.keyEquivalent);
 
     // Check that the menu item's modifier mask matches the one stored in the
-    // accelerator. A mask that include NSShiftKeyMask may not include the
-    // relevant bit (the information is reflected in the keyEquivalent of the
-    // NSMenuItem).
-    BOOL maskEqual =
-        (modifierMask == item.keyEquivalentModifierMask) ||
-        ((modifierMask & (~NSShiftKeyMask)) == item.keyEquivalentModifierMask);
-    EXPECT_TRUE(maskEqual);
+    // accelerator. Ignore the NSEventModifierFlagShift because it's part of
+    // the key equivalent (i.e. "a" + NSEventModifierFlagShift = "A").
+    EXPECT_TRUE(MenuItemHasModifierMask(item, modifierMask));
   }
 }
 
@@ -127,13 +126,10 @@ IN_PROC_BROWSER_TEST_F(AcceleratorsCocoaBrowserTest,
       [[fileMenu itemWithTitle:l10n_util::GetNSString(IDS_SHARE_MAC)] submenu];
   [[shareMenu delegate] menuNeedsUpdate:shareMenu];
 
-  for (AcceleratorsCocoa::AcceleratorMap::iterator it =
-           keymap->accelerators_.begin();
-       it != keymap->accelerators_.end();
-       ++it) {
+  for (auto& it : keymap->accelerators_) {
     NSString* keyEquivalent;
     NSUInteger modifierMask;
-    GetKeyEquivalentAndModifierMaskFromAccelerator(it->second, &keyEquivalent,
+    GetKeyEquivalentAndModifierMaskFromAccelerator(it.second, &keyEquivalent,
                                                    &modifierMask);
 
     // Check that there exists a corresponding NSMenuItem.
@@ -146,6 +142,6 @@ IN_PROC_BROWSER_TEST_F(AcceleratorsCocoaBrowserTest,
     // with IDC_PRESENTATION_MODE.
     if (item.action == @selector(commandDispatch:)
         && item.tag != IDC_TOGGLE_FULLSCREEN_TOOLBAR)
-      EXPECT_EQ(item.tag, it->first);
+      EXPECT_EQ(item.tag, it.first);
   }
 }

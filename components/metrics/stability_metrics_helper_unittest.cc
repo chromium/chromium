@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
@@ -30,6 +29,11 @@ enum RendererType {
 };
 
 class StabilityMetricsHelperTest : public testing::Test {
+ public:
+  StabilityMetricsHelperTest(const StabilityMetricsHelperTest&) = delete;
+  StabilityMetricsHelperTest& operator=(const StabilityMetricsHelperTest&) =
+      delete;
+
  protected:
   StabilityMetricsHelperTest() : prefs_(new TestingPrefServiceSimple) {
     StabilityMetricsHelper::RegisterPrefs(prefs()->registry());
@@ -39,8 +43,6 @@ class StabilityMetricsHelperTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(StabilityMetricsHelperTest);
 };
 
 }  // namespace

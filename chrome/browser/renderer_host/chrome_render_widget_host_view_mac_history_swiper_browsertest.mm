@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -88,17 +87,22 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
         base_path, base::FilePath(FILE_PATH_LITERAL("iframe.html")));
   }
 
+  ChromeRenderWidgetHostViewMacHistorySwiperTest(
+      const ChromeRenderWidgetHostViewMacHistorySwiperTest&) = delete;
+  ChromeRenderWidgetHostViewMacHistorySwiperTest& operator=(
+      const ChromeRenderWidgetHostViewMacHistorySwiperTest&) = delete;
+
   void SetUpOnMainThread() override {
     event_queue_.reset([[NSMutableArray alloc] init]);
     touch_ = CGPointMake(0.5, 0.5);
 
     // Ensure that the navigation stack is not empty.
-    ui_test_utils::NavigateToURL(browser(), url1_);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1_));
     ASSERT_EQ(url1_, GetWebContents()->GetURL());
-    ui_test_utils::NavigateToURL(browser(), url2_);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2_));
     ASSERT_EQ(url2_, GetWebContents()->GetURL());
 
-    mock_clock_.Advance(base::TimeDelta::FromMilliseconds(100));
+    mock_clock_.Advance(base::Milliseconds(100));
     ui::SetEventTickClockForTesting(&mock_clock_);
   }
 
@@ -395,9 +399,6 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
   base::scoped_nsobject<NSMutableArray> event_queue_;
   // The current location of the user's fingers on the track pad.
   CGPoint touch_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeRenderWidgetHostViewMacHistorySwiperTest);
 };
 
 // The ordering, timing, and parameters of the events was determined by
@@ -748,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
   if (!IsHistorySwipingSupported())
     return;
 
-  ui_test_utils::NavigateToURL(browser(), url_iframe_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_iframe_));
   ASSERT_EQ(url_iframe_, GetWebContents()->GetURL());
 
   content::InputEventAckWaiter wheel_end_ack_waiter(
@@ -808,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(
   const base::FilePath base_path(FILE_PATH_LITERAL("scroll"));
   GURL url_overscroll_behavior = ui_test_utils::GetTestUrl(
       base_path, base::FilePath(FILE_PATH_LITERAL("overscroll_behavior.html")));
-  ui_test_utils::NavigateToURL(browser(), url_overscroll_behavior);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_overscroll_behavior));
   ASSERT_EQ(url_overscroll_behavior, GetWebContents()->GetURL());
 
   QueueBeginningEvents(1, 0);

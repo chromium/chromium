@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -33,10 +34,11 @@
 #include "content/public/common/result_codes.h"
 #include "fuchsia/base/inspect.h"
 #include "fuchsia/base/legacymetrics_client.h"
+#include "fuchsia/engine/browser/cdm_provider_service.h"
 #include "fuchsia/engine/browser/context_impl.h"
-#include "fuchsia/engine/browser/media_resource_provider_service.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
+#include "fuchsia/engine/browser/web_engine_memory_inspector.h"
 #include "fuchsia/engine/common/cast_streaming.h"
 #include "fuchsia/engine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -52,11 +54,10 @@ namespace {
 base::NoDestructor<fidl::InterfaceRequest<fuchsia::web::Context>>
     g_test_request;
 
-constexpr base::TimeDelta kMetricsReportingInterval =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kMetricsReportingInterval = base::Minutes(1);
 
 constexpr base::TimeDelta kChildProcessHistogramFetchTimeout =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 // Merge child process' histogram deltas into the browser process' histograms.
 void FetchHistogramsFromChildProcesses(
@@ -71,14 +72,14 @@ void FetchHistogramsFromChildProcesses(
 
 // Implements the fuchsia.web.FrameHost protocol using a ContextImpl with
 // incognito browser context.
-class FrameHostImpl : public fuchsia::web::FrameHost {
+class FrameHostImpl final : public fuchsia::web::FrameHost {
  public:
   explicit FrameHostImpl(inspect::Node inspect_node,
                          WebEngineDevToolsController* devtools_controller)
       : context_(WebEngineBrowserContext::CreateIncognito(),
                  std::move(inspect_node),
                  devtools_controller) {}
-  ~FrameHostImpl() final = default;
+  ~FrameHostImpl() override = default;
 
   FrameHostImpl(const FrameHostImpl&) = delete;
   FrameHostImpl& operator=(const FrameHostImpl&) = delete;
@@ -86,7 +87,7 @@ class FrameHostImpl : public fuchsia::web::FrameHost {
   // fuchsia.web.FrameHost implementation.
   void CreateFrameWithParams(
       fuchsia::web::CreateFrameParams params,
-      fidl::InterfaceRequest<fuchsia::web::Frame> request) final {
+      fidl::InterfaceRequest<fuchsia::web::Frame> request) override {
     context_.CreateFrameWithParams(std::move(params), std::move(request));
   }
 
@@ -98,8 +99,8 @@ class FrameHostImpl : public fuchsia::web::FrameHost {
 
 WebEngineBrowserMainParts::WebEngineBrowserMainParts(
     content::ContentBrowserClient* browser_client,
-    const content::MainFunctionParams& parameters)
-    : browser_client_(browser_client), parameters_(parameters) {}
+    content::MainFunctionParams parameters)
+    : browser_client_(browser_client), parameters_(std::move(parameters)) {}
 
 WebEngineBrowserMainParts::~WebEngineBrowserMainParts() {
   display::Screen::SetScreenInstance(nullptr);
@@ -126,6 +127,10 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   component_inspector_ = std::make_unique<sys::ComponentInspector>(
       base::ComponentContextForProcess());
   cr_fuchsia::PublishVersionInfoToInspect(component_inspector_.get());
+
+  // Add a node providing memory details for this whole web instance.
+  memory_inspector_ =
+      std::make_unique<WebEngineMemoryInspector>(component_inspector_->root());
 
   const auto* command_line = base::CommandLine::ForCurrentProcess();
 
@@ -176,14 +181,16 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
                           base::Unretained(this)));
 
   // Configure Ozone with an Aura implementation of the Screen abstraction.
-  screen_ = std::make_unique<aura::ScreenOzone>();
+  std::unique_ptr<aura::ScreenOzone> screen_ozone =
+      std::make_unique<aura::ScreenOzone>();
+  screen_ozone.get()->Initialize();
+  screen_ = std::move(screen_ozone);
   display::Screen::SetScreenInstance(screen_.get());
 
-  // Create the MediaResourceProviderService at startup rather than on-demand,
+  // Create the CdmProviderService at startup rather than on-demand,
   // to allow it to perform potentially expensive startup work in the
   // background.
-  media_resource_provider_service_ =
-      std::make_unique<MediaResourceProviderService>();
+  cdm_provider_service_ = std::make_unique<CdmProviderService>();
 
   // Disable RenderFrameHost's Javascript injection restrictions so that the
   // Context and Frames can implement their own JS injection policy at a higher
@@ -201,6 +208,15 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
       fidl::InterfaceRequestHandler<fuchsia::web::FrameHost>(fit::bind_member(
           this, &WebEngineBrowserMainParts::HandleFrameHostRequest)));
 
+  // Publish the fuchsia.process.lifecycle.Lifecycle service to allow graceful
+  // teardown.  If there is a |ui_task| then this is a browser-test and graceful
+  // shutdown is not required.
+  if (!parameters_.ui_task) {
+    lifecycle_ = std::make_unique<base::ProcessLifecycle>(
+        base::BindOnce(&WebEngineBrowserMainParts::BeginGracefulShutdown,
+                       base::Unretained(this)));
+  }
+
   // Now that all services have been published, it is safe to start processing
   // requests to the service directory.
   base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
@@ -213,11 +229,7 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   // In browser tests |ui_task| runs the "body" of each test.
   if (parameters_.ui_task) {
     // Since the main loop won't run, there is nothing to quit.
-    quit_closure_ = base::DoNothing::Once();
-
-    std::move(*parameters_.ui_task).Run();
-    delete parameters_.ui_task;
-    run_message_loop_ = false;
+    quit_closure_ = base::DoNothing();
   }
 
   return content::RESULT_CODE_NORMAL_EXIT;
@@ -225,10 +237,7 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
 
 void WebEngineBrowserMainParts::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {
-  if (run_message_loop_)
-    quit_closure_ = run_loop->QuitClosure();
-  else
-    run_loop.reset();
+  quit_closure_ = run_loop->QuitClosure();
 }
 
 void WebEngineBrowserMainParts::PostMainMessageLoopRun() {
@@ -294,7 +303,7 @@ void WebEngineBrowserMainParts::HandleContextRequest(
       [this](zx_status_t status) {
         ZX_LOG_IF(ERROR, status != ZX_ERR_PEER_CLOSED, status)
             << " Context disconnected.";
-        std::move(quit_closure_).Run();
+        BeginGracefulShutdown();
       });
 }
 
@@ -316,11 +325,17 @@ void WebEngineBrowserMainParts::OnIntlProfileChanged(
       base::FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdFromProfile(profile);
   base::i18n::SetICUDefaultLocale(primary_locale);
 
-  // Reload locale-specific resources.
-  std::string loaded_locale =
-      ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources(
-          base::i18n::GetConfiguredLocale());
-  VLOG(1) << "Reloaded locale resources: " << loaded_locale;
+  {
+    // Reloading locale-specific resources requires synchronous blocking.
+    // Locale changes should not be frequent enough for this to cause jank.
+    base::ScopedAllowBlocking allow_blocking;
+
+    std::string loaded_locale =
+        ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources(
+            base::i18n::GetConfiguredLocale());
+
+    VLOG(1) << "Reloaded locale resources: " << loaded_locale;
+  }
 
   // Reconfigure each web.Context's NetworkContext with the new setting.
   for (auto& binding : context_bindings_.bindings()) {
@@ -332,4 +347,9 @@ void WebEngineBrowserMainParts::OnIntlProfileChanged(
         ->GetNetworkContext()
         ->SetAcceptLanguage(accept_language);
   }
+}
+
+void WebEngineBrowserMainParts::BeginGracefulShutdown() {
+  if (quit_closure_)
+    std::move(quit_closure_).Run();
 }

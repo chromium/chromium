@@ -84,7 +84,7 @@ js_library("file_metadata") {
   deps = [
     ":utils",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:icon.m",
+    "//ui/webui/resources/js:icon",
     "//ui/webui/resources/js:util.m",
   ]
 }

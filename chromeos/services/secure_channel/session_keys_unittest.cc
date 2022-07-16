@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,10 +27,13 @@ const char kResponderKeyHex[] =
 }  // namespace
 
 class SecureChannelSessionKeysTest : public testing::Test {
+ public:
+  SecureChannelSessionKeysTest(const SecureChannelSessionKeysTest&) = delete;
+  SecureChannelSessionKeysTest& operator=(const SecureChannelSessionKeysTest&) =
+      delete;
+
  protected:
   SecureChannelSessionKeysTest() {}
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelSessionKeysTest);
 };
 
 TEST_F(SecureChannelSessionKeysTest, GenerateKeys) {

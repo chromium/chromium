@@ -10,32 +10,11 @@
 #include "base/callback_list.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
+#include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "net/cert/x509_certificate.h"
 
 namespace safe_browsing {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class DownloadCheckResult {
-  UNKNOWN = 0,
-  SAFE = 1,
-  DANGEROUS = 2,
-  UNCOMMON = 3,
-  DANGEROUS_HOST = 4,
-  POTENTIALLY_UNWANTED = 5,
-  ALLOWLISTED_BY_POLICY = 6,
-  ASYNC_SCANNING = 7,
-  BLOCKED_PASSWORD_PROTECTED = 8,
-  BLOCKED_TOO_LARGE = 9,
-  SENSITIVE_CONTENT_WARNING = 10,
-  SENSITIVE_CONTENT_BLOCK = 11,
-  DEEP_SCANNED_SAFE = 12,
-  PROMPT_FOR_SCANNING = 13,
-  BLOCKED_UNSUPPORTED_FILE_TYPE = 14,
-  DANGEROUS_ACCOUNT_COMPROMISE = 15,
-  kMaxValue = DANGEROUS_ACCOUNT_COMPROMISE,
-};
 
 // Enum to keep track why a particular download verdict was chosen.
 // Used for UMA metrics. Do not reorder.

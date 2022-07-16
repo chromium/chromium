@@ -48,11 +48,14 @@ class FeatureSwitch {
   class ScopedOverride {
    public:
     ScopedOverride(FeatureSwitch* feature, bool override_value);
+
+    ScopedOverride(const ScopedOverride&) = delete;
+    ScopedOverride& operator=(const ScopedOverride&) = delete;
+
     ~ScopedOverride();
    private:
     FeatureSwitch* feature_;
     FeatureSwitch::OverrideValue previous_value_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedOverride);
   };
 
   // |switch_name| can be null, in which case the feature is controlled solely
@@ -62,6 +65,9 @@ class FeatureSwitch {
   FeatureSwitch(const base::CommandLine* command_line,
                 const char* switch_name,
                 DefaultValue default_value);
+
+  FeatureSwitch(const FeatureSwitch&) = delete;
+  FeatureSwitch& operator=(const FeatureSwitch&) = delete;
 
   // Consider using ScopedOverride instead.
   void SetOverrideValue(OverrideValue value);
@@ -80,8 +86,6 @@ class FeatureSwitch {
   bool default_value_;
   OverrideValue override_value_;
   mutable absl::optional<bool> cached_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureSwitch);
 };
 
 }  // namespace extensions

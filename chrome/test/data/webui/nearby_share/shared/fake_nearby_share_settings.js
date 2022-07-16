@@ -15,6 +15,11 @@ cr.define('nearby_share', function() {
     constructor() {
       /** @private {!boolean} */
       this.enabled_ = true;
+      /** @private {!nearbyShare.mojom.FastInitiationNotificationState} */
+      this.fastInitiationNotificationState_ =
+          nearbyShare.mojom.FastInitiationNotificationState.kEnabled;
+      /** @private {!boolean} */
+      this.isFastInitiationHardwareSupported_ = true;
       /** @private {!string} */
       this.deviceName_ = 'testDevice';
       /** @private {!nearbyShare.mojom.DataUsage} */
@@ -62,15 +67,37 @@ cr.define('nearby_share', function() {
     }
 
     /**
+     * @return {!Promise<{supported: !boolean}>}
+     */
+    async getIsFastInitiationHardwareSupported() {
+      return {supported: this.isFastInitiationHardwareSupported_};
+    }
+
+    /**
+     * @return {!Promise<{state:
+     *     !nearbyShare.mojom.FastInitiationNotificationState}>}
+     */
+    async getFastInitiationNotificationState() {
+      return {state: this.fastInitiationNotificationState_};
+    }
+
+    /**
      * @param { !boolean } enabled
      */
     setEnabled(enabled) {
       this.enabled_ = enabled;
-      if (this.enabled_) {
-        this.isOnboardingComplete_ = true;
-      }
       if (this.observer_) {
         this.observer_.onEnabledChanged(enabled);
+      }
+    }
+
+    /**
+     * @param { !nearbyShare.mojom.FastInitiationNotificationState } state
+     */
+    setFastInitiationNotificationState(state) {
+      this.fastInitiationNotificationState_ = state;
+      if (this.observer_) {
+        this.observer_.onFastInitiationNotificationStateChanged(state);
       }
     }
 
@@ -171,10 +198,49 @@ cr.define('nearby_share', function() {
     }
 
     /**
+     * @param { !boolean } supported
+     */
+    setIsFastInitiationHardwareSupportedForTest(supported) {
+      this.isFastInitiationHardwareSupported_ = supported;
+    }
+
+    /**
      * @param { !boolean } completed
      */
-    setIsOnboardingCompleteForTest(completed) {
+    setIsOnboardingComplete(completed) {
       this.isOnboardingComplete_ = completed;
+      if (this.observer_) {
+        this.observer_.onIsOnboardingCompleteChanged(
+            this.isOnboardingComplete_);
+      }
+    }
+
+    getEnabledForTest() {
+      return this.enabled_;
+    }
+
+    getIsFastInitiationHardwareSupportedTest() {
+      return this.isFastInitiationHardwareSupported_;
+    }
+
+    getFastInitiationNotificationStateTest() {
+      return this.fastInitiationNotificationState_;
+    }
+
+    getDeviceNameForTest() {
+      return this.deviceName_;
+    }
+
+    getDataUsageForTest() {
+      return this.dataUsage_;
+    }
+
+    getVisibilityForTest() {
+      return this.visibility_;
+    }
+
+    getAllowedContactsForTest() {
+      return this.allowedContacts_;
     }
   }
   // #cr_define_end

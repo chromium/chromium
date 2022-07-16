@@ -28,7 +28,6 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAuraLinux
       const base::DictionaryValue& node) const override;
 
   base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
-  base::Value BuildTreeForWindow(gfx::AcceleratedWidget hwnd) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
@@ -43,6 +42,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAuraLinux
   void AddProperties(AtspiAccessible*, base::DictionaryValue*) const;
 
   void AddTextProperties(AtkText* atk_text, base::DictionaryValue* dict) const;
+  void AddHypertextProperties(AtkObject* atk_object,
+                              base::DictionaryValue* dict) const;
   void AddActionProperties(AtkObject* atk_object,
                            base::DictionaryValue* dict) const;
   void AddValueProperties(AtkObject* atk_object,

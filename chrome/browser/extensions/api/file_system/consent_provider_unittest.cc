@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -43,6 +42,11 @@ class TestingConsentProviderDelegate
         show_notification_counter_(0),
         dialog_button_(ui::DIALOG_BUTTON_NONE),
         is_auto_launched_(false) {}
+
+  TestingConsentProviderDelegate(const TestingConsentProviderDelegate&) =
+      delete;
+  TestingConsentProviderDelegate& operator=(
+      const TestingConsentProviderDelegate&) = delete;
 
   ~TestingConsentProviderDelegate() {}
 
@@ -97,8 +101,6 @@ class TestingConsentProviderDelegate
   ui::DialogButton dialog_button_;
   bool is_auto_launched_;
   std::string allowlisted_component_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingConsentProviderDelegate);
 };
 
 // Rewrites result of a consent request from |result| to |log|.

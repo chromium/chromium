@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -70,11 +70,11 @@ static inline const base::TimeDelta EncodePollDelay() {
   // pictures have been fed to saturate any internal buffering).  This is
   // speculative and it's unclear that this would be a win (nor that there's a
   // reasonably device-agnostic way to fill in the "believes" above).
-  return base::TimeDelta::FromMilliseconds(10);
+  return base::Milliseconds(10);
 }
 
 static inline const base::TimeDelta NoWaitTimeOut() {
-  return base::TimeDelta::FromMicroseconds(0);
+  return base::Microseconds(0);
 }
 
 static bool GetSupportedColorFormatForMime(const std::string& mime,
@@ -107,16 +107,16 @@ AndroidVideoEncodeAccelerator::GetSupportedProfiles() {
   const struct {
     const VideoCodec codec;
     const VideoCodecProfile profile;
-  } kSupportedCodecs[] = {{kCodecVP8, VP8PROFILE_ANY},
-                          {kCodecH264, H264PROFILE_BASELINE}};
+  } kSupportedCodecs[] = {{VideoCodec::kVP8, VP8PROFILE_ANY},
+                          {VideoCodec::kH264, H264PROFILE_BASELINE}};
 
   for (const auto& supported_codec : kSupportedCodecs) {
-    if (supported_codec.codec == kCodecVP8 &&
+    if (supported_codec.codec == VideoCodec::kVP8 &&
         !MediaCodecUtil::IsVp8EncoderAvailable()) {
       continue;
     }
 
-    if (supported_codec.codec == kCodecH264 &&
+    if (supported_codec.codec == VideoCodec::kH264 &&
         !MediaCodecUtil::IsH264EncoderAvailable()) {
       continue;
     }
@@ -161,13 +161,13 @@ bool AndroidVideoEncodeAccelerator::Initialize(const Config& config,
   uint32_t frame_input_count;
   uint32_t i_frame_interval;
   if (config.output_profile == VP8PROFILE_ANY) {
-    codec = kCodecVP8;
+    codec = VideoCodec::kVP8;
     mime_type = "video/x-vnd.on2.vp8";
     frame_input_count = 1;
     i_frame_interval = IFRAME_INTERVAL_VPX;
   } else if (config.output_profile == H264PROFILE_BASELINE ||
              config.output_profile == H264PROFILE_MAIN) {
-    codec = kCodecH264;
+    codec = VideoCodec::kH264;
     mime_type = "video/avc";
     frame_input_count = 30;
     i_frame_interval = IFRAME_INTERVAL_H264;
@@ -369,7 +369,7 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
   // mapping to the generated |presentation_timestamp_|, and will read them out
   // after encoding. Then encoder can work happily always and we can preserve
   // the timestamps in captured frames for other purpose.
-  presentation_timestamp_ += base::TimeDelta::FromMicroseconds(
+  presentation_timestamp_ += base::Microseconds(
       base::Time::kMicrosecondsPerSecond / INITIAL_FRAMERATE);
   DCHECK(frame_timestamp_map_.find(presentation_timestamp_) ==
          frame_timestamp_map_.end());

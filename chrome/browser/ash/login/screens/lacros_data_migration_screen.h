@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_LACROS_DATA_MIGRATION_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_LACROS_DATA_MIGRATION_SCREEN_H_
 
+#include "base/callback_forward.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/lacros_data_migration_screen_handler.h"
@@ -25,12 +26,25 @@ class LacrosDataMigrationScreen : public BaseScreen {
   // the `view` it should call view->Unbind().
   void OnViewDestroyed(LacrosDataMigrationScreenView* view);
 
+  // Called from `LacrosDataMigratorScreenHandler::OnCancelClicked()`. It runs
+  // `cancel_callback_` to cancel migration.
+  void OnCancelClicked();
+
+  // Passed to `BrowserDataMigrator` as a callback to transmit the progress
+  // value. `progress` is then passed to `LacrosDataMigrationView`.
+  void OnProgressUpdate(int progress);
+
  private:
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
+  void OnUserAction(const std::string& action_id) override;
 
   LacrosDataMigrationScreenView* view_;
+  // Callback to cancel migration. Stores the return value from
+  // `BrowserDataMigrator::Migrate()`.
+  base::OnceClosure cancel_callback_;
+  base::WeakPtrFactory<LacrosDataMigrationScreen> weak_factory_{this};
 };
 
 }  // namespace ash

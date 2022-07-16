@@ -318,6 +318,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
 
     bool oop_rasterization_supported;
     bool subpixel_font_rendering;
+    uint32_t visibility_callback_call_count;
 
 #if BUILDFLAG(ENABLE_VULKAN)
     absl::optional<VulkanInfo> vulkan_info;
@@ -395,6 +396,8 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     EnumerateImageDecodeAcceleratorSupportedProfile(profile, enumerator);
   enumerator->AddBool("oopRasterizationSupported", oop_rasterization_supported);
   enumerator->AddBool("subpixelFontRendering", subpixel_font_rendering);
+  enumerator->AddInt("visibilityCallbackCallCount",
+                     visibility_callback_call_count);
 #if BUILDFLAG(ENABLE_VULKAN)
   if (vulkan_info) {
     auto blob = vulkan_info->Serialize();

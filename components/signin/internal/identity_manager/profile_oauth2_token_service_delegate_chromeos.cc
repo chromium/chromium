@@ -49,13 +49,13 @@ std::vector<CoreAccountId> GetOAuthAccountIdsFromAccountKeys(
     const AccountTrackerService* const account_tracker_service) {
   std::vector<CoreAccountId> accounts;
   for (auto& account_key : account_keys) {
-    if (account_key.account_type != account_manager::AccountType::kGaia) {
+    if (account_key.account_type() != account_manager::AccountType::kGaia) {
       continue;
     }
 
     CoreAccountId account_id =
         account_tracker_service
-            ->FindAccountInfoByGaiaId(account_key.id /* gaia_id */)
+            ->FindAccountInfoByGaiaId(account_key.id() /* gaia_id */)
             .account_id;
     DCHECK(!account_id.empty());
     accounts.emplace_back(account_id);
@@ -350,7 +350,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnGetAccounts(
   std::vector<account_manager::Account> gaia_accounts;
   for (const auto& account : accounts) {
     pending_accounts_.emplace(account.key, account);
-    if (account.key.account_type == account_manager::AccountType::kGaia) {
+    if (account.key.account_type() == account_manager::AccountType::kGaia) {
       gaia_accounts.emplace_back(account);
     }
   }
@@ -380,7 +380,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::FinishLoadingCredentials(
       if (it != persistent_errors.end()) {
         FinishAddingPendingAccount(account, it->second);
       } else {
-        DCHECK_NE(account.key.account_type,
+        DCHECK_NE(account.key.account_type(),
                   account_manager::AccountType::kGaia);
         FinishAddingPendingAccount(account,
                                    GoogleServiceAuthError::AuthErrorNone());
@@ -421,7 +421,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::FinishAddingPendingAccount(
   pending_accounts_.erase(it);
   account_keys_.insert(account.key);
 
-  if (account.key.account_type != account_manager::AccountType::kGaia) {
+  if (account.key.account_type() != account_manager::AccountType::kGaia) {
     return;
   }
 
@@ -429,7 +429,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::FinishAddingPendingAccount(
   // associated with them (https://crbug.com/933307).
   DCHECK(!account.raw_email.empty());
   CoreAccountId account_id = account_tracker_service_->SeedAccountInfo(
-      account.key.id /* gaia_id */, account.raw_email);
+      account.key.id() /* gaia_id */, account.raw_email);
   DCHECK(!account_id.empty());
 
   // Don't call |FireAuthErrorChanged|, since we call it at the end of this
@@ -458,7 +458,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnAccountUpserted(
     return;
   }
 
-  if (account.key.account_type != account_manager::AccountType::kGaia) {
+  if (account.key.account_type() != account_manager::AccountType::kGaia) {
     // Don't request pending account status for non-Gaia accounts.
     FinishAddingPendingAccount(account,
                                GoogleServiceAuthError::AuthErrorNone());
@@ -492,12 +492,12 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnAccountRemoved(
   }
   account_keys_.erase(it);
 
-  if (account.key.account_type != account_manager::AccountType::kGaia) {
+  if (account.key.account_type() != account_manager::AccountType::kGaia) {
     return;
   }
   CoreAccountId account_id =
       account_tracker_service_
-          ->FindAccountInfoByGaiaId(account.key.id /* gaia_id */)
+          ->FindAccountInfoByGaiaId(account.key.id() /* gaia_id */)
           .account_id;
   DCHECK(!account_id.empty());
   UpdateAuthErrorInternal(account_id, GoogleServiceAuthError::AuthErrorNone(),

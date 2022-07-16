@@ -141,7 +141,7 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
 
         @Override
         public boolean isItemSupported(@ContextMenuManager.ContextMenuItemId int menuItemId) {
-            return menuItemId != ContextMenuManager.ContextMenuItemId.LEARN_MORE;
+            return true;
         }
 
         @Override

@@ -19,7 +19,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/painter.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
@@ -59,6 +59,9 @@ class MockCanvas : public SkCanvas {
   };
 
   MockCanvas(int width, int height) : SkCanvas(width, height) {}
+
+  MockCanvas(const MockCanvas&) = delete;
+  MockCanvas& operator=(const MockCanvas&) = delete;
 
   // Return calls in sorted order.
   std::vector<DrawRectCall> draw_rect_calls() {
@@ -105,14 +108,15 @@ class MockCanvas : public SkCanvas {
   // Stores the onDrawPaint calls in chronological order.
   std::vector<SkPaint> draw_paint_calls_;
   SkRect last_clip_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCanvas);
 };
 
 // Simple Painter that will be used to test BorderPainter.
 class MockPainter : public views::Painter {
  public:
   MockPainter() = default;
+
+  MockPainter(const MockPainter&) = delete;
+  MockPainter& operator=(const MockPainter&) = delete;
 
   // Gets the canvas given to the last call to Paint().
   gfx::Canvas* given_canvas() const { return given_canvas_; }
@@ -135,8 +139,6 @@ class MockPainter : public views::Painter {
  private:
   gfx::Canvas* given_canvas_ = nullptr;
   gfx::Size given_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPainter);
 };
 
 }  // namespace

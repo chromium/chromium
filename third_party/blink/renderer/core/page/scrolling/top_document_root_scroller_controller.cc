@@ -88,7 +88,7 @@ IntSize TopDocumentRootScrollerController::RootScrollerVisibleArea() const {
              ->View()
              ->LayoutViewport()
              ->VisibleContentRect(kExcludeScrollbars)
-             .Size() +
+             .size() +
          IntSize(0, browser_controls_adjustment);
 }
 

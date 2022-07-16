@@ -12,6 +12,8 @@ namespace chromeos {
 
 class NetworkPolicyObserver {
  public:
+  NetworkPolicyObserver& operator=(const NetworkPolicyObserver&) = delete;
+
   // Called when the policies for |userhash| were set (also when they were
   // updated). An empty |userhash| designates the device policy.
   // Note that the policies might be empty and might not have been applied yet
@@ -27,9 +29,6 @@ class NetworkPolicyObserver {
 
  protected:
   virtual ~NetworkPolicyObserver() {}
-
- private:
-  DISALLOW_ASSIGN(NetworkPolicyObserver);
 };
 
 }  // namespace chromeos

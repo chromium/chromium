@@ -58,7 +58,7 @@ static void TrimRangeTest(SampleFormat sample_format) {
   const int channels = ChannelLayoutToChannelCount(channel_layout);
   const int frames = kSampleRate / 10;
   const base::TimeDelta timestamp = base::TimeDelta();
-  const base::TimeDelta duration = base::TimeDelta::FromMilliseconds(100);
+  const base::TimeDelta duration = base::Milliseconds(100);
   scoped_refptr<AudioBuffer> buffer = MakeAudioBuffer<float>(sample_format,
                                                              channel_layout,
                                                              channels,
@@ -80,7 +80,7 @@ static void TrimRangeTest(SampleFormat sample_format) {
   // Trim 10ms of frames from the middle of the buffer.
   int trim_start = frames / 2;
   const int trim_length = kSampleRate / 100;
-  const base::TimeDelta trim_duration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta trim_duration = base::Milliseconds(10);
   buffer->TrimRange(trim_start, trim_start + trim_length);
   EXPECT_EQ(frames - trim_length, buffer->frame_count());
   EXPECT_EQ(timestamp, buffer->timestamp());
@@ -187,7 +187,7 @@ TEST(AudioBufferTest, CopyFromAudioBus) {
   auto audio_bus = media::AudioBus::Create(kChannelCount, kFrameCount);
   temp_buffer->ReadFrames(kFrameCount, 0, 0, audio_bus.get());
 
-  const base::TimeDelta kTimestamp = base::TimeDelta::FromMilliseconds(123);
+  const base::TimeDelta kTimestamp = base::Milliseconds(123);
 
   auto audio_buffer_from_bus =
       media::AudioBuffer::CopyFrom(kSampleRate, kTimestamp, audio_bus.get());
@@ -219,7 +219,7 @@ TEST(AudioBufferTest, CopyBitstreamFrom) {
   const uint8_t kTestData[] = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
                                11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
                                22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
-  const base::TimeDelta kTimestamp = base::TimeDelta::FromMicroseconds(1337);
+  const base::TimeDelta kTimestamp = base::Microseconds(1337);
   const uint8_t* const data[] = {kTestData};
 
   scoped_refptr<AudioBuffer> buffer = AudioBuffer::CopyBitstreamFrom(
@@ -263,7 +263,7 @@ TEST(AudioBufferTest, FrameSize) {
   const uint8_t kTestData[] = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
                                11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
                                22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
-  const base::TimeDelta kTimestamp = base::TimeDelta::FromMicroseconds(1337);
+  const base::TimeDelta kTimestamp = base::Microseconds(1337);
 
   const uint8_t* const data[] = {kTestData};
   scoped_refptr<AudioBuffer> buffer =
@@ -548,7 +548,7 @@ TEST(AudioBufferTest, EmptyBuffer) {
       channel_layout, channels, kSampleRate, frames, start_time);
   EXPECT_EQ(frames, buffer->frame_count());
   EXPECT_EQ(start_time, buffer->timestamp());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(10), buffer->duration());
+  EXPECT_EQ(base::Milliseconds(10), buffer->duration());
   EXPECT_FALSE(buffer->end_of_stream());
 
   // Read all frames from the buffer. All data should be 0.
@@ -567,7 +567,7 @@ TEST(AudioBufferTest, TrimEmptyBuffer) {
   const int channels = ChannelLayoutToChannelCount(channel_layout);
   const int frames = kSampleRate / 10;
   const base::TimeDelta start_time;
-  const base::TimeDelta duration = base::TimeDelta::FromMilliseconds(100);
+  const base::TimeDelta duration = base::Milliseconds(100);
   scoped_refptr<AudioBuffer> buffer = AudioBuffer::CreateEmptyBuffer(
       channel_layout, channels, kSampleRate, frames, start_time);
   EXPECT_EQ(frames, buffer->frame_count());
@@ -583,7 +583,7 @@ TEST(AudioBufferTest, TrimEmptyBuffer) {
   // Trim 10ms of frames from the middle of the buffer.
   int trim_start = frames / 2;
   const int trim_length = kSampleRate / 100;
-  const base::TimeDelta trim_duration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta trim_duration = base::Milliseconds(10);
   buffer->TrimRange(trim_start, trim_start + trim_length);
   EXPECT_EQ(frames - trim_length, buffer->frame_count());
   EXPECT_EQ(start_time, buffer->timestamp());
@@ -598,7 +598,7 @@ TEST(AudioBufferTest, Trim) {
   const int channels = ChannelLayoutToChannelCount(channel_layout);
   const int frames = kSampleRate / 10;
   const base::TimeDelta start_time;
-  const base::TimeDelta duration = base::TimeDelta::FromMilliseconds(100);
+  const base::TimeDelta duration = base::Milliseconds(100);
   scoped_refptr<AudioBuffer> buffer =
       MakeAudioBuffer<float>(kSampleFormatPlanarF32,
                              channel_layout,
@@ -613,7 +613,7 @@ TEST(AudioBufferTest, Trim) {
   EXPECT_EQ(duration, buffer->duration());
 
   const int ten_ms_of_frames = kSampleRate / 100;
-  const base::TimeDelta ten_ms = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta ten_ms = base::Milliseconds(10);
 
   std::unique_ptr<AudioBus> bus = AudioBus::Create(channels, frames);
   buffer->ReadFrames(buffer->frame_count(), 0, 0, bus.get());

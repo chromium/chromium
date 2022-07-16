@@ -40,6 +40,10 @@ class GetCatalogTask : public Task {
   GetCatalogTask(ExploreSitesStore* store,
                  bool update_current,
                  CatalogCallback callback);
+
+  GetCatalogTask(const GetCatalogTask&) = delete;
+  GetCatalogTask& operator=(const GetCatalogTask&) = delete;
+
   ~GetCatalogTask() override;
 
  private:
@@ -55,8 +59,6 @@ class GetCatalogTask : public Task {
   CatalogCallback callback_;
 
   base::WeakPtrFactory<GetCatalogTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GetCatalogTask);
 };
 
 }  // namespace explore_sites

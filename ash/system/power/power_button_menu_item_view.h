@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace views {

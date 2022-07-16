@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_controlling.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
-#import "ios/public/provider/chrome/browser/voice/logo_animation_controller.h"
+#import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
@@ -53,12 +53,22 @@ class ReadingListModel;
 // |YES| if a what's new promo can be displayed.
 @property(nonatomic, assign) BOOL promoCanShow;
 
+// |YES| if the omnibox should be focused on when the view appears for voice
+// over.
+@property(nonatomic, assign) BOOL focusOmniboxWhenViewAppears;
+
+// The base view controller from which to present UI.
+@property(nonatomic, weak) UIViewController* baseViewController;
+
 // Return the toolbar view;
 - (UIView*)toolBarView;
 
 // Animates the NTP fakebox to the focused position and focuses the real
 // omnibox.
 - (void)focusFakebox;
+
+// Sends notification to focus the accessibility of the omnibox.
+- (void)focusAccessibilityOnOmnibox;
 
 // Identity disc shown in this ViewController.
 // TODO(crbug.com/1170995): Remove once the Feed header properly supports

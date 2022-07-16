@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.net.WebSocketTest');
 goog.setTestOnly();
@@ -20,6 +12,7 @@ const ErrorHandler = goog.require('goog.debug.ErrorHandler');
 const MockClock = goog.require('goog.testing.MockClock');
 const NetWebSocket = goog.require('goog.net.WebSocket');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
+const dispose = goog.require('goog.dispose');
 const entryPointRegistry = goog.require('goog.debug.entryPointRegistry');
 const events = goog.require('goog.events');
 const functions = goog.require('goog.functions');
@@ -32,16 +25,22 @@ let pr;
 let testUrl;
 let testProtocol;
 
+/** @suppress {visibility} suppression added to enable type checking */
 const originalOnOpen = NetWebSocket.prototype.onOpen_;
+/** @suppress {visibility} suppression added to enable type checking */
 const originalOnClose = NetWebSocket.prototype.onClose_;
+/** @suppress {visibility} suppression added to enable type checking */
 const originalOnMessage = NetWebSocket.prototype.onMessage_;
+/** @suppress {visibility} suppression added to enable type checking */
 const originalOnError = NetWebSocket.prototype.onError_;
 
 /**
  * Simulates the browser firing the open event for the given web socket.
  * @param {MockWebSocket} ws The mock web socket.
+ * @suppress {missingProperties} suppression added to enable type checking
  */
 function simulateOpenEvent(ws) {
+  /** @suppress {visibility} suppression added to enable type checking */
   ws.readyState = NetWebSocket.ReadyState_.OPEN;
   ws.onopen();
 }
@@ -49,8 +48,10 @@ function simulateOpenEvent(ws) {
 /**
  * Simulates the browser firing the close event for the given web socket.
  * @param {MockWebSocket} ws The mock web socket.
+ * @suppress {missingProperties} suppression added to enable type checking
  */
 function simulateCloseEvent(ws) {
+  /** @suppress {visibility} suppression added to enable type checking */
   ws.readyState = NetWebSocket.ReadyState_.CLOSED;
   ws.onclose({data: 'mock close event'});
 }
@@ -98,11 +99,13 @@ class MockWebSocket {
   constructor(url, protocol) {
     this.url = url;
     this.protocol = protocol;
+    /** @suppress {visibility} suppression added to enable type checking */
     this.readyState = NetWebSocket.ReadyState_.CONNECTING;
   }
 
   /** Mocks out the close method of the WebSocket. */
   close() {
+    /** @suppress {visibility} suppression added to enable type checking */
     this.readyState = NetWebSocket.ReadyState_.CLOSING;
   }
 
@@ -115,7 +118,7 @@ class MockWebSocket {
 testSuite({
   setUp() {
     pr = new PropertyReplacer();
-    pr.set(goog.global, 'WebSocket', MockWebSocket);
+    pr.set(globalThis, 'WebSocket', MockWebSocket);
     mockClock = new MockClock(true);
     testUrl = 'ws://127.0.0.1:4200';
     testProtocol = 'xmpp';
@@ -123,18 +126,23 @@ testSuite({
 
   tearDown() {
     pr.reset();
+    /** @suppress {visibility} suppression added to enable type checking */
     NetWebSocket.prototype.onOpen_ = originalOnOpen;
+    /** @suppress {visibility} suppression added to enable type checking */
     NetWebSocket.prototype.onClose_ = originalOnClose;
+    /** @suppress {visibility} suppression added to enable type checking */
     NetWebSocket.prototype.onMessage_ = originalOnMessage;
+    /** @suppress {visibility} suppression added to enable type checking */
     NetWebSocket.prototype.onError_ = originalOnError;
-    goog.dispose(mockClock);
-    goog.dispose(webSocket);
+    dispose(mockClock);
+    dispose(webSocket);
   },
 
   testOpenInUnsupportingBrowserThrowsException() {
     // Null out WebSocket to simulate lack of support.
-    if (goog.global.WebSocket) {
-      goog.global.WebSocket = null;
+    if (globalThis.WebSocket) {
+      /** @suppress {checkTypes} suppression added to enable type checking */
+      globalThis.WebSocket = null;
     }
 
     webSocket = new NetWebSocket();
@@ -143,6 +151,10 @@ testSuite({
     });
   },
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testOpenTwiceThrowsException() {
     webSocket = new NetWebSocket();
     webSocket.open(testUrl);
@@ -162,19 +174,26 @@ testSuite({
         });
   },
 
+  /**
+     @suppress {checkTypes,missingProperties} suppression added to enable type
+     checking
+   */
   testOpenWithProtocol() {
     webSocket = new NetWebSocket();
     webSocket.open(testUrl, testProtocol);
+    /** @suppress {visibility} suppression added to enable type checking */
     const ws = webSocket.webSocket_;
     simulateOpenEvent(ws);
     assertEquals(testUrl, ws.url);
     assertEquals(testProtocol, ws.protocol);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testOpenAndClose() {
     webSocket = new NetWebSocket();
     assertFalse(webSocket.isOpen());
     webSocket.open(testUrl);
+    /** @suppress {visibility} suppression added to enable type checking */
     const ws = webSocket.webSocket_;
     simulateOpenEvent(ws);
     assertTrue(webSocket.isOpen());
@@ -184,6 +203,7 @@ testSuite({
     assertFalse(webSocket.isOpen());
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testOpenAndCloseWithOptions() {
     webSocket = new NetWebSocket({
       autoReconnect: true,
@@ -192,6 +212,7 @@ testSuite({
     });
     assertFalse(webSocket.isOpen());
     webSocket.open(testUrl);
+    /** @suppress {visibility} suppression added to enable type checking */
     const ws = webSocket.webSocket_;
     simulateOpenEvent(ws);
     assertTrue(webSocket.isOpen());
@@ -201,9 +222,13 @@ testSuite({
     assertFalse(webSocket.isOpen());
   },
 
+  /**
+     @suppress {visibility,missingProperties,checkTypes} suppression added to
+     enable type checking
+   */
   testReconnectionDisabled() {
     // Construct the web socket and disable reconnection.
-    webSocket = new NetWebSocket(false);
+    webSocket = new NetWebSocket({autoReconnect: false});
 
     // Record how many times open is called.
     pr.set(webSocket, 'open', recordFunction(webSocket.open));
@@ -215,6 +240,7 @@ testSuite({
     assertFalse(webSocket.isOpen());
 
     // Simulate failure.
+    /** @suppress {visibility} suppression added to enable type checking */
     const ws = webSocket.webSocket_;
     simulateCloseEvent(ws);
     assertFalse(webSocket.isOpen());
@@ -227,9 +253,14 @@ testSuite({
     assertEquals(1, webSocket.open.getCallCount());
   },
 
+  /**
+     @suppress {visibility,missingProperties,checkTypes} suppression added to
+     enable type checking
+   */
   testReconnectionWithFailureOnFirstOpen() {
     // Construct the web socket with a linear back-off.
-    webSocket = new NetWebSocket(true, linearBackOff);
+    webSocket = new NetWebSocket(
+        {autoReconnect: true, getNextReconnext: linearBackOff});
 
     // Record how many times open is called.
     pr.set(webSocket, 'open', recordFunction(webSocket.open));
@@ -241,6 +272,7 @@ testSuite({
     assertFalse(webSocket.isOpen());
 
     // Simulate failure.
+    /** @suppress {visibility} suppression added to enable type checking */
     const ws = webSocket.webSocket_;
     simulateCloseEvent(ws);
     assertFalse(webSocket.isOpen());
@@ -279,9 +311,14 @@ testSuite({
     assertEquals(3, webSocket.open.getCallCount());
   },
 
+  /**
+     @suppress {visibility,missingProperties,checkTypes} suppression added to
+     enable type checking
+   */
   testReconnectionWithFailureAfterOpen() {
     // Construct the web socket with a linear back-off.
-    webSocket = new NetWebSocket(true, fibonacciBackOff);
+    webSocket = new NetWebSocket(
+        {autoReconnect: true, getNextReconnect: fibonacciBackOff});
 
     // Record how many times open is called.
     pr.set(webSocket, 'open', recordFunction(webSocket.open));
@@ -293,6 +330,7 @@ testSuite({
     assertFalse(webSocket.isOpen());
 
     // Simulate connection success.
+    /** @suppress {visibility} suppression added to enable type checking */
     let ws = webSocket.webSocket_;
     simulateOpenEvent(ws);
     assertEquals(0, webSocket.reconnectAttempt_);
@@ -312,6 +350,7 @@ testSuite({
     assertEquals(2, webSocket.open.getCallCount());
 
     // Simulate connection success.
+    /** @suppress {visibility} suppression added to enable type checking */
     ws = webSocket.webSocket_;
     simulateOpenEvent(ws);
     assertEquals(0, webSocket.reconnectAttempt_);
@@ -322,6 +361,7 @@ testSuite({
     assertEquals(2, webSocket.open.getCallCount());
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testExponentialBackOff() {
     assertEquals(1000, NetWebSocket.EXPONENTIAL_BACKOFF_(0));
     assertEquals(2000, NetWebSocket.EXPONENTIAL_BACKOFF_(1));
@@ -330,7 +370,9 @@ testSuite({
     assertEquals(60000, NetWebSocket.EXPONENTIAL_BACKOFF_(7));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testEntryPointRegistry() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const monitor = new EntryPointMonitor();
     const replacement = () => {};
     monitor.wrap = recordFunction(functions.constant(replacement));
@@ -356,10 +398,15 @@ testSuite({
     });
 
     webSocket.open(testUrl);
+    /** @suppress {visibility} suppression added to enable type checking */
     const ws = webSocket.webSocket_;
-    assertThrows(() => {
-      simulateOpenEvent(ws);
-    });
+    assertThrows(/**
+                    @suppress {checkTypes} suppression added to enable type
+                    checking
+                  */
+                 () => {
+                   simulateOpenEvent(ws);
+                 });
 
     assertTrue(
         'Error handler callback should be called when registered as ' +

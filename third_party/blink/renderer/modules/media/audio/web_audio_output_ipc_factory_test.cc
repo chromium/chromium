@@ -179,7 +179,7 @@ TEST_F(WebAudioOutputIPCFactoryTest, SeveralFactories) {
 
   WebAudioOutputIPCFactory ipc_factory(io_thread->task_runner());
 
-  for (size_t i = 0; i < n_factories; i++) {
+  for (int i = 0; i < n_factories; i++) {
     ipc_factory.RegisterRemoteFactory(TokenFromInt(kRenderFrameId + i),
                                       &interface_broker);
   }
@@ -207,7 +207,7 @@ TEST_F(WebAudioOutputIPCFactoryTest, SeveralFactories) {
           ipc_factory.CreateAudioOutputIPC(TokenFromInt(kRenderFrameId + 2))));
   run_loop2.Run();
 
-  for (size_t i = 0; i < n_factories; i++) {
+  for (int i = 0; i < n_factories; i++) {
     if (i == 1)
       continue;
     ipc_factory.MaybeDeregisterRemoteFactory(TokenFromInt(i));

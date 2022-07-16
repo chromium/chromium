@@ -32,8 +32,6 @@ class FlocEligibilityUnitTest : public ChromeRenderViewHostTestHarness {
     TestingBrowserProcess::GetGlobal()->SetFlocSortingLshClustersService(
         std::make_unique<federated_learning::FlocSortingLshClustersService>());
 
-    ASSERT_TRUE(profile()->CreateHistoryService());
-
     InitWebContents();
 
     tester_ =
@@ -41,6 +39,11 @@ class FlocEligibilityUnitTest : public ChromeRenderViewHostTestHarness {
             GetWebContents(), this,
             base::BindRepeating(&FlocEligibilityUnitTest::RegisterObservers,
                                 base::Unretained(this)));
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {{HistoryServiceFactory::GetInstance(),
+             HistoryServiceFactory::GetDefaultFactory()}};
   }
 
   // Can be overridden in child class to initialize an incognito web_contents.

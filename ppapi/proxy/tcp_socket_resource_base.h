@@ -41,6 +41,9 @@ class PPAPI_PROXY_EXPORT TCPSocketResourceBase : public PluginResource {
                         const PP_NetAddress_Private& local_addr,
                         const PP_NetAddress_Private& remote_addr);
 
+  TCPSocketResourceBase(const TCPSocketResourceBase&) = delete;
+  TCPSocketResourceBase& operator=(const TCPSocketResourceBase&) = delete;
+
   virtual ~TCPSocketResourceBase();
 
   // Implemented by subclasses to create resources for accepted sockets.
@@ -127,8 +130,6 @@ class PPAPI_PROXY_EXPORT TCPSocketResourceBase : public PluginResource {
   void RunCallback(scoped_refptr<TrackedCallback> callback, int32_t pp_result);
 
   TCPSocketVersion version_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPSocketResourceBase);
 };
 
 }  // namespace proxy

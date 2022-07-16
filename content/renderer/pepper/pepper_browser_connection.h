@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "content/common/pepper_plugin.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
@@ -35,6 +34,10 @@ class PepperBrowserConnection
   using PendingResourceIDCallback =
       base::OnceCallback<void(const std::vector<int>&)>;
   explicit PepperBrowserConnection(RenderFrame* render_frame);
+
+  PepperBrowserConnection(const PepperBrowserConnection&) = delete;
+  PepperBrowserConnection& operator=(const PepperBrowserConnection&) = delete;
+
   ~PepperBrowserConnection() override;
 
   bool OnMessageReceived(const IPC::Message& message) override;
@@ -72,10 +75,6 @@ class PepperBrowserConnection
   void DidDeleteOutOfProcessPepperInstance(int32_t plugin_child_id,
                                            int32_t pp_instance,
                                            bool is_external);
-
-  // Return a bound PepperIOHost. This may return null in unittests.
-  mojom::PepperIOHost* GetIOHost();
-
   // Return a bound PepperHost.
   mojom::PepperHost* GetHost();
 
@@ -96,10 +95,6 @@ class PepperBrowserConnection
 
   // Maps a sequence number to the callback to be run.
   std::map<int32_t, PendingResourceIDCallback> pending_create_map_;
-
-  mojo::AssociatedRemote<mojom::PepperIOHost> io_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperBrowserConnection);
 };
 
 }  // namespace content

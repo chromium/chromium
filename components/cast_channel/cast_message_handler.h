@@ -9,7 +9,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/tick_clock.h"
@@ -114,7 +113,7 @@ struct InternalMessage {
 };
 
 // Default timeout amount for requests waiting for a response.
-constexpr base::TimeDelta kRequestTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kRequestTimeout = base::Seconds(5);
 
 // Handles messages that are sent between this browser instance and the Cast
 // devices connected to it. This class also manages virtual connections (VCs)
@@ -142,6 +141,10 @@ class CastMessageHandler : public CastSocket::Observer {
                      const std::string& user_agent,
                      const std::string& browser_version,
                      const std::string& locale);
+
+  CastMessageHandler(const CastMessageHandler&) = delete;
+  CastMessageHandler& operator=(const CastMessageHandler&) = delete;
+
   ~CastMessageHandler() override;
 
   // Ensures a virtual connection exists for (|source_id|, |destination_id|) on
@@ -347,8 +350,6 @@ class CastMessageHandler : public CastSocket::Observer {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastMessageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastMessageHandler);
 };
 
 }  // namespace cast_channel

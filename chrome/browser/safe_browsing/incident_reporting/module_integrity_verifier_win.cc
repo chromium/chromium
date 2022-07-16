@@ -46,6 +46,10 @@ Export::~Export() {
 
 struct ModuleVerificationState {
   explicit ModuleVerificationState(HMODULE hModule);
+
+  ModuleVerificationState(const ModuleVerificationState&) = delete;
+  ModuleVerificationState& operator=(const ModuleVerificationState&) = delete;
+
   ~ModuleVerificationState();
 
   base::win::PEImageAsData disk_peimage;
@@ -88,9 +92,6 @@ struct ModuleVerificationState {
 
   // The module state protobuf object that |VerifyModule| will populate.
   ClientIncidentReport_EnvironmentData_Process_ModuleState* module_state;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ModuleVerificationState);
 };
 
 ModuleVerificationState::ModuleVerificationState(HMODULE hModule)

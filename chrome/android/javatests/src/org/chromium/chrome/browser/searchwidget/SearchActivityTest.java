@@ -12,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -69,14 +70,15 @@ import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.searchwidget.SearchActivity.SearchActivityDelegate;
-import org.chromium.chrome.browser.share.clipboard.ClipboardImageFileProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.share.ClipboardImageFileProvider;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
@@ -273,7 +275,7 @@ public class SearchActivityTest {
         LocationBarCoordinator locationBarCoordinator =
                 searchActivity.getLocationBarCoordinatorForTesting();
         locationBarCoordinator.setVoiceRecognitionHandlerForTesting(mHandler);
-        locationBar.beginQuery(/* isVoiceSearchIntent= */ true, /* optionalText= */ null, mHandler);
+        locationBar.beginQuery(SearchType.VOICE, /* optionalText= */ null, mHandler, null);
         verify(mHandler, times(0))
                 .startVoiceRecognition(
                         VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET);
@@ -297,7 +299,6 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug/1171794")
     public void testTypeBeforeNativeIsLoaded() throws Exception {
         // Wait for the activity to load, but don't let it load the native library.
         mTestDelegate.shouldDelayLoadingNative = true;
@@ -510,7 +511,7 @@ public class SearchActivityTest {
         Assert.assertEquals(0, mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
 
         // Dismiss the dialog without acting on it.
-        mTestDelegate.shownPromoDialog.dismiss();
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTestDelegate.shownPromoDialog.dismiss());
 
         // SearchActivity should realize the failure case and prevent the user from using it.
         CriteriaHelper.pollUiThread(() -> {
@@ -529,7 +530,6 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug/1166647")
     public void testNewIntentDiscardsQuery() {
         final SearchActivity searchActivity = startSearchActivity();
         setUrlBarText(searchActivity, "first query");
@@ -712,6 +712,30 @@ public class SearchActivityTest {
         });
     }
 
+    @Test
+    @SmallTest
+    public void testSearchTypes_knownValidValues() {
+        Assert.assertEquals(SearchType.TEXT,
+                SearchActivity.getSearchType(SearchActivityConstants.ACTION_START_TEXT_SEARCH));
+        Assert.assertEquals(SearchType.VOICE,
+                SearchActivity.getSearchType(SearchActivityConstants.ACTION_START_VOICE_SEARCH));
+        Assert.assertEquals(SearchType.LENS,
+                SearchActivity.getSearchType(SearchActivityConstants.ACTION_START_LENS_SEARCH));
+    }
+
+    @Test
+    @SmallTest
+    public void testSearchTypes_invalidValuesFallBackToTextSearch() {
+        Assert.assertEquals(SearchType.TEXT, SearchActivity.getSearchType("Aaaaaaa"));
+        Assert.assertEquals(SearchType.TEXT, SearchActivity.getSearchType(null));
+        Assert.assertEquals(SearchType.TEXT,
+                SearchActivity.getSearchType(
+                        SearchActivityConstants.ACTION_START_VOICE_SEARCH + "x"));
+        Assert.assertEquals(SearchType.TEXT,
+                SearchActivity.getSearchType(
+                        SearchActivityConstants.ACTION_START_LENS_SEARCH + "1"));
+    }
+
     private void putAnImageIntoClipboard() {
         mActivityTestRule.startMainActivityFromLauncher();
         ContentUriUtils.setFileProviderUtil(new FileProviderHelper());
@@ -724,7 +748,7 @@ public class SearchActivityTest {
         Clipboard.getInstance().setImage(mTestImageData, TEST_PNG_IMAGE_FILE_EXTENSION);
 
         CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(Clipboard.getInstance().getImage(), Matchers.notNullValue());
+            Criteria.checkThat(Clipboard.getInstance().getImageUri(), Matchers.notNullValue());
         });
     }
 
@@ -768,8 +792,11 @@ public class SearchActivityTest {
                 mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
 
         // Fire the Intent to start up the SearchActivity.
-        Intent intent = new Intent();
-        SearchWidgetProvider.startSearchActivity(intent, isVoiceSearch);
+        try {
+            SearchWidgetProvider.createIntent(instrumentation.getContext(), isVoiceSearch).send();
+        } catch (PendingIntent.CanceledException e) {
+            Assert.assertTrue("Intent canceled", false);
+        }
         Activity searchActivity = instrumentation.waitForMonitorWithTimeout(
                 searchMonitor, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
         Assert.assertNotNull("Activity didn't start", searchActivity);

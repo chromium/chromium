@@ -50,6 +50,10 @@ class NavigationContextImpl : public NavigationContext {
   NSError* GetError() const override;
   net::HttpResponseHeaders* GetResponseHeaders() const override;
   bool IsRendererInitiated() const override;
+
+  NavigationContextImpl(const NavigationContextImpl&) = delete;
+  NavigationContextImpl& operator=(const NavigationContextImpl&) = delete;
+
   ~NavigationContextImpl() override;
 
   // Setters for navigation context data members.
@@ -133,8 +137,6 @@ class NavigationContextImpl : public NavigationContext {
   // NavigationManager if the navigated was requested, but context does not yet
   // exist or when navigation was aborted.
   std::unique_ptr<NavigationItemImpl> item_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationContextImpl);
 };
 
 }  // namespace web

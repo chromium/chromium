@@ -73,6 +73,10 @@ class BASE_EXPORT JSONParser {
   static const char kUnrepresentableNumber[];
 
   explicit JSONParser(int options, size_t max_depth = kAbsoluteMaxDepth);
+
+  JSONParser(const JSONParser&) = delete;
+  JSONParser& operator=(const JSONParser&) = delete;
+
   ~JSONParser();
 
   // Parses the input string according to the set options and returns the
@@ -274,8 +278,6 @@ class BASE_EXPORT JSONParser {
   FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ConsumeLiterals);
   FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ConsumeNumbers);
   FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ErrorMessages);
-
-  DISALLOW_COPY_AND_ASSIGN(JSONParser);
 };
 
 // Used when decoding and an invalid utf-8 sequence is encountered.

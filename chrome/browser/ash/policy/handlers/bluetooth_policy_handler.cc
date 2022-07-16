@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/policy/handlers/bluetooth_policy_handler.h"
 
+#include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/settings/cros_settings_provider.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/syslog_logging.h"
 #include "base/values.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/cros_settings_provider.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
@@ -19,12 +19,12 @@ namespace policy {
 BluetoothPolicyHandler::BluetoothPolicyHandler(ash::CrosSettings* cros_settings)
     : cros_settings_(cros_settings) {
   allow_bluetooth_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kAllowBluetooth,
+      ash::kAllowBluetooth,
       base::BindRepeating(&BluetoothPolicyHandler::OnBluetoothPolicyChanged,
                           weak_factory_.GetWeakPtr()));
 
   allowed_services_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kDeviceAllowedBluetoothServices,
+      ash::kDeviceAllowedBluetoothServices,
       base::BindRepeating(&BluetoothPolicyHandler::OnBluetoothPolicyChanged,
                           weak_factory_.GetWeakPtr()));
 
@@ -35,11 +35,11 @@ BluetoothPolicyHandler::BluetoothPolicyHandler(ash::CrosSettings* cros_settings)
 BluetoothPolicyHandler::~BluetoothPolicyHandler() {}
 
 void BluetoothPolicyHandler::OnBluetoothPolicyChanged() {
-  chromeos::CrosSettingsProvider::TrustedStatus status =
+  ash::CrosSettingsProvider::TrustedStatus status =
       cros_settings_->PrepareTrustedValues(
           base::BindOnce(&BluetoothPolicyHandler::OnBluetoothPolicyChanged,
                          weak_factory_.GetWeakPtr()));
-  if (status != chromeos::CrosSettingsProvider::TRUSTED)
+  if (status != ash::CrosSettingsProvider::TRUSTED)
     return;
 
   device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
@@ -61,7 +61,7 @@ void BluetoothPolicyHandler::SetBluetoothPolicy(
   const base::ListValue* allowed_services_list = nullptr;
   std::vector<device::BluetoothUUID> allowed_services;
 
-  cros_settings_->GetBoolean(chromeos::kAllowBluetooth, &allow_bluetooth);
+  cros_settings_->GetBoolean(ash::kAllowBluetooth, &allow_bluetooth);
   if (!allow_bluetooth) {
     adapter_ = adapter;
     adapter_->SetPowered(false, base::DoNothing(), base::DoNothing());
@@ -72,7 +72,7 @@ void BluetoothPolicyHandler::SetBluetoothPolicy(
   // which is the same behavior as leaving DeviceAllowedBluetoothService unset.
   // Therefore, we don't need to handle the case when device management server
   // returns an empty list even if the policy did not set.
-  if (cros_settings_->GetList(chromeos::kDeviceAllowedBluetoothServices,
+  if (cros_settings_->GetList(ash::kDeviceAllowedBluetoothServices,
                               &allowed_services_list)) {
     for (const auto& list_value : allowed_services_list->GetList()) {
       if (!list_value.is_string())

@@ -1,0 +1,107 @@
+<style include="history-clusters-shared-style cr-icons">
+  :host {
+    --indentation: 52px;
+    --search-query-margin: 10px;
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
+    display: block;
+    padding: var(--cluster-padding-vertical) 0;
+  }
+
+  :host([has-hidden-related-visits_]) {
+    margin-bottom: var(--cluster-padding-vertical);
+  }
+
+  #related-searches {
+    padding: var(--cluster-padding-vertical) var(--cluster-padding-horizontal);
+  }
+
+  #related-searches-label {
+    color: var(--cr-secondary-text-color);
+    font-weight: 500;
+  }
+
+  #search-queries {
+    display: flex;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  search-query {
+    margin-top: var(--search-query-margin);
+  }
+
+  search-query:not(:last-of-type) {
+    margin-inline-end: var(--search-query-margin);
+  }
+
+  #visibility-toggle {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--cluster-padding-vertical);
+    position: relative;
+  }
+
+  #toggle-button {
+    --pill-padding-icon: 60px;
+    --pill-padding-text: 64px;
+    align-items: center;
+    background-color: var(--grey-fill-color);
+    cursor: pointer;
+    display: flex;
+    outline: none;
+    position: absolute;
+    top: calc(var(--cluster-padding-vertical) - var(--pill-height) / 2);
+  }
+
+  :host-context(.focus-outline-visible) #toggle-button:focus {
+    box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
+  }
+
+  #toggle-button .icon {
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-color: var(--icon-color);
+    --cr-icon-ripple-margin: 0;
+    --cr-icon-ripple-size: 20px;
+    transition: transform 300ms;
+  }
+
+  :host([expanded_]) #toggle-button .icon {
+    transform: rotate(180deg);
+  }
+</style>
+<url-visit visit="[[visit]]" cluster-index="[[clusterIndex]]" index="0"
+    has-related-visits$="[[hasRelatedVisits_]]" is-top-visit>
+</url-visit>
+<template is="dom-repeat" items="[[visibleRelatedVisits_]]">
+  <url-visit visit="[[item]]" cluster-index="[[clusterIndex]]"
+      index="[[getVisitIndex_(item, visit.relatedVisits.*)]]">
+  </url-visit>
+</template>
+<!-- Disable animation on iron-collapse, as the parent iron-list can't
+     easily handle it. -->
+<iron-collapse opened="[[expanded_]]" no-animation>
+  <template is="dom-repeat" items="[[hiddenRelatedVisits_]]">
+    <url-visit visit="[[item]]" cluster-index="[[clusterIndex]]"
+        index="[[getVisitIndex_(item, visit.relatedVisits.*)]]">
+    </url-visit>
+  </template>
+</iron-collapse>
+<div id="related-searches" hidden="[[!visit.relatedSearches.length]]">
+  <div id="related-searches-label">$i18n{relatedSearchesHeader}</div>
+  <div id="search-queries" role="list" aria-labelledby="related-searches-label">
+    <template is="dom-repeat" items="[[visit.relatedSearches]]">
+      <search-query search-query="[[item]]" index="[[index]]" role="listitem">
+      </search-query>
+    </template>
+  </div>
+</div>
+<div id="visibility-toggle" hidden="[[!hasHiddenRelatedVisits_]]">
+  <div id="toggle-button" class="pill pill-icon-end" tabindex="0"
+      on-click="onToggleButtonClick_" on-keydown="onToggleButtonKeyDown_">
+    <span>[[getToggleButtonLabel_(expanded_)]]</span>
+    <span id="toggle-icon" class="icon cr-icon icon-expand-more"></span>
+  </div>
+</div>

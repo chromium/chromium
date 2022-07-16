@@ -26,10 +26,19 @@ class SharingHubBubbleActionButton : public HoverButton {
 
   int action_command_id() const { return action_command_id_; }
   bool action_is_first_party() const { return action_is_first_party_; }
+  std::string action_name_for_metrics() const {
+    return action_name_for_metrics_;
+  }
+
+  // views::Button:
+  void UpdateBackgroundColor() override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
 
  private:
-  int action_command_id_;
-  bool action_is_first_party_;
+  const int action_command_id_;
+  const bool action_is_first_party_;
+  const std::string action_name_for_metrics_;
 };
 
 }  // namespace sharing_hub

@@ -20,7 +20,7 @@ def error(elem, msg):
   """Raise a nicely formatted error with some context."""
   name = elem.attrib.get('name', None)
   name = name + ' ' if name else ''
-  msg = 'Structured metrics error, {} node {}{}.'.format(elem.tag, name, msg)
+  msg = 'Structured metrics error, {} node {}: {}.'.format(elem.tag, name, msg)
   raise ValueError(msg)
 
 

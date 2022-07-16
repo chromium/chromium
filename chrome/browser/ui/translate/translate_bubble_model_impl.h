@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
 #include "chrome/browser/ui/translate/translate_bubble_view_state_transition.h"
@@ -22,6 +21,10 @@ class TranslateBubbleModelImpl : public TranslateBubbleModel {
   TranslateBubbleModelImpl(
       translate::TranslateStep step,
       std::unique_ptr<translate::TranslateUIDelegate> ui_delegate);
+
+  TranslateBubbleModelImpl(const TranslateBubbleModelImpl&) = delete;
+  TranslateBubbleModelImpl& operator=(const TranslateBubbleModelImpl&) = delete;
+
   ~TranslateBubbleModelImpl() override;
 
   // Converts a TranslateStep to a ViewState.
@@ -56,7 +59,7 @@ class TranslateBubbleModelImpl : public TranslateBubbleModel {
   void RevertTranslation() override;
   void OnBubbleClosing() override;
   bool IsPageTranslatedInCurrentLanguages() const override;
-  bool CanBlocklistSite() override;
+  bool CanAddSiteToNeverPromptList() override;
   void ReportUIInteraction(translate::UIInteraction ui_interaction) override;
 
  private:
@@ -65,8 +68,6 @@ class TranslateBubbleModelImpl : public TranslateBubbleModel {
 
   bool translation_declined_;
   bool translate_executed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateBubbleModelImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_MODEL_IMPL_H_

@@ -24,6 +24,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Handler;
 import android.util.SparseArray;
 
@@ -50,7 +51,7 @@ import java.util.List;
  * Unit tests for PlatformSensor and PlatformSensorProvider.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = 21, manifest = Config.NONE)
+@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
 public class PlatformSensorAndProviderTest {
     @Mock
     private Context mContext;

@@ -5,9 +5,8 @@
 #ifndef CC_BENCHMARKS_MICRO_BENCHMARK_IMPL_H_
 #define CC_BENCHMARKS_MICRO_BENCHMARK_IMPL_H_
 
-#include <memory>
-
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "cc/cc_export.h"
 
 namespace base {
@@ -22,7 +21,7 @@ class LayerImpl;
 class PictureLayerImpl;
 class CC_EXPORT MicroBenchmarkImpl {
  public:
-  using DoneCallback = base::OnceCallback<void(std::unique_ptr<base::Value>)>;
+  using DoneCallback = base::OnceCallback<void(base::Value)>;
 
   explicit MicroBenchmarkImpl(
       DoneCallback callback,
@@ -36,7 +35,7 @@ class CC_EXPORT MicroBenchmarkImpl {
   virtual void RunOnLayer(PictureLayerImpl* layer);
 
  protected:
-  void NotifyDone(std::unique_ptr<base::Value> result);
+  void NotifyDone(base::Value result);
 
  private:
   DoneCallback callback_;

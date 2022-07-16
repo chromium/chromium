@@ -1031,8 +1031,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
       shell(), server_.GetURL("a.test", "/page_with_sandboxed_iframe.html")));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   EXPECT_EQ("Success",
             EvalJs(root->child_at(0)->current_frame_host(),
@@ -1051,8 +1051,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
       shell(), server_.GetURL("a.test", "/page_with_sandboxed_iframe.html")));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   EXPECT_EQ("Success", EvalJs(root->child_at(0)->current_frame_host(),
                               JsReplace(R"(
@@ -1105,8 +1105,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   // For good measure, make sure the analogous signing operation works from
   // fetch, too, even though it wasn't broken by the same bug.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   EXPECT_EQ("Success", EvalJs(root->child_at(0)->current_frame_host(),
                               JsReplace(R"(

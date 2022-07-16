@@ -563,8 +563,7 @@ TEST_P(ContentCaptureReceiverTest, TitleUpdateTaskDelay) {
   EXPECT_TRUE(task_runner->HasPendingTask());
   EXPECT_EQ(2u, receiver->exponential_delay_);
   // Run the pending task.
-  task_runner->FastForwardBy(
-      base::TimeDelta::FromSeconds(receiver->exponential_delay_ / 2));
+  task_runner->FastForwardBy(base::Seconds(receiver->exponential_delay_ / 2));
   task_runner->RunUntilIdle();
   // Verify the title is updated and the task is reset.
   EXPECT_EQ(title2, content_capture_consumer_helper()->updated_title());

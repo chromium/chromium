@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -70,6 +69,10 @@ class AudioInputDevice::AudioThreadCallback
                       bool enable_uma,
                       CaptureCallback* capture_callback,
                       base::RepeatingClosure got_data_callback);
+
+  AudioThreadCallback(const AudioThreadCallback&) = delete;
+  AudioThreadCallback& operator=(const AudioThreadCallback&) = delete;
+
   ~AudioThreadCallback() override;
 
   void MapSharedMemory() override;
@@ -94,8 +97,6 @@ class AudioInputDevice::AudioThreadCallback
   const int got_data_callback_interval_in_frames_;
   int frames_since_last_got_data_callback_;
   base::RepeatingClosure got_data_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioThreadCallback);
 };
 
 AudioInputDevice::AudioInputDevice(std::unique_ptr<AudioInputIPC> ipc,
@@ -260,11 +261,11 @@ void AudioInputDevice::OnStreamCreated(
   const bool stop_at_first_alive_notification = false;
   const bool pause_check_during_suspend = true;
 #endif
-  alive_checker_ = std::make_unique<AliveChecker>(
-      base::BindRepeating(&AudioInputDevice::DetectedDeadInputStream, this),
-      base::TimeDelta::FromSeconds(kCheckMissingCallbacksIntervalSeconds),
-      base::TimeDelta::FromSeconds(kMissingCallbacksTimeBeforeErrorSeconds),
-      stop_at_first_alive_notification, pause_check_during_suspend);
+    alive_checker_ = std::make_unique<AliveChecker>(
+        base::BindRepeating(&AudioInputDevice::DetectedDeadInputStream, this),
+        base::Seconds(kCheckMissingCallbacksIntervalSeconds),
+        base::Seconds(kMissingCallbacksTimeBeforeErrorSeconds),
+        stop_at_first_alive_notification, pause_check_during_suspend);
   }
 
   // Unretained is safe since |alive_checker_| outlives |audio_callback_|.
@@ -272,7 +273,7 @@ void AudioInputDevice::OnStreamCreated(
       alive_checker_
           ? base::BindRepeating(&AliveChecker::NotifyAlive,
                                 base::Unretained(alive_checker_.get()))
-          : base::DoNothing::Repeatedly();
+          : base::DoNothing();
 
   audio_callback_ = std::make_unique<AudioInputDevice::AudioThreadCallback>(
       audio_parameters_, std::move(shared_memory_region),
@@ -462,8 +463,7 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
   // the audio delay measurement.
   // TODO(olka, tommi): Take advantage of |capture_time| in the renderer.
   const base::TimeTicks capture_time =
-      base::TimeTicks() +
-      base::TimeDelta::FromMicroseconds(buffer->params.capture_time_us);
+      base::TimeTicks() + base::Microseconds(buffer->params.capture_time_us);
   const base::TimeTicks now_time = base::TimeTicks::Now();
   DCHECK_GE(now_time, capture_time);
 

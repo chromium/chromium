@@ -65,6 +65,9 @@ class AuthPolicyClientImpl : public AuthPolicyClient {
  public:
   AuthPolicyClientImpl() {}
 
+  AuthPolicyClientImpl(const AuthPolicyClientImpl&) = delete;
+  AuthPolicyClientImpl& operator=(const AuthPolicyClientImpl&) = delete;
+
   ~AuthPolicyClientImpl() override = default;
 
   // AuthPolicyClient override.
@@ -229,8 +232,6 @@ class AuthPolicyClientImpl : public AuthPolicyClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<AuthPolicyClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AuthPolicyClientImpl);
 };
 
 }  // namespace

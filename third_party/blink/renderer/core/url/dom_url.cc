@@ -35,15 +35,30 @@
 
 namespace blink {
 
-DOMURL::DOMURL(const String& url,
-               const KURL& base,
-               ExceptionState& exception_state) {
-  if (!base.IsValid()) {
-    exception_state.ThrowTypeError("Invalid base URL");
-    return;
-  }
+// static
+DOMURL* DOMURL::Create(const String& url, ExceptionState& exception_state) {
+  return MakeGarbageCollected<DOMURL>(PassKey(), url, NullURL(),
+                                      exception_state);
+}
 
-  url_ = KURL(base, url);
+// static
+DOMURL* DOMURL::Create(const String& url,
+                       const String& base,
+                       ExceptionState& exception_state) {
+  KURL base_url(base);
+  if (!base_url.IsValid()) {
+    exception_state.ThrowTypeError("Invalid base URL");
+    return nullptr;
+  }
+  return MakeGarbageCollected<DOMURL>(PassKey(), url, base_url,
+                                      exception_state);
+}
+
+DOMURL::DOMURL(PassKey,
+               const String& url,
+               const KURL& base,
+               ExceptionState& exception_state)
+    : url_(base, url) {
   if (!url_.IsValid())
     exception_state.ThrowTypeError("Invalid URL");
 }
@@ -56,7 +71,7 @@ void DOMURL::Trace(Visitor* visitor) const {
 }
 
 void DOMURL::setHref(const String& value, ExceptionState& exception_state) {
-  KURL url(BlankURL(), value);
+  KURL url(value);
   if (!url.IsValid()) {
     exception_state.ThrowTypeError("Invalid URL");
     return;

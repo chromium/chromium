@@ -65,16 +65,20 @@ class InitializedOpenBroker {
     std::vector<BrokerFilePermission> permissions = {
         BrokerFilePermission::ReadOnly("/proc/allowed"),
         BrokerFilePermission::ReadOnly("/proc/cpuinfo")};
-    broker_process_ = std::make_unique<BrokerProcess>(EPERM, command_set,
-                                                      permissions, broker_type);
-    BPF_ASSERT(broker_process_->Init(base::BindOnce([]() { return true; })));
+    broker_process_ = std::make_unique<BrokerProcess>(
+        syscall_broker::BrokerSandboxConfig(command_set, permissions, EPERM),
+        broker_type);
+    BPF_ASSERT(broker_process_->Fork(base::BindOnce(
+        [](const syscall_broker::BrokerSandboxConfig&) { return true; })));
   }
+
+  InitializedOpenBroker(const InitializedOpenBroker&) = delete;
+  InitializedOpenBroker& operator=(const InitializedOpenBroker&) = delete;
 
   BrokerProcess* broker_process() const { return broker_process_.get(); }
 
  private:
   std::unique_ptr<BrokerProcess> broker_process_;
-  DISALLOW_COPY_AND_ASSIGN(InitializedOpenBroker);
 };
 
 intptr_t BrokerOpenTrapHandler(const struct arch_seccomp_data& args,
@@ -83,6 +87,7 @@ intptr_t BrokerOpenTrapHandler(const struct arch_seccomp_data& args,
   BrokerProcess* broker_process = static_cast<BrokerProcess*>(aux);
   switch (args.nr) {
     case __NR_faccessat:  // access is a wrapper of faccessat in android
+    case __NR_faccessat2:
       BPF_ASSERT(static_cast<int>(args.args[0]) == AT_FDCWD);
       return broker_process->GetBrokerClientSignalBased()->Access(
           reinterpret_cast<const char*>(args.args[1]),
@@ -115,6 +120,10 @@ intptr_t BrokerOpenTrapHandler(const struct arch_seccomp_data& args,
 class DenyOpenPolicy : public bpf_dsl::Policy {
  public:
   explicit DenyOpenPolicy(InitializedOpenBroker* iob) : iob_(iob) {}
+
+  DenyOpenPolicy(const DenyOpenPolicy&) = delete;
+  DenyOpenPolicy& operator=(const DenyOpenPolicy&) = delete;
+
   ~DenyOpenPolicy() override {}
 
   ResultExpr EvaluateSyscall(int sysno) const override {
@@ -122,6 +131,7 @@ class DenyOpenPolicy : public bpf_dsl::Policy {
 
     switch (sysno) {
       case __NR_faccessat:
+      case __NR_faccessat2:
 #if defined(__NR_access)
       case __NR_access:
 #endif
@@ -139,8 +149,6 @@ class DenyOpenPolicy : public bpf_dsl::Policy {
 
  private:
   InitializedOpenBroker* iob_;
-
-  DISALLOW_COPY_AND_ASSIGN(DenyOpenPolicy);
 };
 
 // We use a InitializedOpenBroker class, so that we can run unsandboxed
@@ -491,6 +499,12 @@ class HandleFilesystemViaBrokerPolicy : public bpf_dsl::Policy {
   explicit HandleFilesystemViaBrokerPolicy(BrokerProcess* broker_process,
                                            int denied_errno)
       : broker_process_(broker_process), denied_errno_(denied_errno) {}
+
+  HandleFilesystemViaBrokerPolicy(const HandleFilesystemViaBrokerPolicy&) =
+      delete;
+  HandleFilesystemViaBrokerPolicy& operator=(
+      const HandleFilesystemViaBrokerPolicy&) = delete;
+
   ~HandleFilesystemViaBrokerPolicy() override = default;
 
   ResultExpr EvaluateSyscall(int sysno) const override {
@@ -516,8 +530,6 @@ class HandleFilesystemViaBrokerPolicy : public bpf_dsl::Policy {
  private:
   BrokerProcess* broker_process_;
   int denied_errno_;
-
-  DISALLOW_COPY_AND_ASSIGN(HandleFilesystemViaBrokerPolicy);
 };
 }  // namespace syscall_broker
 
@@ -539,10 +551,13 @@ class BPFTesterBrokerDelegate : public BPFTesterDelegate {
     BrokerTestDelegate::BrokerParams broker_params =
         broker_test_delegate_->ChildSetUpPreSandbox();
 
+    auto policy = absl::make_optional<syscall_broker::BrokerSandboxConfig>(
+        broker_params.allowed_command_set, broker_params.permissions,
+        broker_params.denied_errno);
     broker_process_ = std::make_unique<BrokerProcess>(
-        broker_params.denied_errno, broker_params.allowed_command_set,
-        broker_params.permissions, broker_type_, fast_check_in_client_);
-    BPF_ASSERT(broker_process_->Init(base::BindOnce([]() { return true; })));
+        std::move(policy), broker_type_, fast_check_in_client_);
+    BPF_ASSERT(broker_process_->Fork(base::BindOnce(
+        [](const syscall_broker::BrokerSandboxConfig&) { return true; })));
     broker_test_delegate_->OnBrokerStarted(broker_process_->broker_pid());
 
     BPF_ASSERT(TestUtils::CurrentProcessHasChildren());

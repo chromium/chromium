@@ -20,6 +20,7 @@
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "url/android/gurl_android.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
@@ -101,7 +102,8 @@ void AutofillKeyboardAccessoryView::Show() {
         ConvertUTF16ToJavaString(env, item_tag), android_icon_id,
         suggestion.frontend_id,
         controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
-        ConvertUTF8ToJavaString(env, suggestion.feature_for_iph));
+        ConvertUTF8ToJavaString(env, suggestion.feature_for_iph),
+        url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));
   }
   Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_, data_array,
                                                 controller_->IsRTL());

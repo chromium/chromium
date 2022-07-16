@@ -18,7 +18,6 @@
 
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "ui/base/resource/data_pack_export.h"
 #include "ui/base/resource/resource_handle.h"
@@ -34,6 +33,10 @@ enum ResourceScaleFactor : int;
 class UI_DATA_PACK_EXPORT DataPack : public ResourceHandle {
  public:
   explicit DataPack(ResourceScaleFactor resource_scale_factor);
+
+  DataPack(const DataPack&) = delete;
+  DataPack& operator=(const DataPack&) = delete;
+
   ~DataPack() override;
 
   // Load a pack file from |path|, returning false on error. If the final
@@ -113,8 +116,6 @@ class UI_DATA_PACK_EXPORT DataPack : public ResourceHandle {
   // The scale of the image in this resource pack relative to images in the 1x
   // resource pak.
   ResourceScaleFactor resource_scale_factor_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataPack);
 };
 
 }  // namespace ui

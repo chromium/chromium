@@ -85,10 +85,7 @@ ExtensionInstalledBubbleModel::ExtensionInstalledBubbleModel(
   const auto* action_info =
       extensions::ActionInfo::GetExtensionActionInfo(extension);
 
-  // TODO(ellyjones): There is no logical reason why TYPE_ACTION should be
-  // different here, but the existing bubble behaves this way.
-  const bool toolbar_action =
-      action_info && action_info->type != extensions::ActionInfo::TYPE_ACTION;
+  const bool toolbar_action = !!action_info;
 
   anchor_to_action_ = toolbar_action;
   anchor_to_omnibox_ = !toolbar_action && !keyword.empty();

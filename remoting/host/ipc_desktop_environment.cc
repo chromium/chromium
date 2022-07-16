@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/process/process_handle.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_sender.h"
@@ -23,6 +23,7 @@
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
+#include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/screen_controls.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
@@ -83,6 +84,11 @@ IpcDesktopEnvironment::CreateVideoCapturer() {
 
 std::unique_ptr<FileOperations> IpcDesktopEnvironment::CreateFileOperations() {
   return desktop_session_proxy_->CreateFileOperations();
+}
+
+std::unique_ptr<UrlForwarderConfigurator>
+IpcDesktopEnvironment::CreateUrlForwarderConfigurator() {
+  return desktop_session_proxy_->CreateUrlForwarderConfigurator();
 }
 
 std::string IpcDesktopEnvironment::GetCapabilities() const {

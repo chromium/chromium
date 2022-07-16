@@ -7,8 +7,6 @@ import("//build/config/android/rules.gni")
 
 source_set("android") {
   sources = [
-    "features.cc",
-    "features.h",
     "pwa_bottom_sheet_controller.cc",
     "pwa_bottom_sheet_controller.h",
   ]

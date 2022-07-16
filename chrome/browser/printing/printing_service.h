@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PRINTING_PRINTING_SERVICE_H_
 #define CHROME_BROWSER_PRINTING_PRINTING_SERVICE_H_
 
-#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 // Acquires a remote handle to the sandboxed Printing Service

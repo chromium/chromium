@@ -69,6 +69,9 @@ class ExtensionBuilder {
   // the extension and used to generate a stable ID.
   ExtensionBuilder(const std::string& name, Type type = Type::EXTENSION);
 
+  ExtensionBuilder(const ExtensionBuilder&) = delete;
+  ExtensionBuilder& operator=(const ExtensionBuilder&) = delete;
+
   ~ExtensionBuilder();
 
   // Move constructor and operator=.
@@ -184,8 +187,6 @@ class ExtensionBuilder {
   mojom::ManifestLocation location_;
   int flags_;
   std::string id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionBuilder);
 };
 
 }  // namespace extensions

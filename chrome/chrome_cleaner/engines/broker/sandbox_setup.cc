@@ -22,7 +22,7 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/chrome_cleaner/engines/target/engine_commands_impl.h"  // nogncheck
 #include "chrome/chrome_cleaner/engines/target/engine_delegate.h"  // nogncheck
 #include "chrome/chrome_cleaner/engines/target/engine_delegate_factory.h"  // nogncheck
@@ -65,7 +65,7 @@ ResultCode SpawnWithoutSandboxForTesting(
             new EngineCommandsImpl(engine_delegate,
                                    engine_client->engine_commands_remote()
                                        ->BindNewPipeAndPassReceiver(),
-                                   task_runner, base::DoNothing::Repeatedly());
+                                   task_runner, base::DoNothing());
           },
           engine_client, CreateEngineDelegate(engine_name), mojo_task_runner));
 

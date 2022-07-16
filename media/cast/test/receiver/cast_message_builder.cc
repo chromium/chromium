@@ -117,8 +117,8 @@ bool CastMessageBuilder::TimeToSendNextCastMessage(
   if (last_update_time_.is_null() && framer_->Empty())
     return false;
 
-  *time_to_send = last_update_time_ + base::TimeDelta::FromMilliseconds(
-                                          kCastMessageUpdateIntervalMs);
+  *time_to_send =
+      last_update_time_ + base::Milliseconds(kCastMessageUpdateIntervalMs);
   return true;
 }
 
@@ -143,7 +143,7 @@ bool CastMessageBuilder::UpdateCastMessageInternal(RtcpCastMessage* message) {
   // Is it time to update the cast message?
   base::TimeTicks now = clock_->NowTicks();
   if (now - last_update_time_ <
-      base::TimeDelta::FromMilliseconds(kCastMessageUpdateIntervalMs)) {
+      base::Milliseconds(kCastMessageUpdateIntervalMs)) {
     return false;
   }
   last_update_time_ = now;
@@ -174,8 +174,7 @@ void CastMessageBuilder::BuildPacketList() {
     if (it != time_last_nacked_map_.end()) {
       // We have sent a NACK in this frame before, make sure enough time have
       // passed.
-      if (now - it->second <
-          base::TimeDelta::FromMilliseconds(kNackRepeatIntervalMs)) {
+      if (now - it->second < base::Milliseconds(kNackRepeatIntervalMs)) {
         continue;
       }
     }

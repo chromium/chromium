@@ -38,7 +38,11 @@ enum class DownloadOpenSource {
   kOfflineIndicator = 11,
   // Android notification for offline content.
   kOfflineContentNotification = 12,
-  kMaxValue = kOfflineContentNotification
+  // Download progress message.
+  kDownloadProgressMessage = 13,
+  // Duplicate download dialog.
+  kDuplicateDownloadDialog = 14,
+  kMaxValue = kDuplicateDownloadDialog
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_OPEN_SOURCE_H_

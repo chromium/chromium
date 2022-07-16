@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
@@ -48,7 +47,7 @@ std::string GetPostscriptNameFromFile(base::File& font_file) {
   FT_Face font_face;
   FT_Open_Args open_args = {FT_OPEN_MEMORY,
                             reinterpret_cast<FT_Byte*>(file_contents.data()),
-                            file_size};
+                            static_cast<FT_Long>(file_size)};
   CHECK_EQ(FT_Err_Ok, FT_Open_Face(library, &open_args, 0, &font_face));
   font_family_name = FT_Get_Postscript_Name(font_face);
   FT_Done_Face(font_face);
@@ -75,6 +74,10 @@ mojo::PendingRemote<mojom::FontService> ConnectToBackgroundFontService() {
 class FontLoaderTest : public testing::Test {
  public:
   FontLoaderTest() = default;
+
+  FontLoaderTest(const FontLoaderTest&) = delete;
+  FontLoaderTest& operator=(const FontLoaderTest&) = delete;
+
   ~FontLoaderTest() override = default;
 
  protected:
@@ -83,8 +86,6 @@ class FontLoaderTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   FontLoader font_loader_{ConnectToBackgroundFontService()};
-
-  DISALLOW_COPY_AND_ASSIGN(FontLoaderTest);
 };
 
 }  // namespace

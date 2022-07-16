@@ -52,23 +52,26 @@ suite('route', function() {
   }
 
   /**
-   * Tests that after navigating from |previousRoute| to |currentRoute1| with
-   * pushing a new history entry, and then navigating from |currentRoute1| to
-   * |currentRoute2| without pushing a new history entry, navigating back lands
-   * at |expectedRoute|.
-   * @param {!Route} route0
-   * @param {!Route} route1
-   * @param {!Route} route2
-   * @param {!Route} expectedRoute
+   * Tests that |routeParamUpdate()| sets URL parameters as expected, doesn't
+   * change the current or previous route, and that a back navigation still
+   * works afterwards as expected.
+   * @param {!Route} route0 1st route that the test navigates to.
+   * @param {!Route} route1 2nd route that the test navigates to.
+   * @param {!URLSearchParams} params Get applied after the 2nd navigation
+   * @param {!Route} expectedRoute Route on which a back navigation should land
+   *     after the 1st and 2nd navigation.
    * @return {!Promise}
    */
-  async function testNavigateBackIgnoresNonHistoryNavigation(
-      route0, route1, route2, expectedRoute) {
+  async function testUpdateRouteParamsNavigation(
+      route0, route1, params, expectedRoute) {
     Router.getInstance().navigateTo(route0);
     Router.getInstance().navigateTo(route1);
-    Router.getInstance().navigateTo(
-        route2, /* URLSearchParams */ null, /* opt_removeSearch */ false,
-        /* opt_skipHistoryEntry */ true);
+    Router.getInstance().updateRouteParams(params);
+
+    assertEquals(
+        params.toString(),
+        Router.getInstance().getQueryParameters().toString());
+    assertEquals(route1, Router.getInstance().getCurrentRoute());
 
     await whenPopState(function() {
       Router.getInstance().navigateToPreviousRoute();
@@ -136,8 +139,9 @@ suite('route', function() {
   test(
       'navigate back to parent previous route, ignore non-history navigation',
       function() {
-        return testNavigateBackIgnoresNonHistoryNavigation(
-            routes.BASIC, routes.PEOPLE, routes.SYNC, routes.BASIC);
+        return testUpdateRouteParamsNavigation(
+            routes.BASIC, routes.PEOPLE, new URLSearchParams('param=test'),
+            routes.BASIC);
       });
 
   test('navigate back to non-ancestor shallower route', function() {
@@ -148,8 +152,9 @@ suite('route', function() {
   test(
       'navigate back to non-ancestor shallower route, ignore non-history navigation',
       function() {
-        return testNavigateBackIgnoresNonHistoryNavigation(
-            routes.ADVANCED, routes.PEOPLE, routes.SYNC, routes.BASIC);
+        return testUpdateRouteParamsNavigation(
+            routes.ADVANCED, routes.PEOPLE, new URLSearchParams('param=test'),
+            routes.BASIC);
       });
 
   test('navigate back to sibling route', function() {
@@ -160,8 +165,9 @@ suite('route', function() {
   test(
       'navigate back to sibling route, ignore non-history navigation',
       function() {
-        return testNavigateBackIgnoresNonHistoryNavigation(
-            routes.APPEARANCE, routes.PEOPLE, routes.SYNC, routes.APPEARANCE);
+        return testUpdateRouteParamsNavigation(
+            routes.APPEARANCE, routes.PEOPLE, new URLSearchParams('param=test'),
+            routes.APPEARANCE);
       });
 
   test('navigate back to parent when previous route is deeper', function() {

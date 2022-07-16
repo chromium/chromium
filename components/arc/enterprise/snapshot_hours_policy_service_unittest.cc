@@ -47,7 +47,7 @@ constexpr char kJsonPolicy[] =
     "\"timezone\": \"GMT\""
     "}";
 
-// DeviceArcDataSnapshotHours incorrect policy with missing timezone.
+// DeviceArcDataSnapshotHours correct policy with missing timezone.
 constexpr char kJsonPolicyNoTimezone[] =
     "{"
     "\"intervals\": ["
@@ -96,8 +96,8 @@ constexpr char kJsonPolicyEmptyIntervals[] =
     "\"timezone\": \"GMT\""
     "}";
 
-// DeviceArcDataSnapshotHours incorrect policy with empty timezone.
-constexpr char kJsonPolicyWrongOffset[] =
+// DeviceArcDataSnapshotHours correct policy with UNSET timezone.
+constexpr char kJsonPolicyUnsetTimezone[] =
     "{"
     "\"intervals\": ["
     "{"
@@ -111,7 +111,7 @@ constexpr char kJsonPolicyWrongOffset[] =
     "}"
     "}"
     "],"
-    "\"timezone\": \"\""
+    "\"timezone\": \"UNSET\""
     "}";
 
 class FakeObserver : public SnapshotHoursPolicyService::Observer {
@@ -185,12 +185,13 @@ class SnapshotHoursPolicyServiceTest
   }
 
   // Enable feature and check.
-  void EnableSnapshot(int enabled_calls_num = 1) {
+  void EnableSnapshot(int enabled_calls_num = 1,
+                      const std::string& policyJson = kJsonPolicy) {
     auto account_id = AccountId::FromUserEmail(kPublicAccountEmail);
     EXPECT_TRUE(fake_user_manager_->AddPublicAccountUser(account_id));
     policy_service()->LocalStateChanged(user_manager());
 
-    absl::optional<base::Value> policy = base::JSONReader::Read(kJsonPolicy);
+    absl::optional<base::Value> policy = base::JSONReader::Read(policyJson);
     EXPECT_TRUE(policy.has_value());
     local_state()->Set(arc::prefs::kArcSnapshotHours, policy.value());
 
@@ -250,6 +251,9 @@ class SnapshotHoursPolicyServiceTest
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
+class SnapshotHoursPolicyServiceDisabledTest
+    : public SnapshotHoursPolicyServiceTest {};
+
 // Test that the feature is disabled by default.
 TEST_F(SnapshotHoursPolicyServiceTest, Disabled) {
   EnsureSnapshotDisabled();
@@ -262,10 +266,6 @@ TEST_F(SnapshotHoursPolicyServiceTest, MgsIsNotConfigured) {
   RemovePublicSession();
 
   EnsureSnapshotDisabled(1 /* disabled_calls_num */);
-}
-
-TEST_F(SnapshotHoursPolicyServiceTest, OneIntervalEnabled) {
-  EnableSnapshot();
 }
 
 TEST_F(SnapshotHoursPolicyServiceTest, DoubleDisable) {
@@ -364,7 +364,11 @@ TEST_F(SnapshotHoursPolicyServiceTest, DisableByUserPolicyForMGS) {
   EnsureSnapshotEnabled(2 /* enabled_calls_num */);
 }
 
-TEST_P(SnapshotHoursPolicyServiceTest, DisabledByPolicy) {
+TEST_P(SnapshotHoursPolicyServiceTest, OneIntervalEnabled) {
+  EnableSnapshot(1 /* enabled_calls_num */, policy());
+}
+
+TEST_P(SnapshotHoursPolicyServiceDisabledTest, DisabledByPolicy) {
   EnableSnapshot();
 
   absl::optional<base::Value> policy_value = base::JSONReader::Read(policy());
@@ -376,12 +380,16 @@ TEST_P(SnapshotHoursPolicyServiceTest, DisabledByPolicy) {
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
+    SnapshotHoursPolicyServiceDisabledTest,
+    testing::Values(kJsonPolicyIncorrectIntervals,
+                    kJsonPolicyNoIntervals,
+                    kJsonPolicyEmptyIntervals));
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
     SnapshotHoursPolicyServiceTest,
     testing::Values(kJsonPolicyNoTimezone,
-                    kJsonPolicyIncorrectIntervals,
-                    kJsonPolicyNoIntervals,
-                    kJsonPolicyEmptyIntervals,
-                    kJsonPolicyWrongOffset));
+                    kJsonPolicy,
+                    kJsonPolicyUnsetTimezone));
 
 }  // namespace data_snapshotd
 }  // namespace arc

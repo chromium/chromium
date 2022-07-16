@@ -10,7 +10,6 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #include "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
@@ -20,7 +19,6 @@
 #import "ios/chrome/browser/ui/first_run/first_run_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
-#import "ios/chrome/browser/ui/first_run/location_permissions_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
@@ -33,20 +31,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-// Histogram enum values for showing the experiment arms of the location
-// permissions experiment. These values are persisted to logs. Entries should
-// not be renumbered and numeric values should never be reused.
-enum class LocationPermissionsUI {
-  // The First Run native location prompt was not shown.
-  kFirstRunPromptNotShown = 0,
-  // The First Run location permissions modal was shown.
-  kFirstRunModal = 1,
-  // kMaxValue should share the value of the highest enumerator.
-  kMaxValue = kFirstRunModal,
-};
-}
 
 @interface FirstRunAppAgent () <AppStateObserver,
                                 PolicyWatcherBrowserAgentObserving,
@@ -286,9 +270,7 @@ enum class LocationPermissionsUI {
 
   self.firstRunCoordinator = [[FirstRunCoordinator alloc]
       initWithBaseViewController:self.presentingInterface.bvc
-                         browser:self.presentingInterface.browser
-                     mainBrowser:self.mainBrowser
-                   syncPresenter:self.presentingInterface.bvc
+                         browser:self.mainBrowser
                   screenProvider:provider];
   self.firstRunCoordinator.delegate = self;
   [self.firstRunCoordinator start];
@@ -315,31 +297,7 @@ enum class LocationPermissionsUI {
 
   self.welcomeToChromeController = nil;
 
-  [self maybePromptLocationWithSystemAlert];
-
   [self.appState queueTransitionToNextInitStage];
-}
-
-- (void)logLocationPermissionsExperimentForGroupShown:
-    (LocationPermissionsUI)experimentGroup {
-  UMA_HISTOGRAM_ENUMERATION("IOS.LocationPermissionsUI", experimentGroup);
-}
-
-- (void)maybePromptLocationWithSystemAlert {
-  if (!location_permissions_field_trial::IsInRemoveFirstRunPromptGroup() &&
-      !location_permissions_field_trial::IsInFirstRunModalGroup()) {
-    [self logLocationPermissionsExperimentForGroupShown:
-              LocationPermissionsUI::kFirstRunPromptNotShown];
-    // As soon as First Run has finished, give OmniboxGeolocationController an
-    // opportunity to present the iOS system location alert.
-    [[OmniboxGeolocationController sharedInstance] triggerSystemPrompt];
-  } else if (location_permissions_field_trial::
-                 IsInRemoveFirstRunPromptGroup()) {
-    // If in RemoveFirstRunPrompt group, the system prompt will be delayed until
-    // the site requests location information.
-    [[OmniboxGeolocationController sharedInstance]
-        systemPromptSkippedForNewUser];
-  }
 }
 
 #pragma mark - FirstRunCoordinatorDelegate
@@ -350,21 +308,7 @@ enum class LocationPermissionsUI {
   [self.firstRunCoordinator stop];
 }
 
-- (void)didFinishPresentingScreensWithSubsequentActionsTriggered:
-    (BOOL)actionsTriggered {
-  // Triggers all the events after the first run is dismissed. Note that the
-  // below logic should be removed after the new first run UI supports location
-  // permission page.
-  [self maybePromptLocationWithSystemAlert];
-
-  // Only show the location permission if no additional actions were taken.
-  if (!actionsTriggered &&
-      location_permissions_field_trial::IsInFirstRunModalGroup()) {
-    id<ApplicationCommands> handler = static_cast<id<ApplicationCommands>>(
-        self.mainBrowser->GetCommandDispatcher());
-    [handler
-        showLocationPermissionsFromViewController:self.presentingInterface.bvc];
-  }
+- (void)didFinishPresentingScreens {
   [self.appState queueTransitionToNextInitStage];
 }
 

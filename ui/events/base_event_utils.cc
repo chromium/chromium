@@ -65,7 +65,7 @@ double EventTimeStampToSeconds(base::TimeTicks time_stamp) {
 }
 
 base::TimeTicks EventTimeStampFromSeconds(double time_stamp_seconds) {
-  return base::TimeTicks() + base::TimeDelta::FromSecondsD(time_stamp_seconds);
+  return base::TimeTicks() + base::Seconds(time_stamp_seconds);
 }
 
 bool IsValidTimebase(base::TimeTicks now, base::TimeTicks timestamp) {

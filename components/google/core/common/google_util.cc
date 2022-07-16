@@ -10,9 +10,8 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -47,10 +46,11 @@ void StripTrailingDot(base::StringPiece* host) {
 // with a valid TLD that appears in |allowed_tlds|. If |subdomain_permission| is
 // ALLOW_SUBDOMAIN, we check against host "*.<domain_in_lower_case>.<TLD>"
 // instead.
+template <typename Container>
 bool IsValidHostName(base::StringPiece host,
                      base::StringPiece domain_in_lower_case,
                      SubdomainPermission subdomain_permission,
-                     const base::flat_set<base::StringPiece>& allowed_tlds) {
+                     const Container& allowed_tlds) {
   // Fast path to avoid searching the registry set.
   if (host.find(domain_in_lower_case) == base::StringPiece::npos)
     return false;
@@ -104,21 +104,21 @@ bool IsCanonicalHostGoogleHostname(base::StringPiece canonical_host,
   if (base_url.is_valid() && (canonical_host == base_url.host_piece()))
     return true;
 
-  static const base::NoDestructor<base::flat_set<base::StringPiece>>
-      google_tlds(std::initializer_list<base::StringPiece>({GOOGLE_TLD_LIST}));
+  static constexpr auto google_tlds =
+      base::MakeFixedFlatSet<base::StringPiece>({GOOGLE_TLD_LIST});
   return IsValidHostName(canonical_host, "google", subdomain_permission,
-                         *google_tlds);
+                         google_tlds);
 }
 
 bool IsCanonicalHostYoutubeHostname(base::StringPiece canonical_host,
                                     SubdomainPermission subdomain_permission) {
-  static const base::NoDestructor<base::flat_set<base::StringPiece>>
-      youtube_tlds(
-          std::initializer_list<base::StringPiece>({YOUTUBE_TLD_LIST}));
+  static constexpr auto youtube_tlds =
+      base::MakeFixedFlatSet<base::StringPiece>({YOUTUBE_TLD_LIST});
+
   return IsValidHostName(canonical_host, "youtube", subdomain_permission,
-                         *youtube_tlds) ||
-      IsValidHostName(canonical_host, "youtubekids", subdomain_permission,
-                         *youtube_tlds);
+                         youtube_tlds) ||
+         IsValidHostName(canonical_host, "youtubekids", subdomain_permission,
+                         youtube_tlds);
 }
 
 // True if |url| is a valid URL with a host that is in the static list of
@@ -131,11 +131,11 @@ bool IsGoogleSearchSubdomainUrl(const GURL& url) {
   base::StringPiece host(url.host_piece());
   StripTrailingDot(&host);
 
-  static const base::NoDestructor<base::flat_set<base::StringPiece>>
-      google_subdomains(std::initializer_list<base::StringPiece>(
-          {"ipv4.google.com", "ipv6.google.com"}));
+  static constexpr auto google_subdomains =
+      base::MakeFixedFlatSet<base::StringPiece>(
+          {"ipv4.google.com", "ipv6.google.com"});
 
-  return google_subdomains->contains(host);
+  return google_subdomains.contains(host);
 }
 
 }  // namespace
@@ -357,10 +357,11 @@ GURL AppendToAsyncQueryParam(const GURL& url,
   url::Component key_range, value_range;
   while (url::ExtractQueryKeyValue(input.data(), &cursor, &key_range,
                                    &value_range)) {
-    const base::StringPiece key(input.data() + key_range.begin, key_range.len);
+    const base::StringPiece input_key(input.data() + key_range.begin,
+                                      key_range.len);
     std::string key_value_pair(input, key_range.begin,
                                value_range.end() - key_range.begin);
-    if (!replaced && key == param_name) {
+    if (!replaced && input_key == param_name) {
       // Check |replaced| as only the first match should be replaced.
       replaced = true;
       key_value_pair += "," + key_value;
@@ -381,6 +382,53 @@ GURL AppendToAsyncQueryParam(const GURL& url,
   GURL::Replacements replacements;
   replacements.SetQueryStr(output);
   return url.ReplaceComponents(replacements);
+}
+
+GoogleSearchMode GoogleSearchModeFromUrl(const GURL& url) {
+  static_assert(GoogleSearchMode::kMaxValue == GoogleSearchMode::kFlights,
+                "This function should be updated if new values are added to "
+                "GoogleSearchMode");
+
+  base::StringPiece query_str = url.query_piece();
+  url::Component query(0, static_cast<int>(url.query_piece().length()));
+  url::Component key, value;
+  GoogleSearchMode mode = GoogleSearchMode::kUnspecified;
+  while (url::ExtractQueryKeyValue(query_str.data(), &query, &key, &value)) {
+    base::StringPiece key_str = query_str.substr(key.begin, key.len);
+    if (key_str != "tbm") {
+      continue;
+    }
+    if (mode != GoogleSearchMode::kUnspecified) {
+      // There is more than one tbm parameter, which is not expected. Return
+      // kUnknown to signify the result can't be trusted.
+      return GoogleSearchMode::kUnknown;
+    }
+    base::StringPiece value_str = query_str.substr(value.begin, value.len);
+    if (value_str == "isch") {
+      mode = GoogleSearchMode::kImages;
+    } else if (value_str == "web") {
+      mode = GoogleSearchMode::kWeb;
+    } else if (value_str == "nws") {
+      mode = GoogleSearchMode::kNews;
+    } else if (value_str == "shop") {
+      mode = GoogleSearchMode::kShopping;
+    } else if (value_str == "vid") {
+      mode = GoogleSearchMode::kVideos;
+    } else if (value_str == "bks") {
+      mode = GoogleSearchMode::kBooks;
+    } else if (value_str == "flm") {
+      mode = GoogleSearchMode::kFlights;
+    } else if (value_str == "lcl") {
+      mode = GoogleSearchMode::kLocal;
+    } else {
+      mode = GoogleSearchMode::kUnknown;
+    }
+  }
+  if (mode == GoogleSearchMode::kUnspecified) {
+    // No tbm query parameter means this is the Web mode.
+    mode = GoogleSearchMode::kWeb;
+  }
+  return mode;
 }
 
 }  // namespace google_util

@@ -605,6 +605,11 @@ TopDomainEntry IDNSpoofChecker::LookupSkeletonInTopDomains(
   return TopDomainEntry();
 }
 
+std::u16string IDNSpoofChecker::MaybeRemoveDiacritics(
+    const std::u16string& hostname) {
+  return skeleton_generator_->MaybeRemoveDiacritics(hostname);
+}
+
 void IDNSpoofChecker::SetAllowedUnicodeSet(UErrorCode* status) {
   if (U_FAILURE(*status))
     return;

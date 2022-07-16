@@ -169,4 +169,9 @@ test("wm_unittests") {
   if (is_chromeos_ash) {
     sources += [ "core/ime_util_chromeos_unittest.cc" ]
   }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/present_view_capabilities.test-cmx" ]
+  }
 }

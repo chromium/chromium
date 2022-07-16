@@ -10,11 +10,14 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "components/arc/compat_mode/overlay_dialog.h"
+#include "components/arc/compat_mode/style/arc_color_provider.h"
 #include "components/arc/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
@@ -117,25 +120,27 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
   if (!GetWidget())
     return;
 
-  const auto* theme = GetNativeTheme();
+  const auto* color_provider = GetColorProvider();
 
-  const auto foreground_color = theme->GetSystemColor(
-      is_selected_ ? ui::NativeTheme::kColorId_TextOnProminentButtonColor
-                   : ui::NativeTheme::kColorId_LabelEnabledColor);
-  icon_view_->SetImage(gfx::CreateVectorIcon(icon_, foreground_color));
-  title_->SetEnabledColor(foreground_color);
+  const auto icon_color =
+      is_selected_ ? GetCrOSColor(cros_styles::ColorName::kIconColorSelection)
+                   : color_provider->GetColor(ui::kColorLabelForeground);
+  icon_view_->SetImage(gfx::CreateVectorIcon(icon_, icon_color));
+
+  const auto text_color =
+      is_selected_ ? GetCrOSColor(cros_styles::ColorName::kTextColorSelection)
+                   : color_provider->GetColor(ui::kColorLabelForeground);
+  title_->SetEnabledColor(text_color);
 
   const auto background_color =
-      is_selected_ ? theme->GetSystemColor(
-                         ui::NativeTheme::kColorId_ProminentButtonColor)
+      is_selected_ ? GetCrOSColor(cros_styles::ColorName::kHighlightColor)
                    : SK_ColorTRANSPARENT;
   background()->SetNativeControlColor(background_color);
 
   const auto border_color =
-      is_selected_
-          ? SK_ColorTRANSPARENT
-          : theme->GetSystemColor(ui::NativeTheme::kColorId_MenuBorderColor);
-  border()->set_color(border_color);
+      is_selected_ ? SK_ColorTRANSPARENT
+                   : color_provider->GetColor(ui::kColorMenuBorder);
+  GetBorder()->set_color(border_color);
 }
 
 ResizeToggleMenu::ResizeToggleMenu(views::Widget* widget,
@@ -251,11 +256,11 @@ ResizeToggleMenu::MakeBubbleDelegateView(
         base::BindRepeating(command_handler, command_id), icon, string_id));
   };
   phone_button_ =
-      add_menu_button(ResizeCompatMode::kPhone, ash::kSystemMenuPhoneIcon,
+      add_menu_button(ResizeCompatMode::kPhone, ash::kSystemMenuPhoneLegacyIcon,
                       IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE);
-  tablet_button_ =
-      add_menu_button(ResizeCompatMode::kTablet, ash::kSystemMenuTabletIcon,
-                      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET);
+  tablet_button_ = add_menu_button(
+      ResizeCompatMode::kTablet, ash::kSystemMenuTabletLegacyIcon,
+      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET);
   resizable_button_ =
       add_menu_button(ResizeCompatMode::kResizable, kResizableIcon,
                       IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE);
@@ -291,7 +296,7 @@ void ResizeToggleMenu::ApplyResizeCompatMode(ResizeCompatMode mode) {
 
   auto_close_closure_.Reset(base::BindOnce(&ResizeToggleMenu::CloseBubble,
                                            weak_ptr_factory_.GetWeakPtr()));
-  constexpr auto kAutoCloseDelay = base::TimeDelta::FromSeconds(2);
+  constexpr auto kAutoCloseDelay = base::Seconds(2);
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, auto_close_closure_.callback(), kAutoCloseDelay);
 }

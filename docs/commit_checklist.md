@@ -276,7 +276,7 @@ first and ask questions later. Gerrit can automatically generate revert CLs.
 
 After your CL is landed, you can use `git rebase-update` or `git cl archive` to
 clean up your local branches. These commands will automatically delete merged
-branches. Mark the associated crbug as "fixed".
+branches. Please mark the associated crbug as "fixed".
 
 [//]: # (the reference link section should be alphabetically sorted)
 [build-instructions]: https://chromium.googlesource.com/chromium/src.git/+/main/docs/#Checking-Out-and-Building

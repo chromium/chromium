@@ -9,9 +9,8 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "extensions/browser/sandboxed_unpacker.h"
 
 namespace extensions {
@@ -44,6 +43,9 @@ class KioskExternalUpdateValidator
       const extensions::CRXFileInfo& file,
       const base::FilePath& crx_unpack_dir,
       const base::WeakPtr<KioskExternalUpdateValidatorDelegate>& delegate);
+  KioskExternalUpdateValidator(const KioskExternalUpdateValidator&) = delete;
+  KioskExternalUpdateValidator& operator=(const KioskExternalUpdateValidator&) =
+      delete;
 
   // Starts validating the external crx file.
   void Start();
@@ -71,8 +73,6 @@ class KioskExternalUpdateValidator
   const base::FilePath crx_unpack_dir_;
 
   base::WeakPtr<KioskExternalUpdateValidatorDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskExternalUpdateValidator);
 };
 
 }  // namespace ash

@@ -36,6 +36,10 @@ class NET_EXPORT NetworkQualityEstimatorParams {
   explicit NetworkQualityEstimatorParams(
       const std::map<std::string, std::string>& params);
 
+  NetworkQualityEstimatorParams(const NetworkQualityEstimatorParams&) = delete;
+  NetworkQualityEstimatorParams& operator=(
+      const NetworkQualityEstimatorParams&) = delete;
+
   ~NetworkQualityEstimatorParams();
 
   // Returns the default observation for connection |type|. The default
@@ -303,8 +307,6 @@ class NET_EXPORT NetworkQualityEstimatorParams {
       [EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST];
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityEstimatorParams);
 };
 
 }  // namespace net

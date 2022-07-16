@@ -24,6 +24,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/grit/dev_ui_content_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -57,12 +58,6 @@ using GetRegistrationsCallback =
 void OperationCompleteCallback(WeakPtr<ServiceWorkerInternalsHandler> internals,
                                const std::string& callback_id,
                                blink::ServiceWorkerStatusCode status) {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(OperationCompleteCallback, internals,
-                                  callback_id, status));
-    return;
-  }
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (internals) {
     internals->OnOperationComplete(static_cast<int>(status), callback_id);
@@ -150,10 +145,12 @@ void UpdateVersionInfo(const ServiceWorkerVersionInfo& version, Value* info) {
     base::Value client(base::Value::Type::DICTIONARY);
     client.SetStringKey("client_id", it.first);
     if (it.second.type() == blink::mojom::ServiceWorkerClientType::kWindow) {
-      WebContents* web_contents =
-          WebContents::FromFrameTreeNodeId(it.second.GetFrameTreeNodeId());
-      if (web_contents)
-        client.SetStringKey("url", web_contents->GetURL().spec());
+      RenderFrameHost* render_frame_host =
+          RenderFrameHost::FromID(it.second.GetRenderFrameHostId());
+      if (render_frame_host) {
+        client.SetStringKey("url",
+                            render_frame_host->GetLastCommittedURL().spec());
+      }
     }
     clients.emplace_back(std::move(client));
   }
@@ -203,48 +200,16 @@ base::Value::ListStorage GetVersionListValue(
   return result;
 }
 
-void DidGetStoredRegistrationsOnCoreThread(
+void DidGetStoredRegistrations(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     GetRegistrationsCallback callback,
     blink::ServiceWorkerStatusCode status,
     const std::vector<ServiceWorkerRegistrationInfo>& stored_registrations) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), context->GetAllLiveRegistrationInfo(),
-                     context->GetAllLiveVersionInfo(), stored_registrations));
-}
-
-void GetRegistrationsOnCoreThread(
-    scoped_refptr<ServiceWorkerContextWrapper> context,
-    GetRegistrationsCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  context->GetAllRegistrations(base::BindOnce(
-      DidGetStoredRegistrationsOnCoreThread, context, std::move(callback)));
-}
-
-void DidGetRegistrations(
-    WeakPtr<ServiceWorkerInternalsHandler> internals,
-    int partition_id,
-    const base::FilePath& context_path,
-    const std::vector<ServiceWorkerRegistrationInfo>& live_registrations,
-    const std::vector<ServiceWorkerVersionInfo>& live_versions,
-    const std::vector<ServiceWorkerRegistrationInfo>& stored_registrations) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (internals) {
-    internals->OnDidGetRegistrations(live_registrations, live_versions,
-                                     stored_registrations, partition_id,
-                                     context_path);
-  }
+  std::move(callback).Run(context->GetAllLiveRegistrationInfo(),
+                          context->GetAllLiveVersionInfo(),
+                          stored_registrations);
 }
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ServiceWorkerInternalsLinkQuery {
-  kDevTools = 0,
-  kOther = 1,
-  kMaxValue = kOther,
-};
 
 }  // namespace
 
@@ -274,7 +239,8 @@ class ServiceWorkerInternalsHandler::PartitionObserver
                  const GURL& scope,
                  int process_id,
                  const GURL& script_url,
-                 const blink::ServiceWorkerToken& token) override {
+                 const blink::ServiceWorkerToken& token,
+                 const blink::StorageKey& key) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (handler_) {
       handler_->OnRunningStateChanged();
@@ -294,6 +260,7 @@ class ServiceWorkerInternalsHandler::PartitionObserver
   }
   void OnVersionStateChanged(int64_t version_id,
                              const GURL& scope,
+                             const blink::StorageKey& key,
                              ServiceWorkerVersion::Status) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (handler_) {
@@ -303,6 +270,7 @@ class ServiceWorkerInternalsHandler::PartitionObserver
   void OnErrorReported(
       int64_t version_id,
       const GURL& scope,
+      const blink::StorageKey& key,
       const ServiceWorkerContextObserver::ErrorInfo& info) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (!handler_) {
@@ -319,6 +287,7 @@ class ServiceWorkerInternalsHandler::PartitionObserver
   }
   void OnReportConsoleMessage(int64_t version_id,
                               const GURL& scope,
+                              const blink::StorageKey& key,
                               const ConsoleMessage& message) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (!handler_) {
@@ -334,14 +303,16 @@ class ServiceWorkerInternalsHandler::PartitionObserver
                            version_id, std::move(details));
   }
   void OnRegistrationCompleted(int64_t registration_id,
-                               const GURL& scope) override {
+                               const GURL& scope,
+                               const blink::StorageKey& key) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (handler_) {
       handler_->OnRegistrationEvent("registration-completed", scope);
     }
   }
   void OnRegistrationDeleted(int64_t registration_id,
-                             const GURL& scope) override {
+                             const GURL& scope,
+                             const blink::StorageKey& key) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (handler_) {
       handler_->OnRegistrationEvent("registration-deleted", scope);
@@ -356,14 +327,6 @@ class ServiceWorkerInternalsHandler::PartitionObserver
 
 ServiceWorkerInternalsUI::ServiceWorkerInternalsUI(WebUI* web_ui)
     : WebUIController(web_ui) {
-  std::string query = web_ui->GetWebContents()->GetURL().query();
-  ServiceWorkerInternalsLinkQuery query_type =
-      ServiceWorkerInternalsLinkQuery::kOther;
-  if (query == "devtools") {
-    query_type = ServiceWorkerInternalsLinkQuery::kDevTools;
-  }
-  base::UmaHistogramEnumeration("ServiceWorker.InternalsPageAccessed",
-                                query_type);
   WebUIDataSource* source =
       WebUIDataSource::Create(kChromeUIServiceWorkerInternalsHost);
   source->OverrideContentSecurityPolicy(
@@ -391,32 +354,32 @@ ServiceWorkerInternalsUI::~ServiceWorkerInternalsUI() = default;
 ServiceWorkerInternalsHandler::ServiceWorkerInternalsHandler() = default;
 
 void ServiceWorkerInternalsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "GetOptions",
       base::BindRepeating(&ServiceWorkerInternalsHandler::HandleGetOptions,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SetOption",
       base::BindRepeating(&ServiceWorkerInternalsHandler::HandleSetOption,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAllRegistrations",
       base::BindRepeating(
           &ServiceWorkerInternalsHandler::HandleGetAllRegistrations,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "stop",
       base::BindRepeating(&ServiceWorkerInternalsHandler::HandleStopWorker,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "inspect",
       base::BindRepeating(&ServiceWorkerInternalsHandler::HandleInspectWorker,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "unregister",
       base::BindRepeating(&ServiceWorkerInternalsHandler::HandleUnregister,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "start",
       base::BindRepeating(&ServiceWorkerInternalsHandler::HandleStartWorker,
                           base::Unretained(this)));
@@ -465,11 +428,11 @@ void ServiceWorkerInternalsHandler::OnRegistrationEvent(
 }
 
 void ServiceWorkerInternalsHandler::OnDidGetRegistrations(
+    int partition_id,
+    const base::FilePath& context_path,
     const std::vector<ServiceWorkerRegistrationInfo>& live_registrations,
     const std::vector<ServiceWorkerVersionInfo>& live_versions,
-    const std::vector<ServiceWorkerRegistrationInfo>& stored_registrations,
-    int partition_id,
-    const base::FilePath& context_path) {
+    const std::vector<ServiceWorkerRegistrationInfo>& stored_registrations) {
   base::Value registrations(base::Value::Type::DICTIONARY);
   registrations.SetKey(
       "liveRegistrations",
@@ -491,8 +454,9 @@ void ServiceWorkerInternalsHandler::OnOperationComplete(
 }
 
 void ServiceWorkerInternalsHandler::HandleGetOptions(const ListValue* args) {
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK(args->GetList()[0].is_string());
+  CHECK(args->GetList().size() != 0);
+  std::string callback_id = args->GetList()[0].GetString();
   AllowJavascript();
   DictionaryValue options;
   options.SetBoolean("debug_on_start",
@@ -502,14 +466,23 @@ void ServiceWorkerInternalsHandler::HandleGetOptions(const ListValue* args) {
 }
 
 void ServiceWorkerInternalsHandler::HandleSetOption(const ListValue* args) {
-  std::string option_name;
-  bool option_boolean;
-  if (!args->GetString(0, &option_name) || option_name != "debug_on_start" ||
-      !args->GetBoolean(1, &option_boolean)) {
+  auto args_list = args->GetList();
+  if (args_list.size() < 2) {
+    return;
+  }
+
+  if (!args_list[0].is_string()) {
+    return;
+  }
+  if (args_list[0].GetString() != "debug_on_start") {
+    return;
+  }
+
+  if (!args_list[1].is_bool()) {
     return;
   }
   ServiceWorkerDevToolsManager::GetInstance()
-      ->set_debug_service_worker_on_start(option_boolean);
+      ->set_debug_service_worker_on_start(args_list[1].GetBool());
 }
 
 void ServiceWorkerInternalsHandler::HandleGetAllRegistrations(
@@ -544,14 +517,12 @@ void ServiceWorkerInternalsHandler::AddContextFromStoragePartition(
         std::move(new_observer);
   }
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
+  context->GetAllRegistrations(base::BindOnce(
+      &DidGetStoredRegistrations, context,
       base::BindOnce(
-          GetRegistrationsOnCoreThread, context,
-          base::BindOnce(DidGetRegistrations, weak_ptr_factory_.GetWeakPtr(),
-                         partition_id,
-                         context->is_incognito() ? base::FilePath()
-                                                 : partition->GetPath())));
+          &ServiceWorkerInternalsHandler::OnDidGetRegistrations,
+          weak_ptr_factory_.GetWeakPtr(), partition_id,
+          context->is_incognito() ? base::FilePath() : partition->GetPath())));
 }
 
 void ServiceWorkerInternalsHandler::RemoveObserverFromStoragePartition(
@@ -595,17 +566,21 @@ bool ServiceWorkerInternalsHandler::GetServiceWorkerContext(
 
 void ServiceWorkerInternalsHandler::HandleStopWorker(const ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::string callback_id;
-  const DictionaryValue* cmd_args = nullptr;
-  int partition_id;
+  if (args->GetList().size() == 0 || !args->GetList()[0].is_string())
+    return;
+  std::string callback_id = args->GetList()[0].GetString();
+
+  const base::Value& cmd_args = args->GetList()[1];
+  if (!cmd_args.is_dict())
+    return;
+
+  absl::optional<int> partition_id = cmd_args.FindIntKey("partition_id");
   scoped_refptr<ServiceWorkerContextWrapper> context;
-  std::string version_id_string;
   int64_t version_id = 0;
-  if (!args->GetString(0, &callback_id) || !args->GetDictionary(1, &cmd_args) ||
-      !cmd_args->GetInteger("partition_id", &partition_id) ||
-      !GetServiceWorkerContext(partition_id, &context) ||
-      !cmd_args->GetString("version_id", &version_id_string) ||
-      !base::StringToInt64(version_id_string, &version_id)) {
+  const std::string* version_id_string = cmd_args.FindStringKey("version_id");
+  if (!partition_id || !GetServiceWorkerContext(*partition_id, &context) ||
+      !version_id_string ||
+      !base::StringToInt64(*version_id_string, &version_id)) {
     return;
   }
 
@@ -617,14 +592,18 @@ void ServiceWorkerInternalsHandler::HandleStopWorker(const ListValue* args) {
 
 void ServiceWorkerInternalsHandler::HandleInspectWorker(const ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::string callback_id;
-  const DictionaryValue* cmd_args = nullptr;
-  int process_host_id = 0;
-  int devtools_agent_route_id = 0;
-  if (!args->GetString(0, &callback_id) || !args->GetDictionary(1, &cmd_args) ||
-      !cmd_args->GetInteger("process_host_id", &process_host_id) ||
-      !cmd_args->GetInteger("devtools_agent_route_id",
-                            &devtools_agent_route_id)) {
+  if (args->GetList().size() == 0 || !args->GetList()[0].is_string())
+    return;
+  std::string callback_id = args->GetList()[0].GetString();
+
+  const base::Value& cmd_args = args->GetList()[1];
+  if (!cmd_args.is_dict())
+    return;
+
+  absl::optional<int> process_host_id = cmd_args.FindIntKey("process_host_id");
+  absl::optional<int> devtools_agent_route_id =
+      cmd_args.FindIntKey("devtools_agent_route_id");
+  if (!process_host_id || !devtools_agent_route_id) {
     return;
   }
   base::OnceCallback<void(blink::ServiceWorkerStatusCode)> callback =
@@ -632,8 +611,8 @@ void ServiceWorkerInternalsHandler::HandleInspectWorker(const ListValue* args) {
                      callback_id);
   scoped_refptr<ServiceWorkerDevToolsAgentHost> agent_host(
       ServiceWorkerDevToolsManager::GetInstance()
-          ->GetDevToolsAgentHostForWorker(process_host_id,
-                                          devtools_agent_route_id));
+          ->GetDevToolsAgentHostForWorker(*process_host_id,
+                                          *devtools_agent_route_id));
   if (!agent_host.get()) {
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorNotFound);
     return;
@@ -644,43 +623,52 @@ void ServiceWorkerInternalsHandler::HandleInspectWorker(const ListValue* args) {
 
 void ServiceWorkerInternalsHandler::HandleUnregister(const ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::string callback_id;
-  int partition_id;
-  std::string scope_string;
-  const DictionaryValue* cmd_args = nullptr;
+  if (args->GetList().size() == 0 || !args->GetList()[0].is_string())
+    return;
+  std::string callback_id = args->GetList()[0].GetString();
+
+  const base::Value& cmd_args = args->GetList()[1];
+  if (!cmd_args.is_dict())
+    return;
+
+  absl::optional<int> partition_id = cmd_args.FindIntKey("partition_id");
   scoped_refptr<ServiceWorkerContextWrapper> context;
-  if (!args->GetString(0, &callback_id) || !args->GetDictionary(1, &cmd_args) ||
-      !cmd_args->GetInteger("partition_id", &partition_id) ||
-      !GetServiceWorkerContext(partition_id, &context) ||
-      !cmd_args->GetString("scope", &scope_string)) {
+  const std::string* scope_string = cmd_args.FindStringKey("scope");
+  if (!partition_id || !GetServiceWorkerContext(*partition_id, &context) ||
+      !scope_string) {
     return;
   }
 
   base::OnceCallback<void(blink::ServiceWorkerStatusCode)> callback =
       base::BindOnce(OperationCompleteCallback, weak_ptr_factory_.GetWeakPtr(),
                      callback_id);
-  UnregisterWithScope(context, GURL(scope_string), std::move(callback));
+  UnregisterWithScope(context, GURL(*scope_string), std::move(callback));
 }
 
 void ServiceWorkerInternalsHandler::HandleStartWorker(const ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::string callback_id;
-  int partition_id;
-  std::string scope_string;
-  const DictionaryValue* cmd_args = nullptr;
+  if (args->GetList().size() == 0 || !args->GetList()[0].is_string())
+    return;
+  std::string callback_id = args->GetList()[0].GetString();
+
+  const base::Value& cmd_args = args->GetList()[1];
+  if (!cmd_args.is_dict())
+    return;
+
+  absl::optional<int> partition_id = cmd_args.FindIntKey("partition_id");
+
   scoped_refptr<ServiceWorkerContextWrapper> context;
-  if (!args->GetString(0, &callback_id) || !args->GetDictionary(1, &cmd_args) ||
-      !cmd_args->GetInteger("partition_id", &partition_id) ||
-      !GetServiceWorkerContext(partition_id, &context) ||
-      !cmd_args->GetString("scope", &scope_string)) {
+  const std::string* scope_string = cmd_args.FindStringKey("scope");
+  if (!partition_id || !GetServiceWorkerContext(*partition_id, &context) ||
+      !scope_string) {
     return;
   }
   base::OnceCallback<void(blink::ServiceWorkerStatusCode)> callback =
       base::BindOnce(OperationCompleteCallback, weak_ptr_factory_.GetWeakPtr(),
                      callback_id);
   context->StartActiveServiceWorker(
-      GURL(scope_string),
-      blink::StorageKey(url::Origin::Create(GURL(scope_string))),
+      GURL(*scope_string),
+      blink::StorageKey(url::Origin::Create(GURL(*scope_string))),
       std::move(callback));
 }
 
@@ -688,16 +676,7 @@ void ServiceWorkerInternalsHandler::StopWorkerWithId(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     int64_t version_id,
     StatusCallback callback) {
-  if (!BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId())) {
-    BrowserThread::GetTaskRunnerForThread(
-        ServiceWorkerContext::GetCoreThreadId())
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(&ServiceWorkerInternalsHandler::StopWorkerWithId,
-                           base::Unretained(this), context, version_id,
-                           std::move(callback)));
-    return;
-  }
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   scoped_refptr<ServiceWorkerVersion> version =
       context->GetLiveVersion(version_id);
@@ -716,16 +695,7 @@ void ServiceWorkerInternalsHandler::UnregisterWithScope(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     const GURL& scope,
     ServiceWorkerInternalsHandler::StatusCallback callback) const {
-  if (!BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId())) {
-    BrowserThread::GetTaskRunnerForThread(
-        ServiceWorkerContext::GetCoreThreadId())
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(&ServiceWorkerInternalsHandler::UnregisterWithScope,
-                           base::Unretained(this), context, scope,
-                           std::move(callback)));
-    return;
-  }
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!context->context()) {
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorAbort);

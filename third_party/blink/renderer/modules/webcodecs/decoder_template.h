@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/codec_logger.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_trace_names.h"
 #include "third_party/blink/renderer/modules/webcodecs/hardware_preference.h"
+#include "third_party/blink/renderer/modules/webcodecs/reclaimable_codec.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -39,6 +40,7 @@ template <typename Traits>
 class MODULES_EXPORT DecoderTemplate
     : public ScriptWrappable,
       public ActiveScriptWrappable<DecoderTemplate<Traits>>,
+      public ReclaimableCodec,
       public ExecutionContextLifecycleObserver {
  public:
   typedef typename Traits::ConfigType ConfigType;
@@ -176,6 +178,9 @@ class MODULES_EXPORT DecoderTemplate
 
   // Helper function making it easier to check |state_|.
   bool IsClosed();
+
+  // ReclaimableCodec implementation.
+  void OnCodecReclaimed(DOMException*) override;
 
   void TraceQueueSizes() const;
 

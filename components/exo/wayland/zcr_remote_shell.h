@@ -20,7 +20,7 @@ class Size;
 
 namespace display {
 class Display;
-}
+}  // namespace display
 
 namespace exo {
 

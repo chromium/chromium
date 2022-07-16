@@ -4,6 +4,11 @@
 
 package org.chromium.ui;
 
+import android.graphics.Bitmap;
+
+import androidx.annotation.Nullable;
+
+import org.chromium.url.GURL;
 /**
  * Base implementation of DropdownItem which is used to get default settings to
  * show the item.
@@ -51,7 +56,7 @@ public class DropdownItemBase implements DropdownItem {
 
     @Override
     public int getLabelFontColorResId() {
-        return R.color.default_text_color_list;
+        return R.color.default_text_color_list_baseline;
     }
 
     @Override
@@ -72,5 +77,16 @@ public class DropdownItemBase implements DropdownItem {
     @Override
     public int getIconMarginResId() {
         return R.dimen.dropdown_icon_margin;
+    }
+
+    @Override
+    public GURL getCustomIconUrl() {
+        return null;
+    }
+
+    @Override
+    @Nullable
+    public Bitmap getCustomIcon() {
+        return null;
     }
 }

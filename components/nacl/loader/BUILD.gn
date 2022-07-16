@@ -205,6 +205,7 @@ if (is_win && target_cpu == "x86" && current_cpu == "x64") {
       "//base",
       "//components/nacl/broker",
       "//components/nacl/common:switches",
+      "//content/public/common:static_main_function_params",
       "//content/public/common:static_switches",
       "//mojo/core/embedder",
       "//sandbox",

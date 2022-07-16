@@ -39,9 +39,9 @@ bool RankerModel::IsExpired() const {
 
   // Otherwise, a model is expired if its age exceeds the cache duration.
   base::Time last_modified =
-      base::Time() + base::TimeDelta::FromSeconds(metadata.last_modified_sec());
+      base::Time() + base::Seconds(metadata.last_modified_sec());
   base::TimeDelta age = base::Time::Now() - last_modified;
-  return age > base::TimeDelta::FromSeconds(metadata.cache_duration_sec());
+  return age > base::Seconds(metadata.cache_duration_sec());
 }
 
 const std::string& RankerModel::GetSourceURL() const {

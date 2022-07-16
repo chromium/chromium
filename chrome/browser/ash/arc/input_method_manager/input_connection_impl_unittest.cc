@@ -9,9 +9,9 @@
 #include "chrome/browser/ash/arc/input_method_manager/test_input_method_manager_bridge.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
-#include "ui/base/ime/chromeos/mock_ime_input_context_handler.h"
-#include "ui/base/ime/chromeos/mock_input_method_manager.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/mock_ime_input_context_handler.h"
+#include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/mock_input_method.h"
 #include "ui/events/keycodes/dom/dom_codes.h"
@@ -21,9 +21,15 @@ namespace arc {
 namespace {
 
 class DummyInputMethodEngineObserver
-    : public chromeos::InputMethodEngineBase::Observer {
+    : public ash::input_method::InputMethodEngineBase::Observer {
  public:
   DummyInputMethodEngineObserver() = default;
+
+  DummyInputMethodEngineObserver(const DummyInputMethodEngineObserver&) =
+      delete;
+  DummyInputMethodEngineObserver& operator=(
+      const DummyInputMethodEngineObserver&) = delete;
+
   ~DummyInputMethodEngineObserver() override = default;
 
   void OnActivate(const std::string& engine_id) override {}
@@ -48,24 +54,24 @@ class DummyInputMethodEngineObserver
   void OnCandidateClicked(
       const std::string& component_id,
       int candidate_id,
-      chromeos::InputMethodEngineBase::MouseButtonEvent button) override {}
+      ash::input_method::InputMethodEngineBase::MouseButtonEvent button)
+      override {}
   void OnMenuItemActivated(const std::string& component_id,
                            const std::string& menu_id) override {}
   void OnScreenProjectionChanged(bool is_projected) override {}
   void OnSuggestionsChanged(
       const std::vector<std::string>& suggestions) override {}
   void OnInputMethodOptionsChanged(const std::string& engine_id) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DummyInputMethodEngineObserver);
 };
 
 class TestInputMethodManager
-    : public chromeos::input_method::MockInputMethodManager {
+    : public ash::input_method::MockInputMethodManager {
  public:
   TestInputMethodManager()
       : state_(base::MakeRefCounted<
-               chromeos::input_method::MockInputMethodManager::State>()) {}
+               ash::input_method::MockInputMethodManager::State>()) {}
+  TestInputMethodManager(const TestInputMethodManager&) = delete;
+  TestInputMethodManager& operator=(const TestInputMethodManager&) = delete;
   ~TestInputMethodManager() override = default;
 
   scoped_refptr<InputMethodManager::State> GetActiveIMEState() override {
@@ -74,14 +80,17 @@ class TestInputMethodManager
 
  private:
   scoped_refptr<State> state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInputMethodManager);
 };
 
 class TestIMEInputContextHandler : public ui::MockIMEInputContextHandler {
  public:
   explicit TestIMEInputContextHandler(ui::InputMethod* input_method)
       : input_method_(input_method) {}
+
+  TestIMEInputContextHandler(const TestIMEInputContextHandler&) = delete;
+  TestIMEInputContextHandler& operator=(const TestIMEInputContextHandler&) =
+      delete;
+
   ~TestIMEInputContextHandler() override = default;
 
   ui::InputMethod* GetInputMethod() override { return input_method_; }
@@ -117,8 +126,6 @@ class TestIMEInputContextHandler : public ui::MockIMEInputContextHandler {
 
   int send_key_event_call_count_ = 0;
   std::vector<std::tuple<int, int>> composition_range_history_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestIMEInputContextHandler);
 };
 
 class MockTextInputClient : public ui::DummyTextInputClient {
@@ -161,6 +168,10 @@ class MockTextInputClient : public ui::DummyTextInputClient {
 class InputConnectionImplTest : public testing::Test {
  public:
   InputConnectionImplTest() = default;
+
+  InputConnectionImplTest(const InputConnectionImplTest&) = delete;
+  InputConnectionImplTest& operator=(const InputConnectionImplTest&) = delete;
+
   ~InputConnectionImplTest() override = default;
 
   std::unique_ptr<InputConnectionImpl> CreateNewConnection(int context_id) {
@@ -168,7 +179,7 @@ class InputConnectionImplTest : public testing::Test {
                                                  context_id);
   }
 
-  chromeos::InputMethodEngine* engine() { return engine_.get(); }
+  ash::input_method::InputMethodEngine* engine() { return engine_.get(); }
 
   TestIMEInputContextHandler* context_handler() { return &context_handler_; }
 
@@ -185,10 +196,10 @@ class InputConnectionImplTest : public testing::Test {
 
   void SetUp() override {
     ui::IMEBridge::Initialize();
-    chromeos::input_method::InputMethodManager::Initialize(
+    ash::input_method::InputMethodManager::Initialize(
         new TestInputMethodManager);
     bridge_ = std::make_unique<TestInputMethodManagerBridge>();
-    engine_ = std::make_unique<chromeos::InputMethodEngine>();
+    engine_ = std::make_unique<ash::input_method::InputMethodEngine>();
     engine_->Initialize(std::make_unique<DummyInputMethodEngineObserver>(),
                         "test_extension_id", nullptr);
     chrome_keyboard_controller_client_test_helper_ =
@@ -205,21 +216,19 @@ class InputConnectionImplTest : public testing::Test {
     ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
     engine_.reset();
     bridge_.reset();
-    chromeos::input_method::InputMethodManager::Shutdown();
+    ash::input_method::InputMethodManager::Shutdown();
     ui::IMEBridge::Shutdown();
   }
 
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestInputMethodManagerBridge> bridge_;
-  std::unique_ptr<chromeos::InputMethodEngine> engine_;
+  std::unique_ptr<ash::input_method::InputMethodEngine> engine_;
   MockTextInputClient text_input_client_;
   ui::MockInputMethod input_method_{nullptr};
   TestIMEInputContextHandler context_handler_{&input_method_};
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputConnectionImplTest);
 };
 
 }  // anonymous namespace

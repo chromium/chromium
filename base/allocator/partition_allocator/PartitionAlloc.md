@@ -197,7 +197,7 @@ list is written in the metadata struct.
 However, writing a pointer in each free slot of a newly allocated span would
 require committing and faulting in physical pages upfront, which would be
 unacceptable. Therefore, PartitionAlloc has a concept of *provisioning slots*.
-Only provisioned slots are chained into the free-list.
+Only provisioned slots are chained into the freelist.
 Once provisioned slots in a span are depleted, then another page worth of slots
 is provisioned (note, a slot that crosses a page boundary only gets
 provisioned with slots of the next page). See
@@ -217,31 +217,33 @@ different manner. This helps PartitionAlloc detect corruptions.
 
 A slot span can be in any of 4 states:
 * *Full*. A full span has no free slots.
-* *Free*. A free span has no allocated slots, only free slots.
+* *Empty*. An empty span has no allocated slots, only free slots.
 * *Active*. An active span is anything in between the above two.
-* *Decommitted*. A decommitted span is a special case of a free span, where all
-  pages are decommitted from memory.
+* *Decommitted*. A decommitted span is a special case of an empty span, where
+  all pages are decommitted from memory.
 
 PartitionAlloc prioritizes getting an available slot from an active span, over
-a free one, in hope that the latter can be soon transitioned into a decommitted
-state, thus releasing memory. There is no mechanism, however, to prioritize
-selection of a slot span based on the number of already allocated slots.
+an empty one, in hope that the latter can be soon transitioned into a
+decommitted state, thus releasing memory. There is no mechanism, however, to
+prioritize selection of a slot span based on the number of already allocated
+slots.
 
-A free span becomes decommitted if there are too many free spans (FIFO), or when
-`PartitionRoot::PurgeMemory()` gets invoked periodically (or in low memory
-pressure conditions). An allocation can be satisfied from
-a decommitted span if there are no active or free spans available. The slot
+An empty span becomes decommitted either when there are too many empty spans
+(FIFO), or when `PartitionRoot::PurgeMemory()` gets invoked periodically (or in
+low memory pressure conditions). An allocation can be satisfied from
+a decommitted span if there are no active or empty spans available. The slot
 provisioning mechanism kicks back in, committing the pages gradually as needed,
 and the span becomes active. (There is currently no other way
 to unprovision slots than decommitting the entire span).
 
 As mentioned above, a bucket is a collection of slot spans containing slots of
-the same size. In fact, each bucket has 3 linked-lists, chaining active, free
+the same size. In fact, each bucket has 3 linked-lists, chaining active, empty
 and decommitted spans (see `PartitionBucket::*_slot_spans_head`).
-There is no need for a full span list. The lists are updated lazily. A free,
+There is no need for a full span list. The lists are updated lazily. An empty,
 decommitted or full span may stay on the active list for some time, until
 `PartitionBucket::SetNewActiveSlotSpan()` encounters it.
-A decommitted span may stay on the free list for some time,
+A decommitted span may stay on the empty list for some time,
 until `PartitionBucket<thread_safe>::SlowPathAlloc()` encounters it. However,
 the inaccuracy can't happen in the other direction, i.e. an active span can only
-be on the active list, and a free span can only be on the active or free list.
+be on the active list, and an empty span can only be on the active or empty
+list.

@@ -76,12 +76,12 @@ struct BLINK_COMMON_EXPORT NavigationDownloadPolicy {
   void RecordHistogram() const;
 
   // Possibly set the kOpenerCrossOrigin and kSandboxNoGesture policy in
-  // |download_policy|.
+  // |download_policy|. The parameter `openee_can_access_opener_origin` only
+  // matters if `is_opener_navigation` is true.
   void ApplyDownloadFramePolicy(bool is_opener_navigation,
                                 bool has_gesture,
-                                bool can_access_current_origin,
+                                bool openee_can_access_opener_origin,
                                 bool has_download_sandbox_flag,
-                                bool is_blocking_downloads_in_sandbox_enabled,
                                 bool from_ad);
 
   // An alias of a bitset of navigation types.
@@ -95,8 +95,6 @@ struct BLINK_COMMON_EXPORT NavigationDownloadPolicy {
   // A bitset of navigation types observed where if the navigation turns into
   // a download, the download should be dropped.
   NavigationDownloadTypes disallowed_types;
-
-  bool blocking_downloads_in_sandbox_enabled = false;
 };
 
 }  // namespace blink

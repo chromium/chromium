@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/sync_file_system/drive_backend/task_dependency_manager.h"
@@ -74,6 +73,10 @@ class SyncTaskManager {
   SyncTaskManager(base::WeakPtr<Client> client,
                   size_t maximum_background_task,
                   const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  SyncTaskManager(const SyncTaskManager&) = delete;
+  SyncTaskManager& operator=(const SyncTaskManager&) = delete;
+
   virtual ~SyncTaskManager();
 
   // This needs to be called to start task scheduling.
@@ -207,8 +210,6 @@ class SyncTaskManager {
   base::SequenceChecker sequence_checker_;
 
   base::WeakPtrFactory<SyncTaskManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncTaskManager);
 };
 
 }  // namespace drive_backend

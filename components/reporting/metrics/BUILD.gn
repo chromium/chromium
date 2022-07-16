@@ -1,0 +1,68 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+static_library("metrics_data_collection") {
+  sources = [
+    "metric_data_collector.cc",
+    "metric_data_collector.h",
+    "metric_rate_controller.cc",
+    "metric_rate_controller.h",
+    "metric_report_queue.cc",
+    "metric_report_queue.h",
+    "metric_reporting_controller.cc",
+    "metric_reporting_controller.h",
+    "reporting_settings.h",
+    "sampler.h",
+  ]
+  deps = [
+    "//base",
+    "//components/reporting/client:report_queue",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/util:status",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "fake_metric_report_queue.cc",
+    "fake_metric_report_queue.h",
+    "fake_reporting_settings.cc",
+    "fake_reporting_settings.h",
+    "fake_sampler.cc",
+    "fake_sampler.h",
+  ]
+  deps = [
+    ":metrics_data_collection",
+    "//base",
+    "//components/reporting/client:report_queue",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/util:status",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "metric_data_collector_unittest.cc",
+    "metric_rate_controller_unittest.cc",
+    "metric_report_queue_unittest.cc",
+    "metric_reporting_controller_unittest.cc",
+  ]
+  deps = [
+    ":metrics_data_collection",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/reporting/client:report_queue",
+    "//components/reporting/client:test_support",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/util:status",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

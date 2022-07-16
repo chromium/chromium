@@ -106,8 +106,8 @@ void AccountManagerMojoService::ShowAddAccountDialog(
     ShowAddAccountDialogCallback callback) {
   DCHECK(account_manager_ui_);
   if (account_manager_ui_->IsDialogShown()) {
-    std::move(callback).Run(
-        ToMojoAccountAdditionResult(account_manager::AccountAdditionResult(
+    std::move(callback).Run(ToMojoAccountAdditionResult(
+        account_manager::AccountAdditionResult::FromStatus(
             account_manager::AccountAdditionResult::Status::
                 kAlreadyInProgress)));
     return;
@@ -181,7 +181,7 @@ void AccountManagerMojoService::OnAddAccountDialogClosed() {
 
   // Account addition is still in progress. It means that user didn't complete
   // the account addition flow and closed the dialog.
-  FinishAddAccount(account_manager::AccountAdditionResult(
+  FinishAddAccount(account_manager::AccountAdditionResult::FromStatus(
       account_manager::AccountAdditionResult::Status::kCancelledByUser));
 }
 

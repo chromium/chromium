@@ -11,8 +11,8 @@ async_test(t => {
     i.onload = t.step_func(() => {
       i.contentWindow.appHistory.onnavigate = t.step_func_done(e => {
         assert_equals(e.navigationType, "traverse");
-        assert_true(e.cancelable);
-        assert_false(e.canRespond);
+        assert_false(e.cancelable);
+        assert_false(e.canTransition);
         assert_false(e.userInitiated);
         assert_false(e.hashChange);
         assert_equals(new URL(e.destination.url).pathname, "/common/blank.html");
@@ -24,7 +24,7 @@ async_test(t => {
         assert_equals(e.info, "hi");
       });
       assert_true(i.contentWindow.appHistory.canGoBack);
-      i.contentWindow.appHistory.back({ navigateInfo: "hi" });
+      i.contentWindow.appHistory.back({ info: "hi" });
     })
   });
 }, "navigate event for appHistory.back() - cross-document");

@@ -16,7 +16,9 @@
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
+#include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
+#include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/offline_pages/core/prefetch/prefetch_prefs.h"
 #include "components/offline_pages/core/prefetch/suggestions_provider.h"
@@ -70,14 +72,9 @@ void FeedV2InternalsPageHandler::GetGeneralProperties(
 
   properties->load_stream_status = debug_data.load_stream_status;
 
+  properties->following_feed_order = GetFollowingFeedOrder();
+
   std::move(callback).Run(std::move(properties));
-}
-
-void FeedV2InternalsPageHandler::GetUserClassifierProperties(
-    GetUserClassifierPropertiesCallback callback) {
-  // TODO(crbug.com/1066230): Either implement this or remove it.
-
-  std::move(callback).Run(feed_internals::mojom::UserClassifier::New());
 }
 
 void FeedV2InternalsPageHandler::GetLastFetchProperties(
@@ -100,30 +97,16 @@ void FeedV2InternalsPageHandler::GetLastFetchProperties(
   std::move(callback).Run(std::move(properties));
 }
 
-void FeedV2InternalsPageHandler::ClearUserClassifierProperties() {
-  // TODO(crbug.com/1066230): Remove or implement this.
+void FeedV2InternalsPageHandler::RefreshForYouFeed() {
+  feed_stream_->ForceRefreshForDebugging(feed::kForYouStream);
 }
 
-void FeedV2InternalsPageHandler::ClearCachedDataAndRefreshFeed() {
-  // TODO(crbug.com/1066230): Not sure we need to clear cache since we don't
-  // retain data on refresh.
-  feed_stream_->ForceRefreshForDebugging();
+void FeedV2InternalsPageHandler::RefreshFollowingFeed() {
+  feed_stream_->ForceRefreshForDebugging(feed::kWebFeedStream);
 }
 
-void FeedV2InternalsPageHandler::RefreshFeed() {
-  feed_stream_->ForceRefreshForDebugging();
-}
-
-void FeedV2InternalsPageHandler::GetCurrentContent(
-    GetCurrentContentCallback callback) {
-  if (!IsFeedAllowed()) {
-    std::move(callback).Run({});
-    return;
-  }
-  // TODO(crbug.com/1066230): Content metadata is (yet?) available. I wasn't
-  // able to get this to work for v1 either, so maybe it's not that important
-  // to implement. We should remove |GetCurrentContent| if it's not needed.
-  std::move(callback).Run({});
+void FeedV2InternalsPageHandler::RefreshWebFeedSuggestions() {
+  feed_stream_->subscriptions().RefreshRecommendedFeeds();
 }
 
 void FeedV2InternalsPageHandler::GetFeedProcessScopeDump(
@@ -180,4 +163,35 @@ bool FeedV2InternalsPageHandler::ShouldUseFeedQueryRequestsForWebFeeds() {
 void FeedV2InternalsPageHandler::SetUseFeedQueryRequestsForWebFeeds(
     const bool use_legacy) {
   feed::SetUseFeedQueryRequestsForWebFeeds(use_legacy);
+}
+
+feed_internals::mojom::FeedOrder
+FeedV2InternalsPageHandler::GetFollowingFeedOrder() {
+  feed::ContentOrder order =
+      feed_stream_->GetContentOrderFromPrefs(feed::kWebFeedStream);
+  switch (order) {
+    case feed::ContentOrder::kUnspecified:
+      return feed_internals::mojom::FeedOrder::kUnspecified;
+    case feed::ContentOrder::kGrouped:
+      return feed_internals::mojom::FeedOrder::kGrouped;
+    case feed::ContentOrder::kReverseChron:
+      return feed_internals::mojom::FeedOrder::kReverseChron;
+  }
+}
+
+void FeedV2InternalsPageHandler::SetFollowingFeedOrder(
+    const feed_internals::mojom::FeedOrder new_order) {
+  feed::ContentOrder order_to_set;
+  switch (new_order) {
+    case feed_internals::mojom::FeedOrder::kUnspecified:
+      order_to_set = feed::ContentOrder::kUnspecified;
+      break;
+    case feed_internals::mojom::FeedOrder::kGrouped:
+      order_to_set = feed::ContentOrder::kGrouped;
+      break;
+    case feed_internals::mojom::FeedOrder::kReverseChron:
+      order_to_set = feed::ContentOrder::kReverseChron;
+      break;
+  }
+  feed_stream_->SetContentOrder(feed::kWebFeedStream, order_to_set);
 }

@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/views/view.h"
 
 namespace views {
 
@@ -29,6 +29,20 @@ class StyledLabel;
 class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
                                            public ui::DialogModelHost {
  public:
+  enum class FieldType { kText, kControl, kMenuItem };
+
+  // TODO(pbos): Reconsider whether this should be generic outside of
+  // BubbleDialogModelHost.
+  // TODO(pbos): Consider making this interface appropriate for all fields (not
+  // just custom ones). If so rename this ViewFactory (not CustomViewFactory).
+  // Interface for adding custom views to a DialogModel. This factory interface
+  // allows constructing views to be hosted in BubbleDialogModelHost.
+  class CustomViewFactory : public ui::DialogModelCustomField::Factory {
+   public:
+    virtual std::unique_ptr<View> CreateView() = 0;
+    virtual FieldType GetFieldType() const = 0;
+  };
+
   // Constructs a BubbleDialogModelHost, which for most purposes is to used as a
   // BubbleDialogDelegate. The BubbleDialogDelegate is nominally handed to
   // BubbleDialogDelegate::CreateBubble() which returns a Widget that has taken

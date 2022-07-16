@@ -16,6 +16,10 @@ namespace base {
 class FilePath;
 }  // namespace base
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace storage {
 class FileSystemContext;
 class FileSystemURL;
@@ -37,7 +41,7 @@ CreateFileSystemContext(
     bool is_incognito,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 
-// Verifies that |url| is valid and has a registered backend in |context|.
+// Verifies that `url` is valid and has a registered backend in `context`.
 CONTENT_EXPORT bool FileSystemURLIsValid(storage::FileSystemContext* context,
                                          const storage::FileSystemURL& url);
 
@@ -47,26 +51,27 @@ using SyncGetPlatformPathCB = base::OnceCallback<void(const base::FilePath&)>;
 CONTENT_EXPORT void SyncGetPlatformPath(storage::FileSystemContext* context,
                                         int process_id,
                                         const GURL& path,
+                                        const blink::StorageKey& storage_key,
                                         SyncGetPlatformPathCB callback);
 
-// Make it possible for a |drop_data|'s resources to be read by |child_id|'s
-// process -- by granting permissions, rewriting |drop_data|, or both.
+// Make it possible for a `drop_data`'s resources to be read by `child_id`'s
+// process -- by granting permissions, rewriting `drop_data`, or both.
 //
-// |drop_data| can include references to local files and filesystem files that
+// `drop_data` can include references to local files and filesystem files that
 // were accessible to the child process that is the source of the drag and drop,
 // but might not (yet) be accessible to the child process that is the target of
-// the drop.  PrepareDropDataForChildProcess makes sure that |child_id| has
-// access to files referred to by |drop_data| - this method will 1) mutate
-// |drop_data| as needed (e.g. to refer to files in a new isolated filesystem,
-// rather than the original filesystem files) and 2) use |security_policy| to
-// grant |child_id| appropriate file access.
+// the drop.  PrepareDropDataForChildProcess makes sure that `child_id` has
+// access to files referred to by `drop_data` - this method will 1) mutate
+// `drop_data` as needed (e.g. to refer to files in a new isolated filesystem,
+// rather than the original filesystem files) and 2) use `security_policy` to
+// grant `child_id` appropriate file access.
 CONTENT_EXPORT void PrepareDropDataForChildProcess(
     DropData* drop_data,
     ChildProcessSecurityPolicyImpl* security_policy,
     int child_id,
     const storage::FileSystemContext* file_system_context);
 
-// Make it possible for local files to be read by |child_id|'s process. This is
+// Make it possible for local files to be read by `child_id`'s process. This is
 // used by clipboard, and by drag-and-drop. Returns filesystem_id of the
 // registered isolated filesystem.
 CONTENT_EXPORT std::string PrepareDataTransferFilenamesForChildProcess(

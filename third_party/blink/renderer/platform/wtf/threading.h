@@ -43,14 +43,15 @@
 
 namespace WTF {
 
-#if !defined(OS_ANDROID)
+#if !defined(OS_ANDROID) && !defined(OS_WIN)
 WTF_EXPORT base::PlatformThreadId CurrentThread();
 #else
 // On Android gettid(3) uses a faster TLS model than thread_local.
+// On Windows GetCurrentThreadId() directly pick TID from TEB.
 inline base::PlatformThreadId CurrentThread() {
   return base::PlatformThread::CurrentId();
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !defined(OS_ANDROID) && !defined(OS_WIN)
 
 #if DCHECK_IS_ON()
 WTF_EXPORT bool IsBeforeThreadCreated();

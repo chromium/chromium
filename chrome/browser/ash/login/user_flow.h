@@ -7,12 +7,12 @@
 
 #include "base/compiler_specific.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 
-namespace chromeos {
-
-class UserContext;
+namespace ash {
 
 // Defines possible variants of user flow upon logging in.
 // See UserManager::SetUserFlow for usage contract.
@@ -50,13 +50,6 @@ class ExtendedUserFlow : public UserFlow {
   const AccountId account_id_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove once the migration is finished.
-namespace ash {
-using ::chromeos::DefaultUserFlow;
-using ::chromeos::ExtendedUserFlow;
-using ::chromeos::UserFlow;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USER_FLOW_H_

@@ -91,8 +91,7 @@ class DataPipeConsumerHelper {
     while (current_offset_ < max_bytes_to_read_) {
       const void* data;
       uint32_t size;
-      MojoResult result =
-          pipe_->BeginReadData(&data, &size, MOJO_READ_DATA_FLAG_NONE);
+      result = pipe_->BeginReadData(&data, &size, MOJO_READ_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_SHOULD_WAIT) {
         watcher_.ArmOrNotify();
         return;

@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 
@@ -28,6 +27,9 @@ class ConnectToDeviceOperation {
       base::OnceCallback<void(std::unique_ptr<AuthenticatedChannel>)>;
   using ConnectionFailedCallback =
       base::RepeatingCallback<void(FailureDetailType)>;
+
+  ConnectToDeviceOperation(const ConnectToDeviceOperation&) = delete;
+  ConnectToDeviceOperation& operator=(const ConnectToDeviceOperation&) = delete;
 
   virtual ~ConnectToDeviceOperation() {
     if (has_finished_)
@@ -107,8 +109,6 @@ class ConnectToDeviceOperation {
   ConnectionSuccessCallback success_callback_;
   ConnectionFailedCallback failure_callback_;
   ConnectionPriority connection_priority_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectToDeviceOperation);
 };
 
 }  // namespace secure_channel

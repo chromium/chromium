@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue} from '../chai_assert.js';
-import {eventToPromise, isChildVisible, whenAttributeIs} from '../test_util.m.js';
+import {eventToPromise, isChildVisible, whenAttributeIs} from '../test_util.js';
 // clang-format on
 
 suite('cr-input', function() {

@@ -16,9 +16,9 @@
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -66,8 +66,7 @@ class DevToolsFileWatcher::SharedFileWatcher
 };
 
 DevToolsFileWatcher::SharedFileWatcher::SharedFileWatcher()
-    : last_dispatch_cost_(
-          base::TimeDelta::FromMilliseconds(kDefaultThrottleTimeout)) {
+    : last_dispatch_cost_(base::Milliseconds(kDefaultThrottleTimeout)) {
   DevToolsFileWatcher::s_shared_watcher_ = this;
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
@@ -171,10 +170,9 @@ void DevToolsFileWatcher::SharedFileWatcher::DirectoryChanged(
 
   base::Time now = base::Time::Now();
   // Quickly dispatch first chunk.
-  base::TimeDelta shedule_for =
-      now - last_event_time_ > last_dispatch_cost_ ?
-          base::TimeDelta::FromMilliseconds(kFirstThrottleTimeout) :
-          last_dispatch_cost_ * 2;
+  base::TimeDelta shedule_for = now - last_event_time_ > last_dispatch_cost_
+                                    ? base::Milliseconds(kFirstThrottleTimeout)
+                                    : last_dispatch_cost_ * 2;
 
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -193,9 +191,9 @@ void DevToolsFileWatcher::SharedFileWatcher::DispatchNotifications() {
   std::vector<std::string> removed_paths;
   std::vector<std::string> changed_paths;
 
-  for (const auto& path : pending_paths_) {
-    FilePathTimesMap& old_times = file_path_times_[path];
-    FilePathTimesMap current_times = GetModificationTimes(path);
+  for (const auto& pending_path : pending_paths_) {
+    FilePathTimesMap& old_times = file_path_times_[pending_path];
+    FilePathTimesMap current_times = GetModificationTimes(pending_path);
     for (const auto& path_time : current_times) {
       const base::FilePath& path = path_time.first;
       auto old_timestamp = old_times.find(path);

@@ -63,13 +63,11 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
               UpdateClient::CrxStateChangeCallback crx_state_change_callback,
               Callback update_callback);
 
-  void SendUninstallPing(const std::string& id,
-                         const base::Version& version,
+  void SendUninstallPing(const CrxComponent& crx_component,
                          int reason,
                          Callback update_callback);
 
-  void SendRegistrationPing(const std::string& id,
-                            const base::Version& version,
+  void SendRegistrationPing(const CrxComponent& crx_component,
                             Callback update_callback);
 
  private:

@@ -5,7 +5,6 @@
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser_impl.h"
 
 #include <utility>
-#include <vector>
 
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser.h"
 

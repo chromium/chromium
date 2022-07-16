@@ -163,6 +163,9 @@ struct PerUserTopicSubscriptionManager::SubscriptionEntry {
                     PerUserTopicSubscriptionRequest::RequestType type,
                     bool topic_is_public = false);
 
+  SubscriptionEntry(const SubscriptionEntry&) = delete;
+  SubscriptionEntry& operator=(const SubscriptionEntry&) = delete;
+
   // Destruction of this object causes cancellation of the request.
   ~SubscriptionEntry();
 
@@ -182,8 +185,6 @@ struct PerUserTopicSubscriptionManager::SubscriptionEntry {
   std::string last_request_access_token;
 
   bool has_retried_on_auth_error = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SubscriptionEntry);
 };
 
 PerUserTopicSubscriptionManager::SubscriptionEntry::SubscriptionEntry(

@@ -678,8 +678,8 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
         if (qpc_position_diff_us - position_diff_us > buffer_duration_us / 2) {
           ++num_glitches_detected_;
 
-          base::TimeDelta glitch_duration = base::TimeDelta::FromMicroseconds(
-              qpc_position_diff_us - position_diff_us);
+          base::TimeDelta glitch_duration =
+              base::Microseconds(qpc_position_diff_us - position_diff_us);
 
           if (glitch_duration > largest_glitch_)
             largest_glitch_ = glitch_duration;
@@ -696,13 +696,13 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
       const uint64_t delay_frames = num_written_frames_ - played_out_frames;
 
       // Convert the delay from frames to time.
-      delay = base::TimeDelta::FromMicroseconds(
-          delay_frames * base::Time::kMicrosecondsPerSecond /
-          format_.Format.nSamplesPerSec);
+      delay =
+          base::Microseconds(delay_frames * base::Time::kMicrosecondsPerSecond /
+                             format_.Format.nSamplesPerSec);
       // Note: the obtained |qpc_position| value is in 100ns intervals and from
       // the same time origin as QPC. We can simply convert it into us dividing
       // by 10.0 since 10x100ns = 1us.
-      delay_timestamp += base::TimeDelta::FromMicroseconds(qpc_position * 0.1);
+      delay_timestamp += base::Microseconds(qpc_position * 0.1);
     } else {
       RecordAudioFailure(kRenderFailureHistogram, hr);
       LOG(ERROR) << "WAOS::" << __func__

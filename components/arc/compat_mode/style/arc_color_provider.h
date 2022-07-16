@@ -6,6 +6,7 @@
 #define COMPONENTS_ARC_COMPAT_MODE_STYLE_ARC_COLOR_PROVIDER_H_
 
 #include "ash/public/cpp/style/color_provider.h"
+#include "ui/chromeos/styles/cros_styles.h"
 
 namespace arc {
 
@@ -20,6 +21,9 @@ SkColor GetContentLayerColor(ContentLayerType type);
 
 // Get dialog background base color
 SkColor GetDialogBackgroundBaseColor();
+
+// Get color from cros_styles based on the current semantics (dark/light mode).
+SkColor GetCrOSColor(cros_styles::ColorName color_name);
 
 // Determine if dark mode is enabled
 bool IsDarkModeEnabled();

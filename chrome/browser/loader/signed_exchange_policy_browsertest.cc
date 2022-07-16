@@ -18,6 +18,12 @@
 class SignedExchangePolicyBrowserTest : public CertVerifierBrowserTest {
  public:
   SignedExchangePolicyBrowserTest() = default;
+
+  SignedExchangePolicyBrowserTest(const SignedExchangePolicyBrowserTest&) =
+      delete;
+  SignedExchangePolicyBrowserTest& operator=(
+      const SignedExchangePolicyBrowserTest&) = delete;
+
   ~SignedExchangePolicyBrowserTest() override = default;
 
  protected:
@@ -49,8 +55,6 @@ class SignedExchangePolicyBrowserTest : public CertVerifierBrowserTest {
   }
 
   content::SignedExchangeBrowserTestHelper sxg_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangePolicyBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlackList) {
@@ -65,11 +69,11 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlackList) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TitleWatcher title_watcher(contents, expected_title);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
   base::ListValue blacklist;
-  blacklist.AppendString("test.example.org");
+  blacklist.Append("test.example.org");
   policy::PolicyMap policies;
   policies.Set(policy::key::kURLBlacklist, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
@@ -88,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlackList) {
   content::RunAllTasksUntilIdle();
   content::RunAllPendingInMessageLoop(content::BrowserThread::IO);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   std::u16string blocked_page_title(u"test.example.org");
   EXPECT_EQ(blocked_page_title, contents->GetTitle());

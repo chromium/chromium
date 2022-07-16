@@ -78,6 +78,7 @@ const char kMetricUserUnsignedRemoteCommandReceived[] =
 // Enterprise.UserRemoteCommand.Executed.DeviceRunDiagnosticRoutine
 // Enterprise.UserRemoteCommand.Executed.DeviceGetDiagnosticRoutineUpdate
 // Enterprise.UserRemoteCommand.Executed.BrowserClearBrowsingData
+// Enterprise.UserRemoteCommand.Executed.DeviceResetEuicc
 const char kMetricUserRemoteCommandExecutedTemplate[] =
     "Enterprise.UserRemoteCommand.Executed.%s";
 
@@ -96,6 +97,7 @@ const char kMetricUserRemoteCommandExecutedTemplate[] =
 // Enterprise.UserRemoteCommand.Executed.Unsigned.DeviceRunDiagnosticRoutine
 // Enterprise.UserRemoteCommand.Executed.Unsigned.DeviceGetDiagnosticRoutineUpdate
 // Enterprise.UserRemoteCommand.Executed.Unsigned.BrowserClearBrowsingData
+// Enterprise.UserRemoteCommand.Executed.Unsigned.DeviceResetEuicc
 const char kMetricUserUnsignedRemoteCommandExecutedTemplate[] =
     "Enterprise.UserRemoteCommand.Executed.Unsigned.%s";
 
@@ -120,6 +122,7 @@ const char kMetricDeviceUnsignedRemoteCommandReceived[] =
 // Enterprise.DeviceRemoteCommand.Executed.DeviceRunDiagnosticRoutine
 // Enterprise.DeviceRemoteCommand.Executed.DeviceGetDiagnosticRoutineUpdate
 // Enterprise.DeviceRemoteCommand.Executed.BrowserClearBrowsingData
+// Enterprise.DeviceRemoteCommand.Executed.DeviceResetEuicc
 const char kMetricDeviceRemoteCommandExecutedTemplate[] =
     "Enterprise.DeviceRemoteCommand.Executed.%s";
 
@@ -138,6 +141,7 @@ const char kMetricDeviceRemoteCommandExecutedTemplate[] =
 // Enterprise.DeviceRemoteCommand.Executed.Unsigned.DeviceRunDiagnosticRoutine
 // Enterprise.DeviceRemoteCommand.Executed.Unsigned.DeviceGetDiagnosticRoutineUpdate
 // Enterprise.DeviceRemoteCommand.Executed.Unsigned.BrowserClearBrowsingData
+// Enterprise.DeviceRemoteCommand.Executed.Unsigned.DeviceResetEuicc
 const char kMetricDeviceUnsignedRemoteCommandExecutedTemplate[] =
     "Enterprise.DeviceRemoteCommand.Executed.Unsigned.%s";
 
@@ -162,6 +166,7 @@ const char kMetricCBCMUnsignedRemoteCommandReceived[] =
 // Enterprise.CBCMRemoteCommand.Executed.DeviceRunDiagnosticRoutine
 // Enterprise.CBCMRemoteCommand.Executed.DeviceGetDiagnosticRoutineUpdate
 // Enterprise.CBCMRemoteCommand.Executed.BrowserClearBrowsingData
+// Enterprise.CBCMRemoteCommand.Executed.DeviceResetEuicc
 const char kMetricCBCMRemoteCommandExecutedTemplate[] =
     "Enterprise.CBCMRemoteCommand.Executed.%s";
 
@@ -180,13 +185,10 @@ const char kMetricCBCMRemoteCommandExecutedTemplate[] =
 // Enterprise.CBCMRemoteCommand.Executed.Unsigned.DeviceRunDiagnosticRoutine
 // Enterprise.CBCMRemoteCommand.Executed.Unsigned.DeviceGetDiagnosticRoutineUpdate
 // Enterprise.CBCMRemoteCommand.Executed.Unsigned.BrowserClearBrowsingData
+// Enterprise.CBCMRemoteCommand.Executed.Unsigned.DeviceResetEuicc
 const char kMetricCBCMUnsignedRemoteCommandExecutedTemplate[] =
     "Enterprise.CBCMRemoteCommand.Executed.Unsigned.%s";
 
-const char kUMAPsmHashDanceComparison[] =
-    "Enterprise.AutoEnrollmentPrivateSetMembershipHashDanceComparison";
-const char kUMAPsmHashDanceDifferentResultsComparison[] =
-    "Enterprise.AutoEnrollmentPsmHashDanceDifferentResultsComparison";
 const char kUMAPsmSuccessTime[] =
     "Enterprise.AutoEnrollmentPrivateSetMembershipSuccessTime";
 const char kUMAPsmResult[] = "Enterprise.AutoEnrollmentPsmResult";

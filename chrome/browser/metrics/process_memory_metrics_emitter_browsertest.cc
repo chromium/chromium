@@ -103,6 +103,11 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
                                            ukm::TestUkmRecorder* recorder)
       : run_loop_(run_loop), recorder_(recorder) {}
 
+  ProcessMemoryMetricsEmitterFake(const ProcessMemoryMetricsEmitterFake&) =
+      delete;
+  ProcessMemoryMetricsEmitterFake& operator=(
+      const ProcessMemoryMetricsEmitterFake&) = delete;
+
  private:
   ~ProcessMemoryMetricsEmitterFake() override {}
 
@@ -133,8 +138,6 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
   bool finished_memory_dump_ = false;
   bool finished_process_info_ = false;
   ukm::TestUkmRecorder* recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryMetricsEmitterFake);
 };
 
 void CheckMemoryMetric(const std::string& name,
@@ -312,6 +315,11 @@ class ProcessMemoryMetricsEmitterTest
   ProcessMemoryMetricsEmitterTest() {
     scoped_feature_list_.InitAndEnableFeature(ukm::kUkmFeature);
   }
+
+  ProcessMemoryMetricsEmitterTest(const ProcessMemoryMetricsEmitterTest&) =
+      delete;
+  ProcessMemoryMetricsEmitterTest& operator=(
+      const ProcessMemoryMetricsEmitterTest&) = delete;
 
   ~ProcessMemoryMetricsEmitterTest() override {}
 
@@ -524,8 +532,6 @@ class ProcessMemoryMetricsEmitterTest
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::vector<std::unique_ptr<TestExtensionDir>> temp_dirs_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryMetricsEmitterTest);
 };
 
 // TODO(crbug.com/732501): Re-enable on Win once not flaky.
@@ -630,7 +636,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("app.org", "/empty.html");
   const Extension* app = CreateHostedApp("App", GURL("http://app.org"));
-  ui_test_utils::NavigateToURL(browser(), app_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
 
   // Verify that the hosted app has loaded.
   ProcessManager* pm = ProcessManager::Get(profile());

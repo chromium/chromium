@@ -14,6 +14,10 @@ class UI_DEVTOOLS_EXPORT PageAgent
     : public UiDevToolsBaseAgent<protocol::Page::Metainfo> {
  public:
   explicit PageAgent(DOMAgent* dom_agent);
+
+  PageAgent(const PageAgent&) = delete;
+  PageAgent& operator=(const PageAgent&) = delete;
+
   ~PageAgent() override;
 
   // Called on Ctrl+R (windows, linux) or Meta+R (mac) from frontend, but used
@@ -24,8 +28,6 @@ class UI_DEVTOOLS_EXPORT PageAgent
 
  protected:
   DOMAgent* const dom_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageAgent);
 };
 
 }  // namespace ui_devtools

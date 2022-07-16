@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_fifo.h"
@@ -57,7 +58,7 @@ void AVFreeFrame(AVFrame* frame) {
 }
 
 base::TimeDelta PtsToTimeDelta(int64_t pts, const AVRational& time_base) {
-  return pts * base::TimeDelta::FromSeconds(1) * time_base.num / time_base.den;
+  return pts * base::Seconds(1) * time_base.num / time_base.den;
 }
 
 int64_t TimeDeltaToPts(base::TimeDelta delta, const AVRational& time_base) {
@@ -292,8 +293,7 @@ void FakeMediaSource::SendNextFakeFrame() {
       audio_frame_input_->InsertAudio(std::move(bus), start_time_ + audio_time);
     } else {
       audio_frame_input_->InsertAudio(
-          audio_bus_factory_->NextAudioBus(
-              base::TimeDelta::FromMilliseconds(kAudioFrameMs)),
+          audio_bus_factory_->NextAudioBus(base::Milliseconds(kAudioFrameMs)),
           start_time_ + audio_time);
     }
     audio_time = AudioFrameTime(++audio_frame_count_);
@@ -331,9 +331,9 @@ void FakeMediaSource::UpdateNextFrameSize() {
     }
 
     if (update_size_change_time) {
-      next_frame_size_change_time_ = clock_->NowTicks() +
-          base::TimeDelta::FromMillisecondsD(
-              base::RandDouble() * kMaxFrameSizeChangeMillis);
+      next_frame_size_change_time_ =
+          clock_->NowTicks() +
+          base::Milliseconds(base::RandDouble() * kMaxFrameSizeChangeMillis);
     }
   } else {
     current_frame_size_ = gfx::Size(kStartingFakeFrameWidth,
@@ -406,16 +406,15 @@ void FakeMediaSource::SendNextFrame() {
   }
 
   // Send next send.
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&FakeMediaSource::SendNextFrame,
-                     weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kAudioFrameMs));
+  task_runner_->PostDelayedTask(FROM_HERE,
+                                base::BindOnce(&FakeMediaSource::SendNextFrame,
+                                               weak_factory_.GetWeakPtr()),
+                                base::Milliseconds(kAudioFrameMs));
 }
 
 base::TimeDelta FakeMediaSource::VideoFrameTime(int frame_number) {
-  return frame_number * base::TimeDelta::FromSeconds(1) *
-      video_frame_rate_denominator_ / video_frame_rate_numerator_;
+  return frame_number * base::Seconds(1) * video_frame_rate_denominator_ /
+         video_frame_rate_numerator_;
 }
 
 base::TimeDelta FakeMediaSource::ScaleTimestamp(base::TimeDelta timestamp) {
@@ -423,7 +422,7 @@ base::TimeDelta FakeMediaSource::ScaleTimestamp(base::TimeDelta timestamp) {
 }
 
 base::TimeDelta FakeMediaSource::AudioFrameTime(int frame_number) {
-  return frame_number * base::TimeDelta::FromMilliseconds(kAudioFrameMs);
+  return frame_number * base::Milliseconds(kAudioFrameMs);
 }
 
 void FakeMediaSource::Rewind() {
@@ -540,8 +539,8 @@ bool FakeMediaSource::OnNewVideoFrame(AVFrame* frame) {
   if (timestamp < last_video_frame_timestamp_) {
     // Stream has rewound.  Rebase |video_first_pts_|.
     const AVRational& frame_rate = av_video_stream()->r_frame_rate;
-    timestamp = last_video_frame_timestamp_ + (base::TimeDelta::FromSeconds(1) *
-                                               frame_rate.den / frame_rate.num);
+    timestamp = last_video_frame_timestamp_ +
+                (base::Seconds(1) * frame_rate.den / frame_rate.num);
     const int64_t adjustment_pts = TimeDeltaToPts(timestamp, time_base);
     video_first_pts_ = frame->pts - adjustment_pts;
   }

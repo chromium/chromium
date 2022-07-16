@@ -52,6 +52,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
                mojo::PendingReceiver<mojom::P2PSocket> socket,
                P2PMessageThrottler* throttler,
                net::NetLog* net_log);
+
+  P2PSocketUdp(const P2PSocketUdp&) = delete;
+  P2PSocketUdp& operator=(const P2PSocketUdp&) = delete;
+
   ~P2PSocketUdp() override;
 
   // P2PSocket overrides.
@@ -125,8 +129,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
 
   // Callback object that returns a new socket when invoked.
   DatagramServerSocketFactory socket_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(P2PSocketUdp);
 };
 
 }  // namespace network

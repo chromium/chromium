@@ -29,6 +29,11 @@ class NET_EXPORT_PRIVATE QuicChromiumConnectionHelper
  public:
   QuicChromiumConnectionHelper(const quic::QuicClock* clock,
                                quic::QuicRandom* random_generator);
+
+  QuicChromiumConnectionHelper(const QuicChromiumConnectionHelper&) = delete;
+  QuicChromiumConnectionHelper& operator=(const QuicChromiumConnectionHelper&) =
+      delete;
+
   ~QuicChromiumConnectionHelper() override;
 
   // quic::QuicConnectionHelperInterface
@@ -39,8 +44,6 @@ class NET_EXPORT_PRIVATE QuicChromiumConnectionHelper
  private:
   const quic::QuicClock* clock_;
   quic::QuicRandom* random_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuicChromiumConnectionHelper);
 };
 
 }  // namespace net

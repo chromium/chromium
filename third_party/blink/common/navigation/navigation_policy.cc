@@ -91,25 +91,20 @@ void NavigationDownloadPolicy::RecordHistogram() const {
 void NavigationDownloadPolicy::ApplyDownloadFramePolicy(
     bool is_opener_navigation,
     bool has_gesture,
-    bool can_access_current_origin,
+    bool openee_can_access_opener_origin,
     bool has_download_sandbox_flag,
-    bool is_blocking_downloads_in_sandbox_enabled,
     bool from_ad) {
   if (!has_gesture)
     SetAllowed(NavigationDownloadType::kNoGesture);
 
   // Disallow downloads on an opener if the requestor is cross origin.
   // See crbug.com/632514.
-  if (is_opener_navigation && !can_access_current_origin) {
+  if (is_opener_navigation && !openee_can_access_opener_origin) {
     SetDisallowed(NavigationDownloadType::kOpenerCrossOrigin);
   }
 
   if (has_download_sandbox_flag) {
-    if (is_blocking_downloads_in_sandbox_enabled) {
-      SetDisallowed(NavigationDownloadType::kSandbox);
-    } else {
-      SetAllowed(NavigationDownloadType::kSandbox);
-    }
+    SetDisallowed(NavigationDownloadType::kSandbox);
   }
 
   if (from_ad) {
@@ -123,9 +118,6 @@ void NavigationDownloadPolicy::ApplyDownloadFramePolicy(
       }
     }
   }
-
-  blocking_downloads_in_sandbox_enabled =
-      is_blocking_downloads_in_sandbox_enabled;
 }
 
 }  // namespace blink

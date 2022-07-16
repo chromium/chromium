@@ -506,6 +506,33 @@ Signer.prototype.doSignWebAuthn_ = function(encodedChallenges, challengeVal) {
       this.signChallenges_[0]['appId'] :
       this.appId_;
 
+  if (!chrome.cryptotokenPrivate) {
+    this.doSignWebAuthnContinue_(decodedChallenge, credentialList, appid);
+  } else {
+    chrome.cryptotokenPrivate.canMakeU2fApiRequest(
+        {
+          tabId: this.sender_.tabId,
+          frameId: this.sender_.frameId,
+          origin: this.sender_.origin,
+          appId: appid
+        },
+        (result) => {
+          if (!result) {
+            this.notifyError_({
+              errorCode: ErrorCodes.DEVICE_INELIGIBLE,
+              errorMessage: 'The operation was not allowed',
+            });
+            return;
+          }
+          this.doSignWebAuthnContinue_(decodedChallenge, credentialList, appid);
+        });
+  }
+
+  return true;
+};
+
+Signer.prototype.doSignWebAuthnContinue_ = function(
+    decodedChallenge, credentialList, appid) {
   const request = {
     publicKey: {
       challenge: new Uint8Array(decodedChallenge).buffer,
@@ -525,8 +552,6 @@ Signer.prototype.doSignWebAuthn_ = function(encodedChallenges, challengeVal) {
       .catch(exception => {
         this.handleWebAuthnError_(exception);
       });
-
-  return true;
 };
 
 /**

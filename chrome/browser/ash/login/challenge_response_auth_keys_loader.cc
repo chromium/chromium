@@ -39,12 +39,11 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr base::TimeDelta kDefaultMaximumExtensionLoadWaitingTime =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 
 base::flat_set<std::string> GetLoginScreenPolicyExtensionIds() {
   DCHECK(ProfileHelper::IsSigninProfileInitialized());
@@ -472,4 +471,4 @@ void ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysWithCerts(
   std::move(callback).Run(std::move(filtered_keys));
 }
 
-}  // namespace chromeos
+}  // namespace ash

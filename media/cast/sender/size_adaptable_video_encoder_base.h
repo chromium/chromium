@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/cast/cast_config.h"
@@ -32,6 +31,10 @@ class SizeAdaptableVideoEncoderBase : public VideoEncoder {
       const scoped_refptr<CastEnvironment>& cast_environment,
       const FrameSenderConfig& video_config,
       StatusChangeCallback status_change_cb);
+
+  SizeAdaptableVideoEncoderBase(const SizeAdaptableVideoEncoderBase&) = delete;
+  SizeAdaptableVideoEncoderBase& operator=(
+      const SizeAdaptableVideoEncoderBase&) = delete;
 
   ~SizeAdaptableVideoEncoderBase() override;
 
@@ -109,8 +112,6 @@ class SizeAdaptableVideoEncoderBase : public VideoEncoder {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<SizeAdaptableVideoEncoderBase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SizeAdaptableVideoEncoderBase);
 };
 
 }  // namespace cast

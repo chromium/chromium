@@ -54,6 +54,10 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
       content::WebContents* web_contents,
       PermissionPromptAndroid* permission_prompt,
       std::unique_ptr<PermissionDialogJavaDelegate> java_delegate);
+
+  PermissionDialogDelegate(const PermissionDialogDelegate&) = delete;
+  PermissionDialogDelegate& operator=(const PermissionDialogDelegate&) = delete;
+
   // JNI methods.
   void Accept(JNIEnv* env, const JavaParamRef<jobject>& obj);
   void Cancel(JNIEnv* env, const JavaParamRef<jobject>& obj);
@@ -85,8 +89,6 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   // The PermissionDialogJavaDelegate abstracts away JNI connectivity from
   // native to Java in order to facilicate unit testing.
   std::unique_ptr<PermissionDialogJavaDelegate> java_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionDialogDelegate);
 };
 
 }  // namespace permissions

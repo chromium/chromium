@@ -22,6 +22,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/win_util.h"
+#include "build/branding_buildflags.h"
 #include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
@@ -32,6 +33,7 @@
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/task_scheduler.h"
 #include "chrome/updater/win/win_constants.h"
+#include "chrome/updater/win/win_util.h"
 
 // Specialization for std::hash so that IID instances can be stored in an
 // associative container. This implementation of the hash function adds
@@ -56,17 +58,14 @@ struct std::hash<IID> {
 namespace updater {
 namespace {
 
-constexpr wchar_t kTaskName[] = L"UpdateApps";
-constexpr wchar_t kTaskDescription[] = L"Update all applications.";
-
 }  // namespace
 
-// crbug.com(1216670) - the name of the task must be scoped for user or system.
-bool RegisterWakeTask(const base::CommandLine& run_command) {
+bool RegisterWakeTask(const base::CommandLine& run_command,
+                      UpdaterScope scope) {
   auto task_scheduler = TaskScheduler::CreateInstance();
   if (!task_scheduler->RegisterTask(
-          kTaskName, kTaskDescription, run_command,
-          TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, true)) {
+          scope, GetTaskName(scope).c_str(), GetTaskDisplayName(scope).c_str(),
+          run_command, TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, true)) {
     LOG(ERROR) << "RegisterWakeTask failed.";
     return false;
   }
@@ -74,10 +73,9 @@ bool RegisterWakeTask(const base::CommandLine& run_command) {
   return true;
 }
 
-// crbug.com(1216670) - the name of the task must be scoped for user or system.
-void UnregisterWakeTask() {
+void UnregisterWakeTask(UpdaterScope scope) {
   auto task_scheduler = TaskScheduler::CreateInstance();
-  task_scheduler->DeleteTask(kTaskName);
+  task_scheduler->DeleteTask(GetTaskName(scope).c_str());
 }
 
 std::vector<IID> GetSideBySideInterfaces() {
@@ -88,16 +86,16 @@ std::vector<IID> GetSideBySideInterfaces() {
 }
 
 std::vector<IID> GetActiveInterfaces() {
-  return {__uuidof(IAppBundleWeb),
-          __uuidof(IAppWeb),
-          __uuidof(ICompleteStatus),
-          __uuidof(ICurrentState),
-          __uuidof(IGoogleUpdate3Web),
-          __uuidof(IUpdateState),
-          __uuidof(IUpdater),
-          __uuidof(IUpdaterObserver),
-          __uuidof(IUpdaterRegisterAppCallback),
-          __uuidof(IUpdaterCallback)};
+  return {
+    __uuidof(IUpdateState), __uuidof(IUpdater), __uuidof(IUpdaterObserver),
+        __uuidof(IUpdaterRegisterAppCallback), __uuidof(IUpdaterCallback),
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        __uuidof(IAppBundleWeb), __uuidof(IAppWeb), __uuidof(ICompleteStatus),
+        __uuidof(ICurrentState), __uuidof(IGoogleUpdate3Web),
+        __uuidof(IProcessLauncher), __uuidof(IProcessLauncher2),
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  };
 }
 
 std::vector<CLSID> GetSideBySideServers(UpdaterScope scope) {
@@ -112,10 +110,22 @@ std::vector<CLSID> GetSideBySideServers(UpdaterScope scope) {
 std::vector<CLSID> GetActiveServers(UpdaterScope scope) {
   switch (scope) {
     case UpdaterScope::kUser:
-      return {__uuidof(UpdaterUserClass), __uuidof(GoogleUpdate3WebUserClass)};
+      return {
+        __uuidof(UpdaterUserClass),
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            __uuidof(GoogleUpdate3WebUserClass)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      };
     case UpdaterScope::kSystem:
-      return {__uuidof(UpdaterSystemClass),
-              __uuidof(GoogleUpdate3WebSystemClass)};
+      return {
+        __uuidof(UpdaterSystemClass),
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            __uuidof(GoogleUpdate3WebSystemClass),
+            __uuidof(ProcessLauncherClass)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      };
   }
 }
 
@@ -188,7 +198,7 @@ void AddInstallServerWorkItems(HKEY root,
                                 : kServerUpdateServiceSwitchValue);
   run_com_server_command.AppendSwitch(kEnableLoggingSwitch);
   run_com_server_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                           "*/chrome/updater/*=2");
+                                           kLoggingModuleSwitchValue);
   list->AddSetRegValueWorkItem(
       root, local_server32_reg_path, WorkItem::kWow64Default, L"",
       run_com_server_command.GetCommandLineString(), true);
@@ -215,10 +225,11 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
                                 : kServerUpdateServiceSwitchValue);
   com_service_command.AppendSwitch(kEnableLoggingSwitch);
   com_service_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                        "*/chrome/updater/*=2");
+                                        kLoggingModuleSwitchValue);
   list->AddWorkItem(new installer::InstallServiceWorkItem(
-      kWindowsServiceName, kWindowsServiceName, com_service_command,
-      base::ASCIIToWide(UPDATER_KEY),
+      GetServiceName(internal_service).c_str(),
+      GetServiceDisplayName(internal_service).c_str(), com_service_command,
+      UPDATER_KEY,
       internal_service ? GetSideBySideServers(UpdaterScope::kSystem)
                        : GetActiveServers(UpdaterScope::kSystem),
       {}));
@@ -276,6 +287,8 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       {__uuidof(IAppWeb), kUpdaterLegacyIndex},
       {__uuidof(ICurrentState), kUpdaterLegacyIndex},
       {__uuidof(IGoogleUpdate3Web), kUpdaterLegacyIndex},
+      {__uuidof(IProcessLauncher), kUpdaterLegacyIndex},
+      {__uuidof(IProcessLauncher2), kUpdaterLegacyIndex},
   };
   auto index = kTypeLibIndexes.find(iid);
   return index != kTypeLibIndexes.end() ? index->second : L"";

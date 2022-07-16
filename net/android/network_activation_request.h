@@ -8,7 +8,7 @@
 #include "base/android/jni_android.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

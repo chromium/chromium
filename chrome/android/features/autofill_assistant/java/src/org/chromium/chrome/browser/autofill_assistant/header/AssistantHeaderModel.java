@@ -29,7 +29,11 @@ public class AssistantHeaderModel extends PropertyModel {
     public static final WritableObjectPropertyKey<String> BUBBLE_MESSAGE =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableIntPropertyKey PROGRESS = new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<String> PROFILE_ICON_MENU_SETTINGS_MESSAGE =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<String> PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE =
+            new WritableObjectPropertyKey<>();
 
     public static final WritableIntPropertyKey PROGRESS_ACTIVE_STEP = new WritableIntPropertyKey();
 
@@ -37,9 +41,6 @@ public class AssistantHeaderModel extends PropertyModel {
             new WritableBooleanPropertyKey();
 
     public static final WritableBooleanPropertyKey PROGRESS_VISIBLE =
-            new WritableBooleanPropertyKey();
-
-    public static final WritableBooleanPropertyKey USE_STEP_PROGRESS_BAR =
             new WritableBooleanPropertyKey();
 
     public static final WritableObjectPropertyKey<List<AssistantDrawable>> STEP_PROGRESS_BAR_ICONS =
@@ -52,15 +53,27 @@ public class AssistantHeaderModel extends PropertyModel {
 
     public static final WritableBooleanPropertyKey CHIPS_VISIBLE = new WritableBooleanPropertyKey();
 
+    public static final WritableBooleanPropertyKey TTS_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    public static final WritableIntPropertyKey TTS_BUTTON_STATE = new WritableIntPropertyKey();
+
+    public static final WritableObjectPropertyKey<Runnable> TTS_BUTTON_CALLBACK =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableBooleanPropertyKey DISABLE_ANIMATIONS_FOR_TESTING =
             new WritableBooleanPropertyKey();
 
     public AssistantHeaderModel() {
-        super(STATUS_MESSAGE, BUBBLE_MESSAGE, PROGRESS, PROGRESS_ACTIVE_STEP, PROGRESS_BAR_ERROR,
-                PROGRESS_VISIBLE, USE_STEP_PROGRESS_BAR, STEP_PROGRESS_BAR_ICONS, SPIN_POODLE,
-                FEEDBACK_BUTTON_CALLBACK, CHIPS, CHIPS_VISIBLE, DISABLE_ANIMATIONS_FOR_TESTING);
+        super(STATUS_MESSAGE, BUBBLE_MESSAGE, PROFILE_ICON_MENU_SETTINGS_MESSAGE,
+                PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE, PROGRESS_ACTIVE_STEP, PROGRESS_BAR_ERROR,
+                PROGRESS_VISIBLE, STEP_PROGRESS_BAR_ICONS, SPIN_POODLE, FEEDBACK_BUTTON_CALLBACK,
+                CHIPS, CHIPS_VISIBLE, TTS_BUTTON_VISIBLE, TTS_BUTTON_STATE, TTS_BUTTON_CALLBACK,
+                DISABLE_ANIMATIONS_FOR_TESTING);
         set(CHIPS, new ArrayList<>());
         set(PROGRESS_VISIBLE, true);
+        set(TTS_BUTTON_VISIBLE, false);
+        set(TTS_BUTTON_STATE, AssistantTtsButtonState.DEFAULT);
     }
 
     @CalledByNative
@@ -74,8 +87,13 @@ public class AssistantHeaderModel extends PropertyModel {
     }
 
     @CalledByNative
-    private void setProgress(int progress) {
-        set(PROGRESS, progress);
+    private void setProfileIconMenuSettingsMessage(String profileIconMenuSettingsMessage) {
+        set(PROFILE_ICON_MENU_SETTINGS_MESSAGE, profileIconMenuSettingsMessage);
+    }
+
+    @CalledByNative
+    private void setProfileIconMenuSendFeedbackMessage(String profileIconMenuSendFeedbackMessage) {
+        set(PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE, profileIconMenuSendFeedbackMessage);
     }
 
     @CalledByNative
@@ -91,11 +109,6 @@ public class AssistantHeaderModel extends PropertyModel {
     @CalledByNative
     private void setProgressVisible(boolean visible) {
         set(PROGRESS_VISIBLE, visible);
-    }
-
-    @CalledByNative
-    private void setUseStepProgressBar(boolean useNewProgressBar) {
-        set(USE_STEP_PROGRESS_BAR, useNewProgressBar);
     }
 
     @CalledByNative
@@ -124,7 +137,19 @@ public class AssistantHeaderModel extends PropertyModel {
 
     @CalledByNative
     private void setDelegate(AssistantHeaderDelegate delegate) {
+        // TODO(b/196945756): Replace callbacks with a single delegate field.
         set(FEEDBACK_BUTTON_CALLBACK, delegate::onFeedbackButtonClicked);
+        set(TTS_BUTTON_CALLBACK, delegate::onTtsButtonClicked);
+    }
+
+    @CalledByNative
+    private void setTtsButtonVisible(boolean visible) {
+        set(TTS_BUTTON_VISIBLE, visible);
+    }
+
+    @CalledByNative
+    private void setTtsButtonState(@AssistantTtsButtonState int state) {
+        set(TTS_BUTTON_STATE, state);
     }
 
     @CalledByNative

@@ -25,7 +25,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "ipc/ipc_message_macros.h"
 #include "ppapi/host/resource_host.h"
 #include "ppapi/proxy/ppapi_message_utils.h"
@@ -98,8 +97,9 @@ PendingHostCreator::~PendingHostCreator() {
 class PepperRendererConnection::OpenChannelToPpapiPluginCallback
     : public PpapiPluginProcessHost::PluginClient {
  public:
-  OpenChannelToPpapiPluginCallback(PepperRendererConnection* filter,
-                                   OpenChannelToPepperPluginCallback callback)
+  OpenChannelToPpapiPluginCallback(
+      PepperRendererConnection* filter,
+      mojom::PepperHost::OpenChannelToPepperPluginCallback callback)
       : callback_(std::move(callback)), filter_(filter) {}
 
   void GetPpapiChannelInfo(base::ProcessHandle* renderer_handle,
@@ -124,7 +124,7 @@ class PepperRendererConnection::OpenChannelToPpapiPluginCallback
   bool Incognito() override { return filter_->incognito_; }
 
  private:
-  OpenChannelToPepperPluginCallback callback_;
+  mojom::PepperHost::OpenChannelToPepperPluginCallback callback_;
   scoped_refptr<PepperRendererConnection> filter_;
 };
 
@@ -134,7 +134,6 @@ PepperRendererConnection::PepperRendererConnection(
     BrowserContext* browser_context,
     StoragePartition* storage_partition)
     : BrowserMessageFilter(PpapiMsgStart),
-      BrowserAssociatedInterface<mojom::PepperIOHost>(this),
       render_process_id_(render_process_id),
       incognito_(browser_context->IsOffTheRecord()),
       plugin_service_(plugin_service),
@@ -149,9 +148,7 @@ PepperRendererConnection::~PepperRendererConnection() {}
 
 BrowserPpapiHostImpl* PepperRendererConnection::GetHostForChildProcess(
     int child_process_id) const {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Find the plugin which this message refers to. Check NaCl plugins first.
   BrowserPpapiHostImpl* host = static_cast<BrowserPpapiHostImpl*>(
@@ -182,8 +179,7 @@ BrowserPpapiHostImpl* PepperRendererConnection::GetHostForChildProcess(
 void PepperRendererConnection::OverrideThreadForMessage(
     const IPC::Message& message,
     content::BrowserThread::ID* thread) {
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI) &&
-      IPC_MESSAGE_ID_CLASS(message.type()) == PpapiMsgStart) {
+  if (IPC_MESSAGE_ID_CLASS(message.type()) == PpapiMsgStart) {
     *thread = content::BrowserThread::UI;
   }
 }
@@ -300,7 +296,7 @@ void PepperRendererConnection::DidCreateOutOfProcessPepperInstance(
     const GURL& document_url,
     const GURL& plugin_url,
     bool is_privileged_context,
-    DidCreateOutOfProcessPepperInstanceCallback callback) {
+    mojom::PepperHost::DidCreateOutOfProcessPepperInstanceCallback callback) {
   // It's important that we supply the render process ID ourselves based on the
   // channel the message arrived on. We use the
   //   PP_Instance -> (process id, frame id)
@@ -345,7 +341,7 @@ void PepperRendererConnection::OpenChannelToPepperPlugin(
     const url::Origin& embedder_origin,
     const base::FilePath& path,
     const absl::optional<url::Origin>& origin_lock,
-    OpenChannelToPepperPluginCallback callback) {
+    mojom::PepperHost::OpenChannelToPepperPluginCallback callback) {
   // Enforce that the sender of the IPC (i.e. |render_process_id_|) is actually
   // able/allowed to host a frame with |embedder_origin|.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();

@@ -16,12 +16,6 @@ API_AVAILABLE(macosx(10.14))
 @end
 
 API_AVAILABLE(macosx(10.14))
-@interface FakeUNNotificationResponse : NSObject
-@property(nonatomic, retain, nullable) FakeUNNotification* notification;
-@property(nonatomic, copy, nullable) NSString* actionIdentifier;
-@end
-
-API_AVAILABLE(macosx(10.14))
 @interface FakeUNNotificationSettings : NSObject
 @property(nonatomic, assign) UNAlertStyle alertStyle;
 @property(nonatomic, assign) UNAuthorizationStatus authorizationStatus;
@@ -68,9 +62,5 @@ API_AVAILABLE(macosx(10.14))
 - (id<UNUserNotificationCenterDelegate> _Nullable)delegate;
 
 @end
-
-API_AVAILABLE(macosx(10.14))
-base::scoped_nsobject<FakeUNNotificationResponse>
-CreateFakeUNNotificationResponse(NSDictionary* _Nonnull userInfo);
 
 #endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_NOTIFICATION_TEST_UTILS_MAC_H_

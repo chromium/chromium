@@ -5,6 +5,7 @@
 #include "components/sync_device_info/device_info_sync_bridge.h"
 
 #include <algorithm>
+#include <map>
 #include <set>
 #include <utility>
 
@@ -17,6 +18,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
@@ -25,7 +27,10 @@
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/device_info_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "components/sync/test/model/model_type_store_test_util.h"
 #include "components/sync/test/model/test_matchers.h"
@@ -59,6 +64,7 @@ using testing::Return;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
+using DeviceCountMap = std::map<sync_pb::SyncEnums_DeviceType, int>;
 using DeviceInfoList = std::vector<std::unique_ptr<DeviceInfo>>;
 using StorageKeyList = ModelTypeSyncBridge::StorageKeyList;
 using RecordList = ModelTypeStore::RecordList;
@@ -66,6 +72,9 @@ using StartCallback = ModelTypeControllerDelegate::StartCallback;
 using WriteBatch = ModelTypeStore::WriteBatch;
 
 const int kLocalSuffix = 0;
+
+const sync_pb::SyncEnums_DeviceType kLocalDeviceType =
+    sync_pb::SyncEnums_DeviceType_TYPE_LINUX;
 
 MATCHER_P(HasDeviceInfo, expected, "") {
   return arg.device_info().SerializeAsString() == expected.SerializeAsString();
@@ -138,7 +147,7 @@ Matcher<std::unique_ptr<EntityData>> HasSpecifics(
 MATCHER(HasLastUpdatedAboutNow, "") {
   const sync_pb::DeviceInfoSpecifics& specifics = arg.device_info();
   const base::Time now = base::Time::Now();
-  const base::TimeDelta tolerance = base::TimeDelta::FromMinutes(1);
+  const base::TimeDelta tolerance = base::Minutes(1);
   const base::Time actual_last_updated =
       ProtoTimeToTime(specifics.last_updated_timestamp());
 
@@ -262,7 +271,7 @@ DeviceInfoSpecifics CreateSpecifics(
   DeviceInfoSpecifics specifics;
   specifics.set_cache_guid(CacheGuidForSuffix(suffix));
   specifics.set_client_name(ClientNameForSuffix(suffix));
-  specifics.set_device_type(sync_pb::SyncEnums_DeviceType_TYPE_LINUX);
+  specifics.set_device_type(kLocalDeviceType);
   specifics.set_sync_user_agent(SyncUserAgentForSuffix(suffix));
   specifics.set_chrome_version(ChromeVersionForSuffix(suffix));
   specifics.set_signin_scoped_device_id(SigninScopedDeviceIdForSuffix(suffix));
@@ -342,6 +351,11 @@ std::map<std::string, sync_pb::EntitySpecifics> DataBatchToSpecificsMap(
 class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
  public:
   TestLocalDeviceInfoProvider() = default;
+
+  TestLocalDeviceInfoProvider(const TestLocalDeviceInfoProvider&) = delete;
+  TestLocalDeviceInfoProvider& operator=(const TestLocalDeviceInfoProvider&) =
+      delete;
+
   ~TestLocalDeviceInfoProvider() override = default;
 
   // MutableLocalDeviceInfoProvider implementation.
@@ -365,8 +379,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
         sharing_enabled_features{SharingEnabledFeaturesForSuffix(kLocalSuffix)};
     local_device_info_ = std::make_unique<DeviceInfo>(
         cache_guid, session_name, ChromeVersionForSuffix(kLocalSuffix),
-        SyncUserAgentForSuffix(kLocalSuffix),
-        sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+        SyncUserAgentForSuffix(kLocalSuffix), kLocalDeviceType,
         SigninScopedDeviceIdForSuffix(kLocalSuffix), manufacturer_name,
         model_name, full_hardware_class, base::Time(),
         DeviceInfoUtil::GetPulseInterval(),
@@ -437,8 +450,6 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
   absl::optional<std::string> fcm_registration_token_;
   absl::optional<ModelTypeSet> interested_data_types_;
   absl::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLocalDeviceInfoProvider);
 };  // namespace
 
 class DeviceInfoSyncBridgeTest : public testing::Test,
@@ -977,7 +988,8 @@ TEST_F(DeviceInfoSyncBridgeTest, MergeLocalGuid) {
 TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevices) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   // Local device.
-  EXPECT_EQ(1, bridge()->CountActiveDevices());
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+            bridge()->CountActiveDevicesByType());
 
   ON_CALL(*processor(), GetEntityCreationTime)
       .WillByDefault(Return(base::Time::Now()));
@@ -988,29 +1000,33 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevices) {
   // have the same guid as the local device.
   bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
                              EntityAddList({CreateLocalDeviceSpecifics()}));
-  EXPECT_EQ(1, bridge()->CountActiveDevices());
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+            bridge()->CountActiveDevicesByType());
 
   bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
                              EntityAddList({CreateLocalDeviceSpecifics()}));
-  EXPECT_EQ(1, bridge()->CountActiveDevices());
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+            bridge()->CountActiveDevicesByType());
 
   // A different guid will actually contribute to the count.
   bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
                              EntityAddList({CreateSpecifics(1)}));
-  EXPECT_EQ(2, bridge()->CountActiveDevices());
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 2}}),
+            bridge()->CountActiveDevicesByType());
 
   // Now set time to long ago in the past, it should not be active anymore.
   bridge()->ApplySyncChanges(
       bridge()->CreateMetadataChangeList(),
-      EntityAddList({CreateSpecifics(
-          1, base::Time::Now() - base::TimeDelta::FromDays(365))}));
-  EXPECT_EQ(1, bridge()->CountActiveDevices());
+      EntityAddList({CreateSpecifics(1, base::Time::Now() - base::Days(365))}));
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+            bridge()->CountActiveDevicesByType());
 }
 
 TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithOverlappingTime) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   // Local device.
-  ASSERT_EQ(1, bridge()->CountActiveDevices());
+  ASSERT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+            bridge()->CountActiveDevicesByType());
 
   const DeviceInfoSpecifics specifics1 = CreateSpecifics(1);
   const DeviceInfoSpecifics specifics2 = CreateSpecifics(2);
@@ -1018,30 +1034,25 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithOverlappingTime) {
 
   // Time ranges are overlapping.
   ON_CALL(*processor(), GetEntityCreationTime(specifics1.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(1)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(1)));
   ON_CALL(*processor(), GetEntityModificationTime(specifics1.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(3)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(3)));
   ON_CALL(*processor(), GetEntityCreationTime(specifics2.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(2)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(2)));
   ON_CALL(*processor(), GetEntityModificationTime(specifics2.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(4)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(4)));
   ON_CALL(*processor(), GetEntityCreationTime(specifics3.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(2)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(2)));
   ON_CALL(*processor(), GetEntityModificationTime(specifics3.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(5)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(5)));
 
   // With two devices, the local device gets ignored because it doesn't overlap.
   bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
                              EntityAddList({specifics1, specifics2}));
 
   ASSERT_EQ(3u, bridge()->GetAllDeviceInfo().size());
-  EXPECT_EQ(2, bridge()->CountActiveDevices());
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 2}}),
+            bridge()->CountActiveDevicesByType());
 
   // The third device is also overlapping with the first two (and the local one
   // is still excluded).
@@ -1049,13 +1060,15 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithOverlappingTime) {
                              EntityAddList({specifics3}));
 
   ASSERT_EQ(4u, bridge()->GetAllDeviceInfo().size());
-  EXPECT_EQ(3, bridge()->CountActiveDevices());
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 3}}),
+            bridge()->CountActiveDevicesByType());
 }
 
 TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithNonOverlappingTime) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   // Local device.
-  ASSERT_EQ(1, bridge()->CountActiveDevices());
+  ASSERT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+            bridge()->CountActiveDevicesByType());
 
   const DeviceInfoSpecifics specifics1 = CreateSpecifics(1);
   const DeviceInfoSpecifics specifics2 = CreateSpecifics(2);
@@ -1063,37 +1076,33 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithNonOverlappingTime) {
 
   // Time ranges are non-overlapping.
   ON_CALL(*processor(), GetEntityCreationTime(specifics1.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(1)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(1)));
   ON_CALL(*processor(), GetEntityModificationTime(specifics1.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(2)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(2)));
   ON_CALL(*processor(), GetEntityCreationTime(specifics2.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(3)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(3)));
   ON_CALL(*processor(), GetEntityModificationTime(specifics2.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(4)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(4)));
   ON_CALL(*processor(), GetEntityCreationTime(specifics3.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(5)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(5)));
   ON_CALL(*processor(), GetEntityModificationTime(specifics3.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(6)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(6)));
 
   bridge()->ApplySyncChanges(
       bridge()->CreateMetadataChangeList(),
       EntityAddList({specifics1, specifics2, specifics3}));
 
   ASSERT_EQ(4u, bridge()->GetAllDeviceInfo().size());
-  EXPECT_EQ(1, bridge()->CountActiveDevices());
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+            bridge()->CountActiveDevicesByType());
 }
 
 TEST_F(DeviceInfoSyncBridgeTest,
-       CountActiveDevicesWithNonOverlappingTimeAndDistictType) {
+       CountActiveDevicesWithNonOverlappingTimeAndDistinctType) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   // Local device.
-  ASSERT_EQ(1, bridge()->CountActiveDevices());
+  ASSERT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+            bridge()->CountActiveDevicesByType());
 
   DeviceInfoSpecifics specifics1 = CreateSpecifics(1);
   DeviceInfoSpecifics specifics2 = CreateSpecifics(2);
@@ -1106,67 +1115,64 @@ TEST_F(DeviceInfoSyncBridgeTest,
 
   // Time ranges are non-overlapping.
   ON_CALL(*processor(), GetEntityCreationTime(specifics1.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(1)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(1)));
   ON_CALL(*processor(), GetEntityModificationTime(specifics1.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(2)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(2)));
   ON_CALL(*processor(), GetEntityCreationTime(specifics2.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(3)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(3)));
   ON_CALL(*processor(), GetEntityModificationTime(specifics2.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(4)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(4)));
   ON_CALL(*processor(), GetEntityCreationTime(specifics3.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(5)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(5)));
   ON_CALL(*processor(), GetEntityModificationTime(specifics3.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(6)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(6)));
 
   bridge()->ApplySyncChanges(
       bridge()->CreateMetadataChangeList(),
       EntityAddList({specifics1, specifics2, specifics3}));
 
   ASSERT_EQ(4u, bridge()->GetAllDeviceInfo().size());
-  EXPECT_EQ(4, bridge()->CountActiveDevices());
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1},
+                            {sync_pb::SyncEnums_DeviceType_TYPE_PHONE, 1},
+                            {sync_pb::SyncEnums_DeviceType_TYPE_CROS, 1},
+                            {sync_pb::SyncEnums_DeviceType_TYPE_WIN, 1}}),
+            bridge()->CountActiveDevicesByType());
 }
 
 TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithMalformedTimestamps) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   // Local device.
-  ASSERT_EQ(1, bridge()->CountActiveDevices());
+  ASSERT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+            bridge()->CountActiveDevicesByType());
 
   const DeviceInfoSpecifics specifics1 = CreateSpecifics(1);
   const DeviceInfoSpecifics specifics2 = CreateSpecifics(2);
 
   // Time ranges are overlapping.
   ON_CALL(*processor(), GetEntityCreationTime(specifics1.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(1)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(1)));
   ON_CALL(*processor(), GetEntityModificationTime(specifics1.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(4)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(4)));
   ON_CALL(*processor(), GetEntityCreationTime(specifics2.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(3)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(3)));
   ON_CALL(*processor(), GetEntityModificationTime(specifics2.cache_guid()))
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(2)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(2)));
 
   // With two devices, the local device gets ignored because it doesn't overlap.
   bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
                              EntityAddList({specifics1, specifics2}));
 
   ASSERT_EQ(3u, bridge()->GetAllDeviceInfo().size());
-  EXPECT_EQ(1, bridge()->CountActiveDevices());
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+            bridge()->CountActiveDevicesByType());
 }
 
 TEST_F(DeviceInfoSyncBridgeTest,
        ShouldFilterOutNonChromeClientsFromDeviceTracker) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   // Local device.
-  EXPECT_EQ(1, bridge()->CountActiveDevices());
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+            bridge()->CountActiveDevicesByType());
 
   ON_CALL(*processor(), GetEntityCreationTime)
       .WillByDefault(Return(base::Time::Now()));
@@ -1178,7 +1184,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
                              EntityAddList({CreateSpecifics(1)}));
   ASSERT_THAT(GetAllData(), SizeIs(2));
   ASSERT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(2));
-  ASSERT_EQ(2, bridge()->CountActiveDevices());
+  ASSERT_EQ(DeviceCountMap({{kLocalDeviceType, 2}}),
+            bridge()->CountActiveDevicesByType());
   ASSERT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(1)), NotNull());
 
   // If the Chrome version is not present, it should not be exposed as device.
@@ -1188,7 +1195,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
                              EntityAddList({specifics2}));
   ASSERT_THAT(GetAllData(), SizeIs(3));
   EXPECT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(2));
-  EXPECT_EQ(2, bridge()->CountActiveDevices());
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 2}}),
+            bridge()->CountActiveDevicesByType());
   EXPECT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(2)), IsNull());
 
   // If only the non-legacy field is present, the device should still be exposed
@@ -1200,7 +1208,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
                              EntityAddList({specifics3}));
   ASSERT_THAT(GetAllData(), SizeIs(4));
   EXPECT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(3));
-  EXPECT_EQ(3, bridge()->CountActiveDevices());
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 3}}),
+            bridge()->CountActiveDevicesByType());
   EXPECT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(3)), NotNull());
 }
 
@@ -1289,9 +1298,9 @@ TEST_F(DeviceInfoSyncBridgeTest, ExpireOldEntriesUponStartup) {
   ASSERT_FALSE(ReadAllFromStore().empty());
 
   const DeviceInfoSpecifics specifics_old =
-      CreateSpecifics(1, base::Time::Now() - base::TimeDelta::FromDays(57));
+      CreateSpecifics(1, base::Time::Now() - base::Days(57));
   const DeviceInfoSpecifics specifics_fresh =
-      CreateSpecifics(1, base::Time::Now() - base::TimeDelta::FromDays(55));
+      CreateSpecifics(1, base::Time::Now() - base::Days(55));
   auto error = bridge()->ApplySyncChanges(
       bridge()->CreateMetadataChangeList(),
       EntityAddList({specifics_old, specifics_fresh}));
@@ -1712,8 +1721,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldNotUploadRecentLocalDeviceUponStartup) {
 TEST_F(DeviceInfoSyncBridgeTest, ShouldUploadOutdatedLocalDeviceInfo) {
   // Create an outdated local device info which should be reuploaded during
   // initialization.
-  const DeviceInfoSpecifics specifics = CreateLocalDeviceSpecifics(
-      base::Time::Now() - base::TimeDelta::FromDays(10));
+  const DeviceInfoSpecifics specifics =
+      CreateLocalDeviceSpecifics(base::Time::Now() - base::Days(10));
   const ModelTypeState model_type_state = StateWithEncryption("ekn");
   WriteToStoreWithMetadata({specifics}, model_type_state);
 

@@ -6,6 +6,7 @@
 #define GOOGLE_APIS_GAIA_GAIA_CONFIG_H_
 
 #include <memory>
+#include <string>
 
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece_forward.h"
@@ -16,6 +17,7 @@ class GURL;
 
 namespace base {
 class CommandLine;
+class FilePath;
 }  // namespace base
 
 // Class representing a configuration for Gaia URLs and Google API keys.
@@ -76,6 +78,15 @@ class GaiaConfig {
  private:
   friend class GaiaUrlsTest;
   FRIEND_TEST_ALL_PREFIXES(GoogleAPIKeysTest, OverrideAllKeysUsingConfig);
+
+  static std::unique_ptr<GaiaConfig>* GetGlobalConfig();
+
+  static std::unique_ptr<GaiaConfig> ReadConfigFromString(
+      const std::string& config_contents);
+  static std::unique_ptr<GaiaConfig> ReadConfigFromDisk(
+      const base::FilePath& config_path);
+  static std::unique_ptr<GaiaConfig> ReadConfigFromCommandLineSwitches(
+      const base::CommandLine* command_line);
 
   // Re-reads the config from disk and resets the global instance of GaiaConfig.
   static void ResetInstanceForTesting();

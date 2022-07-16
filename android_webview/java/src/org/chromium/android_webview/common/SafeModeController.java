@@ -118,24 +118,32 @@ public class SafeModeController {
      * Executes the given set of {@link SafeModeAction}s. Execution order is determined by the order
      * of the array registered by {@link registerActions}.
      *
+     * @return {@code true} if <b>all</b> actions succeeded, {@code false} otherwise.
      * @throws IllegalStateException if this is called before {@link registerActions}.
      */
-    public void executeActions(Set<String> actionsToExecute) {
+    public boolean executeActions(Set<String> actionsToExecute) {
         // Execute SafeModeActions in a deterministic order.
         if (mRegisteredActions == null) {
             throw new IllegalStateException(
                     "Must registerActions() before calling executeActions()");
         }
+        boolean overallStatus = true;
         for (SafeModeAction action : mRegisteredActions) {
             if (actionsToExecute.contains(action.getId())) {
                 // Allow SafeModeActions in general to perform disk reads and writes.
                 try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                     Log.i(TAG, "Starting to execute %s", action.getId());
-                    action.execute();
-                    Log.i(TAG, "Finished executing %s", action.getId());
+                    boolean status = action.execute();
+                    overallStatus &= status;
+                    if (status) {
+                        Log.i(TAG, "Finished executing %s (%s)", action.getId(), "success");
+                    } else {
+                        Log.e(TAG, "Finished executing %s (%s)", action.getId(), "failure");
+                    }
                 }
             }
         }
+        return overallStatus;
     }
 
     /**

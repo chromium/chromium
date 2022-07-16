@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/com/google/firebase/firebase-encoders/16.1.0/firebase-encoders-16.1.0.jar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-encoders/16.1.0/firebase-encoders-16.1.0.jar'
 _FILE_NAME = 'firebase-encoders-16.1.0.jar'
 _FILE_VERSION = '16.1.0'
 

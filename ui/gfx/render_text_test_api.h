@@ -5,7 +5,6 @@
 #ifndef UI_GFX_RENDER_TEXT_TEST_API_H_
 #define UI_GFX_RENDER_TEXT_TEST_API_H_
 
-#include "base/macros.h"
 #include "ui/gfx/break_list.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/render_text.h"
@@ -17,6 +16,9 @@ namespace test {
 class RenderTextTestApi {
  public:
   RenderTextTestApi(RenderText* render_text) : render_text_(render_text) {}
+
+  RenderTextTestApi(const RenderTextTestApi&) = delete;
+  RenderTextTestApi& operator=(const RenderTextTestApi&) = delete;
 
   static const cc::PaintFlags& GetRendererPaint(
       internal::SkiaTextRenderer* renderer) {
@@ -118,8 +120,6 @@ class RenderTextTestApi {
 
  private:
   RenderText* render_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderTextTestApi);
 };
 
 }  // namespace test

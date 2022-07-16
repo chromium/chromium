@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/cdm_key_information.h"
 #include "media/base/eme_constants.h"
@@ -109,6 +108,9 @@ class MEDIA_EXPORT ContentDecryptionModule
     : public base::RefCountedThreadSafe<ContentDecryptionModule,
                                         ContentDecryptionModuleTraits> {
  public:
+  ContentDecryptionModule(const ContentDecryptionModule&) = delete;
+  ContentDecryptionModule& operator=(const ContentDecryptionModule&) = delete;
+
   // Provides a server certificate to be used to encrypt messages to the
   // license server.
   virtual void SetServerCertificate(
@@ -183,9 +185,6 @@ class MEDIA_EXPORT ContentDecryptionModule
 
   ContentDecryptionModule();
   virtual ~ContentDecryptionModule();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentDecryptionModule);
 };
 
 struct MEDIA_EXPORT ContentDecryptionModuleTraits {

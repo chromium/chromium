@@ -9,6 +9,9 @@
 
 namespace android_webview {
 
+constexpr char kWebViewAppsPackageNamesAllowlistComponentId[] =
+    "aemllinfpjdgcldgaelcgakpjmaekbai";
+
 namespace {
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: aemllinfpjdgcldgaelcgakpjmaekbai

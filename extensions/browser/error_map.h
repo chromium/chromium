@@ -25,6 +25,10 @@ using ErrorList = base::circular_deque<std::unique_ptr<ExtensionError>>;
 class ErrorMap {
  public:
   ErrorMap();
+
+  ErrorMap(const ErrorMap&) = delete;
+  ErrorMap& operator=(const ErrorMap&) = delete;
+
   ~ErrorMap();
 
   struct Filter {
@@ -79,8 +83,6 @@ class ErrorMap {
 
   // The mapping between Extension IDs and their corresponding Entries.
   std::map<std::string, std::unique_ptr<ExtensionEntry>> map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorMap);
 };
 
 }  // namespace extensions

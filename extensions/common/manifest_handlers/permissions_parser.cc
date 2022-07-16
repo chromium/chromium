@@ -178,8 +178,8 @@ void ParseHostPermissions(Extension* extension,
       }
 
       host_permissions->AddPattern(pattern);
-      // We need to make sure all_urls matches chrome://favicon and (maybe)
-      // chrome://thumbnail, so add them back in to host_permissions separately.
+      // We need to make sure all_urls matches any allowed Chrome-schemed hosts,
+      // so add them back in to host_permissions separately.
       if (pattern.match_all_urls()) {
         host_permissions->AddPatterns(
             ExtensionsClient::Get()->GetPermittedChromeSchemeHosts(

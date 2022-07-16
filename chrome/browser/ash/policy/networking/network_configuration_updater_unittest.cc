@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -34,6 +33,7 @@
 #include "chromeos/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/onc/onc_constants.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -74,15 +74,16 @@ class FakeUser : public user_manager::User {
     set_display_email(kFakeUserEmail);
     set_username_hash(kFakeUsernameHash);
   }
+
+  FakeUser(const FakeUser&) = delete;
+  FakeUser& operator=(const FakeUser&) = delete;
+
   ~FakeUser() override {}
 
   // User overrides
   user_manager::UserType GetType() const override {
     return user_manager::USER_TYPE_REGULAR;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeUser);
 };
 
 class MockPolicyProvidedCertsObserver
@@ -90,10 +91,12 @@ class MockPolicyProvidedCertsObserver
  public:
   MockPolicyProvidedCertsObserver() = default;
 
-  MOCK_METHOD0(OnPolicyProvidedCertsChanged, void());
+  MockPolicyProvidedCertsObserver(const MockPolicyProvidedCertsObserver&) =
+      delete;
+  MockPolicyProvidedCertsObserver& operator=(
+      const MockPolicyProvidedCertsObserver&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPolicyProvidedCertsObserver);
+  MOCK_METHOD0(OnPolicyProvidedCertsChanged, void());
 };
 
 class FakeNetworkDeviceHandler : public chromeos::FakeNetworkDeviceHandler {
@@ -101,19 +104,22 @@ class FakeNetworkDeviceHandler : public chromeos::FakeNetworkDeviceHandler {
   FakeNetworkDeviceHandler()
       : allow_roaming_(false), mac_addr_randomization_(false) {}
 
-  void SetCellularAllowRoaming(bool allow_roaming) override {
+  FakeNetworkDeviceHandler(const FakeNetworkDeviceHandler&) = delete;
+  FakeNetworkDeviceHandler& operator=(const FakeNetworkDeviceHandler&) = delete;
+
+  void SetCellularAllowRoaming(bool allow_roaming,
+                               bool policy_allow_roaming) override {
     allow_roaming_ = allow_roaming;
+    policy_allow_roaming_ = policy_allow_roaming;
   }
 
   void SetMACAddressRandomizationEnabled(bool enabled) override {
     mac_addr_randomization_ = enabled;
   }
 
-  bool allow_roaming_;
+  bool allow_roaming_ = false;
+  bool policy_allow_roaming_ = true;
   bool mac_addr_randomization_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeNetworkDeviceHandler);
 };
 
 class FakeCertificateImporter : public chromeos::onc::CertificateImporter {
@@ -121,6 +127,10 @@ class FakeCertificateImporter : public chromeos::onc::CertificateImporter {
   using OncParsedCertificates = chromeos::onc::OncParsedCertificates;
 
   FakeCertificateImporter() : call_count_(0) {}
+
+  FakeCertificateImporter(const FakeCertificateImporter&) = delete;
+  FakeCertificateImporter& operator=(const FakeCertificateImporter&) = delete;
+
   ~FakeCertificateImporter() override {}
 
   void SetExpectedONCClientCertificates(
@@ -163,8 +173,6 @@ class FakeCertificateImporter : public chromeos::onc::CertificateImporter {
       expected_client_certificates_;
   net::ScopedCERTCertificateList onc_trusted_certificates_;
   unsigned int call_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCertificateImporter);
 };
 
 // Note: HexSSID 737369642D6E6F6E65 maps to "ssid-none".
@@ -302,9 +310,10 @@ void SelectSingleClientCertificateFromOnc(
     size_t client_certificate_index,
     std::vector<chromeos::onc::OncParsedCertificates::ClientCertificate>*
         out_parsed_client_certificates) {
-  base::ListValue* certs = nullptr;
-  toplevel_onc->FindKey(onc::toplevel_config::kCertificates)->GetAsList(&certs);
+  base::Value* certs =
+      toplevel_onc->FindKey(onc::toplevel_config::kCertificates);
   ASSERT_TRUE(certs);
+  ASSERT_TRUE(certs->is_list());
   ASSERT_TRUE(certs->GetList().size() > client_certificate_index);
 
   base::ListValue selected_certs;
@@ -370,9 +379,10 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
         ->GetAsDictionary(&global_config);
     fake_global_network_config_.MergeDictionary(global_config);
 
-    base::ListValue* certs = nullptr;
-    fake_toplevel_onc.FindKey(onc::toplevel_config::kCertificates)
-        ->GetAsList(&certs);
+    base::Value* certs =
+        fake_toplevel_onc.FindKey(onc::toplevel_config::kCertificates);
+    ASSERT_TRUE(certs->is_list());
+
     fake_certificates_ =
         std::make_unique<chromeos::onc::OncParsedCertificates>(*certs);
 
@@ -499,23 +509,68 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
   chromeos::ScopedFakeSessionManagerClient scoped_session_manager_client_;
 };
 
+TEST_F(NetworkConfigurationUpdaterTest, CellularRoamingDefaults) {
+  // Ignore network config updates.
+  EXPECT_CALL(network_config_handler_, SetPolicy(_, _, _, _)).Times(AtLeast(1));
+
+  CreateNetworkConfigurationUpdaterForDevicePolicy();
+  MarkPolicyProviderInitialized();
+  EXPECT_FALSE(network_device_handler_.allow_roaming_);
+  EXPECT_TRUE(network_device_handler_.policy_allow_roaming_);
+}
+
 TEST_F(NetworkConfigurationUpdaterTest, CellularAllowRoaming) {
   // Ignore network config updates.
   EXPECT_CALL(network_config_handler_, SetPolicy(_, _, _, _)).Times(AtLeast(1));
 
+  CreateNetworkConfigurationUpdaterForDevicePolicy();
+  MarkPolicyProviderInitialized();
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kSignedDataRoamingEnabled, false);
+      ash::kSignedDataRoamingEnabled, true);
+  EXPECT_TRUE(network_device_handler_.allow_roaming_);
+
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kSignedDataRoamingEnabled, false);
   EXPECT_FALSE(network_device_handler_.allow_roaming_);
+}
+
+TEST_F(NetworkConfigurationUpdaterTest, CellularPolicyAllowRoamingManaged) {
+  // Ignore network config updates.
+  EXPECT_CALL(network_config_handler_, SetPolicy(_, _, _, _)).Times(AtLeast(1));
+
+  // Perform this test as though this "device" is enterprise managed.
+  scoped_stub_install_attributes_.Get()->SetCloudManaged(
+      policy::PolicyBuilder::kFakeDomain, policy::PolicyBuilder::kFakeDeviceId);
+  EXPECT_TRUE(chromeos::InstallAttributes::Get()->IsEnterpriseManaged());
 
   CreateNetworkConfigurationUpdaterForDevicePolicy();
   MarkPolicyProviderInitialized();
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kSignedDataRoamingEnabled, true);
-  EXPECT_TRUE(network_device_handler_.allow_roaming_);
+      ash::kSignedDataRoamingEnabled, true);
+  EXPECT_TRUE(network_device_handler_.policy_allow_roaming_);
 
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kSignedDataRoamingEnabled, false);
-  EXPECT_FALSE(network_device_handler_.allow_roaming_);
+      ash::kSignedDataRoamingEnabled, false);
+  EXPECT_FALSE(network_device_handler_.policy_allow_roaming_);
+}
+
+TEST_F(NetworkConfigurationUpdaterTest, CellularPolicyAllowRoamingUnmanaged) {
+  // Ignore network config updates.
+  EXPECT_CALL(network_config_handler_, SetPolicy(_, _, _, _)).Times(AtLeast(1));
+
+  // Perform this test as though this "device" is unmanaged.
+  scoped_stub_install_attributes_.Get()->SetConsumerOwned();
+  EXPECT_FALSE(chromeos::InstallAttributes::Get()->IsEnterpriseManaged());
+
+  CreateNetworkConfigurationUpdaterForDevicePolicy();
+  MarkPolicyProviderInitialized();
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kSignedDataRoamingEnabled, true);
+  EXPECT_TRUE(network_device_handler_.policy_allow_roaming_);
+
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kSignedDataRoamingEnabled, false);
+  EXPECT_TRUE(network_device_handler_.policy_allow_roaming_);
 }
 
 TEST_F(NetworkConfigurationUpdaterTest, PolicyIsValidatedAndRepaired) {

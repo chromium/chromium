@@ -97,8 +97,7 @@ const char kAppLauncherInstallSource[] = "applauncher";
 // See http://crbug.com/371398.
 const char kAuthUserQueryKey[] = "authuser";
 
-constexpr base::TimeDelta kTimeRemainingThreshold =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kTimeRemainingThreshold = base::Seconds(1);
 
 // Folder for downloading crx files from the webstore. This is used so that the
 // crx files don't go via the usual downloads folder.

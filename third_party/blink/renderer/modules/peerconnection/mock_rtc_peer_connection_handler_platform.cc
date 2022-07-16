@@ -381,8 +381,8 @@ MockRTCPeerConnectionHandlerPlatform::CreateDataChannel(
   return nullptr;
 }
 
-void MockRTCPeerConnectionHandlerPlatform::Stop() {}
-void MockRTCPeerConnectionHandlerPlatform::StopAndUnregister() {}
+void MockRTCPeerConnectionHandlerPlatform::Close() {}
+void MockRTCPeerConnectionHandlerPlatform::CloseAndUnregister() {}
 
 webrtc::PeerConnectionInterface*
 MockRTCPeerConnectionHandlerPlatform::NativePeerConnection() {

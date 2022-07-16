@@ -5,33 +5,35 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_GUEST_SESSION_MIXIN_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_GUEST_SESSION_MIXIN_H_
 
-#include "base/macros.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 namespace base {
 class CommandLine;
 }
 
-namespace chromeos {
+namespace ash {
 
 // A mixin that sets up test command line for guest user session.
 // Use this with tests for in-session behavior for guest user.
 class GuestSessionMixin : public InProcessBrowserTestMixin {
  public:
   explicit GuestSessionMixin(InProcessBrowserTestMixinHost* mixin_host);
+
+  GuestSessionMixin(const GuestSessionMixin&) = delete;
+  GuestSessionMixin& operator=(const GuestSessionMixin&) = delete;
+
   ~GuestSessionMixin() override;
 
   // InProcessBrowserTestMixin:
   void SetUpCommandLine(base::CommandLine* command_line) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GuestSessionMixin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-using chromeos::GuestSessionMixin;
+namespace chromeos {
+using ::ash::GuestSessionMixin;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_GUEST_SESSION_MIXIN_H_

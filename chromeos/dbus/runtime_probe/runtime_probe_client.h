@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/runtime_probe/runtime_probe.pb.h"
@@ -25,6 +24,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_RUNTIME_PROBE) RuntimeProbeClient
   // Creates an instance of RuntimeProbeClient.
   static std::unique_ptr<RuntimeProbeClient> Create();
 
+  RuntimeProbeClient(const RuntimeProbeClient&) = delete;
+  RuntimeProbeClient& operator=(const RuntimeProbeClient&) = delete;
+
   ~RuntimeProbeClient() override;
 
   // Probes categories.
@@ -34,9 +36,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_RUNTIME_PROBE) RuntimeProbeClient
  protected:
   // Create() should be used instead.
   RuntimeProbeClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RuntimeProbeClient);
 };
 
 }  // namespace chromeos

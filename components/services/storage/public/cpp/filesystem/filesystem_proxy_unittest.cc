@@ -8,13 +8,13 @@
 
 #include "base/check.h"
 #include "base/cxx17_backports.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
-#include "components/services/storage/public/cpp/filesystem/file_error_or.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_impl.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,6 +22,9 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+template <typename ValueType>
+using FileErrorOr = base::FileErrorOr<ValueType>;
 
 namespace storage {
 

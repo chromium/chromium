@@ -26,7 +26,7 @@ source_set("xkb") {
   ]
 }
 
-if (use_x11 || ozone_platform_x11) {
+if (ozone_platform_x11) {
   component("x11") {
     output_name = "keycodes_x11"
 

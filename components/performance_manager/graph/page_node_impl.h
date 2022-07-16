@@ -7,10 +7,8 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -49,6 +47,10 @@ class PageNodeImpl
                bool is_audible,
                base::TimeTicks visibility_change_time,
                PageState page_state);
+
+  PageNodeImpl(const PageNodeImpl&) = delete;
+  PageNodeImpl& operator=(const PageNodeImpl&) = delete;
+
   ~PageNodeImpl() override;
 
   // Returns the web contents associated with this page node. It is valid to
@@ -371,8 +373,6 @@ class PageNodeImpl
   base::WeakPtr<PageNodeImpl> weak_this_;
   base::WeakPtrFactory<PageNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
-
-  DISALLOW_COPY_AND_ASSIGN(PageNodeImpl);
 };
 
 }  // namespace performance_manager

@@ -39,9 +39,8 @@ void AndroidMetricsLogUploader::UploadLog(
       env, reinterpret_cast<const uint8_t*>(log_data.data()), log_data.size());
   Java_AndroidMetricsLogUploader_uploadLog(env, java_data);
 
-  // The platform mechanism doesn't provide a response code or any way to handle
-  // failures, so we have nothing to pass to on_upload_complete. Just pass 200
-  // (HTTP OK) with error code 0 and pretend everything is peachy.
+  // Just pass 200 (HTTP OK) with error code 0 and pretend everything is peachy.
+  // TODO(crbug.com/1264425): propagate the status code down the callstack.
   on_upload_complete_.Run(200, 0, true);
 }
 

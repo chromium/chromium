@@ -15,7 +15,6 @@
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -43,6 +42,12 @@ class SearchResultTileItemListViewTest
       public ::testing::WithParamInterface<std::pair<bool, bool>> {
  public:
   SearchResultTileItemListViewTest() = default;
+
+  SearchResultTileItemListViewTest(const SearchResultTileItemListViewTest&) =
+      delete;
+  SearchResultTileItemListViewTest& operator=(
+      const SearchResultTileItemListViewTest&) = delete;
+
   ~SearchResultTileItemListViewTest() override = default;
 
   // Overridden from testing::Test:
@@ -70,7 +75,7 @@ class SearchResultTileItemListViewTest
     widget_->SetBounds(gfx::Rect(0, 0, 300, 200));
     widget_->GetContentsView()->AddChildView(view_.get());
     widget_->Show();
-    view_->SetResults(view_delegate_.GetSearchModel()->results());
+    view_->SetResults(GetResults());
   }
 
   bool IsReinstallAppRecommendationEnabled() const { return GetParam().first; }
@@ -78,7 +83,7 @@ class SearchResultTileItemListViewTest
   SearchResultTileItemListView* view() { return view_.get(); }
 
   SearchModel::SearchResults* GetResults() {
-    return view_delegate_.GetSearchModel()->results();
+    return AppListModelProvider::Get()->search_model()->results();
   }
 
   void SetUpSearchResults() {
@@ -201,8 +206,6 @@ class SearchResultTileItemListViewTest
   views::Widget* widget_;
   std::unique_ptr<views::Textfield> textfield_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultTileItemListViewTest);
 };
 
 TEST_P(SearchResultTileItemListViewTest, Basic) {

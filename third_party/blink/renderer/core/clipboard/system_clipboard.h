@@ -16,7 +16,6 @@
 namespace blink {
 
 class DataObject;
-class DocumentFragment;
 class Image;
 class KURL;
 class LocalFrame;
@@ -63,7 +62,6 @@ class CORE_EXPORT SystemClipboard final
   String ReadRTF();
 
   mojo_base::BigBuffer ReadPng(mojom::blink::ClipboardBuffer);
-  SkBitmap ReadImage(mojom::ClipboardBuffer);
   String ReadImageAsImageMarkup(mojom::blink::ClipboardBuffer);
 
   // Write the image and its associated tag (bookmark/HTML types).
@@ -83,8 +81,16 @@ class CORE_EXPORT SystemClipboard final
 
   void CopyToFindPboard(const String& text);
 
-  void RecordClipboardImageUrls(DocumentFragment* pasting_fragment);
-  void RecordImageLoadError(const String& image_url);
+  void ReadAvailableCustomAndStandardFormats(
+      mojom::blink::ClipboardHost::ReadAvailableCustomAndStandardFormatsCallback
+          callback);
+  void ReadUnsanitizedCustomFormat(
+      const String& type,
+      mojom::blink::ClipboardHost::ReadUnsanitizedCustomFormatCallback
+          callback);
+
+  void WriteUnsanitizedCustomFormat(const String& type,
+                                    mojo_base::BigBuffer data);
 
   void Trace(Visitor*) const;
 
@@ -99,8 +105,6 @@ class CORE_EXPORT SystemClipboard final
 
   // Whether the selection buffer is available on the underlying platform.
   bool is_selection_buffer_available_ = false;
-  // Cache of image elements inserted by paste.
-  WTF::HashSet<String> image_urls_in_paste_;
 };
 
 }  // namespace blink

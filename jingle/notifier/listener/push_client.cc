@@ -7,7 +7,7 @@
 #include <cstddef>
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "jingle/notifier/listener/non_blocking_push_client.h"
 #include "jingle/notifier/listener/xmpp_push_client.h"
 

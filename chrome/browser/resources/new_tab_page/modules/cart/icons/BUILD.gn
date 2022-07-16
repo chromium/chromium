@@ -9,6 +9,7 @@ generate_grd("build_grdp") {
   out_grd = "$target_gen_dir/resources.grdp"
   input_files = [
     "cart_fallback.svg",
+    "cart_logo.svg",
     "consent_label.svg",
   ]
   input_files_base_dir = rebase_path(".", "//")

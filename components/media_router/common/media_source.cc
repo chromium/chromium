@@ -187,7 +187,7 @@ std::string MediaSource::AppNameFromDialSource() const {
 }
 
 std::string MediaSource::TruncateForLogging(size_t max_length) const {
-  const std::string origin = url_.GetOrigin().spec();
+  const std::string origin = url_.DeprecatedGetOriginAsURL().spec();
   if (!origin.empty())
     return origin.substr(0, max_length);
   // TODO(takumif): Keep the query string by redacting PII. The query string may

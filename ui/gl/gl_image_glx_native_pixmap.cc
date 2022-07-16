@@ -72,8 +72,11 @@ x11::Pixmap XPixmapFromNativePixmap(
 }  // namespace
 
 GLImageGLXNativePixmap::GLImageGLXNativePixmap(const gfx::Size& size,
-                                               gfx::BufferFormat format)
-    : GLImageGLX(size, format) {}
+                                               gfx::BufferFormat format,
+                                               gfx::BufferPlane plane)
+    : GLImageGLX(size, format) {
+  DCHECK_EQ(plane, gfx::BufferPlane::DEFAULT);
+}
 
 GLImageGLXNativePixmap::~GLImageGLXNativePixmap() = default;
 

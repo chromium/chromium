@@ -12,24 +12,32 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 
 // See components/viz/common/frame_sinks/copy_output_result.h.
+// Only the RGBA format is supported for cross-process requests.
+// CopyOutputRequests with other formats are issued internally to viz/.
 enum CopyOutputResultFormat {
-  RGBA_BITMAP,
-  RGBA_TEXTURE,
+  RGBA,
+};
+
+// See components/viz/common/frame_sinks/copy_output_result.h.
+enum CopyOutputResultDestination {
+  kSystemMemory,
+  kNativeTextures,
 };
 
 // See components/viz/common/frame_sinks/copy_output_result.h.
 struct CopyOutputResult {
   CopyOutputResultFormat format;
+  CopyOutputResultDestination destination;
   gfx.mojom.Rect rect;
 
-  // Present when the format is RGBA_BITMAP.
+  // Present when the destination is kSystemMemory.
   BitmapInSharedMemory? bitmap;
 
-  // Present when the format is RGBA_TEXTURE.
+  // Present when the destination is kNativeTextures.
   // If the result is empty, then the |mailbox| will be present but empty.
   gpu.mojom.Mailbox? mailbox;
   gpu.mojom.SyncToken? sync_token;
   gfx.mojom.ColorSpace? color_space;
-  // Present when the format is RGBA_TEXTURE and |mailbox| is non-empty.
+  // Present when the destination is kNativeTextures and |mailbox| is non-empty.
   pending_remote<TextureReleaser>? releaser;
 };

@@ -9,26 +9,28 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 
 namespace content {
 class WebUI;
-class WindowedNotificationObserver;
 }  // namespace content
 
-namespace chromeos {
-
-class FakeUpdateEngineClient;
+namespace ash {
+class LoginOrLockScreenVisibleWaiter;
 
 // Base class for OOBE, login, SAML and Kiosk tests.
 class OobeBaseTest : public MixinBasedInProcessBrowserTest {
  public:
   OobeBaseTest();
+
+  OobeBaseTest(const OobeBaseTest&) = delete;
+  OobeBaseTest& operator=(const OobeBaseTest&) = delete;
+
   ~OobeBaseTest() override;
 
   // Subclasses may register their own custom request handlers that will
@@ -76,25 +78,21 @@ class OobeBaseTest : public MixinBasedInProcessBrowserTest {
   std::string authenticator_id_ = "$('gaia-signin').authenticator_";
   EmbeddedTestServerSetupMixin embedded_test_server_{&mixin_host_,
                                                      embedded_test_server()};
-
- private:
   // Waits for login_screen_load_observer_ and resets it afterwards.
   void MaybeWaitForLoginScreenLoad();
 
+ private:
   FakeUpdateEngineClient* update_engine_client_ = nullptr;
 
-  std::unique_ptr<content::WindowedNotificationObserver>
-      login_screen_load_observer_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeBaseTest);
+  std::unique_ptr<LoginOrLockScreenVisibleWaiter> login_screen_load_observer_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-using chromeos::OobeBaseTest;
+namespace chromeos {
+using ::ash::OobeBaseTest;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_BASE_TEST_H_

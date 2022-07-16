@@ -29,6 +29,7 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
       !data.ReadSubtreeCaptureId(&(*out)->subtree_capture_id) ||
       !data.ReadSubtreeSize(&(*out)->subtree_size) ||
       !data.ReadCopyRequests(&(*out)->copy_requests) ||
+      !data.ReadSharedElementResourceId(&(*out)->shared_element_resource_id) ||
       !data.ReadId(&(*out)->id)) {
     return false;
   }
@@ -41,6 +42,7 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
       (*out)->subtree_size.height() > (*out)->output_rect.size().height()) {
     return false;
   }
+
   (*out)->has_transparent_background = data.has_transparent_background();
   (*out)->has_per_quad_damage = data.has_per_quad_damage();
 

@@ -20,6 +20,10 @@ class FullscreenModelObserver;
 class FullscreenModel : public ChromeBroadcastObserverInterface {
  public:
   FullscreenModel();
+
+  FullscreenModel(const FullscreenModel&) = delete;
+  FullscreenModel& operator=(const FullscreenModel&) = delete;
+
   ~FullscreenModel() override;
 
   // Adds and removes FullscreenModelObservers.
@@ -238,8 +242,6 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   // The number of FullscreenModelObserver callbacks currently being executed.
   size_t observer_callback_count_ = 0;
   bool freeze_toolbar_height_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenModel);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MODEL_H_

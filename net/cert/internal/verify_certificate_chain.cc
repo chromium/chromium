@@ -254,6 +254,9 @@ class ValidPolicyTree {
  public:
   ValidPolicyTree() = default;
 
+  ValidPolicyTree(const ValidPolicyTree&) = delete;
+  ValidPolicyTree& operator=(const ValidPolicyTree&) = delete;
+
   struct Node {
     // |root_policy| is equivalent to |valid_policy|, but in the domain of the
     // caller.
@@ -418,8 +421,6 @@ class ValidPolicyTree {
   }
 
   Level current_level_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValidPolicyTree);
 };
 
 // Class that encapsulates the state variables used by certificate path

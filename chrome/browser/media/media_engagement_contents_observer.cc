@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/media_engagement_preloaded_list.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/media/media_engagement_session.h"
@@ -47,7 +47,7 @@ const gfx::Size MediaEngagementContentsObserver::kSignificantSize =
     gfx::Size(200, 140);
 
 const base::TimeDelta MediaEngagementContentsObserver::kMaxShortPlaybackTime =
-    base::TimeDelta::FromSeconds(3);
+    base::Seconds(3);
 
 const char* const
     MediaEngagementContentsObserver::kHistogramScoreAtPlaybackName =
@@ -71,7 +71,7 @@ const int MediaEngagementContentsObserver::kMaxInsignificantPlaybackReason =
 
 const base::TimeDelta
     MediaEngagementContentsObserver::kSignificantMediaPlaybackTime =
-        base::TimeDelta::FromSeconds(7);
+        base::Seconds(7);
 
 MediaEngagementContentsObserver::MediaEngagementContentsObserver(
     content::WebContents* web_contents,

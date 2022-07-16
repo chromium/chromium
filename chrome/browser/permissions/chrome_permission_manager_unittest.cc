@@ -52,8 +52,8 @@ TEST_F(ChromePermissionManagerTest, GetCanonicalOriginSearch) {
   const GURL google_com("https://www.google.com");
   const GURL google_de("https://www.google.de");
   const GURL other_url("https://other.url");
-  const GURL google_base =
-      GURL(UIThreadSearchTermsData().GoogleBaseURLValue()).GetOrigin();
+  const GURL google_base = GURL(UIThreadSearchTermsData().GoogleBaseURLValue())
+                               .DeprecatedGetOriginAsURL();
   const GURL remote_ntp = GURL(std::string("chrome-search://") +
                                chrome::kChromeSearchRemoteNtpHost);
   const GURL other_chrome_search = GURL("chrome-search://not-local-ntp");

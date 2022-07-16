@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_METRICS_CPU_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_CPU_METRICS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace metrics {
@@ -16,13 +15,14 @@ namespace metrics {
 class CPUMetricsProvider : public MetricsProvider {
  public:
   CPUMetricsProvider();
+
+  CPUMetricsProvider(const CPUMetricsProvider&) = delete;
+  CPUMetricsProvider& operator=(const CPUMetricsProvider&) = delete;
+
   ~CPUMetricsProvider() override;
 
   void ProvideSystemProfileMetrics(
       SystemProfileProto* system_profile_proto) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CPUMetricsProvider);
 };
 
 }  // namespace metrics

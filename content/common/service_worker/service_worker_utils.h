@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/fetch/fetch_api_request_headers_map.h"
@@ -24,23 +23,6 @@ class ServiceWorkerUtils {
  public:
   static bool IsMainRequestDestination(
       network::mojom::RequestDestination destination);
-
-  // Returns true if the script at |script_url| is allowed to control |scope|
-  // according to Service Worker's path restriction policy. If
-  // |service_worker_allowed| is not null, it points to the
-  // Service-Worker-Allowed header value.
-  CONTENT_EXPORT static bool IsPathRestrictionSatisfied(
-      const GURL& scope,
-      const GURL& script_url,
-      const std::string* service_worker_allowed_header_value,
-      std::string* error_message);
-
-  // Same as above IsPathRestrictionSatisfied, but without considering
-  // 'Service-Worker-Allowed' header.
-  CONTENT_EXPORT static bool IsPathRestrictionSatisfiedWithoutHeader(
-      const GURL& scope,
-      const GURL& script_url,
-      std::string* error_message);
 
   static bool ContainsDisallowedCharacter(const GURL& scope,
                                           const GURL& script_url,

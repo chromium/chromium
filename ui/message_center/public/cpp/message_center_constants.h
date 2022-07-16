@@ -50,7 +50,7 @@ const int kContextMessageViewWidth =
     kNotificationWidth - kTextLeftPadding - kTextRightPadding;
 // space between buttons and frame.
 const int kControlButtonPadding = 2;
-const int kControlButtonBorderSize = 6;
+const int kControlButtonBorderSize = 4;
 
 // Text sizes.
 const int kTitleFontSize = 14;        // For title only.
@@ -58,6 +58,25 @@ const int kEmptyCenterFontSize = 13;  // For empty message only.
 const int kTitleLineHeight = 20;      // In DIPs.
 const int kMessageFontSize = 12;      // For everything but title.
 const int kMessageLineHeight = 18;    // In DIPs.
+
+// Line limits.
+const int kMaxTitleLines = 2;
+const int kMessageCollapsedLineLimit = 2;
+const int kMessageExpandedLineLimit = 5;
+const int kContextMessageLineLimit = 1;
+
+// Title.
+constexpr int kMinPixelsPerTitleCharacter = 4;
+
+// Message.
+
+// Max number of lines for message_view_.
+constexpr int kMaxLinesForMessageView = 1;
+constexpr int kMaxLinesForExpandedMessageView = 4;
+
+// Character limit = pixels per line * line limit / min. pixels per character.
+constexpr size_t kMessageCharacterLimit =
+    kNotificationWidth * kMessageExpandedLineLimit / 3;
 
 // For list notifications.
 // Not used when --enabled-new-style-notification is set.
@@ -86,12 +105,6 @@ const int kProgressBarThickness = 5;
 const int kProgressBarCornerRadius = 3;
 #endif
 
-// Line limits.
-const int kMaxTitleLines = 2;
-const int kMessageCollapsedLineLimit = 2;
-const int kMessageExpandedLineLimit = 5;
-const int kContextMessageLineLimit = 1;
-
 // Around notifications ////////////////////////////////////////////////////////
 
 // Horizontal & vertical thickness of the border around the notifications in the
@@ -108,6 +121,7 @@ constexpr int kMarginBetweenPopups = 10;
 // The corners are only rounded in Chrome OS.
 constexpr int kNotificationCornerRadius = 2;
 
+constexpr char kIdSuffixForGroupContainerNotification[] = "_copy";
 }  // namespace message_center
 
 #endif  // UI_MESSAGE_CENTER_PUBLIC_CPP_MESSAGE_CENTER_CONSTANTS_H_

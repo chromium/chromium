@@ -2,7 +2,7 @@
 /* vi: set expandtab shiftwidth=4 tabstop=4: */
 
 /**
- * \file
+ * file
  * <PRE>
  * High performance base64 encoder / decoder
  * Version 1.3 -- 17-Mar-2006
@@ -41,7 +41,7 @@ extern "C" {
  *    i.e.  the result will be equal to strlen(dest) + 1
  *
  * Example
- * 
+ *
  * \code
  * char* src = ...;
  * int srclen = ...; //the length of number of bytes in src
@@ -135,10 +135,12 @@ size_t modp_b64_decode(char* dest, const char* src, size_t len);
 
 #include <string>
 
-inline std::string& modp_b64_encode(std::string& s)
-{
+inline std::string& modp_b64_encode(std::string& s) {
     std::string x(modp_b64_encode_len(s.size()), '\0');
-    size_t d = modp_b64_encode(const_cast<char*>(x.data()), s.data(), (int)s.size());
+    size_t d = modp_b64_encode(const_cast<char*>(x.data()),
+                               s.data(),
+                               (int)s.size());
+
     x.erase(d, std::string::npos);
     s.swap(x);
     return s;
@@ -153,10 +155,12 @@ inline std::string& modp_b64_encode(std::string& s)
  * \param[in,out] s the string to be decoded
  * \return a reference to the input string
  */
-inline std::string& modp_b64_decode(std::string& s)
-{
+inline std::string& modp_b64_decode(std::string& s) {
     std::string x(modp_b64_decode_len(s.size()), '\0');
-    size_t d = modp_b64_decode(const_cast<char*>(x.data()), s.data(), (int)s.size());
+    size_t d = modp_b64_decode(const_cast<char*>(x.data()),
+                               s.data(),
+                               (int)s.size());
+
     if (d == MODP_B64_ERROR) {
         x.clear();
     } else {

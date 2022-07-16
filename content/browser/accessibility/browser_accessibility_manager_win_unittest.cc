@@ -38,6 +38,12 @@ class TestFragmentRootDelegate : public ui::AXFragmentRootDelegateWin {
 class BrowserAccessibilityManagerWinTest : public testing::Test {
  public:
   BrowserAccessibilityManagerWinTest() = default;
+
+  BrowserAccessibilityManagerWinTest(
+      const BrowserAccessibilityManagerWinTest&) = delete;
+  BrowserAccessibilityManagerWinTest& operator=(
+      const BrowserAccessibilityManagerWinTest&) = delete;
+
   ~BrowserAccessibilityManagerWinTest() override = default;
 
  protected:
@@ -46,8 +52,6 @@ class BrowserAccessibilityManagerWinTest : public testing::Test {
 
  private:
   void SetUp() override;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerWinTest);
 };
 
 void BrowserAccessibilityManagerWinTest::SetUp() {

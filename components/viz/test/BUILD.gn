@@ -11,6 +11,7 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
 
   flags = [
+    "ENABLE_GL_RENDERER_TESTS=$enable_gl_renderer_tests",
     "ENABLE_GL_BACKEND_TESTS=$enable_gl_backend_tests",
     "ENABLE_VULKAN_BACKEND_TESTS=$enable_vulkan_backend_tests",
     "ENABLE_DAWN_BACKEND_TESTS=$enable_dawn_backend_tests",
@@ -44,6 +45,8 @@ viz_static_library("test_support") {
     "fake_skia_output_surface.h",
     "fake_surface_observer.cc",
     "fake_surface_observer.h",
+    "gl_scaler_test_util.cc",
+    "gl_scaler_test_util.h",
     "gpu_host_impl_test_api.cc",
     "gpu_host_impl_test_api.h",
     "host_frame_sink_manager_test_api.cc",
@@ -124,9 +127,6 @@ viz_source_set("test_suite") {
     "//ui/events/platform",
     "//ui/gl:test_support",
   ]
-  if (use_x11) {
-    deps += [ "//ui/events/platform/x11" ]
-  }
 }
 
 viz_source_set("unit_tests") {

@@ -24,6 +24,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -38,9 +39,32 @@ namespace android_webview {
 
 namespace {
 
+// Persisted to logs, should never change.
+constexpr char kAppsPackageNamesAllowlistMetricsSuffix[] =
+    "WebViewAppsPackageNamesAllowlist";
 constexpr int kBitsPerByte = 8;
 
-// Lookup the allowlist in `allowlist_fd`, returns null if it fails.
+using AllowlistPraseStatus =
+    AwAppsPackageNamesAllowlistComponentLoaderPolicy::AllowlistPraseStatus;
+
+struct AllowListLookupResult {
+  AllowlistPraseStatus parse_status;
+  absl::optional<AppPackageNameLoggingRule> record_rule;
+};
+
+void RecordAndReportResult(AllowListLookupCallback lookup_callback,
+                           AllowListLookupResult result) {
+  DCHECK(lookup_callback);
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "Android.WebView.Metrics.PackagesAllowList.ParseStatus",
+      result.parse_status);
+  std::move(lookup_callback).Run(result.record_rule);
+}
+
+// Lookup the `package_name` in `allowlist_fd`, returns a null
+// an `AllowListLookupResult` containing an `AppPackageNameLoggingRule` if it
+// fails.
 //
 // `allowlist_fd` the fd of a file the contain a bloomfilter that represents an
 //                allowlist of apps package names.
@@ -51,7 +75,7 @@ constexpr int kBitsPerByte = 8;
 // `version`      the allowlist version.
 // `expiry_date`  the expiry date of the allowlist, i.e the date after which
 //                this allowlist shouldn't be used.
-absl::optional<AppPackageNameLoggingRule> GetAppPackageNameLoggingRule(
+AllowListLookupResult GetAppPackageNameLoggingRule(
     base::ScopedFD allowlist_fd,
     int num_hash,
     int num_bits,
@@ -60,28 +84,31 @@ absl::optional<AppPackageNameLoggingRule> GetAppPackageNameLoggingRule(
     const base::Time& expiry_date) {
   // Transfer the ownership of the file from `allowlist_fd` to `file_stream`.
   base::ScopedFILE file_stream(fdopen(allowlist_fd.release(), "r"));
-  if (!file_stream.get())
-    return absl::optional<AppPackageNameLoggingRule>();
+  if (!file_stream.get()) {
+    return {AllowlistPraseStatus::kIOError};
+  }
 
   // TODO(https://crbug.com/1219496): use mmap instead of reading the whole
   // file.
   std::string bloom_filter_data;
   if (!base::ReadStreamToString(file_stream.get(), &bloom_filter_data) ||
       bloom_filter_data.empty()) {
-    return absl::optional<AppPackageNameLoggingRule>();
+    return {AllowlistPraseStatus::kIOError};
   }
 
   // Make sure the bloomfilter binary data is of the correct length.
   if (bloom_filter_data.size() !=
       size_t((num_bits + kBitsPerByte - 1) / kBitsPerByte)) {
-    return absl::optional<AppPackageNameLoggingRule>();
+    return {AllowlistPraseStatus::kMalformedBloomFilter};
   }
 
   if (optimization_guide::BloomFilter(num_hash, num_bits, bloom_filter_data)
           .Contains(package_name)) {
-    return AppPackageNameLoggingRule(version, expiry_date);
+    return {AllowlistPraseStatus::kSuccess,
+            AppPackageNameLoggingRule(version, expiry_date)};
   } else {
-    return AppPackageNameLoggingRule(version, base::Time::Min());
+    return {AllowlistPraseStatus::kSuccess,
+            AppPackageNameLoggingRule(version, base::Time::Min())};
   }
 }
 
@@ -157,28 +184,30 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
   // date is absent.
   if (!expiry_date_ms.has_value() || !num_hash.has_value() ||
       !num_bits.has_value() || num_hash.value() <= 0 || num_bits.value() <= 0) {
-    ComponentLoadFailedInternal();
+    RecordAndReportResult(std::move(lookup_callback_),
+                          {AllowlistPraseStatus::kMissingFields});
     return;
   }
 
-  base::Time expiry_date =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMillisecondsD(expiry_date_ms.value_or(0.0));
+  base::Time expiry_date = base::Time::UnixEpoch() +
+                           base::Milliseconds(expiry_date_ms.value_or(0.0));
   if (expiry_date <= base::Time::Now()) {
-    ComponentLoadFailedInternal();
+    RecordAndReportResult(std::move(lookup_callback_),
+                          {AllowlistPraseStatus::kExpiredAllowlist});
     return;
   }
 
   if (cached_record_.has_value() &&
       cached_record_.value().GetVersion() == version) {
-    DCHECK(lookup_callback_);
-    std::move(lookup_callback_).Run(cached_record_);
+    RecordAndReportResult(std::move(lookup_callback_),
+                          {AllowlistPraseStatus::kUsingCache, cached_record_});
     return;
   }
 
   auto allowlist_iterator = fd_map.find(kAllowlistBloomFilterFileName);
   if (allowlist_iterator == fd_map.end()) {
-    ComponentLoadFailedInternal();
+    RecordAndReportResult(std::move(lookup_callback_),
+                          {AllowlistPraseStatus::kMissingAllowlistFile});
     return;
   }
 
@@ -188,23 +217,25 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
                      std::move(allowlist_iterator->second), num_hash.value(),
                      num_bits.value(), std::move(app_package_name_), version,
                      expiry_date),
-      std::move(lookup_callback_));
+      base::BindOnce(&RecordAndReportResult, std::move(lookup_callback_)));
 }
 
 void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoadFailed(
-    component_updater::ComponentLoadError /*error*/) {
-  ComponentLoadFailedInternal();
-}
-
-void AwAppsPackageNamesAllowlistComponentLoaderPolicy::
-    ComponentLoadFailedInternal() {
+    component_updater::ComponentLoadResult /*error*/) {
   DCHECK(lookup_callback_);
+  // TODO(crbug.com/1216200): Record the error in a histogram in the
+  // ComponentLoader for each component.
   std::move(lookup_callback_).Run(absl::optional<AppPackageNameLoggingRule>());
 }
 
 void AwAppsPackageNamesAllowlistComponentLoaderPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   GetWebViewAppsPackageNamesAllowlistPublicKeyHash(hash);
+}
+
+std::string AwAppsPackageNamesAllowlistComponentLoaderPolicy::GetMetricsSuffix()
+    const {
+  return kAppsPackageNamesAllowlistMetricsSuffix;
 }
 
 void LoadPackageNamesAllowlistComponent(

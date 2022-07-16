@@ -240,7 +240,7 @@ class ChromiumDepGraph {
         org_checkerframework_checker_qual: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
             licenseName: 'GPL v2 with the classpath exception'),
-        org_checkerframework_dataflow_shaded: new PropertyOverride(
+        org_checkerframework_dataflow_errorprone: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
             licenseName: 'GPL v2 with the classpath exception'),
         org_ow2_asm_asm: new PropertyOverride(
@@ -315,7 +315,14 @@ class ChromiumDepGraph {
     ]
 
     final Map<String, DependencyDescription> dependencies = [:]
-    final Set<String> lowerVersionOverride = [] as Set
+    final Set<String> lowerVersionOverride = [
+        // kotlin deps here to prevent 3pp packager from claiming they are out
+        // of date on a ~weekly basis. https://crbug.com/1257197
+        'org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm',
+        'org_jetbrains_kotlinx_kotlinx_coroutines_android',
+        'org_jetbrains_kotlin_kotlin_stdlib_jdk8',
+        'org_jetbrains_kotlin_kotlin_stdlib_jdk7',
+        ] as Set
 
     Project[] projects
     Logger logger
@@ -647,6 +654,16 @@ class ChromiumDepGraph {
     }
 
     private List computePomFromArtifact(ResolvedArtifact artifact) {
+        ComponentIdentifier component = artifact.id.componentIdentifier
+        String componentPomSubpath = String.format('%s/%s/%s/%s-%s.pom',
+                component.group.replace('.', '/'),
+                component.module,
+                component.version,
+                component.module,
+                // While mavenCentral and google use "version", https://androidx.dev uses "timestampedVersion" as part
+                // of the file url
+                component.hasProperty('timestampedVersion') ? component.timestampedVersion : component.version)
+        List<String> repoUrls = []
         for (Project project : projects) {
             for (ArtifactRepository repository : project.repositories.asList()) {
                 String repoUrl = repository.properties.get('url')
@@ -655,34 +672,41 @@ class ChromiumDepGraph {
                 if (repoUrl.endsWith('/')) {
                     repoUrl = repoUrl[0..-2]
                 }
-                ComponentIdentifier component = artifact.id.componentIdentifier
-                // Constructs the file url for pom. For example, with
-                //   * repoUrl as "https://maven.google.com"
-                //   * component.group as "android.arch.core"
-                //   * component.module as "common"
-                //   * component.version as "1.1.1"
-                //
-                // The file url will be: https://maven.google.com/android/arch/core/common/1.1.1/common-1.1.1.pom
-                String fileUrl = String.format('%s/%s/%s/%s/%s-%s.pom',
-                        repoUrl,
-                        component.group.replace('.', '/'),
-                        component.module,
-                        component.version,
-                        component.module,
-                        // While maven central and maven.google.com use "version", https://androidx.dev uses
-                        // "timestampedVersion" as part of the file url
-                        component.hasProperty('timestampedVersion') ? component.timestampedVersion : component.version)
-                try {
-                    GPathResult content = new XmlSlurper(
-                            false /* validating */, false /* namespaceAware */).parse(fileUrl)
-                    logger.debug("Succeeded in resolving url $fileUrl")
-                    return [fileUrl, content]
-                } catch (any) {
-                    logger.debug("Failed in resolving url $fileUrl")
+                // Deduplicate while collecting repo urls since subprojects (e.g. androidx) may use the same repos. Use
+                // a list instead of a set to preserve order. Since there are very few repositories, 2-3 per project,
+                // this O(n^2) complexity is acceptable.
+                if (repoUrls.contains(repoUrl)) {
+                    continue
+                }
+                // If the component is from androidx, we likely need the nightly builds from androidx.dev, so check that
+                // repo first to avoid potential 404s. Inserting at the front preserves order between google and
+                // mavenCentral.
+                if (component.group.contains('androidx') && repoUrl.contains('androidx.dev')) {
+                    repoUrls.add(0, repoUrl)
+                } else {
+                    repoUrls.add(repoUrl)
                 }
             }
         }
-        return [null, null]
+        for (String repoUrl : repoUrls) {
+            // Constructs the file url for pom. For example, with
+            //   * repoUrl as "https://maven.google.com"
+            //   * component.group as "android.arch.core"
+            //   * component.module as "common"
+            //   * component.version as "1.1.1"
+            //
+            // The file url will be: https://maven.google.com/android/arch/core/common/1.1.1/common-1.1.1.pom
+            String fileUrl = String.format('%s/%s', repoUrl, componentPomSubpath)
+            try {
+                GPathResult content = new XmlSlurper(
+                        false /* validating */, false /* namespaceAware */).parse(fileUrl)
+                logger.debug("Succeeded in resolving url $fileUrl")
+                return [fileUrl, content]
+            } catch (any) {
+                logger.debug("Failed in resolving url $fileUrl")
+            }
+        }
+        throw new RuntimeException("Could not find pom from artifact $componentPomSubpath in $repoUrls")
     }
 
     private void checkDownloadable(String url) {

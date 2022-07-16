@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_TOOLBAR_LAYER_H_
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_TOOLBAR_LAYER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "cc/layers/nine_patch_layer.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
@@ -23,6 +22,9 @@ class ToolbarLayer : public Layer {
  public:
   static scoped_refptr<ToolbarLayer> Create(
       ui::ResourceManager* resource_manager);
+
+  ToolbarLayer(const ToolbarLayer&) = delete;
+  ToolbarLayer& operator=(const ToolbarLayer&) = delete;
 
   // Implements Layer
   scoped_refptr<cc::Layer> layer() override;
@@ -66,8 +68,6 @@ class ToolbarLayer : public Layer {
   scoped_refptr<cc::SolidColorLayer> progress_bar_layer_;
   scoped_refptr<cc::SolidColorLayer> progress_bar_background_layer_;
   scoped_refptr<cc::SolidColorLayer> debug_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ToolbarLayer);
 };
 
 }  //  namespace android

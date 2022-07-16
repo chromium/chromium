@@ -82,17 +82,22 @@ Polymer({
     cr.ui.Oobe.showScreen({id: 'saml-confirm-password'});
   },
 
+  resetFields() {
+    this.$.passwordInput.invalid = false;
+    this.$.passwordInput.value = '';
+    if (this.isManualInput) {
+      this.shadowRoot.querySelector('#confirmPasswordInput').invalid = false;
+      this.shadowRoot.querySelector('#confirmPasswordInput').value = '';
+    }
+  },
+
   reset() {
     if (this.$.cancelConfirmDlg.open)
       this.$.cancelConfirmDlg.hideDialog();
     this.setUIStep(UIState.PASSWORD);
-    this.$.passwordInput.invalid = false;
-    this.$.passwordInput.value = '';
-    if (this.isManualInput) {
-      this.$$('#confirmPasswordInput').invalid = false;
-      this.$$('#confirmPasswordInput').value = '';
-    }
+    this.resetFields();
   },
+
 
   onCancel_() {
     this.$.cancelConfirmDlg.showDialog();
@@ -114,7 +119,7 @@ Polymer({
       return;
     if (this.isManualInput) {
       // When using manual password entry, both passwords must match.
-      var confirmPasswordInput = this.$$('#confirmPasswordInput');
+      var confirmPasswordInput = this.shadowRoot.querySelector('#confirmPasswordInput');
       if (!confirmPasswordInput.validate())
         return;
 
@@ -124,10 +129,9 @@ Polymer({
         return;
       }
     }
-
     this.setUIStep(UIState.PROGRESS);
     this.callback_(this.$.passwordInput.value);
-    this.reset();
+    this.resetFields();
   },
 
   onDialogOverlayClosed_() {

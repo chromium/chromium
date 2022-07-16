@@ -6,6 +6,8 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 static_library("backend") {
   sources = [
+    "async_log.cc",
+    "async_log.h",
     "cpu_usage_data.cc",
     "cpu_usage_data.h",
     "cros_healthd_helpers.cc",
@@ -41,6 +43,7 @@ static_library("backend") {
   deps = [
     "//ash/constants:constants",
     "//ash/public/cpp",
+    "//ash/services/network_health/public/mojom",
     "//ash/webui/diagnostics_ui/mojom",
     "//base",
     "//chromeos/dbus/power",
@@ -49,15 +52,16 @@ static_library("backend") {
     "//chromeos/services/cros_healthd/public/mojom",
     "//chromeos/services/network_config:in_process_instance",
     "//chromeos/services/network_config/public/cpp",
-    "//chromeos/services/network_health/public/mojom",
     "//chromeos/strings/",
     "//chromeos/system",
     "//content/public/browser",
     "//services/data_decoder/public/cpp",
     "//services/device/public/mojom",
     "//ui/base",
+    "//ui/base/ime/ash",
     "//ui/events/ozone",
     "//ui/events/ozone/evdev:event_device_info",
+    "//ui/events/ozone/layout",
     "//ui/gfx",
     "//ui/shell_dialogs",
     "//ui/webui",
@@ -68,6 +72,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "async_log_unittest.cc",
     "cpu_usage_data_unittest.cc",
     "input_data_provider_unittest.cc",
     "log_test_helpers_unittest.cc",
@@ -93,9 +98,12 @@ source_set("unit_tests") {
     "//chromeos/dbus/cros_healthd",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/dbus/shill",
     "//chromeos/login/login_state:login_state",
     "//chromeos/services/cros_healthd/public/cpp",
     "//chromeos/services/cros_healthd/public/mojom",
+    "//chromeos/services/network_config:in_process_instance",
+    "//chromeos/services/network_config:network_config",
     "//chromeos/services/network_config/public/cpp:test_support",
     "//chromeos/services/network_config/public/mojom",
     "//chromeos/system",
@@ -103,6 +111,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
+    "//dbus",
     "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:test_support",
     "//testing/gtest",

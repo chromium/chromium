@@ -12,13 +12,17 @@
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/devices/touch_device_transform.h"
 #include "ui/events/devices/touchscreen_device.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 
 class DeviceDataManagerTest : public testing::Test {
  public:
   DeviceDataManagerTest() {}
+
+  DeviceDataManagerTest(const DeviceDataManagerTest&) = delete;
+  DeviceDataManagerTest& operator=(const DeviceDataManagerTest&) = delete;
+
   ~DeviceDataManagerTest() override {}
 
   // testing::Test:
@@ -29,9 +33,6 @@ class DeviceDataManagerTest : public testing::Test {
   void CallOnDeviceListsComplete() {
     DeviceDataManager::GetInstance()->OnDeviceListsComplete();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceDataManagerTest);
 };
 
 TEST_F(DeviceDataManagerTest, DisplayIdUpdated) {
@@ -62,6 +63,10 @@ class TestInputDeviceEventObserver : public InputDeviceEventObserver {
  public:
   TestInputDeviceEventObserver() = default;
 
+  TestInputDeviceEventObserver(const TestInputDeviceEventObserver&) = delete;
+  TestInputDeviceEventObserver& operator=(const TestInputDeviceEventObserver&) =
+      delete;
+
   int on_touch_device_associations_changed_call_count() const {
     return on_touch_device_associations_changed_call_count_;
   }
@@ -73,8 +78,6 @@ class TestInputDeviceEventObserver : public InputDeviceEventObserver {
 
  private:
   int on_touch_device_associations_changed_call_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInputDeviceEventObserver);
 };
 
 }  // namespace

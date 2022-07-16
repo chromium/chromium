@@ -40,6 +40,9 @@ class EventEmitter : public sdk_util::RefObject {
  public:
   EventEmitter();
 
+  EventEmitter(const EventEmitter&) = delete;
+  EventEmitter& operator=(const EventEmitter&) = delete;
+
   // This returns a snapshot, to ensure the status doesn't change from
   // fetch to use, hold the lock and call GetEventStatus_Locked.
   uint32_t GetEventStatus() {
@@ -71,7 +74,6 @@ class EventEmitter : public sdk_util::RefObject {
   uint32_t event_status_;
   sdk_util::SimpleLock emitter_lock_;
   EventListenerMap_t listeners_;
-  DISALLOW_COPY_AND_ASSIGN(EventEmitter);
 };
 
 }  // namespace nacl_io

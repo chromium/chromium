@@ -53,11 +53,6 @@ class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
   // specified.
   const char* GetDefaultExperimentName() const;
 
-  static bool ValidateAndAppendStudy(
-      const Study* study,
-      bool is_expired,
-      std::vector<ProcessedStudy>* processed_studies);
-
  private:
   // Corresponding Study object. Weak reference.
   const Study* study_ = nullptr;

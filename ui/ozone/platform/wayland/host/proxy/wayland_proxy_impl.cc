@@ -107,7 +107,8 @@ void WaylandProxyImpl::OnWindowRemoved(ui::WaylandWindow* window) {
 
 void WaylandProxyImpl::OnWindowConfigured(ui::WaylandWindow* window) {
   DCHECK(delegate_);
-  delegate_->OnWindowConfigured(window->GetWidget());
+  delegate_->OnWindowConfigured(window->GetWidget(),
+                                window->IsSurfaceConfigured());
 }
 
 }  // namespace wl

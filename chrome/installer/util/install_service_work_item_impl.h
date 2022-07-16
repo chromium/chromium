@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "chrome/installer/util/work_item_list.h"
@@ -61,6 +60,10 @@ class InstallServiceWorkItemImpl {
                              const std::wstring& registry_path,
                              const std::vector<GUID>& clsids,
                              const std::vector<GUID>& iids);
+
+  InstallServiceWorkItemImpl(const InstallServiceWorkItemImpl&) = delete;
+  InstallServiceWorkItemImpl& operator=(const InstallServiceWorkItemImpl&) =
+      delete;
 
   ~InstallServiceWorkItemImpl();
 
@@ -115,6 +118,10 @@ class InstallServiceWorkItemImpl {
    public:
     using Handle = SC_HANDLE;
 
+    ScHandleTraits() = delete;
+    ScHandleTraits(const ScHandleTraits&) = delete;
+    ScHandleTraits& operator=(const ScHandleTraits&) = delete;
+
     static bool CloseHandle(SC_HANDLE handle) {
       return ::CloseServiceHandle(handle) != FALSE;
     }
@@ -122,9 +129,6 @@ class InstallServiceWorkItemImpl {
     static bool IsHandleValid(SC_HANDLE handle) { return handle != nullptr; }
 
     static SC_HANDLE NullHandle() { return nullptr; }
-
-   private:
-    DISALLOW_IMPLICIT_CONSTRUCTORS(ScHandleTraits);
   };
 
   using ScopedScHandle =
@@ -216,8 +220,6 @@ class InstallServiceWorkItemImpl {
   // True if a pre-existing service (named |original_service_name_|) could not
   // be deleted and still exists on rollback.
   bool original_service_still_exists_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallServiceWorkItemImpl);
 };
 
 }  // namespace installer

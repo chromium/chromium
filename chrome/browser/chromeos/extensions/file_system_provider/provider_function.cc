@@ -151,11 +151,10 @@ bool FileSystemProviderInternalFunction::PreRunValidation(std::string* error) {
   if (!ExtensionFunction::PreRunValidation(error))
     return false;
 
-  const auto& list = args_->GetList();
-  EXTENSION_FUNCTION_PRERUN_VALIDATE(list.size() >= 2);
+  EXTENSION_FUNCTION_PRERUN_VALIDATE(args().size() >= 2);
 
-  const auto& file_system_id_value = list[0];
-  const auto& request_id_value = list[1];
+  const auto& file_system_id_value = args()[0];
+  const auto& request_id_value = args()[1];
   EXTENSION_FUNCTION_PRERUN_VALIDATE(file_system_id_value.is_string());
   EXTENSION_FUNCTION_PRERUN_VALIDATE(request_id_value.is_int());
   std::string file_system_id = file_system_id_value.GetString();

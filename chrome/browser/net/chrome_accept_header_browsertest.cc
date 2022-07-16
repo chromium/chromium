@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -54,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAcceptHeaderTest, Check) {
       }));
   ASSERT_TRUE(server.Start());
   GURL url = server.GetURL("/pdf/pdf_embed.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   plugin_loop.Run();
   favicon_loop.Run();

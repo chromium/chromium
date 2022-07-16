@@ -8,10 +8,9 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/display_rotation_observer.h"
@@ -34,13 +33,21 @@ class CameraDeviceDelegate;
 class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
     : public DisplayRotationObserver {
  public:
+  VideoCaptureDeviceChromeOSDelegate() = delete;
+
   VideoCaptureDeviceChromeOSDelegate(
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       const VideoCaptureDeviceDescriptor& device_descriptor,
       scoped_refptr<CameraHalDelegate> camera_hal_delegate,
       base::OnceClosure cleanup_callback);
 
+  VideoCaptureDeviceChromeOSDelegate(
+      const VideoCaptureDeviceChromeOSDelegate&) = delete;
+  VideoCaptureDeviceChromeOSDelegate& operator=(
+      const VideoCaptureDeviceChromeOSDelegate&) = delete;
+
   ~VideoCaptureDeviceChromeOSDelegate();
+
   void Shutdown();
   bool HasDeviceClient();
 
@@ -109,8 +116,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
 
   base::WeakPtrFactory<VideoCaptureDeviceChromeOSDelegate> weak_ptr_factory_{
       this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureDeviceChromeOSDelegate);
 };
 
 }  // namespace media

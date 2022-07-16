@@ -36,11 +36,27 @@ export class Magnifier {
 
     /** @private {!EventHandler} */
     this.focusHandler_ = new EventHandler(
-        [], chrome.automation.EventType.FOCUS, this.onFocus_.bind(this));
+        [], chrome.automation.EventType.FOCUS, event => this.onFocus_(event));
 
+    /** @private {!EventHandler} */
     this.activeDescendantHandler_ = new EventHandler(
         [], chrome.automation.EventType.ACTIVE_DESCENDANT_CHANGED,
-        this.onActiveDescendantChanged_.bind(this));
+        event => this.onActiveDescendantChanged_(event));
+
+    /** @private {!EventHandler} */
+    this.onCaretBoundsChangedHandler = new EventHandler(
+        [], chrome.automation.EventType.CARET_BOUNDS_CHANGED,
+        event => this.onCaretBoundsChanged(event));
+
+    /** @private {!ChromeEventHandler} */
+    this.onMagnifierBoundsChangedHandler_ = new ChromeEventHandler(
+        chrome.accessibilityPrivate.onMagnifierBoundsChanged,
+        bounds => this.onMagnifierBoundsChanged_(bounds));
+
+    /** @private {ChromeEventHandler} */
+    this.updateFromPrefsHandler_ = new ChromeEventHandler(
+        chrome.settingsPrivate.onPrefsChanged,
+        prefs => this.updateFromPrefs_(prefs));
 
     this.init_();
   }
@@ -49,9 +65,9 @@ export class Magnifier {
   onMagnifierDisabled() {
     this.focusHandler_.stop();
     this.activeDescendantHandler_.stop();
-
-    chrome.accessibilityPrivate.onMagnifierBoundsChanged.removeListener(
-        this.onMagnifierBoundsChanged_);
+    this.onCaretBoundsChangedHandler.stop();
+    this.onMagnifierBoundsChangedHandler_.stop();
+    this.updateFromPrefsHandler_.stop();
   }
 
   /**
@@ -59,19 +75,19 @@ export class Magnifier {
    * @private
    */
   init_() {
-    chrome.settingsPrivate.getAllPrefs(this.updateFromPrefs_.bind(this));
-    chrome.settingsPrivate.onPrefsChanged.addListener(
-        this.updateFromPrefs_.bind(this));
+    chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
+    this.updateFromPrefsHandler_.start();
 
     chrome.automation.getDesktop(desktop => {
       this.focusHandler_.setNodes(desktop);
       this.focusHandler_.start();
       this.activeDescendantHandler_.setNodes(desktop);
       this.activeDescendantHandler_.start();
+      this.onCaretBoundsChangedHandler.setNodes(desktop);
+      this.onCaretBoundsChangedHandler.start();
     });
 
-    chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
-        this.onMagnifierBoundsChanged_.bind(this));
+    this.onMagnifierBoundsChangedHandler_.start();
 
     this.isInitializing_ = true;
 
@@ -87,6 +103,10 @@ export class Magnifier {
         });
   }
 
+  /**
+   * @param {!chrome.accessibilityPrivate.ScreenRect} bounds
+   * @private
+   */
   onMagnifierBoundsChanged_(bounds) {
     if (this.magnifierDebugDrawRect_) {
       chrome.accessibilityPrivate.setFocusRings([{
@@ -175,6 +195,31 @@ export class Magnifier {
     }
 
     chrome.accessibilityPrivate.moveMagnifierToRect(location);
+  }
+
+  /**
+   * Listener for when caret bounds have changed. Moves magnifier to include
+   * caret in viewport.
+   * @param {!chrome.automation.AutomationEvent} event
+   * @private
+   */
+  onCaretBoundsChanged(event) {
+    const {target} = event;
+    if (!target || !target.caretBounds) {
+      return;
+    }
+
+    // Note: onCaretBoundsChanged can get called when TextInputType is changed,
+    // during which the caret bounds are set to an empty rect (0x0), and we
+    // don't need to adjust the viewport position based on this bogus caret
+    // position. This is only a transition period; the caret position will be
+    // fixed upon focusing directly afterward.
+    if (target.caretBounds.width === 0 && target.caretBounds.height === 0) {
+      return;
+    }
+
+    const caretBoundsCenter = RectUtil.center(target.caretBounds);
+    chrome.accessibilityPrivate.magnifierCenterOnPoint(caretBoundsCenter);
   }
 }
 

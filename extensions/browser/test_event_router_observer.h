@@ -18,6 +18,10 @@ class TestEventRouterObserver : public EventRouter::TestObserver {
   using EventMap = std::map<std::string, std::unique_ptr<Event>>;
 
   explicit TestEventRouterObserver(EventRouter* event_router);
+
+  TestEventRouterObserver(const TestEventRouterObserver&) = delete;
+  TestEventRouterObserver& operator=(const TestEventRouterObserver&) = delete;
+
   ~TestEventRouterObserver() override;
 
   // Clears all recorded events.
@@ -34,8 +38,6 @@ class TestEventRouterObserver : public EventRouter::TestObserver {
   EventMap events_;
   EventMap dispatched_events_;
   EventRouter* event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventRouterObserver);
 };
 
 }  // namespace extensions

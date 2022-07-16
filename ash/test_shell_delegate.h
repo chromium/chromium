@@ -9,15 +9,25 @@
 
 #include "ash/shell_delegate.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/callback_forward.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "components/favicon_base/favicon_callback.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+
+namespace base {
+class CancelableTaskTracker;
+}  // namespace base
 
 namespace ash {
 
 class TestShellDelegate : public ShellDelegate {
  public:
   TestShellDelegate();
+
+  TestShellDelegate(const TestShellDelegate&) = delete;
+  TestShellDelegate& operator=(const TestShellDelegate&) = delete;
+
   ~TestShellDelegate() override;
 
   // Allows tests to override the MultiDeviceSetup binding behavior for this
@@ -48,6 +58,7 @@ class TestShellDelegate : public ShellDelegate {
   std::unique_ptr<NearbyShareDelegate> CreateNearbyShareDelegate(
       NearbyShareController* controller) const override;
   bool IsSessionRestoreInProgress() const override;
+  void SetUpEnvironmentForLockedFullscreen(bool locked) override {}
 
   void SetCanGoBack(bool can_go_back);
   void SetShouldWaitForTouchAck(bool should_wait_for_touch_ack);
@@ -55,8 +66,20 @@ class TestShellDelegate : public ShellDelegate {
   bool IsLoggingRedirectDisabled() const override;
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
   void OpenFeedbackPageForPersistentDesksBar() override {}
-  std::unique_ptr<full_restore::AppLaunchInfo> GetAppLaunchDataForDeskTemplate(
+  std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchDataForDeskTemplate(
       aura::Window* window) const override;
+  void GetFaviconForUrl(const std::string& page_url,
+                        int desired_icon_size,
+                        favicon_base::FaviconRawBitmapCallback callback,
+                        base::CancelableTaskTracker* tracker) const override;
+  void GetIconForAppId(
+      const std::string& app_id,
+      int desired_icon_size,
+      base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)> callback)
+      const override;
+  void LaunchAppsFromTemplate(
+      std::unique_ptr<DeskTemplate> desk_template) override;
+  bool IsWindowSupportedForDeskTemplate(aura::Window* window) const override;
 
  private:
   // True if the current top window can go back.
@@ -75,8 +98,6 @@ class TestShellDelegate : public ShellDelegate {
   bool session_restore_in_progress_ = false;
 
   MultiDeviceSetupBinder multidevice_setup_binder_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestShellDelegate);
 };
 
 }  // namespace ash

@@ -57,28 +57,28 @@ public final class OfflineContentAvailabilityStatusProviderTest {
         OfflineContentAvailabilityStatusProvider provider =
                 new OfflineContentAvailabilityStatusProvider();
         assertFalse("No prefetch content should be available initially.",
-                provider.isPrefetchContentAvailable());
+                provider.isSuggestedContentAvailable());
 
         // Add some non-prefetch items.
         provider.onItemsAdded(
                 new ArrayList<OfflineItem>(Arrays.asList(mTransientItem, mPersistentItem)));
         assertFalse("Added non-prefetch content should not affect prefetch content availability.",
-                provider.isPrefetchContentAvailable());
+                provider.isSuggestedContentAvailable());
 
         // Add a prefetch item.
         provider.onItemsAdded(new ArrayList<OfflineItem>(Arrays.asList(mPrefetchItem)));
         assertTrue("Prefetch content should be available after adding prefetch content.",
-                provider.isPrefetchContentAvailable());
+                provider.isSuggestedContentAvailable());
 
         // Remove a non-prefetch item.
         provider.onItemRemoved(mPersistentItem.id);
         assertTrue("Removed non-prefetch content should not affect prefetch content availability.",
-                provider.isPrefetchContentAvailable());
+                provider.isSuggestedContentAvailable());
 
         // Remove the prefetch item.
         provider.onItemRemoved(mPrefetchItem.id);
         assertFalse("Prefetch content should not be available after removing all prefetch content.",
-                provider.isPrefetchContentAvailable());
+                provider.isSuggestedContentAvailable());
     }
 
     @Test
@@ -91,7 +91,7 @@ public final class OfflineContentAvailabilityStatusProviderTest {
         // Add a transient item.
         provider.onItemsAdded(new ArrayList<OfflineItem>(Arrays.asList(mTransientItem)));
         assertFalse("Added transient content should not affect persistent content availability.",
-                provider.isPrefetchContentAvailable());
+                provider.isSuggestedContentAvailable());
 
         // Add a persistent item.
         provider.onItemsAdded(new ArrayList<OfflineItem>(Arrays.asList(mPersistentItem)));

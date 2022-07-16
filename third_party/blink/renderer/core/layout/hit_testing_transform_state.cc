@@ -29,39 +29,22 @@
 
 namespace blink {
 
-void HitTestingTransformState::Translate(int x,
-                                         int y,
-                                         TransformAccumulation accumulate) {
+void HitTestingTransformState::Translate(int x, int y) {
   accumulated_transform_.Translate(x, y);
-  if (accumulate == kFlattenTransform)
-    FlattenWithTransform(accumulated_transform_);
-
-  accumulating_transform_ = accumulate == kAccumulateTransform;
 }
 
 void HitTestingTransformState::ApplyTransform(
-    const TransformationMatrix& transform_from_container,
-    TransformAccumulation accumulate) {
+    const TransformationMatrix& transform_from_container) {
   accumulated_transform_.Multiply(transform_from_container);
-  if (accumulate == kFlattenTransform)
-    FlattenWithTransform(accumulated_transform_);
-
-  accumulating_transform_ = accumulate == kAccumulateTransform;
 }
 
 void HitTestingTransformState::Flatten() {
-  FlattenWithTransform(accumulated_transform_);
-}
-
-void HitTestingTransformState::FlattenWithTransform(
-    const TransformationMatrix& t) {
-  TransformationMatrix inverse_transform = t.Inverse();
+  TransformationMatrix inverse_transform = accumulated_transform_.Inverse();
   last_planar_point_ = inverse_transform.ProjectPoint(last_planar_point_);
   last_planar_quad_ = inverse_transform.ProjectQuad(last_planar_quad_);
   last_planar_area_ = inverse_transform.ProjectQuad(last_planar_area_);
 
   accumulated_transform_.MakeIdentity();
-  accumulating_transform_ = false;
 }
 
 FloatPoint HitTestingTransformState::MappedPoint() const {
@@ -70,10 +53,6 @@ FloatPoint HitTestingTransformState::MappedPoint() const {
 
 FloatQuad HitTestingTransformState::MappedQuad() const {
   return accumulated_transform_.Inverse().ProjectQuad(last_planar_quad_);
-}
-
-FloatQuad HitTestingTransformState::MappedArea() const {
-  return accumulated_transform_.Inverse().ProjectQuad(last_planar_area_);
 }
 
 PhysicalRect HitTestingTransformState::BoundsOfMappedQuad() const {

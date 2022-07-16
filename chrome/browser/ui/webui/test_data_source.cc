@@ -99,6 +99,12 @@ std::string TestDataSource::GetContentSecurityPolicy(
                  network::mojom::CSPDirectiveName::RequireTrustedTypesFor ||
              directive == network::mojom::CSPDirectiveName::TrustedTypes) {
     return std::string();
+  } else if (directive == network::mojom::CSPDirectiveName::FrameAncestors) {
+    return "frame-ancestors chrome://* 'self';";
+  } else if (directive == network::mojom::CSPDirectiveName::FrameSrc) {
+    return "frame-src chrome://test/;";
+  } else if (directive == network::mojom::CSPDirectiveName::ChildSrc) {
+    return "child-src chrome://test/;";
   }
 
   return content::URLDataSource::GetContentSecurityPolicy(directive);
@@ -147,22 +153,28 @@ void TestDataSource::ReadFile(
         << url.spec() << "=" << file_path.value();
     content = "<script type=\"module\" src=\"" + js_path + "\"></script>";
   } else {
+    // Strip the query
+    size_t query_length = url.query().length();
+    std::string no_query_path =
+        query_length == 0 ? path
+                          : path.substr(0, path.length() - query_length - 1);
+
     // Try the |gen_root_| folder first, covering cases where the test file is
     // generated at build time. We do this first as if a test file exists under
     // the same name in the src and gen directories, the generated file is
     // generally the desired file (for example, may have been preprocessed).
-    base::FilePath file_path =
-        gen_root_.Append(base::FilePath::FromUTF8Unsafe(path));
-    if (base::PathExists(file_path)) {
-      CHECK(base::ReadFileToString(file_path, &content))
-          << url.spec() << "=" << file_path.value();
+    base::FilePath gen_root_file_path =
+        gen_root_.Append(base::FilePath::FromUTF8Unsafe(no_query_path));
+    if (base::PathExists(gen_root_file_path)) {
+      CHECK(base::ReadFileToString(gen_root_file_path, &content))
+          << url.spec() << "=" << gen_root_file_path.value();
     } else {
       // Then try the |src_root_| folder, covering cases where the test file is
       // generated at build time.
-      base::FilePath file_path =
-          src_root_.Append(base::FilePath::FromUTF8Unsafe(path));
-      CHECK(base::ReadFileToString(file_path, &content))
-          << url.spec() << "=" << file_path.value();
+      base::FilePath src_root_file_path =
+          src_root_.Append(base::FilePath::FromUTF8Unsafe(no_query_path));
+      CHECK(base::ReadFileToString(src_root_file_path, &content))
+          << url.spec() << "=" << src_root_file_path.value();
     }
   }
 

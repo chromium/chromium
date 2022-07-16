@@ -58,12 +58,6 @@ id<GREYMatcher> FakeOmniboxMatcher() {
 
 @implementation NonModalEGTest
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kDefaultPromoNonModal);
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   [ChromeEarlGreyAppInterface clearDefaultBrowserPromoData];
@@ -84,11 +78,6 @@ id<GREYMatcher> FakeOmniboxMatcher() {
 #define MAYBE_testNonModalAppears DISABLED_testNonModalAppears
 #endif
 - (void)MAYBE_testNonModalAppears {
-  // Promos only appear on iOS 14 and up.
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   [ChromeEarlGreyAppInterface copyURLToPasteBoard];
   [[EarlGrey selectElementWithMatcher:FakeOmniboxMatcher()]
       performAction:grey_tap()];

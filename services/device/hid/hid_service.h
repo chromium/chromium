@@ -73,6 +73,7 @@ class HidService {
   // failure.
   virtual void Connect(const std::string& device_guid,
                        bool allow_protected_reports,
+                       bool allow_fido_reports,
                        ConnectCallback callback) = 0;
 
  protected:

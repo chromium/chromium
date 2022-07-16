@@ -129,6 +129,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) Assistant {
   // accessibility status has changed, |spoken_feedback_enabled| may not have.
   virtual void OnAccessibilityStatusChanged(bool spoken_feedback_enabled) = 0;
 
+  // Invoked when color mode (dark/light mode) status changed.
+  virtual void OnColorModeChanged(bool dark_mode_enabled) = 0;
+
   // Send Assistant feedback to Assistant server.
   virtual void SendAssistantFeedback(const AssistantFeedback& feedback) = 0;
 

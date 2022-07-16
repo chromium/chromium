@@ -69,4 +69,8 @@ void WebLaunchServiceImpl::SetLaunchFiles(
                                           std::move(files));
 }
 
+void WebLaunchServiceImpl::EnqueueLaunchParams(const KURL& launch_url) {
+  DOMWindowLaunchQueue::EnqueueLaunchParams(GetSupplementable(), launch_url);
+}
+
 }  // namespace blink

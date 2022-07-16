@@ -126,6 +126,7 @@ if (enable_libaom) {
         cflags = [ "-mssse3" ]
       }
       sources = aom_av1_common_intrin_ssse3
+      sources += aom_av1_encoder_intrin_ssse3
       sources += aom_dsp_common_intrin_ssse3
       sources += aom_dsp_encoder_intrin_ssse3
     }

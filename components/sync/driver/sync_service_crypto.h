@@ -43,6 +43,10 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // outlive this object.
   SyncServiceCrypto(Delegate* delegate,
                     TrustedVaultClient* trusted_vault_client);
+
+  SyncServiceCrypto(const SyncServiceCrypto&) = delete;
+  SyncServiceCrypto& operator=(const SyncServiceCrypto&) = delete;
+
   ~SyncServiceCrypto() override;
 
   void Reset();
@@ -78,8 +82,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   void OnPassphraseAccepted() override;
   void OnTrustedVaultKeyRequired() override;
   void OnTrustedVaultKeyAccepted() override;
-  void OnBootstrapTokenUpdated(const std::string& bootstrap_token,
-                               BootstrapTokenType type) override;
+  void OnBootstrapTokenUpdated(const std::string& bootstrap_token) override;
   void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                bool encrypt_everything) override;
   void OnCryptographerStateChanged(Cryptographer* cryptographer,
@@ -210,8 +213,6 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   bool initial_trusted_vault_recoverability_logged_to_uma_ = false;
 
   base::WeakPtrFactory<SyncServiceCrypto> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncServiceCrypto);
 };
 
 }  // namespace syncer

@@ -141,10 +141,10 @@ Polymer({
     },
 
     /**
-     * Management domain displayed on SAML interstitial page.
+     * Management domain or admin displayed on SAML interstitial page.
      * @private
      */
-    samlInterstitialDomain_: {
+    samlInterstitialDomainManager_: {
       type: String,
       value: null,
     },
@@ -584,7 +584,7 @@ Polymer({
         this.loadAuthenticator_(false /* doSamlRedirect */);
         break;
       case AuthMode.SAML_INTERSTITIAL:
-        this.samlInterstitialDomain_ = data.enterpriseDisplayDomain;
+        this.samlInterstitialDomainManager_ = data.enterpriseDomainManager;
         this.loadingFrameContents_ = false;
         break;
     }
@@ -1177,27 +1177,6 @@ Polymer({
 
   clickPrimaryButtonForTesting() {
     this.$['signin-frame-dialog'].clickPrimaryButtonForTesting();
-  },
-
-  /**
-   * Whether new OOBE layout is enabled.
-   */
-  newLayoutEnabled_() {
-    return loadTimeData.valueExists('newLayoutEnabled') &&
-        loadTimeData.getBoolean('newLayoutEnabled');
-  },
-
-  /**
-   * Called when focus is returned.
-   * @param {boolean} reverse Is focus returned in reverse order?
-   */
-  onFocusReturned(reverse) {
-    // We need to explicitly adjust focus inside the webview part when focus is
-    // returned from the system tray in regular order. Because the webview is
-    // the first focusable element of the screen and we want to eliminate extra
-    // tab. Reverse tab doesn't need any adjustments here.
-    if (!this.newLayoutEnabled_() && !reverse)
-      this.focusActiveFrame_();
   },
 });
 })();

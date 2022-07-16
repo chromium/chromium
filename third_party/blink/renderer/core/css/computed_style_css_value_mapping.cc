@@ -34,7 +34,7 @@
 namespace blink {
 
 const CSSValue* ComputedStyleCSSValueMapping::Get(
-    const AtomicString custom_property_name,
+    const AtomicString& custom_property_name,
     const ComputedStyle& style,
     const PropertyRegistry* registry) {
   CustomProperty custom_property(custom_property_name, registry);

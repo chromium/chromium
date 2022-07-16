@@ -37,12 +37,6 @@
         "DidCreateAnimation",
       ]
     },
-    InspectorApplicationCacheAgent: {
-      probes: [
-        "NetworkStateChanged",
-        "UpdateApplicationCacheStatus",
-      ]
-    },
     InspectorAuditsAgent: {
       probes: [
         "InspectorIssueAdded"
@@ -88,6 +82,7 @@
     InspectorDOMDebuggerAgent: {
       probes: [
         "BreakableLocation",
+        "CharacterDataModified",
         "DidCreateCanvasContext",
         "DidFireWebGLError",
         "DidFireWebGLErrorOrWarning",
@@ -99,7 +94,6 @@
         "UserCallback",
         "WillInsertDOMNode",
         "WillModifyDOMAttr",
-        "WillRemoveDOMNode",
         "WillSendXMLHttpOrFetchNetworkRequest",
         "DidCreateAudioContext",
         "DidCloseAudioContext",

@@ -14,6 +14,7 @@ class BackgroundContentsServiceObserver : public base::CheckedObserver {
   virtual void OnBackgroundContentsServiceChanged() {}
   virtual void OnBackgroundContentsOpened(
       const BackgroundContentsOpenedDetails& details) {}
+  virtual void OnBackgroundContentsClosed() {}
   virtual void OnBackgroundContentsServiceDestroying() {}
 
  protected:

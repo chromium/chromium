@@ -16,7 +16,7 @@ namespace blink {
 // A single speculation rule which permits some set of URLs to be speculated,
 // subject to some conditions.
 //
-// https://jeremyroman.github.io/alternate-loading-modes/#speculation-rule
+// https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rule
 class CORE_EXPORT SpeculationRule final
     : public GarbageCollected<SpeculationRule> {
  public:

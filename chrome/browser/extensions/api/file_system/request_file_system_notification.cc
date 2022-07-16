@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -39,6 +38,9 @@ class AppNotificationLauncher : public AppIconLoaderDelegate {
  public:
   // This class owns and deletes itself after showing the notification.
   AppNotificationLauncher() = default;
+
+  AppNotificationLauncher(const AppNotificationLauncher&) = delete;
+  AppNotificationLauncher& operator=(const AppNotificationLauncher&) = delete;
 
   void InitAndShow(Profile* profile,
                    const Extension& extension,
@@ -72,8 +74,6 @@ class AppNotificationLauncher : public AppIconLoaderDelegate {
   std::unique_ptr<AppIconLoader> icon_loader_;
   gfx::Image extension_icon_;
   std::unique_ptr<message_center::Notification> pending_notification_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppNotificationLauncher);
 };
 
 }  // namespace

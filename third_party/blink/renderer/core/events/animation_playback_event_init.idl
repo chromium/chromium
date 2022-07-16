@@ -5,6 +5,6 @@
 // https://drafts.csswg.org/web-animations/#the-animationplaybackevent-interface
 
 dictionary AnimationPlaybackEventInit : EventInit {
-    double? currentTime = null;
-    double? timelineTime = null;
+    CSSNumberish? currentTime = null;
+    CSSNumberish? timelineTime = null;
 };

@@ -35,8 +35,7 @@
 namespace ui {
 namespace {
 
-display::Display::Rotation WaylandTransformToRotation(
-    wl_output_transform transform) {
+display::Display::Rotation WaylandTransformToRotation(int32_t transform) {
   switch (transform) {
     case WL_OUTPUT_TRANSFORM_NORMAL:
       return display::Display::ROTATE_0;
@@ -57,22 +56,6 @@ display::Display::Rotation WaylandTransformToRotation(
   }
   NOTREACHED();
   return display::Display::ROTATE_0;
-}
-
-wl_output_transform RotationToWaylandTransform(
-    display::Display::Rotation rotation) {
-  switch (rotation) {
-    case display::Display::ROTATE_0:
-      return WL_OUTPUT_TRANSFORM_NORMAL;
-    case display::Display::ROTATE_90:
-      return WL_OUTPUT_TRANSFORM_90;
-    case display::Display::ROTATE_180:
-      return WL_OUTPUT_TRANSFORM_180;
-    case display::Display::ROTATE_270:
-      return WL_OUTPUT_TRANSFORM_270;
-  }
-  NOTREACHED();
-  return WL_OUTPUT_TRANSFORM_NORMAL;
 }
 
 }  // namespace
@@ -125,7 +108,7 @@ WaylandScreen::~WaylandScreen() = default;
 
 void WaylandScreen::OnOutputAddedOrUpdated(uint32_t output_id,
                                            const gfx::Rect& bounds,
-                                           int32_t scale,
+                                           float scale,
                                            int32_t transform) {
   AddOrUpdateDisplay(output_id, bounds, scale, transform);
 }
@@ -150,19 +133,19 @@ void WaylandScreen::OnOutputRemoved(uint32_t output_id) {
 
 void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
                                        const gfx::Rect& new_bounds,
-                                       int32_t scale_factor,
+                                       float scale_factor,
                                        int32_t transform) {
   display::Display changed_display(output_id);
   if (!display::Display::HasForceDeviceScaleFactor()) {
-    changed_display.SetScaleAndBounds(scale_factor + additional_scale_,
-                                      new_bounds);
+    changed_display.SetScaleAndBounds(scale_factor, new_bounds);
   } else {
     changed_display.set_bounds(new_bounds);
     changed_display.set_work_area(new_bounds);
   }
 
-  display::Display::Rotation rotation =
-      WaylandTransformToRotation(static_cast<wl_output_transform>(transform));
+  DCHECK_GE(transform, WL_OUTPUT_TRANSFORM_NORMAL);
+  DCHECK_LE(transform, WL_OUTPUT_TRANSFORM_FLIPPED_270);
+  display::Display::Rotation rotation = WaylandTransformToRotation(transform);
   changed_display.set_rotation(rotation);
   changed_display.set_panel_rotation(rotation);
 
@@ -251,7 +234,8 @@ gfx::Point WaylandScreen::GetCursorScreenPoint() const {
   // the last known cursor position. Otherwise, return such a point, which is
   // not contained by any of the windows.
   auto* cursor_position = connection_->wayland_cursor_position();
-  if (connection_->wayland_window_manager()->GetCurrentFocusedWindow() &&
+  if (connection_->wayland_window_manager()
+          ->GetCurrentPointerOrTouchFocusedWindow() &&
       cursor_position)
     return cursor_position->GetCursorSurfacePoint();
 
@@ -266,8 +250,8 @@ gfx::AcceleratedWidget WaylandScreen::GetAcceleratedWidgetAtScreenPoint(
     const gfx::Point& point) const {
   // It is safe to check only for focused windows and test if they contain the
   // point or not.
-  auto* window =
-      connection_->wayland_window_manager()->GetCurrentFocusedWindow();
+  auto* window = connection_->wayland_window_manager()
+                     ->GetCurrentPointerOrTouchFocusedWindow();
   if (window && window->GetBoundsInDIP().Contains(point))
     return window->GetWidget();
   return gfx::kNullAcceleratedWidget;
@@ -351,7 +335,7 @@ base::TimeDelta WaylandScreen::CalculateIdleTime() const {
   NOTIMPLEMENTED_LOG_ONCE();
 
   // No providers.  Return 0 which means the system never gets idle.
-  return base::TimeDelta::FromSeconds(0);
+  return base::Seconds(0);
 }
 
 void WaylandScreen::AddObserver(display::DisplayObserver* observer) {
@@ -376,22 +360,6 @@ std::vector<base::Value> WaylandScreen::GetGpuExtraInfo(
                                  base::JoinString(protocols, " ")));
   StorePlatformNameIntoListOfValues(values, "wayland");
   return values;
-}
-
-void WaylandScreen::SetDeviceScaleFactor(float scale) {
-  // If the device scale factor is forced, ignore the one provided as it's
-  // already set.
-  if (display::Display::HasForceDeviceScaleFactor())
-    return;
-
-  // See comment near the additional_scale_ in the header file.
-  float whole = 0;
-  additional_scale_ = std::modf(scale, &whole);
-  for (const auto& display : display_list_.displays()) {
-    OnOutputAddedOrUpdated(display.id(), display.bounds(),
-                           display.device_scale_factor(),
-                           RotationToWaylandTransform(display.rotation()));
-  }
 }
 
 }  // namespace ui

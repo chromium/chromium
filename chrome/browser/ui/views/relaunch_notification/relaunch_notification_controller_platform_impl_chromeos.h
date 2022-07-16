@@ -22,6 +22,11 @@ class RelaunchNotificationControllerPlatformImpl
  public:
   RelaunchNotificationControllerPlatformImpl();
 
+  RelaunchNotificationControllerPlatformImpl(
+      const RelaunchNotificationControllerPlatformImpl&) = delete;
+  RelaunchNotificationControllerPlatformImpl& operator=(
+      const RelaunchNotificationControllerPlatformImpl&) = delete;
+
   ~RelaunchNotificationControllerPlatformImpl() override;
 
   // Shows the relaunch recommended notification if it is not already open.
@@ -77,8 +82,6 @@ class RelaunchNotificationControllerPlatformImpl
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RelaunchNotificationControllerPlatformImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_NOTIFICATION_CONTROLLER_PLATFORM_IMPL_CHROMEOS_H_

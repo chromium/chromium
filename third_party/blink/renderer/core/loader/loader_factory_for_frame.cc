@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/loader_factory_for_frame.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
@@ -132,7 +132,10 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
   IssueKeepAliveHandleIfRequested(
       request, frame->GetLocalFrameHostRemote(),
       pending_remote.InitWithNewPipeAndPassReceiver());
-  return frame->GetURLLoaderFactory()->CreateURLLoader(
+  WebURLLoaderFactory* factory = frame->GetURLLoaderFactory();
+  // TODO(crbug.com/1252983): Remove this after debugging.
+  CHECK(factory);
+  return factory->CreateURLLoader(
       webreq, CreateTaskRunnerHandle(freezable_task_runner),
       CreateTaskRunnerHandle(unfreezable_task_runner),
       std::move(pending_remote), back_forward_cache_loader_helper);

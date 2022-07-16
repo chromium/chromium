@@ -12,7 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/wm/workspace/workspace_types.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 
@@ -71,6 +71,9 @@ class ASH_EXPORT RootWindowController {
   // it is primary. In a multi-display environment one monitor is deemed the
   // PRIMARY and all others SECONDARY.
   enum class RootWindowType { PRIMARY, SECONDARY };
+
+  RootWindowController(const RootWindowController&) = delete;
+  RootWindowController& operator=(const RootWindowController&) = delete;
 
   ~RootWindowController();
 
@@ -321,8 +324,6 @@ class ASH_EXPORT RootWindowController {
   std::unique_ptr<WorkAreaInsets> work_area_insets_;
 
   static std::vector<RootWindowController*>* root_window_controllers_;
-
-  DISALLOW_COPY_AND_ASSIGN(RootWindowController);
 };
 
 }  // namespace ash

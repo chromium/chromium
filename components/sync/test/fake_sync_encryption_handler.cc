@@ -36,17 +36,14 @@ bool FakeSyncEncryptionHandler::NeedKeystoreKey() const {
 
 bool FakeSyncEncryptionHandler::SetKeystoreKeys(
     const std::vector<std::vector<uint8_t>>& keys) {
-  if (keys.empty())
+  if (keys.empty()) {
     return false;
+  }
   std::vector<uint8_t> new_key = keys.back();
-  if (new_key.empty())
+  if (new_key.empty()) {
     return false;
+  }
   keystore_key_ = new_key;
-
-  DVLOG(1) << "Keystore bootstrap token updated.";
-  for (auto& observer : observers_)
-    observer.OnBootstrapTokenUpdated(base::Base64Encode(keystore_key_),
-                                     KEYSTORE_BOOTSTRAP_TOKEN);
 
   return true;
 }

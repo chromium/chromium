@@ -162,7 +162,7 @@ void VideoCaptureDeviceAndroid::AllocateAndStart(
   CHECK(!(capture_format_.frame_size.height() % 2));
 
   if (capture_format_.frame_rate > 0) {
-    frame_interval_ = base::TimeDelta::FromMicroseconds(
+    frame_interval_ = base::Microseconds(
         (base::Time::kMicrosecondsPerSecond + capture_format_.frame_rate - 1) /
         capture_format_.frame_rate);
   }
@@ -326,8 +326,7 @@ void VideoCaptureDeviceAndroid::OnI420FrameAvailable(JNIEnv* env,
     return;
   const int64_t absolute_micro =
       timestamp / base::Time::kNanosecondsPerMicrosecond;
-  const base::TimeDelta capture_time =
-      base::TimeDelta::FromMicroseconds(absolute_micro);
+  const base::TimeDelta capture_time = base::Microseconds(absolute_micro);
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
   ProcessFirstFrameAvailable(current_time);

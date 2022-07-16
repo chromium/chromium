@@ -11,6 +11,7 @@ import static org.mockito.Mockito.doAnswer;
 
 import android.content.Context;
 import android.location.LocationManager;
+import android.os.Build;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderApi;
@@ -41,7 +42,7 @@ import java.util.Collection;
  * Test suite for Java Geolocation.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(sdk = 21, manifest = Config.NONE)
+@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
 public class LocationProviderTest {
     static {
         // Setting robolectric.offline which tells Robolectric to look for runtime dependency

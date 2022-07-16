@@ -13,29 +13,23 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "chrome/browser/favicon/favicon_utils.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/web_applications/components/install_finalizer.h"
-#include "chrome/browser/web_applications/components/install_manager.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_ui_manager.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 
 namespace web_app {
-
-// static
-void ExternallyManagedAppInstallTask::CreateTabHelpers(
-    content::WebContents* web_contents) {
-  webapps::InstallableManager::CreateForWebContents(web_contents);
-  SecurityStateTabHelper::CreateForWebContents(web_contents);
-  favicon::CreateContentFaviconDriverForWebContents(web_contents);
-}
 
 ExternallyManagedAppInstallTask::ExternallyManagedAppInstallTask(
     Profile* profile,
@@ -43,8 +37,8 @@ ExternallyManagedAppInstallTask::ExternallyManagedAppInstallTask(
     WebAppRegistrar* registrar,
     OsIntegrationManager* os_integration_manager,
     WebAppUiManager* ui_manager,
-    InstallFinalizer* install_finalizer,
-    InstallManager* install_manager,
+    WebAppInstallFinalizer* install_finalizer,
+    WebAppInstallManager* install_manager,
     ExternalInstallOptions install_options)
     : profile_(profile),
       url_loader_(url_loader),
@@ -162,8 +156,9 @@ void ExternallyManagedAppInstallTask::InstallFromInfo(
     web_app_info->additional_search_terms.push_back(std::move(search_term));
   }
   install_manager_->InstallWebAppFromInfo(
-      std::move(web_app_info), ForInstallableSite::kYes, install_params,
-      internal_install_source,
+      std::move(web_app_info),
+      /*overwrite_existing_manifest_fields=*/install_params.force_reinstall,
+      ForInstallableSite::kYes, install_params, internal_install_source,
       base::BindOnce(&ExternallyManagedAppInstallTask::OnWebAppInstalled,
                      weak_ptr_factory_.GetWeakPtr(), /* is_placeholder=*/false,
                      /*offline_install=*/true, std::move(result_callback)));
@@ -240,27 +235,19 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
 
   WebApplicationInfo web_app_info;
   web_app_info.title =
-      install_options_.fallback_app_name
-          ? base::UTF8ToUTF16(install_options_.fallback_app_name.value())
-          : base::UTF8ToUTF16(install_options_.install_url.spec());
+      install_options_.placeholder_name
+          ? base::UTF8ToUTF16(install_options_.placeholder_name.value())
+          : install_options_.fallback_app_name
+                ? base::UTF8ToUTF16(install_options_.fallback_app_name.value())
+                : base::UTF8ToUTF16(install_options_.install_url.spec());
   web_app_info.start_url = install_options_.install_url;
 
-  switch (install_options_.user_display_mode) {
-    case DisplayMode::kUndefined:
-    case DisplayMode::kBrowser:
-      web_app_info.open_as_window = false;
-      break;
-    case DisplayMode::kMinimalUi:
-    case DisplayMode::kStandalone:
-    case DisplayMode::kFullscreen:
-    case DisplayMode::kWindowControlsOverlay:
-    case DisplayMode::kTabbed:
-      web_app_info.open_as_window = true;
-      break;
-  }
+  web_app_info.user_display_mode = install_options_.user_display_mode;
 
-  InstallFinalizer::FinalizeOptions options;
-  options.install_source = webapps::WebappInstallSource::EXTERNAL_POLICY;
+  WebAppInstallFinalizer::FinalizeOptions options;
+  options.install_source = ConvertExternalInstallSourceToInstallSource(
+      install_options_.install_source);
+  options.overwrite_existing_manifest_fields = false;
 
   install_finalizer_->FinalizeInstall(
       web_app_info, options,
@@ -301,6 +288,7 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalled(
           .did_uninstall_and_replace = uninstall_and_replace_triggered}));
 
   if (!is_placeholder) {
+    registrar_->NotifyWebAppInstalledWithOsHooks(app_id);
     return;
   }
   InstallOsHooksOptions options;
@@ -338,7 +326,7 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalled(
 void ExternallyManagedAppInstallTask::OnOsHooksCreated(
     const AppId& app_id,
     base::ScopedClosureRunner scoped_closure,
-    const OsHooksResults os_hooks_results) {
+    const OsHooksErrors os_hooks_errors) {
   registrar_->NotifyWebAppInstalledWithOsHooks(app_id);
   scoped_closure.RunAndReset();
 }

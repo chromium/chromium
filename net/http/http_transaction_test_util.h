@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
@@ -23,6 +24,7 @@
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/transport_info.h"
+#include "net/cert/x509_certificate.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_request_info.h"
@@ -34,7 +36,6 @@ namespace net {
 
 class IOBuffer;
 class SSLPrivateKey;
-class X509Certificate;
 class NetLogWithSource;
 struct HttpRequestInfo;
 
@@ -147,7 +148,7 @@ class TestTransactionConsumer {
 
   void Start(const HttpRequestInfo* request, const NetLogWithSource& net_log);
 
-  bool is_done() const { return state_ == DONE; }
+  bool is_done() const { return state_ == State::kDone; }
   int error() const { return error_; }
 
   const HttpResponseInfo* response_info() const {
@@ -157,12 +158,7 @@ class TestTransactionConsumer {
   const std::string& content() const { return content_; }
 
  private:
-  enum State {
-    IDLE,
-    STARTING,
-    READING,
-    DONE
-  };
+  enum class State { kIdle, kStarting, kReading, kDone };
 
   void DidStart(int result);
   void DidRead(int result);

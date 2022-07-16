@@ -288,6 +288,13 @@ TEST(Vector2dTest, IntegerOverflow) {
   test = Vector2d(-10, -20);
   test -= Vector2d(int_max, int_max);
   EXPECT_EQ(test, min_vector);
+
+  test = Vector2d();
+  test -= Vector2d(int_min, int_min);
+  EXPECT_EQ(test, max_vector);
+
+  test = -Vector2d(int_min, int_min);
+  EXPECT_EQ(test, max_vector);
 }
 
 }  // namespace gfx

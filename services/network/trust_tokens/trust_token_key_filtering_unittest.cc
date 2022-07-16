@@ -24,7 +24,7 @@ TEST(TrustTokenKeyFiltering, KEqualsZero) {
 
   std::vector<mojom::TrustTokenVerificationKeyPtr> keys;
   keys.emplace_back(mojom::TrustTokenVerificationKey::New());
-  keys.front()->expiry = base::Time::Now() + base::TimeDelta::FromMinutes(1);
+  keys.front()->expiry = base::Time::Now() + base::Minutes(1);
 
   // Even though the key's expiry is in the future, passing k=0 should remove
   // the key.
@@ -39,7 +39,7 @@ TEST(TrustTokenKeyFiltering, Simple) {
 
   std::vector<mojom::TrustTokenVerificationKeyPtr> keys;
   keys.emplace_back(mojom::TrustTokenVerificationKey::New());
-  keys.front()->expiry = base::Time::Now() + base::TimeDelta::FromMinutes(1);
+  keys.front()->expiry = base::Time::Now() + base::Minutes(1);
 
   RetainSoonestToExpireTrustTokenKeys(&keys, 1);
   EXPECT_EQ(keys.size(), 1u);
@@ -54,7 +54,7 @@ TEST(TrustTokenKeyFiltering, ExpiredKey) {
 
   std::vector<mojom::TrustTokenVerificationKeyPtr> keys;
   keys.emplace_back(mojom::TrustTokenVerificationKey::New());
-  keys.front()->expiry = base::Time::Now() - base::TimeDelta::FromMinutes(1);
+  keys.front()->expiry = base::Time::Now() - base::Minutes(1);
 
   RetainSoonestToExpireTrustTokenKeys(&keys, 1);
 
@@ -82,9 +82,9 @@ TEST(TrustTokenKeyFiltering, PrioritizesSoonerToExpire) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
   auto early_key = mojom::TrustTokenVerificationKey::New();
-  early_key->expiry = base::Time::Now() + base::TimeDelta::FromMinutes(1);
+  early_key->expiry = base::Time::Now() + base::Minutes(1);
   auto late_key = mojom::TrustTokenVerificationKey::New();
-  late_key->expiry = base::Time::Now() + base::TimeDelta::FromMinutes(2);
+  late_key->expiry = base::Time::Now() + base::Minutes(2);
 
   std::vector<mojom::TrustTokenVerificationKeyPtr> keys;
   keys.emplace_back(late_key.Clone());
@@ -101,11 +101,11 @@ TEST(TrustTokenKeyFiltering, MixOfPastAndFutureKeys) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
   auto expired_key = mojom::TrustTokenVerificationKey::New();
-  expired_key->expiry = base::Time::Now() - base::TimeDelta::FromMinutes(1);
+  expired_key->expiry = base::Time::Now() - base::Minutes(1);
   auto early_key = mojom::TrustTokenVerificationKey::New();
-  early_key->expiry = base::Time::Now() + base::TimeDelta::FromMinutes(1);
+  early_key->expiry = base::Time::Now() + base::Minutes(1);
   auto late_key = mojom::TrustTokenVerificationKey::New();
-  late_key->expiry = base::Time::Now() + base::TimeDelta::FromMinutes(2);
+  late_key->expiry = base::Time::Now() + base::Minutes(2);
 
   std::vector<mojom::TrustTokenVerificationKeyPtr> keys;
   keys.emplace_back(late_key.Clone());
@@ -140,13 +140,13 @@ TEST(TrustTokenKeyFiltering, BreaksTiesBasedOnBody) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
   auto early_key = mojom::TrustTokenVerificationKey::New(
-      "early", base::Time::Now() + base::TimeDelta::FromSeconds(45));
+      "early", base::Time::Now() + base::Seconds(45));
   auto a_key = mojom::TrustTokenVerificationKey::New(
-      "a", base::Time::Now() + base::TimeDelta::FromMinutes(1));
+      "a", base::Time::Now() + base::Minutes(1));
   auto b_key = mojom::TrustTokenVerificationKey::New(
-      "b", base::Time::Now() + base::TimeDelta::FromMinutes(1));
+      "b", base::Time::Now() + base::Minutes(1));
   auto c_key = mojom::TrustTokenVerificationKey::New(
-      "c", base::Time::Now() + base::TimeDelta::FromMinutes(1));
+      "c", base::Time::Now() + base::Minutes(1));
 
   std::vector<mojom::TrustTokenVerificationKeyPtr> keys;
   keys.emplace_back(c_key.Clone());

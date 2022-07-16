@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 // TODO(https://crbug.com/1164001): forward declare AuthFailure when migrated
 // to ash/components/.
 #include "chromeos/login/auth/auth_status_consumer.h"
@@ -57,8 +56,9 @@ class KioskAppLaunchError {
   // Records the launch error and cryptohome auth error metric and clears them.
   static void RecordMetricAndClear();
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(KioskAppLaunchError);
+  KioskAppLaunchError() = delete;
+  KioskAppLaunchError(const KioskAppLaunchError&) = delete;
+  KioskAppLaunchError& operator=(const KioskAppLaunchError&) = delete;
 };
 
 }  // namespace ash

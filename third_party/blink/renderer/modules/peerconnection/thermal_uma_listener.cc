@@ -10,14 +10,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
 
 namespace blink {
 
 namespace {
 
-const base::TimeDelta kStatsReportingPeriod = base::TimeDelta::FromMinutes(1);
+const base::TimeDelta kStatsReportingPeriod = base::Minutes(1);
 
 enum class ThermalStateUMA {
   kNominal = 0,

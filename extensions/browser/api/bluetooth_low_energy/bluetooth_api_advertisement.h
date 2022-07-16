@@ -27,6 +27,11 @@ class BluetoothApiAdvertisement : public ApiResource {
  public:
   BluetoothApiAdvertisement(const std::string& owner_extension_id,
                             scoped_refptr<device::BluetoothAdvertisement>);
+
+  BluetoothApiAdvertisement(const BluetoothApiAdvertisement&) = delete;
+  BluetoothApiAdvertisement& operator=(const BluetoothApiAdvertisement&) =
+      delete;
+
   ~BluetoothApiAdvertisement() override;
 
   device::BluetoothAdvertisement* advertisement() {
@@ -47,8 +52,6 @@ class BluetoothApiAdvertisement : public ApiResource {
 
   // The underlying advertisement instance.
   scoped_refptr<device::BluetoothAdvertisement> advertisement_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothApiAdvertisement);
 };
 
 }  // namespace extensions

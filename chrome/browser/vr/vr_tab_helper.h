@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_VR_TAB_HELPER_H_
 #define CHROME_BROWSER_VR_VR_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/ui_suppressed_element.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -13,6 +12,9 @@ namespace vr {
 
 class VrTabHelper : public content::WebContentsUserData<VrTabHelper> {
  public:
+  VrTabHelper(const VrTabHelper&) = delete;
+  VrTabHelper& operator=(const VrTabHelper&) = delete;
+
   ~VrTabHelper() override;
 
   bool is_in_vr() const { return is_in_vr_; }
@@ -62,8 +64,6 @@ class VrTabHelper : public content::WebContentsUserData<VrTabHelper> {
   bool is_content_displayed_in_headset_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(VrTabHelper);
 };
 
 }  // namespace vr

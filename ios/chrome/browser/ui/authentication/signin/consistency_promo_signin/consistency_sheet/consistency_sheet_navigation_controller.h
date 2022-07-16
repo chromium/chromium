@@ -7,13 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-// Style to display the consistency sheet.
-typedef NS_ENUM(NSUInteger, ConsistencySheetDisplayStyle) {
-  // Bottom sheet at the bottom of the screen (for compact size).
-  ConsistencySheetDisplayStyleBottom,
-  // Bottom sheet centered in the middle of the screen (for regular size).
-  ConsistencySheetDisplayStyleCentered,
-};
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_layout_delegate.h"
 
 // Delegate for updating navigation controller content.
 @protocol ConsistencySheetNavigationControllerLayoutDelegate <NSObject>
@@ -31,11 +25,8 @@ typedef NS_ENUM(NSUInteger, ConsistencySheetDisplayStyle) {
 // ConsistencySheetSlideTransitionAnimator.
 // Child view controller are required to implement
 // ChildConsistencySheetViewController protocol.
-@interface ConsistencySheetNavigationController : UINavigationController
-
-// Display style according to the trait collection.
-@property(nonatomic, assign, readonly)
-    ConsistencySheetDisplayStyle displayStyle;
+@interface ConsistencySheetNavigationController
+    : UINavigationController <ConsistencyLayoutDelegate>
 
 // Returns the desired size related to the current view controller shown by
 // |ConsistencySheetNavigationController|, based on |width|.
@@ -48,6 +39,9 @@ typedef NS_ENUM(NSUInteger, ConsistencySheetDisplayStyle) {
 @property(nonatomic, weak)
     id<ConsistencySheetNavigationControllerLayoutDelegate>
         layoutDelegate;
+// Interaction transition to swipe from left to right to pop a view controller.
+@property(nonatomic, strong, readonly)
+    UIPercentDrivenInteractiveTransition* interactionTransition;
 
 @end
 

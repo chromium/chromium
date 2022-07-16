@@ -61,9 +61,8 @@ class BLINK_EXPORT WebFormElement final : public WebElement {
 
   // Returns the identifier which is unique among all form elements in the
   // current renderer process. In the current implementation ids are
-  // consecutive numbers so their uniqueness might be broken in case of
-  // overflow.
-  unsigned UniqueRendererFormId() const;
+  // consecutive numbers.
+  uint64_t UniqueRendererFormId() const;
 
   WebVector<WebFormControlElement> GetFormControlElements() const;
 

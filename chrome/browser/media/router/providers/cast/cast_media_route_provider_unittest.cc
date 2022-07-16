@@ -40,8 +40,7 @@ constexpr char kCastSource[] =
 static constexpr char kPresentationId[] = "presentationId";
 static constexpr char kOrigin[] = "https://www.youtube.com";
 static constexpr int kTabId = 1;
-static constexpr base::TimeDelta kRouteTimeout =
-    base::TimeDelta::FromSeconds(30);
+static constexpr base::TimeDelta kRouteTimeout = base::Seconds(30);
 
 base::Value MakeReceiverStatus() {
   return base::test::ParseJson(R"({
@@ -79,7 +78,6 @@ class CastMediaRouteProviderTest : public testing::Test {
                                socket_service_.task_runner()));
     CastSessionTracker::SetInstanceForTest(session_tracker_.get());
 
-    EXPECT_CALL(mock_router_, OnSinkAvailabilityUpdated(_, _));
     provider_ = std::make_unique<CastMediaRouteProvider>(
         provider_remote_.BindNewPipeAndPassReceiver(), std::move(router_remote),
         &media_sink_service_, &app_discovery_service_, &message_handler_,

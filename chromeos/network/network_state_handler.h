@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "chromeos/network/managed_state.h"
@@ -114,6 +113,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
     TECHNOLOGY_DISABLING,
     TECHNOLOGY_PROHIBITED
   };
+
+  NetworkStateHandler(const NetworkStateHandler&) = delete;
+  NetworkStateHandler& operator=(const NetworkStateHandler&) = delete;
 
   ~NetworkStateHandler() override;
 
@@ -420,13 +422,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
 
   void SetDeviceStateUpdatedForTest(const std::string& device_path);
 
-  // Sets |allow_only_policy_networks_to_connect_|,
-  // |allow_only_policy_networks_to_connect_if_available_| and
-  // |blocked_hex_ssids_| and calls |UpdateBlockedWifiNetworksInternal()|.
+  // Sets |allow_only_policy_wifi_networks_to_connect_|,
+  // |allow_only_policy_wifi_networks_to_connect_if_available_| and
+  // |blocked_hex_ssids_| and calls
+  // |UpdateBlockedNetworksInternal(NetworkTypePattern::Wifi())|.
   virtual void UpdateBlockedWifiNetworks(
       bool only_managed,
       bool available_only,
       const std::vector<std::string>& blocked_hex_ssids);
+
+  // Sets |allow_only_policy_cellular_networks_to_connect_| and
+  // calls |UpdateBlockedNetworksInternal(NetworkTypePattern::Cellular())|
+  virtual void UpdateBlockedCellularNetworks(bool only_managed);
 
   // Returns the NetworkState associated to the wifi device's
   // available_managed_network_path or |nullptr| if no managed network is
@@ -448,7 +455,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
 
   // Requests traffic counters for a service denoted by |service_path|.
   void RequestTrafficCounters(const std::string& service_path,
-                              ShillServiceClient::ListValueCallback callback);
+                              DBusMethodCallback<base::Value>);
 
   // Resets traffic counters for a service denoted by |service_path|.
   void ResetTrafficCounters(const std::string& service_path);
@@ -529,10 +536,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   typedef std::map<std::string, std::string> SpecifierGuidMap;
   friend class NetworkStateHandlerTest;
   FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest, NetworkStateHandlerStub);
-  FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest, BlockedByPolicyBlocked);
-  FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest, BlockedByPolicyOnlyManaged);
+  FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest, BlockedWifiByPolicyBlocked);
   FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest,
-                           BlockedByPolicyOnlyManagedIfAvailable);
+                           BlockedWifiByPolicyOnlyManaged);
+  FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest,
+                           BlockedCellularByPolicyOnlyManaged);
+  FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest,
+                           BlockedWifiByPolicyOnlyManagedIfAvailable);
   FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest, SyncStubCellularNetworks);
   FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest,
                            GetNetworkListAfterUpdateManagedList);
@@ -681,11 +691,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
 
   // Updates the device's |managed_network_available_| depending on the list of
   // networks associated with this device. Calls
-  // |UpdateBlockedWifiNetworksInternal()| if the availability changed.
+  // |UpdateBlockedNetworksInternal(NetworkTypePattern::Wifi())| if the
+  // availability changed.
   void UpdateManagedWifiNetworkAvailable();
 
-  // Calls |UpdateBlockedByPolicy()| for each wifi network.
-  void UpdateBlockedWifiNetworksInternal();
+  // Calls |UpdateBlockedByPolicy()| for each given |network_type| network.
+  void UpdateBlockedNetworksInternal(const NetworkTypePattern& network_type);
 
   // Sets properties associated with the default network, currently the path and
   // Metered.
@@ -760,10 +771,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // Ensure that we do not delete any networks while notifying observers.
   bool notifying_network_observers_ = false;
 
-  // Policies which control WiFi blocking (Controlled from
+  // Policies which control WiFi and Cellular blocking (Controlled from
   // |ManagedNetworkConfigurationHandler| by calling |UpdateBlockedNetworks()|).
-  bool allow_only_policy_networks_to_connect_ = false;
-  bool allow_only_policy_networks_to_connect_if_available_ = false;
+  bool allow_only_policy_wifi_networks_to_connect_ = false;
+  bool allow_only_policy_wifi_networks_to_connect_if_available_ = false;
+  bool allow_only_policy_cellular_networks_to_connect_ = false;
   std::vector<std::string> blocked_hex_ssids_;
 
   // After login the user's saved networks get updated asynchronously from
@@ -773,8 +785,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   bool is_user_logged_in_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateHandler);
 };
 
 }  // namespace chromeos

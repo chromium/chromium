@@ -87,6 +87,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
 
   Transaction(RequestPriority priority,
               HttpCache* cache);
+
+  Transaction(const Transaction&) = delete;
+  Transaction& operator=(const Transaction&) = delete;
+
   ~Transaction() override;
 
   // Virtual so it can be extended for testing.
@@ -172,9 +176,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // added to an entry and the entry.
   void ResetCachePendingState() { cache_pending_ = false; }
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
   RequestPriority priority() const { return priority_; }
   PartialData* partial() { return partial_.get(); }
   bool is_truncated() { return truncated_; }
@@ -211,6 +212,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
 
   struct NetworkTransactionInfo {
     NetworkTransactionInfo();
+
+    NetworkTransactionInfo(const NetworkTransactionInfo&) = delete;
+    NetworkTransactionInfo& operator=(const NetworkTransactionInfo&) = delete;
+
     ~NetworkTransactionInfo();
 
     // Load timing information for the last network request, if any. Set in the
@@ -221,8 +226,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     int64_t total_sent_bytes = 0;
     ConnectionAttempts old_connection_attempts;
     IPEndPoint old_remote_endpoint;
-
-    DISALLOW_COPY_AND_ASSIGN(NetworkTransactionInfo);
   };
 
   enum State {
@@ -569,8 +572,9 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Saves network transaction info using |transaction|.
   void SaveNetworkTransactionInfo(const HttpTransaction& transaction);
 
-  // Disables caching for large content when running on battery.
-  bool ShouldDisableCaching(const HttpResponseHeaders* headers) const;
+  // Determines whether caching should be disabled for a response, given its
+  // headers.
+  bool ShouldDisableCaching(const HttpResponseHeaders& headers) const;
 
   State next_state_;
 
@@ -683,8 +687,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   bool in_do_loop_;
 
   base::WeakPtrFactory<Transaction> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Transaction);
 };
 
 }  // namespace net

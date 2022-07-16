@@ -17,7 +17,6 @@
 #include "components/browsing_data/core/counters/passwords_counter.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -71,9 +70,7 @@ class PasswordsCounterTest : public InProcessBrowserTest {
         browsing_data::prefs::kDeleteTimePeriod, static_cast<int>(period));
   }
 
-  void RevertTimeInDays(int days) {
-    time_ -= base::TimeDelta::FromDays(days);
-  }
+  void RevertTimeInDays(int days) { time_ -= base::Days(days); }
 
   void SetTimesUsed(int occurrences) { times_used_ = occurrences; }
 

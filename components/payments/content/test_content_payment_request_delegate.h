@@ -28,10 +28,16 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   TestContentPaymentRequestDelegate(
       std::unique_ptr<base::SingleThreadTaskExecutor> task_executor,
       autofill::PersonalDataManager* pdm);
+
+  TestContentPaymentRequestDelegate(const TestContentPaymentRequestDelegate&) =
+      delete;
+  TestContentPaymentRequestDelegate& operator=(
+      const TestContentPaymentRequestDelegate&) = delete;
+
   ~TestContentPaymentRequestDelegate() override;
 
   // ContentPaymentRequestDelegate:
-  std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator()
+  std::unique_ptr<webauthn::InternalAuthenticator> CreateInternalAuthenticator()
       const override;
   scoped_refptr<PaymentManifestWebDataService>
   GetPaymentManifestWebDataService() const override;
@@ -45,6 +51,8 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   bool SkipUiForBasicCard() const override;
   std::string GetTwaPackageName() const override;
   PaymentRequestDialog* GetDialogForTesting() override;
+  SecurePaymentConfirmationNoCreds* GetNoMatchingCredentialsDialogForTesting()
+      override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   const std::string& GetApplicationLocale() const override;
   bool IsOffTheRecord() const override;
@@ -67,12 +75,14 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   autofill::TestAddressNormalizer* test_address_normalizer();
   void DelayFullCardRequestCompletion();
   void CompleteFullCardRequest();
-  const PaymentUIObserver* GetPaymentUIObserver() const override;
+  const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override;
+  void ShowNoMatchingPaymentCredentialDialog(
+      const std::u16string& merchant_name,
+      base::OnceClosure response_callback) override;
 
  private:
   TestPaymentRequestDelegate core_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContentPaymentRequestDelegate);
+  PaymentRequestDisplayManager payment_request_display_manager_;
 };
 
 }  // namespace payments

@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.autofill_assistant.header;
 
 import android.content.Context;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChipAdapter;
@@ -47,10 +50,12 @@ class AssistantHeaderViewBinder
         final AnimatedPoodle mPoodle;
         final ViewGroup mHeader;
         final TextView mStatusMessage;
-        final AnimatedProgressBar mProgressBar;
         final AssistantStepProgressBar mStepProgressBar;
+        final ImageView mTtsButton;
         final View mProfileIconView;
         final PopupMenu mProfileIconMenu;
+        final MenuItem mProfileIconMenuSettingsMessage;
+        final MenuItem mProfileIconMenuSendFeedbackMessage;
         final RecyclerView mChipsContainer;
         @Nullable
         TextBubble mTextBubble;
@@ -61,18 +66,20 @@ class AssistantHeaderViewBinder
             mPoodle = poodle;
             mHeader = headerView;
             mStatusMessage = headerView.findViewById(R.id.status_message);
-            mProgressBar = new AnimatedProgressBar(headerView.findViewById(R.id.progress_bar));
             mStepProgressBar =
                     new AssistantStepProgressBar(headerView.findViewById(R.id.step_progress_bar));
+            mTtsButton = (ImageView) headerView.findViewById(R.id.tts_button);
             mProfileIconView = headerView.findViewById(R.id.profile_image);
             mProfileIconMenu = new PopupMenu(context, mProfileIconView);
             mProfileIconMenu.inflate(R.menu.profile_icon_menu);
+            mProfileIconMenuSettingsMessage = mProfileIconMenu.getMenu().findItem(R.id.settings);
+            mProfileIconMenuSendFeedbackMessage =
+                    mProfileIconMenu.getMenu().findItem(R.id.send_feedback);
             mProfileIconView.setOnClickListener(unusedView -> mProfileIconMenu.show());
             mChipsContainer = chipsContainer;
         }
 
         void disableAnimations(boolean disable) {
-            mProgressBar.disableAnimations(disable);
             mStepProgressBar.disableAnimations(disable);
             // Hiding the animated poodle seems to be the easiest way to disable its animation since
             // {@link LogoView#setAnimationEnabled(boolean)} is private.
@@ -81,14 +88,8 @@ class AssistantHeaderViewBinder
                     .setSupportsChangeAnimations(!disable);
         }
 
-        void updateProgressBarVisibility(boolean visible, boolean useStepProgressBar) {
-            if (visible && !useStepProgressBar) {
-                mProgressBar.show();
-            } else {
-                mProgressBar.hide();
-            }
-
-            mStepProgressBar.setVisible(visible && useStepProgressBar);
+        void updateProgressBarVisibility(boolean visible) {
+            mStepProgressBar.setVisible(visible);
         }
     }
 
@@ -98,8 +99,12 @@ class AssistantHeaderViewBinder
             String message = model.get(AssistantHeaderModel.STATUS_MESSAGE);
             AssistantTextUtils.applyVisualAppearanceTags(view.mStatusMessage, message, null);
             view.mStatusMessage.announceForAccessibility(view.mStatusMessage.getText());
-        } else if (AssistantHeaderModel.PROGRESS == propertyKey) {
-            view.mProgressBar.setProgress(model.get(AssistantHeaderModel.PROGRESS));
+        } else if (AssistantHeaderModel.PROFILE_ICON_MENU_SETTINGS_MESSAGE == propertyKey) {
+            view.mProfileIconMenuSettingsMessage.setTitle(
+                    model.get(AssistantHeaderModel.PROFILE_ICON_MENU_SETTINGS_MESSAGE));
+        } else if (AssistantHeaderModel.PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE == propertyKey) {
+            view.mProfileIconMenuSendFeedbackMessage.setTitle(
+                    model.get(AssistantHeaderModel.PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE));
         } else if (AssistantHeaderModel.PROGRESS_ACTIVE_STEP == propertyKey) {
             int activeStep = model.get(AssistantHeaderModel.PROGRESS_ACTIVE_STEP);
             if (activeStep >= 0) {
@@ -107,10 +112,8 @@ class AssistantHeaderViewBinder
             }
         } else if (AssistantHeaderModel.PROGRESS_BAR_ERROR == propertyKey) {
             view.mStepProgressBar.setError(model.get(AssistantHeaderModel.PROGRESS_BAR_ERROR));
-        } else if (AssistantHeaderModel.PROGRESS_VISIBLE == propertyKey
-                || AssistantHeaderModel.USE_STEP_PROGRESS_BAR == propertyKey) {
-            view.updateProgressBarVisibility(model.get(AssistantHeaderModel.PROGRESS_VISIBLE),
-                    model.get(AssistantHeaderModel.USE_STEP_PROGRESS_BAR));
+        } else if (AssistantHeaderModel.PROGRESS_VISIBLE == propertyKey) {
+            view.updateProgressBarVisibility(model.get(AssistantHeaderModel.PROGRESS_VISIBLE));
         } else if (AssistantHeaderModel.STEP_PROGRESS_BAR_ICONS == propertyKey) {
             view.mStepProgressBar.setSteps(model.get(AssistantHeaderModel.STEP_PROGRESS_BAR_ICONS));
             view.mStepProgressBar.disableAnimations(
@@ -128,6 +131,12 @@ class AssistantHeaderViewBinder
             maybeShowChips(model, view);
         } else if (AssistantHeaderModel.BUBBLE_MESSAGE == propertyKey) {
             showOrDismissBubble(model, view);
+        } else if (AssistantHeaderModel.TTS_BUTTON_VISIBLE == propertyKey) {
+            showOrHideTtsButton(model, view);
+        } else if (AssistantHeaderModel.TTS_BUTTON_STATE == propertyKey) {
+            setTtsButtonState(view, model.get(AssistantHeaderModel.TTS_BUTTON_STATE));
+        } else if (AssistantHeaderModel.TTS_BUTTON_CALLBACK == propertyKey) {
+            setTtsButtonClickListener(view, model.get(AssistantHeaderModel.TTS_BUTTON_CALLBACK));
         } else if (AssistantHeaderModel.DISABLE_ANIMATIONS_FOR_TESTING == propertyKey) {
             view.disableAnimations(model.get(AssistantHeaderModel.DISABLE_ANIMATIONS_FOR_TESTING));
         } else {
@@ -195,5 +204,38 @@ class AssistantHeaderViewBinder
                 ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         view.mTextBubble.setDismissOnTouchInteraction(true);
         view.mTextBubble.show();
+    }
+
+    private void showOrHideTtsButton(AssistantHeaderModel model, ViewHolder view) {
+        if (model.get(AssistantHeaderModel.TTS_BUTTON_VISIBLE)) {
+            view.mTtsButton.setVisibility(View.VISIBLE);
+        } else {
+            view.mTtsButton.setVisibility(View.GONE);
+        }
+    }
+
+    private void setTtsButtonClickListener(ViewHolder view, @Nullable Runnable ttsButtonCallback) {
+        view.mTtsButton.setOnClickListener(unusedView -> {
+            if (ttsButtonCallback != null) {
+                ttsButtonCallback.run();
+            }
+        });
+    }
+
+    private void setTtsButtonState(ViewHolder view, @AssistantTtsButtonState int state) {
+        switch (state) {
+            case AssistantTtsButtonState.DEFAULT:
+                view.mTtsButton.setImageResource(R.drawable.ic_volume_on_white_24dp);
+                view.mTtsButton.setTag(AssistantTagsForTesting.TTS_ENABLED_ICON_TAG);
+                break;
+            case AssistantTtsButtonState.PLAYING:
+                view.mTtsButton.setImageResource(R.drawable.ic_volume_on_white_24dp);
+                view.mTtsButton.setTag(AssistantTagsForTesting.TTS_PLAYING_ICON_TAG);
+                break;
+            case AssistantTtsButtonState.DISABLED:
+                view.mTtsButton.setImageResource(R.drawable.ic_volume_off_white_24dp);
+                view.mTtsButton.setTag(AssistantTagsForTesting.TTS_DISABLED_ICON_TAG);
+                break;
+        }
     }
 }

@@ -16,7 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base.h"
@@ -69,8 +69,8 @@ class DevicePolicyCloudExternalDataManagerTest
     ASSERT_TRUE(embedded_test_server()->Start());
     DevicePolicyCrosBrowserTest::SetUpOnMainThread();
 
-    BrowserPolicyConnectorChromeOS* policy_connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    BrowserPolicyConnectorAsh* policy_connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     ASSERT_TRUE(policy_connector);
     policy_service_ = policy_connector->GetPolicyService();
     ASSERT_TRUE(

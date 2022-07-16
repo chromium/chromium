@@ -6,20 +6,20 @@
 #define CHROME_BROWSER_LACROS_LACROS_MEMORY_PRESSURE_EVALUATOR_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/util/memory_pressure/memory_pressure_voter.h"
-#include "base/util/memory_pressure/system_memory_pressure_evaluator.h"
 #include "chromeos/crosapi/mojom/resource_manager.mojom.h"
+#include "components/memory_pressure/memory_pressure_voter.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 // LacrosMemoryPressureEvaluator handles the observation of our free memory. It
 // notifies the MemoryPressureListener of memory fill level changes, so that it
 // can take action to reduce memory resources accordingly.
 class LacrosMemoryPressureEvaluator
-    : public util::SystemMemoryPressureEvaluator,
+    : public memory_pressure::SystemMemoryPressureEvaluator,
       public crosapi::mojom::MemoryPressureObserver {
  public:
   explicit LacrosMemoryPressureEvaluator(
-      std::unique_ptr<util::MemoryPressureVoter> voter);
+      std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);
   ~LacrosMemoryPressureEvaluator() override;
 
   LacrosMemoryPressureEvaluator(const LacrosMemoryPressureEvaluator&) = delete;

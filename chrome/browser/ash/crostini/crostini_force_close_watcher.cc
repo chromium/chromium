@@ -18,9 +18,7 @@ namespace crostini {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultForceCloseDelay =
-    base::TimeDelta::FromSeconds(5);
-
+constexpr base::TimeDelta kDefaultForceCloseDelay = base::Seconds(5);
 }
 
 ForceCloseWatcher::Delegate::~Delegate() = default;

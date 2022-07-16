@@ -142,9 +142,6 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   net::Error ReadyForSparseIO(CompletionOnceCallback callback) override;
   void SetLastUsedTimeForTest(base::Time time) override;
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
   // Changes the entry's priority in its TaskRunner.
   void SetPriority(uint32_t entry_priority);
 

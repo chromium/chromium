@@ -26,6 +26,9 @@ class ArcMidisClientImpl : public ArcMidisClient {
  public:
   ArcMidisClientImpl() {}
 
+  ArcMidisClientImpl(const ArcMidisClientImpl&) = delete;
+  ArcMidisClientImpl& operator=(const ArcMidisClientImpl&) = delete;
+
   ~ArcMidisClientImpl() override = default;
 
   void BootstrapMojoConnection(base::ScopedFD fd,
@@ -58,8 +61,6 @@ class ArcMidisClientImpl : public ArcMidisClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<ArcMidisClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcMidisClientImpl);
 };
 
 }  // namespace

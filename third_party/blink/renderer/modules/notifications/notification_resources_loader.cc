@@ -20,7 +20,7 @@ namespace blink {
 namespace {
 
 // 99.9% of all images were fetched successfully in 90 seconds.
-constexpr base::TimeDelta kImageFetchTimeout = base::TimeDelta::FromSeconds(90);
+constexpr base::TimeDelta kImageFetchTimeout = base::Seconds(90);
 
 enum class NotificationIconType { kImage, kIcon, kBadge, kActionIcon };
 

@@ -62,6 +62,10 @@ class SegmentLength {
   };
 
   SegmentLength() = default;
+
+  SegmentLength(const SegmentLength&) = delete;
+  SegmentLength& operator=(const SegmentLength&) = delete;
+
   ~SegmentLength() = default;
 
   // Add a line segment to the set of active line segments, the segment
@@ -97,16 +101,16 @@ class SegmentLength {
   // iterating over the the sorted set of segment events.
   absl::optional<int> Length() {
     base::CheckedNumeric<int> length = 0;
-    int last_event_pos = -1;
+    absl::optional<int> last_event_pos;
     int num_active = 0;
     for (const auto& segment_event : active_segments_) {
-      if (last_event_pos == -1) {
+      if (!last_event_pos) {
         DCHECK(segment_event.is_segment_start);
         last_event_pos = segment_event.pos;
       }
 
       if (num_active > 0)
-        length += segment_event.pos - last_event_pos;
+        length += segment_event.pos - last_event_pos.value();
 
       last_event_pos = segment_event.pos;
       if (segment_event.is_segment_start) {
@@ -128,8 +132,6 @@ class SegmentLength {
 
   // Map from the segment_id passed by user to the Segment struct.
   std::unordered_map<int, SegmentEventSetIterators> segment_event_iterators_;
-
-  DISALLOW_COPY_AND_ASSIGN(SegmentLength);
 };
 
 }  // namespace
@@ -216,11 +218,11 @@ void PageAdDensityTracker::CalculateDensity() {
 
   SegmentLength segment_length_tracker;
 
-  int last_y = -1;
+  absl::optional<int> last_y;
   base::CheckedNumeric<int> total_area = 0;
   base::CheckedNumeric<int> total_height = 0;
   for (const auto& rect_event : rect_events_) {
-    if (last_y == -1) {
+    if (!last_y) {
       DCHECK(rect_event.is_bottom);
       segment_length_tracker.AddSegment(
           rect_event.rect_id, rect_event.rect.x(),
@@ -231,7 +233,7 @@ void PageAdDensityTracker::CalculateDensity() {
 
     int current_y =
         rect_event.is_bottom ? rect_event.rect.bottom() : rect_event.rect.y();
-    DCHECK_LE(current_y, last_y);
+    DCHECK_LE(current_y, last_y.value());
 
     // If the segment length value is invalid, skip this ad density calculation.
     absl::optional<int> segment_length = segment_length_tracker.Length();
@@ -241,14 +243,14 @@ void PageAdDensityTracker::CalculateDensity() {
     // Check that the segment length multiplied by the height of the block
     // does not overflow an int.
     base::CheckedNumeric<int> current_area = *segment_length;
-    current_area *= (last_y - current_y);
+    current_area *= (last_y.value() - current_y);
     if (!current_area.IsValid())
       return;
 
-    total_area += *segment_length * (last_y - current_y);
+    total_area += *segment_length * (last_y.value() - current_y);
 
     if (*segment_length > 0)
-      total_height += (last_y - current_y);
+      total_height += (last_y.value() - current_y);
 
     // As we are iterating from the bottom of the page to the top, add segments
     // when we see the start (bottom) of a new rect.

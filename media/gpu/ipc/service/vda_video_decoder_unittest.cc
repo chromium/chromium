@@ -10,7 +10,7 @@
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -113,6 +113,8 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
     client_ = vdavd;
   }
 
+  VdaVideoDecoderTest(const VdaVideoDecoderTest&) = delete;
+  VdaVideoDecoderTest& operator=(const VdaVideoDecoderTest&) = delete;
   ~VdaVideoDecoderTest() override {
     // Drop ownership of anything that may have an async destruction process,
     // then allow destruction to complete.
@@ -145,7 +147,7 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
         .WillOnce(Return(GetParam()));
     EXPECT_CALL(init_cb_, Run(IsOkStatus()));
     InitializeWithConfig(VideoDecoderConfig(
-        kCodecVP9, VP9PROFILE_PROFILE0,
+        VideoCodec::kVP9, VP9PROFILE_PROFILE0,
         VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace::REC709(),
         kNoTransformation, gfx::Size(1920, 1088), gfx::Rect(1920, 1080),
         gfx::Size(1920, 1080), EmptyExtraData(),
@@ -311,8 +313,6 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
 
   VideoDecodeAccelerator::Client* client_;
   uint64_t next_release_count_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(VdaVideoDecoderTest);
 };
 
 TEST_P(VdaVideoDecoderTest, CreateAndDestroy) {}
@@ -323,10 +323,10 @@ TEST_P(VdaVideoDecoderTest, Initialize) {
 
 TEST_P(VdaVideoDecoderTest, Initialize_UnsupportedSize) {
   InitializeWithConfig(VideoDecoderConfig(
-      kCodecVP9, VP9PROFILE_PROFILE0, VideoDecoderConfig::AlphaMode::kIsOpaque,
-      VideoColorSpace::REC601(), kNoTransformation, gfx::Size(320, 240),
-      gfx::Rect(320, 240), gfx::Size(320, 240), EmptyExtraData(),
-      EncryptionScheme::kUnencrypted));
+      VideoCodec::kVP9, VP9PROFILE_PROFILE0,
+      VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace::REC601(),
+      kNoTransformation, gfx::Size(320, 240), gfx::Rect(320, 240),
+      gfx::Size(320, 240), EmptyExtraData(), EncryptionScheme::kUnencrypted));
   EXPECT_CALL(init_cb_,
               Run(HasStatusCode(StatusCode::kDecoderInitializeNeverCompleted)));
   RunUntilIdle();
@@ -334,7 +334,7 @@ TEST_P(VdaVideoDecoderTest, Initialize_UnsupportedSize) {
 
 TEST_P(VdaVideoDecoderTest, Initialize_UnsupportedCodec) {
   InitializeWithConfig(VideoDecoderConfig(
-      kCodecH264, H264PROFILE_BASELINE,
+      VideoCodec::kH264, H264PROFILE_BASELINE,
       VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace::REC709(),
       kNoTransformation, gfx::Size(1920, 1088), gfx::Rect(1920, 1080),
       gfx::Size(1920, 1080), EmptyExtraData(), EncryptionScheme::kUnencrypted));
@@ -346,10 +346,10 @@ TEST_P(VdaVideoDecoderTest, Initialize_UnsupportedCodec) {
 TEST_P(VdaVideoDecoderTest, Initialize_RejectedByVda) {
   EXPECT_CALL(*vda_, Initialize(_, client_)).WillOnce(Return(false));
   InitializeWithConfig(VideoDecoderConfig(
-      kCodecVP9, VP9PROFILE_PROFILE0, VideoDecoderConfig::AlphaMode::kIsOpaque,
-      VideoColorSpace::REC709(), kNoTransformation, gfx::Size(1920, 1088),
-      gfx::Rect(1920, 1080), gfx::Size(1920, 1080), EmptyExtraData(),
-      EncryptionScheme::kUnencrypted));
+      VideoCodec::kVP9, VP9PROFILE_PROFILE0,
+      VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace::REC709(),
+      kNoTransformation, gfx::Size(1920, 1088), gfx::Rect(1920, 1080),
+      gfx::Size(1920, 1080), EmptyExtraData(), EncryptionScheme::kUnencrypted));
   EXPECT_CALL(init_cb_,
               Run(HasStatusCode(StatusCode::kDecoderInitializeNeverCompleted)));
   RunUntilIdle();
@@ -430,10 +430,10 @@ TEST_P(VdaVideoDecoderTest, Decode_Output_MaintainsAspect) {
   EXPECT_CALL(*vda_, TryToSetupDecodeOnSeparateThread(_, _))
       .WillOnce(Return(GetParam()));
   InitializeWithConfig(VideoDecoderConfig(
-      kCodecVP9, VP9PROFILE_PROFILE0, VideoDecoderConfig::AlphaMode::kIsOpaque,
-      VideoColorSpace::REC709(), kNoTransformation, gfx::Size(640, 480),
-      gfx::Rect(640, 480), gfx::Size(1280, 480), EmptyExtraData(),
-      EncryptionScheme::kUnencrypted));
+      VideoCodec::kVP9, VP9PROFILE_PROFILE0,
+      VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace::REC709(),
+      kNoTransformation, gfx::Size(640, 480), gfx::Rect(640, 480),
+      gfx::Size(1280, 480), EmptyExtraData(), EncryptionScheme::kUnencrypted));
   EXPECT_CALL(init_cb_, Run(IsOkStatus()));
   RunUntilIdle();
 

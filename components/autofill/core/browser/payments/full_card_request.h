@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -102,10 +101,10 @@ class FullCardRequest final : public CardUnmaskDelegate {
   FullCardRequest(RiskDataLoader* risk_data_loader,
                   payments::PaymentsClient* payments_client,
                   PersonalDataManager* personal_data_manager);
-  FullCardRequest(RiskDataLoader* risk_data_loader,
-                  payments::PaymentsClient* payments_client,
-                  PersonalDataManager* personal_data_manager,
-                  base::TimeTicks form_parsed_timestamp);
+
+  FullCardRequest(const FullCardRequest&) = delete;
+  FullCardRequest& operator=(const FullCardRequest&) = delete;
+
   ~FullCardRequest();
 
   // Retrieves the pan for |card| after querying the user for CVC and invokes
@@ -129,8 +128,10 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // Delegate::OnFullCardRequestSucceeded() or
   // Delegate::OnFullCardRequestFailed(). Only one request should be active at a
   // time. |last_committed_url_origin| is the full origin of the url where the
-  // card retrieval happens. |last_committed_url_origin| needs to be specified
-  // if the full card request is for a virtual card.
+  // card retrieval happens. |context_token| is used for providing context of
+  // the request to the server to link related
+  // requests. |last_committed_url_origin| and |context_token| are populated if
+  // the full card request is for a virtual card.
   //
   // If the card is local, has a non-empty GUID, and the user has updated its
   // expiration date, then this function will write the new information to
@@ -140,7 +141,8 @@ class FullCardRequest final : public CardUnmaskDelegate {
       AutofillClient::UnmaskCardReason reason,
       base::WeakPtr<ResultDelegate> result_delegate,
       base::Value fido_assertion_info,
-      absl::optional<GURL> last_committed_url_origin = absl::nullopt);
+      absl::optional<GURL> last_committed_url_origin = absl::nullopt,
+      absl::optional<std::string> context_token = absl::nullopt);
 
   // Called by the payments client when a card has been unmasked.
   void OnDidGetRealPan(
@@ -154,10 +156,6 @@ class FullCardRequest final : public CardUnmaskDelegate {
   payments::PaymentsClient::UnmaskResponseDetails unmask_response_details()
       const {
     return unmask_response_details_;
-  }
-
-  base::TimeTicks form_parsed_timestamp() const {
-    return form_parsed_timestamp_;
   }
 
  private:
@@ -174,8 +172,10 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // If |ui_delegate| is set, then the user is queried for CVC.
   // Else if |fido_assertion_info| is a dictionary, FIDO verification is used.
   // |last_committed_url_origin| is the url of the website on which the card is
-  // unmasked. |last_committed_url_origin| needs to be specified if the full
-  // card request is for a virtual card.
+  // unmasked. |context_token| is used for providing context of the request to
+  // the server to link related requests. |last_committed_url_origin| and
+  // |context_token| need to be specified if the full card request is for a
+  // virtual card.
   //
   // If the card is local, has a non-empty GUID, and the user has updated its
   // expiration date, then this function will write the new information to
@@ -185,7 +185,8 @@ class FullCardRequest final : public CardUnmaskDelegate {
                        base::WeakPtr<ResultDelegate> result_delegate,
                        base::WeakPtr<UIDelegate> ui_delegate,
                        absl::optional<base::Value> fido_assertion_info,
-                       absl::optional<GURL> last_committed_url_origin);
+                       absl::optional<GURL> last_committed_url_origin,
+                       absl::optional<std::string> context_token);
 
   // CardUnmaskDelegate:
   void OnUnmaskPromptAccepted(
@@ -228,17 +229,12 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // histograms.
   base::TimeTicks real_pan_request_timestamp_;
 
-  // The timestamp when the form is parsed. For histograms.
-  base::TimeTicks form_parsed_timestamp_;
-
   // Includes all details from GetRealPan response.
   payments::PaymentsClient::UnmaskResponseDetails unmask_response_details_;
 
   // Enables destroying FullCardRequest while CVC prompt is showing or a server
   // communication is pending.
   base::WeakPtrFactory<FullCardRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FullCardRequest);
 };
 
 }  // namespace payments

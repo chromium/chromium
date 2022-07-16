@@ -4,9 +4,9 @@
 
 #include "chrome/browser/android/autofill_assistant/ui_controller_android.h"
 
-#include <map>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
@@ -44,6 +44,7 @@
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/controller.h"
+#include "components/autofill_assistant/browser/display_strings_util.h"
 #include "components/autofill_assistant/browser/event_handler.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/metrics.h"
@@ -60,13 +61,17 @@
 #include "content/public/browser/web_contents.h"
 #include "google_apis/google_api_keys.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/l10n/l10n_util.h"
 
-using base::android::AttachCurrentThread;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
-using base::android::JavaRef;
-using chrome::android::ScreenshotMode;
+using ::autofill_assistant::ui_controller_android_utils::
+    ConvertNativeOptionalStringToJava;
+using ::autofill_assistant::ui_controller_android_utils::CreateJavaInfoPopup;
+using ::base::android::AttachCurrentThread;
+using ::base::android::ConvertUTF8ToJavaString;
+using ::base::android::JavaParamRef;
+using ::base::android::JavaRef;
+using ::base::android::ScopedJavaLocalRef;
+using ::base::android::ToJavaArrayOfStrings;
+using ::chrome::android::ScreenshotMode;
 
 namespace autofill_assistant {
 
@@ -99,35 +104,52 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDate(
   return CreateJavaDateTime(env, date_time);
 }
 
-// Creates the Java equivalent to |login_choices|.
-base::android::ScopedJavaLocalRef<jobject> CreateJavaLoginChoiceList(
+ScopedJavaLocalRef<jobject> CreateOptionalJavaInfoPopup(
     JNIEnv* env,
-    const std::vector<LoginChoice>& login_choices) {
+    const LoginChoice& login_choice,
+    const ClientSettings& client_settings) {
+  ScopedJavaLocalRef<jobject> jinfo_popup = nullptr;
+  if (login_choice.info_popup.has_value()) {
+    jinfo_popup = CreateJavaInfoPopup(
+        env, *login_choice.info_popup,
+        GetDisplayStringUTF8(ClientSettingsProto::CLOSE, client_settings));
+  }
+  return jinfo_popup;
+}
+
+ScopedJavaLocalRef<jobject> CreateJavaLoginChoice(
+    JNIEnv* env,
+    const LoginChoice& login_choice,
+    const ClientSettings& client_settings) {
+  return Java_AssistantCollectUserDataModel_createLoginChoice(
+      env, ConvertUTF8ToJavaString(env, login_choice.identifier),
+      ConvertUTF8ToJavaString(env, login_choice.label),
+      ConvertUTF8ToJavaString(env, login_choice.sublabel),
+      ConvertNativeOptionalStringToJava(
+          env, login_choice.sublabel_accessibility_hint),
+      login_choice.preselect_priority,
+      CreateOptionalJavaInfoPopup(env, login_choice, client_settings),
+      ConvertNativeOptionalStringToJava(
+          env, login_choice.edit_button_content_description));
+}
+
+// Creates the Java equivalent to |login_choices|.
+ScopedJavaLocalRef<jobject> CreateJavaLoginChoiceList(
+    JNIEnv* env,
+    const std::vector<LoginChoice>& login_choices,
+    const ClientSettings& client_settings) {
   auto jlist = Java_AssistantCollectUserDataModel_createLoginChoiceList(env);
   for (const auto& login_choice : login_choices) {
-    base::android::ScopedJavaLocalRef<jobject> jinfo_popup = nullptr;
-    if (login_choice.info_popup.has_value()) {
-      jinfo_popup = ui_controller_android_utils::CreateJavaInfoPopup(
-          env, *login_choice.info_popup);
-    }
-    base::android::ScopedJavaLocalRef<jstring> jsublabel_accessibility_hint =
-        nullptr;
-    if (login_choice.sublabel_accessibility_hint.has_value()) {
-      jsublabel_accessibility_hint = ConvertUTF8ToJavaString(
-          env, login_choice.sublabel_accessibility_hint.value());
-    }
-    base::android::ScopedJavaLocalRef<jstring>
-        jedit_button_content_description = nullptr;
-    if (login_choice.edit_button_content_description.has_value()) {
-      jedit_button_content_description = base::android::ConvertUTF8ToJavaString(
-          env, login_choice.edit_button_content_description.value());
-    }
     Java_AssistantCollectUserDataModel_addLoginChoice(
         env, jlist, ConvertUTF8ToJavaString(env, login_choice.identifier),
         ConvertUTF8ToJavaString(env, login_choice.label),
         ConvertUTF8ToJavaString(env, login_choice.sublabel),
-        jsublabel_accessibility_hint, login_choice.preselect_priority,
-        jinfo_popup, jedit_button_content_description);
+        ConvertNativeOptionalStringToJava(
+            env, login_choice.sublabel_accessibility_hint),
+        login_choice.preselect_priority,
+        CreateOptionalJavaInfoPopup(env, login_choice, client_settings),
+        ConvertNativeOptionalStringToJava(
+            env, login_choice.edit_button_content_description));
   }
   return jlist;
 }
@@ -244,23 +266,6 @@ absl::optional<bool> GetPreviousFormSelectionResult(
     return absl::nullopt;
   }
   return input_result.selection().selected(selection_index);
-}
-
-bool ShouldAllowSoftKeyboardForState(AutofillAssistantState state) {
-  switch (state) {
-    case AutofillAssistantState::STARTING:
-    case AutofillAssistantState::RUNNING:
-      return false;
-
-    case AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT:
-    case AutofillAssistantState::PROMPT:
-    case AutofillAssistantState::BROWSE:
-    case AutofillAssistantState::MODAL_DIALOG:
-    case AutofillAssistantState::STOPPED:
-    case AutofillAssistantState::TRACKING:
-    case AutofillAssistantState::INACTIVE:
-      return true;
-  }
 }
 
 }  // namespace
@@ -390,7 +395,6 @@ void UiControllerAndroid::SetupForState() {
 
   UpdateActions(ui_delegate_->GetUserActions());
   AutofillAssistantState state = ui_delegate_->GetState();
-  AllowShowingSoftKeyboard(ShouldAllowSoftKeyboardForState(state));
   bool should_prompt_action_expand_sheet =
       ui_delegate_->ShouldPromptActionExpandSheet();
   switch (state) {
@@ -402,14 +406,6 @@ void UiControllerAndroid::SetupForState() {
     case AutofillAssistantState::RUNNING:
       SetOverlayState(OverlayState::FULL);
       SetSpinPoodle(true);
-      return;
-
-    case AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT:
-      SetOverlayState(OverlayState::HIDDEN);
-      SetSpinPoodle(false);
-
-      if (should_prompt_action_expand_sheet && ui_delegate_->IsTabSelected())
-        ShowContentAndExpandBottomSheet();
       return;
 
     case AutofillAssistantState::PROMPT:
@@ -455,6 +451,12 @@ void UiControllerAndroid::SetupForState() {
   NOTREACHED() << "Unknown state: " << static_cast<int>(state);
 }
 
+void UiControllerAndroid::OnKeyboardSuppressionStateChanged(
+    bool should_suppress_keyboard) {
+  Java_AssistantModel_setAllowSoftKeyboard(AttachCurrentThread(), GetModel(),
+                                           !should_suppress_keyboard);
+}
+
 void UiControllerAndroid::OnStatusMessageChanged(const std::string& message) {
   header_model_->SetStatusMessage(message);
 }
@@ -463,10 +465,6 @@ void UiControllerAndroid::OnBubbleMessageChanged(const std::string& message) {
   if (!message.empty()) {
     header_model_->SetBubbleMessage(message);
   }
-}
-
-void UiControllerAndroid::OnProgressChanged(int progress) {
-  header_model_->SetProgress(progress);
 }
 
 void UiControllerAndroid::OnProgressActiveStepChanged(int active_step) {
@@ -521,11 +519,6 @@ void UiControllerAndroid::OnOverlayColorsChanged(
       ui_controller_android_utils::GetJavaColor(env, colors.highlight_border));
 }
 
-void UiControllerAndroid::AllowShowingSoftKeyboard(bool enabled) {
-  Java_AssistantModel_setAllowSoftKeyboard(AttachCurrentThread(), GetModel(),
-                                           enabled);
-}
-
 void UiControllerAndroid::ShowContentAndExpandBottomSheet() {
   Java_AutofillAssistantUiController_showContentAndExpandBottomSheet(
       AttachCurrentThread(), java_object_);
@@ -561,6 +554,7 @@ void UiControllerAndroid::Shutdown(Metrics::DropOutReason reason) {
 
 void UiControllerAndroid::ShowSnackbar(base::TimeDelta delay,
                                        const std::string& message,
+                                       const std::string& undo_string,
                                        base::OnceCallback<void()> action) {
   if (delay.is_zero()) {
     std::move(action).Run();
@@ -578,7 +572,8 @@ void UiControllerAndroid::ShowSnackbar(base::TimeDelta delay,
   snackbar_action_ = std::move(action);
   Java_AutofillAssistantUiController_showSnackbar(
       env, java_object_, static_cast<jint>(delay.InMilliseconds()),
-      ConvertUTF8ToJavaString(env, message));
+      ConvertUTF8ToJavaString(env, message),
+      ConvertUTF8ToJavaString(env, undo_string));
 }
 
 void UiControllerAndroid::SnackbarResult(
@@ -625,12 +620,17 @@ void UiControllerAndroid::SetVisible(
 
 void UiControllerAndroid::SetVisible(bool visible) {
   Java_AssistantModel_setVisible(AttachCurrentThread(), GetModel(), visible);
+  DCHECK(ui_delegate_);
   if (visible) {
     // Recover possibly state changes missed by OnStateChanged()
     SetupForState();
   } else {
     SetOverlayState(OverlayState::HIDDEN);
   }
+  bool should_suppress_keyboard =
+      visible && ui_delegate_->ShouldSuppressKeyboard();
+  ui_delegate_->SuppressKeyboard(should_suppress_keyboard);
+  OnKeyboardSuppressionStateChanged(should_suppress_keyboard);
   ui_delegate_->SetUiShown(visible);
 }
 
@@ -640,28 +640,17 @@ void UiControllerAndroid::RestoreUi() {
 
   OnStatusMessageChanged(ui_delegate_->GetStatusMessage());
   OnBubbleMessageChanged(ui_delegate_->GetBubbleMessage());
-  auto step_progress_bar_configuration =
-      ui_delegate_->GetStepProgressBarConfiguration();
-  if (step_progress_bar_configuration.has_value()) {
-    OnStepProgressBarConfigurationChanged(*step_progress_bar_configuration);
-    if (step_progress_bar_configuration->use_step_progress_bar()) {
-      auto active_step = ui_delegate_->GetProgressActiveStep();
-      if (active_step.has_value()) {
-        OnProgressActiveStepChanged(*active_step);
-      }
-      OnProgressBarErrorStateChanged(ui_delegate_->GetProgressBarErrorState());
-    }
-  } else {
-    OnStepProgressBarConfigurationChanged(
-        ShowProgressBarProto::StepProgressBarConfiguration());
-    OnProgressChanged(ui_delegate_->GetProgress());
-  }
+  OnClientSettingsDisplayStringsChanged(ui_delegate_->GetClientSettings());
+  OnStepProgressBarConfigurationChanged(
+      ui_delegate_->GetStepProgressBarConfiguration());
+  OnProgressActiveStepChanged(ui_delegate_->GetProgressActiveStep());
+  OnProgressBarErrorStateChanged(ui_delegate_->GetProgressBarErrorState());
   OnProgressVisibilityChanged(ui_delegate_->GetProgressVisible());
   OnInfoBoxChanged(ui_delegate_->GetInfoBox());
   OnDetailsChanged(ui_delegate_->GetDetails());
   OnUserActionsChanged(ui_delegate_->GetUserActions());
   OnCollectUserDataOptionsChanged(ui_delegate_->GetCollectUserDataOptions());
-  OnUserDataChanged(ui_delegate_->GetUserData(), UserData::FieldChange::ALL);
+  OnUserDataChanged(*ui_delegate_->GetUserData(), UserData::FieldChange::ALL);
   OnPersistentGenericUserInterfaceChanged(
       ui_delegate_->GetPersistentGenericUiProto());
   OnGenericUserInterfaceChanged(ui_delegate_->GetGenericUiProto());
@@ -670,13 +659,17 @@ void UiControllerAndroid::RestoreUi() {
   ui_delegate_->GetTouchableArea(&area);
   std::vector<RectF> restricted_area;
   ui_delegate_->GetRestrictedArea(&restricted_area);
-  OnTouchableAreaChanged(area, restricted_area);
+  RectF visual_viewport;
+  ui_delegate_->GetVisualViewport(&visual_viewport);
+  OnTouchableAreaChanged(visual_viewport, area, restricted_area);
   OnViewportModeChanged(ui_delegate_->GetViewportMode());
   OnPeekModeChanged(ui_delegate_->GetPeekMode());
   OnFormChanged(ui_delegate_->GetForm(), ui_delegate_->GetFormResult());
   UiDelegate::OverlayColors colors;
   ui_delegate_->GetOverlayColors(&colors);
   OnOverlayColorsChanged(colors);
+  OnTtsButtonVisibilityChanged(ui_delegate_->GetTtsButtonVisible());
+  OnTtsButtonStateChanged(ui_delegate_->GetTtsButtonState());
   SetVisible(true);
   Java_AutofillAssistantUiController_restoreBottomSheetState(
       AttachCurrentThread(), java_object_,
@@ -887,6 +880,10 @@ void UiControllerAndroid::OnFeedbackButtonClicked(
   OnUserActionSelected(env, jcaller, index);
 }
 
+void UiControllerAndroid::OnTtsButtonClicked() {
+  ui_delegate_->OnTtsButtonClicked();
+}
+
 void UiControllerAndroid::OnKeyboardVisibilityChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
@@ -961,7 +958,10 @@ void UiControllerAndroid::CloseOrCancel(
 
   // Cancel, with a snackbar to allow UNDO.
   ShowSnackbar(ui_delegate_->GetClientSettings().cancel_delay,
-               l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_STOPPED),
+               GetDisplayStringUTF8(ClientSettingsProto::STOPPED,
+                                    ui_delegate_->GetClientSettings()),
+               GetDisplayStringUTF8(ClientSettingsProto::UNDO,
+                                    ui_delegate_->GetClientSettings()),
                base::BindOnce(&UiControllerAndroid::OnCancel,
                               weak_ptr_factory_.GetWeakPtr(), action_index,
                               std::move(trigger_context), dropout_reason));
@@ -1048,7 +1048,16 @@ void UiControllerAndroid::OnShouldShowOverlayChanged(bool should_show) {
   }
 }
 
+void UiControllerAndroid::OnTtsButtonVisibilityChanged(bool visible) {
+  header_model_->SetTtsButtonVisible(visible);
+}
+
+void UiControllerAndroid::OnTtsButtonStateChanged(TtsButtonState state) {
+  header_model_->SetTtsButtonState(state);
+}
+
 void UiControllerAndroid::OnTouchableAreaChanged(
+    const RectF& visual_viewport,
     const std::vector<RectF>& touchable_areas,
     const std::vector<RectF>& restricted_areas) {
   if (!touchable_areas.empty() &&
@@ -1058,10 +1067,12 @@ void UiControllerAndroid::OnTouchableAreaChanged(
 
   JNIEnv* env = AttachCurrentThread();
 
+  Java_AssistantOverlayModel_setVisualViewport(
+      env, GetOverlayModel(), visual_viewport.left, visual_viewport.top,
+      visual_viewport.right, visual_viewport.bottom);
   Java_AssistantOverlayModel_setTouchableArea(
       env, GetOverlayModel(),
       base::android::ToJavaFloatArray(env, ToFloatVector(touchable_areas)));
-
   Java_AssistantOverlayModel_setRestrictedArea(
       AttachCurrentThread(), GetOverlayModel(),
       base::android::ToJavaFloatArray(env, ToFloatVector(restricted_areas)));
@@ -1074,15 +1085,13 @@ void UiControllerAndroid::OnUnexpectedTaps() {
   }
 
   ShowSnackbar(ui_delegate_->GetClientSettings().tap_shutdown_delay,
-               l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_MAYBE_GIVE_UP),
+               GetDisplayStringUTF8(ClientSettingsProto::MAYBE_GIVE_UP,
+                                    ui_delegate_->GetClientSettings()),
+               GetDisplayStringUTF8(ClientSettingsProto::UNDO,
+                                    ui_delegate_->GetClientSettings()),
                base::BindOnce(&UiControllerAndroid::Shutdown,
                               weak_ptr_factory_.GetWeakPtr(),
                               Metrics::DropOutReason::OVERLAY_STOP));
-}
-
-void UiControllerAndroid::OnUserInteractionInsideTouchableArea() {
-  if (ui_delegate_)
-    ui_delegate_->OnUserInteractionInsideTouchableArea();
 }
 
 // Other methods.
@@ -1120,7 +1129,7 @@ void UiControllerAndroid::OnTermsAndConditionsChanged(
   ui_delegate_->SetTermsAndConditions(state);
 }
 
-void UiControllerAndroid::OnLoginChoiceChanged(std::string identifier) {
+void UiControllerAndroid::OnLoginChoiceChanged(const std::string& identifier) {
   ui_delegate_->SetLoginOption(identifier);
 }
 
@@ -1193,7 +1202,7 @@ void UiControllerAndroid::OnInputTextFocusChanged(bool is_text_focused) {
       FROM_HERE,
       base::BindOnce(&UiControllerAndroid::HideKeyboardIfFocusNotOnText,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(50));
+      base::Milliseconds(50));
 }
 
 void UiControllerAndroid::HideKeyboardIfFocusNotOnText() {
@@ -1211,6 +1220,8 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
     return;
   }
 
+  Java_AssistantCollectUserDataModel_setShouldStoreUserDataChanges(
+      env, jmodel, collect_user_data_options->should_store_data_changes);
   Java_AssistantCollectUserDataModel_setRequestName(
       env, jmodel, collect_user_data_options->request_payer_name);
   Java_AssistantCollectUserDataModel_setRequestEmail(
@@ -1264,8 +1275,9 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
       base::android::ToJavaArrayOfStrings(
           env, collect_user_data_options->supported_basic_card_networks));
   if (collect_user_data_options->request_login_choice) {
-    auto jlist = CreateJavaLoginChoiceList(
-        env, collect_user_data_options->login_choices);
+    auto jlist =
+        CreateJavaLoginChoiceList(env, collect_user_data_options->login_choices,
+                                  ui_delegate_->GetClientSettings());
     Java_AssistantCollectUserDataModel_setLoginChoices(env, jmodel, jlist);
   }
   Java_AssistantCollectUserDataModel_setRequestDateRange(
@@ -1362,11 +1374,8 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
 }
 
 void UiControllerAndroid::OnUserDataChanged(
-    const UserData* state,
+    const UserData& user_data,
     UserData::FieldChange field_change) {
-  if (!state) {
-    return;
-  }
   DCHECK(ui_delegate_ != nullptr);
   DCHECK(client_->GetWebContents() != nullptr);
   const CollectUserDataOptions* collect_user_data_options =
@@ -1387,11 +1396,12 @@ void UiControllerAndroid::OnUserDataChanged(
   if (field_change == UserData::FieldChange::ALL ||
       field_change == UserData::FieldChange::TERMS_AND_CONDITIONS) {
     Java_AssistantCollectUserDataModel_setTermsStatus(
-        env, jmodel, state->terms_and_conditions_);
+        env, jmodel, user_data.terms_and_conditions_);
   }
 
   const autofill::AutofillProfile* selected_contact_profile =
-      state->selected_address(collect_user_data_options->contact_details_name);
+      user_data.selected_address(
+          collect_user_data_options->contact_details_name);
   auto jselected_contact =
       selected_contact_profile == nullptr
           ? nullptr
@@ -1406,7 +1416,8 @@ void UiControllerAndroid::OnUserDataChanged(
       selected_contact_profile, *collect_user_data_options);
 
   const autofill::AutofillProfile* selected_shipping_address =
-      state->selected_address(collect_user_data_options->shipping_address_name);
+      user_data.selected_address(
+          collect_user_data_options->shipping_address_name);
   auto jselected_shipping_address =
       selected_shipping_address == nullptr
           ? nullptr
@@ -1421,42 +1432,44 @@ void UiControllerAndroid::OnUserDataChanged(
 
   if (field_change == UserData::FieldChange::ALL ||
       field_change == UserData::FieldChange::AVAILABLE_PROFILES) {
-    // Contact profiles.
+    // Contacts.
     auto jcontactlist =
         Java_AssistantCollectUserDataModel_createAutofillContactList(env);
     auto contact_indices = user_data::SortContactsByCompleteness(
-        *collect_user_data_options, state->available_profiles_);
+        *collect_user_data_options, user_data.available_contacts_);
     for (int index : contact_indices) {
       auto jcontact = Java_AssistantCollectUserDataModel_createAutofillContact(
           env, jcontext,
           autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
-              env, *state->available_profiles_[index]),
+              env, *user_data.available_contacts_[index]->profile),
           collect_user_data_options->request_payer_name,
           collect_user_data_options->request_payer_phone,
           collect_user_data_options->request_payer_email);
       if (jcontact) {
         const auto& errors = user_data::GetContactValidationErrors(
-            state->available_profiles_[index].get(),
+            user_data.available_contacts_[index]->profile.get(),
             *collect_user_data_options);
         Java_AssistantCollectUserDataModel_addAutofillContact(
             env, jcontactlist, jcontact,
-            base::android::ToJavaArrayOfStrings(env, errors));
+            base::android::ToJavaArrayOfStrings(env, errors),
+            collect_user_data_options->can_edit_contacts);
       }
     }
     Java_AssistantCollectUserDataModel_setAvailableContacts(env, jmodel,
                                                             jcontactlist);
     Java_AssistantCollectUserDataModel_setSelectedContactDetails(
         env, jmodel, jselected_contact,
-        base::android::ToJavaArrayOfStrings(env, selected_contact_errors));
+        base::android::ToJavaArrayOfStrings(env, selected_contact_errors),
+        collect_user_data_options->can_edit_contacts);
 
-    // Billing address profiles.
+    // Billing addresses.
     auto jbillinglist =
         Java_AssistantCollectUserDataModel_createBillingAddressList(env);
-    for (const auto& profile : state->available_profiles_) {
+    for (const auto& address : user_data.available_addresses_) {
       auto jaddress = Java_AssistantCollectUserDataModel_createAutofillAddress(
           env, jcontext,
           autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
-              env, *profile));
+              env, *address->profile));
       if (jaddress) {
         Java_AssistantCollectUserDataModel_addBillingAddress(env, jbillinglist,
                                                              jaddress);
@@ -1465,19 +1478,19 @@ void UiControllerAndroid::OnUserDataChanged(
     Java_AssistantCollectUserDataModel_setAvailableBillingAddresses(
         env, jmodel, jbillinglist);
 
-    // Shipping address profiles.
+    // Shipping addresses.
     auto jshippinglist =
         Java_AssistantCollectUserDataModel_createShippingAddressList(env);
     auto address_indices = user_data::SortShippingAddressesByCompleteness(
-        *collect_user_data_options, state->available_profiles_);
+        *collect_user_data_options, user_data.available_addresses_);
     for (int index : address_indices) {
       auto jaddress = Java_AssistantCollectUserDataModel_createAutofillAddress(
           env, jcontext,
           autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
-              env, *state->available_profiles_[index]));
+              env, *user_data.available_addresses_[index]->profile));
       if (jaddress) {
         const auto& errors = user_data::GetShippingAddressValidationErrors(
-            state->available_profiles_[index].get(),
+            user_data.available_addresses_[index]->profile.get(),
             *collect_user_data_options);
         Java_AssistantCollectUserDataModel_addShippingAddress(
             env, jshippinglist, jaddress,
@@ -1496,7 +1509,8 @@ void UiControllerAndroid::OnUserDataChanged(
     // off case does not set updated contacts.
     Java_AssistantCollectUserDataModel_setSelectedContactDetails(
         env, jmodel, jselected_contact,
-        base::android::ToJavaArrayOfStrings(env, selected_contact_errors));
+        base::android::ToJavaArrayOfStrings(env, selected_contact_errors),
+        collect_user_data_options->can_edit_contacts);
   }
   if (field_change == UserData::FieldChange::SHIPPING_ADDRESS) {
     // The selection is already known in Java, but it has no errors. The PDM
@@ -1507,9 +1521,10 @@ void UiControllerAndroid::OnUserDataChanged(
                                             selected_shipping_address_errors));
   }
 
-  const autofill::CreditCard* selected_card = state->selected_card();
+  const autofill::CreditCard* selected_card = user_data.selected_card();
   const autofill::AutofillProfile* selected_billing_address =
-      state->selected_address(collect_user_data_options->billing_address_name);
+      user_data.selected_address(
+          collect_user_data_options->billing_address_name);
   auto jselected_card =
       selected_card == nullptr
           ? nullptr
@@ -1531,9 +1546,10 @@ void UiControllerAndroid::OnUserDataChanged(
             env);
     auto sorted_payment_instrument_indices =
         user_data::SortPaymentInstrumentsByCompleteness(
-            *collect_user_data_options, state->available_payment_instruments_);
+            *collect_user_data_options,
+            user_data.available_payment_instruments_);
     for (int index : sorted_payment_instrument_indices) {
-      const auto& instrument = state->available_payment_instruments_[index];
+      const auto& instrument = user_data.available_payment_instruments_[index];
       const auto& errors = user_data::GetPaymentInstrumentValidationErrors(
           instrument->card.get(), instrument->billing_address.get(),
           *collect_user_data_options);
@@ -1570,18 +1586,18 @@ void UiControllerAndroid::OnUserDataChanged(
 
   if (field_change == UserData::FieldChange::ALL ||
       field_change == UserData::FieldChange::DATE_TIME_RANGE_START) {
-    if (state->date_time_range_start_date_.has_value()) {
+    if (user_data.date_time_range_start_date_.has_value()) {
       Java_AssistantCollectUserDataModel_setDateTimeRangeStartDate(
           env, jmodel,
-          CreateJavaDate(env, *state->date_time_range_start_date_));
+          CreateJavaDate(env, *user_data.date_time_range_start_date_));
     } else {
       Java_AssistantCollectUserDataModel_clearDateTimeRangeStartDate(env,
                                                                      jmodel);
     }
 
-    if (state->date_time_range_start_timeslot_.has_value()) {
+    if (user_data.date_time_range_start_timeslot_.has_value()) {
       Java_AssistantCollectUserDataModel_setDateTimeRangeStartTimeSlot(
-          env, jmodel, *state->date_time_range_start_timeslot_);
+          env, jmodel, *user_data.date_time_range_start_timeslot_);
     } else {
       Java_AssistantCollectUserDataModel_clearDateTimeRangeStartTimeSlot(
           env, jmodel);
@@ -1590,23 +1606,34 @@ void UiControllerAndroid::OnUserDataChanged(
 
   if (field_change == UserData::FieldChange::ALL ||
       field_change == UserData::FieldChange::DATE_TIME_RANGE_END) {
-    if (state->date_time_range_end_date_.has_value()) {
+    if (user_data.date_time_range_end_date_.has_value()) {
       Java_AssistantCollectUserDataModel_setDateTimeRangeEndDate(
-          env, jmodel, CreateJavaDate(env, *state->date_time_range_end_date_));
+          env, jmodel,
+          CreateJavaDate(env, *user_data.date_time_range_end_date_));
     } else {
       Java_AssistantCollectUserDataModel_clearDateTimeRangeEndDate(env, jmodel);
     }
 
-    if (state->date_time_range_end_timeslot_.has_value()) {
+    if (user_data.date_time_range_end_timeslot_.has_value()) {
       Java_AssistantCollectUserDataModel_setDateTimeRangeEndTimeSlot(
-          env, jmodel, *state->date_time_range_end_timeslot_);
+          env, jmodel, *user_data.date_time_range_end_timeslot_);
     } else {
       Java_AssistantCollectUserDataModel_clearDateTimeRangeEndTimeSlot(env,
                                                                        jmodel);
     }
   }
 
-  // TODO(crbug.com/806868): Add |setSelectedLogin|.
+  if (field_change == UserData::FieldChange::ALL ||
+      field_change == UserData::FieldChange::LOGIN_CHOICE) {
+    ScopedJavaLocalRef<jobject> jselected_login_choice =
+        user_data.selected_login_choice() == nullptr
+            ? nullptr
+            : CreateJavaLoginChoice(env, *user_data.selected_login_choice(),
+                                    ui_delegate_->GetClientSettings());
+
+    Java_AssistantCollectUserDataModel_setSelectedLoginChoice(
+        env, jmodel, jselected_login_choice);
+  }
 }
 
 // FormProto related methods.
@@ -1711,11 +1738,21 @@ void UiControllerAndroid::OnFormChanged(const FormProto* form,
   if (form->has_info_popup()) {
     Java_AssistantFormModel_setInfoPopup(
         env, GetFormModel(),
-        ui_controller_android_utils::CreateJavaInfoPopup(env,
-                                                         form->info_popup()));
+        ui_controller_android_utils::CreateJavaInfoPopup(
+            env, form->info_popup(),
+            GetDisplayStringUTF8(ClientSettingsProto::CLOSE,
+                                 ui_delegate_->GetClientSettings())));
   } else {
     Java_AssistantFormModel_clearInfoPopup(env, GetFormModel());
   }
+}
+
+void UiControllerAndroid::OnClientSettingsDisplayStringsChanged(
+    const ClientSettings& settings) {
+  header_model_->SetProfileIconMenuSettingsMessage(
+      GetDisplayStringUTF8(ClientSettingsProto::SETTINGS, settings));
+  header_model_->SetProfileIconMenuSendFeedbackMessage(
+      GetDisplayStringUTF8(ClientSettingsProto::SEND_FEEDBACK, settings));
 }
 
 void UiControllerAndroid::OnClientSettingsChanged(
@@ -1760,6 +1797,7 @@ void UiControllerAndroid::OnClientSettingsChanged(
   }
   Java_AssistantModel_setTalkbackSheetSizeFraction(
       env, GetModel(), settings.talkback_sheet_size_fraction);
+  OnClientSettingsDisplayStringsChanged(settings);
 }
 
 void UiControllerAndroid::OnGenericUserInterfaceChanged(

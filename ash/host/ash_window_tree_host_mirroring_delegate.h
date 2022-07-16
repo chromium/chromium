@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace aura {
 class WindowTreeHost;
@@ -25,6 +24,12 @@ namespace ash {
 class ASH_EXPORT AshWindowTreeHostMirroringDelegate {
  public:
   AshWindowTreeHostMirroringDelegate() = default;
+
+  AshWindowTreeHostMirroringDelegate(
+      const AshWindowTreeHostMirroringDelegate&) = delete;
+  AshWindowTreeHostMirroringDelegate& operator=(
+      const AshWindowTreeHostMirroringDelegate&) = delete;
+
   virtual ~AshWindowTreeHostMirroringDelegate() = default;
 
   // Returns a pointer to the mirroring display with |display_id| if found, or
@@ -36,9 +41,6 @@ class ASH_EXPORT AshWindowTreeHostMirroringDelegate {
   // be forwarded by the unified mode event targeter to the unified host.
   virtual void SetCurrentEventTargeterSourceHost(
       aura::WindowTreeHost* targeter_src_host) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AshWindowTreeHostMirroringDelegate);
 };
 
 }  // namespace ash

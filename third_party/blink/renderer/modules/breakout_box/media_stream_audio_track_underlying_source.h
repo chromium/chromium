@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/transferred_frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 
 namespace blink {
 
@@ -65,6 +66,7 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
   bool added_to_track_ = false;
 
   media::AudioParameters audio_parameters_;
+  scoped_refptr<media::AudioBufferMemoryPool> buffer_pool_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -13,7 +13,7 @@
 #include "components/feed/buildflags.h"
 
 #if BUILDFLAG(ENABLE_FEED_V2)
-#include "chrome/browser/android/feed/v2/background_refresh_task.h"
+#include "chrome/browser/feed/android/background_refresh_task.h"
 #include "components/feed/core/v2/public/types.h"
 #endif
 

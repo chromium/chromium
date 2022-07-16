@@ -22,7 +22,7 @@
 #include "extensions/shell/renderer/shell_content_renderer_client.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
 #include "chromeos/dbus/constants/dbus_paths.h"
 #endif
 

@@ -27,6 +27,10 @@ class AddressNormalizationManager {
   AddressNormalizationManager(AddressNormalizer* address_normalizer,
                               const std::string& app_locale);
 
+  AddressNormalizationManager(const AddressNormalizationManager&) = delete;
+  AddressNormalizationManager& operator=(const AddressNormalizationManager&) =
+      delete;
+
   ~AddressNormalizationManager();
 
   // Multiple address version of NormalizeAddressWithCallback. Starts the
@@ -63,7 +67,6 @@ class AddressNormalizationManager {
   AddressNormalizer* address_normalizer_;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(AddressNormalizationManager);
 };
 
 }  // namespace autofill

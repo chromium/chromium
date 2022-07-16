@@ -17,6 +17,12 @@ class LinearAccelerationFusionAlgorithmUsingAccelerometer final
     : public PlatformSensorFusionAlgorithm {
  public:
   LinearAccelerationFusionAlgorithmUsingAccelerometer();
+
+  LinearAccelerationFusionAlgorithmUsingAccelerometer(
+      const LinearAccelerationFusionAlgorithmUsingAccelerometer&) = delete;
+  LinearAccelerationFusionAlgorithmUsingAccelerometer& operator=(
+      const LinearAccelerationFusionAlgorithmUsingAccelerometer&) = delete;
+
   ~LinearAccelerationFusionAlgorithmUsingAccelerometer() override;
 
   void SetFrequency(double frequency) override;
@@ -34,8 +40,6 @@ class LinearAccelerationFusionAlgorithmUsingAccelerometer final
   double gravity_x_;
   double gravity_y_;
   double gravity_z_;
-
-  DISALLOW_COPY_AND_ASSIGN(LinearAccelerationFusionAlgorithmUsingAccelerometer);
 };
 
 }  // namespace device

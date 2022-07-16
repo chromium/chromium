@@ -78,8 +78,7 @@ TEST_F(BrowserProcessTaskProviderTest, TestProvidedTask) {
   EXPECT_EQ(0, provided_task_->GetNetworkUsageRate());
   provided_task_->OnNetworkBytesRead(received_bytes);
   // Do a refresh with a 1-second update time.
-  provided_task_->Refresh(base::TimeDelta::FromSeconds(1),
-                          REFRESH_TYPE_NETWORK_USAGE);
+  provided_task_->Refresh(base::Seconds(1), REFRESH_TYPE_NETWORK_USAGE);
   EXPECT_EQ(received_bytes, provided_task_->GetNetworkUsageRate());
 }
 

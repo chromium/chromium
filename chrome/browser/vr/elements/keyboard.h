@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_KEYBOARD_H_
 #define CHROME_BROWSER_VR_ELEMENTS_KEYBOARD_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/keyboard_delegate.h"
 #include "chrome/browser/vr/renderers/base_renderer.h"
@@ -18,6 +17,10 @@ namespace vr {
 class VR_UI_EXPORT Keyboard : public UiElement {
  public:
   Keyboard();
+
+  Keyboard(const Keyboard&) = delete;
+  Keyboard& operator=(const Keyboard&) = delete;
+
   ~Keyboard() override;
 
   // The gvr keyboard requires that we advance its frame after initilization,
@@ -44,11 +47,12 @@ class VR_UI_EXPORT Keyboard : public UiElement {
   class Renderer : public BaseRenderer {
    public:
     Renderer();
+
+    Renderer(const Renderer&) = delete;
+    Renderer& operator=(const Renderer&) = delete;
+
     ~Renderer() override;
     void Draw(const CameraModel& camera_model, KeyboardDelegate* delegate);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Renderer);
   };
 
  private:
@@ -61,8 +65,6 @@ class VR_UI_EXPORT Keyboard : public UiElement {
   void UpdateDelegateVisibility();
 
   KeyboardDelegate* delegate_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(Keyboard);
 };
 
 }  // namespace vr

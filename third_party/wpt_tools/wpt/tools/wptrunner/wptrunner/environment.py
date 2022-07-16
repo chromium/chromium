@@ -45,6 +45,13 @@ def serve_path(test_paths):
     return test_paths["/"]["tests_path"]
 
 
+def webtranport_h3_server_is_running(host, port, timeout):
+    # TODO(bashi): Move the following import to the beginning of this file
+    # once WebTransportH3Server is enabled by default.
+    from webtransport.h3.webtransport_h3_server import server_is_running  # type: ignore
+    return server_is_running(host, port, timeout)
+
+
 class TestEnvironmentError(Exception):
     pass
 
@@ -83,7 +90,7 @@ class TestEnvironment(object):
     websockets servers"""
     def __init__(self, test_paths, testharness_timeout_multipler,
                  pause_after_test, debug_test, debug_info, options, ssl_config, env_extras,
-                 enable_quic=False, mojojs_path=None):
+                 enable_webtransport=False, mojojs_path=None):
 
         self.test_paths = test_paths
         self.server = None
@@ -104,7 +111,7 @@ class TestEnvironment(object):
         self.env_extras = env_extras
         self.env_extras_cms = None
         self.ssl_config = ssl_config
-        self.enable_quic = enable_quic
+        self.enable_webtransport = enable_webtransport
         self.mojojs_path = mojojs_path
 
     def __enter__(self):
@@ -130,7 +137,8 @@ class TestEnvironment(object):
                                    self.config,
                                    self.get_routes(),
                                    mp_context=mpcontext.get_context(),
-                                   log_handlers=[server_log_handler])
+                                   log_handlers=[server_log_handler],
+                                   webtransport_h3=self.enable_webtransport)
 
         if self.options.get("supports_debugger") and self.debug_info and self.debug_info.interactive:
             self.ignore_interrupts()
@@ -173,9 +181,8 @@ class TestEnvironment(object):
             "ws": [8888],
             "wss": [8889],
             "h2": [9000],
+            "webtransport-h3": [11000],
         }
-        if self.enable_quic:
-            ports["quic-transport"] = [10000]
         config.ports = ports
 
         if os.path.exists(override_path):
@@ -271,10 +278,12 @@ class TestEnvironment(object):
 
         if not failed and self.test_server_port:
             for scheme, servers in self.servers.items():
-                # TODO(Hexcles): Find a way to test QUIC's UDP port.
-                if scheme == "quic-transport":
-                    continue
                 for port, server in servers:
+                    if scheme == "webtransport-h3":
+                        if not webtranport_h3_server_is_running(host, port, timeout=1.0):
+                            # TODO(bashi): Consider supporting retry.
+                            failed.append((host, port))
+                        continue
                     s = socket.socket()
                     s.settimeout(0.1)
                     try:

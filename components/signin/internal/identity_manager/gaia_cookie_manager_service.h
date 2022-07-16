@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -67,19 +66,6 @@ class GaiaCookieManagerService
     SET_ACCOUNTS
   };
 
-  // The result of processing a request to remove an account (i.e.
-  // Google-Accounts-RemoveLocalAccount). Used as entry for histogram
-  // |Signin.RemoveLocalAccountOutcome|, hence entries should not be renumbered
-  // and numeric values should never be reused. Exposed publicly for testing
-  // purposes.
-  enum class RemoveLocalAccountOutcome {
-    kSuccess = 0,
-    kAccountsStale = 1,
-    // Missing means the account is not listed in |signed_out_accounts_|.
-    kSignedOutAccountMissing = 2,
-    kMaxValue = kSignedOutAccountMissing
-  };
-
   typedef base::OnceCallback<void(signin::SetAccountsInCookieResult)>
       SetAccountsInCookieCompletedCallback;
   typedef base::OnceCallback<void(const CoreAccountId&,
@@ -97,6 +83,9 @@ class GaiaCookieManagerService
   // Contains the information and parameters for any request.
   class GaiaCookieRequest {
    public:
+    GaiaCookieRequest(const GaiaCookieRequest&) = delete;
+    GaiaCookieRequest& operator=(const GaiaCookieRequest&) = delete;
+
     ~GaiaCookieRequest();
     GaiaCookieRequest(GaiaCookieRequest&&);
     GaiaCookieRequest& operator=(GaiaCookieRequest&&);
@@ -163,8 +152,6 @@ class GaiaCookieManagerService
     AddAccountToCookieCompletedCallback
         add_account_to_cookie_completed_callback_;
     LogOutFromCookieCompletedCallback log_out_from_cookie_completed_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(GaiaCookieRequest);
   };
 
   // Class to retrieve the external connection check results from gaia.
@@ -179,6 +166,10 @@ class GaiaCookieManagerService
     typedef std::map<std::string, std::string> ResultMap;
 
     explicit ExternalCcResultFetcher(GaiaCookieManagerService* helper);
+
+    ExternalCcResultFetcher(const ExternalCcResultFetcher&) = delete;
+    ExternalCcResultFetcher& operator=(const ExternalCcResultFetcher&) = delete;
+
     ~ExternalCcResultFetcher() override;
 
     // Gets the current value of the external connection check result string.
@@ -224,12 +215,13 @@ class GaiaCookieManagerService
     ResultMap results_;
     base::Time m_external_cc_result_start_time_;
     base::OnceClosure callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(ExternalCcResultFetcher);
   };
 
   GaiaCookieManagerService(ProfileOAuth2TokenService* token_service,
                            SigninClient* signin_client);
+
+  GaiaCookieManagerService(const GaiaCookieManagerService&) = delete;
+  GaiaCookieManagerService& operator=(const GaiaCookieManagerService&) = delete;
 
   ~GaiaCookieManagerService() override;
 
@@ -444,8 +436,6 @@ class GaiaCookieManagerService
   bool list_accounts_stale_;
 
   base::WeakPtrFactory<GaiaCookieManagerService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GaiaCookieManagerService);
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_GAIA_COOKIE_MANAGER_SERVICE_H_

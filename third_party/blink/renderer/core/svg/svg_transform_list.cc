@@ -216,9 +216,9 @@ CSSValue* CreateTransformCSSValue(const SVGTransform& transform) {
       FloatPoint rotation_origin = transform.RotationCenter();
       if (!ToFloatSize(rotation_origin).IsZero()) {
         transform_value->Append(*CSSNumericLiteralValue::Create(
-            rotation_origin.X(), CSSPrimitiveValue::UnitType::kUserUnits));
+            rotation_origin.x(), CSSPrimitiveValue::UnitType::kUserUnits));
         transform_value->Append(*CSSNumericLiteralValue::Create(
-            rotation_origin.Y(), CSSPrimitiveValue::UnitType::kUserUnits));
+            rotation_origin.y(), CSSPrimitiveValue::UnitType::kUserUnits));
       }
       break;
     }

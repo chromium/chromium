@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/chromeos/fileapi/recent_source.h"
 
 namespace chromeos {
@@ -20,6 +19,10 @@ class RecentFile;
 class FakeRecentSource : public RecentSource {
  public:
   FakeRecentSource();
+
+  FakeRecentSource(const FakeRecentSource&) = delete;
+  FakeRecentSource& operator=(const FakeRecentSource&) = delete;
+
   ~FakeRecentSource() override;
 
   // Add a file to the canned set.
@@ -34,8 +37,6 @@ class FakeRecentSource : public RecentSource {
                        RecentSource::FileType file_type) const;
 
   std::vector<RecentFile> canned_files_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeRecentSource);
 };
 
 }  // namespace chromeos

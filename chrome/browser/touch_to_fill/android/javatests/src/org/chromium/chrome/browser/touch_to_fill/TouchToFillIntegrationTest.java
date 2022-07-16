@@ -44,6 +44,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.url.GURL;
 
@@ -63,7 +64,7 @@ public class TouchToFillIntegrationTest {
     private static Credential sAna;
     private static Credential sBob;
 
-    private final TouchToFillComponent mTouchToFill = new TouchToFillCoordinator();
+    private TouchToFillComponent mTouchToFill;
 
     @Mock
     private TouchToFillComponent.Delegate mMockBridge;
@@ -86,6 +87,7 @@ public class TouchToFillIntegrationTest {
 
         mActivityTestRule.startMainActivityOnBlankPage();
         runOnUiThreadBlocking(() -> {
+            mTouchToFill = new TouchToFillCoordinator();
             mBottomSheetController = BottomSheetControllerProvider.from(
                     mActivityTestRule.getActivity().getWindowAndroid());
             mTouchToFill.initialize(
@@ -99,7 +101,7 @@ public class TouchToFillIntegrationTest {
         runOnUiThreadBlocking(() -> {
             mTouchToFill.showCredentials(sExampleUrl, true, Collections.singletonList(sAna));
         });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         pollUiThread(() -> getCredentials().getChildAt(1) != null);
         TouchCommon.singleClickView(getCredentials().getChildAt(1));
@@ -114,7 +116,7 @@ public class TouchToFillIntegrationTest {
         runOnUiThreadBlocking(() -> {
             mTouchToFill.showCredentials(sExampleUrl, true, Arrays.asList(sAna, sBob));
         });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         Espresso.pressBack();
 

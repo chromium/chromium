@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_TETHER_NETWORK_DISCONNECTION_HANDLER_H_
 #define CHROMEOS_COMPONENTS_TETHER_TETHER_NETWORK_DISCONNECTION_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/tether/active_host.h"
 #include "chromeos/network/network_state_handler_observer.h"
@@ -38,6 +37,12 @@ class TetherNetworkDisconnectionHandler : public NetworkStateHandlerObserver {
       NetworkConfigurationRemover* network_configuration_remover,
       DisconnectTetheringRequestSender* disconnect_tethering_request_sender,
       TetherSessionCompletionLogger* tether_session_completion_logger);
+
+  TetherNetworkDisconnectionHandler(const TetherNetworkDisconnectionHandler&) =
+      delete;
+  TetherNetworkDisconnectionHandler& operator=(
+      const TetherNetworkDisconnectionHandler&) = delete;
+
   ~TetherNetworkDisconnectionHandler() override;
 
   // NetworkStateHandlerObserver:
@@ -61,8 +66,6 @@ class TetherNetworkDisconnectionHandler : public NetworkStateHandlerObserver {
   scoped_refptr<base::TaskRunner> task_runner_;
   base::WeakPtrFactory<TetherNetworkDisconnectionHandler> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(TetherNetworkDisconnectionHandler);
 };
 
 }  // namespace tether

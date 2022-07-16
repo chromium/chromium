@@ -25,6 +25,10 @@ namespace chromecast {
 class RendererPrelauncherTest : public content::BrowserTestBase {
  public:
   RendererPrelauncherTest() {}
+
+  RendererPrelauncherTest(const RendererPrelauncherTest&) = delete;
+  RendererPrelauncherTest& operator=(const RendererPrelauncherTest&) = delete;
+
   ~RendererPrelauncherTest() override {}
 
  protected:
@@ -32,9 +36,6 @@ class RendererPrelauncherTest : public content::BrowserTestBase {
   void SetUp() override;
   void PreRunTestOnMainThread() override;
   void PostRunTestOnMainThread() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RendererPrelauncherTest);
 };
 
 void RendererPrelauncherTest::SetUp() {

@@ -44,6 +44,10 @@ class FakeBatteryStatusManager : public BatteryStatusManager {
   explicit FakeBatteryStatusManager(
       const BatteryStatusService::BatteryUpdateCallback& callback)
       : callback_(callback), battery_status_available_(true), started_(false) {}
+
+  FakeBatteryStatusManager(const FakeBatteryStatusManager&) = delete;
+  FakeBatteryStatusManager& operator=(const FakeBatteryStatusManager&) = delete;
+
   ~FakeBatteryStatusManager() override {}
 
   // Methods from BatteryStatusManager.
@@ -77,13 +81,15 @@ class FakeBatteryStatusManager : public BatteryStatusManager {
   bool battery_status_available_;
   bool started_;
   mojom::BatteryStatus status_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBatteryStatusManager);
 };
 
 class BatteryMonitorImplTest : public DeviceServiceTestBase {
  public:
   BatteryMonitorImplTest() = default;
+
+  BatteryMonitorImplTest(const BatteryMonitorImplTest&) = delete;
+  BatteryMonitorImplTest& operator=(const BatteryMonitorImplTest&) = delete;
+
   ~BatteryMonitorImplTest() override = default;
 
  protected:
@@ -115,8 +121,6 @@ class BatteryMonitorImplTest : public DeviceServiceTestBase {
 
  private:
   FakeBatteryStatusManager* battery_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryMonitorImplTest);
 };
 
 TEST_F(BatteryMonitorImplTest, BatteryManagerDefaultValues) {

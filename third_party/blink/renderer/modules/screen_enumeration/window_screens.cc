@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
-#include "third_party/blink/renderer/modules/screen_enumeration/screens.h"
+#include "third_party/blink/renderer/modules/screen_enumeration/screen_details.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
@@ -26,18 +26,18 @@ WindowScreens::WindowScreens(LocalDOMWindow* window)
       permission_service_(window) {}
 
 // static
-ScriptPromise WindowScreens::getScreens(ScriptState* script_state,
-                                        LocalDOMWindow& window,
-                                        ExceptionState& exception_state) {
-  return From(&window)->GetScreens(script_state, exception_state);
+ScriptPromise WindowScreens::getScreenDetails(ScriptState* script_state,
+                                              LocalDOMWindow& window,
+                                              ExceptionState& exception_state) {
+  return From(&window)->GetScreenDetails(script_state, exception_state);
 }
 
 void WindowScreens::ContextDestroyed() {
-  screens_.Clear();
+  screen_details_.Clear();
 }
 
 void WindowScreens::Trace(Visitor* visitor) const {
-  visitor->Trace(screens_);
+  visitor->Trace(screen_details_);
   visitor->Trace(permission_service_);
   ExecutionContextLifecycleObserver::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
@@ -53,8 +53,8 @@ WindowScreens* WindowScreens::From(LocalDOMWindow* window) {
   return supplement;
 }
 
-ScriptPromise WindowScreens::GetScreens(ScriptState* script_state,
-                                        ExceptionState& exception_state) {
+ScriptPromise WindowScreens::GetScreenDetails(ScriptState* script_state,
+                                              ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
@@ -70,13 +70,24 @@ ScriptPromise WindowScreens::GetScreens(ScriptState* script_state,
                      context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
 
+  auto permission_descriptor = CreatePermissionDescriptor(
+      mojom::blink::PermissionName::WINDOW_PLACEMENT);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  permission_service_->RequestPermission(
-      CreatePermissionDescriptor(
-          mojom::blink::PermissionName::WINDOW_PLACEMENT),
-      LocalFrame::HasTransientUserActivation(GetSupplementable()->GetFrame()),
-      WTF::Bind(&WindowScreens::OnPermissionRequestComplete,
-                WrapPersistent(this), WrapPersistent(resolver)));
+  auto callback = WTF::Bind(&WindowScreens::OnPermissionRequestComplete,
+                            WrapPersistent(this), WrapPersistent(resolver));
+
+  // Only allow the user prompts when the frame has a transient activation.
+  // Otherwise, resolve or reject the promise with the current permission state.
+  // This allows sites with permission already granted to obtain screen info
+  // when the document loads, to populate multi-screen UI.
+  if (LocalFrame::HasTransientUserActivation(GetSupplementable()->GetFrame())) {
+    permission_service_->RequestPermission(std::move(permission_descriptor),
+                                           /*user_gesture=*/true,
+                                           std::move(callback));
+  } else {
+    permission_service_->HasPermission(std::move(permission_descriptor),
+                                       std::move(callback));
+  }
 
   return resolver->Promise();
 }
@@ -90,13 +101,16 @@ void WindowScreens::OnPermissionRequestComplete(
     auto* const isolate = resolver->GetScriptState()->GetIsolate();
     ScriptState::Scope scope(resolver->GetScriptState());
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        isolate, DOMExceptionCode::kNotAllowedError, "Permission denied."));
+        isolate, DOMExceptionCode::kNotAllowedError,
+        status == mojom::blink::PermissionStatus::DENIED
+            ? "Permission denied."
+            : "Permission decision deferred."));
     return;
   }
 
-  if (!screens_)
-    screens_ = MakeGarbageCollected<Screens>(GetSupplementable());
-  resolver->Resolve(screens_);
+  if (!screen_details_)
+    screen_details_ = MakeGarbageCollected<ScreenDetails>(GetSupplementable());
+  resolver->Resolve(screen_details_);
 }
 
 }  // namespace blink

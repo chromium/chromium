@@ -17,7 +17,7 @@ PluralStringHandler::PluralStringHandler() = default;
 PluralStringHandler::~PluralStringHandler() = default;
 
 void PluralStringHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getPluralString",
       base::BindRepeating(&PluralStringHandler::HandleGetPluralString,
                           base::Unretained(this)));
@@ -31,7 +31,7 @@ void PluralStringHandler::AddStringToPluralMap(const std::string& name,
 
 void PluralStringHandler::HandleGetPluralString(const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(3U, args->GetSize());
+  CHECK_EQ(3U, args->GetList().size());
   const std::string callback = args->GetList()[0].GetString();
   const std::string name = args->GetList()[1].GetString();
   const int count = args->GetList()[2].GetInt();

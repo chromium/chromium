@@ -20,6 +20,10 @@ namespace scheduling_metrics {
 class COMPONENT_EXPORT(SCHEDULING_METRICS) ThreadMetrics {
  public:
   ThreadMetrics(ThreadType thread_type, bool has_cpu_timing_for_each_task);
+
+  ThreadMetrics(const ThreadMetrics&) = delete;
+  ThreadMetrics& operator=(const ThreadMetrics&) = delete;
+
   ~ThreadMetrics();
 
   bool ShouldDiscardTask(
@@ -42,8 +46,6 @@ class COMPONENT_EXPORT(SCHEDULING_METRICS) ThreadMetrics {
   TaskDurationMetricReporter<ThreadType> thread_task_cpu_duration_reporter_;
   TaskDurationMetricReporter<ThreadType> tracked_cpu_duration_reporter_;
   TaskDurationMetricReporter<ThreadType> non_tracked_cpu_duration_reporter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadMetrics);
 };
 
 }  // namespace scheduling_metrics

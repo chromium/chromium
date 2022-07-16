@@ -20,7 +20,7 @@ namespace base {
 // the thread that calls the final Run() on the returned closures.
 //
 // |done_closure| is also cleared on the final calling thread.
-BASE_EXPORT RepeatingClosure BarrierClosure(int num_closures,
+BASE_EXPORT RepeatingClosure BarrierClosure(size_t num_closures,
                                             OnceClosure done_closure);
 
 }  // namespace base

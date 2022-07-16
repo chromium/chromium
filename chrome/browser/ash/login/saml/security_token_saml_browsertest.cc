@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/login/saml/test_client_cert_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/ash/login/test/https_forwarder.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
@@ -25,7 +24,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/scoped_test_system_nss_key_slot_mixin.h"
+#include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
@@ -213,7 +212,7 @@ class SecurityTokenSamlTest : public OobeBaseTest {
 
   // Subscribes for the notifications from the Login Screen UI,
   void StartObservingLoginUiMessages() {
-    GetLoginUI()->RegisterMessageCallback(
+    GetLoginUI()->RegisterDeprecatedMessageCallback(
         "securityTokenPinDialogShownForTest",
         base::BindRepeating(&SecurityTokenSamlTest::OnPinDialogShownMessage,
                             weak_factory_.GetWeakPtr()));
@@ -231,7 +230,7 @@ class SecurityTokenSamlTest : public OobeBaseTest {
       feature_allowlist_{TestCertificateProviderExtension::extension_id()};
 
   ScopedTestSystemNSSKeySlotMixin system_nss_key_slot_mixin_{&mixin_host_};
-  FakeGaiaMixin gaia_mixin_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin gaia_mixin_{&mixin_host_};
   DeviceStateMixin device_state_mixin_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   TestClientCertSamlIdpMixin saml_idp_mixin_{
@@ -245,13 +244,8 @@ class SecurityTokenSamlTest : public OobeBaseTest {
   base::WeakPtrFactory<SecurityTokenSamlTest> weak_factory_{this};
 };
 
-#define NEVER_ENABLED_Basic DISABLED_Basic
-
 // Tests the successful login scenario with the correct PIN.
-// TODO(crbug.com/1033936): Fix the flakiness and enable it.
-IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, NEVER_ENABLED_Basic) {
-  test::OobeJS().ExpectHiddenPath({"gaia-signin", "pinDialog"});
-
+IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, Basic) {
   StartSignIn();
   WaitForPinDialog();
   test::OobeJS().ExpectVisiblePath({"gaia-signin", "pinDialog"});

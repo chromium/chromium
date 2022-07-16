@@ -23,6 +23,11 @@ class ThrottlingUploadDataStream : public net::UploadDataStream {
   // Supplied |upload_data_stream| must outlive this object.
   explicit ThrottlingUploadDataStream(
       net::UploadDataStream* upload_data_stream);
+
+  ThrottlingUploadDataStream(const ThrottlingUploadDataStream&) = delete;
+  ThrottlingUploadDataStream& operator=(const ThrottlingUploadDataStream&) =
+      delete;
+
   ~ThrottlingUploadDataStream() override;
 
   void SetInterceptor(ThrottlingNetworkInterceptor* interceptor);
@@ -45,8 +50,6 @@ class ThrottlingUploadDataStream : public net::UploadDataStream {
 
   net::UploadDataStream* upload_data_stream_;
   base::WeakPtr<ThrottlingNetworkInterceptor> interceptor_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottlingUploadDataStream);
 };
 
 }  // namespace network

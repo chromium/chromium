@@ -15,6 +15,9 @@ class TuneableTest : public ::testing::Test {
  public:
   TuneableTest() = default;
 
+  TuneableTest(const TuneableTest&) = delete;
+  TuneableTest& operator=(const TuneableTest&) = delete;
+
   void SetUp() override {
     // Note that we might need to call value() to cache `tuneable_cached_` here.
     // We don't currently, since it's not needed.
@@ -64,8 +67,6 @@ class TuneableTest : public ::testing::Test {
   static constexpr const char* kTuneableInt5 = "t_int_5";
   static constexpr const char* kTuneableInt10 = "t_int_10";
   static constexpr const char* kTuneableTimeDeltaFiveSeconds = "t_time_5s";
-
-  DISALLOW_COPY_AND_ASSIGN(TuneableTest);
 };
 
 TEST_F(TuneableTest, IntTuneableCached) {
@@ -105,9 +106,9 @@ TEST_F(TuneableTest, IntTuneableFromParams) {
 TEST_F(TuneableTest, OtherSpecializationsCompile) {
   // Since it's all templated, just be happy if it compiles and does something
   // somewhat sane.
-  constexpr base::TimeDelta min_value = base::TimeDelta::FromSeconds(0);
-  constexpr base::TimeDelta default_value = base::TimeDelta::FromSeconds(5);
-  constexpr base::TimeDelta max_value = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta min_value = base::Seconds(0);
+  constexpr base::TimeDelta default_value = base::Seconds(5);
+  constexpr base::TimeDelta max_value = base::Seconds(10);
   Tuneable<base::TimeDelta> time_delta_tuneable("whatever", min_value,
                                                 default_value, max_value);
   // Since the tuneable is not provided in the finch parameters, it should
@@ -122,11 +123,11 @@ TEST_F(TuneableTest, TimeDeltaIsSpecifiedInMilliseconds) {
   // Since the finch params are constructed with the assumption that the value
   // will be interpreted as milliseconds, make sure that the Tuneable actually
   // does interpret it that way.
-  constexpr base::TimeDelta min_value = base::TimeDelta::FromSeconds(0);
-  constexpr base::TimeDelta max_value = base::TimeDelta::FromSeconds(100);
+  constexpr base::TimeDelta min_value = base::Seconds(0);
+  constexpr base::TimeDelta max_value = base::Seconds(100);
   Tuneable<base::TimeDelta> t(kTuneableTimeDeltaFiveSeconds, min_value,
                               min_value, max_value);
-  EXPECT_EQ(t.value(), base::TimeDelta::FromSeconds(5));
+  EXPECT_EQ(t.value(), base::Seconds(5));
 }
 
 }  // namespace media

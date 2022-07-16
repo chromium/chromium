@@ -27,6 +27,9 @@ class CRYPTO_EXPORT SymmetricKey {
     HMAC_SHA1,
   };
 
+  SymmetricKey(const SymmetricKey&) = delete;
+  SymmetricKey& operator=(const SymmetricKey&) = delete;
+
   virtual ~SymmetricKey();
 
   // Generates a random key suitable to be used with |algorithm| and of
@@ -79,8 +82,6 @@ class CRYPTO_EXPORT SymmetricKey {
   SymmetricKey();
 
   std::string key_;
-
-  DISALLOW_COPY_AND_ASSIGN(SymmetricKey);
 };
 
 }  // namespace crypto

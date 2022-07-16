@@ -7,10 +7,14 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
+#include "base/strings/string_split.h"
+#include "base/task/bind_post_task.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "net/base/test_completion_callback.h"
+#include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/http_response.h"
 
 namespace content {
 
@@ -46,52 +50,40 @@ bool SlowHttpResponse::IsHandledUrl() {
   return false;
 }
 
-void SlowHttpResponse::AddResponseHeaders(std::string* response) {
-  response->append("Content-type: text/html\r\n");
+base::StringPairs SlowHttpResponse::ResponseHeaders() {
+  return {{"Content-type", "text/html"}};
 }
 
-void SlowHttpResponse::SetStatusLine(std::string* response) {
-  response->append("HTTP/1.1 200 OK\r\n");
+std::pair<net::HttpStatusCode, std::string> SlowHttpResponse::StatusLine() {
+  return {net::HTTP_OK, "OK"};
 }
 
 void SlowHttpResponse::SendResponse(
-    const net::test_server::SendBytesCallback& send,
-    net::test_server::SendCompleteCallback done) {
+    base::WeakPtr<HttpResponseDelegate> delegate) {
   // Construct the headers here so subclasses can override them. Then we will
   // bind them into the async task which sends them in the response.
-  std::string header_response;
-  SetStatusLine(&header_response);
-  AddResponseHeaders(&header_response);
-  header_response.append("Cache-Control: no-store\r\n");
-  header_response.append("\r\n");
+  net::HttpStatusCode status;
+  std::string status_reason;
+  std::tie(status, status_reason) = StatusLine();
+
+  base::StringPairs headers = ResponseHeaders();
+  headers.emplace_back("Cache-Control", "no-store");
 
   // SendResponse() runs off the test's main thread so we must have these tasks
   // post back from the test's main thread to this thread.
+  auto task_runner = base::ThreadTaskRunnerHandle::Get();
   auto send_headers = base::BindPostTask(
-      base::ThreadTaskRunnerHandle::Get(),
-      base::BindOnce(
-          [](const std::string& header_response,
-             const net::test_server::SendBytesCallback& send) {
-            send.Run(header_response, base::DoNothing());
-          },
-          header_response, send));
+      task_runner, base::BindOnce(&HttpResponseDelegate::SendResponseHeaders,
+                                  delegate, status, status_reason, headers));
+
   auto send_first_part = base::BindPostTask(
-      base::ThreadTaskRunnerHandle::Get(),
-      base::BindOnce(
-          [](const net::test_server::SendBytesCallback& send) {
-            std::string response(kFirstResponsePartSize, '*');
-            send.Run(response, base::DoNothing());
-          },
-          send));
+      task_runner, base::BindOnce(&HttpResponseDelegate::SendContents, delegate,
+                                  std::string(kFirstResponsePartSize, '*'),
+                                  base::DoNothing()));
   auto send_second_part = base::BindPostTask(
-      base::ThreadTaskRunnerHandle::Get(),
-      base::BindOnce(
-          [](const net::test_server::SendBytesCallback& send,
-             net::test_server::SendCompleteCallback done) {
-            std::string response(kSecondResponsePartSize, '*');
-            send.Run(response, std::move(done));
-          },
-          send, std::move(done)));
+      task_runner,
+      base::BindOnce(&HttpResponseDelegate::SendContentsAndFinish, delegate,
+                     std::string(kSecondResponsePartSize, '*')));
 
   // We run both `send_headers` and `send_first_part` when the test asks
   // us to start the response, but as separate tasks.

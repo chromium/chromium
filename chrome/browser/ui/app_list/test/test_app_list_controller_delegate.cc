@@ -53,7 +53,9 @@ void TestAppListControllerDelegate::DoShowAppInfoFlow(
     const std::string& extension_id) {
 }
 
-void TestAppListControllerDelegate::CreateNewWindow(bool incognito) {}
+void TestAppListControllerDelegate::CreateNewWindow(
+    bool incognito,
+    bool should_trigger_session_restore) {}
 
 void TestAppListControllerDelegate::OpenURL(Profile* profile,
                                             const GURL& url,

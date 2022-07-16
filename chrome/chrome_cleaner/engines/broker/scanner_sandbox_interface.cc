@@ -49,7 +49,7 @@ bool SandboxKnownFolderIdToPathServiceKey(KnownFolder folder_id,
       *path_service_key = base::DIR_PROGRAM_FILESX86;
       return true;
     case KnownFolder::kAppData:
-      *path_service_key = base::DIR_APP_DATA;
+      *path_service_key = base::DIR_ROAMING_APP_DATA;
       return true;
     default:
       LOG(ERROR) << "Unknown SandboxKnownFolderId given, " << folder_id;

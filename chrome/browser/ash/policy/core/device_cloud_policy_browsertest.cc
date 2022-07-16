@@ -16,8 +16,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -36,7 +35,6 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
-#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_switches.h"
@@ -64,42 +62,17 @@ namespace policy {
 
 namespace {
 
-class DeviceCloudPolicyBrowserTest : public InProcessBrowserTest {
- protected:
-  DeviceCloudPolicyBrowserTest()
-      : mock_client_(std::make_unique<MockCloudPolicyClient>()) {}
-
-  std::unique_ptr<MockCloudPolicyClient> mock_client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyBrowserTest);
-};
-
-}  // namespace
-
-IN_PROC_BROWSER_TEST_F(DeviceCloudPolicyBrowserTest, Initializer) {
-  BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  // Initializer exists at first.
-  EXPECT_TRUE(connector->GetDeviceCloudPolicyInitializer());
-
-  // Initializer is deleted when the manager connects.
-  connector->GetDeviceCloudPolicyManager()->StartConnection(
-      std::move(mock_client_), connector->GetInstallAttributes());
-  EXPECT_FALSE(connector->GetDeviceCloudPolicyInitializer());
-
-  // Initializer is restarted when the manager disconnects.
-  connector->GetDeviceCloudPolicyManager()->Disconnect();
-  EXPECT_TRUE(connector->GetDeviceCloudPolicyInitializer());
-}
-
-namespace {
-
 // Tests for the rotation of the signing keys used for the device policy.
 //
 // The test is performed against a test policy server, which is set up for
 // rotating the policy key automatically with each policy fetch.
 class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
+ public:
+  KeyRotationDeviceCloudPolicyTest(const KeyRotationDeviceCloudPolicyTest&) =
+      delete;
+  KeyRotationDeviceCloudPolicyTest& operator=(
+      const KeyRotationDeviceCloudPolicyTest&) = delete;
+
  protected:
   const int kInitialPolicyValue = 123;
   const int kSecondPolicyValue = 456;
@@ -143,7 +116,7 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
 
   void StartDevicePolicyRefresh() {
     g_browser_process->platform_part()
-        ->browser_policy_connector_chromeos()
+        ->browser_policy_connector_ash()
         ->GetDeviceCloudPolicyManager()
         ->RefreshPolicies();
   }
@@ -154,7 +127,7 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
 
   int GetInstalledPolicyKeyVersion() const {
     return g_browser_process->platform_part()
-        ->browser_policy_connector_chromeos()
+        ->browser_policy_connector_ash()
         ->GetDeviceCloudPolicyManager()
         ->device_store()
         ->policy()
@@ -162,10 +135,9 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
   }
 
   int GetInstalledPolicyValue() {
-    PolicyService* const policy_service =
-        g_browser_process->platform_part()
-            ->browser_policy_connector_chromeos()
-            ->GetPolicyService();
+    PolicyService* const policy_service = g_browser_process->platform_part()
+                                              ->browser_policy_connector_ash()
+                                              ->GetPolicyService();
     const base::Value* policy_value =
         policy_service
             ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME,
@@ -201,7 +173,7 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
   void StartObservingTestPolicy() {
     policy_change_registrar_ = std::make_unique<PolicyChangeRegistrar>(
         g_browser_process->platform_part()
-            ->browser_policy_connector_chromeos()
+            ->browser_policy_connector_ash()
             ->GetPolicyService(),
         PolicyNamespace(POLICY_DOMAIN_CHROME,
                         std::string() /* component_id */));
@@ -219,12 +191,10 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
     }
   }
 
-  chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
   std::unique_ptr<PolicyChangeRegistrar> policy_change_registrar_;
   int awaited_policy_value_ = -1;
   std::unique_ptr<base::RunLoop> policy_change_waiting_run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyRotationDeviceCloudPolicyTest);
 };
 
 }  // namespace
@@ -285,6 +255,12 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
   static constexpr int kFakePolicyPublicKeyVersion = 1;
 
   SigninExtensionsDeviceCloudPolicyBrowserTest() = default;
+
+  SigninExtensionsDeviceCloudPolicyBrowserTest(
+      const SigninExtensionsDeviceCloudPolicyBrowserTest&) = delete;
+  SigninExtensionsDeviceCloudPolicyBrowserTest& operator=(
+      const SigninExtensionsDeviceCloudPolicyBrowserTest&) = delete;
+
   ~SigninExtensionsDeviceCloudPolicyBrowserTest() override = default;
 
   void SetUp() override {
@@ -297,8 +273,12 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
     command_line->AppendSwitch(chromeos::switches::kLoginManager);
     command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
     // The test app has to be allowlisted for sign-in screen.
+    // This test is intentionally not migrated to the new
+    // kAllowlistedExtensionID switch to test that the deprecated one keeps
+    // working.
     command_line->AppendSwitchASCII(
-        extensions::switches::kAllowlistedExtensionID, kTestExtensionId);
+        extensions::switches::kDEPRECATED_AllowlistedExtensionID,
+        kTestExtensionId);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -315,8 +295,8 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
   void SetUpOnMainThread() override {
     DevicePolicyCrosBrowserTest::SetUpOnMainThread();
 
-    BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     connector->device_management_service()->ScheduleInitialization(0);
   }
 
@@ -406,9 +386,7 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
     builder->Build();
   }
 
-  chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
-
-  DISALLOW_COPY_AND_ASSIGN(SigninExtensionsDeviceCloudPolicyBrowserTest);
+  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
 };
 
 }  // namespace

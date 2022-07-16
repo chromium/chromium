@@ -278,6 +278,52 @@ TEST_F(LightProviderMojoTest, GetSamplesFromLateLidLightsWithTwoSensors) {
   CheckValues(kFakeLidLightId);
 }
 
+TEST_F(LightProviderMojoTest, DeviceRemovedWithOneSensor) {
+  SetProvider(/*has_several_light_sensors=*/false);
+  AddDevice(kFakeAcpiAlsId, kAcpiAlsName, absl::nullopt);
+  AddDevice(kFakeBaseLightId, kCrosECLightName,
+            chromeos::sensors::mojom::kLocationBase);
+  AddDevice(kFakeLidLightId, kCrosECLightName,
+            chromeos::sensors::mojom::kLocationLid);
+
+  StartConnection();
+
+  // Wait until a sample is received.
+  base::RunLoop().RunUntilIdle();
+
+  CheckValues(kFakeBaseLightId);
+
+  sensor_devices_[kFakeAcpiAlsId]->ClearReceiversWithReason(
+      chromeos::sensors::mojom::SensorDeviceDisconnectReason::DEVICE_REMOVED,
+      "Device was removed");
+
+  // Wait until the disconnection is done.
+  base::RunLoop().RunUntilIdle();
+
+  // The sensor service is not reset with the reason: DEVICE_REMOVED.
+  EXPECT_TRUE(sensor_hal_server_->GetSensorService()->HasReceivers());
+
+  // Wait until samples are received.
+  base::RunLoop().RunUntilIdle();
+
+  sensor_devices_[kFakeBaseLightId]->ClearReceiversWithReason(
+      chromeos::sensors::mojom::SensorDeviceDisconnectReason::DEVICE_REMOVED,
+      "Device was removed");
+  // Overwrite the lid light sensor in the iioservice.
+  AddDevice(kFakeBaseLightId, "", absl::nullopt);
+
+  // Wait until the disconnection and LightProviderMojo::ResetStates are done.
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate the timeout.
+  TriggerNewDevicesTimeout();
+
+  // Wait until all tasks are done.
+  base::RunLoop().RunUntilIdle();
+
+  CheckValues(kFakeLidLightId);
+}
+
 }  // namespace auto_screen_brightness
 }  // namespace power
 }  // namespace ash

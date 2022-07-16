@@ -138,6 +138,8 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
 
   void RequestExitPictureInPicture() override {}
 
+  void RequestMute(bool mute) override {}
+
   void SetVolumeMultiplier(double multiplier) override {
     received_volume_multiplier_ = multiplier;
     if (run_loop_for_volume_)
@@ -326,13 +328,13 @@ TEST_F(MediaSessionControllerTest, BasicControls) {
   EXPECT_TRUE(ReceivedMessagePlay());
 
   // ...as well as the seek behavior.
-  const base::TimeDelta kTestSeekForwardTime = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kTestSeekForwardTime = base::Seconds(1);
   SeekForward(kTestSeekForwardTime);
   EXPECT_TRUE(ReceivedMessageSeekForward(kTestSeekForwardTime));
-  const base::TimeDelta kTestSeekBackwardTime = base::TimeDelta::FromSeconds(2);
+  const base::TimeDelta kTestSeekBackwardTime = base::Seconds(2);
   SeekBackward(kTestSeekBackwardTime);
   EXPECT_TRUE(ReceivedMessageSeekBackward(kTestSeekBackwardTime));
-  const base::TimeDelta kTestSeekToTime = base::TimeDelta::FromSeconds(3);
+  const base::TimeDelta kTestSeekToTime = base::Seconds(3);
   SeekTo(kTestSeekToTime);
   EXPECT_TRUE(ReceivedMessageSeekTo(kTestSeekToTime));
 
@@ -405,7 +407,7 @@ TEST_F(MediaSessionControllerTest, Reinitialize) {
 
 TEST_F(MediaSessionControllerTest, PositionState) {
   media_session::MediaPosition expected_position(
-      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+      /*playback_rate=*/0.0, /*duration=*/base::Seconds(10),
       /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   controller_->OnMediaPositionStateChanged(expected_position);

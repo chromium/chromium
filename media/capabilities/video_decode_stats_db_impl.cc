@@ -33,8 +33,7 @@ namespace {
 
 // Timeout threshold for DB operations. See OnOperationTimeout().
 // NOTE: Used by UmaHistogramOpTime. Change the name if you change the time.
-static constexpr base::TimeDelta kPendingOpTimeout =
-    base::TimeDelta::FromSeconds(30);
+static constexpr base::TimeDelta kPendingOpTimeout = base::Seconds(30);
 
 const int kMaxFramesPerBufferDefault = 2500;
 
@@ -45,7 +44,7 @@ const bool kEnableUnweightedEntriesDefault = false;
 void UmaHistogramOpTime(const std::string& op_name, base::TimeDelta duration) {
   base::UmaHistogramCustomMicrosecondsTimes(
       "Media.VideoDecodeStatsDB.OpTiming." + op_name, duration,
-      base::TimeDelta::FromMilliseconds(1), kPendingOpTimeout, 50);
+      base::Milliseconds(1), kPendingOpTimeout, 50);
 }
 
 }  // namespace
@@ -309,7 +308,7 @@ bool VideoDecodeStatsDBImpl::AreStatsUsable(
   DCHECK_GT(kMaxDaysToKeepStats, 0);
 
   return wall_clock_->Now() - base::Time::FromJsTime(last_write_date) <=
-         base::TimeDelta::FromDays(kMaxDaysToKeepStats);
+         base::Days(kMaxDaysToKeepStats);
 }
 
 void VideoDecodeStatsDBImpl::WriteUpdatedEntry(

@@ -17,7 +17,7 @@ namespace {
 
 bool ReadFileContents(int fd, base::span<char> contents) {
   lseek(fd, 0, SEEK_SET);
-  int res = read(fd, contents.data(), contents.size() - 1);
+  ssize_t res = read(fd, contents.data(), contents.size() - 1);
   if (res <= 0)
     return false;
   contents.data()[res] = '\0';

@@ -95,10 +95,8 @@ void PCMQueueInAudioInputStream::Start(AudioInputCallback* callback) {
     deferred_start_cb_.Reset(base::BindOnce(&PCMQueueInAudioInputStream::Start,
                                             base::Unretained(this), callback));
     manager_->GetTaskRunner()->PostDelayedTask(
-        FROM_HERE,
-        deferred_start_cb_.callback(),
-        base::TimeDelta::FromSeconds(
-            AudioManagerMac::kStartDelayInSecsForPowerEvents));
+        FROM_HERE, deferred_start_cb_.callback(),
+        base::Seconds(AudioManagerMac::kStartDelayInSecsForPowerEvents));
     return;
   }
 
@@ -116,8 +114,7 @@ void PCMQueueInAudioInputStream::Start(AudioInputCallback* callback) {
   // true when the timer expires.
   input_callback_timer_ = std::make_unique<base::OneShotTimer>();
   input_callback_timer_->Start(
-      FROM_HERE,
-      base::TimeDelta::FromSeconds(kInputCallbackStartTimeoutInSeconds), this,
+      FROM_HERE, base::Seconds(kInputCallbackStartTimeoutInSeconds), this,
       &PCMQueueInAudioInputStream::CheckInputStartupSuccess);
   DCHECK(input_callback_timer_->IsRunning());
 }
@@ -267,7 +264,7 @@ void PCMQueueInAudioInputStream::HandleInputBuffer(
     // TODO(dalecurtis): Delete all this. It shouldn't be necessary now that we
     // have a ring buffer and FIFO on the actual shared memory.
     base::TimeDelta elapsed = base::TimeTicks::Now() - last_fill_;
-    const base::TimeDelta kMinDelay = base::TimeDelta::FromMilliseconds(5);
+    const base::TimeDelta kMinDelay = base::Milliseconds(5);
     if (elapsed < kMinDelay) {
       TRACE_EVENT0("audio",
                    "PCMQueueInAudioInputStream::HandleInputBuffer sleep");

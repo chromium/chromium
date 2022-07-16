@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -25,7 +24,7 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/external_testing_loader.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
-#include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
+#include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -95,6 +94,10 @@ const wchar_t kExternalAppRegistryKey[] =
 class ExternalProviderImplTest : public ExtensionServiceTestBase {
  public:
   ExternalProviderImplTest() {}
+
+  ExternalProviderImplTest(const ExternalProviderImplTest&) = delete;
+  ExternalProviderImplTest& operator=(const ExternalProviderImplTest&) = delete;
+
   ~ExternalProviderImplTest() override {}
 
   void InitService() {
@@ -248,8 +251,6 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   base::win::RegKey external_extension_key_;
   registry_util::RegistryOverrideManager registry_override_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalProviderImplTest);
 };
 
 }  // namespace

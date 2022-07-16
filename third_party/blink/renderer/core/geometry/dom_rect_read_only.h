@@ -25,6 +25,8 @@ class CORE_EXPORT DOMRectReadOnly : public ScriptWrappable {
                                  double y,
                                  double width,
                                  double height);
+  static DOMRectReadOnly* FromRect(const gfx::Rect&);
+  static DOMRectReadOnly* FromRectF(const gfx::RectF&);
   static DOMRectReadOnly* FromIntRect(const IntRect&);
   static DOMRectReadOnly* FromFloatRect(const FloatRect&);
   static DOMRectReadOnly* fromRect(const DOMRectInit*);

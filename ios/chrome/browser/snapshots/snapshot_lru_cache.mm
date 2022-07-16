@@ -9,7 +9,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -29,25 +29,25 @@ struct NSObjectHash {
 };
 
 template <class KeyType, class ValueType, class HashType>
-struct MRUCacheNSObjectHashMap {
+struct LRUCacheNSObjectHashMap {
   using Type =
       std::unordered_map<KeyType, ValueType, HashType, NSObjectEqualTo>;
 };
 
-using NSObjectMRUCache = base::MRUCacheBase<id<NSObject>,
+using NSObjectLRUCache = base::LRUCacheBase<id<NSObject>,
                                             id<NSObject>,
                                             NSObjectHash,
-                                            MRUCacheNSObjectHashMap>;
+                                            LRUCacheNSObjectHashMap>;
 
 }  // namespace
 
 @implementation SnapshotLRUCache {
-  std::unique_ptr<NSObjectMRUCache> _cache;
+  std::unique_ptr<NSObjectLRUCache> _cache;
 }
 
 - (instancetype)initWithCacheSize:(NSUInteger)maxCacheSize {
   if ((self = [super init])) {
-    _cache = std::make_unique<NSObjectMRUCache>(maxCacheSize);
+    _cache = std::make_unique<NSObjectLRUCache>(maxCacheSize);
   }
   return self;
 }

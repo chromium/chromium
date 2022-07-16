@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/power_monitor/power_observer.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/audio_codecs.h"
@@ -215,7 +215,7 @@ class BLINK_COMMON_EXPORT WatchTimeReporter : base::PowerStateObserver {
   // The amount of time between each UpdateWatchTime(); this is the frequency by
   // which the watch times are updated. In the event of a process crash or kill
   // this is also the most amount of watch time that we might lose.
-  base::TimeDelta reporting_interval_ = base::TimeDelta::FromSeconds(5);
+  base::TimeDelta reporting_interval_ = base::Seconds(5);
 
   base::RepeatingTimer reporting_timer_;
 

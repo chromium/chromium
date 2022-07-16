@@ -84,6 +84,11 @@ absl::optional<bool> WebAuthenticationDelegate::
   return absl::nullopt;
 }
 
+WebAuthenticationRequestProxy* WebAuthenticationDelegate::MaybeGetRequestProxy(
+    BrowserContext* browser_context) {
+  return nullptr;
+}
+
 AuthenticatorRequestClientDelegate::AuthenticatorRequestClientDelegate() =
     default;
 

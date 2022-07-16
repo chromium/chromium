@@ -13,7 +13,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -77,6 +76,12 @@ class DataReductionProxyCompressionStats {
   DataReductionProxyCompressionStats(DataReductionProxyService* service,
                                      PrefService* pref_service,
                                      const base::TimeDelta& delay);
+
+  DataReductionProxyCompressionStats(
+      const DataReductionProxyCompressionStats&) = delete;
+  DataReductionProxyCompressionStats& operator=(
+      const DataReductionProxyCompressionStats&) = delete;
+
   ~DataReductionProxyCompressionStats();
 
   // Records detailed data usage broken down by |mime_type|. Also records daily
@@ -293,8 +298,6 @@ class DataReductionProxyCompressionStats {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<DataReductionProxyCompressionStats> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataReductionProxyCompressionStats);
 };
 
 }  // namespace data_reduction_proxy

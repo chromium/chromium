@@ -7,14 +7,18 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/token.h"
+#include "base/unguessable_token.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
@@ -30,6 +34,10 @@ class VideoCaptureHost::RenderProcessHostDelegateImpl
  public:
   explicit RenderProcessHostDelegateImpl(uint32_t render_process_id)
       : render_process_id_(render_process_id) {}
+
+  RenderProcessHostDelegateImpl(const RenderProcessHostDelegateImpl&) = delete;
+  RenderProcessHostDelegateImpl& operator=(
+      const RenderProcessHostDelegateImpl&) = delete;
 
   ~RenderProcessHostDelegateImpl() override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -54,7 +62,6 @@ class VideoCaptureHost::RenderProcessHostDelegateImpl
 
  private:
   const uint32_t render_process_id_;
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessHostDelegateImpl);
 };
 
 VideoCaptureHost::VideoCaptureHost(uint32_t render_process_id,
@@ -278,6 +285,34 @@ void VideoCaptureHost::Resume(const base::UnguessableToken& device_id,
     device_id_to_observer_map_[device_id]->OnStateChanged(
         media::mojom::VideoCaptureState::RESUMED);
   }
+}
+
+void VideoCaptureHost::Crop(const base::UnguessableToken& device_id,
+                            const base::Token& crop_id,
+                            CropCallback callback) {
+  DVLOG(1) << __func__ << " " << device_id;
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  const VideoCaptureControllerID& controller_id(device_id);
+  const auto it = controllers_.find(controller_id);
+  if (it == controllers_.end() || !it->second) {
+    std::move(callback).Run(
+        media::mojom::CropRequestResult::kErrorUnknownDeviceId);
+    return;
+  }
+  VideoCaptureController* const controller = it->second.get();
+  DCHECK(controller);  // Verified above.
+
+  if (!controller->IsDeviceAlive()) {
+    std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
+    return;
+  }
+
+  // TODO(crbug.com/1247761): Validate that the crop-ID was produced
+  // by produceCropId(), and that this was done for this specific tab,
+  // thereby rejecting (a) unknown crop-IDs and (b) other-tab-crops.
+
+  controller->Crop(crop_id, std::move(callback));
 }
 
 void VideoCaptureHost::RequestRefreshFrame(

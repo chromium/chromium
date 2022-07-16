@@ -11,14 +11,12 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_language_list.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/variations/service/variations_service.h"
 
 namespace base {
-class DictionaryValue;
 class ListValue;
 class Value;
 }  // namespace base
@@ -33,18 +31,37 @@ struct TranslateInitDetails;
 class TranslateInternalsHandler {
  public:
   TranslateInternalsHandler();
+
+  TranslateInternalsHandler(const TranslateInternalsHandler&) = delete;
+  TranslateInternalsHandler& operator=(const TranslateInternalsHandler&) =
+      delete;
+
   ~TranslateInternalsHandler();
 
-  // Returns a dictionary of languages in |dict| where each key is a language
+  // Returns a dictionary of languages where each key is a language
   // code and each value is a language name in the locale.
-  static void GetLanguages(base::DictionaryValue* dict);
+  static base::Value GetLanguages();
 
   virtual TranslateClient* GetTranslateClient() = 0;
   virtual variations::VariationsService* GetVariationsService() = 0;
   // Registers to handle |message| from JavaScript with |callback|.
-  using MessageCallback = base::RepeatingCallback<void(const base::ListValue*)>;
+  using MessageCallback =
+      base::RepeatingCallback<void(base::Value::ConstListView)>;
   virtual void RegisterMessageCallback(const std::string& message,
-                                       const MessageCallback& callback) = 0;
+                                       MessageCallback callback) = 0;
+
+  // Always use RegisterMessageCallback() above in new code.
+  //
+  // TODO(crbug.com/1243386): Existing callers of
+  // RegisterDeprecatedMessageCallback() should be migrated to
+  // RegisterMessageCallback() if possible.
+  //
+  // Registers to handle |message| from JavaScript with |callback|.
+  using DeprecatedMessageCallback =
+      base::RepeatingCallback<void(const base::ListValue*)>;
+  virtual void RegisterDeprecatedMessageCallback(
+      const std::string& message,
+      const DeprecatedMessageCallback& callback) = 0;
   // Calls a Javascript function with the given name and arguments.
   virtual void CallJavascriptFunction(
       const std::string& function_name,
@@ -106,8 +123,6 @@ class TranslateInternalsHandler {
 
   // Subscription for translate initialization event.
   base::CallbackListSubscription init_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateInternalsHandler);
 };
 
 }  // namespace translate

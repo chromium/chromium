@@ -4,12 +4,6 @@
 
 module media.mojom;
 
-// Mojo struct for
-// fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>.
-struct CdmRequest {
-  handle<platform> request;
-};
-
 // Mojo struct for fidl::InterfaceRequest<fuchsia::media::AudioConsumer>.
 struct AudioConsumerRequest {
   handle<platform> request;
@@ -23,11 +17,6 @@ struct AudioCapturerRequest {
 // Interface used by the render to create media resources. Instances are
 // document-scoped.
 interface FuchsiaMediaResourceProvider {
-  // Create connection to fuchsia::media::drm::ContentDecryptionModule for
-  // |key_system|. Implementation should make sure the persistent storage is
-  // isolated per web origin.
-  CreateCdm(string key_system, CdmRequest cdm_request);
-
   // Creates a fuchsia.media.AudioConsumer for the current frame.
   CreateAudioConsumer(AudioConsumerRequest request);
 

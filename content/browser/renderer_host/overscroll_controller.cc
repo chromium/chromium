@@ -21,8 +21,7 @@ namespace {
 
 // Minimum amount of time after an actual scroll after which a pull-to-refresh
 // can start.
-constexpr base::TimeDelta kPullToRefreshCoolOffDelay =
-    base::TimeDelta::FromMilliseconds(600);
+constexpr base::TimeDelta kPullToRefreshCoolOffDelay = base::Milliseconds(600);
 
 bool IsGestureEventFromTouchpad(const blink::WebInputEvent& event) {
   DCHECK(blink::WebInputEvent::IsGestureEventType(event.GetType()));

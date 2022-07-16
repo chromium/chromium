@@ -9,6 +9,23 @@
  */
 let InputContext;
 
+/**
+ * @typedef {{
+ *   contextID: number,
+ *   text: string,
+ *   cursor: number,
+ * }}
+ */
+let MockImeCompositionParameters;
+
+/**
+ * @typedef {{
+ *   contextID: number,
+ *   text: string,
+ * }}
+ */
+let MockImeCommitParameters;
+
 /*
  * A mock chrome.input.ime API for tests.
  */
@@ -18,6 +35,12 @@ var MockInputIme = {
 
   /** @private {function<number>} */
   onBlurListener_: null,
+
+  /** @private {MockImeCompositionParameters} */
+  lastCompositionParameters_: null,
+
+  /** @private {MockImeCommitParameters} */
+  lastCommittedParameters_: null,
 
   // Methods from chrome.input.ime API. //
 
@@ -61,6 +84,27 @@ var MockInputIme = {
     }
   },
 
+  /** @param {!MockImeCompositionParameters} composition */
+  setComposition(composition) {
+    MockInputIme.lastCompositionParameters_ = composition;
+  },
+
+  /** Clears composition text. */
+  clearComposition() {
+    MockInputIme.lastCompositionParameters_ = null;
+  },
+
+  /** @param {!MockImeCommitParameters} commitParameters */
+  commitText(commitParameters) {
+    MockInputIme.lastCommittedParameters_ = commitParameters;
+  },
+
+  /** @param {Object} unused */
+  setCandidateWindowProperties(unused) {},
+
+  /** @param {Object} unused */
+  setCandidates(unused) {},
+
   // Methods for testing. //
 
   /**
@@ -82,5 +126,27 @@ var MockInputIme = {
     if (MockInputIme.onBlurListener_) {
       MockInputIme.onBlurListener_(contextID);
     }
+  },
+
+  /**
+   * Gets the most recently set composition parameters.
+   * @return {MockImeCompositionParameters}
+   */
+  getLastCompositionParameters() {
+    return MockInputIme.lastCompositionParameters_;
+  },
+
+  /**
+   * Gets the most recently committed parameters.
+   * @return {MockImeCommitParameters}
+   */
+  getLastCommittedParameters() {
+    return MockInputIme.lastCommittedParameters_;
+  },
+
+  /** Resets composition and committed parameters. */
+  clearLastParameters() {
+    MockInputIme.lastCommittedParameters_ = null;
+    MockInputIme.lastCompositionParameters_ = null;
   },
 };

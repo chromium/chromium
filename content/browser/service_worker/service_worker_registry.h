@@ -9,8 +9,11 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/common/content_export.h"
@@ -294,6 +297,12 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       const ResourceList& resources,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
           version_reference);
+
+  void CreateNewRegistrationWithBucketInfo(
+      blink::mojom::ServiceWorkerRegistrationOptions options,
+      const blink::StorageKey& key,
+      NewRegistrationCallback callback,
+      storage::QuotaErrorOr<storage::BucketInfo> result);
 
   // Looks up live registrations and returns an optional value which may contain
   // a "findable" registration. See the implementation of this method for

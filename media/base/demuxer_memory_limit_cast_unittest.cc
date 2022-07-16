@@ -21,28 +21,28 @@ TEST(DemuxerMemoryLimitCastTest, GetDemuxerStreamAudioMemoryLimit) {
             internal::kDemuxerStreamAudioMemoryLimitLow);
 
   AudioDecoderConfig audio_config_opus(
-      AudioCodec::kCodecOpus, SampleFormat::kSampleFormatS16,
+      AudioCodec::kOpus, SampleFormat::kSampleFormatS16,
       ChannelLayout::CHANNEL_LAYOUT_STEREO, 5000 /* samples_per_second */,
       EmptyExtraData(), EncryptionScheme::kUnencrypted);
   EXPECT_EQ(GetDemuxerStreamAudioMemoryLimit(&audio_config_opus),
             internal::kDemuxerStreamAudioMemoryLimitLow);
 
   AudioDecoderConfig audio_config_ac3(
-      AudioCodec::kCodecAC3, SampleFormat::kSampleFormatS16,
+      AudioCodec::kAC3, SampleFormat::kSampleFormatS16,
       ChannelLayout::CHANNEL_LAYOUT_STEREO, 5000 /* samples_per_second */,
       EmptyExtraData(), EncryptionScheme::kUnencrypted);
   EXPECT_EQ(GetDemuxerStreamAudioMemoryLimit(&audio_config_ac3),
             internal::kDemuxerStreamAudioMemoryLimitMedium);
 
   AudioDecoderConfig audio_config_aac_1(
-      AudioCodec::kCodecAAC, SampleFormat::kSampleFormatS16,
+      AudioCodec::kAAC, SampleFormat::kSampleFormatS16,
       ChannelLayout::CHANNEL_LAYOUT_5_0, 5000 /* samples_per_second */,
       EmptyExtraData(), EncryptionScheme::kUnencrypted);
   EXPECT_EQ(GetDemuxerStreamAudioMemoryLimit(&audio_config_aac_1),
             internal::kDemuxerStreamAudioMemoryLimitMedium);
 
   AudioDecoderConfig audio_config_aac_2(
-      AudioCodec::kCodecAAC, SampleFormat::kSampleFormatS16,
+      AudioCodec::kAAC, SampleFormat::kSampleFormatS16,
       ChannelLayout::CHANNEL_LAYOUT_STEREO, 5000 /* samples_per_second */,
       EmptyExtraData(), EncryptionScheme::kUnencrypted);
   EXPECT_EQ(GetDemuxerStreamAudioMemoryLimit(&audio_config_aac_2),
@@ -61,7 +61,7 @@ TEST(DemuxerMemoryLimitCastTest, GetDemuxerStreamVideoMemoryLimit) {
             internal::kDemuxerStreamVideoMemoryLimitLow);
 
   VideoDecoderConfig video_config(
-      kCodecVP8, VIDEO_CODEC_PROFILE_UNKNOWN,
+      VideoCodec::kVP8, VIDEO_CODEC_PROFILE_UNKNOWN,
       VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
       kNoTransformation, kCodedSize, kVisibleRect, kNaturalSize,
       EmptyExtraData(), EncryptionScheme::kUnencrypted);
@@ -75,7 +75,7 @@ TEST(DemuxerMemoryLimitCastTest, GetDemuxerStreamVideoMemoryLimit) {
                 Demuxer::DemuxerTypes::kMediaUrlDemuxer, &video_config),
             internal::kDemuxerStreamVideoMemoryLimitLow);
 
-  video_config.Initialize(kCodecVP9, VIDEO_CODEC_PROFILE_UNKNOWN,
+  video_config.Initialize(VideoCodec::kVP9, VIDEO_CODEC_PROFILE_UNKNOWN,
                           VideoDecoderConfig::AlphaMode::kIsOpaque,
                           VideoColorSpace(), kNoTransformation, kCodedSize,
                           kVisibleRect, kNaturalSize, EmptyExtraData(),

@@ -28,6 +28,9 @@ class GtkFileChooserOnUiThread {
       scoped_refptr<base::SequencedTaskRunner> caller_task_runner,
       base::WeakPtr<FileChooserLinux> file_chooser_linux);
 
+  GtkFileChooserOnUiThread(const GtkFileChooserOnUiThread&) = delete;
+  GtkFileChooserOnUiThread& operator=(const GtkFileChooserOnUiThread&) = delete;
+
   ~GtkFileChooserOnUiThread();
 
   void Show();
@@ -46,14 +49,15 @@ class GtkFileChooserOnUiThread {
   GObject* file_dialog_ = nullptr;
   scoped_refptr<base::SequencedTaskRunner> caller_task_runner_;
   base::WeakPtr<FileChooserLinux> file_chooser_linux_;
-
-  DISALLOW_COPY_AND_ASSIGN(GtkFileChooserOnUiThread);
 };
 
 class FileChooserLinux : public FileChooser {
  public:
   FileChooserLinux(scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
                    ResultCallback callback);
+
+  FileChooserLinux(const FileChooserLinux&) = delete;
+  FileChooserLinux& operator=(const FileChooserLinux&) = delete;
 
   ~FileChooserLinux() override;
 
@@ -66,8 +70,6 @@ class FileChooserLinux : public FileChooser {
   FileChooser::ResultCallback callback_;
   base::SequenceBound<GtkFileChooserOnUiThread> gtk_file_chooser_on_ui_thread_;
   base::WeakPtrFactory<FileChooserLinux> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileChooserLinux);
 };
 
 GtkFileChooserOnUiThread::GtkFileChooserOnUiThread(

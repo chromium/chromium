@@ -12,7 +12,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGFlexibleBox (relative positioned) DIV class='sizing-small test-mode phase-ready state-scrubbing'",
+      "name": "LayoutNGFlexibleBox DIV class='sizing-small test-mode phase-ready state-scrubbing'",
       "bounds": [320, 240],
       "transform": 1
     }

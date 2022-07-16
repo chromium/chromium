@@ -14,8 +14,8 @@
 #include "base/metrics/histogram.h"
 #include "base/notreached.h"
 #include "base/one_shot_event.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "extensions/browser/api/runtime/runtime_api_delegate.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/events/lazy_event_dispatch_util.h"
 #include "extensions/browser/extension_host.h"
@@ -181,8 +182,8 @@ void BrowserContextKeyedAPIFactory<RuntimeAPI>::DeclareFactoryDependencies() {
 
 RuntimeAPI::RuntimeAPI(content::BrowserContext* context)
     : browser_context_(context),
-      minimum_duration_between_restarts_(base::TimeDelta::FromHours(
-          kMinDurationBetweenSuccessiveRestartsHours)),
+      minimum_duration_between_restarts_(
+          base::Hours(kMinDurationBetweenSuccessiveRestartsHours)),
       dispatch_chrome_updated_event_(false),
       did_read_delayed_restart_preferences_(false),
       was_last_restart_due_to_delayed_restart_api_(false) {
@@ -360,8 +361,7 @@ void RuntimeAPI::OnExtensionsReady() {
 RuntimeAPI::RestartAfterDelayStatus RuntimeAPI::ScheduleDelayedRestart(
     const base::Time& now,
     int seconds_from_now) {
-  base::TimeDelta delay_till_restart =
-      base::TimeDelta::FromSeconds(seconds_from_now);
+  base::TimeDelta delay_till_restart = base::Seconds(seconds_from_now);
 
   // Throttle restart requests that are received too soon successively, only if
   // the previous restart was due to this API.
@@ -567,8 +567,8 @@ void RuntimeEventRouter::OnExtensionUninstalled(
   }
 
   // Blocklisted extensions should not open uninstall_url.
-  if (extensions::ExtensionPrefs::Get(context)->IsExtensionBlocklisted(
-          extension_id)) {
+  if (blocklist_prefs::IsExtensionBlocklisted(
+          extension_id, extensions::ExtensionPrefs::Get(context))) {
     return;
   }
 
@@ -621,7 +621,7 @@ ExtensionFunction::ResponseAction RuntimeOpenOptionsPageFunction::Run() {
 
 ExtensionFunction::ResponseAction RuntimeSetUninstallURLFunction::Run() {
   std::unique_ptr<api::runtime::SetUninstallURL::Params> params(
-      api::runtime::SetUninstallURL::Params::Create(*args_));
+      api::runtime::SetUninstallURL::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   if (!params->url.empty() && !GURL(params->url).SchemeIsHTTPOrHTTPS())
     return RespondNow(Error(kInvalidUrlError, params->url));
@@ -682,7 +682,7 @@ ExtensionFunction::ResponseAction RuntimeRestartAfterDelayFunction::Run() {
   }
 
   std::unique_ptr<api::runtime::RestartAfterDelay::Params> params(
-      api::runtime::RestartAfterDelay::Params::Create(*args_));
+      api::runtime::RestartAfterDelay::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   int seconds = params->seconds;
 

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -32,7 +31,7 @@ void TestRecordTimeDeltaMetric(
     base::RepeatingCallback<void(const base::TimeDelta&)> recording_cb,
     const std::string& histogram_name) {
   base::HistogramTester tester;
-  const base::TimeDelta delta = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta delta = base::Milliseconds(10);
 
   tester.ExpectTotalCount(histogram_name, 0);
   recording_cb.Run(delta);

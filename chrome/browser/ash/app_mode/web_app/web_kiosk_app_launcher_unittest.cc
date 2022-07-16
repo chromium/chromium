@@ -11,21 +11,25 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/crosapi/fake_browser_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chrome/browser/web_applications/test/test_data_retriever.h"
+#include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/test_browser_window.h"
-#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/exo/shell_surface_util.h"
+#include "components/exo/wm_helper_chromeos.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 using ::base::test::RunClosure;
+using ::testing::_;
 using ::testing::Return;
 
 namespace ash {
@@ -39,6 +43,7 @@ class MockAppLauncherDelegate : public WebKioskAppLauncher::Delegate {
   MOCK_METHOD0(OnAppInstalling, void());
   MOCK_METHOD0(OnAppPrepared, void());
   MOCK_METHOD0(OnAppLaunched, void());
+  MOCK_METHOD0(OnAppWindowCreated, void());
   MOCK_METHOD1(OnLaunchFailed, void(KioskAppLaunchError::Error));
 
   MOCK_CONST_METHOD0(IsNetworkReady, bool());
@@ -50,11 +55,13 @@ const char kAppEmail[] = "lala@example.com";
 const char kAppInstallUrl[] = "https://example.com";
 const char kAppLaunchUrl[] = "https://example.com/launch";
 const char kAppLaunchBadUrl[] = "https://badexample.com";
+const char kLacrosAppId[] = "org.chromium.lacros.12345";
+const char kUserEmail[] = "user@example.com";
 const char16_t kAppTitle[] = u"app";
 
 std::unique_ptr<web_app::WebAppDataRetriever> CreateDataRetrieverWithData(
     const GURL& url) {
-  auto data_retriever = std::make_unique<web_app::TestDataRetriever>();
+  auto data_retriever = std::make_unique<web_app::FakeDataRetriever>();
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = url;
   info->title = kAppTitle;
@@ -90,25 +97,19 @@ class AppWindowCloser : public BrowserListObserver {
   base::RunLoop waiter;
 };
 
-class WebKioskAppLauncherTest : public ChromeRenderViewHostTestHarness {
+class WebKioskAppLauncherTest : public BrowserWithTestWindowTest {
  public:
-  WebKioskAppLauncherTest()
-      : ChromeRenderViewHostTestHarness(),
-        local_state_(TestingBrowserProcess::GetGlobal()) {}
+  WebKioskAppLauncherTest() : BrowserWithTestWindowTest() {}
   ~WebKioskAppLauncherTest() override {}
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    BrowserWithTestWindowTest::SetUp();
     app_manager_ = std::make_unique<WebKioskAppManager>();
     delegate_ = std::make_unique<MockAppLauncherDelegate>();
     launcher_ = std::make_unique<WebKioskAppLauncher>(
         profile(), delegate_.get(), AccountId::FromUserEmail(kAppEmail));
 
-    browser_window_ = new TestBrowserWindow();
-    new TestBrowserWindowOwner(browser_window_);
-    browser_window_->SetNativeWindow(new aura::Window(nullptr));
-
-    launcher_->SetBrowserWindowForTesting(browser_window_);
+    launcher_->SetBrowserWindowForTesting(window());
     url_loader_ = new web_app::TestWebAppUrlLoader();
     launcher_->SetUrlLoaderForTesting(
         std::unique_ptr<web_app::TestWebAppUrlLoader>(url_loader_));
@@ -121,7 +122,7 @@ class WebKioskAppLauncherTest : public ChromeRenderViewHostTestHarness {
     launcher_.reset();
     delegate_.reset();
     app_manager_.reset();
-    ChromeRenderViewHostTestHarness::TearDown();
+    BrowserWithTestWindowTest::TearDown();
   }
 
   void SetupAppData(bool installed) {
@@ -174,16 +175,12 @@ class WebKioskAppLauncherTest : public ChromeRenderViewHostTestHarness {
 
  private:
   std::unique_ptr<WebKioskAppManager> app_manager_;
-  ScopedTestingLocalState local_state_;
 
-  TestBrowserWindow* browser_window_;
   std::unique_ptr<MockAppLauncherDelegate> delegate_;
   std::unique_ptr<WebKioskAppLauncher> launcher_;
   std::unique_ptr<AppWindowCloser> closer_;
 };
 
-// TODO(crbug.com/1097708): these tests flakily fail on MSAN Builds.
-#if !defined(MEMORY_SANITIZER)
 TEST_F(WebKioskAppLauncherTest, NormalFlowNotInstalled) {
   SetupAppData(/*installed*/ false);
 
@@ -214,7 +211,6 @@ TEST_F(WebKioskAppLauncherTest, NormalFlowNotInstalled) {
 
   CloseAppWindow();
 }
-#endif
 
 TEST_F(WebKioskAppLauncherTest, NormalFlowAlreadyInstalled) {
   SetupAppData(/*installed*/ true);
@@ -233,8 +229,6 @@ TEST_F(WebKioskAppLauncherTest, NormalFlowAlreadyInstalled) {
   CloseAppWindow();
 }
 
-// TODO(crbug.com/1097708): these tests flakily fail on MSAN Builds.
-#if !defined(MEMORY_SANITIZER)
 TEST_F(WebKioskAppLauncherTest, NormalFlowBadLaunchUrl) {
   SetupAppData(/*installed*/ false);
 
@@ -306,7 +300,6 @@ TEST_F(WebKioskAppLauncherTest, InstallationRestarted) {
 
   CloseAppWindow();
 }
-#endif
 
 TEST_F(WebKioskAppLauncherTest, UrlNotLoaded) {
   SetupAppData(/*installed*/ false);
@@ -351,6 +344,131 @@ TEST_F(WebKioskAppLauncherTest, SkipInstallation) {
   loop2.Run();
 
   CloseAppWindow();
+}
+
+class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
+ public:
+  WebKioskAppLauncherUsingLacrosTest()
+      : browser_manager_(std::make_unique<crosapi::FakeBrowserManager>()),
+        fake_user_manager_(new ash::FakeChromeUserManager()),
+        scoped_user_manager_(base::WrapUnique(fake_user_manager_)),
+        wm_helper_(std::make_unique<exo::WMHelperChromeOS>()) {
+    scoped_feature_list_.InitAndEnableFeature(features::kWebKioskEnableLacros);
+    crosapi::browser_util::SetLacrosEnabledForTest(true);
+    crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
+  }
+
+  void LoginWebKioskUser() {
+    const AccountId account_id(AccountId::FromUserEmail(kUserEmail));
+    fake_user_manager()->AddWebKioskAppUser(account_id);
+    fake_user_manager()->LoginUser(account_id);
+  }
+
+  void CreateLacrosWindowAndNotify() {
+    auto window = std::make_unique<aura::Window>(nullptr);
+    window->Init(ui::LAYER_SOLID_COLOR);
+    exo::SetShellApplicationId(window.get(), kLacrosAppId);
+    wm_helper()->NotifyExoWindowCreated(window.get());
+  }
+
+  crosapi::FakeBrowserManager* browser_manager() const {
+    return browser_manager_.get();
+  }
+
+  ash::FakeChromeUserManager* fake_user_manager() const {
+    return fake_user_manager_;
+  }
+
+  exo::WMHelper* wm_helper() const { return wm_helper_.get(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
+  ash::FakeChromeUserManager* fake_user_manager_;
+  user_manager::ScopedUserManager scoped_user_manager_;
+  std::unique_ptr<exo::WMHelper> wm_helper_;
+};
+
+TEST_F(WebKioskAppLauncherUsingLacrosTest, NormalFlow) {
+  LoginWebKioskUser();
+  SetupAppData(/*installed*/ true);
+  browser_manager()->set_new_fullscreen_window_creation_result(
+      crosapi::mojom::CreationResult::kSuccess);
+
+  base::RunLoop loop1;
+  EXPECT_CALL(*delegate(), OnAppPrepared())
+      .WillOnce(RunClosure(loop1.QuitClosure()));
+  launcher()->Initialize();
+  loop1.Run();
+
+  // The browser manager is running before launching app. The
+  // `OnAppWindowCreated` method will be called after the lacros-chrome window
+  // is created successfully.
+  base::RunLoop loop2;
+  EXPECT_CALL(*delegate(), OnAppLaunched()).Times(1);
+  EXPECT_CALL(*delegate(), OnAppWindowCreated())
+      .Times(1)
+      .WillOnce(RunClosure(loop2.QuitClosure()));
+  EXPECT_CALL(*delegate(), OnLaunchFailed(_)).Times(0);
+  browser_manager()->set_is_running(true);
+  launcher()->LaunchApp();
+  CreateLacrosWindowAndNotify();
+  loop2.Run();
+}
+
+TEST_F(WebKioskAppLauncherUsingLacrosTest, WaitBrowserManagerToRun) {
+  LoginWebKioskUser();
+  SetupAppData(/*installed*/ true);
+  browser_manager()->set_new_fullscreen_window_creation_result(
+      crosapi::mojom::CreationResult::kSuccess);
+
+  base::RunLoop loop1;
+  EXPECT_CALL(*delegate(), OnAppPrepared())
+      .WillOnce(RunClosure(loop1.QuitClosure()));
+  launcher()->Initialize();
+  loop1.Run();
+
+  // The browser manager is not running before launching app. The crosapi call
+  // will pend until it is ready. The `OnAppWindowCreated` method will be called
+  // after the lacros-chrome window is created successfully.
+  base::RunLoop loop2;
+  EXPECT_CALL(*delegate(), OnAppLaunched()).Times(1);
+  EXPECT_CALL(*delegate(), OnAppWindowCreated())
+      .Times(1)
+      .WillOnce(RunClosure(loop2.QuitClosure()));
+  EXPECT_CALL(*delegate(), OnLaunchFailed(_)).Times(0);
+  browser_manager()->set_is_running(false);
+  launcher()->LaunchApp();
+  browser_manager()->set_is_running(true);
+  browser_manager()->StartRunning();
+  CreateLacrosWindowAndNotify();
+  loop2.Run();
+}
+
+TEST_F(WebKioskAppLauncherUsingLacrosTest, FailToLaunchApp) {
+  LoginWebKioskUser();
+  SetupAppData(/*installed*/ true);
+  browser_manager()->set_new_fullscreen_window_creation_result(
+      crosapi::mojom::CreationResult::kBrowserNotRunning);
+
+  base::RunLoop loop1;
+  EXPECT_CALL(*delegate(), OnAppPrepared())
+      .WillOnce(RunClosure(loop1.QuitClosure()));
+  launcher()->Initialize();
+  loop1.Run();
+
+  // If the lacros-chrome window fails to be created, the `OnLaunchFailed`
+  // method will be called instead.
+  base::RunLoop loop2;
+  EXPECT_CALL(*delegate(), OnAppLaunched()).Times(1);
+  EXPECT_CALL(*delegate(), OnAppWindowCreated()).Times(0);
+  EXPECT_CALL(*delegate(), OnLaunchFailed(_))
+      .Times(1)
+      .WillOnce(RunClosure(loop2.QuitClosure()));
+
+  browser_manager()->set_is_running(true);
+  launcher()->LaunchApp();
+  loop2.Run();
 }
 
 }  // namespace ash

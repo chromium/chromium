@@ -4,7 +4,7 @@
 
 #include <bitset>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -68,6 +68,7 @@ class MainThreadWorkletTest : public PageTestBase {
         window->UserAgent(), window->GetFrame()->Loader().UserAgentMetadata(),
         nullptr /* web_worker_fetch_context */,
         mojo::Clone(window->GetContentSecurityPolicy()->GetParsedPolicies()),
+        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
         window->GetReferrerPolicy(), window->GetSecurityOrigin(),
         window->IsSecureContext(), window->GetHttpsState(),
         nullptr /* worker_clients */, nullptr /* content_settings_client */,
@@ -76,6 +77,7 @@ class MainThreadWorkletTest : public PageTestBase {
         mojom::blink::V8CacheOptions::kDefault,
         MakeGarbageCollected<WorkletModuleResponsesMap>(),
         mojo::NullRemote() /* browser_interface_broker */,
+        window->GetFrame()->Loader().CreateWorkerCodeCacheHost(),
         BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
         window->GetAgentClusterID(), ukm::kInvalidSourceId,
         window->GetExecutionContextToken());

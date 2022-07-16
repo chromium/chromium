@@ -1,6 +1,6 @@
 Document
 ++Group IsControlElement=false
-++++Image
+++++Image Name='To get missing image descriptions, open the context menu.'
 ++++++Text Name='Static fallback'
 ++++Image
 ++++++Text Name='<newline>    '

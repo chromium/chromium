@@ -44,6 +44,9 @@ class OomInterventionDecider : public base::SupportsUserData::Data {
   static OomInterventionDecider* GetForBrowserContext(
       content::BrowserContext* context);
 
+  OomInterventionDecider(const OomInterventionDecider&) = delete;
+  OomInterventionDecider& operator=(const OomInterventionDecider&) = delete;
+
   ~OomInterventionDecider() override;
 
   bool CanTriggerIntervention(const std::string& host) const;
@@ -79,8 +82,6 @@ class OomInterventionDecider : public base::SupportsUserData::Data {
 
   std::unique_ptr<Delegate> delegate_;
   PrefService* prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(OomInterventionDecider);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_OOM_INTERVENTION_OOM_INTERVENTION_DECIDER_H_

@@ -10,20 +10,16 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/network/policy_certificate_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
+class PrefRegistrySimple;
 
 namespace base {
 class FilePath;
-}
-
-namespace user_manager {
-class UserManager;
 }
 
 namespace net {
@@ -49,22 +45,24 @@ class PolicyCertService : public KeyedService,
   // If |may_use_profile_wide_trust_anchors| is true, certificates from
   // |policy_certificate_provider| that have requested "Web" trust and have
   // profile-wide scope will be used for |profile|.
-  // |user_id| is used to remember if policy-provided trust anchors have been
-  // used in this user Profile and should be an empty string if this is the
-  // PolicyCertService for a Profile which is not associated with a user.
-  // If |user_id| is empty, |may_use_profile_wide_trust_anchors| must be false.
   PolicyCertService(
       Profile* profile,
       chromeos::PolicyCertificateProvider* policy_certificate_provider,
-      bool may_use_profile_wide_trust_anchors,
-      const std::string& user_id,
-      user_manager::UserManager* user_manager);
+      bool may_use_profile_wide_trust_anchors);
+
+  PolicyCertService(const PolicyCertService&) = delete;
+  PolicyCertService& operator=(const PolicyCertService&) = delete;
+
   ~PolicyCertService() override;
 
   // Returns true if the profile that owns this service has used certificates
   // installed via policy to establish a secure connection before. This means
   // that it may have cached content from an untrusted source.
   bool UsedPolicyCertificates() const;
+
+  // Sets the flag that the current profile used certificates pushed by policy
+  // before.
+  void SetUsedPolicyCertificates();
 
   // Returns true if the profile that owns this service has at least one
   // policy-provided trust anchor configured.
@@ -84,9 +82,9 @@ class PolicyCertService : public KeyedService,
       net::CertificateList* out_all_server_and_authority_certificates,
       net::CertificateList* out_trust_anchors) const;
 
-  static std::unique_ptr<PolicyCertService> CreateForTesting(
-      const std::string& user_id,
-      user_manager::UserManager* user_manager);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  static std::unique_ptr<PolicyCertService> CreateForTesting(Profile* profile);
 
   // Sets the profile-wide policy-provided trust anchors reported by this
   // PolicyCertService. This is only callable for instances created through
@@ -96,8 +94,7 @@ class PolicyCertService : public KeyedService,
 
  private:
   // Constructor used by CreateForTesting.
-  PolicyCertService(const std::string& user_id,
-                    user_manager::UserManager* user_manager);
+  explicit PolicyCertService(Profile* profile);
 
   // Returns all allowed policy-provided certificates that have requested "Web"
   // trust and have profile-wide scope. If |may_use_profile_wide_trust_anchors_|
@@ -113,11 +110,6 @@ class PolicyCertService : public KeyedService,
   // "Web" trust and have profile-wide scope may be used for |profile_|.
   const bool may_use_profile_wide_trust_anchors_;
 
-  // This will be an empty string for a PolicyCertService which is tied to a
-  // Profile without user association (e.g. the sign-in screen Profile).
-  const std::string user_id_;
-  user_manager::UserManager* const user_manager_;
-
   // Caches all server and CA certificates that have profile-wide scope from
   // |policy_certificate_provider_|.
   net::CertificateList profile_wide_all_server_and_authority_certs_;
@@ -130,8 +122,6 @@ class PolicyCertService : public KeyedService,
   // as intermediates when NSS verifies a certificate.
   std::unique_ptr<network::NSSTempCertsCacheChromeOS>
       temp_policy_provided_certs_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyCertService);
 };
 
 }  // namespace policy

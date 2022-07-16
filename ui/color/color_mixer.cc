@@ -4,7 +4,10 @@
 
 #include "ui/color/color_mixer.h"
 
+#include <utility>
+
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
@@ -99,6 +102,19 @@ ColorMixer::ColorSets::const_iterator ColorMixer::FindSetWithId(
     ColorSetId id) const {
   return std::find_if(sets_.cbegin(), sets_.cend(),
                       [id](const auto& set) { return set.id == id; });
+}
+
+std::set<ColorId> ColorMixer::GetDefinedColorIds() const {
+  std::set<ColorId> color_ids;
+  for (const auto& set : sets_) {
+    base::ranges::transform(set.colors,
+                            std::inserter(color_ids, color_ids.end()),
+                            &std::pair<ColorId, SkColor>::first);
+  }
+  base::ranges::transform(recipes_, std::inserter(color_ids, color_ids.end()),
+                          &std::pair<const ColorId, ColorRecipe>::first);
+
+  return color_ids;
 }
 
 }  // namespace ui

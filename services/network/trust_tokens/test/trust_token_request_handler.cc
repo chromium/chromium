@@ -333,7 +333,7 @@ absl::optional<std::string> TrustTokenRequestHandler::Issue(
 }
 
 constexpr base::TimeDelta TrustTokenRequestHandler::kRrLifetime =
-    base::TimeDelta::FromDays(100);
+    base::Days(100);
 absl::optional<std::string> TrustTokenRequestHandler::Redeem(
     base::StringPiece redemption_request) {
   base::AutoLock lock(mutex_);

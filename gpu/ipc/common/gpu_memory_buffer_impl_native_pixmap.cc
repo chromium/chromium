@@ -14,12 +14,8 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
 #include "ui/gfx/native_pixmap.h"
-
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
-#endif
 
 namespace gpu {
 namespace {
@@ -37,11 +33,9 @@ GpuMemoryBufferImplNativePixmap::GpuMemoryBufferImplNativePixmap(
     const gfx::Size& size,
     gfx::BufferFormat format,
     DestructionCallback callback,
-    std::unique_ptr<gfx::ClientNativePixmap> pixmap,
-    gfx::NativePixmapHandle handle)
+    std::unique_ptr<gfx::ClientNativePixmap> pixmap)
     : GpuMemoryBufferImpl(id, size, format, std::move(callback)),
-      pixmap_(std::move(pixmap)),
-      handle_(std::move(handle)) {}
+      pixmap_(std::move(pixmap)) {}
 
 GpuMemoryBufferImplNativePixmap::~GpuMemoryBufferImplNativePixmap() = default;
 
@@ -56,13 +50,12 @@ GpuMemoryBufferImplNativePixmap::CreateFromHandle(
     DestructionCallback callback) {
   std::unique_ptr<gfx::ClientNativePixmap> native_pixmap =
       client_native_pixmap_factory->ImportFromHandle(
-          CloneHandleForIPC(handle.native_pixmap_handle), size, format, usage);
+          std::move(handle.native_pixmap_handle), size, format, usage);
   if (!native_pixmap)
     return nullptr;
 
   return base::WrapUnique(new GpuMemoryBufferImplNativePixmap(
-      handle.id, size, format, std::move(callback), std::move(native_pixmap),
-      std::move(handle.native_pixmap_handle)));
+      handle.id, size, format, std::move(callback), std::move(native_pixmap)));
 }
 
 // static
@@ -72,20 +65,20 @@ base::OnceClosure GpuMemoryBufferImplNativePixmap::AllocateForTesting(
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
   scoped_refptr<gfx::NativePixmap> pixmap;
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    pixmap = ui::OzonePlatform::GetInstance()
-                 ->GetSurfaceFactoryOzone()
-                 ->CreateNativePixmap(gfx::kNullAcceleratedWidget,
-                                      VK_NULL_HANDLE, size, format, usage);
-    handle->native_pixmap_handle = pixmap->ExportHandle();
-  } else
-#endif
-  {
+  pixmap = ui::OzonePlatform::GetInstance()
+               ->GetSurfaceFactoryOzone()
+               ->CreateNativePixmap(gfx::kNullAcceleratedWidget, VK_NULL_HANDLE,
+                                    size, format, usage);
+  if (!pixmap) {
     // TODO(j.isorce): use gbm_bo_create / gbm_bo_get_fd from system libgbm.
     NOTIMPLEMENTED();
+  } else {
+    handle->native_pixmap_handle = pixmap->ExportHandle();
+    handle->type = gfx::NATIVE_PIXMAP;
   }
-  handle->type = gfx::NATIVE_PIXMAP;
+  // It's safe to bind FreeNativePixmapForTesting even if pixmap is not created
+  // as it does nothing with the pixmap. See the comment in
+  // FreeNativePixmapForTesting for more details.
   return base::BindOnce(&FreeNativePixmapForTesting, pixmap);
 }
 
@@ -95,7 +88,7 @@ bool GpuMemoryBufferImplNativePixmap::Map() {
     return true;
 
   DCHECK_EQ(gfx::NumberOfPlanesForLinearBufferFormat(GetFormat()),
-            handle_.planes.size());
+            pixmap_->GetNumberOfPlanes());
   if (!pixmap_->Map()) {
     --map_count_;
     return false;
@@ -120,19 +113,8 @@ void GpuMemoryBufferImplNativePixmap::Unmap() {
 
 int GpuMemoryBufferImplNativePixmap::stride(size_t plane) const {
   // The caller is responsible for ensuring that |plane| is within bounds.
-  CHECK_LT(plane, handle_.planes.size());
-
-  // |handle_|.planes[plane].stride is a uint32_t. For usages for which we
-  // create a ClientNativePixmapDmaBuf,
-  // ClientNativePixmapDmaBuf::ImportFromDmabuf() ensures that the stride fits
-  // on an int, so this checked_cast shouldn't fail. For usages for which we
-  // create a ClientNativePixmapOpaque, we don't validate the stride, but the
-  // expectation is that either a) the stride() method won't be called, or b)
-  // the stride() method is called on the GPU process and
-  // |handle_|.planes[plane].stride is also set on the GPU process so there's no
-  // need to validate it. Refer to http://crbug.com/1093644#c1 for a more
-  // detailed discussion.
-  return base::checked_cast<int>(handle_.planes[plane].stride);
+  CHECK_LT(plane, pixmap_->GetNumberOfPlanes());
+  return pixmap_->GetStride(plane);
 }
 
 gfx::GpuMemoryBufferType GpuMemoryBufferImplNativePixmap::GetType() const {
@@ -144,7 +126,7 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferImplNativePixmap::CloneHandle()
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::NATIVE_PIXMAP;
   handle.id = id_;
-  handle.native_pixmap_handle = gfx::CloneHandleForIPC(handle_);
+  handle.native_pixmap_handle = pixmap_->CloneHandleForIPC();
   return handle;
 }
 

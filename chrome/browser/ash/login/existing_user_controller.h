@@ -13,27 +13,15 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-// TODO(https://crbug.com/1164001): move KioskAppId to forward declaration
-// when moved to chrome/browser/ash/.
-#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/signin/oauth2_token_initializer.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ash/login/ui/signin_ui.h"
-// TODO(https://crbug.com/1164001): move CrosSettings to forward declaration
-// when moved to chrome/browser/ash/.
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/login/auth/login_performer.h"
 #include "chromeos/login/auth/user_context.h"
@@ -43,6 +31,7 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -52,7 +41,12 @@ class ElapsedTimer;
 class ListValue;
 }
 
-namespace chromeos {
+namespace ash {
+class CrosSettings;
+class KioskAppId;
+class OAuth2TokenInitializer;
+enum class SigninError;
+
 namespace login {
 class NetworkStateHelper;
 }
@@ -72,6 +66,10 @@ class ExistingUserController : public LoginDisplay::Delegate,
 
   // All UI initialization is deferred till Init() call.
   ExistingUserController();
+
+  ExistingUserController(const ExistingUserController&) = delete;
+  ExistingUserController& operator=(const ExistingUserController&) = delete;
+
   ~ExistingUserController() override;
 
   // Creates and shows login UI for known users.
@@ -397,15 +395,14 @@ class ExistingUserController : public LoginDisplay::Delegate,
 
   // Factory of callbacks.
   base::WeakPtrFactory<ExistingUserController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExistingUserController);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::ExistingUserController;
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::ExistingUserController;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EXISTING_USER_CONTROLLER_H_

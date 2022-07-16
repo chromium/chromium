@@ -13,8 +13,6 @@
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/model/sync_change.h"
 #include "extensions/common/constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 namespace syncer {
@@ -106,17 +104,6 @@ class ExtensionSyncData {
   }
   const syncer::StringOrdinal& page_ordinal() const { return page_ordinal_; }
   extensions::LaunchType launch_type() const { return launch_type_; }
-  const std::string& bookmark_app_url() const { return bookmark_app_url_; }
-  const std::string& bookmark_app_description() const {
-    return bookmark_app_description_;
-  }
-  const std::string& bookmark_app_scope() const { return bookmark_app_scope_; }
-  const std::string& bookmark_app_icon_color() const {
-    return bookmark_app_icon_color_;
-  }
-  absl::optional<SkColor> bookmark_app_theme_color() const {
-    return bookmark_app_theme_color_;
-  }
   const std::vector<LinkedAppIconInfo>& linked_icons() const {
     return linked_icons_;
   }
@@ -160,11 +147,6 @@ class ExtensionSyncData {
   syncer::StringOrdinal app_launch_ordinal_;
   syncer::StringOrdinal page_ordinal_;
   extensions::LaunchType launch_type_;
-  std::string bookmark_app_url_;
-  std::string bookmark_app_description_;
-  std::string bookmark_app_scope_;
-  std::string bookmark_app_icon_color_;
-  absl::optional<SkColor> bookmark_app_theme_color_;
   std::vector<LinkedAppIconInfo> linked_icons_;
 };
 

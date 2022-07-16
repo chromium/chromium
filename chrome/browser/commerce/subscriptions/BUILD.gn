@@ -16,7 +16,6 @@ source_set("commerce_subscription_db") {
     "//base:base",
     "//chrome/browser/commerce/subscriptions/android:jni_headers",
     "//chrome/browser/persisted_state_db:persisted_state_db",
-    "//components/embedder_support/android:browser_context",
     "//components/keyed_service/content",
     "//components/leveldb_proto",
     "//content/public/browser:browser",

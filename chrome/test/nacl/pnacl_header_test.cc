@@ -28,7 +28,6 @@ using net::test_server::HttpResponse;
 void TestDispatcherHostDelegate::RequestBeginning(
     net::URLRequest* request,
     content::ResourceContext* resource_context,
-    content::AppCacheService* appcache_service,
     blink::mojom::ResourceType resource_type,
     std::vector<std::unique_ptr<content::ResourceThrottle>>* throttles) {
   // This checks the same condition as the one for PNaCl in
@@ -78,7 +77,8 @@ void PnaclHeaderTest::RunLoadTest(const std::string& url,
   // in the background).
   base::ScopedPathOverride component_dir(chrome::DIR_PNACL_COMPONENT);
 
-  ui_test_utils::NavigateToURL(browser(), embedded_test_server()->GetURL(url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(url)));
 
   // Wait until the NMF and pexe are also loaded, not just the HTML.
   // Do this by waiting till the LoadTestMessageHandler responds.

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "content/browser/renderer_host/input/synthetic_pointer_driver.h"
@@ -24,6 +23,10 @@ class CONTENT_EXPORT SyntheticPointerAction : public SyntheticGesture {
  public:
   explicit SyntheticPointerAction(
       const SyntheticPointerActionListParams& params);
+
+  SyntheticPointerAction(const SyntheticPointerAction&) = delete;
+  SyntheticPointerAction& operator=(const SyntheticPointerAction&) = delete;
+
   ~SyntheticPointerAction() override;
 
   SyntheticGesture::Result ForwardInputEvents(
@@ -59,8 +62,6 @@ class CONTENT_EXPORT SyntheticPointerAction : public SyntheticGesture {
   content::mojom::GestureSourceType gesture_source_type_;
   GestureState state_;
   size_t num_actions_dispatched_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticPointerAction);
 };
 
 }  // namespace content

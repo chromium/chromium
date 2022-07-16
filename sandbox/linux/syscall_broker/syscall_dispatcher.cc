@@ -74,6 +74,11 @@ int SyscallDispatcher::DispatchSyscall(const arch_seccomp_data& args) {
 #endif
 #if defined(__NR_faccessat)
     case __NR_faccessat:
+#endif
+#if defined(__NR_faccessat2)
+    case __NR_faccessat2:
+#endif
+#if defined(__NR_faccessat) || defined(__NR_faccessat2)
       if (static_cast<int>(args.args[0]) != AT_FDCWD)
         return -EPERM;
       return Access(reinterpret_cast<const char*>(args.args[1]),

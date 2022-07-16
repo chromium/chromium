@@ -8,7 +8,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 UserOnlineSigninNotifier::UserOnlineSigninNotifier(
     const user_manager::UserList& users)
@@ -30,7 +30,7 @@ void UserOnlineSigninNotifier::CheckForPolicyEnforcedOnlineSignin() {
         user_manager::known_user::GetLastOnlineSignin(user->GetAccountId());
     base::TimeDelta time_to_next_online_signin = login::TimeToOnlineSignIn(
         last_online_signin, offline_signin_limit.value());
-    if (time_to_next_online_signin > base::TimeDelta() &&
+    if (time_to_next_online_signin.is_positive() &&
         time_to_next_online_signin < min_delta) {
       min_delta = time_to_next_online_signin;
     }
@@ -65,4 +65,4 @@ void UserOnlineSigninNotifier::NotifyObservers(const AccountId& account_id) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

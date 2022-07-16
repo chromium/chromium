@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
@@ -23,6 +22,12 @@ class FakeProfileOAuth2TokenServiceDelegate
     : public ProfileOAuth2TokenServiceDelegate {
  public:
   FakeProfileOAuth2TokenServiceDelegate();
+
+  FakeProfileOAuth2TokenServiceDelegate(
+      const FakeProfileOAuth2TokenServiceDelegate&) = delete;
+  FakeProfileOAuth2TokenServiceDelegate& operator=(
+      const FakeProfileOAuth2TokenServiceDelegate&) = delete;
+
   ~FakeProfileOAuth2TokenServiceDelegate() override;
 
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
@@ -86,7 +91,5 @@ class FakeProfileOAuth2TokenServiceDelegate
   bool fix_request_if_possible_ = false;
 
   net::BackoffEntry backoff_entry_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeProfileOAuth2TokenServiceDelegate);
 };
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_FAKE_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_H_

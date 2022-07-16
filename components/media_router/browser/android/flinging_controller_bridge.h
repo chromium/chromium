@@ -18,6 +18,10 @@ class FlingingControllerBridge : public media::FlingingController,
  public:
   explicit FlingingControllerBridge(
       base::android::ScopedJavaGlobalRef<jobject> controller);
+
+  FlingingControllerBridge(const FlingingControllerBridge&) = delete;
+  FlingingControllerBridge& operator=(const FlingingControllerBridge&) = delete;
+
   ~FlingingControllerBridge() override;
 
   // FlingingController implementation.
@@ -47,8 +51,6 @@ class FlingingControllerBridge : public media::FlingingController,
   // NOTE: We don't manage a collection of observers because FlingingRenderer is
   // the only observer that subscribes to |this|, with a 1:1 relationship.
   media::MediaStatusObserver* observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FlingingControllerBridge);
 };
 
 }  // namespace media_router

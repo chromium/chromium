@@ -2824,7 +2824,7 @@
       "driver_version": {
         "schema": "intel_driver",
         "op": "<",
-        "value": "0.0.0.9999"
+        "value": "0.0.100.0"
       },
       "features": [
         "disable_nv12_dynamic_textures"
@@ -3229,18 +3229,19 @@
     },
     {
       "id": 337,
-      "description": "Disable hardware MFT H264 encoder on older NVIDIA drivers",
-      "cr_bugs": [1058583],
+      "description": "Disable hardware MFT H.264 encoder on older NVIDIA drivers",
+      "cr_bugs": [1058583, 1263058],
       "os": {
         "type": "win"
       },
       "vendor_id": "0x10de",
+      "multi_gpu_category": "any",
       "driver_version": {
-        "op": "<",
-        "value": "24.21.13.9827"
+        "op": "<=",
+        "value": "24.21.13.9858"
       },
       "features": [
-        "disable_media_foundation_async_h264_encoding"
+        "disable_accelerated_h264_encode"
       ]
     },
     {
@@ -3545,7 +3546,8 @@
       },
       "intel_gpu_series": [
         "icelake",
-        "tigerlake"
+        "tigerlake",
+        "alderlake"
       ],
       "features": [
         "supports_two_yuv_hardware_overlays"
@@ -3759,6 +3761,137 @@
       "vendor_id": "0x10de",
       "features": [
         "disable_canvas_oop_rasterization"
+      ]
+    },
+    {
+      "id": 379,
+      "cr_bugs": [1217298],
+      "description": "Disable VP9 HW encode on Intel Gen 9.5 SoCs using the i965 VA driver backend",
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_series": [
+        "kabylake",
+        "geminilake"
+      ],
+      "features": [
+        "disable_accelerated_vp9_encode"
+      ]
+    },
+    {
+      "id": 380,
+      "cr_bugs": [1245835],
+      "description": "Intel GPUs do not promote downscaled overlays",
+      "os": {
+        "type": "win",
+        "version": {
+          "op": ">=",
+          "value": "10.0"
+        }
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_generation": {
+        "op": ">=",
+        "value": "9"
+      },
+      "features": [
+        "no_downscaled_overlay_promotion"
+      ]
+    },
+    {
+      "id": 381,
+      "cr_bugs": [
+        1246254
+      ],
+      "description": "Check if egl fences are already signalled before waiting them on the i965 driver",
+      "os": {
+        "type": "chromeos"
+      },
+      "intel_gpu_generation": {
+        "op": ">=",
+        "value": "4"
+      },
+      "driver_vendor": "Mesa",
+      "gl_vendor": "Intel.*",
+      "features": [
+        "check_egl_fence_before_wait"
+      ]
+    },
+    {
+      "id": 382,
+      "description": "Disable hardware MFT H.264 encoder on older Intel drivers",
+      "cr_bugs": [1251071],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+        "schema": "intel_driver",
+        "op": "between",
+        "value": "0.0.10.0",
+        "value2": "0.0.10.4425"
+      },
+      "features": [
+        "disable_accelerated_h264_encode"
+      ]
+    },
+    {
+      "id": 383,
+      "description": "Disable hardware MFT H.264 encoder on older Intel drivers",
+      "cr_bugs": [1251071],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+        "schema": "intel_driver",
+        "op": "between",
+        "value": "0.0.13.0",
+        "value2": "0.0.13.5435"
+      },
+      "features": [
+        "disable_accelerated_h264_encode"
+      ]
+    },
+    {
+      "id": 384,
+      "description": "Disable hardware MFT H.264 encoder on older Intel drivers",
+      "cr_bugs": [1251071],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+        "schema": "intel_driver",
+        "op": "between",
+        "value": "0.0.14.0",
+        "value2": "0.0.14.4264"
+      },
+      "features": [
+        "disable_accelerated_h264_encode"
+      ]
+    },
+    {
+      "id": 385,
+      "description": "Disable hardware MFT H.264 encoder on older Intel drivers",
+      "cr_bugs": [1251071],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+        "schema": "intel_driver",
+        "op": "between",
+        "value": "0.0.15.0",
+        "value2": "0.0.15.4256"
+      },
+      "features": [
+        "disable_accelerated_h264_encode"
       ]
     }
   ]

@@ -45,7 +45,7 @@ StreamPromiseResolver::StreamPromiseResolver(ScriptState* script_state) {
   v8::Local<v8::Promise::Resolver> resolver;
   if (v8::Promise::Resolver::New(script_state->GetContext())
           .ToLocal(&resolver)) {
-    resolver_.Set(script_state->GetIsolate(), resolver);
+    resolver_.Reset(script_state->GetIsolate(), resolver);
   }
 }
 
@@ -62,7 +62,7 @@ void StreamPromiseResolver::Resolve(ScriptState* script_state,
   v8::MicrotasksScope microtasks_scope(
       isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   auto result =
-      resolver_.NewLocal(isolate)->Resolve(script_state->GetContext(), value);
+      resolver_.Get(isolate)->Resolve(script_state->GetContext(), value);
   if (result.IsNothing()) {
     DVLOG(3) << "Assuming JS shutdown and ignoring failed Resolve";
   }
@@ -85,7 +85,7 @@ void StreamPromiseResolver::Reject(ScriptState* script_state,
   v8::MicrotasksScope microtasks_scope(
       isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   auto result =
-      resolver_.NewLocal(isolate)->Reject(script_state->GetContext(), reason);
+      resolver_.Get(isolate)->Reject(script_state->GetContext(), reason);
   if (result.IsNothing()) {
     DVLOG(3) << "Assuming JS shutdown and ignoring failed Reject";
   }
@@ -101,7 +101,7 @@ v8::Local<v8::Promise> StreamPromiseResolver::V8Promise(
   if (resolver_.IsEmpty()) {
     return v8::Local<v8::Promise>();
   }
-  return resolver_.NewLocal(isolate)->GetPromise();
+  return resolver_.Get(isolate)->GetPromise();
 }
 
 void StreamPromiseResolver::MarkAsHandled(v8::Isolate* isolate) {

@@ -48,14 +48,43 @@ const display::ScreenInfo& GetScreenInfo(LocalFrame& frame) {
 
 Screen::Screen(LocalDOMWindow* window) : ExecutionContextClient(window) {}
 
+// static
+bool Screen::AreWebExposedScreenPropertiesEqual(
+    const display::ScreenInfo& prev,
+    const display::ScreenInfo& current) {
+  // height() / width() use rect / device_scale_factor
+  if (prev.rect.size() != current.rect.size())
+    return false;
+
+  // Note: comparing device_scale_factor is a bit of a lie as Screen only uses
+  // this with the PhysicalPixelsQuirk (see width() / height() below).  However,
+  // this value likely changes rarely and should not throw many false positives.
+  if (prev.device_scale_factor != current.device_scale_factor)
+    return false;
+
+  // availLeft() / availTop() / availHeight() / availWidth() use available_rect
+  if (prev.available_rect != current.available_rect)
+    return false;
+
+  // colorDepth() / pixelDepth() use depth
+  if (prev.depth != current.depth)
+    return false;
+
+  // isExtended()
+  if (prev.is_extended != current.is_extended)
+    return false;
+
+  return true;
+}
+
 int Screen::height() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
   const display::ScreenInfo& screen_info = GetScreenInfo(*frame);
   if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return static_cast<int>(
-        lroundf(screen_info.rect.height() * screen_info.device_scale_factor));
+    return base::ClampRound(screen_info.rect.height() *
+                            screen_info.device_scale_factor);
   }
   return screen_info.rect.height();
 }
@@ -66,8 +95,8 @@ int Screen::width() const {
   LocalFrame* frame = DomWindow()->GetFrame();
   const display::ScreenInfo& screen_info = GetScreenInfo(*frame);
   if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return static_cast<int>(
-        lroundf(screen_info.rect.width() * screen_info.device_scale_factor));
+    return base::ClampRound(screen_info.rect.width() *
+                            screen_info.device_scale_factor);
   }
   return screen_info.rect.width();
 }
@@ -88,10 +117,10 @@ int Screen::availLeft() const {
   LocalFrame* frame = DomWindow()->GetFrame();
   const display::ScreenInfo& screen_info = GetScreenInfo(*frame);
   if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return static_cast<int>(lroundf(screen_info.available_rect.x() *
-                                    screen_info.device_scale_factor));
+    return base::ClampRound(screen_info.available_rect.x() *
+                            screen_info.device_scale_factor);
   }
-  return static_cast<int>(screen_info.available_rect.x());
+  return screen_info.available_rect.x();
 }
 
 int Screen::availTop() const {
@@ -100,10 +129,10 @@ int Screen::availTop() const {
   LocalFrame* frame = DomWindow()->GetFrame();
   const display::ScreenInfo& screen_info = GetScreenInfo(*frame);
   if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return static_cast<int>(lroundf(screen_info.available_rect.y() *
-                                    screen_info.device_scale_factor));
+    return base::ClampRound(screen_info.available_rect.y() *
+                            screen_info.device_scale_factor);
   }
-  return static_cast<int>(screen_info.available_rect.y());
+  return screen_info.available_rect.y();
 }
 
 int Screen::availHeight() const {
@@ -112,8 +141,8 @@ int Screen::availHeight() const {
   LocalFrame* frame = DomWindow()->GetFrame();
   const display::ScreenInfo& screen_info = GetScreenInfo(*frame);
   if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return static_cast<int>(lroundf(screen_info.available_rect.height() *
-                                    screen_info.device_scale_factor));
+    return base::ClampRound(screen_info.available_rect.height() *
+                            screen_info.device_scale_factor);
   }
   return screen_info.available_rect.height();
 }
@@ -124,8 +153,8 @@ int Screen::availWidth() const {
   LocalFrame* frame = DomWindow()->GetFrame();
   const display::ScreenInfo& screen_info = GetScreenInfo(*frame);
   if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return static_cast<int>(lroundf(screen_info.available_rect.width() *
-                                    screen_info.device_scale_factor));
+    return base::ClampRound(screen_info.available_rect.width() *
+                            screen_info.device_scale_factor);
   }
   return screen_info.available_rect.width();
 }

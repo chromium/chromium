@@ -266,7 +266,7 @@ void MtpDeviceManager::OnStorageAttached(const std::string& storage_name) {
       storage_name,
       base::BindOnce(&MtpDeviceManager::OnGetStorageInfo,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::DoNothing::Once());
+      base::DoNothing());
 }
 
 void MtpDeviceManager::OnStorageDetached(const std::string& storage_name) {
@@ -513,7 +513,7 @@ void MtpDeviceManager::FinishSetupOnOriginThread(
   mtp_client_->EnumerateStorages(
       base::BindOnce(&MtpDeviceManager::OnEnumerateStorages,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::DoNothing::Once());
+      base::DoNothing());
 }
 
 // static

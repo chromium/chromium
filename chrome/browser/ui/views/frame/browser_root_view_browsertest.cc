@@ -18,16 +18,21 @@ class BrowserRootViewBrowserTest : public InProcessBrowserTest {
  public:
   BrowserRootViewBrowserTest() = default;
 
+  BrowserRootViewBrowserTest(const BrowserRootViewBrowserTest&) = delete;
+  BrowserRootViewBrowserTest& operator=(const BrowserRootViewBrowserTest&) =
+      delete;
+
   BrowserRootView* browser_root_view() {
     BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
     return static_cast<BrowserRootView*>(
         browser_view->GetWidget()->GetRootView());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserRootViewBrowserTest);
 };
 
+// TODO(https://crbug.com/1220680): These tests produces wayland protocol error
+// wl_display.error(xdg_surface, 1, "popup parent not constructed") on LaCrOS
+// with Exo.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Clear drop info after performing drop. http://crbug.com/838791
 IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropInfo) {
   ui::OSExchangeData data;
@@ -48,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropInfo) {
 #else
 #define MAYBE_PlainString PlainString
 #endif
-IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, PlainString) {
+IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, MAYBE_PlainString) {
   ui::OSExchangeData data;
   data.SetString(u"Plain string");
   ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
@@ -94,3 +99,4 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, RunDropCallback) {
   EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kCopy);
   EXPECT_EQ(tab_strip_model->count(), 2);
 }
+#endif  // #if !BUILDFLAG(IS_CHROMEOS_LACROS)

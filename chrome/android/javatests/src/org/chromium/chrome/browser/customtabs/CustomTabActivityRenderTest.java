@@ -89,7 +89,8 @@ public class CustomTabActivityRenderTest {
     public final EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
 
     @Rule
-    public final RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
+    public final RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
 
     @Before
     public void setUp() {

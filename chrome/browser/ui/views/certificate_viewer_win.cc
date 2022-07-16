@@ -9,12 +9,12 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/cryptuiapi_shim.h"
+#include "crypto/scoped_capi_types.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_win.h"
 #include "ui/aura/window.h"
@@ -28,6 +28,9 @@ namespace {
 class CertificateViewerDialog : public ui::BaseShellDialogImpl {
  public:
   CertificateViewerDialog() {}
+
+  CertificateViewerDialog(const CertificateViewerDialog&) = delete;
+  CertificateViewerDialog& operator=(const CertificateViewerDialog&) = delete;
 
   // Shows the dialog and calls |callback| when the dialog closes. The caller
   // must ensure the CertificateViewerDialog remains valid until then.
@@ -57,7 +60,7 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
                           const scoped_refptr<net::X509Certificate>& cert) {
     // Create a new cert context and store containing just the certificate
     // and its intermediate certificates.
-    net::ScopedPCCERT_CONTEXT cert_list(
+    crypto::ScopedPCCERT_CONTEXT cert_list(
         net::x509_util::CreateCertContextWithChain(cert.get()));
     // Perhaps this should show an error instead of silently failing, but it's
     // probably not even possible to get here with a cert that can't be
@@ -85,8 +88,6 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
     // May delete |this|.
     std::move(callback).Run();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateViewerDialog);
 };
 
 }  // namespace

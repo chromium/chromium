@@ -152,7 +152,7 @@ void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
 
 void AdTracker::DidExecuteScript() {
   if (stack_frame_is_ad_.back()) {
-    DCHECK_LT(0u, num_ads_in_stack_);
+    DCHECK_LT(0, num_ads_in_stack_);
     num_ads_in_stack_ -= 1;
   }
   stack_frame_is_ad_.pop_back();

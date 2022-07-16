@@ -24,6 +24,12 @@ class PushNotificationsSendUpdateTask : public jingle_xmpp::XmppTask {
  public:
   PushNotificationsSendUpdateTask(
       jingle_xmpp::XmppTaskParentInterface* parent, const Notification& notification);
+
+  PushNotificationsSendUpdateTask(const PushNotificationsSendUpdateTask&) =
+      delete;
+  PushNotificationsSendUpdateTask& operator=(
+      const PushNotificationsSendUpdateTask&) = delete;
+
   ~PushNotificationsSendUpdateTask() override;
 
   // Overridden from jingle_xmpp::XmppTask.
@@ -38,8 +44,6 @@ class PushNotificationsSendUpdateTask : public jingle_xmpp::XmppTask {
 
   FRIEND_TEST_ALL_PREFIXES(PushNotificationsSendUpdateTaskTest,
                            MakeUpdateMessage);
-
-  DISALLOW_COPY_AND_ASSIGN(PushNotificationsSendUpdateTask);
 };
 
 }  // namespace notifier

@@ -13,15 +13,14 @@
 #include "components/arc/mojom/input_method_manager.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
 
 namespace arc {
 
-using ::chromeos::extension_ime_util::GetArcInputMethodID;
-using ::chromeos::input_method::InputMethodDescriptor;
-using ::chromeos::input_method::InputMethodDescriptors;
-
 namespace {
+
+using ::ash::input_method::InputMethodDescriptor;
+using ::ash::input_method::InputMethodDescriptors;
 
 mojom::ImeInfoPtr GenerateImeInfo(const std::string& id,
                                   bool enabled,
@@ -51,7 +50,7 @@ TEST(ArcInputMethodState, Constructor) {
 
   ArcInputMethodState empty_state(&delegate);
   InputMethodDescriptors empty_vector;
-  EXPECT_EQ(0u, empty_state.GetActiveInputMethods().size());
+  EXPECT_EQ(0u, empty_state.GetAvailableInputMethods().size());
   EXPECT_EQ(0u, empty_state.GetEnabledInputMethods().size());
 }
 
@@ -66,7 +65,7 @@ TEST(ArcInputMethodState, InstallInputMethod) {
   imes.push_back(GenerateImeInfo("ime_d", false, true));
   state.InitializeWithImeInfo("ime_id", imes);
 
-  InputMethodDescriptors active_imes = state.GetActiveInputMethods();
+  InputMethodDescriptors active_imes = state.GetAvailableInputMethods();
   EXPECT_EQ(2u, active_imes.size());
   EXPECT_EQ("ime_b", active_imes[0].id());
   EXPECT_EQ("ime_d", active_imes[1].id());
@@ -98,15 +97,15 @@ TEST(ArcInputMethodState, AllowDisallowInputMethods) {
   imes.push_back(GenerateImeInfo("ime_b", true, false));
   state.InitializeWithImeInfo("ime_id", imes);
 
-  EXPECT_EQ(1u, state.GetActiveInputMethods().size());
-  EXPECT_EQ("ime_a", state.GetActiveInputMethods()[0].id());
+  EXPECT_EQ(1u, state.GetAvailableInputMethods().size());
+  EXPECT_EQ("ime_a", state.GetAvailableInputMethods()[0].id());
 
   delegate.allowed = true;
-  EXPECT_EQ(2u, state.GetActiveInputMethods().size());
+  EXPECT_EQ(2u, state.GetAvailableInputMethods().size());
 
   delegate.allowed = false;
-  EXPECT_EQ(1u, state.GetActiveInputMethods().size());
-  EXPECT_EQ("ime_a", state.GetActiveInputMethods()[0].id());
+  EXPECT_EQ(1u, state.GetAvailableInputMethods().size());
+  EXPECT_EQ("ime_a", state.GetAvailableInputMethods()[0].id());
 }
 
 TEST(ArcInputMethodState, Histogram) {

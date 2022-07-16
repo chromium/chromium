@@ -26,6 +26,12 @@ class SkiaOutputSurfaceDependencyWebView
       gpu::SharedContextState* shared_context_state,
       gl::GLSurface* gl_surface,
       AwVulkanContextProvider* vulkan_context_provider);
+
+  SkiaOutputSurfaceDependencyWebView(
+      const SkiaOutputSurfaceDependencyWebView&) = delete;
+  SkiaOutputSurfaceDependencyWebView& operator=(
+      const SkiaOutputSurfaceDependencyWebView&) = delete;
+
   ~SkiaOutputSurfaceDependencyWebView() override;
 
   std::unique_ptr<gpu::SingleTaskSequence> CreateSequence() override;
@@ -64,8 +70,6 @@ class SkiaOutputSurfaceDependencyWebView
   GpuServiceWebView* gpu_service_;
   gpu::GpuDriverBugWorkarounds workarounds_;
   gpu::SharedContextState* const shared_context_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaOutputSurfaceDependencyWebView);
 };
 
 }  // namespace android_webview

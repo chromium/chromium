@@ -21,6 +21,11 @@ class VideoFrame;
 class CAPTURE_EXPORT ScreenCaptureMachineAndroid {
  public:
   ScreenCaptureMachineAndroid();
+
+  ScreenCaptureMachineAndroid(const ScreenCaptureMachineAndroid&) = delete;
+  ScreenCaptureMachineAndroid& operator=(const ScreenCaptureMachineAndroid&) =
+      delete;
+
   virtual ~ScreenCaptureMachineAndroid();
 
   static base::android::ScopedJavaLocalRef<jobject>
@@ -82,8 +87,6 @@ class CAPTURE_EXPORT ScreenCaptureMachineAndroid {
 
   // Java VideoCaptureAndroid instance.
   base::android::ScopedJavaLocalRef<jobject> j_capture_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenCaptureMachineAndroid);
 };
 
 }  // namespace media

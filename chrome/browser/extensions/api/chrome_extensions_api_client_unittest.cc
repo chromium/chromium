@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 
-#include "base/macros.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
@@ -19,9 +18,12 @@ class ChromeExtensionsAPIClientTest : public testing::Test {
  public:
   ChromeExtensionsAPIClientTest() = default;
 
+  ChromeExtensionsAPIClientTest(const ChromeExtensionsAPIClientTest&) = delete;
+  ChromeExtensionsAPIClientTest& operator=(
+      const ChromeExtensionsAPIClientTest&) = delete;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionsAPIClientTest);
 };
 
 TEST_F(ChromeExtensionsAPIClientTest, ShouldHideResponseHeader) {

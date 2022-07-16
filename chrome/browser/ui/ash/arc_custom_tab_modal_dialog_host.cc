@@ -34,7 +34,8 @@ ArcCustomTabModalDialogHost::~ArcCustomTabModalDialogHost() {
   // WebContentsModalDialogManager::SetDelegate(nullptr)
 }
 
-void ArcCustomTabModalDialogHost::MainFrameWasResized(bool width_changed) {
+void ArcCustomTabModalDialogHost::PrimaryMainFrameWasResized(
+    bool width_changed) {
   for (auto& observer : observer_list_)
     observer.OnPositionRequiresUpdate();
 }

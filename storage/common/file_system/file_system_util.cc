@@ -189,7 +189,7 @@ bool ParseFileSystemSchemeURL(const GURL& url,
     return false;
 
   if (origin_url)
-    *origin_url = url.GetOrigin();
+    *origin_url = url.DeprecatedGetOriginAsURL();
   if (type)
     *type = file_system_type;
   if (virtual_path)
@@ -236,23 +236,6 @@ std::string GetFileSystemName(const GURL& origin_url, FileSystemType type) {
   return origin_identifier + ":" + type_string;
 }
 
-blink::mojom::StorageType FileSystemTypeToQuotaStorageType(
-    FileSystemType type) {
-  switch (type) {
-    case kFileSystemTypeTemporary:
-      return blink::mojom::StorageType::kTemporary;
-    case kFileSystemTypePersistent:
-      return blink::mojom::StorageType::kPersistent;
-    case kFileSystemTypeSyncable:
-    case kFileSystemTypeSyncableForInternalSync:
-      return blink::mojom::StorageType::kSyncable;
-    case kFileSystemTypePluginPrivate:
-      return blink::mojom::StorageType::kQuotaNotManaged;
-    default:
-      return blink::mojom::StorageType::kUnknown;
-  }
-}
-
 std::string GetFileSystemTypeString(FileSystemType type) {
   switch (type) {
     case kFileSystemTypeTemporary:
@@ -284,8 +267,6 @@ std::string GetFileSystemTypeString(FileSystemType type) {
       return "TransientFile";
     case kFileSystemTypePluginPrivate:
       return "PluginPrivate";
-    case kFileSystemTypeCloudDevice:
-      return "CloudDevice";
     case kFileSystemTypeProvided:
       return "Provided";
     case kFileSystemTypeDeviceMediaAsFileStorage:

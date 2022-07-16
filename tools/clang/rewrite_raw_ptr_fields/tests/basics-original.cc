@@ -5,7 +5,7 @@
 class SomeClass;
 
 class MyClass {
-  // Expected rewrite: CheckedPtr<SomeClass> raw_ptr_field;
+  // Expected rewrite: raw_ptr<SomeClass> raw_ptr_field;
   SomeClass* raw_ptr_field;
 
   // No rewrite expected.
@@ -13,7 +13,7 @@ class MyClass {
 };
 
 struct MyStruct {
-  // Expected rewrite: CheckedPtr<SomeClass> raw_ptr_field;
+  // Expected rewrite: raw_ptr<SomeClass> raw_ptr_field;
   SomeClass* raw_ptr_field;
 
   // No rewrite expected.
@@ -23,7 +23,7 @@ struct MyStruct {
   // "clang-format off" is used to make sure |git cl format| won't change this
   // testcase.
   //
-  // Expected rewrite: CheckedPtr<SomeClass> raw_ptr_field;
+  // Expected rewrite: raw_ptr<SomeClass> raw_ptr_field;
   // clang-format off
   SomeClass *raw_ptr_field2;
   // clang-format on
@@ -31,7 +31,7 @@ struct MyStruct {
 
 template <typename T>
 class MyTemplate {
-  // Expected rewrite: CheckedPtr<T> raw_ptr_field;
+  // Expected rewrite: raw_ptr<T> raw_ptr_field;
   T* raw_ptr_field;
 
   // No rewrite expected.
@@ -46,6 +46,6 @@ template <typename T>
 struct MaybeProvidesType;
 template <typename T>
 struct DependentNameTest {
-  // Expected rewrite: CheckedPtr<typename MaybeProvidesType<T>::Type> field;
+  // Expected rewrite: raw_ptr<typename MaybeProvidesType<T>::Type> field;
   typename MaybeProvidesType<T>::Type* field;
 };

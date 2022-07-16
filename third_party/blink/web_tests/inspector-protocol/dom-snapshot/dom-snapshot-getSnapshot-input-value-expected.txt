@@ -135,12 +135,6 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             shadowRootType : user-agent
         }
         [10] : {
-            attributes : [
-                [0] : {
-                    name : name
-                    value : user-agent-custom-assign-slot
-                }
-            ]
             backendNodeId : <number>
             childNodeIndexes : [
                 [0] : 11

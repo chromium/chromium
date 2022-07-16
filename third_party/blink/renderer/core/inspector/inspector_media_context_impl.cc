@@ -10,6 +10,7 @@
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -51,8 +52,7 @@ void MediaInspectorContextImpl::Trace(Visitor* visitor) const {
 
 Vector<WebString> MediaInspectorContextImpl::AllPlayerIdsAndMarkSent() {
   Vector<WebString> existing_players;
-  const auto& keys = players_.Keys();
-  existing_players.AppendRange(keys.begin(), keys.end());
+  WTF::CopyKeysToVector(players_, existing_players);
   unsent_players_.clear();
   return existing_players;
 }
@@ -69,8 +69,10 @@ WebString MediaInspectorContextImpl::CreatePlayer() {
       String::FromUTF8(base::UnguessableToken::Create().ToString());
   players_.insert(next_player_id, MakeGarbageCollected<MediaPlayer>());
   probe::PlayersCreated(GetSupplementable(), {next_player_id});
-  if (!GetSupplementable()->GetProbeSink()->HasInspectorMediaAgents())
+  if (!GetSupplementable()->GetProbeSink() ||
+      !GetSupplementable()->GetProbeSink()->HasInspectorMediaAgents()) {
     unsent_players_.push_back(next_player_id);
+  }
   return next_player_id;
 }
 
@@ -193,9 +195,7 @@ void MediaInspectorContextImpl::SetPlayerProperties(
   if (player != players_.end()) {
     for (const auto& property : props)
       player->value->properties.Set(property.name, property);
-
-    properties.AppendRange(player->value->properties.Values().begin(),
-                           player->value->properties.Values().end());
+    WTF::CopyValuesToVector(player->value->properties, properties);
   }
   probe::PlayerPropertiesChanged(GetSupplementable(), playerId, properties);
 }

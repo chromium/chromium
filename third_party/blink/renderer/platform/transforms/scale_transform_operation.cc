@@ -32,6 +32,9 @@ TransformOperation::OperationType GetTypeForScale(double x,
   // Note: purely due to ordering, we will convert scale(1, 1, 1) to kScaleX.
   // This is fine; they are equivalent.
 
+  if (z != 1 & y == 1 & x == 1)
+    return TransformOperation::kScaleZ;
+
   if (z != 1)
     return TransformOperation::kScale3D;
 
@@ -65,10 +68,11 @@ scoped_refptr<TransformOperation> ScaleTransformOperation::Blend(
     bool blend_to_identity) {
   DCHECK(!from || CanBlendWith(*from));
 
-  if (blend_to_identity)
+  if (blend_to_identity) {
     return ScaleTransformOperation::Create(
         blink::Blend(x_, 1.0, progress), blink::Blend(y_, 1.0, progress),
         blink::Blend(z_, 1.0, progress), type_);
+  }
 
   const ScaleTransformOperation* from_op =
       static_cast<const ScaleTransformOperation*>(from);
@@ -76,10 +80,31 @@ scoped_refptr<TransformOperation> ScaleTransformOperation::Blend(
   double from_y = from_op ? from_op->y_ : 1.0;
   double from_z = from_op ? from_op->z_ : 1.0;
 
-  bool is_3d = Is3DOperation() || (from && from->Is3DOperation());
+  TransformOperation::OperationType type;
+
+  CommonPrimitiveForInterpolation(from, type);
+
   return ScaleTransformOperation::Create(
       blink::Blend(from_x, x_, progress), blink::Blend(from_y, y_, progress),
-      blink::Blend(from_z, z_, progress), is_3d ? kScale3D : kScale);
+      blink::Blend(from_z, z_, progress), type);
+}
+
+void ScaleTransformOperation::CommonPrimitiveForInterpolation(
+    const TransformOperation* from,
+    TransformOperation::OperationType& common_type) const {
+  bool is_3d = Is3DOperation() || (from && from->Is3DOperation());
+  const ScaleTransformOperation* from_op =
+      static_cast<const ScaleTransformOperation*>(from);
+  TransformOperation::OperationType from_type =
+      from_op ? from_op->type_ : type_;
+
+  if (type_ == from_type) {
+    common_type = type_;
+  } else if (is_3d) {
+    common_type = kScale3D;
+  } else {
+    common_type = kScale;
+  }
 }
 
 }  // namespace blink

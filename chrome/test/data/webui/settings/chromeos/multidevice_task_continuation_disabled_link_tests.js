@@ -47,7 +47,7 @@ suite('Multidevice', function() {
     const chromeSyncLink = localizedLink.$$('#chromeSyncLink');
     chromeSyncLink.click();
 
-    if (loadTimeData.getBoolean('splitSettingsSyncEnabled')) {
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
       await test_util.eventToPromise(
           'opened-browser-advanced-sync-setting', localizedLink);
       assertNotEquals(

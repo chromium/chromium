@@ -52,6 +52,11 @@ class BluetoothPowerControllerTest : public AshTestBase {
     BluetoothPowerController::RegisterProfilePrefs(
         active_user_prefs_.registry());
   }
+
+  BluetoothPowerControllerTest(const BluetoothPowerControllerTest&) = delete;
+  BluetoothPowerControllerTest& operator=(const BluetoothPowerControllerTest&) =
+      delete;
+
   ~BluetoothPowerControllerTest() override = default;
 
   void SetUp() override {
@@ -100,9 +105,6 @@ class BluetoothPowerControllerTest : public AshTestBase {
 
   TestingPrefServiceSimple active_user_prefs_;
   base::HistogramTester histogram_tester;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothPowerControllerTest);
 };
 
 class BluetoothPowerControllerNoSessionTest

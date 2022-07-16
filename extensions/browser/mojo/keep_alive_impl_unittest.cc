@@ -21,6 +21,10 @@ namespace extensions {
 class KeepAliveTest : public ExtensionsTest {
  public:
   KeepAliveTest() : mojo_activity_(Activity::MOJO, "") {}
+
+  KeepAliveTest(const KeepAliveTest&) = delete;
+  KeepAliveTest& operator=(const KeepAliveTest&) = delete;
+
   ~KeepAliveTest() override {}
 
   void SetUp() override {
@@ -76,8 +80,6 @@ class KeepAliveTest : public ExtensionsTest {
 
  private:
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveTest);
 };
 
 TEST_F(KeepAliveTest, Basic) {

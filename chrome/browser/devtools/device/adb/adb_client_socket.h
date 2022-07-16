@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "net/base/io_buffer.h"
 #include "net/socket/stream_socket.h"
 
@@ -26,6 +25,9 @@ class AdbClientSocket {
                              const std::string& serial,
                              const std::string& socket_name,
                              SocketCallback callback);
+
+  AdbClientSocket(const AdbClientSocket&) = delete;
+  AdbClientSocket& operator=(const AdbClientSocket&) = delete;
 
  protected:
   explicit AdbClientSocket(int port);
@@ -59,8 +61,6 @@ class AdbClientSocket {
 
   std::string host_;
   int port_;
-
-  DISALLOW_COPY_AND_ASSIGN(AdbClientSocket);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVICE_ADB_ADB_CLIENT_SOCKET_H_

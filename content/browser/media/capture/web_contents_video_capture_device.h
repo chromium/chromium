@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/media/capture/frame_sink_video_capture_device.h"
 #include "content/browser/media/capture/web_contents_frame_tracker.h"
@@ -46,6 +45,11 @@ class CONTENT_EXPORT WebContentsVideoCaptureDevice
   // |device_id|. Returns null if |device_id| is invalid.
   static std::unique_ptr<WebContentsVideoCaptureDevice> Create(
       const std::string& device_id);
+
+  // VideoCaptureDevice overrides.
+  void Crop(
+      const base::Token& crop_id,
+      base::OnceCallback<void(media::mojom::CropRequestResult)> callback) final;
 
   // For testing, we need the ability to create a device without its tracker.
  protected:

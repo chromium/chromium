@@ -15,8 +15,8 @@
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
-#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
+#include "third_party/blink/public/mojom/widget/platform_widget.mojom-blink.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -125,6 +125,11 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
                 bool was_evicted,
                 mojom::blink::RecordContentToVisibleTimeRequestPtr
                     record_tab_switch_time_request) override;
+  void RequestPresentationTimeForNextFrame(
+      base::TimeTicks show_request_timestamp,
+      mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request)
+      override;
+  void CancelPresentationTimeRequest() override;
 
   // LayerTreeDelegate overrides:
   // Applies viewport related properties during a commit from the compositor
@@ -144,7 +149,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override;
   void WillCommitCompositorFrame() override;
-  void DidCommitCompositorFrame(base::TimeTicks commit_start_time) override;
+  void DidCommitCompositorFrame(base::TimeTicks commit_start_time,
+                                base::TimeTicks commit_finish_time) override;
   void DidCompletePageScaleAnimation() override;
   void RecordStartOfFrameMetrics() override;
   void RecordEndOfFrameMetrics(
@@ -198,6 +204,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void UpdateTooltipFromKeyboard(const String& tooltip_text,
                                  TextDirection dir,
                                  const gfx::Rect& bounds);
+  void ClearKeyboardTriggeredTooltip();
 
   // Posts a task with the given delay, then calls ScheduleAnimation() on the
   // WidgetBaseClient.
@@ -376,6 +383,9 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // Called after the delay given in `RequestAnimationAfterDelay()`.
   void RequestAnimationAfterDelayTimerFired(TimerBase*);
+
+  // Helper to get the non-emulated device scale factor.
+  float GetOriginalDeviceScaleFactor() const;
 
   // Indicates that we are never visible, so never produce graphical output.
   const bool never_composited_;

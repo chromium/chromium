@@ -308,7 +308,7 @@ TEST_F(TerminaDlcInstallTest, InstallDlcBusyTriggersRetry) {
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
                                             base::Unretained(this)),
                              /*is_initial_install=*/true);
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(0));
+  task_env_.FastForwardBy(base::Seconds(0));
 
   fake_dlc_client_->set_install_error(dlcservice::kErrorNone);
   run_loop_.Run();
@@ -324,13 +324,13 @@ TEST_F(TerminaDlcInstallTest, InstallDlcBusyRetryIsCancelable) {
       base::BindOnce(&TerminaInstallTest::ExpectNotCalled,
                      base::Unretained(this)),
       /*is_initial_install=*/true);
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(0));
+  task_env_.FastForwardBy(base::Seconds(0));
 
   CheckDlcInstallCalledTimes(1);
 
   termina_installer_.Cancel();
 
-  task_env_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_env_.FastForwardBy(base::Days(1));
 
   CheckDlcInstallCalledTimes(1);
 }
@@ -424,7 +424,7 @@ TEST_F(TerminaDlcInstallTest, InstallDlcFallbackIsCancelable) {
       /*is_initial_install=*/false);
   termina_installer_.Cancel();
 
-  task_env_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_env_.FastForwardBy(base::Days(1));
 
   CheckDlcInstallCalledTimes(1);
   EXPECT_FALSE(component_manager_->IsRegisteredMayBlock(
@@ -709,7 +709,7 @@ TEST_F(TerminaComponentInstallTest, UpdateInProgressTriggersRetry) {
       ComponentInfo(ComponentError::UPDATE_IN_PROGRESS, base::FilePath(),
                     base::FilePath()));
 
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(6));
+  task_env_.FastForwardBy(base::Seconds(6));
 
   EXPECT_TRUE(component_manager_->HasPendingInstall(
       imageloader::kTerminaComponentName));

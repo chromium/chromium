@@ -1,5 +1,6 @@
 {
    "EAP.CertID": "1:123456abcdef",
+   "EAP.DomainSuffixMatch": ["domain1.com", "domain2.com"],
    "EAP.EAP": "TLS",
    "EAP.Identity": "my_identity",
    "EAP.KeyID": "1:123456abcdef",

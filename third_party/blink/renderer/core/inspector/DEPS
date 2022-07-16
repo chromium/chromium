@@ -12,9 +12,14 @@ include_rules = [
     "+cc/trees/transform_node.h",
     "+net/base/ip_address.h",
     "+net/base/ip_endpoint.h",
-    "+third_party/inspector_protocol/crdtp",
-    "+third_party/icu/source/common/unicode/locid.h",
+    "+net/cert/ct_sct_to_string.h",
+    "+net/cert/x509_certificate.h",
+    "+net/cert/x509_util.h",
     "+net/http/http_status_code.h",
+    "+net/ssl/ssl_cipher_suite_names.h",
+    "+net/ssl/ssl_connection_status_flags.h",
+    "+third_party/icu/source/common/unicode/locid.h",
+    "+third_party/inspector_protocol/crdtp",
 ]
 
 specific_include_rules = {

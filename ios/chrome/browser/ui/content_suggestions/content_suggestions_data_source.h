@@ -48,27 +48,8 @@ typedef void (^MoreSuggestionsFetched)(
 - (nonnull NSArray<CollectionViewItem<SuggestedContent>*>*)itemsForSectionInfo:
     (nonnull ContentSuggestionsSectionInformation*)sectionInfo;
 
-// Fetches additional content. All the |knownSuggestions| must come from the
-// same |sectionInfo|. If the fetch was completed, the given |callback| is
-// called with the new content.
-- (void)fetchMoreSuggestionsKnowing:
-            (nullable NSArray<ContentSuggestionIdentifier*>*)knownSuggestions
-                    fromSectionInfo:
-                        (nonnull ContentSuggestionsSectionInformation*)
-                            sectionInfo
-                           callback:(nonnull MoreSuggestionsFetched)callback;
-
-// Dismisses the suggestion from the content suggestions service. It doesn't
-// change the UI.
-- (void)dismissSuggestion:
-    (nonnull ContentSuggestionIdentifier*)suggestionIdentifier;
-
 // Returns the header view containing the logo and omnibox to be displayed.
 - (nullable UIView*)headerViewForWidth:(CGFloat)width;
-
-// Toggles the preference that controls content suggestions articles visilibity
-// and triggers an update for the necessary data sources.
-- (void)toggleArticlesVisibility;
 
 @end
 

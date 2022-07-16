@@ -8,7 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -27,17 +28,29 @@ namespace apps {
 // An app publisher (in the App Service sense) of Plugin VM apps.
 //
 // See components/services/app_service/README.md.
+//
+// TODO(crbug.com/1253250):
+// 1. Remove the parent class apps::PublisherBase.
+// 2. Remove all apps::mojom related code.
 class PluginVmApps : public apps::PublisherBase,
+                     public AppPublisher,
                      public guest_os::GuestOsRegistryService::Observer {
  public:
-  PluginVmApps(const mojo::Remote<apps::mojom::AppService>& app_service,
-               Profile* profile);
+  explicit PluginVmApps(AppServiceProxy* proxy);
   ~PluginVmApps() override;
 
   PluginVmApps(const PluginVmApps&) = delete;
   PluginVmApps& operator=(const PluginVmApps&) = delete;
 
  private:
+  // apps::AppPublisher overrides.
+  void LoadIcon(const std::string& app_id,
+                const IconKey& icon_key,
+                IconType icon_type,
+                int32_t size_hint_in_dip,
+                bool allow_placeholder_icon,
+                apps::LoadIconCallback callback) override;
+
   // apps::PublisherBase overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
                apps::mojom::ConnectOptionsPtr opts) override;
@@ -69,6 +82,10 @@ class PluginVmApps : public apps::PublisherBase,
       const std::vector<std::string>& updated_apps,
       const std::vector<std::string>& removed_apps,
       const std::vector<std::string>& inserted_apps) override;
+
+  std::unique_ptr<App> CreateApp(
+      const guest_os::GuestOsRegistryService::Registration& registration,
+      bool generate_new_icon_key);
 
   apps::mojom::AppPtr Convert(
       const guest_os::GuestOsRegistryService::Registration& registration,

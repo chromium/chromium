@@ -18,8 +18,7 @@ namespace ash {
 namespace {
 // The duration used to log the number of notifications shown
 // right after a user logs in.
-constexpr base::TimeDelta kLoginNotificationLogDuration =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kLoginNotificationLogDuration = base::Minutes(1);
 }  // namespace
 
 MessageCenterUiController::MessageCenterUiController(

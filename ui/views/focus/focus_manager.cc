@@ -390,9 +390,6 @@ void FocusManager::SetFocusedViewWithReason(View* view,
 
   for (FocusChangeListener& observer : focus_change_listeners_)
     observer.OnDidChangeFocus(old_focused_view, focused_view_);
-
-  if (delegate_)
-    delegate_->OnDidChangeFocus(old_focused_view, focused_view_);
 }
 
 void FocusManager::SetFocusedView(View* view) {

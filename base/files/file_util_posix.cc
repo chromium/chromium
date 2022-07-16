@@ -20,10 +20,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
-#include <sys/sendfile.h>
-#endif
-
 #include "base/base_switches.h"
 #include "base/bits.h"
 #include "base/command_line.h"
@@ -55,6 +51,10 @@
 #if defined(OS_APPLE)
 #include <AvailabilityMacros.h>
 #include "base/mac/foundation_util.h"
+#endif
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#include <sys/sendfile.h>
 #endif
 
 #if defined(OS_ANDROID)
@@ -247,13 +247,13 @@ bool DoCopyDirectory(const FilePath& from_path,
     // source file's permissions into account. On the other platforms, we just
     // use the base::File constructor. On Chrome OS, base::File uses a different
     // set of permissions than it does on other POSIX platforms.
-#if defined(OS_APPLE)
+  #if defined(OS_APPLE)
     int mode = 0600 | (stat_at_use.st_mode & 0177);
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  #elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     int mode = 0644;
-#else
+  #else
     int mode = 0600;
-#endif
+  #endif
     File outfile(open(target_path.value().c_str(), open_flags, mode));
     if (!outfile.IsValid()) {
       DPLOG(ERROR) << "CopyDirectory() couldn't create file: "
@@ -1238,8 +1238,26 @@ bool MoveUnsafe(const FilePath& from_path, const FilePath& to_path) {
 bool CopyFileContentsWithSendfile(File& infile,
                                   File& outfile,
                                   bool& retry_slow) {
-  int64_t file_size = infile.GetLength();
-  if (file_size < 0) {
+  DCHECK(infile.IsValid());
+  stat_wrapper_t in_file_info;
+  retry_slow = false;
+
+  if (base::File::Fstat(infile.GetPlatformFile(), &in_file_info)) {
+    return false;
+  }
+
+  int64_t file_size = in_file_info.st_size;
+  if (file_size == 0) {
+    // Non-regular files can return a file size of 0, things such as pipes,
+    // sockets, etc. Additionally, kernel seq_files(most procfs files) will also
+    // return 0 while still reporting as a regular file. Unfortunately, in some
+    // of these situations there are easy ways to detect them, in others there
+    // are not. No extra syscalls are needed if it's not a regular file.
+    //
+    // Because any attempt to detect it would likely require another syscall,
+    // let's just fall back to a slow copy which will invoke a single read(2) to
+    // determine if the file has contents or if it's really a zero length file.
+    retry_slow = true;
     return false;
   }
 

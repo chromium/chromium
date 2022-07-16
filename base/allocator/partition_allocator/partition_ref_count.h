@@ -108,7 +108,7 @@ class BASE_EXPORT PartitionRefCount {
   }
 
   // "IsAlive" means is allocated and not freed. "KnownRefs" refers to
-  // CheckedPtr references. There may be other references from raw pointers or
+  // raw_ptr<T> references. There may be other references from raw pointers or
   // unique_ptr, but we have no way of tracking them, so we hope for the best.
   // To summarize, the function returns whether we believe the allocation can be
   // safely freed.
@@ -179,6 +179,7 @@ static_assert((sizeof(PartitionRefCount) * (kSuperPageSize / SystemPageSize()) *
               "<= SystemPageSize().");
 
 ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
+  PA_DCHECK(slot_start == memory::RemaskPtr(slot_start));
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CheckThatSlotOffsetIsZero(slot_start);
 #endif
@@ -193,14 +194,9 @@ ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
   } else {
     PartitionRefCount* bitmap_base = reinterpret_cast<PartitionRefCount*>(
         (slot_start_as_uintptr & kSuperPageBaseMask) + SystemPageSize() * 2);
-    size_t index = ((slot_start_as_uintptr & kSuperPageOffsetMask)
-#if !defined(OS_APPLE)
-                    >> SystemPageShift()
-#else
-                    / SystemPageSize()
-#endif
-                        ) *
-                   kPartitionRefCountIndexMultiplier;
+    size_t index =
+        ((slot_start_as_uintptr & kSuperPageOffsetMask) >> SystemPageShift()) *
+        kPartitionRefCountIndexMultiplier;
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(sizeof(PartitionRefCount) * index <= SystemPageSize());
 #endif

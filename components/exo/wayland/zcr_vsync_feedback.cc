@@ -23,6 +23,10 @@ class VSyncTiming final : public VSyncTimingManager::Observer {
       : timing_resource_(timing_resource) {
     WMHelper::GetInstance()->GetVSyncTimingManager().AddObserver(this);
   }
+
+  VSyncTiming(const VSyncTiming&) = delete;
+  VSyncTiming& operator=(const VSyncTiming&) = delete;
+
   ~VSyncTiming() override {
     WMHelper::GetInstance()->GetVSyncTimingManager().RemoveObserver(this);
   }
@@ -42,8 +46,6 @@ class VSyncTiming final : public VSyncTimingManager::Observer {
  private:
   // The VSync timing resource.
   wl_resource* const timing_resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(VSyncTiming);
 };
 
 void vsync_timing_destroy(wl_client* client, wl_resource* resource) {

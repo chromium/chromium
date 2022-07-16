@@ -193,8 +193,7 @@ public class TopToolbarOverlayMediator {
     @ColorInt
     private int getUrlBarBackgroundColor(Tab tab, @ColorInt int backgroundColor) {
         if (sUrlBarColorForTesting != null) return sUrlBarColorForTesting;
-        return ThemeUtils.getTextBoxColorForToolbarBackground(
-                mContext.getResources(), tab, backgroundColor);
+        return ThemeUtils.getTextBoxColorForToolbarBackground(mContext, tab, backgroundColor);
     }
 
     /** Update the state of the composited progress bar. */

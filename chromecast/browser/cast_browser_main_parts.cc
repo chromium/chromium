@@ -19,9 +19,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_split.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -145,8 +145,8 @@
 #include "base/callback_helpers.h"
 #include "chromecast/base/cast_sys_info_util.h"
 #include "chromecast/public/cast_sys_info.h"
-#include "components/heap_profiling/multi_process/client_connection_manager.h"
-#include "components/heap_profiling/multi_process/supervisor.h"
+#include "components/heap_profiling/multi_process/client_connection_manager.h"  // nogncheck
+#include "components/heap_profiling/multi_process/supervisor.h"  // nogncheck
 #endif  // !defined(OS_FUCHSIA)
 
 namespace {
@@ -267,10 +267,11 @@ CreateClientConnectionManager(
 class CastViewsDelegate : public views::ViewsDelegate {
  public:
   CastViewsDelegate() = default;
-  ~CastViewsDelegate() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastViewsDelegate);
+  CastViewsDelegate(const CastViewsDelegate&) = delete;
+  CastViewsDelegate& operator=(const CastViewsDelegate&) = delete;
+
+  ~CastViewsDelegate() override = default;
 };
 
 #endif  // defined(USE_AURA)
@@ -282,7 +283,8 @@ base::FilePath GetApplicationFontsDir() {
   std::string fontconfig_sysroot;
   if (env->GetVar("FONTCONFIG_SYSROOT", &fontconfig_sysroot)) {
     // Running with hermetic fontconfig; using the full path will not work.
-    // Assume the root is base::DIR_MODULE as set by base::SetUpFontconfig().
+    // Assume the root is base::DIR_MODULE as set by
+    // test_fonts::SetUpFontconfig().
     return base::FilePath("/fonts");
   } else {
     base::FilePath dir_module;
@@ -396,11 +398,11 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
 }  // namespace
 
 CastBrowserMainParts::CastBrowserMainParts(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     CastContentBrowserClient* cast_content_browser_client)
     : BrowserMainParts(),
       cast_browser_process_(new CastBrowserProcess()),
-      parameters_(parameters),
+      parameters_(std::move(parameters)),
       cast_content_browser_client_(cast_content_browser_client),
 
       media_caps_(std::make_unique<media::MediaCapsImpl>()),
@@ -411,10 +413,7 @@ CastBrowserMainParts::CastBrowserMainParts(
   AddDefaultCommandLineSwitches(command_line);
 
   service_manager_context_ = std::make_unique<ServiceManagerContext>(
-      cast_content_browser_client_,
-      base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-          ? content::GetUIThreadTaskRunner({})
-          : content::GetIOThreadTaskRunner({}));
+      cast_content_browser_client_, content::GetUIThreadTaskRunner({}));
   ServiceManagerConnection::GetForProcess()->Start();
 }
 
@@ -530,7 +529,8 @@ int CastBrowserMainParts::PreCreateThreads() {
 
 int CastBrowserMainParts::PreMainMessageLoopRun() {
 #if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
-  memory_pressure_monitor_.reset(new util::MultiSourceMemoryPressureMonitor());
+  memory_pressure_monitor_.reset(
+      new memory_pressure::MultiSourceMemoryPressureMonitor());
   auto cast_system_memory_pressure_evaluator =
       std::make_unique<CastSystemMemoryPressureEvaluator>(
           memory_pressure_monitor_->CreateVoter());
@@ -634,6 +634,10 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
   window_manager_ = std::make_unique<CastWindowManagerDefault>();
 #endif  // defined(USE_AURA)
 
+  cast_content_browser_client_->media_resource_tracker()->InitializeMediaLib();
+  ::media::InitializeMediaLibrary();
+  media_caps_->Initialize();
+
   cast_browser_process_->SetCastService(
       cast_browser_process_->browser_client()->CreateCastService(
           cast_browser_process_->browser_context(),
@@ -641,10 +645,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
           cast_browser_process_->pref_service(),
           video_plane_controller_.get(), window_manager_.get()));
   cast_browser_process_->cast_service()->Initialize();
-
-  cast_content_browser_client_->media_resource_tracker()->InitializeMediaLib();
-  ::media::InitializeMediaLibrary();
-  media_caps_->Initialize();
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   user_pref_service_ = extensions::cast_prefs::CreateUserPrefService(
@@ -698,12 +698,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
 
   cast_browser_process_->cast_service()->Start();
 
-  if (parameters_.ui_task) {
-    std::move(*parameters_.ui_task).Run();
-    delete parameters_.ui_task;
-    run_message_loop_ = false;
-  }
-
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
@@ -712,7 +706,7 @@ void CastBrowserMainParts::StartPeriodicCrashReportUpload() {
   OnStartPeriodicCrashReportUpload();
   crash_reporter_timer_.reset(new base::RepeatingTimer());
   crash_reporter_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromMinutes(20), this,
+      FROM_HERE, base::Minutes(20), this,
       &CastBrowserMainParts::OnStartPeriodicCrashReportUpload);
 }
 
@@ -732,16 +726,10 @@ void CastBrowserMainParts::WillRunMainMessageLoop(
 #if defined(OS_ANDROID)
   // Android does not use native main MessageLoop.
   NOTREACHED();
-#else
-  if (run_message_loop_) {
-#if !defined(OS_FUCHSIA)
-    // Fuchsia doesn't have signals.
-    RegisterClosureOnSignal(run_loop->QuitClosure());
+#elif !defined(OS_FUCHSIA)
+  // Fuchsia doesn't have signals.
+  RegisterClosureOnSignal(run_loop->QuitClosure());
 #endif  // !defined(OS_FUCHSIA)
-  } else {
-    run_loop.reset();
-  }
-#endif
 }
 
 void CastBrowserMainParts::PostMainMessageLoopRun() {

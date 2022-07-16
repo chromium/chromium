@@ -103,6 +103,12 @@ spdy::Http2HeaderBlock WebSocketHttp2Response(
 class WebSocketMockClientSocketFactoryMaker {
  public:
   WebSocketMockClientSocketFactoryMaker();
+
+  WebSocketMockClientSocketFactoryMaker(
+      const WebSocketMockClientSocketFactoryMaker&) = delete;
+  WebSocketMockClientSocketFactoryMaker& operator=(
+      const WebSocketMockClientSocketFactoryMaker&) = delete;
+
   ~WebSocketMockClientSocketFactoryMaker();
 
   // Tell the factory to create a socket which expects |expect_written| to be
@@ -132,8 +138,6 @@ class WebSocketMockClientSocketFactoryMaker {
  private:
   struct Detail;
   std::unique_ptr<Detail> detail_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketMockClientSocketFactoryMaker);
 };
 
 // This class encapsulates the details of creating a
@@ -142,6 +146,12 @@ class WebSocketMockClientSocketFactoryMaker {
 struct WebSocketTestURLRequestContextHost {
  public:
   WebSocketTestURLRequestContextHost();
+
+  WebSocketTestURLRequestContextHost(
+      const WebSocketTestURLRequestContextHost&) = delete;
+  WebSocketTestURLRequestContextHost& operator=(
+      const WebSocketTestURLRequestContextHost&) = delete;
+
   ~WebSocketTestURLRequestContextHost();
 
   void SetExpectations(const std::string& expect_written,
@@ -175,8 +185,6 @@ struct WebSocketTestURLRequestContextHost {
   TestNetworkDelegate network_delegate_;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   bool url_request_context_initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketTestURLRequestContextHost);
 };
 
 // WebSocketStream::ConnectDelegate implementation that does nothing.
@@ -233,13 +241,16 @@ class TestWebSocketHandshakeStreamCreateHelper
                                              /* requested_subprotocols = */ {},
                                              &request_) {}
 
+  TestWebSocketHandshakeStreamCreateHelper(
+      const TestWebSocketHandshakeStreamCreateHelper&) = delete;
+  TestWebSocketHandshakeStreamCreateHelper& operator=(
+      const TestWebSocketHandshakeStreamCreateHelper&) = delete;
+
   ~TestWebSocketHandshakeStreamCreateHelper() override = default;
 
  private:
   DummyConnectDelegate connect_delegate_;
   TestWebSocketStreamRequestAPI request_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebSocketHandshakeStreamCreateHelper);
 };
 
 }  // namespace net

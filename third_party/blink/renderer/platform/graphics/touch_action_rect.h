@@ -12,7 +12,7 @@
 namespace blink {
 
 struct PLATFORM_EXPORT TouchActionRect {
-  IntRect rect;
+  gfx::Rect rect;
   TouchAction allowed_touch_action = TouchAction::kNone;
 
   bool operator==(const TouchActionRect& rhs) const {

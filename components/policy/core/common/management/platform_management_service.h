@@ -15,12 +15,6 @@ class POLICY_EXPORT PlatformManagementService : public ManagementService {
  public:
   PlatformManagementService();
   ~PlatformManagementService() override;
-
-  static PlatformManagementService& GetInstance();
-
- protected:
-  // ManagementService impl
-  void InitManagementStatusProviders() override;
 };
 
 }  // namespace policy

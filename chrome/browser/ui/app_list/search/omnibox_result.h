@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
@@ -47,7 +46,7 @@ class OmniboxResult : public ChromeSearchResult, public BitmapFetcherDelegate {
 
   // ChromeSearchResult:
   void Open(int event_flags) override;
-  void InvokeAction(int action_index) override;
+  void InvokeAction(ash::SearchResultActionType action) override;
 
   // BitmapFetcherDelegate:
   void OnFetchComplete(const GURL& url, const SkBitmap* bitmap) override;

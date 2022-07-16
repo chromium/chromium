@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Intl vs. Closure Benchmarks - format functions in goog.i18n</title>
+<script src="../base.js"></script>
+
+<script>
+  goog.require('goog.testing.benchmark');
+  goog.require('goog.i18n.bidi');
+  goog.require('goog.i18n.bidi.Dir');
+  goog.require('goog.date.Date');
+  goog.require('goog.i18n.DateIntervalFormat');
+  goog.require('goog.i18n.dateIntervalPatterns');
+  goog.require('goog.date.DateRange');
+  goog.require('goog.i18n.collation');
+  goog.require('goog.i18n.DateTimeFormat');
+  goog.require('goog.i18n.GraphemeBreak');
+  goog.require('goog.i18n.NumberFormat');
+  goog.require('goog.i18n.RelativeDateTimeFormat');
+  goog.require('goog.i18n.TimeZone');
+</script>
+
+<link rel="stylesheet" href="../testing/performancetable.css"/>
+</head>
+<body>
+
+<script>
+  // Benchmarking I18N Closure formatting functions.
+  // Also comparing performance of Closure vs. Intl object
+
+  //------------------------------------------------------------------------
+  // RelatveDateTimeFormat comparisons
+  var rdtf = goog.module.get('goog.i18n.RelativeDateTimeFormat');
+  var fmt = new rdtf(
+     rdtf.NumericOption.ALWAYS,
+     rdtf.Style.LONG);
+  var fmtAuto = new rdtf(
+      rdtf.NumericOption.AUTO,
+      rdtf.Style.LONG);
+  var rdtfIntlAlways =
+      new Intl.RelativeTimeFormat('en',
+                                  {style: 'short'});
+  var rdtfIntlAuto =
+      new Intl.RelativeTimeFormat('en',
+                                  {style: 'short'},
+                                  {numeric: 'auto'});
+
+  function benchmarkRdtf_Closure() {
+      var result;
+      for (var i = 0; i < 100; i++) {
+          result = fmt.format(-1,  rdtf.Unit.DAY);  // Yesterday
+          result = fmt.format(7,  rdtf.Unit.WEEK);  // 7 weeks
+          result = fmt.format(307,  rdtf.Unit.SECOND);  // seconds
+      };
+  };
+
+  function benchmarkRdtf_Intl() {
+      var result;
+      for (var i = 0; i < 100; i++) {
+          result = rdtfIntlAlways.format(-1,  "day");  // Yesterday
+          result = rdtfIntlAlways.format(7,  "week");  // 7 weeks
+          result = rdtfIntlAlways.format(307,  "second");  // seconds
+      };
+  };
+
+  function benchmarkRdtfAuto_Closure() {
+      var result;
+      for (var i = 0; i < 500; i++) {
+          result = fmtAuto.format(-1,  rdtf.Unit.DAY);  // Yesterday
+          result = fmtAuto.format(2,  rdtf.Unit.DAY);  // in two days
+      };
+  };
+
+  function benchmarkRdtfAuto_Intl() {
+      var result;
+      for (var i = 0; i < 500; i++) {
+          result = rdtfIntlAuto.format(-1,  "day");  // Yesterday
+          result = rdtfIntlAuto.format(2,  "day");  // in two days
+      };
+  };
+
+  //------------------------------------------------------------------------
+  // DateTimeFormat comparisons
+  var date = new Date(2006, 6, 27, 13, 10, 10, 250);
+  var datefmtClosure = new goog.i18n.DateTimeFormat('EEE, MMM d, yyyy');
+  function benchmarkDate_Closure() {
+      var result;
+      for (var i = 0; i < 500; i++) {
+          result = datefmtClosure.format(date)
+      }
+  }
+
+  var dateOptions = { weekday: 'short',
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric' };
+  var datefmtIntl = new Intl.DateTimeFormat('en', dateOptions);
+  function benchmarkDate_Intl() {
+      var result;
+      for (var i = 0; i < 500; i++) {
+          result = datefmtIntl.format(date);
+      }
+  }
+
+  //------------------------------------------------------------------------
+  // NumberFormat comparisons
+  var number = 1234.579;
+  var numberPercent = 0.135799;
+
+  var numFmtClosureCurrency =
+      new goog.i18n.NumberFormat(goog.i18n.NumberFormat.Format.CURRENCY);
+  var numFmtClosureDecimal =
+      new goog.i18n.NumberFormat(goog.i18n.NumberFormat.Format.DECIMAL);
+  var numFmtClosurePercent =
+      new goog.i18n.NumberFormat(goog.i18n.NumberFormat.Format.PERCENT);
+  function benchmarkNumber_Closure() {
+      var resultCur;
+      var resultDec;
+      var resultPer;
+      for (var i = 0; i < 500; i++) {
+          resultCur = numFmtClosureCurrency.format(number);
+          resultDec = numFmtClosureDecimal.format(number);
+          resultPer = numFmtClosurePercent.format(numberPercent);
+      }
+  }
+
+  //------------------------------------------------------------------------
+  // Formatting currency comparisons
+  var numFmtIntlCurrency =
+      new Intl.NumberFormat('en', { style: 'currency', currency: 'EUR' });
+  var numFmtIntlDecimal = new Intl.NumberFormat('en', { style: 'decimal'});
+  var numFmtIntlPercent = new Intl.NumberFormat('en', { style: 'percent'});
+  function benchmarkNumber_Intl() {
+      var resultCur;
+      var resultDec;
+      var resultPer;
+      for (var i = 0; i < 500; i++) {
+          resultCur = numFmtIntlCurrency.format(number);
+          resultDec = numFmtIntlDecimal.format(number);
+          resultPer = numFmtIntlPercent.format(numberPercent);
+      }
+  }
+
+  //------------------------------------------------------------------------
+  // Collator comparisons
+  var closureCollator = goog.i18n.collation.createComparator();
+
+  var intlCollator = new Intl.Collator('en').compare;
+
+  var wordList = ["dolphin", "ant", "aarvark", "anteater",
+                  "moa", "cat", "kitty", "wolverine", "wolf",
+                  "jackal", "octopus", "lamprey", "paramecium",
+                  "lady bug", "stink bug", "mantis", "honey bee"
+                 ];
+  function wordSort(words, comparator) {
+      return words.sort(comparator);
+  }
+
+  function benchmarkCollator_Intl() {
+      var result;
+      for (var i = 0; i < 200; i++) {
+          result = wordSort(wordList, intlCollator);
+      }
+  }
+
+  function benchmarkCollator_Closure() {
+      var result;
+      for (var i = 0; i < 200; i++) {
+          result = wordSort(wordList, closureCollator);
+      }
+  }
+
+
+  //------------------------------------------------------------------------
+  // DateInterval comparisons
+  var firstDate = new Date(Date.UTC.apply(null, [2007, 9, 10, 10, 10, 10]));
+  var secondDate = new Date(Date.UTC.apply(null, [2008, 9, 10, 10, 10, 10]));
+  var dateIntervalPatterns = goog.module.get('goog.i18n.dateIntervalPatterns');
+  var datePattern = dateIntervalPatterns.DateIntervalPatterns_en.MONTH_DAY_FULL;
+
+  var dif = goog.module.get('goog.i18n.DateIntervalFormat');
+  var difFmtClosure = new dif(datePattern);
+  var TimeZone = goog.module.get('goog.i18n.TimeZone');
+  var tz = TimeZone.createTimeZone(0);
+
+  function benchmarkDateInterval_Closure() {
+      var result;
+      for (var i = 0; i < 200; i++) {
+          result = difFmtClosure.format(firstDate, secondDate, tz);
+      }
+  }
+
+  function benchmarkGraphemeBreak_Closure() {
+      var result;
+      for (var i = 0; i < 200; i++) {
+          result = goog.i18n.GraphemeBreak.hasGraphemeBreakStrings(
+              'a', 'b', true);
+      }
+  }
+
+  //------------------------------------------------------------------------
+  // Bidi timing
+  function benchmarkBidi_Closure() {
+      var result;
+      for (var i = 0; i < 500; i++) {
+          result = goog.i18n.bidi.estimateDirection(
+              'http://foo/bar/?s=\u05d0\u05d0\u05d0\u05d0\u05d0\u05d0' +
+                  '\u05d0\u05d0\u05d0\u05d0\u05d0\u05d0\u05d0\u05d0\u05d0' +
+                  '\u05d0\u05d0\u05d0\u05d0\u05d0\u05d0\u05d0\u05d0\u05d0',
+              false);
+          result = !goog.i18n.bidi.startsWithRtl(
+              '\uD800\uDD01\uD800\uDD9A');
+          result = goog.i18n.bidi.startsWithLtr(
+              '\uD800\uDD01\uD800\uDD9A');
+          result = !goog.i18n.bidi.startsWithLtr(
+              '\u05e0(123)-4567!');
+          result = goog.i18n.bidi.startsWithRtl(
+              '\u05e0(123)-4567!');
+          result = goog.i18n.bidi.endsWithRtl(
+              ' \u05e0\u05e1a\u05e2 &lt;', true);
+          result = !goog.i18n.bidi.endsWithRtl(
+              ' \u05e0\u05e1a\u05e2 &lt;', false);
+          result = goog.i18n.bidi.endsWithLtr(
+              ' \u05e0\u05e1a\u05e2\u05e3 a (!)');
+          result = goog.i18n.bidi.endsWithLtr(
+              '\u202b\u05d0!\u202c\u200e');
+          result = goog.i18n.bidi.hasAnyRtl(
+              'A\uD83A\uDD22\uD83A\uDD15B', false);
+          result = goog.i18n.bidi.hasAnyLtr(
+              '\u05e0\u05e1Q\u05e2\u05e3');
+          result = goog.i18n.bidi.isNeutralText(
+              '<input value=\u05e0>123&lt;', true);
+      }
+  }
+  </script>
+</body>
+</html>

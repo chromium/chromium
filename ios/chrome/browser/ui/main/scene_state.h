@@ -116,6 +116,10 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 // accordingly, and then reset it to NO.
 @property(nonatomic, assign) BOOL modifytVisibleNTPForStartSurface;
 
+// YES if sign-in is in progress which covers the authentication flow and the
+// sign-in prompt UI.
+@property(nonatomic, assign) BOOL signinInProgress;
+
 // Adds an observer to this scene state. The observers will be notified about
 // scene state changes per SceneStateObserver protocol.
 - (void)addObserver:(id<SceneStateObserver>)observer;

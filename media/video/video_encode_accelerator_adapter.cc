@@ -7,16 +7,17 @@
 #include <limits>
 #include <vector>
 
-#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/svc_scalability_mode.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -50,19 +51,33 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
       VideoEncodeAccelerator::Config(format, opts.frame_size, profile, bitrate,
                                      initial_framerate, opts.keyframe_interval);
 
-  if (opts.temporal_layers > 1) {
+  size_t num_temporal_layers = 1;
+  if (opts.scalability_mode) {
+    switch (opts.scalability_mode.value()) {
+      case SVCScalabilityMode::kL1T2:
+        num_temporal_layers = 2;
+        break;
+      case SVCScalabilityMode::kL1T3:
+        num_temporal_layers = 3;
+        break;
+      default:
+        NOTREACHED() << "Unsupported SVC: "
+                     << GetScalabilityModeName(opts.scalability_mode.value());
+    }
+  }
+  if (num_temporal_layers > 1) {
     VideoEncodeAccelerator::Config::SpatialLayer layer;
     layer.width = opts.frame_size.width();
     layer.height = opts.frame_size.height();
     layer.bitrate_bps = config.bitrate.target();
     if (initial_framerate.has_value())
       layer.framerate = initial_framerate.value();
-    layer.num_of_temporal_layers = opts.temporal_layers;
+    layer.num_of_temporal_layers = num_temporal_layers;
     config.spatial_layers.push_back(layer);
   }
 
-  // We don't mind if Mac encoding will have higher latency on low resolutions.
-  config.require_low_delay = false;
+  config.require_low_delay =
+      opts.latency_mode == VideoEncoder::LatencyMode::Realtime;
 
   const bool is_rgb =
       format == PIXEL_FORMAT_XBGR || format == PIXEL_FORMAT_XRGB ||
@@ -90,8 +105,6 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
 
 VideoEncodeAcceleratorAdapter::PendingOp::PendingOp() = default;
 VideoEncodeAcceleratorAdapter::PendingOp::~PendingOp() = default;
-VideoEncodeAcceleratorAdapter::PendingEncode::PendingEncode() = default;
-VideoEncodeAcceleratorAdapter::PendingEncode::~PendingEncode() = default;
 
 VideoEncodeAcceleratorAdapter::VideoEncodeAcceleratorAdapter(
     GpuVideoAcceleratorFactories* gpu_factories,
@@ -450,7 +463,9 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
   result.key_frame = metadata.key_frame;
   result.timestamp = metadata.timestamp;
   result.size = metadata.payload_size_bytes;
-  if (metadata.vp9.has_value())
+  if (metadata.h264.has_value())
+    result.temporal_id = metadata.h264.value().temporal_idx;
+  else if (metadata.vp9.has_value())
     result.temporal_id = metadata.vp9.value().temporal_idx;
   else if (metadata.vp8.has_value())
     result.temporal_id = metadata.vp8.value().temporal_idx;
@@ -645,8 +660,7 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
   // Keep the SharedMemoryHolder until the frame is destroyed so that the
   // memory is not freed prematurely.
   shared_frame->AddDestructionObserver(BindToCurrentLoop(base::BindOnce(
-      base::DoNothing::Once<
-          std::unique_ptr<base::UnsafeSharedMemoryPool::Handle>>(),
+      [](std::unique_ptr<base::UnsafeSharedMemoryPool::Handle>) {},
       std::move(handle))));
   auto status =
       ConvertAndScaleFrame(*mapped_src_frame, *shared_frame, resize_buf_);

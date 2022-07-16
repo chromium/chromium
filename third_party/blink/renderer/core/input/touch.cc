@@ -65,8 +65,7 @@ Touch::Touch(LocalFrame* frame,
              const FloatPoint& page_pos,
              const FloatSize& radius,
              float rotation_angle,
-             float force,
-             String region)
+             float force)
     : target_(target),
       identifier_(identifier),
       client_pos_(page_pos - ContentsOffset(frame)),
@@ -75,7 +74,6 @@ Touch::Touch(LocalFrame* frame,
       radius_(radius),
       rotation_angle_(rotation_angle),
       force_(force),
-      region_(region),
       absolute_location_(PageToAbsolute(frame, page_pos)) {}
 
 Touch::Touch(EventTarget* target,
@@ -86,7 +84,6 @@ Touch::Touch(EventTarget* target,
              const FloatSize& radius,
              float rotation_angle,
              float force,
-             String region,
              LayoutPoint absolute_location)
     : target_(target),
       identifier_(identifier),
@@ -96,7 +93,6 @@ Touch::Touch(EventTarget* target,
       radius_(radius),
       rotation_angle_(rotation_angle),
       force_(force),
-      region_(region),
       absolute_location_(absolute_location) {}
 
 Touch::Touch(LocalFrame* frame, const TouchInit* initializer)
@@ -108,13 +104,12 @@ Touch::Touch(LocalFrame* frame, const TouchInit* initializer)
       radius_(FloatSize(initializer->radiusX(), initializer->radiusY())),
       rotation_angle_(initializer->rotationAngle()),
       force_(initializer->force()),
-      region_(initializer->region()),
       absolute_location_(PageToAbsolute(frame, page_pos_)) {}
 
 Touch* Touch::CloneWithNewTarget(EventTarget* event_target) const {
   return MakeGarbageCollected<Touch>(
       event_target, identifier_, client_pos_, screen_pos_, page_pos_, radius_,
-      rotation_angle_, force_, region_, absolute_location_);
+      rotation_angle_, force_, absolute_location_);
 }
 
 void Touch::Trace(Visitor* visitor) const {

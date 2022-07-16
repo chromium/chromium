@@ -61,14 +61,14 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
   EXPECT_EQ(u"New Tab", items[1].title);
 
   // Browsers are listed with the title of their active contents.
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("data:text/html,<title>0</title>"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,<title>0</title>")));
   AddBlankTabAndShow(browser1);
-  ui_test_utils::NavigateToURL(browser1,
-                               GURL("data:text/html,<title>1</title>"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser1, GURL("data:text/html,<title>1</title>")));
   AddBlankTabAndShow(browser1);
-  ui_test_utils::NavigateToURL(browser1,
-                               GURL("data:text/html,<title>2</title>"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser1, GURL("data:text/html,<title>2</title>")));
   EXPECT_EQ(1, browser1->tab_strip_model()->active_index());
   items = GetAppMenuItems(controller, ui::EF_NONE);
   ASSERT_EQ(2U, items.size());

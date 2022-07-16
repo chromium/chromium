@@ -105,6 +105,8 @@ class CORE_EXPORT Shape {
   }
   virtual void BuildDisplayPaths(DisplayPaths&) const = 0;
 
+  void SetShapeMarginForTesting(float margin) { margin_ = margin; }
+
  protected:
   float ShapeMargin() const { return margin_; }
 
@@ -121,8 +123,8 @@ class CORE_EXPORT Shape {
            (!line_height && line_top == rect.Y());
   }
 
-  WritingMode writing_mode_;
-  float margin_;
+  WritingMode writing_mode_ = WritingMode::kHorizontalTb;
+  float margin_ = 0;
 };
 
 }  // namespace blink

@@ -1,0 +1,57 @@
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="./common_styles/common_styles.html">
+<link rel="import" href="./gaia_button.html">
+
+<!--
+  A simple input form with a button. Being used for typing email or password.
+  User should put one or more <gaia-input slot="inputs">s inside.
+
+  Example:
+    <gaia-input-form button-text="Submit">
+      <gaia-input slot="inputs" label="Email" type="email"></gaia-input>
+      <gaia-input slot="inputs" label="Password" type="password"></gaia-input>
+      <gaia-input slot="inputs" label="OTP"></gaia-input>
+    </gaia-input-form>
+
+  Attributes:
+    'button-text' - text on the button.
+  Methods:
+    'reset' - resets all the inputs to the initial state.
+  Events:
+    'submit' - fired on button click or "Enter" press inside input field.
+
+-->
+<dom-module id="gaia-input-form">
+  <template>
+    <style include="oobe-common-styles">
+      :host {
+        display: block;
+        font-size: 16px;
+      }
+
+      :host ::slotted(gaia-input) {
+        margin-bottom: 24px;
+      }
+
+      :host ::slotted(gaia-input:last-of-type) {
+        margin-bottom: 28px;
+      }
+    </style>
+    <div on-keydown="onKeyDown_">
+      <slot id="inputs" name="inputs"></slot>
+      <div class="horizontal-reverse justified layout center">
+        <gaia-button id="button" on-click="onButtonClicked_" class="self-end"
+            hidden="[[!buttonText]]">
+          <span>[[buttonText]]</span>
+        </gaia-button>
+        <slot></slot>
+      </div>
+    </div>
+  </template>
+  <script src="gaia_input_form.js"></script>
+</dom-module>

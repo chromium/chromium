@@ -91,6 +91,11 @@ class COMPONENT_EXPORT(UI_BASE_X) XClipboardHelper : public x11::EventObserver {
   // ownership of it.
   void StoreCopyPasteDataAndWait();
 
+  // Returns true if the event was handled.
+  bool DispatchEvent(const x11::Event& xev);
+
+  SelectionRequestor* GetSelectionRequestorForTest();
+
  private:
   class TargetList;
 

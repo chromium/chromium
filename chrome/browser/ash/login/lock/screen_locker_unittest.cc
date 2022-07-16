@@ -11,17 +11,16 @@
 #include "ash/public/cpp/login_types.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/chromeos/input_method/mock_input_method_manager_impl.h"
 #include "chrome/browser/ui/ash/accessibility/fake_accessibility_controller.h"
 #include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
@@ -67,6 +66,10 @@ std::unique_ptr<KeyedService> CreateCertificateProviderService(
 class ScreenLockerUnitTest : public testing::Test {
  public:
   ScreenLockerUnitTest() = default;
+
+  ScreenLockerUnitTest(const ScreenLockerUnitTest&) = delete;
+  ScreenLockerUnitTest& operator=(const ScreenLockerUnitTest&) = delete;
+
   ~ScreenLockerUnitTest() override = default;
 
   void SetUp() override {
@@ -180,7 +183,6 @@ class ScreenLockerUnitTest : public testing::Test {
   chromeos::SessionTerminationManager session_termination_manager_;
 
   std::unique_ptr<audio::TestObserver> observer_;
-  DISALLOW_COPY_AND_ASSIGN(ScreenLockerUnitTest);
 };
 
 // Chrome notifies Ash when screen is locked. Ash is responsible for suspending

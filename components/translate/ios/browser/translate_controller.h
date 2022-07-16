@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/translate/core/common/translate_errors.h"
 #import "ios/web/public/web_state.h"
@@ -48,6 +47,10 @@ class TranslateController : public web::WebStateObserver {
   };
 
   TranslateController(web::WebState* web_state, JsTranslateManager* manager);
+
+  TranslateController(const TranslateController&) = delete;
+  TranslateController& operator=(const TranslateController&) = delete;
+
   ~TranslateController() override;
 
   // Sets the observer.
@@ -128,8 +131,6 @@ class TranslateController : public web::WebStateObserver {
   Observer* observer_;
   __strong JsTranslateManager* js_manager_;
   base::WeakPtrFactory<TranslateController> weak_method_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateController);
 };
 
 }  // namespace translate

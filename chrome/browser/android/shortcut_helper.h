@@ -12,7 +12,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/android/webapk/webapk_info.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/browser/android/webapk/webapk_installer.h"
@@ -30,6 +29,10 @@ struct ShortcutInfo;
 // ShortcutHelper in Java.
 class ShortcutHelper {
  public:
+  ShortcutHelper() = delete;
+  ShortcutHelper(const ShortcutHelper&) = delete;
+  ShortcutHelper& operator=(const ShortcutHelper&) = delete;
+
   // Adds a shortcut to the launcher using a SkBitmap. The type of shortcut
   // added depends on the properties in |info|.
   static void AddToLauncherWithSkBitmap(content::WebContents* web_contents,
@@ -61,9 +64,6 @@ class ShortcutHelper {
   // Sets a flag to force an update for the WebAPK corresponding to |id| on next
   // launch.
   static void SetForceWebApkUpdate(const std::string& id);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ShortcutHelper);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_SHORTCUT_HELPER_H_

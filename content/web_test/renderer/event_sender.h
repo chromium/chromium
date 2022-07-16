@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -41,6 +40,7 @@ class Arguments;
 
 namespace content {
 class TestRunner;
+class WebFrameTestProxy;
 
 // Key event location code introduced in DOM Level 3.
 // See also: http://www.w3.org/TR/DOM-Level-3-Events/#events-keyboardevents
@@ -54,10 +54,14 @@ enum KeyLocationCode {
 class EventSender {
  public:
   EventSender(blink::WebFrameWidget*, content::TestRunner* test_runner);
+
+  EventSender(const EventSender&) = delete;
+  EventSender& operator=(const EventSender&) = delete;
+
   virtual ~EventSender();
 
   void Reset();
-  void Install(blink::WebLocalFrame*);
+  void Install(WebFrameTestProxy*);
 
   void SetContextMenuData(const blink::ContextMenuData&);
 
@@ -317,8 +321,6 @@ class EventSender {
   base::TimeTicks last_event_timestamp_;
 
   base::WeakPtrFactory<EventSender> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EventSender);
 };
 
 }  // namespace content

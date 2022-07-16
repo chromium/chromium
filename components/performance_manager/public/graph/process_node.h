@@ -6,8 +6,8 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_PROCESS_NODE_H_
 
 #include "base/callback_forward.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/graph/node.h"
@@ -44,7 +44,21 @@ class ProcessNode : public Node {
   using Observer = ProcessNodeObserver;
   class ObserverDefaultImpl;
 
+  // The type of content a renderer can host.
+  enum class ContentType : uint32_t {
+    kExtension = 1 << 0,
+    kMainFrame = 1 << 1,
+    kAd = 1 << 2,
+  };
+
+  using ContentTypes =
+      base::EnumSet<ContentType, ContentType::kExtension, ContentType::kAd>;
+
   ProcessNode();
+
+  ProcessNode(const ProcessNode&) = delete;
+  ProcessNode& operator=(const ProcessNode&) = delete;
+
   ~ProcessNode() override;
 
   // Returns the type of this process.
@@ -112,8 +126,9 @@ class ProcessNode : public Node {
   // Returns the current priority of the process.
   virtual base::TaskPriority GetPriority() const = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessNode);
+  // Returns a bit field indicating what type of content this process has
+  // hosted, either currently or in the past.
+  virtual ContentTypes GetHostedContentTypes() const = 0;
 };
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
@@ -121,6 +136,10 @@ class ProcessNode : public Node {
 class ProcessNodeObserver {
  public:
   ProcessNodeObserver();
+
+  ProcessNodeObserver(const ProcessNodeObserver&) = delete;
+  ProcessNodeObserver& operator=(const ProcessNodeObserver&) = delete;
+
   virtual ~ProcessNodeObserver();
 
   // Node lifetime notifications.
@@ -152,9 +171,6 @@ class ProcessNodeObserver {
 
   // Fired when all frames in a process have transitioned to being frozen.
   virtual void OnAllFramesInProcessFrozen(const ProcessNode* process_node) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessNodeObserver);
 };
 
 // Default implementation of observer that provides dummy versions of each
@@ -163,6 +179,10 @@ class ProcessNodeObserver {
 class ProcessNode::ObserverDefaultImpl : public ProcessNodeObserver {
  public:
   ObserverDefaultImpl();
+
+  ObserverDefaultImpl(const ObserverDefaultImpl&) = delete;
+  ObserverDefaultImpl& operator=(const ObserverDefaultImpl&) = delete;
+
   ~ObserverDefaultImpl() override;
 
   // ProcessNodeObserver implementation:
@@ -173,9 +193,6 @@ class ProcessNode::ObserverDefaultImpl : public ProcessNodeObserver {
   void OnPriorityChanged(const ProcessNode* process_node,
                          base::TaskPriority previous_value) override {}
   void OnAllFramesInProcessFrozen(const ProcessNode* process_node) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObserverDefaultImpl);
 };
 
 }  // namespace performance_manager

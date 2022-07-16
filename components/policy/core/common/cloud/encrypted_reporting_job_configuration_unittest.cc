@@ -15,7 +15,7 @@
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,14 +57,14 @@ constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
 
 // Keys for EncrypedRecord
 constexpr char kEncryptedWrappedRecordKey[] = "encryptedWrappedRecord";
-constexpr char kSequencingInformationKey[] = "sequencingInformation";
+constexpr char kSequenceInformationKey[] = "sequencingInformation";
 constexpr char kEncryptionInfoKey[] = "encryptionInfo";
 
 // Keys for internal encryption information dictionaries.
 constexpr char kEncryptionKey[] = "encryptionKey";
 constexpr char kPublicKeyIdKey[] = "publicKeyId";
 
-// Keys for internal SequencingInformation dictionaries.
+// Keys for internal SequenceInformation dictionaries.
 constexpr char kSequencingIdKey[] = "sequencingId";
 constexpr char kGenerationIdKey[] = "generationId";
 constexpr char kPriorityKey[] = "priority";
@@ -89,7 +89,7 @@ base::Value GenerateSingleRecord(base::StringPiece encrypted_wrapped_record) {
   record_dictionary.SetStringKey(kEncryptedWrappedRecordKey, base64_encode);
 
   base::Value* const sequencing_dictionary = record_dictionary.SetKey(
-      kSequencingInformationKey, base::Value{base::Value::Type::DICTIONARY});
+      kSequenceInformationKey, base::Value{base::Value::Type::DICTIONARY});
   sequencing_dictionary->SetStringKey(
       kSequencingIdKey, base::NumberToString(GetNextSequenceId()));
   sequencing_dictionary->SetStringKey(kGenerationIdKey,
@@ -130,17 +130,16 @@ class RequestPayloadBuilder {
 class ResponseValueBuilder {
  public:
   static absl::optional<base::Value> CreateUploadFailure(
-      const ::reporting::SequencingInformation& sequencing_information) {
-    if (!sequencing_information.has_sequencing_id() ||
-        !sequencing_information.has_generation_id() ||
-        !sequencing_information.has_priority()) {
+      const ::reporting::SequenceInformation& sequence_information) {
+    if (!sequence_information.has_sequencing_id() ||
+        !sequence_information.has_generation_id() ||
+        !sequence_information.has_priority()) {
       return absl::nullopt;
     }
 
     base::Value upload_failure{base::Value::Type::DICTIONARY};
-    upload_failure.SetKey(
-        kFailedUploadedRecord,
-        BuildSequencingInformationValue(sequencing_information));
+    upload_failure.SetKey(kFailedUploadedRecord,
+                          BuildSequenceInformationValue(sequence_information));
 
     // Set to internal error (error::INTERNAL == 13).
     upload_failure.SetIntKey(GetFailureStatusCodePath(), 13);
@@ -150,12 +149,12 @@ class ResponseValueBuilder {
   }
 
   static base::Value CreateResponse(
-      const base::Value& sequencing_information,
+      const base::Value& sequence_information,
       absl::optional<base::Value> upload_failure) {
     base::Value response{base::Value::Type::DICTIONARY};
 
     response.SetKey(kLastSucceedUploadedRecordKey,
-                    sequencing_information.Clone());
+                    sequence_information.Clone());
 
     if (upload_failure.has_value()) {
       response.SetKey(kFirstFailedUploadedRecordKey,
@@ -190,16 +189,16 @@ class ResponseValueBuilder {
   }
 
  private:
-  static base::Value BuildSequencingInformationValue(
-      const ::reporting::SequencingInformation& sequencing_information) {
-    base::Value sequencing_information_value{base::Value::Type::DICTIONARY};
-    sequencing_information_value.SetIntKey(
-        kSequencingIdKey, sequencing_information.sequencing_id());
-    sequencing_information_value.SetIntKey(
-        kGenerationIdKey, sequencing_information.generation_id());
-    sequencing_information_value.SetIntKey(kPriorityKey,
-                                           sequencing_information.priority());
-    return sequencing_information_value;
+  static base::Value BuildSequenceInformationValue(
+      const ::reporting::SequenceInformation& sequence_information) {
+    base::Value sequence_information_value{base::Value::Type::DICTIONARY};
+    sequence_information_value.SetIntKey(kSequencingIdKey,
+                                         sequence_information.sequencing_id());
+    sequence_information_value.SetIntKey(kGenerationIdKey,
+                                         sequence_information.generation_id());
+    sequence_information_value.SetIntKey(kPriorityKey,
+                                         sequence_information.priority());
+    return sequence_information_value;
   }
 
   static std::string GetPath(base::StringPiece base, base::StringPiece leaf) {
@@ -497,7 +496,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, OnURLLoadComplete_Success) {
   base::Value record_value = GenerateSingleRecord(kEncryptedWrappedRecord);
 
   base::Value response = ResponseValueBuilder::CreateResponse(
-      *record_value.FindDictKey(kSequencingInformationKey), absl::nullopt);
+      *record_value.FindDictKey(kSequenceInformationKey), absl::nullopt);
 
   EXPECT_CALL(complete_cb_,
               Call(&job_, DM_STATUS_SUCCESS, net::OK, Eq(ByRef(response))))

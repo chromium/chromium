@@ -24,8 +24,8 @@ namespace syncer {
 
 class SyncBackendMigratorTest : public testing::Test {
  public:
-  SyncBackendMigratorTest() {}
-  ~SyncBackendMigratorTest() override {}
+  SyncBackendMigratorTest() = default;
+  ~SyncBackendMigratorTest() override = default;
 
   void SetUp() override {
     Mock::VerifyAndClear(manager());
@@ -39,9 +39,7 @@ class SyncBackendMigratorTest : public testing::Test {
     SetUnsyncedTypes(ModelTypeSet());
   }
 
-  void TearDown() override {
-    migrator_.reset();
-  }
+  void TearDown() override { migrator_.reset(); }
 
   // Marks all types in |unsynced_types| as unsynced  and all other
   // types as synced.
@@ -84,7 +82,7 @@ class SyncBackendMigratorTest : public testing::Test {
 
 class MockMigrationObserver : public MigrationObserver {
  public:
-  ~MockMigrationObserver() override {}
+  ~MockMigrationObserver() override = default;
 
   MOCK_METHOD(void, OnMigrationStateChange, ());
 };

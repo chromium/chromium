@@ -12,7 +12,6 @@
 #include "ash/frame_throttler/frame_throttling_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -32,7 +31,7 @@ namespace ash {
 
 constexpr uint8_t kDefaultThrottleFps = 20;
 
-class ASH_EXPORT FrameThrottlingController
+class ASH_EXPORT FrameThrottlingController final
     : public aura::WindowTreeHostObserver,
       public aura::WindowObserver {
  public:
@@ -40,7 +39,7 @@ class ASH_EXPORT FrameThrottlingController
   FrameThrottlingController(const FrameThrottlingController&) = delete;
   FrameThrottlingController& operator=(const FrameThrottlingController&) =
       delete;
-  ~FrameThrottlingController() final;
+  ~FrameThrottlingController() override;
 
   // ui::WindowTreeHostObserver overrides
   void OnCompositingFrameSinksToThrottleUpdated(
@@ -61,6 +60,7 @@ class ASH_EXPORT FrameThrottlingController
 
   void AddArcObserver(FrameThrottlingObserver* observer);
   void RemoveArcObserver(FrameThrottlingObserver* observer);
+  bool HasArcObserver(FrameThrottlingObserver* observer);
 
   uint8_t throttled_fps() const { return throttled_fps_; }
 

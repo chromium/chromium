@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -18,8 +18,7 @@
 namespace autofill {
 
 // The delay between card being fetched and manual fallback bubble being shown.
-constexpr base::TimeDelta kManualFallbackBubbleDelay =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kManualFallbackBubbleDelay = base::Seconds(1.5);
 
 // static
 VirtualCardManualFallbackBubbleController*
@@ -49,6 +48,7 @@ VirtualCardManualFallbackBubbleControllerImpl::
     ~VirtualCardManualFallbackBubbleControllerImpl() = default;
 
 void VirtualCardManualFallbackBubbleControllerImpl::ShowBubble(
+    const std::u16string& masked_card_identifier_string,
     const CreditCard* virtual_card,
     const std::u16string& virtual_card_cvc,
     const gfx::Image& virtual_card_image) {
@@ -57,6 +57,7 @@ void VirtualCardManualFallbackBubbleControllerImpl::ShowBubble(
   if (bubble_view())
     HideBubble();
 
+  masked_card_identifier_string_ = masked_card_identifier_string;
   virtual_card_ = *virtual_card;
   virtual_card_cvc_ = virtual_card_cvc;
   virtual_card_image_ = virtual_card_image;
@@ -94,8 +95,15 @@ VirtualCardManualFallbackBubbleControllerImpl::GetBubbleTitleIcon() const {
 
 std::u16string
 VirtualCardManualFallbackBubbleControllerImpl::GetBubbleTitleText() const {
+  return l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_TITLE,
+      masked_card_identifier_string_);
+}
+
+std::u16string
+VirtualCardManualFallbackBubbleControllerImpl::GetEducationalBodyLabel() const {
   return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_TITLE);
+      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_EDUCATIONAL_BODY_LABEL);
 }
 
 std::u16string
@@ -141,6 +149,15 @@ std::u16string VirtualCardManualFallbackBubbleControllerImpl::GetValueForField(
   }
 }
 
+std::u16string
+VirtualCardManualFallbackBubbleControllerImpl::GetFieldButtonTooltip(
+    VirtualCardManualFallbackBubbleField field) const {
+  return l10n_util::GetStringUTF16(
+      clicked_field_ == field
+          ? IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_BUTTON_TOOLTIP_CLICKED
+          : IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_BUTTON_TOOLTIP_NORMAL);
+}
+
 const CreditCard*
 VirtualCardManualFallbackBubbleControllerImpl::GetVirtualCard() const {
   return &virtual_card_;
@@ -166,10 +183,6 @@ void VirtualCardManualFallbackBubbleControllerImpl::OnBubbleClosed(
       metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
           VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NOT_INTERACTED;
       break;
-    case PaymentsBubbleClosedReason::kLostFocus:
-      metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LOST_FOCUS;
-      break;
     default:
       metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
           VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_RESULT_UNKNOWN;
@@ -182,7 +195,8 @@ void VirtualCardManualFallbackBubbleControllerImpl::OnBubbleClosed(
 }
 
 void VirtualCardManualFallbackBubbleControllerImpl::OnFieldClicked(
-    VirtualCardManualFallbackBubbleField field) const {
+    VirtualCardManualFallbackBubbleField field) {
+  clicked_field_ = field;
   LogVirtualCardManualFallbackBubbleFieldClicked(field);
   // Strip the whitespaces that were added to the card number for legibility.
   UpdateClipboard(field == VirtualCardManualFallbackBubbleField::kCardNumber
@@ -309,11 +323,6 @@ void VirtualCardManualFallbackBubbleControllerImpl::SetEventObserverForTesting(
   observer_for_test_ = observer_for_test;
 }
 
-base::WeakPtr<VirtualCardManualFallbackBubbleController>
-VirtualCardManualFallbackBubbleControllerImpl::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(VirtualCardManualFallbackBubbleControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(VirtualCardManualFallbackBubbleControllerImpl);
 
 }  // namespace autofill

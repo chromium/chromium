@@ -25,6 +25,9 @@ enum class PageLoadCompletionStatus : bool { SUCCESS = 0, FAILURE = 1 };
 // load events from WebState.
 class WebStateObserver {
  public:
+  WebStateObserver(const WebStateObserver&) = delete;
+  WebStateObserver& operator=(const WebStateObserver&) = delete;
+
   virtual ~WebStateObserver();
 
   // These methods are invoked every time the WebState changes visibility.
@@ -140,15 +143,16 @@ class WebStateObserver {
   // possibly by other means).
   virtual void RenderProcessGone(WebState* web_state) {}
 
+  // Invoked when the WebState becomes realized (e.g. when it becomes fully
+  // operational after being restored).
+  virtual void WebStateRealized(WebState* web_state) {}
+
   // Invoked when the WebState is being destroyed. Gives subclasses a chance
   // to cleanup.
   virtual void WebStateDestroyed(WebState* web_state) {}
 
  protected:
   WebStateObserver();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateObserver);
 };
 
 }  // namespace web

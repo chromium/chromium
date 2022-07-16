@@ -1,4 +1,0 @@
-CONSOLE MESSAGE: Blink Test Plugin: initializing
-go fullscreen
-
-There should only be one ALERT. If there were two, the plugin was reloaded during the transition to fullscreen.

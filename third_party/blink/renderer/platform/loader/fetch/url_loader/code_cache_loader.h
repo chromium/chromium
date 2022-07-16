@@ -5,9 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_CODE_CACHE_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_CODE_CACHE_LOADER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
 
 namespace blink {
+
+class CodeCacheHost;
 
 // This class is loading V8 compilation code cache for scripts
 // (either separate script resources, or inline scripts in html file).
@@ -20,7 +23,7 @@ class BLINK_PLATFORM_EXPORT CodeCacheLoader : public WebCodeCacheLoader {
   // interface.
   // TODO(mythria): Remove the per-process interface and only expect non nullptr
   // for |code_cache_host|.
-  explicit CodeCacheLoader(mojom::CodeCacheHost* code_cache_host);
+  explicit CodeCacheLoader(CodeCacheHost* code_cache_host);
 
   ~CodeCacheLoader() override;
 
@@ -28,8 +31,13 @@ class BLINK_PLATFORM_EXPORT CodeCacheLoader : public WebCodeCacheLoader {
                           const WebURL& url,
                           FetchCodeCacheCallback callback) override;
 
+  void ClearCodeCacheEntry(mojom::CodeCacheType cache_type,
+                           const WebURL& url) override;
+
  private:
-  mojom::CodeCacheHost* const code_cache_host_;
+  bool ShouldUsePerProcessInterface() const;
+
+  base::WeakPtr<CodeCacheHost> const code_cache_host_;
 };
 
 }  // namespace blink

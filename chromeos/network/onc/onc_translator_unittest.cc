@@ -167,7 +167,13 @@ INSTANTIATE_TEST_SUITE_P(
             "translation_of_shill_wifi_eap_ttls_with_password_variable.onc"),
         std::make_pair(
             "shill_wifi_eap_ttls_with_hardcoded_password.json",
-            "translation_of_shill_wifi_eap_ttls_with_hardcoded_password.onc")));
+            "translation_of_shill_wifi_eap_ttls_with_hardcoded_password.onc"),
+        std::make_pair("shill_cellular_with_roaming_required_and_active.json",
+                       "translation_of_shill_cellular_with_roaming_required_"
+                       "and_active.onc"),
+        std::make_pair("shill_cellular_with_roaming_required_and_inactive.json",
+                       "translation_of_shill_cellular_with_roaming_required_"
+                       "and_inactive.onc")));
 
 }  // namespace onc
 }  // namespace chromeos

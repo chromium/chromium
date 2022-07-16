@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.stats.BasicStatTest');
 goog.setTestOnly();
@@ -18,7 +10,6 @@ goog.setTestOnly();
 const BasicStat = goog.require('goog.stats.BasicStat');
 const PseudoRandom = goog.require('goog.testing.PseudoRandom');
 const format = goog.require('goog.string.format');
-const googArray = goog.require('goog.array');
 const testSuite = goog.require('goog.testing.testSuite');
 const userAgent = goog.require('goog.userAgent');
 
@@ -30,6 +21,7 @@ const userAgent = goog.require('goog.userAgent');
 class PerfectlySlowStat {
   constructor(interval) {
     this.interval_ = interval;
+    /** @suppress {visibility} suppression added to enable type checking */
     this.slotSize_ = Math.floor(interval / BasicStat.NUM_SLOTS_);
     this.events_ = [];
   }
@@ -42,18 +34,19 @@ class PerfectlySlowStat {
     const end =
         Math.floor(now / this.slotSize_) * this.slotSize_ + this.slotSize_;
     const start = end - this.interval_;
-    const events = googArray.filter(this.events_, (e) => e.time >= start);
+    const events = this.events_.filter(e => e.time >= start);
     return {
-      'count': googArray.reduce(events, (sum, e) => sum + e.count, 0),
-      'min': googArray.reduce(
-          events, (min, e) => Math.min(min, e.count), Number.MAX_VALUE),
-      'max': googArray.reduce(
-          events, (max, e) => Math.max(max, e.count), Number.MIN_VALUE),
+      'count': events.reduce((sum, e) => sum + e.count, 0),
+      'min':
+          events.reduce((min, e) => Math.min(min, e.count), Number.MAX_VALUE),
+      'max':
+          events.reduce((max, e) => Math.max(max, e.count), Number.MIN_VALUE),
     };
   }
 }
 
 testSuite({
+  /** @suppress {visibility} suppression added to enable type checking */
   testGetSlotBoundary() {
     const stat = new BasicStat(1654);
     assertEquals('Checking interval', 33, stat.slotInterval_);
@@ -64,6 +57,7 @@ testSuite({
     assertEquals(99, stat.getSlotBoundary_(98));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testCheckForTimeTravel() {
     const stat = new BasicStat(1000);
 

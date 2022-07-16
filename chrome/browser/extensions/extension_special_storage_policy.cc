@@ -19,6 +19,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/task_traits.h"
 #include "base/thread_annotations.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
@@ -36,18 +37,15 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/common/webui_url_constants.h"
+#endif
+
 using content::BrowserThread;
 using extensions::APIPermission;
 using extensions::Extension;
 using extensions::mojom::APIPermissionID;
 using storage::SpecialStoragePolicy;
-
-namespace {
-// Kill switch for default app protected storage. Enable this make
-// default-installed hosted apps have protected storage.
-const base::Feature kDefaultHostedAppsNeedProtection{
-    "DefaultHostedAppsNeedProtection", base::FEATURE_DISABLED_BY_DEFAULT};
-}  // namespace
 
 class ExtensionSpecialStoragePolicy::CookieSettingsObserver
     : public content_settings::CookieSettings::Observer {
@@ -128,6 +126,14 @@ bool ExtensionSpecialStoragePolicy::IsStorageUnlimited(const GURL& origin) {
       origin.host_piece() == chrome::kChromeUIDevToolsHost)
     return true;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // chrome-untrusted://terminal/ runs the SSH extension code which can store
+  // SSH known_hosts, config, and Identity keys. Use unlimitedStorage to match
+  // extension config.
+  if (origin == chrome::kChromeUIUntrustedTerminalURL)
+    return true;
+#endif
+
   base::AutoLock locker(lock_);
   return unlimited_extensions_.Contains(origin) ||
          content_capabilities_unlimited_extensions_.GrantsCapabilitiesTo(
@@ -185,11 +191,10 @@ bool ExtensionSpecialStoragePolicy::NeedsProtection(
   if (!extension->is_hosted_app() || extension->from_bookmark())
     return false;
 
-  // Normally, default-installed apps shouldn't have protected storage...
-  if (extension->was_installed_by_default()) {
-    // ... However, we have a kill-switch for this, just in case.
-    return base::FeatureList::IsEnabled(kDefaultHostedAppsNeedProtection);
-  }
+  // Default-installed apps don't have protected storage.
+  if (extension->was_installed_by_default())
+    return false;
+
   // Otherwise, this is a user-installed hosted app, and we grant it
   // special protected storage.
   return true;

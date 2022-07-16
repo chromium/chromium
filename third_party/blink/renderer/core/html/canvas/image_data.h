@@ -204,8 +204,8 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static unsigned StorageFormatBytesPerPixel(ImageDataStorageFormat);
 
   IntSize Size() const { return size_; }
-  int width() const { return size_.Width(); }
-  int height() const { return size_.Height(); }
+  int width() const { return size_.width(); }
+  int height() const { return size_.height(); }
   String colorSpace() const;
   String storageFormat() const;
 

@@ -24,6 +24,9 @@ class AwCookieAccessPolicy {
  public:
   static AwCookieAccessPolicy* GetInstance();
 
+  AwCookieAccessPolicy(const AwCookieAccessPolicy&) = delete;
+  AwCookieAccessPolicy& operator=(const AwCookieAccessPolicy&) = delete;
+
   // Can we read/write any cookies? Can be called from any thread.
   bool GetShouldAcceptCookies();
   void SetShouldAcceptCookies(bool allow);
@@ -55,8 +58,6 @@ class AwCookieAccessPolicy {
                         bool accept_third_party_cookies);
   bool accept_cookies_;
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwCookieAccessPolicy);
 };
 
 }  // namespace android_webview

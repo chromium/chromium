@@ -12,7 +12,7 @@
 #include "media/gpu/vp9_picture.h"
 #include "media/media_buildflags.h"
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 #include "media/gpu/h265_dpb.h"
 #endif
 
@@ -26,30 +26,22 @@ class VaapiH264Picture : public H264Picture {
  public:
   explicit VaapiH264Picture(scoped_refptr<VASurface> va_surface);
 
+  VaapiH264Picture(const VaapiH264Picture&) = delete;
+  VaapiH264Picture& operator=(const VaapiH264Picture&) = delete;
+
   VaapiH264Picture* AsVaapiH264Picture() override;
 
   scoped_refptr<VASurface> va_surface() const { return va_surface_; }
   VASurfaceID GetVASurfaceID() const { return va_surface_->id(); }
-  void SetDecodeSurface(scoped_refptr<VASurface> decode_va_surface);
-  VASurfaceID GetVADecodeSurfaceID() const {
-    return decode_va_surface_ ? decode_va_surface_->id() : GetVASurfaceID();
-  }
-  const gfx::Size& GetDecodeSize() const {
-    return decode_va_surface_ ? decode_va_surface_->size()
-                              : va_surface_->size();
-  }
 
  protected:
   ~VaapiH264Picture() override;
 
  private:
   scoped_refptr<VASurface> va_surface_;
-  scoped_refptr<VASurface> decode_va_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiH264Picture);
 };
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 class VaapiH265Picture : public H265Picture {
  public:
   explicit VaapiH265Picture(scoped_refptr<VASurface> va_surface);
@@ -61,27 +53,21 @@ class VaapiH265Picture : public H265Picture {
 
   scoped_refptr<VASurface> va_surface() const { return va_surface_; }
   VASurfaceID GetVASurfaceID() const { return va_surface_->id(); }
-  void SetDecodeSurface(scoped_refptr<VASurface> decode_va_surface);
-  VASurfaceID GetVADecodeSurfaceID() const {
-    return decode_va_surface_ ? decode_va_surface_->id() : GetVASurfaceID();
-  }
-  const gfx::Size& GetDecodeSize() const {
-    return decode_va_surface_ ? decode_va_surface_->size()
-                              : va_surface_->size();
-  }
 
  protected:
   ~VaapiH265Picture() override;
 
  private:
   scoped_refptr<VASurface> va_surface_;
-  scoped_refptr<VASurface> decode_va_surface_;
 };
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 
 class VaapiVP8Picture : public VP8Picture {
  public:
   explicit VaapiVP8Picture(scoped_refptr<VASurface> va_surface);
+
+  VaapiVP8Picture(const VaapiVP8Picture&) = delete;
+  VaapiVP8Picture& operator=(const VaapiVP8Picture&) = delete;
 
   VaapiVP8Picture* AsVaapiVP8Picture() override;
 
@@ -93,26 +79,19 @@ class VaapiVP8Picture : public VP8Picture {
 
  private:
   scoped_refptr<VASurface> va_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiVP8Picture);
 };
 
 class VaapiVP9Picture : public VP9Picture {
  public:
   explicit VaapiVP9Picture(scoped_refptr<VASurface> va_surface);
 
+  VaapiVP9Picture(const VaapiVP9Picture&) = delete;
+  VaapiVP9Picture& operator=(const VaapiVP9Picture&) = delete;
+
   VaapiVP9Picture* AsVaapiVP9Picture() override;
 
   scoped_refptr<VASurface> va_surface() const { return va_surface_; }
   VASurfaceID GetVASurfaceID() const { return va_surface_->id(); }
-  void SetDecodeSurface(scoped_refptr<VASurface> decode_va_surface);
-  VASurfaceID GetVADecodeSurfaceID() const {
-    return decode_va_surface_ ? decode_va_surface_->id() : GetVASurfaceID();
-  }
-  const gfx::Size& GetDecodeSize() const {
-    return decode_va_surface_ ? decode_va_surface_->size()
-                              : va_surface_->size();
-  }
 
  protected:
   ~VaapiVP9Picture() override;
@@ -121,9 +100,6 @@ class VaapiVP9Picture : public VP9Picture {
   scoped_refptr<VP9Picture> CreateDuplicate() override;
 
   scoped_refptr<VASurface> va_surface_;
-  scoped_refptr<VASurface> decode_va_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiVP9Picture);
 };
 
 class VaapiAV1Picture : public AV1Picture {

@@ -285,10 +285,11 @@ void ReadingListDownloadService::OnDownloadEnd(
                                 STATUS_MAX);
       break;
     }
-    case URLDownloader::ERROR: {
+    case URLDownloader::ERROR:
+    case URLDownloader::PERMANENT_ERROR: {
       const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(url);
       // Add this failure to the total failure count.
-      if (entry &&
+      if (entry && real_success_value == URLDownloader::ERROR &&
           entry->FailedDownloadCounter() + 1 < kNumberOfFailsBeforeStop) {
         reading_list_model_->SetEntryDistilledState(
             url, ReadingListEntry::WILL_RETRY);

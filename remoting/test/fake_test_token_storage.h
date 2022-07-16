@@ -18,6 +18,10 @@ namespace test {
 class FakeTestTokenStorage : public TestTokenStorage {
  public:
   FakeTestTokenStorage();
+
+  FakeTestTokenStorage(const FakeTestTokenStorage&) = delete;
+  FakeTestTokenStorage& operator=(const FakeTestTokenStorage&) = delete;
+
   ~FakeTestTokenStorage() override;
 
   // TestTokenStorage interface.
@@ -54,8 +58,6 @@ class FakeTestTokenStorage : public TestTokenStorage {
   // Verification members to observe the value of the data being written.
   bool refresh_token_write_attempted_;
   std::string stored_refresh_token_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTestTokenStorage);
 };
 
 }  // namespace test

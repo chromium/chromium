@@ -77,7 +77,7 @@ void LoadStreamFromStoreTask::LoadStreamDone(
                feedwire::DiscoverCardReadCacheResult::STALE);
       return;
     }
-    if (content_age_ < base::TimeDelta()) {
+    if (content_age_.is_negative()) {
       stale_reason_ = LoadStreamStatus::kDataInStoreIsStaleTimestampInFuture;
     } else if (ShouldWaitForNewContent(metadata, result.stream_type,
                                        content_age_)) {

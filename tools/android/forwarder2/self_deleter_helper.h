@@ -104,6 +104,9 @@ class SelfDeleterHelper {
         self_deleting_object_(self_deleting_object),
         deletion_callback_(std::move(deletion_callback)) {}
 
+  SelfDeleterHelper(const SelfDeleterHelper&) = delete;
+  SelfDeleterHelper& operator=(const SelfDeleterHelper&) = delete;
+
   ~SelfDeleterHelper() {
     DCHECK(construction_runner_->RunsTasksInCurrentSequence());
   }
@@ -130,8 +133,6 @@ class SelfDeleterHelper {
   // that any WeakPtrs to Controller are invalidated before its members
   // variable's destructors are executed, rendering them invalid.
   base::WeakPtrFactory<SelfDeleterHelper<T>> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SelfDeleterHelper);
 };
 
 }  // namespace forwarder2

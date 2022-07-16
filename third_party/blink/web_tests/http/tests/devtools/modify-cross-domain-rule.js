@@ -6,7 +6,7 @@
   'use strict';
   TestRunner.addResult(
       `Tests that modifying a rule in a stylesheet loaded from a different domain does not crash the renderer.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.loadHTML(`
       <div id="inspected">Text</div>
     `);
@@ -35,9 +35,7 @@
       ElementsTestRunner.selectNodeAndWaitForStyles('inspected', selectCallback);
 
       function selectCallback() {
-        var idToDOMNode = TestRunner.domModel._idToDOMNode;
-        for (var id in idToDOMNode) {
-          const node = idToDOMNode[id];
+        for (const [id, node] of ElementsTestRunner.mappedNodes()) {
           if (node.getAttribute && node.getAttribute('id') === 'inspected') {
             nodeId = parseInt(id, 10);
             break;

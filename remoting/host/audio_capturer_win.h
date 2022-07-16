@@ -30,6 +30,10 @@ class DefaultAudioDeviceChangeDetector;
 class AudioCapturerWin : public AudioCapturer {
  public:
   AudioCapturerWin();
+
+  AudioCapturerWin(const AudioCapturerWin&) = delete;
+  AudioCapturerWin& operator=(const AudioCapturerWin&) = delete;
+
   ~AudioCapturerWin() override;
 
   // AudioCapturer interface.
@@ -78,8 +82,6 @@ class AudioCapturerWin : public AudioCapturer {
   HRESULT last_capture_error_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioCapturerWin);
 };
 
 }  // namespace remoting

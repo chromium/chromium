@@ -5,7 +5,6 @@
 package org.chromium.components.spellcheck;
 
 import android.content.Context;
-import android.os.SystemClock;
 import android.text.style.SuggestionSpan;
 import android.view.textservice.SentenceSuggestionsInfo;
 import android.view.textservice.SpellCheckerSession;
@@ -17,7 +16,6 @@ import android.view.textservice.TextServicesManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.ArrayList;
 
@@ -27,8 +25,6 @@ import java.util.ArrayList;
 public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
     private long mNativeSpellCheckerSessionBridge;
     private final SpellCheckerSession mSpellCheckerSession;
-    private long mStartMs;
-    private long mStopMs;
 
     /**
      * Constructs a SpellCheckerSessionBridge object as well as its SpellCheckerSession object.
@@ -89,7 +85,6 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
         if (text.endsWith(".")) {
             text = text.substring(0, text.length() - 1);
         }
-        mStartMs = SystemClock.elapsedRealtime();
         mSpellCheckerSession.getSentenceSuggestions(
                 new TextInfo[] {new TextInfo(text)}, SuggestionSpan.SUGGESTIONS_MAX_SIZE);
     }
@@ -100,8 +95,6 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
      */
     @Override
     public void onGetSentenceSuggestions(SentenceSuggestionsInfo[] results) {
-        mStopMs = SystemClock.elapsedRealtime();
-
         if (mNativeSpellCheckerSessionBridge == 0) {
             return;
         }
@@ -143,8 +136,6 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
                 mNativeSpellCheckerSessionBridge, SpellCheckerSessionBridge.this,
                 convertListToArray(offsets), convertListToArray(lengths),
                 suggestions.toArray(new String[suggestions.size()][]));
-
-        RecordHistogram.recordTimesHistogram("SpellCheck.Android.Latency", mStopMs - mStartMs);
     }
 
     /**

@@ -50,7 +50,8 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   static std::unique_ptr<NavigationSimulatorImpl> CreateHistoryNavigation(
       int offset,
-      WebContents* web_contents);
+      WebContents* web_contents,
+      bool is_renderer_initiated);
 
   // TODO(https://crbug.com/1131832): Remove |original_url| as it's not used.
   static std::unique_ptr<NavigationSimulatorImpl> CreateRendererInitiated(
@@ -58,7 +59,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
       RenderFrameHost* render_frame_host);
 
   static std::unique_ptr<NavigationSimulatorImpl> CreateFromPending(
-      WebContents* contents);
+      NavigationController& controller);
 
   // Creates a NavigationSimulator for an already-started navigation happening
   // in |frame_tree_node|. Can be used to drive the navigation to completion.
@@ -92,8 +93,12 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void SetPermissionsPolicyHeader(
       blink::ParsedPermissionsPolicy permissions_policy_header) override;
   void SetContentsMimeType(const std::string& contents_mime_type) override;
+  void SetRedirectHeaders(
+      scoped_refptr<net::HttpResponseHeaders> redirect_headers) override;
   void SetResponseHeaders(
       scoped_refptr<net::HttpResponseHeaders> response_headers) override;
+  void SetResponseBody(
+      mojo::ScopedDataPipeConsumerHandle response_body) override;
   void SetAutoAdvance(bool auto_advance) override;
   void SetResolveErrorInfo(
       const net::ResolveErrorInfo& resolve_error_info) override;
@@ -126,10 +131,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   // Set DidCommit*Params history_list_was_cleared flag to |history_cleared|.
   void set_history_list_was_cleared(bool history_cleared);
-
-  // Manually force the value of did_create_new_entry flag in DidCommit*Params
-  // to |did_create_new_entry|.
-  void set_did_create_new_entry(bool did_create_new_entry);
 
   // Manually force the value of should_replace_current_entry flag in
   // DidCommit*Params to |should_replace_current_entry|.
@@ -194,12 +195,29 @@ class NavigationSimulatorImpl : public NavigationSimulator,
     searchable_form_encoding_ = searchable_form_encoding;
   }
 
-  void set_history_url_for_data_url(const GURL& history_url_for_data_url) {
-    history_url_for_data_url_ = history_url_for_data_url;
-  }
-
   void set_href_translate(const std::string& href_translate) {
     href_translate_ = href_translate;
+  }
+
+  void set_request_context_type(
+      blink::mojom::RequestContextType request_context_type) {
+    request_context_type_ = request_context_type;
+  }
+
+  void set_insecure_request_policy(
+      blink::mojom::InsecureRequestPolicy insecure_request_policy) {
+    insecure_request_policy_ = insecure_request_policy;
+  }
+
+  void set_insecure_navigations_set(
+      const std::vector<uint32_t> insecure_navigations_set) {
+    insecure_navigations_set_ = insecure_navigations_set;
+  }
+
+  void set_has_potentially_trustworthy_unique_origin(
+      bool has_potentially_trustworthy_unique_origin) {
+    has_potentially_trustworthy_unique_origin_ =
+        has_potentially_trustworthy_unique_origin;
   }
 
  private:
@@ -265,7 +283,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   // Infers from internal parameters whether the navigation created a new
   // entry.
-  bool DidCreateNewEntry();
+  bool DidCreateNewEntry(bool same_document, bool should_replace_current_entry);
 
   // Set the navigation to be done towards the specified navigation controller
   // offset. Typically -1 for back navigations or 1 for forward navigations.
@@ -344,8 +362,10 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker_receiver_;
   std::string contents_mime_type_;
+  scoped_refptr<net::HttpResponseHeaders> redirect_headers_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
   blink::ParsedPermissionsPolicy permissions_policy_header_;
+  mojo::ScopedDataPipeConsumerHandle response_body_;
   network::mojom::CSPDisposition should_check_main_world_csp_ =
       network::mojom::CSPDisposition::CHECK;
   net::HttpResponseInfo::ConnectionInfo http_connection_info_ =
@@ -364,10 +384,13 @@ class NavigationSimulatorImpl : public NavigationSimulator,
       blink::mojom::MixedContentContextType::kBlockable;
   GURL searchable_form_url_;
   std::string searchable_form_encoding_;
-  absl::optional<GURL> history_url_for_data_url_;
   std::string href_translate_;
   blink::mojom::RequestContextType request_context_type_ =
       blink::mojom::RequestContextType::LOCATION;
+  blink::mojom::InsecureRequestPolicy insecure_request_policy_ =
+      blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone;
+  std::vector<uint32_t> insecure_navigations_set_;
+  bool has_potentially_trustworthy_unique_origin_ = false;
 
   // Any DNS aliases, as read from CNAME records, for the request URL that
   // would be in the network::mojom::URLResponseHead. The alias chain order
@@ -386,7 +409,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   bool history_list_was_cleared_ = false;
   bool should_replace_current_entry_ = false;
-  absl::optional<bool> did_create_new_entry_;
   bool was_aborted_prior_to_ready_to_commit_ = false;
 
   bool early_hints_preload_link_header_received_ = false;

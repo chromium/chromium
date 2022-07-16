@@ -48,14 +48,15 @@ void VROrientationSession::GetEnvironmentIntegrationProvider(
         environment_provider) {
   // Environment integration is not supported. This call should not
   // be made on this device.
-  mojo::ReportBadMessage("Environment integration is not supported.");
+  magic_window_receiver_.ReportBadMessage(
+      "Environment integration is not supported.");
 }
 
 void VROrientationSession::SetInputSourceButtonListener(
     mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>) {
   // Input eventing is not supported. This call should not
   // be made on this device.
-  mojo::ReportBadMessage("Input eventing is not supported.");
+  magic_window_receiver_.ReportBadMessage("Input eventing is not supported.");
 }
 
 // XRSessionController

@@ -8,7 +8,6 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 
@@ -18,7 +17,9 @@ namespace ui {
 
 class AXPlatformNodeMac : public AXPlatformNodeBase {
  public:
-  AXPlatformNodeMac();
+  ~AXPlatformNodeMac() override;
+  AXPlatformNodeMac(const AXPlatformNodeMac&) = delete;
+  AXPlatformNodeMac& operator=(const AXPlatformNodeMac&) = delete;
 
   // AXPlatformNode.
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
@@ -29,17 +30,28 @@ class AXPlatformNodeMac : public AXPlatformNodeBase {
   void Destroy() override;
   bool IsPlatformCheckable() const override;
 
+  AXPlatformNodeCocoa* GetNativeWrapper() const { return native_node_.get(); }
+
+  base::scoped_nsobject<AXPlatformNodeCocoa> ReleaseNativeWrapper() {
+    return std::move(native_node_);
+  }
+
+  void SetNativeWrapper(AXPlatformNodeCocoa* native_node) {
+    return native_node_.reset(native_node);
+  }
+
  protected:
+  AXPlatformNodeMac();
+
   void AddAttributeToList(const char* name,
                           const char* value,
                           PlatformAttributeList* attributes) override;
 
  private:
-  ~AXPlatformNodeMac() override;
-
   base::scoped_nsobject<AXPlatformNodeCocoa> native_node_;
 
-  DISALLOW_COPY_AND_ASSIGN(AXPlatformNodeMac);
+  friend AXPlatformNode* AXPlatformNode::Create(
+      AXPlatformNodeDelegate* delegate);
 };
 
 // Convenience function to determine whether an internal object role should
@@ -47,26 +59,5 @@ class AXPlatformNodeMac : public AXPlatformNodeBase {
 AX_EXPORT bool IsNameExposedInAXValueForRole(ax::mojom::Role role);
 
 }  // namespace ui
-
-AX_EXPORT
-@interface AXPlatformNodeCocoa : NSAccessibilityElement<NSAccessibility>
-
-// Maps AX roles to native roles. Returns NSAccessibilityUnknownRole if not
-// found.
-+ (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role;
-
-// Maps AX roles to native subroles. Returns nil if not found.
-+ (NSString*)nativeSubroleFromAXRole:(ax::mojom::Role)role;
-
-// Maps AX events to native notifications. Returns nil if not found.
-+ (NSString*)nativeNotificationFromAXEvent:(ax::mojom::Event)event;
-
-- (instancetype)initWithNode:(ui::AXPlatformNodeBase*)node;
-- (void)detach;
-
-@property(nonatomic, readonly) NSRect boundsInScreen;
-@property(nonatomic, readonly) ui::AXPlatformNodeBase* node;
-
-@end
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_MAC_H_

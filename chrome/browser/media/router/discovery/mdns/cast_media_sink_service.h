@@ -12,7 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_delegate.h"
@@ -34,13 +34,17 @@ namespace media_router {
 class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
  public:
   CastMediaSinkService();
+
+  CastMediaSinkService(const CastMediaSinkService&) = delete;
+  CastMediaSinkService& operator=(const CastMediaSinkService&) = delete;
+
   ~CastMediaSinkService() override;
 
   // Starts Cast sink discovery. No-ops if already started.
   // |sink_discovery_cb|: Callback to invoke when the list of discovered sinks
   // has been updated.
-  // |dial_media_sink_service|: Pointer to DIAL MediaSinkService for dual
-  // discovery.
+  // |dial_media_sink_service|: Optional pointer to DIAL MediaSinkService for
+  // dual discovery.
   // Marked virtual for tests.
   virtual void Start(const OnSinksDiscoveredCallback& sinks_discovered_cb,
                      MediaSinkServiceBase* dial_media_sink_service);
@@ -113,8 +117,6 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastMediaSinkService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastMediaSinkService);
 };
 
 }  // namespace media_router

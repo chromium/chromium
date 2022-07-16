@@ -22,6 +22,10 @@ class RuleIterator;
 class GlobalValueMap {
  public:
   GlobalValueMap();
+
+  GlobalValueMap(const GlobalValueMap&) = delete;
+  GlobalValueMap& operator=(const GlobalValueMap&) = delete;
+
   ~GlobalValueMap();
 
   // Returns nullptr to indicate the RuleIterator is empty.
@@ -33,8 +37,6 @@ class GlobalValueMap {
 
  private:
   std::map<ContentSettingsType, ContentSetting> settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalValueMap);
 };
 
 }  // namespace content_settings

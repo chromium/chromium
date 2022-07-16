@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/system/input_device_settings.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/system/fake_input_device_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
@@ -25,6 +24,10 @@ class InputDeviceSettingsImplOzone : public InputDeviceSettings {
  public:
   InputDeviceSettingsImplOzone();
 
+  InputDeviceSettingsImplOzone(const InputDeviceSettingsImplOzone&) = delete;
+  InputDeviceSettingsImplOzone& operator=(const InputDeviceSettingsImplOzone&) =
+      delete;
+
  protected:
   ~InputDeviceSettingsImplOzone() override {}
 
@@ -34,6 +37,8 @@ class InputDeviceSettingsImplOzone : public InputDeviceSettings {
   void UpdateTouchpadSettings(const TouchpadSettings& settings) override;
   void SetTouchpadSensitivity(int value) override;
   void SetTouchpadScrollSensitivity(int value) override;
+  void SetTouchpadHapticFeedback(bool enabled) override;
+  void SetTouchpadHapticClickSensitivity(int value) override;
   void SetTapToClick(bool enabled) override;
   void SetThreeFingerClick(bool enabled) override;
   void SetTapDragging(bool enabled) override;
@@ -69,8 +74,6 @@ class InputDeviceSettingsImplOzone : public InputDeviceSettings {
   TouchpadSettings current_touchpad_settings_;
   MouseSettings current_mouse_settings_;
   PointingStickSettings current_pointing_stick_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputDeviceSettingsImplOzone);
 };
 
 InputDeviceSettingsImplOzone::InputDeviceSettingsImplOzone() = default;
@@ -99,6 +102,17 @@ void InputDeviceSettingsImplOzone::SetTouchpadScrollSensitivity(int value) {
   DCHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest));
   current_touchpad_settings_.SetScrollSensitivity(value);
   input_controller()->SetTouchpadScrollSensitivity(value);
+}
+
+void InputDeviceSettingsImplOzone::SetTouchpadHapticFeedback(bool enabled) {
+  current_touchpad_settings_.SetHapticFeedback(enabled);
+  input_controller()->SetTouchpadHapticFeedback(enabled);
+}
+
+void InputDeviceSettingsImplOzone::SetTouchpadHapticClickSensitivity(
+    int value) {
+  current_touchpad_settings_.SetHapticClickSensitivity(value);
+  input_controller()->SetTouchpadHapticClickSensitivity(value);
 }
 
 void InputDeviceSettingsImplOzone::SetNaturalScroll(bool enabled) {

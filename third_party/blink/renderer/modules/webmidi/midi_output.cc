@@ -258,8 +258,8 @@ void MIDIOutput::send(NotShared<DOMUint8Array> array,
   if (timestamp_in_milliseconds == 0.0) {
     timestamp = base::TimeTicks::Now();
   } else {
-    timestamp = GetTimeOrigin(context) +
-                base::TimeDelta::FromMillisecondsD(timestamp_in_milliseconds);
+    timestamp =
+        GetTimeOrigin(context) + base::Milliseconds(timestamp_in_milliseconds);
   }
   SendInternal(array.Get(), timestamp, exception_state);
 }

@@ -79,4 +79,38 @@ TEST(VideoBitrateAllocationTest, CanCopyAndCompare) {
   EXPECT_NE(copy, allocation);
 }
 
+TEST(VideoBitrateAllocationTest, ToString) {
+  VideoBitrateAllocation allocation;
+  EXPECT_TRUE(allocation.SetBitrate(0, 0, 123));
+  EXPECT_TRUE(allocation.SetBitrate(0, 1, 456));
+  EXPECT_TRUE(allocation.SetBitrate(0, 2, 789));
+  EXPECT_EQ(allocation.ToString(),
+            "active spatial layers: 1, {SL#0: {123, 456, 789}}");
+
+  // Add spatial layer.
+  EXPECT_TRUE(allocation.SetBitrate(1, 0, 789));
+  EXPECT_TRUE(allocation.SetBitrate(1, 1, 456));
+  EXPECT_EQ(
+      allocation.ToString(),
+      "active spatial layers: 2, {SL#0: {123, 456, 789}, SL#1: {789, 456}}");
+
+  // Reset the bottom spatial layer.
+  EXPECT_TRUE(allocation.SetBitrate(0, 0, 0));
+  EXPECT_TRUE(allocation.SetBitrate(0, 1, 0));
+  EXPECT_TRUE(allocation.SetBitrate(0, 2, 0));
+  EXPECT_EQ(allocation.ToString(),
+            "active spatial layers: 1, {SL#1: {789, 456}}");
+
+  // Add one more spatial layer.
+  EXPECT_TRUE(allocation.SetBitrate(2, 0, 123));
+  EXPECT_EQ(allocation.ToString(),
+            "active spatial layers: 2, {SL#1: {789, 456}, SL#2: {123}}");
+
+  // Reset all the spatial layers.
+  EXPECT_TRUE(allocation.SetBitrate(1, 0, 0));
+  EXPECT_TRUE(allocation.SetBitrate(1, 1, 0));
+  EXPECT_TRUE(allocation.SetBitrate(2, 0, 0));
+  EXPECT_EQ(allocation.ToString(), "Empty VideoBitrateAllocation");
+}
+
 }  // namespace media

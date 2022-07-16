@@ -139,3 +139,50 @@ promise_test(t => fetchTest(t, {
   },
   expected: kFetchTestResult.failure,
 }), "Public HTTPS non-secure context cannot fetch private subresource.");
+
+// These tests verify that websocket connections behave similarly to fetches.
+
+promise_test(t => websocketTest(t, {
+  source: {
+    port: kPorts.httpLocal,
+  },
+  target: {
+    protocol: "ws:",
+    port: kPorts.wsLocal,
+  },
+  expected: kWebsocketTestResult.success,
+}), "Local non-secure context can open connection to ws://localhost.");
+
+promise_test(t => websocketTest(t, {
+  source: {
+    port: kPorts.httpPrivate,
+  },
+  target: {
+    protocol: "ws:",
+    port: kPorts.wsLocal,
+  },
+  expected: kWebsocketTestResult.failure,
+}), "Private non-secure context cannot open connection to ws://localhost.");
+
+promise_test(t => websocketTest(t, {
+  source: {
+    port: kPorts.httpPublic,
+  },
+  target: {
+    protocol: "ws:",
+    port: kPorts.wsLocal,
+  },
+  expected: kWebsocketTestResult.failure,
+}), "Public non-secure context cannot open connection to ws://localhost.");
+
+promise_test(t => websocketTest(t, {
+  source: {
+    port: kPorts.httpLocal,
+    treatAsPublicAddress: true,
+  },
+  target: {
+    protocol: "ws:",
+    port: kPorts.wsLocal,
+  },
+  expected: kWebsocketTestResult.failure,
+}), "Treat-as-public non-secure context cannot open connection to ws://localhost.");

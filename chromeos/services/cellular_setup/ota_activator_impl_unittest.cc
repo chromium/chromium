@@ -47,6 +47,12 @@ const char kPaymentPortalMethodPost[] = "POST";
 }  // namespace
 
 class CellularSetupOtaActivatorImplTest : public testing::Test {
+ public:
+  CellularSetupOtaActivatorImplTest(const CellularSetupOtaActivatorImplTest&) =
+      delete;
+  CellularSetupOtaActivatorImplTest& operator=(
+      const CellularSetupOtaActivatorImplTest&) = delete;
+
  protected:
   CellularSetupOtaActivatorImplTest()
       : test_helper_(false /* use_default_devices_and_services */) {}
@@ -287,8 +293,6 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
   mojo::Remote<mojom::CarrierPortalHandler> carrier_portal_handler_remote_;
 
   bool is_finished_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CellularSetupOtaActivatorImplTest);
 };
 
 TEST_F(CellularSetupOtaActivatorImplTest, Success) {

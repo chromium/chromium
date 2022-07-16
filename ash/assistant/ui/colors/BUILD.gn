@@ -6,7 +6,7 @@ import("//tools/style_variable_generator/style_variable_generator.gni")
 
 style_variable_generator("assistant_colors") {
   sources = [
-    "//ui/chromeos/colors/cros_palette.json5",
+    "//ui/chromeos/styles/cros_palette.json5",
     "assistant_colors.json5",
   ]
 }

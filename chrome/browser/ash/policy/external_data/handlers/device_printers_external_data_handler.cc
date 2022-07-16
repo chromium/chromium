@@ -7,14 +7,14 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/printing/bulk_printers_calculator.h"
+#include "chrome/browser/ash/printing/bulk_printers_calculator.h"
 #include "components/policy/policy_constants.h"
 
 namespace policy {
 
 DevicePrintersExternalDataHandler::DevicePrintersExternalDataHandler(
     PolicyService* policy_service,
-    base::WeakPtr<chromeos::BulkPrintersCalculator> calculator)
+    base::WeakPtr<ash::BulkPrintersCalculator> calculator)
     : calculator_(calculator),
       device_printers_observer_(
           std::make_unique<DeviceCloudExternalDataPolicyObserver>(

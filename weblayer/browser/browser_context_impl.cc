@@ -42,7 +42,6 @@
 #include "weblayer/browser/browsing_data_remover_delegate.h"
 #include "weblayer/browser/browsing_data_remover_delegate_factory.h"
 #include "weblayer/browser/client_hints_factory.h"
-#include "weblayer/browser/default_search_engine.h"
 #include "weblayer/browser/heavy_ad_service_factory.h"
 #include "weblayer/browser/permissions/permission_manager_factory.h"
 #include "weblayer/browser/stateful_ssl_host_state_delegate_factory.h"
@@ -91,10 +90,11 @@ const char kUkmEnabled[] = "weblayer.ukm_enabled";
 class ResourceContextImpl : public content::ResourceContext {
  public:
   ResourceContextImpl() = default;
-  ~ResourceContextImpl() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceContextImpl);
+  ResourceContextImpl(const ResourceContextImpl&) = delete;
+  ResourceContextImpl& operator=(const ResourceContextImpl&) = delete;
+
+  ~ResourceContextImpl() override = default;
 };
 
 BrowserContextImpl::BrowserContextImpl(ProfileImpl* profile_impl,
@@ -117,12 +117,6 @@ BrowserContextImpl::BrowserContextImpl(ProfileImpl* profile_impl,
   }
 
   site_isolation::SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(this);
-
-  // Set the DSE permissions every time the browser context is created for
-  // simplicity. These permissions are not editable in site settings, so should
-  // not ever be changed by the user. The site settings entry will link to the
-  // client app's system level permissions page to handle these.
-  ResetDsePermissions(this);
 }
 
 BrowserContextImpl::~BrowserContextImpl() {
@@ -152,12 +146,10 @@ base::FilePath BrowserContextImpl::GetDefaultDownloadDirectory() {
   return download_dir;
 }
 
-#if !defined(OS_ANDROID)
 std::unique_ptr<content::ZoomLevelDelegate>
 BrowserContextImpl::CreateZoomLevelDelegate(const base::FilePath&) {
   return nullptr;
 }
-#endif  // !defined(OS_ANDROID)
 
 base::FilePath BrowserContextImpl::GetPath() {
   return path_;
@@ -181,6 +173,11 @@ content::BrowserPluginGuestManager* BrowserContextImpl::GetGuestManager() {
 }
 
 storage::SpecialStoragePolicy* BrowserContextImpl::GetSpecialStoragePolicy() {
+  return nullptr;
+}
+
+content::PlatformNotificationService*
+BrowserContextImpl::GetPlatformNotificationService() {
   return nullptr;
 }
 

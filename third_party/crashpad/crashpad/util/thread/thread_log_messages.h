@@ -18,7 +18,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 
 namespace crashpad {
 
@@ -31,6 +30,10 @@ namespace crashpad {
 class ThreadLogMessages {
  public:
   ThreadLogMessages();
+
+  ThreadLogMessages(const ThreadLogMessages&) = delete;
+  ThreadLogMessages& operator=(const ThreadLogMessages&) = delete;
+
   ~ThreadLogMessages();
 
   //! \return The log messages collected on the thread that this object was
@@ -39,8 +42,6 @@ class ThreadLogMessages {
 
  private:
   std::vector<std::string> log_messages_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadLogMessages);
 };
 
 }  // namespace crashpad

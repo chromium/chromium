@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromecast/browser/webview/proto/webview.grpc.pb.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "url/gurl.h"
@@ -23,6 +23,10 @@ class WebviewNavigationThrottle : public content::NavigationThrottle {
   WebviewNavigationThrottle(content::NavigationHandle* handle,
                             base::WeakPtr<WebviewController> controller);
 
+  WebviewNavigationThrottle(const WebviewNavigationThrottle&) = delete;
+  WebviewNavigationThrottle& operator=(const WebviewNavigationThrottle&) =
+      delete;
+
   ~WebviewNavigationThrottle() override;
 
   ThrottleCheckResult WillStartRequest() override;
@@ -34,8 +38,6 @@ class WebviewNavigationThrottle : public content::NavigationThrottle {
 
  private:
   base::WeakPtr<WebviewController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebviewNavigationThrottle);
 };
 
 }  // namespace chromecast

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/guest_view/common/guest_view_constants.h"
@@ -65,6 +64,9 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
       const content::WebContents* web_contents);
 
   static GuestViewBase* From(int owner_process_id, int instance_id);
+
+  GuestViewBase(const GuestViewBase&) = delete;
+  GuestViewBase& operator=(const GuestViewBase&) = delete;
 
   // Given a |web_contents|, returns the top level owner WebContents. If
   // |web_contents| does not belong to a GuestView, it will be returned
@@ -478,8 +480,6 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.
   base::WeakPtrFactory<GuestViewBase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GuestViewBase);
 };
 
 }  // namespace guest_view

@@ -22,6 +22,10 @@ namespace audio {
 class LogFactoryManager final : public mojom::LogFactoryManager {
  public:
   LogFactoryManager();
+
+  LogFactoryManager(const LogFactoryManager&) = delete;
+  LogFactoryManager& operator=(const LogFactoryManager&) = delete;
+
   ~LogFactoryManager() final;
 
   void Bind(mojo::PendingReceiver<mojom::LogFactoryManager> receiver);
@@ -35,8 +39,6 @@ class LogFactoryManager final : public mojom::LogFactoryManager {
   mojo::ReceiverSet<mojom::LogFactoryManager> receivers_;
   LogFactoryAdapter log_factory_adapter_;
   SEQUENCE_CHECKER(owning_sequence_);
-
-  DISALLOW_COPY_AND_ASSIGN(LogFactoryManager);
 };
 
 }  // namespace audio

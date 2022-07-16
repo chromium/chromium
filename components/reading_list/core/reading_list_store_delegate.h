@@ -7,14 +7,16 @@
 
 #include <map>
 
-#include "base/macros.h"
-
 class ReadingListEntry;
 
 // The delegate to handle callbacks from the ReadingListStore.
 class ReadingListStoreDelegate {
  public:
   using ReadingListEntries = std::map<GURL, ReadingListEntry>;
+
+  ReadingListStoreDelegate(const ReadingListStoreDelegate&) = delete;
+  ReadingListStoreDelegate& operator=(const ReadingListStoreDelegate&) = delete;
+
   // These three methods handle callbacks from a ReadingListStore.
   // This method is called when the local store is loaded. |entries| contains
   // the ReadingListEntry present on the device before sync starts.
@@ -37,9 +39,6 @@ class ReadingListStoreDelegate {
  protected:
   ReadingListStoreDelegate() {}
   virtual ~ReadingListStoreDelegate() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReadingListStoreDelegate);
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_STORE_DELEGATE_H_

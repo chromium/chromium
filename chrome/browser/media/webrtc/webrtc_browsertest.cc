@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/deferred_sequenced_task_runner.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
@@ -27,6 +27,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 
 #if defined(OS_MAC)
 #include "base/mac/mac_util.h"
@@ -57,7 +58,8 @@ class WebRtcBrowserTest : public WebRtcTestBase {
     EXPECT_FALSE(command_line->HasSwitch(switches::kUseFakeUIForMediaStream));
 
     // Flag used by TestWebAudioMediaStream to force garbage collection.
-    command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose-gc");
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--expose-gc");
   }
 
   void RunsAudioVideoWebRTCCallInTwoTabs(
@@ -207,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest, TestWebAudioMediaStream) {
   // integration.
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/webrtc/webaudio_crash.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -324,9 +326,17 @@ IN_PROC_BROWSER_TEST_F(
   DetectVideoAndHangUp();
 }
 
+// Test is flaky on windows. https://crbug.com/1239275
+#if defined(OS_WIN)
+#define MAYBE_RunsAudioVideoWebRTCCallInTwoTabsEmitsGatheringStateChange_ConnectionCount \
+  DISABLED_RunsAudioVideoWebRTCCallInTwoTabsEmitsGatheringStateChange_ConnectionCount
+#else
+#define MAYBE_RunsAudioVideoWebRTCCallInTwoTabsEmitsGatheringStateChange_ConnectionCount \
+  RunsAudioVideoWebRTCCallInTwoTabsEmitsGatheringStateChange_ConnectionCount
+#endif
 IN_PROC_BROWSER_TEST_F(
     MAYBE_WebRtcBrowserTest,
-    RunsAudioVideoWebRTCCallInTwoTabsEmitsGatheringStateChange_ConnectionCount) {
+    MAYBE_RunsAudioVideoWebRTCCallInTwoTabsEmitsGatheringStateChange_ConnectionCount) {
   EXPECT_EQ(0u, GetPeerToPeerConnectionsCountChangeFromNetworkService());
   StartServerAndOpenTabs();
   SetupPeerconnectionWithLocalStream(left_tab_);

@@ -23,25 +23,6 @@ enum CaptivePortalResult {
   RESULT_COUNT
 };
 
-// Possible causes of a captive portal probe. These values are persisted to
-// logs. Entries should not be renumbered and numeric values should never be
-// reused. Please keep in sync with "CaptivePortalProbeReason" in
-// src/tools/metrics/histograms/enums.xml.
-enum class CaptivePortalProbeReason {
-  kUnspecified = 0,
-  // Timeout
-  kTimeout = 1,
-  // Certificate error
-  kCertificateError = 2,
-  // SSL protocol error
-  kSslProtocolError = 3,
-  // First load of login tab
-  kLoginTabLoad = 4,
-  // Secure DNS error
-  kSecureDnsError = 5,
-  kMaxValue = kSecureDnsError,
-};
-
 CAPTIVE_PORTAL_EXPORT extern std::string CaptivePortalResultToString(
     CaptivePortalResult result);
 

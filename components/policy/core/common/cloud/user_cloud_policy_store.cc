@@ -15,8 +15,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -98,11 +98,8 @@ DesktopCloudPolicyStore::DesktopCloudPolicyStore(
     const base::FilePath& key_path,
     PolicyLoadFilter policy_load_filter,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    PolicyScope policy_scope,
-    PolicySource policy_source)
-    : UserCloudPolicyStoreBase(background_task_runner,
-                               policy_scope,
-                               policy_source),
+    PolicyScope policy_scope)
+    : UserCloudPolicyStoreBase(background_task_runner, policy_scope),
       policy_path_(policy_path),
       key_path_(key_path),
       policy_load_filter_(std::move(policy_load_filter)) {}
@@ -129,7 +126,7 @@ void DesktopCloudPolicyStore::Clear() {
       FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), policy_path_));
   background_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), key_path_));
-  policy_.reset();
+  ResetPolicy();
   policy_map_.Clear();
   policy_signature_public_key_.clear();
   persisted_policy_key_.clear();
@@ -229,9 +226,6 @@ void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
         // next fetch.
         doing_key_rotation = true;
         DLOG(WARNING) << "Verification key rotation detected";
-        // TODO(atwilson): Add code to update |verification_key| to point to
-        // the correct key to validate the existing blob (can't do this until
-        // we've done our first key rotation).
       }
 
       Validate(std::move(cloud_policy), std::move(key), validate_in_background,
@@ -327,7 +321,8 @@ void DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation(
     persisted_policy_key_ = signing_key;
   }
 
-  InstallPolicy(std::move(validator->policy_data()),
+  InstallPolicy(std::move(validator->policy()),
+                std::move(validator->policy_data()),
                 std::move(validator->payload()), persisted_policy_key_);
   status_ = STATUS_OK;
   NotifyStoreLoaded();
@@ -368,7 +363,8 @@ void DesktopCloudPolicyStore::OnPolicyToStoreValidated(
   if (validator->policy()->has_new_public_key())
     persisted_policy_key_ = validator->policy()->new_public_key();
 
-  InstallPolicy(std::move(validator->policy_data()),
+  InstallPolicy(std::move(validator->policy()),
+                std::move(validator->policy_data()),
                 std::move(validator->payload()), persisted_policy_key_);
   status_ = STATUS_OK;
   NotifyStoreLoaded();
@@ -382,8 +378,7 @@ UserCloudPolicyStore::UserCloudPolicyStore(
                               key_path,
                               PolicyLoadFilter(),
                               background_task_runner,
-                              PolicyScope::POLICY_SCOPE_USER,
-                              PolicySource::POLICY_SOURCE_CLOUD) {}
+                              PolicyScope::POLICY_SCOPE_USER) {}
 
 UserCloudPolicyStore::~UserCloudPolicyStore() {}
 

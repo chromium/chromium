@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_DATA_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_WEB_DATA_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -37,6 +36,9 @@ class WebDataServiceFactory
   static WebDataServiceWrapper* GetForProfileIfExists(
       Profile* profile,
       ServiceAccessType access_type);
+
+  WebDataServiceFactory(const WebDataServiceFactory&) = delete;
+  WebDataServiceFactory& operator=(const WebDataServiceFactory&) = delete;
 
   // Returns the AutofillWebDataService associated with the |profile|.
   static scoped_refptr<autofill::AutofillWebDataService>
@@ -71,8 +73,6 @@ class WebDataServiceFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDataServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_WEB_DATA_SERVICE_FACTORY_H_

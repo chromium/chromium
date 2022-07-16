@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_export.h"
@@ -32,6 +31,8 @@ class TextTrackConfig;
 // demuxer text stream.
 class MEDIA_EXPORT TextRenderer {
  public:
+  TextRenderer() = delete;
+
   // |task_runner| is the thread on which TextRenderer will execute.
   //
   // |add_text_track_cb] is called when the demuxer requests (via its host)
@@ -39,6 +40,9 @@ class MEDIA_EXPORT TextRenderer {
   TextRenderer(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
       const AddTextTrackCB& add_text_track_cb);
+
+  TextRenderer(const TextRenderer&) = delete;
+  TextRenderer& operator=(const TextRenderer&) = delete;
 
   // Stops all operations and fires all pending callbacks.
   ~TextRenderer();
@@ -133,8 +137,6 @@ class MEDIA_EXPORT TextRenderer {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<TextRenderer> weak_factory_{this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TextRenderer);
 };
 
 }  // namespace media

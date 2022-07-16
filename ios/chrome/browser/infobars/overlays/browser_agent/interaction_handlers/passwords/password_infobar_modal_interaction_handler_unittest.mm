@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/infobars/test/fake_infobar_ui_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -29,7 +28,7 @@ class PasswordInfobarModalInteractionHandlerTest : public PlatformTest {
       : mock_command_receiver_(
             OCMStrictProtocolMock(@protocol(ApplicationSettingsCommands))),
         infobar_(
-            [[FakeInfobarUIDelegate alloc] init],
+            InfobarType::kInfobarTypePasswordSave,
             MockIOSChromeSavePasswordInfoBarDelegate::Create(@"username",
                                                              @"password")) {
     [browser_.GetCommandDispatcher()

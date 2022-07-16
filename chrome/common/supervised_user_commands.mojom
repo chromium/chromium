@@ -9,10 +9,15 @@ module supervised_user.mojom;
 interface SupervisedUserCommands {
   // Go back to the previous page.
   GoBack();
-  // Request permission from supervised user administrator to view the current
-  // URL. Expects a |success| response indicating whether or not sending the
+  // Sends a remote URL approval request to the supervised user administrator to
+  // view the current URL.
+  // Expects a |request_issued| response indicating whether or not sending the
   // request was successful.
-  RequestPermission() => (bool success);
+  RequestUrlAccessRemote() => (bool request_issued);
+  // Starts a local, platform-specific URL approval flow.
+  // |request_issued| indicates whether the flow was successfully initiated (not
+  // the result of the approval flow).
+  RequestUrlAccessLocal() => (bool request_issued);
   // Send feedback about the decision to block the current URL.
   Feedback();
 };

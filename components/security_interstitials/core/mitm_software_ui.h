@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CORE_MITM_SOFTWARE_UI_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_MITM_SOFTWARE_UI_H_
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/ssl_errors/error_classification.h"
@@ -23,6 +22,10 @@ class MITMSoftwareUI {
                  const std::string& mitm_software_name,
                  bool is_enterprise_managed,
                  ControllerClient* controller_);
+
+  MITMSoftwareUI(const MITMSoftwareUI&) = delete;
+  MITMSoftwareUI& operator=(const MITMSoftwareUI&) = delete;
+
   ~MITMSoftwareUI();
 
   void PopulateStringsForHTML(base::Value* load_time_data);
@@ -39,8 +42,6 @@ class MITMSoftwareUI {
   const std::string mitm_software_name_;
   const bool is_enterprise_managed_;
   ControllerClient* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(MITMSoftwareUI);
 };
 
 }  // namespace security_interstitials

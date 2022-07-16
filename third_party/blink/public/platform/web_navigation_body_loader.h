@@ -11,13 +11,13 @@
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/loader/code_cache.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 
 namespace blink {
 
+class CodeCacheHost;
 class ResourceLoadInfoNotifierWrapper;
 struct WebNavigationParams;
 
@@ -75,8 +75,10 @@ class BLINK_EXPORT WebNavigationBodyLoader {
 
   // Starts loading the body. Client must be non-null, and will receive
   // the body, code cache and final result.
-  virtual void StartLoadingBody(Client*,
-                                mojom::CodeCacheHost* code_cache_host) = 0;
+  virtual void StartLoadingBody(Client*, CodeCacheHost* code_cache_host) = 0;
+
+  // Starts loading the code cache.
+  virtual void StartLoadingCodeCache(CodeCacheHost* code_cache_host) = 0;
 };
 
 }  // namespace blink

@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "content/public/common/zygote/zygote_fork_delegate_linux.h"
 
 namespace base {
@@ -32,6 +31,10 @@ void AddNaClZygoteForkDelegates(
 class NaClForkDelegate : public content::ZygoteForkDelegate {
  public:
   explicit NaClForkDelegate(bool nonsfi_mode);
+
+  NaClForkDelegate(const NaClForkDelegate&) = delete;
+  NaClForkDelegate& operator=(const NaClForkDelegate&) = delete;
+
   ~NaClForkDelegate() override;
 
   void Init(int sandboxdesc, bool enable_layer1_sandbox) override;
@@ -71,8 +74,6 @@ class NaClForkDelegate : public content::ZygoteForkDelegate {
   int fd_;
 
   FRIEND_TEST_ALL_PREFIXES(NaClForkDelegateLinuxTest, EnvPassthrough);
-
-  DISALLOW_COPY_AND_ASSIGN(NaClForkDelegate);
 };
 
 }  // namespace nacl

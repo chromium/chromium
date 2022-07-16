@@ -37,7 +37,7 @@ EVENT_TYPE(FAILED)
 EVENT_TYPE(REQUEST_ALIVE)
 
 // ------------------------------------------------------------------------
-// HostResolverImpl
+// HostResolverManager (previously known as HostResolverImpl)
 // ------------------------------------------------------------------------
 
 // The start/end of a host resolve (DNS) request.  Note that these events are
@@ -47,21 +47,22 @@ EVENT_TYPE(REQUEST_ALIVE)
 // The BEGIN phase contains the following parameters:
 //
 //   {
-//     "host": <Hostname associated with the request>,
+//     "host": <Serialized scheme/host/port of the request>,
 //     "dns_query_type": <The type of the DNS query>,
 //     "allow_cached_response": <Whether it is ok to return a result from
 //                               the host cache>,
 //     "is_speculative": <Whether this request was started by the DNS
-//                        prefetcher>
+//                        prefetcher>,
 //     "network_isolation_key": <NetworkIsolationKey associated with the
-//                               request>
+//                               request>,
+//     "secure_dns_policy": <SecureDnsPolicy of the request>,
 //   }
 //
 // If an error occurred, the END phase will contain these parameters:
 //   {
 //     "net_error": <The net error code integer for the failure>,
 //   }
-EVENT_TYPE(HOST_RESOLVER_IMPL_REQUEST)
+EVENT_TYPE(HOST_RESOLVER_MANAGER_REQUEST)
 
 // This event is created (in a source of the same name) when the host resolver
 // creates a UDP socket to check for global IPv6 connectivity.
@@ -70,67 +71,66 @@ EVENT_TYPE(HOST_RESOLVER_IMPL_REQUEST)
 //   {
 //     "ipv6_available": <True if the probe indicates ipv6 connectivity>,
 //   }
-EVENT_TYPE(HOST_RESOLVER_IMPL_IPV6_REACHABILITY_CHECK)
+EVENT_TYPE(HOST_RESOLVER_MANAGER_IPV6_REACHABILITY_CHECK)
 
 // This event is logged when a request is handled by a cache entry.
 // It contains the following parameter:
 //   {
-//     "address_list": <The resolved addresses>,
+//     "results": <HostCache::Entry of results>,
 //   }
-EVENT_TYPE(HOST_RESOLVER_IMPL_CACHE_HIT)
+EVENT_TYPE(HOST_RESOLVER_MANAGER_CACHE_HIT)
 
 // This event is logged when a request is handled by a HOSTS entry.
 // It contains the following parameter:
 //   {
-//     "address_list": <The resolved addresses>,
+//     "results": <HostCache::Entry of results>,
 //   }
-EVENT_TYPE(HOST_RESOLVER_IMPL_HOSTS_HIT)
+EVENT_TYPE(HOST_RESOLVER_MANAGER_HOSTS_HIT)
 
-// This event is created when a new HostResolverImpl::Job is about to be created
-// for a request.
-EVENT_TYPE(HOST_RESOLVER_IMPL_CREATE_JOB)
+// This event is created when a new HostResolverManager::Job is about to be
+// created for a request.
+EVENT_TYPE(HOST_RESOLVER_MANAGER_CREATE_JOB)
 
-// The creation/completion of a HostResolverImpl::Job which is created for
+// The creation/completion of a HostResolverManager::Job which is created for
 // Requests that cannot be resolved synchronously.
 //
 // The BEGIN phase contains the following parameters:
 //
 //   {
-//     "host": <Hostname associated with the request>,
-//     "source_dependency": <Source id, if any, of what created the request>,
+//     "dns_query_type": <DnsQueryType of the job>,
+//     "host": <Serialized scheme/host/port associated with the job>,
+//     "network_isolation_key": <NetworkIsolationKey associated with the job>,
+//     "secure_dns_mode": <SecureDnsMode of the job>,
+//     "source_dependency": <Source id, if any, of what created the job>,
 //   }
 //
-// On success, the END phase has these parameters:
-//   {
-//     "address_list": <The host name being resolved>,
-//   }
-// If an error occurred, the END phase will contain these parameters:
+// The END phase will contain these parameters:
 //   {
 //     "net_error": <The net error code integer for the failure>,
 //   }
-EVENT_TYPE(HOST_RESOLVER_IMPL_JOB)
+EVENT_TYPE(HOST_RESOLVER_MANAGER_JOB)
 
-// This event is created when a HostResolverImpl::Job is evicted from
+// This event is created when a HostResolverManager::Job is evicted from
 // PrioritizedDispatcher before it can start, because the limit on number of
 // queued Jobs was reached.
-EVENT_TYPE(HOST_RESOLVER_IMPL_JOB_EVICTED)
+EVENT_TYPE(HOST_RESOLVER_MANAGER_JOB_EVICTED)
 
-// This event is created when a HostResolverImpl::Job is started by
+// This event is created when a HostResolverManager::Job is started by
 // PrioritizedDispatcher.
-EVENT_TYPE(HOST_RESOLVER_IMPL_JOB_STARTED)
+EVENT_TYPE(HOST_RESOLVER_MANAGER_JOB_STARTED)
 
-// This event is created when HostResolverImpl::ProcJob is about to start a new
-// attempt to resolve the host.
+// This event is created when HostResolverManager::ProcTask is about to start a
+// new attempt to resolve the host.
 //
 // The ATTEMPT_STARTED event has the parameters:
 //
 //   {
 //     "attempt_number": <the number of the attempt that is resolving the host>,
 //   }
-EVENT_TYPE(HOST_RESOLVER_IMPL_ATTEMPT_STARTED)
+EVENT_TYPE(HOST_RESOLVER_MANAGER_ATTEMPT_STARTED)
 
-// This event is created when HostResolverImpl::ProcJob has finished resolving
-// the host.
+// This event is created when HostResolverManager::ProcTask has finished
+// resolving the host.
 //
 // The ATTEMPT_FINISHED event has the parameters:
 //
@@ -142,12 +142,12 @@ EVENT_TYPE(HOST_RESOLVER_IMPL_ATTEMPT_STARTED)
 //     "net_error": <The net error code integer for the failure>,
 //     "os_error": <The exact error code integer that getaddrinfo() returned>,
 //   }
-EVENT_TYPE(HOST_RESOLVER_IMPL_ATTEMPT_FINISHED)
+EVENT_TYPE(HOST_RESOLVER_MANAGER_ATTEMPT_FINISHED)
 
 // This is logged for a request when it's attached to a
-// HostResolverImpl::Job. When this occurs without a preceding
-// HOST_RESOLVER_IMPL_CREATE_JOB entry, it means the request was attached to an
-// existing HostResolverImpl::Job.
+// HostResolverManager::Job. When this occurs without a preceding
+// HOST_RESOLVER_MANAGER_CREATE_JOB entry, it means the request was attached to
+// an existing HostResolverManager::Job.
 //
 // The event contains the following parameters:
 //
@@ -155,7 +155,7 @@ EVENT_TYPE(HOST_RESOLVER_IMPL_ATTEMPT_FINISHED)
 //     "source_dependency": <Source identifier for the attached Job>,
 //   }
 //
-EVENT_TYPE(HOST_RESOLVER_IMPL_JOB_ATTACH)
+EVENT_TYPE(HOST_RESOLVER_MANAGER_JOB_ATTACH)
 
 // This event is logged for the job to which the request is attached.
 // In that case, the event contains the following parameters:
@@ -164,7 +164,7 @@ EVENT_TYPE(HOST_RESOLVER_IMPL_JOB_ATTACH)
 //     "source_dependency": <Source identifier for the attached Request>,
 //     "priority": <New priority of the job>,
 //   }
-EVENT_TYPE(HOST_RESOLVER_IMPL_JOB_REQUEST_ATTACH)
+EVENT_TYPE(HOST_RESOLVER_MANAGER_JOB_REQUEST_ATTACH)
 
 // This is logged for a job when a request is cancelled and detached.
 //
@@ -174,10 +174,10 @@ EVENT_TYPE(HOST_RESOLVER_IMPL_JOB_REQUEST_ATTACH)
 //     "source_dependency": <Source identifier for the detached Request>,
 //     "priority": <New priority of the job>,
 //   }
-EVENT_TYPE(HOST_RESOLVER_IMPL_JOB_REQUEST_DETACH)
+EVENT_TYPE(HOST_RESOLVER_MANAGER_JOB_REQUEST_DETACH)
 
-// The creation/completion of a HostResolverImpl::ProcTask to call getaddrinfo.
-// The BEGIN phase contains the following parameters:
+// The creation/completion of a HostResolverManager::ProcTask to call
+// getaddrinfo. The BEGIN phase contains the following parameters:
 //
 //   {
 //     "hostname": <Hostname associated with the request>,
@@ -192,25 +192,57 @@ EVENT_TYPE(HOST_RESOLVER_IMPL_JOB_REQUEST_DETACH)
 //     "net_error": <The net error code integer for the failure>,
 //     "os_error": <The exact error code integer that getaddrinfo() returned>,
 //   }
-EVENT_TYPE(HOST_RESOLVER_IMPL_PROC_TASK)
+EVENT_TYPE(HOST_RESOLVER_MANAGER_PROC_TASK)
 
-// The creation/completion of a HostResolverImpl::DnsTask to manage a
+// The creation/completion of a HostResolverManager::DnsTask to manage a
 // DnsTransaction. The BEGIN phase contains the following parameters:
 //
 //   {
-//     "source_dependency": <Source id of DnsTransaction>,
+//     "secure": <Whether or not the task will use secure DNS>,
+//     "transactions_needed": [{
+//       "dns_query_type": <DnsQueryType for which a transaction is expected>,
+//     }],
 //   }
 //
 // On success, the END phase has these parameters:
 //   {
-//     "address_list": <The resolved addresses>,
+//     "results": <HostCache::Entry of results>,
 //   }
 // If an error occurred, the END phase will contain these parameters:
 //   {
+//     "dns_query_type": <The DnsQueryType of the transaction that failed>,
+//     "error_ttl_sec": <TTL in seconds for caching the error>,
 //     "net_error": <The net error code integer for the failure>,
-//     "dns_error": <The detailed DnsResponse::Result>
+//     "saved_results": <HostCache::Entry of any previously completed
+//                       transactions>,
 //   }
-EVENT_TYPE(HOST_RESOLVER_IMPL_DNS_TASK)
+EVENT_TYPE(HOST_RESOLVER_MANAGER_DNS_TASK)
+
+// Logged when DnsResponseResultExtractor returns an error to
+// HostResolverManager::DnsTask when attempting to extract results from a
+// DnsResponse. Contains the following parameters:
+//
+//   {
+//     "extraction_error": <The DnsResponseResultExtractor::ExtractionError>
+//     "dns_query_type": <The DnsQueryType requested from the extractor>
+//     "results": <The HostCache::Entry returned by the extractor>
+//   }
+EVENT_TYPE(HOST_RESOLVER_MANAGER_DNS_TASK_EXTRACTION_FAILURE)
+
+// Logged when a HostResolverManager::DnsTask times out and cancels unfinished
+// transactions.
+// The event contains the following parameters:
+//
+//   {
+//     "started_transactions": [{
+//       "dns_query_type": <DnsQueryType of a started but incomplete
+//       transaction>,
+//     }],
+//     "queued_transactions": [{
+//       "dns_query_type": <DnsQueryType of a not-yet-started transaction>,
+//     }],
+//   }
+EVENT_TYPE(HOST_RESOLVER_MANAGER_DNS_TASK_TIMEOUT)
 
 // ------------------------------------------------------------------------
 // InitProxyResolver
@@ -490,6 +522,13 @@ EVENT_TYPE(SOCKS_UNKNOWN_ADDRESS_TYPE)
 //    "next_proto": <The next protocol negotiated via ALPN>,
 //  }
 EVENT_TYPE(SSL_CONNECT)
+
+// Emitted at the start of an SSL handshakes that use ECH. The following
+// parameters are attached.
+// {
+//     "bytes": <The ECHConfigList used, base64 encoded>
+// }
+EVENT_TYPE(SSL_ECH_CONFIG_LIST)
 
 // The start/end of an SSL server handshake (aka "accept").
 EVENT_TYPE(SSL_SERVER_HANDSHAKE)
@@ -1152,7 +1191,8 @@ EVENT_TYPE(HTTP_STREAM_JOB_RESUMED)
 // The following parameters are attached:
 //   {
 //      "url": <String of request URL>,
-//      "is_preconnect": <True if controller is created for a preconnect.>,
+//      "is_preconnect": <True if controller is created for a preconnect>,
+//      "private_mode": <Privacy mode of the request>,
 //   }
 EVENT_TYPE(HTTP_STREAM_JOB_CONTROLLER)
 
@@ -2057,6 +2097,17 @@ EVENT_TYPE(QUIC_SESSION_TRANSPORT_PARAMETERS_SENT)
 //   }
 EVENT_TYPE(QUIC_SESSION_TRANSPORT_PARAMETERS_RESUMED)
 
+// A WebTransport client is alive.
+EVENT_TYPE(QUIC_SESSION_WEBTRANSPORT_CLIENT_ALIVE)
+
+// A WebTransport client state has changed.
+//   {
+//     "last_state": <The last client state>
+//     "next_state": <The next client state>
+//     "error": <Optionally, error codes and details when an error happened>
+//   }
+EVENT_TYPE(QUIC_SESSION_WEBTRANSPORT_CLIENT_STATE_CHANGED)
+
 // QUIC with TLS gets 0-RTT rejected.
 EVENT_TYPE(QUIC_SESSION_ZERO_RTT_REJECTED)
 
@@ -2677,13 +2728,6 @@ EVENT_TYPE(AUTH_GENERATE_TOKEN)
 //                                "different_realm" depending on the outcome of
 //                                the handling the challenge>
 //  }
-//
-// The END phase has the following parameters:
-//  {
-//      "net_error": <The error code.>
-//      "has_handle": <Whether it has an auth handler.>
-//      "has_valid_identity": <Whether it has a valid identity.>
-//  }
 EVENT_TYPE(AUTH_HANDLE_CHALLENGE)
 
 // An attempt was made to load an authentication library.
@@ -2810,8 +2854,8 @@ EVENT_TYPE(NETWORK_CONNECTIVITY_CHANGED)
 //   }
 EVENT_TYPE(NETWORK_CHANGED)
 
-// This event is emitted whenever HostResolverImpl receives a new DnsConfig
-// from the DnsConfigService.
+// This event is emitted whenever DnsClient receives a new DnsConfig or
+// DnsConfigOverrides.
 //   {
 //     "nameservers":                <List of name server IPs>,
 //     "search":                     <List of domain suffixes>,
@@ -2959,8 +3003,11 @@ EVENT_TYPE(DNS_TRANSACTION_TCP_ATTEMPT)
 //   {
 //     "rcode": <rcode in the received response>,
 //     "answer_count": <answer_count in the received response>,
+//     "additional_answer_count": <additional_answer_count in the received
+//                                 response>,
 //     "source_dependency": <Source id of the UDP socket that received the
 //                           response>,
+//     "response_buffer": <Raw buffer of the received response>,
 //   }
 EVENT_TYPE(DNS_TRANSACTION_RESPONSE)
 
@@ -3933,14 +3980,72 @@ EVENT_TYPE(TRUST_TOKEN_OPERATION_FINALIZE_REDEMPTION)
 
 EVENT_TYPE(TRUST_TOKEN_OPERATION_BEGIN_SIGNING)
 
-// Temporarily added to for https://crbug.com/1186863. Logged at
-// net::URLRequestJob::NotifyHeadersComplete.
-EVENT_TYPE(URL_REQUEST_JOB_NOTIFY_HEADERS_COMPLETE_NEEDS_AUTH)
+// -----------------------------------------------------------------------------
+// CORS preflight events
+// -----------------------------------------------------------------------------
 
-// Temporarily added to for https://crbug.com/1186863. Logged at
-// net::URLRequestHttpJob::NotifyHeadersComplete.
-// The following parameters are attached:
+// The start/end of CORS preflight request. It corresponds with the lifetime of
+// CorsURLLoader.
+//
+// The BEGIN phase contains the following parameters.
+// See network.mojom.ResourceRequest for details.
+//
+//  {
+//    "cors_preflight_policy" : <A policy to decide if CORS-preflight fetch
+//                              should be performed>,
+//    "headers" : <The list of header:value pairs>,
+//    "is_external_request": <Boolean indicating whether request is external>,
+//    "is_revalidating": <Boolean indicating whether request is revalidating>,
+//    "method": <The method ("POST" or "GET" or "HEAD" etc...)>,
+//    "url": <The URL to create a request for>
+//  }
+EVENT_TYPE(CORS_REQUEST)
+
+// This event is logged when CorsURLLoader judges if preflight request is
+// required. If required, the reason of judgement is recorded next.
+// It contains the following parameter:
+//  {
+//    "preflight_required": <Boolean indicating whether preflight request is
+//                          required>,
+//    "preflight_required_reason": <The reason why preflight is required>
+//  }
+EVENT_TYPE(CHECK_CORS_PREFLIGHT_REQUIRED)
+
+// This event is logged when PreflightController checks preflight cache.
+// It contains the following parameter:
+//  {
+//    "status": <The result of cache checking. "hit-and-pass",
+//              "hit-and-fail", "miss" or "stale">
+//  }
+EVENT_TYPE(CHECK_CORS_PREFLIGHT_CACHE)
+
+// This event is logged when PreflightController gets CORS preflight result
+// from preflight request.
+// It contains the following parameter:
+//  {
+//    "access-control-allow-headers": <List of headers given in
+//                                    `Access-Control-Allow-Headers`>,
+//    "access-control-allow-methods": <List of methods given in
+//                                    `Access-Control-Allow-Methods`>
+//  }
+EVENT_TYPE(CORS_PREFLIGHT_RESULT)
+
+// This event identifies the NetLogSource() for a URLRequest of the preflight
+// request.
+EVENT_TYPE(CORS_PREFLIGHT_URL_REQUEST)
+
+// This event is logged when PreflightController gets CORS preflight result
+// from preflight cache.
+// The parameters are the same as for CORS_PREFLIGHT_RESULT.
+EVENT_TYPE(CORS_PREFLIGHT_CACHED_RESULT)
+
+// ------------------------------------------------------------------------
+// Initiator
+// ------------------------------------------------------------------------
+
+// This event is logged to indicate the initiator of the network event.
+// The event contains the following parameters:
 //   {
-//     "ready_to_restart_for_auth": <boolean>,
+//     "source_dependency": <Source identifier for the attached event>
 //   }
-EVENT_TYPE(URL_REQUEST_HTTP_JOB_NOTIFY_HEADERS_COMPLETE)
+EVENT_TYPE(CREATED_BY)

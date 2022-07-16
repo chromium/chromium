@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views.h"
 
@@ -18,6 +17,12 @@
 class ChromeNativeAppWindowViewsAura : public ChromeNativeAppWindowViews {
  public:
   ChromeNativeAppWindowViewsAura();
+
+  ChromeNativeAppWindowViewsAura(const ChromeNativeAppWindowViewsAura&) =
+      delete;
+  ChromeNativeAppWindowViewsAura& operator=(
+      const ChromeNativeAppWindowViewsAura&) = delete;
+
   ~ChromeNativeAppWindowViewsAura() override;
 
  protected:
@@ -42,8 +47,6 @@ class ChromeNativeAppWindowViewsAura : public ChromeNativeAppWindowViews {
  private:
   FRIEND_TEST_ALL_PREFIXES(ShapedAppWindowTargeterTest,
                            ResizeInsetsWithinBounds);
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeNativeAppWindowViewsAura);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_CHROME_NATIVE_APP_WINDOW_VIEWS_AURA_H_

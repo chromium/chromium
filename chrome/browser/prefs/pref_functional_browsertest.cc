@@ -69,8 +69,8 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestDownloadDirPref) {
   // Create a downloads observer.
   std::unique_ptr<content::DownloadTestObserver> downloads_observer(
       CreateWaiter(browser(), 1));
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/downloads/a_zip_file.zip"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/downloads/a_zip_file.zip")));
   // Waits for the download to complete.
   downloads_observer->WaitForFinished();
 
@@ -82,8 +82,8 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestDownloadDirPref) {
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImageContentSettings) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/settings/image_page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/settings/image_page.html")));
 
   bool result = false;
   std::string script =
@@ -106,8 +106,8 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImageContentSettings) {
           ->default_value_pref_name(),
       CONTENT_SETTING_BLOCK);
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/settings/image_page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/settings/image_page.html")));
 
   result = false;
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
@@ -123,14 +123,14 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestJavascriptEnableDisable) {
 
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kWebKitJavascriptEnabled));
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/javaScriptTitle.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/javaScriptTitle.html")));
   EXPECT_EQ(u"Title from script javascript enabled",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kWebKitJavascriptEnabled,
                                                false);
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/javaScriptTitle.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/javaScriptTitle.html")));
   EXPECT_EQ(u"This is html title",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImagesNotBlockedInIncognito) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/settings/image_page.html");
   Browser* incognito_browser = CreateIncognitoBrowser();
-  ui_test_utils::NavigateToURL(incognito_browser, url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
 
   bool result = false;
   std::string script =

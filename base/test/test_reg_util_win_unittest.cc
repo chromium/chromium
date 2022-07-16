@@ -107,13 +107,12 @@ TEST_F(RegistryOverrideManagerTest, DeleteStaleKeys) {
 
   std::wstring path_garbage = fake_test_key_root_ + L"\\Blah";
   std::wstring path_very_stale =
-      FakeOverrideManagerPath(kTestTime - base::TimeDelta::FromDays(100));
-  std::wstring path_stale =
-      FakeOverrideManagerPath(kTestTime - base::TimeDelta::FromDays(5));
+      FakeOverrideManagerPath(kTestTime - base::Days(100));
+  std::wstring path_stale = FakeOverrideManagerPath(kTestTime - base::Days(5));
   std::wstring path_current =
-      FakeOverrideManagerPath(kTestTime - base::TimeDelta::FromMinutes(1));
+      FakeOverrideManagerPath(kTestTime - base::Minutes(1));
   std::wstring path_future =
-      FakeOverrideManagerPath(kTestTime + base::TimeDelta::FromMinutes(1));
+      FakeOverrideManagerPath(kTestTime + base::Minutes(1));
 
   ASSERT_NO_FATAL_FAILURE(CreateKey(path_garbage));
   ASSERT_NO_FATAL_FAILURE(CreateKey(path_very_stale));

@@ -146,13 +146,6 @@ HeapVector<Member<ScrollTimelineOffset>> ComputeScrollOffsets(
   return offsets;
 }
 
-absl::optional<double> ComputeTimeRange(const CSSValue* value) {
-  if (auto* primitive = DynamicTo<CSSPrimitiveValue>(value))
-    return primitive->ComputeSeconds() * 1000.0;
-  // TODO(crbug.com/1097041): Support 'auto' value.
-  return absl::nullopt;
-}
-
 class ElementReferenceObserver : public IdTargetObserver {
  public:
   ElementReferenceObserver(Document* document,
@@ -214,15 +207,13 @@ CSSScrollTimeline::Options::Options(Document& document,
     : source_(ComputeScrollSource(document, rule.GetSource())),
       direction_(ComputeScrollDirection(rule.GetOrientation())),
       offsets_(ComputeScrollOffsets(document, rule.GetStart(), rule.GetEnd())),
-      time_range_(ComputeTimeRange(rule.GetTimeRange())),
       rule_(&rule) {}
 
 CSSScrollTimeline::CSSScrollTimeline(Document* document, Options&& options)
     : ScrollTimeline(document,
                      options.source_,
                      options.direction_,
-                     std::move(options.offsets_),
-                     options.time_range_),
+                     std::move(options.offsets_)),
       rule_(options.rule_) {
   DCHECK(rule_);
 }
@@ -232,10 +223,9 @@ const AtomicString& CSSScrollTimeline::Name() const {
 }
 
 bool CSSScrollTimeline::Matches(const Options& options) const {
-  return (scrollSource() == options.source_) &&
+  return (source() == options.source_) &&
          (GetOrientation() == options.direction_) &&
-         (ScrollOffsetsEqual(options.offsets_)) &&
-         (GetTimeRange() == options.time_range_) && (rule_ == options.rule_);
+         (ScrollOffsetsEqual(options.offsets_)) && (rule_ == options.rule_);
 }
 
 void CSSScrollTimeline::AnimationAttached(Animation* animation) {

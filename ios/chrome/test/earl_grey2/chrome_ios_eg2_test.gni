@@ -4,6 +4,7 @@
 
 import("//build/apple/compile_entitlements.gni")
 import("//build/apple/tweak_info_plist.gni")
+import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
@@ -75,13 +76,25 @@ template("chrome_ios_eg2_test_app_host") {
                              "eg_main_application_delegate",
                              "info_plist",
                              "info_plist_target",
+                             "output_name",
                            ],
                            [
                              "deps",
                              "public_deps",
                            ])
+
     testonly = true
-    xcode_product_bundle_id = "gtest.$target_name"
+    _output_name = target_name
+    if (defined(output_name)) {
+      _output_name = output_name
+    }
+
+    if (ios_use_shared_bundle_id_for_test_apps) {
+      bundle_identifier = "$ios_app_bundle_id_prefix.gtest.unittests"
+    } else {
+      bundle_identifier = "$ios_app_bundle_id_prefix.gtest." +
+                          string_replace(_output_name, "_", "-")
+    }
 
     if (defined(_tweak_entitlements)) {
       entitlements_target = ":$_tweak_entitlements"
@@ -118,21 +131,18 @@ template("chrome_ios_eg2_test_app_host") {
       ios_application_icons_target,
     ]
 
-    if (!defined(extra_substitutions)) {
-      extra_substitutions = []
-    }
-    extra_substitutions += [
+    extra_substitutions = [
+      "CHROMIUM_BUNDLE_ID=$bundle_identifier",
       "CHROMIUM_HANDOFF_ID=$chromium_handoff_id",
       "CHROMIUM_SHORT_NAME=$target_name",
+      "CHROMIUM_URL_CHANNEL_SCHEME=$url_channel_scheme",
       "CHROMIUM_URL_SCHEME_1=$url_unsecure_scheme",
       "CHROMIUM_URL_SCHEME_2=$url_secure_scheme",
       "CHROMIUM_URL_SCHEME_3=$url_x_callback_scheme",
-      "CHROMIUM_URL_CHANNEL_SCHEME=$url_channel_scheme",
+      "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$bundle_identifier.ContentTodayExtension",
       "EG_MAIN_APPLICATION_DELEGATE=$_eg_main_application_delegate",
-      "SSOAUTH_URL_SCHEME=$url_ssoauth_scheme",
-      "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$chromium_bundle_id.ContentTodayExtension",
-      "CHROMIUM_BUNDLE_ID=gtest.$target_name",
       "IOS_MOVE_TAB_ACTIVITY_TYPE=$ios_move_tab_activity_type",
+      "SSOAUTH_URL_SCHEME=$url_ssoauth_scheme",
     ]
   }
 }
@@ -166,6 +176,7 @@ template("chrome_ios_eg2_test") {
     forward_variables_from(invoker,
                            [
                              "bundle_deps",
+                             "data",
                              "deps",
                              "data_deps",
                              "executable_args",

@@ -132,8 +132,8 @@ bool ImageBitmapRenderingContextBase::PushFrame() {
       Host()->ResourceProvider()->ProduceCanvasResource();
   Host()->PushFrame(
       std::move(resource),
-      SkIRect::MakeWH(image_layer_bridge_->GetImage()->Size().Width(),
-                      image_layer_bridge_->GetImage()->Size().Height()));
+      SkIRect::MakeWH(image_layer_bridge_->GetImage()->Size().width(),
+                      image_layer_bridge_->GetImage()->Size().height()));
   return true;
 }
 

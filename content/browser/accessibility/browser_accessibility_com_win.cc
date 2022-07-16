@@ -63,7 +63,7 @@ BrowserAccessibilityComWin::BrowserAccessibilityComWin()
       previous_scroll_x_(0),
       previous_scroll_y_(0) {}
 
-BrowserAccessibilityComWin::~BrowserAccessibilityComWin() {}
+BrowserAccessibilityComWin::~BrowserAccessibilityComWin() = default;
 
 //
 // IAccessible2 overrides:
@@ -931,7 +931,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nodeInfo(
   *num_children = owner()->PlatformChildCount();
   *unique_id = -AXPlatformNodeWin::GetUniqueId();
 
-  if (owner()->IsPlatformDocument()) {
+  if (ui::IsPlatformDocument(owner()->GetRole())) {
     *node_type = NODETYPE_DOCUMENT;
   } else if (owner()->IsText()) {
     *node_type = NODETYPE_TEXT;
@@ -1200,7 +1200,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_innerHTML(BSTR* innerHTML) {
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!owner())
     return E_FAIL;
-  if (owner()->GetRole() != ax::mojom::Role::kMath)
+  if (owner()->GetRole() != ax::mojom::Role::kMath &&
+      owner()->GetRole() != ax::mojom::Role::kMathMLMath)
     return E_NOTIMPL;
 
   std::u16string inner_html =
@@ -1414,7 +1415,7 @@ STDMETHODIMP BrowserAccessibilityComWin::InternalQueryInterface(
       return E_NOINTERFACE;
     }
   } else if (iid == IID_ISimpleDOMDocument) {
-    if (!accessibility->IsPlatformDocument()) {
+    if (!ui::IsPlatformDocument(accessibility->GetRole())) {
       *object = nullptr;
       return E_NOINTERFACE;
     }
@@ -1507,7 +1508,7 @@ void BrowserAccessibilityComWin::UpdateStep3FireEvents() {
     // AXEventGenerator, as they are providing redundant information and will
     // lead to duplicate announcements.
     if (name() == old_win_attributes_->name ||
-        GetData().GetNameFrom() == ax::mojom::NameFrom::kContents) {
+        GetNameFrom() == ax::mojom::NameFrom::kContents) {
       size_t start, old_len, new_len;
       ComputeHypertextRemovedAndInserted(&start, &old_len, &new_len);
       if (old_len > 0) {

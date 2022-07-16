@@ -42,6 +42,8 @@ void MockIndexedDBCallbacks::OnSuccess(int64_t result) {}
 void MockIndexedDBCallbacks::OnSuccess(
     std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions) {
   info_called_ = true;
+  if (call_on_info_success_)
+    call_on_info_success_.Run();
 }
 
 void MockIndexedDBCallbacks::OnSuccess(
@@ -69,6 +71,9 @@ void MockIndexedDBCallbacks::CallOnUpgradeNeeded(base::OnceClosure closure) {
 }
 void MockIndexedDBCallbacks::CallOnDBSuccess(base::OnceClosure closure) {
   call_on_db_success_ = std::move(closure);
+}
+void MockIndexedDBCallbacks::CallOnInfoSuccess(base::RepeatingClosure closure) {
+  call_on_info_success_ = std::move(closure);
 }
 
 }  // namespace content

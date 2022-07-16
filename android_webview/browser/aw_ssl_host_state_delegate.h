@@ -44,6 +44,10 @@ class CertPolicy {
 class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
  public:
   AwSSLHostStateDelegate();
+
+  AwSSLHostStateDelegate(const AwSSLHostStateDelegate&) = delete;
+  AwSSLHostStateDelegate& operator=(const AwSSLHostStateDelegate&) = delete;
+
   ~AwSSLHostStateDelegate() override;
 
   // Records that |cert| is permitted to be used for |host| in the future, for
@@ -73,9 +77,11 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
                                  int child_id,
                                  InsecureContentType content_type) override;
 
-  // HTTPS-Only Mode is not implemented in Android Webview.
-  void AllowHttpForHost(const std::string& host) override;
-  bool IsHttpAllowedForHost(const std::string& host) override;
+  // HTTPS-First Mode is not implemented in Android Webview.
+  void AllowHttpForHost(const std::string& host,
+                        content::WebContents* web_contents) override;
+  bool IsHttpAllowedForHost(const std::string& host,
+                            content::WebContents* web_contents) override;
 
   // Revokes all SSL certificate error allow exceptions made by the user for
   // |host|.
@@ -91,8 +97,6 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
  private:
   // Certificate policies for each host.
   std::map<std::string, internal::CertPolicy> cert_policy_for_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwSSLHostStateDelegate);
 };
 
 }  // namespace android_webview

@@ -19,7 +19,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/base_paths_fuchsia.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -67,8 +66,7 @@ MULTIPROCESS_TEST_MAIN(SpawnContextServer) {
 
   LOG(INFO) << "SpawnContextServer test component started.";
 
-  base::FilePath data_dir;
-  CHECK(base::PathService::Get(base::DIR_APP_DATA, &data_dir));
+  base::FilePath data_dir(base::kPersistedDataDirectoryPath);
   if (base::PathExists(data_dir.AppendASCII(kTestDataFileIn))) {
     auto out_file = data_dir.AppendASCII(kTestDataFileOut);
     CHECK_EQ(base::WriteFile(out_file, nullptr, 0), 0);
@@ -107,14 +105,14 @@ MULTIPROCESS_TEST_MAIN(SpawnContextServer) {
 
 // Fake implementation of the Launcher for the isolated environment in which
 // web instance Components are launched.
-class FakeSysLauncher : public fuchsia::sys::testing::Launcher_TestBase {
+class FakeSysLauncher final : public fuchsia::sys::testing::Launcher_TestBase {
  public:
   using CreateComponentCallback =
       base::OnceCallback<void(const base::CommandLine&)>;
 
   explicit FakeSysLauncher(fuchsia::sys::Launcher* real_launcher)
       : real_launcher_(real_launcher) {}
-  ~FakeSysLauncher() final = default;
+  ~FakeSysLauncher() override = default;
 
   void set_create_component_callback(CreateComponentCallback callback) {
     create_component_callback_ = std::move(callback);
@@ -125,9 +123,9 @@ class FakeSysLauncher : public fuchsia::sys::testing::Launcher_TestBase {
   }
 
   // fuchsia::sys::Launcher implementation.
-  void CreateComponent(
-      fuchsia::sys::LaunchInfo launch_info,
-      fidl::InterfaceRequest<fuchsia::sys::ComponentController> request) final {
+  void CreateComponent(fuchsia::sys::LaunchInfo launch_info,
+                       fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+                           request) override {
     // |arguments| should not include argv[0] (i.e. the program name), which
     // would be empty in a no-program CommandLine instance. Verify that the
     // |arguments| are either empty or have a non-empty first element.
@@ -187,7 +185,7 @@ class FakeSysLauncher : public fuchsia::sys::testing::Launcher_TestBase {
   }
 
  private:
-  void NotImplemented_(const std::string& name) final {
+  void NotImplemented_(const std::string& name) override {
     ADD_FAILURE() << "Unexpected call: " << name;
   }
 
@@ -202,20 +200,20 @@ class FakeNestedSysEnvironment
  public:
   explicit FakeNestedSysEnvironment(FakeSysLauncher* fake_launcher)
       : fake_launcher_(fake_launcher) {}
-  ~FakeNestedSysEnvironment() final = default;
+  ~FakeNestedSysEnvironment() override = default;
 
   void Bind(fidl::InterfaceRequest<fuchsia::sys::Environment> request) {
     bindings_.AddBinding(this, std::move(request));
   }
 
   // fuchsia::sys::Environment implementation.
-  void GetLauncher(
-      fidl::InterfaceRequest<fuchsia::sys::Launcher> launcher_request) final {
+  void GetLauncher(fidl::InterfaceRequest<fuchsia::sys::Launcher>
+                       launcher_request) override {
     fake_launcher_->Bind(std::move(launcher_request));
   }
 
  private:
-  void NotImplemented_(const std::string& name) final {
+  void NotImplemented_(const std::string& name) override {
     ADD_FAILURE() << "Unexpected call: " << name;
   }
 
@@ -224,14 +222,15 @@ class FakeNestedSysEnvironment
 };
 
 // Fake implementation of the Environment in which the ContextProvider runs.
-class FakeSysEnvironment : public fuchsia::sys::testing::Environment_TestBase {
+class FakeSysEnvironment final
+    : public fuchsia::sys::testing::Environment_TestBase {
  public:
   FakeSysEnvironment(sys::OutgoingDirectory* outgoing_directory,
                      fuchsia::sys::Launcher* real_launcher)
       : bindings_(outgoing_directory, this),
         fake_launcher_(real_launcher),
         fake_nested_environment_(&fake_launcher_) {}
-  ~FakeSysEnvironment() final = default;
+  ~FakeSysEnvironment() override = default;
 
   FakeSysLauncher& fake_launcher() { return fake_launcher_; }
 
@@ -242,7 +241,7 @@ class FakeSysEnvironment : public fuchsia::sys::testing::Environment_TestBase {
           controller_request,
       std::string label,
       fuchsia::sys::ServiceListPtr additional_services,
-      fuchsia::sys::EnvironmentOptions options) final {
+      fuchsia::sys::EnvironmentOptions options) override {
     EXPECT_TRUE(environment_request);
     EXPECT_TRUE(controller_request);
     EXPECT_FALSE(label.empty());
@@ -260,13 +259,13 @@ class FakeSysEnvironment : public fuchsia::sys::testing::Environment_TestBase {
     fake_nested_environment_.Bind(std::move(environment_request));
     nested_environment_controller_request_ = std::move(controller_request);
   }
-  void GetDirectory(zx::channel request) final {
+  void GetDirectory(zx::channel request) override {
     base::ComponentContextForProcess()->svc()->CloneChannel(
         fidl::InterfaceRequest<fuchsia::io::Directory>(std::move(request)));
   }
 
  private:
-  void NotImplemented_(const std::string& name) final {
+  void NotImplemented_(const std::string& name) override {
     ADD_FAILURE() << "Unexpected call: " << name;
   }
 
@@ -318,6 +317,9 @@ class ContextProviderImplTest : public base::MultiProcessTest {
         provider_(std::make_unique<ContextProviderImpl>()) {
     bindings_.AddBinding(provider_.get(), provider_ptr_.NewRequest());
   }
+
+  ContextProviderImplTest(const ContextProviderImplTest&) = delete;
+  ContextProviderImplTest& operator=(const ContextProviderImplTest&) = delete;
 
   ~ContextProviderImplTest() override {
     provider_ptr_.Unbind();
@@ -415,8 +417,6 @@ class ContextProviderImplTest : public base::MultiProcessTest {
     base::OnceClosure on_change_cb_;
     fuchsia::web::NavigationState captured_state_;
   };
-
-  DISALLOW_COPY_AND_ASSIGN(ContextProviderImplTest);
 };
 
 TEST_F(ContextProviderImplTest, CanCreateContext) {

@@ -17,11 +17,11 @@
   </div>
   <div id="make-model-body" slot="dialog-body">
     <div class="subtext" id="makeModelTextInfo">
-      <settings-localized-link
+      <localized-link
           localized-string=
               "[[getManufacturerAndModelSubtext_(activePrinter.*)]]"
           link-url="$i18n{printingCUPSPrintLearnMoreUrl}">
-      </settings-localized-link>
+      </localized-link>
     </div>
     <div class="settings-box two-line">
       <cr-searchable-drop-down id="manufacturerDropdown"
@@ -40,9 +40,9 @@
       </cr-searchable-drop-down>
     </div>
     <div id="ppdLabel" class="cr-form-field-label">
-      <settings-localized-link localized-string="$i18n{selectDriver}"
+      <localized-link localized-string="$i18n{selectDriver}"
           link-url="$i18n{printingCUPSPrintPpdLearnMoreUrl}">
-      </settings-localized-link>
+      </localized-link>
     </div>
     <div class="settings-box two-line">
       <cr-input class="browse-file-input" readonly value="[[newUserPPD_]]"

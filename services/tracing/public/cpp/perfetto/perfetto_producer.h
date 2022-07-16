@@ -120,7 +120,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
 #endif
 
   // TODO(crbug.com/839071): Figure out a good buffer size.
-  static constexpr size_t kSMBSizeBytes = 4 * 1024 * 1024;
+  static constexpr size_t kDefaultSMBSizeBytes = 4 * 1024 * 1024;
 
   // TODO(lri): replace this constant with its version in the client library,
   // when we move over.
@@ -140,6 +140,8 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
 
   base::tracing::PerfettoTaskRunner* task_runner();
 
+  size_t GetPreferredSmbSizeBytes();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
@@ -152,7 +154,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
   // flags, but the tracing session got disabled in the service while it was
   // initializing (in which case, the tracing service will not tell the
   // subprocess to start tracing after it connects).
-  base::TimeDelta startup_tracing_timeout_ = base::TimeDelta::FromSeconds(60);
+  base::TimeDelta startup_tracing_timeout_ = base::Seconds(60);
 
   base::tracing::PerfettoTaskRunner* const task_runner_;
 

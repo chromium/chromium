@@ -7,14 +7,13 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "chrome/browser/ash/login/test/https_forwarder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "google_apis/gaia/fake_gaia.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace crypto {
 class ScopedTestSystemNSSKeySlot;
@@ -39,6 +38,10 @@ class PlatformKeysTestBase : public extensions::MixinBasedExtensionApiTest {
   PlatformKeysTestBase(SystemTokenStatus system_token_status,
                        EnrollmentStatus enrollment_status,
                        UserStatus user_status);
+
+  PlatformKeysTestBase(const PlatformKeysTestBase&) = delete;
+  PlatformKeysTestBase& operator=(const PlatformKeysTestBase&) = delete;
+
   ~PlatformKeysTestBase() override;
 
  protected:
@@ -86,8 +89,11 @@ class PlatformKeysTestBase : public extensions::MixinBasedExtensionApiTest {
   bool IsPreTest();
 
  private:
-  void SetUpTestSystemSlotOnIO(base::OnceClosure done_callback);
-  void TearDownTestSystemSlotOnIO(base::OnceClosure done_callback);
+  // Create test system slot and prepare crypto:: methods to use it when the
+  // initialization starts.
+  void CreateTestSystemSlot();
+  // Destroy test system slot.
+  void TearDownTestSystemSlotOnIO();
 
   const SystemTokenStatus system_token_status_;
   const EnrollmentStatus enrollment_status_;
@@ -100,10 +106,8 @@ class PlatformKeysTestBase : public extensions::MixinBasedExtensionApiTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider>
       mock_policy_provider_;
   FakeGaia fake_gaia_;
-  chromeos::HTTPSForwarder gaia_https_forwarder_;
+  net::EmbeddedTestServer gaia_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   chromeos::ScopedStubInstallAttributes install_attributes_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformKeysTestBase);
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_TEST_BASE_H_

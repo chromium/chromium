@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/cast/constants.h"
@@ -26,18 +25,20 @@ static const int64_t kStartMillisecond = INT64_C(12345678900000);
 static const double kTargetEmptyBufferFraction = 0.9;
 
 class CongestionControlTest : public ::testing::Test {
+ public:
+  CongestionControlTest(const CongestionControlTest&) = delete;
+  CongestionControlTest& operator=(const CongestionControlTest&) = delete;
+
  protected:
   CongestionControlTest()
       : task_runner_(new FakeSingleThreadTaskRunner(&testing_clock_)) {
-    testing_clock_.Advance(
-        base::TimeDelta::FromMilliseconds(kStartMillisecond));
+    testing_clock_.Advance(base::Milliseconds(kStartMillisecond));
     congestion_control_.reset(NewAdaptiveCongestionControl(
         &testing_clock_, kMaxBitrateConfigured, kMinBitrateConfigured,
         kMaxFrameRate));
     const int max_unacked_frames = 10;
     const base::TimeDelta target_playout_delay =
-        (max_unacked_frames - 1) * base::TimeDelta::FromSeconds(1) /
-        kMaxFrameRate;
+        (max_unacked_frames - 1) * base::Seconds(1) / kMaxFrameRate;
     congestion_control_->UpdateTargetPlayoutDelay(target_playout_delay);
   }
 
@@ -68,8 +69,6 @@ class CongestionControlTest : public ::testing::Test {
   std::unique_ptr<CongestionControl> congestion_control_;
   scoped_refptr<FakeSingleThreadTaskRunner> task_runner_;
   FrameId frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(CongestionControlTest);
 };
 
 // Tests that AdaptiveCongestionControl returns reasonable bitrates based on
@@ -77,31 +76,28 @@ class CongestionControlTest : public ::testing::Test {
 // "target buffer fill" model).
 TEST_F(CongestionControlTest, SimpleRun) {
   uint32_t frame_size = 10000 * 8;
-  Run(500,
-      frame_size,
-      base::TimeDelta::FromMilliseconds(10),
-      base::TimeDelta::FromMilliseconds(kFrameDelayMs),
-      base::TimeDelta::FromMilliseconds(45));
+  Run(500, frame_size, base::Milliseconds(10),
+      base::Milliseconds(kFrameDelayMs), base::Milliseconds(45));
   // Empty the buffer.
-  task_runner_->Sleep(base::TimeDelta::FromMilliseconds(100));
+  task_runner_->Sleep(base::Milliseconds(100));
 
   uint32_t safe_bitrate = frame_size * 1000 / kFrameDelayMs;
   uint32_t bitrate = congestion_control_->GetBitrate(
-      testing_clock_.NowTicks() + base::TimeDelta::FromMilliseconds(300),
-      base::TimeDelta::FromMilliseconds(300));
+      testing_clock_.NowTicks() + base::Milliseconds(300),
+      base::Milliseconds(300));
   EXPECT_NEAR(
       safe_bitrate / kTargetEmptyBufferFraction, bitrate, safe_bitrate * 0.05);
 
   bitrate = congestion_control_->GetBitrate(
-      testing_clock_.NowTicks() + base::TimeDelta::FromMilliseconds(200),
-      base::TimeDelta::FromMilliseconds(300));
+      testing_clock_.NowTicks() + base::Milliseconds(200),
+      base::Milliseconds(300));
   EXPECT_NEAR(safe_bitrate / kTargetEmptyBufferFraction * 2 / 3,
               bitrate,
               safe_bitrate * 0.05);
 
   bitrate = congestion_control_->GetBitrate(
-      testing_clock_.NowTicks() + base::TimeDelta::FromMilliseconds(100),
-      base::TimeDelta::FromMilliseconds(300));
+      testing_clock_.NowTicks() + base::Milliseconds(100),
+      base::Milliseconds(300));
   EXPECT_NEAR(safe_bitrate / kTargetEmptyBufferFraction * 1 / 3,
               bitrate,
               safe_bitrate * 0.05);
@@ -112,8 +108,8 @@ TEST_F(CongestionControlTest, SimpleRun) {
 
   // Results should show that we have ~200ms to send.
   bitrate = congestion_control_->GetBitrate(
-      testing_clock_.NowTicks() + base::TimeDelta::FromMilliseconds(300),
-      base::TimeDelta::FromMilliseconds(300));
+      testing_clock_.NowTicks() + base::Milliseconds(300),
+      base::Milliseconds(300));
   EXPECT_NEAR(safe_bitrate / kTargetEmptyBufferFraction * 2 / 3,
               bitrate,
               safe_bitrate * 0.05);
@@ -124,8 +120,8 @@ TEST_F(CongestionControlTest, SimpleRun) {
 
   // Results should show that we have ~100ms to send.
   bitrate = congestion_control_->GetBitrate(
-      testing_clock_.NowTicks() + base::TimeDelta::FromMilliseconds(300),
-      base::TimeDelta::FromMilliseconds(300));
+      testing_clock_.NowTicks() + base::Milliseconds(300),
+      base::Milliseconds(300));
   EXPECT_NEAR(safe_bitrate / kTargetEmptyBufferFraction * 1 / 3,
               bitrate,
               safe_bitrate * 0.05);
@@ -138,8 +134,8 @@ TEST_F(CongestionControlTest, SimpleRun) {
 
   // Results should show that we have ~200ms to send.
   bitrate = congestion_control_->GetBitrate(
-      testing_clock_.NowTicks() + base::TimeDelta::FromMilliseconds(300),
-      base::TimeDelta::FromMilliseconds(300));
+      testing_clock_.NowTicks() + base::Milliseconds(300),
+      base::Milliseconds(300));
   EXPECT_NEAR(safe_bitrate / kTargetEmptyBufferFraction * 2 / 3, bitrate,
               safe_bitrate * 0.05);
 }
@@ -148,11 +144,10 @@ TEST_F(CongestionControlTest, SimpleRun) {
 // history is maintained in AdaptiveCongestionControl to avoid invalid
 // indexing offsets. This test is successful if it does not crash the process.
 TEST_F(CongestionControlTest, RetainsSufficientHistory) {
-  constexpr base::TimeDelta kFakePlayoutDelay =
-      base::TimeDelta::FromMilliseconds(400);
+  constexpr base::TimeDelta kFakePlayoutDelay = base::Milliseconds(400);
 
   // Sanity-check: With no data, GetBitrate() returns an in-range value.
-  const int bitrate = congestion_control_->GetBitrate(
+  int bitrate = congestion_control_->GetBitrate(
       testing_clock_.NowTicks() + kFakePlayoutDelay, kFakePlayoutDelay);
   ASSERT_GE(bitrate, kMinBitrateConfigured);
   ASSERT_LE(bitrate, kMaxBitrateConfigured);
@@ -165,12 +160,12 @@ TEST_F(CongestionControlTest, RetainsSufficientHistory) {
     congestion_control_->SendFrameToTransport(frame_id, 16384,
                                               testing_clock_.NowTicks());
 
-    const int bitrate = congestion_control_->GetBitrate(
+    bitrate = congestion_control_->GetBitrate(
         testing_clock_.NowTicks() + kFakePlayoutDelay, kFakePlayoutDelay);
     ASSERT_GE(bitrate, kMinBitrateConfigured);
     ASSERT_LE(bitrate, kMaxBitrateConfigured);
 
-    task_runner_->Sleep(base::TimeDelta::FromMilliseconds(kFrameDelayMs));
+    task_runner_->Sleep(base::Milliseconds(kFrameDelayMs));
     ++frame_id;
   }
 
@@ -180,12 +175,12 @@ TEST_F(CongestionControlTest, RetainsSufficientHistory) {
   for (int i = 0; i < kMaxUnackedFrames; ++i) {
     congestion_control_->AckFrame(frame_id, testing_clock_.NowTicks());
 
-    const int bitrate = congestion_control_->GetBitrate(
+    bitrate = congestion_control_->GetBitrate(
         testing_clock_.NowTicks() + kFakePlayoutDelay, kFakePlayoutDelay);
     ASSERT_GE(bitrate, kMinBitrateConfigured);
     ASSERT_LE(bitrate, kMaxBitrateConfigured);
 
-    task_runner_->Sleep(base::TimeDelta::FromMilliseconds(kFrameDelayMs));
+    task_runner_->Sleep(base::Milliseconds(kFrameDelayMs));
     ++frame_id;
   }
 }

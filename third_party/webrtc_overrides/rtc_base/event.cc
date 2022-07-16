@@ -34,7 +34,7 @@ bool Event::Wait(int give_up_after_ms) {
     return true;
   }
 
-  return event_.TimedWait(base::TimeDelta::FromMilliseconds(give_up_after_ms));
+  return event_.TimedWait(base::Milliseconds(give_up_after_ms));
 }
 
 }  // namespace rtc

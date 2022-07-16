@@ -1,0 +1,4 @@
+focusable.AXAccessKey='s'
+restriction.AXAccessKey='s'
+invalid.AXAccessKey=n/a
+not_applicable.AXAccessKey=n/a

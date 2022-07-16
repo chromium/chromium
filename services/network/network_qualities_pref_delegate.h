@@ -30,6 +30,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkQualitiesPrefDelegate {
   NetworkQualitiesPrefDelegate(
       PrefService* pref_service,
       net::NetworkQualityEstimator* network_quality_estimator);
+
+  NetworkQualitiesPrefDelegate(const NetworkQualitiesPrefDelegate&) = delete;
+  NetworkQualitiesPrefDelegate& operator=(const NetworkQualitiesPrefDelegate&) =
+      delete;
+
   ~NetworkQualitiesPrefDelegate();
 
   // Registers the profile-specific network quality estimator prefs.
@@ -58,8 +63,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkQualitiesPrefDelegate {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<NetworkQualitiesPrefDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualitiesPrefDelegate);
 };
 
 }  // namespace network

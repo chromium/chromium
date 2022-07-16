@@ -74,6 +74,10 @@ bool AutofillDriverIOS::IsInMainFrame() const {
   return web_frame ? web_frame->IsMainFrame() : true;
 }
 
+bool AutofillDriverIOS::IsPrerendering() const {
+  return false;
+}
+
 bool AutofillDriverIOS::CanShowAutofillUi() const {
   return true;
 }

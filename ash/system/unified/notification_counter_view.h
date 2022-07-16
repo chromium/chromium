@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_item_view.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 
 namespace session_manager {
@@ -42,6 +41,7 @@ class ASH_EXPORT NotificationCounterView : public TrayItemView {
 
   // TrayItemView:
   void HandleLocaleChange() override;
+  void OnThemeChanged() override;
 
   // views::TrayItemView:
   const char* GetClassName() const override;
@@ -70,6 +70,7 @@ class QuietModeView : public TrayItemView {
 
   // TrayItemView:
   void HandleLocaleChange() override;
+  void OnThemeChanged() override;
 
   // views::TrayItemView:
   const char* GetClassName() const override;

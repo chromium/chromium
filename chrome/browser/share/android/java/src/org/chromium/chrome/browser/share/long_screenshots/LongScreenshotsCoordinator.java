@@ -49,7 +49,8 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
         super(activity, tab, shareUrl, chromeOptionShareCallback, sheetController,
                 imageEditorModuleProvider);
         mActivity = activity;
-        mEntryManager = manager == null ? new EntryManager(mActivity, mTab) : manager;
+        mEntryManager =
+                manager == null ? new EntryManager(mActivity, mTab, /*inMemory=*/false) : manager;
         mMediator = mediator;
 
         if (shouldWarmupCompositor) {

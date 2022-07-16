@@ -1,0 +1,4 @@
+include_rules = [
+  # Tests run in browser_tests, so can access things under chrome/test/base*.
+  "+chrome/test/base",
+]

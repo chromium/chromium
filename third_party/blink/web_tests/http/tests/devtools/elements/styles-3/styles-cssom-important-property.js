@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that !important modifier is shown for CSSOM-generated properties.`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <style id="mycss"></style>

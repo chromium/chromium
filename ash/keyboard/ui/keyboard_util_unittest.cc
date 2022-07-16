@@ -11,7 +11,6 @@
 #include "ash/keyboard/ui/test/test_keyboard_controller_observer.h"
 #include "ash/keyboard/ui/test/test_keyboard_layout_delegate.h"
 #include "ash/keyboard/ui/test/test_keyboard_ui_factory.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/base/ime/dummy_input_method.h"
@@ -22,6 +21,10 @@ namespace {
 class KeyboardUtilTest : public aura::test::AuraTestBase {
  public:
   KeyboardUtilTest() = default;
+
+  KeyboardUtilTest(const KeyboardUtilTest&) = delete;
+  KeyboardUtilTest& operator=(const KeyboardUtilTest&) = delete;
+
   ~KeyboardUtilTest() override = default;
 
   // Sets all flags controlling whether the keyboard should be shown to
@@ -86,9 +89,6 @@ class KeyboardUtilTest : public aura::test::AuraTestBase {
   KeyboardUIController keyboard_ui_controller_;
   ui::DummyInputMethod input_method_;
   std::unique_ptr<TestKeyboardLayoutDelegate> layout_delegate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardUtilTest);
 };
 
 }  // namespace

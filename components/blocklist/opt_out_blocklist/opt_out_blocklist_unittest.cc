@@ -224,6 +224,10 @@ class TestOptOutBlocklist : public OptOutBlocklist {
 class OptOutBlocklistTest : public testing::Test {
  public:
   OptOutBlocklistTest() = default;
+
+  OptOutBlocklistTest(const OptOutBlocklistTest&) = delete;
+  OptOutBlocklistTest& operator=(const OptOutBlocklistTest&) = delete;
+
   ~OptOutBlocklistTest() override = default;
 
   void StartTest(bool null_opt_out_store) {
@@ -298,14 +302,12 @@ class OptOutBlocklistTest : public testing::Test {
   size_t max_hosts_ = 0;
 
   BlocklistData::AllowedTypesAndVersions allowed_types_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptOutBlocklistTest);
 };
 
 TEST_F(OptOutBlocklistTest, HostBlockListNoStore) {
   // Tests the block list behavior when a null OptOutStore is passed in.
-  auto host_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(365), 4u, 2);
+  auto host_policy =
+      std::make_unique<BlocklistData::Policy>(base::Days(365), 4u, 2);
   SetHostRule(std::move(host_policy), 5);
   BlocklistData::AllowedTypesAndVersions allowed_types;
   allowed_types.insert({1, 0});
@@ -313,7 +315,7 @@ TEST_F(OptOutBlocklistTest, HostBlockListNoStore) {
 
   StartTest(true /* null_opt_out */);
 
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
 
   EXPECT_EQ(
       BlocklistReason::kAllowed,
@@ -323,9 +325,9 @@ TEST_F(OptOutBlocklistTest, HostBlockListNoStore) {
       block_list_->IsLoadedAndAllowed(kTestHost2, 1, false, &passed_reasons_));
 
   block_list_->AddEntry(kTestHost1, true, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost1, true, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
 
   EXPECT_EQ(
       BlocklistReason::kUserOptedOutOfHost,
@@ -338,9 +340,9 @@ TEST_F(OptOutBlocklistTest, HostBlockListNoStore) {
       block_list_->IsLoadedAndAllowed(kTestHost2, 1, false, &passed_reasons_));
 
   block_list_->AddEntry(kTestHost2, true, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost2, true, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
 
   EXPECT_EQ(
       BlocklistReason::kUserOptedOutOfHost,
@@ -353,11 +355,11 @@ TEST_F(OptOutBlocklistTest, HostBlockListNoStore) {
       block_list_->IsLoadedAndAllowed(kTestHost2, 1, false, &passed_reasons_));
 
   block_list_->AddEntry(kTestHost2, false, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost2, false, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost2, false, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
 
   EXPECT_EQ(
       BlocklistReason::kUserOptedOutOfHost,
@@ -382,8 +384,8 @@ TEST_F(OptOutBlocklistTest, HostBlockListNoStore) {
 TEST_F(OptOutBlocklistTest, TypeBlockListWithStore) {
   // Tests the block list behavior when a non-null OptOutStore is passed in.
 
-  auto type_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(365), 4u, 2);
+  auto type_policy =
+      std::make_unique<BlocklistData::Policy>(base::Days(365), 4u, 2);
   SetTypeRule(std::move(type_policy));
   BlocklistData::AllowedTypesAndVersions allowed_types;
   allowed_types.insert({1, 0});
@@ -392,7 +394,7 @@ TEST_F(OptOutBlocklistTest, TypeBlockListWithStore) {
 
   StartTest(false /* null_opt_out */);
 
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
 
   EXPECT_EQ(
       BlocklistReason::kBlocklistNotLoaded,
@@ -417,9 +419,9 @@ TEST_F(OptOutBlocklistTest, TypeBlockListWithStore) {
       block_list_->IsLoadedAndAllowed(kTestHost1, 2, false, &passed_reasons_));
 
   block_list_->AddEntry(kTestHost1, true, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost1, true, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
 
   EXPECT_EQ(
       BlocklistReason::kUserOptedOutOfType,
@@ -435,9 +437,9 @@ TEST_F(OptOutBlocklistTest, TypeBlockListWithStore) {
       block_list_->IsLoadedAndAllowed(kTestHost1, 2, false, &passed_reasons_));
 
   block_list_->AddEntry(kTestHost1, true, 2);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost1, true, 2);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
 
   EXPECT_EQ(
       BlocklistReason::kUserOptedOutOfType,
@@ -450,11 +452,11 @@ TEST_F(OptOutBlocklistTest, TypeBlockListWithStore) {
       block_list_->IsLoadedAndAllowed(kTestHost1, 2, false, &passed_reasons_));
 
   block_list_->AddEntry(kTestHost1, false, 2);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost1, false, 2);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost1, false, 2);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
 
   EXPECT_EQ(
       BlocklistReason::kUserOptedOutOfType,
@@ -496,8 +498,8 @@ TEST_F(OptOutBlocklistTest, TypeBlockListWithStore) {
 
 TEST_F(OptOutBlocklistTest, TypeBlockListNoStore) {
   // Tests the block list behavior when a null OptOutStore is passed in.
-  auto type_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(365), 4u, 2);
+  auto type_policy =
+      std::make_unique<BlocklistData::Policy>(base::Days(365), 4u, 2);
   SetTypeRule(std::move(type_policy));
   BlocklistData::AllowedTypesAndVersions allowed_types;
   allowed_types.insert({1, 0});
@@ -506,7 +508,7 @@ TEST_F(OptOutBlocklistTest, TypeBlockListNoStore) {
 
   StartTest(true /* null_opt_out */);
 
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
 
   EXPECT_EQ(
       BlocklistReason::kAllowed,
@@ -516,9 +518,9 @@ TEST_F(OptOutBlocklistTest, TypeBlockListNoStore) {
       block_list_->IsLoadedAndAllowed(kTestHost1, 2, false, &passed_reasons_));
 
   block_list_->AddEntry(kTestHost1, true, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost1, true, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
 
   EXPECT_EQ(
       BlocklistReason::kUserOptedOutOfType,
@@ -531,9 +533,9 @@ TEST_F(OptOutBlocklistTest, TypeBlockListNoStore) {
       block_list_->IsLoadedAndAllowed(kTestHost1, 2, false, &passed_reasons_));
 
   block_list_->AddEntry(kTestHost1, true, 2);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost1, true, 2);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
 
   EXPECT_EQ(
       BlocklistReason::kUserOptedOutOfType,
@@ -546,11 +548,11 @@ TEST_F(OptOutBlocklistTest, TypeBlockListNoStore) {
       block_list_->IsLoadedAndAllowed(kTestHost1, 2, false, &passed_reasons_));
 
   block_list_->AddEntry(kTestHost1, false, 2);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost1, false, 2);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost1, false, 2);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
 
   EXPECT_EQ(
       BlocklistReason::kUserOptedOutOfType,
@@ -584,14 +586,14 @@ TEST_F(OptOutBlocklistTest, HostIndifferentBlocklist) {
   int host_indifferent_threshold = 4;
 
   auto persistent_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(365), 4u, host_indifferent_threshold);
+      base::Days(365), 4u, host_indifferent_threshold);
   SetPersistentRule(std::move(persistent_policy));
   BlocklistData::AllowedTypesAndVersions allowed_types;
   allowed_types.insert({1, 0});
   SetAllowedTypes(std::move(allowed_types));
 
   StartTest(true /* null_opt_out */);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
 
   EXPECT_EQ(
       BlocklistReason::kAllowed,
@@ -612,7 +614,7 @@ TEST_F(OptOutBlocklistTest, HostIndifferentBlocklist) {
         i != 3 ? BlocklistReason::kAllowed
                : BlocklistReason::kUserOptedOutInGeneral,
         block_list_->IsLoadedAndAllowed(hosts[0], 1, false, &passed_reasons_));
-    test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock_.Advance(base::Seconds(1));
   }
 
   EXPECT_EQ(
@@ -632,7 +634,7 @@ TEST_F(OptOutBlocklistTest, HostIndifferentBlocklist) {
       block_list_->IsLoadedAndAllowed(hosts[3], 1, true, &passed_reasons_));
 
   block_list_->AddEntry(hosts[3], false, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
 
   // New non-opt-out entry will cause these to be allowed now.
   EXPECT_EQ(
@@ -657,8 +659,8 @@ TEST_F(OptOutBlocklistTest, QueueBehavior) {
   std::vector<bool> test_opt_out{true, false};
 
   for (auto opt_out : test_opt_out) {
-    auto host_policy = std::make_unique<BlocklistData::Policy>(
-        base::TimeDelta::FromDays(365), 4u, 2);
+    auto host_policy =
+        std::make_unique<BlocklistData::Policy>(base::Days(365), 4u, 2);
     SetHostRule(std::move(host_policy), 5);
     BlocklistData::AllowedTypesAndVersions allowed_types;
     allowed_types.insert({1, 0});
@@ -670,9 +672,9 @@ TEST_F(OptOutBlocklistTest, QueueBehavior) {
               block_list_->IsLoadedAndAllowed(kTestHost1, 1, false,
                                               &passed_reasons_));
     block_list_->AddEntry(kTestHost1, opt_out, 1);
-    test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock_.Advance(base::Seconds(1));
     block_list_->AddEntry(kTestHost1, opt_out, 1);
-    test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock_.Advance(base::Seconds(1));
     EXPECT_EQ(BlocklistReason::kBlocklistNotLoaded,
               block_list_->IsLoadedAndAllowed(kTestHost1, 1, false,
                                               &passed_reasons_));
@@ -682,17 +684,16 @@ TEST_F(OptOutBlocklistTest, QueueBehavior) {
               block_list_->IsLoadedAndAllowed(kTestHost1, 1, false,
                                               &passed_reasons_));
     block_list_->AddEntry(kTestHost1, opt_out, 1);
-    test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock_.Advance(base::Seconds(1));
     block_list_->AddEntry(kTestHost1, opt_out, 1);
-    test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock_.Advance(base::Seconds(1));
     EXPECT_EQ(0, opt_out_store_->clear_blocklist_count());
-    block_list_->ClearBlockList(
-        start_, test_clock_.Now() + base::TimeDelta::FromSeconds(1));
+    block_list_->ClearBlockList(start_, test_clock_.Now() + base::Seconds(1));
     EXPECT_EQ(1, opt_out_store_->clear_blocklist_count());
     block_list_->AddEntry(kTestHost2, opt_out, 1);
-    test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock_.Advance(base::Seconds(1));
     block_list_->AddEntry(kTestHost2, opt_out, 1);
-    test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock_.Advance(base::Seconds(1));
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(1, opt_out_store_->clear_blocklist_count());
 
@@ -713,8 +714,8 @@ TEST_F(OptOutBlocklistTest, MaxHosts) {
   const std::string test_host_4("host4.com");
   const std::string test_host_5("host5.com");
 
-  auto host_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(365), 1u, 1);
+  auto host_policy =
+      std::make_unique<BlocklistData::Policy>(base::Days(365), 1u, 1);
   SetHostRule(std::move(host_policy), 2);
   BlocklistData::AllowedTypesAndVersions allowed_types;
   allowed_types.insert({1, 0});
@@ -723,9 +724,9 @@ TEST_F(OptOutBlocklistTest, MaxHosts) {
   StartTest(true /* null_opt_out */);
 
   block_list_->AddEntry(kTestHost1, true, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost2, false, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(test_host_3, false, 1);
   // kTestHost1 should stay in the map, since it has an opt out time.
   EXPECT_EQ(
@@ -738,9 +739,9 @@ TEST_F(OptOutBlocklistTest, MaxHosts) {
       BlocklistReason::kAllowed,
       block_list_->IsLoadedAndAllowed(test_host_3, 1, false, &passed_reasons_));
 
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(test_host_4, true, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(test_host_5, true, 1);
   // test_host_4 and test_host_5 should remain in the map, but host should be
   // evicted.
@@ -762,7 +763,7 @@ TEST_F(OptOutBlocklistTest, SingleOptOut) {
   const std::string test_host_3("host3.com");
 
   auto session_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromSeconds(single_opt_out_duration), 1u, 1);
+      base::Seconds(single_opt_out_duration), 1u, 1);
   SetSessionRule(std::move(session_policy));
   BlocklistData::AllowedTypesAndVersions allowed_types;
   allowed_types.insert({1, 0});
@@ -778,8 +779,7 @@ TEST_F(OptOutBlocklistTest, SingleOptOut) {
       BlocklistReason::kAllowed,
       block_list_->IsLoadedAndAllowed(test_host_3, 1, false, &passed_reasons_));
 
-  test_clock_.Advance(
-      base::TimeDelta::FromSeconds(single_opt_out_duration + 1));
+  test_clock_.Advance(base::Seconds(single_opt_out_duration + 1));
 
   block_list_->AddEntry(kTestHost2, true, 1);
   EXPECT_EQ(
@@ -789,8 +789,7 @@ TEST_F(OptOutBlocklistTest, SingleOptOut) {
       BlocklistReason::kUserOptedOutInSession,
       block_list_->IsLoadedAndAllowed(test_host_3, 1, false, &passed_reasons_));
 
-  test_clock_.Advance(
-      base::TimeDelta::FromSeconds(single_opt_out_duration - 1));
+  test_clock_.Advance(base::Seconds(single_opt_out_duration - 1));
 
   EXPECT_EQ(
       BlocklistReason::kUserOptedOutInSession,
@@ -799,8 +798,7 @@ TEST_F(OptOutBlocklistTest, SingleOptOut) {
       BlocklistReason::kUserOptedOutInSession,
       block_list_->IsLoadedAndAllowed(test_host_3, 1, false, &passed_reasons_));
 
-  test_clock_.Advance(
-      base::TimeDelta::FromSeconds(single_opt_out_duration + 1));
+  test_clock_.Advance(base::Seconds(single_opt_out_duration + 1));
 
   EXPECT_EQ(
       BlocklistReason::kAllowed,
@@ -815,8 +813,8 @@ TEST_F(OptOutBlocklistTest, ClearingBlockListClearsRecentNavigation) {
   // "single_opt_out_duration_in_seconds") resets the blocklist's recent opt out
   // rule.
 
-  auto session_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromSeconds(5), 1u, 1);
+  auto session_policy =
+      std::make_unique<BlocklistData::Policy>(base::Seconds(5), 1u, 1);
   SetSessionRule(std::move(session_policy));
   BlocklistData::AllowedTypesAndVersions allowed_types;
   allowed_types.insert({1, 0});
@@ -825,7 +823,7 @@ TEST_F(OptOutBlocklistTest, ClearingBlockListClearsRecentNavigation) {
   StartTest(false /* null_opt_out */);
 
   block_list_->AddEntry(kTestHost1, true /* opt_out */, 1);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->ClearBlockList(start_, test_clock_.Now());
   base::RunLoop().RunUntilIdle();
 
@@ -837,8 +835,8 @@ TEST_F(OptOutBlocklistTest, ClearingBlockListClearsRecentNavigation) {
 TEST_F(OptOutBlocklistTest, ObserverIsNotifiedOnHostBlocklisted) {
   // Tests the block list behavior when a null OptOutStore is passed in.
 
-  auto host_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(365), 4u, 2);
+  auto host_policy =
+      std::make_unique<BlocklistData::Policy>(base::Days(365), 4u, 2);
   SetHostRule(std::move(host_policy), 5);
   BlocklistData::AllowedTypesAndVersions allowed_types;
   allowed_types.insert({1, 0});
@@ -851,13 +849,13 @@ TEST_F(OptOutBlocklistTest, ObserverIsNotifiedOnHostBlocklisted) {
       block_list_->IsLoadedAndAllowed(kTestHost1, 1, false, &passed_reasons_));
 
   // Observer is not notified as blocklisted when the threshold does not met.
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost1, true, 1);
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(blocklist_delegate_.blocklisted_hosts(), ::testing::SizeIs(0));
 
   // Observer is notified as blocklisted when the threshold is met.
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost1, true, 1);
   base::RunLoop().RunUntilIdle();
   const base::Time blocklisted_time = test_clock_.Now();
@@ -866,7 +864,7 @@ TEST_F(OptOutBlocklistTest, ObserverIsNotifiedOnHostBlocklisted) {
             blocklist_delegate_.blocklisted_hosts().find(kTestHost1)->second);
 
   // Observer is not notified when the host is already blocklisted.
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(kTestHost1, true, 1);
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(blocklist_delegate_.blocklisted_hosts(), ::testing::SizeIs(1));
@@ -876,7 +874,7 @@ TEST_F(OptOutBlocklistTest, ObserverIsNotifiedOnHostBlocklisted) {
   // Observer is notified when blocklist is cleared.
   EXPECT_FALSE(blocklist_delegate_.blocklist_cleared());
 
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->ClearBlockList(start_, test_clock_.Now());
   base::RunLoop().RunUntilIdle();
 
@@ -896,7 +894,7 @@ TEST_F(OptOutBlocklistTest, ObserverIsNotifiedOnUserBlocklisted) {
   int host_indifferent_threshold = 4;
 
   auto persistent_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(30), 4u, host_indifferent_threshold);
+      base::Days(30), 4u, host_indifferent_threshold);
   SetPersistentRule(std::move(persistent_policy));
   BlocklistData::AllowedTypesAndVersions allowed_types;
   allowed_types.insert({1, 0});
@@ -909,7 +907,7 @@ TEST_F(OptOutBlocklistTest, ObserverIsNotifiedOnUserBlocklisted) {
   EXPECT_FALSE(blocklist_delegate_.user_blocklisted());
 
   for (int i = 0; i < host_indifferent_threshold; ++i) {
-    test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock_.Advance(base::Seconds(1));
     block_list_->AddEntry(hosts[i], true, 1);
     base::RunLoop().RunUntilIdle();
 
@@ -921,7 +919,7 @@ TEST_F(OptOutBlocklistTest, ObserverIsNotifiedOnUserBlocklisted) {
   }
 
   // Observer is notified when the user is no longer blocklisted.
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   block_list_->AddEntry(hosts[3], false, 1);
   base::RunLoop().RunUntilIdle();
 
@@ -932,8 +930,7 @@ TEST_F(OptOutBlocklistTest, ObserverIsNotifiedWhenLoadBlocklistDone) {
   int host_indifferent_threshold = 4;
   size_t host_indifferent_history = 4u;
   auto persistent_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(30), host_indifferent_history,
-      host_indifferent_threshold);
+      base::Days(30), host_indifferent_history, host_indifferent_threshold);
   SetPersistentRule(std::move(persistent_policy));
   BlocklistData::AllowedTypesAndVersions allowed_types;
   allowed_types.insert({1, 0});
@@ -945,14 +942,14 @@ TEST_F(OptOutBlocklistTest, ObserverIsNotifiedWhenLoadBlocklistDone) {
   allowed_types[0] = 0;
   std::unique_ptr<BlocklistData> data = std::make_unique<BlocklistData>(
       nullptr,
-      std::make_unique<BlocklistData::Policy>(base::TimeDelta::FromSeconds(365),
+      std::make_unique<BlocklistData::Policy>(base::Seconds(365),
                                               host_indifferent_history,
                                               host_indifferent_threshold),
       nullptr, nullptr, 0, std::move(allowed_types));
   base::SimpleTestClock test_clock;
 
   for (int i = 0; i < host_indifferent_threshold; ++i) {
-    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock.Advance(base::Seconds(1));
     data->AddEntry(kTestHost1, true, 0, test_clock.Now(), true);
   }
 
@@ -969,8 +966,7 @@ TEST_F(OptOutBlocklistTest, ObserverIsNotifiedWhenLoadBlocklistDone) {
   block_list->SetAllowedTypes(std::move(allowed_types));
 
   persistent_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(30), host_indifferent_history,
-      host_indifferent_threshold);
+      base::Days(30), host_indifferent_history, host_indifferent_threshold);
   block_list->SetPersistentRule(std::move(persistent_policy));
 
   block_list->Init();
@@ -984,8 +980,7 @@ TEST_F(OptOutBlocklistTest, ObserverIsNotifiedOfHistoricalBlocklistedHosts) {
   int host_indifferent_threshold = 2;
   size_t host_indifferent_history = 4u;
   auto host_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(365), host_indifferent_history,
-      host_indifferent_threshold);
+      base::Days(365), host_indifferent_history, host_indifferent_threshold);
   SetHostRule(std::move(host_policy), 5);
   BlocklistData::AllowedTypesAndVersions allowed_types;
   allowed_types.insert({1, 0});
@@ -999,14 +994,14 @@ TEST_F(OptOutBlocklistTest, ObserverIsNotifiedOfHistoricalBlocklistedHosts) {
   allowed_types[static_cast<int>(1)] = 0;
   std::unique_ptr<BlocklistData> data = std::make_unique<BlocklistData>(
       nullptr, nullptr,
-      std::make_unique<BlocklistData::Policy>(base::TimeDelta::FromDays(365),
+      std::make_unique<BlocklistData::Policy>(base::Days(365),
                                               host_indifferent_history,
                                               host_indifferent_threshold),
       nullptr, 2, std::move(allowed_types));
 
-  test_clock.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock.Advance(base::Seconds(1));
   data->AddEntry(kTestHost1, true, static_cast<int>(1), test_clock.Now(), true);
-  test_clock.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock.Advance(base::Seconds(1));
   data->AddEntry(kTestHost1, true, static_cast<int>(1), test_clock.Now(), true);
   base::Time blocklisted_time = test_clock.Now();
 
@@ -1017,7 +1012,7 @@ TEST_F(OptOutBlocklistTest, ObserverIsNotifiedOfHistoricalBlocklistedHosts) {
                             test_clock.Now(), &reasons));
 
   // Host |url_b| is not blocklisted.
-  test_clock.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock.Advance(base::Seconds(1));
   data->AddEntry(kTestHost2, true, static_cast<int>(1), test_clock.Now(), true);
 
   std::unique_ptr<TestOptOutStore> opt_out_store =
@@ -1031,8 +1026,7 @@ TEST_F(OptOutBlocklistTest, ObserverIsNotifiedOfHistoricalBlocklistedHosts) {
   block_list->SetAllowedTypes(std::move(allowed_types));
 
   host_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(30), host_indifferent_history,
-      host_indifferent_threshold);
+      base::Days(30), host_indifferent_history, host_indifferent_threshold);
   block_list->SetPersistentRule(std::move(host_policy));
 
   block_list->Init();
@@ -1064,8 +1058,8 @@ TEST_F(OptOutBlocklistTest, PassedReasonsWhenUserRecentlyOptedOut) {
   // Test that IsLoadedAndAllow, push checked BlocklistReasons to the
   // |passed_reasons| vector.
 
-  auto session_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromSeconds(5), 1u, 1);
+  auto session_policy =
+      std::make_unique<BlocklistData::Policy>(base::Seconds(5), 1u, 1);
   SetSessionRule(std::move(session_policy));
   BlocklistData::AllowedTypesAndVersions allowed_types;
   allowed_types.insert({1, 0});
@@ -1091,24 +1085,24 @@ TEST_F(OptOutBlocklistTest, PassedReasonsWhenUserBlocklisted) {
       "http://www.url_3.com",
   };
 
-  auto session_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromSeconds(1), 1u, 1);
+  auto session_policy =
+      std::make_unique<BlocklistData::Policy>(base::Seconds(1), 1u, 1);
   SetSessionRule(std::move(session_policy));
-  auto persistent_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(365), 4u, 4);
+  auto persistent_policy =
+      std::make_unique<BlocklistData::Policy>(base::Days(365), 4u, 4);
   SetPersistentRule(std::move(persistent_policy));
   BlocklistData::AllowedTypesAndVersions allowed_types;
   allowed_types.insert({1, 0});
   SetAllowedTypes(std::move(allowed_types));
 
   StartTest(true /* null_opt_out */);
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
 
   for (auto host : hosts) {
     block_list_->AddEntry(host, true, 1);
   }
 
-  test_clock_.Advance(base::TimeDelta::FromSeconds(2));
+  test_clock_.Advance(base::Seconds(2));
 
   EXPECT_EQ(
       BlocklistReason::kUserOptedOutInGeneral,
@@ -1128,14 +1122,14 @@ TEST_F(OptOutBlocklistTest, PassedReasonsWhenHostBlocklisted) {
   // Test that IsLoadedAndAllow, push checked BlocklistReasons to the
   // |passed_reasons| vector.
 
-  auto session_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(5), 3u, 3);
+  auto session_policy =
+      std::make_unique<BlocklistData::Policy>(base::Days(5), 3u, 3);
   SetSessionRule(std::move(session_policy));
-  auto persistent_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(365), 4u, 4);
+  auto persistent_policy =
+      std::make_unique<BlocklistData::Policy>(base::Days(365), 4u, 4);
   SetPersistentRule(std::move(persistent_policy));
-  auto host_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(30), 4u, 2);
+  auto host_policy =
+      std::make_unique<BlocklistData::Policy>(base::Days(30), 4u, 2);
   SetHostRule(std::move(host_policy), 2);
   BlocklistData::AllowedTypesAndVersions allowed_types;
   allowed_types.insert({1, 0});
@@ -1165,17 +1159,17 @@ TEST_F(OptOutBlocklistTest, PassedReasonsWhenAllowed) {
   // Test that IsLoadedAndAllow, push checked BlocklistReasons to the
   // |passed_reasons| vector.
 
-  auto session_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromSeconds(1), 1u, 1);
+  auto session_policy =
+      std::make_unique<BlocklistData::Policy>(base::Seconds(1), 1u, 1);
   SetSessionRule(std::move(session_policy));
-  auto persistent_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(365), 4u, 4);
+  auto persistent_policy =
+      std::make_unique<BlocklistData::Policy>(base::Days(365), 4u, 4);
   SetPersistentRule(std::move(persistent_policy));
-  auto host_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(30), 4u, 4);
+  auto host_policy =
+      std::make_unique<BlocklistData::Policy>(base::Days(30), 4u, 4);
   SetHostRule(std::move(host_policy), 1);
-  auto type_policy = std::make_unique<BlocklistData::Policy>(
-      base::TimeDelta::FromDays(30), 4u, 4);
+  auto type_policy =
+      std::make_unique<BlocklistData::Policy>(base::Days(30), 4u, 4);
   SetTypeRule(std::move(type_policy));
   BlocklistData::AllowedTypesAndVersions allowed_types;
   allowed_types.insert({1, 0});

@@ -13,10 +13,13 @@ source_set("services") {
 
   deps = [
     "//chrome/browser/share/android:jni_headers",
+    "//components/google/core/common:common",
     "//components/keyed_service/core",
     "//components/paint_preview/browser",
     "//components/paint_preview/common",
     "//content/public/browser",
+    "//third_party/re2",
+    "//url:gurl_android",
   ]
 }
 

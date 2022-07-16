@@ -1,8 +1,8 @@
-CONSOLE MESSAGE: line 1: Executed script with MIME type: 'application/json'.
-CONSOLE MESSAGE: line 1: Executed script with MIME type: 'text/html'.
-CONSOLE MESSAGE: line 1: Executed script with MIME type: 'text/vbs'.
-CONSOLE MESSAGE: line 1: Executed script with MIME type: 'text/vbscript'.
-CONSOLE MESSAGE: line 1: Executed script with MIME type: 'text/x-javascript'.
+CONSOLE MESSAGE: Executed script with MIME type: 'application/json'.
+CONSOLE MESSAGE: Executed script with MIME type: 'text/html'.
+CONSOLE MESSAGE: Executed script with MIME type: 'text/vbs'.
+CONSOLE MESSAGE: Executed script with MIME type: 'text/vbscript'.
+CONSOLE MESSAGE: Executed script with MIME type: 'text/x-javascript'.
 Check that script sent with an invalid 'X-Content-Type-Options: nosniff' header is correctly allowed, even if the MIME type isn't scripty.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

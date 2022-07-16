@@ -16,6 +16,7 @@
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
@@ -96,15 +97,14 @@ static bool ShouldDisplayWebNotificationOnFullScreen(Profile* profile,
     //      notification.
     //  (b) the browser is fullscreen
     //  (c) the browser has focus.
-    if (active_contents->GetURL().GetOrigin() == origin &&
+    if (active_contents->GetURL().DeprecatedGetOriginAsURL() == origin &&
         browser->exclusive_access_manager()->context()->IsFullscreen() &&
         browser->window()->IsActive()) {
       return true;
     }
   }
-#endif
-
   return false;
+#endif
 }
 
 // Records the total number of deleted notifications after all storage
@@ -171,10 +171,10 @@ void PlatformNotificationServiceImpl::Shutdown() {
 void PlatformNotificationServiceImpl::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsTypeSet content_type_set) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (content_type != ContentSettingsType::NOTIFICATIONS)
+  if (!content_type_set.Contains(ContentSettingsType::NOTIFICATIONS))
     return;
 
   auto recorder = base::MakeRefCounted<RevokeDeleteCountRecorder>();
@@ -240,7 +240,7 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
   // Posted tasks can request notifications to be added, which would cause a
   // crash (see |ScopedKeepAlive|). We just do nothing here, the user would not
   // see the notification anyway, since we are shutting down.
-  // TODO(knollr): IsShuttingDown check should not be required anymore, but some
+  // Note that the IsShuttingDown() check should not be required here, but some
   // tests try to display a notification during shutdown.
   if (g_browser_process->IsShuttingDown() || !profile_)
     return;
@@ -437,8 +437,11 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsNotificationIconAndTitle)) {
     web_app_icon_and_title = FindWebAppIconAndTitle(web_app_hint_url);
-    if (web_app_icon_and_title) {
+    if (web_app_icon_and_title && notification_resources.badge.isNull()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+      // ChromeOS: Enables web app theme color only if monochrome web app icon
+      // has been specified. `badge` Notifications API icons must be masked with
+      // the accent color.
       optional_fields.ignore_accent_color_for_small_image = true;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
@@ -532,7 +535,7 @@ PlatformNotificationServiceImpl::FindWebAppIconAndTitle(
     const GURL& web_app_hint_url) const {
 #if !defined(OS_ANDROID)
   web_app::WebAppProvider* web_app_provider =
-      web_app::WebAppProvider::Get(profile_);
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
   if (web_app_provider) {
     const absl::optional<web_app::AppId> app_id =
         web_app_provider->registrar().FindAppWithUrlInScope(web_app_hint_url);
@@ -542,9 +545,8 @@ PlatformNotificationServiceImpl::FindWebAppIconAndTitle(
 
       icon_and_title->title = base::UTF8ToUTF16(
           web_app_provider->registrar().GetAppShortName(*app_id));
-      icon_and_title->icon = web_app_provider->icon_manager()
-                                 .AsWebAppIconManager()
-                                 ->GetMonochromeFavicon(*app_id);
+      icon_and_title->icon =
+          web_app_provider->icon_manager().GetMonochromeFavicon(*app_id);
       return icon_and_title;
     }
   }

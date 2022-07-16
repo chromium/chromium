@@ -10,7 +10,7 @@ setTimeout (async)
 
 testFunction @ async-callstack-in-console.js:19
 async-callstack-in-console.js:31 Uncaught Error: foo
-    at timeout2 (async-callstack-in-console.js:31)
+    at timeout2 (async-callstack-in-console.js:31:17)
 
 timeout2 @ async-callstack-in-console.js:31
 

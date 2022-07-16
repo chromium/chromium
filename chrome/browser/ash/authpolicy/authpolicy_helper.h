@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
 
@@ -28,6 +27,10 @@ class AuthPolicyHelper {
       base::OnceCallback<void(std::string decrypted_data)>;
 
   AuthPolicyHelper();
+
+  AuthPolicyHelper(const AuthPolicyHelper&) = delete;
+  AuthPolicyHelper& operator=(const AuthPolicyHelper&) = delete;
+
   ~AuthPolicyHelper();
 
   // Tries to get Kerberos TGT. To get TGT and password statuses one should use
@@ -116,7 +119,6 @@ class AuthPolicyHelper {
   RefreshPolicyCallback device_policy_callback_;
 
   base::WeakPtrFactory<AuthPolicyHelper> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AuthPolicyHelper);
 };
 
 }  // namespace ash

@@ -18,6 +18,10 @@ enum class CompressionFormat;
 class DeflateTransformer final : public TransformStreamTransformer {
  public:
   DeflateTransformer(ScriptState*, CompressionFormat, int level);
+
+  DeflateTransformer(const DeflateTransformer&) = delete;
+  DeflateTransformer& operator=(const DeflateTransformer&) = delete;
+
   ~DeflateTransformer() override;
 
   ScriptPromise Transform(v8::Local<v8::Value> chunk,
@@ -50,8 +54,6 @@ class DeflateTransformer final : public TransformStreamTransformer {
 
   // This buffer size has been experimentally verified to be optimal.
   static constexpr wtf_size_t kBufferSize = 16384;
-
-  DISALLOW_COPY_AND_ASSIGN(DeflateTransformer);
 };
 
 }  // namespace blink

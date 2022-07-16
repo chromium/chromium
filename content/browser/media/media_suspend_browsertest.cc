@@ -32,7 +32,7 @@ class MediaSuspendTest : public MediaBrowserTest {
         media::GetTestDataFilePath("media_suspend_test.html"),
         media::GetURLQueryString(query_params));
 
-    const std::u16string kError = base::ASCIIToUTF16(media::kError);
+    const std::u16string kError = base::ASCIIToUTF16(media::kErrorTitle);
 
     {
       VLOG(0) << "Waiting for test URL: " << gurl << ", to load.";
@@ -61,7 +61,7 @@ class MediaSuspendTest : public MediaBrowserTest {
 
     {
       VLOG(0) << "Waiting for playback to resume.";
-      const std::u16string kEnded = base::ASCIIToUTF16(media::kEnded);
+      const std::u16string kEnded = base::ASCIIToUTF16(media::kEndedTitle);
       TitleWatcher title_watcher(shell()->web_contents(), kEnded);
       title_watcher.AlsoWaitForTitle(kError);
       ASSERT_TRUE(ExecJs(shell(), "video.play();"));

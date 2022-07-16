@@ -9,11 +9,10 @@
 namespace blink {
 
 // How frequently we check for leaks.
-constexpr base::TimeDelta kTimerInterval = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kTimerInterval = base::Seconds(10);
 
 // How long we wait before stopping the timer when there is no activity.
-constexpr base::TimeDelta kTimerShutdownDelay =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kTimerShutdownDelay = base::Seconds(60);
 
 void WebCodecsLogger::VideoFrameCloseAuditor::ReportUnclosedFrame() {
   were_frames_not_closed_ = true;

@@ -8,7 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {

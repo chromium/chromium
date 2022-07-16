@@ -24,7 +24,7 @@ PASS view detached
 PASS Posting message ('[object ArrayBuffer]', ): threw exception DataCloneError: Failed to execute 'postMessage' on 'Window': An ArrayBuffer is detached and could not be cloned.
 PASS Posting message ('data', [object ArrayBuffer]): threw exception DataCloneError: Failed to execute 'postMessage' on 'Window': ArrayBuffer at index 0 is already detached.
 PASS Posting message ('[detached TypedArray]', ): threw exception DataCloneError: Failed to execute 'postMessage' on 'Window': An ArrayBuffer is detached and could not be cloned.
-PASS Posting message ('data', [detached TypedArray]): threw exception TypeError: Failed to execute 'postMessage' on 'Window': Value at index 0 does not have a transferable type.
+PASS Posting message ('data', [detached TypedArray]): threw exception DataCloneError: Failed to execute 'postMessage' on 'Window': Value at index 0 does not have a transferable type.
 PASS Posting message ('data', [object Object]): threw exception TypeError: Failed to execute 'postMessage' on 'Window': The object must have a callable @@iterator property.
 PASS Posting message ('data', 1,,2): threw exception TypeError: Failed to execute 'postMessage' on 'Window': Failed to convert value to 'object'.
 PASS Posting message ('data', ,function postMessage() { [native code] }): threw exception TypeError: Failed to execute 'postMessage' on 'Window': Failed to convert value to 'object'.

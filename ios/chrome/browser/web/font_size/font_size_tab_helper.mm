@@ -112,6 +112,7 @@ FontSizeTabHelper::~FontSizeTabHelper() {
 
 FontSizeTabHelper::FontSizeTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
+  DCHECK(ios::provider::IsTextZoomEnabled());
   web_state->AddObserver(this);
   content_size_did_change_observer_ = [NSNotificationCenter.defaultCenter
       addObserverForName:UIContentSizeCategoryDidChangeNotification
@@ -138,7 +139,6 @@ void FontSizeTabHelper::SetPageFontSize(int size) {
   }
   tab_helper_has_zoomed_ = true;
 
-  DCHECK(ios::provider::IsTextZoomEnabled());
   ios::provider::SetTextZoomForWebState(web_state_, size);
 }
 

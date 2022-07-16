@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_CREDENTIALS_ITEM_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_CREDENTIALS_ITEM_VIEW_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"

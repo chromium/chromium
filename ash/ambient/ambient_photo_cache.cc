@@ -7,16 +7,18 @@
 #include <fstream>
 #include <iostream>
 
+#include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
@@ -29,6 +31,31 @@
 namespace ash {
 
 namespace {
+
+constexpr net::NetworkTrafficAnnotationTag kAmbientPhotoCacheNetworkTag =
+    net::DefineNetworkTrafficAnnotation("ambient_photo_cache", R"(
+        semantics {
+          sender: "Ambient photo"
+          description:
+            "Get ambient photo from url to store limited number of photos in "
+            "the device cache. This is used to show the screensaver when the "
+            "user is idle. The url can be Backdrop service to provide pictures"
+            " from internal gallery, weather/time photos served by Google, or "
+            "user selected album from Google photos."
+          trigger:
+            "Triggered by a photo refresh timer, after the device has been "
+            "idle and the battery is charging."
+          data: "None."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+         cookies_allowed: NO
+         setting:
+           "This feature is off by default and can be overridden by users."
+         policy_exception_justification:
+           "This feature is set by user settings.ambient_mode.enabled pref. "
+           "The user setting is per device and cannot be overriden by admin."
+        })");
 
 void ToImageSkia(base::OnceCallback<void(const gfx::ImageSkia&)> callback,
                  const SkBitmap& image) {
@@ -52,14 +79,22 @@ int GetResponseCode(network::SimpleURLLoader* simple_loader) {
 }
 
 std::unique_ptr<network::SimpleURLLoader> CreateSimpleURLLoader(
-    const std::string& url) {
+    const std::string& url,
+    const std::string& token) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(url);
   resource_request->method = "GET";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
+  if (ash::features::IsAmbientModeNewUrlEnabled()) {
+    if (token.empty())
+      DVLOG(2) << "Failed to fetch access token";
+    else
+      resource_request->headers.SetHeader("Authorization", "Bearer " + token);
+  }
+
   return network::SimpleURLLoader::Create(std::move(resource_request),
-                                          NO_TRAFFIC_ANNOTATION_YET);
+                                          kAmbientPhotoCacheNetworkTag);
 }
 
 bool CreateDirIfNotExists(const base::FilePath& path) {
@@ -122,35 +157,58 @@ base::FilePath GetCachePath(int cache_index, const base::FilePath& root_path) {
 
 class AmbientPhotoCacheImpl : public AmbientPhotoCache {
  public:
-  explicit AmbientPhotoCacheImpl(base::FilePath path)
+  AmbientPhotoCacheImpl(base::FilePath path,
+                        AmbientClient& ambient_client,
+                        AmbientAccessTokenController& access_token_controller)
       : root_directory_(path),
         task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {}
+             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
+        ambient_client_(ambient_client),
+        access_token_controller_(access_token_controller) {}
+
   ~AmbientPhotoCacheImpl() override = default;
 
   // AmbientPhotoCache:
   void DownloadPhoto(
       const std::string& url,
       base::OnceCallback<void(std::string&&)> callback) override {
-    std::unique_ptr<network::SimpleURLLoader> simple_loader =
-        CreateSimpleURLLoader(url);
-    scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
-        AmbientClient::Get()->GetURLLoaderFactory();
-    auto* loader_ptr = simple_loader.get();
-
-    loader_ptr->DownloadToString(
-        loader_factory.get(),
-        base::BindOnce(&AmbientPhotoCacheImpl::OnUrlDownloaded,
-                       weak_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(simple_loader), loader_factory),
-        kMaxImageSizeInBytes);
+    if (ash::features::IsAmbientModeNewUrlEnabled()) {
+      access_token_controller_.RequestAccessToken(
+          base::BindOnce(&AmbientPhotoCacheImpl::DownloadPhotoInternal,
+                         weak_factory_.GetWeakPtr(), url, std::move(callback)));
+    } else {
+      DownloadPhotoInternal(url, std::move(callback), /*gaia_id=*/std::string(),
+                            /*access_token=*/std::string());
+    }
   }
 
   void DownloadPhotoToFile(const std::string& url,
                            int cache_index,
                            base::OnceCallback<void(bool)> callback) override {
     auto file_path = GetCachePath(cache_index, root_directory_);
+    base::OnceClosure download_callback;
+    if (ash::features::IsAmbientModeNewUrlEnabled()) {
+      download_callback = base::BindOnce(
+          [](base::WeakPtr<AmbientPhotoCacheImpl> weak_ptr,
+             base::OnceCallback<void(const std::string&, const std::string&)>
+                 callback) {
+            if (!weak_ptr)
+              return;
+            weak_ptr->access_token_controller_.RequestAccessToken(
+                std::move(callback));
+          },
+          weak_factory_.GetWeakPtr(),
+          base::BindOnce(&AmbientPhotoCacheImpl::DownloadPhotoToFileInternal,
+                         weak_factory_.GetWeakPtr(), url, std::move(callback),
+                         file_path));
+    } else {
+      download_callback = base::BindOnce(
+          &AmbientPhotoCacheImpl::DownloadPhotoToFileInternal,
+          weak_factory_.GetWeakPtr(), url, std::move(callback), file_path,
+          /*gaia_id=*/std::string(), /*access_token=*/std::string());
+    }
+
     task_runner_->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(
@@ -159,17 +217,15 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
                 LOG(ERROR) << "Cannot create ambient mode directory";
             },
             root_directory_),
-        base::BindOnce(&AmbientPhotoCacheImpl::DownloadPhotoToFileInternal,
-                       weak_factory_.GetWeakPtr(), url, std::move(callback),
-                       file_path));
+        std::move(download_callback));
   }
 
   void DecodePhoto(
       const std::string& data,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback) override {
-    std::vector<uint8_t> image_bytes(data.begin(), data.end());
     data_decoder::DecodeImageIsolated(
-        image_bytes, data_decoder::mojom::ImageCodec::kDefault,
+        base::as_bytes(base::make_span(data)),
+        data_decoder::mojom::ImageCodec::kDefault,
         /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
         /*desired_image_frame_size=*/gfx::Size(),
         base::BindOnce(&ToImageSkia, std::move(callback)));
@@ -224,13 +280,34 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
   }
 
  private:
+  void DownloadPhotoInternal(const std::string& url,
+                             base::OnceCallback<void(std::string&&)> callback,
+                             const std::string& gaia_id,
+                             const std::string& access_token) {
+    std::unique_ptr<network::SimpleURLLoader> simple_loader =
+        CreateSimpleURLLoader(url, access_token);
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
+        ambient_client_.GetURLLoaderFactory();
+    auto* loader_ptr = simple_loader.get();
+    auto* loader_factory_ptr = loader_factory.get();
+
+    loader_ptr->DownloadToString(
+        loader_factory_ptr,
+        base::BindOnce(&AmbientPhotoCacheImpl::OnUrlDownloaded,
+                       weak_factory_.GetWeakPtr(), std::move(callback),
+                       std::move(simple_loader), std::move(loader_factory)),
+        kMaxImageSizeInBytes);
+  }
+
   void DownloadPhotoToFileInternal(const std::string& url,
                                    base::OnceCallback<void(bool)> callback,
-                                   const base::FilePath& file_path) {
+                                   const base::FilePath& file_path,
+                                   const std::string& gaia_id,
+                                   const std::string& access_token) {
     std::unique_ptr<network::SimpleURLLoader> simple_loader =
-        CreateSimpleURLLoader(url);
+        CreateSimpleURLLoader(url, access_token);
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
-        AmbientClient::Get()->GetURLLoaderFactory();
+        ambient_client_.GetURLLoaderFactory();
     auto* loader_ptr = simple_loader.get();
     auto* loader_factory_ptr = loader_factory.get();
 
@@ -322,6 +399,8 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
 
   const base::FilePath root_directory_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  AmbientClient& ambient_client_;
+  AmbientAccessTokenController& access_token_controller_;
   base::WeakPtrFactory<AmbientPhotoCacheImpl> weak_factory_{this};
 };
 
@@ -331,8 +410,11 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
 
 // static
 std::unique_ptr<AmbientPhotoCache> AmbientPhotoCache::Create(
-    base::FilePath root_path) {
-  return std::make_unique<AmbientPhotoCacheImpl>(root_path);
+    base::FilePath root_path,
+    AmbientClient& ambient_client,
+    AmbientAccessTokenController& access_token_controller) {
+  return std::make_unique<AmbientPhotoCacheImpl>(root_path, ambient_client,
+                                                 access_token_controller);
 }
 
 }  // namespace ash

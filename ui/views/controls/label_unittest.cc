@@ -63,6 +63,9 @@ class TestLabel : public Label {
  public:
   TestLabel() : Label(u"TestLabel") { SizeToPreferredSize(); }
 
+  TestLabel(const TestLabel&) = delete;
+  TestLabel& operator=(const TestLabel&) = delete;
+
   int schedule_paint_count() const { return schedule_paint_count_; }
 
   void SimulatePaint() {
@@ -82,8 +85,6 @@ class TestLabel : public Label {
 
  private:
   int schedule_paint_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLabel);
 };
 
 // A test utility function to set the application default text direction.
@@ -144,6 +145,9 @@ class LabelSelectionTest : public LabelTest {
   enum { NW, NORTH, NE, SE, SOUTH, SW };
 
   LabelSelectionTest() = default;
+
+  LabelSelectionTest(const LabelSelectionTest&) = delete;
+  LabelSelectionTest& operator=(const LabelSelectionTest&) = delete;
 
   // LabelTest overrides:
   void SetUp() override {
@@ -234,8 +238,6 @@ class LabelSelectionTest : public LabelTest {
 
  private:
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(LabelSelectionTest);
 };
 
 TEST_F(LabelTest, Metadata) {

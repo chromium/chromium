@@ -6,6 +6,6 @@
 <shape
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="?attr/divider_line_bg_color"/>
+    <solid android:color="?attr/divider_line_bg_color_dynamic"/>
     <size android:height="1dp"/>
 </shape>

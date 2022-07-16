@@ -227,10 +227,7 @@ target(link_target_type, "renderer") {
     ]
   }
 
-  configs += [
-    "//content:content_implementation",
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
+  configs += [ "//content:content_implementation" ]
   defines = []
 
   public_deps = [
@@ -244,6 +241,7 @@ target(link_target_type, "renderer") {
     "//base:i18n",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
+    "//build:os_buildflags",
     "//cc",
     "//cc/animation",
     "//cc/mojo_embedder",
@@ -264,6 +262,7 @@ target(link_target_type, "renderer") {
     "//content/common:buildflags",
     "//content/gpu:gpu_sources",
     "//content/public/child:child_sources",
+    "//content/services/shared_storage_worklet",
     "//crypto",
     "//crypto:platform",
     "//device/base/synchronization",
@@ -352,16 +351,10 @@ target(link_target_type, "renderer") {
   }
 
   if (is_fuchsia) {
-    sources += [
-      "media/fuchsia_renderer_factory.cc",
-      "media/fuchsia_renderer_factory.h",
-      "renderer_main_platform_delegate_fuchsia.cc",
-    ]
+    sources += [ "renderer_main_platform_delegate_fuchsia.cc" ]
 
     deps += [
-      "//media/fuchsia/audio",
       "//media/fuchsia/cdm/client",
-      "//media/fuchsia/mojom",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
@@ -374,6 +367,15 @@ target(link_target_type, "renderer") {
     }
 
     if (is_chromecast) {
+      if (enable_cast_audio_renderer) {
+        sources += [
+          "media/cast_renderer_factory.cc",
+          "media/cast_renderer_factory.h",
+        ]
+
+        deps += [ "//chromecast/media/audio:audio_renderer" ]
+      }
+
       deps += [
         "//media/remoting:remoting_constants",
         "//media/remoting:remoting_renderer",
@@ -385,6 +387,7 @@ target(link_target_type, "renderer") {
     deps += [
       "//components/cast_streaming/public",
       "//media/cast/receiver:cast_streaming_renderer",
+      "//media/cast/receiver:cast_streaming_renderer_controller_proxy",
     ]
   }
 
@@ -549,9 +552,12 @@ target(link_target_type, "renderer") {
   if (is_chromeos_ash) {
     deps += [
       "//chromeos:chromeos_export",
-      "//chromeos/memory/userspace_swap",
       "//chromeos/system:system",
     ]
+
+    if (target_cpu == "x64") {
+      deps += [ "//chromeos/memory/userspace_swap" ]
+    }
   }
 
   if (use_ozone) {

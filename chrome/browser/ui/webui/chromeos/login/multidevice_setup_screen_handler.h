@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MULTIDEVICE_SETUP_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MULTIDEVICE_SETUP_SCREEN_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace ash {
@@ -34,6 +33,11 @@ class MultiDeviceSetupScreenHandler : public BaseScreenHandler,
   using TView = MultiDeviceSetupScreenView;
 
   explicit MultiDeviceSetupScreenHandler(JSCallsContainer* js_calls_container);
+
+  MultiDeviceSetupScreenHandler(const MultiDeviceSetupScreenHandler&) = delete;
+  MultiDeviceSetupScreenHandler& operator=(
+      const MultiDeviceSetupScreenHandler&) = delete;
+
   ~MultiDeviceSetupScreenHandler() override;
 
   // BaseScreenHandler:
@@ -49,8 +53,6 @@ class MultiDeviceSetupScreenHandler : public BaseScreenHandler,
  private:
   // BaseScreenHandler:
   void Initialize() override;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupScreenHandler);
 };
 
 }  // namespace chromeos

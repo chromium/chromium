@@ -80,7 +80,8 @@ uint64_t CrashUtil::GetCurrentTimeMs() {
 bool CrashUtil::RequestUploadCrashDump(
     const std::string& existing_minidump_path,
     uint64_t crashed_pid,
-    uint64_t crashed_process_start_time_ms) {
+    uint64_t crashed_process_start_time_ms,
+    const std::vector<Attachment>* attachments) {
   // Remove IO restrictions from this thread. Chromium IO functions must be used
   // to access the file system and upload information to the crash server.
   base::ScopedAllowBlocking allow_blocking;
@@ -103,10 +104,11 @@ bool CrashUtil::RequestUploadCrashDump(
   std::unique_ptr<MinidumpWriter> writer;
   if (g_dumpstate_cb) {
     writer.reset(new MinidumpWriter(&minidump_generator, filename.value(),
-                                    params, std::move(*g_dumpstate_cb)));
+                                    params, std::move(*g_dumpstate_cb),
+                                    attachments));
   } else {
-    writer.reset(
-        new MinidumpWriter(&minidump_generator, filename.value(), params));
+    writer.reset(new MinidumpWriter(&minidump_generator, filename.value(),
+                                    params, attachments));
   }
   bool success = false;
   success = (0 == writer->Write());  // error already logged.

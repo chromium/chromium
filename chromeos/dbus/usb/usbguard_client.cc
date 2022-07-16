@@ -26,6 +26,10 @@ UsbguardClient* g_instance = nullptr;
 class UsbguardClientImpl : public UsbguardClient {
  public:
   UsbguardClientImpl() = default;
+
+  UsbguardClientImpl(const UsbguardClientImpl&) = delete;
+  UsbguardClientImpl& operator=(const UsbguardClientImpl&) = delete;
+
   ~UsbguardClientImpl() override = default;
 
   // UsbguardClient:
@@ -118,8 +122,6 @@ class UsbguardClientImpl : public UsbguardClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<UsbguardClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UsbguardClientImpl);
 };
 
 UsbguardClient::UsbguardClient() {

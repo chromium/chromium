@@ -14,7 +14,8 @@ namespace headless {
 void HeadlessBrowserMainParts::PreCreateMainMessageLoop() {
   // Force hide dock and menu bar.
   [NSApp setActivationPolicy:NSApplicationActivationPolicyAccessory];
-  geolocation_manager_ = device::GeolocationManagerImpl::Create();
+  if (!geolocation_manager_)
+    geolocation_manager_ = device::GeolocationManagerImpl::Create();
 }
 
 }  // namespace headless

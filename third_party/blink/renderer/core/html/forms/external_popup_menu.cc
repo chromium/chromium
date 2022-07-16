@@ -50,8 +50,8 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -130,9 +130,9 @@ bool ExternalPopupMenu::ShowInternal() {
       rect_in_viewport.Scale(1 / dpr);
 
     gfx::Rect bounds =
-        gfx::Rect(rect_in_viewport.X() * scale_for_emulation,
-                  rect_in_viewport.Y() * scale_for_emulation,
-                  rect_in_viewport.Width(), rect_in_viewport.Height());
+        gfx::Rect(rect_in_viewport.x() * scale_for_emulation,
+                  rect_in_viewport.y() * scale_for_emulation,
+                  rect_in_viewport.width(), rect_in_viewport.height());
     local_frame_->GetLocalFrameHostRemote().ShowPopupMenu(
         receiver_.BindNewPipeAndPassRemote(execution_context->GetTaskRunner(
             TaskType::kInternalUserInteraction)),
@@ -147,7 +147,7 @@ bool ExternalPopupMenu::ShowInternal() {
   return false;
 }
 
-void ExternalPopupMenu::Show() {
+void ExternalPopupMenu::Show(PopupMenu::ShowEventType) {
   if (!ShowInternal())
     return;
 #if defined(OS_MAC)

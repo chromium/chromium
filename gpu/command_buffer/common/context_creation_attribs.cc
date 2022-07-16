@@ -127,6 +127,27 @@ bool IsWebGPUContextType(ContextType context_type) {
   return false;
 }
 
+const char* ContextTypeToLabel(ContextType context_type) {
+  // Switch statement to cause a compile-time error if we miss a case.
+  switch (context_type) {
+    case CONTEXT_TYPE_OPENGLES2:
+      return "OPENGLES2";
+    case CONTEXT_TYPE_OPENGLES3:
+      return "OPENGLES3";
+    case CONTEXT_TYPE_WEBGL1:
+      return "WEBGL1";
+    case CONTEXT_TYPE_WEBGL2:
+      return "WEBGL2";
+    case CONTEXT_TYPE_OPENGLES31_FOR_TESTING:
+      return "GLES31_FOR_TESTING";
+    case CONTEXT_TYPE_WEBGPU:
+      return "WEBGPU";
+  }
+
+  NOTREACHED();
+  return "BadGLContext";
+}
+
 ContextCreationAttribs::ContextCreationAttribs() = default;
 
 ContextCreationAttribs::ContextCreationAttribs(

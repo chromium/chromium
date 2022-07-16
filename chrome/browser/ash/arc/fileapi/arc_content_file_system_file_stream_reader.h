@@ -30,6 +30,12 @@ namespace arc {
 class ArcContentFileSystemFileStreamReader : public storage::FileStreamReader {
  public:
   ArcContentFileSystemFileStreamReader(const GURL& arc_url, int64_t offset);
+
+  ArcContentFileSystemFileStreamReader(
+      const ArcContentFileSystemFileStreamReader&) = delete;
+  ArcContentFileSystemFileStreamReader& operator=(
+      const ArcContentFileSystemFileStreamReader&) = delete;
+
   ~ArcContentFileSystemFileStreamReader() override;
 
   // storage::FileStreamReader override:
@@ -88,8 +94,6 @@ class ArcContentFileSystemFileStreamReader : public storage::FileStreamReader {
 
   base::WeakPtrFactory<ArcContentFileSystemFileStreamReader> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcContentFileSystemFileStreamReader);
 };
 
 }  // namespace arc

@@ -14,15 +14,18 @@
 
       // Watch for the testing trigger_id for HaTS Next, defined on the browser
       // side in hats_service.cc.
-      if (params.get('trigger_id') == 'zishSVViB0kPN8UwQ150VGjBKuBP') {
-        // Check that the provided product specific data matches the values
-        // defined in hats_browsertest.cc, if it does provide a loaded response
-        // before closing.
+      if (params.get('trigger_id') == 'HLpeYy5Av0ugnJ3q1cK0XzzA8UHv') {
+        // Check that the provided product specific data, and the provided
+        // preferred language, match the values defined in hats_browsertest.cc,
+        // if they do, provide a loaded response before closing.
         const productSpecificData = JSON.parse(
                   decodeURIComponent(params.get('product_specific_data')));
+        const languages =
+            JSON.parse(decodeURIComponent(params.get('languages')));
         if (productSpecificData['Test Field 1'] === 'true' &&
             productSpecificData['Test Field 2'] === 'false' &&
-            productSpecificData['Test Field 3'] === 'true') {
+            productSpecificData['Test Field 3'] === 'Test value' &&
+            languages.length == 1 && languages[0] == 'lt') {
           history.pushState('', '', '#loaded');
         }
         history.pushState('', '', '#close');

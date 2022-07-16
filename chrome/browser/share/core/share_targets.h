@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_SHARE_CORE_SHARE_TARGETS_H_
 #define CHROME_BROWSER_SHARE_CORE_SHARE_TARGETS_H_
 
-#include "chrome/browser/share/proto/share_target.pb.h"
-
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
+#include "chrome/browser/share/proto/share_target.pb.h"
 
 namespace sharing {
 
@@ -45,7 +45,17 @@ class ShareTargets {
     FAILED_PROTO_PARSE = 3,
     FAILED_VERSION_CHECK = 4,
     SKIPPED_VERSION_CHECK_EQUAL = 5,
+    kMaxValue = 5,
   };
+
+  // Used in metrics, do not reorder.
+  enum class UpdateOrigin {
+    RESOURCE_BUNDLE = 1,
+    DYNAMIC_UPDATE = 2,
+  };
+
+  // Visible for testing.
+  std::string GetCountryStringFromID(int countryID);
 
  private:
   // Read data from an serialized protobuf and update the internal list
@@ -58,8 +68,7 @@ class ShareTargets {
   void PopulateFromResourceBundle();
 
   // Record the result of an update attempt.
-  virtual void RecordUpdateMetrics(UpdateResult result,
-                                   const std::string& src_name);
+  virtual void RecordUpdateMetrics(UpdateResult result, UpdateOrigin src_name);
 
   // Swap in a different targets. This will rebuild file_type_by_ext_ index.
   void SwapTargetsLocked(std::unique_ptr<mojom::MapLocaleTargets>& new_targets);
@@ -82,6 +91,7 @@ class ShareTargets {
   FRIEND_TEST_ALL_PREFIXES(ShareTargetsTest, UnpackResourceBundle);
   FRIEND_TEST_ALL_PREFIXES(ShareTargetsTest, BadProto);
   FRIEND_TEST_ALL_PREFIXES(ShareTargetsTest, BadUpdateFromExisting);
+  FRIEND_TEST_ALL_PREFIXES(ShareTargetsTest, CountryCodeMatches);
 
   friend struct ShareTargetsSingletonTrait;
 };

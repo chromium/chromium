@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/interactive_test_utils.h"
 
+#include <windows.h>
+
 #include <Psapi.h>
 
 #include <memory>

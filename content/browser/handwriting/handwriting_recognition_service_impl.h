@@ -45,6 +45,11 @@ class CONTENT_EXPORT HandwritingRecognitionServiceImpl
   void QueryHandwritingRecognizerSupport(
       handwriting::mojom::HandwritingFeatureQueryPtr query,
       QueryHandwritingRecognizerSupportCallback callback) override;
+
+  // Always return `nullptr`.
+  void QueryHandwritingRecognizer(
+      handwriting::mojom::HandwritingModelConstraintPtr model_constraint,
+      QueryHandwritingRecognizerCallback callback) override;
 };
 
 }  // namespace content

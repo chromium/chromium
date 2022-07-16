@@ -52,6 +52,10 @@ class ArchiveManager {
                  const base::FilePath& private_archives_dir_,
                  const base::FilePath& public_archives_dir,
                  const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  ArchiveManager(const ArchiveManager&) = delete;
+  ArchiveManager& operator=(const ArchiveManager&) = delete;
+
   virtual ~ArchiveManager();
 
   // Creates archives directory if one does not exist yet;
@@ -82,8 +86,6 @@ class ArchiveManager {
   // second task will start after the first one. This is an important assumption
   // for |ArchiveManager::EnsureArchivesDirCreated|.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArchiveManager);
 };
 
 }  // namespace offline_pages

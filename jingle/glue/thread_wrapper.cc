@@ -23,8 +23,7 @@
 
 namespace jingle_glue {
 namespace {
-constexpr base::TimeDelta kTaskLatencySampleDuration =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kTaskLatencySampleDuration = base::Seconds(3);
 }
 
 // Class intended to conditionally live for the duration of JingleThreadWrapper
@@ -322,7 +321,7 @@ void JingleThreadWrapper::PostTaskInternal(const rtc::Location& posted_from,
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&JingleThreadWrapper::RunTask, weak_ptr_, task_id),
-        base::TimeDelta::FromMilliseconds(delay_ms));
+        base::Milliseconds(delay_ms));
   }
 }
 
@@ -339,7 +338,7 @@ void JingleThreadWrapper::PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&JingleThreadWrapper::RunTaskQueueTask, weak_ptr_,
                      std::move(task)),
-      base::TimeDelta::FromMilliseconds(milliseconds));
+      base::Milliseconds(milliseconds));
 }
 
 absl::optional<base::TimeTicks> JingleThreadWrapper::PrepareRunTask() {

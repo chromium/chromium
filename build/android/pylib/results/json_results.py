@@ -233,6 +233,7 @@ def ParseResultsFromJson(json_results):
       results_list.extend(
           [base_test_result.BaseTestResult(test,
                                            string_as_status(tr['status']),
-                                           duration=tr['elapsed_time_ms'])
+                                           duration=tr['elapsed_time_ms'],
+                                           log=tr.get('output_snippet'))
           for tr in test_runs])
   return results_list

@@ -11,7 +11,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/midi/usb_midi_export.h"
 #include "media/midi/usb_midi_jack.h"
@@ -48,6 +47,10 @@ class USB_MIDI_EXPORT UsbMidiInputStream {
   };
 
   explicit UsbMidiInputStream(Delegate* delegate);
+
+  UsbMidiInputStream(const UsbMidiInputStream&) = delete;
+  UsbMidiInputStream& operator=(const UsbMidiInputStream&) = delete;
+
   ~UsbMidiInputStream();
 
   void Add(const UsbMidiJack& jack);
@@ -79,8 +82,6 @@ class USB_MIDI_EXPORT UsbMidiInputStream {
 
   // Not owned
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbMidiInputStream);
 };
 
 }  // namespace midi

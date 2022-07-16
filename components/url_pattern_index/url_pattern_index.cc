@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -74,6 +73,8 @@ const ElementTypeMap& GetElementTypeMap() {
           // Filtering popups is not supported.
           {proto::ELEMENT_TYPE_POPUP, flat::ElementType_NONE},
           {proto::ELEMENT_TYPE_WEBSOCKET, flat::ElementType_WEBSOCKET},
+          {proto::ELEMENT_TYPE_WEBTRANSPORT, flat::ElementType_WEBTRANSPORT},
+          {proto::ELEMENT_TYPE_WEBBUNDLE, flat::ElementType_WEBBUNDLE},
       });
   return *element_type_map;
 }
@@ -242,8 +243,8 @@ class UrlRuleFlatBufferConverter {
     static_assert(flat::OptionFlag_ANY <= std::numeric_limits<uint8_t>::max(),
                   "Option flags can not be stored in uint8_t.");
     static_assert(
-        flat::RequestMethod_ANY <= std::numeric_limits<uint8_t>::max(),
-        "Request methods can not be stored in uint8_t.");
+        flat::RequestMethod_ANY <= std::numeric_limits<uint16_t>::max(),
+        "Request methods can not be stored in uint16_t.");
 
     if (rule_.semantics() == proto::RULE_SEMANTICS_ALLOWLIST) {
       options_ |= flat::OptionFlag_IS_ALLOWLIST;

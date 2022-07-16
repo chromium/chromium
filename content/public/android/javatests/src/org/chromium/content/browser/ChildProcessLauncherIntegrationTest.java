@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -106,6 +107,10 @@ public class ChildProcessLauncherIntegrationTest {
 
     @Test
     @MediumTest
+    // This test may run with --site-per-process, which also enables a feature to maintain a
+    // spare renderer process. The spare process interferes with assertions on the number of
+    // process connections in this test, so disable it.
+    @CommandLineFlags.Add({"disable-features=SpareRendererForSitePerProcess"})
     public void testCrossDomainNavigationDoNotLoseImportance() throws Throwable {
         final TestChildProcessConnectionFactory factory = new TestChildProcessConnectionFactory();
         final List<TestChildProcessConnection> connections = factory.getConnections();
@@ -154,6 +159,10 @@ public class ChildProcessLauncherIntegrationTest {
 
     @Test
     @MediumTest
+    // This test may run with --site-per-process, which also enables a feature to maintain a
+    // spare renderer process. The spare process interferes with assertions on the number of
+    // process connections in this test, so disable it.
+    @CommandLineFlags.Add({"disable-features=SpareRendererForSitePerProcess"})
     public void testIntentionalKillToFreeServiceSlot() throws Throwable {
         final TestChildProcessConnectionFactory factory = new TestChildProcessConnectionFactory();
         final List<TestChildProcessConnection> connections = factory.getConnections();
@@ -218,7 +227,8 @@ public class ChildProcessLauncherIntegrationTest {
             crashServiceForTesting();
             mCrashServiceCalled = true;
             if (mConnectionBundle != null) {
-                super.setupConnection(mConnectionBundle, mClientInterfaces, mConnectionCallback);
+                super.setupConnection(
+                        mConnectionBundle, mClientInterfaces, mConnectionCallback, null);
                 mConnectionBundle = null;
                 mClientInterfaces = null;
                 mConnectionCallback = null;
@@ -233,11 +243,11 @@ public class ChildProcessLauncherIntegrationTest {
 
         @Override
         public void setupConnection(Bundle connectionBundle, List<IBinder> clientInterfaces,
-                ConnectionCallback connectionCallback) {
+                ConnectionCallback connectionCallback, ZygoteInfoCallback zygoteInfoCallback) {
             // Make sure setupConnection is called after crashServiceForTesting so that
             // setupConnection is guaranteed to fail.
             if (mCrashServiceCalled) {
-                super.setupConnection(connectionBundle, clientInterfaces, connectionCallback);
+                super.setupConnection(connectionBundle, clientInterfaces, connectionCallback, null);
                 return;
             }
             mConnectionBundle = connectionBundle;

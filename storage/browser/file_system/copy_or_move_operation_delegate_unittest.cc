@@ -20,7 +20,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
@@ -32,6 +32,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/file_system_test_file_set.h"
@@ -43,6 +44,7 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -81,6 +83,10 @@ class TestValidatorFactory : public CopyOrMoveFileValidatorFactory {
           write_result_(post_copy_valid ? base::File::FILE_OK
                                         : base::File::FILE_ERROR_SECURITY),
           reject_string_(reject_string) {}
+
+    TestValidator(const TestValidator&) = delete;
+    TestValidator& operator=(const TestValidator&) = delete;
+
     ~TestValidator() override = default;
 
     void StartPreWriteValidation(ResultCallback result_callback) override {
@@ -105,8 +111,6 @@ class TestValidatorFactory : public CopyOrMoveFileValidatorFactory {
     base::File::Error result_;
     base::File::Error write_result_;
     std::string reject_string_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestValidator);
   };
 };
 
@@ -147,6 +151,9 @@ class ScopedThreadStopper {
  public:
   explicit ScopedThreadStopper(base::Thread* thread) : thread_(thread) {}
 
+  ScopedThreadStopper(const ScopedThreadStopper&) = delete;
+  ScopedThreadStopper& operator=(const ScopedThreadStopper&) = delete;
+
   ~ScopedThreadStopper() {
     if (thread_) {
       // Give another chance for deleted streams to perform Close.
@@ -162,7 +169,6 @@ class ScopedThreadStopper {
 
  private:
   base::Thread* thread_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedThreadStopper);
 };
 
 }  // namespace
@@ -176,6 +182,10 @@ class CopyOrMoveOperationTestHelper {
         src_type_(src_type),
         dest_type_(dest_type),
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+
+  CopyOrMoveOperationTestHelper(const CopyOrMoveOperationTestHelper&) = delete;
+  CopyOrMoveOperationTestHelper& operator=(
+      const CopyOrMoveOperationTestHelper&) = delete;
 
   ~CopyOrMoveOperationTestHelper() {
     file_system_context_ = nullptr;
@@ -248,12 +258,14 @@ class CopyOrMoveOperationTestHelper {
 
   FileSystemURL SourceURL(const std::string& path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        origin_, src_type_, base::FilePath::FromUTF8Unsafe(path));
+        blink::StorageKey(origin_), src_type_,
+        base::FilePath::FromUTF8Unsafe(path));
   }
 
   FileSystemURL DestURL(const std::string& path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        origin_, dest_type_, base::FilePath::FromUTF8Unsafe(path));
+        blink::StorageKey(origin_), dest_type_,
+        base::FilePath::FromUTF8Unsafe(path));
   }
 
   base::File::Error Copy(const FileSystemURL& src, const FileSystemURL& dest) {
@@ -290,7 +302,7 @@ class CopyOrMoveOperationTestHelper {
     for (size_t i = 0; i < test_case_size; ++i) {
       const FileSystemTestCaseRecord& test_case = test_cases[i];
       FileSystemURL url = file_system_context_->CreateCrackedFileSystemURL(
-          root.origin(), root.mount_type(),
+          root.storage_key(), root.mount_type(),
           root.virtual_path().Append(test_case.path));
       if (test_case.is_directory)
         result = CreateDirectory(url);
@@ -321,7 +333,7 @@ class CopyOrMoveOperationTestHelper {
       ASSERT_EQ(base::File::FILE_OK, ReadDirectory(dir, &entries));
       for (const filesystem::mojom::DirectoryEntry& entry : entries) {
         FileSystemURL url = file_system_context_->CreateCrackedFileSystemURL(
-            dir.origin(), dir.mount_type(),
+            dir.storage_key(), dir.mount_type(),
             dir.virtual_path().Append(entry.name));
         base::FilePath relative;
         root.virtual_path().AppendRelativePath(url.virtual_path(), &relative);
@@ -393,8 +405,6 @@ class CopyOrMoveOperationTestHelper {
   scoped_refptr<FileSystemContext> file_system_context_;
   scoped_refptr<MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<MockQuotaManager> quota_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CopyOrMoveOperationTestHelper);
 };
 
 TEST(LocalFileSystemCopyOrMoveOperationTest, CopySingleFile) {

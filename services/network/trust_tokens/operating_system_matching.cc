@@ -9,15 +9,11 @@
 namespace network {
 
 bool IsCurrentOperatingSystem(mojom::TrustTokenKeyCommitmentResult::Os os) {
-  switch (os) {
-    case mojom::TrustTokenKeyCommitmentResult::Os::kAndroid:
 #if defined(OS_ANDROID)
-      return true;
-#endif  // defined(OS_ANDROID)
-      break;
-  }
-
+  return os == mojom::TrustTokenKeyCommitmentResult::Os::kAndroid;
+#else
   return false;
+#endif
 }
 
 }  // namespace network

@@ -44,10 +44,10 @@ ReverbConvolverStage::ReverbConvolverStage(
     size_t,
     size_t reverb_total_latency,
     size_t stage_offset,
-    size_t stage_length,
-    size_t fft_size,
+    unsigned stage_length,
+    unsigned fft_size,
     size_t render_phase,
-    size_t render_slice_size,
+    unsigned render_slice_size,
     ReverbAccumulationBuffer* accumulation_buffer,
     float scale,
     bool direct_mode)
@@ -102,7 +102,7 @@ ReverbConvolverStage::ReverbConvolverStage(
   // can schedule at exactly the moment when the FFT will happen.  This is
   // coordinated with the other stages, so they don't all do their FFTs at the
   // same time...
-  int max_pre_delay_length = std::min(half_size, total_delay);
+  size_t max_pre_delay_length = std::min(half_size, total_delay);
   pre_delay_length_ = total_delay > 0 ? render_phase % max_pre_delay_length : 0;
   if (pre_delay_length_ > total_delay)
     pre_delay_length_ = 0;

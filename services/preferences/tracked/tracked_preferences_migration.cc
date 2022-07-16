@@ -41,6 +41,10 @@ class TrackedPreferencesMigrator
       InterceptablePrefFilter* unprotected_pref_filter,
       InterceptablePrefFilter* protected_pref_filter);
 
+  TrackedPreferencesMigrator(const TrackedPreferencesMigrator&) = delete;
+  TrackedPreferencesMigrator& operator=(const TrackedPreferencesMigrator&) =
+      delete;
+
   // Stores the data coming in from the filter identified by |id| into this
   // class and then calls MigrateIfReady();
   void InterceptFilterOnLoad(
@@ -80,8 +84,6 @@ class TrackedPreferencesMigrator
 
   std::unique_ptr<base::DictionaryValue> unprotected_prefs_;
   std::unique_ptr<base::DictionaryValue> protected_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackedPreferencesMigrator);
 };
 
 // Invokes |store_cleaner| for every |keys_to_clean|.

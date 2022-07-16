@@ -61,7 +61,7 @@ class ChromeAccountManagerServiceTest : public PlatformTest {
   // Sets a restricted pattern.
   void SetPattern(const std::string pattern) {
     base::ListValue allowed_patterns;
-    allowed_patterns.AppendString(pattern);
+    allowed_patterns.Append(pattern);
     GetApplicationContext()->GetLocalState()->Set(
         prefs::kRestrictAccountsToPatterns, allowed_patterns);
   }
@@ -77,10 +77,12 @@ class ChromeAccountManagerServiceTest : public PlatformTest {
 // Tests to get identities when the restricted pattern is not set.
 TEST_F(ChromeAccountManagerServiceTest, TestHasIdentities) {
   EXPECT_EQ(account_manager_->HasIdentities(), false);
+  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), false);
   EXPECT_EQ((int)[account_manager_->GetAllIdentities() count], 0);
 
   AddIdentities();
   EXPECT_EQ(account_manager_->HasIdentities(), true);
+  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), false);
   EXPECT_EQ((int)[account_manager_->GetAllIdentities() count], 4);
 }
 
@@ -89,8 +91,10 @@ TEST_F(ChromeAccountManagerServiceTest,
        TestGetIdentityWithValidRestrictedPattern) {
   AddIdentities();
   EXPECT_EQ(account_manager_->HasIdentities(), true);
+  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), false);
 
   SetPattern("*gmail.com");
+  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), true);
   EXPECT_EQ(account_manager_->IsValidIdentity(identity1), true);
   EXPECT_EQ(account_manager_->IsValidIdentity(identity2), false);
   EXPECT_EQ(account_manager_->IsValidIdentity(identity3), false);
@@ -99,6 +103,7 @@ TEST_F(ChromeAccountManagerServiceTest,
   EXPECT_EQ((int)[account_manager_->GetAllIdentities() count], 1);
 
   SetPattern("foo2@google.com");
+  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), true);
   EXPECT_EQ(account_manager_->IsValidIdentity(identity1), false);
   EXPECT_EQ(account_manager_->IsValidIdentity(identity2), true);
   EXPECT_EQ(account_manager_->IsValidIdentity(identity3), false);
@@ -113,8 +118,10 @@ TEST_F(ChromeAccountManagerServiceTest,
        TestGetIdentitiesWithValidRestrictedPattern) {
   AddIdentities();
   EXPECT_EQ(account_manager_->HasIdentities(), true);
+  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), false);
 
   SetPattern("*chromium.com");
+  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), true);
   EXPECT_EQ(account_manager_->IsValidIdentity(identity1), false);
   EXPECT_EQ(account_manager_->IsValidIdentity(identity2), false);
   EXPECT_EQ(account_manager_->IsValidIdentity(identity3), true);
@@ -128,12 +135,31 @@ TEST_F(ChromeAccountManagerServiceTest,
        TestGetIdentityWithInvalidRestrictedPattern) {
   AddIdentities();
   EXPECT_EQ(account_manager_->HasIdentities(), true);
+  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), false);
 
   SetPattern("*none.com");
+  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), true);
   EXPECT_EQ(account_manager_->IsValidIdentity(identity1), false);
   EXPECT_EQ(account_manager_->IsValidIdentity(identity2), false);
   EXPECT_EQ(account_manager_->IsValidIdentity(identity3), false);
   EXPECT_EQ(account_manager_->IsValidIdentity(identity4), false);
   EXPECT_EQ(account_manager_->HasIdentities(), false);
   EXPECT_EQ((int)[account_manager_->GetAllIdentities() count], 0);
+}
+
+// Tests to get identity when all identities are matched by pattern.
+TEST_F(ChromeAccountManagerServiceTest,
+       TestGetIdentityWithAllInclusivePattern) {
+  AddIdentities();
+  EXPECT_EQ(account_manager_->HasIdentities(), true);
+  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), false);
+
+  SetPattern("*");
+  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), false);
+  EXPECT_EQ(account_manager_->IsValidIdentity(identity1), true);
+  EXPECT_EQ(account_manager_->IsValidIdentity(identity2), true);
+  EXPECT_EQ(account_manager_->IsValidIdentity(identity3), true);
+  EXPECT_EQ(account_manager_->IsValidIdentity(identity4), true);
+  EXPECT_EQ(account_manager_->HasIdentities(), true);
+  EXPECT_EQ((int)[account_manager_->GetAllIdentities() count], 4);
 }

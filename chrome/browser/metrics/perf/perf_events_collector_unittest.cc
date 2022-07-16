@@ -13,7 +13,6 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_split.h"
@@ -114,6 +113,10 @@ class FakePerfOutputCall : public PerfOutputCall {
     collection_done_timer_.Start(FROM_HERE, duration, this,
                                  &FakePerfOutputCall::OnCollectionDone);
   }
+
+  FakePerfOutputCall(const FakePerfOutputCall&) = delete;
+  FakePerfOutputCall& operator=(const FakePerfOutputCall&) = delete;
+
   ~FakePerfOutputCall() override = default;
 
   void Stop() override {
@@ -135,8 +138,6 @@ class FakePerfOutputCall : public PerfOutputCall {
   DoneCallback done_callback_;
   base::OneShotTimer collection_done_timer_;
   base::OnceClosure on_stop_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePerfOutputCall);
 };
 
 // Allows testing of PerfCollector behavior when an incognito window is opened.
@@ -151,6 +152,9 @@ class TestIncognitoObserver : public WindowedIncognitoObserver {
     return base::WrapUnique(new TestIncognitoObserver(incognito_launched));
   }
 
+  TestIncognitoObserver(const TestIncognitoObserver&) = delete;
+  TestIncognitoObserver& operator=(const TestIncognitoObserver&) = delete;
+
   bool IncognitoLaunched() const override { return incognito_launched_; }
 
  private:
@@ -159,14 +163,15 @@ class TestIncognitoObserver : public WindowedIncognitoObserver {
         incognito_launched_(incognito_launched) {}
 
   bool incognito_launched_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestIncognitoObserver);
 };
 
 // Allows access to some private methods for testing.
 class TestPerfCollector : public PerfCollector {
  public:
   TestPerfCollector() = default;
+
+  TestPerfCollector(const TestPerfCollector&) = delete;
+  TestPerfCollector& operator=(const TestPerfCollector&) = delete;
 
   using MetricCollector::CollectionAttemptStatus;
   using MetricCollector::CollectPerfDataAfterSessionRestore;
@@ -212,13 +217,10 @@ class TestPerfCollector : public PerfCollector {
 
   PerfOutputCall::DoneCallback real_callback_;
   bool collection_stopped_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPerfCollector);
 };
 
-const base::TimeDelta kPeriodicCollectionInterval =
-    base::TimeDelta::FromHours(1);
-const base::TimeDelta kCollectionDuration = base::TimeDelta::FromSeconds(2);
+const base::TimeDelta kPeriodicCollectionInterval = base::Hours(1);
+const base::TimeDelta kCollectionDuration = base::Seconds(2);
 
 // A wrapper around internal::CommandSamplesCPUCycles, to test if a perf command
 // samples the cycles event. The wrapper takes a command as a string, while the
@@ -236,6 +238,9 @@ class PerfCollectorTest : public testing::Test {
  public:
   PerfCollectorTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  PerfCollectorTest(const PerfCollectorTest&) = delete;
+  PerfCollectorTest& operator=(const PerfCollectorTest&) = delete;
 
   void SaveProfile(std::unique_ptr<SampledProfile> sampled_profile) {
     cached_profile_data_.resize(cached_profile_data_.size() + 1);
@@ -276,8 +281,6 @@ class PerfCollectorTest : public testing::Test {
   std::unique_ptr<TestPerfCollector> perf_collector_;
 
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerfCollectorTest);
 };
 
 TEST_F(PerfCollectorTest, CheckSetup) {
@@ -1003,18 +1006,18 @@ TEST_F(PerfCollectorTest, CommandMatching_SpecificModel_LongestMatch) {
 TEST_F(PerfCollectorTest, StopCollection_AnotherTrigger) {
   const int kRestoredTabs = 1;
 
-  perf_collector_->CollectPerfDataAfterSessionRestore(
-      base::TimeDelta::FromSeconds(1), kRestoredTabs);
+  perf_collector_->CollectPerfDataAfterSessionRestore(base::Seconds(1),
+                                                      kRestoredTabs);
   // Timer is active after the OnSessionRestoreDone call.
   EXPECT_TRUE(perf_collector_->IsRunning());
   // A collection in action: should reject another collection request.
   EXPECT_FALSE(perf_collector_->ShouldCollect());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment_.FastForwardBy(base::Milliseconds(100));
   // A collection is ongoing. Triggering a jankiness collection should have no
   // effect on the existing collection.
   perf_collector_->OnJankStarted();
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment_.FastForwardBy(base::Milliseconds(100));
   // This doesn't stop the existing collection.
   perf_collector_->OnJankStopped();
   task_environment_.RunUntilIdle();
@@ -1048,7 +1051,7 @@ TEST_F(PerfCollectorTest, JankinessCollectionStopped) {
   // A collection in action: should reject another collection request.
   EXPECT_FALSE(perf_collector_->ShouldCollect());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment_.FastForwardBy(base::Milliseconds(100));
 
   perf_collector_->OnJankStopped();
   task_environment_.RunUntilIdle();
@@ -1105,14 +1108,17 @@ class PerfCollectorCollectionParamsTest : public testing::Test {
  public:
   PerfCollectorCollectionParamsTest() {}
 
+  PerfCollectorCollectionParamsTest(const PerfCollectorCollectionParamsTest&) =
+      delete;
+  PerfCollectorCollectionParamsTest& operator=(
+      const PerfCollectorCollectionParamsTest&) = delete;
+
   void TearDown() override {
     variations::testing::ClearAllVariationParams();
   }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerfCollectorCollectionParamsTest);
 };
 
 TEST_F(PerfCollectorCollectionParamsTest, Commands_InitializedAfterVariations) {
@@ -1213,26 +1219,24 @@ TEST_F(PerfCollectorCollectionParamsTest, Parameters_Override) {
   const auto& parsed_params = perf_collector->collection_params();
 
   // Not initialized yet:
-  EXPECT_NE(base::TimeDelta::FromSeconds(15),
-            parsed_params.collection_duration);
-  EXPECT_NE(base::TimeDelta::FromHours(1), parsed_params.periodic_interval);
+  EXPECT_NE(base::Seconds(15), parsed_params.collection_duration);
+  EXPECT_NE(base::Hours(1), parsed_params.periodic_interval);
   EXPECT_NE(1, parsed_params.resume_from_suspend.sampling_factor);
-  EXPECT_NE(base::TimeDelta::FromSeconds(10),
+  EXPECT_NE(base::Seconds(10),
             parsed_params.resume_from_suspend.max_collection_delay);
   EXPECT_NE(2, parsed_params.restore_session.sampling_factor);
-  EXPECT_NE(base::TimeDelta::FromSeconds(20),
+  EXPECT_NE(base::Seconds(20),
             parsed_params.restore_session.max_collection_delay);
 
   perf_collector->Init();
 
-  EXPECT_EQ(base::TimeDelta::FromSeconds(15),
-            parsed_params.collection_duration);
-  EXPECT_EQ(base::TimeDelta::FromHours(1), parsed_params.periodic_interval);
+  EXPECT_EQ(base::Seconds(15), parsed_params.collection_duration);
+  EXPECT_EQ(base::Hours(1), parsed_params.periodic_interval);
   EXPECT_EQ(1, parsed_params.resume_from_suspend.sampling_factor);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(10),
+  EXPECT_EQ(base::Seconds(10),
             parsed_params.resume_from_suspend.max_collection_delay);
   EXPECT_EQ(2, parsed_params.restore_session.sampling_factor);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(20),
+  EXPECT_EQ(base::Seconds(20),
             parsed_params.restore_session.max_collection_delay);
 }
 

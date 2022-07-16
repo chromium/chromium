@@ -138,7 +138,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
                                 if (lastFavicon.get() != null) {
                                     drawFaviconThenMaybeSendBack(lastFavicon.get(), index);
                                 } else {
-                                    mTabListFaviconProvider.getFaviconForUrlAsync(
+                                    mTabListFaviconProvider.getFaviconDrawableForUrlAsync(
                                             url, isIncognito, (Drawable favicon) -> {
                                                 lastFavicon.set(favicon);
                                                 drawFaviconThenMaybeSendBack(favicon, index);
@@ -347,7 +347,8 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
     private void initializedThumbnailRects(Context context, float expectedThumbnailAspectRatio) {
         boolean themeRefactorEnabled = TabUiThemeProvider.themeRefactorEnabled();
 
-        float thumbnailHorizontalPadding = TabUiThemeProvider.getTabCardPaddingDimension(context);
+        float thumbnailHorizontalPadding =
+                TabUiThemeProvider.getTabMiniThumbnailPaddingDimension(context);
         float thumbnailVerticalPadding = themeRefactorEnabled
                 ? thumbnailHorizontalPadding
                 : thumbnailHorizontalPadding / expectedThumbnailAspectRatio;

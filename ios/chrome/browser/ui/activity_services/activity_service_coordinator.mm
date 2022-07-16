@@ -68,12 +68,15 @@
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForBrowserState(browserState);
+  id<BookmarksCommands> bookmarksHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BookmarksCommands);
   self.mediator =
       [[ActivityServiceMediator alloc] initWithHandler:self.handler
-                                      bookmarksHandler:self.scopedHandler
+                                      bookmarksHandler:bookmarksHandler
                                    qrGenerationHandler:self.scopedHandler
                                            prefService:browserState->GetPrefs()
-                                         bookmarkModel:bookmarkModel];
+                                         bookmarkModel:bookmarkModel
+                                    baseViewController:self.baseViewController];
 
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();

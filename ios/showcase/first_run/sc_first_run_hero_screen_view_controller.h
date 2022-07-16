@@ -7,11 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
-#import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller_delegate.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
 // Extends the base delegate protocol to handle taps on the custom button.
-@protocol HeroScreenDelegate <FirstRunScreenViewControllerDelegate>
+@protocol HeroScreenDelegate <PromoStyleViewControllerDelegate>
 
 // Invoked when the custom action button is tapped.
 - (void)didTapCustomActionButton;
@@ -20,7 +20,7 @@
 
 // A view controller to showcase an example hero screen for the new first run
 // experience.
-@interface SCFirstRunHeroScreenViewController : FirstRunScreenViewController
+@interface SCFirstRunHeroScreenViewController : PromoStyleViewController
 
 @property(nonatomic, weak) id<HeroScreenDelegate> delegate;
 

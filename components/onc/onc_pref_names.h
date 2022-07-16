@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_ONC_ONC_PREF_NAMES_H_
 #define COMPONENTS_ONC_ONC_PREF_NAMES_H_
 
-#include "components/onc/onc_export.h"
+#include "base/component_export.h"
 
 class PrefRegistrySimple;
 
@@ -17,15 +17,15 @@ namespace onc {
 
 namespace prefs {
 
-ONC_EXPORT extern const char kDeviceOpenNetworkConfiguration[];
-ONC_EXPORT extern const char kOpenNetworkConfiguration[];
+COMPONENT_EXPORT(ONC) extern const char kDeviceOpenNetworkConfiguration[];
+COMPONENT_EXPORT(ONC) extern const char kOpenNetworkConfiguration[];
 
 }  // namespace prefs
 
-ONC_EXPORT void RegisterPrefs(PrefRegistrySimple* registry);
+COMPONENT_EXPORT(ONC) void RegisterPrefs(PrefRegistrySimple* registry);
 
-ONC_EXPORT void RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry);
+COMPONENT_EXPORT(ONC)
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 }  // namespace onc
 

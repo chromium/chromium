@@ -33,19 +33,19 @@ bool HostIsInSet(const std::string& host, const std::set<std::string>& set) {
 
 }  // namespace
 
-bool IsExtensionOrSharedModuleWhitelisted(
+bool IsExtensionOrSharedModuleAllowed(
     const GURL& url,
     const extensions::ExtensionSet* extension_set,
-    const std::set<std::string>& whitelist) {
+    const std::set<std::string>& allowlist) {
   if (!url.is_valid() || !url.SchemeIs(extensions::kExtensionScheme))
     return false;
 
   const std::string host = url.host();
-  if (HostIsInSet(host, whitelist))
+  if (HostIsInSet(host, allowlist))
     return true;
 
   // Check the modules that are imported by this extension to see if any of them
-  // is whitelisted.
+  // is allowed.
   const Extension* extension = extension_set ? extension_set->GetByID(host)
                                              : NULL;
   if (!extension)
@@ -58,7 +58,7 @@ bool IsExtensionOrSharedModuleWhitelisted(
         extension_set->GetByID(it->extension_id);
     if (imported_extension &&
         SharedModuleInfo::IsSharedModule(imported_extension) &&
-        HostIsInSet(it->extension_id, whitelist)) {
+        HostIsInSet(it->extension_id, allowlist)) {
       return true;
     }
   }

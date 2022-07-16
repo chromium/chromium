@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/common/frame.mojom.h"
 #include "content/renderer/navigation_client.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -24,6 +23,9 @@ namespace content {
 
 class CONTENT_EXPORT NavigationState {
  public:
+  NavigationState(const NavigationState&) = delete;
+  NavigationState& operator=(const NavigationState&) = delete;
+
   ~NavigationState();
 
   static std::unique_ptr<NavigationState> Create(
@@ -113,8 +115,6 @@ class CONTENT_EXPORT NavigationState {
   // Used to notify whether a commit request from the browser process was
   // successful or not.
   mojom::NavigationClient::CommitNavigationCallback commit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationState);
 };
 
 }  // namespace content

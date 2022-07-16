@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
 
 namespace chromeos {
@@ -20,6 +19,10 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
       const std::vector<std::string>& upstart_env)>;
 
   FakeUpstartClient();
+
+  FakeUpstartClient(const FakeUpstartClient&) = delete;
+  FakeUpstartClient& operator=(const FakeUpstartClient&) = delete;
+
   ~FakeUpstartClient() override;
 
   // Returns the fake global instance if initialized. May return null.
@@ -54,8 +57,6 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
   // callbacks decide the result StartJob() or StopJob() returns.
   StartStopJobCallback start_job_cb_;
   StartStopJobCallback stop_job_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUpstartClient);
 };
 
 }  // namespace chromeos

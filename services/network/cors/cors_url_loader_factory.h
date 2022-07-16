@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -55,6 +56,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
       scoped_refptr<ResourceSchedulerClient> resource_scheduler_client,
       mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
       const OriginAccessList* origin_access_list);
+
+  CorsURLLoaderFactory(const CorsURLLoaderFactory&) = delete;
+  CorsURLLoaderFactory& operator=(const CorsURLLoaderFactory&) = delete;
+
   ~CorsURLLoaderFactory() override;
 
   void OnLoaderCreated(std::unique_ptr<mojom::URLLoader> loader);
@@ -66,6 +71,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   void ClearBindings();
 
   int32_t process_id() const { return process_id_; }
+  mojom::CrossOriginEmbedderPolicyReporter* coep_reporter() {
+    return coep_reporter_ ? coep_reporter_.get() : nullptr;
+  }
 
  private:
   class FactoryOverride;
@@ -112,6 +120,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   const mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy_;
   net::IsolationInfo isolation_info_;
   const std::string debug_tag_;
+  const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
+  mojo::Remote<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
   // Relative order of |network_loader_factory_| and |loaders_| matters -
   // URLLoaderFactory needs to live longer than URLLoaders created using the
@@ -129,8 +139,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   const OriginAccessList* const origin_access_list_;
 
   static bool allow_external_preflights_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(CorsURLLoaderFactory);
 };
 
 }  // namespace cors

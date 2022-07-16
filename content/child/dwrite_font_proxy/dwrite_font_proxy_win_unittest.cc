@@ -68,7 +68,7 @@ class DWriteFontProxyUnitTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakeFontCollection> fake_collection_;
   mswr::ComPtr<DWriteFontCollectionProxy> collection_;
 
@@ -153,6 +153,24 @@ TEST_F(DWriteFontProxyUnitTest, GetFontFamilyShouldCreateFamily) {
   EXPECT_EQ(S_OK, hr);
   EXPECT_EQ(2u, fake_collection_->MessageCount());
   EXPECT_NE(nullptr, family.Get());
+}
+
+TEST_F(DWriteFontProxyUnitTest, PrewarmFamilyShouldCreateFamily) {
+  collection_->InitializePrewarmerForTesting(fake_collection_->CreateRemote());
+
+  collection_->PrewarmFamily("Arial");
+  // Run posted tasks in |ThreadPool|.
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(3u, fake_collection_->MessageCount());
+
+  // |FindFamilyName| should not make any mojo calls, because |PrewarmFamily|
+  // should have already created the family.
+  UINT32 index = UINT_MAX;
+  BOOL exists = FALSE;
+  HRESULT hr = collection_->FindFamilyName(L"Arial", &index, &exists);
+  EXPECT_EQ(S_OK, hr);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(3u, fake_collection_->MessageCount());
 }
 
 void CheckLocale(const std::wstring& locale_name,

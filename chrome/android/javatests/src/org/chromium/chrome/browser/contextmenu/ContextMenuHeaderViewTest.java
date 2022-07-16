@@ -26,17 +26,17 @@ import org.junit.runner.RunWith;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 /**
  * Tests for ContextMenuHeader view and {@link ContextMenuHeaderViewBinder}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class ContextMenuHeaderViewTest extends DummyUiChromeActivityTestCase {
+public class ContextMenuHeaderViewTest extends DummyUiActivityTestCase {
     private static final String TITLE_STRING = "Some Very Cool Title";
     private static final String URL_STRING = "www.website.com";
 

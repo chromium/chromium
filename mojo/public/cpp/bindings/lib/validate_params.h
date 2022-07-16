@@ -49,6 +49,9 @@ class ContainerValidateParams {
       : expected_num_elements(in_expected_num_elements),
         validate_enum_func(in_validate_enum_func) {}
 
+  ContainerValidateParams(const ContainerValidateParams&) = delete;
+  ContainerValidateParams& operator=(const ContainerValidateParams&) = delete;
+
   ~ContainerValidateParams() {
     if (element_validate_params)
       delete element_validate_params;
@@ -77,9 +80,6 @@ class ContainerValidateParams {
 
   // Validation function for enum elements.
   ValidateEnumFunc validate_enum_func = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContainerValidateParams);
 };
 
 }  // namespace internal

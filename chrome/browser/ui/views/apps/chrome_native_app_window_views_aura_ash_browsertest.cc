@@ -7,7 +7,6 @@
 #include "ash/public/cpp/split_view_test_api.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -34,6 +33,9 @@ namespace {
 
 class ViewBoundsChangeWaiter : public views::ViewObserver {
  public:
+  ViewBoundsChangeWaiter(const ViewBoundsChangeWaiter&) = delete;
+  ViewBoundsChangeWaiter& operator=(const ViewBoundsChangeWaiter&) = delete;
+
   static void VerifyY(views::View* view, int y) {
     if (y != view->bounds().y())
       ViewBoundsChangeWaiter(view).run_loop_.Run();
@@ -53,8 +55,6 @@ class ViewBoundsChangeWaiter : public views::ViewObserver {
   base::RunLoop run_loop_;
 
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ViewBoundsChangeWaiter);
 };
 
 }  // namespace
@@ -63,6 +63,12 @@ class ChromeNativeAppWindowViewsAuraAshBrowserTest
     : public AppWindowInteractiveTest {
  public:
   ChromeNativeAppWindowViewsAuraAshBrowserTest() = default;
+
+  ChromeNativeAppWindowViewsAuraAshBrowserTest(
+      const ChromeNativeAppWindowViewsAuraAshBrowserTest&) = delete;
+  ChromeNativeAppWindowViewsAuraAshBrowserTest& operator=(
+      const ChromeNativeAppWindowViewsAuraAshBrowserTest&) = delete;
+
   ~ChromeNativeAppWindowViewsAuraAshBrowserTest() override = default;
 
  protected:
@@ -120,9 +126,6 @@ class ChromeNativeAppWindowViewsAuraAshBrowserTest
   }
 
   extensions::AppWindow* app_window_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeNativeAppWindowViewsAuraAshBrowserTest);
 };
 
 // Verify that immersive mode is enabled or disabled as expected.

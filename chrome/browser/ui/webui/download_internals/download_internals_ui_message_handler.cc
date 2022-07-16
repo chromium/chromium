@@ -26,17 +26,17 @@ DownloadInternalsUIMessageHandler::~DownloadInternalsUIMessageHandler() {
 }
 
 void DownloadInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getServiceStatus",
       base::BindRepeating(
           &DownloadInternalsUIMessageHandler::HandleGetServiceStatus,
           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getServiceDownloads",
       base::BindRepeating(
           &DownloadInternalsUIMessageHandler::HandleGetServiceDownloads,
           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "startDownload",
       base::BindRepeating(
           &DownloadInternalsUIMessageHandler::HandleStartDownload,

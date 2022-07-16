@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
@@ -25,6 +24,10 @@ class CommitRequestEvent : public ProtocolEvent {
                      size_t num_items,
                      ModelTypeSet contributing_types,
                      const sync_pb::ClientToServerMessage& request);
+
+  CommitRequestEvent(const CommitRequestEvent&) = delete;
+  CommitRequestEvent& operator=(const CommitRequestEvent&) = delete;
+
   ~CommitRequestEvent() override;
 
   std::unique_ptr<ProtocolEvent> Clone() const override;
@@ -40,8 +43,6 @@ class CommitRequestEvent : public ProtocolEvent {
   const size_t num_items_;
   const ModelTypeSet contributing_types_;
   const sync_pb::ClientToServerMessage request_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommitRequestEvent);
 };
 
 }  // namespace syncer

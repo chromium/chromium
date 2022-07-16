@@ -15,16 +15,15 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
@@ -101,12 +100,6 @@ net::NetworkTrafficAnnotationTag kChromeCleanerTrafficAnnotation =
         policy_exception_justification: "Not implemented."
   })");
 
-void RecordCleanerDownloadStatusHistogram(
-    CleanerDownloadStatusHistogramValue value) {
-  UMA_HISTOGRAM_ENUMERATION("SoftwareReporter.Cleaner.DownloadStatus", value,
-                            CLEANER_DOWNLOAD_STATUS_MAX);
-}
-
 // Class that will attempt to download the Chrome Cleaner executable and call a
 // given callback when done. Instances of ChromeCleanerFetcher own themselves
 // and will self-delete if they encounter an error or when the network request
@@ -116,6 +109,9 @@ class ChromeCleanerFetcher {
   ChromeCleanerFetcher(ChromeCleanerFetchedCallback fetched_callback,
                        network::mojom::URLLoaderFactory* url_loader_factory);
 
+  ChromeCleanerFetcher(const ChromeCleanerFetcher&) = delete;
+  ChromeCleanerFetcher& operator=(const ChromeCleanerFetcher&) = delete;
+
  private:
   // Must be called on a sequence where IO is allowed.
   bool CreateTemporaryDirectory();
@@ -123,12 +119,6 @@ class ChromeCleanerFetcher {
   void OnTemporaryDirectoryCreated(bool success);
   void PostCallbackAndDeleteSelf(base::FilePath path,
                                  ChromeCleanerFetchStatus fetch_status);
-
-  // Sends a histogram indicating an error and invokes the fetch callback if
-  // the cleaner binary can't be downloaded or saved to the disk.
-  void RecordDownloadStatusAndPostCallback(
-      CleanerDownloadStatusHistogramValue histogram_value,
-      ChromeCleanerFetchStatus fetch_status);
 
   void RecordTimeToCompleteDownload(FetchCompletedReasonHistogramSuffix suffix,
                                     base::TimeDelta download_duration);
@@ -148,8 +138,6 @@ class ChromeCleanerFetcher {
   // allowed.
   std::unique_ptr<base::ScopedTempDir, base::OnTaskRunnerDeleter>
       scoped_temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeCleanerFetcher);
 };
 
 ChromeCleanerFetcher::ChromeCleanerFetcher(
@@ -179,8 +167,6 @@ bool ChromeCleanerFetcher::CreateTemporaryDirectory() {
 
 void ChromeCleanerFetcher::OnTemporaryDirectoryCreated(bool success) {
   if (!success) {
-    RecordCleanerDownloadStatusHistogram(
-        CLEANER_DOWNLOAD_STATUS_FAILED_TO_CREATE_TEMP_DIR);
     PostCallbackAndDeleteSelf(
         base::FilePath(),
         ChromeCleanerFetchStatus::kFailedToCreateTemporaryDirectory);
@@ -230,9 +216,8 @@ void ChromeCleanerFetcher::OnDownloadedToFile(base::Time start_time,
                              url_loader_->NetError());
     RecordTimeToCompleteDownload(
         FetchCompletedReasonHistogramSuffix::kNetworkError, download_duration);
-    RecordDownloadStatusAndPostCallback(
-        CLEANER_DOWNLOAD_STATUS_OTHER_FAILURE,
-        ChromeCleanerFetchStatus::kOtherFailure);
+    PostCallbackAndDeleteSelf(base::FilePath(),
+                              ChromeCleanerFetchStatus::kOtherFailure);
     return;
   }
 
@@ -248,32 +233,22 @@ void ChromeCleanerFetcher::OnDownloadedToFile(base::Time start_time,
   RecordTimeToCompleteDownload(suffix, download_duration);
 
   if (response_code == net::HTTP_NOT_FOUND) {
-    RecordDownloadStatusAndPostCallback(
-        CLEANER_DOWNLOAD_STATUS_NOT_FOUND_ON_SERVER,
-        ChromeCleanerFetchStatus::kNotFoundOnServer);
+    PostCallbackAndDeleteSelf(base::FilePath(),
+                              ChromeCleanerFetchStatus::kNotFoundOnServer);
     return;
   }
 
   if (response_code != net::HTTP_OK) {
-    RecordDownloadStatusAndPostCallback(
-        CLEANER_DOWNLOAD_STATUS_OTHER_FAILURE,
-        ChromeCleanerFetchStatus::kOtherFailure);
+    PostCallbackAndDeleteSelf(base::FilePath(),
+                              ChromeCleanerFetchStatus::kOtherFailure);
     return;
   }
 
   // Take ownership of the scoped temp directory so it is not deleted.
   scoped_temp_dir_->Take();
 
-  RecordCleanerDownloadStatusHistogram(CLEANER_DOWNLOAD_STATUS_SUCCEEDED);
   PostCallbackAndDeleteSelf(std::move(path),
                             ChromeCleanerFetchStatus::kSuccess);
-}
-
-void ChromeCleanerFetcher::RecordDownloadStatusAndPostCallback(
-    CleanerDownloadStatusHistogramValue histogram_value,
-    ChromeCleanerFetchStatus fetch_status) {
-  RecordCleanerDownloadStatusHistogram(histogram_value);
-  PostCallbackAndDeleteSelf(base::FilePath(), fetch_status);
 }
 
 void ChromeCleanerFetcher::RecordTimeToCompleteDownload(

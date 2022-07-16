@@ -16,6 +16,10 @@ namespace test {
 class MessageQueue {
  public:
   MessageQueue();
+
+  MessageQueue(const MessageQueue&) = delete;
+  MessageQueue& operator=(const MessageQueue&) = delete;
+
   ~MessageQueue();
 
   bool IsEmpty() const;
@@ -33,8 +37,6 @@ class MessageQueue {
   void Pop();
 
   base::queue<Message> queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageQueue);
 };
 
 }  // namespace test

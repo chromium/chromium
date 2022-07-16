@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/offscreen_canvas_placeholder.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/resource_id_traits.h"

@@ -19,7 +19,7 @@ js_library("modules") {
     "..:utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:event_tracker.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -42,6 +42,7 @@ js_library("module_descriptors") {
     "drive:module",
     "drive_v2:module",
     "photos:module",
+    "recipes_v2:module",
     "task_module:module",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -103,6 +104,7 @@ group("web_components") {
     "drive_v2:web_components",
     "dummy:web_components",
     "photos:web_components",
+    "recipes_v2:web_components",
     "task_module:web_components",
   ]
 }
@@ -159,6 +161,7 @@ preprocess_if_expr("preprocess_gen") {
     "modules.js",
     "info_dialog.js",
     "task_module/module.js",
+    "recipes_v2/module.js",
     "cart/module.js",
     "cart_v2/module.js",
     "drive/module.js",

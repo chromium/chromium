@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -54,6 +53,9 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
                    sk_sp<SkColorSpace> color_space,
                    const bool allow_keeping_read_access = true);
 
+  ImageContextImpl(const ImageContextImpl&) = delete;
+  ImageContextImpl& operator=(const ImageContextImpl&) = delete;
+
   ~ImageContextImpl() final;
 
   void OnContextLost() final;
@@ -81,6 +83,8 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
       gpu::MailboxManager* mailbox_manager,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores);
+  bool BeginRasterAccess(
+      gpu::SharedImageRepresentationFactory* representation_factory);
   void EndAccessIfNecessary();
 
  private:
@@ -107,11 +111,14 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   // Only one of the follow should be non-null at the same time.
   scoped_refptr<gpu::gles2::TexturePassthrough> texture_passthrough_;
   std::unique_ptr<gpu::SharedImageRepresentationSkia> representation_;
+  std::unique_ptr<gpu::SharedImageRepresentationRaster> raster_representation_;
 
   // For scoped read accessing |representation|. It is only accessed on GPU
   // thread.
   std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedReadAccess>
       representation_scoped_read_access_;
+  std::unique_ptr<gpu::SharedImageRepresentationRaster::ScopedReadAccess>
+      representation_raster_scoped_access_;
 
   // For holding SkPromiseImageTexture create from |fallback_texture| or legacy
   // mailbox.
@@ -120,8 +127,6 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   // The |promise_image_texture| is used for fulfilling the promise image. It is
   // used on GPU thread.
   SkPromiseImageTexture* promise_image_texture_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageContextImpl);
 };
 
 }  // namespace viz

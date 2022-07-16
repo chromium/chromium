@@ -39,7 +39,8 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/tree/tree_view.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -259,91 +260,62 @@ void BookmarkEditorView::Init() {
     url = details_.bookmark_data.url.value();
     title = details_.bookmark_data.title;
   }
-  auto title_tf = std::make_unique<views::Textfield>();
-  title_tf->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_BOOKMARK_AX_EDITOR_NAME_LABEL));
-  title_tf->SetText(title);
-  title_tf->set_controller(this);
 
-  std::unique_ptr<views::TreeView> tree_view;
-  if (show_tree_) {
-    tree_view = std::make_unique<views::TreeView>();
-    tree_view->SetRootShown(false);
-    tree_view->set_context_menu_controller(this);
-  }
-
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  views::BoxLayout* layout =
+      SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+          provider->GetDistanceMetric(
+              views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  auto* labels = AddChildView(std::make_unique<views::View>());
+  auto* label_layout =
+      labels->SetLayoutManager(std::make_unique<views::TableLayout>());
+  label_layout
+      ->AddColumn(views::LayoutAlignment::kStart,
+                  views::LayoutAlignment::kCenter,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize,
+                        provider->GetDistanceMetric(
+                            views::DISTANCE_RELATED_CONTROL_HORIZONTAL))
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kCenter, 1.0f,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(1, views::TableLayout::kFixedSize);
 
-  const int labels_column_set_id = 0;
-  const int single_column_view_set_id = 1;
-  const int buttons_column_set_id = 2;
-
-  using ColumnSize = views::GridLayout::ColumnSize;
-  views::ColumnSet* column_set = layout->AddColumnSet(labels_column_set_id);
-  column_set->AddColumn(
-      provider->GetControlLabelGridAlignment(), views::GridLayout::CENTER,
-      views::GridLayout::kFixedSize, ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER, 1.0,
-                        ColumnSize::kUsePreferred, 0, 0);
-
-  column_set = layout->AddColumnSet(single_column_view_set_id);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                        ColumnSize::kUsePreferred, 0, 0);
-
-  column_set = layout->AddColumnSet(buttons_column_set_id);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::LEADING,
-                        views::GridLayout::kFixedSize,
-                        ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(
-      1.0,
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::LEADING,
-                        views::GridLayout::kFixedSize,
-                        ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::LEADING,
-                        views::GridLayout::kFixedSize,
-                        ColumnSize::kUsePreferred, 0, 0);
-  column_set->LinkColumnSizes({0, 2, 4});
-
-  layout->StartRow(views::GridLayout::kFixedSize, labels_column_set_id);
-  layout->AddView(std::make_unique<views::Label>(
+  labels->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NAME_LABEL)));
-  title_tf_ = layout->AddView(std::move(title_tf));
+  title_tf_ = labels->AddChildView(std::make_unique<views::Textfield>());
+  title_tf_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_BOOKMARK_AX_EDITOR_NAME_LABEL));
+  title_tf_->SetText(title);
+  title_tf_->set_controller(this);
 
   if (details_.GetNodeType() != BookmarkNode::FOLDER) {
-    auto url_tf = std::make_unique<views::Textfield>();
-    url_tf->SetText(chrome::FormatBookmarkURLForDisplay(url));
-    url_tf->set_controller(this);
-    url_tf->SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_BOOKMARK_AX_EDITOR_URL_LABEL));
-    url_tf->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_URL);
+    label_layout
+        ->AddPaddingRow(views::TableLayout::kFixedSize,
+                        provider->GetDistanceMetric(
+                            views::DISTANCE_RELATED_CONTROL_VERTICAL))
+        .AddRows(1, views::TableLayout::kFixedSize);
 
-    layout->AddPaddingRow(
-        views::GridLayout::kFixedSize,
-        provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL));
-
-    layout->StartRow(views::GridLayout::kFixedSize, labels_column_set_id);
-    layout->AddView(std::make_unique<views::Label>(
+    labels->AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_URL_LABEL)));
-    url_tf_ = layout->AddView(std::move(url_tf));
+    url_tf_ = labels->AddChildView(std::make_unique<views::Textfield>());
+    url_tf_->SetText(chrome::FormatBookmarkURLForDisplay(url));
+    url_tf_->set_controller(this);
+    url_tf_->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_BOOKMARK_AX_EDITOR_URL_LABEL));
+    url_tf_->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_URL);
   }
 
   if (show_tree_) {
-    layout->AddPaddingRow(
-        views::GridLayout::kFixedSize,
-        provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL));
-    layout->StartRow(1.0, single_column_view_set_id);
+    auto tree_view = std::make_unique<views::TreeView>();
+    tree_view->SetRootShown(false);
+    tree_view->set_context_menu_controller(this);
     tree_view_ = tree_view.get();
-    layout->AddView(
+    auto* scroll_view = AddChildView(
         views::TreeView::CreateScrollViewWithTree(std::move(tree_view)));
+    layout->SetFlexForView(scroll_view, 1);
   }
 
   if (!show_tree_ || bb_model_->loaded())

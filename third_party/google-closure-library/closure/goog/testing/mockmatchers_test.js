@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.testing.mockmatchersTest');
 goog.setTestOnly('goog.testing.mockmatchersTest');
@@ -28,6 +20,7 @@ const bar = function() {};
 // Simple class to test adding error messages to
 // MockExpectation objects
 function MockMock() {
+  /** @suppress {globalThis} suppression added to enable type checking */
   this.errorMessages = [];
 }
 
@@ -44,13 +37,14 @@ MockMock.prototype.getErrorMessageCount = function() {
 
 testSuite({
   setUp() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     mockExpect = new MockMock();
   },
 
 
   testNoMatchName() {
     // A matcher that does not fill in the match name
-    const matcher = new ArgumentMatcher(goog.isString);
+    const matcher = new ArgumentMatcher(x => typeof x === 'string');
 
     // Make sure the lack of match name doesn't affect the ability
     // to return True/False
@@ -67,6 +61,7 @@ testSuite({
   },
 
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testInstanceOf() {
     const matcher = new matchers.InstanceOf(foo);
     assertTrue(matcher.matches(new foo()));
@@ -151,12 +146,16 @@ testSuite({
   },
 
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testSaveArgument() {
     let saveMatcher = new matchers.SaveArgument();
     assertTrue(saveMatcher.matches(42));
     assertEquals(42, saveMatcher.arg);
 
-    saveMatcher = new matchers.SaveArgument(goog.isString);
+    saveMatcher = new matchers.SaveArgument(x => typeof x === 'string');
     assertTrue(saveMatcher.matches('test'));
     assertEquals('test', saveMatcher.arg);
     assertFalse(saveMatcher.matches(17));
@@ -269,6 +268,7 @@ testSuite({
   },
 
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testIsObject() {
     assertTrue(matchers.isObject.matches({}));
     assertTrue(matchers.isObject.matches(new Object()));
@@ -302,6 +302,7 @@ testSuite({
   },
 
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testIgnoreArgumentsMatcher() {
     // ignoreArgument always returns true:
     assertTrue(matchers.ignoreArgument.matches());
@@ -321,9 +322,11 @@ testSuite({
     assertFalse(matchers.flexibleArrayMatcher(a1, a3));
 
     // Test that basic lists with basic class instances are verified properly.
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const instance = new foo();
     a1 = [1, 'test', instance];
     a2 = [1, 'test', instance];
+    /** @suppress {checkTypes} suppression added to enable type checking */
     a3 = [1, 'test', new foo()];
     assertTrue(matchers.flexibleArrayMatcher(a1, a2));
     assertTrue(matchers.flexibleArrayMatcher(a1, a3));
@@ -338,6 +341,7 @@ testSuite({
 
     // Test that the arguments are always verified when the verifier returns
     // true.
+    /** @suppress {checkTypes} suppression added to enable type checking */
     a1 = [1, 'test', new argVerifier()];
     a2 = [1, 'test', 'anything'];
     a3 = [1, 'test', 12345];
@@ -379,7 +383,7 @@ testSuite({
  * Utility method for checking for an ObjectEquals match failure.  Checks that
  * the expected error message was included in the error messages appended to
  * the expectation object.
- * @param {!ArgumentMatcher.ObjectEquals} matcher
+ * @param {?} matcher
  *     The matcher to test against.
  * @param {!Object} matchObject The object to compare.
  * @param {string=} opt_errorMsg The deep object comparison failure message

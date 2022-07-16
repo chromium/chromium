@@ -59,7 +59,12 @@ void ExternalFocusTracker::StoreLastFocusedView(View* view) {
 }
 
 void ExternalFocusTracker::StartTracking() {
-  StoreLastFocusedView(focus_manager_->GetFocusedView());
+  View* current_focused_view = focus_manager_->GetFocusedView();
+  // During focus restore events, it's possible for focus to already be within
+  // the parent_view_.
+  if (!parent_view_->Contains(current_focused_view))
+    StoreLastFocusedView(current_focused_view);
+
   focus_manager_->AddFocusChangeListener(this);
 }
 

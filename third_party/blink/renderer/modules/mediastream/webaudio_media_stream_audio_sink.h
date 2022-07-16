@@ -46,10 +46,15 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
       public media::AudioConverter::InputCallback,
       public WebMediaStreamAudioSink {
  public:
-  static const size_t kWebAudioRenderBufferSize;
+  static const int kWebAudioRenderBufferSize;
 
   explicit WebAudioMediaStreamAudioSink(MediaStreamComponent* component,
                                         int context_sample_rate);
+
+  WebAudioMediaStreamAudioSink(const WebAudioMediaStreamAudioSink&) = delete;
+  WebAudioMediaStreamAudioSink& operator=(const WebAudioMediaStreamAudioSink&) =
+      delete;
+
   ~WebAudioMediaStreamAudioSink() override;
 
   // WebMediaStreamAudioSink implementation.
@@ -61,7 +66,7 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
   // WebAudioSourceProvider implementation.
   void SetClient(WebAudioSourceProviderClient* client) override;
   void ProvideInput(const WebVector<float*>& audio_data,
-                    size_t number_of_frames) override;
+                    int number_of_frames) override;
 
   // Method to allow the unittests to inject its own sink parameters to avoid
   // query the hardware.
@@ -111,8 +116,6 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
 
   // Used to assert that OnReadyStateChanged() is not accessed concurrently.
   REENTRANCY_CHECKER(ready_state_reentrancy_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(WebAudioMediaStreamAudioSink);
 };
 
 }  // namespace blink

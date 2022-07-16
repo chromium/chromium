@@ -1,0 +1,8 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
+++IA2_ROLE_SECTION ia2_hypertext='<obj0>'
+++++IA2_ROLE_SECTION ia2_hypertext='<obj0><obj1>'
+++++++ROLE_SYSTEM_BUTTONMENU name='Custom selectmenu button' EXPANDED HASPOPUP haspopup:menu ia2_hypertext='Custom selectmenu button'
+++++++ROLE_SYSTEM_LIST ia2_hypertext='<obj0><obj1><obj2>'
+++++++++ROLE_SYSTEM_LISTITEM name='Option 1' SELECTED FOCUSABLE SELECTABLE ia2_hypertext='Option 1'
+++++++++ROLE_SYSTEM_LISTITEM name='Option 2' FOCUSABLE SELECTABLE ia2_hypertext='Option 2'
+++++++++ROLE_SYSTEM_LISTITEM name='Option 3' FOCUSABLE SELECTABLE ia2_hypertext='Option 3'

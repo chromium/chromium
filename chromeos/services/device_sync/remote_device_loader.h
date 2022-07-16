@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
@@ -63,6 +62,9 @@ class RemoteDeviceLoader {
       std::unique_ptr<multidevice::SecureMessageDelegate>
           secure_message_delegate);
 
+  RemoteDeviceLoader(const RemoteDeviceLoader&) = delete;
+  RemoteDeviceLoader& operator=(const RemoteDeviceLoader&) = delete;
+
   virtual ~RemoteDeviceLoader();
 
   // Loads the RemoteDevice objects. |callback| will be invoked upon completion.
@@ -95,8 +97,6 @@ class RemoteDeviceLoader {
   multidevice::RemoteDeviceList remote_devices_;
 
   base::WeakPtrFactory<RemoteDeviceLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDeviceLoader);
 };
 
 }  // namespace device_sync

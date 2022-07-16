@@ -34,6 +34,9 @@ class Watch : public base::RefCountedThreadSafe<Watch> {
         MojoHandleSignals signals,
         MojoTriggerCondition condition);
 
+  Watch(const Watch&) = delete;
+  Watch& operator=(const Watch&) = delete;
+
   // Notifies the Watch of a potential state change.
   //
   // If |allowed_to_call_callback| is true, this may add a notification
@@ -117,8 +120,6 @@ class Watch : public base::RefCountedThreadSafe<Watch> {
 
   // Guarded by |notification_lock_|.
   bool is_cancelled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Watch);
 };
 
 }  // namespace core

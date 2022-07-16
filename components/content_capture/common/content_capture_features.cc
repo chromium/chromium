@@ -25,12 +25,19 @@ const base::Feature kContentCaptureTriggeringForExperiment{
     "ContentCaptureTriggeringForExperiment", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+const base::Feature kContentCaptureInWebLayer{
+    "ContentCaptureInWebLayer", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsContentCaptureEnabled() {
   return base::FeatureList::IsEnabled(kContentCapture);
 }
 
 bool ShouldTriggerContentCaptureForExperiment() {
   return base::FeatureList::IsEnabled(kContentCaptureTriggeringForExperiment);
+}
+
+bool IsContentCaptureEnabledInWebLayer() {
+  return base::FeatureList::IsEnabled(kContentCaptureInWebLayer);
 }
 
 int TaskInitialDelayInMilliseconds() {

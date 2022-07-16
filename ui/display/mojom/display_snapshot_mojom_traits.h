@@ -23,6 +23,21 @@ struct StructTraits<display::mojom::DisplaySnapshotDataView,
     return snapshot->display_id();
   }
 
+  static int64_t port_display_id(
+      const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
+    return snapshot->port_display_id();
+  }
+
+  static int64_t edid_display_id(
+      const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
+    return snapshot->edid_display_id();
+  }
+
+  static uint16_t connector_index(
+      const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
+    return snapshot->connector_index();
+  }
+
   static const gfx::Point& origin(
       const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
     return snapshot->origin();

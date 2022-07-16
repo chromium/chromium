@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -29,6 +28,9 @@ class MEDIA_EXPORT WavAudioHandler {
     kAudioFormatFloat = 0x0003,
     kAudioFormatExtensible = 0xfffe
   };
+
+  WavAudioHandler(const WavAudioHandler&) = delete;
+  WavAudioHandler& operator=(const WavAudioHandler&) = delete;
 
   virtual ~WavAudioHandler();
 
@@ -73,8 +75,6 @@ class MEDIA_EXPORT WavAudioHandler {
   const uint16_t bits_per_sample_;
   const AudioFormat audio_format_;
   uint32_t total_frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(WavAudioHandler);
 };
 
 }  // namespace media

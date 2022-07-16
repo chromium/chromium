@@ -190,7 +190,7 @@ TEST(ReadingListEntry, TimeUntilNextTryInThePast) {
               kFirstBackoff * fuzzing);
 
   // Action.
-  clock.Advance(base::TimeDelta::FromMinutes(kFirstBackoff * 2));
+  clock.Advance(base::Minutes(kFirstBackoff * 2));
 
   // Test.
   EXPECT_EQ(0, e.TimeUntilNextTry().InMilliseconds());

@@ -21,7 +21,7 @@ namespace {
 
 base::TimeTicks MillisecondsToTestTimeTicks(int64_t ms) {
   return PredictionUnittestHelpers::GetStaticTimeStampForTests() +
-         base::TimeDelta::FromMilliseconds(ms);
+         base::Milliseconds(ms);
 }
 
 }  // namespace
@@ -30,13 +30,15 @@ class PredictionMetricsHandlerTest : public testing::Test {
  public:
   explicit PredictionMetricsHandlerTest() {}
 
+  PredictionMetricsHandlerTest(const PredictionMetricsHandlerTest&) = delete;
+  PredictionMetricsHandlerTest& operator=(const PredictionMetricsHandlerTest&) =
+      delete;
+
   void SetUp() override {
     metrics_handler_ = std::make_unique<PredictionMetricsHandler>(
         "Event.InputEventPrediction.Scroll");
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PredictionMetricsHandlerTest);
 
   int GetInterpolatedEventForPredictedEvent(const base::TimeTicks& timestamp,
                                             gfx::PointF* interpolated) {
@@ -80,7 +82,7 @@ class PredictionMetricsHandlerTest : public testing::Test {
 TEST_F(PredictionMetricsHandlerTest, CanComputeMetricsTest) {
   base::TimeTicks start_time =
       PredictionUnittestHelpers::GetStaticTimeStampForTests();
-  base::TimeDelta dt = base::TimeDelta::FromMilliseconds(8);
+  base::TimeDelta dt = base::Milliseconds(8);
 
   // Need at least 2 real events to start comput metrics.
   {
@@ -120,7 +122,7 @@ TEST_F(PredictionMetricsHandlerTest, CanComputeMetricsTest) {
 TEST_F(PredictionMetricsHandlerTest, InterpolationTest) {
   base::TimeTicks start_time =
       PredictionUnittestHelpers::GetStaticTimeStampForTests();
-  base::TimeDelta dt = base::TimeDelta::FromMilliseconds(8);
+  base::TimeDelta dt = base::Milliseconds(8);
   gfx::PointF interpolated;
 
   metrics_handler_->AddRealEvent(gfx::PointF(2, 2), start_time + 1 * dt,

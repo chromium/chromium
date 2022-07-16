@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -52,6 +51,9 @@ class UsbChooserBrowserTest : public DialogBrowserTest {
  public:
   UsbChooserBrowserTest() {}
 
+  UsbChooserBrowserTest(const UsbChooserBrowserTest&) = delete;
+  UsbChooserBrowserTest& operator=(const UsbChooserBrowserTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     ShowChooser(name, browser(),
@@ -61,9 +63,6 @@ class UsbChooserBrowserTest : public DialogBrowserTest {
  protected:
   // Number of devices to show in the chooser.
   int device_count_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsbChooserBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(UsbChooserBrowserTest, InvokeUi_NoDevicesBubble) {
@@ -91,6 +90,10 @@ class BluetoothChooserBrowserTest : public DialogBrowserTest {
   BluetoothChooserBrowserTest()
       : status_(permissions::FakeBluetoothChooserController::BluetoothStatus::
                     UNAVAILABLE) {}
+
+  BluetoothChooserBrowserTest(const BluetoothChooserBrowserTest&) = delete;
+  BluetoothChooserBrowserTest& operator=(const BluetoothChooserBrowserTest&) =
+      delete;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -154,8 +157,6 @@ class BluetoothChooserBrowserTest : public DialogBrowserTest {
  private:
   permissions::FakeBluetoothChooserController::BluetoothStatus status_;
   std::vector<permissions::FakeBluetoothChooserController::FakeDevice> devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothChooserBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(BluetoothChooserBrowserTest,

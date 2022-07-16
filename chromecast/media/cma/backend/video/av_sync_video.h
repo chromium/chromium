@@ -23,6 +23,10 @@ class RateAdjuster;
 class AvSyncVideo : public AvSync {
  public:
   explicit AvSyncVideo(MediaPipelineBackendForMixer* const backend);
+
+  AvSyncVideo(const AvSyncVideo&) = delete;
+  AvSyncVideo& operator=(const AvSyncVideo&) = delete;
+
   ~AvSyncVideo() override;
 
   // AvSync implementation:
@@ -69,8 +73,6 @@ class AvSyncVideo : public AvSync {
 
   int64_t last_apts_value_ = INT64_MIN;
   int64_t last_apts_timestamp_ = INT64_MIN;
-
-  DISALLOW_COPY_AND_ASSIGN(AvSyncVideo);
 };
 
 }  // namespace media

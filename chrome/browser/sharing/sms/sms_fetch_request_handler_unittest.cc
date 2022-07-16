@@ -43,6 +43,10 @@ const char kDefaultDeviceName[] = "Default Device";
 class MockSmsFetcher : public SmsFetcher {
  public:
   MockSmsFetcher() = default;
+
+  MockSmsFetcher(const MockSmsFetcher&) = delete;
+  MockSmsFetcher& operator=(const MockSmsFetcher&) = delete;
+
   ~MockSmsFetcher() = default;
 
   MOCK_METHOD2(Subscribe,
@@ -56,9 +60,6 @@ class MockSmsFetcher : public SmsFetcher {
                void(const content::OriginList& origin_list,
                     Subscriber* subscriber));
   MOCK_METHOD0(HasSubscribers, bool());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSmsFetcher);
 };
 
 class MockSmsFetchRequestHandler : public SmsFetchRequestHandler {
@@ -237,7 +238,7 @@ TEST(SmsFetchRequestHandlerTest, AskUserPermissionOnReceive) {
 
   testing::Mock::VerifyAndClear(&handler);
   EXPECT_CALL(handler, AskUserPermission);
-  handler.task_environment().FastForwardBy(base::TimeDelta::FromSeconds(1));
+  handler.task_environment().FastForwardBy(base::Seconds(1));
 }
 
 TEST(SmsFetchRequestHandlerTest, SendSuccessMessageOnConfirm) {

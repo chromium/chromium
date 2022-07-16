@@ -96,7 +96,7 @@ class DownloadsListTrackerTest : public testing::Test {
 
   MockDownloadItem* CreateNextItem() {
     return CreateMock(mock_items_.size(), base::Time::UnixEpoch() +
-        base::TimeDelta::FromHours(mock_items_.size()));
+                                              base::Hours(mock_items_.size()));
   }
 
   void CreateTracker() {

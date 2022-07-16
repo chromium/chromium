@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/supports_user_data.h"
@@ -86,6 +85,11 @@ static std::unique_ptr<KeyedService> BuildSpellcheckService(
 class SpellcheckServiceUnitTestBase : public testing::Test {
  public:
   SpellcheckServiceUnitTestBase() = default;
+
+  SpellcheckServiceUnitTestBase(const SpellcheckServiceUnitTestBase&) = delete;
+  SpellcheckServiceUnitTestBase& operator=(
+      const SpellcheckServiceUnitTestBase&) = delete;
+
   ~SpellcheckServiceUnitTestBase() override = default;
 
   content::BrowserContext* browser_context() { return &profile_; }
@@ -111,9 +115,6 @@ class SpellcheckServiceUnitTestBase : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 #endif  // defined(OS_WIN)
   TestingProfile profile_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckServiceUnitTestBase);
 };
 
 class SpellcheckServiceUnitTest : public SpellcheckServiceUnitTestBase,

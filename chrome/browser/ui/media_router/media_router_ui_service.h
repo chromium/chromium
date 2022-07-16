@@ -29,6 +29,10 @@ class MediaRouterUIService : public KeyedService {
   MediaRouterUIService(
       Profile* profile,
       std::unique_ptr<MediaRouterActionController> action_controller);
+
+  MediaRouterUIService(const MediaRouterUIService&) = delete;
+  MediaRouterUIService& operator=(const MediaRouterUIService&) = delete;
+
   ~MediaRouterUIService() override;
 
   // KeyedService:
@@ -52,8 +56,6 @@ class MediaRouterUIService : public KeyedService {
   std::unique_ptr<PrefChangeRegistrar> profile_pref_registrar_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterUIService);
 };
 
 }  // namespace media_router

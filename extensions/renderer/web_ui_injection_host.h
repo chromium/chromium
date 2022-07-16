@@ -12,6 +12,10 @@
 class WebUIInjectionHost : public InjectionHost {
  public:
   WebUIInjectionHost(const extensions::mojom::HostID& host_id);
+
+  WebUIInjectionHost(const WebUIInjectionHost&) = delete;
+  WebUIInjectionHost& operator=(const WebUIInjectionHost&) = delete;
+
   ~WebUIInjectionHost() override;
 
  private:
@@ -27,8 +31,6 @@ class WebUIInjectionHost : public InjectionHost {
 
  private:
   GURL url_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIInjectionHost);
 };
 
 #endif  // EXTENSIONS_RENDERER_WEB_UI_INJECTION_HOST_H_

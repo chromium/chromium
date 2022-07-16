@@ -26,6 +26,11 @@ namespace ash {
 class ReleaseNotesNotificationTest : public BrowserWithTestWindowTest {
  public:
   ReleaseNotesNotificationTest() {}
+
+  ReleaseNotesNotificationTest(const ReleaseNotesNotificationTest&) = delete;
+  ReleaseNotesNotificationTest& operator=(const ReleaseNotesNotificationTest&) =
+      delete;
+
   ~ReleaseNotesNotificationTest() override = default;
 
   // BrowserWithTestWindowTest:
@@ -44,8 +49,7 @@ class ReleaseNotesNotificationTest : public BrowserWithTestWindowTest {
     release_notes_notification_ =
         std::make_unique<ReleaseNotesNotification>(profile());
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kReleaseNotesNotification,
-                              features::kReleaseNotesNotificationAllChannels},
+        /*enabled_features=*/{features::kReleaseNotesNotificationAllChannels},
         /*disabled_features=*/{});
   }
 
@@ -73,8 +77,6 @@ class ReleaseNotesNotificationTest : public BrowserWithTestWindowTest {
  private:
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReleaseNotesNotificationTest);
 };
 
 TEST_F(ReleaseNotesNotificationTest, DoNotShowReleaseNotesNotification) {

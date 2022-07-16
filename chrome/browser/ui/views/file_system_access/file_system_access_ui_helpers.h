@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_UI_HELPERS_H_
 
 #include <memory>
+#include <string>
 
 namespace base {
 class FilePath;
@@ -36,6 +37,10 @@ std::unique_ptr<views::View> CreateOriginPathLabel(int message_id,
                                                    const base::FilePath& path,
                                                    int text_context,
                                                    bool show_emphasis);
+
+// Returns a human-readable string for use in UI surfaces.
+// Shows the drive letter of a path if it is the root of a file system.
+std::u16string GetPathForDisplay(const base::FilePath& path);
 
 }  // namespace file_system_access_ui_helper
 

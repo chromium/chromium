@@ -49,6 +49,10 @@ constexpr size_t kRandomNameCacheSize = 256;
 class RandomNameGenerator {
  public:
   RandomNameGenerator() = default;
+
+  RandomNameGenerator(const RandomNameGenerator&) = delete;
+  RandomNameGenerator& operator=(const RandomNameGenerator&) = delete;
+
   ~RandomNameGenerator() = default;
 
   PortName GenerateRandomPortName() {
@@ -68,8 +72,6 @@ class RandomNameGenerator {
   base::Lock lock_;
   PortName cache_[kRandomNameCacheSize];
   size_t cache_index_ = kRandomNameCacheSize;
-
-  DISALLOW_COPY_AND_ASSIGN(RandomNameGenerator);
 };
 
 base::LazyInstance<RandomNameGenerator>::Leaky g_name_generator =

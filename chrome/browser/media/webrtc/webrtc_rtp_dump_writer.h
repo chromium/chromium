@@ -12,10 +12,9 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/webrtc/rtp_dump_type.h"
 
@@ -47,6 +46,9 @@ class WebRtcRtpDumpWriter {
                       const base::FilePath& outgoing_dump_path,
                       size_t max_dump_size,
                       base::RepeatingClosure max_dump_size_reached_callback);
+
+  WebRtcRtpDumpWriter(const WebRtcRtpDumpWriter&) = delete;
+  WebRtcRtpDumpWriter& operator=(const WebRtcRtpDumpWriter&) = delete;
 
   virtual ~WebRtcRtpDumpWriter();
 
@@ -139,8 +141,6 @@ class WebRtcRtpDumpWriter {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<WebRtcRtpDumpWriter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcRtpDumpWriter);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_RTP_DUMP_WRITER_H_

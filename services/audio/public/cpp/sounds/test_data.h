@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_renderer_sink.h"
 #include "services/audio/public/cpp/sounds/audio_stream_handler.h"
 
@@ -29,6 +29,10 @@ const size_t kTestAudioDataSize = base::size(kTestAudioData) - 1;
 class TestObserver : public AudioStreamHandler::TestObserver {
  public:
   TestObserver(const base::RepeatingClosure& quit);
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override;
 
   // AudioStreamHandler::TestObserver implementation:
@@ -52,8 +56,6 @@ class TestObserver : public AudioStreamHandler::TestObserver {
   int is_playing;
   media::AudioRendererSink::RenderCallback* callback_;
   std::unique_ptr<media::AudioBus> bus_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace audio

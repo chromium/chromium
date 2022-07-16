@@ -231,7 +231,7 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
                 }
 
                 @Override
-                public void onSheetStateChanged(int newState) {
+                public void onSheetStateChanged(int newState, int reason) {
                     if (newState == SheetState.HIDDEN) {
                         mIsActive = false;
                         destroyWebContents();
@@ -290,6 +290,11 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
     @Override
     public WebContents getWebContents() {
         return mWebContents;
+    }
+
+    @Override
+    public ViewGroup getContainerView() {
+        return null;
     }
 
     @Override

@@ -48,6 +48,10 @@ class GURL;
                              activityOrigin:
                                  (WindowActivityOrigin)activityOrigin;
 
+// Creates a UIAction instance configured for opening a new window using
+// |activity|.
+- (UIAction*)actionToOpenInNewWindowWithActivity:(NSUserActivity*)activity;
+
 // Creates a UIAction instance for opening an image |URL| in current tab and
 // invoke the given |completion| block after execution.
 - (UIAction*)actionOpenImageWithURL:(const GURL)URL
@@ -58,6 +62,12 @@ class GURL;
 - (UIAction*)actionOpenImageInNewTabWithUrlLoadParams:(UrlLoadParams)params
                                            completion:
                                                (ProceduralBlock)completion;
+
+// Creates a UIAction instance for showing an element.
+- (UIAction*)actionToShowLinkPreview;
+
+// Creates a UIAction instance for hidding an element.
+- (UIAction*)actionToHideLinkPreview;
 
 @end
 

@@ -8,8 +8,12 @@
 
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {flushTasks} from 'chrome://test/test_util.m.js';
+// #import {CrSettingsPrefs, Router, routes, setNearbyShareSettingsForTesting, setContactManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
+// #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+// #import {flushTasks} from 'chrome://test/test_util.js';
+// #import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
+// #import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.m.js';
 // clang-format on
 
 suite('OsSettingsPageTests', function() {
@@ -19,10 +23,22 @@ suite('OsSettingsPageTests', function() {
   /** @type {?SettingsPrefsElement} */
   let prefElement = null;
 
+  /** @type {!nearby_share.FakeContactManager} */
+  let fakeContactManager = null;
+  /** @type {!nearby_share.FakeNearbyShareSettings} */
+  let fakeSettings = null;
+
   suiteSetup(async function() {
     loadTimeData.overrideValues({
       enableBluetoothRevamp: false,
     });
+
+    fakeContactManager = new nearby_share.FakeContactManager();
+    nearby_share.setContactManagerForTesting(fakeContactManager);
+    fakeContactManager.setupContactRecords();
+
+    fakeSettings = new nearby_share.FakeNearbyShareSettings();
+    nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
 
     settings.Router.getInstance().navigateTo(settings.routes.BASIC);
     PolymerTest.clearBody();
@@ -66,8 +82,6 @@ suite('OsSettingsPageTests', function() {
     assert(!!osSettingsPrintingPage);
   });
 
-  // TODO(crbug.com/1010321) Update this to check for absence of
-  // <os-settings-bluetooth-page> when it is created.
   test(
       'Check settings-bluetooth-page exists with' +
           'enableBluetoothRevamp flag off',
@@ -75,11 +89,13 @@ suite('OsSettingsPageTests', function() {
         init();
         const settingsBluetoothPage =
             settingsPage.$$('settings-bluetooth-page');
+
+        const osSettingsBluetoothPage =
+            settingsPage.$$('os-settings-bluetooth-page');
         assert(!!settingsBluetoothPage);
+        assertFalse(!!osSettingsBluetoothPage);
       });
 
-  // TODO(crbug.com/1010321) Update this to check for existence of
-  // <os-settings-bluetooth-page> when it is created.
   test(
       'Check settings-bluetooth-page does not exist with' +
           'enableBluetoothRevamp flag on',
@@ -87,15 +103,24 @@ suite('OsSettingsPageTests', function() {
         loadTimeData.overrideValues({
           enableBluetoothRevamp: true,
         });
+
+        // Using the real CrosBluetoothConfig will crash due to no
+        // SessionManager.
+        setBluetoothConfigForTesting(new FakeBluetoothConfig());
+
         init();
         const settingsBluetoothPage =
             settingsPage.$$('settings-bluetooth-page');
+
+        const osSettingsBluetoothPage =
+            settingsPage.$$('os-settings-bluetooth-page');
+
         assertFalse(!!settingsBluetoothPage);
+        assert(!!osSettingsBluetoothPage);
       });
 
   test('Check os-settings-privacy-page exists', async () => {
     init();
-    settingsPage.isAccountManagementFlowsV2Enabled_ = false;
     const osSettingsPrivacyPage = settingsPage.$$('os-settings-privacy-page');
     assert(!!osSettingsPrivacyPage);
     Polymer.dom.flush();

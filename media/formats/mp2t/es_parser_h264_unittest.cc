@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "media/base/stream_parser_buffer.h"
@@ -29,6 +28,9 @@ class EsParserH264Test : public EsParserTestBase,
                          public testing::Test {
  public:
   EsParserH264Test() {}
+
+  EsParserH264Test(const EsParserH264Test&) = delete;
+  EsParserH264Test& operator=(const EsParserH264Test&) = delete;
 
  protected:
   void LoadH264Stream(const char* filename);
@@ -49,8 +51,6 @@ class EsParserH264Test : public EsParserTestBase,
   // Insert an AUD before each access unit.
   // Update |stream_| and |access_units_| accordingly.
   void InsertAUD();
-
-  DISALLOW_COPY_AND_ASSIGN(EsParserH264Test);
 };
 
 void EsParserH264Test::LoadH264Stream(const char* filename) {
@@ -64,7 +64,7 @@ void EsParserH264Test::LoadH264Stream(const char* filename) {
 
   // Generate some timestamps based on a 25fps stream.
   for (size_t k = 0; k < access_units_.size(); k++)
-    access_units_[k].pts = base::TimeDelta::FromMilliseconds(k * 40u);
+    access_units_[k].pts = base::Milliseconds(k * 40u);
 }
 
 void EsParserH264Test::GetAccessUnits() {
@@ -143,7 +143,7 @@ void EsParserH264Test::GetPesTimestamps(std::vector<Packet>* pes_packets_ptr) {
   // a special meaning in EsParserH264. The negative timestamps should be
   // ultimately discarded by the H264 parser since not relevant.
   for (size_t k = 0; k < pes_packets.size(); k++) {
-    (*pes_packets_ptr)[k].pts = base::TimeDelta::FromMilliseconds(-1);
+    (*pes_packets_ptr)[k].pts = base::Milliseconds(-1);
   }
 
   // Set a valid timestamp for PES packets which include the start

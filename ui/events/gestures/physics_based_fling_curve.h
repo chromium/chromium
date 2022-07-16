@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_GESTURES_PHYSICS_BASED_FLING_CURVE_H_
 #define UI_EVENTS_GESTURES_PHYSICS_BASED_FLING_CURVE_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/events/events_base_export.h"
 #include "ui/events/gesture_curve.h"
@@ -30,6 +29,10 @@ class EVENTS_BASE_EXPORT PhysicsBasedFlingCurve : public GestureCurve {
       // Maximum fling distance subject to boost_multiplier and default
       // bounds multiplier
       const gfx::Size& bounding_size);
+
+  PhysicsBasedFlingCurve(const PhysicsBasedFlingCurve&) = delete;
+  PhysicsBasedFlingCurve& operator=(const PhysicsBasedFlingCurve&) = delete;
+
   ~PhysicsBasedFlingCurve() override;
 
   // GestureCurve implementation.
@@ -72,8 +75,6 @@ class EVENTS_BASE_EXPORT PhysicsBasedFlingCurve : public GestureCurve {
   base::TimeDelta previous_time_delta_;
   gfx::Vector2dF cumulative_scroll_;
   gfx::Vector2dF prev_offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(PhysicsBasedFlingCurve);
 };
 
 }  // namespace ui

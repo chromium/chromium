@@ -47,6 +47,8 @@ class CORE_EXPORT KeyboardEventManager final
   static WebInputEvent::Modifiers GetCurrentModifierState();
   static bool CurrentCapsLockState();
 
+  bool is_handling_key_event() const { return is_handling_key_event_; }
+
  private:
   friend class Internals;
   // Allows overriding the current caps lock state for testing purposes.
@@ -63,6 +65,8 @@ class CORE_EXPORT KeyboardEventManager final
   const Member<LocalFrame> frame_;
 
   Member<ScrollManager> scroll_manager_;
+
+  bool is_handling_key_event_ = false;
 };
 
 }  // namespace blink

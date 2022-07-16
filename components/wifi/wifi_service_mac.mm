@@ -17,9 +17,8 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "components/onc/onc_constants.h"
 #include "components/wifi/network_properties.h"
@@ -31,6 +30,10 @@ namespace wifi {
 class WiFiServiceMac : public WiFiService {
  public:
   WiFiServiceMac();
+
+  WiFiServiceMac(const WiFiServiceMac&) = delete;
+  WiFiServiceMac& operator=(const WiFiServiceMac&) = delete;
+
   ~WiFiServiceMac() override;
 
   // WiFiService interface implementation.
@@ -153,8 +156,6 @@ class WiFiServiceMac : public WiFiService {
   std::string connected_network_guid_;
   // Temporary storage of network properties indexed by |network_guid|.
   base::DictionaryValue network_properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(WiFiServiceMac);
 };
 
 WiFiServiceMac::WiFiServiceMac() : wlan_observer_(nil) {

@@ -14,10 +14,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
-#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/display/screen_info.h"
+#include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/range/range.h"
@@ -244,10 +243,15 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // This method returns the ScreenInfo used by the view to render. If the
   // information is not knowable (e.g, because the view is not attached to a
   // screen yet), then a default best-guess will be used.
-  virtual void GetScreenInfo(display::ScreenInfo* screen_info) = 0;
+  virtual display::ScreenInfo GetScreenInfo() const = 0;
+
+  // This method returns the ScreenInfos used by the view to render. If the
+  // information is not knowable (e.g, because the view is not attached to a
+  // screen yet), then a default best-guess will be used.
+  virtual display::ScreenInfos GetScreenInfos() const = 0;
 
   // This must always return the same device scale factor as GetScreenInfo.
-  virtual float GetDeviceScaleFactor() = 0;
+  virtual float GetDeviceScaleFactor() const = 0;
 
 #if defined(OS_MAC)
   // Set the view's active state (i.e., tint state of controls).
@@ -285,33 +289,19 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // have anything to show.
   virtual void TakeFallbackContentFrom(RenderWidgetHostView* view) = 0;
 
-  // Set the last time a content to visible event starts to be processed for
-  // this RenderWidgetHostView. Will merge with the previous value if exists
-  // (which means that several events may happen at the same time and must be
-  // induvidually reported).  |start_time| marks event start time to calculate
-  // the duration later.
-  //
-  // |destination_is_loaded| is true when
-  //   ResourceCoordinatorTabHelper::IsLoaded() is true for the new tab
-  //   contents.
-  // |show_reason_tab_switching| is true when tab switch event should be
-  //   reported.
-  // |show_reason_unoccluded| is true when "unoccluded" event should be
-  //   reported.
-  // |show_reason_bfcache_restore| is true when page restored from bfcache event
-  // should be reported.
-  virtual void SetRecordContentToVisibleTimeRequest(
-      base::TimeTicks start_time,
-      bool destination_is_loaded,
-      bool show_reason_tab_switching,
-      bool show_reason_unoccluded,
-      bool show_reason_bfcache_restore) = 0;
-
   // Returns true if the overlaycontent flag is set in the JS, else false.
   // This determines whether to fire geometrychange event to JS and also not
   // resize the visual/layout viewports in response to keyboard visibility
   // changes.
   virtual bool ShouldVirtualKeyboardOverlayContent() = 0;
+
+  // Create a geometrychange event and forward it to the JS with the
+  // keyboard coordinates.
+  virtual void NotifyVirtualKeyboardOverlayRect(
+      const gfx::Rect& keyboard_rect) = 0;
+
+  // Returns true if this widget is a HTML popup, e.g. a <select> menu.
+  virtual bool IsHTMLFormPopup() const = 0;
 };
 
 }  // namespace content

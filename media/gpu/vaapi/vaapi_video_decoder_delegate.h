@@ -21,7 +21,6 @@
 #include "media/base/encryption_scheme.h"
 #include "media/base/subsample_entry.h"
 #include "third_party/libva_protected_content/va_protected_content.h"
-#include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
@@ -127,14 +126,6 @@ class VaapiVideoDecoderDelegate {
   // every successful protected decode.
   void ProtectedDecodedSucceeded();
 
-  // Fills *|proc_buffer| with the proper parameters for decode scaling and
-  // returns true if that buffer was filled in and should be submitted, false
-  // otherwise.
-  bool FillDecodeScalingIfNeeded(const gfx::Rect& decode_visible_rect,
-                                 VASurfaceID decode_surface_id,
-                                 scoped_refptr<VASurface> output_surface,
-                                 VAProcPipelineParameterBuffer* proc_buffer);
-
   // Returns the key_id string for the current DecryptConfig.
   std::string GetDecryptKeyId() const;
 
@@ -161,12 +152,6 @@ class VaapiVideoDecoderDelegate {
   std::vector<uint8_t> hw_identifier_;
   std::map<std::string, std::vector<uint8_t>> hw_key_data_map_;
   base::TimeTicks last_key_retrieval_time_;
-  // We need to hold onto these across a call since the VABuffer will reference
-  // their pointers, so declare them here to allow for that. These are used in
-  // the decode scaling operation.
-  VARectangle src_region_;
-  VARectangle dst_region_;
-  VASurfaceID scaled_surface_id_;
 
   // This will only be true on AMD platforms where we support encrypted content
   // and the content is encrypted.

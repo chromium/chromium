@@ -65,6 +65,10 @@ class MessageService : public BrowserContextKeyedAPI,
   struct MessageChannel;
 
   explicit MessageService(content::BrowserContext* context);
+
+  MessageService(const MessageService&) = delete;
+  MessageService& operator=(const MessageService&) = delete;
+
   ~MessageService() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -252,8 +256,6 @@ class MessageService : public BrowserContextKeyedAPI,
   PendingLazyContextChannelMap pending_lazy_context_channels_;
 
   base::WeakPtrFactory<MessageService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MessageService);
 };
 
 }  // namespace extensions

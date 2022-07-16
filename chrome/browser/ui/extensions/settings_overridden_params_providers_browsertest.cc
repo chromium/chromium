@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   GURL search_url =
       new_turl->GenerateSearchURL(GetTemplateURLService()->search_terms_data());
   test_dir.WriteManifest(base::StringPrintf(
-      kManifestTemplate, search_url.GetOrigin().spec().c_str(),
+      kManifestTemplate, search_url.DeprecatedGetOriginAsURL().spec().c_str(),
       new_turl->prepopulate_id()));
 
   const extensions::Extension* extension =
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   GURL search_url =
       new_turl->GenerateSearchURL(GetTemplateURLService()->search_terms_data());
   test_dir.WriteManifest(base::StringPrintf(
-      kManifestTemplate, search_url.GetOrigin().spec().c_str()));
+      kManifestTemplate, search_url.DeprecatedGetOriginAsURL().spec().c_str()));
 
   const extensions::Extension* extension =
       InstallExtensionWithPermissionsGranted(test_dir.UnpackedPath(), 1);

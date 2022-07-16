@@ -8,7 +8,9 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 #include "chrome/services/printing/print_backend_service_impl.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -45,6 +47,10 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
   void FetchCapabilities(
       const std::string& printer_name,
       mojom::PrintBackendService::FetchCapabilitiesCallback callback) override;
+  void UpdatePrintSettings(
+      base::flat_map<std::string, base::Value> job_settings,
+      mojom::PrintBackendService::UpdatePrintSettingsCallback callback)
+      override;
 
   // Cause the service to terminate on the next interaction it receives.  Once
   // terminated no further Mojo calls will be possible since there will not be

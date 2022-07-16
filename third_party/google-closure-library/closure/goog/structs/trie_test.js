@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.structs.TrieTest');
 goog.setTestOnly();
@@ -136,6 +128,7 @@ testSuite({
     assertEquals('count, should be 0', trieTwo.getCount(), 0);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testRemoveKeyFromTrie() {
     const trie = new Trie();
     trie.add('key1', 'value1');
@@ -183,6 +176,7 @@ testSuite({
     assertUndefined('get "akey1", should be undefined', trie.get('akey1'));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testRemoveKeyFromTrieWithNulls() {
     const trie = new Trie();
     trie.add('key1', null);
@@ -443,21 +437,21 @@ testSuite({
   testGetKeyAndPrefixes() {
     const trie = makeTrie();
     // Note: trie has one of its keys as ''
-    assertEquals(
-        'getKeyAndPrefixes, should be 2', 2,
-        googObject.getCount(trie.getKeyAndPrefixes('world')));
-    assertEquals(
-        'getKeyAndPrefixes, should be 2', 2,
-        googObject.getCount(trie.getKeyAndPrefixes('hello')));
-    assertEquals(
-        'getKeyAndPrefixes, should be 2', 2,
-        googObject.getCount(trie.getKeyAndPrefixes('hello,')));
-    assertEquals(
-        'getKeyAndPrefixes, should be 3', 3,
-        googObject.getCount(trie.getKeyAndPrefixes('hello, world')));
-    assertEquals(
-        'getKeyAndPrefixes, should be 1', 1,
-        googObject.getCount(trie.getKeyAndPrefixes('hell')));
+    assertObjectEquals(
+        {0: 'an empty string key', 4: {}},  //
+        trie.getKeyAndPrefixes('world'));
+    assertObjectEquals(
+        {0: 'an empty string key', 4: 1},  //
+        trie.getKeyAndPrefixes('hello'));
+    assertObjectEquals(
+        {0: 'an empty string key', 4: 1},  //
+        trie.getKeyAndPrefixes('hello,'));
+    assertObjectEquals(
+        {0: 'an empty string key', 4: 1, 11: 2},  //
+        trie.getKeyAndPrefixes('hello, world'));
+    assertObjectEquals(
+        {0: 'an empty string key'},  //
+        trie.getKeyAndPrefixes('hell'));
   },
 
   testGetKeyAndPrefixesStartIndex() {

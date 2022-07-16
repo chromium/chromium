@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/ui/browser.h"
@@ -19,6 +18,10 @@
 class GlobalConfirmInfoBar::DelegateProxy : public ConfirmInfoBarDelegate {
  public:
   explicit DelegateProxy(base::WeakPtr<GlobalConfirmInfoBar> global_info_bar);
+
+  DelegateProxy(const DelegateProxy&) = delete;
+  DelegateProxy& operator=(const DelegateProxy&) = delete;
+
   ~DelegateProxy() override;
   void Detach();
 
@@ -40,8 +43,6 @@ class GlobalConfirmInfoBar::DelegateProxy : public ConfirmInfoBarDelegate {
 
   infobars::InfoBar* info_bar_ = nullptr;
   base::WeakPtr<GlobalConfirmInfoBar> global_info_bar_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegateProxy);
 };
 
 GlobalConfirmInfoBar::DelegateProxy::DelegateProxy(

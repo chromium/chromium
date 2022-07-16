@@ -5,11 +5,16 @@
 #ifndef COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_TRACKER_H_
 #define COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_TRACKER_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "components/sync_device_info/device_info.h"
+
+namespace sync_pb {
+enum SyncEnums_DeviceType : int;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -49,10 +54,12 @@ class DeviceInfoTracker {
   virtual void AddObserver(Observer* observer) = 0;
   // Unregisters an observer.
   virtual void RemoveObserver(Observer* observer) = 0;
-  // Returns the count of active devices. Deduping logic may be used internally
-  // to prevent double counting for devices that disable sync and reenable it,
-  // but callers should nevertheless consider this an upper bound.
-  virtual int CountActiveDevices() const = 0;
+  // Returns the count of active devices per device type. Deduping logic may be
+  // used internally to prevent double counting for devices that disable sync
+  // and reenable it, but callers should nevertheless consider this an upper
+  // bound per type.
+  virtual std::map<sync_pb::SyncEnums_DeviceType, int>
+  CountActiveDevicesByType() const = 0;
   // A function to to allow tests to ensure active devices. If called when the
   // local device info provider is not initialized, will force update after
   // initialization.

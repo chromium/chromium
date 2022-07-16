@@ -12,12 +12,15 @@
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/colors/assistant_colors.h"
 #include "ash/assistant/ui/colors/assistant_colors_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/escape.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/background.h"
 #include "ui/views/layout/flex_layout.h"
 
 namespace ash {
@@ -68,29 +71,17 @@ int AssistantQueryView::GetHeightForWidth(int width) const {
 void AssistantQueryView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  background()->SetNativeControlColor(ash::assistant::ResolveAssistantColor(
-      assistant_colors::ColorName::kBgAssistantPlate));
+  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
 
-  high_confidence_label_->SetBackgroundColor(
-      ash::assistant::ResolveAssistantColor(
-          assistant_colors::ColorName::kBgAssistantPlate));
   high_confidence_label_->SetEnabledColor(
       ColorProvider::Get()->GetContentLayerColor(
           ColorProvider::ContentLayerType::kTextColorPrimary));
-
-  low_confidence_label_->SetBackgroundColor(
-      ash::assistant::ResolveAssistantColor(
-          assistant_colors::ColorName::kBgAssistantPlate));
   low_confidence_label_->SetEnabledColor(
       ColorProvider::Get()->GetContentLayerColor(
           ColorProvider::ContentLayerType::kTextColorSecondary));
 }
 
 void AssistantQueryView::InitLayout() {
-  SetBackground(
-      views::CreateSolidBackground(ash::assistant::ResolveAssistantColor(
-          assistant_colors::ColorName::kBgAssistantPlate)));
-
   views::FlexLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
 

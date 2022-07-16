@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_CHOOSER_DIALOG_H_
 #define CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_CHOOSER_DIALOG_H_
 
-#include "base/macros.h"
-
 namespace content {
 class WebContents;
 }
@@ -19,6 +17,11 @@ class ChromeExtensionChooserDialog {
  public:
   explicit ChromeExtensionChooserDialog(content::WebContents* web_contents)
       : web_contents_(web_contents) {}
+
+  ChromeExtensionChooserDialog(const ChromeExtensionChooserDialog&) = delete;
+  ChromeExtensionChooserDialog& operator=(const ChromeExtensionChooserDialog&) =
+      delete;
+
   ~ChromeExtensionChooserDialog() {}
 
   void ShowDialog(
@@ -29,8 +32,6 @@ class ChromeExtensionChooserDialog {
       std::unique_ptr<permissions::ChooserController> chooser_controller) const;
 
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionChooserDialog);
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_CHOOSER_DIALOG_H_

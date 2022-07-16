@@ -17,6 +17,9 @@ class UpdateService;
 // Note that OTR browser contexts do not get an UpdateService.
 class UpdateServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
+  UpdateServiceFactory(const UpdateServiceFactory&) = delete;
+  UpdateServiceFactory& operator=(const UpdateServiceFactory&) = delete;
+
   static UpdateService* GetForBrowserContext(content::BrowserContext* context);
   static UpdateServiceFactory* GetInstance();
 
@@ -29,8 +32,6 @@ class UpdateServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateServiceFactory);
 };
 
 }  // namespace extensions

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -23,6 +22,10 @@ namespace viz {
 class VIZ_COMMON_EXPORT ParentLocalSurfaceIdAllocator {
  public:
   ParentLocalSurfaceIdAllocator();
+
+  ParentLocalSurfaceIdAllocator(const ParentLocalSurfaceIdAllocator&) = delete;
+  ParentLocalSurfaceIdAllocator& operator=(
+      const ParentLocalSurfaceIdAllocator&) = delete;
 
   ~ParentLocalSurfaceIdAllocator() = default;
 
@@ -60,8 +63,6 @@ class VIZ_COMMON_EXPORT ParentLocalSurfaceIdAllocator {
   bool is_allocation_suppressed_ = false;
 
   friend class ScopedSurfaceIdAllocator;
-
-  DISALLOW_COPY_AND_ASSIGN(ParentLocalSurfaceIdAllocator);
 };
 
 }  // namespace viz

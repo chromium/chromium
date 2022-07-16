@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -34,6 +33,10 @@ class EventHandler {
   };
 
   EventHandler();
+
+  EventHandler(const EventHandler&) = delete;
+  EventHandler& operator=(const EventHandler&) = delete;
+
   ~EventHandler();
 
   void DispatchEvent(const EventKey& key);
@@ -47,7 +50,6 @@ class EventHandler {
  private:
   base::ReentrantObserverList<Observer> observers_{
       base::ObserverListPolicy::EXISTING_ONLY};
-  DISALLOW_COPY_AND_ASSIGN(EventHandler);
 };
 
 // Intended for debugging.

@@ -14,6 +14,10 @@ namespace remoting {
 class RemotingKeychain : public Keychain {
  public:
   RemotingKeychain();
+
+  RemotingKeychain(const RemotingKeychain&) = delete;
+  RemotingKeychain& operator=(const RemotingKeychain&) = delete;
+
   ~RemotingKeychain() override;
 
   static RemotingKeychain* GetInstance();
@@ -31,8 +35,6 @@ class RemotingKeychain : public Keychain {
   std::string KeyToService(Key key) const;
 
   std::string service_prefix_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemotingKeychain);
 };
 
 }  // namespace remoting

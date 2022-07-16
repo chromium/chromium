@@ -29,6 +29,9 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoPendingBuffer
     : public base::RefCountedThreadSafe<NetToMojoPendingBuffer> {
  public:
+  NetToMojoPendingBuffer(const NetToMojoPendingBuffer&) = delete;
+  NetToMojoPendingBuffer& operator=(const NetToMojoPendingBuffer&) = delete;
+
   // Begins a two-phase write to the data pipe.
   //
   // On success, MOJO_RESULT_OK will be returned. The ownership of the given
@@ -54,7 +57,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoPendingBuffer
   ~NetToMojoPendingBuffer();
   mojo::ScopedDataPipeProducerHandle handle_;
   void* buffer_;
-  DISALLOW_COPY_AND_ASSIGN(NetToMojoPendingBuffer);
 };
 
 // Net side of a Net -> Mojo copy. The data will be read from the network and
@@ -66,16 +68,20 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoIOBuffer
   // will be offset by that many bytes.
   NetToMojoIOBuffer(NetToMojoPendingBuffer* pending_buffer, int offset = 0);
 
+  NetToMojoIOBuffer(const NetToMojoIOBuffer&) = delete;
+  NetToMojoIOBuffer& operator=(const NetToMojoIOBuffer&) = delete;
+
  private:
   ~NetToMojoIOBuffer() override;
   scoped_refptr<NetToMojoPendingBuffer> pending_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetToMojoIOBuffer);
 };
 
 class COMPONENT_EXPORT(NETWORK_CPP) MojoToNetPendingBuffer
     : public base::RefCountedThreadSafe<MojoToNetPendingBuffer> {
  public:
+  MojoToNetPendingBuffer(const MojoToNetPendingBuffer&) = delete;
+  MojoToNetPendingBuffer& operator=(const MojoToNetPendingBuffer&) = delete;
+
   // Starts reading from Mojo.
   //
   // On success, MOJO_RESULT_OK will be returned. The ownership of the given
@@ -113,8 +119,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) MojoToNetPendingBuffer
 
   mojo::ScopedDataPipeConsumerHandle handle_;
   const void* buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoToNetPendingBuffer);
 };
 
 // Net side of a Mojo -> Net copy. The data will already be in the

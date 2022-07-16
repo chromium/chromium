@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਇੱਕ ਨਵੀਂ ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="152892567002884378">ਅਵਾਜ਼ ਵਧਾਓ</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ਫਿਰ <ph name="ESC" /></translation>
-<translation id="1633761758045565086">ਫੋਕਸ ਨੂੰ ਮਦਦ ਵਿੰਡੋ 'ਤੇ ਲਿਜਾਓ</translation>
 <translation id="1652741121070700329">ਪਿਛਲੇ ਸ਼ਬਦ ਦੀ ਸ਼ੁਰੂਆਤ 'ਤੇ ਜਾਓ</translation>
 <translation id="1679841710523778799">ਚਮਕ ਵਧਾਓ</translation>
 <translation id="168356808214100546"><ph name="ALT" /> ਦਬਾਈ ਰੱਖੋ, <ph name="TAB" /> 'ਤੇ ਉਦੋਂ ਤੱਕ ਟੈਪ ਕਰੀ ਰੱਖੋ ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਆਪਣੀ ਇੱਛਾ ਵਾਲੀ ਵਿੰਡੋ 'ਤੇ ਨਹੀਂ ਪਹੁੰਚਦੇ, ਫਿਰ ਛੱਡੋ।</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">ਵੈੱਬ ਪੰਨੇ ਨੂੰ ਹੇਠਾਂ ਵੱਲ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="2530896289327917474">ਕੈਰਟ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="2574014812750545982">ਪੰਨੇ 'ਤੇ ਜ਼ੂਮ ਪੱਧਰ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ</translation>
-<translation id="2596078834055697711">ਵਿੰਡੋ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ਫਿਰ <ph name="TAB" /> ਜਾਂ <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">ਆਪਣੇ ਮੌਜੂਦਾ ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="2764005613199379871">ਖੋਜ ਪਤਾ ਬਾਰ ਵਿੱਚ ਫੋਕਸ ਰੱਖੋ</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="3084301071537457911">ਆਪਣੀ ਸ਼ੈਲਫ਼ 'ਤੇ ਅਗਲੀ ਆਈਟਮ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="309173601632226815">ਆਪਣੀ ਸ਼ੈਲਫ਼ 'ਤੇ ਲਾਂਚਰ ਬਟਨ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
-<translation id="3105917916468784889">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਵੋ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">ਫੋਕਸ ਪਤਾ ਬਾਰ</translation>
 <translation id="3256109297135787951">ਆਪਣੀ ਸ਼ੈਲਫ਼ 'ਤੇ ਕਿਸੇ ਆਈਟਮ ਦਾ ਉਜਾਗਰ ਹੋਣਾ ਹਟਾਓ</translation>
 <translation id="3288816184963444640">ਮੌਜੂਦਾ ਵਿੰਡੋ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
+<translation id="3350805006883559974">ਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋ ਨੂੰ ਸਿਖਰ 'ਤੇ ਲਿਜਾਓ</translation>
 <translation id="3407560819924487926">ਕਾਰਜ ਪ੍ਰਬੰਧਕ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3417835166382867856">ਖੋਜ ਟੈਬਾਂ</translation>
 <translation id="3422679037938588196">ਆਪਣੀ ਖੋਜ ਦੇ ਪਿਛਲੇ ਮਿਲਾਨ 'ਤੇ ਜਾਓ</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਮਦਦਗਾਰ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> ਜਾਂ <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">ਸਥਿਤੀ ਖੇਤਰ ਨੂੰ ਖੋਲ੍ਹੋ (ਜਿੱਥੇ ਤੁਹਾਡੇ ਖਾਤੇ ਦੀ ਤਸਵੀਰ ਦਿਖਾਈ ਦਿੰਦੀ ਹੈ)</translation>
-<translation id="4642092649622328492">ਛੋਟਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਵੋ</translation>
 <translation id="4698850295812410683">ਸਟਾਈਲਸ ਟੂਲ ਦਿਖਾਓ</translation>
 <translation id="4801989101741319327">ਅਗਲੇ ਸ਼ਬਦ ਦੇ ਅਖੀਰ 'ਤੇ ਜਾਓ</translation>
 <translation id="4866066940972151697">ਡੈਸਕ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
@@ -211,6 +208,7 @@
 <translation id="8881584919399569791">ਸਰਗਰਮ ਵਿੰਡੋ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਡੈਸਕ 'ਤੇ ਲਿਜਾਓ</translation>
 <translation id="88986195241502842">ਸਫ਼ਾ ਹੇਠਾਂ</translation>
 <translation id="8924883688469390268">ਪਿਛਲੇ ਵਰਤੋਂਕਾਰ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
+<translation id="8941626538514548667">ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਵੈੱਬ ਸਮੱਗਰੀ ਨੂੰ ਫੋਕਸ ਕਰੋ</translation>
 <translation id="8977648847395357314">ਪਤਾ ਬਾਰ ਵਿੱਚ ਸਮੱਗਰੀ ਚੁਣੋ</translation>
 <translation id="8982190978301344584">ਉਪਲਬਧ IMEs ਦੀ ਸੂਚੀ ਦਿਖਾਉਣ ਵਾਲਾ ਮੀਨੂ ਦਿਖਾਓ</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 ਤੋਂ 8 ਤੱਕ</translation>

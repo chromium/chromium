@@ -32,13 +32,16 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/entity_data.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/sync_error_factory.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "components/sync/test/model/sync_error_factory_mock.h"
 #include "components/webdata/common/web_database.h"
@@ -262,6 +265,12 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
 class AutofillProfileSyncBridgeTestBase : public testing::Test {
  public:
   AutofillProfileSyncBridgeTestBase() = default;
+
+  AutofillProfileSyncBridgeTestBase(const AutofillProfileSyncBridgeTestBase&) =
+      delete;
+  AutofillProfileSyncBridgeTestBase& operator=(
+      const AutofillProfileSyncBridgeTestBase&) = delete;
+
   ~AutofillProfileSyncBridgeTestBase() override = default;
 
   void SetUp() override {
@@ -372,8 +381,6 @@ class AutofillProfileSyncBridgeTestBase : public testing::Test {
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
   std::unique_ptr<AutofillProfileSyncBridge> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileSyncBridgeTestBase);
 };
 
 // This class performs the sync bridge test with and without structured names
@@ -1459,10 +1466,13 @@ class AutofillProfileSyncBridgeUpdatesUsageStatsTest
       public testing::WithParamInterface<UpdatesUsageStatsTestCase> {
  public:
   AutofillProfileSyncBridgeUpdatesUsageStatsTest() {}
-  ~AutofillProfileSyncBridgeUpdatesUsageStatsTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileSyncBridgeUpdatesUsageStatsTest);
+  AutofillProfileSyncBridgeUpdatesUsageStatsTest(
+      const AutofillProfileSyncBridgeUpdatesUsageStatsTest&) = delete;
+  AutofillProfileSyncBridgeUpdatesUsageStatsTest& operator=(
+      const AutofillProfileSyncBridgeUpdatesUsageStatsTest&) = delete;
+
+  ~AutofillProfileSyncBridgeUpdatesUsageStatsTest() override {}
 };
 
 TEST_P(AutofillProfileSyncBridgeUpdatesUsageStatsTest, UpdatesUsageStats) {

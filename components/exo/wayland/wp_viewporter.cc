@@ -32,6 +32,10 @@ class Viewport : public SurfaceObserver {
     surface_->AddSurfaceObserver(this);
     surface_->SetProperty(kSurfaceHasViewportKey, true);
   }
+
+  Viewport(const Viewport&) = delete;
+  Viewport& operator=(const Viewport&) = delete;
+
   ~Viewport() override {
     if (surface_) {
       surface_->RemoveSurfaceObserver(this);
@@ -59,8 +63,6 @@ class Viewport : public SurfaceObserver {
 
  private:
   Surface* surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(Viewport);
 };
 
 void viewport_destroy(wl_client* client, wl_resource* resource) {

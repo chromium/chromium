@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_VIEW_MODEL_UTILS_H_
 #define UI_VIEWS_VIEW_MODEL_UTILS_H_
 
-#include "base/macros.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -15,6 +14,10 @@ class ViewModelBase;
 
 class VIEWS_EXPORT ViewModelUtils {
  public:
+  ViewModelUtils() = delete;
+  ViewModelUtils(const ViewModelUtils&) = delete;
+  ViewModelUtils& operator=(const ViewModelUtils&) = delete;
+
   // Sets the bounds of each view to its ideal bounds.
   static void SetViewBoundsToIdealBounds(const ViewModelBase& model);
 
@@ -27,9 +30,6 @@ class VIEWS_EXPORT ViewModelUtils {
                                 bool is_horizontal,
                                 int x,
                                 int y);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ViewModelUtils);
 };
 
 }  // namespace views

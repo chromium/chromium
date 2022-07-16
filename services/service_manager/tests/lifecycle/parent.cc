@@ -30,6 +30,9 @@ class Parent : public service_manager::Service,
         base::BindRepeating(&Parent::Create, base::Unretained(this)));
   }
 
+  Parent(const Parent&) = delete;
+  Parent& operator=(const Parent&) = delete;
+
   ~Parent() override = default;
 
  private:
@@ -63,8 +66,6 @@ class Parent : public service_manager::Service,
   service_manager::ServiceReceiver service_receiver_;
   service_manager::BinderRegistry registry_;
   mojo::ReceiverSet<service_manager::test::mojom::Parent> parent_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(Parent);
 };
 
 }  // namespace

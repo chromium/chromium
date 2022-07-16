@@ -11,7 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/oobe_resources.h"
+#include "chrome/grit/oobe_conditional_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -101,9 +101,7 @@ struct NamedResourceId {
 
 const std::vector<const NamedBoolean>& GetBooleanValues() {
   static const base::NoDestructor<std::vector<const NamedBoolean>> named_bools(
-      {{"updatedCellularActivationUi",
-        chromeos::features::IsCellularActivationUiEnabled()},
-       {"useExternalEuicc",
+      {{"useExternalEuicc",
         base::FeatureList::IsEnabled(
             chromeos::features::kCellularUseExternalEuicc)}});
   return *named_bools;

@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
@@ -22,7 +22,6 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::WithArgs;
 
 // A callback that expects to be called immediately.
@@ -57,14 +56,15 @@ class DirectCallback {
 class ScriptPreconditionTest : public testing::Test {
  public:
   void SetUp() override {
-    ON_CALL(mock_web_controller_, OnFindElement(Selector({"exists"}), _))
-        .WillByDefault(WithArgs<1>([](auto&& callback) {
+    ON_CALL(mock_web_controller_,
+            FindElement(Selector({"exists"}), /* strict= */ false, _))
+        .WillByDefault(WithArgs<2>([](auto&& callback) {
           std::move(callback).Run(OkClientStatus(),
                                   std::make_unique<ElementFinder::Result>());
         }));
     ON_CALL(mock_web_controller_,
-            OnFindElement(Selector({"does_not_exist"}), _))
-        .WillByDefault(RunOnceCallback<1>(
+            FindElement(Selector({"does_not_exist"}), /* strict= */ false, _))
+        .WillByDefault(RunOnceCallback<2>(
             ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
     SetUrl("http://www.example.com/path");
@@ -187,7 +187,7 @@ TEST_F(ScriptPreconditionTest, ParameterMustExist) {
 
   trigger_context_ = std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(
-          std::map<std::string, std::string>{{"param", "exists"}}),
+          base::flat_map<std::string, std::string>{{"param", "exists"}}),
       TriggerContext::Options{});
 
   EXPECT_TRUE(Check(proto));
@@ -203,7 +203,7 @@ TEST_F(ScriptPreconditionTest, ParameterMustNotExist) {
 
   trigger_context_ = std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(
-          std::map<std::string, std::string>{{"param", "exists"}}),
+          base::flat_map<std::string, std::string>{{"param", "exists"}}),
       TriggerContext::Options{});
 
   EXPECT_FALSE(Check(proto));
@@ -219,13 +219,13 @@ TEST_F(ScriptPreconditionTest, ParameterMustHaveValue) {
 
   trigger_context_ = std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(
-          std::map<std::string, std::string>{{"param", "another"}}),
+          base::flat_map<std::string, std::string>{{"param", "another"}}),
       TriggerContext::Options{});
   EXPECT_FALSE(Check(proto));
 
   trigger_context_ = std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(
-          std::map<std::string, std::string>{{"param", "value"}}),
+          base::flat_map<std::string, std::string>{{"param", "value"}}),
       TriggerContext::Options{});
   EXPECT_TRUE(Check(proto));
 }

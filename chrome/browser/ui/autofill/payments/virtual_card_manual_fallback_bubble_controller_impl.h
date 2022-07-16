@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller.h"
 
-#include "base/macros.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -34,7 +33,8 @@ class VirtualCardManualFallbackBubbleControllerImpl
       const VirtualCardManualFallbackBubbleControllerImpl&) = delete;
 
   // Show the bubble view.
-  void ShowBubble(const CreditCard* virtual_card,
+  void ShowBubble(const std::u16string& masked_card_identifier_string,
+                  const CreditCard* virtual_card,
                   const std::u16string& virtual_card_cvc,
                   const gfx::Image& virtual_card_image);
 
@@ -45,19 +45,19 @@ class VirtualCardManualFallbackBubbleControllerImpl
   AutofillBubbleBase* GetBubble() const override;
   const gfx::Image& GetBubbleTitleIcon() const override;
   std::u16string GetBubbleTitleText() const override;
+  std::u16string GetEducationalBodyLabel() const override;
   std::u16string GetVirtualCardNumberFieldLabel() const override;
   std::u16string GetExpirationDateFieldLabel() const override;
   std::u16string GetCardholderNameFieldLabel() const override;
   std::u16string GetCvcFieldLabel() const override;
   std::u16string GetValueForField(
       VirtualCardManualFallbackBubbleField field) const override;
+  std::u16string GetFieldButtonTooltip(
+      VirtualCardManualFallbackBubbleField field) const override;
   const CreditCard* GetVirtualCard() const override;
   bool ShouldIconBeVisible() const override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
-  void OnFieldClicked(
-      VirtualCardManualFallbackBubbleField field) const override;
-  base::WeakPtr<VirtualCardManualFallbackBubbleController> GetWeakPtr()
-      override;
+  void OnFieldClicked(VirtualCardManualFallbackBubbleField field) override;
 
  protected:
   explicit VirtualCardManualFallbackBubbleControllerImpl(
@@ -88,6 +88,10 @@ class VirtualCardManualFallbackBubbleControllerImpl
 
   void SetEventObserverForTesting(ObserverForTest* observer_for_test);
 
+  // The network + last four digits of card number for the related masked server
+  // card.
+  std::u16string masked_card_identifier_string_;
+
   // The cvc of the virtual card.
   std::u16string virtual_card_cvc_;
 
@@ -108,6 +112,10 @@ class VirtualCardManualFallbackBubbleControllerImpl
   // when there is a page navigation and bubble is therefore no longer
   // applicable.
   bool bubble_has_been_shown_ = false;
+
+  // The field of the most-recently-clicked button, whose value
+  // has been copied to the clipboard.
+  absl::optional<VirtualCardManualFallbackBubbleField> clicked_field_;
 
   ObserverForTest* observer_for_test_ = nullptr;
 

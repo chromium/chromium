@@ -5,8 +5,6 @@
 #ifndef UI_VIEWS_TEST_SLIDER_TEST_API_H_
 #define UI_VIEWS_TEST_SLIDER_TEST_API_H_
 
-#include "base/macros.h"
-
 namespace views {
 
 class Slider;
@@ -20,6 +18,10 @@ namespace test {
 class SliderTestApi {
  public:
   explicit SliderTestApi(Slider* slider);
+
+  SliderTestApi(const SliderTestApi&) = delete;
+  SliderTestApi& operator=(const SliderTestApi&) = delete;
+
   virtual ~SliderTestApi();
 
   // Set the SliderListener on the Slider.
@@ -29,8 +31,6 @@ class SliderTestApi {
 
  private:
   Slider* slider_;
-
-  DISALLOW_COPY_AND_ASSIGN(SliderTestApi);
 };
 
 }  // namespace test

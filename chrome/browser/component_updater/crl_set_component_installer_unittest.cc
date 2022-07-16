@@ -17,6 +17,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -31,6 +32,10 @@ class CRLSetComponentInstallerTest : public PlatformTest {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         test_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         network_service_(std::make_unique<network::NetworkService>(nullptr)) {}
+
+  CRLSetComponentInstallerTest(const CRLSetComponentInstallerTest&) = delete;
+  CRLSetComponentInstallerTest& operator=(const CRLSetComponentInstallerTest&) =
+      delete;
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -78,10 +83,10 @@ class CRLSetComponentInstallerTest : public PlatformTest {
 
   void InstallCRLSet(const base::FilePath& raw_crl_file) {
     base::CopyFile(raw_crl_file, temp_dir_.GetPath().AppendASCII("crl-set"));
-    ASSERT_TRUE(policy_->VerifyInstallation(base::DictionaryValue(),
-                                            temp_dir_.GetPath()));
+    ASSERT_TRUE(policy_->VerifyInstallation(
+        base::Value(base::Value::Type::DICTIONARY), temp_dir_.GetPath()));
     policy_->ComponentReady(base::Version("1.0"), temp_dir_.GetPath(),
-                            std::make_unique<base::DictionaryValue>());
+                            base::Value(base::Value::Type::DICTIONARY));
     task_environment_.RunUntilIdle();
   }
 
@@ -102,9 +107,6 @@ class CRLSetComponentInstallerTest : public PlatformTest {
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   mojo::Remote<network::mojom::URLLoader> loader_;
   base::ScopedTempDir temp_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CRLSetComponentInstallerTest);
 };
 
 TEST_F(CRLSetComponentInstallerTest, ConfiguresOnInstall) {

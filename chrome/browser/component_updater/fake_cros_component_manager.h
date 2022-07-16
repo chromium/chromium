@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 
@@ -44,6 +43,9 @@ class FakeCrOSComponentManager : public CrOSComponentManager {
   };
 
   FakeCrOSComponentManager();
+
+  FakeCrOSComponentManager(const FakeCrOSComponentManager&) = delete;
+  FakeCrOSComponentManager& operator=(const FakeCrOSComponentManager&) = delete;
 
   void set_queue_load_requests(bool queue_load_requests) {
     queue_load_requests_ = queue_load_requests;
@@ -157,8 +159,6 @@ class FakeCrOSComponentManager : public CrOSComponentManager {
 
   // Maps the currently mounted components to their mount point path.
   std::map<std::string, base::FilePath> mounted_components_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCrOSComponentManager);
 };
 
 }  // namespace component_updater

@@ -26,6 +26,10 @@ class PPAPI_PROXY_EXPORT CameraCapabilitiesResource
   CameraCapabilitiesResource(PP_Instance instance,
                              const std::vector<PP_VideoCaptureFormat>& formats);
 
+  CameraCapabilitiesResource(const CameraCapabilitiesResource&) = delete;
+  CameraCapabilitiesResource& operator=(const CameraCapabilitiesResource&) =
+      delete;
+
   ~CameraCapabilitiesResource() override;
 
   // Resource overrides.
@@ -39,8 +43,6 @@ class PPAPI_PROXY_EXPORT CameraCapabilitiesResource
  private:
   size_t num_video_capture_formats_;
   std::unique_ptr<PP_VideoCaptureFormat[]> video_capture_formats_;
-
-  DISALLOW_COPY_AND_ASSIGN(CameraCapabilitiesResource);
 };
 
 }  // namespace proxy

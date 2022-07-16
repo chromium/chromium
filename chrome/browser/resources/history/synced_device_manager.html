@@ -74,7 +74,8 @@
       [[noSyncedTabsMessage(fetchingSyncedTabs_, searchTerm)]]
     </div>
     <div id="sign-in-guide"
-        hidden="[[!showSignInGuide(signInState, guestSession_)]]">
+        hidden="[[!showSignInGuide(signInState, guestSession_,
+                                   signInAllowed_)]]">
       <div id="illustration"></div>
       <div id="sign-in-promo">$i18n{signInPromo}</div>
       <div id="sign-in-promo-desc">$i18n{signInPromoDesc}</div>

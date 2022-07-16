@@ -19,18 +19,28 @@ source_set("voice") {
   ]
 
   deps = [
+    ":voice_search_language",
     "//base",
     "//base/ios",
     "//components/pref_registry",
     "//components/prefs",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/voice",
+    "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
     "//ios/web",
+  ]
+}
+
+source_set("voice_search_language") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "voice_search_language.h",
+    "voice_search_language.mm",
   ]
 }
 
 source_set("prefs") {
   sources = [
+    "voice_search_prefs.cc",
+    "voice_search_prefs.h",
     "voice_search_prefs_registration.cc",
     "voice_search_prefs_registration.h",
   ]
@@ -38,7 +48,6 @@ source_set("prefs") {
   deps = [
     "//components/pref_registry",
     "//components/prefs",
-    "//ios/public/provider/chrome/browser/voice",
   ]
 }
 
@@ -54,13 +63,13 @@ source_set("tts") {
   ]
 
   deps = [
+    ":prefs",
     ":voice",
     "//base",
     "//components/google/core/common",
     "//components/prefs",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
-    "//ios/public/provider/chrome/browser/voice",
     "//ios/web",
     "//ios/web/public/deprecated",
     "//net",
@@ -79,8 +88,7 @@ source_set("test_support") {
   deps = [
     ":voice",
     "//base",
-    "//ios/public/provider/chrome/browser:test_support",
-    "//ios/public/provider/chrome/browser/voice:test_support",
+    "//ios/public/provider/chrome/browser/voice_search:test_voice_search",
     "//testing/gtest",
   ]
 }

@@ -97,14 +97,10 @@ void ChromeZoomLevelPrefs::SetDefaultZoomLevelPref(double level) {
 }
 
 double ChromeZoomLevelPrefs::GetDefaultZoomLevelPref() const {
-  double default_zoom_level = 0.0;
-
   const base::DictionaryValue* default_zoom_level_dictionary =
       pref_service_->GetDictionary(prefs::kPartitionDefaultZoomLevel);
-  // If no default has been previously set, the default returned is the
-  // value used to initialize default_zoom_level in this function.
-  default_zoom_level_dictionary->GetDouble(partition_key_, &default_zoom_level);
-  return default_zoom_level;
+  return default_zoom_level_dictionary->FindDoubleKey(partition_key_)
+      .value_or(0.0);
 }
 
 base::CallbackListSubscription
@@ -211,11 +207,11 @@ void ChromeZoomLevelPrefs::ExtractPerHostZoomLevels(
     DictionaryPrefUpdate update(pref_service_,
                                 prefs::kPartitionPerHostZoomLevels);
     base::DictionaryValue* host_zoom_dictionaries = update.Get();
-    base::DictionaryValue* host_zoom_dictionary = nullptr;
+    base::DictionaryValue* partition_dictionary = nullptr;
     host_zoom_dictionaries->GetDictionary(partition_key_,
-                                          &host_zoom_dictionary);
+                                          &partition_dictionary);
     for (const std::string& s : keys_to_remove)
-      host_zoom_dictionary->RemoveKey(s);
+      partition_dictionary->RemoveKey(s);
   }
 }
 

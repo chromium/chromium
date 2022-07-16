@@ -176,7 +176,7 @@ void AffiliationTestHelper::PreLoginUser(const AccountId& account_id) {
   if (user_manager::UserManager::IsInitialized())
     user_manager::known_user::SaveKnownUser(account_id);
 
-  chromeos::StartupUtils::MarkOobeCompleted();
+  ash::StartupUtils::MarkOobeCompleted();
 }
 
 // static
@@ -195,11 +195,10 @@ void AffiliationTestHelper::LoginUser(const AccountId& account_id) {
   if (account_id.GetUserEmail() == kEnterpriseUserEmail) {
     user_context.SetRefreshToken(kFakeRefreshToken);
   }
-  chromeos::ExistingUserController* controller =
-      chromeos::ExistingUserController::current_controller();
+  auto* controller = ash::ExistingUserController::current_controller();
   CHECK(controller);
-  controller->Login(user_context, chromeos::SigninSpecifics());
-  chromeos::test::WaitForPrimaryUserSessionStart();
+  controller->Login(user_context, ash::SigninSpecifics());
+  ash::test::WaitForPrimaryUserSessionStart();
 
   const user_manager::UserList& logged_users =
       user_manager::UserManager::Get()->GetLoggedInUsers();

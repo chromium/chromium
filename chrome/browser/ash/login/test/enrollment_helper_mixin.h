@@ -7,11 +7,8 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_mock.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/policy/enrollment_status.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -22,7 +19,9 @@ namespace policy {
 class ActiveDirectoryJoinDelegate;
 }
 
-namespace chromeos {
+namespace ash {
+class EnterpriseEnrollmentHelperMock;
+
 namespace test {
 
 // This test mixin covers mocking backend interaction during enterprise
@@ -32,6 +31,10 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
   static const char kTestAuthCode[];
 
   explicit EnrollmentHelperMixin(InProcessBrowserTestMixinHost* host);
+
+  EnrollmentHelperMixin(const EnrollmentHelperMixin&) = delete;
+  EnrollmentHelperMixin& operator=(const EnrollmentHelperMixin&) = delete;
+
   ~EnrollmentHelperMixin() override;
 
   // Resets mock (to be used in tests that retry enrollment.
@@ -78,8 +81,6 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
                                 const std::string& expected_domain,
                                 const std::string& domain_join_config,
                                 const std::string& dm_token);
-  // Sets up expectations for token enrollment.
-  void ExpectTokenEnrollmentSuccess(const std::string& token);
 
   // InProcessBrowserTestMixin:
   void SetUpInProcessBrowserTestFixture() override;
@@ -89,19 +90,17 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
   // Unowned reference to last created mock.
   EnterpriseEnrollmentHelperMock* mock_ = nullptr;
   base::WeakPtrFactory<EnrollmentHelperMixin> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentHelperMixin);
 };
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
+namespace chromeos {
 namespace test {
-using ::chromeos::test::EnrollmentHelperMixin;
+using ::ash::test::EnrollmentHelperMixin;
 }
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_ENROLLMENT_HELPER_MIXIN_H_

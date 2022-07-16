@@ -13,7 +13,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -23,11 +23,9 @@ namespace {
 // Scale of dragged desk proxy.
 constexpr float kDragProxyScale = 1.2f;
 // Time duration of scaling up dragged desk proxy.
-constexpr base::TimeDelta kDragProxyScaleUpDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kDragProxyScaleUpDuration = base::Milliseconds(200);
 // Time duration of snapping back drag proxy.
-constexpr base::TimeDelta kDragProxySnapBackDuration =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kDragProxySnapBackDuration = base::Milliseconds(300);
 
 }  // namespace
 

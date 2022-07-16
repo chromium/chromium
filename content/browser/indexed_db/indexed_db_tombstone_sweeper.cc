@@ -8,9 +8,9 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"

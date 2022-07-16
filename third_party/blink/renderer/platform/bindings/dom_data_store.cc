@@ -16,7 +16,7 @@ void DOMDataStore::Dispose() {
     // EmbedderHeapTracer::IsRootForNonTracingGC) that would not treat them as
     // roots and then Blink would not be able to find and remove them from a DOM
     // world. Explicitly resetting on disposal avoids that problem
-    it.value.Clear();
+    it.value.Reset();
   }
 }
 

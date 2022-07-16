@@ -23,12 +23,6 @@ component("menu") {
     "//ui/base",
     "//ui/gfx",
   ]
-  if (use_x11) {
-    deps += [
-      "//ui/events/keycodes:x11",
-      "//ui/gfx/x",
-    ]
-  }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
@@ -43,4 +37,7 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//testing/gtest",
   ]
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }

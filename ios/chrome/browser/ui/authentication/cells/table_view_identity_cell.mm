@@ -15,6 +15,8 @@
 namespace {
 // Checkmark margin.
 const CGFloat kCheckmarkMagin = 26.;
+// Leading margin for the separator.
+const CGFloat kSeparatorMargin = 80;
 }  // namespace
 
 @interface TableViewIdentityCell ()
@@ -29,11 +31,13 @@ const CGFloat kCheckmarkMagin = 26.;
   if (self) {
     _identityView = [[IdentityView alloc] initWithFrame:CGRectZero];
     _identityView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.customSeparator.leadingAnchor
+        constraintEqualToAnchor:self.contentView.leadingAnchor
+                       constant:kSeparatorMargin]
+        .active = YES;
     [self.contentView addSubview:_identityView];
     AddSameConstraints(_identityView, self.contentView);
-    if (@available(iOS 13.4, *)) {
-      [self addInteraction:[[ViewPointerInteraction alloc] init]];
-    }
+    [self addInteraction:[[ViewPointerInteraction alloc] init]];
   }
   return self;
 }
@@ -42,10 +46,12 @@ const CGFloat kCheckmarkMagin = 26.;
                       subtitle:(NSString*)subtitle
                          image:(UIImage*)image
                        checked:(BOOL)checked
-             identityViewStyle:(IdentityViewStyle)identityViewStyle {
+             identityViewStyle:(IdentityViewStyle)identityViewStyle
+                    titleColor:(UIColor*)titleColor {
+  self.identityView.style = identityViewStyle;
   [self.identityView setTitle:title subtitle:subtitle];
   [self.identityView setAvatar:image];
-  self.identityView.style = identityViewStyle;
+  self.identityView.titleColor = titleColor;
   self.accessoryType = checked ? UITableViewCellAccessoryCheckmark
                                : UITableViewCellAccessoryNone;
   if (checked) {

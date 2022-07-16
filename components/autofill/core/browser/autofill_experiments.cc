@@ -13,8 +13,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -35,6 +35,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
+#if defined(OS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace autofill {
 namespace {
 void LogCardUploadDisabled(LogManager* log_manager, std::string context) {
@@ -53,9 +57,20 @@ void LogCardUploadEnabled(LogManager* log_manager) {
 }
 }  // namespace
 
+// The list of countries for which the credit card upload save feature is fully
+// launched. Last updated M75.
+const char* const kAutofillUpstreamLaunchedCountries[] = {
+    "AD", "AE", "AF", "AG", "AT", "AU", "BB", "BE", "BG", "BM", "BR", "BS",
+    "CA", "CH", "CR", "CY", "CZ", "DE", "DK", "EE", "ES", "FI", "FR", "GB",
+    "GF", "GI", "GL", "GP", "GR", "GU", "HK", "HR", "HU", "IE", "IL", "IS",
+    "IT", "JP", "KY", "LC", "LT", "LU", "LV", "ME", "MK", "MO", "MQ", "MT",
+    "NC", "NL", "NO", "NZ", "PA", "PL", "PR", "PT", "RE", "RO", "RU", "SE",
+    "SG", "SI", "SK", "TH", "TR", "TT", "TW", "UA", "US", "VI", "VN", "ZA"};
+
 bool IsCreditCardUploadEnabled(const PrefService* pref_service,
                                const syncer::SyncService* sync_service,
                                const std::string& user_email,
+                               const std::string& user_country,
                                const AutofillSyncSigninState sync_state,
                                LogManager* log_manager) {
   if (!sync_service) {
@@ -164,16 +179,31 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kAutofillUpstream)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillUpstream)) {
+    // Feature flag is enabled, so continue regardless of the country. This is
+    // required for the ability to continue to launch to more countries as
+    // necessary.
     AutofillMetrics::LogCardUploadEnabledMetric(
-        AutofillMetrics::CardUploadEnabledMetric::AUTOFILL_UPSTREAM_DISABLED,
+        AutofillMetrics::CardUploadEnabledMetric::ENABLED_BY_FLAG, sync_state);
+    LogCardUploadEnabled(log_manager);
+    return true;
+  }
+
+  std::string country_code = base::ToUpperASCII(user_country);
+  auto* const* country_iter =
+      std::find(std::begin(kAutofillUpstreamLaunchedCountries),
+                std::end(kAutofillUpstreamLaunchedCountries), country_code);
+  if (country_iter == std::end(kAutofillUpstreamLaunchedCountries)) {
+    // |country_code| was not found in the list of launched countries.
+    AutofillMetrics::LogCardUploadEnabledMetric(
+        AutofillMetrics::CardUploadEnabledMetric::UNSUPPORTED_COUNTRY,
         sync_state);
-    LogCardUploadDisabled(log_manager, "AUTOFILL_UPSTREAM_NOT_ENABLED");
+    LogCardUploadDisabled(log_manager, "UNSUPPORTED_COUNTRY");
     return false;
   }
 
   AutofillMetrics::LogCardUploadEnabledMetric(
-      AutofillMetrics::CardUploadEnabledMetric::CARD_UPLOAD_ENABLED,
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY,
       sync_state);
   LogCardUploadEnabled(log_manager);
   return true;
@@ -191,6 +221,7 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
       !IsCreditCardUploadEnabled(
           pref_service, sync_service,
           personal_data_manager->GetAccountInfoForPaymentsServer().email,
+          personal_data_manager->GetCountryCodeForExperimentGroup(),
           personal_data_manager->GetSyncSigninState(), log_manager)) {
     return false;
   }
@@ -217,6 +248,23 @@ bool IsInAutofillSuggestionsDisabledExperiment() {
   std::string group_name =
       base::FieldTrialList::FindFullName("AutofillEnabled");
   return group_name == "Disabled";
+}
+
+bool IsCreditCardFidoAuthenticationEnabled() {
+  // The feature is enabled if the flag is enabled.
+  if (base::FeatureList::IsEnabled(features::kAutofillCreditCardAuthentication))
+    return true;
+
+#if defined(OS_WIN) || defined(OS_ANDROID)
+  // Better Auth project is fully launched on Windows and Clank.
+  return true;
+#elif defined(OS_MAC)
+  // Mac OS X 10.12 and earlier has a OS-level bug that causes crashes,
+  // therefore only enable for 10.13+.
+  return base::mac::IsAtLeastOS10_13();
+#else
+  return false;
+#endif
 }
 
 }  // namespace autofill

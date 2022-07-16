@@ -52,15 +52,15 @@ class CORE_EXPORT EmbeddedContentView : public GarbageCollectedMixin {
   virtual void PropagateFrameRects() = 0;
 
   IntRect FrameRect() const { return IntRect(Location(), Size()); }
-  IntPoint Location() const;
-  int X() const { return Location().X(); }
-  int Y() const { return Location().Y(); }
-  int Width() const { return Size().Width(); }
-  int Height() const { return Size().Height(); }
-  IntSize Size() const { return frame_rect_.Size(); }
+  gfx::Point Location() const;
+  int X() const { return Location().x(); }
+  int Y() const { return Location().y(); }
+  int Width() const { return Size().width(); }
+  int Height() const { return Size().height(); }
+  IntSize Size() const { return frame_rect_.size(); }
   void Resize(int width, int height) { Resize(IntSize(width, height)); }
   void Resize(const IntSize& size) {
-    SetFrameRect(IntRect(frame_rect_.Location(), size));
+    SetFrameRect(IntRect(frame_rect_.origin(), size));
   }
   bool IsAttached() const { return is_attached_; }
   // The visibility flags are set for iframes based on style properties of the

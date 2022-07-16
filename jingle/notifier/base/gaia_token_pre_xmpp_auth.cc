@@ -26,6 +26,9 @@ class GaiaCookieMechanism : public jingle_xmpp::SaslCookieMechanism {
       : jingle_xmpp::SaslCookieMechanism(
           mechanism, username, cookie, token_service) {}
 
+  GaiaCookieMechanism(const GaiaCookieMechanism&) = delete;
+  GaiaCookieMechanism& operator=(const GaiaCookieMechanism&) = delete;
+
   ~GaiaCookieMechanism() override {}
 
   jingle_xmpp::XmlElement* StartSaslAuth() override {
@@ -42,9 +45,6 @@ class GaiaCookieMechanism : public jingle_xmpp::SaslCookieMechanism {
     auth->SetAttr(QN_GOOGLE_AUTH_CLIENT_USES_FULL_BIND_RESULT, "true");
     return auth;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GaiaCookieMechanism);
 };
 
 }  // namespace

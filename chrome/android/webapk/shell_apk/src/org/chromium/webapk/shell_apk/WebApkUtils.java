@@ -338,4 +338,12 @@ public class WebApkUtils {
         }
         return null;
     }
+
+    public static boolean isSplashIconAdaptive(Context context) {
+        try {
+            return context.getResources().getBoolean(R.bool.is_splash_icon_maskable);
+        } catch (Resources.NotFoundException e) {
+        }
+        return false;
+    }
 }

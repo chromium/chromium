@@ -34,19 +34,23 @@ double MojoTicksToSeconds(MojoTimeTicks ticks) {
 class PingServiceImpl : public test::PingService {
  public:
   PingServiceImpl() = default;
+
+  PingServiceImpl(const PingServiceImpl&) = delete;
+  PingServiceImpl& operator=(const PingServiceImpl&) = delete;
+
   ~PingServiceImpl() override = default;
 
   // |PingService| methods:
   void Ping(PingCallback callback) override { std::move(callback).Run(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PingServiceImpl);
 };
 
 class PingPongTest {
  public:
   explicit PingPongTest(PendingRemote<test::PingService> remote)
       : remote_(std::move(remote)) {}
+
+  PingPongTest(const PingPongTest&) = delete;
+  PingPongTest& operator=(const PingPongTest&) = delete;
 
   void Run(unsigned int iterations) {
     iterations_to_run_ = iterations;
@@ -76,8 +80,6 @@ class PingPongTest {
   unsigned int current_iterations_;
 
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(PingPongTest);
 };
 
 struct BoundPingService {

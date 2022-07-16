@@ -87,7 +87,7 @@ TEST_F(StorageSchemaManifestHandlerTest, Parse) {
 
 TEST_F(StorageSchemaManifestHandlerTest, Validate) {
   base::ListValue permissions;
-  permissions.AppendString("storage");
+  permissions.Append("storage");
   manifest_.SetKey("permissions", permissions.Clone());
 
   // Absolute path.

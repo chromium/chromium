@@ -14,6 +14,7 @@
 #include "content/public/browser/background_sync_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
 #if defined(OS_ANDROID)
@@ -96,7 +97,7 @@ int BackgroundSyncDelegateImpl::GetSiteEngagementPenalty(const GURL& url) {
       site_engagement_service_->GetEngagementLevel(url);
   if (engagement_level == blink::mojom::EngagementLevel::NONE) {
     suspended_periodic_sync_origins_.insert(
-        url::Origin::Create(url.GetOrigin()));
+        url::Origin::Create(url.DeprecatedGetOriginAsURL()));
   }
 
   switch (engagement_level) {
@@ -159,8 +160,8 @@ void BackgroundSyncDelegateImpl::OnEngagementEvent(
 
   suspended_periodic_sync_origins_.erase(iter);
 
-  auto* storage_partition =
-      profile_->GetStoragePartitionForUrl(url, /* can_create= */ false);
+  // Engagement is always accumulated in the main frame.
+  auto* storage_partition = web_contents->GetMainFrame()->GetStoragePartition();
   if (!storage_partition)
     return;
 

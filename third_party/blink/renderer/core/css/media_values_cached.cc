@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
 
 namespace blink {
 
@@ -42,7 +41,17 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
         MediaValues::CalculateAvailablePointerTypes(frame);
     primary_hover_type = MediaValues::CalculatePrimaryHoverType(frame);
     available_hover_types = MediaValues::CalculateAvailableHoverTypes(frame);
-    default_font_size = MediaValues::CalculateDefaultFontSize(frame);
+    em_size = MediaValues::CalculateEmSize(frame);
+    // Use 0.5em as the fallback for ex and ch units. CalculateEx/ChSize() would
+    // trigger unconditional font metrics retrieval for MediaValuesCached
+    // regardless of whether they are being used in a media query. In addition
+    // to unnecessary load font data, it also causes these two tests to fail for
+    // some reason:
+    //
+    // virtual/text-antialias/sub-pixel/text-scaling-pixel.html
+    // virtual/highdpi-threaded/external/wpt/css/css-paint-api/hidpi/device-pixel-ratio.https.html
+    ex_size = em_size / 2.0;
+    ch_size = em_size / 2.0;
     three_d_enabled = MediaValues::CalculateThreeDEnabled(frame);
     immersive_mode = MediaValues::CalculateInImmersiveMode(frame);
     strict_mode = MediaValues::CalculateStrictMode(frame);
@@ -55,7 +64,10 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     prefers_reduced_data = MediaValues::CalculatePrefersReducedData(frame);
     forced_colors = MediaValues::CalculateForcedColors(frame);
     navigation_controls = MediaValues::CalculateNavigationControls(frame);
-    screen_spanning = MediaValues::CalculateScreenSpanning(frame);
+    horizontal_viewport_segments =
+        MediaValues::CalculateHorizontalViewportSegments(frame);
+    vertical_viewport_segments =
+        MediaValues::CalculateVerticalViewportSegments(frame);
     device_posture = MediaValues::CalculateDevicePosture(frame);
   }
 }
@@ -65,24 +77,10 @@ MediaValuesCached::MediaValuesCached() = default;
 MediaValuesCached::MediaValuesCached(const MediaValuesCachedData& data)
     : data_(data) {}
 
+MediaValuesCached::MediaValuesCached(Document& document) : data_(document) {}
+
 MediaValues* MediaValuesCached::Copy() const {
   return MakeGarbageCollected<MediaValuesCached>(data_);
-}
-
-bool MediaValuesCached::ComputeLength(double value,
-                                      CSSPrimitiveValue::UnitType type,
-                                      int& result) const {
-  return MediaValues::ComputeLength(value, type, data_.default_font_size,
-                                    data_.viewport_width, data_.viewport_height,
-                                    result);
-}
-
-bool MediaValuesCached::ComputeLength(double value,
-                                      CSSPrimitiveValue::UnitType type,
-                                      double& result) const {
-  return MediaValues::ComputeLength(value, type, data_.default_font_size,
-                                    data_.viewport_width, data_.viewport_height,
-                                    result);
 }
 
 double MediaValuesCached::ViewportWidth() const {
@@ -91,6 +89,23 @@ double MediaValuesCached::ViewportWidth() const {
 
 double MediaValuesCached::ViewportHeight() const {
   return data_.viewport_height;
+}
+
+float MediaValuesCached::EmSize() const {
+  return data_.em_size;
+}
+
+float MediaValuesCached::RemSize() const {
+  // For media queries rem and em units are both based on the initial font.
+  return data_.em_size;
+}
+
+float MediaValuesCached::ExSize() const {
+  return data_.ex_size;
+}
+
+float MediaValuesCached::ChSize() const {
+  return data_.ch_size;
 }
 
 int MediaValuesCached::DeviceWidth() const {
@@ -197,8 +212,12 @@ NavigationControls MediaValuesCached::GetNavigationControls() const {
   return data_.navigation_controls;
 }
 
-ScreenSpanning MediaValuesCached::GetScreenSpanning() const {
-  return data_.screen_spanning;
+int MediaValuesCached::GetHorizontalViewportSegments() const {
+  return data_.horizontal_viewport_segments;
+}
+
+int MediaValuesCached::GetVerticalViewportSegments() const {
+  return data_.vertical_viewport_segments;
 }
 
 device::mojom::blink::DevicePostureType MediaValuesCached::GetDevicePosture()

@@ -14,7 +14,6 @@ source_set("test_support") {
     "fit_adapter.h",
     "frame_test_util.cc",
     "frame_test_util.h",
-    "result_receiver.h",
     "scoped_connection_checker.h",
     "test_devtools_list_fetcher.cc",
     "test_devtools_list_fetcher.h",
@@ -25,10 +24,11 @@ source_set("test_support") {
   ]
   public_deps = [
     "//base",
-    "//fuchsia/base",
+    "//fuchsia/base:base",
     "//fuchsia/base:modular",
     "//net",
     "//net:test_support",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     "//url",

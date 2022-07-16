@@ -34,6 +34,11 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data {
  public:
   explicit WebViewContentScriptManager(
       content::BrowserContext* browser_context);
+
+  WebViewContentScriptManager(const WebViewContentScriptManager&) = delete;
+  WebViewContentScriptManager& operator=(const WebViewContentScriptManager&) =
+      delete;
+
   ~WebViewContentScriptManager() override;
 
   static WebViewContentScriptManager* Get(
@@ -107,8 +112,6 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data {
   content::BrowserContext* browser_context_;
 
   base::WeakPtrFactory<WebViewContentScriptManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewContentScriptManager);
 };
 
 }  // namespace extensions

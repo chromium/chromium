@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_METRICS_UI_SCREEN_INFO_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_UI_SCREEN_INFO_METRICS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
@@ -16,6 +15,11 @@ namespace metrics {
 class ScreenInfoMetricsProvider : public MetricsProvider {
  public:
   ScreenInfoMetricsProvider();
+
+  ScreenInfoMetricsProvider(const ScreenInfoMetricsProvider&) = delete;
+  ScreenInfoMetricsProvider& operator=(const ScreenInfoMetricsProvider&) =
+      delete;
+
   ~ScreenInfoMetricsProvider() override;
 
   // MetricsProvider:
@@ -33,9 +37,6 @@ class ScreenInfoMetricsProvider : public MetricsProvider {
 
   // Returns the number of monitors the user is using.
   virtual int GetScreenCount() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenInfoMetricsProvider);
 };
 
 }  // namespace metrics

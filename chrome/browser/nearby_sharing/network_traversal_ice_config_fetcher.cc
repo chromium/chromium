@@ -109,11 +109,11 @@ std::vector<sharing::mojom::IceServerPtr> ParseIceConfigJson(std::string json) {
 
     std::vector<GURL> urls;
     for (const base::Value& url_json : urls_json->GetList()) {
-      std::string url;
-      if (!url_json.GetAsString(&url))
+      const std::string* url = url_json.GetIfString();
+      if (!url)
         continue;
 
-      urls.emplace_back(url);
+      urls.emplace_back(*url);
     }
 
     if (urls.empty())

@@ -51,7 +51,8 @@ class SessionDataServiceTest : public BrowserWithTestWindowTest {
     auto cookie_settings = CookieSettingsFactory::GetForProfile(profile());
     cookie_settings->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
     profile()->SetExtensionSpecialStoragePolicy(
-        new ExtensionSpecialStoragePolicy(cookie_settings.get()));
+        base::MakeRefCounted<ExtensionSpecialStoragePolicy>(
+            cookie_settings.get()));
     RestartService(CreateDeleter());
   }
 

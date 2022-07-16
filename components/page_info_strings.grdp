@@ -66,13 +66,25 @@
 
   <!-- Accuracy Tip strings -->
   <message name="IDS_PAGE_INFO_ACCURACY_TIP_TITLE" desc="Message to display in the page info bubble when the page you are on triggered an accuracy tip.">
-    Is this website accurate?
+    Take a moment to consider accuracy
   </message>
   <message name="IDS_PAGE_INFO_ACCURACY_TIP_LEARN_MORE_BUTTON" desc="Text of button to learn more about inaccurate pages. Shown on the accuracy tip page info bubble.">
     Learn more
   </message>
   <message name="IDS_PAGE_INFO_ACCURACY_TIP_IGNORE_BUTTON" desc="Text of button to close the accuracy tip page info bubble.">
     Ignore
+  </message>
+  <message name="IDS_PAGE_INFO_ACCURACY_TIP_OPT_OUT_BUTTON" desc="Text of button to close the accuracy tip page info bubble and not show it again.">
+    Don't show again
+  </message>
+  <message name="IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_1" desc="Text shown inside an accuracy tip.">
+    Who’s behind this information?
+  </message>
+    <message name="IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_2" desc="Text shown inside an accuracy tip.">
+    What evidence supports it?
+  </message>
+    <message name="IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_3" desc="Text shown inside an accuracy tip.">
+    What do other sources say?
   </message>
 
   <!-- Viewing file strings -->
@@ -111,39 +123,24 @@
 
   <!-- Identity detail strings shared with iOS -->
   <message name="IDS_PAGE_INFO_SECURITY_TAB_INSECURE_IDENTITY" desc="The text of the identity section when the page is not secure.">
-    The identity of this website has not been verified.
+    The identity of this website isn't verified.
   </message>
 
   <!-- Password Protection strings shared with iOS -->
   <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if user has reuse their google password on current website.">
     Your password may be compromised
   </message>
+  <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_SAVED_PASSWORD_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if user has reuse a saved password on current website.">
+    Check your passwords
+  </message>
   <if expr="_google_chrome">
     <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website.">
-      You just entered your password on a deceptive site. Chrome recommends changing your password now.
-    </message>
-    <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_1_DOMAIN" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website and to check their password on one domain.">
-      You just entered your password on a deceptive site. Chrome recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph> and other sites where you use this password now.
-    </message>
-    <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_2_DOMAIN" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website and to check their password on two domains.">
-      You just entered your password on a deceptive site. Chrome recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, and other sites where you use this password now.
-    </message>
-    <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_3_DOMAIN" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website and to check their password on three domains.">
-      You just entered your password on a deceptive site. Chrome recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, <ph name="WEBSITE_3">$3<ex>www.amazon.com</ex></ph>, and other sites where you use this password now.
+      You just entered your password on a deceptive site. To secure your accounts, Chrome recommends checking your saved passwords.
     </message>
   </if>
   <if expr="not _google_chrome">
     <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website.">
-      You just entered your password on a deceptive site. Chromium recommends changing your password now.
-    </message>
-    <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_1_DOMAIN" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to check their password on one domain.">
-      You just entered your password on a deceptive site. Chromium recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph> and other sites where you use this password now.
-    </message>
-    <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_2_DOMAIN" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to check their password on two domains.">
-      You just entered your password on a deceptive site. Chromium recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, and other sites where you use this password now.
-    </message>
-    <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_3_DOMAIN" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to check their password on three domains.">
-      You just entered your password on a deceptive site. Chromium recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, <ph name="WEBSITE_3">$3<ex>www.amazon.com</ex></ph>, and other sites where you use this password now.
+      You just entered your password on a deceptive site. To secure your accounts, Chromium recommends checking your saved passwords.
     </message>
   </if>
   <if expr="use_titlecase">
@@ -163,18 +160,11 @@
     <!-- Certificate exception decision UI (after clicking through an SSL certificate error) -->
     <!-- TODO(crbug.com/502473): Support revoking certificate overrides on iOS Page Info. -->
     <message name="IDS_PAGE_INFO_INVALID_CERTIFICATE_DESCRIPTION" desc="A short paragraph to the user that security warnings are disabled. This is the case when the user has encountered a certificate error for the current site and chosen to override it.">
-      You have chosen to disable security warnings for this site.
+      You have chosen to turn off security warnings for this site.
     </message>
-    <if expr="is_android">
-      <message name="IDS_PAGE_INFO_RESET_INVALID_CERTIFICATE_DECISIONS_BUTTON" desc="Text of button in the page info that resets allow/deny decisions of invalid certificates, which will start showing security warnings for the page again.">
-        Stop using an invalid certificate
-      </message>
-    </if>
-    <if expr="not is_android">
-      <message name="IDS_PAGE_INFO_RESET_INVALID_CERTIFICATE_DECISIONS_BUTTON" desc="Text of button in the page info that resets allow/deny decisions of invalid certificates, which will start showing security warnings for the page again.">
-        Re-enable warnings
-      </message>
-    </if>
+    <message name="IDS_PAGE_INFO_RESET_INVALID_CERTIFICATE_DECISIONS_BUTTON" desc="Text of button in the page info that resets allow/deny decisions of invalid certificates, which will start showing security warnings for the page again.">
+      Turn on warnings
+    </message>
 
     <!-- Old connection info UI. Only used on Android, but still compiled on desktop. -->
     <message name="IDS_PAGE_INFO_HELP_CENTER_LINK" desc="This is the text of the link pointing to the Help Center. This appears at the bottom of the SSL dialog and 'this' refers to the sections within the bubble.">
@@ -299,96 +289,6 @@
         Show cookies
       </message>
     </if>
-
-    <!-- Permission names -->
-    <message name="IDS_PAGE_INFO_TYPE_ADS" desc="The label used for the ads permission controls in the Page Info popup.">
-      Ads
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_PROTECTED_MEDIA_IDENTIFIER" desc="The label used for the protected media identifier permission that controls content controlled by DRM (e.g. paid subscriptions). Appears in the Page Info popover when you click the icon next to the URL. Protected content refers to DRM-controlled content. IDs is short for identifiers; use abbreviation to avoid truncation.">
-      Protected content IDs
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_BACKGROUND_SYNC" desc="The label used for the background sync permission controls in the Page Info popup.">
-      Background Sync
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_IDLE_DETECTION" desc="The label used for the idle detection permission controlls in the Page Info popup.">
-      Your device use
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_IMAGES" desc="The label used for images permission controls in the Page Info popup.">
-      Images
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_JAVASCRIPT" desc="The label used for JavaScript permission controls in the Page Info popup.">
-      JavaScript
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_POPUPS_REDIRECTS" desc="The label used for the popup/redirect permission controls in the Page Info popup.">
-      Pop-ups and redirects
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_LOCATION" desc="The label used for geolocation permission controls in the Page Info popup." meaning="Geolocation">
-      Location
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_NOTIFICATIONS" desc="The label used for notifications permission controls in the Page Info popup.">
-      Notifications
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_MIC" desc="The label used for the microphone permission controls in the Page Info popup.">
-      Microphone
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_CAMERA" desc="The label used for the camera permission controls in the Page Info popup.">
-      Camera
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_MIDI_SYSEX" desc="The label used for MIDI system exclusive message permission controls in the Page Info popup.">
-      MIDI devices full control
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_SOUND" desc="The label used for the sound permission controls in the Page Info popup.">
-      Sound
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_CLIPBOARD" desc="The label used for the clipboard permission controls in the Page Info popup.">
-      Clipboard
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_SENSORS" desc="The label used for the sensor permission controls in the Page Info popup. Title case format.">
-      Motion or Light Sensors
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_MOTION_SENSORS" desc="The label used for the motion sensor (accelerometer, gyroscope, magnetometer) permission controls in the Page Info popup. Title case format.">
-      Motion Sensors
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_USB" desc="The label used for the USB permission controls in the Page Info popup.">
-      USB devices
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_SERIAL" desc="The label used for the serial port permission controls in the Page Info popup.">
-      Serial ports
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_BLUETOOTH" desc="The label used for the Bluetooth permission controls in the Page Info popup.">
-      Bluetooth devices
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_FILE_SYSTEM_ACCESS_WRITE" desc="The label used for the File System Access write permission controls in the Page Info popup. The write permission determines whether sites are allowed to save to the original file that was selected by the user through the File System Access API.">
-      File editing
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_BLUETOOTH_SCANNING" desc="The label used for the Bluetooth scanning controls in the Page Info popup.">
-      Bluetooth scanning
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_NFC" desc="The label used for the NFC permission controls in the Page Info popup.">
-      NFC devices
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_VR" desc="The label used for the VR permission controls in the Page Info popup.">
-      Virtual reality
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_AR" desc="The label used for the AR permission controls in the Page Info popup.">
-      Augmented reality
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_CAMERA_PAN_TILT_ZOOM" desc="The label used for the Camera PTZ permission controls in the Page Info popup.">
-      Camera use &amp; movement
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_WINDOW_PLACEMENT" desc="The label used for the Window Placement permission controls in the Page Info popup.">
-      Window placement
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_FONT_ACCESS" desc="The label used for the Font Access permission controls in the Page Info popup.">
-      Fonts
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_HID" desc="The label used for the HID permission controls in the Page Info popup.">
-      HID devices
-    </message>
-    <message name="IDS_PAGE_INFO_TYPE_FILE_HANDLING" desc="The label used for the File Handling permission controls in the Page Info popup.">
-      File Handlers
-    </message>
-    <!-- TODO(crbug.com/716303): A few permissions are missing here. -->
 
     <!-- Permission values -->
     <message name="IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button was explicitly set to allow by the user.">
@@ -596,6 +496,12 @@
     <message name="IDS_PAGE_INFO_SITE_SETTINGS_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_SITE_SETTINGS_LINK.">
       Go to site settings
     </message>
+    <message name="IDS_PAGE_INFO_APP_SETTINGS_LINK" desc="This is the text of the link pointing to the App Settings page. This appears at the bottom of the Permissions pane of the Page Information Window for app windows (in place of 'Site settings').">
+      App settings
+    </message>
+    <message name="IDS_PAGE_INFO_APP_SETTINGS_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_SITE_SETTINGS_LINK.">
+      Go to app settings
+    </message>
 
     <!-- Permission decision strings -->
     <message name="IDS_PAGE_INFO_PERMISSION_ALLOWED_BY_POLICY" desc="The label used underneath a permission listed in the Page Info bubble if the permission was explicitly allowed by the user's enterprise policy.">
@@ -644,15 +550,6 @@
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS" desc="A short paragraph explaining to the user that they has reuse their google password on current website.">
         You could lose access to your Google Account. Chrome recommends changing your password now. You'll be asked to sign in.
       </message>
-      <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED_1_DOMAIN" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website and to change their password on one domain.">
-        You just entered your password on a deceptive site. Chrome recommends going to <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph> and other sites where you use this password and changing it now.
-      </message>
-      <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED_2_DOMAINS" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website and to change their password on two domains.">
-        You just entered your password on a deceptive site. Chrome recommends going to <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, and other sites where you use this password and changing it now.
-      </message>
-      <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED_3_DOMAINS" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website and to change their password on three domains.">
-        You just entered your password on a deceptive site. Chrome recommends going to <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, <ph name="WEBSITE_3">$3<ex>www.amazon.com</ex></ph>, and other sites where you use this password and changing it now.
-      </message>
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SYNC" desc="A short paragraph explaining to a Chrome sync user that they have reused their Google password on the current website.">
         Chrome can help you protect your Google Account and change your password.
       </message>
@@ -669,15 +566,6 @@
     <if expr="not _google_chrome">
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS" desc="A short paragraph explaining to the user that they has reuse their google password on current website.">
         You could lose access to your Google Account. Chromium recommends changing your password now. You'll be asked to sign in.
-      </message>
-      <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED_1_DOMAIN" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to change their password on one domain.">
-        You just entered your password on a deceptive site. Chromium recommends going to <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph> and other sites where you use this password and changing it now.
-      </message>
-      <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED_2_DOMAINS" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to change their password on two domains.">
-        You just entered your password on a deceptive site. Chromium recommends going to <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, and other sites where you use this password and changing it now.
-      </message>
-      <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED_3_DOMAINS" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to change their password on three domains.">
-        You just entered your password on a deceptive site. Chromium recommends going to <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, <ph name="WEBSITE_3">$3<ex>www.amazon.com</ex></ph>, and other sites where you use this password and changing it now.
       </message>
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SYNC" desc="A short paragraph explaining to a Chrome sync user that they have reused their Google password on the current website.">
         Chromium can help you protect your Google Account and change your password.
@@ -804,5 +692,16 @@
   </message>
   <message name="IDS_PAGE_INFO_RESET_PERMISSIONS" desc="The label of the button to reset permissions for a site.">
     {NUM_PERMISSIONS, plural, =1 {Reset permission} other {Reset permissions}}
+  </message>
+
+  <!-- About this site strings -->
+  <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER" desc="The header label of the 'About this site' subpage in Page Info bubble.">
+    About this site
+  </message>
+  <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_TOOLTIP" desc="The tooltip of the button that opens 'About this site' subpage in Page Info bubble.">
+    Show information about this site
+  </message>
+  <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_SUBPAGE_FROM_LABEL" desc="The label containing the source of the description in the 'About this site' subpage in Page Info bubble.">
+    From <ph name="SOURCE_NAME">$1<ex>Wikipedia</ex></ph>
   </message>
 </grit-part>

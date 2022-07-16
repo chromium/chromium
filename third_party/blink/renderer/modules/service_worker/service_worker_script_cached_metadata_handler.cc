@@ -36,6 +36,7 @@ void ServiceWorkerScriptCachedMetadataHandler::Trace(Visitor* visitor) const {
 }
 
 void ServiceWorkerScriptCachedMetadataHandler::SetCachedMetadata(
+    CodeCacheHost* code_cache_host,
     uint32_t data_type_id,
     const uint8_t* data,
     size_t size) {
@@ -47,6 +48,7 @@ void ServiceWorkerScriptCachedMetadataHandler::SetCachedMetadata(
 }
 
 void ServiceWorkerScriptCachedMetadataHandler::ClearCachedMetadata(
+    CodeCacheHost* code_cache_host,
     ClearCacheType type) {
   if (type == kDiscardLocally)
     return;
@@ -58,7 +60,8 @@ void ServiceWorkerScriptCachedMetadataHandler::ClearCachedMetadata(
 
 scoped_refptr<CachedMetadata>
 ServiceWorkerScriptCachedMetadataHandler::GetCachedMetadata(
-    uint32_t data_type_id) const {
+    uint32_t data_type_id,
+    GetCachedMetadataBehavior behavior) const {
   if (!cached_metadata_ || cached_metadata_->DataTypeID() != data_type_id)
     return nullptr;
   return cached_metadata_;

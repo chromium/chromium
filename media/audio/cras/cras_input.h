@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "media/audio/agc_audio_stream.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
@@ -33,6 +32,9 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
   CrasInputStream(const AudioParameters& params,
                   AudioManagerCrasBase* manager,
                   const std::string& device_id);
+
+  CrasInputStream(const CrasInputStream&) = delete;
+  CrasInputStream& operator=(const CrasInputStream&) = delete;
 
   // The dtor is typically called by the AudioManager only and it is usually
   // triggered by calling AudioOutputStream::Close().
@@ -121,8 +123,6 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
   double input_volume_;
 
   std::unique_ptr<AudioBus> audio_bus_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrasInputStream);
 };
 
 }  // namespace media

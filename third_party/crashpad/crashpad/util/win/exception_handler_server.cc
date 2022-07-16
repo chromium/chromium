@@ -78,6 +78,9 @@ class PipeServiceContext {
         clients_(clients),
         shutdown_token_(shutdown_token) {}
 
+  PipeServiceContext(const PipeServiceContext&) = delete;
+  PipeServiceContext& operator=(const PipeServiceContext&) = delete;
+
   HANDLE port() const { return port_; }
   HANDLE pipe() const { return pipe_.get(); }
   ExceptionHandlerServer::Delegate* delegate() const { return delegate_; }
@@ -92,8 +95,6 @@ class PipeServiceContext {
   base::Lock* clients_lock_;  // weak
   std::set<internal::ClientData*>* clients_;  // weak
   uint64_t shutdown_token_;
-
-  DISALLOW_COPY_AND_ASSIGN(PipeServiceContext);
 };
 
 //! \brief The context data for registered threadpool waits.
@@ -136,6 +137,9 @@ class ClientData {
                             non_crash_dump_request_callback,
                             process_end_callback);
   }
+
+  ClientData(const ClientData&) = delete;
+  ClientData& operator=(const ClientData&) = delete;
 
   ~ClientData() {
     // It is important that this only access the threadpool waits (it's called
@@ -230,8 +234,6 @@ class ClientData {
   WinVMAddress crash_exception_information_address_;
   WinVMAddress non_crash_exception_information_address_;
   WinVMAddress debug_critical_section_address_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientData);
 };
 
 }  // namespace internal

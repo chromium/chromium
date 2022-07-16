@@ -1,0 +1,68 @@
+This is a testharness.js-based test.
+Found 64 tests; 63 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: member names are unique
+PASS Partial interface mixin NavigatorID: member names are unique
+PASS Navigator includes NavigatorID: member names are unique
+PASS Navigator includes NavigatorLanguage: member names are unique
+PASS Navigator includes NavigatorOnLine: member names are unique
+PASS Navigator includes NavigatorContentUtils: member names are unique
+PASS Navigator includes NavigatorCookies: member names are unique
+PASS Navigator includes NavigatorPlugins: member names are unique
+PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS HID interface: existence and properties of interface object
+PASS HID interface object length
+PASS HID interface object name
+PASS HID interface: existence and properties of interface prototype object
+PASS HID interface: existence and properties of interface prototype object's "constructor" property
+PASS HID interface: existence and properties of interface prototype object's @@unscopables property
+PASS HID interface: attribute onconnect
+PASS HID interface: attribute ondisconnect
+PASS HID interface: operation getDevices()
+PASS HID interface: operation requestDevice(HIDDeviceRequestOptions)
+PASS HID must be primary interface of navigator.hid
+PASS Stringification of navigator.hid
+PASS HID interface: navigator.hid must inherit property "onconnect" with the proper type
+PASS HID interface: navigator.hid must inherit property "ondisconnect" with the proper type
+PASS HID interface: navigator.hid must inherit property "getDevices()" with the proper type
+PASS HID interface: navigator.hid must inherit property "requestDevice(HIDDeviceRequestOptions)" with the proper type
+PASS HID interface: calling requestDevice(HIDDeviceRequestOptions) on navigator.hid with too few arguments must throw TypeError
+PASS HIDConnectionEvent interface: existence and properties of interface object
+PASS HIDConnectionEvent interface object length
+PASS HIDConnectionEvent interface object name
+PASS HIDConnectionEvent interface: existence and properties of interface prototype object
+PASS HIDConnectionEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS HIDConnectionEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS HIDConnectionEvent interface: attribute device
+PASS HIDInputReportEvent interface: existence and properties of interface object
+FAIL HIDInputReportEvent interface object length assert_equals: wrong value for HIDInputReportEvent.length expected 2 but got 0
+PASS HIDInputReportEvent interface object name
+PASS HIDInputReportEvent interface: existence and properties of interface prototype object
+PASS HIDInputReportEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS HIDInputReportEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS HIDInputReportEvent interface: attribute device
+PASS HIDInputReportEvent interface: attribute reportId
+PASS HIDInputReportEvent interface: attribute data
+PASS HIDDevice interface: existence and properties of interface object
+PASS HIDDevice interface object length
+PASS HIDDevice interface object name
+PASS HIDDevice interface: existence and properties of interface prototype object
+PASS HIDDevice interface: existence and properties of interface prototype object's "constructor" property
+PASS HIDDevice interface: existence and properties of interface prototype object's @@unscopables property
+PASS HIDDevice interface: attribute oninputreport
+PASS HIDDevice interface: attribute opened
+PASS HIDDevice interface: attribute vendorId
+PASS HIDDevice interface: attribute productId
+PASS HIDDevice interface: attribute productName
+PASS HIDDevice interface: attribute collections
+PASS HIDDevice interface: operation open()
+PASS HIDDevice interface: operation close()
+PASS HIDDevice interface: operation sendReport(octet, BufferSource)
+PASS HIDDevice interface: operation sendFeatureReport(octet, BufferSource)
+PASS HIDDevice interface: operation receiveFeatureReport(octet)
+PASS Navigator interface: attribute hid
+PASS Navigator interface: navigator must inherit property "hid" with the proper type
+Harness: the test ran to completion.
+

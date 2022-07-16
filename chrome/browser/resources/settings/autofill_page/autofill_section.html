@@ -50,7 +50,9 @@
               </span>
             </div>
             <cr-icon-button class="icon-more-vert" id="addressMenu"
-                on-click="onAddressMenuTap_" title="$i18n{moreActions}">
+                on-click="onAddressMenuTap_"
+                title="[[moreActionsTitle_(item.metadata.summaryLabel,
+                 item.metadata.summarySublabel)]]">
             </cr-icon-button>
           </div>
         </template>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<body></body>
+<script>
+for (const inputType of ["date", "month", "week", "datetime-local", "time"]) {
+    promise_test(async (t) => {
+      const input = document.createElement("input");
+      input.setAttribute("type", inputType);
+
+      await test_driver.bless("show calendar picker");
+      input.showPicker();
+      assert_not_equals(internals.pagePopupWindow, null, "Picker is opened.");
+
+      input.blur();
+      assert_equals(internals.pagePopupWindow, null, "Picker is closed.");
+    }, `Calendar picker: showPicker() for input[type="${inputType}""] should show picker`);
+  }
+</script>

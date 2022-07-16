@@ -4,6 +4,7 @@
 
 module chrome.mojom;
 
+import "components/content_settings/common/content_settings_manager.mojom";
 import "components/content_settings/core/common/content_settings.mojom";
 
 // The renderer configuration parameters which can change post renderer launch.
@@ -26,9 +27,13 @@ interface RendererConfiguration {
   // Configures the renderer with settings that won't change.
   // The |chromeos_listener| is only passed on Chrome OS when
   // the merge session is still running - otherwise not set.
+  // |content_settings_manager| may be sent as an optimization to avoid
+  // requesting it from the browser process, and may be null.
   SetInitialConfiguration(
       bool is_incognito_process,
-      pending_receiver<ChromeOSListener>? chromeos_listener);
+      pending_receiver<ChromeOSListener>? chromeos_listener,
+      pending_remote<content_settings.mojom.ContentSettingsManager>?
+          content_settings_manager);
 
   // Update renderer configuration with settings that can change.
   SetConfiguration(DynamicParams params);

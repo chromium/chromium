@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "chrome_personalization_app_ui_delegate.cc" : [
+    "+chrome/browser/ui/views/frame/browser_view.h",
+    "+chrome/browser/ui/views/frame/contents_web_view.h",
+  ]
+}

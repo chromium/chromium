@@ -27,6 +27,10 @@ class BinaryUploadServiceFactory : public BrowserContextKeyedServiceFactory {
   // Get the singleton instance.
   static BinaryUploadServiceFactory* GetInstance();
 
+  BinaryUploadServiceFactory(const BinaryUploadServiceFactory&) = delete;
+  BinaryUploadServiceFactory& operator=(const BinaryUploadServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<BinaryUploadServiceFactory>;
 
@@ -38,8 +42,6 @@ class BinaryUploadServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BinaryUploadServiceFactory);
 };
 
 }  // namespace safe_browsing

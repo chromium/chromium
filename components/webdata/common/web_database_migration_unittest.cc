@@ -7,7 +7,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -52,6 +51,10 @@ std::string RemoveQuotes(const std::string& has_quotes) {
 class WebDatabaseMigrationTest : public testing::Test {
  public:
   WebDatabaseMigrationTest() {}
+
+  WebDatabaseMigrationTest(const WebDatabaseMigrationTest&) = delete;
+  WebDatabaseMigrationTest& operator=(const WebDatabaseMigrationTest&) = delete;
+
   ~WebDatabaseMigrationTest() override {}
 
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
@@ -120,11 +123,9 @@ class WebDatabaseMigrationTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDatabaseMigrationTest);
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 96;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 98;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1173,17 +1174,16 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion70ToCurrent) {
     // for the billing_address_id. The values are added to the table in
     // version_70.sql.
     sql::Statement s_masked_cards(
-        connection.GetUniqueStatement("SELECT id, status, name_on_card, "
+        connection.GetUniqueStatement("SELECT id, name_on_card, "
                                       "network, last_four, exp_month, exp_year "
                                       "FROM masked_credit_cards"));
     ASSERT_TRUE(s_masked_cards.Step());
     EXPECT_EQ("card_1", s_masked_cards.ColumnString(0));
-    EXPECT_EQ("status", s_masked_cards.ColumnString(1));
-    EXPECT_EQ("bob", s_masked_cards.ColumnString(2));
-    EXPECT_EQ("VISA", s_masked_cards.ColumnString(3));
-    EXPECT_EQ("1234", s_masked_cards.ColumnString(4));
-    EXPECT_EQ(12, s_masked_cards.ColumnInt(5));
-    EXPECT_EQ(2050, s_masked_cards.ColumnInt(6));
+    EXPECT_EQ("bob", s_masked_cards.ColumnString(1));
+    EXPECT_EQ("VISA", s_masked_cards.ColumnString(2));
+    EXPECT_EQ("1234", s_masked_cards.ColumnString(3));
+    EXPECT_EQ(12, s_masked_cards.ColumnInt(4));
+    EXPECT_EQ(2050, s_masked_cards.ColumnInt(5));
   }
 }
 
@@ -2157,5 +2157,68 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion95ToCurrent) {
 
     EXPECT_FALSE(connection.DoesColumnExist(
         "autofill_profile", "disallow_settings_visible_updates"));
+  }
+}
+
+// Tests addition of is_active column in keywords table.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion96ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_96.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&connection, 96, 83));
+
+    EXPECT_FALSE(connection.DoesColumnExist("keywords", "is_active"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+
+    EXPECT_TRUE(connection.DoesColumnExist("keywords", "is_active"));
+  }
+}
+
+TEST_F(WebDatabaseMigrationTest, MigrateVersion97ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_97.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&connection, 97, 83));
+
+    // The status column should exist.
+    EXPECT_TRUE(connection.DoesColumnExist("masked_credit_cards", "status"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+
+    // The status column should not exist.
+    EXPECT_FALSE(connection.DoesColumnExist("masked_credit_cards", "status"));
   }
 }

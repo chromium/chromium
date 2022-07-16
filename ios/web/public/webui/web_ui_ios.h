@@ -10,13 +10,9 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/values.h"
 
 class GURL;
-
-namespace base {
-class ListValue;
-class Value;
-}
 
 namespace web {
 
@@ -48,9 +44,24 @@ class WebUIIOS {
 
   // Used by WebUIIOSMessageHandlers. If the given message is already
   // registered, the call has no effect.
-  using MessageCallback = base::RepeatingCallback<void(const base::ListValue*)>;
+  using MessageCallback =
+      base::RepeatingCallback<void(base::Value::ConstListView)>;
   virtual void RegisterMessageCallback(const std::string& message,
-                                       const MessageCallback& callback) = 0;
+                                       MessageCallback callback) = 0;
+
+  // Always use RegisterMessageCallback() above in new code.
+  //
+  // TODO(crbug.com/1243386): Existing callers of
+  // RegisterDeprecatedMessageCallback() should be migrated to
+  // RegisterMessageCallback() if possible.
+  //
+  // Used by WebUIIOSMessageHandlers. If the given message is already
+  // registered, the call has no effect.
+  using DeprecatedMessageCallback =
+      base::RepeatingCallback<void(const base::ListValue*)>;
+  virtual void RegisterDeprecatedMessageCallback(
+      const std::string& message,
+      const DeprecatedMessageCallback& callback) = 0;
 
   // This is only needed if an embedder overrides handling of a WebUIIOSMessage
   // and then later wants to undo that, or to route it to a different WebUIIOS

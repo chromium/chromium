@@ -21,6 +21,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -29,6 +30,7 @@ import org.chromium.components.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.InstallTrigger;
 import org.chromium.components.webapps.WebappInstallSource;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -51,16 +53,33 @@ public class PwaBottomSheetController
     /** The controller used to show the bottom sheet. */
     private BottomSheetController mBottomSheetController;
 
-    /** The observer used to set the bottom sheet content priority. */
+    /**
+     * The observer used to set the bottom sheet content priority, communicate sheet state
+     * changes to the native version of this class, and track when the sheet is dismissed.
+     */
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
         @Override
-        public void onSheetStateChanged(@SheetState int state) {
+        public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {
+            if (state == SheetState.HIDDEN) {
+                if (reason == StateChangeReason.SWIPE) {
+                    PwaBottomSheetControllerJni.get().onSheetClosedWithSwipe(
+                            mNativePwaBottomSheetController);
+                }
+                mBottomSheetController.removeObserver(mBottomSheetObserver);
+                mWebContentsObserver = null;
+                mPwaBottomSheetContent = null;
+                destroy();
+                return;
+            }
+
             // When our sheet is not fully expanded, lower its priority to make sure
             // other (high-priority) sheets in the queue can be shown.
-            int priority = (isBottomSheetVisible() && state == SheetState.FULL)
-                    ? ContentPriority.HIGH
-                    : ContentPriority.LOW;
-            mPwaBottomSheetContent.setPriority(priority);
+            if (isBottomSheetVisible() && state == SheetState.FULL) {
+                mPwaBottomSheetContent.setPriority(ContentPriority.HIGH);
+                PwaBottomSheetControllerJni.get().onSheetExpanded(mNativePwaBottomSheetController);
+            } else {
+                mPwaBottomSheetContent.setPriority(ContentPriority.LOW);
+            }
         }
     };
 
@@ -157,10 +176,8 @@ public class PwaBottomSheetController
 
     @Override
     public void onViewDismissed() {
-        mBottomSheetController.removeObserver(mBottomSheetObserver);
-        mWebContentsObserver = null;
-        mPwaBottomSheetContent = null;
-        destroy();
+        // The bottom sheet observer OnSheetStateChanged() method is used instead to track when the
+        // sheet is dismissed.
     }
 
     private void createWebContentsObserver(WebContents webContents) {
@@ -195,7 +212,7 @@ public class PwaBottomSheetController
         mWebContents = webContents;
 
         mBottomSheetController = BottomSheetControllerProvider.from(windowAndroid);
-        if (mBottomSheetController == null) {
+        if (mBottomSheetController == null || !canShowFor(webContents)) {
             // TODO(finnur): Investigate whether retrying is feasible (and how).
             return;
         }
@@ -224,6 +241,14 @@ public class PwaBottomSheetController
         if (webContents != null) {
             createWebContentsObserver(webContents);
         }
+    }
+
+    /**
+     * @return Whether the Bottom Sheet Installer UI can be shown.
+     * @param webContents The WebContents the UI should show for.
+     */
+    public boolean canShowFor(WebContents webContents) {
+        return webContents.getVisibility() == Visibility.VISIBLE;
     }
 
     /**
@@ -323,6 +348,7 @@ public class PwaBottomSheetController
     interface Natives {
         boolean requestOrExpandBottomSheetInstaller(
                 WebContents webContents, @InstallTrigger int trigger);
+        void onSheetClosedWithSwipe(long nativePwaBottomSheetController);
         void onSheetExpanded(long nativePwaBottomSheetController);
         void updateInstallSource(
                 long nativePwaBottomSheetController, @WebappInstallSource int installSource);

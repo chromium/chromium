@@ -1,0 +1,17 @@
+<style>
+  :host {
+    display: block;
+    outline: none;
+    padding-bottom: var(--cluster-padding-vertical);
+  }
+
+  /* Puts the blue ring around the card itself instead of the whole host. */
+  :host-context(.focus-outline-visible):host(:focus) top-visit {
+    box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
+  }
+</style>
+<top-visit visit="[[cluster.visit]]" cluster-index="[[index]]"
+    on-related-search-clicked="onRelatedSearchClicked_"
+    on-related-visits-visibility-toggled="onRelatedVisitsVisibilityToggled_"
+    on-visit-clicked="onVisitClicked_">
+</top-visit>

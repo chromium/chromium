@@ -13,10 +13,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "remoting/base/result.h"
@@ -63,6 +63,10 @@ class LocalFileReader : public FileOperations::Reader {
  public:
   explicit LocalFileReader(
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+
+  LocalFileReader(const LocalFileReader&) = delete;
+  LocalFileReader& operator=(const LocalFileReader&) = delete;
+
   ~LocalFileReader() override;
 
   // FileOperations::Reader implementation.
@@ -98,13 +102,15 @@ class LocalFileReader : public FileOperations::Reader {
   absl::optional<base::FileProxy> file_proxy_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<LocalFileReader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileReader);
 };
 
 class LocalFileWriter : public FileOperations::Writer {
  public:
   LocalFileWriter();
+
+  LocalFileWriter(const LocalFileWriter&) = delete;
+  LocalFileWriter& operator=(const LocalFileWriter&) = delete;
+
   ~LocalFileWriter() override;
 
   // FileOperations::Writer implementation.
@@ -147,8 +153,6 @@ class LocalFileWriter : public FileOperations::Writer {
   absl::optional<base::FileProxy> file_proxy_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<LocalFileWriter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileWriter);
 };
 
 LocalFileReader::LocalFileReader(

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/create_options.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/dialog_delegate.h"
 #include "chrome/browser/ui/ash/test_login_screen.h"
@@ -25,17 +24,24 @@ namespace {
 class MockLoginScreen : public TestLoginScreen {
  public:
   MockLoginScreen() = default;
+
+  MockLoginScreen(const MockLoginScreen&) = delete;
+  MockLoginScreen& operator=(const MockLoginScreen&) = delete;
+
   ~MockLoginScreen() override = default;
 
   MOCK_METHOD1(FocusLoginShelf, void(bool reverse));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockLoginScreen);
 };
 
 class LoginScreenExtensionUiWebDialogViewUnittest : public testing::Test {
  public:
   LoginScreenExtensionUiWebDialogViewUnittest() = default;
+
+  LoginScreenExtensionUiWebDialogViewUnittest(
+      const LoginScreenExtensionUiWebDialogViewUnittest&) = delete;
+  LoginScreenExtensionUiWebDialogViewUnittest& operator=(
+      const LoginScreenExtensionUiWebDialogViewUnittest&) = delete;
+
   ~LoginScreenExtensionUiWebDialogViewUnittest() override = default;
 
  protected:
@@ -57,9 +63,6 @@ class LoginScreenExtensionUiWebDialogViewUnittest : public testing::Test {
         &profile, dialog_delegate_.get(),
         std::make_unique<ChromeWebContentsHandler>());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenExtensionUiWebDialogViewUnittest);
 };
 
 TEST_F(LoginScreenExtensionUiWebDialogViewUnittest, ShouldShowCloseButton) {

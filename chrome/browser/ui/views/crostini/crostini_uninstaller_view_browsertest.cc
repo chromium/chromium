@@ -64,6 +64,11 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
     waiting_fake_concierge_client_ = new WaitingFakeConciergeClient(nullptr);
   }
 
+  CrostiniUninstallerViewBrowserTest(
+      const CrostiniUninstallerViewBrowserTest&) = delete;
+  CrostiniUninstallerViewBrowserTest& operator=(
+      const CrostiniUninstallerViewBrowserTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     ShowCrostiniUninstallerView(browser()->profile(),
@@ -87,9 +92,6 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
 
  protected:
   WaitingFakeConciergeClient* waiting_fake_concierge_client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUninstallerViewBrowserTest);
 };
 
 class CrostiniUninstalledUninstallerViewBrowserTest
@@ -98,8 +100,10 @@ class CrostiniUninstalledUninstallerViewBrowserTest
   CrostiniUninstalledUninstallerViewBrowserTest()
       : CrostiniUninstallerViewBrowserTest(false /*register_termina*/) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUninstalledUninstallerViewBrowserTest);
+  CrostiniUninstalledUninstallerViewBrowserTest(
+      const CrostiniUninstalledUninstallerViewBrowserTest&) = delete;
+  CrostiniUninstalledUninstallerViewBrowserTest& operator=(
+      const CrostiniUninstalledUninstallerViewBrowserTest&) = delete;
 };
 
 // Test the dialog is actually launched from the app launcher.

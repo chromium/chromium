@@ -4,8 +4,16 @@
 
 #include "content/browser/font_access/font_access_manager_impl.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/sequence_bound.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/font_access/font_access_test_utils.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
@@ -34,11 +42,6 @@ class FontAccessManagerImplBrowserBase : public ContentBrowserTest {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   }
 
-  void SetUpOnMainThread() override {
-    enumeration_cache_ = FontEnumerationCache::GetInstance();
-    enumeration_cache_->ResetStateForTesting();
-  }
-
   void TearDownOnMainThread() override {
     font_access_manager()->SkipPrivacyChecksForTesting(false);
   }
@@ -53,14 +56,29 @@ class FontAccessManagerImplBrowserBase : public ContentBrowserTest {
     return storage_partition->GetFontAccessManager();
   }
 
-  void OverrideFontAccessLocale(const std::string& locale) {
-    enumeration_cache_->OverrideLocaleForTesting(locale);
-    enumeration_cache_->ResetStateForTesting();
+  // Must be called before the StoragePartition's FontAccessManager is accessed.
+  //
+  // This method replaces the StoragePartition's FontAccessManager. This leads
+  // to confusin if the old FontAccessManager is already in use, either due to
+  // a font_access_manager() call, or due to JavaScript connecting to the Font
+  // Access API.
+  void OverrideFontAccessLocale(std::string locale) {
+    base::SequenceBound<FontEnumerationCache> font_enumeration_cache =
+        FontEnumerationCache::CreateForTesting(
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+            std::move(locale));
+
+    auto* storage_partition =
+        static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition());
+    storage_partition->SetFontAccessManagerForTesting(
+        FontAccessManagerImpl::CreateForTesting(
+            std::move(font_enumeration_cache)));
   }
 
  protected:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
-  FontEnumerationCache* enumeration_cache_;
+  std::unique_ptr<FontEnumerationCache> enumeration_cache_;
 };
 
 class FontAccessManagerImplBrowserTest
@@ -119,9 +137,8 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, EnumerationTest) {
 #if defined(OS_WIN)
 IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, LocaleTest) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
-  font_access_manager()->SkipPrivacyChecksForTesting(true);
-
   OverrideFontAccessLocale("zh-cn");
+  font_access_manager()->SkipPrivacyChecksForTesting(true);
 
   std::string result =
       EvalJs(shell(),
@@ -145,9 +162,8 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, LocaleTest) {
 IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest,
                        UnlocalizedFamilyTest) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
-  font_access_manager()->SkipPrivacyChecksForTesting(true);
-
   OverrideFontAccessLocale("zh-cn");
+  font_access_manager()->SkipPrivacyChecksForTesting(true);
 
   std::string result =
       EvalJs(shell(),

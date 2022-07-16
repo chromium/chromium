@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ui/aura/window_targeter.h"
-#include "ui/gfx/rrect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 
 namespace ash {
 

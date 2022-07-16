@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/launcher/test_launcher.h"
+
 #include <stddef.h>
 
 #include "base/base64.h"
@@ -9,17 +11,21 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/test/launcher/test_launcher.h"
 #include "base/test/launcher/test_launcher_test_utils.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/multiprocess_test.h"
+#include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -32,11 +38,10 @@
 namespace base {
 namespace {
 
-TestResult GenerateTestResult(
-    const std::string& test_name,
-    TestResult::Status status,
-    TimeDelta elapsed_td = TimeDelta::FromMilliseconds(30),
-    const std::string& output_snippet = "output") {
+TestResult GenerateTestResult(const std::string& test_name,
+                              TestResult::Status status,
+                              TimeDelta elapsed_td = Milliseconds(30),
+                              const std::string& output_snippet = "output") {
   TestResult result;
   result.full_name = test_name;
   result.status = status;
@@ -403,6 +408,33 @@ TEST_F(TestLauncherTest, RetryPreTests) {
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 }
 
+// Test TestLauncher should fail if a PRE test fails but its non-PRE test passes
+TEST_F(TestLauncherTest, PreTestFailure) {
+  AddMockedTests("Test", {"FirstTest", "PRE_FirstTest"});
+  SetUpExpectCalls();
+  std::vector<TestResult> results = {
+      GenerateTestResult("Test.PRE_FirstTest", TestResult::TEST_FAILURE),
+      GenerateTestResult("Test.FirstTest", TestResult::TEST_SUCCESS)};
+  using ::testing::_;
+  EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
+      .WillOnce(
+          ::testing::DoAll(OnTestResult(&test_launcher, "Test.PRE_FirstTest",
+                                        TestResult::TEST_FAILURE),
+                           OnTestResult(&test_launcher, "Test.FirstTest",
+                                        TestResult::TEST_SUCCESS)));
+  EXPECT_CALL(test_launcher,
+              LaunchChildGTestProcess(
+                  _, testing::ElementsAre("Test.PRE_FirstTest"), _, _))
+      .WillOnce(OnTestResult(&test_launcher, "Test.PRE_FirstTest",
+                             TestResult::TEST_FAILURE));
+  EXPECT_CALL(
+      test_launcher,
+      LaunchChildGTestProcess(_, testing::ElementsAre("Test.FirstTest"), _, _))
+      .WillOnce(OnTestResult(&test_launcher, "Test.FirstTest",
+                             TestResult::TEST_SUCCESS));
+  EXPECT_FALSE(test_launcher.Run(command_line.get()));
+}
+
 // Test TestLauncher run disabled unit tests switch.
 TEST_F(TestLauncherTest, RunDisabledTests) {
   AddMockedTests("DISABLED_TestDisabled", {"firstTest"});
@@ -443,6 +475,36 @@ TEST_F(TestLauncherTest, DisablePreTests) {
                                                            tests_names.cend()),
                                  _, _))
       .Times(1);
+  EXPECT_TRUE(test_launcher.Run(command_line.get()));
+}
+
+// Tests fail if they produce too much output.
+TEST_F(TestLauncherTest, ExcessiveOutput) {
+  AddMockedTests("Test", {"firstTest"});
+  SetUpExpectCalls();
+  using ::testing::_;
+  command_line->AppendSwitchASCII("test-launcher-retry-limit", "0");
+  command_line->AppendSwitchASCII("test-launcher-print-test-stdio", "never");
+  TestResult test_result =
+      GenerateTestResult("Test.firstTest", TestResult::TEST_SUCCESS,
+                         Milliseconds(30), std::string(500000, 'a'));
+  EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
+      .WillOnce(OnTestResult(&test_launcher, test_result));
+  EXPECT_FALSE(test_launcher.Run(command_line.get()));
+}
+
+// Use command-line switch to allow more output.
+TEST_F(TestLauncherTest, OutputLimitSwitch) {
+  AddMockedTests("Test", {"firstTest"});
+  SetUpExpectCalls();
+  command_line->AppendSwitchASCII("test-launcher-print-test-stdio", "never");
+  command_line->AppendSwitchASCII("test-launcher-output-bytes-limit", "800000");
+  using ::testing::_;
+  TestResult test_result =
+      GenerateTestResult("Test.firstTest", TestResult::TEST_SUCCESS,
+                         Milliseconds(30), std::string(500000, 'a'));
+  EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
+      .WillOnce(OnTestResult(&test_launcher, test_result));
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 }
 
@@ -586,12 +648,12 @@ TEST_F(TestLauncherTest, JsonSummary) {
   // Setup results to be returned by the test launcher delegate.
   TestResult first_result =
       GenerateTestResult("Test.firstTest", TestResult::TEST_SUCCESS,
-                         TimeDelta::FromMilliseconds(30), "output_first");
+                         Milliseconds(30), "output_first");
   first_result.test_result_parts.push_back(GenerateTestResultPart(
       TestResultPart::kSuccess, "TestFile", 110, "summary", "message"));
   TestResult second_result =
       GenerateTestResult("Test.secondTest", TestResult::TEST_SUCCESS,
-                         TimeDelta::FromMilliseconds(50), "output_second");
+                         Milliseconds(50), "output_second");
 
   using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
@@ -647,7 +709,7 @@ TEST_F(TestLauncherTest, JsonSummaryWithDisabledTests) {
   // Setup results to be returned by the test launcher delegate.
   TestResult test_result =
       GenerateTestResult("Test.DISABLED_Test", TestResult::TEST_SUCCESS,
-                         TimeDelta::FromMilliseconds(50), "output_second");
+                         Milliseconds(50), "output_second");
 
   using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
@@ -714,6 +776,15 @@ TEST_F(TestLauncherTest, TestChildTempDir) {
   // The task's temporary directory should have been deleted.
   EXPECT_FALSE(DirectoryExists(task_temp));
 }
+
+#if defined(OS_FUCHSIA)
+// Verifies that test processes have /data, /cache and /tmp available.
+TEST_F(TestLauncherTest, ProvidesDataCacheAndTmpDirs) {
+  EXPECT_TRUE(base::DirectoryExists(base::FilePath("/data")));
+  EXPECT_TRUE(base::DirectoryExists(base::FilePath("/cache")));
+  EXPECT_TRUE(base::DirectoryExists(base::FilePath("/tmp")));
+}
+#endif  // defined(OS_FUCHSIA)
 
 // Unit tests to validate UnitTestLauncherDelegate implementation.
 class UnitTestLauncherDelegateTester : public testing::Test {
@@ -840,7 +911,7 @@ TEST_F(UnitTestLauncherDelegateTester, RunMockTests) {
 
 MULTIPROCESS_TEST_MAIN(LeakChildProcess) {
   while (true)
-    PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+    PlatformThread::Sleep(base::Seconds(1));
 }
 
 TEST(LeakedChildProcessTest, DISABLED_LeakChildProcess) {
@@ -933,6 +1004,204 @@ TEST(TestLauncherTools, GetTestOutputSnippetTest) {
   EXPECT_EQ(GetTestOutputSnippet(result, output),
             "[ RUN      ] TestCase.ThirdTest\n"
             "[  SKIPPED ] TestCase.ThirdTest (0 ms)\n");
+}
+
+void CheckTruncatationPreservesMessage(std::string message) {
+  // Ensure the inserted message matches the expected pattern.
+  constexpr char kExpected[] = R"(FATAL.*message\n)";
+  ASSERT_THAT(message, ::testing::ContainsRegex(kExpected));
+
+  const std::string snippet =
+      base::StrCat({"[ RUN      ] SampleTestSuite.SampleTestName\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n",
+                    message,
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"});
+
+  // Strip the stack trace off the end of message.
+  size_t line_end_pos = message.find("\n");
+  std::string first_line = message.substr(0, line_end_pos + 1);
+
+  const std::string result = TruncateSnippetFocused(snippet, 300);
+  EXPECT_TRUE(result.find(first_line) > 0);
+  EXPECT_EQ(result.length(), 300UL);
+}
+
+void MatchesFatalMessagesTest() {
+  // Use a static because only captureless lambdas can be converted to a
+  // function pointer for SetLogMessageHandler().
+  static base::NoDestructor<std::string> log_string;
+  logging::SetLogMessageHandler([](int severity, const char* file, int line,
+                                   size_t start,
+                                   const std::string& str) -> bool {
+    *log_string = str;
+    return true;
+  });
+  // Different Chrome test suites have different settings for their logs.
+  // E.g. unit tests may not show the process ID (as they are single process),
+  // whereas browser tests usually do (as they are multi-process). This
+  // affects how log messages are formatted and hence how the log criticality
+  // i.e. "FATAL", appears in the log message. We test the two extremes --
+  // all process IDs, timestamps present, and all not present. We also test
+  // the presence/absence of an extra logging prefix.
+  {
+    // Process ID, Thread ID, Timestamp and Tickcount.
+    logging::SetLogItems(true, true, true, true);
+    logging::SetLogPrefix(nullptr);
+    LOG(FATAL) << "message";
+    CheckTruncatationPreservesMessage(*log_string);
+  }
+  {
+    logging::SetLogItems(false, false, false, false);
+    logging::SetLogPrefix(nullptr);
+    LOG(FATAL) << "message";
+    CheckTruncatationPreservesMessage(*log_string);
+  }
+  {
+    // Process ID, Thread ID, Timestamp and Tickcount.
+    logging::SetLogItems(true, true, true, true);
+    logging::SetLogPrefix("my_log_prefix");
+    LOG(FATAL) << "message";
+    CheckTruncatationPreservesMessage(*log_string);
+  }
+  {
+    logging::SetLogItems(false, false, false, false);
+    logging::SetLogPrefix("my_log_prefix");
+    LOG(FATAL) << "message";
+    CheckTruncatationPreservesMessage(*log_string);
+  }
+}
+
+// Validates TestSnippetFocused correctly identifies fatal messages to
+// retain during truncation.
+TEST(TestLauncherTools, TruncateSnippetFocusedMatchesFatalMessagesTest) {
+  logging::ScopedLoggingSettings scoped_logging_settings;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  scoped_logging_settings.SetLogFormat(logging::LogFormat::LOG_FORMAT_SYSLOG);
+#endif
+  MatchesFatalMessagesTest();
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Validates TestSnippetFocused correctly identifies fatal messages to
+// retain during truncation, for ChromeOS Ash.
+TEST(TestLauncherTools, TruncateSnippetFocusedMatchesFatalMessagesCrosAshTest) {
+  logging::ScopedLoggingSettings scoped_logging_settings;
+  scoped_logging_settings.SetLogFormat(logging::LogFormat::LOG_FORMAT_CHROME);
+  MatchesFatalMessagesTest();
+}
+#endif
+
+// Validate TestSnippetFocused truncates snippets correctly, regardless of
+// whether fatal messages appear at the start, middle or end of the snippet.
+TEST(TestLauncherTools, TruncateSnippetFocusedTest) {
+  // Test where FATAL message appears in the start of the log.
+  const std::string snippet =
+      "[ RUN      ] "
+      "EndToEndTests/"
+      "EndToEndTest.WebTransportSessionUnidirectionalStreamSentEarly/"
+      "draft29_QBIC\n"
+      "[26219:26368:FATAL:tls_handshaker.cc(293)] 1-RTT secret(s) not set "
+      "yet.\n"
+      "#0 0x55619ad1fcdb in backtrace "
+      "/b/s/w/ir/cache/builder/src/third_party/llvm/compiler-rt/lib/asan/../"
+      "sanitizer_common/sanitizer_common_interceptors.inc:4205:13\n"
+      "#1 0x5561a6bdf519 in base::debug::CollectStackTrace(void**, unsigned "
+      "long) ./../../base/debug/stack_trace_posix.cc:845:39\n"
+      "#2 0x5561a69a1293 in StackTrace "
+      "./../../base/debug/stack_trace.cc:200:12\n"
+      "...\n";
+  const std::string result = TruncateSnippetFocused(snippet, 300);
+  EXPECT_EQ(
+      result,
+      "[ RUN      ] EndToEndTests/EndToEndTest.WebTransportSessionUnidirection"
+      "alStreamSentEarly/draft29_QBIC\n"
+      "[26219:26368:FATAL:tls_handshaker.cc(293)] 1-RTT secret(s) not set "
+      "yet.\n"
+      "#0 0x55619ad1fcdb in backtrace /b/s/w/ir/cache/bui\n"
+      "<truncated (358 bytes)>\n"
+      "Trace ./../../base/debug/stack_trace.cc:200:12\n"
+      "...\n");
+  EXPECT_EQ(result.length(), 300UL);
+
+  // Test where FATAL message appears in the middle of the log.
+  const std::string snippet_two =
+      "[ RUN      ] NetworkingPrivateApiTest.CreateSharedNetwork\n"
+      "Padding log information added for testing purposes\n"
+      "Padding log information added for testing purposes\n"
+      "Padding log information added for testing purposes\n"
+      "FATAL extensions_unittests[12666:12666]: [managed_network_configuration"
+      "_handler_impl.cc(525)] Check failed: !guid_str && !guid_str->empty().\n"
+      "#0 0x562f31dba779 base::debug::CollectStackTrace()\n"
+      "#1 0x562f31cdf2a3 base::debug::StackTrace::StackTrace()\n"
+      "#2 0x562f31cf4380 logging::LogMessage::~LogMessage()\n"
+      "#3 0x562f31cf4d3e logging::LogMessage::~LogMessage()\n";
+  const std::string result_two = TruncateSnippetFocused(snippet_two, 300);
+  EXPECT_EQ(
+      result_two,
+      "[ RUN      ] NetworkingPriv\n"
+      "<truncated (210 bytes)>\n"
+      " added for testing purposes\n"
+      "FATAL extensions_unittests[12666:12666]: [managed_network_configuration"
+      "_handler_impl.cc(525)] Check failed: !guid_str && !guid_str->empty().\n"
+      "#0 0x562f31dba779 base::deb\n"
+      "<truncated (213 bytes)>\n"
+      ":LogMessage::~LogMessage()\n");
+  EXPECT_EQ(result_two.length(), 300UL);
+
+  // Test where FATAL message appears at end of the log.
+  const std::string snippet_three =
+      "[ RUN      ] All/PDFExtensionAccessibilityTreeDumpTest.Highlights/"
+      "linux\n"
+      "[6741:6741:0716/171816.818448:ERROR:power_monitor_device_source_stub.cc"
+      "(11)] Not implemented reached in virtual bool base::PowerMonitorDevice"
+      "Source::IsOnBatteryPower()\n"
+      "[6741:6741:0716/171816.818912:INFO:content_main_runner_impl.cc(1082)]"
+      " Chrome is running in full browser mode.\n"
+      "libva error: va_getDriverName() failed with unknown libva error,driver"
+      "_name=(null)\n"
+      "[6741:6741:0716/171817.688633:FATAL:agent_scheduling_group_host.cc(290)"
+      "] Check failed: message->routing_id() != MSG_ROUTING_CONTROL "
+      "(2147483647 vs. 2147483647)\n";
+  const std::string result_three = TruncateSnippetFocused(snippet_three, 300);
+  EXPECT_EQ(
+      result_three,
+      "[ RUN      ] All/PDFExtensionAccessibilityTreeDumpTest.Hi\n"
+      "<truncated (432 bytes)>\n"
+      "Name() failed with unknown libva error,driver_name=(null)\n"
+      "[6741:6741:0716/171817.688633:FATAL:agent_scheduling_group_host.cc(290)"
+      "] Check failed: message->routing_id() != MSG_ROUTING_CONTROL "
+      "(2147483647 vs. 2147483647)\n");
+  EXPECT_EQ(result_three.length(), 300UL);
+
+  // Test where FATAL message does not appear.
+  const std::string snippet_four =
+      "[ RUN      ] All/PassingTest/linux\n"
+      "Padding log line 1 added for testing purposes\n"
+      "Padding log line 2 added for testing purposes\n"
+      "Padding log line 3 added for testing purposes\n"
+      "Padding log line 4 added for testing purposes\n"
+      "Padding log line 5 added for testing purposes\n"
+      "Padding log line 6 added for testing purposes\n";
+  const std::string result_four = TruncateSnippetFocused(snippet_four, 300);
+  EXPECT_EQ(result_four,
+            "[ RUN      ] All/PassingTest/linux\n"
+            "Padding log line 1 added for testing purposes\n"
+            "Padding log line 2 added for testing purposes\n"
+            "Padding lo\n<truncated (311 bytes)>\n"
+            "Padding log line 4 added for testing purposes\n"
+            "Padding log line 5 added for testing purposes\n"
+            "Padding log line 6 added for testing purposes\n");
+  EXPECT_EQ(result_four.length(), 300UL);
 }
 
 }  // namespace

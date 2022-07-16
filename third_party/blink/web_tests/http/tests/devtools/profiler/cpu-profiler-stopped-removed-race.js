@@ -13,14 +13,14 @@
     targetManager.addEventListener(SDK.TargetManager.Events.SuspendStateChanged, onSuspendStateChanged);
     var profilesPanel = UI.panels.js_profiler;
     TestRunner.addSniffer(cpuProfiler, 'stopRecording', stopRecording);
-    TestRunner.addSniffer(profilesPanel, '_addProfileHeader', onAddProfileHeader);
+    TestRunner.addSniffer(profilesPanel, 'addProfileHeader', onAddProfileHeader);
     if (!UI.context.flavor(SDK.CPUProfilerModel))
       await new Promise(resolve => UI.context.addFlavorChangeListener(SDK.CPUProfilerModel, resolve));
     profilesPanel.toggleRecord();  // Start profiling.
 
     function onAddProfileHeader() {
       profilesPanel.toggleRecord();  // Stop profiling.
-      profilesPanel._reset();        // ... and remove the profile before it actually stopped.
+      profilesPanel.reset();        // ... and remove the profile before it actually stopped.
     }
 
     function onSuspendStateChanged() {

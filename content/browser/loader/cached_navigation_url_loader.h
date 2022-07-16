@@ -36,6 +36,7 @@ class CachedNavigationURLLoader : public NavigationURLLoader {
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       blink::PreviewsState new_previews_state) override;
+  bool SetNavigationTimeout(base::TimeDelta timeout) override;
 
  private:
   void OnResponseStarted();

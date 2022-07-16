@@ -23,7 +23,9 @@
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/browser/api/declarative_net_request/index_helper.h"
+#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
+#include "extensions/browser/api/declarative_net_request/install_index_helper.h"
+#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -214,7 +216,7 @@ void UnpackedInstaller::OnInstallChecksComplete(
   }
 
   std::u16string error_message;
-  if (errors.count(PreloadCheck::DISALLOWED_BY_POLICY))
+  if (errors.count(PreloadCheck::Error::kDisallowedByPolicy))
     error_message = policy_check_->GetErrorMessage();
   else
     error_message = requirements_check_->GetErrorMessage();
@@ -271,12 +273,21 @@ bool UnpackedInstaller::LoadExtension(mojom::ManifestLocation location,
 bool UnpackedInstaller::IndexAndPersistRulesIfNeeded(std::string* error) {
   DCHECK(extension());
 
+  // Index all static rulesets and therefore parse all static rules at
+  // installation time for unpacked extensions. Throw an error for invalid rules
+  // where possible so that the extension developer is immediately notified.
+  auto ruleset_filter = declarative_net_request::FileBackedRulesetSource::
+      RulesetFilter::kIncludeAll;
+  auto parse_flags =
+      declarative_net_request::RulesetSource::kRaiseErrorOnInvalidRules |
+      declarative_net_request::RulesetSource::kRaiseWarningOnLargeRegexRules;
+
   // TODO(crbug.com/761107): IndexStaticRulesetsUnsafe will read and parse JSON
   // synchronously. Change this so that we don't need to parse JSON in the
   // browser process.
-  declarative_net_request::IndexHelper::Result result =
-      declarative_net_request::IndexHelper::IndexStaticRulesetsUnsafe(
-          *extension());
+  declarative_net_request::InstallIndexHelper::Result result =
+      declarative_net_request::InstallIndexHelper::IndexStaticRulesetsUnsafe(
+          *extension(), ruleset_filter, parse_flags);
   if (result.error) {
     *error = std::move(*result.error);
     return false;

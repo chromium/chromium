@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/plugin.mojom.h"
 #include "components/no_state_prefetch/renderer/prerender_observer.h"
@@ -42,6 +41,9 @@ class ChromePluginPlaceholder final
       content::RenderFrame* render_frame,
       const blink::WebPluginParams& params);
 
+  ChromePluginPlaceholder(const ChromePluginPlaceholder&) = delete;
+  ChromePluginPlaceholder& operator=(const ChromePluginPlaceholder&) = delete;
+
   // Runs |callback| over each plugin placeholder for the given RenderFrame.
   static void ForEach(
       content::RenderFrame* render_frame,
@@ -74,9 +76,6 @@ class ChromePluginPlaceholder final
   // content::RenderThreadObserver methods:
   void PluginListChanged() override;
 
-  // Show the Plugins permission bubble.
-  void ShowPermissionBubbleCallback();
-
   // chrome::mojom::PluginRenderer methods.
   void FinishedDownloading() override;
   void UpdateDownloading() override;
@@ -100,8 +99,6 @@ class ChromePluginPlaceholder final
 
   mojo::AssociatedReceiver<blink::mojom::ContextMenuClient>
       context_menu_client_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromePluginPlaceholder);
 };
 
 #endif  // CHROME_RENDERER_PLUGINS_CHROME_PLUGIN_PLACEHOLDER_H_

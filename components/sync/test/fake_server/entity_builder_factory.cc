@@ -17,9 +17,9 @@ EntityBuilderFactory::EntityBuilderFactory()
 EntityBuilderFactory::EntityBuilderFactory(const string& cache_guid)
     : cache_guid_(cache_guid) {}
 
-EntityBuilderFactory::~EntityBuilderFactory() {}
+EntityBuilderFactory::~EntityBuilderFactory() = default;
 
-const BookmarkEntityBuilder EntityBuilderFactory::NewBookmarkEntityBuilder(
+BookmarkEntityBuilder EntityBuilderFactory::NewBookmarkEntityBuilder(
     const string& title,
     absl::optional<std::string> originator_client_item_id) {
   if (!originator_client_item_id)

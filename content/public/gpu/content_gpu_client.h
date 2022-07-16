@@ -6,7 +6,7 @@
 #define CONTENT_PUBLIC_GPU_CONTENT_GPU_CLIENT_H_
 
 #include "base/metrics/field_trial.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 

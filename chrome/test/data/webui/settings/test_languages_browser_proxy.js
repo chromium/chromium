@@ -3,12 +3,10 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {isChromeOS, isWindows} from 'chrome://resources/js/cr.m.js';
-import {LanguagesBrowserProxy} from 'chrome://settings/lazy_load.js';
+import {isWindows} from 'chrome://resources/js/cr.m.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-import {FakeInputMethodPrivate} from './fake_input_method_private.js';
 import {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
 // clang-format on
 
@@ -16,7 +14,7 @@ import {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
 export class TestLanguagesBrowserProxy extends TestBrowserProxy {
   constructor() {
     const methodNames = [];
-    if (isChromeOS || isWindows) {
+    if (isWindows) {
       methodNames.push('getProspectiveUILanguage', 'setProspectiveUILanguage');
     }
 
@@ -24,10 +22,6 @@ export class TestLanguagesBrowserProxy extends TestBrowserProxy {
 
     /** @private {!LanguageSettingsPrivate} */
     this.languageSettingsPrivate_ = new FakeLanguageSettingsPrivate();
-
-    /** @private {!InputMethodPrivate} */
-    this.inputMethodPrivate_ =
-        /** @type{!InputMethodPrivate} */ (new FakeInputMethodPrivate());
   }
 
   /** @override */
@@ -41,7 +35,7 @@ export class TestLanguagesBrowserProxy extends TestBrowserProxy {
   }
 }
 
-if (isChromeOS || isWindows) {
+if (isWindows) {
   /** @override */
   TestLanguagesBrowserProxy.prototype.getProspectiveUILanguage = function() {
     this.methodCalled('getProspectiveUILanguage');
@@ -52,12 +46,5 @@ if (isChromeOS || isWindows) {
   TestLanguagesBrowserProxy.prototype.setProspectiveUILanguage = function(
       language) {
     this.methodCalled('setProspectiveUILanguage', language);
-  };
-}
-
-if (isChromeOS) {
-  /** @override */
-  TestLanguagesBrowserProxy.prototype.getInputMethodPrivate = function() {
-    return this.inputMethodPrivate_;
   };
 }

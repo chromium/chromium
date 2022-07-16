@@ -14,8 +14,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/numerics/math_constants.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -934,7 +934,7 @@ float PDFiumPage::PreProcessAndTransformInPageCoordX(float x) {
   // If `x` < 0, scroll to the left side of the page.
   // If `x` > page width, scroll to the right side of the page.
   return TransformPageToScreenX(
-      std::max(std::min(x, FPDF_GetPageWidthF(GetPage())), 0.0f));
+      base::clamp(x, 0.0f, FPDF_GetPageWidthF(GetPage())));
 }
 
 float PDFiumPage::PreProcessAndTransformInPageCoordY(float y) {
@@ -1282,9 +1282,9 @@ void PDFiumPage::PopulateHighlight(FPDF_ANNOTATION annot) {
     highlight.color = MakeARGB(255, 255, 255, 0);
   }
 
-  // Retrieve the contents of the popup note associated with highlight.
-  // See table 164 in ISO 32000-1 standard for more details around "Contents"
-  // key in a highlight annotation.
+  // Retrieve the contents of the popup note associated with highlight. See
+  // table 164 in ISO 32000-1:2008 spec for more details around "Contents" key
+  // in a highlight annotation.
   static constexpr char kContents[] = "Contents";
   highlight.note_text = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
       base::BindRepeating(&FPDFAnnot_GetStringValue, annot, kContents),
@@ -1639,8 +1639,9 @@ uint32_t PDFiumPage::CountLinkHighlightOverlaps(
 }
 
 int ToPDFiumRotation(PageOrientation orientation) {
-  // Could static_cast<int>(orientation), but using an exhaustive switch will
-  // trigger an error if we ever change the definition of PageOrientation.
+  // Could use static_cast<int>(orientation), but using an exhaustive switch
+  // will trigger an error if we ever change the definition of
+  // `PageOrientation`.
   switch (orientation) {
     case PageOrientation::kOriginal:
       return 0;
@@ -1651,8 +1652,6 @@ int ToPDFiumRotation(PageOrientation orientation) {
     case PageOrientation::kClockwise270:
       return 3;
   }
-  NOTREACHED();
-  return 0;
 }
 
 }  // namespace chrome_pdf

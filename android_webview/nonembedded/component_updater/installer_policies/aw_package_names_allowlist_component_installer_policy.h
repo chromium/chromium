@@ -11,23 +11,18 @@
 #include <utility>
 #include <vector>
 
-#include "android_webview/nonembedded/component_updater/aw_component_installer_policy_delegate.h"
+#include "android_webview/nonembedded/component_updater/aw_component_installer_policy.h"
 #include "base/callback.h"
-#include "base/files/file_path.h"
-#include "base/values.h"
-#include "base/version.h"
-#include "components/component_updater/component_installer.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 class FilePath;
-class Version;
 }  // namespace base
 
 namespace android_webview {
 
 class AwPackageNamesAllowlistComponentInstallerPolicy
-    : public component_updater::ComponentInstallerPolicy {
+    : public AwComponentInstallerPolicy {
  public:
   AwPackageNamesAllowlistComponentInstallerPolicy();
   ~AwPackageNamesAllowlistComponentInstallerPolicy() override;
@@ -43,20 +38,13 @@ class AwPackageNamesAllowlistComponentInstallerPolicy
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictionaryValue& manifest,
+      const base::Value& manifest,
       const base::FilePath& install_dir) override;
-  void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::DictionaryValue& manifest,
+  bool VerifyInstallation(const base::Value& manifest,
                           const base::FilePath& install_dir) const override;
-  void ComponentReady(const base::Version& version,
-                      const base::FilePath& install_dir,
-                      std::unique_ptr<base::DictionaryValue> manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-
- private:
-  std::unique_ptr<AwComponentInstallerPolicyDelegate> delegate_;
 };
 
 // Call once during startup to make the component update service aware of

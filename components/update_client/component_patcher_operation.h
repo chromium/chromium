@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/update_client/component_patcher.h"
 #include "components/update_client/component_unpacker.h"
@@ -33,6 +32,9 @@ enum class UnpackerError;
 class DeltaUpdateOp : public base::RefCountedThreadSafe<DeltaUpdateOp> {
  public:
   DeltaUpdateOp();
+
+  DeltaUpdateOp(const DeltaUpdateOp&) = delete;
+  DeltaUpdateOp& operator=(const DeltaUpdateOp&) = delete;
 
   // Parses, runs, and verifies the operation. Calls |callback| with the
   // result of the operation. The callback is called using |task_runner|.
@@ -72,8 +74,6 @@ class DeltaUpdateOp : public base::RefCountedThreadSafe<DeltaUpdateOp> {
   void DoneRunning(UnpackerError error, int extended_error);
 
   ComponentPatcher::Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeltaUpdateOp);
 };
 
 // A 'copy' operation takes a file currently residing on the disk and moves it
@@ -82,6 +82,9 @@ class DeltaUpdateOp : public base::RefCountedThreadSafe<DeltaUpdateOp> {
 class DeltaUpdateOpCopy : public DeltaUpdateOp {
  public:
   DeltaUpdateOpCopy();
+
+  DeltaUpdateOpCopy(const DeltaUpdateOpCopy&) = delete;
+  DeltaUpdateOpCopy& operator=(const DeltaUpdateOpCopy&) = delete;
 
  private:
   ~DeltaUpdateOpCopy() override;
@@ -95,8 +98,6 @@ class DeltaUpdateOpCopy : public DeltaUpdateOp {
   void DoRun(ComponentPatcher::Callback callback) override;
 
   base::FilePath input_abs_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeltaUpdateOpCopy);
 };
 
 // A 'create' operation takes a full file that was sent in the delta update
@@ -106,6 +107,9 @@ class DeltaUpdateOpCopy : public DeltaUpdateOp {
 class DeltaUpdateOpCreate : public DeltaUpdateOp {
  public:
   DeltaUpdateOpCreate();
+
+  DeltaUpdateOpCreate(const DeltaUpdateOpCreate&) = delete;
+  DeltaUpdateOpCreate& operator=(const DeltaUpdateOpCreate&) = delete;
 
  private:
   ~DeltaUpdateOpCreate() override;
@@ -119,8 +123,6 @@ class DeltaUpdateOpCreate : public DeltaUpdateOp {
   void DoRun(ComponentPatcher::Callback callback) override;
 
   base::FilePath patch_abs_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeltaUpdateOpCreate);
 };
 
 // Both 'bsdiff' and 'courgette' operations take an existing file on disk,
@@ -131,6 +133,9 @@ class DeltaUpdateOpPatch : public DeltaUpdateOp {
  public:
   DeltaUpdateOpPatch(const std::string& operation,
                      scoped_refptr<Patcher> patcher);
+
+  DeltaUpdateOpPatch(const DeltaUpdateOpPatch&) = delete;
+  DeltaUpdateOpPatch& operator=(const DeltaUpdateOpPatch&) = delete;
 
  private:
   ~DeltaUpdateOpPatch() override;
@@ -151,8 +156,6 @@ class DeltaUpdateOpPatch : public DeltaUpdateOp {
   scoped_refptr<Patcher> patcher_;
   base::FilePath patch_abs_path_;
   base::FilePath input_abs_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeltaUpdateOpPatch);
 };
 
 DeltaUpdateOp* CreateDeltaUpdateOp(const std::string& operation,

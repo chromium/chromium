@@ -364,9 +364,8 @@ void LocationProviderWinrt::OnPositionChanged(
         base::TimeTicks::Now() - position_callback_initialized_time_;
 
     UmaHistogramCustomTimes("Windows.RT.LocationRequest.TimeToFirstPosition",
-                            time_to_first_position,
-                            base::TimeDelta::FromMilliseconds(1),
-                            base::TimeDelta::FromSeconds(10), 100);
+                            time_to_first_position, base::Milliseconds(1),
+                            base::Seconds(10), 100);
     position_received_ = true;
   }
   RecordUmaEvent(WindowsRTLocationRequestEvent::

@@ -60,6 +60,11 @@ class QuicHttpProxyBackend;
 class QuicHttpProxyBackendStream : public net::URLRequest::Delegate {
  public:
   explicit QuicHttpProxyBackendStream(QuicHttpProxyBackend* context);
+
+  QuicHttpProxyBackendStream(const QuicHttpProxyBackendStream&) = delete;
+  QuicHttpProxyBackendStream& operator=(const QuicHttpProxyBackendStream&) =
+      delete;
+
   ~QuicHttpProxyBackendStream() override;
 
   static const std::set<std::string> kHopHeaders;
@@ -157,8 +162,6 @@ class QuicHttpProxyBackendStream : public net::URLRequest::Delegate {
   std::unique_ptr<quic::QuicBackendResponse> quic_response_;
 
   base::WeakPtrFactory<QuicHttpProxyBackendStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicHttpProxyBackendStream);
 };
 
 }  // namespace net

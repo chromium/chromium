@@ -9,9 +9,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation.h"
@@ -36,6 +35,10 @@ class ImageWriterUtilityClientTest : public InProcessBrowserTest {
         chrome::mojom::RemovableStorageWriter::kTestDevice);
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
+
+  ImageWriterUtilityClientTest(const ImageWriterUtilityClientTest&) = delete;
+  ImageWriterUtilityClientTest& operator=(const ImageWriterUtilityClientTest&) =
+      delete;
 
   void FillImageFileWithPattern(char pattern) {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -250,8 +253,6 @@ class ImageWriterUtilityClientTest : public InProcessBrowserTest {
   bool cancel_ = false;
   std::string error_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageWriterUtilityClientTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, WriteNoImage) {

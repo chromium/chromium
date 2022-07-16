@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/ble_listener_failure_type.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/pending_ble_connection_request_base.h"
@@ -45,6 +44,11 @@ class PendingBleListenerConnectionRequest
     static Factory* test_factory_;
   };
 
+  PendingBleListenerConnectionRequest(
+      const PendingBleListenerConnectionRequest&) = delete;
+  PendingBleListenerConnectionRequest& operator=(
+      const PendingBleListenerConnectionRequest&) = delete;
+
   ~PendingBleListenerConnectionRequest() override;
 
  private:
@@ -56,8 +60,6 @@ class PendingBleListenerConnectionRequest
 
   // PendingConnectionRequest<BleListenerFailureType>:
   void HandleConnectionFailure(BleListenerFailureType failure_detail) override;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingBleListenerConnectionRequest);
 };
 
 }  // namespace secure_channel

@@ -20,8 +20,8 @@ import os
 import subprocess
 import sys
 import tempfile
-import urllib
 import logging
+import six
 
 SRC_DIR = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -29,7 +29,6 @@ SRC_DIR = os.path.dirname(
 # .exe on Windows.
 EXECUTABLE_SUFFIX = '.exe' if sys.platform == 'win32' else ''
 
-SWARMING_PY = os.path.join(SRC_DIR, 'tools', 'swarming_client', 'swarming.py')
 SWARMING_GO = os.path.join(SRC_DIR, 'tools', 'luci-go',
                            'swarming' + EXECUTABLE_SUFFIX)
 
@@ -52,14 +51,14 @@ def _convert_to_go_swarming_args(args):
 def strip_unicode(obj):
     """Recursively re-encodes strings as utf-8 inside |obj|. Returns the result.
   """
-    if isinstance(obj, unicode):
+    if isinstance(obj, six.text_type):
         return obj.encode('utf-8', 'replace')
     if isinstance(obj, list):
         return list(map(strip_unicode, obj))
 
     if isinstance(obj, dict):
         new_obj = type(obj)(
-            (strip_unicode(k), strip_unicode(v)) for k, v in obj.iteritems())
+            (strip_unicode(k), strip_unicode(v)) for k, v in obj.items())
         return new_obj
     return obj
 
@@ -101,7 +100,7 @@ class BaseTestTriggerer(object):
             bot_args.append('--env')
             bot_args.append('GTEST_TOTAL_SHARDS=%s' % total_shards)
         if self._bot_configs:
-            for key, val in sorted(self._bot_configs[bot_index].iteritems()):
+            for key, val in sorted(self._bot_configs[bot_index].items()):
                 bot_args.append('--dimension')
                 bot_args.append(key)
                 bot_args.append(val)
@@ -170,31 +169,33 @@ class BaseTestTriggerer(object):
             with open(result_json.name) as f:
                 return json.load(f)
 
-    # TODO(eyaich): Move the stateless logic that is specific to querying
-    # swarming to its own object to make trigger logic more clear.
-    def query_swarming(self,
-                       api,
-                       query_args,
-                       limit='0',
-                       server='chromium-swarm.appspot.com'):
-        try:
-            temp_file = self.make_temp_file(prefix='base_trigger_dimensions',
-                                            suffix='.json')
-            encoded_args = urllib.urlencode(query_args)
-            args = [
-                'query', '-S', server, '--limit', limit, '--json', temp_file
-            ]
-            # Append the query at the end
-            args.append(('%s?%s' % (api, encoded_args)))
-            ret = self.run_swarming(args)
-            if ret:
-                raise Exception('Error running swarming.py')
-            return self.read_encoded_json_from_temp_file(temp_file)
-        finally:
-            self.delete_temp_file(temp_file)
+    def list_tasks(self, tags, limit=None,
+                   server='chromium-swarm.appspot.com'):
+        """List bots having specified task tags.
+
+        Type of returned value is list of
+        https://source.chromium.org/search?q=%22class%20TaskResult(messages.Message):%22%20f:luci%2Fappengine%2Fswarming&ssfr=1
+        """
+
+        args = [SWARMING_GO, 'tasks', '-server', server]
+
+        for tag in sorted(tags):
+            args.extend(['-tag', tag])
+
+        if limit is not None:
+            args.extend(['-limit', str(limit)])
+
+        logging.info('Running Go `swarming` with args: %s', args)
+
+        with tempfile.NamedTemporaryFile(delete=False) as result_json:
+            result_json.close()
+            args.extend(['-json', result_json.name])
+            subprocess.check_call(args)
+            with open(result_json.name) as f:
+                return json.load(f)
 
     def remove_swarming_dimension(self, args, dimension):
-        for i in xrange(len(args)):
+        for i in range(len(args)):
             if args[i] == '--dimension' and args[i + 1] == dimension:
                 return args[:i] + args[i + 3:]
         return args
@@ -219,10 +220,6 @@ class BaseTestTriggerer(object):
     def write_json_to_file(self, merged_json, output_file):
         with open(output_file, 'w') as f:
             json.dump(merged_json, f)
-
-    def run_swarming(self, args):
-        logging.info('Running Swarming with args: %s', args)
-        return subprocess.call([sys.executable, SWARMING_PY] + args)
 
     def run_swarming_go(self,
                         args,
@@ -275,7 +272,7 @@ class BaseTestTriggerer(object):
         """Returns the indices of the swarming shards that should be
         triggered."""
         if args.shard_index is None:
-            return range(args.shards)
+            return list(range(args.shards))
         else:
             return [args.shard_index]
 
@@ -312,7 +309,7 @@ class BaseTestTriggerer(object):
         # Swarming dimensions on the command line.
         filtered_remaining_args = copy.deepcopy(remaining)
         for config in self._bot_configs:
-            for k in config.iterkeys():
+            for k in config.keys():
                 filtered_remaining_args = self.remove_swarming_dimension(
                     filtered_remaining_args, k)
         # crbug/1140389: debug print outs

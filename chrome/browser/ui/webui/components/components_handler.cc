@@ -23,12 +23,12 @@ ComponentsHandler::ComponentsHandler(
 ComponentsHandler::~ComponentsHandler() = default;
 
 void ComponentsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestComponentsData",
       base::BindRepeating(&ComponentsHandler::HandleRequestComponentsData,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "checkUpdate", base::BindRepeating(&ComponentsHandler::HandleCheckUpdate,
                                          base::Unretained(this)));
 }
@@ -57,16 +57,16 @@ void ComponentsHandler::HandleRequestComponentsData(
 // state e.g. If component state is currently updating then we need to disable
 // button. (https://code.google.com/p/chromium/issues/detail?id=272540)
 void ComponentsHandler::HandleCheckUpdate(const base::ListValue* args) {
-  if (args->GetSize() != 1) {
+  if (args->GetList().size() != 1) {
     NOTREACHED();
     return;
   }
 
-  std::string component_id;
-  if (!args->GetString(0, &component_id)) {
+  if (!args->GetList()[0].is_string()) {
     NOTREACHED();
     return;
   }
+  const std::string& component_id = args->GetList()[0].GetString();
 
   OnDemandUpdate(component_id);
 }

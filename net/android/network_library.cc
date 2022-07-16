@@ -101,12 +101,6 @@ std::string GetTelephonyNetworkOperator() {
           base::android::AttachCurrentThread()));
 }
 
-std::string GetTelephonySimOperator() {
-  return base::android::ConvertJavaStringToUTF8(
-      Java_AndroidNetworkLibrary_getSimOperator(
-          base::android::AttachCurrentThread()));
-}
-
 bool GetIsRoaming() {
   return Java_AndroidNetworkLibrary_getIsRoaming(
       base::android::AttachCurrentThread());

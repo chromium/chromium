@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -32,6 +31,10 @@ using BasicAXTreeSerializer = AXTreeSerializer<const AXNode*>;
 class AXTreeSerializerTest : public testing::Test {
  public:
   AXTreeSerializerTest() {}
+
+  AXTreeSerializerTest(const AXTreeSerializerTest&) = delete;
+  AXTreeSerializerTest& operator=(const AXTreeSerializerTest&) = delete;
+
   ~AXTreeSerializerTest() override {}
 
  protected:
@@ -44,9 +47,6 @@ class AXTreeSerializerTest : public testing::Test {
   std::unique_ptr<AXTreeSource<const AXNode*>> tree0_source_;
   std::unique_ptr<AXTreeSource<const AXNode*>> tree1_source_;
   std::unique_ptr<BasicAXTreeSerializer> serializer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AXTreeSerializerTest);
 };
 
 void AXTreeSerializerTest::CreateTreeSerializer() {
@@ -243,6 +243,11 @@ class AXTreeSourceWithInvalidId : public AXTreeSource<const AXNode*> {
   AXTreeSourceWithInvalidId(AXTree* tree, int invalid_id)
       : tree_(tree),
         invalid_id_(invalid_id) {}
+
+  AXTreeSourceWithInvalidId(const AXTreeSourceWithInvalidId&) = delete;
+  AXTreeSourceWithInvalidId& operator=(const AXTreeSourceWithInvalidId&) =
+      delete;
+
   ~AXTreeSourceWithInvalidId() override {}
 
   // AXTreeSource implementation.
@@ -280,8 +285,6 @@ class AXTreeSourceWithInvalidId : public AXTreeSource<const AXNode*> {
  private:
   AXTree* tree_;
   int invalid_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXTreeSourceWithInvalidId);
 };
 
 // Test that the serializer skips invalid children.

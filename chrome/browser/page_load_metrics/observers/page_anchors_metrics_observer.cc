@@ -34,7 +34,7 @@ void PageAnchorsMetricsObserver::AnchorsData::Clear() {
   link_locations_.clear();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PageAnchorsMetricsObserver::AnchorsData)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PageAnchorsMetricsObserver::AnchorsData);
 
 void PageAnchorsMetricsObserver::RecordUkm() {
   PageAnchorsMetricsObserver::AnchorsData* data =

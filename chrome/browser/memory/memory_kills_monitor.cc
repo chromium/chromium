@@ -100,7 +100,7 @@ void MemoryKillsMonitor::StartMonitoring() {
     last_oom_kills_count_ = 0;
   }
 
-  checking_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(1),
+  checking_timer_.Start(FROM_HERE, base::Seconds(1),
                         base::BindRepeating(&MemoryKillsMonitor::CheckOOMKill,
                                             base::Unretained(this)));
 }

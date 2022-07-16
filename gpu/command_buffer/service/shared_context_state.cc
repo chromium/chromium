@@ -31,6 +31,8 @@
 #include "ui/gl/init/create_gr_gl_interface.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
+#include <vulkan/vulkan.h>
+
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/service/external_semaphore_pool.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
@@ -818,8 +820,7 @@ absl::optional<error::ContextLostReason> SharedContextState::GetResetStatus(
   }
   // Checking the reset status is expensive on some OS/drivers
   // (https://crbug.com/1090232). Rate limit it.
-  constexpr base::TimeDelta kMinCheckDelay =
-      base::TimeDelta::FromMilliseconds(5);
+  constexpr base::TimeDelta kMinCheckDelay = base::Milliseconds(5);
   base::Time now = base::Time::Now();
   if (!disable_check_reset_status_throttling_for_test_ &&
       now < last_gl_check_graphics_reset_status_ + kMinCheckDelay) {

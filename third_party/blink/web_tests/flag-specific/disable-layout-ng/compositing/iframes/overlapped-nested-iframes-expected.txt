@@ -1,23 +1,11 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 1650],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "transform": 1
-    },
-    {
-      "name": "LayoutView #document",
-      "bounds": [280, 200],
-      "transform": 2
-    },
-    {
-      "name": "LayoutView #document",
-      "bounds": [250, 170],
-      "contentsOpaqueForText": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 3
     },
     {
       "name": "LayoutBlockFlow DIV id='iframe-content' class='box'",
@@ -25,18 +13,6 @@
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 4
-    },
-    {
-      "name": "LayoutView #document",
-      "bounds": [280, 200],
-      "transform": 5
-    },
-    {
-      "name": "LayoutView #document",
-      "bounds": [250, 170],
-      "contentsOpaqueForText": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 6
     },
     {
       "name": "LayoutBlockFlow DIV id='iframe-content' class='box'",
@@ -48,13 +24,13 @@
     {
       "name": "LayoutBlockFlow (positioned) DIV id='banner'",
       "bounds": [785, 120],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#00000080"
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

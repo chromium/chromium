@@ -37,6 +37,10 @@ class SimplePostDoomWaiterTable
  public:
   explicit SimplePostDoomWaiterTable(net::CacheType cache_type);
 
+  SimplePostDoomWaiterTable(const SimplePostDoomWaiterTable&) = delete;
+  SimplePostDoomWaiterTable& operator=(const SimplePostDoomWaiterTable&) =
+      delete;
+
   // The entry for |entry_hash| is being doomed; the backend will not attempt
   // to run new operations for this |entry_hash| until the Doom is completed.
   void OnDoomStart(uint64_t entry_hash);
@@ -60,8 +64,6 @@ class SimplePostDoomWaiterTable
   net::CacheType cache_type_;
   std::unordered_map<uint64_t, std::vector<SimplePostDoomWaiter>>
       entries_pending_doom_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimplePostDoomWaiterTable);
 };
 
 }  // namespace disk_cache

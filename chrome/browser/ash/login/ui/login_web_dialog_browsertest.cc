@@ -39,11 +39,10 @@ IN_PROC_BROWSER_TEST_F(LoginWebDialogTest, CloseDialogByAccelerator) {
   gfx::NativeWindow window = dialog->get_dialog_window_for_test();
   ASSERT_TRUE(window);
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
-  views::test::WidgetClosingObserver closing_observer(widget);
+  views::test::WidgetDestroyedWaiter closing_observer(widget);
   ui::test::EventGenerator generator(window->GetRootWindow());
   generator.PressKey(ui::VKEY_BROWSER_BACK, ui::EF_SHIFT_DOWN);
   closing_observer.Wait();
-  EXPECT_TRUE(closing_observer.widget_closed());
 }
 
 // Tests that LoginWebDialog does not crash with missing parent window.

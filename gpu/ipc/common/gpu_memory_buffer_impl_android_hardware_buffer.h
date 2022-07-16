@@ -15,6 +15,11 @@ namespace gpu {
 class GPU_EXPORT GpuMemoryBufferImplAndroidHardwareBuffer
     : public GpuMemoryBufferImpl {
  public:
+  GpuMemoryBufferImplAndroidHardwareBuffer(
+      const GpuMemoryBufferImplAndroidHardwareBuffer&) = delete;
+  GpuMemoryBufferImplAndroidHardwareBuffer& operator=(
+      const GpuMemoryBufferImplAndroidHardwareBuffer&) = delete;
+
   ~GpuMemoryBufferImplAndroidHardwareBuffer() override;
 
   static constexpr gfx::GpuMemoryBufferType kBufferType =
@@ -57,8 +62,6 @@ class GPU_EXPORT GpuMemoryBufferImplAndroidHardwareBuffer
       base::android::ScopedHardwareBufferHandle handle);
 
   base::android::ScopedHardwareBufferHandle hardware_buffer_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferImplAndroidHardwareBuffer);
 };
 
 }  // namespace gpu

@@ -31,17 +31,13 @@
 #include "third_party/blink/renderer/core/css/page_rule_collector.h"
 
 #include <algorithm>
+#include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
-
-static inline bool ComparePageRules(const StyleRulePage* r1,
-                                    const StyleRulePage* r2) {
-  return r1->Selector()->Specificity() < r2->Selector()->Specificity();
-}
 
 bool PageRuleCollector::IsLeftPage(const ComputedStyle* root_element_style,
                                    uint32_t page_index) const {
@@ -68,7 +64,8 @@ PageRuleCollector::PageRuleCollector(const ComputedStyle* root_element_style,
       page_name_(page_name),
       result_(match_result) {}
 
-void PageRuleCollector::MatchPageRules(RuleSet* rules) {
+void PageRuleCollector::MatchPageRules(RuleSet* rules,
+                                       const CascadeLayerMap* layer_map) {
   if (!rules)
     return;
 
@@ -78,8 +75,16 @@ void PageRuleCollector::MatchPageRules(RuleSet* rules) {
   if (matched_page_rules.IsEmpty())
     return;
 
-  std::stable_sort(matched_page_rules.begin(), matched_page_rules.end(),
-                   ComparePageRules);
+  std::stable_sort(
+      matched_page_rules.begin(), matched_page_rules.end(),
+      [layer_map](const StyleRulePage* r1, const StyleRulePage* r2) {
+        if (r1->GetCascadeLayer() != r2->GetCascadeLayer()) {
+          DCHECK(layer_map);
+          return layer_map->CompareLayerOrder(r1->GetCascadeLayer(),
+                                              r2->GetCascadeLayer()) < 0;
+        }
+        return r1->Selector()->Specificity() < r2->Selector()->Specificity();
+      });
 
   for (unsigned i = 0; i < matched_page_rules.size(); i++)
     result_.AddMatchedProperties(&matched_page_rules[i]->Properties());

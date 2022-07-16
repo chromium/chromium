@@ -5,8 +5,8 @@
 #include "components/password_manager/core/browser/credential_manager_password_form_manager.h"
 
 #include <memory>
+#include <vector>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -33,6 +33,8 @@ class MockDelegate : public CredentialManagerPasswordFormManagerDelegate {
 class MockFormSaver : public StubFormSaver {
  public:
   MockFormSaver() = default;
+  MockFormSaver(const MockFormSaver&) = delete;
+  MockFormSaver& operator=(const MockFormSaver&) = delete;
   ~MockFormSaver() override = default;
 
   // FormSaver:
@@ -47,11 +49,9 @@ class MockFormSaver : public StubFormSaver {
 
   // Convenience downcasting method.
   static MockFormSaver& Get(PasswordFormManager* form_manager) {
-    return *static_cast<MockFormSaver*>(form_manager->form_saver());
+    return *static_cast<MockFormSaver*>(
+        form_manager->profile_store_form_saver());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockFormSaver);
 };
 
 MATCHER_P(FormMatches, form, "") {
@@ -72,7 +72,12 @@ class CredentialManagerPasswordFormManagerTest : public testing::Test {
     form_to_save_.password_value = u"pass1";
     form_to_save_.scheme = PasswordForm::Scheme::kHtml;
     form_to_save_.type = PasswordForm::Type::kApi;
+    form_to_save_.in_store = PasswordForm::Store::kProfileStore;
   }
+  CredentialManagerPasswordFormManagerTest(
+      const CredentialManagerPasswordFormManagerTest&) = delete;
+  CredentialManagerPasswordFormManagerTest& operator=(
+      const CredentialManagerPasswordFormManagerTest&) = delete;
 
  protected:
   std::unique_ptr<CredentialManagerPasswordFormManager> CreateFormManager(
@@ -101,8 +106,6 @@ class CredentialManagerPasswordFormManagerTest : public testing::Test {
   StubPasswordManagerClient client_;
   MockDelegate delegate_;
   PasswordForm form_to_save_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialManagerPasswordFormManagerTest);
 };
 
 // Ensure that GetCredentialSource is actually overriden and returns the proper

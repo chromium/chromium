@@ -16,10 +16,10 @@ class IPEndPoint;
 
 namespace openscreen_platform {
 
-class NetUdpSocket : public openscreen::UdpSocket {
+class NetUdpSocket final : public openscreen::UdpSocket {
  public:
   NetUdpSocket(Client* client, const openscreen::IPEndpoint& local_endpoint);
-  ~NetUdpSocket() final;
+  ~NetUdpSocket() override;
 
   NetUdpSocket& operator=(const NetUdpSocket&) = delete;
   NetUdpSocket& operator=(NetUdpSocket&&) = delete;
@@ -33,18 +33,18 @@ class NetUdpSocket : public openscreen::UdpSocket {
   void OnSendToCompleted(int result);
 
   // openscreen::UdpSocket implementation.
-  bool IsIPv4() const final;
-  bool IsIPv6() const final;
-  openscreen::IPEndpoint GetLocalEndpoint() const final;
-  void Bind() final;
+  bool IsIPv4() const override;
+  bool IsIPv6() const override;
+  openscreen::IPEndpoint GetLocalEndpoint() const override;
+  void Bind() override;
   void SetMulticastOutboundInterface(
-      openscreen::NetworkInterfaceIndex ifindex) final;
+      openscreen::NetworkInterfaceIndex ifindex) override;
   void JoinMulticastGroup(const openscreen::IPAddress& address,
-                          openscreen::NetworkInterfaceIndex ifindex) final;
+                          openscreen::NetworkInterfaceIndex ifindex) override;
   void SendMessage(const void* data,
                    size_t length,
-                   const openscreen::IPEndpoint& dest) final;
-  void SetDscp(openscreen::UdpSocket::DscpMode state) final;
+                   const openscreen::IPEndpoint& dest) override;
+  void SetDscp(openscreen::UdpSocket::DscpMode state) override;
 
   Client* const client_;
 

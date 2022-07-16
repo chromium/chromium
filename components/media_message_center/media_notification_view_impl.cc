@@ -104,6 +104,7 @@ const gfx::VectorIcon* GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kToggleCamera:
     case MediaSessionAction::kHangUp:
     case MediaSessionAction::kRaise:
+    case MediaSessionAction::kSetMute:
       NOTREACHED();
       break;
   }
@@ -649,6 +650,7 @@ void MediaNotificationViewImpl::CreateHeaderRow(
   }
 
   header_row->SetAppName(default_app_name_);
+  header_row->SetFocusBehavior(FocusBehavior::NEVER);
 
   if (should_show_icon) {
     header_row->ClearAppIcon();
@@ -741,7 +743,7 @@ void MediaNotificationViewImpl::UpdateForegroundColor() {
   artist_label_->SetEnabledColor(theme.secondary_text_color);
 
   if (header_row_) {
-    header_row_->SetAccentColor(theme.primary_text_color);
+    header_row_->SetColor(theme.primary_text_color);
     header_row_->SetBackgroundColor(background);
   } else {
     cros_header_label_->SetEnabledColor(theme.primary_text_color);

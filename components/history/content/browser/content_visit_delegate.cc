@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
@@ -25,6 +24,9 @@ class URLIteratorFromURLs : public visitedlink::VisitedLinkWriter::URLIterator {
   explicit URLIteratorFromURLs(const std::vector<GURL>& urls)
       : itr_(urls.begin()), end_(urls.end()) {}
 
+  URLIteratorFromURLs(const URLIteratorFromURLs&) = delete;
+  URLIteratorFromURLs& operator=(const URLIteratorFromURLs&) = delete;
+
   // visitedlink::VisitedLinkWriter::URLIterator implementation.
   const GURL& NextURL() override { return *(itr_++); }
   bool HasNextURL() const override { return itr_ != end_; }
@@ -32,8 +34,6 @@ class URLIteratorFromURLs : public visitedlink::VisitedLinkWriter::URLIterator {
  private:
   std::vector<GURL>::const_iterator itr_;
   std::vector<GURL>::const_iterator end_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLIteratorFromURLs);
 };
 
 // IterateUrlsDBTask bridge HistoryBackend::URLEnumerator to
@@ -42,6 +42,10 @@ class IterateUrlsDBTask : public HistoryDBTask {
  public:
   explicit IterateUrlsDBTask(const scoped_refptr<
       visitedlink::VisitedLinkDelegate::URLEnumerator>& enumerator);
+
+  IterateUrlsDBTask(const IterateUrlsDBTask&) = delete;
+  IterateUrlsDBTask& operator=(const IterateUrlsDBTask&) = delete;
+
   ~IterateUrlsDBTask() override;
 
  private:
@@ -50,8 +54,6 @@ class IterateUrlsDBTask : public HistoryDBTask {
   void DoneRunOnMainThread() override;
 
   scoped_refptr<visitedlink::VisitedLinkDelegate::URLEnumerator> enumerator_;
-
-  DISALLOW_COPY_AND_ASSIGN(IterateUrlsDBTask);
 };
 
 IterateUrlsDBTask::IterateUrlsDBTask(const scoped_refptr<

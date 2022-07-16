@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientUserEventsSyncTest,
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
   event_service->RecordUserEvent(user_events_helper::CreateTestEvent(
-      base::Time() + base::TimeDelta::FromMicroseconds(1)));
+      base::Time() + base::Microseconds(1)));
 
   // Set up sync on the second client.
   ASSERT_TRUE(GetClient(kDecryptingClientId)

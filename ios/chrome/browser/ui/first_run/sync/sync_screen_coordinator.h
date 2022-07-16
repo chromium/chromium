@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_SYNC_SYNC_SCREEN_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_FIRST_RUN_SYNC_SYNC_SCREEN_COORDINATOR_H_
 
-#import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/interruptible_chrome_coordinator.h"
 
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 
 // Coordinator to present sync screen.
-@interface SyncScreenCoordinator : ChromeCoordinator
+@interface SyncScreenCoordinator : InterruptibleChromeCoordinator
 
 // Initiates a SyncScreenCoordinator with
 // |navigationController| to present the view;

@@ -25,6 +25,12 @@ class PrintServersExternalDataHandler : public CloudExternalDataPolicyHandler {
   PrintServersExternalDataHandler(
       ash::CrosSettings* cros_settings,
       DeviceLocalAccountPolicyService* policy_service);
+
+  PrintServersExternalDataHandler(const PrintServersExternalDataHandler&) =
+      delete;
+  PrintServersExternalDataHandler& operator=(
+      const PrintServersExternalDataHandler&) = delete;
+
   ~PrintServersExternalDataHandler() override;
 
   // CloudExternalDataPolicyHandler:
@@ -40,8 +46,6 @@ class PrintServersExternalDataHandler : public CloudExternalDataPolicyHandler {
 
  private:
   CloudExternalDataPolicyObserver print_servers_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintServersExternalDataHandler);
 };
 
 }  // namespace policy

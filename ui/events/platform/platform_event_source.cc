@@ -5,6 +5,7 @@
 #include "ui/events/platform/platform_event_source.h"
 
 #include <algorithm>
+#include <ostream>
 
 #include "base/lazy_instance.h"
 #include "base/threading/thread_local.h"

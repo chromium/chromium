@@ -19,9 +19,9 @@
 
 #include "base/bind.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -211,7 +211,7 @@ BPF_TEST_C(ParameterRestrictions,
   BPF_ASSERT(getparam_thread.Start());
   getparam_thread.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&SchedGetParamThread, &thread_run));
-  BPF_ASSERT(thread_run.TimedWait(base::TimeDelta::FromMilliseconds(5000)));
+  BPF_ASSERT(thread_run.TimedWait(base::Milliseconds(5000)));
   getparam_thread.Stop();
 }
 

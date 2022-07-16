@@ -240,7 +240,7 @@ class _Generator(object):
                                                                     choice))
             .Concat(self._GeneratePopulateVariableFromValue(
                 choice,
-                '(&value)',
+                'value',
                 'out->as_%s' % choice.unix_name,
                 'false',
                 is_ptr=True))
@@ -283,7 +283,7 @@ class _Generator(object):
               .Append('%s tmp;' % cpp_type)
               .Concat(self._GeneratePopulateVariableFromValue(
                   type_.additional_properties,
-                  '(&it.value())',
+                  'it.value()',
                   'tmp',
                   'false'))
               .Append('out->additional_properties[it.key()] = tmp;')
@@ -315,7 +315,7 @@ class _Generator(object):
       (c.Sblock(
           'if (%(value_var)s) {')
         .Concat(self._GeneratePopulatePropertyFromValue(
-            prop, value_var, dst, 'false')))
+            prop, '(*%s)' % value_var, dst, 'false')))
       underlying_type = self._type_helper.FollowRef(prop.type_)
       if underlying_type.property_type == PropertyType.ENUM:
         namespace_prefix = ('%s::' % underlying_type.namespace.unix_name
@@ -333,7 +333,7 @@ class _Generator(object):
         .Append('return false;')
         .Eblock('}')
         .Concat(self._GeneratePopulatePropertyFromValue(
-            prop, value_var, dst, 'false'))
+            prop, '(*%s)' % value_var, dst, 'false'))
       )
     c.Append()
     c.Substitute({
@@ -834,15 +834,15 @@ class _Generator(object):
       if not param.optional:
         num_required += 1
     if num_required == len(function.params):
-      c.Sblock('if (%(var)s.GetSize() != %(total)d) {')
+      c.Sblock('if (%(var)s.size() != %(total)d) {')
     elif not num_required:
-      c.Sblock('if (%(var)s.GetSize() > %(total)d) {')
+      c.Sblock('if (%(var)s.size() > %(total)d) {')
     else:
-      c.Sblock('if (%(var)s.GetSize() < %(required)d'
-          ' || %(var)s.GetSize() > %(total)d) {')
+      c.Sblock('if (%(var)s.size() < %(required)d'
+          ' || %(var)s.size() > %(total)d) {')
     (c.Concat(self._AppendError16(
         'u"expected %%(total)d arguments, got " '
-        '+ base::NumberToString16(%%(var)s.GetSize())'))
+        '+ base::NumberToString16(%%(var)s.size())'))
       .Append('return nullptr;')
       .Eblock('}')
       .Substitute({
@@ -854,14 +854,16 @@ class _Generator(object):
 
   def _GenerateFunctionParamsCreate(self, function):
     """Generate function to create an instance of Params. The generated
-    function takes a base::ListValue of arguments.
+    function takes a base::Value::ConstListView of arguments.
 
     E.g for function "Bar", generate Bar::Params::Create()
     """
     c = Code()
+
     (c.Append('// static')
       .Sblock('std::unique_ptr<Params> Params::Create(%s) {' %
-                  self._GenerateParams(['const base::ListValue& args']))
+                  self._GenerateParams([
+                      'const base::Value::ConstListView& args']))
     )
     if self._generate_error_messages:
       c.Append('DCHECK(error);')
@@ -880,9 +882,9 @@ class _Generator(object):
       failure_value = 'std::unique_ptr<Params>()'
       c.Append()
       value_var = param.unix_name + '_value'
-      (c.Append('const base::Value* %(value_var)s = nullptr;')
-        .Append('if (args.Get(%(i)s, &%(value_var)s) &&')
-        .Sblock('    !%(value_var)s->is_none()) {')
+      (c.Append('if (%(i)s < args.size() &&')
+        .Sblock('    !args[%(i)s].is_none()) {')
+        .Append('const base::Value& %(value_var)s = args[%(i)s];')
         .Concat(self._GeneratePopulatePropertyFromValue(
             param, value_var, 'params', failure_value))
         .Eblock('}')
@@ -907,7 +909,7 @@ class _Generator(object):
                                          dst_class_var,
                                          failure_value):
     """Generates code to populate property |prop| of |dst_class_var| (a
-    pointer) from a Value*. See |_GeneratePopulateVariableFromValue| for
+    pointer) from a Value. See |_GeneratePopulateVariableFromValue| for
     semantics.
     """
     return self._GeneratePopulateVariableFromValue(prop.type_,
@@ -924,9 +926,8 @@ class _Generator(object):
                                          failure_value,
                                          is_ptr=False):
     """Generates code to populate a variable |dst_var| of type |type_| from a
-    Value* at |src_var|. The Value* is assumed to be non-null. In the generated
-    code, if |dst_var| fails to be populated then Populate will return
-    |failure_value|.
+    Value |src_var|. In the generated code, if |dst_var| fails to be populated
+    then Populate will return |failure_value|.
     """
     c = Code()
 
@@ -947,15 +948,13 @@ class _Generator(object):
           .Concat(self._AppendError16(
             'u"\'%%(key)s\': expected ' + '%s, got " + %s' % (
                 type_.name,
-                self._util_cc_helper.GetValueTypeString(
-                    '%%(src_var)s', True)))))
+                self._util_cc_helper.GetValueTypeString('%%(src_var)s')))))
       else:
         (c.Sblock('if (!temp.has_value()) {')
           .Concat(self._AppendError16(
             'u"\'%%(key)s\': expected ' + '%s, got " + %s' % (
                 type_.name,
-                self._util_cc_helper.GetValueTypeString(
-                    '%%(src_var)s', True)))))
+                self._util_cc_helper.GetValueTypeString('%%(src_var)s')))))
       if is_ptr:
         c.Append('%(dst_var)s.reset();')
       c.Append('return %(failure_value)s;')
@@ -974,10 +973,10 @@ class _Generator(object):
     elif underlying_type.property_type == PropertyType.OBJECT:
       if is_ptr:
         (c.Append('const base::DictionaryValue* dictionary = nullptr;')
-          .Sblock('if (!%(src_var)s->GetAsDictionary(&dictionary)) {')
+          .Sblock('if (!%(src_var)s.GetAsDictionary(&dictionary)) {')
           .Concat(self._AppendError16(
             'u"\'%%(key)s\': expected dictionary, got " + ' +
-            self._util_cc_helper.GetValueTypeString('%%(src_var)s', True)))
+            self._util_cc_helper.GetValueTypeString('%%(src_var)s')))
           .Append('return %(failure_value)s;')
         )
         (c.Eblock('}')
@@ -994,10 +993,10 @@ class _Generator(object):
         )
       else:
         (c.Append('const base::DictionaryValue* dictionary = nullptr;')
-          .Sblock('if (!%(src_var)s->GetAsDictionary(&dictionary)) {')
+          .Sblock('if (!%(src_var)s.GetAsDictionary(&dictionary)) {')
           .Concat(self._AppendError16(
             'u"\'%%(key)s\': expected dictionary, got " + ' +
-            self._util_cc_helper.GetValueTypeString('%%(src_var)s', True)))
+            self._util_cc_helper.GetValueTypeString('%%(src_var)s')))
           .Append('return %(failure_value)s;')
           .Eblock('}')
           .Append('if (!%%(cpp_type)s::Populate(%s)) {' % self._GenerateArgs(
@@ -1011,14 +1010,13 @@ class _Generator(object):
       if is_ptr: # Non-serializable functions are just represented as dicts.
         c.Append('%(dst_var)s = std::make_unique<base::DictionaryValue>();')
     elif underlying_type.property_type == PropertyType.ANY:
-      c.Append('%(dst_var)s = %(src_var)s->CreateDeepCopy();')
+      c.Append('%(dst_var)s = %(src_var)s.CreateDeepCopy();')
     elif underlying_type.property_type == PropertyType.ARRAY:
       # util_cc_helper deals with optional and required arrays
-      (c.Append('const base::ListValue* list = nullptr;')
-        .Sblock('if (!%(src_var)s->GetAsList(&list)) {')
+      (c.Sblock('if (!%(src_var)s.is_list()) {')
         .Concat(self._AppendError16(
           'u"\'%%(key)s\': expected list, got " + ' +
-          self._util_cc_helper.GetValueTypeString('%%(src_var)s', True)))
+          self._util_cc_helper.GetValueTypeString('%%(src_var)s')))
         .Append('return %(failure_value)s;')
       )
       c.Eblock('}')
@@ -1027,12 +1025,12 @@ class _Generator(object):
       if item_type.property_type == PropertyType.ENUM:
         c.Concat(self._GenerateListValueToEnumArrayConversion(
                      item_type,
-                     'list',
+                     src_var,
                      dst_var,
                      failure_value,
                      is_ptr=is_ptr))
       else:
-        args = ['*list', '&%(dst_var)s']
+        args = ['%(src_var)s.GetList()', '&%(dst_var)s']
         if self._generate_error_messages:
           c.Append('std::u16string array_parse_error;')
           args.append('&array_parse_error')
@@ -1054,13 +1052,13 @@ class _Generator(object):
       if is_ptr:
         (c.Append('auto temp = std::make_unique<%(cpp_type)s>();')
           .Append('if (!%%(cpp_type)s::Populate(%s))' % self._GenerateArgs(
-            ('*%(src_var)s', 'temp.get()')))
+            ('%(src_var)s', 'temp.get()')))
           .Append('  return %(failure_value)s;')
           .Append('%(dst_var)s = std::move(temp);')
         )
       else:
         (c.Append('if (!%%(cpp_type)s::Populate(%s))' % self._GenerateArgs(
-            ('*%(src_var)s', '&%(dst_var)s')))
+            ('%(src_var)s', '&%(dst_var)s')))
           .Append('  return %(failure_value)s;'))
     elif underlying_type.property_type == PropertyType.ENUM:
       c.Concat(self._GenerateStringToEnumConversion(underlying_type,
@@ -1068,10 +1066,10 @@ class _Generator(object):
                                                     dst_var,
                                                     failure_value))
     elif underlying_type.property_type == PropertyType.BINARY:
-      (c.Sblock('if (!%(src_var)s->is_blob()) {')
+      (c.Sblock('if (!%(src_var)s.is_blob()) {')
         .Concat(self._AppendError16(
           'u"\'%%(key)s\': expected binary, got " + ' +
-          self._util_cc_helper.GetValueTypeString('%%(src_var)s', True)))
+          self._util_cc_helper.GetValueTypeString('%%(src_var)s')))
         .Append('return %(failure_value)s;')
       )
       (c.Eblock('}')
@@ -1079,9 +1077,9 @@ class _Generator(object):
       )
       if is_ptr:
         c.Append('%(dst_var)s = std::make_unique<std::vector<uint8_t>>('
-                 '%(src_var)s->GetBlob());')
+                 '%(src_var)s.GetBlob());')
       else:
-        c.Append('%(dst_var)s = %(src_var)s->GetBlob();')
+        c.Append('%(dst_var)s = %(src_var)s.GetBlob();')
       c.Eblock('}')
     else:
       raise NotImplementedError(type_)
@@ -1102,7 +1100,7 @@ class _Generator(object):
                                               dst_var,
                                               failure_value,
                                               is_ptr=False):
-    """Returns Code that converts a ListValue of string constants from
+    """Returns Code that converts a list Value of string constants from
     |src_var| into an array of enums of |type_| in |dst_var|. On failure,
     returns |failure_value|.
     """
@@ -1113,13 +1111,12 @@ class _Generator(object):
       cpp_type = self._type_helper.GetCppType(item_type, is_in_container=True)
       c.Append('%s = std::make_unique<std::vector<%s>>();' %
                    (dst_var, cpp_type))
-    (c.Sblock('for (const auto& it : (%s)->GetList()) {' % src_var)
+    (c.Sblock('for (const auto& it : (%s).GetList()) {' % src_var)
       .Append('%s tmp;' % self._type_helper.GetCppType(item_type))
       .Concat(self._GenerateStringToEnumConversion(item_type,
                                                    '(it)',
                                                    'tmp',
-                                                   failure_value,
-                                                   is_ptr=False))
+                                                   failure_value))
       .Append('%s%spush_back(tmp);' % (dst_var, accessor))
       .Eblock('}')
     )
@@ -1129,8 +1126,7 @@ class _Generator(object):
                                       type_,
                                       src_var,
                                       dst_var,
-                                      failure_value,
-                                      is_ptr=True):
+                                      failure_value):
     """Returns Code that converts a string type in |src_var| to an enum with
     type |type_| in |dst_var|. In the generated code, if |src_var| is not
     a valid enum name then the function will return |failure_value|.
@@ -1142,14 +1138,11 @@ class _Generator(object):
     cpp_type_namespace = ''
     if type_.namespace != self._namespace:
       cpp_type_namespace = '%s::' % type_.namespace.unix_name
-    accessor = '->' if is_ptr else '.'
     (c.Append('std::string %s;' % enum_as_string)
-      .Sblock('if (!%s%sGetAsString(&%s)) {' % (src_var,
-                                                accessor,
-                                                enum_as_string))
+      .Sblock('if (!%s.GetAsString(&%s)) {' % (src_var, enum_as_string))
       .Concat(self._AppendError16(
         'u"\'%%(key)s\': expected string, got " + ' +
-        self._util_cc_helper.GetValueTypeString('%%(src_var)s', is_ptr)))
+        self._util_cc_helper.GetValueTypeString('%%(src_var)s')))
       .Append('return %s;' % failure_value)
       .Eblock('}')
       .Append('%s = %sParse%s(%s);' % (dst_var,

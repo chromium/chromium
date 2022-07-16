@@ -44,7 +44,7 @@ class DeadlineTaskRunnerTest : public testing::Test {
 
 TEST_F(DeadlineTaskRunnerTest, RunOnce) {
   base::TimeTicks start_time = Now();
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(10);
+  base::TimeDelta delay = base::Milliseconds(10);
   deadline_task_runner_->SetDeadline(FROM_HERE, delay, Now());
   task_environment_.FastForwardUntilNoTasksRemain();
 
@@ -52,12 +52,12 @@ TEST_F(DeadlineTaskRunnerTest, RunOnce) {
 }
 
 TEST_F(DeadlineTaskRunnerTest, RunTwice) {
-  base::TimeDelta delay1 = base::TimeDelta::FromMilliseconds(10);
+  base::TimeDelta delay1 = base::Milliseconds(10);
   base::TimeTicks deadline1 = Now() + delay1;
   deadline_task_runner_->SetDeadline(FROM_HERE, delay1, Now());
   task_environment_.FastForwardUntilNoTasksRemain();
 
-  base::TimeDelta delay2 = base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta delay2 = base::Milliseconds(100);
   base::TimeTicks deadline2 = Now() + delay2;
   deadline_task_runner_->SetDeadline(FROM_HERE, delay2, Now());
   task_environment_.FastForwardUntilNoTasksRemain();
@@ -67,9 +67,9 @@ TEST_F(DeadlineTaskRunnerTest, RunTwice) {
 
 TEST_F(DeadlineTaskRunnerTest, EarlierDeadlinesTakePrecidence) {
   base::TimeTicks start_time = Now();
-  base::TimeDelta delay1 = base::TimeDelta::FromMilliseconds(1);
-  base::TimeDelta delay10 = base::TimeDelta::FromMilliseconds(10);
-  base::TimeDelta delay100 = base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta delay1 = base::Milliseconds(1);
+  base::TimeDelta delay10 = base::Milliseconds(10);
+  base::TimeDelta delay100 = base::Milliseconds(100);
   deadline_task_runner_->SetDeadline(FROM_HERE, delay100, Now());
   deadline_task_runner_->SetDeadline(FROM_HERE, delay10, Now());
   deadline_task_runner_->SetDeadline(FROM_HERE, delay1, Now());
@@ -80,8 +80,8 @@ TEST_F(DeadlineTaskRunnerTest, EarlierDeadlinesTakePrecidence) {
 
 TEST_F(DeadlineTaskRunnerTest, LaterDeadlinesIgnored) {
   base::TimeTicks start_time = Now();
-  base::TimeDelta delay100 = base::TimeDelta::FromMilliseconds(100);
-  base::TimeDelta delay10000 = base::TimeDelta::FromMilliseconds(10000);
+  base::TimeDelta delay100 = base::Milliseconds(100);
+  base::TimeDelta delay10000 = base::Milliseconds(10000);
   deadline_task_runner_->SetDeadline(FROM_HERE, delay100, Now());
   deadline_task_runner_->SetDeadline(FROM_HERE, delay10000, Now());
   task_environment_.FastForwardUntilNoTasksRemain();
@@ -90,8 +90,7 @@ TEST_F(DeadlineTaskRunnerTest, LaterDeadlinesIgnored) {
 }
 
 TEST_F(DeadlineTaskRunnerTest, DeleteDeadlineTaskRunnerAfterPosting) {
-  deadline_task_runner_->SetDeadline(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(10), Now());
+  deadline_task_runner_->SetDeadline(FROM_HERE, base::Milliseconds(10), Now());
 
   // Deleting the pending task should cancel it.
   deadline_task_runner_.reset(nullptr);

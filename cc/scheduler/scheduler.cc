@@ -12,7 +12,8 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -29,8 +30,7 @@ namespace cc {
 namespace {
 // This is a fudge factor we subtract from the deadline to account
 // for message latency and kernel scheduling variability.
-const base::TimeDelta kDeadlineFudgeFactor =
-    base::TimeDelta::FromMicroseconds(1000);
+const base::TimeDelta kDeadlineFudgeFactor = base::Microseconds(1000);
 }  // namespace
 
 Scheduler::Scheduler(
@@ -162,6 +162,20 @@ void Scheduler::SetNeedsPrepareTiles() {
 void Scheduler::DidSubmitCompositorFrame(uint32_t frame_token,
                                          EventMetricsSet events_metrics,
                                          bool has_missing_content) {
+  // Timedelta used from begin impl frame to submit frame.
+  const auto cc_begin_impl_to_submit_ = Now() - cc_frame_start_;
+  if (cc_frame_time_available_ >= cc_begin_impl_to_submit_) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Scheduling.Renderer.FrameProduction.TimeUnused",
+        cc_frame_time_available_ - cc_begin_impl_to_submit_,
+        base::Microseconds(1), base::Milliseconds(50), 50);
+  } else {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Scheduling.Renderer.FrameProduction.TimeOverused",
+        cc_begin_impl_to_submit_ - cc_frame_time_available_,
+        base::Microseconds(1), base::Milliseconds(50), 50);
+  }
+
   compositor_frame_reporting_controller_->DidSubmitCompositorFrame(
       frame_token, begin_main_frame_args_.frame_id,
       last_activate_origin_frame_args_.frame_id, std::move(events_metrics),
@@ -366,8 +380,7 @@ bool Scheduler::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
   // zero then let |client_| know about the new interval for animations. In
   // theory the interval should always be bigger than zero but the value is
   // provided by APIs outside our control.
-  if (args.interval != last_frame_interval_ &&
-      args.interval > base::TimeDelta()) {
+  if (args.interval != last_frame_interval_ && args.interval.is_positive()) {
     last_frame_interval_ = args.interval;
     client_->FrameIntervalUpdated(last_frame_interval_);
   }
@@ -592,10 +605,15 @@ void Scheduler::BeginImplFrameSynchronous(const viz::BeginFrameArgs& args) {
   begin_main_frame_args_ = args;
   begin_main_frame_args_.on_critical_path = !ImplLatencyTakesPriority();
 
-  BeginImplFrame(args, Now());
+  viz::BeginFrameArgs adjusted_args = args;
+  adjusted_args.deadline -= compositor_timing_history_->DrawDurationEstimate();
+  adjusted_args.deadline -= kDeadlineFudgeFactor;
+
+  BeginImplFrame(adjusted_args, Now());
   compositor_timing_history_->WillFinishImplFrame(
       state_machine_.needs_redraw());
-  compositor_frame_reporting_controller_->OnFinishImplFrame(args.frame_id);
+  compositor_frame_reporting_controller_->OnFinishImplFrame(
+      adjusted_args.frame_id);
   // Delay the call to |FinishFrame()| if a draw is anticipated, so that it is
   // called after the draw happens (in |OnDrawForLayerTreeFrameSink()|).
   needs_finish_frame_for_synchronous_compositor_ = true;
@@ -616,10 +634,28 @@ void Scheduler::FinishImplFrame() {
     bool has_pending_tree = state_machine_.has_pending_tree();
     bool is_waiting_on_main = state_machine_.begin_main_frame_state() !=
                               SchedulerStateMachine::BeginMainFrameState::IDLE;
-    SendDidNotProduceFrame(begin_impl_frame_tracker_.Current(),
-                           is_waiting_on_main || has_pending_tree
-                               ? FrameSkippedReason::kWaitingOnMain
-                               : FrameSkippedReason::kNoDamage);
+    bool is_draw_throttled =
+        state_machine_.needs_redraw() && state_machine_.IsDrawThrottled();
+
+    FrameSkippedReason reason = FrameSkippedReason::kNoDamage;
+
+    if (is_waiting_on_main || has_pending_tree)
+      reason = FrameSkippedReason::kWaitingOnMain;
+    else if (is_draw_throttled)
+      reason = FrameSkippedReason::kDrawThrottled;
+
+    SendDidNotProduceFrame(begin_impl_frame_tracker_.Current(), reason);
+
+    // If the current finished impl frame is not the last activated frame, but
+    // the last activated frame has succeeded draw, it means that the drawn
+    // frame would not be submitted and is causing no visible damage.
+    if (begin_impl_frame_tracker_.Current().frame_id !=
+            last_activate_origin_frame_args_.frame_id &&
+        state_machine_.draw_succeeded_in_last_frame()) {
+      compositor_frame_reporting_controller_->DidNotProduceFrame(
+          last_activate_origin_frame_args_.frame_id,
+          FrameSkippedReason::kNoDamage);
+    }
   }
 
   begin_impl_frame_tracker_.Finish();
@@ -657,6 +693,9 @@ void Scheduler::BeginImplFrame(const viz::BeginFrameArgs& args,
             SchedulerStateMachine::BeginImplFrameState::IDLE);
   DCHECK(begin_impl_frame_deadline_task_.IsCancelled());
   DCHECK(state_machine_.HasInitializedLayerTreeFrameSink());
+  cc_frame_time_available_ = args.interval - kDeadlineFudgeFactor -
+                             compositor_timing_history_->DrawDurationEstimate();
+  cc_frame_start_ = now;
 
   {
     DCHECK(!inside_scheduled_action_);
@@ -763,6 +802,7 @@ void Scheduler::OnBeginImplFrameDeadline() {
   //     order to wait for more user-input before starting the next commit.
   // * Creating a new OuputSurface will not occur during the deadline in
   //     order to allow the state machine to "settle" first.
+  compositor_timing_history_->RecordDeadlineMode(deadline_mode_);
   if (!settings_.using_synchronous_renderer_compositor) {
     compositor_timing_history_->WillFinishImplFrame(
         state_machine_.needs_redraw());
@@ -798,7 +838,7 @@ void Scheduler::DrawIfPossible() {
   DrawResult result = client_->ScheduledActionDrawIfPossible();
   state_machine_.DidDraw(result);
   compositor_timing_history_->DidDraw(drawing_with_new_active_tree,
-                                      client_->HasCustomPropertyAnimations());
+                                      client_->HasInvalidationAnimation());
 }
 
 void Scheduler::DrawForced() {
@@ -812,7 +852,7 @@ void Scheduler::DrawForced() {
   DrawResult result = client_->ScheduledActionDrawForced();
   state_machine_.DidDraw(result);
   compositor_timing_history_->DidDraw(drawing_with_new_active_tree,
-                                      client_->HasCustomPropertyAnimations());
+                                      client_->HasInvalidationAnimation());
 }
 
 void Scheduler::SetDeferBeginMainFrame(bool defer_begin_main_frame) {
@@ -844,7 +884,8 @@ void Scheduler::ProcessScheduledActions() {
     action = state_machine_.NextAction();
     TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler"),
                 "SchedulerStateMachine", [this](perfetto::EventContext ctx) {
-                  this->AsProtozeroInto(ctx.event()->set_cc_scheduler_state());
+                  this->AsProtozeroInto(ctx,
+                                        ctx.event()->set_cc_scheduler_state());
                 });
     base::AutoReset<SchedulerStateMachine::Action> mark_inside_action(
         &inside_action_, action);
@@ -931,6 +972,7 @@ void Scheduler::ProcessScheduledActions() {
 }
 
 void Scheduler::AsProtozeroInto(
+    perfetto::EventContext& ctx,
     perfetto::protos::pbzero::ChromeCompositorSchedulerState* state) const {
   base::TimeTicks now = Now();
 
@@ -957,14 +999,15 @@ void Scheduler::AsProtozeroInto(
   state->set_now_to_deadline_scheduled_at_delta_us(
       (deadline_scheduled_at_ - Now()).InMicroseconds());
 
-  begin_impl_frame_tracker_.AsProtozeroInto(now,
+  begin_impl_frame_tracker_.AsProtozeroInto(ctx, now,
                                             state->set_begin_impl_frame_args());
 
   BeginFrameObserverBase::AsProtozeroInto(
-      state->set_begin_frame_observer_state());
+      ctx, state->set_begin_frame_observer_state());
 
   if (begin_frame_source_) {
-    begin_frame_source_->AsProtozeroInto(state->set_begin_frame_source_state());
+    begin_frame_source_->AsProtozeroInto(ctx,
+                                         state->set_begin_frame_source_state());
   }
 }
 

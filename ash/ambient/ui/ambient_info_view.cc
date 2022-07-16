@@ -54,10 +54,11 @@ AmbientInfoView::~AmbientInfoView() = default;
 
 void AmbientInfoView::OnThemeChanged() {
   views::View::OnThemeChanged();
+  const auto* color_provider = GetColorProvider();
   details_label_->SetShadows(
-      ambient::util::GetTextShadowValues(GetNativeTheme()));
+      ambient::util::GetTextShadowValues(color_provider));
   related_details_label_->SetShadows(
-      ambient::util::GetTextShadowValues(GetNativeTheme()));
+      ambient::util::GetTextShadowValues(color_provider));
 }
 
 void AmbientInfoView::UpdateImageDetails(

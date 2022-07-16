@@ -22,6 +22,11 @@
              android:id="@+id/options_menu_check_updates"
              android:title="Check for WebView updates"
              android:showAsAction="never"/>
+              <!--suppress HardcodedText -->
+        <item
+             android:id="@+id/options_menu_components"
+             android:title="Components"
+             android:showAsAction="never"/>
         <!--suppress HardcodedText -->
         <item
              android:id="@+id/options_menu_about_devui"

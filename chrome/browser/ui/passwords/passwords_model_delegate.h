@@ -171,6 +171,13 @@ class PasswordsModelDelegate {
   // reauth, it moves the password.
   virtual void AuthenticateUserForAccountStoreOptInAndMovePassword() = 0;
 
+  // Called from the Save/Update bubble controller when a "new" user (i.e. who
+  // hasn't chosen whether to use the account-scoped storage yet) saves a
+  // password (locally). If the reauth is successful, this moves the just-saved
+  // password into the account store.
+  virtual void
+  AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword() = 0;
+
   // Returns true if the password values should be revealed when the bubble is
   // opened.
   virtual bool ArePasswordsRevealedWhenBubbleIsOpened() const = 0;

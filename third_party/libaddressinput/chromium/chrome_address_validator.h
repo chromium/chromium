@@ -81,6 +81,9 @@ class AddressValidator {
                    std::unique_ptr<::i18n::addressinput::Storage> storage,
                    LoadRulesListener* load_rules_listener);
 
+  AddressValidator(const AddressValidator&) = delete;
+  AddressValidator& operator=(const AddressValidator&) = delete;
+
   virtual ~AddressValidator();
 
   // Loads the generic validation rules for |region_code| and specific rules
@@ -208,8 +211,6 @@ class AddressValidator {
   // any WeakPtrs to AddressValidator are invalidated before its members
   // variable's destructors are executed, rendering them invalid.
   base::WeakPtrFactory<AddressValidator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AddressValidator);
 };
 
 }  // namespace autofill

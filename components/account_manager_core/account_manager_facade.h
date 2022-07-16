@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
+#include "build/chromeos_buildflags.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 
@@ -58,15 +59,21 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     kArc = 2,
     // Launched automatically from Chrome content area. As of now, this is
     // possible only when an account requires re-authentication.
-    kContentArea = 3,
+    kContentAreaReauth = 3,
     // Print Preview dialog.
     kPrintPreviewDialog = 4,
     // Account Manager migration welcome screen.
     kAccountManagerMigrationWelcomeScreen = 5,
     // Onboarding.
     kOnboarding = 6,
+    // At profile creation, main account of secondary profile.
+    kChromeProfileCreation = 7,
+    // Account addition flow launched by the user from One Google Bar.
+    kOgbAddAccount = 8,
+    // Avatar bubble -> Signin again button.
+    kAvatarBubbleReauthAccountButton = 9,
 
-    kMaxValue = kOnboarding
+    kMaxValue = kAvatarBubbleReauthAccountButton
   };
 
   AccountManagerFacade();
@@ -94,18 +101,18 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
       base::OnceCallback<void(const GoogleServiceAuthError&)> callback) = 0;
 
   // Launches account addition dialog.
-  virtual void ShowAddAccountDialog(const AccountAdditionSource& source) = 0;
+  virtual void ShowAddAccountDialog(AccountAdditionSource source) = 0;
 
   // Launches account addition dialog and calls the `callback` with the result.
   // If `result` is `kSuccess`, the added account will be passed to the
   // callback. Otherwise `account` will be set to `absl::nullopt`.
   virtual void ShowAddAccountDialog(
-      const AccountAdditionSource& source,
+      AccountAdditionSource source,
       base::OnceCallback<void(const AccountAdditionResult& result)>
           callback) = 0;
 
   // Launches account reauthentication dialog for provided `email`.
-  virtual void ShowReauthAccountDialog(const AccountAdditionSource& source,
+  virtual void ShowReauthAccountDialog(AccountAdditionSource source,
                                        const std::string& email) = 0;
 
   // Launches OS Settings > Accounts.
@@ -118,6 +125,15 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
       const AccountKey& account,
       const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer) = 0;
+
+  // Adds or updates an account programmatically without user interaction.
+  // Should only be used in tests.
+  virtual void UpsertAccountForTesting(const Account& account,
+                                       const std::string& token_value) = 0;
+
+  // Removes an account programmatically without user interaction. Should only
+  // be used in tests.
+  virtual void RemoveAccountForTesting(const AccountKey& account) = 0;
 };
 
 }  // namespace account_manager

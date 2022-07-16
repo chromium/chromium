@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/wm/core/wm_core_export.h"
 
@@ -21,6 +20,10 @@ class WM_CORE_EXPORT AcceleratorFilter : public ui::EventHandler {
   // AcceleratorFilter doesn't own |accelerator_history|, it's owned by
   // AcceleratorController.
   explicit AcceleratorFilter(std::unique_ptr<AcceleratorDelegate> delegate);
+
+  AcceleratorFilter(const AcceleratorFilter&) = delete;
+  AcceleratorFilter& operator=(const AcceleratorFilter&) = delete;
+
   ~AcceleratorFilter() override;
 
   // If the return value is true, |event| should be filtered out.
@@ -31,8 +34,6 @@ class WM_CORE_EXPORT AcceleratorFilter : public ui::EventHandler {
 
  private:
   std::unique_ptr<AcceleratorDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AcceleratorFilter);
 };
 
 }  // namespace wm

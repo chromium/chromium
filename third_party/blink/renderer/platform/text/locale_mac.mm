@@ -48,7 +48,7 @@ namespace blink {
 static inline String LanguageFromLocale(const String& locale) {
   String normalized_locale = locale;
   normalized_locale.Replace('-', '_');
-  size_t separator_position = normalized_locale.find('_');
+  wtf_size_t separator_position = normalized_locale.find('_');
   if (separator_position == kNotFound)
     return normalized_locale;
   return normalized_locale.Left(separator_position);
@@ -154,7 +154,7 @@ unsigned LocaleMac::FirstDayOfWeek() {
   // The document for NSCalendar - firstWeekday doesn't have an explanation of
   // firstWeekday value. We can guess it by the document of NSDateComponents -
   // weekDay, so it can be 1 through 7 and 1 is Sunday.
-  return [gregorian_calendar_ firstWeekday] - 1;
+  return static_cast<unsigned>([gregorian_calendar_ firstWeekday] - 1);
 }
 
 bool LocaleMac::IsRTL() {

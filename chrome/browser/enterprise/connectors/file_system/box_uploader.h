@@ -200,8 +200,6 @@ class BoxUploader {
   // call failure such that, when the external caller calls TryTask() again, the
   // current step is re-attempted.
   std::unique_ptr<OAuth2ApiCallFlow> current_api_call_;
-  // Folder id used to specify the destination folder for the Service Provider.
-  std::string folder_id_;
   // PrefService used to store folder_id.
   PrefService* prefs_ = nullptr;  // Must be initialized to nullptr for DCHECKs.
 
@@ -227,6 +225,7 @@ class BoxDirectUploader : public BoxUploader {
   void OnWholeFileUploadResponse(BoxApiCallResponse response,
                                  const std::string& file_id);
 
+  const std::string mime_type_;
   base::WeakPtrFactory<BoxDirectUploader> weak_factory_{this};
 };
 

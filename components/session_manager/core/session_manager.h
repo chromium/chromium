@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/session_manager/session_manager_export.h"
 #include "components/session_manager/session_manager_types.h"
@@ -22,6 +21,10 @@ class SessionManagerObserver;
 class SESSION_EXPORT SessionManager {
  public:
   SessionManager();
+
+  SessionManager(const SessionManager&) = delete;
+  SessionManager& operator=(const SessionManager&) = delete;
+
   virtual ~SessionManager();
 
   // Returns current SessionManager instance and NULL if it hasn't been
@@ -64,9 +67,15 @@ class SESSION_EXPORT SessionManager {
 
   // Various helpers to notify observers.
   void NotifyUserProfileLoaded(const AccountId& account_id);
+  void NotifyNetworkErrorScreenShown();
+  void NotifyLoginOrLockScreenVisible();
 
   SessionState session_state() const { return session_state_; }
   const std::vector<Session>& sessions() const { return sessions_; }
+
+  bool login_or_lock_screen_shown_for_test() const {
+    return login_or_lock_screen_shown_for_test_;
+  }
 
  protected:
   // Notifies UserManager about a user signs in when creating a user session.
@@ -96,6 +105,11 @@ class SESSION_EXPORT SessionManager {
   // True if SessionStarted() has been called.
   bool session_started_ = false;
 
+  // True if `NotifyLoginOrLockScreenVisible()` has been called. Used by test
+  // classes to determine whether they should observe the session manager, as
+  // the session manager may not be available when the test object is created.
+  bool login_or_lock_screen_shown_for_test_ = false;
+
   // Id of the primary session, i.e. the first user session.
   static const SessionId kPrimarySessionId = 1;
 
@@ -106,8 +120,6 @@ class SESSION_EXPORT SessionManager {
   std::vector<Session> sessions_;
 
   base::ObserverList<SessionManagerObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionManager);
 };
 
 }  // namespace session_manager

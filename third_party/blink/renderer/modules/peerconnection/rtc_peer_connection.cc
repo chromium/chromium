@@ -249,24 +249,6 @@ SdpSemanticRequested GetSdpSemanticRequested(
   return kSdpSemanticRequestedDefault;
 }
 
-enum class OfferExtmapAllowMixedSetting {
-  kDefault,
-  kEnabled,
-  kDisabled,
-  kMaxValue = kDisabled
-};
-
-OfferExtmapAllowMixedSetting GetOfferExtmapAllowMixedSetting(
-    const blink::RTCConfiguration* configuration) {
-  if (!configuration->hasOfferExtmapAllowMixed()) {
-    return OfferExtmapAllowMixedSetting::kDefault;
-  }
-
-  return configuration->offerExtmapAllowMixed()
-             ? OfferExtmapAllowMixedSetting::kEnabled
-             : OfferExtmapAllowMixedSetting::kDisabled;
-}
-
 webrtc::PeerConnectionInterface::IceTransportsType IceTransportPolicyFromString(
     const String& policy) {
   if (policy == "relay")
@@ -367,20 +349,6 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
     } else {
       web_configuration.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
     }
-  }
-
-  if (configuration->hasOfferExtmapAllowMixed()) {
-    web_configuration.offer_extmap_allow_mixed =
-        configuration->offerExtmapAllowMixed();
-    if (!web_configuration.offer_extmap_allow_mixed) {
-      // Only show a deprecation warning when set to false. The default
-      // is "true" as of M91.
-      Deprecation::CountDeprecation(
-          context, WebFeature::kRTCPeerConnectionOfferAllowExtmapMixedFalse);
-    }
-  } else {
-    web_configuration.offer_extmap_allow_mixed =
-        base::FeatureList::IsEnabled(features::kRTCOfferExtmapAllowMixed);
   }
 
   if (configuration->hasIceServers()) {
@@ -790,9 +758,6 @@ RTCPeerConnection* RTCPeerConnection::Create(
                       WebFeature::kRTCPeerConnectionConstructedWithUnifiedPlan);
   }
 
-  UMA_HISTOGRAM_ENUMERATION("WebRTC.PeerConnection.OfferExtmapAllowMixed",
-                            GetOfferExtmapAllowMixedSetting(rtc_configuration));
-
   return peer_connection;
 }
 
@@ -907,7 +872,7 @@ void RTCPeerConnection::Dispose() {
   // Promptly clears the handler's pointer to |this|
   // so that content/ doesn't access it in a lazy sweeping phase.
   if (peer_handler_) {
-    peer_handler_->StopAndUnregister();
+    peer_handler_->CloseAndUnregister();
   }
 }
 
@@ -1463,17 +1428,22 @@ ScriptPromise RTCPeerConnection::setLocalDescription(
   String sdp = session_description_init->sdp();
   // https://w3c.github.io/webrtc-pc/#dom-peerconnection-setlocaldescription
   // step 4.4 and 4.5: If SDP is empty, return the last created offer or answer.
-  if (sdp.IsNull() || sdp.IsEmpty()) {
-    if (session_description_init->type() == "offer") {
-      sdp = last_offer_;
-    } else if (session_description_init->type() == "answer" ||
-               session_description_init->type() == "pranswer") {
-      sdp = last_answer_;
+  if (sdp.IsEmpty()) {
+    switch (session_description_init->type().AsEnum()) {
+      case V8RTCSdpType::Enum::kOffer:
+        sdp = last_offer_;
+        break;
+      case V8RTCSdpType::Enum::kPranswer:
+      case V8RTCSdpType::Enum::kAnswer:
+        sdp = last_answer_;
+        break;
+      case V8RTCSdpType::Enum::kRollback:
+        break;
     }
   }
   ParsedSessionDescription parsed_sdp =
       ParsedSessionDescription::Parse(session_description_init->type(), sdp);
-  if (session_description_init->type() != "rollback") {
+  if (session_description_init->type() != V8RTCSdpType::Enum::kRollback) {
     RecordSdpCategoryAndMaybeEmitWarnings(parsed_sdp);
     ReportSetSdpUsage(SetSdpOperationType::kSetLocalDescription, parsed_sdp);
 
@@ -1517,17 +1487,26 @@ ScriptPromise RTCPeerConnection::setLocalDescription(
   String sdp = session_description_init->sdp();
   // https://w3c.github.io/webrtc-pc/#dom-peerconnection-setlocaldescription
   // step 4.4 and 4.5: If SDP is empty, return the last created offer or answer.
-  if (sdp.IsNull() || sdp.IsEmpty()) {
-    if (session_description_init->type() == "offer") {
-      sdp = last_offer_;
-    } else if (session_description_init->type() == "answer" ||
-               session_description_init->type() == "pranswer") {
-      sdp = last_answer_;
+  if (sdp.IsEmpty() && session_description_init->hasType()) {
+    switch (session_description_init->type().AsEnum()) {
+      case V8RTCSdpType::Enum::kOffer:
+        sdp = last_offer_;
+        break;
+      case V8RTCSdpType::Enum::kPranswer:
+      case V8RTCSdpType::Enum::kAnswer:
+        sdp = last_answer_;
+        break;
+      case V8RTCSdpType::Enum::kRollback:
+        break;
     }
   }
-  ParsedSessionDescription parsed_sdp =
-      ParsedSessionDescription::Parse(session_description_init->type(), sdp);
-  if (session_description_init->type() != "rollback") {
+  ParsedSessionDescription parsed_sdp = ParsedSessionDescription::Parse(
+      session_description_init->hasType()
+          ? session_description_init->type().AsString()
+          : String(),
+      sdp);
+  if (!session_description_init->hasType() ||
+      session_description_init->type() != V8RTCSdpType::Enum::kRollback) {
     RecordSdpCategoryAndMaybeEmitWarnings(parsed_sdp);
     ReportSetSdpUsage(SetSdpOperationType::kSetLocalDescription, parsed_sdp);
   }
@@ -1549,7 +1528,8 @@ ScriptPromise RTCPeerConnection::setLocalDescription(
           WebFeature::
               kRTCPeerConnectionSetLocalDescriptionLegacyNoFailureCallback);
   }
-  if (session_description_init->type() != "rollback") {
+  if (!session_description_init->hasType() ||
+      session_description_init->type() != V8RTCSdpType::Enum::kRollback) {
     DOMException* exception = checkSdpForStateErrors(context, parsed_sdp);
     if (exception) {
       if (error_callback)
@@ -1595,8 +1575,7 @@ ScriptPromise RTCPeerConnection::setRemoteDescription(
   ParsedSessionDescription parsed_sdp =
       ParsedSessionDescription::Parse(session_description_init);
   if (!session_description_init->hasType() ||
-      session_description_init->type().AsEnum() !=
-          V8RTCSdpType::Enum::kRollback) {
+      session_description_init->type() != V8RTCSdpType::Enum::kRollback) {
     RecordSdpCategoryAndMaybeEmitWarnings(parsed_sdp);
     ReportSetSdpUsage(SetSdpOperationType::kSetRemoteDescription, parsed_sdp);
   }
@@ -1616,7 +1595,6 @@ ScriptPromise RTCPeerConnection::setRemoteDescription(
   NoteCallSetupStateEventPending(SetSdpOperationType::kSetRemoteDescription,
                                  *session_description_init);
   if (ContainsLegacyRtpDataChannel(session_description_init->sdp())) {
-    ExecutionContext* context = ExecutionContext::From(script_state);
     UseCounter::Count(context, WebFeature::kRTCLegacyRtpDataChannelNegotiated);
   }
 
@@ -1646,7 +1624,8 @@ ScriptPromise RTCPeerConnection::setRemoteDescription(
   DCHECK(script_state->ContextIsValid());
   ParsedSessionDescription parsed_sdp =
       ParsedSessionDescription::Parse(session_description_init);
-  if (session_description_init->type() != "rollback") {
+  if (!session_description_init->hasType() ||
+      session_description_init->type() != V8RTCSdpType::Enum::kRollback) {
     RecordSdpCategoryAndMaybeEmitWarnings(parsed_sdp);
     ReportSetSdpUsage(SetSdpOperationType::kSetRemoteDescription, parsed_sdp);
   }
@@ -2687,9 +2666,14 @@ RTCDataChannel* RTCPeerConnection::createDataChannel(
   return channel;
 }
 
-MediaStreamTrack* RTCPeerConnection::GetTrack(
+MediaStreamTrack* RTCPeerConnection::GetTrackForTesting(
     MediaStreamComponent* component) const {
-  return tracks_.at(component);
+  auto it = tracks_.find(component);
+  if (it != tracks_.end()) {
+    return it->value;
+  } else {
+    return nullptr;
+  }
 }
 
 RTCRtpSender* RTCPeerConnection::FindSenderForTrackAndStream(
@@ -3450,7 +3434,7 @@ void RTCPeerConnection::UnregisterPeerConnectionHandler() {
   ice_connection_state_ = webrtc::PeerConnectionInterface::kIceConnectionClosed;
   signaling_state_ = webrtc::PeerConnectionInterface::SignalingState::kClosed;
 
-  peer_handler_->StopAndUnregister();
+  peer_handler_->CloseAndUnregister();
   dispatch_scheduled_events_task_handle_.Cancel();
   scheduled_events_.clear();
   feature_handle_for_scheduler_.reset();
@@ -3635,7 +3619,7 @@ bool RTCPeerConnection::SetPeerConnectionState(
 void RTCPeerConnection::CloseInternal() {
   DCHECK(signaling_state_ !=
          webrtc::PeerConnectionInterface::SignalingState::kClosed);
-  peer_handler_->Stop();
+  peer_handler_->Close();
   closed_ = true;
 
   ChangeIceConnectionState(

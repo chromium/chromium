@@ -8,7 +8,6 @@
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "components/exo/shell_surface_base.h"
 #include "ui/base/ui_base_types.h"
 
@@ -34,6 +33,10 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
                bool can_minimize,
                int container);
   explicit ShellSurface(Surface* surface);
+
+  ShellSurface(const ShellSurface&) = delete;
+  ShellSurface& operator=(const ShellSurface&) = delete;
+
   ~ShellSurface() override;
 
   // Set the callback to run when the client is asked to configure the surface.
@@ -131,6 +134,10 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   class ScopedConfigure {
    public:
     ScopedConfigure(ShellSurface* shell_surface, bool force_configure);
+
+    ScopedConfigure(const ScopedConfigure&) = delete;
+    ScopedConfigure& operator=(const ScopedConfigure&) = delete;
+
     ~ScopedConfigure();
 
     void set_needs_configure() { needs_configure_ = true; }
@@ -139,8 +146,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
     ShellSurface* const shell_surface_;
     const bool force_configure_;
     bool needs_configure_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedConfigure);
   };
 
   // Set the parent window of this surface.
@@ -172,8 +177,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   int pending_resize_component_ = HTCAPTION;
   ui::WindowShowState initial_show_state_ = ui::SHOW_STATE_DEFAULT;
   bool ignore_window_bounds_changes_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellSurface);
 };
 
 }  // namespace exo

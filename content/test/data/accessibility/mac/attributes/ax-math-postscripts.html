@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!--
+@SCRIPT:
+  multiscripts1.AXMathPostscripts.count
+  multiscripts1.AXMathPostscripts[0].AXMathSubscript.AXChildren[0].AXValue
+  multiscripts1.AXMathPostscripts[0].AXMathSuperscript.AXChildren[0].AXValue
+  multiscripts1.AXMathPostscripts[1].AXMathSubscript.AXChildren[0].AXValue
+  multiscripts1.AXMathPostscripts[1].AXMathSuperscript.AXChildren[0].AXValue
+  multiscripts1.AXMathPostscripts[2].AXMathSubscript.AXChildren[0].AXValue
+  multiscripts1.AXMathPostscripts[2].AXMathSuperscript.AXChildren[0].AXValue
+
+@SCRIPT:
+  multiscripts2.AXMathPostscripts.count
+  multiscripts2.AXMathPostscripts[0].AXMathSubscript.AXChildren[0].AXValue
+  multiscripts2.AXMathPostscripts[0].AXMathSuperscript.AXChildren.count
+  multiscripts2.AXMathPostscripts[1].AXMathSubscript.AXChildren.count
+  multiscripts2.AXMathPostscripts[1].AXMathSuperscript.AXChildren[0].AXValue
+
+@SCRIPT:
+  multiscripts3.AXMathPostscripts.count
+  multiscripts3.AXMathPostscripts[0].AXMathSubscript.AXChildren[0].AXValue
+  multiscripts3.AXMathPostscripts[0].AXMathSuperscript.AXChildren[0].AXValue
+
+@SCRIPT:
+  multiscripts4.AXMathPostscripts
+-->
+<math>
+  <mmultiscripts id="multiscripts1">
+    <mtext>base</mtext>
+    <mtext>post1</mtext>
+    <mtext>post2</mtext>
+    <mtext>post3</mtext>
+    <mtext>post4</mtext>
+    <mtext>post5</mtext>
+    <mtext>post6</mtext>
+    <mprescripts/>
+    <mtext>pre1</mtext>
+    <mtext>pre2</mtext>
+    <mtext>pre3</mtext>
+    <mtext>pre4</mtext>
+    <mtext>pre5</mtext>
+    <mtext>pre6</mtext>
+  </mmultiscripts>
+  <mmultiscripts id="multiscripts2">
+    <mtext>base</mtext>
+    <mtext>post1</mtext>
+    <none/>
+    <none/>
+    <mtext>post4</mtext>
+    <mprescripts/>
+    <mtext>pre1</mtext>
+    <none/>
+    <none/>
+    <mtext>pre4</mtext>
+  </mmultiscripts>
+  <mmultiscripts id="multiscripts3">
+    <mtext>base</mtext>
+    <mn>1</mn>
+    <mn>2</mn>
+  </mmultiscripts>
+  <mmultiscripts id="multiscripts4">
+    <mtext>base</mtext>
+    <mprescripts/>
+    <mn>1</mn>
+    <mn>2</mn>
+  </mmultiscripts>
+</math>

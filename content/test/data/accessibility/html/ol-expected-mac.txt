@@ -2,26 +2,20 @@ AXWebArea
 ++AXList
 ++++AXGroup
 ++++++AXListMarker AXValue='1. '
-++++++++AXStaticText AXValue='1. '
 ++++++AXStaticText AXValue='Chrome'
 ++++AXGroup
 ++++++AXListMarker AXValue='2. '
-++++++++AXStaticText AXValue='2. '
 ++++++AXStaticText AXValue='Safari'
 ++++AXGroup
 ++++++AXListMarker AXValue='3. '
-++++++++AXStaticText AXValue='3. '
 ++++++AXStaticText AXValue='IE'
 ++AXList
 ++++AXGroup
 ++++++AXListMarker AXValue='10. '
-++++++++AXStaticText AXValue='10. '
 ++++++AXStaticText AXValue='Android'
 ++++AXGroup
 ++++++AXListMarker AXValue='11. '
-++++++++AXStaticText AXValue='11. '
 ++++++AXStaticText AXValue='Mac'
 ++++AXGroup
 ++++++AXListMarker AXValue='12. '
-++++++++AXStaticText AXValue='12. '
 ++++++AXStaticText AXValue='Windows'

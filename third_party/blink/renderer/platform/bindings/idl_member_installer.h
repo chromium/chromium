@@ -159,9 +159,9 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
       base::span<const NoAllocDirectCallOperationConfig> configs);
 
   // Global property reference
-  // https://heycam.github.io/webidl/#define-the-global-property-references
+  // https://webidl.spec.whatwg.org/#define-the-global-property-references
   // [LegacyNamespace]
-  // https://heycam.github.io/webidl/#LegacyNamespace
+  // https://webidl.spec.whatwg.org/#LegacyNamespace
   struct ExposedConstructConfig {
     ExposedConstructConfig& operator=(const ExposedConstructConfig&) = delete;
 

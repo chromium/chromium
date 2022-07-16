@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that renaming a selector updates element styles. Bug 70018. https://bugs.webkit.org/show_bug.cgi?id=70018\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -25,9 +25,9 @@
     await ElementsTestRunner.dumpSelectedElementStyles(true);
     var section = ElementsTestRunner.firstMatchedStyleSection();
     section.startEditingSelector();
-    section._selectorElement.textContent = 'hr, #inspected ';
+    section.selectorElement.textContent = 'hr, #inspected ';
     ElementsTestRunner.waitForSelectorCommitted(step2);
-    section._selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+    section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
   }
 
   async function step2() {
@@ -35,9 +35,9 @@
     await ElementsTestRunner.dumpSelectedElementStyles(true);
     var section = ElementsTestRunner.firstMatchedStyleSection();
     section.startEditingSelector();
-    section._selectorElement.textContent = '#inspectedChanged';
+    section.selectorElement.textContent = '#inspectedChanged';
     ElementsTestRunner.waitForSelectorCommitted(step3);
-    section._selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+    section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
   }
 
   async function step3() {

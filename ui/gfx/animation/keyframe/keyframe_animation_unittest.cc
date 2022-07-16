@@ -9,8 +9,7 @@
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/animation/keyframe/test/animation_utils.h"
-#include "ui/gfx/geometry/test/size_test_util.h"
-#include "ui/gfx/test/gfx_util.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace gfx {
 
@@ -545,7 +544,7 @@ TEST(KeyframeAnimationTest, BoundsTransitions) {
 
   animator.TransitionSizeTo(&target, start_time, kBoundsPropertyId, from, to);
 
-  EXPECT_FLOAT_SIZE_EQ(from, target.size());
+  EXPECT_SIZEF_EQ(from, target.size());
   animator.Tick(start_time);
 
   // Scheduling a redundant, approximately equal transition should be ignored.
@@ -563,7 +562,7 @@ TEST(KeyframeAnimationTest, BoundsTransitions) {
   EXPECT_GT(to.height(), target.size().height());
 
   animator.Tick(start_time + MicrosecondsToDelta(10000));
-  EXPECT_FLOAT_SIZE_EQ(to, target.size());
+  EXPECT_SIZEF_EQ(to, target.size());
 }
 
 TEST(KeyframeAnimationTest, RetargetSizeTransition) {
@@ -588,7 +587,7 @@ TEST(KeyframeAnimationTest, RetargetSizeTransition) {
   EXPECT_EQ(from, target.size());
   animator.Tick(start_time + MicrosecondsToDelta(5000));
 
-  EXPECT_FLOAT_SIZE_EQ(SizeF(6, 12), target.size());
+  EXPECT_SIZEF_EQ(SizeF(6, 12), target.size());
 
   SizeF new_to(600, 1200);
 
@@ -596,10 +595,10 @@ TEST(KeyframeAnimationTest, RetargetSizeTransition) {
       ->Retarget(start_time + MicrosecondsToDelta(5000), kRectPropertyId,
                  new_to);
   animator.Tick(start_time + MicrosecondsToDelta(5000));
-  EXPECT_FLOAT_SIZE_EQ(SizeF(6, 12), target.size());
+  EXPECT_SIZEF_EQ(SizeF(6, 12), target.size());
 
   animator.Tick(start_time + MicrosecondsToDelta(7500));
-  EXPECT_FLOAT_SIZE_EQ(SizeF(303, 606), target.size());
+  EXPECT_SIZEF_EQ(SizeF(303, 606), target.size());
 }
 
 TEST(KeyframeAnimationTest, ReversedBoundsTransitions) {
@@ -617,7 +616,7 @@ TEST(KeyframeAnimationTest, ReversedBoundsTransitions) {
 
   animator.TransitionSizeTo(&target, start_time, kBoundsPropertyId, from, to);
 
-  EXPECT_FLOAT_SIZE_EQ(from, target.size());
+  EXPECT_SIZEF_EQ(from, target.size());
   animator.Tick(start_time);
 
   animator.Tick(start_time + MicrosecondsToDelta(1000));
@@ -630,10 +629,10 @@ TEST(KeyframeAnimationTest, ReversedBoundsTransitions) {
   animator.TransitionSizeTo(&target, start_time + MicrosecondsToDelta(1000),
                             kBoundsPropertyId, target.size(), from);
   animator.Tick(start_time + MicrosecondsToDelta(1000));
-  EXPECT_FLOAT_SIZE_EQ(value_before_reversing, target.size());
+  EXPECT_SIZEF_EQ(value_before_reversing, target.size());
 
   animator.Tick(start_time + MicrosecondsToDelta(2000));
-  EXPECT_FLOAT_SIZE_EQ(from, target.size());
+  EXPECT_SIZEF_EQ(from, target.size());
 }
 
 TEST(KeyframeAnimationTest, BackgroundColorTransitions) {

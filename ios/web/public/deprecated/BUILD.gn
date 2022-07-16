@@ -37,15 +37,6 @@ source_set("deprecated_web_util") {
   ]
 }
 
-source_set("deprecated_navigation_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
-  sources = [
-    "navigation_item_list.h",
-    "navigation_item_list.mm",
-  ]
-}
-
 source_set("test_doubles") {
   configs += [ "//build/config/compiler:enable_arc" ]
 

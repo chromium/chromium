@@ -1,13 +1,13 @@
 [document web]
-++[landmark]
+++[landmark] xml-roles:banner
 ++++[static] name='This is a header element.'
 ++[landmark] xml-roles:complementary
 ++++[static] name='This is an aside element.'
 ++[section]
 ++++[static] name='This is an address element.'
-++[landmark]
+++[landmark] xml-roles:contentinfo
 ++++[static] name='This is a footer element.'
-++[form] xml-roles:form
+++[section]
 ++++[static] name='This is a form element.'
 ++[landmark] xml-roles:main
 ++++[static] name='This is a main element.'

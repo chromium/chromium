@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"

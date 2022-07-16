@@ -38,6 +38,10 @@ class ProducerHost : public tracing::mojom::ProducerHost,
                      public perfetto::Producer {
  public:
   explicit ProducerHost(base::tracing::PerfettoTaskRunner*);
+
+  ProducerHost(const ProducerHost&) = delete;
+  ProducerHost& operator=(const ProducerHost&) = delete;
+
   ~ProducerHost() override;
 
   // Keep in sync with tools/metrics/histograms/enums.xml. These values are
@@ -113,8 +117,6 @@ class ProducerHost : public tracing::mojom::ProducerHost,
   // immediately after |producer_endpoint_| is destroyed.
   std::unique_ptr<perfetto::TracingService::ProducerEndpoint>
       producer_endpoint_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProducerHost);
 };
 
 }  // namespace tracing

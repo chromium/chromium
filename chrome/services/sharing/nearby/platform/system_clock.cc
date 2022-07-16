@@ -50,7 +50,7 @@ absl::Time SystemClock::ElapsedRealtime() {
   base::TimeDelta time_difference =
       base::Time::FromCFAbsoluteTime(CFAbsoluteTimeGetCurrent()) -
       (base::Time::FromTimeT(boottime.tv_sec) +
-       base::TimeDelta::FromMicroseconds(boottime.tv_usec));
+       base::Microseconds(boottime.tv_usec));
   return absl::FromUnixMicros(time_difference.InMicroseconds());
 #elif defined(OS_POSIX)
   // SystemClock::ElapsedRealtime() must provide monotonically increasing time,
@@ -69,7 +69,7 @@ absl::Time SystemClock::ElapsedRealtime() {
 
 Exception SystemClock::Sleep(absl::Duration duration) {
   base::PlatformThread::Sleep(
-      base::TimeDelta::FromMicroseconds(absl::ToInt64Microseconds(duration)));
+      base::Microseconds(absl::ToInt64Microseconds(duration)));
   return {Exception::kSuccess};
 }
 

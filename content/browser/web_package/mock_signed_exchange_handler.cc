@@ -31,8 +31,7 @@ MockSignedExchangeHandlerParams::MockSignedExchangeHandlerParams(
       response_headers(std::move(response_headers)),
       header_integrity(header_integrity),
       signature_expire_time(signature_expire_time.is_null()
-                                ? base::Time::Now() +
-                                      base::TimeDelta::FromDays(1)
+                                ? base::Time::Now() + base::Days(1)
                                 : signature_expire_time) {}
 
 MockSignedExchangeHandlerParams::MockSignedExchangeHandlerParams(

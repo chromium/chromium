@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 
 /**
@@ -36,6 +28,7 @@ goog.provide('goog.graphics.Stroke');
  *     http://en.wikipedia.org/wiki/Canvas_element for details.
  */
 goog.graphics.Stroke = function(width, color, opt_opacity) {
+  'use strict';
   /**
    * The width of the stroke.
    * @type {number|string}
@@ -65,6 +58,7 @@ goog.graphics.Stroke = function(width, color, opt_opacity) {
  * @return {number|string} The width of this stroke.
  */
 goog.graphics.Stroke.prototype.getWidth = function() {
+  'use strict';
   return this.width_;
 };
 
@@ -73,6 +67,7 @@ goog.graphics.Stroke.prototype.getWidth = function() {
  * @return {string} The color of this stroke.
  */
 goog.graphics.Stroke.prototype.getColor = function() {
+  'use strict';
   return this.color_;
 };
 
@@ -81,5 +76,6 @@ goog.graphics.Stroke.prototype.getColor = function() {
  * @return {number} The opacity of this fill.
  */
 goog.graphics.Stroke.prototype.getOpacity = function() {
+  'use strict';
   return this.opacity_;
 };

@@ -23,12 +23,6 @@ class DisplayHighlightControllerTest : public AshTestBase {
     return Shell::Get()->display_highlight_controller();
   }
 
-  // AshTestBase:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kDisplayIdentification);
-    AshTestBase::SetUp();
-  }
-
   void ExpectNoHighlight() {
     EXPECT_EQ(display_highlight_controller()->GetWidgetForTesting(), nullptr);
   }
@@ -47,9 +41,6 @@ class DisplayHighlightControllerTest : public AshTestBase {
     EXPECT_EQ(widget->GetWindowBoundsInScreen(), target.bounds());
     EXPECT_TRUE(widget->IsVisible());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(DisplayHighlightControllerTest, OnDisplayChangedNoDisplaySelected) {

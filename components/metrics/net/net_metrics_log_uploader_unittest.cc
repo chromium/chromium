@@ -8,7 +8,6 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -37,6 +36,10 @@ class NetMetricsLogUploaderTest : public testing::Test {
           loop_.Quit();
         }));
   }
+
+  NetMetricsLogUploaderTest(const NetMetricsLogUploaderTest&) = delete;
+  NetMetricsLogUploaderTest& operator=(const NetMetricsLogUploaderTest&) =
+      delete;
 
   void CreateAndOnUploadCompleteReuseUploader() {
     ReportingInfo reporting_info;
@@ -120,8 +123,6 @@ class NetMetricsLogUploaderTest : public testing::Test {
   base::RunLoop loop_;
   std::string upload_data_;
   net::HttpRequestHeaders headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetMetricsLogUploaderTest);
 };
 
 void CheckReportingInfoHeader(net::HttpRequestHeaders headers,

@@ -16,6 +16,12 @@ namespace extensions {
 class DefaultShellBrowserMainDelegate : public ShellBrowserMainDelegate {
  public:
   DefaultShellBrowserMainDelegate();
+
+  DefaultShellBrowserMainDelegate(const DefaultShellBrowserMainDelegate&) =
+      delete;
+  DefaultShellBrowserMainDelegate& operator=(
+      const DefaultShellBrowserMainDelegate&) = delete;
+
   ~DefaultShellBrowserMainDelegate() override;
 
   // ShellBrowserMainDelegate:
@@ -23,9 +29,6 @@ class DefaultShellBrowserMainDelegate : public ShellBrowserMainDelegate {
   void Shutdown() override;
   DesktopController* CreateDesktopController(
       content::BrowserContext* context) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultShellBrowserMainDelegate);
 };
 
 }  // namespace extensions

@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
@@ -44,6 +43,9 @@ using EmbedderConditionsMatcher =
 class UrlPatternIndexTest : public ::testing::Test {
  public:
   UrlPatternIndexTest() { Reset(); }
+
+  UrlPatternIndexTest(const UrlPatternIndexTest&) = delete;
+  UrlPatternIndexTest& operator=(const UrlPatternIndexTest&) = delete;
 
  protected:
   bool AddUrlRule(const proto::UrlRule& rule) {
@@ -179,8 +181,6 @@ class UrlPatternIndexTest : public ::testing::Test {
   std::unique_ptr<UrlPatternIndexMatcher> index_matcher_;
 
   FlatDomainMap domain_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlPatternIndexTest);
 };
 
 TEST_F(UrlPatternIndexTest, EmptyIndex) {

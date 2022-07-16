@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.support.test.InstrumentationRegistry;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -26,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.components.browser_ui.widget.R;
 
 /**
  * Tests the utility methods for highlighting of a view.
@@ -44,7 +46,8 @@ public class ViewHighlighterTest {
 
     @Before
     public void setUp() {
-        mContext = InstrumentationRegistry.getTargetContext();
+        mContext = new ContextThemeWrapper(
+                InstrumentationRegistry.getTargetContext(), R.style.Theme_BrowserUI_DayNight);
         MockitoAnnotations.initMocks(this);
     }
 

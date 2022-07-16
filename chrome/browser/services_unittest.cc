@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "components/services/patch/content/patch_service.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
@@ -23,6 +22,9 @@ class ServicesTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::MainThreadType::IO) {
   }
 
+  ServicesTest(const ServicesTest&) = delete;
+  ServicesTest& operator=(const ServicesTest&) = delete;
+
   template <typename Interface>
   bool IsConnected(mojo::Remote<Interface>* remote) {
     bool connected = true;
@@ -35,8 +37,6 @@ class ServicesTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServicesTest);
 };
 
 }  // namespace

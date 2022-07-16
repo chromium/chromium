@@ -34,10 +34,11 @@ TEST_F(AlertViewControllerTest, DeallocWithActions) {
   __weak AlertViewController* weakAlert = nil;
   @autoreleasepool {
     AlertViewController* alert = [[AlertViewController alloc] init];
-    AlertAction* action = [AlertAction actionWithTitle:@"OK"
-                                                 style:UIAlertActionStyleDefault
-                                               handler:^(AlertAction* action){
-                                               }];
+    AlertAction* action =
+        [AlertAction actionWithTitle:@"OK"
+                               style:UIAlertActionStyleDefault
+                             handler:^(AlertAction* alert_action){
+                             }];
     [alert setActions:@[ action ]];
     weakAlert = alert;
   }

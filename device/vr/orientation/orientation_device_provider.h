@@ -23,6 +23,11 @@ class COMPONENT_EXPORT(VR_ORIENTATION) VROrientationDeviceProvider
  public:
   explicit VROrientationDeviceProvider(
       mojo::PendingRemote<device::mojom::SensorProvider> sensor_provider);
+
+  VROrientationDeviceProvider(const VROrientationDeviceProvider&) = delete;
+  VROrientationDeviceProvider& operator=(const VROrientationDeviceProvider&) =
+      delete;
+
   ~VROrientationDeviceProvider() override;
 
   void Initialize(
@@ -52,8 +57,6 @@ class COMPONENT_EXPORT(VR_ORIENTATION) VROrientationDeviceProvider
                                mojo::PendingRemote<mojom::XRRuntime>)>
       add_device_callback_;
   base::OnceClosure initialized_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(VROrientationDeviceProvider);
 };
 
 }  // namespace device

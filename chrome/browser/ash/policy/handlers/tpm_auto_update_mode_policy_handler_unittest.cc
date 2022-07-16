@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -13,14 +14,13 @@
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/chromeos/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -52,10 +52,10 @@ class TPMAutoUpdateModePolicyHandlerTest : public testing::Test {
 
   void SetAutoUpdateMode(AutoUpdateMode auto_update_mode) {
     base::DictionaryValue dict;
-    dict.SetKey(chromeos::tpm_firmware_update::kSettingsKeyAutoUpdateMode,
+    dict.SetKey(ash::tpm_firmware_update::kSettingsKeyAutoUpdateMode,
                 base::Value(static_cast<int>(auto_update_mode)));
     scoped_testing_cros_settings_.device_settings()->Set(
-        chromeos::kTPMFirmwareUpdateSettings, dict);
+        ash::kTPMFirmwareUpdateSettings, dict);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -195,7 +195,7 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest,
   update_available_ = true;
 
   // First notification was shwed more than 24 hours ago.
-  base::Time yesterday = base::Time::Now() - base::TimeDelta::FromHours(25);
+  base::Time yesterday = base::Time::Now() - base::Hours(25);
   local_state_.Get()->SetInt64(
       prefs::kTPMUpdatePlannedNotificationShownTime,
       yesterday.ToDeltaSinceWindowsEpoch().InSeconds());

@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
@@ -42,6 +41,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticator
 
   static scoped_refptr<ExtendedAuthenticator> Create(
       AuthStatusConsumer* consumer);
+
+  ExtendedAuthenticator(const ExtendedAuthenticator&) = delete;
+  ExtendedAuthenticator& operator=(const ExtendedAuthenticator&) = delete;
 
   // Updates consumer of the class.
   virtual void SetConsumer(AuthStatusConsumer* consumer) = 0;
@@ -100,8 +102,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticator
 
  private:
   friend class base::RefCountedThreadSafe<ExtendedAuthenticator>;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtendedAuthenticator);
 };
 
 }  // namespace chromeos

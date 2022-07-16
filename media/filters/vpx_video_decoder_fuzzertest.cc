@@ -64,11 +64,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   bool has_alpha = false;
   if (rng() & 1) {
-    codec = media::kCodecVP8;
+    codec = media::VideoCodec::kVP8;
     // non-Alpha VP8 decoding isn't supported by VpxVideoDecoder on Linux.
     has_alpha = true;
   } else {
-    codec = media::kCodecVP9;
+    codec = media::VideoCodec::kVP9;
     has_alpha = rng() & 1;
   }
 

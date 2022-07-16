@@ -12,7 +12,7 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_generation_provider.h"
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
@@ -68,7 +68,7 @@ BOOL AreCredentialsAtIndexesConnected(
                                           ManualFillContentInjector,
                                           PasswordFetcherDelegate> {
   // The interface for getting and manipulating a user's saved passwords.
-  scoped_refptr<password_manager::PasswordStore> _passwordStore;
+  scoped_refptr<password_manager::PasswordStoreInterface> _passwordStore;
 }
 
 // The password fetcher to query the user profile.
@@ -108,7 +108,7 @@ BOOL AreCredentialsAtIndexesConnected(
 }
 
 - (instancetype)initWithPasswordStore:
-                    (scoped_refptr<password_manager::PasswordStore>)
+                    (scoped_refptr<password_manager::PasswordStoreInterface>)
                         passwordStore
                         faviconLoader:(FaviconLoader*)faviconLoader
                              webState:(web::WebState*)webState

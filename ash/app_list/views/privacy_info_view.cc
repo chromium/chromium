@@ -104,9 +104,9 @@ void PrivacyInfoView::OnPaintBackground(gfx::Canvas* canvas) {
     const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(SkColorSetA(
-        color_provider->GetRippleAttributesBaseColor(bg_color),
-        color_provider->GetRippleAttributesHighlightOpacity(bg_color) * 255));
+    flags.setColor(
+        SkColorSetA(color_provider->GetInkDropBaseColor(bg_color),
+                    color_provider->GetInkDropOpacity(bg_color) * 255));
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawCircle(close_button_->bounds().CenterPoint(),
                        close_button_->width() / 2, flags);

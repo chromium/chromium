@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -34,6 +33,9 @@ ManageAccountsParams::ManageAccountsParams() = default;
 
 ManageAccountsParams::ManageAccountsParams(const ManageAccountsParams&) =
     default;
+
+ManageAccountsParams& ManageAccountsParams::operator=(
+    const ManageAccountsParams&) = default;
 
 // Trivial constructors and destructors.
 DiceResponseParams::DiceResponseParams() {}

@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apdu {
@@ -39,6 +38,10 @@ class COMPONENT_EXPORT(APDU) ApduResponse {
   ApduResponse(std::vector<uint8_t> data, Status response_status);
   ApduResponse(ApduResponse&& that);
   ApduResponse& operator=(ApduResponse&& that);
+
+  ApduResponse(const ApduResponse&) = delete;
+  ApduResponse& operator=(const ApduResponse&) = delete;
+
   ~ApduResponse();
 
   std::vector<uint8_t> GetEncodedResponse() const;
@@ -51,8 +54,6 @@ class COMPONENT_EXPORT(APDU) ApduResponse {
 
   std::vector<uint8_t> data_;
   Status response_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApduResponse);
 };
 
 }  // namespace apdu

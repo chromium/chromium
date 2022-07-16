@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview A color palette with a button for adding additional colors
@@ -25,6 +17,8 @@ goog.require('goog.dom.TagName');
 goog.require('goog.dom.classlist');
 goog.require('goog.ui.ColorPalette');
 goog.require('goog.ui.Component');
+goog.requireType('goog.events.Event');
+goog.requireType('goog.ui.PaletteRenderer');
 
 
 
@@ -43,6 +37,7 @@ goog.require('goog.ui.Component');
  * @final
  */
 goog.ui.CustomColorPalette = function(initColors, opt_renderer, opt_domHelper) {
+  'use strict';
   goog.ui.ColorPalette.call(this, initColors, opt_renderer, opt_domHelper);
   this.setSupportedState(goog.ui.Component.State.OPENED, true);
 };
@@ -55,6 +50,7 @@ goog.inherits(goog.ui.CustomColorPalette, goog.ui.ColorPalette);
  * @override
  */
 goog.ui.CustomColorPalette.prototype.createColorNodes = function() {
+  'use strict';
   /** @desc Hover caption for the button that allows the user to add a color. */
   var MSG_CLOSURE_CUSTOM_COLOR_BUTTON = goog.getMsg('Add a color');
 
@@ -76,6 +72,7 @@ goog.ui.CustomColorPalette.prototype.createColorNodes = function() {
  * @return {boolean} True if the action was allowed to proceed, false otherwise.
  */
 goog.ui.CustomColorPalette.prototype.performActionInternal = function(e) {
+  'use strict';
   var item = /** @type {Element} */ (this.getHighlightedItem());
   if (item) {
     if (goog.dom.classlist.contains(
@@ -97,6 +94,7 @@ goog.ui.CustomColorPalette.prototype.performActionInternal = function(e) {
  * but could be updated to use a dialog box with a WheelColorPalette.
  */
 goog.ui.CustomColorPalette.prototype.promptForCustomColor = function() {
+  'use strict';
   /** @desc Default custom color dialog. */
   var MSG_CLOSURE_CUSTOM_COLOR_PROMPT = goog.getMsg(
       'Input custom color, i.e. pink, #F00, #D015FF or rgb(100, 50, 25)');

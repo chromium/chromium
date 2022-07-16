@@ -11,12 +11,14 @@
 class TestMailtoHandlerProvider : public MailtoHandlerProvider {
  public:
   TestMailtoHandlerProvider();
+
+  TestMailtoHandlerProvider(const TestMailtoHandlerProvider&) = delete;
+  TestMailtoHandlerProvider& operator=(const TestMailtoHandlerProvider&) =
+      delete;
+
   ~TestMailtoHandlerProvider() override;
 
   NSString* MailtoHandlerSettingsTitle() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestMailtoHandlerProvider);
 };
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_MAILTO_TEST_MAILTO_HANDLER_PROVIDER_H_

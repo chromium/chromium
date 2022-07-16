@@ -52,7 +52,7 @@ bool IsDisableSiteIsolationForPolicyFlagPresent() {
 }
 #endif
 
-bool IsSiteIsolationDisabled() {
+bool IsSiteIsolationDisabled(SiteIsolationMode site_isolation_mode) {
   if (IsDisableSiteIsolationFlagPresent()) {
     return true;
   }
@@ -67,7 +67,8 @@ bool IsSiteIsolationDisabled() {
   // Check with the embedder.  In particular, chrome/ uses this to disable site
   // isolation when below a memory threshold.
   return GetContentClient() &&
-         GetContentClient()->browser()->ShouldDisableSiteIsolation();
+         GetContentClient()->browser()->ShouldDisableSiteIsolation(
+             site_isolation_mode);
 }
 
 }  // namespace
@@ -79,7 +80,7 @@ bool SiteIsolationPolicy::UseDedicatedProcessesForAllSites() {
     return true;
   }
 
-  if (IsSiteIsolationDisabled())
+  if (IsSiteIsolationDisabled(SiteIsolationMode::kStrictSiteIsolation))
     return false;
 
   // The switches above needs to be checked first, because if the
@@ -100,7 +101,7 @@ bool SiteIsolationPolicy::AreIsolatedOriginsEnabled() {
     return true;
   }
 
-  if (IsSiteIsolationDisabled())
+  if (IsSiteIsolationDisabled(SiteIsolationMode::kPartialSiteIsolation))
     return false;
 
   // The feature needs to be checked last, because checking the feature
@@ -123,7 +124,11 @@ bool SiteIsolationPolicy::IsStrictOriginIsolationEnabled() {
 
   // TODO(wjmaclean): Figure out what should happen when this feature is
   // combined with --isolate-origins.
-  if (IsSiteIsolationDisabled())
+  //
+  // TODO(alexmos): For now, use the same memory threshold for strict origin
+  // isolation and strict site isolation.  In the future, strict origin
+  // isolation may need its own memory threshold.
+  if (IsSiteIsolationDisabled(SiteIsolationMode::kStrictSiteIsolation))
     return false;
 
   // The feature needs to be checked last, because checking the feature
@@ -139,12 +144,12 @@ bool SiteIsolationPolicy::IsErrorPageIsolationEnabled(bool in_main_frame) {
 
 // static
 bool SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() {
-  return !IsSiteIsolationDisabled();
+  return !IsSiteIsolationDisabled(SiteIsolationMode::kPartialSiteIsolation);
 }
 
 // static
 bool SiteIsolationPolicy::ArePreloadedIsolatedOriginsEnabled() {
-  if (IsSiteIsolationDisabled())
+  if (IsSiteIsolationDisabled(SiteIsolationMode::kPartialSiteIsolation))
     return false;
 
   // Currently, preloaded isolated origins are redundant when full site
@@ -165,7 +170,7 @@ bool SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled() {
 
   // Otherwise, if site isolation is disabled (e.g., on Android due to being
   // under a memory threshold), turn off opt-in origin isolation.
-  if (IsSiteIsolationDisabled())
+  if (IsSiteIsolationDisabled(SiteIsolationMode::kPartialSiteIsolation))
     return false;
 
   return IsOriginAgentClusterEnabled();
@@ -227,7 +232,7 @@ std::string SiteIsolationPolicy::GetIsolatedOriginsFromFieldTrial() {
 
   // Check if site isolation modes are turned off (e.g., due to an opt-out
   // flag).
-  if (IsSiteIsolationDisabled())
+  if (IsSiteIsolationDisabled(SiteIsolationMode::kPartialSiteIsolation))
     return origins;
 
   // The feature needs to be checked after the opt-out, because checking the

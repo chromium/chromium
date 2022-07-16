@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -54,6 +53,10 @@ class TabUnderBlockerBrowserTest : public extensions::ExtensionBrowserTest {
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
 
+  TabUnderBlockerBrowserTest(const TabUnderBlockerBrowserTest&) = delete;
+  TabUnderBlockerBrowserTest& operator=(const TabUnderBlockerBrowserTest&) =
+      delete;
+
   ~TabUnderBlockerBrowserTest() override {}
 
   void SetUpOnMainThread() override {
@@ -91,13 +94,11 @@ class TabUnderBlockerBrowserTest : public extensions::ExtensionBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabUnderBlockerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest, SimpleTabUnder_IsBlocked) {
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
 
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
@@ -135,8 +136,8 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest, SimpleTabUnder_IsBlocked) {
 
 IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest,
                        RedirectAfterGesture_IsNotBlocked) {
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
 
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
@@ -174,8 +175,8 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest,
                        SpoofCtrlClickTabUnder_IsBlocked) {
   content::WebContents* opener =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/links.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/links.html")));
   const std::string cross_origin_url =
       embedded_test_server()->GetURL("a.com", "/title1.html").spec();
 
@@ -206,8 +207,8 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest,
                        ControlledByEnterprisePolicy) {
   // Allow tab-unders via enterprise policy, should disable tab-under blocking.
   UpdatePopupPolicy(CONTENT_SETTING_ALLOW);
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
   content::WebContents* opener =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -257,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest,
       LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
 
   const GURL extension_url = extension->GetResourceURL("file.html");
-  ui_test_utils::NavigateToURL(browser(), extension_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   content::WebContents* opener =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -282,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest, ControlledBySetting) {
   // Allow tab-unders via popup/redirect blocker settings, should disable
   // tab-under blocking.
   const GURL top_level_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), top_level_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), top_level_url));
   content::WebContents* opener =
       browser()->tab_strip_model()->GetActiveWebContents();
 

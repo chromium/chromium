@@ -18,17 +18,16 @@
 #include "chrome/browser/ash/arc/tracing/arc_value_event_trimmer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/power.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 
 namespace chromeos {
 
 namespace {
 
 // Maximum interval to display in tracing.
-constexpr base::TimeDelta kMaxIntervalToDisplay =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kMaxIntervalToDisplay = base::Minutes(5);
 
 // Names of throttling mode.
 constexpr char kThrottlingDisable[] = "disable";
@@ -126,22 +125,22 @@ ArcPowerControlHandler::~ArcPowerControlHandler() {
 }
 
 void ArcPowerControlHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "ready", base::BindRepeating(&ArcPowerControlHandler::HandleReady,
                                    base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setWakefulnessMode",
       base::BindRepeating(&ArcPowerControlHandler::HandleSetWakefulnessMode,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setThrottling",
       base::BindRepeating(&ArcPowerControlHandler::HandleSetThrottling,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "startTracing",
       base::BindRepeating(&ArcPowerControlHandler::HandleStartTracing,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "stopTracing",
       base::BindRepeating(&ArcPowerControlHandler::HandleStopTracing,
                           base::Unretained(this)));
@@ -205,7 +204,7 @@ void ArcPowerControlHandler::HandleReady(const base::ListValue* args) {
 
 void ArcPowerControlHandler::HandleSetWakefulnessMode(
     const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
 
   if (!power_control_enabled_) {
     LOG(ERROR) << "Power control is not enabled";
@@ -250,7 +249,7 @@ void ArcPowerControlHandler::HandleSetWakefulnessMode(
 }
 
 void ArcPowerControlHandler::HandleSetThrottling(const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
 
   if (!power_control_enabled_) {
     LOG(ERROR) << "Power control is not enabled";
@@ -279,12 +278,12 @@ void ArcPowerControlHandler::HandleSetThrottling(const base::ListValue* args) {
 }
 
 void ArcPowerControlHandler::HandleStartTracing(const base::ListValue* args) {
-  DCHECK(!args->GetSize());
+  DCHECK(!args->GetList().size());
   StartTracing();
 }
 
 void ArcPowerControlHandler::HandleStopTracing(const base::ListValue* args) {
-  DCHECK(!args->GetSize());
+  DCHECK(!args->GetList().size());
   StopTracing();
 }
 

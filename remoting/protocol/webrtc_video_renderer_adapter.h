@@ -40,6 +40,11 @@ class WebrtcVideoRendererAdapter
  public:
   WebrtcVideoRendererAdapter(const std::string& label,
                              VideoRenderer* video_renderer);
+
+  WebrtcVideoRendererAdapter(const WebrtcVideoRendererAdapter&) = delete;
+  WebrtcVideoRendererAdapter& operator=(const WebrtcVideoRendererAdapter&) =
+      delete;
+
   ~WebrtcVideoRendererAdapter() override;
 
   std::string label() const { return label_; }
@@ -81,8 +86,6 @@ class WebrtcVideoRendererAdapter
   std::list<std::pair<uint32_t, HostFrameStats>> host_stats_queue_;
 
   base::WeakPtrFactory<WebrtcVideoRendererAdapter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebrtcVideoRendererAdapter);
 };
 
 }  // namespace remoting

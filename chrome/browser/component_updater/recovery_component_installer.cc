@@ -158,7 +158,7 @@ std::unique_ptr<base::DictionaryValue> ReadManifest(
 
 void WaitForElevatedInstallToComplete(base::Process process) {
   int installer_exit_code = 0;
-  const base::TimeDelta kMaxWaitTime = base::TimeDelta::FromSeconds(600);
+  const base::TimeDelta kMaxWaitTime = base::Seconds(600);
   if (process.WaitForExitWithTimeout(kMaxWaitTime, &installer_exit_code)) {
     if (installer_exit_code == EXIT_CODE_RECOVERY_SUCCEEDED) {
       RecordRecoveryComponentUMAEvent(RCE_ELEVATED_SUCCEEDED);
@@ -347,7 +347,7 @@ void WaitForInstallToComplete(base::Process process,
                               const base::FilePath& installer_folder,
                               PrefService* prefs) {
   int installer_exit_code = 0;
-  const base::TimeDelta kMaxWaitTime = base::TimeDelta::FromSeconds(600);
+  const base::TimeDelta kMaxWaitTime = base::Seconds(600);
   if (process.WaitForExitWithTimeout(kMaxWaitTime, &installer_exit_code)) {
     if (installer_exit_code == EXIT_CODE_ELEVATION_NEEDED) {
       RecordRecoveryComponentUMAEvent(RCE_ELEVATION_NEEDED);
@@ -512,7 +512,7 @@ void RegisterRecoveryComponent(ComponentUpdateService* cus,
   // the critical path during browser startup.
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, base::BindOnce(&RecoveryRegisterHelper, cus, prefs),
-      base::TimeDelta::FromSeconds(6));
+      base::Seconds(6));
 #endif
 #endif
 }

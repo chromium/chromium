@@ -8,13 +8,12 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/process/process_handle.h"
 #include "base/types/pass_key.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/peer_connection_tracker_host_observer.h"
-#include "content/public/browser/render_document_host_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -36,11 +35,15 @@ class RenderFrameHost;
 // Note: This class and all of its methods are meant to only be used on the UI
 //       thread.
 class PeerConnectionTrackerHost
-    : public RenderDocumentHostUserData<PeerConnectionTrackerHost>,
+    : public DocumentUserData<PeerConnectionTrackerHost>,
       public base::PowerSuspendObserver,
       public base::PowerThermalObserver,
       public blink::mojom::PeerConnectionTrackerHost {
  public:
+  PeerConnectionTrackerHost(const PeerConnectionTrackerHost&) = delete;
+  PeerConnectionTrackerHost& operator=(const PeerConnectionTrackerHost&) =
+      delete;
+
   ~PeerConnectionTrackerHost() override;
 
   // Adds/removes a PeerConnectionTrackerHostObserver.
@@ -56,6 +59,7 @@ class PeerConnectionTrackerHost
   // base::PowerThermalObserver override.
   void OnThermalStateChange(
       base::PowerThermalObserver::DeviceThermalState new_state) override;
+  void OnSpeedLimitChange(int) override;
 
   // These methods call out to blink::mojom::PeerConnectionManager on renderer
   // side.
@@ -69,9 +73,9 @@ class PeerConnectionTrackerHost
           pending_receiver);
 
  private:
-  friend class RenderDocumentHostUserData<PeerConnectionTrackerHost>;
+  friend class DocumentUserData<PeerConnectionTrackerHost>;
   explicit PeerConnectionTrackerHost(RenderFrameHost* rfh);
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+  DOCUMENT_USER_DATA_KEY_DECL();
 
   // blink::mojom::PeerConnectionTrackerHost implementation.
   void AddPeerConnection(blink::mojom::PeerConnectionInfoPtr info) override;
@@ -95,8 +99,6 @@ class PeerConnectionTrackerHost
   base::ProcessId peer_pid_;
   mojo::Receiver<blink::mojom::PeerConnectionTrackerHost> receiver_{this};
   mojo::Remote<blink::mojom::PeerConnectionManager> tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(PeerConnectionTrackerHost);
 };
 
 }  // namespace content

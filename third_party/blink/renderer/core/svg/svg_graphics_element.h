@@ -30,7 +30,6 @@
 namespace blink {
 
 class AffineTransform;
-class FloatRect;
 class SVGAnimatedTransformList;
 class SVGMatrixTearOff;
 class SVGRectTearOff;
@@ -50,7 +49,7 @@ class CORE_EXPORT SVGGraphicsElement : public SVGElement, public SVGTests {
   AffineTransform LocalCoordinateSpaceTransform(CTMScope) const override;
   AffineTransform* AnimateMotionTransform() override;
 
-  virtual FloatRect GetBBox();
+  virtual gfx::RectF GetBBox();
   SVGRectTearOff* getBBoxFromJavascript();
 
   bool IsValid() const final { return SVGTests::IsValid(); }

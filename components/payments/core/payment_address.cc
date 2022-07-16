@@ -25,24 +25,23 @@ static const char kAddressSortingCode[] = "sortingCode";
 
 }  // namespace
 
-std::unique_ptr<base::DictionaryValue> PaymentAddressToDictionaryValue(
-    const mojom::PaymentAddress& address) {
-  auto result = std::make_unique<base::DictionaryValue>();
-  result->SetString(kAddressCountry, address.country);
-  base::ListValue address_line_list;
+base::Value PaymentAddressToValue(const mojom::PaymentAddress& address) {
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetStringKey(kAddressCountry, address.country);
+  base::Value address_line_list(base::Value::Type::LIST);
   for (const std::string& address_line_string : address.address_line) {
     if (!address_line_string.empty())
-      address_line_list.AppendString(address_line_string);
+      address_line_list.Append(address_line_string);
   }
-  result->SetKey(kAddressAddressLine, std::move(address_line_list));
-  result->SetString(kAddressRegion, address.region);
-  result->SetString(kAddressCity, address.city);
-  result->SetString(kAddressDependentLocality, address.dependent_locality);
-  result->SetString(kAddressPostalCode, address.postal_code);
-  result->SetString(kAddressSortingCode, address.sorting_code);
-  result->SetString(kAddressOrganization, address.organization);
-  result->SetString(kAddressRecipient, address.recipient);
-  result->SetString(kAddressPhone, address.phone);
+  result.SetKey(kAddressAddressLine, std::move(address_line_list));
+  result.SetStringKey(kAddressRegion, address.region);
+  result.SetStringKey(kAddressCity, address.city);
+  result.SetStringKey(kAddressDependentLocality, address.dependent_locality);
+  result.SetStringKey(kAddressPostalCode, address.postal_code);
+  result.SetStringKey(kAddressSortingCode, address.sorting_code);
+  result.SetStringKey(kAddressOrganization, address.organization);
+  result.SetStringKey(kAddressRecipient, address.recipient);
+  result.SetStringKey(kAddressPhone, address.phone);
 
   return result;
 }

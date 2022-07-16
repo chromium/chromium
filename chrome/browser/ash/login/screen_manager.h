@@ -9,17 +9,19 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ash/login/screens/base_screen.h"
 
-namespace chromeos {
+namespace ash {
+class BaseScreen;
 
 // Class that manages creation and ownership of screens.
 class ScreenManager {
  public:
   ScreenManager();
+
+  ScreenManager(const ScreenManager&) = delete;
+  ScreenManager& operator=(const ScreenManager&) = delete;
+
   ~ScreenManager();
 
   // Initialize all screen instances.
@@ -36,16 +38,8 @@ class ScreenManager {
  private:
   // Created screens.
   std::map<OobeScreenId, std::unique_ptr<BaseScreen>> screens_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenManager);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ScreenManager;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREEN_MANAGER_H_

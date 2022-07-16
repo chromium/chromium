@@ -37,6 +37,20 @@ source_set("message_port") {
   }
 }
 
+source_set("blink_message_port_adapter") {
+  public = [ "blink_message_port_adapter.h" ]
+  sources = [ "blink_message_port_adapter.cc" ]
+
+  public_deps = [
+    ":message_port",
+    "//third_party/blink/public/common",
+  ]
+  deps = [
+    ":message_port_cast",
+    "//base",
+  ]
+}
+
 source_set("public") {
   sources = [
     "message_port.cc",
@@ -59,13 +73,12 @@ if (is_fuchsia) {
 
     public_deps = [
       ":public",
-
-      # TODO(crbug.com/1120731): Remove dependencies on //fuchsia.
-      "//fuchsia/base",
+      "//base",
+      "//third_party/abseil-cpp:absl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     ]
 
-    deps = [ "//base" ]
+    deps = [ "//third_party/fuchsia-sdk/sdk/pkg/fit-promise" ]
   }
 }
 
@@ -113,6 +126,7 @@ source_set("message_port_unittest") {
   testonly = true
   sources = [ "message_port_unittest.cc" ]
   deps = [
+    ":blink_message_port_adapter",
     ":message_port",
     ":message_port_buildflags",
     ":message_port_cast",

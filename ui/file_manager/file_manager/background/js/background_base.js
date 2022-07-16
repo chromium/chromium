@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
+import {resolveIsolatedEntries} from '../../common/js/api.js';
 import {util} from '../../common/js/util.js';
 import {BackgroundBase, LaunchHandler} from '../../externs/background/background_base.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -30,7 +31,9 @@ export class BackgroundBaseImpl {
           console.error(chrome.runtime.lastError.message);
           return;
         }
-        loadTimeData.data = assert(stringData);
+        if (!loadTimeData.isInitialized()) {
+          loadTimeData.data = assert(stringData);
+        }
         fulfill(stringData);
       });
     });
@@ -56,38 +59,41 @@ export class BackgroundBaseImpl {
    * Called when an app is launched.
    *
    * @param {!Object} launchData Launch data. See the manual of
-   *     chrome.app.runtime .onLaunched for detail.
+   *     chrome.app.runtime.onLaunched for detail.
    */
-  onLaunched_(launchData) {
+  async onLaunched_(launchData) {
     // Skip if files are not selected.
     if (!launchData || !launchData.items || launchData.items.length == 0) {
       return;
     }
 
-    this.initializationPromise_
-        .then(() => {
-          // Volume list needs to be initialized (more precisely,
-          // chrome.fileSystem.requestFileSystem needs to be called to grant
-          // access) before resolveIsolatedEntries().
-          return volumeManagerFactory.getInstance();
-        })
-        .then(() => {
-          const isolatedEntries = launchData.items.map(item => {
-            return item.entry;
-          });
+    await this.initializationPromise_;
 
-          // Obtains entries in non-isolated file systems.
-          // The entries in launchData are stored in the isolated file system.
-          // We need to map the isolated entries to the normal entries to
-          // retrieve their parent directory.
-          chrome.fileManagerPrivate.resolveIsolatedEntries(
-              isolatedEntries, externalEntries => {
-                const urls = util.entriesToURLs(externalEntries);
-                if (this.launchHandler_) {
-                  this.launchHandler_(urls);
-                }
-              });
-        });
+    // Volume list needs to be initialized (more precisely,
+    // chrome.fileSystem.requestFileSystem needs to be called to grant
+    // access) before resolveIsolatedEntries().
+    await volumeManagerFactory.getInstance();
+
+    const isolatedEntries = launchData.items.map(item => item.entry);
+
+    let urls = [];
+    try {
+      // Obtains entries in non-isolated file systems.
+      // The entries in launchData are stored in the isolated file system.
+      // We need to map the isolated entries to the normal entries to retrieve
+      // their parent directory.
+      const externalEntries =
+          await retryResolveIsolatedEntries(isolatedEntries);
+      urls = util.entriesToURLs(externalEntries);
+    } catch (error) {
+      // Just log the error and default no file/URL so we spawn the app window.
+      console.error(error);
+      urls = [];
+    }
+
+    if (this.launchHandler_) {
+      this.launchHandler_(urls);
+    }
   }
 
   /**
@@ -102,4 +108,41 @@ export class BackgroundBaseImpl {
    * Called when an app is restarted.
    */
   onRestarted_() {}
+}
+
+/** @private {number} Total number of retries for the resolve entries below.*/
+const MAX_RETRIES = 6;
+
+/**
+ * Retry the resolveIsolatedEntries() until we get the same number of entries
+ * back.
+ * @param {!Array<!Entry>} isolatedEntries Entries that need to be resolved.
+ * @return {!Promise<!Array<!Entry>>} Promise resolved with the entries
+ *   resolved.
+ */
+async function retryResolveIsolatedEntries(isolatedEntries) {
+  let count = 0;
+  let externalEntries = [];
+  // Wait time in milliseconds between attempts. We double this value after
+  // every wait.
+  let waitTime = 25;
+
+  // Total waiting time is ~1.5 second for `waitTime` starting at 25ms and total
+  // of 6 attempts.
+  while (count <= MAX_RETRIES) {
+    externalEntries = await resolveIsolatedEntries(isolatedEntries);
+    if (externalEntries.length >= isolatedEntries.length) {
+      return externalEntries;
+    }
+
+    console.warn(`Failed to resolve, retrying in ${waitTime}ms...`);
+    await new Promise(resolve => setTimeout(resolve, waitTime));
+    waitTime = waitTime * 2;
+    count += 1;
+  }
+
+  console.error(
+      `Failed to resolve: Requested ${isolatedEntries.length},` +
+      ` resolved: ${externalEntries.length}.`);
+  return [];
 }

@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -53,10 +52,14 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     // Install the Settings App.
-    web_app::WebAppProvider::Get(browser()->profile())
+    web_app::WebAppProvider::GetForTest(browser()->profile())
         ->system_web_app_manager()
         .InstallSystemAppsForTesting();
   }
+
+  SettingsWindowManagerTest(const SettingsWindowManagerTest&) = delete;
+  SettingsWindowManagerTest& operator=(const SettingsWindowManagerTest&) =
+      delete;
 
   ~SettingsWindowManagerTest() override = default;
 
@@ -80,8 +83,6 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
 
  protected:
   chrome::SettingsWindowManager* settings_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsWindowManagerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
@@ -110,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
               settings_app_id,
               apps::mojom::LaunchContainer::kLaunchContainerWindow,
               WindowOpenDisposition::NEW_WINDOW,
-              apps::mojom::AppLaunchSource::kSourceCommandLine));
+              apps::mojom::LaunchSource::kFromCommandLine));
   web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
   EXPECT_EQ(contents,
             settings_browser->tab_strip_model()->GetActiveWebContents());
@@ -210,7 +211,7 @@ class SettingsWindowManagerLoginTest : public MixinBasedInProcessBrowserTest {
   ~SettingsWindowManagerLoginTest() override = default;
 
  private:
-  LoginManagerMixin login_manager_{&mixin_host_, {}};
+  ash::LoginManagerMixin login_manager_{&mixin_host_, {}};
 };
 
 // Regression test for crash. https://crbug.com/1174525

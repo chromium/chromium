@@ -29,23 +29,13 @@ const base::Feature kDetectFormSubmissionOnFormClear = {
 
 // Enables the editing of passwords in Chrome settings.
 const base::Feature kEditPasswordsInSettings = {
-#if defined(OS_ANDROID)
-    "EditPasswordsInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
-#else
     "EditPasswordsInSettings", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
 
 // Enables UI that allows the user to create a strong password even if the field
 // wasn't parsed as a new password field.
 // TODO(crbug/1181254): Remove once it's launched.
 const base::Feature kEnableManualPasswordGeneration = {
-    "EnableManualPasswordGeneration", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables UI in settings that allows the user to move multiple passwords to the
-// account storage.
-const base::Feature kEnableMovingMultiplePasswordsToAccount = {
-    "EnableMovingMultiplePasswordsToAccount",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableManualPasswordGeneration", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the overwriting of prefilled username fields if the server predicted
 // the field to contain a placeholder value.
@@ -72,12 +62,6 @@ const base::Feature KEnablePasswordGenerationForClearTextFields = {
 const base::Feature kFillingAcrossAffiliatedWebsites{
     "FillingAcrossAffiliatedWebsites", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables showing UI button in password fallback sheet.
-// The button opens a different sheet that allows filling a password from any
-// origin.
-const base::Feature kFillingPasswordsFromAnyOrigin{
-    "FillingPasswordsFromAnyOrigin", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables the experiment for the password manager to only fill on account
 // selection, rather than autofilling on page load, with highlighting of fields.
 const base::Feature kFillOnAccountSelect = {"fill-on-account-select",
@@ -89,13 +73,19 @@ const base::Feature kFillOnAccountSelect = {"fill-on-account-select",
 const base::Feature kInferConfirmationPasswordField = {
     "InferConfirmationPasswordField", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables respecting of insecure credential muting state.
-const base::Feature kMutingCompromisedCredentials{
-    "MutingCompromisedCredentials", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables password leak detection for unauthenticated users.
+const base::Feature kLeakDetectionUnauthenticated = {
+    "LeakDetectionUnauthenticated", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables password change flow from leaked password dialog.
 const base::Feature kPasswordChange = {"PasswordChange",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables offering automated password change only for compromised credentials
+// that are recently used. Only has an effect if PasswordChangeInSettings is
+// also enabled.
+const base::Feature kPasswordChangeOnlyRecentCredentials = {
+    "PasswordChangeOnlyRecentCredentials", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables password change flow from bulk leak check in settings.
 const base::Feature kPasswordChangeInSettings = {
@@ -108,6 +98,11 @@ const base::Feature kPasswordImport = {"PasswordImport",
 // Enables password reuse detection.
 const base::Feature kPasswordReuseDetectionEnabled = {
     "PasswordReuseDetectionEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables a revised opt-in flow for the account-scoped password storage.
+const base::Feature kPasswordsAccountStorageRevisedOptInFlow = {
+    "PasswordsAccountStorageRevisedOptInFlow",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables password scripts fetching for the |PasswordChangeInSettings| feature.
 const base::Feature kPasswordScriptsFetching = {
@@ -138,30 +133,55 @@ const base::Feature kSupportForAddPasswordsInSettings = {
 const base::Feature kTreatNewPasswordHeuristicsAsReliable = {
     "TreatNewPasswordHeuristicsAsReliable", base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if defined(OS_ANDROID)
 // Enables use of Google Mobile Services for password storage. Chrome's local
 // database will be unused but kept in sync for local passwords.
 const base::Feature kUnifiedPasswordManagerAndroid{
     "UnifiedPasswordManagerAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether we should use the new header images for the legacy save
-// password bubble.
-const base::Feature kUseNewHeaderForLegacySavePasswordBubble{
-    "UseNewHeaderForLegacySavePasswordBubble",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+// Enables migration of passwords from built in storage to Google Mobile
+// Services.
+const base::Feature kUnifiedPasswordManagerMigration{
+    "UnifiedPasswordManagerMigration", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether we should use the new header images for the save
-// password bubble with account store.
-const base::Feature kUseNewHeaderForSavePasswordWithAccountStoreBubble{
-    "UseNewHeaderForSavePasswordWithAccountStoreBubble",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+// Sends shadow traffic to Google Mobile Services for password storage. This
+// allows to check stability without switching away from the local storage as
+// source of truth.
+const base::Feature kUnifiedPasswordManagerShadowAndroid{
+    "UnifiedPasswordManagerShadowAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables support of sending votes on username first flow.
+// If enabled, the built-in sync functionality in PasswordSyncBridge becomes
+// unused, meaning that SyncService/SyncEngine will no longer download or
+// upload changes to/from the Sync server. Instead, an external Android-specific
+// backend will be used to achieve similar behavior.
+const base::Feature kUnifiedPasswordManagerSyncUsingAndroidBackendOnly{
+    "UnifiedPasswordManagerSyncUsingAndroidBackendOnly",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
+// Enables support of sending votes on username first flow. The votes are sent
+// on single username forms and are based on user interaction with the save
+// prompt.
 const base::Feature kUsernameFirstFlow = {"UsernameFirstFlow",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables support of filling and saving on username first flow.
 const base::Feature kUsernameFirstFlowFilling = {
     "UsernameFirstFlowFilling", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables support of sending additional votes on username first flow. The votes
+// are sent on single password forms and contain information about preceding
+// single username forms.
+const base::Feature kUsernameFirstFlowFallbackCrowdsourcing = {
+    "UsernameFirstFlowFallbackCrowdsourcing",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+#if defined(OS_ANDROID)
+// Current migration version to Google Mobile Services. If version saved in pref
+// is lower than 'kMigrationVersion' passwords will be re-uploaded.
+extern const base::FeatureParam<int> kMigrationVersion = {
+    &kUnifiedPasswordManagerMigration, "migration_version", 0};
+#endif
 
 // Field trial identifier for password generation requirements.
 const char kGenerationRequirementsFieldTrial[] =
@@ -191,27 +211,6 @@ const char kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission[] =
 // settings.
 const char kPasswordChangeInSettingsWithForcedWarningForEverySite[] =
     "should_force_warning_for_every_site_in_settings";
-
-// Number of times the user can refuse an offer to move a password to the
-// account before Chrome stops offering this flow. Only applies to users who
-// haven't gone through the opt-in flow for passwords account storage.
-const char kMaxMoveToAccountOffersForNonOptedInUser[] =
-    "max_move_to_account_offers_for_non_opted_in_user";
-
-const int kMaxMoveToAccountOffersForNonOptedInUserDefaultValue = 5;
-
-// If set to true, Chrome will default to saving to the profile store for users
-// who haven't made an explicit choice yet.
-const char kSaveToProfileStoreByDefault[] = "save_to_profile_store_by_default";
-
-const bool kSaveToProfileStoreByDefaultDefaultValue = false;
-
-// If set to true, Chrome will set the default store to the account store when
-// the user opts in. This is mostly meaningful together with
-// |kSaveToProfileStoreByDefault|.
-const char kSaveToAccountStoreOnOptIn[] = "save_to_account_store_on_optin";
-
-const bool kSaveToAccountStoreOnOptInDefaultValue = false;
 
 }  // namespace features
 

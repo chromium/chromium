@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator of the single tab tab switcher. */
@@ -66,6 +67,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
             if (mTabSelectingListener != null
                     && mTabModelSelector.getCurrentTabId() != TabList.INVALID_TAB_INDEX) {
                 selectTheCurrentTab();
+                StartSurfaceUserData.setOpenedFromStart(mTabModelSelector.getCurrentTab());
             }
         });
 
@@ -136,7 +138,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
 
     private void updateFavicon(Tab tab) {
         assert mTabListFaviconProvider.isInitialized();
-        mTabListFaviconProvider.getFaviconForUrlAsync(tab.getUrl(), false,
+        mTabListFaviconProvider.getFaviconDrawableForUrlAsync(tab.getUrl(), false,
                 (Drawable favicon) -> { mPropertyModel.set(FAVICON, favicon); });
     }
 
@@ -245,7 +247,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
 
         StartSurfaceConfiguration.recordHistogram(SINGLE_TAB_TITLE_AVAILABLE_TIME_UMA,
                 mTabTitleAvailableTime - activityCreationTimeMs,
-                TabUiFeatureUtilities.supportInstantStart(false));
+                TabUiFeatureUtilities.supportInstantStart(false, mContext));
     }
 
     @Override
@@ -255,7 +257,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
 
     private void updateSelectedTab(Tab tab) {
         mPropertyModel.set(TITLE, tab.getTitle());
-        mTabListFaviconProvider.getFaviconForUrlAsync(tab.getUrl(), false,
+        mTabListFaviconProvider.getFaviconDrawableForUrlAsync(tab.getUrl(), false,
                 (Drawable favicon) -> { mPropertyModel.set(FAVICON, favicon); });
     }
 

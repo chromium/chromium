@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_paths.h"
 
 namespace {
@@ -19,6 +19,10 @@ namespace {
 class DeviceTestSuite : public base::TestSuite {
  public:
   DeviceTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
+
+  DeviceTestSuite(const DeviceTestSuite&) = delete;
+  DeviceTestSuite& operator=(const DeviceTestSuite&) = delete;
+
   ~DeviceTestSuite() override = default;
 
  protected:
@@ -41,7 +45,7 @@ class DeviceTestSuite : public base::TestSuite {
     base::FilePath bluetooth_test_strings =
         path.Append(FILE_PATH_LITERAL("bluetooth_test_strings.pak"));
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        bluetooth_test_strings, ui::SCALE_FACTOR_NONE);
+        bluetooth_test_strings, ui::kScaleFactorNone);
 #endif  // !defined(OS_IOS)
   }
 
@@ -52,9 +56,6 @@ class DeviceTestSuite : public base::TestSuite {
 
     base::TestSuite::Shutdown();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceTestSuite);
 };
 
 }  // namespace

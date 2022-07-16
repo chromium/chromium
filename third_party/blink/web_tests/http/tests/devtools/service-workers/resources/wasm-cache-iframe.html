@@ -1,0 +1,31 @@
+<script src="../../../resources/testharness.js"></script>
+<script>
+// Instantiate a WASM module and make sure it works.
+async function instantiateModule(url)
+{
+  const module = await WebAssembly.compileStreaming(fetch(url));
+  const instance = await WebAssembly.instantiate(module);
+  assert_equals(instance.exports.exported_func(), 42);
+}
+
+const url_base = 'http://127.0.0.1:8000/wasm/resources/load-wasm.php?name=';
+
+(async function loadModules() {
+  // This should load without any code cache.
+  await instantiateModule(url_base + 'large.wasm&cors');
+
+  // We need to wait for the large wasm code cache to flush to disk.  We
+  // approximate how long to wait by writing a very large dummy file to disk
+  // and then deleting it.
+  const cache = await caches.open('foo');
+  await cache.put('/bar', new Response('snafu'.repeat(20 * 1024 * 1024)));
+  await caches.delete('foo');
+
+  // This should load with code cache.
+  await instantiateModule(url_base + 'large.wasm&cors');
+
+  window.top.postMessage('done', '*');
+})();
+
+</script>
+

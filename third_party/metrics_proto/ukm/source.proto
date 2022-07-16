@@ -34,7 +34,7 @@ enum AndroidActivityType {
 }
 
 // Source contains data related to a top-level navigation.
-// Next tag: 19
+// Next tag: 20
 message Source {
   // The URL scheme, such as HTTP, HTTPS, CHROME_EXTENSION, etc.
   enum UrlScheme {

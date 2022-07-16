@@ -161,6 +161,9 @@ void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
       element.FastHasAttribute(html_names::kFormAttr)) {
     SetFormAttributeTargetObserver(nullptr);
     ResetFormOwner();
+  } else if (!form_ && insertion_point.isConnected()) {
+    // An unassociated listed element is detached from the document.
+    ResetFormOwner();
   } else {
     // If the form and element are both in the same tree, preserve the
     // connection to the form.  Otherwise, null out our form and remove
@@ -221,6 +224,10 @@ void ListedElement::AssociateByParser(HTMLFormElement* form) {
 }
 
 void ListedElement::SetForm(HTMLFormElement* new_form) {
+  if (!form_ || !new_form) {
+    // Element was unassociated, or is becoming unassociated.
+    ToHTMLElement().GetDocument().MarkUnassociatedListedElementsDirty();
+  }
   if (form_.Get() == new_form)
     return;
   WillChangeForm();

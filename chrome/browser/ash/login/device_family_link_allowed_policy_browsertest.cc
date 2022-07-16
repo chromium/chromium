@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "chromeos/login/auth/user_context.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user_manager.h"
@@ -27,8 +27,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kFamilyLinkUser[] = "fl@gmail.com";
@@ -54,20 +53,29 @@ class DeviceFamilyLinkAllowedPolicyTest : public LoginManagerTest {
       const DeviceFamilyLinkAllowedPolicyTest&) = delete;
   ~DeviceFamilyLinkAllowedPolicyTest() override = default;
 
-  void AddUserToAllowlist(const std::string& user_id) {
-    policy_helper_.device_policy()
-        ->payload()
-        .mutable_user_allowlist()
-        ->add_user_allowlist(user_id);
-    policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
-        {kAccountsPrefUsers});
-  }
-
   void SetDeviceAllowNewUsersPolicy(bool enabled) {
     policy_helper_.device_policy()
         ->payload()
         .mutable_allow_new_users()
         ->set_allow_new_users(enabled);
+  }
+
+  void AllowUniqueUserToSignIn(const std::string& user_id) {
+    policy_helper_.device_policy()
+        ->payload()
+        .mutable_user_allowlist()
+        ->add_user_allowlist(user_id);
+    SetDeviceAllowNewUsersPolicy(false);
+    policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
+        {kAccountsPrefUsers});
+  }
+
+  void AllowAllUsersToSignIn() {
+    SetDeviceAllowNewUsersPolicy(true);
+    policy_helper_.device_policy()
+        ->payload()
+        .mutable_user_allowlist()
+        ->clear_user_allowlist();
     policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
         {kAccountsPrefAllowNewUser});
   }
@@ -109,7 +117,7 @@ class DeviceFamilyLinkAllowedPolicyTest : public LoginManagerTest {
 
   UserPolicyMixin user_policy_mixin_{&mixin_host_,
                                      family_link_user_.account_id};
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   LoginManagerMixin login_manager_ = {
       &mixin_host_,
@@ -124,23 +132,23 @@ IN_PROC_BROWSER_TEST_F(DeviceFamilyLinkAllowedPolicyTest, LoginScreenUpdates) {
   // No policy restrictions, all users available.
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
-  EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 3);
+  EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 3);
 
   // User allowlist on - only school domain account available.
-  AddUserToAllowlist(kSchoolAllowlist);
-  EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 1);
+  AllowUniqueUserToSignIn(kSchoolAllowlist);
+  EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 1);
 
   // Family Link allowed - school and Family Link accounts available.
   SetDeviceFamilyLinkAccountsAllowedPolicy(true);
-  EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 2);
+  EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 2);
 
   // Family link off - Family Link account should disappear.
   SetDeviceFamilyLinkAccountsAllowedPolicy(false);
-  EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 1);
+  EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 1);
 
   // Allow all new users.
-  SetDeviceAllowNewUsersPolicy(true);
-  EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 3);
+  AllowAllUsersToSignIn();
+  EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 3);
 }
 
 // Tests that the user is signed out when policy value changes.
@@ -149,9 +157,9 @@ IN_PROC_BROWSER_TEST_F(DeviceFamilyLinkAllowedPolicyTest, InSessionUpdate) {
             session_manager::SessionState::LOGIN_PRIMARY);
 
   // Family Link allowed - school and Family Link accounts available.
-  AddUserToAllowlist(kSchoolAllowlist);
+  AllowUniqueUserToSignIn(kSchoolAllowlist);
   SetDeviceFamilyLinkAccountsAllowedPolicy(true);
-  EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 2);
+  EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 2);
 
   LoginFamilyLinkUser();
   SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();
@@ -166,4 +174,4 @@ IN_PROC_BROWSER_TEST_F(DeviceFamilyLinkAllowedPolicyTest, InSessionUpdate) {
   termination_waiter.Wait();
 }
 
-}  // namespace chromeos
+}  // namespace ash

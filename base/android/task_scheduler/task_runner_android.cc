@@ -62,7 +62,7 @@ void TaskRunnerAndroid::PostDelayedTask(
           &PostTaskAndroid::RunJavaTask,
           base::android::ScopedJavaGlobalRef<jobject>(task),
           android::ConvertJavaStringToUTF8(env, runnable_class_name)),
-      TimeDelta::FromMilliseconds(delay));
+      Milliseconds(delay));
 }
 
 bool TaskRunnerAndroid::BelongsToCurrentThread(JNIEnv* env) {

@@ -59,6 +59,9 @@ class ScopedFeatureListHolder {
     return base::Singleton<ScopedFeatureListHolder>::get();
   }
 
+  ScopedFeatureListHolder(const ScopedFeatureListHolder&) = delete;
+  ScopedFeatureListHolder& operator=(const ScopedFeatureListHolder&) = delete;
+
   // Creates and returns new scoped feature list. List stays alive until
   // DestroyLists() is called. Allows to push multiple features via scoped
   // feature list as required by some FeatureEngagement tests.
@@ -75,8 +78,6 @@ class ScopedFeatureListHolder {
   ScopedFeatureListHolder() = default;
   std::vector<std::unique_ptr<ScopedFeatureList>> scoped_feature_lists_;
   friend struct base::DefaultSingletonTraits<ScopedFeatureListHolder>;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFeatureListHolder);
 };
 
 }  // namespace

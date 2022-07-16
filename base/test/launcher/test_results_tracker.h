@@ -8,10 +8,11 @@
 #include <map>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/test/launcher/test_result.h"
 #include "base/threading/thread_checker.h"
 
@@ -32,6 +33,10 @@ class FilePath;
 class TestResultsTracker {
  public:
   TestResultsTracker();
+
+  TestResultsTracker(const TestResultsTracker&) = delete;
+  TestResultsTracker& operator=(const TestResultsTracker&) = delete;
+
   ~TestResultsTracker();
 
   // Initialize the result tracker. Must be called exactly once before
@@ -168,8 +173,6 @@ class TestResultsTracker {
 
   // File handle of output file (can be NULL if no file).
   FILE* out_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestResultsTracker);
 };
 
 }  // namespace base

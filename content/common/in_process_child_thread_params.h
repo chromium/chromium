@@ -6,7 +6,7 @@
 #define CONTENT_COMMON_IN_PROCESS_CHILD_THREAD_PARAMS_H_
 
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/system/invitation.h"
 

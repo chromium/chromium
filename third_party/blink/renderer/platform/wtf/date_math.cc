@@ -718,8 +718,7 @@ base::TimeDelta ConvertToLocalTime(base::Time time) {
   UErrorCode status = U_ZERO_ERROR;
   timezone->getOffset(ms, false, raw_offset, dst_offset, status);
   DCHECK(U_SUCCESS(status));
-  return base::TimeDelta::FromMillisecondsD(
-      ms + static_cast<double>(raw_offset + dst_offset));
+  return base::Milliseconds(ms + static_cast<double>(raw_offset + dst_offset));
 }
 
 }  // namespace WTF

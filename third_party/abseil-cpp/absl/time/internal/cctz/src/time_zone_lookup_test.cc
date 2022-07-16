@@ -579,6 +579,7 @@ const char* const kTimeZoneNames[] = {"Africa/Abidjan",
                                       "Pacific/Guam",
                                       "Pacific/Honolulu",
                                       "Pacific/Johnston",
+                                      "Pacific/Kanton",
                                       "Pacific/Kiritimati",
                                       "Pacific/Kosrae",
                                       "Pacific/Kwajalein",
@@ -1026,7 +1027,11 @@ TEST(MakeTime, SysSecondsLimits) {
 #endif
     const year_t min_tm_year = year_t{std::numeric_limits<int>::min()} + 1900;
     tp = convert(civil_second(min_tm_year, 1, 1, 0, 0, 0), cut);
+#if defined(__Fuchsia__)
+    // Fuchsia's gmtime_r() fails on extreme negative values (fxbug.dev/78527).
+#else
     EXPECT_EQ("-2147481748-01-01T00:00:00+00:00", format(RFC3339, tp, cut));
+#endif
 #endif
   }
 }

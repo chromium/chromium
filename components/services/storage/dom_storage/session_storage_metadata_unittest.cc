@@ -28,8 +28,6 @@
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace storage {
 namespace {
@@ -85,7 +83,6 @@ class SessionStorageMetadataTest : public testing::Test {
 
     base::RunLoop loop;
     database_->database().PostTaskWithThisObject(
-        FROM_HERE,
         base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
           EXPECT_TRUE(db.Get(database_version_key_, &version_value).ok());
           EXPECT_TRUE(db.Get(next_map_id_key_, &next_map_id_value).ok());
@@ -121,7 +118,6 @@ class SessionStorageMetadataTest : public testing::Test {
     // | version                                | 1                  |
     base::RunLoop loop;
     database_->database().PostTaskWithThisObject(
-        FROM_HERE,
         base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
           db.Put(StdStringToUint8Vector(std::string("namespace-") +
                                         test_namespace1_id_ + "-" +
@@ -159,7 +155,6 @@ class SessionStorageMetadataTest : public testing::Test {
     std::vector<DomStorageDatabase::KeyValuePair> entries;
     base::RunLoop loop;
     database_->database().PostTaskWithThisObject(
-        FROM_HERE,
         base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
           leveldb::Status status = db.GetPrefixed({}, &entries);
           ASSERT_TRUE(status.ok());
@@ -223,8 +218,8 @@ TEST_F(SessionStorageMetadataTest, LoadingData) {
   EXPECT_EQ(5, metadata.NextMapId());
   EXPECT_EQ(2ul, metadata.namespace_storage_key_map().size());
 
-  // Namespace 1 should have 2 origins, referencing map 1 and 3. Map 1 is shared
-  // between namespace 1 and namespace 2.
+  // Namespace 1 should have 2 StorageKeys, referencing map 1 and 3. Map 1 is
+  // shared between namespace 1 and namespace 2.
   auto entry = metadata.GetOrCreateNamespaceEntry(test_namespace1_id_);
   EXPECT_EQ(test_namespace1_id_, entry->first);
   EXPECT_EQ(2ul, entry->second.size());
@@ -235,7 +230,7 @@ TEST_F(SessionStorageMetadataTest, LoadingData) {
             entry->second[test_storage_key2_]->KeyPrefix());
   EXPECT_EQ(1, entry->second[test_storage_key2_]->ReferenceCount());
 
-  // Namespace 2 is the same, except the second origin references map 4.
+  // Namespace 2 is the same, except the second StorageKey references map 4.
   entry = metadata.GetOrCreateNamespaceEntry(test_namespace2_id_);
   EXPECT_EQ(test_namespace2_id_, entry->first);
   EXPECT_EQ(2ul, entry->second.size());
@@ -416,7 +411,8 @@ class SessionStorageMetadataMigrationTest : public testing::Test {
   SessionStorageMetadataMigrationTest()
       : test_namespace1_id_(base::GenerateGUID()),
         test_namespace2_id_(base::GenerateGUID()),
-        test_origin1_(url::Origin::Create(GURL("http://host1:1/"))) {
+        test_storage_key1_(
+            blink::StorageKey::CreateFromStringForTesting("http://host1:1/")) {
     next_map_id_key_ = std::vector<uint8_t>(
         std::begin(SessionStorageMetadata::kNextMapIdKeyBytes),
         std::end(SessionStorageMetadata::kNextMapIdKeyBytes));
@@ -453,7 +449,7 @@ class SessionStorageMetadataMigrationTest : public testing::Test {
   LevelDBEnv leveldb_env_;
   std::string test_namespace1_id_;
   std::string test_namespace2_id_;
-  url::Origin test_origin1_;
+  blink::StorageKey test_storage_key1_;
   std::unique_ptr<leveldb::Env> in_memory_env_;
   scoped_refptr<TestingLegacySessionStorageDatabase> old_ss_database_;
 
@@ -488,8 +484,8 @@ TEST_F(SessionStorageMetadataMigrationTest, MigrateV0ToV1) {
   LegacyDomStorageValuesMap data;
   data[key] = value;
   data[key2] = value;
-  EXPECT_TRUE(old_ss_database_->CommitAreaChanges(test_namespace1_id_,
-                                                  test_origin1_, false, data));
+  EXPECT_TRUE(old_ss_database_->CommitAreaChanges(
+      test_namespace1_id_, test_storage_key1_, false, data));
   EXPECT_TRUE(old_ss_database_->CloneNamespace(test_namespace1_id_,
                                                test_namespace2_id_));
 

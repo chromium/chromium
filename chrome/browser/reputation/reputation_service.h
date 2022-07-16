@@ -57,6 +57,10 @@ using ReputationCheckCallback =
 class ReputationService : public KeyedService {
  public:
   explicit ReputationService(Profile* profile);
+
+  ReputationService(const ReputationService&) = delete;
+  ReputationService& operator=(const ReputationService&) = delete;
+
   ~ReputationService() override;
 
   static ReputationService* Get(Profile* profile);
@@ -89,6 +93,7 @@ class ReputationService : public KeyedService {
   // sorted order, and must have a lifetime at least as long as this service.
   void SetSensitiveKeywordsForTesting(const char* const* new_keywords,
                                       size_t num_new_keywords);
+  void ResetSensitiveKeywordsForTesting();
 
  private:
   // Callback once we have up-to-date |engaged_sites|. Performs checks on the
@@ -111,7 +116,6 @@ class ReputationService : public KeyedService {
   size_t num_sensitive_keywords_;
 
   base::WeakPtrFactory<ReputationService> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ReputationService);
 };
 
 #endif  // CHROME_BROWSER_REPUTATION_REPUTATION_SERVICE_H_

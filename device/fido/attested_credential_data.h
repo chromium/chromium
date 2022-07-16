@@ -42,6 +42,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestedCredentialData {
       std::vector<uint8_t> credential_id,
       std::unique_ptr<PublicKey> public_key);
 
+  AttestedCredentialData(const AttestedCredentialData&) = delete;
+  AttestedCredentialData& operator=(const AttestedCredentialData&) = delete;
+
   ~AttestedCredentialData();
 
   AttestedCredentialData& operator=(AttestedCredentialData&& other);
@@ -73,8 +76,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestedCredentialData {
 
   std::vector<uint8_t> credential_id_;
   std::unique_ptr<PublicKey> public_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(AttestedCredentialData);
 };
 
 }  // namespace device

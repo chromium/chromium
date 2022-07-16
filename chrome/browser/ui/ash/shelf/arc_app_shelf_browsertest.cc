@@ -15,7 +15,6 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,10 +32,11 @@
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_test_util.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/exo/shell_surface.h"
@@ -142,7 +142,7 @@ class AppAnimatedWaiter {
 
   void Wait() {
     const base::TimeDelta threshold =
-        base::TimeDelta::FromMilliseconds(kAppAnimatedThresholdMs);
+        base::Milliseconds(kAppAnimatedThresholdMs);
     ShelfSpinnerController* controller =
         ChromeShelfController::instance()->GetShelfSpinnerController();
     while (controller->GetActiveTime(app_id_) < threshold) {
@@ -195,6 +195,10 @@ ash::ShelfItemDelegate::AppMenuItems GetAppMenuItems(
 class ArcAppShelfBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   ArcAppShelfBrowserTest() = default;
+
+  ArcAppShelfBrowserTest(const ArcAppShelfBrowserTest&) = delete;
+  ArcAppShelfBrowserTest& operator=(const ArcAppShelfBrowserTest&) = delete;
+
   ~ArcAppShelfBrowserTest() override = default;
 
  protected:
@@ -354,17 +358,18 @@ class ArcAppShelfBrowserTest : public extensions::ExtensionBrowserTest {
  private:
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppShelfBrowserTest);
 };
 
 class ArcAppDeferredShelfBrowserTest : public ArcAppShelfBrowserTest {
  public:
   ArcAppDeferredShelfBrowserTest() = default;
-  ~ArcAppDeferredShelfBrowserTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppDeferredShelfBrowserTest);
+  ArcAppDeferredShelfBrowserTest(const ArcAppDeferredShelfBrowserTest&) =
+      delete;
+  ArcAppDeferredShelfBrowserTest& operator=(
+      const ArcAppDeferredShelfBrowserTest&) = delete;
+
+  ~ArcAppDeferredShelfBrowserTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(ArcAppDeferredShelfBrowserTest,
@@ -379,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppDeferredShelfBrowserTest,
 
   ChromeShelfController* const controller = ChromeShelfController::instance();
   const std::string app_id = GetTestApp1Id(kTestAppPackage);
-  controller->PinAppWithID(app_id);
+  PinAppWithIDToShelf(app_id);
 
   aura::Window* const root_window = ash::Shell::GetPrimaryRootWindow();
   ash::ShelfViewTestAPI test_api(
@@ -419,15 +424,18 @@ class ArcAppDeferredShelfWithParamsBrowserTest
       public testing::WithParamInterface<TestParameter> {
  public:
   ArcAppDeferredShelfWithParamsBrowserTest() = default;
+
+  ArcAppDeferredShelfWithParamsBrowserTest(
+      const ArcAppDeferredShelfWithParamsBrowserTest&) = delete;
+  ArcAppDeferredShelfWithParamsBrowserTest& operator=(
+      const ArcAppDeferredShelfWithParamsBrowserTest&) = delete;
+
   ~ArcAppDeferredShelfWithParamsBrowserTest() override = default;
 
  protected:
   bool is_pinned() const { return std::get<1>(GetParam()); }
 
   TestAction test_action() const { return std::get<0>(GetParam()); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppDeferredShelfWithParamsBrowserTest);
 };
 
 // This tests simulates normal workflow for starting ARC app in deferred mode.
@@ -442,7 +450,7 @@ IN_PROC_BROWSER_TEST_P(ArcAppDeferredShelfWithParamsBrowserTest,
   const std::string app_id = GetTestApp1Id(kTestAppPackage);
   const ash::ShelfID shelf_id(app_id);
   if (is_pinned()) {
-    controller->PinAppWithID(app_id);
+    PinAppWithIDToShelf(app_id);
     const ash::ShelfItem* item = controller->GetItem(shelf_id);
     EXPECT_EQ(kTestAppName16, item->title);
   } else {
@@ -524,8 +532,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, PinOnPackageUpdateAndRemove) {
   const ash::ShelfID shelf_id1(GetTestApp1Id(kTestAppPackage));
   const ash::ShelfID shelf_id2(GetTestApp2Id(kTestAppPackage));
   ChromeShelfController* controller = ChromeShelfController::instance();
-  controller->PinAppWithID(shelf_id1.app_id);
-  controller->PinAppWithID(shelf_id2.app_id);
+  PinAppWithIDToShelf(shelf_id1.app_id);
+  PinAppWithIDToShelf(shelf_id2.app_id);
   EXPECT_TRUE(controller->GetItem(shelf_id1));
   EXPECT_TRUE(controller->GetItem(shelf_id2));
 

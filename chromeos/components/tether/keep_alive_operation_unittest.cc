@@ -36,6 +36,10 @@ namespace {
 class MockOperationObserver : public KeepAliveOperation::Observer {
  public:
   MockOperationObserver() = default;
+
+  MockOperationObserver(const MockOperationObserver&) = delete;
+  MockOperationObserver& operator=(const MockOperationObserver&) = delete;
+
   ~MockOperationObserver() = default;
 
   MOCK_METHOD2(OnOperationFinishedRaw,
@@ -45,14 +49,15 @@ class MockOperationObserver : public KeepAliveOperation::Observer {
                            std::unique_ptr<DeviceStatus> device_status) {
     OnOperationFinishedRaw(remote_device, device_status.get());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockOperationObserver);
 };
 
 }  // namespace
 
 class KeepAliveOperationTest : public testing::Test {
+ public:
+  KeepAliveOperationTest(const KeepAliveOperationTest&) = delete;
+  KeepAliveOperationTest& operator=(const KeepAliveOperationTest&) = delete;
+
  protected:
   KeepAliveOperationTest()
       : local_device_(multidevice::RemoteDeviceRefBuilder()
@@ -117,9 +122,6 @@ class KeepAliveOperationTest : public testing::Test {
   base::SimpleTestClock test_clock_;
   MockOperationObserver mock_observer_;
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveOperationTest);
 };
 
 // Tests that the KeepAliveTickle message is sent to the remote device once the
@@ -167,7 +169,7 @@ TEST_F(KeepAliveOperationTest, NotifiesObserversOnResponse) {
 
 TEST_F(KeepAliveOperationTest, RecordsResponseDuration) {
   static constexpr base::TimeDelta kKeepAliveTickleResponseTime =
-      base::TimeDelta::FromSeconds(3);
+      base::Seconds(3);
 
   EXPECT_CALL(mock_observer_, OnOperationFinishedRaw(remote_device_, _));
 

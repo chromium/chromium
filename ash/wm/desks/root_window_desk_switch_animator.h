@@ -367,8 +367,10 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // cases we do not want to notify our delegate that the animation is finished.
   bool setting_new_transform_ = false;
 
-  // Callback that is run after the ending screenshot is taken for testing
-  // purposes.
+  // Callbacks that are run after the screenshots are taken for testing
+  // purposes. Waiting for the ending screenshots means you will implicitly wait
+  // for the starting screenshots too.
+  base::OnceClosure on_starting_screenshot_taken_callback_for_testing_;
   base::OnceClosure on_ending_screenshot_taken_callback_for_testing_;
 
   base::WeakPtrFactory<RootWindowDeskSwitchAnimator> weak_ptr_factory_{this};

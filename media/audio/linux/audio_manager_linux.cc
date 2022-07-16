@@ -28,13 +28,6 @@
 
 namespace media {
 
-enum LinuxAudioIO {
-  kPulse,
-  kAlsa,
-  kCras,
-  kAudioIOMax = kCras  // Must always be equal to largest logged entry.
-};
-
 std::unique_ptr<media::AudioManager> CreateAudioManager(
     std::unique_ptr<AudioThread> audio_thread,
     AudioLogFactory* audio_log_factory) {
@@ -47,7 +40,6 @@ std::unique_ptr<media::AudioManager> CreateAudioManager(
 
 #if defined(USE_CRAS)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUseCras)) {
-    UMA_HISTOGRAM_ENUMERATION("Media.LinuxAudioIO", kCras, kAudioIOMax + 1);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     return std::make_unique<AudioManagerChromeOS>(std::move(audio_thread),
                                                   audio_log_factory);
@@ -62,7 +54,6 @@ std::unique_ptr<media::AudioManager> CreateAudioManager(
   pa_threaded_mainloop* pa_mainloop = nullptr;
   pa_context* pa_context = nullptr;
   if (pulse::InitPulse(&pa_mainloop, &pa_context)) {
-    UMA_HISTOGRAM_ENUMERATION("Media.LinuxAudioIO", kPulse, kAudioIOMax + 1);
     return std::make_unique<AudioManagerPulse>(
         std::move(audio_thread), audio_log_factory, pa_mainloop, pa_context);
   }
@@ -71,7 +62,6 @@ std::unique_ptr<media::AudioManager> CreateAudioManager(
 #endif
 
 #if defined(USE_ALSA)
-  UMA_HISTOGRAM_ENUMERATION("Media.LinuxAudioIO", kAlsa, kAudioIOMax + 1);
   return std::make_unique<AudioManagerAlsa>(std::move(audio_thread),
                                             audio_log_factory);
 #else

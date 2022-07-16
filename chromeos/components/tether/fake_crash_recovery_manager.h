@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_TETHER_FAKE_CRASH_RECOVERY_MANAGER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/components/tether/crash_recovery_manager.h"
 
 namespace chromeos {
@@ -17,6 +16,10 @@ namespace tether {
 class FakeCrashRecoveryManager : public CrashRecoveryManager {
  public:
   FakeCrashRecoveryManager();
+
+  FakeCrashRecoveryManager(const FakeCrashRecoveryManager&) = delete;
+  FakeCrashRecoveryManager& operator=(const FakeCrashRecoveryManager&) = delete;
+
   ~FakeCrashRecoveryManager() override;
 
   base::OnceClosure TakeOnRestorationFinishedCallback() {
@@ -29,8 +32,6 @@ class FakeCrashRecoveryManager : public CrashRecoveryManager {
 
  private:
   base::OnceClosure on_restoration_finished_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCrashRecoveryManager);
 };
 
 }  // namespace tether

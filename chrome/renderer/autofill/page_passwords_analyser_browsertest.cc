@@ -116,6 +116,11 @@ const std::string AutocompleteSuggestionString(const std::string& suggestion) {
 }  // namespace
 
 class PagePasswordsAnalyserTest : public ChromeRenderViewTest {
+ public:
+  PagePasswordsAnalyserTest(const PagePasswordsAnalyserTest&) = delete;
+  PagePasswordsAnalyserTest& operator=(const PagePasswordsAnalyserTest&) =
+      delete;
+
  protected:
   PagePasswordsAnalyserTest()
       : mock_logger_(new MockPageFormAnalyserLogger()) {}
@@ -160,8 +165,6 @@ class PagePasswordsAnalyserTest : public ChromeRenderViewTest {
   PagePasswordsAnalyser page_passwords_analyser;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(PagePasswordsAnalyserTest);
-
   std::vector<blink::WebElement> elements_;
   std::unique_ptr<MockPageFormAnalyserLogger> mock_logger_;
 };

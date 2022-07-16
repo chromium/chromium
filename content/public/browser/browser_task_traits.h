@@ -42,6 +42,14 @@ enum class BrowserTaskType {
   // A subset of tasks related to user input.
   kUserInput,
 
+  // Tasks processing navigation network request's response from the network
+  // service.
+  // NOTE: This task type should not be used for other navigation-related tasks
+  // as they should be ordered w.r.t. IPC channel and the UI thread's default
+  // task runner. Reach out to navigation-dev@ before adding new usages.
+  // TODO(altimin): Make this content-internal.
+  kNavigationNetworkResponse,
+
   // Used to validate values in Java
   kBrowserTaskType_Last
 };

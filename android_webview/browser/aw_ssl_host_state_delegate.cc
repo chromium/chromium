@@ -61,13 +61,17 @@ bool AwSSLHostStateDelegate::DidHostRunInsecureContent(
   return false;
 }
 
-void AwSSLHostStateDelegate::AllowHttpForHost(const std::string& host) {
+void AwSSLHostStateDelegate::AllowHttpForHost(
+    const std::string& host,
+    content::WebContents* web_contents) {
   // Intentional no-op for Android WebView.
 }
 
-bool AwSSLHostStateDelegate::IsHttpAllowedForHost(const std::string& host) {
+bool AwSSLHostStateDelegate::IsHttpAllowedForHost(
+    const std::string& host,
+    content::WebContents* web_contents) {
   // Intentional no-op for Android WebView. Return value does not matter as
-  // HTTPS-Only Mode is not enabled on WebView.
+  // HTTPS-First Mode is not enabled on WebView.
   return false;
 }
 

@@ -16,9 +16,12 @@ struct wl_client;
 struct wl_resource;
 
 namespace exo {
+
+class ShellSurfaceBase;
+
 namespace wayland {
 
-constexpr uint32_t kZAuraShellVersion = 21;
+constexpr uint32_t kZAuraShellVersion = 28;
 
 // Adds bindings to the Aura Shell. Normally this implies Ash on ChromeOS
 // builds. On non-ChromeOS builds the protocol provides access to Aura windowing
@@ -32,6 +35,10 @@ class AuraSurface : public SurfaceObserver,
                     public ::wm::ActivationChangeObserver {
  public:
   AuraSurface(Surface* surface, wl_resource* resource);
+
+  AuraSurface(const AuraSurface&) = delete;
+  AuraSurface& operator=(const AuraSurface&) = delete;
+
   ~AuraSurface() override;
 
   void SetFrame(SurfaceFrameType type);
@@ -46,8 +53,8 @@ class AuraSurface : public SurfaceObserver,
   void DrawAttention();
   void SetFullscreenMode(uint32_t mode);
   void IntentToSnap(uint32_t snap_direction);
-  void SetSnapLeft();
-  void SetSnapRight();
+  void SetSnapPrimary();
+  void SetSnapSecondary();
   void UnsetSnap();
   void SetWindowSessionId(int32_t window_session_id);
   void SetCanGoBack();
@@ -55,11 +62,17 @@ class AuraSurface : public SurfaceObserver,
   void SetPip();
   void UnsetPip();
   void SetAspectRatio(const gfx::SizeF& aspect_ratio);
+  void MoveToDesk(int desk_index);
+  void SetInitialWorkspace(const char* initial_workspace);
+  void Pin(bool trusted);
+  void Unpin();
+  void SetOrientationLock(uint32_t orientation_lock);
 
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
   void OnWindowOcclusionChanged(Surface* surface) override;
   void OnFrameLockingChanged(Surface* surface, bool lock) override;
+  void OnDeskChanged(Surface* surface, int state) override;
 
   // Overridden from ActivationChangeObserver:
   void OnWindowActivating(ActivationReason reason,
@@ -81,8 +94,34 @@ class AuraSurface : public SurfaceObserver,
   void ComputeAndSendOcclusion(
       const aura::Window::OcclusionState occlusion_state,
       const SkRegion& occluded_region);
+};
 
-  DISALLOW_COPY_AND_ASSIGN(AuraSurface);
+// Provides an implementation for top level operations on the shell.
+class AuraToplevel {
+ public:
+  AuraToplevel(ShellSurfaceBase* shell_surface);
+  AuraToplevel(const AuraToplevel&) = delete;
+  AuraToplevel& operator=(const AuraToplevel&) = delete;
+  ~AuraToplevel();
+
+  void SetOrientationLock(uint32_t lock_type);
+  void SetClientSubmitsSurfacesInPixelCoordinates(bool enable);
+
+ private:
+  ShellSurfaceBase* shell_surface_;
+};
+
+class AuraPopup {
+ public:
+  AuraPopup(ShellSurfaceBase* shell_surface);
+  AuraPopup(const AuraPopup&) = delete;
+  AuraPopup& operator=(const AuraPopup&) = delete;
+  ~AuraPopup();
+
+  void SetClientSubmitsSurfacesInPixelCoordinates(bool enable);
+
+ private:
+  ShellSurfaceBase* shell_surface_;
 };
 
 }  // namespace wayland

@@ -22,11 +22,11 @@ class NET_EXPORT ClientCertVerifier {
    public:
     Request() {}
 
+    Request(const Request&) = delete;
+    Request& operator=(const Request&) = delete;
+
     // Destruction of the Request cancels it.
     virtual ~Request() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Request);
   };
 
   virtual ~ClientCertVerifier() {}

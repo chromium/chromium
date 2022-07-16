@@ -25,6 +25,10 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/init/gl_factory.h"
 
+#if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace gles2_conform_support {
 // Thread local key for ThreadState instance. Accessed when holding g_egl_lock
 // only, since the initialization can not be Guaranteed otherwise.  Not in
@@ -80,6 +84,9 @@ egl::ThreadState* ThreadState::Get() {
       // Need to call both Init and InitFromArgv, since Windows does not use
       // argc, argv in CommandLine::Init(argc, argv).
       command_line->InitFromArgv(argv);
+#if defined(USE_OZONE)
+      ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
+#endif
       gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true);
       gpu::GpuFeatureInfo gpu_feature_info;
       if (!command_line->HasSwitch(switches::kDisableGpuDriverBugWorkarounds)) {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_OAUTH2_TOKEN_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_OAUTH2_TOKEN_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 class PrefService;
@@ -26,24 +25,27 @@ class DeviceOAuth2TokenServiceFactory {
   // DeviceOAuth2TokenService during startup or shutdown.
   static DeviceOAuth2TokenService* Get();
 
-  // Called by ChromeBrowserMainPartsChromeOS in order to bootstrap the
+  // Called by `ChromeBrowserMainPartsAsh` in order to bootstrap the
   // DeviceOAuth2TokenService instance after the required global data is
   // available (local state, url loader and CrosSettings).
   static void Initialize(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* local_state);
 
-  // Called by ChromeBrowserMainPartsChromeOS in order to shutdown the
+  // Called by `ChromeBrowserMainPartsAsh` in order to shutdown the
   // DeviceOAuth2TokenService instance and cancel all in-flight requests before
   // the required global data is destroyed (local state, request context getter
   // and CrosSettings).
   static void Shutdown();
 
+  DeviceOAuth2TokenServiceFactory(const DeviceOAuth2TokenServiceFactory&) =
+      delete;
+  DeviceOAuth2TokenServiceFactory& operator=(
+      const DeviceOAuth2TokenServiceFactory&) = delete;
+
  private:
   DeviceOAuth2TokenServiceFactory();
   ~DeviceOAuth2TokenServiceFactory();
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceOAuth2TokenServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_OAUTH2_TOKEN_SERVICE_FACTORY_H_

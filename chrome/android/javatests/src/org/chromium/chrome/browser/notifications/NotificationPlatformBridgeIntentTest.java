@@ -55,6 +55,7 @@ public class NotificationPlatformBridgeIntentTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1246141")
     @Feature({"Browser", "Notifications"})
     public void testLaunchNotificationPreferencesForCategory() {
         Assert.assertFalse("The native library should not be loaded yet",
@@ -92,6 +93,7 @@ public class NotificationPlatformBridgeIntentTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1246141")
     @Feature({"Browser", "Notifications"})
     public void testLaunchNotificationPreferencesForWebsite() {
         Assert.assertFalse("The native library should not be loaded yet",

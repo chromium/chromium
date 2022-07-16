@@ -279,6 +279,29 @@ TEST_F(FlagsStateTest, AddTwoFlagsRemoveBoth) {
   EXPECT_TRUE(entries_list == nullptr || entries_list->GetList().size() == 0);
 }
 
+TEST_F(FlagsStateTest, CombineOriginListValues) {
+  // Add a value in prefs, and on command line.
+  flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags11, true);
+  const std::string prefs_value =
+      "http://a.test,http://c.test,http://dupe.test";
+  flags_state_->SetOriginListFlag(kFlags11, prefs_value, &flags_storage_);
+  ASSERT_EQ(flags_storage_.GetOriginListFlag(kFlags11), prefs_value);
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  const std::string cli_value = "http://dupe.test,http://b.test";
+  command_line.AppendSwitchASCII(kStringSwitch, cli_value);
+  ASSERT_EQ(command_line.GetSwitchValueASCII(kStringSwitch), cli_value);
+
+  flags_state_->ConvertFlagsToSwitches(&flags_storage_, &command_line,
+                                       kNoSentinels, kEnableFeatures,
+                                       kDisableFeatures);
+
+  // Lists are concatenated together with duplicates removed, but are not
+  // sorted.
+  EXPECT_EQ(command_line.GetSwitchValueASCII(kStringSwitch),
+            "http://dupe.test,http://b.test,http://a.test,http://c.test");
+}
+
 TEST_F(FlagsStateTest, ConvertFlagsToSwitches) {
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, true);
 

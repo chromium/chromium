@@ -12,11 +12,10 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::TimeDelta;
 
 namespace {
 // Default elapsed time between frames.
-constexpr TimeDelta FrameTime = TimeDelta::FromMilliseconds(10);
+constexpr base::TimeDelta FrameTime = base::Milliseconds(10);
 }  // namespace
 
 namespace media {
@@ -28,7 +27,7 @@ class PromotionHintAggregatorImplTest : public testing::Test {
 
   void SetUp() override {
     // Advance the clock so that time 0 isn't recent.
-    tick_clock_.Advance(TimeDelta::FromSeconds(10000));
+    tick_clock_.Advance(base::Seconds(10000));
     impl_ = std::make_unique<PromotionHintAggregatorImpl>(&tick_clock_);
   }
 
@@ -36,7 +35,7 @@ class PromotionHintAggregatorImplTest : public testing::Test {
 
   // Sends a new frame that's |is_promotable| or not, with |elapsed| since the
   // previous frame.  Returns whether the video is promotable.
-  bool SendFrame(bool is_promotable, TimeDelta elapsed = FrameTime) {
+  bool SendFrame(bool is_promotable, base::TimeDelta elapsed = FrameTime) {
     tick_clock_.Advance(elapsed);
     PromotionHintAggregator::Hint hint(gfx::Rect(), is_promotable);
     impl_->NotifyPromotionHint(hint);
@@ -60,8 +59,8 @@ TEST_F(PromotionHintAggregatorImplTest, SomePromotableFramesArePromotable) {
   ASSERT_TRUE(SendFrame(true));
 
   // Waiting a while should't cause un-promotion.
-  ASSERT_TRUE(SendFrame(true, TimeDelta::FromMilliseconds(10000)));
-  ASSERT_TRUE(SendFrame(true, TimeDelta::FromMilliseconds(10000)));
+  ASSERT_TRUE(SendFrame(true, base::Milliseconds(10000)));
+  ASSERT_TRUE(SendFrame(true, base::Milliseconds(10000)));
 }
 
 TEST_F(PromotionHintAggregatorImplTest, UnpromotableFramesDelayPromotion) {
@@ -71,7 +70,7 @@ TEST_F(PromotionHintAggregatorImplTest, UnpromotableFramesDelayPromotion) {
 
   // Send more until the minimum time has elapsed.  Note that this will also be
   // at least enough promotable frames in a row.
-  while (tick_clock_.NowTicks() - start + FrameTime < TimeDelta::FromSeconds(2))
+  while (tick_clock_.NowTicks() - start + FrameTime < base::Seconds(2))
     ASSERT_FALSE(SendFrame(true));
 
   // The next frame should do it.
@@ -84,7 +83,7 @@ TEST_F(PromotionHintAggregatorImplTest, PromotableFramesMustBeFastEnough) {
     ASSERT_FALSE(SendFrame(true));
 
   // Time passes.
-  tick_clock_.Advance(TimeDelta::FromMilliseconds(500));
+  tick_clock_.Advance(base::Milliseconds(500));
 
   // We should now start over.
   for (int i = 0; i < 9; i++)

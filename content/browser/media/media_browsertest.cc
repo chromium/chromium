@@ -121,10 +121,10 @@ std::string MediaBrowserTest::EncodeErrorMessage(
 }
 
 void MediaBrowserTest::AddTitlesToAwait(content::TitleWatcher* title_watcher) {
-  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kEnded));
-  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kError));
-  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kErrorEvent));
-  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kFailed));
+  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kEndedTitle));
+  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kErrorTitle));
+  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kErrorEventTitle));
+  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kFailedTitle));
 }
 
 // Tests playback and seeking of an audio or video file over file or http based
@@ -149,7 +149,7 @@ class MediaTest : public testing::WithParamInterface<bool>,
                  bool http) {
     base::StringPairs query_params;
     query_params.emplace_back(tag, media_file);
-    RunMediaTestPage("player.html", query_params, media::kEnded, http);
+    RunMediaTestPage("player.html", query_params, media::kEndedTitle, http);
   }
 
   void RunErrorMessageTest(const std::string& tag,
@@ -160,11 +160,12 @@ class MediaTest : public testing::WithParamInterface<bool>,
     query_params.emplace_back(tag, media_file);
     query_params.emplace_back("error_substr",
                               EncodeErrorMessage(expected_error_substring));
-    RunMediaTestPage("player.html", query_params, media::kErrorEvent, http);
+    RunMediaTestPage("player.html", query_params, media::kErrorEventTitle,
+                     http);
   }
 
   void RunVideoSizeTest(const char* media_file, int width, int height) {
-    std::string expected_title = std::string(media::kEnded) + " " +
+    std::string expected_title = std::string(media::kEndedTitle) + " " +
                                  base::NumberToString(width) + " " +
                                  base::NumberToString(height);
     base::StringPairs query_params;
@@ -303,7 +304,8 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearHighBitDepthMp4) {
 #endif
 IN_PROC_BROWSER_TEST_F(MediaTest, MAYBE_LoadManyVideos) {
   base::StringPairs query_params;
-  RunMediaTestPage("load_many_videos.html", query_params, media::kEnded, true);
+  RunMediaTestPage("load_many_videos.html", query_params, media::kEndedTitle,
+                   true);
 }
 #endif  // !defined(OS_ANDROID)
 
@@ -398,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(MediaTest, Navigate) {
 
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioOnly_XHE_AAC_MP4) {
   if (media::IsSupportedAudioType(
-          {media::kCodecAAC, media::AudioCodecProfile::kXHE_AAC})) {
+          {media::AudioCodec::kAAC, media::AudioCodecProfile::kXHE_AAC})) {
     PlayAudio("noise-xhe-aac.mp4", GetParam());
   }
 }

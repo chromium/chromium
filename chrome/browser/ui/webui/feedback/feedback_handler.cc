@@ -52,24 +52,24 @@ FeedbackHandler::FeedbackHandler(const FeedbackDialog* dialog)
 FeedbackHandler::~FeedbackHandler() = default;
 
 void FeedbackHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showDialog", base::BindRepeating(&FeedbackHandler::HandleShowDialog,
                                         base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_ui()->RegisterMessageCallback(
+#if defined(OS_CHROMEOS)
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showAssistantLogsInfo",
       base::BindRepeating(&FeedbackHandler::HandleShowAssistantLogsInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showBluetoothLogsInfo",
       base::BindRepeating(&FeedbackHandler::HandleShowBluetoothLogsInfo,
                           base::Unretained(this)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_ui()->RegisterMessageCallback(
+#endif  // defined(OS_CHROMEOS)
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showSystemInfo",
       base::BindRepeating(&FeedbackHandler::HandleShowSystemInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showMetrics", base::BindRepeating(&FeedbackHandler::HandleShowMetrics,
                                          base::Unretained(this)));
 }
@@ -78,7 +78,7 @@ void FeedbackHandler::HandleShowDialog(const base::ListValue* args) {
   dialog_->Show();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
 void FeedbackHandler::HandleShowAssistantLogsInfo(const base::ListValue* args) {
   ShowChildPage(dialog_, ChildPageURL("html/assistant_logs_info.html"),
                 std::u16string(),
@@ -91,7 +91,7 @@ void FeedbackHandler::HandleShowBluetoothLogsInfo(const base::ListValue* args) {
                 /*dialog_width=*/400, /*dialog_height=*/120,
                 /*can_resize=*/false, /*can_minimize=*/false);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // defined(OS_CHROMEOS)
 
 void FeedbackHandler::HandleShowSystemInfo(const base::ListValue* args) {
   ShowChildPage(dialog_, ChildPageURL("html/sys_info.html"),

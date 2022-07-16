@@ -22,7 +22,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/scoped_generic.h"
@@ -47,12 +46,13 @@ constexpr const char kCRLFTerminator[] = "\r\n";
 class HTTPTransportSocket final : public HTTPTransport {
  public:
   HTTPTransportSocket() = default;
+
+  HTTPTransportSocket(const HTTPTransportSocket&) = delete;
+  HTTPTransportSocket& operator=(const HTTPTransportSocket&) = delete;
+
   ~HTTPTransportSocket() override = default;
 
   bool ExecuteSynchronously(std::string* response_body) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HTTPTransportSocket);
 };
 
 struct ScopedAddrinfoTraits {
@@ -74,6 +74,9 @@ class FdStream : public Stream {
  public:
   explicit FdStream(int fd) : fd_(fd) { CHECK(fd_ >= 0); }
 
+  FdStream(const FdStream&) = delete;
+  FdStream& operator=(const FdStream&) = delete;
+
   bool LoggingWrite(const void* data, size_t size) override {
     return LoggingWriteFile(fd_, data, size);
   }
@@ -88,14 +91,15 @@ class FdStream : public Stream {
 
  private:
   int fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(FdStream);
 };
 
 #if defined(CRASHPAD_USE_BORINGSSL)
 class SSLStream : public Stream {
  public:
   SSLStream() = default;
+
+  SSLStream(const SSLStream&) = delete;
+  SSLStream& operator=(const SSLStream&) = delete;
 
   bool Initialize(const base::FilePath& root_cert_path,
                   int sock,
@@ -210,8 +214,6 @@ class SSLStream : public Stream {
 
   ScopedSSLCTX ctx_;
   ScopedSSL ssl_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLStream);
 };
 #endif
 
@@ -262,6 +264,9 @@ class ScopedSetNonblocking {
     }
   }
 
+  ScopedSetNonblocking(const ScopedSetNonblocking&) = delete;
+  ScopedSetNonblocking& operator=(const ScopedSetNonblocking&) = delete;
+
   ~ScopedSetNonblocking() {
     if (sock_ >= 0) {
       int flags = fcntl(sock_, F_GETFL, 0);
@@ -278,8 +283,6 @@ class ScopedSetNonblocking {
 
  private:
   int sock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetNonblocking);
 };
 
 base::ScopedFD CreateSocket(const std::string& hostname,

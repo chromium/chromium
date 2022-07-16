@@ -57,6 +57,11 @@ class CreateVisualElementsManifestTest
         expected_manifest_(std::get<1>(GetParam())),
         version_("0.0.0.0") {}
 
+  CreateVisualElementsManifestTest(const CreateVisualElementsManifestTest&) =
+      delete;
+  CreateVisualElementsManifestTest& operator=(
+      const CreateVisualElementsManifestTest&) = delete;
+
   void SetUp() override {
     // Create a temp directory for testing.
     ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
@@ -125,9 +130,6 @@ class CreateVisualElementsManifestTest
 
   // The path to the Start Menu shortcut.
   base::FilePath start_menu_shortcut_path_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CreateVisualElementsManifestTest);
 };
 
 constexpr char kExpectedPrimaryManifest[] =
@@ -462,12 +464,12 @@ class MigrateShortcutTest
       : shortcut_operation_(testing::get<0>(GetParam())),
         shortcut_level_(testing::get<1>(GetParam())) {}
 
+  MigrateShortcutTest(const MigrateShortcutTest&) = delete;
+  MigrateShortcutTest& operator=(const MigrateShortcutTest&) = delete;
+
  protected:
   const installer::InstallShortcutOperation shortcut_operation_;
   const installer::InstallShortcutLevel shortcut_level_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MigrateShortcutTest);
 };
 
 TEST_P(MigrateShortcutTest, MigrateAwayFromDeprecatedStartMenuTest) {

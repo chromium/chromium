@@ -1,3 +1,1 @@
-monorail {
-  component: "UI>Browser>Shopping"
-}
+mixins: "//chrome/browser/cart/COMMON_METADATA"

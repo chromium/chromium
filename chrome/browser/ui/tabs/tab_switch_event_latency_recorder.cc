@@ -27,26 +27,22 @@ void TabSwitchEventLatencyRecorder::OnWillChangeActiveTab(
     case EventType::kKeyboard:
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Browser.Tabs.InputEventToSelectionTime.Keyboard", delta,
-          base::TimeDelta::FromMicroseconds(100),
-          base::TimeDelta::FromMilliseconds(50), 50);
+          base::Microseconds(100), base::Milliseconds(50), 50);
       break;
     case EventType::kMouse:
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Browser.Tabs.InputEventToSelectionTime.Mouse", delta,
-          base::TimeDelta::FromMicroseconds(100),
-          base::TimeDelta::FromMilliseconds(50), 50);
+          base::Microseconds(100), base::Milliseconds(50), 50);
       break;
     case EventType::kTouch:
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Browser.Tabs.InputEventToSelectionTime.Touch", delta,
-          base::TimeDelta::FromMicroseconds(100),
-          base::TimeDelta::FromMilliseconds(50), 50);
+          base::Microseconds(100), base::Milliseconds(50), 50);
       break;
     case EventType::kWheel:
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Browser.Tabs.InputEventToSelectionTime.Wheel", delta,
-          base::TimeDelta::FromMicroseconds(100),
-          base::TimeDelta::FromMilliseconds(50), 50);
+          base::Microseconds(100), base::Milliseconds(50), 50);
       break;
     case EventType::kOther:
       break;

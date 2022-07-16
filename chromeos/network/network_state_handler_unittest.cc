@@ -16,7 +16,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -108,6 +107,10 @@ base::Value GenerateSimSlotInfosWithEid(const std::string& eid) {
 class TestObserver final : public chromeos::NetworkStateHandlerObserver {
  public:
   explicit TestObserver(NetworkStateHandler* handler) : handler_(handler) {}
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   void DeviceListChanged() override {
@@ -295,13 +298,15 @@ class TestObserver final : public chromeos::NetworkStateHandlerObserver {
   absl::optional<base::RunLoop> run_loop_scan_started_;
   absl::optional<base::RunLoop> run_loop_scan_completed_;
   std::vector<std::pair<std::string, std::string>> service_path_transitions_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 class TestTetherSortDelegate : public NetworkStateHandler::TetherSortDelegate {
  public:
   TestTetherSortDelegate() = default;
+
+  TestTetherSortDelegate(const TestTetherSortDelegate&) = delete;
+  TestTetherSortDelegate& operator=(const TestTetherSortDelegate&) = delete;
+
   ~TestTetherSortDelegate() = default;
 
   // NetworkStateHandler::TetherSortDelegate:
@@ -319,9 +324,6 @@ class TestTetherSortDelegate : public NetworkStateHandler::TetherSortDelegate {
                 return first_network->guid() >= second_network->guid();
               });
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestTetherSortDelegate);
 };
 
 }  // namespace
@@ -335,6 +337,10 @@ class NetworkStateHandlerTest : public testing::Test {
         manager_test_(nullptr),
         profile_test_(nullptr),
         service_test_(nullptr) {}
+
+  NetworkStateHandlerTest(const NetworkStateHandlerTest&) = delete;
+  NetworkStateHandlerTest& operator=(const NetworkStateHandlerTest&) = delete;
+
   ~NetworkStateHandlerTest() override = default;
 
   void SetUp() override {
@@ -453,9 +459,6 @@ class NetworkStateHandlerTest : public testing::Test {
   ShillManagerClient::TestInterface* manager_test_;
   ShillProfileClient::TestInterface* profile_test_;
   ShillServiceClient::TestInterface* service_test_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateHandlerTest);
 };
 
 TEST_F(NetworkStateHandlerTest, NetworkStateHandlerStub) {
@@ -1098,13 +1101,40 @@ TEST_F(NetworkStateHandlerTest, TetherNetworkState) {
   EXPECT_EQ(kTetherSignalStrength1, tether_network->signal_strength());
   EXPECT_FALSE(tether_network->tether_has_connected_to_host());
 
+  // Property changes to a connecting or connected Tether network should notify
+  // observers that the active network states have changed.
+  network_state_handler_->SetTetherNetworkStateConnecting(
+      kTetherGuid1 /* guid */);
+
+  EXPECT_EQ(1u, test_observer_->active_network_change_count());
+  EXPECT_EQ(1u, test_observer_->network_list_changed_count());
+  EXPECT_EQ(1, test_observer_->PropertyUpdatesForService(kTetherGuid1));
+
+  // Update the Tether battery percentage property and verify the observers are
+  // correctly notified.
+  EXPECT_TRUE(network_state_handler_->UpdateTetherNetworkProperties(
+      kTetherGuid1, kTetherCarrier1, kTetherBatteryPercentage1,
+      0 /* signal_strength */));
+
+  EXPECT_EQ(2u, test_observer_->active_network_change_count());
+  EXPECT_EQ(1u, test_observer_->network_list_changed_count());
+  EXPECT_EQ(2, test_observer_->PropertyUpdatesForService(kTetherGuid1));
+
+  network_state_handler_->SetTetherNetworkStateDisconnected(
+      kTetherGuid1 /* guid */);
+
+  EXPECT_EQ(3u, test_observer_->active_network_change_count());
+  EXPECT_EQ(1u, test_observer_->network_list_changed_count());
+  EXPECT_EQ(3, test_observer_->PropertyUpdatesForService(kTetherGuid1));
+
   // Update the Tether properties and verify the changes.
   EXPECT_TRUE(network_state_handler_->UpdateTetherNetworkProperties(
       kTetherGuid1, "NewCarrier", 5 /* battery_percentage */,
       10 /* signal_strength */));
 
+  EXPECT_EQ(3u, test_observer_->active_network_change_count());
   EXPECT_EQ(1u, test_observer_->network_list_changed_count());
-  EXPECT_EQ(1, test_observer_->PropertyUpdatesForService(kTetherGuid1));
+  EXPECT_EQ(4, test_observer_->PropertyUpdatesForService(kTetherGuid1));
 
   tether_network =
       network_state_handler_->GetNetworkStateFromGuid(kTetherGuid1);
@@ -1121,7 +1151,7 @@ TEST_F(NetworkStateHandlerTest, TetherNetworkState) {
       network_state_handler_->SetTetherNetworkHasConnectedToHost(kTetherGuid1));
 
   EXPECT_EQ(1u, test_observer_->network_list_changed_count());
-  EXPECT_EQ(2, test_observer_->PropertyUpdatesForService(kTetherGuid1));
+  EXPECT_EQ(5, test_observer_->PropertyUpdatesForService(kTetherGuid1));
 
   // Try calling that function again. It should return false and should not
   // trigger a NetworkListChanged() callback for observers.
@@ -1129,12 +1159,12 @@ TEST_F(NetworkStateHandlerTest, TetherNetworkState) {
       network_state_handler_->SetTetherNetworkHasConnectedToHost(kTetherGuid1));
 
   EXPECT_EQ(1u, test_observer_->network_list_changed_count());
-  EXPECT_EQ(2, test_observer_->PropertyUpdatesForService(kTetherGuid1));
+  EXPECT_EQ(5, test_observer_->PropertyUpdatesForService(kTetherGuid1));
 
   network_state_handler_->RemoveTetherNetworkState(kTetherGuid1);
 
   EXPECT_EQ(2u, test_observer_->network_list_changed_count());
-  EXPECT_EQ(2, test_observer_->PropertyUpdatesForService(kTetherGuid1));
+  EXPECT_EQ(5, test_observer_->PropertyUpdatesForService(kTetherGuid1));
 
   ASSERT_FALSE(network_state_handler_->GetNetworkStateFromGuid(kTetherGuid1));
 
@@ -2117,7 +2147,7 @@ TEST_F(NetworkStateHandlerTest, IPConfigChanged) {
   base::DictionaryValue ip_config_properties;
   ip_config_test->AddIPConfig(kIPConfigPath, ip_config_properties);
   base::ListValue device_ip_configs;
-  device_ip_configs.AppendString(kIPConfigPath);
+  device_ip_configs.Append(kIPConfigPath);
   device_test_->SetDeviceProperty(kShillManagerClientStubWifiDevice,
                                   shill::kIPConfigsProperty, device_ip_configs,
                                   /*notify_changed=*/true);
@@ -2301,7 +2331,7 @@ TEST_F(NetworkStateHandlerTest, SyncStubCellularNetworks_SimInfoChange) {
   EXPECT_EQ(1u, test_observer_->network_list_changed_count());
 }
 
-TEST_F(NetworkStateHandlerTest, BlockedByPolicyBlocked) {
+TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyBlocked) {
   NetworkState* wifi1 = network_state_handler_->GetModifiableNetworkState(
       kShillManagerClientStubDefaultWifi);
   NetworkState* wifi2 = network_state_handler_->GetModifiableNetworkState(
@@ -2338,7 +2368,7 @@ TEST_F(NetworkStateHandlerTest, BlockedByPolicyBlocked) {
   EXPECT_FALSE(wifi2->blocked_by_policy());
 }
 
-TEST_F(NetworkStateHandlerTest, BlockedByPolicyOnlyManaged) {
+TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyOnlyManaged) {
   NetworkState* wifi1 = network_state_handler_->GetModifiableNetworkState(
       kShillManagerClientStubDefaultWifi);
   NetworkState* wifi2 = network_state_handler_->GetModifiableNetworkState(
@@ -2372,7 +2402,44 @@ TEST_F(NetworkStateHandlerTest, BlockedByPolicyOnlyManaged) {
   EXPECT_TRUE(wifi2->blocked_by_policy());
 }
 
-TEST_F(NetworkStateHandlerTest, BlockedByPolicyOnlyManagedIfAvailable) {
+TEST_F(NetworkStateHandlerTest, BlockedCellularByPolicyOnlyManaged) {
+  const char kTestCellularServicePath2[] = "test_cellular_service_path2";
+  const char kTestCellularServiceGuid2[] = "test_cellular_guid2";
+  const char kTestCellularServiceName2[] = "test_cellular2";
+  AddService(kTestCellularServicePath2, kTestCellularServiceGuid2,
+             kTestCellularServiceName2, shill::kTypeCellular,
+             shill::kStateIdle);
+  base::RunLoop().RunUntilIdle();
+
+  NetworkState* cellular1 = network_state_handler_->GetModifiableNetworkState(
+      kShillManagerClientStubCellular);
+  NetworkState* cellular2 = network_state_handler_->GetModifiableNetworkState(
+      kTestCellularServicePath2);
+  EXPECT_FALSE(cellular1->IsManagedByPolicy());
+  EXPECT_FALSE(cellular1->blocked_by_policy());
+  EXPECT_FALSE(cellular2->IsManagedByPolicy());
+  EXPECT_FALSE(cellular2->blocked_by_policy());
+
+  network_state_handler_->UpdateBlockedCellularNetworks(true);
+
+  EXPECT_TRUE(cellular1->blocked_by_policy());
+  EXPECT_TRUE(cellular2->blocked_by_policy());
+
+  // Emulate 'cellular1' being a managed network.
+  std::unique_ptr<NetworkUIData> ui_data =
+      NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
+  base::Value properties(base::Value::Type::DICTIONARY);
+  properties.SetKey(shill::kProfileProperty, base::Value(kProfilePath));
+  properties.SetKey(shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
+  SetProperties(cellular1, properties);
+
+  EXPECT_TRUE(cellular1->IsManagedByPolicy());
+  EXPECT_FALSE(cellular1->blocked_by_policy());
+  EXPECT_FALSE(cellular2->IsManagedByPolicy());
+  EXPECT_TRUE(cellular2->blocked_by_policy());
+}
+
+TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyOnlyManagedIfAvailable) {
   NetworkState* wifi1 = network_state_handler_->GetModifiableNetworkState(
       kShillManagerClientStubDefaultWifi);
   NetworkState* wifi2 = network_state_handler_->GetModifiableNetworkState(
@@ -2570,16 +2637,16 @@ TEST_F(NetworkStateHandlerTest, RequestTrafficCounters) {
 
   base::RunLoop run_loop;
   network_state_handler_->RequestTrafficCounters(
-      kWifiName1,
-      base::BindOnce(
-          [](base::Value* expected_traffic_counters,
-             base::OnceClosure quit_closure,
-             const base::ListValue& actual_traffic_counters) {
-            EXPECT_EQ(base::Value::AsListValue(*expected_traffic_counters),
-                      actual_traffic_counters);
-            std::move(quit_closure).Run();
-          },
-          &traffic_counters, run_loop.QuitClosure()));
+      kWifiName1, base::BindOnce(
+                      [](base::Value* expected_traffic_counters,
+                         base::OnceClosure quit_closure,
+                         absl::optional<base::Value> actual_traffic_counters) {
+                        ASSERT_TRUE(actual_traffic_counters);
+                        EXPECT_EQ(*expected_traffic_counters,
+                                  *actual_traffic_counters);
+                        std::move(quit_closure).Run();
+                      },
+                      &traffic_counters, run_loop.QuitClosure()));
   run_loop.Run();
 }
 

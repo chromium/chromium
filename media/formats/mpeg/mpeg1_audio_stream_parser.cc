@@ -187,7 +187,9 @@ bool MPEG1AudioStreamParser::ParseHeader(MediaLog* media_log,
 }
 
 MPEG1AudioStreamParser::MPEG1AudioStreamParser()
-    : MPEGAudioStreamParserBase(kMPEG1StartCodeMask, kCodecMP3, kCodecDelay) {}
+    : MPEGAudioStreamParserBase(kMPEG1StartCodeMask,
+                                AudioCodec::kMP3,
+                                kCodecDelay) {}
 
 MPEG1AudioStreamParser::~MPEG1AudioStreamParser() = default;
 

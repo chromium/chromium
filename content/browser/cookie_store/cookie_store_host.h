@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom.h"
 #include "url/origin.h"
@@ -28,6 +27,10 @@ class CookieStoreManager;
 class CookieStoreHost : public blink::mojom::CookieStore {
  public:
   CookieStoreHost(CookieStoreManager* manager, const url::Origin& origin);
+
+  CookieStoreHost(const CookieStoreHost&) = delete;
+  CookieStoreHost& operator=(const CookieStoreHost&) = delete;
+
   ~CookieStoreHost() override;
 
   // content::mojom::CookieStore
@@ -54,8 +57,6 @@ class CookieStoreHost : public blink::mojom::CookieStore {
   // thread. However, the class implementation itself is thread-friendly, so it
   // only checks that methods are called on the same sequence.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CookieStoreHost);
 };
 
 }  // namespace content

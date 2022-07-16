@@ -156,6 +156,17 @@ BASE_EXPORT void DecommitSystemPages(
     size_t length,
     PageAccessibilityDisposition accessibility_disposition);
 
+// Decommit one or more system pages starting at |address| and continuing for
+// |length| bytes. |address| and |length| must be aligned to a system page
+// boundary.
+//
+// In contrast to |DecommitSystemPages|, this API guarantees that the pages are
+// zeroed and will always mark the region as inaccessible (the equivalent of
+// setting them to PageInaccessible).
+//
+// This API will crash if the operation cannot be performed.
+BASE_EXPORT void DecommitAndZeroSystemPages(void* address, size_t length);
+
 // Whether decommitted memory is guaranteed to be zeroed when it is
 // recommitted. Do not assume that this will not change over time.
 constexpr BASE_EXPORT bool DecommittedMemoryIsAlwaysZeroed() {

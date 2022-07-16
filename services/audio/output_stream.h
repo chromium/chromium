@@ -63,6 +63,9 @@ class OutputStream final : public media::mojom::AudioOutputStream,
       LoopbackCoordinator* coordinator,
       const base::UnguessableToken& loopback_group_id);
 
+  OutputStream(const OutputStream&) = delete;
+  OutputStream& operator=(const OutputStream&) = delete;
+
   ~OutputStream() final;
 
   // media::mojom::AudioOutputStream implementation.
@@ -114,8 +117,6 @@ class OutputStream final : public media::mojom::AudioOutputStream,
   bool is_audible_ = false;
 
   base::WeakPtrFactory<OutputStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OutputStream);
 };
 
 }  // namespace audio

@@ -16,9 +16,9 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/move_to_desks_menu_delegate.h"
-#include "chromeos/ui/frame/move_to_desks_menu_model.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
+#include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 #endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
@@ -50,9 +50,11 @@ bool SystemMenuModelDelegate::IsCommandIdChecked(int command_id) const {
 }
 
 bool SystemMenuModelDelegate::IsCommandIdEnabled(int command_id) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId)
-    return ash::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId) {
+    return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
+        browser_->window()->GetNativeWindow());
+  }
 #endif
   return chrome::IsCommandEnabled(browser_, command_id);
 }
@@ -69,9 +71,11 @@ bool SystemMenuModelDelegate::IsCommandIdVisible(int command_id) const {
       return is_maximized;
   }
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId)
-    return ash::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId) {
+    return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
+        browser_->window()->GetNativeWindow());
+  }
 #endif
   return true;
 }

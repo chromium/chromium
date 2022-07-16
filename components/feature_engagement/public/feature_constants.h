@@ -13,19 +13,30 @@ namespace feature_engagement {
 // A feature for enabling a demonstration mode for In-Product Help (IPH).
 extern const base::Feature kIPHDemoMode;
 
+// A feature for enabling a snooze mode for In-Product Help (IPH).
+extern const base::Feature kIPHSnooze;
+
+// A feature for enabling In-Product Help (IPH) to use client side
+// configuration. When this flag is enabled, finch config will be ignored for
+// all IPHs.
+extern const base::Feature kUseClientConfigIPH;
+
 // A feature to ensure all arrays can contain at least one feature.
 extern const base::Feature kIPHDummyFeature;
 
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+    defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+extern const base::Feature kIPHDesktopSharedHighlightingFeature;
 extern const base::Feature kIPHDesktopTabGroupsNewGroupFeature;
-extern const base::Feature kIPHFocusModeFeature;
-extern const base::Feature kIPHGlobalMediaControlsFeature;
+extern const base::Feature kIPHFocusHelpBubbleScreenReaderPromoFeature;
+extern const base::Feature kIPHGMCCastStartStopFeature;
 extern const base::Feature kIPHLiveCaptionFeature;
 extern const base::Feature kIPHPasswordsAccountStorageFeature;
 extern const base::Feature kIPHReadingListDiscoveryFeature;
 extern const base::Feature kIPHReadingListEntryPointFeature;
+extern const base::Feature kIPHReadingListInSidePanelFeature;
 extern const base::Feature kIPHReopenTabFeature;
+extern const base::Feature kIPHSideSearchFeature;
 extern const base::Feature kIPHTabSearchFeature;
 extern const base::Feature kIPHWebUITabStripFeature;
 extern const base::Feature kIPHDesktopSnoozeFeature;
@@ -33,7 +44,7 @@ extern const base::Feature kIPHDesktopPwaInstallFeature;
 extern const base::Feature kIPHProfileSwitchFeature;
 extern const base::Feature kIPHUpdatedConnectionSecurityIndicatorsFeature;
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
+        // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
 // All the features declared for Android below that are also used in Java,
 // should also be declared in:
@@ -47,6 +58,8 @@ extern const base::Feature
     kIPHAdaptiveButtonInTopToolbarCustomizationVoiceSearchFeature;
 extern const base::Feature kIPHAddToHomescreenMessageFeature;
 extern const base::Feature kIPHAddToHomescreenTextBubbleFeature;
+extern const base::Feature kIPHAutoDarkOptOutFeature;
+extern const base::Feature kIPHAutoDarkUserEducationMessageFeature;
 extern const base::Feature kIPHDataSaverDetailFeature;
 extern const base::Feature kIPHDataSaverMilestonePromoFeature;
 extern const base::Feature kIPHDataSaverPreviewFeature;
@@ -72,6 +85,7 @@ extern const base::Feature kIPHHomePageButtonFeature;
 extern const base::Feature kIPHHomepageTileFeature;
 extern const base::Feature kIPHHomepagePromoCardFeature;
 extern const base::Feature kIPHIdentityDiscFeature;
+extern const base::Feature kIPHInstanceSwitcherFeature;
 extern const base::Feature kIPHKeyboardAccessoryAddressFillingFeature;
 extern const base::Feature kIPHKeyboardAccessoryBarSwipingFeature;
 extern const base::Feature kIPHKeyboardAccessoryPasswordFillingFeature;
@@ -81,6 +95,7 @@ extern const base::Feature kIPHKeyboardAccessoryPaymentVirtualCardFeature;
 extern const base::Feature kIPHMicToolbarFeature;
 extern const base::Feature kIPHNewTabPageHomeButtonFeature;
 extern const base::Feature kIPHPageInfoFeature;
+extern const base::Feature kIPHPageInfoStoreInfoFeature;
 extern const base::Feature kIPHPreviewsOmniboxUIFeature;
 extern const base::Feature kIPHQuietNotificationPromptsFeature;
 extern const base::Feature kIPHReadLaterContextMenuFeature;
@@ -98,6 +113,7 @@ extern const base::Feature kIPHVideoTutorialNTPDownloadFeature;
 extern const base::Feature kIPHVideoTutorialNTPSearchFeature;
 extern const base::Feature kIPHVideoTutorialNTPVoiceSearchFeature;
 extern const base::Feature kIPHVideoTutorialNTPSummaryFeature;
+extern const base::Feature kIPHVideoTutorialTryNowFeature;
 extern const base::Feature kIPHExploreSitesTileFeature;
 extern const base::Feature kIPHFeedHeaderMenuFeature;
 extern const base::Feature kIPHFeedSwipeRefresh;
@@ -106,10 +122,13 @@ extern const base::Feature kIPHChromeReengagementNotification2Feature;
 extern const base::Feature kIPHChromeReengagementNotification3Feature;
 extern const base::Feature kIPHPwaInstallAvailableFeature;
 extern const base::Feature kIPHShareScreenshotFeature;
+extern const base::Feature kIPHSharingHubLinkToggleFeature;
 extern const base::Feature kIPHWebFeedFollowFeature;
 extern const base::Feature kIPHWebFeedPostFollowDialogFeature;
 extern const base::Feature kIPHSharedHighlightingBuilder;
+extern const base::Feature kIPHSharedHighlightingReceiverFeature;
 extern const base::Feature kIPHStartSurfaceTabSwitcherHomeButton;
+extern const base::Feature kIPHSharingHubWebnotesStylizeFeature;
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_IOS)
@@ -124,7 +143,7 @@ extern const base::Feature kIPHDiscoverFeedHeaderFeature;
 #endif  // defined(OS_IOS)
 
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS) || defined(OS_ANDROID)
+    defined(OS_CHROMEOS) || defined(OS_ANDROID) || defined(OS_FUCHSIA)
 extern const base::Feature kIPHUpdatedConnectionSecurityIndicatorsFeature;
 #endif
 

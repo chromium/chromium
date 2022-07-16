@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.modules;
 import android.content.Context;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.ui.widget.Toast;
 
 /**
@@ -92,32 +94,27 @@ public class ModuleInstallUi {
             return;
         }
 
-        SimpleConfirmInfoBarBuilder.Listener listener = new SimpleConfirmInfoBarBuilder.Listener() {
-            @Override
-            public void onInfoBarDismissed() {
-                if (mFailureUiListener != null) mFailureUiListener.onFailureUiResponse(false);
-            }
-
-            @Override
-            public boolean onInfoBarButtonClicked(boolean isPrimary) {
-                if (mFailureUiListener != null) {
-                    mFailureUiListener.onFailureUiResponse(isPrimary);
-                }
-                return false;
-            }
-
-            @Override
-            public boolean onInfoBarLinkClicked() {
-                return false;
-            }
-        };
-
         String text = String.format(context.getString(R.string.module_install_failure_text),
                 context.getResources().getString(mModuleTitleStringId));
-        SimpleConfirmInfoBarBuilder.create(mTab.getWebContents(), listener,
-                InfoBarIdentifier.MODULE_INSTALL_FAILURE_INFOBAR_ANDROID, context,
-                R.drawable.ic_error_outline_googblue_24dp, text,
-                context.getString(R.string.try_again), context.getString(R.string.cancel),
-                /* linkText = */ null, /* autoExpire = */ true);
+        Snackbar snackbar = Snackbar.make(text, new SnackbarController() {
+            @Override
+            public void onAction(Object actionData) {
+                if (mFailureUiListener != null) {
+                    mFailureUiListener.onFailureUiResponse(true);
+                }
+            }
+
+            @Override
+            public void onDismissNoAction(Object actionData) {
+                if (mFailureUiListener != null) {
+                    mFailureUiListener.onFailureUiResponse(false);
+                }
+            }
+        }, Snackbar.TYPE_ACTION, Snackbar.UMA_MODULE_INSTALL_FAILURE);
+        snackbar.setAction(context.getString(R.string.try_again), null);
+        snackbar.setSingleLine(false);
+        snackbar.setDuration(SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS);
+        SnackbarManager snackbarManager = SnackbarManagerProvider.from(mTab.getWindowAndroid());
+        snackbarManager.showSnackbar(snackbar);
     }
 }

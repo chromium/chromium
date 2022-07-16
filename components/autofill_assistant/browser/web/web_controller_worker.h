@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_WEB_CONTROLLER_WORKER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_WEB_CONTROLLER_WORKER_H_
 
-#include "base/macros.h"
-
 namespace autofill_assistant {
 
 // Superclass for workers of |WebController| that execute complex operations.
@@ -16,10 +14,11 @@ namespace autofill_assistant {
 class WebControllerWorker {
  public:
   WebControllerWorker() = default;
-  virtual ~WebControllerWorker() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebControllerWorker);
+  WebControllerWorker(const WebControllerWorker&) = delete;
+  WebControllerWorker& operator=(const WebControllerWorker&) = delete;
+
+  virtual ~WebControllerWorker() = default;
 };
 
 }  //  namespace autofill_assistant

@@ -51,6 +51,10 @@ namespace {
 class ChildPortHandshakeServer final : public ChildPortServer::Interface {
  public:
   ChildPortHandshakeServer();
+
+  ChildPortHandshakeServer(const ChildPortHandshakeServer&) = delete;
+  ChildPortHandshakeServer& operator=(const ChildPortHandshakeServer&) = delete;
+
   ~ChildPortHandshakeServer();
 
   mach_port_t RunServer(base::ScopedFD server_write_fd,
@@ -69,8 +73,6 @@ class ChildPortHandshakeServer final : public ChildPortServer::Interface {
   mach_port_t port_;
   mach_msg_type_name_t right_type_;
   bool checked_in_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildPortHandshakeServer);
 };
 
 ChildPortHandshakeServer::ChildPortHandshakeServer()

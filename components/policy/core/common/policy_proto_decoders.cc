@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/policy_proto_decoders.h"
 
+#include <cstring>
 #include <limits>
 #include <memory>
 
@@ -177,8 +178,16 @@ void DecodeProtoFields(
                             ? DecodeStringProto(proto)
                             : DecodeJsonProto(proto, &error);
 
+    // EXTERNAL policies represent a single piece of external data that is
+    // retrieved by an ExternalDataFetcher.
+    // kWebAppInstallForceList is currently the only policy that is a JSON
+    // policy (containing mostly non-external data) which can contain
+    // references to multiple pieces of external data as well. For that it
+    // needs an ExternalDataFetcher. If we ever create a second such policy,
+    // create a new type for it instead of special-casing the policies here.
     std::unique_ptr<ExternalDataFetcher> external_data_fetcher =
-        (access->type == StringPolicyType::EXTERNAL)
+        (access->type == StringPolicyType::EXTERNAL ||
+         strcmp(access->policy_key, key::kWebAppInstallForceList) == 0)
             ? std::make_unique<ExternalDataFetcher>(external_data_manager,
                                                     access->policy_key)
             : nullptr;

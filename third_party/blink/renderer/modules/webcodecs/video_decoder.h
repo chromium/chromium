@@ -127,7 +127,7 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord> h264_avcc_;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-  media::VideoCodec current_codec_ = media::kUnknownVideoCodec;
+  media::VideoCodec current_codec_ = media::VideoCodec::kUnknown;
 
  private:
   // DecoderTemplate implementation.

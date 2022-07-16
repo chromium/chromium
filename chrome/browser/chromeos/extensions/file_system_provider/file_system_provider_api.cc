@@ -119,7 +119,7 @@ void FillFileSystemInfo(const ProvidedFileSystemInfo& file_system_info,
 
 ExtensionFunction::ResponseAction FileSystemProviderMountFunction::Run() {
   using api::file_system_provider::Mount::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // It's an error if the file system Id is empty.
@@ -167,7 +167,7 @@ ExtensionFunction::ResponseAction FileSystemProviderMountFunction::Run() {
 
 ExtensionFunction::ResponseAction FileSystemProviderUnmountFunction::Run() {
   using api::file_system_provider::Unmount::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Service* const service =
@@ -218,7 +218,7 @@ ExtensionFunction::ResponseAction FileSystemProviderGetAllFunction::Run() {
 
 ExtensionFunction::ResponseAction FileSystemProviderGetFunction::Run() {
   using api::file_system_provider::Get::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   using api::file_system_provider::FileSystemInfo;
@@ -248,7 +248,7 @@ ExtensionFunction::ResponseAction FileSystemProviderGetFunction::Run() {
 
 ExtensionFunction::ResponseAction FileSystemProviderNotifyFunction::Run() {
   using api::file_system_provider::Notify::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Service* const service = Service::Get(browser_context());
@@ -289,7 +289,7 @@ void FileSystemProviderNotifyFunction::OnNotifyCompleted(
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalUnmountRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::UnmountRequestedSuccess::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   return FulfillRequest(
@@ -300,7 +300,7 @@ FileSystemProviderInternalUnmountRequestedSuccessFunction::Run() {
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalGetMetadataRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::GetMetadataRequestedSuccess::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   return FulfillRequest(
@@ -311,7 +311,7 @@ FileSystemProviderInternalGetMetadataRequestedSuccessFunction::Run() {
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalGetActionsRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::GetActionsRequestedSuccess::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   return FulfillRequest(
@@ -323,7 +323,7 @@ ExtensionFunction::ResponseAction
 FileSystemProviderInternalReadDirectoryRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::ReadDirectoryRequestedSuccess::
       Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const bool has_more = params->has_more;
@@ -336,7 +336,7 @@ FileSystemProviderInternalReadFileRequestedSuccessFunction::Run() {
   TRACE_EVENT0("file_system_provider", "ReadFileRequestedSuccess");
   using api::file_system_provider_internal::ReadFileRequestedSuccess::Params;
 
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const bool has_more = params->has_more;
@@ -347,7 +347,7 @@ FileSystemProviderInternalReadFileRequestedSuccessFunction::Run() {
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalOperationRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::OperationRequestedSuccess::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   return FulfillRequest(
@@ -359,7 +359,7 @@ FileSystemProviderInternalOperationRequestedSuccessFunction::Run() {
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalOperationRequestedErrorFunction::Run() {
   using api::file_system_provider_internal::OperationRequestedError::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->error == api::file_system_provider::PROVIDER_ERROR_OK) {

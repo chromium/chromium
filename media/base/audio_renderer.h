@@ -6,7 +6,6 @@
 #define MEDIA_BASE_AUDIO_RENDERER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/buffering_state.h"
 #include "media/base/media_export.h"
@@ -23,6 +22,9 @@ class TimeSource;
 class MEDIA_EXPORT AudioRenderer {
  public:
   AudioRenderer();
+
+  AudioRenderer(const AudioRenderer&) = delete;
+  AudioRenderer& operator=(const AudioRenderer&) = delete;
 
   // Stop all operations and fire all pending callbacks.
   virtual ~AudioRenderer();
@@ -71,9 +73,6 @@ class MEDIA_EXPORT AudioRenderer {
 
   // Sets a flag indicating whether the audio stream was initiated by autoplay.
   virtual void SetAutoplayInitiated(bool autoplay_initiated) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioRenderer);
 };
 
 }  // namespace media

@@ -9,9 +9,8 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -36,6 +35,10 @@ struct Config;
 // true for Linux, if a password management tool is available.
 class OSCrypt {
  public:
+  OSCrypt() = delete;
+  OSCrypt(const OSCrypt&) = delete;
+  OSCrypt& operator=(const OSCrypt&) = delete;
+
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -134,9 +137,6 @@ class OSCrypt {
   // loaded via Init() or SetRawEncryptionkey().
   static COMPONENT_EXPORT(OS_CRYPT) void ResetStateForTesting();
 #endif
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(OSCrypt);
 };
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch

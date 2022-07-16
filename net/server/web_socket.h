@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/websockets/websocket_frame.h"
 
 namespace net {
 
@@ -22,7 +23,12 @@ class WebSocketEncoder;
 class WebSocket final {
  public:
   enum ParseResult {
-    FRAME_OK,
+    // Final frame of a text message or compressed frame.
+    FRAME_OK_FINAL,
+    // Other frame of a text message.
+    FRAME_OK_MIDDLE,
+    FRAME_PING,
+    FRAME_PONG,
     FRAME_INCOMPLETE,
     FRAME_CLOSE,
     FRAME_ERROR
@@ -34,7 +40,12 @@ class WebSocket final {
               const NetworkTrafficAnnotationTag traffic_annotation);
   ParseResult Read(std::string* message);
   void Send(base::StringPiece message,
+            WebSocketFrameHeader::OpCodeEnum op_code,
             const NetworkTrafficAnnotationTag traffic_annotation);
+
+  WebSocket(const WebSocket&) = delete;
+  WebSocket& operator=(const WebSocket&) = delete;
+
   ~WebSocket();
 
  private:
@@ -46,8 +57,7 @@ class WebSocket final {
   HttpConnection* const connection_;
   std::unique_ptr<WebSocketEncoder> encoder_;
   bool closed_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocket);
+  std::unique_ptr<NetworkTrafficAnnotationTag> traffic_annotation_ = nullptr;
 };
 
 }  // namespace net

@@ -260,8 +260,8 @@ void SetupManagedTestConditions(
       std::make_unique<base::Value>(test_case.default_content_setting));
 
   if (test_case.default_content_setting != CONTENT_SETTING_DEFAULT) {
-    auto provider = std::make_unique<content_settings::MockProvider>();
-    provider->SetWebsiteSetting(
+    auto mock_provider = std::make_unique<content_settings::MockProvider>();
+    mock_provider->SetWebsiteSetting(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
         ContentSettingsType::COOKIES,
         std::make_unique<base::Value>(test_case.default_content_setting));
@@ -280,7 +280,7 @@ void SetupManagedTestConditions(
       default:
         provider_type = HostContentSettingsMap::DEFAULT_PROVIDER;
     }
-    content_settings::TestUtils::OverrideProvider(map, std::move(provider),
+    content_settings::TestUtils::OverrideProvider(map, std::move(mock_provider),
                                                   provider_type);
   }
   if (test_case.block_third_party != settings_private::PrefSetting::kNotSet) {

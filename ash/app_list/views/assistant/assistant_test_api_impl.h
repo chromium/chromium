@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/public/cpp/test/assistant_test_api.h"
-#include "base/macros.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ui {
@@ -23,6 +22,10 @@ class ContentsView;
 class AssistantTestApiImpl : public AssistantTestApi {
  public:
   AssistantTestApiImpl();
+
+  AssistantTestApiImpl(const AssistantTestApiImpl&) = delete;
+  AssistantTestApiImpl& operator=(const AssistantTestApiImpl&) = delete;
+
   ~AssistantTestApiImpl() override;
 
   // AssistantTestApi overrides:
@@ -57,8 +60,6 @@ class AssistantTestApiImpl : public AssistantTestApi {
   aura::Window* root_window() override;
 
  private:
-  void EnableAnimations();
-
   bool AppListViewsHaveBeenCreated() const;
   ContentsView* contents_view();
   ContentsView* contents_view_or_null() const;
@@ -67,8 +68,6 @@ class AssistantTestApiImpl : public AssistantTestApi {
 
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode>
       scoped_animation_duration_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantTestApiImpl);
 };
 
 }  // namespace ash

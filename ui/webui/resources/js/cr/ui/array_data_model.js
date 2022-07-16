@@ -118,7 +118,7 @@ cr.define('cr.ui', function() {
      * Returns an array of elements in a selected range.
      * @param {number=} opt_from The starting index of the selected range.
      * @param {number=} opt_to The ending index of selected range.
-     * @return {Array} An array of elements in the selected range.
+     * @return {!Array} An array of elements in the selected range.
      */
     slice(opt_from, opt_to) {
       const arr = this.array_;

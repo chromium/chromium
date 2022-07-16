@@ -113,6 +113,10 @@ if (!use_static_angle) {
       "//ui/gl/init",
     ]
 
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+
     defines = [
       "COMMAND_BUFFER_GLES_LIB_SUPPORT_ONLY",
       "EGLAPIENTRY=",
@@ -292,6 +296,10 @@ if (!is_android && !is_fuchsia && !is_chromeos_ash) {
       "//ui/gl:gl",
       "//ui/gl/init:init",
     ]
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
   }
 }
 
@@ -381,8 +389,6 @@ test("gl_tests") {
 
   defines = [ "GL_GLEXT_PROTOTYPES" ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     ":gles2",
     ":gpu",
@@ -435,6 +441,7 @@ test("gl_tests") {
       "//ui/platform_window:platform_impls",
     ]
     sources += [
+      "command_buffer/service/dxgi_shared_handle_manager_unittest.cc",
       "command_buffer/service/shared_image_backing_factory_d3d_unittest.cc",
     ]
   } else if (is_linux || is_chromeos) {
@@ -794,6 +801,10 @@ fuzzer_test("gpu_fuzzer") {
   ]
 
   libfuzzer_options = [ "max_len=16384" ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 if (is_linux || is_chromeos) {
@@ -811,6 +822,10 @@ if (is_linux || is_chromeos) {
       "//ui/gl",
       "//ui/gl:test_support",
     ]
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
 
     libfuzzer_options = [ "max_len=16384" ]
   }
@@ -833,6 +848,10 @@ if (is_linux || is_chromeos) {
       "//ui/gl:test_support",
     ]
 
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+
     libfuzzer_options = [ "max_len=16384" ]
   }
 
@@ -850,6 +869,10 @@ if (is_linux || is_chromeos) {
       "//ui/gl",
       "//ui/gl:test_support",
     ]
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
 
     libfuzzer_options = [ "max_len=16384" ]
   }
@@ -873,6 +896,10 @@ if (is_linux || is_chromeos) {
       "//ui/gl:test_support",
     ]
 
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+
     libfuzzer_options = [ "max_len=16384" ]
   }
 
@@ -890,6 +917,10 @@ if (is_linux || is_chromeos) {
       "//ui/gl",
       "//ui/gl:test_support",
     ]
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
 
     libfuzzer_options = [ "max_len=16384" ]
   }
@@ -913,6 +944,10 @@ if (is_linux || is_chromeos) {
       "//ui/gl:test_support",
     ]
 
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+
     libfuzzer_options = [ "max_len=16384" ]
   }
 
@@ -934,6 +969,10 @@ if (is_linux || is_chromeos) {
       "//ui/gl:test_support",
     ]
 
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+
     libfuzzer_options = [ "max_len=16384" ]
   }
 
@@ -954,6 +993,10 @@ if (is_linux || is_chromeos) {
       "//ui/gl",
       "//ui/gl:test_support",
     ]
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
 
     libfuzzer_options = [ "max_len=16384" ]
   }
@@ -978,6 +1021,10 @@ if (is_linux || is_chromeos) {
       "//ui/gl:test_support",
     ]
 
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+
     libfuzzer_options = [ "max_len=16384" ]
   }
 }
@@ -988,7 +1035,6 @@ test("gpu_benchmark") {
   sources = [ "command_buffer/tests/gl_helper_benchmark.cc" ]
 
   configs += [
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//build/config:precompiled_headers",
     "//third_party/khronos:khronos_headers",
   ]

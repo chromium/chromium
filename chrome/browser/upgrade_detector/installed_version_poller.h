@@ -40,7 +40,7 @@ class InstalledVersionPoller {
   // A type of callback that is run (in the background) to get the currently
   // installed version of the browser.
   using GetInstalledVersionCallback =
-      base::RepeatingCallback<InstalledAndCriticalVersion()>;
+      base::RepeatingCallback<void(InstalledVersionCallback)>;
 
   // A constructor for tests that provide a mock source of time and a mock
   // version getter.

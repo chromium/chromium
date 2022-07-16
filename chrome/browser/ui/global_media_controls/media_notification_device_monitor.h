@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_MONITOR_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_MONITOR_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/system/system_monitor.h"
 #include "build/build_config.h"

@@ -31,8 +31,8 @@ struct COMPONENT_EXPORT(TRACING_CPP) Instance {
   Instance(const Instance& other);
   ~Instance();
 
-  void AddReferenceFrom(const std::string& name, uint64_t object_id);
-  void AddReferenceTo(const std::string& name, uint64_t object_id);
+  void AddReferenceFrom(const std::string& name, uint64_t obj_id);
+  void AddReferenceTo(const std::string& name, uint64_t obj_id);
 
   //  Only set in first pass for ClassObject and PrimitiveArrayInstances.
   std::string type_name;

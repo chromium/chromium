@@ -27,7 +27,7 @@ using State = password_manager::BulkLeakCheckServiceInterface::State;
 // Key used to attach UserData to a LeakCheckCredential.
 constexpr char kPasswordCheckDataKey[] = "password-check-manager-data-key";
 // Minimum time the check should be running.
-constexpr base::TimeDelta kDelay = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kDelay = base::Seconds(3);
 
 // Class which ensures that IOSChromePasswordCheckManager will stay alive
 // until password check is completed even if class what initially created
@@ -150,10 +150,15 @@ IOSChromePasswordCheckManager::GetSavedPasswordsFor(
 
 bool IOSChromePasswordCheckManager::EditPasswordForm(
     const password_manager::PasswordForm& form,
-    base::StringPiece new_username,
-    base::StringPiece new_password) {
-  return saved_passwords_presenter_.EditSavedPasswords(
-      form, base::UTF8ToUTF16(new_username), base::UTF8ToUTF16(new_password));
+    const std::u16string& new_username,
+    const std::u16string& new_password) {
+  return saved_passwords_presenter_.EditSavedPasswords(form, new_username,
+                                                       new_password);
+}
+
+bool IOSChromePasswordCheckManager::AddPasswordForm(
+    const password_manager::PasswordForm& form) {
+  return saved_passwords_presenter_.AddPassword(form);
 }
 
 void IOSChromePasswordCheckManager::EditCompromisedPasswordForm(

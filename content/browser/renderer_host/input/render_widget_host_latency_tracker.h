@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -23,6 +22,12 @@ class RenderWidgetHostDelegate;
 class CONTENT_EXPORT RenderWidgetHostLatencyTracker {
  public:
   explicit RenderWidgetHostLatencyTracker(RenderWidgetHostDelegate* delegate);
+
+  RenderWidgetHostLatencyTracker(const RenderWidgetHostLatencyTracker&) =
+      delete;
+  RenderWidgetHostLatencyTracker& operator=(
+      const RenderWidgetHostLatencyTracker&) = delete;
+
   virtual ~RenderWidgetHostLatencyTracker();
 
   // Populates the LatencyInfo with relevant entries for latency tracking.
@@ -46,6 +51,7 @@ class CONTENT_EXPORT RenderWidgetHostLatencyTracker {
 
   bool has_seen_first_gesture_scroll_update_;
   int64_t gesture_scroll_id_;
+  int64_t touch_trace_id_;
 
   // Whether the current stream of touch events includes more than one active
   // touch point. This is set in OnInputEvent, and cleared in OnInputEventAck.
@@ -55,8 +61,6 @@ class CONTENT_EXPORT RenderWidgetHostLatencyTracker {
   bool touch_start_default_prevented_;
 
   RenderWidgetHostDelegate* render_widget_host_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostLatencyTracker);
 };
 
 }  // namespace content

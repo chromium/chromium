@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/authenticator.h"
 #include "chromeos/services/secure_channel/connection.h"
@@ -76,6 +75,10 @@ class DeviceToDeviceAuthenticator : public Authenticator,
       Connection* connection,
       std::unique_ptr<multidevice::SecureMessageDelegate>
           secure_message_delegate);
+
+  DeviceToDeviceAuthenticator(const DeviceToDeviceAuthenticator&) = delete;
+  DeviceToDeviceAuthenticator& operator=(const DeviceToDeviceAuthenticator&) =
+      delete;
 
   ~DeviceToDeviceAuthenticator() override;
 
@@ -172,8 +175,6 @@ class DeviceToDeviceAuthenticator : public Authenticator,
   SessionKeys session_keys_;
 
   base::WeakPtrFactory<DeviceToDeviceAuthenticator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceToDeviceAuthenticator);
 };
 
 }  // namespace secure_channel

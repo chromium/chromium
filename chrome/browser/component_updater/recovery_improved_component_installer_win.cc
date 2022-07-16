@@ -17,8 +17,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
 #include "chrome/browser/component_updater/recovery_improved_component_installer.h"
@@ -75,7 +75,7 @@ std::tuple<bool, int, int> RunRecoveryCRXElevated(
     return {false, static_cast<int>(hr), 0};
 
   int exit_code = 0;
-  const base::TimeDelta kMaxWaitTime = base::TimeDelta::FromSeconds(600);
+  const base::TimeDelta kMaxWaitTime = base::Seconds(600);
   base::Process process(reinterpret_cast<base::ProcessHandle>(proc_handle));
   const bool succeeded =
       process.WaitForExitWithTimeout(kMaxWaitTime, &exit_code);

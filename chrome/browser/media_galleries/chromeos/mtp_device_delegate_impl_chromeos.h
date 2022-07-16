@@ -18,7 +18,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media_galleries/chromeos/mtp_device_task_helper.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
@@ -80,6 +79,10 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // Do all the initializations in EnsureInitAndRunTask() function.
   MTPDeviceDelegateImplLinux(const std::string& device_location,
                              const bool read_only);
+
+  MTPDeviceDelegateImplLinux(const MTPDeviceDelegateImplLinux&) = delete;
+  MTPDeviceDelegateImplLinux& operator=(const MTPDeviceDelegateImplLinux&) =
+      delete;
 
   // Destructed via CancelPendingTasksAndDeleteDelegate().
   ~MTPDeviceDelegateImplLinux() override;
@@ -512,8 +515,6 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
 
   // For callbacks that may run after destruction.
   base::WeakPtrFactory<MTPDeviceDelegateImplLinux> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MTPDeviceDelegateImplLinux);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_MTP_DEVICE_DELEGATE_IMPL_CHROMEOS_H_

@@ -23,6 +23,8 @@ class MediaGpuChannel {
  public:
   MediaGpuChannel(gpu::GpuChannel* channel,
                   const AndroidOverlayMojoFactoryCB& overlay_factory_cb);
+  MediaGpuChannel(const MediaGpuChannel&) = delete;
+  MediaGpuChannel& operator=(const MediaGpuChannel&) = delete;
   ~MediaGpuChannel();
 
  private:
@@ -34,8 +36,6 @@ class MediaGpuChannel {
   AndroidOverlayMojoFactoryCB overlay_factory_cb_;
   mojo::UniqueAssociatedReceiverSet<mojom::GpuAcceleratedVideoDecoderProvider>
       accelerated_video_decoder_providers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGpuChannel);
 };
 
 }  // namespace media

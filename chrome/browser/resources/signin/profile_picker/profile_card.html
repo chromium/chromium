@@ -152,9 +152,10 @@
   <profile-card-menu profile-state="[[profileState]]"></profile-card-menu>
 </div>
 <paper-tooltip id="gaiaNameTooltip" for="gaiaName" manual-mode offset="0"
-    position="bottom">
+    position="bottom" aria-hidden="true">
   [[profileState.gaiaName]]
 </paper-tooltip>
-<paper-tooltip id="tooltip" for="nameInput" manual-mode offset="-10">
+<paper-tooltip id="tooltip" for="nameInput" manual-mode offset="-10"
+    aria-hidden="true">
   [[profileState.localProfileName]]
 </paper-tooltip>

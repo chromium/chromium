@@ -22,6 +22,10 @@ class DiscoverFeedService : public KeyedService,
   DiscoverFeedService(PrefService* pref_service,
                       AuthenticationService* authentication_service,
                       signin::IdentityManager* identity_manager);
+
+  DiscoverFeedService(const DiscoverFeedService&) = delete;
+  DiscoverFeedService& operator=(const DiscoverFeedService&) = delete;
+
   ~DiscoverFeedService() override;
 
   // Returns the FeedMetricsRecorder to be used by the Feed, a single instance
@@ -43,8 +47,6 @@ class DiscoverFeedService : public KeyedService,
 
   // Metrics recorder for the DiscoverFeed.
   __strong DiscoverFeedMetricsRecorder* discover_feed_metrics_recorder_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(DiscoverFeedService);
 };
 
 #endif  // IOS_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_SERVICE_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 28
+// Next MinVersion: 29
 
 module arc.mojom;
 
@@ -219,6 +219,24 @@ enum AccountCheckStatus {
     // corresponding UMA callsite in Chrome arc::UpdateAuthAccountCheckStatus.
 };
 
+// These values describe AndroidId source during ARC provisioning.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+[Extensible]
+enum AndroidIdSource {
+    // AndroidId was not found.
+    [MinVersion=28] MISSING = 0,
+
+    // AndroidId was cached.
+    [MinVersion=28] CACHED = 1,
+
+    // AndroidId was found via GService flag.
+    [MinVersion=28] GSERVICE_FLAG = 2,
+
+    // AndroidId was found via GmsProxy api.
+    [MinVersion=28] GMS_PROXY = 3,
+};
+
 // These values describe the reason for reauth.
 [Extensible]
 enum ReauthReason {
@@ -381,7 +399,7 @@ struct ArcAccountInfo {
   string gaia_id;
 };
 
-// Next Method ID: 21.
+// Next Method ID: 22.
 interface AuthHost {
   // Notifies Chrome that the authorization flow is completed and provides
   // |result| and |account| that was authorized.
@@ -458,6 +476,9 @@ interface AuthHost {
 
   // Reports the reason for doing auth despite device being provisioned earlier.
   [MinVersion=27] ReportAccountReauthReason@20(ReauthReason reason);
+
+  // Reports AndroidId source during provisioning.
+  [MinVersion=28] ReportAndroidIdSource@21(AndroidIdSource source);
 };
 
 // Next Method ID: 6

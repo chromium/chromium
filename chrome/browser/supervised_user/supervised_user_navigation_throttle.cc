@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_interstitial.h"
@@ -150,6 +150,12 @@ content::NavigationThrottle::ThrottleCheckResult
 SupervisedUserNavigationThrottle::CheckURL() {
   deferred_ = false;
   DCHECK_EQ(SupervisedUserURLFilter::INVALID, behavior_);
+
+  // We do not yet support prerendering for supervised users.
+  if (navigation_handle()->IsInPrerenderedMainFrame()) {
+    return NavigationThrottle::CANCEL;
+  }
+
   GURL url = navigation_handle()->GetURL();
 
   bool skip_manual_parent_filter =

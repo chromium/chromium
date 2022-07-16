@@ -7,7 +7,9 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
@@ -15,9 +17,11 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
+#include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/event.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -39,6 +43,10 @@ ui::GestureEvent CreateTapEvent() {
 class SelectToSpeakTrayTest : public AshTestBase {
  public:
   SelectToSpeakTrayTest() = default;
+
+  SelectToSpeakTrayTest(const SelectToSpeakTrayTest&) = delete;
+  SelectToSpeakTrayTest& operator=(const SelectToSpeakTrayTest&) = delete;
+
   ~SelectToSpeakTrayTest() override = default;
 
   void SetUp() override {
@@ -57,14 +65,20 @@ class SelectToSpeakTrayTest : public AshTestBase {
   // Gets the current tray image view.
   views::ImageView* GetImageView() { return GetTray()->icon_; }
 
-  gfx::ImageSkia GetInactiveImage() { return GetTray()->inactive_image_; }
-
-  gfx::ImageSkia GetSelectingImage() { return GetTray()->selecting_image_; }
-
-  gfx::ImageSkia GetSpeakingImage() { return GetTray()->speaking_image_; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SelectToSpeakTrayTest);
+  // Gets the corresponding image given the |select_to_speak_state|.
+  gfx::ImageSkia GetIconImage(SelectToSpeakState select_to_speak_state) {
+    SkColor color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorPrimary);
+    switch (select_to_speak_state) {
+      case SelectToSpeakState::kSelectToSpeakStateInactive:
+        return gfx::CreateVectorIcon(kSystemTraySelectToSpeakNewuiIcon, color);
+      case SelectToSpeakState::kSelectToSpeakStateSelecting:
+        return gfx::CreateVectorIcon(kSystemTraySelectToSpeakActiveNewuiIcon,
+                                     color);
+      case SelectToSpeakState::kSelectToSpeakStateSpeaking:
+        return gfx::CreateVectorIcon(kSystemTrayStopNewuiIcon, color);
+    }
+  }
 };
 
 // Ensures that creation doesn't cause any crashes and adds the image icon.
@@ -103,20 +117,28 @@ TEST_F(SelectToSpeakTrayTest, SelectToSpeakStateImpactsImageAndActivation) {
   controller->SetSelectToSpeakState(
       SelectToSpeakState::kSelectToSpeakStateSelecting);
   EXPECT_TRUE(IsTrayBackgroundActive());
-  EXPECT_TRUE(
-      GetSelectingImage().BackedBySameObjectAs(GetImageView()->GetImage()));
-
+  gfx::ImageSkia expected_icon_image =
+      GetIconImage(SelectToSpeakState::kSelectToSpeakStateSelecting);
+  gfx::ImageSkia actual_icon_image = GetImageView()->GetImage();
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(*expected_icon_image.bitmap(),
+                                         *actual_icon_image.bitmap()));
   controller->SetSelectToSpeakState(
       SelectToSpeakState::kSelectToSpeakStateSpeaking);
   EXPECT_TRUE(IsTrayBackgroundActive());
-  EXPECT_TRUE(
-      GetSpeakingImage().BackedBySameObjectAs(GetImageView()->GetImage()));
+  expected_icon_image =
+      GetIconImage(SelectToSpeakState::kSelectToSpeakStateSpeaking);
+  actual_icon_image = GetImageView()->GetImage();
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(*expected_icon_image.bitmap(),
+                                         *actual_icon_image.bitmap()));
 
   controller->SetSelectToSpeakState(
       SelectToSpeakState::kSelectToSpeakStateInactive);
   EXPECT_FALSE(IsTrayBackgroundActive());
-  EXPECT_TRUE(
-      GetInactiveImage().BackedBySameObjectAs(GetImageView()->GetImage()));
+  expected_icon_image =
+      GetIconImage(SelectToSpeakState::kSelectToSpeakStateInactive);
+  actual_icon_image = GetImageView()->GetImage();
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(*expected_icon_image.bitmap(),
+                                         *actual_icon_image.bitmap()));
 }
 
 // Trivial test to increase coverage of select_to_speak_tray.h. The

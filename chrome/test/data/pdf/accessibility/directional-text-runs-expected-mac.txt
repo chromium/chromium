@@ -1,7 +1,6 @@
-AXGroup
-++AXGroup AXDescription='PDF document containing 1 page'
-++++AXGroup AXDescription='Page 1'
-++++++AXGroup
-++++++++AXStaticText AXValue='Hello,<newline> world!<newline><newline>Goodbye,<newline> world!<newline>'
-++++++AXGroup
-++++++++AXStaticText AXValue='This is some text abc<newline>def'
+AXGroup AXDescription='PDF document containing 1 page'
+++AXGroup AXDescription='Page 1'
+++++AXGroup
+++++++AXStaticText AXValue='Hello,<newline> world!<newline><newline>Goodbye,<newline> world!<newline>'
+++++AXGroup
+++++++AXStaticText AXValue='This is some text abc<newline>def'

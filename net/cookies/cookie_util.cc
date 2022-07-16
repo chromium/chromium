@@ -6,7 +6,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -184,22 +183,6 @@ ComputeSameSiteContextResult ComputeSameSiteContext(
         features::kCookieSameSiteConsidersRedirectChain);
   }
 
-  if (is_http) {
-    base::UmaHistogramBoolean("Cookie.SameSiteContextAffectedByBugfix1166211",
-                              !is_main_frame_navigation);
-  }
-
-  // Preserve old behavior if the bugfix is disabled.
-  if (!base::FeatureList::IsEnabled(features::kSameSiteCookiesBugfix1166211)) {
-    if (cross_site_redirect_downgraded_from_strict) {
-      result.metadata.cross_site_redirect_downgrade =
-          ContextMetadata::ContextDowngradeType::kStrictToLax;
-    }
-    result.context_type =
-        use_strict ? ContextType::SAME_SITE_STRICT : ContextType::SAME_SITE_LAX;
-    return result;
-  }
-
   if (!is_http || is_main_frame_navigation) {
     if (cross_site_redirect_downgraded_from_strict) {
       result.metadata.cross_site_redirect_downgrade =
@@ -217,7 +200,6 @@ ComputeSameSiteContextResult ComputeSameSiteContext(
   result.context_type =
       use_strict ? ContextType::SAME_SITE_STRICT : ContextType::CROSS_SITE;
 
-  result.metadata.affected_by_bugfix_1166211 = !use_strict;
   return result;
 }
 
@@ -270,7 +252,7 @@ bool CookieWithAccessResultSorter(const CookieWithAccessResult& a,
 }  // namespace
 
 void FireStorageAccessHistogram(StorageAccessResult result) {
-  UMA_HISTOGRAM_ENUMERATION("API.StorageAccess.AllowedRequests", result);
+  UMA_HISTOGRAM_ENUMERATION("API.StorageAccess.AllowedRequests2", result);
 }
 
 bool DomainIsHostOnly(const std::string& domain_string) {
@@ -748,16 +730,6 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForSubresource(
   }
 
   return CookieOptions::SameSiteCookieContext::MakeInclusive();
-}
-
-bool IsSameSiteByDefaultCookiesEnabled() {
-  return base::FeatureList::IsEnabled(features::kSameSiteByDefaultCookies);
-}
-
-bool IsCookiesWithoutSameSiteMustBeSecureEnabled() {
-  return IsSameSiteByDefaultCookiesEnabled() &&
-         base::FeatureList::IsEnabled(
-             features::kCookiesWithoutSameSiteMustBeSecure);
 }
 
 bool IsSchemefulSameSiteEnabled() {

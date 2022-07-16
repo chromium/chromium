@@ -677,13 +677,12 @@ bool IsSafeForPublicSession(const extensions::Extension* extension) {
     // |kSafePermissionDicts|.
     if (it.key() == emk::kPermissions ||
         it.key() == emk::kOptionalPermissions) {
-      const base::ListValue* list_value;
-      if (!it.value().GetAsList(&list_value)) {
+      if (!it.value().is_list()) {
         LOG(ERROR) << extension->id() << ": " << it.key() << " is not a list.";
         safe = false;
         continue;
       }
-      for (const auto& entry : list_value->GetList()) {
+      for (const auto& entry : it.value().GetList()) {
         // Try to read as dictionary.
         const base::DictionaryValue *dict_value;
         if (entry.GetAsDictionary(&dict_value)) {

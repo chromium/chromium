@@ -24,6 +24,7 @@ const FieldTranslationEntry eap_fields[] = {
     {::onc::eap::kAnonymousIdentity, shill::kEapAnonymousIdentityProperty},
     // This field is converted during translation, see onc_translator_*.
     // { ::onc::client_cert::kClientCertPKCS11Id, shill::kEapCertIdProperty },
+    {::onc::eap::kDomainSuffixMatch, shill::kEapDomainSuffixMatchProperty},
     {::onc::eap::kIdentity, shill::kEapIdentityProperty},
     // This field is converted during translation, see onc_translator_*.
     // { ::onc::eap::kInner, shill::kEapPhase2AuthProperty },

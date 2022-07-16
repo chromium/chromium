@@ -22,9 +22,9 @@ class MockDlpContentManager : public DlpContentManager {
   MOCK_CONST_METHOD1(GetRestrictionSetForURL,
                      DlpContentRestrictionSet(const GURL&));
   MOCK_METHOD1(OnVisibilityChanged, void(content::WebContents*));
-  MOCK_CONST_METHOD1(IsScreenshotRestricted, bool(const ScreenshotArea& area));
-  MOCK_CONST_METHOD1(IsScreenCaptureRestricted,
-                     bool(const content::DesktopMediaID& media_id));
+  MOCK_METHOD1(IsScreenshotApiRestricted, bool(const ScreenshotArea& area));
+  MOCK_METHOD1(IsScreenCaptureRestricted,
+               bool(const content::DesktopMediaID& media_id));
 
  protected:
   void Init() override;

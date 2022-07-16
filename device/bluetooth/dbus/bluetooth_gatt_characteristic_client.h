@@ -85,6 +85,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicClient
       absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value)>;
 
+  BluetoothGattCharacteristicClient(const BluetoothGattCharacteristicClient&) =
+      delete;
+  BluetoothGattCharacteristicClient& operator=(
+      const BluetoothGattCharacteristicClient&) = delete;
+
   ~BluetoothGattCharacteristicClient() override;
 
   // Adds and removes observers for events on all remote GATT characteristics.
@@ -156,9 +161,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicClient
 
  protected:
   BluetoothGattCharacteristicClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattCharacteristicClient);
 };
 
 }  // namespace bluez

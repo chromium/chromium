@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_ANDROID_MOCK_CODEC_IMAGE_H_
 #define MEDIA_GPU_ANDROID_MOCK_CODEC_IMAGE_H_
 
-#include "base/macros.h"
 #include "media/gpu/android/codec_image.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,12 +16,13 @@ class MockCodecImage : public CodecImage {
  public:
   MockCodecImage(const gfx::Size& coded_size);
 
+  MockCodecImage(const MockCodecImage&) = delete;
+  MockCodecImage& operator=(const MockCodecImage&) = delete;
+
   MOCK_METHOD0(ReleaseCodecBuffer, void());
 
  protected:
   ~MockCodecImage() override;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCodecImage);
 };
 
 }  // namespace media

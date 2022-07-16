@@ -14,8 +14,6 @@
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/extensions/api/tab_capture/offscreen_tabs_owner.h"
-#include "chrome/browser/media/offscreen_tab.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/media_router/common/route_request_result.h"
@@ -53,8 +51,6 @@ TestMediaRouteProvider::TestMediaRouteProvider(
     : receiver_(this, std::move(receiver)),
       media_router_(std::move(media_router)) {
   SetSinks();
-  media_router_->OnSinkAvailabilityUpdated(
-      kProviderId, mojom::MediaRouter::SinkAvailability::PER_SOURCE);
 }
 
 TestMediaRouteProvider::~TestMediaRouteProvider() = default;
@@ -83,8 +79,8 @@ void TestMediaRouteProvider::CreateRoute(const std::string& media_source,
     std::move(callback).Run(absl::nullopt, nullptr, route_error_message_,
                             RouteRequestResult::ResultCode::UNKNOWN_ERROR);
   } else if (!delay_.is_zero()) {
-    base::ThreadPool::PostDelayedTask(
-        FROM_HERE, {base::TaskPriority::HIGHEST},
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
         base::BindOnce(&TestMediaRouteProvider::CreateRouteTimeOut,
                        GetWeakPtr(), std::move(callback)),
         delay_);
@@ -284,8 +280,21 @@ void TestMediaRouteProvider::CaptureOffScreenTab(
     content::WebContents* web_contents,
     GURL source_urn,
     std::string& presentation_id) {
-  extensions::OffscreenTabsOwner::Get(web_contents)
-      ->OpenNewTab(source_urn, gfx::Size(180, 180), presentation_id);
+  offscreen_tab_ =
+      std::make_unique<OffscreenTab>(this, web_contents->GetBrowserContext());
+  offscreen_tab_->Start(source_urn, gfx::Size(180, 180), presentation_id);
+}
+
+void TestMediaRouteProvider::TearDown() {
+  // An OffscreenTab observes its Profile*, and must be destroyed before
+  // Profiles.
+  if (offscreen_tab_)
+    offscreen_tab_.reset();
+}
+
+void TestMediaRouteProvider::DestroyTab(OffscreenTab* tab) {
+  if (offscreen_tab_ && offscreen_tab_.get() == tab)
+    offscreen_tab_.reset();
 }
 
 }  // namespace media_router

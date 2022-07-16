@@ -13,7 +13,7 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 class PasswordStoreBridge
@@ -66,7 +66,7 @@ class PasswordStoreBridge
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
 
   // Handle to the password store, powering `saved_passwords_presenter_`.
-  scoped_refptr<password_manager::PasswordStore> password_store_ =
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store_ =
       PasswordStoreFactory::GetForProfile(ProfileManager::GetLastUsedProfile(),
                                           ServiceAccessType::EXPLICIT_ACCESS);
 

@@ -19,6 +19,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
@@ -30,13 +31,61 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 using content::NativeWebKeyboardEvent;
 
 namespace {
 
+class FindBarHostHelper
+    : public content::WebContentsUserData<FindBarHostHelper> {
+ public:
+  static FindBarHostHelper* CreateOrGetFromWebContents(
+      content::WebContents* web_contents) {
+    CreateForWebContents(web_contents);
+    return FromWebContents(web_contents);
+  }
+
+  void SetExternalFocusTracker(
+      std::unique_ptr<views::ExternalFocusTracker> external_focus_tracker) {
+    external_focus_tracker_ = std::move(external_focus_tracker);
+  }
+
+  std::unique_ptr<views::ExternalFocusTracker> TakeExternalFocusTracker() {
+    return std::move(external_focus_tracker_);
+  }
+
+  views::ExternalFocusTracker* focus_tracker() {
+    return external_focus_tracker_.get();
+  }
+
+ private:
+  friend class content::WebContentsUserData<FindBarHostHelper>;
+
+  explicit FindBarHostHelper(content::WebContents* web_contents) {}
+
+  std::unique_ptr<views::ExternalFocusTracker> external_focus_tracker_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FindBarHostHelper);
+
 gfx::Rect GetLocationForFindBarView(gfx::Rect view_location,
                                     const gfx::Rect& dialog_bounds,
                                     const gfx::Rect& avoid_overlapping_rect) {
+  // Clamp to the `dialog_bounds`.
+  view_location.set_width(
+      std::min(view_location.width(), dialog_bounds.width()));
+  if (base::i18n::IsRTL()) {
+    int boundary = dialog_bounds.width() - view_location.width();
+    view_location.set_x(std::min(view_location.x(), boundary));
+  } else {
+    view_location.set_x(std::max(view_location.x(), dialog_bounds.x()));
+  }
+
   gfx::Rect new_pos = view_location;
 
   // The minimum space between the FindInPage window and the search result.
@@ -79,6 +128,7 @@ FindBarHost::FindBarHost(BrowserView* browser_view)
   DropdownBarHostDelegate* find_bar_delegate = find_bar_view.get();
   Init(browser_view->find_bar_host_view(), std::move(find_bar_view),
        find_bar_delegate);
+  SetAccessibleRole(ax::mojom::Role::kDialog);
 }
 
 FindBarHost::~FindBarHost() {
@@ -125,10 +175,16 @@ void FindBarHost::SetFindBarController(FindBarController* find_bar_controller) {
 }
 
 void FindBarHost::Show(bool animate) {
+  RestoreFocusTracker();
   DropdownBarHost::Show(animate);
 }
 
 void FindBarHost::Hide(bool animate) {
+  // Restore/Save is non-symmetric as hiding the DropdownBarHost could change
+  // the focus state of the external view. Saving the focus tracker before the
+  // hide preserves the appropriate view in the event the FindBarHost visibility
+  // is restored as part of a tab change.
+  SaveFocusTracker();
   DropdownBarHost::Hide(animate);
 }
 
@@ -192,11 +248,25 @@ bool FindBarHost::IsFindBarVisible() const {
 }
 
 void FindBarHost::RestoreSavedFocus() {
-  if (focus_tracker() == NULL) {
+  std::unique_ptr<views::ExternalFocusTracker> focus_tracker_from_web_contents;
+  views::ExternalFocusTracker* tracker = focus_tracker();
+  if (!tracker) {
+    auto* web_contents = find_bar_controller_->web_contents();
+    if (web_contents) {
+      auto* helper = FindBarHostHelper::FromWebContents(web_contents);
+      if (helper) {
+        focus_tracker_from_web_contents = helper->TakeExternalFocusTracker();
+        tracker = focus_tracker_from_web_contents.get();
+      }
+    }
+  }
+
+  if (tracker) {
+    tracker->FocusLastFocusedExternalView();
+    ResetFocusTracker();
+  } else {
     // TODO(brettw): Focus() should be on WebContentsView.
     find_bar_controller_->web_contents()->Focus();
-  } else {
-    focus_tracker()->FocusLastFocusedExternalView();
   }
 }
 
@@ -249,15 +319,7 @@ bool FindBarHost::CanHandleAccelerators() const {
 
 bool FindBarHost::GetFindBarWindowInfo(gfx::Point* position,
                                        bool* fully_visible) const {
-  if (!find_bar_controller_ ||
-#if defined(OS_WIN) && !defined(USE_AURA)
-      !::IsWindow(host()->GetNativeView())) {
-#else
-      false) {
-      // TODO(sky): figure out linux side.
-      // This is tricky due to asynchronous nature of x11.
-      // See bug http://crbug.com/28629.
-#endif
+  if (!find_bar_controller_) {
     if (position)
       *position = gfx::Point();
     if (fully_visible)
@@ -294,9 +356,9 @@ size_t FindBarHost::GetAudibleAlertCount() const {
 
 gfx::Rect FindBarHost::GetDialogPosition(gfx::Rect avoid_overlapping_rect) {
   // Find the area we have to work with (after accounting for scrollbars, etc).
-  gfx::Rect widget_bounds;
-  GetWidgetBounds(&widget_bounds);
-  if (widget_bounds.IsEmpty())
+  gfx::Rect find_bar_bounds;
+  GetWidgetBounds(&find_bar_bounds);
+  if (find_bar_bounds.IsEmpty())
     return gfx::Rect();
 
   // Ask the view how large an area it needs to draw on.
@@ -304,16 +366,16 @@ gfx::Rect FindBarHost::GetDialogPosition(gfx::Rect avoid_overlapping_rect) {
 
   // Don't show the find bar if |widget_bounds| is not tall enough to fit.
   gfx::Insets insets = view()->GetInsets();
-  if (widget_bounds.height() < prefsize.height() - insets.height())
+  if (find_bar_bounds.height() < prefsize.height() - insets.height())
     return gfx::Rect();
 
   // Place the view in the top right corner of the widget boundaries (top left
   // for RTL languages). Adjust for the view insets to ensure the border lines
   // up with the location bar.
-  int x = widget_bounds.x() - insets.left();
+  int x = find_bar_bounds.x() - insets.left();
   if (!base::i18n::IsRTL())
-    x += widget_bounds.width() - prefsize.width() + insets.width();
-  int y = widget_bounds.y() - insets.top();
+    x += find_bar_bounds.width() - prefsize.width() + insets.width();
+  int y = find_bar_bounds.y() - insets.top();
   const gfx::Rect view_location(x, y, prefsize.width(), prefsize.height());
 
   // When we get Find results back, we specify a selection rect, which we
@@ -326,6 +388,8 @@ gfx::Rect FindBarHost::GetDialogPosition(gfx::Rect avoid_overlapping_rect) {
     GetWidgetPositionNative(&avoid_overlapping_rect);
   }
 
+  gfx::Rect widget_bounds;
+  DropdownBarHost::GetWidgetBounds(&widget_bounds);
   return GetLocationForFindBarView(view_location, widget_bounds,
                                    avoid_overlapping_rect);
 }
@@ -382,10 +446,6 @@ void FindBarHost::OnVisibilityChanged() {
   browser_view()->browser()->OnFindBarVisibilityChanged();
 }
 
-ax::mojom::Role FindBarHost::GetAccessibleWindowRole() {
-  return ax::mojom::Role::kDialog;
-}
-
 std::u16string FindBarHost::GetAccessibleWindowTitle() const {
   // This can be called in tests by AccessibilityChecker before the controller
   // is registered with this object. So to handle that case, we need to bail out
@@ -428,4 +488,32 @@ void FindBarHost::MoveWindowIfNecessaryWithRect(
   // May need to redraw our frame to accommodate bookmark bar styles.
   view()->Layout();  // Bounds may have changed.
   view()->SchedulePaint();
+}
+
+void FindBarHost::SaveFocusTracker() {
+  auto* web_contents = find_bar_controller_->web_contents();
+  if (!web_contents)
+    return;
+
+  std::unique_ptr<views::ExternalFocusTracker> focus_tracker =
+      TakeFocusTracker();
+  if (focus_tracker) {
+    focus_tracker->SetFocusManager(nullptr);
+    FindBarHostHelper::CreateOrGetFromWebContents(web_contents)
+        ->SetExternalFocusTracker(std::move(focus_tracker));
+  }
+}
+
+void FindBarHost::RestoreFocusTracker() {
+  auto* web_contents = find_bar_controller_->web_contents();
+  if (!web_contents)
+    return;
+
+  std::unique_ptr<views::ExternalFocusTracker> focus_tracker =
+      FindBarHostHelper::CreateOrGetFromWebContents(web_contents)
+          ->TakeExternalFocusTracker();
+  if (focus_tracker) {
+    focus_tracker->SetFocusManager(GetWidget()->GetFocusManager());
+    SetFocusTracker(std::move(focus_tracker));
+  }
 }

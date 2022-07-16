@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
@@ -148,7 +149,9 @@ void BuildFileTypeInfo(const mojom::SelectFilesRequestPtr& request,
   for (const std::string& mime_type : request->mime_types) {
     std::vector<base::FilePath::StringType> extensions;
     net::GetExtensionsForMimeType(mime_type, &extensions);
-    file_type_info->extensions.push_back(extensions);
+    if (!extensions.empty()) {
+      file_type_info->extensions.push_back(extensions);
+    }
 
     // Enable "Select from all files" option if GetExtensionsForMimeType
     // can't find any matching extensions or specified MIME type contains an
@@ -309,7 +312,8 @@ void ArcSelectFilesHandler::FilesSelectedInternal(
     GURL gurl;
     file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
         profile_, file_path, file_manager::util::GetFileManagerURL(), &gurl);
-    file_system_urls.push_back(file_system_context->CrackURL(gurl));
+    file_system_urls.push_back(
+        file_system_context->CrackURLInFirstPartyContext(gurl));
   }
 
   arc::ConvertToContentUrlsAndShare(

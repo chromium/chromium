@@ -20,7 +20,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
@@ -53,6 +52,9 @@ class WebContentsImpl;
 class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
                                           public WebContentsObserver {
  public:
+  BrowserPluginGuest(const BrowserPluginGuest&) = delete;
+  BrowserPluginGuest& operator=(const BrowserPluginGuest&) = delete;
+
   ~BrowserPluginGuest() override;
 
   // The WebContents passed into the factory method here has not been
@@ -89,7 +91,8 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 #if defined(OS_MAC)
   // On MacOS X popups are painted by the browser process. We handle them here
   // so that they are positioned correctly.
@@ -139,8 +142,6 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
   ui::mojom::TextInputStatePtr last_text_input_state_;
 
   BrowserPluginGuestDelegate* const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserPluginGuest);
 };
 
 }  // namespace content

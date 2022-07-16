@@ -125,8 +125,7 @@ class DisplayDeciderTest : public testing::Test {
   // window.
   NotificationEntry CreateNotification(SchedulerClientType type,
                                        const std::string& guid) {
-    return CreateNotification(type, guid, base::TimeDelta(),
-                              base::TimeDelta::FromHours(1));
+    return CreateNotification(type, guid, base::TimeDelta(), base::Hours(1));
   }
 
   // Creates a notification entry with specific deliver time window.
@@ -181,12 +180,10 @@ TEST_F(DisplayDeciderTest, PickOneNotification) {
 // Notification falls out of the target deliver time window will not be picked.
 TEST_F(DisplayDeciderTest, OutOfDeliverTimeWindow) {
   auto entry0 = CreateNotification(SchedulerClientType::kTest2, "guid0",
-                                   base::TimeDelta::FromDays(1),
-                                   base::TimeDelta::FromDays(2));
-  auto entry1 =
-      CreateNotification(SchedulerClientType::kTest2, "guid1",
-                         base::TimeDelta() - base::TimeDelta::FromDays(2),
-                         base::TimeDelta() - base::TimeDelta::FromDays(1));
+                                   base::Days(1), base::Days(2));
+  auto entry1 = CreateNotification(SchedulerClientType::kTest2, "guid1",
+                                   base::TimeDelta() - base::Days(2),
+                                   base::TimeDelta() - base::Days(1));
   auto entry2 = CreateNotification(SchedulerClientType::kTest2, "guid2",
                                    absl::nullopt, absl::nullopt);
 
@@ -207,7 +204,7 @@ TEST_F(DisplayDeciderTest, ClientRotation) {
 
   // Create an impression shown today.
   Impression impression(SchedulerClientType::kTest1, "shown_guid1",
-                        Now() - base::TimeDelta::FromHours(1));
+                        Now() - base::Hours(1));
   impression_test_data.front().impressions.emplace_back(impression);
 
   auto entry2 = CreateNotification(SchedulerClientType::kTest2, "guid2");
@@ -226,7 +223,7 @@ TEST_F(DisplayDeciderTest, ThrottleMaxDailyShowAllTypes) {
   // Create an impression shown today, but only allow to show one per day for
   // all clients.
   Impression impression(SchedulerClientType::kTest1, "shown_guid1",
-                        Now() - base::TimeDelta::FromHours(1));
+                        Now() - base::Hours(1));
   impression_test_data.front().impressions.emplace_back(impression);
   config()->max_daily_shown_all_type = 1;
 
@@ -247,7 +244,7 @@ TEST_F(DisplayDeciderTest, ThrottlePerClient) {
 
   // Create an impression shown today.
   Impression impression(SchedulerClientType::kTest1, "shown_guid1",
-                        Now() - base::TimeDelta::FromHours(1));
+                        Now() - base::Hours(1));
   impression_test_data.front().impressions.emplace_back(impression);
 
   TestData data{impression_test_data, {entry1, entry2}, {"guid2"}};
@@ -258,7 +255,7 @@ TEST_F(DisplayDeciderTest, ThrottlePerClient) {
 TEST_F(DisplayDeciderTest, ThrottleSuppressedClient) {
   auto impression_test_data = kClientsImpressionTestData;
   impression_test_data.front().suppression_info =
-      SuppressionInfo(Now(), base::TimeDelta::FromDays(10));
+      SuppressionInfo(Now(), base::Days(10));
   auto entry1 = CreateNotification(SchedulerClientType::kTest1, "guid1");
 
   TestData data{impression_test_data, {entry1}, DisplayDecider::Results()};

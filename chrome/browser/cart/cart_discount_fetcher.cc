@@ -13,9 +13,12 @@
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_discount_metric_collector.h"
+#include "chrome/browser/commerce/commerce_feature_list.h"
+#include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/search/ntp_features.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -24,35 +27,64 @@
 namespace {
 const char kPostMethod[] = "POST";
 const char kContentType[] = "application/json; charset=UTF-8";
+const char kAcceptLanguageKey[] = "Accept-Language";
+// The name string for the header for variations information.
+const char kClientDataHeader[] = "X-Client-Data";
 
 const char kFetchDiscountsEndpoint[] =
     "https://memex-pa.googleapis.com/v1/shopping/cart/discounts";
 const int64_t kTimeoutMs = 30000;
 
-struct DiscountInfo {
-  std::vector<cart_db::DiscountInfoProto> discount_list;
+const char kCartDiscountFetcherEndpointParam[] =
+    "CartDiscountFetcherEndpointParam";
+
+constexpr base::FeatureParam<std::string> kDiscountFetcherServerConfigEndpoint{
+    &ntp_features::kNtpChromeCartModule, kCartDiscountFetcherEndpointParam,
+    kFetchDiscountsEndpoint};
+
+struct RuleDiscountInfo {
+  std::vector<cart_db::RuleDiscountInfoProto> discount_list;
   int highest_amount_off;
   int highest_percent_off;
 
-  DiscountInfo(std::vector<cart_db::DiscountInfoProto> discount_list,
-               int highest_amount_off,
-               int highest_percent_off)
+  RuleDiscountInfo(std::vector<cart_db::RuleDiscountInfoProto> discount_list,
+                   int highest_amount_off,
+                   int highest_percent_off)
       : discount_list(std::move(discount_list)),
         highest_amount_off(highest_amount_off),
         highest_percent_off(highest_percent_off) {}
 
-  ~DiscountInfo() = default;
-  DiscountInfo(const DiscountInfo& other) = delete;
-  DiscountInfo& operator=(const DiscountInfo& other) = delete;
-  DiscountInfo(DiscountInfo&& other) = default;
-  DiscountInfo& operator=(DiscountInfo&& other) = default;
+  ~RuleDiscountInfo() = default;
+  RuleDiscountInfo(const RuleDiscountInfo& other) = delete;
+  RuleDiscountInfo& operator=(const RuleDiscountInfo& other) = delete;
+  RuleDiscountInfo(RuleDiscountInfo&& other) = default;
+  RuleDiscountInfo& operator=(RuleDiscountInfo&& other) = default;
+};
+
+struct CouponDiscountInfo {
+  std::vector<coupon_db::FreeListingCouponInfoProto> discount_list;
+  explicit CouponDiscountInfo(
+      std::vector<coupon_db::FreeListingCouponInfoProto> discount_list)
+      : discount_list(std::move(discount_list)) {}
+
+  ~CouponDiscountInfo() = default;
+  CouponDiscountInfo(const CouponDiscountInfo& other) = delete;
+  CouponDiscountInfo& operator=(const CouponDiscountInfo& other) = delete;
+  CouponDiscountInfo(CouponDiscountInfo&& other) = default;
+  CouponDiscountInfo& operator=(CouponDiscountInfo&& other) = default;
+};
+
+enum CouponType {
+  UNSPECIFIED,
+  FREE_LISTING_WITHOUT_CODE,
+  FREE_LISTING_WITH_CODE
 };
 
 // TODO(crbug.com/1207197): Consolidate to one util method to get string.
 std::string GetMerchantUrl(const base::Value* merchant_identifier) {
   DCHECK(merchant_identifier->is_dict());
 
-  // TODO(crbug.com/1207197): Use a constant instead.
+  // TODO(crbug.com/1207197): Use a static constant for "cartUrl" instead.
   const base::Value* value = merchant_identifier->FindKey("cartUrl");
   if (!value || !value->is_string()) {
     NOTREACHED() << "Missing cart_url or it is not a string";
@@ -74,12 +106,29 @@ std::string GetMerchantId(const base::Value* merchant_identifier) {
   return value->GetString();
 }
 
-DiscountInfo CovertToDiscountInfo(const base::Value* rule_discount_list) {
-  std::vector<cart_db::DiscountInfoProto> cart_discounts;
+std::string GetStringFromDict(const base::Value* dict,
+                              const std::string key,
+                              bool is_required) {
+  DCHECK(dict->is_dict());
+
+  const base::Value* value = dict->FindKey(key);
+  if (!value || !value->is_string()) {
+    if (is_required) {
+      NOTREACHED() << "Missing " << key << " or it is not a string";
+    }
+    return "";
+  }
+
+  return value->GetString();
+}
+
+RuleDiscountInfo CovertToRuleDiscountInfo(
+    const base::Value* rule_discount_list) {
+  std::vector<cart_db::RuleDiscountInfoProto> cart_discounts;
 
   if (!rule_discount_list || !rule_discount_list->is_list()) {
-    NOTREACHED() << "Missing rule_Discounts or it is not a list";
-    return DiscountInfo(cart_discounts, 0, 0);
+    return RuleDiscountInfo(cart_discounts, 0 /*highest_amount_off*/,
+                            0 /*highest_percent_off*/);
   }
 
   cart_discounts.reserve(rule_discount_list->GetList().size());
@@ -87,7 +136,7 @@ DiscountInfo CovertToDiscountInfo(const base::Value* rule_discount_list) {
   int highest_percent_off = 0;
   int64_t highest_amount_off = 0;
   for (const auto& rule_discount : rule_discount_list->GetList()) {
-    cart_db::DiscountInfoProto discount_proto;
+    cart_db::RuleDiscountInfoProto discount_proto;
 
     // Parse ruleId
     const base::Value* rule_id_value = rule_discount.FindKey("ruleId");
@@ -179,8 +228,85 @@ DiscountInfo CovertToDiscountInfo(const base::Value* rule_discount_list) {
     cart_discounts.emplace_back(std::move(discount_proto));
   }
 
-  return DiscountInfo(std::move(cart_discounts), highest_amount_off,
-                      highest_percent_off);
+  return RuleDiscountInfo(std::move(cart_discounts), highest_amount_off,
+                          highest_percent_off);
+}
+
+CouponType ConvertToCouponType(const base::Value* type) {
+  if (!type || !type->is_string()) {
+    NOTREACHED() << "Missing coupon type";
+    return CouponType::UNSPECIFIED;
+  }
+
+  std::string type_str = type->GetString();
+  if (type_str == "FREE_LISTING_WITHOUT_CODE") {
+    return CouponType::FREE_LISTING_WITHOUT_CODE;
+  } else if (type_str == "FREE_LISTING_WITH_CODE") {
+    return CouponType::FREE_LISTING_WITH_CODE;
+  }
+
+  NOTREACHED() << "Unrecognized coupon type";
+  return CouponType::UNSPECIFIED;
+}
+
+CouponDiscountInfo ConvertToCouponDiscountInfo(
+    const base::Value* coupon_discount_list) {
+  std::vector<coupon_db::FreeListingCouponInfoProto> coupons;
+  if (!commerce::IsCouponWithCodeEnabled() || !coupon_discount_list ||
+      !coupon_discount_list->is_list()) {
+    return CouponDiscountInfo({});
+  }
+
+  coupons.reserve(coupon_discount_list->GetList().size());
+
+  for (const auto& coupon_discount : coupon_discount_list->GetList()) {
+    coupon_db::FreeListingCouponInfoProto coupon_info_proto;
+
+    // Parse type
+    CouponType type = ConvertToCouponType(coupon_discount.FindKey("type"));
+    if (type != CouponType::FREE_LISTING_WITH_CODE)
+      continue;
+
+    // Parse description
+    // TODO(crbug.com/1266076): Need to parse languageCode and save it in
+    // coupon_info_proto.
+    coupon_info_proto.set_coupon_description(GetStringFromDict(
+        coupon_discount.FindKey("description"), "title", true));
+
+    // Parse couponCode
+    coupon_info_proto.set_coupon_code(
+        GetStringFromDict(&coupon_discount, "couponCode", true));
+
+    // Parse couponId
+    int64_t coupon_id;
+    if (!base::StringToInt64(
+            GetStringFromDict(&coupon_discount, "couponId", true),
+            &coupon_id)) {
+      NOTREACHED() << "Failed to parsed couponId";
+      continue;
+    }
+    coupon_info_proto.set_coupon_id(coupon_id);
+
+    // Parse expiryTimeSec
+    const base::Value* expiry_time_sec_value =
+        coupon_discount.FindKey("expiryTimeSec");
+    if (!expiry_time_sec_value) {
+      NOTREACHED() << "Missing expiryTimeSec";
+      continue;
+    }
+    if (expiry_time_sec_value->GetIfDouble() ||
+        expiry_time_sec_value->GetIfInt()) {
+      coupon_info_proto.set_expiry_time(expiry_time_sec_value->GetDouble());
+    } else {
+      NOTREACHED() << "expiryTimeSec is in a wrong format: "
+                   << expiry_time_sec_value->type();
+      continue;
+    }
+
+    coupons.emplace_back(std::move(coupon_info_proto));
+  }
+
+  return CouponDiscountInfo(std::move(coupons));
 }
 
 bool ValidateResponse(const absl::optional<base::Value>& response) {
@@ -207,11 +333,15 @@ bool ValidateResponse(const absl::optional<base::Value>& response) {
 
 MerchantIdAndDiscounts::MerchantIdAndDiscounts(
     std::string merchant_id,
-    std::vector<cart_db::DiscountInfoProto> discount_list,
-    std::string discount_string)
+    std::vector<cart_db::RuleDiscountInfoProto> rule_discounts,
+    std::vector<coupon_db::FreeListingCouponInfoProto> coupon_discounts,
+    std::string discount_string,
+    bool has_coupons)
     : merchant_id(std::move(merchant_id)),
-      discount_list(std::move(discount_list)),
-      highest_discount_string(std::move(discount_string)) {}
+      rule_discounts(std::move(rule_discounts)),
+      coupon_discounts(std::move(coupon_discounts)),
+      highest_discount_string(std::move(discount_string)),
+      has_coupons(has_coupons) {}
 
 MerchantIdAndDiscounts::MerchantIdAndDiscounts(
     const MerchantIdAndDiscounts& other) = default;
@@ -241,10 +371,13 @@ void CartDiscountFetcher::Fetch(
     CartDiscountFetcherCallback callback,
     std::vector<CartDB::KeyAndValue> proto_pairs,
     bool is_oauth_fetch,
-    const std::string access_token) {
+    const std::string access_token,
+    const std::string fetch_for_locale,
+    const std::string variation_headers) {
   CartDiscountFetcher::FetchForDiscounts(
       std::move(pending_factory), std::move(callback), std::move(proto_pairs),
-      is_oauth_fetch, std::move(access_token));
+      is_oauth_fetch, std::move(access_token), std::move(fetch_for_locale),
+      std::move(variation_headers));
 }
 
 void CartDiscountFetcher::FetchForDiscounts(
@@ -252,9 +385,12 @@ void CartDiscountFetcher::FetchForDiscounts(
     CartDiscountFetcherCallback callback,
     std::vector<CartDB::KeyAndValue> proto_pairs,
     bool is_oauth_fetch,
-    const std::string access_token) {
-  auto fetcher = CreateEndpointFetcher(std::move(pending_factory),
-                                       std::move(proto_pairs), is_oauth_fetch);
+    const std::string access_token,
+    const std::string fetch_for_locale,
+    const std::string variation_headers) {
+  auto fetcher = CreateEndpointFetcher(
+      std::move(pending_factory), std::move(proto_pairs), is_oauth_fetch,
+      std::move(fetch_for_locale), std::move(variation_headers));
 
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->PerformRequest(
@@ -267,7 +403,9 @@ void CartDiscountFetcher::FetchForDiscounts(
 std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
     std::vector<CartDB::KeyAndValue> proto_pairs,
-    bool is_oauth_fetch) {
+    bool is_oauth_fetch,
+    const std::string fetch_for_locale,
+    const std::string variation_headers) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("chrome_cart_discounts_lookup", R"(
         semantics {
@@ -297,9 +435,15 @@ std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(
             "feature."
         })");
 
+  const std::vector<std::string> headers{kAcceptLanguageKey, std::move(fetch_for_locale)};
+  const std::vector<std::string>& cors_exempt_headers{
+      kClientDataHeader, std::move(variation_headers)};
+
   return std::make_unique<EndpointFetcher>(
-      GURL(kFetchDiscountsEndpoint), kPostMethod, kContentType, kTimeoutMs,
-      generatePostData(proto_pairs, base::Time::Now()), traffic_annotation,
+      GURL(kDiscountFetcherServerConfigEndpoint.Get()), kPostMethod,
+      kContentType, kTimeoutMs,
+      generatePostData(proto_pairs, base::Time::Now()), headers,
+      cors_exempt_headers, traffic_annotation,
       network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
       is_oauth_fetch);
 }
@@ -390,38 +534,61 @@ void CartDiscountFetcher::OnDiscountsAvailable(
       continue;
     }
 
-    // Parse rule discounts
-    auto cart_discounts_info =
-        CovertToDiscountInfo(merchant_discount.FindKey("ruleDiscounts"));
-    if (!cart_discounts_info.discount_list.size()) {
-      continue;
-    }
-    std::string discount_string_param;
-    if (cart_discounts_info.highest_amount_off) {
-      // TODO(meiliang): Use icu_formatter or
-      // components/payments/core/currency_formatter to set the amount off.
-      discount_string_param =
-          "$" + base::NumberToString(cart_discounts_info.highest_amount_off);
-    } else if (cart_discounts_info.highest_percent_off) {
-      discount_string_param =
-          base::NumberToString(cart_discounts_info.highest_percent_off) + "%";
-    } else {
-      NOTREACHED() << "Missing hightest discount info";
-      continue;
+    std::string discount_string = "";
+
+    // Parse overallDiscountInfo, which is an optional field.
+    const base::Value* overall_discount_info =
+        merchant_discount.FindKey("overallDiscountInfo");
+    if (overall_discount_info) {
+      discount_string = GetStringFromDict(overall_discount_info, "text",
+                                          true /*is_required*/);
     }
 
-    std::string discount_string =
-        cart_discounts_info.discount_list.size() > 1
-            ? l10n_util::GetStringFUTF8(
-                  IDS_NTP_MODULES_CART_DISCOUNT_CHIP_UP_TO_AMOUNT,
-                  base::UTF8ToUTF16(discount_string_param))
-            : l10n_util::GetStringFUTF8(
-                  IDS_NTP_MODULES_CART_DISCOUNT_CHIP_AMOUNT,
-                  base::UTF8ToUTF16(discount_string_param));
+    // Parse rule discounts, which is an optional field.
+    auto cart_rule_based_discounts_info =
+        CovertToRuleDiscountInfo(merchant_discount.FindKey("ruleDiscounts"));
+
+    if (cart_rule_based_discounts_info.discount_list.size() > 0) {
+      std::string discount_string_param;
+      if (cart_rule_based_discounts_info.highest_amount_off) {
+        // TODO(meiliang): Use icu_formatter or
+        // components/payments/core/currency_formatter to set the amount off.
+        discount_string_param =
+            "$" + base::NumberToString(
+                      cart_rule_based_discounts_info.highest_amount_off);
+      } else if (cart_rule_based_discounts_info.highest_percent_off) {
+        discount_string_param =
+            base::NumberToString(
+                cart_rule_based_discounts_info.highest_percent_off) +
+            "%";
+      } else {
+        NOTREACHED() << "Missing hightest discount info";
+        continue;
+      }
+
+      if (discount_string.empty()) {
+        discount_string =
+            cart_rule_based_discounts_info.discount_list.size() > 1
+                ? l10n_util::GetStringFUTF8(
+                      IDS_NTP_MODULES_CART_DISCOUNT_CHIP_UP_TO_AMOUNT,
+                      base::UTF8ToUTF16(discount_string_param))
+                : l10n_util::GetStringFUTF8(
+                      IDS_NTP_MODULES_CART_DISCOUNT_CHIP_AMOUNT,
+                      base::UTF8ToUTF16(discount_string_param));
+      }
+    }
+
+    // Parse couponDiscounts, which is an optional field.
+    const base::Value* coupon_discounts =
+        merchant_discount.FindKey("couponDiscounts");
+
+    auto coupon_discount_info = ConvertToCouponDiscountInfo(coupon_discounts);
 
     MerchantIdAndDiscounts merchant_id_and_discounts(
-        std::move(merchant_id), std::move(cart_discounts_info.discount_list),
-        std::move(discount_string));
+        std::move(merchant_id),
+        std::move(cart_rule_based_discounts_info.discount_list),
+        std::move(coupon_discount_info.discount_list),
+        std::move(discount_string), coupon_discounts != nullptr);
     cart_discount_map.emplace(merchant_url,
                               std::move(merchant_id_and_discounts));
   }
@@ -430,6 +597,12 @@ void CartDiscountFetcher::OnDiscountsAvailable(
   const base::Value* is_tester_value = value->FindKey("externalTester");
   if (is_tester_value && is_tester_value->is_bool()) {
     is_tester = is_tester_value->GetBool();
+  } else {
+    const base::Value* is_internal_tester_value =
+        value->FindKey("internalTester");
+    if (is_internal_tester_value && is_internal_tester_value->is_bool()) {
+      is_tester = is_internal_tester_value->GetBool();
+    }
   }
 
   std::move(callback).Run(std::move(cart_discount_map), is_tester);

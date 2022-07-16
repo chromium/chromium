@@ -72,6 +72,10 @@ PowerMonitorDeviceSource::GetCurrentThermalState() {
   return thermal_state_observer_->GetCurrentThermalState();
 }
 
+int PowerMonitorDeviceSource::GetCurrentSpeedLimit() {
+  return thermal_state_observer_->GetCurrentSpeedLimit();
+}
+
 namespace {
 
 void BatteryEventCallback(void*) {
@@ -105,7 +109,8 @@ void PowerMonitorDeviceSource::PlatformInit() {
                      kCFRunLoopDefaultMode);
 
   thermal_state_observer_ = std::make_unique<ThermalStateObserverMac>(
-      BindRepeating(&PowerMonitorSource::ProcessThermalEvent));
+      BindRepeating(&PowerMonitorSource::ProcessThermalEvent),
+      BindRepeating(&PowerMonitorSource::ProcessSpeedLimitEvent));
 }
 
 void PowerMonitorDeviceSource::PlatformDestroy() {

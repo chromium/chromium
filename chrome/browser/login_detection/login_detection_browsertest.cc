@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest,
   GURL test_url(https_test_server_.GetURL("www.saved.com", "/title1.html"));
 
   // Initial navigation will not be treated as no login.
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kNoLogin);
 
   // Use site isolation to save the site to manual passworded list.
@@ -94,25 +94,26 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest,
 
   // Subsequent navigation be detected as login.
   ResetHistogramTester();
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kPasswordEnteredLogin);
 
   // Navigations to other subdomains of saved.com are treated as login too.
   ResetHistogramTester();
-  ui_test_utils::NavigateToURL(
-      browser(), https_test_server_.GetURL("mobile.saved.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_test_server_.GetURL("mobile.saved.com", "/title1.html")));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kPasswordEnteredLogin);
 
   ResetHistogramTester();
-  ui_test_utils::NavigateToURL(
-      browser(), https_test_server_.GetURL("saved.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server_.GetURL("saved.com", "/title1.html")));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kPasswordEnteredLogin);
 }
 
 IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest, PopUpBasedOAuthLoginFlow) {
   // Navigate to the OAuth requestor.
-  ui_test_utils::NavigateToURL(
-      browser(), https_test_server_.GetURL("www.foo.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server_.GetURL("www.foo.com", "/title1.html")));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kNoLogin);
   ResetHistogramTester();
 
@@ -140,22 +141,26 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest, PopUpBasedOAuthLoginFlow) {
   ResetHistogramTester();
 
   // Subsequent navigations to the OAuth requestor site will be treated as OAuth
-  ui_test_utils::NavigateToURL(
-      browser(), https_test_server_.GetURL("www.foo.com", "/title3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server_.GetURL("www.foo.com", "/title3.html")));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kOauthLogin);
 }
 
 IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest,
                        OptimizationGuideDetectedBlacklist) {
-  ui_test_utils::NavigateToURL(
-      browser(), GURL("https://www.optguideloggedin.com/page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.optguideloggedin.com/page.html")));
   ExpectLoginDetectionTypeMetric(
       LoginDetectionType::kOptimizationGuideDetected);
 }
 
 class LoginDetectionPrerenderBrowserTest : public LoginDetectionBrowserTest {
  public:
-  LoginDetectionPrerenderBrowserTest() = default;
+  LoginDetectionPrerenderBrowserTest() {
+    prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
+        base::BindRepeating(&LoginDetectionPrerenderBrowserTest::GetWebContents,
+                            base::Unretained(this)));
+  }
   ~LoginDetectionPrerenderBrowserTest() override = default;
   LoginDetectionPrerenderBrowserTest(
       const LoginDetectionPrerenderBrowserTest&) = delete;
@@ -163,14 +168,12 @@ class LoginDetectionPrerenderBrowserTest : public LoginDetectionBrowserTest {
   LoginDetectionPrerenderBrowserTest& operator=(
       const LoginDetectionPrerenderBrowserTest&) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
-        base::BindRepeating(&LoginDetectionPrerenderBrowserTest::GetWebContents,
-                            base::Unretained(this)));
+  void SetUp() override {
+    prerender_helper_->SetUp(embedded_test_server());
+    LoginDetectionBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    prerender_helper_->SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }

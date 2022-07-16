@@ -11,9 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/components/local_search_service/index.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 

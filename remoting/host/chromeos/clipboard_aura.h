@@ -34,6 +34,10 @@ class ClipboardStub;
 class ClipboardAura : public Clipboard {
  public:
   explicit ClipboardAura();
+
+  ClipboardAura(const ClipboardAura&) = delete;
+  ClipboardAura& operator=(const ClipboardAura&) = delete;
+
   ~ClipboardAura() override;
 
   // Clipboard interface.
@@ -52,8 +56,6 @@ class ClipboardAura : public Clipboard {
   base::RepeatingTimer clipboard_polling_timer_;
   ui::ClipboardSequenceNumberToken current_change_token_;
   base::TimeDelta polling_interval_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardAura);
 };
 
 }  // namespace remoting

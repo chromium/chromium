@@ -42,6 +42,10 @@ class FakeEncryptedMedia {
   };
 
   FakeEncryptedMedia(AppBase* app);
+
+  FakeEncryptedMedia(const FakeEncryptedMedia&) = delete;
+  FakeEncryptedMedia& operator=(const FakeEncryptedMedia&) = delete;
+
   ~FakeEncryptedMedia();
   CdmContext* GetCdmContext();
 
@@ -72,8 +76,6 @@ class FakeEncryptedMedia {
   scoped_refptr<AesDecryptor> decryptor_;
   TestCdmContext cdm_context_;
   std::unique_ptr<AppBase> app_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeEncryptedMedia);
 };
 
 }  // namespace media

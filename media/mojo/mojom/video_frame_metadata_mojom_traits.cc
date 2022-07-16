@@ -55,9 +55,6 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   DESERIALIZE_INTO_OPT(frame_rate);
   DESERIALIZE_INTO_OPT(rtp_timestamp);
 
-  // unsigned int.
-  output->hw_protected_validation_id = input.hw_protected_validation_id();
-
   READ_AND_ASSIGN_OPT(media::VideoTransformation, transformation,
                       Transformation);
 

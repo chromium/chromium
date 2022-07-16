@@ -31,10 +31,8 @@ namespace {
 // Triggering timeouts that will be passed through Finch params. They are chosen
 // to be different than the fallback timeouts to test that
 // ReopenTabInProductHelpTrigger does use the params if they exist.
-constexpr base::TimeDelta kTabMinimumActiveDuration =
-    base::TimeDelta::FromSeconds(15);
-constexpr base::TimeDelta kNewTabOpenedTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kTabMinimumActiveDuration = base::Seconds(15);
+constexpr base::TimeDelta kNewTabOpenedTimeout = base::Seconds(5);
 
 }  // namespace
 
@@ -104,7 +102,7 @@ TEST_F(ReopenTabInProductHelpTriggerTest, TabNotActiveLongEnough) {
   base::SimpleTestTickClock clock;
   ReopenTabInProductHelpTrigger reopen_tab_iph(&mock_tracker, &clock);
 
-  reopen_tab_iph.SetShowHelpCallback(base::DoNothing::Repeatedly());
+  reopen_tab_iph.SetShowHelpCallback(base::DoNothing());
 
   reopen_tab_iph.ActiveTabClosed(kTabMinimumActiveDuration / 2);
   reopen_tab_iph.NewTabOpened();
@@ -118,7 +116,7 @@ TEST_F(ReopenTabInProductHelpTriggerTest, RespectsTimeout) {
   base::SimpleTestTickClock clock;
   ReopenTabInProductHelpTrigger reopen_tab_iph(&mock_tracker, &clock);
 
-  reopen_tab_iph.SetShowHelpCallback(base::DoNothing::Repeatedly());
+  reopen_tab_iph.SetShowHelpCallback(base::DoNothing());
 
   reopen_tab_iph.ActiveTabClosed(kTabMinimumActiveDuration);
   clock.Advance(kNewTabOpenedTimeout);

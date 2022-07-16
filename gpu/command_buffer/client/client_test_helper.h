@@ -106,6 +106,10 @@ class MockClientCommandBufferMockFlush : public MockClientCommandBuffer {
 class MockClientGpuControl : public GpuControl {
  public:
   MockClientGpuControl();
+
+  MockClientGpuControl(const MockClientGpuControl&) = delete;
+  MockClientGpuControl& operator=(const MockClientGpuControl&) = delete;
+
   ~MockClientGpuControl() override;
 
   MOCK_METHOD1(SetGpuControlClient, void(GpuControlClient*));
@@ -147,9 +151,6 @@ class MockClientGpuControl : public GpuControl {
                    base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>
                        callback) override {}
   MOCK_METHOD1(SetDisplayTransform, void(gfx::OverlayTransform));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockClientGpuControl);
 };
 
 class FakeDecoderClient : public DecoderClient {

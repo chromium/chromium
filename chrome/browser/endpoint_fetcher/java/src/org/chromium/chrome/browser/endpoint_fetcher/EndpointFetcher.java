@@ -9,6 +9,7 @@ import androidx.annotation.MainThread;
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 
 /**
  * EndpointFetcher uses native EndpointFetcher to call a HTTPS endpoint and return
@@ -39,11 +40,12 @@ public final class EndpointFetcher {
     @MainThread
     public static void fetchUsingOAuth(Callback<EndpointResponse> callback, Profile profile,
             String oathConsumerName, String url, String httpsMethod, String contentType,
-            String[] scopes, String postData, long timeout) {
+            String[] scopes, String postData, long timeout,
+            NetworkTrafficAnnotationTag annotation) {
         // EndpointFetcher currently does not support incognito mode
         assert !profile.isOffTheRecord();
         EndpointFetcherJni.get().nativeFetchOAuth(profile, oathConsumerName, url, httpsMethod,
-                contentType, scopes, postData, timeout, callback);
+                contentType, scopes, postData, timeout, annotation.getHashCode(), callback);
     }
 
     /**
@@ -61,22 +63,22 @@ public final class EndpointFetcher {
     @MainThread
     public static void fetchUsingChromeAPIKey(Callback<EndpointResponse> callback, Profile profile,
             String url, String httpsMethod, String contentType, String postData, long timeout,
-            String[] headers) {
+            String[] headers, NetworkTrafficAnnotationTag annotation) {
         // EndpointFetcher currently does not support incognito mode
         // assert !profile.isOffTheRecord();
-        EndpointFetcherJni.get().nativeFetchChromeAPIKey(
-                profile, url, httpsMethod, contentType, postData, timeout, headers, callback);
+        EndpointFetcherJni.get().nativeFetchChromeAPIKey(profile, url, httpsMethod, contentType,
+                postData, timeout, headers, annotation.getHashCode(), callback);
     }
 
     @NativeMethods
     public interface Natives {
         void nativeFetchOAuth(Profile profile, String oathConsumerName, String url,
                 String httpsMethod, String contentType, String[] scopes, String postData,
-                long timeout, Callback<EndpointResponse> callback);
+                long timeout, int annotationHashCode, Callback<EndpointResponse> callback);
         void nativeFetchChromeAPIKey(Profile profile, String url, String httpsMethod,
                 String contentType, String postData, long timeout, String[] headers,
+                int annotationHashCode, Callback<EndpointResponse> callback);
+        void nativeFetchWithNoAuth(Profile profile, String url, int annotationHashCode,
                 Callback<EndpointResponse> callback);
-        void nativeFetchWithNoAuth(
-                Profile profile, String url, Callback<EndpointResponse> callback);
     }
 }

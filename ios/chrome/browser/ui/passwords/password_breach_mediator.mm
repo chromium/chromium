@@ -57,11 +57,12 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 
     NSString* subtitle = SysUTF16ToNSString(GetDescription(leakType));
     NSString* primaryActionString =
-        SysUTF16ToNSString(GetAcceptButtonLabel(leakType));
+        ShouldCheckPasswords(leakType)
+            ? SysUTF16ToNSString(GetAcceptButtonLabel(leakType))
+            : nil;
     [consumer setTitleString:SysUTF16ToNSString(GetTitle(leakType))
-                subtitleString:subtitle
-           primaryActionString:primaryActionString
-        primaryActionAvailable:ShouldCheckPasswords(leakType)];
+              subtitleString:subtitle
+         primaryActionString:primaryActionString];
   }
   return self;
 }
@@ -82,10 +83,6 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
   // Opening Password page will stop the presentation in the presenter.
   // No need to send |stop|.
   [self.presenter startPasswordCheck];
-}
-
-- (void)confirmationAlertSecondaryAction {
-  // No-op.
 }
 
 - (void)confirmationAlertLearnMoreAction {

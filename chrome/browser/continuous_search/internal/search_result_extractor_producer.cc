@@ -10,7 +10,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/containers/span.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/continuous_search/internal/jni_headers/SearchResultExtractorProducer_jni.h"
 #include "chrome/browser/continuous_search/internal/search_result_extractor_producer_interface.h"
 #include "chrome/browser/continuous_search/internal/search_url_helper.h"
@@ -44,14 +43,13 @@ class SearchResultExtractorProducerJavaInterface
       const base::android::JavaRef<jobject>& url,
       const base::android::JavaRef<jstring>& query,
       jint result_type,
-      const base::android::JavaRef<jobjectArray>& group_label,
-      const base::android::JavaRef<jbooleanArray>& is_ad_group,
+      const base::android::JavaRef<jintArray>& group_type,
       const base::android::JavaRef<jintArray>& group_size,
       const base::android::JavaRef<jobjectArray>& titles,
       const base::android::JavaRef<jobjectArray>& urls) override {
     Java_SearchResultExtractorProducer_onResultsAvailable(
-        env, obj, url, query, result_type, group_label, is_ad_group, group_size,
-        titles, urls);
+        env, obj, url, query, result_type, group_type, group_size, titles,
+        urls);
   }
 };
 
@@ -81,7 +79,7 @@ void SearchResultExtractorProducer::FetchResults(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   client_.RequestData(
-      web_contents,
+      web_contents, {mojom::ResultType::kSearchResults},
       base::BindOnce(&SearchResultExtractorProducer::OnResultsCallback,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::android::ConvertJavaStringToUTF8(env, j_query)));
@@ -105,17 +103,10 @@ void SearchResultExtractorProducer::OnResultsCallback(
   for (const mojom::ResultGroupPtr& group : results->groups) {
     result_count += group->results.size();
   }
-  base::UmaHistogramCounts100(
-      "Browser.ContinuousSearch.NumberOfSearchResultsExtracted", result_count);
 
-  std::vector<std::string> labels;
+  std::vector<int> group_types;
+  group_types.reserve(results->groups.size());
   std::vector<int> group_sizes;
-  // std::vector<bool> doesn't provide data() due to its unique packing
-  // implementation and there is no JNI method for returning a Java array of
-  // booleans from a base::span<bool> or std::vector<bool>. This is the next
-  // best option.
-  std::unique_ptr<bool[]> groups_are_ad_type(new bool[results->groups.size()]);
-  labels.reserve(results->groups.size());
   group_sizes.reserve(results->groups.size());
 
   std::vector<std::u16string> titles;
@@ -124,8 +115,7 @@ void SearchResultExtractorProducer::OnResultsCallback(
   urls.reserve(result_count);
   for (size_t i = 0; i < results->groups.size(); ++i) {
     const mojom::ResultGroupPtr& group = results->groups[i];
-    labels.push_back(group->label);
-    groups_are_ad_type[i] = group->is_ad_group;
+    group_types.push_back(static_cast<int>(group->type));
     group_sizes.push_back(group->results.size());
 
     for (const mojom::SearchResultPtr& result : group->results) {
@@ -144,9 +134,7 @@ void SearchResultExtractorProducer::OnResultsCallback(
       url::GURLAndroid::FromNativeGURL(env, results->document_url),
       base::android::ConvertUTF8ToJavaString(env, query),
       static_cast<jint>(GetSrpPageCategoryForUrl(results->document_url)),
-      base::android::ToJavaArrayOfStrings(env, labels),
-      base::android::ToJavaBooleanArray(env, groups_are_ad_type.get(),
-                                        results->groups.size()),
+      base::android::ToJavaIntArray(env, group_types),
       base::android::ToJavaIntArray(env, group_sizes),
       base::android::ToJavaArrayOfStrings(env, titles),
       url::GURLAndroid::ToJavaArrayOfGURLs(env, urls));

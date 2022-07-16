@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FilesAppState} from '../../common/js/files_app_state.js';
 import {importer} from '../../common/js/importer_common.js';
 import {metrics} from '../../common/js/metrics.js';
 import {str, util} from '../../common/js/util.js';
@@ -125,11 +126,6 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
     this.stringData = null;
 
     if (!window.isSWA) {
-      // Initialize listener for importer.handlePhotosAppMessage messages to
-      // the files app back-end. FIXME: Files SWA needs to support photos
-      // import workflow.
-      chrome.runtime.onMessageExternal.addListener(
-          this.onExternalMessageReceived_.bind(this));
       // FIXME: chrome.contextMenus not enabled for Files SWA yet. See service
       // onContextMenuClicked_ for adding "New Window" item to the OS shelf.
       chrome.contextMenus.onClicked.addListener(
@@ -204,12 +200,12 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
   /**
    * Launches a new File Manager window.
    *
-   * @param {Object=} opt_appState App state.
+   * @param {!FilesAppState=} appState App state.
    * @return {!Promise<chrome.app.window.AppWindow|string>} Resolved with the
    *     App ID.
    */
-  async launchFileManager(opt_appState) {
-    return launcher.launchFileManager(opt_appState);
+  async launchFileManager(appState = {}) {
+    return launcher.launchFileManager(appState);
   }
 
   /**
@@ -372,7 +368,7 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
    * @private
    * @override
    */
-  onLaunched_(launchData) {
+  async onLaunched_(launchData) {
     metrics.startInterval('Load.BackgroundLaunch');
     if (!launchData || !launchData.items || launchData.items.length == 0) {
       this.launch_(undefined);
@@ -413,18 +409,6 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
   }
 
   /**
-   * Handles a message received via chrome.runtime.sendMessageExternal.
-   *
-   * @param {*} message
-   * @param {MessageSender} sender
-   */
-  onExternalMessageReceived_(message, sender) {
-    if ('origin' in sender && sender.origin === GPLUS_PHOTOS_APP_ORIGIN) {
-      importer.handlePhotosAppMessage(message);
-    }
-  }
-
-  /**
    * Restarted the app, restore windows.
    * @private
    * @override
@@ -439,7 +423,8 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
             metrics.startInterval('Load.BackgroundRestart');
             const id = Number(match[1]);
             try {
-              const appState = /** @type {Object} */ (JSON.parse(items[key]));
+              const appState =
+                  /** @type {!FilesAppState} */ (JSON.parse(items[key]));
               launcher.launchFileManager(appState, id, undefined).then(() => {
                 metrics.recordInterval('Load.BackgroundRestart');
               });
@@ -581,10 +566,6 @@ const DIALOG_ID_PREFIX = 'dialog#';
  * @type {number}
  */
 let nextFileManagerDialogID = 0;
-
-/** @const {!string} */
-const GPLUS_PHOTOS_APP_ORIGIN =
-    'chrome-extension://efjnaogkjbogokcnohkmnjdojkikgobo';
 
 /**
  * Singleton instance of Background object.

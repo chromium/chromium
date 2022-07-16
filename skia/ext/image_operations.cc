@@ -100,6 +100,9 @@ class ResizeFilter {
                int dest_width, int dest_height,
                const SkIRect& dest_subset);
 
+  ResizeFilter(const ResizeFilter&) = delete;
+  ResizeFilter& operator=(const ResizeFilter&) = delete;
+
   // Returns the filled filter values.
   const ConvolutionFilter1D& x_filter() { return x_filter_; }
   const ConvolutionFilter1D& y_filter() { return y_filter_; }
@@ -160,8 +163,6 @@ class ResizeFilter {
 
   ConvolutionFilter1D x_filter_;
   ConvolutionFilter1D y_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResizeFilter);
 };
 
 ResizeFilter::ResizeFilter(ImageOperations::ResizeMethod method,

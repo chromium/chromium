@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OPEN_FROM_CLIPBOARD_FAKE_CLIPBOARD_RECENT_CONTENT_H_
 #define COMPONENTS_OPEN_FROM_CLIPBOARD_FAKE_CLIPBOARD_RECENT_CONTENT_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "ui/gfx/image/image.h"
@@ -16,6 +15,11 @@
 class FakeClipboardRecentContent : public ClipboardRecentContent {
  public:
   FakeClipboardRecentContent();
+
+  FakeClipboardRecentContent(const FakeClipboardRecentContent&) = delete;
+  FakeClipboardRecentContent& operator=(const FakeClipboardRecentContent&) =
+      delete;
+
   ~FakeClipboardRecentContent() override;
 
   // ClipboardRecentContent implementation.
@@ -45,8 +49,6 @@ class FakeClipboardRecentContent : public ClipboardRecentContent {
   absl::optional<gfx::Image> clipboard_image_content_;
   base::TimeDelta content_age_;
   bool suppress_content_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClipboardRecentContent);
 };
 
 #endif  // COMPONENTS_OPEN_FROM_CLIPBOARD_FAKE_CLIPBOARD_RECENT_CONTENT_H_

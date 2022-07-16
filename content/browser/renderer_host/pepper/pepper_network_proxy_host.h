@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "ppapi/host/host_message_context.h"
@@ -43,6 +42,9 @@ class CONTENT_EXPORT PepperNetworkProxyHost : public ppapi::host::ResourceHost {
   PepperNetworkProxyHost(BrowserPpapiHostImpl* host,
                          PP_Instance instance,
                          PP_Resource resource);
+
+  PepperNetworkProxyHost(const PepperNetworkProxyHost&) = delete;
+  PepperNetworkProxyHost& operator=(const PepperNetworkProxyHost&) = delete;
 
   ~PepperNetworkProxyHost() override;
 
@@ -104,8 +106,6 @@ class CONTENT_EXPORT PepperNetworkProxyHost : public ppapi::host::ResourceHost {
       pending_requests_;
 
   base::WeakPtrFactory<PepperNetworkProxyHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperNetworkProxyHost);
 };
 
 }  // namespace content

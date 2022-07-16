@@ -140,12 +140,9 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   // Check accesses from |accessing_frame| and every same-origin iframe toward
   // this window. A report is sent to |reporter| when this happens.
   void InstallCoopAccessMonitor(
-      network::mojom::blink::CoopAccessReportType report_type,
       LocalFrame* accessing_frame,
-      mojo::PendingRemote<
-          network::mojom::blink::CrossOriginOpenerPolicyReporter> reporter,
-      bool endpoint_defined,
-      const WTF::String& reported_window_url);
+      network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
+          coop_reporter_params);
   // Whenever we detect that the enforcement of a report-only COOP policy would
   // have resulted in preventing access to this window, a report is potentially
   // sent when calling this function.

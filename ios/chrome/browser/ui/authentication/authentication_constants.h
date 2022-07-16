@@ -10,6 +10,9 @@
 // Header image sizes.
 extern const CGFloat kAuthenticationHeaderImageHeight;
 
+// Height/Width of the avatar in authentication context.
+extern const CGFloat kAccountProfilePhotoDimension;
+
 // Font sizes
 extern const UIFontTextStyle kAuthenticationTitleFontStyle;
 extern const UIFontTextStyle kAuthenticationTextFontStyle;
@@ -26,5 +29,8 @@ extern const CGFloat kAuthenticationSeparatorHeight;
 
 // Header image name.
 extern NSString* const kAuthenticationHeaderImageName;
+
+// Accessibility identifier for the Signin/Sync screen.
+extern NSString* const kSigninSyncScreenAccessibilityIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_CONSTANTS_H_

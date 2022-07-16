@@ -6,4 +6,5 @@
 
 declare namespace chrome {
   function send(msg: string, params?: Array<any>): void;
+  function getVariableValue(name: string): string;
 }

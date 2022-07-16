@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/video_decoder_config.h"
 #include "media/video/video_decode_accelerator.h"
@@ -38,6 +37,10 @@ class PepperVideoDecoderHost;
 class VideoDecoderShim : public media::VideoDecodeAccelerator {
  public:
   VideoDecoderShim(PepperVideoDecoderHost* host, uint32_t texture_pool_size);
+
+  VideoDecoderShim(const VideoDecoderShim&) = delete;
+  VideoDecoderShim& operator=(const VideoDecoderShim&) = delete;
+
   ~VideoDecoderShim() override;
 
   // media::VideoDecodeAccelerator implementation.
@@ -106,8 +109,6 @@ class VideoDecoderShim : public media::VideoDecodeAccelerator {
   uint32_t num_pending_decodes_;
 
   base::WeakPtrFactory<VideoDecoderShim> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderShim);
 };
 
 }  // namespace content

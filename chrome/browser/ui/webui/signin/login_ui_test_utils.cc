@@ -27,7 +27,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -66,7 +66,7 @@ class SignInObserver : public signin::IdentityManager::Observer {
 
     base::OneShotTimer timer;
     timer.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(30),
+        FROM_HERE, base::Seconds(30),
         base::BindOnce(&SignInObserver::OnTimeout, base::Unretained(this)));
     running_ = true;
     message_loop_runner_ = new MessageLoopRunner;
@@ -157,7 +157,7 @@ void WaitUntilCondition(const base::RepeatingCallback<bool()>& condition,
   for (int attempt = 0; attempt < 10; ++attempt) {
     if (condition.Run())
       return;
-    RunLoopFor(base::TimeDelta::FromMilliseconds(1000));
+    RunLoopFor(base::Milliseconds(1000));
   }
 
   FAIL() << error_message;
@@ -485,7 +485,7 @@ bool DismissSyncConfirmationDialog(Browser* browser,
       confirmation_closed_observer.WaitForConfirmationClosed();
       return true;
     }
-    RunLoopFor(base::TimeDelta::FromMilliseconds(1000));
+    RunLoopFor(base::Milliseconds(1000));
   }
   return false;
 }
@@ -510,7 +510,7 @@ bool CompleteSigninEmailConfirmationDialog(
             browser, action)) {
       return true;
     }
-    RunLoopFor(base::TimeDelta::FromMilliseconds(1000));
+    RunLoopFor(base::Milliseconds(1000));
   }
   return false;
 }
@@ -523,7 +523,7 @@ bool CompleteReauthConfirmationDialog(Browser* browser,
     if (SigninViewControllerTestUtil::TryCompleteReauthConfirmationDialog(
             browser, action))
       return true;
-    RunLoopFor(base::TimeDelta::FromMilliseconds(1000));
+    RunLoopFor(base::Milliseconds(1000));
   }
   return false;
 }

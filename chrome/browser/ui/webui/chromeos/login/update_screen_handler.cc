@@ -25,8 +25,13 @@ namespace {
 constexpr bool strings_equal(char const* a, char const* b) {
   return *a == *b && (*a == '\0' || strings_equal(a + 1, b + 1));
 }
-static_assert(strings_equal(UpdateView::kScreenId.name, "oobe-update"),
-              "The update screen id must never change");
+static_assert(
+    strings_equal(UpdateView::kScreenId.name,
+                  "oobe"
+                  // break with comment is used here so the verification value
+                  // won't get automatically renamed by mass renaming tools
+                  "-update"),
+    "The update screen id must never change");
 
 // These values must be kept in sync with UIState in JS code.
 constexpr const char kCheckingForUpdate[] = "checking";

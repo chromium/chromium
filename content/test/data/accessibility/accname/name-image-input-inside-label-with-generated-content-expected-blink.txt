@@ -1,2 +1,1 @@
-# BUG: The expected result is 'foo baz'
-button name='bar' nameFrom=title
+button name='foo baz' nameFrom=relatedElement

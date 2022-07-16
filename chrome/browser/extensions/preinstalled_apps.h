@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_PREINSTALLED_APPS_H_
 #define CHROME_BROWSER_EXTENSIONS_PREINSTALLED_APPS_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "extensions/common/manifest.h"
@@ -50,6 +49,9 @@ class Provider : public extensions::ExternalProviderImpl {
            extensions::mojom::ManifestLocation download_location,
            int creation_flags);
 
+  Provider(const Provider&) = delete;
+  Provider& operator=(const Provider&) = delete;
+
   // ExternalProviderImpl overrides:
   void VisitRegisteredExtension() override;
   void SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) override;
@@ -74,8 +76,6 @@ class Provider : public extensions::ExternalProviderImpl {
   // Whether this class should perform a new installation, such as for a
   // new profile.
   bool perform_new_installation_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Provider);
 };
 
 }  // namespace preinstalled_apps

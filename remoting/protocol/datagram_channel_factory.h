@@ -23,6 +23,9 @@ class DatagramChannelFactory {
 
   DatagramChannelFactory() {}
 
+  DatagramChannelFactory(const DatagramChannelFactory&) = delete;
+  DatagramChannelFactory& operator=(const DatagramChannelFactory&) = delete;
+
   // Creates new channels and calls the |callback| when then new channel is
   // created and connected. The |callback| is called with nullptr if channel
   // setup failed for any reason. Callback may be called synchronously, before
@@ -39,9 +42,6 @@ class DatagramChannelFactory {
 
  protected:
   virtual ~DatagramChannelFactory() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DatagramChannelFactory);
 };
 
 }  // namespace protocol

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -25,18 +24,20 @@ namespace android {
 class AndroidPushNotificationManagerJavaTest;
 class OptimizationGuideBridge;
 }  // namespace android
+class ChromeHintsManager;
 class OptimizationGuideStore;
 class PredictionManager;
 class PredictionManagerBrowserTestBase;
 class PredictionModelDownloadClient;
+class PushNotificationManager;
 class ModelInfo;
 class TabUrlProvider;
 class TopHostProvider;
 }  // namespace optimization_guide
 
 class GURL;
-class OptimizationGuideHintsManager;
 class OptimizationGuideNavigationData;
+class Profile;
 
 // Keyed service that can be used to get information received from the remote
 // Optimization Guide Service. For regular profiles, this will do the work to
@@ -52,17 +53,14 @@ class OptimizationGuideKeyedService
  public:
   explicit OptimizationGuideKeyedService(
       content::BrowserContext* browser_context);
+
+  OptimizationGuideKeyedService(const OptimizationGuideKeyedService&) = delete;
+  OptimizationGuideKeyedService& operator=(
+      const OptimizationGuideKeyedService&) = delete;
+
   ~OptimizationGuideKeyedService() override;
 
   // optimization_guide::OptimizationGuideDecider implementation:
-  void RegisterOptimizationTargets(
-      const std::vector<optimization_guide::proto::OptimizationTarget>&
-          optimization_targets) override;
-  void ShouldTargetNavigationAsync(
-      content::NavigationHandle* navigation_handle,
-      optimization_guide::proto::OptimizationTarget optimization_target,
-      optimization_guide::OptimizationGuideTargetDecisionCallback callback)
-      override;
   void RegisterOptimizationTypes(
       const std::vector<optimization_guide::proto::OptimizationType>&
           optimization_types) override;
@@ -100,15 +98,16 @@ class OptimizationGuideKeyedService
       optimization_guide::proto::OptimizationTarget optimization_target,
       std::unique_ptr<optimization_guide::ModelInfo> model_info);
 
-  // Returns the OptimizationGuideNavigationData for |navigation_handle|. Will
-  // return nullptr if one cannot be created for it for any reason.
-  static OptimizationGuideNavigationData* GetNavigationDataFromNavigationHandle(
-      content::NavigationHandle* navigation_handle);
+  // Creates the platform specific push notification manager. May returns
+  // nullptr for desktop or when the push notification feature is disabled.
+  static std::unique_ptr<optimization_guide::PushNotificationManager>
+  MaybeCreatePushNotificationManager(Profile* profile);
 
  private:
   friend class ChromeBrowsingDataRemoverDelegate;
   friend class HintsFetcherBrowserTest;
   friend class OptimizationGuideKeyedServiceBrowserTest;
+  friend class OptimizationGuideMessageHandler;
   friend class OptimizationGuideWebContentsObserver;
   friend class optimization_guide::PredictionModelDownloadClient;
   friend class optimization_guide::PredictionManagerBrowserTestBase;
@@ -120,7 +119,7 @@ class OptimizationGuideKeyedService
   void Initialize();
 
   // Virtualized for testing.
-  virtual OptimizationGuideHintsManager* GetHintsManager();
+  virtual optimization_guide::ChromeHintsManager* GetHintsManager();
 
   optimization_guide::TopHostProvider* GetTopHostProvider() {
     return top_host_provider_.get();
@@ -131,9 +130,9 @@ class OptimizationGuideKeyedService
   }
 
   // Notifies |hints_manager_| that the navigation associated with
-  // |navigation_handle| has started or redirected.
+  // |navigation_data| has started or redirected.
   void OnNavigationStartOrRedirect(
-      content::NavigationHandle* navigation_handle);
+      OptimizationGuideNavigationData* navigation_data);
 
   // Notifies |hints_manager_| that the navigation associated with
   // |navigation_redirect_chain| has finished.
@@ -151,7 +150,7 @@ class OptimizationGuideKeyedService
   std::unique_ptr<optimization_guide::OptimizationGuideStore> hint_store_;
 
   // Manages the storing, loading, and fetching of hints.
-  std::unique_ptr<OptimizationGuideHintsManager> hints_manager_;
+  std::unique_ptr<optimization_guide::ChromeHintsManager> hints_manager_;
 
   // The store of optimization target prediction models and features.
   std::unique_ptr<optimization_guide::OptimizationGuideStore>
@@ -169,8 +168,6 @@ class OptimizationGuideKeyedService
   // The tab URL provider to use for fetching information for the user's active
   // tabs. Will be null if the user is off the record.
   std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptimizationGuideKeyedService);
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_KEYED_SERVICE_H_

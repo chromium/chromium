@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceMemoryBrowserTest, PerformanceMemory) {
 
   WebContents* contents = shell()->web_contents();
   FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(contents)->GetFrameTree()->root();
+      static_cast<WebContentsImpl*>(contents)->GetPrimaryFrameTree().root();
   int usedJSHeapSize =
       EvalJs(root, "performance.memory.usedJSHeapSize;").ExtractInt();
 

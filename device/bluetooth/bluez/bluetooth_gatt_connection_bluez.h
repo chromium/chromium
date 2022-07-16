@@ -32,6 +32,11 @@ class BluetoothGattConnectionBlueZ
       scoped_refptr<device::BluetoothAdapter> adapter,
       const std::string& device_address,
       const dbus::ObjectPath& object_path);
+
+  BluetoothGattConnectionBlueZ(const BluetoothGattConnectionBlueZ&) = delete;
+  BluetoothGattConnectionBlueZ& operator=(const BluetoothGattConnectionBlueZ&) =
+      delete;
+
   ~BluetoothGattConnectionBlueZ() override;
 
   // BluetoothGattConnection overrides.
@@ -50,8 +55,6 @@ class BluetoothGattConnectionBlueZ
   // D-Bus object path of the underlying device. This is used to filter observer
   // events.
   dbus::ObjectPath object_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattConnectionBlueZ);
 };
 
 }  // namespace bluez

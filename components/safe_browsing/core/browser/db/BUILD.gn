@@ -104,10 +104,6 @@ static_library("util") {
     "//net",
     "//url",
   ]
-  if (is_win) {
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    cflags = [ "/wd4267" ]  # Conversion from size_t to 'type'.
-  }
 }
 
 static_library("v4_database") {
@@ -295,10 +291,6 @@ source_set("unit_tests_shared") {
     "//services/network:test_support",
     "//testing/gtest",
   ]
-  if (is_win) {
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    cflags = [ "/wd4267" ]  # Conversion from size_t to 'type'.
-  }
 }
 
 source_set("unit_tests_local_db") {
@@ -335,10 +327,6 @@ source_set("unit_tests_local_db") {
     "//testing/gtest",
     "//url",
   ]
-  if (is_win) {
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    cflags = [ "/wd4267" ]  # Conversion from size_t to 'type'.
-  }
 }
 
 static_library("allowlist_checker_client") {

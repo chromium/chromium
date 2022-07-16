@@ -346,7 +346,7 @@ template("generated_types") {
     "//base",
     "//tools/json_schema_compiler:generated_api_util",
   ]
-  lib_extra_configs = [ "//build/config/compiler:no_size_t_to_int_warning" ]
+  lib_extra_configs = []
   if (defined(invoker.configs)) {
     lib_extra_configs += invoker.configs
   }

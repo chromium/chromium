@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/frame/immersive/immersive_revealed_lock.h"
 #include "ui/aura/window_observer.h"
@@ -72,6 +71,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
   static const int kMouseRevealBoundsHeight;
 
   ImmersiveFullscreenController();
+
+  ImmersiveFullscreenController(const ImmersiveFullscreenController&) = delete;
+  ImmersiveFullscreenController& operator=(
+      const ImmersiveFullscreenController&) = delete;
+
   ~ImmersiveFullscreenController() override;
 
   // Initializes the controller. Must be called prior to enabling immersive
@@ -301,8 +305,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
   static bool value_for_animations_disabled_for_test_;
 
   base::WeakPtrFactory<ImmersiveFullscreenController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveFullscreenController);
 };
 
 }  // namespace chromeos

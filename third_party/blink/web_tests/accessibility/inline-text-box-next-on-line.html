@@ -194,7 +194,7 @@ test(() => {
   // Both the inline text box, as well as its static text parent, should be pointing to the same "previousOnLine".
   assert_equals(axObj.parentElement().previousOnLine(), axObj.previousOnLine());
   axObj = axObj.previousOnLine();
-  axObj = axObj.parentElement().parentElement();
+  axObj = axObj.parentElement();
   assert_equals(axObj.role, 'AXRole: AXListMarker');
   lineText.push(axObj.name);
   assert_array_equals(lineText, ['1. ', 'List item', '1. ']);
@@ -213,7 +213,7 @@ test(() => {
   assert_equals(axObj.role, 'AXRole: AXButton');
   lineText.push(axObj.name);
   axObj = axObj.previousOnLine();
-  axObj = axObj.parentElement().parentElement();
+  axObj = axObj.parentElement();
   assert_equals(axObj.role, 'AXRole: AXListMarker');
   lineText.push(axObj.name);
   assert_array_equals(lineText, ['2. ', 'button', '2. ']);

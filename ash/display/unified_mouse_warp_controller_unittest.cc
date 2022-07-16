@@ -41,6 +41,12 @@ struct WarpGroup {
 class UnifiedMouseWarpControllerTest : public AshTestBase {
  public:
   UnifiedMouseWarpControllerTest() = default;
+
+  UnifiedMouseWarpControllerTest(const UnifiedMouseWarpControllerTest&) =
+      delete;
+  UnifiedMouseWarpControllerTest& operator=(
+      const UnifiedMouseWarpControllerTest&) = delete;
+
   ~UnifiedMouseWarpControllerTest() override = default;
 
   void SetUp() override {
@@ -178,48 +184,45 @@ class UnifiedMouseWarpControllerTest : public AshTestBase {
     // Touch the bottom edge of the second display.
     EXPECT_FALSE(TestIfMouseWarpsAt(gfx::Point(610, 499)));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnifiedMouseWarpControllerTest);
 };
 
 // Verifies if MouseCursorEventFilter's bounds calculation works correctly.
 TEST_F(UnifiedMouseWarpControllerTest, BoundaryTest) {
   {
     SCOPED_TRACE("1x1");
-    BoundaryTestBody("400x400,0+450-700x400",
+    BoundaryTestBody("500x400,0+450-700x400",
                      {},  // Empty matrix (use horizontal layout).
-                     {{"399,0 1x400"}, {"0,450 1x400"}});
-    BoundaryTestBody("400x400,0+450-700x600",
+                     {{"499,0 1x400"}, {"0,450 1x400"}});
+    BoundaryTestBody("500x400,0+450-700x600",
                      {},  // Empty matrix (use horizontal layout).
-                     {{"399,0 1x400"}, {"0,450 1x600"}});
+                     {{"499,0 1x400"}, {"0,450 1x600"}});
   }
   {
     SCOPED_TRACE("2x1");
-    BoundaryTestBody("400x400*2,0+450-700x400",
+    BoundaryTestBody("500x400*2,0+450-700x400",
                      {},  // Empty matrix (use horizontal layout).
-                     {{"399,0 1x400"}, {"0,450 1x400"}});
-    BoundaryTestBody("400x400*2,0+450-700x600",
+                     {{"499,0 1x400"}, {"0,450 1x400"}});
+    BoundaryTestBody("500x400*2,0+450-700x600",
                      {},  // Empty matrix (use horizontal layout).
-                     {{"399,0 1x400"}, {"0,450 1x600"}});
+                     {{"499,0 1x400"}, {"0,450 1x600"}});
   }
   {
     SCOPED_TRACE("1x2");
-    BoundaryTestBody("400x400,0+450-700x400*2",
+    BoundaryTestBody("500x400,0+450-700x400*2",
                      {},  // Empty matrix (use horizontal layout).
-                     {{"399,0 1x400"}, {"0,450 1x400"}});
-    BoundaryTestBody("400x400,0+450-700x600*2",
+                     {{"499,0 1x400"}, {"0,450 1x400"}});
+    BoundaryTestBody("500x400,0+450-700x600*2",
                      {},  // Empty matrix (use horizontal layout).
-                     {{"399,0 1x400"}, {"0,450 1x600"}});
+                     {{"499,0 1x400"}, {"0,450 1x600"}});
   }
   {
     SCOPED_TRACE("2x2");
-    BoundaryTestBody("400x400*2,0+450-700x400*2",
+    BoundaryTestBody("500x400*2,0+450-700x400*2",
                      {},  // Empty matrix (use horizontal layout).
-                     {{"399,0 1x400"}, {"0,450 1x400"}});
-    BoundaryTestBody("400x400*2,0+450-700x600*2",
+                     {{"499,0 1x400"}, {"0,450 1x400"}});
+    BoundaryTestBody("500x400*2,0+450-700x600*2",
                      {},  // Empty matrix (use horizontal layout).
-                     {{"399,0 1x400"}, {"0,450 1x600"}});
+                     {{"499,0 1x400"}, {"0,450 1x600"}});
   }
 }
 
@@ -255,7 +258,7 @@ TEST_F(UnifiedMouseWarpControllerTest, BoundaryTestGrid) {
   const std::string display_specs =
       "0+0-500x300,510+0-400x500,920+0-300x600,"
       "0+600-200x300,210+600-700x200,920+600-350x480,"
-      "0+1080-300x500,310+1080-600x600,920+1080-400x450";
+      "0+1080-300x500,310+1080-600x599,920+1080-400x450";
   UpdateDisplay(display_specs);
   display_manager()->SetUnifiedDesktopEnabled(true);
   display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
@@ -264,7 +267,7 @@ TEST_F(UnifiedMouseWarpControllerTest, BoundaryTestGrid) {
   // Test a very general case of a 3 x 3 matrix.
   // 0:[500 x 300] 1:[400 x 500] 2:[300 x 600]
   // 3:[200 x 300] 4:[700 x 200] 5:[350 x 480]
-  // 6:[300 x 500] 7:[600 x 600] 8:[400 x 450]
+  // 6:[300 x 500] 7:[600 x 599] 8:[400 x 450]
   display::UnifiedDesktopLayoutMatrix matrix;
   matrix.resize(3u);
   matrix[0].emplace_back(list[0]);
@@ -310,14 +313,14 @@ TEST_F(UnifiedMouseWarpControllerTest, BoundaryTestGrid) {
           "210,600 1x200",  // Left with display 3.
           "909,600 1x200",  // Right with display 5.
           "210,799 102x1",  // Bottom with display 6.
-          "312,799 392x1",  // Bottom with display 7.
-          "704,799 204x1",  // Bottom with display 8.
+          "312,799 393x1",  // Bottom with display 7.
+          "705,799 203x1",  // Bottom with display 8.
       },
       // Display 5 edges.
       {
           "920,600 350x1",   // Top with display 2.
           "920,600 1x480",   // Left with display 4.
-          "920,1079 348x1",  // Bottom with display 8.
+          "920,1079 350x1",  // Bottom with display 8.
       },
       // Display 6 edges.
       {
@@ -328,13 +331,13 @@ TEST_F(UnifiedMouseWarpControllerTest, BoundaryTestGrid) {
       // Display 7 edges.
       {
           "310,1080 600x1",  // Top with display 4.
-          "310,1080 1x600",  // Left with display 6.
-          "909,1080 1x600",  // Right with display 8.
+          "310,1080 1x599",  // Left with display 6.
+          "909,1080 1x599",  // Right with display 8.
       },
       // Display 8 edges.
       {
-          "920,1080 234x1",   // Top with display 4.
-          "1154,1080 166x1",  // Top with display 5.
+          "920,1080 233x1",   // Top with display 4.
+          "1153,1080 167x1",  // Top with display 5.
           "920,1080 1x450",   // Left with display 7.
       },
   };
@@ -379,12 +382,12 @@ TEST_F(UnifiedMouseWarpControllerTest, BoundaryTestGrid) {
       {{299, 1200}, {214, 566}, list[7]},  // Display 6 --> 7.
 
       {{500, 1080}, {326, 480}, list[4]},  // Display 7 --> 4.
-      {{310, 1500}, {212, 730}, list[6]},  // Display 7 --> 6.
-      {{909, 1500}, {571, 730}, list[8]},  // Display 7 --> 8.
+      {{310, 1500}, {212, 731}, list[6]},  // Display 7 --> 6.
+      {{909, 1500}, {572, 731}, list[8]},  // Display 7 --> 8.
 
-      {{1000, 1080}, {633, 480}, list[4]},  // Display 8 --> 4.
-      {{1200, 1080}, {792, 481}, list[5]},  // Display 8 --> 5.
-      {{920, 1500}, {569, 814}, list[7]},   // Display 8 --> 7.
+      {{1000, 1080}, {634, 480}, list[4]},  // Display 8 --> 4.
+      {{1200, 1080}, {793, 481}, list[5]},  // Display 8 --> 5.
+      {{920, 1500}, {570, 814}, list[7]},   // Display 8 --> 7.
   };
   WarpTestBody(warp_groups);
 }
@@ -392,18 +395,18 @@ TEST_F(UnifiedMouseWarpControllerTest, BoundaryTestGrid) {
 // Verifies if the mouse pointer correctly moves to another display in
 // unified desktop mode.
 TEST_F(UnifiedMouseWarpControllerTest, WarpMouse) {
-  UpdateDisplay("500x500,600+0-500x500");
+  UpdateDisplay("600x500,700+0-600x500");
   ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
 
   EXPECT_FALSE(TestIfMouseWarpsAt(gfx::Point(10, 10)));
   // Touch the right edge of the first display. Pointer should warp.
-  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(499, 10)));
-  EXPECT_EQ("501,10",  // by 2px.
+  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(599, 10)));
+  EXPECT_EQ("601,10",  // by 2px.
             aura::Env::GetInstance()->last_mouse_location().ToString());
 
   // Touch the left edge of the second display. Pointer should warp.
-  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(600, 10)));
-  EXPECT_EQ("498,10",  // by 2px.
+  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(700, 10)));
+  EXPECT_EQ("598,10",  // by 2px.
             aura::Env::GetInstance()->last_mouse_location().ToString());
   {
     SCOPED_TRACE("1x1 NO WARP");
@@ -411,18 +414,18 @@ TEST_F(UnifiedMouseWarpControllerTest, WarpMouse) {
   }
 
   // With 2X and 1X displays
-  UpdateDisplay("500x500*2,600+0-500x500");
+  UpdateDisplay("600x500*2,700+0-600x500");
   ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
 
   EXPECT_FALSE(TestIfMouseWarpsAt(gfx::Point(10, 10)));
   // Touch the right edge of the first display. Pointer should warp.
-  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(499, 10)));
-  EXPECT_EQ("250,5",  // moved to 501 by 2px, divided by 2 (dsf).
+  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(599, 10)));
+  EXPECT_EQ("300,5",  // moved to 601 by 2px, divided by 2 (dsf).
             aura::Env::GetInstance()->last_mouse_location().ToString());
 
   // Touch the left edge of the second display. Pointer should warp.
-  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(600, 10)));
-  EXPECT_EQ("249,5",  // moved to 498 by 2px, divided by 2 (dsf).
+  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(700, 10)));
+  EXPECT_EQ("299,5",  // moved to 598 by 2px, divided by 2 (dsf).
             aura::Env::GetInstance()->last_mouse_location().ToString());
 
   {
@@ -431,18 +434,18 @@ TEST_F(UnifiedMouseWarpControllerTest, WarpMouse) {
   }
 
   // With 1X and 2X displays
-  UpdateDisplay("500x500,600+0-500x500*2");
+  UpdateDisplay("600x500,700+0-600x500*2");
   ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
 
   EXPECT_FALSE(TestIfMouseWarpsAt(gfx::Point(10, 10)));
   // Touch the right edge of the first display. Pointer should warp.
-  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(499, 10)));
-  EXPECT_EQ("501,10",  // by 2px.
+  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(599, 10)));
+  EXPECT_EQ("601,10",  // by 2px.
             aura::Env::GetInstance()->last_mouse_location().ToString());
 
   // Touch the left edge of the second display. Pointer should warp.
-  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(600, 10)));
-  EXPECT_EQ("498,10",  // by 2px.
+  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(700, 10)));
+  EXPECT_EQ("598,10",  // by 2px.
             aura::Env::GetInstance()->last_mouse_location().ToString());
   {
     SCOPED_TRACE("1x2 NO WARP");
@@ -450,18 +453,18 @@ TEST_F(UnifiedMouseWarpControllerTest, WarpMouse) {
   }
 
   // With two 2X displays
-  UpdateDisplay("500x500*2,600+0-500x500*2");
+  UpdateDisplay("600x500*2,700+0-600x500*2");
   ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
 
   EXPECT_FALSE(TestIfMouseWarpsAt(gfx::Point(10, 10)));
   // Touch the right edge of the first display. Pointer should warp.
-  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(499, 10)));
-  EXPECT_EQ("250,5",  // by 2px.
+  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(599, 10)));
+  EXPECT_EQ("300,5",  // by 2px.
             aura::Env::GetInstance()->last_mouse_location().ToString());
 
   // Touch the left edge of the second display. Pointer should warp.
-  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(600, 10)));
-  EXPECT_EQ("249,5",  // moved to 498 by 2px, divided by 2 (dsf).
+  EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(700, 10)));
+  EXPECT_EQ("299,5",  // moved to 598 by 2px, divided by 2 (dsf).
             aura::Env::GetInstance()->last_mouse_location().ToString());
   {
     SCOPED_TRACE("1x2 NO WARP");

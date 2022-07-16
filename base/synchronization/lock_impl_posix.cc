@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/debug/activity_tracker.h"
 #include "base/posix/safe_strerror.h"
@@ -29,7 +30,9 @@ const char* AdditionalHintForSystemErrorCode(int error_code) {
 }
 #endif  // DCHECK_IS_ON()
 
-std::string SystemErrorCodeToString(int error_code) {
+}  // namespace
+
+BASE_EXPORT std::string SystemErrorCodeToString(int error_code) {
 #if DCHECK_IS_ON()
   return base::safe_strerror(error_code) + ". " +
          AdditionalHintForSystemErrorCode(error_code);
@@ -37,8 +40,6 @@ std::string SystemErrorCodeToString(int error_code) {
   return std::string();
 #endif  // DCHECK_IS_ON()
 }
-
-}  // namespace
 
 // Determines which platforms can consider using priority inheritance locks. Use
 // this define for platform code that may not compile if priority inheritance

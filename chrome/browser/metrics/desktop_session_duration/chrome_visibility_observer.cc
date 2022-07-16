@@ -72,7 +72,7 @@ void ChromeVisibilityObserver::InitVisibilityGapTimeout() {
   if (!param_value.empty())
     base::StringToInt(param_value, &timeout_seconds);
 
-  visibility_gap_timeout_ = base::TimeDelta::FromSeconds(timeout_seconds);
+  visibility_gap_timeout_ = base::Seconds(timeout_seconds);
 }
 
 void ChromeVisibilityObserver::SetVisibilityGapTimeoutForTesting(

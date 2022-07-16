@@ -35,11 +35,11 @@ source_set("file_util") {
       "zip_file_creator.h",
     ]
 
-    deps += [ "//components/services/filesystem/public/mojom" ]
+    deps += ["//components/services/filesystem/public/mojom"]
   }
 
   if (is_mac) {
-    deps += [ "//chrome/utility/safe_browsing/mac" ]
+    deps += ["//chrome/utility/safe_browsing/mac"]
   }
 
   if (safe_browsing_mode == 1) {
@@ -47,11 +47,28 @@ source_set("file_util") {
       "safe_archive_analyzer.cc",
       "safe_archive_analyzer.h",
     ]
+
+    if (is_linux || is_win) {
+      sources += [
+        "document_analysis_service.cc",
+        "document_analysis_service.h",
+        "safe_document_analyzer.cc",
+        "safe_document_analyzer.h",
+      ]
+    }
+
     deps += [
       "//chrome/common/safe_browsing",
       "//chrome/common/safe_browsing:archive_analyzer_results",
       "//chrome/common/safe_browsing:rar_analyzer",
     ]
+
+    if (is_linux || is_win) {
+      deps += [
+        "//chrome/common/safe_browsing:document_analyzer",
+        "//chrome/common/safe_browsing:document_analyzer_results",
+      ]
+    }
   }
 
   if (enable_xz_extractor) {
@@ -70,7 +87,7 @@ source_set("unit_tests") {
   testonly = true
 
   if (enable_xz_extractor) {
-    sources = [ "xz_file_extractor_unittest.cc" ]
+    sources = ["xz_file_extractor_unittest.cc"]
 
     deps = [
       ":file_util",
@@ -83,5 +100,8 @@ source_set("unit_tests") {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_XZ_EXTRACTOR=$enable_xz_extractor" ]
+  flags = [
+    "ENABLE_XZ_EXTRACTOR=$enable_xz_extractor",
+    "ENABLE_MALDOCA=$enable_maldoca",
+  ]
 }

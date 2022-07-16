@@ -26,7 +26,7 @@ class ReadingListInfobarModalInteractionHandler
   void PerformMainAction(InfoBarIOS* infobar) override;
 
   // InfobarInteractionHandler::Handler:
-  void InfobarVisibilityChanged(InfoBarIOS* infobar, bool visible) override {}
+  void InfobarVisibilityChanged(InfoBarIOS* infobar, bool visible) override;
 
  private:
   // InfobarModalInteractionHandler:

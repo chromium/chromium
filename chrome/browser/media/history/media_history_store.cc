@@ -7,9 +7,10 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/history/media_history_images_table.h"
 #include "chrome/browser/media/history/media_history_origin_table.h"
@@ -442,7 +443,7 @@ mojom::MediaHistoryStatsPtr MediaHistoryStore::GetMediaHistoryStats() {
     return stats;
 
   sql::Statement statement(DB()->GetUniqueStatement(
-      "SELECT name FROM sqlite_master WHERE type='table' "
+      "SELECT name FROM sqlite_schema WHERE type='table' "
       "AND name NOT LIKE 'sqlite_%';"));
 
   std::vector<std::string> table_names;
@@ -478,14 +479,13 @@ MediaHistoryStore::GetOriginRowsForDebug() {
     mojom::MediaHistoryOriginRowPtr origin(mojom::MediaHistoryOriginRow::New());
 
     origin->origin = url::Origin::Create(GURL(statement.ColumnString(0)));
-    origin->last_updated_time =
-        base::Time::FromDeltaSinceWindowsEpoch(
-            base::TimeDelta::FromSeconds(statement.ColumnInt64(1)))
-            .ToJsTime();
+    origin->last_updated_time = base::Time::FromDeltaSinceWindowsEpoch(
+                                    base::Seconds(statement.ColumnInt64(1)))
+                                    .ToJsTime();
     origin->cached_audio_video_watchtime =
-        base::TimeDelta::FromSeconds(statement.ColumnInt64(2));
+        base::Seconds(statement.ColumnInt64(2));
     origin->actual_audio_video_watchtime =
-        base::TimeDelta::FromSeconds(statement.ColumnInt64(3));
+        base::Seconds(statement.ColumnInt64(3));
 
     origins.push_back(std::move(origin));
   }

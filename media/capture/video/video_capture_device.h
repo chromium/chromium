@@ -23,12 +23,14 @@
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/token.h"
 #include "build/build_config.h"
 #include "media/base/video_frame.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/mojom/image_capture.mojom.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video/video_capture_feedback.h"
@@ -316,6 +318,14 @@ class CAPTURE_EXPORT VideoCaptureDevice
   // Note: This should only be called after AllocateAndStart() and before
   // StopAndDeAllocate(). Otherwise, its behavior is undefined.
   virtual void Resume() {}
+
+  // Start/stop cropping.
+  // Non-empty |crop_id| sets (or changes) the crop-target.
+  // Empty |crop_id| reverts the capture to its original, uncropped state.
+  // The callback reports success/failure.
+  virtual void Crop(
+      const base::Token& crop_id,
+      base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
 
   // Deallocates the video capturer, possibly asynchronously.
   //

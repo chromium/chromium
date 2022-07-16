@@ -225,7 +225,7 @@ ContentSuggestion ReadingListSuggestionsProvider::ConvertEntry(
     suggestion.set_title(url_formatter::FormatUrl(entry->URL()));
   }
   suggestion.set_publisher_name(
-      url_formatter::FormatUrl(entry->URL().GetOrigin()));
+      url_formatter::FormatUrl(entry->URL().DeprecatedGetOriginAsURL()));
   int64_t entry_time = entry->DistillationTime();
   if (entry_time == 0) {
     entry_time = entry->CreationTime();

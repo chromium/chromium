@@ -30,6 +30,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
@@ -55,6 +56,7 @@ class PasswordCheckMediator
     private static long sStatusUpdateDelayMillis = 1000;
 
     private final PasswordAccessReauthenticationHelper mReauthenticationHelper;
+    private final ReauthenticatorBridge mReauthenticatorBridge;
     private final PasswordCheckChangePasswordHelper mChangePasswordDelegate;
     private PropertyModel mModel;
     private PasswordCheckComponentUi.Delegate mDelegate;
@@ -67,11 +69,13 @@ class PasswordCheckMediator
 
     PasswordCheckMediator(PasswordCheckChangePasswordHelper changePasswordDelegate,
             PasswordAccessReauthenticationHelper reauthenticationHelper,
-            SettingsLauncher settingsLauncher, PasswordCheckIconHelper passwordCheckIconHelper) {
+            ReauthenticatorBridge reauthenticatorBridge, SettingsLauncher settingsLauncher,
+            PasswordCheckIconHelper passwordCheckIconHelper) {
         mChangePasswordDelegate = changePasswordDelegate;
         mReauthenticationHelper = reauthenticationHelper;
         mSettingsLauncher = settingsLauncher;
         mIconHelper = passwordCheckIconHelper;
+        mReauthenticatorBridge = reauthenticatorBridge;
     }
 
     void initialize(PropertyModel model, PasswordCheckComponentUi.Delegate delegate,
@@ -185,6 +189,8 @@ class PasswordCheckMediator
         } else {
             header = items.get(0).model;
         }
+        @PasswordCheckUIStatus
+        int oldStatus = header.get(CHECK_STATUS);
         header.set(CHECK_STATUS, status);
         Pair<Integer, Integer> progress = header.get(CHECK_PROGRESS);
         if (progress == null) progress = UNKNOWN_PROGRESS;
@@ -195,6 +201,11 @@ class PasswordCheckMediator
             compromisedCredentialCount = getPasswordCheck().getCompromisedCredentialsCount();
             checkTimestamp = getPasswordCheck().getLastCheckTimestamp();
             header.set(SHOW_CHECK_SUBTITLE, true);
+
+            // If a check was just completed, record some metrics.
+            if (oldStatus == PasswordCheckUIStatus.RUNNING) {
+                recordMetricsOnCheckCompletion();
+            }
         }
         header.set(CHECK_TIMESTAMP, checkTimestamp);
         header.set(COMPROMISED_CREDENTIALS_COUNT, compromisedCredentialCount);
@@ -202,6 +213,22 @@ class PasswordCheckMediator
         if (items.size() == 0) {
             items.add(new ListItem(PasswordCheckProperties.ItemType.HEADER, header));
         }
+    }
+
+    private void recordMetricsOnCheckCompletion() {
+        int countTotal = 0;
+        int countWithAutoChange = 0;
+        // Note: items[0] is the header, so skip that one.
+        ListModel<ListItem> items = mModel.get(ITEMS);
+        for (int i = 1; i < items.size(); i++) {
+            countTotal++;
+            CompromisedCredential credential = items.get(i).model.get(COMPROMISED_CREDENTIAL);
+            if (credential.hasAutoChangeButton()) {
+                countWithAutoChange++;
+            }
+        }
+        PasswordCheckMetricsRecorder.recordCompromisedCredentialsCountAfterCheck(
+                countTotal, countWithAutoChange);
     }
 
     @Override
@@ -220,15 +247,6 @@ class PasswordCheckMediator
                 CHECK_PROGRESS, new Pair<>(alreadyProcessed, alreadyProcessed + remainingInQueue));
         header.set(CHECK_TIMESTAMP, null);
         header.set(COMPROMISED_CREDENTIALS_COUNT, null);
-    }
-
-    @Override
-    public void onCompromisedCredentialFound(CompromisedCredential leakedCredential) {
-        assert leakedCredential != null;
-        ListModel<ListItem> items = mModel.get(ITEMS);
-        assert items.size() >= 1 : "Needs to initialize list with header before adding items!";
-        updateStatusHeaderWhenCredentialsChange();
-        items.add(createEntryForCredential(leakedCredential));
     }
 
     @Override
@@ -318,6 +336,20 @@ class PasswordCheckMediator
 
     @Override
     public void onChangePasswordWithScriptButtonClick(CompromisedCredential credential) {
+        if (!mReauthenticatorBridge.canUseAuthentication()
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.BIOMETRIC_TOUCH_TO_FILL)) {
+            startAutomatedPasswordChange(credential);
+            return;
+        }
+
+        mReauthenticatorBridge.reauthenticate(reauthSucceeded -> {
+            if (reauthSucceeded) {
+                startAutomatedPasswordChange(credential);
+            }
+        });
+    }
+
+    private void startAutomatedPasswordChange(CompromisedCredential credential) {
         assert credential.hasAutoChangeButton();
         PasswordCheckMetricsRecorder.recordUiUserAction(
                 PasswordCheckUserAction.CHANGE_PASSWORD_AUTOMATICALLY);

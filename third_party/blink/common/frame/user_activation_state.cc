@@ -11,10 +11,27 @@ using blink::mojom::UserActivationNotificationType;
 
 namespace blink {
 
+namespace {
+
+// Indicates if |notification_type| should be considered restricted.  See
+// |LastActivationWasRestricted| for details.
+bool IsRestricted(UserActivationNotificationType notification_type) {
+  return notification_type == UserActivationNotificationType::
+                                  kExtensionMessagingBothPrivileged ||
+         notification_type == UserActivationNotificationType::
+                                  kExtensionMessagingSenderPrivileged ||
+         notification_type == UserActivationNotificationType::
+                                  kExtensionMessagingReceiverPrivileged ||
+         notification_type == UserActivationNotificationType::
+                                  kExtensionMessagingNeitherPrivileged;
+}
+
+}  // namespace
+
 // The expiry time should be long enough to allow network round trips even in a
 // very slow connection (to support xhr-like calls with user activation), yet
 // not too long to make an "unattended" page feel activated.
-constexpr base::TimeDelta kActivationLifespan = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kActivationLifespan = base::Seconds(5);
 
 UserActivationState::UserActivationState()
     : first_notification_type_(UserActivationNotificationType::kNone),
@@ -23,6 +40,7 @@ UserActivationState::UserActivationState()
 void UserActivationState::Activate(
     UserActivationNotificationType notification_type) {
   has_been_active_ = true;
+  last_activation_was_restricted_ = IsRestricted(notification_type);
   ActivateTransientState();
 
   // Update states for UMA.
@@ -36,6 +54,7 @@ void UserActivationState::Activate(
 
 void UserActivationState::Clear() {
   has_been_active_ = false;
+  last_activation_was_restricted_ = false;
   first_notification_type_ = UserActivationNotificationType::kNone;
   last_notification_type_ = UserActivationNotificationType::kNone;
   DeactivateTransientState();
@@ -68,6 +87,10 @@ bool UserActivationState::ConsumeIfActive() {
     return false;
   DeactivateTransientState();
   return true;
+}
+
+bool UserActivationState::LastActivationWasRestricted() const {
+  return last_activation_was_restricted_;
 }
 
 void UserActivationState::RecordPreconsumptionUma() const {

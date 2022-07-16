@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
+import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandlerFactory;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.CloseButtonNavigator;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabNavigationEventObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.customtabs.DefaultBrowserProviderImpl;
 import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -142,6 +144,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(tabFactory.getTabModelSelector()).thenReturn(tabModelSelector);
         when(tabModelOrchestrator.getTabModelSelector()).thenReturn(tabModelSelector);
         when(tabModelSelector.getModel(anyBoolean())).thenReturn(tabModel);
+        when(tabModelSelector.getCurrentModel()).thenReturn(tabModel);
         when(connection.getSpeculatedUrl(any())).thenReturn(SPECULATED_URL);
         when(browserInitializer.isFullBrowserInitialized()).thenReturn(true);
         // Default setup is toolbarManager doesn't consume back press event.
@@ -180,25 +183,24 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                         ()
                                 -> customTabObserver,
                         closeButtonNavigator, browserInitializer, activity, lifecycleDispatcher,
-                        () -> fullscreenManager);
+                        () -> fullscreenManager, new DefaultBrowserProviderImpl());
         controller.onToolbarInitialized(toolbarManager);
         return controller;
     }
 
     public CustomTabIntentHandler createIntentHandler(
             CustomTabActivityNavigationController navigationController) {
-        CustomTabIntentHandlingStrategy strategy =
-                new DefaultCustomTabIntentHandlingStrategy(tabProvider, navigationController,
-                        navigationEventObserver, () -> customTabObserver) {
-                    @Override
-                    public GURL getGurlForUrl(String url) {
-                        return JUnitTestGURLs.getGURL(url);
-                    }
-                };
-        return new CustomTabIntentHandler(tabProvider,
-                intentDataProvider, strategy, (intent) -> false, activity);
+        CustomTabIntentHandlingStrategy strategy = new DefaultCustomTabIntentHandlingStrategy(
+                tabProvider, navigationController, navigationEventObserver,
+                () -> customTabObserver, null, AttributionIntentHandlerFactory.getInstance()) {
+            @Override
+            public GURL getGurlForUrl(String url) {
+                return JUnitTestGURLs.getGURL(url);
+            }
+        };
+        return new CustomTabIntentHandler(
+                tabProvider, intentDataProvider, strategy, (intent) -> false, activity);
     }
-
 
     public void warmUp() {
         when(connection.hasWarmUpBeenFinished()).thenReturn(true);
@@ -206,6 +208,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public void changeTab(Tab newTab) {
         when(activityTabProvider.get()).thenReturn(newTab);
+        when(tabModel.getCount()).thenReturn(1);
         for (Callback<Tab> observer : activityTabObserverCaptor.getAllValues()) {
             observer.onResult(newTab);
         }

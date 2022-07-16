@@ -80,4 +80,11 @@
         <attr name="horizontalSpacing" format="dimension" />
         <attr name="verticalSpacing" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="SurfaceColorOvalView">
+      <!-- Used to specify the elevation level in dp. Similar to
+           android:elevation, but only affects color. Does not cause shadows to
+           be added or z-order to be adjusted. -->
+      <attr name="surfaceElevation" format="reference|dimension"/>
+    </declare-styleable>
 </resources>

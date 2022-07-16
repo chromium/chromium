@@ -67,7 +67,7 @@ class AudioContextTestPlatform : public TestingPlatformSupport {
         break;
       case WebAudioLatencyHint::kCategoryExact:
         buffer_size =
-            clampTo(latency_hint.Seconds() * AudioHardwareSampleRate(),
+            ClampTo(latency_hint.Seconds() * AudioHardwareSampleRate(),
                     static_cast<double>(AudioHardwareBufferSize()),
                     static_cast<double>(playback_size));
         break;

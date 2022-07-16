@@ -4,7 +4,7 @@
 
 #include "chrome/browser/login_detection/login_detection_prefs.h"
 
-#include "base/util/values/values_util.h"
+#include "base/json/values_util.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -40,14 +40,14 @@ void RemoveLoginDetectionData(PrefService* prefs) {
 void SaveSiteToOAuthSignedInList(PrefService* pref_service, const GURL& url) {
   DictionaryPrefUpdate update(pref_service, kOAuthSignedInSitesPref);
   base::DictionaryValue* dict = update.Get();
-  dict->SetKey(GetSiteNameForURL(url), util::TimeToValue(base::Time::Now()));
+  dict->SetKey(GetSiteNameForURL(url), base::TimeToValue(base::Time::Now()));
 
   // Try making space by removing sites having invalid sign-in time. This should
   // not happen unless the pref is corrupt somehow.
   if (dict->DictSize() > GetOauthLoggedInSitesMaxSize()) {
     std::vector<std::string> invalid_sites;
     for (auto site_entry : dict->DictItems()) {
-      if (!util::ValueToTime(site_entry.second))
+      if (!base::ValueToTime(site_entry.second))
         invalid_sites.push_back(site_entry.first);
     }
     for (const auto& invalid_site : invalid_sites)
@@ -61,7 +61,7 @@ void SaveSiteToOAuthSignedInList(PrefService* pref_service, const GURL& url) {
     // least recently signed-in to be removed.
     absl::optional<std::pair<std::string, base::Time>> site_entry_to_remove;
     for (auto site_entry : dict->DictItems()) {
-      base::Time signin_time = *util::ValueToTime(site_entry.second);
+      base::Time signin_time = *base::ValueToTime(site_entry.second);
       if (!site_entry_to_remove || signin_time < site_entry_to_remove->second) {
         site_entry_to_remove = std::make_pair(site_entry.first, signin_time);
       }

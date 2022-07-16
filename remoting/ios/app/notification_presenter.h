@@ -25,6 +25,9 @@ class NotificationPresenter final {
  public:
   static NotificationPresenter* GetInstance();
 
+  NotificationPresenter(const NotificationPresenter&) = delete;
+  NotificationPresenter& operator=(const NotificationPresenter&) = delete;
+
   void Start();
 
  private:
@@ -52,8 +55,6 @@ class NotificationPresenter final {
   State state_ = State::NOT_FETCHED;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationPresenter);
 };
 
 }  // namespace remoting

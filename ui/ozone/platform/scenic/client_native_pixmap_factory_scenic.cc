@@ -24,6 +24,10 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
       : handle_(std::move(handle)) {
   }
 
+  ClientNativePixmapFuchsia(const ClientNativePixmapFuchsia&) = delete;
+  ClientNativePixmapFuchsia& operator=(const ClientNativePixmapFuchsia&) =
+      delete;
+
   ~ClientNativePixmapFuchsia() override {
     if (mapping_)
       Unmap();
@@ -80,6 +84,8 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
     mapping_ = nullptr;
   }
 
+  size_t GetNumberOfPlanes() const override { return handle_.planes.size(); }
+
   void* GetMemoryAddress(size_t plane) const override {
     DCHECK_LT(plane, handle_.planes.size());
     DCHECK(mapping_);
@@ -91,18 +97,26 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
     return base::checked_cast<int>(handle_.planes[plane].stride);
   }
 
+  gfx::NativePixmapHandle CloneHandleForIPC() const override {
+    return gfx::CloneHandleForIPC(handle_);
+  }
+
  private:
   gfx::NativePixmapHandle handle_;
 
   uint8_t* mapping_ = nullptr;
   size_t mapping_size_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientNativePixmapFuchsia);
 };
 
 class ScenicClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
  public:
   ScenicClientNativePixmapFactory() = default;
+
+  ScenicClientNativePixmapFactory(const ScenicClientNativePixmapFactory&) =
+      delete;
+  ScenicClientNativePixmapFactory& operator=(
+      const ScenicClientNativePixmapFactory&) = delete;
+
   ~ScenicClientNativePixmapFactory() override = default;
 
   std::unique_ptr<gfx::ClientNativePixmap> ImportFromHandle(
@@ -159,9 +173,6 @@ class ScenicClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
 
     return std::make_unique<ClientNativePixmapFuchsia>(std::move(handle));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScenicClientNativePixmapFactory);
 };
 
 gfx::ClientNativePixmapFactory* CreateClientNativePixmapFactoryScenic() {

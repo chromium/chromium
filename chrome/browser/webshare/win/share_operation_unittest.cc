@@ -63,8 +63,8 @@ class ShareOperationUnitTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    if (!IsSupportedEnvironment())
-      return;
+    if (!ScopedShareOperationFakeComponents::IsSupportedEnvironment())
+      GTEST_SKIP();
 
     ASSERT_NO_FATAL_FAILURE(scoped_fake_components_.SetUp());
     ShareOperation::SetMaxFileBytesForTesting(kMaxSharedFileBytesForTest);
@@ -173,10 +173,6 @@ class ShareOperationUnitTest : public ChromeRenderViewHostTestHarness {
     return blink::mojom::SharedFile::New(name, std::move(blob));
   }
 
-  bool IsSupportedEnvironment() {
-    return ScopedShareOperationFakeComponents::IsSupportedEnvironment();
-  }
-
   // Fetches the FakeDataTransferManager associated with the current context.
   // Returns a non-ref-counted pointer, as the lifetime is already maintained by
   // the scoped_fake_components_.
@@ -193,6 +189,10 @@ class ShareOperationUnitTest : public ChromeRenderViewHostTestHarness {
     return fake_data_transfer_manager_;
   }
 
+  FakeDataTransferManagerInterop& fake_data_transfer_manager_interop() {
+    return scoped_fake_components_.fake_data_transfer_manager_interop();
+  }
+
  private:
   FakeDataTransferManager* fake_data_transfer_manager_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
@@ -200,9 +200,6 @@ class ShareOperationUnitTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(ShareOperationUnitTest, WithoutTitle) {
-  if (!IsSupportedEnvironment())
-    return;
-
   bool post_data_requested_callback_invoked = false;
   fake_data_transfer_manager()->SetPostDataRequestedCallback(
       base::BindLambdaForTesting(
@@ -230,9 +227,6 @@ TEST_F(ShareOperationUnitTest, WithoutTitle) {
 }
 
 TEST_F(ShareOperationUnitTest, BasicFields) {
-  if (!IsSupportedEnvironment())
-    return;
-
   bool post_data_requested_callback_invoked = false;
   fake_data_transfer_manager()->SetPostDataRequestedCallback(
       base::BindLambdaForTesting(
@@ -262,10 +256,25 @@ TEST_F(ShareOperationUnitTest, BasicFields) {
   ASSERT_TRUE(post_data_requested_callback_invoked);
 }
 
-TEST_F(ShareOperationUnitTest, BasicFile) {
-  if (!IsSupportedEnvironment())
-    return;
+TEST_F(ShareOperationUnitTest, ShowShareUIForWindowFailure) {
+  fake_data_transfer_manager_interop().SetShowShareUIForWindowBehavior(
+      FakeDataTransferManagerInterop::ShowShareUIForWindowBehavior::
+          FailImmediately);
 
+  base::RunLoop run_loop;
+  std::vector<blink::mojom::SharedFilePtr> files;
+  ShareOperation operation{"shared title", "shared text",
+                           GURL("https://www.contoso.com"), std::move(files),
+                           web_contents()};
+  operation.Run(
+      base::BindLambdaForTesting([&run_loop](blink::mojom::ShareError error) {
+        ASSERT_EQ(error, blink::mojom::ShareError::INTERNAL_ERROR);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShareOperationUnitTest, BasicFile) {
   bool post_data_requested_callback_invoked = false;
   ComPtr<IStorageFile> shared_file;
   fake_data_transfer_manager()->SetPostDataRequestedCallback(
@@ -301,9 +310,6 @@ TEST_F(ShareOperationUnitTest, BasicFile) {
 }
 
 TEST_F(ShareOperationUnitTest, SingleFileAtSizeLimit) {
-  if (!IsSupportedEnvironment())
-    return;
-
   bool post_data_requested_callback_invoked = false;
   ComPtr<IStorageFile> shared_file;
   fake_data_transfer_manager()->SetPostDataRequestedCallback(
@@ -338,9 +344,6 @@ TEST_F(ShareOperationUnitTest, SingleFileAtSizeLimit) {
 }
 
 TEST_F(ShareOperationUnitTest, SingleFileLargerThanSizeLimit) {
-  if (!IsSupportedEnvironment())
-    return;
-
   bool post_data_requested_callback_invoked = false;
   ComPtr<IStorageFile> shared_file;
   fake_data_transfer_manager()->SetPostDataRequestedCallback(
@@ -375,9 +378,6 @@ TEST_F(ShareOperationUnitTest, SingleFileLargerThanSizeLimit) {
 }
 
 TEST_F(ShareOperationUnitTest, FilesTotallingSizeLimit) {
-  if (!IsSupportedEnvironment())
-    return;
-
   bool post_data_requested_callback_invoked = false;
   ComPtr<IStorageFile> shared_file_1;
   ComPtr<IStorageFile> shared_file_2;
@@ -421,9 +421,6 @@ TEST_F(ShareOperationUnitTest, FilesTotallingSizeLimit) {
 }
 
 TEST_F(ShareOperationUnitTest, FilesTotallingLargerThanSizeLimit) {
-  if (!IsSupportedEnvironment())
-    return;
-
   bool post_data_requested_callback_invoked = false;
   ComPtr<IStorageFile> shared_file_1;
   ComPtr<IStorageFile> shared_file_2;
@@ -464,6 +461,31 @@ TEST_F(ShareOperationUnitTest, FilesTotallingLargerThanSizeLimit) {
   ASSERT_NO_FATAL_FAILURE(ReadFile(shared_file_2.Get(), file2_contents));
   ASSERT_LT(file1_contents.length() + file2_contents.length(),
             kMaxSharedFileBytesForTest + 1);
+}
+
+class ShareOperationInUnsupportedEnvironmentUnitTest
+    : public ShareOperationUnitTest {
+ public:
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+
+    if (ScopedShareOperationFakeComponents::IsSupportedEnvironment())
+      GTEST_SKIP();
+  }
+};
+
+TEST_F(ShareOperationInUnsupportedEnvironmentUnitTest, GracefullyFails) {
+  base::RunLoop run_loop;
+  std::vector<blink::mojom::SharedFilePtr> files;
+  ShareOperation operation{"shared title", "shared text",
+                           GURL("https://www.contoso.com"), std::move(files),
+                           web_contents()};
+  operation.Run(
+      base::BindLambdaForTesting([&run_loop](blink::mojom::ShareError error) {
+        ASSERT_EQ(error, blink::mojom::ShareError::INTERNAL_ERROR);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 }  // namespace webshare

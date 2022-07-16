@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_threadsafe.h"
@@ -28,14 +27,11 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace base {
 class FilePath;
-}
-
-namespace blink {
-class StorageKey;
-}  // namespace blink
+}  // namespace base
 
 namespace storage {
 class QuotaManagerProxy;
@@ -60,11 +56,9 @@ class StoragePartitionImpl;
 // refcounted. The core object is what is used internally by service worker
 // classes.
 //
-// All the methods are expected to be called on the UI thread.
-// Some of the methods are exceptionally allowed to be called on any threads,
-// but it's now discouraged.
-// TODO(https://crbug.com/1161153): Disallow methods to be called on any
-// threads.
+// All the methods called on the UI thread.
+// TODO(https://crbug.com/1161153): Require all references to be on the UI
+// thread and remove RefCountedThreadSafe.
 class CONTENT_EXPORT ServiceWorkerContextWrapper
     : public ServiceWorkerContext,
       public ServiceWorkerContextCoreObserver,
@@ -90,8 +84,12 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   explicit ServiceWorkerContextWrapper(BrowserContext* browser_context);
 
-  // Init and Shutdown are for use on the UI thread when the profile,
-  // storagepartition is being setup and torn down.
+  ServiceWorkerContextWrapper(const ServiceWorkerContextWrapper&) = delete;
+  ServiceWorkerContextWrapper& operator=(const ServiceWorkerContextWrapper&) =
+      delete;
+
+  // Init and Shutdown called when the StoragePartition is being setup and torn
+  // down.
   void Init(const base::FilePath& user_data_directory,
             storage::QuotaManagerProxy* quota_manager_proxy,
             storage::SpecialStoragePolicy* special_storage_policy,
@@ -102,7 +100,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // leaves the system in a disabled state until it's done.
   void DeleteAndStartOver();
 
-  // The StoragePartition should only be used on the UI thread.
   // Can be null before/during init and during/after shutdown (and in tests).
   StoragePartitionImpl* storage_partition() const;
 
@@ -116,23 +113,30 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   // ServiceWorkerContextCoreObserver implementation:
   void OnRegistrationCompleted(int64_t registration_id,
-                               const GURL& scope) override;
+                               const GURL& scope,
+                               const blink::StorageKey& key) override;
   void OnRegistrationStored(int64_t registration_id,
-                            const GURL& scope) override;
-  void OnAllRegistrationsDeletedForOrigin(const url::Origin& origin) override;
+                            const GURL& scope,
+                            const blink::StorageKey& key) override;
+  void OnAllRegistrationsDeletedForStorageKey(
+      const blink::StorageKey& key) override;
   void OnErrorReported(
       int64_t version_id,
       const GURL& scope,
+      const blink::StorageKey& key,
       const ServiceWorkerContextObserver::ErrorInfo& info) override;
   void OnReportConsoleMessage(int64_t version_id,
                               const GURL& scope,
+                              const blink::StorageKey& key,
                               const ConsoleMessage& message) override;
   void OnControlleeAdded(int64_t version_id,
                          const std::string& uuid,
                          const ServiceWorkerClientInfo& info) override;
   void OnControlleeRemoved(int64_t version_id,
                            const std::string& uuid) override;
-  void OnNoControllees(int64_t version_id, const GURL& scope) override;
+  void OnNoControllees(int64_t version_id,
+                       const GURL& scope,
+                       const blink::StorageKey& key) override;
   void OnControlleeNavigationCommitted(
       int64_t version_id,
       const std::string& uuid,
@@ -141,11 +145,13 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
                  const GURL& scope,
                  int process_id,
                  const GURL& script_url,
-                 const blink::ServiceWorkerToken& token) override;
+                 const blink::ServiceWorkerToken& token,
+                 const blink::StorageKey& key) override;
   void OnStopped(int64_t version_id) override;
   void OnDeleteAndStartOver() override;
   void OnVersionStateChanged(int64_t version_id,
                              const GURL& scope,
+                             const blink::StorageKey& key,
                              ServiceWorkerVersion::Status status) override;
 
   // ServiceWorkerContext implementation:
@@ -153,9 +159,11 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void RemoveObserver(ServiceWorkerContextObserver* observer) override;
   void RegisterServiceWorker(
       const GURL& script_url,
+      const blink::StorageKey& key,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
       StatusCodeCallback callback) override;
   void UnregisterServiceWorker(const GURL& scope,
+                               const blink::StorageKey& key,
                                ResultCallback callback) override;
   ServiceWorkerExternalRequestResult StartingExternalRequest(
       int64_t service_worker_version_id,
@@ -163,28 +171,34 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   ServiceWorkerExternalRequestResult FinishedExternalRequest(
       int64_t service_worker_version_id,
       const std::string& request_uuid) override;
-  size_t CountExternalRequestsForTest(const url::Origin& origin) override;
-  bool MaybeHasRegistrationForOrigin(const url::Origin& origin) override;
+  size_t CountExternalRequestsForTest(const blink::StorageKey& key) override;
+  bool MaybeHasRegistrationForStorageKey(const blink::StorageKey& key) override;
   void GetAllOriginsInfo(GetUsageInfoCallback callback) override;
-  void DeleteForOrigin(const url::Origin& origin,
-                       ResultCallback callback) override;
+  void DeleteForStorageKey(const blink::StorageKey& key,
+                           ResultCallback callback) override;
   void CheckHasServiceWorker(const GURL& url,
+                             const blink::StorageKey& key,
                              CheckHasServiceWorkerCallback callback) override;
   void CheckOfflineCapability(const GURL& url,
+                              const blink::StorageKey& key,
                               CheckOfflineCapabilityCallback callback) override;
 
   void ClearAllServiceWorkersForTest(base::OnceClosure callback) override;
   void StartWorkerForScope(const GURL& scope,
+                           const blink::StorageKey& key,
                            StartWorkerCallback info_callback,
                            StatusCodeCallback failure_callback) override;
   void StartServiceWorkerAndDispatchMessage(
       const GURL& scope,
+      const blink::StorageKey& key,
       blink::TransferableMessage message,
       ResultCallback result_callback) override;
   void StartServiceWorkerForNavigationHint(
       const GURL& document_url,
+      const blink::StorageKey& key,
       StartServiceWorkerForNavigationHintCallback callback) override;
-  void StopAllServiceWorkersForOrigin(const url::Origin& origin) override;
+  void StopAllServiceWorkersForStorageKey(
+      const blink::StorageKey& key) override;
   void StopAllServiceWorkers(base::OnceClosure callback) override;
   const base::flat_map<int64_t, ServiceWorkerRunningInfo>&
   GetRunningServiceWorkerInfos() override;
@@ -238,6 +252,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // Similar to FindReadyRegistrationForScope, but in the case no waiting or
   // active worker is found (i.e., there is only an installing worker),
   // `callback` is called without waiting for the worker to reach active.
+  //
+  // Not guaranteed to call the callback asynchronously.
+  // TODO(falken): Should it?
   void FindRegistrationForScope(const GURL& scope,
                                 const blink::StorageKey& key,
                                 FindRegistrationCallback callback);
@@ -279,10 +296,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   void GetAllRegistrations(GetRegistrationsInfosCallback callback);
 
-  // These can be called from any thread, and the callback is called on that
-  // thread.
-  // TODO(https://crbug.com/1161153): Make these methods called only on the UI
-  // thread.
   void GetRegistrationUserData(int64_t registration_id,
                                const std::vector<std::string>& keys,
                                GetUserDataCallback callback);
@@ -394,6 +407,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   // If `include_installing_version` is true, `callback` is called if there is
   // an installing version with no waiting or active version.
+  //
+  // Not guaranteed to call the callback asynchronously.
+  // TODO(falken): Should it?
   void FindRegistrationForScopeImpl(const GURL& scope,
                                     const blink::StorageKey& key,
                                     bool include_installing_version,
@@ -506,8 +522,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       base::ObserverListThreadSafe<ServiceWorkerContextCoreObserver>;
   const scoped_refptr<ServiceWorkerContextObserverList> core_observer_list_;
 
-  // Observers which live outside content's implementation boundary. Observer
-  // methods will always be dispatched on the UI thread.
+  // Observers which live outside content's implementation boundary.
   base::ObserverList<ServiceWorkerContextObserver, true>::Unchecked
       observer_list_;
 
@@ -525,11 +540,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   base::flat_map<int64_t /* version_id */, ServiceWorkerRunningInfo>
       running_service_workers_;
 
-  // A set of origins that have at least one registration. See
-  // HasRegistrationForOrigin() for details. Must be accessed on the UI thread.
+  // A set of StorageKeys that have at least one registration.
   // TODO(http://crbug.com/824858): This can be removed when service workers are
   // fully converted to running on the UI thread.
-  std::set<url::Origin> registered_origins_;
+  std::set<blink::StorageKey> registered_storage_keys_;
   bool registrations_initialized_ = false;
   base::OnceClosure on_registrations_initialized_;
 
@@ -548,11 +562,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   // A loader factory used to register a service worker. Used for tests.
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_for_test_;
-
-  // Temporary for moving context core to the UI thread.
-  scoped_refptr<base::TaskRunner> core_thread_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContextWrapper);
 };
 
 }  // namespace content

@@ -157,6 +157,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAgentServiceProvider {
     virtual void Cancel() = 0;
   };
 
+  BluetoothAgentServiceProvider(const BluetoothAgentServiceProvider&) = delete;
+  BluetoothAgentServiceProvider& operator=(
+      const BluetoothAgentServiceProvider&) = delete;
+
   virtual ~BluetoothAgentServiceProvider();
 
   // Creates the instance where |bus| is the D-Bus bus connection to export
@@ -170,9 +174,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAgentServiceProvider {
 
  protected:
   BluetoothAgentServiceProvider();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAgentServiceProvider);
 };
 
 }  // namespace bluez

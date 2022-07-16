@@ -10,7 +10,6 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
@@ -28,7 +27,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace {
 
@@ -144,6 +142,12 @@ class V4GetHashProtocolManagerFactoryImpl
     : public V4GetHashProtocolManagerFactory {
  public:
   V4GetHashProtocolManagerFactoryImpl() {}
+
+  V4GetHashProtocolManagerFactoryImpl(
+      const V4GetHashProtocolManagerFactoryImpl&) = delete;
+  V4GetHashProtocolManagerFactoryImpl& operator=(
+      const V4GetHashProtocolManagerFactoryImpl&) = delete;
+
   ~V4GetHashProtocolManagerFactoryImpl() override {}
   std::unique_ptr<V4GetHashProtocolManager> CreateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -152,9 +156,6 @@ class V4GetHashProtocolManagerFactoryImpl
     return base::WrapUnique(new V4GetHashProtocolManager(
         url_loader_factory, stores_to_check, config));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(V4GetHashProtocolManagerFactoryImpl);
 };
 
 // ----------------------------------------------------------------
@@ -341,8 +342,7 @@ void V4GetHashProtocolManager::GetFullHashes(
                        &resource_request->headers);
 
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
-  if (base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookies))
-    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   std::unique_ptr<network::SimpleURLLoader> owned_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        traffic_annotation);
@@ -367,7 +367,8 @@ void V4GetHashProtocolManager::GetFullHashesWithApis(
   DCHECK(url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme));
 
   std::vector<FullHash> full_hashes;
-  V4ProtocolManagerUtil::UrlToFullHashes(url.GetOrigin(), &full_hashes);
+  V4ProtocolManagerUtil::UrlToFullHashes(url.DeprecatedGetOriginAsURL(),
+                                         &full_hashes);
 
   FullHashToStoreAndHashPrefixesMap full_hash_to_store_and_hash_prefixes;
   for (const FullHash& full_hash : full_hashes) {
@@ -525,7 +526,7 @@ void V4GetHashProtocolManager::GetHashUrlAndHeaders(
 
 void V4GetHashProtocolManager::HandleGetHashError(const Time& now) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TimeDelta next = V4ProtocolManagerUtil::GetNextBackOffInterval(
+  base::TimeDelta next = V4ProtocolManagerUtil::GetNextBackOffInterval(
       &gethash_error_count_, &gethash_back_off_mult_);
   next_gethash_time_ = now + next;
 }
@@ -562,13 +563,13 @@ bool V4GetHashProtocolManager::ParseHashResponse(
   // Seconds resolution is good enough so we ignore the nanos field.
   *negative_cache_expire =
       clock_->Now() +
-      TimeDelta::FromSeconds(response.negative_cache_duration().seconds());
+      base::Seconds(response.negative_cache_duration().seconds());
 
   if (response.has_minimum_wait_duration()) {
     // Seconds resolution is good enough so we ignore the nanos field.
     next_gethash_time_ =
         clock_->Now() +
-        TimeDelta::FromSeconds(response.minimum_wait_duration().seconds());
+        base::Seconds(response.minimum_wait_duration().seconds());
   }
 
   for (const ThreatMatch& match : response.matches()) {
@@ -602,10 +603,10 @@ bool V4GetHashProtocolManager::ParseHashResponse(
     base::Time positive_expiry;
     if (match.has_cache_duration()) {
       // Seconds resolution is good enough so we ignore the nanos field.
-      positive_expiry = clock_->Now() + TimeDelta::FromSeconds(
-                                            match.cache_duration().seconds());
+      positive_expiry =
+          clock_->Now() + base::Seconds(match.cache_duration().seconds());
     } else {
-      positive_expiry = clock_->Now() - base::TimeDelta::FromSeconds(1);
+      positive_expiry = clock_->Now() - base::Seconds(1);
     }
     FullHashInfo full_hash_info(match.threat().hash(), list_id,
                                 positive_expiry);

@@ -69,6 +69,10 @@ class FakeVideoCaptureDevice : public VideoCaptureDevice {
       std::unique_ptr<FrameDelivererFactory> frame_deliverer_factory,
       std::unique_ptr<FakePhotoDevice> photo_device,
       std::unique_ptr<FakeDeviceState> device_state);
+
+  FakeVideoCaptureDevice(const FakeVideoCaptureDevice&) = delete;
+  FakeVideoCaptureDevice& operator=(const FakeVideoCaptureDevice&) = delete;
+
   ~FakeVideoCaptureDevice() override;
 
   static void GetSupportedSizes(std::vector<gfx::Size>* supported_sizes);
@@ -103,8 +107,6 @@ class FakeVideoCaptureDevice : public VideoCaptureDevice {
   // FakeVideoCaptureDevice post tasks to itself for frame construction and
   // needs to deal with asynchronous StopAndDeallocate().
   base::WeakPtrFactory<FakeVideoCaptureDevice> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVideoCaptureDevice);
 };
 
 // Represents the current state of a FakeVideoCaptureDevice.

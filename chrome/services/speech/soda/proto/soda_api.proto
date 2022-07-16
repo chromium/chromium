@@ -13,7 +13,7 @@ package speech.soda.chrome;
 option optimize_for = LITE_RUNTIME;
 option java_multiple_files = true;
 
-// Next ID to use: 13
+// Next ID to use: 15
 message ExtendedSodaConfigMsg {
   // Number of channels in RAW audio that will be provided to SODA.
   optional int32 channel_count = 1;
@@ -65,6 +65,13 @@ message ExtendedSodaConfigMsg {
 
   // Whether to enable formatting and punctuation in the recognition results.
   optional bool enable_formatting = 12 [default = true];
+
+  // Whether to enable speaker change detection in the recognition results.
+  optional bool enable_speaker_change_detection = 13 [default = false];
+
+  // Whether to return, in an asynchronous manner, speech/google3 logs from here
+  // and back through the callbacks.
+  optional bool include_logging = 14 [default = false];
 }
 
 // Next id: 5
@@ -211,4 +218,7 @@ message SodaResponse {
 
   // Set when type is LANGID
   optional SodaLangIdEvent langid_event = 5;
+
+  // aynchronously built up list of strings of logs since last SodaResponse.
+  repeated string log_lines = 6;
 }

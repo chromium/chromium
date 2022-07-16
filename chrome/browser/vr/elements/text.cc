@@ -149,6 +149,9 @@ class TextTexture : public UiTexture {
  public:
   explicit TextTexture(Text* element) : element_(element) {}
 
+  TextTexture(const TextTexture&) = delete;
+  TextTexture& operator=(const TextTexture&) = delete;
+
   ~TextTexture() override {}
 
   void SetFontHeightInDmm(float font_height_dmms) {
@@ -256,8 +259,6 @@ class TextTexture : public UiTexture {
       render_text_rendered_callback_;
 
   bool unsupported_code_point_for_test_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TextTexture);
 };
 
 Text::Text(float font_height_dmms)

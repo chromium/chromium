@@ -11,9 +11,9 @@
 #include "base/bind.h"
 #include "chrome/browser/extensions/api/storage/sync_storage_backend.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
+#include "components/value_store/value_store_factory.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
-#include "extensions/browser/value_store/value_store_factory.h"
 #include "extensions/common/api/storage.h"
 #include "extensions/common/extension.h"
 
@@ -36,7 +36,7 @@ SettingsStorageQuotaEnforcer::Limits GetSyncQuotaLimits() {
 }  // namespace
 
 SyncValueStoreCache::SyncValueStoreCache(
-    scoped_refptr<ValueStoreFactory> factory,
+    scoped_refptr<value_store::ValueStoreFactory> factory,
     scoped_refptr<SettingsObserverList> observers,
     const base::FilePath& profile_path)
     : initialized_(false) {
@@ -92,7 +92,7 @@ void SyncValueStoreCache::DeleteStorageSoon(const std::string& extension_id) {
 }
 
 void SyncValueStoreCache::InitOnBackend(
-    scoped_refptr<ValueStoreFactory> factory,
+    scoped_refptr<value_store::ValueStoreFactory> factory,
     scoped_refptr<SettingsObserverList> observers,
     const base::FilePath& profile_path) {
   DCHECK(IsOnBackendSequence());

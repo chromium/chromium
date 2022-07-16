@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_LIVE_CAPTION_PREF_NAMES_H_
 #define COMPONENTS_LIVE_CAPTION_PREF_NAMES_H_
 
+#include <string>
+
+class PrefService;
+
 namespace prefs {
 
 // Live Caption is not available on Android, so exclude these unneeded
@@ -12,6 +16,8 @@ namespace prefs {
 #if !defined(ANDROID)
 extern const char kLiveCaptionEnabled[];
 extern const char kLiveCaptionLanguageCode[];
+
+const std::string GetLiveCaptionLanguageCode(PrefService* profile_prefs);
 #endif  // !defined(ANDROID)
 
 // These kAccessibilityCaptions* caption style prefs are used on Android

@@ -20,16 +20,8 @@ class PictureInPictureWindowManager::ContentsObserver final
 
   ~ContentsObserver() final = default;
 
-  void DidFinishNavigation(content::NavigationHandle* navigation_handle) final {
+  void PrimaryPageChanged(content::Page& page) final {
     // Closes the active Picture-in-Picture window if user navigates away.
-    // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-    // frames. This caller was converted automatically to the primary main frame
-    // to preserve its semantics. Follow up to confirm correctness.
-    if (!navigation_handle->IsInPrimaryMainFrame() ||
-        !navigation_handle->HasCommitted() ||
-        navigation_handle->IsSameDocument()) {
-      return;
-    }
     owner_->CloseWindowInternal();
   }
 

@@ -5,8 +5,6 @@
 #ifndef UI_AURA_TEST_AURA_TEST_SUITE_H_
 #define UI_AURA_TEST_AURA_TEST_SUITE_H_
 
-#include "base/macros.h"
-
 namespace aura {
 namespace test {
 
@@ -30,10 +28,11 @@ namespace test {
 class EnvReinstaller {
  public:
   EnvReinstaller();
-  ~EnvReinstaller();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnvReinstaller);
+  EnvReinstaller(const EnvReinstaller&) = delete;
+  EnvReinstaller& operator=(const EnvReinstaller&) = delete;
+
+  ~EnvReinstaller();
 };
 
 }  // namespace test

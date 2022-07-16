@@ -4,16 +4,25 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "base/json/json_reader.h"
+#include "base/logging.h"
+#include "base/numerics/clamped_math.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/host_cache_fuzzer.pb.h"
+#include "testing/libfuzzer/proto/json.pb.h"
+#include "testing/libfuzzer/proto/json_proto_converter.h"
+#include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
 struct Environment {
-  Environment() { logging::SetMinLogLevel(logging::LOG_ERROR); }
+  Environment() { logging::SetMinLogLevel(logging::LOG_INFO); }
+  const bool kDumpStats = getenv("DUMP_FUZZER_STATS");
+  const bool kDumpNativeInput = getenv("LPM_DUMP_NATIVE_INPUT");
 };
 
 // This fuzzer checks that parsing a JSON list to a HostCache and then
@@ -26,21 +35,51 @@ struct Environment {
 // TODO(dmcardle): Check the other direction of this property. Starting from an
 // arbitrary HostCache, serialize it and then parse a different HostCache.
 // Verify that the two HostCaches are equal.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_PROTO_FUZZER(const host_cache_fuzzer_proto::JsonOrBytes& input) {
   static Environment env;
 
-  // Attempt to read a JSON list from the fuzzed string.
-  base::StringPiece data_view(reinterpret_cast<const char*>(data), size);
-  absl::optional<base::Value> value = base::JSONReader::Read(data_view);
+  // Clamp these counters to avoid incorrect statistics in case of overflow. On
+  // platforms with 8-byte size_t, it would take roughly 58,000 centuries to
+  // overflow, assuming a very fast fuzzer running at 100,000 exec/s. However, a
+  // 4-byte size_t could overflow in roughly 12 hours.
+  static base::ClampedNumeric<size_t> valid_json_count = 0;
+  static base::ClampedNumeric<size_t> iteration_count = 0;
+
+  constexpr size_t kIterationsPerStatsDump = 1024;
+  static_assert(SIZE_MAX % kIterationsPerStatsDump != 0,
+                "After saturation, stats would print on every iteration.");
+
+  ++iteration_count;
+  if (env.kDumpStats && iteration_count % kIterationsPerStatsDump == 0) {
+    LOG(INFO) << "Valid JSON hit rate:" << valid_json_count << "/"
+              << iteration_count;
+  }
+
+  std::string native_input;
+  if (input.has_json()) {
+    json_proto::JsonProtoConverter converter;
+    native_input = converter.Convert(input.json());
+  } else if (input.has_bytes()) {
+    native_input = input.bytes();
+  } else {
+    return;
+  }
+
+  if (env.kDumpNativeInput)
+    LOG(INFO) << "native_input: " << native_input;
+
+  absl::optional<base::Value> value = base::JSONReader::Read(native_input);
   if (!value || !value->is_list())
-    return 0;
+    return;
+  ++valid_json_count;
+
   const base::ListValue& list_input = base::Value::AsListValue(*value);
 
   // Parse the HostCache.
   constexpr size_t kMaxEntries = 1000;
   HostCache host_cache(kMaxEntries);
   if (!host_cache.RestoreFromListValue(list_input))
-    return 0;
+    return;
 
   // Serialize the HostCache.
   base::ListValue serialized;
@@ -49,6 +88,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       HostCache::SerializationType::kRestorable /* serialization_type */);
 
   CHECK_EQ(list_input, serialized);
-  return 0;
+  return;
 }
 }  // namespace net

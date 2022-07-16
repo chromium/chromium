@@ -311,11 +311,23 @@
   <message name="IDS_NEARBY_NOTIFICATION_DECLINE_ACTION" desc="Text shown on the notification action to decline receiving data via Nearby Share.">
     Decline
   </message>
-  <message name="IDS_NEARBY_NOTIFICATION_ONBOARDING_MESSAGE" desc="Text shown as the message of a notification when a nearby device is attempting to share data via Nearby Share.">
-    Click to become visible so it can share with you
+  <message name="IDS_NEARBY_NOTIFICATION_ONBOARDING_MESSAGE" desc="Text shown as the message of a notification when a nearby device is attempting to share data via Nearby Share but the user has not yet set up the Nearby Share feature.">
+    Set up Nearby Share to receive and send files with people around you
+  </message>
+  <message name="IDS_NEARBY_NOTIFICATION_GO_VISIBLE_MESSAGE" desc="Text shown as the message of a notification when a nearby device is attempting to share data via Nearby Share. This notification is a prompt that the user can click to become visible to nearby devices that are trying to share.">
+    To receive and accept files with people around you, become visible
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_ONBOARDING_TITLE" desc="Text shown as the title of a notification when a nearby device is attempting to share data via Nearby Share.">
     Device nearby is sharing
+  </message>
+  <message name="IDS_NEARBY_NOTIFICATION_SET_UP_ACTION" desc="Text shown on the notification to enter the Nearby Share setup flow.">
+    Set up
+  </message>
+  <message name="IDS_NEARBY_NOTIFICATION_GO_VISIBLE_ACTION" desc="Text shown on the notification to enter High Visibility Mode. High visibility mode allows the user to be discovered by nearby devices that are trying to share.">
+    Enable
+  </message>
+  <message name="IDS_NEARBY_NOTIFICATION_DISMISS_ACTION" desc="Text shown on the notification to close the notification.">
+    Dismiss
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_RECEIVE_FAILURE_TITLE" desc="Text shown as the title of a notfication when receiving data via Nearby Share failed.">
     {COUNT, plural,

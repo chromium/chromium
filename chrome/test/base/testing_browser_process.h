@@ -149,6 +149,8 @@ class TestingBrowserProcess : public BrowserProcess {
   SerialPolicyAllowedPorts* serial_policy_allowed_ports() override;
 #endif
   BuildState* GetBuildState() override;
+  breadcrumbs::BreadcrumbPersistentStorageManager*
+  GetBreadcrumbPersistentStorageManager() override;
 
   // Set the local state for tests. Consumer is responsible for cleaning it up
   // afterwards (using ScopedTestingLocalState, for example).

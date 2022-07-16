@@ -18,7 +18,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/multidevice_setup_resources.h"
 #include "chrome/grit/multidevice_setup_resources_map.h"
-#include "chrome/grit/oobe_resources.h"
+#include "chrome/grit/oobe_conditional_resources.h"
 #include "chromeos/grit/chromeos_resources.h"
 #include "chromeos/services/multidevice_setup/public/cpp/url_provider.h"
 #include "components/login/localized_values_builder.h"
@@ -57,6 +57,8 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MIRROR_PHONE_NOTIFICATIONS},
     {"startSetupPageFeatureWifiSync",
      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_WIFI_SYNC},
+    {"startSetupPageFeatureCameraRoll",
+     IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_CAMERA_ROLL},
     {"startSetupPageFeatureListInstallApps",
      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_INSTALL_APPS_DESCRIPTION},
     {"startSetupPageFeatureListAddFeatures",
@@ -135,17 +137,22 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(chromeos::features::kPhoneHub));
 
   html_source->AddBoolean(
+      "phoneHubCameraRollEnabled",
+      base::FeatureList::IsEnabled(chromeos::features::kPhoneHub) &&
+          base::FeatureList::IsEnabled(
+              chromeos::features::kPhoneHubCameraRoll));
+
+  html_source->AddBoolean(
       "wifiSyncEnabled",
       base::FeatureList::IsEnabled(chromeos::features::kWifiSyncAndroid));
-
-  html_source->AddBoolean("newLayoutEnabled",
-                          chromeos::features::IsNewOobeLayoutEnabled());
 
   for (const auto& entry : GetLocalizedStringsWithPlaceholders())
     html_source->AddString(entry.name, entry.localized_string);
 
-  html_source->AddResourcePath("multidevice_setup.json",
-                               IDR_MULTIDEVICE_SETUP_ANIMATION);
+  html_source->AddResourcePath("multidevice_setup_dark.json",
+                               IDR_MULTIDEVICE_SETUP_ANIMATION_DARK);
+  html_source->AddResourcePath("multidevice_setup_light.json",
+                               IDR_MULTIDEVICE_SETUP_ANIMATION_LIGHT);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }

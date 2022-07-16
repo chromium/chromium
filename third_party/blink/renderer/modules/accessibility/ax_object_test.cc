@@ -1000,7 +1000,7 @@ TEST_F(AccessibilityTest, LineBreakInDisplayLockedIsLineBreakingObject) {
   ASSERT_EQ(ax::mojom::Role::kParagraph, paragraph->RoleValue());
   ASSERT_EQ(3, paragraph->UnignoredChildCount());
   ASSERT_EQ(paragraph->GetNode(),
-            DisplayLockUtilities::NearestLockedInclusiveAncestor(
+            DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
                 *paragraph->GetNode()))
       << "The <p> element should be display locked.";
   EXPECT_TRUE(paragraph->IsLineBreakingObject());
@@ -1010,11 +1010,63 @@ TEST_F(AccessibilityTest, LineBreakInDisplayLockedIsLineBreakingObject) {
   ASSERT_EQ(ax::mojom::Role::kGenericContainer, br->RoleValue())
       << "The <br> child should be display locked and thus have a generic "
          "role.";
-  ASSERT_EQ(
-      paragraph->GetNode(),
-      DisplayLockUtilities::NearestLockedInclusiveAncestor(*br->GetNode()))
+  ASSERT_EQ(paragraph->GetNode(),
+            DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
+                *br->GetNode()))
       << "The <br> child should be display locked.";
   EXPECT_TRUE(br->IsLineBreakingObject());
+}
+
+TEST_P(ParameterizedAccessibilityTest, ListMarkerIsNotLineBreakingObject) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        ul li::marker {
+          content: "X";
+        }
+      </style>
+      <ul id="unorderedList">
+        <li id="unorderedListItem">.....
+          Unordered item 1
+        </li>
+      </ul>
+      <ol id="orderedList">
+        <li id="orderedListItem">
+          Ordered item 1
+        </li>
+      </ol>
+      )HTML");
+
+  const AXObject* unordered_list = GetAXObjectByElementId("unorderedList");
+  ASSERT_NE(nullptr, unordered_list);
+  ASSERT_EQ(ax::mojom::Role::kList, unordered_list->RoleValue());
+  EXPECT_TRUE(unordered_list->IsLineBreakingObject());
+
+  const AXObject* unordered_list_item =
+      GetAXObjectByElementId("unorderedListItem");
+  ASSERT_NE(nullptr, unordered_list_item);
+  ASSERT_EQ(ax::mojom::Role::kListItem, unordered_list_item->RoleValue());
+  EXPECT_TRUE(unordered_list_item->IsLineBreakingObject());
+
+  const AXObject* unordered_list_marker =
+      unordered_list_item->UnignoredChildAt(0);
+  ASSERT_NE(nullptr, unordered_list_marker);
+  ASSERT_EQ(ax::mojom::Role::kListMarker, unordered_list_marker->RoleValue());
+  EXPECT_FALSE(unordered_list_marker->IsLineBreakingObject());
+
+  const AXObject* ordered_list = GetAXObjectByElementId("orderedList");
+  ASSERT_NE(nullptr, ordered_list);
+  ASSERT_EQ(ax::mojom::Role::kList, ordered_list->RoleValue());
+  EXPECT_TRUE(ordered_list->IsLineBreakingObject());
+
+  const AXObject* ordered_list_item = GetAXObjectByElementId("orderedListItem");
+  ASSERT_NE(nullptr, ordered_list_item);
+  ASSERT_EQ(ax::mojom::Role::kListItem, ordered_list_item->RoleValue());
+  EXPECT_TRUE(ordered_list_item->IsLineBreakingObject());
+
+  const AXObject* ordered_list_marker = ordered_list_item->UnignoredChildAt(0);
+  ASSERT_NE(nullptr, ordered_list_marker);
+  ASSERT_EQ(ax::mojom::Role::kListMarker, ordered_list_marker->RoleValue());
+  EXPECT_FALSE(ordered_list_marker->IsLineBreakingObject());
 }
 
 TEST_F(AccessibilityTest, CheckNoDuplicateChildren) {
@@ -1139,6 +1191,28 @@ TEST_F(AccessibilityTest, IsSelectedFromFocusSupported) {
   // TODO(crbug.com/1143451): #option5 should not support selection from focus
   // because #option4 is explicitly selected.
   EXPECT_TRUE(option5->IsSelectedFromFocusSupported());
+}
+
+TEST_F(AccessibilityTest, GetBoundsInFrameCoordinatesSvgText) {
+  // This test doesn't work with the legacy SVG text.
+  if (!RuntimeEnabledFeatures::SVGTextNGEnabled())
+    return;
+  SetBodyInnerHTML(R"HTML(
+  <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+    <text id="t1" x="100">Text1</text>
+    <text id="t2" x="50">Text1</text>
+  </svg>)HTML");
+
+  AXObject* text1 = GetAXObjectByElementId("t1");
+  ASSERT_NE(text1, nullptr);
+  AXObject* text2 = GetAXObjectByElementId("t2");
+  ASSERT_NE(text2, nullptr);
+  LayoutRect bounds1 = text1->GetBoundsInFrameCoordinates();
+  LayoutRect bounds2 = text2->GetBoundsInFrameCoordinates();
+
+  // Check if bounding boxes for SVG <text> respect to positioning
+  // attributes such as 'x'.
+  EXPECT_GT(bounds1.X(), bounds2.X());
 }
 
 }  // namespace test

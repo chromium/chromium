@@ -37,7 +37,6 @@
 #include "printing/printing_features.h"
 #endif
 
-using base::TimeDelta;
 
 namespace printing {
 
@@ -50,6 +49,16 @@ void HoldRefCallback(scoped_refptr<PrintJob> job, base::OnceClosure callback) {
 
 #if defined(OS_WIN)
 // Those must be kept in sync with the values defined in policy_templates.json.
+enum class PrintPostScriptMode {
+  // Do normal PostScript generation. Text is always rendered with Type 3 fonts.
+  // Default value when policy not set.
+  kDefault = 0,
+  // Text is rendered with Type 42 fonts if possible.
+  kType42 = 1,
+  kMaxValue = kType42,
+};
+
+// Those must be kept in sync with the values defined in policy_templates.json.
 enum class PrintRasterizationMode {
   // Do full page rasterization if necessary. Default value when policy not set.
   kFull = 0,
@@ -57,6 +66,17 @@ enum class PrintRasterizationMode {
   kFast = 1,
   kMaxValue = kFast,
 };
+
+bool PrintWithPostScriptType42Fonts(PrefService* prefs) {
+  // Managed preference takes precedence over user preference and field trials.
+  if (prefs && prefs->IsManagedPreference(prefs::kPrintPostScriptMode)) {
+    int value = prefs->GetInteger(prefs::kPrintPostScriptMode);
+    return value == static_cast<int>(PrintPostScriptMode::kType42);
+  }
+
+  return base::FeatureList::IsEnabled(
+      features::kPrintWithPostScriptType42Fonts);
+}
 
 bool PrintWithReducedRasterization(PrefService* prefs) {
   // Managed preference takes precedence over user preference and field trials.
@@ -67,7 +87,17 @@ bool PrintWithReducedRasterization(PrefService* prefs) {
 
   return base::FeatureList::IsEnabled(features::kPrintWithReducedRasterization);
 }
-#endif
+
+PrefService* GetPrefsForWebContents(content::WebContents* web_contents) {
+  // TODO(thestig): Figure out why crbug.com/1083911 occurred, which is likely
+  // because `web_contents` was null. As a result, this section has many more
+  // pointer checks to avoid crashing.
+  content::BrowserContext* context =
+      web_contents ? web_contents->GetBrowserContext() : nullptr;
+  return context ? Profile::FromBrowserContext(context)->GetPrefs() : nullptr;
+}
+
+#endif  // defined(OS_WIN)
 
 }  // namespace
 
@@ -353,14 +383,7 @@ void PrintJob::StartPdfToEmfConversion(
       settings.print_text_with_gdi() && !settings.printer_language_is_xps() &&
       base::FeatureList::IsEnabled(::features::kGdiTextPrinting);
 
-  // TODO(thestig): Figure out why crbug.com/1083911 occurred, which is likely
-  // because `web_contents` was null. As a result, this section has many more
-  // pointer checks to avoid crashing.
-  content::WebContents* web_contents = worker_->GetWebContents();
-  content::BrowserContext* context =
-      web_contents ? web_contents->GetBrowserContext() : nullptr;
-  PrefService* prefs =
-      context ? Profile::FromBrowserContext(context)->GetPrefs() : nullptr;
+  PrefService* prefs = GetPrefsForWebContents(worker_->GetWebContents());
   bool print_with_reduced_rasterization = PrintWithReducedRasterization(prefs);
 
   using RenderMode = PdfRenderSettings::Mode;
@@ -451,11 +474,19 @@ void PrintJob::StartPdfToPostScriptConversion(
   pdf_conversion_state_ = std::make_unique<PdfConversionState>(
       gfx::Size(), gfx::Rect());
   const PrintSettings& settings = document()->settings();
+
+  PdfRenderSettings::Mode mode;
+  if (ps_level2) {
+    mode = PdfRenderSettings::Mode::POSTSCRIPT_LEVEL2;
+  } else {
+    PrefService* prefs = GetPrefsForWebContents(worker_->GetWebContents());
+    mode = PrintWithPostScriptType42Fonts(prefs)
+               ? PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS
+               : PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3;
+  }
   PdfRenderSettings render_settings(
       content_area, physical_offsets, settings.dpi_size(),
-      /*autorotate=*/true, settings.color() == mojom::ColorModel::kColor,
-      ps_level2 ? PdfRenderSettings::Mode::POSTSCRIPT_LEVEL2
-                : PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3);
+      /*autorotate=*/true, settings.color() == mojom::ColorModel::kColor, mode);
   pdf_conversion_state_->Start(
       bytes, render_settings,
       base::BindOnce(&PrintJob::OnPdfConversionStarted, this));
@@ -562,7 +593,7 @@ void PrintJob::ControlledWorkerShutdown() {
   if (worker_->IsRunning()) {
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE, base::BindOnce(&PrintJob::ControlledWorkerShutdown, this),
-        base::TimeDelta::FromMilliseconds(100));
+        base::Milliseconds(100));
     return;
   }
 #endif

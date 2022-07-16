@@ -31,11 +31,11 @@ MetricsReportingHandler::MetricsReportingHandler() {}
 MetricsReportingHandler::~MetricsReportingHandler() {}
 
 void MetricsReportingHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getMetricsReporting",
       base::BindRepeating(&MetricsReportingHandler::HandleGetMetricsReporting,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setMetricsReportingEnabled",
       base::BindRepeating(
           &MetricsReportingHandler::HandleSetMetricsReportingEnabled,

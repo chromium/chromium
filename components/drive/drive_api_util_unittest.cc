@@ -6,8 +6,8 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/hash/md5.h"
+#include "google_apis/common/test_util.h"
 #include "google_apis/drive/drive_api_parser.h"
-#include "google_apis/drive/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

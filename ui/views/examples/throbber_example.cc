@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
@@ -24,6 +23,9 @@ class ThrobberView : public View {
     throbber_ = AddChildView(std::make_unique<Throbber>());
     throbber_->Start();
   }
+
+  ThrobberView(const ThrobberView&) = delete;
+  ThrobberView& operator=(const ThrobberView&) = delete;
 
   // View::
   gfx::Size CalculatePreferredSize() const override {
@@ -53,8 +55,6 @@ class ThrobberView : public View {
  private:
   Throbber* throbber_;
   bool is_checked_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrobberView);
 };
 
 }  // namespace

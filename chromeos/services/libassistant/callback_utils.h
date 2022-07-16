@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_LIBASSISTANT_CALLBACK_UTILS_H_
 
 #include <functional>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -59,6 +60,20 @@ std::function<void(Args...)> ToStdFunctionRepeating(
   return [callback = repeating_callback](Args... args) {
     callback.Run(std::forward<Args>(args)...);
   };
+}
+
+// Wraps a |base::OnceCallback| callback1<Args1> that changes its argument to
+// Args2, where Args2 is transformed from Args1 applying the |transformer| rule.
+template <typename... Args1, typename... Args2, typename Functor>
+base::OnceCallback<void(Args1...)> AdaptCallback(
+    base::OnceCallback<void(Args2...)> once_callback,
+    Functor&& transformer) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(Args2...)> callback, Functor&& transformer,
+         Args1&&... args) {
+        std::move(callback).Run(transformer(std::forward<Args1>(args)...));
+      },
+      std::move(once_callback), std::forward<Functor>(transformer));
 }
 
 // Binds a method call to the current sequence, meaning we ensure |callback|
@@ -136,6 +151,16 @@ auto BindToCurrentSequence(Functor&& functor, Args&&... args) {
   auto callback = base::BindOnce(std::forward<Functor>(functor),
                                  std::forward<Args>(args)...);
   return BindToCurrentSequence(std::move(callback));
+}
+
+// Binds a repeating callback to the current sequence.
+// This is a convenience version, that allows you to use the same simplified
+// style noted above on a repeating callback.
+template <typename Functor, typename... Args>
+auto BindToCurrentSequenceRepeating(Functor&& functor, Args&&... args) {
+  auto callback = base::BindRepeating(std::forward<Functor>(functor),
+                                      std::forward<Args>(args)...);
+  return BindToCurrentSequenceRepeating(callback);
 }
 
 }  // namespace libassistant

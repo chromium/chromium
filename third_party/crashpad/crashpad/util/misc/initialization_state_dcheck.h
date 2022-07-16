@@ -19,7 +19,6 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "util/misc/initialization_state.h"
 
@@ -65,6 +64,10 @@ class InitializationStateDcheck : public InitializationState {
  public:
   InitializationStateDcheck() : InitializationState() {}
 
+  InitializationStateDcheck(const InitializationStateDcheck&) = delete;
+  InitializationStateDcheck& operator=(const InitializationStateDcheck&) =
+      delete;
+
   //! \brief Returns the object’s state.
   //!
   //! Consumers of this class should not call this method. Use the
@@ -99,9 +102,6 @@ class InitializationStateDcheck : public InitializationState {
   //! Consumers of this class should not call this method. Use the
   //! INITIALIZATION_STATE_SET_VALID() macro instead.
   State SetValid();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InitializationStateDcheck);
 };
 
 // Using macros enables the non-DCHECK no-op implementation below to be more

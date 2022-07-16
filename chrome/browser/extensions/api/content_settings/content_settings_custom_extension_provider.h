@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/api/content_settings/content_settings_store.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
@@ -21,6 +20,9 @@ class CustomExtensionProvider : public ObservableProvider,
   CustomExtensionProvider(const scoped_refptr<extensions::ContentSettingsStore>&
                               extensions_settings,
                           bool incognito);
+
+  CustomExtensionProvider(const CustomExtensionProvider&) = delete;
+  CustomExtensionProvider& operator=(const CustomExtensionProvider&) = delete;
 
   ~CustomExtensionProvider() override;
 
@@ -52,8 +54,6 @@ class CustomExtensionProvider : public ObservableProvider,
 
   // The backend storing content setting rules defined by extensions.
   scoped_refptr<extensions::ContentSettingsStore> extensions_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomExtensionProvider);
 };
 
 }  // namespace content_settings

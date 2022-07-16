@@ -23,17 +23,17 @@ RoundedInnerRectClipper::RoundedInnerRectClipper(
     // making sure we clip opposing corners together.
     if (!clip_rect.GetRadii().TopLeft().IsEmpty() ||
         !clip_rect.GetRadii().BottomRight().IsEmpty()) {
-      FloatRect top_corner(clip_rect.Rect().X(), clip_rect.Rect().Y(),
-                           rect.Right() - clip_rect.Rect().X(),
-                           rect.Bottom() - clip_rect.Rect().Y());
+      FloatRect top_corner(clip_rect.Rect().x(), clip_rect.Rect().y(),
+                           rect.Right() - clip_rect.Rect().x(),
+                           rect.Bottom() - clip_rect.Rect().y());
       FloatRoundedRect::Radii top_corner_radii;
       top_corner_radii.SetTopLeft(clip_rect.GetRadii().TopLeft());
       rounded_rect_clips.push_back(
           FloatRoundedRect(top_corner, top_corner_radii));
 
       FloatRect bottom_corner(rect.X().ToFloat(), rect.Y().ToFloat(),
-                              clip_rect.Rect().MaxX() - rect.X().ToFloat(),
-                              clip_rect.Rect().MaxY() - rect.Y().ToFloat());
+                              clip_rect.Rect().right() - rect.X().ToFloat(),
+                              clip_rect.Rect().bottom() - rect.Y().ToFloat());
       FloatRoundedRect::Radii bottom_corner_radii;
       bottom_corner_radii.SetBottomRight(clip_rect.GetRadii().BottomRight());
       rounded_rect_clips.push_back(
@@ -42,17 +42,17 @@ RoundedInnerRectClipper::RoundedInnerRectClipper(
 
     if (!clip_rect.GetRadii().TopRight().IsEmpty() ||
         !clip_rect.GetRadii().BottomLeft().IsEmpty()) {
-      FloatRect top_corner(rect.X().ToFloat(), clip_rect.Rect().Y(),
-                           clip_rect.Rect().MaxX() - rect.X().ToFloat(),
-                           rect.Bottom() - clip_rect.Rect().Y());
+      FloatRect top_corner(rect.X().ToFloat(), clip_rect.Rect().y(),
+                           clip_rect.Rect().right() - rect.X().ToFloat(),
+                           rect.Bottom() - clip_rect.Rect().y());
       FloatRoundedRect::Radii top_corner_radii;
       top_corner_radii.SetTopRight(clip_rect.GetRadii().TopRight());
       rounded_rect_clips.push_back(
           FloatRoundedRect(top_corner, top_corner_radii));
 
-      FloatRect bottom_corner(clip_rect.Rect().X(), rect.Y().ToFloat(),
-                              rect.Right() - clip_rect.Rect().X(),
-                              clip_rect.Rect().MaxY() - rect.Y().ToFloat());
+      FloatRect bottom_corner(clip_rect.Rect().x(), rect.Y().ToFloat(),
+                              rect.Right() - clip_rect.Rect().x(),
+                              clip_rect.Rect().bottom() - rect.Y().ToFloat());
       FloatRoundedRect::Radii bottom_corner_radii;
       bottom_corner_radii.SetBottomLeft(clip_rect.GetRadii().BottomLeft());
       rounded_rect_clips.push_back(

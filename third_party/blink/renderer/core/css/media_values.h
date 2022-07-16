@@ -24,10 +24,10 @@ enum class CSSValueID;
 enum class ColorSpaceGamut;
 enum class ForcedColors;
 enum class NavigationControls;
-enum class ScreenSpanning { kNone, kSingleFoldHorizontal, kSingleFoldVertical };
 
 mojom::blink::PreferredColorScheme CSSValueIDToPreferredColorScheme(
     CSSValueID id);
+ForcedColors CSSValueIDToForcedColors(CSSValueID id);
 
 class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
  public:
@@ -35,37 +35,20 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   virtual void Trace(Visitor* visitor) const {}
 
   static MediaValues* CreateDynamicIfFrameExists(LocalFrame*);
-  virtual MediaValues* Copy() const = 0;
 
-  static bool ComputeLengthImpl(double value,
-                                CSSPrimitiveValue::UnitType,
-                                unsigned default_font_size,
-                                double viewport_width,
-                                double viewport_height,
-                                double& result);
   template <typename T>
-  static bool ComputeLength(double value,
-                            CSSPrimitiveValue::UnitType type,
-                            unsigned default_font_size,
-                            double viewport_width,
-                            double viewport_height,
-                            T& result) {
+  bool ComputeLength(double value,
+                     CSSPrimitiveValue::UnitType type,
+                     T& result) const {
     double temp_result;
-    if (!ComputeLengthImpl(value, type, default_font_size, viewport_width,
-                           viewport_height, temp_result))
+    if (!ComputeLengthImpl(value, type, temp_result))
       return false;
-    result = clampTo<T>(temp_result);
+    result = ClampTo<T>(temp_result);
     return true;
   }
-  virtual bool ComputeLength(double value,
-                             CSSPrimitiveValue::UnitType,
-                             int& result) const = 0;
-  virtual bool ComputeLength(double value,
-                             CSSPrimitiveValue::UnitType,
-                             double& result) const = 0;
 
-  virtual double ViewportWidth() const = 0;
-  virtual double ViewportHeight() const = 0;
+  virtual double Width() const { return ViewportWidth(); }
+  virtual double Height() const { return ViewportHeight(); }
   virtual int DeviceWidth() const = 0;
   virtual int DeviceHeight() const = 0;
   virtual float DevicePixelRatio() const = 0;
@@ -84,7 +67,6 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   virtual Document* GetDocument() const = 0;
   virtual bool HasValues() const = 0;
 
-  virtual void OverrideViewportDimensions(double width, double height) = 0;
   virtual ColorSpaceGamut ColorGamut() const = 0;
   virtual mojom::blink::PreferredColorScheme GetPreferredColorScheme()
       const = 0;
@@ -93,12 +75,23 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   virtual bool PrefersReducedData() const = 0;
   virtual ForcedColors GetForcedColors() const = 0;
   virtual NavigationControls GetNavigationControls() const = 0;
-  virtual ScreenSpanning GetScreenSpanning() const = 0;
+  virtual int GetHorizontalViewportSegments() const = 0;
+  virtual int GetVerticalViewportSegments() const = 0;
   virtual device::mojom::blink::DevicePostureType GetDevicePosture() const = 0;
 
  protected:
+  virtual double ViewportWidth() const = 0;
+  virtual double ViewportHeight() const = 0;
+  virtual float EmSize() const = 0;
+  virtual float RemSize() const = 0;
+  virtual float ExSize() const = 0;
+  virtual float ChSize() const = 0;
+
   static double CalculateViewportWidth(LocalFrame*);
   static double CalculateViewportHeight(LocalFrame*);
+  static float CalculateEmSize(LocalFrame*);
+  static float CalculateExSize(LocalFrame*);
+  static float CalculateChSize(LocalFrame*);
   static int CalculateDeviceWidth(LocalFrame*);
   static int CalculateDeviceHeight(LocalFrame*);
   static bool CalculateStrictMode(LocalFrame*);
@@ -106,7 +99,6 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   static bool CalculateDeviceSupportsHDR(LocalFrame*);
   static int CalculateColorBitsPerComponent(LocalFrame*);
   static int CalculateMonochromeBitsPerComponent(LocalFrame*);
-  static int CalculateDefaultFontSize(LocalFrame*);
   static const String CalculateMediaType(LocalFrame*);
   static blink::mojom::DisplayMode CalculateDisplayMode(LocalFrame*);
   static bool CalculateThreeDEnabled(LocalFrame*);
@@ -124,9 +116,14 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   static bool CalculatePrefersReducedData(LocalFrame*);
   static ForcedColors CalculateForcedColors(LocalFrame*);
   static NavigationControls CalculateNavigationControls(LocalFrame*);
-  static ScreenSpanning CalculateScreenSpanning(LocalFrame*);
+  static int CalculateHorizontalViewportSegments(LocalFrame*);
+  static int CalculateVerticalViewportSegments(LocalFrame*);
   static device::mojom::blink::DevicePostureType CalculateDevicePosture(
       LocalFrame*);
+
+  bool ComputeLengthImpl(double value,
+                         CSSPrimitiveValue::UnitType,
+                         double& result) const;
 };
 
 }  // namespace blink

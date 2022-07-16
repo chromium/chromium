@@ -7,9 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/profiler/thread_profiler.h"
 #include "content/public/gpu/content_gpu_client.h"
@@ -23,6 +22,10 @@ class ProtectedBufferManager;
 class ChromeContentGpuClient : public content::ContentGpuClient {
  public:
   ChromeContentGpuClient();
+
+  ChromeContentGpuClient(const ChromeContentGpuClient&) = delete;
+  ChromeContentGpuClient& operator=(const ChromeContentGpuClient&) = delete;
+
   ~ChromeContentGpuClient() override;
 
   // content::ContentGpuClient:
@@ -47,8 +50,6 @@ class ChromeContentGpuClient : public content::ContentGpuClient {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<arc::ProtectedBufferManager> protected_buffer_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentGpuClient);
 };
 
 #endif  // CHROME_GPU_CHROME_CONTENT_GPU_CLIENT_H_

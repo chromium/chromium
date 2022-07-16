@@ -16,7 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/async_file_util_adapter.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -30,6 +30,7 @@
 #include "storage/browser/file_system/sandbox_file_stream_writer.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -86,7 +87,11 @@ base::File::Error OpenFileSystemOnFileTaskRunner(
     OpenFileSystemMode mode) {
   base::File::Error error = base::File::FILE_ERROR_FAILED;
   const bool create = (mode == OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT);
-  file_util->GetDirectoryForOriginAndType(origin, plugin_id, create, &error);
+  // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
+  // file system will be partitioned; if so, replace the in-line conversion with
+  // the correct third-party StorageKey.
+  file_util->GetDirectoryForStorageKeyAndType(blink::StorageKey(origin),
+                                              plugin_id, create, &error);
   if (error == base::File::FILE_OK)
     plugin_map->RegisterFileSystem(filesystem_id, plugin_id);
   return error;
@@ -179,12 +184,13 @@ PluginPrivateFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   return nullptr;
 }
 
-FileSystemOperation* PluginPrivateFileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<FileSystemOperation>
+PluginPrivateFileSystemBackend::CreateFileSystemOperation(
     const FileSystemURL& url,
     FileSystemContext* context,
     base::File::Error* error_code) const {
-  std::unique_ptr<FileSystemOperationContext> operation_context(
-      std::make_unique<FileSystemOperationContext>(context));
+  auto operation_context =
+      std::make_unique<FileSystemOperationContext>(context);
   return FileSystemOperation::Create(url, context,
                                      std::move(operation_context));
 }
@@ -231,15 +237,15 @@ FileSystemQuotaUtil* PluginPrivateFileSystemBackend::GetQuotaUtil() {
 }
 
 base::File::Error
-PluginPrivateFileSystemBackend::DeleteOriginDataOnFileTaskRunner(
+PluginPrivateFileSystemBackend::DeleteStorageKeyDataOnFileTaskRunner(
     FileSystemContext* context,
     QuotaManagerProxy* proxy,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     FileSystemType type) {
   if (!CanHandleType(type))
     return base::File::FILE_ERROR_SECURITY;
-  bool result = obfuscated_file_util()->DeleteDirectoryForOriginAndType(
-      origin, std::string());
+  bool result = obfuscated_file_util()->DeleteDirectoryForStorageKeyAndType(
+      storage_key, std::string());
   if (result)
     return base::File::FILE_OK;
   return base::File::FILE_ERROR_FAILED;
@@ -254,40 +260,40 @@ void PluginPrivateFileSystemBackend::PerformStorageCleanupOnFileTaskRunner(
   obfuscated_file_util()->RewriteDatabases();
 }
 
-std::vector<url::Origin>
-PluginPrivateFileSystemBackend::GetOriginsForTypeOnFileTaskRunner(
+std::vector<blink::StorageKey>
+PluginPrivateFileSystemBackend::GetStorageKeysForTypeOnFileTaskRunner(
     FileSystemType type) {
   if (!CanHandleType(type))
-    return std::vector<url::Origin>();
-  std::unique_ptr<ObfuscatedFileUtil::AbstractOriginEnumerator> enumerator(
-      obfuscated_file_util()->CreateOriginEnumerator());
-  std::vector<url::Origin> origins;
-  absl::optional<url::Origin> origin;
-  while ((origin = enumerator->Next()).has_value())
-    origins.push_back(std::move(origin).value());
-  return origins;
+    return std::vector<blink::StorageKey>();
+  std::unique_ptr<ObfuscatedFileUtil::AbstractStorageKeyEnumerator> enumerator(
+      obfuscated_file_util()->CreateStorageKeyEnumerator());
+  std::vector<blink::StorageKey> storage_keys;
+  absl::optional<blink::StorageKey> storage_key;
+  while ((storage_key = enumerator->Next()).has_value())
+    storage_keys.push_back(std::move(storage_key).value());
+  return storage_keys;
 }
 
-std::vector<url::Origin>
-PluginPrivateFileSystemBackend::GetOriginsForHostOnFileTaskRunner(
+std::vector<blink::StorageKey>
+PluginPrivateFileSystemBackend::GetStorageKeysForHostOnFileTaskRunner(
     FileSystemType type,
     const std::string& host) {
   if (!CanHandleType(type))
-    return std::vector<url::Origin>();
-  std::unique_ptr<ObfuscatedFileUtil::AbstractOriginEnumerator> enumerator(
-      obfuscated_file_util()->CreateOriginEnumerator());
-  std::vector<url::Origin> origins;
-  absl::optional<url::Origin> origin;
-  while ((origin = enumerator->Next()).has_value()) {
-    if (host == origin->host())
-      origins.push_back(std::move(origin).value());
+    return std::vector<blink::StorageKey>();
+  std::unique_ptr<ObfuscatedFileUtil::AbstractStorageKeyEnumerator> enumerator(
+      obfuscated_file_util()->CreateStorageKeyEnumerator());
+  std::vector<blink::StorageKey> storage_keys;
+  absl::optional<blink::StorageKey> storage_key;
+  while ((storage_key = enumerator->Next()).has_value()) {
+    if (host == storage_key->origin().host())
+      storage_keys.push_back(std::move(storage_key).value());
   }
-  return origins;
+  return storage_keys;
 }
 
-int64_t PluginPrivateFileSystemBackend::GetOriginUsageOnFileTaskRunner(
+int64_t PluginPrivateFileSystemBackend::GetStorageKeyUsageOnFileTaskRunner(
     FileSystemContext* context,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     FileSystemType type) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
 
@@ -296,7 +302,7 @@ int64_t PluginPrivateFileSystemBackend::GetOriginUsageOnFileTaskRunner(
 
   int64_t total_size;
   base::Time last_modified_time;
-  GetOriginDetailsOnFileTaskRunner(context, origin, &total_size,
+  GetOriginDetailsOnFileTaskRunner(context, storage_key.origin(), &total_size,
                                    &last_modified_time);
   return total_size;
 }
@@ -328,8 +334,12 @@ void PluginPrivateFileSystemBackend::GetOriginDetailsOnFileTaskRunner(
   // application_x-ppapi-widevine-cdm). Enumerate through the set of
   // directories so that data from any CDM used by this origin is counted.
   base::File::Error error;
-  base::FilePath path = obfuscated_file_util()->GetDirectoryForOriginAndType(
-      origin, "", false, &error);
+  // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
+  // file system will be partitioned; if so, replace the in-line conversion with
+  // the correct third-party StorageKey.
+  base::FilePath path =
+      obfuscated_file_util()->GetDirectoryForStorageKeyAndType(
+          blink::StorageKey(origin), "", false, &error);
   if (error != base::File::FILE_OK) {
     DLOG(ERROR) << "Unable to read directory for " << origin;
     return;
@@ -346,9 +356,14 @@ void PluginPrivateFileSystemBackend::GetOriginDetailsOnFileTaskRunner(
       continue;
     }
 
+    // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
+    // file system will be partitioned and use the appropriate StorageKey
     std::unique_ptr<FileSystemFileUtil::AbstractFileEnumerator> enumerator(
         obfuscated_file_util()->CreateFileEnumerator(
-            operation_context.get(), context->CrackURL(GURL(root)), true));
+            operation_context.get(),
+            context->CrackURL(
+                GURL(root), blink::StorageKey(url::Origin::Create(GURL(root)))),
+            true));
 
     while (!enumerator->Next().empty()) {
       *total_size += enumerator->Size();
@@ -360,7 +375,7 @@ void PluginPrivateFileSystemBackend::GetOriginDetailsOnFileTaskRunner(
 
 scoped_refptr<QuotaReservation>
 PluginPrivateFileSystemBackend::CreateQuotaReservationOnFileTaskRunner(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     FileSystemType type) {
   // We don't track usage on this filesystem.
   NOTREACHED();

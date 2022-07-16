@@ -12,11 +12,11 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_profile_sync_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -547,11 +547,9 @@ void AutofillWalletSyncBridge::ProcessVirtualCardMetadataChanges(
     const std::vector<CreditCard>& new_data) {
   std::vector<std::string> updated_server_ids;
   for (const CreditCard& new_card : new_data) {
-    // If this new card is not enrolled for virtual cards, clear the table entry
-    // for it if any and continue.
+    // If this new card is not enrolled for virtual cards, continue.
     if (new_card.virtual_card_enrollment_state() !=
         CreditCard::VirtualCardEnrollmentState::ENROLLED) {
-      GetAutofillTable()->ClearCreditCardArtImage(new_card.server_id());
       continue;
     }
 
@@ -567,20 +565,15 @@ void AutofillWalletSyncBridge::ProcessVirtualCardMetadataChanges(
       updated_server_ids.push_back(new_card.server_id());
       // log the newly-synced card.
       AutofillMetrics::LogVirtualCardMetadataSynced(/*existing_card=*/false);
-      // The actual card image will be added later once it has actually been
-      // fetched.
       continue;
     }
 
     // If the virtual card metadata has changed from the old card to the new
-    // cards, change the table data and log the updated sync.
+    // cards, log the updated sync.
     if ((*old_data_iterator)->virtual_card_enrollment_state() !=
             new_card.virtual_card_enrollment_state() ||
         (*old_data_iterator)->card_art_url() != new_card.card_art_url()) {
       updated_server_ids.push_back(new_card.server_id());
-      // Any existing card art image is not valid anymore. A new image will be
-      // added later.
-      GetAutofillTable()->ClearCreditCardArtImage(new_card.server_id());
       AutofillMetrics::LogVirtualCardMetadataSynced(/*existing_card=*/true);
     }
   }

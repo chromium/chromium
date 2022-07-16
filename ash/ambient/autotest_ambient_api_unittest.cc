@@ -30,7 +30,7 @@ TEST_F(AutotestAmbientApiTest,
   base::RunLoop run_loop;
   AutotestAmbientApi test_api;
   test_api.WaitForPhotoTransitionAnimationCompleted(
-      /*num_completions=*/10, /*timeout=*/base::TimeDelta::FromSeconds(30),
+      /*num_completions=*/10, /*timeout=*/base::Seconds(30),
       /*on_complete=*/run_loop.QuitClosure(),
       /*on_timeout=*/base::BindOnce([]() { NOTREACHED(); }));
   run_loop.Run();
@@ -47,7 +47,7 @@ TEST_F(AutotestAmbientApiTest,
   base::RunLoop run_loop;
   AutotestAmbientApi test_api;
   test_api.WaitForPhotoTransitionAnimationCompleted(
-      /*num_completions=*/10, /*timeout=*/base::TimeDelta::FromSeconds(5),
+      /*num_completions=*/10, /*timeout=*/base::Seconds(5),
       /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
       /*on_timeout=*/run_loop.QuitClosure());
   run_loop.Run();

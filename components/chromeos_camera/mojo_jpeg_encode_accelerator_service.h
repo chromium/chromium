@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "components/chromeos_camera/common/jpeg_encode_accelerator.mojom.h"
@@ -28,6 +27,11 @@ class MojoJpegEncodeAcceleratorService
   static void Create(
       mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
           receiver);
+
+  MojoJpegEncodeAcceleratorService(const MojoJpegEncodeAcceleratorService&) =
+      delete;
+  MojoJpegEncodeAcceleratorService& operator=(
+      const MojoJpegEncodeAcceleratorService&) = delete;
 
   ~MojoJpegEncodeAcceleratorService() override;
 
@@ -81,6 +85,7 @@ class MojoJpegEncodeAcceleratorService
       uint32_t exif_buffer_size,
       int32_t coded_size_width,
       int32_t coded_size_height,
+      int32_t quality,
       EncodeWithDmaBufCallback callback) override;
 
   void NotifyEncodeStatus(
@@ -102,8 +107,6 @@ class MojoJpegEncodeAcceleratorService
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<MojoJpegEncodeAcceleratorService> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoJpegEncodeAcceleratorService);
 };
 
 }  // namespace chromeos_camera

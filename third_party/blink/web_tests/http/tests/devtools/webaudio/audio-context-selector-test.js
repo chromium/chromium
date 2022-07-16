@@ -4,7 +4,6 @@
 
 (async function() {
   TestRunner.addResult(`Tests the AudioContextSelector.`);
-  await TestRunner.loadModule('web_audio');
   await TestRunner.loadLegacyModule('web_audio');
 
   /** @type {!Protocol.WebAudio.BaseAudioContext} */
@@ -21,8 +20,8 @@
   function dumpSelectorState(
       /** @type {!WebAudio.AudioContextSelector} */ selector) {
     TestRunner.addResult(`
-Number of contexts (items): ${selector._items.length}
-Title: ${selector.toolbarItem()._title}}
+Number of contexts (items): ${selector.items.length}
+Title: ${selector.toolbarItem().title}}
 Selected Context: ${JSON.stringify(selector.selectedContext(), null, 3)}
 `);
   }
@@ -92,12 +91,12 @@ Selected Context: ${JSON.stringify(selector.selectedContext(), null, 3)}
     async function testOnListItemReplacedCalled() {
       function dumpItemCount() {
         TestRunner.addResult(
-            `_onListItemReplaced called with contexts (items) count: ${
-                this._items.length}`);
+            `onListItemReplaced called with contexts (items) count: ${
+                this.items.length}`);
       }
 
       TestRunner.addSniffer(
-          WebAudio.AudioContextSelector.prototype, '_onListItemReplaced',
+          WebAudio.AudioContextSelector.prototype, 'onListItemReplaced',
           dumpItemCount);
 
       const selector = new WebAudio.AudioContextSelector();

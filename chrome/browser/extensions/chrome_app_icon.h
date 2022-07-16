@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_icon_image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -60,6 +59,10 @@ class ChromeAppIcon : public IconImage::Observer {
                 const std::string& app_id,
                 int resource_size_in_dip,
                 const ResizeFunction& resize_function);
+
+  ChromeAppIcon(const ChromeAppIcon&) = delete;
+  ChromeAppIcon& operator=(const ChromeAppIcon&) = delete;
+
   ~ChromeAppIcon() override;
 
   // Reloads icon.
@@ -113,8 +116,6 @@ class ChromeAppIcon : public IconImage::Observer {
   const ResizeFunction resize_function_;
 
   std::unique_ptr<IconImage> icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppIcon);
 };
 
 }  // namespace extensions

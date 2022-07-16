@@ -18,7 +18,7 @@ import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.chromium.base.Log;
 import org.chromium.payments.mojom.BillingResponseCode;
-import org.chromium.payments.mojom.DigitalGoods.GetDetailsResponse;
+import org.chromium.payments.mojom.DigitalGoods.GetDetails_Response;
 import org.chromium.payments.mojom.ItemDetails;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 
@@ -61,7 +61,7 @@ public class GetDetailsConverter {
      * Produces a {@link TrustedWebActivityCallback} that calls the given
      * {@link GetDetailsResponse}.
      */
-    static TrustedWebActivityCallback convertCallback(GetDetailsResponse callback) {
+    static TrustedWebActivityCallback convertCallback(GetDetails_Response callback) {
         return new TrustedWebActivityCallback() {
             @Override
             public void onExtraCallback(@NonNull String callbackName, @Nullable Bundle args) {
@@ -132,11 +132,11 @@ public class GetDetailsConverter {
         return result;
     }
 
-    static void returnClientAppUnavailable(GetDetailsResponse callback) {
+    static void returnClientAppUnavailable(GetDetails_Response callback) {
         callback.call(BillingResponseCode.CLIENT_APP_UNAVAILABLE, new ItemDetails[0]);
     }
 
-    static void returnClientAppError(GetDetailsResponse callback) {
+    static void returnClientAppError(GetDetails_Response callback) {
         callback.call(BillingResponseCode.CLIENT_APP_ERROR, new ItemDetails[0]);
     }
 

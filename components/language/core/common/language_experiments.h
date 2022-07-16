@@ -9,10 +9,6 @@
 
 namespace language {
 
-// The feature that enables the heuristic model of user language. If disabled,
-// the baseline model is used instead.
-extern const base::Feature kUseHeuristicLanguageModel;
-
 // The feature that enables explicitly asking for user preferred
 // Accept-Languages on second run on Android. Replaced by kAppLanguagePrompt.
 extern const base::Feature kExplicitLanguageAsk;
@@ -25,15 +21,14 @@ extern const base::Feature kForceAppLanguagePrompt;
 // This feature controls the activation of the experiment to trigger Translate
 // in India on English pages independent of the user's UI language. The params
 // associated with the experiment dictate which model is used to determine the
-// target language. This can in turn be overriden by the Heuristic Model
-// experiment.
+// target language.
 extern const base::Feature kOverrideTranslateTriggerInIndia;
 extern const char kOverrideModelKey[];
 extern const char kEnforceRankerKey[];
-extern const char kOverrideModelHeuristicValue[];
 extern const char kOverrideModelGeoValue[];
 extern const char kOverrideModelDefaultValue[];
 extern const char kBackoffThresholdKey[];
+extern const char kContentLanguagesDisableObserversParam[];
 
 // Notify sync to update data on language determined.
 extern const base::Feature kNotifySyncOnLanguageDetermined;
@@ -67,7 +62,6 @@ extern const base::Feature kContentLanguagesInLanguagePicker;
 enum class OverrideLanguageModel {
   DEFAULT,
   FLUENT,
-  HEURISTIC,
   GEO,
 };
 

@@ -76,7 +76,7 @@ class CORE_EXPORT LayoutNGTableCell
   // compat.
   const char* GetName() const final {
     NOT_DESTROYED();
-    return "LayoutNGTableCellNew";
+    return "LayoutNGTableCell";
   }
 
   bool CreatesNewFormattingContext() const final {

@@ -36,6 +36,10 @@ class SecurityKeySocket {
   SecurityKeySocket(std::unique_ptr<net::StreamSocket> socket,
                     base::TimeDelta timeout,
                     base::OnceClosure timeout_callback);
+
+  SecurityKeySocket(const SecurityKeySocket&) = delete;
+  SecurityKeySocket& operator=(const SecurityKeySocket&) = delete;
+
   ~SecurityKeySocket();
 
   // Returns false if the request has not yet completed, or is too large to be
@@ -108,8 +112,6 @@ class SecurityKeySocket {
 
   // The activity timer.
   std::unique_ptr<base::OneShotTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeySocket);
 };
 
 }  // namespace remoting

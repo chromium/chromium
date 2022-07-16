@@ -14,7 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -284,11 +284,8 @@ class VideoCaptureDeviceTest
         local_gpu_memory_buffer_manager_.get());
     if (media::ShouldUseCrosCameraService() &&
         !CameraHalDispatcherImpl::GetInstance()->IsStarted()) {
-      CameraHalDispatcherImpl::GetInstance()->Start(
-          base::DoNothing::Repeatedly<mojo::PendingReceiver<
-              chromeos_camera::mojom::MjpegDecodeAccelerator>>(),
-          base::DoNothing::Repeatedly<mojo::PendingReceiver<
-              chromeos_camera::mojom::JpegEncodeAccelerator>>());
+      CameraHalDispatcherImpl::GetInstance()->Start(base::DoNothing(),
+                                                    base::DoNothing());
     }
 #endif
     video_capture_device_factory_ =

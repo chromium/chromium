@@ -159,8 +159,7 @@ class PendingGetPrintersRequests {
 // requests for an extension.
 class PendingGetCapabilityRequests {
  public:
-  static constexpr base::TimeDelta kGetCapabilityTimeout =
-      base::TimeDelta::FromSeconds(20);
+  static constexpr base::TimeDelta kGetCapabilityTimeout = base::Seconds(20);
 
   PendingGetCapabilityRequests();
   ~PendingGetCapabilityRequests();
@@ -405,7 +404,7 @@ int PendingGetCapabilityRequests::Add(
     PrinterProviderAPI::GetCapabilityCallback callback) {
   pending_requests_[++last_request_id_] = std::move(callback);
   // Abort the request after the timeout is exceeded.
-  base::ThreadPool::PostDelayedTask(
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PendingGetCapabilityRequests::Complete,
                      weak_factory_.GetWeakPtr(), last_request_id_,

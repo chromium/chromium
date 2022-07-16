@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_WTF_H_
 
 #include "base/threading/platform_thread.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace WTF {
@@ -41,7 +42,18 @@ WTF_EXPORT extern base::PlatformThreadId g_main_thread_identifier;
 // This function must be called exactly once from the main thread before using
 // anything else in WTF.
 WTF_EXPORT void Initialize();
+
+// thread_local variables can't be exported on Windows, so we use an extra
+// function call on component builds. Also, thread_local on Android is emulated
+// by the runtime lib; gettid(3) in bionic already caches tid in a TLS variable.
+#if defined(OS_ANDROID) || (defined(COMPONENT_BUILD) && defined(OS_WIN))
 WTF_EXPORT bool IsMainThread();
+#else
+WTF_EXPORT extern thread_local bool g_is_main_thread;
+inline bool IsMainThread() {
+  return g_is_main_thread;
+}
+#endif
 
 }  // namespace WTF
 

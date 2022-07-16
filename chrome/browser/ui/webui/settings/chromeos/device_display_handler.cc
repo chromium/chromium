@@ -24,12 +24,12 @@ DisplayHandler::~DisplayHandler() {
 }
 
 void DisplayHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "highlightDisplay",
       base::BindRepeating(&DisplayHandler::HandleHighlightDisplay,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "dragDisplayDelta",
       base::BindRepeating(&DisplayHandler::HandleDragDisplayDelta,
                           base::Unretained(this)));
@@ -38,11 +38,10 @@ void DisplayHandler::RegisterMessages() {
 void DisplayHandler::HandleHighlightDisplay(const base::ListValue* args) {
   AllowJavascript();
 
-  std::string display_id_str;
   int64_t display_id;
 
-  if (!args->GetString(0, &display_id_str) ||
-      !base::StringToInt64(display_id_str, &display_id)) {
+  if (args->GetList().empty() || !args->GetList()[0].is_string() ||
+      !base::StringToInt64(args->GetList()[0].GetString(), &display_id)) {
     cros_display_config_->HighlightDisplay(display::kInvalidDisplayId);
     return;
   }
@@ -51,7 +50,7 @@ void DisplayHandler::HandleHighlightDisplay(const base::ListValue* args) {
 }
 
 void DisplayHandler::HandleDragDisplayDelta(const base::ListValue* args) {
-  DCHECK_EQ(3U, args->GetSize());
+  DCHECK_EQ(3U, args->GetList().size());
   AllowJavascript();
 
   const auto& args_list = args->GetList();

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/components/proximity_auth/messenger.h"
@@ -31,6 +30,10 @@ class MessengerImpl : public Messenger,
   // The messenger begins observing messages as soon as it is constructed.
   explicit MessengerImpl(
       std::unique_ptr<chromeos::secure_channel::ClientChannel> channel);
+
+  MessengerImpl(const MessengerImpl&) = delete;
+  MessengerImpl& operator=(const MessengerImpl&) = delete;
+
   ~MessengerImpl() override;
 
   // Messenger:
@@ -102,8 +105,6 @@ class MessengerImpl : public Messenger,
   std::unique_ptr<PendingMessage> pending_message_;
 
   base::WeakPtrFactory<MessengerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MessengerImpl);
 };
 
 }  // namespace proximity_auth

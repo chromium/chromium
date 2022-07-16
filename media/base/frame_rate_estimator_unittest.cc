@@ -26,9 +26,7 @@ class FrameRateEstimatorTest : public testing::TestWithParam<FpsPair> {
   int low_fps() const { return std::get<0>(GetParam()); }
   int high_fps() const { return std::get<1>(GetParam()); }
 
-  base::TimeDelta duration(int fps) {
-    return base::TimeDelta::FromSecondsD(1.0 / fps);
-  }
+  base::TimeDelta duration(int fps) { return base::Seconds(1.0 / fps); }
 
   FrameRateEstimator estimator_;
 };

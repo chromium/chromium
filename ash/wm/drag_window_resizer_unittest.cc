@@ -11,7 +11,6 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wm/cursor_manager_test_api.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_controller.h"
 #include "ash/wm/window_positioning_utils.h"
@@ -23,6 +22,7 @@
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
@@ -34,6 +34,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -45,6 +46,10 @@ const int kRootHeight = 600;
 class TestLayerDelegate : public ui::LayerDelegate {
  public:
   TestLayerDelegate() = default;
+
+  TestLayerDelegate(const TestLayerDelegate&) = delete;
+  TestLayerDelegate& operator=(const TestLayerDelegate&) = delete;
+
   ~TestLayerDelegate() override = default;
 
   int paint_count() const { return paint_count_; }
@@ -58,8 +63,6 @@ class TestLayerDelegate : public ui::LayerDelegate {
                                   float new_device_scale_factor) override {}
 
   int paint_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLayerDelegate);
 };
 
 }  // namespace
@@ -67,6 +70,10 @@ class TestLayerDelegate : public ui::LayerDelegate {
 class DragWindowResizerTest : public AshTestBase {
  public:
   DragWindowResizerTest() : transient_child_(nullptr) {}
+
+  DragWindowResizerTest(const DragWindowResizerTest&) = delete;
+  DragWindowResizerTest& operator=(const DragWindowResizerTest&) = delete;
+
   ~DragWindowResizerTest() override = default;
 
   void SetUp() override {
@@ -162,9 +169,6 @@ class DragWindowResizerTest : public AshTestBase {
   std::unique_ptr<aura::Window> system_modal_window_;
   aura::Window* transient_child_;
   std::unique_ptr<aura::Window> transient_parent_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DragWindowResizerTest);
 };
 
 // Verifies a window can be moved from the primary display to another.
@@ -709,7 +713,7 @@ TEST_F(DragWindowResizerTest, WarpMousePointer) {
 TEST_F(DragWindowResizerTest, CursorDeviceScaleFactor) {
   // The secondary display is logically on the right, but on the system (e.g. X)
   // layer, it's below the primary one. See UpdateDisplay() in ash_test_base.cc.
-  UpdateDisplay("400x400,800x800*2");
+  UpdateDisplay("600x400,1000x800*2");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   ASSERT_EQ(2U, root_windows.size());
   const display::Display display0 =
@@ -717,7 +721,7 @@ TEST_F(DragWindowResizerTest, CursorDeviceScaleFactor) {
   const display::Display display1 =
       display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]);
 
-  CursorManagerTestApi cursor_test_api(Shell::Get()->cursor_manager());
+  auto* cursor_manager = Shell::Get()->cursor_manager();
   // Move window from the root window with 1.0 device scale factor to the root
   // window with 2.0 device scale factor.
   {
@@ -726,16 +730,16 @@ TEST_F(DragWindowResizerTest, CursorDeviceScaleFactor) {
     // Grab (0, 0) of the window.
     std::unique_ptr<WindowResizer> resizer(
         CreateDragWindowResizer(window_.get(), gfx::Point(), HTCAPTION));
-    EXPECT_EQ(1.0f, cursor_test_api.GetCurrentCursor().image_scale_factor());
+    EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
     ASSERT_TRUE(resizer.get());
     // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
     // without having to call |CursorManager::SetDisplay|.
-    Shell::Get()->cursor_manager()->SetDisplay(display1);
+    cursor_manager->SetDisplay(display1);
     resizer->Drag(CalculateDragPoint(*resizer, 399, 200), 0);
     TestIfMouseWarpsAt(gfx::Point(399, 200));
-    EXPECT_EQ(2.0f, cursor_test_api.GetCurrentCursor().image_scale_factor());
+    EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
     resizer->CompleteDrag();
-    EXPECT_EQ(2.0f, cursor_test_api.GetCurrentCursor().image_scale_factor());
+    EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
   }
 
   // Move window from the root window with 2.0 device scale factor to the root
@@ -746,16 +750,16 @@ TEST_F(DragWindowResizerTest, CursorDeviceScaleFactor) {
     // Grab (0, 0) of the window.
     std::unique_ptr<WindowResizer> resizer(
         CreateDragWindowResizer(window_.get(), gfx::Point(), HTCAPTION));
-    EXPECT_EQ(2.0f, cursor_test_api.GetCurrentCursor().image_scale_factor());
+    EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
     ASSERT_TRUE(resizer.get());
     // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
     // without having to call |CursorManager::SetDisplay|.
-    Shell::Get()->cursor_manager()->SetDisplay(display0);
+    cursor_manager->SetDisplay(display0);
     resizer->Drag(CalculateDragPoint(*resizer, -200, 200), 0);
     TestIfMouseWarpsAt(gfx::Point(400, 200));
-    EXPECT_EQ(1.0f, cursor_test_api.GetCurrentCursor().image_scale_factor());
+    EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
     resizer->CompleteDrag();
-    EXPECT_EQ(1.0f, cursor_test_api.GetCurrentCursor().image_scale_factor());
+    EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
   }
 }
 
@@ -763,7 +767,7 @@ TEST_F(DragWindowResizerTest, CursorDeviceScaleFactor) {
 TEST_F(DragWindowResizerTest, MoveWindowAcrossDisplays) {
   // The secondary display is logically on the right, but on the system (e.g. X)
   // layer, it's below the primary one. See UpdateDisplay() in ash_test_base.cc.
-  UpdateDisplay("400x400,400x400");
+  UpdateDisplay("400x300,400x300");
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   ASSERT_EQ(2U, root_windows.size());

@@ -5,14 +5,13 @@
 #include "content/public/browser/audio_service.h"
 
 #include "base/command_line.h"
-#include "base/deferred_sequenced_task_runner.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/browser_main_loop.h"
-#include "content/browser/service_sandbox_type.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -24,6 +23,7 @@
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/cpp/audio_system_to_service_adapter.h"
+#include "services/audio/public/mojom/audio_service.mojom.h"
 #include "services/audio/service.h"
 #include "services/audio/service_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -38,7 +38,7 @@ absl::optional<base::TimeDelta> GetFieldTrialIdleTimeout() {
   int timeout_s = 0;
   if (!base::StringToInt(timeout_str, &timeout_s))
     return absl::nullopt;
-  return base::TimeDelta::FromSeconds(timeout_s);
+  return base::Seconds(timeout_s);
 }
 
 absl::optional<base::TimeDelta> GetCommandLineIdleTimeout() {
@@ -49,14 +49,14 @@ absl::optional<base::TimeDelta> GetCommandLineIdleTimeout() {
   int timeout_ms = 0;
   if (!base::StringToInt(timeout_str, &timeout_ms))
     return absl::nullopt;
-  return base::TimeDelta::FromMilliseconds(timeout_ms);
+  return base::Milliseconds(timeout_ms);
 }
 
 absl::optional<base::TimeDelta> GetAudioServiceProcessIdleTimeout() {
   absl::optional<base::TimeDelta> timeout = GetCommandLineIdleTimeout();
   if (!timeout)
     timeout = GetFieldTrialIdleTimeout();
-  if (timeout && *timeout < base::TimeDelta())
+  if (timeout && timeout->is_negative())
     return absl::nullopt;
   return timeout;
 }
@@ -171,7 +171,7 @@ audio::mojom::AudioService& GetAudioService() {
 }
 
 std::unique_ptr<media::AudioSystem> CreateAudioSystemForAudioService() {
-  constexpr auto kServiceDisconnectTimeout = base::TimeDelta::FromSeconds(1);
+  constexpr auto kServiceDisconnectTimeout = base::Seconds(1);
   return std::make_unique<audio::AudioSystemToServiceAdapter>(
       base::BindRepeating(&BindSystemInfoFromAnySequence),
       kServiceDisconnectTimeout);

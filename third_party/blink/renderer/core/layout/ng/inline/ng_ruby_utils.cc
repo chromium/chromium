@@ -232,9 +232,9 @@ LayoutUnit CommitPendingEndOverhang(NGLineInfo* line_info) {
 NGAnnotationMetrics ComputeAnnotationOverflow(
     const NGLogicalLineItems& logical_line,
     const FontHeight& line_box_metrics,
-    LayoutUnit line_over,
     const ComputedStyle& line_style) {
   // Min/max position of content and annotations, ignoring line-height.
+  const LayoutUnit line_over;
   LayoutUnit content_over = line_over + line_box_metrics.ascent;
   LayoutUnit content_under = content_over;
 
@@ -249,8 +249,8 @@ NGAnnotationMetrics ComputeAnnotationOverflow(
       continue;
     if (item.IsControl())
       continue;
-    LayoutUnit item_over = item.BlockOffset();
-    LayoutUnit item_under = item.BlockEndOffset();
+    LayoutUnit item_over = line_box_metrics.ascent + item.BlockOffset();
+    LayoutUnit item_under = line_box_metrics.ascent + item.BlockEndOffset();
     if (item.shape_result) {
       if (const auto* style = item.Style()) {
         std::tie(item_over, item_under) = AdjustTextOverUnderOffsetsForEmHeight(

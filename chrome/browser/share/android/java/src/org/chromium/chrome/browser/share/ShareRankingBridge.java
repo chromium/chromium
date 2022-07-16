@@ -17,15 +17,15 @@ import java.util.List;
  */
 public class ShareRankingBridge {
     public static void rank(Profile profile, String type, List<String> available, int fold,
-            boolean persist, Callback<List<String>> onDone) {
+            int length, boolean persist, Callback<List<String>> onDone) {
         assert profile != null;
-        ShareRankingBridgeJni.get().rank(profile, type, available.toArray(), fold, persist,
+        ShareRankingBridgeJni.get().rank(profile, type, available.toArray(), fold, length, persist,
                 result -> { onDone.onResult(Arrays.asList(result)); });
     }
 
     @NativeMethods
     public interface Natives {
-        void rank(Profile profile, String type, Object[] available, int fold, boolean persist,
-                Callback<String[]> onDone);
+        void rank(Profile profile, String type, Object[] available, int fold, int length,
+                boolean persist, Callback<String[]> onDone);
     }
 }

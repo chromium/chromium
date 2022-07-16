@@ -12,7 +12,6 @@
 namespace views {
 class Button;
 class View;
-struct InstallableInkDropConfig;
 }  // namespace views
 
 constexpr float kToolbarInkDropVisibleOpacity = 0.06f;
@@ -26,9 +25,6 @@ gfx::Insets GetToolbarInkDropInsets(const views::View* host_view);
 // Returns the ink drop base color that should be used by all toolbar buttons.
 // This is only needed if you can't use ConfigureInkDropForToolbar().
 SkColor GetToolbarInkDropBaseColor(const views::View* host_view);
-
-views::InstallableInkDropConfig GetToolbarInstallableInkDropConfig(
-    const views::View* host_view);
 
 void ConfigureInkDropForToolbar(views::Button* host);
 

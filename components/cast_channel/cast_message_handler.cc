@@ -21,7 +21,7 @@ namespace cast_channel {
 namespace {
 
 // The max launch timeout amount for session launch requests.
-constexpr base::TimeDelta kLaunchMaxTimeout = base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kLaunchMaxTimeout = base::Minutes(2);
 
 // The max size of Cast Message is 64KB.
 constexpr int kMaxCastMessagePayload = 64 * 1024;

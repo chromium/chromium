@@ -246,6 +246,10 @@ class BufferGraphicsEventMapper {
                                     BufferEventType::kChromeOSSwapDone));
   }
 
+  BufferGraphicsEventMapper(const BufferGraphicsEventMapper&) = delete;
+  BufferGraphicsEventMapper& operator=(const BufferGraphicsEventMapper&) =
+      delete;
+
   ~BufferGraphicsEventMapper() = default;
 
   void Produce(const ArcTracingEvent& event,
@@ -259,8 +263,6 @@ class BufferGraphicsEventMapper {
 
  private:
   MappingRules rules_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferGraphicsEventMapper);
 };
 
 BufferGraphicsEventMapper& GetEventMapper() {
@@ -450,6 +452,10 @@ class ExoInputEvent {
                 uint64_t input_timestamp,
                 ui::EventType type)
       : event_(event), input_timestamp_(input_timestamp), type_(type) {}
+
+  ExoInputEvent(const ExoInputEvent&) = delete;
+  ExoInputEvent& operator=(const ExoInputEvent&) = delete;
+
   ~ExoInputEvent() = default;
 
   // Parses |event| and extracts information for Wayland input event. Returns
@@ -481,8 +487,6 @@ class ExoInputEvent {
   const uint64_t input_timestamp_;
   // Type of the event;
   const ui::EventType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExoInputEvent);
 };
 
 bool SortExoByInputTimestampPred(const std::unique_ptr<ExoInputEvent>& a,
@@ -510,6 +514,9 @@ class AndroidInputEvent {
         input_timestamps_(std::move(input_timestamps)),
         source_(source),
         sequence_id_(sequence_id) {}
+
+  AndroidInputEvent(const AndroidInputEvent&) = delete;
+  AndroidInputEvent& operator=(const AndroidInputEvent&) = delete;
 
   ~AndroidInputEvent() = default;
 
@@ -595,8 +602,6 @@ class AndroidInputEvent {
 
   const Source source_;
   const int sequence_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidInputEvent);
 };
 
 // Maps Android sources to possible input types from Chrome.
@@ -1276,7 +1281,7 @@ void AddJanks(ArcTracingGraphicsModel::EventsContainer* result,
 
   for (const auto& it : pulse_events) {
     jank_detector.OnSample(base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(it.timestamp)));
+        base::Microseconds(it.timestamp)));
     if (jank_detector.stage() == ArcGraphicsJankDetector::Stage::kActive)
       break;
   }
@@ -1288,7 +1293,7 @@ void AddJanks(ArcTracingGraphicsModel::EventsContainer* result,
   jank_detector.SetPeriodFixed(jank_detector.period());
   for (const auto& it : pulse_events) {
     jank_detector.OnSample(base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(it.timestamp)));
+        base::Microseconds(it.timestamp)));
   }
 }
 

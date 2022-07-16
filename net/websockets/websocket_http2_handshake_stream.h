@@ -56,6 +56,10 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
       WebSocketStreamRequestAPI* request,
       std::vector<std::string> dns_aliases);
 
+  WebSocketHttp2HandshakeStream(const WebSocketHttp2HandshakeStream&) = delete;
+  WebSocketHttp2HandshakeStream& operator=(
+      const WebSocketHttp2HandshakeStream&) = delete;
+
   ~WebSocketHttp2HandshakeStream() override;
 
   // HttpStream methods.
@@ -196,8 +200,6 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   std::vector<std::string> dns_aliases_;
 
   base::WeakPtrFactory<WebSocketHttp2HandshakeStream> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketHttp2HandshakeStream);
 };
 
 }  // namespace net

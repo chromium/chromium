@@ -86,6 +86,10 @@ class HeapProfileTable {
   // interface ---------------------------
 
   HeapProfileTable(Allocator alloc, DeAllocator dealloc, bool profile_mmap);
+
+  HeapProfileTable(const HeapProfileTable&) = delete;
+  HeapProfileTable& operator=(const HeapProfileTable&) = delete;
+
   ~HeapProfileTable();
 
   // Collect the stack trace for the function that asked to do the
@@ -231,11 +235,12 @@ class HeapProfileTable {
           bufsize(bufsize_arg) {
     }
 
+    BufferArgs(const BufferArgs&) = delete;
+    BufferArgs& operator=(const BufferArgs&) = delete;
+
     char* buf;
     int buflen;
     int bufsize;
-
-    DISALLOW_COPY_AND_ASSIGN(BufferArgs);
   };
 
   // Arguments that need to be passed DumpNonLiveIterator callback below.
@@ -340,12 +345,13 @@ class HeapProfileTable {
 
   // Map of all currently allocated objects and mapped regions we know about.
   AllocationMap* address_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeapProfileTable);
 };
 
 class HeapProfileTable::Snapshot {
  public:
+  Snapshot(const Snapshot&) = delete;
+  Snapshot& operator=(const Snapshot&) = delete;
+
   const Stats& total() const { return total_; }
 
   // Report anything in this snapshot as a leak.
@@ -392,8 +398,6 @@ class HeapProfileTable::Snapshot {
   struct ReportState;
   static void ReportCallback(const void* ptr, AllocValue* v, ReportState*);
   static void ReportObject(const void* ptr, AllocValue* v, char*);
-
-  DISALLOW_COPY_AND_ASSIGN(Snapshot);
 };
 
 #endif  // BASE_HEAP_PROFILE_TABLE_H_

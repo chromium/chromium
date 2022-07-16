@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -16,14 +15,10 @@
 
 - (instancetype)init {
   if ((self = [super init])) {
-    if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
-      _tableViewBackgroundColor =
-          [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-      _cellBackgroundColor =
-          [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-    } else {
-      _tableViewBackgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-    }
+    _tableViewBackgroundColor =
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+    _cellBackgroundColor =
+        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   }
   return self;
 }

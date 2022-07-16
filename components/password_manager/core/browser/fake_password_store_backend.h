@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 
 namespace password_manager {
@@ -28,13 +29,16 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
 
  private:
   // Implements PasswordStoreBackend interface.
+  base::WeakPtr<PasswordStoreBackend> GetWeakPtr() override;
   void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
+  void Shutdown(base::OnceClosure shutdown_completed) override;
   void GetAllLoginsAsync(LoginsReply callback) override;
   void GetAutofillableLoginsAsync(LoginsReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsReply callback,
+      bool include_psl,
       const std::vector<PasswordFormDigest>& forms) override;
   void AddLoginAsync(const PasswordForm& form,
                      PasswordStoreChangeListReply callback) override;
@@ -52,15 +56,29 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
       base::Time delete_begin,
       base::Time delete_end,
       PasswordStoreChangeListReply callback) override;
+  void DisableAutoSignInForOriginsAsync(
+      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+      base::OnceClosure completion) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
+  FieldInfoStore* GetFieldInfoStore() override;
+  std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+  CreateSyncControllerDelegate() override;
+  void GetSyncStatus(base::OnceCallback<void(bool)> callback) override;
 
+  LoginsResult GetAllLoginsInternal();
+  LoginsResult GetAutofillableLoginsInternal();
   LoginsResult FillMatchingLoginsInternal(
-      const std::vector<PasswordFormDigest>& forms);
-  LoginsResult FillMatchingLoginsHelper(const PasswordFormDigest& form);
+      const std::vector<PasswordFormDigest>& forms,
+      bool include_psl);
+  LoginsResult FillMatchingLoginsHelper(const PasswordFormDigest& form,
+                                        bool include_psl);
   PasswordStoreChangeList AddLoginInternal(const PasswordForm& form);
   PasswordStoreChangeList UpdateLoginInternal(const PasswordForm& form);
+  void DisableAutoSignInForOriginsInternal(
+      const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
 
   PasswordMap stored_passwords_;
+  base::WeakPtrFactory<FakePasswordStoreBackend> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

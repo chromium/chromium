@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
@@ -570,6 +569,6 @@ void RecentTabHelper::CancelInFlightSnapshots() {
   last_n_ongoing_snapshot_info_.reset();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(RecentTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(RecentTabHelper);
 
 }  // namespace offline_pages

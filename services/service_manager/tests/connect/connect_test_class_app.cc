@@ -38,6 +38,9 @@ class ConnectTestClassApp : public Service,
                             base::Unretained(this)));
   }
 
+  ConnectTestClassApp(const ConnectTestClassApp&) = delete;
+  ConnectTestClassApp& operator=(const ConnectTestClassApp&) = delete;
+
   ~ConnectTestClassApp() override = default;
 
  private:
@@ -81,8 +84,6 @@ class ConnectTestClassApp : public Service,
   BinderRegistry registry_;
   mojo::ReceiverSet<test::mojom::ConnectTestService> receivers_;
   mojo::ReceiverSet<test::mojom::ClassInterface> class_interface_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectTestClassApp);
 };
 
 }  // namespace service_manager

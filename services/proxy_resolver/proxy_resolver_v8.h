@@ -57,6 +57,9 @@ class ProxyResolverV8 {
                     JSBindings* bindings,
                     std::unique_ptr<ProxyResolverV8>* resolver);
 
+  ProxyResolverV8(const ProxyResolverV8&) = delete;
+  ProxyResolverV8& operator=(const ProxyResolverV8&) = delete;
+
   ~ProxyResolverV8();
 
   int GetProxyForURL(const GURL& url,
@@ -75,8 +78,6 @@ class ProxyResolverV8 {
   explicit ProxyResolverV8(std::unique_ptr<Context> context);
 
   std::unique_ptr<Context> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverV8);
 };
 
 }  // namespace proxy_resolver

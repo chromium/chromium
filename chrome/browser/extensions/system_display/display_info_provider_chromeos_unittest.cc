@@ -18,7 +18,6 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/system_display/display_info_provider_chromeos.h"
@@ -51,6 +50,11 @@ void ErrorCallback(std::string* result,
 class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
  public:
   DisplayInfoProviderChromeosTest() {}
+
+  DisplayInfoProviderChromeosTest(const DisplayInfoProviderChromeosTest&) =
+      delete;
+  DisplayInfoProviderChromeosTest& operator=(
+      const DisplayInfoProviderChromeosTest&) = delete;
 
   ~DisplayInfoProviderChromeosTest() override {}
 
@@ -187,8 +191,6 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
 
  private:
   std::unique_ptr<ash::CrosDisplayConfig> cros_display_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayInfoProviderChromeosTest);
 };
 
 TEST_F(DisplayInfoProviderChromeosTest, GetBasic) {
@@ -1574,6 +1576,11 @@ class DisplayInfoProviderChromeosTouchviewTest
  public:
   DisplayInfoProviderChromeosTouchviewTest() {}
 
+  DisplayInfoProviderChromeosTouchviewTest(
+      const DisplayInfoProviderChromeosTouchviewTest&) = delete;
+  DisplayInfoProviderChromeosTouchviewTest& operator=(
+      const DisplayInfoProviderChromeosTouchviewTest&) = delete;
+
   ~DisplayInfoProviderChromeosTouchviewTest() override {}
 
   void SetUp() override {
@@ -1583,9 +1590,6 @@ class DisplayInfoProviderChromeosTouchviewTest
         ash::switches::kAshEnableTabletMode);
     DisplayInfoProviderChromeosTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayInfoProviderChromeosTouchviewTest);
 };
 
 TEST_F(DisplayInfoProviderChromeosTouchviewTest, GetTabletMode) {

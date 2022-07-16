@@ -66,6 +66,9 @@ class ServiceVideoCaptureProvider::ServiceProcessObserver
     ServiceProcessHost::AddObserver(this);
   }
 
+  ServiceProcessObserver(const ServiceProcessObserver&) = delete;
+  ServiceProcessObserver& operator=(const ServiceProcessObserver&) = delete;
+
   ~ServiceProcessObserver() override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     ServiceProcessHost::RemoveObserver(this);
@@ -92,8 +95,6 @@ class ServiceVideoCaptureProvider::ServiceProcessObserver
   const scoped_refptr<base::TaskRunner> io_task_runner_;
   const base::RepeatingClosure start_callback_;
   const base::RepeatingClosure stop_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProcessObserver);
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

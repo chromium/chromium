@@ -41,6 +41,11 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
  public:
   DesktopDragDropClientOzone(aura::Window* root_window,
                              ui::WmDragHandler* drag_handler);
+
+  DesktopDragDropClientOzone(const DesktopDragDropClientOzone&) = delete;
+  DesktopDragDropClientOzone& operator=(const DesktopDragDropClientOzone&) =
+      delete;
+
   ~DesktopDragDropClientOzone() override;
 
  private:
@@ -102,6 +107,7 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   void OnDragLocationChanged(const gfx::Point& screen_point_px) override;
   void OnDragOperationChanged(ui::mojom::DragOperation operation) override;
   void OnDragFinished(ui::mojom::DragOperation operation) override;
+  absl::optional<gfx::AcceleratedWidget> GetDragWidget() override;
 
   // Returns a DropTargetEvent to be passed to the DragDropDelegate.
   // Updates the delegate if needed, which in its turn calls their
@@ -148,8 +154,6 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   std::unique_ptr<DragContext> drag_context_;
 
   base::WeakPtrFactory<DesktopDragDropClientOzone> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopDragDropClientOzone);
 };
 
 }  // namespace views

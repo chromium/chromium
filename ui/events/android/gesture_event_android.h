@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_ANDROID_GESTURE_EVENT_ANDROID_H_
 #define UI_EVENTS_ANDROID_GESTURE_EVENT_ANDROID_H_
 
-#include "base/macros.h"
 #include "ui/events/events_export.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -29,6 +28,9 @@ class EVENTS_EXPORT GestureEventAndroid {
                       bool target_viewport,
                       bool synthetic_scroll,
                       bool prevent_boosting);
+
+  GestureEventAndroid(const GestureEventAndroid&) = delete;
+  GestureEventAndroid& operator=(const GestureEventAndroid&) = delete;
 
   ~GestureEventAndroid();
 
@@ -67,8 +69,6 @@ class EVENTS_EXPORT GestureEventAndroid {
   // Used by fling cancel. If true, this gesture will never attempt to boost an
   // existing fling. It will immediately cancel an existing fling.
   bool prevent_boosting_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureEventAndroid);
 };
 
 }  // namespace ui

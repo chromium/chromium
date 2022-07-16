@@ -46,11 +46,11 @@ class KeystoreServiceLacrosBrowserTest : public InProcessBrowserTest {
 // Tests that providing an incorrectly formatted user keystore challenge returns
 // failure.
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, WrongFormattingUser) {
-  crosapi::mojom::KeystoreStringResultPtr result;
+  crosapi::mojom::DEPRECATED_KeystoreStringResultPtr result;
   std::string challenge = "asdf";
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
-  async_waiter.ChallengeAttestationOnlyKeystore(
+  async_waiter.DEPRECATED_ChallengeAttestationOnlyKeystore(
       challenge, crosapi::mojom::KeystoreType::kUser, /*migrate=*/false,
       &result);
   ASSERT_TRUE(result->is_error_message());
@@ -62,10 +62,11 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, WrongFormattingUser) {
 
 // Tests that get certificates works.
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GetCertificatesEmpty) {
-  crosapi::mojom::GetCertificatesResultPtr result;
+  crosapi::mojom::DEPRECATED_GetCertificatesResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
-  async_waiter.GetCertificates(crosapi::mojom::KeystoreType::kUser, &result);
+  async_waiter.DEPRECATED_GetCertificates(crosapi::mojom::KeystoreType::kUser,
+                                          &result);
   ASSERT_TRUE(result->is_certificates());
   EXPECT_EQ(0u, result->get_certificates().size());
 }
@@ -141,12 +142,13 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, CertificateBadFormat) {
   dummy_certificate.push_back(15);
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
-  async_waiter.AddCertificate(crosapi::mojom::KeystoreType::kUser,
-                              std::move(dummy_certificate), &result);
+  async_waiter.DEPRECATED_AddCertificate(crosapi::mojom::KeystoreType::kUser,
+                                         std::move(dummy_certificate), &result);
   EXPECT_EQ(result, expected_error);
 
   result = "";
-  async_waiter.RemoveCertificate(crosapi::mojom::KeystoreType::kUser,
-                                 std::move(dummy_certificate), &result);
+  async_waiter.DEPRECATED_RemoveCertificate(crosapi::mojom::KeystoreType::kUser,
+                                            std::move(dummy_certificate),
+                                            &result);
   EXPECT_EQ(result, expected_error);
 }

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PERMISSION_TOGGLE_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PERMISSION_TOGGLE_ROW_VIEW_H_
 
-#include "chrome/browser/ui/views/page_info/permission_selector_row_observer.h"
+#include "chrome/browser/ui/views/page_info/permission_toggle_row_view_observer.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/views/view.h"
 
@@ -36,7 +36,7 @@ class PermissionToggleRowView : public views::View {
 
   ~PermissionToggleRowView() override;
 
-  void AddObserver(PermissionSelectorRowObserver* observer);
+  void AddObserver(PermissionToggleRowViewObserver* observer);
   void PermissionChanged();
   void ResetPermission();
 
@@ -58,7 +58,7 @@ class PermissionToggleRowView : public views::View {
   ChromePageInfoUiDelegate* delegate_ = nullptr;
   PageInfoNavigationHandler* navigation_handler_ = nullptr;
 
-  base::ObserverList<PermissionSelectorRowObserver, false>::Unchecked
+  base::ObserverList<PermissionToggleRowViewObserver, false>::Unchecked
       observer_list_;
 };
 

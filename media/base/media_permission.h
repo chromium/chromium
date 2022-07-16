@@ -6,7 +6,6 @@
 #define MEDIA_BASE_MEDIA_PERMISSION_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -23,6 +22,10 @@ class MEDIA_EXPORT MediaPermission {
   };
 
   MediaPermission();
+
+  MediaPermission(const MediaPermission&) = delete;
+  MediaPermission& operator=(const MediaPermission&) = delete;
+
   virtual ~MediaPermission();
 
   // Checks whether |type| is permitted without triggering user interaction
@@ -40,9 +43,6 @@ class MEDIA_EXPORT MediaPermission {
   // the use of Clear Key key systems, which is always allowed as required by
   // the spec.
   virtual bool IsEncryptedMediaEnabled() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaPermission);
 };
 
 }  // namespace media

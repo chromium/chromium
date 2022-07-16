@@ -30,6 +30,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) API_AVAILABLE(macos(10.12.2)) Keychain {
  public:
   static Keychain& GetInstance();
 
+  Keychain(const Keychain&) = delete;
+  Keychain& operator=(const Keychain&) = delete;
+
   // KeyCreateRandomKey wraps the |SecKeyCreateRandomKey| function.
   virtual base::ScopedCFTypeRef<SecKeyRef> KeyCreateRandomKey(
       CFDictionaryRef params,
@@ -61,8 +64,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) API_AVAILABLE(macos(10.12.2)) Keychain {
   // override by calling |ClearInstanceOverride| before deleting it.
   static void SetInstanceOverride(Keychain* keychain);
   static void ClearInstanceOverride();
-
-  DISALLOW_COPY_AND_ASSIGN(Keychain);
 };
 }  // namespace mac
 }  // namespace fido

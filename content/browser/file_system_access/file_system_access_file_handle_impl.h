@@ -6,12 +6,14 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FILE_HANDLE_IMPL_H_
 
 #include "base/files/file.h"
+#include "base/files/file_error_or.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 
 namespace content {
@@ -46,6 +48,12 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   void CreateFileWriter(bool keep_existing_data,
                         bool auto_close,
                         CreateFileWriterCallback callback) override;
+  void Move(mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+                destination_directory,
+            const std::string& new_entry_name,
+            MoveCallback callback) override;
+  void Rename(const std::string& new_entry_name,
+              RenameCallback callback) override;
   void Remove(RemoveCallback callback) override;
   void OpenAccessHandle(OpenAccessHandleCallback callback) override;
   void IsSameEntry(
@@ -65,42 +73,45 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   void CreateFileWriterImpl(bool keep_existing_data,
                             bool auto_close,
                             CreateFileWriterCallback callback);
-  void CreateSwapFile(int count,
-                      bool keep_existing_data,
-                      bool auto_close,
-                      CreateFileWriterCallback callback);
-  // |swap_file_system| is set to the isolated file system the swap url was
-  // created in (if any) as that file system might be different than the file
-  // system |this| was created from.
+  void DidVerifyHasWritePermissions(bool keep_existing_data,
+                                    bool auto_close,
+                                    CreateFileWriterCallback callback,
+                                    bool can_write);
+  void CreateSwapFile(
+      int count,
+      bool keep_existing_data,
+      bool auto_close,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>,
+      CreateFileWriterCallback callback);
   void DidCreateSwapFile(
       int count,
       const storage::FileSystemURL& swap_url,
-      storage::IsolatedContext::ScopedFSHandle swap_file_system,
       bool keep_existing_data,
       bool auto_close,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       CreateFileWriterCallback callback,
       base::File::Error result);
   void DidCopySwapFile(
       const storage::FileSystemURL& swap_url,
-      storage::IsolatedContext::ScopedFSHandle swap_file_system,
       bool auto_close,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       CreateFileWriterCallback callback,
       base::File::Error result);
   void DoOpenIncognitoFile(
-      mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
-          access_handle_host_remote,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       OpenAccessHandleCallback callback);
   void DoOpenFile(
-      mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
-          access_handle_host_remote,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       OpenAccessHandleCallback callback);
-
-  void DidOpenFile(
+  void DoGetLengthAfterOpenFile(
       OpenAccessHandleCallback callback,
-      mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
-          access_handle_host_remote,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       base::File file,
       base::OnceClosure on_close_callback);
+  void DidOpenFileAndGetLength(
+      OpenAccessHandleCallback callback,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+      std::pair<base::File, base::FileErrorOr<int>> file_and_length);
 
   void IsSameEntryImpl(IsSameEntryCallback callback,
                        FileSystemAccessTransferTokenImpl* other);

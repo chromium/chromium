@@ -31,14 +31,17 @@ class WilcoDtcSupportdManagerDelegateImpl final
     : public WilcoDtcSupportdManager::Delegate {
  public:
   WilcoDtcSupportdManagerDelegateImpl();
+
+  WilcoDtcSupportdManagerDelegateImpl(
+      const WilcoDtcSupportdManagerDelegateImpl&) = delete;
+  WilcoDtcSupportdManagerDelegateImpl& operator=(
+      const WilcoDtcSupportdManagerDelegateImpl&) = delete;
+
   ~WilcoDtcSupportdManagerDelegateImpl() override;
 
   // Delegate overrides:
   std::unique_ptr<WilcoDtcSupportdBridge> CreateWilcoDtcSupportdBridge()
       override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdManagerDelegateImpl);
 };
 
 WilcoDtcSupportdManagerDelegateImpl::WilcoDtcSupportdManagerDelegateImpl() =

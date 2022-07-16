@@ -25,13 +25,14 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/default_style.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/cascading_property.h"
@@ -1180,7 +1181,7 @@ void Label::ApplyTextColors() const {
 }
 
 void Label::UpdateColorsFromTheme() {
-  ui::NativeTheme* theme = GetNativeTheme();
+  ui::ColorProvider* color_provider = GetColorProvider();
   if (!enabled_color_set_) {
     const absl::optional<SkColor> cascading_color =
         GetCascadingProperty(this, kCascadingLabelEnabledColor);
@@ -1188,16 +1189,15 @@ void Label::UpdateColorsFromTheme() {
         style::GetColor(*this, text_context_, text_style_));
   }
   if (!background_color_set_) {
-    background_color_ =
-        theme->GetSystemColor(ui::NativeTheme::kColorId_DialogBackground);
+    background_color_ = color_provider->GetColor(ui::kColorDialogBackground);
   }
   if (!selection_text_color_set_) {
-    requested_selection_text_color_ = theme->GetSystemColor(
-        ui::NativeTheme::kColorId_LabelTextSelectionColor);
+    requested_selection_text_color_ =
+        color_provider->GetColor(ui::kColorLabelSelectionForeground);
   }
   if (!selection_background_color_set_) {
-    selection_background_color_ = theme->GetSystemColor(
-        ui::NativeTheme::kColorId_LabelTextSelectionBackgroundFocused);
+    selection_background_color_ =
+        color_provider->GetColor(ui::kColorLabelSelectionBackground);
   }
   RecalculateColors();
 }

@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -62,6 +61,9 @@ class MenuManagerTest : public testing::Test {
         prefs_(base::ThreadTaskRunnerHandle::Get()),
         next_id_(1) {}
 
+  MenuManagerTest(const MenuManagerTest&) = delete;
+  MenuManagerTest& operator=(const MenuManagerTest&) = delete;
+
   void TearDown() override {
     prefs_.pref_service()->CommitPendingWrite();
     base::RunLoop().RunUntilIdle();
@@ -107,9 +109,6 @@ class MenuManagerTest : public testing::Test {
   ExtensionList extensions_;
   TestExtensionPrefs prefs_;
   int next_id_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MenuManagerTest);
 };
 
 // Tests adding, getting, and removing items.
@@ -227,6 +226,11 @@ TEST_F(MenuManagerTest, ChildFunctions) {
 
 TEST_F(MenuManagerTest, PopulateFromValue) {
   const Extension* extension = AddExtension("test");
+  std::string error;
+
+  std::unique_ptr<MenuItem> invalid_item(MenuItem::Populate(
+      extension->id(), base::Value("needs a dictionary"), &error));
+  EXPECT_EQ(invalid_item.get(), nullptr);
 
   bool incognito = true;
   int type = MenuItem::CHECKBOX;
@@ -239,32 +243,32 @@ TEST_F(MenuManagerTest, PopulateFromValue) {
   contexts.Add(MenuItem::SELECTION);
   int contexts_value = contexts.ToValue()->GetInt();
 
-  auto document_url_patterns = std::make_unique<base::ListValue>();
-  document_url_patterns->AppendString("http://www.google.com/*");
-  document_url_patterns->AppendString("http://www.reddit.com/*");
+  base::Value document_url_patterns(base::Value::Type::LIST);
+  document_url_patterns.Append("http://www.google.com/*");
+  document_url_patterns.Append("http://www.reddit.com/*");
 
-  auto target_url_patterns = std::make_unique<base::ListValue>();
-  target_url_patterns->AppendString("http://www.yahoo.com/*");
-  target_url_patterns->AppendString("http://www.facebook.com/*");
+  base::Value target_url_patterns(base::Value::Type::LIST);
+  target_url_patterns.Append("http://www.yahoo.com/*");
+  target_url_patterns.Append("http://www.facebook.com/*");
 
-  base::DictionaryValue value;
-  value.SetBoolean("incognito", incognito);
-  value.SetString("string_uid", std::string());
-  value.SetInteger("type", type);
-  value.SetString("title", title);
-  value.SetBoolean("checked", checked);
-  value.SetBoolean("visible", visible);
-  value.SetBoolean("enabled", enabled);
-  value.SetInteger("contexts", contexts_value);
-  std::string error;
+  base::Value value(base::Value::Type::DICTIONARY);
+  value.SetBoolKey("incognito", incognito);
+  value.SetStringKey("string_uid", std::string());
+  value.SetIntKey("type", type);
+  value.SetStringKey("title", title);
+  value.SetBoolKey("checked", checked);
+  value.SetBoolKey("visible", visible);
+  value.SetBoolKey("enabled", enabled);
+  value.SetIntKey("contexts", contexts_value);
   URLPatternSet document_url_pattern_set;
-  document_url_pattern_set.Populate(*document_url_patterns,
-                                    URLPattern::SCHEME_ALL, true, &error);
-  value.Set("document_url_patterns", std::move(document_url_patterns));
+  document_url_pattern_set.Populate(
+      base::Value::AsListValue(document_url_patterns), URLPattern::SCHEME_ALL,
+      true, &error);
+  value.SetKey("document_url_patterns", std::move(document_url_patterns));
   URLPatternSet target_url_pattern_set;
-  target_url_pattern_set.Populate(*target_url_patterns, URLPattern::SCHEME_ALL,
-                                  true, &error);
-  value.Set("target_url_patterns", std::move(target_url_patterns));
+  target_url_pattern_set.Populate(base::Value::AsListValue(target_url_patterns),
+                                  URLPattern::SCHEME_ALL, true, &error);
+  value.SetKey("target_url_patterns", std::move(target_url_patterns));
 
   std::unique_ptr<MenuItem> item(
       MenuItem::Populate(extension->id(), value, &error));
@@ -484,6 +488,9 @@ class MockEventRouter : public EventRouter {
  public:
   explicit MockEventRouter(Profile* profile) : EventRouter(profile, NULL) {}
 
+  MockEventRouter(const MockEventRouter&) = delete;
+  MockEventRouter& operator=(const MockEventRouter&) = delete;
+
   MOCK_METHOD6(DispatchEventToExtensionMock,
                void(const std::string& extension_id,
                     const std::string& event_name,
@@ -501,9 +508,6 @@ class MockEventRouter : public EventRouter {
                                  event->event_url,
                                  event->user_gesture);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockEventRouter);
 };
 
 // MockEventRouter factory function
@@ -616,16 +620,13 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   manager_.ExecuteCommand(&profile, nullptr /* web_contents */,
                           nullptr /* render_frame_host */, params, id);
 
-  ASSERT_EQ(2u, list->GetSize());
+  ASSERT_EQ(2u, list->GetList().size());
 
   base::DictionaryValue* info;
   ASSERT_TRUE(list->GetDictionary(0, &info));
 
-  int tmp_id = 0;
-  ASSERT_TRUE(info->GetInteger("menuItemId", &tmp_id));
-  ASSERT_EQ(id.uid, tmp_id);
-  ASSERT_TRUE(info->GetInteger("parentMenuItemId", &tmp_id));
-  ASSERT_EQ(parent_id.uid, tmp_id);
+  ASSERT_EQ(id.uid, info->FindIntKey("menuItemId"));
+  ASSERT_EQ(parent_id.uid, info->FindIntKey("parentMenuItemId"));
 
   std::string tmp;
   ASSERT_TRUE(info->GetString("mediaType", &tmp));
@@ -639,9 +640,9 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   ASSERT_TRUE(info->GetString("selectionText", &tmp16));
   ASSERT_EQ(params.selection_text, tmp16);
 
-  bool bool_tmp = true;
-  ASSERT_TRUE(info->GetBoolean("editable", &bool_tmp));
-  ASSERT_EQ(params.is_editable, bool_tmp);
+  absl::optional<bool> editable = info->FindBoolKey("editable");
+  ASSERT_TRUE(editable.has_value());
+  ASSERT_EQ(params.is_editable, editable.value());
 
   delete list;
 }

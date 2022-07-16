@@ -78,3 +78,11 @@ TEST(SurfaceSetValuationTest, PerType) {
   EXPECT_FLOAT_EQ(2.25, valuation.Cost(IdentifiableSurfaceSet{
                             kSurface1, kSurface2, kSurface3}));
 }
+
+TEST(SurfaceSetValuationTest, ExpectedSurfaceCountForCost) {
+  EXPECT_EQ(0u, SurfaceSetValuation::ExpectedSurfaceCountForCost(0.0));
+  EXPECT_EQ(1u, SurfaceSetValuation::ExpectedSurfaceCountForCost(0.5));
+  EXPECT_EQ(1u, SurfaceSetValuation::ExpectedSurfaceCountForCost(1.0));
+  EXPECT_EQ(2u, SurfaceSetValuation::ExpectedSurfaceCountForCost(1.4));
+  EXPECT_EQ(3u, SurfaceSetValuation::ExpectedSurfaceCountForCost(2.1));
+}

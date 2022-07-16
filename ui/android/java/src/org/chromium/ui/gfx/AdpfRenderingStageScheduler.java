@@ -5,10 +5,10 @@
 package org.chromium.ui.gfx;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -30,7 +30,7 @@ class AdpfRenderingStageScheduler {
 
     static {
         boolean enabled = false;
-        if (BuildInfo.isAtLeastS()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             try {
                 Class hintManagerClazz = Class.forName("android.os.PerformanceHintManager");
                 sHintManagerCreateHintSession =

@@ -41,6 +41,9 @@ class WebViewRendererState {
     ~WebViewInfo();
   };
 
+  WebViewRendererState(const WebViewRendererState&) = delete;
+  WebViewRendererState& operator=(const WebViewRendererState&) = delete;
+
   static WebViewRendererState* GetInstance();
 
   // Looks up the information for the embedder WebView for a RenderViewHost,
@@ -104,8 +107,6 @@ class WebViewRendererState {
   mutable base::Lock web_view_info_map_lock_;
   WebViewPartitionIDMap web_view_partition_id_map_;
   mutable base::Lock web_view_partition_id_map_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewRendererState);
 };
 
 }  // namespace extensions

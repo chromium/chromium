@@ -24,8 +24,7 @@ base::StringPiece ToStringPiece(const uint8_t (&data)[N]) {
 
 TEST(EncodeValuesTest, EncodeTimeAsGeneralizedTime) {
   // Fri, 24 Jun 2016 17:04:54 GMT
-  base::Time time =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1466787894);
+  base::Time time = base::Time::UnixEpoch() + base::Seconds(1466787894);
   GeneralizedTime generalized_time;
   ASSERT_TRUE(EncodeTimeAsGeneralizedTime(time, &generalized_time));
   EXPECT_EQ(2016, generalized_time.year);
@@ -52,8 +51,7 @@ TEST(EncodeValuesTest, EncodeTimeFromBeforeWindowsEpoch) {
   constexpr int kDaysPerYear = 365;
   constexpr int kExtraLeapDaysOverThoseYears = 8;
   constexpr base::Time kStartOfYear1570 =
-      base::Time() -
-      base::TimeDelta::FromDays(kYearsBeforeWindowsEpoch * kDaysPerYear +
+      base::Time() - base::Days(kYearsBeforeWindowsEpoch * kDaysPerYear +
                                 kExtraLeapDaysOverThoseYears);
 
   GeneralizedTime generalized_time;
@@ -105,8 +103,7 @@ TEST(EncodeValuesTest, GeneralizedTimeToTime) {
   generalized_time.seconds = 54;
   base::Time time;
   ASSERT_TRUE(GeneralizedTimeToTime(generalized_time, &time));
-  EXPECT_EQ(base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1466787894),
-            time);
+  EXPECT_EQ(base::Time::UnixEpoch() + base::Seconds(1466787894), time);
 }
 
 TEST(EncodeValuesTest, GeneralizedTimeToTimeBeforeWindowsEpoch) {

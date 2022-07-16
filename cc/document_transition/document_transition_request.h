@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/callback.h"
 #include "cc/cc_export.h"
@@ -24,12 +25,15 @@ namespace cc {
 class CC_EXPORT DocumentTransitionRequest {
  public:
   using Effect = viz::CompositorFrameTransitionDirective::Effect;
+  using TransitionConfig =
+      viz::CompositorFrameTransitionDirective::TransitionConfig;
 
   // Creates a Type::kPrepare type of request.
   static std::unique_ptr<DocumentTransitionRequest> CreatePrepare(
       Effect effect,
       uint32_t document_tag,
-      uint32_t shared_element_count,
+      TransitionConfig root_config,
+      std::vector<TransitionConfig> shared_element_config,
       base::OnceClosure commit_callback);
 
   // Creates a Type::kSave type of request.
@@ -37,6 +41,14 @@ class CC_EXPORT DocumentTransitionRequest {
       uint32_t document_tag,
       uint32_t shared_element_count,
       base::OnceClosure commit_callback);
+
+  // Creates a Type::kAnimateRenderer type of request.
+  static std::unique_ptr<DocumentTransitionRequest> CreateAnimateRenderer(
+      uint32_t document_tag);
+
+  // Creates a Type::kRelease type of request.
+  static std::unique_ptr<DocumentTransitionRequest> CreateRelease(
+      uint32_t document_tag);
 
   DocumentTransitionRequest(DocumentTransitionRequest&) = delete;
   ~DocumentTransitionRequest();
@@ -51,12 +63,18 @@ class CC_EXPORT DocumentTransitionRequest {
     return std::move(commit_callback_);
   }
 
+  struct CC_EXPORT SharedElementInfo {
+    SharedElementInfo();
+    ~SharedElementInfo();
+
+    viz::CompositorRenderPassId render_pass_id;
+    viz::SharedElementResourceId resource_id;
+  };
   // This constructs a viz directive. Note that repeated calls to this function
   // would create a new sequence id for the directive, which means it would be
   // processed again by viz.
   viz::CompositorFrameTransitionDirective ConstructDirective(
-      const std::map<DocumentTransitionSharedElementId,
-                     viz::CompositorRenderPassId>&
+      const std::map<DocumentTransitionSharedElementId, SharedElementInfo>&
           shared_element_render_pass_id_map) const;
 
   // Returns the sequence id for this request.
@@ -70,16 +88,20 @@ class CC_EXPORT DocumentTransitionRequest {
 
   DocumentTransitionRequest(Effect effect,
                             uint32_t document_tag,
+                            TransitionConfig root_config,
+                            std::vector<TransitionConfig> shared_element_config,
+                            base::OnceClosure commit_callback);
+  DocumentTransitionRequest(uint32_t document_tag,
                             uint32_t shared_element_count,
                             base::OnceClosure commit_callback);
-  explicit DocumentTransitionRequest(uint32_t document_tag,
-                                     uint32_t shared_element_count,
-                                     base::OnceClosure commit_callback);
+  DocumentTransitionRequest(Type type, uint32_t document_tag);
 
   const Type type_;
   const Effect effect_ = Effect::kNone;
+  const TransitionConfig root_config_;
   const uint32_t document_tag_;
   const uint32_t shared_element_count_;
+  const std::vector<TransitionConfig> shared_element_config_;
   base::OnceClosure commit_callback_;
   const uint32_t sequence_id_;
 

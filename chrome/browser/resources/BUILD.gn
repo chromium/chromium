@@ -30,17 +30,19 @@ group("resources") {
       "commander:resources",
       "download_shelf:resources",
       "downloads:resources",
+      "enterprise_casting:resources",
       "federated_learning:resources",
       "feedback_webui:resources",
       "gaia_auth_host:resources",
       "history:resources",
       "management:resources",
-      "memories:resources",
       "new_tab_page:resources",
       "new_tab_page_instant:resources",
       "new_tab_page_third_party:resources",
       "read_later:resources",
       "settings:resources",
+      "signin:resources",
+      "support_tool:resources",
       "tab_search:resources",
       "whats_new:resources",
     ]
@@ -56,21 +58,24 @@ group("resources") {
       ":internet_detail_dialog_resources",
       "chromeos:multidevice_setup_resources",
       "chromeos/accessibility:build",
+      "chromeos/audio:resources",
       "chromeos/emoji_picker:resources",
-      "chromeos/enterprise_casting:resources",
       "chromeos/launcher_internals:resources",
-      "chromeos/login:modulized_resources",
-      "chromeos/login:resources",
+      "chromeos/login:conditional_resources",
+      "chromeos/login:unconditional_resources",
       "chromeos/multidevice_internals:resources",
       "chromeos/network_ui:resources",
-      "chromeos/projector:resources",
       "nearby_internals:resources",
       "nearby_share:resources",
       "settings/chromeos:resources",
     ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+  if (is_win || is_mac || is_linux || is_chromeos_ash) {
+    public_deps += [ "connectors_internals:resources" ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {
     public_deps += [ "browser_switch:resources" ]
   }
 
@@ -117,13 +122,12 @@ if (enable_js_type_check) {
       "memory_internals:closure_compile",
       "predictors:closure_compile",
       "reset_password:closure_compile",
+      "support_tool:closure_compile",
     ]
     if (is_linux || is_chromeos || is_win || is_mac) {
       deps += [
         "bluetooth_internals:closure_compile",
-        "commander:closure_compile",
         "discards:closure_compile",
-        "download_internals:closure_compile",
         "federated_learning:closure_compile",
         "feedback_webui/js:closure_compile",
         "gaia_auth_host:closure_compile",
@@ -139,7 +143,6 @@ if (enable_js_type_check) {
         "quota_internals:closure_compile",
         "read_later:closure_compile",
         "settings:closure_compile",
-        "signin:closure_compile",
         "sync_file_system_internals:closure_compile",
         "tab_search:closure_compile",
         "usb_internals:closure_compile",
@@ -154,7 +157,6 @@ if (enable_js_type_check) {
     if (is_chromeos_ash) {
       deps += [
         "chromeos:closure_compile",
-        "chromeos/projector:closure_compile",
         "nearby_share:closure_compile",
         "nearby_share/shared:closure_compile",
         "nearby_share/shared:closure_compile_module",
@@ -165,9 +167,6 @@ if (enable_js_type_check) {
     }
     if (enable_pdf) {
       deps += [ "pdf:closure_compile" ]
-    }
-    if (enable_print_preview) {
-      deps += [ "print_preview:closure_compile" ]
     }
     if (enable_webui_tab_strip) {
       deps += [ "tab_strip:closure_compile" ]
@@ -313,7 +312,6 @@ repack("dev_ui_paks") {
   sources = [
     "$root_gen_dir/chrome/bluetooth_internals_resources.pak",
     "$root_gen_dir/chrome/dev_ui_browser_resources.pak",
-    "$root_gen_dir/chrome/download_internals_resources.pak",
     "$root_gen_dir/chrome/floc_internals_resources.pak",
     "$root_gen_dir/chrome/internals_resources.pak",
     "$root_gen_dir/chrome/invalidations_resources.pak",
@@ -323,6 +321,7 @@ repack("dev_ui_paks") {
     "$root_gen_dir/chrome/usb_internals_resources.pak",
     "$root_gen_dir/chrome/webrtc_logs_resources.pak",
     "$root_gen_dir/components/dev_ui_components_resources.pak",
+    "$root_gen_dir/components/download_internals_resources.pak",
     "$root_gen_dir/components/sync_driver_sync_internals_resources.pak",
     "$root_gen_dir/content/browser/resources/media/media_internals_resources.pak",
     "$root_gen_dir/content/browser/webrtc/resources/webrtc_internals_resources.pak",
@@ -331,7 +330,6 @@ repack("dev_ui_paks") {
   deps = [
     "//chrome/browser:dev_ui_browser_resources",
     "//chrome/browser/resources/bluetooth_internals:resources",
-    "//chrome/browser/resources/download_internals:resources",
     "//chrome/browser/resources/federated_learning:resources",
     "//chrome/browser/resources/internals:resources",
     "//chrome/browser/resources/invalidations:resources",
@@ -340,6 +338,7 @@ repack("dev_ui_paks") {
     "//chrome/browser/resources/omnibox:resources",
     "//chrome/browser/resources/quota_internals:resources",
     "//chrome/browser/resources/usb_internals:resources",
+    "//components/download/resources/download_internals:resources",
     "//components/resources:dev_ui_components_resources",
     "//components/sync/driver/resources",
     "//content:dev_ui_content_resources",

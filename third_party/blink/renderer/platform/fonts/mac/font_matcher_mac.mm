@@ -60,11 +60,11 @@ BOOL AcceptableChoice(NSFontTraitMask desired_traits,
 }
 
 BOOL BetterChoice(NSFontTraitMask desired_traits,
-                  int desired_weight,
+                  NSInteger desired_weight,
                   NSFontTraitMask chosen_traits,
-                  int chosen_weight,
+                  NSInteger chosen_weight,
                   NSFontTraitMask candidate_traits,
-                  int candidate_weight) {
+                  NSInteger candidate_weight) {
   if (!AcceptableChoice(desired_traits, candidate_traits))
     return NO;
 
@@ -89,8 +89,9 @@ BOOL BetterChoice(NSFontTraitMask desired_traits,
       return NO;
   }
 
-  int chosen_weight_delta_magnitude = abs(chosen_weight - desired_weight);
-  int candidate_weight_delta_magnitude = abs(candidate_weight - desired_weight);
+  NSInteger chosen_weight_delta_magnitude = abs(chosen_weight - desired_weight);
+  NSInteger candidate_weight_delta_magnitude =
+      abs(candidate_weight - desired_weight);
 
   // If both are the same distance from the desired weight, prefer the candidate
   // if it is further from medium.
@@ -190,7 +191,7 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
     available_family = desired_family;
   }
 
-  int app_kit_font_weight = ToAppKitFontWeight(desired_weight);
+  NSInteger app_kit_font_weight = ToAppKitFontWeight(desired_weight);
   if (!available_family) {
     // Match by PostScript name.
     NSEnumerator* available_fonts =
@@ -225,13 +226,13 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
 
   // Found a family, now figure out what weight and traits to use.
   BOOL chose_font = false;
-  int chosen_weight = 0;
+  NSInteger chosen_weight = 0;
   NSFontTraitMask chosen_traits = 0;
   NSString* chosen_full_name = 0;
 
   NSArray* fonts = [font_manager availableMembersOfFontFamily:available_family];
-  unsigned n = [fonts count];
-  unsigned i;
+  NSUInteger n = [fonts count];
+  NSUInteger i;
   for (i = 0; i < n; i++) {
     NSArray* font_info = fonts[i];
 
@@ -273,7 +274,7 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
   NSFontTraitMask actual_traits = 0;
   if (desired_traits & NSFontItalicTrait)
     actual_traits = [font_manager traitsOfFont:font];
-  int actual_weight = [font_manager weightOfFont:font];
+  NSInteger actual_weight = [font_manager weightOfFont:font];
 
   bool synthetic_bold = app_kit_font_weight >= 7 && actual_weight < 7;
   bool synthetic_italic = (desired_traits & NSFontItalicTrait) &&

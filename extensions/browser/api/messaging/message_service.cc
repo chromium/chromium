@@ -16,9 +16,12 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -29,6 +32,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_host.h"
+#include "content/public/common/content_features.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/extension_message_port.h"
@@ -36,21 +40,27 @@
 #include "extensions/browser/api/messaging/messaging_delegate.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_context.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "net/http/http_response_headers.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "url/gurl.h"
 
 using content::BrowserContext;
@@ -110,6 +120,26 @@ const Extension* GetExtensionForNativeAppChannel(
                                                                 true);
 }
 
+bool IsExtensionMessageSupportedInBackForwardCache() {
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled())
+    return false;
+  static const bool is_extension_message_supported =
+      base::FeatureParam<bool>(&features::kBackForwardCache,
+                               "extension_message_supported", false)
+          .Get();
+  return is_extension_message_supported;
+}
+
+// Disables the back forward for `host` if the current configuration does not
+// support extension messaging APIs.
+void MaybeDisableBackForwardCacheForMessaging(content::RenderFrameHost* host) {
+  if (!host || IsExtensionMessageSupportedInBackForwardCache())
+    return;
+  content::BackForwardCache::DisableForRenderFrameHost(
+      host, back_forward_cache::DisabledReason(
+                back_forward_cache::DisabledReasonId::kExtensionMessaging));
+}
+
 }  // namespace
 
 struct MessageService::MessageChannel {
@@ -157,8 +187,8 @@ struct MessageService::OpenChannelParams {
         channel_name(channel_name),
         include_guest_process_info(include_guest_process_info) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(OpenChannelParams);
+  OpenChannelParams(const OpenChannelParams&) = delete;
+  OpenChannelParams& operator=(const OpenChannelParams&) = delete;
 };
 
 MessageService::MessageService(BrowserContext* context)
@@ -215,6 +245,8 @@ void MessageService::OpenChannelToExtension(
   BrowserContext* context = source.browser_context();
   DCHECK(ExtensionsBrowserClient::Get()->IsSameContext(context, context_));
 
+  MaybeDisableBackForwardCacheForMessaging(source_render_frame_host);
+
   if (!opener_port) {
     DCHECK(source_endpoint.type == MessagingEndpoint::Type::kTab ||
            source_endpoint.type == MessagingEndpoint::Type::kExtension);
@@ -258,10 +290,37 @@ void MessageService::OpenChannelToExtension(
       } else {
         DCHECK(source_render_frame_host);
 
-        // Check that the web page URL matches.
         is_web_connection = true;
-        is_externally_connectable = externally_connectable->matches.MatchesURL(
-            source_render_frame_host->GetLastCommittedURL());
+
+        // Sites can only connect to the CryptoToken component extension if it
+        // has been enabled via feature flag, enterprise policy or deprecation
+        // trial.
+        // TODO(1224886): Delete together with CryptoToken code.
+        if (target_extension_id == extension_misc::kCryptotokenExtensionId) {
+          blink::TrialTokenValidator validator;
+          const net::HttpResponseHeaders* response_headers =
+              source_render_frame_host->GetLastResponseHeaders();
+          const bool u2f_api_enabled =
+              base::FeatureList::IsEnabled(
+                  extensions_features::kU2FSecurityKeyAPI) ||
+              ExtensionPrefs::Get(context)->pref_service()->GetBoolean(
+                  extensions::pref_names::kU2fSecurityKeyApiEnabled) ||
+              (response_headers &&
+               validator.RequestEnablesFeature(
+                   source_render_frame_host->GetLastCommittedURL(),
+                   response_headers,
+                   extension_misc::kCryptotokenDeprecationTrialName,
+                   base::Time::Now()));
+          is_externally_connectable =
+              u2f_api_enabled &&
+              externally_connectable->matches.MatchesURL(
+                  source_render_frame_host->GetLastCommittedURL());
+        } else {
+          // Check that the web page URL matches.
+          is_externally_connectable =
+              externally_connectable->matches.MatchesURL(
+                  source_render_frame_host->GetLastCommittedURL());
+        }
       }
     } else {
       // Default behaviour. Any extension or content script, no webpages.
@@ -408,6 +467,8 @@ void MessageService::OpenChannelToNativeApp(
   content::RenderFrameHost* source_rfh =
       source.is_for_render_frame() ? source.GetRenderFrameHost() : nullptr;
 
+  MaybeDisableBackForwardCacheForMessaging(source_rfh);
+
   std::string error = kReceivingEndDoesntExistError;
   const PortId receiver_port_id = source_port_id.GetOppositePortId();
   // NOTE: We're creating |receiver| with nullptr |source_rfh|, which seems to
@@ -471,6 +532,8 @@ void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
     opener_port->DispatchOnDisconnect(kReceivingEndDoesntExistError);
     return;
   }
+
+  MaybeDisableBackForwardCacheForMessaging(receiver_contents->GetMainFrame());
 
   const PortId receiver_port_id = source_port_id.GetOppositePortId();
   std::unique_ptr<MessagePort> receiver =
@@ -740,8 +803,7 @@ void MessageService::EnqueuePendingMessage(const PortId& source_port_id,
     DCHECK(!base::Contains(pending_lazy_context_channels_, channel_id));
     return;
   }
-  EnqueuePendingMessageForLazyBackgroundLoad(source_port_id,
-                                             channel_id,
+  EnqueuePendingMessageForLazyBackgroundLoad(source_port_id, channel_id,
                                              message);
 }
 

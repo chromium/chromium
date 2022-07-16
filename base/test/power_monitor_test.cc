@@ -6,6 +6,7 @@
 
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 
@@ -33,11 +34,13 @@ class PowerMonitorTestSource : public PowerMonitorSource {
   void GenerateResumeEvent();
   void GenerateThermalThrottlingEvent(
       PowerThermalObserver::DeviceThermalState new_thermal_state);
+  void GenerateSpeedLimitEvent(int speed_limit);
 
  protected:
   bool test_on_battery_power_ = false;
   PowerThermalObserver::DeviceThermalState current_thermal_state_ =
       PowerThermalObserver::DeviceThermalState::kUnknown;
+  int current_speed_limit_ = PowerThermalObserver::kSpeedLimitMax;
 };
 
 PowerThermalObserver::DeviceThermalState
@@ -81,6 +84,12 @@ void PowerMonitorTestSource::GenerateThermalThrottlingEvent(
     PowerThermalObserver::DeviceThermalState new_thermal_state) {
   ProcessThermalEvent(new_thermal_state);
   current_thermal_state_ = new_thermal_state;
+  RunLoop().RunUntilIdle();
+}
+
+void PowerMonitorTestSource::GenerateSpeedLimitEvent(int speed_limit) {
+  ProcessSpeedLimitEvent(speed_limit);
+  current_speed_limit_ = speed_limit;
   RunLoop().RunUntilIdle();
 }
 
@@ -133,6 +142,10 @@ void ScopedPowerMonitorTestSource::GenerateThermalThrottlingEvent(
   power_monitor_test_source_->GenerateThermalThrottlingEvent(new_thermal_state);
 }
 
+void ScopedPowerMonitorTestSource::GenerateSpeedLimitEvent(int speed_limit) {
+  power_monitor_test_source_->GenerateSpeedLimitEvent(speed_limit);
+}
+
 PowerMonitorTestObserver::PowerMonitorTestObserver() = default;
 PowerMonitorTestObserver::~PowerMonitorTestObserver() = default;
 
@@ -153,6 +166,11 @@ void PowerMonitorTestObserver::OnThermalStateChange(
     PowerThermalObserver::DeviceThermalState new_state) {
   thermal_state_changes_++;
   last_thermal_state_ = new_state;
+}
+
+void PowerMonitorTestObserver::OnSpeedLimitChange(int speed_limit) {
+  speed_limit_changes_++;
+  last_speed_limit_ = speed_limit;
 }
 
 }  // namespace test

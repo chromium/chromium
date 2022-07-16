@@ -35,7 +35,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-using base::TimeDelta;
 using content::BrowserThread;
 
 const char NOLISTENERS_HTML[] =
@@ -160,17 +159,17 @@ class UnloadTest : public InProcessBrowserTest {
   }
 
   void NavigateToDataURL(const char* html_content, const char* expected_title) {
-    ui_test_utils::NavigateToURL(
-        browser(), GURL(std::string("data:text/html,") + html_content));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(std::string("data:text/html,") + html_content)));
     CheckTitle(expected_title);
   }
 
   void NavigateToNolistenersFileTwice() {
     ASSERT_TRUE(embedded_test_server()->Start());
     GURL url(embedded_test_server()->GetURL("/title2.html"));
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     CheckTitle("Title Of Awesomeness");
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     CheckTitle("Title Of Awesomeness");
   }
 
@@ -182,7 +181,7 @@ class UnloadTest : public InProcessBrowserTest {
     GURL url(embedded_test_server()->GetURL("/title2.html"));
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::CURRENT_TAB, 0);
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     CheckTitle("Title Of Awesomeness");
   }
 
@@ -623,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, VisibilityChangeOnlyDispatchedOnce) {
   EXPECT_TRUE(embedded_test_server()->Start());
   // Start on a.com and open a popup to another page in a.com.
   GURL opener_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), opener_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), opener_url));
   content::WebContents* opener_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -701,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseWithCrossSiteIframe) {
 
   // Navigate to a page with an iframe.
   GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   // Navigate iframe cross-site.
   GURL frame_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -728,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseWithSameSiteIframe) {
 
   // Navigate to a page with a same-site iframe.
   GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* child =

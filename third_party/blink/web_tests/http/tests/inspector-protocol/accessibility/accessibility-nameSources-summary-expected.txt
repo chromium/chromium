@@ -1,5 +1,6 @@
 Tests name sources in details and summary.
 {
+    childIds : <object>
     domNode : summary#summary2
     ignored : false
     name : {
@@ -28,6 +29,7 @@ Tests name sources in details and summary.
         value : summary2-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable
@@ -50,6 +52,7 @@ Tests name sources in details and summary.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : summary3-title
@@ -87,6 +90,7 @@ Tests name sources in details and summary.
         value : summary3-contents
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable
@@ -109,6 +113,7 @@ Tests name sources in details and summary.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : summary4-contents
@@ -155,6 +160,7 @@ Tests name sources in details and summary.
         value : summary4-aria-label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable
@@ -177,6 +183,7 @@ Tests name sources in details and summary.
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : summary5-contents
@@ -239,6 +246,7 @@ Tests name sources in details and summary.
         value : summary5-aria-labelledby
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable

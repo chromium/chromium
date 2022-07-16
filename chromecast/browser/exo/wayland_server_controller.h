@@ -26,6 +26,10 @@ class CastWindowManagerAura;
 class WaylandServerController {
  public:
   explicit WaylandServerController(CastWindowManagerAura* window_manager);
+
+  WaylandServerController(const WaylandServerController&) = delete;
+  WaylandServerController& operator=(const WaylandServerController&) = delete;
+
   ~WaylandServerController();
 
  private:
@@ -33,8 +37,6 @@ class WaylandServerController {
   std::unique_ptr<exo::Display> display_;
   std::unique_ptr<exo::wayland::Server> wayland_server_;
   std::unique_ptr<exo::wayland::WaylandWatcher> wayland_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandServerController);
 };
 
 }  // namespace chromecast

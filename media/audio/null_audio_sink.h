@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "media/base/audio_renderer_sink.h"
 
 namespace base {
@@ -24,6 +23,9 @@ class MEDIA_EXPORT NullAudioSink : public SwitchableAudioRendererSink {
  public:
   explicit NullAudioSink(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
+
+  NullAudioSink(const NullAudioSink&) = delete;
+  NullAudioSink& operator=(const NullAudioSink&) = delete;
 
   // AudioRendererSink implementation.
   void Initialize(const AudioParameters& params,
@@ -66,8 +68,6 @@ class MEDIA_EXPORT NullAudioSink : public SwitchableAudioRendererSink {
   std::unique_ptr<FakeAudioWorker> fake_worker_;
   base::TimeDelta fixed_data_delay_;
   std::unique_ptr<AudioBus> audio_bus_;
-
-  DISALLOW_COPY_AND_ASSIGN(NullAudioSink);
 };
 
 }  // namespace media

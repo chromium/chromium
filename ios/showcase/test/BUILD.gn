@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("eg2_test") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -27,14 +26,16 @@ source_set("eg2_test") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
 
-  sources = [ "showcase_test_case_app_interface.h" ]
+  sources = [
+    "showcase_test_case_app_interface.h",
+    "showcase_test_case_app_interface_stub.mm",
+  ]
 
   public_deps = [ "//base" ]
 
@@ -52,7 +53,6 @@ source_set("eg_app_support+eg2") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  defines = [ "CHROME_EARL_GREY_2" ]
 
   sources = [
     "showcase_test_case_app_interface.h",

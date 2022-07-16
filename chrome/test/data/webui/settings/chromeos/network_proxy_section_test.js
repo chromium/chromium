@@ -24,6 +24,13 @@ suite('NetworkProxySection', function() {
           value: true,
         },
       },
+      'ash': {
+        'lacros_proxy_controlling_extension': {
+          key: 'ash.lacros_proxy_controlling_extension',
+          type: chrome.settingsPrivate.PrefType.DICTIONARY,
+          value: {},
+        },
+      },
     };
     document.body.appendChild(proxySection);
     Polymer.dom.flush();

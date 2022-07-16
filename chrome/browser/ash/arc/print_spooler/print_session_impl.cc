@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/arc/print_spooler/arc_print_spooler_util.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/printing/printing_service.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "components/arc/intent_helper/custom_tab.h"
 #include "components/arc/mojom/print_common.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -364,7 +365,7 @@ void PrintSessionImpl::StartPrintAfterPluginIsLoaded() {
         FROM_HERE,
         base::BindOnce(&PrintSessionImpl::StartPrintAfterPluginIsLoaded,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(100));
+        base::Milliseconds(100));
     LOG(WARNING) << "PDF plugin not ready yet.  Can't start print preview.";
     return;
   }
@@ -376,7 +377,7 @@ void PrintSessionImpl::StartPrintAfterPluginIsLoaded() {
       FROM_HERE,
       base::BindOnce(&PrintSessionImpl::StartPrintNow,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(500));
+      base::Milliseconds(500));
 }
 
 void PrintSessionImpl::StartPrintNow() {
@@ -385,6 +386,6 @@ void PrintSessionImpl::StartPrintNow() {
                        false, false);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintSessionImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintSessionImpl);
 
 }  // namespace arc

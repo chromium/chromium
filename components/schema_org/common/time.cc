@@ -28,13 +28,13 @@ absl::optional<base::TimeDelta> ParseISO8601Duration(const std::string& str) {
     t >> unit;
     switch (unit) {
       case 'H':
-        duration = duration + base::TimeDelta::FromHours(amount);
+        duration = duration + base::Hours(amount);
         break;
       case 'M':
-        duration = duration + base::TimeDelta::FromMinutes(amount);
+        duration = duration + base::Minutes(amount);
         break;
       case 'S':
-        duration = duration + base::TimeDelta::FromSeconds(amount);
+        duration = duration + base::Seconds(amount);
         break;
       default:
         return absl::nullopt;

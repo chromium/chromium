@@ -44,6 +44,7 @@ source_set("security_key") {
     "//remoting/protocol:protocol",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
+  public_deps = [ "//remoting/host:common_headers" ]
 
   if (is_posix) {
     sources += [ "security_key_auth_handler_posix.cc" ]
@@ -61,11 +62,9 @@ source_set("main") {
     defines += host_predefines
   }
 
-  sources = [
-    "remote_security_key_main.cc",
-    "remote_security_key_main.h",
-  ]
+  sources = [ "remote_security_key_main.cc" ]
   deps = [
+    ":remote_security_key_main_headers",
     ":security_key",
     "//base:debugging_buildflags",
     "//mojo/core/embedder",
@@ -82,6 +81,7 @@ if (is_win) {
         host_predefines + [ "REMOTING_HOST_BINARY=BINARY_REMOTE_SECURITY_KEY" ]
 
     deps = [
+      ":remote_security_key_main_headers",
       "//build/win:default_exe_manifest",
       "//remoting/host/win:remoting_core",
       "//remoting/host/win:remoting_windows_resources",
@@ -92,6 +92,11 @@ if (is_win) {
       "remote_security_key_entry_point.cc",
     ]
   }
+}
+
+source_set("remote_security_key_main_headers") {
+  sources = [ "remote_security_key_main.h" ]
+  deps = [ "//remoting/host:host_main_headers" ]
 }
 
 source_set("unit_tests") {

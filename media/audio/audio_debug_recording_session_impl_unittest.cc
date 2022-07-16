@@ -57,6 +57,11 @@ class AudioDebugRecordingSessionImplTest : public AudioDebugRecordingTest {
     base_file_path_ = temp_dir_.GetPath().Append(base::FilePath(kBaseFileName));
   }
 
+  AudioDebugRecordingSessionImplTest(
+      const AudioDebugRecordingSessionImplTest&) = delete;
+  AudioDebugRecordingSessionImplTest& operator=(
+      const AudioDebugRecordingSessionImplTest&) = delete;
+
  protected:
   void CreateDebugRecordingSession() {
     audio_debug_recording_session_impl_ =
@@ -81,8 +86,6 @@ class AudioDebugRecordingSessionImplTest : public AudioDebugRecordingTest {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<AudioDebugRecordingSessionImpl>
       audio_debug_recording_session_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDebugRecordingSessionImplTest);
 };
 
 TEST_F(AudioDebugRecordingSessionImplTest,

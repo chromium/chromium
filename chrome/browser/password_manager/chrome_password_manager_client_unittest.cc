@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,7 +38,6 @@
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -86,6 +84,7 @@
 #include "chrome/browser/autofill/mock_credit_card_accessory_controller.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller_impl.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #endif  // defined(OS_ANDROID)
 
 using autofill::FieldRendererId;
@@ -121,6 +120,11 @@ class MockChromePasswordManagerClient : public ChromePasswordManagerClient {
 #endif
   }
 
+  MockChromePasswordManagerClient(const MockChromePasswordManagerClient&) =
+      delete;
+  MockChromePasswordManagerClient& operator=(
+      const MockChromePasswordManagerClient&) = delete;
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
       const override {
@@ -137,17 +141,16 @@ class MockChromePasswordManagerClient : public ChromePasswordManagerClient {
   std::unique_ptr<safe_browsing::MockPasswordProtectionService>
       password_protection_service_;
 #endif
-  DISALLOW_COPY_AND_ASSIGN(MockChromePasswordManagerClient);
 };
 
 class DummyLogReceiver : public autofill::LogReceiver {
  public:
   DummyLogReceiver() = default;
 
-  void LogEntry(const base::Value& entry) override {}
+  DummyLogReceiver(const DummyLogReceiver&) = delete;
+  DummyLogReceiver& operator=(const DummyLogReceiver&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DummyLogReceiver);
+  void LogEntry(const base::Value& entry) override {}
 };
 
 class FakePasswordAutofillAgent
@@ -484,12 +487,10 @@ struct SchemeTestCase {
   const char* scheme;
   bool password_manager_works;
 };
-const SchemeTestCase kTestCases[] = {
+const SchemeTestCase kSchemeTestCases[] = {
     {url::kHttpScheme, true},
     {url::kHttpsScheme, true},
-    {url::kFtpScheme, true},
     {url::kDataScheme, true},
-    {"feed", true},
 
     {"invalid-scheme-i-just-made-up", false},
     {content::kChromeDevToolsScheme, false},
@@ -505,7 +506,7 @@ class ChromePasswordManagerClientSchemeTest
  public:
   static std::vector<const char*> GetSchemes() {
     std::vector<const char*> result;
-    for (const SchemeTestCase& test_case : kTestCases) {
+    for (const SchemeTestCase& test_case : kSchemeTestCases) {
       result.push_back(test_case.scheme);
     }
     return result;
@@ -521,9 +522,9 @@ TEST_P(ChromePasswordManagerClientSchemeTest,
             GetClient()->GetLastCommittedOrigin().GetURL());
 
   auto* it = std::find_if(
-      std::begin(kTestCases), std::end(kTestCases),
+      std::begin(kSchemeTestCases), std::end(kSchemeTestCases),
       [](auto test_case) { return strcmp(test_case.scheme, GetParam()) == 0; });
-  ASSERT_FALSE(it == std::end(kTestCases));
+  ASSERT_FALSE(it == std::end(kSchemeTestCases));
   EXPECT_EQ(it->password_manager_works,
             GetClient()->IsSavingAndFillingEnabled(url));
   EXPECT_EQ(it->password_manager_works, GetClient()->IsFillingEnabled(url));
@@ -691,9 +692,7 @@ TEST_F(ChromePasswordManagerClientTest, CanShowBubbleOnURL) {
   } kTestCases[] = {
     {url::kHttpScheme, true},
     {url::kHttpsScheme, true},
-    {url::kFtpScheme, true},
     {url::kDataScheme, true},
-    {"feed", true},
     {url::kBlobScheme, true},
     {url::kFileSystemScheme, true},
 
@@ -844,9 +843,9 @@ void ChromePasswordManagerClientAndroidTest::SetUp() {
   ChromePasswordManagerClientTest::SetUp();
   PasswordStoreFactory::GetInstance()->SetTestingFactory(
       GetBrowserContext(),
-      base::BindRepeating(
-          &password_manager::BuildPasswordStore<
-              content::BrowserContext, password_manager::MockPasswordStore>));
+      base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
+                          content::BrowserContext,
+                          password_manager::MockPasswordStoreInterface>));
 }
 
 std::unique_ptr<password_manager::ContentPasswordManagerDriver>

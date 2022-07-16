@@ -23,6 +23,7 @@
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
+#include "sandbox/policy/sandbox_type.h"
 #endif
 
 namespace service_manager {

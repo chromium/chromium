@@ -40,8 +40,8 @@ SyntheticGesture::Result SyntheticTapGesture::ForwardInputEvents(
             content::mojom::GestureSourceType::kDefaultInput);
 
   if (!synthetic_pointer_driver_)
-    synthetic_pointer_driver_ =
-        SyntheticPointerDriver::Create(gesture_source_type_);
+    synthetic_pointer_driver_ = SyntheticPointerDriver::Create(
+        gesture_source_type_, params_.from_devtools_debugger);
 
   if (gesture_source_type_ == content::mojom::GestureSourceType::kTouchInput ||
       gesture_source_type_ == content::mojom::GestureSourceType::kMouseInput)
@@ -99,7 +99,7 @@ void SyntheticTapGesture::ForwardTouchOrMouseInputEvents(
 }
 
 base::TimeDelta SyntheticTapGesture::GetDuration() const {
-  return base::TimeDelta::FromMilliseconds(params_.duration_ms);
+  return base::Milliseconds(params_.duration_ms);
 }
 
 }  // namespace content

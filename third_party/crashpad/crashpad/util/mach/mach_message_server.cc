@@ -32,6 +32,9 @@ class MachMessageBuffer {
  public:
   MachMessageBuffer() : vm_() {}
 
+  MachMessageBuffer(const MachMessageBuffer&) = delete;
+  MachMessageBuffer& operator=(const MachMessageBuffer&) = delete;
+
   ~MachMessageBuffer() {}
 
   //! \return A pointer to the buffer.
@@ -81,8 +84,6 @@ class MachMessageBuffer {
 
  private:
   base::mac::ScopedMachVM vm_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachMessageBuffer);
 };
 
 // Wraps MachMessageWithDeadline(), using a MachMessageBuffer argument which

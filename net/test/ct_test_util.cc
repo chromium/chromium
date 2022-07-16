@@ -217,8 +217,8 @@ void GetX509CertSCT(scoped_refptr<SignedCertificateTimestamp>* sct_ref) {
   sct->log_id = HexDecode(kTestKeyId);
   // Time the log issued a SCT for this certificate, which is
   // Fri Apr  5 10:04:16.089 2013
-  sct->timestamp = base::Time::UnixEpoch() +
-      base::TimeDelta::FromMilliseconds(INT64_C(1365181456089));
+  sct->timestamp =
+      base::Time::UnixEpoch() + base::Milliseconds(INT64_C(1365181456089));
   sct->extensions.clear();
 
   sct->signature.hash_algorithm = ct::DigitallySigned::HASH_ALGO_SHA256;
@@ -234,8 +234,8 @@ void GetPrecertSCT(scoped_refptr<SignedCertificateTimestamp>* sct_ref) {
   sct->log_id = HexDecode(kTestKeyId);
   // Time the log issued a SCT for this Precertificate, which is
   // Fri Apr  5 10:04:16.275 2013
-  sct->timestamp = base::Time::UnixEpoch() +
-    base::TimeDelta::FromMilliseconds(INT64_C(1365181456275));
+  sct->timestamp =
+      base::Time::UnixEpoch() + base::Milliseconds(INT64_C(1365181456275));
   sct->extensions.clear();
 
   sct->signature.hash_algorithm = ct::DigitallySigned::HASH_ALGO_SHA256;
@@ -266,8 +266,7 @@ std::string GetDerEncodedFakeOCSPResponseIssuerCert() {
 // A sample, valid STH
 bool GetSampleSignedTreeHead(SignedTreeHead* sth) {
   sth->version = SignedTreeHead::V1;
-  sth->timestamp = base::Time::UnixEpoch() +
-                   base::TimeDelta::FromMilliseconds(kTestTimestamp);
+  sth->timestamp = base::Time::UnixEpoch() + base::Milliseconds(kTestTimestamp);
   sth->tree_size = kSampleSTHTreeSize;
   std::string sha256_root_hash = GetSampleSTHSHA256RootHash();
   memcpy(sth->sha256_root_hash, sha256_root_hash.c_str(), kSthRootHashLength);
@@ -278,8 +277,8 @@ bool GetSampleSignedTreeHead(SignedTreeHead* sth) {
 
 bool GetSampleEmptySignedTreeHead(SignedTreeHead* sth) {
   sth->version = SignedTreeHead::V1;
-  sth->timestamp = base::Time::UnixEpoch() +
-                   base::TimeDelta::FromMilliseconds(INT64_C(1450443594920));
+  sth->timestamp =
+      base::Time::UnixEpoch() + base::Milliseconds(INT64_C(1450443594920));
   sth->tree_size = 0;
   std::string empty_root_hash = HexDecode(
       "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
@@ -296,8 +295,8 @@ bool GetSampleEmptySignedTreeHead(SignedTreeHead* sth) {
 
 bool GetBadEmptySignedTreeHead(SignedTreeHead* sth) {
   sth->version = SignedTreeHead::V1;
-  sth->timestamp = base::Time::UnixEpoch() +
-                   base::TimeDelta::FromMilliseconds(INT64_C(1450870952897));
+  sth->timestamp =
+      base::Time::UnixEpoch() + base::Milliseconds(INT64_C(1450870952897));
   sth->tree_size = 0;
   memset(sth->sha256_root_hash, 'f', kSthRootHashLength);
   sth->log_id = GetTestPublicKeyId();

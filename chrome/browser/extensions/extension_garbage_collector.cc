@@ -17,10 +17,10 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/one_shot_event.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
@@ -45,13 +45,11 @@ namespace extensions {
 namespace {
 
 // Wait this long before trying to garbage collect extensions again.
-constexpr base::TimeDelta kGarbageCollectRetryDelay =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kGarbageCollectRetryDelay = base::Seconds(30);
 
 // Wait this long after startup to see if there are any extensions which can be
 // garbage collected.
-constexpr base::TimeDelta kGarbageCollectStartupDelay =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kGarbageCollectStartupDelay = base::Seconds(30);
 
 typedef std::multimap<std::string, base::FilePath> ExtensionPathsMultimap;
 

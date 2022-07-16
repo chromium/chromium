@@ -4,6 +4,10 @@
 
 #import "base/message_loop/message_pump_mac.h"
 
+// Foundation框架对于OC语言来说就是一个基础实现。是苹果官方的工程师们编写好的供OC
+// 编程使用的一个框架，在这个框架的基础上，可以编写OC程序实现一定的功能.
+// Foundation框架中的类都是以NS(NextStep)为前缀的，
+// 学习：https://cloud.tencent.com/developer/article/1139804
 #import <Foundation/Foundation.h>
 
 #include <limits>
@@ -21,17 +25,27 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
-#if !defined(OS_IOS)
+#if !defined(OS_IOS) // Mac平台
+// Mac系统的应用程序使用的是AppKit框架，在AppKit里面可以看到Cocoa框架中关于用户界
+// 面的大量资源，像UIKit一样，它包含了按钮、文本框等内容，尽管它关注的是macOS而不是
+// iOS。
+// 学习：https://www.jianshu.com/p/ef7b303d8596
+// UIKit是用来开发iOS的应用的，AppKit是用来开发Mac应用的，在使用过程中他们很相似，
+// 可是又有很多不同之处，通过对比分析它们的几个核心对象，可以避免混淆。
+// UIKit和AppKit都有一个Application类，每个应用都只创建一个Application对象，分
+// 别是UIAplication和NSApplication的实例。
 #import <AppKit/AppKit.h>
 #endif  // !defined(OS_IOS)
 
 namespace base {
 
+// 消息循环 “独占” 模式
 const CFStringRef kMessageLoopExclusiveRunLoopMode =
     CFSTR("kMessageLoopExclusiveRunLoopMode");
 
 namespace {
 
+// 荒谬的松弛设置
 MessagePumpCFRunLoopBase::LudicrousSlackSetting GetLudicrousSlackSetting() {
   return base::IsLudicrousTimerSlackEnabled()
              ? MessagePumpCFRunLoopBase::LudicrousSlackSetting::
@@ -41,25 +55,36 @@ MessagePumpCFRunLoopBase::LudicrousSlackSetting GetLudicrousSlackSetting() {
 }
 
 // Mask that determines which modes to use.
-enum { kCommonModeMask = 0x1, kAllModesMask = 0xf };
+enum {
+  kCommonModeMask = 0x1, // 共模掩模
+  kAllModesMask = 0xf    // 所有模式掩码
+};
 
 // Modes to use for MessagePumpNSApplication that are considered "safe".
 // Currently just common and exclusive modes. Ideally, messages would be pumped
 // in all modes, but that interacts badly with app modal dialogs (e.g. NSAlert).
-enum { kNSApplicationModalSafeModeMask = 0x3 };
+// MessagePumpNSApplication 使用的被认为“安全”的模式。 目前只是普通模式和独占模式。
+// 理想情况下，消息将以所有模式发送，但与应用程序模式对话框（例如 NSAlert）的交互很糟糕。
+enum {
+  kNSApplicationModalSafeModeMask = 0x3
+};
 
-void NoOp(void* info) {
-}
+// 无操作
+void NoOp(void* info) {}
 
+// 时间间隔最大值
 constexpr CFTimeInterval kCFTimeIntervalMax =
     std::numeric_limits<CFTimeInterval>::max();
 
 #if !defined(OS_IOS)
 // Set to true if MessagePumpMac::Create() is called before NSApp is
 // initialized.  Only accessed from the main thread.
+// 如果在初始化 NSApp 之前调用 MessagePumpMac::Create()，则设置为 true。
+// 只能从主线程访问。
 bool g_not_using_cr_app = false;
 
 // The MessagePump controlling [NSApp run].
+// MessagePump 控制 [NSApp 运行]。
 MessagePumpNSApplication* g_app_pump;
 #endif  // !defined(OS_IOS)
 
@@ -68,42 +93,71 @@ MessagePumpNSApplication* g_app_pump;
 // A scoper for autorelease pools created from message pump run loops.
 // Avoids dirtying up the ScopedNSAutoreleasePool interface for the rare
 // case where an autorelease pool needs to be passed in.
+// 从消息泵运行循环创建的自动释放池的范围。在需要传入自动释放池的极少数情况下，避免
+// 弄脏 Scoped NSAutoreleasePool 接口。
 class MessagePumpScopedAutoreleasePool {
  public:
   explicit MessagePumpScopedAutoreleasePool(MessagePumpCFRunLoopBase* pump) :
       pool_(pump->CreateAutoreleasePool()) {
   }
-   ~MessagePumpScopedAutoreleasePool() {
-    [pool_ drain];
+
+  MessagePumpScopedAutoreleasePool(const MessagePumpScopedAutoreleasePool&) = delete;
+  MessagePumpScopedAutoreleasePool& operator=(
+      const MessagePumpScopedAutoreleasePool&) = delete;
+
+  ~MessagePumpScopedAutoreleasePool() {
+    [pool_ drain]; // 释放
   }
 
  private:
+ // 在引用计数环境中(与使用垃圾收集的环境相反)，NSAutoreleasePool对象包含已收到
+ // 自动释放消息的对象，并且在耗尽时它会向每个对象发送释放消息。
   NSAutoreleasePool* pool_;
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpScopedAutoreleasePool);
 };
 
 class MessagePumpCFRunLoopBase::ScopedModeEnabler {
  public:
+  /**
+   * CFRunLoop管理的类型通常有三种，这个函数中全部体现了：
+   * 1. sources(CFRunLoopSource)     事件源
+   * 2. timers(CFRunLoopTimer)       定时器
+        是基于时间的触发器。和NSTimer类似，可以执行一些定时任务。
+   * 3. observers(CFRunLoopObserver) 观察者
+   */
   ScopedModeEnabler(MessagePumpCFRunLoopBase* owner, int mode_index)
       : owner_(owner), mode_index_(mode_index) {
+
     CFRunLoopRef loop = owner_->run_loop_;
+
+    // 将 定时器(delayed_work_timer_) 事件添加到消息循环
     CFRunLoopAddTimer(loop, owner_->delayed_work_timer_, mode());
+
+    // 将 work_source_源(事件)添加到消息循环
     CFRunLoopAddSource(loop, owner_->work_source_, mode());
+    // 将 idle_work_source_源(事件)添加到消息循环
     CFRunLoopAddSource(loop, owner_->idle_work_source_, mode());
+    // 忽略
     CFRunLoopAddSource(loop, owner_->nesting_deferred_work_source_, mode());
+
+    // 添加观察者到消息循环
     CFRunLoopAddObserver(loop, owner_->pre_wait_observer_, mode());
     CFRunLoopAddObserver(loop, owner_->pre_source_observer_, mode());
     CFRunLoopAddObserver(loop, owner_->enter_exit_observer_, mode());
   }
+
+  ScopedModeEnabler(const ScopedModeEnabler&) = delete;
+  ScopedModeEnabler& operator=(const ScopedModeEnabler&) = delete;
 
   ~ScopedModeEnabler() {
     CFRunLoopRef loop = owner_->run_loop_;
     CFRunLoopRemoveObserver(loop, owner_->enter_exit_observer_, mode());
     CFRunLoopRemoveObserver(loop, owner_->pre_source_observer_, mode());
     CFRunLoopRemoveObserver(loop, owner_->pre_wait_observer_, mode());
+
     CFRunLoopRemoveSource(loop, owner_->nesting_deferred_work_source_, mode());
     CFRunLoopRemoveSource(loop, owner_->idle_work_source_, mode());
     CFRunLoopRemoveSource(loop, owner_->work_source_, mode());
+
     CFRunLoopRemoveTimer(loop, owner_->delayed_work_timer_, mode());
   }
 
@@ -117,9 +171,12 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
     static const CFStringRef modes[] = {
         // The standard Core Foundation "common modes" constant. Must always be
         // first in this list to match the value of kCommonModeMask.
+        // 标准的核心基础“通用模式”常量。 必须始终位于此列表的第一个以匹配
+        // kCommonModeMask 的值。
         kCFRunLoopCommonModes,
 
         // Mode that only sees Chrome work sources.
+        // 消息循环 “独占” 模式，仅查看 Chrome 工作源的模式。
         kMessageLoopExclusiveRunLoopMode,
 
         // Process work when NSMenus are fading out.
@@ -138,11 +195,10 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
  private:
   MessagePumpCFRunLoopBase* const owner_;  // Weak. Owns this.
   const int mode_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedModeEnabler);
 };
 
 // Must be called on the run loop thread.
+// 在消息循环线程中被调用
 void MessagePumpCFRunLoopBase::Run(Delegate* delegate) {
   AutoReset<bool> auto_reset_keep_running(&keep_running_, true);
   // nesting_level_ will be incremented in EnterExitRunLoop, so set
@@ -154,7 +210,7 @@ void MessagePumpCFRunLoopBase::Run(Delegate* delegate) {
   SetDelegate(delegate);
 
   ScheduleWork();
-  DoRun(delegate);
+  DoRun(delegate); // 这里调用的是子类(iOS/Android)
 
   // Restore the previous state of the object.
   SetDelegate(last_delegate);
@@ -172,7 +228,9 @@ void MessagePumpCFRunLoopBase::OnDidQuit() {
 
 // May be called on any thread.
 void MessagePumpCFRunLoopBase::ScheduleWork() {
+  // 向 work_source_(CFRunLoopSourceRef) 事件发出信号，将其标记为准备触发
   CFRunLoopSourceSignal(work_source_);
+  // 唤醒一个等待的 (run_loop_)CFRunLoop 对象
   CFRunLoopWakeUp(run_loop_);
 }
 
@@ -198,6 +256,8 @@ void MessagePumpCFRunLoopBase::ScheduleDelayedWorkImpl(TimeDelta delta) {
   // Pickup the ludicrous slack setting as late as possible to work around
   // initialization issues in base. Note that the main thread won't sleep until
   // field trial initialization is complete.
+  // 尽可能晚地使用可笑的 slack 设置来解决 base 中的初始化问题。
+  // 请注意，在现场试验初始化完成之前，主线程不会休眠。
   if (ludicrous_slack_setting_ ==
       LudicrousSlackSetting::kLudicrousSlackUninitialized) {
     ludicrous_slack_setting_ = GetLudicrousSlackSetting();
@@ -210,15 +270,20 @@ void MessagePumpCFRunLoopBase::ScheduleDelayedWorkImpl(TimeDelta delta) {
 
   if (GetLudicrousSlackState() == LudicrousSlackSetting::kLudicrousSlackOn) {
     // Specify ludicrous slack when the experiment is enabled and not suspended.
+    // 在实验启用且未暂停时指定可笑的 slack。
+    // 设置运行时间误差范围
     CFRunLoopTimerSetTolerance(delayed_work_timer_,
                                GetLudicrousTimerSlack().InSecondsF());
   } else if (timer_slack_ == TIMER_SLACK_MAXIMUM) {
+    // 设置运行时间误差范围
     CFRunLoopTimerSetTolerance(delayed_work_timer_, delta.InSecondsF() * 0.5);
   } else {
+    // 设置运行时间误差范围
     CFRunLoopTimerSetTolerance(delayed_work_timer_, 0);
   }
   CFRunLoopTimerSetNextFireDate(
-      delayed_work_timer_, CFAbsoluteTimeGetCurrent() + delta.InSecondsF());
+      delayed_work_timer_,
+      CFAbsoluteTimeGetCurrent() + delta.InSecondsF());
 }
 
 void MessagePumpCFRunLoopBase::SetTimerSlack(TimerSlack timer_slack) {
@@ -232,6 +297,7 @@ void MessagePumpCFRunLoopBase::Detach() {}
 #endif  // OS_IOS
 
 // Must be called on the run loop thread.
+// 在run loop线程中被调用
 MessagePumpCFRunLoopBase::MessagePumpCFRunLoopBase(int initial_mode_mask)
     : delegate_(NULL),
       timer_slack_(base::TIMER_SLACK_NONE),
@@ -241,57 +307,77 @@ MessagePumpCFRunLoopBase::MessagePumpCFRunLoopBase(int initial_mode_mask)
       keep_running_(true),
       delegateless_work_(false),
       delegateless_idle_work_(false) {
+
+  // 返回当前线程的 CFRunLoop 对象
   run_loop_ = CFRunLoopGetCurrent();
-  CFRetain(run_loop_);
+  CFRetain(run_loop_); // 持有run_loop_实例，不让释放
 
   // Set a repeating timer with a preposterous firing time and interval.  The
   // timer will effectively never fire as-is.  The firing time will be adjusted
   // as needed when ScheduleDelayedWork is called.
+  // 设置一个具有荒谬的触发时间和间隔的重复计时器。 计时器实际上永远不会按原样触发。
+  // 调用 ScheduleDelayedWork 时会根据需要调整触发时间。
+  // 包含程序定义的数据和回调的结构，您可以使用它们配置 CFRunLoopTimer 的行为。
   CFRunLoopTimerContext timer_context = CFRunLoopTimerContext();
-  timer_context.info = this;
-  delayed_work_timer_ = CFRunLoopTimerCreate(NULL,                // allocator
-                                             kCFTimeIntervalMax,  // fire time
-                                             kCFTimeIntervalMax,  // interval
-                                             0,                   // flags
-                                             0,                   // priority
-                                             RunDelayedWorkTimer,
-                                             &timer_context);
+  timer_context.info = this; // 将当前对象作为参数传入
+  // 创建一个新的 CFRunLoopTimer 对象
+  delayed_work_timer_ = CFRunLoopTimerCreate(NULL, // allocator 用于分配内存，通常使用kCFAllocatorDefault即可
+                                             kCFTimeIntervalMax, // fire time 第一次触发调用的时间
+                                             kCFTimeIntervalMax, // interval 回调间隔
+                                             0, // flags 苹果备用参数，传0即可
+                                             0, // priority RunLoop执行事件的优先级，对于Timer是无用的，传0即可
+                                             RunDelayedWorkTimer, // 定时器事件的回调函数
+                                             &timer_context); // 用于与callback联系的上下文context
 
+  // 包含程序定义的数据和回调的结构，您可以使用它们配置版本 0 CFRunLoopSource 的行为
   CFRunLoopSourceContext source_context = CFRunLoopSourceContext();
   source_context.info = this;
-  source_context.perform = RunWorkSource;
+  source_context.perform = RunWorkSource; // 执行工作回调函数
+  // 创建工作源(事件)
   work_source_ = CFRunLoopSourceCreate(NULL,  // allocator
                                        1,     // priority
                                        &source_context);
-  source_context.perform = RunIdleWorkSource;
+
+  source_context.perform = RunIdleWorkSource; // idel工作的回调函数
+  // 创建idle工作源(事件)
   idle_work_source_ = CFRunLoopSourceCreate(NULL,  // allocator
                                             2,     // priority
                                             &source_context);
-  source_context.perform = RunNestingDeferredWorkSource;
+
+  source_context.perform = RunNestingDeferredWorkSource; // 忽略，嵌套任务
   nesting_deferred_work_source_ = CFRunLoopSourceCreate(NULL,  // allocator
                                                         0,     // priority
                                                         &source_context);
 
+  // 消息循环-观察者上下文，观察消息循环状态变化
   CFRunLoopObserverContext observer_context = CFRunLoopObserverContext();
-  observer_context.info = this;
+  observer_context.info = this; // 把自己传递过去
+  // 创建消息队列休眠等待之前观察者
   pre_wait_observer_ = CFRunLoopObserverCreate(NULL,  // allocator
+                                               // 即将进入休眠
                                                kCFRunLoopBeforeWaiting,
                                                true,  // repeat
                                                0,     // priority
+                                               // 回调函数
                                                PreWaitObserver,
                                                &observer_context);
+  // 创建消息事件发生之前观察者
   pre_source_observer_ = CFRunLoopObserverCreate(NULL,  // allocator
+                                                 // 即将处理 Source(事件)
                                                  kCFRunLoopBeforeSources,
                                                  true,  // repeat
                                                  0,     // priority
+                                                 // 回调函数
                                                  PreSourceObserver,
                                                  &observer_context);
+  // 进入退出消息循环观察者
   enter_exit_observer_ = CFRunLoopObserverCreate(NULL,  // allocator
-                                                 kCFRunLoopEntry |
-                                                     kCFRunLoopExit,
+                                                 // 即将进入Loop | 即将退出Loop
+                                                 kCFRunLoopEntry | kCFRunLoopExit,
                                                  true,  // repeat
                                                  0,     // priority
-                                                 EnterExitObserver,
+                                                 // 回调函数
+                                                 EnterExitObserver, // callback
                                                  &observer_context);
   SetModeMask(initial_mode_mask);
 }
@@ -318,11 +404,14 @@ void MessagePumpCFRunLoopBase::SetDelegate(Delegate* delegate) {
     // If any work showed up but could not be dispatched for want of a
     // delegate, set it up for dispatch again now that a delegate is
     // available.
+    // 如果有任何工作出现但由于缺少委托而无法分派，则在委托可用后再次将其设置为分派。
     if (delegateless_work_) {
+      // 向 work_source_(CFRunLoopSourceRef) 对象发出信号，将其标记为准备触发
       CFRunLoopSourceSignal(work_source_);
       delegateless_work_ = false;
     }
     if (delegateless_idle_work_) {
+      // 向 idle_work_source_(CFRunLoopSourceRef) 对象发出信号，将其标记为准备触发
       CFRunLoopSourceSignal(idle_work_source_);
       delegateless_idle_work_ = false;
     }
@@ -338,8 +427,8 @@ void MessagePumpCFRunLoopBase::SetModeMask(int mode_mask) {
   for (size_t i = 0; i < kNumModes; ++i) {
     bool enable = mode_mask & (0x1 << i);
     if (enable == !enabled_modes_[i]) {
-      enabled_modes_[i] =
-          enable ? std::make_unique<ScopedModeEnabler>(this, i) : nullptr;
+      enabled_modes_[i] = enable ?
+          std::make_unique<ScopedModeEnabler>(this, i) : nullptr;
     }
   }
 }
@@ -351,7 +440,7 @@ int MessagePumpCFRunLoopBase::GetModeMask() const {
   return mask;
 }
 
-// Called from the run loop.
+// Called from the run loop. CFRunLoopTimerCreate的定时器回调函数
 // static
 void MessagePumpCFRunLoopBase::RunDelayedWorkTimer(CFRunLoopTimerRef timer,
                                                    void* info) {
@@ -363,7 +452,7 @@ void MessagePumpCFRunLoopBase::RunDelayedWorkTimer(CFRunLoopTimerRef timer,
   });
 }
 
-// Called from the run loop.
+// Called from the run loop. 在消息循环线程中被调用
 // static
 void MessagePumpCFRunLoopBase::RunWorkSource(void* info) {
   MessagePumpCFRunLoopBase* self = static_cast<MessagePumpCFRunLoopBase*>(info);
@@ -391,13 +480,15 @@ bool MessagePumpCFRunLoopBase::RunWork() {
   // released promptly even in the absence of UI events.
   MessagePumpScopedAutoreleasePool autorelease_pool(this);
 
+  // 执行代理的消息队列中的任务
   Delegate::NextWorkInfo next_work_info = delegate_->DoWork();
-
   if (next_work_info.is_immediate()) {
+    // 向 work_source_(CFRunLoopSourceRef) 对象发出信号，将其标记为准备触发
     CFRunLoopSourceSignal(work_source_);
     return true;
   }
 
+  // 定时器任务
   if (!next_work_info.delayed_run_time.is_max())
     ScheduleDelayedWorkImpl(next_work_info.remaining_delay());
   return false;
@@ -432,8 +523,10 @@ void MessagePumpCFRunLoopBase::RunIdleWork() {
   // Call DoIdleWork once, and if something was done, arrange to come back here
   // again as long as the loop is still running.
   bool did_work = delegate_->DoIdleWork();
-  if (did_work)
+  if (did_work) {
+    // 向 idle_work_source_(CFRunLoopSourceRef) 对象发出信号，将其标记为准备触发
     CFRunLoopSourceSignal(idle_work_source_);
+  }
 }
 
 // Called from the run loop.
@@ -483,6 +576,7 @@ void MessagePumpCFRunLoopBase::MaybeScheduleNestingDeferredWork() {
   // was disallowed.
   if (deepest_nesting_level_ > nesting_level_) {
     deepest_nesting_level_ = nesting_level_;
+    // 把 nesting_deferred_work_source_源标记位待处理，等到手动调用 CFRunLoopWakeUp即可
     CFRunLoopSourceSignal(nesting_deferred_work_source_);
   }
 }
@@ -533,14 +627,14 @@ void MessagePumpCFRunLoopBase::EnterExitObserver(CFRunLoopObserverRef observer,
   MessagePumpCFRunLoopBase* self = static_cast<MessagePumpCFRunLoopBase*>(info);
 
   switch (activity) {
-    case kCFRunLoopEntry:
+    case kCFRunLoopEntry: // 即将进入消息循环事件
       ++self->nesting_level_;
       if (self->nesting_level_ > self->deepest_nesting_level_) {
         self->deepest_nesting_level_ = self->nesting_level_;
       }
       break;
 
-    case kCFRunLoopExit:
+    case kCFRunLoopExit: // 即将退出消息循环事件
       // Not all run loops go to sleep.  If a run loop is stopped before it
       // goes to sleep due to a CFRunLoopStop call, or if the timeout passed
       // to CFRunLoopRunInMode expires, the run loop may proceed directly from
@@ -574,8 +668,7 @@ void MessagePumpCFRunLoopBase::EnterExitObserver(CFRunLoopObserverRef observer,
 
 // Called by MessagePumpCFRunLoopBase::EnterExitRunLoop.  The default
 // implementation is a no-op.
-void MessagePumpCFRunLoopBase::EnterExitRunLoop(CFRunLoopActivity activity) {
-}
+void MessagePumpCFRunLoopBase::EnterExitRunLoop(CFRunLoopActivity activity) {}
 
 MessagePumpCFRunLoop::MessagePumpCFRunLoop()
     : MessagePumpCFRunLoopBase(kCommonModeMask), quit_pending_(false) {}
@@ -599,10 +692,12 @@ void MessagePumpCFRunLoop::DoRun(Delegate* delegate) {
 }
 
 // Must be called on the run loop thread.
+// 必须是在运行时线程中被调用
 bool MessagePumpCFRunLoop::DoQuit() {
   // Stop the innermost run loop managed by this MessagePumpCFRunLoop object.
   if (nesting_level() == run_nesting_level()) {
     // This object is running the innermost loop, just stop it.
+    // 强制CFRunLoop对象停止运行
     CFRunLoopStop(run_loop());
     return true;
   } else {
@@ -625,6 +720,7 @@ void MessagePumpCFRunLoop::EnterExitRunLoop(CFRunLoopActivity activity) {
     // were running further inside a run loop managed by this object.  Now
     // that all unmanaged inner run loops are gone, stop the loop running
     // just inside Run.
+    // 强制CFRunLoop对象停止运行
     CFRunLoopStop(run_loop());
     quit_pending_ = false;
     OnDidQuit();
@@ -633,11 +729,14 @@ void MessagePumpCFRunLoop::EnterExitRunLoop(CFRunLoopActivity activity) {
 
 MessagePumpNSRunLoop::MessagePumpNSRunLoop()
     : MessagePumpCFRunLoopBase(kCommonModeMask) {
+  // 创建源（事件）上下文
   CFRunLoopSourceContext source_context = CFRunLoopSourceContext();
-  source_context.perform = NoOp;
+  source_context.perform = NoOp; // 回调函数设置为空函数
+  // 创建退出源(事件)
   quit_source_ = CFRunLoopSourceCreate(NULL,  // allocator
                                        0,     // priority
                                        &source_context);
+  // 添加退出source(退出事件)到消息循环中，退出事件通知时，这里就可以收到
   CFRunLoopAddSource(run_loop(), quit_source_, kCFRunLoopCommonModes);
 }
 
@@ -655,6 +754,7 @@ void MessagePumpNSRunLoop::DoRun(Delegate* delegate) {
 }
 
 bool MessagePumpNSRunLoop::DoQuit() {
+  // 唤醒休眠的消息循环，退出消息循环
   CFRunLoopSourceSignal(quit_source_);
   CFRunLoopWakeUp(run_loop());
   return true;
@@ -736,7 +836,7 @@ void MessagePumpNSApplication::DoRun(Delegate* delegate) {
   if (![NSApp isRunning]) {
     running_own_loop_ = false;
     // NSApplication manages autorelease pools itself when run this way.
-    [NSApp run];
+    [NSApp run]; // 开始执行mac/ios的消息循环
   } else {
     running_own_loop_ = true;
     NSDate* distant_future = [NSDate distantFuture];
@@ -797,11 +897,9 @@ void MessagePumpNSApplication::EnterExitRunLoop(CFRunLoopActivity activity) {
   }
 }
 
-MessagePumpCrApplication::MessagePumpCrApplication() {
-}
+MessagePumpCrApplication::MessagePumpCrApplication() {}
 
-MessagePumpCrApplication::~MessagePumpCrApplication() {
-}
+MessagePumpCrApplication::~MessagePumpCrApplication() {}
 
 // Prevents an autorelease pool from being created if the app is in the midst of
 // handling a UI event because various parts of AppKit depend on objects that
@@ -863,12 +961,13 @@ bool MessagePumpMac::IsHandlingSendEvent() {
 }
 #endif  // !defined(OS_IOS)
 
+// 创建用于处理iOS和Mac平台的UI事件的消息泵
 // static
 std::unique_ptr<MessagePump> MessagePumpMac::Create() {
-  if ([NSThread isMainThread]) {
-#if defined(OS_IOS)
+  if ([NSThread isMainThread]) { // 主线程
+#if defined(OS_IOS) // iOS平台
     return std::make_unique<MessagePumpUIApplication>();
-#else
+#else // Mac平台
     if ([NSApp conformsToProtocol:@protocol(CrAppProtocol)])
       return std::make_unique<MessagePumpCrApplication>();
 
@@ -876,6 +975,8 @@ std::unique_ptr<MessagePump> MessagePumpMac::Create() {
     // Executables which have specific requirements for their
     // NSApplication subclass should initialize appropriately before
     // creating an event loop.
+    // 主线程 MessagePump 实现需要一个 NSApp。对其 NSApplication 子类有特定
+    // 要求的可执行文件应在创建事件循环之前进行适当的初始化。
     [NSApplication sharedApplication];
     g_not_using_cr_app = true;
     return std::make_unique<MessagePumpNSApplication>();

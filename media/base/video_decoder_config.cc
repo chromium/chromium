@@ -69,7 +69,7 @@ void VideoDecoderConfig::Initialize(VideoCodec codec,
 }
 
 bool VideoDecoderConfig::IsValidConfig() const {
-  return codec_ != kUnknownVideoCodec && IsValidSize(coded_size_) &&
+  return codec_ != VideoCodec::kUnknown && IsValidSize(coded_size_) &&
          IsValidSize(natural_size_) &&
          gfx::Rect(coded_size_).Contains(visible_rect_);
 }

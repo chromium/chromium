@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -44,6 +43,10 @@ class BitmapFetcherTestDelegate : public BitmapFetcherDelegate {
                                                    success_(false),
                                                    async_(async) {}
 
+  BitmapFetcherTestDelegate(const BitmapFetcherTestDelegate&) = delete;
+  BitmapFetcherTestDelegate& operator=(const BitmapFetcherTestDelegate&) =
+      delete;
+
   ~BitmapFetcherTestDelegate() override { EXPECT_TRUE(called_); }
 
   // Method inherited from BitmapFetcherDelegate.
@@ -80,8 +83,6 @@ class BitmapFetcherTestDelegate : public BitmapFetcherDelegate {
   bool success_;
   bool async_;
   SkBitmap bitmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(BitmapFetcherTestDelegate);
 };
 
 class BitmapFetcherBrowserTest : public InProcessBrowserTest {

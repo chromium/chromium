@@ -1,0 +1,4 @@
+include_rules = [
+    "+components/device_reauth/biometric_authenticator.h",
+    "+content/public/android/java/src/org/chromium/content_public",
+]

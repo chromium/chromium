@@ -20,6 +20,7 @@ import sys
 
 # This is a bit more expansive than it needs to be (includes README). Meh.
 test_support_bundle_data_globs = [
+    "data/quic_http_response_cache_data/test.example.com/*",
     "data/quic_http_response_cache_data_with_push/test.example.com/*",
     "data/ssl/certificates/*",
 ]
@@ -125,7 +126,7 @@ def format_file_list(files):
 def replace_sources(data, sources_regex, globs):
   m = sources_regex.search(data)
   if not m:
-      fatal("Couldn't find the sources section: %s" % sources_regex.pattern)
+    fatal("Couldn't find the sources section: %s" % sources_regex.pattern)
 
   formatted_files = format_file_list(resolve_file_globs(globs))
   return data[0:m.start(1)] + formatted_files + data[m.end(1):]

@@ -11,12 +11,11 @@
 #include "cc/animation/keyframe_model.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
-#include "cc/test/geometry_test_utils.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
-#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace gfx {
-class ScrollOffset;
+class Vector2dF;
 }
 
 namespace cc {
@@ -68,13 +67,18 @@ class FakeFloatTransition : public gfx::FloatAnimationCurve {
 };
 
 int AddScrollOffsetAnimationToAnimation(Animation* animation,
-                                        gfx::ScrollOffset initial_value,
-                                        gfx::ScrollOffset target_value);
+                                        gfx::Vector2dF initial_value,
+                                        gfx::Vector2dF target_value);
 
 int AddAnimatedTransformToAnimation(Animation* animation,
                                     double duration,
                                     int delta_x,
                                     int delta_y);
+
+int AddAnimatedCustomPropertyToAnimation(Animation* animation,
+                                         double duration,
+                                         int start_value,
+                                         int end_value);
 
 int AddAnimatedTransformToAnimation(Animation* animation,
                                     double duration,

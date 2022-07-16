@@ -17,10 +17,12 @@ namespace chrome {
 
 namespace {
 
+// Client name for logging in BLE scanning.
+constexpr char kScanClientName[] = "Nearby Connections";
+
 // Duration of time after which inactive Bluetooth devices may be removed from
 // the discovered devices map.
-const base::TimeDelta kStaleBluetoothDeviceTimeout =
-    base::TimeDelta::FromSeconds(20);
+const base::TimeDelta kStaleBluetoothDeviceTimeout = base::Seconds(20);
 
 void LogStartDiscoveryResult(bool success) {
   base::UmaHistogramBoolean(
@@ -88,7 +90,8 @@ bool BluetoothClassicMedium::StartDiscovery(
   }
 
   mojo::PendingRemote<bluetooth::mojom::DiscoverySession> discovery_session;
-  success = adapter_->StartDiscoverySession(&discovery_session);
+  success =
+      adapter_->StartDiscoverySession(kScanClientName, &discovery_session);
 
   if (!success || !discovery_session.is_valid()) {
     adapter_observer_.reset();

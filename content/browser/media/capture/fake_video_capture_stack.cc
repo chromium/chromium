@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "content/browser/media/capture/frame_test_util.h"
 #include "media/base/video_frame.h"
 #include "media/capture/video/video_frame_receiver.h"
@@ -29,23 +28,27 @@ void FakeVideoCaptureStack::Reset() {
   last_frame_timestamp_ = base::TimeDelta::Min();
 }
 
-class FakeVideoCaptureStack::Receiver : public media::VideoFrameReceiver {
+class FakeVideoCaptureStack::Receiver final : public media::VideoFrameReceiver {
  public:
   explicit Receiver(FakeVideoCaptureStack* capture_stack)
       : capture_stack_(capture_stack) {}
-  ~Receiver() final = default;
+
+  Receiver(const Receiver&) = delete;
+  Receiver& operator=(const Receiver&) = delete;
+
+  ~Receiver() override = default;
 
  private:
   using Buffer = media::VideoCaptureDevice::Client::Buffer;
 
   void OnNewBuffer(int buffer_id,
-                   media::mojom::VideoBufferHandlePtr buffer_handle) final {
+                   media::mojom::VideoBufferHandlePtr buffer_handle) override {
     buffers_[buffer_id] = std::move(buffer_handle);
   }
 
   void OnFrameReadyInBuffer(
       media::ReadyFrameInBuffer frame,
-      std::vector<media::ReadyFrameInBuffer> scaled_frames) final {
+      std::vector<media::ReadyFrameInBuffer> scaled_frames) override {
     const auto it = buffers_.find(frame.buffer_id);
     CHECK(it != buffers_.end());
 
@@ -72,8 +75,7 @@ class FakeVideoCaptureStack::Receiver : public media::VideoFrameReceiver {
     // This destruction observer will unmap the shared memory when the
     // VideoFrame goes out-of-scope.
     video_frame->AddDestructionObserver(base::BindOnce(
-        base::DoNothing::Once<base::ReadOnlySharedMemoryMapping>(),
-        std::move(mapping)));
+        [](base::ReadOnlySharedMemoryMapping) {}, std::move(mapping)));
     // This destruction observer will notify the video capture device once all
     // downstream code is done using the VideoFrame.
     video_frame->AddDestructionObserver(base::BindOnce(
@@ -84,32 +86,30 @@ class FakeVideoCaptureStack::Receiver : public media::VideoFrameReceiver {
     capture_stack_->OnReceivedFrame(std::move(video_frame));
   }
 
-  void OnBufferRetired(int buffer_id) final {
+  void OnBufferRetired(int buffer_id) override {
     const auto it = buffers_.find(buffer_id);
     CHECK(it != buffers_.end());
     buffers_.erase(it);
   }
 
-  void OnError(media::VideoCaptureError) final {
+  void OnError(media::VideoCaptureError) override {
     capture_stack_->error_occurred_ = true;
   }
 
-  void OnFrameDropped(media::VideoCaptureFrameDropReason) final {}
+  void OnFrameDropped(media::VideoCaptureFrameDropReason) override {}
 
-  void OnLog(const std::string& message) final {
+  void OnLog(const std::string& message) override {
     capture_stack_->log_messages_.push_back(message);
   }
 
-  void OnStarted() final { capture_stack_->started_ = true; }
+  void OnStarted() override { capture_stack_->started_ = true; }
 
-  void OnStartedUsingGpuDecode() final { NOTREACHED(); }
+  void OnStartedUsingGpuDecode() override { NOTREACHED(); }
 
-  void OnStopped() final {}
+  void OnStopped() override {}
 
   FakeVideoCaptureStack* const capture_stack_;
   base::flat_map<int, media::mojom::VideoBufferHandlePtr> buffers_;
-
-  DISALLOW_COPY_AND_ASSIGN(Receiver);
 };
 
 std::unique_ptr<media::VideoFrameReceiver>

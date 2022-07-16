@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/cpp/assistant/assistant_state.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/ash/assistant/device_actions.h"
 #include "chromeos/assistant/buildflags.h"
@@ -24,8 +23,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class AssistantSetup;
-class AssistantWebViewFactoryImpl;
-class ConversationStartersClientImpl;
 class Profile;
 
 // Class to handle all Assistant in-browser-process functionalities.
@@ -105,8 +102,6 @@ class AssistantBrowserDelegateImpl
   std::unique_ptr<DeviceActions> device_actions_;
   std::unique_ptr<chromeos::assistant::Service> service_;
   std::unique_ptr<AssistantSetup> assistant_setup_;
-  std::unique_ptr<AssistantWebViewFactoryImpl> assistant_web_view_factory_;
-  std::unique_ptr<ConversationStartersClientImpl> conversation_starters_client_;
 
   bool initialized_ = false;
 

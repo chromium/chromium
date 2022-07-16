@@ -12,11 +12,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/cxx17_backports.h"
+#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/hex_utils.h"
 #include "net/base/host_port_pair.h"
@@ -34,6 +36,7 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_request_info.h"
 #include "net/http/transport_security_state_test_util.h"
+#include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/test_net_log.h"
@@ -88,8 +91,7 @@ base::TimeTicks TheNearFuture() {
 }
 
 base::TimeTicks SlowReads() {
-  g_time_delta +=
-      base::TimeDelta::FromMilliseconds(2 * kYieldAfterDurationMilliseconds);
+  g_time_delta += base::Milliseconds(2 * kYieldAfterDurationMilliseconds);
   return base::TimeTicks::Now() + g_time_delta;
 }
 
@@ -112,13 +114,15 @@ class SpdySessionRequestDelegate
     : public SpdySessionPool::SpdySessionRequest::Delegate {
  public:
   SpdySessionRequestDelegate() = default;
+
+  SpdySessionRequestDelegate(const SpdySessionRequestDelegate&) = delete;
+  SpdySessionRequestDelegate& operator=(const SpdySessionRequestDelegate&) =
+      delete;
+
   ~SpdySessionRequestDelegate() override = default;
 
   void OnSpdySessionAvailable(
       base::WeakPtr<SpdySession> spdy_session) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SpdySessionRequestDelegate);
 };
 
 }  // namespace
@@ -192,7 +196,7 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
   void SetUp() override {
     g_time_delta = base::TimeDelta();
     g_time_now = base::TimeTicks::Now();
-    session_deps_.net_log = log_.bound().net_log();
+    session_deps_.net_log = NetLog::Get();
     session_deps_.enable_server_push_cancellation = true;
   }
 
@@ -216,8 +220,8 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
 
   void CreateSpdySession() {
     DCHECK(!session_);
-    session_ =
-        ::net::CreateSpdySession(http_session_.get(), key_, log_.bound());
+    session_ = ::net::CreateSpdySession(http_session_.get(), key_,
+                                        net_log_with_source_);
   }
 
   void StallSessionSend() {
@@ -369,7 +373,9 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
     return session_->buffered_spdy_framer_->header_encoder_table_size();
   }
 
-  RecordingBoundTestNetLog log_;
+  RecordingNetLogObserver net_log_observer_;
+  NetLogWithSource net_log_with_source_{
+      NetLogWithSource::Make(NetLogSourceType::NONE)};
 
   // Original socket limits.  Some tests set these.  Safest to always restore
   // them once each test has been run.
@@ -1138,7 +1144,7 @@ TEST_F(SpdySessionTestWithMockTime, ClientPing) {
   base::TimeTicks before_ping_time = base::TimeTicks::Now();
 
   // Negative value means a preface ping will always be sent.
-  set_connection_at_risk_of_loss_time(base::TimeDelta::FromSeconds(-1));
+  set_connection_at_risk_of_loss_time(base::Seconds(-1));
 
   // Send a PING frame.  This posts CheckPingStatus() with delay.
   MaybeSendPrefacePing();
@@ -1251,7 +1257,7 @@ TEST_F(SpdySessionTest, PingAndWriteLoop) {
   spdy_stream->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
   // Shift time so that a ping will be sent out.
-  g_time_delta = base::TimeDelta::FromSeconds(11);
+  g_time_delta = base::Seconds(11);
 
   base::RunLoop().RunUntilIdle();
   session_->CloseSessionOnError(ERR_ABORTED, "Aborting");
@@ -1262,8 +1268,6 @@ TEST_F(SpdySessionTest, PingAndWriteLoop) {
 }
 
 TEST_F(SpdySessionTest, StreamIdSpaceExhausted) {
-  const spdy::SpdyStreamId kLastStreamId = 0x7fffffff;
-
   // Test setup: |stream_hi_water_mark_| and |max_concurrent_streams_| are
   // fixed to allow for two stream ID assignments, and three concurrent
   // streams. Four streams are started, and two are activated. Verify the
@@ -1882,7 +1886,7 @@ TEST_F(SpdySessionTestWithMockTime, FailedPing) {
   spdy_stream1->SetDelegate(&delegate);
 
   // Negative value means a preface ping will always be sent.
-  set_connection_at_risk_of_loss_time(base::TimeDelta::FromSeconds(-1));
+  set_connection_at_risk_of_loss_time(base::Seconds(-1));
 
   // Send a PING frame.  This posts CheckPingStatus() with delay.
   MaybeSendPrefacePing();
@@ -1896,7 +1900,7 @@ TEST_F(SpdySessionTestWithMockTime, FailedPing) {
   EXPECT_TRUE(HasSpdySession(spdy_session_pool_, key_));
 
   // Run CheckPingStatus() and make it believe hung_interval has passed.
-  g_time_delta = base::TimeDelta::FromSeconds(15);
+  g_time_delta = base::Seconds(15);
   FastForwardUntilNoTasksRemain();
   base::RunLoop().RunUntilIdle();
 
@@ -1932,7 +1936,7 @@ TEST_F(SpdySessionTestWithMockTime, NoPingSentWhenCheckPingPending) {
   CreateSpdySession();
 
   // Negative value means a preface ping will always be sent.
-  set_connection_at_risk_of_loss_time(base::TimeDelta::FromSeconds(-1));
+  set_connection_at_risk_of_loss_time(base::Seconds(-1));
 
   base::WeakPtr<SpdyStream> spdy_stream1 =
       CreateStreamSynchronously(SPDY_BIDIRECTIONAL_STREAM, session_, test_url_,
@@ -1960,7 +1964,7 @@ TEST_F(SpdySessionTestWithMockTime, NoPingSentWhenCheckPingPending) {
 
   // Fast forward mock time so that normally another ping would be sent out.
   // However, since CheckPingStatus() is still pending, no new ping is sent.
-  g_time_delta = base::TimeDelta::FromSeconds(15);
+  g_time_delta = base::Seconds(15);
   MaybeSendPrefacePing();
 
   EXPECT_FALSE(ping_in_flight());
@@ -2194,7 +2198,7 @@ TEST_F(SpdySessionTest, Initialize) {
   // Flush the read completion task.
   base::RunLoop().RunUntilIdle();
 
-  auto entries = log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
   EXPECT_LT(0u, entries.size());
 
   // Check that we logged HTTP2_SESSION_INITIALIZED correctly.
@@ -2207,7 +2211,7 @@ TEST_F(SpdySessionTest, Initialize) {
   EXPECT_TRUE(
       NetLogSourceFromEventParameters(&entries[pos].params, &socket_source));
   EXPECT_TRUE(socket_source.IsValid());
-  EXPECT_NE(log_.bound().source().id, socket_source.id);
+  EXPECT_NE(net_log_with_source_.source().id, socket_source.id);
 }
 
 TEST_F(SpdySessionTest, NetLogOnSessionGoaway) {
@@ -2233,7 +2237,7 @@ TEST_F(SpdySessionTest, NetLogOnSessionGoaway) {
   EXPECT_FALSE(session_);
 
   // Check that the NetLog was filled reasonably.
-  auto entries = log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
   EXPECT_LT(0u, entries.size());
 
   int pos = ExpectLogContainsSomewhere(
@@ -2274,7 +2278,7 @@ TEST_F(SpdySessionTest, NetLogOnSessionEOF) {
   EXPECT_FALSE(session_);
 
   // Check that the NetLog was filled reasonably.
-  auto entries = log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
   EXPECT_LT(0u, entries.size());
 
   // Check that we logged SPDY_SESSION_CLOSE correctly.
@@ -2867,7 +2871,7 @@ TEST_F(SpdySessionTest, VerifyDomainAuthenticationExpectCT) {
 
   // Add Expect-CT data for all three hosts that passed the above checks, using
   // different NetworkIsolationKeys.
-  const base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1);
+  const base::Time expiry = base::Time::Now() + base::Days(1);
   session_deps_.transport_security_state->AddExpectCT(
       "www.example.org", expiry, true, GURL(), NetworkIsolationKey());
   session_deps_.transport_security_state->AddExpectCT(
@@ -6352,8 +6356,7 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameWithExpectCTError) {
   session_deps_.transport_security_state =
       std::make_unique<TransportSecurityState>();
   session_deps_.transport_security_state->AddExpectCT(
-      GURL(origin).host(),
-      base::Time::Now() + base::TimeDelta::FromDays(1) /* expiry */, true,
+      GURL(origin).host(), base::Time::Now() + base::Days(1) /* expiry */, true,
       GURL(), key_.network_isolation_key());
 
   spdy::SpdyAltSvcIR altsvc_ir(/* stream_id = */ 0);
@@ -6709,9 +6712,9 @@ TEST(MapFramerErrorToProtocolError, MapsValues) {
   CHECK_EQ(SPDY_ERROR_INVALID_DATA_FRAME_FLAGS,
            MapFramerErrorToProtocolError(
                http2::Http2DecoderAdapter::SPDY_INVALID_DATA_FRAME_FLAGS));
-  CHECK_EQ(SPDY_ERROR_GOAWAY_FRAME_CORRUPT,
+  CHECK_EQ(SPDY_ERROR_HPACK_NAME_HUFFMAN_ERROR,
            MapFramerErrorToProtocolError(
-               http2::Http2DecoderAdapter::SPDY_GOAWAY_FRAME_CORRUPT));
+               http2::Http2DecoderAdapter::SPDY_HPACK_NAME_HUFFMAN_ERROR));
   CHECK_EQ(SPDY_ERROR_UNEXPECTED_FRAME,
            MapFramerErrorToProtocolError(
                http2::Http2DecoderAdapter::SPDY_UNEXPECTED_FRAME));
@@ -6721,9 +6724,6 @@ TEST(MapFramerErrorToNetError, MapsValue) {
   CHECK_EQ(ERR_HTTP2_PROTOCOL_ERROR,
            MapFramerErrorToNetError(
                http2::Http2DecoderAdapter::SPDY_INVALID_CONTROL_FRAME));
-  CHECK_EQ(ERR_HTTP2_COMPRESSION_ERROR,
-           MapFramerErrorToNetError(
-               http2::Http2DecoderAdapter::SPDY_COMPRESS_FAILURE));
   CHECK_EQ(ERR_HTTP2_COMPRESSION_ERROR,
            MapFramerErrorToNetError(
                http2::Http2DecoderAdapter::SPDY_DECOMPRESS_FAILURE));
@@ -6855,7 +6855,7 @@ TEST(CanPoolTest, CanPoolExpectCT) {
                                    network_isolation_key));
 
   const base::Time current_time(base::Time::Now());
-  const base::Time expiry = current_time + base::TimeDelta::FromSeconds(1000);
+  const base::Time expiry = current_time + base::Seconds(1000);
   ssl_info.ct_policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
 

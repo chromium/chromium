@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/time/tick_clock.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -45,6 +44,9 @@ class DnsProbeServiceFactory : public BrowserContextKeyedServiceFactory {
   // Returns the NetworkContextServiceFactory singleton.
   static DnsProbeServiceFactory* GetInstance();
 
+  DnsProbeServiceFactory(const DnsProbeServiceFactory&) = delete;
+  DnsProbeServiceFactory& operator=(const DnsProbeServiceFactory&) = delete;
+
   // Creates a DnsProbeService which will use the supplied
   // |network_context_getter| and |dns_config_change_manager_getter| instead of
   // getting them from a BrowserContext, and uses |tick_clock| for cache
@@ -65,8 +67,6 @@ class DnsProbeServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsProbeServiceFactory);
 };
 
 }  // namespace chrome_browser_net

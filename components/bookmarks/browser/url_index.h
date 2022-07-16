@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/history_bookmark_model.h"
@@ -37,6 +36,9 @@ struct UrlAndTitle;
 class UrlIndex : public HistoryBookmarkModel {
  public:
   explicit UrlIndex(std::unique_ptr<BookmarkNode> root);
+
+  UrlIndex(const UrlIndex&) = delete;
+  UrlIndex& operator=(const UrlIndex&) = delete;
 
   BookmarkNode* root() { return root_.get(); }
 
@@ -115,8 +117,6 @@ class UrlIndex : public HistoryBookmarkModel {
   using NodesOrderedByUrlSet = std::multiset<BookmarkNode*, NodeUrlComparator>;
   NodesOrderedByUrlSet nodes_ordered_by_url_set_;
   mutable base::Lock url_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlIndex);
 };
 
 }  // namespace bookmarks

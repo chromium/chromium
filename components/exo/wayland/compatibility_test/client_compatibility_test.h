@@ -15,10 +15,11 @@ namespace test {
 class ClientCompatibilityTest : public WaylandClientTest {
  public:
   ClientCompatibilityTest();
-  ~ClientCompatibilityTest() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientCompatibilityTest);
+  ClientCompatibilityTest(const ClientCompatibilityTest&) = delete;
+  ClientCompatibilityTest& operator=(const ClientCompatibilityTest&) = delete;
+
+  ~ClientCompatibilityTest() override;
 };
 
 }  // namespace test

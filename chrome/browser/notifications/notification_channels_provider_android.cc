@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "chrome/browser/notifications/jni_headers/NotificationSettingsBridge_jni.h"
 #include "chrome/common/pref_names.h"
-#include "components/content_settings/core/browser/content_settings_details.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -287,7 +286,8 @@ NotificationChannelsProviderAndroid::UpdateCachedChannels() const {
         FROM_HERE,
         base::BindOnce(&NotificationChannelsProviderAndroid::NotifyObservers,
                        provider->weak_factory_.GetWeakPtr(),
-                       ContentSettingsPattern(), ContentSettingsPattern(),
+                       ContentSettingsPattern::Wildcard(),
+                       ContentSettingsPattern::Wildcard(),
                        ContentSettingsType::NOTIFICATIONS));
     provider->cached_channels_ = std::move(updated_channels_map);
     provider->initialized_cached_channels_ = true;
@@ -356,8 +356,8 @@ void NotificationChannelsProviderAndroid::ClearAllContentSettingsRules(
   cached_channels_.clear();
 
   if (channels.size() > 0) {
-    NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
-                    content_type);
+    NotifyObservers(ContentSettingsPattern::Wildcard(),
+                    ContentSettingsPattern::Wildcard(), content_type);
   }
 }
 
@@ -404,7 +404,8 @@ void NotificationChannelsProviderAndroid::CreateChannelIfRequired(
         new_channel_status == NotificationChannelStatus::ENABLED);
     cached_channels_.emplace(origin_string, std::move(channel));
 
-    NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
+    NotifyObservers(ContentSettingsPattern::Wildcard(),
+                    ContentSettingsPattern::Wildcard(),
                     ContentSettingsType::NOTIFICATIONS);
   } else {
     auto old_channel_status =

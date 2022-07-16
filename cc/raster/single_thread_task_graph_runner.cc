@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "base/threading/simple_thread.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/base_tracing.h"
 
 namespace cc {
 
@@ -116,6 +116,11 @@ void SingleThreadTaskGraphRunner::Run() {
 
   while (true) {
     if (!RunTaskWithLockAcquired()) {
+      // Make sure the END of the last trace event emitted before going idle
+      // is flushed to perfetto.
+      // TODO(crbug.com/1021571): Remove this once fixed.
+      PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
+
       // Exit when shutdown is set and no more tasks are pending.
       if (shutdown_)
         break;

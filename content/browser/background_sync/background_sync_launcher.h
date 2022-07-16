@@ -26,6 +26,10 @@ class StoragePartition;
 class CONTENT_EXPORT BackgroundSyncLauncher {
  public:
   static BackgroundSyncLauncher* Get();
+
+  BackgroundSyncLauncher(const BackgroundSyncLauncher&) = delete;
+  BackgroundSyncLauncher& operator=(const BackgroundSyncLauncher&) = delete;
+
   static base::TimeDelta GetSoonestWakeupDelta(
       blink::mojom::BackgroundSyncType sync_type,
       BrowserContext* browser_context);
@@ -72,7 +76,6 @@ class CONTENT_EXPORT BackgroundSyncLauncher {
   base::TimeDelta soonest_wakeup_delta_one_shot_ = base::TimeDelta::Max();
   base::TimeDelta soonest_wakeup_delta_periodic_ = base::TimeDelta::Max();
   base::Time last_browser_wakeup_for_periodic_sync_;
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncLauncher);
 };
 
 }  // namespace content

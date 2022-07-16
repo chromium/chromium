@@ -6,14 +6,57 @@
  * @fileoverview Polymer element for lacros data migration screen.
  */
 
-Polymer({
-  is: 'lacros-data-migration-element',
+/* #js_imports_placeholder */
 
-  behaviors: [OobeDialogHostBehavior, LoginScreenBehavior],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ */
+const LacrosDataMigrationScreenElementBase = Polymer.mixinBehaviors(
+    [OobeDialogHostBehavior, OobeI18nBehavior, LoginScreenBehavior],
+    Polymer.Element);
+
+class LacrosDataMigrationScreen extends LacrosDataMigrationScreenElementBase {
+  static get is() {
+    return 'lacros-data-migration-element';
+  }
+
+  /* #html_template_placeholder */
+
+  constructor() {
+    super();
+    this.progressValue_ = 0;
+  }
+
+  static get properties() {
+    return {
+      progressValue_: {type: Number},
+    };
+  }
+
+  get EXTERNAL_API() {
+    return ['setProgressValue'];
+  }
+
+  /**
+   * Called to update the progress of data migration.
+   * @param {number} progress Percentage of data copied so far.
+   */
+  setProgressValue(progress) {
+    this.progressValue_ = progress;
+  }
 
   ready() {
+    super.ready();
     this.initializeLoginScreen('LacrosDataMigrationScreen', {
       resetAllowed: false,
     });
-  },
-});
+  }
+
+  onCancelButtonClicked_() {
+    this.userActed('cancel');
+  }
+}
+
+customElements.define(LacrosDataMigrationScreen.is, LacrosDataMigrationScreen);

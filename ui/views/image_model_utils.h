@@ -9,18 +9,18 @@
 #include "ui/views/views_export.h"
 
 namespace ui {
+class ColorProvider;
 class ImageModel;
-class NativeTheme;
 }  // namespace ui
 
 namespace views {
 
 // Returns an ImageSkia representation from an ImageModel representation.
-// `native_theme` must be non-null if `model` represents a vector icon. If
+// `color_provider` must be non-null if `model` represents a vector icon. If
 // `model` is empty, it returns an empty ImageSkia.
 VIEWS_EXPORT gfx::ImageSkia GetImageSkiaFromImageModel(
     const ui::ImageModel& model,
-    const ui::NativeTheme* native_theme = nullptr);
+    const ui::ColorProvider* color_provider = nullptr);
 }  // namespace views
 
 #endif  // UI_VIEWS_IMAGE_MODEL_UTILS_H_

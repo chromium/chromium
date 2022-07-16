@@ -34,7 +34,8 @@ TEST(SurfaceTest, PresentationCallback) {
   const LocalSurfaceId local_surface_id(6, base::UnguessableToken::Create());
 
   ServerSharedBitmapManager shared_bitmap_manager;
-  FrameSinkManagerImpl frame_sink_manager(&shared_bitmap_manager);
+  FrameSinkManagerImpl frame_sink_manager{
+      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager)};
   MockCompositorFrameSinkClient client;
   auto support = std::make_unique<CompositorFrameSinkSupport>(
       &client, &frame_sink_manager, kArbitraryFrameSinkId, kIsRoot);
@@ -88,7 +89,8 @@ void TestCopyResultCallback(bool* called,
 // aggregated on the next frame.
 TEST(SurfaceTest, CopyRequestLifetime) {
   ServerSharedBitmapManager shared_bitmap_manager;
-  FrameSinkManagerImpl frame_sink_manager(&shared_bitmap_manager);
+  FrameSinkManagerImpl frame_sink_manager{
+      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager)};
   SurfaceManager* surface_manager = frame_sink_manager.surface_manager();
   auto support = std::make_unique<CompositorFrameSinkSupport>(
       nullptr, &frame_sink_manager, kArbitraryFrameSinkId, kIsRoot);
@@ -105,7 +107,8 @@ TEST(SurfaceTest, CopyRequestLifetime) {
   support->RequestCopyOfOutput(PendingCopyOutputRequest{
       local_surface_id, SubtreeCaptureId(),
       std::make_unique<CopyOutputRequest>(
-          CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+          CopyOutputRequest::ResultFormat::RGBA,
+          CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(&TestCopyResultCallback, &copy_called,
                          copy_runloop.QuitClosure()))});
   surface->TakeCopyOutputRequestsFromClient();
@@ -114,7 +117,7 @@ TEST(SurfaceTest, CopyRequestLifetime) {
 
   int max_frame = 3, start_id = 200;
   for (int i = 0; i < max_frame; ++i) {
-    CompositorFrame frame = CompositorFrameBuilder().Build();
+    frame = CompositorFrameBuilder().Build();
     frame.render_pass_list.push_back(CompositorRenderPass::Create());
     frame.render_pass_list.back()->id =
         CompositorRenderPassId{i * 3 + start_id};

@@ -12,7 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_observer.h"
 #include "components/power_scheduler/power_mode.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
@@ -63,7 +63,8 @@ enum class PowerModeForUma {
   kMediumAnimation = 13,
   kSmallMainThreadAnimation = 14,
   kMediumMainThreadAnimation = 15,
-  kMaxValue = kMediumMainThreadAnimation,
+  kScriptExecution = 16,
+  kMaxValue = kScriptExecution,
 };
 
 // Samples the process's CPU time after a specific number of task were executed
@@ -114,11 +115,16 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
   void OnVisibilityChangedOnThreadPool(bool visible);
   void PerformFullCollectionOnThreadPool();
   void CollectHighLevelMetricsOnThreadPool();
+  void ReportAverageCpuLoad(base::TimeDelta cumulative_cpu_time);
 
   // Sample CPU time after a certain number of main-thread task to balance
   // overhead of sampling and loss at process termination.
   static constexpr int kReportAfterEveryNTasksPersistentProcess = 2500;
   static constexpr int kReportAfterEveryNTasksOtherProcess = 1000;
+  static constexpr base::TimeDelta kAvgCpuLoadReportInterval =
+      base::Seconds(30);
+  static constexpr base::TimeDelta kIdleCpuLoadReportInterval =
+      base::Seconds(5);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   power_scheduler::PowerModeArbiter* const arbiter_;
@@ -135,6 +141,10 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
   absl::optional<power_scheduler::PowerMode> power_mode_;
   ProcessTypeForUma process_type_;
   base::TimeDelta reported_cpu_time_;
+  base::TimeDelta cpu_time_on_last_load_report_;
+  base::TimeTicks cpu_load_report_time_;
+  base::TimeDelta cpu_time_for_idle_cpu_;
+  base::TimeTicks timestamp_for_idle_cpu_;
 
   // Lives on |task_runner_| after construction.
   std::unique_ptr<DetailedCpuTimeMetrics> detailed_metrics_;

@@ -30,6 +30,7 @@ source_set("internal") {
     "cloud/affiliation.cc",
     "cloud/affiliation.h",
     "cloud/chrome_browser_cloud_management_metrics.h",
+    "cloud/client_data_delegate.h",
     "cloud/cloud_external_data_manager.cc",
     "cloud/cloud_external_data_manager.h",
     "cloud/cloud_external_data_store.cc",
@@ -574,4 +575,12 @@ if (is_win || is_linux || is_chromeos) {
       "//base",
     ]
   }
+}
+
+fuzzer_test("policy_schema_fuzzer") {
+  sources = [ "schema_fuzzer.cc" ]
+  deps = [
+    ":internal",
+    "//base",
+  ]
 }

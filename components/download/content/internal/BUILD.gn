@@ -19,6 +19,7 @@ source_set("internal") {
 
   public_deps = [
     "//components/download/content/public",
+    "//components/download/internal/background_service:common",
     "//components/download/internal/background_service:internal",
     "//components/download/public/background_service:public",
   ]

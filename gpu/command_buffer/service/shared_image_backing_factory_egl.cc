@@ -101,12 +101,16 @@ bool SharedImageBackingFactoryEGL::IsSupported(
   if (gmb_type != gfx::EMPTY_BUFFER) {
     return false;
   }
-  bool needs_interop_factory = (gr_context_type == GrContextType::kVulkan &&
-                                (usage & SHARED_IMAGE_USAGE_DISPLAY)) ||
-                               (usage & SHARED_IMAGE_USAGE_WEBGPU) ||
-                               (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE) ||
-                               (usage & SHARED_IMAGE_USAGE_SCANOUT);
-  if (needs_interop_factory) {
+
+  // Doesn't support contexts other than GL for OOPR Canvas
+  if (gr_context_type != GrContextType::kGL &&
+      ((usage & SHARED_IMAGE_USAGE_DISPLAY) ||
+       (usage & SHARED_IMAGE_USAGE_RASTER))) {
+    return false;
+  }
+  if ((usage & SHARED_IMAGE_USAGE_WEBGPU) ||
+      (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE) ||
+      (usage & SHARED_IMAGE_USAGE_SCANOUT)) {
     // return false if it needs interop factory
     return false;
   }
@@ -139,16 +143,10 @@ SharedImageBackingFactoryEGL::MakeEglImageBacking(
     return nullptr;
   }
 
-  auto egl_backing = std::make_unique<SharedImageBackingEglImage>(
+  return std::make_unique<SharedImageBackingEglImage>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      estimated_size, format_info.gl_format, format_info.gl_type,
-      batch_access_manager_, workarounds_, attribs_, use_passthrough_);
-
-  if (!pixel_data.empty()) {
-    egl_backing->InitializePixels(format_info.adjusted_format,
-                                  format_info.gl_type, pixel_data.data());
-  }
-  return egl_backing;
+      estimated_size, format_info, batch_access_manager_, workarounds_,
+      attribs_, use_passthrough_, pixel_data);
 }
 
 }  // namespace gpu

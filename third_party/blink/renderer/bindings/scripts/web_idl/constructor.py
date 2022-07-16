@@ -22,7 +22,7 @@ from .make_copy import make_copy
 class Constructor(FunctionLike, WithExtendedAttributes, WithCodeGeneratorInfo,
                   WithExposure, WithOwner, WithOwnerMixin, WithComponent,
                   WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-constructors"""
+    """https://webidl.spec.whatwg.org/#idl-constructors"""
 
     class IR(FunctionLike.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
              WithExposure, WithOwnerMixin, WithComponent, WithDebugInfo):

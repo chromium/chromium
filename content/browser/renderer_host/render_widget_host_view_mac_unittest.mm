@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/containers/queue.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -350,6 +349,9 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
             testing::Invoke(this, &MockRenderWidgetHostImpl::BlurImpl));
   }
 
+  MockRenderWidgetHostImpl(const MockRenderWidgetHostImpl&) = delete;
+  MockRenderWidgetHostImpl& operator=(const MockRenderWidgetHostImpl&) = delete;
+
   ~MockRenderWidgetHostImpl() override = default;
 
   // Extracts |latency_info| and stores it in |last_wheel_event_latency_info_|.
@@ -383,8 +385,6 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
 
   ui::LatencyInfo last_wheel_event_latency_info_;
   MockWidgetInputHandler input_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRenderWidgetHostImpl);
 };
 
 // Generates the |length| of composition rectangle vector and save them to
@@ -477,8 +477,12 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
   RenderWidgetHostViewMacTest() : rwhv_mac_(nullptr) {
   }
 
+  RenderWidgetHostViewMacTest(const RenderWidgetHostViewMacTest&) = delete;
+  RenderWidgetHostViewMacTest& operator=(const RenderWidgetHostViewMacTest&) =
+      delete;
+
   void SetUp() override {
-    mock_clock_.Advance(base::TimeDelta::FromMilliseconds(100));
+    mock_clock_.Advance(base::Milliseconds(100));
     ui::SetEventTickClockForTesting(&mock_clock_);
     RenderViewHostImplTestHarness::SetUp();
 
@@ -559,8 +563,6 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
   base::mac::ScopedNSAutoreleasePool pool_;
 
   base::SimpleTestTickClock mock_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewMacTest);
 };
 
 TEST_F(RenderWidgetHostViewMacTest, Basic) {
@@ -1195,7 +1197,7 @@ TEST_F(RenderWidgetHostViewMacTest, Background) {
 // generated from this type of devices.
 TEST_F(RenderWidgetHostViewMacTest, TimerBasedPhaseInfo) {
   rwhv_mac_->set_mouse_wheel_wheel_phase_handler_timeout(
-      base::TimeDelta::FromMilliseconds(100));
+      base::Milliseconds(100));
 
   // Send a wheel event without phase information for scrolling by 3 lines.
   NSEvent* wheelEvent = MockScrollWheelEventWithoutPhase(3);
@@ -1219,8 +1221,7 @@ TEST_F(RenderWidgetHostViewMacTest, TimerBasedPhaseInfo) {
   // event gets dispatched.
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitWhenIdleClosure(),
-      base::TimeDelta::FromMilliseconds(100));
+      FROM_HERE, run_loop.QuitWhenIdleClosure(), base::Milliseconds(100));
   run_loop.Run();
 
   events = host_->GetAndResetDispatchedMessages();
@@ -1428,6 +1429,11 @@ class RenderWidgetHostViewMacPinchTest
     }
   }
 
+  RenderWidgetHostViewMacPinchTest(const RenderWidgetHostViewMacPinchTest&) =
+      delete;
+  RenderWidgetHostViewMacPinchTest& operator=(
+      const RenderWidgetHostViewMacPinchTest&) = delete;
+
   void SendBeginPinchEvent() {
     NSEvent* pinchBeginEvent = MockPinchEvent(NSEventPhaseBegan, 0);
     [rwhv_cocoa_ magnifyWithEvent:pinchBeginEvent];
@@ -1442,7 +1448,6 @@ class RenderWidgetHostViewMacPinchTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewMacPinchTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(, RenderWidgetHostViewMacPinchTest, testing::Bool());
@@ -1663,6 +1668,10 @@ TEST_F(RenderWidgetHostViewMacTest, SelectedText) {
 class InputMethodMacTest : public RenderWidgetHostViewMacTest {
  public:
   InputMethodMacTest() {}
+
+  InputMethodMacTest(const InputMethodMacTest&) = delete;
+  InputMethodMacTest& operator=(const InputMethodMacTest&) = delete;
+
   ~InputMethodMacTest() override {}
 
   void SetUp() override {
@@ -1724,8 +1733,6 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
 
  private:
   std::unique_ptr<TestBrowserContext> child_browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodMacTest);
 };
 
 // This test will verify that calling unmarkText on the cocoa view will lead to
@@ -2166,7 +2173,7 @@ TEST_F(RenderWidgetHostViewMacTest, ConflictingAllocationsResolve) {
 
   // Cause a conflicting viz::LocalSurfaceId allocation
   BrowserCompositorMac* browser_compositor = rwhv_mac_->BrowserCompositor();
-  EXPECT_TRUE(browser_compositor->ForceNewSurfaceForTesting());
+  browser_compositor->ForceNewSurfaceForTesting();
   viz::LocalSurfaceId local_surface_id3(rwhv_mac_->GetLocalSurfaceId());
   EXPECT_NE(local_surface_id1, local_surface_id3);
 

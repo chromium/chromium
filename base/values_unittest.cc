@@ -1382,47 +1382,32 @@ TEST(ValuesTest, Basic) {
 }
 
 TEST(ValuesTest, List) {
-  std::unique_ptr<ListValue> mixed_list(new ListValue());
-  mixed_list->Set(0, std::make_unique<Value>(true));
-  mixed_list->Set(1, std::make_unique<Value>(42));
-  mixed_list->Set(2, std::make_unique<Value>(88.8));
-  mixed_list->Set(3, std::make_unique<Value>("foo"));
-  ASSERT_EQ(4u, mixed_list->GetSize());
+  Value mixed_list(Value::Type::LIST);
+  mixed_list.Append(true);
+  mixed_list.Append(42);
+  mixed_list.Append(88.8);
+  mixed_list.Append("foo");
 
-  Value* value = nullptr;
-  bool bool_value = false;
-  double double_value = 0.0;
-  std::string string_value;
+  Value::ConstListView list_view = mixed_list.GetList();
+  ASSERT_EQ(4u, list_view.size());
 
-  ASSERT_FALSE(mixed_list->Get(4, &value));
+  ASSERT_FALSE(list_view[0].is_int());
+  ASSERT_FALSE(list_view[1].is_bool());
+  ASSERT_FALSE(list_view[2].is_string());
+  ASSERT_FALSE(list_view[2].is_int());
+  ASSERT_FALSE(list_view[2].is_bool());
 
-  ASSERT_FALSE(mixed_list->GetList()[0].is_int());
-  ASSERT_FALSE(mixed_list->GetBoolean(1, &bool_value));
-  ASSERT_FALSE(bool_value);
-  ASSERT_FALSE(mixed_list->GetString(2, &string_value));
-  ASSERT_EQ("", string_value);
-  ASSERT_FALSE(mixed_list->GetList()[2].is_int());
-  ASSERT_FALSE(mixed_list->GetBoolean(3, &bool_value));
-  ASSERT_FALSE(bool_value);
-
-  ASSERT_TRUE(mixed_list->GetBoolean(0, &bool_value));
-  ASSERT_TRUE(bool_value);
-  ASSERT_TRUE(mixed_list->GetList()[1].is_int());
-  ASSERT_EQ(42, mixed_list->GetList()[1].GetInt());
-  // implicit conversion from Integer to Double should be possible.
-  ASSERT_TRUE(mixed_list->GetDouble(1, &double_value));
-  ASSERT_EQ(42, double_value);
-  ASSERT_TRUE(mixed_list->GetDouble(2, &double_value));
-  ASSERT_EQ(88.8, double_value);
-  ASSERT_TRUE(mixed_list->GetString(3, &string_value));
-  ASSERT_EQ("foo", string_value);
+  ASSERT_TRUE(list_view[0].is_bool());
+  ASSERT_TRUE(list_view[1].is_int());
+  ASSERT_EQ(42, list_view[1].GetInt());
+  // Implicit conversion from Integer to Double should be possible.
+  ASSERT_EQ(42, list_view[1].GetDouble());
+  ASSERT_EQ(88.8, list_view[2].GetDouble());
+  ASSERT_EQ("foo", list_view[3].GetString());
 
   // Try searching in the mixed list.
-  base::Value sought_value(42);
-  base::Value not_found_value(false);
-
-  ASSERT_TRUE(Contains(mixed_list->GetList(), sought_value));
-  ASSERT_FALSE(Contains(mixed_list->GetList(), not_found_value));
+  ASSERT_TRUE(Contains(list_view, base::Value(42)));
+  ASSERT_FALSE(Contains(list_view, base::Value(false)));
 }
 
 TEST(ValuesTest, BinaryValue) {
@@ -1556,36 +1541,6 @@ TEST(ValuesTest, DictionarySetReturnsPointer) {
     ListValue* list_ptr =
         dict.SetList("foo.bar", std::make_unique<base::ListValue>());
     EXPECT_EQ(Value::Type::LIST, list_ptr->type());
-  }
-}
-
-TEST(ValuesTest, DictionaryRemoval) {
-  std::string key = "test";
-  std::unique_ptr<Value> removed_item;
-
-  {
-    DictionaryValue dict;
-    EXPECT_EQ(0U, dict.DictSize());
-    EXPECT_TRUE(dict.DictEmpty());
-    dict.Set(key, std::make_unique<Value>());
-    EXPECT_TRUE(dict.HasKey(key));
-    EXPECT_FALSE(dict.Remove("absent key", &removed_item));
-    EXPECT_EQ(1U, dict.DictSize());
-    EXPECT_FALSE(dict.DictEmpty());
-
-    EXPECT_TRUE(dict.Remove(key, &removed_item));
-    EXPECT_FALSE(dict.HasKey(key));
-    ASSERT_TRUE(removed_item);
-    EXPECT_EQ(0U, dict.DictSize());
-    EXPECT_TRUE(dict.DictEmpty());
-  }
-
-  {
-    DictionaryValue dict;
-    dict.Set(key, std::make_unique<Value>());
-    EXPECT_TRUE(dict.HasKey(key));
-    EXPECT_TRUE(dict.Remove(key, nullptr));
-    EXPECT_FALSE(dict.HasKey(key));
   }
 }
 
@@ -1727,7 +1682,7 @@ TEST(ValuesTest, DeepCopy) {
   ListValue* copy_list = nullptr;
   ASSERT_TRUE(copy_value->GetAsList(&copy_list));
   ASSERT_TRUE(copy_list);
-  ASSERT_EQ(2U, copy_list->GetSize());
+  ASSERT_EQ(2U, copy_list->GetList().size());
 
   Value* copy_list_element_0;
   ASSERT_TRUE(copy_list->Get(0, &copy_list_element_0));
@@ -1790,7 +1745,7 @@ TEST(ValuesTest, Equals) {
   // Check if Equals detects differences in only the keys.
   copy = dv.CreateDeepCopy();
   EXPECT_EQ(dv, *copy);
-  copy->Remove("a", nullptr);
+  copy->RemoveKey("a");
   copy->SetBoolKey("aa", false);
   EXPECT_NE(dv, *copy);
 }
@@ -1869,8 +1824,8 @@ TEST(ValuesTest, Comparisons) {
   // Test Non Empty List Values.
   ListValue int_list1;
   ListValue int_list2;
-  int_list1.AppendInteger(1);
-  int_list2.AppendInteger(2);
+  int_list1.Append(1);
+  int_list2.Append(2);
   EXPECT_FALSE(int_list1 == int_list2);
   EXPECT_NE(int_list1, int_list2);
   EXPECT_LT(int_list1, int_list2);
@@ -2030,7 +1985,7 @@ TEST(ValuesTest, RemoveEmptyChildren) {
 
     ListValue* inner_value;
     EXPECT_TRUE(root->GetList("list_with_empty_children", &inner_value));
-    ASSERT_EQ(1U, inner_value->GetSize());  // Dictionary was pruned.
+    ASSERT_EQ(1U, inner_value->GetList().size());  // Dictionary was pruned.
     const Value& inner_value2 = inner_value->GetList()[0];
     ASSERT_TRUE(inner_value2.is_list());
     EXPECT_EQ(1U, inner_value2.GetList().size());
@@ -2261,16 +2216,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_FALSE(main_dict.GetInteger("list", nullptr));
   EXPECT_FALSE(main_dict.GetInteger("DNE", nullptr));
 
-  // Both int and double values can be obtained from GetDouble.
-  EXPECT_FALSE(main_dict.GetDouble("bool", nullptr));
-  EXPECT_TRUE(main_dict.GetDouble("int", nullptr));
-  EXPECT_TRUE(main_dict.GetDouble("double", nullptr));
-  EXPECT_FALSE(main_dict.GetDouble("string", nullptr));
-  EXPECT_FALSE(main_dict.GetDouble("binary", nullptr));
-  EXPECT_FALSE(main_dict.GetDouble("dict", nullptr));
-  EXPECT_FALSE(main_dict.GetDouble("list", nullptr));
-  EXPECT_FALSE(main_dict.GetDouble("DNE", nullptr));
-
   EXPECT_FALSE(main_dict.GetString("bool", static_cast<std::string*>(nullptr)));
   EXPECT_FALSE(main_dict.GetString("int", static_cast<std::string*>(nullptr)));
   EXPECT_FALSE(
@@ -2300,15 +2245,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_FALSE(
       main_dict.GetString("DNE", static_cast<std::u16string*>(nullptr)));
 
-  EXPECT_FALSE(main_dict.GetBinary("bool", nullptr));
-  EXPECT_FALSE(main_dict.GetBinary("int", nullptr));
-  EXPECT_FALSE(main_dict.GetBinary("double", nullptr));
-  EXPECT_FALSE(main_dict.GetBinary("string", nullptr));
-  EXPECT_TRUE(main_dict.GetBinary("binary", nullptr));
-  EXPECT_FALSE(main_dict.GetBinary("dict", nullptr));
-  EXPECT_FALSE(main_dict.GetBinary("list", nullptr));
-  EXPECT_FALSE(main_dict.GetBinary("DNE", nullptr));
-
   EXPECT_FALSE(main_dict.GetDictionary("bool", nullptr));
   EXPECT_FALSE(main_dict.GetDictionary("int", nullptr));
   EXPECT_FALSE(main_dict.GetDictionary("double", nullptr));
@@ -2326,40 +2262,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_FALSE(main_dict.GetList("dict", nullptr));
   EXPECT_TRUE(main_dict.GetList("list", nullptr));
   EXPECT_FALSE(main_dict.GetList("DNE", nullptr));
-
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "bool", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "int", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "double", static_cast<std::string*>(nullptr)));
-  EXPECT_TRUE(main_dict.GetStringWithoutPathExpansion(
-      "string", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "binary", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "dict", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "list", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "DNE", static_cast<std::string*>(nullptr)));
-
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "bool", static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "int", static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "double", static_cast<std::u16string*>(nullptr)));
-  EXPECT_TRUE(main_dict.GetStringWithoutPathExpansion(
-      "string", static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "binary", static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "dict", static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "list", static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "DNE", static_cast<std::u16string*>(nullptr)));
 
   // There is no GetBinaryWithoutPathExpansion for some reason, but if there
   // were it should be tested here...
@@ -2399,15 +2301,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_FALSE(main_list.GetBoolean(5, nullptr));
   EXPECT_FALSE(main_list.GetBoolean(6, nullptr));
   EXPECT_FALSE(main_list.GetBoolean(7, nullptr));
-
-  EXPECT_FALSE(main_list.GetDouble(0, nullptr));
-  EXPECT_TRUE(main_list.GetDouble(1, nullptr));
-  EXPECT_TRUE(main_list.GetDouble(2, nullptr));
-  EXPECT_FALSE(main_list.GetDouble(3, nullptr));
-  EXPECT_FALSE(main_list.GetDouble(4, nullptr));
-  EXPECT_FALSE(main_list.GetDouble(5, nullptr));
-  EXPECT_FALSE(main_list.GetDouble(6, nullptr));
-  EXPECT_FALSE(main_list.GetDouble(7, nullptr));
 
   EXPECT_FALSE(main_list.GetString(0, static_cast<std::string*>(nullptr)));
   EXPECT_FALSE(main_list.GetString(1, static_cast<std::string*>(nullptr)));

@@ -34,12 +34,11 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "content/browser/media/capture_handle_manager.h"
@@ -144,6 +143,9 @@ class CONTENT_EXPORT MediaStreamManager
       media::AudioSystem* audio_system,
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
       std::unique_ptr<VideoCaptureProvider> video_capture_provider);
+
+  MediaStreamManager(const MediaStreamManager&) = delete;
+  MediaStreamManager& operator=(const MediaStreamManager&) = delete;
 
   ~MediaStreamManager() override;
 
@@ -301,6 +303,7 @@ class CONTENT_EXPORT MediaStreamManager
   // base::PowerThermalObserver overrides.
   void OnThermalStateChange(
       base::PowerThermalObserver::DeviceThermalState new_state) override;
+  void OnSpeedLimitChange(int new_limit) override;
 
   // Called by the tests to specify a factory for creating
   // FakeMediaStreamUIProxys to be used for generated streams.
@@ -379,6 +382,23 @@ class CONTENT_EXPORT MediaStreamManager
 
   // This method is called when all tracks are started.
   void OnStreamStarted(const std::string& label);
+
+#if !defined(OS_ANDROID)
+  // Determines whether the captured surface (tab/window) should be focused.
+  // This can be called at most once, and only within the first 1s of the
+  // capture session being initiated. If a call with |focus=false| is not
+  // executed within this time period, the captured surface *is* focused.
+  //
+  // |is_from_microtask| and |is_from_timer| are used to distinguish:
+  // a. Explicit calls from the Web-application.
+  // b. Implicit calls resulting from the focusability-window-closing microtask.
+  // c. The browser-side timer.
+  // This distinction is reflected by UMA.
+  void SetCapturedDisplaySurfaceFocus(const std::string& label,
+                                      bool focus,
+                                      bool is_from_microtask,
+                                      bool is_from_timer);
+#endif
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaStreamManagerTest, DesktopCaptureDeviceStopped);
@@ -623,6 +643,16 @@ class CONTENT_EXPORT MediaStreamManager
                              blink::mojom::MediaStreamType type,
                              media::mojom::CaptureHandlePtr capture_handle);
 
+#if !defined(OS_ANDROID)
+  // Defines a window of opportunity for the Web-application to decide
+  // whether a display-surface which it's capturing should be focused.
+  // After |kConditionalFocusWindow| past the beginning of the capture,
+  // the browser makes its own decision and ignores further instructions
+  // from Web-applications, thereby preventing applications from changing
+  // focus at an arbitrary time.
+  const base::TimeDelta conditional_focus_window_;
+#endif
+
   media::AudioSystem* const audio_system_;  // not owned
   scoped_refptr<AudioInputDeviceManager> audio_input_device_manager_;
   scoped_refptr<VideoCaptureManager> video_capture_manager_;
@@ -653,8 +683,6 @@ class CONTENT_EXPORT MediaStreamManager
   std::unique_ptr<AudioServiceListener> audio_service_listener_;
 
   GenerateStreamTestCallback generate_stream_test_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamManager);
 };
 
 }  // namespace content

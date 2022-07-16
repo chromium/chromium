@@ -9,7 +9,6 @@
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "media/base/test_helpers.h"
@@ -24,10 +23,10 @@ class ReadCBHandler {
  public:
   ReadCBHandler() = default;
 
-  MOCK_METHOD1(ReadCB, void(int size));
+  ReadCBHandler(const ReadCBHandler&) = delete;
+  ReadCBHandler& operator=(const ReadCBHandler&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReadCBHandler);
+  MOCK_METHOD1(ReadCB, void(int size));
 };
 
 // Returns a path to the test file which contains the string "0123456789"

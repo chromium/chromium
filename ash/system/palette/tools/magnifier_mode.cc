@@ -27,7 +27,7 @@ PaletteToolId MagnifierMode::GetToolId() const {
 }
 
 const gfx::VectorIcon& MagnifierMode::GetActiveTrayIcon() const {
-  return kPaletteTrayIconMagnifyIcon;
+  return kPaletteModeMagnifyIcon;
 }
 
 void MagnifierMode::OnEnable() {

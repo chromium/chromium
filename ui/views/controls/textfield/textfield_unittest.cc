@@ -93,8 +93,8 @@ class GestureEventForTest : public ui::GestureEvent {
   GestureEventForTest(int x, int y, ui::GestureEventDetails details)
       : GestureEvent(x, y, ui::EF_NONE, base::TimeTicks(), details) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GestureEventForTest);
+  GestureEventForTest(const GestureEventForTest&) = delete;
+  GestureEventForTest& operator=(const GestureEventForTest&) = delete;
 };
 
 // This controller will happily destroy the target field passed on
@@ -104,6 +104,10 @@ class TextfieldDestroyerController : public TextfieldController {
   explicit TextfieldDestroyerController(Textfield* target) : target_(target) {
     target_->set_controller(this);
   }
+
+  TextfieldDestroyerController(const TextfieldDestroyerController&) = delete;
+  TextfieldDestroyerController& operator=(const TextfieldDestroyerController&) =
+      delete;
 
   Textfield* target() { return target_.get(); }
 
@@ -118,8 +122,6 @@ class TextfieldDestroyerController : public TextfieldController {
 
  private:
   std::unique_ptr<Textfield> target_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextfieldDestroyerController);
 };
 
 // Class that focuses a textfield when it sees a KeyDown event.
@@ -128,6 +130,9 @@ class TextfieldFocuser : public View {
   explicit TextfieldFocuser(Textfield* textfield) : textfield_(textfield) {
     SetFocusBehavior(FocusBehavior::ALWAYS);
   }
+
+  TextfieldFocuser(const TextfieldFocuser&) = delete;
+  TextfieldFocuser& operator=(const TextfieldFocuser&) = delete;
 
   void set_consume(bool consume) { consume_ = consume; }
 
@@ -140,13 +145,15 @@ class TextfieldFocuser : public View {
  private:
   bool consume_ = true;
   Textfield* textfield_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextfieldFocuser);
 };
 
 class MockInputMethod : public ui::InputMethodBase {
  public:
   MockInputMethod();
+
+  MockInputMethod(const MockInputMethod&) = delete;
+  MockInputMethod& operator=(const MockInputMethod&) = delete;
+
   ~MockInputMethod() override;
 
   // InputMethod:
@@ -203,8 +210,6 @@ class MockInputMethod : public ui::InputMethodBase {
   bool cancel_composition_called_ = false;
 
   int count_show_virtual_keyboard_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MockInputMethod);
 };
 
 MockInputMethod::MockInputMethod() : ui::InputMethodBase(nullptr) {}
@@ -327,6 +332,10 @@ void MockInputMethod::ClearComposition() {
 class TestTextfield : public views::Textfield {
  public:
   TestTextfield() = default;
+
+  TestTextfield(const TestTextfield&) = delete;
+  TestTextfield& operator=(const TestTextfield&) = delete;
+
   ~TestTextfield() override = default;
 
   // ui::TextInputClient:
@@ -384,8 +393,6 @@ class TestTextfield : public views::Textfield {
   int accessibility_selection_fired_count_ = 0;
 
   base::WeakPtrFactory<TestTextfield> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestTextfield);
 };
 
 TextfieldTest::TextfieldTest() {
@@ -475,9 +482,8 @@ void TextfieldTest::PrepareTextfieldsInternal(int count,
   test_api_ = std::make_unique<TextfieldTestApi>(textfield);
 
   for (int i = 1; i < count; ++i) {
-    Textfield* textfield =
-        container->AddChildView(std::make_unique<Textfield>());
-    textfield->SetID(i + 1);
+    Textfield* child = container->AddChildView(std::make_unique<Textfield>());
+    child->SetID(i + 1);
   }
 
   model_ = test_api_->model();
@@ -1580,6 +1586,10 @@ TEST_F(TextfieldTest, OnKeyPressBinding) {
   class TestDelegate : public ui::TextEditKeyBindingsDelegateAuraLinux {
    public:
     TestDelegate() = default;
+
+    TestDelegate(const TestDelegate&) = delete;
+    TestDelegate& operator=(const TestDelegate&) = delete;
+
     ~TestDelegate() override = default;
 
     bool MatchEvent(
@@ -1587,9 +1597,6 @@ TEST_F(TextfieldTest, OnKeyPressBinding) {
         std::vector<ui::TextEditCommandAuraLinux>* commands) override {
       return false;
     }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(TestDelegate);
   };
 
   TestDelegate delegate;
@@ -2118,6 +2125,86 @@ TEST_F(TextfieldTest, DragAndDrop_ToTheLeft) {
   EXPECT_EQ(u"h worlellod", textfield_->GetText());
   SendKeyEvent(ui::VKEY_Z, true, true);
   EXPECT_EQ(u"h worlellod", textfield_->GetText());
+}
+
+TEST_F(TextfieldTest, DropCallbackRun) {
+  InitTextfield();
+  textfield_->SetText(u"hello world");
+  const int cursor_y = GetCursorYForTesting();
+
+  std::u16string string;
+  ui::OSExchangeData data;
+  int formats = 0;
+  int operations = 0;
+  std::set<ui::ClipboardFormatType> format_types;
+
+  // Start dragging "hello".
+  textfield_->SetSelectedRange(gfx::Range(0, 5));
+  gfx::Point point(GetCursorPositionX(3), cursor_y);
+  MoveMouseTo(point);
+  PressLeftMouseButton();
+  EXPECT_TRUE(textfield_->CanStartDragForView(textfield_, point, gfx::Point()));
+  operations = textfield_->GetDragOperationsForView(textfield_, point);
+  EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE | ui::DragDropTypes::DRAG_COPY,
+            operations);
+  textfield_->WriteDragDataForView(nullptr, point, &data);
+  EXPECT_TRUE(data.GetString(&string));
+  EXPECT_EQ(textfield_->GetSelectedText(), string);
+  EXPECT_TRUE(textfield_->GetDropFormats(&formats, &format_types));
+  EXPECT_EQ(ui::OSExchangeData::STRING, formats);
+  EXPECT_TRUE(format_types.empty());
+
+  // Drop "hello" after "d".
+  EXPECT_TRUE(textfield_->CanDrop(data));
+  gfx::PointF drop_point(GetCursorPositionX(11), cursor_y);
+  ui::DropTargetEvent drop_a(data, drop_point, drop_point, operations);
+  EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE, textfield_->OnDragUpdated(drop_a));
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  auto cb = textfield_->GetDropCallback(drop_a);
+  std::move(cb).Run(drop_a, output_drag_op);
+  EXPECT_EQ(ui::mojom::DragOperation::kMove, output_drag_op);
+  EXPECT_EQ(u" worldhello", textfield_->GetText());
+}
+
+TEST_F(TextfieldTest, DropCallbackCancelled) {
+  InitTextfield();
+  textfield_->SetText(u"hello world");
+  const int cursor_y = GetCursorYForTesting();
+
+  std::u16string string;
+  ui::OSExchangeData data;
+  int formats = 0;
+  int operations = 0;
+  std::set<ui::ClipboardFormatType> format_types;
+
+  // Start dragging "hello".
+  textfield_->SetSelectedRange(gfx::Range(0, 5));
+  gfx::Point point(GetCursorPositionX(3), cursor_y);
+  MoveMouseTo(point);
+  PressLeftMouseButton();
+  EXPECT_TRUE(textfield_->CanStartDragForView(textfield_, point, gfx::Point()));
+  operations = textfield_->GetDragOperationsForView(textfield_, point);
+  EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE | ui::DragDropTypes::DRAG_COPY,
+            operations);
+  textfield_->WriteDragDataForView(nullptr, point, &data);
+  EXPECT_TRUE(data.GetString(&string));
+  EXPECT_EQ(textfield_->GetSelectedText(), string);
+  EXPECT_TRUE(textfield_->GetDropFormats(&formats, &format_types));
+  EXPECT_EQ(ui::OSExchangeData::STRING, formats);
+  EXPECT_TRUE(format_types.empty());
+
+  // Drop "hello" after "d". The drop callback should do nothing because
+  // `textfield_` is mutated before the callback is run.
+  EXPECT_TRUE(textfield_->CanDrop(data));
+  gfx::PointF drop_point(GetCursorPositionX(11), cursor_y);
+  ui::DropTargetEvent drop_a(data, drop_point, drop_point, operations);
+  EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE, textfield_->OnDragUpdated(drop_a));
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  auto cb = textfield_->GetDropCallback(drop_a);
+  textfield_->AppendText(u"new text");
+  std::move(cb).Run(drop_a, output_drag_op);
+  EXPECT_EQ(ui::mojom::DragOperation::kNone, output_drag_op);
+  EXPECT_EQ(u"hello worldnew text", textfield_->GetText());
 }
 
 TEST_F(TextfieldTest, DragAndDrop_Canceled) {
@@ -2991,7 +3078,7 @@ TEST_F(TextfieldTest, CommitEmptyComposingTextTest) {
   EXPECT_EQ(composed_text_length, static_cast<uint32_t>(0));
 }
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 // SetCompositionFromExistingText is only available on Windows and Chrome OS.
 TEST_F(TextfieldTest, SetCompositionFromExistingTextTest) {
   InitTextfield();

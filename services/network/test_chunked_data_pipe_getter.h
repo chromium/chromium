@@ -22,6 +22,11 @@ namespace network {
 class TestChunkedDataPipeGetter : public mojom::ChunkedDataPipeGetter {
  public:
   TestChunkedDataPipeGetter();
+
+  TestChunkedDataPipeGetter(const TestChunkedDataPipeGetter&) = delete;
+  TestChunkedDataPipeGetter& operator=(const TestChunkedDataPipeGetter&) =
+      delete;
+
   ~TestChunkedDataPipeGetter() override;
 
   // Returns the mojo::PendingRemote<mojom::ChunkedDataPipeGetter> corresponding
@@ -46,8 +51,6 @@ class TestChunkedDataPipeGetter : public mojom::ChunkedDataPipeGetter {
   mojo::ScopedDataPipeProducerHandle write_pipe_;
   GetSizeCallback get_size_callback_;
   bool received_size_callback_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestChunkedDataPipeGetter);
 };
 
 }  // namespace network

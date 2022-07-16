@@ -26,6 +26,10 @@ class StreamMessagePipeAdapter : public MessagePipe {
 
   StreamMessagePipeAdapter(std::unique_ptr<P2PStreamSocket> socket,
                            ErrorCallback error_callback);
+
+  StreamMessagePipeAdapter(const StreamMessagePipeAdapter&) = delete;
+  StreamMessagePipeAdapter& operator=(const StreamMessagePipeAdapter&) = delete;
+
   ~StreamMessagePipeAdapter() override;
 
   // MessagePipe interface.
@@ -43,8 +47,6 @@ class StreamMessagePipeAdapter : public MessagePipe {
 
   std::unique_ptr<MessageReader> reader_;
   std::unique_ptr<BufferedSocketWriter> writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamMessagePipeAdapter);
 };
 
 class StreamMessageChannelFactoryAdapter : public MessageChannelFactory {
@@ -54,6 +56,12 @@ class StreamMessageChannelFactoryAdapter : public MessageChannelFactory {
   StreamMessageChannelFactoryAdapter(
       StreamChannelFactory* stream_channel_factory,
       const ErrorCallback& error_callback);
+
+  StreamMessageChannelFactoryAdapter(
+      const StreamMessageChannelFactoryAdapter&) = delete;
+  StreamMessageChannelFactoryAdapter& operator=(
+      const StreamMessageChannelFactoryAdapter&) = delete;
+
   ~StreamMessageChannelFactoryAdapter() override;
 
   // MessageChannelFactory interface.
@@ -67,8 +75,6 @@ class StreamMessageChannelFactoryAdapter : public MessageChannelFactory {
 
   StreamChannelFactory* stream_channel_factory_;
   ErrorCallback error_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamMessageChannelFactoryAdapter);
 };
 
 }  // namespace protocol

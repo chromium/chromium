@@ -24,6 +24,10 @@ class ShareExtensionService : public KeyedService,
  public:
   ShareExtensionService(bookmarks::BookmarkModel* bookmark_model,
                         ReadingListModel* reading_list_model);
+
+  ShareExtensionService(const ShareExtensionService&) = delete;
+  ShareExtensionService& operator=(const ShareExtensionService&) = delete;
+
   ~ShareExtensionService() override;
 
   void Initialize();
@@ -49,8 +53,6 @@ class ShareExtensionService : public KeyedService,
   bookmarks::BookmarkModel* bookmark_model_;
   bool bookmark_model_loaded_;
   __strong ShareExtensionItemReceiver* receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShareExtensionService);
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARE_EXTENSION_SHARE_EXTENSION_SERVICE_H_

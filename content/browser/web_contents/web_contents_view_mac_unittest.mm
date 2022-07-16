@@ -5,7 +5,6 @@
 #import "content/browser/web_contents/web_contents_view_mac.h"
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #import "content/app_shim_remote_cocoa/web_contents_view_cocoa.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
@@ -41,6 +40,10 @@ TEST_F(WebContentsNSViewTest, NonWebDragSourceTest) {
 namespace {
 
 class WebContentsViewMacTest : public RenderViewHostTestHarness {
+ public:
+  WebContentsViewMacTest(const WebContentsViewMacTest&) = delete;
+  WebContentsViewMacTest& operator=(const WebContentsViewMacTest&) = delete;
+
  protected:
   WebContentsViewMacTest() = default;
 
@@ -52,9 +55,6 @@ class WebContentsViewMacTest : public RenderViewHostTestHarness {
   }
 
   base::scoped_nsobject<CocoaTestHelperWindow> window_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebContentsViewMacTest);
 };
 
 }  // namespace

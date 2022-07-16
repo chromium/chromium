@@ -8,7 +8,6 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/cast_config_controller.h"
 #include "ash/public/cpp/system_tray_test_api.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -38,6 +37,12 @@ media_router::MediaRoute MakeRoute(const std::string& route_id,
 }
 
 class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
+ public:
+  SystemTrayTrayCastMediaRouterChromeOSTest(
+      const SystemTrayTrayCastMediaRouterChromeOSTest&) = delete;
+  SystemTrayTrayCastMediaRouterChromeOSTest& operator=(
+      const SystemTrayTrayCastMediaRouterChromeOSTest&) = delete;
+
  protected:
   SystemTrayTrayCastMediaRouterChromeOSTest() : InProcessBrowserTest() {}
   ~SystemTrayTrayCastMediaRouterChromeOSTest() override {}
@@ -118,8 +123,6 @@ class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
   media_router::MediaSinksObserver* media_sinks_observer_ = nullptr;
   media_router::MediaRoutesObserver* media_routes_observer_ = nullptr;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemTrayTrayCastMediaRouterChromeOSTest);
 };
 
 }  // namespace

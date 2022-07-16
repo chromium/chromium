@@ -2,29 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-CANVAS_DIMENSIONS, 24,
+CANVAS_DIMENSIONS, 18,
 
-MOVE_TO, 8.6f, 2,
-H_LINE_TO, 4.4f,
-CUBIC_TO, 3.6f, 2, 3, 2.6f, 3, 3.4f,
-R_V_LINE_TO, 4.2f,
-R_H_LINE_TO, 0,
+// Create four rounded border elements: we start with
+// a large rounded rectangle filling the canvas,
+// hollow it out, and then divide into four sections.
+ROUND_RECT, 2, 2, 15, 15, 2,
+CLOSE,
+NEW_PATH,
+PATH_MODE_CLEAR,
+ROUND_RECT, 3, 3, 13, 13, 1.72f,
+CLOSE,
+NEW_PATH,
+PATH_MODE_CLEAR,
+ROUND_RECT, 7.4f, 0, 3.2f, 18, 0,
+ROUND_RECT, 0, 7.4f, 18, 3.2f, 0,
+CLOSE,
 
-MOVE_TO, 8.6f, 18.8f,
-H_LINE_TO, 4.4f,
-R_CUBIC_TO, -0.8f, 0, -1.4f, -0.6f, -1.4f, -1.4f,
-R_V_LINE_TO, -4.2f,
-R_H_LINE_TO, 0,
-
-MOVE_TO, 14, 2,
-R_H_LINE_TO, 4.2f,
-R_CUBIC_TO, 0.8f, 0, 1.4f, 0.6f, 1.4f, 1.4f,
-R_V_LINE_TO, 4.2f,
-R_H_LINE_TO, 0,
-
-MOVE_TO, 19.8f, 12.5f,
-R_V_LINE_TO, 9.8f,
-
-MOVE_TO, 14, 18.8f,
-R_H_LINE_TO, 8.5f,
+// Draw the bottom-right cross.
+NEW_PATH,
+STROKE, 1,
+MOVE_TO, 16.5, 12,
+R_V_LINE_TO, 7,
+MOVE_TO, 12, 16.5,
+R_H_LINE_TO, 7,
 CLOSE

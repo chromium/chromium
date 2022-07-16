@@ -15,6 +15,7 @@ namespace chromecast {
 
 // Receives messages from the browser process and stores identification settings
 // to feed into URLLoaderThrottles for throttling url requests in renderers.
+// Note: this class could be deleted on a different thread from the main thread.
 class IdentificationSettingsManagerRenderer
     : public content::RenderFrameObserver,
       public IdentificationSettingsManager {
@@ -26,6 +27,8 @@ class IdentificationSettingsManagerRenderer
       const IdentificationSettingsManagerRenderer&) = delete;
   IdentificationSettingsManagerRenderer& operator=(
       const IdentificationSettingsManagerRenderer&) = delete;
+
+ protected:
   ~IdentificationSettingsManagerRenderer() override;
 
  private:

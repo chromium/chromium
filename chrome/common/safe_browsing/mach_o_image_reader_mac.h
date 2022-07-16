@@ -12,8 +12,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace safe_browsing {
 
 class ByteSlice;
@@ -55,6 +53,10 @@ class MachOImageReader {
   static bool IsMachOMagicValue(uint32_t magic);
 
   MachOImageReader();
+
+  MachOImageReader(const MachOImageReader&) = delete;
+  MachOImageReader& operator=(const MachOImageReader&) = delete;
+
   ~MachOImageReader();
 
   // Initializes the instance and verifies that the data is a valid Mach-O
@@ -97,8 +99,6 @@ class MachOImageReader {
 
   bool is_64_bit_;
   std::vector<LoadCommand> commands_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachOImageReader);
 };
 
 }  // namespace safe_browsing

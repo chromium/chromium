@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/device/bluetooth/le/remote_service.h"
 
 namespace chromecast {
@@ -23,6 +23,9 @@ class RemoteDeviceImpl;
 
 class RemoteServiceImpl : public RemoteService {
  public:
+  RemoteServiceImpl(const RemoteServiceImpl&) = delete;
+  RemoteServiceImpl& operator=(const RemoteServiceImpl&) = delete;
+
   // RemoteService implementation:
   std::vector<scoped_refptr<RemoteCharacteristic>> GetCharacteristics()
       override;
@@ -55,8 +58,6 @@ class RemoteServiceImpl : public RemoteService {
   const std::map<bluetooth_v2_shlib::Uuid,
                  scoped_refptr<RemoteCharacteristicImpl>>
       uuid_to_characteristic_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteServiceImpl);
 };
 
 }  // namespace bluetooth

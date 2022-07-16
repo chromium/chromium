@@ -6,18 +6,24 @@ config("ruy_includes") {
   include_dirs = [ "src" ]
 }
 
+config("ruy_flags") {
+  if (target_cpu == "arm" || target_cpu == "arm64") {
+    cflags = [ "-Wno-inline-asm" ]
+  }
+}
+
 source_set("ruy") {
   sources = [
     "src/ruy/allocator.cc",
     "src/ruy/allocator.h",
     "src/ruy/apply_multiplier.cc",
     "src/ruy/apply_multiplier.h",
+    "src/ruy/asm_helpers.h",
     "src/ruy/block_map.cc",
     "src/ruy/block_map.h",
     "src/ruy/blocking_counter.cc",
     "src/ruy/blocking_counter.h",
     "src/ruy/check_macros.h",
-    "src/ruy/common.h",
     "src/ruy/context.cc",
     "src/ruy/context.h",
     "src/ruy/context_get_ctx.cc",
@@ -25,26 +31,25 @@ source_set("ruy") {
     "src/ruy/cpu_cache_params.h",
     "src/ruy/cpuinfo.cc",
     "src/ruy/cpuinfo.h",
-    "src/ruy/create_trmul_params.cc",
     "src/ruy/create_trmul_params.h",
     "src/ruy/ctx.cc",
     "src/ruy/ctx.h",
     "src/ruy/ctx_impl.h",
-    "src/ruy/dispatch.h",
+    "src/ruy/denormal.cc",
+    "src/ruy/frontend.cc",
+    "src/ruy/frontend.h",
     "src/ruy/have_built_path_for.h",
-    "src/ruy/have_built_path_for_avx2.cc",
+    "src/ruy/have_built_path_for_avx.cc",
+    "src/ruy/have_built_path_for_avx2_fma.cc",
     "src/ruy/have_built_path_for_avx512.cc",
-    "src/ruy/have_built_path_for_avxvnni.cc",
-    "src/ruy/have_built_path_for_sse42.cc",
     "src/ruy/kernel.h",
     "src/ruy/kernel_arm.h",
     "src/ruy/kernel_arm32.cc",
     "src/ruy/kernel_arm64.cc",
-    "src/ruy/kernel_avx2.cc",
+    "src/ruy/kernel_avx.cc",
+    "src/ruy/kernel_avx2_fma.cc",
     "src/ruy/kernel_avx512.cc",
-    "src/ruy/kernel_avxvnni.cc",
     "src/ruy/kernel_common.h",
-    "src/ruy/kernel_sse42.cc",
     "src/ruy/kernel_x86.h",
     "src/ruy/mat.h",
     "src/ruy/matrix.h",
@@ -53,18 +58,20 @@ source_set("ruy") {
     "src/ruy/pack.h",
     "src/ruy/pack_arm.cc",
     "src/ruy/pack_arm.h",
-    "src/ruy/pack_avx2.cc",
+    "src/ruy/pack_avx.cc",
+    "src/ruy/pack_avx2_fma.cc",
     "src/ruy/pack_avx512.cc",
-    "src/ruy/pack_avxvnni.cc",
     "src/ruy/pack_common.h",
-    "src/ruy/pack_sse42.cc",
     "src/ruy/pack_x86.h",
     "src/ruy/path.h",
+    "src/ruy/performance_advisory.h",
     "src/ruy/platform.h",
     "src/ruy/pmu.cc",
     "src/ruy/pmu.h",
     "src/ruy/prepacked_cache.cc",
     "src/ruy/prepacked_cache.h",
+    "src/ruy/prepare_packed_matrices.cc",
+    "src/ruy/prepare_packed_matrices.h",
     "src/ruy/profiler/instrumentation.cc",
     "src/ruy/profiler/instrumentation.h",
     "src/ruy/profiler/profiler.cc",
@@ -85,12 +92,16 @@ source_set("ruy") {
     "src/ruy/trmul_params.h",
     "src/ruy/tune.cc",
     "src/ruy/tune.h",
+    "src/ruy/validate.h",
     "src/ruy/wait.cc",
     "src/ruy/wait.h",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [
+    ":ruy_flags",
+    "//build/config/compiler:no_chromium_code",
+  ]
 
   public_configs = [ ":ruy_includes" ]
 }

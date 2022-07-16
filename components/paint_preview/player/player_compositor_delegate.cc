@@ -66,7 +66,7 @@ BuildHitTesters(std::unique_ptr<PaintPreviewProto> proto) {
 }
 
 absl::optional<base::ReadOnlySharedMemoryRegion> ToReadOnlySharedMemory(
-    const paint_preview::PaintPreviewProto& proto) {
+    paint_preview::PaintPreviewProto&& proto) {
   TRACE_EVENT0("paint_preview", "PaintPreviewProto ToReadOnlySharedMemory");
   auto region = base::WritableSharedMemoryRegion::Create(proto.ByteSizeLong());
   if (!region.IsValid())
@@ -81,17 +81,19 @@ absl::optional<base::ReadOnlySharedMemoryRegion> ToReadOnlySharedMemory(
 }
 
 paint_preview::mojom::PaintPreviewBeginCompositeRequestPtr
-PrepareCompositeRequest(const paint_preview::PaintPreviewProto& proto) {
+PrepareCompositeRequest(std::unique_ptr<CaptureResult> capture_result) {
   TRACE_EVENT0("paint_preview", "PaintPreview PrepareCompositeRequest");
   paint_preview::mojom::PaintPreviewBeginCompositeRequestPtr
       begin_composite_request =
           paint_preview::mojom::PaintPreviewBeginCompositeRequest::New();
-  begin_composite_request->recording_map =
-      RecordingMapFromPaintPreviewProto(proto);
+  std::pair<RecordingMap, PaintPreviewProto> map_and_proto =
+      RecordingMapFromCaptureResult(std::move(*capture_result));
+  begin_composite_request->recording_map = std::move(map_and_proto.first);
   if (begin_composite_request->recording_map.empty())
     return nullptr;
 
-  auto read_only_proto = ToReadOnlySharedMemory(proto);
+  auto read_only_proto =
+      ToReadOnlySharedMemory(std::move(map_and_proto.second));
   if (!read_only_proto) {
     DVLOG(1) << "Failed to read proto to read-only shared memory.";
     return nullptr;
@@ -125,7 +127,7 @@ void PlayerCompositorDelegate::Initialize(
     bool main_frame_mode,
     base::OnceCallback<void(int)> compositor_error,
     base::TimeDelta timeout_duration,
-    size_t max_requests) {
+    std::array<size_t, PressureLevelCount::kLevels> max_requests_map) {
   TRACE_EVENT0("paint_preview", "PlayerCompositorDelegate::Initialize");
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("paint_preview",
                                     "PlayerCompositorDelegate CreateCompositor",
@@ -150,7 +152,12 @@ void PlayerCompositorDelegate::Initialize(
 
   InitializeInternal(paint_preview_service, expected_url, key, main_frame_mode,
                      std::move(compositor_error), timeout_duration,
-                     max_requests);
+                     std::move(max_requests_map));
+}
+
+void PlayerCompositorDelegate::SetCaptureResult(
+    std::unique_ptr<CaptureResult> capture_result) {
+  capture_result_ = std::move(capture_result);
 }
 
 void PlayerCompositorDelegate::InitializeWithFakeServiceForTest(
@@ -160,7 +167,7 @@ void PlayerCompositorDelegate::InitializeWithFakeServiceForTest(
     bool main_frame_mode,
     base::OnceCallback<void(int)> compositor_error,
     base::TimeDelta timeout_duration,
-    size_t max_requests,
+    std::array<size_t, PressureLevelCount::kLevels> max_requests_map,
     std::unique_ptr<PaintPreviewCompositorService, base::OnTaskRunnerDeleter>
         fake_compositor_service) {
   paint_preview_compositor_service_ = std::move(fake_compositor_service);
@@ -170,7 +177,7 @@ void PlayerCompositorDelegate::InitializeWithFakeServiceForTest(
 
   InitializeInternal(paint_preview_service, expected_url, key, main_frame_mode,
                      std::move(compositor_error), timeout_duration,
-                     max_requests);
+                     std::move(max_requests_map));
 }
 
 void PlayerCompositorDelegate::InitializeInternal(
@@ -180,8 +187,10 @@ void PlayerCompositorDelegate::InitializeInternal(
     bool main_frame_mode,
     base::OnceCallback<void(int)> compositor_error,
     base::TimeDelta timeout_duration,
-    size_t max_requests) {
-  max_requests_ = max_requests;
+    std::array<size_t, PressureLevelCount::kLevels> max_requests_map) {
+  max_requests_map_ = max_requests_map;
+  max_requests_ = max_requests_map_
+      [base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE];
   main_frame_mode_ = main_frame_mode;
   compositor_error_ = std::move(compositor_error);
   paint_preview_service_ = paint_preview_service;
@@ -196,7 +205,7 @@ void PlayerCompositorDelegate::InitializeInternal(
                      weak_factory_.GetWeakPtr()));
 
   memory_pressure_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE,
+      FROM_HERE, base::DoNothing(),
       base::BindRepeating(&PlayerCompositorDelegate::OnMemoryPressure,
                           weak_factory_.GetWeakPtr()));
   if (!timeout_duration.is_inf() && !timeout_duration.is_zero()) {
@@ -274,8 +283,17 @@ void PlayerCompositorDelegate::OnMemoryPressure(
   TRACE_EVENT1("paint_preview", "PlayerCompositorDelegate::OnMemoryPressure",
                "memory_pressure_level",
                static_cast<int>(memory_pressure_level));
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  if (paint_preview_compositor_service_) {
+    paint_preview_compositor_service_->OnMemoryPressure(memory_pressure_level);
+  }
+
+  DCHECK(memory_pressure_level >= 0 &&
+         static_cast<size_t>(memory_pressure_level) <
+             PressureLevelCount::kLevels);
+  max_requests_ = max_requests_map_[memory_pressure_level];
+  if (max_requests_ == 0 ||
+      memory_pressure_level ==
+          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     if (paint_preview_compositor_client_)
       paint_preview_compositor_client_.reset();
 
@@ -283,9 +301,12 @@ void PlayerCompositorDelegate::OnMemoryPressure(
       paint_preview_compositor_service_.reset();
 
     if (compositor_error_) {
-      std::move(compositor_error_)
-          .Run(static_cast<int>(
-              CompositorStatus::STOPPED_DUE_TO_MEMORY_PRESSURE));
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              std::move(compositor_error_),
+              static_cast<int>(
+                  CompositorStatus::STOPPED_DUE_TO_MEMORY_PRESSURE)));
     }
   }
 }
@@ -335,14 +356,13 @@ void PlayerCompositorDelegate::OnCompositorClientCreated(
   TRACE_EVENT_NESTABLE_ASYNC_END0("paint_preview",
                                   "PlayerCompositorDelegate CreateCompositor",
                                   TRACE_ID_LOCAL(this));
-  if (!proto_) {
+  if (!capture_result_) {
     paint_preview_service_->GetFileMixin()->GetCapturedPaintPreviewProto(
         key, absl::nullopt,
         base::BindOnce(&PlayerCompositorDelegate::OnProtoAvailable,
                        weak_factory_.GetWeakPtr(), expected_url));
   } else {
-    OnProtoAvailable(expected_url, PaintPreviewFileMixin::ProtoReadStatus::kOk,
-                     std::move(proto_));
+    ValidateProtoAndLoadAXTree(expected_url);
   }
 }
 
@@ -371,8 +391,18 @@ void PlayerCompositorDelegate::OnProtoAvailable(
                       nullptr);
     return;
   }
+  capture_result_ =
+      std::make_unique<CaptureResult>(RecordingPersistence::kFileSystem);
+  capture_result_->proto = std::move(*proto);
 
-  const uint32_t version = proto->metadata().version();
+  ValidateProtoAndLoadAXTree(expected_url);
+}
+
+void PlayerCompositorDelegate::ValidateProtoAndLoadAXTree(
+    const GURL& expected_url) {
+  TRACE_EVENT0("paint_preview",
+               "PlayerCompositorDelegate::ValidateProtoAndLoadAXTree");
+  const uint32_t version = capture_result_->proto.metadata().version();
   if (version < kPaintPreviewVersion) {
     // If the version is old there was a breaking change to either;
     // - The SkPicture encoding format
@@ -389,7 +419,7 @@ void PlayerCompositorDelegate::OnProtoAvailable(
     return;
   }
 
-  auto proto_url = GURL(proto->metadata().url());
+  auto proto_url = GURL(capture_result_->proto.metadata().url());
   if (expected_url != proto_url) {
     OnCompositorReady(CompositorStatus::URL_MISMATCH, nullptr, nullptr);
     return;
@@ -402,16 +432,18 @@ void PlayerCompositorDelegate::OnProtoAvailable(
   }
 
   paint_preview_compositor_client_->SetRootFrameUrl(proto_url);
-  proto_ = std::move(proto);
+  root_frame_offsets_ =
+      gfx::Point(capture_result_->proto.root_frame().frame_offset_x(),
+                 capture_result_->proto.root_frame().frame_offset_y());
 
   // If the current Chrome version doesn't match the one in proto, we can't
   // use the AXTreeUpdate.
-  auto chromeVersion = proto_->metadata().chrome_version();
-  if (proto_->metadata().has_chrome_version() &&
-      chromeVersion.major() == CHROME_VERSION_MAJOR &&
-      chromeVersion.minor() == CHROME_VERSION_MINOR &&
-      chromeVersion.build() == CHROME_VERSION_BUILD &&
-      chromeVersion.patch() == CHROME_VERSION_PATCH) {
+  auto chrome_version = capture_result_->proto.metadata().chrome_version();
+  if (capture_result_->proto.metadata().has_chrome_version() &&
+      chrome_version.major() == CHROME_VERSION_MAJOR &&
+      chrome_version.minor() == CHROME_VERSION_MINOR &&
+      chrome_version.build() == CHROME_VERSION_BUILD &&
+      chrome_version.patch() == CHROME_VERSION_PATCH) {
     paint_preview_service_->GetFileMixin()->GetAXTreeUpdate(
         key_, base::BindOnce(&PlayerCompositorDelegate::OnAXTreeUpdateAvailable,
                              weak_factory_.GetWeakPtr()));
@@ -425,11 +457,16 @@ void PlayerCompositorDelegate::OnAXTreeUpdateAvailable(
   TRACE_EVENT0("paint_preview",
                "PlayerCompositorDelegate::OnAXTreeUpdateAvailable");
   ax_tree_update_ = std::move(update);
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&PrepareCompositeRequest, *proto_),
-      base::BindOnce(&PlayerCompositorDelegate::SendCompositeRequest,
-                     weak_factory_.GetWeakPtr()));
+  proto_copy_ = std::make_unique<PaintPreviewProto>(capture_result_->proto);
+  if (capture_result_->persistence == RecordingPersistence::kFileSystem) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&PrepareCompositeRequest, std::move(capture_result_)),
+        base::BindOnce(&PlayerCompositorDelegate::SendCompositeRequest,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+  SendCompositeRequest(PrepareCompositeRequest(std::move(capture_result_)));
 }
 
 void PlayerCompositorDelegate::SendCompositeRequest(
@@ -466,11 +503,13 @@ void PlayerCompositorDelegate::SendCompositeRequest(
 
   // Defer building hit testers so it happens in parallel with preparing the
   // compositor.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&BuildHitTesters, std::move(proto_)),
-      base::BindOnce(&PlayerCompositorDelegate::OnHitTestersBuilt,
-                     weak_factory_.GetWeakPtr()));
-  proto_.reset();
+  if (proto_copy_) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&BuildHitTesters, std::move(proto_copy_)),
+        base::BindOnce(&PlayerCompositorDelegate::OnHitTestersBuilt,
+                       weak_factory_.GetWeakPtr()));
+  }
+  proto_copy_.reset();
 }
 
 void PlayerCompositorDelegate::OnHitTestersBuilt(
@@ -498,6 +537,7 @@ void PlayerCompositorDelegate::OnCompositorTimeout() {
 void PlayerCompositorDelegate::ProcessBitmapRequestsFromQueue() {
   TRACE_EVENT0("paint_preview",
                "PlayerCompositorDelegate::ProcessBitmapRequestsFromQueue");
+
   while (active_requests_ < max_requests_ && bitmap_request_queue_.size()) {
     int request_id = bitmap_request_queue_.front();
     bitmap_request_queue_.pop();

@@ -7,6 +7,6 @@ class SomeClass;
 SomeClass* GetPointer();
 
 class MyClass {
-  // Expected rewrite: CheckedPtr<SomeClass> raw_ptr_field = GetPointer();
+  // Expected rewrite: raw_ptr<SomeClass> raw_ptr_field = GetPointer();
   SomeClass* raw_ptr_field = GetPointer();
 };

@@ -18,6 +18,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -66,11 +67,13 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
      * @param delegate The primary delegate for the UrlBar view.
      * @param keyboardVisibilityDelegate Delegate that allows querying and changing the keyboard's
      *         visibility.
+     * @param isIncognito Whether incognito mode is initially enabled. This can later be changed
+     *         using {@link #setIncognitoColorsEnabled(boolean)}.
      */
     public UrlBarCoordinator(@NonNull UrlBar urlBar, @Nullable WindowDelegate windowDelegate,
             @NonNull ActionMode.Callback actionModeCallback,
             @NonNull Callback<Boolean> focusChangeCallback, @NonNull UrlBarDelegate delegate,
-            @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate) {
+            @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate, boolean isIncognito) {
         mUrlBar = urlBar;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mWindowDelegate = windowDelegate;
@@ -81,6 +84,7 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
                         .with(UrlBarProperties.ACTION_MODE_CALLBACK, actionModeCallback)
                         .with(UrlBarProperties.WINDOW_DELEGATE, windowDelegate)
                         .with(UrlBarProperties.DELEGATE, delegate)
+                        .with(UrlBarProperties.INCOGNITO_COLORS_ENABLED, isIncognito)
                         .build();
         PropertyModelChangeProcessor.create(model, urlBar, UrlBarViewBinder::bind);
 
@@ -118,9 +122,14 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         mMediator.setAutocompleteText(userText, autocompleteText);
     }
 
-    /** @see UrlBarMediator#setUseDarkTextColors(boolean) */
-    public boolean setUseDarkTextColors(boolean useDarkColors) {
-        return mMediator.setUseDarkTextColors(useDarkColors);
+    /** @see UrlBarMediator#setOmniboxTheme(int) */
+    public boolean setOmniboxTheme(@OmniboxTheme int omniboxTheme) {
+        return mMediator.setOmniboxTheme(omniboxTheme);
+    }
+
+    /** @see UrlBarMediator#setIncognitoColorsEnabled(boolean) */
+    public void setIncognitoColorsEnabled(boolean incognitoColorsEnabled) {
+        mMediator.setIncognitoColorsEnabled(incognitoColorsEnabled);
     }
 
     /** @see UrlBarMediator#setAllowFocus(boolean) */

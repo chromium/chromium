@@ -6,16 +6,27 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_usvstringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/modules/ad_auction/validate_blink_interest_group.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -63,12 +74,13 @@ String ErrorInvalidAuctionConfigJson(const AuctionAdConfig& config,
 // JSON and Origin conversion helpers.
 
 bool Jsonify(const ScriptState& script_state,
-             const v8::Local<v8::Object> object,
+             const v8::Local<v8::Value>& value,
              String& output) {
   v8::Local<v8::String> v8_string;
-  if (!v8::JSON::Stringify(script_state.GetContext(), object)
-           .ToLocal(&v8_string))
+  if (!v8::JSON::Stringify(script_state.GetContext(), value)
+           .ToLocal(&v8_string)) {
     return false;
+  }
   output = ToCoreString(v8_string);
   // JSON.stringify can fail to produce a string value in one of two ways: it
   // can throw an exception (as with unserializable objects), or it can return
@@ -113,7 +125,7 @@ bool CopyOwnerFromIdlToMojo(const ExecutionContext& execution_context,
         "owner '%s' for AuctionAdInterestGroup with name '%s' match frame "
         "origin '%s'.",
         input.owner().Utf8().c_str(), input.name().Utf8().c_str(),
-        owner->ToString().Utf8().c_str()));
+        execution_context.GetSecurityOrigin()->ToRawString().Utf8().c_str()));
     return false;
   }
 
@@ -192,8 +204,7 @@ bool CopyUserBiddingSignalsFromIdlToMojo(const ScriptState& script_state,
                                          mojom::blink::InterestGroup& output) {
   if (!input.hasUserBiddingSignals())
     return true;
-  if (!Jsonify(script_state,
-               input.userBiddingSignals().V8Value().As<v8::Object>(),
+  if (!Jsonify(script_state, input.userBiddingSignals().V8Value(),
                output.user_bidding_signals)) {
     exception_state.ThrowTypeError(
         ErrorInvalidInterestGroupJson(input, "userBiddingSignals"));
@@ -222,14 +233,43 @@ bool CopyAdsFromIdlToMojo(const ExecutionContext& context,
     }
     mojo_ad->render_url = render_url;
     if (ad->hasMetadata()) {
-      if (!Jsonify(script_state, ad->metadata().V8Value().As<v8::Object>(),
-                   mojo_ad->metadata)) {
+      if (!Jsonify(script_state, ad->metadata().V8Value(), mojo_ad->metadata)) {
         exception_state.ThrowTypeError(
             ErrorInvalidInterestGroupJson(input, "ad metadata"));
         return false;
       }
     }
     output.ads->push_back(std::move(mojo_ad));
+  }
+  return true;
+}
+
+bool CopyAdComponentsFromIdlToMojo(const ExecutionContext& context,
+                                   const ScriptState& script_state,
+                                   ExceptionState& exception_state,
+                                   const AuctionAdInterestGroup& input,
+                                   mojom::blink::InterestGroup& output) {
+  if (!input.hasAdComponents())
+    return true;
+  output.ad_components.emplace();
+  for (const auto& ad : input.adComponents()) {
+    auto mojo_ad = mojom::blink::InterestGroupAd::New();
+    KURL render_url = context.CompleteURL(ad->renderUrl());
+    if (!render_url.IsValid()) {
+      exception_state.ThrowTypeError(
+          ErrorInvalidInterestGroup(input, "ad renderUrl", ad->renderUrl(),
+                                    "cannot be resolved to a valid URL."));
+      return false;
+    }
+    mojo_ad->render_url = render_url;
+    if (ad->hasMetadata()) {
+      if (!Jsonify(script_state, ad->metadata().V8Value(), mojo_ad->metadata)) {
+        exception_state.ThrowTypeError(
+            ErrorInvalidInterestGroupJson(input, "ad metadata"));
+        return false;
+      }
+    }
+    output.ad_components->push_back(std::move(mojo_ad));
   }
   return true;
 }
@@ -314,7 +354,7 @@ bool CopyAuctionSignalsFromIdlToMojo(const ScriptState& script_state,
                                      mojom::blink::AuctionAdConfig& output) {
   if (!input.hasAuctionSignals())
     return true;
-  if (!Jsonify(script_state, input.auctionSignals().V8Value().As<v8::Object>(),
+  if (!Jsonify(script_state, input.auctionSignals().V8Value(),
                output.auction_signals)) {
     exception_state.ThrowTypeError(
         ErrorInvalidAuctionConfigJson(input, "auctionSignals"));
@@ -329,7 +369,7 @@ bool CopySellerSignalsFromIdlToMojo(const ScriptState& script_state,
                                     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasSellerSignals())
     return true;
-  if (!Jsonify(script_state, input.sellerSignals().V8Value().As<v8::Object>(),
+  if (!Jsonify(script_state, input.sellerSignals().V8Value(),
                output.seller_signals)) {
     exception_state.ThrowTypeError(
         ErrorInvalidAuctionConfigJson(input, "sellerSignals"));
@@ -356,8 +396,7 @@ bool CopyPerBuyerSignalsFromIdlToMojo(const ScriptState& script_state,
       return false;
     }
     String buyer_signals_str;
-    if (!Jsonify(script_state,
-                 per_buyer_signal.second.V8Value().As<v8::Object>(),
+    if (!Jsonify(script_state, per_buyer_signal.second.V8Value(),
                  buyer_signals_str)) {
       exception_state.ThrowTypeError(
           ErrorInvalidAuctionConfigJson(input, "perBuyerSignals"));
@@ -373,14 +412,9 @@ bool CopyPerBuyerSignalsFromIdlToMojo(const ScriptState& script_state,
 
 NavigatorAuction::NavigatorAuction(Navigator& navigator)
     : Supplement(navigator),
-      ad_auction_service_(navigator.GetExecutionContext()),
-      interest_group_store_(navigator.GetExecutionContext()) {
+      ad_auction_service_(navigator.GetExecutionContext()) {
   navigator.GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       ad_auction_service_.BindNewPipeAndPassReceiver(
-          navigator.GetExecutionContext()->GetTaskRunner(
-              TaskType::kMiscPlatformAPI)));
-  navigator.GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
-      interest_group_store_.BindNewPipeAndPassReceiver(
           navigator.GetExecutionContext()->GetTaskRunner(
               TaskType::kMiscPlatformAPI)));
 }
@@ -403,9 +437,9 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
                                            double duration_seconds,
                                            ExceptionState& exception_state) {
   const ExecutionContext* context = ExecutionContext::From(script_state);
+
   auto mojo_group = mojom::blink::InterestGroup::New();
-  mojo_group->expiry =
-      base::Time::Now() + base::TimeDelta::FromSecondsD(duration_seconds);
+  mojo_group->expiry = base::Time::Now() + base::Seconds(duration_seconds);
   if (!CopyOwnerFromIdlToMojo(*context, exception_state, *group, *mojo_group))
     return;
   mojo_group->name = group->name();
@@ -431,18 +465,22 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
                             *mojo_group)) {
     return;
   }
+  if (!CopyAdComponentsFromIdlToMojo(*context, *script_state, exception_state,
+                                     *group, *mojo_group)) {
+    return;
+  }
 
   String error_field_name;
   String error_field_value;
   String error;
-  if (!ValidateBlinkInterestGroup(
-          *mojo_group, error_field_name, error_field_value, error)) {
+  if (!ValidateBlinkInterestGroup(*mojo_group, error_field_name,
+                                  error_field_value, error)) {
     exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
         *group, error_field_name, error_field_value, error));
     return;
   }
 
-  interest_group_store_->JoinInterestGroup(std::move(mojo_group));
+  ad_auction_service_->JoinInterestGroup(std::move(mojo_group));
 }
 
 /* static */
@@ -451,6 +489,14 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
                                            const AuctionAdInterestGroup* group,
                                            double duration_seconds,
                                            ExceptionState& exception_state) {
+  const ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+    exception_state.ThrowException(
+        static_cast<int>(DOMExceptionCode::kNotAllowedError),
+        "Feature join-ad-interest-group is not enabled by Permissions Policy");
+    return;
+  }
   return From(ExecutionContext::From(script_state), navigator)
       .joinAdInterestGroup(script_state, group, duration_seconds,
                            exception_state);
@@ -467,7 +513,7 @@ void NavigatorAuction::leaveAdInterestGroup(ScriptState* script_state,
                                    "' must be a valid https origin.");
     return;
   }
-  interest_group_store_->LeaveInterestGroup(owner, group->name());
+  ad_auction_service_->LeaveInterestGroup(owner, group->name());
 }
 
 /* static */
@@ -475,8 +521,35 @@ void NavigatorAuction::leaveAdInterestGroup(ScriptState* script_state,
                                             Navigator& navigator,
                                             const AuctionAdInterestGroup* group,
                                             ExceptionState& exception_state) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+    exception_state.ThrowException(
+        static_cast<int>(DOMExceptionCode::kNotAllowedError),
+        "Feature join-ad-interest-group is not enabled by Permissions Policy");
+    return;
+  }
   return From(ExecutionContext::From(script_state), navigator)
       .leaveAdInterestGroup(script_state, group, exception_state);
+}
+
+void NavigatorAuction::updateAdInterestGroups() {
+  ad_auction_service_->UpdateAdInterestGroups();
+}
+
+/* static */
+void NavigatorAuction::updateAdInterestGroups(ScriptState* script_state,
+                                              Navigator& navigator,
+                                              ExceptionState& exception_state) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+    exception_state.ThrowException(
+        static_cast<int>(DOMExceptionCode::kNotAllowedError),
+        "Feature join-ad-interest-group is not enabled by Permissions Policy");
+    return;
+  }
+  return From(context, navigator).updateAdInterestGroups();
 }
 
 ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
@@ -516,8 +589,83 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
                                              Navigator& navigator,
                                              const AuctionAdConfig* config,
                                              ExceptionState& exception_state) {
+  const ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kRunAdAuction)) {
+    exception_state.ThrowException(
+        static_cast<int>(DOMExceptionCode::kNotAllowedError),
+        "Feature run-ad-auction is not enabled by Permissions Policy");
+    return ScriptPromise();
+  }
   return From(ExecutionContext::From(script_state), navigator)
       .runAdAuction(script_state, config, exception_state);
+}
+
+/* static */
+Vector<String> NavigatorAuction::adAuctionComponents(
+    ScriptState* script_state,
+    Navigator& navigator,
+    uint16_t num_ad_components,
+    ExceptionState& exception_state) {
+  const auto& ad_auction_components =
+      navigator.DomWindow()->document()->Loader()->AdAuctionComponents();
+  Vector<String> out;
+  if (!ad_auction_components) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "This frame was not loaded with the "
+                                      "result of an interest group auction.");
+    return out;
+  }
+
+  // Clamp the number of ad components at blink::kMaxAdAuctionAdComponents.
+  if (num_ad_components >
+      static_cast<int16_t>(blink::kMaxAdAuctionAdComponents)) {
+    num_ad_components = blink::kMaxAdAuctionAdComponents;
+  }
+
+  DCHECK_EQ(kMaxAdAuctionAdComponents, ad_auction_components->size());
+
+  for (int i = 0; i < num_ad_components; ++i) {
+    out.push_back((*ad_auction_components)[i].GetString());
+  }
+  return out;
+}
+
+ScriptPromise NavigatorAuction::createAdRequest(ScriptState* script_state,
+                                                ExceptionState&) {
+  // TODO(https://crbug.com/1249186): Add full impl of methods; for now just
+  // return a resolved promise.
+  return ScriptPromise::RejectWithDOMException(
+      script_state, MakeGarbageCollected<DOMException>(
+                        DOMExceptionCode::kNotSupportedError,
+                        "createAdRequest API not yet implemented"));
+}
+
+/* static */
+ScriptPromise NavigatorAuction::createAdRequest(
+    ScriptState* script_state,
+    Navigator& navigator,
+    ExceptionState& exception_state) {
+  return From(ExecutionContext::From(script_state), navigator)
+      .createAdRequest(script_state, exception_state);
+}
+
+ScriptPromise NavigatorAuction::finalizeAd(ScriptState* script_state,
+                                           ExceptionState&) {
+  // TODO(https://crbug.com/1249186): Add full impl of methods; for now just
+  // return a resolved promise.
+  return ScriptPromise::RejectWithDOMException(
+      script_state,
+      MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
+                                         "finalizeAd API not yet implemented"));
+}
+
+/* static */
+ScriptPromise NavigatorAuction::finalizeAd(ScriptState* script_state,
+                                           Navigator& navigator,
+                                           ExceptionState& exception_state) {
+  return From(ExecutionContext::From(script_state), navigator)
+      .finalizeAd(script_state, exception_state);
 }
 
 void NavigatorAuction::AuctionComplete(ScriptPromiseResolver* resolver,

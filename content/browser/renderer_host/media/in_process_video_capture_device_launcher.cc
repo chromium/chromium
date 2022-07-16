@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/in_process_launched_video_capture_device.h"
@@ -55,17 +56,19 @@
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder_impl.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+namespace content {
+
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
     media::VideoCaptureJpegDecoder::DecodeDoneCB decode_done_cb,
     base::RepeatingCallback<void(const std::string&)> send_log_message_cb) {
-  auto io_task_runner = content::GetIOThreadTaskRunner({});
+  auto io_task_runner = GetIOThreadTaskRunner({});
   return std::make_unique<media::ScopedVideoCaptureJpegDecoder>(
       std::make_unique<media::VideoCaptureJpegDecoderImpl>(
           base::BindRepeating(
-              &content::VideoCaptureDependencies::CreateJpegDecodeAccelerator),
+              &VideoCaptureDependencies::CreateJpegDecodeAccelerator),
           io_task_runner, std::move(decode_done_cb),
           std::move(send_log_message_cb)),
       io_task_runner);
@@ -77,9 +80,13 @@ std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
 // not on hardware performance.
 const int kMaxNumberOfBuffers = media::kVideoCaptureDefaultMaxBufferPoolSize;
 
-}  // anonymous namespace
+#if defined(OS_MAC)
+const base::Feature kDesktopCaptureMacV2{"DesktopCaptureMacV2",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-namespace content {
+#endif
+
+}  // anonymous namespace
 
 InProcessVideoCaptureDeviceLauncher::InProcessVideoCaptureDeviceLauncher(
     scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
@@ -202,6 +209,12 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 
 #if defined(USE_AURA) || defined(OS_MAC)
       if (desktop_id.window_id != DesktopMediaID::kNullId) {
+        // For the other capturers, when a bug reports the type of capture it's
+        // easy enough to determine which capturer was used, but it's a little
+        // fuzzier with window capture.
+        TRACE_EVENT_INSTANT0(
+            TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+            "UsingVizFrameSinkCapturer", TRACE_EVENT_SCOPE_THREAD);
         start_capture_closure = base::BindOnce(
             &InProcessVideoCaptureDeviceLauncher::
                 DoStartVizFrameSinkWindowCaptureOnDeviceThread,
@@ -212,6 +225,8 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 #endif  // defined(USE_AURA) || defined(OS_MAC)
 
       // All cases other than tab capture or Aura desktop/window capture.
+      TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+                           "UsingDesktopCapturer", TRACE_EVENT_SCOPE_THREAD);
       start_capture_closure = base::BindOnce(
           &InProcessVideoCaptureDeviceLauncher::
               DoStartDesktopCaptureOnDeviceThread,
@@ -403,7 +418,7 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
   video_capture_device = std::make_unique<ScreenCaptureDeviceAndroid>();
 #else
 #if defined(OS_MAC)
-  if (base::FeatureList::IsEnabled(features::kDesktopCaptureMacV2))
+  if (base::FeatureList::IsEnabled(kDesktopCaptureMacV2))
     video_capture_device = CreateDesktopCaptureDeviceMac(desktop_id);
 #endif
   if (!video_capture_device)

@@ -15,7 +15,7 @@ namespace blink {
 PerformanceElementTiming* PerformanceElementTiming::Create(
     const AtomicString& name,
     const String& url,
-    const FloatRect& intersection_rect,
+    const gfx::RectF& intersection_rect,
     DOMHighResTimeStamp render_time,
     DOMHighResTimeStamp load_time,
     const AtomicString& identifier,
@@ -38,7 +38,7 @@ PerformanceElementTiming::PerformanceElementTiming(
     const AtomicString& name,
     DOMHighResTimeStamp start_time,
     const String& url,
-    const FloatRect& intersection_rect,
+    const gfx::RectF& intersection_rect,
     DOMHighResTimeStamp render_time,
     DOMHighResTimeStamp load_time,
     const AtomicString& identifier,
@@ -48,7 +48,7 @@ PerformanceElementTiming::PerformanceElementTiming(
     Element* element)
     : PerformanceEntry(name, start_time, start_time),
       element_(element),
-      intersection_rect_(DOMRectReadOnly::FromFloatRect(intersection_rect)),
+      intersection_rect_(DOMRectReadOnly::FromRectF(intersection_rect)),
       render_time_(render_time),
       load_time_(load_time),
       identifier_(identifier),
@@ -69,6 +69,23 @@ PerformanceEntryType PerformanceElementTiming::EntryTypeEnum() const {
 
 Element* PerformanceElementTiming::element() const {
   return Performance::CanExposeNode(element_) ? element_ : nullptr;
+}
+
+std::unique_ptr<TracedValue> PerformanceElementTiming::ToTracedValue() const {
+  auto traced_value = std::make_unique<TracedValue>();
+  traced_value->SetString("elementType", name());
+  traced_value->SetInteger("loadTime", load_time_);
+  traced_value->SetInteger("renderTime", render_time_);
+  traced_value->SetDouble("rectLeft", intersection_rect_->left());
+  traced_value->SetDouble("rectTop", intersection_rect_->top());
+  traced_value->SetDouble("rectWidth", intersection_rect_->width());
+  traced_value->SetDouble("rectHeight", intersection_rect_->height());
+  traced_value->SetString("identifier", identifier_);
+  traced_value->SetInteger("naturalWidth", naturalWidth_);
+  traced_value->SetInteger("naturalHeight", naturalHeight_);
+  traced_value->SetString("elementId", id_);
+  traced_value->SetString("url", url_);
+  return traced_value;
 }
 
 void PerformanceElementTiming::BuildJSONValue(V8ObjectBuilder& builder) const {

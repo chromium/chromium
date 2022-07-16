@@ -240,8 +240,7 @@ class MessageLoop : public Resource {
   ///   - PP_ERROR_BADARGUMENT: The function pointer for the completion callback
   ///     is null (this will be the case if you pass PP_BlockUntilComplete()).
   ///   - PP_ERROR_FAILED: The message loop has been destroyed.
-  int32_t PostWork(const CompletionCallback& callback,
-                   int64_t delay_ms = 0);
+  int32_t PostWork(const CompletionCallback& callback, int64_t delay_ms = 0);
 
   /// Posts a quit message to the given message loop's work queue. Work posted
   /// before that point will be processed before quitting.

@@ -20,7 +20,10 @@ class ASH_EXPORT CaptureModeTypeView : public views::View {
  public:
   METADATA_HEADER(CaptureModeTypeView);
 
-  CaptureModeTypeView();
+  // |projector_mode| specifies whether the current capture mode session was
+  // started for the projector workflow. In this mode, only video recording is
+  // allowed.
+  explicit CaptureModeTypeView(bool projector_mode);
   CaptureModeTypeView(const CaptureModeTypeView&) = delete;
   CaptureModeTypeView& operator=(const CaptureModeTypeView&) = delete;
   ~CaptureModeTypeView() override;

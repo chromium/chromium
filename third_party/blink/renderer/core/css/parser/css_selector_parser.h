@@ -61,9 +61,32 @@ class CORE_EXPORT CSSSelectorParser {
   // https://drafts.csswg.org/selectors/#typedef-forgiving-selector-list
   CSSSelectorList ConsumeForgivingComplexSelectorList(CSSParserTokenRange&);
   CSSSelectorList ConsumeForgivingCompoundSelectorList(CSSParserTokenRange&);
+  // https://drafts.csswg.org/selectors/#typedef-relative-selector-list
+  CSSSelectorList ConsumeRelativeSelectorList(CSSParserTokenRange&);
 
+  std::unique_ptr<CSSParserSelector> ConsumeRelativeSelector(
+      CSSParserTokenRange&);
   std::unique_ptr<CSSParserSelector> ConsumeComplexSelector(
       CSSParserTokenRange&);
+
+  // ConsumePartialComplexSelector() method provides the common logic of
+  // consuming a complex selector and consuming a relative selector.
+  //
+  // After consuming the left-most combinator of a relative selector, we can
+  // consume the remaining selectors with the common logic.
+  // For example, after consuming the left-most combinator '~' of the relative
+  // selector '~ .a ~ .b', we can consume remaining selectors '.a ~ .b'
+  // with this method.
+  //
+  // After consuming the left-most compound selector and a combinator of a
+  // complex selector, we can also use this method to consume the remaining
+  // selectors of the complex selector.
+  std::unique_ptr<CSSParserSelector> ConsumePartialComplexSelector(
+      CSSParserTokenRange&,
+      CSSSelector::RelationType& /* current combinator */,
+      std::unique_ptr<CSSParserSelector> /* previous compound selector */,
+      unsigned& /* previous compound flags */);
+
   std::unique_ptr<CSSParserSelector> ConsumeCompoundSelector(
       CSSParserTokenRange&);
   // This doesn't include element names, since they're handled specially

@@ -21,7 +21,7 @@
 #include "url/gurl.h"
 
 namespace {
-constexpr char kBaseDataDir[] = "content/test/data/conversions";
+constexpr char kBaseDataDir[] = "content/test/data/attribution_reporting";
 constexpr char kOriginTrialTestPublicKey[] =
     "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=";
 }  // namespace

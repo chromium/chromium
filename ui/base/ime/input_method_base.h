@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -35,6 +34,9 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
     : public InputMethod,
       public base::SupportsWeakPtr<InputMethodBase> {
  public:
+  InputMethodBase(const InputMethodBase&) = delete;
+  InputMethodBase& operator=(const InputMethodBase&) = delete;
+
   ~InputMethodBase() override;
 
   // Overriden from InputMethod.
@@ -43,7 +45,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
   void OnBlur() override;
 
 #if defined(OS_WIN)
-  bool OnUntranslatedIMEMessage(const MSG event,
+  bool OnUntranslatedIMEMessage(const CHROME_MSG event,
                                 NativeEventResult* result) override;
   void OnInputLocaleChanged() override;
   bool IsInputLocaleCJK() const override;
@@ -121,8 +123,6 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
   gfx::Rect keyboard_bounds_;
 
   std::unique_ptr<VirtualKeyboardController> const keyboard_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodBase);
 };
 
 }  // namespace ui

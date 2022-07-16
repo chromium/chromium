@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -186,6 +185,10 @@ void FakeMCSClient::SendMessage(const MCSMessage& message) {
 class AutoAdvancingTestClock : public base::Clock {
  public:
   explicit AutoAdvancingTestClock(base::TimeDelta auto_increment_time_delta);
+
+  AutoAdvancingTestClock(const AutoAdvancingTestClock&) = delete;
+  AutoAdvancingTestClock& operator=(const AutoAdvancingTestClock&) = delete;
+
   ~AutoAdvancingTestClock() override;
 
   base::Time Now() const override;
@@ -196,8 +199,6 @@ class AutoAdvancingTestClock : public base::Clock {
   mutable int call_count_;
   base::TimeDelta auto_increment_time_delta_;
   mutable base::Time now_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoAdvancingTestClock);
 };
 
 AutoAdvancingTestClock::AutoAdvancingTestClock(
@@ -591,7 +592,7 @@ void GCMClientImplTest::AddRegistration(
 }
 
 void GCMClientImplTest::InitializeGCMClient() {
-  clock()->Advance(base::TimeDelta::FromMilliseconds(1));
+  clock()->Advance(base::Milliseconds(1));
 
   // Actual initialization.
   GCMClient::ChromeBuildInfo chrome_build_info;
@@ -796,7 +797,7 @@ TEST_F(GCMClientImplTest, DestroyStoreWhenNotNeeded) {
   EXPECT_TRUE(device_checkin_info().secret);
 
   // Fast forward the clock to trigger the store destroying logic.
-  FastForwardBy(base::TimeDelta::FromMilliseconds(300000));
+  FastForwardBy(base::Milliseconds(300000));
   PumpLoopUntilIdle();
 
   EXPECT_EQ(GCMClientImpl::INITIALIZED, gcm_client_state());
@@ -953,7 +954,7 @@ TEST_F(GCMClientImplTest, DISABLED_RegisterAgainWhenTokenIsFresh) {
   reset_last_event();
 
   // Advance time by (kTestTokenInvalidationPeriod)/2
-  clock()->Advance(base::TimeDelta::FromDays(kTestTokenInvalidationPeriod / 2));
+  clock()->Advance(base::Days(kTestTokenInvalidationPeriod / 2));
 
   // Register the same sender again. The same registration ID as the
   // previous one should be returned, and we should *not* send a
@@ -984,7 +985,7 @@ TEST_F(GCMClientImplTest, RegisterAgainWhenTokenIsStale) {
   reset_last_event();
 
   // Advance time by kTestTokenInvalidationPeriod
-  clock()->Advance(base::TimeDelta::FromDays(kTestTokenInvalidationPeriod));
+  clock()->Advance(base::Days(kTestTokenInvalidationPeriod));
 
   // Register the same sender again. Different registration ID from the
   // previous one should be returned.
@@ -1170,7 +1171,7 @@ void GCMClientImplCheckinTest::SetUp() {
   // GCM Client and G-services settings.
   ASSERT_TRUE(CreateUniqueTempDir());
   // Time will be advancing one hour every time it is checked.
-  BuildGCMClient(base::TimeDelta::FromSeconds(kSettingsCheckinInterval));
+  BuildGCMClient(base::Seconds(kSettingsCheckinInterval));
   InitializeGCMClient();
   StartGCMClient();
 }
@@ -1185,7 +1186,7 @@ TEST_F(GCMClientImplCheckinTest, GServicesSettingsAfterInitialCheckin) {
   ASSERT_NO_FATAL_FAILURE(
       CompleteCheckin(kDeviceAndroidId, kDeviceSecurityToken,
                       GServicesSettings::CalculateDigest(settings), settings));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(kSettingsCheckinInterval),
+  EXPECT_EQ(base::Seconds(kSettingsCheckinInterval),
             gservices_settings().GetCheckinInterval());
   EXPECT_EQ(GURL("http://alternative.url/checkin"),
             gservices_settings().GetCheckinURL());
@@ -1232,7 +1233,7 @@ TEST_F(GCMClientImplCheckinTest, LoadGSettingsFromStore) {
   InitializeGCMClient();
   StartGCMClient();
 
-  EXPECT_EQ(base::TimeDelta::FromSeconds(kSettingsCheckinInterval),
+  EXPECT_EQ(base::Seconds(kSettingsCheckinInterval),
             gservices_settings().GetCheckinInterval());
   EXPECT_EQ(GURL("http://alternative.url/checkin"),
             gservices_settings().GetCheckinURL());

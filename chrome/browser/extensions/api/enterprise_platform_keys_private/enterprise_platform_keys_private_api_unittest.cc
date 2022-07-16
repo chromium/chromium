@@ -104,7 +104,7 @@ TEST_F(EPKPChallengeMachineKeyTest, Success) {
   SetMockTpmChallenger();
 
   base::ListValue allowlist;
-  allowlist.AppendString(extension_->id());
+  allowlist.Append(extension_->id());
   prefs_->Set(prefs::kAttestationExtensionAllowlist, allowlist);
 
   std::unique_ptr<base::Value> value(utils::RunFunctionAndReturnSingleResult(
@@ -143,7 +143,7 @@ TEST_F(EPKPChallengeUserKeyTest, Success) {
   SetMockTpmChallenger();
 
   base::ListValue allowlist;
-  allowlist.AppendString(extension_->id());
+  allowlist.Append(extension_->id());
   prefs_->Set(prefs::kAttestationExtensionAllowlist, allowlist);
 
   std::unique_ptr<base::Value> value(utils::RunFunctionAndReturnSingleResult(

@@ -7,12 +7,10 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/system/unified/collapse_button.h"
-#include "ash/system/unified/sign_out_button.h"
 #include "ash/system/unified/top_shortcut_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
@@ -21,6 +19,10 @@ namespace ash {
 class TopShortcutsViewTest : public NoSessionAshTestBase {
  public:
   TopShortcutsViewTest() = default;
+
+  TopShortcutsViewTest(const TopShortcutsViewTest&) = delete;
+  TopShortcutsViewTest& operator=(const TopShortcutsViewTest&) = delete;
+
   ~TopShortcutsViewTest() override = default;
 
   void SetUp() override {
@@ -68,8 +70,6 @@ class TopShortcutsViewTest : public NoSessionAshTestBase {
   std::unique_ptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<TopShortcutsView> top_shortcuts_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopShortcutsViewTest);
 };
 
 // Settings button and lock button are hidden before login.

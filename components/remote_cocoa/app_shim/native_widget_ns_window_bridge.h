@@ -11,7 +11,6 @@
 #include <vector>
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #import "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
@@ -84,6 +83,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
       NativeWidgetNSWindowHost* host,
       NativeWidgetNSWindowHostHelper* host_helper,
       remote_cocoa::mojom::TextInputHost* text_input_host);
+
+  NativeWidgetNSWindowBridge(const NativeWidgetNSWindowBridge&) = delete;
+  NativeWidgetNSWindowBridge& operator=(const NativeWidgetNSWindowBridge&) =
+      delete;
+
   ~NativeWidgetNSWindowBridge() override;
 
   // Bind |bridge_mojo_receiver_| to |receiver|, and set the connection error
@@ -395,7 +399,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
 
   mojo::AssociatedReceiver<remote_cocoa::mojom::NativeWidgetNSWindow>
       bridge_mojo_receiver_{this};
-  DISALLOW_COPY_AND_ASSIGN(NativeWidgetNSWindowBridge);
 };
 
 }  // namespace remote_cocoa

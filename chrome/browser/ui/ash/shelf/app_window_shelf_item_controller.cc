@@ -8,7 +8,6 @@
 #include <iterator>
 #include <utility>
 
-#include "ash/public/cpp/desks_helper.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
+#include "chromeos/ui/wm/desks/desks_helper.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/wm/core/window_util.h"
@@ -71,12 +71,15 @@ bool MaybeLaunchNewWindow(const std::list<AppWindowBase*>& app_windows) {
   for (auto* window : app_windows) {
     aura::Window* aura_window = window->GetNativeWindow();
     if (crosapi::browser_util::IsLacrosWindow(aura_window) &&
-        ash::DesksHelper::Get()->BelongsToActiveDesk(aura_window)) {
+        chromeos::DesksHelper::Get(aura_window)
+            ->BelongsToActiveDesk(aura_window)) {
       return false;
     }
   }
 
-  ash::NewWindowDelegate::GetPrimary()->NewWindow(/*incognito=*/false);
+  ash::NewWindowDelegate::GetPrimary()->NewWindow(
+      /*incognito=*/false,
+      /*should_trigger_session_restore=*/true);
   return true;
 }
 
@@ -316,7 +319,8 @@ void AppWindowShelfItemController::UpdateShelfItemIcon() {
         aura::client::kAppIconKey);
   }
   // TODO(khmel): Remove using image_set_by_controller
-  if (app_icon && !app_icon->isNull()) {
+  if (app_icon && !app_icon->isNull() &&
+      ChromeShelfController::instance()->GetItem(shelf_id())) {
     set_image_set_by_controller(true);
     ChromeShelfController::instance()->SetItemImage(shelf_id(), *app_icon);
   } else if (image_set_by_controller()) {

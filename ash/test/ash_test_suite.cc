@@ -13,6 +13,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/display/display_switches.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
@@ -29,6 +30,7 @@ void AshTestSuite::Initialize() {
   // in its own process
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   cmd_line->AppendSwitch(switches::kOverrideUseSoftwareGLForTests);
+  cmd_line->AppendSwitch(switches::kRejectSquareDisplay);
 
   gl::GLSurfaceTestSupport::InitializeOneOff();
 
@@ -45,17 +47,17 @@ void AshTestSuite::Initialize() {
       path.Append(FILE_PATH_LITERAL("ash_test_strings.pak"));
   ui::ResourceBundle::InitSharedInstanceWithPakPath(ash_test_strings);
 
-  if (ui::ResourceBundle::IsScaleFactorSupported(ui::SCALE_FACTOR_100P)) {
+  if (ui::ResourceBundle::IsScaleFactorSupported(ui::k100Percent)) {
     base::FilePath ash_test_resources_100 =
         path.AppendASCII("ash_test_resources_100_percent.pak");
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        ash_test_resources_100, ui::SCALE_FACTOR_100P);
+        ash_test_resources_100, ui::k100Percent);
   }
-  if (ui::ResourceBundle::IsScaleFactorSupported(ui::SCALE_FACTOR_200P)) {
+  if (ui::ResourceBundle::IsScaleFactorSupported(ui::k200Percent)) {
     base::FilePath ash_test_resources_200 =
         path.Append(FILE_PATH_LITERAL("ash_test_resources_200_percent.pak"));
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        ash_test_resources_200, ui::SCALE_FACTOR_200P);
+        ash_test_resources_200, ui::k200Percent);
   }
 
   base::DiscardableMemoryAllocator::SetInstance(&discardable_memory_allocator_);

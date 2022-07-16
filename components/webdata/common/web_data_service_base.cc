@@ -4,7 +4,7 @@
 
 #include "components/webdata/common/web_data_service_base.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "components/webdata/common/web_database_service.h"
 

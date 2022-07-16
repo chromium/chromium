@@ -59,6 +59,9 @@ class RankerModelLoaderImpl : public RankerModelLoader {
       GURL model_url,
       std::string uma_prefix);
 
+  RankerModelLoaderImpl(const RankerModelLoaderImpl&) = delete;
+  RankerModelLoaderImpl& operator=(const RankerModelLoaderImpl&) = delete;
+
   ~RankerModelLoaderImpl() override;
 
   // Call this method periodically to notify the model loader the ranker is
@@ -163,8 +166,6 @@ class RankerModelLoaderImpl : public RankerModelLoader {
 
   // Creates weak pointer references to the loader.
   base::WeakPtrFactory<RankerModelLoaderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RankerModelLoaderImpl);
 };
 
 }  // namespace assist_ranker

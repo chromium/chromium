@@ -17,6 +17,8 @@ enum class DownloadItemMode {
   kMixedContentWarn,   // Displaying the mixed-content download warning.
   kMixedContentBlock,  // Displaying the mixed-content download block error.
   kDeepScanning,       // Displaying in-progress deep scanning information.
+  kIncognitoWarning,  // Displaying warning about files saved on the device even
+                      // in Incognito.
 };
 
 // Returns the mode that best reflects the current model state.

@@ -22,8 +22,8 @@ class SendPingTaskTest : public testing::Test {
  public:
   SendPingTaskTest() {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SendPingTaskTest);
+  SendPingTaskTest(const SendPingTaskTest&) = delete;
+  SendPingTaskTest& operator=(const SendPingTaskTest&) = delete;
 };
 
 TEST_F(SendPingTaskTest, MakePingStanza) {

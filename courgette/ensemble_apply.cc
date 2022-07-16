@@ -30,6 +30,10 @@ namespace courgette {
 class EnsemblePatchApplication {
  public:
   EnsemblePatchApplication();
+
+  EnsemblePatchApplication(const EnsemblePatchApplication&) = delete;
+  EnsemblePatchApplication& operator=(const EnsemblePatchApplication&) = delete;
+
   ~EnsemblePatchApplication() = default;
 
   Status ReadHeader(SourceStream* header_stream);
@@ -76,8 +80,6 @@ class EnsemblePatchApplication {
 
   SinkStream corrected_parameters_storage_;
   SinkStream corrected_elements_storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnsemblePatchApplication);
 };
 
 EnsemblePatchApplication::EnsemblePatchApplication()

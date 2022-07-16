@@ -15,14 +15,7 @@ const base::Feature kGenericSensorExtraClasses{
 const base::Feature kWinrtGeolocationImplementation{
     "WinrtGeolocationImplementation", base::FEATURE_DISABLED_BY_DEFAULT};
 // Enables usage of the CoreLocation API for LocationProvider instead of
-// NetworkLocationProvider for macOS. The |kMacCoreLocationImplementation| flag
-// enables a permissions UX workflow that navigates the user to give the
-// browser location permission in the macOS System Preferences. The
-// |kMacCoreLocationBackend| flag switches to using the the macOS Core Location
-// API instead of using the NetworkLocationProvider to gather location through
-// WiFi scans.
-const base::Feature kMacCoreLocationImplementation{
-    "MacCoreLocationImplementation", base::FEATURE_ENABLED_BY_DEFAULT};
+// NetworkLocationProvider for macOS.
 const base::Feature kMacCoreLocationBackend{"MacCoreLocationBackend",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -25,7 +25,6 @@ class BluetoothDiscoveryFilter;
 namespace content {
 
 class RenderFrameHost;
-class WebContents;
 class WebBluetoothServiceImpl;
 
 // Class that interacts with a chooser and starts a bluetooth discovery session.
@@ -135,8 +134,6 @@ class CONTENT_EXPORT BluetoothDeviceChooserController final {
   WebBluetoothServiceImpl* web_bluetooth_service_;
   // The RenderFrameHost that owns web_bluetooth_service_.
   RenderFrameHost* render_frame_host_;
-  // The WebContents that owns render_frame_host_.
-  WebContents* web_contents_;
 
   // Contains the filters and optional services used when scanning.
   blink::mojom::WebBluetoothRequestDeviceOptionsPtr options_;

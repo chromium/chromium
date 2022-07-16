@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -34,7 +35,7 @@ namespace blink {
 
 namespace {
 
-class MockVideoCapturerSource : public media::VideoCapturerSource {
+class MockVideoCapturerSource : public VideoCapturerSource {
  public:
   MockVideoCapturerSource() {}
 
@@ -170,7 +171,7 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
 
   MOCK_METHOD0(MockNotification, void());
 
-  std::unique_ptr<media::VideoCapturerSource> RecreateVideoCapturerSource(
+  std::unique_ptr<VideoCapturerSource> RecreateVideoCapturerSource(
       const base::UnguessableToken& session_id) {
     auto delegate = std::make_unique<MockVideoCapturerSource>();
     delegate_ = delegate.get();
@@ -227,7 +228,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, StartAndStop) {
 
 TEST_F(MediaStreamVideoCapturerSourceTest, CaptureTimeAndMetadataPlumbing) {
   VideoCaptureDeliverFrameCB deliver_frame_cb;
-  media::VideoCapturerSource::RunningCallback running_cb;
+  VideoCapturerSource::RunningCallback running_cb;
 
   InSequence s;
   EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _))

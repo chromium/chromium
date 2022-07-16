@@ -21,6 +21,11 @@ class CrostiniAnsibleSoftwareConfigView
     : public views::BubbleDialogDelegateView,
       public crostini::AnsibleManagementService::Observer {
  public:
+  CrostiniAnsibleSoftwareConfigView(const CrostiniAnsibleSoftwareConfigView&) =
+      delete;
+  CrostiniAnsibleSoftwareConfigView& operator=(
+      const CrostiniAnsibleSoftwareConfigView&) = delete;
+
   METADATA_HEADER(CrostiniAnsibleSoftwareConfigView);
 
   // views::DialogDelegateView:
@@ -55,8 +60,6 @@ class CrostiniAnsibleSoftwareConfigView
   views::ProgressBar* progress_bar_ = nullptr;
 
   ~CrostiniAnsibleSoftwareConfigView() override;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniAnsibleSoftwareConfigView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_VIEW_H_

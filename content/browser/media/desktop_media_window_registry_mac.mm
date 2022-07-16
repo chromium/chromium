@@ -9,7 +9,7 @@
 
 namespace content {
 
-class DesktopMediaWindowRegistryMac : public DesktopMediaWindowRegistry {
+class DesktopMediaWindowRegistryMac final : public DesktopMediaWindowRegistry {
  public:
   static DesktopMediaWindowRegistryMac* GetInstance() {
     static base::NoDestructor<DesktopMediaWindowRegistryMac> instance;
@@ -18,21 +18,23 @@ class DesktopMediaWindowRegistryMac : public DesktopMediaWindowRegistry {
 
   DesktopMediaWindowRegistryMac() = default;
 
-  Id RegisterWindow(gfx::NativeWindow window) final {
+  DesktopMediaWindowRegistryMac(const DesktopMediaWindowRegistryMac&) = delete;
+  DesktopMediaWindowRegistryMac& operator=(
+      const DesktopMediaWindowRegistryMac&) = delete;
+
+  Id RegisterWindow(gfx::NativeWindow window) override {
     // Note that DesktopMediaPickerViews in //chrome depends on the fact that
     // the Id returned from this function is the NSWindow's windowNumber, but
     // that invariant is *not* part of the general contract for DesktopMediaID.
     return window.GetNativeNSWindow().windowNumber;
   }
 
-  gfx::NativeWindow GetWindowById(Id id) final {
+  gfx::NativeWindow GetWindowById(Id id) override {
     return gfx::NativeWindow([NSApp windowWithWindowNumber:id]);
   }
 
  private:
-  ~DesktopMediaWindowRegistryMac() final = default;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaWindowRegistryMac);
+  ~DesktopMediaWindowRegistryMac() override = default;
 };
 
 // static

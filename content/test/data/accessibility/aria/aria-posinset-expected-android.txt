@@ -29,4 +29,13 @@ android.webkit.WebView focusable focused scrollable
 ++++++android.view.View name='red'
 ++++++android.view.View name='<newline>'
 ++++++android.widget.RadioButton role_description='radio button' checkable clickable focusable name='blue'
+++android.widget.GridView role_description='tree grid' clickable collection row_count=1 column_count=1
+++++android.view.View
+++++++android.view.View collection_item name='content' row_span=1 column_span=1
+++android.widget.GridView role_description='table' collection row_count=1 column_count=1
+++++android.view.View
+++++++android.view.View collection_item name='content' row_span=1 column_span=1
+++android.widget.GridView role_description='table' collection row_count=1 column_count=1
+++++android.view.View
+++++++android.view.View collection_item name='content' row_span=1 column_span=1
 ++android.widget.TextView name='Done'

@@ -20,6 +20,11 @@ class AnsibleManagementServiceFactory
   static AnsibleManagementService* GetForProfile(Profile* profile);
   static AnsibleManagementServiceFactory* GetInstance();
 
+  AnsibleManagementServiceFactory(const AnsibleManagementServiceFactory&) =
+      delete;
+  AnsibleManagementServiceFactory& operator=(
+      const AnsibleManagementServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<AnsibleManagementServiceFactory>;
 
@@ -29,8 +34,6 @@ class AnsibleManagementServiceFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AnsibleManagementServiceFactory);
 };
 
 }  // namespace crostini

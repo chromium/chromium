@@ -277,11 +277,11 @@ base::DictionaryValue* ExtensionTabUtil::OpenTab(ExtensionFunction* function,
       (!function->extension() ||
        !IncognitoInfo::IsSplitMode(function->extension())) &&
       browser->profile()->IsOffTheRecord()) {
-    Profile* profile = browser->profile()->GetOriginalProfile();
+    Profile* original_profile = browser->profile()->GetOriginalProfile();
 
-    browser = chrome::FindTabbedBrowser(profile, false);
+    browser = chrome::FindTabbedBrowser(original_profile, false);
     if (!browser) {
-      browser = CreateBrowser(profile, user_gesture);
+      browser = CreateBrowser(original_profile, user_gesture);
       if (!browser) {
         *error = tabs_constants::kBrowserWindowNotAllowed;
         return nullptr;
@@ -398,12 +398,13 @@ int ExtensionTabUtil::GetWindowIdOfTab(const WebContents* web_contents) {
 std::string ExtensionTabUtil::GetBrowserWindowTypeText(const Browser& browser) {
   if (browser.is_type_devtools())
     return tabs_constants::kWindowTypeValueDevTools;
-  // TODO(crbug.com/990158): We return 'popup' for both popup and app since
+  // Browser::TYPE_APP_POPUP is considered 'popup' rather than 'app' since
   // chrome.windows.create({type: 'popup'}) uses
-  // Browser::CreateParams::CreateForApp.
-  if (browser.is_type_popup() || browser.is_type_app() ||
-      browser.is_type_app_popup())
+  // Browser::CreateParams::CreateForAppPopup().
+  if (browser.is_type_popup() || browser.is_type_app_popup())
     return tabs_constants::kWindowTypeValuePopup;
+  if (browser.is_type_app())
+    return tabs_constants::kWindowTypeValueApp;
   return tabs_constants::kWindowTypeValueNormal;
 }
 
@@ -636,8 +637,8 @@ void ExtensionTabUtil::ScrubTabForExtension(
       tab->fav_icon_url.reset();
       break;
     case kScrubTabUrlToOrigin:
-      tab->url =
-          std::make_unique<std::string>(GURL(*tab->url).GetOrigin().spec());
+      tab->url = std::make_unique<std::string>(
+          GURL(*tab->url).DeprecatedGetOriginAsURL().spec());
       break;
     case kDontScrubTab:
       break;
@@ -651,7 +652,7 @@ void ExtensionTabUtil::ScrubTabForExtension(
         break;
       case kScrubTabUrlToOrigin:
         tab->pending_url = std::make_unique<std::string>(
-            GURL(*tab->pending_url).GetOrigin().spec());
+            GURL(*tab->pending_url).DeprecatedGetOriginAsURL().spec());
         break;
       case kDontScrubTab:
         break;
@@ -827,13 +828,16 @@ bool ExtensionTabUtil::PrepareURLForNavigation(const std::string& url_string,
 
   // Don't let the extension navigate directly to devtools scheme pages, unless
   // they have applicable permissions.
-  if (url.SchemeIs(content::kChromeDevToolsScheme) &&
-      !(extension->permissions_data()->HasAPIPermission(
-            APIPermissionID::kDevtools) ||
-        extension->permissions_data()->HasAPIPermission(
-            APIPermissionID::kDebugger))) {
-    *error = tabs_constants::kCannotNavigateToDevtools;
-    return false;
+  if (url.SchemeIs(content::kChromeDevToolsScheme)) {
+    bool has_permission =
+        extension && (extension->permissions_data()->HasAPIPermission(
+                          APIPermissionID::kDevtools) ||
+                      extension->permissions_data()->HasAPIPermission(
+                          APIPermissionID::kDebugger));
+    if (!has_permission) {
+      *error = tabs_constants::kCannotNavigateToDevtools;
+      return false;
+    }
   }
 
   return_url->Swap(&url);
@@ -862,7 +866,7 @@ void ExtensionTabUtil::CreateTab(std::unique_ptr<WebContents> web_contents,
   // TODO(mpcomplete): This seems wrong. What if the extension content is hosted
   // in a tab?
   if (disposition == WindowOpenDisposition::NEW_POPUP)
-    params.extension_app_id = extension_id;
+    params.app_id = extension_id;
 
   params.disposition = disposition;
   params.window_bounds = initial_rect;

@@ -18,14 +18,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.UiThreadTest;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -33,8 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Tests for the {@link ScreenshotShareSheetView}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Features.EnableFeatures(ChromeFeatureList.CHROME_SHARE_SCREENSHOT)
-public class ScreenshotShareSheetViewTest extends DummyUiChromeActivityTestCase {
+public class ScreenshotShareSheetViewTest extends DummyUiActivityTestCase {
     private ScreenshotShareSheetView mScreenshotView;
     private PropertyModel mScreenshotModel;
     private PropertyModelChangeProcessor mScreenshotMCP;

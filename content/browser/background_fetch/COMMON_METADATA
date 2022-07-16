@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>BackgroundFetch"
+}
+team_email: "platform-capabilities@chromium.org"

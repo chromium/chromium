@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++tabList horizontal hierarchicalLevel=1 setSize=5
+++++++tabList horizontal setSize=5
 ++++++++tab name='tab1' setSize=5 posInSet=2 selected=false
 ++++++++++staticText name='tab1'
 ++++++++++++inlineTextBox name='tab1'

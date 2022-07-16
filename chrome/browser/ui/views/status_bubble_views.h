@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/status_bubble.h"
 #include "ui/gfx/geometry/rect.h"
@@ -42,6 +41,10 @@ class StatusBubbleViews : public StatusBubble {
 
   // |base_view| is the view that this bubble is positioned relative to.
   explicit StatusBubbleViews(views::View* base_view);
+
+  StatusBubbleViews(const StatusBubbleViews&) = delete;
+  StatusBubbleViews& operator=(const StatusBubbleViews&) = delete;
+
   ~StatusBubbleViews() override;
 
   views::View* base_view() { return base_view_; }
@@ -170,8 +173,6 @@ class StatusBubbleViews : public StatusBubble {
 
   // Times expansion of status bubble when URL is too long for standard width.
   base::WeakPtrFactory<StatusBubbleViews> expand_timer_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StatusBubbleViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_BUBBLE_VIEWS_H_

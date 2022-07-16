@@ -15,10 +15,11 @@
 class InspectUI : public web::WebUIIOSController {
  public:
   explicit InspectUI(web::WebUIIOS* web_ui, const std::string& host);
-  ~InspectUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(InspectUI);
+  InspectUI(const InspectUI&) = delete;
+  InspectUI& operator=(const InspectUI&) = delete;
+
+  ~InspectUI() override;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_INSPECT_INSPECT_UI_H_

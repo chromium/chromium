@@ -40,6 +40,11 @@ class ASH_EXPORT CaptureWindowObserver : public aura::WindowObserver,
       const gfx::Point& location_in_screen,
       const std::set<aura::Window*>& ignore_windows);
 
+  // Set the given |window| as the current observed |window_|.
+  // |window| will be ignored if it's a child of the wallpaper container
+  // or it's the home launcher window.
+  void SetSelectedWindow(aura::Window* window);
+
   // aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* window,
                              const gfx::Rect& old_bounds,

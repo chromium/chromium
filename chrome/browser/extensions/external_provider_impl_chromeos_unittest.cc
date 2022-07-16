@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_path_override.h"
@@ -39,6 +38,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
@@ -55,6 +55,11 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
   ExternalProviderImplChromeOSTest()
       : fake_user_manager_(new ash::FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_)) {}
+
+  ExternalProviderImplChromeOSTest(const ExternalProviderImplChromeOSTest&) =
+      delete;
+  ExternalProviderImplChromeOSTest& operator=(
+      const ExternalProviderImplChromeOSTest&) = delete;
 
   ~ExternalProviderImplChromeOSTest() override {}
 
@@ -142,8 +147,6 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   ash::FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalProviderImplChromeOSTest);
 };
 
 }  // namespace
@@ -246,10 +249,34 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PolicyDisabled) {
   TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
 }
 
+enum class SyncSettingsCategorization { kEnabled, kDisabled };
+
+class ExternalProviderImplChromeOSSyncCategorizationTest
+    : public ExternalProviderImplChromeOSTest,
+      public ::testing::WithParamInterface<SyncSettingsCategorization> {
+ public:
+  ExternalProviderImplChromeOSSyncCategorizationTest() {
+    switch (GetParam()) {
+      case SyncSettingsCategorization::kEnabled:
+        feature_list_.InitAndEnableFeature(
+            chromeos::features::kSyncSettingsCategorization);
+        break;
+      case SyncSettingsCategorization::kDisabled:
+        feature_list_.InitAndDisableFeature(
+            chromeos::features::kSyncSettingsCategorization);
+        break;
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // User signed in, sync service started, install app when priority sync is
 // completed.
 // TODO(crbug.com/1177118) Re-enable test
-TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PriorityCompleted) {
+TEST_P(ExternalProviderImplChromeOSSyncCategorizationTest,
+       DISABLED_PriorityCompleted) {
   InitServiceWithExternalProviders(true);
 
   // User is logged in.
@@ -266,9 +293,10 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PriorityCompleted) {
   // App sync will wait for priority sync to complete.
   service_->CheckForExternalUpdates();
 
-  // SplitSettingsSync makes ExternalPrefLoader wait for OS priority prefs.
+  // SyncSettingsCategorization makes ExternalPrefLoader wait for OS priority
+  // prefs.
   syncer::ModelType priority_pref_type =
-      chromeos::features::IsSplitSettingsSyncEnabled()
+      GetParam() == SyncSettingsCategorization::kEnabled
           ? syncer::OS_PRIORITY_PREFERENCES
           : syncer::PRIORITY_PREFERENCES;
 
@@ -286,6 +314,11 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PriorityCompleted) {
 
   EXPECT_TRUE(registry()->GetInstalledExtension(kStandaloneAppId));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExternalProviderImplChromeOSSyncCategorizationTest,
+                         testing::Values(SyncSettingsCategorization::kDisabled,
+                                         SyncSettingsCategorization::kEnabled));
 
 // Validate the external providers enabled in the Chrome App Kiosk session. The
 // expected number should be 3.

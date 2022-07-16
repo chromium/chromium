@@ -34,6 +34,10 @@ class FrameGeneratorForTest {
   };
 
   explicit FrameGeneratorForTest(const std::vector<FrameSpec> frame_specs);
+
+  FrameGeneratorForTest(const FrameGeneratorForTest&) = delete;
+  FrameGeneratorForTest& operator=(const FrameGeneratorForTest&) = delete;
+
   ~FrameGeneratorForTest();
 
   // Indicates whether the next frame should come with a new decoder config.
@@ -52,8 +56,6 @@ class FrameGeneratorForTest {
 
   // Total size of A/V buffers generated so far.
   size_t total_buffer_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameGeneratorForTest);
 };
 
 }  // namespace media

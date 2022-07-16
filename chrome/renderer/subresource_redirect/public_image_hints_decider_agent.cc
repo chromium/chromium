@@ -63,7 +63,7 @@ void PublicImageHintsDeciderAgent::ReadyToCommitNavigation(
   // by |this|, and the timer and its callback will get deleted when |this| is
   // destroyed.
   hint_receive_timeout_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(GetHintsReceiveTimeout()),
+      FROM_HERE, base::Seconds(GetHintsReceiveTimeout()),
       base::BindOnce(&PublicImageHintsDeciderAgent::OnHintsReceiveTimeout,
                      base::Unretained(this)));
 }

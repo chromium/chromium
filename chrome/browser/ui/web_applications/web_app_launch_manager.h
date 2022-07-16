@@ -53,6 +53,7 @@ class WebAppLaunchManager {
       const base::FilePath& current_directory,
       const absl::optional<GURL>& url_handler_launch_url,
       const absl::optional<GURL>& protocol_handler_launch_url,
+      const std::vector<base::FilePath>& launch_files,
       base::OnceCallback<void(Browser* browser,
                               apps::mojom::LaunchContainer container)>
           callback);
@@ -73,13 +74,15 @@ class WebAppLaunchManager {
   base::WeakPtrFactory<WebAppLaunchManager> weak_ptr_factory_{this};
 };
 
-Browser* CreateWebApplicationWindow(Profile* profile,
-                                    const std::string& app_id,
-                                    WindowOpenDisposition disposition,
-                                    int32_t restore_id,
-                                    bool omit_from_session_restore = false,
-                                    bool can_resize = true,
-                                    bool can_maximize = true);
+Browser* CreateWebApplicationWindow(
+    Profile* profile,
+    const std::string& app_id,
+    WindowOpenDisposition disposition,
+    int32_t restore_id,
+    bool omit_from_session_restore = false,
+    bool can_resize = true,
+    bool can_maximize = true,
+    const gfx::Rect initial_bounds = gfx::Rect());
 
 content::WebContents* NavigateWebApplicationWindow(
     Browser* browser,

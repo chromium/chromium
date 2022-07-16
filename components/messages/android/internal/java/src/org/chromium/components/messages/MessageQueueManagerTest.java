@@ -24,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
@@ -460,6 +461,40 @@ public class MessageQueueManagerTest {
                 description(
                         "Message should be dismissed when its target scope instance is destroyed."))
                 .dismiss(anyInt());
+    }
+
+    /**
+     * Test that callback can be correctly called if #hide is called without #show called before.
+     */
+    @Test
+    @SmallTest
+    public void testShowHideMultipleTimes() {
+        MessageQueueDelegate delegate = Mockito.spy(MessageQueueDelegate.class);
+        MessageQueueManager queueManager = new MessageQueueManager();
+        queueManager.setDelegate(delegate);
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(delegate).onStartShowing(runnableCaptor.capture());
+        Runnable onShow = runnableCaptor.getValue();
+        verify(m1, never()).show();
+        queueManager.onScopeChange(
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.INACTIVE));
+        verify(m1, never()).hide(anyBoolean(), any());
+        onShow.run();
+        verify(m1, never()).show();
+
+        queueManager.onScopeChange(
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
+        runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(delegate, times(2)).onStartShowing(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
+        verify(m1).show();
+
+        queueManager.onScopeChange(
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.DESTROY));
+        verify(m1).hide(anyBoolean(), any());
     }
 
     /**

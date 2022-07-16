@@ -15,7 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -61,6 +61,9 @@ class GeopositionEqMatcher
   explicit GeopositionEqMatcher(const mojom::Geoposition& expected)
       : expected_(expected) {}
 
+  GeopositionEqMatcher(const GeopositionEqMatcher&) = delete;
+  GeopositionEqMatcher& operator=(const GeopositionEqMatcher&) = delete;
+
   bool MatchAndExplain(const mojom::Geoposition& actual,
                        MatchResultListener* listener) const override {
     return actual.latitude == expected_.latitude &&
@@ -85,8 +88,6 @@ class GeopositionEqMatcher
 
  private:
   mojom::Geoposition expected_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeopositionEqMatcher);
 };
 
 Matcher<const mojom::Geoposition&> GeopositionEq(
@@ -107,6 +108,9 @@ class GeolocationProviderTest : public testing::Test {
         arbitrator_(new FakeLocationProvider) {
     provider()->SetArbitratorForTesting(base::WrapUnique(arbitrator_));
   }
+
+  GeolocationProviderTest(const GeolocationProviderTest&) = delete;
+  GeolocationProviderTest& operator=(const GeolocationProviderTest&) = delete;
 
   ~GeolocationProviderTest() override = default;
 
@@ -138,8 +142,6 @@ class GeolocationProviderTest : public testing::Test {
 
   // True if |arbitrator_| is started.
   bool is_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationProviderTest);
 };
 
 bool GeolocationProviderTest::ProvidersStarted() {

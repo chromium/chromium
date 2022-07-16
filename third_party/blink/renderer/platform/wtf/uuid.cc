@@ -10,8 +10,9 @@
 namespace WTF {
 
 String CreateCanonicalUUIDString() {
-  std::string uuid = base::GenerateGUID();
-  return String::FromUTF8(uuid.data(), uuid.length());
+  String uuid(base::GenerateGUID());
+  DCHECK(uuid.IsLowerASCII());
+  return uuid;
 }
 
 bool IsValidUUID(const String& uuid) {

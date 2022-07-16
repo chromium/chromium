@@ -288,7 +288,7 @@ void ScriptingPermissionsModifier::GrantHostPermission(const GURL& url) {
           *extension_,
           PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
                         std::move(explicit_hosts), std::move(scriptable_hosts)),
-          base::DoNothing::Once());
+          base::DoNothing());
 }
 
 bool ScriptingPermissionsModifier::HasGrantedHostPermission(
@@ -334,7 +334,7 @@ void ScriptingPermissionsModifier::RemoveGrantedHostPermission(
           *extension_,
           PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
                         std::move(explicit_hosts), std::move(scriptable_hosts)),
-          base::DoNothing::Once());
+          base::DoNothing());
 }
 
 void ScriptingPermissionsModifier::RemoveBroadGrantedHostPermissions() {
@@ -361,7 +361,7 @@ void ScriptingPermissionsModifier::RemoveBroadGrantedHostPermissions() {
           *extension_,
           PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
                         std::move(explicit_hosts), std::move(scriptable_hosts)),
-          base::DoNothing::Once());
+          base::DoNothing());
 }
 
 void ScriptingPermissionsModifier::RemoveAllGrantedHostPermissions() {
@@ -454,14 +454,13 @@ void ScriptingPermissionsModifier::GrantWithheldHostPermissions() {
                             withheld.explicit_hosts().Clone(),
                             withheld.scriptable_hosts().Clone());
   PermissionsUpdater(browser_context_)
-      .GrantRuntimePermissions(*extension_, permissions,
-                               base::DoNothing::Once());
+      .GrantRuntimePermissions(*extension_, permissions, base::DoNothing());
 }
 
 void ScriptingPermissionsModifier::WithholdHostPermissions() {
   PermissionsUpdater(browser_context_)
       .RevokeRuntimePermissions(*extension_, *GetRevokablePermissions(),
-                                base::DoNothing::Once());
+                                base::DoNothing());
 }
 
 }  // namespace extensions

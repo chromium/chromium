@@ -18,7 +18,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
-#include "ppapi/shared_impl/ppapi_constants.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
@@ -40,6 +39,10 @@ const char kClearKeyCdmPluginId[] = "application_x-ppapi-clearkey-cdm";
 class AwaitCompletionHelper {
  public:
   AwaitCompletionHelper() : start_(false), already_quit_(false) {}
+
+  AwaitCompletionHelper(const AwaitCompletionHelper&) = delete;
+  AwaitCompletionHelper& operator=(const AwaitCompletionHelper&) = delete;
+
   virtual ~AwaitCompletionHelper() {}
 
   void BlockUntilNotified() {
@@ -74,8 +77,6 @@ class AwaitCompletionHelper {
   // immediately.
   bool start_;
   bool already_quit_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwaitCompletionHelper);
 };
 
 // The FileSystem APIs are all asynchronous; this testing class wraps up the
@@ -92,6 +93,11 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
     helper_ = BrowsingDataMediaLicenseHelper::Create(filesystem_context_);
     base::RunLoop().RunUntilIdle();
   }
+
+  BrowsingDataMediaLicenseHelperTest(
+      const BrowsingDataMediaLicenseHelperTest&) = delete;
+  BrowsingDataMediaLicenseHelperTest& operator=(
+      const BrowsingDataMediaLicenseHelperTest&) = delete;
 
   ~BrowsingDataMediaLicenseHelperTest() override {
     // Avoid memory leaks.
@@ -129,10 +135,10 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
   virtual void PopulateTestMediaLicenseData(const GURL& origin1,
                                             const GURL& origin2,
                                             const GURL& origin3) {
-    const base::Time ten_days_ago = now_ - base::TimeDelta::FromDays(10);
-    const base::Time twenty_days_ago = now_ - base::TimeDelta::FromDays(20);
-    const base::Time thirty_days_ago = now_ - base::TimeDelta::FromDays(30);
-    const base::Time sixty_days_ago = now_ - base::TimeDelta::FromDays(60);
+    const base::Time ten_days_ago = now_ - base::Days(10);
+    const base::Time twenty_days_ago = now_ - base::Days(20);
+    const base::Time thirty_days_ago = now_ - base::Days(30);
+    const base::Time sixty_days_ago = now_ - base::Days(60);
 
     std::string clearkey_fsid = CreateFileSystem(kClearKeyCdmPluginId, origin1);
     storage::FileSystemURL clearkey_file =
@@ -175,10 +181,11 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
   std::string CreateFileSystem(const std::string& plugin_name,
                                const GURL& origin) {
     AwaitCompletionHelper await_completion;
-    std::string fsid = storage::IsolatedContext::GetInstance()
-                           ->RegisterFileSystemForVirtualPath(
-                               storage::kFileSystemTypePluginPrivate,
-                               ppapi::kPluginPrivateRootName, base::FilePath());
+    std::string fsid =
+        storage::IsolatedContext::GetInstance()
+            ->RegisterFileSystemForVirtualPath(
+                storage::kFileSystemTypePluginPrivate,
+                storage::kPluginPrivateRootName, base::FilePath());
     EXPECT_TRUE(storage::ValidateIsolatedFileSystemId(fsid));
     filesystem_context_->OpenPluginPrivateFileSystem(
         url::Origin::Create(origin), storage::kFileSystemTypePluginPrivate,
@@ -204,9 +211,10 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
                                     const std::string& file_name) {
     AwaitCompletionHelper await_completion;
     std::string root = storage::GetIsolatedFileSystemRootURIString(
-        origin, fsid, ppapi::kPluginPrivateRootName);
+        origin, fsid, storage::kPluginPrivateRootName);
     storage::FileSystemURL file_url =
-        filesystem_context_->CrackURL(GURL(root + file_name));
+        filesystem_context_->CrackURLInFirstPartyContext(
+            GURL(root + file_name));
     storage::AsyncFileUtil* file_util = filesystem_context_->GetAsyncFileUtil(
         storage::kFileSystemTypePluginPrivate);
     std::unique_ptr<storage::FileSystemOperationContext> operation_context(
@@ -267,8 +275,6 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
   // Storage to pass information back from callbacks.
   std::unique_ptr<std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>>
       media_license_info_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataMediaLicenseHelperTest);
 };
 
 // Verifies that the BrowsingDataMediaLicenseHelper correctly handles an empty

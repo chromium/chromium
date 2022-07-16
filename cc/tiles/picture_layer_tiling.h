@@ -19,6 +19,7 @@
 #include "cc/base/tiling_data.h"
 #include "cc/cc_export.h"
 #include "cc/paint/paint_worklet_input.h"
+#include "cc/raster/raster_source.h"
 #include "cc/tiles/tile.h"
 #include "cc/tiles/tile_priority.h"
 #include "cc/trees/occlusion.h"
@@ -33,7 +34,6 @@ class TracedValue;
 
 namespace cc {
 
-class RasterSource;
 class PictureLayerTiling;
 class PrioritizedTile;
 
@@ -53,7 +53,7 @@ class CC_EXPORT PictureLayerTilingClient {
   virtual const PaintWorkletRecordMap& GetPaintWorkletRecords() const = 0;
   virtual bool IsDirectlyCompositedImage() const = 0;
   virtual bool ScrollInteractionInProgress() const = 0;
-  virtual bool DidCheckerboardQuad() const = 0;
+  virtual bool CurrentScrollCheckerboardsDueToNoRecording() const = 0;
 
  protected:
   virtual ~PictureLayerTilingClient() {}
@@ -113,8 +113,16 @@ class CC_EXPORT PictureLayerTiling {
   void TakeTilesAndPropertiesFrom(PictureLayerTiling* pending_twin,
                                   const Region& layer_invalidation);
 
-  bool IsTileRequiredForActivation(const Tile* tile) const;
-  bool IsTileRequiredForDraw(const Tile* tile) const;
+  bool IsTileRequiredForActivation(const Tile* tile) const {
+    return IsTileRequiredForActivation(
+        tile, [this](const Tile* tile) { return IsTileVisible(tile); },
+        IsTileOccluded(tile));
+  }
+
+  bool IsTileRequiredForDraw(const Tile* tile) const {
+    return IsTileRequiredForDraw(
+        tile, [this](const Tile* tile) { return IsTileVisible(tile); });
+  }
 
   // Returns true if the tile should be processed for decoding images skipped
   // during rasterization.
@@ -312,6 +320,74 @@ class CC_EXPORT PictureLayerTiling {
     EVENTUALLY_RECT
   };
 
+  bool IsTileVisible(const Tile* tile) const {
+    gfx::Rect tile_bounds =
+        tiling_data_.TileBounds(tile->tiling_i_index(), tile->tiling_j_index());
+    return tile_bounds.Intersects(current_visible_rect_);
+  }
+
+  template <typename VisibilityChecker>
+  bool IsTileRequiredForActivation(const Tile* tile,
+                                   VisibilityChecker is_visible,
+                                   bool is_tile_occluded) const {
+    if (tree_ == PENDING_TREE) {
+      if (!can_require_tiles_for_activation_ ||
+          resolution_ != HIGH_RESOLUTION || is_tile_occluded) {
+        return false;
+      }
+
+      // We may be checking the active tree tile here (since this function is
+      // also called for active trees below, ensure that this is at all a valid
+      // tile on the pending tree.
+      if (tile->tiling_i_index() >= tiling_data_.num_tiles_x() ||
+          tile->tiling_j_index() >= tiling_data_.num_tiles_y()) {
+        return false;
+      }
+
+      if (!is_visible(tile))
+        return false;
+
+      if (client_->RequiresHighResToDraw())
+        return true;
+
+      const PictureLayerTiling* active_twin =
+          client_->GetPendingOrActiveTwinTiling(this);
+      if (!active_twin || !TilingMatchesTileIndices(active_twin))
+        return true;
+
+      if (active_twin->raster_source()->GetSize() != raster_source()->GetSize())
+        return true;
+
+      if (active_twin->current_visible_rect_ != current_visible_rect_)
+        return true;
+
+      Tile* twin_tile =
+          active_twin->TileAt(tile->tiling_i_index(), tile->tiling_j_index());
+      if (!twin_tile)
+        return false;
+      return true;
+    }
+
+    DCHECK_EQ(tree_, ACTIVE_TREE);
+    const PictureLayerTiling* pending_twin =
+        client_->GetPendingOrActiveTwinTiling(this);
+    // If we don't have a pending tree, or the pending tree will overwrite the
+    // given tile, then it is not required for activation.
+    if (!pending_twin || !TilingMatchesTileIndices(pending_twin) ||
+        pending_twin->TileAt(tile->tiling_i_index(), tile->tiling_j_index())) {
+      return false;
+    }
+    // Otherwise, ask the pending twin if this tile is required for activation.
+    return pending_twin->IsTileRequiredForActivation(tile);
+  }
+
+  template <typename VisibilityChecker>
+  bool IsTileRequiredForDraw(const Tile* tile,
+                             VisibilityChecker is_visible) const {
+    return tree_ == ACTIVE_TREE && resolution_ == HIGH_RESOLUTION &&
+           is_visible(tile) && !IsTileOccludedOnCurrentTree(tile);
+  }
+
   using TileMap =
       std::unordered_map<TileMapKey, std::unique_ptr<Tile>, TileMapKeyHash>;
 
@@ -334,13 +410,42 @@ class CC_EXPORT PictureLayerTiling {
   bool IsTileOccludedOnCurrentTree(const Tile* tile) const;
   Tile::CreateInfo CreateInfoForTile(int i, int j) const;
   bool ShouldCreateTileAt(const Tile::CreateInfo& info) const;
-  bool IsTileOccluded(const Tile* tile) const;
-  PrioritizedTile MakePrioritizedTile(
-      Tile* tile,
-      PriorityRectType priority_rect_type) const;
-  TilePriority ComputePriorityForTile(
-      const Tile* tile,
-      PriorityRectType priority_rect_type) const;
+
+  bool IsTileOccluded(const Tile* tile) const {
+    // If this tile is not occluded on this tree, then it is not occluded.
+    if (!IsTileOccludedOnCurrentTree(tile))
+      return false;
+
+    // Otherwise, if this is the pending tree, we're done and the tile is
+    // occluded.
+    if (tree_ == PENDING_TREE)
+      return true;
+
+    // On the active tree however, we need to check if this tile will be
+    // unoccluded upon activation, in which case it has to be considered
+    // unoccluded.
+    const PictureLayerTiling* pending_twin =
+        client_->GetPendingOrActiveTwinTiling(this);
+    if (pending_twin) {
+      // If there's a pending tile in the same position. Or if the pending twin
+      // would have to be creating all tiles, then we don't need to worry about
+      // occlusion on the twin.
+      if (!TilingMatchesTileIndices(pending_twin) ||
+          pending_twin->TileAt(tile->tiling_i_index(),
+                               tile->tiling_j_index())) {
+        return true;
+      }
+      return pending_twin->IsTileOccludedOnCurrentTree(tile);
+    }
+    return true;
+  }
+
+  PrioritizedTile MakePrioritizedTile(Tile* tile,
+                                      PriorityRectType priority_rect_type,
+                                      bool is_tile_occluded) const;
+  TilePriority ComputePriorityForTile(const Tile* tile,
+                                      PriorityRectType priority_rect_type,
+                                      bool is_tile_occluded) const;
   PriorityRectType ComputePriorityRectTypeForTile(const Tile* tile) const;
   bool has_visible_rect_tiles() const { return has_visible_rect_tiles_; }
   bool has_skewport_rect_tiles() const { return has_skewport_rect_tiles_; }

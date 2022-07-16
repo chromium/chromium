@@ -37,6 +37,9 @@ class FtlSignalStrategy : public SignalStrategy {
       std::unique_ptr<FtlDeviceIdProvider> device_id_provider,
       SignalingTracker* signaling_tracker = nullptr);
 
+  FtlSignalStrategy(const FtlSignalStrategy&) = delete;
+  FtlSignalStrategy& operator=(const FtlSignalStrategy&) = delete;
+
   // Note that pending outgoing messages will be silently dropped when the
   // signal strategy is being deleted. If you want to send last minute messages,
   // consider calling Disconnect() then posting a delayed task to delete the
@@ -73,8 +76,6 @@ class FtlSignalStrategy : public SignalStrategy {
   class Core;
 
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(FtlSignalStrategy);
 };
 
 }  // namespace remoting

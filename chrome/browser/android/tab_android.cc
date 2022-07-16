@@ -102,7 +102,7 @@ class TabAndroidHelper : public content::WebContentsUserData<TabAndroidHelper> {
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabAndroidHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabAndroidHelper);
 
 }  // namespace
 

@@ -10,7 +10,6 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/assistant_optin_flow_screen_handler.h"
@@ -29,6 +28,10 @@ class AssistantOptInFlowScreen : public BaseScreen {
 
   AssistantOptInFlowScreen(AssistantOptInFlowScreenView* view,
                            const ScreenExitCallback& exit_callback);
+
+  AssistantOptInFlowScreen(const AssistantOptInFlowScreen&) = delete;
+  AssistantOptInFlowScreen& operator=(const AssistantOptInFlowScreen&) = delete;
+
   ~AssistantOptInFlowScreen() override;
 
   // Called when view is destroyed so there's no dead reference to it.
@@ -55,8 +58,6 @@ class AssistantOptInFlowScreen : public BaseScreen {
  private:
   AssistantOptInFlowScreenView* view_;
   ScreenExitCallback exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantOptInFlowScreen);
 };
 
 }  // namespace ash

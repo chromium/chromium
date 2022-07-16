@@ -12,6 +12,8 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 
 namespace net {
@@ -33,7 +35,7 @@ void AddProxyURIListToProxyList(std::string uri_list,
   base::StringTokenizer proxy_uri_list(uri_list, ",");
   while (proxy_uri_list.GetNext()) {
     proxy_list->AddProxyServer(
-        ProxyServer::FromURI(proxy_uri_list.token(), default_scheme));
+        ProxyUriToProxyServer(proxy_uri_list.token(), default_scheme));
   }
 }
 
@@ -217,9 +219,9 @@ ProxyConfig::~ProxyConfig() = default;
 ProxyConfig& ProxyConfig::operator=(const ProxyConfig& config) = default;
 
 bool ProxyConfig::Equals(const ProxyConfig& other) const {
-  return auto_detect_ == other.auto_detect_ &&
-         pac_url_ == other.pac_url_ &&
+  return auto_detect_ == other.auto_detect_ && pac_url_ == other.pac_url_ &&
          pac_mandatory_ == other.pac_mandatory_ &&
+         from_system_ == other.from_system_ &&
          proxy_rules_.Equals(other.proxy_rules());
 }
 
@@ -242,6 +244,9 @@ base::Value ProxyConfig::ToValue() const {
     dict.SetStringKey("pac_url", pac_url_.possibly_invalid_spec());
     if (pac_mandatory_)
       dict.SetBoolKey("pac_mandatory", pac_mandatory_);
+  }
+  if (from_system_) {
+    dict.SetBoolKey("from_system", from_system_);
   }
 
   // Output the manual settings.

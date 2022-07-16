@@ -3,35 +3,48 @@
 // found in the LICENSE file.
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AcceleratorViewElement, ModifierKeys} from 'chrome://shortcut-customization/accelerator_view.js';
+import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
+import {AcceleratorViewElement, ViewState} from 'chrome://shortcut-customization/accelerator_view.js';
+import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/fake_data.js';
+import {AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
+
+import {CreateDefaultAccelerator, CreateUserAccelerator} from './shortcut_customization_test_util.js';
 
 export function acceleratorViewTest() {
   /** @type {?AcceleratorViewElement} */
   let viewElement = null;
 
+  /** @type {?AcceleratorLookupManager} */
+  let manager = null;
+
   setup(() => {
+    manager = AcceleratorLookupManager.getInstance();
+    manager.setAcceleratorLookup(fakeAcceleratorConfig);
+    manager.setAcceleratorLayoutLookup(fakeLayoutInfo);
+
     viewElement = /** @type {!AcceleratorViewElement} */ (
         document.createElement('accelerator-view'));
     document.body.appendChild(viewElement);
   });
 
   teardown(() => {
+    manager.reset();
+
     viewElement.remove();
     viewElement = null;
   });
 
   test('LoadsBasicAccelerator', async () => {
-    // TODO(jimmyxgong): Update the type of the test accelerator with the mojom
-    // version.
-    const accelerator = {
-      modifiers: ModifierKeys.SHIFT | ModifierKeys.CONTROL,
-      key: 'g',
-      rawKey: 0x0,
-    };
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo = CreateUserAccelerator(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*key_display=*/ 'g');
 
-    viewElement.accelerator = accelerator;
+
+    viewElement.acceleratorInfo = acceleratorInfo;
     await flush();
     const keys = viewElement.shadowRoot.querySelectorAll('input-key');
     // Three keys: shift, control, g
@@ -46,18 +59,18 @@ export function acceleratorViewTest() {
   });
 
   test('EditableAccelerator', async () => {
-    // TODO(jimmyxgong): Update the type of the test accelerator with the mojom
-    // version.
-    const accelerator = {
-      modifiers: ModifierKeys.SHIFT | ModifierKeys.CONTROL,
-      key: 'g',
-      rawKey: 0x0,
-    };
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo = CreateDefaultAccelerator(
+        Modifier.ALT,
+        /*key=*/ 221,
+        /*key_display=*/ ']');
 
-    viewElement.accelerator = accelerator;
+    viewElement.acceleratorInfo = acceleratorInfo;
+    viewElement.source = AcceleratorSource.kAsh;
+    viewElement.action = 1;
     await flush();
     // Enable the edit view.
-    viewElement.isEditable = true;
+    viewElement.viewState = ViewState.EDIT;
 
     await flush();
 

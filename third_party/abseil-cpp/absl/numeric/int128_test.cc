@@ -239,6 +239,24 @@ TEST(Uint128, AllTests) {
   EXPECT_EQ(absl::Uint128Max(), absl::kuint128max);
 }
 
+TEST(Int128, RightShiftOfNegativeNumbers) {
+  absl::int128 minus_six = -6;
+  absl::int128 minus_three = -3;
+  absl::int128 minus_two = -2;
+  absl::int128 minus_one = -1;
+  if ((-6 >> 1) == -3) {
+    // Right shift is arithmetic (sign propagates)
+    EXPECT_EQ(minus_six >> 1, minus_three);
+    EXPECT_EQ(minus_six >> 2, minus_two);
+    EXPECT_EQ(minus_six >> 65, minus_one);
+  } else {
+    // Right shift is logical (zeros shifted in at MSB)
+    EXPECT_EQ(minus_six >> 1, absl::int128(absl::uint128(minus_six) >> 1));
+    EXPECT_EQ(minus_six >> 2, absl::int128(absl::uint128(minus_six) >> 2));
+    EXPECT_EQ(minus_six >> 65, absl::int128(absl::uint128(minus_six) >> 65));
+  }
+}
+
 TEST(Uint128, ConversionTests) {
   EXPECT_TRUE(absl::MakeUint128(1, 0));
 

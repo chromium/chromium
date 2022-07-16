@@ -87,8 +87,12 @@ def main():
                       help='Path to compiler')
   parser.add_argument('-s', '--sources', nargs='*', default=[],
                       help='List of js source files')
-  parser.add_argument('-o', '--output', required=True,
+  parser.add_argument('-o', '--output', required=False,
                       help='Compile to output')
+  parser.add_argument('--chunks', action='store_true',
+                      help='Compile each source to its own chunk')
+  parser.add_argument('--chunk_suffix', required=False,
+                      help='String appended to the source when naming a chunk')
   parser.add_argument('-d', '--deps', nargs='*', default=[],
                       help='List of js_libarary dependencies')
   parser.add_argument('-b', '--bootstrap',
@@ -105,19 +109,42 @@ def main():
                       help='Only performs checks and writes an empty output')
 
   args = parser.parse_args()
-  sources, externs = CrawlRootDepsTree(args.deps, args.sources, args.externs)
 
+  # If --chunks is used, args.sources will be added later
+  sources, externs = CrawlRootDepsTree(args.deps, [] if args.chunks else args.sources, args.externs)
   compiler_args = ['--%s' % flag for flag in args.flags]
   compiler_args += ['--externs=%s' % e for e in externs]
+
+  if not args.chunks:
+    compiler_args += [
+        '--js_output_file',
+        args.output,
+    ]
+
   compiler_args += [
-      '--js_output_file',
-      args.output,
       '--js',
   ]
+
   if args.bootstrap:
     compiler_args += [args.bootstrap]
+
   compiler_args += args.config
   compiler_args += sources
+
+  if args.chunks:
+    chunk_suffix = args.chunk_suffix
+    common_chunk_name = 'common' + chunk_suffix
+    compiler_args += [
+      '--chunk_output_path_prefix {}'.format(args.output),
+      '--chunk {}:auto'.format(common_chunk_name)
+    ]
+
+    for s in args.sources:
+      # '//path/to/target.js' becomes 'target'
+      chunk_name = '{}{}'.format(s.split('/')[-1].split('.')[0], chunk_suffix)
+      compiler_args += [
+        '--chunk {}:1:{}: {}'.format(chunk_name, common_chunk_name, s)
+      ]
 
   if args.checks_only:
     compiler_args += ['--checks-only']

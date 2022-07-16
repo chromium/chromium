@@ -147,7 +147,7 @@ absl::optional<QuotaSettings> CalculateNominalDynamicSettings(
       RandomizeByPercent(kMaxSessionOnlyHostQuota, kRandomizedPercentage),
       static_cast<int64_t>(settings.per_host_quota *
                            kSessionOnlyHostQuotaRatio));
-  settings.refresh_interval = base::TimeDelta::FromSeconds(60);
+  settings.refresh_interval = base::Seconds(60);
   return settings;
 }
 

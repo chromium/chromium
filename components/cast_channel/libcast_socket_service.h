@@ -8,10 +8,9 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/cast_channel/cast_socket.h"
 #include "components/cast_channel/cast_socket_service.h"
 #include "components/openscreen_platform/task_runner.h"
@@ -31,6 +30,9 @@ class LibcastSocketService final
       public openscreen::cast::SenderSocketFactory::Client {
  public:
   using CastSocketService::NetworkContextGetter;
+
+  LibcastSocketService(const LibcastSocketService&) = delete;
+  LibcastSocketService& operator=(const LibcastSocketService&) = delete;
 
   ~LibcastSocketService() override;
 
@@ -120,8 +122,6 @@ class LibcastSocketService final
   std::map<openscreen::IPEndpoint, SavedOpenParams> open_params_;
 
   std::unique_ptr<LibcastSocket> libcast_socket_for_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(LibcastSocketService);
 };
 
 }  // namespace cast_channel

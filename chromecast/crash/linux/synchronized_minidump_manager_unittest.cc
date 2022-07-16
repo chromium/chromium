@@ -133,8 +133,7 @@ class SleepySynchronizedMinidumpManagerSimple
   bool DoWork() override {
     // The lock has been acquired. Fall asleep for |kSleepDurationMs|, then
     // write the file.
-    base::PlatformThread::Sleep(
-        base::TimeDelta::FromMilliseconds(sleep_duration_ms_));
+    base::PlatformThread::Sleep(base::Milliseconds(sleep_duration_ms_));
     return SynchronizedMinidumpManagerSimple::DoWork();
   }
 
@@ -310,8 +309,7 @@ TEST_F(SynchronizedMinidumpManagerTest, AcquireLockFile_WaitsForOtherThread) {
   // Meanwhile, this thread should wait brielfy to allow the other thread to
   // grab the lock.
   const int concurrency_delay = 50;
-  base::PlatformThread::Sleep(
-      base::TimeDelta::FromMilliseconds(concurrency_delay));
+  base::PlatformThread::Sleep(base::Milliseconds(concurrency_delay));
 
   // |sleepy_manager| has the lock by now, but has not released it. Attempt to
   // grab it. DoWorkLocked() should block until |manager| has a chance to write
@@ -360,8 +358,7 @@ TEST_F(SynchronizedMinidumpManagerTest,
   // Meanwhile, this process should wait brielfy to allow the other thread to
   // grab the lock.
   const int concurrency_delay = 50;
-  base::PlatformThread::Sleep(
-      base::TimeDelta::FromMilliseconds(concurrency_delay));
+  base::PlatformThread::Sleep(base::Milliseconds(concurrency_delay));
 
   // |sleepy_manager| has the lock by now, but has not released it. Attempt to
   // grab it. DoWorkLocked() should block until |manager| has a chance to write
@@ -417,13 +414,12 @@ TEST_F(SynchronizedMinidumpManagerTest, Upload_FailsWhenTooManyRecentDumps) {
 
 TEST_F(SynchronizedMinidumpManagerTest, UploadSucceedsAfterRateLimitPeriodEnd) {
   // Sample parameters.
-  base::Time now = base::Time::Now();
   MinidumpParams params;
 
   FakeSynchronizedMinidumpUploader uploader;
   SynchronizedMinidumpManagerSimple producer;
   producer.SetDumpInfoToWrite(
-      std::make_unique<DumpInfo>("dump1", "log1", now, params));
+      std::make_unique<DumpInfo>("dump1", "log1", base::Time::Now(), params));
 
   const int iters = 3;
   const int max_dumps = SynchronizedMinidumpManager::kRatelimitPeriodMaxDumps;
@@ -436,8 +432,8 @@ TEST_F(SynchronizedMinidumpManagerTest, UploadSucceedsAfterRateLimitPeriodEnd) {
     ASSERT_TRUE(uploader.DoWorkLocked());
     ASSERT_FALSE(uploader.can_upload_return_val());
 
-    base::TimeDelta period = base::TimeDelta::FromSeconds(
-        SynchronizedMinidumpManager::kRatelimitPeriodSeconds);
+    base::TimeDelta period =
+        base::Seconds(SynchronizedMinidumpManager::kRatelimitPeriodSeconds);
     base::Time now = base::Time::Now();
 
     // Half period shouldn't trigger reset

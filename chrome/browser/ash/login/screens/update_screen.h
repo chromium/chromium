@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -72,6 +71,10 @@ class UpdateScreen : public BaseScreen,
   UpdateScreen(UpdateView* view,
                ErrorScreen* error_screen,
                const ScreenExitCallback& exit_callback);
+
+  UpdateScreen(const UpdateScreen&) = delete;
+  UpdateScreen& operator=(const UpdateScreen&) = delete;
+
   ~UpdateScreen() override;
 
   // Called when the being destroyed. This should call Unbind() on the
@@ -227,8 +230,6 @@ class UpdateScreen : public BaseScreen,
       power_manager_subscription_{this};
 
   base::WeakPtrFactory<UpdateScreen> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateScreen);
 };
 
 }  // namespace ash

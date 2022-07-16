@@ -1,0 +1,41 @@
+[document web] tag:#document
+++[section] tag:body
+++++[document frame] class:name-aria-labelledby tag:svg
+++++++[link] name='Link (from aria-labelledby)' description='Link (from title)' description-from:tooltip tag:a
+++++[document frame] class:name-aria-label tag:svg
+++++++[link] name='Link (from aria-label)' description='Link (from title)' description-from:tooltip tag:a
+++++[document frame] class:name-title tag:svg
+++++++[link] name='Link (from title)' description='Link (from xlink:title)' description-from:tooltip tag:a
+++++[document frame] class:name-xlink-title tag:svg
+++++++[link] name='Link (from xlink:title)' tag:a
+++++[document frame] class:name-aria-labelledby tag:svg
+++++++[image] name='Circle (from aria-labelledby)' tag:circle
+++++[document frame] class:name-aria-label tag:svg
+++++++[image] name='Circle (from aria-label)' tag:circle
+++++[document frame] class:name-title tag:svg
+++++++[image] name='Circle (from title)' tag:circle
+++++[document frame] class:name-use-title tag:svg
+++++++[panel] name='Circle (From first use element's title)' tag:use
+++++++[panel] name='Circle (From second use element's title)' tag:use
+++++[document frame] class:name-symbol-title tag:svg
+++++++[panel] name='Rectangle Symbol (From symbol's title)' id:myRect tag:svg
+++++++[panel] name='Rectangle Symbol (From symbol's title)' id:myRect tag:svg
+++++[document frame] class:description-aria-describedby tag:svg
+++++++[link] name='Link (from title)' description='Link (from aria-describedby)' description-from:aria-describedby tag:a
+++++[document frame] class:description-aria-description tag:svg
+++++++[link] name='Link (from title)' description='Link (from aria-description)' description:Link (from aria-description) description-from:aria-description tag:a
+++++[document frame] class:description-desc tag:svg
+++++++[link] name='Link (from title)' description='Link (from desc)' description-from:svg-desc-element tag:a
+++++[document frame] class:description-title tag:svg
+++++++[link] name='Link (from aria-label)' description='Link (from title)' description-from:tooltip tag:a
+++++[document frame] class:description-xlink-title tag:svg
+++++++[link] name='Link (from title)' description='Link (from xlink:title)' description-from:tooltip tag:a
+++++[document frame] class:description-use-desc tag:svg
+++++++[panel] description='Circle (From first use element's desc)' description-from:svg-desc-element tag:use
+++++++[panel] description='Circle (From second use element's desc)' description-from:svg-desc-element tag:use
+++++[document frame] class:description-use-title tag:svg
+++++++[panel] name='Circle 1' description='Circle (From first use element's title)' description-from:tooltip tag:use
+++++++[panel] name='Circle 2' description='Circle (From second use element's title)' description-from:tooltip tag:use
+++++[document frame] class:desc-symbol-desc tag:svg
+++++++[panel] description='Rectangle Symbol (From symbol's desc)' description-from:svg-desc-element id:myRect2 tag:svg
+++++++[panel] description='Rectangle Symbol (From symbol's desc)' description-from:svg-desc-element id:myRect2 tag:svg

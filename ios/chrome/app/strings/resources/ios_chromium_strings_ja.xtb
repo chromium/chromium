@@ -22,6 +22,10 @@
 <translation id="2168108852149185974">アドオンが原因で Chromium がクラッシュしました。次をアンインストールしてください:</translation>
 <translation id="2178608107313874732">現在 Chromium ではカメラを使用できません</translation>
 <translation id="2195025571279539885">次回から Chromium でこのサイトの <ph name="LANGUAGE_NAME" /> ページの翻訳を表示しますか？</translation>
+<translation id="2218146227246548550">組織が、Chromium を使用するにはログインすることを求めています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="2426113998523353159">Chromium を使用するためにログインするよう、組織が求めています。</translation>
+<translation id="2450140762465183767">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chromium が使えるようになります。</translation>
+<translation id="2478931088402984578">[<ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />] を選択する</translation>
 <translation id="2567507405773541360">シンプル、安全で、さらに高速になった Chromium をご活用ください</translation>
 <translation id="2590893390871230428">Chromium のデータを同期する</translation>
 <translation id="2650312721222849884">どのデバイスからでも Chromium で自分のタブにアクセスするには、同期をオンにしてください</translation>
@@ -38,7 +42,6 @@
 <translation id="3805899903892079518">Chromium で写真または動画にアクセスできません。iOS の [設定] &gt; [プライバシー] &gt; [写真] でアクセスを有効にしてください。</translation>
 <translation id="3946918322491238254">このデバイスのブックマーク、履歴、パスワードなどの設定は、引き続き使用できます。これらの設定に変更を加えた場合、変更内容はアカウントと同期されません。</translation>
 <translation id="4099085513035183040">Chromium ベータ版ではサポートされていません</translation>
-<translation id="4166206055865952171">Chromium を既定のブラウザにする</translation>
 <translation id="4555020257205549924">この機能を有効にすると、外国語のページを開いたときに翻訳ツールが表示されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">メッセージ、ドキュメント、他のアプリでタップしたリンクが常に Chromium で開かれるようになります。</translation>
 <translation id="4681781466797808448">Chromium のスキャナをオンにしてください</translation>
@@ -54,8 +57,6 @@
 <translation id="5521125884468363740">どのデバイスからでも Chromium で自分のタブにアクセスするには、ログインして同期をオンにしてください</translation>
 <translation id="5573014823074921752">Chromium の使い方のヒント: タブのオプションをさらに表示するには、画面の下部または上部のツールバーにある [タブを表示] を長押しします。</translation>
 <translation id="5700709190537129682">Chromium でパスワードを確認できません</translation>
-<translation id="5715349567881822785">Chromium でもっと便利に</translation>
-<translation id="5742135483959137648">Chromium でリンクを開く</translation>
 <translation id="5777187867430702742">Chromium ページ</translation>
 <translation id="5862307444128926510">Chromium へようこそ</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> で管理されているアカウントでログインして、Chromium データの管理を管理者に委ねようとしています。この操作を行うと、データはこのアカウントに恒久的に関連付けられます。Chromium からログアウトすると、データはこのデバイスから削除されますが、Google アカウントには残ります。</translation>
@@ -65,16 +66,17 @@
 2. [デフォルトのブラウザアプリ] をタップします。
 3. Chromium を選択します。</translation>
 <translation id="6155422572367400359">このサイト、Google アカウント、Chromium にログインします。同期は後でオンにできます。</translation>
+<translation id="6183442264225539303">このサイトと Chromium にログインしてください。同期は後でオンにできます。</translation>
 <translation id="6268381023930128611">Chromium からログアウトしますか？</translation>
 <translation id="632825460376924298">Chromium へのログインを許可する</translation>
 <translation id="6337530241089703714">このデバイスから Chromium データを削除するかどうかを選択してください</translation>
 <translation id="6424492062988593837">Chromium のアップデートが見つかりました。新しいバージョンが利用可能です。</translation>
 <translation id="6752854822223394465">組織で Chromium を設定しています...</translation>
 <translation id="6820823224820483452">Chromium ですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
-<translation id="6827294685447036764">Chromium に位置情報の利用を許可すると、許可を与えたサイトに位置情報が提供されます。また、サイトで付近の店舗やニュースなどの地域情報を表示できる場合に位置情報を要求されることがあります。</translation>
 <translation id="7018284295775193585">Chromium を更新できません</translation>
 <translation id="7045244423563602563">Chromium を独自にカスタマイズ</translation>
 <translation id="7099326575020694068">Chromium では、分割表示モードでカメラを使用することはできません</translation>
+<translation id="7108914401277488191">Chromium でもっと便利に</translation>
 <translation id="7118091470949186573">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chromium が使えるようになります。</translation>
 <translation id="7208566199746267865">Chromium ではアカウントがウェブで管理されるので、さまざまな手間を省くことができます。[設定] でアカウントの追加と削除を行うことができます。</translation>
 <translation id="725427773388857052">Chromium でデータ侵害や安全でないウェブサイトなどの脅威から保護されているか確認します。</translation>
@@ -102,6 +104,7 @@
 <translation id="894437814105052438">ログアウトすると、Chromium で新しいデータが Google アカウントと同期されなくなります。これまでに同期されたデータはアカウントに残ります。</translation>
 <translation id="9022552996538154597">Chromium にログイン</translation>
 <translation id="9089354809943900324">Chromium は古いバージョンです</translation>
+<translation id="9110075932708282655">Chromium をデフォルトに設定</translation>
 <translation id="921174536258924340">Chromium ですべてのパスワードを確認できませんでした。明日もう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウント内のパスワードをご確認ください<ph name="END_LINK" />。</translation>
 <translation id="985602178874221306">Chromium 開発者</translation>
 </translationbundle>

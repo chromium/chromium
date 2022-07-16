@@ -20,8 +20,8 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/skia_util.h"
 
 namespace ash {
 namespace {
@@ -114,20 +114,22 @@ class HoldingSpaceControllerProgressRing
   // HoldingSpaceProgressRing:
   absl::optional<float> CalculateProgress() const override {
     // If there is no `model` attached, then there are no in-progress holding
-    // space items. Return `1.f` to prevent the progress ring from painting.
+    // space items. Do not paint the progress ring.
     const HoldingSpaceModel* model = controller_->model();
     if (!model)
-      return 1.f;
+      return kProgressComplete;
 
     HoldingSpaceProgress cumulative_progress;
 
     // Iterate over all holding space items.
     for (const auto& item : model->items()) {
       // Ignore any holding space items that are not yet initialized, since
-      // they are not visible to the user, or items that are not in-progress,
-      // since they do not contribute to `cumulative_progress`.
-      if (item->IsInitialized() && !item->progress().IsComplete())
+      // they are not visible to the user, or items that are not visibly
+      // in-progress, since they do not contribute to `cumulative_progress`.
+      if (item->IsInitialized() && !item->progress().IsHidden() &&
+          !item->progress().IsComplete()) {
         cumulative_progress += item->progress();
+      }
     }
 
     return cumulative_progress.GetValue();
@@ -204,9 +206,11 @@ class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
  private:
   // HoldingSpaceProgressRing:
   absl::optional<float> CalculateProgress() const override {
-    // If `item_` is `nullptr` it is being destroyed. Return `1.f` in that case
-    // so that no progress ring will be painted.
-    return item_ ? item_->progress().GetValue() : 1.f;
+    // If `item_` is `nullptr` it is being destroyed. Ensure the progress ring
+    // is not painted in this case. Similarly, ensure the progress ring is not
+    // painted when progress is hidden.
+    return item_ && !item_->progress().IsHidden() ? item_->progress().GetValue()
+                                                  : kProgressComplete;
   }
 
   // HoldingSpaceModelObserver:
@@ -237,6 +241,8 @@ class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
 }  // namespace
 
 // HoldingSpaceProgressRing ----------------------------------------------------
+
+constexpr float HoldingSpaceProgressRing::kProgressComplete;
 
 HoldingSpaceProgressRing::HoldingSpaceProgressRing(const void* animation_key)
     : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)),
@@ -295,22 +301,26 @@ void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
           ->GetProgressRingAnimationForKey(animation_key_);
 
   // Unless `this` is animating, nothing will paint if `progress_` is complete.
-  if (progress_ == 1.f && !animation)
+  if (progress_ == kProgressComplete && !animation)
     return;
 
-  float start, end;
+  float start, end, opacity;
   if (animation) {
     start = animation->start_position();
     end = animation->end_position();
+    opacity = animation->opacity();
   } else {
     start = 0.f;
     end = progress_.value();
+    opacity = 1.f;
   }
 
   DCHECK_GE(start, 0.f);
   DCHECK_LE(start, 1.f);
   DCHECK_GE(end, 0.f);
   DCHECK_LE(end, 1.f);
+  DCHECK_GE(opacity, 0.f);
+  DCHECK_LE(opacity, 1.f);
 
   ui::PaintRecorder recorder(context, layer()->size());
   gfx::Canvas* canvas = recorder.canvas();
@@ -335,11 +345,11 @@ void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
       AshColorProvider::ControlsLayerType::kFocusRingColor);
 
   // Track.
-  flags.setColor(SkColorSetA(color, 0xFF * kTrackOpacity));
+  flags.setColor(SkColorSetA(color, 0xFF * kTrackOpacity * opacity));
   canvas->DrawPath(path, flags);
 
   // Ring.
-  flags.setColor(color);
+  flags.setColor(SkColorSetA(color, 0xFF * opacity));
   if (start <= end) {
     // If `start` <= `end`, only a single path segment is necessary.
     canvas->DrawPath(CreatePathSegment(path, start, end), flags);

@@ -11,12 +11,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-const base::TimeDelta kRequestDelta = base::TimeDelta::FromMilliseconds(100);
-const base::TimeDelta kLongRequestDelta =
-    base::TimeDelta::FromMilliseconds(200);
-const base::TimeDelta kTinyDelay = base::TimeDelta::FromMilliseconds(1);
-const base::TimeDelta kModerateDelay = base::TimeDelta::FromMilliseconds(25);
-const base::TimeDelta kExcessiveDelay = base::TimeDelta::FromMilliseconds(75);
+const base::TimeDelta kRequestDelta = base::Milliseconds(100);
+const base::TimeDelta kLongRequestDelta = base::Milliseconds(200);
+const base::TimeDelta kTinyDelay = base::Milliseconds(1);
+const base::TimeDelta kModerateDelay = base::Milliseconds(25);
+const base::TimeDelta kExcessiveDelay = base::Milliseconds(75);
 }  // namespace
 
 // Test the basis recording of histograms.

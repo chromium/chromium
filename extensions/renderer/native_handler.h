@@ -6,7 +6,7 @@
 #define EXTENSIONS_RENDERER_NATIVE_HANDLER_H_
 
 #include "base/macros.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 
@@ -18,6 +18,10 @@ namespace extensions {
 class NativeHandler {
  public:
   NativeHandler();
+
+  NativeHandler(const NativeHandler&) = delete;
+  NativeHandler& operator=(const NativeHandler&) = delete;
+
   virtual ~NativeHandler();
 
   // Initializes the native handler.
@@ -46,8 +50,6 @@ class NativeHandler {
 
  private:
   bool is_valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeHandler);
 };
 
 }  // namespace extensions

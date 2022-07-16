@@ -28,6 +28,8 @@ const char* PowerModeToString(PowerMode mode) {
       return "VideoPlayback";
     case PowerMode::kMainThreadAnimation:
       return "MainThreadAnimation";
+    case PowerMode::kScriptExecution:
+      return "ScriptExecution";
     case PowerMode::kLoading:
       return "Loading";
     case PowerMode::kAnimation:

@@ -30,9 +30,40 @@
 import errno
 import logging
 import socket
+import sys
 import tempfile
 
+import six
+
 _log = logging.getLogger(__name__)
+
+# This module is dynamically imported when the WebTransport over HTTP/3 server
+# is enabled. It only works with python3.
+# pylint: disable=invalid-name
+webtransport_h3_server = None
+# pylint: enable=invalid-name
+
+
+def _is_webtransport_h3_server_running(port):
+    if six.PY2:
+        # TODO(crbug.com/1250210): Consider to support python2.
+        return False
+
+    # Import the WebTransport server module from wpt tools.
+    global webtransport_h3_server
+    if webtransport_h3_server is None:
+        from blinkpy.common.path_finder import get_wpt_tools_wpt_dir
+        wpt_tools_path = get_wpt_tools_wpt_dir()
+        if wpt_tools_path not in sys.path:
+            sys.path.insert(0, wpt_tools_path)
+
+        from importlib import import_module
+        webtransport_h3_server = import_module(
+            'tools.webtransport.h3.webtransport_h3_server')
+
+    return webtransport_h3_server.server_is_running(host='127.0.0.1',
+                                                    port=port,
+                                                    timeout=1)
 
 
 class ServerError(Exception):
@@ -283,9 +314,20 @@ class ServerBase(object):
             raise ServerError('Server exited')
 
         for mapping in self._mappings:
-            s = socket.socket()
             port = mapping['port']
             scheme = mapping['scheme']
+            if scheme == 'webtransport-h3':
+                if not _is_webtransport_h3_server_running(port):
+                    _log.log(failure_log_level,
+                             'WebTransportH3 server NOT running on '\
+                             'https://localhost:%d', port)
+                    return False
+                _log.log(
+                    success_log_level,
+                    'WebTransportH3 server running on https://localhost:%d',
+                    port)
+                continue
+            s = socket.socket()
             try:
                 s.connect(('localhost', port))
                 _log.log(success_log_level,
@@ -303,7 +345,12 @@ class ServerBase(object):
 
     def _check_that_all_ports_are_available(self):
         for mapping in self._mappings:
-            s = socket.socket()
+            scheme = mapping['scheme']
+            if scheme == 'webtransport-h3':
+                socket_type = socket.SOCK_DGRAM
+            else:
+                socket_type = socket.SOCK_STREAM
+            s = socket.socket(socket.AF_INET, socket_type)
             if not self._platform.is_win():
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             port = mapping['port']

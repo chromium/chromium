@@ -1,4 +1,6 @@
 {
+  "version": "4.25",
+  "log_list_timestamp": "2021-11-11T01:33:52Z",
   "operators": [
     {
       "name": "Google",
@@ -614,8 +616,8 @@
           "url": "https://ct2021.trustasia.com/log2021/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2021-05-11T07:00:00Z"
+            "usable": {
+              "timestamp": "2021-10-16T01:46:32Z"
             }
           },
           "temporal_interval": {

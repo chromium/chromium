@@ -4,7 +4,6 @@
 
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "base/test/task_environment.h"
@@ -48,6 +47,10 @@ class ScreenlockMonitorTestObserver : public ScreenlockObserver {
 };
 
 class ScreenlockMonitorTest : public testing::Test {
+ public:
+  ScreenlockMonitorTest(const ScreenlockMonitorTest&) = delete;
+  ScreenlockMonitorTest& operator=(const ScreenlockMonitorTest&) = delete;
+
  protected:
   ScreenlockMonitorTest() {
     screenlock_monitor_source_ = new ScreenlockMonitorTestSource();
@@ -62,8 +65,6 @@ class ScreenlockMonitorTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenlockMonitorTest);
 };
 
 TEST_F(ScreenlockMonitorTest, ScreenlockNotifications) {

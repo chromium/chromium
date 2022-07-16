@@ -5,7 +5,6 @@
 #include "chrome/browser/media/media_engagement_preloaded_list.h"
 
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"

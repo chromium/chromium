@@ -12,4 +12,7 @@ StorageOptions& StorageOptions::operator=(const StorageOptions& options) =
     default;
 StorageOptions::~StorageOptions() = default;
 
+QueueOptions::QueueOptions(const StorageOptions& storage_options)
+      : storage_options_(storage_options) {}
+QueueOptions::QueueOptions(const QueueOptions& options) = default;
 }  // namespace reporting

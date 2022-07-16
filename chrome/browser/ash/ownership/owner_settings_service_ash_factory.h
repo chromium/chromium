@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_OWNERSHIP_OWNER_SETTINGS_SERVICE_ASH_FACTORY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -35,6 +34,11 @@ class OwnerSettingsServiceAshFactory
 
   static OwnerSettingsServiceAshFactory* GetInstance();
 
+  OwnerSettingsServiceAshFactory(const OwnerSettingsServiceAshFactory&) =
+      delete;
+  OwnerSettingsServiceAshFactory& operator=(
+      const OwnerSettingsServiceAshFactory&) = delete;
+
   static void SetDeviceSettingsServiceForTesting(
       DeviceSettingsService* device_settings_service);
 
@@ -60,8 +64,6 @@ class OwnerSettingsServiceAshFactory
       content::BrowserContext* browser_context) const override;
 
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(OwnerSettingsServiceAshFactory);
 };
 
 }  // namespace ash

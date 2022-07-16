@@ -41,8 +41,10 @@ class CORE_EXPORT TextOffsetMapping final {
     // |first| and |last|(inclusive) represent inline layout object run, they
     // should be descendants of |block_flow|.
     InlineContents(const LayoutBlockFlow& block_flow,
+                   const LayoutObject* block_in_inline_before,
                    const LayoutObject& first,
-                   const LayoutObject& last);
+                   const LayoutObject& last,
+                   const LayoutObject* block_in_inline_after);
     // |block_flow| must be non-anonymous empty block or block containing only
     // anonymous object.
     InlineContents(const LayoutBlockFlow& block_flow);
@@ -74,8 +76,18 @@ class CORE_EXPORT TextOffsetMapping final {
     PositionInFlatTree LastPositionBeforeBlockFlow() const;
 
     const LayoutBlockFlow* block_flow_ = nullptr;
+    // The block-in-inline in |block_flow_| before |first_|, e.g.
+    //  <span><div>...</div>abc</span>
+    //  LayoutInline {SPAN}
+    //    LayoutNGBlockFlow (anonymous) <= block-in-inline
+    //      LayoutNGBlockFlow {DIV}
+    //        ...
+    //      LayoutNGBlockFlow (anonymous)
+    //        LayoutNGText "abc"
+    const LayoutObject* block_in_inline_before_ = nullptr;
     const LayoutObject* first_ = nullptr;
     const LayoutObject* last_ = nullptr;
+    const LayoutObject* block_in_inline_after_ = nullptr;
   };
 
   // |BackwardRange| class is used with range-for to traverse inline contents

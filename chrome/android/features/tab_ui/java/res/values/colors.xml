@@ -5,13 +5,13 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Tab Switcher colors. -->
-    <color name="tab_grid_card_view_tint_color">@color/popup_bg_color</color>
+    <color name="tab_grid_card_view_tint_color">@color/legacy_bg_color_elev_4</color>
     <color name="tab_grid_card_view_tint_color_incognito">@color/default_bg_color_dark_elev_4</color>
 
     <color name="tab_grid_card_title_text_color">@color/default_text_color_list</color>
     <color name="tab_grid_card_title_text_color_incognito">@color/default_text_color_light_list</color>
 
-    <color name="tab_group_number_text_color">@color/default_text_color</color>
+    <color name="tab_group_number_text_color">@color/default_text_color_list</color>
     <color name="tab_group_number_text_color_incognito">@color/default_text_color_light</color>
 
     <color name="tab_grid_card_action_button_tint_color">@color/default_icon_color</color>
@@ -33,7 +33,7 @@
     <color name="tab_grid_dialog_background_color">@color/legacy_bg_color_elev_1</color>
     <color name="tab_grid_dialog_background_color_incognito">@color/default_bg_color_dark_elev_1</color>
 
-    <color name="tab_grid_dialog_ungroup_button_text_color">@color/default_icon_color_blue</color>
+    <color name="tab_grid_dialog_ungroup_button_text_color">@color/default_icon_color_accent1_baseline</color>
     <color name="tab_grid_dialog_ungroup_button_text_color_incognito">@color/default_icon_color_blue_light</color>
     <color name="tab_grid_dialog_ungroup_button_text_color_hovered">@color/default_text_color_light_list</color>
 
@@ -66,7 +66,7 @@
     <color name="incognito_tab_thumbnail_placeholder_selected_color">@color/baseline_primary_100</color>
 
     <color name="incognito_tab_tile_number_color">@color/baseline_neutral_100</color>
-    <color name="incognito_tab_tile_number_selected_color">@color/baseline_primary_900</color>
+    <color name="incognito_tab_tile_number_selected_color">@color/baseline_primary_800</color>
 
     <color name="incognito_tab_grid_dialog_background_color">@color/baseline_neutral_900</color>
 
@@ -74,4 +74,6 @@
 
     <color name="incognito_tab_grid_dialog_ungroup_bar_text_color">@color/baseline_primary_200</color>
     <color name="incognito_tab_grid_dialog_ungroup_bar_text_hovered_color">@color/modern_white</color>
+
+    <color name="incognito_tab_selection_editor_toolbar_bg_color">@color/toolbar_background_primary_dark</color>
 </resources>

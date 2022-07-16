@@ -10,8 +10,8 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "build/build_config.h"
-#include "chrome/browser/service_sandbox_type.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/services/removable_storage_writer/public/mojom/removable_storage_writer.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -46,6 +46,11 @@ class ImageWriterUtilityClient::RemovableStorageWriterClientImpl
                        image_writer_utility_client_));
   }
 
+  RemovableStorageWriterClientImpl(const RemovableStorageWriterClientImpl&) =
+      delete;
+  RemovableStorageWriterClientImpl& operator=(
+      const RemovableStorageWriterClientImpl&) = delete;
+
   ~RemovableStorageWriterClientImpl() override = default;
 
  private:
@@ -65,8 +70,6 @@ class ImageWriterUtilityClient::RemovableStorageWriterClientImpl
 
   // |image_writer_utility_client_| owns |this|.
   ImageWriterUtilityClient* const image_writer_utility_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemovableStorageWriterClientImpl);
 };
 
 ImageWriterUtilityClient::ImageWriterUtilityClient(

@@ -11,7 +11,6 @@
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 
-using base::TimeDelta;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 using blink::WebMouseEvent;
@@ -61,9 +60,12 @@ void MockWidgetInputHandler::ImeSetComposition(
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& range,
     int32_t start,
-    int32_t end) {
+    int32_t end,
+    ImeSetCompositionCallback callback) {
   dispatched_messages_.emplace_back(std::make_unique<DispatchedIMEMessage>(
       "SetComposition", text, ime_text_spans, range, start, end));
+  if (callback)
+    std::move(callback).Run();
 }
 
 void MockWidgetInputHandler::ImeCommitText(

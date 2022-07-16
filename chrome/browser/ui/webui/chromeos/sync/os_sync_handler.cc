@@ -37,23 +37,23 @@ OSSyncHandler::~OSSyncHandler() {
 }
 
 void OSSyncHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "DidNavigateToOsSyncPage",
       base::BindRepeating(&OSSyncHandler::HandleDidNavigateToOsSyncPage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "DidNavigateAwayFromOsSyncPage",
       base::BindRepeating(&OSSyncHandler::HandleDidNavigateAwayFromOsSyncPage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "OsSyncPrefsDispatch",
       base::BindRepeating(&OSSyncHandler::HandleOsSyncPrefsDispatch,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SetOsSyncFeatureEnabled",
       base::BindRepeating(&OSSyncHandler::HandleSetOsSyncFeatureEnabled,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SetOsSyncDatatypes",
       base::BindRepeating(&OSSyncHandler::HandleSetOsSyncDatatypes,
                           base::Unretained(this)));
@@ -92,21 +92,24 @@ void OSSyncHandler::HandleDidNavigateAwayFromOsSyncPage(
 }
 
 void OSSyncHandler::HandleSetOsSyncFeatureEnabled(const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetSize());
-  CHECK(args->GetBoolean(0, &feature_enabled_));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  feature_enabled_ = list[0].GetBool();
   should_commit_feature_enabled_ = true;
   // Changing the feature enabled state may change toggle state.
   PushSyncPrefs();
 }
 
 void OSSyncHandler::HandleSetOsSyncDatatypes(const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetSize());
-  const base::DictionaryValue* result;
-  CHECK(args->GetDictionary(0, &result));
+  CHECK_EQ(1u, args->GetList().size());
+  const base::Value& result_value = args->GetList()[0];
+  CHECK(result_value.is_dict());
+  const base::DictionaryValue& result =
+      base::Value::AsDictionaryValue(result_value);
 
   // Wallpaper sync status is stored directly to the profile's prefs.
   bool wallpaper_synced;
-  CHECK(result->GetBoolean(kWallpaperEnabledKey, &wallpaper_synced));
+  CHECK(result.GetBoolean(kWallpaperEnabledKey, &wallpaper_synced));
   profile_->GetPrefs()->SetBoolean(chromeos::settings::prefs::kSyncOsWallpaper,
                                    wallpaper_synced);
 
@@ -119,14 +122,14 @@ void OSSyncHandler::HandleSetOsSyncDatatypes(const base::ListValue* args) {
     return;
 
   bool sync_all_os_types;
-  CHECK(result->GetBoolean("syncAllOsTypes", &sync_all_os_types));
+  CHECK(result.GetBoolean("syncAllOsTypes", &sync_all_os_types));
 
   UserSelectableOsTypeSet selected_types;
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     std::string key =
         syncer::GetUserSelectableOsTypeName(type) + std::string("Synced");
     bool sync_value;
-    CHECK(result->GetBoolean(key, &sync_value)) << key;
+    CHECK(result.GetBoolean(key, &sync_value)) << key;
     if (sync_value)
       selected_types.Put(type);
   }

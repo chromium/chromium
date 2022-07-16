@@ -40,6 +40,7 @@
 #include "content/public/common/url_constants.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "third_party/perfetto/protos/perfetto/common/trace_stats.gen.h"
 
@@ -54,7 +55,7 @@ void OnGotCategories(WebUIDataSource::GotDataCallback callback,
                      const std::set<std::string>& categorySet) {
   base::ListValue category_list;
   for (auto it = categorySet.begin(); it != categorySet.end(); it++) {
-    category_list.AppendString(*it);
+    category_list.Append(*it);
   }
 
   scoped_refptr<base::RefCountedString> res(new base::RefCountedString());
@@ -261,20 +262,19 @@ bool TracingUI::GetTracingOptions(const std::string& data64,
     return false;
   }
 
-  std::unique_ptr<base::Value> optionsRaw =
-      base::JSONReader::ReadDeprecated(data);
-  if (!optionsRaw) {
+  absl::optional<base::Value> options = base::JSONReader::Read(data);
+  if (!options) {
     LOG(ERROR) << "Options were not valid JSON";
     return false;
   }
-  base::DictionaryValue* options;
-  if (!optionsRaw->GetAsDictionary(&options)) {
+  if (!options->is_dict()) {
     LOG(ERROR) << "Options must be dict";
     return false;
   }
 
-  if (options->HasKey(kStreamFormat)) {
-    options->GetString(kStreamFormat, &out_stream_format);
+  if (const std::string* stream_format =
+          options->FindStringKey(kStreamFormat)) {
+    out_stream_format = *stream_format;
   } else {
     out_stream_format = kStreamFormatJSON;
   }

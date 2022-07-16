@@ -8,8 +8,9 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PrivacyPageBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {TestPrivacyPageBrowserProxy} from 'chrome://test/settings/test_privacy_page_browser_proxy.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
+
+import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
 
 // clang-format on
 
@@ -22,7 +23,7 @@ suite('metrics reporting', function() {
 
   setup(function() {
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.instance_ = testBrowserProxy;
+    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
     PolymerTest.clearBody();
     page = document.createElement('settings-personalization-options');
     document.body.appendChild(page);
@@ -72,7 +73,7 @@ suite('metrics reporting', function() {
       flush();
 
       // Restart button should be hidden by default (in any state).
-      assertFalse(!!page.$$('#restart'));
+      assertFalse(!!page.shadowRoot.querySelector('#restart'));
 
       // Simulate toggling via policy.
       webUIListenerCallback('metrics-reporting-change', {
@@ -81,7 +82,7 @@ suite('metrics reporting', function() {
       });
 
       // No restart button should show because the value is managed.
-      assertFalse(!!page.$$('#restart'));
+      assertFalse(!!page.shadowRoot.querySelector('#restart'));
 
       webUIListenerCallback('metrics-reporting-change', {
         enabled: true,
@@ -91,7 +92,7 @@ suite('metrics reporting', function() {
 
       // Changes in policy should not show the restart button because the value
       // is still managed.
-      assertFalse(!!page.$$('#restart'));
+      assertFalse(!!page.shadowRoot.querySelector('#restart'));
 
       // Remove the policy and toggle the value.
       webUIListenerCallback('metrics-reporting-change', {
@@ -101,7 +102,7 @@ suite('metrics reporting', function() {
       flush();
 
       // Now the restart button should be showing.
-      assertTrue(!!page.$$('#restart'));
+      assertTrue(!!page.shadowRoot.querySelector('#restart'));
 
       // Receiving the same values should have no effect.
       webUIListenerCallback('metrics-reporting-change', {
@@ -109,7 +110,7 @@ suite('metrics reporting', function() {
         managed: false,
       });
       flush();
-      assertTrue(!!page.$$('#restart'));
+      assertTrue(!!page.shadowRoot.querySelector('#restart'));
     });
   });
 });

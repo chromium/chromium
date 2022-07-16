@@ -59,8 +59,9 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   void Trace(Visitor* visitor) const override;
 
   // HTMLFrameOwnerElement overrides.
-  mojom::blink::FrameOwnerElementType OwnerType() const override {
-    return mojom::blink::FrameOwnerElementType::kFencedframe;
+  void DisconnectContentFrame() override;
+  FrameOwnerElementType OwnerType() const override {
+    return FrameOwnerElementType::kFencedframe;
   }
   ParsedPermissionsPolicy ConstructContainerPolicy() const override {
     NOTREACHED();
@@ -85,6 +86,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   bool IsURLAttribute(const Attribute&) const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
   void AttachLayoutTree(AttachContext& context) override;
+  bool SupportsFocus() const override;
 
   // The underlying <fencedframe> implementation that we delegate all of the
   // important bits to. See the comment above this class declaration.

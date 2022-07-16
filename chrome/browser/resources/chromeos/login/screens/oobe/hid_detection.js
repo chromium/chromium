@@ -7,6 +7,8 @@
  * screen.
  */
 
+/* #js_imports_placeholder */
+
 (function() {
 /** @const {number} */ var PINCODE_LENGTH = 6;
 
@@ -19,139 +21,158 @@ const CONNECTION = {
   PAIRED: 'paired',
 };
 
-Polymer({
-  is: 'hid-detection-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+ const HidDetectionScreenBase = Polymer.mixinBehaviors(
+  [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+  Polymer.Element);
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+class HidDetectionScreen extends HidDetectionScreenBase {
 
-  EXTERNAL_API: [
-    'setKeyboardState',
-    'setMouseState',
-    'setKeyboardPinCode',
-    'setPinDialogVisible',
-    'setNumKeysEnteredPinCode',
-    'setPointingDeviceName',
-    'setKeyboardDeviceName',
-    'setTouchscreenDetectedState',
-    'setContinueButtonEnabled',
-  ],
+  static get is() { return 'hid-detection-element'; }
 
-  properties: {
-    /** "Continue" button is disabled until HID devices are paired. */
-    continueButtonEnabled: {
-      type: Boolean,
-      value: false,
-    },
+  /* #html_template_placeholder */
 
-    /**
-     * The keyboard device name
-     */
-    keyboardDeviceName: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /** "Continue" button is disabled until HID devices are paired. */
+      continueButtonEnabled: {
+        type: Boolean,
+      },
 
-    /**
-     * The pointing device name
-     */
-    pointingDeviceName: {
-      type: String,
-      value: '',
-    },
+      /**
+       * The keyboard device name
+       */
+      keyboardDeviceName: {
+        type: String,
+      },
 
-    /**
-     * State of touchscreen detection
-     * @private
-     */
-    touchscreenDetected_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * The pointing device name
+       */
+      pointingDeviceName: {
+        type: String,
+      },
 
-    /**
-     * Current state in mouse pairing process.
-     * @private
-     */
-    mouseState_: {
-      type: String,
-      value: CONNECTION.SEARCHING,
-    },
+      /**
+       * State of touchscreen detection
+       * @private
+       */
+      touchscreenDetected_: {
+        type: Boolean,
+      },
 
-    /**
-     * Current state in keyboard pairing process.
-     * @private
-     */
-    keyboardState_: {
-      type: String,
-      value: CONNECTION.SEARCHING,
-    },
+      /**
+       * Current state in mouse pairing process.
+       * @private
+       */
+      mouseState_: {
+        type: String,
+      },
 
-    /**
-     * Controls the visibility of the PIN dialog.
-     * @private
-     */
-    pinDialogVisible_: {
-      type: Boolean,
-      value: false,
-      observer: 'onPinDialogVisibilityChanged_',
-    },
+      /**
+       * Current state in keyboard pairing process.
+       * @private
+       */
+      keyboardState_: {
+        type: String,
+      },
 
-    /**
-     * The PIN code to be typed by the user
-     */
-    pinCode: {
-      type: String,
-      value: '000000',
-      observer: 'onPinParametersChanged_',
-    },
+      /**
+       * Controls the visibility of the PIN dialog.
+       * @private
+       */
+      pinDialogVisible_: {
+        type: Boolean,
+        observer: 'onPinDialogVisibilityChanged_',
+      },
 
-    /**
-     * The number of keys that the user already entered for this PIN.
-     * This helps the user to see what's the next key to be pressed.
-     */
-    numKeysEnteredPinCode: {
-      type: Number,
-      value: 0,
-      observer: 'onPinParametersChanged_',
-    },
+      /**
+       * The PIN code to be typed by the user
+       */
+      pinCode: {
+        type: String,
+        observer: 'onPinParametersChanged_',
+      },
 
-    /**
-     *  Whether the dialog for PIN input is being shown.
-     *  Internal use only. Used for preventing multiple openings.
-     */
-    pinDialogIsOpen_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * The number of keys that the user already entered for this PIN.
+       * This helps the user to see what's the next key to be pressed.
+       */
+      numKeysEnteredPinCode: {
+        type: Number,
+        observer: 'onPinParametersChanged_',
+      },
 
-    /**
-     * The title that is displayed on the PIN dialog
-     */
-    pinDialogTitle: {
-      type: String,
-      computed: 'getPinDialogTitle_(locale, keyboardDeviceName)',
-    },
-  },
+      /**
+       *  Whether the dialog for PIN input is being shown.
+       *  Internal use only. Used for preventing multiple openings.
+       */
+      pinDialogIsOpen_: {
+        type: Boolean,
+      },
+
+      /**
+       * The title that is displayed on the PIN dialog
+       */
+      pinDialogTitle: {
+        type: String,
+        computed: 'getPinDialogTitle_(locale, keyboardDeviceName)',
+      },
+    };
+  }
+
+  constructor() {
+    super();
+    this.continueButtonEnabled = false;
+    this.keyboardDeviceName = '';
+    this.pointingDeviceName = '';
+    this.touchscreenDetected_ = false;
+    this.mouseState_ = CONNECTION.SEARCHING;
+    this.keyboardState_ = CONNECTION.SEARCHING;
+    this.pinDialogVisible_ = false;
+    this.pinCode = '000000';
+    this.numKeysEnteredPinCode = 0;
+    this.pinDialogIsOpen_ = false;
+  }
+
+
+  get EXTERNAL_API() {
+    return ['setKeyboardState',
+            'setMouseState',
+            'setKeyboardPinCode',
+            'setPinDialogVisible',
+            'setNumKeysEnteredPinCode',
+            'setPointingDeviceName',
+            'setKeyboardDeviceName',
+            'setTouchscreenDetectedState',
+            'setContinueButtonEnabled'];
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.initializeLoginScreen('HIDDetectionScreen', {
       resetAllowed: false,
     });
-  },
+  }
 
   getPrerequisitesText_(locale, touchscreenDetected) {
     if (touchscreenDetected)
       return this.i18n('hidDetectionPrerequisitesTouchscreen');
     else
       return this.i18n('hidDetectionPrerequisites');
-  },
+  }
 
   /**
    * Provides the label for the mouse row
    */
   getMouseLabel_() {
-    var stateToStrMap = new Map([
+    const stateToStrMap = new Map([
       [CONNECTION.SEARCHING, 'hidDetectionMouseSearching'],
       [CONNECTION.USB, 'hidDetectionUSBMouseConnected'],
       [CONNECTION.CONNECTED, 'hidDetectionPointingDeviceConnected'],
@@ -163,7 +184,7 @@ Polymer({
       return this.i18n(stateToStrMap.get(this.mouseState_));
     else
       return '';
-  },
+  }
 
   /**
    * Provides the label for the keyboard row
@@ -182,7 +203,7 @@ Polymer({
         return this.i18n(
             'hidDetectionKeyboardPairing', this.keyboardDeviceName);
     }
-  },
+  }
 
   /**
    * If the user accidentally closed the PIN dialog, tapping on on the keyboard
@@ -190,7 +211,7 @@ Polymer({
    */
   openPinDialog_() {
     this.onPinDialogVisibilityChanged_();
-  },
+  }
 
   /**
    * Helper function to calculate visibility of 'connected' icons.
@@ -200,7 +221,7 @@ Polymer({
   tickIsVisible_(state) {
     return (state == CONNECTION.USB) || (state == CONNECTION.CONNECTED) ||
         (state == CONNECTION.PAIRED);
-  },
+  }
 
   /**
    * Helper function to calculate visibility of the spinner.
@@ -209,7 +230,7 @@ Polymer({
    */
   spinnerIsVisible_(state) {
     return state == CONNECTION.SEARCHING;
-  },
+  }
 
   /**
    * Updates the visibility of the PIN dialog.
@@ -225,14 +246,14 @@ Polymer({
       this.$['hid-pin-popup'].hideDialog();
       this.pinDialogIsOpen_ = false;
     }
-  },
+  }
 
   /**
    * Sets the title of the PIN dialog according to the device's name.
    */
   getPinDialogTitle_() {
     return this.i18n('hidDetectionPinDialogTitle', this.keyboardDeviceName);
-  },
+  }
 
   /**
    *  Modifies the PIN that is seen on the PIN dialog.
@@ -246,7 +267,7 @@ Polymer({
       if (i < PINCODE_LENGTH)
         pincodeSymbol.textContent = this.pinCode[i] ? this.pinCode[i] : '';
     }
-  },
+  }
 
   /**
    * Action to be taken when the user closes the PIN dialog before finishing
@@ -254,7 +275,7 @@ Polymer({
    */
   onPinDialogClosed_() {
     this.pinDialogIsOpen_ = false;
-  },
+  }
 
   /**
    * This is 'on-tap' event handler for 'Continue' button.
@@ -262,14 +283,14 @@ Polymer({
   onHIDContinueTap_(event) {
     this.userActed('HIDDetectionOnContinue');
     event.stopPropagation();
-  },
+  }
 
   /**
    * Sets TouchscreenDetected to true
    */
   setTouchscreenDetectedState(state) {
     this.touchscreenDetected_ = state;
-  },
+  }
 
   /**
    * Sets current state in keyboard pairing process.
@@ -277,7 +298,7 @@ Polymer({
    */
   setKeyboardState(state) {
     this.keyboardState_ = state;
-  },
+  }
 
   /**
    * Sets current state in mouse pairing process.
@@ -285,30 +306,32 @@ Polymer({
    */
   setMouseState(state) {
     this.mouseState_ = state;
-  },
+  }
 
   setKeyboardPinCode(pin) {
     this.pinCode = pin;
-  },
+  }
 
   setPinDialogVisible(visibility) {
     this.pinDialogVisible_ = visibility;
-  },
+  }
 
   setNumKeysEnteredPinCode(num_keys) {
     this.numKeysEnteredPinCode = num_keys;
-  },
+  }
 
   setPointingDeviceName(device_name) {
     this.pointingDeviceName = device_name;
-  },
+  }
 
   setKeyboardDeviceName(device_name) {
     this.keyboardDeviceName = device_name;
-  },
+  }
 
   setContinueButtonEnabled(enabled) {
     this.continueButtonEnabled = enabled;
-  },
-});
+  }
+}
+
+customElements.define(HidDetectionScreen.is, HidDetectionScreen);
 })();

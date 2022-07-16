@@ -8,6 +8,7 @@
 #include "gin/array_buffer.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
+#include "v8/include/v8-context.h"
 
 using v8::Context;
 using v8::Local;

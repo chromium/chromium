@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_ROUND_RECT_PAINTER_H_
 #define UI_VIEWS_ROUND_RECT_PAINTER_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/painter.h"
 #include "ui/views/views_export.h"
@@ -23,6 +22,10 @@ class VIEWS_EXPORT RoundRectPainter : public Painter {
   enum { kBorderWidth = 1 };
 
   RoundRectPainter(SkColor border_color, int corner_radius);
+
+  RoundRectPainter(const RoundRectPainter&) = delete;
+  RoundRectPainter& operator=(const RoundRectPainter&) = delete;
+
   ~RoundRectPainter() override;
 
   // Painter:
@@ -32,8 +35,6 @@ class VIEWS_EXPORT RoundRectPainter : public Painter {
  private:
   const SkColor border_color_;
   const int corner_radius_;
-
-  DISALLOW_COPY_AND_ASSIGN(RoundRectPainter);
 };
 
 }  // namespace views

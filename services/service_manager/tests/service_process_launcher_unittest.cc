@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -43,6 +44,12 @@ class ServiceProcessLauncherDelegateImpl
     : public ServiceProcessLauncherDelegate {
  public:
   ServiceProcessLauncherDelegateImpl() {}
+
+  ServiceProcessLauncherDelegateImpl(
+      const ServiceProcessLauncherDelegateImpl&) = delete;
+  ServiceProcessLauncherDelegateImpl& operator=(
+      const ServiceProcessLauncherDelegateImpl&) = delete;
+
   ~ServiceProcessLauncherDelegateImpl() override {}
 
   size_t get_and_clear_adjust_count() {
@@ -60,8 +67,6 @@ class ServiceProcessLauncherDelegateImpl
   }
 
   size_t adjust_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProcessLauncherDelegateImpl);
 };
 
 #if defined(OS_ANDROID)
@@ -73,13 +78,9 @@ class ServiceProcessLauncherDelegateImpl
 TEST(ServiceProcessLauncherTest, MAYBE_StartJoin) {
   base::test::TaskEnvironment task_environment;
 
+  // The test executable is a data_deps and thus generated test data.
   base::FilePath test_service_path;
-#if defined(OS_FUCHSIA)
-  // Service binaries are treated as "assets".
-  base::PathService::Get(base::DIR_ASSETS, &test_service_path);
-#else
-  base::PathService::Get(base::DIR_EXE, &test_service_path);
-#endif
+  base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &test_service_path);
   test_service_path = test_service_path.AppendASCII(kTestServiceName)
                           .AddExtension(kServiceExtension);
 
@@ -88,7 +89,7 @@ TEST(ServiceProcessLauncherTest, MAYBE_StartJoin) {
       absl::in_place, &service_process_launcher_delegate, test_service_path);
   base::RunLoop run_loop;
   launcher->Start(
-      Identity(), sandbox::policy::SandboxType::kNoSandbox,
+      Identity(), sandbox::mojom::Sandbox::kNoSandbox,
       base::BindOnce(&ProcessReadyCallbackAdapter,
                      true /*expect_process_id_valid*/, run_loop.QuitClosure()));
   run_loop.Run();
@@ -116,7 +117,7 @@ TEST(ServiceProcessLauncherTest, FailToLaunchProcess) {
   absl::optional<ServiceProcessLauncher> launcher(
       absl::in_place, &service_process_launcher_delegate, test_service_path);
   base::RunLoop run_loop;
-  launcher->Start(Identity(), sandbox::policy::SandboxType::kNoSandbox,
+  launcher->Start(Identity(), sandbox::mojom::Sandbox::kNoSandbox,
                   base::BindOnce(&ProcessReadyCallbackAdapter,
                                  false /*expect_process_id_valid*/,
                                  run_loop.QuitClosure()));

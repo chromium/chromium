@@ -211,7 +211,7 @@ void GpuArcVideoEncodeAccelerator::Encode(
       gfx::Rect(visible_size_), visible_size_, std::move(gpu_memory_buffer),
       dummy_mailbox /* mailbox_holders */,
       base::NullCallback() /* mailbox_holder_release_cb_ */,
-      base::TimeDelta::FromMicroseconds(timestamp));
+      base::Microseconds(timestamp));
   if (!frame) {
     DLOG(ERROR) << "Failed to create VideoFrame";
     client_->NotifyError(Error::kInvalidArgumentError);
@@ -267,6 +267,22 @@ void GpuArcVideoEncodeAccelerator::UseBitstreamBuffer(
 }
 
 void GpuArcVideoEncodeAccelerator::RequestEncodingParametersChange(
+    const media::Bitrate& bitrate,
+    uint32_t framerate) {
+  DVLOGF(2) << bitrate.ToString();
+
+  if (!accelerator_) {
+    DLOG(ERROR) << "Accelerator is not initialized.";
+    return;
+  }
+
+  // Note that dynamic bitrate mode changes are not allowed. Attempting to
+  // change the bitrate mode at runtime will result in the |accelerator_|
+  // reporting an error through NotifyError.
+  accelerator_->RequestEncodingParametersChange(bitrate, framerate);
+}
+
+void GpuArcVideoEncodeAccelerator::RequestEncodingParametersChangeDeprecated(
     uint32_t bitrate,
     uint32_t framerate) {
   DVLOGF(2) << "bitrate=" << bitrate << ", framerate=" << framerate;

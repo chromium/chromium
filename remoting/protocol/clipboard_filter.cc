@@ -4,15 +4,15 @@
 
 #include "remoting/protocol/clipboard_filter.h"
 
+#include "remoting/proto/internal.pb.h"
+
 namespace remoting {
 namespace protocol {
 
-ClipboardFilter::ClipboardFilter() : clipboard_stub_(nullptr), enabled_(true) {
-}
+ClipboardFilter::ClipboardFilter() = default;
 
 ClipboardFilter::ClipboardFilter(ClipboardStub* clipboard_stub)
-    : clipboard_stub_(clipboard_stub), enabled_(true) {
-}
+    : clipboard_stub_(clipboard_stub) {}
 
 ClipboardFilter::~ClipboardFilter() = default;
 
@@ -21,8 +21,21 @@ void ClipboardFilter::set_clipboard_stub(ClipboardStub* clipboard_stub) {
 }
 
 void ClipboardFilter::InjectClipboardEvent(const ClipboardEvent& event) {
-  if (enabled_ && clipboard_stub_ != nullptr)
+  if (!enabled_ || !clipboard_stub_) {
+    return;
+  }
+
+  if (max_size_.has_value() && max_size_.value() == 0) {
+    return;
+  }
+
+  if (!max_size_.has_value() || max_size_.value() >= event.data().size()) {
     clipboard_stub_->InjectClipboardEvent(event);
+  } else {
+    ClipboardEvent resized_event(event);
+    resized_event.mutable_data()->resize(max_size_.value());
+    clipboard_stub_->InjectClipboardEvent(resized_event);
+  }
 }
 
 }  // namespace protocol

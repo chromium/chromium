@@ -45,6 +45,12 @@ UpgradeParams DefaultUpgradeParams() {
   return params;
 }
 
+std::string ConvertToString(ArcSessionImpl::State state) {
+  std::stringstream ss;
+  ss << state;
+  return ss.str();
+}
+
 // An ArcClientAdapter implementation that does the same as the real ones but
 // without any D-Bus calls.
 class FakeArcClientAdapter : public ArcClientAdapter {
@@ -128,6 +134,9 @@ class FakeDelegate : public ArcSessionImpl::Delegate {
  public:
   FakeDelegate() = default;
 
+  FakeDelegate(const FakeDelegate&) = delete;
+  FakeDelegate& operator=(const FakeDelegate&) = delete;
+
   // Emulates to fail Mojo connection establishing. |callback| passed to
   // ConnectMojo will be called with nullptr.
   void EmulateMojoConnectionFailure() { success_ = false; }
@@ -194,8 +203,6 @@ class FakeDelegate : public ArcSessionImpl::Delegate {
   bool suspend_ = false;
   int64_t free_disk_space_ = kMinimumFreeDiskSpaceBytes * 2;
   ConnectMojoCallback pending_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDelegate);
 };
 
 class TestArcSessionObserver : public ArcSession::Observer {
@@ -214,6 +221,9 @@ class TestArcSessionObserver : public ArcSession::Observer {
       : arc_session_(arc_session), run_loop_(run_loop) {
     arc_session_->AddObserver(this);
   }
+
+  TestArcSessionObserver(const TestArcSessionObserver&) = delete;
+  TestArcSessionObserver& operator=(const TestArcSessionObserver&) = delete;
 
   ~TestArcSessionObserver() override { arc_session_->RemoveObserver(this); }
 
@@ -235,8 +245,6 @@ class TestArcSessionObserver : public ArcSession::Observer {
   ArcSession* const arc_session_;            // Not owned.
   base::RunLoop* const run_loop_ = nullptr;  // Not owned.
   absl::optional<OnSessionStoppedArgs> on_session_stopped_args_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestArcSessionObserver);
 };
 
 // Custom deleter for ArcSession testing.
@@ -253,6 +261,12 @@ class FakeSchedulerConfigurationManager
     : public chromeos::SchedulerConfigurationManagerBase {
  public:
   FakeSchedulerConfigurationManager() = default;
+
+  FakeSchedulerConfigurationManager(const FakeSchedulerConfigurationManager&) =
+      delete;
+  FakeSchedulerConfigurationManager& operator=(
+      const FakeSchedulerConfigurationManager&) = delete;
+
   ~FakeSchedulerConfigurationManager() override = default;
 
   void SetLastReply(size_t num_cores_disabled) {
@@ -267,8 +281,6 @@ class FakeSchedulerConfigurationManager
 
  private:
   absl::optional<std::pair<bool, size_t>> reply_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSchedulerConfigurationManager);
 };
 
 class FakeAdbSideloadingAvailabilityDelegate
@@ -294,6 +306,10 @@ class FakeAdbSideloadingAvailabilityDelegate
 class ArcSessionImplTest : public testing::Test {
  public:
   ArcSessionImplTest() = default;
+
+  ArcSessionImplTest(const ArcSessionImplTest&) = delete;
+  ArcSessionImplTest& operator=(const ArcSessionImplTest&) = delete;
+
   ~ArcSessionImplTest() override = default;
 
   std::unique_ptr<ArcSessionImpl, ArcSessionDeleter> CreateArcSession(
@@ -348,8 +364,6 @@ class ArcSessionImplTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionImplTest);
 };
 
 // Starting mini container success case.
@@ -866,6 +880,44 @@ TEST_F(ArcSessionImplTest, CanChangeAdbSideloading_True) {
                   .is_managed_adb_sideloading_allowed);
 }
 
+// Test that validates disabling ureadahead is not enforced by default.
+TEST_F(ArcSessionImplTest, UreadaheadByDefault) {
+  auto arc_session = CreateArcSession();
+  arc_session->StartMiniInstance();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      GetClient(arc_session.get())->last_start_params().disable_ureadahead);
+}
+
+// Test that validates disabling ureadahead is enforced by switch.
+TEST_F(ArcSessionImplTest, DisableUreadahead) {
+  base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitch(chromeos::switches::kArcDisableUreadahead);
+  auto arc_session = CreateArcSession();
+  arc_session->StartMiniInstance();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(
+      GetClient(arc_session.get())->last_start_params().disable_ureadahead);
+}
+
+// Test "<<" operator for ArcSessionImpl::State type.
+TEST_F(ArcSessionImplTest, StateTypeStreamOutput) {
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::NOT_STARTED), "NOT_STARTED");
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::WAITING_FOR_NUM_CORES),
+            "WAITING_FOR_NUM_CORES");
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::STARTING_MINI_INSTANCE),
+            "STARTING_MINI_INSTANCE");
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::RUNNING_MINI_INSTANCE),
+            "RUNNING_MINI_INSTANCE");
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::STARTING_FULL_INSTANCE),
+            "STARTING_FULL_INSTANCE");
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::CONNECTING_MOJO),
+            "CONNECTING_MOJO");
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::RUNNING_FULL_INSTANCE),
+            "RUNNING_FULL_INSTANCE");
+  EXPECT_EQ(ConvertToString(ArcSessionImpl::State::STOPPED), "STOPPED");
+}
 struct DalvikMemoryProfileVariant {
   // Memory stat file
   const char* file_name;

@@ -138,18 +138,20 @@ scoped_refptr<MessageAttachment> MessageAttachment::CreateFromMojoHandle(
   }
 #elif defined(OS_FUCHSIA)
   if (type == Type::FUCHSIA_HANDLE) {
-    zx::handle handle;
+    zx::handle zx_handle;
     if (platform_handle.type == MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE)
-      handle.reset(static_cast<zx_handle_t>(platform_handle.value));
-    return new internal::HandleAttachmentFuchsia(std::move(handle));
+      zx_handle.reset(static_cast<zx_handle_t>(platform_handle.value));
+    return new internal::HandleAttachmentFuchsia(std::move(zx_handle));
   }
 #elif defined(OS_WIN)
   if (type == Type::WIN_HANDLE) {
-    base::PlatformFile handle = base::kInvalidPlatformFile;
-    if (platform_handle.type == MOJO_PLATFORM_HANDLE_TYPE_WINDOWS_HANDLE)
-      handle = reinterpret_cast<base::PlatformFile>(platform_handle.value);
+    base::PlatformFile platform_file = base::kInvalidPlatformFile;
+    if (platform_handle.type == MOJO_PLATFORM_HANDLE_TYPE_WINDOWS_HANDLE) {
+      platform_file =
+          reinterpret_cast<base::PlatformFile>(platform_handle.value);
+    }
     return new internal::HandleAttachmentWin(
-        handle, internal::HandleAttachmentWin::FROM_WIRE);
+        platform_file, internal::HandleAttachmentWin::FROM_WIRE);
   }
 #endif
   NOTREACHED();

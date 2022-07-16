@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
@@ -33,6 +33,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -50,7 +52,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
 
@@ -65,7 +66,7 @@ class ThemeTrackingLabel : public views::Label {
   explicit ThemeTrackingLabel(const std::u16string& text) : Label(text) {}
   ~ThemeTrackingLabel() override = default;
 
-  void set_enabled_color_id(ui::NativeTheme::ColorId enabled_color_id) {
+  void set_enabled_color_id(ui::ColorId enabled_color_id) {
     enabled_color_id_ = enabled_color_id;
   }
 
@@ -73,11 +74,11 @@ class ThemeTrackingLabel : public views::Label {
   void OnThemeChanged() override {
     Label::OnThemeChanged();
     if (enabled_color_id_.has_value())
-      SetEnabledColor(GetNativeTheme()->GetSystemColor(*enabled_color_id_));
+      SetEnabledColor(GetColorProvider()->GetColor(*enabled_color_id_));
   }
 
  private:
-  absl::optional<ui::NativeTheme::ColorId> enabled_color_id_;
+  absl::optional<ui::ColorId> enabled_color_id_;
 };
 
 BEGIN_METADATA(ThemeTrackingLabel, views::Label)
@@ -135,7 +136,7 @@ std::unique_ptr<views::View> GetBaseProfileLabel(
     label->SetID(static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_1));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     if (!enabled)
-      label->set_enabled_color_id(ui::NativeTheme::kColorId_LabelDisabledColor);
+      label->set_enabled_color_id(ui::kColorLabelForegroundDisabled);
     container->AddChildView(std::move(label));
   }
 
@@ -144,7 +145,7 @@ std::unique_ptr<views::View> GetBaseProfileLabel(
     label->SetID(static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_2));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     if (!enabled)
-      label->set_enabled_color_id(ui::NativeTheme::kColorId_LabelDisabledColor);
+      label->set_enabled_color_id(ui::kColorLabelForegroundDisabled);
     container->AddChildView(std::move(label));
   }
 
@@ -153,7 +154,7 @@ std::unique_ptr<views::View> GetBaseProfileLabel(
     label->SetID(static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_3));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     if (!enabled)
-      label->set_enabled_color_id(ui::NativeTheme::kColorId_LabelDisabledColor);
+      label->set_enabled_color_id(ui::kColorLabelForegroundDisabled);
     container->AddChildView(std::move(label));
   }
 
@@ -190,7 +191,7 @@ std::unique_ptr<views::Label> GetLabelForMissingInformation(
   label->SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL);
   label->SetID(static_cast<int>(DialogViewID::PROFILE_LABEL_ERROR));
   // Missing information typically has a nice shade of blue.
-  label->set_enabled_color_id(ui::NativeTheme::kColorId_LinkEnabled);
+  label->set_enabled_color_id(ui::kColorLinkForeground);
   return label;
 }
 
@@ -199,6 +200,12 @@ std::unique_ptr<views::Label> GetLabelForMissingInformation(
 class PaymentRequestRowBorderPainter : public views::Painter {
  public:
   explicit PaymentRequestRowBorderPainter(SkColor color) : color_(color) {}
+
+  PaymentRequestRowBorderPainter(const PaymentRequestRowBorderPainter&) =
+      delete;
+  PaymentRequestRowBorderPainter& operator=(
+      const PaymentRequestRowBorderPainter&) = delete;
+
   ~PaymentRequestRowBorderPainter() override {}
 
   // views::Painter:
@@ -217,7 +224,6 @@ class PaymentRequestRowBorderPainter : public views::Painter {
 
  private:
   SkColor color_;
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestRowBorderPainter);
 };
 
 }  // namespace
@@ -229,8 +235,13 @@ void PopulateSheetHeaderView(bool show_back_arrow,
                              std::unique_ptr<views::Background> background) {
   SkColor background_color = background->get_color();
   container->SetBackground(std::move(background));
-  views::GridLayout* layout =
-      container->SetLayoutManager(std::make_unique<views::GridLayout>());
+  views::BoxLayout* layout =
+      container->SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  // Need some spacing if the optional back arrow presents.
+  constexpr int kPaddingBetweenArrowAndTitle = 8;
+  layout->set_between_child_spacing(kPaddingBetweenArrowAndTitle);
 
   constexpr int kVerticalInset = 14;
   constexpr int kHeaderHorizontalInset = 16;
@@ -238,25 +249,7 @@ void PopulateSheetHeaderView(bool show_back_arrow,
       views::CreateEmptyBorder(kVerticalInset, kHeaderHorizontalInset,
                                kVerticalInset, kHeaderHorizontalInset));
 
-  views::ColumnSet* columns = layout->AddColumnSet(0);
-  // A column for the optional back arrow.
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  constexpr int kPaddingBetweenArrowAndTitle = 8;
-  if (show_back_arrow)
-    columns->AddPaddingColumn(views::GridLayout::kFixedSize,
-                              kPaddingBetweenArrowAndTitle);
-
-  // A column for the title.
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER, 1.0,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  if (!show_back_arrow) {
-    layout->SkipColumns(1);
-  } else {
+  if (show_back_arrow) {
     auto back_arrow =
         views::CreateVectorImageButton(std::move(back_arrow_callback));
     views::SetImageFromVectorIcon(
@@ -267,10 +260,11 @@ void PopulateSheetHeaderView(bool show_back_arrow,
     back_arrow->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     back_arrow->SetID(static_cast<int>(DialogViewID::BACK_BUTTON));
     back_arrow->SetAccessibleName(l10n_util::GetStringUTF16(IDS_PAYMENTS_BACK));
-    layout->AddView(std::move(back_arrow));
+    container->AddChildView(std::move(back_arrow));
   }
 
-  layout->AddView(std::move(header_content_view));
+  layout->SetFlexForView(
+      container->AddChildView(std::move(header_content_view)), 1);
 }
 
 std::unique_ptr<views::ImageView> CreateAppIconView(
@@ -486,10 +480,9 @@ std::unique_ptr<views::View> CreateWarningView(const std::u16string& message,
     auto warning_icon = std::make_unique<views::ImageView>();
     warning_icon->SetCanProcessEventsWithinSubtree(false);
     warning_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kWarningIcon, ui::NativeTheme::kColorId_AlertSeverityHigh,
-        16));
+        vector_icons::kWarningIcon, ui::kColorAlertHighSeverity, 16));
     header_view->AddChildView(std::move(warning_icon));
-    label->set_enabled_color_id(ui::NativeTheme::kColorId_AlertSeverityHigh);
+    label->set_enabled_color_id(ui::kColorAlertHighSeverity);
   }
 
   header_view->AddChildView(std::move(label));

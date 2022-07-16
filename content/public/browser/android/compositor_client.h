@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_ANDROID_COMPOSITOR_CLIENT_H_
 #define CONTENT_PUBLIC_BROWSER_ANDROID_COMPOSITOR_CLIENT_H_
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -13,6 +12,9 @@ namespace content {
 
 class CONTENT_EXPORT CompositorClient {
  public:
+  CompositorClient(const CompositorClient&) = delete;
+  CompositorClient& operator=(const CompositorClient&) = delete;
+
   // Compositor is requesting client to create a new surface and call
   // SetSurface again. The existing surface if any is cleared from the
   // compositor before this call.
@@ -32,9 +34,6 @@ class CONTENT_EXPORT CompositorClient {
  protected:
   CompositorClient() {}
   virtual ~CompositorClient() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CompositorClient);
 };
 
 }  // namespace content

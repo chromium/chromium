@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SSL_SSL_ERROR_HANDLER_H_
 #define CONTENT_BROWSER_SSL_SSL_ERROR_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
@@ -50,6 +49,9 @@ class SSLErrorHandler {
                   int net_error,
                   const net::SSLInfo& ssl_info,
                   bool fatal);
+
+  SSLErrorHandler(const SSLErrorHandler&) = delete;
+  SSLErrorHandler& operator=(const SSLErrorHandler&) = delete;
 
   virtual ~SSLErrorHandler();
 
@@ -99,8 +101,6 @@ class SSLErrorHandler {
 
   // The WebContents associated with the request that generated the error.
   WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorHandler);
 };
 
 }  // namespace content

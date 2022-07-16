@@ -13,8 +13,10 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 class DiceTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -209,4 +211,43 @@ TEST_F(DiceTabHelperTest, IsSyncSigninInProgress) {
   EXPECT_TRUE(dice_tab_helper->IsSyncSigninInProgress());
   dice_tab_helper->OnSyncSigninFlowComplete();
   EXPECT_FALSE(dice_tab_helper->IsSyncSigninInProgress());
+}
+
+class DiceTabHelperPrerenderTest : public DiceTabHelperTest {
+ public:
+  DiceTabHelperPrerenderTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2},
+        // Disable the memory requirement of Prerender2 so the test can run on
+        // any bot.
+        {blink::features::kPrerender2MemoryControls});
+  }
+
+  ~DiceTabHelperPrerenderTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(DiceTabHelperPrerenderTest, SigninStatusAfterPrerendering) {
+  base::UserActionTester ua_tester;
+  DiceTabHelper::CreateForWebContents(web_contents());
+  DiceTabHelper* dice_tab_helper =
+      DiceTabHelper::FromWebContents(web_contents());
+  EXPECT_FALSE(dice_tab_helper->IsChromeSigninPage());
+  EXPECT_EQ(0, ua_tester.GetActionCount("Signin_SigninPage_Shown"));
+
+  // Sync signin
+  InitializeDiceTabHelper(dice_tab_helper,
+                          signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
+                          signin_metrics::Reason::kSigninPrimaryAccount);
+  dice_tab_helper->OnSyncSigninFlowComplete();
+  EXPECT_TRUE(dice_tab_helper->IsChromeSigninPage());
+  EXPECT_EQ(1, ua_tester.GetActionCount("Signin_SigninPage_Shown"));
+
+  // Starting prerendering a page doesn't navigate away from the signin page.
+  content::WebContentsTester::For(web_contents())
+      ->AddPrerenderAndCommitNavigation(signin_url_.Resolve("/foo/test.html"));
+  EXPECT_TRUE(dice_tab_helper->IsChromeSigninPage());
+  EXPECT_EQ(1, ua_tester.GetActionCount("Signin_SigninPage_Shown"));
 }

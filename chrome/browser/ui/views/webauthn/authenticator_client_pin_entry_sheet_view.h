@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_client_pin_entry_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
@@ -20,6 +19,12 @@ class AuthenticatorClientPinEntrySheetView
  public:
   explicit AuthenticatorClientPinEntrySheetView(
       std::unique_ptr<AuthenticatorClientPinEntrySheetModel> model);
+
+  AuthenticatorClientPinEntrySheetView(
+      const AuthenticatorClientPinEntrySheetView&) = delete;
+  AuthenticatorClientPinEntrySheetView& operator=(
+      const AuthenticatorClientPinEntrySheetView&) = delete;
+
   ~AuthenticatorClientPinEntrySheetView() override;
 
  private:
@@ -32,8 +37,6 @@ class AuthenticatorClientPinEntrySheetView
   // AuthenticatorClientPinEntryView::Delegate:
   void OnPincodeChanged(std::u16string pincode) override;
   void OnConfirmationChanged(std::u16string pincode) override;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorClientPinEntrySheetView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_CLIENT_PIN_ENTRY_SHEET_VIEW_H_

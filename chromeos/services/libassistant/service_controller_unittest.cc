@@ -14,13 +14,14 @@
 #include "base/test/task_environment.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
-#include "chromeos/services/libassistant/assistant_client_observer.h"
+#include "chromeos/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
 #include "chromeos/services/libassistant/settings_controller.h"
 #include "chromeos/services/libassistant/test_support/fake_libassistant_factory.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/device_state_listener.h"
+#include "libassistant/shared/public/media_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -92,7 +93,7 @@ class AssistantClientObserverMock : public AssistantClientObserver {
   MOCK_METHOD(void,
               OnDestroyingAssistantClient,
               (AssistantClient * assistant_client));
-  MOCK_METHOD(void, OnAssistantManagerDestroyed, ());
+  MOCK_METHOD(void, OnAssistantClientDestroyed, ());
 };
 
 class SettingsControllerMock : public mojom::SettingsController {
@@ -109,6 +110,7 @@ class SettingsControllerMock : public mojom::SettingsController {
   MOCK_METHOD(void, SetListeningEnabled, (bool value));
   MOCK_METHOD(void, SetLocale, (const std::string& value));
   MOCK_METHOD(void, SetSpokenFeedbackEnabled, (bool value));
+  MOCK_METHOD(void, SetDarkModeEnabled, (bool value));
   MOCK_METHOD(void, SetHotwordEnabled, (bool value));
   MOCK_METHOD(void,
               GetSettings,
@@ -118,6 +120,26 @@ class SettingsControllerMock : public mojom::SettingsController {
   MOCK_METHOD(void,
               UpdateSettings,
               (const std::string& settings, UpdateSettingsCallback callback));
+};
+
+class MediaManagerMock : public assistant_client::MediaManager {
+ public:
+  MediaManagerMock() = default;
+  MediaManagerMock(const MediaManagerMock&) = delete;
+  MediaManagerMock& operator=(const MediaManagerMock&) = delete;
+  ~MediaManagerMock() override = default;
+
+  // assistant_client::MediaManager:
+  MOCK_METHOD(void, AddListener, (Listener * listener));
+  MOCK_METHOD(void, Next, ());
+  MOCK_METHOD(void, Previous, ());
+  MOCK_METHOD(void, Resume, ());
+  MOCK_METHOD(void, Pause, ());
+  MOCK_METHOD(void, PlayPause, ());
+  MOCK_METHOD(void, StopAndClearPlaylist, ());
+  MOCK_METHOD(void,
+              SetExternalPlaybackState,
+              (const assistant_client::MediaStatus& new_status));
 };
 
 class AssistantServiceControllerTest : public testing::Test {
@@ -166,6 +188,7 @@ class AssistantServiceControllerTest : public testing::Test {
 
   void Start() {
     service_controller().Start();
+    libassistant_factory_.assistant_manager().SetMediaManager(&media_manager_);
     RunUntilIdle();
   }
 
@@ -208,6 +231,7 @@ class AssistantServiceControllerTest : public testing::Test {
   testing::NiceMock<SettingsControllerMock> settings_controller_;
   mojo::Remote<mojom::ServiceController> client_;
   std::unique_ptr<ServiceController> service_controller_;
+  MediaManagerMock media_manager_;
 };
 
 }  // namespace
@@ -570,7 +594,7 @@ TEST_F(AssistantServiceControllerTest,
                      service_controller()](AssistantClient* assistant_client) {
         EXPECT_EQ(assistant_client, controller.assistant_client());
       });
-  EXPECT_CALL(observer, OnAssistantManagerDestroyed);
+  EXPECT_CALL(observer, OnAssistantClientDestroyed);
 
   Stop();
 
@@ -586,7 +610,7 @@ TEST_F(AssistantServiceControllerTest,
   EXPECT_NO_CALLS(observer, OnAssistantClientCreated);
   EXPECT_NO_CALLS(observer, OnAssistantClientStarted);
   EXPECT_NO_CALLS(observer, OnDestroyingAssistantClient);
-  EXPECT_NO_CALLS(observer, OnAssistantManagerDestroyed);
+  EXPECT_NO_CALLS(observer, OnAssistantClientDestroyed);
 
   Initialize();
   Start();
@@ -606,7 +630,7 @@ TEST_F(AssistantServiceControllerTest,
   AddAndFireAssistantClientObserver(&observer);
 
   EXPECT_CALL(observer, OnDestroyingAssistantClient);
-  EXPECT_CALL(observer, OnAssistantManagerDestroyed);
+  EXPECT_CALL(observer, OnAssistantClientDestroyed);
   DestroyServiceController();
 }
 

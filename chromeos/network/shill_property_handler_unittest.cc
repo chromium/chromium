@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -46,7 +45,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
   void UpdateManagedList(ManagedState::ManagedType type,
                          const base::ListValue& entries) override {
     VLOG(1) << "UpdateManagedList[" << ManagedState::TypeToString(type)
-            << "]: " << entries.GetSize();
+            << "]: " << entries.GetList().size();
     UpdateEntries(GetTypeString(type), entries);
   }
 
@@ -179,6 +178,10 @@ class ShillPropertyHandlerTest : public testing::Test {
         device_test_(NULL),
         service_test_(NULL),
         profile_test_(NULL) {}
+
+  ShillPropertyHandlerTest(const ShillPropertyHandlerTest&) = delete;
+  ShillPropertyHandlerTest& operator=(const ShillPropertyHandlerTest&) = delete;
+
   ~ShillPropertyHandlerTest() override = default;
 
   void SetUp() override {
@@ -281,9 +284,6 @@ class ShillPropertyHandlerTest : public testing::Test {
   ShillDeviceClient::TestInterface* device_test_;
   ShillServiceClient::TestInterface* service_test_;
   ShillProfileClient::TestInterface* profile_test_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShillPropertyHandlerTest);
 };
 
 TEST_F(ShillPropertyHandlerTest, ShillPropertyHandlerStub) {
@@ -478,8 +478,8 @@ TEST_F(ShillPropertyHandlerTest, ShillPropertyHandlerIPConfigPropertyChanged) {
                                           shill::kAddressProperty, ip_address,
                                           base::DoNothing());
   base::ListValue dns_servers;
-  dns_servers.AppendString("192.168.1.100");
-  dns_servers.AppendString("192.168.1.101");
+  dns_servers.Append("192.168.1.100");
+  dns_servers.Append("192.168.1.101");
   ShillIPConfigClient::Get()->SetProperty(dbus::ObjectPath(kTestIPConfigPath),
                                           shill::kNameServersProperty,
                                           dns_servers, base::DoNothing());
@@ -601,16 +601,16 @@ TEST_F(ShillPropertyHandlerTest, RequestTrafficCounters) {
 
   base::RunLoop run_loop;
   shill_property_handler_->RequestTrafficCounters(
-      kStubWiFi1,
-      base::BindOnce(
-          [](base::Value* expected_traffic_counters,
-             base::OnceClosure quit_closure,
-             const base::ListValue& actual_traffic_counters) {
-            EXPECT_EQ(base::Value::AsListValue(*expected_traffic_counters),
-                      actual_traffic_counters);
-            std::move(quit_closure).Run();
-          },
-          &traffic_counters, run_loop.QuitClosure()));
+      kStubWiFi1, base::BindOnce(
+                      [](base::Value* expected_traffic_counters,
+                         base::OnceClosure quit_closure,
+                         absl::optional<base::Value> actual_traffic_counters) {
+                        ASSERT_TRUE(actual_traffic_counters);
+                        EXPECT_EQ(*expected_traffic_counters,
+                                  *actual_traffic_counters);
+                        std::move(quit_closure).Run();
+                      },
+                      &traffic_counters, run_loop.QuitClosure()));
 
   run_loop.Run();
 }

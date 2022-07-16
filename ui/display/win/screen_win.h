@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ui/display/display_change_notifier.h"
 #include "ui/display/display_export.h"
@@ -40,6 +39,10 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
                                  public UwpTextScaleFactor::Observer {
  public:
   ScreenWin();
+
+  ScreenWin(const ScreenWin&) = delete;
+  ScreenWin& operator=(const ScreenWin&) = delete;
+
   ~ScreenWin() override;
 
   // Converts a screen physical point to a screen DIP point.
@@ -268,8 +271,6 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
 
   base::ScopedObservation<UwpTextScaleFactor, UwpTextScaleFactor::Observer>
       scale_factor_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenWin);
 };
 
 }  // namespace win

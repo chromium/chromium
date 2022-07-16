@@ -121,6 +121,25 @@ Experiments GetExperiments(PrefService& pref_service) {
   return experiments;
 }
 
+void SetWebFeedContentOrder(PrefService& pref_service,
+                            ContentOrder content_order) {
+  pref_service.Set(feed::prefs::kWebFeedContentOrder,
+                   base::Value(static_cast<int>(content_order)));
+}
+
+ContentOrder GetWebFeedContentOrder(const PrefService& pref_service) {
+  int order = pref_service.GetInteger(feed::prefs::kWebFeedContentOrder);
+  switch (order) {
+    case static_cast<int>(ContentOrder::kReverseChron):
+      return ContentOrder::kReverseChron;
+    case static_cast<int>(ContentOrder::kGrouped):
+      return ContentOrder::kGrouped;
+    default:
+      // Note: we need to handle invalid values gracefully.
+      return ContentOrder::kUnspecified;
+  }
+}
+
 }  // namespace prefs
 
 }  // namespace feed

@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
 namespace ash {
@@ -48,6 +47,11 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantStructureFuture {
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantScreenContextModel {
  public:
   AssistantScreenContextModel();
+
+  AssistantScreenContextModel(const AssistantScreenContextModel&) = delete;
+  AssistantScreenContextModel& operator=(const AssistantScreenContextModel&) =
+      delete;
+
   ~AssistantScreenContextModel();
 
   void Clear();
@@ -58,8 +62,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantScreenContextModel {
 
  private:
   AssistantStructureFuture assistant_structure_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantScreenContextModel);
 };
 
 }  // namespace ash

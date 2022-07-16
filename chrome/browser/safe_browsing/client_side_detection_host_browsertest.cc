@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_host_delegate.h"
+#include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 
 #include "base/run_loop.h"
 #include "chrome/browser/profiles/profile.h"
@@ -84,13 +84,14 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
             std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
             GURL(chrome::kChromeUINewTabURL)) {}
 
+  MockSafeBrowsingUIManager(const MockSafeBrowsingUIManager&) = delete;
+  MockSafeBrowsingUIManager& operator=(const MockSafeBrowsingUIManager&) =
+      delete;
+
   MOCK_METHOD1(DisplayBlockingPage, void(const UnsafeResource& resource));
 
  protected:
   ~MockSafeBrowsingUIManager() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSafeBrowsingUIManager);
 };
 
 }  // namespace
@@ -133,14 +134,14 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostBrowserTest,
 
   ASSERT_TRUE(embedded_test_server()->Start());
   std::unique_ptr<ClientSideDetectionHost> csd_host =
-      ClientSideDetectionHostDelegate::CreateHost(
+      ChromeClientSideDetectionHostDelegate::CreateHost(
           browser()->tab_strip_model()->GetActiveWebContents());
   csd_host->set_client_side_detection_service(&fake_csd_service);
   csd_host->SendModelToRenderFrame();
   csd_host->set_ui_manager(mock_ui_manager.get());
 
   GURL page_url(embedded_test_server()->GetURL("/safe_browsing/malware.html"));
-  ui_test_utils::NavigateToURL(browser(), page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
 
   base::RunLoop run_loop;
   fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
@@ -176,8 +177,12 @@ class ClientSideDetectionHostPrerenderBrowserTest
   ClientSideDetectionHostPrerenderBrowserTest& operator=(
       const ClientSideDetectionHostPrerenderBrowserTest&) = delete;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    ClientSideDetectionHostBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     ClientSideDetectionHostBrowserTest::SetUpOnMainThread();
@@ -204,14 +209,14 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
       new StrictMock<MockSafeBrowsingUIManager>();
 
   std::unique_ptr<ClientSideDetectionHost> csd_host =
-      ClientSideDetectionHostDelegate::CreateHost(
+      ChromeClientSideDetectionHostDelegate::CreateHost(
           browser()->tab_strip_model()->GetActiveWebContents());
   csd_host->set_client_side_detection_service(&fake_csd_service);
   csd_host->SendModelToRenderFrame();
   csd_host->set_ui_manager(mock_ui_manager.get());
 
   GURL page_url(embedded_test_server()->GetURL("/safe_browsing/malware.html"));
-  ui_test_utils::NavigateToURL(browser(), page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
 
   base::RunLoop run_loop;
   fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
@@ -254,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
       new StrictMock<MockSafeBrowsingUIManager>();
 
   std::unique_ptr<ClientSideDetectionHost> csd_host =
-      ClientSideDetectionHostDelegate::CreateHost(
+      ChromeClientSideDetectionHostDelegate::CreateHost(
           browser()->tab_strip_model()->GetActiveWebContents());
   csd_host->set_client_side_detection_service(&fake_csd_service);
   csd_host->SendModelToRenderFrame();
@@ -264,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
 
   const GURL initial_url(embedded_test_server()->GetURL("/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Prerender then activate a phishing page.
   const GURL prerender_url =

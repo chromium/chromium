@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_REGISTRATION_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_REGISTRATION_SERVICE_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
@@ -35,6 +34,11 @@ class CONTENT_EXPORT BackgroundFetchRegistrationServiceImpl
       mojo::PendingRemote<blink::mojom::BackgroundFetchRegistrationObserver>
           observer) override;
 
+  BackgroundFetchRegistrationServiceImpl(
+      const BackgroundFetchRegistrationServiceImpl&) = delete;
+  BackgroundFetchRegistrationServiceImpl& operator=(
+      const BackgroundFetchRegistrationServiceImpl&) = delete;
+
   ~BackgroundFetchRegistrationServiceImpl() override;
 
  private:
@@ -48,8 +52,6 @@ class CONTENT_EXPORT BackgroundFetchRegistrationServiceImpl
   base::WeakPtr<BackgroundFetchContext> background_fetch_context_;
   mojo::Receiver<blink::mojom::BackgroundFetchRegistrationService> receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchRegistrationServiceImpl);
 };
 
 }  // namespace content

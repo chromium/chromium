@@ -15,6 +15,11 @@ extern const base::Feature kStructuredMetrics;
 
 extern const base::Feature kBluetoothSessionizedMetrics;
 
+// Enabling this feature will have structured metrics use the crosapi interface
+// to record structured metrics rather than direct writes. This enables
+// processes not in Chrome Ash (ie Lacros) to use Structured metrics.
+extern const base::Feature kUseCrosApiInterface;
+
 // TODO(crbug.com/1148168): This is a temporary switch to revert structured
 // metrics upload to its old behaviour. Old behaviour:
 // - all metrics are uploaded in the main UMA upload

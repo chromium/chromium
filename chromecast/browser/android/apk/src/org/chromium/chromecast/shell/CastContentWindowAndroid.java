@@ -42,22 +42,22 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
     @CalledByNative
     private static CastContentWindowAndroid create(long nativeCastContentWindowAndroid,
             boolean enableTouchInput, boolean isRemoteControlMode, boolean turnOnScreen,
-            boolean keepScreenOn, String sessionId) {
+            String sessionId) {
         return new CastContentWindowAndroid(nativeCastContentWindowAndroid,
                 ContextUtils.getApplicationContext(), enableTouchInput, isRemoteControlMode,
-                turnOnScreen, keepScreenOn, sessionId);
+                turnOnScreen, sessionId);
     }
 
     private CastContentWindowAndroid(long nativeCastContentWindowAndroid, final Context context,
             boolean enableTouchInput, boolean isRemoteControlMode, boolean turnOnScreen,
-            boolean keepScreenOn, String sessionId) {
+            String sessionId) {
         mNativeCastContentWindowAndroid = nativeCastContentWindowAndroid;
         mContext = context;
         Log.i(TAG,
                 "Creating new CastContentWindowAndroid(No. " + sInstanceId++
                         + ") Seesion ID: " + sessionId);
-        mComponent = new CastWebContentsComponent(sessionId, this, this, enableTouchInput,
-                isRemoteControlMode, turnOnScreen, keepScreenOn);
+        mComponent = new CastWebContentsComponent(
+                sessionId, this, this, enableTouchInput, isRemoteControlMode, turnOnScreen);
         mScreenAccess.subscribe(screenAccess -> mStartParams.subscribe(startParams -> {
             // If the app doesn't have screen access, start in headless mode, so that the web
             // content can still have a window attached. Since we have video overlay always

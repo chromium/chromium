@@ -28,10 +28,10 @@
 
 #include <memory>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "base/numerics/checked_math.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/layout/content_change_type.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/core/typed_arrays/nadc_typed_array_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/typed_flexible_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension_name.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
@@ -139,6 +140,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                                  public DrawingBuffer::Client,
                                                  public NoAllocDirectCallHost {
  public:
+  WebGLRenderingContextBase(const WebGLRenderingContextBase&) = delete;
+  WebGLRenderingContextBase& operator=(const WebGLRenderingContextBase&) =
+      delete;
+
   ~WebGLRenderingContextBase() override;
 
   HTMLCanvasElement* canvas() const {
@@ -484,52 +489,52 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                      ExceptionState&);
 
   void uniform1f(const WebGLUniformLocation*, GLfloat x);
-  void uniform1fv(const WebGLUniformLocation*, const FlexibleFloat32Array&);
+  void uniform1fv(const WebGLUniformLocation*, NADCTypedArrayView<GLfloat>);
   void uniform1fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform1i(const WebGLUniformLocation*, GLint x);
-  void uniform1iv(const WebGLUniformLocation*, const FlexibleInt32Array&);
+  void uniform1iv(const WebGLUniformLocation*, NADCTypedArrayView<GLint>);
   void uniform1iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniform2f(const WebGLUniformLocation*, GLfloat x, GLfloat y);
-  void uniform2fv(const WebGLUniformLocation*, const FlexibleFloat32Array&);
+  void uniform2fv(const WebGLUniformLocation*, NADCTypedArrayView<GLfloat>);
   void uniform2fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform2i(const WebGLUniformLocation*, GLint x, GLint y);
-  void uniform2iv(const WebGLUniformLocation*, const FlexibleInt32Array&);
+  void uniform2iv(const WebGLUniformLocation*, NADCTypedArrayView<GLint>);
   void uniform2iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniform3f(const WebGLUniformLocation*, GLfloat x, GLfloat y, GLfloat z);
-  void uniform3fv(const WebGLUniformLocation*, const FlexibleFloat32Array&);
+  void uniform3fv(const WebGLUniformLocation*, NADCTypedArrayView<GLfloat>);
   void uniform3fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform3i(const WebGLUniformLocation*, GLint x, GLint y, GLint z);
-  void uniform3iv(const WebGLUniformLocation*, const FlexibleInt32Array&);
+  void uniform3iv(const WebGLUniformLocation*, NADCTypedArrayView<GLint>);
   void uniform3iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniform4f(const WebGLUniformLocation*,
                  GLfloat x,
                  GLfloat y,
                  GLfloat z,
                  GLfloat w);
-  void uniform4fv(const WebGLUniformLocation*, const FlexibleFloat32Array&);
+  void uniform4fv(const WebGLUniformLocation*, NADCTypedArrayView<GLfloat>);
   void uniform4fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform4i(const WebGLUniformLocation*,
                  GLint x,
                  GLint y,
                  GLint z,
                  GLint w);
-  void uniform4iv(const WebGLUniformLocation*, const FlexibleInt32Array&);
+  void uniform4iv(const WebGLUniformLocation*, NADCTypedArrayView<GLint>);
   void uniform4iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniformMatrix2fv(const WebGLUniformLocation*,
                         GLboolean transpose,
-                        MaybeShared<DOMFloat32Array> value);
+                        NADCTypedArrayView<GLfloat> value);
   void uniformMatrix2fv(const WebGLUniformLocation*,
                         GLboolean transpose,
                         Vector<GLfloat>& value);
   void uniformMatrix3fv(const WebGLUniformLocation*,
                         GLboolean transpose,
-                        MaybeShared<DOMFloat32Array> value);
+                        NADCTypedArrayView<GLfloat> value);
   void uniformMatrix3fv(const WebGLUniformLocation*,
                         GLboolean transpose,
                         Vector<GLfloat>& value);
   void uniformMatrix4fv(const WebGLUniformLocation*,
                         GLboolean transpose,
-                        MaybeShared<DOMFloat32Array> value);
+                        NADCTypedArrayView<GLfloat> value);
   void uniformMatrix4fv(const WebGLUniformLocation*,
                         GLboolean transpose,
                         Vector<GLfloat>& value);
@@ -538,16 +543,16 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void validateProgram(WebGLProgram*);
 
   void vertexAttrib1f(GLuint index, GLfloat x);
-  void vertexAttrib1fv(GLuint index, MaybeShared<const DOMFloat32Array> values);
+  void vertexAttrib1fv(GLuint index, NADCTypedArrayView<const GLfloat> values);
   void vertexAttrib1fv(GLuint index, const Vector<GLfloat>& values);
   void vertexAttrib2f(GLuint index, GLfloat x, GLfloat y);
-  void vertexAttrib2fv(GLuint index, MaybeShared<const DOMFloat32Array> values);
+  void vertexAttrib2fv(GLuint index, NADCTypedArrayView<const GLfloat> values);
   void vertexAttrib2fv(GLuint index, const Vector<GLfloat>& values);
   void vertexAttrib3f(GLuint index, GLfloat x, GLfloat y, GLfloat z);
-  void vertexAttrib3fv(GLuint index, MaybeShared<const DOMFloat32Array> values);
+  void vertexAttrib3fv(GLuint index, NADCTypedArrayView<const GLfloat> values);
   void vertexAttrib3fv(GLuint index, const Vector<GLfloat>& values);
   void vertexAttrib4f(GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-  void vertexAttrib4fv(GLuint index, MaybeShared<const DOMFloat32Array> values);
+  void vertexAttrib4fv(GLuint index, NADCTypedArrayView<const GLfloat> values);
   void vertexAttrib4fv(GLuint index, const Vector<GLfloat>& values);
   void vertexAttribPointer(GLuint index,
                            GLint size,
@@ -701,6 +706,12 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) override;
   bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
                                              SourceDrawingBuffer) override;
+  void CopyRenderingResultsToVideoFrame(
+      WebGraphicsContext3DVideoFramePool*,
+      SourceDrawingBuffer,
+      const gfx::ColorSpace&,
+      VideoFrameCopyCompletedCallback&) override;
+
   cc::Layer* CcLayer() const override;
   void Stop() override;
   void FinalizeFrame() override;
@@ -1173,21 +1184,21 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     int image_width = static_cast<int>(image->width());
     int image_height = static_cast<int>(image->height());
     *selecting_sub_rectangle =
-        !(sub_rect.X() == 0 && sub_rect.Y() == 0 &&
-          sub_rect.Width() == image_width && sub_rect.Height() == image_height);
+        !(sub_rect.x() == 0 && sub_rect.y() == 0 &&
+          sub_rect.width() == image_width && sub_rect.height() == image_height);
     // If the source image rect selects anything except the entire
     // contents of the image, assert that we're running WebGL 2.0 or
     // higher, since this should never happen for WebGL 1.0 (even though
     // the code could support it). If the image is null, that will be
     // signaled as an error later.
     DCHECK(!*selecting_sub_rectangle || IsWebGL2())
-        << "subRect = (" << sub_rect.Width() << " x " << sub_rect.Height()
-        << ") @ (" << sub_rect.X() << ", " << sub_rect.Y() << "), image = ("
+        << "subRect = (" << sub_rect.width() << " x " << sub_rect.height()
+        << ") @ (" << sub_rect.x() << ", " << sub_rect.y() << "), image = ("
         << image_width << " x " << image_height << ")";
 
-    if (!sub_rect.IsValid() || sub_rect.X() < 0 || sub_rect.Y() < 0 ||
-        sub_rect.MaxX() > image_width || sub_rect.MaxY() > image_height ||
-        sub_rect.Width() < 0 || sub_rect.Height() < 0) {
+    if (!sub_rect.IsValid() || sub_rect.x() < 0 || sub_rect.y() < 0 ||
+        sub_rect.right() > image_width || sub_rect.bottom() > image_height ||
+        sub_rect.width() < 0 || sub_rect.height() < 0) {
       SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                         "source sub-rectangle specified via pixel unpack "
                         "parameters is invalid");
@@ -1209,11 +1220,11 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
       if (unpack_image_height) {
         max_y_accessed = unpack_image_height;
       } else {
-        max_y_accessed = sub_rect.Height();
+        max_y_accessed = sub_rect.height();
       }
       max_y_accessed *= depth - 1;
-      max_y_accessed += sub_rect.Height();
-      max_y_accessed += sub_rect.Y();
+      max_y_accessed += sub_rect.height();
+      max_y_accessed += sub_rect.y();
 
       if (!max_y_accessed.IsValid()) {
         SynthesizeGLError(GL_INVALID_OPERATION, function_name,
@@ -1496,7 +1507,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool ValidateUniformMatrixParameters(const char* function_name,
                                        const WebGLUniformLocation*,
                                        GLboolean transpose,
-                                       DOMFloat32Array*,
+                                       const NADCTypedArrayView<GLfloat>&,
                                        GLsizei mod,
                                        GLuint src_offset,
                                        size_t src_length);
@@ -1509,14 +1520,13 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                        GLuint src_offset,
                                        GLuint src_length);
 
-  template <typename WTFTypedArray>
-  bool ValidateUniformParameters(
-      const char* function_name,
-      const WebGLUniformLocation* location,
-      const TypedFlexibleArrayBufferView<WTFTypedArray>& v,
-      GLsizei required_min_size,
-      GLuint src_offset,
-      size_t src_length) {
+  template <typename T>
+  bool ValidateUniformParameters(const char* function_name,
+                                 const WebGLUniformLocation* location,
+                                 const NADCTypedArrayView<T>& v,
+                                 GLsizei required_min_size,
+                                 GLuint src_offset,
+                                 size_t src_length) {
     GLuint length;
     if (!base::CheckedNumeric<GLuint>(src_length).AssignIfValid(&length)) {
       SynthesizeGLError(GL_INVALID_VALUE, function_name,
@@ -1524,17 +1534,16 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
       return false;
     }
     GLuint array_length;
-    if (!base::CheckedNumeric<GLuint>(v.length())
-             .AssignIfValid(&array_length)) {
+    if (!base::CheckedNumeric<GLuint>(v.Size()).AssignIfValid(&array_length)) {
       SynthesizeGLError(GL_INVALID_VALUE, function_name, "array is too big");
       return false;
     }
-    if (!v.DataMaybeOnStack()) {
+    if (v.IsEmpty()) {
       SynthesizeGLError(GL_INVALID_VALUE, function_name, "no array");
       return false;
     }
     return ValidateUniformMatrixParameters(
-        function_name, location, false, v.DataMaybeOnStack(), array_length,
+        function_name, location, false, v.Data(), array_length,
         required_min_size, src_offset, length);
   }
 
@@ -1900,15 +1909,13 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool checkProgramCompletionQueryAvailable(WebGLProgram* program,
                                             bool* completed);
   static constexpr unsigned int kMaxProgramCompletionQueries = 128u;
-  base::MRUCache<WebGLProgram*, GLuint> program_completion_queries_;
+  base::LRUCache<WebGLProgram*, GLuint> program_completion_queries_;
 
   int number_of_user_allocated_multisampled_renderbuffers_;
 
   bool has_been_drawn_to_ = false;
 
   CanvasColorParams color_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebGLRenderingContextBase);
 };
 
 template <>

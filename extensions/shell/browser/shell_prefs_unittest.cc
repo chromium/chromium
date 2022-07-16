@@ -22,6 +22,10 @@ namespace {
 class PrefsTestBrowserContext : public content::TestBrowserContext {
  public:
   PrefsTestBrowserContext() {}
+
+  PrefsTestBrowserContext(const PrefsTestBrowserContext&) = delete;
+  PrefsTestBrowserContext& operator=(const PrefsTestBrowserContext&) = delete;
+
   ~PrefsTestBrowserContext() override {}
 
   // content::BrowserContext:
@@ -30,9 +34,6 @@ class PrefsTestBrowserContext : public content::TestBrowserContext {
     base::PathService::Get(extensions::DIR_TEST_DATA, &path);
     return path.AppendASCII("shell_prefs");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrefsTestBrowserContext);
 };
 
 class ShellPrefsTest : public testing::Test {

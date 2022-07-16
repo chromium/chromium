@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
@@ -38,14 +37,16 @@ struct LinkedAppIcons : public Extension::ManifestData {
 class LinkedAppIconsHandler : public ManifestHandler {
  public:
   LinkedAppIconsHandler();
+
+  LinkedAppIconsHandler(const LinkedAppIconsHandler&) = delete;
+  LinkedAppIconsHandler& operator=(const LinkedAppIconsHandler&) = delete;
+
   ~LinkedAppIconsHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(LinkedAppIconsHandler);
 };
 
 }  // namespace extensions

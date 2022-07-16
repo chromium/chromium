@@ -13,7 +13,6 @@
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -39,6 +38,9 @@ class SyncSchedulerImpl : public SyncScheduler {
                     SyncCycleContext* context,
                     std::unique_ptr<Syncer> syncer,
                     bool ignore_auth_credentials);
+
+  SyncSchedulerImpl(const SyncSchedulerImpl&) = delete;
+  SyncSchedulerImpl& operator=(const SyncSchedulerImpl&) = delete;
 
   // Calls Stop().
   ~SyncSchedulerImpl() override;
@@ -294,8 +296,6 @@ class SyncSchedulerImpl : public SyncScheduler {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SyncSchedulerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSchedulerImpl);
 };
 
 }  // namespace syncer

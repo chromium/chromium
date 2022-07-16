@@ -313,11 +313,10 @@ void OptimizationGuideStore::PurgeInactiveModels() {
   database_->LoadKeysAndEntriesWithFilter(
       base::BindRepeating(&DatabasePrefixFilter,
                           GetPredictionModelEntryKeyPrefix()),
-      base::BindOnce(&OptimizationGuideStore::OnLoadModelsToBeUpdated,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::make_unique<EntryVector>(),
-                     std::make_unique<leveldb_proto::KeyVector>(),
-                     base::DoNothing::Once()));
+      base::BindOnce(
+          &OptimizationGuideStore::OnLoadModelsToBeUpdated,
+          weak_ptr_factory_.GetWeakPtr(), std::make_unique<EntryVector>(),
+          std::make_unique<leveldb_proto::KeyVector>(), base::DoNothing()));
 }
 
 void OptimizationGuideStore::OnLoadEntriesToPurgeExpired(
@@ -325,7 +324,7 @@ void OptimizationGuideStore::OnLoadEntriesToPurgeExpired(
     std::unique_ptr<EntryMap> entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!success)
+  if (!success || !entries)
     return;
 
   EntryKeySet expired_keys_to_remove;
@@ -345,7 +344,7 @@ void OptimizationGuideStore::OnLoadEntriesToPurgeExpired(
       std::make_unique<EntryVector>(),
       base::BindRepeating(&KeySetFilter, std::move(expired_keys_to_remove)),
       base::BindOnce(&OptimizationGuideStore::OnUpdateStore,
-                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing::Once()));
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 }
 
 void OptimizationGuideStore::RemoveFetchedHintsByKey(
@@ -513,6 +512,25 @@ OptimizationGuideStore::GetPredictionModelEntryKeyPrefix() {
 }
 
 // static
+proto::OptimizationTarget
+OptimizationGuideStore::GetOptimizationTargetFromPredictionModelEntryKey(
+    const EntryKey& prediction_model_entry_key) {
+  base::StringPiece optimization_target_number_string =
+      base::TrimString(base::StringPiece(prediction_model_entry_key),
+                       base::StringPiece(GetPredictionModelEntryKeyPrefix()),
+                       base::TRIM_LEADING);
+  int optimization_target_number;
+  if (!base::StringToInt(optimization_target_number_string,
+                         &optimization_target_number)) {
+    return proto::OPTIMIZATION_TARGET_UNKNOWN;
+  }
+  if (!proto::OptimizationTarget_IsValid(optimization_target_number)) {
+    return proto::OPTIMIZATION_TARGET_UNKNOWN;
+  }
+  return static_cast<proto::OptimizationTarget>(optimization_target_number);
+}
+
+// static
 OptimizationGuideStore::EntryKeyPrefix
 OptimizationGuideStore::GetHostModelFeaturesEntryKeyPrefix() {
   return base::NumberToString(static_cast<int>(
@@ -613,7 +631,7 @@ void OptimizationGuideStore::ClearFetchedHintsFromDatabase() {
       base::BindRepeating(&DatabasePrefixFilter,
                           GetFetchedHintEntryKeyPrefix()),
       base::BindOnce(&OptimizationGuideStore::OnUpdateStore,
-                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing::Once()));
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 }
 
 void OptimizationGuideStore::MaybeLoadEntryKeys(base::OnceClosure callback) {
@@ -692,13 +710,12 @@ void OptimizationGuideStore::OnLoadMetadata(
     bool success,
     std::unique_ptr<EntryMap> metadata_entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(metadata_entries);
 
   // Create a scoped load metadata result recorder. It records the result when
   // its destructor is called.
   ScopedLoadMetadataResultRecorder result_recorder;
 
-  if (!success) {
+  if (!success || !metadata_entries) {
     result_recorder.set_result(
         OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult::
             kLoadMetadataFailed);
@@ -749,7 +766,7 @@ void OptimizationGuideStore::OnLoadMetadata(
   if (fetched_entry != metadata_entries->end()) {
     DCHECK(fetched_entry->second.has_update_time_secs());
     fetched_update_time_ = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromSeconds(fetched_entry->second.update_time_secs()));
+        base::Seconds(fetched_entry->second.update_time_secs()));
   } else {
     if (component_metadata_missing) {
       result_recorder.set_result(
@@ -769,9 +786,8 @@ void OptimizationGuideStore::OnLoadMetadata(
   host_model_features_update_time_ = base::Time();
   if (host_model_features_entry != metadata_entries->end()) {
     DCHECK(host_model_features_entry->second.has_update_time_secs());
-    host_model_features_update_time_ =
-        base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromSeconds(
-            host_model_features_entry->second.update_time_secs()));
+    host_model_features_update_time_ = base::Time::FromDeltaSinceWindowsEpoch(
+        base::Seconds(host_model_features_entry->second.update_time_secs()));
     host_model_features_metadata_loaded = true;
   }
   // TODO(crbug/1001194): Metrics should be separated so that stores maintaining
@@ -877,11 +893,10 @@ void OptimizationGuideStore::OnLoadHint(
   absl::optional<base::Time> expiry_time;
   if (entry->has_expiry_time_secs()) {
     expiry_time = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromSeconds(entry->expiry_time_secs()));
+        base::Seconds(entry->expiry_time_secs()));
     LOCAL_HISTOGRAM_CUSTOM_TIMES(
         "OptimizationGuide.HintCache.FetchedHint.TimeToExpiration",
-        *expiry_time - base::Time::Now(), base::TimeDelta::FromHours(1),
-        base::TimeDelta::FromDays(15), 50);
+        *expiry_time - base::Time::Now(), base::Hours(1), base::Days(15), 50);
   }
   std::move(callback).Run(
       entry_key,
@@ -938,7 +953,7 @@ void OptimizationGuideStore::OnLoadModelsToBeUpdated(
     base::OnceClosure callback,
     bool success,
     std::unique_ptr<EntryMap> entries) {
-  if (!success) {
+  if (!success || !entries) {
     std::move(callback).Run();
     return;
   }
@@ -956,8 +971,12 @@ void OptimizationGuideStore::OnLoadModelsToBeUpdated(
         if (entry.second.expiry_time_secs() <= now_since_epoch) {
           remove_vector->push_back(entry.first);
           should_delete_download_file = true;
-          base::UmaHistogramBoolean("OptimizationGuide.PredictionModelExpired",
-                                    true);
+          proto::OptimizationTarget optimization_target =
+              GetOptimizationTargetFromPredictionModelEntryKey(entry.first);
+          base::UmaHistogramBoolean(
+              "OptimizationGuide.PredictionModelExpired." +
+                  GetStringNameForOptimizationTarget(optimization_target),
+              true);
         }
       } else {
         // If we were checking expiry and the entry did not have an expiration
@@ -1049,7 +1068,7 @@ bool OptimizationGuideStore::RemovePredictionModelFromEntryKey(
       base::BindOnce(&OptimizationGuideStore::OnLoadModelsToBeUpdated,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::make_unique<EntryVector>(), std::move(key_to_remove),
-                     base::DoNothing::Once()));
+                     base::DoNothing()));
 
   return true;
 }
@@ -1307,7 +1326,7 @@ void OptimizationGuideStore::ClearHostModelFeaturesFromDatabase() {
       base::BindRepeating(&DatabasePrefixFilter,
                           GetHostModelFeaturesEntryKeyPrefix()),
       base::BindOnce(&OptimizationGuideStore::OnUpdateStore,
-                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing::Once()));
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 }
 
 }  // namespace optimization_guide

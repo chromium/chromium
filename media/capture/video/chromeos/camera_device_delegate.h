@@ -9,9 +9,8 @@
 #include <queue>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/capture_metadata_dispatcher.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
@@ -116,10 +115,15 @@ class CAPTURE_EXPORT StreamCaptureInterface {
 class CAPTURE_EXPORT CameraDeviceDelegate final
     : public CaptureMetadataDispatcher::ResultMetadataObserver {
  public:
+  CameraDeviceDelegate() = delete;
+
   CameraDeviceDelegate(
       VideoCaptureDeviceDescriptor device_descriptor,
       scoped_refptr<CameraHalDelegate> camera_hal_delegate,
       scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner);
+
+  CameraDeviceDelegate(const CameraDeviceDelegate&) = delete;
+  CameraDeviceDelegate& operator=(const CameraDeviceDelegate&) = delete;
 
   ~CameraDeviceDelegate() final;
 
@@ -230,6 +234,8 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
       const std::string& range_name,
       const absl::optional<int32_t>& current);
 
+  bool ShouldUseBlobVideoSnapshot();
+
   // CaptureMetadataDispatcher::ResultMetadataObserver implementation.
   void OnResultMetadataAvailable(
       uint32_t frame_number,
@@ -301,8 +307,6 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   gfx::Rect active_array_size_;
 
   base::WeakPtrFactory<CameraDeviceDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(CameraDeviceDelegate);
 };
 
 }  // namespace media

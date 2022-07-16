@@ -33,9 +33,10 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/border.h"
@@ -76,10 +77,9 @@ std::unique_ptr<views::View> CreatePrimaryIconForSink(const UIMediaSink& sink) {
     return CreatePrimaryIconView(gfx::CreateVectorIcon(
         kGenericStopIcon, kPrimaryIconSize, gfx::kGoogleBlue500));
   } else if (sink.issue) {
-    auto icon =
-        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            ::vector_icons::kInfoOutlineIcon,
-            ui::NativeTheme::kColorId_DefaultIconColor, kPrimaryIconSize));
+    auto icon = std::make_unique<views::ImageView>(
+        ui::ImageModel::FromVectorIcon(::vector_icons::kInfoOutlineIcon,
+                                       ui::kColorIcon, kPrimaryIconSize));
     icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
     return icon;
   } else if (sink.state == UIMediaSinkState::CONNECTING ||
@@ -191,8 +191,8 @@ void CastDialogSinkButton::OnEnabledChanged() {
 }
 
 void CastDialogSinkButton::UpdateTitleTextStyle() {
-  SkColor background_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogBackground);
+  SkColor background_color =
+      GetColorProvider()->GetColor(ui::kColorDialogBackground);
   SetTitleTextStyle(
       GetEnabled() ? views::style::STYLE_PRIMARY : views::style::STYLE_DISABLED,
       background_color);

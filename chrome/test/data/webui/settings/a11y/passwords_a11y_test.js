@@ -6,8 +6,8 @@ import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PasswordManagerImpl, routes} from 'chrome://settings/settings.js';
-import {createPasswordEntry} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
-import {TestPasswordManagerProxy} from 'chrome://test/settings/test_password_manager_proxy.js';
+import {createPasswordEntry} from '../passwords_and_autofill_fake_data.js';
+import {TestPasswordManagerProxy} from '../test_password_manager_proxy.js';
 
 /** @type {PasswordsSectionElement}*/
 let passwordsSection = null;
@@ -21,7 +21,7 @@ const whenReady = new Promise((resolve) => {
   // APIs for fake data.
   window.history.pushState('object or string', 'Test', routes.PASSWORDS.path);
 
-  PasswordManagerImpl.instance_ = new TestPasswordManagerProxy();
+  PasswordManagerImpl.setInstance(new TestPasswordManagerProxy());
   passwordManager = PasswordManagerImpl.getInstance();
 
   settingsUi = document.createElement('settings-ui');

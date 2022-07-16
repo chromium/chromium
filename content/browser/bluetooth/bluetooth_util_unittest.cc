@@ -4,7 +4,6 @@
 
 #include "content/browser/bluetooth/bluetooth_util.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using WebBluetoothManufacturerDataMap =
@@ -37,10 +36,11 @@ std::vector<blink::mojom::WebBluetoothDataFilterPtr> CreateDataFilters(
 class BluetoothUtilTest : public testing::Test {
  public:
   BluetoothUtilTest() = default;
-  ~BluetoothUtilTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothUtilTest);
+  BluetoothUtilTest(const BluetoothUtilTest&) = delete;
+  BluetoothUtilTest& operator=(const BluetoothUtilTest&) = delete;
+
+  ~BluetoothUtilTest() override = default;
 };
 
 TEST_F(BluetoothUtilTest, SameFilters) {

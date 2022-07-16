@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -52,12 +51,12 @@
   } else if (styler.cellTitleColor) {
     cell.textLabel.textColor = styler.cellTitleColor;
   } else {
-    cell.textLabel.textColor = UIColor.cr_labelColor;
+    cell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   }
   if (self.detailTextColor) {
     cell.detailTextLabel.textColor = self.detailTextColor;
   } else {
-    cell.detailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
+    cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   }
   cell.textLabel.textAlignment =
       self.textAlignment ? self.textAlignment : NSTextAlignmentNatural;

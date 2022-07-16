@@ -8,9 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <deque>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/zucchini/image_utils.h"
 
 namespace zucchini {
@@ -22,6 +22,8 @@ class EquivalenceMap;
 class TargetsAffinity {
  public:
   TargetsAffinity();
+  TargetsAffinity(const TargetsAffinity&) = delete;
+  const TargetsAffinity& operator=(const TargetsAffinity&) = delete;
   ~TargetsAffinity();
 
   // Infers affinity between |old_targets| and |new_targets| using similarities
@@ -29,8 +31,8 @@ class TargetsAffinity {
   // affinity scores. Both |old_targets| and |new_targets| are targets in the
   // same pool and are sorted in ascending order.
   void InferFromSimilarities(const EquivalenceMap& equivalence_map,
-                             const std::vector<offset_t>& old_targets,
-                             const std::vector<offset_t>& new_targets);
+                             const std::deque<offset_t>& old_targets,
+                             const std::deque<offset_t>& new_targets);
 
   // Assigns labels to targets based on associations previously inferred, using
   // |min_affinity| to reject associations with weak |affinity|. Label 0 is
@@ -65,8 +67,6 @@ class TargetsAffinity {
   // lookup, given |old_key| or |new_key|.
   std::vector<Association> forward_association_;
   std::vector<Association> backward_association_;
-
-  DISALLOW_COPY_AND_ASSIGN(TargetsAffinity);
 };
 
 }  // namespace zucchini

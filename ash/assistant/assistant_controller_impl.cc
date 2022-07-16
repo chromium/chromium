@@ -10,11 +10,14 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/android_intent_helper.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
@@ -36,6 +39,8 @@ AssistantControllerImpl::AssistantControllerImpl() {
   // and be notified of any accessibility status changes in the future to
   // provide an opportunity to turn on/off A11Y features.
   Shell::Get()->accessibility_controller()->AddObserver(this);
+
+  color_mode_observer_.Observe(AshColorProvider::Get());
 
   NotifyConstructed();
 }
@@ -73,6 +78,9 @@ void AssistantControllerImpl::SetAssistant(
   assistant_ui_controller_.SetAssistant(assistant);
 
   OnAccessibilityStatusChanged();
+
+  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
+  OnColorModeChanged(AshColorProvider::Get()->IsDarkModeEnabled());
 
   if (assistant) {
     for (AssistantControllerObserver& observer : observers_)
@@ -113,6 +121,7 @@ void AssistantControllerImpl::DownloadImage(
                 "Generally triggered in direct response to a user issued "
                 "query. A single query may necessitate the downloading of "
                 "multiple images."
+              data: "None."
               destination: GOOGLE_OWNED_SERVICE
             }
             policy {
@@ -120,6 +129,9 @@ void AssistantControllerImpl::DownloadImage(
               setting:
                 "The Google Assistant can be enabled/disabled in Chrome "
                 "Settings and is subject to eligibility requirements."
+              policy_exception_justification:
+                "The users can disable this feature. This does not send/store "
+                "user data."
             })");
 
   ImageDownloader::Get()->Download(url, kNetworkTrafficAnnotationTag,
@@ -163,8 +175,8 @@ void AssistantControllerImpl::OpenUrl(const GURL& url,
     // such, the browser will always be instructed to open |url| in a new
     // browser tab and Assistant UI state will be updated downstream to respect
     // |in_background|.
-    NewWindowDelegate::GetInstance()->NewTabWithUrl(
-        url, /*from_user_interaction=*/true);
+    NewWindowDelegate::GetInstance()->OpenUrl(url,
+                                              /*from_user_interaction=*/true);
   }
   NotifyUrlOpened(url, from_server);
 }
@@ -267,6 +279,13 @@ void AssistantControllerImpl::OnAccessibilityStatusChanged() {
   // state so that it can turn on/off A11Y features appropriately.
   assistant_->OnAccessibilityStatusChanged(
       Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
+}
+
+void AssistantControllerImpl::OnColorModeChanged(bool dark_mode_enabled) {
+  if (!assistant_)
+    return;
+
+  assistant_->OnColorModeChanged(dark_mode_enabled);
 }
 
 bool AssistantControllerImpl::IsAssistantReady() const {

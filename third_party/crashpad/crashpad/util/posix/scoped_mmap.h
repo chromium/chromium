@@ -15,7 +15,6 @@
 #ifndef CRASHPAD_UTIL_POSIX_SCOPED_MMAP_H_
 #define CRASHPAD_UTIL_POSIX_SCOPED_MMAP_H_
 
-#include "base/macros.h"
 
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -34,6 +33,10 @@ class ScopedMmap {
   //!
   //! \param can_log `true` if methods of this class may log messages.
   explicit ScopedMmap(bool can_log = true);
+
+  ScopedMmap(const ScopedMmap&) = delete;
+  ScopedMmap& operator=(const ScopedMmap&) = delete;
+
   ~ScopedMmap();
 
   //! \brief Releases the memory-mapped region by calling `munmap()`.
@@ -109,8 +112,6 @@ class ScopedMmap {
   void* addr_ = MAP_FAILED;
   size_t len_ = 0;
   bool can_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMmap);
 };
 
 }  // namespace crashpad

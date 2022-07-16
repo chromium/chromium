@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SERVICES_LANGUAGE_DETECTION_PUBLIC_CPP_LANGUAGE_DETECTION_SERVICE_H_
 #define COMPONENTS_SERVICES_LANGUAGE_DETECTION_PUBLIC_CPP_LANGUAGE_DETECTION_SERVICE_H_
 
-#include "components/services/language_detection/public/mojom/language_detection.mojom.h"
+#include "components/services/language_detection/public/mojom/language_detection.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace language_detection {

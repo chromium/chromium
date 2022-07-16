@@ -6,11 +6,13 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/bind.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/secure_channel/connection_observer.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/wire_message.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,6 +34,10 @@ namespace {
 class MockConnection : public Connection {
  public:
   MockConnection() : Connection(multidevice::CreateRemoteDeviceRefForTest()) {}
+
+  MockConnection(const MockConnection&) = delete;
+  MockConnection& operator=(const MockConnection&) = delete;
+
   ~MockConnection() {}
 
   MOCK_METHOD1(SetPaused, void(bool paused));
@@ -40,6 +46,12 @@ class MockConnection : public Connection {
   MOCK_METHOD0(GetDeviceAddress, std::string());
   MOCK_METHOD0(CancelConnectionAttempt, void());
   MOCK_METHOD1(SendMessageImplProxy, void(WireMessage* message));
+  MOCK_METHOD4(
+      RegisterPayloadFileImpl,
+      void(int64_t payload_id,
+           mojom::PayloadFilesPtr payload_files,
+           FileTransferUpdateCallback file_transfer_update_callback,
+           base::OnceCallback<void(bool)> registration_result_callback));
   MOCK_METHOD1(DeserializeWireMessageProxy,
                WireMessage*(bool* is_incomplete_message));
 
@@ -58,14 +70,15 @@ class MockConnection : public Connection {
   using Connection::OnDidSendMessage;
   using Connection::SetStatus;
   using Connection::status;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockConnection);
 };
 
 class MockConnectionObserver : public ConnectionObserver {
  public:
   MockConnectionObserver() {}
+
+  MockConnectionObserver(const MockConnectionObserver&) = delete;
+  MockConnectionObserver& operator=(const MockConnectionObserver&) = delete;
+
   virtual ~MockConnectionObserver() {}
 
   MOCK_METHOD3(OnConnectionStatusChanged,
@@ -78,24 +91,26 @@ class MockConnectionObserver : public ConnectionObserver {
                void(const Connection& connection,
                     const WireMessage& message,
                     bool success));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockConnectionObserver);
 };
 
 // Unlike WireMessage, offers a public constructor.
 class TestWireMessage : public WireMessage {
  public:
   TestWireMessage() : WireMessage("payload", "feature") {}
-  ~TestWireMessage() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWireMessage);
+  TestWireMessage(const TestWireMessage&) = delete;
+  TestWireMessage& operator=(const TestWireMessage&) = delete;
+
+  ~TestWireMessage() override = default;
 };
 
 }  // namespace
 
 class CryptAuthConnectionTest : public testing::Test {
+ public:
+  CryptAuthConnectionTest(const CryptAuthConnectionTest&) = delete;
+  CryptAuthConnectionTest& operator=(const CryptAuthConnectionTest&) = delete;
+
  protected:
   CryptAuthConnectionTest() = default;
   ~CryptAuthConnectionTest() override = default;
@@ -114,8 +129,6 @@ class CryptAuthConnectionTest : public testing::Test {
   void OnConnectionRssi(absl::optional<int32_t> rssi) { rssi_ = rssi; }
 
   absl::optional<int32_t> rssi_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthConnectionTest);
 };
 
 TEST_F(CryptAuthConnectionTest, IsConnected) {
@@ -168,6 +181,31 @@ TEST_F(CryptAuthConnectionTest,
 
   EXPECT_CALL(connection, SendMessageImplProxy(_));
   connection.SendMessage(std::unique_ptr<WireMessage>());
+}
+
+TEST_F(CryptAuthConnectionTest, RegisterPayloadFile_FailsWhenNotConnected) {
+  StrictMock<MockConnection> connection;
+  connection.SetStatus(Connection::Status::IN_PROGRESS);
+
+  EXPECT_CALL(connection, GetDeviceAddress()).Times(1);
+  EXPECT_CALL(connection, RegisterPayloadFileImpl(_, _, _, _)).Times(0);
+  bool result;
+  connection.RegisterPayloadFile(
+      /*payload_id=*/1234, mojom::PayloadFiles::New(),
+      FileTransferUpdateCallback(),
+      base::BindLambdaForTesting([&](bool success) { result = success; }));
+  EXPECT_FALSE(result);
+}
+
+TEST_F(CryptAuthConnectionTest, RegisterPayloadFile_SucceedsWhenConnected) {
+  StrictMock<MockConnection> connection;
+  connection.SetStatus(Connection::Status::CONNECTED);
+
+  EXPECT_CALL(connection,
+              RegisterPayloadFileImpl(/*payload_id=*/1234, _, _, _));
+  connection.RegisterPayloadFile(
+      /*payload_id=*/1234, mojom::PayloadFiles::New(),
+      FileTransferUpdateCallback(), base::OnceCallback<void(bool)>());
 }
 
 TEST_F(CryptAuthConnectionTest, SetStatus_NotifiesObserversOfStatusChange) {

@@ -14,5 +14,8 @@ namespace switches {
 // Draws a semitransparent rect to indicate the bounds of each view.
 const char kDrawViewBoundsRects[] = "draw-view-bounds-rects";
 
+// Captures stack traces on View construction to provide better debug info.
+const char kViewStackTraces[] = "view-stack-traces";
+
 }  // namespace switches
 }  // namespace views

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/scoped_native_library.h"
 #include "media/base/media_export.h"
 #include "media/cdm/api/content_decryption_module.h"
@@ -28,6 +27,9 @@ class MEDIA_EXPORT CdmModule {
 
   // Reset the CdmModule instance so that each test have it's own instance.
   static void ResetInstanceForTesting();
+
+  CdmModule(const CdmModule&) = delete;
+  CdmModule& operator=(const CdmModule&) = delete;
 
   ~CdmModule();
 
@@ -62,8 +64,6 @@ class MEDIA_EXPORT CdmModule {
   InitializeCdmModuleFunc initialize_cdm_module_func_ = nullptr;
   DeinitializeCdmModuleFunc deinitialize_cdm_module_func_ = nullptr;
   GetCdmVersionFunc get_cdm_version_func_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmModule);
 };
 
 }  // namespace media

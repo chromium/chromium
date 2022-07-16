@@ -8,12 +8,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/nigori/nigori_local_change_processor.h"
-#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
 namespace syncer {
@@ -26,6 +24,10 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
                                  public NigoriLocalChangeProcessor {
  public:
   NigoriModelTypeProcessor();
+
+  NigoriModelTypeProcessor(const NigoriModelTypeProcessor&) = delete;
+  NigoriModelTypeProcessor& operator=(const NigoriModelTypeProcessor&) = delete;
+
   ~NigoriModelTypeProcessor() override;
 
   // ModelTypeProcessor implementation.
@@ -113,8 +115,6 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
   // invalidated during destruction).
   base::WeakPtrFactory<ModelTypeControllerDelegate>
       weak_ptr_factory_for_controller_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NigoriModelTypeProcessor);
 };
 
 }  // namespace syncer

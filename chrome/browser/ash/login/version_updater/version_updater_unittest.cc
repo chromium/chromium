@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/version_updater/mock_version_updater_delegate.h"
 #include "chrome/browser/ash/login/version_updater/update_time_estimator.h"
-#include "chrome/browser/chromeos/net/network_portal_detector_test_impl.h"
+#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -42,7 +42,7 @@ constexpr int kFinalizingTimeInSeconds = 5 * 60;
 constexpr const char kNetworkGuid[] = "test_network";
 
 MATCHER_P(TimeLeftEq, time_in_seconds, "") {
-  return arg.total_time_left == base::TimeDelta::FromSeconds(time_in_seconds);
+  return arg.total_time_left == base::Seconds(time_in_seconds);
 }
 
 MATCHER_P2(DowloadingTimeLeftEq, can_be_used, time, "") {
@@ -54,6 +54,9 @@ MATCHER_P2(DowloadingTimeLeftEq, can_be_used, time, "") {
 class VersionUpdaterUnitTest : public testing::Test {
  public:
   VersionUpdaterUnitTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+
+  VersionUpdaterUnitTest(const VersionUpdaterUnitTest&) = delete;
+  VersionUpdaterUnitTest& operator=(const VersionUpdaterUnitTest&) = delete;
 
   void SetUpdateEngineStatus(update_engine::Operation operation) {
     update_engine::StatusResult status;
@@ -146,8 +149,6 @@ class VersionUpdaterUnitTest : public testing::Test {
   ScopedTestingLocalState local_state_;
 
   int checks_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(VersionUpdaterUnitTest);
 };
 
 TEST_F(VersionUpdaterUnitTest, HandlesNoUpdate) {
@@ -226,8 +227,7 @@ TEST_F(VersionUpdaterUnitTest, TimeLeftExpectation) {
     EXPECT_CALL(*mock_delegate_,
                 UpdateInfoChanged(TimeLeftEq(time_left - seconds - 1)));
   }
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(time_spent_on_downloading));
+  task_environment_.FastForwardBy(base::Seconds(time_spent_on_downloading));
   Mock::VerifyAndClearExpectations(&mock_delegate_);
 
   // VERIFYING starts.
@@ -247,8 +247,7 @@ TEST_F(VersionUpdaterUnitTest, TimeLeftExpectation) {
       *mock_delegate_,
       UpdateInfoChanged(TimeLeftEq(time_left - kVerifyingTimeInSeconds)))
       .Times(over_time + 1);
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(time_spent_on_verifying));
+  task_environment_.FastForwardBy(base::Seconds(time_spent_on_verifying));
   Mock::VerifyAndClearExpectations(&mock_delegate_);
 
   // FINALIZING starts.
@@ -292,7 +291,7 @@ TEST_F(VersionUpdaterUnitTest, SimpleTimeLeftExpectationDownloadinStage) {
   fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
   EXPECT_CALL(*mock_delegate_,
               UpdateInfoChanged(DowloadingTimeLeftEq(false, 0)));
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   status.set_progress(0.01);
   EXPECT_CALL(*mock_delegate_,

@@ -13,12 +13,11 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -115,7 +114,7 @@
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "extensions/browser/event_router_factory.h"
@@ -130,9 +129,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/net/delay_network_call.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/net/delay_network_call.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #endif
 
@@ -185,7 +184,7 @@ const char TestingProfile::kDefaultProfileUserName[] = "testing_profile";
 // static
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Must be kept in sync with
-// ChromeBrowserMainPartsChromeos::PreEarlyInitialization.
+// `ChromeBrowserMainPartsAsh::PreEarlyInitialization`.
 const char TestingProfile::kTestUserProfileDir[] = "test-user";
 #else
 const char TestingProfile::kTestUserProfileDir[] = "Default";
@@ -224,7 +223,7 @@ TestingProfile::TestingProfile(
     bool is_new_profile,
     const std::string& supervised_user_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    std::unique_ptr<policy::UserCloudPolicyManagerChromeOS> policy_manager,
+    std::unique_ptr<policy::UserCloudPolicyManagerAsh> policy_manager,
 #else
     std::unique_ptr<policy::UserCloudPolicyManager> policy_manager,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -407,7 +406,7 @@ void TestingProfile::Init() {
       this, BrowserContextKeyedServiceFactory::TestingFactory());
 
   web_app::WebAppProviderFactory::GetInstance()->SetTestingFactory(
-      this, base::BindRepeating(&web_app::TestWebAppProvider::BuildDefault));
+      this, base::BindRepeating(&web_app::FakeWebAppProvider::BuildDefault));
 #endif
 
   // Prefs for incognito profiles are set in CreateIncognitoPrefService().
@@ -545,23 +544,6 @@ TestingProfile::~TestingProfile() {
   }
 }
 
-bool TestingProfile::CreateHistoryService() {
-  // Should never be created multiple times.
-  DCHECK(!HistoryServiceFactory::GetForProfileWithoutCreating(this));
-
-  // This will create and init the history service.
-  history::HistoryService* history_service =
-      static_cast<history::HistoryService*>(
-          HistoryServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              this, HistoryServiceFactory::GetDefaultFactory()));
-  if (!history_service) {
-    HistoryServiceFactory::GetInstance()->SetTestingFactory(
-        this, BrowserContextKeyedServiceFactory::TestingFactory());
-    return false;
-  }
-  return true;
-}
-
 void TestingProfile::CreateWebDataService() {
   WebDataServiceFactory::GetInstance()->SetTestingFactory(
       this, base::BindRepeating(&BuildWebDataService));
@@ -588,14 +570,12 @@ base::Time TestingProfile::GetCreationTime() const {
   return start_time_;
 }
 
-#if !defined(OS_ANDROID)
 std::unique_ptr<content::ZoomLevelDelegate>
 TestingProfile::CreateZoomLevelDelegate(const base::FilePath& partition_path) {
   return std::make_unique<ChromeZoomLevelPrefs>(
       GetPrefs(), GetPath(), partition_path,
       zoom::ZoomEventManager::GetForBrowserContext(this)->GetWeakPtr());
 }
-#endif  // !defined(OS_ANDROID)
 
 scoped_refptr<base::SequencedTaskRunner> TestingProfile::GetIOTaskRunner() {
   return base::ThreadTaskRunnerHandle::Get();
@@ -626,8 +606,13 @@ bool TestingProfile::IsOffTheRecord() const {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool TestingProfile::IsMainProfile() const {
-  return false;
+  return is_main_profile_;
 }
+
+void TestingProfile::SetIsMainProfile(bool is_main_profile) {
+  is_main_profile_ = is_main_profile;
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 const Profile::OTRProfileID& TestingProfile::GetOTRProfileID() const {
@@ -727,17 +712,20 @@ bool TestingProfile::AllowsBrowserWindows() const {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void TestingProfile::SetExtensionSpecialStoragePolicy(
-    ExtensionSpecialStoragePolicy* extension_special_storage_policy) {
-  extension_special_storage_policy_ = extension_special_storage_policy;
+    scoped_refptr<ExtensionSpecialStoragePolicy>
+        extension_special_storage_policy) {
+  extension_special_storage_policy_ =
+      std::move(extension_special_storage_policy);
 }
 #endif
 
 ExtensionSpecialStoragePolicy*
 TestingProfile::GetExtensionSpecialStoragePolicy() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!extension_special_storage_policy_.get())
+  if (!extension_special_storage_policy_.get()) {
     extension_special_storage_policy_ =
-        new ExtensionSpecialStoragePolicy(nullptr);
+        base::MakeRefCounted<ExtensionSpecialStoragePolicy>(nullptr);
+  }
   return extension_special_storage_policy_.get();
 #else
   return nullptr;
@@ -808,12 +796,10 @@ const PrefService* TestingProfile::GetPrefs() const {
   return prefs_.get();
 }
 
-#if !defined(OS_ANDROID)
 ChromeZoomLevelPrefs* TestingProfile::GetZoomLevelPrefs() {
   return static_cast<ChromeZoomLevelPrefs*>(
       GetDefaultStoragePartition()->GetZoomLevelDelegate());
 }
-#endif  // !defined(OS_ANDROID)
 
 DownloadManagerDelegate* TestingProfile::GetDownloadManagerDelegate() {
   return nullptr;
@@ -836,6 +822,11 @@ content::BrowserPluginGuestManager* TestingProfile::GetGuestManager() {
 #else
   return nullptr;
 #endif
+}
+
+content::PlatformNotificationService*
+TestingProfile::GetPlatformNotificationService() {
+  return nullptr;
 }
 
 content::PushMessagingService* TestingProfile::GetPushMessagingService() {
@@ -868,8 +859,8 @@ TestingProfile::GetPolicySchemaRegistryService() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-policy::UserCloudPolicyManagerChromeOS*
-TestingProfile::GetUserCloudPolicyManagerChromeOS() {
+policy::UserCloudPolicyManagerAsh*
+TestingProfile::GetUserCloudPolicyManagerAsh() {
   return user_cloud_policy_manager_.get();
 }
 
@@ -992,10 +983,6 @@ bool TestingProfile::IsNewProfile() const {
   return is_new_profile_;
 }
 
-Profile::ExitType TestingProfile::GetLastSessionExitType() const {
-  return last_session_exited_cleanly_ ? EXIT_NORMAL : EXIT_CRASHED;
-}
-
 TestingProfile::Builder::Builder() = default;
 
 TestingProfile::Builder::~Builder() = default;
@@ -1038,8 +1025,8 @@ void TestingProfile::Builder::SetSupervisedUserId(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void TestingProfile::Builder::SetUserCloudPolicyManagerChromeOS(
-    std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
+void TestingProfile::Builder::SetUserCloudPolicyManagerAsh(
+    std::unique_ptr<policy::UserCloudPolicyManagerAsh>
         user_cloud_policy_manager) {
   user_cloud_policy_manager_ = std::move(user_cloud_policy_manager);
 }

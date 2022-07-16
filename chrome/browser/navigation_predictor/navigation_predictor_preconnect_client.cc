@@ -70,9 +70,6 @@ void NavigationPredictorPreconnectClient::DidFinishNavigation(
         web_contents_, current_visibility_ == content::Visibility::VISIBLE);
   }
 
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted()) {
     return;
@@ -112,7 +109,7 @@ void NavigationPredictorPreconnectClient::DidFinishNavigation(
     }
 
     timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(delay_ms),
+        FROM_HERE, base::Milliseconds(delay_ms),
         base::BindOnce(&NavigationPredictorPreconnectClient::MaybePreconnectNow,
                        base::Unretained(this), /*preconnects_attempted=*/0u));
   }
@@ -153,8 +150,8 @@ void NavigationPredictorPreconnectClient::OnVisibilityChanged(
 void NavigationPredictorPreconnectClient::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  // Ignore sub-frame loads.
-  if (render_frame_host->GetParent())
+  // Ignore sub-frames and non-primary mainframes load.
+  if (!render_frame_host->IsInPrimaryMainFrame())
     return;
 
   MaybePreconnectNow(/*preconnects_attempted=*/0u);
@@ -186,7 +183,7 @@ void NavigationPredictorPreconnectClient::MaybePreconnectNow(
     return;
 
   url::Origin preconnect_origin =
-      url::Origin::Create(web_contents()->GetLastCommittedURL());
+      web_contents()->GetMainFrame()->GetLastCommittedOrigin();
   if (preconnect_origin.scheme() != url::kHttpScheme &&
       preconnect_origin.scheme() != url::kHttpsScheme) {
     return;
@@ -214,13 +211,13 @@ void NavigationPredictorPreconnectClient::MaybePreconnectNow(
 
   // The delay beyond the idle socket timeout that net uses when
   // re-preconnecting. If negative, no retries occur.
-  const base::TimeDelta retry_delay = base::TimeDelta::FromMilliseconds(50);
+  const base::TimeDelta retry_delay = base::Milliseconds(50);
 
   // Set/Reset the timer to fire after the preconnect times out. Add an extra
   // delay to make sure the preconnect has expired if it wasn't used.
   timer_.Start(
       FROM_HERE,
-      base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+      base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
           net::features::kNetUnusedIdleSocketTimeout,
           "unused_idle_socket_timeout_seconds", 60)) +
           retry_delay,
@@ -260,4 +257,4 @@ absl::optional<bool> NavigationPredictorPreconnectClient::IsPubliclyRoutable(
 bool NavigationPredictorPreconnectClient::
     enable_preconnects_for_local_ips_for_testing_ = false;
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(NavigationPredictorPreconnectClient)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(NavigationPredictorPreconnectClient);

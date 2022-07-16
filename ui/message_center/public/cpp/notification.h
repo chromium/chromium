@@ -16,9 +16,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/message_center_public_export.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -278,10 +278,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   void set_allow_group(bool allow_group) { allow_group_ = allow_group; }
 
   bool group_child() const { return group_child_; }
-  void set_group_child(bool group_child) { group_child_ = group_child; }
-
   bool group_parent() const { return group_parent_; }
-  void set_group_parent(bool group_parent) { group_parent_ = group_parent; }
 
   const NotifierId& notifier_id() const { return notifier_id_; }
 
@@ -468,6 +465,23 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // Set the priority to SYSTEM. The system priority user needs to call this
   // method explicitly, to avoid setting it accidentally.
   void SetSystemPriority();
+
+  // Set the notification as a group child. This means it can only be displayed
+  // inside a group notification.
+  void SetGroupChild();
+
+  // Set the notification as a group parent. This means the message view
+  // associated with this notification will act as a container for all
+  // notifications that are part of its group.
+  void SetGroupParent();
+
+  // Set `group_child_` to false so it's back to it's
+  // default state.
+  void ClearGroupChild();
+
+  // Set `group_parent_` to false so it's back to it's
+  // default state.
+  void ClearGroupParent();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void set_system_notification_warning_level(

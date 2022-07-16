@@ -38,8 +38,7 @@ SyncSetupServiceFactory::SyncSetupServiceFactory()
   DependsOn(SyncServiceFactory::GetInstance());
 }
 
-SyncSetupServiceFactory::~SyncSetupServiceFactory() {
-}
+SyncSetupServiceFactory::~SyncSetupServiceFactory() {}
 
 std::unique_ptr<KeyedService> SyncSetupServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {

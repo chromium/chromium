@@ -84,9 +84,9 @@ bool DMPolicyManager::GetUpdatesSuppressedTimes(
       !updates_suppressed.has_duration_min())
     return false;
 
-  suppressed_times->start_hour = updates_suppressed.start_hour();
-  suppressed_times->start_minute = updates_suppressed.start_minute();
-  suppressed_times->duration_minute = updates_suppressed.duration_min();
+  suppressed_times->start_hour_ = updates_suppressed.start_hour();
+  suppressed_times->start_minute_ = updates_suppressed.start_minute();
+  suppressed_times->duration_minute_ = updates_suppressed.duration_min();
   return true;
 }
 

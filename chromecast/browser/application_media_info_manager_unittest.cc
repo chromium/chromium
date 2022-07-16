@@ -36,11 +36,10 @@ class ApplicationMediaInfoManagerTest
   void SetUp() override {
     initializer_ = std::make_unique<content::TestContentClientInitializer>();
     content::RenderViewHostTestHarness::SetUp();
-    application_media_info_manager_ =
-        std::make_unique<ApplicationMediaInfoManager>(
-            main_rfh(),
-            application_media_info_manager_remote_.BindNewPipeAndPassReceiver(),
-            kSessionId, kMixedAudioEnabled);
+    application_media_info_manager_ = new ApplicationMediaInfoManager(
+        main_rfh(),
+        application_media_info_manager_remote_.BindNewPipeAndPassReceiver(),
+        kSessionId, kMixedAudioEnabled);
   }
 
   void OnCastApplicationMediaInfo(
@@ -53,7 +52,9 @@ class ApplicationMediaInfoManagerTest
   mojo::Remote<::media::mojom::CastApplicationMediaInfoManager>
       application_media_info_manager_remote_;
   std::unique_ptr<content::TestContentClientInitializer> initializer_;
-  std::unique_ptr<ApplicationMediaInfoManager> application_media_info_manager_;
+  // `ApplicationMediaInfoManager` is a `DocumentService` and manages its
+  // own lifetime.
+  ApplicationMediaInfoManager* application_media_info_manager_;
   bool started_;
 };
 

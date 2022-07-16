@@ -2,129 +2,122 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js';
+import 'chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js';
+import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+import '/app-management/file_path.mojom-lite.js';
+import '/app-management/image.mojom-lite.js';
+import '/app-management/types.mojom-lite.js';
+import '/app-management/app_management.mojom-lite.js';
 
-// #import 'chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js';
-// #import 'chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js';
-// #import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-// #import '/app-management/file_path.mojom-lite.js';
-// #import '/app-management/image.mojom-lite.js';
-// #import '/app-management/types.mojom-lite.js';
-// #import '/app-management/app_management.mojom-lite.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-// #import {FakePageHandler}  from './fake_page_handler.m.js';
-// #import {PwaPermissionType, TriState, AppType, InstallSource} from './constants.m.js';
-// clang-format on
+import {PermissionType, TriState} from '../permission_constants.js';
 
-cr.define('app_management', function() {
-  /* #export */ class BrowserProxy {
-    constructor() {
-      /** @type {appManagement.mojom.PageCallbackRouter} */
-      this.callbackRouter = new appManagement.mojom.PageCallbackRouter();
+import {AppType, InstallReason} from './constants.js';
+import {FakePageHandler} from './fake_page_handler.js';
 
-      /** @type {appManagement.mojom.PageHandlerRemote} */
-      this.handler = null;
+export class BrowserProxy {
+  constructor() {
+    /** @type {appManagement.mojom.PageCallbackRouter} */
+    this.callbackRouter = new appManagement.mojom.PageCallbackRouter();
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const useFake = urlParams.get('fakeBackend');
+    /** @type {appManagement.mojom.PageHandlerRemote} */
+    this.handler = null;
 
-      if (useFake) {
-        this.fakeHandler = new app_management.FakePageHandler(
-            this.callbackRouter.$.bindNewPipeAndPassRemote());
-        this.handler = this.fakeHandler.getRemote();
+    const urlParams = new URLSearchParams(window.location.search);
+    const useFake = urlParams.get('fakeBackend');
 
-        const permissionOptions = {};
-        permissionOptions[PwaPermissionType.GEOLOCATION] = {
-          permissionValue: TriState.kAllow,
-          isManaged: true,
-        };
-        permissionOptions[PwaPermissionType.MEDIASTREAM_CAMERA] = {
-          permissionValue: TriState.kBlock,
-          isManaged: true
-        };
+    if (useFake) {
+      this.fakeHandler =
+          new FakePageHandler(this.callbackRouter.$.bindNewPipeAndPassRemote());
+      this.handler = this.fakeHandler.getRemote();
 
-        const /** @type {!Array<App>}*/ appList = [
-          app_management.FakePageHandler.createApp(
-              'blpcfgokakmgnkcojhhkbfblekacnbeo',
-              {
-                title: 'Built in app, not implemented',
-                type: AppType.kBuiltIn,
-                installSource: InstallSource.kSystem,
-              },
-              ),
-          app_management.FakePageHandler.createApp(
-              'aohghmighlieiainnegkcijnfilokake',
-              {
-                title: 'Arc app',
-                type: AppType.kArc,
-                installSource: InstallSource.kUser,
-              },
-              ),
-          app_management.FakePageHandler.createApp(
-              'blpcfgokakmgnkcojhhkbfbldkacnbeo',
-              {
-                title: 'Crostini app, not implemented',
-                type: AppType.kCrostini,
-                installSource: InstallSource.kUser,
-              },
-              ),
-          app_management.FakePageHandler.createApp(
-              'pjkljhegncpnkkknowihdijeoejaedia',
-              {
-                title: 'Chrome App',
-                type: AppType.kExtension,
-                description:
-                    'A Chrome App installed from the Chrome Web Store.',
-              },
-              ),
-          app_management.FakePageHandler.createApp(
-              'aapocclcdoekwnckovdopfmtonfmgok',
-              {
-                title: 'Web App',
-                type: AppType.kWeb,
-              },
-              ),
-          app_management.FakePageHandler.createApp(
-              'pjkljhegncpnkkknbcohdijeoejaedia',
-              {
-                title: 'Chrome App, OEM installed',
-                type: AppType.kExtension,
-                description: 'A Chrome App installed by an OEM.',
-                installSource: InstallSource.kOem,
-              },
-              ),
-          app_management.FakePageHandler.createApp(
-              'aapocclcgogkmnckokdopfmhonfmgok',
-              {
-                title: 'Web App, policy applied',
-                type: AppType.kWeb,
-                isPinned: apps.mojom.OptionalBool.kTrue,
-                isPolicyPinned: apps.mojom.OptionalBool.kTrue,
-                installSource: apps.mojom.InstallSource.kPolicy,
-                permissions:
-                    app_management.FakePageHandler.createWebPermissions(
-                        permissionOptions),
-              },
-              ),
-        ];
+      const permissionOptions = {};
+      permissionOptions[PermissionType.kLocation] = {
+        permissionValue: TriState.kAllow,
+        isManaged: true,
+      };
+      permissionOptions[PermissionType.kCamera] = {
+        permissionValue: TriState.kBlock,
+        isManaged: true
+      };
 
-        this.fakeHandler.setApps(appList);
+      const /** @type {!Array<App>}*/ appList = [
+        FakePageHandler.createApp(
+            'blpcfgokakmgnkcojhhkbfblekacnbeo',
+            {
+              title: 'Built in app, not implemented',
+              type: AppType.kBuiltIn,
+              installReason: InstallReason.kSystem,
+            },
+            ),
+        FakePageHandler.createApp(
+            'aohghmighlieiainnegkcijnfilokake',
+            {
+              title: 'Arc app',
+              type: AppType.kArc,
+              installReason: InstallReason.kUser,
+            },
+            ),
+        FakePageHandler.createApp(
+            'blpcfgokakmgnkcojhhkbfbldkacnbeo',
+            {
+              title: 'Crostini app, not implemented',
+              type: AppType.kCrostini,
+              installReason: InstallReason.kUser,
+            },
+            ),
+        FakePageHandler.createApp(
+            'pjkljhegncpnkkknowihdijeoejaedia',
+            {
+              title: 'Chrome App',
+              type: AppType.kExtension,
+              description: 'A Chrome App installed from the Chrome Web Store.',
+            },
+            ),
+        FakePageHandler.createApp(
+            'aapocclcdoekwnckovdopfmtonfmgok',
+            {
+              title: 'Web App',
+              type: AppType.kWeb,
+            },
+            ),
+        FakePageHandler.createApp(
+            'pjkljhegncpnkkknbcohdijeoejaedia',
+            {
+              title: 'Chrome App, OEM installed',
+              type: AppType.kExtension,
+              description: 'A Chrome App installed by an OEM.',
+              installReason: InstallReason.kOem,
+            },
+            ),
+        FakePageHandler.createApp(
+            'aapocclcgogkmnckokdopfmhonfmgok',
+            {
+              title: 'Web App, policy applied',
+              type: AppType.kWeb,
+              isPinned: apps.mojom.OptionalBool.kTrue,
+              isPolicyPinned: apps.mojom.OptionalBool.kTrue,
+              installReason: apps.mojom.InstallReason.kPolicy,
+              permissions:
+                  FakePageHandler.createWebPermissions(permissionOptions),
+            },
+            ),
+      ];
 
-      } else {
-        this.handler = new appManagement.mojom.PageHandlerRemote();
-        const factory = appManagement.mojom.PageHandlerFactory.getRemote();
-        factory.createPageHandler(
-            this.callbackRouter.$.bindNewPipeAndPassRemote(),
-            this.handler.$.bindNewPipeAndPassReceiver());
-      }
+      this.fakeHandler.setApps(appList);
+
+    } else {
+      this.handler = new appManagement.mojom.PageHandlerRemote();
+      const factory = appManagement.mojom.PageHandlerFactory.getRemote();
+      factory.createPageHandler(
+          this.callbackRouter.$.bindNewPipeAndPassRemote(),
+          this.handler.$.bindNewPipeAndPassReceiver());
     }
   }
+}
 
-  cr.addSingletonGetter(BrowserProxy);
-
-  // #cr_define_end
-  return {BrowserProxy: BrowserProxy};
-});
+addSingletonGetter(BrowserProxy);

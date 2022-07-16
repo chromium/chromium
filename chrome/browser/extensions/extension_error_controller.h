@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
 #include "extensions/common/extension_set.h"
 
@@ -25,6 +24,10 @@ class ExtensionErrorController : public ExtensionErrorUI::Delegate {
   typedef ExtensionErrorUI* (*UICreateMethod)(ExtensionErrorUI::Delegate*);
 
   ExtensionErrorController(content::BrowserContext* context, bool is_first_run);
+
+  ExtensionErrorController(const ExtensionErrorController&) = delete;
+  ExtensionErrorController& operator=(const ExtensionErrorController&) = delete;
+
   virtual ~ExtensionErrorController();
 
   void ShowErrorIfNeeded();
@@ -56,8 +59,6 @@ class ExtensionErrorController : public ExtensionErrorUI::Delegate {
   // Whether or not this is the first run. If it is, we avoid noisy errors, and
   // silently acknowledge blocklisted extensions.
   bool is_first_run_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionErrorController);
 };
 
 }  // namespace extensions

@@ -17,16 +17,13 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /** Tests {@link PrivacySandboxSettingsFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS)
 public final class PrivacySandboxSettingsFragmentTest {
     private static final String REFERRER_HISTOGRAM =
             "Settings.PrivacySandbox.PrivacySandboxReferrer";

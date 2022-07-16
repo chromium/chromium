@@ -52,6 +52,10 @@ class ASH_EXPORT ShelfNavigationWidget : public ShelfComponent,
   };
 
   ShelfNavigationWidget(Shelf* shelf, ShelfView* shelf_view);
+
+  ShelfNavigationWidget(const ShelfNavigationWidget&) = delete;
+  ShelfNavigationWidget& operator=(const ShelfNavigationWidget&) = delete;
+
   ~ShelfNavigationWidget() override;
 
   // Initializes the widget, sets its contents view and basic properties.
@@ -139,8 +143,6 @@ class ASH_EXPORT ShelfNavigationWidget : public ShelfComponent,
   // Widget to ensure it outlives the HomeButton view.
   std::unique_ptr<NavigationButtonAnimationMetricsReporter>
       home_button_metrics_reporter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfNavigationWidget);
 };
 
 }  // namespace ash

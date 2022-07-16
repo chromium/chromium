@@ -98,6 +98,7 @@ const CGFloat kAnimationDuration = 0.25;
 
   // Restore frame to pre-layout value before triggering animations.
   self.navigationController.view.frame = viewControllerFrame;
+  [self.navigationController didUpdateControllerViewFrame];
   NSTimeInterval duration = [self transitionDuration:transitionContext];
   void (^animations)() = ^() {
     [UIView addKeyframeWithRelativeStartTime:.0

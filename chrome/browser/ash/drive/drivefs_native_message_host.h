@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

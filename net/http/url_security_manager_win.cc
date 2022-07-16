@@ -31,6 +31,10 @@ namespace net {
 class URLSecurityManagerWin : public URLSecurityManagerAllowlist {
  public:
   URLSecurityManagerWin();
+
+  URLSecurityManagerWin(const URLSecurityManagerWin&) = delete;
+  URLSecurityManagerWin& operator=(const URLSecurityManagerWin&) = delete;
+
   ~URLSecurityManagerWin() override;
 
   // URLSecurityManager methods:
@@ -40,8 +44,6 @@ class URLSecurityManagerWin : public URLSecurityManagerAllowlist {
   bool EnsureSystemSecurityManager();
 
   Microsoft::WRL::ComPtr<IInternetSecurityManager> security_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLSecurityManagerWin);
 };
 
 URLSecurityManagerWin::URLSecurityManagerWin() {}

@@ -19,6 +19,9 @@ class ImageSkia;
 
 namespace ash {
 
+class AmbientClient;
+class AmbientAccessTokenController;
+
 // Interface for downloading and decoding photos for Ambient mode. Mocked for
 // testing to isolate from network and file system.
 // Each cache entry is written to disk as three files in the |root_path|, with
@@ -30,7 +33,13 @@ class ASH_EXPORT AmbientPhotoCache {
   AmbientPhotoCache& operator=(const AmbientPhotoCache&) = delete;
   virtual ~AmbientPhotoCache() = default;
 
-  static std::unique_ptr<AmbientPhotoCache> Create(base::FilePath root_path);
+  // `root_path` is where the cached photos stored on disk.
+  // `ambient_client` and `access_token_controller` are used to obtain url
+  // loader factory and access tokens to fetch the online images.
+  static std::unique_ptr<AmbientPhotoCache> Create(
+      base::FilePath root_path,
+      AmbientClient& ambient_client,
+      AmbientAccessTokenController& access_token_controller);
 
   virtual void DownloadPhoto(
       const std::string& url,

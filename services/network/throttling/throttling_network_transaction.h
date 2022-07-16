@@ -46,6 +46,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransaction
   explicit ThrottlingNetworkTransaction(
       std::unique_ptr<net::HttpTransaction> network_transaction);
 
+  ThrottlingNetworkTransaction(const ThrottlingNetworkTransaction&) = delete;
+  ThrottlingNetworkTransaction& operator=(const ThrottlingNetworkTransaction&) =
+      delete;
+
   ~ThrottlingNetworkTransaction() override;
 
   // HttpTransaction methods:
@@ -122,8 +126,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransaction
 
   // True if Fail was already invoked.
   bool failed_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottlingNetworkTransaction);
 };
 
 }  // namespace network

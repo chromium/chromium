@@ -26,11 +26,7 @@ source_set("common_constants") {
 
   deps = [ "//build:chromecast_buildflags" ]
 
-  configs += [
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 if (enable_extensions) {
@@ -47,6 +43,7 @@ if (enable_extensions) {
       "mojom/css_origin.mojom",
       "mojom/event_dispatcher.mojom",
       "mojom/event_router.mojom",
+      "mojom/execution_world.mojom",
       "mojom/feature_session_type.mojom",
       "mojom/frame.mojom",
       "mojom/guest_view.mojom",
@@ -278,7 +275,6 @@ if (enable_extensions) {
       "features/simple_feature.h",
       "file_util.cc",
       "file_util.h",
-      "guest_view/extensions_guest_view_messages.h",
       "hashed_extension_id.cc",
       "hashed_extension_id.h",
       "identifiability_metrics.cc",
@@ -343,12 +339,6 @@ if (enable_extensions) {
       "manifest_handlers/shared_module_info.h",
       "manifest_handlers/web_accessible_resources_info.cc",
       "manifest_handlers/web_accessible_resources_info.h",
-      "manifest_handlers/web_app_file_handler.cc",
-      "manifest_handlers/web_app_file_handler.h",
-      "manifest_handlers/web_app_linked_shortcut_items.cc",
-      "manifest_handlers/web_app_linked_shortcut_items.h",
-      "manifest_handlers/web_app_shortcut_icons_handler.cc",
-      "manifest_handlers/web_app_shortcut_icons_handler.h",
       "manifest_handlers/webview_info.cc",
       "manifest_handlers/webview_info.h",
       "manifest_url_handlers.cc",
@@ -396,6 +386,8 @@ if (enable_extensions) {
       "stack_frame.h",
       "switches.cc",
       "switches.h",
+      "trace_util.cc",
+      "trace_util.h",
       "url_pattern.cc",
       "url_pattern.h",
       "url_pattern_set.cc",
@@ -418,9 +410,6 @@ if (enable_extensions) {
 
     configs += [
       "//build/config:precompiled_headers",
-
-      # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-      "//build/config/compiler:no_size_t_to_int_warning",
       "//build/config/compiler:wexit_time_destructors",
     ]
 
@@ -563,9 +552,6 @@ if (enable_extensions) {
       "manifest_handlers/oauth2_manifest_unittest.cc",
       "manifest_handlers/replacement_apps_unittest.cc",
       "manifest_handlers/shared_module_manifest_unittest.cc",
-      "manifest_handlers/web_app_file_handler_manifest_unittest.cc",
-      "manifest_handlers/web_app_linked_shortcut_items_unittest.cc",
-      "manifest_handlers/web_app_shortcut_icons_handler_unittest.cc",
       "manifest_unittest.cc",
       "message_bundle_unittest.cc",
       "mojom/permission_set_mojom_traits_unittest.cc",
@@ -625,6 +611,14 @@ if (enable_extensions) {
 
   fuzzer_test("extension_fuzzer") {
     sources = [ "extension_fuzzer.cc" ]
+    deps = [
+      ":common",
+      "//base",
+    ]
+  }
+
+  fuzzer_test("extension_manifest_fuzzer") {
+    sources = [ "manifest_fuzzer.cc" ]
     deps = [
       ":common",
       "//base",

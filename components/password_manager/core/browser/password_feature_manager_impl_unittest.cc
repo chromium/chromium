@@ -42,8 +42,8 @@ TEST_F(PasswordFeatureManagerImplTest, GenerationEnabledIfUserIsOptedIn) {
   features.InitAndEnableFeature(
       password_manager::features::kEnablePasswordsAccountStorage);
 
-  sync_service_.SetAuthenticatedAccountInfo(account_);
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetAccountInfo(account_);
+  sync_service_.SetHasSyncConsent(false);
   sync_service_.SetDisableReasons({});
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
 
@@ -62,8 +62,8 @@ TEST_F(PasswordFeatureManagerImplTest,
   features.InitAndEnableFeature(
       password_manager::features::kEnablePasswordsAccountStorage);
 
-  sync_service_.SetAuthenticatedAccountInfo(account_);
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetAccountInfo(account_);
+  sync_service_.SetHasSyncConsent(false);
   sync_service_.SetDisableReasons({});
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   sync_service_.SetActiveDataTypes({});
@@ -84,8 +84,8 @@ TEST_F(PasswordFeatureManagerImplTest,
   features.InitAndDisableFeature(
       password_manager::features::kEnablePasswordsAccountStorage);
 
-  sync_service_.SetAuthenticatedAccountInfo(account_);
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetAccountInfo(account_);
+  sync_service_.SetHasSyncConsent(false);
   sync_service_.SetDisableReasons({});
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   sync_service_.SetActiveDataTypes({});

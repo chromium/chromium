@@ -11,7 +11,7 @@ PaintRecordBuilder::PaintRecordBuilder()
       paint_controller_(&own_paint_controller_.value()),
       context_(*paint_controller_) {
   paint_controller_->UpdateCurrentPaintChunkProperties(
-      nullptr, PropertyTreeState::Root());
+      PropertyTreeState::Root());
 }
 
 PaintRecordBuilder::PaintRecordBuilder(GraphicsContext& containing_context)
@@ -27,7 +27,6 @@ PaintRecordBuilder::~PaintRecordBuilder() = default;
 sk_sp<PaintRecord> PaintRecordBuilder::EndRecording(
     const PropertyTreeState& replay_state) {
   paint_controller_->CommitNewDisplayItems();
-  paint_controller_->FinishCycle();
   return paint_controller_->GetPaintArtifact().GetPaintRecord(replay_state);
 }
 

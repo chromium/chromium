@@ -44,6 +44,9 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   // Init().
   GuardedPageAllocator();
 
+  GuardedPageAllocator(const GuardedPageAllocator&) = delete;
+  GuardedPageAllocator& operator=(const GuardedPageAllocator&) = delete;
+
   // Configures this allocator to allocate up to max_alloced_pages pages at a
   // time, holding metadata for up to num_metadata allocations, from a pool of
   // total_pages pages, where:
@@ -234,8 +237,6 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   friend class CrashAnalyzerTest;
   FRIEND_TEST_ALL_PREFIXES(CrashAnalyzerTest, InternalError);
   FRIEND_TEST_ALL_PREFIXES(CrashAnalyzerTest, StackTraceCollection);
-
-  DISALLOW_COPY_AND_ASSIGN(GuardedPageAllocator);
 };
 
 }  // namespace internal

@@ -5,7 +5,6 @@
 #ifndef CONTENT_TEST_MOCK_OVERSCROLL_REFRESH_HANDLER_ANDROID_H_
 #define CONTENT_TEST_MOCK_OVERSCROLL_REFRESH_HANDLER_ANDROID_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/test/mock_overscroll_observer.h"
 #include "ui/android/overscroll_refresh_handler.h"
@@ -19,6 +18,12 @@ class MockOverscrollRefreshHandlerAndroid : public ui::OverscrollRefreshHandler,
                                             public MockOverscrollObserver {
  public:
   MockOverscrollRefreshHandlerAndroid();
+
+  MockOverscrollRefreshHandlerAndroid(
+      const MockOverscrollRefreshHandlerAndroid&) = delete;
+  MockOverscrollRefreshHandlerAndroid& operator=(
+      const MockOverscrollRefreshHandlerAndroid&) = delete;
+
   ~MockOverscrollRefreshHandlerAndroid() override;
 
   // ui::OverscrollRefreshHandler:
@@ -43,7 +48,6 @@ class MockOverscrollRefreshHandlerAndroid : public ui::OverscrollRefreshHandler,
   scoped_refptr<MessageLoopRunner> end_message_loop_runner_;
   bool seen_update_;
   bool pull_ended_;
-  DISALLOW_COPY_AND_ASSIGN(MockOverscrollRefreshHandlerAndroid);
 };
 
 }  // namespace content

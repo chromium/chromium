@@ -14,8 +14,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
-#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
-#include "third_party/blink/public/mojom/page/widget.mojom.h"
+#include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 
 namespace content {
 
@@ -59,6 +59,11 @@ class MockWidget : public blink::mojom::Widget {
                 bool was_evicted,
                 blink::mojom::RecordContentToVisibleTimeRequestPtr
                     record_tab_switch_time_request) override;
+  void RequestPresentationTimeForNextFrame(
+      base::TimeTicks show_request_timestamp,
+      blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
+      override;
+  void CancelPresentationTimeRequest() override;
 
  private:
   absl::optional<bool> is_hidden_;

@@ -4,14 +4,14 @@
 
 #include "fuchsia/runners/cast/create_web_message.h"
 
+#include "base/fuchsia/mem_buffer_util.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
-#include "fuchsia/base/mem_buffer_util.h"
 
 fuchsia::web::WebMessage CreateWebMessage(
     base::StringPiece message,
     std::unique_ptr<cast_api_bindings::MessagePort> port) {
   fuchsia::web::WebMessage web_message;
-  web_message.set_data(cr_fuchsia::MemBufferFromString(message, "msg"));
+  web_message.set_data(base::MemBufferFromString(message, "msg"));
   if (port) {
     fuchsia::web::OutgoingTransferable outgoing_transferable;
     outgoing_transferable.set_message_port(

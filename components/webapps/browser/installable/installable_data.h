@@ -9,9 +9,8 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/webapps/browser/installable/installable_logging.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -24,7 +23,7 @@ namespace webapps {
 struct InstallableData {
   InstallableData(std::vector<InstallableStatusCode> errors,
                   const GURL& manifest_url,
-                  const blink::Manifest& manifest,
+                  const blink::mojom::Manifest& manifest,
                   const GURL& primary_icon_url,
                   const SkBitmap* primary_icon,
                   bool has_maskable_primary_icon,
@@ -34,6 +33,10 @@ struct InstallableData {
                   const std::vector<SkBitmap>& screenshots,
                   bool valid_manifest,
                   bool has_worker);
+
+  InstallableData(const InstallableData&) = delete;
+  InstallableData& operator=(const InstallableData&) = delete;
+
   ~InstallableData();
 
   // Returns true if `errors` is empty or only has `WARN_NOT_OFFLINE_CAPABLE`.
@@ -53,7 +56,7 @@ struct InstallableData {
   const GURL& manifest_url;
 
   // The parsed web app manifest.
-  const blink::Manifest& manifest;
+  const blink::mojom::Manifest& manifest;
 
   // The URL of the chosen primary icon.
   const GURL& primary_icon_url;
@@ -92,9 +95,6 @@ struct InstallableData {
 
   // true if the site has a service worker with a fetch handler.
   const bool has_worker = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstallableData);
 };
 
 using InstallableCallback = base::OnceCallback<void(const InstallableData&)>;

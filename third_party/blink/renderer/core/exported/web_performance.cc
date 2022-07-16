@@ -75,13 +75,13 @@ WebPerformance::BackForwardCacheRestore() const {
       private_->timing()->BackForwardCacheRestore();
 
   WebVector<BackForwardCacheRestoreTiming> timings(restore_timings.size());
-  for (size_t i = 0; i < restore_timings.size(); i++) {
+  for (wtf_size_t i = 0; i < restore_timings.size(); i++) {
     timings[i].navigation_start =
         MillisecondsToSeconds(restore_timings[i].navigation_start);
     timings[i].first_paint =
         MillisecondsToSeconds(restore_timings[i].first_paint);
-    for (size_t j = 0; j < restore_timings[i].request_animation_frames.size();
-         j++) {
+    for (wtf_size_t j = 0;
+         j < restore_timings[i].request_animation_frames.size(); j++) {
       timings[i].request_animation_frames[j] =
           MillisecondsToSeconds(restore_timings[i].request_animation_frames[j]);
     }
@@ -217,21 +217,24 @@ base::TimeTicks WebPerformance::LargestContentfulPaintAsMonotonicTime() const {
 }
 
 double WebPerformance::ExperimentalLargestImagePaint() const {
-  return MillisecondsToSeconds(
-      private_->timing()->ExperimentalLargestImagePaint());
+  return 0.0;
 }
 
 uint64_t WebPerformance::ExperimentalLargestImagePaintSize() const {
-  return private_->timing()->ExperimentalLargestImagePaintSize();
+  return 0u;
+}
+
+LargestContentfulPaintTypeMask WebPerformance::LargestContentfulPaintType()
+    const {
+  return private_->timing()->LargestContentfulPaintType();
 }
 
 double WebPerformance::ExperimentalLargestTextPaint() const {
-  return MillisecondsToSeconds(
-      private_->timing()->ExperimentalLargestTextPaint());
+  return 0.0;
 }
 
 uint64_t WebPerformance::ExperimentalLargestTextPaintSize() const {
-  return private_->timing()->ExperimentalLargestTextPaintSize();
+  return 0u;
 }
 
 double WebPerformance::FirstEligibleToPaint() const {

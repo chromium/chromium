@@ -10,6 +10,7 @@ mojom("mojom") {
   public_deps = [
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
   ]
 
   cpp_typemaps = [

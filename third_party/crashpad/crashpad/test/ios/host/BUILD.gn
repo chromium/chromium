@@ -42,6 +42,7 @@ static_library("app_host_sources") {
     ":app_shared_sources",
     "../../../build:ios_enable_arc",
     "../../../client",
+    "../../../snapshot",
     "../../../third_party/edo",
   ]
   frameworks = [
@@ -50,8 +51,21 @@ static_library("app_host_sources") {
   ]
 }
 
+# TODO(justincohen): Codesign crashy_initializer.so so it can run on devices.
+bundle_data("crashy_module_bundle") {
+  testonly = true
+  sources =
+      [ "$root_out_dir/crashpad_snapshot_test_module_crashy_initializer.so" ]
+  outputs = [ "{{bundle_contents_dir}}/crashpad_snapshot_test_module_crashy_initializer.so" ]
+  public_deps =
+      [ "../../../snapshot:crashpad_snapshot_test_module_crashy_initializer" ]
+}
+
 ios_app_bundle("ios_crash_xcuitests") {
   info_plist = "Info.plist"
   testonly = true
-  deps = [ ":app_host_sources" ]
+  deps = [
+    ":app_host_sources",
+    ":crashy_module_bundle",
+  ]
 }

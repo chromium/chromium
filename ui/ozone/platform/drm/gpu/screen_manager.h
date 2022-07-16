@@ -10,7 +10,7 @@
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/trace_event/traced_value.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
@@ -54,6 +54,10 @@ class ScreenManager {
   using ControllerConfigsList = std::vector<ControllerConfigParams>;
 
   ScreenManager();
+
+  ScreenManager(const ScreenManager&) = delete;
+  ScreenManager& operator=(const ScreenManager&) = delete;
+
   virtual ~ScreenManager();
 
   // Register a display controller. This must be called before trying to
@@ -91,6 +95,8 @@ class ScreenManager {
   // Updates the mapping between display controllers and windows such that a
   // controller will be associated with at most one window.
   void UpdateControllerToWindowMapping();
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
 
  private:
   using HardwareDisplayControllers =
@@ -187,8 +193,6 @@ class ScreenManager {
   HardwareDisplayControllers controllers_;
 
   WidgetToWindowMap window_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenManager);
 };
 
 }  // namespace ui

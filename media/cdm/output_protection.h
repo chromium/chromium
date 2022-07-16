@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -16,6 +15,10 @@ namespace media {
 class MEDIA_EXPORT OutputProtection {
  public:
   OutputProtection() = default;
+
+  OutputProtection(const OutputProtection&) = delete;
+  OutputProtection& operator=(const OutputProtection&) = delete;
+
   virtual ~OutputProtection() = default;
 
   using QueryStatusCB = base::OnceCallback<
@@ -65,9 +68,6 @@ class MEDIA_EXPORT OutputProtection {
   //   call QueryStatus().
   virtual void EnableProtection(uint32_t desired_protection_mask,
                                 EnableProtectionCB callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OutputProtection);
 };
 
 }  // namespace media

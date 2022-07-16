@@ -84,7 +84,13 @@ _DESIRED_VERSIONS = [
     '89.0.4389.105',
     '90.0.4430.82',
     '91.0.4472.120',
-    '92.0.4515.70',  # Beta
+    '92.0.4515.70',
+    '93.0.4577.37',
+    '94.0.4606.6',
+    '94.0.4606.85',
+    '95.0.4638.7',
+    '96.0.4664.6',
+    '97.0.4692.9',
 ]
 
 
@@ -230,7 +236,7 @@ def main():
 
     if args.sync:
       subprocess.check_call(
-          [_GSUTIL, '-m', 'rsync', '-J', '-r', staging_dir, _PUSH_URL])
+          [_GSUTIL, '-m', 'rsync', '-r', staging_dir, _PUSH_URL])
       milestones_json = _PUSH_URL + 'milestones.json'
       # The main index.html page has no authentication code, so make .json file
       # world-readable.

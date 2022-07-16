@@ -28,7 +28,7 @@
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/drive/event_logger.h"
 #include "content/public/browser/browser_thread.h"
-#include "google_apis/drive/task_util.h"
+#include "google_apis/common/task_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
@@ -43,7 +43,7 @@ FileManagerPrivateAddMountFunction::FileManagerPrivateAddMountFunction() =
 
 ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
   using file_manager_private::AddMount::Params;
-  const std::unique_ptr<Params> params = Params::Create(*args_);
+  const std::unique_ptr<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -69,7 +69,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
 
     std::vector<storage::FileSystemURL> urls;
     const storage::FileSystemURL url =
-        file_system_context->CrackURL(GURL(params->source));
+        file_system_context->CrackURLInFirstPartyContext(GURL(params->source));
     urls.push_back(url);
 
     notifier->NotifyFileTasks(urls);
@@ -94,7 +94,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
 
 ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
   using file_manager_private::RemoveMount::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -155,7 +155,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetVolumeMetadataListFunction::Run() {
-  if (args_->GetSize())
+  if (!args().empty())
     return RespondNow(Error("Invalid arguments"));
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());

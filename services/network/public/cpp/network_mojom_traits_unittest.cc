@@ -17,6 +17,10 @@ namespace {
 
 class NetworkStructTraitsTest : public testing::Test,
                                 public mojom::TraitsTestService {
+ public:
+  NetworkStructTraitsTest(const NetworkStructTraitsTest&) = delete;
+  NetworkStructTraitsTest& operator=(const NetworkStructTraitsTest&) = delete;
+
  protected:
   NetworkStructTraitsTest() = default;
 
@@ -36,7 +40,6 @@ class NetworkStructTraitsTest : public testing::Test,
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   mojo::ReceiverSet<TraitsTestService> traits_test_receivers_;
-  DISALLOW_COPY_AND_ASSIGN(NetworkStructTraitsTest);
 };
 
 }  // namespace

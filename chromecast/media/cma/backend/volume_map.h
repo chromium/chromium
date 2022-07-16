@@ -28,6 +28,9 @@ class VolumeMap {
   // For testing.
   VolumeMap(std::unique_ptr<CastAudioJsonProvider> config_provider);
 
+  VolumeMap(const VolumeMap&) = delete;
+  VolumeMap& operator=(const VolumeMap&) = delete;
+
   ~VolumeMap();
 
   float VolumeToDbFS(float volume);
@@ -50,8 +53,6 @@ class VolumeMap {
   std::vector<LevelToDb> volume_map_;
 
   std::unique_ptr<CastAudioJsonProvider> config_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(VolumeMap);
 };
 
 }  // namespace media

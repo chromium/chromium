@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,6 +31,12 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
                                            public display::DisplayObserver {
  public:
   ChromeBrowserMainExtraPartsMetrics();
+
+  ChromeBrowserMainExtraPartsMetrics(
+      const ChromeBrowserMainExtraPartsMetrics&) = delete;
+  ChromeBrowserMainExtraPartsMetrics& operator=(
+      const ChromeBrowserMainExtraPartsMetrics&) = delete;
+
   ~ChromeBrowserMainExtraPartsMetrics() override;
 
   // Overridden from ChromeBrowserMainExtraParts:
@@ -60,9 +65,9 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 
-#if defined(USE_OZONE) || defined(USE_X11)
+#if defined(USE_OZONE)
   std::unique_ptr<ui::InputDeviceEventObserver> input_device_event_observer_;
-#endif  // defined(USE_OZONE) || defined(USE_X11)
+#endif  // defined(USE_OZONE)
 
 #if defined(OS_MAC) || defined(OS_WIN)
   // Tracks coarse usage scenarios that affect performance during a given
@@ -77,8 +82,6 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   // scenarios and power consumption.
   std::unique_ptr<PowerMetricsReporter> power_metrics_reporter_;
 #endif  // defined(OS_MAC) || defined (OS_WIN)
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsMetrics);
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_BROWSER_MAIN_EXTRA_PARTS_METRICS_H_

@@ -10,6 +10,7 @@
 #include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 

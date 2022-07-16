@@ -11,7 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -34,7 +34,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -73,10 +72,14 @@ void CloseArcPrintSession(WebContents* initiator) {
 #endif
 
 // A ui::WebDialogDelegate that specifies the print preview dialog appearance.
-class PrintPreviewDialogDelegate : public ui::WebDialogDelegate,
-                                   public content::WebContentsObserver {
+class PrintPreviewDialogDelegate : public ui::WebDialogDelegate {
  public:
   explicit PrintPreviewDialogDelegate(WebContents* initiator);
+
+  PrintPreviewDialogDelegate(const PrintPreviewDialogDelegate&) = delete;
+  PrintPreviewDialogDelegate& operator=(const PrintPreviewDialogDelegate&) =
+      delete;
+
   ~PrintPreviewDialogDelegate() override;
 
   ui::ModalType GetDialogModalType() const override;
@@ -93,15 +96,14 @@ class PrintPreviewDialogDelegate : public ui::WebDialogDelegate,
   bool ShouldShowDialogTitle() const override;
 
  private:
-  WebContents* initiator() const { return web_contents(); }
+  WebContents* initiator() const { return web_contents_.get(); }
 
+  base::WeakPtr<content::WebContents> web_contents_;
   bool on_dialog_closed_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewDialogDelegate);
 };
 
 PrintPreviewDialogDelegate::PrintPreviewDialogDelegate(WebContents* initiator)
-    : content::WebContentsObserver(initiator) {}
+    : web_contents_(initiator->GetWeakPtr()) {}
 
 PrintPreviewDialogDelegate::~PrintPreviewDialogDelegate() = default;
 
@@ -347,8 +349,7 @@ void PrintPreviewDialogController::OnInitiatorNavigated(
     static const ui::PageTransition kTransitions[] = {
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-        ui::PAGE_TRANSITION_LINK,
-    };
+        ui::PAGE_TRANSITION_LINK, ui::PAGE_TRANSITION_AUTO_BOOKMARK};
     ui::PageTransition type = details.entry->GetTransitionType();
     for (ui::PageTransition transition : kTransitions) {
       if (ui::PageTransitionTypeIncludingQualifiersIs(type, transition))

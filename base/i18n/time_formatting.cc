@@ -193,7 +193,7 @@ bool TimeDurationFormat(const TimeDelta time,
                         std::u16string* out) {
   DCHECK(out);
   UErrorCode status = U_ZERO_ERROR;
-  const int total_minutes = ClampRound(time / base::TimeDelta::FromMinutes(1));
+  const int total_minutes = ClampRound(time / base::Minutes(1));
   const int hours = total_minutes / 60;
   const int minutes = total_minutes % 60;
   UMeasureFormatWidth u_width = DurationWidthToMeasureWidth(width);

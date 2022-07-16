@@ -20,6 +20,12 @@
 class BackgroundSyncMetricsBrowserTest : public InProcessBrowserTest {
  public:
   BackgroundSyncMetricsBrowserTest() = default;
+
+  BackgroundSyncMetricsBrowserTest(const BackgroundSyncMetricsBrowserTest&) =
+      delete;
+  BackgroundSyncMetricsBrowserTest& operator=(
+      const BackgroundSyncMetricsBrowserTest&) = delete;
+
   ~BackgroundSyncMetricsBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -36,7 +42,7 @@ class BackgroundSyncMetricsBrowserTest : public InProcessBrowserTest {
     // recorded.
     ASSERT_TRUE(embedded_test_server()->Start());
     GURL url(embedded_test_server()->GetURL("/links.html"));
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
  protected:
@@ -50,14 +56,13 @@ class BackgroundSyncMetricsBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> recorder_;
   std::unique_ptr<BackgroundSyncMetrics> background_sync_metrics_;
   std::unique_ptr<BackgroundSyncDelegateImpl> background_sync_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncMetricsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(BackgroundSyncMetricsBrowserTest,
                        OneShotBackgroundSyncUkmEventsAreRecorded) {
   background_sync_metrics_->MaybeRecordOneShotSyncRegistrationEvent(
-      url::Origin::Create(embedded_test_server()->base_url().GetOrigin()),
+      url::Origin::Create(
+          embedded_test_server()->base_url().DeprecatedGetOriginAsURL()),
       /* can_fire= */ true,
       /* is_reregistered= */ false);
   WaitForUkm();
@@ -75,7 +80,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncMetricsBrowserTest,
   }
 
   background_sync_metrics_->MaybeRecordOneShotSyncCompletionEvent(
-      url::Origin::Create(embedded_test_server()->base_url().GetOrigin()),
+      url::Origin::Create(
+          embedded_test_server()->base_url().DeprecatedGetOriginAsURL()),
       /* status_code= */ blink::ServiceWorkerStatusCode::kOk,
       /* num_attempts= */ 2, /* max_attempts= */ 5);
   WaitForUkm();
@@ -98,7 +104,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncMetricsBrowserTest,
 IN_PROC_BROWSER_TEST_F(BackgroundSyncMetricsBrowserTest,
                        PeriodicBackgroundSyncUkmEventsAreRecorded) {
   background_sync_metrics_->MaybeRecordPeriodicSyncRegistrationEvent(
-      url::Origin::Create(embedded_test_server()->base_url().GetOrigin()),
+      url::Origin::Create(
+          embedded_test_server()->base_url().DeprecatedGetOriginAsURL()),
       /* min_interval= */ 1000,
       /* is_reregistered= */ false);
   WaitForUkm();
@@ -119,7 +126,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncMetricsBrowserTest,
   }
 
   background_sync_metrics_->MaybeRecordPeriodicSyncEventCompletion(
-      url::Origin::Create(embedded_test_server()->base_url().GetOrigin()),
+      url::Origin::Create(
+          embedded_test_server()->base_url().DeprecatedGetOriginAsURL()),
       /* status_code= */ blink::ServiceWorkerStatusCode::kOk,
       /* num_attempts= */ 2, /* max_attempts= */ 5);
   WaitForUkm();

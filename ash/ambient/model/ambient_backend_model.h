@@ -11,7 +11,6 @@
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/gfx/image/image_skia.h"

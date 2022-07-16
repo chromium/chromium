@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -52,6 +51,9 @@ class DrmWindow {
   DrmWindow(gfx::AcceleratedWidget widget,
             DrmDeviceManager* device_manager,
             ScreenManager* screen_manager);
+
+  DrmWindow(const DrmWindow&) = delete;
+  DrmWindow& operator=(const DrmWindow&) = delete;
 
   ~DrmWindow();
 
@@ -123,8 +125,6 @@ class DrmWindow {
   DrmOverlayPlaneList last_submitted_planes_;
 
   bool force_buffer_reallocation_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmWindow);
 };
 
 }  // namespace ui

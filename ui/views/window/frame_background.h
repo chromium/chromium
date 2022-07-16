@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_WINDOW_FRAME_BACKGROUND_H_
 #define UI_VIEWS_WINDOW_FRAME_BACKGROUND_H_
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/views_export.h"
@@ -28,6 +27,10 @@ class View;
 class VIEWS_EXPORT FrameBackground {
  public:
   FrameBackground();
+
+  FrameBackground(const FrameBackground&) = delete;
+  FrameBackground& operator=(const FrameBackground&) = delete;
+
   ~FrameBackground();
 
   // Sets the color to draw under the frame images.
@@ -120,8 +123,6 @@ class VIEWS_EXPORT FrameBackground {
 
   // Vertical inset for theme image when drawing maximized.
   int maximized_top_inset_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameBackground);
 };
 
 }  // namespace views

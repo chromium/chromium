@@ -34,6 +34,10 @@ class PasswordsCounter : public browsing_data::BrowsingDataCounter {
                     bool sync_enabled,
                     std::vector<std::string> domain_examples,
                     std::vector<std::string> account_domain_examples);
+
+    PasswordsResult(const PasswordsResult&) = delete;
+    PasswordsResult& operator=(const PasswordsResult&) = delete;
+
     ~PasswordsResult() override;
 
     ResultInt account_passwords() const { return account_passwords_; }
@@ -50,8 +54,6 @@ class PasswordsCounter : public browsing_data::BrowsingDataCounter {
     ResultInt account_passwords_ = 0;
     std::vector<std::string> domain_examples_;
     std::vector<std::string> account_domain_examples_;
-
-    DISALLOW_COPY_AND_ASSIGN(PasswordsResult);
   };
 
   PasswordsCounter(

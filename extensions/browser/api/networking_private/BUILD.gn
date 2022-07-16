@@ -47,7 +47,7 @@ source_set("networking_private") {
               ]
 
     deps += [ "//dbus" ]
-  } else if (is_win || is_mac) {
+  } else if (is_win || is_mac || is_fuchsia) {
     sources = default_sources + [
                 "networking_private_event_router_nonchromeos.cc",
                 "networking_private_service_client.cc",

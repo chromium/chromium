@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace chromecast {
@@ -33,6 +33,9 @@ class DependencyCount : public base::RefCountedThreadSafe<DependencyCount> {
         disabling_(false) {
     DCHECK(component_);
   }
+
+  DependencyCount(const DependencyCount&) = delete;
+  DependencyCount& operator=(const DependencyCount&) = delete;
 
   void Detach() {
     DCHECK(task_runner_->BelongsToCurrentThread());
@@ -160,8 +163,6 @@ class DependencyCount : public base::RefCountedThreadSafe<DependencyCount> {
   AtomicWord dep_count_;
   bool disabling_;
   std::set<DependencyBase*> strong_dependents_;
-
-  DISALLOW_COPY_AND_ASSIGN(DependencyCount);
 };
 
 DependencyBase::DependencyBase(const WeakReferenceBase& dependency,

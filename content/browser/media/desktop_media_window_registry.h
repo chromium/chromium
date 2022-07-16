@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_MEDIA_DESKTOP_MEDIA_WINDOW_REGISTRY_H_
 #define CONTENT_BROWSER_MEDIA_DESKTOP_MEDIA_WINDOW_REGISTRY_H_
 
-#include "base/macros.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
@@ -15,6 +14,11 @@ class DesktopMediaWindowRegistry {
   using Id = intptr_t;
 
   static DesktopMediaWindowRegistry* GetInstance();
+
+  DesktopMediaWindowRegistry(const DesktopMediaWindowRegistry&) = delete;
+  DesktopMediaWindowRegistry& operator=(const DesktopMediaWindowRegistry&) =
+      delete;
+
   virtual ~DesktopMediaWindowRegistry();
 
   virtual Id RegisterWindow(gfx::NativeWindow window) = 0;
@@ -22,8 +26,6 @@ class DesktopMediaWindowRegistry {
 
  protected:
   DesktopMediaWindowRegistry();
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaWindowRegistry);
 };
 
 }  // namespace content

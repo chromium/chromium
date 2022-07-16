@@ -25,6 +25,9 @@ class ShortcutsBackendFactory
       ChromeBrowserState* browser_state);
   static ShortcutsBackendFactory* GetInstance();
 
+  ShortcutsBackendFactory(const ShortcutsBackendFactory&) = delete;
+  ShortcutsBackendFactory& operator=(const ShortcutsBackendFactory&) = delete;
+
  private:
   friend class base::NoDestructor<ShortcutsBackendFactory>;
 
@@ -35,8 +38,6 @@ class ShortcutsBackendFactory
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ShortcutsBackendFactory);
 };
 
 }  // namespace ios

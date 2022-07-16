@@ -17,6 +17,10 @@ namespace test {
 class TestSupportImpl : public mojo::test::TestSupport {
  public:
   TestSupportImpl();
+
+  TestSupportImpl(const TestSupportImpl&) = delete;
+  TestSupportImpl& operator=(const TestSupportImpl&) = delete;
+
   ~TestSupportImpl() override;
 
   void LogPerfResult(const char* test_name,
@@ -26,9 +30,6 @@ class TestSupportImpl : public mojo::test::TestSupport {
   FILE* OpenSourceRootRelativeFile(const char* relative_path) override;
   char** EnumerateSourceRootRelativeDirectory(
       const char* relative_path) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestSupportImpl);
 };
 
 }  // namespace test

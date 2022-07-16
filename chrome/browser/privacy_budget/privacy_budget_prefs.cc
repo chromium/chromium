@@ -8,16 +8,16 @@
 
 namespace prefs {
 
-const char kPrivacyBudgetActiveSurfaces[] = "privacy_budget.active_surfaces";
-const char kPrivacyBudgetRetiredSurfaces[] = "privacy_budget.retired_surfaces";
-const char kPrivacyBudgetSeed[] = "privacy_budget.randomizer_seed";
 const char kPrivacyBudgetGeneration[] = "privacy_budget.generation";
+const char kPrivacyBudgetSeenSurfaces[] = "privacy_budget.seen";
+const char kPrivacyBudgetSelectedOffsets[] = "privacy_budget.selected";
+const char kPrivacyBudgetSelectedBlock[] = "privacy_budget.block_offset";
 
 void RegisterPrivacyBudgetPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(kPrivacyBudgetActiveSurfaces, std::string());
-  registry->RegisterStringPref(kPrivacyBudgetRetiredSurfaces, std::string());
-  registry->RegisterUint64Pref(kPrivacyBudgetSeed, 0u);
   registry->RegisterIntegerPref(kPrivacyBudgetGeneration, 0);
+  registry->RegisterStringPref(kPrivacyBudgetSeenSurfaces, std::string());
+  registry->RegisterStringPref(kPrivacyBudgetSelectedOffsets, std::string());
+  registry->RegisterIntegerPref(kPrivacyBudgetSelectedBlock, -1);
 }
 
 }  // namespace prefs

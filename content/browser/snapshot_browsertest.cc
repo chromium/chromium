@@ -147,13 +147,10 @@ class SnapshotBrowserTest : public ContentBrowserTest {
 
   void SyncSnapshotCallback(content::RenderWidgetHostImpl* rwhi,
                             const gfx::Image& image) {
-    bool found = false;
     for (auto iter = expected_snapshots_.begin();
          iter != expected_snapshots_.end(); ++iter) {
       const SerialSnapshot& expected = *iter;
       if (expected.host == rwhi) {
-        found = true;
-
         const SkBitmap* bitmap = image.ToSkBitmap();
         SkColor color = bitmap->getColor(1, 1);
 

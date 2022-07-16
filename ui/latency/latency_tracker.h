@@ -5,7 +5,6 @@
 #ifndef UI_LATENCY_LATENCY_TRACKER_H_
 #define UI_LATENCY_LATENCY_TRACKER_H_
 
-#include "base/macros.h"
 #include "ui/latency/latency_info.h"
 
 namespace ui {
@@ -15,6 +14,10 @@ namespace ui {
 class LatencyTracker {
  public:
   LatencyTracker();
+
+  LatencyTracker(const LatencyTracker&) = delete;
+  LatencyTracker& operator=(const LatencyTracker&) = delete;
+
   ~LatencyTracker();
 
   // Terminates latency tracking for events that triggered rendering, also
@@ -34,12 +37,16 @@ class LatencyTracker {
     INPUT_METRIC_EVENT_MAX = SCROLL_UPDATE_WHEEL
   };
 
-  base::TimeDelta prev_duration_;
-  bool prev_scroll_update_reported_ = false;
-  int total_update_events_ = 0;
-  int janky_update_events_ = 0;
-  base::TimeDelta total_update_duration_;
-  base::TimeDelta janky_update_duration_;
+  // Data holder for all intermediate state for jank tracking.
+  struct JankTrackerState {
+    int total_update_events_ = 0;
+    int janky_update_events_ = 0;
+    bool prev_scroll_update_reported_ = false;
+    base::TimeDelta prev_duration_;
+    base::TimeDelta total_update_duration_;
+    base::TimeDelta janky_update_duration_;
+  };
+  JankTrackerState jank_state_;
 
   void ReportUkmScrollLatency(
       const InputMetricEvent& metric_event,
@@ -59,8 +66,6 @@ class LatencyTracker {
                         base::TimeTicks gpu_swap_end_timestamp,
                         const LatencyInfo& latency,
                         bool first_frame);
-
-  DISALLOW_COPY_AND_ASSIGN(LatencyTracker);
 };
 
 }  // namespace latency

@@ -54,7 +54,8 @@ semantics {
 }
 policy {
   cookies_allowed: YES
-  setting: "user"
+  cookies_store: "user"
+  setting: "TODO(crbug.com/1231780): Add this field."
   policy_exception_justification:
     "This feature is only enabled explicitly by flag."
 })");

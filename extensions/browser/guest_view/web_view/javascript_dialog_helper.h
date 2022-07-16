@@ -15,6 +15,10 @@ class WebViewGuest;
 class JavaScriptDialogHelper : public content::JavaScriptDialogManager {
  public:
   explicit JavaScriptDialogHelper(WebViewGuest* guest);
+
+  JavaScriptDialogHelper(const JavaScriptDialogHelper&) = delete;
+  JavaScriptDialogHelper& operator=(const JavaScriptDialogHelper&) = delete;
+
   ~JavaScriptDialogHelper() override;
 
   // JavaScriptDialogManager implementation.
@@ -42,8 +46,6 @@ class JavaScriptDialogHelper : public content::JavaScriptDialogManager {
 
   // Pointer to the webview that is being helped.
   WebViewGuest* const web_view_guest_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaScriptDialogHelper);
 };
 
 }  // namespace extensions

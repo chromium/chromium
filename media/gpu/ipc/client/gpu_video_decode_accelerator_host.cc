@@ -9,6 +9,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
+#include "ipc/ipc_mojo_bootstrap.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace media {
@@ -47,6 +48,13 @@ bool GpuVideoDecodeAcceleratorHost::Initialize(const Config& config,
   base::AutoLock lock(impl_lock_);
   if (!impl_)
     return false;
+
+  // Mojo will ignore our request to bind to a different thread than the main or
+  // IO thread unless we construct this object. It does this to avoid breaking
+  // use cases that depend on the behavior of ignoring other bindings, as
+  // detailed in the documentation for
+  // IPC::ScopedAllowOffSequenceChannelAssociatedBindings.
+  IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_binding;
 
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
       impl_->channel()->io_task_runner();

@@ -48,6 +48,7 @@ class CORE_EXPORT CounterStyleMap : public GarbageCollected<CounterStyleMap> {
 
   void ResolveExtendsFor(CounterStyle&);
   void ResolveFallbackFor(CounterStyle&);
+  void ResolveSpeakAsReferenceFor(CounterStyle&);
 
   static CounterStyleMap* CreateUACounterStyleMap();
   CounterStyle& CreateUACounterStyle(const AtomicString& name);

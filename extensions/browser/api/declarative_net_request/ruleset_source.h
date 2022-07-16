@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_RULESET_SOURCE_H_
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_RULESET_SOURCE_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -21,6 +22,23 @@ class RulesetMatcher;
 // Encapsulates information for a single extension ruleset.
 class RulesetSource {
  public:
+  // Bitflags to configure rule parsing behavior.
+  enum ParseFlags {
+    // Ignore all invalid or large regex rules.
+    kNone = 0,
+
+    // When an error is raised for a rule, further rule parsing is stopped. When
+    // a warning is raised for a rule, the problematic rule is skipped, but the
+    // parsing of the remaining rules continues. It is not possible to raise
+    // both an error and a warning for a rule.
+
+    kRaiseErrorOnInvalidRules = 1 << 0,
+    kRaiseWarningOnInvalidRules = 1 << 1,
+
+    kRaiseErrorOnLargeRegexRules = 1 << 2,
+    kRaiseWarningOnLargeRegexRules = 1 << 3
+  };
+
   RulesetSource(RulesetID id,
                 size_t rule_count_limit,
                 ExtensionId extension_id,
@@ -45,8 +63,8 @@ class RulesetSource {
   bool enabled_by_default() const { return enabled_by_default_; }
 
   // Indexes the given |rules| in indexed/flatbuffer format.
-  ParseInfo IndexRules(
-      std::vector<api::declarative_net_request::Rule> rules) const;
+  ParseInfo IndexRules(std::vector<api::declarative_net_request::Rule> rules,
+                       uint8_t parse_flags) const;
 
   // Creates a verified RulesetMatcher corresponding to the buffer in |data|.
   // Returns kSuccess on success along with the ruleset |matcher|.

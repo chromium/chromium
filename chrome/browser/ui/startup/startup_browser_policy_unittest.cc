@@ -40,17 +40,17 @@ class StartupBrowserPolicyUnitTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
 
-  // Helper function to add a profile with |profile_name| to |profile_manager|'s
+  // Helper function to add a profile to |profile_manager|'s
   // ProfileAttributesStorage, and return the profile created.
-  Profile* CreateTestingProfile(ProfileManager* profile_manager,
-                                const std::string& profile_name) {
+  Profile* CreateTestingProfile(ProfileManager* profile_manager) {
+    const std::string kProfileName = "Default";
     ProfileAttributesStorage& storage =
         profile_manager->GetProfileAttributesStorage();
     size_t num_profiles = storage.GetNumberOfProfiles();
-    base::FilePath path = temp_dir_.GetPath().AppendASCII(profile_name);
+    base::FilePath path = temp_dir_.GetPath().AppendASCII(kProfileName);
     ProfileAttributesInitParams params;
     params.profile_path = path;
-    params.profile_name = base::ASCIIToUTF16(profile_name.c_str());
+    params.profile_name = base::ASCIIToUTF16(kProfileName.c_str());
     storage.AddProfile(std::move(params));
     EXPECT_EQ(num_profiles + 1u, storage.GetNumberOfProfiles());
     return profile_manager->GetProfile(path);
@@ -152,7 +152,7 @@ TEST_F(StartupBrowserPolicyUnitTest, ForceEphemeralProfiles) {
       std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile = CreateTestingProfile(profile_manager, "path_1");
+  Profile* profile = CreateTestingProfile(profile_manager);
 
   EXPECT_TRUE(welcome::HasModulesToShow(profile));
 

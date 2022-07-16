@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_VIEWS_WIDGET_VIDEO_CAPTURE_DEVICE_MAC_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_VIEWS_WIDGET_VIDEO_CAPTURE_DEVICE_MAC_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "content/browser/media/capture/frame_sink_video_capture_device.h"

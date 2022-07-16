@@ -453,8 +453,8 @@ public class ToolbarSwipeLayout extends Layout {
         if (mSceneLayer != null) {
             int background_color = getBackgroundColor();
 
-            if (mLeftTab != null) mSceneLayer.update(mLeftTab, true, background_color);
-            if (mRightTab != null) mSceneLayer.update(mRightTab, false, background_color);
+            mSceneLayer.update(mLeftTab, true, background_color);
+            mSceneLayer.update(mRightTab, false, background_color);
         }
     }
 

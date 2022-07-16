@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -53,12 +52,12 @@ class MockIpcMessageSender : public IPC::Sender {
         .WillByDefault(DoAll(Invoke(MessageDeleter), Return(true)));
   }
 
+  MockIpcMessageSender(const MockIpcMessageSender&) = delete;
+  MockIpcMessageSender& operator=(const MockIpcMessageSender&) = delete;
+
   ~MockIpcMessageSender() override = default;
 
   MOCK_METHOD1(Send, bool(IPC::Message* message));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockIpcMessageSender);
 };
 
 class MockRequestPeer : public blink::WebRequestPeer {
@@ -66,6 +65,9 @@ class MockRequestPeer : public blink::WebRequestPeer {
   MockRequestPeer()
       : body_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC) {
   }
+
+  MockRequestPeer(const MockRequestPeer&) = delete;
+  MockRequestPeer& operator=(const MockRequestPeer&) = delete;
 
   MOCK_METHOD2(OnUploadProgress, void(uint64_t position, uint64_t size));
   MOCK_METHOD3(OnReceivedRedirect,
@@ -128,8 +130,6 @@ class MockRequestPeer : public blink::WebRequestPeer {
   mojo::SimpleWatcher body_watcher_;
   mojo::ScopedDataPipeConsumerHandle body_handle_;
   base::OnceClosure wait_for_body_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRequestPeer);
 };
 
 }  // namespace

@@ -255,7 +255,7 @@ bool TouchCalibrationData::CalibrationPointPairCompare(
   return pair_1.first < pair_2.first;
 }
 
-TouchCalibrationData::TouchCalibrationData() {}
+TouchCalibrationData::TouchCalibrationData() = default;
 
 TouchCalibrationData::TouchCalibrationData(
     const TouchCalibrationData::CalibrationPointPairQuad& point_pairs,
@@ -263,9 +263,10 @@ TouchCalibrationData::TouchCalibrationData(
     : point_pairs(point_pairs), bounds(bounds) {}
 
 TouchCalibrationData::TouchCalibrationData(
-    const TouchCalibrationData& calibration_data)
-    : point_pairs(calibration_data.point_pairs),
-      bounds(calibration_data.bounds) {}
+    const TouchCalibrationData& calibration_data) = default;
+
+TouchCalibrationData& TouchCalibrationData::operator=(
+    const TouchCalibrationData& calibration_data) = default;
 
 bool TouchCalibrationData::operator==(const TouchCalibrationData& other) const {
   if (bounds != other.bounds)

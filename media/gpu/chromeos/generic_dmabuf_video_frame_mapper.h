@@ -17,6 +17,10 @@ class MEDIA_GPU_EXPORT GenericDmaBufVideoFrameMapper : public VideoFrameMapper {
   static std::unique_ptr<GenericDmaBufVideoFrameMapper> Create(
       VideoPixelFormat format);
 
+  GenericDmaBufVideoFrameMapper(const GenericDmaBufVideoFrameMapper&) = delete;
+  GenericDmaBufVideoFrameMapper& operator=(
+      const GenericDmaBufVideoFrameMapper&) = delete;
+
   ~GenericDmaBufVideoFrameMapper() override = default;
   // VideoFrameMapper implementation.
   scoped_refptr<VideoFrame> Map(
@@ -24,8 +28,6 @@ class MEDIA_GPU_EXPORT GenericDmaBufVideoFrameMapper : public VideoFrameMapper {
 
  private:
   explicit GenericDmaBufVideoFrameMapper(VideoPixelFormat format);
-
-  DISALLOW_COPY_AND_ASSIGN(GenericDmaBufVideoFrameMapper);
 };
 
 }  // namespace media

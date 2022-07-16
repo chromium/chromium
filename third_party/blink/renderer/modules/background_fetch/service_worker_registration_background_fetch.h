@@ -23,6 +23,12 @@ class ServiceWorkerRegistrationBackgroundFetch final
 
   explicit ServiceWorkerRegistrationBackgroundFetch(
       ServiceWorkerRegistration* registration);
+
+  ServiceWorkerRegistrationBackgroundFetch(
+      const ServiceWorkerRegistrationBackgroundFetch&) = delete;
+  ServiceWorkerRegistrationBackgroundFetch& operator=(
+      const ServiceWorkerRegistrationBackgroundFetch&) = delete;
+
   virtual ~ServiceWorkerRegistrationBackgroundFetch();
 
   static ServiceWorkerRegistrationBackgroundFetch& From(
@@ -36,8 +42,6 @@ class ServiceWorkerRegistrationBackgroundFetch final
 
  private:
   Member<BackgroundFetchManager> background_fetch_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistrationBackgroundFetch);
 };
 
 }  // namespace blink

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -23,6 +22,10 @@ extern const char kDiceProtocolVersion[];
 class DiceHeaderHelper : public SigninHeaderHelper {
  public:
   explicit DiceHeaderHelper(AccountConsistencyMethod account_consistency);
+
+  DiceHeaderHelper(const DiceHeaderHelper&) = delete;
+  DiceHeaderHelper& operator=(const DiceHeaderHelper&) = delete;
+
   ~DiceHeaderHelper() override {}
 
   // Returns the parameters contained in the X-Chrome-ID-Consistency-Response
@@ -54,8 +57,6 @@ class DiceHeaderHelper : public SigninHeaderHelper {
   bool IsUrlEligibleForRequestHeader(const GURL& url) override;
 
   AccountConsistencyMethod account_consistency_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiceHeaderHelper);
 };
 
 }  // namespace signin

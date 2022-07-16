@@ -13,14 +13,9 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
-#include <objidl.h>
-#endif
-
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 
 class GURL;
@@ -67,6 +62,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   // Creates an OSExchangeData with the specified provider. OSExchangeData
   // takes ownership of the supplied provider.
   explicit OSExchangeData(std::unique_ptr<OSExchangeDataProvider> provider);
+
+  OSExchangeData(const OSExchangeData&) = delete;
+  OSExchangeData& operator=(const OSExchangeData&) = delete;
 
   ~OSExchangeData();
 
@@ -195,8 +193,6 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
  private:
   // Provides the actual data.
   std::unique_ptr<OSExchangeDataProvider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(OSExchangeData);
 };
 
 }  // namespace ui

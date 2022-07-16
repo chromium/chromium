@@ -13,21 +13,15 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {deselectItems, setSearchTerm} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {Command, MenuSource} from './constants.js';
-import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
-import {BookmarksPageState} from './types.js';
+import {StoreClientMixin} from './store_client_mixin.js';
 
-const BookmarksToolbarElementBase =
-    mixinBehaviors([StoreClient], PolymerElement) as {
-  new (): PolymerElement & BookmarksStoreClientInterface &
-      StoreObserver<BookmarksPageState>
-}
+const BookmarksToolbarElementBase = StoreClientMixin(PolymerElement);
 
 export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
   static get is() {
@@ -76,15 +70,9 @@ export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
 
   connectedCallback() {
     super.connectedCallback();
-    this.watch('searchTerm_', function(state: BookmarksPageState) {
-      return state.search.term;
-    });
-    this.watch('selectedItems_', function(state: BookmarksPageState) {
-      return state.selection.items;
-    });
-    this.watch('globalCanEdit_', function(state: BookmarksPageState) {
-      return state.prefs.canEdit;
-    });
+    this.watch('searchTerm_', state => state.search.term);
+    this.watch('selectedItems_', state => state.selection.items);
+    this.watch('globalCanEdit_', state => state.prefs.canEdit);
     this.updateFromStore();
   }
 
@@ -144,6 +132,12 @@ export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
 
   private getItemsSelectedString_(): string {
     return loadTimeData.getStringF('itemsSelected', this.selectedItems_.size);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'bookmarks-toolbar': BookmarksToolbarElement;
   }
 }
 

@@ -20,11 +20,11 @@ component("memory") {
   ]
   deps = [
     "//base",
-    "//base/util/memory_pressure",
     "//chromeos:chromeos_export",
     "//chromeos/dbus",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/resourced:resourced",
+    "//components/memory_pressure",
     "//crypto",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
   ]
@@ -34,8 +34,6 @@ component("memory") {
     "kstaled.h",
     "memory.cc",
     "memory.h",
-    "memory_ablation_study.cc",
-    "memory_ablation_study.h",
     "pagemap.cc",
     "pagemap.h",
     "pressure/system_memory_pressure_evaluator.cc",
@@ -51,15 +49,14 @@ source_set("unit_tests") {
   deps = [
     ":memory",
     "//base/test:test_support",
-    "//base/util/memory_pressure",
     "//build:chromeos_buildflags",
+    "//components/memory_pressure",
     "//mojo/core/embedder",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
     "//testing/gmock",
     "//testing/gtest",
   ]
   sources = [
-    "memory_ablation_study_unittest.cc",
     "pagemap_unittest.cc",
     "pressure/system_memory_pressure_evaluator_unittest.cc",
   ]

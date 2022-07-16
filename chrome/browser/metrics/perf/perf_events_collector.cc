@@ -12,12 +12,12 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/metrics/perf/cpu_identity.h"
 #include "chrome/browser/metrics/perf/process_type_collector.h"
@@ -429,25 +429,24 @@ void PerfCollector::SetCollectionParamsFromVariationParams(
   int64_t value;
   CollectionParams& collector_params = collection_params();
   if (GetInt64Param(params, "ProfileCollectionDurationSec", &value)) {
-    collector_params.collection_duration = base::TimeDelta::FromSeconds(value);
+    collector_params.collection_duration = base::Seconds(value);
   }
   if (GetInt64Param(params, "PeriodicProfilingIntervalMs", &value)) {
-    collector_params.periodic_interval =
-        base::TimeDelta::FromMilliseconds(value);
+    collector_params.periodic_interval = base::Milliseconds(value);
   }
   if (GetInt64Param(params, "ResumeFromSuspend::SamplingFactor", &value)) {
     collector_params.resume_from_suspend.sampling_factor = value;
   }
   if (GetInt64Param(params, "ResumeFromSuspend::MaxDelaySec", &value)) {
     collector_params.resume_from_suspend.max_collection_delay =
-        base::TimeDelta::FromSeconds(value);
+        base::Seconds(value);
   }
   if (GetInt64Param(params, "RestoreSession::SamplingFactor", &value)) {
     collector_params.restore_session.sampling_factor = value;
   }
   if (GetInt64Param(params, "RestoreSession::MaxDelaySec", &value)) {
     collector_params.restore_session.max_collection_delay =
-        base::TimeDelta::FromSeconds(value);
+        base::Seconds(value);
   }
 
   const std::string best_cpu_specifier =

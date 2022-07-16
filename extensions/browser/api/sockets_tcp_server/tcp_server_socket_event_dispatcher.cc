@@ -170,10 +170,10 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
 
     // Since we got an error, the socket is now "paused" until the application
     // "resumes" it.
-    ResumableTCPServerSocket* socket =
+    ResumableTCPServerSocket* server_socket =
         params.server_sockets->Get(params.extension_id, params.socket_id);
-    if (socket) {
-      socket->set_paused(true);
+    if (server_socket) {
+      server_socket->set_paused(true);
     }
   }
 }

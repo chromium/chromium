@@ -11,11 +11,11 @@
 
 #include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/spellcheck/browser/spellcheck_dictionary.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_data.h"
@@ -46,6 +46,10 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
   class Change {
    public:
     Change();
+
+    Change(const Change&) = delete;
+    Change& operator=(const Change&) = delete;
+
     ~Change();
 
     // Adds |word| in this change.
@@ -91,8 +95,6 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
 
     // Whether to clear everything before adding words.
     bool clear_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(Change);
   };
 
   // Interface to implement for dictionary load and change observers.
@@ -107,6 +109,10 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
 
   struct LoadFileResult {
     LoadFileResult();
+
+    LoadFileResult(const LoadFileResult&) = delete;
+    LoadFileResult& operator=(const LoadFileResult&) = delete;
+
     ~LoadFileResult();
 
     // The contents of the custom dictionary file or its backup. Does not
@@ -116,14 +122,16 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
     // True when the custom dictionary file on disk has a valid checksum and
     // contains only valid words.
     bool is_valid_file;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(LoadFileResult);
   };
 
   // The dictionary will be saved in |dictionary_directory_name|.
   explicit SpellcheckCustomDictionary(
       const base::FilePath& dictionary_directory_name);
+
+  SpellcheckCustomDictionary(const SpellcheckCustomDictionary&) = delete;
+  SpellcheckCustomDictionary& operator=(const SpellcheckCustomDictionary&) =
+      delete;
+
   ~SpellcheckCustomDictionary() override;
 
   // Returns the in-memory cache of words in the custom dictionary.
@@ -244,8 +252,6 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
 
   // Used to create weak pointers for an instance of this class.
   base::WeakPtrFactory<SpellcheckCustomDictionary> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckCustomDictionary);
 };
 
 #endif  // CHROME_BROWSER_SPELLCHECKER_SPELLCHECK_CUSTOM_DICTIONARY_H_

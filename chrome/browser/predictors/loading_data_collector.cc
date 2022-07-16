@@ -322,7 +322,7 @@ void LoadingDataCollector::CleanupAbandonedNavigations(
     stats_collector_->CleanupAbandonedStats();
 
   static const base::TimeDelta max_navigation_age =
-      base::TimeDelta::FromSeconds(config_.max_navigation_lifetime_seconds);
+      base::Seconds(config_.max_navigation_lifetime_seconds);
 
   base::TimeTicks time_now = base::TimeTicks::Now();
   for (auto it = inflight_navigations_.begin();

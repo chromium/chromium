@@ -5,7 +5,6 @@
 #ifndef UI_WM_CORE_TRANSIENT_WINDOW_CONTROLLER_H_
 #define UI_WM_CORE_TRANSIENT_WINDOW_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/wm/core/wm_core_export.h"
@@ -20,6 +19,11 @@ class WM_CORE_EXPORT TransientWindowController
     : public aura::client::TransientWindowClient {
  public:
   TransientWindowController();
+
+  TransientWindowController(const TransientWindowController&) = delete;
+  TransientWindowController& operator=(const TransientWindowController&) =
+      delete;
+
   ~TransientWindowController() override;
 
   // Returns the single TransientWindowController instance.
@@ -44,8 +48,6 @@ class WM_CORE_EXPORT TransientWindowController
 
   base::ObserverList<aura::client::TransientWindowClientObserver>::Unchecked
       observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransientWindowController);
 };
 
 }  // namespace wm

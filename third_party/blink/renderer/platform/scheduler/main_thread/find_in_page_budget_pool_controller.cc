@@ -15,8 +15,7 @@ namespace scheduler {
 
 namespace {
 // We will accumulate at most 1000ms for find-in-page budget.
-constexpr base::TimeDelta kFindInPageMaxBudget =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kFindInPageMaxBudget = base::Seconds(1);
 // At least 25% of the total CPU time will go to find-in-page tasks.
 // TODO(rakina): Experiment with this number to figure out the right percentage
 // for find-in-page. Currently this is following CompositorPriorityExperiments.

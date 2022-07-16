@@ -6,7 +6,6 @@
 #define UI_EVENTS_NULL_EVENT_TARGETER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/events/event_targeter.h"
 #include "ui/events/events_export.h"
 
@@ -17,15 +16,16 @@ namespace ui {
 class EVENTS_EXPORT NullEventTargeter : public EventTargeter {
  public:
   NullEventTargeter();
+
+  NullEventTargeter(const NullEventTargeter&) = delete;
+  NullEventTargeter& operator=(const NullEventTargeter&) = delete;
+
   ~NullEventTargeter() override;
 
   // EventTargeter:
   EventTarget* FindTargetForEvent(EventTarget* root, Event* event) override;
   EventTarget* FindNextBestTarget(EventTarget* previous_target,
                                   Event* event) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NullEventTargeter);
 };
 
 }  // namespace ui

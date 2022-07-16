@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/image/image.h"
 
@@ -29,6 +28,10 @@ class ExtensionIconManager {
   };
 
   ExtensionIconManager();
+
+  ExtensionIconManager(const ExtensionIconManager&) = delete;
+  ExtensionIconManager& operator=(const ExtensionIconManager&) = delete;
+
   virtual ~ExtensionIconManager();
 
   // Start loading the icon for the given extension.
@@ -68,8 +71,6 @@ class ExtensionIconManager {
   Observer* observer_ = nullptr;
 
   base::WeakPtrFactory<ExtensionIconManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionIconManager);
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_ICON_MANAGER_H_

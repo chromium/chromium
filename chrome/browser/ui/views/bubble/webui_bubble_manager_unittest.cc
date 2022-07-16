@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 
 #include "base/feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
@@ -33,11 +34,13 @@ class BubbleContentsWrapperT<TestWebUIController>
                          content::BrowserContext* browser_context,
                          int task_manager_string_id,
                          bool enable_extension_apis = false,
-                         bool webui_resizes_host = true)
+                         bool webui_resizes_host = true,
+                         bool esc_closes_ui = true)
       : BubbleContentsWrapper(browser_context,
                               task_manager_string_id,
                               enable_extension_apis,
-                              webui_resizes_host) {}
+                              webui_resizes_host,
+                              esc_closes_ui) {}
   void ReloadWebContents() override {}
 };
 

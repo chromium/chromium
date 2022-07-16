@@ -1,16 +1,8 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.labs.mockTest');
 goog.setTestOnly('goog.labs.mockTest');
@@ -55,6 +47,7 @@ class ChildClassEs6 extends ParentClassEs6 {
  * in the given order.
  */
 function assertContainsInOrder(str, var_args) {
+  /** @suppress {checkTypes} suppression added to enable type checking */
   const expected = array.splice(arguments, 1);
   const indices = array.map(expected, function(val) {
     return str.indexOf(val);
@@ -74,6 +67,10 @@ function assertContainsInOrder(str, var_args) {
 
 
 testSuite({
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testParentClass() {
     const parentMock = mock.mock(ParentClass);
 
@@ -87,6 +84,10 @@ testSuite({
         parentMock instanceof ParentClass);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testParentClassEs6() {
     const parentMock = mock.mock(ParentClassEs6);
 
@@ -97,6 +98,10 @@ testSuite({
         parentMock instanceof ParentClassEs6);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testChildClass() {
     const childMock = mock.mock(ChildClass);
 
@@ -111,6 +116,10 @@ testSuite({
         childMock instanceof ChildClass);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testChildClassEs6() {
     const childMock = mock.mock(ChildClassEs6);
 
@@ -123,7 +132,12 @@ testSuite({
         childMock instanceof ChildClassEs6);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testParentClassInstance() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const parentMock = mock.mock(new ParentClass());
 
     assertNotUndefined(parentMock.method1);
@@ -136,6 +150,10 @@ testSuite({
         parentMock instanceof ParentClass);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testParentClassEs6Instance() {
     const parentMock = mock.mock(new ParentClassEs6());
 
@@ -146,7 +164,12 @@ testSuite({
         parentMock instanceof ParentClassEs6);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testChildClassInstance() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const childMock = mock.mock(new ChildClass());
 
     assertNotUndefined(childMock.method1);
@@ -160,6 +183,10 @@ testSuite({
         childMock instanceof ChildClass);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testChildClassEs6Instance() {
     const childMock = mock.mock(new ChildClassEs6());
 
@@ -181,6 +208,10 @@ testSuite({
     assertEquals('toString', mockObject.toString());
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testBasicStubbing() {
     const obj = {
       method1: function(i) {
@@ -252,6 +283,7 @@ testSuite({
     assertEquals(mockInstance, new MockCtor());
   },
 
+  /** @suppress {missingProperties} suppression added to enable type checking */
   testMockConstructorCopiesProperties() {
     const Ctor = function() {};
     Ctor.myParam = true;
@@ -259,6 +291,10 @@ testSuite({
     assertTrue(MockCtor.myParam);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testStubbingConsecutiveCalls() {
     const obj = {
       method: function(i) {
@@ -286,6 +322,10 @@ testSuite({
     assertEquals(25, mockedFunc(100));
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testStubbingMultipleObjectStubsNonConflictingArgsAllShouldWork() {
     const obj = {
       method: function(i) {
@@ -302,6 +342,10 @@ testSuite({
   },
 
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testStubbingMultipleObjectStubsConflictingArgsMostRecentShouldPrevail() {
     const obj = {
       method: function(i) {
@@ -342,6 +386,10 @@ testSuite({
     assertEquals(132, mockedFunc(100));
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testSpying() {
     const obj = {
       method1: function(i) {
@@ -364,6 +412,10 @@ testSuite({
     mock.verify(spyObj).method2(4);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testSpyingSelfInteraction() {
     class A {
       method1() {
@@ -377,7 +429,12 @@ testSuite({
     mock.verify(spyObj).method2();
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testSpyParentClassInstance() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const parent = new ParentClass();
     const parentMock = mock.spy(parent);
 
@@ -396,7 +453,12 @@ testSuite({
         incrementedOrigVal, parentMock.val);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testSpyChildClassInstance() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const child = new ChildClass();
     const childMock = mock.spy(child);
 
@@ -416,6 +478,10 @@ testSuite({
         incrementedOrigVal, childMock.val);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testVerifyForObjects() {
     const obj = {
       method1: function(i) {
@@ -462,6 +528,7 @@ testSuite({
     assertTrue(e instanceof VerificationError);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testVerifyPassesWhenVerificationModeReturnsTrue() {
     const trueMode = {
       verify: function(number) {
@@ -477,6 +544,7 @@ testSuite({
     mock.verify(mockObj, trueMode).doThing();
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testVerifyFailsWhenVerificationModeReturnsFalse() {
     const falseMode = {
       verify: function(number) {
@@ -491,6 +559,10 @@ testSuite({
     assertThrows(mock.verify(mockObj, falseMode).doThing);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testVerificationErrorMessagePutsVerificationModeInRightPlace() {
     const modeDescription = 'test';
     const mode = {
@@ -504,6 +576,7 @@ testSuite({
     const mockObj = mock.mock({methodName: function() {}});
     mockObj.methodName(2);
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const e = assertThrows(mock.verify(mockObj, mode).methodName);
     // The mode description should be between the expected method
     // invocation and a newline.
@@ -515,6 +588,8 @@ testSuite({
   /**
    * When a function invocation verification fails, it should show the failed
    * expectation call, as well as the recorded calls to the same method.
+   * @suppress {strictMissingProperties,checkTypes} suppression added to enable
+   * type checking
    */
   testVerificationErrorMessages() {
     const mockObj = mock.mock({
@@ -597,11 +672,26 @@ testSuite({
   async testWait() {
     const mockParent = mock.mock(ParentClass);
 
-    setTimeout(() => {
-      mockParent.method1();
-    }, 0);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mockParent.method1();
+               },
+               0);
 
     await mock.waitAndVerify(mockParent).method1();
+  },
+
+  async testMockFunctionWait() {
+    const mockFunc = mock.mockFunction();
+
+    setTimeout(() => {
+      mockFunc();
+    }, 0);
+
+    await mock.waitAndVerify(mockFunc)();
   },
 
   async testWaitOnMultipleMethodCalls() {
@@ -609,27 +699,62 @@ testSuite({
     const timeoutMode = mockTimeout.timeout(150);
     const verificationMode = mock.verification.times(2);
 
-    setTimeout(() => {
-      mockParent.method1();
-    }, 0);
-    setTimeout(() => {
-      mockParent.method1();
-    }, 0);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mockParent.method1();
+               },
+               0);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mockParent.method1();
+               },
+               0);
 
     await mock.waitAndVerify(mockParent, verificationMode, timeoutMode)
         .method1();
   },
 
+  async testMockFunctionWaitOnMultipleMethodCalls() {
+    const mockFunc = mock.mockFunction();
+    const timeoutMode = mockTimeout.timeout(150);
+    const verificationMode = mock.verification.times(2);
+
+    setTimeout(() => {
+      mockFunc();
+    }, 0);
+    setTimeout(() => {
+      mockFunc();
+    }, 0);
+
+    await mock.waitAndVerify(mockFunc, verificationMode, timeoutMode)();
+  },
+
   async testWaitOnDifferentFunctions() {
     const mockParent = mock.mock(ParentClass);
 
-    setTimeout(() => {
-      mockParent.incrementVal();
-    }, 0);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mockParent.incrementVal();
+               },
+               0);
 
-    setTimeout(() => {
-      mockParent.method1();
-    }, 0);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mockParent.method1();
+               },
+               0);
 
     await mock.waitAndVerify(mockParent).method1();
     await mock.waitAndVerify(mockParent).incrementVal();
@@ -638,25 +763,59 @@ testSuite({
   async testWaitOnSameFunctionWithDifferentArgs() {
     const mockParent = mock.mock(ParentClass);
 
-    setTimeout(() => {
-      mockParent.method1(1);
-    }, 0);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mockParent.method1(1);
+               },
+               0);
 
-    setTimeout(() => {
-      mockParent.method1(2);
-    }, 0);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mockParent.method1(2);
+               },
+               0);
 
     await mock.waitAndVerify(mockParent).method1(2);
     await mock.waitAndVerify(mockParent).method1(1);
   },
 
+  async testMockFunctionWaitWithDifferentArgs() {
+    const mockFunc = mock.mockFunction();
+
+    setTimeout(() => {
+      mockFunc(1);
+    }, 0);
+
+    setTimeout(() => {
+      mockFunc(2);
+    }, 0);
+
+    await mock.waitAndVerify(mockFunc)(2);
+    await mock.waitAndVerify(mockFunc)(1);
+  },
+
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   async testWaitWithTimeoutMode() {
     const mockParent = mock.mock(ParentClass);
     const timeoutMode = mockTimeout.timeout(1);
 
-    setTimeout(() => {
-      mockParent.method1();
-    }, 50);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mockParent.method1();
+               },
+               50);
 
     const e = await assertRejects(
         mock.waitAndVerify(mockParent, timeoutMode).method1());
@@ -669,6 +828,35 @@ testSuite({
             'Recorded: No recorded calls');
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
+  async testMockFunctionWaitWithTimeoutMode() {
+    const func = function() {};
+    const funcId = mock.getUid(func);
+    const mockFunc = mock.mockFunction(func);
+    const timeoutMode = mockTimeout.timeout(1);
+
+    setTimeout(() => {
+      mockFunc();
+    }, 50);
+
+    const e = await assertRejects(mock.waitAndVerify(mockFunc, timeoutMode)());
+    assertTrue(e instanceof TimeoutError);
+    assertEquals(
+        e.message,
+        'Function call was either not invoked or never met criteria specified ' +
+            'by provided verification mode. \n' +
+            'Expected: #mockFor<#anonymous' + funcId +
+            '>() at least 1 times\n' +
+            'Recorded: No recorded calls');
+  },
+
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   async testWaitWithVerificationMode() {
     const mockParent = mock.mock(ParentClass);
     const verificationMode = mock.verification.times(2);
@@ -685,6 +873,32 @@ testSuite({
             'Recorded: method1()');
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
+  async testMockFunctionWaitWithVerificationMode() {
+    const func = function() {};
+    const funcId = mock.getUid(func);
+    const mockFunc = mock.mockFunction(func);
+    const verificationMode = mock.verification.times(2);
+
+    mockFunc();
+
+    const e =
+        await assertRejects(mock.waitAndVerify(mockFunc, verificationMode)());
+    assertEquals(
+        e.message,
+        'Function call was either not invoked or never met criteria specified ' +
+            'by provided verification mode. \n' +
+            'Expected: #mockFor<#anonymous' + funcId + '>() 2 times\n' +
+            'Recorded: #mockFor<#anonymous' + funcId + '>()');
+  },
+
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   async testWaitOnSameMethodTwice() {
     const mockParent = mock.mock(ParentClass);
 
@@ -694,18 +908,41 @@ testSuite({
     await mock.waitAndVerify(mockParent).method1();
   },
 
+  async testMockFunctionWaitOnSameMethodTwice() {
+    const mockFunc = mock.mockFunction();
+
+    mockFunc();
+
+    await mock.waitAndVerify(mockFunc)();
+    await mock.waitAndVerify(mockFunc)();
+  },
+
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   async testWaitWithTimeoutAndVerificationMode() {
     const mockParent = mock.mock(ParentClass);
     const timeoutMode = mockTimeout.timeout(150);
     const verificationMode = mock.verification.times(2);
 
-    setTimeout(() => {
-      mockParent.method1();
-    }, 50);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mockParent.method1();
+               },
+               50);
 
-    setTimeout(() => {
-      mockParent.method1();
-    }, 250);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mockParent.method1();
+               },
+               250);
 
     const e = await assertRejects(
         mock.waitAndVerify(mockParent, timeoutMode, verificationMode)
@@ -719,18 +956,62 @@ testSuite({
             'Recorded: method1()');
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
+  async testMockFunctionWaitWithTimeoutAndVerificationMode() {
+    const func = function() {};
+    const funcId = mock.getUid(func);
+    const mockFunc = mock.mockFunction(func);
+    const timeoutMode = mockTimeout.timeout(150);
+    const verificationMode = mock.verification.times(2);
+
+    setTimeout(() => {
+      mockFunc();
+    }, 50);
+
+    setTimeout(() => {
+      mockFunc();
+    }, 250);
+
+    const e = await assertRejects(
+        mock.waitAndVerify(mockFunc, timeoutMode, verificationMode)());
+    assertTrue(e instanceof TimeoutError);
+    assertEquals(
+        e.message,
+        'Function call was either not invoked or never met criteria specified ' +
+            'by provided verification mode. \n' +
+            'Expected: #mockFor<#anonymous' + funcId + '>() 2 times\n' +
+            'Recorded: #mockFor<#anonymous' + funcId + '>()');
+  },
+
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   async testPassingVerificationModeBeforeTimeoutMode() {
     const mockParent = mock.mock(ParentClass);
     const timeoutMode = mockTimeout.timeout(150);
     const verificationMode = mock.verification.times(2);
 
-    setTimeout(() => {
-      mockParent.method1();
-    }, 50);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mockParent.method1();
+               },
+               50);
 
-    setTimeout(() => {
-      mockParent.method1();
-    }, 250);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mockParent.method1();
+               },
+               250);
 
     const e = await assertRejects(
         mock.waitAndVerify(mockParent, verificationMode, timeoutMode)
@@ -744,7 +1025,41 @@ testSuite({
             'Recorded: method1()');
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
+  async testMockFunctionPassingVerificationModeBeforeTimeoutMode() {
+    const func = function() {};
+    const funcId = mock.getUid(func);
+    const mockFunc = mock.mockFunction(func);
+    const timeoutMode = mockTimeout.timeout(150);
+    const verificationMode = mock.verification.times(2);
 
+    setTimeout(() => {
+      mockFunc();
+    }, 50);
+
+    setTimeout(() => {
+      mockFunc();
+    }, 250);
+
+    const e = await assertRejects(
+        mock.waitAndVerify(mockFunc, verificationMode, timeoutMode)());
+    assertTrue(e instanceof TimeoutError);
+    assertEquals(
+        e.message,
+        'Function call was either not invoked or never met criteria specified ' +
+            'by provided verification mode. \n' +
+            'Expected: #mockFor<#anonymous' + funcId + '>() 2 times\n' +
+            'Recorded: #mockFor<#anonymous' + funcId + '>()');
+  },
+
+
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testMatchers() {
     const obj = {
       method1: function(i) {
@@ -767,6 +1082,10 @@ testSuite({
     assertUndefined(mockObj.method1(4));
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testMatcherVerify() {
     const obj = {
       method: function(i) {
@@ -793,6 +1112,10 @@ testSuite({
     assertTrue(e instanceof mock.VerificationError);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testMatcherVerifyCollision() {
     const obj = {
       method: function(i) {
@@ -820,6 +1143,10 @@ testSuite({
     assertTrue(e instanceof VerificationError);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testVerifyForUnmockedMethods() {
     const Task = function() {};
     Task.prototype.run = function() {};
@@ -830,7 +1157,9 @@ testSuite({
     mock.verify(mockTask).run();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testFormatMethodCall() {
+    /** @suppress {visibility} suppression added to enable type checking */
     const formatMethodCall = mock.formatMethodCall_;
     assertEquals('alert()', formatMethodCall('alert'));
     assertEquals('sum(2, 4)', formatMethodCall('sum', [2, 4]));
@@ -845,6 +1174,7 @@ testSuite({
         formatMethodCall('call', [arg]));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testGetFunctionName() {
     const f1 = function() {};
     const f2 = function() {};
@@ -856,6 +1186,7 @@ testSuite({
     assertEquals('myName', mock.getFunctionName_(named));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testFormatObject() {
     let obj;
     let obj2;
@@ -904,6 +1235,10 @@ testSuite({
     assertEquals(mock.getUid(func1), mock.getUid(func1));
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testMockEs6ClassMethods() {
     const Foo = class {
       a() {

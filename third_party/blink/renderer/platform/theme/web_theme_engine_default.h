@@ -40,7 +40,11 @@ class WebThemeEngineDefault : public WebThemeEngine {
                                     int32_t horizontal_arrow_bitmap_width);
 #endif
   ForcedColors GetForcedColors() const override;
+  void OverrideForcedColorsTheme(bool is_dark_theme) override;
   void SetForcedColors(const ForcedColors forced_colors) override;
+  void ResetToSystemColors(
+      WebThemeEngine::SystemColorInfoState system_color_info_state) override;
+  WebThemeEngine::SystemColorInfoState GetSystemColorInfo() override;
 };
 
 }  // namespace blink

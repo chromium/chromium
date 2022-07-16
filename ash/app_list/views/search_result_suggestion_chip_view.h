@@ -9,7 +9,6 @@
 
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace views {
 class BoxLayout;

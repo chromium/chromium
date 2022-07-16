@@ -32,8 +32,7 @@ class LibcastSocketServiceTest : public ::testing::Test {
   CastSocket* OpenSocket(std::unique_ptr<LibcastSocket> cast_socket,
                          const net::IPEndPoint& endpoint) {
     socket_service_.SetLibcastSocketForTest(std::move(cast_socket));
-    CastSocketOpenParams open_params(endpoint,
-                                     base::TimeDelta::FromSeconds(20));
+    CastSocketOpenParams open_params(endpoint, base::Seconds(20));
     CastSocket* socket = nullptr;
     base::RunLoop run_loop;
     socket_service_.OpenSocket(

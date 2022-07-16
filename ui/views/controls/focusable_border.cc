@@ -6,13 +6,14 @@
 
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace {
@@ -27,8 +28,7 @@ FocusableBorder::FocusableBorder() : insets_(kInsetSize) {}
 
 FocusableBorder::~FocusableBorder() = default;
 
-void FocusableBorder::SetColorId(
-    const absl::optional<ui::NativeTheme::ColorId>& color_id) {
+void FocusableBorder::SetColorId(const absl::optional<ui::ColorId>& color_id) {
   override_color_id_ = color_id;
 }
 
@@ -73,12 +73,11 @@ void FocusableBorder::SetInsets(int vertical, int horizontal) {
 }
 
 SkColor FocusableBorder::GetCurrentColor(const View& view) const {
-  ui::NativeTheme::ColorId color_id =
-      ui::NativeTheme::kColorId_UnfocusedBorderColor;
+  ui::ColorId color_id = ui::kColorFocusableBorderUnfocused;
   if (override_color_id_)
     color_id = *override_color_id_;
 
-  SkColor color = view.GetNativeTheme()->GetSystemColor(color_id);
+  SkColor color = view.GetColorProvider()->GetColor(color_id);
   return view.GetEnabled() ? color
                            : color_utils::BlendTowardMaxContrast(
                                  color, gfx::kDisabledControlAlpha);

@@ -38,6 +38,11 @@ class CastExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::BrowserContext* context,
       PrefService* pref_service,
       chromecast::shell::CastNetworkContexts* cast_network_contexts);
+
+  CastExtensionsBrowserClient(const CastExtensionsBrowserClient&) = delete;
+  CastExtensionsBrowserClient& operator=(const CastExtensionsBrowserClient&) =
+      delete;
+
   ~CastExtensionsBrowserClient() override;
 
   // ExtensionsBrowserClient overrides:
@@ -134,8 +139,6 @@ class CastExtensionsBrowserClient : public ExtensionsBrowserClient {
   std::unique_ptr<ExtensionsAPIClient> api_client_;
 
   std::unique_ptr<KioskDelegate> kiosk_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionsBrowserClient);
 };
 
 }  // namespace extensions

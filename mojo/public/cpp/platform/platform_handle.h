@@ -71,6 +71,9 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
   explicit PlatformHandle(base::ScopedFD fd);
 #endif
 
+  PlatformHandle(const PlatformHandle&) = delete;
+  PlatformHandle& operator=(const PlatformHandle&) = delete;
+
   ~PlatformHandle();
 
   PlatformHandle& operator=(PlatformHandle&& other);
@@ -228,8 +231,6 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
   base::ScopedFD fd_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformHandle);
 };
 
 }  // namespace mojo

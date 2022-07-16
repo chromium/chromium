@@ -90,6 +90,11 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
                             const IsOriginSecureCallback& is_origin_secure_cb,
                             const URLSecurityPolicy& url_security_policy,
                             WakeLockProviderBinder wake_lock_provider_binder);
+
+  InProgressDownloadManager(const InProgressDownloadManager&) = delete;
+  InProgressDownloadManager& operator=(const InProgressDownloadManager&) =
+      delete;
+
   ~InProgressDownloadManager() override;
 
   // SimpleDownloadManager implementation.
@@ -298,8 +303,6 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
   const WakeLockProviderBinder wake_lock_provider_binder_;
 
   base::WeakPtrFactory<InProgressDownloadManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InProgressDownloadManager);
 };
 
 }  // namespace download

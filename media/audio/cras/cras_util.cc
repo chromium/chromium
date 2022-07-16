@@ -41,10 +41,14 @@ constexpr char kAlsaLoopback[] = "ALSA_LOOPBACK";
 // One special case is ALSA loopback device, which will only exist under
 // testing. We want it visible to users for e2e tests.
 bool IsForSimpleUsage(std::string type) {
-  return type == kInternalMic || type == kHeadphone || type == kHDMI ||
+  return type == kInternalSpeaker || type == kHeadphone || type == kHDMI ||
          type == kLineout || type == kMic || type == kInternalMic ||
          type == kFrontMic || type == kRearMic || type == kBluetoothNBMic ||
          type == kUSB || type == kBluetooth || type == kAlsaLoopback;
+}
+
+bool IsInternalMic(std::string type) {
+  return type == kInternalMic || type == kFrontMic || type == kRearMic;
 }
 
 // Connects to the CRAS server.
@@ -126,6 +130,13 @@ CrasDevice::CrasDevice(struct libcras_node_info* node, DeviceType type)
     device_name = nullptr;
   }
 
+  rc = libcras_node_info_get_max_supported_channels(node,
+                                                    &max_supported_channels);
+  if (rc) {
+    LOG(ERROR) << "Failed to get max supported channels: " << rc;
+    max_supported_channels = 0;
+  }
+
   name = std::string(node_name);
   if (name.empty() || name == "(default)")
     name = device_name;
@@ -140,7 +151,8 @@ void mergeDevices(CrasDevice& old_dev, CrasDevice& new_dev) {
              new_dev.node_type == kInternalSpeaker) {
     old_dev.name = kInternalOutputVirtualDevice;
     old_dev.node_type = "";
-  } else if (old_dev.node_type == kMic || new_dev.node_type == kMic) {
+  } else if (IsInternalMic(old_dev.node_type) ||
+             IsInternalMic(new_dev.node_type)) {
     old_dev.name = kInternalInputVirtualDevice;
     old_dev.node_type = "";
   } else {
@@ -149,7 +161,11 @@ void mergeDevices(CrasDevice& old_dev, CrasDevice& new_dev) {
   old_dev.active |= new_dev.active;
 }
 
-std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type) {
+CrasUtil::CrasUtil() = default;
+
+CrasUtil::~CrasUtil() = default;
+
+std::vector<CrasDevice> CrasUtil::CrasGetAudioDevices(DeviceType type) {
   std::vector<CrasDevice> devices;
 
   libcras_client* client = CrasConnect();
@@ -197,7 +213,7 @@ std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type) {
   return devices;
 }
 
-bool CrasHasKeyboardMic() {
+bool CrasUtil::CrasHasKeyboardMic() {
   libcras_client* client = CrasConnect();
   if (!client)
     return false;
@@ -226,7 +242,7 @@ bool CrasHasKeyboardMic() {
   return ret;
 }
 
-int CrasGetAecSupported() {
+int CrasUtil::CrasGetAecSupported() {
   libcras_client* client = CrasConnect();
   if (!client)
     return 0;
@@ -238,7 +254,7 @@ int CrasGetAecSupported() {
   return supported;
 }
 
-int CrasGetAecGroupId() {
+int CrasUtil::CrasGetAecGroupId() {
   libcras_client* client = CrasConnect();
   if (!client)
     return -1;
@@ -250,7 +266,7 @@ int CrasGetAecGroupId() {
   return rc < 0 ? rc : id;
 }
 
-int CrasGetDefaultOutputBufferSize() {
+int CrasUtil::CrasGetDefaultOutputBufferSize() {
   libcras_client* client = CrasConnect();
   if (!client)
     return -1;

@@ -17,6 +17,10 @@ namespace device {
 class Udev0Loader : public UdevLoader {
  public:
   Udev0Loader();
+
+  Udev0Loader(const Udev0Loader&) = delete;
+  Udev0Loader& operator=(const Udev0Loader&) = delete;
+
   ~Udev0Loader() override;
 
  private:
@@ -77,8 +81,6 @@ class Udev0Loader : public UdevLoader {
   void udev_unref(udev* udev) override;
 
   std::unique_ptr<LibUdev0Loader> lib_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(Udev0Loader);
 };
 
 }  // namespace device

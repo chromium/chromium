@@ -17,7 +17,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -132,6 +132,10 @@ class DnsConfigServicePosix::Watcher : public DnsConfigService::Watcher {
  public:
   explicit Watcher(DnsConfigServicePosix& service)
       : DnsConfigService::Watcher(service) {}
+
+  Watcher(const Watcher&) = delete;
+  Watcher& operator=(const Watcher&) = delete;
+
   ~Watcher() override = default;
 
   bool Watch() override {
@@ -168,8 +172,6 @@ class DnsConfigServicePosix::Watcher : public DnsConfigService::Watcher {
 #if !defined(OS_IOS)
   base::FilePathWatcher hosts_watcher_;
 #endif  // !defined(OS_IOS)
-
-  DISALLOW_COPY_AND_ASSIGN(Watcher);
 };
 
 // A SerialWorker that uses libresolv to initialize res_state and converts
@@ -182,30 +184,40 @@ class DnsConfigServicePosix::ConfigReader : public SerialWorker {
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
-  void DoWork() override { dns_config_ = ReadDnsConfig(); }
+  ~ConfigReader() override = default;
 
-  bool OnWorkFinished() override {
+  ConfigReader(const ConfigReader&) = delete;
+  ConfigReader& operator=(const ConfigReader&) = delete;
+
+  std::unique_ptr<SerialWorker::WorkItem> CreateWorkItem() override {
+    return std::make_unique<WorkItem>();
+  }
+
+  void OnWorkFinished(std::unique_ptr<SerialWorker::WorkItem>
+                          serial_worker_work_item) override {
+    DCHECK(serial_worker_work_item);
     DCHECK(!IsCancelled());
-    if (dns_config_.has_value()) {
-      service_->OnConfigRead(std::move(dns_config_).value());
-      return true;
+
+    WorkItem* work_item = static_cast<WorkItem*>(serial_worker_work_item.get());
+    if (work_item->dns_config_.has_value()) {
+      service_->OnConfigRead(std::move(work_item->dns_config_).value());
     } else {
       LOG(WARNING) << "Failed to read DnsConfig.";
-      return false;
     }
   }
 
  private:
-  ~ConfigReader() override = default;
+  class WorkItem : public SerialWorker::WorkItem {
+   public:
+    void DoWork() override { dns_config_ = ReadDnsConfig(); }
 
-  // Raw pointer to owning DnsConfigService. This must never be accessed inside
-  // DoWork(), since service may be destroyed while SerialWorker is running
-  // on worker thread.
+   private:
+    friend class ConfigReader;
+    absl::optional<DnsConfig> dns_config_;
+  };
+
+  // Raw pointer to owning DnsConfigService.
   DnsConfigServicePosix* const service_;
-  // Written in DoWork, read in OnWorkFinished, no locking necessary.
-  absl::optional<DnsConfig> dns_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigReader);
 };
 
 DnsConfigServicePosix::DnsConfigServicePosix()
@@ -227,6 +239,8 @@ void DnsConfigServicePosix::RefreshConfig() {
 }
 
 void DnsConfigServicePosix::ReadConfigNow() {
+  if (!config_reader_)
+    CreateReader();
   config_reader_->WorkNow();
 }
 
@@ -240,7 +254,7 @@ bool DnsConfigServicePosix::StartWatching() {
 void DnsConfigServicePosix::CreateReader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!config_reader_);
-  config_reader_ = base::MakeRefCounted<ConfigReader>(*this);
+  config_reader_ = std::make_unique<ConfigReader>(*this);
 }
 
 absl::optional<DnsConfig> ConvertResStateToDnsConfig(
@@ -309,7 +323,7 @@ absl::optional<DnsConfig> ConvertResStateToDnsConfig(
   }
 
   dns_config.ndots = res.ndots;
-  dns_config.fallback_period = base::TimeDelta::FromSeconds(res.retrans);
+  dns_config.fallback_period = base::Seconds(res.retrans);
   dns_config.attempts = res.retry;
 #if defined(RES_ROTATE)
   dns_config.rotate = res.options & RES_ROTATE;

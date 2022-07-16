@@ -11,120 +11,111 @@ import {assertNotReached} from 'chrome://resources/js/assert.m.js';
  * calls.
  */
 
-cr.define('app_management', function() {
-  /* #export */ const AppState = {};
+export const AppState = {};
 
-  /**
-   * @param {AppMap} apps
-   * @param {Object} action
-   * @return {AppMap}
-   */
-  AppState.addApp = function(apps, action) {
-    if (apps[action.app.id]) {
-      const stringifyApp = (app) => {
-        return `id: ${app.id}, type: ${app.type}, install source: ${
-            app.installSource} title: ${app.title}`;
-      };
-      const errorMessage = `Attempted to add an app that already exists.
-                            New app: ${stringifyApp(action.app)}.
-                            Old app: ${stringifyApp(apps[action.app.id])}.`;
-      assertNotReached(errorMessage);
-    }
-
-    const newAppEntry = {};
-    newAppEntry[action.app.id] = action.app;
-    return Object.assign({}, apps, newAppEntry);
-  };
-
-  /**
-   * @param {AppMap} apps
-   * @param {Object} action
-   * @return {AppMap}
-   */
-  AppState.changeApp = function(apps, action) {
-    // If the app doesn't exist, that means that the app that has been changed
-    // does not need to be shown in App Management.
-    if (!apps[action.app.id]) {
-      return apps;
-    }
-
-    const changedAppEntry = {};
-    changedAppEntry[action.app.id] = action.app;
-    return Object.assign({}, apps, changedAppEntry);
-  };
-
-  /**
-   * @param {AppMap} apps
-   * @param {Object} action
-   * @return {AppMap}
-   */
-  AppState.removeApp = function(apps, action) {
-    if (!apps.hasOwnProperty(action.id)) {
-      return apps;
-    }
-
-    delete apps[action.id];
-    return Object.assign({}, apps);
-  };
-
-  /**
-   * @param {AppMap} apps
-   * @param {Object} action
-   * @return {AppMap}
-   */
-  AppState.updateApps = function(apps, action) {
-    switch (action.name) {
-      case 'add-app':
-        return AppState.addApp(apps, action);
-      case 'change-app':
-        return AppState.changeApp(apps, action);
-      case 'remove-app':
-        return AppState.removeApp(apps, action);
-      default:
-        return apps;
-    }
-  };
-
-  const SelectedAppId = {};
-
-  /**
-   * @param {?string} selectedAppId
-   * @param {Object} action
-   * @return {?string}
-   */
-  SelectedAppId.updateSelectedAppId = function(selectedAppId, action) {
-    switch (action.name) {
-      case 'update-selected-app-id':
-        return action.value;
-      case 'remove-app':
-        if (selectedAppId === action.id) {
-          return null;
-        }
-        return selectedAppId;
-      default:
-        return selectedAppId;
-    }
-  };
-
-  /**
-   * Root reducer for the App Management page. This is called by the store in
-   * response to an action, and the return value is used to update the UI.
-   * @param {!AppManagementPageState} state
-   * @param {Object} action
-   * @return {!AppManagementPageState}
-   */
-  /* #export */ function reduceAction(state, action) {
-    return {
-      apps: AppState.updateApps(state.apps, action),
-      selectedAppId:
-          SelectedAppId.updateSelectedAppId(state.selectedAppId, action),
+/**
+ * @param {AppMap} apps
+ * @param {Object} action
+ * @return {AppMap}
+ */
+AppState.addApp = function(apps, action) {
+  if (apps[action.app.id]) {
+    const stringifyApp = (app) => {
+      return `id: ${app.id}, type: ${app.type}, install source: ${
+          app.installReason} title: ${app.title}`;
     };
+    const errorMessage = `Attempted to add an app that already exists.
+                          New app: ${stringifyApp(action.app)}.
+                          Old app: ${stringifyApp(apps[action.app.id])}.`;
+    assertNotReached(errorMessage);
   }
 
-  // #cr_define_end
+  const newAppEntry = {};
+  newAppEntry[action.app.id] = action.app;
+  return Object.assign({}, apps, newAppEntry);
+};
+
+/**
+ * @param {AppMap} apps
+ * @param {Object} action
+ * @return {AppMap}
+ */
+AppState.changeApp = function(apps, action) {
+  // If the app doesn't exist, that means that the app that has been changed
+  // does not need to be shown in App Management.
+  if (!apps[action.app.id]) {
+    return apps;
+  }
+
+  const changedAppEntry = {};
+  changedAppEntry[action.app.id] = action.app;
+  return Object.assign({}, apps, changedAppEntry);
+};
+
+/**
+ * @param {AppMap} apps
+ * @param {Object} action
+ * @return {AppMap}
+ */
+AppState.removeApp = function(apps, action) {
+  if (!apps.hasOwnProperty(action.id)) {
+    return apps;
+  }
+
+  delete apps[action.id];
+  return Object.assign({}, apps);
+};
+
+/**
+ * @param {AppMap} apps
+ * @param {Object} action
+ * @return {AppMap}
+ */
+AppState.updateApps = function(apps, action) {
+  switch (action.name) {
+    case 'add-app':
+      return AppState.addApp(apps, action);
+    case 'change-app':
+      return AppState.changeApp(apps, action);
+    case 'remove-app':
+      return AppState.removeApp(apps, action);
+    default:
+      return apps;
+  }
+};
+
+const SelectedAppId = {};
+
+/**
+ * @param {?string} selectedAppId
+ * @param {Object} action
+ * @return {?string}
+ */
+SelectedAppId.updateSelectedAppId = function(selectedAppId, action) {
+  switch (action.name) {
+    case 'update-selected-app-id':
+      return action.value;
+    case 'remove-app':
+      if (selectedAppId === action.id) {
+        return null;
+      }
+      return selectedAppId;
+    default:
+      return selectedAppId;
+  }
+};
+
+/**
+ * Root reducer for the App Management page. This is called by the store in
+ * response to an action, and the return value is used to update the UI.
+ * @param {!AppManagementPageState} state
+ * @param {Object} action
+ * @return {!AppManagementPageState}
+ */
+export function reduceAction(state, action) {
   return {
-    reduceAction: reduceAction,
-    AppState: AppState,
-    SelectedAppId: SelectedAppId,
+    apps: AppState.updateApps(state.apps, action),
+    selectedAppId:
+        SelectedAppId.updateSelectedAppId(state.selectedAppId, action),
   };
-});
+}

@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_V8_FEATURES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_V8_FEATURES_H_
 
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace blink {
 
@@ -22,6 +24,10 @@ namespace blink {
 class WebV8Features {
  public:
   BLINK_EXPORT static void EnableMojoJS(v8::Local<v8::Context>, bool);
+
+  BLINK_EXPORT static void EnableMojoJSAndUseBroker(
+      v8::Local<v8::Context> context,
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote);
 
   // Enables SharedArrayBuffer for this process.
   BLINK_EXPORT static void EnableSharedArrayBuffer();

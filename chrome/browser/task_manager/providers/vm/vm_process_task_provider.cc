@@ -14,7 +14,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chrome/browser/chromeos/process_snapshot_server.h"
+#include "chrome/browser/ash/process_snapshot_server.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/task_manager/providers/vm/crostini_process_task.h"
 #include "chrome/browser/task_manager/providers/vm/plugin_vm_process_task.h"
@@ -31,8 +31,7 @@ constexpr char kVmConciergeName[] = "/usr/bin/vm_concierge";
 constexpr char kVmProcessName[] = "/usr/bin/crosvm";
 
 // Delay between refreshing the list of VM processes.
-constexpr base::TimeDelta kRefreshProcessListDelay =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kRefreshProcessListDelay = base::Seconds(5);
 
 // Matches the process name "vm_concierge" in the process tree and get the
 // corresponding process ID.
@@ -185,7 +184,7 @@ struct VmProcessData {
 };
 
 VmProcessTaskProvider::VmProcessTaskProvider()
-    : ProcessSnapshotServer::Observer(kRefreshProcessListDelay) {}
+    : ash::ProcessSnapshotServer::Observer(kRefreshProcessListDelay) {}
 
 VmProcessTaskProvider::~VmProcessTaskProvider() = default;
 
@@ -198,8 +197,8 @@ void VmProcessTaskProvider::OnProcessSnapshotRefreshed(
     const base::ProcessIterator::ProcessEntries& snapshot) {
   TRACE_EVENT0("browser", "VmProcessTaskProvider::OnProcessSnapshotRefreshed");
 
-  // Throttle the refreshes in case the ProcessSnapshotServer has observers with
-  // a much higher desired refresh rates.
+  // Throttle the refreshes in case the `ash::ProcessSnapshotServer` has
+  // observers with a much higher desired refresh rates.
   const auto old_snapshot_time = last_process_snapshot_time_;
   last_process_snapshot_time_ = base::Time::Now();
   if ((last_process_snapshot_time_ - old_snapshot_time) <
@@ -235,11 +234,11 @@ void VmProcessTaskProvider::OnProcessSnapshotRefreshed(
 }
 
 void VmProcessTaskProvider::StartUpdating() {
-  ProcessSnapshotServer::Get()->AddObserver(this);
+  ash::ProcessSnapshotServer::Get()->AddObserver(this);
 }
 
 void VmProcessTaskProvider::StopUpdating() {
-  ProcessSnapshotServer::Get()->RemoveObserver(this);
+  ash::ProcessSnapshotServer::Get()->RemoveObserver(this);
   task_map_.clear();
 }
 

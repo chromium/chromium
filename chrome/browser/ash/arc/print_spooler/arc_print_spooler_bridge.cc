@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -105,7 +104,8 @@ void ArcPrintSpoolerBridge::OnPrintDocumentSaved(
     return;
   }
 
-  GURL url = net::FilePathToFileURL(base::MakeAbsoluteFilePath(file_path));
+  DCHECK(file_path.IsAbsolute()) << file_path;
+  GURL url = net::FilePathToFileURL(file_path);
 
   aura::Window* arc_window = GetArcWindow(task_id);
   if (!arc_window) {

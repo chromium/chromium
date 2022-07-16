@@ -11,8 +11,8 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/apps/apk_web_app_installer.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/test/fake_app_instance.h"
@@ -52,6 +52,9 @@ class FakeApkWebAppInstaller : public ApkWebAppInstaller {
       : ApkWebAppInstaller(profile, base::DoNothing(), weak_owner),
         quit_closure_(std::move(quit_closure)) {}
 
+  FakeApkWebAppInstaller(const FakeApkWebAppInstaller&) = delete;
+  FakeApkWebAppInstaller& operator=(const FakeApkWebAppInstaller&) = delete;
+
   ~FakeApkWebAppInstaller() override = default;
 
   using ApkWebAppInstaller::has_web_app_info;
@@ -81,9 +84,6 @@ class FakeApkWebAppInstaller : public ApkWebAppInstaller {
   bool complete_installation_called_ = false;
   bool do_install_called_ = false;
   base::OnceClosure quit_closure_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeApkWebAppInstaller);
 };
 
 class ApkWebAppInstallerTest : public ChromeRenderViewHostTestHarness,

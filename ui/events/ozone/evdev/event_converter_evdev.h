@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/task/current_thread.h"
 #include "ui/events/devices/gamepad_device.h"
 #include "ui/events/devices/input_device.h"
@@ -25,6 +24,7 @@ struct input_event;
 
 namespace ui {
 enum class DomCode;
+struct InputDeviceSettingsEvdev;
 
 class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
     : public base::MessagePumpForUI::FdWatcher {
@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
                       uint16_t vendor_id,
                       uint16_t product_id,
                       uint16_t version);
+
+  EventConverterEvdev(const EventConverterEvdev&) = delete;
+  EventConverterEvdev& operator=(const EventConverterEvdev&) = delete;
+
   ~EventConverterEvdev() override;
 
   int id() const { return input_device_.id; }
@@ -47,6 +51,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   InputDeviceType type() const { return input_device_.type; }
 
   const InputDevice& input_device() const { return input_device_; }
+
+  // Update device settings. The default implementation doesn't do
+  // anything
+  virtual void ApplyDeviceSettings(const InputDeviceSettingsEvdev& settings);
 
   // Start reading events.
   void Start();
@@ -163,9 +171,6 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
 
   // Controller for watching the input fd.
   base::MessagePumpForUI::FdWatchController controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventConverterEvdev);
 };
 
 }  // namespace ui

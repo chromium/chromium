@@ -10,9 +10,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "content/public/browser/visibility.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -31,11 +30,15 @@ class RenderFrameHost;
 //
 // This class derives from WebContentsObserver so that it can keep track of when
 // WebContents is being destroyed via web_contents().
-class NavigationPredictor : public content::DocumentServiceBase<
-                                blink::mojom::AnchorElementMetricsHost> {
+class NavigationPredictor
+    : public content::DocumentService<blink::mojom::AnchorElementMetricsHost> {
  public:
   NavigationPredictor(content::RenderFrameHost* render_frame_host,
                       mojo::PendingReceiver<AnchorElementMetricsHost> receiver);
+
+  NavigationPredictor(const NavigationPredictor&) = delete;
+  NavigationPredictor& operator=(const NavigationPredictor&) = delete;
+
   ~NavigationPredictor() override;
 
   // Create and bind NavigationPredictor.
@@ -97,8 +100,6 @@ class NavigationPredictor : public content::DocumentServiceBase<
   base::TimeTicks navigation_start_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationPredictor);
 };
 
 #endif  // CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_H_

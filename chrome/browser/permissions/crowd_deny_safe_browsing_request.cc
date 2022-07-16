@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
@@ -24,8 +24,7 @@ namespace {
 constexpr char kSafeBrowsingNotificationPermissionName[] = "NOTIFICATIONS";
 
 // The maximum amount of time to wait for the Safe Browsing response.
-constexpr base::TimeDelta kSafeBrowsingCheckTimeout =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kSafeBrowsingCheckTimeout = base::Seconds(2);
 
 }  // namespace
 
@@ -50,8 +49,8 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
   void CheckOrigin(const url::Origin& origin) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-    // Start the timer before the call to CheckApiBlacklistUrl(), as it may
-    // call back into OnCheckApiBlacklistUrlResult() synchronously.
+    // Start the timer before the call to CheckApiBlocklistUrl(), as it may
+    // call back into OnCheckApiBlocklistUrlResult() synchronously.
     timeout_.Start(FROM_HERE, kSafeBrowsingCheckTimeout, this,
                    &SafeBrowsingClient::OnTimeout);
 

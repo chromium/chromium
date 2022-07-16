@@ -27,14 +27,14 @@ struct PolicyData {
 PolicyData BuildPolicies() {
   std::vector<OfflinePageClientPolicy> all_policies;
   {
-    auto policy = OfflinePageClientPolicy::CreateTemporary(
-        kBookmarkNamespace, base::TimeDelta::FromDays(7));
+    auto policy = OfflinePageClientPolicy::CreateTemporary(kBookmarkNamespace,
+                                                           base::Days(7));
     policy.pages_allowed_per_url = 1;
     all_policies.push_back(policy);
   }
   {
-    auto policy = OfflinePageClientPolicy::CreateTemporary(
-        kLastNNamespace, base::TimeDelta::FromDays(30));
+    auto policy = OfflinePageClientPolicy::CreateTemporary(kLastNNamespace,
+                                                           base::Days(30));
     policy.is_restricted_to_tab_from_client_id = true;
     all_policies.push_back(policy);
   }
@@ -44,8 +44,8 @@ PolicyData BuildPolicies() {
     all_policies.push_back(policy);
   }
   {
-    auto policy = OfflinePageClientPolicy::CreateTemporary(
-        kCCTNamespace, base::TimeDelta::FromDays(2));
+    auto policy =
+        OfflinePageClientPolicy::CreateTemporary(kCCTNamespace, base::Days(2));
     policy.pages_allowed_per_url = 1;
     policy.requires_specific_user_settings = true;
     all_policies.push_back(policy);
@@ -63,7 +63,7 @@ PolicyData BuildPolicies() {
   }
   {
     auto policy = OfflinePageClientPolicy::CreateTemporary(
-        kSuggestedArticlesNamespace, base::TimeDelta::FromDays(30));
+        kSuggestedArticlesNamespace, base::Days(30));
     policy.is_supported_by_download = 1;
     policy.is_suggested = true;
     all_policies.push_back(policy);
@@ -77,14 +77,14 @@ PolicyData BuildPolicies() {
   }
   {
     auto policy = OfflinePageClientPolicy::CreateTemporary(
-        kLivePageSharingNamespace, base::TimeDelta::FromHours(1));
+        kLivePageSharingNamespace, base::Hours(1));
     policy.pages_allowed_per_url = 1;
     policy.is_restricted_to_tab_from_client_id = true;
     all_policies.push_back(policy);
   }
   {
-    auto policy = OfflinePageClientPolicy::CreateTemporary(
-        kAutoAsyncNamespace, base::TimeDelta::FromDays(30));
+    auto policy = OfflinePageClientPolicy::CreateTemporary(kAutoAsyncNamespace,
+                                                           base::Days(30));
     policy.pages_allowed_per_url = 1;
     policy.defer_background_fetch_while_page_is_active = true;
     all_policies.push_back(policy);
@@ -93,7 +93,7 @@ PolicyData BuildPolicies() {
   // Fallback policy.
   {
     OfflinePageClientPolicy policy = OfflinePageClientPolicy::CreateTemporary(
-        kDefaultNamespace, base::TimeDelta::FromDays(1));
+        kDefaultNamespace, base::Days(1));
     policy.page_limit = 10;
     policy.pages_allowed_per_url = 1;
     all_policies.push_back(policy);

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/app_icon_loader_delegate.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "components/arc/mojom/app.mojom.h"
@@ -36,6 +35,11 @@ class ArcAppShortcutSearchResult : public ChromeSearchResult,
                              AppListControllerDelegate* list_controller,
                              bool is_recommendation,
                              const std::u16string& query);
+
+  ArcAppShortcutSearchResult(const ArcAppShortcutSearchResult&) = delete;
+  ArcAppShortcutSearchResult& operator=(const ArcAppShortcutSearchResult&) =
+      delete;
+
   ~ArcAppShortcutSearchResult() override;
 
   // ChromeSearchResult:
@@ -52,6 +56,9 @@ class ArcAppShortcutSearchResult : public ChromeSearchResult,
   // Gets accessible name for this app shortcut.
   std::u16string ComputeAccessibleName() const;
 
+  // Callback passed to |icon_decode_request_|.
+  void OnIconDecoded(const gfx::ImageSkia&);
+
   arc::mojom::AppShortcutItemPtr data_;
   std::unique_ptr<arc::IconDecodeRequest> icon_decode_request_;
 
@@ -61,8 +68,6 @@ class ArcAppShortcutSearchResult : public ChromeSearchResult,
   AppListControllerDelegate* const list_controller_;  // Owned by AppListClient.
 
   base::WeakPtrFactory<ArcAppShortcutSearchResult> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppShortcutSearchResult);
 };
 
 }  // namespace app_list

@@ -7,7 +7,6 @@
 #include "base/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "content/browser/service_sandbox_type.h"
 #include "content/public/browser/gpu_client.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -59,7 +58,7 @@ const mojo::Remote<device::mojom::XRDeviceService>& GetXRDeviceService() {
     // one -- then we will reset |remote|, causing the service process to be
     // terminated if it isn't already.
     remote->reset_on_disconnect();
-    remote->reset_on_idle_timeout(base::TimeDelta::FromSeconds(5));
+    remote->reset_on_idle_timeout(base::Seconds(5));
 
     auto& startup_callback = GetStartupCallback();
     if (startup_callback)

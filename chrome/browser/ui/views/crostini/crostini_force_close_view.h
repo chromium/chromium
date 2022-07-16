@@ -24,6 +24,9 @@ class CrostiniForceCloseView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(CrostiniForceCloseView);
 
+  CrostiniForceCloseView(const CrostiniForceCloseView&) = delete;
+  CrostiniForceCloseView& operator=(const CrostiniForceCloseView&) = delete;
+
   // Show the "would you like to force-close |app_name|?" dialog, which invokes
   // the |force_close_callback_| if the user chooses to force close. Returns the
   // widget for the force-close dialog. The |closable_widget| will be used as
@@ -44,8 +47,6 @@ class CrostiniForceCloseView : public views::BubbleDialogDelegateView {
                          base::OnceClosure force_close_callback);
 
   ~CrostiniForceCloseView() override;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniForceCloseView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_FORCE_CLOSE_VIEW_H_

@@ -90,13 +90,18 @@ public class ChromeSurveyControllerIntegrationTest {
         SurveyController.setInstanceForTesting(mTestSurveyController);
 
         mActivityTestRule.startMainActivityOnBlankPage();
-        mActivityTestRule.getInfoBarContainer().addAnimationListener(mInfoBarAnimationListener);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getInfoBarContainer().addAnimationListener(mInfoBarAnimationListener);
+        });
         waitUntilInfoBarPresented();
     }
 
     @After
     public void tearDown() {
-        mActivityTestRule.getInfoBarContainer().removeAnimationListener(mInfoBarAnimationListener);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getInfoBarContainer().removeAnimationListener(
+                    mInfoBarAnimationListener);
+        });
         SurveyController.setInstanceForTesting(null);
         mSharedPreferenceManager.removeKey(mPrefKey);
         ChromeSurveyController.forceIsUMAEnabledForTesting(false);
@@ -104,6 +109,7 @@ public class ChromeSurveyControllerIntegrationTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)
     public void testInfoBarClicked() throws TimeoutException {
         SurveyInfoBar surveyInfoBar = (SurveyInfoBar) getSurveyInfoBar();
         Assert.assertNotNull("SurveyInfoBar should not be null.", surveyInfoBar);
@@ -120,6 +126,7 @@ public class ChromeSurveyControllerIntegrationTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)
     public void testInfoBarClose() throws TimeoutException {
         InfoBar surveyInfoBar = getSurveyInfoBar();
         Assert.assertNotNull("SurveyInfoBar should not be null.", surveyInfoBar);
@@ -133,6 +140,7 @@ public class ChromeSurveyControllerIntegrationTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)
     public void testNoInfoBarInNewTab() throws InterruptedException {
         waitUntilInfoBarStateRecorded();
 

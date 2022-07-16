@@ -65,8 +65,8 @@ void ProtobufHttpRequestBase::StartRequest(
   base::TimeDelta timeout_duration = GetRequestTimeoutDuration();
   if (!timeout_duration.is_zero()) {
     // Add a 500ms fuzz to account for task dispatching delay and other stuff.
-    request_deadline_ = base::TimeTicks::Now() + timeout_duration +
-                        base::TimeDelta::FromMilliseconds(500);
+    request_deadline_ =
+        base::TimeTicks::Now() + timeout_duration + base::Milliseconds(500);
   }
 #endif  // DCHECK_IS_ON()
 }

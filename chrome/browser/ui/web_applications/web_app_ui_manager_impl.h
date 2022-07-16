@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/web_applications/components/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 
 class Profile;
 class Browser;
@@ -35,7 +35,7 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   WebAppUiManagerImpl& operator=(const WebAppUiManagerImpl&) = delete;
   ~WebAppUiManagerImpl() override;
 
-  void SetSubsystems(AppRegistryController* app_registry_controller,
+  void SetSubsystems(WebAppSyncBridge* sync_bridge,
                      OsIntegrationManager* os_integration_manager) override;
   void Start() override;
   void Shutdown() override;
@@ -109,7 +109,7 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
 
   Profile* const profile_;
 
-  AppRegistryController* app_registry_controller_ = nullptr;
+  WebAppSyncBridge* sync_bridge_ = nullptr;
   OsIntegrationManager* os_integration_manager_ = nullptr;
 
   std::map<AppId, std::vector<base::OnceClosure>> windows_closed_requests_map_;

@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
@@ -33,6 +32,10 @@ WriteKeyPressMonitorCount(const base::WritableSharedMemoryMapping& shmem,
 class MEDIA_EXPORT UserInputMonitor {
  public:
   UserInputMonitor();
+
+  UserInputMonitor(const UserInputMonitor&) = delete;
+  UserInputMonitor& operator=(const UserInputMonitor&) = delete;
+
   virtual ~UserInputMonitor();
 
   // Creates a platform-specific instance of UserInputMonitorBase.
@@ -52,15 +55,16 @@ class MEDIA_EXPORT UserInputMonitor {
   // number of keypresses happened within that time period, but should not make
   // any assumption on the initial value.
   virtual uint32_t GetKeyPressCount() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserInputMonitor);
 };
 
 // Monitors and notifies about keyboard events.
 class MEDIA_EXPORT UserInputMonitorBase : public UserInputMonitor {
  public:
   UserInputMonitorBase();
+
+  UserInputMonitorBase(const UserInputMonitorBase&) = delete;
+  UserInputMonitorBase& operator=(const UserInputMonitorBase&) = delete;
+
   ~UserInputMonitorBase() override;
 
   // A caller must call EnableKeyPressMonitoring(WithMapping) and
@@ -84,8 +88,6 @@ class MEDIA_EXPORT UserInputMonitorBase : public UserInputMonitor {
   base::ReadOnlySharedMemoryRegion key_press_count_region_;
 
   SEQUENCE_CHECKER(owning_sequence_);
-
-  DISALLOW_COPY_AND_ASSIGN(UserInputMonitorBase);
 };
 
 }  // namespace media

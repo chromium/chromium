@@ -95,8 +95,8 @@ class WmGestureHandlerTest : public AshTestBase {
 
   void Scroll(float x_offset, float y_offset, int fingers) {
     GetEventGenerator()->ScrollSequence(
-        gfx::Point(), base::TimeDelta::FromMilliseconds(5),
-        GetOffsetX(x_offset), GetOffsetY(y_offset), /*steps=*/100, fingers);
+        gfx::Point(), base::Milliseconds(5), GetOffsetX(x_offset),
+        GetOffsetY(y_offset), /*steps=*/100, fingers);
   }
 
   void ScrollToSwitchDesks(bool scroll_left) {
@@ -117,7 +117,7 @@ class WmGestureHandlerTest : public AshTestBase {
     // Continue with a large enough scroll to start the desk switch animation.
     // The animation does not start on fling cancel since there is no finger
     // data in production code.
-    const base::TimeDelta step_delay = base::TimeDelta::FromMilliseconds(5);
+    const base::TimeDelta step_delay = base::Milliseconds(5);
     timestamp += step_delay;
     const int direction = scroll_left ? -1 : 1;
     const int initial_move_x =
@@ -261,7 +261,7 @@ TEST_F(WmGestureHandlerTest, HorizontalScrolls) {
 TEST_F(WmGestureHandlerTest, EnterOverviewOnScrollEnd) {
   base::TimeTicks timestamp = base::TimeTicks::Now();
   const int num_fingers = 3;
-  base::TimeDelta step_delay(base::TimeDelta::FromMilliseconds(5));
+  base::TimeDelta step_delay(base::Milliseconds(5));
   ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
                                timestamp, 0, 0, 0, 0, 0, num_fingers);
   GetEventGenerator()->Dispatch(&fling_cancel);

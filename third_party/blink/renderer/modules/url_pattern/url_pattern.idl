@@ -4,19 +4,22 @@
 
 typedef (USVString or URLPatternInit) URLPatternInput;
 
+enum URLPatternComponent { "protocol", "username", "password", "hostname",
+                           "port", "pathname", "search", "hash" };
+
 // https://wicg.github.io/urlpattern/
 [
   Exposed=(Window,Worker),
   RuntimeEnabled=URLPattern
 ] interface URLPattern {
   [RaisesException, Measure]
-  constructor(URLPatternInput input, optional USVString baseURL);
+  constructor(optional URLPatternInput input = {}, optional USVString baseURL);
 
   [RaisesException, Measure]
-  boolean test(URLPatternInput input, optional USVString baseURL);
+  boolean test(optional URLPatternInput input = {}, optional USVString baseURL);
 
   [RaisesException, Measure]
-  URLPatternResult? exec(URLPatternInput input, optional USVString baseURL);
+  URLPatternResult? exec(optional URLPatternInput input = {}, optional USVString baseURL);
 
   readonly attribute USVString protocol;
   readonly attribute USVString username;
@@ -26,4 +29,8 @@ typedef (USVString or URLPatternInit) URLPatternInput;
   readonly attribute USVString pathname;
   readonly attribute USVString search;
   readonly attribute USVString hash;
+
+  [RuntimeEnabled=URLPatternCompareComponent, Measure]
+  static short compareComponent(URLPatternComponent component,
+                                URLPattern left, URLPattern right);
 };

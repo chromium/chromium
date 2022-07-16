@@ -5,6 +5,9 @@
 #ifndef BASE_PROFILER_NATIVE_UNWINDER_ANDROID_H_
 #define BASE_PROFILER_NATIVE_UNWINDER_ANDROID_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/profiler/unwinder.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Maps.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"

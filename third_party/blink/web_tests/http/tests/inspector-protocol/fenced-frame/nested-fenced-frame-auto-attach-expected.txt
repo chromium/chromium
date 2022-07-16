@@ -1,0 +1,4 @@
+Tests that auto-attach with nested fenced frames works correctly
+attached to outer fenced frame
+attached to inner fenced frame
+

@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/test/scoped_field_trial_list_resetter.h"
 
 namespace base {
@@ -50,6 +49,10 @@ class VariationParamsManager {
       const std::string& trial_name,
       const std::map<std::string, std::string>& param_values,
       const std::set<std::string>& associated_features);
+
+  VariationParamsManager(const VariationParamsManager&) = delete;
+  VariationParamsManager& operator=(const VariationParamsManager&) = delete;
+
   ~VariationParamsManager();
 
   // Associates |param_values| with the given |trial_name|. |param_values| maps
@@ -80,7 +83,7 @@ class VariationParamsManager {
   //
   // This static method is useful in situations where using
   // VariationParamsManager directly would have resulted in initializing
-  // FieldTrialList twice (once from ChromeBrowserMainParts::SetupFieldTrials
+  // FieldTrialList twice (once from ChromeBrowserMainParts::SetUpFieldTrials
   // and once from VariationParamsManager).
   static void AppendVariationParams(
       const std::string& trial_name,
@@ -92,8 +95,6 @@ class VariationParamsManager {
   base::test::ScopedFieldTrialListResetter field_trial_list_resetter_;
   std::unique_ptr<base::FieldTrialList> field_trial_list_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariationParamsManager);
 };
 
 }  // namespace testing

@@ -25,6 +25,7 @@
 
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
+#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "util/mac/mac_util.h"
 #include "util/mach/bootstrap.h"
@@ -94,6 +95,9 @@ class ScopedPthreadAttrDestroy {
       : pthread_attr_(pthread_attr) {
   }
 
+  ScopedPthreadAttrDestroy(const ScopedPthreadAttrDestroy&) = delete;
+  ScopedPthreadAttrDestroy& operator=(const ScopedPthreadAttrDestroy&) = delete;
+
   ~ScopedPthreadAttrDestroy() {
     errno = pthread_attr_destroy(pthread_attr_);
     PLOG_IF(WARNING, errno != 0) << "pthread_attr_destroy";
@@ -101,13 +105,14 @@ class ScopedPthreadAttrDestroy {
 
  private:
   pthread_attr_t* pthread_attr_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPthreadAttrDestroy);
 };
 
 //! \brief Starts a Crashpad handler, possibly restarting it if it dies.
 class HandlerStarter final : public NotifyServer::DefaultInterface {
  public:
+  HandlerStarter(const HandlerStarter&) = delete;
+  HandlerStarter& operator=(const HandlerStarter&) = delete;
+
   ~HandlerStarter() {}
 
   //! \brief Starts a Crashpad handler initially, as opposed to starting it for
@@ -427,8 +432,6 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
   std::vector<std::string> arguments_;
   base::mac::ScopedMachReceiveRight notify_port_;
   uint64_t last_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(HandlerStarter);
 };
 
 }  // namespace

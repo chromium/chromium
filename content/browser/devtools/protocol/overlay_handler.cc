@@ -54,8 +54,7 @@ Response OverlayHandler::Disable() {
 void OverlayHandler::UpdateCaptureInputEvents() {
   if (!host_)
     return;
-  auto* web_contents =
-      WebContentsImpl::FromFrameTreeNode(host_->frame_tree_node());
+  auto* web_contents = WebContentsImpl::FromRenderFrameHostImpl(host_);
   if (!web_contents)
     return;
   bool capture_input =

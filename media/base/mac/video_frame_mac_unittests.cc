@@ -21,7 +21,7 @@ namespace {
 const int kWidth = 64;
 const int kHeight = 48;
 const int kVisibleRectOffset = 8;
-const base::TimeDelta kTimestamp = base::TimeDelta::FromMicroseconds(1337);
+const base::TimeDelta kTimestamp = base::Microseconds(1337);
 
 struct FormatPair {
   VideoPixelFormat chrome;

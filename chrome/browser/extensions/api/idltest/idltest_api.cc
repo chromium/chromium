@@ -27,15 +27,15 @@ base::Value CopyBinaryValueToIntegerList(
 }  // namespace
 
 ExtensionFunction::ResponseAction IdltestSendArrayBufferFunction::Run() {
-  EXTENSION_FUNCTION_VALIDATE(args_ && !args_->GetList().empty());
-  const auto& value = args_->GetList()[0];
+  EXTENSION_FUNCTION_VALIDATE(has_args() && !args().empty());
+  const auto& value = args()[0];
   EXTENSION_FUNCTION_VALIDATE(value.is_blob());
   return RespondNow(OneArgument(CopyBinaryValueToIntegerList(value.GetBlob())));
 }
 
 ExtensionFunction::ResponseAction IdltestSendArrayBufferViewFunction::Run() {
-  EXTENSION_FUNCTION_VALIDATE(args_ && !args_->GetList().empty());
-  const auto& value = args_->GetList()[0];
+  EXTENSION_FUNCTION_VALIDATE(has_args() && !args().empty());
+  const auto& value = args()[0];
   EXTENSION_FUNCTION_VALIDATE(value.is_blob());
   return RespondNow(OneArgument(CopyBinaryValueToIntegerList(value.GetBlob())));
 }

@@ -12,8 +12,10 @@ mojom("mojom") {
   ]
 
   public_deps = [
+    "//chromecast/bindings/public/mojom",
     "//chromecast/browser/webui/mojom",
     "//chromecast/common/mojom",
+    "//chromecast/mojo/mojom",
     "//chromecast/ui/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
@@ -21,6 +23,10 @@ mojom("mojom") {
   cpp_typemaps = [
     {
       types = [
+        {
+          mojom = "chromecast.mojom.VisibilityType"
+          cpp = "::chromecast::VisibilityType"
+        },
         {
           mojom = "chromecast.mojom.VisibilityPriority"
           cpp = "::chromecast::VisibilityPriority"

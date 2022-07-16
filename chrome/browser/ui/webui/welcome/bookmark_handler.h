@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WELCOME_BOOKMARK_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_WELCOME_BOOKMARK_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -16,6 +15,10 @@ namespace welcome {
 class BookmarkHandler : public content::WebUIMessageHandler {
  public:
   explicit BookmarkHandler(PrefService* prefs);
+
+  BookmarkHandler(const BookmarkHandler&) = delete;
+  BookmarkHandler& operator=(const BookmarkHandler&) = delete;
+
   ~BookmarkHandler() override;
 
   // WebUIMessageHandler:
@@ -28,8 +31,6 @@ class BookmarkHandler : public content::WebUIMessageHandler {
  private:
   // Weak reference.
   PrefService* prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkHandler);
 };
 
 }  // namespace welcome

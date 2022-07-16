@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/power/ml/user_activity_event.pb.h"
 
 namespace ash {
@@ -63,6 +62,12 @@ int Bucketize(int original_value, const std::array<Bucket, N>& buckets) {
 
 class UserActivityUkmLoggerBucketizer {
  public:
+  UserActivityUkmLoggerBucketizer() = delete;
+  UserActivityUkmLoggerBucketizer(const UserActivityUkmLoggerBucketizer&) =
+      delete;
+  UserActivityUkmLoggerBucketizer& operator=(
+      const UserActivityUkmLoggerBucketizer&) = delete;
+
   // Bucketizes features if they are present. Returns a
   // feature->bucketized_value map.
   static std::map<std::string, int> BucketizeUserActivityEventFeatures(
@@ -71,10 +76,6 @@ class UserActivityUkmLoggerBucketizer {
   // Bucketizes features and also EventLogDuration.
   static std::map<std::string, int> BucketizeUserActivityEventData(
       const UserActivityEvent& event);
-
- private:
-  UserActivityUkmLoggerBucketizer() = delete;
-  DISALLOW_COPY_AND_ASSIGN(UserActivityUkmLoggerBucketizer);
 };
 
 }  // namespace ml

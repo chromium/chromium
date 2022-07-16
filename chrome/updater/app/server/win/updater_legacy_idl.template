@@ -212,6 +212,41 @@ interface IAppWeb : IDispatch {
 };
 
 [
+  object,
+  oleautomation,
+  uuid(IPROCESSLAUNCHER_IID),
+  helpstring("Google Update IProcessLauncher Interface"),
+  pointer_default(unique)
+]
+interface IProcessLauncher : IUnknown {
+  HRESULT LaunchCmdLine([in, string] const WCHAR* cmd_line);
+  HRESULT LaunchBrowser([in] DWORD browser_type,
+                        [in, string] const WCHAR* url);
+  HRESULT LaunchCmdElevated([in, string] const WCHAR* app_guid,
+                            [in, string] const WCHAR* cmd_id,
+                            [in] DWORD caller_proc_id,
+                            [out] ULONG_PTR* proc_handle);
+};
+
+[
+  object,
+  oleautomation,
+  uuid(IPROCESSLAUNCHER2_IID),
+  helpstring("Google Update IProcessLauncher2 Interface"),
+  pointer_default(unique)
+]
+interface IProcessLauncher2 : IProcessLauncher {
+  // Launches the command line, returning the COM server's process ID and
+  // handles to the launched process and its stdout. The caller is responsible
+  // for closing the returned handles (by passing DUPLICATE_CLOSE_SOURCE to
+  // DuplicateHandle, for instance).
+  HRESULT LaunchCmdLineEx([in, string] const WCHAR* cmd_line,
+                          [out] DWORD* server_proc_id,
+                          [out] ULONG_PTR* proc_handle,
+                          [out] ULONG_PTR* stdout_handle);
+};
+
+[
   uuid(UPDATER_LEGACY_LIB_UUID),
   version(1.0),
   helpstring("Chromium Updater legacy type library.")
@@ -236,8 +271,18 @@ library UpdaterLegacyLib {
     [default] interface IUnknown;
   }
 
+  [
+    uuid(ABC01078-F197-4b0b-ADBC-CFE684B39C82),
+    helpstring("ProcessLauncherClass Class")
+  ]
+  coclass ProcessLauncherClass {
+    [default] interface IUnknown;
+  }
+
   interface ICurrentState;
   interface IGoogleUpdate3Web;
   interface IAppBundleWeb;
   interface IAppWeb;
+  interface IProcessLauncher;
+  interface IProcessLauncher2;
 };

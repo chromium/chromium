@@ -1,5 +1,5 @@
 <!--
-@MAC-SCRIPT:
+@SCRIPT:
   // Select the 1st word via text marker associated with container AXTextArea.
   text_range:= ce1.AXTextMarkerRangeForUIElement(ce1)
   marker_0:= text_range.anchor
@@ -9,7 +9,7 @@
   wait for AXSelectedTextChanged on AXTextArea
   ce1.AXSelectedText
 
-@MAC-SCRIPT:
+@SCRIPT:
   // Select the 2nd word via the marker associated with AXStaticText.
   text:= ce1.AXChildren[0].AXChildren[0]
   text.AXValue
@@ -23,7 +23,7 @@
   wait for AXSelectedTextChanged on AXTextArea
   ce1.AXSelectedText
 
-@MAC-SCRIPT:
+@SCRIPT:
   // Select text inside a span.
   text:= ce1.AXChildren[0].AXChildren[3]
   text.AXValue
@@ -36,7 +36,7 @@
   wait for AXSelectedTextChanged on AXTextArea
   ce1.AXSelectedText
 
-@MAC-SCRIPT:
+@SCRIPT:
   // Select the text inside the block with incorrect grammar.
   text:= ce1.AXChildren[0].AXChildren[1].AXChildren[0]
   text.AXValue
@@ -45,7 +45,7 @@
   wait for AXSelectedTextChanged on AXTextArea
   ce1.AXSelectedText
 
-@MAC-SCRIPT:
+@SCRIPT:
   // Select the text after a forced break.
   text:= ce2.AXChildren[0].AXChildren[2]
   text.AXValue

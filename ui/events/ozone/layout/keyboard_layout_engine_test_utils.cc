@@ -6,7 +6,6 @@
 
 #include "base/callback.h"
 #include "base/run_loop.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 
@@ -16,8 +15,6 @@ namespace ui {
 // sets up XkbKeyboardLayoutEngine differently. When that is fixed, remove the
 // workaround function below.
 void WaitUntilLayoutEngineIsReadyForTest() {
-  if (!features::IsUsingOzonePlatform())
-    return;
   // The platform may set the keyboard layout asynchronously.  We need the
   // layout when handling key events, so wait until it is ready.
   //

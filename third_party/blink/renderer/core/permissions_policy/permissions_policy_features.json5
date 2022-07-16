@@ -91,11 +91,6 @@
       depends_on: ["FeaturePolicyForClientHints"],
     },
     {
-      name: "ClientHintLang",
-      permissions_policy_name: "ch-lang",
-      depends_on: ["FeaturePolicyForClientHints"],
-    },
-    {
       name: "ClientHintPrefersColorScheme",
       permissions_policy_name: "ch-prefers-color-scheme",
       depends_on: ["FeaturePolicyForClientHints"],
@@ -146,9 +141,24 @@
       depends_on: ["FeaturePolicyForClientHints"],
     },
     {
+      name: "ClientHintUAFullVersionList",
+      permissions_policy_name: "ch-ua-full-version-list",
+      depends_on: ["FeaturePolicyForClientHints", "UserAgentClientHintFullVersionList"],
+    },
+    {
       name: "ClientHintUAPlatformVersion",
       permissions_policy_name: "ch-ua-platform-version",
       depends_on: ["FeaturePolicyForClientHints"],
+    },
+    {
+      name: "ClientHintUAReduced",
+      permissions_policy_name: "ch-ua-reduced",
+      depends_on: ["FeaturePolicyForClientHints", "UserAgentReduction"],
+    },
+    {
+      name: "ClientHintViewportHeight",
+      permissions_policy_name: "ch-viewport-height",
+      depends_on: ["ViewportHeightClientHintHeader"],
     },
     {
       name: "ClientHintViewportWidth",
@@ -253,6 +263,19 @@
       depends_on: ["InterestCohortFeaturePolicy"],
     },
     {
+      name: "JoinAdInterestGroup",
+      permissions_policy_name: "join-ad-interest-group",
+      feature_default: "EnableForAll",
+      depends_on: ["AdInterestGroupAPI"],
+      default_value_behind_flag: [
+        ["AdInterestGroupAPIRestrictedPolicyByDefault", "EnableForSelf"],
+      ],
+    },
+    {
+      name: "KeyboardMap",
+      permissions_policy_name: "keyboard-map",
+    },
+    {
       name: "Magnetometer",
       permissions_policy_name: "magnetometer",
     },
@@ -283,6 +306,15 @@
     {
       name: "PublicKeyCredentialsGet",
       permissions_policy_name: "publickey-credentials-get",
+    },
+    {
+      name: "RunAdAuction",
+      permissions_policy_name: "run-ad-auction",
+      feature_default: "EnableForAll",
+      depends_on: ["Fledge"],
+      default_value_behind_flag: [
+        ["AdInterestGroupAPIRestrictedPolicyByDefault", "EnableForSelf"],
+      ],
     },
     {
       name: "ScreenWakeLock",

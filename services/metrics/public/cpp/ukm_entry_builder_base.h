@@ -19,6 +19,9 @@ namespace internal {
 // This class should not be used directly.
 class METRICS_EXPORT UkmEntryBuilderBase {
  public:
+  UkmEntryBuilderBase(const UkmEntryBuilderBase&) = delete;
+  UkmEntryBuilderBase& operator=(const UkmEntryBuilderBase&) = delete;
+
   virtual ~UkmEntryBuilderBase();
 
   // Records the complete entry into the recorder. If recorder is null, the
@@ -39,8 +42,6 @@ class METRICS_EXPORT UkmEntryBuilderBase {
 
  private:
   mojom::UkmEntryPtr entry_;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmEntryBuilderBase);
 };
 
 }  // namespace internal

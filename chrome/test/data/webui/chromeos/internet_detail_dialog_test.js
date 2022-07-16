@@ -9,7 +9,7 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chrome
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
 /** @implements {InternetDetailDialogBrowserProxy} */
 export class TestInternetDetailDialogBrowserProxy extends TestBrowserProxy {
@@ -105,10 +105,6 @@ suite('internet-detail-dialog', () => {
   }
 
   test('Network not on active sim, hide configurations', async () => {
-    loadTimeData.overrideValues({
-      updatedCellularActivationUi: true,
-    });
-
     await setupCellularNetwork(/*isPrimary=*/ false, /*isInhibited=*/ false);
 
     await init();
@@ -123,10 +119,6 @@ suite('internet-detail-dialog', () => {
   });
 
   test('Network on active sim, show configurations', async () => {
-    loadTimeData.overrideValues({
-      updatedCellularActivationUi: true,
-    });
-
     await setupCellularNetwork(/*isPrimary=*/ true, /*isInhibited=*/ false);
 
     await init();
@@ -138,10 +130,6 @@ suite('internet-detail-dialog', () => {
   });
 
   test('Dialog disabled when inhibited', async () => {
-    loadTimeData.overrideValues({
-      updatedCellularActivationUi: true,
-    });
-
     // Start uninhibited.
     await setupCellularNetwork(/*isPrimary=*/ true, /*isInhibited=*/ false);
     await init();

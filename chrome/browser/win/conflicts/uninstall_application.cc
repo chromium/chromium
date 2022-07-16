@@ -12,14 +12,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_variant.h"
@@ -66,6 +65,9 @@ bool FindSearchBoxElement(IUIAutomation* automation,
 
 class UninstallAppController {
  public:
+  UninstallAppController(const UninstallAppController&) = delete;
+  UninstallAppController& operator=(const UninstallAppController&) = delete;
+
   // Launches the Apps & Features page, ensuring the |application_name| is
   // written into the search box.
   static void Launch(const std::wstring& application_name);
@@ -85,8 +87,6 @@ class UninstallAppController {
   std::unique_ptr<AutomationController> automation_controller_;
 
   base::WeakPtrFactory<UninstallAppController> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(UninstallAppController);
 };
 
 // static
@@ -134,6 +134,11 @@ class UninstallAppController::AutomationControllerDelegate
       scoped_refptr<base::SequencedTaskRunner> controller_runner,
       base::OnceClosure on_automation_finished,
       const std::wstring& application_name);
+
+  AutomationControllerDelegate(const AutomationControllerDelegate&) = delete;
+  AutomationControllerDelegate& operator=(const AutomationControllerDelegate&) =
+      delete;
+
   ~AutomationControllerDelegate() override;
 
   // AutomationController::Delegate:
@@ -157,8 +162,6 @@ class UninstallAppController::AutomationControllerDelegate
   mutable base::OnceClosure on_automation_finished_;
 
   const std::wstring application_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationControllerDelegate);
 };
 
 UninstallAppController::AutomationControllerDelegate::

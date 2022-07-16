@@ -33,9 +33,7 @@ import org.chromium.chrome.browser.accessibility.FontSizePrefs;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
@@ -183,23 +181,6 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @Features.DisableFeatures({ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS})
-    public void testImageDescriptionsPreferences_Disabled() {
-        mSettingsActivityTestRule.startSettingsActivity();
-        AccessibilitySettings accessibilitySettings = mSettingsActivityTestRule.getFragment();
-
-        Preference imageDescriptionsPref =
-                accessibilitySettings.findPreference(AccessibilitySettings.PREF_IMAGE_DESCRIPTIONS);
-
-        Assert.assertNotNull(imageDescriptionsPref);
-        Assert.assertFalse(
-                "Image Descriptions should not be visible", imageDescriptionsPref.isVisible());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @Features.EnableFeatures({ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS})
     public void testImageDescriptionsPreferences_Enabled() {
         // Enable touch exploration to display settings option.
         TestThreadUtils.runOnUiThreadBlocking(() -> {

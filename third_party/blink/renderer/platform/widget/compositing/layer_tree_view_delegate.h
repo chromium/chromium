@@ -65,7 +65,8 @@ class LayerTreeViewDelegate {
   // Notifies about a compositor frame commit operation having finished.
   // The commit_start_time is the time that the impl thread started processing
   // the commit.
-  virtual void DidCommitCompositorFrame(base::TimeTicks commit_start_time) = 0;
+  virtual void DidCommitCompositorFrame(base::TimeTicks commit_start_time,
+                                        base::TimeTicks commit_finish_time) = 0;
 
   // Called by the compositor when page scale animation completed.
   virtual void DidCompletePageScaleAnimation() = 0;

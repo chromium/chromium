@@ -7,20 +7,22 @@
       <template is="dom-if" if="[[!connectionAccountInfo_.linked]]">
       <div class="cr-row first" id="downloadsRoutingConnectionUnlinked">
         <div class="flex cr-padded-text">
-          <div id="connectionLabel" aria-hidden="true">
+          <div id="connectionLabel">
             $i18n{downloadsConnectionTitle}
           </div>
-          <div class="secondary" id="connectionMessage" aria-hidden="true">
+          <div class="secondary" id="connectionMessage">
             $i18n{downloadsConnectionUnlinkedMessage}
-            <a href="[[connectionLearnMoreLink_]]" target="_blank">
+            <a href="[[connectionLearnMoreLink_]]" target="_blank"
+               id="learnMore" aria-labelledby="connectionMessage learnMore">
               $i18n{downloadConnectionLearnMore}
             </a>
           </div>
         </div>
         <div class="separator"></div>
-        <cr-button class="action-button cr-button-gap" id="linkAccount"
+        <cr-button class="action-button cr-button-gap" id="linkAccountButton"
             on-click="onLinkDownloadsConnectionClick_"
-            disabled="[[connectionSetupInProgress_]]">
+            disabled="[[connectionSetupInProgress_]]"
+            aria-labelledby="connectionLabel linkAccountButton">
             $i18n{downloadsConnectionLinkButton}
         </cr-button>
       </div>
@@ -28,20 +30,26 @@
       <template is="dom-if" if="[[connectionAccountInfo_.linked]]">
         <div class="cr-row first" id="downloadsRoutingConnectionLinked">
           <div class="flex cr-padded-text">
-            <div id="connectionLabel" aria-hidden="true">
+            <div id="connectionLabel">
               $i18n{downloadsConnectionTitle}
             </div>
-            <div class="secondary" id="connectionMessage" aria-hidden="true">
+            <div class="secondary" id="connectionLinkedMessage">
               $i18n{downloadsConnectionLinkedMessage}
-              <a href="[[connectionLearnMoreLink_]]" target="_blank">
+              <a href="[[connectionLearnMoreLink_]]" target="_blank"
+                  id="learnMore"
+                  aria-labelledby="connectionLinkedMessage learnMore">
                 $i18n{downloadConnectionLearnMore}
               </a>
             </div>
           </div>
           <div class="separator"></div>
-          <cr-button class="action-button cr-button-gap" id="unlinkAccount"
+          <cr-button class="action-button cr-button-gap"
+              id="unlinkAccountButton"
               on-click="onUnlinkDownloadsConnectionClick_"
-              disabled="[[connectionSetupInProgress_]]">
+              disabled="[[connectionSetupInProgress_]]"
+              aria-labelledby="connectionLabel connectionAccountLabel
+                  connectionAccountName connectionAccountLogin
+                  unlinkAccountButton">
               $i18n{downloadsConnectionUnlinkButton}
           </cr-button>
         </div>
@@ -61,8 +69,10 @@
             <div id="connectionFolderLabel">
               $i18n{downloadConnectionLinkedFolder}
             </div>
-            <div class="secondary" id="connectionFolderLink">
-              <a href="[[connectionAccountInfo_.folder.link]]" target="_blank">
+            <div class="secondary">
+              <a href="[[connectionAccountInfo_.folder.link]]" target="_blank"
+                  id="connectionFolderLink"
+                  aria-labelledby="connectionFolderLabel connectionFolderLink">
                 [[connectionAccountInfo_.folder.name]]
               </a>
             </div>
@@ -73,12 +83,12 @@
     <div class="cr-row first">
       <div class="flex cr-padded-text">
         <template is="dom-if" if="[[showConnection_]]">
-          <div id="locationLabel" aria-hidden="true">
+          <div id="locationLabel">
             $i18n{downloadLocalLocation}
           </div>
         </template>
         <template is="dom-if" if="[[!showConnection_]]">
-          <div id="locationLabel" aria-hidden="true">
+          <div id="locationLabel">
             $i18n{downloadLocation}
           </div>
         </template>

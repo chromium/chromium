@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/demuxer_stream.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -44,6 +43,9 @@ class MojoDecoderBufferReader {
   // Hold the consumer handle to read DecoderBuffer data.
   explicit MojoDecoderBufferReader(
       mojo::ScopedDataPipeConsumerHandle consumer_handle);
+
+  MojoDecoderBufferReader(const MojoDecoderBufferReader&) = delete;
+  MojoDecoderBufferReader& operator=(const MojoDecoderBufferReader&) = delete;
 
   ~MojoDecoderBufferReader();
 
@@ -97,8 +99,6 @@ class MojoDecoderBufferReader {
 
   // Number of bytes already read into the current buffer.
   uint32_t bytes_read_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDecoderBufferReader);
 };
 
 // Converts media::DecoderBuffers to mojom::DecoderBuffers, writing the data
@@ -122,6 +122,9 @@ class MojoDecoderBufferWriter {
   // Hold the producer handle to write DecoderBuffer data.
   explicit MojoDecoderBufferWriter(
       mojo::ScopedDataPipeProducerHandle producer_handle);
+
+  MojoDecoderBufferWriter(const MojoDecoderBufferWriter&) = delete;
+  MojoDecoderBufferWriter& operator=(const MojoDecoderBufferWriter&) = delete;
 
   ~MojoDecoderBufferWriter();
 
@@ -150,8 +153,6 @@ class MojoDecoderBufferWriter {
 
   // Number of bytes already written from the current buffer.
   uint32_t bytes_written_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDecoderBufferWriter);
 };
 
 }  // namespace media

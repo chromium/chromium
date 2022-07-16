@@ -77,6 +77,9 @@ class MockUDPSocket : public net::DatagramClientSocket {
                 net::Error connect_error)
       : peer_ip_(peer_ip), local_ip_(local_ip), connect_error_(connect_error) {}
 
+  MockUDPSocket(const MockUDPSocket&) = delete;
+  MockUDPSocket& operator=(const MockUDPSocket&) = delete;
+
   ~MockUDPSocket() override = default;
 
   // Socket implementation.
@@ -202,8 +205,6 @@ class MockUDPSocket : public net::DatagramClientSocket {
   net::IPAddress peer_ip_;
   net::IPAddress local_ip_;
   net::Error connect_error_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockUDPSocket);
 };
 
 class MockSocketFactory : public net::ClientSocketFactory {
@@ -227,6 +228,9 @@ class MockSocketFactory : public net::ClientSocketFactory {
         CreateIPAddress(peer_ip), net::IPAddress(),
         net::ERR_ADDRESS_UNREACHABLE));
   }
+
+  MockSocketFactory(const MockSocketFactory&) = delete;
+  MockSocketFactory& operator=(const MockSocketFactory&) = delete;
 
   ~MockSocketFactory() override {
     EXPECT_EQ(0u, udp_sockets_.size())
@@ -281,8 +285,6 @@ class MockSocketFactory : public net::ClientSocketFactory {
 
  private:
   std::vector<std::unique_ptr<MockUDPSocket>> udp_sockets_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSocketFactory);
 };
 
 // Tests myIpAddress() when there is a route to 8.8.8.8.

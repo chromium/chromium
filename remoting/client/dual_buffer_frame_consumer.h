@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/protocol/frame_consumer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_region.h"
@@ -37,6 +37,10 @@ class DualBufferFrameConsumer : public protocol::FrameConsumer {
       RenderCallback callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       PixelFormat format);
+
+  DualBufferFrameConsumer(const DualBufferFrameConsumer&) = delete;
+  DualBufferFrameConsumer& operator=(const DualBufferFrameConsumer&) = delete;
+
   ~DualBufferFrameConsumer() override;
 
   // Feeds the callback on the right thread with a BasicDesktopFrame that merges
@@ -71,8 +75,6 @@ class DualBufferFrameConsumer : public protocol::FrameConsumer {
   base::ThreadChecker thread_checker_;
   base::WeakPtr<DualBufferFrameConsumer> weak_ptr_;
   base::WeakPtrFactory<DualBufferFrameConsumer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DualBufferFrameConsumer);
 };
 
 }  // namespace remoting

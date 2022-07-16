@@ -4,13 +4,6 @@
 
 #include "base/files/file_path_watcher.h"
 
-#if defined(OS_WIN)
-#include <windows.h>
-#include <aclapi.h>
-#elif defined(OS_POSIX)
-#include <sys/stat.h>
-#endif
-
 #include <memory>
 #include <set>
 #include <string>
@@ -25,9 +18,9 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
@@ -36,6 +29,13 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if defined(OS_WIN)
+#include <windows.h>
+#include <aclapi.h>
+#elif defined(OS_POSIX)
+#include <sys/stat.h>
+#endif
 
 #if defined(OS_ANDROID)
 #include "base/android/path_utils.h"
@@ -833,10 +833,8 @@ TEST_F(FilePathWatcherTest, LinkedDirectoryPart3) {
 // `g_inotify_reader` due to a race in recursive watch.
 // See https://crbug.com/990004.
 TEST_F(FilePathWatcherTest, RacyRecursiveWatch) {
-  if (!FilePathWatcher::RecursiveWatchAvailable()) {
+  if (!FilePathWatcher::RecursiveWatchAvailable())
     GTEST_SKIP();
-    return;
-  }
 
   FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
 
@@ -1162,7 +1160,7 @@ TEST_F(FilePathWatcherTest, TrivialParentDirChange) {
 
   // There should be no notification for a change to |sub_dir2|'s parent.
   ASSERT_TRUE(Move(sub_dir1, tmp_dir.Append(FILE_PATH_LITERAL("over_here"))));
-  ASSERT_FALSE(WaitForEvents());
+  ASSERT_FALSE(WaitForEventsWithTimeout(TestTimeouts::tiny_timeout()));
 }
 
 // Do not crash when a directory is moved; https://crbug.com/1156603.

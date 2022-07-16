@@ -45,7 +45,7 @@ class CrOSActionRecorderTest : public testing::Test {
 
     save_internal_secs_ = CrOSActionRecorder::kSaveInternal.InSeconds();
     // Set time_ to be base::Time::UnixEpoch().
-    time_.Advance(base::TimeDelta::FromSeconds(11612937600));
+    time_.Advance(base::Seconds(11612937600));
   }
 
   void TearDown() override {
@@ -171,7 +171,7 @@ TEST_F(CrOSActionRecorderTest, DisableHashToLogExplicitly) {
 // Check a new file is written every day for expected values.
 TEST_F(CrOSActionRecorderTest, WriteToNewFileEveryDay) {
   SetLogWithHash();
-  time_.Advance(base::TimeDelta::FromSeconds(save_internal_secs_));
+  time_.Advance(base::Seconds(save_internal_secs_));
   recorder_->RecordAction({actions_[0]}, {{conditions_[0], kConditionValue}});
   Wait();
 
@@ -183,7 +183,7 @@ TEST_F(CrOSActionRecorderTest, WriteToNewFileEveryDay) {
   ExpectCrOSAction(action_history_0.actions(0), 0, save_internal_secs_);
 
   // Advance for 1 day.
-  time_.Advance(base::TimeDelta::FromSeconds(kSecondsPerDay));
+  time_.Advance(base::Seconds(kSecondsPerDay));
   recorder_->RecordAction({actions_[1]},
                           {{conditions_[1], kConditionValue + 1}});
   Wait();
@@ -200,7 +200,7 @@ TEST_F(CrOSActionRecorderTest, WriteToNewFileEveryDay) {
 // Check that the result is appended to previous log within a day.
 TEST_F(CrOSActionRecorderTest, AppendToFileEverySaveInAday) {
   SetLogWithHash();
-  time_.Advance(base::TimeDelta::FromSeconds(save_internal_secs_));
+  time_.Advance(base::Seconds(save_internal_secs_));
   recorder_->RecordAction({actions_[0]}, {{conditions_[0], kConditionValue}});
   Wait();
 
@@ -212,7 +212,7 @@ TEST_F(CrOSActionRecorderTest, AppendToFileEverySaveInAday) {
   ExpectCrOSAction(action_history_0.actions(0), 0, save_internal_secs_);
 
   // Advance for 1 kSaveInternal.
-  time_.Advance(base::TimeDelta::FromSeconds(save_internal_secs_));
+  time_.Advance(base::Seconds(save_internal_secs_));
   recorder_->RecordAction({actions_[1]},
                           {{conditions_[1], kConditionValue + 1}});
   Wait();
@@ -226,7 +226,7 @@ TEST_F(CrOSActionRecorderTest, AppendToFileEverySaveInAday) {
   ExpectCrOSAction(action_history_1.actions(1), 1, save_internal_secs_ * 2);
 
   // Advance for 3 kSaveInternal.
-  time_.Advance(base::TimeDelta::FromSeconds(save_internal_secs_ * 3));
+  time_.Advance(base::Seconds(save_internal_secs_ * 3));
   recorder_->RecordAction({actions_[2]},
                           {{conditions_[2], kConditionValue + 2}});
   Wait();

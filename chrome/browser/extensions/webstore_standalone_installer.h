@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/active_install_data.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -53,6 +52,11 @@ class WebstoreStandaloneInstaller
   WebstoreStandaloneInstaller(const std::string& webstore_item_id,
                               Profile* profile,
                               Callback callback);
+
+  WebstoreStandaloneInstaller(const WebstoreStandaloneInstaller&) = delete;
+  WebstoreStandaloneInstaller& operator=(const WebstoreStandaloneInstaller&) =
+      delete;
+
   void BeginInstall();
 
  protected:
@@ -223,8 +227,6 @@ class WebstoreStandaloneInstaller
   // Created by ShowInstallUI() when a prompt is shown (if
   // the implementor returns a non-NULL in CreateInstallPrompt()).
   scoped_refptr<Extension> localized_extension_for_display_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebstoreStandaloneInstaller);
 };
 
 }  // namespace extensions

@@ -9,9 +9,8 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill {
 

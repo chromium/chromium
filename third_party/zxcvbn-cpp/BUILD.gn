@@ -5,8 +5,10 @@
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
-config("zxcvbn_include_config") {
+config("zxcvbn_config") {
   include_dirs = [ "//third_party/zxcvbn-cpp/native-src" ]
+
+  cflags = [ "-Wno-shadow" ]
 }
 
 source_set("zxcvbn-cpp") {
@@ -32,7 +34,7 @@ source_set("zxcvbn-cpp") {
     "//third_party/icu",
   ]
 
-  public_configs = [ ":zxcvbn_include_config" ]
+  public_configs = [ ":zxcvbn_config" ]
 }
 
 test("zxcvbn_unittests") {

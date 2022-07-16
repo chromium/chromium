@@ -46,6 +46,9 @@ class OriginPolicyManagerTest : public testing::Test {
     manager_ = std::make_unique<OriginPolicyManager>(network_context_.get());
   }
 
+  OriginPolicyManagerTest(const OriginPolicyManagerTest&) = delete;
+  OriginPolicyManagerTest& operator=(const OriginPolicyManagerTest&) = delete;
+
   void RetrieveOriginPolicyAndStoreResult(
       const url::Origin& origin,
       const absl::optional<std::string>& header) {
@@ -75,8 +78,6 @@ class OriginPolicyManagerTest : public testing::Test {
   mojo::Remote<mojom::NetworkContext> network_context_remote_;
   std::unique_ptr<OriginPolicyManager> manager_;
   std::unique_ptr<OriginPolicy> result_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginPolicyManagerTest);
 };
 
 TEST_F(OriginPolicyManagerTest, AddReceiver) {

@@ -24,10 +24,6 @@ constexpr char kRemotePlaybackPresentationUrlScheme[] = "remote-playback";
 constexpr char kLegacyCastPresentationUrlPrefix[] =
     "https://google.com/cast#__castAppId__=";
 
-// A Cast SDK enabled website (e.g. Google Slides) may use the mirroring app ID
-// rather than the tab mirroring URN.
-constexpr char kMirroringAppUri[] = "cast:0F5096E8";
-
 // Strings used in presentation IDs by the Cast SDK implementation.
 // TODO(takumif): Move them out of this file, since they are not directly
 // related to MediaSource.

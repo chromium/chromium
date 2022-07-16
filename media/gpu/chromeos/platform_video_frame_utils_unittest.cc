@@ -164,7 +164,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
   constexpr gfx::Size kCodedSize(320, 240);
   constexpr gfx::Rect kVisibleRect(kCodedSize);
   constexpr gfx::Size kNaturalSize(kCodedSize);
-  constexpr auto kTimeStamp = base::TimeDelta::FromMilliseconds(1234);
+  constexpr auto kTimeStamp = base::Milliseconds(1234);
   constexpr gfx::BufferUsage kBufferUsage =
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
 

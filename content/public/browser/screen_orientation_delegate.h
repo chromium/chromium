@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_SCREEN_ORIENTATION_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_SCREEN_ORIENTATION_DELEGATE_H_
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 
@@ -18,25 +17,30 @@ class WebContents;
 class CONTENT_EXPORT ScreenOrientationDelegate {
  public:
   ScreenOrientationDelegate() {}
+
+  ScreenOrientationDelegate(const ScreenOrientationDelegate&) = delete;
+  ScreenOrientationDelegate& operator=(const ScreenOrientationDelegate&) =
+      delete;
+
   virtual ~ScreenOrientationDelegate() {}
 
-  // Returns true if the tab must be fullscreen in order for
+  // Returns true if the provided `web_contents` must be fullscreen in order for
   // ScreenOrientationProvider to respond to requests.
   virtual bool FullScreenRequired(WebContents* web_contents) = 0;
 
-  // Lock display to the given orientation.
+  // Lock the display with the provided `web_contents` to the given orientation.
   virtual void Lock(
       WebContents* web_contents,
       device::mojom::ScreenOrientationLockType lock_orientation) = 0;
 
-  // Are ScreenOrientationProvider requests currently supported by the platform.
-  virtual bool ScreenOrientationProviderSupported() = 0;
+  // Returns true if `Lock()` above can be called for the specified
+  // `web_contents`.
+  virtual bool ScreenOrientationProviderSupported(
+      WebContents* web_contents) = 0;
 
-  // Unlocks the display, allowing hardware rotation to resume.
+  // Unlocks the display with the provided `web_contents`, allowing hardware
+  // rotation to resume.
   virtual void Unlock(WebContents* web_contents) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationDelegate);
 };
 
 } // namespace content

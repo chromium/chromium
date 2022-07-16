@@ -17,11 +17,10 @@
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -39,10 +38,6 @@ namespace system {
 class StatisticsProvider;
 }
 }  // namespace chromeos
-
-namespace cryptohome {
-struct TpmStatusInfo;
-}
 
 namespace power_manager {
 class PowerSupplyProperties;
@@ -65,38 +60,14 @@ class DeviceStatusCollectorState;
 // Enum used to define which data the CrosHealthdDataFetcher should collect.
 enum class CrosHealthdCollectionMode { kFull, kBattery };
 
-// Holds TPM status info.  Cf. TpmStatusInfo in device_management_backend.proto.
-struct TpmStatusInfo {
-  TpmStatusInfo();
-  TpmStatusInfo(const TpmStatusInfo&);
-  TpmStatusInfo(bool enabled,
-                bool owned,
-                bool initialized,
-                bool attestation_prepared,
-                bool attestation_enrolled,
-                int32_t dictionary_attack_counter,
-                int32_t dictionary_attack_threshold,
-                bool dictionary_attack_lockout_in_effect,
-                int32_t dictionary_attack_lockout_seconds_remaining,
-                bool boot_lockbox_finalized);
-  ~TpmStatusInfo();
-
-  bool enabled = false;
-  bool owned = false;
-  bool initialized = false;
-  bool attestation_prepared = false;
-  bool attestation_enrolled = false;
-  int32_t dictionary_attack_counter = 0;
-  int32_t dictionary_attack_threshold = 0;
-  bool dictionary_attack_lockout_in_effect = false;
-  int32_t dictionary_attack_lockout_seconds_remaining = 0;
-  bool boot_lockbox_finalized = false;
-};
-
 // Sampled hardware measurement data for single time point.
 class SampledData {
  public:
   SampledData();
+
+  SampledData(const SampledData&) = delete;
+  SampledData& operator=(const SampledData&) = delete;
+
   ~SampledData();
 
   // Sampling timestamp.
@@ -107,8 +78,6 @@ class SampledData {
   std::map<std::string, enterprise_management::ThermalSample> thermal_samples;
   // CPU thermal samples.
   std::map<std::string, enterprise_management::CPUTempInfo> cpu_samples;
-
-  DISALLOW_COPY_AND_ASSIGN(SampledData);
 };
 
 // Collects and summarizes the status of an enterprise-managed ChromeOS device.
@@ -133,7 +102,8 @@ class DeviceStatusCollector : public StatusCollector,
       std::vector<enterprise_management::CPUTempInfo>()>;
 
   // Format of the function that asynchronously receives TpmStatusInfo.
-  using TpmStatusReceiver = base::OnceCallback<void(const TpmStatusInfo&)>;
+  using TpmStatusReceiver =
+      base::OnceCallback<void(const enterprise_management::TpmStatusInfo&)>;
   // Gets the TpmStatusInfo and passes it to TpmStatusReceiver.
   using TpmStatusFetcher = base::RepeatingCallback<void(TpmStatusReceiver)>;
 
@@ -196,17 +166,20 @@ class DeviceStatusCollector : public StatusCollector,
   DeviceStatusCollector(PrefService* pref_service,
                         chromeos::system::StatisticsProvider* provider);
 
+  DeviceStatusCollector(const DeviceStatusCollector&) = delete;
+  DeviceStatusCollector& operator=(const DeviceStatusCollector&) = delete;
+
   ~DeviceStatusCollector() override;
 
   // StatusCollector:
   void GetStatusAsync(StatusCollectorCallback response) override;
   void OnSubmittedSuccessfully() override;
-  bool ShouldReportActivityTimes() const override;
-  bool ShouldReportNetworkInterfaces() const override;
-  bool ShouldReportUsers() const override;
-  bool ShouldReportHardwareStatus() const override;
-  bool ShouldReportCrashReportInfo() const override;
-  bool ShouldReportAppInfoAndActivity() const override;
+  bool IsReportingActivityTimes() const override;
+  bool IsReportingNetworkData() const override;
+  bool IsReportingHardwareData() const override;
+  bool IsReportingUsers() const override;
+  bool IsReportingCrashReportInfo() const override;
+  bool IsReportingAppInfoAndActivity() const override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -215,8 +188,7 @@ class DeviceStatusCollector : public StatusCollector,
   }
 
   // How often to poll to see if the user is idle.
-  static constexpr base::TimeDelta kIdlePollInterval =
-      base::TimeDelta::FromSeconds(30);
+  static constexpr base::TimeDelta kIdlePollInterval = base::Seconds(30);
 
   // The total number of hardware resource usage samples cached internally.
   static const unsigned int kMaxResourceUsageSamples = 10;
@@ -234,9 +206,13 @@ class DeviceStatusCollector : public StatusCollector,
   // Gets the version of the passed app. Virtual to allow mocking.
   virtual std::string GetAppVersion(const std::string& app_id);
 
-  // Samples the current hardware resource usage to be sent up with the
-  // next device status update.
-  void SampleResourceUsage();
+  // Samples the current cpu usage to be sent up with the next
+  // device status update.
+  void SampleCpuUsage();
+
+  // Samples the current ram usage to be sent up with the next device status
+  // update.
+  void SampleMemoryUsage();
 
   // power_manager::PowerManagerClient::Observer:
   void PowerChanged(const power_manager::PowerSupplyProperties& prop) override;
@@ -248,8 +224,11 @@ class DeviceStatusCollector : public StatusCollector,
       base::OnceCallback<void(chromeos::cros_healthd::mojom::TelemetryInfoPtr)>;
   using SamplingCallback = base::OnceCallback<void()>;
 
-  // Clears the cached hardware resource usage.
-  void ClearCachedResourceUsage();
+  // Clears the cached cpu resource usage.
+  void ClearCachedCpuUsage();
+
+  // Clears cached memory resource usage.
+  void ClearCachedMemoryUsage();
 
   // Callbacks from chromeos::VersionLoader.
   void OnOSVersion(const std::string& version);
@@ -273,11 +252,14 @@ class DeviceStatusCollector : public StatusCollector,
   bool GetVersionInfo(enterprise_management::DeviceStatusReportRequest* status);
   bool GetWriteProtectSwitch(
       enterprise_management::DeviceStatusReportRequest* status);
-  bool GetNetworkInterfaces(
+  bool GetNetworkConfiguration(
+      enterprise_management::DeviceStatusReportRequest* status);
+  bool GetNetworkStatus(
       enterprise_management::DeviceStatusReportRequest* status);
   bool GetUsers(enterprise_management::DeviceStatusReportRequest* status);
-  bool GetHardwareStatus(scoped_refptr<DeviceStatusCollectorState>
-                             state);  // Queues async queries!
+  bool GetMemoryInfo(enterprise_management::DeviceStatusReportRequest* status);
+  bool GetCPUInfo(enterprise_management::DeviceStatusReportRequest* status);
+  bool GetAudioStatus(enterprise_management::DeviceStatusReportRequest* status);
   bool GetOsUpdateStatus(
       enterprise_management::DeviceStatusReportRequest* status);
   bool GetRunningKioskApp(
@@ -373,17 +355,23 @@ class DeviceStatusCollector : public StatusCollector,
   base::Time last_requested_;
 
   base::RepeatingTimer idle_poll_timer_;
-  base::RepeatingTimer resource_usage_sampling_timer_;
+  base::RepeatingTimer cpu_usage_sampling_timer_;
+  base::RepeatingTimer memory_usage_sampling_timer_;
 
   std::string os_version_;
   std::string firmware_version_;
   std::string firmware_fetch_error_;
   ::tpm_manager::GetVersionInfoReply tpm_version_reply_;
 
-  struct ResourceUsage {
+  struct CpuUsage {
     // Sample of percentage-of-CPU-used.
     int cpu_usage_percent;
 
+    // Sampling timestamp.
+    base::Time timestamp;
+  };
+
+  struct MemoryUsage {
     // Amount of free RAM (measures raw memory used by processes, not internal
     // memory waiting to be reclaimed by GC).
     int64_t bytes_of_ram_free;
@@ -392,9 +380,13 @@ class DeviceStatusCollector : public StatusCollector,
     base::Time timestamp;
   };
 
-  // Samples of resource usage (contains multiple samples taken
+  // Samples of cpu usage percentage (contains multiple samples taken
   // periodically every kHardwareStatusSampleIntervalSeconds).
-  base::circular_deque<ResourceUsage> resource_usage_;
+  base::circular_deque<CpuUsage> cpu_usage_;
+
+  // Samples of memory usage (contains multiple samples taken
+  // periodically every kHardwareStatusSampleIntervalSeconds).
+  base::circular_deque<MemoryUsage> memory_usage_;
 
   // Samples of probe data (contains multiple samples taken
   // periodically every kHardwareStatusSampleIntervalSeconds)
@@ -434,9 +426,9 @@ class DeviceStatusCollector : public StatusCollector,
 
   // Cached values of the reporting settings. These are enterprise only. There
   // are common ones in StatusCollector interface.
-  bool report_network_interfaces_ = false;
+  bool report_network_configuration_ = false;
+  bool report_network_status_ = false;
   bool report_users_ = false;
-  bool report_hardware_status_ = false;
   bool report_kiosk_session_status_ = false;
   bool report_os_update_status_ = false;
   bool report_running_kiosk_app_ = false;
@@ -455,16 +447,20 @@ class DeviceStatusCollector : public StatusCollector,
   bool report_app_info_ = false;
   bool report_system_info_ = false;
   bool stat_reporting_pref_ = false;
+  bool report_audio_status_ = false;
+  bool report_security_status_ = false;
 
   base::CallbackListSubscription activity_times_subscription_;
-  base::CallbackListSubscription network_interfaces_subscription_;
+  base::CallbackListSubscription audio_status_subscription_;
+  base::CallbackListSubscription network_configuration_subscription_;
+  base::CallbackListSubscription network_status_subscription_;
   base::CallbackListSubscription users_subscription_;
-  base::CallbackListSubscription hardware_status_subscription_;
   base::CallbackListSubscription session_status_subscription_;
   base::CallbackListSubscription os_update_status_subscription_;
   base::CallbackListSubscription running_kiosk_app_subscription_;
   base::CallbackListSubscription power_status_subscription_;
   base::CallbackListSubscription storage_status_subscription_;
+  base::CallbackListSubscription security_status_subscription_;
   base::CallbackListSubscription board_status_subscription_;
   base::CallbackListSubscription cpu_info_subscription_;
   base::CallbackListSubscription graphics_status_subscription_;
@@ -489,8 +485,6 @@ class DeviceStatusCollector : public StatusCollector,
   std::unique_ptr<EnterpriseActivityStorage> activity_storage_;
 
   base::WeakPtrFactory<DeviceStatusCollector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceStatusCollector);
 };
 
 }  // namespace policy

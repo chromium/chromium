@@ -30,7 +30,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 // PS stands for path separator.
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
@@ -105,14 +104,14 @@ class SandboxFileSystemBackendTest
     backend_ = std::make_unique<SandboxFileSystemBackend>(delegate_.get());
   }
 
-  SandboxFileSystemBackendDelegate::OriginEnumerator* CreateOriginEnumerator()
-      const {
-    return backend_->CreateOriginEnumerator();
+  SandboxFileSystemBackendDelegate::StorageKeyEnumerator*
+  CreateStorageKeyEnumerator() const {
+    return backend_->CreateStorageKeyEnumerator();
   }
 
   void CreateOriginTypeDirectory(const char* origin_url, FileSystemType type) {
-    base::FilePath target = delegate_->GetBaseDirectoryForOriginAndType(
-        url::Origin::Create(GURL(origin_url)), type, true);
+    base::FilePath target = delegate_->GetBaseDirectoryForStorageKeyAndType(
+        blink::StorageKey::CreateFromStringForTesting(origin_url), type, true);
     ASSERT_TRUE(!target.empty());
     ASSERT_TRUE(base::DirectoryExists(target));
   }
@@ -131,8 +130,8 @@ class SandboxFileSystemBackendTest
     if (error != base::File::FILE_OK)
       return false;
     base::FilePath returned_root_path =
-        delegate_->GetBaseDirectoryForOriginAndType(
-            url::Origin::Create(GURL(origin_url)), type,
+        delegate_->GetBaseDirectoryForStorageKeyAndType(
+            blink::StorageKey::CreateFromStringForTesting(origin_url), type,
             /*create=*/false);
     if (root_path)
       *root_path = returned_root_path;
@@ -158,8 +157,8 @@ INSTANTIATE_TEST_SUITE_P(All, SandboxFileSystemBackendTest, ::testing::Bool());
 
 TEST_P(SandboxFileSystemBackendTest, Empty) {
   SetUpNewBackend(CreateAllowFileAccessOptions());
-  std::unique_ptr<SandboxFileSystemBackendDelegate::OriginEnumerator>
-      enumerator(CreateOriginEnumerator());
+  std::unique_ptr<SandboxFileSystemBackendDelegate::StorageKeyEnumerator>
+      enumerator(CreateStorageKeyEnumerator());
   ASSERT_FALSE(enumerator->Next());
 }
 
@@ -177,25 +176,27 @@ TEST_P(SandboxFileSystemBackendTest, EnumerateOrigins) {
   };
   size_t temporary_size = base::size(temporary_origins);
   size_t persistent_size = base::size(persistent_origins);
-  std::set<url::Origin> temporary_set, persistent_set;
+  std::set<blink::StorageKey> temporary_set, persistent_set;
   for (size_t i = 0; i < temporary_size; ++i) {
     CreateOriginTypeDirectory(temporary_origins[i], kFileSystemTypeTemporary);
-    temporary_set.insert(url::Origin::Create(GURL(temporary_origins[i])));
+    temporary_set.insert(
+        blink::StorageKey::CreateFromStringForTesting(temporary_origins[i]));
   }
   for (size_t i = 0; i < persistent_size; ++i) {
     CreateOriginTypeDirectory(persistent_origins[i], kFileSystemTypePersistent);
-    persistent_set.insert(url::Origin::Create(GURL(persistent_origins[i])));
+    persistent_set.insert(
+        blink::StorageKey::CreateFromStringForTesting(persistent_origins[i]));
   }
 
-  std::unique_ptr<SandboxFileSystemBackendDelegate::OriginEnumerator>
-      enumerator(CreateOriginEnumerator());
+  std::unique_ptr<SandboxFileSystemBackendDelegate::StorageKeyEnumerator>
+      enumerator(CreateStorageKeyEnumerator());
   size_t temporary_actual_size = 0;
   size_t persistent_actual_size = 0;
 
-  absl::optional<url::Origin> current;
+  absl::optional<blink::StorageKey> current;
   while ((current = enumerator->Next()).has_value()) {
     SCOPED_TRACE(testing::Message()
-                 << "EnumerateOrigin " << current->Serialize());
+                 << "EnumerateOrigin " << current->origin().Serialize());
     if (enumerator->HasFileSystemType(kFileSystemTypeTemporary)) {
       ASSERT_TRUE(temporary_set.find(current.value()) != temporary_set.end());
       ++temporary_actual_size;

@@ -68,7 +68,7 @@ class FlingingRendererTest : public testing::Test {
 };
 
 TEST_F(FlingingRendererTest, StartPlayingFromTime) {
-  base::TimeDelta seek_time = base::TimeDelta::FromSeconds(10);
+  base::TimeDelta seek_time = base::Seconds(10);
   EXPECT_CALL(*media_controller_, Seek(seek_time));
 
   renderer_->StartPlayingFrom(seek_time);

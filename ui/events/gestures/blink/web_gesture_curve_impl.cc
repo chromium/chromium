@@ -127,8 +127,7 @@ bool WebGestureCurveImpl::Advance(double time,
     ++ticks_since_first_animate_;
   }
 
-  const base::TimeTicks time_ticks =
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(time);
+  const base::TimeTicks time_ticks = base::TimeTicks() + base::Seconds(time);
   gfx::Vector2dF offset;
   bool still_active =
       curve_->ComputeScrollOffset(time_ticks, &offset, &out_current_velocity);

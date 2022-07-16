@@ -5,7 +5,6 @@
 #include "content/browser/web_package/web_bundle_url_loader_factory.h"
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_package/mock_web_bundle_reader_factory.h"
@@ -30,6 +29,10 @@ namespace {
 class WebBundleURLLoaderFactoryTest : public testing::Test {
  public:
   WebBundleURLLoaderFactoryTest() {}
+
+  WebBundleURLLoaderFactoryTest(const WebBundleURLLoaderFactoryTest&) = delete;
+  WebBundleURLLoaderFactoryTest& operator=(
+      const WebBundleURLLoaderFactoryTest&) = delete;
 
   void SetUp() override {
     mock_factory_ = MockWebBundleReaderFactory::Create();
@@ -172,8 +175,6 @@ class WebBundleURLLoaderFactoryTest : public testing::Test {
   network::TestURLLoaderClient test_client_;
   const std::string body_ = std::string("present day, present time");
   const GURL primary_url_ = GURL("https://test.example.org/");
-
-  DISALLOW_COPY_AND_ASSIGN(WebBundleURLLoaderFactoryTest);
 };
 
 TEST_F(WebBundleURLLoaderFactoryTest, CreateEntryLoader) {

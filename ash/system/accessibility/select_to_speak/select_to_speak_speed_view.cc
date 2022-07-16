@@ -37,7 +37,7 @@ SelectToSpeakSpeedView::SelectToSpeakSpeedView(Delegate* delegate,
 }
 
 void SelectToSpeakSpeedView::SetInitialSpeechRate(double initial_speech_rate) {
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 
   for (size_t i = 0; i < base::size(kSelectToSpeakSpeechRates); i++) {
     double option_speed = kSelectToSpeakSpeechRates[i];

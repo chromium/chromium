@@ -1,17 +1,20 @@
+#!/usr/bin/env vpython
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Unittests for test_apps.py."""
 
 import mock
+import os
 import unittest
 
 import test_apps
+import test_runner
+import test_runner_errors
 import test_runner_test
 
 
 _TEST_APP_PATH = '/path/to/test_app.app'
-_HOST_APP_PATH = '/path/to/host_app.app'
 _BUNDLE_ID = 'org.chromium.gtest.test-app'
 _MODULE_NAME = 'test_app'
 _XCTEST_PATH = '/PlugIns/boringssl_ssl_tests_module.xctest'
@@ -39,6 +42,24 @@ class GetGTestFilterTest(test_runner_test.TestCase):
     expected = '-test.1:test.2'
 
     self.assertEqual(test_apps.get_gtest_filter(tests, invert=True), expected)
+
+
+class EgtestsAppGetAllTestsTest(test_runner_test.TestCase):
+  """Tests to get_all_tests methods of EgtestsApp."""
+
+  @mock.patch('os.path.exists', return_value=True)
+  @mock.patch('shard_util.fetch_test_names')
+  def testNonTestsFiltered(self, mock_fetch, _):
+    mock_fetch.return_value = [
+        ('ATestCase', 'testB'),
+        ('setUpForTestCase', 'testForStartup'),
+        ('ChromeTestCase', 'testServer'),
+        ('FindInPageTestCase', 'testURL'),
+        ('CTestCase', 'testD'),
+    ]
+    test_app = test_apps.EgtestsApp(_TEST_APP_PATH)
+    tests = test_app.get_all_tests()
+    self.assertEqual(set(tests), set(['ATestCase/testB', 'CTestCase/testD']))
 
 
 class DeviceXCTestUnitTestsAppTest(test_runner_test.TestCase):
@@ -116,6 +137,111 @@ class SimulatorXCTestUnitTestsAppTest(test_runner_test.TestCase):
     }
     xctestrun_node = test_app.fill_xctestrun_node()
     self.assertEqual(xctestrun_node, expected_xctestrun_node)
+
+
+class GTestsAppTest(test_runner_test.TestCase):
+  """Tests to test methods of GTestsApp."""
+
+  @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
+  @mock.patch('os.path.exists', return_value=True)
+  def test_repeat_count(self, _1, _2):
+    """Tests correct arguments present when repeat_count."""
+    gtests_app = test_apps.GTestsApp('app_path', repeat_count=2)
+    xctestrun_data = gtests_app.fill_xctestrun_node()
+    cmd_args = xctestrun_data[gtests_app.module_name +
+                              '_module']['CommandLineArguments']
+    self.assertTrue('--gtest_repeat=2' in cmd_args)
+
+
+class EgtestsAppTest(test_runner_test.TestCase):
+  """Tests to test methods of EgTestsApp."""
+
+  def setUp(self):
+    super(EgtestsAppTest, self).setUp()
+    self.mock(test_apps, 'get_bundle_id', lambda _: 'bundle-id')
+    self.mock(test_apps, 'is_running_rosetta', lambda: True)
+    self.mock(os.path, 'exists', lambda _: True)
+
+  @mock.patch('xcode_util.using_xcode_13_or_higher', return_value=True)
+  @mock.patch('test_apps.EgtestsApp.fill_xctest_run', return_value='xctestrun')
+  def test_command_with_repeat_count(self, _1, _2):
+    """Tests command method can produce repeat_count arguments when available.
+    """
+    egtests_app = test_apps.EgtestsApp(
+        'app_path', host_app_path='host_app_path', repeat_count=2)
+    cmd = egtests_app.command('outdir', 'id=UUID', 1)
+    expected_cmd = [
+        'arch', '-arch', 'arm64', 'xcodebuild', 'test-without-building',
+        '-xctestrun', 'xctestrun', '-destination', 'id=UUID',
+        '-resultBundlePath', 'outdir', '-test-iterations', '2'
+    ]
+    self.assertEqual(cmd, expected_cmd)
+
+  @mock.patch('xcode_util.using_xcode_13_or_higher', return_value=False)
+  @mock.patch('test_apps.EgtestsApp.fill_xctest_run', return_value='xctestrun')
+  def test_command_with_repeat_count_incorrect_xcode(self, _1, _2):
+    """Tests |command| raises error with repeat_count in lower Xcode version."""
+    egtests_app = test_apps.EgtestsApp(
+        'app_path', host_app_path='host_app_path', repeat_count=2)
+    with self.assertRaises(test_runner_errors.XcodeUnsupportedFeatureError):
+      cmd = egtests_app.command('outdir', 'id=UUID', 1)
+
+  def test_not_found_egtests_app(self):
+    self.mock(os.path, 'exists', lambda _: False)
+    with self.assertRaises(test_runner.AppNotFoundError):
+      test_apps.EgtestsApp(_TEST_APP_PATH)
+
+  def test_not_found_plugins(self):
+    egtests = test_apps.EgtestsApp(_TEST_APP_PATH)
+    self.mock(os.path, 'exists', lambda _: False)
+    with self.assertRaises(test_runner.PlugInsNotFoundError):
+      egtests._xctest_path()
+
+  @mock.patch('os.listdir', autospec=True)
+  def test_found_xctest(self, mock_listdir):
+    mock_listdir.return_value = [
+        '/path/to/test_app.app/PlugIns/any_egtests.xctest'
+    ]
+    self.assertEqual('/PlugIns/any_egtests.xctest',
+                     test_apps.EgtestsApp(_TEST_APP_PATH)._xctest_path())
+
+  @mock.patch('os.listdir', autospec=True)
+  def test_not_found_xctest(self, mock_listdir):
+    mock_listdir.return_value = ['random_file']
+    egtest = test_apps.EgtestsApp(_TEST_APP_PATH)
+    with self.assertRaises(test_runner.XCTestPlugInNotFoundError):
+      egtest._xctest_path()
+
+  def test_xctestRunNode_without_filter(self):
+    self.mock(test_apps.EgtestsApp, '_xctest_path', lambda _: 'xctest-path')
+    egtest_node = test_apps.EgtestsApp(
+        _TEST_APP_PATH).fill_xctestrun_node()['test_app_module']
+    self.assertNotIn('OnlyTestIdentifiers', egtest_node)
+    self.assertNotIn('SkipTestIdentifiers', egtest_node)
+
+  def test_xctestRunNode_with_filter_only_identifiers(self):
+    self.mock(test_apps.EgtestsApp, '_xctest_path', lambda _: 'xctest-path')
+    filtered_tests = [
+        'TestCase1/testMethod1', 'TestCase1/testMethod2',
+        'TestCase2/testMethod1', 'TestCase1/testMethod2'
+    ]
+    egtest_node = test_apps.EgtestsApp(
+        _TEST_APP_PATH,
+        included_tests=filtered_tests).fill_xctestrun_node()['test_app_module']
+    self.assertEqual(filtered_tests, egtest_node['OnlyTestIdentifiers'])
+    self.assertNotIn('SkipTestIdentifiers', egtest_node)
+
+  def test_xctestRunNode_with_filter_skip_identifiers(self):
+    self.mock(test_apps.EgtestsApp, '_xctest_path', lambda _: 'xctest-path')
+    skipped_tests = [
+        'TestCase1/testMethod1', 'TestCase1/testMethod2',
+        'TestCase2/testMethod1', 'TestCase1/testMethod2'
+    ]
+    egtest_node = test_apps.EgtestsApp(
+        _TEST_APP_PATH,
+        excluded_tests=skipped_tests).fill_xctestrun_node()['test_app_module']
+    self.assertEqual(skipped_tests, egtest_node['SkipTestIdentifiers'])
+    self.assertNotIn('OnlyTestIdentifiers', egtest_node)
 
 
 if __name__ == '__main__':

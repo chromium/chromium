@@ -10,8 +10,11 @@ namespace media {
 namespace cast {
 
 CastStreamingRendererFactory::CastStreamingRendererFactory(
-    std::unique_ptr<RendererFactory> renderer_factory)
-    : real_renderer_factory_(std::move(renderer_factory)) {
+    std::unique_ptr<RendererFactory> renderer_factory,
+    mojo::PendingReceiver<media::mojom::Renderer> pending_renderer_controls)
+    : pending_renderer_controls_(std::move(pending_renderer_controls)),
+      real_renderer_factory_(std::move(renderer_factory)) {
+  DCHECK(pending_renderer_controls_);
   DCHECK(real_renderer_factory_);
 }
 
@@ -24,10 +27,12 @@ std::unique_ptr<Renderer> CastStreamingRendererFactory::CreateRenderer(
     VideoRendererSink* video_renderer_sink,
     RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& target_color_space) {
+  DCHECK(pending_renderer_controls_);
   return std::make_unique<CastStreamingRenderer>(
       real_renderer_factory_->CreateRenderer(
           media_task_runner, worker_task_runner, audio_renderer_sink,
-          video_renderer_sink, request_overlay_info_cb, target_color_space));
+          video_renderer_sink, request_overlay_info_cb, target_color_space),
+      media_task_runner, std::move(pending_renderer_controls_));
 }
 
 }  // namespace cast

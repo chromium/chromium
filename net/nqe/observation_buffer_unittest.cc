@@ -32,10 +32,9 @@ TEST(NetworkQualityObservationBufferTest, BoundedBuffer) {
   std::map<std::string, std::string> variation_params;
   NetworkQualityEstimatorParams params(variation_params);
   base::SimpleTestTickClock tick_clock;
-  tick_clock.Advance(base::TimeDelta::FromMinutes(1));
+  tick_clock.Advance(base::Minutes(1));
   ObservationBuffer observation_buffer(&params, &tick_clock, 1.0, 1.0);
-  const base::TimeTicks now =
-      base::TimeTicks() + base::TimeDelta::FromSeconds(1);
+  const base::TimeTicks now = base::TimeTicks() + base::Seconds(1);
   for (int i = 1; i <= 1000; ++i) {
     observation_buffer.AddObservation(
         Observation(i, now, INT32_MIN, NETWORK_QUALITY_OBSERVATION_SOURCE_TCP));
@@ -50,12 +49,12 @@ TEST(NetworkQualityObservationBufferTest, GetPercentileWithWeights) {
   std::map<std::string, std::string> variation_params;
   NetworkQualityEstimatorParams params(variation_params);
   base::SimpleTestTickClock tick_clock;
-  tick_clock.Advance(base::TimeDelta::FromMinutes(1));
+  tick_clock.Advance(base::Minutes(1));
 
   ObservationBuffer observation_buffer(&params, &tick_clock, 0.98, 1.0);
   const base::TimeTicks now = tick_clock.NowTicks();
   for (int i = 1; i <= 100; ++i) {
-    tick_clock.Advance(base::TimeDelta::FromSeconds(1));
+    tick_clock.Advance(base::Seconds(1));
     observation_buffer.AddObservation(
         Observation(i, tick_clock.NowTicks(), INT32_MIN,
                     NETWORK_QUALITY_OBSERVATION_SOURCE_TCP));
@@ -92,7 +91,7 @@ TEST(NetworkQualityObservationBufferTest, PercentileSameTimestamps) {
   std::map<std::string, std::string> variation_params;
   NetworkQualityEstimatorParams params(variation_params);
   base::SimpleTestTickClock tick_clock;
-  tick_clock.Advance(base::TimeDelta::FromMinutes(1));
+  tick_clock.Advance(base::Minutes(1));
   ObservationBuffer buffer(&params, &tick_clock, 0.5, 1.0);
   ASSERT_EQ(0u, buffer.Size());
   ASSERT_LT(0u, buffer.Capacity());
@@ -140,11 +139,10 @@ TEST(NetworkQualityObservationBufferTest, PercentileSameTimestamps) {
     EXPECT_NEAR(result.value(), i, 1.0);
   }
 
-  EXPECT_FALSE(
-      buffer
-          .GetPercentile(now + base::TimeDelta::FromSeconds(1), INT32_MIN, 50,
-                         &observations_count)
-          .has_value());
+  EXPECT_FALSE(buffer
+                   .GetPercentile(now + base::Seconds(1), INT32_MIN, 50,
+                                  &observations_count)
+                   .has_value());
   EXPECT_EQ(0u, observations_count);
 
   // Percentiles should be unavailable when no observations are available.
@@ -165,10 +163,10 @@ TEST(NetworkQualityObservationBufferTest, PercentileDifferentTimestamps) {
   std::map<std::string, std::string> variation_params;
   NetworkQualityEstimatorParams params(variation_params);
   base::SimpleTestTickClock tick_clock;
-  tick_clock.Advance(base::TimeDelta::FromMinutes(1));
+  tick_clock.Advance(base::Minutes(1));
   ObservationBuffer buffer(&params, &tick_clock, 0.5, 1.0);
   const base::TimeTicks now = tick_clock.NowTicks();
-  const base::TimeTicks very_old = now - base::TimeDelta::FromDays(7);
+  const base::TimeTicks very_old = now - base::Days(7);
 
   size_t observations_count;
 
@@ -206,8 +204,8 @@ TEST(NetworkQualityObservationBufferTest, PercentileDifferentTimestamps) {
     EXPECT_EQ(100u, observations_count);
   }
 
-  EXPECT_FALSE(buffer.GetPercentile(now + base::TimeDelta::FromSeconds(1),
-                                    INT32_MIN, 50, &observations_count));
+  EXPECT_FALSE(buffer.GetPercentile(now + base::Seconds(1), INT32_MIN, 50,
+                                    &observations_count));
   EXPECT_EQ(0u, observations_count);
 }
 
@@ -219,7 +217,7 @@ TEST(NetworkQualityObservationBufferTest, PercentileDifferentRSSI) {
   std::map<std::string, std::string> variation_params;
   NetworkQualityEstimatorParams params(variation_params);
   base::SimpleTestTickClock tick_clock;
-  tick_clock.Advance(base::TimeDelta::FromMinutes(1));
+  tick_clock.Advance(base::Minutes(1));
   ObservationBuffer buffer(&params, &tick_clock, 1.0, 0.25);
   const base::TimeTicks now = tick_clock.NowTicks();
   int32_t high_rssi = 4;
@@ -266,7 +264,7 @@ TEST(NetworkQualityObservationBufferTest, RemoveObservations) {
   std::map<std::string, std::string> variation_params;
   NetworkQualityEstimatorParams params(variation_params);
   base::SimpleTestTickClock tick_clock;
-  tick_clock.Advance(base::TimeDelta::FromMinutes(1));
+  tick_clock.Advance(base::Minutes(1));
 
   ObservationBuffer buffer(&params, &tick_clock, 0.5, 1.0);
   const base::TimeTicks now = tick_clock.NowTicks();
@@ -329,10 +327,10 @@ TEST(NetworkQualityObservationBufferTest, TestGetMedianRTTSince) {
   std::map<std::string, std::string> variation_params;
   NetworkQualityEstimatorParams params(variation_params);
   base::SimpleTestTickClock tick_clock;
-  tick_clock.Advance(base::TimeDelta::FromMinutes(1));
+  tick_clock.Advance(base::Minutes(1));
   ObservationBuffer buffer(&params, &tick_clock, 0.5, 1.0);
   base::TimeTicks now = tick_clock.NowTicks();
-  base::TimeTicks old = now - base::TimeDelta::FromMilliseconds(1);
+  base::TimeTicks old = now - base::Milliseconds(1);
   ASSERT_NE(old, now);
 
   // First sample has very old timestamp.
@@ -347,11 +345,9 @@ TEST(NetworkQualityObservationBufferTest, TestGetMedianRTTSince) {
     bool expect_network_quality_available;
     base::TimeDelta expected_url_request_rtt;
   } tests[] = {
-      {now + base::TimeDelta::FromSeconds(10), false,
-       base::TimeDelta::FromMilliseconds(0)},
-      {now, true, base::TimeDelta::FromMilliseconds(100)},
-      {now - base::TimeDelta::FromMicroseconds(500), true,
-       base::TimeDelta::FromMilliseconds(100)},
+      {now + base::Seconds(10), false, base::Milliseconds(0)},
+      {now, true, base::Milliseconds(100)},
+      {now - base::Microseconds(500), true, base::Milliseconds(100)},
 
   };
 

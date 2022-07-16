@@ -53,34 +53,34 @@ ManageProfileHandler::ManageProfileHandler(Profile* profile)
 ManageProfileHandler::~ManageProfileHandler() {}
 
 void ManageProfileHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAvailableIcons",
       base::BindRepeating(&ManageProfileHandler::HandleGetAvailableIcons,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setProfileIconToGaiaAvatar",
       base::BindRepeating(
           &ManageProfileHandler::HandleSetProfileIconToGaiaAvatar,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setProfileIconToDefaultAvatar",
       base::BindRepeating(
           &ManageProfileHandler::HandleSetProfileIconToDefaultAvatar,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setProfileName",
       base::BindRepeating(&ManageProfileHandler::HandleSetProfileName,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestProfileShortcutStatus",
       base::BindRepeating(
           &ManageProfileHandler::HandleRequestProfileShortcutStatus,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "addProfileShortcut",
       base::BindRepeating(&ManageProfileHandler::HandleAddProfileShortcut,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "removeProfileShortcut",
       base::BindRepeating(&ManageProfileHandler::HandleRemoveProfileShortcut,
                           base::Unretained(this)));
@@ -129,11 +129,10 @@ void ManageProfileHandler::HandleGetAvailableIcons(
 
   profiles::UpdateGaiaProfileInfoIfNeeded(profile_);
 
-  CHECK_EQ(1U, args->GetSize());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const base::Value& callback_id = args->GetList()[0];
 
-  ResolveJavascriptCallback(*callback_id, base::Value(GetAvailableIcons()));
+  ResolveJavascriptCallback(callback_id, base::Value(GetAvailableIcons()));
 }
 
 std::vector<base::Value> ManageProfileHandler::GetAvailableIcons() {
@@ -205,7 +204,7 @@ void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(args);
-  CHECK_EQ(1u, args->GetSize());
+  CHECK_EQ(1u, args->GetList().size());
   CHECK(args->GetList()[0].is_int());
 
   size_t new_icon_index = args->GetList()[0].GetInt();
@@ -225,10 +224,10 @@ void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
 void ManageProfileHandler::HandleSetProfileName(const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(args);
-  CHECK_EQ(1u, args->GetSize());
+  CHECK_EQ(1u, args->GetList().size());
 
-  std::u16string new_profile_name;
-  CHECK(args->GetString(0, &new_profile_name));
+  std::u16string new_profile_name =
+      base::UTF8ToUTF16(args->GetList()[0].GetString());
 
   base::TrimWhitespace(new_profile_name, base::TRIM_ALL, &new_profile_name);
   CHECK(!new_profile_name.empty());
@@ -243,9 +242,8 @@ void ManageProfileHandler::HandleRequestProfileShortcutStatus(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(ProfileShortcutManager::IsFeatureEnabled());
 
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   // Don't show the add/remove desktop shortcut button in the single user case.
   ProfileAttributesStorage& storage =

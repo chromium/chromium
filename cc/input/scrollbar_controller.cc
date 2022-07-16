@@ -322,8 +322,8 @@ InputHandlerPointerResult ScrollbarController::HandlePointerMove(
     scroll_result.scroll_units = ui::ScrollGranularity::kScrollByPrecisePixel;
     scroll_result.scroll_offset =
         scrollbar->orientation() == ScrollbarOrientation::VERTICAL
-            ? gfx::ScrollOffset(0, -delta)
-            : gfx::ScrollOffset(-delta, 0);
+            ? gfx::Vector2dF(0, -delta)
+            : gfx::Vector2dF(-delta, 0);
     drag_processed_for_current_frame_ = true;
     return scroll_result;
   }
@@ -359,12 +359,12 @@ InputHandlerPointerResult ScrollbarController::HandlePointerMove(
   delta -= drag_state_->scroller_displacement;
 
   // If scroll_offset can't be consumed, there's no point in continuing on.
-  const gfx::ScrollOffset scroll_offset(scrollbar->orientation() ==
-                                                ScrollbarOrientation::VERTICAL
-                                            ? gfx::ScrollOffset(0, delta)
-                                            : gfx::ScrollOffset(delta, 0));
+  const gfx::Vector2dF scroll_offset(scrollbar->orientation() ==
+                                             ScrollbarOrientation::VERTICAL
+                                         ? gfx::Vector2dF(0, delta)
+                                         : gfx::Vector2dF(delta, 0));
   const gfx::Vector2dF clamped_scroll_offset =
-      ComputeClampedDelta(*target_node, ScrollOffsetToVector2dF(scroll_offset));
+      ComputeClampedDelta(*target_node, scroll_offset);
 
   if (clamped_scroll_offset.IsZero())
     return scroll_result;
@@ -372,7 +372,7 @@ InputHandlerPointerResult ScrollbarController::HandlePointerMove(
   // Thumb drags have more granularity and are purely dependent on the pointer
   // movement. Hence we use kPrecisePixel when dragging the thumb.
   scroll_result.scroll_units = ui::ScrollGranularity::kScrollByPrecisePixel;
-  scroll_result.scroll_offset = gfx::ScrollOffset(clamped_scroll_offset);
+  scroll_result.scroll_offset = clamped_scroll_offset;
   drag_processed_for_current_frame_ = true;
 
   return scroll_result;
@@ -546,7 +546,7 @@ void ScrollbarController::RecomputeAutoscrollStateIfNeeded() {
 
 // Helper to calculate the autoscroll velocity.
 float ScrollbarController::InitialDeltaToAutoscrollVelocity(
-    gfx::ScrollOffset scroll_offset) const {
+    gfx::Vector2dF scroll_offset) const {
   DCHECK(captured_scrollbar_metadata_.has_value());
   const float scroll_delta =
       ScrollbarLayer()->orientation() == ScrollbarOrientation::VERTICAL
@@ -579,7 +579,7 @@ void ScrollbarController::StartAutoScrollAnimation(
   layer_tree_host_impl_->active_tree()->UpdateScrollbarGeometries();
   float scroll_layer_length = scrollbar->scroll_layer_length();
 
-  gfx::ScrollOffset current_offset =
+  gfx::Vector2dF current_offset =
       scroll_tree.current_scroll_offset(scroll_node->element_id);
 
   // Determine the max offset for the scroll based on the scrolling direction.
@@ -789,7 +789,7 @@ gfx::Rect ScrollbarController::GetRectForScrollbarPart(
 
 // Determines the scroll offsets based on the ScrollbarPart and the scrollbar
 // orientation.
-gfx::ScrollOffset ScrollbarController::GetScrollOffsetForScrollbarPart(
+gfx::Vector2dF ScrollbarController::GetScrollOffsetForScrollbarPart(
     const ScrollbarPart scrollbar_part,
     const bool jump_key_modifier) const {
   const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
@@ -800,23 +800,23 @@ gfx::ScrollOffset ScrollbarController::GetScrollOffsetForScrollbarPart(
   // will be interpreted.
   if (scrollbar_part == ScrollbarPart::BACK_BUTTON) {
     return scrollbar->orientation() == ScrollbarOrientation::VERTICAL
-               ? gfx::ScrollOffset(0, -scroll_delta)   // Up arrow
-               : gfx::ScrollOffset(-scroll_delta, 0);  // Left arrow
+               ? gfx::Vector2dF(0, -scroll_delta)   // Up arrow
+               : gfx::Vector2dF(-scroll_delta, 0);  // Left arrow
   } else if (scrollbar_part == ScrollbarPart::FORWARD_BUTTON) {
     return scrollbar->orientation() == ScrollbarOrientation::VERTICAL
-               ? gfx::ScrollOffset(0, scroll_delta)   // Down arrow
-               : gfx::ScrollOffset(scroll_delta, 0);  // Right arrow
+               ? gfx::Vector2dF(0, scroll_delta)   // Down arrow
+               : gfx::Vector2dF(scroll_delta, 0);  // Right arrow
   } else if (scrollbar_part == ScrollbarPart::BACK_TRACK) {
     return scrollbar->orientation() == ScrollbarOrientation::VERTICAL
-               ? gfx::ScrollOffset(0, -scroll_delta)   // Track click up
-               : gfx::ScrollOffset(-scroll_delta, 0);  // Track click left
+               ? gfx::Vector2dF(0, -scroll_delta)   // Track click up
+               : gfx::Vector2dF(-scroll_delta, 0);  // Track click left
   } else if (scrollbar_part == ScrollbarPart::FORWARD_TRACK) {
     return scrollbar->orientation() == ScrollbarOrientation::VERTICAL
-               ? gfx::ScrollOffset(0, scroll_delta)   // Track click down
-               : gfx::ScrollOffset(scroll_delta, 0);  // Track click right
+               ? gfx::Vector2dF(0, scroll_delta)   // Track click down
+               : gfx::Vector2dF(scroll_delta, 0);  // Track click right
   }
 
-  return gfx::ScrollOffset(0, 0);
+  return gfx::Vector2dF(0, 0);
 }
 
 }  // namespace cc

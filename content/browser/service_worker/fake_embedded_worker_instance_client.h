@@ -26,6 +26,12 @@ class FakeEmbeddedWorkerInstanceClient
  public:
   // |helper| must outlive this instance.
   explicit FakeEmbeddedWorkerInstanceClient(EmbeddedWorkerTestHelper* helper);
+
+  FakeEmbeddedWorkerInstanceClient(const FakeEmbeddedWorkerInstanceClient&) =
+      delete;
+  FakeEmbeddedWorkerInstanceClient& operator=(
+      const FakeEmbeddedWorkerInstanceClient&) = delete;
+
   ~FakeEmbeddedWorkerInstanceClient() override;
 
   EmbeddedWorkerTestHelper* helper() { return helper_; }
@@ -80,8 +86,6 @@ class FakeEmbeddedWorkerInstanceClient
   std::unique_ptr<LoaderClient> main_script_loader_client_;
 
   base::WeakPtrFactory<FakeEmbeddedWorkerInstanceClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeEmbeddedWorkerInstanceClient);
 };
 
 // A EmbeddedWorkerInstanceClient fake that doesn't respond to the Start/Stop
@@ -91,6 +95,12 @@ class DelayedFakeEmbeddedWorkerInstanceClient
  public:
   explicit DelayedFakeEmbeddedWorkerInstanceClient(
       EmbeddedWorkerTestHelper* helper);
+
+  DelayedFakeEmbeddedWorkerInstanceClient(
+      const DelayedFakeEmbeddedWorkerInstanceClient&) = delete;
+  DelayedFakeEmbeddedWorkerInstanceClient& operator=(
+      const DelayedFakeEmbeddedWorkerInstanceClient&) = delete;
+
   ~DelayedFakeEmbeddedWorkerInstanceClient() override;
 
   // Unblocks the Start/StopWorker() call to this instance. May be called before
@@ -117,8 +127,6 @@ class DelayedFakeEmbeddedWorkerInstanceClient
 
   // Valid after StartWorker() until start is unblocked.
   blink::mojom::EmbeddedWorkerStartParamsPtr start_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayedFakeEmbeddedWorkerInstanceClient);
 };
 
 }  // namespace content

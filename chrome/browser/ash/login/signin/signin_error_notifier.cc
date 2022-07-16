@@ -11,7 +11,6 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
@@ -44,10 +43,11 @@
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -93,6 +93,73 @@ bool IsSecondaryEduAccountMigratedForChildUser(Profile* profile,
       prefs::kEduCoexistenceArcMigrationCompleted);
 }
 
+std::unique_ptr<message_center::Notification>
+CreateDeviceAccountErrorNotification(
+    const std::string& email,
+    const std::string& device_account_notification_id,
+    const std::u16string& error_message) {
+  // Add an accept button to sign the user out.
+  message_center::RichNotificationData data;
+  data.buttons.push_back(message_center::ButtonInfo(
+      l10n_util::GetStringUTF16(IDS_SYNC_RELOGIN_BUTTON)));
+
+  message_center::NotifierId notifier_id(
+      message_center::NotifierType::SYSTEM_COMPONENT,
+      kProfileSigninNotificationId);
+
+  // Set `profile_id` for multi-user notification blocker.
+  notifier_id.profile_id = email;
+
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          device_account_notification_id,
+          l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_BUBBLE_VIEW_TITLE),
+          error_message,
+          l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DISPLAY_SOURCE),
+          GURL(device_account_notification_id), notifier_id, data,
+          new message_center::HandleNotificationClickDelegate(
+              base::BindRepeating(&HandleDeviceAccountReauthNotificationClick)),
+          chromeos::kNotificationWarningIcon,
+          message_center::SystemNotificationWarningLevel::WARNING);
+  notification->SetSystemPriority();
+
+  return notification;
+}
+
+void SaveForceOnlineSignin(const Profile* const profile) {
+  const AccountId account_id =
+      multi_user_util::GetAccountIdFromProfile(profile);
+  user_manager::UserManager::Get()->SaveForceOnlineSignin(
+      account_id, true /* force_online_signin */);
+}
+
+std::u16string GetMessageBodyForSecondaryAccountErrors() {
+  return l10n_util::GetStringUTF16(
+      IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_BUBBLE_VIEW_MESSAGE);
+}
+
+std::u16string GetMessageBodyForDeviceAccountErrors(
+    const GoogleServiceAuthError::State& error_state) {
+  switch (error_state) {
+    // User credentials are invalid (bad acct, etc).
+    case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
+    case GoogleServiceAuthError::SERVICE_ERROR:
+      return l10n_util::GetStringUTF16(
+          IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE);
+
+    // Sync service is not available for this account's domain.
+    case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
+      return l10n_util::GetStringUTF16(
+          IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE);
+
+    // Generic message for "other" errors.
+    default:
+      return l10n_util::GetStringUTF16(
+          IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE);
+  }
+}
+
 }  // namespace
 
 SigninErrorNotifier::SigninErrorNotifier(SigninErrorController* controller,
@@ -130,7 +197,8 @@ void SigninErrorNotifier::OnTokenHandleCheck(
   if (status != TokenHandleUtil::INVALID)
     return;
   RecordReauthReason(account_id, ReauthReason::INVALID_TOKEN_HANDLE);
-  HandleDeviceAccountError();
+  HandleDeviceAccountError(/*error_message=*/l10n_util::GetStringUTF16(
+      IDS_SYNC_TOKEN_HANDLE_ERROR_BUBBLE_VIEW_MESSAGE));
 }
 
 SigninErrorNotifier::~SigninErrorNotifier() {
@@ -175,7 +243,9 @@ void SigninErrorNotifier::OnErrorChanged() {
     // If this flag is disabled, Chrome OS does not have a concept of Secondary
     // Accounts. Preserve existing behavior.
     RecordReauthReason(account_id, ReauthReason::SYNC_FAILED);
-    HandleDeviceAccountError();
+    HandleDeviceAccountError(
+        /*error_message=*/GetMessageBodyForDeviceAccountErrors(
+            /*error=*/error_controller_->auth_error().state()));
     return;
   }
 
@@ -184,13 +254,16 @@ void SigninErrorNotifier::OnErrorChanged() {
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (error_account_id == primary_account_id) {
     RecordReauthReason(account_id, ReauthReason::SYNC_FAILED);
-    HandleDeviceAccountError();
+    HandleDeviceAccountError(
+        /*error_message=*/GetMessageBodyForDeviceAccountErrors(
+            /*error=*/error_controller_->auth_error().state()));
   } else {
     HandleSecondaryAccountError(error_account_id);
   }
 }
 
-void SigninErrorNotifier::HandleDeviceAccountError() {
+void SigninErrorNotifier::HandleDeviceAccountError(
+    const std::u16string& error_message) {
   // If this error has occurred because a user's account has just been converted
   // to a Family Link Supervised account, then suppress the notification.
   SupervisedUserService* service =
@@ -198,40 +271,15 @@ void SigninErrorNotifier::HandleDeviceAccountError() {
   if (service->signout_required_after_supervision_enabled())
     return;
 
-  const AccountId account_id =
-      multi_user_util::GetAccountIdFromProfile(profile_);
   // We need to save the flag in the local state because
   // TokenHandleUtil::CheckToken might fail on the login screen due to lack of
   // network connectivity.
-  user_manager::UserManager::Get()->SaveForceOnlineSignin(
-      account_id, true /* force_online_signin */);
-
-  // Add an accept button to sign the user out.
-  message_center::RichNotificationData data;
-  data.buttons.push_back(message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_SYNC_RELOGIN_BUTTON)));
-
-  message_center::NotifierId notifier_id(
-      message_center::NotifierType::SYSTEM_COMPONENT,
-      kProfileSigninNotificationId);
-
-  // Set `profile_id` for multi-user notification blocker.
-  notifier_id.profile_id =
-      multi_user_util::GetAccountIdFromProfile(profile_).GetUserEmail();
-
+  SaveForceOnlineSignin(profile_);
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE,
-          device_account_notification_id_,
-          l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_BUBBLE_VIEW_TITLE),
-          GetMessageBody(false /* is_secondary_account_error */),
-          l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DISPLAY_SOURCE),
-          GURL(device_account_notification_id_), notifier_id, data,
-          new message_center::HandleNotificationClickDelegate(
-              base::BindRepeating(&HandleDeviceAccountReauthNotificationClick)),
-          chromeos::kNotificationWarningIcon,
-          message_center::SystemNotificationWarningLevel::WARNING);
-  notification->SetSystemPriority();
+      CreateDeviceAccountErrorNotification(
+          /*email=*/multi_user_util::GetAccountIdFromProfile(profile_)
+              .GetUserEmail(),
+          device_account_notification_id_, error_message);
 
   // Update or add the notification.
   NotificationDisplayService::GetForProfile(profile_)->Display(
@@ -271,7 +319,7 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
                 IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_MIGRATION_BUBBLE_VIEW_TITLE);
   const std::u16string message_body =
       are_all_accounts_migrated
-          ? GetMessageBody(true /* is_secondary_account_error */)
+          ? GetMessageBodyForSecondaryAccountErrors()
           : l10n_util::GetStringUTF16(
                 IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_MIGRATION_BUBBLE_VIEW_MESSAGE);
 
@@ -317,36 +365,6 @@ void SigninErrorNotifier::HandleSecondaryAccountReauthNotificationClick(
 
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
         profile_, chromeos::settings::mojom::kMyAccountsSubpagePath);
-  }
-}
-
-std::u16string SigninErrorNotifier::GetMessageBody(
-    bool is_secondary_account_error) const {
-  if (is_secondary_account_error) {
-    return l10n_util::GetStringUTF16(
-        IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_BUBBLE_VIEW_MESSAGE);
-  }
-
-  switch (error_controller_->auth_error().state()) {
-    // TODO(rogerta): use account id in error messages.
-
-    // User credentials are invalid (bad acct, etc).
-    case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
-    case GoogleServiceAuthError::SERVICE_ERROR:
-      return l10n_util::GetStringUTF16(
-          IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE);
-      break;
-
-    // Sync service is not available for this account's domain.
-    case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
-      return l10n_util::GetStringUTF16(
-          IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE);
-      break;
-
-    // Generic message for "other" errors.
-    default:
-      return l10n_util::GetStringUTF16(
-          IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE);
   }
 }
 

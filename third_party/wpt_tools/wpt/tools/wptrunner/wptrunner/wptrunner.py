@@ -86,7 +86,7 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kw
                                         chunk_number=kwargs["this_chunk"],
                                         include_https=ssl_enabled,
                                         include_h2=h2_enabled,
-                                        include_quic=kwargs["enable_quic"],
+                                        include_webtransport_h3=kwargs["enable_webtransport_h3"],
                                         skip_timeout=kwargs["skip_timeout"],
                                         skip_implementation_status=kwargs["skip_implementation_status"],
                                         chunker_kwargs=chunker_kwargs)
@@ -230,7 +230,7 @@ def run_tests(config, test_paths, product, **kwargs):
                                  product.env_options,
                                  ssl_config,
                                  env_extras,
-                                 kwargs["enable_quic"],
+                                 kwargs["enable_webtransport_h3"],
                                  mojojs_path) as test_environment:
             recording.set(["startup", "ensure_environment"])
             try:

@@ -20,6 +20,7 @@
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request_base.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/download/public/common/download_item.h"
+#include "components/safe_browsing/core/browser/download_check_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
@@ -38,6 +39,11 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
       DownloadProtectionService* service,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor);
+
+  CheckClientDownloadRequest(const CheckClientDownloadRequest&) = delete;
+  CheckClientDownloadRequest& operator=(const CheckClientDownloadRequest&) =
+      delete;
+
   ~CheckClientDownloadRequest() override;
 
   // download::DownloadItem::Observer:
@@ -68,7 +74,8 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
   // done.
   absl::optional<enterprise_connectors::AnalysisSettings> ShouldUploadBinary(
       DownloadCheckResultReason reason) override;
-  void UploadBinary(DownloadCheckResultReason reason,
+  void UploadBinary(DownloadCheckResult result,
+                    DownloadCheckResultReason reason,
                     enterprise_connectors::AnalysisSettings settings) override;
 
   // Called when this request is completed.
@@ -92,8 +99,6 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
   base::TimeTicks upload_start_time_;
 
   base::WeakPtrFactory<CheckClientDownloadRequest> weakptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CheckClientDownloadRequest);
 };
 
 }  // namespace safe_browsing

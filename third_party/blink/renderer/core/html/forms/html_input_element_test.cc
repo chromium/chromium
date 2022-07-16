@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -21,10 +22,25 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
+using ::testing::Truly;
+
 namespace blink {
+
+namespace {
+
+class MockChromeClient : public EmptyChromeClient {
+ public:
+  MOCK_METHOD(void,
+              PasswordFieldReset,
+              (HTMLInputElement & element),
+              (override));
+};
+
+}  // namespace
 
 class HTMLInputElementTest : public PageTestBase {
  protected:
@@ -82,6 +98,37 @@ TEST_F(HTMLInputElementTest, FilteredDataListOptionsForMultipleEmail) {
   auto options = TestElement().FilteredDataListOptions();
   EXPECT_EQ(1u, options.size());
   EXPECT_EQ("tkent@chromium.org", options[0]->value().Utf8());
+}
+
+TEST_F(HTMLInputElementTest, FilteredDataListOptionsDynamicContain) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <input id=test value='40m auto reel' list=dl4>
+    <datalist id=dl4>
+    <option>Hozelock 10m Mini Auto Reel - 2485</option>
+    <option>Hozelock Auto Reel 20m - 2401</option>
+    <option>Hozelock Auto Reel 30m - 2403</option>
+    <option>Hozelock Auto Reel 40m - 2595</option>
+    </datalist>
+  )HTML");
+  auto options = TestElement().FilteredDataListOptions();
+  EXPECT_EQ(1u, options.size());
+  EXPECT_EQ("Hozelock Auto Reel 40m - 2595", options[0]->value().Utf8());
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <input id=test value='autoreel' list=dl4>
+    <datalist id=dl4>
+    <option>Hozelock 10m Mini Auto Reel - 2485</option>
+    <option>Hozelock Auto Reel 20m - 2401</option>
+    <option>Hozelock Auto Reel 30m - 2403</option>
+    <option>Hozelock Auto Reel 40m - 2595</option>
+    </datalist>
+  )HTML");
+  options = TestElement().FilteredDataListOptions();
+  EXPECT_EQ(4u, options.size());
+  EXPECT_EQ("Hozelock 10m Mini Auto Reel - 2485", options[0]->value().Utf8());
+  EXPECT_EQ("Hozelock Auto Reel 20m - 2401", options[1]->value().Utf8());
+  EXPECT_EQ("Hozelock Auto Reel 30m - 2403", options[2]->value().Utf8());
+  EXPECT_EQ("Hozelock Auto Reel 40m - 2595", options[3]->value().Utf8());
 }
 
 TEST_F(HTMLInputElementTest, create) {
@@ -244,5 +291,56 @@ TEST_F(HTMLInputElementTest, UpdateTypeDcheck) {
   // Test succeeds if the above setAttribute() didn't trigger a DCHECK failure
   // in Document::UpdateFocusAppearanceAfterLayout().
 }
+
+struct PasswordFieldResetParam {
+  const char* new_type;
+  const char* temporary_value;
+  bool expected_call = true;
+};
+
+class HTMLInputElementPasswordFieldResetTest
+    : public HTMLInputElementTest,
+      public ::testing::WithParamInterface<PasswordFieldResetParam> {
+ protected:
+  void SetUp() override {
+    chrome_client_ = MakeGarbageCollected<MockChromeClient>();
+    SetupPageWithClients(chrome_client_);
+  }
+
+  MockChromeClient& chrome_client() { return *chrome_client_; }
+
+ private:
+  Persistent<MockChromeClient> chrome_client_;
+};
+
+// Tests that PasswordFieldReset() is (only) called for empty fields. This is
+// particularly relevant for field types where setValue("") does not imply
+// value().IsEmpty(), such as <input type="range"> (see crbug.com/1265130).
+TEST_P(HTMLInputElementPasswordFieldResetTest, PasswordFieldReset) {
+  GetDocument().documentElement()->setInnerHTML(
+      "<input id=test type=password>");
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  TestElement().setType(GetParam().new_type);
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  TestElement().setValue(GetParam().temporary_value);
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  EXPECT_CALL(chrome_client(),
+              PasswordFieldReset(Truly([this](const HTMLInputElement& e) {
+                return e.isSameNode(&TestElement()) && e.value().IsEmpty();
+              })))
+      .Times(GetParam().expected_call ? 1 : 0);
+  TestElement().setValue("");
+  GetDocument().UpdateStyleAndLayoutTree();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    HTMLInputElementTest,
+    HTMLInputElementPasswordFieldResetTest,
+    ::testing::Values(PasswordFieldResetParam{"password", "some_value", true},
+                      PasswordFieldResetParam{"text", "some_value", true},
+                      PasswordFieldResetParam{"range", "51", false}));
 
 }  // namespace blink

@@ -29,6 +29,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
@@ -456,14 +457,15 @@ void MediaStreamTrack::stopTrack(ExecutionContext* execution_context) {
 
 MediaStreamTrack* MediaStreamTrack::clone(ScriptState* script_state) {
   SendLogMessage(String::Format("%s()", __func__));
-  MediaStreamComponent* cloned_component = Component()->Clone();
+
+  // Instantiate the clone.
   MediaStreamTrack* cloned_track = MakeGarbageCollected<MediaStreamTrack>(
-      ExecutionContext::From(script_state), cloned_component, ready_state_,
+      ExecutionContext::From(script_state), Component()->Clone(), ready_state_,
       base::DoNothing());
-  DidCloneMediaStreamTrack(Component(), cloned_component);
-  if (image_capture_) {
-    cloned_track->image_capture_ = image_capture_->Clone();
-  }
+
+  // Copy state.
+  CloneInternal(cloned_track);
+
   return cloned_track;
 }
 
@@ -874,6 +876,10 @@ std::unique_ptr<AudioSourceProvider> MediaStreamTrack::CreateWebAudioSource(
                                                context_sample_rate));
 }
 
+#if !defined(OS_ANDROID)
+void MediaStreamTrack::CloseFocusWindowOfOpportunity() {}
+#endif
+
 void MediaStreamTrack::RegisterMediaStream(MediaStream* media_stream) {
   CHECK(!is_iterating_registered_media_streams_);
   CHECK(!registered_media_streams_.Contains(media_stream));
@@ -911,6 +917,17 @@ void MediaStreamTrack::Trace(Visitor* visitor) const {
   visitor->Trace(execution_context_);
   visitor->Trace(observers_);
   EventTargetWithInlineData::Trace(visitor);
+}
+
+void MediaStreamTrack::CloneInternal(MediaStreamTrack* cloned_track) {
+  DCHECK(cloned_track);
+
+  DidCloneMediaStreamTrack(Component(), cloned_track->Component());
+
+  DCHECK(!cloned_track->image_capture_);
+  if (image_capture_) {
+    cloned_track->image_capture_ = image_capture_->Clone();
+  }
 }
 
 void MediaStreamTrack::EnsureFeatureHandleForScheduler() {

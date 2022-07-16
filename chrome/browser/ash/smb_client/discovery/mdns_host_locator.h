@@ -8,11 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/smb_client/discovery/host_locator.h"
 
 namespace ash {
@@ -26,6 +25,10 @@ Hostname RemoveLocal(const std::string& raw_hostname);
 class MDnsHostLocator : public HostLocator {
  public:
   MDnsHostLocator();
+
+  MDnsHostLocator(const MDnsHostLocator&) = delete;
+  MDnsHostLocator& operator=(const MDnsHostLocator&) = delete;
+
   ~MDnsHostLocator() override;
 
   // HostLocator override.
@@ -55,8 +58,6 @@ class MDnsHostLocator : public HostLocator {
 
   // Must be last member.
   base::WeakPtrFactory<MDnsHostLocator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MDnsHostLocator);
 };
 
 }  // namespace smb_client

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
 namespace wl {
@@ -20,14 +19,16 @@ class TestCompositor : public GlobalObject {
   static constexpr uint32_t kVersion = 4;
 
   TestCompositor();
+
+  TestCompositor(const TestCompositor&) = delete;
+  TestCompositor& operator=(const TestCompositor&) = delete;
+
   ~TestCompositor() override;
 
   void AddSurface(MockSurface* surface);
 
  private:
   std::vector<MockSurface*> surfaces_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCompositor);
 };
 
 }  // namespace wl

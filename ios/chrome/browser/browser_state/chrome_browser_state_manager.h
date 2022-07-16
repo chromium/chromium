@@ -22,6 +22,10 @@ namespace ios {
 // ChromeBrowserState instances. Owns all instances that it creates.
 class ChromeBrowserStateManager {
  public:
+  ChromeBrowserStateManager(const ChromeBrowserStateManager&) = delete;
+  ChromeBrowserStateManager& operator=(const ChromeBrowserStateManager&) =
+      delete;
+
   virtual ~ChromeBrowserStateManager() {}
 
   // Returns the ChromeBrowserState that was last used, creating one if
@@ -40,9 +44,6 @@ class ChromeBrowserStateManager {
 
  protected:
   ChromeBrowserStateManager() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserStateManager);
 };
 
 }  // namespace ios

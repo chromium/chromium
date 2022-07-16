@@ -58,6 +58,10 @@ class MockFidoDevice : public ::testing::StrictMock<FidoDevice> {
   MockFidoDevice();
   MockFidoDevice(ProtocolVersion protocol_version,
                  absl::optional<AuthenticatorGetInfoResponse> device_info);
+
+  MockFidoDevice(const MockFidoDevice&) = delete;
+  MockFidoDevice& operator=(const MockFidoDevice&) = delete;
+
   ~MockFidoDevice() override;
 
   // TODO(crbug.com/729950): Remove these workarounds once support for move-only
@@ -106,8 +110,6 @@ class MockFidoDevice : public ::testing::StrictMock<FidoDevice> {
   FidoTransportProtocol transport_protocol_ =
       FidoTransportProtocol::kUsbHumanInterfaceDevice;
   base::WeakPtrFactory<FidoDevice> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockFidoDevice);
 };
 
 }  // namespace device

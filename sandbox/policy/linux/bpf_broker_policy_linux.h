@@ -19,14 +19,16 @@ class SANDBOX_POLICY_EXPORT BrokerProcessPolicy : public BPFBasePolicy {
  public:
   explicit BrokerProcessPolicy(
       const syscall_broker::BrokerCommandSet& allowed_command_set);
+
+  BrokerProcessPolicy(const BrokerProcessPolicy&) = delete;
+  BrokerProcessPolicy& operator=(const BrokerProcessPolicy&) = delete;
+
   ~BrokerProcessPolicy() override;
 
   bpf_dsl::ResultExpr EvaluateSyscall(int system_call_number) const override;
 
  private:
   const syscall_broker::BrokerCommandSet allowed_command_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrokerProcessPolicy);
 };
 
 }  // namespace policy

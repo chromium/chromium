@@ -1,0 +1,15 @@
+:root {
+    --fragment-image-url: url("#foo");
+}
+
+#external-unquoted {
+    background-image: url(#foo);
+}
+
+#external-quoted {
+    background-image: url("#foo");
+}
+
+#external-variable {
+    background-image: var(--fragment-image-url);
+}

@@ -15,9 +15,8 @@ class TemplateURLService;
 class ImageSearchParamGenerator {
  public:
   // Create loading parameters using the given |data|, which should represent
-  // an image and |url|, the web url the image came from. This can be useful to
-  // avoid having to convert from UIImage back to NSData, which can be slow. If
-  // the image data didn't come from a url, use an empty GURL to indicate that.
+  // an image and |url|, the web url the image came from. If the image data
+  // didn't come from a url, use an empty GURL to indicate that.
   static web::NavigationManager::WebLoadParams LoadParamsForImageData(
       NSData* data,
       const GURL& url,

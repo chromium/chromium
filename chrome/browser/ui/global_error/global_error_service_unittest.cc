@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,6 +16,10 @@ namespace {
 class BaseError : public GlobalError {
  public:
   BaseError() { ++count_; }
+
+  BaseError(const BaseError&) = delete;
+  BaseError& operator=(const BaseError&) = delete;
+
   ~BaseError() override { --count_; }
 
   static int count() { return count_; }
@@ -40,8 +43,6 @@ class BaseError : public GlobalError {
  private:
   // This tracks the number BaseError objects that are currently instantiated.
   static int count_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseError);
 };
 
 int BaseError::count_ = 0;
@@ -54,6 +55,9 @@ class MenuError : public BaseError {
         severity_(severity) {
   }
 
+  MenuError(const MenuError&) = delete;
+  MenuError& operator=(const MenuError&) = delete;
+
   Severity GetSeverity() override { return severity_; }
 
   bool HasMenuItem() override { return true; }
@@ -64,8 +68,6 @@ class MenuError : public BaseError {
  private:
   int command_id_;
   Severity severity_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuError);
 };
 
 } // namespace

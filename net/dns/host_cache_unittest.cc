@@ -64,7 +64,7 @@ class MockPersistenceDelegate : public HostCache::PersistenceDelegate {
 }  // namespace
 
 TEST(HostCacheTest, Basic) {
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
 
   HostCache cache(kMaxCacheEntries);
 
@@ -87,7 +87,7 @@ TEST(HostCacheTest, Basic) {
   EXPECT_EQ(1U, cache.size());
 
   // Advance to t=5.
-  now += base::TimeDelta::FromSeconds(5);
+  now += base::Seconds(5);
 
   // Add an entry for "foobar2.com" at t=5.
   EXPECT_FALSE(cache.Lookup(key2, now));
@@ -96,7 +96,7 @@ TEST(HostCacheTest, Basic) {
   EXPECT_EQ(2U, cache.size());
 
   // Advance to t=9
-  now += base::TimeDelta::FromSeconds(4);
+  now += base::Seconds(4);
 
   // Verify that the entries we added are still retrievable, and usable.
   EXPECT_TRUE(cache.Lookup(key1, now));
@@ -104,7 +104,7 @@ TEST(HostCacheTest, Basic) {
   EXPECT_NE(cache.Lookup(key1, now), cache.Lookup(key2, now));
 
   // Advance to t=10; key is now expired.
-  now += base::TimeDelta::FromSeconds(1);
+  now += base::Seconds(1);
 
   EXPECT_FALSE(cache.Lookup(key1, now));
   EXPECT_TRUE(cache.Lookup(key2, now));
@@ -119,7 +119,7 @@ TEST(HostCacheTest, Basic) {
   EXPECT_TRUE(cache.Lookup(key2, now));
 
   // Advance to t=20; both entries are now expired.
-  now += base::TimeDelta::FromSeconds(10);
+  now += base::Seconds(10);
 
   EXPECT_FALSE(cache.Lookup(key1, now));
   EXPECT_FALSE(cache.Lookup(key2, now));
@@ -128,7 +128,7 @@ TEST(HostCacheTest, Basic) {
 // Test that Keys without scheme are allowed and treated as completely different
 // from similar Keys with scheme.
 TEST(HostCacheTest, HandlesKeysWithoutScheme) {
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
 
   HostCache cache(kMaxCacheEntries);
 
@@ -183,7 +183,7 @@ TEST(HostCacheTest, HandlesKeysWithoutScheme) {
 // Make sure NetworkIsolationKey is respected.
 TEST(HostCacheTest, NetworkIsolationKey) {
   const url::SchemeHostPort kHost(url::kHttpsScheme, "hostname.test", 443);
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
 
   const SchemefulSite kSite1(GURL("https://site1.test/"));
   const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
@@ -242,8 +242,8 @@ TEST(HostCacheTest, NetworkIsolationKey) {
 // Try caching entries for a failed resolve attempt -- since we set the TTL of
 // such entries to 0 it won't store, but it will kick out the previous result.
 TEST(HostCacheTest, NoCacheZeroTTL) {
-  const base::TimeDelta kSuccessEntryTTL = base::TimeDelta::FromSeconds(10);
-  const base::TimeDelta kFailureEntryTTL = base::TimeDelta::FromSeconds(0);
+  const base::TimeDelta kSuccessEntryTTL = base::Seconds(10);
+  const base::TimeDelta kFailureEntryTTL = base::Seconds(0);
 
   HostCache cache(kMaxCacheEntries);
 
@@ -272,7 +272,7 @@ TEST(HostCacheTest, NoCacheZeroTTL) {
 
 // Try caching entries for a failed resolves for 10 seconds.
 TEST(HostCacheTest, CacheNegativeEntry) {
-  const base::TimeDelta kFailureEntryTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kFailureEntryTTL = base::Seconds(10);
 
   HostCache cache(kMaxCacheEntries);
 
@@ -293,7 +293,7 @@ TEST(HostCacheTest, CacheNegativeEntry) {
   EXPECT_EQ(1U, cache.size());
 
   // Advance to t=5.
-  now += base::TimeDelta::FromSeconds(5);
+  now += base::Seconds(5);
 
   // Add an entry for "foobar2.com" at t=5.
   EXPECT_FALSE(cache.Lookup(key2, now));
@@ -302,14 +302,14 @@ TEST(HostCacheTest, CacheNegativeEntry) {
   EXPECT_EQ(2U, cache.size());
 
   // Advance to t=9
-  now += base::TimeDelta::FromSeconds(4);
+  now += base::Seconds(4);
 
   // Verify that the entries we added are still retrievable, and usable.
   EXPECT_TRUE(cache.Lookup(key1, now));
   EXPECT_TRUE(cache.Lookup(key2, now));
 
   // Advance to t=10; key1 is now expired.
-  now += base::TimeDelta::FromSeconds(1);
+  now += base::Seconds(1);
 
   EXPECT_FALSE(cache.Lookup(key1, now));
   EXPECT_TRUE(cache.Lookup(key2, now));
@@ -325,7 +325,7 @@ TEST(HostCacheTest, CacheNegativeEntry) {
   EXPECT_TRUE(cache.Lookup(key2, now));
 
   // Advance to t=20; both entries are now expired.
-  now += base::TimeDelta::FromSeconds(10);
+  now += base::Seconds(10);
 
   EXPECT_FALSE(cache.Lookup(key1, now));
   EXPECT_FALSE(cache.Lookup(key2, now));
@@ -334,7 +334,7 @@ TEST(HostCacheTest, CacheNegativeEntry) {
 // Tests that the same hostname can be duplicated in the cache, so long as
 // the query type differs.
 TEST(HostCacheTest, DnsQueryTypeIsPartOfKey) {
-  const base::TimeDelta kSuccessEntryTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kSuccessEntryTTL = base::Seconds(10);
 
   HostCache cache(kMaxCacheEntries);
 
@@ -373,7 +373,7 @@ TEST(HostCacheTest, DnsQueryTypeIsPartOfKey) {
 // the HostResolverFlags differ.
 TEST(HostCacheTest, HostResolverFlagsArePartOfKey) {
   const url::SchemeHostPort kHost(url::kHttpsScheme, "foobar.test", 443);
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
 
   HostCache cache(kMaxCacheEntries);
 
@@ -420,7 +420,7 @@ TEST(HostCacheTest, HostResolverFlagsArePartOfKey) {
 // the HostResolverSource differs.
 TEST(HostCacheTest, HostResolverSourceIsPartOfKey) {
   const url::SchemeHostPort kHost(url::kHttpsScheme, "foobar.test", 443);
-  const base::TimeDelta kSuccessEntryTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kSuccessEntryTTL = base::Seconds(10);
 
   HostCache cache(kMaxCacheEntries);
 
@@ -457,7 +457,7 @@ TEST(HostCacheTest, HostResolverSourceIsPartOfKey) {
 // the secure field in the key differs.
 TEST(HostCacheTest, SecureIsPartOfKey) {
   const url::SchemeHostPort kHost(url::kHttpsScheme, "foobar.test", 443);
-  const base::TimeDelta kSuccessEntryTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kSuccessEntryTTL = base::Seconds(10);
 
   HostCache cache(kMaxCacheEntries);
 
@@ -503,7 +503,7 @@ TEST(HostCacheTest, SecureIsPartOfKey) {
 
 TEST(HostCacheTest, PreferLessStaleMoreSecure) {
   const url::SchemeHostPort kHost(url::kHttpsScheme, "foobar.test", 443);
-  const base::TimeDelta kSuccessEntryTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kSuccessEntryTTL = base::Seconds(10);
 
   HostCache cache(kMaxCacheEntries);
 
@@ -548,11 +548,11 @@ TEST(HostCacheTest, PreferLessStaleMoreSecure) {
 
   // Add both insecure and secure entries to a cleared cache, still at t=0.
   cache.clear();
-  cache.Set(insecure_key, entry, now, base::TimeDelta::FromSeconds(20));
+  cache.Set(insecure_key, entry, now, base::Seconds(20));
   cache.Set(secure_key, entry, now, kSuccessEntryTTL);
 
   // Advance to t=15 to expire the secure entry only.
-  now += base::TimeDelta::FromSeconds(15);
+  now += base::Seconds(15);
   EXPECT_EQ(insecure_key, cache.Lookup(insecure_key, now)->first);
   EXPECT_FALSE(cache.Lookup(secure_key, now));
   EXPECT_EQ(secure_key, cache.LookupStale(secure_key, now, &stale)->first);
@@ -564,7 +564,7 @@ TEST(HostCacheTest, PreferLessStaleMoreSecure) {
 }
 
 TEST(HostCacheTest, NoCache) {
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
 
   // Disable caching.
   HostCache cache(0);
@@ -585,7 +585,7 @@ TEST(HostCacheTest, NoCache) {
 }
 
 TEST(HostCacheTest, Clear) {
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
 
   HostCache cache(kMaxCacheEntries);
 
@@ -610,7 +610,7 @@ TEST(HostCacheTest, Clear) {
 }
 
 TEST(HostCacheTest, ClearForHosts) {
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
 
   HostCache cache(kMaxCacheEntries);
 
@@ -663,15 +663,15 @@ TEST(HostCacheTest, Evict) {
   EXPECT_FALSE(cache.Lookup(key3, now));
 
   // |key1| expires in 10 seconds, but |key2| in just 5.
-  cache.Set(key1, entry, now, base::TimeDelta::FromSeconds(10));
-  cache.Set(key2, entry, now, base::TimeDelta::FromSeconds(5));
+  cache.Set(key1, entry, now, base::Seconds(10));
+  cache.Set(key2, entry, now, base::Seconds(5));
   EXPECT_EQ(2u, cache.size());
   EXPECT_TRUE(cache.Lookup(key1, now));
   EXPECT_TRUE(cache.Lookup(key2, now));
   EXPECT_FALSE(cache.Lookup(key3, now));
 
   // |key2| should be chosen for eviction, since it expires sooner.
-  cache.Set(key3, entry, now, base::TimeDelta::FromSeconds(10));
+  cache.Set(key3, entry, now, base::Seconds(10));
   EXPECT_EQ(2u, cache.size());
   EXPECT_TRUE(cache.Lookup(key1, now));
   EXPECT_FALSE(cache.Lookup(key2, now));
@@ -681,7 +681,7 @@ TEST(HostCacheTest, Evict) {
 // Try to retrieve stale entries from the cache. They should be returned by
 // |LookupStale()| but not |Lookup()|, with correct |EntryStaleness| data.
 TEST(HostCacheTest, Stale) {
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
 
   HostCache cache(kMaxCacheEntries);
 
@@ -707,7 +707,7 @@ TEST(HostCacheTest, Stale) {
   EXPECT_EQ(1U, cache.size());
 
   // Advance to t=5.
-  now += base::TimeDelta::FromSeconds(5);
+  now += base::Seconds(5);
 
   EXPECT_TRUE(cache.Lookup(key, now));
   EXPECT_TRUE(cache.LookupStale(key, now, &stale));
@@ -715,22 +715,22 @@ TEST(HostCacheTest, Stale) {
   EXPECT_EQ(0, stale.stale_hits);
 
   // Advance to t=15.
-  now += base::TimeDelta::FromSeconds(10);
+  now += base::Seconds(10);
 
   EXPECT_FALSE(cache.Lookup(key, now));
   EXPECT_TRUE(cache.LookupStale(key, now, &stale));
   EXPECT_TRUE(stale.is_stale());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(5), stale.expired_by);
+  EXPECT_EQ(base::Seconds(5), stale.expired_by);
   EXPECT_EQ(0, stale.network_changes);
   EXPECT_EQ(1, stale.stale_hits);
 
   // Advance to t=20.
-  now += base::TimeDelta::FromSeconds(5);
+  now += base::Seconds(5);
 
   EXPECT_FALSE(cache.Lookup(key, now));
   EXPECT_TRUE(cache.LookupStale(key, now, &stale));
   EXPECT_TRUE(stale.is_stale());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(10), stale.expired_by);
+  EXPECT_EQ(base::Seconds(10), stale.expired_by);
   EXPECT_EQ(0, stale.network_changes);
   EXPECT_EQ(2, stale.stale_hits);
 
@@ -740,7 +740,7 @@ TEST(HostCacheTest, Stale) {
   EXPECT_FALSE(cache.Lookup(key, now));
   EXPECT_TRUE(cache.LookupStale(key, now, &stale));
   EXPECT_TRUE(stale.is_stale());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(10), stale.expired_by);
+  EXPECT_EQ(base::Seconds(10), stale.expired_by);
   EXPECT_EQ(1, stale.network_changes);
   EXPECT_EQ(3, stale.stale_hits);
 }
@@ -763,7 +763,7 @@ TEST(HostCacheTest, EvictStale) {
   EXPECT_FALSE(cache.Lookup(key3, now));
 
   // |key1| expires in 10 seconds.
-  cache.Set(key1, entry, now, base::TimeDelta::FromSeconds(10));
+  cache.Set(key1, entry, now, base::Seconds(10));
   EXPECT_EQ(1u, cache.size());
   EXPECT_TRUE(cache.Lookup(key1, now));
   EXPECT_FALSE(cache.Lookup(key2, now));
@@ -778,10 +778,10 @@ TEST(HostCacheTest, EvictStale) {
   EXPECT_EQ(1, stale.network_changes);
 
   // Advance to t=1.
-  now += base::TimeDelta::FromSeconds(1);
+  now += base::Seconds(1);
 
   // |key2| expires before |key1| would originally have expired.
-  cache.Set(key2, entry, now, base::TimeDelta::FromSeconds(5));
+  cache.Set(key2, entry, now, base::Seconds(5));
   EXPECT_EQ(2u, cache.size());
   EXPECT_FALSE(cache.Lookup(key1, now));
   EXPECT_TRUE(cache.LookupStale(key1, now, &stale));
@@ -789,7 +789,7 @@ TEST(HostCacheTest, EvictStale) {
   EXPECT_FALSE(cache.Lookup(key3, now));
 
   // |key1| should be chosen for eviction, since it is stale.
-  cache.Set(key3, entry, now, base::TimeDelta::FromSeconds(1));
+  cache.Set(key3, entry, now, base::Seconds(1));
   EXPECT_EQ(2u, cache.size());
   EXPECT_FALSE(cache.Lookup(key1, now));
   EXPECT_FALSE(cache.LookupStale(key1, now, &stale));
@@ -797,10 +797,10 @@ TEST(HostCacheTest, EvictStale) {
   EXPECT_TRUE(cache.Lookup(key3, now));
 
   // Advance to t=6.
-  now += base::TimeDelta::FromSeconds(5);
+  now += base::Seconds(5);
 
   // Insert |key1| again. |key3| should be evicted.
-  cache.Set(key1, entry, now, base::TimeDelta::FromSeconds(10));
+  cache.Set(key1, entry, now, base::Seconds(10));
   EXPECT_EQ(2u, cache.size());
   EXPECT_TRUE(cache.Lookup(key1, now));
   EXPECT_FALSE(cache.Lookup(key2, now));
@@ -821,13 +821,13 @@ TEST(HostCacheTest, NoEvictPinned) {
   HostCache::Key key3 = Key("foobar3.com");
   HostCache::Entry entry =
       HostCache::Entry(OK, AddressList(), HostCache::Entry::SOURCE_UNKNOWN);
-  entry.set_pinned(true);
+  entry.set_pinning(true);
 
-  cache.Set(key1, entry, now, base::TimeDelta::FromSeconds(5));
-  now += base::TimeDelta::FromSeconds(10);
-  cache.Set(key2, entry, now, base::TimeDelta::FromSeconds(5));
-  now += base::TimeDelta::FromSeconds(10);
-  cache.Set(key3, entry, now, base::TimeDelta::FromSeconds(5));
+  cache.Set(key1, entry, now, base::Seconds(5));
+  now += base::Seconds(10);
+  cache.Set(key2, entry, now, base::Seconds(5));
+  now += base::Seconds(10);
+  cache.Set(key3, entry, now, base::Seconds(5));
 
   // There are 3 entries in this cache whose nominal max size is 2.
   EXPECT_EQ(3u, cache.size());
@@ -848,12 +848,12 @@ TEST(HostCacheTest, EvictObsoletePinned) {
   HostCache::Key key4 = Key("foobar4.com");
   HostCache::Entry entry =
       HostCache::Entry(OK, AddressList(), HostCache::Entry::SOURCE_UNKNOWN);
-  entry.set_pinned(true);
+  entry.set_pinning(true);
 
   // |key2| should be preserved, since it expires later.
-  cache.Set(key1, entry, now, base::TimeDelta::FromSeconds(5));
-  cache.Set(key2, entry, now, base::TimeDelta::FromSeconds(10));
-  cache.Set(key3, entry, now, base::TimeDelta::FromSeconds(5));
+  cache.Set(key1, entry, now, base::Seconds(5));
+  cache.Set(key2, entry, now, base::Seconds(10));
+  cache.Set(key3, entry, now, base::Seconds(5));
   // There are 3 entries in this cache whose nominal max size is 2.
   EXPECT_EQ(3u, cache.size());
 
@@ -863,7 +863,7 @@ TEST(HostCacheTest, EvictObsoletePinned) {
 
   // |Set()| triggers an eviction, leaving only |key2| in cache,
   // before adding |key4|
-  cache.Set(key4, entry, now, base::TimeDelta::FromSeconds(2));
+  cache.Set(key4, entry, now, base::Seconds(2));
   EXPECT_EQ(2u, cache.size());
   EXPECT_FALSE(cache.LookupStale(key1, now, nullptr));
   EXPECT_TRUE(cache.LookupStale(key2, now, nullptr));
@@ -887,27 +887,27 @@ TEST(HostCacheTest, PreserveActivePin) {
                                              HostCache::Entry::SOURCE_UNKNOWN);
   HostCache::Entry entry2 = HostCache::Entry(OK, AddressList(endpoint2),
                                              HostCache::Entry::SOURCE_UNKNOWN);
-  entry1.set_pinned(true);
+  entry1.set_pinning(true);
 
   HostCache::Key key = Key("foobar.com");
 
   // Insert entry1, and verify that it can be retrieved with the
-  // correct IP and |pinned()| == true.
-  cache.Set(key, entry1, now, base::TimeDelta::FromSeconds(10));
+  // correct IP and |pinning()| == true.
+  cache.Set(key, entry1, now, base::Seconds(10));
   const auto* pair1 = cache.Lookup(key, now);
   ASSERT_TRUE(pair1);
   const HostCache::Entry& result1 = pair1->second;
   EXPECT_EQ(endpoint1, result1.addresses()->front());
-  EXPECT_TRUE(result1.pinned());
+  EXPECT_THAT(result1.pinning(), Optional(true));
 
   // Insert |entry2|, and verify that it when it is retrieved, it
   // has the new IP, and the "pinned" flag copied from |entry1|.
-  cache.Set(key, entry2, now, base::TimeDelta::FromSeconds(10));
+  cache.Set(key, entry2, now, base::Seconds(10));
   const auto* pair2 = cache.Lookup(key, now);
   ASSERT_TRUE(pair2);
   const HostCache::Entry& result2 = pair2->second;
   EXPECT_EQ(endpoint2, result2.addresses()->front());
-  EXPECT_TRUE(result2.pinned());
+  EXPECT_THAT(result2.pinning(), Optional(true));
 }
 
 // An obsolete cache pin is not preserved if the record is replaced.
@@ -925,30 +925,70 @@ TEST(HostCacheTest, DontPreserveObsoletePin) {
                                              HostCache::Entry::SOURCE_UNKNOWN);
   HostCache::Entry entry2 = HostCache::Entry(OK, AddressList(endpoint2),
                                              HostCache::Entry::SOURCE_UNKNOWN);
-  entry1.set_pinned(true);
+  entry1.set_pinning(true);
 
   HostCache::Key key = Key("foobar.com");
 
   // Insert entry1, and verify that it can be retrieved with the
-  // correct IP and |pinned()| == true.
-  cache.Set(key, entry1, now, base::TimeDelta::FromSeconds(10));
+  // correct IP and |pinning()| == true.
+  cache.Set(key, entry1, now, base::Seconds(10));
   const auto* pair1 = cache.Lookup(key, now);
   ASSERT_TRUE(pair1);
   const HostCache::Entry& result1 = pair1->second;
   EXPECT_EQ(endpoint1, result1.addresses()->front());
-  EXPECT_TRUE(result1.pinned());
+  EXPECT_THAT(result1.pinning(), Optional(true));
 
   // Make entry1 obsolete.
   cache.Invalidate();
 
   // Insert |entry2|, and verify that it when it is retrieved, it
   // has the new IP, and the "pinned" flag is not copied from |entry1|.
-  cache.Set(key, entry2, now, base::TimeDelta::FromSeconds(10));
+  cache.Set(key, entry2, now, base::Seconds(10));
   const auto* pair2 = cache.Lookup(key, now);
   ASSERT_TRUE(pair2);
   const HostCache::Entry& result2 = pair2->second;
   EXPECT_EQ(endpoint2, result2.addresses()->front());
-  EXPECT_FALSE(result2.pinned());
+  EXPECT_THAT(result2.pinning(), Optional(false));
+}
+
+// An active pin is removed if the record is replaced by a Set() call
+// with the pin flag set to false.
+TEST(HostCacheTest, Unpin) {
+  HostCache cache(2);
+
+  base::TimeTicks now;
+
+  // Make entry1 and entry2, identical except for IP and pinned flag.
+  IPAddress address1(192, 0, 2, 1);
+  IPAddress address2(192, 0, 2, 2);
+  IPEndPoint endpoint1(address1, 0);
+  IPEndPoint endpoint2(address2, 0);
+  HostCache::Entry entry1 = HostCache::Entry(OK, AddressList(endpoint1),
+                                             HostCache::Entry::SOURCE_UNKNOWN);
+  HostCache::Entry entry2 = HostCache::Entry(OK, AddressList(endpoint2),
+                                             HostCache::Entry::SOURCE_UNKNOWN);
+  entry1.set_pinning(true);
+  entry2.set_pinning(false);
+
+  HostCache::Key key = Key("foobar.com");
+
+  // Insert entry1, and verify that it can be retrieved with the
+  // correct IP and |pinning()| == true.
+  cache.Set(key, entry1, now, base::Seconds(10));
+  const auto* pair1 = cache.Lookup(key, now);
+  ASSERT_TRUE(pair1);
+  const HostCache::Entry& result1 = pair1->second;
+  EXPECT_EQ(endpoint1, result1.addresses()->front());
+  EXPECT_THAT(result1.pinning(), Optional(true));
+
+  // Insert |entry2|, and verify that it when it is retrieved, it
+  // has the new IP, and the "pinned" flag is now false.
+  cache.Set(key, entry2, now, base::Seconds(10));
+  const auto* pair2 = cache.Lookup(key, now);
+  ASSERT_TRUE(pair2);
+  const HostCache::Entry& result2 = pair2->second;
+  EXPECT_EQ(endpoint2, result2.addresses()->front());
+  EXPECT_THAT(result2.pinning(), Optional(false));
 }
 
 // Tests the less than and equal operators for HostCache::Key work.
@@ -1106,7 +1146,7 @@ TEST(HostCacheTest, KeyComparators) {
 }
 
 TEST(HostCacheTest, SerializeAndDeserialize) {
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
 
   HostCache cache(kMaxCacheEntries);
 
@@ -1146,7 +1186,7 @@ TEST(HostCacheTest, SerializeAndDeserialize) {
   EXPECT_EQ(1u, cache.size());
 
   // Advance to t=5.
-  now += base::TimeDelta::FromSeconds(5);
+  now += base::Seconds(5);
 
   // Add entries for "foobar2.com" and "foobar3.com" at t=5.
   EXPECT_FALSE(cache.Lookup(key2, now));
@@ -1162,7 +1202,7 @@ TEST(HostCacheTest, SerializeAndDeserialize) {
   EXPECT_EQ(0u, cache.last_restore_size());
 
   // Advance to t=12, ansd serialize the cache.
-  now += base::TimeDelta::FromSeconds(7);
+  now += base::Seconds(7);
 
   base::ListValue serialized_cache;
   cache.GetAsListValue(&serialized_cache, false /* include_staleness */,
@@ -1203,8 +1243,8 @@ TEST(HostCacheTest, SerializeAndDeserialize) {
   EXPECT_EQ(1, stale.network_changes);
   // Time to TimeTicks conversion is fuzzy, so just check that expected and
   // actual expiration times are close.
-  EXPECT_GT(base::TimeDelta::FromMilliseconds(100),
-            (base::TimeDelta::FromSeconds(2) - stale.expired_by).magnitude());
+  EXPECT_GT(base::Milliseconds(100),
+            (base::Seconds(2) - stale.expired_by).magnitude());
 
   // The "foobar2.com" entry is stale only due to network changes.
   EXPECT_FALSE(restored_cache.Lookup(key2, now));
@@ -1218,8 +1258,8 @@ TEST(HostCacheTest, SerializeAndDeserialize) {
             result2->second.addresses().value().front().address());
   EXPECT_EQ(address_ipv4, result2->second.addresses().value().back().address());
   EXPECT_EQ(1, stale.network_changes);
-  EXPECT_GT(base::TimeDelta::FromMilliseconds(100),
-            (base::TimeDelta::FromSeconds(-3) - stale.expired_by).magnitude());
+  EXPECT_GT(base::Milliseconds(100),
+            (base::Seconds(-3) - stale.expired_by).magnitude());
 
   // The "foobar3.com" entry is the new one, not the restored one.
   const std::pair<const HostCache::Key, HostCache::Entry>* result3 =
@@ -1243,7 +1283,7 @@ TEST(HostCacheTest, SerializeAndDeserialize) {
 }
 
 TEST(HostCacheTest, SerializeAndDeserializeEntryWithoutScheme) {
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
 
   HostCache::Key key("host.test", DnsQueryType::UNSPECIFIED, 0,
                      HostResolverSource::ANY, NetworkIsolationKey());
@@ -1272,7 +1312,7 @@ TEST(HostCacheTest, SerializeAndDeserializeEntryWithoutScheme) {
 TEST(HostCacheTest, SerializeAndDeserializeWithNetworkIsolationKey) {
   const url::SchemeHostPort kHost =
       url::SchemeHostPort(url::kHttpsScheme, "hostname.test", 443);
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
   const SchemefulSite kSite(GURL("https://site.test/"));
   const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
   const SchemefulSite kOpaqueSite;
@@ -1323,7 +1363,7 @@ TEST(HostCacheTest, SerializeAndDeserializeWithNetworkIsolationKey) {
 
 TEST(HostCacheTest, SerializeForDebugging) {
   const url::SchemeHostPort kHost(url::kHttpsScheme, "hostname.test", 443);
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
   const NetworkIsolationKey kNetworkIsolationKey =
       NetworkIsolationKey::CreateTransient();
 
@@ -1361,7 +1401,7 @@ TEST(HostCacheTest, SerializeForDebugging) {
 TEST(HostCacheTest, SerializeAndDeserialize_Text) {
   base::TimeTicks now;
 
-  base::TimeDelta ttl = base::TimeDelta::FromSeconds(99);
+  base::TimeDelta ttl = base::Seconds(99);
   std::vector<std::string> text_records({"foo", "bar"});
   HostCache::Key key(url::SchemeHostPort(url::kHttpsScheme, "example.com", 443),
                      DnsQueryType::A, 0, HostResolverSource::DNS,
@@ -1396,7 +1436,7 @@ TEST(HostCacheTest, SerializeAndDeserialize_Text) {
 TEST(HostCacheTest, SerializeAndDeserialize_Hostname) {
   base::TimeTicks now;
 
-  base::TimeDelta ttl = base::TimeDelta::FromSeconds(99);
+  base::TimeDelta ttl = base::Seconds(99);
   std::vector<HostPortPair> hostnames(
       {HostPortPair("example.com", 95), HostPortPair("chromium.org", 122)});
   HostCache::Key key(url::SchemeHostPort(url::kHttpsScheme, "example.com", 443),
@@ -1428,7 +1468,7 @@ TEST(HostCacheTest, SerializeAndDeserialize_Hostname) {
 }
 
 TEST(HostCacheTest, PersistenceDelegate) {
-  const base::TimeDelta kTTL = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTTL = base::Seconds(10);
   HostCache cache(kMaxCacheEntries);
   MockPersistenceDelegate delegate;
   cache.set_persistence_delegate(&delegate);
@@ -1470,7 +1510,7 @@ TEST(HostCacheTest, PersistenceDelegate) {
   EXPECT_EQ(2, delegate.num_changes());
 
   // Advance to t=5.
-  now += base::TimeDelta::FromSeconds(5);
+  now += base::Seconds(5);
 
   // Changes that shouldn't trigger a write:
   // Add an entry for "foobar.com" with different expiration time.
@@ -1482,7 +1522,7 @@ TEST(HostCacheTest, PersistenceDelegate) {
 
   // Add an entry for "foobar.com" with different TTL.
   EXPECT_TRUE(cache.Lookup(key1, now));
-  cache.Set(key1, entry1, now, kTTL - base::TimeDelta::FromSeconds(5));
+  cache.Set(key1, entry1, now, kTTL - base::Seconds(5));
   EXPECT_TRUE(cache.Lookup(key1, now));
   EXPECT_EQ(2u, cache.size());
   EXPECT_EQ(2, delegate.num_changes());
@@ -1634,8 +1674,7 @@ TEST(HostCacheTest, MergeEntries_frontEmpty) {
   const IPEndPoint kEndpointBack(kAddressBack, 0);
   std::vector<std::string> aliases_back({"alias1", "alias2", "alias3"});
   HostCache::Entry back(OK, AddressList(kEndpointBack, std::move(aliases_back)),
-                        HostCache::Entry::SOURCE_DNS,
-                        base::TimeDelta::FromHours(4));
+                        HostCache::Entry::SOURCE_DNS, base::Hours(4));
   back.set_text_records(std::vector<std::string>{"text2"});
   const HostPortPair kHostnameBack("host", 2);
   back.set_hostnames(std::vector<HostPortPair>{kHostnameBack});
@@ -1652,7 +1691,7 @@ TEST(HostCacheTest, MergeEntries_frontEmpty) {
   EXPECT_THAT(result.text_records(), Optional(ElementsAre("text2")));
   EXPECT_THAT(result.hostnames(), Optional(ElementsAre(kHostnameBack)));
 
-  EXPECT_EQ(base::TimeDelta::FromHours(4), result.ttl());
+  EXPECT_EQ(base::Hours(4), result.ttl());
 
   ASSERT_TRUE(result.addresses());
   EXPECT_THAT(result.addresses().value().dns_aliases(),
@@ -1663,9 +1702,9 @@ TEST(HostCacheTest, MergeEntries_backEmpty) {
   const IPAddress kAddressFront(1, 2, 3, 4);
   const IPEndPoint kEndpointFront(kAddressFront, 0);
   std::vector<std::string> aliases_front({"alias1", "alias2", "alias3"});
-  HostCache::Entry front(
-      OK, AddressList(kEndpointFront, std::move(aliases_front)),
-      HostCache::Entry::SOURCE_DNS, base::TimeDelta::FromMinutes(5));
+  HostCache::Entry front(OK,
+                         AddressList(kEndpointFront, std::move(aliases_front)),
+                         HostCache::Entry::SOURCE_DNS, base::Minutes(5));
   front.set_text_records(std::vector<std::string>{"text1"});
   const HostPortPair kHostnameFront("host", 1);
   front.set_hostnames(std::vector<HostPortPair>{kHostnameFront});
@@ -1684,7 +1723,7 @@ TEST(HostCacheTest, MergeEntries_backEmpty) {
   EXPECT_THAT(result.text_records(), Optional(ElementsAre("text1")));
   EXPECT_THAT(result.hostnames(), Optional(ElementsAre(kHostnameFront)));
 
-  EXPECT_EQ(base::TimeDelta::FromMinutes(5), result.ttl());
+  EXPECT_EQ(base::Minutes(5), result.ttl());
 
   ASSERT_TRUE(result.addresses());
   EXPECT_THAT(result.addresses().value().dns_aliases(),
@@ -1719,8 +1758,7 @@ TEST(HostCacheTest, MergeEntries_frontWithAliasesNoAddressesBackWithBoth) {
   const IPEndPoint kEndpointBack(kAddressBack, 0);
   std::vector<std::string> aliases_back({"alias1", "alias2", "alias3"});
   HostCache::Entry back(OK, AddressList(kEndpointBack, std::move(aliases_back)),
-                        HostCache::Entry::SOURCE_DNS,
-                        base::TimeDelta::FromHours(4));
+                        HostCache::Entry::SOURCE_DNS, base::Hours(4));
 
   HostCache::Entry result =
       HostCache::Entry::MergeEntries(std::move(front), std::move(back));
@@ -1732,7 +1770,7 @@ TEST(HostCacheTest, MergeEntries_frontWithAliasesNoAddressesBackWithBoth) {
   EXPECT_THAT(result.addresses().value().endpoints(),
               ElementsAre(kEndpointBack));
 
-  EXPECT_EQ(base::TimeDelta::FromHours(4), result.ttl());
+  EXPECT_EQ(base::Hours(4), result.ttl());
 
   ASSERT_TRUE(result.addresses());
   EXPECT_THAT(result.addresses().value().dns_aliases(),
@@ -1751,9 +1789,9 @@ TEST(HostCacheTest, MergeEntries_backWithAliasesNoAddressesFrontWithBoth) {
                                 0);
   const IPEndPoint kEndpointFront(kAddressFront, 0);
   std::vector<std::string> aliases_front({"alias0", "alias1", "alias2"});
-  HostCache::Entry front(
-      OK, AddressList(kEndpointFront, std::move(aliases_front)),
-      HostCache::Entry::SOURCE_DNS, base::TimeDelta::FromHours(4));
+  HostCache::Entry front(OK,
+                         AddressList(kEndpointFront, std::move(aliases_front)),
+                         HostCache::Entry::SOURCE_DNS, base::Hours(4));
 
   HostCache::Entry result =
       HostCache::Entry::MergeEntries(std::move(front), std::move(back));
@@ -1765,7 +1803,7 @@ TEST(HostCacheTest, MergeEntries_backWithAliasesNoAddressesFrontWithBoth) {
   EXPECT_THAT(result.addresses().value().endpoints(),
               ElementsAre(kEndpointFront));
 
-  EXPECT_EQ(base::TimeDelta::FromHours(4), result.ttl());
+  EXPECT_EQ(base::Hours(4), result.ttl());
 
   ASSERT_TRUE(result.addresses());
   EXPECT_THAT(result.addresses().value().dns_aliases(),
@@ -1776,16 +1814,14 @@ TEST(HostCacheTest, MergeEntries_frontWithAddressesNoAliasesBackWithBoth) {
   const IPAddress kAddressFront(1, 2, 3, 4);
   const IPEndPoint kEndpointFront(kAddressFront, 0);
   HostCache::Entry front(OK, AddressList(kEndpointFront),
-                         HostCache::Entry::SOURCE_DNS,
-                         base::TimeDelta::FromHours(4));
+                         HostCache::Entry::SOURCE_DNS, base::Hours(4));
 
   const IPAddress kAddressBack(0x20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0);
   const IPEndPoint kEndpointBack(kAddressBack, 0);
   std::vector<std::string> aliases_back({"alias1", "alias2", "alias3"});
   HostCache::Entry back(OK, AddressList(kEndpointBack, std::move(aliases_back)),
-                        HostCache::Entry::SOURCE_DNS,
-                        base::TimeDelta::FromHours(4));
+                        HostCache::Entry::SOURCE_DNS, base::Hours(4));
 
   HostCache::Entry result =
       HostCache::Entry::MergeEntries(std::move(front), std::move(back));
@@ -1797,7 +1833,7 @@ TEST(HostCacheTest, MergeEntries_frontWithAddressesNoAliasesBackWithBoth) {
   EXPECT_THAT(result.addresses().value().endpoints(),
               ElementsAre(kEndpointBack, kEndpointFront));
 
-  EXPECT_EQ(base::TimeDelta::FromHours(4), result.ttl());
+  EXPECT_EQ(base::Hours(4), result.ttl());
 
   ASSERT_TRUE(result.addresses());
   EXPECT_THAT(result.addresses().value().dns_aliases(),
@@ -1808,16 +1844,15 @@ TEST(HostCacheTest, MergeEntries_backWithAddressesNoAliasesFrontWithBoth) {
   const IPAddress kAddressFront(1, 2, 3, 4);
   const IPEndPoint kEndpointFront(kAddressFront, 0);
   std::vector<std::string> aliases_front({"alias1", "alias2", "alias3"});
-  HostCache::Entry front(
-      OK, AddressList(kEndpointFront, std::move(aliases_front)),
-      HostCache::Entry::SOURCE_DNS, base::TimeDelta::FromHours(4));
+  HostCache::Entry front(OK,
+                         AddressList(kEndpointFront, std::move(aliases_front)),
+                         HostCache::Entry::SOURCE_DNS, base::Hours(4));
 
   const IPAddress kAddressBack(0x20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0);
   const IPEndPoint kEndpointBack(kAddressBack, 0);
   HostCache::Entry back(OK, AddressList(kEndpointBack),
-                        HostCache::Entry::SOURCE_DNS,
-                        base::TimeDelta::FromHours(4));
+                        HostCache::Entry::SOURCE_DNS, base::Hours(4));
 
   HostCache::Entry result =
       HostCache::Entry::MergeEntries(std::move(front), std::move(back));
@@ -1829,7 +1864,7 @@ TEST(HostCacheTest, MergeEntries_backWithAddressesNoAliasesFrontWithBoth) {
   EXPECT_THAT(result.addresses().value().endpoints(),
               ElementsAre(kEndpointBack, kEndpointFront));
 
-  EXPECT_EQ(base::TimeDelta::FromHours(4), result.ttl());
+  EXPECT_EQ(base::Hours(4), result.ttl());
 
   ASSERT_TRUE(result.addresses());
   EXPECT_THAT(result.addresses().value().dns_aliases(),
@@ -1838,14 +1873,14 @@ TEST(HostCacheTest, MergeEntries_backWithAddressesNoAliasesFrontWithBoth) {
 
 TEST(HostCacheTest, MergeEntries_differentTtl) {
   HostCache::Entry front(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS,
-                         base::TimeDelta::FromDays(12));
+                         base::Days(12));
   HostCache::Entry back(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS,
-                        base::TimeDelta::FromSeconds(42));
+                        base::Seconds(42));
 
   HostCache::Entry result =
       HostCache::Entry::MergeEntries(std::move(front), std::move(back));
 
-  EXPECT_EQ(base::TimeDelta::FromSeconds(42), result.ttl());
+  EXPECT_EQ(base::Seconds(42), result.ttl());
 }
 
 TEST(HostCacheTest, MergeEntries_FrontCannonnamePreserved) {

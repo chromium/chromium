@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -30,6 +31,9 @@
 namespace paint_preview {
 
 namespace {
+
+// The 95%ile allocation size in the experiment for discardable memory is 2 MB.
+constexpr size_t kTestAllocationSize = 2 * 1000L * 1000L;
 
 // Returns |nullopt| if |proto_memory| cannot be mapped or parsed.
 absl::optional<PaintPreviewProto> ParsePaintPreviewProto(
@@ -98,8 +102,8 @@ gfx::Rect AdjustClipRect(const gfx::Rect& clip_rect,
 
   // Clamp the x/y to be within the bounds of the picture.
   gfx::Rect out_rect;
-  out_rect.set_x(std::min(std::max(0, clip_rect.x()), picture_size.width()));
-  out_rect.set_y(std::min(std::max(0, clip_rect.y()), picture_size.height()));
+  out_rect.set_x(base::clamp(clip_rect.x(), 0, picture_size.width()));
+  out_rect.set_y(base::clamp(clip_rect.y(), 0, picture_size.height()));
 
   // Default the width/height to be that of the picture if no value was
   // provided.
@@ -141,10 +145,46 @@ absl::optional<SkBitmap> CreateBitmap(
           SkImageInfo::MakeN32Premul(clip_rect.width(), clip_rect.height()))) {
     return absl::nullopt;
   }
+
   SkCanvas canvas(bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
   SkMatrix matrix;
   matrix.setScaleTranslate(scale_factor, scale_factor, -clip_rect.x(),
                            -clip_rect.y());
+
+  {
+    // For context see: https://crbug.com/1199857
+    //
+    // SkCanvas::drawPicture may attempt to invoke discardable memory allocation
+    // this can fail for several reasons:
+    // * Browser-side limits on discardable memory allocation per-process.
+    // * Lost connection to the browser-process.
+    // * An actual out-of-memory.
+    //
+    // An allocation failure in SkCanvas::drawPicture will result in an OOM
+    // crash. This is by design as clients would have no way to recover and
+    // proceeding could be dangerous.
+    //
+    // Attempt to mitigate OOM crashes caused by an allocation failure by
+    // pre-allocating a chunk of discardable memory and immediately discarding
+    // it. This determines if it is "probable" future allocations in
+    // SkCanvas::drawPicture will succeed if so we can proceed.
+    //
+    // This is imperfect and can still lead to crashes and other issues as:
+    // * Locking during this segment is avoided for performance reasons and it
+    // is possible there are multiple in-flight requests so success here does
+    // not guarantee success later.
+    // * It isn't possible to know precisely how much memory
+    // SkCanvas::drawPicture will allocate. As such, it is possible more memory
+    // will be allocated still resulting in an OOM. Alternatively, less memory
+    // may be allocated resulting in an unnecessary abort albeit unlikely.
+    auto* allocator = base::DiscardableMemoryAllocator::GetInstance();
+    auto test_memory =
+        allocator->AllocateLockedDiscardableMemory(kTestAllocationSize);
+    if (!test_memory) {
+      return absl::nullopt;
+    }
+    test_memory.reset();
+  }
   canvas.drawPicture(skp, &matrix, nullptr);
   return bitmap;
 }
@@ -243,6 +283,7 @@ void PaintPreviewCompositorImpl::BitmapForSeparatedFrame(
     return;
   }
 
+  // TODO(crbug/1199857): Investigate if CONTINUE_ON_SHUTDOWN is a good option.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE, base::WithBaseSyncPrimitives(),

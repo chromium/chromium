@@ -68,6 +68,11 @@ class TestMessagePopupCollection : public AshMessagePopupCollection {
 class AshMessagePopupCollectionTest : public AshTestBase {
  public:
   AshMessagePopupCollectionTest() = default;
+
+  AshMessagePopupCollectionTest(const AshMessagePopupCollectionTest&) = delete;
+  AshMessagePopupCollectionTest& operator=(
+      const AshMessagePopupCollectionTest&) = delete;
+
   ~AshMessagePopupCollectionTest() override = default;
 
   void SetUp() override {
@@ -144,13 +149,11 @@ class AshMessagePopupCollectionTest : public AshTestBase {
  private:
   int notification_id_ = 0;
   std::unique_ptr<AshMessagePopupCollection> popup_collection_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshMessagePopupCollectionTest);
 };
 
 TEST_F(AshMessagePopupCollectionTest, ShelfAlignment) {
   const gfx::Rect toast_size(0, 0, 10, 10);
-  UpdateDisplay("600x600");
+  UpdateDisplay("601x600");
   gfx::Point toast_point;
   toast_point.set_x(popup_collection()->GetToastOriginX(toast_size));
   toast_point.set_y(popup_collection()->GetBaseline());
@@ -194,7 +197,7 @@ TEST_F(AshMessagePopupCollectionTest, LockScreen) {
 
 TEST_F(AshMessagePopupCollectionTest, AutoHide) {
   const gfx::Rect toast_size(0, 0, 10, 10);
-  UpdateDisplay("600x600");
+  UpdateDisplay("601x600");
   int origin_x = popup_collection()->GetToastOriginX(toast_size);
   int baseline = popup_collection()->GetBaseline();
 
@@ -209,28 +212,28 @@ TEST_F(AshMessagePopupCollectionTest, AutoHide) {
 
 TEST_F(AshMessagePopupCollectionTest, DisplayResize) {
   const gfx::Rect toast_size(0, 0, 10, 10);
-  UpdateDisplay("600x600");
+  UpdateDisplay("601x600");
   int origin_x = popup_collection()->GetToastOriginX(toast_size);
   int baseline = popup_collection()->GetBaseline();
 
-  UpdateDisplay("800x800");
+  UpdateDisplay("801x800");
   EXPECT_LT(origin_x, popup_collection()->GetToastOriginX(toast_size));
   EXPECT_LT(baseline, popup_collection()->GetBaseline());
 
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   EXPECT_GT(origin_x, popup_collection()->GetToastOriginX(toast_size));
   EXPECT_GT(baseline, popup_collection()->GetBaseline());
 }
 
 TEST_F(AshMessagePopupCollectionTest, DockedMode) {
   const gfx::Rect toast_size(0, 0, 10, 10);
-  UpdateDisplay("600x600");
+  UpdateDisplay("601x600");
   int origin_x = popup_collection()->GetToastOriginX(toast_size);
   int baseline = popup_collection()->GetBaseline();
 
   // Emulate the docked mode; enter to an extended mode, then invoke
   // OnNativeDisplaysChanged() with the info for the secondary display only.
-  UpdateDisplay("600x600,800x800");
+  UpdateDisplay("601x600,801x800");
 
   std::vector<display::ManagedDisplayInfo> new_info;
   new_info.push_back(display_manager()->GetDisplayInfo(
@@ -243,7 +246,7 @@ TEST_F(AshMessagePopupCollectionTest, DockedMode) {
 
 TEST_F(AshMessagePopupCollectionTest, TrayHeight) {
   const gfx::Rect toast_size(0, 0, 10, 10);
-  UpdateDisplay("600x600");
+  UpdateDisplay("601x600");
   int origin_x = popup_collection()->GetToastOriginX(toast_size);
   int baseline = popup_collection()->GetBaseline();
 
@@ -257,7 +260,7 @@ TEST_F(AshMessagePopupCollectionTest, TrayHeight) {
 }
 
 TEST_F(AshMessagePopupCollectionTest, Extended) {
-  UpdateDisplay("600x600,800x800");
+  UpdateDisplay("601x600,801x800");
   SetPopupCollection(
       std::make_unique<AshMessagePopupCollection>(GetPrimaryShelf()));
 
@@ -273,7 +276,7 @@ TEST_F(AshMessagePopupCollectionTest, Extended) {
 }
 
 TEST_F(AshMessagePopupCollectionTest, MixedFullscreenNone) {
-  UpdateDisplay("600x600,800x800");
+  UpdateDisplay("601x600,801x800");
   Shelf* shelf1 = GetPrimaryShelf();
   TestMessagePopupCollection collection1(shelf1);
   UpdateWorkArea(&collection1, GetPrimaryDisplay());
@@ -298,7 +301,7 @@ TEST_F(AshMessagePopupCollectionTest, MixedFullscreenNone) {
 }
 
 TEST_F(AshMessagePopupCollectionTest, MixedFullscreenSome) {
-  UpdateDisplay("600x600,800x800");
+  UpdateDisplay("601x600,801x800");
   Shelf* shelf1 = GetPrimaryShelf();
   TestMessagePopupCollection collection1(shelf1);
   UpdateWorkArea(&collection1, GetPrimaryDisplay());
@@ -323,7 +326,7 @@ TEST_F(AshMessagePopupCollectionTest, MixedFullscreenSome) {
 }
 
 TEST_F(AshMessagePopupCollectionTest, MixedFullscreenAll) {
-  UpdateDisplay("600x600,800x800");
+  UpdateDisplay("601x600,801x800");
   Shelf* shelf1 = GetPrimaryShelf();
   TestMessagePopupCollection collection1(shelf1);
   UpdateWorkArea(&collection1, GetPrimaryDisplay());
@@ -362,7 +365,7 @@ TEST_F(AshMessagePopupCollectionTest, Unified) {
   // transition.
   SetPopupCollection(nullptr);
 
-  UpdateDisplay("600x600,800x800");
+  UpdateDisplay("601x600,801x800");
   SetPopupCollection(
       std::make_unique<AshMessagePopupCollection>(GetPrimaryShelf()));
 
@@ -376,11 +379,11 @@ TEST_F(AshMessagePopupCollectionTest, KeyboardShowing) {
   ASSERT_TRUE(
       keyboard::KeyboardUIController::Get()->IsKeyboardOverscrollEnabled());
 
-  UpdateDisplay("600x600");
+  UpdateDisplay("601x600");
   int baseline = popup_collection()->GetBaseline();
 
   Shelf* shelf = GetPrimaryShelf();
-  gfx::Rect keyboard_bounds(0, 300, 600, 300);
+  gfx::Rect keyboard_bounds(0, 300, 601, 300);
   shelf->SetVirtualKeyboardBoundsForTesting(keyboard_bounds);
   int keyboard_baseline = popup_collection()->GetBaseline();
   EXPECT_NE(baseline, keyboard_baseline);

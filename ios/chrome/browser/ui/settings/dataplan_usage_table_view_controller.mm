@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -100,7 +100,7 @@ NetworkPredictionSetting SettingWithItemType(ItemType item_type) {
 
 - (void)loadModel {
   [super loadModel];
-  self.styler.cellTitleColor = UIColor.cr_labelColor;
+  self.styler.cellTitleColor = [UIColor colorNamed:kTextPrimaryColor];
 
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierOptions];

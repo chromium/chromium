@@ -11,6 +11,9 @@
 // Handles creating a unique identifier, which is stable across cold starts.
 class TabIdTabHelper : public web::WebStateUserData<TabIdTabHelper> {
  public:
+  TabIdTabHelper(const TabIdTabHelper&) = delete;
+  TabIdTabHelper& operator=(const TabIdTabHelper&) = delete;
+
   ~TabIdTabHelper() override;
 
   // Returns a unique identifier for this tab.
@@ -23,8 +26,6 @@ class TabIdTabHelper : public web::WebStateUserData<TabIdTabHelper> {
   __strong NSString* tab_id_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(TabIdTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_TAB_ID_TAB_HELPER_H_

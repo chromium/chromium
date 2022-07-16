@@ -11,20 +11,20 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chrome/browser/supervised_user/supervised_users.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_store.h"
 #include "components/sync/model/syncable_service.h"
+#include "url/gurl.h"
 
 class PersistentPrefStore;
 
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 // This class syncs supervised user settings from a server, which are mapped to
 // preferences. The downloaded settings are persisted in a PrefStore (which is
@@ -62,12 +62,26 @@ class SupervisedUserSettingsService : public KeyedService,
   using SettingsCallbackList =
       base::RepeatingCallbackList<SettingsCallbackType>;
 
+  // Called when a new host is remotely approved for this supervised user. The
+  // first param is newly approved host, which might be a pattern containing
+  // wildcards (e.g. "*.google.*"").
+  using WebsiteApprovalCallbackType = void(const std::string& hostname);
+  using WebsiteApprovalCallback =
+      base::RepeatingCallback<WebsiteApprovalCallbackType>;
+  using WebsiteApprovalCallbackList =
+      base::RepeatingCallbackList<WebsiteApprovalCallbackType>;
+
   using ShutdownCallbackType = void();
   using ShutdownCallback = base::RepeatingCallback<ShutdownCallbackType>;
   using ShutdownCallbackList =
       base::RepeatingCallbackList<ShutdownCallbackType>;
 
   SupervisedUserSettingsService();
+
+  SupervisedUserSettingsService(const SupervisedUserSettingsService&) = delete;
+  SupervisedUserSettingsService& operator=(
+      const SupervisedUserSettingsService&) = delete;
+
   ~SupervisedUserSettingsService() override;
 
   // Initializes the service by loading its settings from a file underneath the
@@ -87,6 +101,11 @@ class SupervisedUserSettingsService : public KeyedService,
   // available, or when they change.
   base::CallbackListSubscription SubscribeForSettingsChange(
       const SettingsCallback& callback) WARN_UNUSED_RESULT;
+
+  // Subscribes to be notified when a new website is remotely approved for this
+  // user.
+  base::CallbackListSubscription SubscribeForNewWebsiteApproval(
+      const WebsiteApprovalCallback& callback) WARN_UNUSED_RESULT;
 
   // Subscribe for a notification when the keyed service is shut down. The
   // subscription can be destroyed to unsubscribe.
@@ -143,19 +162,19 @@ class SupervisedUserSettingsService : public KeyedService,
   void OnPrefValueChanged(const std::string& key) override;
   void OnInitializationCompleted(bool success) override;
 
-  const base::DictionaryValue* LocalSettingsForTest() const;
+  const base::Value& LocalSettingsForTest() const;
 
   // Returns the dictionary where a given Sync item should be stored, depending
   // on whether the supervised user setting is atomic or split. In case of a
   // split setting, the split setting prefix of |key| is removed, so that |key|
   // can be used to update the returned dictionary.
-  base::DictionaryValue* GetDictionaryAndSplitKey(std::string* key) const;
+  base::Value* GetDictionaryAndSplitKey(std::string* key) const;
 
  private:
-  base::DictionaryValue* GetOrCreateDictionary(const std::string& key) const;
-  base::DictionaryValue* GetAtomicSettings() const;
-  base::DictionaryValue* GetSplitSettings() const;
-  base::DictionaryValue* GetQueuedItems() const;
+  base::Value* GetOrCreateDictionary(const std::string& key) const;
+  base::Value* GetAtomicSettings() const;
+  base::Value* GetSplitSettings() const;
+  base::Value* GetQueuedItems() const;
 
   // Returns a dictionary with all supervised user settings if the service is
   // active, or NULL otherwise.
@@ -180,16 +199,16 @@ class SupervisedUserSettingsService : public KeyedService,
   base::OnceClosure wait_until_ready_to_sync_cb_;
 
   // A set of local settings that are fixed and not configured remotely.
-  std::unique_ptr<base::DictionaryValue> local_settings_;
+  base::Value local_settings_;
 
   SettingsCallbackList settings_callback_list_;
+
+  WebsiteApprovalCallbackList website_approval_callback_list_;
 
   ShutdownCallbackList shutdown_callback_list_;
 
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
   std::unique_ptr<syncer::SyncErrorFactory> error_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserSettingsService);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SETTINGS_SERVICE_H_

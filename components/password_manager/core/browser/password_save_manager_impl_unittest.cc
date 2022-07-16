@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -13,7 +12,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
-#include "components/password_manager/core/browser/multi_store_password_save_manager.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/stub_form_saver.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -54,6 +52,13 @@ const int kPasswordFieldIndex = 2;
 MATCHER_P(FormHasUniqueKey, key, "") {
   return ArePasswordFormUniqueKeysEqual(arg, key);
 }
+
+MATCHER_P2(MatchesUsernameAndPassword, username, password, "") {
+  return arg.username_value == username && arg.password_value == password;
+}
+
+const auto kTrigger = metrics_util::MoveToAccountStoreTrigger::
+    kSuccessfulLoginWithProfileStorePassword;
 
 void CheckPendingCredentials(const PasswordForm& expected,
                              const PasswordForm& actual) {
@@ -164,6 +169,9 @@ class MockAutofillDownloadManager : public autofill::AutofillDownloadManager {
  public:
   MockAutofillDownloadManager()
       : AutofillDownloadManager(nullptr, &fake_observer) {}
+  MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
+  MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
+      delete;
 
   MOCK_METHOD(bool,
               StartUploadRequest,
@@ -183,15 +191,13 @@ class MockAutofillDownloadManager : public autofill::AutofillDownloadManager {
   };
 
   StubObserver fake_observer;
-  DISALLOW_COPY_AND_ASSIGN(MockAutofillDownloadManager);
 };
 
 }  // namespace
 
-class PasswordSaveManagerImplTest : public testing::Test,
-                                    public testing::WithParamInterface<bool> {
+class PasswordSaveManagerImplTestBase : public testing::Test {
  public:
-  PasswordSaveManagerImplTest()
+  explicit PasswordSaveManagerImplTestBase(bool enable_account_store)
       : votes_uploader_(&client_, false /* is_possible_change_password_form */),
         task_runner_(new TestMockTimeTaskRunner) {
     GURL origin = GURL("https://accounts.google.com/a/ServiceLoginAuth");
@@ -293,30 +299,34 @@ class PasswordSaveManagerImplTest : public testing::Test,
     metrics_recorder_ = base::MakeRefCounted<PasswordFormMetricsRecorder>(
         client_.IsCommittedMainFrameSecure(), client_.GetUkmSourceId(),
         /*pref_service=*/nullptr);
-    auto mock_form_saver = std::make_unique<NiceMock<MockFormSaver>>();
-    mock_form_saver_ = mock_form_saver.get();
 
-    if (!GetParam()) {
-      password_save_manager_impl_ =
-          std::make_unique<PasswordSaveManagerImpl>(std::move(mock_form_saver));
-    } else {
-      password_save_manager_impl_ = std::make_unique<
-          MultiStorePasswordSaveManager>(
-          /*account_form_saver=*/std::move(mock_form_saver),
-          /*account_form_saver=*/std::make_unique<NiceMock<MockFormSaver>>());
+    auto mock_profile_form_saver = std::make_unique<NiceMock<MockFormSaver>>();
+    mock_profile_form_saver_ = mock_profile_form_saver.get();
+
+    std::unique_ptr<NiceMock<MockFormSaver>> mock_account_form_saver;
+    if (enable_account_store) {
+      mock_account_form_saver = std::make_unique<NiceMock<MockFormSaver>>();
+      mock_account_form_saver_ = mock_account_form_saver.get();
     }
+
+    password_save_manager_impl_ = std::make_unique<PasswordSaveManagerImpl>(
+        /*profile_form_saver=*/std::move(mock_profile_form_saver),
+        /*account_form_saver=*/std::move(mock_account_form_saver));
 
     password_save_manager_impl_->Init(&client_, fetcher_.get(),
                                       metrics_recorder_, &votes_uploader_);
 
     ON_CALL(client_, GetAutofillDownloadManager())
         .WillByDefault(Return(&mock_autofill_download_manager_));
-    ON_CALL(mock_autofill_download_manager_,
-            StartUploadRequest(_, _, _, _, _, _))
+    ON_CALL(mock_autofill_download_manager_, StartUploadRequest)
         .WillByDefault(Return(true));
     ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore)
         .WillByDefault(Return(PasswordForm::Store::kProfileStore));
   }
+  PasswordSaveManagerImplTestBase(const PasswordSaveManagerImplTestBase&) =
+      delete;
+  PasswordSaveManagerImplTestBase& operator=(
+      const PasswordSaveManagerImplTestBase&) = delete;
 
   PasswordForm Parse(const FormData& form_data) {
     return *FormDataParser().Parse(form_data, FormDataParser::Mode::kSaving);
@@ -333,7 +343,8 @@ class PasswordSaveManagerImplTest : public testing::Test,
     return password_save_manager_impl_.get();
   }
 
-  MockFormSaver* mock_form_saver() { return mock_form_saver_; }
+  MockFormSaver* mock_account_form_saver() { return mock_account_form_saver_; }
+  MockFormSaver* mock_profile_form_saver() { return mock_profile_form_saver_; }
 
   FakeFormFetcher* fetcher() { return fetcher_.get(); }
 
@@ -351,6 +362,34 @@ class PasswordSaveManagerImplTest : public testing::Test,
       const std::vector<const PasswordForm*>& non_federated) {
     fetcher()->SetNonFederated(non_federated);
     fetcher()->NotifyFetchCompleted();
+  }
+
+  void SetFederatedAndNotifyFetchCompleted(
+      const std::vector<const PasswordForm*>& federated) {
+    fetcher_->set_federated(federated);
+    fetcher_->NotifyFetchCompleted();
+  }
+
+  void SetAccountStoreEnabled(bool is_enabled) {
+    ON_CALL(*client()->GetPasswordFeatureManager(),
+            IsOptedInForAccountStorage())
+        .WillByDefault(Return(is_enabled));
+  }
+
+  void SetDefaultPasswordStore(const PasswordForm::Store& store) {
+    ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore())
+        .WillByDefault(Return(store));
+  }
+
+  PasswordForm CreateSavedFederated() {
+    PasswordForm federated;
+    federated.url = GURL("https://example.in/login");
+    federated.signon_realm = "federation://example.in/google.com";
+    federated.type = PasswordForm::Type::kApi;
+    federated.federation_origin =
+        url::Origin::Create(GURL("https://google.com/"));
+    federated.username_value = u"federated_username";
+    return federated;
   }
 
   VotesUploader* votes_uploader() { return &votes_uploader_; }
@@ -373,23 +412,31 @@ class PasswordSaveManagerImplTest : public testing::Test,
   // needs to outlive the latter.
   std::unique_ptr<FakeFormFetcher> fetcher_;
   std::unique_ptr<PasswordSaveManagerImpl> password_save_manager_impl_;
-  NiceMock<MockFormSaver>* mock_form_saver_;
+  NiceMock<MockFormSaver>* mock_account_form_saver_ = nullptr;
+  NiceMock<MockFormSaver>* mock_profile_form_saver_ = nullptr;
   NiceMock<MockAutofillDownloadManager> mock_autofill_download_manager_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(PasswordSaveManagerImplTest);
+// The boolean test parameter maps to the `enable_account_store` constructor
+// parameter of the base class.
+class PasswordSaveManagerImplTest : public PasswordSaveManagerImplTestBase,
+                                    public testing::WithParamInterface<bool> {
+ public:
+  PasswordSaveManagerImplTest()
+      : PasswordSaveManagerImplTestBase(/*enable_account_store=*/GetParam()) {}
 };
 
 TEST_P(PasswordSaveManagerImplTest, Blocklist) {
   PasswordFormDigest form_digest(PasswordForm::Scheme::kDigest,
                                  "www.example.com", GURL("www.abc.com"));
-  EXPECT_CALL(*mock_form_saver(), Blocklist(form_digest));
+  EXPECT_CALL(*mock_profile_form_saver(), Blocklist(form_digest));
   password_save_manager_impl()->Blocklist(form_digest);
 }
 
 TEST_P(PasswordSaveManagerImplTest, Unblocklist) {
   PasswordFormDigest form_digest(PasswordForm::Scheme::kDigest,
                                  "www.example.com", GURL("www.abc.com"));
-  EXPECT_CALL(*mock_form_saver(), Unblocklist(form_digest));
+  EXPECT_CALL(*mock_profile_form_saver(), Unblocklist(form_digest));
   password_save_manager_impl()->Unblocklist(form_digest);
 }
 
@@ -597,16 +644,16 @@ TEST_P(PasswordSaveManagerImplTest, SaveNewCredentials) {
 
   PasswordForm saved_form;
   std::vector<const PasswordForm*> best_matches;
-  EXPECT_CALL(*mock_form_saver(), Save(_, _, _))
+  EXPECT_CALL(*mock_profile_form_saver(), Save)
       .WillOnce(DoAll(SaveArg<0>(&saved_form), SaveArg<1>(&best_matches)));
 
   password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form);
 
-  std::string expected_signon_realm = submitted_form.url.GetOrigin().spec();
+  std::string expected_signon_realm =
+      submitted_form.url.DeprecatedGetOriginAsURL().spec();
   EXPECT_EQ(submitted_form.url, saved_form.url);
   EXPECT_EQ(expected_signon_realm, saved_form.signon_realm);
   EXPECT_EQ(new_username, saved_form.username_value);
-  EXPECT_EQ(new_username, votes_uploader()->saved_username());
   EXPECT_EQ(new_password, saved_form.password_value);
 
   EXPECT_EQ(submitted_form.fields[kUsernameFieldIndex].name,
@@ -654,7 +701,7 @@ TEST_P(PasswordSaveManagerImplTest, SavePSLToAlreadySaved) {
 
   PasswordForm saved_form;
   std::vector<const PasswordForm*> best_matches;
-  EXPECT_CALL(*mock_form_saver(), Save(_, _, _))
+  EXPECT_CALL(*mock_profile_form_saver(), Save)
       .WillOnce(DoAll(SaveArg<0>(&saved_form), SaveArg<1>(&best_matches)));
 
   password_save_manager_impl()->Save(&observed_form_, Parse(submitted_form));
@@ -689,15 +736,15 @@ TEST_P(PasswordSaveManagerImplTest, OverridePassword) {
   EXPECT_TRUE(password_save_manager_impl()->IsPasswordUpdate());
 
   PasswordForm updated_form;
-  EXPECT_CALL(*mock_form_saver(), Update(_, ElementsAre(Pointee(saved_match_)),
-                                         saved_match_.password_value))
+  EXPECT_CALL(*mock_profile_form_saver(),
+              Update(_, ElementsAre(Pointee(saved_match_)),
+                     saved_match_.password_value))
       .WillOnce(SaveArg<0>(&updated_form));
 
   password_save_manager_impl()->Save(&observed_form_, Parse(submitted_form));
 
   EXPECT_TRUE(ArePasswordFormUniqueKeysEqual(saved_match_, updated_form));
   EXPECT_EQ(new_password, updated_form.password_value);
-  EXPECT_EQ(username, votes_uploader()->saved_username());
 }
 
 // Tests that when the user changes password on a change password form then the
@@ -725,7 +772,7 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordOnChangePasswordForm) {
   EXPECT_TRUE(password_save_manager_impl()->IsPasswordUpdate());
 
   PasswordForm updated_form;
-  EXPECT_CALL(*mock_form_saver(),
+  EXPECT_CALL(*mock_profile_form_saver(),
               Update(_,
                      UnorderedElementsAre(
                          Pointee(saved_match_), Pointee(not_best_saved_match),
@@ -738,7 +785,6 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordOnChangePasswordForm) {
 
   EXPECT_TRUE(ArePasswordFormUniqueKeysEqual(saved_match_, updated_form));
   EXPECT_EQ(new_password, updated_form.password_value);
-  EXPECT_EQ(saved_match_.username_value, votes_uploader()->saved_username());
 }
 
 TEST_P(PasswordSaveManagerImplTest, UpdateUsernameToAnotherFieldValue) {
@@ -775,7 +821,6 @@ TEST_P(PasswordSaveManagerImplTest, UpdateUsernameToAnotherFieldValue) {
 
   password_save_manager_impl()->Save(&observed_form_only_password_fields_,
                                      parsed_submitted_form);
-  EXPECT_EQ(user_chosen_username, votes_uploader()->saved_username());
 }
 
 TEST_P(PasswordSaveManagerImplTest, UpdateUsernameToAlreadyExisting) {
@@ -836,9 +881,7 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordValueEmptyStore) {
 
   // TODO(https://crbug.com/928690): implement not sending incorrect votes and
   // check that StartUploadRequest is not called.
-  EXPECT_CALL(*mock_autofill_download_manager(),
-              StartUploadRequest(_, _, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(*mock_autofill_download_manager(), StartUploadRequest).Times(1);
   password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form);
 }
 
@@ -925,7 +968,7 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordValueMultiplePasswordFields) {
 
   // Check that the password which was chosen by the user is saved.
   PasswordForm saved_form;
-  EXPECT_CALL(*mock_form_saver(), Save(_, _, _))
+  EXPECT_CALL(*mock_profile_form_saver(), Save)
       .WillOnce(SaveArg<0>(&saved_form));
 
   password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form);
@@ -939,7 +982,7 @@ TEST_P(PasswordSaveManagerImplTest, PresaveGeneratedPasswordEmptyStore) {
 
   // Check that the generated password is presaved.
   PasswordForm saved_form;
-  EXPECT_CALL(*mock_form_saver(), Save(_, IsEmpty(), std::u16string()))
+  EXPECT_CALL(*mock_profile_form_saver(), Save(_, IsEmpty(), std::u16string()))
       .WillOnce(SaveArg<0>(&saved_form));
 
   PasswordForm form_with_generated_password = parsed_submitted_form_;
@@ -953,11 +996,11 @@ TEST_P(PasswordSaveManagerImplTest, PresaveGeneratedPasswordEmptyStore) {
   EXPECT_EQ(saved_form.password_value,
             form_with_generated_password.password_value);
 
-  Mock::VerifyAndClearExpectations(mock_form_saver());
+  Mock::VerifyAndClearExpectations(mock_profile_form_saver());
 
   // Check that when the generated password is edited, then it's presaved.
   form_with_generated_password.password_value += u"1";
-  EXPECT_CALL(*mock_form_saver(),
+  EXPECT_CALL(*mock_profile_form_saver(),
               UpdateReplace(_, IsEmpty(), testing::Eq(u""),
                             FormHasUniqueKey(form_with_generated_password)))
       .WillOnce(SaveArg<0>(&saved_form));
@@ -971,7 +1014,7 @@ TEST_P(PasswordSaveManagerImplTest, PresaveGeneratedPasswordEmptyStore) {
   EXPECT_EQ(saved_form.password_value,
             form_with_generated_password.password_value);
 
-  Mock::VerifyAndClearExpectations(mock_form_saver());
+  Mock::VerifyAndClearExpectations(mock_profile_form_saver());
 }
 
 TEST_P(PasswordSaveManagerImplTest, PresaveGenerated_ModifiedUsername) {
@@ -979,20 +1022,21 @@ TEST_P(PasswordSaveManagerImplTest, PresaveGenerated_ModifiedUsername) {
 
   // Check that the generated password is presaved.
   PasswordForm saved_form;
-  EXPECT_CALL(*mock_form_saver(), Save(_, _, _))
+  EXPECT_CALL(*mock_profile_form_saver(), Save)
       .WillOnce(SaveArg<0>(&saved_form));
   PasswordForm form_with_generated_password = parsed_submitted_form_;
 
   password_save_manager_impl()->PresaveGeneratedPassword(
       form_with_generated_password);
 
-  Mock::VerifyAndClearExpectations(mock_form_saver());
+  Mock::VerifyAndClearExpectations(mock_profile_form_saver());
 
   // Check that when the username is edited, then it's presaved.
   form_with_generated_password.username_value += u"1";
 
-  EXPECT_CALL(*mock_form_saver(), UpdateReplace(_, IsEmpty(), testing::Eq(u""),
-                                                FormHasUniqueKey(saved_form)))
+  EXPECT_CALL(*mock_profile_form_saver(),
+              UpdateReplace(_, IsEmpty(), testing::Eq(u""),
+                            FormHasUniqueKey(saved_form)))
       .WillOnce(SaveArg<0>(&saved_form));
 
   password_save_manager_impl()->PresaveGeneratedPassword(
@@ -1011,7 +1055,7 @@ TEST_P(PasswordSaveManagerImplTest,
 
   // Check that the generated password is presaved.
   PasswordForm saved_form;
-  EXPECT_CALL(*mock_form_saver(), Save(_, _, _))
+  EXPECT_CALL(*mock_profile_form_saver(), Save)
       .WillOnce(SaveArg<0>(&saved_form));
 
   PasswordForm form_with_generated_password = parsed_submitted_form_;
@@ -1031,11 +1075,11 @@ TEST_P(PasswordSaveManagerImplTest,
 
 TEST_P(PasswordSaveManagerImplTest, PasswordNoLongerGenerated) {
   fetcher()->NotifyFetchCompleted();
-  EXPECT_CALL(*mock_form_saver(), Save(_, _, _));
+  EXPECT_CALL(*mock_profile_form_saver(), Save);
   PasswordForm submitted_form(parsed_observed_form_);
   submitted_form.password_value = u"password";
   password_save_manager_impl()->PresaveGeneratedPassword(submitted_form);
-  EXPECT_CALL(*mock_form_saver(), Remove(_));
+  EXPECT_CALL(*mock_profile_form_saver(), Remove);
   password_save_manager_impl()->PasswordNoLongerGenerated();
 }
 
@@ -1122,7 +1166,7 @@ TEST_P(PasswordSaveManagerImplTest, Update) {
 
   PasswordForm updated_form;
   EXPECT_CALL(
-      *mock_form_saver(),
+      *mock_profile_form_saver(),
       Update(_,
              UnorderedElementsAre(Pointee(saved_match_),
                                   Pointee(saved_match_another_username)),
@@ -1173,7 +1217,7 @@ TEST_P(PasswordSaveManagerImplTest, HTTPAuthPasswordOverridden) {
 
   // Check that the password is updated in the stored credential.
   PasswordForm updated_form;
-  EXPECT_CALL(*mock_form_saver(),
+  EXPECT_CALL(*mock_profile_form_saver(),
               Update(_, ElementsAre(Pointee(saved_http_auth_form)), password))
       .WillOnce(SaveArg<0>(&updated_form));
 
@@ -1184,8 +1228,800 @@ TEST_P(PasswordSaveManagerImplTest, HTTPAuthPasswordOverridden) {
   EXPECT_EQ(new_password, updated_form.password_value);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(,
                          PasswordSaveManagerImplTest,
                          testing::Values(false, true));
+
+class MultiStorePasswordSaveManagerTest
+    : public PasswordSaveManagerImplTestBase {
+ public:
+  MultiStorePasswordSaveManagerTest()
+      : PasswordSaveManagerImplTestBase(/*enable_account_store=*/true) {}
+};
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       SaveInAccountStoreWhenAccountStoreEnabled) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+
+  fetcher()->NotifyFetchCompleted();
+
+  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_TRUE(password_save_manager_impl()->IsNewLogin());
+
+  EXPECT_CALL(*mock_profile_form_saver(), Save).Times(0);
+  EXPECT_CALL(*mock_account_form_saver(), Save);
+
+  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       DoNotSaveInAccountStoreWhenAccountStoreDisabled) {
+  SetAccountStoreEnabled(/*is_enabled=*/false);
+
+  fetcher()->NotifyFetchCompleted();
+
+  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_TRUE(password_save_manager_impl()->IsNewLogin());
+
+  EXPECT_CALL(*mock_profile_form_saver(), Save).Times(0);
+  EXPECT_CALL(*mock_account_form_saver(), Save).Times(0);
+
+  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest, SaveInProfileStore) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+
+  fetcher()->NotifyFetchCompleted();
+
+  SetDefaultPasswordStore(PasswordForm::Store::kProfileStore);
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_TRUE(password_save_manager_impl()->IsNewLogin());
+
+  EXPECT_CALL(*mock_profile_form_saver(), Save);
+  EXPECT_CALL(*mock_account_form_saver(), Save).Times(0);
+
+  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest, UpdateInAccountStoreOnly) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+
+  PasswordForm saved_match_in_account_store(saved_match_);
+  saved_match_in_account_store.username_value =
+      parsed_submitted_form_.username_value;
+  saved_match_in_account_store.in_store = PasswordForm::Store::kAccountStore;
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_in_account_store});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_FALSE(password_save_manager_impl()->IsNewLogin());
+  // An update prompt should be shown.
+  EXPECT_TRUE(password_save_manager_impl()->IsPasswordUpdate());
+
+  EXPECT_CALL(*mock_profile_form_saver(), Update).Times(0);
+  EXPECT_CALL(*mock_account_form_saver(), Update);
+
+  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest, UpdateInProfileStoreOnly) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+
+  PasswordForm saved_match_in_profile_store(saved_match_);
+  saved_match_in_profile_store.username_value =
+      parsed_submitted_form_.username_value;
+  saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_in_profile_store});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_FALSE(password_save_manager_impl()->IsNewLogin());
+  // An update prompt should be shown.
+  EXPECT_TRUE(password_save_manager_impl()->IsPasswordUpdate());
+
+  EXPECT_CALL(*mock_profile_form_saver(), Update);
+  EXPECT_CALL(*mock_account_form_saver(), Update).Times(0);
+
+  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest, UpdateInBothStores) {
+  // This test assumes that all fields of the PasswordForm in both stores are
+  // equal except the |moving_blocked_for_list|. The reason for that is:
+  // 1. |moving_blocked_for_list| is the most probable field to have different
+  //    values since it's always empty in the account store.
+  // 2. Other fields (e.g. |times_used|) are less critical and should be fine if
+  //    the value in one store overrides the value in the other one.
+
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+
+  PasswordForm saved_match_in_account_store(saved_match_);
+  saved_match_in_account_store.username_value =
+      parsed_submitted_form_.username_value;
+  saved_match_in_account_store.in_store = PasswordForm::Store::kAccountStore;
+  PasswordForm saved_match_in_profile_store(saved_match_in_account_store);
+  saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
+  autofill::GaiaIdHash user_id_hash =
+      autofill::GaiaIdHash::FromGaiaId("user@gmail.com");
+  saved_match_in_profile_store.moving_blocked_for_list.push_back(user_id_hash);
+
+  SetNonFederatedAndNotifyFetchCompleted(
+      {&saved_match_in_profile_store, &saved_match_in_account_store});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_FALSE(password_save_manager_impl()->IsNewLogin());
+  // An update prompt should be shown.
+  EXPECT_TRUE(password_save_manager_impl()->IsPasswordUpdate());
+
+  // Both stores should be updated in the following ways:
+  // 1. |password_value| is updated.
+  // 2. |times_used| is incremented.
+  // 3. |date_last_used| is updated.
+  // 4. |in_store| field is irrelevant since it's not persisted.
+  // 5. The rest of fields are taken arbitrarily from one store.
+  PasswordForm expected_profile_updated_form(saved_match_in_profile_store);
+  expected_profile_updated_form.password_value =
+      parsed_submitted_form_.password_value;
+  expected_profile_updated_form.times_used++;
+  expected_profile_updated_form.date_last_used =
+      password_save_manager_impl()->GetPendingCredentials().date_last_used;
+  expected_profile_updated_form.in_store =
+      password_save_manager_impl()->GetPendingCredentials().in_store;
+
+  PasswordForm expected_account_updated_form(saved_match_in_account_store);
+  expected_account_updated_form.password_value =
+      parsed_submitted_form_.password_value;
+  expected_account_updated_form.times_used++;
+  expected_account_updated_form.date_last_used =
+      password_save_manager_impl()->GetPendingCredentials().date_last_used;
+  expected_account_updated_form.in_store =
+      password_save_manager_impl()->GetPendingCredentials().in_store;
+
+  EXPECT_CALL(*mock_profile_form_saver(),
+              Update(expected_profile_updated_form, _, _));
+  EXPECT_CALL(*mock_account_form_saver(),
+              Update(expected_account_updated_form, _, _));
+
+  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest, AutomaticSaveInBothStores) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+
+  // Set different values for the fields that should be preserved per store
+  // (namely: date_created, times_used, moving_blocked_for_list)
+  PasswordForm saved_match_in_profile_store(saved_match_);
+  saved_match_in_profile_store.username_value =
+      parsed_submitted_form_.username_value;
+  saved_match_in_profile_store.password_value =
+      parsed_submitted_form_.password_value;
+  saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
+  saved_match_in_profile_store.date_created =
+      base::Time::Now() - base::Days(10);
+  saved_match_in_profile_store.times_used = 10;
+  saved_match_in_profile_store.moving_blocked_for_list.push_back(
+      autofill::GaiaIdHash::FromGaiaId("email@gmail.com"));
+
+  PasswordForm saved_match_in_account_store(saved_match_in_profile_store);
+  saved_match_in_account_store.in_store = PasswordForm::Store::kAccountStore;
+  saved_match_in_account_store.date_created = base::Time::Now();
+  saved_match_in_account_store.times_used = 5;
+  saved_match_in_account_store.moving_blocked_for_list.clear();
+
+  SetNonFederatedAndNotifyFetchCompleted(
+      {&saved_match_in_profile_store, &saved_match_in_account_store});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  // No save or update prompts should be shown.
+  EXPECT_FALSE(password_save_manager_impl()->IsNewLogin());
+  EXPECT_FALSE(password_save_manager_impl()->IsPasswordUpdate());
+
+  // We still should update both credentials to update the |date_last_used| and
+  // |times_used|. Note that |in_store| is irrelevant since it's not persisted.
+  // All other fields should be preserved.
+  PasswordForm expected_profile_update_form(saved_match_in_profile_store);
+  expected_profile_update_form.times_used++;
+  expected_profile_update_form.date_last_used =
+      password_save_manager_impl()->GetPendingCredentials().date_last_used;
+  expected_profile_update_form.in_store =
+      password_save_manager_impl()->GetPendingCredentials().in_store;
+
+  PasswordForm expected_account_update_form(saved_match_in_account_store);
+  expected_account_update_form.times_used++;
+  expected_account_update_form.date_last_used =
+      password_save_manager_impl()->GetPendingCredentials().date_last_used;
+  expected_account_update_form.in_store =
+      password_save_manager_impl()->GetPendingCredentials().in_store;
+
+  EXPECT_CALL(*mock_profile_form_saver(),
+              Update(expected_profile_update_form, _, _));
+  EXPECT_CALL(*mock_account_form_saver(),
+              Update(expected_account_update_form, _, _));
+
+  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       PresaveGeneratedPasswordInProfileStoreIfAccountStoreDisabled) {
+  SetAccountStoreEnabled(/*is_enabled=*/false);
+  fetcher()->NotifyFetchCompleted();
+
+  EXPECT_CALL(*mock_profile_form_saver(), Save);
+  EXPECT_CALL(*mock_account_form_saver(), Save).Times(0);
+
+  password_save_manager_impl()->PresaveGeneratedPassword(
+      parsed_submitted_form_);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       SaveInAccountStoreWhenPSLMatchExistsInTheAccountStore) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+
+  PasswordForm psl_saved_match(psl_saved_match_);
+  psl_saved_match.username_value = parsed_submitted_form_.username_value;
+  psl_saved_match.password_value = parsed_submitted_form_.password_value;
+  psl_saved_match.in_store = PasswordForm::Store::kAccountStore;
+  SetNonFederatedAndNotifyFetchCompleted({&psl_saved_match});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_CALL(*mock_profile_form_saver(), Save).Times(0);
+  EXPECT_CALL(*mock_account_form_saver(), Save);
+
+  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       SaveInProfileStoreWhenPSLMatchExistsInTheProfileStore) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+
+  PasswordForm psl_saved_match(psl_saved_match_);
+  psl_saved_match.username_value = parsed_submitted_form_.username_value;
+  psl_saved_match.password_value = parsed_submitted_form_.password_value;
+  psl_saved_match.in_store = PasswordForm::Store::kProfileStore;
+  SetNonFederatedAndNotifyFetchCompleted({&psl_saved_match});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_CALL(*mock_profile_form_saver(), Save);
+  EXPECT_CALL(*mock_account_form_saver(), Save).Times(0);
+
+  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       SaveInBothStoresWhenPSLMatchExistsInBothStores) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+
+  PasswordForm profile_psl_saved_match(psl_saved_match_);
+  profile_psl_saved_match.username_value =
+      parsed_submitted_form_.username_value;
+  profile_psl_saved_match.password_value =
+      parsed_submitted_form_.password_value;
+  profile_psl_saved_match.in_store = PasswordForm::Store::kProfileStore;
+
+  PasswordForm account_psl_saved_match(psl_saved_match_);
+  account_psl_saved_match.username_value =
+      parsed_submitted_form_.username_value;
+  account_psl_saved_match.password_value =
+      parsed_submitted_form_.password_value;
+  account_psl_saved_match.in_store = PasswordForm::Store::kAccountStore;
+
+  SetNonFederatedAndNotifyFetchCompleted(
+      {&profile_psl_saved_match, &account_psl_saved_match});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_CALL(*mock_profile_form_saver(), Save);
+  EXPECT_CALL(*mock_account_form_saver(), Save);
+
+  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest, UpdateVsPSLMatch) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+
+  PasswordForm profile_saved_match(saved_match_);
+  profile_saved_match.username_value = parsed_submitted_form_.username_value;
+  profile_saved_match.password_value = u"old_password";
+  profile_saved_match.in_store = PasswordForm::Store::kProfileStore;
+
+  PasswordForm account_psl_saved_match(psl_saved_match_);
+  account_psl_saved_match.username_value =
+      parsed_submitted_form_.username_value;
+  account_psl_saved_match.password_value =
+      parsed_submitted_form_.password_value;
+  account_psl_saved_match.in_store = PasswordForm::Store::kAccountStore;
+
+  SetNonFederatedAndNotifyFetchCompleted(
+      {&profile_saved_match, &account_psl_saved_match});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  // This should *not* result in an update prompt.
+  EXPECT_FALSE(password_save_manager_impl()->IsPasswordUpdate());
+
+  EXPECT_CALL(*mock_profile_form_saver(), Update);
+  EXPECT_CALL(*mock_account_form_saver(), Save);
+
+  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest, UnblocklistInBothStores) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+  const PasswordFormDigest form_digest(saved_match_);
+
+  EXPECT_CALL(*mock_profile_form_saver(), Unblocklist(form_digest));
+  EXPECT_CALL(*mock_account_form_saver(), Unblocklist(form_digest));
+
+  password_save_manager_impl()->Unblocklist(form_digest);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       BlocklistInAccountStoreWhenAccountStoreEnabled) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+  const PasswordFormDigest form_digest(saved_match_);
+  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
+
+  EXPECT_CALL(*mock_profile_form_saver(), Blocklist(form_digest)).Times(0);
+  EXPECT_CALL(*mock_account_form_saver(), Blocklist(form_digest));
+  password_save_manager_impl()->Blocklist(form_digest);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       BlocklistInProfileStoreAlthoughAccountStoreEnabled) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+  const PasswordFormDigest form_digest(saved_match_);
+  SetDefaultPasswordStore(PasswordForm::Store::kProfileStore);
+
+  EXPECT_CALL(*mock_profile_form_saver(), Blocklist(form_digest));
+  EXPECT_CALL(*mock_account_form_saver(), Blocklist(form_digest)).Times(0);
+  password_save_manager_impl()->Blocklist(form_digest);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       BlocklistInProfileStoreWhenAccountStoreDisabled) {
+  SetAccountStoreEnabled(/*is_enabled=*/false);
+  const PasswordFormDigest form_digest(saved_match_);
+  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
+
+  EXPECT_CALL(*mock_profile_form_saver(), Blocklist(form_digest));
+  EXPECT_CALL(*mock_account_form_saver(), Blocklist(form_digest)).Times(0);
+  password_save_manager_impl()->Blocklist(form_digest);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       MoveCredentialsFromProfileToAccountStoreRecordsFlowAccepted) {
+  base::HistogramTester histogram_tester;
+
+  PasswordForm saved_match_in_profile_store(saved_match_);
+  saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
+  saved_match_in_profile_store.moving_blocked_for_list.push_back(
+      autofill::GaiaIdHash::FromGaiaId("user@gmail.com"));
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_in_profile_store});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      saved_match_in_profile_store, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  PasswordForm saved_match_without_moving_blocked_list(
+      saved_match_in_profile_store);
+  saved_match_without_moving_blocked_list.moving_blocked_for_list.clear();
+
+  EXPECT_CALL(*mock_profile_form_saver(), Remove(saved_match_in_profile_store));
+  EXPECT_CALL(*mock_account_form_saver(),
+              Save(saved_match_without_moving_blocked_list, _, _));
+
+  password_save_manager_impl()->MoveCredentialsToAccountStore(kTrigger);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted", kTrigger,
+      1);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       MoveCredentialsFromProfileToAccountStoreWhenExistsOnlyInProfileStore) {
+  PasswordForm saved_match_in_profile_store(saved_match_);
+  saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
+  saved_match_in_profile_store.moving_blocked_for_list.push_back(
+      autofill::GaiaIdHash::FromGaiaId("user@gmail.com"));
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_in_profile_store});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      saved_match_in_profile_store, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  PasswordForm saved_match_without_moving_blocked_list(
+      saved_match_in_profile_store);
+  saved_match_without_moving_blocked_list.moving_blocked_for_list.clear();
+
+  EXPECT_CALL(*mock_profile_form_saver(), Remove(saved_match_in_profile_store));
+  EXPECT_CALL(*mock_account_form_saver(),
+              Save(saved_match_without_moving_blocked_list, _, _));
+
+  password_save_manager_impl()->MoveCredentialsToAccountStore(kTrigger);
+}
+
+TEST_F(
+    MultiStorePasswordSaveManagerTest,
+    DoNotMoveCredentialsFromProfileToAccountStoreWhenExistsOnlyInProfileStoreWithDifferentUserName) {
+  PasswordForm saved_match_in_profile_store(saved_match_);
+  saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_in_profile_store});
+  PasswordForm credentials_with_diffrent_username(saved_match_in_profile_store);
+  credentials_with_diffrent_username.username_value = u"different_username";
+  password_save_manager_impl()->CreatePendingCredentials(
+      credentials_with_diffrent_username, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_CALL(*mock_profile_form_saver(), Remove(saved_match_in_profile_store))
+      .Times(0);
+  EXPECT_CALL(*mock_account_form_saver(),
+              Save(saved_match_in_profile_store, _, _))
+      .Times(0);
+
+  password_save_manager_impl()->MoveCredentialsToAccountStore(kTrigger);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       MovePSLMatchedCredentialsFromProfileToAccountStore) {
+  PasswordForm saved_match_in_profile_store(saved_match_);
+  saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
+  PasswordForm psl_saved_match_in_profile_store(psl_saved_match_);
+  psl_saved_match_in_profile_store.in_store =
+      PasswordForm::Store::kProfileStore;
+  SetNonFederatedAndNotifyFetchCompleted(
+      {&saved_match_in_profile_store, &psl_saved_match_in_profile_store});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      saved_match_in_profile_store, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_CALL(*mock_profile_form_saver(), Remove(saved_match_in_profile_store));
+  EXPECT_CALL(*mock_profile_form_saver(),
+              Remove(psl_saved_match_in_profile_store));
+  EXPECT_CALL(*mock_account_form_saver(),
+              Save(saved_match_in_profile_store, _, _));
+  EXPECT_CALL(*mock_account_form_saver(),
+              Save(psl_saved_match_in_profile_store, _, _));
+
+  password_save_manager_impl()->MoveCredentialsToAccountStore(kTrigger);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       MoveFederatedCredentialsFromProfileToAccountStore) {
+  PasswordForm federated_match_in_profile_store = CreateSavedFederated();
+  federated_match_in_profile_store.in_store =
+      PasswordForm::Store::kProfileStore;
+
+  SetFederatedAndNotifyFetchCompleted({&federated_match_in_profile_store});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      federated_match_in_profile_store, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_CALL(*mock_profile_form_saver(),
+              Remove(federated_match_in_profile_store));
+
+  EXPECT_CALL(*mock_account_form_saver(),
+              Save(federated_match_in_profile_store, _, _));
+
+  password_save_manager_impl()->MoveCredentialsToAccountStore(kTrigger);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       MoveCredentialsFromProfileToAccountStoreWhenExistsInBothStores) {
+  PasswordForm saved_match_in_profile_store(saved_match_);
+  saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
+  PasswordForm saved_match_in_account_store(saved_match_);
+  saved_match_in_account_store.in_store = PasswordForm::Store::kAccountStore;
+  SetNonFederatedAndNotifyFetchCompleted(
+      {&saved_match_in_profile_store, &saved_match_in_account_store});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      saved_match_in_profile_store, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_CALL(*mock_profile_form_saver(), Remove(saved_match_in_profile_store));
+  EXPECT_CALL(*mock_account_form_saver(), Save).Times(0);
+
+  password_save_manager_impl()->MoveCredentialsToAccountStore(kTrigger);
+}
+
+TEST_F(
+    MultiStorePasswordSaveManagerTest,
+    MoveCredentialsFromProfileToAccountStoreWhenExistsInBothStoresWithDifferentPassword) {
+  PasswordForm saved_match_in_profile_store(saved_match_);
+  saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
+  saved_match_in_profile_store.password_value = u"password1";
+  PasswordForm saved_match_in_account_store(saved_match_);
+  saved_match_in_account_store.in_store = PasswordForm::Store::kAccountStore;
+  saved_match_in_account_store.password_value = u"password2";
+  SetNonFederatedAndNotifyFetchCompleted(
+      {&saved_match_in_profile_store, &saved_match_in_account_store});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      saved_match_in_profile_store, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_CALL(*mock_profile_form_saver(), Remove(saved_match_in_profile_store));
+  EXPECT_CALL(*mock_account_form_saver(),
+              Save(saved_match_in_profile_store, _, _));
+
+  password_save_manager_impl()->MoveCredentialsToAccountStore(kTrigger);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       MoveCredentialsFromProfileToAccountStoreWhenPSLMatchExistsInBothStores) {
+  PasswordForm saved_match_in_profile_store(saved_match_);
+  saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
+
+  PasswordForm psl_saved_match_in_profile_store(psl_saved_match_);
+  psl_saved_match_in_profile_store.in_store =
+      PasswordForm::Store::kProfileStore;
+
+  PasswordForm psl_saved_match_in_account_store(psl_saved_match_);
+  psl_saved_match_in_account_store.in_store =
+      PasswordForm::Store::kAccountStore;
+
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_in_profile_store,
+                                          &psl_saved_match_in_profile_store,
+                                          &psl_saved_match_in_account_store});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      saved_match_in_profile_store, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_CALL(*mock_profile_form_saver(), Remove(saved_match_in_profile_store));
+  EXPECT_CALL(*mock_profile_form_saver(),
+              Remove(psl_saved_match_in_profile_store));
+  EXPECT_CALL(*mock_account_form_saver(),
+              Save(saved_match_in_profile_store, _, _));
+
+  password_save_manager_impl()->MoveCredentialsToAccountStore(kTrigger);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest, BlockMovingWhenExistsInProfileStore) {
+  autofill::GaiaIdHash user1_id_hash =
+      autofill::GaiaIdHash::FromGaiaId("user1@gmail.com");
+  autofill::GaiaIdHash user2_id_hash =
+      autofill::GaiaIdHash::FromGaiaId("user2@gmail.com");
+
+  PasswordForm profile_saved_match(saved_match_);
+  profile_saved_match.username_value = parsed_submitted_form_.username_value;
+  profile_saved_match.password_value = parsed_submitted_form_.password_value;
+  profile_saved_match.in_store = PasswordForm::Store::kProfileStore;
+  profile_saved_match.moving_blocked_for_list = {user1_id_hash};
+
+  SetNonFederatedAndNotifyFetchCompleted({&profile_saved_match});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  PasswordForm profile_updated_match(profile_saved_match);
+  profile_updated_match.date_last_used =
+      password_save_manager_impl()->GetPendingCredentials().date_last_used;
+  profile_updated_match.moving_blocked_for_list.push_back(user2_id_hash);
+
+  EXPECT_CALL(*mock_account_form_saver(), Update).Times(0);
+  EXPECT_CALL(*mock_profile_form_saver(), Update(profile_updated_match, _, _));
+
+  password_save_manager_impl()->BlockMovingToAccountStoreFor(user2_id_hash);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest, BlockMovingWhenExistsInBothStores) {
+  autofill::GaiaIdHash user1_id_hash =
+      autofill::GaiaIdHash::FromGaiaId("user1@gmail.com");
+  autofill::GaiaIdHash user2_id_hash =
+      autofill::GaiaIdHash::FromGaiaId("user2@gmail.com");
+
+  PasswordForm account_saved_match(saved_match_);
+  account_saved_match.username_value = parsed_submitted_form_.username_value;
+  account_saved_match.password_value = parsed_submitted_form_.password_value;
+  account_saved_match.in_store = PasswordForm::Store::kAccountStore;
+
+  PasswordForm profile_saved_match(account_saved_match);
+  profile_saved_match.in_store = PasswordForm::Store::kProfileStore;
+  profile_saved_match.moving_blocked_for_list = {user1_id_hash};
+
+  SetNonFederatedAndNotifyFetchCompleted({&profile_saved_match});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  PasswordForm profile_updated_match(profile_saved_match);
+  profile_updated_match.date_last_used =
+      password_save_manager_impl()->GetPendingCredentials().date_last_used;
+  profile_updated_match.moving_blocked_for_list.push_back(user2_id_hash);
+
+  EXPECT_CALL(*mock_account_form_saver(), Update).Times(0);
+  EXPECT_CALL(*mock_profile_form_saver(), Update(profile_updated_match, _, _));
+
+  password_save_manager_impl()->BlockMovingToAccountStoreFor(user2_id_hash);
+}
+
+// Since conflicts in the profile store should not be taken into account during
+// generation, below is a parameterized fixture to run the same tests for all 4
+// combinations that can exist there (no matches, same username match, empty
+// username match, and both).
+class MultiStorePasswordSaveManagerGenerationConflictTest
+    : public MultiStorePasswordSaveManagerTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  MultiStorePasswordSaveManagerGenerationConflictTest() {
+    SetAccountStoreEnabled(/*is_enabled=*/true);
+  }
+
+  // Returns a password form using |saved_match_| with |username|, |password|
+  // and |in_store|.
+  PasswordForm CreateSavedMatch(const std::u16string& username,
+                                const std::u16string& password,
+                                const PasswordForm::Store in_store) const {
+    PasswordForm form = saved_match_;
+    form.username_value = username;
+    form.password_value = password;
+    form.in_store = in_store;
+    return form;
+  }
+
+  // Returns at most two entries in the profile store, either with the same
+  // username value as |username|, or an empty one.
+  // The test parameters determine which of the conflicts should be included.
+  std::vector<PasswordForm> CreateProfileStoreMatchesForTestParameters(
+      const std::u16string& username) const {
+    bool add_same_username_match, add_empty_username_match;
+    std::tie(add_same_username_match, add_empty_username_match) = GetParam();
+
+    std::vector<PasswordForm> profile_store_matches;
+    if (add_same_username_match) {
+      profile_store_matches.push_back(CreateSavedMatch(
+          username, u"password_for_same_username_match_in_profile",
+          PasswordForm::Store::kProfileStore));
+    }
+    if (add_empty_username_match) {
+      profile_store_matches.push_back(
+          CreateSavedMatch(u"", u"password_for_empty_username_match_in_profile",
+                           PasswordForm::Store::kProfileStore));
+    }
+    return profile_store_matches;
+  }
+
+  // Helper function used because SetNonFederatedAndNotifyFetchCompleted() needs
+  // a vector of pointers.
+  std::vector<const PasswordForm*> GetFormPointers(
+      const std::vector<PasswordForm>& forms) const {
+    std::vector<const PasswordForm*> pointers_to_forms;
+    for (const auto& form : forms) {
+      pointers_to_forms.push_back(&form);
+    }
+    return pointers_to_forms;
+  }
+};
+
+TEST_P(MultiStorePasswordSaveManagerGenerationConflictTest,
+       PresaveGeneratedPasswordWithNoMatchesInAccountStore) {
+  std::vector<PasswordForm> matches =
+      CreateProfileStoreMatchesForTestParameters(
+          parsed_submitted_form_.username_value);
+  SetNonFederatedAndNotifyFetchCompleted(GetFormPointers(matches));
+
+  EXPECT_CALL(*mock_profile_form_saver(), Save).Times(0);
+  // Presaving found no entry in the account store with the same username, so
+  // stores the form as is.
+  EXPECT_CALL(
+      *mock_account_form_saver(),
+      Save(MatchesUsernameAndPassword(parsed_submitted_form_.username_value,
+                                      parsed_submitted_form_.password_value),
+           _, _));
+
+  password_save_manager_impl()->PresaveGeneratedPassword(
+      parsed_submitted_form_);
+}
+
+TEST_P(MultiStorePasswordSaveManagerGenerationConflictTest,
+       PresaveGeneratedPasswordWithSameUsernameMatchInAccountStore) {
+  std::vector<PasswordForm> matches =
+      CreateProfileStoreMatchesForTestParameters(
+          parsed_submitted_form_.username_value);
+  matches.push_back(
+      CreateSavedMatch(parsed_submitted_form_.username_value,
+                       u"password_for_same_username_conflict_in_account",
+                       PasswordForm::Store::kAccountStore));
+  SetNonFederatedAndNotifyFetchCompleted(GetFormPointers(matches));
+
+  EXPECT_CALL(*mock_profile_form_saver(), Save).Times(0);
+  // Presaving found an entry in the account store with the same username, so
+  // stores the form with an empty username instead.
+  EXPECT_CALL(*mock_account_form_saver(),
+              Save(MatchesUsernameAndPassword(
+                       u"", parsed_submitted_form_.password_value),
+                   _, _));
+
+  password_save_manager_impl()->PresaveGeneratedPassword(
+      parsed_submitted_form_);
+}
+
+TEST_P(MultiStorePasswordSaveManagerGenerationConflictTest,
+       PresaveGeneratedPasswordWithEmptyUsernameMatchInAccountStore) {
+  std::vector<PasswordForm> matches =
+      CreateProfileStoreMatchesForTestParameters(
+          parsed_submitted_form_.username_value);
+  matches.push_back(
+      CreateSavedMatch(u"", u"password_for_empty_username_conflict_in_account",
+                       PasswordForm::Store::kAccountStore));
+  SetNonFederatedAndNotifyFetchCompleted(GetFormPointers(matches));
+
+  EXPECT_CALL(*mock_profile_form_saver(), Save).Times(0);
+  // Presaving found only an entry with an empty username in the account store,
+  // so stores the form as is.
+  EXPECT_CALL(
+      *mock_account_form_saver(),
+      Save(MatchesUsernameAndPassword(parsed_submitted_form_.username_value,
+                                      parsed_submitted_form_.password_value),
+           _, _));
+
+  password_save_manager_impl()->PresaveGeneratedPassword(
+      parsed_submitted_form_);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         MultiStorePasswordSaveManagerGenerationConflictTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace password_manager

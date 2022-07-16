@@ -176,6 +176,7 @@ void DownloadDriverImpl::Start(
   download_url_params->set_guid(guid);
   download_url_params->set_transient(true);
   download_url_params->set_method(request_params.method);
+  download_url_params->set_credentials_mode(request_params.credentials_mode);
   download_url_params->set_file_path(file_path);
   if (request_params.fetch_error_body)
     download_url_params->set_fetch_error_body(true);
@@ -189,6 +190,10 @@ void DownloadDriverImpl::Start(
                           weak_ptr_factory_.GetWeakPtr(), guid));
   download_url_params->set_require_safety_checks(
       request_params.require_safety_checks);
+  if (request_params.isolation_info) {
+    download_url_params->set_isolation_info(
+        request_params.isolation_info.value());
+  }
   download_manager_coordinator_->DownloadUrl(std::move(download_url_params));
 }
 

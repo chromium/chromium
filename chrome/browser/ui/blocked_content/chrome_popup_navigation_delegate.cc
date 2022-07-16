@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
 
 #include "build/build_config.h"
-#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -82,7 +81,6 @@ void ChromePopupNavigationDelegate::OnPopupBlocked(
         total_popups_blocked_on_page,
         HostContentSettingsMapFactory::GetForProfile(
             web_contents->GetBrowserContext()),
-        base::BindRepeating(&ResourceMapper::MapToJavaDrawableId),
         base::BindOnce(
             &content_settings::RecordPopupsAction,
             content_settings::POPUPS_ACTION_CLICKED_ALWAYS_SHOW_ON_MOBILE));

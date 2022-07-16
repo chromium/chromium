@@ -30,3 +30,9 @@ include_rules = [
   "+ui/base/l10n/l10n_util.h",
   "+ui/events/keycodes",
 ]
+
+specific_include_rules = {
+  ".*_unittest\.cc": [
+    "+third_party/blink/public/common/features.h",
+  ]
+}

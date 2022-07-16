@@ -5,6 +5,7 @@
 <link rel="import" href="ui_page.html">
 <link rel="import" href="ui_page_container_behavior.html">
 <link rel="import" href="../../../html/cr.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-media-query/iron-media-query.html">
 
 <dom-module id="setup-succeeded-page">
   <template>
@@ -27,9 +28,11 @@
         icon-name="google-g">
       <span slot="message" inner-h-t-m-l="[[getMessageHtml_()]]"></span>
       <div id="page-icon-container" slot="additional-content">
+        <iron-media-query query="(prefers-color-scheme: dark)"
+            query-matches="{{isDarkModeActive_}}">
+        </iron-media-query>
         <img id="success-img" aria-hidden="true"
-            srcset="chrome://resources/cr_components/chromeos/multidevice_setup/all_set_1x.svg 1x,
-                    chrome://resources/cr_components/chromeos/multidevice_setup/all_set_2x.svg 2x">
+            srcset="[[getImageSrcSet_(isDarkModeActive_)]]">
       </div>
     </ui-page>
   </template>

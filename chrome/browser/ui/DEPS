@@ -8,6 +8,7 @@ include_rules = [
   "+components/enterprise",
   "+components/infobars/android",
   "+components/live_caption",
+  "+components/omnibox",
   "+components/page_load_metrics/browser",
   "+components/qr_code_generator",
   "+components/safety_check",
@@ -37,5 +38,6 @@ specific_include_rules = {
   ],
   "startup_browser_creator_browsertest.cc": [
     "+chrome/browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_view.h",
+    "+chrome/browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h",
   ]
 }

@@ -52,10 +52,7 @@
   self.handler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                     ApplicationCommands);
 
-  ReauthenticationModule* module = nil;
-  if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
-    module = [[ReauthenticationModule alloc] init];
-  }
+  ReauthenticationModule* module = [[ReauthenticationModule alloc] init];
   self.viewController =
       [[PrivacyTableViewController alloc] initWithBrowser:self.browser
                                    reauthenticationModule:module];

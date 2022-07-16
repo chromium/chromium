@@ -8,6 +8,7 @@ import "url/mojom/url.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/blocked_by_response_reason.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // A code that uniquely identifies an issue. This type should be descriptive
 // enough for the front-end to provide a clear description of the issue.
@@ -20,6 +21,7 @@ enum InspectorIssueCode {
   kTrustedWebActivityIssue,
   kHeavyAdIssue,
   kLowTextContrastIssue,
+  kGenericIssue,
 };
 
 // Information about a cookie that is affected by an issue.
@@ -90,6 +92,7 @@ enum ContentSecurityPolicyViolationType {
     kURLViolation,
     kTrustedTypesSinkViolation,
     kTrustedTypesPolicyViolation,
+    kWasmEvalViolation,
 };
 
 struct ContentSecurityPolicyIssueDetails {
@@ -172,6 +175,15 @@ struct LowTextContrastIssue {
   string font_weight;
 };
 
+enum GenericIssueErrorType {
+  kCrossOriginPortalPostMessageError,
+};
+
+struct GenericIssueDetails {
+  GenericIssueErrorType error_type;
+  string? frame_id;
+};
+
 // A collection of optional fields that may store additional data depending
 // on the issue code.
 struct InspectorIssueDetails {
@@ -183,6 +195,8 @@ struct InspectorIssueDetails {
   TrustedWebActivityIssueDetails? twa_issue_details;
   HeavyAdIssueDetails? heavy_ad_issue_details;
   LowTextContrastIssue? low_text_contrast_details;
+  GenericIssueDetails? generic_issue_details;
+  mojo_base.mojom.UnguessableToken? issue_id;
 };
 
 struct InspectorIssueInfo {

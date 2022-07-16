@@ -29,12 +29,14 @@ source_set("commands") {
     "page_info_commands.h",
     "password_breach_commands.h",
     "password_protection_commands.h",
-    "policy_signout_commands.h",
+    "policy_change_commands.h",
     "popup_menu_commands.h",
     "qr_generation_commands.h",
     "qr_scanner_commands.h",
     "reading_list_add_command.h",
     "reading_list_add_command.mm",
+    "search_image_with_lens_command.h",
+    "search_image_with_lens_command.mm",
     "security_alert_commands.h",
     "share_highlight_command.h",
     "share_highlight_command.mm",
@@ -59,7 +61,6 @@ source_set("commands") {
     "//base",
     "//components/browsing_data/core",
     "//components/password_manager/core/browser",
-    "//components/signin/public/base",
     "//ios/chrome/browser/browsing_data:browsing_data_remove_mask",
   ]
 }

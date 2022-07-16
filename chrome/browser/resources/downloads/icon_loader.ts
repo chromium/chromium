@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getFileIconUrl} from 'chrome://resources/js/icon.m.js';
+import {getFileIconUrl} from 'chrome://resources/js/icon.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-export class IconLoader {
+export interface IconLoader {
+  loadIcon(imageEl: HTMLImageElement, filePath: string): Promise<boolean>;
+}
+
+export class IconLoaderImpl implements IconLoader {
   private iconResolvers_: Map<string, PromiseResolver<boolean>>;
   private listeningImages_: Set<HTMLImageElement>;
 
@@ -45,7 +49,7 @@ export class IconLoader {
   }
 
   static getInstance(): IconLoader {
-    return instance || (instance = new IconLoader());
+    return instance || (instance = new IconLoaderImpl());
   }
 
   static setInstance(obj: IconLoader) {

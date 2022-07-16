@@ -21,6 +21,10 @@ class MOJO_SYSTEM_IMPL_EXPORT ConnectionParams {
   explicit ConnectionParams(PlatformChannelEndpoint endpoint);
   explicit ConnectionParams(PlatformChannelServerEndpoint server_endpoint);
   ConnectionParams(ConnectionParams&&);
+
+  ConnectionParams(const ConnectionParams&) = delete;
+  ConnectionParams& operator=(const ConnectionParams&) = delete;
+
   ~ConnectionParams();
 
   ConnectionParams& operator=(ConnectionParams&&);
@@ -47,8 +51,6 @@ class MOJO_SYSTEM_IMPL_EXPORT ConnectionParams {
   bool leak_endpoint_ = false;
   PlatformChannelEndpoint endpoint_;
   PlatformChannelServerEndpoint server_endpoint_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionParams);
 };
 
 }  // namespace core

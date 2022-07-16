@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
 #include "components/autofill/core/common/language_code.h"
@@ -24,13 +23,14 @@ class EmailField : public FormField {
                                           LogManager* log_manager);
   explicit EmailField(const AutofillField* field);
 
+  EmailField(const EmailField&) = delete;
+  EmailField& operator=(const EmailField&) = delete;
+
  protected:
   void AddClassifications(FieldCandidatesMap* field_candidates) const override;
 
  private:
   const AutofillField* field_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmailField);
 };
 
 }  // namespace autofill

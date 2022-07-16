@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -137,6 +136,12 @@ class WebstoreInstallListener : public WebstoreInstaller::Delegate {
 class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
  public:
   ExtensionWebstorePrivateApiTest() {}
+
+  ExtensionWebstorePrivateApiTest(const ExtensionWebstorePrivateApiTest&) =
+      delete;
+  ExtensionWebstorePrivateApiTest& operator=(
+      const ExtensionWebstorePrivateApiTest&) = delete;
+
   ~ExtensionWebstorePrivateApiTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -208,8 +213,6 @@ class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
   base::FilePath webstore_install_dir_copy_;
 
   std::unique_ptr<ScopedTestDialogAutoConfirm> auto_confirm_install_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionWebstorePrivateApiTest);
 };
 
 // Test cases for webstore origin frame blocking.
@@ -218,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest,
   GURL url = embedded_test_server()->GetURL(
       "/extensions/api_test/webstore_private/noframe.html");
   content::WebContents* web_contents = GetWebContents();
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Try to load the same URL, but with the current Chrome web store origin in
   // an iframe (i.e. http://www.example.com)
@@ -241,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, FrameErrorPageBlocked) {
   GURL url = embedded_test_server()->GetURL(
       "/extensions/api_test/webstore_private/noframe2.html");
   content::WebContents* web_contents = GetWebContents();
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Try to load the same URL, but with the current Chrome web store origin in
   // an iframe (i.e. http://www.example.com)
@@ -389,7 +392,7 @@ class ExtensionWebstorePrivateApiTestChild
         embedded_test_server_(std::make_unique<net::EmbeddedTestServer>()),
         logged_in_user_mixin_(
             &mixin_host_,
-            chromeos::LoggedInUserMixin::LogInType::kChild,
+            ash::LoggedInUserMixin::LogInType::kChild,
             embedded_test_server_.get(),
             this,
             true /* should_launch_browser */,
@@ -433,7 +436,7 @@ class ExtensionWebstorePrivateApiTestChild
         true);
   }
 
-  chromeos::LoggedInUserMixin* GetLoggedInUserMixin() {
+  ash::LoggedInUserMixin* GetLoggedInUserMixin() {
     return &logged_in_user_mixin_;
   }
 
@@ -473,7 +476,7 @@ class ExtensionWebstorePrivateApiTestChild
  private:
   // Create another embedded test server to avoid starting the same one twice.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
-  chromeos::LoggedInUserMixin logged_in_user_mixin_;
+  ash::LoggedInUserMixin logged_in_user_mixin_;
   absl::optional<NextDialogAction> next_dialog_action_;
 };
 
@@ -667,8 +670,9 @@ class ExtensionWebstorePrivateApiAllowlistEnforcementTest
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
                        EnhancedSafeBrowsingNotAllowlisted) {
-  safe_browsing::SetSafeBrowsingState(browser()->profile()->GetPrefs(),
-                                      safe_browsing::ENHANCED_PROTECTION);
+  safe_browsing::SetSafeBrowsingState(
+      browser()->profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(
       RunInstallTest("safebrowsing_not_allowlisted.html", "extension.crx"));
 
@@ -683,8 +687,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
                        EnhancedSafeBrowsingAllowlisted) {
-  safe_browsing::SetSafeBrowsingState(browser()->profile()->GetPrefs(),
-                                      safe_browsing::ENHANCED_PROTECTION);
+  safe_browsing::SetSafeBrowsingState(
+      browser()->profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(RunInstallTest("safebrowsing_allowlisted.html", "extension.crx"));
 
   EXPECT_EQ(ALLOWLIST_UNDEFINED,
@@ -694,8 +699,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
                        StandardSafeBrowsingNotAllowlisted) {
-  safe_browsing::SetSafeBrowsingState(browser()->profile()->GetPrefs(),
-                                      safe_browsing::STANDARD_PROTECTION);
+  safe_browsing::SetSafeBrowsingState(
+      browser()->profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   ASSERT_TRUE(
       RunInstallTest("safebrowsing_not_allowlisted.html", "extension.crx"));
 

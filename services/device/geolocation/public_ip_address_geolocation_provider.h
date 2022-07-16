@@ -38,6 +38,12 @@ class PublicIpAddressGeolocationProvider
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       network::NetworkConnectionTracker* network_connection_tracker,
       const std::string& api_key);
+
+  PublicIpAddressGeolocationProvider(
+      const PublicIpAddressGeolocationProvider&) = delete;
+  PublicIpAddressGeolocationProvider& operator=(
+      const PublicIpAddressGeolocationProvider&) = delete;
+
   ~PublicIpAddressGeolocationProvider() override;
 
   // Binds a PublicIpAddressGeolocationProvider request to this instance.
@@ -64,8 +70,6 @@ class PublicIpAddressGeolocationProvider
       provider_receiver_set_;
 
   mojo::UniqueReceiverSet<mojom::Geolocation> geolocation_receiver_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(PublicIpAddressGeolocationProvider);
 };
 
 }  // namespace device

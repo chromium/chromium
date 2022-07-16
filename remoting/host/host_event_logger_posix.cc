@@ -32,6 +32,9 @@ class HostEventLoggerPosix : public HostEventLogger, public HostStatusObserver {
   HostEventLoggerPosix(scoped_refptr<HostStatusMonitor> monitor,
                        const std::string& application_name);
 
+  HostEventLoggerPosix(const HostEventLoggerPosix&) = delete;
+  HostEventLoggerPosix& operator=(const HostEventLoggerPosix&) = delete;
+
   ~HostEventLoggerPosix() override;
 
   // HostStatusObserver implementation.  These methods will be called from the
@@ -50,8 +53,6 @@ class HostEventLoggerPosix : public HostEventLogger, public HostStatusObserver {
 
   scoped_refptr<HostStatusMonitor> monitor_;
   std::string application_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostEventLoggerPosix);
 };
 
 } //namespace

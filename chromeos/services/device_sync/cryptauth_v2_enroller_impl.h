@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_result.h"
@@ -61,6 +60,9 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
    private:
     static Factory* test_factory_;
   };
+
+  CryptAuthV2EnrollerImpl(const CryptAuthV2EnrollerImpl&) = delete;
+  CryptAuthV2EnrollerImpl& operator=(const CryptAuthV2EnrollerImpl&) = delete;
 
   ~CryptAuthV2EnrollerImpl() override;
 
@@ -189,8 +191,6 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
   // SyncKeysResponse. Information about the newly created keys are sent to
   // CryptAuth in the EnrollKeysRequest.
   std::unique_ptr<CryptAuthKeyCreator> key_creator_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthV2EnrollerImpl);
 };
 
 }  // namespace device_sync

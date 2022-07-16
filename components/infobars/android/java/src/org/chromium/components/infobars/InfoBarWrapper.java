@@ -38,6 +38,7 @@ class InfoBarWrapper extends FrameLayout {
         LayerDrawable layerDrawable = (LayerDrawable) getBackground();
         ColorDrawable colorDrawable =
                 (ColorDrawable) layerDrawable.findDrawableByLayerId(R.id.infobar_wrapper_bg_fill);
+        colorDrawable.mutate();
         colorDrawable.setColor(
                 ChromeColors.getSurfaceColor(getContext(), R.dimen.infobar_elevation));
     }

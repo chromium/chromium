@@ -56,13 +56,36 @@ struct SameSizeAsCSSPrimitiveValue : CSSValue {
 ASSERT_SIZE(CSSPrimitiveValue, SameSizeAsCSSPrimitiveValue);
 
 float CSSPrimitiveValue::ClampToCSSLengthRange(double value) {
-  // TODO(crbug.com/1133390): clampTo function could occur the DECHECK failure
+  // TODO(crbug.com/1133390): ClampTo function could occur the DECHECK failure
   // for NaN value. Therefore, infinity and NaN values should not be clamped
   // here.
   if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
     value = CSSValueClampingUtils::ClampLength(value);
   }
-  return clampTo<float>(value, kMinValueForCssLength, kMaxValueForCssLength);
+  return ClampTo<float>(value, kMinValueForCssLength, kMaxValueForCssLength);
+}
+
+Length::ValueRange CSSPrimitiveValue::ConversionToLengthValueRange(
+    ValueRange range) {
+  switch (range) {
+    case ValueRange::kNonNegative:
+      return Length::ValueRange::kNonNegative;
+    case ValueRange::kAll:
+      return Length::ValueRange::kAll;
+    default:
+      NOTREACHED();
+      return Length::ValueRange::kAll;
+  }
+}
+
+CSSPrimitiveValue::ValueRange CSSPrimitiveValue::ValueRangeForLengthValueRange(
+    Length::ValueRange range) {
+  switch (range) {
+    case Length::ValueRange::kNonNegative:
+      return ValueRange::kNonNegative;
+    case Length::ValueRange::kAll:
+      return ValueRange::kAll;
+  }
 }
 
 CSSPrimitiveValue::UnitCategory CSSPrimitiveValue::UnitTypeToUnitCategory(
@@ -147,9 +170,16 @@ bool CSSPrimitiveValue::IsNumber() const {
 }
 
 bool CSSPrimitiveValue::IsInteger() const {
-  // TODO(crbug.com/931216): Support integer math functions properly.
-  return IsNumericLiteralValue() &&
-         To<CSSNumericLiteralValue>(this)->IsInteger();
+  // Integer target context can take calc() function
+  // which resolves to number type.
+  // So we don't have to track whether cals type is integer,
+  // and we can answer to IsInteger() question asked from a context
+  // in which requires integer type
+  // (e.g. CSSPrimitiveValue::IsInteger() check in MediaQueryExp::Create)
+  // here.
+  if (IsNumericLiteralValue())
+    return To<CSSNumericLiteralValue>(this)->IsInteger();
+  return To<CSSMathFunctionValue>(this)->IsNumber();
 }
 
 bool CSSPrimitiveValue::IsPercentage() const {
@@ -277,14 +307,11 @@ uint8_t CSSPrimitiveValue::ComputeLength(
 template <>
 float CSSPrimitiveValue::ComputeLength(
     const CSSToLengthConversionData& conversion_data) const {
-  // TODO(crbug.com/1133390): clampTo function could occur the DECHECK failure
-  // for NaN value. Therefore, infinity and NaN values should not be clamped
-  // here.
-  float value = ComputeLengthDouble(conversion_data);
+  double value = ComputeLengthDouble(conversion_data);
   if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
-    return CSSValueClampingUtils::ClampLength(value);
+    value = CSSValueClampingUtils::ClampLength(value);
   }
-  return value;
+  return ClampTo<float>(value);
 }
 
 template <>

@@ -14,6 +14,7 @@ mojom("mojom") {
 
   deps = [
     "//components/content_settings/core/common:mojo_bindings",
+    "//services/network/public/mojom:cookies_mojom",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
   ]

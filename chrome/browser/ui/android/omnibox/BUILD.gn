@@ -122,12 +122,16 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java",
   ]
 
-  public_deps = [ ":partner_location_descriptor_proto_java" ]
+  public_deps = [
+    ":partner_location_descriptor_proto_java",
+    ":util_java",
+  ]
 
   deps = [
     ":java_resources",
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/commerce/merchant_viewer/android:java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/gsa:java",
@@ -147,6 +151,7 @@ android_library("java") {
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/night_mode:java",
+    "//chrome/browser/ui/android/searchactivityutils:java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/user_education:java",
     "//chrome/browser/util:java",
@@ -175,6 +180,7 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/metrics_proto:metrics_proto_java",
@@ -185,6 +191,41 @@ android_library("java") {
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.omnibox"
+}
+
+android_library("util_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionUtil.java" ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionUtilTest.java" ]
+
+  deps = [
+    ":util_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base/test:test_support_java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_sdk:android_test_mock_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
 }
 
 generate_jni("jni_headers") {
@@ -338,23 +379,24 @@ java_library("junit") {
     "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/browser_ui/site_settings/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",
-    "//components/embedder_support/android:browser_context_java",
     "//components/embedder_support/android:util_java",
     "//components/externalauth/android:java",
     "//components/omnibox/browser:browser_java",
     "//components/search_engines/android:java",
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",
-    "//content/public/android:content_full_java",
-    "//content/public/android:content_main_dex_java",
+    "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//testing/android/junit:junit_test_support",
     "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",

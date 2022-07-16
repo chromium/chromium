@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.merchant_viewer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -16,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,12 +31,17 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -100,6 +109,21 @@ public class MerchantTrustBottomSheetMediatorTest {
     @Mock
     SecurityStateModel.Natives mSecurityStateMocks;
 
+    @Mock
+    private ObservableSupplier<Profile> mMockProfileSupplier;
+
+    @Mock
+    private Profile mMockProfile;
+
+    @Mock
+    private FaviconHelper mMockFaviconHelper;
+
+    @Mock
+    private GURL mMockUrl;
+
+    @Mock
+    private Drawable mMockDrawable;
+
     @Captor
     private ArgumentCaptor<WebContentsDelegateAndroid> mWebContentsDelegateCaptor;
 
@@ -125,15 +149,29 @@ public class MerchantTrustBottomSheetMediatorTest {
         doReturn(mMockDestinationGurl).when(mMockWebContents).getVisibleUrl();
         doReturn(mMockNavigationController).when(mMockWebContents).getNavigationController();
         when(mUrlUtilitiesJniMock.isGoogleDomainUrl(anyString(), anyBoolean())).thenReturn(true);
+        when(mUrlUtilitiesJniMock.isGoogleSubDomainUrl(anyString())).thenReturn(true);
         when(mSecurityStateMocks.getSecurityLevelForWebContents(any(WebContents.class)))
                 .thenReturn(ConnectionSecurityLevel.SECURE);
+        doReturn(true).when(mMockNavigationHandle).isInPrimaryMainFrame();
+        doReturn(false).when(mMockNavigationHandle).isSameDocument();
+        doReturn(mMockUrl).when(mMockNavigationHandle).getUrl();
+        doReturn(mMockProfile).when(mMockProfileSupplier).get();
+        doAnswer((Answer<Void>) invocation -> {
+            FaviconImageCallback callback = (FaviconImageCallback) invocation.getArguments()[3];
+            callback.onFaviconAvailable(null, null);
+            return null;
+        })
+                .when(mMockFaviconHelper)
+                .getLocalFaviconImageForURL(any(Profile.class), any(GURL.class), anyInt(),
+                        any(FaviconImageCallback.class));
 
         mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         mocker.mock(SecurityStateModelJni.TEST_HOOKS, mSecurityStateMocks);
 
-        mMediator = new MerchantTrustBottomSheetMediator(
-                mMockContext, mMockWindowAndroid, mMockMetrics);
+        mMediator = new MerchantTrustBottomSheetMediator(mMockContext, mMockWindowAndroid,
+                mMockMetrics, mMockProfileSupplier, mMockFaviconHelper);
         mMediator.setWebContentsForTesting(mMockWebContents);
+        mMediator.setFaviconDrawableForTesting(mMockDrawable);
         mToolbarModel = new PropertyModel.Builder(BottomSheetToolbarProperties.ALL_KEYS).build();
         setUpSheetWebContentsAndVerify();
     }
@@ -141,6 +179,7 @@ public class MerchantTrustBottomSheetMediatorTest {
     @After
     public void tearDown() {
         mMediator.setWebContentsForTesting(null);
+        mMediator.setFaviconDrawableForTesting(null);
     }
 
     private void setUpSheetWebContentsAndVerify() {
@@ -161,6 +200,7 @@ public class MerchantTrustBottomSheetMediatorTest {
     @Test(expected = java.lang.AssertionError.class)
     public void testNavigateToNonGoogleUrl() {
         doReturn(false).when(mUrlUtilitiesJniMock).isGoogleDomainUrl(anyString(), anyBoolean());
+        doReturn(false).when(mUrlUtilitiesJniMock).isGoogleSubDomainUrl(anyString());
         mMediator.navigateToUrl(mMockDestinationGurl, DUMMY_SHEET_TITLE);
     }
 
@@ -213,8 +253,18 @@ public class MerchantTrustBottomSheetMediatorTest {
 
     @Test
     public void testWebContentsObserverDidStartNavigation() {
+        doReturn(false).when(mUrlUtilitiesJniMock).isGoogleDomainUrl(anyString(), anyBoolean());
+        doReturn(false).when(mUrlUtilitiesJniMock).isGoogleSubDomainUrl(anyString());
+
+        assertNull(mToolbarModel.get(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE));
+
         mWebContentsObserverCaptor.getValue().didStartNavigation(mMockNavigationHandle);
         verify(mMockMetrics, times(1)).recordNavigateLinkOnBottomSheet();
+        verify(mMockFaviconHelper, times(1))
+                .getLocalFaviconImageForURL(any(Profile.class), any(GURL.class), anyInt(),
+                        any(FaviconImageCallback.class));
+        assertEquals(mMockDrawable,
+                mToolbarModel.get(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE));
     }
 
     @Test

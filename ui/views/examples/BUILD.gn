@@ -11,8 +11,8 @@ component("views_examples_lib") {
   testonly = true
 
   sources = [
-    "animation_builder.cc",
-    "animation_builder.h",
+    "animated_image_view_example.cc",
+    "animated_image_view_example.h",
     "animation_example.cc",
     "animation_example.h",
     "ax_example.cc",
@@ -29,6 +29,8 @@ component("views_examples_lib") {
     "checkbox_example.h",
     "colored_dialog_example.cc",
     "colored_dialog_example.h",
+    "colors_example.cc",
+    "colors_example.h",
     "combobox_example.cc",
     "combobox_example.h",
     "create_examples.cc",
@@ -45,6 +47,8 @@ component("views_examples_lib") {
     "fade_animation.h",
     "flex_layout_example.cc",
     "flex_layout_example.h",
+    "ink_drop_example.cc",
+    "ink_drop_example.h",
     "label_example.cc",
     "label_example.h",
     "layout_example_base.cc",
@@ -59,8 +63,6 @@ component("views_examples_lib") {
     "message_box_example.h",
     "multiline_example.cc",
     "multiline_example.h",
-    "native_theme_example.cc",
-    "native_theme_example.h",
     "notification_example.cc",
     "notification_example.h",
     "progress_bar_example.cc",
@@ -71,6 +73,8 @@ component("views_examples_lib") {
     "scroll_view_example.h",
     "slider_example.cc",
     "slider_example.h",
+    "square_ink_drop_example.cc",
+    "square_ink_drop_example.h",
     "tabbed_pane_example.cc",
     "tabbed_pane_example.h",
     "table_example.cc",
@@ -94,9 +98,6 @@ component("views_examples_lib") {
     "widget_example.h",
   ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   defines = [
     "GFX_VECTOR_ICONS_UNSAFE",
     "VIEWS_EXAMPLES_IMPLEMENTATION",
@@ -110,9 +111,11 @@ component("views_examples_lib") {
     "//skia",
     "//third_party/icu",
     "//ui/base",
+    "//ui/color",
     "//ui/events",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/lottie",
     "//ui/message_center",
     "//ui/native_theme",
     "//ui/resources",
@@ -177,9 +180,6 @@ source_set("views_examples_proc") {
       "//ui/aura",
       "//ui/wm",
     ]
-  }
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
   }
   if (is_chromeos_ash) {
     sources += [
@@ -315,6 +315,11 @@ test("views_examples_unittests") {
       "//ui/aura",
       "//ui/wm",
     ]
+  }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/vulkan_capabilities.test-cmx" ]
   }
 
   data_deps = [

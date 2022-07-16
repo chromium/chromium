@@ -5,10 +5,11 @@
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import {ClickInfo, Command} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
+import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
-import {PromoBrowserCommandProxy} from './promo_browser_command_proxy.js';
 import {WindowProxy} from './window_proxy.js';
 
 /**
@@ -19,8 +20,7 @@ import {WindowProxy} from './window_proxy.js';
  */
 export async function renderPromo() {
   const browserHandler = NewTabPageProxy.getInstance().handler;
-  const promoBrowserCommandHandler =
-      PromoBrowserCommandProxy.getInstance().handler;
+  const promoBrowserCommandHandler = BrowserCommandProxy.getInstance().handler;
   const {promo} = await browserHandler.getPromo();
   if (!promo) {
     return null;
@@ -33,17 +33,16 @@ export async function renderPromo() {
       return null;
     }
     const el = /** @type {!HTMLAnchorElement} */ (document.createElement('a'));
-    /** @type {?promoBrowserCommand.mojom.Command} */
+    /** @type {?Command} */
     let commandId = null;
     if (!commandIdMatch) {
       el.href = target.url;
     } else {
       commandId =
-          /** @type {promoBrowserCommand.mojom.Command} */ (+commandIdMatch[1]);
+          /** @type {Command} */ (+commandIdMatch[1]);
       // Make sure we don't send unsupported commands to the browser.
-      if (!Object.values(promoBrowserCommand.mojom.Command)
-               .includes(commandId)) {
-        commandId = promoBrowserCommand.mojom.Command.kUnknownCommand;
+      if (!Object.values(Command).includes(commandId)) {
+        commandId = Command.kUnknownCommand;
       }
       commandIds.push(commandId);
     }
@@ -103,8 +102,8 @@ export async function renderPromo() {
   const canShow =
       (await Promise.all(commandIds.map(
            commandId =>
-               promoBrowserCommandHandler.canShowPromoWithCommand(commandId))))
-          .every(({canShow}) => canShow);
+               promoBrowserCommandHandler.canExecuteCommand(commandId))))
+          .every(({canExecute}) => canExecute);
   if (hasContent && canShow) {
     browserHandler.onPromoRendered(
         WindowProxy.getInstance().now(), promo.logUrl || null);

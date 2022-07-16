@@ -59,6 +59,7 @@ android_library("javatests") {
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/appmenu/test:test_support_java",
     "//chrome/browser/webapps/android:java",
     "//chrome/test/android:chrome_java_test_support",

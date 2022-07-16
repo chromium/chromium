@@ -622,20 +622,20 @@ void ReadYUV(const char* file_name,
   EXPECT_EQ(expected_y_size, y_size);
   EXPECT_EQ(expected_uv_size, u_size);
 
-  size_t row_bytes[3];
+  wtf_size_t row_bytes[3];
   row_bytes[0] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kY);
   row_bytes[1] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kU);
   row_bytes[2] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kV);
 
-  size_t planes_data_size = row_bytes[0] * y_size.Height() +
-                            row_bytes[1] * u_size.Height() +
-                            row_bytes[2] * v_size.Height();
+  size_t planes_data_size = row_bytes[0] * y_size.height() +
+                            row_bytes[1] * u_size.height() +
+                            row_bytes[2] * v_size.height();
   auto planes_data = std::make_unique<char[]>(planes_data_size);
 
   void* planes[3];
   planes[0] = planes_data.get();
-  planes[1] = static_cast<char*>(planes[0]) + row_bytes[0] * y_size.Height();
-  planes[2] = static_cast<char*>(planes[1]) + row_bytes[1] * u_size.Height();
+  planes[1] = static_cast<char*>(planes[0]) + row_bytes[0] * y_size.height();
+  planes[2] = static_cast<char*>(planes[1]) + row_bytes[1] * u_size.height();
 
   decoder->SetImagePlanes(
       std::make_unique<ImagePlanes>(planes, row_bytes, color_type));
@@ -646,10 +646,10 @@ void ReadYUV(const char* file_name,
 
   auto metadata = decoder->MakeMetadataForDecodeAcceleration();
   EXPECT_EQ(cc::ImageType::kAVIF, metadata.image_type);
-  EXPECT_EQ(gfx::Size(size), metadata.image_size);
+  EXPECT_EQ(ToGfxSize(size), metadata.image_size);
   if (expected_y_size == expected_uv_size)
     EXPECT_EQ(cc::YUVSubsampling::k444, metadata.yuv_subsampling);
-  else if (expected_y_size.Height() == expected_uv_size.Height())
+  else if (expected_y_size.height() == expected_uv_size.height())
     EXPECT_EQ(cc::YUVSubsampling::k422, metadata.yuv_subsampling);
   else
     EXPECT_EQ(cc::YUVSubsampling::k420, metadata.yuv_subsampling);
@@ -812,6 +812,12 @@ TEST(StaticAVIFTests, ValidImages) {
       "/images/resources/avif/red-at-12-oclock-with-color-profile-12bpc.avif",
       1, kAnimationNone);
 #endif
+  TestByteByByteDecode(&CreateAVIFDecoder,
+                       "/images/resources/avif/tiger_3layer_1res.avif", 1,
+                       kAnimationNone);
+  TestByteByByteDecode(&CreateAVIFDecoder,
+                       "/images/resources/avif/tiger_3layer_3res.avif", 1,
+                       kAnimationNone);
 }
 
 TEST(StaticAVIFTests, YUV) {
@@ -881,6 +887,54 @@ TEST(StaticAVIFTests, SizeAvailableBeforeAllDataReceived) {
 
   decoder->SetData(stream_buffer, /*all_data_received=*/true);
   EXPECT_TRUE(decoder->IsSizeAvailable());
+}
+
+TEST(StaticAVIFTests, ProgressiveDecoding) {
+  scoped_refptr<SharedBuffer> stream_buffer = WTF::SharedBuffer::Create();
+  scoped_refptr<SegmentReader> segment_reader =
+      SegmentReader::CreateFromSharedBuffer(stream_buffer);
+  std::unique_ptr<ImageDecoder> decoder = ImageDecoder::CreateByMimeType(
+      "image/avif", segment_reader, /*data_complete=*/false,
+      ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
+      ColorBehavior::Tag(), SkISize::MakeEmpty(),
+      ImageDecoder::AnimationOption::kUnspecified);
+
+  scoped_refptr<SharedBuffer> data =
+      ReadFile("/images/resources/avif/tiger_3layer_1res.avif");
+  ASSERT_TRUE(data.get());
+  ASSERT_EQ(data->size(), 70944u);
+
+  // This image has three layers. The first layer is 8299 bytes. Because of
+  // image headers and other overhead, if we pass exactly 8299 bytes to the
+  // decoder, the decoder does not have enough data to decode the first layer.
+  stream_buffer->Append(data->Data(), 8299u);
+  decoder->SetData(stream_buffer, /*all_data_received=*/false);
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(decoder->FrameCount(), 1u);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameEmpty);
+  EXPECT_FALSE(decoder->Failed());
+
+  // An additional 301 bytes are enough data for the decoder to decode the first
+  // layer. With progressive decoding, the frame buffer status will transition
+  // to ImageFrame::kFramePartial.
+  stream_buffer->Append(data->Data() + 8299u, 301u);
+  decoder->SetData(stream_buffer, /*all_data_received=*/false);
+  EXPECT_FALSE(decoder->Failed());
+  frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->GetStatus(), ImageFrame::kFramePartial);
+  EXPECT_FALSE(decoder->Failed());
+}
+
+TEST(StaticAVIFTests, AlphaHasNoIspeProperty) {
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
+  decoder->SetData(ReadFile("/images/resources/avif/green-no-alpha-ispe.avif"),
+                   true);
+  EXPECT_FALSE(decoder->IsSizeAvailable());
+  EXPECT_TRUE(decoder->Failed());
 }
 
 using StaticAVIFColorTests = ::testing::TestWithParam<StaticColorCheckParam>;

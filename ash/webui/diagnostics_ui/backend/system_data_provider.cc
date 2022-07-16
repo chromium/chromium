@@ -255,8 +255,7 @@ void SystemDataProvider::ObserveBatteryChargeStatus(
 
   if (!battery_charge_status_timer_->IsRunning()) {
     battery_charge_status_timer_->Start(
-        FROM_HERE,
-        base::TimeDelta::FromSeconds(kChargeStatusRefreshIntervalInSeconds),
+        FROM_HERE, base::Seconds(kChargeStatusRefreshIntervalInSeconds),
         base::BindRepeating(&SystemDataProvider::UpdateBatteryChargeStatus,
                             base::Unretained(this)));
   }
@@ -269,8 +268,7 @@ void SystemDataProvider::ObserveBatteryHealth(
 
   if (!battery_health_timer_->IsRunning()) {
     battery_health_timer_->Start(
-        FROM_HERE,
-        base::TimeDelta::FromSeconds(kBatteryHealthRefreshIntervalInSeconds),
+        FROM_HERE, base::Seconds(kBatteryHealthRefreshIntervalInSeconds),
         base::BindRepeating(&SystemDataProvider::UpdateBatteryHealth,
                             base::Unretained(this)));
   }
@@ -283,8 +281,7 @@ void SystemDataProvider::ObserveMemoryUsage(
 
   if (!memory_usage_timer_->IsRunning()) {
     memory_usage_timer_->Start(
-        FROM_HERE,
-        base::TimeDelta::FromSeconds(kMemoryUsageRefreshIntervalInSeconds),
+        FROM_HERE, base::Seconds(kMemoryUsageRefreshIntervalInSeconds),
         base::BindRepeating(&SystemDataProvider::UpdateMemoryUsage,
                             base::Unretained(this)));
   }
@@ -297,8 +294,7 @@ void SystemDataProvider::ObserveCpuUsage(
   if (!cpu_usage_timer_->IsRunning()) {
     previous_cpu_usage_data_ = CpuUsageData();
     cpu_usage_timer_->Start(
-        FROM_HERE,
-        base::TimeDelta::FromSeconds(kCpuUsageRefreshIntervalInSeconds),
+        FROM_HERE, base::Seconds(kCpuUsageRefreshIntervalInSeconds),
         base::BindRepeating(&SystemDataProvider::UpdateCpuUsage,
                             base::Unretained(this)));
   }
@@ -322,7 +318,18 @@ void SystemDataProvider::PowerChanged(
 
 void SystemDataProvider::BindInterface(
     mojo::PendingReceiver<mojom::SystemDataProvider> pending_receiver) {
+  DCHECK(!ReceiverIsBound());
   receiver_.Bind(std::move(pending_receiver));
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &SystemDataProvider::OnBoundInterfaceDisconnect, base::Unretained(this)));
+}
+
+bool SystemDataProvider::ReceiverIsBound() {
+  return receiver_.is_bound();
+}
+
+void SystemDataProvider::OnBoundInterfaceDisconnect() {
+  receiver_.reset();
 }
 
 void SystemDataProvider::SetBatteryChargeStatusTimerForTesting(

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {MockTimer} from './mock_timer.js';
+
 var mockTimer;
 
 /**
@@ -124,3 +126,12 @@ function testInterleavedTimers() {
   mockTimer.tick(30);
   assertEquals('ABAABAABAABABCB', results);
 }
+
+Object.assign(window, {
+  setUp,
+  tearDown,
+  testSetTimeout,
+  testClearTimeout,
+  testSetAndClearInterval,
+  testInterleavedTimers,
+});

@@ -19,7 +19,6 @@
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -31,6 +30,10 @@ namespace test {
 class SearchResultPageViewTest : public views::ViewsTestBase {
  public:
   SearchResultPageViewTest() = default;
+
+  SearchResultPageViewTest(const SearchResultPageViewTest&) = delete;
+  SearchResultPageViewTest& operator=(const SearchResultPageViewTest&) = delete;
+
   ~SearchResultPageViewTest() override = default;
 
   // Overridden from testing::Test:
@@ -65,7 +68,7 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
   SearchResultListView* list_view() const { return list_view_; }
 
   SearchModel::SearchResults* GetResults() const {
-    return delegate_->GetSearchModel()->results();
+    return AppListModelProvider::Get()->search_model()->results();
   }
 
  private:
@@ -76,8 +79,6 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
       nullptr;                                 // Owned by views hierarchy.
   SearchResultListView* list_view_ = nullptr;  // Owned by views hierarchy.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultPageViewTest);
 };
 
 TEST_F(SearchResultPageViewTest, ResultsSorted) {

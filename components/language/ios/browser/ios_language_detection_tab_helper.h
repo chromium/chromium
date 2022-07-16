@@ -6,7 +6,6 @@
 #define COMPONENTS_LANGUAGE_IOS_BROWSER_IOS_LANGUAGE_DETECTION_TAB_HELPER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -35,6 +34,10 @@ class IOSLanguageDetectionTabHelper
     virtual ~Observer() {}
   };
 
+  IOSLanguageDetectionTabHelper(const IOSLanguageDetectionTabHelper&) = delete;
+  IOSLanguageDetectionTabHelper& operator=(
+      const IOSLanguageDetectionTabHelper&) = delete;
+
   ~IOSLanguageDetectionTabHelper() override;
 
   // Adds or Removes observers.
@@ -60,8 +63,6 @@ class IOSLanguageDetectionTabHelper
   UrlLanguageHistogram* const url_language_histogram_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(IOSLanguageDetectionTabHelper);
 };
 
 }  // namespace language

@@ -59,6 +59,10 @@ class TetherHostFetcherImplTest : public testing::Test {
         test_remote_device_ref_list_(
             CreateTestRemoteDeviceRefList(test_remote_device_list_)) {}
 
+  TetherHostFetcherImplTest(const TetherHostFetcherImplTest&) = delete;
+  TetherHostFetcherImplTest& operator=(const TetherHostFetcherImplTest&) =
+      delete;
+
   void SetUp() override {
     fake_device_sync_client_ =
         std::make_unique<device_sync::FakeDeviceSyncClient>();
@@ -208,9 +212,6 @@ class TetherHostFetcherImplTest : public testing::Test {
       fake_multidevice_setup_client_;
 
   std::unique_ptr<TetherHostFetcher> tether_host_fetcher_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TetherHostFetcherImplTest);
 };
 
 TEST_F(TetherHostFetcherImplTest, TestHasSyncedTetherHosts) {

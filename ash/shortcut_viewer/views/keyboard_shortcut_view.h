@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/search_box/search_box_view_delegate.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -37,6 +36,9 @@ class KSVSearchBoxView;
 class KeyboardShortcutView : public views::WidgetDelegateView,
                              public ash::SearchBoxViewDelegate {
  public:
+  KeyboardShortcutView(const KeyboardShortcutView&) = delete;
+  KeyboardShortcutView& operator=(const KeyboardShortcutView&) = delete;
+
   ~KeyboardShortcutView() override;
 
   // Toggle the Keyboard Shortcut Viewer window.
@@ -48,7 +50,6 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
 
   // views::View:
   const char* GetClassName() const override;
-  ax::mojom::Role GetAccessibleWindowRole() override;
   std::u16string GetAccessibleWindowTitle() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void Layout() override;
@@ -135,8 +136,6 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   bool did_first_paint_ = false;
 
   base::WeakPtrFactory<KeyboardShortcutView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardShortcutView);
 };
 
 }  // namespace keyboard_shortcut_viewer

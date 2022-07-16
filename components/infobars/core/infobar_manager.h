@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/infobars/core/infobar_delegate.h"
 
@@ -38,6 +37,10 @@ class InfoBarManager {
   };
 
   InfoBarManager();
+
+  InfoBarManager(const InfoBarManager&) = delete;
+  InfoBarManager& operator=(const InfoBarManager&) = delete;
+
   virtual ~InfoBarManager();
 
   // Must be called before destruction.
@@ -124,8 +127,6 @@ class InfoBarManager {
   bool animations_enabled_ = true;
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBarManager);
 };
 
 }  // namespace infobars

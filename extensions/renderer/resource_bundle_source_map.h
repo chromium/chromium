@@ -6,11 +6,12 @@
 #define EXTENSIONS_RENDERER_RESOURCE_BUNDLE_SOURCE_MAP_H_
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "base/macros.h"
 #include "extensions/renderer/source_map.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace ui {
 class ResourceBundle;
@@ -21,6 +22,10 @@ namespace extensions {
 class ResourceBundleSourceMap : public SourceMap {
  public:
   explicit ResourceBundleSourceMap(const ui::ResourceBundle* resource_bundle);
+
+  ResourceBundleSourceMap(const ResourceBundleSourceMap&) = delete;
+  ResourceBundleSourceMap& operator=(const ResourceBundleSourceMap&) = delete;
+
   ~ResourceBundleSourceMap() override;
 
   v8::Local<v8::String> GetSource(v8::Isolate* isolate,
@@ -45,8 +50,6 @@ class ResourceBundleSourceMap : public SourceMap {
 
   const ui::ResourceBundle* resource_bundle_;
   std::map<std::string, ResourceInfo> resource_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceBundleSourceMap);
 };
 
 }  // namespace extensions

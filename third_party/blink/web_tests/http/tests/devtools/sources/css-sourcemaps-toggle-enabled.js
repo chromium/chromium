@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that CSS sourcemap enabling and disabling adds/removes sourcemap sources.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   var sourcesNavigator = new Sources.NetworkNavigatorView();

@@ -5,6 +5,7 @@
 #ifndef BASE_TEST_GMOCK_MOVE_SUPPORT_H_
 #define BASE_TEST_GMOCK_MOVE_SUPPORT_H_
 
+#include <cstddef>
 #include <tuple>
 #include <utility>
 

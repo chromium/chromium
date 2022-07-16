@@ -17,6 +17,8 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/buildflags.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/views/accessibility/views_ax_tree_manager.h"
 #include "ui/views/accessibility/widget_ax_tree_id_map.h"
 #include "ui/views/view.h"
@@ -169,8 +171,12 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     // been closed. Returning the wrong result might cause a crash, because the
     // focus manager might be expecting the result to be the same regardless of
     // the state of the view's widget.
-    if (ViewAccessibility::IsAccessibilityFocusable())
+    if (ViewAccessibility::IsAccessibilityFocusable()) {
       data->AddState(ax::mojom::State::kFocusable);
+      // Set this node as intentionally nameless to avoid DCHECKs for a missing
+      // name of a focusable.
+      data->SetNameExplicitlyEmpty();
+    }
     return;
   }
 
@@ -277,6 +283,15 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
          "ViewAccessibility::OverrideChildTreeID.";
   if (child_tree_id_) {
     data->AddChildTreeId(child_tree_id_.value());
+
+    if (widget && widget->GetNativeView() && display::Screen::GetScreen()) {
+      const float scale_factor =
+          display::Screen::GetScreen()
+              ->GetDisplayNearestView(view_->GetWidget()->GetNativeView())
+              .device_scale_factor();
+      data->AddFloatAttribute(ax::mojom::FloatAttribute::kChildTreeScale,
+                              scale_factor);
+    }
   }
 }
 
@@ -323,7 +338,7 @@ void ViewAccessibility::EndPopupFocusOverride() {
 }
 
 void ViewAccessibility::FireFocusAfterMenuClose() {
-  NotifyAccessibilityEvent(ax::mojom::Event::kFocusAfterMenuClose);
+  view_->NotifyAccessibilityEvent(ax::mojom::Event::kFocusAfterMenuClose, true);
 }
 
 void ViewAccessibility::OverrideRole(const ax::mojom::Role role) {

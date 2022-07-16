@@ -89,7 +89,7 @@
           </cr-policy-pref-indicator>
         </template>
         <div hidden$="[[noCollapse]]" class="separator"></div>
-        <cr-expand-button no-hover
+        <cr-expand-button id="expandButton" no-hover
               aria-label="[[expandAriaLabel]]"
               hidden$="[[noCollapse]]" expanded="{{expanded}}"
               on-click="onExpandClicked_"

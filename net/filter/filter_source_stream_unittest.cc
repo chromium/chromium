@@ -27,6 +27,11 @@ class TestFilterSourceStreamBase : public FilterSourceStream {
  public:
   TestFilterSourceStreamBase(std::unique_ptr<SourceStream> upstream)
       : FilterSourceStream(SourceStream::TYPE_NONE, std::move(upstream)) {}
+
+  TestFilterSourceStreamBase(const TestFilterSourceStreamBase&) = delete;
+  TestFilterSourceStreamBase& operator=(const TestFilterSourceStreamBase&) =
+      delete;
+
   ~TestFilterSourceStreamBase() override { DCHECK(buffer_.empty()); }
   std::string GetTypeAsString() const override { return type_string_; }
 
@@ -52,8 +57,6 @@ class TestFilterSourceStreamBase : public FilterSourceStream {
 
  private:
   std::string type_string_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFilterSourceStreamBase);
 };
 
 // A FilterSourceStream that needs all input data before it can return non-zero
@@ -64,6 +67,12 @@ class NeedsAllInputFilterSourceStream : public TestFilterSourceStreamBase {
                                   size_t expected_input_bytes)
       : TestFilterSourceStreamBase(std::move(upstream)),
         expected_input_bytes_(expected_input_bytes) {}
+
+  NeedsAllInputFilterSourceStream(const NeedsAllInputFilterSourceStream&) =
+      delete;
+  NeedsAllInputFilterSourceStream& operator=(
+      const NeedsAllInputFilterSourceStream&) = delete;
+
   int FilterData(IOBuffer* output_buffer,
                  int output_buffer_size,
                  IOBuffer* input_buffer,
@@ -85,8 +94,6 @@ class NeedsAllInputFilterSourceStream : public TestFilterSourceStreamBase {
  private:
   // Expected remaining bytes to be received from |upstream|.
   int expected_input_bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(NeedsAllInputFilterSourceStream);
 };
 
 // A FilterSourceStream that repeat every input byte by |multiplier| amount of
@@ -96,6 +103,10 @@ class MultiplySourceStream : public TestFilterSourceStreamBase {
   MultiplySourceStream(std::unique_ptr<SourceStream> upstream, int multiplier)
       : TestFilterSourceStreamBase(std::move(upstream)),
         multiplier_(multiplier) {}
+
+  MultiplySourceStream(const MultiplySourceStream&) = delete;
+  MultiplySourceStream& operator=(const MultiplySourceStream&) = delete;
+
   int FilterData(IOBuffer* output_buffer,
                  int output_buffer_size,
                  IOBuffer* input_buffer,
@@ -112,8 +123,6 @@ class MultiplySourceStream : public TestFilterSourceStreamBase {
 
  private:
   int multiplier_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiplySourceStream);
 };
 
 // A FilterSourceStream passes through data unchanged to consumer.
@@ -121,6 +130,11 @@ class PassThroughFilterSourceStream : public TestFilterSourceStreamBase {
  public:
   explicit PassThroughFilterSourceStream(std::unique_ptr<SourceStream> upstream)
       : TestFilterSourceStreamBase(std::move(upstream)) {}
+
+  PassThroughFilterSourceStream(const PassThroughFilterSourceStream&) = delete;
+  PassThroughFilterSourceStream& operator=(
+      const PassThroughFilterSourceStream&) = delete;
+
   int FilterData(IOBuffer* output_buffer,
                  int output_buffer_size,
                  IOBuffer* input_buffer,
@@ -131,9 +145,6 @@ class PassThroughFilterSourceStream : public TestFilterSourceStreamBase {
     *consumed_bytes = input_buffer_size;
     return WriteBufferToOutput(output_buffer, output_buffer_size);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PassThroughFilterSourceStream);
 };
 
 // A FilterSourceStream passes throttle input data such that it returns them to
@@ -142,6 +153,10 @@ class ThrottleSourceStream : public TestFilterSourceStreamBase {
  public:
   explicit ThrottleSourceStream(std::unique_ptr<SourceStream> upstream)
       : TestFilterSourceStreamBase(std::move(upstream)) {}
+
+  ThrottleSourceStream(const ThrottleSourceStream&) = delete;
+  ThrottleSourceStream& operator=(const ThrottleSourceStream&) = delete;
+
   int FilterData(IOBuffer* output_buffer,
                  int output_buffer_size,
                  IOBuffer* input_buffer,
@@ -155,9 +170,6 @@ class ThrottleSourceStream : public TestFilterSourceStreamBase {
     buffer_.erase(0, bytes_to_read);
     return bytes_to_read;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThrottleSourceStream);
 };
 
 // A FilterSourceStream that consumes all input data but return no output.
@@ -168,6 +180,10 @@ class NoOutputSourceStream : public TestFilterSourceStreamBase {
       : TestFilterSourceStreamBase(std::move(upstream)),
         expected_input_size_(expected_input_size),
         consumed_all_input_(false) {}
+
+  NoOutputSourceStream(const NoOutputSourceStream&) = delete;
+  NoOutputSourceStream& operator=(const NoOutputSourceStream&) = delete;
+
   int FilterData(IOBuffer* output_buffer,
                  int output_buffer_size,
                  IOBuffer* input_buffer,
@@ -187,8 +203,6 @@ class NoOutputSourceStream : public TestFilterSourceStreamBase {
   // Expected remaining bytes to be received from |upstream|.
   int expected_input_size_;
   bool consumed_all_input_;
-
-  DISALLOW_COPY_AND_ASSIGN(NoOutputSourceStream);
 };
 
 // A FilterSourceStream return an error code in FilterData().
@@ -196,6 +210,9 @@ class ErrorFilterSourceStream : public FilterSourceStream {
  public:
   explicit ErrorFilterSourceStream(std::unique_ptr<SourceStream> upstream)
       : FilterSourceStream(SourceStream::TYPE_NONE, std::move(upstream)) {}
+
+  ErrorFilterSourceStream(const ErrorFilterSourceStream&) = delete;
+  ErrorFilterSourceStream& operator=(const ErrorFilterSourceStream&) = delete;
 
   int FilterData(IOBuffer* output_buffer,
                  int output_buffer_size,
@@ -206,9 +223,6 @@ class ErrorFilterSourceStream : public FilterSourceStream {
     return ERR_CONTENT_DECODING_FAILED;
   }
   std::string GetTypeAsString() const override { return ""; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ErrorFilterSourceStream);
 };
 
 }  // namespace

@@ -34,6 +34,11 @@ class ChromeEnterpriseRealTimeUrlLookupServiceFactory
   // Get the singleton instance.
   static ChromeEnterpriseRealTimeUrlLookupServiceFactory* GetInstance();
 
+  ChromeEnterpriseRealTimeUrlLookupServiceFactory(
+      const ChromeEnterpriseRealTimeUrlLookupServiceFactory&) = delete;
+  ChromeEnterpriseRealTimeUrlLookupServiceFactory& operator=(
+      const ChromeEnterpriseRealTimeUrlLookupServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       ChromeEnterpriseRealTimeUrlLookupServiceFactory>;
@@ -44,8 +49,6 @@ class ChromeEnterpriseRealTimeUrlLookupServiceFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeEnterpriseRealTimeUrlLookupServiceFactory);
 };
 
 }  // namespace safe_browsing

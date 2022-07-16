@@ -11,14 +11,19 @@
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/forms/form_controller.h"
+#include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/select_menu_part_traversal.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_popup_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/keyboard_codes.h"
 
 namespace blink {
 
@@ -38,6 +43,9 @@ class HTMLSelectMenuElement::SelectMutationCallback
   template <typename StringType>
   void PartRemoved(const StringType& part_name, Element* element);
 
+  template <typename StringType>
+  void SlotChanged(const StringType& slot_name);
+
   Member<HTMLSelectMenuElement> select_;
   Member<MutationObserver> observer_;
 };
@@ -49,10 +57,11 @@ HTMLSelectMenuElement::SelectMutationCallback::SelectMutationCallback(
   init->setAttributeOldValue(true);
   init->setAttributes(true);
   // TODO(crbug.com/1121840) There are more attributes that affect <selectmenu>.
-  init->setAttributeFilter({"part"});
+  init->setAttributeFilter({"behavior", "slot"});
   init->setChildList(true);
   init->setSubtree(true);
   observer_->observe(select_, init, ASSERT_NO_EXCEPTION);
+  observer_->observe(select_->GetShadowRoot(), init, ASSERT_NO_EXCEPTION);
 }
 
 ExecutionContext*
@@ -72,12 +81,18 @@ void HTMLSelectMenuElement::SelectMutationCallback::Deliver(
     MutationObserver&) {
   for (const auto& record : records) {
     if (record->type() == "attributes") {
-      if (record->attributeName() == html_names::kPartAttr) {
+      if (record->attributeName() == html_names::kBehaviorAttr) {
         auto* target = DynamicTo<Element>(record->target());
-        if (target &&
-            record->oldValue() != target->getAttribute(html_names::kPartAttr)) {
+        if (target && record->oldValue() !=
+                          target->getAttribute(html_names::kBehaviorAttr)) {
           PartRemoved(record->oldValue(), target);
-          PartInserted(target->getAttribute(html_names::kPartAttr), target);
+          PartInserted(target->getAttribute(html_names::kBehaviorAttr), target);
+        }
+      } else if (record->attributeName() == html_names::kSlotAttr) {
+        auto* target = DynamicTo<Element>(record->target());
+        if (target && record->oldValue() != target->SlotName()) {
+          SlotChanged(record->oldValue());
+          SlotChanged(target->SlotName());
         }
       }
     } else if (record->type() == "childList") {
@@ -87,8 +102,10 @@ void HTMLSelectMenuElement::SelectMutationCallback::Deliver(
           continue;
         }
 
-        const AtomicString& part = element->getAttribute(html_names::kPartAttr);
+        const AtomicString& part =
+            element->getAttribute(html_names::kBehaviorAttr);
         PartInserted(part, element);
+        SlotChanged(element->SlotName());
       }
 
       for (unsigned i = 0; i < record->removedNodes()->length(); ++i) {
@@ -97,8 +114,10 @@ void HTMLSelectMenuElement::SelectMutationCallback::Deliver(
           continue;
         }
 
-        const AtomicString& part = element->getAttribute(html_names::kPartAttr);
+        const AtomicString& part =
+            element->getAttribute(html_names::kBehaviorAttr);
         PartRemoved(part, element);
+        SlotChanged(element->SlotName());
       }
     }
   }
@@ -114,8 +133,8 @@ void HTMLSelectMenuElement::SelectMutationCallback::PartInserted(
     select_->SelectedValuePartInserted(element);
   } else if (part_name == kListboxPartName) {
     select_->ListboxPartInserted(element);
-  } else if (part_name == kOptionPartName || IsA<HTMLOptionElement>(element)) {
-    select_->OptionPartInserted(element);
+  } else if (IsA<HTMLOptionElement>(element)) {
+    select_->OptionPartInserted(DynamicTo<HTMLOptionElement>(element));
   }
 }
 
@@ -129,13 +148,26 @@ void HTMLSelectMenuElement::SelectMutationCallback::PartRemoved(
     select_->SelectedValuePartRemoved(element);
   } else if (part_name == kListboxPartName) {
     select_->ListboxPartRemoved(element);
-  } else if (part_name == kOptionPartName || IsA<HTMLOptionElement>(element)) {
-    select_->OptionPartRemoved(element);
+  } else if (IsA<HTMLOptionElement>(element)) {
+    select_->OptionPartRemoved(DynamicTo<HTMLOptionElement>(element));
+  }
+}
+
+template <typename StringType>
+void HTMLSelectMenuElement::SelectMutationCallback::SlotChanged(
+    const StringType& slot_name) {
+  if (slot_name == kListboxPartName) {
+    select_->UpdateListboxPart();
+  } else if (slot_name == kButtonPartName) {
+    select_->UpdateButtonPart();
+    select_->UpdateSelectedValuePart();
+  } else if (slot_name.IsEmpty()) {
+    select_->ResetOptionParts();
   }
 }
 
 HTMLSelectMenuElement::HTMLSelectMenuElement(Document& document)
-    : HTMLElement(html_names::kSelectmenuTag, document) {
+    : HTMLFormControlElementWithState(html_names::kSelectmenuTag, document) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
   DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
   UseCounter::Count(document, WebFeature::kSelectMenuElement);
@@ -146,26 +178,49 @@ HTMLSelectMenuElement::HTMLSelectMenuElement(Document& document)
           *this);
 }
 
+// static
+HTMLSelectMenuElement* HTMLSelectMenuElement::OwnerSelectMenu(Node* node) {
+  HTMLSelectMenuElement* nearest_select_menu_ancestor =
+      SelectMenuPartTraversal::NearestSelectMenuAncestor(*node);
+
+  if (nearest_select_menu_ancestor &&
+      nearest_select_menu_ancestor->AssignedPartType(node) != PartType::kNone) {
+    return nearest_select_menu_ancestor;
+  }
+
+  return nullptr;
+}
+
+HTMLSelectMenuElement::PartType HTMLSelectMenuElement::AssignedPartType(
+    Node* node) const {
+  if (node == button_part_) {
+    return PartType::kButton;
+  } else if (node == listbox_part_) {
+    return PartType::kListBox;
+  } else if (IsA<HTMLOptionElement>(node) &&
+             option_parts_.Contains(DynamicTo<HTMLOptionElement>(node))) {
+    return PartType::kOption;
+  }
+
+  return PartType::kNone;
+}
+
 void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   DCHECK(IsShadowHost(this));
 
-  root.EnableNameBasedSlotAssignment();
   Document& document = GetDocument();
 
   // TODO(crbug.com/1121840) Where to put the styles for the default elements in
-  // the shadow tree? We'd like to have them in the UA styles (html.css), but
-  // the -webkit pseudo-id selectors only work if this is a UA shadow DOM.  We
-  // can't use a UA shadow DOMs because these don't currently support named
-  // slots. For now, just set the style attributes with raw inline strings, but
-  // we should be able to do something better than this. Probably the solution
-  // is to get named slots working in UA shadow DOM (crbug.com/1179356), and
-  // then we can switch to that and use the -webkit pseudo-id selectors.
+  // the shadow tree? For now, just set the style attributes with raw inline
+  // strings, but we should be able to do something better than this. Probably
+  // the solution is to have them in the UA styles (html.css).
 
-  auto* button_slot = MakeGarbageCollected<HTMLSlotElement>(document);
-  button_slot->setAttribute(html_names::kNameAttr, kButtonPartName);
+  button_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
+  button_slot_->setAttribute(html_names::kNameAttr, kButtonPartName);
 
   button_part_ = MakeGarbageCollected<HTMLButtonElement>(document);
   button_part_->setAttribute(html_names::kPartAttr, kButtonPartName);
+  button_part_->setAttribute(html_names::kBehaviorAttr, kButtonPartName);
   button_part_->setAttribute(html_names::kStyleAttr,
                              R"CSS(
       display: inline-flex;
@@ -180,10 +235,14 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
       MakeGarbageCollected<HTMLSelectMenuElement::ButtonPartEventListener>(
           this);
   button_part_->addEventListener(event_type_names::kClick,
-                                 button_part_listener_, false);
+                                 button_part_listener_, /*use_capture=*/false);
+  button_part_->addEventListener(event_type_names::kKeydown,
+                                 button_part_listener_, /*use_capture=*/false);
 
   selected_value_part_ = MakeGarbageCollected<HTMLDivElement>(document);
   selected_value_part_->setAttribute(html_names::kPartAttr,
+                                     kSelectedValuePartName);
+  selected_value_part_->setAttribute(html_names::kBehaviorAttr,
                                      kSelectedValuePartName);
 
   auto* button_icon = MakeGarbageCollected<HTMLDivElement>(document);
@@ -208,24 +267,34 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
     width: 1.2em;
     )CSS");
 
-  auto* listbox_slot = MakeGarbageCollected<HTMLSlotElement>(document);
-  listbox_slot->setAttribute(html_names::kNameAttr, kListboxPartName);
+  listbox_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
+  listbox_slot_->setAttribute(html_names::kNameAttr, kListboxPartName);
 
   SetListboxPart(MakeGarbageCollected<HTMLPopupElement>(document));
   listbox_part_->setAttribute(html_names::kPartAttr, kListboxPartName);
+  listbox_part_->setAttribute(html_names::kBehaviorAttr, kListboxPartName);
+  listbox_part_->setAttribute(html_names::kStyleAttr,
+                              R"CSS(
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+        box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
+        box-sizing: border-box;
+        overflow: auto;
+        padding: 4px;
+  )CSS");
 
   auto* options_slot = MakeGarbageCollected<HTMLSlotElement>(document);
 
   button_part_->AppendChild(selected_value_part_);
   button_part_->AppendChild(button_icon);
 
-  button_slot->AppendChild(button_part_);
+  button_slot_->AppendChild(button_part_);
 
   listbox_part_->appendChild(options_slot);
-  listbox_slot->appendChild(listbox_part_);
+  listbox_slot_->appendChild(listbox_part_);
 
-  root.AppendChild(button_slot);
-  root.AppendChild(listbox_slot);
+  root.AppendChild(button_slot_);
+  root.AppendChild(listbox_slot_);
 
   option_part_listener_ =
       MakeGarbageCollected<HTMLSelectMenuElement::OptionPartEventListener>(
@@ -260,48 +329,79 @@ bool HTMLSelectMenuElement::open() const {
 }
 
 void HTMLSelectMenuElement::OpenListbox() {
-  if (listbox_part_ != nullptr && !open()) {
+  if (listbox_part_ && !open()) {
     listbox_part_->SetNeedsRepositioningForSelectMenu(true);
     listbox_part_->show();
+    if (SelectedOption()) {
+      SelectedOption()->focus();
+    }
   }
 }
 
 void HTMLSelectMenuElement::CloseListbox() {
-  if (listbox_part_ != nullptr && open()) {
+  if (listbox_part_ && open()) {
+    if (button_part_) {
+      button_part_->focus();
+    }
     listbox_part_->hide();
   }
 }
 
-void HTMLSelectMenuElement::SetListboxPart(HTMLPopupElement* listbox_part) {
-  if (listbox_part_ == listbox_part)
+void HTMLSelectMenuElement::SetListboxPart(HTMLPopupElement* new_listbox_part) {
+  if (listbox_part_ == new_listbox_part)
     return;
 
   if (listbox_part_) {
     listbox_part_->SetOwnerSelectMenuElement(nullptr);
     listbox_part_->SetNeedsRepositioningForSelectMenu(false);
   }
-  listbox_part_ = listbox_part;
-  listbox_part_->SetOwnerSelectMenuElement(this);
-}
 
-bool HTMLSelectMenuElement::IsValidButtonPart(const Element* part,
-                                              bool show_warning) const {
-  bool is_valid = !FlatTreeTraversal::IsDescendantOf(*part, *listbox_part_);
-  if (!is_valid && show_warning) {
+  if (new_listbox_part) {
+    new_listbox_part->SetOwnerSelectMenuElement(this);
+  } else {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "A <selectmenu> must not contain an element labeled with "
-        "part=\"button\" that is also a descendant of the \"listbox\" part. "
-        "This <selectmenu> will not be fully functional."));
+        "<selectmenu>'s default listbox was removed by an element labeled "
+        "slot=\"listbox\", and a new one was not provided. This <selectmenu> "
+        "will not be fully functional."));
   }
 
-  return is_valid;
+  listbox_part_ = new_listbox_part;
 }
 
-bool HTMLSelectMenuElement::IsValidListboxPart(const Element* part,
+bool HTMLSelectMenuElement::IsValidButtonPart(const Node* node,
+                                              bool show_warning) const {
+  auto* element = DynamicTo<Element>(node);
+  if (!element ||
+      element->getAttribute(html_names::kBehaviorAttr) != kButtonPartName) {
+    return false;
+  }
+
+  bool is_valid_tree_position =
+      !listbox_part_ ||
+      !FlatTreeTraversal::IsDescendantOf(*element, *listbox_part_);
+  if (!is_valid_tree_position && show_warning) {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "To receive button part controller code, an element labeled as a "
+        "button must not be a descendant of the <selectmenu>'s listbox "
+        "part. This <selectmenu> will not be fully functional."));
+  }
+
+  return is_valid_tree_position;
+}
+
+bool HTMLSelectMenuElement::IsValidListboxPart(const Node* node,
                                                bool show_warning) const {
-  if (!IsA<HTMLPopupElement>(part)) {
+  auto* element = DynamicTo<Element>(node);
+  if (!element ||
+      element->getAttribute(html_names::kBehaviorAttr) != kListboxPartName) {
+    return false;
+  }
+
+  if (!IsA<HTMLPopupElement>(element)) {
     if (show_warning) {
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kRendering,
@@ -313,7 +413,8 @@ bool HTMLSelectMenuElement::IsValidListboxPart(const Element* part,
     return false;
   }
 
-  if (FlatTreeTraversal::IsDescendantOf(*part, *button_part_)) {
+  if (button_part_ &&
+      FlatTreeTraversal::IsDescendantOf(*element, *button_part_)) {
     if (show_warning) {
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kRendering,
@@ -328,10 +429,17 @@ bool HTMLSelectMenuElement::IsValidListboxPart(const Element* part,
   return true;
 }
 
-bool HTMLSelectMenuElement::IsValidOptionPart(const Element* part,
+bool HTMLSelectMenuElement::IsValidOptionPart(const Node* node,
                                               bool show_warning) const {
-  bool is_valid = FlatTreeTraversal::IsDescendantOf(*part, *listbox_part_);
-  if (!is_valid && show_warning) {
+  auto* element = DynamicTo<Element>(node);
+  if (!element || !IsA<HTMLOptionElement>(element)) {
+    return false;
+  }
+
+  bool is_valid_tree_position =
+      listbox_part_ &&
+      SelectMenuPartTraversal::IsDescendantOf(*element, *listbox_part_);
+  if (!is_valid_tree_position && show_warning) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kWarning,
@@ -339,7 +447,48 @@ bool HTMLSelectMenuElement::IsValidOptionPart(const Element* part,
         "option must be a descendant of the <selectmenu>'s listbox "
         "part. This <selectmenu> will not be fully functional."));
   }
-  return is_valid;
+  return is_valid_tree_position;
+}
+
+Element* HTMLSelectMenuElement::FirstValidButtonPart() const {
+  for (Node* node = SelectMenuPartTraversal::FirstChild(*this); node;
+       node = SelectMenuPartTraversal::Next(*node, this)) {
+    if (IsValidButtonPart(node, /*show_warning=*/false)) {
+      return DynamicTo<Element>(node);
+    }
+  }
+
+  return nullptr;
+}
+
+void HTMLSelectMenuElement::SetButtonPart(Element* new_button_part) {
+  if (button_part_ == new_button_part)
+    return;
+
+  if (button_part_) {
+    button_part_->removeEventListener(
+        event_type_names::kClick, button_part_listener_, /*use_capture=*/false);
+    button_part_->removeEventListener(event_type_names::kKeydown,
+                                      button_part_listener_,
+                                      /*use_capture=*/false);
+  }
+
+  if (new_button_part) {
+    new_button_part->addEventListener(
+        event_type_names::kClick, button_part_listener_, /*use_capture=*/false);
+    new_button_part->addEventListener(event_type_names::kKeydown,
+                                      button_part_listener_,
+                                      /*use_capture=*/false);
+  } else {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "<selectmenu>'s default button was removed by an element labeled "
+        "slot=\"button\", and a new one was not provided. This <selectmenu> "
+        "will not be fully functional."));
+  }
+
+  button_part_ = new_button_part;
 }
 
 void HTMLSelectMenuElement::ButtonPartInserted(Element* new_button_part) {
@@ -347,19 +496,7 @@ void HTMLSelectMenuElement::ButtonPartInserted(Element* new_button_part) {
     return;
   }
 
-  // TODO(crbug.com/1191121) Decide which part gets controller code when there
-  // are multiple parts available.
-  if (button_part_ != new_button_part) {
-    if (button_part_) {
-      button_part_->removeEventListener(event_type_names::kClick,
-                                        button_part_listener_, false);
-    }
-    if (new_button_part) {
-      new_button_part->addEventListener(event_type_names::kClick,
-                                        button_part_listener_, false);
-    }
-    button_part_ = new_button_part;
-  }
+  UpdateButtonPart();
 }
 
 void HTMLSelectMenuElement::ButtonPartRemoved(Element* button_part) {
@@ -367,64 +504,54 @@ void HTMLSelectMenuElement::ButtonPartRemoved(Element* button_part) {
     return;
   }
 
-  button_part_->removeEventListener(event_type_names::kClick,
-                                    button_part_listener_, false);
+  UpdateButtonPart();
+}
 
-  // Try to find a new button part by choosing the one that comes first in the
-  // flat tree traversal.
-  Element* new_button_part = nullptr;
-  for (Node* node = FlatTreeTraversal::FirstChild(*this); node != nullptr;
-       node = FlatTreeTraversal::Next(*node, this)) {
+void HTMLSelectMenuElement::UpdateButtonPart() {
+  SetButtonPart(FirstValidButtonPart());
+}
+
+Element* HTMLSelectMenuElement::FirstValidSelectedValuePart() const {
+  for (Node* node = SelectMenuPartTraversal::FirstChild(*this); node;
+       node = SelectMenuPartTraversal::Next(*node, this)) {
     auto* element = DynamicTo<Element>(node);
     if (!element) {
       continue;
     }
 
-    if (element->getAttribute(html_names::kPartAttr) == kButtonPartName &&
-        IsValidButtonPart(element, /*show_warning=*/false)) {
-      new_button_part = element;
-      break;
+    if (element->getAttribute(html_names::kBehaviorAttr) ==
+        kSelectedValuePartName) {
+      return element;
     }
   }
-
-  if (new_button_part) {
-    new_button_part->addEventListener(event_type_names::kClick,
-                                      button_part_listener_, false);
-  }
-  button_part_ = new_button_part;
+  return nullptr;
 }
 
 void HTMLSelectMenuElement::SelectedValuePartInserted(
     Element* new_selected_value_part) {
-  // TODO(crbug.com/1191121) Decide which part gets controller code when there
-  // are multiple parts available.
-  selected_value_part_ = new_selected_value_part;
+  UpdateSelectedValuePart();
 }
 
 void HTMLSelectMenuElement::SelectedValuePartRemoved(
     Element* selected_value_part) {
-  if (selected_value_part_ != selected_value_part) {
+  if (selected_value_part != selected_value_part_) {
     return;
   }
+  UpdateSelectedValuePart();
+}
 
-  // Try to find a new selected value part by choosing the one that comes first
-  // in the flat tree traversal.
-  Element* new_selected_value_part = nullptr;
-  for (Node* node = FlatTreeTraversal::FirstChild(*this); node != nullptr;
-       node = FlatTreeTraversal::Next(*node, this)) {
-    auto* element = DynamicTo<Element>(node);
-    if (!element) {
-      continue;
-    }
+void HTMLSelectMenuElement::UpdateSelectedValuePart() {
+  selected_value_part_ = FirstValidSelectedValuePart();
+}
 
-    if (element->getAttribute(html_names::kPartAttr) ==
-        kSelectedValuePartName) {
-      new_selected_value_part = element;
-      break;
+Element* HTMLSelectMenuElement::FirstValidListboxPart() const {
+  for (Node* node = SelectMenuPartTraversal::FirstChild(*this); node;
+       node = SelectMenuPartTraversal::Next(*node, this)) {
+    if (IsValidListboxPart(node, /*show_warning=*/false)) {
+      return DynamicTo<Element>(node);
     }
   }
-
-  selected_value_part_ = new_selected_value_part;
+  return nullptr;
 }
 
 void HTMLSelectMenuElement::ListboxPartInserted(Element* new_listbox_part) {
@@ -432,10 +559,7 @@ void HTMLSelectMenuElement::ListboxPartInserted(Element* new_listbox_part) {
     return;
   }
 
-  // TODO(crbug.com/1191121) Decide which part gets controller code when there
-  // are multiple parts available.
-  SetListboxPart(DynamicTo<HTMLPopupElement>(new_listbox_part));
-  // TODO(crbug.com/1121840) Should the current option parts be revalidated?
+  UpdateListboxPart();
 }
 
 void HTMLSelectMenuElement::ListboxPartRemoved(Element* listbox_part) {
@@ -443,28 +567,37 @@ void HTMLSelectMenuElement::ListboxPartRemoved(Element* listbox_part) {
     return;
   }
 
-  // Try to find a new listbox part by choosing the one that comes first in the
-  // flat tree traversal.
-  Element* new_listbox_part = nullptr;
-  for (Node* node = FlatTreeTraversal::FirstChild(*this); node != nullptr;
-       node = FlatTreeTraversal::Next(*node, this)) {
-    auto* element = DynamicTo<Element>(node);
-    if (!element) {
-      continue;
-    }
-
-    if (element->getAttribute(html_names::kPartAttr) == kListboxPartName &&
-        IsValidListboxPart(element, /*show_warning=*/false)) {
-      new_listbox_part = element;
-      break;
-    }
-  }
-
-  SetListboxPart(DynamicTo<HTMLPopupElement>(new_listbox_part));
-  // TODO(crbug.com/1121840) Should the current option parts be revalidated?
+  UpdateListboxPart();
 }
 
-void HTMLSelectMenuElement::OptionPartInserted(Element* new_option_part) {
+void HTMLSelectMenuElement::UpdateListboxPart() {
+  auto* new_listbox_part = DynamicTo<HTMLPopupElement>(FirstValidListboxPart());
+  if (listbox_part_ == new_listbox_part) {
+    return;
+  }
+
+  SetListboxPart(new_listbox_part);
+
+  ResetOptionParts();
+}
+
+void HTMLSelectMenuElement::ResetOptionParts() {
+  // Remove part status from all current option parts
+  while (!option_parts_.IsEmpty()) {
+    OptionPartRemoved(option_parts_.back());
+  }
+
+  // Find new option parts under the new listbox
+  for (Node* node = SelectMenuPartTraversal::FirstChild(*this); node;
+       node = SelectMenuPartTraversal::Next(*node, this)) {
+    if (IsValidOptionPart(node, /*show_warning=*/false)) {
+      OptionPartInserted(DynamicTo<HTMLOptionElement>(node));
+    }
+  }
+}
+
+void HTMLSelectMenuElement::OptionPartInserted(
+    HTMLOptionElement* new_option_part) {
   if (!IsValidOptionPart(new_option_part, /*show_warning=*/true)) {
     return;
   }
@@ -478,12 +611,10 @@ void HTMLSelectMenuElement::OptionPartInserted(Element* new_option_part) {
     new_option_element->OptionInsertedIntoSelectMenuElement();
   }
 
-  new_option_part->addEventListener(event_type_names::kClick,
-                                    option_part_listener_, false);
-  // TODO(crbug.com/1121840) We don't want to actually change the attribute,
-  // and if tabindex is already set we shouldn't override it.  So we need to
-  // come up with something else here.
-  new_option_part->setTabIndex(-1);
+  new_option_part->addEventListener(
+      event_type_names::kClick, option_part_listener_, /*use_capture=*/false);
+  new_option_part->addEventListener(
+      event_type_names::kKeydown, option_part_listener_, /*use_capture=*/false);
 
   // TODO(crbug.com/1191131) The option part list should match the flat tree
   // order.
@@ -496,7 +627,7 @@ void HTMLSelectMenuElement::OptionPartInserted(Element* new_option_part) {
   }
 }
 
-void HTMLSelectMenuElement::OptionPartRemoved(Element* option_part) {
+void HTMLSelectMenuElement::OptionPartRemoved(HTMLOptionElement* option_part) {
   if (!option_parts_.Contains(option_part)) {
     return;
   }
@@ -505,11 +636,10 @@ void HTMLSelectMenuElement::OptionPartRemoved(Element* option_part) {
     option_element->OptionRemovedFromSelectMenuElement();
   }
 
-  option_part->removeEventListener(event_type_names::kClick,
-                                   option_part_listener_, false);
-  // TODO(crbug.com/1121840) Whenever we figure out how to set
-  // focusability properly (without using tabIndex), we should undo up
-  // those changes here for elements that are no longer option parts.
+  option_part->removeEventListener(
+      event_type_names::kClick, option_part_listener_, /*use_capture=*/false);
+  option_part->removeEventListener(
+      event_type_names::kKeydown, option_part_listener_, /*use_capture=*/false);
   option_parts_.erase(option_part);
 
   if (selected_option_ == option_part) {
@@ -522,21 +652,14 @@ void HTMLSelectMenuElement::OptionPartRemoved(Element* option_part) {
   }
 }
 
-Element* HTMLSelectMenuElement::FirstOptionPart() const {
+HTMLOptionElement* HTMLSelectMenuElement::FirstOptionPart() const {
   // TODO(crbug.com/1121840) This is going to be replaced by an option part
   // list iterator, or we could reuse OptionListIterator if we decide that just
   // <option>s are supported as option parts.
-  for (Node* node = FlatTreeTraversal::FirstChild(*this); node != nullptr;
-       node = FlatTreeTraversal::Next(*node, this)) {
-    auto* element = DynamicTo<Element>(node);
-    if (!element) {
-      continue;
-    }
-
-    if ((element->getAttribute(html_names::kPartAttr) == kOptionPartName ||
-         IsA<HTMLOptionElement>(element)) &&
-        IsValidOptionPart(element, /*show_warning=*/false)) {
-      return element;
+  for (Node* node = SelectMenuPartTraversal::FirstChild(*this); node;
+       node = SelectMenuPartTraversal::Next(*node, this)) {
+    if (IsValidOptionPart(node, /*show_warning=*/false)) {
+      return DynamicTo<HTMLOptionElement>(node);
     }
   }
 
@@ -549,10 +672,7 @@ void HTMLSelectMenuElement::EnsureSelectedOptionIsValid() {
   // option is still valid before using it. In future, we may move to observe
   // DOM tree mutation synchronously.
   if (selected_option_ &&
-      ((selected_option_->getAttribute(html_names::kPartAttr) !=
-            kOptionPartName &&
-        !IsA<HTMLOptionElement>(selected_option_.Get())) ||
-       !IsValidOptionPart(selected_option_, /*show_warning=*/false))) {
+      !IsValidOptionPart(selected_option_, /*show_warning=*/false)) {
     OptionPartRemoved(selected_option_);
   }
 }
@@ -562,12 +682,45 @@ Element* HTMLSelectMenuElement::SelectedOption() {
   return selected_option_;
 }
 
-void HTMLSelectMenuElement::SetSelectedOption(Element* selected_option) {
+void HTMLSelectMenuElement::SetSelectedOption(
+    HTMLOptionElement* selected_option) {
   if (selected_option_ == selected_option)
     return;
 
+  if (selected_option_)
+    selected_option_->SetSelectedState(false);
+
   selected_option_ = selected_option;
+
+  if (selected_option_)
+    selected_option_->SetSelectedState(true);
+
   UpdateSelectedValuePartContents();
+  NotifyFormStateChanged();
+}
+
+void HTMLSelectMenuElement::SelectNextOption() {
+  for (Node* node = SelectMenuPartTraversal::Next(*SelectedOption(), this);
+       node; node = SelectMenuPartTraversal::Next(*node, this)) {
+    if (IsValidOptionPart(node, /*show_warning=*/false)) {
+      auto* element = DynamicTo<HTMLOptionElement>(node);
+      SetSelectedOption(element);
+      element->focus();
+      return;
+    }
+  }
+}
+
+void HTMLSelectMenuElement::SelectPreviousOption() {
+  for (Node* node = SelectMenuPartTraversal::Previous(*SelectedOption(), this);
+       node; node = SelectMenuPartTraversal::Previous(*node, this)) {
+    if (IsValidOptionPart(node, /*show_warning=*/false)) {
+      auto* element = DynamicTo<HTMLOptionElement>(node);
+      SetSelectedOption(element);
+      element->focus();
+      return;
+    }
+  }
 }
 
 void HTMLSelectMenuElement::UpdateSelectedValuePartContents() {
@@ -586,19 +739,97 @@ void HTMLSelectMenuElement::ButtonPartEventListener::Invoke(ExecutionContext*,
   if (event->type() == event_type_names::kClick &&
       !select_menu_element_->open()) {
     select_menu_element_->OpenListbox();
+  } else if (event->type() == event_type_names::kKeydown) {
+    bool handled = false;
+    auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+    if (!keyboard_event)
+      return;
+    switch (keyboard_event->keyCode()) {
+      case VKEY_RETURN:
+      case VKEY_SPACE:
+        if (!select_menu_element_->open()) {
+          select_menu_element_->OpenListbox();
+        }
+        handled = true;
+        break;
+    }
+    if (handled) {
+      event->stopPropagation();
+      event->SetDefaultHandled();
+    }
   }
 }
 
 void HTMLSelectMenuElement::OptionPartEventListener::Invoke(ExecutionContext*,
                                                             Event* event) {
   if (event->type() == event_type_names::kClick) {
-    Element* target_element =
-        DynamicTo<Element>(event->currentTarget()->ToNode());
+    auto* target_element =
+        DynamicTo<HTMLOptionElement>(event->currentTarget()->ToNode());
     DCHECK(target_element);
     DCHECK(select_menu_element_->option_parts_.Contains(target_element));
     select_menu_element_->SetSelectedOption(target_element);
-    select_menu_element_->listbox_part_->hide();
+    select_menu_element_->CloseListbox();
+  } else if (event->type() == event_type_names::kKeydown) {
+    bool handled = false;
+    auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+    if (!keyboard_event)
+      return;
+    switch (keyboard_event->keyCode()) {
+      case VKEY_RETURN: {
+        auto* target_element =
+            DynamicTo<HTMLOptionElement>(event->currentTarget()->ToNode());
+        DCHECK(target_element);
+        DCHECK(select_menu_element_->option_parts_.Contains(target_element));
+        select_menu_element_->SetSelectedOption(target_element);
+        select_menu_element_->CloseListbox();
+        handled = true;
+        break;
+      }
+      case VKEY_SPACE: {
+        // Prevent the default behavior of scrolling the page on spacebar
+        // that would cause the listbox to close.
+        handled = true;
+        break;
+      }
+      case VKEY_UP: {
+        select_menu_element_->SelectPreviousOption();
+        handled = true;
+        break;
+      }
+      case VKEY_DOWN: {
+        select_menu_element_->SelectNextOption();
+        handled = true;
+        break;
+      }
+    }
+    if (handled) {
+      event->stopPropagation();
+      event->SetDefaultHandled();
+    }
   }
+}
+
+const AtomicString& HTMLSelectMenuElement::FormControlType() const {
+  DEFINE_STATIC_LOCAL(const AtomicString, selectmenu, ("selectmenu"));
+  return selectmenu;
+}
+
+bool HTMLSelectMenuElement::MayTriggerVirtualKeyboard() const {
+  return true;
+}
+
+void HTMLSelectMenuElement::AppendToFormData(FormData& form_data) {
+  if (!GetName().IsEmpty())
+    form_data.AppendFromElement(GetName(), value());
+}
+
+FormControlState HTMLSelectMenuElement::SaveFormControlState() const {
+  return FormControlState(const_cast<HTMLSelectMenuElement*>(this)->value());
+}
+
+void HTMLSelectMenuElement::RestoreFormControlState(
+    const FormControlState& state) {
+  setValue(state[0]);
 }
 
 void HTMLSelectMenuElement::Trace(Visitor* visitor) const {
@@ -609,13 +840,14 @@ void HTMLSelectMenuElement::Trace(Visitor* visitor) const {
   visitor->Trace(selected_value_part_);
   visitor->Trace(listbox_part_);
   visitor->Trace(option_parts_);
+  visitor->Trace(button_slot_);
+  visitor->Trace(listbox_slot_);
   visitor->Trace(selected_option_);
-  HTMLElement::Trace(visitor);
+  HTMLFormControlElementWithState::Trace(visitor);
 }
 
 constexpr char HTMLSelectMenuElement::kButtonPartName[];
 constexpr char HTMLSelectMenuElement::kSelectedValuePartName[];
 constexpr char HTMLSelectMenuElement::kListboxPartName[];
-constexpr char HTMLSelectMenuElement::kOptionPartName[];
 
 }  // namespace blink

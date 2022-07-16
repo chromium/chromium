@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_util.h"
 
 namespace breadcrumbs {
 
@@ -66,7 +67,8 @@ BreadcrumbManagerKeyedService::BreadcrumbManagerKeyedService(
     // Set "I" for Incognito (Chrome branded OffTheRecord implementation) and
     // empty string for Normal browsing mode.
     : browsing_mode_(is_off_the_record ? "I " : ""),
-      breadcrumb_manager_(std::make_unique<BreadcrumbManager>()) {}
+      breadcrumb_manager_(std::make_unique<BreadcrumbManager>(GetStartTime())) {
+}
 
 BreadcrumbManagerKeyedService::~BreadcrumbManagerKeyedService() = default;
 

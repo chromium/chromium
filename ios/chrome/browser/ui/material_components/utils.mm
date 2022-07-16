@@ -14,7 +14,6 @@
 #import <MaterialComponents/MaterialShadowLayer.h>
 
 #include "base/mac/foundation_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -46,7 +45,8 @@ void ConfigureAppBarViewControllerWithCardStyle(
       MDCFlexibleHeaderShiftBehaviorDisabled;
   viewController.headerView.backgroundColor =
       [UIColor colorNamed:kSecondaryBackgroundColor];
-  viewController.navigationBar.tintColor = UIColor.cr_labelColor;
+  viewController.navigationBar.tintColor =
+      [UIColor colorNamed:kTextPrimaryColor];
   viewController.navigationBar.titleAlignment =
       MDCNavigationBarTitleAlignmentLeading;
 

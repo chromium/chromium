@@ -86,10 +86,13 @@ ui::WindowShowState ToWindowShowState(WindowStateType type) {
   return ui::SHOW_STATE_DEFAULT;
 }
 
-bool IsFullscreenOrPinnedWindowStateType(WindowStateType type) {
-  return type == WindowStateType::kFullscreen ||
-         type == WindowStateType::kPinned ||
+bool IsPinnedWindowStateType(WindowStateType type) {
+  return type == WindowStateType::kPinned ||
          type == WindowStateType::kTrustedPinned;
+}
+
+bool IsFullscreenOrPinnedWindowStateType(WindowStateType type) {
+  return type == WindowStateType::kFullscreen || IsPinnedWindowStateType(type);
 }
 
 bool IsMaximizedOrFullscreenOrPinnedWindowStateType(WindowStateType type) {

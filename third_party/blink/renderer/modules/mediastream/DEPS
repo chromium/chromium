@@ -25,10 +25,12 @@ include_rules = [
     "+skia/ext/platform_canvas.h",
 
     "+base/atomicops.h",
-    "+base/bind_post_task.h",
+    "+base/task/bind_post_task.h",
     "+base/files/file.h",
     "+base/metrics/field_trial.h",
 
+    "+base/guid.h",
+    "+base/token.h",
     "+base/trace_event/trace_event.h",
     "+base/unguessable_token.h",
     "+media/audio",
@@ -38,7 +40,7 @@ include_rules = [
     "+media/webrtc/audio_delay_stats_reporter.h",
     "+media/webrtc/audio_processor_controls.h",
     "+media/webrtc/helpers.h",
-    "+media/webrtc/webrtc_switches.h",
+    "+media/webrtc/webrtc_features.h",
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/event_modules.h",
     "+third_party/blink/renderer/modules/event_target_modules.h",

@@ -110,7 +110,7 @@ class OfferNotificationInfoBarControllerImplBrowserTest
 IN_PROC_BROWSER_TEST_F(OfferNotificationInfoBarControllerImplBrowserTest,
                        ShowInfobarOnlyOncePerDomain) {
   AutofillOfferData offer =
-      CreateTestOfferWithOrigins({GetInitialUrl().GetOrigin()});
+      CreateTestOfferWithOrigins({GetInitialUrl().DeprecatedGetOriginAsURL()});
   ShowOfferNotificationInfoBar(&offer);
   // Verify that the infobar was shown and logged.
   infobars::InfoBar* infobar = GetInfoBar();
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationInfoBarControllerImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(OfferNotificationInfoBarControllerImplBrowserTest,
                        ShowInfobarAndAccept) {
   AutofillOfferData offer =
-      CreateTestOfferWithOrigins({GetInitialUrl().GetOrigin()});
+      CreateTestOfferWithOrigins({GetInitialUrl().DeprecatedGetOriginAsURL()});
   ShowOfferNotificationInfoBar(&offer);
   // Verify that the infobar was shown.
   infobars::InfoBar* infobar = GetInfoBar();
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationInfoBarControllerImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(OfferNotificationInfoBarControllerImplBrowserTest,
                        ShowInfobarAndClose) {
   AutofillOfferData offer =
-      CreateTestOfferWithOrigins({GetInitialUrl().GetOrigin()});
+      CreateTestOfferWithOrigins({GetInitialUrl().DeprecatedGetOriginAsURL()});
   ShowOfferNotificationInfoBar(&offer);
   // Verify that the infobar was shown.
   infobars::InfoBar* infobar = GetInfoBar();

@@ -12,11 +12,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/win/registry.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/chrome_elf/chrome_elf_constants.h"
 #include "chrome/chrome_elf/dll_hash/dll_hash.h"
 #include "chrome/chrome_elf/third_party_dlls/public_api.h"
 #include "chrome/common/chrome_version.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/install_static/install_util.h"
+#include "components/prefs/pref_service.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -103,6 +106,16 @@ ExtensionPointEnableState GetExtensionPointsEnableState() {
   return EXTENSIONPOINT_ENABLED;
 }
 
+bool IsBrowserLegacyExtensionPointsBlocked() {
+  PrefService* local_state = g_browser_process->local_state();
+  if (!local_state ||
+      !local_state->HasPrefPath(prefs::kBlockBrowserLegacyExtensionPoints) ||
+      !local_state->IsManagedPreference(
+          prefs::kBlockBrowserLegacyExtensionPoints))
+    return true;
+  return local_state->GetBoolean(prefs::kBlockBrowserLegacyExtensionPoints);
+}
+
 }  // namespace
 
 void InitializeChromeElf() {
@@ -130,7 +143,8 @@ void InitializeChromeElf() {
   bool enable_extension_point_policy =
       (extension_point_enable_state == EXTENSIONPOINT_ENABLED) &&
       base::FeatureList::IsEnabled(
-          sandbox::policy::features::kWinSboxDisableExtensionPoints);
+          sandbox::policy::features::kWinSboxDisableExtensionPoints) &&
+      IsBrowserLegacyExtensionPointsBlocked();
 
   if (enable_extension_point_policy) {
     if (!browser_extension_point_registry_key.Valid()) {

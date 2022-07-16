@@ -11,11 +11,11 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "cc/base/rolling_time_delta_history.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/resources/returned_resource.h"
@@ -93,12 +93,13 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
       std::unique_ptr<DisplaySchedulerBase> scheduler,
       scoped_refptr<base::SingleThreadTaskRunner> current_task_runner);
 
+  Display(const Display&) = delete;
+  Display& operator=(const Display&) = delete;
+
   ~Display() override;
 
-  static constexpr base::TimeDelta kDrawToSwapMin =
-      base::TimeDelta::FromMicroseconds(5);
-  static constexpr base::TimeDelta kDrawToSwapMax =
-      base::TimeDelta::FromMilliseconds(50);
+  static constexpr base::TimeDelta kDrawToSwapMin = base::Microseconds(5);
+  static constexpr base::TimeDelta kDrawToSwapMax = base::Milliseconds(50);
   static constexpr uint32_t kDrawToSwapUsBuckets = 50;
 
   // TODO(cblume, crbug.com/900973): |enable_shared_images| is a temporary
@@ -122,6 +123,10 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   void SetVisible(bool visible);
   void Resize(const gfx::Size& new_size);
 
+  // Sets the current SurfaceId to an invalid value. Additionally, the display
+  // will fail to draw until SetLocalSurfaceId() is called.
+  void InvalidateCurrentSurfaceId();
+
   // This disallows resource provider to access GPU thread to unlock resources
   // outside of Initialize, DrawAndSwap and dtor.
   void DisableGPUAccessByDefault();
@@ -142,11 +147,14 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
       const gfx::DisplayColorSpaces& display_color_spaces);
   void SetOutputIsSecure(bool secure);
 
-  const SurfaceId& CurrentSurfaceId();
+  const SurfaceId& CurrentSurfaceId() const;
 
   // DisplaySchedulerClient implementation.
   bool DrawAndSwap(base::TimeTicks expected_display_time) override;
   void DidFinishFrame(const BeginFrameAck& ack) override;
+  base::TimeDelta GetEstimatedDisplayDrawTime(const base::TimeDelta interval,
+                                              double percentile) const override;
+  void OnObservingBeginFrameSourceChanged(bool observing) override;
 
   // OutputSurfaceClient implementation.
   void SetNeedsRedrawRect(const gfx::Rect& damage_rect) override;
@@ -216,6 +224,10 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
    public:
     PresentationGroupTiming();
     PresentationGroupTiming(PresentationGroupTiming&& other);
+
+    PresentationGroupTiming(const PresentationGroupTiming&) = delete;
+    PresentationGroupTiming& operator=(const PresentationGroupTiming&) = delete;
+
     ~PresentationGroupTiming();
 
     void AddPresentationHelper(
@@ -235,8 +247,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
     gfx::SwapTimings swap_timings_;
     std::vector<std::unique_ptr<Surface::PresentationHelper>>
         presentation_helpers_;
-
-    DISALLOW_COPY_AND_ASSIGN(PresentationGroupTiming);
   };
 
   // TODO(cblume, crbug.com/900973): |enable_shared_images| is a temporary
@@ -310,7 +320,9 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // The height of the top-controls in the previously drawn frame.
   float last_top_controls_visible_height_ = 0.f;
 
-  DISALLOW_COPY_AND_ASSIGN(Display);
+  // The historical drawing times of the most recent 100 frames. Recorded
+  // without the delays caused by waiting for scheduling.
+  cc::RollingTimeDeltaHistory draw_time_without_scheduling_waits_{100};
 };
 
 }  // namespace viz

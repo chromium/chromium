@@ -18,6 +18,19 @@ Profile* GetProfile() {
   return ProfileManager::GetPrimaryUserProfile();
 }
 
+drive::DriveIntegrationService* GetDriveService() {
+  return GetProfile() ? drive::DriveIntegrationServiceFactory::GetForProfile(
+                            GetProfile())
+                      : nullptr;
+}
+
+const base::FilePath GetMountPoint() {
+  return GetDriveService() && GetDriveService()->IsMounted()
+             ? GetDriveService()->GetMountPointPath().Append(
+                   drive::util::kDriveMyDriveRootDirName)
+             : base::FilePath();
+}
+
 }  // namespace
 
 DriveIntegrationServiceAsh::DriveIntegrationServiceAsh() = default;
@@ -30,14 +43,36 @@ void DriveIntegrationServiceAsh::BindReceiver(
 
 void DriveIntegrationServiceAsh::GetMountPointPath(
     GetMountPointPathCallback callback) {
-  drive::DriveIntegrationService* drive_service =
-      drive::DriveIntegrationServiceFactory::GetForProfile(GetProfile());
-  const base::FilePath drive_mount =
-      drive_service && drive_service->IsMounted()
-          ? drive_service->GetMountPointPath().Append(
-                drive::util::kDriveMyDriveRootDirName)
-          : base::FilePath();
-  std::move(callback).Run(drive_mount);
+  std::move(callback).Run(GetMountPoint());
+}
+
+void DriveIntegrationServiceAsh::AddDriveIntegrationServiceObserver(
+    mojo::PendingRemote<mojom::DriveIntegrationServiceObserver> observer) {
+  DCHECK(GetDriveService());
+  drive_service_observation_.Reset();
+  drive_service_observation_.Observe(GetDriveService());
+  mojo::Remote<mojom::DriveIntegrationServiceObserver> remote(
+      std::move(observer));
+  observers_.Add(std::move(remote));
+  // Fire the observer with the initial value.
+  for (auto& observer : observers_)
+    observer->OnMountPointPathChanged(GetMountPoint());
+}
+
+void DriveIntegrationServiceAsh::OnFileSystemMounted() {
+  for (auto& observer : observers_)
+    observer->OnMountPointPathChanged(GetMountPoint());
+}
+void DriveIntegrationServiceAsh::OnFileSystemBeingUnmounted() {
+  for (auto& observer : observers_)
+    observer->OnMountPointPathChanged(base::FilePath());
+}
+void DriveIntegrationServiceAsh::OnFileSystemMountFailed() {
+  for (auto& observer : observers_)
+    observer->OnMountPointPathChanged(base::FilePath());
+}
+void DriveIntegrationServiceAsh::OnDriveIntegrationServiceDestroyed() {
+  drive_service_observation_.Reset();
 }
 
 }  // namespace crosapi

@@ -5,11 +5,10 @@
 #include "content/browser/background_sync/background_sync_base_browsertest.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/background_sync/background_sync_network_observer.h"
@@ -34,6 +33,12 @@ namespace content {
 class OneShotBackgroundSyncBrowserTest : public BackgroundSyncBaseBrowserTest {
  public:
   OneShotBackgroundSyncBrowserTest() {}
+
+  OneShotBackgroundSyncBrowserTest(const OneShotBackgroundSyncBrowserTest&) =
+      delete;
+  OneShotBackgroundSyncBrowserTest& operator=(
+      const OneShotBackgroundSyncBrowserTest&) = delete;
+
   ~OneShotBackgroundSyncBrowserTest() override {}
 
   bool Register(const std::string& tag);
@@ -47,9 +52,6 @@ class OneShotBackgroundSyncBrowserTest : public BackgroundSyncBaseBrowserTest {
   bool GetTags(const std::vector<std::string>& expected_tags);
   bool GetTagsFromServiceWorker(const std::vector<std::string>& expected_tags);
   bool RejectDelayedSyncEvent();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OneShotBackgroundSyncBrowserTest);
 };
 
 bool OneShotBackgroundSyncBrowserTest::Register(const std::string& tag) {
@@ -82,8 +84,7 @@ void OneShotBackgroundSyncBrowserTest::WaitForTagRemoval(const std::string& tag,
   while (HasTag(tag)) {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(pauses_ms));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(pauses_ms));
     run_loop.Run();
   }
 }

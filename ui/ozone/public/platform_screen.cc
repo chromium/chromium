@@ -35,7 +35,7 @@ bool PlatformScreen::IsScreenSaverActive() const {
 
 base::TimeDelta PlatformScreen::CalculateIdleTime() const {
   NOTIMPLEMENTED_LOG_ONCE();
-  return base::TimeDelta::FromSeconds(0);
+  return base::Seconds(0);
 }
 
 std::vector<base::Value> PlatformScreen::GetGpuExtraInfo(

@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -51,6 +52,11 @@ public class InternalAuthenticator {
     @CalledByNative
     public void setEffectiveOrigin(Origin origin) {
         mAuthenticator.setEffectiveOrigin(origin);
+    }
+
+    @CalledByNative
+    public void setPaymentOptions(ByteBuffer payment) {
+        mAuthenticator.setPaymentOptions(PaymentOptions.deserialize(payment));
     }
 
     /**

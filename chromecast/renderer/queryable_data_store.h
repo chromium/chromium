@@ -26,6 +26,10 @@ class QueryableDataStore : public shell::mojom::QueryableDataStore {
  public:
   explicit QueryableDataStore(
       const scoped_refptr<base::TaskRunner> render_main_thread);
+
+  QueryableDataStore(const QueryableDataStore&) = delete;
+  QueryableDataStore& operator=(const QueryableDataStore&) = delete;
+
   ~QueryableDataStore() override;
 
   void BindQueryableDataStoreReceiver(
@@ -38,8 +42,6 @@ class QueryableDataStore : public shell::mojom::QueryableDataStore {
   const scoped_refptr<base::TaskRunner> render_main_thread_;
 
   mojo::ReceiverSet<shell::mojom::QueryableDataStore> queryable_data_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueryableDataStore);
 };
 
 }  // namespace chromecast

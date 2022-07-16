@@ -42,11 +42,13 @@ Polymer({
    *
    * @param {string} iconUri the icon uri to be wrapped.
    * @param {string} imageLabel the aria label of the image.
+   * @param {string} background the background color of the icon, default to
+   * white if unspecified.
    * @return {string} wrapped html snippet.
    *
    * @private
    */
-  getWrappedIcon(iconUri, imageLabel) {
+  getWrappedIcon(iconUri, imageLabel, background) {
     return String.raw`
     <html>
       <style>
@@ -54,6 +56,8 @@ Polymer({
           margin: 0;
         }
         #icon {
+          background: ` +
+        (background || 'white') + `;
           width: 20px;
           height: 20px;
           user-select: none;

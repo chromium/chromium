@@ -13,11 +13,7 @@ namespace autofill {
 namespace features {
 
 // All features in alphabetical order.
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutocompleteFilterForMeaningfulNames;
 COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillAcrossIframes;
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillAddressEnhancementVotes;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillAddressProfileSavePrompt;
 COMPONENT_EXPORT(AUTOFILL)
@@ -48,12 +44,12 @@ extern const base::Feature kAutofillAllowDuplicateFormSubmissions;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillAllowNonHttpActivation;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillAugmentFormsInRenderer;
-COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillCreateDataForTest;
 COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillDisableFilling;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillDisableAddressImport;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillDisplaceRemovedForms;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableAccountWalletStorage;
 COMPONENT_EXPORT(AUTOFILL)
@@ -92,9 +88,13 @@ extern const base::Feature kAutofillEnableSupportForHonorificPrefixes;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillExtractAllDatalists;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillTypeSpecificPopupWidth;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillFixFillableFieldTypes;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillIgnoreAutocompleteForImport;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillHighlightOnlyChangedValuesInPreviewMode;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillServerTypeTakesPrecedence;
 COMPONENT_EXPORT(AUTOFILL)
@@ -105,8 +105,14 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillKeyboardAccessory;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillLabelAffixRemoval;
-COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillPruneSuggestions;
-COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillMetadataUploads;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillCenterAlignedSuggestions;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kAutofillMaximumPixelsToMoveSuggestionopupToCenter;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kAutofillMaxiumWidthPercentageToMoveSuggestionPopupToCenter;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillParsingPatternsFromRemote;
 COMPONENT_EXPORT(AUTOFILL)
@@ -115,8 +121,6 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillParsingPatternsNegativeMatching;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillParsingPatternsLanguageDependent;
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillPreventMixedFormsFilling;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillProbableFormSubmissionInBrowser;
 COMPONENT_EXPORT(AUTOFILL)
@@ -135,6 +139,8 @@ extern const base::Feature kAutofillServerCommunication;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillShowTypePredictions;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillSilentProfileUpdateForInsufficientImport;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillSkipComparingInferredLabels;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillStrictContextualCardNameConditions;
@@ -148,8 +154,9 @@ extern const base::Feature kAutofillUseImprovedLabelDisambiguation;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillUseNewSectioningMethod;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature
-    kAutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval;
+extern const base::Feature kAutofillUseConsistentPopupSettingsIcons;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillUseUnassociatedListedElements;
 
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableAblationStudy;
@@ -168,6 +175,8 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillManualFallbackAndroid;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillRefreshStyleAndroid;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillTouchToFillForCreditCardsAndroid;
 #endif  // OS_ANDROID
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
@@ -198,10 +207,8 @@ extern const base::Feature
 
 #if defined(OS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAndroidAutofillQueryServerFieldTypes;
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kWalletRequiresFirstSyncSetupComplete;
-#endif
+bool IsAutofillManualFallbackEnabled();
+#endif  // OS_ANDROID
 
 }  // namespace features
 }  // namespace autofill

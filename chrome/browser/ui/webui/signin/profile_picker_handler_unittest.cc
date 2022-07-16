@@ -3,20 +3,39 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
+
+#include <vector>
+
+#include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/util/values/values_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
+#include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
+#include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_addition_result.h"
+#include "components/account_manager_core/mock_account_manager_facade.h"
+#endif
 
 void VerifyProfileEntry(const base::Value& value,
                         ProfileAttributesEntry* entry) {
   EXPECT_EQ(*value.FindKey("profilePath"),
-            util::FilePathToValue(entry->GetPath()));
+            base::FilePathToValue(entry->GetPath()));
   EXPECT_EQ(*value.FindStringKey("localProfileName"),
             base::UTF16ToUTF8(entry->GetLocalProfileName()));
   EXPECT_EQ(value.FindBoolKey("isSyncing"),
@@ -38,8 +57,37 @@ class ProfilePickerHandlerTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Configure a mock account manager facade.
+    ON_CALL(mock_account_manager_facade_, GetAccounts(testing::_))
+        .WillByDefault(
+            [this](
+                base::OnceCallback<void(
+                    const std::vector<account_manager::Account>&)> callback) {
+              DCHECK(!facade_get_accounts_callback_);
+              facade_get_accounts_callback_ = std::move(callback);
+            });
+    ON_CALL(mock_account_manager_facade_, GetPersistentErrorForAccount)
+        .WillByDefault(
+            [](const account_manager::AccountKey&,
+               base::OnceCallback<void(const GoogleServiceAuthError&)>
+                   callback) {
+              std::move(callback).Run(GoogleServiceAuthError::AuthErrorNone());
+            });
+    profile_manager()->SetAccountProfileMapper(
+        std::make_unique<AccountProfileMapper>(
+            &mock_account_manager_facade_,
+            profile_manager()->profile_attributes_storage()));
+#endif
+
+    system_profile_ = profile_manager()->CreateSystemProfile();
+    web_ui_.set_web_contents(
+        web_contents_factory_.CreateWebContents(system_profile_));
     handler_.set_web_ui(&web_ui_);
+    handler_.RegisterMessages();
   }
+
   void VerifyProfileListWasPushed(
       const std::vector<ProfileAttributesEntry*>& ordered_profile_entries) {
     ASSERT_TRUE(!web_ui()->call_data().empty());
@@ -58,13 +106,13 @@ class ProfilePickerHandlerTest : public testing::Test {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     ASSERT_EQ("cr.webUIListenerCallback", data.function_name());
     ASSERT_EQ("profile-removed", data.arg1()->GetString());
-    ASSERT_EQ(*data.arg2(), util::FilePathToValue(profile_path));
+    ASSERT_EQ(*data.arg2(), base::FilePathToValue(profile_path));
   }
 
   void InitializeMainViewAndVerifyProfileList(
       const std::vector<ProfileAttributesEntry*>& ordered_profile_entries) {
     base::ListValue empty_args;
-    handler()->HandleMainViewInitialize(&empty_args);
+    web_ui()->HandleReceivedMessage("mainViewInitialize", &empty_args);
     VerifyProfileListWasPushed(ordered_profile_entries);
   }
 
@@ -84,9 +132,32 @@ class ProfilePickerHandlerTest : public testing::Test {
   content::TestWebUI* web_ui() { return &web_ui_; }
   ProfilePickerHandler* handler() { return &handler_; }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  account_manager::MockAccountManagerFacade* mock_account_manager_facade() {
+    return &mock_account_manager_facade_;
+  }
+
+  void CompleteFacadeGetAccounts(
+      const std::vector<account_manager::Account>& accounts) {
+    std::move(facade_get_accounts_callback_).Run(accounts);
+  }
+#endif
+
  private:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kMultiProfileAccountConsistency};
+  account_manager::MockAccountManagerFacade mock_account_manager_facade_;
+
+  // Callback to configure the accounts in the facade.
+  base::OnceCallback<void(const std::vector<account_manager::Account>&)>
+      facade_get_accounts_callback_;
+#endif
+
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
+  content::TestWebContentsFactory web_contents_factory_;
+  Profile* system_profile_ = nullptr;
   content::TestWebUI web_ui_;
   ProfilePickerHandler handler_;
 };
@@ -220,3 +291,113 @@ TEST_F(ProfilePickerHandlerTest, OmittedProfileOnInit) {
   VerifyProfileListWasPushed({profile_a, profile_c, profile_d, profile_b});
   web_ui()->ClearTrackedCalls();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+TEST_F(ProfilePickerHandlerTest, HandleGetUnassignedAccounts) {
+  // Send message to the handler.
+  base::ListValue empty_args;
+  web_ui()->HandleReceivedMessage("getUnassignedAccounts", &empty_args);
+
+  // Check that the handler replied.
+  // TODO(https://crbug/1226050): Update the test once this is fully
+  // implemented.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
+  EXPECT_EQ("unassigned-accounts-changed", data.arg1()->GetString());
+  EXPECT_TRUE(data.arg2()->GetList().empty());
+}
+
+TEST_F(ProfilePickerHandlerTest, CreateProfileExistingAccount) {
+  // Lacros always expects a default profile.
+  CreateTestingProfile("Default");
+
+  // Add account to the facade.
+  const std::string kGaiaId = "some_gaia_id";
+  CompleteFacadeGetAccounts({account_manager::Account{
+      account_manager::AccountKey{kGaiaId, account_manager::AccountType::kGaia},
+      "example@gmail.com"}});
+
+  // OS account addition flow should not trigger.
+  EXPECT_CALL(*mock_account_manager_facade(),
+              ShowAddAccountDialog(testing::_, testing::_))
+      .Times(0);
+
+  // Request profile creation with the existing account.
+  ProfileWaiter profile_waiter;
+  base::ListValue args;
+  args.Append(/*color=*/base::Value());
+  args.Append(/*gaiaId=*/kGaiaId);
+  web_ui()->HandleReceivedMessage("loadSignInProfileCreationFlow", &args);
+
+  // Check profile creation.
+  Profile* new_profile = profile_waiter.WaitForProfileAdded();
+  ASSERT_TRUE(new_profile);
+  ProfileAttributesEntry* entry =
+      profile_manager()
+          ->profile_attributes_storage()
+          ->GetProfileAttributesWithPath(new_profile->GetPath());
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->GetGaiaIds(), base::flat_set<std::string>{kGaiaId});
+
+  // Check that the handler replied.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
+  EXPECT_EQ("load-signin-finished", data.arg1()->GetString());
+  bool success = data.arg2()->GetBool();
+  EXPECT_TRUE(success);
+}
+
+TEST_F(ProfilePickerHandlerTest, CreateProfileNewAccount) {
+  // Lacros always expects a default profile.
+  CreateTestingProfile("Default");
+  CompleteFacadeGetAccounts({});
+
+  // Mock the OS account addition.
+  const std::string kGaiaId = "some_gaia_id";
+  account_manager::Account account{
+      account_manager::AccountKey{kGaiaId, account_manager::AccountType::kGaia},
+      "example@gmail.com"};
+  EXPECT_CALL(
+      *mock_account_manager_facade(),
+      ShowAddAccountDialog(account_manager::AccountManagerFacade::
+                               AccountAdditionSource::kChromeProfileCreation,
+                           testing::_))
+      .WillOnce(
+          [account](
+              account_manager::AccountManagerFacade::AccountAdditionSource,
+              base::OnceCallback<void(
+                  const account_manager::AccountAdditionResult&)> callback) {
+            std::move(callback).Run(
+                account_manager::AccountAdditionResult::FromAccount(account));
+          });
+
+  // Request profile creation.
+  ProfileWaiter profile_waiter;
+  base::ListValue args;
+  args.Append(/*color=*/base::Value());
+  args.Append(/*gaiaId=*/base::Value(base::Value::Type::STRING));
+  web_ui()->HandleReceivedMessage("loadSignInProfileCreationFlow", &args);
+
+  // Check profile creation.
+  Profile* new_profile = profile_waiter.WaitForProfileAdded();
+  ASSERT_TRUE(new_profile);
+  ProfileAttributesEntry* entry =
+      profile_manager()
+          ->profile_attributes_storage()
+          ->GetProfileAttributesWithPath(new_profile->GetPath());
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->GetGaiaIds(), base::flat_set<std::string>{kGaiaId});
+
+  // Check that the handler replied.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
+  EXPECT_EQ("load-signin-finished", data.arg1()->GetString());
+  bool success = data.arg2()->GetBool();
+  EXPECT_TRUE(success);
+}
+
+#endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)

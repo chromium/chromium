@@ -84,7 +84,7 @@ def _ParseIntValue(value, on_error=-1):
   # Try to parse as int and, in case of error, return a pre-defined value.
   try:
     return int(value)
-  except StandardError:
+  except Exception:
     return on_error
 
 

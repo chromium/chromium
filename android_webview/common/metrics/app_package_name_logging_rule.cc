@@ -4,8 +4,8 @@
 
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
 
+#include "base/json/values_util.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -63,7 +63,7 @@ AppPackageNameLoggingRule::FromDictionary(const base::Value& dict) {
     return AppPackageNameLoggingRule(version, base::Time::Min());
   }
   absl::optional<base::Time> expiry_date =
-      util::ValueToTime(*expiry_date_value);
+      base::ValueToTime(*expiry_date_value);
   if (!expiry_date.has_value()) {
     return AppPackageNameLoggingRule(version, base::Time::Min());
   }
@@ -76,7 +76,7 @@ base::Value AppPackageNameLoggingRule::ToDictionary() {
 
   dict.SetStringKey(kVersionKey, version_.GetString());
   if (!expiry_date_.is_min()) {
-    dict.SetKey(kExpiryDateKey, util::TimeToValue(expiry_date_));
+    dict.SetKey(kExpiryDateKey, base::TimeToValue(expiry_date_));
   }
   return dict;
 }

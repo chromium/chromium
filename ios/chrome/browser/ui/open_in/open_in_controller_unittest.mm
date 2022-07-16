@@ -87,15 +87,11 @@ class OpenInControllerTest : public PlatformTest {
 TEST_F(OpenInControllerTest, TestDisplayOpenInMenu) {
   histogram_tester_.ExpectTotalCount(kOpenInDownloadResultHistogram, 0);
 
-  // Pointer to allow us to grab the VC instance in our validation callback.
-  __block UIActivityViewController* activityViewController;
-
   id vc_partial_mock = OCMPartialMock(base_view_controller);
   [[vc_partial_mock expect]
       presentViewController:[OCMArg checkWithBlock:^BOOL(
                                         UIViewController* viewController) {
         if ([viewController isKindOfClass:[UIActivityViewController class]]) {
-          activityViewController = (UIActivityViewController*)viewController;
           return YES;
         }
         return NO;

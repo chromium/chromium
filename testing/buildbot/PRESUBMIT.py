@@ -29,7 +29,9 @@ def CheckTests(input_api, output_api):
   tests = input_api.canned_checks.GetUnitTests(input_api,
                                                output_api,
                                                input_api.glob(glob),
-                                               run_on_python2=False)
+                                               run_on_python2=False,
+                                               run_on_python3=True,
+                                               skip_shebang_check=True)
   return input_api.RunTests(tests)
 
 

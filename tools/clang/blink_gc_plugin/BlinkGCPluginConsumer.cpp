@@ -371,9 +371,7 @@ void BlinkGCPluginConsumer::CheckPolymorphicClass(
 CXXRecordDecl* BlinkGCPluginConsumer::GetLeftMostBase(
     CXXRecordDecl* left_most) {
   CXXRecordDecl::base_class_iterator it = left_most->bases_begin();
-  CXXRecordDecl* previous_left_most = left_most;
   while (it != left_most->bases_end()) {
-    previous_left_most = left_most;
     if (it->getType()->isDependentType())
       left_most = RecordInfo::GetDependentTemplatedDecl(*it->getType());
     else
@@ -381,12 +379,6 @@ CXXRecordDecl* BlinkGCPluginConsumer::GetLeftMostBase(
     if (!left_most || !left_most->hasDefinition())
       return 0;
     it = left_most->bases_begin();
-  }
-  if (Config::IsCppgcGCBase(left_most->getName())) {
-    // In the cppgc library, the GC base classes share a common parent. The
-    // common parent should be ignored for the purposes of getting the left
-    // most base.
-    return previous_left_most;
   }
   return left_most;
 }

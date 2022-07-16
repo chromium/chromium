@@ -18,7 +18,7 @@ import org.chromium.mojo.bindings.BindingsTestUtils.CapturingErrorHandler;
 import org.chromium.mojo.bindings.test.mojom.imported.ImportedInterface;
 import org.chromium.mojo.bindings.test.mojom.sample.Factory;
 import org.chromium.mojo.bindings.test.mojom.sample.NamedObject;
-import org.chromium.mojo.bindings.test.mojom.sample.NamedObject.GetNameResponse;
+import org.chromium.mojo.bindings.test.mojom.sample.NamedObject.GetName_Response;
 import org.chromium.mojo.bindings.test.mojom.sample.Request;
 import org.chromium.mojo.bindings.test.mojom.sample.Response;
 import org.chromium.mojo.system.DataPipe.ConsumerHandle;
@@ -61,7 +61,7 @@ public class InterfacesTest {
         }
 
         @Override
-        public void getName(GetNameResponse callback) {
+        public void getName(GetName_Response callback) {
             callback.call(mName);
         }
 
@@ -73,7 +73,7 @@ public class InterfacesTest {
     /**
      * Implementation of {@link GetNameResponse} keeping track of usage.
      */
-    public static class RecordingGetNameResponse implements GetNameResponse {
+    public static class RecordingGetNameResponse implements GetName_Response {
         private String mName;
         private boolean mCalled;
 
@@ -120,7 +120,7 @@ public class InterfacesTest {
         }
 
         @Override
-        public void doStuff(Request request, MessagePipeHandle pipe, DoStuffResponse callback) {
+        public void doStuff(Request request, MessagePipeHandle pipe, DoStuff_Response callback) {
             if (pipe != null) {
                 pipe.close();
             }
@@ -130,7 +130,7 @@ public class InterfacesTest {
         }
 
         @Override
-        public void doStuff2(ConsumerHandle pipe, DoStuff2Response callback) {
+        public void doStuff2(ConsumerHandle pipe, DoStuff2_Response callback) {
             callback.call("World");
         }
 
@@ -155,7 +155,7 @@ public class InterfacesTest {
     /**
      * Implementation of DoStuffResponse that keeps track of if the response is called.
      */
-    public static class DoStuffResponseImpl implements Factory.DoStuffResponse {
+    public static class DoStuffResponseImpl implements Factory.DoStuff_Response {
         private boolean mResponseCalled;
 
         public boolean wasResponseCalled() {

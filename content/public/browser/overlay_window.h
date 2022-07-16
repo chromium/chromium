@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace gfx {
@@ -39,6 +38,10 @@ class OverlayWindow {
   };
 
   OverlayWindow() = default;
+
+  OverlayWindow(const OverlayWindow&) = delete;
+  OverlayWindow& operator=(const OverlayWindow&) = delete;
+
   virtual ~OverlayWindow() = default;
 
   // Returns a created OverlayWindow. This is defined in the platform-specific
@@ -67,9 +70,6 @@ class OverlayWindow {
   virtual void SetHangUpButtonVisibility(bool is_visible) = 0;
   virtual void SetSurfaceId(const viz::SurfaceId& surface_id) = 0;
   virtual cc::Layer* GetLayerForTesting() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverlayWindow);
 };
 
 }  // namespace content

@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
@@ -73,6 +72,10 @@ void WrapInstallerCallback(update_client::Callback callback,
 class TestUpdater : public OnDemandUpdater {
  public:
   TestUpdater() = default;
+
+  TestUpdater(const TestUpdater&) = delete;
+  TestUpdater& operator=(const TestUpdater&) = delete;
+
   ~TestUpdater() override = default;
 
   // Whether has a pending update request (either foreground or background).
@@ -174,8 +177,6 @@ class TestUpdater : public OnDemandUpdater {
       component_installers_;
   // Maps a registered component ID to the component name.
   std::map<std::string, std::string> component_id_to_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUpdater);
 };
 
 }  // namespace
@@ -184,6 +185,10 @@ class CrOSComponentInstallerTest : public testing::Test {
  public:
   CrOSComponentInstallerTest()
       : user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
+
+  CrOSComponentInstallerTest(const CrOSComponentInstallerTest&) = delete;
+  CrOSComponentInstallerTest& operator=(const CrOSComponentInstallerTest&) =
+      delete;
 
   void SetUp() override {
     ASSERT_TRUE(base_component_paths_.CreateUniqueTempDir());
@@ -359,8 +364,6 @@ class CrOSComponentInstallerTest : public testing::Test {
   base::FilePath user_cros_components_;
 
   base::FilePath tmp_unpack_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrOSComponentInstallerTest);
 };
 
 TEST_F(CrOSComponentInstallerTest, CompatibleCrOSComponent) {
@@ -389,9 +392,8 @@ TEST_F(CrOSComponentInstallerTest, CompatibilityOK) {
   EnvVersionInstallerPolicy policy(config, installer.get());
   base::Version version;
   base::FilePath path("/path");
-  std::unique_ptr<base::DictionaryValue> manifest =
-      std::make_unique<base::DictionaryValue>();
-  manifest->SetString("min_env_version", "2.1");
+  base::Value manifest(base::Value::Type::DICTIONARY);
+  manifest.SetStringKey("min_env_version", "2.1");
   policy.ComponentReady(version, path, std::move(manifest));
   // Component is compatible and was registered.
   EXPECT_EQ(path, installer->GetCompatiblePath("component"));
@@ -406,8 +408,7 @@ TEST_F(CrOSComponentInstallerTest, CompatibilityMissingManifest) {
   EnvVersionInstallerPolicy policy(config, installer.get());
   base::Version version;
   base::FilePath path("/path");
-  std::unique_ptr<base::DictionaryValue> manifest =
-      std::make_unique<base::DictionaryValue>();
+  base::Value manifest(base::Value::Type::DICTIONARY);
   policy.ComponentReady(version, path, std::move(manifest));
   // No compatible path was registered.
   EXPECT_EQ(base::FilePath(), installer->GetCompatiblePath("component"));
@@ -437,15 +438,15 @@ TEST_F(CrOSComponentInstallerTest, LacrosMinVersion) {
   LacrosInstallerPolicy policy(config, installer.get());
 
   // Simulate finding an incompatible existing install.
-  policy.ComponentReady(base::Version("8.0.0.0"),
-                        base::FilePath("/lacros/8.0.0.0"),
-                        /*manifest=*/nullptr);
+  policy.ComponentReady(
+      base::Version("8.0.0.0"), base::FilePath("/lacros/8.0.0.0"),
+      /*manifest=*/base::Value(base::Value::Type::DICTIONARY));
   EXPECT_TRUE(installer->GetCompatiblePath("lacros-fishfood").empty());
 
   // Simulate finding a compatible existing install.
-  policy.ComponentReady(base::Version("9.0.0.0"),
-                        base::FilePath("/lacros/9.0.0.0"),
-                        /*manifest=*/nullptr);
+  policy.ComponentReady(
+      base::Version("9.0.0.0"), base::FilePath("/lacros/9.0.0.0"),
+      /*manifest=*/base::Value(base::Value::Type::DICTIONARY));
   EXPECT_EQ("/lacros/9.0.0.0",
             installer->GetCompatiblePath("lacros-fishfood").MaybeAsASCII());
 

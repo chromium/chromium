@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "ui/base/buildflags.h"
+#include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(USE_ATK)
 using AtkKeyEventStruct = struct _AtkKeyEventStruct;
@@ -34,11 +35,19 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) X11ExtensionDelegate {
 #endif
 
   // Returns true if this window should be in a forced override-redirect state
-  // (not managed by the window manager). If |is_tiling_wm| is set to true, the
-  // underlaying window manager is tiling. If it is set to false, the wm is
-  // stacking. The delegate can use this information to determine the value
-  // returned for override-redirect.
-  virtual bool IsOverrideRedirect(bool is_tiling_wm) const = 0;
+  // (not managed by the window manager).
+  virtual bool IsOverrideRedirect() const = 0;
+
+  // Returns guessed size we will have after the switch to/from fullscreen:
+  // - (may) avoid transient states
+  // - works around Flash content which expects to have the size updated
+  //   synchronously.
+  // See https://crbug.com/361408
+  // TODO(1096425): remove this and let this managed by X11ScreenOzone that
+  // Ozone's X11Window should be able to access instead. This delegate method
+  // is required as non-Ozone/X11 is not able to determine matching display
+  // as it requires to know bounds in dip.
+  virtual gfx::Rect GetGuessedFullScreenSizeInPx() const = 0;
 
  protected:
   virtual ~X11ExtensionDelegate() = default;

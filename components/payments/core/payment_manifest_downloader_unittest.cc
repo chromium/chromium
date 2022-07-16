@@ -548,6 +548,10 @@ class WebAppManifestDownloaderTest : public testing::Test {
                        base::Unretained(this)));
   }
 
+  WebAppManifestDownloaderTest(const WebAppManifestDownloaderTest&) = delete;
+  WebAppManifestDownloaderTest& operator=(const WebAppManifestDownloaderTest&) =
+      delete;
+
   ~WebAppManifestDownloaderTest() override {}
 
   MOCK_METHOD3(OnManifestDownload,
@@ -575,8 +579,6 @@ class WebAppManifestDownloaderTest : public testing::Test {
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   PaymentManifestDownloader downloader_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAppManifestDownloaderTest);
 };
 
 TEST_F(WebAppManifestDownloaderTest, HttpGetResponse404IsFailure) {

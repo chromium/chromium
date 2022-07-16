@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
 import {MockProgressCenter} from '../../background/js/mock_progress_center.js';
@@ -11,6 +11,7 @@ import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {reportPromise} from '../../common/js/test_error_reporting.js';
+import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
@@ -18,7 +19,6 @@ import {EntryLocation} from '../../externs/entry_location.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
 
-import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileTasks} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
@@ -515,75 +515,6 @@ export function testOpenWithMostRecentlyExecuted(callback) {
   reportPromise(promise, callback);
 }
 
-/**
- * Tests opening a .zip file.
- */
-export function testOpenZipWithZipArchiver(callback) {
-  const zipArchiverDescriptor = {
-    appId: 'dmboannefpncccogfdikhmhpmdnddgoe',
-    taskType: 'app',
-    actionId: 'open',
-  };
-
-  window.chrome.fileManagerPrivate.getFileTasks = (entries, callback) => {
-    setTimeout(
-        callback.bind(
-            null,
-            [
-              {
-                descriptor: zipArchiverDescriptor,
-                isDefault: false,
-                isGenericFileHandler: false,
-                title: 'Zip Archiver',
-              },
-            ]),
-        0);
-  };
-
-  // None of the tasks has ever been executed.
-  const taskHistory = /** @type {!TaskHistory} */ ({
-    getLastExecutedTime: function(descriptor) {
-      return 0;
-    },
-    recordTaskExecuted: function(descriptor) {},
-  });
-
-  let executedTask = null;
-  window.chrome.fileManagerPrivate.executeTask =
-      (descriptor, entries, onViewFiles) => {
-        executedTask = descriptor;
-        onViewFiles('success');
-      };
-
-  const mockFileSystem = new MockFileSystem('volumeId');
-  const mockEntry = MockFileEntry.create(mockFileSystem, '/test.zip');
-
-  const promise = new Promise((resolve, reject) => {
-    const fileManager = getMockFileManager();
-    fileManager.ui.defaultTaskPicker = {
-      showDefaultTaskDialog: function(
-          title, message, items, defaultIdx, onSuccess) {
-        failWithMessage('run zip archiver', 'default task picker was shown');
-      },
-    };
-
-    FileTasks
-        .create(
-            fileManager.volumeManager, fileManager.metadataModel,
-            fileManager.directoryModel, fileManager.ui,
-            mockFileTransferController, [mockEntry], [null], taskHistory,
-            fileManager.namingController, fileManager.crostini,
-            fileManager.progressCenter)
-        .then(tasks => {
-          tasks.executeDefault();
-          assertTrue(util.descriptorEqual(zipArchiverDescriptor, executedTask));
-          resolve();
-        });
-  });
-
-  reportPromise(promise, callback);
-}
-
 function setUpInstallLinuxPackage() {
   const fileManager = getMockFileManager();
   fileManager.volumeManager.getLocationInfo = entry => {
@@ -593,7 +524,7 @@ function setUpInstallLinuxPackage() {
   };
   const fileTask = {
     descriptor: {
-      appId: constants.FILES_APP_EXTENSION_ID,
+      appId: LEGACY_FILES_EXTENSION_ID,
       taskType: 'app',
       actionId: 'install-linux-package'
     },
@@ -650,7 +581,7 @@ export function testToOpenTiniFileOpensImportCrostiniImageDialog(callback) {
             [
               {
                 descriptor: {
-                  appId: constants.FILES_APP_EXTENSION_ID,
+                  appId: LEGACY_FILES_EXTENSION_ID,
                   taskType: 'app',
                   actionId: 'import-crostini-image'
                 },
@@ -688,84 +619,17 @@ export function testGetViewFileType() {
 /**
  * Checks that we are correctly recording UMA about Share action.
  */
-export function testRecordSharingAction() {
+export function testRecordSharingFileTypes() {
   // Setup: create a fake metrics object that can be examined for content.
   const mockFileSystem = new MockFileSystem('volumeId');
 
   // Actual tests.
-  FileTasks.recordSharingActionUMA_(
-      FileTasks.SharingActionSourceForUMA.CONTEXT_MENU, [
-        MockFileEntry.create(mockFileSystem, '/test.log'),
-        MockFileEntry.create(mockFileSystem, '/test.doc'),
-        MockFileEntry.create(mockFileSystem, '/test.__no_such_extension__'),
-      ]);
-  assertArrayEquals(
-      enumMap.get('Share.ActionSource'),
-      [FileTasks.SharingActionSourceForUMA.CONTEXT_MENU]);
-  assertArrayEquals(countMap.get('Share.FileCount'), [3]);
-  assertArrayEquals(enumMap.get('Share.FileType'), ['.log', '.doc', 'other']);
-
-  FileTasks.recordSharingActionUMA_(
-      FileTasks.SharingActionSourceForUMA.SHARE_BUTTON, [
-        MockFileEntry.create(mockFileSystem, '/test.log'),
-      ]);
-  assertArrayEquals(enumMap.get('Share.ActionSource'), [
-    FileTasks.SharingActionSourceForUMA.CONTEXT_MENU,
-    FileTasks.SharingActionSourceForUMA.SHARE_BUTTON,
+  FileTasks.recordSharingFileTypesUMA_([
+    MockFileEntry.create(mockFileSystem, '/test.log'),
+    MockFileEntry.create(mockFileSystem, '/test.doc'),
+    MockFileEntry.create(mockFileSystem, '/test.__no_such_extension__'),
   ]);
-  assertArrayEquals(countMap.get('Share.FileCount'), [3, 1]);
-  assertArrayEquals(
-      enumMap.get('Share.FileType'), ['.log', '.doc', 'other', '.log']);
-}
-
-/**
- * Checks that file task is correctly recognized as a file sharing task.
- */
-export function testIsSharingTask() {
-  const mockShareTask = /** @type {!chrome.fileManagerPrivate.FileTask} */ ({
-    verb: chrome.fileManagerPrivate.Verb.SHARE_WITH,
-  });
-  assertTrue(FileTasks.isShareTask(mockShareTask));
-  const mockPackTask = /** @type {!chrome.fileManagerPrivate.FileTask} */ ({
-    verb: '__no_such_verb__',
-  });
-  assertFalse(FileTasks.isShareTask(mockPackTask));
-}
-
-/**
- * Checks that a task sharing files with external apps correctly records
- * UMA statistics.
- */
-export async function testShareWith(done) {
-  const fileManager = getMockFileManager();
-  const mockFileSystem = new MockFileSystem('volumeId');
-  const entries = [
-    MockFileEntry.create(mockFileSystem, '/image1.jpg'),
-    MockFileEntry.create(mockFileSystem, '/image2.jpg'),
-  ];
-
-  const tasks = await FileTasks.create(
-      fileManager.volumeManager, fileManager.metadataModel,
-      fileManager.directoryModel, fileManager.ui, mockFileTransferController,
-      entries, ['application/jpg'], mockTaskHistory,
-      fileManager.namingController, fileManager.crostini,
-      fileManager.progressCenter);
-
-  const mockTask = /** @type {!chrome.fileManagerPrivate.FileTask} */ ({
-    descriptor: {
-      appId: 'com.acme/com.acme.android.PhotosApp',
-      taskType: 'arc',
-      actionId: 'send_multiple'
-    },
-    isDefault: false,
-    verb: chrome.fileManagerPrivate.Verb.SHARE_WITH,
-    isGenericFileHandler: true,
-  });
-  tasks.execute(mockTask);
-  assertArrayEquals(['.jpg', '.jpg'], enumMap.get('Share.FileType'));
-  assertArrayEquals([2], countMap.get('Share.FileCount'));
-
-  done();
+  assertArrayEquals(enumMap.get('Share.FileType'), ['.log', '.doc', 'other']);
 }
 
 /**

@@ -7,12 +7,14 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "components/leveldb_proto/internal/proto_leveldb_wrapper.h"
 #include "components/leveldb_proto/internal/shared_proto_database.h"
+#include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 
 namespace leveldb_proto {
@@ -34,7 +36,7 @@ class ObsoleteClientsDbHolder
   void set_success(bool success) { success_ &= success; }
 
  private:
-  friend class RefCounted<ObsoleteClientsDbHolder>;
+  friend class base::RefCounted<ObsoleteClientsDbHolder>;
   ~ObsoleteClientsDbHolder() { std::move(callback_).Run(success_); }
 
   bool success_;
@@ -45,11 +47,16 @@ class ObsoleteClientsDbHolder
 }  // namespace
 
 // static
+bool SharedProtoDatabaseClient::HasPrefix(const std::string& key,
+                                          const std::string& prefix) {
+  return base::StartsWith(key, prefix, base::CompareCase::SENSITIVE);
+}
+
+// static
 std::string SharedProtoDatabaseClient::StripPrefix(const std::string& key,
                                                    const std::string& prefix) {
-  return base::StartsWith(key, prefix, base::CompareCase::SENSITIVE)
-             ? key.substr(prefix.length())
-             : key;
+  DCHECK(HasPrefix(key, prefix));
+  return HasPrefix(key, prefix) ? key.substr(prefix.length()) : key;
 }
 
 // static
@@ -69,6 +76,18 @@ bool SharedProtoDatabaseClient::KeyFilterStripPrefix(
   if (key_filter.is_null())
     return true;
   return key_filter.Run(StripPrefix(key, prefix));
+}
+
+// static
+Enums::KeyIteratorAction
+SharedProtoDatabaseClient::KeyIteratorControllerStripPrefix(
+    const KeyIteratorController& controller,
+    const std::string& prefix,
+    const std::string& key) {
+  DCHECK(!controller.is_null());
+  if (!HasPrefix(key, prefix))
+    return Enums::kSkipAndStop;
+  return controller.Run(StripPrefix(key, prefix));
 }
 
 // static
@@ -260,6 +279,20 @@ void SharedProtoDatabaseClient::LoadKeysAndEntriesInRange(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UniqueProtoDatabase::LoadKeysAndEntriesInRange(
       prefix_ + start, prefix_ + end,
+      base::BindOnce(
+          &SharedProtoDatabaseClient::StripPrefixLoadKeysAndEntriesCallback,
+          std::move(callback), prefix_));
+}
+
+void SharedProtoDatabaseClient::LoadKeysAndEntriesWhile(
+    const std::string& start,
+    const leveldb_proto::KeyIteratorController& controller,
+    Callbacks::LoadKeysAndEntriesCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  UniqueProtoDatabase::LoadKeysAndEntriesWhile(
+      prefix_ + start,
+      base::BindRepeating(&KeyIteratorControllerStripPrefix, controller,
+                          prefix_),
       base::BindOnce(
           &SharedProtoDatabaseClient::StripPrefixLoadKeysAndEntriesCallback,
           std::move(callback), prefix_));

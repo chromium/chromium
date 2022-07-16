@@ -316,7 +316,7 @@ public class TabListCoordinator
      *         animations for tab switcher.
      */
     int getTabListTopOffset() {
-        if (!ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()) return 0;
+        if (!ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mContext)) return 0;
         Rect tabListRect = getRecyclerViewLocation();
         Rect parentRect = new Rect();
         mRootView.getGlobalVisibleRect(parentRect);

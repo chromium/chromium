@@ -342,12 +342,9 @@ bool ParseCertificate(const der::Input& certificate_tlv,
                       CertErrors* out_errors) {
   // |out_errors| is optional. But ensure it is non-null for the remainder of
   // this function.
-  if (!out_errors) {
-    CertErrors unused_errors;
-    return ParseCertificate(certificate_tlv, out_tbs_certificate_tlv,
-                            out_signature_algorithm_tlv, out_signature_value,
-                            &unused_errors);
-  }
+  CertErrors unused_errors;
+  if (!out_errors)
+    out_errors = &unused_errors;
 
   der::Parser parser(certificate_tlv);
 
@@ -414,10 +411,9 @@ bool ParseTbsCertificate(const der::Input& tbs_tlv,
                          ParsedTbsCertificate* out,
                          CertErrors* errors) {
   // The rest of this function assumes that |errors| is non-null.
-  if (!errors) {
-    CertErrors unused_errors;
-    return ParseTbsCertificate(tbs_tlv, options, out, &unused_errors);
-  }
+  CertErrors unused_errors;
+  if (!errors)
+    errors = &unused_errors;
 
   // TODO(crbug.com/634443): Add useful error information to |errors|.
 

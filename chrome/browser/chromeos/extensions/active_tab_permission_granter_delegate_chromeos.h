@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_ACTIVE_TAB_PERMISSION_GRANTER_DELEGATE_CHROMEOS_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_ACTIVE_TAB_PERMISSION_GRANTER_DELEGATE_CHROMEOS_H_
 
-#include "base/macros.h"
 #include "chrome/browser/chromeos/extensions/public_session_permission_helper.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 
@@ -25,6 +24,12 @@ class ActiveTabPermissionGranterDelegateChromeOS
     : public ActiveTabPermissionGranter::Delegate {
  public:
   ActiveTabPermissionGranterDelegateChromeOS();
+
+  ActiveTabPermissionGranterDelegateChromeOS(
+      const ActiveTabPermissionGranterDelegateChromeOS&) = delete;
+  ActiveTabPermissionGranterDelegateChromeOS& operator=(
+      const ActiveTabPermissionGranterDelegateChromeOS&) = delete;
+
   ~ActiveTabPermissionGranterDelegateChromeOS() override;
 
   static void SetRequestResolvedCallbackForTesting(
@@ -34,9 +39,6 @@ class ActiveTabPermissionGranterDelegateChromeOS
   bool ShouldGrantActiveTabOrPrompt(
       const Extension* extension,
       content::WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveTabPermissionGranterDelegateChromeOS);
 };
 
 }  // namespace extensions

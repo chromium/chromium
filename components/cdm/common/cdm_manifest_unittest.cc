@@ -186,13 +186,13 @@ TEST(CdmManifestTest, ValidManifest) {
   CdmCapability capability;
   EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
   CheckVideoCodecs(capability.video_codecs,
-                   {media::VideoCodec::kCodecVP8, media::VideoCodec::kCodecVP9,
-                    media::VideoCodec::kCodecAV1});
+                   {media::VideoCodec::kVP8, media::VideoCodec::kVP9,
+                    media::VideoCodec::kAV1});
   CheckAudioCodecs(capability.audio_codecs, {
-    media::AudioCodec::kCodecOpus, media::AudioCodec::kCodecVorbis,
-        media::AudioCodec::kCodecFLAC,
+    media::AudioCodec::kOpus, media::AudioCodec::kVorbis,
+        media::AudioCodec::kFLAC,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-        media::AudioCodec::kCodecAAC,
+        media::AudioCodec::kAAC,
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
   });
   CheckEncryptionSchemes(
@@ -209,10 +209,10 @@ TEST(CdmManifestTest, EmptyManifest) {
   EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
   CheckVideoCodecs(capability.video_codecs, {});
   CheckAudioCodecs(capability.audio_codecs, {
-    media::AudioCodec::kCodecOpus, media::AudioCodec::kCodecVorbis,
-        media::AudioCodec::kCodecFLAC,
+    media::AudioCodec::kOpus, media::AudioCodec::kVorbis,
+        media::AudioCodec::kFLAC,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-        media::AudioCodec::kCodecAAC,
+        media::AudioCodec::kAAC,
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
   });
   CheckEncryptionSchemes(capability.encryption_schemes,
@@ -229,26 +229,26 @@ TEST(CdmManifestTest, ManifestCodecs) {
     CdmCapability capability;
     manifest.SetStringKey(kCdmCodecsListName, "vp8");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kCodecVP8});
+    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kVP8});
   }
   {
     CdmCapability capability;
     manifest.SetStringKey(kCdmCodecsListName, "vp09");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kCodecVP9});
+    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kVP9});
   }
   {
     CdmCapability capability;
     manifest.SetStringKey(kCdmCodecsListName, "av01");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kCodecAV1});
+    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kAV1});
   }
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   {
     CdmCapability capability;
     manifest.SetStringKey(kCdmCodecsListName, "avc1");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kCodecH264});
+    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kH264});
   }
 #endif
   {
@@ -256,9 +256,9 @@ TEST(CdmManifestTest, ManifestCodecs) {
     CdmCapability capability;
     manifest.SetStringKey(kCdmCodecsListName, "vp8,vp09,av01");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kCodecVP8,
-                                               media::VideoCodec::kCodecVP9,
-                                               media::VideoCodec::kCodecAV1});
+    CheckVideoCodecs(capability.video_codecs,
+                     {media::VideoCodec::kVP8, media::VideoCodec::kVP9,
+                      media::VideoCodec::kAV1});
   }
   {
     // Empty codecs list result in empty list.
@@ -272,7 +272,7 @@ TEST(CdmManifestTest, ManifestCodecs) {
     CdmCapability capability;
     manifest.SetStringKey(kCdmCodecsListName, "invalid,av01");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kCodecAV1});
+    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kAV1});
   }
   {
     // Legacy: "vp9.0" was used to support VP9 profile 0 (no profile 2 support).
@@ -411,8 +411,8 @@ TEST(CdmManifestTest, FileManifest) {
   EXPECT_TRUE(version.IsValid());
   EXPECT_EQ(version.GetString(), kVersion);
   CheckVideoCodecs(capability.video_codecs,
-                   {media::VideoCodec::kCodecVP8, media::VideoCodec::kCodecVP9,
-                    media::VideoCodec::kCodecAV1});
+                   {media::VideoCodec::kVP8, media::VideoCodec::kVP9,
+                    media::VideoCodec::kAV1});
   CheckEncryptionSchemes(
       capability.encryption_schemes,
       {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs});

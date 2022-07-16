@@ -17,12 +17,21 @@ namespace {
 // for details.
 //
 // Note: Most Chrome process exits will not invoke the AtExit handler, so
-// MFShutdown() will generally not be called. However, we use the default
-// singleton traits (which register an AtExit handler) for tests and remoting.
+// MFShutdown() will generally not be called. However, we use singleton traits
+// that register an AtExit handler for tests and remoting.
 class MediaFoundationSession {
  public:
   static MediaFoundationSession* GetInstance() {
-    return base::Singleton<MediaFoundationSession>::get();
+    // StaticMemorySingletonTraits are preferred over DefaultSingletonTraits to
+    // allow access from CONTINUE_ON_SHUTDOWN tasks. This means we don't mind a
+    // task reading the value of `has_media_foundation_` even after the AtExit
+    // hook has run the destructor. StaticMemorySingletonTraits actually make
+    // this safe by allocating the singleton with placement new into a static
+    // buffer: The destructor doesn't free the memory occupied by the object
+    // and it also leaves the object state intact.
+    return base::Singleton<
+        MediaFoundationSession,
+        base::StaticMemorySingletonTraits<MediaFoundationSession>>::get();
   }
 
   ~MediaFoundationSession() {
@@ -35,7 +44,7 @@ class MediaFoundationSession {
   bool has_media_foundation() const { return has_media_foundation_; }
 
  private:
-  friend struct base::DefaultSingletonTraits<MediaFoundationSession>;
+  friend struct base::StaticMemorySingletonTraits<MediaFoundationSession>;
 
   MediaFoundationSession() {
     const auto hr = MFStartup(MF_VERSION, MFSTARTUP_LITE);

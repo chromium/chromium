@@ -10,24 +10,16 @@ source_set("color_headers") {
   public_deps = [ "//ui/color:color_headers" ]
 }
 
-executable("dump_colors") {
-  testonly = true
-
-  sources = [ "tools/dump_colors.cc" ]
-
-  deps = [
-    ":color_headers",
-    ":mixers",
-    "//ui/color:mixers",
-  ]
-}
-
 source_set("mixers") {
   sources = [
+    "chrome_color_mixer.cc",
+    "chrome_color_mixer.h",
     "chrome_color_mixers.cc",
     "chrome_color_mixers.h",
-    "omnibox_color_mixers.cc",
-    "omnibox_color_mixers.h",
+    "chrome_color_provider_utils.cc",
+    "chrome_color_provider_utils.h",
+    "omnibox_color_mixer.cc",
+    "omnibox_color_mixer.h",
   ]
 
   deps = [
@@ -35,4 +27,38 @@ source_set("mixers") {
     "//ui/color:color",
     "//ui/color:mixers",
   ]
+}
+
+if (!is_ios && !is_android && !is_chromecast && !is_fuchsia) {
+  executable("dump_colors") {
+    testonly = true
+
+    sources = [ "tools/dump_colors.cc" ]
+
+    deps = [
+      ":color_headers",
+      ":mixers",
+      "//chrome/browser",
+      "//ui/color:mixers",
+    ]
+
+    if (is_mac) {
+      sources += [
+        "//chrome/app/chrome_crash_reporter_client.cc",
+        "//chrome/app/chrome_crash_reporter_client_mac.mm",
+      ]
+
+      deps += [
+        "//chrome/app_shim",
+        "//components/upload_list",
+      ]
+    }
+
+    if (is_win) {
+      deps += [
+        "//chrome/chrome_elf:test_stubs",
+        "//components/crash/core/app:crash_export_thunks",
+      ]
+    }
+  }
 }

@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/base/audio_sample_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

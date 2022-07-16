@@ -7,6 +7,7 @@
 #include <iostream>
 #include <utility>
 
+#include "base/base_paths.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
@@ -14,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
@@ -21,6 +23,7 @@
 #include "content/common/content_constants_internal.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/main_function_params.h"
 #include "content/public/common/url_constants.h"
 #include "content/shell/app/shell_crash_reporter_client.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -74,10 +77,6 @@
 #if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
 #include "v8/include/v8-wasm-trap-handler-posix.h"
 #endif
-
-#if defined(OS_FUCHSIA)
-#include "base/base_paths_fuchsia.h"
-#endif  // OS_FUCHSIA
 
 namespace {
 
@@ -225,12 +224,12 @@ void ShellMainDelegate::PreSandboxStartup() {
   InitializeResourceBundle();
 }
 
-int ShellMainDelegate::RunProcess(
+absl::variant<int, MainFunctionParams> ShellMainDelegate::RunProcess(
     const std::string& process_type,
-    const MainFunctionParams& main_function_params) {
+    MainFunctionParams main_function_params) {
   // For non-browser process, return and have the caller run the main loop.
   if (!process_type.empty())
-    return -1;
+    return std::move(main_function_params);
 
   base::trace_event::TraceLog::GetInstance()->set_process_name("Browser");
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
@@ -239,7 +238,7 @@ int ShellMainDelegate::RunProcess(
 #if !defined(OS_ANDROID)
   if (switches::IsRunWebTestsSwitchPresent()) {
     // Web tests implement their own BrowserMain() replacement.
-    web_test_runner_->RunBrowserMain(main_function_params);
+    web_test_runner_->RunBrowserMain(std::move(main_function_params));
     web_test_runner_.reset();
     // Returning 0 to indicate that we have replaced BrowserMain() and the
     // caller should not call BrowserMain() itself. Web tests do not ever
@@ -247,9 +246,9 @@ int ShellMainDelegate::RunProcess(
     return 0;
   }
 
-  // On non-Android, we can return -1 and have the caller run BrowserMain()
-  // normally.
-  return -1;
+  // On non-Android, we can return the |main_function_params| back and have the
+  // caller run BrowserMain() normally.
+  return std::move(main_function_params);
 #else
   // On Android, we defer to the system message loop when the stack unwinds.
   // So here we only create (and leak) a BrowserMainRunner. The shutdown
@@ -259,7 +258,8 @@ int ShellMainDelegate::RunProcess(
   // In browser tests, the |main_function_params| contains a |ui_task| which
   // will execute the testing. The task will be executed synchronously inside
   // Initialize() so we don't depend on the BrowserMainRunner being Run().
-  int initialize_exit_code = main_runner->Initialize(main_function_params);
+  int initialize_exit_code =
+      main_runner->Initialize(std::move(main_function_params));
   DCHECK_LT(initialize_exit_code, 0)
       << "BrowserMainRunner::Initialize failed in ShellMainDelegate";
   ignore_result(main_runner.release());
@@ -317,7 +317,7 @@ void ShellMainDelegate::InitializeResourceBundle() {
   ui::ResourceBundle::InitSharedInstanceWithPakFileRegion(
       android_pak_file.Duplicate(), pak_region);
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromFileRegion(
-      std::move(android_pak_file), pak_region, ui::SCALE_FACTOR_100P);
+      std::move(android_pak_file), pak_region, ui::k100Percent);
 #elif defined(OS_MAC)
   ui::ResourceBundle::InitSharedInstanceWithPakPath(GetResourcesPakFilePath());
 #else

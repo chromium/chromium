@@ -29,13 +29,15 @@ namespace safe_browsing {
 
 namespace {
 
+constexpr size_t kReadFileChunkSize = 4096;
+
 std::string GetFileMimeType(const base::FilePath& path,
-                            const base::MemoryMappedFile& file) {
+                            base::StringPiece first_bytes) {
   std::string sniffed_mime_type;
   bool sniff_found = net::SniffMimeType(
-      base::StringPiece(
-          reinterpret_cast<const char*>(file.data()),
-          std::min(file.length(), static_cast<size_t>(net::kMaxBytesToSniff))),
+      base::StringPiece(first_bytes.data(),
+                        std::min(first_bytes.size(),
+                                 static_cast<size_t>(net::kMaxBytesToSniff))),
       net::FilePathToFileURL(path),
       /*type_hint*/ std::string(), net::ForceSniffFileUrlsForHtml::kDisabled,
       &sniffed_mime_type);
@@ -66,7 +68,10 @@ std::string GetFileMimeType(const base::FilePath& path,
 
 std::pair<BinaryUploadService::Result, BinaryUploadService::Request::Data>
 GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
-  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  // FLAG_SHARE_DELETE is necessary to allow the file to be renamed by the user
+  // clicking "Open Now" without causing download errors.
+  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                            base::File::FLAG_SHARE_DELETE);
 
   if (!file.IsValid()) {
     return std::make_pair(BinaryUploadService::Result::UNKNOWN,
@@ -79,21 +84,34 @@ GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
                           BinaryUploadService::Request::Data());
   }
 
-  base::MemoryMappedFile mm_file;
-  if (!mm_file.Initialize(std::move(file)) || !mm_file.IsValid()) {
-    return std::make_pair(BinaryUploadService::Result::UNKNOWN,
-                          BinaryUploadService::Request::Data());
-  }
-
   BinaryUploadService::Request::Data file_data;
   file_data.size = file_size;
   file_data.path = path;
-  if (detect_mime_type)
-    file_data.mime_type = GetFileMimeType(path, mm_file);
 
   std::unique_ptr<crypto::SecureHash> secure_hash =
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  secure_hash->Update(mm_file.data(), file_size);
+  size_t bytes_read = 0;
+  std::string buf;
+  buf.reserve(kReadFileChunkSize);
+
+  while (bytes_read < file_size) {
+    int64_t bytes_currently_read =
+        file.ReadAtCurrentPos(&buf[0], kReadFileChunkSize);
+    if (bytes_currently_read == -1) {
+      return {BinaryUploadService::Result::UNKNOWN,
+              BinaryUploadService::Request::Data()};
+    }
+
+    // Use the first read chunk to get the mimetype as necessary.
+    if (detect_mime_type && (bytes_read == 0)) {
+      file_data.mime_type = GetFileMimeType(
+          path, base::StringPiece(buf.data(), bytes_currently_read));
+    }
+
+    secure_hash->Update(buf.data(), bytes_currently_read);
+    bytes_read += bytes_currently_read;
+  }
+
   file_data.hash.resize(crypto::kSHA256Length);
   secure_hash->Finish(base::data(file_data.hash), crypto::kSHA256Length);
   file_data.hash =
@@ -203,9 +221,6 @@ bool FileAnalysisRequest::HasMalwareRequest() const {
 
 void FileAnalysisRequest::OnGotFileData(
     std::pair<BinaryUploadService::Result, Data> result_and_data) {
-  set_digest(result_and_data.second.hash);
-  set_content_type(result_and_data.second.mime_type);
-
   if (result_and_data.first != BinaryUploadService::Result::SUCCESS) {
     CacheResultAndData(result_and_data.first,
                        std::move(result_and_data.second));
@@ -281,6 +296,9 @@ void FileAnalysisRequest::CacheResultAndData(BinaryUploadService::Result result,
     data.mime_type = std::move(cached_data_.mime_type);
 
   cached_data_ = std::move(data);
+
+  set_digest(cached_data_.hash);
+  set_content_type(cached_data_.mime_type);
 }
 
 void FileAnalysisRequest::RunCallback() {

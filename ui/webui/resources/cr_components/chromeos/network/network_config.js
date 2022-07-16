@@ -17,6 +17,17 @@ const VPNConfigType = {
   L2TP_IPSEC_PSK: 'L2TP_IPsec_PSK',
   L2TP_IPSEC_CERT: 'L2TP_IPsec_Cert',
   OPEN_VPN: 'OpenVPN',
+  WIREGUARD: 'WireGuard',
+};
+
+/**
+ * Method to configure WireGuard local key pair.
+ * @enum {string}
+ */
+const WireGuardKeyConfigType = {
+  USE_CURRENT: 'UseCurrent',
+  GENERATE_NEW: 'GenerateNew',
+  USER_INPUT: 'UserInput',
 };
 
 // Note: This pattern does not work for elements that are stamped on initial
@@ -210,6 +221,15 @@ Polymer({
      */
     vpnType_: String,
 
+    /** @private {WireGuardKeyConfigType|undefined} */
+    wireguardKeyType_: String,
+
+    /** @private {string|undefined} */
+    ipAddressInput_: String,
+
+    /** @private {string|undefined} */
+    nameServersInput_: String,
+
     /**
      * Dictionary of boolean values determining which EAP properties to show,
      * or null to hide all EAP settings.
@@ -217,7 +237,7 @@ Polymer({
      *   Outer: (boolean|undefined),
      *   Inner: (boolean|undefined),
      *   ServerCA: (boolean|undefined),
-     *   SubjectMatch: (boolean|undefined),
+     *   EapServerCertMatch: (boolean|undefined),
      *   UserCert: (boolean|undefined),
      *   Identity: (boolean|undefined),
      *   Password: (boolean|undefined),
@@ -233,13 +253,24 @@ Polymer({
      * Dictionary of boolean values determining which VPN properties to show,
      * or null to hide all VPN settings.
      * @private {?{
+     *   L2TPIPsec:  (boolean|undefined),
      *   OpenVPN: (boolean|undefined),
+     *   WireGuard: (boolean|undefined),
      *   Cert: (boolean|undefined),
      * }}
      */
     showVpn_: {
       type: Object,
       value: null,
+    },
+
+    /**
+     * Whether the WireGuard private key input box should be shown.
+     * @private
+     */
+    isWireGuardUserPrivateKeyInputActive_: {
+      type: Boolean,
+      computed: 'updateWireGuardKeyType_(wireguardKeyType_)',
     },
 
     /**
@@ -281,16 +312,25 @@ Polymer({
      * IPsec AuthenticationType ('PSK' or 'Cert') is included in the type.
      * Note: closure does not recognize Array<VPNConfigType> here.
      * @private {!Array<string>}
-     * @const
      */
     vpnTypeItems_: {
       type: Array,
-      readOnly: true,
       value: [
         VPNConfigType.L2TP_IPSEC_PSK,
         VPNConfigType.L2TP_IPSEC_CERT,
         VPNConfigType.OPEN_VPN,
       ],
+    },
+
+    /**
+     * Array of values for the WireGuard key configuration method dropdown.
+     * The actual value is set in initWireGuardKeyConfigType_() since the
+     * value differs for new network and existing networks.
+     * @private {!Array<string>}
+     */
+    wireguardKeyTypeItems_: {
+      type: Array,
+      value: [],
     },
 
     /**
@@ -307,6 +347,18 @@ Polymer({
     configRequiresPassphrase_: {
       type: Boolean,
       computed: 'computeConfigRequiresPassphrase_(mojoType_, securityType_)',
+    },
+
+    /** @private */
+    serializedDomainSuffixMatch_: {
+      type: String,
+      value: '',
+    },
+
+    /** @private */
+    serializedSubjectAltNameMatch_: {
+      type: String,
+      value: '',
     },
   },
 
@@ -365,6 +417,11 @@ Polymer({
     this.selectedServerCaHash_ = undefined;
     this.selectedUserCertHash_ = undefined;
 
+    this.networkConfig_.getSupportedVpnTypes().then(response => {
+      this.updateVpnTypeItems_(response.vpnTypes);
+    });
+    this.initWireGuardKeyConfigType_();
+
     if (this.guid) {
       this.networkConfig_.getManagedProperties(this.guid).then(response => {
         this.getManagedPropertiesCallback_(response.result);
@@ -388,7 +445,7 @@ Polymer({
 
     if (this.mojoType_ === mojom.NetworkType.kVPN ||
         (this.globalPolicy_ &&
-         this.globalPolicy_.allowOnlyPolicyNetworksToConnect)) {
+         this.globalPolicy_.allowOnlyPolicyWifiNetworksToConnect)) {
       this.autoConnect_ = false;
     } else {
       this.autoConnect_ = true;
@@ -425,7 +482,25 @@ Polymer({
     }
     this.propertiesSent_ = true;
     this.error = '';
+    if (this.eapProperties_) {
+      const dsm = OncMojo.deserializeDomainSuffixMatch(
+          this.serializedDomainSuffixMatch_);
+      if (!dsm) {
+        this.setError_('invalidDomainSuffixMatchEntry');
+        this.propertiesSent_ = false;
+        return;
+      }
+      this.eapProperties_.domainSuffixMatch = dsm;
 
+      const sanm = OncMojo.deserializeSubjectAltNameMatch(
+          this.serializedSubjectAltNameMatch_);
+      if (!sanm) {
+        this.setError_('invalidSubjectAlternativeNameMatchEntry');
+        this.propertiesSent_ = false;
+        return;
+      }
+      this.eapProperties_.subjectAltNameMatch = sanm;
+    }
     const propertiesToSet = this.getPropertiesToSet_();
     if (this.managedProperties_.source === mojom.OncSource.kNone) {
       if (!this.autoConnect_) {
@@ -499,6 +574,44 @@ Polymer({
    */
   hasGuid_() {
     return !!this.guid;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isWireGuardSupported_() {
+    return this.vpnTypeItems_.includes(VPNConfigType.WIREGUARD);
+  },
+
+  /**
+   * @param {!Array<string>|undefined} responseTypes
+   * @private
+   */
+  updateVpnTypeItems_(responseTypes) {
+    this.vpnTypeItems_ = [
+      VPNConfigType.L2TP_IPSEC_PSK,
+      VPNConfigType.L2TP_IPSEC_CERT,
+      VPNConfigType.OPEN_VPN,
+    ];
+    if (responseTypes.includes('wireguard')) {
+      this.vpnTypeItems_.push(VPNConfigType.WIREGUARD);
+    }
+  },
+
+  /** @private */
+  initWireGuardKeyConfigType_() {
+    let items = [
+      WireGuardKeyConfigType.GENERATE_NEW,
+      WireGuardKeyConfigType.USER_INPUT,
+    ];
+    if (this.hasGuid_()) {
+      items = [...items, WireGuardKeyConfigType.USE_CURRENT];
+      this.wireguardKeyType_ = WireGuardKeyConfigType.USE_CURRENT;
+    } else {
+      this.wireguardKeyType_ = WireGuardKeyConfigType.GENERATE_NEW;
+    }
+    this.wireguardKeyTypeItems_ = items;
   },
 
   /** NetworkListenerBehavior override */
@@ -616,6 +729,8 @@ Polymer({
       } else if (vpn.type === mojom.VpnType.kL2TPIPsec) {
         saveCredentials = this.getActiveBoolean_(vpn.ipSec.saveCredentials) ||
             this.getActiveBoolean_(vpn.l2tp.saveCredentials);
+      } else if (vpn.type === mojom.VpnType.kWireGuard) {
+        saveCredentials = true;
       }
       this.vpnSaveCredentials_ = saveCredentials;
     }
@@ -690,12 +805,16 @@ Polymer({
       anonymousIdentity: OncMojo.getActiveString(eap.anonymousIdentity),
       clientCertType: OncMojo.getActiveString(eap.clientCertType),
       clientCertPkcs11Id: OncMojo.getActiveString(eap.clientCertPkcs11Id),
+      domainSuffixMatch: this.getActiveStringList_(eap.domainSuffixMatch) || [],
       identity: OncMojo.getActiveString(eap.identity),
       inner: OncMojo.getActiveString(eap.inner),
       outer: OncMojo.getActiveString(eap.outer) || 'LEAP',
       password: OncMojo.getActiveString(eap.password),
       saveCredentials: this.getActiveBoolean_(eap.saveCredentials),
       serverCaPems: this.getActiveStringList_(eap.serverCaPems),
+      subjectAltNameMatch:
+          /** @type {!Array<!chromeos.networkConfig.mojom.SubjectAltName>} */
+          (OncMojo.getActiveValue(eap.subjectAltNameMatch) || []),
       subjectMatch: OncMojo.getActiveString(eap.subjectMatch),
       useSystemCas: this.getActiveBoolean_(eap.useSystemCas),
     };
@@ -757,6 +876,24 @@ Polymer({
   },
 
   /**
+   * @param {!mojom.ManagedWireGuardProperties} wireguard
+   * @return {!mojom.WireGuardConfigProperties}
+   * @private
+   */
+  getWireGuardConfigProperties_(wireguard) {
+    const config = {
+      privateKey: OncMojo.getActiveString(wireguard.privateKey),
+      peers: [],
+    };
+    if (wireguard.peers && wireguard.peers.activeValue) {
+      for (const peer of wireguard.peers.activeValue) {
+        config.peers.push(Object.assign({}, peer));
+      }
+    }
+    return config;
+  },
+
+  /**
    * Updates the config properties when |this.managedProperties| changes.
    * This gets called once when navigating to the page when default properties
    * are set, and again for existing networks when the properties are received.
@@ -812,10 +949,25 @@ Polymer({
           configVpn.ipSec = this.getIPSecConfigProperties_(vpn.ipSec);
           assert(vpn.l2tp);
           configVpn.l2tp = this.getL2TPConfigProperties_(vpn.l2tp);
-        } else {
-          assert(vpnType === mojom.VpnType.kOpenVPN);
+        } else if (vpnType === mojom.VpnType.kOpenVPN) {
           assert(vpn.openVpn);
           configVpn.openVpn = this.getOpenVPNConfigProperties_(vpn.openVpn);
+        } else if (vpnType === mojom.VpnType.kWireGuard) {
+          if (!this.isWireGuardSupported_()) {
+            break;
+          }
+          assert(vpn.wireguard);
+          assert(managedProperties.staticIpConfig);
+          configVpn.wireguard =
+              this.getWireGuardConfigProperties_(vpn.wireguard);
+          const staticIpConfig = managedProperties.staticIpConfig;
+          this.ipAddressInput_ = staticIpConfig.ipAddress.activeValue;
+          if (staticIpConfig.nameServers) {
+            this.nameServersInput_ =
+                staticIpConfig.nameServers.activeValue.join(',');
+          }
+        } else {
+          assertNotReached();
         }
         security = mojom.SecurityType.kNone;
         break;
@@ -830,6 +982,12 @@ Polymer({
     this.set('eapProperties_', this.getEap_(this.configProperties_));
     if (!this.eapProperties_) {
       this.showEap_ = null;
+    } else {
+      this.serializedDomainSuffixMatch_ = OncMojo.serializeDomainSuffixMatch(
+          this.eapProperties_.domainSuffixMatch);
+      this.serializedSubjectAltNameMatch_ =
+          OncMojo.serializeSubjectAltNameMatch(
+              this.eapProperties_.subjectAltNameMatch);
     }
     if (managedProperties.type === mojom.NetworkType.kVPN) {
       this.vpnType_ = this.getVpnTypeFromProperties_(this.configProperties_);
@@ -920,7 +1078,8 @@ Polymer({
           Outer: true,
           Inner: outer === 'PEAP' || outer === 'EAP-TTLS',
           ServerCA: outer !== 'LEAP',
-          SubjectMatch: outer === 'EAP-TLS',
+          EapServerCertMatch:
+              outer === 'EAP-TLS' || outer === 'EAP-TTLS' || outer === 'PEAP',
           UserCert: outer === 'EAP-TLS',
           Identity: true,
           Password: outer !== 'EAP-TLS',
@@ -948,6 +1107,8 @@ Polymer({
       return eap || {
         saveCredentials: false,
         useSystemCas: false,
+        domainSuffixMatch: [],
+        subjectAltNameMatch: [],
       };
     }
     return eap || null;
@@ -999,8 +1160,15 @@ Polymer({
       return vpn.ipSec.authenticationType === 'Cert' ?
           VPNConfigType.L2TP_IPSEC_CERT :
           VPNConfigType.L2TP_IPSEC_PSK;
+    } else if (!!vpn.type && vpn.type.value === mojom.VpnType.kWireGuard) {
+      return VPNConfigType.WIREGUARD;
     }
     return VPNConfigType.OPEN_VPN;
+  },
+
+  /** @private */
+  updateWireGuardKeyType_() {
+    return this.wireguardKeyType_ === WireGuardKeyConfigType.USER_INPUT;
   },
 
   /** @private */
@@ -1027,8 +1195,8 @@ Polymer({
             saveCredentials: false,
           };
         }
-        this.showVpn_ = {Cert: false, OpenVPN: false};
-        delete vpn.openVpn;
+        this.showVpn_ =
+            {Cert: false, L2TPIPsec: true, OpenVPN: false, WireGuard: false};
         break;
       case VPNConfigType.L2TP_IPSEC_CERT:
         vpn.type = {value: mojom.VpnType.kL2TPIPsec};
@@ -1041,15 +1209,20 @@ Polymer({
             saveCredentials: false,
           };
         }
-        delete vpn.openVpn;
-        this.showVpn_ = {Cert: true, OpenVPN: false};
+        this.showVpn_ =
+            {Cert: true, L2TPIPsec: true, OpenVPN: false, WireGuard: false};
         break;
       case VPNConfigType.OPEN_VPN:
         vpn.type = {value: mojom.VpnType.kOpenVPN};
         vpn.openVpn = vpn.openVpn || {saveCredentials: false};
-        this.showVpn_ = {Cert: true, OpenVPN: true};
-        delete vpn.l2tp;
-        delete vpn.ipSec;
+        this.showVpn_ =
+            {Cert: true, L2TPIPsec: false, OpenVPN: true, WireGuard: false};
+        break;
+      case VPNConfigType.WIREGUARD:
+        vpn.type = {value: mojom.VpnType.kWireGuard};
+        vpn.wireguard = vpn.wireguard || {peers: [{}]};
+        this.showVpn_ =
+            {Cert: false, L2TPIPsec: false, OpenVPN: false, WireGuard: true};
         break;
       default:
         assertNotReached();
@@ -1061,6 +1234,16 @@ Polymer({
         saveCredentials: false,
         username: '',
       };
+    }
+    if (vpn.type.value !== mojom.VpnType.kL2TPIPsec) {
+      delete vpn.l2tp;
+      delete vpn.ipSec;
+    }
+    if (vpn.type.value !== mojom.VpnType.kOpenVPN) {
+      delete vpn.openVpn;
+    }
+    if (vpn.type.value !== mojom.VpnType.kWireGuard) {
+      delete vpn.wireguard;
     }
     this.updateCertError_();
   },
@@ -1429,12 +1612,60 @@ Polymer({
   },
 
   /**
+   * @param {string|null|undefined} input
+   * @return {boolean}
+   * @private
+   */
+  isValidWireGuardKey_(input) {
+    // A base64 translation of a 32 byte string is 44 bytes with '=' ending
+    return !!input && input.length === 44 && input.charAt(43) === '=' &&
+        !!input.match(/^[a-z0-9+/=]+$/i);
+  },
+
+  /**
+   * @param {mojom.WireGuardConfigProperties|null|undefined} wireguard
+   * @param {string|undefined} ipAddress
+   * @return {boolean}
+   * @private
+   */
+  isWireGuardConfigurationValid_(wireguard, ipAddress) {
+    if (!wireguard) {
+      return false;
+    }
+    // ipAddress should be a valid IPv4 address
+    if (!ipAddress || !ipAddress.match(/^([0-9]+\.){3}[0-9]+$/i)) {
+      return false;
+    }
+    if (this.isWireGuardUserPrivateKeyInputActive_ &&
+        !this.isValidWireGuardKey_(wireguard.privateKey)) {
+      return false;
+    }
+    // TODO: Current UI only supports configuring a single peer.
+    const peer = wireguard.peers[0];
+    if (!this.isValidWireGuardKey_(peer.publicKey)) {
+      return false;
+    }
+    // endpoint should be the form of IP:port or hostname:port
+    if (!peer.endpoint || !peer.endpoint.match(/^[a-zA-Z0-9\-\.]+:[0-9]+$/i)) {
+      return false;
+    }
+    // allowedIps should be comma-seperated list of IP/cidr
+    if (!peer.allowedIps ||
+        !peer.allowedIps.match(
+            /^([0-9\.]+(\/[0-9]+)?,)*[0-9\.]+(\/[0-9]+)?$/i)) {
+      return false;
+    }
+    return true;
+  },
+
+  /**
    * @return {boolean}
    * @private
    */
   vpnIsConfigured_() {
     const vpn = this.configProperties_.typeConfig.vpn;
-    if (!this.configProperties_.name || !vpn || !vpn.host) {
+    if (!this.configProperties_.name || !vpn ||
+        (!vpn.host && this.vpnType_ !== VPNConfigType.WIREGUARD)) {
       return false;
     }
 
@@ -1448,6 +1679,9 @@ Polymer({
         // there may be servers with different requirements so err on the side
         // of permissiveness.
         return true;
+      case VPNConfigType.WIREGUARD:
+        return this.isWireGuardConfigurationValid_(
+            vpn.wireguard, this.ipAddressInput_);
     }
     return false;
   },
@@ -1477,11 +1711,19 @@ Polymer({
       const vpnType = vpnConfig.type.value;
       if (vpnType === mojom.VpnType.kOpenVPN) {
         this.setOpenVPNProperties_(propertiesToSet);
+      } else {
+        delete propertiesToSet.typeConfig.vpn.openVpn;
+      }
+      if (vpnType === mojom.VpnType.kL2TPIPsec) {
+        this.setVpnIPsecProperties_(propertiesToSet);
+      } else {
         delete propertiesToSet.typeConfig.vpn.ipSec;
         delete propertiesToSet.typeConfig.vpn.l2tp;
-      } else if (vpnType === mojom.VpnType.kL2TPIPsec) {
-        this.setVpnIPsecProperties_(propertiesToSet);
-        delete propertiesToSet.typeConfig.vpn.openVpn;
+      }
+      if (vpnType === mojom.VpnType.kWireGuard) {
+        this.setWireGuardProperties_(propertiesToSet);
+      } else {
+        delete propertiesToSet.typeConfig.vpn.wireguard;
       }
     }
     return propertiesToSet;
@@ -1553,6 +1795,32 @@ Polymer({
 
     openVpn.saveCredentials = this.vpnSaveCredentials_;
     propertiesToSet.typeConfig.vpn.openVpn = openVpn;
+  },
+
+  /**
+   * @param {!mojom.ConfigProperties} propertiesToSet
+   * @private
+   */
+  setWireGuardProperties_(propertiesToSet) {
+    const wireguard = propertiesToSet.typeConfig.vpn.wireguard;
+    assert(!!wireguard);
+    propertiesToSet.typeConfig.vpn.host = 'wireguard';
+    propertiesToSet.ipAddressConfigType = 'Static';
+    propertiesToSet.staticIpConfig = {
+      ipAddress: this.ipAddressInput_,
+      gateway: this.ipAddressInput_,
+      routingPrefix: 32,
+    };
+    if (this.nameServersInput_) {
+      propertiesToSet.nameServersConfigType = 'Static';
+      propertiesToSet.staticIpConfig.nameServers =
+          this.nameServersInput_.split(',');
+    }
+    if (this.wireguardKeyType_ === WireGuardKeyConfigType.USE_CURRENT) {
+      delete wireguard.privateKey;
+    } else if (this.wireguardKeyType_ === WireGuardKeyConfigType.GENERATE_NEW) {
+      wireguard.privateKey = '';
+    }
   },
 
   /**
@@ -1728,6 +1996,8 @@ Polymer({
       case mojom.VpnType.kL2TPIPsec:
         return vpn.ipSec.saveCredentials || vpn.l2tp.saveCredentials ||
             OncMojo.createManagedBool(false);
+      case mojom.VpnType.kWireGuard:
+        return OncMojo.createManagedBool(true);
     }
     assertNotReached();
     return undefined;

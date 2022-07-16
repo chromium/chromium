@@ -9,7 +9,6 @@
 
 #include "base/mac/dispatch_source_mach.h"
 #include "base/mac/scoped_mach_port.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/process/port_provider_mac.h"
 #include "base/process/process_handle.h"
@@ -27,6 +26,10 @@ class CONTENT_EXPORT ChildProcessTaskPortProvider : public base::PortProvider {
  public:
   // Returns the singleton instance.
   static ChildProcessTaskPortProvider* GetInstance();
+
+  ChildProcessTaskPortProvider(const ChildProcessTaskPortProvider&) = delete;
+  ChildProcessTaskPortProvider& operator=(const ChildProcessTaskPortProvider&) =
+      delete;
 
   // Called by BrowserChildProcessHostImpl and RenderProcessHostImpl when
   // a new child has been created. This will invoke the GetTaskPort() method
@@ -72,8 +75,6 @@ class CONTENT_EXPORT ChildProcessTaskPortProvider : public base::PortProvider {
 
   // Dispatch source for |notification_port_|.
   std::unique_ptr<base::DispatchSourceMach> notification_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessTaskPortProvider);
 };
 
 }  // namespace content

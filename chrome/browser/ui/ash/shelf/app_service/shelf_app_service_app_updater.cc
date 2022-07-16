@@ -14,9 +14,8 @@ ShelfAppServiceAppUpdater::ShelfAppServiceAppUpdater(
     Delegate* delegate,
     content::BrowserContext* browser_context)
     : ShelfAppUpdater(delegate, browser_context) {
-  apps::AppServiceProxyChromeOs* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
+  apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context));
 
   proxy->AppRegistryCache().ForEachApp([this](const apps::AppUpdate& update) {
     if (update.Readiness() == apps::mojom::Readiness::kReady)
@@ -29,7 +28,8 @@ ShelfAppServiceAppUpdater::~ShelfAppServiceAppUpdater() = default;
 
 void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
   if (!update.ReadinessChanged() && !update.PausedChanged() &&
-      !update.ShowInShelfChanged() && !update.ShortNameChanged()) {
+      !update.ShowInShelfChanged() && !update.ShortNameChanged() &&
+      !update.PolicyIdChanged()) {
     return;
   }
 
@@ -70,6 +70,9 @@ void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
         return;
     }
   }
+
+  if (update.PolicyIdChanged())
+    delegate()->OnAppInstalled(browser_context(), app_id);
 
   if (update.PausedChanged()) {
     delegate()->OnAppUpdated(browser_context(), app_id, /*reload_icon=*/true);

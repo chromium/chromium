@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -29,6 +28,12 @@ class MergeSessionNavigationThrottle : public content::NavigationThrottle,
  public:
   static std::unique_ptr<content::NavigationThrottle> Create(
       content::NavigationHandle* handle);
+
+  MergeSessionNavigationThrottle(const MergeSessionNavigationThrottle&) =
+      delete;
+  MergeSessionNavigationThrottle& operator=(
+      const MergeSessionNavigationThrottle&) = delete;
+
   ~MergeSessionNavigationThrottle() override;
 
  private:
@@ -58,8 +63,6 @@ class MergeSessionNavigationThrottle : public content::NavigationThrottle,
       login_manager_observation_{this};
 
   base::OneShotTimer proceed_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MergeSessionNavigationThrottle);
 };
 
 }  // namespace ash

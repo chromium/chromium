@@ -22,7 +22,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/content_features.h"
 #include "gpu/config/gpu_feature_type.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_switches.h"
@@ -47,20 +46,31 @@ std::unique_ptr<SystemInfo::Size> GfxSizeToSystemInfoSize(
       .SetHeight(size.height())
       .Build();
 }
+
 // Give the GPU process a few seconds to provide GPU info.
+
 // Linux and ChromeOS Debug builds need more time -- see Issue 796437,
 // 1046598, and 1153667.
 // Windows builds need more time -- see Issue 873112 and 1004472.
 // Mac builds need more time - see Issue angleproject:6182.
-// ASAN builds need more time -- see Issue 1167875.
 #if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && !defined(NDEBUG)) || \
-    defined(OS_WIN) || defined(OS_MAC) || defined(ADDRESS_SANITIZER) ||  \
-    defined(USE_OZONE)
-const int kGPUInfoWatchdogTimeoutMs = 30000;
+    defined(OS_WIN) || defined(OS_MAC) || defined(USE_OZONE)
+static constexpr int kGPUInfoWatchdogTimeoutMultiplierOS = 3;
 #else
-// Increased from 5000 to 10000 -- see Issue 1220072.
-const int kGPUInfoWatchdogTimeoutMs = 10000;
+static constexpr int kGPUInfoWatchdogTimeoutMultiplierOS = 1;
 #endif
+
+// ASAN builds need more time -- see Issue 1167875 and 1242771.
+#ifdef ADDRESS_SANITIZER
+static constexpr int kGPUInfoWatchdogTimeoutMultiplierASAN = 3;
+#else
+static constexpr int kGPUInfoWatchdogTimeoutMultiplierASAN = 1;
+#endif
+
+// Base increased from 5000 to 10000 -- see Issue 1220072.
+static constexpr int kGPUInfoWatchdogTimeoutMs =
+    10000 * kGPUInfoWatchdogTimeoutMultiplierOS *
+    kGPUInfoWatchdogTimeoutMultiplierASAN;
 
 class AuxGPUInfoEnumerator : public gpu::GPUInfo::Enumerator {
  public:
@@ -230,6 +240,8 @@ void SendGetInfoResponse(std::unique_ptr<GetInfoCallback> callback) {
   gpu_info.EnumerateFields(&enumerator);
   enumerator.BeginAuxAttributes();
   enumerator.AddInt("processCrashCount", GpuProcessHost::GetGpuCrashCount());
+  enumerator.AddInt("visibilityCallbackCallCount",
+                    gpu_info.visibility_callback_call_count);
   enumerator.EndAuxAttributes();
 
   std::unique_ptr<base::DictionaryValue> base_feature_status =
@@ -300,7 +312,7 @@ class SystemInfoHandlerGpuObserver : public content::GpuDataManagerObserver {
         FROM_HERE,
         base::BindOnce(&SystemInfoHandlerGpuObserver::ObserverWatchdogCallback,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kGPUInfoWatchdogTimeoutMs));
+        base::Milliseconds(kGPUInfoWatchdogTimeoutMs));
 
     GpuDataManagerImpl::GetInstance()->AddObserver(this);
     OnGpuInfoUpdate();
@@ -405,13 +417,9 @@ void AddRendererProcessInfo(
   }
 }
 
-std::unique_ptr<protocol::Array<protocol::SystemInfo::ProcessInfo>>
-AddChildProcessInfo(
-    std::unique_ptr<protocol::Array<protocol::SystemInfo::ProcessInfo>>
-        process_info) {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? BrowserThread::UI
-                          : BrowserThread::IO);
+void AddChildProcessInfo(
+    protocol::Array<protocol::SystemInfo::ProcessInfo>* process_info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (BrowserChildProcessHostIterator it; !it.Done(); ++it) {
     const ChildProcessData& process_data = it.GetData();
@@ -421,8 +429,6 @@ AddChildProcessInfo(
           MakeProcessInfo(process, process_data.metrics_name));
     }
   }
-
-  return process_info;
 }
 
 }  // namespace
@@ -432,18 +438,10 @@ void SystemInfoHandler::GetProcessInfo(
   auto process_info =
       std::make_unique<protocol::Array<SystemInfo::ProcessInfo>>();
 
-  // Collect browser and renderer processes info on the UI thread.
   AddBrowserProcessInfo(process_info.get());
   AddRendererProcessInfo(process_info.get());
-
-  // Collect child processes info on the IO thread.
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? GetUIThreadTaskRunner({})
-                         : GetIOThreadTaskRunner({});
-  task_runner->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&AddChildProcessInfo, std::move(process_info)),
-      base::BindOnce(&GetProcessInfoCallback::sendSuccess,
-                     std::move(callback)));
+  AddChildProcessInfo(process_info.get());
+  callback->sendSuccess(std::move(process_info));
 }
 
 }  // namespace protocol

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/shelf_types.h"
-#include "base/macros.h"
 #include "ui/base/base_window.h"
 
 class AppWindowShelfItemController;
@@ -32,6 +31,9 @@ class AppWindowBase : public ui::BaseWindow {
   };
 
   AppWindowBase(const ash::ShelfID& shelf_id, views::Widget* widget);
+
+  AppWindowBase(const AppWindowBase&) = delete;
+  AppWindowBase& operator=(const AppWindowBase&) = delete;
 
   virtual ~AppWindowBase();
 
@@ -80,8 +82,6 @@ class AppWindowBase : public ui::BaseWindow {
   ash::ShelfID shelf_id_;
   views::Widget* const widget_;
   AppWindowShelfItemController* controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AppWindowBase);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_APP_WINDOW_BASE_H_

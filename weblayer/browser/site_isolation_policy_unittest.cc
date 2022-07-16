@@ -43,6 +43,9 @@ class SiteIsolationPolicyTest : public testing::Test {
  public:
   SiteIsolationPolicyTest() = default;
 
+  SiteIsolationPolicyTest(const SiteIsolationPolicyTest&) = delete;
+  SiteIsolationPolicyTest& operator=(const SiteIsolationPolicyTest&) = delete;
+
   void SetUp() override {
     // This way the test always sees the same amount of physical memory
     // (kLowMemoryDeviceThresholdMB = 512MB), regardless of how much memory is
@@ -52,19 +55,24 @@ class SiteIsolationPolicyTest : public testing::Test {
     EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
   }
 
+  // Sets the same memory threshold for both strict site isolation and partial
+  // site isolation modes, since these tests care about both. For example,
+  // UseDedicatedProcessesForAllSites() depends on the former, while preloaded
+  // isolated origins use the latter.
   void SetMemoryThreshold(const std::string& threshold) {
     threshold_feature_.InitAndEnableFeatureWithParameters(
-        site_isolation::features::kSitePerProcessOnlyForHighMemoryClients,
+        site_isolation::features::kSiteIsolationMemoryThresholds,
         {{site_isolation::features::
-              kSitePerProcessOnlyForHighMemoryClientsParamName,
+              kStrictSiteIsolationMemoryThresholdParamName,
+          threshold},
+         {site_isolation::features::
+              kPartialSiteIsolationMemoryThresholdParamName,
           threshold}});
   }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList threshold_feature_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteIsolationPolicyTest);
 };
 
 TEST_F(SiteIsolationPolicyTest, NoIsolationBelowMemoryThreshold) {

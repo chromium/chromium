@@ -343,8 +343,9 @@ class HashTableConstIterator final {
 #if DCHECK_IS_ON()
     // HashTable and collections that build on it do not support
     // modifications while there is an iterator in use. The exception is
-    // ListHashSet, which has its own iterators that tolerate modification
+    // LinkedHashSet, which has its own iterators that tolerate modification
     // of the underlying set.
+
     DCHECK_EQ(container_modifications_, container_->Modifications());
     DCHECK(!container_->AccessForbidden());
 #endif
@@ -862,8 +863,9 @@ class HashTable final
   int64_t Modifications() const { return modifications_; }
   void RegisterModification() { modifications_++; }
   // HashTable and collections that build on it do not support modifications
-  // while there is an iterator in use. The exception is ListHashSet, which
-  // has its own iterators that tolerate modification of the underlying set.
+  // while there is an iterator in use. The exception is
+  // LinkedHashSet, which has its own iterators that tolerate modification
+  // of the underlying set.
   void CheckModifications(int64_t mods) const {
     DCHECK_EQ(mods, modifications_);
   }
@@ -1015,8 +1017,6 @@ class HashTable final
             typename Y,
             typename Z>
   friend struct WeakProcessingHashTableHelper;
-  template <typename T, size_t, typename U, typename V>
-  friend class ListHashSet;
 };
 
 template <typename Key,
@@ -1318,7 +1318,7 @@ struct HashTableBucketInitializer<true> {
       memset(&bucket, 0, sizeof(bucket));
       return;
     }
-    AtomicMemzero(&bucket, sizeof(bucket));
+    AtomicMemzero<sizeof(bucket)>(&bucket);
   }
 };
 
@@ -1832,7 +1832,7 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
   Allocator::template BackingWriteBarrier(&table_);
 
   if (Traits::kEmptyValueIsZero) {
-    memset(original_table, 0, new_table_size * sizeof(ValueType));
+    AtomicMemzero(original_table, new_table_size * sizeof(ValueType));
   } else {
     for (unsigned i = 0; i < new_table_size; i++)
       InitializeBucket(original_table[i]);
@@ -1879,7 +1879,7 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
     }
   }
 
-  Allocator::TraceBackingStoreIfMarked(&new_hash_table.table_);
+  Allocator::TraceBackingStoreIfMarked(new_hash_table.table_);
 
   ValueType* old_table = table_;
   unsigned old_table_size = table_size_;
@@ -2061,9 +2061,9 @@ void HashTable<Key,
     // Weak processing is omitted when no backing store is present. In case such
     // an empty table is later on used it needs to be strongified.
     if (table_)
-      Allocator::TraceBackingStoreIfMarked(&table_);
+      Allocator::TraceBackingStoreIfMarked(table_);
     if (other.table_)
-      Allocator::TraceBackingStoreIfMarked(&other.table_);
+      Allocator::TraceBackingStoreIfMarked(other.table_);
   }
   std::swap(table_size_, other.table_size_);
   std::swap(key_count_, other.key_count_);

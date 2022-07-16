@@ -33,6 +33,11 @@ class PrivilegedHostDeviceSetterImpl : public PrivilegedHostDeviceSetterBase {
     static Factory* test_factory_;
   };
 
+  PrivilegedHostDeviceSetterImpl(const PrivilegedHostDeviceSetterImpl&) =
+      delete;
+  PrivilegedHostDeviceSetterImpl& operator=(
+      const PrivilegedHostDeviceSetterImpl&) = delete;
+
   ~PrivilegedHostDeviceSetterImpl() override;
 
  private:
@@ -44,8 +49,6 @@ class PrivilegedHostDeviceSetterImpl : public PrivilegedHostDeviceSetterBase {
                      SetHostDeviceCallback callback) override;
 
   MultiDeviceSetupBase* multidevice_setup_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrivilegedHostDeviceSetterImpl);
 };
 
 }  // namespace multidevice_setup

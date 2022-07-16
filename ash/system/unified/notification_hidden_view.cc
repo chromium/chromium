@@ -8,9 +8,9 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/button_style.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/unified/rounded_label_button.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -62,12 +62,11 @@ NotificationHiddenView::NotificationHiddenView()
   // Shows the "Change" button, unless the locks screen notification is
   // prohibited by policy or flag.
   if (AshMessageCenterLockScreenController::IsAllowed()) {
-    change_button_ =
-        container_->AddChildView(std::make_unique<RoundedLabelButton>(
-            base::BindRepeating(&NotificationHiddenView::ChangeButtonPressed,
-                                base::Unretained(this)),
-            l10n_util::GetStringUTF16(
-                IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE)));
+    change_button_ = container_->AddChildView(std::make_unique<PillButton>(
+        base::BindRepeating(&NotificationHiddenView::ChangeButtonPressed,
+                            base::Unretained(this)),
+        l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE),
+        PillButton::Type::kIconless, /*icon=*/nullptr));
     change_button_->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE_TOOLTIP));
   }

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 blink_core_sources_inspector = [
+  "agent_registry.h",
   "console_message.cc",
   "console_message.h",
   "console_message_storage.cc",
@@ -25,12 +26,12 @@ blink_core_sources_inspector = [
   "identifiers_factory.h",
   "inspect_tools.cc",
   "inspect_tools.h",
+  "exception_metadata.h",
+  "exception_metadata.cc",
   "inspected_frames.cc",
   "inspected_frames.h",
   "inspector_animation_agent.cc",
   "inspector_animation_agent.h",
-  "inspector_application_cache_agent.cc",
-  "inspector_application_cache_agent.h",
   "inspector_audits_agent.cc",
   "inspector_audits_agent.h",
   "inspector_audits_issue.cc",

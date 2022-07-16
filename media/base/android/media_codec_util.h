@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "media/base/android/media_codec_direction.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/media_export.h"

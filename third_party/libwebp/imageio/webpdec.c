@@ -95,7 +95,7 @@ VP8StatusCode DecodeWebPIncremental(
   {
     WebPIDecoder* const idec = WebPIDecode(data, data_size, config);
     if (idec == NULL) {
-      fprintf(stderr, "Failed during WebPINewDecoder().\n");
+      fprintf(stderr, "Failed during WebPIDecode().\n");
       return VP8_STATUS_OUT_OF_MEMORY;
     } else {
       status = WebPIUpdate(idec, data, data_size);

@@ -28,7 +28,7 @@ TEST(VideoTutorialsConfigTest, FinchConfigEnabled) {
   EXPECT_EQ(Config::GetTutorialsServerURL("https://abc.com").spec(),
             "https://test.com/v1/videotutorials");
   EXPECT_EQ(Config::GetDefaultPreferredLocale(), "en");
-  EXPECT_EQ(Config::GetFetchFrequency(), base::TimeDelta::FromDays(10));
+  EXPECT_EQ(Config::GetFetchFrequency(), base::Days(10));
   EXPECT_EQ(Config::GetExperimentTag(), "{some_param:some_value}");
 }
 
@@ -39,7 +39,7 @@ TEST(VideoTutorialsConfigTest, ConfigDefaultParams) {
             "https://testing.com/v1/videotutorials");
   EXPECT_EQ(Config::GetTutorialsServerURL(""), GURL());
   EXPECT_EQ(Config::GetDefaultPreferredLocale(), "en");
-  EXPECT_EQ(Config::GetFetchFrequency(), base::TimeDelta::FromDays(15));
+  EXPECT_EQ(Config::GetFetchFrequency(), base::Days(15));
   EXPECT_EQ(Config::GetExperimentTag(), "");
 }
 

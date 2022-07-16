@@ -27,6 +27,10 @@ using RTCCertificateCallback =
 class MODULES_EXPORT RTCCertificateGenerator {
  public:
   RTCCertificateGenerator() {}
+
+  RTCCertificateGenerator(const RTCCertificateGenerator&) = delete;
+  RTCCertificateGenerator& operator=(const RTCCertificateGenerator&) = delete;
+
   ~RTCCertificateGenerator() {}
 
   // Start generating a certificate asynchronously. |observer| is invoked on the
@@ -53,9 +57,6 @@ class MODULES_EXPORT RTCCertificateGenerator {
   // |rtc::RTCCertificate::ToPEM|.
   rtc::scoped_refptr<rtc::RTCCertificate> FromPEM(String pem_private_key,
                                                   String pem_certificate);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RTCCertificateGenerator);
 };
 
 }  // namespace blink

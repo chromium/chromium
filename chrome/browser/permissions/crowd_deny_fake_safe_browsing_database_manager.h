@@ -20,6 +20,11 @@ class CrowdDenyFakeSafeBrowsingDatabaseManager
  public:
   CrowdDenyFakeSafeBrowsingDatabaseManager();
 
+  CrowdDenyFakeSafeBrowsingDatabaseManager(
+      const CrowdDenyFakeSafeBrowsingDatabaseManager&) = delete;
+  CrowdDenyFakeSafeBrowsingDatabaseManager& operator=(
+      const CrowdDenyFakeSafeBrowsingDatabaseManager&) = delete;
+
   void SetSimulatedMetadataForUrl(
       const GURL& url,
       const safe_browsing::ThreatMetadata& metadata);
@@ -54,8 +59,6 @@ class CrowdDenyFakeSafeBrowsingDatabaseManager
 
   base::WeakPtrFactory<CrowdDenyFakeSafeBrowsingDatabaseManager> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrowdDenyFakeSafeBrowsingDatabaseManager);
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_CROWD_DENY_FAKE_SAFE_BROWSING_DATABASE_MANAGER_H_

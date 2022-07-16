@@ -95,7 +95,7 @@ class GEOMETRY_EXPORT Point {
   int y_;
 };
 
-inline bool operator==(const Point& lhs, const Point& rhs) {
+constexpr bool operator==(const Point& lhs, const Point& rhs) {
   return lhs.x() == rhs.x() && lhs.y() == rhs.y();
 }
 

@@ -13,7 +13,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 

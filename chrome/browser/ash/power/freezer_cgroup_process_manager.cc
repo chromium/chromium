@@ -10,10 +10,9 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -40,6 +39,9 @@ class FreezerCgroupProcessManager::FileWorker {
         froze_successfully_(false) {
     DCHECK(ui_thread_->RunsTasksInCurrentSequence());
   }
+
+  FileWorker(const FileWorker&) = delete;
+  FileWorker& operator=(const FileWorker&) = delete;
 
   // Called on FILE thread.
   virtual ~FileWorker() { DCHECK(file_thread_->RunsTasksInCurrentSequence()); }
@@ -152,8 +154,6 @@ class FreezerCgroupProcessManager::FileWorker {
   // True iff FreezeRenderers() wrote its command successfully the last time it
   // was called.
   bool froze_successfully_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileWorker);
 };
 
 FreezerCgroupProcessManager::FreezerCgroupProcessManager()

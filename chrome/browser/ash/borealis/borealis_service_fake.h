@@ -28,6 +28,7 @@ class BorealisServiceFake : public BorealisService {
   BorealisDiskManagerDispatcher& DiskManagerDispatcher() override;
   BorealisFeatures& Features() override;
   BorealisInstaller& Installer() override;
+  BorealisLaunchOptions& LaunchOptions() override;
   BorealisShutdownMonitor& ShutdownMonitor() override;
   BorealisWindowManager& WindowManager() override;
 
@@ -38,6 +39,7 @@ class BorealisServiceFake : public BorealisService {
       BorealisDiskManagerDispatcher* borealis_disk_manager_dispatcher);
   void SetFeaturesForTesting(BorealisFeatures* features);
   void SetInstallerForTesting(BorealisInstaller* installer);
+  void SetLaunchOptionsForTesting(BorealisLaunchOptions* launch_options);
   void SetShutdownMonitorForTesting(BorealisShutdownMonitor* shutdown_monitor);
   void SetWindowManagerForTesting(BorealisWindowManager* window_manager);
 
@@ -48,6 +50,7 @@ class BorealisServiceFake : public BorealisService {
   BorealisDiskManagerDispatcher* borealis_disk_manager_dispatcher_ = nullptr;
   BorealisFeatures* features_ = nullptr;
   BorealisInstaller* installer_ = nullptr;
+  BorealisLaunchOptions* launch_options_ = nullptr;
   BorealisShutdownMonitor* shutdown_monitor_ = nullptr;
   BorealisWindowManager* window_manager_ = nullptr;
 };

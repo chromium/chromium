@@ -25,6 +25,10 @@ namespace {
 class FillLayout : public aura::LayoutManager {
  public:
   FillLayout(aura::Window* owner) : owner_(owner) { DCHECK(owner_); }
+
+  FillLayout(const FillLayout&) = delete;
+  FillLayout& operator=(const FillLayout&) = delete;
+
   ~FillLayout() override = default;
 
  private:
@@ -59,8 +63,6 @@ class FillLayout : public aura::LayoutManager {
   }
 
   aura::Window* owner_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(FillLayout);
 };
 
 // A simple screen positioning client that translates bounds to screen
@@ -68,6 +70,10 @@ class FillLayout : public aura::LayoutManager {
 class ScreenPositionClient : public wm::DefaultScreenPositionClient {
  public:
   using DefaultScreenPositionClient::DefaultScreenPositionClient;
+
+  ScreenPositionClient(const ScreenPositionClient&) = delete;
+  ScreenPositionClient& operator=(const ScreenPositionClient&) = delete;
+
   ~ScreenPositionClient() override = default;
 
   // wm::DefaultScreenPositionClient:
@@ -86,9 +92,6 @@ class ScreenPositionClient : public wm::DefaultScreenPositionClient {
     origin.Offset(-host_origin.x(), -host_origin.y());
     window->SetBounds(gfx::Rect(origin, bounds.size()));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenPositionClient);
 };
 
 }  // namespace

@@ -117,7 +117,7 @@ enum BackgroundFetchStorageVersion {
 // in memory. This information should be everything needed to reconstruct
 // the state of an interrupted background fetch.
 //
-// Next Tag: 6
+// Next Tag: 7
 message BackgroundFetchMetadata {
   optional int64 creation_microseconds_since_unix_epoch = 1;
   optional string origin = 2;
@@ -127,6 +127,9 @@ message BackgroundFetchMetadata {
 
   // Number of fetches initiated by the developer.
   optional int32 num_fetches = 5;
+
+  // Serialized net::IsolationInfo associated with the Background Fetch.
+  optional string isolation_info = 6;
 }
 
 // All the updateable options that show up in the UI (e.g. notification).

@@ -24,6 +24,10 @@ class ChangeRequestsStateTask : public Task {
                           const std::vector<int64_t>& request_ids,
                           const SavePageRequest::RequestState new_state,
                           RequestQueueStore::UpdateCallback callback);
+
+  ChangeRequestsStateTask(const ChangeRequestsStateTask&) = delete;
+  ChangeRequestsStateTask& operator=(const ChangeRequestsStateTask&) = delete;
+
   ~ChangeRequestsStateTask() override;
 
  private:
@@ -47,8 +51,6 @@ class ChangeRequestsStateTask : public Task {
   RequestQueueStore::UpdateCallback callback_;
 
   base::WeakPtrFactory<ChangeRequestsStateTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChangeRequestsStateTask);
 };
 
 }  // namespace offline_pages

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
@@ -23,22 +24,23 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
-#include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/search/promos/promo_service_factory.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/search_provider_logos/logo_service_factory.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/search/instant_types.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -52,129 +54,155 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/theme_provider.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace {
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
 
-new_tab_page::mojom::ThemePtr MakeTheme(const NtpTheme& ntp_theme) {
+new_tab_page::mojom::ThemePtr MakeTheme(
+    const ui::ThemeProvider* theme_provider,
+    ThemeService* theme_service,
+    NtpCustomBackgroundService* ntp_custom_background_service) {
+  if (ntp_custom_background_service) {
+    ntp_custom_background_service->RefreshBackgroundIfNeeded();
+  }
   auto theme = new_tab_page::mojom::Theme::New();
   auto most_visited = most_visited::mojom::MostVisitedTheme::New();
-  theme->is_default = ntp_theme.using_default_theme;
-  theme->background_color = ntp_theme.background_color;
-  most_visited->background_color = ntp_theme.shortcut_color;
+  auto custom_background =
+      ntp_custom_background_service
+          ? ntp_custom_background_service->GetCustomBackground()
+          : absl::nullopt;
+  theme->is_default = theme_service->UsingDefaultTheme();
+  theme->background_color =
+      theme_provider->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND);
+  SkColor text_color;
+  if (custom_background.has_value()) {
+    text_color = gfx::kGoogleGrey050;
+    most_visited->background_color = ThemeProperties::GetDefaultColor(
+        ThemeProperties::COLOR_NTP_SHORTCUT, false);
+    theme->logo_color = ThemeProperties::GetDefaultColor(
+        ThemeProperties::COLOR_NTP_LOGO, false);
+  } else {
+    text_color = theme_provider->GetColor(ThemeProperties::COLOR_NTP_TEXT);
+    most_visited->background_color =
+        theme_provider->GetColor(ThemeProperties::COLOR_NTP_SHORTCUT);
+    if (theme_provider->GetDisplayProperty(
+            ThemeProperties::NTP_LOGO_ALTERNATE) == 1) {
+      theme->logo_color =
+          theme_provider->GetColor(ThemeProperties::COLOR_NTP_LOGO);
+    }
+  }
   most_visited->use_white_tile_icon =
       color_utils::IsDark(most_visited->background_color);
-  most_visited->is_dark = !color_utils::IsDark(ntp_theme.text_color);
+  most_visited->is_dark = !color_utils::IsDark(text_color);
   most_visited->use_title_pill = false;
-  theme->text_color = ntp_theme.text_color;
-  theme->is_dark = !color_utils::IsDark(ntp_theme.text_color);
-  if (ntp_theme.logo_alternate) {
-    theme->logo_color = ntp_theme.logo_color;
-  }
+  theme->text_color = text_color;
+  theme->is_dark = !color_utils::IsDark(text_color);
   auto background_image = new_tab_page::mojom::BackgroundImage::New();
-  if (!ntp_theme.custom_background_url.is_empty()) {
-    background_image->url = ntp_theme.custom_background_url;
-  } else if (ntp_theme.has_theme_image) {
+  if (custom_background.has_value()) {
+    theme->is_custom_background = true;
+    background_image->url = custom_background->custom_background_url;
+  } else if (theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND)) {
+    theme->is_custom_background = false;
     most_visited->use_title_pill = true;
-    background_image->url =
-        GURL(base::StrCat({"chrome-untrusted://theme/IDR_THEME_NTP_BACKGROUND?",
-                           ntp_theme.theme_id}));
-    background_image->url_2x = GURL(
-        base::StrCat({"chrome-untrusted://theme/IDR_THEME_NTP_BACKGROUND@2x?",
-                      ntp_theme.theme_id}));
-    if (ntp_theme.has_attribution) {
+    auto theme_id = theme_service->GetThemeID();
+    background_image->url = GURL(base::StrCat(
+        {"chrome-untrusted://theme/IDR_THEME_NTP_BACKGROUND?", theme_id}));
+    background_image->url_2x = GURL(base::StrCat(
+        {"chrome-untrusted://theme/IDR_THEME_NTP_BACKGROUND@2x?", theme_id}));
+    if (theme_provider->HasCustomImage(IDR_THEME_NTP_ATTRIBUTION)) {
       background_image->attribution_url = GURL(base::StrCat(
-          {"chrome://theme/IDR_THEME_NTP_ATTRIBUTION?", ntp_theme.theme_id}));
+          {"chrome://theme/IDR_THEME_NTP_ATTRIBUTION?", theme_id}));
     }
     background_image->size = "initial";
-    switch (ntp_theme.image_tiling) {
-      case THEME_BKGRND_IMAGE_NO_REPEAT:
+    switch (theme_provider->GetDisplayProperty(
+        ThemeProperties::NTP_BACKGROUND_TILING)) {
+      case ThemeProperties::NO_REPEAT:
         background_image->repeat_x = "no-repeat";
         background_image->repeat_y = "no-repeat";
         break;
-      case THEME_BKGRND_IMAGE_REPEAT_X:
+      case ThemeProperties::REPEAT_X:
         background_image->repeat_x = "repeat";
         background_image->repeat_y = "no-repeat";
         break;
-      case THEME_BKGRND_IMAGE_REPEAT_Y:
+      case ThemeProperties::REPEAT_Y:
         background_image->repeat_x = "no-repeat";
         background_image->repeat_y = "repeat";
         break;
-      case THEME_BKGRND_IMAGE_REPEAT:
+      case ThemeProperties::REPEAT:
         background_image->repeat_x = "repeat";
         background_image->repeat_y = "repeat";
         break;
     }
-    switch (ntp_theme.image_horizontal_alignment) {
-      case THEME_BKGRND_IMAGE_ALIGN_CENTER:
-        background_image->position_x = "center";
-        break;
-      case THEME_BKGRND_IMAGE_ALIGN_LEFT:
-        background_image->position_x = "left";
-        break;
-      case THEME_BKGRND_IMAGE_ALIGN_RIGHT:
-        background_image->position_x = "right";
-        break;
-      case THEME_BKGRND_IMAGE_ALIGN_TOP:
-      case THEME_BKGRND_IMAGE_ALIGN_BOTTOM:
-        // Inconsistent. Ignore.
-        break;
+    int alignment = theme_provider->GetDisplayProperty(
+        ThemeProperties::NTP_BACKGROUND_ALIGNMENT);
+    if (alignment & ThemeProperties::ALIGN_LEFT) {
+      background_image->position_x = "left";
+    } else if (alignment & ThemeProperties::ALIGN_RIGHT) {
+      background_image->position_x = "right";
+    } else {
+      background_image->position_x = "center";
     }
-    switch (ntp_theme.image_vertical_alignment) {
-      case THEME_BKGRND_IMAGE_ALIGN_CENTER:
-        background_image->position_y = "center";
-        break;
-      case THEME_BKGRND_IMAGE_ALIGN_TOP:
-        background_image->position_y = "top";
-        break;
-      case THEME_BKGRND_IMAGE_ALIGN_BOTTOM:
-        background_image->position_y = "bottom";
-        break;
-      case THEME_BKGRND_IMAGE_ALIGN_LEFT:
-      case THEME_BKGRND_IMAGE_ALIGN_RIGHT:
-        // Inconsistent. Ignore.
-        break;
+    if (alignment & ThemeProperties::ALIGN_TOP) {
+      background_image->position_y = "top";
+    } else if (alignment & ThemeProperties::ALIGN_BOTTOM) {
+      background_image->position_y = "bottom";
+    } else {
+      background_image->position_y = "center";
     }
   } else {
     background_image = nullptr;
   }
   theme->background_image = std::move(background_image);
-  if (!ntp_theme.custom_background_attribution_line_1.empty()) {
+  if (custom_background.has_value()) {
     theme->background_image_attribution_1 =
-        ntp_theme.custom_background_attribution_line_1;
-  }
-  if (!ntp_theme.custom_background_attribution_line_2.empty()) {
+        custom_background->custom_background_attribution_line_1;
     theme->background_image_attribution_2 =
-        ntp_theme.custom_background_attribution_line_2;
-  }
-  if (!ntp_theme.custom_background_attribution_action_url.is_empty()) {
+        custom_background->custom_background_attribution_line_2;
     theme->background_image_attribution_url =
-        ntp_theme.custom_background_attribution_action_url;
-  }
-  if (!ntp_theme.collection_id.empty()) {
-    theme->daily_refresh_collection_id = ntp_theme.collection_id;
+        custom_background->custom_background_attribution_action_url;
+    theme->daily_refresh_collection_id = custom_background->collection_id;
   }
 
   theme->most_visited = std::move(most_visited);
 
   auto search_box = realbox::mojom::SearchBoxTheme::New();
-  search_box->bg = ntp_theme.search_box.bg;
-  search_box->icon = ntp_theme.search_box.icon;
-  search_box->icon_selected = ntp_theme.search_box.icon_selected;
-  search_box->placeholder = ntp_theme.search_box.placeholder;
-  search_box->results_bg = ntp_theme.search_box.results_bg;
-  search_box->results_bg_hovered = ntp_theme.search_box.results_bg_hovered;
-  search_box->results_bg_selected = ntp_theme.search_box.results_bg_selected;
-  search_box->results_dim = ntp_theme.search_box.results_dim;
-  search_box->results_dim_selected = ntp_theme.search_box.results_dim_selected;
-  search_box->results_text = ntp_theme.search_box.results_text;
+  search_box->bg =
+      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND);
+  search_box->icon = GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_ICON);
+  search_box->icon_selected = GetOmniboxColor(
+      theme_provider, OmniboxPart::RESULTS_ICON, OmniboxPartState::SELECTED);
+  search_box->placeholder =
+      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
+  search_box->results_bg =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND);
+  search_box->results_bg_hovered =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND,
+                      OmniboxPartState::HOVERED);
+  search_box->results_bg_selected =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND,
+                      OmniboxPartState::SELECTED);
+  search_box->results_dim =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DIMMED);
+  search_box->results_dim_selected =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DIMMED,
+                      OmniboxPartState::SELECTED);
+  search_box->results_text =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DEFAULT);
   search_box->results_text_selected =
-      ntp_theme.search_box.results_text_selected;
-  search_box->results_url = ntp_theme.search_box.results_url;
-  search_box->results_url_selected = ntp_theme.search_box.results_url_selected;
-  search_box->text = ntp_theme.search_box.text;
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DEFAULT,
+                      OmniboxPartState::SELECTED);
+  search_box->results_url =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_URL);
+  search_box->results_url_selected =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_URL,
+                      OmniboxPartState::SELECTED);
+  search_box->text =
+      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_TEXT_DEFAULT);
   theme->search_box = std::move(search_box);
 
   return theme;
@@ -223,7 +251,7 @@ new_tab_page::mojom::ImageDoodlePtr MakeImageDoodle(
         "data:image/png;base64,%s", share_button_icon.c_str()));
     doodle->share_button->background_color =
         SkColorSetA(ParseHexColor(share_button_bg),
-                    std::max(0.0, std::min(share_button_opacity, 1.0)) * 255.0);
+                    base::clamp(share_button_opacity, 0.0, 1.0) * 255.0);
   }
   if (type == search_provider_logos::LogoType::ANIMATED) {
     doodle->image_impression_log_url = cta_log_url;
@@ -317,13 +345,18 @@ NewTabPageHandler::NewTabPageHandler(
         pending_page_handler,
     mojo::PendingRemote<new_tab_page::mojom::Page> pending_page,
     Profile* profile,
-    InstantService* instant_service,
+    NtpCustomBackgroundService* ntp_custom_background_service,
+    ThemeService* theme_service,
+    search_provider_logos::LogoService* logo_service,
+    const ui::ThemeProvider* theme_provider,
     content::WebContents* web_contents,
     const base::Time& ntp_navigation_start_time)
-    : instant_service_(instant_service),
-      ntp_background_service_(
+    : ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
-      logo_service_(LogoServiceFactory::GetForProfile(profile)),
+      ntp_custom_background_service_(ntp_custom_background_service),
+      logo_service_(logo_service),
+      theme_provider_(theme_provider),
+      theme_service_(theme_service),
       profile_(profile),
       web_contents_(web_contents),
       ntp_navigation_start_time_(ntp_navigation_start_time),
@@ -331,19 +364,24 @@ NewTabPageHandler::NewTabPageHandler(
       promo_service_(PromoServiceFactory::GetForProfile(profile)),
       page_{std::move(pending_page)},
       receiver_{this, std::move(pending_page_handler)} {
-  CHECK(instant_service_);
   CHECK(ntp_background_service_);
+  CHECK(ntp_custom_background_service_);
   CHECK(logo_service_);
+  CHECK(theme_provider_);
+  CHECK(theme_service_);
   CHECK(promo_service_);
   CHECK(web_contents_);
-  instant_service_->AddObserver(this);
   ntp_background_service_->AddObserver(this);
-  instant_service_->UpdateNtpTheme();
+  native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+  theme_service_observation_.Observe(theme_service_);
+  ntp_custom_background_service_observation_.Observe(
+      ntp_custom_background_service_);
   promo_service_observation_.Observe(promo_service_);
+  page_->SetTheme(MakeTheme(theme_provider_, theme_service_,
+                            ntp_custom_background_service_));
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
-  instant_service_->RemoveObserver(this);
   ntp_background_service_->RemoveObserver(this);
   if (select_file_dialog_) {
     select_file_dialog_->ListenerDestroyed();
@@ -388,9 +426,9 @@ void NewTabPageHandler::SetBackgroundImage(const std::string& attribution_1,
                                            const GURL& image_url) {
   // Populating the |collection_id| turns on refresh daily which overrides the
   // the selected image.
-  instant_service_->SetCustomBackgroundInfo(image_url, attribution_1,
-                                            attribution_2, attribution_url,
-                                            /* collection_id= */ "");
+  ntp_custom_background_service_->SetCustomBackgroundInfo(
+      image_url, attribution_1, attribution_2, attribution_url,
+      /* collection_id= */ "");
   LogEvent(NTP_BACKGROUND_IMAGE_SET);
 }
 
@@ -398,17 +436,27 @@ void NewTabPageHandler::SetDailyRefreshCollectionId(
     const std::string& collection_id) {
   // Populating the |collection_id| turns on refresh daily which overrides the
   // the selected image.
-  instant_service_->SetCustomBackgroundInfo(
-      /* image_url */ GURL(), /* attribution_1= */ "", /* attribution_2= */ "",
-      /* attribution_url= */ GURL(), collection_id);
+  ntp_custom_background_service_->SetCustomBackgroundInfo(
+      /* image_url */ GURL(), /* attribution_line_1= */ "",
+      /* attribution_line_2= */ "",
+      /* action_url= */ GURL(), collection_id);
   LogEvent(NTP_BACKGROUND_DAILY_REFRESH_ENABLED);
 }
 
 void NewTabPageHandler::SetNoBackgroundImage() {
-  instant_service_->SetCustomBackgroundInfo(
-      /* image_url */ GURL(), /* attribution_1= */ "", /* attribution_2= */ "",
-      /* attribution_url= */ GURL(), /* collection_id= */ "");
+  ntp_custom_background_service_->SetCustomBackgroundInfo(
+      /* image_url */ GURL(), /* attribution_line_1= */ "",
+      /* attribution_line_2= */ "",
+      /* action_url= */ GURL(), /* collection_id= */ "");
   LogEvent(NTP_BACKGROUND_IMAGE_RESET);
+}
+
+void NewTabPageHandler::RevertBackgroundChanges() {
+  ntp_custom_background_service_->RevertBackgroundChanges();
+}
+
+void NewTabPageHandler::ConfirmBackgroundChanges() {
+  ntp_custom_background_service_->ConfirmBackgroundChanges();
 }
 
 void NewTabPageHandler::GetBackgroundCollections(
@@ -443,22 +491,11 @@ void NewTabPageHandler::GetBackgroundImages(
 
 void NewTabPageHandler::GetDoodle(GetDoodleCallback callback) {
   search_provider_logos::LogoCallbacks callbacks;
-  std::string fresh_doodle_param;
-  if (net::GetValueForKeyInQuery(web_contents_->GetLastCommittedURL(),
-                                 "fresh-doodle", &fresh_doodle_param) &&
-      fresh_doodle_param == "1") {
-    // In fresh-doodle mode, wait for the desired doodle to be downloaded.
-    callbacks.on_fresh_encoded_logo_available =
-        base::BindOnce(&NewTabPageHandler::OnLogoAvailable,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  } else {
-    // In regular mode, return cached doodle as it is available faster.
-    callbacks.on_cached_encoded_logo_available =
-        base::BindOnce(&NewTabPageHandler::OnLogoAvailable,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  }
-  // This will trigger re-downloading the doodle and caching it. This means that
-  // in regular mode a new doodle will be returned on subsequent NTP loads.
+  callbacks.on_cached_encoded_logo_available =
+      base::BindOnce(&NewTabPageHandler::OnLogoAvailable,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  // This will trigger re-downloading the doodle and caching it. This means a
+  // new doodle will be returned on subsequent NTP loads.
   logo_service_->GetLogo(std::move(callbacks), /*for_webui_ntp=*/true);
 }
 
@@ -491,7 +528,7 @@ void NewTabPageHandler::GetPromo(GetPromoCallback callback) {
   // Replace the promo URL with "command:<id>" if such a command ID is set
   // via the feature params.
   const std::string command_id = base::GetFieldTrialParamValueByFeature(
-      features::kPromoBrowserCommands, features::kPromoBrowserCommandIdParam);
+      features::kPromoBrowserCommands, features::kBrowserCommandIdParam);
   if (!command_id.empty()) {
     auto promo = new_tab_page::mojom::Promo::New();
     std::vector<new_tab_page::mojom::PromoPartPtr> parts;
@@ -789,12 +826,25 @@ void NewTabPageHandler::OnPromoLinkClicked() {
   LogEvent(NTP_MIDDLE_SLOT_PROMO_LINK_CLICKED);
 }
 
-void NewTabPageHandler::NtpThemeChanged(const NtpTheme& ntp_theme) {
-  page_->SetTheme(MakeTheme(ntp_theme));
+void NewTabPageHandler::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
+  page_->SetTheme(MakeTheme(theme_provider_, theme_service_,
+                            ntp_custom_background_service_));
 }
 
-void NewTabPageHandler::MostVisitedInfoChanged(
-    const InstantMostVisitedInfo& info) {}
+void NewTabPageHandler::OnThemeChanged() {
+  page_->SetTheme(MakeTheme(theme_provider_, theme_service_,
+                            ntp_custom_background_service_));
+}
+
+void NewTabPageHandler::OnCustomBackgroundImageUpdated() {
+  page_->SetTheme(MakeTheme(theme_provider_, theme_service_,
+                            ntp_custom_background_service_));
+}
+
+void NewTabPageHandler::OnNtpCustomBackgroundServiceShuttingDown() {
+  ntp_custom_background_service_observation_.Reset();
+  ntp_custom_background_service_ = nullptr;
+}
 
 void NewTabPageHandler::OnCollectionInfoAvailable() {
   if (!background_collections_callback_) {
@@ -877,9 +927,9 @@ void NewTabPageHandler::FileSelected(const base::FilePath& path,
                                      int index,
                                      void* params) {
   DCHECK(choose_local_custom_background_callback_);
-  if (instant_service_) {
+  if (ntp_custom_background_service_) {
     profile_->set_last_selected_directory(path.DirName());
-    instant_service_->SelectLocalBackgroundImage(path);
+    ntp_custom_background_service_->SelectLocalBackgroundImage(path);
   }
 
   select_file_dialog_ = nullptr;
@@ -940,7 +990,9 @@ void NewTabPageHandler::OnLogoAvailable(
           logo->metadata.dark_share_button_opacity, logo->metadata.dark_log_url,
           logo->metadata.dark_cta_log_url);
     }
-    image_doodle->on_click_url = logo->metadata.on_click_url;
+    if (logo->metadata.on_click_url.is_valid()) {
+      image_doodle->on_click_url = logo->metadata.on_click_url;
+    }
     image_doodle->share_url = logo->metadata.short_link;
     doodle->image = std::move(image_doodle);
   } else if (logo->metadata.type ==

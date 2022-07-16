@@ -217,7 +217,8 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         _GetTagsToTest(browser),
         set([
             'win', 'win10', 'release', 'nvidia', 'nvidia-0x1cb3', 'angle-d3d9',
-            'no-passthrough', 'no-swiftshader-gl', 'skia-renderer-disabled'
+            'no-passthrough', 'no-swiftshader-gl', 'skia-renderer-disabled',
+            'no-oop-c'
         ]))
 
   @mock.patch('sys.platform', 'darwin')
@@ -234,7 +235,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         set([
             'mac', 'mojave', 'release', 'imagination',
             'imagination-PowerVR-SGX-554', 'angle-opengles', 'passthrough',
-            'no-swiftshader-gl', 'skia-renderer-disabled'
+            'no-swiftshader-gl', 'skia-renderer-disabled', 'no-oop-c'
         ]))
 
   @mock.patch('sys.platform', 'darwin')
@@ -249,7 +250,8 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         set([
             'mac', 'mojave', 'release', 'imagination',
             'imagination-Triangle-Monster-3000', 'angle-disabled',
-            'no-passthrough', 'no-swiftshader-gl', 'skia-renderer-disabled'
+            'no-passthrough', 'no-swiftshader-gl', 'skia-renderer-disabled',
+            'no-oop-c'
         ]))
 
   @mock.patch.dict(os.environ, clear=True)
@@ -262,7 +264,18 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
       for t in tags:
         self.assertFalse(t.startswith('display-server'))
 
+    # Python 2's return value.
     with mock.patch('sys.platform', 'linux2'):
+      tags = gpu_integration_test.GpuIntegrationTest.GetPlatformTags(browser)
+      self.assertIn('display-server-x', tags)
+
+      os.environ['WAYLAND_DISPLAY'] = 'wayland-0'
+      tags = gpu_integration_test.GpuIntegrationTest.GetPlatformTags(browser)
+      self.assertIn('display-server-wayland', tags)
+
+    # Python 3's return value.
+    with mock.patch('sys.platform', 'linux'):
+      del os.environ['WAYLAND_DISPLAY']
       tags = gpu_integration_test.GpuIntegrationTest.GetPlatformTags(browser)
       self.assertIn('display-server-x', tags)
 

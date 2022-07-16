@@ -30,7 +30,6 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Invoke;
-using ::testing::IsNull;
 using ::testing::Not;
 using ::testing::Property;
 using ::testing::Return;
@@ -170,7 +169,9 @@ TEST_F(ShowGenericUiActionTest, NonEmptyOutputModel) {
                   view_inflation_finished_callback) {
             std::move(view_inflation_finished_callback)
                 .Run(ClientStatus(ACTION_APPLIED));
-            user_model_.SetValue("value_2", SimpleValue(std::string("change")));
+            user_model_.SetValue(
+                "value_2", SimpleValue(std::string("change"),
+                                       /* is_client_side_only = */ false));
             std::move(end_action_callback).Run(ClientStatus(ACTION_APPLIED));
           }));
 
@@ -221,12 +222,13 @@ TEST_F(ShowGenericUiActionTest, ClientOnlyValuesDoNotLeaveDevice) {
   auto* input_value_a =
       proto_.mutable_generic_user_interface()->mutable_model()->add_values();
   input_value_a->set_identifier("regular_value");
-  *input_value_a->mutable_value() = SimpleValue(std::string("regular"));
+  *input_value_a->mutable_value() =
+      SimpleValue(std::string("regular"), /* is_client_side_only = */ false);
   auto* input_value_b =
       proto_.mutable_generic_user_interface()->mutable_model()->add_values();
   input_value_b->set_identifier("sensitive_value");
-  *input_value_b->mutable_value() = SimpleValue(std::string("secret"));
-  input_value_b->mutable_value()->set_is_client_side_only(true);
+  *input_value_b->mutable_value() =
+      SimpleValue(std::string("secret"), /* is_client_side_only = */ true);
 
   proto_.add_output_model_identifiers("regular_value");
   proto_.add_output_model_identifiers("sensitive_value");
@@ -556,9 +558,9 @@ TEST_F(ShowGenericUiActionTest, RequestUserData) {
   additional_value->set_source_identifier("client_memory_2");
   additional_value->set_model_identifier("target_2");
 
-  user_data_.additional_values_["client_memory_1"] =
-      SimpleValue(std::string("value_1"));
-  user_data_.additional_values_["client_memory_2"] = SimpleValue(123);
+  user_data_.SetAdditionalValue("client_memory_1",
+                                SimpleValue(std::string("value_1")));
+  user_data_.SetAdditionalValue("client_memory_2", SimpleValue(123));
 
   EXPECT_CALL(
       callback_,

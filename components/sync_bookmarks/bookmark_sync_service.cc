@@ -13,12 +13,12 @@ namespace sync_bookmarks {
 
 BookmarkSyncService::BookmarkSyncService(
     BookmarkUndoService* bookmark_undo_service) {
-    bookmark_model_type_processor_ =
-        std::make_unique<sync_bookmarks::BookmarkModelTypeProcessor>(
-            bookmark_undo_service);
+  bookmark_model_type_processor_ =
+      std::make_unique<sync_bookmarks::BookmarkModelTypeProcessor>(
+          bookmark_undo_service);
 }
 
-BookmarkSyncService::~BookmarkSyncService() {}
+BookmarkSyncService::~BookmarkSyncService() = default;
 
 std::string BookmarkSyncService::EncodeBookmarkSyncMetadata() {
   if (!bookmark_model_type_processor_) {

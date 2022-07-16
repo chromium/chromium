@@ -18,6 +18,10 @@ namespace content {
 class CONTENT_EXPORT InputInjectorImpl : public mojom::InputInjector {
  public:
   explicit InputInjectorImpl(base::WeakPtr<RenderFrameHostImpl> frame_host);
+
+  InputInjectorImpl(const InputInjectorImpl&) = delete;
+  InputInjectorImpl& operator=(const InputInjectorImpl&) = delete;
+
   ~InputInjectorImpl() override;
 
   static void Create(base::WeakPtr<RenderFrameHostImpl> frame_host,
@@ -44,8 +48,6 @@ class CONTENT_EXPORT InputInjectorImpl : public mojom::InputInjector {
       base::OnceCallback<void(SyntheticGesture::Result)> callback);
 
   base::WeakPtr<RenderFrameHostImpl> frame_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputInjectorImpl);
 };
 
 }  // namespace content

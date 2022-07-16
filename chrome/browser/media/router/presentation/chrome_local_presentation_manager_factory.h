@@ -22,6 +22,11 @@ class ChromeLocalPresentationManagerFactory
   // For test use only.
   static ChromeLocalPresentationManagerFactory* GetInstance();
 
+  ChromeLocalPresentationManagerFactory(
+      const ChromeLocalPresentationManagerFactory&) = delete;
+  ChromeLocalPresentationManagerFactory& operator=(
+      const ChromeLocalPresentationManagerFactory&) = delete;
+
  private:
   friend struct base::LazyInstanceTraitsBase<
       ChromeLocalPresentationManagerFactory>;
@@ -32,8 +37,6 @@ class ChromeLocalPresentationManagerFactory
   // BrowserContextKeyedServiceFactory interface.
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeLocalPresentationManagerFactory);
 };
 
 }  // namespace media_router

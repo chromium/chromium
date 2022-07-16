@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#import "base/test/scoped_feature_list.h"
-#import "components/signin/public/base/account_consistency_method.h"
 #import "components/sync/driver/sync_service_utils.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
@@ -63,21 +61,6 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceSignInNeedsUpdate) {
 }
 
 TEST_F(SyncErrorInfobarDelegateTest, SyncServiceUnrecoverableError) {
-  ON_CALL(*sync_setup_service_mock(), GetSyncServiceState())
-      .WillByDefault(Return(SyncSetupService::kSyncServiceUnrecoverableError));
-
-  id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
-  [[presenter expect] showGoogleServicesSettings];
-  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
-      new SyncErrorInfoBarDelegate(chrome_browser_state_.get(), presenter));
-
-  EXPECT_FALSE(delegate->Accept());
-}
-
-TEST_F(SyncErrorInfobarDelegateTest, SyncServiceUnrecoverableErrorWithMICE) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
   [[presenter expect] showAccountSettings];
   std::unique_ptr<SyncErrorInfoBarDelegate> delegate(

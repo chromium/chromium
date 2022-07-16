@@ -17,10 +17,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 
-namespace base {
-class Clock;
-}  // namespace base
-
 namespace segmentation_platform {
 
 class SignalDatabase;
@@ -29,7 +25,7 @@ class SignalDatabase;
 // persisting them to the internal database for future processing.
 class HistogramSignalHandler {
  public:
-  HistogramSignalHandler(SignalDatabase* signal_database, base::Clock* clock);
+  explicit HistogramSignalHandler(SignalDatabase* signal_database);
   virtual ~HistogramSignalHandler();
 
   // Disallow copy/assign.
@@ -52,9 +48,6 @@ class HistogramSignalHandler {
 
   // The database storing relevant histogram samples.
   SignalDatabase* db_;
-
-  // Used for getting current time.
-  base::Clock* clock_;
 
   // Whether or not the segmentation platform should record metrics events.
   bool metrics_enabled_;

@@ -26,9 +26,9 @@
 namespace blink {
 namespace {
 TransformOperation::OperationType GetTypeForRotation(const Rotation& rotation) {
-  float x = rotation.axis.X();
-  float y = rotation.axis.Y();
-  float z = rotation.axis.Z();
+  float x = rotation.axis.x();
+  float y = rotation.axis.y();
+  float z = rotation.axis.z();
   if (x && !y && !z)
     return TransformOperation::kRotateX;
   if (y && !x && !z)

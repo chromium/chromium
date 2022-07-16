@@ -11,10 +11,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -65,6 +64,10 @@ class CredentialManagerPendingRequestTask
       bool include_passwords,
       const std::vector<GURL>& request_federations,
       StoresToQuery stores_to_query);
+  CredentialManagerPendingRequestTask(
+      const CredentialManagerPendingRequestTask&) = delete;
+  CredentialManagerPendingRequestTask& operator=(
+      const CredentialManagerPendingRequestTask&) = delete;
   ~CredentialManagerPendingRequestTask() override;
 
   const url::Origin& origin() const { return origin_; }
@@ -101,8 +104,6 @@ class CredentialManagerPendingRequestTask
   base::flat_map<PasswordStoreInterface*,
                  std::unique_ptr<HttpPasswordStoreMigrator>>
       http_migrators_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialManagerPendingRequestTask);
 };
 
 }  // namespace password_manager

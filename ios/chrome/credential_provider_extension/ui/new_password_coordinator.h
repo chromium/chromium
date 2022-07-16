@@ -8,6 +8,8 @@
 #import <UIKit/UIKit.h>
 
 @class ASCredentialProviderExtensionContext;
+@class ASCredentialServiceIdentifier;
+@protocol CredentialStore;
 
 // The coordinator for the new password feature.
 @interface NewPasswordCoordinator : NSObject
@@ -17,6 +19,9 @@
 - (instancetype)
     initWithBaseViewController:(UIViewController*)baseViewController
                        context:(ASCredentialProviderExtensionContext*)context
+            serviceIdentifiers:
+                (NSArray<ASCredentialServiceIdentifier*>*)serviceIdentifiers
+           existingCredentials:(id<CredentialStore>)existingCredentials
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

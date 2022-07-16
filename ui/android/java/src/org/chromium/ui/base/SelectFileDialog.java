@@ -656,13 +656,12 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     /**
      * Callback method to handle the intent results and pass on the path to the native
      * SelectFileDialog.
-     * @param window The window that has access to the application activity.
      * @param resultCode The result code whether the intent returned successfully.
      * @param results The results of the requested intent.
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
-    public void onIntentCompleted(WindowAndroid window, int resultCode, Intent results) {
+    public void onIntentCompleted(int resultCode, Intent results) {
         if (sPhotoPicker != null) {
             sPhotoPicker.onExternalIntentCompleted();
         }
@@ -684,14 +683,14 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             String path = ContentResolver.SCHEME_FILE.equals(mCameraOutputUri.getScheme())
                     ? mCameraOutputUri.getPath() : mCameraOutputUri.toString();
 
-            if (!isUnderAppDir(
-                        mCameraOutputUri.getSchemeSpecificPart(), window.getApplicationContext())) {
+            if (!isUnderAppDir(mCameraOutputUri.getSchemeSpecificPart(),
+                        mWindowAndroid.getApplicationContext())) {
                 onFileSelected(
                         mNativeSelectFileDialog, path, mCameraOutputUri.getLastPathSegment());
                 // Broadcast to the media scanner that there's a new photo on the device so it will
                 // show up right away in the gallery (rather than waiting until the next time the
                 // media scanner runs).
-                window.sendBroadcast(
+                mWindowAndroid.sendBroadcast(
                         new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, mCameraOutputUri));
             } else {
                 onFileNotSelected();
@@ -726,7 +725,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             String filePath = results.getData().getPath();
             if (!TextUtils.isEmpty(filePath)) {
                 FilePathSelectedTask task = new FilePathSelectedTask(
-                        ContextUtils.getApplicationContext(), filePath, window);
+                        ContextUtils.getApplicationContext(), filePath, mWindowAndroid);
                 task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 return;
             }

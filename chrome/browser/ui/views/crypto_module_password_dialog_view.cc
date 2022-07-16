@@ -14,7 +14,8 @@
 #include "ui/events/event.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/widget/widget.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -104,45 +105,30 @@ void CryptoModulePasswordDialogView::Init(const std::string& hostname,
     default:
       NOTREACHED();
   }
-  auto reason_label = std::make_unique<views::Label>(base::UTF8ToUTF16(text));
-  reason_label->SetMultiLine(true);
-
-  auto password_label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_CRYPTO_MODULE_AUTH_DIALOG_PASSWORD_FIELD));
-
-  auto password_entry = std::make_unique<views::Textfield>();
-  password_entry->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
-  password_entry->set_controller(this);
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
 
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
+  reason_label_ =
+      AddChildView(std::make_unique<views::Label>(base::UTF8ToUTF16(text)));
+  reason_label_->SetMultiLine(true);
+  reason_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-  views::ColumnSet* reason_column_set = layout->AddColumnSet(0);
-  reason_column_set->AddColumn(
-      views::GridLayout::LEADING, views::GridLayout::LEADING, 1.0,
-      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  views::ColumnSet* column_set = layout->AddColumnSet(1);
-  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL_LARGE));
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  reason_label_ = layout->AddView(std::move(reason_label));
-  layout->AddPaddingRow(
-      views::GridLayout::kFixedSize,
-      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-
-  layout->StartRow(views::GridLayout::kFixedSize, 1);
-  password_label_ = layout->AddView(std::move(password_label));
-  password_entry_ = layout->AddView(std::move(password_entry));
+  auto* password_container =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  password_container->SetBetweenChildSpacing(
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL));
+  password_label_ = password_container->AddChildView(
+      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+          IDS_CRYPTO_MODULE_AUTH_DIALOG_PASSWORD_FIELD)));
+  password_entry_ =
+      password_container->AddChildView(std::make_unique<views::Textfield>());
+  password_entry_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+  password_entry_->set_controller(this);
+  password_entry_->SetAssociatedLabel(password_label_);
+  password_container->SetFlexForView(password_entry_, 1);
 }
 
 BEGIN_METADATA(CryptoModulePasswordDialogView, views::DialogDelegateView)

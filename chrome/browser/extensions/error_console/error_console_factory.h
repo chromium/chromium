@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_ERROR_CONSOLE_ERROR_CONSOLE_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_ERROR_CONSOLE_ERROR_CONSOLE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -15,6 +14,9 @@ class ErrorConsole;
 
 class ErrorConsoleFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ErrorConsoleFactory(const ErrorConsoleFactory&) = delete;
+  ErrorConsoleFactory& operator=(const ErrorConsoleFactory&) = delete;
+
   static ErrorConsole* GetForBrowserContext(content::BrowserContext* context);
   static ErrorConsoleFactory* GetInstance();
 
@@ -29,8 +31,6 @@ class ErrorConsoleFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorConsoleFactory);
 };
 
 }  // namespace extensions

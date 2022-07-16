@@ -10,12 +10,9 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
-
-namespace blink {
-struct Manifest;
-}  // namespace blink
 
 namespace content {
 
@@ -24,7 +21,7 @@ namespace content {
 // At the moment some navigations might create a new blink::Document in the
 // existing RenderFrameHost, which will lead to a creation of a new Page
 // associated with the same main RenderFrameHost. See the comment in
-// |RenderDocumentHostUserData| for more details and crbug.com/936696 for the
+// |DocumentUserData| for more details and crbug.com/936696 for the
 // progress on always creating a new RenderFrameHost for each new document.
 
 // Page is created when a main document is created, which can happen in the
@@ -68,7 +65,7 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   // frame document's manifest. The url will be empty if the document specifies
   // no manifest, and the manifest will be empty if any other failures occurred.
   using GetManifestCallback =
-      base::OnceCallback<void(const GURL&, const blink::Manifest&)>;
+      base::OnceCallback<void(const GURL&, blink::mojom::ManifestPtr)>;
 
   // Requests the manifest URL and the Manifest of the main frame's document.
   virtual void GetManifest(GetManifestCallback callback) = 0;
@@ -85,6 +82,12 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
 
   // Write a description of this Page into the provided |context|.
   virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
+
+  virtual base::WeakPtr<Page> GetWeakPtr() = 0;
+
+  // Whether the most recent page scale factor sent by the main frame's renderer
+  // is 1 (i.e. no magnification).
+  virtual bool IsPageScaleFactorOne() = 0;
 
  private:
   // This method is needed to ensure that PageImpl can both implement a Page's

@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -100,6 +99,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
 
   // Gets the global instance. Initialize() must be called first.
   static NetworkCertLoader* Get();
+
+  NetworkCertLoader(const NetworkCertLoader&) = delete;
+  NetworkCertLoader& operator=(const NetworkCertLoader&) = delete;
 
   // Returns true if the global instance has been initialized.
   static bool IsInitialized();
@@ -269,8 +271,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<NetworkCertLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkCertLoader);
 };
 
 }  // namespace chromeos

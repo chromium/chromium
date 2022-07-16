@@ -113,13 +113,16 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
    private:
     struct BufferedSample {
       BufferedSample(base::TimeTicks, std::vector<base::Frame>&&);
+
+      BufferedSample(const BufferedSample&) = delete;
+      BufferedSample& operator=(const BufferedSample&) = delete;
+
       BufferedSample(BufferedSample&& other);
+
       ~BufferedSample();
 
       base::TimeTicks timestamp;
       std::vector<base::Frame> sample;
-
-      DISALLOW_COPY_AND_ASSIGN(BufferedSample);
     };
 
     void WriteSampleToTrace(const BufferedSample& sample);
@@ -143,6 +146,9 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   // Creates sampling profiler on main thread. The profiler *must* be
   // destroyed prior to process shutdown.
   static std::unique_ptr<TracingSamplerProfiler> CreateOnMainThread();
+
+  TracingSamplerProfiler(const TracingSamplerProfiler&) = delete;
+  TracingSamplerProfiler& operator=(const TracingSamplerProfiler&) = delete;
 
   // Sets up tracing sampling profiler on a child thread. The profiler will be
   // stored in SequencedLocalStorageSlot and will be destroyed with the thread
@@ -212,8 +218,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   // and stop at the same time that stack sampling does.
   std::unique_ptr<LoaderLockSamplingThread> loader_lock_sampling_thread_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TracingSamplerProfiler);
 };
 
 }  // namespace tracing

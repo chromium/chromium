@@ -7,7 +7,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/infobars/android/infobar_android.h"
 
 namespace content {
@@ -23,6 +22,9 @@ class FramebustBlockMessageDelegate;
 // See FramebustBlockInfoBar.java for UI specifics.
 class FramebustBlockInfoBar : public infobars::InfoBarAndroid {
  public:
+  FramebustBlockInfoBar(const FramebustBlockInfoBar&) = delete;
+  FramebustBlockInfoBar& operator=(const FramebustBlockInfoBar&) = delete;
+
   ~FramebustBlockInfoBar() override;
 
   static void Show(content::WebContents* web_contents,
@@ -41,8 +43,6 @@ class FramebustBlockInfoBar : public infobars::InfoBarAndroid {
                      const base::android::JavaParamRef<jobject>& obj) override;
 
   std::unique_ptr<FramebustBlockMessageDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(FramebustBlockInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_FRAMEBUST_BLOCK_INFOBAR_H_

@@ -5,22 +5,20 @@
 #ifndef CHROME_BROWSER_UI_PAGE_INFO_CHROME_ACCURACY_TIP_UI_H_
 #define CHROME_BROWSER_UI_PAGE_INFO_CHROME_ACCURACY_TIP_UI_H_
 
+#include "base/callback_forward.h"
+#include "components/accuracy_tips/accuracy_tip_interaction.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
-#include "components/accuracy_tips/accuracy_tip_ui.h"
 
-class ChromeAccuracyTipUI : public accuracy_tips::AccuracyTipUI {
- public:
-  void ShowAccuracyTip(
-      content::WebContents* web_contents,
-      accuracy_tips::AccuracyTipStatus type,
-      base::OnceCallback<void(Interaction)> close_callback) override;
-};
+namespace content {
+class WebContents;
+}
 
 // Definition for platform specific view implementation.
 void ShowAccuracyTipDialog(
     content::WebContents* web_contents,
     accuracy_tips::AccuracyTipStatus type,
-    base::OnceCallback<void(accuracy_tips::AccuracyTipUI::Interaction)>
+    bool show_opt_out,
+    base::OnceCallback<void(accuracy_tips::AccuracyTipInteraction)>
         close_callback);
 
 #endif  // CHROME_BROWSER_UI_PAGE_INFO_CHROME_ACCURACY_TIP_UI_H_

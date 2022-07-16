@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
@@ -35,6 +34,10 @@ class AutocompleteSyncBridge
   AutocompleteSyncBridge(
       AutofillWebDataBackend* backend,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+
+  AutocompleteSyncBridge(const AutocompleteSyncBridge&) = delete;
+  AutocompleteSyncBridge& operator=(const AutocompleteSyncBridge&) = delete;
+
   ~AutocompleteSyncBridge() override;
 
   static void CreateForWebDataServiceAndBackend(
@@ -82,8 +85,6 @@ class AutocompleteSyncBridge
   base::ScopedObservation<AutofillWebDataBackend,
                           AutofillWebDataServiceObserverOnDBSequence>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteSyncBridge);
 };
 
 }  // namespace autofill

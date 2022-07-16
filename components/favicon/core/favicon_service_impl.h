@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/favicon_service.h"
@@ -39,6 +38,10 @@ class FaviconServiceImpl : public FaviconService {
   // |history_service| most not be nullptr and  must outlive this object.
   FaviconServiceImpl(std::unique_ptr<FaviconClient> favicon_client,
                      history::HistoryService* history_service);
+
+  FaviconServiceImpl(const FaviconServiceImpl&) = delete;
+  FaviconServiceImpl& operator=(const FaviconServiceImpl&) = delete;
+
   ~FaviconServiceImpl() override;
 
   // FaviconService implementation.
@@ -162,8 +165,6 @@ class FaviconServiceImpl : public FaviconService {
   std::unordered_set<MissingFaviconURLHash> missing_favicon_urls_;
   std::unique_ptr<FaviconClient> favicon_client_;
   history::HistoryService* history_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconServiceImpl);
 };
 
 }  // namespace favicon

@@ -27,7 +27,6 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -47,7 +46,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 using sync_pb::EntityMetadata;
 using sync_pb::ModelTypeState;
 using syncer::EntityMetadataMap;
@@ -175,7 +173,7 @@ TEST_F(AutofillTableTest, Autofill) {
   field.name = u"Name";
   field.value = u"Superman";
   base::Time now = AutofillClock::Now();
-  base::TimeDelta two_seconds = base::TimeDelta::FromSeconds(2);
+  base::TimeDelta two_seconds = base::Seconds(2);
   EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
   std::vector<AutofillEntry> v;
   for (int i = 0; i < 5; ++i) {
@@ -306,7 +304,7 @@ TEST_F(AutofillTableTest, Autofill_GetEntry_Populated) {
   EXPECT_THAT(no_prefix_v, ElementsAre(expected_entry));
 
   // Update date_last_used.
-  base::Time new_time = now + base::TimeDelta::FromSeconds(1000);
+  base::Time new_time = now + base::Seconds(1000);
   EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, new_time));
   EXPECT_TRUE(
       table_->GetFormValuesForElementName(field.name, u"Super", &prefix_v, 10));
@@ -327,7 +325,7 @@ TEST_F(AutofillTableTest, Autofill_GetCountOfValuesContainedBetween) {
   // Make sure we use timestamps rounded to a second.
   Time begin = Time::FromTimeT(AutofillClock::Now().ToTimeT());
   Time now = begin;
-  TimeDelta second = TimeDelta::FromSeconds(1);
+  base::TimeDelta second = base::Seconds(1);
 
   struct Entry {
     const char16_t* name;
@@ -386,7 +384,7 @@ TEST_F(AutofillTableTest, Autofill_GetCountOfValuesContainedBetween) {
 }
 
 TEST_F(AutofillTableTest, Autofill_RemoveBetweenChanges) {
-  TimeDelta one_day(TimeDelta::FromDays(1));
+  base::TimeDelta one_day(base::Days(1));
   Time t1 = AutofillClock::Now();
   Time t2 = t1 + one_day;
 
@@ -414,7 +412,7 @@ TEST_F(AutofillTableTest, Autofill_RemoveBetweenChanges) {
 }
 
 TEST_F(AutofillTableTest, Autofill_AddChanges) {
-  TimeDelta one_day(TimeDelta::FromDays(1));
+  base::TimeDelta one_day(base::Days(1));
   Time t1 = AutofillClock::Now();
   Time t2 = t1 + one_day;
 
@@ -751,9 +749,9 @@ TEST_F(AutofillTableTest,
 TEST_F(AutofillTableTest,
        Autofill_RemoveFormElementsAddedBetween_OlderThan30Days) {
   const base::Time kNow = AutofillClock::Now();
-  const base::Time k29DaysOld = kNow - base::TimeDelta::FromDays(29);
-  const base::Time k30DaysOld = kNow - base::TimeDelta::FromDays(30);
-  const base::Time k31DaysOld = kNow - base::TimeDelta::FromDays(31);
+  const base::Time k29DaysOld = kNow - base::Days(29);
+  const base::Time k30DaysOld = kNow - base::Days(30);
+  const base::Time k31DaysOld = kNow - base::Days(31);
 
   // Add some form field entries.
   AutofillChangeList changes;
@@ -785,8 +783,8 @@ TEST_F(AutofillTableTest,
 // delete an old entry.
 TEST_F(AutofillTableTest, RemoveExpiredFormElements_Expires_DeleteEntry) {
   auto kNow = AutofillClock::Now();
-  auto k2YearsOld = kNow - base::TimeDelta::FromDays(
-                               2 * kAutocompleteRetentionPolicyPeriodInDays);
+  auto k2YearsOld =
+      kNow - base::Days(2 * kAutocompleteRetentionPolicyPeriodInDays);
 
   AutofillChangeList changes;
   FormFieldData field;
@@ -806,7 +804,7 @@ TEST_F(AutofillTableTest, RemoveExpiredFormElements_Expires_DeleteEntry) {
 // delete non-expired entries' data from the SQLite table.
 TEST_F(AutofillTableTest, RemoveExpiredFormElements_NotOldEnough) {
   auto kNow = AutofillClock::Now();
-  auto k2DaysOld = kNow - base::TimeDelta::FromDays(2);
+  auto k2DaysOld = kNow - base::Days(2);
 
   AutofillChangeList changes;
   FormFieldData field;
@@ -1001,10 +999,7 @@ TEST_F(AutofillTableTest,
 TEST_F(AutofillTableTest, AutofillProfile_StructuredAddresses) {
   // Enable the structured addresses features.
   scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillAddressEnhancementVotes,
-       features::kAutofillEnableSupportForMoreStructureInAddresses},
-      {});
-  ;
+      {features::kAutofillEnableSupportForMoreStructureInAddresses}, {});
 
   AutofillProfile profile;
   profile.set_origin(std::string());
@@ -1122,10 +1117,7 @@ TEST_F(AutofillTableTest,
        AutofillProfile_StructuredAddresses_Eventual_Deletion) {
   // Enable the structured addresses.
   scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillAddressEnhancementVotes,
-       features::kAutofillEnableSupportForMoreStructureInAddresses},
-      {});
-  ;
+      {features::kAutofillEnableSupportForMoreStructureInAddresses}, {});
 
   AutofillProfile profile;
   profile.set_origin(std::string());
@@ -1167,8 +1159,7 @@ TEST_F(AutofillTableTest,
   // Deactivate the features.
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      {}, {features::kAutofillAddressEnhancementVotes,
-           features::kAutofillEnableSupportForMoreStructureInAddresses});
+      {}, {features::kAutofillEnableSupportForMoreStructureInAddresses});
 
   // Retrieve the address and verify that the structured tokens are not written.
   std::unique_ptr<AutofillProfile> legacy_db_profile =
@@ -1219,11 +1210,8 @@ TEST_F(AutofillTableTest,
 
   // Enable the feature again and load the profile.
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillAddressEnhancementVotes,
-       features::kAutofillEnableSupportForMoreStructureInAddresses},
-      {});
-  ;
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInAddresses);
 
   // Retrieve the address and manually query the data base to verify that the
   // structured address was deleted.
@@ -2469,7 +2457,6 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   inputs[1].SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"1997");
   inputs[1].SetRawInfo(CREDIT_CARD_NUMBER, u"1111");
   inputs[1].SetNetworkForMaskedCard(kVisaCard);
-  inputs[1].SetServerStatus(CreditCard::EXPIRED);
   std::u16string nickname = u"Grocery card";
   inputs[1].SetNickname(nickname);
   inputs[1].set_card_issuer(CreditCard::Issuer::GOOGLE);
@@ -2498,9 +2485,6 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
 
   EXPECT_EQ(inputs[0], *outputs[0]);
   EXPECT_EQ(inputs[1], *outputs[1]);
-
-  EXPECT_EQ(CreditCard::OK, outputs[0]->GetServerStatus());
-  EXPECT_EQ(CreditCard::EXPIRED, outputs[1]->GetServerStatus());
 
   EXPECT_TRUE(outputs[0]->nickname().empty());
   EXPECT_EQ(nickname, outputs[1]->nickname());
@@ -2725,7 +2709,6 @@ TEST_F(AutofillTableTest, SetServerCardsData) {
   inputs[0].SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"1997");
   inputs[0].SetRawInfo(CREDIT_CARD_NUMBER, u"1111");
   inputs[0].SetNetworkForMaskedCard(kVisaCard);
-  inputs[0].SetServerStatus(CreditCard::EXPIRED);
   inputs[0].SetNickname(u"Grocery card");
   inputs[0].set_instrument_id(1);
   inputs[0].set_virtual_card_enrollment_state(
@@ -2745,7 +2728,6 @@ TEST_F(AutofillTableTest, SetServerCardsData) {
   outputs[0]->set_guid(std::string());
 
   EXPECT_EQ(inputs[0], *outputs[0]);
-  EXPECT_EQ(CreditCard::EXPIRED, outputs[0]->GetServerStatus());
 
   EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::ENROLLED,
             outputs[0]->virtual_card_enrollment_state());
@@ -3141,9 +3123,8 @@ TEST_F(AutofillTableTest, DeleteUnmaskedCard) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   std::vector<std::unique_ptr<CreditCard>> credit_cards;
   ASSERT_TRUE(table_->RemoveAutofillDataModifiedBetween(
-      unmasked_time + base::TimeDelta::FromDays(365),
-      unmasked_time + base::TimeDelta::FromDays(530), &profiles,
-      &credit_cards));
+      unmasked_time + base::Days(365), unmasked_time + base::Days(530),
+      &profiles, &credit_cards));
 
   // This should not affect the unmasked card (should be unmasked).
   std::vector<std::unique_ptr<CreditCard>> outputs;
@@ -3156,9 +3137,9 @@ TEST_F(AutofillTableTest, DeleteUnmaskedCard) {
   // Delete data in the range of the last 24 hours.
   // Fudge |now| to make sure it's strictly greater than the |now| that
   // the database uses.
-  base::Time now = AutofillClock::Now() + base::TimeDelta::FromSeconds(1);
+  base::Time now = AutofillClock::Now() + base::Seconds(1);
   ASSERT_TRUE(table_->RemoveAutofillDataModifiedBetween(
-      now - base::TimeDelta::FromDays(1), now, &profiles, &credit_cards));
+      now - base::Days(1), now, &profiles, &credit_cards));
 
   // This should re-mask.
   ASSERT_TRUE(table_->GetServerCreditCards(&outputs));
@@ -3766,36 +3747,6 @@ TEST_F(AutofillTableTest, SetAndGetCreditCardOfferData) {
                 testing::UnorderedElementsAreArray(
                     output_offer_data[output_index]->eligible_instrument_id));
   }
-}
-
-TEST_F(AutofillTableTest, SetAndGetAndClearCreditCardArtImage) {
-  CreditCardArtImage image1("image1", 1, {UINT8_MAX});
-  table_->AddCreditCardArtImage(image1);
-  CreditCardArtImage image2("image2", 2, {UINT8_MAX});
-  table_->AddCreditCardArtImage(image2);
-
-  std::vector<std::unique_ptr<CreditCardArtImage>> output;
-  EXPECT_TRUE(table_->GetCreditCardArtImages(&output));
-  EXPECT_EQ(2U, output.size());
-  EXPECT_EQ("image1", output[0]->id);
-  EXPECT_EQ(1, output[0]->instrument_id);
-  EXPECT_EQ(UINT8_MAX, output[0]->card_art_image[0]);
-  EXPECT_EQ("image2", output[1]->id);
-  EXPECT_EQ(2, output[1]->instrument_id);
-  EXPECT_EQ(UINT8_MAX, output[1]->card_art_image[0]);
-
-  EXPECT_TRUE(table_->ClearCreditCardArtImage("image1"));
-  output.clear();
-  EXPECT_TRUE(table_->GetCreditCardArtImages(&output));
-  EXPECT_EQ(1U, output.size());
-  EXPECT_EQ("image2", output[0]->id);
-  EXPECT_EQ(2, output[0]->instrument_id);
-  EXPECT_EQ(UINT8_MAX, output[0]->card_art_image[0]);
-
-  EXPECT_TRUE(table_->ClearAllServerData());
-  output.clear();
-  EXPECT_TRUE(table_->GetCreditCardArtImages(&output));
-  EXPECT_EQ(0U, output.size());
 }
 
 }  // namespace autofill

@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/values.h"
-#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
@@ -23,6 +22,7 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -55,20 +55,16 @@ const AccountId kDeviceAccount =
 
 ::account_manager::Account GetAccountFor(const std::string& email,
                                          const std::string& gaia_id) {
-  ::account_manager::Account account;
-  account.raw_email = email;
-  account.key.id = gaia_id;
-  account.key.account_type = account_manager::AccountType::kGaia;
-  return account;
+  ::account_manager::AccountKey key(gaia_id,
+                                    ::account_manager::AccountType::kGaia);
+  return {key, email};
 }
 
 void AddAccount(account_manager::AccountManager* account_manager,
                 const std::string& email,
                 const std::string& gaia_id) {
-  ::account_manager::AccountKey account_key;
-  account_key.id = gaia_id;
-  account_key.account_type = account_manager::AccountType::kGaia;
-
+  ::account_manager::AccountKey account_key(
+      gaia_id, ::account_manager::AccountType::kGaia);
   account_manager->UpsertAccount(account_key, email, kValidToken);
 }
 

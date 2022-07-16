@@ -11,12 +11,16 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-persistent-handle.h"
+
+namespace v8 {
+class UnboundScript;
+}  // namespace v8
 
 namespace auction_worklet {
 
@@ -71,6 +75,7 @@ class WorkletLoader {
   WorkletLoader(network::mojom::URLLoaderFactory* url_loader_factory,
                 const GURL& script_source_url,
                 scoped_refptr<AuctionV8Helper> v8_helper,
+                int debug_context_group_id,
                 LoadWorkletCallback load_worklet_callback);
   explicit WorkletLoader(const WorkletLoader&) = delete;
   WorkletLoader& operator=(const WorkletLoader&) = delete;
@@ -83,6 +88,7 @@ class WorkletLoader {
   static void HandleDownloadResultOnV8Thread(
       GURL script_source_url,
       scoped_refptr<AuctionV8Helper> v8_helper,
+      int debug_context_group_id,
       std::unique_ptr<std::string> body,
       absl::optional<std::string> error_msg,
       scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
@@ -93,6 +99,7 @@ class WorkletLoader {
 
   const GURL script_source_url_;
   const scoped_refptr<AuctionV8Helper> v8_helper_;
+  int debug_context_group_id_;
 
   std::unique_ptr<AuctionDownloader> auction_downloader_;
   LoadWorkletCallback load_worklet_callback_;

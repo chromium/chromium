@@ -9,15 +9,21 @@ source_set("elements") {
     "extended_touch_target_button.mm",
     "fade_truncating_label.h",
     "fade_truncating_label.mm",
+    "favicon_container_view.h",
+    "favicon_container_view.mm",
     "gray_highlight_button.h",
     "gray_highlight_button.mm",
     "home_waiting_view.h",
     "home_waiting_view.mm",
+    "instruction_view.h",
+    "instruction_view.mm",
     "selector_picker_presentation_controller.h",
     "selector_picker_presentation_controller.mm",
     "selector_picker_view_controller.h",
     "selector_picker_view_controller.mm",
     "selector_view_controller_delegate.h",
+    "self_sizing_table_view.h",
+    "self_sizing_table_view.mm",
     "text_field_configuration.h",
     "text_field_configuration.mm",
     "text_view_selection_disabled.h",
@@ -28,12 +34,17 @@ source_set("elements") {
     "windowed_container_view.mm",
   ]
   deps = [
+    ":instruction_view_constants",
     "//base",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:dynamic_type_util",
   ]
 }
 
@@ -50,6 +61,14 @@ source_set("selector_coordinator") {
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
+  ]
+}
+
+source_set("instruction_view_constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "instruction_view_constants.h",
+    "instruction_view_constants.mm",
   ]
 }
 

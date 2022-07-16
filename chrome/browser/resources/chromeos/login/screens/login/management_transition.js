@@ -7,9 +7,9 @@
  * transition screen.
  */
 
-(function() {
+/* #js_imports_placeholder */
 
-const UIState = {
+const ManagementTransitionUIState = {
   PROGRESS: 'progress',
   ERROR: 'error',
 };
@@ -26,40 +26,83 @@ const ARC_SUPERVISION_TRANSITION = {
   UNMANAGED_TO_MANAGED: 3,
 };
 
-Polymer({
-  is: 'management-transition-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ */
+const ManagementTransitionScreenBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+    Polymer.Element);
 
-  behaviors: [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+class ManagementTransitionScreen extends ManagementTransitionScreenBase {
+  static get is() {
+    return 'management-transition-element';
+  }
 
-  properties: {
-    /**
-     * Property that determines transition direction.
-     */
-    arcTransition_: Number,
-    /**
-     * String that represents management entity for the user. Can be domain or
-     * admin name.
-     */
-    managementEntity_: String,
-  },
+  /* #html_template_placeholder */
 
-  UI_STEPS: UIState,
+  static get properties() {
+    return {
+      /**
+       * Property that determines transition direction.
+       */
+      arcTransition_: Number,
+      /**
+       * String that represents management entity for the user. Can be domain or
+       * admin name.
+       */
+      managementEntity_: String
+    };
+  }
+
+  constructor() {
+    super();
+    this.managementEntity_ = '';
+    this.arcTransition_ = ARC_SUPERVISION_TRANSITION.NO_TRANSITION;
+  }
 
   defaultUIStep() {
-    return UIState.PROGRESS;
-  },
+    return ManagementTransitionUIState.PROGRESS;
+  }
+
+  get UI_STEPS() {
+    return ManagementTransitionUIState;
+  }
+
+  /** Overridden from LoginScreenBehavior. */
+  // clang-format off
+  get EXTERNAL_API() {
+    return ['showStep'];
+  }
+  // clang-format on
 
   ready() {
+    super.ready();
     this.initializeLoginScreen('ManagementTransitionScreen', {
       resetAllowed: false,
     });
-  },
+  }
 
   onBeforeShow(data) {
     this.setArcTransition(data['arcTransition']);
     this.setManagementEntity(data['managementEntity']);
-  },
+  }
 
+  /**
+   * Switches between different steps.
+   * @param {string} step the steps to show
+   */
+  showStep(step) {
+    this.setUIStep(step);
+  }
+
+  /**
+   * Sets arc transition type.
+   * @param {number} arc_transition enum element indicating transition type
+   */
   setArcTransition(arc_transition) {
     switch (arc_transition) {
       case ARC_SUPERVISION_TRANSITION.CHILD_TO_REGULAR:
@@ -74,18 +117,11 @@ Polymer({
       default:
         console.error('Not handled transition type: ' + arc_transition);
     }
-  },
+  }
 
   setManagementEntity(management_entity) {
     this.managementEntity_ = management_entity;
-  },
-
-  /** @override */
-  attached() {
-    cr.addWebUIListener(
-        'management-transition-failed',
-        this.showManagementTransitionFailedScreen_.bind(this));
-  },
+  }
 
   /** @private */
   getDialogTitle_(locale, arcTransition, managementEntity) {
@@ -101,17 +137,12 @@ Polymer({
           return this.i18n('addingManagementTitleUnknownAdmin');
         }
     }
-  },
+  }
 
   /** @private */
   isChildTransition_(arcTransition) {
     return arcTransition != ARC_SUPERVISION_TRANSITION.UNMANAGED_TO_MANAGED;
-  },
-
-  /** @private */
-  showManagementTransitionFailedScreen_() {
-    this.setUIStep(UIState.ERROR);
-  },
+  }
 
   /**
    * On-tap event handler for OK button.
@@ -120,6 +151,8 @@ Polymer({
    */
   onAcceptAndContinue_() {
     chrome.send('finishManagementTransition');
-  },
-});
-})();
+  }
+}
+
+customElements.define(
+    ManagementTransitionScreen.is, ManagementTransitionScreen);

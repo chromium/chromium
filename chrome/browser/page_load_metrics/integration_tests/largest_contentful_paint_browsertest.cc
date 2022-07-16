@@ -12,9 +12,11 @@
 #include "base/test/trace_event_analyzer.h"
 #include "build/build_config.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 
 using trace_analyzer::Query;
 using trace_analyzer::TraceAnalyzer;
@@ -114,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_LargestContentfulPaint) {
 
   // Need to navigate away from the test html page to force metrics to get
   // flushed/synced.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Check Trace Events.
   ValidateTraceEvents(StopTracingAndAnalyze());
@@ -125,20 +127,20 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_LargestContentfulPaint) {
   // Comparing with strict equality could round incorrectly and introduce
   // flakiness into the test.
   ExpectUKMPageLoadMetricNear(
-      PageLoad::kPaintTiming_NavigationToLargestContentfulPaintName,
+      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name,
       lcp_timestamps[2].value(), 1.2);
   ExpectUKMPageLoadMetricNear(
-      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint_MainFrameName,
+      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2_MainFrameName,
       lcp_timestamps[2].value(), 1.2);
 
   // Check UMA.
   // Similar to UKM, rounding could introduce flakiness, so use helper to
   // compare near.
   ExpectUniqueUMAPageLoadMetricNear(
-      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint",
+      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2",
       lcp_timestamps[2].value());
   ExpectUniqueUMAPageLoadMetricNear(
-      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint.MainFrame",
+      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame",
       lcp_timestamps[2].value());
 }
 
@@ -174,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, DISABLED_FullSizeImageInIframe) {
   double lcpTime = EvalJs(web_contents(), "lcpTime").ExtractDouble();
 
   // Navigate away to force metrics recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // |lcpTime| is computed from 3 different JS timestamps, so use an epsilon of
   // 2 to account for coarsening and UKM integer rounding.
@@ -183,4 +185,51 @@ IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, DISABLED_FullSizeImageInIframe) {
       2.0);
   ExpectUniqueUMAPageLoadMetricNear(
       "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2", lcpTime);
+}
+
+class IsAnimatedLCPTest : public MetricIntegrationTest {
+ public:
+  void test_is_animated(const char* html_name,
+                        uint32_t flag_set,
+                        bool expected,
+                        unsigned entries = 1) {
+    auto waiter =
+        std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+            web_contents());
+    waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                   TimingField::kLargestContentfulPaint);
+    waiter->AddMinimumCompleteResourcesExpectation(entries);
+    Start();
+    Load(html_name);
+    EXPECT_EQ(EvalJs(web_contents()->GetMainFrame(), "run_test()").error, "");
+
+    // Need to navigate away from the test html page to force metrics to get
+    // flushed/synced.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+    waiter->Wait();
+    ExpectUKMPageLoadMetricFlagSet(
+        PageLoad::kPaintTiming_LargestContentfulPaintTypeName, flag_set,
+        expected);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest, LargestContentfulPaint_IsAnimated) {
+  test_is_animated("/is_animated.html",
+                   blink::LargestContentfulPaintType::kLCPTypeAnimatedImage,
+                   /*expected=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest,
+                       LargestContentfulPaint_IsNotAnimated) {
+  test_is_animated("/non_animated.html",
+                   blink::LargestContentfulPaintType::kLCPTypeAnimatedImage,
+                   /*expected=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IsAnimatedLCPTest,
+    LargestContentfulPaint_AnimatedImageWithLargerTextFirst) {
+  test_is_animated("/animated_image_with_larger_text_first.html",
+                   blink::LargestContentfulPaintType::kLCPTypeAnimatedImage,
+                   /*expected=*/false);
 }

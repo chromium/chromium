@@ -4,7 +4,10 @@
 
 #include "ash/app_list/model/app_list_folder_item.h"
 
+#include <utility>
+
 #include "ash/app_list/model/app_list_item_list.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/guid.h"
@@ -13,14 +16,20 @@
 
 namespace ash {
 
-AppListFolderItem::AppListFolderItem(const std::string& id)
+AppListFolderItem::AppListFolderItem(
+    const std::string& id,
+    AppListModelDelegate* app_list_model_delegate)
     : AppListItem(id),
       folder_type_(id == kOemFolderId ? FOLDER_TYPE_OEM : FOLDER_TYPE_NORMAL),
-      item_list_(std::make_unique<AppListItemList>()) {
-  EnsureIconsForAvailableConfigTypes(
-      {AppListConfigType::kLarge, AppListConfigType::kMedium,
-       AppListConfigType::kSmall},
-      false /*request_icon_update*/);
+      item_list_(std::make_unique<AppListItemList>(app_list_model_delegate)) {
+  std::vector<AppListConfigType> configs;
+  if (features::IsProductivityLauncherEnabled()) {
+    configs = {AppListConfigType::kRegular, AppListConfigType::kDense};
+  } else {
+    configs = {AppListConfigType::kLarge, AppListConfigType::kMedium,
+               AppListConfigType::kSmall};
+  }
+  EnsureIconsForAvailableConfigTypes(configs, /*request_icon_update=*/false);
   config_provider_observation_.Observe(&AppListConfigProvider::Get());
   set_is_folder(true);
 }

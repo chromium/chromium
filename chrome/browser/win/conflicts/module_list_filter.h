@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/win/conflicts/proto/module_list.pb.h"
@@ -24,6 +23,9 @@ class FilePath;
 class ModuleListFilter : public base::RefCountedThreadSafe<ModuleListFilter> {
  public:
   ModuleListFilter();
+
+  ModuleListFilter(const ModuleListFilter&) = delete;
+  ModuleListFilter& operator=(const ModuleListFilter&) = delete;
 
   bool Initialize(const base::FilePath& module_list_path);
 
@@ -67,8 +69,6 @@ class ModuleListFilter : public base::RefCountedThreadSafe<ModuleListFilter> {
 
   // Indicates if Initalize() has been succesfully called.
   bool initialized_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleListFilter);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_MODULE_LIST_FILTER_H_

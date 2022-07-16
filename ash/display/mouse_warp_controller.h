@@ -6,7 +6,6 @@
 #define ASH_DISPLAY_MOUSE_WARP_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace ui {
 class MouseEvent;

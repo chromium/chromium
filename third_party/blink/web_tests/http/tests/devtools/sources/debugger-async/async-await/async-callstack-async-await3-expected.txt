@@ -5,7 +5,7 @@ Captured call stacks in no particular order:
 Call stack:
     0) errorCallback (async-callstack-async-await3.js:64)
     1) doTestPromiseReject (async-callstack-async-await3.js:133)
-    [async function]
+    [await]
     0) testFunctionTimeout (async-callstack-async-await3.js:54)
     [setTimeout]
     0) testFunction (async-callstack-async-await3.js:47)
@@ -16,7 +16,7 @@ Call stack:
 Call stack:
     0) errorCallback (async-callstack-async-await3.js:64)
     1) doTestRejectFromChain (async-callstack-async-await3.js:113)
-    [async function]
+    [await]
     0) testFunctionTimeout (async-callstack-async-await3.js:54)
     [setTimeout]
     0) testFunction (async-callstack-async-await3.js:47)
@@ -27,7 +27,7 @@ Call stack:
 Call stack:
     0) errorCallback (async-callstack-async-await3.js:64)
     1) doTestThrowFromChain (async-callstack-async-await3.js:93)
-    [async function]
+    [await]
     0) testFunctionTimeout (async-callstack-async-await3.js:54)
     [setTimeout]
     0) testFunction (async-callstack-async-await3.js:47)
@@ -38,7 +38,7 @@ Call stack:
 Call stack:
     0) thenCallback (async-callstack-async-await3.js:59)
     1) doTestPromiseAll (async-callstack-async-await3.js:71)
-    [async function]
+    [await]
     0) testFunctionTimeout (async-callstack-async-await3.js:54)
     [setTimeout]
     0) testFunction (async-callstack-async-await3.js:47)
@@ -49,7 +49,7 @@ Call stack:
 Call stack:
     0) thenCallback (async-callstack-async-await3.js:59)
     1) doTestPromiseResolve (async-callstack-async-await3.js:121)
-    [async function]
+    [await]
     0) testFunctionTimeout (async-callstack-async-await3.js:54)
     [setTimeout]
     0) testFunction (async-callstack-async-await3.js:47)

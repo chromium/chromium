@@ -1,0 +1,4 @@
+[document web] tag:#document
+++[section] tag:body
+++++[document frame] name='svg' tag:svg
+++++++[link] tag:a

@@ -5,14 +5,16 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_H_
 
+#include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/secure_channel/authenticator.h"
 #include "chromeos/services/secure_channel/connection.h"
 #include "chromeos/services/secure_channel/connection_observer.h"
 #include "chromeos/services/secure_channel/device_to_device_authenticator.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/secure_context.h"
 
 namespace chromeos {
@@ -80,6 +82,9 @@ class SecureChannel : public ConnectionObserver {
     static Factory* factory_instance_;
   };
 
+  SecureChannel(const SecureChannel&) = delete;
+  SecureChannel& operator=(const SecureChannel&) = delete;
+
   ~SecureChannel() override;
 
   virtual void Initialize();
@@ -89,6 +94,18 @@ class SecureChannel : public ConnectionObserver {
   // has been sent and will be provided this sequence number.
   virtual int SendMessage(const std::string& feature,
                           const std::string& payload);
+
+  // Registers |payload_files| to receive an incoming file transfer with
+  // the given |payload_id|. |registration_result_callback| will return true
+  // if the file was successfully registered, or false if the registration
+  // failed or if this operation is not supported by the connection type.
+  // Callers can listen to progress information about the transfer through the
+  // |file_transfer_update_callback| if the registration was successful.
+  virtual void RegisterPayloadFile(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback);
 
   virtual void Disconnect();
 
@@ -157,8 +174,6 @@ class SecureChannel : public ConnectionObserver {
   int next_sequence_number_ = 0;
   base::ObserverList<Observer>::Unchecked observer_list_;
   base::WeakPtrFactory<SecureChannel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannel);
 };
 
 }  // namespace secure_channel

@@ -202,95 +202,65 @@ TEST_P(GCAPIOmahaExperimentTest, BuildExperimentDateString) {
   EXPECT_EQ(L"Sat, 01 Jan 2001 00:00:00 GMT",
             BuildExperimentDateString(kTestTime));
   EXPECT_EQ(L"Sat, 01 Jan 2001 00:00:00 GMT",
-            BuildExperimentDateString(kTestTime +
-                                      base::TimeDelta::FromMilliseconds(1)));
-  EXPECT_EQ(
-      L"Sat, 01 Jan 2001 00:00:01 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromSeconds(1)));
-  EXPECT_EQ(
-      L"Sat, 01 Jan 2001 00:00:59 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromSeconds(59)));
-  EXPECT_EQ(
-      L"Sat, 01 Jan 2001 00:01:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromSeconds(60)));
-  EXPECT_EQ(
-      L"Sat, 01 Jan 2001 00:01:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromMinutes(1)));
-  EXPECT_EQ(
-      L"Sat, 01 Jan 2001 00:59:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromMinutes(59)));
-  EXPECT_EQ(
-      L"Sat, 01 Jan 2001 01:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromMinutes(60)));
-  EXPECT_EQ(
-      L"Sat, 01 Jan 2001 01:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromHours(1)));
-  EXPECT_EQ(
-      L"Sat, 01 Jan 2001 23:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromHours(23)));
-  EXPECT_EQ(
-      L"Sun, 02 Jan 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromHours(24)));
-  EXPECT_EQ(
-      L"Sun, 02 Jan 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(1)));
-  EXPECT_EQ(
-      L"Mon, 03 Jan 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(2)));
-  EXPECT_EQ(
-      L"Tue, 04 Jan 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(3)));
-  EXPECT_EQ(
-      L"Wed, 05 Jan 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(4)));
-  EXPECT_EQ(
-      L"Thu, 06 Jan 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(5)));
-  EXPECT_EQ(
-      L"Fri, 07 Jan 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(6)));
-  EXPECT_EQ(
-      L"Sat, 08 Jan 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(7)));
-  EXPECT_EQ(
-      L"Mon, 31 Jan 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(30)));
-  EXPECT_EQ(
-      L"Tue, 01 Feb 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(31)));
-  EXPECT_EQ(
-      L"Wed, 01 Mar 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(60)));
-  EXPECT_EQ(
-      L"Sat, 01 Apr 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(91)));
-  EXPECT_EQ(
-      L"Mon, 01 May 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(121)));
-  EXPECT_EQ(
-      L"Thu, 01 Jun 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(152)));
-  EXPECT_EQ(
-      L"Sat, 01 Jul 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(182)));
-  EXPECT_EQ(
-      L"Tue, 01 Aug 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(213)));
-  EXPECT_EQ(
-      L"Fri, 01 Sep 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(244)));
-  EXPECT_EQ(
-      L"Sun, 01 Oct 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(274)));
-  EXPECT_EQ(
-      L"Wed, 01 Nov 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(305)));
-  EXPECT_EQ(
-      L"Fri, 01 Dec 2001 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(335)));
-  EXPECT_EQ(
-      L"Mon, 01 Jan 2002 00:00:00 GMT",
-      BuildExperimentDateString(kTestTime + base::TimeDelta::FromDays(366)));
+            BuildExperimentDateString(kTestTime + base::Milliseconds(1)));
+  EXPECT_EQ(L"Sat, 01 Jan 2001 00:00:01 GMT",
+            BuildExperimentDateString(kTestTime + base::Seconds(1)));
+  EXPECT_EQ(L"Sat, 01 Jan 2001 00:00:59 GMT",
+            BuildExperimentDateString(kTestTime + base::Seconds(59)));
+  EXPECT_EQ(L"Sat, 01 Jan 2001 00:01:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Seconds(60)));
+  EXPECT_EQ(L"Sat, 01 Jan 2001 00:01:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Minutes(1)));
+  EXPECT_EQ(L"Sat, 01 Jan 2001 00:59:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Minutes(59)));
+  EXPECT_EQ(L"Sat, 01 Jan 2001 01:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Minutes(60)));
+  EXPECT_EQ(L"Sat, 01 Jan 2001 01:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Hours(1)));
+  EXPECT_EQ(L"Sat, 01 Jan 2001 23:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Hours(23)));
+  EXPECT_EQ(L"Sun, 02 Jan 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Hours(24)));
+  EXPECT_EQ(L"Sun, 02 Jan 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(1)));
+  EXPECT_EQ(L"Mon, 03 Jan 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(2)));
+  EXPECT_EQ(L"Tue, 04 Jan 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(3)));
+  EXPECT_EQ(L"Wed, 05 Jan 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(4)));
+  EXPECT_EQ(L"Thu, 06 Jan 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(5)));
+  EXPECT_EQ(L"Fri, 07 Jan 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(6)));
+  EXPECT_EQ(L"Sat, 08 Jan 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(7)));
+  EXPECT_EQ(L"Mon, 31 Jan 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(30)));
+  EXPECT_EQ(L"Tue, 01 Feb 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(31)));
+  EXPECT_EQ(L"Wed, 01 Mar 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(60)));
+  EXPECT_EQ(L"Sat, 01 Apr 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(91)));
+  EXPECT_EQ(L"Mon, 01 May 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(121)));
+  EXPECT_EQ(L"Thu, 01 Jun 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(152)));
+  EXPECT_EQ(L"Sat, 01 Jul 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(182)));
+  EXPECT_EQ(L"Tue, 01 Aug 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(213)));
+  EXPECT_EQ(L"Fri, 01 Sep 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(244)));
+  EXPECT_EQ(L"Sun, 01 Oct 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(274)));
+  EXPECT_EQ(L"Wed, 01 Nov 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(305)));
+  EXPECT_EQ(L"Fri, 01 Dec 2001 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(335)));
+  EXPECT_EQ(L"Mon, 01 Jan 2002 00:00:00 GMT",
+            BuildExperimentDateString(kTestTime + base::Days(366)));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, GCAPIOmahaExperimentTest, ::testing::Bool());

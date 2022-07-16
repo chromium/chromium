@@ -201,7 +201,8 @@ class TestImporterTest(LoggingTestCase):
                 Build('cq-builder-a', 123): TryJobStatus(
                     'COMPLETED', 'SUCCESS'),
             })
-        importer.git_cl.wait_for_closed_status = lambda: False
+        importer._need_sheriff_attention = lambda: False
+        importer.git_cl.wait_for_closed_status = lambda timeout_seconds: False
         success = importer.run_commit_queue_for_cl()
         self.assertFalse(success)
         self.assertLog([
@@ -289,7 +290,8 @@ class TestImporterTest(LoggingTestCase):
                 Build('cq-builder-a', 123): TryJobStatus(
                     'COMPLETED', 'SUCCESS')
             })
-        importer.git_cl.wait_for_closed_status = lambda: False
+        importer._need_sheriff_attention = lambda: False
+        importer.git_cl.wait_for_closed_status = lambda timeout_seconds: False
         success = importer.run_commit_queue_for_cl()
         # Since the CL is already merged, we absorb the error and treat it as success.
         self.assertTrue(success)
@@ -429,10 +431,7 @@ class TestImporterTest(LoggingTestCase):
             'https://chromium.googlesource.com'
             '/chromium/src/+/main/docs/testing/web_platform_tests.md\n\n'
             'NOAUTOREVERT=true\n'
-            'No-Export: true\n'
-            'Cq-Include-Trybots: luci.chromium.try:linux-wpt-identity-fyi-rel,'
-            'linux-wpt-input-fyi-rel')
-        print(host.executive.calls)
+            'No-Export: true')
         self.assertEqual(host.executive.calls,
                          [MANIFEST_INSTALL_CMD] +
                          [['git', 'log', '-1', '--format=%B']])
@@ -541,6 +540,32 @@ class TestImporterTest(LoggingTestCase):
         importer.chromium_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME]
         self.assertTrue(importer._only_wpt_manifest_changed())
+
+    def test_need_sheriff_attention(self):
+        host = self.mock_host()
+        importer = self._get_test_importer(host)
+        importer.chromium_git.changed_files = lambda: [
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html']
+        self.assertFalse(importer._need_sheriff_attention())
+
+        importer.chromium_git.changed_files = lambda: [
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html',
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/y.sh']
+        self.assertTrue(importer._need_sheriff_attention())
+
+        importer.chromium_git.changed_files = lambda: [
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html',
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/y.py']
+        self.assertTrue(importer._need_sheriff_attention())
+
+        importer.chromium_git.changed_files = lambda: [
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html',
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/y.bat']
+        self.assertTrue(importer._need_sheriff_attention())
 
     # TODO(crbug.com/800570): Fix orphan baseline finding in the presence of
     # variant tests.

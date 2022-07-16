@@ -21,7 +21,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,9 +36,9 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -110,8 +110,8 @@ base::Time GetSigninTime() {
 // required.
 std::string GetDeviceIdForActiveUserProfile() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  const policy::UserCloudPolicyManagerChromeOS* policy_manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
+  const policy::UserCloudPolicyManagerAsh* policy_manager =
+      profile->GetUserCloudPolicyManagerAsh();
   if (!policy_manager)
     return std::string();
 
@@ -160,7 +160,7 @@ EduCoexistenceLoginHandler::EduCoexistenceLoginHandler(
               &EduCoexistenceLoginHandler::OnOAuthAccessTokensFetched,
               base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          signin::ConsentLevel::kSignin);
+          signin::ConsentLevel::kSync);
 }
 
 EduCoexistenceLoginHandler::~EduCoexistenceLoginHandler() {
@@ -177,22 +177,22 @@ void EduCoexistenceLoginHandler::RegisterMessages() {
       web_ui(), /* is_onboarding */ session_manager::SessionManager::Get()
                     ->IsUserSessionBlocked());
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializeEduArgs",
       base::BindRepeating(&EduCoexistenceLoginHandler::InitializeEduArgs,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "consentValid",
       base::BindRepeating(&EduCoexistenceLoginHandler::ConsentValid,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "consentLogged",
       base::BindRepeating(&EduCoexistenceLoginHandler::ConsentLogged,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "error", base::BindRepeating(&EduCoexistenceLoginHandler::OnError,
                                    base::Unretained(this)));
 }
@@ -292,7 +292,8 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
   params.SetStringKey("deviceId", GetDeviceIdForActiveUserProfile());
 
   params.SetDoubleKey("signinTime", GetSigninTime().ToJsTimeIgnoringNull());
-  params.SetBoolKey("newOobeLayoutEnabled", features::IsNewOobeLayoutEnabled());
+  // TODO(crbug.com/1202135): Remove along with JS part.
+  params.SetBoolKey("newOobeLayoutEnabled", true);
 
   // If the secondary edu account is being reauthenticated, the email address
   // will be provided via the url of the webcontent. Example

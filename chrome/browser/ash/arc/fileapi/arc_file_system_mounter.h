@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_FILEAPI_ARC_FILE_SYSTEM_MOUNTER_H_
 #define CHROME_BROWSER_ASH_ARC_FILEAPI_ARC_FILE_SYSTEM_MOUNTER_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -26,10 +25,11 @@ class ArcFileSystemMounter : public KeyedService {
 
   ArcFileSystemMounter(content::BrowserContext* context,
                        ArcBridgeService* bridge_service);
-  ~ArcFileSystemMounter() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcFileSystemMounter);
+  ArcFileSystemMounter(const ArcFileSystemMounter&) = delete;
+  ArcFileSystemMounter& operator=(const ArcFileSystemMounter&) = delete;
+
+  ~ArcFileSystemMounter() override;
 };
 
 }  // namespace arc

@@ -7,8 +7,11 @@
 #include <utility>
 
 #include "ash/public/cpp/app_types_util.h"
+#include "base/files/file_util.h"
 #include "base/memory/singleton.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
 #include "chrome/browser/ash/arc/nearby_share/nearby_share_session_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -42,6 +45,16 @@ class ArcNearbyShareBridgeFactory
   ~ArcNearbyShareBridgeFactory() override = default;
 };
 
+void DeleteArcNearbyShareCachePath(const Profile* profile) {
+  DCHECK(profile);
+  base::FilePath file_path =
+      arc::NearbyShareSessionImpl::GetUserCacheFilePath(profile);
+  if (base::PathExists(file_path)) {
+    DVLOG(1) << "Deleting path: " << file_path;
+    base::DeletePathRecursively(file_path);
+  }
+}
+
 }  // namespace
 
 // static
@@ -65,6 +78,11 @@ ArcNearbyShareBridge::ArcNearbyShareBridge(
       profile_(Profile::FromBrowserContext(browser_context)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   arc_bridge_service_->nearby_share()->SetHost(this);
+
+  // On startup, delete the ARC Nearby Share cache path.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&DeleteArcNearbyShareCachePath, profile_));
 }
 
 ArcNearbyShareBridge::~ArcNearbyShareBridge() {
@@ -73,9 +91,7 @@ ArcNearbyShareBridge::~ArcNearbyShareBridge() {
   session_map_.clear();
 }
 
-// TODO(b/191430761): Tie this to Nearby Share transfer complete/abort/cancel
-// so that cache files are not wiped prematurely.
-void ArcNearbyShareBridge::OnNearbyShareSessionFinished(int32_t task_id) {
+void ArcNearbyShareBridge::OnNearbyShareSessionFinished(uint32_t task_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!session_map_.erase(task_id)) {
     VLOG(1) << "No share session found for " << task_id;
@@ -83,7 +99,7 @@ void ArcNearbyShareBridge::OnNearbyShareSessionFinished(int32_t task_id) {
 }
 
 void ArcNearbyShareBridge::StartNearbyShare(
-    int32_t task_id,
+    uint32_t task_id,
     mojom::ShareIntentInfoPtr share_info,
     mojo::PendingRemote<mojom::NearbyShareSessionInstance> session_instance,
     StartNearbyShareCallback callback) {
@@ -92,6 +108,7 @@ void ArcNearbyShareBridge::StartNearbyShare(
   VLOG(1) << "Creating Nearby Share session";
   if (!session_instance) {
     LOG(ERROR) << "instance is null. Unable to create NearbyShareSessionImpl";
+    UpdateNearbyShareArcBridgeFail(ArcBridgeFailResult::kInstanceIsNull);
     std::move(callback).Run(mojo::NullRemote());
     return;
   }
@@ -99,6 +116,7 @@ void ArcNearbyShareBridge::StartNearbyShare(
   if (session_map_.find(task_id) != session_map_.end()) {
     LOG(ERROR) << "Unable to create NearbyShareSessionImpl since one already "
                << "exists for " << task_id;
+    UpdateNearbyShareArcBridgeFail(ArcBridgeFailResult::kAlreadyExists);
     std::move(callback).Run(mojo::NullRemote());
     return;
   }

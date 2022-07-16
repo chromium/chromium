@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/external_loader.h"
@@ -48,6 +47,9 @@ class ExternalPrefLoader : public ExternalLoader {
   // wait priority sync if DELAY_LOAD_UNTIL_PRIORITY_SYNC set.
   // |options| is combination of |Options|.
   ExternalPrefLoader(int base_path_id, int options, Profile* profile);
+
+  ExternalPrefLoader(const ExternalPrefLoader&) = delete;
+  ExternalPrefLoader& operator=(const ExternalPrefLoader&) = delete;
 
   const base::FilePath GetBaseCrxFilePath() override;
 
@@ -129,8 +131,6 @@ class ExternalPrefLoader : public ExternalLoader {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::vector<std::unique_ptr<PrioritySyncReadyWaiter>> pending_waiter_list_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalPrefLoader);
 };
 
 }  // namespace extensions

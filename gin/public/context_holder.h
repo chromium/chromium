@@ -9,7 +9,9 @@
 #include <memory>
 
 #include "gin/gin_export.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-persistent-handle.h"
 
 namespace gin {
 

@@ -16,7 +16,8 @@ GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#endif');
 
-// eslint-disable-next-line no-var
+/* eslint-disable no-var */
+
 var InlineLoginBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
@@ -52,45 +53,7 @@ TEST_F('InlineLoginBrowserTest', 'BackButton', function() {
 
 GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 // eslint-disable-next-line no-var
-var InlineLoginBrowserTestWithAccountManagementFlowsV2Enabled =
-    class extends InlineLoginBrowserTest {
-  /** @override */
-  get featureList() {
-    return {enabled: ['chromeos::features::kAccountManagementFlowsV2']};
-  }
-};
-
-TEST_F(
-    'InlineLoginBrowserTestWithAccountManagementFlowsV2Enabled', 'Initialize',
-    function() {
-      this.runMochaTest(inline_login_test.TestNames.Initialize);
-    });
-
-TEST_F(
-    'InlineLoginBrowserTestWithAccountManagementFlowsV2Enabled',
-    'WebUICallbacks', function() {
-      this.runMochaTest(inline_login_test.TestNames.WebUICallbacks);
-    });
-
-TEST_F(
-    'InlineLoginBrowserTestWithAccountManagementFlowsV2Enabled',
-    'AuthExtHostCallbacks', function() {
-      this.runMochaTest(inline_login_test.TestNames.AuthExtHostCallbacks);
-    });
-
-TEST_F(
-    'InlineLoginBrowserTestWithAccountManagementFlowsV2Enabled', 'BackButton',
-    function() {
-      this.runMochaTest(inline_login_test.TestNames.BackButton);
-    });
-
-// eslint-disable-next-line no-var
 var InlineLoginWelcomePageBrowserTest = class extends InlineLoginBrowserTest {
-  /** @override */
-  get featureList() {
-    return {enabled: ['chromeos::features::kAccountManagementFlowsV2']};
-  }
-
   /** @override */
   get browsePreload() {
     // See Reason enum in components/signin/public/base/signin_metrics.h.

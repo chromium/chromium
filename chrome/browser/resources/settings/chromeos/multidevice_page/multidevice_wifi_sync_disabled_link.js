@@ -62,7 +62,9 @@ Polymer({
    */
   onChromeSyncLinkClick_(event) {
     event.preventDefault();
-    if (loadTimeData.getBoolean('splitSettingsSyncEnabled')) {
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
+      // If syncSettingsCategorization is enabled, then WiFi sync is controlled
+      // by the OS sync settings, not the browser sync settings.
       settings.Router.getInstance().navigateTo(settings.routes.OS_SYNC);
     } else {
       settings.Router.getInstance().navigateTo(settings.routes.SYNC_ADVANCED);

@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/base/wall_clock_time_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,10 +16,14 @@ class WallClockTimeSourceTest : public testing::Test {
     time_source_.SetTickClockForTesting(tick_clock_.get());
     AdvanceTimeInSeconds(1);
   }
+
+  WallClockTimeSourceTest(const WallClockTimeSourceTest&) = delete;
+  WallClockTimeSourceTest& operator=(const WallClockTimeSourceTest&) = delete;
+
   ~WallClockTimeSourceTest() override = default;
 
   void AdvanceTimeInSeconds(int seconds) {
-    tick_clock_->Advance(base::TimeDelta::FromSeconds(seconds));
+    tick_clock_->Advance(base::Seconds(seconds));
   }
 
   int CurrentMediaTimeInSeconds() {
@@ -28,7 +31,7 @@ class WallClockTimeSourceTest : public testing::Test {
   }
 
   void SetMediaTimeInSeconds(int seconds) {
-    return time_source_.SetMediaTime(base::TimeDelta::FromSeconds(seconds));
+    return time_source_.SetMediaTime(base::Seconds(seconds));
   }
 
   base::TimeTicks ConvertMediaTime(base::TimeDelta timestamp,
@@ -42,22 +45,19 @@ class WallClockTimeSourceTest : public testing::Test {
   bool IsWallClockNowForMediaTimeInSeconds(int seconds) {
     bool is_time_moving = false;
     return tick_clock_->NowTicks() ==
-           ConvertMediaTime(base::TimeDelta::FromSeconds(seconds),
-                            &is_time_moving);
+           ConvertMediaTime(base::Seconds(seconds), &is_time_moving);
   }
 
   bool IsTimeStopped() {
     bool is_time_moving = false;
     // Convert any random value, it shouldn't matter for this call.
-    ConvertMediaTime(base::TimeDelta::FromSeconds(1), &is_time_moving);
+    ConvertMediaTime(base::Seconds(1), &is_time_moving);
     return !is_time_moving;
   }
 
  protected:
   WallClockTimeSource time_source_;
   std::unique_ptr<base::SimpleTestTickClock> tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallClockTimeSourceTest);
 };
 
 TEST_F(WallClockTimeSourceTest, InitialTimeIsZero) {
@@ -130,7 +130,7 @@ TEST_F(WallClockTimeSourceTest, StopTicking) {
 }
 
 TEST_F(WallClockTimeSourceTest, ConvertsTimestampsWhenStopped) {
-  const base::TimeDelta kOneSecond = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kOneSecond = base::Seconds(1);
   bool is_time_moving = false;
   EXPECT_EQ(base::TimeTicks(),
             ConvertMediaTime(base::TimeDelta(), &is_time_moving));

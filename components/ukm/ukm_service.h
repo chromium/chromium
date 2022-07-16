@@ -7,11 +7,9 @@
 
 #include <stddef.h>
 #include <memory>
-#include <vector>
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
@@ -65,6 +63,10 @@ class UkmService : public UkmRecorderImpl {
              metrics::MetricsServiceClient* client,
              std::unique_ptr<metrics::UkmDemographicMetricsProvider>
                  demographics_provider);
+
+  UkmService(const UkmService&) = delete;
+  UkmService& operator=(const UkmService&) = delete;
+
   ~UkmService() override;
 
   // Initializes the UKM service.
@@ -216,8 +218,6 @@ class UkmService : public UkmRecorderImpl {
   // Weak pointers factory used to post task on different threads. All weak
   // pointers managed by this factory have the same lifetime as UkmService.
   base::WeakPtrFactory<UkmService> self_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UkmService);
 };
 
 }  // namespace ukm

@@ -18,6 +18,10 @@ namespace device {
 class COMPONENT_EXPORT(DEVICE_VR_UTIL) XRStandardGamepadBuilder {
  public:
   XRStandardGamepadBuilder(device::mojom::XRHandedness handedness);
+
+  XRStandardGamepadBuilder(const XRStandardGamepadBuilder&) = delete;
+  XRStandardGamepadBuilder& operator=(const XRStandardGamepadBuilder&) = delete;
+
   virtual ~XRStandardGamepadBuilder();
   void SetPrimaryButton(const GamepadButton& button) {
     primary_button_ = button;
@@ -59,8 +63,6 @@ class COMPONENT_EXPORT(DEVICE_VR_UTIL) XRStandardGamepadBuilder {
   bool has_optional_axes_ = false;
 
   device::mojom::XRHandedness handedness_;
-
-  DISALLOW_COPY_AND_ASSIGN(XRStandardGamepadBuilder);
 };
 
 }  // namespace device

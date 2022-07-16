@@ -216,23 +216,23 @@ void TraceEventMetadataSource::WriteMetadataPacket(
   }
 }
 
-std::unique_ptr<base::DictionaryValue>
+absl::optional<base::Value>
 TraceEventMetadataSource::GenerateTraceConfigMetadataDict() {
   AutoLockWithDeferredTaskPosting lock(lock_);
   if (chrome_config_.empty()) {
-    return nullptr;
+    return absl::nullopt;
   }
 
-  auto metadata_dict = std::make_unique<base::DictionaryValue>();
+  base::Value metadata_dict(base::Value::Type::DICTIONARY);
   // If argument filtering is enabled, we need to check if the trace config is
   // allowlisted before emitting it.
   // TODO(eseckler): Figure out a way to solve this without calling directly
   // into IsMetadataAllowlisted().
   if (!parsed_chrome_config_->IsArgumentFilterEnabled() ||
       IsMetadataAllowlisted("trace-config")) {
-    metadata_dict->SetString("trace-config", chrome_config_);
+    metadata_dict.SetStringKey("trace-config", chrome_config_);
   } else {
-    metadata_dict->SetString("trace-config", "__stripped__");
+    metadata_dict.SetStringKey("trace-config", "__stripped__");
   }
 
   chrome_config_ = std::string();
@@ -308,7 +308,7 @@ void TraceEventMetadataSource::GenerateJsonMetadataFromGenerator(
   DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
 
   auto write_to_bundle = [&generator](ChromeEventBundle* bundle) {
-    std::unique_ptr<base::DictionaryValue> metadata_dict = generator.Run();
+    absl::optional<base::Value> metadata_dict = generator.Run();
     if (!metadata_dict)
       return;
     for (auto it : metadata_dict->DictItems()) {
@@ -364,22 +364,21 @@ void TraceEventMetadataSource::GenerateJsonMetadataFromGenerator(
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
-std::unique_ptr<base::DictionaryValue>
-TraceEventMetadataSource::GenerateLegacyMetadataDict() {
+base::Value TraceEventMetadataSource::GenerateLegacyMetadataDict() {
   DCHECK(!privacy_filtering_enabled_);
 
-  auto merged_metadata = std::make_unique<base::DictionaryValue>();
+  base::Value merged_metadata(base::Value::Type::DICTIONARY);
   std::vector<JsonMetadataGeneratorFunction> json_generators;
   {
     base::AutoLock lock(lock_);
     json_generators = json_generator_functions_;
   }
   for (auto& generator : json_generators) {
-    std::unique_ptr<base::DictionaryValue> metadata_dict = generator.Run();
+    absl::optional<base::Value> metadata_dict = generator.Run();
     if (!metadata_dict) {
       continue;
     }
-    merged_metadata->MergeDictionary(metadata_dict.get());
+    merged_metadata.MergeDictionary(&(*metadata_dict));
   }
 
   base::trace_event::MetadataFilterPredicate metadata_filter =
@@ -388,10 +387,9 @@ TraceEventMetadataSource::GenerateLegacyMetadataDict() {
   // This out-of-band generation of the global metadata is only used by the
   // crash service uploader path, which always requires privacy filtering.
   CHECK(metadata_filter);
-  for (base::DictionaryValue::Iterator it(*merged_metadata); !it.IsAtEnd();
-       it.Advance()) {
-    if (!metadata_filter.Run(it.key())) {
-      merged_metadata->SetString(it.key(), "__stripped__");
+  for (auto it : merged_metadata.DictItems()) {
+    if (!metadata_filter.Run(it.first)) {
+      it.second = base::Value("__stripped__");
     }
   }
 
@@ -677,7 +675,8 @@ void TraceEventDataSource::RegisterStartupHooks() {
   RegisterTracedValueProtoWriter();
   base::trace_event::EnableTypedTraceEvents(
       &TraceEventDataSource::OnAddTypedTraceEvent,
-      &TraceEventDataSource::OnAddTracePacket);
+      &TraceEventDataSource::OnAddTracePacket,
+      &TraceEventDataSource::OnAddEmptyPacket);
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
@@ -820,14 +819,13 @@ void TraceEventDataSource::SetupStartupTracing(
   config_for_trace_log.SetTraceBufferSizeInKb(0);
   config_for_trace_log.SetTraceBufferSizeInEvents(0);
 
+  RegisterWithTraceLog(config_for_trace_log);
+
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   uint8_t modes = base::trace_event::TraceLog::RECORDING_MODE;
   if (!trace_config.event_filters().empty()) {
     modes |= base::trace_event::TraceLog::FILTERING_MODE;
   }
-
-  RegisterWithTraceLog(config_for_trace_log);
-
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::trace_event::TraceLog::GetInstance()->SetEnabled(trace_config, modes);
 #endif
 }
@@ -1313,6 +1311,15 @@ base::trace_event::TracePacketHandle TraceEventDataSource::OnAddTracePacket() {
 }
 
 // static
+void TraceEventDataSource::OnAddEmptyPacket() {
+  auto* thread_local_event_sink = GetOrPrepareEventSink();
+  if (thread_local_event_sink) {
+    // GetThreadIsInTraceEventTLS() is handled by the sink for trace packets.
+    thread_local_event_sink->AddEmptyPacket();
+  }
+}
+
+// static
 void TraceEventDataSource::FlushCurrentThread() {
   auto* thread_local_event_sink = static_cast<TrackEventThreadLocalEventSink*>(
       ThreadLocalEventSinkSlot()->Get());
@@ -1481,8 +1488,11 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   process->set_pid(process_id);
   process->set_start_timestamp_ns(
       process_creation_time_ticks_.since_origin().InNanoseconds());
-  if (!privacy_filtering_enabled && !process_name.empty()) {
+  if (!privacy_filtering_enabled) {
     process->set_process_name(process_name);
+    for (const auto& label : TraceLog::GetInstance()->process_labels()) {
+      process->add_process_labels(label.second);
+    }
   }
 
   ChromeProcessDescriptor* chrome_process =

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/ink_drop_ripple_observer.h"
@@ -37,6 +36,8 @@ class VIEWS_EXPORT InkDropRipple {
   static const float kHiddenOpacity;
 
   InkDropRipple();
+  InkDropRipple(const InkDropRipple&) = delete;
+  InkDropRipple& operator=(const InkDropRipple&) = delete;
   virtual ~InkDropRipple();
 
   // In the event that an animation is in progress for ink drop state 's1' and
@@ -85,13 +86,16 @@ class VIEWS_EXPORT InkDropRipple {
   // |new_ink_drop_state|. |observer| is added to all LayerAnimationSequence's
   // used if not null.
   virtual void AnimateStateChange(InkDropState old_ink_drop_state,
-                                  InkDropState new_ink_drop_state,
-                                  ui::LayerAnimationObserver* observer) = 0;
+                                  InkDropState new_ink_drop_state) = 0;
 
   // Updates the transforms, opacity, and visibility to a HIDDEN state.
   virtual void SetStateToHidden() = 0;
 
   virtual void AbortAllAnimations() = 0;
+
+  // Get the current observer. CreateAnimationObserver must have already been
+  // called.
+  ui::LayerAnimationObserver* GetLayerAnimationObserver();
 
  private:
   // The Callback invoked when all of the animation sequences for the specific
@@ -119,8 +123,6 @@ class VIEWS_EXPORT InkDropRipple {
   InkDropRippleObserver* observer_ = nullptr;
 
   std::unique_ptr<ui::CallbackLayerAnimationObserver> animation_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InkDropRipple);
 };
 
 }  // namespace views

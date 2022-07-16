@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "url/origin.h"
@@ -51,6 +50,9 @@ class CONTENT_EXPORT NotificationIdGenerator {
  public:
   NotificationIdGenerator() = default;
 
+  NotificationIdGenerator(const NotificationIdGenerator&) = delete;
+  NotificationIdGenerator& operator=(const NotificationIdGenerator&) = delete;
+
   // Returns whether |notification_id| belongs to a persistent notification.
   static bool IsPersistentNotification(
       const base::StringPiece& notification_id);
@@ -80,9 +82,6 @@ class CONTENT_EXPORT NotificationIdGenerator {
   std::string GenerateForNonPersistentNotification(
       const url::Origin& origin,
       const std::string& token) const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationIdGenerator);
 };
 
 }  // namespace context

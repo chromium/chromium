@@ -13,6 +13,8 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -26,7 +28,8 @@ class ViewShadow;
 // The Assistant page for the app list.
 class ASH_EXPORT AssistantPageView : public AppListPage,
                                      public AssistantControllerObserver,
-                                     public AssistantUiModelObserver {
+                                     public AssistantUiModelObserver,
+                                     public TabletModeObserver {
  public:
   METADATA_HEADER(AssistantPageView);
 
@@ -47,8 +50,6 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
   void OnAnimationStarted(AppListState from_state,
                           AppListState to_state) override;
   gfx::Size GetPreferredSearchBoxSize() const override;
-  absl::optional<int> GetSearchBoxTop(
-      AppListViewState view_state) const override;
   void UpdatePageOpacityForState(AppListState state,
                                  float search_box_opacity,
                                  bool restore_opacity) override;
@@ -56,8 +57,6 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
       AppListState state,
       const gfx::Rect& contents_bounds,
       const gfx::Rect& search_box_bounds) const override;
-  views::View* GetFirstFocusableView() override;
-  views::View* GetLastFocusableView() override;
   void AnimateYPosition(AppListViewState target_view_state,
                         const TransformAnimator& animator,
                         float default_offset) override;
@@ -76,11 +75,16 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
       absl::optional<AssistantEntryPoint> entry_point,
       absl::optional<AssistantExitPoint> exit_point) override;
 
+  // TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
+
   // views::View:
   void OnThemeChanged() override;
 
  private:
   void InitLayout();
+  void UpdateBackground(bool in_tablet_mode);
   void MaybeUpdateAppListState(int child_height);
 
   AssistantViewDelegate* const assistant_view_delegate_;
@@ -94,6 +98,8 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};
+  base::ScopedObservation<TabletModeController, TabletModeObserver>
+      tablet_mode_observation_{this};
 };
 
 }  // namespace ash

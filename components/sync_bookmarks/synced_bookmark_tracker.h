@@ -11,11 +11,15 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/protocol/bookmark_model_metadata.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
+
+namespace sync_pb {
+class BookmarkModelMetadata;
+class EntitySpecifics;
+}  // namespace sync_pb
 
 namespace base {
 class GUID;
@@ -29,7 +33,6 @@ class BookmarkNode;
 namespace syncer {
 class ClientTagHash;
 struct EntityData;
-class UniquePosition;
 }  // namespace syncer
 
 namespace sync_bookmarks {
@@ -45,15 +48,20 @@ class SyncedBookmarkTracker {
     // |bookmark_node| can be null for tombstones. |metadata| must not be null.
     Entity(const bookmarks::BookmarkNode* bookmark_node,
            std::unique_ptr<sync_pb::EntityMetadata> metadata);
+
+    Entity(const Entity&) = delete;
+    Entity& operator=(const Entity&) = delete;
+
     ~Entity();
 
     // Returns true if this data is out of sync with the server.
     // A commit may or may not be in progress at this time.
     bool IsUnsynced() const;
 
-    // Check whether |data| matches the stored specifics hash. It ignores parent
-    // information.
-    bool MatchesDataIgnoringParent(const syncer::EntityData& data) const;
+    // Check whether |data| matches the stored specifics hash. It also compares
+    // parent information, but only if present in specifics (M94 and above).
+    bool MatchesDataPossiblyIncludingParent(
+        const syncer::EntityData& data) const;
 
     // Check whether |specifics| matches the stored specifics_hash.
     bool MatchesSpecificsHash(const sync_pb::EntitySpecifics& specifics) const;
@@ -76,13 +84,9 @@ class SyncedBookmarkTracker {
       bookmark_node_ = bookmark_node;
     }
 
-    const sync_pb::EntityMetadata* metadata() const {
-      return metadata_.get();
-    }
+    const sync_pb::EntityMetadata* metadata() const { return metadata_.get(); }
 
-    sync_pb::EntityMetadata* metadata() {
-      return metadata_.get();
-    }
+    sync_pb::EntityMetadata* metadata() { return metadata_.get(); }
 
     bool commit_may_have_started() const { return commit_may_have_started_; }
     void set_commit_may_have_started(bool value) {
@@ -110,8 +114,6 @@ class SyncedBookmarkTracker {
     // server. The tracker sets it to true in the constructor because this code
     // path is only executed in production when loading from disk.
     bool commit_may_have_started_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(Entity);
   };
 
   // Returns a client tag hash given a bookmark GUID.
@@ -130,11 +132,14 @@ class SyncedBookmarkTracker {
       const bookmarks::BookmarkModel* model,
       sync_pb::BookmarkModelMetadata model_metadata);
 
+  SyncedBookmarkTracker(const SyncedBookmarkTracker&) = delete;
+  SyncedBookmarkTracker& operator=(const SyncedBookmarkTracker&) = delete;
+
   ~SyncedBookmarkTracker();
 
   // This method is used to denote that all bookmarks are reuploaded and there
   // is no need to reupload them again after next browser startup.
-  void SetBookmarksFullTitleReuploaded();
+  void SetBookmarksReuploaded();
 
   // Returns null if no entity is found.
   const Entity* GetEntityForSyncId(const std::string& sync_id) const;
@@ -154,7 +159,6 @@ class SyncedBookmarkTracker {
                     const std::string& sync_id,
                     int64_t server_version,
                     base::Time creation_time,
-                    const syncer::UniquePosition& unique_position,
                     const sync_pb::EntitySpecifics& specifics);
 
   // Updates the sync metadata for a tracked entity. |entity| must be owned by
@@ -162,7 +166,6 @@ class SyncedBookmarkTracker {
   void Update(const Entity* entity,
               int64_t server_version,
               base::Time modification_time,
-              const syncer::UniquePosition& unique_position,
               const sync_pb::EntitySpecifics& specifics);
 
   // Updates the server version of an existing entity. |entity| must be owned by
@@ -227,8 +230,7 @@ class SyncedBookmarkTracker {
   // Informs the tracker that the sync ID for |entity| has changed. It updates
   // the internal state of the tracker accordingly. |entity| must be owned by
   // this tracker.
-  void UpdateSyncIdForLocalCreationIfNeeded(const Entity* entity,
-                                            const std::string& sync_id);
+  void UpdateSyncIdIfNeeded(const Entity* entity, const std::string& sync_id);
 
   // Used to start tracking an entity that overwrites a previous local tombstone
   // (e.g. user-initiated bookmark deletion undo). |entity| must be owned by
@@ -267,10 +269,11 @@ class SyncedBookmarkTracker {
 
   // This method is used to mark all entities except permanent nodes as
   // unsynced. This will cause reuploading of all bookmarks. The reupload
-  // will be initiated only when the |bookmarks_full_title_reuploaded| field in
-  // BookmarksMetadata is false. This field is used to prevent reuploading after
-  // each browser restart. Returns true if the reupload was initiated.
-  // TODO(crbug.com/1066962): remove this code when most of bookmarks are
+  // will be initiated only when the |bookmarks_hierarchy_fields_reuploaded|
+  // field in BookmarksMetadata is false. This field is used to prevent
+  // reuploading after each browser restart. Returns true if the reupload was
+  // initiated.
+  // TODO(crbug.com/1232951): remove this code when most of bookmarks are
   // reuploaded.
   bool ReuploadBookmarksOnLoadIfNeeded();
 
@@ -303,7 +306,7 @@ class SyncedBookmarkTracker {
   };
 
   SyncedBookmarkTracker(sync_pb::ModelTypeState model_type_state,
-                        bool bookmarks_full_title_reuploaded,
+                        bool bookmarks_reuploaded,
                         base::Time last_sync_time);
 
   // Add entities to |this| tracker based on the content of |*model| and
@@ -356,18 +359,16 @@ class SyncedBookmarkTracker {
   sync_pb::ModelTypeState model_type_state_;
 
   // This field contains the value of
-  // BookmarksMetadata::bookmarks_full_title_reuploaded.
-  // TODO(crbug.com/1066962): remove this code when most of bookmarks are
+  // BookmarksMetadata::bookmarks_hierarchy_fields_reuploaded.
+  // TODO(crbug.com/1232951): remove this code when most of bookmarks are
   // reuploaded.
-  bool bookmarks_full_title_reuploaded_ = false;
+  bool bookmarks_reuploaded_ = false;
 
   // The local timestamp corresponding to the last time remote updates were
   // received.
   // TODO(crbug.com/1032052): Remove this code once all local sync metadata is
   // required to populate the client tag (and be considered invalid otherwise).
   base::Time last_sync_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedBookmarkTracker);
 };
 
 }  // namespace sync_bookmarks

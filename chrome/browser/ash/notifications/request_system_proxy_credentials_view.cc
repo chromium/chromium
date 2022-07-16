@@ -21,10 +21,11 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -51,8 +52,7 @@ class ErrorLabelView : public views::Label {
   // views::View:
   void OnThemeChanged() override {
     Label::OnThemeChanged();
-    SetEnabledColor(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_AlertSeverityHigh));
+    SetEnabledColor(GetColorProvider()->GetColor(ui::kColorAlertHighSeverity));
   }
 };
 
@@ -187,8 +187,7 @@ void RequestSystemProxyCredentialsView::Init() {
   auto error_icon = std::make_unique<views::ImageView>();
   const int kIconSize = 18;
   error_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kInfoOutlineIcon,
-      ui::NativeTheme::kColorId_AlertSeverityHigh, kIconSize));
+      vector_icons::kInfoOutlineIcon, ui::kColorAlertHighSeverity, kIconSize));
   error_icon->SetImageSize(gfx::Size(kIconSize, kIconSize));
   error_icon->SetVisible(show_error_label_);
   layout->AddView(std::move(error_icon));

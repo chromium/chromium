@@ -7,8 +7,6 @@
 
 #include "media/cdm/library_cdm/cdm_host_proxy.h"
 
-#include "base/macros.h"
-
 namespace media {
 
 // A templated implementation of CdmHostProxy to forward Host calls to the
@@ -17,6 +15,10 @@ template <typename HostInterface>
 class CdmHostProxyImpl : public CdmHostProxy {
  public:
   explicit CdmHostProxyImpl(HostInterface* host) : host_(host) {}
+
+  CdmHostProxyImpl(const CdmHostProxyImpl&) = delete;
+  CdmHostProxyImpl& operator=(const CdmHostProxyImpl&) = delete;
+
   ~CdmHostProxyImpl() override {}
 
   void OnInitialized(bool success) final {
@@ -115,8 +117,6 @@ class CdmHostProxyImpl : public CdmHostProxy {
 
  private:
   HostInterface* const host_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmHostProxyImpl);
 };
 
 }  // namespace media

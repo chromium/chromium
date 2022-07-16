@@ -130,7 +130,7 @@ class CORE_EXPORT NewScriptFunction final
   }
 
   v8::Local<v8::Function> V8Function() {
-    return function_.NewLocal(script_state_->GetIsolate());
+    return function_.Get(script_state_->GetIsolate());
   }
 
  private:

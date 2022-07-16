@@ -24,7 +24,7 @@ suite('CrModuleSendWithPromiseTest', function() {
     // Simulate a WebUI handler that echoes back all parameters passed to it.
     // Rejects the promise depending on |rejectPromises|.
     whenChromeSendCalled(CHROME_SEND_NAME).then(function(args) {
-      var callbackId = args[0];
+      const callbackId = args[0];
       webUIResponse.apply(
           null, [callbackId, !rejectPromises].concat(args.slice(1)));
     });
@@ -40,7 +40,7 @@ suite('CrModuleSendWithPromiseTest', function() {
   });
 
   test('ResponseObject', function() {
-    var expectedResponse = {'foo': 'bar'};
+    const expectedResponse = {'foo': 'bar'};
     return sendWithPromise(CHROME_SEND_NAME, expectedResponse)
         .then(function(response) {
           assertEquals(
@@ -49,7 +49,7 @@ suite('CrModuleSendWithPromiseTest', function() {
   });
 
   test('ResponseArray', function() {
-    var expectedResponse = ['foo', 'bar'];
+    const expectedResponse = ['foo', 'bar'];
     return sendWithPromise(CHROME_SEND_NAME, expectedResponse)
         .then(function(response) {
           assertEquals(
@@ -58,7 +58,7 @@ suite('CrModuleSendWithPromiseTest', function() {
   });
 
   test('ResponsePrimitive', function() {
-    var expectedResponse = 1234;
+    const expectedResponse = 1234;
     return sendWithPromise(CHROME_SEND_NAME, expectedResponse)
         .then(function(response) {
           assertEquals(expectedResponse, response);
@@ -73,7 +73,7 @@ suite('CrModuleSendWithPromiseTest', function() {
 
   test('Reject', function() {
     rejectPromises = true;
-    var expectedResponse = 1234;
+    const expectedResponse = 1234;
     return sendWithPromise(CHROME_SEND_NAME, expectedResponse)
         .then(
             function() {
@@ -93,16 +93,16 @@ suite('CrModuleAddSingletonGetterTest', function() {
     assertEquals(
         'function', typeof Foo.getInstance, 'Should add get instance function');
 
-    var x = Foo.getInstance();
+    const x = Foo.getInstance();
     assertEquals('object', typeof x, 'Should successfully create an object');
     assertNotEquals(null, x, 'Created object should not be null');
 
-    var y = Foo.getInstance();
+    const y = Foo.getInstance();
     assertEquals(x, y, 'Should return the same object');
 
     delete Foo.instance_;
 
-    var z = Foo.getInstance();
+    const z = Foo.getInstance();
     assertEquals('object', typeof z, 'Should work after clearing for testing');
     assertNotEquals(null, z, 'Created object should not be null');
 
@@ -112,11 +112,11 @@ suite('CrModuleAddSingletonGetterTest', function() {
 });
 
 suite('CrModuleWebUIListenersTest', function() {
-  var listener1 = null;
-  var listener2 = null;
+  let listener1 = null;
+  let listener2 = null;
 
   /** @const {string} */
-  var EVENT_NAME = 'my-foo-event';
+  const EVENT_NAME = 'my-foo-event';
 
   teardown(function() {
     if (listener1) {
@@ -138,10 +138,10 @@ suite('CrModuleWebUIListenersTest', function() {
   });
 
   test('addWebUIListener_ResponseParams', function() {
-    var expectedString = 'foo';
-    var expectedNumber = 123;
-    var expectedArray = [1, 2];
-    var expectedObject = {};
+    const expectedString = 'foo';
+    const expectedNumber = 123;
+    const expectedArray = [1, 2];
+    const expectedObject = {};
 
     return new Promise(function(resolve, reject) {
       listener1 = addWebUIListener(EVENT_NAME, function(s, n, a, o) {
@@ -168,8 +168,8 @@ suite('CrModuleWebUIListenersTest', function() {
   });
 
   test('addWebUIListener_MulitpleListeners', function() {
-    var resolver1 = new PromiseResolver();
-    var resolver2 = new PromiseResolver();
+    const resolver1 = new PromiseResolver();
+    const resolver2 = new PromiseResolver();
     listener1 = addWebUIListener(EVENT_NAME, resolver1.resolve);
     listener2 = addWebUIListener(EVENT_NAME, resolver2.resolve);
     webUIListenerCallback(EVENT_NAME);

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -35,10 +34,10 @@ using ::testing::Values;
 
 namespace {
 
-// Helper to shorten "base::TimeDelta::FromMilliseconds(...)" in these test
+// Helper to shorten "base::Milliseconds(...)" in these test
 // cases for integer milliseconds.
 constexpr base::TimeDelta Milliseconds(int64_t milliseconds) {
-  return base::TimeDelta::FromMilliseconds(milliseconds);
+  return base::Milliseconds(milliseconds);
 }
 
 }  // namespace
@@ -53,6 +52,12 @@ typedef StreamParser::TrackId TrackId;
 class FrameProcessorTestCallbackHelper {
  public:
   FrameProcessorTestCallbackHelper() = default;
+
+  FrameProcessorTestCallbackHelper(const FrameProcessorTestCallbackHelper&) =
+      delete;
+  FrameProcessorTestCallbackHelper& operator=(
+      const FrameProcessorTestCallbackHelper&) = delete;
+
   virtual ~FrameProcessorTestCallbackHelper() = default;
 
   MOCK_METHOD1(OnParseWarning, void(const SourceBufferParseWarning));
@@ -73,12 +78,13 @@ class FrameProcessorTestCallbackHelper {
                void(const DemuxerStream::Type type,
                     DecodeTimestamp start_dts,
                     base::TimeDelta start_pts));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrameProcessorTestCallbackHelper);
 };
 
 class FrameProcessorTest : public ::testing::TestWithParam<bool> {
+ public:
+  FrameProcessorTest(const FrameProcessorTest&) = delete;
+  FrameProcessorTest& operator=(const FrameProcessorTest&) = delete;
+
  protected:
   FrameProcessorTest()
       : append_window_end_(kInfiniteDuration),
@@ -169,10 +175,10 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
       scoped_refptr<StreamParserBuffer> buffer =
           StreamParserBuffer::CopyFrom(timestamp_as_data, sizeof(time_in_ms),
                                        is_keyframe, type, track_id);
-      buffer->set_timestamp(base::TimeDelta::FromMillisecondsD(time_in_ms));
+      buffer->set_timestamp(base::Milliseconds(time_in_ms));
       if (time_in_ms != decode_time_in_ms) {
         buffer->SetDecodeTimestamp(DecodeTimestamp::FromPresentationTime(
-            base::TimeDelta::FromMillisecondsD(decode_time_in_ms)));
+            base::Milliseconds(decode_time_in_ms)));
       }
 
       buffer->set_duration(frame_duration_);
@@ -381,13 +387,14 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
         AudioDecoderConfig decoder_config;
         if (support_audio_nonkeyframes) {
           decoder_config = AudioDecoderConfig(
-              kCodecAAC, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO, 1000,
-              EmptyExtraData(), EncryptionScheme::kUnencrypted);
+              AudioCodec::kAAC, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO,
+              1000, EmptyExtraData(), EncryptionScheme::kUnencrypted);
           decoder_config.set_profile(AudioCodecProfile::kXHE_AAC);
         } else {
-          decoder_config = AudioDecoderConfig(
-              kCodecVorbis, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO, 1000,
-              EmptyExtraData(), EncryptionScheme::kUnencrypted);
+          decoder_config =
+              AudioDecoderConfig(AudioCodec::kVorbis, kSampleFormatPlanarF32,
+                                 CHANNEL_LAYOUT_STEREO, 1000, EmptyExtraData(),
+                                 EncryptionScheme::kUnencrypted);
         }
         frame_processor_->OnPossibleAudioConfigUpdate(decoder_config);
         ASSERT_TRUE(
@@ -422,8 +429,6 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
                               base::Unretained(&callbacks_), type));
     }
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FrameProcessorTest);
 };
 
 TEST_P(FrameProcessorTest, WrongTypeInAppendedBuffer) {
@@ -924,8 +929,7 @@ TEST_P(FrameProcessorTest, AppendWindowFilterWithInexactPreroll_2) {
     EXPECT_CALL(callbacks_, PossibleDurationIncrease(Milliseconds(0)));
   EXPECT_TRUE(ProcessFrames("0K", ""));
 
-  EXPECT_CALL(callbacks_, PossibleDurationIncrease(
-                              base::TimeDelta::FromMicroseconds(10250)));
+  EXPECT_CALL(callbacks_, PossibleDurationIncrease(base::Microseconds(10250)));
   EXPECT_TRUE(ProcessFrames("10.25K", ""));
 
   EXPECT_MEDIA_LOG(SkippingSpliceTooLittleOverlap(10000, 250));
@@ -1884,7 +1888,7 @@ TEST_P(FrameProcessorTest,
   if (use_sequence_mode_)
     frame_processor_->SetSequenceMode(true);
 
-  frame_duration_ = base::TimeDelta::FromMicroseconds(4999);
+  frame_duration_ = base::Microseconds(4999);
 
   EXPECT_CALL(callbacks_, OnGroupStart(DemuxerStream::AUDIO, DecodeTimestamp(),
                                        base::TimeDelta()));
@@ -1913,8 +1917,7 @@ TEST_P(FrameProcessorTest,
                    Milliseconds(20) + frame_duration_));
   EXPECT_CALL(callbacks_, OnAppend(DemuxerStream::AUDIO, _));
 
-  EXPECT_CALL(callbacks_, PossibleDurationIncrease(
-                              base::TimeDelta::FromMicroseconds(34999)));
+  EXPECT_CALL(callbacks_, PossibleDurationIncrease(base::Microseconds(34999)));
   EXPECT_TRUE(ProcessFrames("0K 10|5K 20|10K 30|15K", ""));
   EXPECT_EQ(Milliseconds(0), timestamp_offset_);
 
@@ -2238,14 +2241,14 @@ TEST_P(FrameProcessorTest, NonkeyframeAudioBuffering_TrimSpliceOverlap) {
   if (use_sequence_mode_)
     frame_processor_->SetSequenceMode(true);
 
-  frame_duration_ = base::TimeDelta::FromMicroseconds(9750);
+  frame_duration_ = base::Microseconds(9750);
   EXPECT_CALL(callbacks_, PossibleDurationIncrease(frame_duration_));
   EXPECT_TRUE(ProcessFrames("0K", ""));
 
   // As with all-keyframe streams, a slight jump forward should not trigger any
   // splicing logic, though accumulations of these may result in loss of A/V
   // sync.
-  frame_duration_ = base::TimeDelta::FromMicroseconds(10250);
+  frame_duration_ = base::Microseconds(10250);
   EXPECT_CALL(callbacks_,
               PossibleDurationIncrease(Milliseconds(10) + frame_duration_));
   EXPECT_TRUE(ProcessFrames("10", ""));
@@ -2265,7 +2268,7 @@ TEST_P(FrameProcessorTest, NonkeyframeAudioBuffering_TrimSpliceOverlap) {
   // frame. Accumulations of these could rapidly lead to loss of A/V sync.
   // Nonkeyframe timestamp & duration metadata sequences need to be correctly
   // muxed to avoid this.
-  frame_duration_ = base::TimeDelta::FromMicroseconds(10250);
+  frame_duration_ = base::Microseconds(10250);
   EXPECT_CALL(callbacks_,
               PossibleDurationIncrease(Milliseconds(22) + frame_duration_));
   EXPECT_TRUE(ProcessFrames("22", ""));

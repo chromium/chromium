@@ -6,9 +6,9 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -71,15 +71,14 @@ class ConstrainedWebDialogBrowserTest : public InProcessBrowserTest {
     const base::TimeTicks start_time = base::TimeTicks::Now();
     while (!condition.Run()) {
       const base::TimeTicks current_time = base::TimeTicks::Now();
-      if (current_time - start_time > base::TimeDelta::FromSeconds(5)) {
+      if (current_time - start_time > base::Seconds(5)) {
         ADD_FAILURE() << "Condition not met within five seconds.";
         return false;
       }
 
       base::RunLoop run_loop;
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(),
-          base::TimeDelta::FromMilliseconds(20));
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(20));
       run_loop.Run();
     }
     return true;

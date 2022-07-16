@@ -124,10 +124,10 @@ TEST_F(BrowserSwitcherPrefsTest, ListensForPrefChanges) {
 #endif
 
   EXPECT_EQ(1u, prefs()->GetRules().sitelist.size());
-  EXPECT_EQ("example.com", prefs()->GetRules().sitelist[0]);
+  EXPECT_EQ("example.com", prefs()->GetRules().sitelist[0]->ToString());
 
   EXPECT_EQ(1u, prefs()->GetRules().greylist.size());
-  EXPECT_EQ("foo.example.com", prefs()->GetRules().greylist[0]);
+  EXPECT_EQ("foo.example.com", prefs()->GetRules().greylist[0]->ToString());
 }
 
 TEST_F(BrowserSwitcherPrefsTest, TriggersObserversOnPolicyChange) {

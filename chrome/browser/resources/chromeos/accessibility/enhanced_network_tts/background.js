@@ -4,16 +4,5 @@
 
 import {EnhancedNetworkTts} from './enhanced_network_tts.js';
 
-/**
- * Register the listener for onSpeakWithAudioStream event. The event will be
- * called when the user makes a call to tts.speak() and one of the voices from
- * this extension's manifest is the first to match the options object.
- */
-chrome.ttsEngine.onSpeakWithAudioStream.addListener(
-    async (
-        /** string */ utterance,
-        /** !chrome.ttsEngine.SpeakOptions */ options,
-        /** !chrome.ttsEngine.AudioStreamOptions */ audioStreamOptions,
-        /** function(!chrome.ttsEngine.AudioBuffer): void */ sendTtsAudio) =>
-        await EnhancedNetworkTts.onSpeakWithAudioStreamEvent(
-            utterance, options, audioStreamOptions, sendTtsAudio));
+InstanceChecker.closeExtraInstances();
+export const enhancedNetworkTts = new EnhancedNetworkTts();

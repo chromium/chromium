@@ -122,10 +122,8 @@ void InstallLimiter::AddWithSize(const scoped_refptr<CrxInstaller>& installer,
   // big app is the first one in the list.
   if (running_installers_.empty() && !wait_timer_.IsRunning()) {
     const int kMaxWaitTimeInMs = 5000;  // 5 seconds.
-    wait_timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(kMaxWaitTimeInMs),
-        this, &InstallLimiter::CheckAndRunDeferrredInstalls);
+    wait_timer_.Start(FROM_HERE, base::Milliseconds(kMaxWaitTimeInMs), this,
+                      &InstallLimiter::CheckAndRunDeferrredInstalls);
   }
 }
 

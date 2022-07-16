@@ -5,8 +5,8 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/quick_action_widget"
-    android:layout_width="@dimen/quick_action_search_widget_width"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+  android:layout_height="@dimen/quick_action_search_widget_medium_height"
     android:background="@drawable/quick_action_search_widget_background"
     android:orientation="vertical">
 
@@ -27,7 +27,7 @@
             android:layout_height="@dimen/quick_action_search_widget_medium_search_bar_icon_size"
             android:layout_margin="@dimen/quick_action_search_widget_medium_search_bar_icon_margin"
             android:contentDescription="@string/accessibility_quick_action_search_widget_icon"
-            android:src="@drawable/ic_launcher_round" />
+            android:src="@mipmap/app_icon" />
 
         <TextView
             android:id="@+id/search_bar"

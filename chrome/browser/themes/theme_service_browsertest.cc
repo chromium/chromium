@@ -4,7 +4,6 @@
 
 #include "chrome/browser/themes/theme_service.h"
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,15 +30,16 @@ class ThemeServiceBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   ThemeServiceBrowserTest() {
   }
+
+  ThemeServiceBrowserTest(const ThemeServiceBrowserTest&) = delete;
+  ThemeServiceBrowserTest& operator=(const ThemeServiceBrowserTest&) = delete;
+
   ~ThemeServiceBrowserTest() override {}
 
   void SetUp() override {
     extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
     extensions::ExtensionBrowserTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThemeServiceBrowserTest);
 };
 
 // Test that the theme is recreated from the extension when the data pack is

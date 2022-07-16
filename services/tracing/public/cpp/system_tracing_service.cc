@@ -17,16 +17,15 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/system_tracing_service.h"
-#include "third_party/perfetto/include/perfetto/ext/base/unix_socket.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/ipc/default_socket.h"  // nogncheck
 
 namespace tracing {
 
-namespace {
-
 using ::perfetto::base::UnixSocket;
 
-class UnixSocketEventListener : private UnixSocket::EventListener {
+namespace {
+
+class UnixSocketEventListener : public UnixSocket::EventListener {
  public:
   using OpenProducerSocketCallback =
       SystemTracingService::OpenProducerSocketCallback;
@@ -48,6 +47,11 @@ class UnixSocketEventListener : private UnixSocket::EventListener {
     socket_ = perfetto::base::UnixSocket::Connect(
         socket_name, this, task_runner, perfetto::base::SockFamily::kUnix,
         perfetto::base::SockType::kStream);
+  }
+
+  void SetOnConnectCallbackForTesting(  // IN-TEST
+      SystemTracingService::OnConnectCallback on_connect_callback) {
+    on_connect_callback_for_testing_ = std::move(on_connect_callback);
   }
 
  private:
@@ -76,6 +80,22 @@ class UnixSocketEventListener : private UnixSocket::EventListener {
   // After Connect(), whether successful or not.
   void OnConnect(UnixSocket* self, bool connected) override {
     DCHECK(self == socket_.get());
+
+    // Run |on_connect_callback_for_testing_| first if set for testing.
+    if (on_connect_callback_for_testing_)
+      callback_sequence_->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](SystemTracingService::OnConnectCallback callback,
+                 bool connected) { std::move(callback).Run(connected); },
+              std::move(on_connect_callback_for_testing_), connected));
+
+    // If not connected, run the mojo callback with an invalid FD to let the
+    // child retry. Don't try to steal the socket FD as it is cleaned up in the
+    // UnixSocket class.
+    if (!connected)
+      return RunCallback(base::File());
+
     // Steal the FD of the underlying socket.
     base::File fd(self->ReleaseSocket().ReleaseFd().release());
     DCHECK(connected == fd.IsValid());
@@ -90,7 +110,10 @@ class UnixSocketEventListener : private UnixSocket::EventListener {
   }
 
   std::unique_ptr<UnixSocket> socket_;
+  // The Mojo callback.
   OpenProducerSocketCallback callback_;
+  // The callback for testing the OnConnect() event.
+  SystemTracingService::OnConnectCallback on_connect_callback_for_testing_;
   scoped_refptr<base::SequencedTaskRunner> callback_sequence_;
 };
 
@@ -115,6 +138,16 @@ void SystemTracingService::OnConnectionError() {
 void SystemTracingService::OpenProducerSocket(
     OpenProducerSocketCallback callback) {
   auto* connect_listener = new UnixSocketEventListener(std::move(callback));
+  connect_listener->Connect();
+  // |connect_listener| will self-destroy on connection successful.
+}
+
+void SystemTracingService::OpenProducerSocketForTesting(
+    OpenProducerSocketCallback callback,
+    OnConnectCallback on_connect_callback) {
+  auto* connect_listener = new UnixSocketEventListener(std::move(callback));
+  connect_listener->SetOnConnectCallbackForTesting(  // IN-TEST
+      std::move(on_connect_callback));
   connect_listener->Connect();
   // |connect_listener| will self-destroy on connection successful.
 }

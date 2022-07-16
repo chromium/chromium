@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PRINTING_PRINTER_MANAGER_DIALOG_H_
 #define CHROME_BROWSER_PRINTING_PRINTER_MANAGER_DIALOG_H_
 
-#include "base/macros.h"
 #include "printing/buildflags/buildflags.h"
 
 #if !BUILDFLAG(ENABLE_PRINTING)
@@ -21,11 +20,12 @@ namespace printing {
 // This includes the OS-dependent UI to manage the network and local printers.
 class PrinterManagerDialog {
  public:
+  PrinterManagerDialog() = delete;
+  PrinterManagerDialog(const PrinterManagerDialog&) = delete;
+  PrinterManagerDialog& operator=(const PrinterManagerDialog&) = delete;
+
   // Displays the native printer manager dialog.
   static void ShowPrinterManagerDialog(Profile* profile);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PrinterManagerDialog);
 };
 
 }  // namespace printing

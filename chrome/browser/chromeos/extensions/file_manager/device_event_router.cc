@@ -19,8 +19,8 @@ using content::BrowserThread;
 DeviceEventRouter::DeviceEventRouter(
     SystemNotificationManager* notification_manager)
     : notification_manager_(notification_manager),
-      resume_time_delta_(base::TimeDelta::FromSeconds(10)),
-      startup_time_delta_(base::TimeDelta::FromSeconds(10)),
+      resume_time_delta_(base::Seconds(10)),
+      startup_time_delta_(base::Seconds(10)),
       is_starting_up_(false),
       is_resuming_(false) {}
 

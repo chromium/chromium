@@ -24,14 +24,15 @@ public class MessagesFactory {
      *         autodismiss duration for message banner.
      * @param animatorStartCallback The {@link Callback} that will be used by the message to
      *         delegate starting the animations to the {@link WindowAndroid}.
+     * @param windowAndroid The current window Android.
      * @return The constructed ManagedMessageDispatcher.
      */
     public static ManagedMessageDispatcher createMessageDispatcher(MessageContainer container,
             Supplier<Integer> messageMaxTranslation,
             MessageAutodismissDurationProvider autodismissDurationMs,
-            Callback<Animator> animatorStartCallback) {
-        return new MessageDispatcherImpl(
-                container, messageMaxTranslation, autodismissDurationMs, animatorStartCallback);
+            Callback<Animator> animatorStartCallback, WindowAndroid windowAndroid) {
+        return new MessageDispatcherImpl(container, messageMaxTranslation, autodismissDurationMs,
+                animatorStartCallback, windowAndroid);
     }
 
     /**

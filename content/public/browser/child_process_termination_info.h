@@ -52,11 +52,6 @@ struct CONTENT_EXPORT ChildProcessTerminationInfo {
   // True if the child shut itself down cleanly by quitting the main runloop.
   bool clean_exit = false;
 
-  // Counts of remaining child processes with corresponding binding.
-  int remaining_process_with_strong_binding = 0;
-  int remaining_process_with_moderate_binding = 0;
-  int remaining_process_with_waived_binding = 0;
-
   // Eg lowest ranked process at time of death should have value 0.
   // Valid values are non-negative.
   // -1 means could not be obtained due to threading restrictions.

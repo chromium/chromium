@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -22,6 +21,8 @@ class AudioBuffer;
 // Helper class for managing timestamps and discard events around decoding.
 class MEDIA_EXPORT AudioDiscardHelper {
  public:
+  AudioDiscardHelper() = delete;
+
   // |sample_rate| is the sample rate of decoded data which will be handed into
   // the ProcessBuffers() call.
   //
@@ -40,6 +41,10 @@ class MEDIA_EXPORT AudioDiscardHelper {
   AudioDiscardHelper(int sample_rate,
                      size_t decoder_delay,
                      bool delayed_discard);
+
+  AudioDiscardHelper(const AudioDiscardHelper&) = delete;
+  AudioDiscardHelper& operator=(const AudioDiscardHelper&) = delete;
+
   ~AudioDiscardHelper();
 
   // Converts a TimeDelta to a frame count based on the constructed sample rate.
@@ -50,17 +55,17 @@ class MEDIA_EXPORT AudioDiscardHelper {
   // frames should be discarded.
   void Reset(size_t initial_discard);
 
-  // Applies discard padding from the encoded buffer along with any initial
-  // discards.  |decoded_buffer| may be NULL, if not the timestamp and duration
-  // will be set after discards are applied.  Returns true if |decoded_buffer|
-  // exists after processing discard events.  Returns false if |decoded_buffer|
-  // was NULL, is completely discarded, or a processing error occurs.
+  // Applies discard padding from |time_info| along with any initial discards.
+  // |decoded_buffer| may be NULL, if not the timestamp and duration will be set
+  // after discards are applied.  Returns true if |decoded_buffer| exists after
+  // processing discard events.  Returns false if |decoded_buffer| was NULL, is
+  // completely discarded, or a processing error occurs.
   //
   // If AudioDiscardHelper is not initialized() the timestamp of the first
-  // |encoded_buffer| will be used as the basis for all future timestamps set on
-  // |decoded_buffer|s.  If the first buffer has a negative timestamp it will be
-  // clamped to zero.
-  bool ProcessBuffers(const DecoderBuffer& encoded_buffer,
+  // |time_info| will be used as the basis for all future timestamps set on
+  // |decoded_buffer|s.  If the first |time_info| has a negative timestamp it
+  // will be clamped to zero.
+  bool ProcessBuffers(const DecoderBuffer::TimeInfo& time_info,
                       AudioBuffer* decoded_buffer);
 
   // Whether any buffers have been processed.
@@ -103,8 +108,6 @@ class MEDIA_EXPORT AudioDiscardHelper {
   // from the next buffer.  The index at which to start discarding is calculated
   // by subtracting |delayed_end_discard_| from |decoder_delay_|.
   size_t delayed_end_discard_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AudioDiscardHelper);
 };
 
 }  // namespace media

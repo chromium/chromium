@@ -28,7 +28,7 @@
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/logging/logging_defines.h"
 #include "media/cast/net/cast_transport_config.h"
-#include "media/cast/sender/vp8_quantizer_parser.h"
+#include "media/cast/sender/vpx_quantizer_parser.h"
 #include "media/video/h264_parser.h"
 
 namespace {
@@ -118,6 +118,9 @@ class ExternalVideoEncoder::VEAClientImpl final
         key_frame_quantizer_parsable_(false),
         requested_bit_rate_(-1),
         allocate_input_buffer_in_progress_(false) {}
+
+  VEAClientImpl(const VEAClientImpl&) = delete;
+  VEAClientImpl& operator=(const VEAClientImpl&) = delete;
 
   base::SingleThreadTaskRunner* task_runner() const {
     return task_runner_.get();
@@ -368,7 +371,7 @@ class ExternalVideoEncoder::VEAClientImpl final
       base::TimeDelta frame_duration =
           request.video_frame->metadata().frame_duration.value_or(
               base::TimeDelta());
-      if (frame_duration > base::TimeDelta()) {
+      if (frame_duration.is_positive()) {
         // Compute encoder utilization in terms of the number of frames in
         // backlog, including the current frame encode that is finishing
         // here. This "backlog" model works as follows: First, assume that all
@@ -397,7 +400,7 @@ class ExternalVideoEncoder::VEAClientImpl final
         // and all the following delta frames.
         if (metadata.key_frame || key_frame_quantizer_parsable_) {
           if (codec_profile_ == media::VP8PROFILE_ANY) {
-            quantizer = ParseVp8HeaderQuantizer(
+            quantizer = ParseVpxHeaderQuantizer(
                 reinterpret_cast<const uint8_t*>(encoded_frame->data.data()),
                 encoded_frame->data.size());
           } else if (codec_profile_ == media::H264PROFILE_MAIN) {
@@ -608,8 +611,6 @@ class ExternalVideoEncoder::VEAClientImpl final
   // Set to true when the allocation of an input buffer is in progress, and
   // reset to false after the allocated buffer is received.
   bool allocate_input_buffer_in_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(VEAClientImpl);
 };
 
 // static

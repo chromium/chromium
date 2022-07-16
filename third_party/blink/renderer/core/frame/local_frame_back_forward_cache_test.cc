@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
+#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 
 #include "base/run_loop.h"
@@ -44,6 +45,9 @@ class TestLocalFrameBackForwardCacheClient
   void EvictFromBackForwardCache(mojom::RendererEvictionReason) override {
     quit_closure_.Run();
   }
+
+  void DidChangeBackForwardCacheDisablingFeatures(
+      uint64_t features_mask) override {}
 
   void WaitUntilEvictedFromBackForwardCache() {
     base::RunLoop run_loop;

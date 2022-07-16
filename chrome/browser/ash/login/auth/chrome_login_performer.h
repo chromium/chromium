@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/login/wildcard_login_checker.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
@@ -35,6 +34,10 @@ namespace ash {
 class ChromeLoginPerformer : public LoginPerformer {
  public:
   explicit ChromeLoginPerformer(Delegate* delegate);
+
+  ChromeLoginPerformer(const ChromeLoginPerformer&) = delete;
+  ChromeLoginPerformer& operator=(const ChromeLoginPerformer&) = delete;
+
   ~ChromeLoginPerformer() override;
 
   // LoginPerformer:
@@ -72,8 +75,6 @@ class ChromeLoginPerformer : public LoginPerformer {
   // Used to verify logins that matched wildcard on the login allowlist.
   std::unique_ptr<policy::WildcardLoginChecker> wildcard_login_checker_;
   base::WeakPtrFactory<ChromeLoginPerformer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeLoginPerformer);
 };
 
 }  // namespace ash

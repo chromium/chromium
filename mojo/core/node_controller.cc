@@ -20,6 +20,7 @@
 #include "mojo/core/broker.h"
 #include "mojo/core/broker_host.h"
 #include "mojo/core/configuration.h"
+#include "mojo/core/ports/name.h"
 #include "mojo/core/request_context.h"
 #include "mojo/core/user_message_impl.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -121,6 +122,10 @@ class ThreadDestructionObserver
     }
   }
 
+  ThreadDestructionObserver(const ThreadDestructionObserver&) = delete;
+  ThreadDestructionObserver& operator=(const ThreadDestructionObserver&) =
+      delete;
+
  private:
   explicit ThreadDestructionObserver(base::OnceClosure callback)
       : callback_(std::move(callback)) {
@@ -138,8 +143,6 @@ class ThreadDestructionObserver
   }
 
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadDestructionObserver);
 };
 
 }  // namespace
@@ -1126,6 +1129,12 @@ void NodeController::OnIntroduce(const ports::NodeName& from_node,
                                  PlatformHandle channel_handle,
                                  const uint64_t remote_capabilities) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+
+  if (broker_name_ == ports::kInvalidNodeName || from_node != broker_name_) {
+    DVLOG(1) << "Ignoring introduction from non-broker process.";
+    DropPeer(from_node, nullptr);
+    return;
+  }
 
   if (!channel_handle.is_valid()) {
     node_->LostConnectionToNode(name);

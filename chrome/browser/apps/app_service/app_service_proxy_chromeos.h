@@ -15,10 +15,18 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
+#include "chrome/browser/apps/app_service/publisher_host.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/native_widget_types.h"
+
+// Avoid including this header file directly or referring directly to
+// AppServiceProxyChromeOs as a type. Instead:
+//  - for forward declarations, use app_service_proxy_forward.h
+//  - for the full header, use app_service_proxy.h, which aliases correctly
+//    based on the platform
 
 class Profile;
 
@@ -26,20 +34,13 @@ namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
-namespace web_app {
-class WebAppsChromeOs;
-}  // namespace web_app
-
 namespace apps {
 
 class AppPlatformMetrics;
 class AppPlatformMetricsService;
-class BorealisApps;
-class BuiltInChromeOsApps;
-class CrostiniApps;
-class ExtensionAppsChromeOs;
-class PluginVmApps;
-class StandaloneBrowserApps;
+class InstanceRegistryUpdater;
+class BrowserAppInstanceRegistry;
+class BrowserAppInstanceTracker;
 class UninstallDialog;
 
 struct PauseData {
@@ -52,7 +53,8 @@ struct PauseData {
 // OS.
 //
 // See components/services/app_service/README.md.
-class AppServiceProxyChromeOs : public AppServiceProxyBase {
+class AppServiceProxyChromeOs : public AppServiceProxyBase,
+                                public apps::AppRegistryCache::Observer {
  public:
   using OnPauseDialogClosedCallback = base::OnceCallback<void()>;
 
@@ -63,6 +65,9 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
 
   apps::InstanceRegistry& InstanceRegistry();
   apps::AppPlatformMetrics* AppPlatformMetrics();
+
+  apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
+  apps::BrowserAppInstanceRegistry* BrowserAppInstanceRegistry();
 
   // apps::AppServiceProxyBase overrides:
   void Uninstall(const std::string& app_id,
@@ -91,7 +96,7 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
   // apps::AppServiceProxyBase overrides:
   void FlushMojoCallsForTesting() override;
 
-  void ReInitializeCrostiniForTesting(Profile* profile);
+  void ReInitializeCrostiniForTesting();
   void SetDialogCreatedCallbackForTesting(base::OnceClosure callback);
   void UninstallForTesting(const std::string& app_id,
                            gfx::NativeWindow parent_window,
@@ -101,6 +106,9 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
           app_platform_metrics_service);
 
  private:
+  // For access to Initialize.
+  friend class AppServiceProxyFactory;
+
   using UninstallDialogs = std::set<std::unique_ptr<apps::UninstallDialog>,
                                     base::UniquePtrComparator>;
 
@@ -164,6 +172,10 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
 
   // apps::AppRegistryCache::Observer overrides:
   void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
+
+  void PerformPostLaunchTasks(apps::mojom::LaunchSource launch_source) override;
 
   void RecordAppPlatformMetrics(
       Profile* profile,
@@ -173,17 +185,23 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
 
   void InitAppPlatformMetrics();
 
-  std::unique_ptr<BuiltInChromeOsApps> built_in_chrome_os_apps_;
-  std::unique_ptr<CrostiniApps> crostini_apps_;
-  std::unique_ptr<ExtensionAppsChromeOs> extension_apps_;
-  std::unique_ptr<PluginVmApps> plugin_vm_apps_;
-  std::unique_ptr<StandaloneBrowserApps> standalone_browser_apps_;
-  std::unique_ptr<web_app::WebAppsChromeOs> web_apps_;
-  std::unique_ptr<BorealisApps> borealis_apps_;
+  void PerformPostUninstallTasks(
+      apps::mojom::AppType app_type,
+      const std::string& app_id,
+      apps::mojom::UninstallSource uninstall_source) override;
+
+  std::unique_ptr<PublisherHost> publisher_host_;
 
   bool arc_is_registered_ = false;
 
   apps::InstanceRegistry instance_registry_;
+
+  std::unique_ptr<apps::BrowserAppInstanceTracker>
+      browser_app_instance_tracker_;
+  std::unique_ptr<apps::BrowserAppInstanceRegistry>
+      browser_app_instance_registry_;
+  std::unique_ptr<apps::InstanceRegistryUpdater>
+      browser_app_instance_app_service_updater_;
 
   // When PauseApps is called, the app is added to |pending_pause_requests|.
   // When the user clicks the OK from the pause app dialog, the pause status is
@@ -198,32 +216,6 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
       app_platform_metrics_service_;
 
   base::WeakPtrFactory<AppServiceProxyChromeOs> weak_ptr_factory_{this};
-};
-
-class ScopedOmitBuiltInAppsForTesting {
- public:
-  ScopedOmitBuiltInAppsForTesting();
-  ScopedOmitBuiltInAppsForTesting(const ScopedOmitBuiltInAppsForTesting&) =
-      delete;
-  ScopedOmitBuiltInAppsForTesting& operator=(
-      const ScopedOmitBuiltInAppsForTesting&) = delete;
-  ~ScopedOmitBuiltInAppsForTesting();
-
- private:
-  const bool previous_omit_built_in_apps_for_testing_;
-};
-
-class ScopedOmitPluginVmAppsForTesting {
- public:
-  ScopedOmitPluginVmAppsForTesting();
-  ScopedOmitPluginVmAppsForTesting(const ScopedOmitPluginVmAppsForTesting&) =
-      delete;
-  ScopedOmitPluginVmAppsForTesting& operator=(
-      const ScopedOmitPluginVmAppsForTesting&) = delete;
-  ~ScopedOmitPluginVmAppsForTesting();
-
- private:
-  const bool previous_omit_plugin_vm_apps_for_testing_;
 };
 
 }  // namespace apps

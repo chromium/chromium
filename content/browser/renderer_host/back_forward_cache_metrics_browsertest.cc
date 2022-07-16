@@ -88,13 +88,12 @@ class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
   void GiveItSomeTime() {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(200));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(200));
     run_loop.Run();
   }
 
   RenderFrameHostImpl* current_frame_host() {
-    return web_contents()->GetFrameTree()->root()->current_frame_host();
+    return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
   void DidStartNavigation(NavigationHandle* navigation_handle) override {
@@ -617,14 +616,14 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, DedicatedWorker) {
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  EXPECT_EQ(base::util::Difference(
-                static_cast<WebContentsImpl*>(shell()->web_contents())
-                    ->GetMainFrame()
-                    ->scheduler_tracked_features(),
-                kFeaturesToIgnore),
-            blink::scheduler::WebSchedulerTrackedFeatures(
-                blink::scheduler::WebSchedulerTrackedFeature::
-                    kDedicatedWorkerOrWorklet));
+  EXPECT_EQ(
+      base::Difference(static_cast<WebContentsImpl*>(shell()->web_contents())
+                           ->GetMainFrame()
+                           ->GetBackForwardCacheDisablingFeatures(),
+                       kFeaturesToIgnore),
+      blink::scheduler::WebSchedulerTrackedFeatures(
+          blink::scheduler::WebSchedulerTrackedFeature::
+              kDedicatedWorkerOrWorklet));
 }
 
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
@@ -639,13 +638,13 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, MAYBE_SharedWorker) {
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  EXPECT_EQ(base::util::Difference(
-                static_cast<WebContentsImpl*>(shell()->web_contents())
-                    ->GetMainFrame()
-                    ->scheduler_tracked_features(),
-                kFeaturesToIgnore),
-            blink::scheduler::WebSchedulerTrackedFeatures(
-                blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker));
+  EXPECT_EQ(
+      base::Difference(static_cast<WebContentsImpl*>(shell()->web_contents())
+                           ->GetMainFrame()
+                           ->GetBackForwardCacheDisablingFeatures(),
+                       kFeaturesToIgnore),
+      blink::scheduler::WebSchedulerTrackedFeatures(
+          blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker));
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Geolocation) {
@@ -839,11 +838,11 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   RenderFrameHostImpl* rfh_url1 =
-      web_contents()->GetFrameTree()->root()->current_frame_host();
+      web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
 
   // Make url1 ineligible for caching so that when we navigate back it doesn't
   // fetch the RenderFrameHost from the back/forward cache.
-  DisableForRenderFrameHostForTesting(rfh_url1);
+  DisableBFCacheForRFHForTesting(rfh_url1);
   EXPECT_TRUE(NavigateToURL(shell(), url3));
 
   // 6) Go back and reload.

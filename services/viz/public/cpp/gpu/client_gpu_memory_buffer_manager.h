@@ -36,6 +36,11 @@ class ClientGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
  public:
   explicit ClientGpuMemoryBufferManager(
       mojo::PendingRemote<mojom::GpuMemoryBufferFactory> gpu);
+
+  ClientGpuMemoryBufferManager(const ClientGpuMemoryBufferManager&) = delete;
+  ClientGpuMemoryBufferManager& operator=(const ClientGpuMemoryBufferManager&) =
+      delete;
+
   ~ClientGpuMemoryBufferManager() override;
 
  private:
@@ -83,8 +88,6 @@ class ClientGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
   scoped_refptr<base::UnsafeSharedMemoryPool> pool_;
 
   base::WeakPtrFactory<ClientGpuMemoryBufferManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClientGpuMemoryBufferManager);
 };
 
 }  // namespace viz

@@ -35,11 +35,10 @@ LookalikeUrlTabHelper::LookalikeUrlTabHelper(web::WebState* web_state)
 
 void LookalikeUrlTabHelper::ShouldAllowResponse(
     NSURLResponse* response,
-    bool for_main_frame,
-    base::OnceCallback<void(web::WebStatePolicyDecider::PolicyDecision)>
-        callback) {
+    web::WebStatePolicyDecider::ResponseInfo response_info,
+    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   // Ignore subframe navigations.
-  if (!for_main_frame) {
+  if (!response_info.for_main_frame) {
     std::move(callback).Run(CreateAllowDecision());
     return;
   }

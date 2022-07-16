@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
@@ -25,9 +26,12 @@ namespace blink {
 
 class CachedMetadata;
 class KURL;
-class SingleCachedMetadataHandler;
 class ScriptSourceCode;
 class ModuleRecordProduceCacheData;
+
+namespace mojom {
+class CodeCacheHost;
+}
 
 class CORE_EXPORT V8CodeCache final {
   STATIC_ONLY(V8CodeCache);
@@ -46,11 +50,14 @@ class CORE_EXPORT V8CodeCache final {
 
   static uint32_t TagForCodeCache(const SingleCachedMetadataHandler*);
   static uint32_t TagForTimeStamp(const SingleCachedMetadataHandler*);
-  static void SetCacheTimeStamp(SingleCachedMetadataHandler*);
+  static void SetCacheTimeStamp(CodeCacheHost*, SingleCachedMetadataHandler*);
 
   // Returns true iff the SingleCachedMetadataHandler contains a code cache
   // that can be consumed by V8.
-  static bool HasCodeCache(const SingleCachedMetadataHandler*);
+  static bool HasCodeCache(
+      const SingleCachedMetadataHandler*,
+      SingleCachedMetadataHandler::GetCachedMetadataBehavior behavior =
+          SingleCachedMetadataHandler::kCrashIfUnchecked);
 
   static std::tuple<v8::ScriptCompiler::CompileOptions,
                     ProduceCacheOptions,
@@ -64,14 +71,25 @@ class CORE_EXPORT V8CodeCache final {
                     size_t source_text_length,
                     ScriptSourceLocationType);
 
-  static v8::ScriptCompiler::CachedData* CreateCachedData(
+  static scoped_refptr<CachedMetadata> GetCachedMetadata(
+      const SingleCachedMetadataHandler* cache_handler,
+      SingleCachedMetadataHandler::GetCachedMetadataBehavior behavior =
+          SingleCachedMetadataHandler::kCrashIfUnchecked);
+  static std::unique_ptr<v8::ScriptCompiler::CachedData> CreateCachedData(
+      scoped_refptr<CachedMetadata>);
+  static std::unique_ptr<v8::ScriptCompiler::CachedData> CreateCachedData(
       const SingleCachedMetadataHandler*);
 
   static void ProduceCache(v8::Isolate*,
+                           CodeCacheHost*,
                            v8::Local<v8::Script>,
-                           const ScriptSourceCode&,
+                           SingleCachedMetadataHandler*,
+                           size_t source_text_length,
+                           const KURL& source_url,
+                           const WTF::TextPosition& source_start_position,
                            ProduceCacheOptions);
   static void ProduceCache(v8::Isolate*,
+                           CodeCacheHost*,
                            ModuleRecordProduceCacheData*,
                            size_t source_text_length,
                            const KURL& source_url,
@@ -80,7 +98,7 @@ class CORE_EXPORT V8CodeCache final {
   static scoped_refptr<CachedMetadata> GenerateFullCodeCache(
       ScriptState*,
       const String& script_string,
-      const String& file_name,
+      const KURL& source_url,
       const WTF::TextEncoding&,
       OpaqueMode);
 };

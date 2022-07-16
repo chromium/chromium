@@ -32,7 +32,7 @@ found in the LICENSE file.
             android:id="@+id/feed_management_menu_item_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
             android:layout_below="@id/feed_management_menu_item_text" />
 
     </RelativeLayout>

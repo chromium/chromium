@@ -57,18 +57,12 @@ void CastBrowserTest::PostRunTestOnMainThread() {
 }
 
 content::WebContents* CastBrowserTest::CreateWebView() {
-  CastWebView::CreateParams create_params;
-  create_params.delegate = weak_factory_.GetWeakPtr();
-  create_params.web_contents_delegate = weak_factory_.GetWeakPtr();
-  create_params.window_delegate = weak_factory_.GetWeakPtr();
-
   ::chromecast::mojom::CastWebViewParamsPtr params =
       ::chromecast::mojom::CastWebViewParams::New();
   // MOJO_RENDERER is CMA renderer on Chromecast
   params->renderer_type = ::chromecast::mojom::RendererType::MOJO_RENDERER;
   params->enabled_for_dev = true;
-  cast_web_view_ =
-      web_service_->CreateWebViewInternal(create_params, std::move(params));
+  cast_web_view_ = web_service_->CreateWebViewInternal(std::move(params));
 
   return cast_web_view_->web_contents();
 }
@@ -85,19 +79,6 @@ content::WebContents* CastBrowserTest::NavigateToURL(const GURL& url) {
   same_tab_observer.Wait();
 
   return web_contents;
-}
-
-void CastBrowserTest::OnWindowDestroyed() {}
-
-void CastBrowserTest::OnVisibilityChange(VisibilityType visibility_type) {}
-
-bool CastBrowserTest::CanHandleGesture(GestureType gesture_type) {
-  return false;
-}
-
-void CastBrowserTest::ConsumeGesture(GestureType gesture_type,
-                                     GestureHandledCallback handled_callback) {
-  std::move(handled_callback).Run(false);
 }
 
 }  // namespace shell

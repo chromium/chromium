@@ -15,6 +15,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace net_log {
+class NetExportFileWriter;
+}
+
 namespace weblayer {
 
 // Manages a system-wide network context that's not tied to a profile.
@@ -41,6 +45,10 @@ class SystemNetworkContextManager {
       network::mojom::NetworkContextParams* network_context_params,
       const std::string& user_agent);
 
+  SystemNetworkContextManager(const SystemNetworkContextManager&) = delete;
+  SystemNetworkContextManager& operator=(const SystemNetworkContextManager&) =
+      delete;
+
   ~SystemNetworkContextManager();
 
   // Returns the System NetworkContext. Does any initialization of the
@@ -59,6 +67,11 @@ class SystemNetworkContextManager {
   // network service crashes.
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory();
 
+  // Returns a shared global NetExportFileWriter instance, used by net-export.
+  // It lives here so it can outlive chrome://net-export/ if the tab is closed
+  // or destroyed, and so that it's destroyed before Mojo is shut down.
+  net_log::NetExportFileWriter* GetNetExportFileWriter();
+
  private:
   explicit SystemNetworkContextManager(const std::string& user_agent);
 
@@ -73,7 +86,8 @@ class SystemNetworkContextManager {
 
   mojo::Remote<network::mojom::NetworkContext> system_network_context_;
 
-  DISALLOW_COPY_AND_ASSIGN(SystemNetworkContextManager);
+  // Initialized on first access.
+  std::unique_ptr<net_log::NetExportFileWriter> net_export_file_writer_;
 };
 
 }  // namespace weblayer

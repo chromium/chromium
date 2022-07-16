@@ -151,7 +151,7 @@ void ImageCaptureImpl::TakePhoto(const std::string& source_id,
 ImageCaptureImpl::ImageCaptureImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<media::mojom::ImageCapture> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)) {}
+    : DocumentService(render_frame_host, std::move(receiver)) {}
 
 ImageCaptureImpl::~ImageCaptureImpl() = default;
 

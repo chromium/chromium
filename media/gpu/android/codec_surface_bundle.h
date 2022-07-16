@@ -12,6 +12,10 @@
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gl/android/scoped_java_surface.h"
 
+namespace gpu {
+class RefCountedLock;
+}  // namespace gpu
+
 namespace media {
 
 // CodecSurfaceBundle is a Java surface, and the TextureOwner or Overlay that
@@ -28,7 +32,11 @@ class MEDIA_GPU_EXPORT CodecSurfaceBundle
   // Create an empty bundle to be manually populated.
   CodecSurfaceBundle();
   explicit CodecSurfaceBundle(std::unique_ptr<AndroidOverlay> overlay);
-  explicit CodecSurfaceBundle(scoped_refptr<gpu::TextureOwner> texture_owner);
+  explicit CodecSurfaceBundle(scoped_refptr<gpu::TextureOwner> texture_owner,
+                              scoped_refptr<gpu::RefCountedLock> drdc_lock);
+
+  CodecSurfaceBundle(const CodecSurfaceBundle&) = delete;
+  CodecSurfaceBundle& operator=(const CodecSurfaceBundle&) = delete;
 
   const base::android::JavaRef<jobject>& GetJavaSurface() const;
 
@@ -63,8 +71,6 @@ class MEDIA_GPU_EXPORT CodecSurfaceBundle
   gfx::Rect layout_rect_;
 
   base::WeakPtrFactory<CodecSurfaceBundle> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CodecSurfaceBundle);
 };
 
 }  // namespace media

@@ -7,11 +7,7 @@ import("//ios/build/chrome_build.gni")
 
 buildflag_header("buildflags") {
   header = "showcase_model_buildflags.h"
-  flags = [
-    "SHOWCASE_CREDENTIAL_PROVIDER_ENABLED=ios_enable_credential_provider_extension",
-    "SHOWCASE_CONTENT_WIDGET_ENABLED=$ios_enable_content_widget_extension",
-    "SHOWCASE_SEARCH_WIDGET_ENABLED=$ios_enable_search_widget_extension",
-  ]
+  flags = [ "SHOWCASE_CREDENTIAL_PROVIDER_ENABLED=ios_enable_credential_provider_extension" ]
 }
 
 source_set("core") {
@@ -76,7 +72,6 @@ source_set("main") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",

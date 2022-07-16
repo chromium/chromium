@@ -62,7 +62,8 @@ void InstalledWebappGeolocationBridge::StartListeningForUpdates() {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (java_ref_.is_null()) {
     base::android::ScopedJavaLocalRef<jstring> j_origin =
-        base::android::ConvertUTF8ToJavaString(env, origin_.GetOrigin().spec());
+        base::android::ConvertUTF8ToJavaString(
+            env, origin_.DeprecatedGetOriginAsURL().spec());
     java_ref_.Reset(Java_InstalledWebappGeolocationBridge_create(
         env, reinterpret_cast<intptr_t>(this), j_origin));
   }

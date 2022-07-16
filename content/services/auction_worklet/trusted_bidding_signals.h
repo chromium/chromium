@@ -14,7 +14,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace auction_worklet {
 
@@ -45,9 +45,9 @@ class TrustedBiddingSignals {
     ~Result();
     Result& operator=(const Result&) = delete;
 
-    // Get the signals associated with the provided |keys|. `v8_helper`'s
+    // Get the signals associated with the provided `keys`. `v8_helper`'s
     // Isolate must be active (in particular, this must be on the v8 thread),
-    // and `context` must be the active context. |keys| must be a subset of
+    // and `context` must be the active context. `keys` must be a subset of
     // those provided when creating the TrustedBiddingSignals object. Always
     // returns a non-empty value (which may be an Object with no fields).
     v8::Local<v8::Object> GetSignals(
@@ -70,6 +70,8 @@ class TrustedBiddingSignals {
   // Fails if the URL already has a query param (or has a location or embedded
   // credentials) or if the response is not JSON. If some or all keys are
   // missing, still succeeds, and GetSignals() will populate them with nulls.
+  //
+  // There are no lifetime constraints of `url_loader_factory`.
   TrustedBiddingSignals(network::mojom::URLLoaderFactory* url_loader_factory,
                         std::vector<std::string> trusted_bidding_signals_keys,
                         const std::string& hostname,

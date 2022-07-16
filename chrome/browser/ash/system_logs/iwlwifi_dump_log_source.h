@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_LOGS_IWLWIFI_DUMP_LOG_SOURCE_H_
 #define CHROME_BROWSER_ASH_SYSTEM_LOGS_IWLWIFI_DUMP_LOG_SOURCE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "components/feedback/system_logs/system_logs_source.h"
@@ -25,13 +24,14 @@ constexpr char kIwlwifiDumpKey[] = "iwlwifi_dump";
 class IwlwifiDumpChecker : public SystemLogsSource {
  public:
   IwlwifiDumpChecker();
+
+  IwlwifiDumpChecker(const IwlwifiDumpChecker&) = delete;
+  IwlwifiDumpChecker& operator=(const IwlwifiDumpChecker&) = delete;
+
   ~IwlwifiDumpChecker() override;
 
   // system_logs::SystemLogsSource:
   void Fetch(SysLogsSourceCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IwlwifiDumpChecker);
 };
 
 // Fetches information from the /var/log/last_iwlwifi_dump file, if
@@ -39,13 +39,14 @@ class IwlwifiDumpChecker : public SystemLogsSource {
 class IwlwifiDumpLogSource : public SystemLogsSource {
  public:
   IwlwifiDumpLogSource();
+
+  IwlwifiDumpLogSource(const IwlwifiDumpLogSource&) = delete;
+  IwlwifiDumpLogSource& operator=(const IwlwifiDumpLogSource&) = delete;
+
   ~IwlwifiDumpLogSource() override;
 
   // system_logs::SystemLogsSource:
   void Fetch(SysLogsSourceCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IwlwifiDumpLogSource);
 };
 
 // Checks to see if |sys_logs| contains the iwlwifi logs key.

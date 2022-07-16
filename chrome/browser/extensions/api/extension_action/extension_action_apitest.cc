@@ -6,12 +6,12 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
 #include "chrome/browser/extensions/api/extension_action/test_icon_image_observer.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -46,11 +46,16 @@ namespace {
 // A background script that allows for setting the icon dynamically.
 constexpr char kSetIconBackgroundJsTemplate[] =
     R"(function setIcon(details) {
-           chrome.%s.setIcon(details, () => {
-             chrome.test.assertNoLastError();
-             chrome.test.notifyPass();
-           });
-         })";
+         chrome.%s.setIcon(details, () => {
+           chrome.test.assertNoLastError();
+           chrome.test.notifyPass();
+         });
+       }
+       function setIconPromise(details) {
+         chrome.%s.setIcon(details)
+           .then(chrome.test.notifyPass)
+           .catch(chrome.test.notifyFail);
+       })";
 
 constexpr char kPageHtmlTemplate[] =
     R"(<html><script src="page.js"></script></html>)";
@@ -74,6 +79,10 @@ class TestStateStoreObserver : public StateStore::TestObserver {
       : extension_id_(extension_id) {
     scoped_observation_.Observe(ExtensionSystem::Get(context)->state_store());
   }
+
+  TestStateStoreObserver(const TestStateStoreObserver&) = delete;
+  TestStateStoreObserver& operator=(const TestStateStoreObserver&) = delete;
+
   ~TestStateStoreObserver() override {}
 
   void WillSetExtensionValue(const std::string& extension_id,
@@ -93,8 +102,6 @@ class TestStateStoreObserver : public StateStore::TestObserver {
 
   base::ScopedObservation<StateStore, StateStore::TestObserver>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestStateStoreObserver);
 };
 
 // A helper class to handle setting or getting the values for an action from JS.
@@ -110,6 +117,10 @@ class ActionTestHelper {
         get_method_name_(get_method_name),
         js_property_key_(js_property_key),
         web_contents_(web_contents) {}
+
+  ActionTestHelper(const ActionTestHelper&) = delete;
+  ActionTestHelper& operator=(const ActionTestHelper&) = delete;
+
   ~ActionTestHelper() = default;
 
   // Checks the value for the given |tab_id|.
@@ -176,8 +187,6 @@ class ActionTestHelper {
   const char* const js_property_key_;
   // The WebContents to use to execute API calls.
   content::WebContents* const web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActionTestHelper);
 };
 
 // Forces a flush of the StateStore, where action state is persisted.
@@ -369,7 +378,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
 
   // Navigating should clear the title.
   GURL second_url = embedded_test_server()->GetURL("/title2.html");
-  ui_test_utils::NavigateToURL(browser(), second_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), second_url));
 
   EXPECT_EQ(second_url, web_contents->GetLastCommittedURL());
   EXPECT_FALSE(action->HasTitle(tab_id));
@@ -549,8 +558,16 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, PopupCreation) {
 
 // Tests that sessionStorage does not persist between closing and opening of a
 // popup.
+// TODO(crbug/1256760): Flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_SessionStorageDoesNotPersistBetweenOpenings \
+  DISABLED_SessionStorageDoesNotPersistBetweenOpenings
+#else
+#define MAYBE_SessionStorageDoesNotPersistBetweenOpenings \
+  SessionStorageDoesNotPersistBetweenOpenings
+#endif
 IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
-                       SessionStorageDoesNotPersistBetweenOpenings) {
+                       MAYBE_SessionStorageDoesNotPersistBetweenOpenings) {
   constexpr char kManifestTemplate[] =
       R"({
            "name": "Test sessionStorage",
@@ -741,6 +758,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DynamicSetIcon) {
   test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtmlTemplate);
   test_dir.WriteFile(FILE_PATH_LITERAL("page.js"),
                      base::StringPrintf(kSetIconBackgroundJsTemplate,
+                                        GetAPINameForActionType(GetParam()),
                                         GetAPINameForActionType(GetParam())));
   test_dir.CopyFileTo(test_data_dir_.AppendASCII("icon_rgb_0_0_255.png"),
                       FILE_PATH_LITERAL("blue_icon.png"));
@@ -834,6 +852,19 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DynamicSetIcon) {
   EXPECT_FALSE(new_tab_icon.IsEmpty());
   EXPECT_EQ(SK_ColorGREEN, new_tab_icon.AsBitmap().getColor(mid_x, mid_y));
 
+  // Manifest V3 extensions using the action API should also be able to use a
+  // promise version of setIcon.
+  if (GetManifestVersionForActionType(GetParam()) == 3) {
+    constexpr char kSetIconPromiseScript[] =
+        "setIconPromise({tabId: %d, path: 'blue_icon.png'});";
+    RunTestAndWaitForSuccess(
+        web_contents, base::StringPrintf(kSetIconPromiseScript, new_tab_id));
+
+    new_tab_icon = toolbar_helper->GetIcon(extension->id());
+    EXPECT_FALSE(new_tab_icon.IsEmpty());
+    EXPECT_EQ(SK_ColorBLUE, new_tab_icon.AsBitmap().getColor(mid_x, mid_y));
+  }
+
   // Switch back to the first tab. The icon should still be red, since the other
   // changes were for specific tabs.
   browser()->tab_strip_model()->ActivateTabAt(0);
@@ -864,6 +895,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetIconWithJavascriptHooks) {
   test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtmlTemplate);
   test_dir.WriteFile(FILE_PATH_LITERAL("page.js"),
                      base::StringPrintf(kSetIconBackgroundJsTemplate,
+                                        GetAPINameForActionType(GetParam()),
                                         GetAPINameForActionType(GetParam())));
   test_dir.CopyFileTo(test_data_dir_.AppendASCII("icon_rgb_0_0_255.png"),
                       FILE_PATH_LITERAL("blue_icon.png"));
@@ -934,6 +966,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetIconWithSelfDefined) {
   test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtmlTemplate);
   test_dir.WriteFile(FILE_PATH_LITERAL("page.js"),
                      base::StringPrintf(kSetIconBackgroundJsTemplate,
+                                        GetAPINameForActionType(GetParam()),
                                         GetAPINameForActionType(GetParam())));
   test_dir.CopyFileTo(test_data_dir_.AppendASCII("icon_rgb_0_0_255.png"),
                       FILE_PATH_LITERAL("blue_icon.png"));

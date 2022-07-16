@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/payment_app.mojom.h"
 #include "components/arc/pay/arc_payment_app_bridge.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/test_browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

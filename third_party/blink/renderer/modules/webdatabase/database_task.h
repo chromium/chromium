@@ -48,6 +48,9 @@ class DatabaseTask {
   USING_FAST_MALLOC(DatabaseTask);
 
  public:
+  DatabaseTask(const DatabaseTask&) = delete;
+  DatabaseTask& operator=(const DatabaseTask&) = delete;
+
   virtual ~DatabaseTask();
 
   void Run();
@@ -68,8 +71,6 @@ class DatabaseTask {
   virtual const char* DebugTaskName() const = 0;
   bool complete_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseTask);
 };
 
 class Database::DatabaseOpenTask final : public DatabaseTask {

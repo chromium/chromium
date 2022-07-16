@@ -6,7 +6,6 @@
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,9 +27,14 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "services/network/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/third_party/mozilla/url_parse.h"
 
+using testing::AllOf;
+using testing::Eq;
+using testing::Matcher;
+using testing::Property;
 using version_info::GetProductNameAndVersionForUserAgent;
 
 namespace autofill {
@@ -63,13 +67,17 @@ class WindowedPersonalDataManagerObserver : public PersonalDataManagerObserver {
 
 class WindowedNetworkObserver {
  public:
-  explicit WindowedNetworkObserver(const std::string& expected_upload_data)
+  explicit WindowedNetworkObserver(Matcher<std::string> expected_upload_data)
       : expected_upload_data_(expected_upload_data),
         message_loop_runner_(new content::MessageLoopRunner) {
     interceptor_ =
         std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
             &WindowedNetworkObserver::OnIntercept, base::Unretained(this)));
   }
+
+  WindowedNetworkObserver(const WindowedNetworkObserver&) = delete;
+  WindowedNetworkObserver& operator=(const WindowedNetworkObserver&) = delete;
+
   ~WindowedNetworkObserver() {}
 
   // Waits for a network request with the |expected_upload_data_|.
@@ -111,19 +119,17 @@ class WindowedNetworkObserver {
             ? GetLookupContent(resource_request.url.path())
             : network::GetUploadData(resource_request);
 
-    if (data == expected_upload_data_)
+    if (expected_upload_data_.Matches(data))
       message_loop_runner_->Quit();
 
     return false;
   }
 
  private:
-  const std::string expected_upload_data_;
+  Matcher<std::string> expected_upload_data_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 
   std::unique_ptr<content::URLLoaderInterceptor> interceptor_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowedNetworkObserver);
 };
 
 }  // namespace
@@ -138,7 +144,7 @@ class AutofillServerTest : public InProcessBrowserTest {
         // Enabled.
         {features::kAutofillAllowNonHttpActivation},
         // Disabled.
-        {features::kAutofillMetadataUploads});
+        {});
 
     // Note that features MUST be enabled/disabled before continuing with
     // SetUp(); otherwise, the feature state doesn't propagate to the test
@@ -155,6 +161,38 @@ class AutofillServerTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+MATCHER_P(EqualsUploadProto, expected_const, "") {
+  AutofillUploadRequest expected = expected_const;
+  AutofillUploadRequest request;
+  if (!request.ParseFromString(arg))
+    return false;
+
+  // Remove metadata because it is randomised and won't match.
+  EXPECT_EQ(request.upload().has_randomized_form_metadata(),
+            expected.upload().has_randomized_form_metadata());
+  request.mutable_upload()->clear_randomized_form_metadata();
+  expected.mutable_upload()->clear_randomized_form_metadata();
+  EXPECT_EQ(request.upload().field_size(), expected.upload().field_size());
+  if (request.upload().field_size() != expected.upload().field_size())
+    return false;
+  for (int i = 0; i < request.upload().field_size(); i++) {
+    request.mutable_upload()
+        ->mutable_field(i)
+        ->clear_randomized_field_metadata();
+    expected.mutable_upload()
+        ->mutable_field(i)
+        ->clear_randomized_field_metadata();
+  }
+
+  // TODO(crbug.com/1251119): The language is sometimes missing from the upload,
+  // making the test flaky. Add the language back to the comparison when the
+  // root cause is fixed.
+  request.mutable_upload()->clear_language();
+  expected.mutable_upload()->clear_language();
+
+  return request.SerializeAsString() == expected.SerializeAsString();
+}
 
 // Regression test for http://crbug.com/177419
 IN_PROC_BROWSER_TEST_F(AutofillServerTest,
@@ -198,8 +236,8 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
 
   WindowedNetworkObserver query_network_observer(expected_query_string);
 
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL(std::string(kDataURIPrefix) + kFormHtml));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(std::string(kDataURIPrefix) + kFormHtml)));
   query_network_observer.Wait();
 
   // Submit the form, using a simulated mouse click because form submissions not
@@ -250,6 +288,10 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   upload->set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_HTML_FORM_SUBMISSION);
   upload->set_has_form_tag(true);
+  // We don't set metadata, because the matcher will skip them.
+  upload->set_language("und");
+  *upload->mutable_randomized_form_metadata() =
+      autofill::AutofillRandomizedFormMetadata();
 
   // Enabling raw form data uploading (e.g., field name) is too complicated in
   // this test. So, don't expect it in the upload.
@@ -262,10 +304,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   test::FillUploadField(upload->add_field(), 1236501728U, nullptr, nullptr,
                         nullptr, 2U);
 
-  std::string expected_upload_string;
-  ASSERT_TRUE(request.SerializeToString(&expected_upload_string));
-
-  WindowedNetworkObserver upload_network_observer(expected_upload_string);
+  WindowedNetworkObserver upload_network_observer(EqualsUploadProto(request));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::SimulateMouseClick(web_contents, 0,
@@ -299,8 +338,8 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest, AlwaysQueryForPasswordFields) {
   ASSERT_TRUE(query.SerializeToString(&expected_query_string));
 
   WindowedNetworkObserver query_network_observer(expected_query_string);
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL(std::string(kDataURIPrefix) + kFormHtml));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(std::string(kDataURIPrefix) + kFormHtml)));
   query_network_observer.Wait();
 }
 

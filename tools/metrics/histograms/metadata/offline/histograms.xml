@@ -1,0 +1,1278 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Offline histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Offline.Measurements.HttpProbeResult"
+    enum="OfflineMeasurementsHttpProbeResult" expires_after="2022-04-17">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The result of the HTTP probe of the offline measurements experiment.
+
+    Each time the Offline Measurements background task runs, one value is stored
+    to prefs. At a later time, when Chrome is starting up, all stored results
+    from past unreported HTTP probes are recorded to the histogram. The stored
+    values are then cleared so they are only recorded once each.
+  </summary>
+</histogram>
+
+<histogram name="Offline.Measurements.IsAirplaneModeEnabled"
+    enum="BooleanEnabled" expires_after="2022-04-17">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Whether or not airplane mode was enabled when the Offline Measurements
+    background task was run.
+
+    Each time the Offline Measurements background task runs, the airplane mode
+    status is queried, and then that value is stored to prefs. At a later time,
+    when Chrome is starting up, all stored values are recorded to this
+    histogram. The stored values are then cleared so they are only recorded once
+    each.
+  </summary>
+</histogram>
+
+<histogram name="Offline.Measurements.IsRoaming" enum="Boolean"
+    expires_after="2022-04-17">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Whether or not the system was roaming when the Offline Measurements
+    background task was run. If there are multiple networks, then if any network
+    is not roaming, we record a value of &quot;not roaming&quot; (false).
+
+    Each time the Offline Measurements background task runs, it queries all
+    networks if they are marked roaming, and then that value is stored to prefs.
+    At a later time, when Chrome is starting up, all stored values are recorded
+    to this histogram. The stored values are then cleared so they are only
+    recorded once each.
+  </summary>
+</histogram>
+
+<histogram name="Offline.Measurements.MeasurementInterval" units="minutes"
+    expires_after="2022-04-17">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The specified interval (in minutes) which the offline measurements
+    experiment will periodically run. This value is logged when Chrome starts up
+    for users where this feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Offline.Measurements.TimeBetweenChecks" units="minutes"
+    expires_after="2022-04-17">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The time (in minutes) between the last check and current check for the
+    offline measurements experiment. This value is logged each time the offline
+    measurements background task runs.
+  </summary>
+</histogram>
+
+<histogram name="Offline.Measurements.UserState"
+    enum="OfflineMeasurementsUserState" expires_after="2022-04-17">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The state of the phone and how the user is interacting with it when the
+    Offline Measurements background task runs.
+
+    Each time the background task runs, it determines the user state, and then
+    that value is stored to prefs. At a later time, when Chrome is starting up,
+    all stored values are recorded to this histogram. The stored values are then
+    cleared so they are only recorded once each.
+  </summary>
+</histogram>
+
+<histogram name="OfflineIndicator.ConnectivityChanged.DeviceState.Offline"
+    enum="OfflineIndicatorSurfaceState" expires_after="2022-01-16">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <owner>sinansahin@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    For OfflineIndicatorV2, records whether the native browser controls can be
+    animated and whether the omnibox is focused. Recorded when the device goes
+    offline.
+  </summary>
+</histogram>
+
+<histogram name="OfflineIndicator.ConnectivityChanged.DeviceState.Online"
+    enum="OfflineIndicatorSurfaceState" expires_after="2021-05-09">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <owner>sinansahin@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    For OfflineIndicatorV2, records whether the native browser controls can be
+    animated and whether the omnibox is focused. Recorded when the device goes
+    online.
+  </summary>
+</histogram>
+
+<histogram name="OfflineIndicator.CTR" enum="OfflineIndicatorCTREvent"
+    expires_after="2021-01-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>jianli@chromium.org</owner>
+  <summary>
+    Records events related to click through rate (CTR) calculation for Offline
+    Indicator UI. The CTR can be calculated by computing Clicked/Displayed.
+  </summary>
+</histogram>
+
+<histogram name="OfflineIndicator.ShownDuration" units="ms"
+    expires_after="2021-07-11">
+  <obsolete>
+    Removed M90. Replaced by OfflineIndicator.ShownDurationV2.
+  </obsolete>
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <owner>sinansahin@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    The duration the offline indicator was shown. Recorded when the offline
+    indicator hides.
+  </summary>
+</histogram>
+
+<histogram name="OfflineIndicator.ShownDurationV2" units="ms"
+    expires_after="2022-04-17">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The duration the offline indicator was shown. Recorded when the offline
+    indicator stops being shown. There are two differences between this
+    histogram and OfflineIndicator.ShownDuration: 1) the maximum bucket size and
+    total number of buckets are higher in this histogram, and 2) this histogram
+    is persisted in perfs. The second point means that if the user backgrounds
+    then kills Chrome when the Offline Indicator was shown, then we will still
+    record a sample. Note that in this case, when the user opens Chrome again
+    and if the Offline Indicator is shown, then it will be treated as a
+    continuation from before Chrome was killed.
+  </summary>
+</histogram>
+
+<histogram name="OfflineIndicator.ShownDurationV2.InBackground" units="ms"
+    expires_after="2021-12-05">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The duration the offline indicator was shown and Chrome was in the
+    background. Samples are only recorded to this histogram if Chrome was in the
+    background at some point while the offline indicator was shown. This is
+    recorded when the offline indicator stops being shown. The data for this
+    histogram is persisted in perfs, so if Chrome is killed, then we will still
+    record a sample. Note that in this case, when the user opens Chrome again
+    and the offline indicator is shown, then it will be treated as a
+    continuation from before Chrome was killed.
+  </summary>
+</histogram>
+
+<histogram name="OfflineIndicator.ShownDurationV2.InForeground" units="ms"
+    expires_after="2021-12-05">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The duration the offline indicator was shown and Chrome was in the
+    foreground. This is recorded every time the offline indicator stops being
+    shown. The data for this histogram is persisted in perfs, so if Chrome is
+    killed, then we will still record a sample. Note that in this case, when the
+    user opens Chrome again and the offline indicator is shown, then it will be
+    treated as a continuation from before Chrome was killed.
+  </summary>
+</histogram>
+
+<histogram
+    name="OfflineIndicator.ShownDurationV2.InForegroundWithoutBeingBackgrounded"
+    units="ms" expires_after="2022-05-01">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The duration the offline indicator was shown and Chrome was in the
+    foreground. Samples are only recorded to this histogram if Chrome was never
+    in the background while the offline indicator was shown. This is recoreded
+    when the offline indicator stops being shown. The data for this histogram is
+    persisted in perfs, so if Chrome is killed, then we will still record a
+    sample. Note that in this case, when the user opens Chrome again and the
+    offline indicator is shown, then it will be treated as a continuation from
+    before Chrome was killed.
+  </summary>
+</histogram>
+
+<histogram name="OfflineIndicator.ShownDurationV2.NumTimesBackgrounded"
+    units="times backgrounded" expires_after="2022-05-01">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The number of times Chrome was backgrounded while the offline indicator was
+    shown. This is recorded every time the offline indicator stops being shown.
+    The data for this histogram is persisted in perfs, so if Chrome is killed,
+    then we will still record a sample. Note that in this case, when the user
+    opens Chrome again and the offline indicator is shown, then it will be
+    treated as a continuation from before Chrome was killed.
+  </summary>
+</histogram>
+
+<histogram name="OfflineIndicator.ShownDurationV2.UntilFirstTimeBackgrounded"
+    units="ms" expires_after="2021-12-05">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The duration the offline indicator was first shown and in the foreground
+    until Chrome was backgrounded. Samples are only recorded to this histogram
+    if Chrome was in the background at some point while the offline indicator
+    was shown. This is recoreded when the offline indicator stops being shown.
+    The data for this histogram is persisted in perfs, so if Chrome is killed,
+    then we will still record a sample. Note that in this case, when the user
+    opens Chrome again and the offline indicator is shown, then it will be
+    treated as a continuation from before Chrome was killed.
+  </summary>
+</histogram>
+
+<histogram base="true" name="OfflinePages.AccessCount" units="units"
+    expires_after="M85">
+  <owner>jianli@chromium.org</owner>
+  <summary>
+    Number of accesses to the offline page since its creation. This is reported
+    when the offline page was deleted.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.AccessEntryPoint"
+    enum="OfflinePagesAccessEntryPoint" expires_after="2021-08-29">
+  <owner>jianli@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Logs the UI location from which an offline page was launched.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.AccessPageCount"
+    enum="OfflinePagesNamespaceEnumeration" expires_after="2022-04-24">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Counts the number of times an offline page is accessed. Events are reported
+    per offline pages namespace.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.AggregatedRequestResult2"
+    enum="OfflinePagesAggregatedRequestResult" expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>jianli@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>Result of servicing requests that may contain offline page.</summary>
+</histogram>
+
+<histogram name="OfflinePages.ArchiveManager.ArchiveDirsCreationResult2"
+    enum="PlatformFileError" expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    This is recorded every time the archive directory is being created. It
+    doesn't include the case which the archive directory exists. It has suffixes
+    indicating results for temporary or persistent archives directories.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.AutoFetch.CompleteNotificationAction"
+    enum="OfflinePagesAutoFetchNotificationAction" expires_after="2021-10-04">
+  <owner>sclittle@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    This is recorded every time the auto-fetch complete notification is shown or
+    interacted with.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.AutoFetch.InProgressNotificationAction"
+    enum="OfflinePagesAutoFetchNotificationAction" expires_after="2021-10-04">
+  <owner>sclittle@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    This is recorded every time the auto-fetch in-progress notification is shown
+    or interacted with.
+  </summary>
+</histogram>
+
+<histogram
+    name="OfflinePages.Background.EffectiveConnectionType.OffliningStartType"
+    enum="NQEEffectiveConnectionType" expires_after="2021-06-25">
+  <owner>petewil@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Effective connection type at the start of an offlining attempt for an
+    attempt that eventually failed.
+
+    This metric is recorded for RequestCoordinator::SavePageLater API calls.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.EffectiveConnectionType.PauseRequests"
+    enum="NQEEffectiveConnectionType" expires_after="2021-06-25">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Effective connection type when pausing one or more background loads is
+    requested.
+
+    This metric is recorded for RequestCoordinator::PauseRequests API calls.
+  </summary>
+</histogram>
+
+<histogram
+    name="OfflinePages.Background.EffectiveConnectionType.RemoveRequests"
+    enum="NQEEffectiveConnectionType" expires_after="2021-06-25">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Effective connection type when removing one or more background loads is
+    requested.
+
+    This metric is recorded for RequestCoordinator::RemoveRequests API calls.
+  </summary>
+</histogram>
+
+<histogram
+    name="OfflinePages.Background.EffectiveConnectionType.ResumeRequests"
+    enum="NQEEffectiveConnectionType" expires_after="2021-06-25">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Effective connection type when resuming one or more background loads is
+    requested.
+
+    This metric is recorded for RequestCoordinator::ResumeRequests API calls.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.EffectiveConnectionType.SavePageLater"
+    enum="NQEEffectiveConnectionType" expires_after="2021-03-01">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Effective connection type when a background load is requested.
+
+    This metric is recorded for RequestCoordinator::SavePageLater API calls.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.FinalSavePageResult"
+    enum="OfflinePagesBackgroundSavePageResult" expires_after="2021-06-25">
+  <owner>chili@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Status code of background offlining requests at the final step.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.ImmediateStart.AvailableRequestCount"
+    units="units" expires_after="2021-06-25">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of queued background load requests available for processing when
+    processing starts immediately (vs. scheduled). This is for non-svelte
+    devices (where svelte is determined by base::SysInfo::IsLowEnd()).
+  </summary>
+</histogram>
+
+<histogram
+    name="OfflinePages.Background.ImmediateStart.AvailableRequestCount.Svelte"
+    units="units" expires_after="2021-06-25">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of queued background load requests available for processing when
+    processing starts immediately (vs. scheduled). This is for svelte devices
+    (where svelte is determined by base::SysInfo::IsLowEnd()).
+  </summary>
+</histogram>
+
+<histogram
+    name="OfflinePages.Background.ImmediateStart.UnavailableRequestCount"
+    units="units" expires_after="2021-06-25">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of queued background load requests unavailable for processing when
+    processing starts immediately (vs. scheduled). This is for non-svelte
+    devices (where svelte is determined by base::SysInfo::IsLowEnd()).
+  </summary>
+</histogram>
+
+<histogram
+    name="OfflinePages.Background.ImmediateStart.UnavailableRequestCount.Svelte"
+    units="units" expires_after="2021-06-25">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of queued background load requests unavailable for processing when
+    processing starts immediately (vs. scheduled). This is for svelte devices
+    (where svelte is determined by base::SysInfo::IsLowEnd()).
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.ImmediateStartStatus"
+    enum="OfflinePagesBackgroundImmediateStartStatus"
+    expires_after="2021-06-25">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Status of attempt to immediately start offlining a page in the background
+    while application is still concurrently using the foreground. This may be
+    attempted when an web page download is initially requested or resumed.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.LoadingErrorStatusCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-06-25">
+  <owner>chili@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    The combined http and net error codes that caused a page load failure.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.OfflinerRequestStatus"
+    enum="OfflinePagesBackgroundOfflinerRequestStatus"
+    expires_after="2021-03-01">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Status code of background offlining (loading and saving) requests.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.OffliningPreviewStatus"
+    enum="BooleanEnabled" expires_after="2021-01-25">
+  <obsolete>
+    Removed 22 Jan 2021.
+  </obsolete>
+  <owner>petewil@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Whether any previews were selected for a page we were asked to make
+    available offline.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.RequestFailure.StartedAttemptCount"
+    units="units" expires_after="2021-06-25">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of started attempts by failed background load requests.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.RequestSuccess.StartedAttemptCount"
+    units="units" expires_after="2021-06-25">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of started attempts by successful background load requests.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.SavePageFromCCT" units="units"
+    expires_after="2021-06-25">
+  <owner>chili@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>Whether the save page result came from chrome custom tabs.</summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.ScheduledStart.AvailableRequestCount"
+    units="units" expires_after="2021-06-25">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of queued background load requests available for processing when
+    background scheduled processing starts. This is for non-svelte devices
+    (where svelte is determined by base::SysInfo::IsLowEnd()).
+  </summary>
+</histogram>
+
+<histogram
+    name="OfflinePages.Background.ScheduledStart.AvailableRequestCount.Svelte"
+    units="units" expires_after="2021-06-25">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of queued background load requests available for processing when
+    background scheduled processing starts. This is for svelte devices (where
+    svelte is determined by base::SysInfo::IsLowEnd()).
+  </summary>
+</histogram>
+
+<histogram
+    name="OfflinePages.Background.ScheduledStart.UnavailableRequestCount"
+    units="units" expires_after="2021-06-25">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of queued background load requests unavailable for processing when
+    background scheduled processing starts. This is for non-svelte devices
+    (where svelte is determined by base::SysInfo::IsLowEnd()).
+  </summary>
+</histogram>
+
+<histogram
+    name="OfflinePages.Background.ScheduledStart.UnavailableRequestCount.Svelte"
+    units="units" expires_after="2021-06-25">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of queued background load requests unavailable for processing when
+    background scheduled processing starts. This is for svelte devices (where
+    svelte is determined by base::SysInfo::IsLowEnd()).
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.TimeToCanceled" units="seconds"
+    expires_after="2021-03-01">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>Time from background request until it was canceled.</summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.TimeToSaved" units="seconds"
+    expires_after="2021-03-01">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Time from background request until it was successfully saved.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.TimeToStart" units="ms"
+    expires_after="2021-03-01">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Time from background request until processing it was first started. This is
+    for non-svelte devices.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Background.TimeToStart.Svelte" units="ms"
+    expires_after="2021-03-01">
+  <owner>dougarnett@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Time from background request until processing it was first started on svelte
+    device. Svelte is determined by base::SysInfo::IsLowEnd().
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.CleanupThumbnails.Count" units="thumbnails"
+    expires_after="2021-06-25">
+  <owner>harringtond@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>Number of thumbnails removed by the thumbnail cleanup task.</summary>
+</histogram>
+
+<histogram name="OfflinePages.ClearStoragePreRunUsage2" units="KiB"
+    expires_after="2021-06-25">
+  <owner>carlosk@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    The total disk storage size used by all offline pages from a specific client
+    namespace.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.ClearTemporaryPages.BatchSize" units="pages"
+    expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of pages deleted in a batch in one clear storage task.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.ClearTemporaryPages.Result"
+    enum="OfflinePagesClearStorageResult" expires_after="2021-06-25">
+  <owner>romax@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Result of clearing temporary pages to release storage space.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.ClearTemporaryPages.TimeSinceCreation"
+    units="minutes" expires_after="2021-06-25">
+  <owner>carlosk@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    When a temporary page is deleted due to storage pressure, reports the time
+    since its creation. This metric should be useful to track the occurrence of
+    &quot;content thrashing&quot;, when automatically created temporary pages
+    are forcing the deletion of recently saved temporary pages.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.ConsistencyCheck.Legacy.DeletedHeadlessFileCount"
+    units="files" expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of files which are deleted during legacy dir clearing since they have
+    no associated DB entry and live in private directory.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.ConsistencyCheck.Persistent.ExpiredEntryCount"
+    units="entries" expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of DB entries (in persistent namespaces) that have been missing their
+    files for longer than 365 days, and deleted during maintenance task.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.ConsistencyCheck.Persistent.MissingFileCount"
+    units="files" expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of files that are found missing during maintenance task, which is
+    also the number of DB entries that are updated with valid file missing time.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.ConsistencyCheck.Persistent.ReappearedFileCount"
+    units="files" expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of files that were marked as missing reappeared in the file system,
+    which is also the number of DB entries that removes file missing time.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.ConsistencyCheck.Persistent.Result"
+    enum="OfflinePagesSyncOperationResult" expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>Result of persistent page consistency check.</summary>
+</histogram>
+
+<histogram
+    name="OfflinePages.ConsistencyCheck.Temporary.PagesMissingArchiveFileCount"
+    units="pages" expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of temporary offline pages without archive file when checking
+    consistency. It will only be reported if the number is larger than 0.
+  </summary>
+</histogram>
+
+<histogram
+    name="OfflinePages.ConsistencyCheck.Temporary.PagesMissingDbEntryCount"
+    units="pages" expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of archives without database entry when checking temporary page
+    consistency. It will only be reported if the number is larger than 0.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.ConsistencyCheck.Temporary.Result"
+    enum="OfflinePagesSyncOperationResult" expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>Result of temporary page consistency check.</summary>
+</histogram>
+
+<histogram name="OfflinePages.DeletePageCount"
+    enum="OfflinePagesNamespaceEnumeration" expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Counts the number of times an offline page is deleted. Events are reported
+    per offline pages namespace.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.DeletePageResult"
+    enum="OfflinePagesDeletePageResult" expires_after="2021-06-25">
+  <owner>jianli@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>Result of removing an offline copy for a page.</summary>
+</histogram>
+
+<histogram name="OfflinePages.DidNavigationThrottleCancelNavigation"
+    enum="Boolean" expires_after="2022-04-17">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Whether or not the OfflinePageNavigationThrottle canceled a navigation
+    request. Requests are only canceled if and only if the navigation request
+    was initiated by the renderer and the request headers contain the
+    &quot;X-Chrome-offline&quot; header.
+
+    This histogram is recorded each time Chrome tries to create an
+    OfflinePageNavigationThrottle, which only happens on Android (since Offline
+    Pages is only enabled there).
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.DownloadRequestTimeSinceDuplicateRequested"
+    units="seconds" expires_after="2021-11-07">
+  <owner>dewittj@chromium.org</owner>
+  <owner>fgorski@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    If at request time there is another request with the same URL, this tracks
+    this amount of time between creation of the most recent request and the
+    current request.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.DownloadRequestTimeSinceDuplicateSaved"
+    units="seconds" expires_after="2021-06-25">
+  <owner>dewittj@chromium.org</owner>
+  <owner>fgorski@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    If at request time there is another downloaded page with the same URL, this
+    tracks this amount of time between creation of the most recent existing page
+    and the current request.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.DownloadUI.PrefetchedItemHasThumbnail"
+    enum="BooleanAvailable" expires_after="2021-06-25">
+  <owner>harringtond@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Whether or not a thumbnail was provided for a prefetched offline article.
+    Recorded when the item is shown in Downloads Home.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.LastN.IsSavingSamePage"
+    enum="OfflinePagesLastNIsSavingSamePageEnum" expires_after="2021-05-31">
+  <owner>sclittle@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Upon starting saving a new last_n offline page snapshot, report if that is
+    being done for a page that is new (a navigation happened) or for one that
+    has been previously saved in the same session (no navigation happened). This
+    metric will assist in determining if there is the need to better track
+    actual content changes in pages saved more than once by last_n.
+  </summary>
+</histogram>
+
+<histogram base="true" name="OfflinePages.MhtmlLoadResult"
+    enum="MhtmlLoadResult" expires_after="2021-05-31">
+  <owner>sclittle@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Result of an attempt to load an MHTML archive to display a trusted offline
+    page, recorded per offline namespace by OfflinePageTabHelper after renderer
+    attempts to load the archive.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.MhtmlLoadResultUntrusted" enum="MhtmlLoadResult"
+    expires_after="2021-05-31">
+  <owner>sclittle@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Result of an attempt to load an MHTML archive to display an untrusted
+    offline page, recorded by OfflinePageTabHelper after the renderer attempts
+    to load the archive.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.OfflineUsage" enum="OfflinePagesOfflineUsage"
+    expires_after="2022-05-08">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Counts user-days when Chrome was used in specific ways regarding navigation
+    to online and offline content. Buckets are mutually exclusive so that only
+    one bucket is incremented per reported day. This metric is not recorded to
+    UMA immediately due to potential data loss while offline. So day counters
+    are persisted to prefs and reported to the histogram only when the next UMA
+    data upload is likely to succeed. For more details see:
+    https://goo.gl/GJXwFe.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.OfflineUsage.NotOfflineResilient"
+    enum="OfflinePagesOfflineUsage" expires_after="2022-04-17">
+  <owner>sclittle@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Counts user-days when Chrome was used in specific ways regarding navigation
+    to online and offline content. Buckets are mutually exclusive so that only
+    one bucket is incremented per reported day.
+
+    This metric is a mirror of OfflinePages.OfflineUsage but it doesn't use any
+    of the offline resilient mechanisms that one has. Ideally both should report
+    exactly the same values but it is expected this one will lose more samples.
+  </summary>
+</histogram>
+
+<histogram base="true" name="OfflinePages.PageAccessInterval" units="minutes"
+    expires_after="2021-08-29">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Length of time between accesses to an offline page. This is the same time
+    period used for expiring temporary pages. This metric is recorded when an
+    offline page is accessed.
+  </summary>
+</histogram>
+
+<histogram base="true" name="OfflinePages.PageLifetime" units="minutes"
+    expires_after="2021-06-25">
+  <owner>jianli@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Length of time between when an offline page was created and was removed.
+  </summary>
+</histogram>
+
+<histogram base="true" name="OfflinePages.PageSize" units="KB"
+    expires_after="2021-06-25">
+  <owner>jianli@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>Size of the saved copy of an offline page.</summary>
+</histogram>
+
+<histogram name="OfflinePages.PageSizeOnAccess.Offline" units="KiB"
+    expires_after="2021-06-25">
+  <owner>carlosk@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Records the archive size of an offline page loaded during a navigation that
+    took place while the device was considered to be offline or with poor
+    connectivity.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.PageSizeOnAccess.Online" units="KiB"
+    expires_after="2021-06-25">
+  <owner>carlosk@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Records the archive size of an offline page loaded during a navigation that
+    took place while the device was considered to be online.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.PrefetchEnabled" enum="BooleanEnabled"
+    expires_after="2021-10-31">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Counts user-days when candidate articles were suggested to the Offline
+    Prefetch pipeline while it was enabled. This metric is not recorded to UMA
+    immediately due to potential data loss while offline. So day counters are
+    persisted to prefs and reported to the histogram only when the next UMA data
+    upload is likely to succeed. For more details see: https://goo.gl/GJXwFe.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Prefetching.ActionAttempts" units="attempts"
+    expires_after="2021-06-25">
+  <owner>dewittj@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Number of attempts to perform a specific retriable pipeline action for each
+    finished prefetch item.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Prefetching.DownloadedFileSize" units="KiB"
+    expires_after="2021-06-25">
+  <owner>carlosk@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Actual size of archive file successfully downloaded by offline page
+    prefetching.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Prefetching.DownloadExpectedFileSize" units="KiB"
+    expires_after="2021-06-25">
+  <owner>carlosk@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Expected download size of archive file, after gzip content encoding, that
+    started being downloaded by offline page prefetching. Sizes reported in this
+    metric are less than the sizes reported in DownloadedFileSize due to content
+    gzip encoding.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Prefetching.DownloadFinishedUpdate"
+    enum="OfflinePrefetchDownloadFinishedOutcome" expires_after="2021-06-25">
+  <owner>carlosk@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Reports the possible outcomes of an archive download finishing and its
+    respective prefetch item being updated in the store. Downloads are expected
+    to succeed or fail but a respective item should always exist and be updated.
+    The &quot;item not found&quot; cases are exceptions.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Prefetching.FinishedItemErrorCode"
+    enum="OfflinePrefetchItemErrorCode" expires_after="2022-05-08">
+  <owner>carlosk@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Error code representing the reason why each offline prefetch item was
+    finalized.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Prefetching.ItemLifetime" units="seconds"
+    expires_after="2021-06-25">
+  <owner>carlosk@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    The lifetime of an offline prefetch item, from creation until
+    &quot;zombie-fication&quot; (after metrics collection).
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Prefetching.NotificationAction"
+    enum="OfflinePagePrefetchNotificationAction" expires_after="2021-08-29">
+  <owner>dewittj@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Actions taken with respect to the offline prefetch notification, includes
+    show attempts to calculate CTR.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Prefetching.OfflinePageImportResult"
+    enum="OfflinePrefetchPageImportResult" expires_after="2021-06-25">
+  <owner>carlosk@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Final result of an attempt to import a prefetched article into the Offline
+    Pages system.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Prefetching.ServiceGetOperationStatus"
+    enum="OfflinePrefetchRequestStatus" expires_after="2021-06-25">
+  <owner>petewil@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Status returned by a request to the Offline Page Service's GetOperation
+    method.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Prefetching.ServiceGetPageBundleStatus"
+    enum="OfflinePrefetchRequestStatus" expires_after="2021-06-25">
+  <owner>petewil@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Status returned by a request to the Offline Page Service's GetPageBundle
+    method.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Prefetching.StateCounts"
+    enum="OfflinePrefetchItemState" expires_after="2021-06-25">
+  <owner>petewil@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    A prefetch item was seen in this state when starting the background task.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Prefetching.StuckItemState"
+    enum="OfflinePrefetchItemState" expires_after="2021-06-25">
+  <owner>petewil@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    A prefetch item was found in this state after more than 7 days since its
+    creation, time enough for it to have been finalized by the pipeline.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.Prefetching.UniqueUrlsAddedCount" units="urls"
+    expires_after="2021-08-29">
+  <owner>dewittj@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    When receiving suggestions in the prefetch pipeline, emits the number of new
+    suggestions added to the database. If there is an error, nothing is emitted.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.PrefetchStore.StoreEvent"
+    enum="OfflinePagesStoreEvent" expires_after="2021-05-31">
+  <owner>sclittle@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Counts when the offline pages prefetch store is opened or closed.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.PrefetchUsage" enum="OfflinePagesPrefetchUsage"
+    expires_after="2022-05-01">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Counts user-days categorized by how Offline Prefetch performed and had its
+    content accessed by the user. Buckets are mutually exclusive so that only
+    one bucket is incremented per reported day. This metric is not recorded to
+    UMA immediately due to potential data loss while offline. So day counters
+    are persisted to prefs and reported to the histogram only when the next UMA
+    data upload is likely to succeed. For more details see:
+    https://goo.gl/GJXwFe.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.PublishArchive.PublishSource"
+    enum="OfflinePagesPublishSource" expires_after="M85">
+  <owner>petewil@chromium.org</owner>
+  <summary>
+    When publishing an offline page, a page might not be found. This returns the
+    publishing path that was used (ex: by Guid or by OfflineId).
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.SavedPageCountUponQuery" units="pages"
+    expires_after="2021-05-31">
+  <owner>sclittle@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Total number of saved offline pages recorded when they are all queried from
+    the store. This value is more meaningful when filtered by unique users as
+    that eliminates multiple reports from the same Chrome instance.
+  </summary>
+</histogram>
+
+<histogram base="true" name="OfflinePages.SavePage.AddPageTime" units="ms"
+    expires_after="2021-05-31">
+  <owner>sclittle@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Time taken to successfully create the store metadata entry for an offline
+    page archive during the process of saving an offline page.
+  </summary>
+</histogram>
+
+<histogram base="true" name="OfflinePages.SavePage.ComputeDigestTime"
+    units="ms" expires_after="2021-05-31">
+  <owner>sclittle@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Time taken to successfully compute the digest of an offline page archive
+    during the process of saving an offline page.
+  </summary>
+</histogram>
+
+<histogram base="true" name="OfflinePages.SavePage.CreateArchiveTime"
+    units="ms" expires_after="2021-05-31">
+  <owner>sclittle@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Time taken to successfully create an offline page archive during the process
+    of saving an offline page.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.SavePage.PercentLoaded" units="%"
+    expires_after="M77">
+  <owner>twellington@chromium.org</owner>
+  <owner>ianwen@chromium.org</owner>
+  <summary>
+    The percentage of the page load completed when the button to save an offline
+    page is pressed.
+  </summary>
+</histogram>
+
+<histogram base="true" name="OfflinePages.SavePage.PublishArchiveTime"
+    units="ms" expires_after="2021-05-31">
+  <owner>sclittle@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Time taken to successfully move an offline page archive to the public
+    downloads folder during the process of saving an offline page.
+  </summary>
+</histogram>
+
+<histogram base="true" name="OfflinePages.SavePageResult2"
+    enum="OfflinePagesSavePageResult" expires_after="M85">
+  <owner>jianli@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>Result of saving an offline copy for a page.</summary>
+</histogram>
+
+<histogram base="true" name="OfflinePages.SavePageTime" units="ms"
+    expires_after="2021-06-25">
+  <owner>jianli@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    The amount of time taken to save an offline copy for a page.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.SharedPageWasOffline"
+    enum="OfflinePagesSharedPageWasOffline" expires_after="2021-06-25">
+  <owner>dewittj@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>Whether a shared page was an offline page or not.</summary>
+</histogram>
+
+<histogram name="OfflinePages.Sharing.PublishInternalPageResult"
+    enum="OfflinePagesSavePageResult" expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Result of publishing internal page while sharing. CANCELLED means the page
+    to publish isn't found. ALREADY_EXISTS means the page have already been
+    published before.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.SQLStorage.StoreEvent"
+    enum="OfflinePagesStoreEvent" expires_after="2021-06-25">
+  <owner>sclittle@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Used as a counter to track different events related to offline page store
+    inner working.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.StorageInfo.ExternalArchiveSizeMiB" units="MiB"
+    expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    The storage space used by the archive files of offline pages, including all
+    files in public directory with mhtml/mht extensions. Collected after every
+    time an offline page is saved successfully.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.StorageInfo.ExternalFreeSpaceMiB" units="MiB"
+    expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    The amount of free space on the external drive (which contains the public
+    download directory). Collected after every time an offline page is saved
+    successfully.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.StorageInfo.ExternalUsagePercentage" units="%"
+    expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    The percentage of storage space on the external volume (that contains public
+    download directory) used by offline pages archives.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.StorageInfo.InternalArchiveSizeMiB" units="MiB"
+    expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    The storage space used by the archive files of offline pages, including the
+    files in temporary and private directory. Collected after every time an
+    offline page is saved successfully.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.StorageInfo.InternalFreeSpaceMiB" units="MiB"
+    expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    The amount of free space on the internal drive (which contains the app
+    directory). Collected after every time an offline page is saved
+    successfully.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.StorageInfo.InternalUsagePercentage" units="%"
+    expires_after="2021-06-25">
+  <owner>dimich@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    The percentage of storage space on internal volume (that contains the app
+    directory) used by offline pages archives.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.TabRestore" enum="OfflinePagesTabRestoreType"
+    expires_after="2021-06-25">
+  <owner>carlosk@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Tracks the reload of contents of an existing tab that is being restored
+    either because that tab is being presented for the first time after Chrome
+    was restarted or because its contents were discarded. All buckets are
+    mutually exclusive (adding up all reported values amounts to the total
+    number of tracked tab restores). This metric is focused on last_n offline
+    pages and is exclusive to Chrome on Android.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.TrustStateOnOpen" enum="OfflinePageTrustedState"
+    expires_after="2021-06-25">
+  <owner>sclittle@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    The trust state of the offline page. This is recorded when an offline page
+    is being opened.
+  </summary>
+</histogram>
+
+<histogram name="OfflinePages.WebsiteSettings.OpenOnlineButtonVisible"
+    enum="BooleanVisible" expires_after="M77">
+  <owner>fgorski@chromium.org</owner>
+  <summary>
+    Indicates whether Open online was visible in Page Info popup, when it was
+    shown for an offline page. (The button is visible only when Chrome is
+    connected when the Page Info popup is opened for offline page.)
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

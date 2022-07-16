@@ -489,7 +489,7 @@ TEST_F(InstanceIDGetTokenRequestTest, RequestDataAndURL) {
 
 TEST_F(InstanceIDGetTokenRequestTest, RequestDataWithTTL) {
   CreateRequest(false, kInstanceId, kDeveloperId, kScope,
-                /*time_to_live=*/base::TimeDelta::FromSeconds(100));
+                /*time_to_live=*/base::Seconds(100));
   request_->Start();
 
   // Same as RequestDataAndURL except "ttl" and "X-Foo".

@@ -24,6 +24,10 @@ class WMHelperTester : public WMHelper, public VSyncTimingManager::Delegate {
  public:
   WMHelperTester(aura::Window* root_window)
       : root_window_(root_window), vsync_timing_manager_(this) {}
+
+  WMHelperTester(const WMHelperTester&) = delete;
+  WMHelperTester& operator=(const WMHelperTester&) = delete;
+
   ~WMHelperTester() override {}
 
   // Overridden from WMHelper
@@ -77,8 +81,6 @@ class WMHelperTester : public WMHelper, public VSyncTimingManager::Delegate {
     return 1.0;
   }
   void SetDefaultScaleCancellation(bool default_scale_cancellation) override {}
-  void SetImeBlocked(aura::Window* window, bool ime_blocked) override {}
-  bool IsImeBlocked(aura::Window* window) const override { return false; }
 
   LifetimeManager* GetLifetimeManager() override { return &lifetime_manager_; }
   aura::client::CaptureClient* GetCaptureClient() override { return nullptr; }
@@ -97,8 +99,7 @@ class WMHelperTester : public WMHelper, public VSyncTimingManager::Delegate {
   }
   WMHelper::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override {
-    NOTIMPLEMENTED();
-    return base::NullCallback();
+    return base::DoNothing();
   }
 
   // Overridden from VSyncTimingManager::Delegate:
@@ -110,8 +111,6 @@ class WMHelperTester : public WMHelper, public VSyncTimingManager::Delegate {
   aura::Window* root_window_;
   LifetimeManager lifetime_manager_;
   VSyncTimingManager vsync_timing_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(WMHelperTester);
 };
 
 }  // namespace

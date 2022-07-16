@@ -429,11 +429,11 @@ TEST_F(NotificationDatabaseTest, ReadWriteMultipleNotificationData) {
   GURL origin("https://example.com");
 
   std::vector<std::string> notification_ids;
-  std::string notification_id;
 
   // Write ten notifications to the database, each with a unique title and
   // notification id (it is the responsibility of the user to increment this).
   for (int i = 1; i <= 10; ++i) {
+    std::string notification_id;
     ASSERT_NO_FATAL_FAILURE(CreateAndWriteNotification(
         database.get(), origin, "" /* tag */, false /* is_shown_by_browser */,
         i /* sw_registration_id */, &notification_id));

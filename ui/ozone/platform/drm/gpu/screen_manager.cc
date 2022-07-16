@@ -8,23 +8,29 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/flat_set.h"
+#include "base/files/file_path.h"
 #include "base/files/platform_file.h"
 #include "base/logging.h"
+#include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/traced_value.h"
+#include "base/trace_event/traced_value_support.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/linux/gbm_buffer.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/crtc_controller.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_dumb_buffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
+#include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_window.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
 
@@ -91,6 +97,30 @@ CrtcController* GetCrtcController(HardwareDisplayController* controller,
 
   NOTREACHED();
   return nullptr;
+}
+
+std::unique_ptr<base::trace_event::TracedValue> ParamsToTracedValue(
+    const ScreenManager::ControllerConfigsList& controllers_params) {
+  auto value = std::make_unique<base::trace_event::TracedValue>();
+  auto scoped_array = value->BeginArrayScoped("param");
+  for (const auto& param : controllers_params) {
+    auto scoped_dict = value->AppendDictionaryScoped();
+    value->SetInteger("display_id", param.display_id);
+    value->SetInteger("crtc", param.crtc);
+    value->SetInteger("connector", param.connector);
+    value->SetString("origin", param.origin.ToString());
+    {
+      auto mode_dict = value->BeginDictionaryScoped("drm");
+      if (param.drm)
+        param.drm->AsValueInto(value.get());
+    }
+    {
+      auto mode_dict = value->BeginDictionaryScoped("mode");
+      if (param.mode)
+        DrmAsValueIntoHelper(*param.mode, value.get());
+    }
+  }
+  return value;
 }
 
 }  // namespace
@@ -180,11 +210,11 @@ void ScreenManager::RemoveDisplayControllers(
 
   bool should_update_controllers_to_window_mapping = false;
   for (const auto& controllers_on_drm : controllers_for_drm_devices) {
-    CrtcsWithDrmList controllers_to_remove = controllers_on_drm.second;
+    CrtcsWithDrmList drm_controllers_to_remove = controllers_on_drm.second;
 
     CommitRequest commit_request;
     auto drm = controllers_on_drm.first;
-    for (const auto& controller : controllers_to_remove) {
+    for (const auto& controller : drm_controllers_to_remove) {
       uint32_t crtc_id = controller.first;
       auto it = FindDisplayController(drm, crtc_id);
       if (it == controllers_.end())
@@ -215,7 +245,9 @@ void ScreenManager::RemoveDisplayControllers(
 
 bool ScreenManager::ConfigureDisplayControllers(
     const ControllerConfigsList& controllers_params) {
-  TRACE_EVENT0("drm", "ScreenManager::ConfigureDisplayControllers");
+  TRACE_EVENT_BEGIN2("drm", "ScreenManager::ConfigureDisplayControllers",
+                     "params", ParamsToTracedValue(controllers_params),
+                     "before", base::trace_event::ToTracedValue(this));
 
   // Split them to different lists unique to each DRM Device.
   base::flat_map<scoped_refptr<DrmDevice>, ControllerConfigsList>
@@ -233,20 +265,31 @@ bool ScreenManager::ConfigureDisplayControllers(
   bool config_success = true;
   // Perform display configurations together for the same DRM only.
   for (const auto& configs_on_drm : displays_for_drm_devices) {
-    const ControllerConfigsList& controllers_params = configs_on_drm.second;
-    bool test_modeset = TestAndSetPreferredModifiers(controllers_params) ||
-                        TestAndSetLinearModifier(controllers_params);
+    const ControllerConfigsList& drm_controllers_params = configs_on_drm.second;
+    bool test_modeset = TestAndSetPreferredModifiers(drm_controllers_params) ||
+                        TestAndSetLinearModifier(drm_controllers_params);
     config_success &= test_modeset;
-    if (!test_modeset)
+    if (!test_modeset) {
+      LOG(ERROR)
+          << "Test modeset failed (preferred modifiers and linear modifier)";
       continue;
+    }
     bool can_modeset_with_overlays =
-        TestModesetWithOverlays(controllers_params);
-    config_success &= Modeset(controllers_params, can_modeset_with_overlays);
+        TestModesetWithOverlays(drm_controllers_params);
+    bool real_modeset =
+        Modeset(drm_controllers_params, can_modeset_with_overlays);
+    config_success &= real_modeset;
+    LOG_IF(ERROR, !real_modeset)
+        << "Failed to modeset. can_modeset_with_overlays="
+        << can_modeset_with_overlays;
   }
 
   if (config_success)
     UpdateControllerToWindowMapping();
 
+  TRACE_EVENT_END2("drm", "ScreenManager::ConfigureDisplayControllers", "after",
+                   base::trace_event::ToTracedValue(this), "success",
+                   config_success);
   return config_success;
 }
 
@@ -685,6 +728,29 @@ void ScreenManager::UpdateControllerToWindowMapping() {
           std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET);
     }
   }
+}
+
+void ScreenManager::AsValueInto(base::trace_event::TracedValue* value) const {
+  {
+    auto scoped_array = value->BeginArrayScoped("hardware_display_controllers");
+    for (const auto& controller : controllers_) {
+      auto scoped_dict = value->AppendDictionaryScoped();
+      controller->AsValueInto(value);
+    }
+  }
+  {
+    auto scoped_array = value->BeginArrayScoped("drm_devices");
+    base::flat_set<base::FilePath> seen_devices;
+    for (const auto& controller : controllers_) {
+      if (seen_devices.contains(controller->GetDrmDevice()->device_path()))
+        continue;
+      seen_devices.insert(controller->GetDrmDevice()->device_path());
+      auto scoped_dict = value->AppendDictionaryScoped();
+      controller->GetDrmDevice()->AsValueInto(value);
+    }
+  }
+
+  // TODO(jshargo): also trace WidgetToWindowMap window_map.
 }
 
 DrmOverlayPlaneList ScreenManager::GetModesetPlanes(

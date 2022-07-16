@@ -13,7 +13,6 @@
 
 #include "base/files/file.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -67,6 +66,10 @@ class Service : public KeyedService,
   enum UnmountReason { UNMOUNT_REASON_USER, UNMOUNT_REASON_SHUTDOWN };
 
   Service(Profile* profile, extensions::ExtensionRegistry* extension_registry);
+
+  Service(const Service&) = delete;
+  Service& operator=(const Service&) = delete;
+
   ~Service() override;
 
   // Gets the singleton instance for the |context|.
@@ -209,7 +212,6 @@ class Service : public KeyedService,
   ProviderMap provider_map_;
 
   base::WeakPtrFactory<Service> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(Service);
 };
 
 }  // namespace file_system_provider

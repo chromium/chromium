@@ -10,10 +10,10 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/net/nss_service.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/ssl/client_cert_identity.h"
@@ -57,6 +57,10 @@ class CertificateManagerModel {
              bool web_trust_anchor,
              bool hardware_backed,
              bool device_wide);
+
+    CertInfo(const CertInfo&) = delete;
+    CertInfo& operator=(const CertInfo&) = delete;
+
     ~CertInfo();
 
     CERTCertificate* cert() const { return cert_.get(); }
@@ -105,8 +109,6 @@ class CertificateManagerModel {
     // Note: can be true only on Chrome OS.
     bool device_wide_;
 
-    DISALLOW_COPY_AND_ASSIGN(CertInfo);
-
     FRIEND_TEST_ALL_PREFIXES(CertificateHandlerTest,
                              CanDeleteCertificateCommonTest);
     FRIEND_TEST_ALL_PREFIXES(CertificateHandlerTest,
@@ -132,11 +134,13 @@ class CertificateManagerModel {
 #endif
 
     Params();
-    Params(Params&& other);
-    ~Params();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Params);
+    Params(const Params&) = delete;
+    Params& operator=(const Params&) = delete;
+
+    Params(Params&& other);
+
+    ~Params();
   };
 
   // Map from the subject organization name to the list of certs from that
@@ -170,13 +174,12 @@ class CertificateManagerModel {
   // |BrowserContext|.
   CertificateManagerModel(std::unique_ptr<Params> params,
                           Observer* observer,
-                          net::NSSCertDatabase* nss_cert_database,
-                          bool is_user_db_available,
-                          bool is_tpm_available);
-  ~CertificateManagerModel();
+                          net::NSSCertDatabase* nss_cert_database);
 
-  bool is_user_db_available() const { return is_user_db_available_; }
-  bool is_tpm_available() const { return is_tpm_available_; }
+  CertificateManagerModel(const CertificateManagerModel&) = delete;
+  CertificateManagerModel& operator=(const CertificateManagerModel&) = delete;
+
+  ~CertificateManagerModel();
 
   // Accessor for read-only access to the underlying NSSCertDatabase.
   const net::NSSCertDatabase* cert_db() const { return cert_db_; }
@@ -257,9 +260,7 @@ class CertificateManagerModel {
       std::unique_ptr<Params> params,
       CertificateManagerModel::Observer* observer,
       CreationCallback callback,
-      net::NSSCertDatabase* cert_db,
-      bool is_user_db_available,
-      bool is_tpm_available);
+      net::NSSCertDatabase* cert_db);
   static void DidGetCertDBOnIOThread(
       std::unique_ptr<Params> params,
       CertificateManagerModel::Observer* observer,
@@ -279,15 +280,8 @@ class CertificateManagerModel {
 
   bool hold_back_updates_ = false;
 
-  // Whether the certificate database has a public slot associated with the
-  // profile. If not set, importing certificates is not allowed with this model.
-  bool is_user_db_available_;
-  bool is_tpm_available_;
-
   // The observer to notify when certificate list is refreshed.
   Observer* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateManagerModel);
 };
 
 #endif  // CHROME_BROWSER_CERTIFICATE_MANAGER_MODEL_H_

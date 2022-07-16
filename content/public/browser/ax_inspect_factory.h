@@ -9,6 +9,7 @@
 
 #include "base/process/process_handle.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 
@@ -39,34 +40,13 @@ class CONTENT_EXPORT AXInspectFactory {
   // formatter, which is used to dump the Blink accessibility tree to a string
   static std::unique_ptr<ui::AXTreeFormatter> CreateBlinkFormatter();
 
-  // Inspect types for all platforms.
-  enum TypeConstant {
-    kAndroid,
-    kBlink,
-    kMac,
-    kLinux,
-    kWinIA2,
-    kWinUIA,
-  };
-
-  // Inspect type.
-  class CONTENT_EXPORT Type final {
-   public:
-    Type(TypeConstant type) : type_(type) {}
-
-    explicit operator std::string() const;
-    operator TypeConstant() const { return type_; }
-
-   private:
-    TypeConstant type_;
-  };
-
   // Creates a tree formatter of a given inspect type if supported by platform.
-  static std::unique_ptr<ui::AXTreeFormatter> CreateFormatter(Type);
+  static std::unique_ptr<ui::AXTreeFormatter> CreateFormatter(
+      ui::AXApiType::Type);
 
   // Creates an event recorder of a given inspect type if supported by platform.
   static std::unique_ptr<ui::AXEventRecorder> CreateRecorder(
-      Type,
+      ui::AXApiType::Type,
       BrowserAccessibilityManager* manager = nullptr,
       base::ProcessId pid = 0,
       const ui::AXTreeSelector& selector = {});

@@ -6,7 +6,6 @@ nyquist@chromium.org
 tedchoc@chromium.org
 twellington@chromium.org
 yfriedman@chromium.org
-yusufo@chromium.org
 
 per-file static_initializers.gni=file://build/OWNERS
 per-file java_sources.gni=*

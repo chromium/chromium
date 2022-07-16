@@ -22,6 +22,9 @@ class BASE_EXPORT StartupInformation {
  public:
   StartupInformation();
 
+  StartupInformation(const StartupInformation&) = delete;
+  StartupInformation& operator=(const StartupInformation&) = delete;
+
   ~StartupInformation();
 
   // Initialize the attribute list for the specified number of entries.
@@ -44,7 +47,6 @@ class BASE_EXPORT StartupInformation {
  private:
   std::unique_ptr<char[]> attribute_list_;
   STARTUPINFOEXW startup_info_;
-  DISALLOW_COPY_AND_ASSIGN(StartupInformation);
 };
 
 }  // namespace win

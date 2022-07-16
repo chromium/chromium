@@ -17,7 +17,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -180,6 +179,10 @@ void DecodeJsonStringAndNormalize(const std::string& json_string,
 }  // namespace
 
 class PowerPrefsTest : public NoSessionAshTestBase {
+ public:
+  PowerPrefsTest(const PowerPrefsTest&) = delete;
+  PowerPrefsTest& operator=(const PowerPrefsTest&) = delete;
+
  protected:
   PowerPrefsTest() = default;
   ~PowerPrefsTest() override = default;
@@ -192,7 +195,7 @@ class PowerPrefsTest : public NoSessionAshTestBase {
     power_prefs_ = ShellTestApi().power_prefs();
 
     // Advance the clock an arbitrary amount of time so it won't report zero.
-    tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
+    tick_clock_.Advance(base::Seconds(1));
     power_prefs_->set_tick_clock_for_test(&tick_clock_);
 
     // Get to Login screen.
@@ -268,9 +271,6 @@ class PowerPrefsTest : public NoSessionAshTestBase {
       base::MakeRefCounted<PrefRegistrySimple>();
 
   std::unique_ptr<PrefService> local_state_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerPrefsTest);
 };
 
 TEST_F(PowerPrefsTest, LoginScreen) {
@@ -343,19 +343,19 @@ TEST_F(PowerPrefsTest, AvoidLockDelaysAfterInactivity) {
   // If the screen was already off due to inactivity when it was locked, we
   // should continue using the unlocked delays.
   NotifyScreenIdleOffChanged(true);
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(5));
+  tick_clock_.Advance(base::Seconds(5));
   SetLockedState(ScreenLockState::LOCKED);
   EXPECT_EQ(GetExpectedPowerPolicyForPrefs(prefs, ScreenLockState::UNLOCKED),
             GetCurrentPowerPolicy());
 
   // If the screen turns on while still locked, we should switch to the locked
   // delays.
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(5));
+  tick_clock_.Advance(base::Seconds(5));
   NotifyScreenIdleOffChanged(false);
   EXPECT_EQ(GetExpectedPowerPolicyForPrefs(prefs, ScreenLockState::LOCKED),
             GetCurrentPowerPolicy());
 
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(5));
+  tick_clock_.Advance(base::Seconds(5));
   SetLockedState(ScreenLockState::UNLOCKED);
   EXPECT_EQ(GetExpectedPowerPolicyForPrefs(prefs, ScreenLockState::UNLOCKED),
             GetCurrentPowerPolicy());

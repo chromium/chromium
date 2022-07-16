@@ -167,6 +167,12 @@ Value ArrayPolicyConversions::ToValue() {
   if (client()->HasUserPolicies()) {
     all_policies.Append(GetChromePolicies());
 
+#if !defined(OS_CHROMEOS)
+    // Precedence policies do not apply to Chrome OS, so the Policy Precedence
+    // table is not shown in chrome://policy.
+    all_policies.Append(GetPrecedencePolicies());
+#endif  // !defined(OS_CHROMEOS)
+
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (client()->HasUpdaterPolicies())
       all_policies.Append(GetUpdaterPolicies());
@@ -218,6 +224,17 @@ Value ArrayPolicyConversions::GetChromePolicies() {
   chrome_policies_data.SetKey("name", Value("Chrome Policies"));
   chrome_policies_data.SetKey("policies", client()->GetChromePolicies());
   return chrome_policies_data;
+}
+
+Value ArrayPolicyConversions::GetPrecedencePolicies() {
+  Value precedence_policies_data(Value::Type::DICTIONARY);
+  precedence_policies_data.SetKey("id", Value("precedence"));
+  precedence_policies_data.SetKey("name", Value("Policy Precedence"));
+  precedence_policies_data.SetKey("policies",
+                                  client()->GetPrecedencePolicies());
+  precedence_policies_data.SetKey("precedenceOrder",
+                                  client()->GetPrecedenceOrder());
+  return precedence_policies_data;
 }
 
 }  // namespace policy

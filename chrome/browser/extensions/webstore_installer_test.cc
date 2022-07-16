@@ -30,6 +30,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/switches.h"
 #include "url/gurl.h"
 
 using content::WebContents;
@@ -76,7 +77,8 @@ void WebstoreInstallerTest::SetUpCommandLine(base::CommandLine* command_line) {
 
   // Allow tests to call window.gc(), so that we can check that callback
   // functions don't get collected prematurely.
-  command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose-gc");
+  command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                  "--expose-gc");
 }
 
 void WebstoreInstallerTest::SetUpOnMainThread() {

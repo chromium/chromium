@@ -9,10 +9,10 @@
 
 #include "base/base_export.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -23,6 +23,9 @@ class TaskTraits;
 // A TaskExecutor can execute Tasks with a specific TaskTraits extension id. To
 // handle Tasks posted via the //base/task/post_task.h API, the TaskExecutor
 // should be registered by calling RegisterTaskExecutor().
+// TaskExecutor 可以执行具有特定 TaskTraits 扩展 ID 的任务。
+// 要处理通过 //base/task/post_task.h API 发布的任务，
+// 应通过调用 RegisterTaskExecutor() 注册 TaskExecutor。
 class BASE_EXPORT TaskExecutor {
  public:
   virtual ~TaskExecutor() = default;
@@ -37,13 +40,11 @@ class BASE_EXPORT TaskExecutor {
 
   // Returns a TaskRunner whose PostTask invocations result in scheduling tasks
   // using |traits|. Tasks may run in any order and in parallel.
-  virtual scoped_refptr<TaskRunner> CreateTaskRunner(
-      const TaskTraits& traits) = 0;
+  virtual scoped_refptr<TaskRunner> CreateTaskRunner(const TaskTraits& traits) = 0;
 
   // Returns a SequencedTaskRunner whose PostTask invocations result in
   // scheduling tasks using |traits|. Tasks run one at a time in posting order.
-  virtual scoped_refptr<SequencedTaskRunner> CreateSequencedTaskRunner(
-      const TaskTraits& traits) = 0;
+  virtual scoped_refptr<SequencedTaskRunner> CreateSequencedTaskRunner(const TaskTraits& traits) = 0;
 
   // Returns a SingleThreadTaskRunner whose PostTask invocations result in
   // scheduling tasks using |traits|. Tasks run on a single thread in posting

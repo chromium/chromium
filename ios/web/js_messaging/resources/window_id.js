@@ -13,4 +13,8 @@ __gCrWeb['windowId'] = '$(WINDOW_ID)';
 
 // Send messages queued since message.js injection.
 __gCrWeb.message.invokeQueues();
+
+const event = new Event('__gCrWebWindowIdInjected');
+window.dispatchEvent(event);
+
 }());

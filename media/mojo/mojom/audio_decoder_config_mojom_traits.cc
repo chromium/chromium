@@ -45,11 +45,16 @@ bool StructTraits<media::mojom::AudioDecoderConfigDataView,
   if (!input.ReadTargetOutputChannelLayout(&target_output_channel_layout))
     return false;
 
+  std::vector<uint8_t> aac_extra_data;
+  if (!input.ReadAacExtraData(&aac_extra_data))
+    return false;
+
   output->Initialize(codec, sample_format, channel_layout,
-                     input.samples_per_second(), extra_data, encryption_scheme,
-                     seek_preroll, input.codec_delay());
+                     input.samples_per_second(), std::move(extra_data),
+                     encryption_scheme, seek_preroll, input.codec_delay());
   output->set_profile(profile);
   output->set_target_output_channel_layout(target_output_channel_layout);
+  output->set_aac_extra_data(std::move(aac_extra_data));
 
   if (!input.should_discard_decoder_delay())
     output->disable_discard_decoder_delay();

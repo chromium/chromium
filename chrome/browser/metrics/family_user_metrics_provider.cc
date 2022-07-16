@@ -6,8 +6,8 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -29,8 +29,8 @@ constexpr char kNumSecondaryAccountsHistogramName[] =
 // Returns managed user log segment for metrics logging.
 enterprise_management::PolicyData::MetricsLogSegment GetManagedUserLogSegment(
     Profile* profile) {
-  const policy::UserCloudPolicyManagerChromeOS* user_cloud_policy_manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
+  const policy::UserCloudPolicyManagerAsh* user_cloud_policy_manager =
+      profile->GetUserCloudPolicyManagerAsh();
   if (!user_cloud_policy_manager)
     return enterprise_management::PolicyData::UNSPECIFIED;
   const enterprise_management::PolicyData* policy =
@@ -42,8 +42,8 @@ enterprise_management::PolicyData::MetricsLogSegment GetManagedUserLogSegment(
 
 // Returns if the device is managed, independent of the user.
 bool IsDeviceEnterpriseEnrolled() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->IsDeviceEnterpriseManaged();
 }
 

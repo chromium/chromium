@@ -29,6 +29,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileUtil
     : public FileSystemFileUtil {
  public:
   LocalFileUtil();
+
+  LocalFileUtil(const LocalFileUtil&) = delete;
+  LocalFileUtil& operator=(const LocalFileUtil&) = delete;
+
   ~LocalFileUtil() override;
 
   base::File CreateOrOpen(FileSystemOperationContext* context,
@@ -65,7 +69,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileUtil
   base::File::Error CopyOrMoveFile(FileSystemOperationContext* context,
                                    const FileSystemURL& src_url,
                                    const FileSystemURL& dest_url,
-                                   CopyOrMoveOption option,
+                                   CopyOrMoveOptionSet options,
                                    bool copy) override;
   base::File::Error CopyInForeignFile(FileSystemOperationContext* context,
                                       const base::FilePath& src_file_path,
@@ -89,8 +93,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileUtil
 
  private:
   class LocalFileEnumerator;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileUtil);
 };
 
 }  // namespace storage

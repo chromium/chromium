@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!--
-Copyright 2010 The Closure Library Authors. All Rights Reserved.
+Copyright The Closure Library Authors. All Rights Reserved.
 
 Use of this source code is governed by the Apache License, Version 2.0.
 See the COPYING file for details.
@@ -105,7 +105,7 @@ See the COPYING file for details.
   <script type="text/javascript">
 
   // Set up a logger to track responses
-  goog.debug.LogManager.getRoot().setLevel(goog.debug.Logger.Level.ALL);
+  goog.log.setLevel(goog.log.getRootLogger(), goog.log.Level.ALL);
   var logconsole = new goog.debug.DivConsole(document.getElementById('log'));
   logconsole.setCapturing(true);
 

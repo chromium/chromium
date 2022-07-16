@@ -38,6 +38,10 @@ const char16_t kCellularNetworkGuid16[] = u"cellular_guid";
 class ActiveNetworkIconTest : public AshTestBase {
  public:
   ActiveNetworkIconTest() = default;
+
+  ActiveNetworkIconTest(const ActiveNetworkIconTest&) = delete;
+  ActiveNetworkIconTest& operator=(const ActiveNetworkIconTest&) = delete;
+
   ~ActiveNetworkIconTest() override = default;
 
   void SetUp() override {
@@ -174,8 +178,6 @@ class ActiveNetworkIconTest : public AshTestBase {
   network_icon::IconType icon_type_ = network_icon::ICON_TYPE_TRAY_REGULAR;
   // Counter to provide unique ids for reference networks.
   int reference_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveNetworkIconTest);
 };
 
 TEST_F(ActiveNetworkIconTest, GetConnectionStatusStrings) {

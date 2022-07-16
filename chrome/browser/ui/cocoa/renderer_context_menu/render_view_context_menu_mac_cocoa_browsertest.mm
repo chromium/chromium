@@ -17,6 +17,11 @@ class RenderViewContextMenuMacCocoaBrowserTest : public InProcessBrowserTest {
  public:
   RenderViewContextMenuMacCocoaBrowserTest() {}
 
+  RenderViewContextMenuMacCocoaBrowserTest(
+      const RenderViewContextMenuMacCocoaBrowserTest&) = delete;
+  RenderViewContextMenuMacCocoaBrowserTest& operator=(
+      const RenderViewContextMenuMacCocoaBrowserTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     filteredItems_.reset([[NSMutableArray alloc] init]);
@@ -42,9 +47,6 @@ class RenderViewContextMenuMacCocoaBrowserTest : public InProcessBrowserTest {
 
   base::scoped_nsobject<NSMutableArray> filteredItems_;
   base::scoped_nsobject<NSTextField> textField_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderViewContextMenuMacCocoaBrowserTest);
 };
 
 // Confirm that the private classes used to filter Safari's redundant Services

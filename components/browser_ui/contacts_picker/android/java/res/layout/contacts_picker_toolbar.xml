@@ -26,7 +26,7 @@
             android:layout_gravity="center_vertical"
             android:src="@drawable/ic_search"
             android:contentDescription="@string/search"
-            app:tint="@color/default_icon_color" />
+            app:tint="@color/default_icon_color_secondary_tint_list" />
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/done"

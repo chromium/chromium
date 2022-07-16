@@ -66,6 +66,7 @@ class ChromeBrowserCloudManagementControllerDesktop
                                    url_loader_factory) override;
   bool ReadyToCreatePolicyManager() override;
   bool ReadyToInit() override;
+  std::unique_ptr<ClientDataDelegate> CreateClientDataDelegate() override;
 
   // CBCMInvalidationsInitializer::Delegate:
   // Starts the services required for Policy Invalidations over FCM to be

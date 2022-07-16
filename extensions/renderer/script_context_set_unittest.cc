@@ -15,6 +15,7 @@
 #include "extensions/renderer/script_context_set.h"
 #include "extensions/renderer/test_extensions_renderer_client.h"
 #include "gin/public/context_holder.h"
+#include "gin/public/isolate_holder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "v8/include/v8.h"
@@ -23,6 +24,9 @@ namespace extensions {
 
 TEST(ScriptContextSetTest, Lifecycle) {
   base::test::TaskEnvironment task_environment;
+  gin::IsolateHolder isolate_holder(task_environment.GetMainThreadTaskRunner(),
+                                    gin::IsolateHolder::IsolateType::kTest);
+  v8::Isolate::Scope isolate_scope(isolate_holder.isolate());
   ScopedWebFrame web_frame;
   // Used by ScriptContextSet::Register().
   TestExtensionsRendererClient extensions_renderer_client;

@@ -19,14 +19,13 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher_update_checker.h"
-#include "chrome/browser/chromeos/net/delay_network_call.h"
+#include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/crx_file/id_util.h"
-#include "components/session_manager/core/session_manager.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -260,8 +259,8 @@ void StartupAppLauncher::OnExtensionUpdateCheckFinished(bool update_found) {
     // of the shared module, extension, etc will be cleaned up andthe new
     // version will be loaded.
     extensions::ExtensionSystem::Get(profile_)
-            ->extension_service()
-            ->ReloadExtension(app_id_);
+        ->extension_service()
+        ->ReloadExtension(app_id_);
 
     SYSLOG(INFO) << "Finish to reload extension with id " << app_id_;
   }
@@ -432,10 +431,9 @@ void StartupAppLauncher::LaunchApp() {
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceKiosk));
+          apps::mojom::LaunchSource::kFromKiosk));
 
   KioskAppManager::Get()->InitSession(profile_, app_id_);
-  session_manager::SessionManager::Get()->SessionStarted();
 
   OnLaunchSuccess();
 }
@@ -509,7 +507,7 @@ void StartupAppLauncher::MaybeInstallSecondaryApps() {
 
   if (!AreSecondaryAppsInstalled() && !delegate_->IsNetworkReady()) {
     DelayNetworkCall(
-        base::TimeDelta::FromMilliseconds(kDefaultNetworkRetryDelayMS),
+        base::Milliseconds(kDefaultNetworkRetryDelayMS),
         base::BindOnce(&StartupAppLauncher::MaybeInstallSecondaryApps,
                        weak_ptr_factory_.GetWeakPtr()));
     return;

@@ -22,16 +22,16 @@ import urllib2
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 SUPPORTED_DEBIAN_RELEASES = {
-    'Debian 8 (Jessie)': 'jessie',
     'Debian 9 (Stretch)': 'stretch',
     'Debian 10 (Buster)': 'buster',
+    # TODO: bullseye-updates does not have a .gz file.
+    # 'Debian 11 (Bullseye)': 'bullseye',
 }
 
 SUPPORTED_UBUNTU_RELEASES = {
     'Ubuntu 14.04 (Trusty)': 'trusty',
     'Ubuntu 16.04 (Xenial)': 'xenial',
     'Ubuntu 18.04 (Bionic)': 'bionic',
-    'Ubuntu 19.10 (Eoan)': 'eoan',
     'Ubuntu 20.04 (Focal)': 'focal',
 }
 

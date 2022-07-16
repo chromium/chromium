@@ -96,11 +96,10 @@ void DevToolsProtocolTestBindings::HandleMessageFromTest(base::Value message) {
     return;
   }
 
-  int request_id = 0;
-  dict->GetInteger("id", &request_id);
   dict->GetList("params", &params);
 
-  if (method == "dispatchProtocolMessage" && params && params->GetSize() == 1) {
+  if (method == "dispatchProtocolMessage" && params &&
+      params->GetList().size() == 1) {
     std::string protocol_message;
     if (!params->GetString(0, &protocol_message))
       return;
@@ -144,6 +143,10 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
 void DevToolsProtocolTestBindings::AgentHostClosed(
     DevToolsAgentHost* agent_host) {
   agent_host_ = nullptr;
+}
+
+bool DevToolsProtocolTestBindings::AllowUnsafeOperations() {
+  return true;
 }
 
 }  // namespace content

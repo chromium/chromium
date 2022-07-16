@@ -26,7 +26,7 @@ String StyleRuleKeyframe::KeyText() const {
     key_text.Append('%');
   }
 
-  return key_text.ToString();
+  return key_text.ReleaseString();
 }
 
 bool StyleRuleKeyframe::SetKeyText(const String& key_text) {
@@ -60,7 +60,7 @@ String StyleRuleKeyframe::CssText() const {
   if (!decls.IsEmpty())
     result.Append(' ');
   result.Append('}');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 void StyleRuleKeyframe::TraceAfterDispatch(blink::Visitor* visitor) const {

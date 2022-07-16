@@ -5,7 +5,6 @@
 #include "components/os_crypt/key_storage_util_linux.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -13,6 +12,12 @@ namespace {
 class KeyStorageUtilLinuxPreferenceTest : public testing::Test {
  public:
   KeyStorageUtilLinuxPreferenceTest() = default;
+
+  KeyStorageUtilLinuxPreferenceTest(const KeyStorageUtilLinuxPreferenceTest&) =
+      delete;
+  KeyStorageUtilLinuxPreferenceTest& operator=(
+      const KeyStorageUtilLinuxPreferenceTest&) = delete;
+
   ~KeyStorageUtilLinuxPreferenceTest() override = default;
 
   void SetUp() override {
@@ -25,9 +30,6 @@ class KeyStorageUtilLinuxPreferenceTest : public testing::Test {
 
  protected:
   base::FilePath fake_user_data_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyStorageUtilLinuxPreferenceTest);
 };
 
 TEST_F(KeyStorageUtilLinuxPreferenceTest, FirstTimeDefaultsToTrue) {
@@ -58,14 +60,15 @@ TEST_F(KeyStorageUtilLinuxPreferenceTest, MultipleWrites) {
 class KeyStorageUtilLinuxTest : public testing::Test {
  public:
   KeyStorageUtilLinuxTest() = default;
+
+  KeyStorageUtilLinuxTest(const KeyStorageUtilLinuxTest&) = delete;
+  KeyStorageUtilLinuxTest& operator=(const KeyStorageUtilLinuxTest&) = delete;
+
   ~KeyStorageUtilLinuxTest() override = default;
 
   void SetUp() override {}
 
   void TearDown() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyStorageUtilLinuxTest);
 };
 
 TEST_F(KeyStorageUtilLinuxTest, PasswordStoreFlagOverrides) {

@@ -18,6 +18,12 @@ class PPB_X509Certificate_Private_Proxy
     : public InterfaceProxy {
  public:
   explicit PPB_X509Certificate_Private_Proxy(Dispatcher* dispatcher);
+
+  PPB_X509Certificate_Private_Proxy(const PPB_X509Certificate_Private_Proxy&) =
+      delete;
+  PPB_X509Certificate_Private_Proxy& operator=(
+      const PPB_X509Certificate_Private_Proxy&) = delete;
+
   ~PPB_X509Certificate_Private_Proxy() override;
   static PP_Resource CreateProxyResource(PP_Instance instance);
 
@@ -25,9 +31,6 @@ class PPB_X509Certificate_Private_Proxy
   bool OnMessageReceived(const IPC::Message& msg) override;
 
   static const ApiID kApiID = API_ID_PPB_X509_CERTIFICATE_PRIVATE;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PPB_X509Certificate_Private_Proxy);
 };
 
 }  // namespace proxy

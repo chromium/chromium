@@ -160,10 +160,6 @@ base::Value DisableReasonsToList(int disable_reasons) {
   }
   if (disable_reasons & extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY)
     disable_reasons_value.Append("DISABLE_BLOCKED_BY_POLICY");
-  if (disable_reasons &
-      extensions::disable_reason::DISABLE_REMOTELY_FOR_MALWARE) {
-    disable_reasons_value.Append("DISABLE_REMOTELY_FOR_MALWARE");
-  }
   return disable_reasons_value;
 }
 // The JSON we generate looks like this:

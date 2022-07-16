@@ -13,6 +13,8 @@
 #include "chrome/browser/extensions/api/proxy/proxy_api_constants.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_prefs.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -280,7 +282,8 @@ TEST(ExtensionProxyApiHelpers, GetProxyServer) {
   ASSERT_TRUE(
       GetProxyServer(&proxy_server_dict, net::ProxyServer::SCHEME_HTTP,
                      &created, &error, &bad_message));
-  EXPECT_EQ("PROXY proxy_server:80", created.ToPacString());
+  EXPECT_EQ("PROXY proxy_server:80",
+            net::ProxyServerToPacResultElement(created));
   EXPECT_FALSE(bad_message);
 
   // Test complete case.
@@ -289,16 +292,17 @@ TEST(ExtensionProxyApiHelpers, GetProxyServer) {
   ASSERT_TRUE(
         GetProxyServer(&proxy_server_dict, net::ProxyServer::SCHEME_HTTP,
                        &created, &error, &bad_message));
-  EXPECT_EQ("SOCKS proxy_server:1234", created.ToPacString());
+  EXPECT_EQ("SOCKS proxy_server:1234",
+            net::ProxyServerToPacResultElement(created));
   EXPECT_FALSE(bad_message);
 }
 
 TEST(ExtensionProxyApiHelpers, JoinUrlList) {
   bool bad_message = false;
   base::ListValue list;
-  list.AppendString("s1");
-  list.AppendString("s2");
-  list.AppendString("s3");
+  list.Append("s1");
+  list.Append("s2");
+  list.Append("s3");
 
   std::string out;
   std::string error;
@@ -390,9 +394,9 @@ TEST(ExtensionProxyApiHelpers, CreatePacScriptDictWidthData) {
 
 TEST(ExtensionProxyApiHelpers, TokenizeToStringList) {
   base::ListValue expected;
-  expected.AppendString("s1");
-  expected.AppendString("s2");
-  expected.AppendString("s3");
+  expected.Append("s1");
+  expected.Append("s2");
+  expected.Append("s3");
 
   std::unique_ptr<base::ListValue> out(TokenizeToStringList("s1;s2;s3", ";"));
   EXPECT_EQ(expected, *out);

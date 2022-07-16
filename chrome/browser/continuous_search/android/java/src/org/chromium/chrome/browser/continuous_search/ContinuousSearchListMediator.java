@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
-import android.content.res.Resources;
+import android.content.Context;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
@@ -13,13 +13,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.VisibilitySettings;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemProperties;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemType;
-import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ProviderProperties;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -52,21 +51,20 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     private final PropertyModel mRootViewModel;
     private final Callback<VisibilitySettings> mSetLayoutVisibility;
     private final ThemeColorProvider mThemeColorProvider;
-    private final Resources mResources;
+    private final Context mContext;
     private Tab mCurrentTab;
     private boolean mOnSrp;
     private ContinuousNavigationUserDataImpl mCurrentUserData;
     private @PageCategory int mPageCategory;
     private boolean mVisible;
     private boolean mDismissed;
-    private boolean mUiShown;
     // The navigation index when CSN metadata was retrieved.
     private int mStartNavigationIndex;
     private int mSrpVisits;
     private BrowserControlsStateProvider.Observer mScrollObserver;
 
-    private boolean mScrolled;
-    private boolean mProviderButtonClicked;
+    @VisibleForTesting
+    boolean mScrolled;
 
     @IntDef({TriggerMode.ALWAYS, TriggerMode.AFTER_SECOND_SRP, TriggerMode.ON_REVERSE_SCROLL})
     @Retention(RetentionPolicy.SOURCE)
@@ -79,13 +77,13 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     ContinuousSearchListMediator(BrowserControlsStateProvider browserControlsStateProvider,
             ModelList modelList, PropertyModel rootViewModel,
             Callback<VisibilitySettings> setLayoutVisibility, ThemeColorProvider themeColorProvider,
-            Resources resources) {
+            Context context) {
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mModelList = modelList;
         mRootViewModel = rootViewModel;
         mSetLayoutVisibility = setLayoutVisibility;
         mThemeColorProvider = themeColorProvider;
-        mResources = resources;
+        mContext = context;
 
         mRootViewModel.set(ContinuousSearchListProperties.DISMISS_CLICK_CALLBACK,
                 (v) -> dismissOnUserRequest());
@@ -102,22 +100,20 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     }
 
     private void dismissOnUserRequest() {
+        TraceEvent.begin("ContinuousSearchListMediator#dismissOnUserRequest");
         // To avoid showing for duration of the current SRP session don't delete the data, instead
         // hide the UI permamently. Data will be deleted as soon as the SRP session is over.
         mDismissed = true;
         ContinuousSearchConfiguration.recordDismissed();
         setVisibility(false, null);
+        TraceEvent.end("ContinuousSearchListMediator#dismissOnUserRequest");
     }
 
     private void reset() {
-        // Only record the metrics if the UI was shown.
-        if (mUiShown) recordUiMetrics();
         mModelList.clear();
         mDismissed = false;
         mOnSrp = false;
-        mUiShown = false;
         mScrolled = false;
-        mProviderButtonClicked = false;
         mSrpVisits = 0;
     }
 
@@ -130,6 +126,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
      */
     @Override
     public void onResult(Tab tab) {
+        TraceEvent.begin("ContinuousSearchListMediator#onResult");
         if (mCurrentUserData != null) {
             mCurrentUserData.removeObserver(this);
             mCurrentUserData = null;
@@ -142,13 +139,17 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         setVisibility(false, null);
         reset();
         mCurrentTab = tab;
-        if (mCurrentTab == null) return;
+        if (mCurrentTab == null) {
+            TraceEvent.end("ContinuousSearchListMediator#onResult");
+            return;
+        }
 
         if (mScrollObserver != null) {
             mBrowserControlsStateProvider.addObserver(mScrollObserver);
         }
         mCurrentUserData = ContinuousNavigationUserDataImpl.getOrCreateForTab(mCurrentTab);
         mCurrentUserData.addObserver(this);
+        TraceEvent.end("ContinuousSearchListMediator#onResult");
     }
 
     @Override
@@ -158,6 +159,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
 
     @Override
     public void onUpdate(ContinuousNavigationMetadata metadata) {
+        TraceEvent.begin("ContinuousSearchListMediator#onUpdate");
         reset();
 
         ContinuousNavigationMetadata.Provider provider = metadata.getProvider();
@@ -173,8 +175,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
             mStartNavigationIndex = -1;
         }
 
-        mModelList.add(new ListItem(ListItemType.PROVIDER,
-                generateProvider(provider.getName(), provider.getIconRes())));
+        setProviderProperties(provider.getName(), provider.getIconRes());
 
         int resultCount = 0;
         for (PageGroup group : metadata.getGroups()) {
@@ -184,19 +185,23 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                         generateListItem(result.getTitle(), result.getUrl(), resultCount++)));
             }
         }
+        TraceEvent.end("ContinuousSearchListMediator#onUpdate");
     }
 
     @Override
     public void onUrlChanged(GURL currentUrl, boolean onSrp) {
+        TraceEvent.begin("ContinuousSearchListMediator#onUrlChanged");
         mOnSrp = onSrp;
         if (mOnSrp) mSrpVisits++;
 
-        for (ListItem listItem : mModelList) {
-            if (listItem.type == ListItemType.PROVIDER) continue;
+        int selectedItemPosition = -1;
+        for (int i = 0; i < mModelList.size(); i++) {
+            ListItem listItem = mModelList.get(i);
 
             boolean isSelected = currentUrl != null
                     && currentUrl.equals(listItem.model.get(ListItemProperties.URL));
             listItem.model.set(ListItemProperties.IS_SELECTED, isSelected);
+            if (isSelected) selectedItemPosition = i;
         }
 
         boolean shouldTrigger = false;
@@ -212,7 +217,16 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                 shouldTrigger = mVisible;
                 break;
         }
-        setVisibility(shouldShow() && shouldTrigger, null);
+        boolean shouldBeVisible = shouldShow() && shouldTrigger;
+        Runnable onFinishShowRunnable = null;
+        if (selectedItemPosition != -1) {
+            final int finalSelectedItemPosition = selectedItemPosition;
+            onFinishShowRunnable = ()
+                    -> mRootViewModel.set(ContinuousSearchListProperties.SELECTED_ITEM_POSITION,
+                            finalSelectedItemPosition);
+        }
+        setVisibility(shouldBeVisible, onFinishShowRunnable);
+        TraceEvent.end("ContinuousSearchListMediator#onUrlChanged");
     }
 
     private @TriggerMode int getTriggerMode() {
@@ -226,30 +240,28 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     }
 
     /**
-     * Generates the {@link PropertyModel} for the provider.
+     * Sets the provider properties on the root PropertyModel.
      * @param label     Provider label text. Can be null.
      * @param iconRes   Provider icon resource. Pass 0 here if there is no icon.
-     * @return the configured {@link PropertyModel}.
      */
-    private PropertyModel generateProvider(String label, @DrawableRes int iconRes) {
+    private void setProviderProperties(String label, @DrawableRes int iconRes) {
         int backgroundColor =
                 getBackgroundColorForParentBackgroundColor(mThemeColorProvider.getThemeColor());
         boolean useDarkColors = shouldUseDarkElementColors(backgroundColor);
-        PropertyModel.Builder builder =
-                new PropertyModel.Builder(ProviderProperties.ALL_KEYS)
-                        .with(ProviderProperties.CLICK_LISTENER,
-                                (view)
-                                        -> handleItemClick(/*url=*/null, /*resultPosition=*/0,
-                                                /*isProviderLabel=*/true))
-                        .with(ProviderProperties.TEXT_STYLE,
-                                useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Dark
-                                              : R.style.TextAppearance_TextMedium_Primary_Light);
+        mRootViewModel.set(ContinuousSearchListProperties.PROVIDER_CLICK_LISTENER,
+                (view)
+                        -> handleItemClick(/*url=*/null, /*resultPosition=*/0,
+                                /*isProviderLabel=*/true));
+        mRootViewModel.set(ContinuousSearchListProperties.PROVIDER_TEXT_STYLE,
+                useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Baseline_Dark
+                              : R.style.TextAppearance_TextMedium_Primary_Baseline_Light);
         if (label != null) {
-            builder = builder.with(ProviderProperties.LABEL,
-                    mResources.getString(R.string.csn_provider_label, label));
+            mRootViewModel.set(ContinuousSearchListProperties.PROVIDER_LABEL,
+                    mContext.getString(R.string.csn_provider_label, label));
         }
-        if (iconRes != 0) builder = builder.with(ProviderProperties.ICON_RESOURCE, iconRes);
-        return builder.build();
+        if (iconRes != 0) {
+            mRootViewModel.set(ContinuousSearchListProperties.PROVIDER_ICON_RESOURCE, iconRes);
+        }
     }
 
     /**
@@ -283,6 +295,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     }
 
     private void handleItemClick(@Nullable GURL url, int resultPosition, boolean isProviderLabel) {
+        TraceEvent.begin("ContinuousSearchListMediator#handleItemClick");
         // When the provider label is clicked, we should go back to the page where CSN started on.
         if (isProviderLabel) {
             if (mStartNavigationIndex >= 0 && mCurrentTab != null
@@ -294,40 +307,24 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                     navigationController.goToNavigationIndex(mStartNavigationIndex);
                 }
             }
-            mProviderButtonClicked = true;
         } else if (mCurrentTab != null && url != null) {
             LoadUrlParams params = new LoadUrlParams(url.getSpec());
             params.setReferrer(
                     new Referrer("https://www.google.com", ReferrerPolicy.STRICT_ORIGIN));
             mCurrentTab.loadUrl(params);
-
-            RecordHistogram.recordCount100Histogram(
-                    "Browser.ContinuousSearch.UI.ClickedItemPosition"
-                            + SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory),
-                    resultPosition);
         }
+        TraceEvent.end("ContinuousSearchListMediator#handleItemClick");
     }
 
-    private void setVisibility(boolean visibility, Runnable onHideFinished) {
+    private void setVisibility(boolean visibility, Runnable onFinished) {
+        TraceEvent.begin("ContinuousSearchListMediator#setVisibility");
         mVisible = visibility;
-        if (mVisible) mUiShown = true;
-        mSetLayoutVisibility.onResult(new VisibilitySettings(mVisible, onHideFinished));
+        mSetLayoutVisibility.onResult(new VisibilitySettings(mVisible, onFinished));
+        TraceEvent.end("ContinuousSearchListMediator#setVisibility");
     }
 
     void onScrolled() {
         mScrolled = true;
-    }
-
-    private void recordUiMetrics() {
-        String histogramSuffix = SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory);
-
-        RecordHistogram.recordBooleanHistogram(
-                "Browser.ContinuousSearch.UI.CarouselScrolled2" + histogramSuffix, mScrolled);
-        RecordHistogram.recordBooleanHistogram(
-                "Browser.ContinuousSearch.UI.ProviderButtonClicked" + histogramSuffix,
-                mProviderButtonClicked);
-        RecordHistogram.recordBooleanHistogram(
-                "Browser.ContinuousSearch.UI.DismissButtonClicked" + histogramSuffix, mDismissed);
     }
 
     private void initScrollObserver() {
@@ -361,30 +358,27 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
 
         int itemBgColor = getBackgroundColorForParentBackgroundColor(color);
         boolean useDarkColors = shouldUseDarkElementColors(itemBgColor);
+        mRootViewModel.set(ContinuousSearchListProperties.PROVIDER_TEXT_STYLE,
+                useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Baseline_Dark
+                              : R.style.TextAppearance_TextMedium_Primary_Baseline_Light);
         for (ListItem listItem : mModelList) {
-            if (listItem.type == ListItemType.PROVIDER) {
-                listItem.model.set(ProviderProperties.TEXT_STYLE,
-                        useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Dark
-                                      : R.style.TextAppearance_TextMedium_Primary_Light);
-            } else {
-                listItem.model.set(ListItemProperties.BACKGROUND_COLOR, itemBgColor);
-                listItem.model.set(ListItemProperties.PRIMARY_TEXT_STYLE,
-                        useDarkColors ? R.style.TextAppearance_ContinuousNavigationChipText_Dark
-                                      : R.style.TextAppearance_ContinuousNavigationChipText_Light);
-                listItem.model.set(ListItemProperties.SECONDARY_TEXT_STYLE,
-                        useDarkColors ? R.style.TextAppearance_ContinuousNavigationChipHint_Dark
-                                      : R.style.TextAppearance_ContinuousNavigationChipHint_Light);
-                listItem.model.set(ListItemProperties.BORDER_COLOR,
-                        useDarkColors ? getColor(R.color.default_icon_color_dark)
-                                      : getColor(R.color.default_icon_color_light));
-            }
+            listItem.model.set(ListItemProperties.BACKGROUND_COLOR, itemBgColor);
+            listItem.model.set(ListItemProperties.PRIMARY_TEXT_STYLE,
+                    useDarkColors ? R.style.TextAppearance_ContinuousNavigationChipText_Dark
+                                  : R.style.TextAppearance_ContinuousNavigationChipText_Light);
+            listItem.model.set(ListItemProperties.SECONDARY_TEXT_STYLE,
+                    useDarkColors ? R.style.TextAppearance_ContinuousNavigationChipHint_Dark
+                                  : R.style.TextAppearance_ContinuousNavigationChipHint_Light);
+            listItem.model.set(ListItemProperties.BORDER_COLOR,
+                    useDarkColors ? getColor(R.color.default_icon_color_dark)
+                                  : getColor(R.color.default_icon_color_light));
         }
     }
 
     private int getBackgroundColorForParentBackgroundColor(int parentColor) {
         // TODO(crbug.com/1192784): Pass isIncognito here.
         return ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
-                mResources, parentColor, false);
+                mContext, parentColor, false);
     }
 
     private boolean shouldUseDarkElementColors(int backgroundColor) {
@@ -392,7 +386,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     }
 
     private int getColor(int id) {
-        return ApiCompatibilityUtils.getColor(mResources, id);
+        return ApiCompatibilityUtils.getColor(mContext.getResources(), id);
     }
 
     void destroy() {

@@ -46,6 +46,10 @@ class MockHttpStreamRequestDelegate : public HttpStreamRequest::Delegate {
  public:
   MockHttpStreamRequestDelegate();
 
+  MockHttpStreamRequestDelegate(const MockHttpStreamRequestDelegate&) = delete;
+  MockHttpStreamRequestDelegate& operator=(
+      const MockHttpStreamRequestDelegate&) = delete;
+
   ~MockHttpStreamRequestDelegate() override;
 
   // std::unique_ptr is not copyable and therefore cannot be mocked.
@@ -95,9 +99,6 @@ class MockHttpStreamRequestDelegate : public HttpStreamRequest::Delegate {
                     SSLCertRequestInfo* cert_info));
 
   MOCK_METHOD0(OnQuicBroken, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockHttpStreamRequestDelegate);
 };
 
 class MockHttpStreamFactoryJob : public HttpStreamFactory::Job {

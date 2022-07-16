@@ -55,6 +55,10 @@ bool NotificationCallback(const base::CommandLine& command_line,
 class ScopedVisibleWindow {
  public:
   ScopedVisibleWindow() : class_(0), window_(NULL) {}
+
+  ScopedVisibleWindow(const ScopedVisibleWindow&) = delete;
+  ScopedVisibleWindow& operator=(const ScopedVisibleWindow&) = delete;
+
   ~ScopedVisibleWindow() {
     if (window_)
       ::DestroyWindow(window_);
@@ -92,8 +96,6 @@ class ScopedVisibleWindow {
  private:
   ATOM class_;
   HWND window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVisibleWindow);
 };
 
 MULTIPROCESS_TEST_MAIN(ProcessSingletonTestProcessMain) {
@@ -146,6 +148,10 @@ MULTIPROCESS_TEST_MAIN(ProcessSingletonTestProcessMain) {
 // of rendezvous, specifically the ones where the singleton-owning process
 // is hung.
 class ProcessSingletonTest : public base::MultiProcessTest {
+ public:
+  ProcessSingletonTest(const ProcessSingletonTest&) = delete;
+  ProcessSingletonTest& operator=(const ProcessSingletonTest&) = delete;
+
  protected:
   enum WindowOption { WITH_WINDOW, NO_WINDOW };
 
@@ -156,8 +162,8 @@ class ProcessSingletonTest : public base::MultiProcessTest {
     ASSERT_NO_FATAL_FAILURE(base::MultiProcessTest::SetUp());
 
     // Drop the process finder notification timeout to one second for testing.
-    old_notification_timeout_ = chrome::SetNotificationTimeoutForTesting(
-        base::TimeDelta::FromSeconds(1));
+    old_notification_timeout_ =
+        chrome::SetNotificationTimeoutForTesting(base::Seconds(1));
   }
 
   void TearDown() override {
@@ -260,8 +266,6 @@ class ProcessSingletonTest : public base::MultiProcessTest {
   base::TimeDelta old_notification_timeout_;
   bool should_kill_called_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessSingletonTest);
 };
 
 }  // namespace

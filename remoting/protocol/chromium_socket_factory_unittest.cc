@@ -12,7 +12,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,7 +75,7 @@ class ChromiumSocketFactoryTest : public testing::Test,
   void VerifyCanSendAndReceive(rtc::AsyncPacketSocket* sender) {
     // UDP packets may be lost, so we have to retry sending it more than once.
     const int kMaxAttempts = 3;
-    const base::TimeDelta kAttemptPeriod = base::TimeDelta::FromSeconds(1);
+    const base::TimeDelta kAttemptPeriod = base::Seconds(1);
     std::string test_packet("TEST PACKET");
     int attempts = 0;
     rtc::PacketOptions options;

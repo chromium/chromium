@@ -15,9 +15,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/user_manager/user.h"
@@ -27,9 +27,9 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
 // The scope that will be used to access the ChromebookEmailService API.
 const char kChromebookOAuth2Scope[] =
     "https://www.googleapis.com/auth/chromebook.email";
@@ -69,6 +69,7 @@ std::unique_ptr<network::ResourceRequest> GetResourceRequest() {
   resource_request->method = "POST";
   return resource_request;
 }
+
 }  // namespace
 
 // static
@@ -256,4 +257,4 @@ ScopedRequestCallbackSetter::~ScopedRequestCallbackSetter() {
   MarketingBackendConnector::request_finished_for_tests_ = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -15,7 +15,6 @@
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "base/macros.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
@@ -47,6 +46,10 @@ class ASH_EXPORT KeyboardControllerImpl
  public:
   // |session_controller| is expected to outlive KeyboardControllerImpl.
   explicit KeyboardControllerImpl(SessionControllerImpl* session_controller);
+
+  KeyboardControllerImpl(const KeyboardControllerImpl&) = delete;
+  KeyboardControllerImpl& operator=(const KeyboardControllerImpl&) = delete;
+
   ~KeyboardControllerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -128,6 +131,8 @@ class ASH_EXPORT KeyboardControllerImpl
   void SendKeyRepeatUpdate();
   void SendKeyboardConfigUpdate();
 
+  void SetEnableFlagFromCommandLine();
+
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   SessionControllerImpl* session_controller_;  // unowned
   std::unique_ptr<keyboard::KeyboardUIController> keyboard_ui_controller_;
@@ -138,8 +143,6 @@ class ASH_EXPORT KeyboardControllerImpl
   // Note: the flag value cannot be changed from 'true' to 'false' because
   // original config is not stored.
   bool keyboard_config_from_pref_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardControllerImpl);
 };
 
 }  // namespace ash

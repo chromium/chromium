@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/video_tutorials/internal/proto_conversions.h"
 #include "chrome/browser/video_tutorials/internal/store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,53 +24,41 @@ namespace video_tutorials {
 
 class TutorialManagerImpl : public TutorialManager {
  public:
-  using TutorialStore = Store<TutorialGroup>;
+  using TutorialStore = Store<proto::VideoTutorialGroups>;
   TutorialManagerImpl(std::unique_ptr<TutorialStore> store, PrefService* prefs);
   ~TutorialManagerImpl() override;
 
  private:
   // TutorialManager implementation.
+  void Initialize(SuccessCallback callback) override;
+  bool IsInitialized() override;
   void GetTutorials(MultipleItemCallback callback) override;
   void GetTutorial(FeatureType feature_type,
                    SingleItemCallback callback) override;
-  const std::vector<std::string>& GetSupportedLanguages() override;
+  std::vector<std::string> GetSupportedLanguages() override;
   const std::vector<std::string>& GetAvailableLanguagesForTutorial(
       FeatureType feature_type) override;
   absl::optional<std::string> GetPreferredLocale() override;
   void SetPreferredLocale(const std::string& locale) override;
-  void SaveGroups(std::unique_ptr<std::vector<TutorialGroup>> groups) override;
+  std::string GetTextLocale() override;
+  void SaveGroups(std::unique_ptr<proto::VideoTutorialGroups> groups) override;
 
-  void Initialize();
-  void OnInitCompleted(bool success);
-  void OnInitialDataLoaded(
-      bool success,
-      std::unique_ptr<std::vector<TutorialGroup>> all_groups);
-  void MaybeCacheApiCall(base::OnceClosure api_call);
-  void OnTutorialsLoaded(
-      MultipleItemCallback callback,
-      bool success,
-      std::unique_ptr<std::vector<TutorialGroup>> loaded_groups);
-  void RunSingleItemCallback(SingleItemCallback callback,
-                             FeatureType feature_type,
-                             std::vector<Tutorial> tutorials_excluding_summary);
+  void OnDataLoaded(SuccessCallback callback,
+                    bool success,
+                    std::unique_ptr<proto::VideoTutorialGroups> loaded_groups);
+  void OnGroupsSaved(bool success);
 
+  // The underlying persistence store.
   std::unique_ptr<TutorialStore> store_;
-  PrefService* prefs_;
-
-  // List of languages for which we have tutorials.
-  std::vector<std::string> supported_languages_;
 
   // List of supported languages per tutorial.
   std::map<FeatureType, std::vector<std::string>> languages_for_tutorials_;
 
-  // We only keep the tutorials for the preferred locale.
-  absl::optional<TutorialGroup> tutorial_group_;
+  // Cached copy of the DB. Loaded on the first call to GetTutorials.
+  std::unique_ptr<proto::VideoTutorialGroups> tutorial_groups_;
 
-  // The initialization result of the database.
-  absl::optional<bool> init_success_;
-
-  // Caches the API calls in case initialization is not completed.
-  std::deque<base::OnceClosure> cached_api_calls_;
+  // The initialization status of the database.
+  bool initialized_{false};
 
   base::WeakPtrFactory<TutorialManagerImpl> weak_ptr_factory_{this};
 };

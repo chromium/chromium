@@ -55,16 +55,8 @@ function openGalleryExpectOpened(entry) {
   openGallery(entry, chrome.fileManagerPrivate.TaskResult.OPENED);
 }
 
-function openGalleryExpectMsgSent(entry) {
-  openGallery(entry, chrome.fileManagerPrivate.TaskResult.MESSAGE_SENT);
-}
-
 function testPngOpensGalleryReturnsOpened() {
   getFileEntry('testing', kTestPng).then(openGalleryExpectOpened);
-}
-
-function testPngOpensGalleryReturnsMsgSent() {
-  getFileEntry('testing', kTestPng).then(openGalleryExpectMsgSent);
 }
 
 // Handle the case where JSTestStarter has already injected a test to run.

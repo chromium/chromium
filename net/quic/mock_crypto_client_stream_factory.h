@@ -22,6 +22,11 @@ namespace net {
 class MockCryptoClientStreamFactory : public QuicCryptoClientStreamFactory {
  public:
   MockCryptoClientStreamFactory();
+
+  MockCryptoClientStreamFactory(const MockCryptoClientStreamFactory&) = delete;
+  MockCryptoClientStreamFactory& operator=(
+      const MockCryptoClientStreamFactory&) = delete;
+
   ~MockCryptoClientStreamFactory() override;
 
   quic::QuicCryptoClientStream* CreateQuicCryptoClientStream(
@@ -56,8 +61,6 @@ class MockCryptoClientStreamFactory : public QuicCryptoClientStreamFactory {
   base::queue<const ProofVerifyDetailsChromium*> proof_verify_details_queue_;
   std::unique_ptr<quic::QuicConfig> config_;
   bool use_mock_crypter_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCryptoClientStreamFactory);
 };
 
 }  // namespace net

@@ -83,7 +83,7 @@ void WebScopedVirtualTimePauser::DecrementVirtualTimePauseCount() {
   scheduler_->DecrementVirtualTimePauseCount();
   if (duration_ == VirtualTaskDuration::kNonInstant) {
     scheduler_->MaybeAdvanceVirtualTime(virtual_time_when_paused_ +
-                                        base::TimeDelta::FromMilliseconds(10));
+                                        base::Milliseconds(10));
   }
   if (virtual_time_enabled_when_paused_) {
     TRACE_EVENT_NESTABLE_ASYNC_END0(

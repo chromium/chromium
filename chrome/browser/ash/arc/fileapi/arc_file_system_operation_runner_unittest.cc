@@ -9,12 +9,11 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_file_system_instance.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -37,6 +36,12 @@ constexpr char kUrl[] = "content://test";
 class ArcFileSystemOperationRunnerTest : public testing::Test {
  public:
   ArcFileSystemOperationRunnerTest() = default;
+
+  ArcFileSystemOperationRunnerTest(const ArcFileSystemOperationRunnerTest&) =
+      delete;
+  ArcFileSystemOperationRunnerTest& operator=(
+      const ArcFileSystemOperationRunnerTest&) = delete;
+
   ~ArcFileSystemOperationRunnerTest() override = default;
 
   void SetUp() override {
@@ -138,13 +143,10 @@ class ArcFileSystemOperationRunnerTest : public testing::Test {
   FakeFileSystemInstance file_system_instance_;
 
   // Use the same initialization/destruction order as
-  // ChromeBrowserMainPartsChromeos.
+  // `ChromeBrowserMainPartsAsh`.
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcFileSystemOperationRunner> runner_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcFileSystemOperationRunnerTest);
 };
 
 TEST_F(ArcFileSystemOperationRunnerTest, RunImmediately) {

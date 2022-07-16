@@ -1,0 +1,22 @@
+Test that back/forward navigations report the bfcache status
+{
+    frameId : <string>
+    loaderId : <string>
+    notRestoredExplanations : [
+        [0] : {
+            reason : ContentMediaSession
+            type : SupportPending
+        }
+    ]
+}
+{
+    frameId : <string>
+    loaderId : <string>
+    notRestoredExplanations : [
+        [0] : {
+            reason : HTTPStatusNotOK
+            type : Circumstantial
+        }
+    ]
+}
+

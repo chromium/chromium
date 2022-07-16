@@ -46,14 +46,17 @@ class GetStorageKeysTask
   GetStorageKeysTask(AwQuotaManagerBridge::GetOriginsCallback callback,
                      QuotaManager* quota_manager);
 
+  GetStorageKeysTask(const GetStorageKeysTask&) = delete;
+  GetStorageKeysTask& operator=(const GetStorageKeysTask&) = delete;
+
   void Run();
 
  private:
   friend class base::RefCountedThreadSafe<GetStorageKeysTask>;
   ~GetStorageKeysTask();
 
-  void OnStorageKeysObtained(const std::set<blink::StorageKey>& storage_keys,
-                             blink::mojom::StorageType type);
+  void OnStorageKeysObtained(blink::mojom::StorageType type,
+                             const std::set<blink::StorageKey>& storage_keys);
 
   void OnUsageAndQuotaObtained(const blink::StorageKey& storage_key,
                                blink::mojom::QuotaStatusCode status_code,
@@ -72,8 +75,6 @@ class GetStorageKeysTask
 
   size_t num_callbacks_to_wait_;
   size_t num_callbacks_received_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetStorageKeysTask);
 };
 
 GetStorageKeysTask::GetStorageKeysTask(
@@ -90,16 +91,15 @@ void GetStorageKeysTask::Run() {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &QuotaManager::GetStorageKeysModifiedBetween, quota_manager_,
+          &QuotaManager::GetStorageKeysForType, quota_manager_,
           blink::mojom::StorageType::kTemporary,
-          base::Time() /* Since beginning of time. */,
-          base::Time::Max() /* Until the end of time. */,
-          base::BindOnce(&GetStorageKeysTask::OnStorageKeysObtained, this)));
+          base::BindOnce(&GetStorageKeysTask::OnStorageKeysObtained, this,
+                         blink::mojom::StorageType::kTemporary)));
 }
 
 void GetStorageKeysTask::OnStorageKeysObtained(
-    const std::set<blink::StorageKey>& storage_keys,
-    blink::mojom::StorageType type) {
+    blink::mojom::StorageType type,
+    const std::set<blink::StorageKey>& storage_keys) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   num_callbacks_to_wait_ = storage_keys.size();
   num_callbacks_received_ = 0u;
@@ -228,7 +228,8 @@ void AwQuotaManagerBridge::DeleteOriginOnUiThread(
           StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
           StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
           StoragePartition::REMOVE_DATA_MASK_WEBSQL,
-      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_TEMPORARY, GURL(origin));
+      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_TEMPORARY, GURL(origin),
+      base::DoNothing());
 }
 
 void AwQuotaManagerBridge::GetOrigins(JNIEnv* env,

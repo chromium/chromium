@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -62,6 +61,10 @@ class PasswordManager : public PasswordManagerInterface {
   static void RegisterLocalPrefs(PrefRegistrySimple* registry);
 
   explicit PasswordManager(PasswordManagerClient* client);
+
+  PasswordManager(const PasswordManager&) = delete;
+  PasswordManager& operator=(const PasswordManager&) = delete;
+
   ~PasswordManager() override;
 
   // FormSubmissionObserver:
@@ -377,8 +380,6 @@ class PasswordManager : public PasswordManagerInterface {
   LeakDetectionDelegate leak_delegate_;
 
   absl::optional<PossibleUsernameData> possible_username_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManager);
 };
 
 }  // namespace password_manager

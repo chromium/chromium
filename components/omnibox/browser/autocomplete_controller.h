@@ -139,19 +139,17 @@ class AutocompleteController : public AutocompleteProviderListener,
   // content; see |OmniboxEditModel::user_input_in_progress_|.
   void ResetSession();
 
-  // Constructs the final destination URL for a given match using additional
-  // parameters otherwise not available at initial construction time.  This
-  // method should be called from OmniboxEditModel::OpenMatch() before the user
-  // navigates to the selected match.
-  void UpdateMatchDestinationURLWithQueryFormulationTime(
+  // Updates the destination URL for the given match with the final AQS
+  // parameter using additional information otherwise not available at initial
+  // construction time iff the provider's TemplateURL supports assisted query
+  // stats.
+  // This method should be called right before the user navigates to the match.
+  void UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
       base::TimeDelta query_formulation_time,
       AutocompleteMatch* match) const;
 
-  // Constructs the final destination URL for a given match using additional
-  // parameters otherwise not available at initial construction time.
-  void UpdateMatchDestinationURL(
-      const TemplateURLRef::SearchTermsArgs& search_terms_args,
-      AutocompleteMatch* match) const;
+  // Constructs and sets the final destination URL on the given match.
+  void SetMatchDestinationURL(AutocompleteMatch* match) const;
 
   // Prepend missing tail suggestion prefixes in results, if present.
   void InlineTailPrefixes();
@@ -201,15 +199,15 @@ class AutocompleteController : public AutocompleteProviderListener,
 #if defined(OS_WIN)
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsUIATest, AccessibleOmnibox);
 #endif  // OS_WIN
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest, SetSelectedLine);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest,
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, SetSelectedLine);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
                            SetSelectedLineWithNoDefaultMatches);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest, TestFocusFixing);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest, PopupPositionChanging);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest, PopupStepSelection);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest,
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, TestFocusFixing);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, PopupPositionChanging);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, PopupStepSelection);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
                            PopupStepSelectionWithHiddenGroupIds);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest,
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
                            PopupInlineAutocompleteAndTemporaryText);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupContentsViewTest,
                            EmitSelectedChildrenChangedAccessibilityEvent);
@@ -247,9 +245,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   // provider name as a description on the first match in the group.
   void UpdateKeywordDescriptions(AutocompleteResult* result);
 
-  // For each AutocompleteMatch returned by SearchProvider, updates the
-  // destination_url iff the provider's TemplateURL supports assisted query
-  // stats.
+  // For each AutocompleteMatch in |result|, updates the assisted query stats
+  // iff the provider's TemplateURL supports it.
   void UpdateAssistedQueryStats(AutocompleteResult* result);
 
   // Calls AutocompleteController::Observer::OnResultChanged() and if done sends

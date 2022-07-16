@@ -1603,7 +1603,7 @@ TEST_F(DiskCacheEntryTest, MemoryOnlyEnumerationWithSparseEntries) {
     ++count;
     disk_cache::MemEntryImpl* mem_entry =
         reinterpret_cast<disk_cache::MemEntryImpl*>(entry);
-    EXPECT_EQ(disk_cache::MemEntryImpl::PARENT_ENTRY, mem_entry->type());
+    EXPECT_EQ(disk_cache::MemEntryImpl::EntryType::kParent, mem_entry->type());
     mem_entry->Close();
   }
   EXPECT_EQ(1, count);
@@ -2262,7 +2262,7 @@ void DiskCacheEntryTest::DoomSparseEntry() {
       // Most likely we are waiting for the result of reading the sparse info
       // (it's always async on Posix so it is easy to miss). Unfortunately we
       // don't have any signal to watch for so we can only wait.
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(500));
+      base::PlatformThread::Sleep(base::Milliseconds(500));
       base::RunLoop().RunUntilIdle();
     }
     EXPECT_EQ(0, cache_->GetEntryCount());
@@ -2291,6 +2291,10 @@ class SparseTestCompletionCallback: public net::TestCompletionCallback {
       std::unique_ptr<disk_cache::Backend> cache)
       : cache_(std::move(cache)) {}
 
+  SparseTestCompletionCallback(const SparseTestCompletionCallback&) = delete;
+  SparseTestCompletionCallback& operator=(const SparseTestCompletionCallback&) =
+      delete;
+
  private:
   void SetResult(int result) override {
     cache_.reset();
@@ -2298,7 +2302,6 @@ class SparseTestCompletionCallback: public net::TestCompletionCallback {
   }
 
   std::unique_ptr<disk_cache::Backend> cache_;
-  DISALLOW_COPY_AND_ASSIGN(SparseTestCompletionCallback);
 };
 
 // Tests that we don't crash when the backend is deleted while we are working
@@ -4878,7 +4881,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheNoSideDataEOF) {
   SetSimpleCacheMode();
   InitCache();
 
-  const std::string key("the first key");
+  const char key[] = "the first key";
   const int kSize = 1024;
   CreateEntryWithHeaderBodyAndSideData(key, kSize);
 
@@ -4888,7 +4891,20 @@ TEST_F(DiskCacheEntryTest, SimpleCacheNoSideDataEOF) {
 
   TruncateFileFromEnd(1 /*side data file_index*/, key, kSize,
                       static_cast<int>(sizeof(disk_cache::SimpleFileEOF)));
-  EXPECT_THAT(OpenEntry(key, &entry), IsError(net::ERR_FAILED));
+  EXPECT_THAT(OpenEntry(key, &entry), IsOk());
+  // The corrupted stream should have been deleted.
+  EXPECT_FALSE(SimpleCacheThirdStreamFileExists(key));
+  // _0 should still exist.
+  base::FilePath path_0 = cache_path_.AppendASCII(
+      disk_cache::simple_util::GetFilenameFromKeyAndFileIndex(key, 0));
+  EXPECT_TRUE(base::PathExists(path_0));
+
+  scoped_refptr<net::IOBuffer> check_stream_data =
+      base::MakeRefCounted<net::IOBuffer>(kSize);
+  EXPECT_EQ(kSize, ReadData(entry, 0, 0, check_stream_data.get(), kSize));
+  EXPECT_EQ(kSize, ReadData(entry, 1, 0, check_stream_data.get(), kSize));
+  EXPECT_EQ(0, entry->GetDataSize(2));
+  entry->Close();
 }
 
 TEST_F(DiskCacheEntryTest, SimpleCacheReadWithoutKeySHA256) {
@@ -5291,8 +5307,7 @@ void DiskCacheEntryTest::LastUsedTimePersists() {
   disk_cache::Entry* entry1 = nullptr;
   ASSERT_THAT(CreateEntry(kKey, &entry1), IsOk());
   ASSERT_TRUE(nullptr != entry1);
-  base::Time modified_last_used =
-      entry1->GetLastUsed() - base::TimeDelta::FromMinutes(5);
+  base::Time modified_last_used = entry1->GetLastUsed() - base::Minutes(5);
   entry1->SetLastUsedTimeForTest(modified_last_used);
   entry1->Close();
 
@@ -5301,8 +5316,8 @@ void DiskCacheEntryTest::LastUsedTimePersists() {
   ASSERT_TRUE(nullptr != entry2);
 
   base::TimeDelta diff = modified_last_used - entry2->GetLastUsed();
-  EXPECT_LT(diff, base::TimeDelta::FromSeconds(2));
-  EXPECT_GT(diff, -base::TimeDelta::FromSeconds(2));
+  EXPECT_LT(diff, base::Seconds(2));
+  EXPECT_GT(diff, -base::Seconds(2));
   entry2->Close();
 }
 

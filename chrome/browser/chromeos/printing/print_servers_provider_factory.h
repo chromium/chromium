@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 class AccountId;
@@ -25,6 +24,10 @@ class PrintServersProviderFactory {
   static PrintServersProviderFactory* Get();
 
   PrintServersProviderFactory();
+
+  PrintServersProviderFactory(const PrintServersProviderFactory&) = delete;
+  PrintServersProviderFactory& operator=(const PrintServersProviderFactory&) =
+      delete;
 
   // Returns a WeakPtr to the PrintServersProvider registered for
   // |account_id|. If an PrintServersProvider does not exist, one will be
@@ -56,8 +59,6 @@ class PrintServersProviderFactory {
   std::map<AccountId, std::unique_ptr<PrintServersProvider>> providers_by_user_;
 
   std::unique_ptr<PrintServersProvider> device_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintServersProviderFactory);
 };
 
 }  // namespace chromeos

@@ -23,7 +23,7 @@ class WeakIdentifierMapTest : public ::testing::Test {
 
   void CollectGarbage() {
     ThreadState::Current()->CollectAllGarbageForTesting(
-        BlinkGC::kNoHeapPointersOnStack);
+        ThreadState::StackState::kNoHeapPointers);
   }
 };
 

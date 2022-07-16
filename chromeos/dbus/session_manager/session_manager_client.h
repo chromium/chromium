@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
@@ -131,6 +130,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
 
   // Returns the global instance if initialized. May return null.
   static SessionManagerClient* Get();
+
+  SessionManagerClient(const SessionManagerClient&) = delete;
+  SessionManagerClient& operator=(const SessionManagerClient&) = delete;
 
   // Sets the delegate used by the stub implementation. Ownership of |delegate|
   // remains with the caller.
@@ -484,9 +486,6 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // Use Initialize/Shutdown instead.
   SessionManagerClient();
   virtual ~SessionManagerClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionManagerClient);
 };
 
 }  // namespace chromeos

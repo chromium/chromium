@@ -25,6 +25,10 @@ class AwContentBrowserClient;
 class AwBrowserMainParts : public content::BrowserMainParts {
  public:
   explicit AwBrowserMainParts(AwContentBrowserClient* browser_client);
+
+  AwBrowserMainParts(const AwBrowserMainParts&) = delete;
+  AwBrowserMainParts& operator=(const AwBrowserMainParts&) = delete;
+
   ~AwBrowserMainParts() override;
 
   // Overriding methods from content::BrowserMainParts.
@@ -46,8 +50,6 @@ class AwBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<metrics::MemoryMetricsLogger> metrics_logger_;
 
   std::unique_ptr<AwBrowserProcess> browser_process_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwBrowserMainParts);
 };
 
 }  // namespace android_webview

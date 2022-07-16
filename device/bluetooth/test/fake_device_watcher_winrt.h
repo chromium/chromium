@@ -21,6 +21,10 @@ class FakeDeviceWatcherWinrt
           ABI::Windows::Devices::Enumeration::IDeviceWatcher> {
  public:
   FakeDeviceWatcherWinrt();
+
+  FakeDeviceWatcherWinrt(const FakeDeviceWatcherWinrt&) = delete;
+  FakeDeviceWatcherWinrt& operator=(const FakeDeviceWatcherWinrt&) = delete;
+
   ~FakeDeviceWatcherWinrt() override;
 
   // IDeviceWatcher:
@@ -82,8 +86,6 @@ class FakeDeviceWatcherWinrt
       ABI::Windows::Devices::Enumeration::DeviceWatcher*,
       IInspectable*>>
       enumerated_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceWatcherWinrt);
 };
 
 }  // namespace device

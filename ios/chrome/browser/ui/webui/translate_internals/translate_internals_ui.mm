@@ -34,12 +34,11 @@ web::WebUIIOSDataSource* CreateTranslateInternalsHTMLSource() {
   source->AddResourcePath("translate_internals.js",
                           IDR_IOS_TRANSLATE_INTERNALS_JS);
 
-  base::DictionaryValue langs;
-  translate::TranslateInternalsHandler::GetLanguages(&langs);
-  for (base::DictionaryValue::Iterator it(langs); !it.IsAtEnd(); it.Advance()) {
-    std::string key = "language-" + it.key();
-    std::string value;
-    it.value().GetAsString(&value);
+  base::Value langs = translate::TranslateInternalsHandler::GetLanguages();
+  for (const auto key_value_pair : langs.DictItems()) {
+    DCHECK(key_value_pair.second.is_string());
+    std::string key = "language-" + key_value_pair.first;
+    const std::string& value = key_value_pair.second.GetString();
     source->AddString(key, value);
   }
 

@@ -85,6 +85,8 @@ enum class InstallError {
   CLEAN_INSTALL_DIR_FAILED = 15,
   INSTALL_VERIFICATION_FAILED = 16,
   MISSING_INSTALL_PARAMS = 17,
+  // If LaunchProcess is attempted on unsupported non-desktop skus e.g. xbox
+  LAUNCH_PROCESS_FAILED = 18,
   CUSTOM_ERROR_BASE = 100,  // Specific installer errors go above this value.
 };
 

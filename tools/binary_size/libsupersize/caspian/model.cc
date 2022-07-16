@@ -166,9 +166,11 @@ int32_t DeltaSymbol::Size() const {
 }
 
 int32_t DeltaSymbol::Flags() const {
+  // Compute the union of flags (|) instead of symmetric difference (^), as
+  // that is more useful when querying for symbols with flags.
   int32_t before_flags = before_ ? before_->Flags() : 0;
   int32_t after_flags = after_ ? after_->Flags() : 0;
-  return before_flags ^ after_flags;
+  return before_flags | after_flags;
 }
 
 int32_t DeltaSymbol::Padding() const {

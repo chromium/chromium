@@ -4,15 +4,12 @@
 
 static_library("browser") {
   sources = [
-    "prefs_util.cc",
-    "prefs_util.h",
     "print_composite_client.cc",
     "print_composite_client.h",
     "print_manager.cc",
     "print_manager.h",
     "print_manager_utils.cc",
     "print_manager_utils.h",
-    "service_sandbox_type.h",
   ]
 
   public_deps = [ "//content/public/browser" ]
@@ -22,7 +19,6 @@ static_library("browser") {
     "//build:chromeos_buildflags",
     "//components/crash/core/common",
     "//components/discardable_memory/service",
-    "//components/prefs",
     "//components/printing/common",
     "//components/printing/common:mojo_interfaces",
     "//components/services/print_compositor/public/cpp",
@@ -30,7 +26,8 @@ static_library("browser") {
     "//components/site_isolation",
     "//components/strings:components_strings_grit",
     "//printing",
-    "//printing/common:common",
+    "//printing/backend",
+    "//printing/common",
     "//ui/base",
     "//ui/gfx/geometry",
   ]

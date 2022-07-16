@@ -95,8 +95,7 @@ SendTabToSelfSubMenuModel::SendTabToSelfSubMenuModel(
     SendTabToSelfMenuType menu_type,
     const GURL& link_url)
     : ui::SimpleMenuModel(this),
-      content::WebContentsObserver(tab),
-      tab_(tab),
+      tab_(tab->GetWeakPtr()),
       menu_type_(menu_type),
       link_url_(link_url) {
   DCHECK(tab_);
@@ -128,15 +127,11 @@ void SendTabToSelfSubMenuModel::ExecuteCommand(int command_id,
   const ValidDeviceItem& item = valid_device_items_[vector_index];
   if (menu_type_ == SendTabToSelfMenuType::kLink) {
     // Is sharing a link from link menu.
-    CreateNewEntry(tab_, item.device_name, item.cache_guid, link_url_);
+    CreateNewEntry(tab_.get(), item.device_name, item.cache_guid, link_url_);
   } else {
     // Is sharing a tab from tab menu, content menu or omnibox menu.
-    CreateNewEntry(tab_, item.device_name, item.cache_guid);
+    CreateNewEntry(tab_.get(), item.device_name, item.cache_guid);
   }
-}
-
-void SendTabToSelfSubMenuModel::WebContentsDestroyed() {
-  tab_ = nullptr;
 }
 
 void SendTabToSelfSubMenuModel::Build(Profile* profile) {

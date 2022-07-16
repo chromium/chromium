@@ -5,6 +5,7 @@
 #include "ui/views/corewm/tooltip_controller_test_helper.h"
 
 #include "ui/aura/window.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace views {
 namespace corewm {
@@ -59,6 +60,15 @@ void TooltipControllerTestHelper::SetTooltipShowDelayEnable(
     bool tooltip_show_delay) {
   controller_->state_manager_->SetTooltipShowDelayedForTesting(
       tooltip_show_delay);
+}
+
+void TooltipControllerTestHelper::MockWindowActivated(aura::Window* window,
+                                                      bool active) {
+  aura::Window* gained_active = active ? window : nullptr;
+  aura::Window* lost_active = active ? nullptr : window;
+  controller_->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
+      gained_active, lost_active);
 }
 
 TooltipTestView::TooltipTestView() = default;

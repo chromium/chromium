@@ -6,8 +6,8 @@
 #define MEDIA_FUCHSIA_CDM_FUCHSIA_DECRYPTOR_H_
 
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "media/base/decryptor.h"
 #include "media/fuchsia/cdm/fuchsia_stream_decryptor.h"
@@ -20,6 +20,10 @@ class FuchsiaDecryptor : public Decryptor {
  public:
   // Caller should make sure |cdm| lives longer than this class.
   explicit FuchsiaDecryptor(FuchsiaCdmContext* cdm_context);
+
+  FuchsiaDecryptor(const FuchsiaDecryptor&) = delete;
+  FuchsiaDecryptor& operator=(const FuchsiaDecryptor&) = delete;
+
   ~FuchsiaDecryptor() override;
 
   // media::Decryptor implementation:
@@ -44,8 +48,6 @@ class FuchsiaDecryptor : public Decryptor {
 
   // TaskRunner for the thread on which |audio_decryptor_| was created.
   scoped_refptr<base::SingleThreadTaskRunner> audio_decryptor_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuchsiaDecryptor);
 };
 
 }  // namespace media

@@ -105,6 +105,44 @@ export class MetricsUtils {
         MetricsUtils.OVERRIDE_SPEECH_RATE_MULTIPLIER_METRIC,
         MetricsUtils.speechMultiplierToSparseHistogramInt_(rate));
   }
+
+  /**
+   * Records the TTS engine used for a single speech utterance.
+   * @param {string} voiceName voice in TTS
+   * @param {PrefsManager} prefsManager A PrefsManager with the users's current
+   *    preferences.
+   */
+  static recordTtsEngineUsed(voiceName, prefsManager) {
+    let ttsEngine;
+    if (voiceName === '') {
+      // No voice name passed to TTS, default voice is used
+      ttsEngine = MetricsUtils.TtsEngineUsed.SYSTEM_DEFAULT;
+    } else {
+      const extensionId = prefsManager.ttsExtensionForVoice(voiceName);
+      ttsEngine = MetricsUtils.ttsEngineForExtensionId_(extensionId);
+    }
+    chrome.metricsPrivate.recordEnumerationValue(
+        MetricsUtils.TTS_ENGINE_USED_METRIC.METRIC_NAME, ttsEngine,
+        MetricsUtils.TTS_ENGINE_USED_METRIC.EVENT_COUNT);
+  }
+
+  /**
+   * Converts extension id of TTS voice into metric for logging.
+   * @param {string} extensionId Extension ID of TTS engine
+   * @returns {MetricsUtils.TtsEngineUsed} Enum used in TtsEngineUsed histogram.
+   */
+  static ttsEngineForExtensionId_(extensionId) {
+    switch (extensionId) {
+      case PrefsManager.ENHANCED_TTS_EXTENSION_ID:
+        return MetricsUtils.TtsEngineUsed.GOOGLE_NETWORK;
+      case PrefsManager.ESPEAK_EXTENSION_ID:
+        return MetricsUtils.TtsEngineUsed.ESPEAK;
+      case PrefsManager.GOOGLE_TTS_EXTENSION_ID:
+        return MetricsUtils.TtsEngineUsed.GOOGLE_LOCAL;
+      default:
+        return MetricsUtils.TtsEngineUsed.UNKNOWN;
+    }
+  }
 }
 
 /**
@@ -155,6 +193,29 @@ MetricsUtils.StateChangeEvent = {
 MetricsUtils.STATE_CHANGE_METRIC = {
   EVENT_COUNT: Object.keys(MetricsUtils.StateChangeEvent).length,
   METRIC_NAME: 'Accessibility.CrosSelectToSpeak.StateChangeEvent'
+};
+
+/**
+ * CrosSelectToSpeakTtsEngineUsed enums.
+ * These values are persisted to logs and should not be renumbered or re-used.
+ * See tools/metrics/histograms/enums.xml.
+ * @enum {number}
+ */
+MetricsUtils.TtsEngineUsed = {
+  UNKNOWN: 0,
+  SYSTEM_DEFAULT: 1,
+  ESPEAK: 2,
+  GOOGLE_LOCAL: 3,
+  GOOGLE_NETWORK: 4,
+};
+
+/**
+ * Constants for the TTS engine metric, CrosSelectToSpeak.TtsEngineUsed.
+ * @type {MetricsUtils.EnumerationMetric}
+ */
+MetricsUtils.TTS_ENGINE_USED_METRIC = {
+  EVENT_COUNT: Object.keys(MetricsUtils.TtsEngineUsed).length,
+  METRIC_NAME: 'Accessibility.CrosSelectToSpeak.TtsEngineUsed'
 };
 
 /**

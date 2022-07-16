@@ -26,7 +26,6 @@ source_set("ipc_client_sources") {
     "shared_image_interface_proxy.h",
   ]
   configs += [
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//gpu:gpu_implementation",
   ]
   deps = [

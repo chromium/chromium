@@ -6,6 +6,7 @@
 
 #include "ash/app_list/views/contents_view.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/views/focus/focus_manager.h"
 
 namespace ash {
 
@@ -29,11 +30,6 @@ gfx::Size AppListPage::GetPreferredSearchBoxSize() const {
   return gfx::Size();
 }
 
-absl::optional<int> AppListPage::GetSearchBoxTop(
-    AppListViewState view_state) const {
-  return absl::nullopt;
-}
-
 void AppListPage::UpdatePageBoundsForState(AppListState state,
                                            const gfx::Rect& contents_bounds,
                                            const gfx::Rect& search_box_bounds) {
@@ -42,11 +38,13 @@ void AppListPage::UpdatePageBoundsForState(AppListState state,
 }
 
 views::View* AppListPage::GetFirstFocusableView() {
-  return nullptr;
+  return GetFocusManager()->GetNextFocusableView(
+      this, GetWidget(), false /* reverse */, false /* dont_loop */);
 }
 
 views::View* AppListPage::GetLastFocusableView() {
-  return nullptr;
+  return GetFocusManager()->GetNextFocusableView(
+      this, GetWidget(), true /* reverse */, false /* dont_loop */);
 }
 
 void AppListPage::AnimateOpacity(float current_progress,

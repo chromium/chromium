@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_WIPE_USERS_JOB_H_
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_WIPE_USERS_JOB_H_
 
-#include "base/macros.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 namespace policy {
@@ -15,6 +14,11 @@ class RemoteCommandsService;
 class DeviceCommandWipeUsersJob : public RemoteCommandJob {
  public:
   explicit DeviceCommandWipeUsersJob(RemoteCommandsService* service);
+
+  DeviceCommandWipeUsersJob(const DeviceCommandWipeUsersJob&) = delete;
+  DeviceCommandWipeUsersJob& operator=(const DeviceCommandWipeUsersJob&) =
+      delete;
+
   ~DeviceCommandWipeUsersJob() override;
 
   // RemoteCommandJob:
@@ -28,8 +32,6 @@ class DeviceCommandWipeUsersJob : public RemoteCommandJob {
 
  private:
   RemoteCommandsService* const service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandWipeUsersJob);
 };
 
 }  // namespace policy

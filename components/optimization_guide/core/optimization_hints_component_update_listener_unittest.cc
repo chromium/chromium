@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -29,6 +28,9 @@ class TestObserver : public OptimizationHintsComponentObserver {
   TestObserver()
       : hints_component_notification_count_(0),
         hints_component_version_("0.0.0.0") {}
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
 
   ~TestObserver() override {}
 
@@ -52,13 +54,17 @@ class TestObserver : public OptimizationHintsComponentObserver {
   int hints_component_notification_count_;
   base::Version hints_component_version_;
   base::FilePath hints_component_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 class OptimizationHintsComponentUpdateListenerTest : public testing::Test {
  public:
   OptimizationHintsComponentUpdateListenerTest() = default;
+
+  OptimizationHintsComponentUpdateListenerTest(
+      const OptimizationHintsComponentUpdateListenerTest&) = delete;
+  OptimizationHintsComponentUpdateListenerTest& operator=(
+      const OptimizationHintsComponentUpdateListenerTest&) = delete;
+
   ~OptimizationHintsComponentUpdateListenerTest() override = default;
 
   void SetUp() override {
@@ -98,8 +104,6 @@ class OptimizationHintsComponentUpdateListenerTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 
   std::unique_ptr<TestObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptimizationHintsComponentUpdateListenerTest);
 };
 
 TEST_F(OptimizationHintsComponentUpdateListenerTest,

@@ -103,8 +103,7 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithTypeUnsafeKeyLabel) {
   base::test::TaskEnvironment env(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  base::Time one_minute_from_now =
-      base::Time::Now() + base::TimeDelta::FromMinutes(1);
+  base::Time one_minute_from_now = base::Time::Now() + base::Minutes(1);
   int64_t one_minute_from_now_in_micros =
       (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
@@ -134,8 +133,7 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithKeyLabelTooSmall) {
   base::test::TaskEnvironment env(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  base::Time one_minute_from_now =
-      base::Time::Now() + base::TimeDelta::FromMinutes(1);
+  base::Time one_minute_from_now = base::Time::Now() + base::Minutes(1);
   int64_t one_minute_from_now_in_micros =
       (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
@@ -163,8 +161,7 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithKeyLabelTooLarge) {
   base::test::TaskEnvironment env(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  base::Time one_minute_from_now =
-      base::Time::Now() + base::TimeDelta::FromMinutes(1);
+  base::Time one_minute_from_now = base::Time::Now() + base::Minutes(1);
   int64_t one_minute_from_now_in_micros =
       (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
@@ -192,8 +189,7 @@ TEST(TrustTokenKeyCommitmentParser, RejectsOtherwiseValidButNonBase64Key) {
   base::test::TaskEnvironment env(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  base::Time one_minute_from_now =
-      base::Time::Now() + base::TimeDelta::FromMinutes(1);
+  base::Time one_minute_from_now = base::Time::Now() + base::Minutes(1);
   int64_t one_minute_from_now_in_micros =
       (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
@@ -220,8 +216,7 @@ TEST(TrustTokenKeyCommitmentParser, AcceptsKeyWithExpiryAndBody) {
   base::test::TaskEnvironment env(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  base::Time one_minute_from_now =
-      base::Time::Now() + base::TimeDelta::FromMinutes(1);
+  base::Time one_minute_from_now = base::Time::Now() + base::Minutes(1);
   int64_t one_minute_from_now_in_micros =
       (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
@@ -249,13 +244,11 @@ TEST(TrustTokenKeyCommitmentParser, AcceptsMultipleKeys) {
   base::test::TaskEnvironment env(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  base::Time one_minute_from_now =
-      base::Time::Now() + base::TimeDelta::FromMinutes(1);
+  base::Time one_minute_from_now = base::Time::Now() + base::Minutes(1);
   int64_t one_minute_from_now_in_micros =
       (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
-  base::Time two_minutes_from_now =
-      base::Time::Now() + base::TimeDelta::FromMinutes(2);
+  base::Time two_minutes_from_now = base::Time::Now() + base::Minutes(2);
   int64_t two_minutes_from_now_in_micros =
       (two_minutes_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
@@ -330,12 +323,10 @@ TEST(TrustTokenKeyCommitmentParser, IgnoreKeyWithExpiryInThePast) {
   // Ensure that "one minute ago" yields a nonnegative number of microseconds
   // past the Unix epoch.
   env.AdvanceClock(std::max<base::TimeDelta>(
-      base::TimeDelta(), base::Time::UnixEpoch() +
-                             base::TimeDelta::FromMinutes(1) -
-                             base::Time::Now()));
+      base::TimeDelta(),
+      base::Time::UnixEpoch() + base::Minutes(1) - base::Time::Now()));
 
-  base::Time one_minute_before_now =
-      base::Time::Now() - base::TimeDelta::FromMinutes(1);
+  base::Time one_minute_before_now = base::Time::Now() - base::Minutes(1);
   int64_t one_minute_before_now_in_micros =
       (one_minute_before_now - base::Time::UnixEpoch()).InMicroseconds();
 
@@ -363,8 +354,7 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithNoBody) {
   base::test::TaskEnvironment env(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  base::Time one_minute_from_now =
-      base::Time::Now() + base::TimeDelta::FromMinutes(1);
+  base::Time one_minute_from_now = base::Time::Now() + base::Minutes(1);
   int64_t one_minute_from_now_in_micros =
       (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
 

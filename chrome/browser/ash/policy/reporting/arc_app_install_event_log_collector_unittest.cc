@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -45,6 +44,12 @@ class FakeAppInstallEventLogCollectorDelegate
     : public ArcAppInstallEventLogCollector::Delegate {
  public:
   FakeAppInstallEventLogCollectorDelegate() = default;
+
+  FakeAppInstallEventLogCollectorDelegate(
+      const FakeAppInstallEventLogCollectorDelegate&) = delete;
+  FakeAppInstallEventLogCollectorDelegate& operator=(
+      const FakeAppInstallEventLogCollectorDelegate&) = delete;
+
   ~FakeAppInstallEventLogCollectorDelegate() override = default;
 
   struct Request {
@@ -92,8 +97,6 @@ class FakeAppInstallEventLogCollectorDelegate
   int add_for_all_count_ = 0;
   int add_count_ = 0;
   std::vector<Request> requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAppInstallEventLogCollectorDelegate);
 };
 
 int64_t TimeToTimestamp(base::Time time) {
@@ -103,6 +106,12 @@ int64_t TimeToTimestamp(base::Time time) {
 }  // namespace
 
 class ArcAppInstallEventLogCollectorTest : public testing::Test {
+ public:
+  ArcAppInstallEventLogCollectorTest(
+      const ArcAppInstallEventLogCollectorTest&) = delete;
+  ArcAppInstallEventLogCollectorTest& operator=(
+      const ArcAppInstallEventLogCollectorTest&) = delete;
+
  protected:
   ArcAppInstallEventLogCollectorTest() = default;
   ~ArcAppInstallEventLogCollectorTest() override = default;
@@ -177,8 +186,6 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
   FakeAppInstallEventLogCollectorDelegate delegate_;
   TestingPrefServiceSimple pref_service_;
   ArcAppTest arc_app_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppInstallEventLogCollectorTest);
 };
 
 // Test the case when collector is created and destroyed inside the one user
@@ -355,7 +362,7 @@ TEST_F(ArcAppInstallEventLogCollectorTest, CloudDPSEvent) {
   EXPECT_EQ(0, delegate()->requests()[1].event.clouddps_response());
 
   // One package succeeded.
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   collector->OnCloudDpsSucceeded(time, {kPackageName});
   ASSERT_EQ(3, delegate()->add_count());
   ASSERT_EQ(0, delegate()->add_for_all_count());
@@ -367,7 +374,7 @@ TEST_F(ArcAppInstallEventLogCollectorTest, CloudDPSEvent) {
   EXPECT_FALSE(delegate()->requests()[0].event.has_clouddps_response());
 
   // One package failed.
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   collector->OnCloudDpsFailed(time, kPackageName2,
                               arc::mojom::InstallErrorReason::TIMEOUT);
   ASSERT_EQ(4, delegate()->add_count());
@@ -439,7 +446,7 @@ TEST_F(ArcAppInstallEventLogCollectorTest, InstallPackages) {
   EXPECT_EQ(kPackageName2, delegate()->last_request().package_name);
   EXPECT_TRUE(delegate()->last_request().add_disk_space_info);
 
-  time += base::TimeDelta::FromSeconds(1);
+  time += base::Seconds(1);
   collector->OnReportForceInstallMainLoopFailed(time, {kPackageName2});
   EXPECT_EQ(6, delegate()->add_count());
   EXPECT_EQ(em::AppInstallReportLogEvent::CLOUDDPC_MAIN_LOOP_FAILED,

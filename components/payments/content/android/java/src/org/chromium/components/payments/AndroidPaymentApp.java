@@ -174,9 +174,8 @@ public class AndroidPaymentApp
 
         // WindowAndroid.IntentCallback implementation.
         @Override
-        public void onIntentCompleted(WindowAndroid windowAndroid, int resultCode, Intent data) {
+        public void onIntentCompleted(int resultCode, Intent data) {
             assert mIntentCallback != null;
-            windowAndroid.removeIntentCallback(this);
             IntentResult intentResult = new IntentResult();
             intentResult.resultCode = resultCode;
             intentResult.data = data;

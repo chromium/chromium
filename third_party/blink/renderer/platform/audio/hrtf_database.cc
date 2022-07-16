@@ -104,7 +104,7 @@ void HRTFDatabase::GetKernelsFromAzimuthElevation(double azimuth_blend,
 unsigned HRTFDatabase::IndexFromElevationAngle(double elevation_angle) {
   // Clamp to allowed range.
   elevation_angle =
-      clampTo<double, double>(elevation_angle, kMinElevation, kMaxElevation);
+      ClampTo<double, double>(elevation_angle, kMinElevation, kMaxElevation);
 
   unsigned elevation_index = static_cast<int>(
       kInterpolationFactor * (elevation_angle - kMinElevation) /

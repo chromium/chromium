@@ -5,7 +5,6 @@
 #ifndef MEDIA_MOJO_CLIENTS_MOJO_ANDROID_OVERLAY_H_
 #define MEDIA_MOJO_CLIENTS_MOJO_ANDROID_OVERLAY_H_
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "media/base/android/android_overlay.h"
 #include "media/mojo/mojom/android_overlay.mojom.h"
@@ -23,6 +22,9 @@ class MojoAndroidOverlay : public AndroidOverlay,
       mojo::PendingRemote<mojom::AndroidOverlayProvider> pending_provider,
       AndroidOverlayConfig config,
       const base::UnguessableToken& routing_token);
+
+  MojoAndroidOverlay(const MojoAndroidOverlay&) = delete;
+  MojoAndroidOverlay& operator=(const MojoAndroidOverlay&) = delete;
 
   ~MojoAndroidOverlay() override;
 
@@ -45,8 +47,6 @@ class MojoAndroidOverlay : public AndroidOverlay,
 
   // Have we received OnSurfaceReady yet?
   bool received_surface_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAndroidOverlay);
 };
 
 }  // namespace media

@@ -12,8 +12,8 @@
 #include "base/files/file_path.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/values.h"
 #include "components/policy/core/common/async_policy_provider.h"
@@ -56,9 +56,8 @@ class TestHarness : public PolicyProviderTestHarness {
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
                                const base::ListValue* policy_value) override;
-  void InstallDictionaryPolicy(
-      const std::string& policy_name,
-      const base::DictionaryValue* policy_value) override;
+  void InstallDictionaryPolicy(const std::string& policy_name,
+                               const base::Value* policy_value) override;
 
   static PolicyProviderTestHarness* Create();
   static PolicyProviderTestHarness* CreateWithJSONEncoding();
@@ -136,9 +135,8 @@ void TestHarness::InstallStringListPolicy(const std::string& policy_name,
   AddPolicies(@{key : (__bridge NSArray*)(value.get())});
 }
 
-void TestHarness::InstallDictionaryPolicy(
-    const std::string& policy_name,
-    const base::DictionaryValue* policy_value) {
+void TestHarness::InstallDictionaryPolicy(const std::string& policy_name,
+                                          const base::Value* policy_value) {
   NSString* key = base::SysUTF8ToNSString(policy_name);
 
   if (encode_complex_data_as_json_) {

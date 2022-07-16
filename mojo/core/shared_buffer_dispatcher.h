@@ -62,6 +62,9 @@ class MOJO_SYSTEM_IMPL_EXPORT SharedBufferDispatcher final : public Dispatcher {
       PlatformHandle* platform_handles,
       size_t num_handles);
 
+  SharedBufferDispatcher(const SharedBufferDispatcher&) = delete;
+  SharedBufferDispatcher& operator=(const SharedBufferDispatcher&) = delete;
+
   // Passes the underlying PlatformSharedMemoryRegion. This dispatcher must be
   // closed after calling this function.
   base::subtle::PlatformSharedMemoryRegion PassPlatformSharedMemoryRegion();
@@ -114,8 +117,6 @@ class MOJO_SYSTEM_IMPL_EXPORT SharedBufferDispatcher final : public Dispatcher {
 
   bool in_transit_ = false;
   base::subtle::PlatformSharedMemoryRegion region_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedBufferDispatcher);
 };
 
 }  // namespace core

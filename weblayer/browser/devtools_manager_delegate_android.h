@@ -13,15 +13,18 @@ namespace weblayer {
 class DevToolsManagerDelegateAndroid : public content::DevToolsManagerDelegate {
  public:
   DevToolsManagerDelegateAndroid();
+
+  DevToolsManagerDelegateAndroid(const DevToolsManagerDelegateAndroid&) =
+      delete;
+  DevToolsManagerDelegateAndroid& operator=(
+      const DevToolsManagerDelegateAndroid&) = delete;
+
   ~DevToolsManagerDelegateAndroid() override;
 
   // content::DevToolsManagerDelegate implementation.
   content::BrowserContext* GetDefaultBrowserContext() override;
   std::string GetDiscoveryPageHTML() override;
   bool IsBrowserTargetDiscoverable() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DevToolsManagerDelegateAndroid);
 };
 
 }  // namespace weblayer

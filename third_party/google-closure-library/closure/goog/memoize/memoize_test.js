@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.memoizeTest');
 goog.setTestOnly();
@@ -70,7 +62,9 @@ testSuite({
       return this.x - z;
     });
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const obj1 = new Class(10);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const obj2 = new Class(20);
 
     assertEquals('10+1', 11, obj1.f(1));
@@ -123,7 +117,7 @@ testSuite({
     assertEquals('identity(1)==1', 1, identity(1));
     assertEquals('Expected memozation', 1, computed);
 
-    memoize.clearCache(goog.global);
+    memoize.clearCache(globalThis);
     assertEquals('identity(1)==1', 1, identity(1));
     assertEquals('identity(1)==1', 1, identity(1));
     assertEquals('Expected cleared memoization cache', 2, computed);

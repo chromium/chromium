@@ -34,6 +34,10 @@ class FakeGattDescriptorWinrt
   FakeGattDescriptorWinrt(BluetoothTestWinrt* bluetooth_test_winrt,
                           base::StringPiece uuid,
                           uint16_t attribute_handle);
+
+  FakeGattDescriptorWinrt(const FakeGattDescriptorWinrt&) = delete;
+  FakeGattDescriptorWinrt& operator=(const FakeGattDescriptorWinrt&) = delete;
+
   ~FakeGattDescriptorWinrt() override;
 
   // IGattDescriptor:
@@ -88,8 +92,6 @@ class FakeGattDescriptorWinrt
       Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::
                                  GenericAttributeProfile::IGattWriteResult>)>
       write_value_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGattDescriptorWinrt);
 };
 
 }  // namespace device

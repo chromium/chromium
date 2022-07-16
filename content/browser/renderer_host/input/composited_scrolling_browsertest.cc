@@ -72,6 +72,11 @@ class CompositedScrollingBrowserTest : public ContentBrowserTest {
         blink::features::kResamplingScrollEvents);
   }
 
+  CompositedScrollingBrowserTest(const CompositedScrollingBrowserTest&) =
+      delete;
+  CompositedScrollingBrowserTest& operator=(
+      const CompositedScrollingBrowserTest&) = delete;
+
   ~CompositedScrollingBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
@@ -163,8 +168,6 @@ class CompositedScrollingBrowserTest : public ContentBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<MessageLoopRunner> runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositedScrollingBrowserTest);
 };
 
 // Verify transforming a scroller doesn't prevent it from scrolling. See

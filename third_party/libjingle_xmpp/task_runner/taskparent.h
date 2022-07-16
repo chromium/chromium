@@ -26,6 +26,10 @@ class TaskParent {
  public:
   TaskParent(Task *derived_instance, TaskParent *parent);
   explicit TaskParent(TaskRunner *derived_instance);
+
+  TaskParent(const TaskParent&) = delete;
+  TaskParent& operator=(const TaskParent&) = delete;
+
   virtual ~TaskParent();
 
   TaskParent *GetParent() { return parent_; }
@@ -54,7 +58,6 @@ class TaskParent {
   bool child_error_;
   typedef std::set<Task *> ChildSet;
   std::unique_ptr<ChildSet> children_;
-  DISALLOW_COPY_AND_ASSIGN(TaskParent);
 };
 
 

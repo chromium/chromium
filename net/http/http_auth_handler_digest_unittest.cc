@@ -66,8 +66,8 @@ bool RespondToChallenge(HttpAuth::Target target,
   GURL url_origin(target == HttpAuth::AUTH_SERVER ? request_url : proxy_name);
   int rv_create = factory->CreateAuthHandlerFromString(
       challenge, target, null_ssl_info, NetworkIsolationKey(),
-      url_origin.GetOrigin(), NetLogWithSource(), host_resolver.get(),
-      &handler);
+      url_origin.DeprecatedGetOriginAsURL(), NetLogWithSource(),
+      host_resolver.get(), &handler);
   if (rv_create != OK || handler.get() == nullptr) {
     ADD_FAILURE() << "Unable to create auth handler.";
     return false;

@@ -21,6 +21,10 @@ namespace remoting {
 class ClipboardX11 : public Clipboard, public x11::EventObserver {
  public:
   ClipboardX11();
+
+  ClipboardX11(const ClipboardX11&) = delete;
+  ClipboardX11& operator=(const ClipboardX11&) = delete;
+
   ~ClipboardX11() override;
 
   void Init();
@@ -45,8 +49,6 @@ class ClipboardX11 : public Clipboard, public x11::EventObserver {
   // Connection to the X server, used by |x_server_clipboard_|. This must only
   // be accessed on the input thread.
   x11::Connection* connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardX11);
 };
 
 ClipboardX11::ClipboardX11() = default;

@@ -29,6 +29,11 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferSharedMemoryRegion {
   BigBufferSharedMemoryRegion(mojo::ScopedSharedBufferHandle buffer_handle,
                               size_t size);
   BigBufferSharedMemoryRegion(BigBufferSharedMemoryRegion&& other);
+
+  BigBufferSharedMemoryRegion(const BigBufferSharedMemoryRegion&) = delete;
+  BigBufferSharedMemoryRegion& operator=(const BigBufferSharedMemoryRegion&) =
+      delete;
+
   ~BigBufferSharedMemoryRegion();
 
   BigBufferSharedMemoryRegion& operator=(BigBufferSharedMemoryRegion&& other);
@@ -45,8 +50,6 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferSharedMemoryRegion {
   size_t size_;
   mojo::ScopedSharedBufferHandle buffer_handle_;
   mojo::ScopedSharedBufferMapping buffer_mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(BigBufferSharedMemoryRegion);
 };
 
 }  // namespace internal
@@ -93,6 +96,9 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
   // before transfer to avoid leaking information to less privileged processes.
   explicit BigBuffer(size_t size);
 
+  BigBuffer(const BigBuffer&) = delete;
+  BigBuffer& operator=(const BigBuffer&) = delete;
+
   ~BigBuffer();
 
   BigBuffer& operator=(BigBuffer&& other);
@@ -125,8 +131,6 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
   std::unique_ptr<uint8_t[]> bytes_;
   size_t bytes_size_;
   absl::optional<internal::BigBufferSharedMemoryRegion> shared_memory_;
-
-  DISALLOW_COPY_AND_ASSIGN(BigBuffer);
 };
 
 // Similar to BigBuffer, but doesn't *necessarily* own the buffer storage.
@@ -143,6 +147,10 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferView {
   // will retain an unsafe reference to |bytes| and must therefore not outlive
   // |bytes|.
   explicit BigBufferView(base::span<const uint8_t> bytes);
+
+  BigBufferView(const BigBufferView&) = delete;
+  BigBufferView& operator=(const BigBufferView&) = delete;
+
   ~BigBufferView();
 
   BigBufferView& operator=(BigBufferView&& other);
@@ -179,8 +187,6 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferView {
   BigBuffer::StorageType storage_type_ = BigBuffer::StorageType::kBytes;
   base::span<const uint8_t> bytes_;
   absl::optional<internal::BigBufferSharedMemoryRegion> shared_memory_;
-
-  DISALLOW_COPY_AND_ASSIGN(BigBufferView);
 };
 
 }  // namespace mojo_base

@@ -65,13 +65,13 @@ Value GetSupportedMediaCommandsValue(const mojom::MediaStatus& status) {
   // |can_set_volume| and |can_mute| are not used, because the receiver volume
   // is used instead.
   if (status.can_play_pause)
-    commands.AppendString("pause");
+    commands.Append("pause");
   if (status.can_seek)
-    commands.AppendString("seek");
+    commands.Append("seek");
   if (status.can_skip_to_next_track)
-    commands.AppendString("queue_next");
+    commands.Append("queue_next");
   if (status.can_skip_to_previous_track)
-    commands.AppendString("queue_next");
+    commands.Append("queue_next");
   return std::move(commands);
 }
 
@@ -123,8 +123,8 @@ mojom::MediaStatusPtr CreateSampleMediaStatus() {
   status->is_muted = false;
   status->volume = 0.7;
   status->play_state = mojom::MediaStatus::PlayState::BUFFERING;
-  status->duration = base::TimeDelta::FromSeconds(30);
-  status->current_time = base::TimeDelta::FromSeconds(12);
+  status->duration = base::Seconds(30);
+  status->current_time = base::Seconds(12);
   return status;
 }
 
@@ -274,7 +274,7 @@ TEST_F(CastMediaControllerTest, SendSeekRequest) {
         VerifySessionId(cast_message.v2_message_body());
         return 0;
       });
-  mojo_controller_->Seek(base::TimeDelta::FromSecondsD(12.34));
+  mojo_controller_->Seek(base::Seconds(12.34));
 }
 
 TEST_F(CastMediaControllerTest, SendNextTrackRequest) {
@@ -323,8 +323,8 @@ TEST_F(CastMediaControllerTest, UpdateMediaStatus) {
 
 TEST_F(CastMediaControllerTest, UpdateMediaStatusWithDoubleDurations) {
   mojom::MediaStatusPtr expected_status = CreateSampleMediaStatus();
-  expected_status->duration = base::TimeDelta::FromSecondsD(30.5);
-  expected_status->current_time = base::TimeDelta::FromSecondsD(12.9);
+  expected_status->duration = base::Seconds(30.5);
+  expected_status->current_time = base::Seconds(12.9);
 
   EXPECT_CALL(*status_observer_, OnMediaStatusUpdated(_))
       .WillOnce([&](mojom::MediaStatusPtr status) {

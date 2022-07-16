@@ -23,11 +23,11 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/camera_presence_notifier.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/camera_presence_notifier.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
@@ -112,25 +112,25 @@ ChangePictureHandler::~ChangePictureHandler() {
 }
 
 void ChangePictureHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "chooseFile", base::BindRepeating(&ChangePictureHandler::HandleChooseFile,
                                         base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "photoTaken", base::BindRepeating(&ChangePictureHandler::HandlePhotoTaken,
                                         base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "discardPhoto",
       base::BindRepeating(&ChangePictureHandler::HandleDiscardPhoto,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "onChangePicturePageInitialized",
       base::BindRepeating(&ChangePictureHandler::HandlePageInitialized,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "selectImage",
       base::BindRepeating(&ChangePictureHandler::HandleSelectImage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestSelectedImage",
       base::BindRepeating(&ChangePictureHandler::HandleRequestSelectedImage,
                           base::Unretained(this)));
@@ -149,15 +149,18 @@ void ChangePictureHandler::OnJavascriptDisallowed() {
   DCHECK(camera_observation_.IsObservingSource(
       CameraPresenceNotifier::GetInstance()));
   camera_observation_.Reset();
+
+  if (select_file_dialog_.get())
+    select_file_dialog_->ListenerDestroyed();
 }
 
 void ChangePictureHandler::SendDefaultImages() {
   base::DictionaryValue result;
-  result.SetInteger("first", default_user_image::GetFirstDefaultImage());
-  std::unique_ptr<base::ListValue> default_images =
-      default_user_image::GetAsDictionary(true /* all */);
-  result.SetKey("images",
-                base::Value::FromUniquePtrValue(std::move(default_images)));
+  std::unique_ptr<base::ListValue> current_default_images =
+      default_user_image::GetCurrentImageSet();
+  result.SetKey(
+      "current_default_images",
+      base::Value::FromUniquePtrValue(std::move(current_default_images)));
   FireWebUIListener("default-images-changed", result);
 }
 
@@ -194,9 +197,9 @@ void ChangePictureHandler::HandlePhotoTaken(const base::ListValue* args) {
   AccessibilityManager::Get()->PlayEarcon(
       Sound::kCameraSnap, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 
-  std::string image_url;
-  if (!args || args->GetSize() != 1 || !args->GetString(0, &image_url))
+  if (!args || args->GetList().size() != 1 || !args->GetList()[0].is_string())
     NOTREACHED();
+  const std::string& image_url = args->GetList()[0].GetString();
   DCHECK(!image_url.empty());
 
   std::string raw_data;
@@ -215,7 +218,7 @@ void ChangePictureHandler::HandlePhotoTaken(const base::ListValue* args) {
   user_photo_data_ = base::RefCountedBytes::TakeVector(&photo_data);
 
   ImageDecoder::Cancel(this);
-  ImageDecoder::Start(this, raw_data);
+  ImageDecoder::Start(this, std::move(raw_data));
 }
 
 void ChangePictureHandler::HandlePageInitialized(const base::ListValue* args) {
@@ -268,14 +271,23 @@ void ChangePictureHandler::SendSelectedImage() {
             default_user_image::GetDefaultImageUrl(previous_image_index_));
         FireWebUIListener("selected-image-changed", image_url);
       } else {
-        // User has an old default image, so present it in the same manner as a
-        // previous image from file.
+        // User has a deprecated default image, send it for preview.
         previous_image_ = user->GetImage();
         previous_image_bytes_ = nullptr;
         previous_image_format_ = user_manager::UserImage::FORMAT_UNKNOWN;
-        SendOldImageWithIndex(
-            default_user_image::GetDefaultImageUrl(previous_image_index_),
+
+        base::DictionaryValue result;
+        result.SetStringPath("url", default_user_image::GetDefaultImageUrl(
+                                        previous_image_index_));
+        auto source_info = default_user_image::GetDefaultImageSourceInfo(
             previous_image_index_);
+        if (source_info.has_value()) {
+          result.SetStringPath("author", l10n_util::GetStringUTF16(std::move(
+                                             source_info.value().author_id)));
+          result.SetStringPath("website", l10n_util::GetStringUTF16(std::move(
+                                              source_info.value().website_id)));
+        }
+        FireWebUIListener("preview-deprecated-image", result);
       }
     }
   }
@@ -301,25 +313,17 @@ void ChangePictureHandler::UpdateProfileImage() {
 }
 
 void ChangePictureHandler::SendOldImage(std::string&& image_url) {
-  SendOldImageWithIndex(std::move(image_url), -1);
-}
-
-void ChangePictureHandler::SendOldImageWithIndex(std::string&& image_url,
-                                                 int image_index) {
-  base::DictionaryValue result;
-  result.SetStringPath("url", std::move(image_url));
-  result.SetIntPath("index", image_index);
-  FireWebUIListener("old-image-changed", result);
+  FireWebUIListener("old-image-changed", base::Value(image_url));
 }
 
 void ChangePictureHandler::HandleSelectImage(const base::ListValue* args) {
-  std::string image_url;
-  std::string image_type;
-  if (!args || args->GetSize() != 2 || !args->GetString(0, &image_url) ||
-      !args->GetString(1, &image_type)) {
+  if (!args || args->GetList().size() != 2 || !args->GetList()[0].is_string() ||
+      !args->GetList()[1].is_string()) {
     NOTREACHED();
     return;
   }
+  const std::string& image_url = args->GetList()[0].GetString();
+  const std::string& image_type = args->GetList()[1].GetString();
   // |image_url| may be empty unless |image_type| is "default".
   DCHECK(!image_type.empty());
 
@@ -393,6 +397,10 @@ void ChangePictureHandler::FileSelected(const base::FilePath& path,
       user_manager::User::USER_IMAGE_EXTERNAL));
   user_image_manager->SaveUserImageFromFile(path);
   VLOG(1) << "Selected image from file";
+}
+
+void ChangePictureHandler::FileSelectionCanceled(void* params) {
+  SendSelectedImage();
 }
 
 void ChangePictureHandler::SetImageFromCamera(

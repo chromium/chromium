@@ -54,6 +54,11 @@ class WaylandNotificationShellNotification {
                             weak_ptr_factory_.GetWeakPtr()));
   }
 
+  WaylandNotificationShellNotification(
+      const WaylandNotificationShellNotification&) = delete;
+  WaylandNotificationShellNotification& operator=(
+      const WaylandNotificationShellNotification&) = delete;
+
   void Close() { notification_->Close(); }
 
  private:
@@ -73,8 +78,6 @@ class WaylandNotificationShellNotification {
 
   base::WeakPtrFactory<WaylandNotificationShellNotification> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandNotificationShellNotification);
 };
 
 void notification_destroy(wl_client* client, wl_resource* resource) {
@@ -95,6 +98,9 @@ const struct zcr_notification_shell_notification_v1_interface
 class WaylandNotificationShell {
  public:
   WaylandNotificationShell() : id_(g_next_notification_shell_id.GetNext()) {}
+
+  WaylandNotificationShell(const WaylandNotificationShell&) = delete;
+  WaylandNotificationShell& operator=(const WaylandNotificationShell&) = delete;
 
   ~WaylandNotificationShell() = default;
 
@@ -117,8 +123,6 @@ class WaylandNotificationShell {
  private:
   // Id for this notification shell instance.
   const uint32_t id_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandNotificationShell);
 };
 
 void notification_shell_create_notification(wl_client* client,

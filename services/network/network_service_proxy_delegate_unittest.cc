@@ -10,6 +10,8 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -101,8 +103,9 @@ class NetworkServiceProxyDelegateTest : public testing::Test {
   }
 
   void SetConfig(mojom::CustomProxyConfigPtr config) {
-    client_->OnCustomProxyConfigUpdated(std::move(config));
-    task_environment_.RunUntilIdle();
+    base::RunLoop loop;
+    client_->OnCustomProxyConfigUpdated(std::move(config), loop.QuitClosure());
+    loop.Run();
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -133,7 +136,7 @@ TEST_F(NetworkServiceProxyDelegateTest, AddsHeadersToTunnelRequest) {
   auto delegate = CreateDelegate(std::move(config));
 
   net::HttpRequestHeaders headers;
-  auto proxy_server = net::ProxyServer::FromPacString("HTTPS proxy");
+  auto proxy_server = net::PacResultElementToProxyServer("HTTPS proxy");
   delegate->OnBeforeTunnelRequest(proxy_server, &headers);
 
   EXPECT_THAT(headers, Contain("connect", "baz"));
@@ -151,7 +154,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessHttpProxy) {
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      net::ProxyServer::FromPacString("PROXY foo"));
+      net::PacResultElementToProxyServer("PROXY foo"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
 }
 
@@ -167,7 +170,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessHttpsUrl) {
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      net::ProxyServer::FromPacString("HTTPS foo"));
+      net::PacResultElementToProxyServer("HTTPS foo"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
 }
 
@@ -183,7 +186,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessWebSocketUrl) {
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      net::ProxyServer::FromPacString("HTTPS foo"));
+      net::PacResultElementToProxyServer("HTTPS foo"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
 }
 
@@ -251,7 +254,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      net::ProxyServer::FromPacString("PROXY foo"));
+      net::PacResultElementToProxyServer("PROXY foo"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
 }
 
@@ -284,7 +287,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDoesNotOverrideExisting) {
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      net::ProxyServer::FromPacString("PROXY bar"));
+      net::PacResultElementToProxyServer("PROXY bar"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
 }
 
@@ -301,7 +304,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyOverridesExisting) {
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      net::ProxyServer::FromPacString("PROXY foo"));
+      net::PacResultElementToProxyServer("PROXY foo"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
 }
 
@@ -315,12 +318,12 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
   net::ProxyRetryInfoMap retry_map;
   net::ProxyRetryInfo& info = retry_map["foo:80"];
   info.try_while_bad = false;
-  info.bad_until = base::TimeTicks::Now() + base::TimeDelta::FromDays(2);
+  info.bad_until = base::TimeTicks::Now() + base::Days(2);
   delegate->OnResolveProxy(GURL(kHttpUrl), "GET", retry_map, &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      net::ProxyServer::FromPacString("PROXY bar"));
+      net::PacResultElementToProxyServer("PROXY bar"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
 }
 
@@ -334,7 +337,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyAllProxiesBad) {
   net::ProxyRetryInfoMap retry_map;
   net::ProxyRetryInfo& info = retry_map["foo:80"];
   info.try_while_bad = false;
-  info.bad_until = base::TimeTicks::Now() + base::TimeDelta::FromDays(2);
+  info.bad_until = base::TimeTicks::Now() + base::Days(2);
   delegate->OnResolveProxy(GURL(kHttpUrl), "GET", retry_map, &result);
 
   EXPECT_TRUE(result.is_direct());
@@ -355,7 +358,7 @@ TEST_F(NetworkServiceProxyDelegateTest, InitialConfigUsedForProxy) {
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      net::ProxyServer::FromPacString("PROXY foo"));
+      net::PacResultElementToProxyServer("PROXY foo"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
 }
 

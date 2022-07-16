@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/settings/stats_reporting_controller.h"
+#include "chrome/browser/ash/settings/stats_reporting_controller.h"  // nogncheck
 #endif
 
 class PrefService;
@@ -39,7 +39,15 @@ class ChromeMetricsServicesManagerClient
     : public metrics_services_manager::MetricsServicesManagerClient {
  public:
   explicit ChromeMetricsServicesManagerClient(PrefService* local_state);
+
+  ChromeMetricsServicesManagerClient(
+      const ChromeMetricsServicesManagerClient&) = delete;
+  ChromeMetricsServicesManagerClient& operator=(
+      const ChromeMetricsServicesManagerClient&) = delete;
+
   ~ChromeMetricsServicesManagerClient() override;
+
+  metrics::MetricsStateManager* GetMetricsStateManagerForTesting();
 
   // Unconditionally attempts to create a field trial to control client side
   // metrics/crash sampling to use as a fallback when one hasn't been
@@ -106,8 +114,6 @@ class ChromeMetricsServicesManagerClient
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CallbackListSubscription reporting_setting_subscription_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeMetricsServicesManagerClient);
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_METRICS_SERVICES_MANAGER_CLIENT_H_

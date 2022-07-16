@@ -19,13 +19,13 @@
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/reset/metrics.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
-#include "chrome/browser/chromeos/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -119,7 +119,7 @@ void ResetScreen::CheckIfPowerwashAllowed(
     base::OnceCallback<void(bool, absl::optional<tpm_firmware_update::Mode>)>
         callback) {
   if (g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->IsDeviceEnterpriseManaged()) {
     // Powerwash is allowed by default, if the policy is loaded. Admin can
     // explicitly forbid powerwash. If the policy is not loaded yet, we
@@ -256,7 +256,7 @@ void ResetScreen::ShowImpl() {
     tpm_firmware_update_checker_.Run(
         base::BindOnce(&ResetScreen::OnTPMFirmwareUpdateAvailableCheck,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(10));
+        base::Seconds(10));
   }
 
   if (view_) {
@@ -347,7 +347,7 @@ void ResetScreen::OnPowerwash() {
     tpm_firmware_update_checker_.Run(
         base::BindOnce(&StartTPMFirmwareUpdate,
                        view_->GetTpmFirmwareUpdateMode()),
-        base::TimeDelta::FromSeconds(10));
+        base::Seconds(10));
   } else {
     VLOG(1) << "Starting Powerwash";
     SessionManagerClient::Get()->StartDeviceWipe();
@@ -438,8 +438,8 @@ void ResetScreen::UpdateStatusChanged(
 // Invoked from call to CanRollbackCheck upon completion of the DBus call.
 void ResetScreen::OnRollbackCheck(bool can_rollback) {
   VLOG(1) << "Callback from CanRollbackCheck, result " << can_rollback;
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
 
   const bool rollback_available =
       !connector->IsDeviceEnterpriseManaged() && can_rollback;

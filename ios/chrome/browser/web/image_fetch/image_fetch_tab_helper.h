@@ -30,13 +30,16 @@ enum class ContextMenuGetImageDataByJsResult {
 };
 
 // Gets the image data by JavaScript or
-// image_fetcher::IOSImageDataFetcherWrapper. Always use this class by
+// image_fetcher::FetchImageData. Always use this class by
 // ImageFetchTabHelper::FromWebState on UI thread. All callbacks will also be
 // invoked on UI thread.
 class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
                             public web::WebStateObserver,
                             public web::WebStateUserData<ImageFetchTabHelper> {
  public:
+  ImageFetchTabHelper(const ImageFetchTabHelper&) = delete;
+  ImageFetchTabHelper& operator=(const ImageFetchTabHelper&) = delete;
+
   ~ImageFetchTabHelper() override;
 
   // Callback for GetImageData. |data| will be in binary format, or nil if
@@ -46,7 +49,7 @@ class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
   // Gets image data in binary format by following steps:
   //   1. Call injected JavaScript to get the image data from web page;
   //   2. If JavaScript fails or does not send a message back in 300ms, try
-  //   downloading the image by image_fetcher::IOSImageDataFetcherWrapper.
+  //   downloading the image by image_fetcher::FetchImageData.
   void GetImageData(const GURL& url,
                     const web::Referrer& referrer,
                     ImageDataCallback callback);
@@ -106,8 +109,6 @@ class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
   base::WeakPtrFactory<ImageFetchTabHelper> weak_ptr_factory_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFetchTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_IMAGE_FETCH_IMAGE_FETCH_TAB_HELPER_H_

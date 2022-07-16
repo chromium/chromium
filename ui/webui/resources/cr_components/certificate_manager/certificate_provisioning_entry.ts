@@ -12,11 +12,11 @@ import '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './certificate_shared_css.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrActionMenuElement} from '../../cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {I18nBehavior} from '../../js/i18n_behavior.m.js';
+import {I18nMixin} from '../../js/i18n_mixin.js';
 
 import {CertificateProvisioningActionEventDetail, CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
 import {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
@@ -28,9 +28,7 @@ export interface CertificateProvisioningEntryElement {
   };
 }
 
-const CertificateProvisioningEntryElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior};
+const CertificateProvisioningEntryElementBase = I18nMixin(PolymerElement);
 
 export class CertificateProvisioningEntryElement extends
     CertificateProvisioningEntryElementBase {

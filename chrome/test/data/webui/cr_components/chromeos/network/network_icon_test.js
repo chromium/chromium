@@ -23,9 +23,6 @@ suite('NetworkIconTest', function() {
   }
 
   setup(function() {
-    loadTimeData.overrideValues({
-      updatedCellularActivationUi: true,
-    });
     mojom = chromeos.networkConfig.mojom;
     networkIcon = document.createElement('network-icon');
     document.body.appendChild(networkIcon);
@@ -74,5 +71,33 @@ suite('NetworkIconTest', function() {
     await flushAsync();
 
     assertTrue(networkIcon.$$('#roaming').hidden);
+  });
+
+  test('Should not display icon', async function() {
+    const networkState =
+        OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, 'cellular');
+    networkIcon.networkState = networkState;
+    await flushAsync();
+
+    let icon = networkIcon.$$('#icon');
+    let tech_badge = networkIcon.$$('#technology');
+    let secure_badge = networkIcon.$$('#secure');
+    let roaming_badge = networkIcon.$$('#roaming');
+    assertTrue(!!icon);
+    assertTrue(!!tech_badge);
+    assertTrue(!!secure_badge);
+    assertTrue(!!roaming_badge);
+
+    networkIcon.networkState = null;
+    await flushAsync();
+
+    icon = networkIcon.$$('#icon');
+    tech_badge = networkIcon.$$('#technology');
+    secure_badge = networkIcon.$$('#secure');
+    roaming_badge = networkIcon.$$('#roaming');
+    assertFalse(!!icon);
+    assertFalse(!!tech_badge);
+    assertFalse(!!secure_badge);
+    assertFalse(!!roaming_badge);
   });
 });

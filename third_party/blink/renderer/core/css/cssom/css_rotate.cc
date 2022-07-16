@@ -163,11 +163,6 @@ DOMMatrix* CSSRotate::toMatrix(ExceptionState& exception_state) const {
 }
 
 const CSSFunctionValue* CSSRotate::ToCSSValue() const {
-  DCHECK(x_->to(CSSPrimitiveValue::UnitType::kNumber));
-  DCHECK(y_->to(CSSPrimitiveValue::UnitType::kNumber));
-  DCHECK(z_->to(CSSPrimitiveValue::UnitType::kNumber));
-  DCHECK(angle_->to(CSSPrimitiveValue::UnitType::kRadians));
-
   CSSFunctionValue* result = MakeGarbageCollected<CSSFunctionValue>(
       is2D() ? CSSValueID::kRotate : CSSValueID::kRotate3d);
   if (!is2D()) {
@@ -185,6 +180,11 @@ const CSSFunctionValue* CSSRotate::ToCSSValue() const {
   const CSSValue* angle = angle_->ToCSSValue();
   if (!angle)
     return nullptr;
+
+  DCHECK(x_->to(CSSPrimitiveValue::UnitType::kNumber));
+  DCHECK(y_->to(CSSPrimitiveValue::UnitType::kNumber));
+  DCHECK(z_->to(CSSPrimitiveValue::UnitType::kNumber));
+  DCHECK(angle_->to(CSSPrimitiveValue::UnitType::kRadians));
 
   result->Append(*angle);
   return result;

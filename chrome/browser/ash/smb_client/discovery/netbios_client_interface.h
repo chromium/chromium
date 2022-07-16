@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace net {
 class IPAddress;
@@ -23,6 +22,9 @@ using NetBiosResponseCallback = base::RepeatingCallback<
 
 class NetBiosClientInterface {
  public:
+  NetBiosClientInterface(const NetBiosClientInterface&) = delete;
+  NetBiosClientInterface& operator=(const NetBiosClientInterface&) = delete;
+
   virtual ~NetBiosClientInterface() = default;
 
   // Starts the Name Query Request process. Any response packets that match
@@ -33,8 +35,6 @@ class NetBiosClientInterface {
 
  protected:
   NetBiosClientInterface() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(NetBiosClientInterface);
 };
 
 }  // namespace smb_client

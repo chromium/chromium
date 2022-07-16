@@ -22,6 +22,11 @@ class PermissionWizard;
 class DaemonControllerDelegateMac : public DaemonController::Delegate {
  public:
   DaemonControllerDelegateMac();
+
+  DaemonControllerDelegateMac(const DaemonControllerDelegateMac&) = delete;
+  DaemonControllerDelegateMac& operator=(const DaemonControllerDelegateMac&) =
+      delete;
+
   ~DaemonControllerDelegateMac() override;
 
   // DaemonController::Delegate interface.
@@ -43,8 +48,6 @@ class DaemonControllerDelegateMac : public DaemonController::Delegate {
   // thread.
   scoped_refptr<AutoThreadTaskRunner> io_task_runner_;
   AutoThread io_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(DaemonControllerDelegateMac);
 };
 
 }  // namespace remoting

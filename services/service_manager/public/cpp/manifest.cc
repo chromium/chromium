@@ -47,10 +47,10 @@ Manifest& Manifest::Amend(Manifest other) {
   }
 
   for (const auto& capability_entry : other.required_capabilities) {
-    const auto& service_name = capability_entry.first;
+    const auto& service = capability_entry.first;
     const auto& capability_names = capability_entry.second;
     for (const auto& capability_name : capability_names)
-      required_capabilities[service_name].insert(capability_name);
+      required_capabilities[service].insert(capability_name);
   }
 
   for (const auto& filter_entry :
@@ -58,12 +58,12 @@ Manifest& Manifest::Amend(Manifest other) {
     const auto& filter_name = filter_entry.first;
     const auto& capability_maps = filter_entry.second;
     for (const auto& capability_entry : capability_maps) {
-      const auto& service_name = capability_entry.first;
+      const auto& service = capability_entry.first;
       const auto& capability_names = capability_entry.second;
-      auto& required_capabilities =
-          required_interface_filter_capabilities[filter_name][service_name];
+      auto& required =
+          required_interface_filter_capabilities[filter_name][service];
       for (const auto& capability_name : capability_names)
-        required_capabilities.insert(capability_name);
+        required.insert(capability_name);
     }
   }
 

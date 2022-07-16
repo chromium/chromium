@@ -133,7 +133,7 @@ void SpellingMenuObserver::InitMenu(const content::ContextMenuParams& params) {
           l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_SPELLING_CHECKING);
       loading_frame_ = 0;
       animation_timer_.Start(
-          FROM_HERE, base::TimeDelta::FromSeconds(1),
+          FROM_HERE, base::Seconds(1),
           base::BindRepeating(&SpellingMenuObserver::OnAnimationTimerExpired,
                               weak_ptr_factory_.GetWeakPtr(),
                               IDC_SPELLCHECK_SUGGESTION_0));
@@ -486,7 +486,7 @@ void SpellingMenuObserver::GetRemoteSuggestions() {
   if (result) {
     loading_frame_ = 0;
     animation_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(1),
+        FROM_HERE, base::Seconds(1),
         base::BindRepeating(&SpellingMenuObserver::OnAnimationTimerExpired,
                             weak_ptr_factory_.GetWeakPtr(),
                             IDC_CONTENT_CONTEXT_SPELLING_SUGGESTION));

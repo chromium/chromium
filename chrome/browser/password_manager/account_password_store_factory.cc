@@ -25,12 +25,10 @@
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_built_in_backend.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
-#include "components/password_manager/core/browser/password_store_impl.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -50,6 +48,7 @@
 #endif  // !defined(OS_ANDROID)
 
 using password_manager::PasswordStore;
+using password_manager::PasswordStoreInterface;
 
 #if !defined(OS_ANDROID)
 
@@ -126,25 +125,14 @@ void SyncEnabledOrDisabled(Profile* profile) {
       base::BindOnce(&UpdateAllFormManagersAndPasswordReuseManager, profile));
 #endif  // defined(OS_ANDROID)
 }
-
 // static
-scoped_refptr<PasswordStore> AccountPasswordStoreFactory::GetForProfile(
-    Profile* profile,
-    ServiceAccessType access_type) {
+scoped_refptr<PasswordStoreInterface>
+AccountPasswordStoreFactory::GetForProfile(Profile* profile,
+                                           ServiceAccessType access_type) {
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kEnablePasswordsAccountStorage)) {
-    if (profile->GetPrefs()->GetBoolean(
-            password_manager::prefs::kAccountStorageExists)) {
-      // TODO(crbug.com/1108738): Remove this logic once
-      // kEnablePasswordsAccountStorage is launched.
-      profile->GetPrefs()->ClearPref(
-          password_manager::prefs::kAccountStorageExists);
-      password_manager::DeleteLoginDatabaseForAccountStorageFiles(
-          profile->GetPath());
-    }
     return nullptr;
   }
-
   // |profile| gets always redirected to a non-Incognito profile below, so
   // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
   // result in traces in the normal profile without the user knowing it.
@@ -152,13 +140,9 @@ scoped_refptr<PasswordStore> AccountPasswordStoreFactory::GetForProfile(
       profile->IsOffTheRecord()) {
     return nullptr;
   }
-
-  // Either the store exists already, or it'll be created now.
-  profile->GetPrefs()->SetBoolean(
-      password_manager::prefs::kAccountStorageExists, true);
-
-  return base::WrapRefCounted(static_cast<password_manager::PasswordStore*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true).get()));
+  return base::WrapRefCounted(
+      static_cast<password_manager::PasswordStoreInterface*>(
+          GetInstance()->GetServiceForBrowserContext(profile, true).get()));
 }
 
 // static
@@ -175,12 +159,6 @@ AccountPasswordStoreFactory::AccountPasswordStoreFactory()
 
 AccountPasswordStoreFactory::~AccountPasswordStoreFactory() = default;
 
-void AccountPasswordStoreFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(password_manager::prefs::kAccountStorageExists,
-                                false);
-}
-
 scoped_refptr<RefcountedKeyedService>
 AccountPasswordStoreFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
@@ -193,9 +171,21 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
       password_manager::CreateLoginDatabaseForAccountStorage(
           profile->GetPath()));
 
-  scoped_refptr<PasswordStore> ps =
-      new password_manager::PasswordStoreImpl(std::move(login_db));
+  scoped_refptr<password_manager::PasswordStore> ps =
+#if defined(OS_ANDROID)
+      new password_manager::PasswordStore(
+          std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
+              std::move(login_db)));
+#else
+      new password_manager::PasswordStore(
+          std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
+              std::move(login_db),
+              std::make_unique<UnsyncedCredentialsDeletionNotifierImpl>(
+                  profile)));
+#endif
+
   if (!ps->Init(profile->GetPrefs(),
+                /*affiliated_match_helper=*/nullptr,
                 base::BindRepeating(&SyncEnabledOrDisabled, profile))) {
     // TODO(crbug.com/479725): Remove the LOG once this error is visible in the
     // UI.
@@ -212,13 +202,7 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
       profile);
   password_manager_util::RemoveUselessCredentials(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), ps,
-      profile->GetPrefs(), base::TimeDelta::FromSeconds(60),
-      network_context_getter);
-
-#if !defined(OS_ANDROID)
-  ps->SetUnsyncedCredentialsDeletionNotifier(
-      std::make_unique<UnsyncedCredentialsDeletionNotifierImpl>(profile));
-#endif  // !defined(OS_ANDROID)
+      profile->GetPrefs(), base::Seconds(60), network_context_getter);
 
   return ps;
 }

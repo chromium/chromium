@@ -73,7 +73,6 @@ buildflag_header("buildflags") {
   flags = [
     "POSIX_AVOID_MMAP=$posix_avoid_mmap",
     "DISABLE_FILE_SUPPORT=$disable_file_support",
-    "DISABLE_FTP_SUPPORT=$disable_ftp_support",
     "ENABLE_MDNS=$enable_mdns",
     "ENABLE_REPORTING=$enable_reporting",
     "ENABLE_WEBSOCKETS=$enable_websockets",
@@ -217,6 +216,8 @@ component("net") {
     "base/proxy_delegate.h",
     "base/proxy_server.cc",
     "base/proxy_server.h",
+    "base/proxy_string_util.cc",
+    "base/proxy_string_util.h",
     "base/rand_callback.h",
     "base/registry_controlled_domains/registry_controlled_domain.cc",
     "base/registry_controlled_domains/registry_controlled_domain.h",
@@ -378,6 +379,8 @@ component("net") {
     "cert/symantec_certs.h",
     "cert/test_root_certs.cc",
     "cert/test_root_certs.h",
+    "cert/trial_comparison_cert_verifier_util.cc",
+    "cert/trial_comparison_cert_verifier_util.h",
     "cert/x509_cert_types.cc",
     "cert/x509_cert_types.h",
     "cert/x509_certificate.cc",
@@ -410,6 +413,10 @@ component("net") {
     "cookies/cookie_monster_netlog_params.h",
     "cookies/cookie_options.cc",
     "cookies/cookie_options.h",
+    "cookies/cookie_partition_key.cc",
+    "cookies/cookie_partition_key.h",
+    "cookies/cookie_partition_keychain.cc",
+    "cookies/cookie_partition_keychain.h",
     "cookies/cookie_store.cc",
     "cookies/cookie_store.h",
     "cookies/cookie_util.cc",
@@ -720,6 +727,7 @@ component("net") {
     "proxy_resolution/pac_file_data.h",
     "proxy_resolution/pac_file_decider.cc",
     "proxy_resolution/pac_file_decider.h",
+    "proxy_resolution/pac_file_fetcher.cc",
     "proxy_resolution/pac_file_fetcher.h",
     "proxy_resolution/pac_file_fetcher_impl.cc",
     "proxy_resolution/pac_file_fetcher_impl.h",
@@ -770,10 +778,6 @@ component("net") {
     "quic/platform/impl/quic_iovec_impl.h",
     "quic/platform/impl/quic_mem_slice_impl.cc",
     "quic/platform/impl/quic_mem_slice_impl.h",
-    "quic/platform/impl/quic_mem_slice_span_impl.cc",
-    "quic/platform/impl/quic_mem_slice_span_impl.h",
-    "quic/platform/impl/quic_mem_slice_storage_impl.cc",
-    "quic/platform/impl/quic_mem_slice_storage_impl.h",
     "quic/platform/impl/quic_prefetch_impl.h",
     "quic/platform/impl/quic_reference_counted_impl.h",
     "quic/platform/impl/quic_server_stats_impl.h",
@@ -827,8 +831,6 @@ component("net") {
     "quic/quic_session_key.h",
     "quic/quic_stream_factory.cc",
     "quic/quic_stream_factory.h",
-    "quic/quic_transport_client.cc",
-    "quic/quic_transport_client.h",
     "quic/web_transport_client.cc",
     "quic/web_transport_client.h",
     "quic/web_transport_error.cc",
@@ -1141,8 +1143,6 @@ component("net") {
   if (is_android) {
     sources += [
       "android/android_http_util.cc",
-      "android/cellular_signal_strength.cc",
-      "android/cellular_signal_strength.h",
       "android/cert_verify_result_android.cc",
       "android/cert_verify_result_android.h",
       "android/gurl_utils.cc",
@@ -1173,7 +1173,7 @@ component("net") {
     ]
   }
 
-  if (is_chromeos_ash && use_nss_certs) {
+  if ((is_chromeos_ash || is_chromeos_lacros) && use_nss_certs) {
     sources += [
       "cert/nss_cert_database_chromeos.cc",
       "cert/nss_cert_database_chromeos.h",
@@ -1248,7 +1248,7 @@ component("net") {
       "base/network_config_watcher_mac.cc",
       "base/network_config_watcher_mac.h",
       "base/platform_mime_util_mac.mm",
-      "base/proxy_server_mac.cc",
+      "base/proxy_string_util_mac.cc",
       "cert/test_root_certs_mac.cc",
       "cert/x509_util_ios_and_mac.cc",
       "cert/x509_util_ios_and_mac.h",
@@ -1300,12 +1300,8 @@ component("net") {
       "proxy_resolution/win/windows_system_proxy_resolution_request.h",
       "proxy_resolution/win/windows_system_proxy_resolution_service.cc",
       "proxy_resolution/win/windows_system_proxy_resolution_service.h",
-      "proxy_resolution/win/windows_system_proxy_resolver.cc",
       "proxy_resolution/win/windows_system_proxy_resolver.h",
-      "proxy_resolution/win/winhttp_api_wrapper.cc",
-      "proxy_resolution/win/winhttp_api_wrapper.h",
-      "proxy_resolution/win/winhttp_proxy_resolver_functions.cc",
-      "proxy_resolution/win/winhttp_proxy_resolver_functions.h",
+      "proxy_resolution/win/winhttp_status.h",
       "socket/tcp_socket_win.cc",
       "socket/tcp_socket_win.h",
       "socket/udp_socket_win.cc",
@@ -1395,6 +1391,14 @@ component("net") {
       "cert/internal/trust_store_chrome.h",
     ]
     deps += [ "//net/data/ssl/chrome_root_store:gen_root_store_inc" ]
+    if (is_win) {
+      sources += [
+        "cert/internal/trust_store_win.cc",
+        "cert/internal/trust_store_win.h",
+        "third_party/mozilla_win/cert/win_util.cc",
+        "third_party/mozilla_win/cert/win_util.h",
+      ]
+    }
   }
 
   if (use_nss_certs) {
@@ -1501,41 +1505,6 @@ component("net") {
       "base/directory_lister.h",
       "base/directory_listing.cc",
       "base/directory_listing.h",
-    ]
-  }
-
-  if (!disable_ftp_support) {
-    sources += [
-      "ftp/ftp_auth_cache.cc",
-      "ftp/ftp_auth_cache.h",
-      "ftp/ftp_ctrl_response_buffer.cc",
-      "ftp/ftp_ctrl_response_buffer.h",
-      "ftp/ftp_directory_listing_parser.cc",
-      "ftp/ftp_directory_listing_parser.h",
-      "ftp/ftp_directory_listing_parser_ls.cc",
-      "ftp/ftp_directory_listing_parser_ls.h",
-      "ftp/ftp_directory_listing_parser_vms.cc",
-      "ftp/ftp_directory_listing_parser_vms.h",
-      "ftp/ftp_directory_listing_parser_windows.cc",
-      "ftp/ftp_directory_listing_parser_windows.h",
-      "ftp/ftp_network_layer.cc",
-      "ftp/ftp_network_layer.h",
-      "ftp/ftp_network_session.cc",
-      "ftp/ftp_network_session.h",
-      "ftp/ftp_network_transaction.cc",
-      "ftp/ftp_network_transaction.h",
-      "ftp/ftp_request_info.h",
-      "ftp/ftp_response_info.cc",
-      "ftp/ftp_response_info.h",
-      "ftp/ftp_server_type.h",
-      "ftp/ftp_transaction.h",
-      "ftp/ftp_transaction_factory.h",
-      "ftp/ftp_util.cc",
-      "ftp/ftp_util.h",
-      "url_request/ftp_protocol_handler.cc",
-      "url_request/ftp_protocol_handler.h",
-      "url_request/url_request_ftp_job.cc",
-      "url_request/url_request_ftp_job.h",
     ]
   }
 
@@ -1650,6 +1619,7 @@ source_set("net_deps") {
 
   public_deps = [
     ":constants",
+    ":isolation_info_proto",
     ":net_export_header",
     ":net_resources",
     ":preload_decoder",
@@ -1755,6 +1725,10 @@ proto_library("net_nqe_proto") {
   defines = [ "NET_IMPLEMENTATION" ]
 
   extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+proto_library("isolation_info_proto") {
+  sources = [ "base/isolation_info.proto" ]
 }
 
 component("extras") {
@@ -2128,13 +2102,20 @@ static_library("test_support") {
     "test/cert_test_util.h",
     "test/ct_test_util.cc",
     "test/ct_test_util.h",
+    "test/embedded_test_server/connection_tracker.cc",
+    "test/embedded_test_server/connection_tracker.h",
     "test/embedded_test_server/controllable_http_response.cc",
     "test/embedded_test_server/controllable_http_response.h",
     "test/embedded_test_server/default_handlers.cc",
     "test/embedded_test_server/default_handlers.h",
     "test/embedded_test_server/embedded_test_server.cc",
     "test/embedded_test_server/embedded_test_server.h",
+    "test/embedded_test_server/embedded_test_server_connection_listener.cc",
     "test/embedded_test_server/embedded_test_server_connection_listener.h",
+    "test/embedded_test_server/http1_connection.cc",
+    "test/embedded_test_server/http1_connection.h",
+    "test/embedded_test_server/http2_connection.cc",
+    "test/embedded_test_server/http2_connection.h",
     "test/embedded_test_server/http_connection.cc",
     "test/embedded_test_server/http_connection.h",
     "test/embedded_test_server/http_request.cc",
@@ -2160,6 +2141,8 @@ static_library("test_support") {
     "test/test_certificate_data.h",
     "test/test_data_directory.cc",
     "test/test_data_directory.h",
+    "test/test_doh_server.cc",
+    "test/test_doh_server.h",
     "test/test_with_task_environment.h",
     "test/url_request/ssl_certificate_error_job.cc",
     "test/url_request/ssl_certificate_error_job.h",
@@ -2200,6 +2183,7 @@ static_library("test_support") {
   ]
 
   deps = [
+    ":quic_test_flags_utils",
     ":simple_quic_tools",
     "//net/http:transport_security_state_unittest_data_default",
     "//third_party/zlib",
@@ -2300,6 +2284,35 @@ if (!is_ios && !is_android) {
     ]
 
     deps = [
+      ":net",
+      ":test_support",
+      "//base",
+      "//build/win:default_exe_manifest",
+    ]
+
+    if (is_mac) {
+      frameworks = [ "Security.framework" ]
+    }
+  }
+
+  proto_library("cert_verify_comparison_tool_proto") {
+    sources = [ "tools/cert_verify_tool/dumper.proto" ]
+
+    visibility = [ ":cert_verify_comparison_tool" ]
+  }
+
+  executable("cert_verify_comparison_tool") {
+    testonly = true
+    sources = [
+      "tools/cert_verify_tool/cert_verify_comparision_tool.cc",
+      "tools/cert_verify_tool/cert_verify_tool_util.cc",
+      "tools/cert_verify_tool/cert_verify_tool_util.h",
+      "tools/cert_verify_tool/verify_using_cert_verify_proc.cc",
+      "tools/cert_verify_tool/verify_using_cert_verify_proc.h",
+    ]
+
+    deps = [
+      ":cert_verify_comparison_tool_proto",
       ":net",
       ":test_support",
       "//base",
@@ -2480,7 +2493,6 @@ if (is_linux || is_chromeos) {
 if (is_android) {
   generate_jni("net_jni_headers") {
     sources = [
-      "android/java/src/org/chromium/net/AndroidCellularSignalStrength.java",
       "android/java/src/org/chromium/net/AndroidCertVerifyResult.java",
       "android/java/src/org/chromium/net/AndroidKeyStore.java",
       "android/java/src/org/chromium/net/AndroidNetworkLibrary.java",
@@ -2500,8 +2512,8 @@ if (is_android) {
     testonly = true
     sources = [
       "android/javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
-      "android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
       "android/javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
+      "test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
       "test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java",
       "test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java",
     ]
@@ -2570,6 +2582,15 @@ source_set("quiche_test_tools") {
       [ "//net/third_party/quiche:quiche_test_tools_core" ]
 }
 
+source_set("quic_test_flags_utils") {
+  testonly = true
+  sources = [
+    "quic/platform/impl/quic_test_flags_utils.cc",
+    "quic/platform/impl/quic_test_flags_utils.h",
+  ]
+  deps = [ ":net" ]
+}
+
 source_set("quic_test_tools") {
   testonly = true
   sources = [
@@ -2591,8 +2612,6 @@ source_set("quic_test_tools") {
     "quic/platform/impl/quic_test_impl.h",
     "quic/platform/impl/quic_test_loopback_impl.cc",
     "quic/platform/impl/quic_test_loopback_impl.h",
-    "quic/platform/impl/quic_test_mem_slice_vector_impl.cc",
-    "quic/platform/impl/quic_test_mem_slice_vector_impl.h",
     "quic/platform/impl/quic_test_output_impl.cc",
     "quic/platform/impl/quic_test_output_impl.h",
     "quic/test_task_runner.cc",
@@ -2612,7 +2631,10 @@ source_set("quic_test_tools") {
     "//third_party/protobuf:protobuf_lite",
     "//third_party/quic_trace:quic_trace_proto",
   ]
-  public_deps = [ "//net/third_party/quiche:quic_test_tools_core" ]
+  public_deps = [
+    ":quic_test_flags_utils",
+    "//net/third_party/quiche:quic_test_tools_core",
+  ]
   allow_circular_includes_from =
       [ "//net/third_party/quiche:quic_test_tools_core" ]
 }
@@ -3065,6 +3087,10 @@ bundle_data("net_unittests_bundle_data") {
     "data/path_builder_unittest/key_id_prioritization/int_no_ski_c.pem",
     "data/path_builder_unittest/key_id_prioritization/root.pem",
     "data/path_builder_unittest/key_id_prioritization/target.pem",
+    "data/path_builder_unittest/self_issued_prioritization/root1.pem",
+    "data/path_builder_unittest/self_issued_prioritization/root1_cross.pem",
+    "data/path_builder_unittest/self_issued_prioritization/root2.pem",
+    "data/path_builder_unittest/self_issued_prioritization/target.pem",
     "data/path_builder_unittest/validity_date_prioritization/int_ac.pem",
     "data/path_builder_unittest/validity_date_prioritization/int_ad.pem",
     "data/path_builder_unittest/validity_date_prioritization/int_bc.pem",
@@ -4105,6 +4131,7 @@ test("net_unittests") {
     "base/prioritized_task_runner_unittest.cc",
     "base/priority_queue_unittest.cc",
     "base/proxy_server_unittest.cc",
+    "base/proxy_string_util_unittest.cc",
     "base/registry_controlled_domains/registry_controlled_domain_unittest.cc",
     "base/scheme_host_port_matcher_rule_unittest.cc",
     "base/scheme_host_port_matcher_unittest.cc",
@@ -4176,6 +4203,8 @@ test("net_unittests") {
     "cookies/cookie_inclusion_status_unittest.cc",
     "cookies/cookie_monster_unittest.cc",
     "cookies/cookie_options_unittest.cc",
+    "cookies/cookie_partition_key_unittest.cc",
+    "cookies/cookie_partition_keychain_unittest.cc",
     "cookies/cookie_util_unittest.cc",
     "cookies/parsed_cookie_unittest.cc",
     "cookies/site_for_cookies_unittest.cc",
@@ -4288,6 +4317,7 @@ test("net_unittests") {
     "quic/bidirectional_stream_quic_impl_unittest.cc",
     "quic/crypto/proof_test_chromium.cc",
     "quic/crypto/proof_verifier_chromium_test.cc",
+    "quic/dedicated_web_transport_http3_client_test.cc",
     "quic/mock_quic_data.cc",
     "quic/mock_quic_data.h",
     "quic/network_connection_unittest.cc",
@@ -4313,7 +4343,6 @@ test("net_unittests") {
     "quic/quic_stream_factory_test.cc",
     "quic/quic_test_packet_maker.cc",
     "quic/quic_test_packet_maker.h",
-    "quic/quic_transport_end_to_end_test.cc",
     "quic/test_quic_crypto_client_config_handle.cc",
     "quic/test_quic_crypto_client_config_handle.h",
     "socket/client_socket_pool_base_unittest.cc",
@@ -4392,7 +4421,6 @@ test("net_unittests") {
     "url_request/url_fetcher_impl_unittest.cc",
     "url_request/url_fetcher_response_writer_unittest.cc",
     "url_request/url_request_context_builder_unittest.cc",
-    "url_request/url_request_context_unittest.cc",
     "url_request/url_request_filter_unittest.cc",
     "url_request/url_request_http_job_unittest.cc",
     "url_request/url_request_job_factory_unittest.cc",
@@ -4408,7 +4436,6 @@ test("net_unittests") {
 
   if (is_android) {
     sources += [
-      "android/cellular_signal_strength_unittest.cc",
       "android/dummy_spnego_authenticator.cc",
       "android/dummy_spnego_authenticator.h",
       "android/http_auth_negotiate_android_unittest.cc",
@@ -4452,6 +4479,7 @@ test("net_unittests") {
     sources += [
       "base/network_change_notifier_win_unittest.cc",
       "base/network_interfaces_win_unittest.cc",
+      "cert/cert_verify_proc_win_unittest.cc",
       "http/http_auth_sspi_win_unittest.cc",
       "http/mock_sspi_library_win.cc",
       "http/mock_sspi_library_win.h",
@@ -4459,7 +4487,6 @@ test("net_unittests") {
       "proxy_resolution/win/dhcp_pac_file_fetcher_win_unittest.cc",
       "proxy_resolution/win/proxy_config_service_win_unittest.cc",
       "proxy_resolution/win/windows_system_proxy_resolution_service_unittest.cc",
-      "proxy_resolution/win/windows_system_proxy_resolver_unittest.cc",
       "ssl/client_cert_store_win_unittest.cc",
       "ssl/ssl_platform_key_win_unittest.cc",
     ]
@@ -4667,21 +4694,6 @@ test("net_unittests") {
     ]
   }
 
-  if (!disable_ftp_support) {
-    sources += [
-      "ftp/ftp_auth_cache_unittest.cc",
-      "ftp/ftp_ctrl_response_buffer_unittest.cc",
-      "ftp/ftp_directory_listing_parser_ls_unittest.cc",
-      "ftp/ftp_directory_listing_parser_unittest.cc",
-      "ftp/ftp_directory_listing_parser_unittest.h",
-      "ftp/ftp_directory_listing_parser_vms_unittest.cc",
-      "ftp/ftp_directory_listing_parser_windows_unittest.cc",
-      "ftp/ftp_network_transaction_unittest.cc",
-      "ftp/ftp_util_unittest.cc",
-      "url_request/url_request_ftp_job_unittest.cc",
-    ]
-  }
-
   if (enable_built_in_dns) {
     sources += [ "url_request/http_with_dns_over_https_unittest.cc" ]
   }
@@ -4751,11 +4763,6 @@ test("net_unittests") {
     ]
   }
 
-  if (chrome_root_store_supported) {
-    sources += [ "cert/internal/trust_store_chrome_unittest.cc" ]
-    deps += [ "//net/data/ssl/chrome_root_store:gen_root_store_test_inc" ]
-  }
-
   if (!disable_brotli_filter) {
     sources += [ "filter/brotli_source_stream_unittest.cc" ]
   }
@@ -4789,6 +4796,16 @@ test("net_unittests") {
       "iphlpapi.lib",
       "ncrypt.lib",
     ]
+  }
+
+  if (chrome_root_store_supported) {
+    sources += [ "cert/internal/trust_store_chrome_unittest.cc" ]
+    deps += [ "//net/data/ssl/chrome_root_store:gen_root_store_test_inc" ]
+
+    if (is_win) {
+      sources += [ "cert/internal/trust_store_win_unittest.cc" ]
+      libs += [ "crypt32.lib" ]
+    }
   }
 
   if (trial_comparison_cert_verifier_supported) {
@@ -4866,7 +4883,6 @@ if (use_fuzzing_engine) {
       "socket/fuzzed_socket.h",
       "socket/fuzzed_socket_factory.cc",
       "socket/fuzzed_socket_factory.h",
-      "third_party/quiche/src/quic/platform/api/quic_fuzzed_data_provider.h",
     ]
     public_deps = [
       "//base/test:test_support",
@@ -5145,7 +5161,16 @@ fuzzer_test("net_canonical_cookie_fuzzer") {
     ":net_fuzzer_test_support",
     "//net",
   ]
-  seed_corpus = "data/fuzzer_data/net_canonical_cookie_fuzzer/"
+  dict = "data/fuzzer_dictionaries/net_cookies_fuzzer.dict"
+  seed_corpus = "data/fuzzer_data/cookies/"
+}
+
+fuzzer_test("net_cookie_partition_key_fuzzer") {
+  sources = [ "cookies/cookie_partition_key_fuzzer.cc" ]
+  deps = [
+    ":net_fuzzer_test_support",
+    "//net",
+  ]
 }
 
 fuzzer_test("net_parse_cookie_line_fuzzer") {
@@ -5154,6 +5179,8 @@ fuzzer_test("net_parse_cookie_line_fuzzer") {
     ":net_fuzzer_test_support",
     "//net",
   ]
+  dict = "data/fuzzer_dictionaries/net_cookies_fuzzer.dict"
+  seed_corpus = "data/fuzzer_data/cookies/"
 }
 
 fuzzer_test("net_http_stream_parser_fuzzer") {
@@ -5217,46 +5244,6 @@ fuzzer_test("net_crl_set_fuzzer") {
   seed_corpus = "data/fuzzer_data/net_crl_set_fuzzer/"
 }
 
-if (!disable_ftp_support) {
-  fuzzer_test("net_ftp_ctrl_response_fuzzer") {
-    sources = [ "ftp/ftp_ctrl_response_fuzzer.cc" ]
-    deps = [
-      ":net_fuzzer_test_support",
-      "//base",
-      "//net",
-    ]
-  }
-
-  fuzzer_test("net_ftp_directory_listing_fuzzer") {
-    sources = [ "ftp/ftp_directory_listing_fuzzer.cc" ]
-    deps = [
-      ":net_fuzzer_test_support",
-      "//base",
-      "//net",
-    ]
-
-    # TODO(https://crbug.com/921297): Re-enable once source of timeout is
-    # understood (probably just needs to restrict maximum input size).
-    additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
-  }
-
-  fuzzer_test("net_url_request_ftp_fuzzer") {
-    sources = [ "url_request/url_request_ftp_fuzzer.cc" ]
-    deps = [
-      ":net_fuzzer_test_support",
-      ":test_support",
-      "//base",
-      "//net",
-    ]
-    dict = "data/fuzzer_dictionaries/net_url_request_ftp_fuzzer.dict"
-    seed_corpus = "data/fuzzer_data/net_url_request_ftp_fuzzer/"
-
-    # TODO(https://crbug.com/962087): Re-enable once source of timeout is
-    # understood (probably just needs to restrict maximum input size).
-    additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
-  }
-}
-
 fuzzer_test("net_unescape_url_component_fuzzer") {
   sources = [ "base/unescape_url_component_fuzzer.cc" ]
   deps = [
@@ -5296,6 +5283,34 @@ fuzzer_test("net_websocket_frame_parser_fuzzer") {
   ]
   dict = "data/fuzzer_dictionaries/net_websocket_frame_parser_fuzzer.dict"
   libfuzzer_options = [ "max_len=256" ]
+}
+
+if (use_fuzzing_engine) {
+  # This is a separate target because //net/server:http_server
+  # wants to limit its visibility to a select number of target, but the
+  # "fuzzer_test" template expands on iOS to many targets that need to
+  # have the "deps" information propagated in order to support "fat"
+  # binaries.
+  source_set("net_web_socket_encoder_fuzzer_deps") {
+    testonly = true
+    visibility = [
+      ":net_web_socket_encoder_fuzzer",
+      ":net_web_socket_encoder_fuzzer_arch_executable",
+      ":net_web_socket_encoder_fuzzer_arch_executable_sources",
+      ":run_net_web_socket_encoder_fuzzer",
+    ]
+    public_deps = [
+      ":net_fuzzer_test_support",
+      "//net",
+      "//net/server:http_server",
+    ]
+  }
+
+  fuzzer_test("net_web_socket_encoder_fuzzer") {
+    sources = [ "server/web_socket_encoder_fuzzer.cc" ]
+    deps = [ ":net_web_socket_encoder_fuzzer_deps" ]
+    libfuzzer_options = [ "max_len=256" ]
+  }
 }
 
 fuzzer_test("net_http_chunked_decoder_fuzzer") {

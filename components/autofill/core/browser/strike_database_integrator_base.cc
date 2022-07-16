@@ -181,9 +181,9 @@ std::string StrikeDatabaseIntegratorBase::GetIdFromKey(
 
 base::TimeDelta StrikeDatabaseIntegratorBase::GetEntryAge(
     const StrikeData& strike_data) {
-  return AutofillClock::Now() - base::Time::FromDeltaSinceWindowsEpoch(
-                                    base::TimeDelta::FromMicroseconds(
-                                        strike_data.last_update_timestamp()));
+  return AutofillClock::Now() -
+         base::Time::FromDeltaSinceWindowsEpoch(
+             base::Microseconds(strike_data.last_update_timestamp()));
 }
 
 std::string StrikeDatabaseIntegratorBase::GetKey(const std::string& id) const {

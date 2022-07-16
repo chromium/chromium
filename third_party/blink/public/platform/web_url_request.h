@@ -153,11 +153,6 @@ class WebURLRequest {
   BLINK_PLATFORM_EXPORT bool ReportUploadProgress() const;
   BLINK_PLATFORM_EXPORT void SetReportUploadProgress(bool);
 
-  // Controls whether actual headers sent and received for request are
-  // collected and reported.
-  BLINK_PLATFORM_EXPORT bool ReportRawHeaders() const;
-  BLINK_PLATFORM_EXPORT void SetReportRawHeaders(bool);
-
   BLINK_PLATFORM_EXPORT mojom::RequestContextType GetRequestContext() const;
   BLINK_PLATFORM_EXPORT void SetRequestContext(mojom::RequestContextType);
 

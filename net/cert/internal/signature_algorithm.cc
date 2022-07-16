@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
 #include "net/cert/internal/cert_error_params.h"
 #include "net/cert/internal/cert_errors.h"
@@ -380,23 +381,22 @@ WARN_UNUSED_RESULT bool ParseMaskGenAlgorithm(const der::Input input,
 // indicated context-specific class number. Values greater than 32-bits will be
 // rejected.
 //
-// Returns true on success and sets |*present| to true if the field was present.
-WARN_UNUSED_RESULT bool ReadOptionalContextSpecificUint32(der::Parser* parser,
-                                                          uint8_t class_number,
-                                                          uint32_t* out,
-                                                          bool* present) {
-  der::Input value;
-  bool has_value;
+// Returns true on success.
+WARN_UNUSED_RESULT bool ReadOptionalContextSpecificUint32(
+    der::Parser* parser,
+    uint8_t class_number,
+    absl::optional<uint32_t>* out) {
+  absl::optional<der::Input> field;
 
   // Read the context specific value.
   if (!parser->ReadOptionalTag(der::ContextSpecificConstructed(class_number),
-                               &value, &has_value)) {
+                               &field)) {
     return false;
   }
 
-  if (has_value) {
+  if (field.has_value()) {
     // Parse the integer contained in it.
-    der::Parser number_parser(value);
+    der::Parser number_parser(field.value());
     uint64_t uint64_value;
 
     if (!number_parser.ReadUint64(&uint64_value))
@@ -411,7 +411,6 @@ WARN_UNUSED_RESULT bool ReadOptionalContextSpecificUint32(der::Parser* parser,
     *out = casted.ValueOrDie();
   }
 
-  *present = has_value;
   return true;
 }
 
@@ -436,7 +435,18 @@ WARN_UNUSED_RESULT bool ReadOptionalContextSpecificUint32(der::Parser* parser,
 //
 // Which is to say the parameters MUST be present, and of type
 // RSASSA-PSS-params.
+//
+// Note also that DER encoding (ITU-T X.690 section 11.5) prohibits
+// specifying default values explicitly. The parameter should instead be
+// omitted to indicate a default value.
 std::unique_ptr<SignatureAlgorithm> ParseRsaPss(const der::Input& params) {
+  // Right now, whether some unenforced DER error is recorded with this bool,
+  // and that bool is reported via a UMA metric below.
+  // TODO(crbug.com/525829): After the UMA metric shows rare occurrence of
+  // unenforced errors, then add a Finch flag to toggle to enforcing these
+  // errors by returning nullptr.
+  bool der_error = false;
+
   der::Parser parser(params);
   der::Parser params_parser;
   if (!parser.ReadSequence(&params_parser))
@@ -447,46 +457,61 @@ std::unique_ptr<SignatureAlgorithm> ParseRsaPss(const der::Input& params) {
   if (parser.HasMore())
     return nullptr;
 
-  bool has_field;
-  der::Input field;
+  absl::optional<der::Input> field;
 
   // Parse:
   //     hashAlgorithm     [0] HashAlgorithm DEFAULT sha1Identifier,
   DigestAlgorithm hash = DigestAlgorithm::Sha1;
-  if (!params_parser.ReadOptionalTag(der::ContextSpecificConstructed(0), &field,
-                                     &has_field)) {
+  if (!params_parser.ReadOptionalTag(der::ContextSpecificConstructed(0),
+                                     &field)) {
     return nullptr;
   }
-  if (has_field && !ParseHashAlgorithm(field, &hash))
+  if (field.has_value() && !ParseHashAlgorithm(field.value(), &hash))
     return nullptr;
+  // Default hash should be specified by omission.
+  der_error |= (field.has_value() && hash == DigestAlgorithm::Sha1);
 
   // Parse:
   //     maskGenAlgorithm  [1] MaskGenAlgorithm DEFAULT mgf1SHA1,
   DigestAlgorithm mgf1_hash = DigestAlgorithm::Sha1;
-  if (!params_parser.ReadOptionalTag(der::ContextSpecificConstructed(1), &field,
-                                     &has_field)) {
+  if (!params_parser.ReadOptionalTag(der::ContextSpecificConstructed(1),
+                                     &field)) {
     return nullptr;
   }
-  if (has_field && !ParseMaskGenAlgorithm(field, &mgf1_hash))
+  if (field.has_value() && !ParseMaskGenAlgorithm(field.value(), &mgf1_hash))
     return nullptr;
+  // Default mask generation should be specified by omission.
+  der_error |= (field.has_value() && mgf1_hash == DigestAlgorithm::Sha1);
 
   // Parse:
   //     saltLength        [2] INTEGER DEFAULT 20,
-  uint32_t salt_length = 20u;
-  if (!ReadOptionalContextSpecificUint32(&params_parser, 2, &salt_length,
-                                         &has_field)) {
+  absl::optional<uint32_t> opt_salt_length;
+  if (!ReadOptionalContextSpecificUint32(&params_parser, 2, &opt_salt_length)) {
     return nullptr;
   }
+  // Default salt length should be specified by omission.
+  der_error |= (opt_salt_length.has_value() && opt_salt_length.value() == 20u);
+  uint32_t salt_length = opt_salt_length.value_or(20u);
 
   // Parse:
   //     trailerField      [3] INTEGER DEFAULT 1
-  uint32_t trailer_field = 1u;
-  if (!ReadOptionalContextSpecificUint32(&params_parser, 3, &trailer_field,
-                                         &has_field)) {
+  absl::optional<uint32_t> opt_trailer_field;
+  if (!ReadOptionalContextSpecificUint32(&params_parser, 3,
+                                         &opt_trailer_field)) {
     return nullptr;
   }
+  // Default trailer field should be specified by omission.
+  der_error |=
+      (opt_trailer_field.has_value() && opt_trailer_field.value() == 1u);
+  uint32_t trailer_field = opt_trailer_field.value_or(1u);
 
-  // RFC 4055 says that the trailer field must be 1:
+  // Parse:
+  //     trailerField      [3] INTEGER DEFAULT 1
+  //
+  // The trailer field parameter is expected to not be present, because of
+  // the combination of two requirements:
+  //
+  // 1. RFC 4055 says that the trailer field must be 1:
   //
   //     The trailerField field is an integer.  It provides
   //     compatibility with IEEE Std 1363a-2004 [P1363A].  The value
@@ -499,6 +524,9 @@ std::unique_ptr<SignatureAlgorithm> ParseRsaPss(const der::Input& params) {
   //     Implementations that perform signature validation MUST
   //     recognize both a present trailerField field with value 1 and an
   //     absent trailerField field.
+  //
+  // 2. DER encoding prohibits specifying a default value, which in this
+  //    case is 1.
   if (trailer_field != 1)
     return nullptr;
 
@@ -506,6 +534,8 @@ std::unique_ptr<SignatureAlgorithm> ParseRsaPss(const der::Input& params) {
   // include an extensibility point for RSASSA-PSS-params)
   if (params_parser.HasMore())
     return nullptr;
+
+  UMA_HISTOGRAM_BOOLEAN("Net.CertVerifier.InvalidRsaPssParams", der_error);
 
   return SignatureAlgorithm::CreateRsaPss(hash, mgf1_hash, salt_length);
 }
@@ -548,8 +578,6 @@ SignatureAlgorithm::~SignatureAlgorithm() = default;
 std::unique_ptr<SignatureAlgorithm> SignatureAlgorithm::Create(
     const der::Input& algorithm_identifier,
     CertErrors* errors) {
-  // TODO(crbug.com/634443): Add useful error information.
-
   der::Input oid;
   der::Input params;
   if (!ParseAlgorithmIdentifier(algorithm_identifier, &oid, &params))

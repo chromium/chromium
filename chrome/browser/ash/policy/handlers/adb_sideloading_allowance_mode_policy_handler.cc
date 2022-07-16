@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/settings/cros_settings_provider.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -17,8 +19,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/cros_settings_provider.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -28,7 +28,7 @@
 namespace {
 
 constexpr base::TimeDelta kAdbSideloadingPlannedNotificationWaitTime =
-    base::TimeDelta::FromDays(1);
+    base::Days(1);
 
 absl::optional<policy::AdbSideloadingAllowanceMode>
 GetAdbSideloadingDevicePolicyMode(const ash::CrosSettings* cros_settings,
@@ -36,15 +36,14 @@ GetAdbSideloadingDevicePolicyMode(const ash::CrosSettings* cros_settings,
   auto status = cros_settings->PrepareTrustedValues(callback);
 
   // If the policy value is still not trusted, return optional null
-  if (status != chromeos::CrosSettingsProvider::TRUSTED) {
+  if (status != ash::CrosSettingsProvider::TRUSTED) {
     return absl::nullopt;
   }
 
   // Get the trusted policy value.
   int sideloading_mode = -1;
-  if (!cros_settings->GetInteger(
-          chromeos::kDeviceCrostiniArcAdbSideloadingAllowed,
-          &sideloading_mode)) {
+  if (!cros_settings->GetInteger(ash::kDeviceCrostiniArcAdbSideloadingAllowed,
+                                 &sideloading_mode)) {
     // Here we do not return null because we want to handle this case separately
     // and to reset all the prefs for the notifications so that they can be
     // displayed again if the policy changes
@@ -96,7 +95,7 @@ AdbSideloadingAllowanceModePolicyHandler::
       power_manager_observer_(this) {
   DCHECK(local_state_);
   policy_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kDeviceCrostiniArcAdbSideloadingAllowed,
+      ash::kDeviceCrostiniArcAdbSideloadingAllowed,
       base::BindRepeating(
           &AdbSideloadingAllowanceModePolicyHandler::MaybeShowNotification,
           weak_factory_.GetWeakPtr()));

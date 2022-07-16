@@ -30,6 +30,9 @@ class MouseCursorOverlayController::Observer final
     window_->AddPreTargetHandler(this);
   }
 
+  Observer(const Observer&) = delete;
+  Observer& operator=(const Observer&) = delete;
+
   ~Observer() final {
     if (window_) {
       OnWindowDestroying(window_);
@@ -114,8 +117,6 @@ class MouseCursorOverlayController::Observer final
 
   MouseCursorOverlayController* const controller_;
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(Observer);
 };
 
 MouseCursorOverlayController::MouseCursorOverlayController()

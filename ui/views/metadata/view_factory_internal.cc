@@ -27,8 +27,12 @@ void ViewBuilderCore::AddPropertySetter(
 }
 
 void ViewBuilderCore::CreateChildren(View* parent) {
-  for (auto& builder : children_)
-    parent->AddChildView(builder->DoBuild());
+  for (auto& builder : children_) {
+    if (builder.second)
+      parent->AddChildViewAt(builder.first->DoBuild(), builder.second.value());
+    else
+      parent->AddChildView(builder.first->DoBuild());
+  }
 }
 
 void ViewBuilderCore::SetProperties(View* view) {

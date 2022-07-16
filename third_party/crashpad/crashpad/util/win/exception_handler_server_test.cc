@@ -20,7 +20,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "client/crashpad_client.h"
 #include "gtest/gtest.h"
@@ -41,6 +40,10 @@ class RunServerThread : public Thread {
   RunServerThread(ExceptionHandlerServer* server,
                   ExceptionHandlerServer::Delegate* delegate)
       : server_(server), delegate_(delegate) {}
+
+  RunServerThread(const RunServerThread&) = delete;
+  RunServerThread& operator=(const RunServerThread&) = delete;
+
   ~RunServerThread() override {}
 
  private:
@@ -49,13 +52,15 @@ class RunServerThread : public Thread {
 
   ExceptionHandlerServer* server_;
   ExceptionHandlerServer::Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(RunServerThread);
 };
 
 class TestDelegate : public ExceptionHandlerServer::Delegate {
  public:
   explicit TestDelegate(HANDLE server_ready) : server_ready_(server_ready) {}
+
+  TestDelegate(const TestDelegate&) = delete;
+  TestDelegate& operator=(const TestDelegate&) = delete;
+
   ~TestDelegate() {}
 
   void ExceptionHandlerServerStarted() override {
@@ -72,8 +77,6 @@ class TestDelegate : public ExceptionHandlerServer::Delegate {
 
  private:
   HANDLE server_ready_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
 class ExceptionHandlerServerTest : public testing::Test {
@@ -87,6 +90,10 @@ class ExceptionHandlerServerTest : public testing::Test {
     server_.SetPipeName(pipe_name_);
   }
 
+  ExceptionHandlerServerTest(const ExceptionHandlerServerTest&) = delete;
+  ExceptionHandlerServerTest& operator=(const ExceptionHandlerServerTest&) =
+      delete;
+
   TestDelegate& delegate() { return delegate_; }
   ExceptionHandlerServer& server() { return server_; }
   Thread& server_thread() { return server_thread_; }
@@ -98,8 +105,6 @@ class ExceptionHandlerServerTest : public testing::Test {
   ScopedKernelHANDLE server_ready_;
   TestDelegate delegate_;
   RunServerThread server_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionHandlerServerTest);
 };
 
 // During destruction, ensures that the server is stopped and the background
@@ -108,6 +113,11 @@ class ScopedStopServerAndJoinThread {
  public:
   ScopedStopServerAndJoinThread(ExceptionHandlerServer* server, Thread* thread)
       : server_(server), thread_(thread) {}
+
+  ScopedStopServerAndJoinThread(const ScopedStopServerAndJoinThread&) = delete;
+  ScopedStopServerAndJoinThread& operator=(
+      const ScopedStopServerAndJoinThread&) = delete;
+
   ~ScopedStopServerAndJoinThread() {
     server_->Stop();
     thread_->Join();
@@ -116,7 +126,6 @@ class ScopedStopServerAndJoinThread {
  private:
   ExceptionHandlerServer* server_;
   Thread* thread_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedStopServerAndJoinThread);
 };
 
 TEST_F(ExceptionHandlerServerTest, Instantiate) {
@@ -163,6 +172,9 @@ class TestClient final : public WinChildProcess {
  public:
   TestClient() : WinChildProcess() {}
 
+  TestClient(const TestClient&) = delete;
+  TestClient& operator=(const TestClient&) = delete;
+
   ~TestClient() {}
 
  private:
@@ -176,8 +188,6 @@ class TestClient final : public WinChildProcess {
     WriteWString(WritePipeHandle(), L"OK");
     return EXIT_SUCCESS;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestClient);
 };
 
 TEST_F(ExceptionHandlerServerTest, MultipleConnections) {

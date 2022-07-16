@@ -8,7 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -22,9 +22,9 @@ namespace remoting {
 namespace {
 
 void DisallowBlockingOperations() {
-  base::ThreadRestrictions::SetIOAllowed(false);
+  base::DisallowBlocking();
   // TODO(crbug.com/793486): Re-enable after the underlying issue is fixed.
-  // base::ThreadRestrictions::DisallowBaseSyncPrimitives();
+  // base::DisallowBaseSyncPrimitives();
 }
 
 }  // namespace
@@ -109,6 +109,10 @@ ChromotingHostContext::url_loader_factory() {
             url_request_context_getter_);
   }
   return url_loader_factory_owner_->GetURLLoaderFactory();
+}
+
+policy::ManagementService* ChromotingHostContext::management_service() {
+  return &platform_management_service_;
 }
 
 std::unique_ptr<ChromotingHostContext> ChromotingHostContext::Create(

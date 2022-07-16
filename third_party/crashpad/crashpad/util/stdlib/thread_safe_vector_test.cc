@@ -27,6 +27,11 @@ constexpr int kElementsPerThread = 100;
 class ThreadSafeVectorTestThread : public Thread {
  public:
   ThreadSafeVectorTestThread() : thread_safe_vector_(nullptr), start_(0) {}
+
+  ThreadSafeVectorTestThread(const ThreadSafeVectorTestThread&) = delete;
+  ThreadSafeVectorTestThread& operator=(const ThreadSafeVectorTestThread&) =
+      delete;
+
   ~ThreadSafeVectorTestThread() {}
 
   void SetTestParameters(ThreadSafeVector<int>* thread_safe_vector, int start) {
@@ -44,8 +49,6 @@ class ThreadSafeVectorTestThread : public Thread {
  private:
   ThreadSafeVector<int>* thread_safe_vector_;
   int start_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadSafeVectorTestThread);
 };
 
 TEST(ThreadSafeVector, ThreadSafeVector) {

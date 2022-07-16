@@ -183,8 +183,7 @@ void AndroidPushNotificationManager::OnDelegateReady() {
 
     // The helper here is used only for tracking success and logging that to
     // metrics. In this case, nothing needs to be done in the event of failure.
-    auto helper =
-        DroppedSuccessCallbackHelper::CreateAndArm(base::DoNothing::Once());
+    auto helper = DroppedSuccessCallbackHelper::CreateAndArm(base::DoNothing());
     helper->SetReportResultHistogram(
         "OptimizationGuide.PushNotifications."
         "CachedNotificationsHandledSuccessfully");
@@ -220,6 +219,7 @@ void AndroidPushNotificationManager::OnNewPushNotification(
       "OptimizationGuide.PushNotifications.GotPushNotification", true);
 
   if (!delegate_) {
+    // Cache the notification into Android shared preference.
     OnNewPushNotificationNotHandled(notification);
     return;
   }
@@ -230,6 +230,12 @@ void AndroidPushNotificationManager::OnNewPushNotification(
   if (!notification.has_key_representation())
     return;
 
+  DispatchPayload(notification);
+  InvalidateHints(notification);
+}
+
+void AndroidPushNotificationManager::InvalidateHints(
+    const proto::HintNotificationPayload& notification) {
   // If the notification can't be handled right now, make sure it gets pushed
   // back to Android to be cached.
   auto helper = DroppedSuccessCallbackHelper::CreateAndArm(base::BindOnce(
@@ -253,9 +259,38 @@ void AndroidPushNotificationManager::OnPurgeCompleted() {
   }
 }
 
+void AndroidPushNotificationManager::DispatchPayload(
+    const proto::HintNotificationPayload& notification) {
+  // No custom payload or optimization type.
+  if (!notification.has_payload() || !notification.has_optimization_type()) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.PushNotifications.ReceivedNotificationType",
+      notification.optimization_type(),
+      static_cast<optimization_guide::proto::OptimizationType>(
+          optimization_guide::proto::OptimizationType_ARRAYSIZE));
+
+  for (Observer& observer : observers_) {
+    observer.OnNotificationPayload(notification.optimization_type(),
+                                   notification.payload());
+  }
+}
+
 void AndroidPushNotificationManager::OnNewPushNotificationNotHandled(
     const proto::HintNotificationPayload& notification) {
   OptimizationGuideBridge::OnNotificationNotHandledByNative(notification);
+}
+
+void AndroidPushNotificationManager::AddObserver(
+    PushNotificationManager::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AndroidPushNotificationManager::RemoveObserver(
+    PushNotificationManager::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace android

@@ -8,7 +8,6 @@
 #include <list>
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/common/pepper_plugin_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -24,6 +23,9 @@ class PluginModule;
 // not preloaded).
 class PepperPluginRegistry {
  public:
+  PepperPluginRegistry(const PepperPluginRegistry&) = delete;
+  PepperPluginRegistry& operator=(const PepperPluginRegistry&) = delete;
+
   ~PepperPluginRegistry();
 
   static PepperPluginRegistry* GetInstance();
@@ -76,8 +78,6 @@ class PepperPluginRegistry {
       std::map<std::pair<base::FilePath, absl::optional<url::Origin>>,
                PluginModule*>;
   NonOwningModuleMap live_modules_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPluginRegistry);
 };
 
 }  // namespace content

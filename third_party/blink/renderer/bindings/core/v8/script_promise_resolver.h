@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "v8/include/v8.h"
@@ -43,6 +44,10 @@ class CORE_EXPORT ScriptPromiseResolver
 
  public:
   explicit ScriptPromiseResolver(ScriptState*);
+
+  ScriptPromiseResolver(const ScriptPromiseResolver&) = delete;
+  ScriptPromiseResolver& operator=(const ScriptPromiseResolver&) = delete;
+
   ~ScriptPromiseResolver() override;
 
   void Dispose();
@@ -129,8 +134,8 @@ class CORE_EXPORT ScriptPromiseResolver
       v8::Isolate* isolate = script_state_->GetIsolate();
       v8::MicrotasksScope microtasks_scope(
           isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
-      value_.Set(isolate, ToV8(value, script_state_->GetContext()->Global(),
-                               script_state_->GetIsolate()));
+      value_.Reset(isolate, ToV8(value, script_state_->GetContext()->Global(),
+                                 script_state_->GetIsolate()));
     }
 
     if (GetExecutionContext()->IsContextPaused()) {
@@ -171,8 +176,6 @@ class CORE_EXPORT ScriptPromiseResolver
 
   base::debug::StackTrace create_stack_trace_{8};
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptPromiseResolver);
 };
 
 }  // namespace blink

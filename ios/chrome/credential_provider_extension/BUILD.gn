@@ -4,6 +4,7 @@
 
 import("//build/apple/compile_entitlements.gni")
 import("//build/apple/tweak_info_plist.gni")
+import("//build/buildflag_header.gni")
 import("//build/config/ios/rules.gni")
 import("//build/config/locales.gni")
 import("//ios/build/chrome_build.gni")
@@ -28,11 +29,6 @@ extension_repack_all_locales("packed_resources") {
 
 tweak_info_plist("tweak_info_plist") {
   info_plist = "Info.plist"
-
-  # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
-  if (ios_lock_to_version != "") {
-    args = [ "--lock-to-version=$ios_lock_to_version" ]
-  }
 }
 
 compile_entitlements("entitlements") {
@@ -90,13 +86,12 @@ ios_appex_bundle("credential_provider_extension") {
   extra_substitutions = [
     "CHROME_CHANNEL_SCHEME=$url_channel_scheme",
     "CHROMIUM_SHORT_NAME=$chromium_short_name",
-    "CREDENTIAL_PROVIDER_EXTENSION_BUNDLE_ID=$chromium_bundle_id.CredentialProviderExtension",
     "CHROMIUM_BUNDLE_ID=$chromium_bundle_id",
   ]
 
   entitlements_target = ":entitlements"
   info_plist_target = ":tweak_info_plist"
-  xcode_product_bundle_id = "$chromium_bundle_id.CredentialProviderExtension"
+  bundle_identifier = "$chromium_bundle_id.CredentialProviderExtension"
 }
 
 generate_localizable_strings("system_strings") {
@@ -114,14 +109,11 @@ generate_localizable_strings("system_strings") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "metrics_util_unittest.mm",
-    "password_util_unittest.mm",
-  ]
+  sources = [ "metrics_util_unittest.mm" ]
   deps = [
     ":metrics_util",
-    ":password_util",
     "//base",
+    "//base/test:test_support",
     "//ios/chrome/common/app_group",
     "//testing/gtest",
   ]
@@ -142,6 +134,11 @@ source_set("reauthentication_handler") {
   ]
 }
 
+buildflag_header("password_spec_fetcher_buildflags") {
+  header = "password_spec_fetcher_buildflags.h"
+  flags = [ "GOOGLE_API_KEY=@\"$ios_credential_provider_extension_api_key\"" ]
+}
+
 source_set("password_util") {
   sources = [
     "password_util.h",
@@ -152,11 +149,9 @@ source_set("password_util") {
     "//base",
     "//ios/chrome/common/app_group",
     "//ios/chrome/credential_provider_extension:metrics_util",
+    "//ios/components/credential_provider_extension:password_util",
   ]
-  frameworks = [
-    "Security.framework",
-    "Foundation.framework",
-  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("metrics_util") {

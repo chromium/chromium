@@ -19,6 +19,7 @@
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "chrome/android/chrome_jni_headers/DownloadController_jni.h"
+#include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/android/tab_android.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/offline_pages/android/offline_page_bridge.h"
 #include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
+#include "chrome/browser/permissions/permission_update_message_controller_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
@@ -39,6 +41,8 @@
 #include "components/download/public/common/auto_resumption_handler.h"
 #include "components/download/public/common/download_features.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/messages/android/messages_feature.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -94,6 +98,9 @@ class DownloadManagerGetter : public DownloadManager::Observer {
     manager_->AddObserver(this);
   }
 
+  DownloadManagerGetter(const DownloadManagerGetter&) = delete;
+  DownloadManagerGetter& operator=(const DownloadManagerGetter&) = delete;
+
   ~DownloadManagerGetter() override {
     if (manager_)
       manager_->RemoveObserver(this);
@@ -107,7 +114,6 @@ class DownloadManagerGetter : public DownloadManager::Observer {
 
  private:
   DownloadManager* manager_;
-  DISALLOW_COPY_AND_ASSIGN(DownloadManagerGetter);
 };
 
 void RemoveDownloadItem(std::unique_ptr<DownloadManagerGetter> getter,
@@ -131,9 +137,19 @@ void OnRequestFileAccessResult(
     std::vector<std::string> permissions;
     permissions.push_back(permission_to_update);
 
-    PermissionUpdateInfoBarDelegate::Create(
-        web_contents, permissions,
-        IDS_MISSING_STORAGE_PERMISSION_DOWNLOAD_EDUCATION_TEXT, std::move(cb));
+    if (messages::IsPermissionUpdateMessagesUiEnabled()) {
+      PermissionUpdateMessageController::CreateForWebContents(web_contents);
+      PermissionUpdateMessageController::FromWebContents(web_contents)
+          ->ShowMessage(permissions, IDR_ANDORID_MESSAGE_PERMISSION_STORAGE,
+                        IDS_MESSAGE_MISSING_STORAGE_ACCESS_PERMISSION_TITLE,
+                        IDS_MESSAGE_STORAGE_ACCESS_PERMISSION_TEXT,
+                        std::move(cb));
+    } else {
+      PermissionUpdateInfoBarDelegate::Create(
+          web_contents, permissions,
+          IDS_MISSING_STORAGE_PERMISSION_DOWNLOAD_EDUCATION_TEXT,
+          std::move(cb));
+    }
     return;
   }
 
@@ -437,6 +453,20 @@ void DownloadController::OnDangerousDownload(DownloadItem* item) {
         base::BindOnce(&RemoveDownloadItem, std::move(download_manager_getter),
                        item->GetGuid()));
     item->RemoveObserver(this);
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kEnableDangerousDownloadDialog)) {
+    ui::ViewAndroid* view_android =
+        web_contents ? web_contents->GetNativeView() : nullptr;
+    ui::WindowAndroid* window_android =
+        view_android ? view_android->GetWindowAndroid() : nullptr;
+    if (!dangerous_download_bridge_) {
+      dangerous_download_bridge_ =
+          std::make_unique<DangerousDownloadDialogBridge>();
+    }
+    dangerous_download_bridge_->Show(item, window_android);
     return;
   }
 

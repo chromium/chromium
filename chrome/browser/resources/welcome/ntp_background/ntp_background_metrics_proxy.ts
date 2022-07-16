@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ModuleMetricsProxyImpl, NuxNtpBackgroundInteractions} from '../shared/module_metrics_proxy.js';
+import {ModuleMetricsProxy, ModuleMetricsProxyImpl, NuxNtpBackgroundInteractions} from '../shared/module_metrics_proxy.js';
 
 export class NtpBackgroundMetricsProxyImpl extends ModuleMetricsProxyImpl {
   constructor() {
@@ -11,17 +11,13 @@ export class NtpBackgroundMetricsProxyImpl extends ModuleMetricsProxyImpl {
         NuxNtpBackgroundInteractions);
   }
 
-  getInteractions() {
-    return NuxNtpBackgroundInteractions;
-  }
-
-  static getInstance(): NtpBackgroundMetricsProxyImpl {
+  static getInstance(): ModuleMetricsProxy {
     return instance || (instance = new NtpBackgroundMetricsProxyImpl());
   }
 
-  static setInstance(obj: NtpBackgroundMetricsProxyImpl) {
+  static setInstance(obj: ModuleMetricsProxy) {
     instance = obj;
   }
 }
 
-let instance: NtpBackgroundMetricsProxyImpl|null = null;
+let instance: ModuleMetricsProxy|null = null;

@@ -1,5 +1,6 @@
 Tests name sources when used with aria-labelledby.
 {
+    childIds : <object>
     domNode : div#div
     ignored : false
     name : {
@@ -21,6 +22,7 @@ Tests name sources when used with aria-labelledby.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -29,6 +31,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#self
     ignored : false
     name : {
@@ -62,6 +65,7 @@ Tests name sources when used with aria-labelledby.
         value : Contents of button
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -84,6 +88,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby
     ignored : false
     name : {
@@ -135,6 +140,7 @@ Tests name sources when used with aria-labelledby.
         value : Label 1
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -170,6 +176,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledbySelf
     ignored : false
     name : {
@@ -221,6 +228,7 @@ Tests name sources when used with aria-labelledby.
         value : Contents
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -256,6 +264,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby3
     ignored : false
     name : {
@@ -312,6 +321,7 @@ Tests name sources when used with aria-labelledby.
         value : Contents Label 3
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -352,6 +362,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby4
     ignored : false
     name : {
@@ -403,6 +414,7 @@ Tests name sources when used with aria-labelledby.
         value : Contents 4
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -438,6 +450,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby5
     ignored : false
     name : {
@@ -476,6 +489,7 @@ Tests name sources when used with aria-labelledby.
         value : Contents
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -498,6 +512,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby6
     ignored : false
     name : {
@@ -549,6 +564,7 @@ Tests name sources when used with aria-labelledby.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -584,6 +600,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby7
     ignored : false
     name : {
@@ -635,6 +652,7 @@ Tests name sources when used with aria-labelledby.
         value : Invisible label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -670,6 +688,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby8
     ignored : false
     name : {
@@ -721,6 +740,7 @@ Tests name sources when used with aria-labelledby.
         value : Display-none label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -756,6 +776,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelOnly
     ignored : false
     name : {
@@ -799,6 +820,7 @@ Tests name sources when used with aria-labelledby.
         value : Label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -821,6 +843,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#emptyLabel1
     ignored : false
     name : {
@@ -854,6 +877,7 @@ Tests name sources when used with aria-labelledby.
         value : Contents
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -876,6 +900,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#emptyLabel2
     ignored : false
     name : {
@@ -909,6 +934,7 @@ Tests name sources when used with aria-labelledby.
         value : Contents
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -931,6 +957,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby9
     ignored : false
     name : {
@@ -990,6 +1017,7 @@ Tests name sources when used with aria-labelledby.
         value : Labelledby 9
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1025,6 +1053,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby10
     ignored : false
     name : {
@@ -1076,6 +1105,7 @@ Tests name sources when used with aria-labelledby.
         value : Label 10 label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1111,6 +1141,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby11
     ignored : false
     name : {
@@ -1162,6 +1193,7 @@ Tests name sources when used with aria-labelledby.
         value : Contents 11
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1197,6 +1229,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : button#labelledby12
     ignored : false
     name : {
@@ -1248,6 +1281,7 @@ Tests name sources when used with aria-labelledby.
         value : Label 12 label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1283,6 +1317,7 @@ Tests name sources when used with aria-labelledby.
     }
 }
 {
+    childIds : <object>
     domNode : input#input1
     ignored : false
     name : {
@@ -1336,6 +1371,7 @@ Tests name sources when used with aria-labelledby.
         value : A B C
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid

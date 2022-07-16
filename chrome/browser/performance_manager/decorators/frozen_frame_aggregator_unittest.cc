@@ -23,12 +23,15 @@ using LifecycleState = PageNodeImpl::LifecycleState;
 class LenientMockProcessNodeObserver : public ProcessNode::ObserverDefaultImpl {
  public:
   LenientMockProcessNodeObserver() = default;
+
+  LenientMockProcessNodeObserver(const LenientMockProcessNodeObserver&) =
+      delete;
+  LenientMockProcessNodeObserver& operator=(
+      const LenientMockProcessNodeObserver&) = delete;
+
   ~LenientMockProcessNodeObserver() override = default;
 
   MOCK_METHOD1(OnAllFramesInProcessFrozen, void(const ProcessNode*));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LenientMockProcessNodeObserver);
 };
 
 using MockProcessNodeObserver =
@@ -37,6 +40,11 @@ using MockProcessNodeObserver =
 }  // namespace
 
 class FrozenFrameAggregatorTest : public GraphTestHarness {
+ public:
+  FrozenFrameAggregatorTest(const FrozenFrameAggregatorTest&) = delete;
+  FrozenFrameAggregatorTest& operator=(const FrozenFrameAggregatorTest&) =
+      delete;
+
  protected:
   using Super = GraphTestHarness;
 
@@ -84,18 +92,14 @@ class FrozenFrameAggregatorTest : public GraphTestHarness {
     EXPECT_EQ(LifecycleState::kFrozen, page_node_.get()->lifecycle_state());
   }
 
-  TestNodeWrapper<FrameNodeImpl> CreateFrame(FrameNodeImpl* parent_frame_node,
-                                             int frame_tree_node_id) {
+  TestNodeWrapper<FrameNodeImpl> CreateFrame(FrameNodeImpl* parent_frame_node) {
     return CreateFrameNodeAutoId(process_node_.get(), page_node_.get(),
-                                 parent_frame_node, frame_tree_node_id);
+                                 parent_frame_node);
   }
 
   FrozenFrameAggregator* ffa_;
   TestNodeWrapper<ProcessNodeImpl> process_node_;
   TestNodeWrapper<PageNodeImpl> page_node_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrozenFrameAggregatorTest);
 };
 
 TEST_F(FrozenFrameAggregatorTest, ProcessAggregation) {
@@ -106,7 +110,7 @@ TEST_F(FrozenFrameAggregatorTest, ProcessAggregation) {
   ExpectNoProcessData();
 
   // Add a main frame.
-  auto f0 = CreateFrame(nullptr, 0);
+  auto f0 = CreateFrame(nullptr);
   ExpectNoProcessData();
 
   // Make the frame current.
@@ -125,7 +129,7 @@ TEST_F(FrozenFrameAggregatorTest, ProcessAggregation) {
   ExpectProcessData(1, 1);
 
   // Create a child frame for the first page hosted in the second process.
-  auto f1 = CreateFrameNodeAutoId(proc2.get(), page_node_.get(), f0.get(), 1);
+  auto f1 = CreateFrameNodeAutoId(proc2.get(), page_node_.get(), f0.get());
   ExpectProcessData(1, 1);
 
   // Immediately make it current.
@@ -145,7 +149,7 @@ TEST_F(FrozenFrameAggregatorTest, ProcessAggregation) {
   ExpectProcessData(1, 0);
 
   // Create a main frame in the second page, but that's in the first process.
-  auto f2 = CreateFrameNodeAutoId(process_node_.get(), page2.get(), nullptr, 2);
+  auto f2 = CreateFrameNodeAutoId(process_node_.get(), page2.get(), nullptr);
   ExpectProcessData(1, 0);
 
   // Freeze the main frame in the second page.
@@ -189,7 +193,7 @@ TEST_F(FrozenFrameAggregatorTest, PageAggregation) {
   ExpectRunning();
 
   // Add a non-current frame.
-  auto f0 = CreateFrame(nullptr, 0);
+  auto f0 = CreateFrame(nullptr);
   ExpectPageData(0, 0);
   ExpectRunning();
 
@@ -209,7 +213,7 @@ TEST_F(FrozenFrameAggregatorTest, PageAggregation) {
   ExpectRunning();
 
   // Add a child frame.
-  auto f1 = CreateFrame(f0.get(), 1);
+  auto f1 = CreateFrame(f0.get());
   ExpectPageData(1, 0);
   ExpectRunning();
 
@@ -235,7 +239,7 @@ TEST_F(FrozenFrameAggregatorTest, PageAggregation) {
   ExpectRunning();
 
   // Create a third frame.
-  auto f1a = CreateFrame(f0.get(), 1);
+  auto f1a = CreateFrame(f0.get());
   ExpectPageData(2, 0);
   ExpectRunning();
 

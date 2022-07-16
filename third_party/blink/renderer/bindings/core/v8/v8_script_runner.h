@@ -115,7 +115,7 @@ class CORE_EXPORT V8ScriptRunner final {
       SanitizeScriptErrors,
       v8::ScriptCompiler::CompileOptions,
       v8::ScriptCompiler::NoCacheReason,
-      const ReferrerScriptInfo&);
+      v8::Local<v8::Data> host_defined_options);
   static v8::MaybeLocal<v8::Module> CompileModule(
       v8::Isolate*,
       const ModuleScriptCreationParams&,
@@ -165,9 +165,11 @@ class CORE_EXPORT V8ScriptRunner final {
   static void ReportException(v8::Isolate*, v8::Local<v8::Value> exception);
 
  private:
-  static v8::MaybeLocal<v8::Value> RunCompiledScript(v8::Isolate*,
-                                                     v8::Local<v8::Script>,
-                                                     ExecutionContext*);
+  static v8::MaybeLocal<v8::Value> RunCompiledScript(
+      v8::Isolate*,
+      v8::Local<v8::Script>,
+      v8::Local<v8::Data> host_defined_options,
+      ExecutionContext*);
 };
 
 }  // namespace blink

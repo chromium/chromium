@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -48,6 +47,9 @@ class GpuChildThread : public ChildThreadImpl,
 
   GpuChildThread(const InProcessChildThreadParams& params,
                  std::unique_ptr<gpu::GpuInit> gpu_init);
+
+  GpuChildThread(const GpuChildThread&) = delete;
+  GpuChildThread& operator=(const GpuChildThread&) = delete;
 
   ~GpuChildThread() override;
 
@@ -101,8 +103,6 @@ class GpuChildThread : public ChildThreadImpl,
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   base::WeakPtrFactory<GpuChildThread> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GpuChildThread);
 };
 
 }  // namespace content

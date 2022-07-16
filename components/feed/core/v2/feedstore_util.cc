@@ -34,7 +34,7 @@ int64_t ToTimestampMillis(base::Time t) {
 }
 
 base::Time FromTimestampMillis(int64_t millis) {
-  return base::Time::UnixEpoch() + base::TimeDelta::FromMilliseconds(millis);
+  return base::Time::UnixEpoch() + base::Milliseconds(millis);
 }
 
 void SetLastAddedTime(base::Time t, feedstore::StreamData& data) {
@@ -47,8 +47,7 @@ base::Time GetLastAddedTime(const feedstore::StreamData& data) {
 
 base::Time GetSessionIdExpiryTime(const Metadata& metadata) {
   return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMilliseconds(
-          metadata.session_id().expiry_time_ms()));
+      base::Milliseconds(metadata.session_id().expiry_time_ms()));
 }
 
 void SetSessionId(Metadata& metadata,

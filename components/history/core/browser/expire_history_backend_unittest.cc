@@ -69,8 +69,7 @@ bool MockCanAddURLToHistory(const GURL& url) {
 }
 
 base::Time GetOldFaviconThreshold() {
-  return PretendNow() -
-         base::TimeDelta::FromDays(internal::kOnDemandFaviconIsOldAfterDays);
+  return PretendNow() - base::Days(internal::kOnDemandFaviconIsOldAfterDays);
 }
 
 }  // namespace
@@ -234,9 +233,9 @@ void ExpireHistoryTest::AddExampleData(URLID url_ids[3],
 
   // Four times for each visit.
   visit_times[3] = PretendNow();
-  visit_times[2] = visit_times[3] - base::TimeDelta::FromDays(1);
-  visit_times[1] = visit_times[3] - base::TimeDelta::FromDays(2);
-  visit_times[0] = visit_times[3] - base::TimeDelta::FromDays(3);
+  visit_times[2] = visit_times[3] - base::Days(1);
+  visit_times[1] = visit_times[3] - base::Days(2);
+  visit_times[0] = visit_times[3] - base::Days(3);
 
   // Two favicons. The first two URLs will share the same one, while the last
   // one will have a unique favicon.
@@ -1057,8 +1056,8 @@ TEST_F(ExpireHistoryTest, ExpireSomeOldHistory) {
   const ExpiringVisitsReader* reader = expirer_.GetAllVisitsReader();
 
   // Deleting a time range with no URLs should return false (nothing found).
-  EXPECT_FALSE(expirer_.ExpireSomeOldHistory(
-      visit_times[0] - base::TimeDelta::FromDays(100), reader, 1));
+  EXPECT_FALSE(expirer_.ExpireSomeOldHistory(visit_times[0] - base::Days(100),
+                                             reader, 1));
   EXPECT_EQ(nullptr, GetLastDeletionInfo());
 
   // Deleting a time range with not up the the max results should also return
@@ -1117,7 +1116,7 @@ TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesDeleteUnstarred) {
   favicon_base::FaviconID icon_id = thumb_db_->AddFavicon(
       url, favicon_base::IconType::kFavicon, favicon,
       favicon::FaviconBitmapType::ON_DEMAND,
-      GetOldFaviconThreshold() - base::TimeDelta::FromSeconds(1), gfx::Size());
+      GetOldFaviconThreshold() - base::Seconds(1), gfx::Size());
   ASSERT_NE(0, icon_id);
   GURL page_url("http://google.com/");
   ASSERT_NE(0, thumb_db_->AddIconMapping(page_url, icon_id));
@@ -1143,7 +1142,7 @@ TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesNotDeleteStarred) {
   favicon_base::FaviconID icon_id = thumb_db_->AddFavicon(
       url, favicon_base::IconType::kFavicon, favicon,
       favicon::FaviconBitmapType::ON_DEMAND,
-      GetOldFaviconThreshold() - base::TimeDelta::FromSeconds(1), gfx::Size());
+      GetOldFaviconThreshold() - base::Seconds(1), gfx::Size());
   ASSERT_NE(0, icon_id);
   GURL page_url1("http://google.com/1");
   ASSERT_NE(0, thumb_db_->AddIconMapping(page_url1, icon_id));
@@ -1171,7 +1170,7 @@ TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesNotDeleteStarred) {
 TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesDeleteAfterLongDelay) {
   // Previous clearing (2 days ago).
   expirer_.ClearOldOnDemandFaviconsIfPossible(GetOldFaviconThreshold() -
-                                              base::TimeDelta::FromDays(2));
+                                              base::Days(2));
 
   // The blob does not encode any real bitmap, obviously.
   const unsigned char kBlob[] = "0";
@@ -1183,7 +1182,7 @@ TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesDeleteAfterLongDelay) {
   favicon_base::FaviconID icon_id = thumb_db_->AddFavicon(
       url, favicon_base::IconType::kFavicon, favicon,
       favicon::FaviconBitmapType::ON_DEMAND,
-      GetOldFaviconThreshold() - base::TimeDelta::FromSeconds(1), gfx::Size());
+      GetOldFaviconThreshold() - base::Seconds(1), gfx::Size());
   ASSERT_NE(0, icon_id);
   GURL page_url("http://google.com/");
   ASSERT_NE(0, thumb_db_->AddIconMapping(page_url, icon_id));
@@ -1202,7 +1201,7 @@ TEST_F(ExpireHistoryTest,
        ClearOldOnDemandFaviconsDoesNotDeleteAfterShortDelay) {
   // Previous clearing (5 minutes ago).
   expirer_.ClearOldOnDemandFaviconsIfPossible(GetOldFaviconThreshold() -
-                                              base::TimeDelta::FromMinutes(5));
+                                              base::Minutes(5));
 
   // The blob does not encode any real bitmap, obviously.
   const unsigned char kBlob[] = "0";
@@ -1214,7 +1213,7 @@ TEST_F(ExpireHistoryTest,
   favicon_base::FaviconID icon_id = thumb_db_->AddFavicon(
       url, favicon_base::IconType::kFavicon, favicon,
       favicon::FaviconBitmapType::ON_DEMAND,
-      GetOldFaviconThreshold() - base::TimeDelta::FromSeconds(1), gfx::Size());
+      GetOldFaviconThreshold() - base::Seconds(1), gfx::Size());
   ASSERT_NE(0, icon_id);
   GURL page_url1("http://google.com/1");
   ASSERT_NE(0, thumb_db_->AddIconMapping(page_url1, icon_id));
@@ -1242,7 +1241,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitAndRedirects) {
   // Set up the example data.
   base::Time now = PretendNow();
   URLRow url_row1(GURL("http://google.com/1"));
-  url_row1.set_last_visit(now - base::TimeDelta::FromDays(1));
+  url_row1.set_last_visit(now - base::Days(1));
   url_row1.set_visit_count(1);
   URLID url1 = main_db_->AddURL(url_row1);
 
@@ -1255,7 +1254,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitAndRedirects) {
   // "http://www.google.com/1".
   VisitRow visit_row1;
   visit_row1.url_id = url1;
-  visit_row1.visit_time = now - base::TimeDelta::FromDays(1);
+  visit_row1.visit_time = now - base::Days(1);
   visit_row1.transition = ui::PAGE_TRANSITION_CHAIN_START;
 
   main_db_->AddVisit(&visit_row1, SOURCE_BROWSED);
@@ -1284,7 +1283,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitAndRedirectsWithLoop) {
   // Set up the example data.
   base::Time now = PretendNow();
   URLRow url_row1(GURL("http://google.com/1"));
-  url_row1.set_last_visit(now - base::TimeDelta::FromDays(1));
+  url_row1.set_last_visit(now - base::Days(1));
   url_row1.set_visit_count(1);
   URLID url1 = main_db_->AddURL(url_row1);
 
@@ -1297,7 +1296,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitAndRedirectsWithLoop) {
   // "http://www.google.com/1".
   VisitRow visit_row1;
   visit_row1.url_id = url1;
-  visit_row1.visit_time = now - base::TimeDelta::FromDays(1);
+  visit_row1.visit_time = now - base::Days(1);
   visit_row1.transition = ui::PAGE_TRANSITION_CHAIN_START;
   main_db_->AddVisit(&visit_row1, SOURCE_BROWSED);
 
@@ -1330,7 +1329,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitButNotActualReferers) {
   // Set up the example data.
   base::Time now = PretendNow();
   URLRow url_row1(GURL("http://google.com/1"));
-  url_row1.set_last_visit(now - base::TimeDelta::FromDays(1));
+  url_row1.set_last_visit(now - base::Days(1));
   url_row1.set_visit_count(1);
   URLID url1 = main_db_->AddURL(url_row1);
 
@@ -1343,7 +1342,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitButNotActualReferers) {
   // "http://www.google.com/1". But both are separate redirect chains.
   VisitRow visit_row1;
   visit_row1.url_id = url1;
-  visit_row1.visit_time = now - base::TimeDelta::FromDays(1);
+  visit_row1.visit_time = now - base::Days(1);
   visit_row1.transition = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_CHAIN_START | ui::PAGE_TRANSITION_CHAIN_END);
   main_db_->AddVisit(&visit_row1, SOURCE_BROWSED);

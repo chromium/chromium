@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
+#include "ash/components/quick_answers/quick_answers_model.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/quick_answers/controller/quick_answers_controller.h"
 #include "ash/public/cpp/quick_answers/quick_answers_state.h"
@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -37,8 +36,8 @@
 
 namespace {
 
-using chromeos::quick_answers::Context;
-using chromeos::quick_answers::QuickAnswersClient;
+using ash::quick_answers::Context;
+using ash::quick_answers::QuickAnswersExitPoint;
 
 constexpr int kMaxSurroundingTextLength = 300;
 
@@ -56,32 +55,15 @@ bool IsInternalUser(Profile* profile) {
 
 QuickAnswersMenuObserver::QuickAnswersMenuObserver(
     RenderViewContextMenuProxy* proxy)
-    : proxy_(proxy) {
-  if (proxy_ && proxy_->GetBrowserContext()) {
-    auto* browser_context = proxy_->GetBrowserContext();
-    if (browser_context->IsOffTheRecord())
-      return;
-
-    quick_answers_controller_ = ash::QuickAnswersController::Get();
-    if (!quick_answers_controller_)
-      return;
-    quick_answers_controller_->SetClient(std::make_unique<QuickAnswersClient>(
-        browser_context->GetDefaultStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess()
-            .get(),
-        quick_answers_controller_->GetQuickAnswersDelegate()));
-  }
-}
+    : proxy_(proxy) {}
 
 QuickAnswersMenuObserver::~QuickAnswersMenuObserver() = default;
 
 void QuickAnswersMenuObserver::OnContextMenuShown(
     const content::ContextMenuParams& params,
     const gfx::Rect& bounds_in_screen) {
+  DCHECK(ash::QuickAnswersController::Get());
   menu_shown_time_ = base::TimeTicks::Now();
-
-  if (!quick_answers_controller_)
-    return;
 
   if (!ash::QuickAnswersState::Get()->is_eligible())
     return;
@@ -89,12 +71,6 @@ void QuickAnswersMenuObserver::OnContextMenuShown(
   // Skip password input field.
   if (params.input_field_type ==
       blink::mojom::ContextMenuDataInputFieldType::kPassword) {
-    return;
-  }
-
-  // Skip editable text selection if the feature is not enabled.
-  if (params.is_editable &&
-      !chromeos::features::IsQuickAnswersOnEditableTextEnabled()) {
     return;
   }
 
@@ -108,7 +84,7 @@ void QuickAnswersMenuObserver::OnContextMenuShown(
   content::RenderFrameHost* focused_frame =
       proxy_->GetWebContents()->GetFocusedFrame();
   if (focused_frame) {
-    quick_answers_controller_->SetPendingShowQuickAnswers();
+    ash::QuickAnswersController::Get()->SetPendingShowQuickAnswers();
     focused_frame->RequestTextSurroundingSelection(
         base::BindOnce(
             &QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable,
@@ -120,9 +96,8 @@ void QuickAnswersMenuObserver::OnContextMenuShown(
 void QuickAnswersMenuObserver::OnContextMenuViewBoundsChanged(
     const gfx::Rect& bounds_in_screen) {
   bounds_in_screen_ = bounds_in_screen;
-  if (!quick_answers_controller_)
-    return;
-  quick_answers_controller_->UpdateQuickAnswersAnchorBounds(bounds_in_screen);
+  ash::QuickAnswersController::Get()->UpdateQuickAnswersAnchorBounds(
+      bounds_in_screen);
 }
 
 void QuickAnswersMenuObserver::OnMenuClosed() {
@@ -140,10 +115,9 @@ void QuickAnswersMenuObserver::OnMenuClosed() {
   base::UmaHistogramBoolean("QuickAnswers.ContextMenu.Close",
                             is_other_command_executed_);
 
-  if (!quick_answers_controller_)
-    return;
-
-  quick_answers_controller_->DismissQuickAnswers(!is_other_command_executed_);
+  ash::QuickAnswersController::Get()->DismissQuickAnswers(
+      is_other_command_executed_ ? QuickAnswersExitPoint::kContextMenuClick
+                                 : QuickAnswersExitPoint::KContextMenuDismiss);
 }
 
 void QuickAnswersMenuObserver::CommandWillBeExecuted(int command_id) {
@@ -165,6 +139,6 @@ void QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable(
   context.device_properties.preferred_languages =
       prefs->GetString(language::prefs::kPreferredLanguages);
   context.device_properties.is_internal = IsInternalUser(profile);
-  quick_answers_controller_->MaybeShowQuickAnswers(bounds_in_screen_,
-                                                   selected_text, context);
+  ash::QuickAnswersController::Get()->MaybeShowQuickAnswers(
+      bounds_in_screen_, selected_text, context);
 }

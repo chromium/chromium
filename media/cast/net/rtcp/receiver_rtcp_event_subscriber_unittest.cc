@@ -60,7 +60,7 @@ class ReceiverRtcpEventSubscriberTest : public ::testing::Test {
     playout_event->media_type = VIDEO_EVENT;
     playout_event->rtp_timestamp = RtpTimeTicks().Expand(UINT32_C(100));
     playout_event->frame_id = FrameId::first() + 2;
-    playout_event->delay_delta = base::TimeDelta::FromMilliseconds(kDelayMs);
+    playout_event->delay_delta = base::Milliseconds(kDelayMs);
     cast_environment_->logger()->DispatchFrameEvent(std::move(playout_event));
 
     std::unique_ptr<FrameEvent> decode_event(new FrameEvent());
@@ -89,7 +89,7 @@ class ReceiverRtcpEventSubscriberTest : public ::testing::Test {
     playout_event->media_type = AUDIO_EVENT;
     playout_event->rtp_timestamp = RtpTimeTicks().Expand(UINT32_C(300));
     playout_event->frame_id = FrameId::first() + 4;
-    playout_event->delay_delta = base::TimeDelta::FromMilliseconds(kDelayMs);
+    playout_event->delay_delta = base::Milliseconds(kDelayMs);
     cast_environment_->logger()->DispatchFrameEvent(std::move(playout_event));
 
     decode_event = std::make_unique<FrameEvent>();

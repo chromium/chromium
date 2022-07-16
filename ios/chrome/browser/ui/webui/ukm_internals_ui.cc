@@ -33,6 +33,10 @@ web::WebUIIOSDataSource* CreateUkmInternalsUIHTMLSource() {
 class UkmMessageHandler : public web::WebUIIOSMessageHandler {
  public:
   explicit UkmMessageHandler(const ukm::UkmService* ukm_service);
+
+  UkmMessageHandler(const UkmMessageHandler&) = delete;
+  UkmMessageHandler& operator=(const UkmMessageHandler&) = delete;
+
   ~UkmMessageHandler() override;
 
   // web::WebUIIOSMessageHandler implementation.
@@ -42,8 +46,6 @@ class UkmMessageHandler : public web::WebUIIOSMessageHandler {
   void HandleRequestUkmData(const base::ListValue* args);
 
   const ukm::UkmService* ukm_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmMessageHandler);
 };
 
 UkmMessageHandler::UkmMessageHandler(const ukm::UkmService* ukm_service)
@@ -52,7 +54,7 @@ UkmMessageHandler::UkmMessageHandler(const ukm::UkmService* ukm_service)
 UkmMessageHandler::~UkmMessageHandler() {}
 
 void UkmMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestUkmData",
       base::BindRepeating(&UkmMessageHandler::HandleRequestUkmData,
                           base::Unretained(this)));

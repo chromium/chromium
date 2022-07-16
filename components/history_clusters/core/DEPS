@@ -1,7 +1,11 @@
 include_rules = [
   "+components/history/core",
   "+components/keyed_service/core",
+  "+components/optimization_guide/core",
+  "+components/pref_registry",
   "+components/query_parser",
+  "+components/search_engines",
+  "+components/url_formatter",
   "+net",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

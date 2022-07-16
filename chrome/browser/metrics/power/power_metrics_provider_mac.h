@@ -8,7 +8,6 @@
 #include "components/metrics/metrics_provider.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/metrics/power/battery_level_provider.h"
 
 class PowerMetricsProvider : public metrics::MetricsProvider {

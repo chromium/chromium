@@ -24,6 +24,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -37,6 +38,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
@@ -49,14 +51,14 @@
 
 using content::DesktopMediaID;
 
-enum class DesktopMediaPickerDialogView::DialogSource : int {
-  kGetCurrentBrowsingContextMedia = 0,
-  kGetDisplayMedia = 1
+enum class DesktopMediaPickerDialogView::DialogType : int {
+  kStandard = 0,
+  kPreferCurrentTab = 1
 };
 
 namespace {
 
-using DialogSource = DesktopMediaPickerDialogView::DialogSource;
+using DialogType = DesktopMediaPickerDialogView::DialogType;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_AURA)
 DesktopMediaID::Id AcceleratedWidgetToDesktopMediaId(
@@ -92,7 +94,7 @@ enum class GDMResult {
 
 void RecordUma(GCBCMResult result) {
   base::UmaHistogramEnumeration(
-      "Media.Ui.GetCurrentBrowsingContextMedia.ExplicitSelection."
+      "Media.Ui.GetDisplayMediaPreferCurrentTab.ExplicitSelection."
       "UserInteraction",
       result);
 }
@@ -102,16 +104,16 @@ void RecordUma(GDMResult result) {
                                 result);
 }
 
-void RecordUmaDismissal(DialogSource dialog_source) {
-  if (dialog_source == DialogSource::kGetCurrentBrowsingContextMedia) {
+void RecordUmaDismissal(DialogType dialog_type) {
+  if (dialog_type == DialogType::kPreferCurrentTab) {
     RecordUma(GCBCMResult::kDialogDismissed);
   } else {
     RecordUma(GDMResult::kDialogDismissed);
   }
 }
 
-void RecordUmaCancellation(DialogSource dialog_source) {
-  if (dialog_source == DialogSource::kGetCurrentBrowsingContextMedia) {
+void RecordUmaCancellation(DialogType dialog_type) {
+  if (dialog_type == DialogType::kPreferCurrentTab) {
     RecordUma(GCBCMResult::kUserCancelled);
   } else {
     RecordUma(GDMResult::kUserCancelled);
@@ -121,7 +123,7 @@ void RecordUmaCancellation(DialogSource dialog_source) {
 // Convenience function for recording UMA.
 // |source_type| is there to help us distinguish the current tab being
 // selected explicitly, from it being selected from the list of all tabs.
-void RecordUmaSelection(DialogSource dialog_source,
+void RecordUmaSelection(DialogType dialog_type,
                         content::WebContents* web_contents,
                         const DesktopMediaID& selected_media,
                         DesktopMediaList::Type source_type) {
@@ -132,7 +134,7 @@ void RecordUmaSelection(DialogSource dialog_source,
     }
 
     case DesktopMediaList::Type::kScreen: {
-      if (dialog_source == DialogSource::kGetCurrentBrowsingContextMedia) {
+      if (dialog_type == DialogType::kPreferCurrentTab) {
         RecordUma(GCBCMResult::kUserSelectedScreen);
       } else {
         RecordUma(GDMResult::kUserSelectedScreen);
@@ -141,7 +143,7 @@ void RecordUmaSelection(DialogSource dialog_source,
     }
 
     case DesktopMediaList::Type::kWindow: {
-      if (dialog_source == DialogSource::kGetCurrentBrowsingContextMedia) {
+      if (dialog_type == DialogType::kPreferCurrentTab) {
         RecordUma(GCBCMResult::kUserSelectedWindow);
       } else {
         RecordUma(GDMResult::kUserSelectedWindow);
@@ -160,7 +162,7 @@ void RecordUmaSelection(DialogSource dialog_source,
           web_contents->GetMainFrame()->GetRoutingID() ==
               selected_media.web_contents_id.main_render_frame_id;
 
-      if (dialog_source == DialogSource::kGetCurrentBrowsingContextMedia) {
+      if (dialog_type == DialogType::kPreferCurrentTab) {
         RecordUma(current_tab_selected
                       ? GCBCMResult::kUserSelectedThisTabAsGenericTab
                       : GCBCMResult::kUserSelectedOtherTab);
@@ -206,6 +208,33 @@ bool AreEquivalentTypesForAudioCheckbox(DesktopMediaList::Type lhs,
   } else {
     return lhs == rhs;
   }
+}
+
+// Helper to generate the view containing the enterprise icon and a message that
+// the picker choices may have been restricted.
+std::unique_ptr<views::View> CreatePolicyRestrictedView() {
+  auto icon = std::make_unique<views::ImageView>();
+  icon->SetImage(gfx::CreateVectorIcon(gfx::IconDescription(
+      vector_icons::kBusinessIcon, 18, gfx::kChromeIconGrey)));
+
+  auto policy_label = std::make_unique<views::Label>();
+  policy_label->SetMultiLine(true);
+  policy_label->SetText(
+      l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_MANAGED));
+  policy_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  auto policy_view = std::make_unique<views::View>();
+  views::BoxLayout* layout =
+      policy_view->SetLayoutManager(std::make_unique<views::BoxLayout>());
+
+  int text_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING);
+  layout->set_between_child_spacing(text_padding);
+
+  policy_view->AddChildView(std::move(icon));
+  policy_view->AddChildView(std::move(policy_label));
+
+  return policy_view;
 }
 
 }  // namespace
@@ -281,9 +310,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         return list->GetMediaListType() == DesktopMediaList::Type::kCurrentTab;
       });
 
-  dialog_source_ = current_tab_among_sources
-                       ? DialogSource::kGetCurrentBrowsingContextMedia
-                       : DialogSource::kGetDisplayMedia;
+  dialog_type_ = current_tab_among_sources ? DialogType::kPreferCurrentTab
+                                           : DialogType::kStandard;
 
   for (auto& source_list : source_lists) {
     switch (source_list->GetMediaListType()) {
@@ -437,6 +465,10 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     SetAudioCheckboxAt(previously_selected_category_);
   }
 
+  if (params.restricted_by_policy) {
+    AddChildView(CreatePolicyRestrictedView());
+  }
+
   // If |params.web_contents| is set and it's not a background page then the
   // picker will be shown modal to the web contents. Otherwise the picker is
   // shown in a separate window.
@@ -491,8 +523,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
 DesktopMediaPickerDialogView::~DesktopMediaPickerDialogView() {}
 
-DialogSource DesktopMediaPickerDialogView::GetDialogSource() const {
-  return dialog_source_;
+DialogType DesktopMediaPickerDialogView::GetDialogType() const {
+  return dialog_type_;
 }
 
 void DesktopMediaPickerDialogView::TabSelectedAt(int index) {
@@ -565,7 +597,7 @@ void DesktopMediaPickerDialogView::DetachParent() {
 }
 
 gfx::Size DesktopMediaPickerDialogView::CalculatePreferredSize() const {
-  static const size_t kDialogViewWidth = 600;
+  static constexpr size_t kDialogViewWidth = 600;
   return gfx::Size(kDialogViewWidth, GetHeightForWidth(kDialogViewWidth));
 }
 
@@ -612,34 +644,11 @@ bool DesktopMediaPickerDialogView::Accept() {
   source.audio_share = audio_share_checkbox_ &&
                        audio_share_checkbox_->GetVisible() &&
                        audio_share_checkbox_->GetChecked();
-  if (source.audio_share &&
-      dialog_source_ == DialogSource::kGetCurrentBrowsingContextMedia) {
+  if (source.audio_share && dialog_type_ == DialogType::kPreferCurrentTab) {
     source.web_contents_id.disable_local_echo = true;
   }
 
-  if (source.type == DesktopMediaID::TYPE_WEB_CONTENTS) {
-    // Activate the selected tab and bring the browser window for the selected
-    // tab to the front.
-    content::WebContents* tab = content::WebContents::FromRenderFrameHost(
-        content::RenderFrameHost::FromID(
-            source.web_contents_id.render_process_id,
-            source.web_contents_id.main_render_frame_id));
-    if (tab) {
-      tab->GetDelegate()->ActivateContents(tab);
-      Browser* browser = chrome::FindBrowserWithWebContents(tab);
-      if (browser && browser->window())
-        browser->window()->Activate();
-    }
-  } else if (source.type == DesktopMediaID::TYPE_WINDOW) {
-#if defined(USE_AURA)
-    aura::Window* window = DesktopMediaID::GetNativeWindowById(source);
-    Browser* browser = chrome::FindBrowserWithWindow(window);
-    if (browser && browser->window())
-      browser->window()->Activate();
-#endif
-  }
-
-  RecordUmaSelection(dialog_source_, web_contents_, source,
+  RecordUmaSelection(dialog_type_, web_contents_, source,
                      GetSelectedSourceListType());
 
   if (parent_)
@@ -650,7 +659,7 @@ bool DesktopMediaPickerDialogView::Accept() {
 }
 
 bool DesktopMediaPickerDialogView::Cancel() {
-  RecordUmaCancellation(dialog_source_);
+  RecordUmaCancellation(dialog_type_);
   return views::DialogDelegateView::Cancel();
 }
 
@@ -705,7 +714,7 @@ DesktopMediaPickerViews::DesktopMediaPickerViews() : dialog_(nullptr) {}
 
 DesktopMediaPickerViews::~DesktopMediaPickerViews() {
   if (dialog_) {
-    RecordUmaDismissal(dialog_->GetDialogSource());
+    RecordUmaDismissal(dialog_->GetDialogType());
     dialog_->DetachParent();
     dialog_->GetWidget()->Close();
   }

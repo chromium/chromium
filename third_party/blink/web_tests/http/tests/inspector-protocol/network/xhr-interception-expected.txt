@@ -10,6 +10,5 @@ Network.responseReceived xhr-iframe.html 200 text/html
 Network.requestIntercepted ID 2 GET example.txt type: XHR
 mockResponse ID 2
 Network.responseReceived example.txt 200 text/plain
-Page.frameStoppedLoading
 xhr.responseText = Payload for the Mock XHR response;
 

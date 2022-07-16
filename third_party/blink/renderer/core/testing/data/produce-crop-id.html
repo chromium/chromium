@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style type="text/css">
+    body {
+      height: 2000px;
+    }
+    #scrollable {
+      margin-top: 50px;
+      margin-left: 50px;
+      width: 200px;
+      height: 200px;
+      overflow: scroll;
+    }
+    #content {
+      width: 1000px;
+      height: 1000px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="scrollable">
+    <div id="content"></div>
+  </div>
+</body>
+
+<script>
+  navigator.mediaDevices.produceCropId(document.getElementById('scrollable'));
+  navigator.mediaDevices.produceCropId(document.getElementById('content'));
+</script>
+
+</html>

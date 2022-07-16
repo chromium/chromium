@@ -8,10 +8,13 @@
 #include <memory>
 
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/prefs/testing_pref_service.h"
 
 class TestOmniboxEditModel : public OmniboxEditModel {
  public:
-  TestOmniboxEditModel(OmniboxView* view, OmniboxEditController* controller);
+  TestOmniboxEditModel(OmniboxView* view,
+                       OmniboxEditController* controller,
+                       PrefService* pref_service);
   ~TestOmniboxEditModel() override;
   TestOmniboxEditModel(const TestOmniboxEditModel&) = delete;
   TestOmniboxEditModel& operator=(const TestOmniboxEditModel&) = delete;
@@ -24,9 +27,29 @@ class TestOmniboxEditModel : public OmniboxEditModel {
 
   void SetCurrentMatchForTest(const AutocompleteMatch& match);
 
+  void OnPopupDataChanged(const std::u16string& temporary_text,
+                          bool is_temporary_text,
+                          const std::u16string& inline_autocompletion,
+                          const std::u16string& prefix_autocompletion,
+                          const SplitAutocompletion& split_autocompletion,
+                          const std::u16string& keyword,
+                          bool is_keyword_hint,
+                          const std::u16string& additional_text) override;
+
+  const std::u16string& text() const { return text_; }
+  bool is_temporary_text() const { return is_temporary_text_; }
+
+ protected:
+  PrefService* GetPrefService() const override;
+
  private:
   bool popup_is_open_;
   std::unique_ptr<AutocompleteMatch> override_current_match_;
+
+  // Contains the most recent text passed by the popup model to the edit model.
+  std::u16string text_;
+  bool is_temporary_text_ = false;
+  PrefService* pref_service_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_MODEL_H_

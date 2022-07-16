@@ -6,16 +6,11 @@
 
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/request_type.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -32,30 +27,19 @@
 
 namespace {
 
-const gfx::VectorIcon& GetPermissionIconId(
+const gfx::VectorIcon& GetBlockedPermissionIconId(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
 
-  if (delegate->Requests()[0]->request_type() ==
-      permissions::RequestType::kNotifications) {
-    return vector_icons::kNotificationsOffIcon;
-  }
-
-  NOTREACHED();
-  return gfx::kNoneIcon;
+  return delegate->Requests()[0]->GetBlockedIconForChip();
 }
 
 std::u16string GetPermissionMessage(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
+  DCHECK(delegate->Requests()[0]->GetQuietChipText().has_value());
 
-  if (delegate->Requests()[0]->request_type() ==
-      permissions::RequestType::kNotifications) {
-    return l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
-  }
-
-  NOTREACHED();
-  return std::u16string();
+  return delegate->Requests()[0]->GetQuietChipText().value();
 }
 
 }  // namespace
@@ -66,7 +50,10 @@ PermissionQuietChip::PermissionQuietChip(
     bool should_expand)
     : PermissionChip(
           delegate,
-          {GetPermissionIconId(delegate), GetPermissionMessage(delegate), false,
+          // `PermissionQuietChip` displays only permissions blocked icon.
+          {GetBlockedPermissionIconId(delegate),
+           GetBlockedPermissionIconId(delegate), GetPermissionMessage(delegate),
+           false,
            /*is_prominent=*/false, OmniboxChipButton::Theme::kGray,
            /*should_expand=*/should_expand}),
       browser_(browser) {
@@ -74,50 +61,40 @@ PermissionQuietChip::PermissionQuietChip(
   chip_shown_time_ = base::TimeTicks::Now();
 }
 
-PermissionQuietChip::~PermissionQuietChip() {
-  if (quiet_request_bubble_) {
-    views::Widget* widget = quiet_request_bubble_->GetWidget();
-    widget->RemoveObserver(this);
-    widget->Close();
-  }
-}
+PermissionQuietChip::~PermissionQuietChip() = default;
 
-void PermissionQuietChip::OpenBubble() {
-  // The prompt bubble is either not opened yet or already closed on
-  // deactivation.
-  DCHECK(!quiet_request_bubble_);
+views::View* PermissionQuietChip::CreateBubble() {
+  RecordChipButtonPressed();
 
   LocationBarView* lbv = GetLocationBarView();
   content::WebContents* web_contents = lbv->GetContentSettingWebContents();
 
   if (web_contents) {
-    quiet_request_bubble_ = new ContentSettingBubbleContents(
-        std::make_unique<ContentSettingNotificationsBubbleModel>(
-            lbv->GetContentSettingBubbleModelDelegate(), web_contents),
-        web_contents, lbv, views::BubbleBorder::TOP_LEFT);
-    quiet_request_bubble_->SetHighlightedButton(button());
+    std::unique_ptr<ContentSettingQuietRequestBubbleModel>
+        content_setting_bubble_model =
+            std::make_unique<ContentSettingQuietRequestBubbleModel>(
+                lbv->GetContentSettingBubbleModelDelegate(), web_contents);
+    content_setting_bubble_model->SetOnBubbleDismissedByUserCallback(
+        base::BindOnce(&PermissionQuietChip::OnPromptBubbleDismissed,
+                       base::Unretained(this)));
+    ContentSettingBubbleContents* quiet_request_bubble =
+        new ContentSettingBubbleContents(
+            std::move(content_setting_bubble_model), web_contents, lbv,
+            views::BubbleBorder::TOP_LEFT);
+    quiet_request_bubble->SetHighlightedButton(button());
     views::Widget* bubble_widget =
-        views::BubbleDialogDelegateView::CreateBubble(quiet_request_bubble_);
+        views::BubbleDialogDelegateView::CreateBubble(quiet_request_bubble);
     bubble_widget->AddObserver(this);
     bubble_widget->Show();
+
+    return quiet_request_bubble;
   }
 
-  RecordChipButtonPressed();
+  return nullptr;
 }
 
-views::BubbleDialogDelegateView*
-PermissionQuietChip::GetPermissionPromptBubbleForTest() {
-  return quiet_request_bubble_;
-}
-
-void PermissionQuietChip::OnWidgetClosing(views::Widget* widget) {
-  DCHECK_EQ(widget, quiet_request_bubble_->GetWidget());
-  PermissionChip::OnWidgetClosing(widget);
-  quiet_request_bubble_ = nullptr;
-}
-
-bool PermissionQuietChip::IsBubbleShowing() const {
-  return quiet_request_bubble_;
+bool PermissionQuietChip::ShouldCloseBubbleOnLostFocus() const {
+  return true;
 }
 
 void PermissionQuietChip::RecordChipButtonPressed() {

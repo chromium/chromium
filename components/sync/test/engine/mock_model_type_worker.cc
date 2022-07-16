@@ -11,6 +11,8 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -22,7 +24,7 @@ MockModelTypeWorker::MockModelTypeWorker(
   model_type_state_.set_initial_sync_done(true);
 }
 
-MockModelTypeWorker::~MockModelTypeWorker() {}
+MockModelTypeWorker::~MockModelTypeWorker() = default;
 
 void MockModelTypeWorker::NudgeForCommit() {
   processor_->GetLocalChanges(
@@ -170,9 +172,8 @@ syncer::UpdateResponseData MockModelTypeWorker::GenerateUpdateData(
   data.specifics = specifics;
   // These elements should have no effect on behavior, but we set them anyway
   // so we can test they are properly copied around the system if we want to.
-  data.creation_time = base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
-  data.modification_time =
-      data.creation_time + base::TimeDelta::FromSeconds(version);
+  data.creation_time = base::Time::UnixEpoch() + base::Days(1);
+  data.modification_time = data.creation_time + base::Seconds(version);
   data.name = data.specifics.has_encrypted()
                   ? "encrypted"
                   : data.specifics.preference().name();
@@ -222,9 +223,8 @@ syncer::UpdateResponseData MockModelTypeWorker::GenerateTombstoneUpdateData(
   data.client_tag_hash = tag_hash;
   // These elements should have no effect on behavior, but we set them anyway
   // so we can test they are properly copied around the system if we want to.
-  data.creation_time = base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
-  data.modification_time =
-      data.creation_time + base::TimeDelta::FromSeconds(version);
+  data.creation_time = base::Time::UnixEpoch() + base::Days(1);
+  data.modification_time = data.creation_time + base::Seconds(version);
   data.name = "Name Non Unique";
 
   UpdateResponseData response_data;

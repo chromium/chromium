@@ -1,0 +1,61 @@
+<style include="privacy-review-fragment-shared"></style>
+<settings-radio-group id="cookiesRadioGroup"
+    pref="{{prefs.generated.cookie_primary_setting}}"
+    selectable-elements="settings-collapse-radio-button">
+  <settings-collapse-radio-button pref="[[prefs.generated.cookie_primary_setting]]"
+      name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY_INCOGNITO]]"
+      label="$i18n{privacyReviewCookiesCardBlockTpcIncognitoSubheader}">
+    <div slot="collapse" class="description-wrapper two-column">
+      <div class="description-column description-column-first">
+        <div class=description-header>
+          $i18n{privacyReviewFeatureDescriptionHeader}
+        </div>
+        <privacy-review-description-item
+            icon="settings20:shoppingcart"
+            label="$i18n{privacyReviewCookiesCardBlockTpcIncognitoFeatureDescription1}">
+        </privacy-review-description-item>
+        <privacy-review-description-item
+            icon="settings20:broken"
+            label="$i18n{privacyReviewCookiesCardBlockTpcIncognitoFeatureDescription2}">
+        </privacy-review-description-item>
+      </div>
+      <div class="description-column">
+        <div class=description-header>
+          $i18n{privacyReviewWhatYouShareWithWebsites}
+        </div>
+        <privacy-review-description-item
+            icon="settings20:block"
+            label="$i18n{privacyReviewCookiesCardBlockTpcIncognitoPrivacyDescription1}">
+        </privacy-review-description-item>
+      </div>
+    </div>
+  </settings-collapse-radio-button>
+  <settings-collapse-radio-button pref="[[prefs.generated.cookie_primary_setting]]"
+      name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY]]"
+      label="$i18n{privacyReviewCookiesCardBlockTpcSubheader}">
+    <div slot="collapse" class="description-wrapper two-column">
+      <div class="description-column description-column-first">
+        <div class=description-header>
+          $i18n{privacyReviewFeatureDescriptionHeader}
+        </div>
+        <privacy-review-description-item
+            icon="settings20:shoppingcart"
+            label="$i18n{privacyReviewCookiesCardBlockTpcFeatureDescription1}">
+        </privacy-review-description-item>
+        <privacy-review-description-item
+            icon="settings20:broken"
+            label="$i18n{privacyReviewCookiesCardBlockTpcFeatureDescription2}">
+        </privacy-review-description-item>
+      </div>
+      <div class="description-column">
+        <div class=description-header>
+          $i18n{privacyReviewWhatYouShareWithWebsites}
+        </div>
+        <privacy-review-description-item
+            icon="settings20:block"
+            label="$i18n{privacyReviewCookiesCardBlockTpcPrivacyDescription1}">
+        </privacy-review-description-item>
+      </div>
+    </div>
+  </settings-collapse-radio-button>
+</settings-radio-group>

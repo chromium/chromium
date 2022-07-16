@@ -12,7 +12,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "components/subresource_filter/tools/ruleset_converter/rule_stream.h"
 #include "components/subresource_filter/tools/ruleset_converter/ruleset_format.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
@@ -46,6 +45,10 @@ class ScopedTempRulesetFile {
  public:
   // Creates a temporary file of the specified |format|.
   explicit ScopedTempRulesetFile(RulesetFormat format);
+
+  ScopedTempRulesetFile(const ScopedTempRulesetFile&) = delete;
+  ScopedTempRulesetFile& operator=(const ScopedTempRulesetFile&) = delete;
+
   ~ScopedTempRulesetFile();
 
   // Opens the |ruleset_file| and creates an empty rule output stream to this
@@ -69,8 +72,6 @@ class ScopedTempRulesetFile {
   base::ScopedTempDir scoped_dir_;
   base::FilePath ruleset_path_;
   const RulesetFormat format_;  // The format of the |file|.
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTempRulesetFile);
 };
 
 bool AreUrlRulesEqual(const url_pattern_index::proto::UrlRule& first,

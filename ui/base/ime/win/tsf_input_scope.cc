@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/task/current_thread.h"
 #include "base/win/windows_version.h"
 
@@ -35,6 +34,9 @@ class TSFInputScope final : public ITfInputScope {
   explicit TSFInputScope(const std::vector<InputScope>& input_scopes)
       : input_scopes_(input_scopes),
         ref_count_(0) {}
+
+  TSFInputScope(const TSFInputScope&) = delete;
+  TSFInputScope& operator=(const TSFInputScope&) = delete;
 
   // ITfInputScope:
   IFACEMETHODIMP_(ULONG) AddRef() override {
@@ -98,8 +100,6 @@ class TSFInputScope final : public ITfInputScope {
 
   // The reference count of this instance.
   volatile ULONG ref_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TSFInputScope);
 };
 
 typedef HRESULT (WINAPI *SetInputScopesFunc)(HWND window_handle,

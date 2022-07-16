@@ -11,7 +11,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/mojom/cros_display_config.mojom.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -26,6 +25,10 @@ class TouchCalibratorController;
 class ASH_EXPORT CrosDisplayConfig : public mojom::CrosDisplayConfigController {
  public:
   CrosDisplayConfig();
+
+  CrosDisplayConfig(const CrosDisplayConfig&) = delete;
+  CrosDisplayConfig& operator=(const CrosDisplayConfig&) = delete;
+
   ~CrosDisplayConfig() override;
 
   void BindReceiver(
@@ -73,8 +76,6 @@ class ASH_EXPORT CrosDisplayConfig : public mojom::CrosDisplayConfigController {
   std::map<std::string, std::unique_ptr<OverscanCalibrator>>
       overscan_calibrators_;
   std::unique_ptr<TouchCalibratorController> touch_calibrator_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrosDisplayConfig);
 };
 
 }  // namespace ash

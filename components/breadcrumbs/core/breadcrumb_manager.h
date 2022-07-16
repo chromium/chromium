@@ -7,7 +7,6 @@
 
 #include <list>
 #include <string>
-#include <utility>
 
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -23,7 +22,10 @@ class BreadcrumbManagerObserver;
 // stale data.
 class BreadcrumbManager {
  public:
-  BreadcrumbManager();
+  // |start_time| will be used to determine logged events' timestamps, and
+  // should almost always be breadcrumbs::GetStartTime(), with a few exceptions
+  // for tests that rely on specific start times.
+  explicit BreadcrumbManager(base::TimeTicks start_time);
   BreadcrumbManager(const BreadcrumbManager&) = delete;
   BreadcrumbManager& operator=(const BreadcrumbManager&) = delete;
   ~BreadcrumbManager();
@@ -43,7 +45,7 @@ class BreadcrumbManager {
 
   // Logs a breadcrumb event with message data |event|.
   // NOTE: |event| must not include newline characters as newlines are used by
-  // BreadcrumbPersistentStore as a deliminator.
+  // BreadcrumbPersistentStorageManager as a delimiter.
   void AddEvent(const std::string& event);
 
   // Adds and removes observers.
@@ -56,16 +58,20 @@ class BreadcrumbManager {
   // newer events are limited.
   void DropOldEvents();
 
-  // Creation time of the BreadcrumbManager.
-  const base::Time start_time_;
+  // Returns the time since |start_time_|.
+  base::TimeDelta GetElapsedTime();
 
-  // List of events, paired with the time they were logged to minute resolution.
-  // Newer events are at the end of the list.
+  // The time when breadcrumbs logging started, used to calculate elapsed time
+  // for event timestamps.
+  const base::TimeTicks start_time_;
+
+  // List of events, paired with the time they were logged in minutes. Newer
+  // events are at the end of the list.
   struct EventBucket {
-    base::Time time;
+    int minutes_elapsed;
     std::list<std::string> events;
 
-    explicit EventBucket(base::Time bucket_time);
+    explicit EventBucket(int minutes_elapsed);
     EventBucket(const EventBucket&);
     ~EventBucket();
   };

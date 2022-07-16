@@ -19,25 +19,23 @@
 #include "gtest/gtest.h"
 #include "maldoca/base/digest.h"
 #include "maldoca/base/file.h"
-#include "maldoca/base/get_runfiles_dir.h"
 #include "maldoca/base/testing/status_matchers.h"
+#include "maldoca/base/testing/test_utils.h"
 #include "maldoca/ole/oss_utils.h"
 #include "maldoca/ole/vba_extract.h"
 
 namespace {
-using maldoca::PPT97ExtractVBAStorage;
-using maldoca::RecordHeader;
-using maldoca::VBAProjectStorage;
+using ::maldoca::PPT97ExtractVBAStorage;
+using ::maldoca::RecordHeader;
+using ::maldoca::VBAProjectStorage;
 
 std::string TestFilename(absl::string_view filename) {
-  return maldoca::file::JoinPath(
-      maldoca::GetRunfilesDir(),
-      absl::StrCat("maldoca/ole/testdata/ole/", filename));
+  return maldoca::testing::OleTestFilename(filename, "ole/");
 }
-
 std::string GetTestContent(absl::string_view filename) {
   std::string content;
-  auto status = maldoca::file::GetContents(TestFilename(filename), &content);
+  auto status =
+      maldoca::testing::GetTestContents(TestFilename(filename), &content);
   EXPECT_TRUE(status.ok()) << status;
   return content;
 }
@@ -118,7 +116,8 @@ TEST(VBAProjectStorage, ExtractCompressedStorageInvalid) {
 
   // Frob reference data: length field
   std::string frob_length = content.substr(kCompressedPayloadOffset);
-  memfrob(&frob_length[4], 4);
+  // Intentionally destroying header
+  memset(&frob_length[4], 0x42, 4);
 
   // Expect to fail, the header is invalid
   EXPECT_FALSE(VBAProjectStorage::ExtractContent(frob_length).ok());

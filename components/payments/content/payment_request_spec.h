@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -70,6 +69,10 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
                      std::vector<mojom::PaymentMethodDataPtr> method_data,
                      base::WeakPtr<PaymentRequestSpec::Observer> observer,
                      const std::string& app_locale);
+
+  PaymentRequestSpec(const PaymentRequestSpec&) = delete;
+  PaymentRequestSpec& operator=(const PaymentRequestSpec&) = delete;
+
   ~PaymentRequestSpec() override;
 
   // Called when the merchant has new PaymentDetails. Will recompute every spec
@@ -122,14 +125,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   const mojom::PaymentOptionsPtr& payment_options() const { return options_; }
 
   // Returns the query to be used for the quota on hasEnrolledInstrument()
-  // calls. Generally this returns the payment method identifiers and their
-  // corresponding data. However, in the case of basic-card with
-  // kStrictHasEnrolledAutofillInstrument feature enabled, this method also
-  // returns the following payment options:
-  // - requestPayerEmail
-  // - requestPayerName
-  // - requestPayerPhone
-  // - requestShipping
+  // calls: the payment method identifiers and their corresponding data.
   const std::map<std::string, std::set<std::string>>& query_for_quota() const {
     return query_for_quota_;
   }
@@ -273,13 +269,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   std::map<std::string, std::set<std::string>> stringified_method_data_;
 
   // A mapping of the payment method names to the corresponding JSON-stringified
-  // payment method specific data. If kStrictHasEnrolledAutofillInstrument is
-  // enabled, then the key "basic-card-payment-options" also maps to the
-  // following payment options:
-  // - requestPayerEmail
-  // - requestPayerName
-  // - requestPayerPhone
-  // - requestShipping
+  // payment method specific data.
   std::map<std::string, std::set<std::string>> query_for_quota_;
 
   // The reason why this payment request is waiting for updateWith.
@@ -295,8 +285,6 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   std::set<std::string> app_store_billing_methods_;
 
   base::WeakPtrFactory<PaymentRequestSpec> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestSpec);
 };
 
 }  // namespace payments

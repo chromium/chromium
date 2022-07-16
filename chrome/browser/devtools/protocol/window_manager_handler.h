@@ -10,14 +10,15 @@
 class WindowManagerHandler : public protocol::WindowManager::Backend {
  public:
   explicit WindowManagerHandler(protocol::UberDispatcher* dispatcher);
+
+  WindowManagerHandler(const WindowManagerHandler&) = delete;
+  WindowManagerHandler& operator=(const WindowManagerHandler&) = delete;
+
   ~WindowManagerHandler() override;
 
   // WindowManager::Backend:
   protocol::Response EnterOverviewMode() override;
   protocol::Response ExitOverviewMode() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowManagerHandler);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_PROTOCOL_WINDOW_MANAGER_HANDLER_H_

@@ -24,6 +24,11 @@ class SyncedBookmarksObserverBridge : public SyncObserverBridge {
  public:
   SyncedBookmarksObserverBridge(id<SyncObserverModelBridge> delegate,
                                 ChromeBrowserState* browserState);
+
+  SyncedBookmarksObserverBridge(const SyncedBookmarksObserverBridge&) = delete;
+  SyncedBookmarksObserverBridge& operator=(
+      const SyncedBookmarksObserverBridge&) = delete;
+
   ~SyncedBookmarksObserverBridge() override;
   // Returns true if the user has consented to sync.
   bool HasSyncConsent();
@@ -33,8 +38,6 @@ class SyncedBookmarksObserverBridge : public SyncObserverBridge {
  private:
   signin::IdentityManager* identity_manager_;
   ChromeBrowserState* browser_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedBookmarksObserverBridge);
 };
 
 }  // namespace sync_bookmarks

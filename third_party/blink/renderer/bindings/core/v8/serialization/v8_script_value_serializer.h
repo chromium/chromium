@@ -47,6 +47,9 @@ class CORE_EXPORT V8ScriptValueSerializer
 
   explicit V8ScriptValueSerializer(ScriptState*, const Options& = Options());
 
+  V8ScriptValueSerializer(const V8ScriptValueSerializer&) = delete;
+  V8ScriptValueSerializer& operator=(const V8ScriptValueSerializer&) = delete;
+
   scoped_refptr<SerializedScriptValue> Serialize(v8::Local<v8::Value>,
                                                  ExceptionState&);
 
@@ -131,8 +134,6 @@ class CORE_EXPORT V8ScriptValueSerializer
 #if DCHECK_IS_ON()
   bool serialize_invoked_ = false;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(V8ScriptValueSerializer);
 };
 
 // For code testing V8ScriptValueSerializer

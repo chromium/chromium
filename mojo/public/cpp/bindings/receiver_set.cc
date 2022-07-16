@@ -107,6 +107,17 @@ bool ReceiverSetState::Remove(ReceiverId id) {
   return true;
 }
 
+bool ReceiverSetState::RemoveWithReason(ReceiverId id,
+                                        uint32_t custom_reason_code,
+                                        const std::string& description) {
+  auto it = entries_.find(id);
+  if (it == entries_.end())
+    return false;
+  it->second->receiver().ResetWithReason(custom_reason_code, description);
+  entries_.erase(it);
+  return true;
+}
+
 void ReceiverSetState::FlushForTesting() {
   // We avoid flushing while iterating over |entries_| because this set may be
   // mutated during individual flush operations.  Instead, snapshot the

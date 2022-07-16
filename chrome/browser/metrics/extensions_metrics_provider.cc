@@ -254,8 +254,6 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
        ExtensionInstallProto::CUSTODIAN_APPROVAL_REQUIRED},
       {extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY,
        ExtensionInstallProto::BLOCKED_BY_POLICY},
-      {extensions::disable_reason::DISABLE_REMOTELY_FOR_MALWARE,
-       ExtensionInstallProto::DISABLE_REMOTELY_FOR_MALWARE},
       {extensions::disable_reason::DISABLE_REINSTALL,
        ExtensionInstallProto::REINSTALL},
       {extensions::disable_reason::DISABLE_NOT_ALLOWLISTED,

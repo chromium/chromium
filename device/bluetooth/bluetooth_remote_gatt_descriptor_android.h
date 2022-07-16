@@ -35,6 +35,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorAndroid
       const base::android::JavaRef<
           jobject>& /* chromeBluetoothDevice */ chrome_bluetooth_device);
 
+  BluetoothRemoteGattDescriptorAndroid(
+      const BluetoothRemoteGattDescriptorAndroid&) = delete;
+  BluetoothRemoteGattDescriptorAndroid& operator=(
+      const BluetoothRemoteGattDescriptorAndroid&) = delete;
+
   ~BluetoothRemoteGattDescriptorAndroid() override;
 
   // Returns the associated ChromeBluetoothRemoteGattDescriptor Java object.
@@ -83,8 +88,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorAndroid
   ErrorCallback write_error_callback_;
 
   std::vector<uint8_t> value_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattDescriptorAndroid);
 };
 
 }  // namespace device

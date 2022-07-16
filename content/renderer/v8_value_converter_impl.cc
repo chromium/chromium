@@ -18,7 +18,15 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-array-buffer.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-date.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 namespace content {
 
@@ -82,6 +90,9 @@ class V8ValueConverterImpl::FromV8ValueState {
       : max_recursion_depth_(kMaxRecursionDepth),
         avoid_identity_hash_for_testing_(avoid_identity_hash_for_testing) {}
 
+  FromV8ValueState(const FromV8ValueState&) = delete;
+  FromV8ValueState& operator=(const FromV8ValueState&) = delete;
+
   // If |handle| is not in |unique_map_|, then add it to |unique_map_| and
   // return true.
   //
@@ -136,8 +147,6 @@ class V8ValueConverterImpl::FromV8ValueState {
   int max_recursion_depth_;
 
   bool avoid_identity_hash_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(FromV8ValueState);
 };
 
 // A class to ensure that objects/arrays that are being converted by
@@ -152,6 +161,10 @@ class V8ValueConverterImpl::ScopedUniquenessGuard {
       : state_(state),
         value_(value),
         is_valid_(state_->AddToUniquenessCheck(value_)) {}
+
+  ScopedUniquenessGuard(const ScopedUniquenessGuard&) = delete;
+  ScopedUniquenessGuard& operator=(const ScopedUniquenessGuard&) = delete;
+
   ~ScopedUniquenessGuard() {
     if (is_valid_) {
       bool removed = state_->RemoveFromUniquenessCheck(value_);
@@ -166,8 +179,6 @@ class V8ValueConverterImpl::ScopedUniquenessGuard {
   V8ValueConverterImpl::FromV8ValueState* state_;
   v8::Local<v8::Object> value_;
   bool is_valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUniquenessGuard);
 };
 
 std::unique_ptr<V8ValueConverter> V8ValueConverter::Create() {
@@ -246,10 +257,10 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8ValueImpl(
     }
 
     case base::Value::Type::STRING: {
-      std::string val;
-      CHECK(value->GetAsString(&val));
-      return v8::String::NewFromUtf8(isolate, val.c_str(),
-                                     v8::NewStringType::kNormal, val.length())
+      const std::string* val = value->GetIfString();
+      CHECK(val);
+      return v8::String::NewFromUtf8(isolate, val->c_str(),
+                                     v8::NewStringType::kNormal, val->length())
           .ToLocalChecked();
     }
 
@@ -276,12 +287,12 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8Array(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context,
     const base::ListValue* val) const {
-  v8::Local<v8::Array> result(v8::Array::New(isolate, val->GetSize()));
+  v8::Local<v8::Array> result(v8::Array::New(isolate, val->GetList().size()));
 
   // TODO(robwu): Callers should pass in the context.
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
-  for (size_t i = 0; i < val->GetSize(); ++i) {
+  for (size_t i = 0; i < val->GetList().size(); ++i) {
     const base::Value* child = nullptr;
     CHECK(val->Get(i, &child));
 

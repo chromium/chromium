@@ -42,10 +42,9 @@ Case: Displaying movie
       "transform": 1
     },
     {
-      "name": "LayoutNGFlexibleBox (relative positioned) DIV class='sizing-small phase-pre-ready state-no-source'",
+      "name": "LayoutNGFlexibleBox DIV class='sizing-small phase-pre-ready state-no-source'",
       "bounds": [352, 288],
       "contentsOpaqueForText": true,
-      "drawsContent": false,
       "transform": 1
     },
     {

@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -40,6 +39,10 @@ class PermissionManager : public KeyedService,
                          ContentSettingsTypeHash>;
   PermissionManager(content::BrowserContext* browser_context,
                     PermissionContextMap permission_contexts);
+
+  PermissionManager(const PermissionManager&) = delete;
+  PermissionManager& operator=(const PermissionManager&) = delete;
+
   ~PermissionManager() override;
 
   // Converts from |url|'s actual origin to the "canonical origin" that should
@@ -207,7 +210,7 @@ class PermissionManager : public KeyedService,
   // permissions::Observer:
   void OnPermissionChanged(const ContentSettingsPattern& primary_pattern,
                            const ContentSettingsPattern& secondary_pattern,
-                           ContentSettingsType content_type) override;
+                           ContentSettingsTypeSet content_type_set) override;
 
   PermissionResult GetPermissionStatusHelper(
       ContentSettingsType permission,
@@ -242,11 +245,6 @@ class PermissionManager : public KeyedService,
   url::Origin devtools_global_overrides_origin_;
 
   bool is_shutting_down_ = false;
-
-  // This is false when not processing a permission change and true otherwise
-  bool is_processing_permission_change_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionManager);
 };
 
 }  // namespace permissions

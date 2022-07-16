@@ -14,6 +14,7 @@ namespace printing {
 class COMPONENT_EXPORT(PRINTING) PageMargins {
  public:
   PageMargins();
+  PageMargins(int header, int footer, int left, int right, int top, int bottom);
 
   void Clear();
 
@@ -36,6 +37,11 @@ class COMPONENT_EXPORT(PRINTING) PageMargins {
 class COMPONENT_EXPORT(PRINTING) PageSetup {
  public:
   PageSetup();
+  PageSetup(const gfx::Size& physical_size,
+            const gfx::Rect& printable_area,
+            const PageMargins& requested_margins,
+            bool forced_margins,
+            int text_height);
   PageSetup(const PageSetup& other);
   ~PageSetup();
 
@@ -66,6 +72,9 @@ class COMPONENT_EXPORT(PRINTING) PageSetup {
   const gfx::Rect& content_area() const { return content_area_; }
   const gfx::Rect& printable_area() const { return printable_area_; }
   const PageMargins& effective_margins() const { return effective_margins_; }
+  const PageMargins& requested_margins() const { return requested_margins_; }
+  bool forced_margins() const { return forced_margins_; }
+  int text_height() const { return text_height_; }
 
  private:
   // Store `requested_margins_` and update page setup values.

@@ -25,6 +25,10 @@ class MockProducer;
 class VideoCaptureServiceTest : public testing::Test {
  public:
   VideoCaptureServiceTest();
+
+  VideoCaptureServiceTest(const VideoCaptureServiceTest&) = delete;
+  VideoCaptureServiceTest& operator=(const VideoCaptureServiceTest&) = delete;
+
   ~VideoCaptureServiceTest() override;
 
   void SetUp() override;
@@ -52,8 +56,6 @@ class VideoCaptureServiceTest : public testing::Test {
   mojo::Remote<mojom::DeviceFactory> factory_;
   base::MockCallback<mojom::DeviceFactory::GetDeviceInfosCallback>
       device_info_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureServiceTest);
 };
 
 }  // namespace video_capture

@@ -34,6 +34,9 @@ class NET_EXPORT CoalescingCertVerifier : public CertVerifier {
   // any in-flight, not-yet-completed calls to Verify().
   explicit CoalescingCertVerifier(std::unique_ptr<CertVerifier> verifier);
 
+  CoalescingCertVerifier(const CoalescingCertVerifier&) = delete;
+  CoalescingCertVerifier& operator=(const CoalescingCertVerifier&) = delete;
+
   ~CoalescingCertVerifier() override;
 
   // CertVerifier implementation:
@@ -71,8 +74,6 @@ class NET_EXPORT CoalescingCertVerifier : public CertVerifier {
   uint32_t config_id_;
   uint64_t requests_;
   uint64_t inflight_joins_;
-
-  DISALLOW_COPY_AND_ASSIGN(CoalescingCertVerifier);
 };
 
 }  // namespace net

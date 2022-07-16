@@ -27,6 +27,7 @@ preprocess_if_expr("preprocess") {
     "constants.js",
     "controller.js",
     "gesture_detector.js",
+    "internal_plugin.js",
     "local_storage_proxy.js",
     "metrics.js",
     "navigator.js",
@@ -80,6 +81,12 @@ preprocess_if_expr("preprocess_generated") {
   }
 }
 
+# Just copy to $preprocess_folder.
+copy("preprocess_internal_plugin") {
+  sources = [ "pdf_internal_plugin_wrapper.js" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
+}
+
 if (optimize_webui) {
   build_manifest = "build_manifest.json"
 
@@ -100,6 +107,27 @@ if (optimize_webui) {
       "chrome://resources/js/cr.m.js",
     ]
   }
+}
+
+# This script is injected by `pdf::PluginResponseWriter`, and must stand alone.
+# Consequently, it must always be rolled up by `optimize_webui()`.
+build_internal_plugin_manifest = "build_internal_plugin_manifest.json"
+optimize_webui("build_internal_plugin") {
+  host = "about:blank"
+  input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+  js_out_files = [ "pdf_internal_plugin_wrapper.rollup.js" ]
+  js_module_in_files = [ "pdf_internal_plugin_wrapper.js" ]
+  out_manifest = "$target_gen_dir/$build_internal_plugin_manifest"
+
+  deps = [
+    ":preprocess",
+    ":preprocess_internal_plugin",
+    "../../../../ui/webui/resources:preprocess",
+  ]
+  excludes = [
+    "browser_api.js",
+    "chrome://resources/js/cr.m.js",
+  ]
 }
 
 generate_grd("build_grd") {
@@ -132,6 +160,10 @@ generate_grd("build_grd") {
       "$target_gen_dir/$preprocess_gen_manifest",
     ]
   }
+
+  deps += [ ":build_internal_plugin" ]
+  manifest_files += [ "$target_gen_dir/$build_internal_plugin_manifest" ]
+
   grd_prefix = "pdf"
   out_grd = "$target_gen_dir/resources.grd"
   resource_path_prefix = "pdf"
@@ -268,12 +300,20 @@ js_library("local_storage_proxy") {
 
 js_library("controller") {
   deps = [
+    ":internal_plugin",
     ":viewport",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:promise_resolver.m",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
+}
+
+js_library("internal_plugin") {
+}
+
+js_library("pdf_internal_plugin_wrapper") {
+  deps = [ ":gesture_detector" ]
 }
 
 js_library("pdf_viewer_base") {
@@ -302,6 +342,7 @@ js_library("pdf_viewer") {
     ":browser_api",
     ":constants",
     ":controller",
+    ":gesture_detector",
     ":ink_controller",
     ":local_storage_proxy",
     ":metrics",
@@ -378,6 +419,7 @@ js_type_check("closure_compile_local") {
     ":metrics",
     ":navigator",
     ":open_pdf_params_parser",
+    ":pdf_internal_plugin_wrapper",
     ":pdf_scripting_api",
     ":pdf_viewer",
     ":pdf_viewer_base",

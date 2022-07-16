@@ -20,7 +20,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
-#include "net/log/test_net_log.h"
+#include "net/log/net_log.h"
 #include "net/socket/connect_job_test_util.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/stream_socket.h"
@@ -41,7 +41,7 @@ class TransportConnectJobTest : public WithTaskEnvironment,
  public:
   TransportConnectJobTest()
       : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        client_socket_factory_(&net_log_),
+        client_socket_factory_(NetLog::Get()),
         common_connect_job_params_(
             &client_socket_factory_,
             &host_resolver_,
@@ -55,7 +55,7 @@ class TransportConnectJobTest : public WithTaskEnvironment,
             nullptr /* ssl_client_context */,
             nullptr /* socket_performance_watcher_factory */,
             nullptr /* network_quality_estimator */,
-            &net_log_,
+            NetLog::Get(),
             nullptr /* websocket_endpoint_lock_manager */) {}
 
   ~TransportConnectJobTest() override {}
@@ -68,8 +68,8 @@ class TransportConnectJobTest : public WithTaskEnvironment,
   }
 
  protected:
-  RecordingTestNetLog net_log_;
-  MockHostResolver host_resolver_;
+  MockHostResolver host_resolver_{/*default_result=*/MockHostResolverBase::
+                                      RuleResolver::GetLocalhostResult()};
   MockTransportClientSocketFactory client_socket_factory_;
   const CommonConnectJobParams common_connect_job_params_;
 };
@@ -182,7 +182,7 @@ TEST_F(TransportConnectJobTest, ConnectionFailure) {
 }
 
 TEST_F(TransportConnectJobTest, HostResolutionTimeout) {
-  const base::TimeDelta kTinyTime = base::TimeDelta::FromMicroseconds(1);
+  const base::TimeDelta kTinyTime = base::Microseconds(1);
 
   // Make request hang.
   host_resolver_.set_ondemand_mode(true);
@@ -204,7 +204,7 @@ TEST_F(TransportConnectJobTest, HostResolutionTimeout) {
 }
 
 TEST_F(TransportConnectJobTest, ConnectionTimeout) {
-  const base::TimeDelta kTinyTime = base::TimeDelta::FromMicroseconds(1);
+  const base::TimeDelta kTinyTime = base::Microseconds(1);
 
   // Half the timeout time. In the async case, spend half the time waiting on
   // host resolution, half on connecting.
@@ -361,8 +361,8 @@ TEST_F(TransportConnectJobTest, IPv6FallbackSocketIPv6FinishesFirst) {
       MockTransportClientSocketFactory::MOCK_STALLED_FAILING_CLIENT_SOCKET};
 
   client_socket_factory_.set_client_socket_types(case_types, 2);
-  client_socket_factory_.set_delay(base::TimeDelta::FromMilliseconds(
-      TransportConnectJob::kIPv6FallbackTimerInMs + 50));
+  client_socket_factory_.set_delay(
+      base::Milliseconds(TransportConnectJob::kIPv6FallbackTimerInMs + 50));
 
   // Resolve an AddressList with a IPv6 address first and then a IPv4 address.
   host_resolver_.rules()->AddIPLiteralRule(kHostName, "2:abcd::3:4:ff,2.2.2.2",

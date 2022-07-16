@@ -7,7 +7,6 @@
 
 #include "ash/system/power/power_button_controller.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 
 namespace base {
 class TickClock;
@@ -29,6 +28,11 @@ class PowerButtonScreenshotController;
 class PowerButtonControllerTestApi {
  public:
   explicit PowerButtonControllerTestApi(PowerButtonController* controller);
+
+  PowerButtonControllerTestApi(const PowerButtonControllerTestApi&) = delete;
+  PowerButtonControllerTestApi& operator=(const PowerButtonControllerTestApi&) =
+      delete;
+
   ~PowerButtonControllerTestApi();
 
   // Returns true when |controller_->pre_shutdown_timer_| is running.
@@ -80,8 +84,6 @@ class PowerButtonControllerTestApi {
 
  private:
   PowerButtonController* controller_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonControllerTestApi);
 };
 
 }  // namespace ash

@@ -6,6 +6,7 @@ module mac_notifications.mojom;
 
 import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
@@ -141,6 +142,7 @@ interface MacNotificationActionHandler {
 // Main entrypoint for the system notification service. Implemented in a helper
 // app so we can set a custom alert style different from the main app. This
 // allows us to show both banner and alert style notifications on macOS.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
 interface MacNotificationProvider {
   // Called from the browser process to connect to the helper app. Further calls
   // are made on the |service| interface and actions will be handled by the

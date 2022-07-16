@@ -29,6 +29,7 @@ class TestLocationBarModel : public LocationBarModel {
   std::u16string GetURLForDisplay() const override;
   GURL GetURL() const override;
   security_state::SecurityLevel GetSecurityLevel() const override;
+  net::CertStatus GetCertStatus() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       OmniboxFocusSource focus_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
@@ -37,6 +38,7 @@ class TestLocationBarModel : public LocationBarModel {
   bool ShouldDisplayURL() const override;
   bool IsOfflinePage() const override;
   bool ShouldPreventElision() const override;
+  bool ShouldUseUpdatedConnectionSecurityIndicators() const override;
 
   void set_formatted_full_url(const std::u16string& url) {
     formatted_full_url_ = std::make_unique<std::u16string>(url);
@@ -47,6 +49,9 @@ class TestLocationBarModel : public LocationBarModel {
   void set_url(const GURL& url) { url_ = url; }
   void set_security_level(security_state::SecurityLevel security_level) {
     security_level_ = security_level;
+  }
+  void set_cert_status(net::CertStatus cert_status) {
+    cert_status_ = cert_status;
   }
   void set_icon(const gfx::VectorIcon& icon) { icon_ = &icon; }
   void set_should_display_url(bool should_display_url) {
@@ -68,6 +73,7 @@ class TestLocationBarModel : public LocationBarModel {
 
   GURL url_;
   security_state::SecurityLevel security_level_ = security_state::NONE;
+  net::CertStatus cert_status_ = 0;
   const gfx::VectorIcon* icon_ = nullptr;
   bool should_display_url_ = false;
   bool offline_page_ = false;

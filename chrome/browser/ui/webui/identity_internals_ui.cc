@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/i18n/time_formatting.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
@@ -103,6 +102,11 @@ class IdentityInternalsTokenRevoker : public GaiaAuthConsumer {
                                 const std::string& callback_id,
                                 Profile* profile,
                                 IdentityInternalsUIMessageHandler* consumer);
+
+  IdentityInternalsTokenRevoker(const IdentityInternalsTokenRevoker&) = delete;
+  IdentityInternalsTokenRevoker& operator=(
+      const IdentityInternalsTokenRevoker&) = delete;
+
   ~IdentityInternalsTokenRevoker() override;
 
   // Returns the access token being revoked.
@@ -126,8 +130,6 @@ class IdentityInternalsTokenRevoker : public GaiaAuthConsumer {
   const std::string callback_id_;
   // An object that needs to be notified once the access token is revoked.
   IdentityInternalsUIMessageHandler* consumer_;  // weak.
-
-  DISALLOW_COPY_AND_ASSIGN(IdentityInternalsTokenRevoker);
 };
 
 IdentityInternalsUIMessageHandler::IdentityInternalsUIMessageHandler() {}
@@ -179,7 +181,7 @@ std::unique_ptr<base::ListValue> IdentityInternalsUIMessageHandler::GetScopes(
     const extensions::IdentityTokenCacheValue& token_cache_value) {
   auto scopes_value = std::make_unique<base::ListValue>();
   for (const auto& scope : token_cache_value.granted_scopes()) {
-    scopes_value->AppendString(scope);
+    scopes_value->Append(scope);
   }
   return scopes_value;
 }
@@ -225,8 +227,7 @@ IdentityInternalsUIMessageHandler::GetInfoForToken(
 
 void IdentityInternalsUIMessageHandler::GetInfoForAllTokens(
     const base::ListValue* args) {
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const std::string& callback_id = args->GetList()[0].GetString();
   CHECK(!callback_id.empty());
 
   AllowJavascript();
@@ -247,12 +248,12 @@ void IdentityInternalsUIMessageHandler::GetInfoForAllTokens(
 }
 
 void IdentityInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "identityInternalsGetTokens",
       base::BindRepeating(
           &IdentityInternalsUIMessageHandler::GetInfoForAllTokens,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "identityInternalsRevokeToken",
       base::BindRepeating(&IdentityInternalsUIMessageHandler::RevokeToken,
                           base::Unretained(this)));
@@ -260,14 +261,19 @@ void IdentityInternalsUIMessageHandler::RegisterMessages() {
 
 void IdentityInternalsUIMessageHandler::RevokeToken(
     const base::ListValue* args) {
+  const auto& list = args->GetList();
+  const std::string& callback_id = list[0].GetString();
+  CHECK(!callback_id.empty());
   std::string extension_id;
   std::string access_token;
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
-  CHECK(!callback_id.empty());
+  if (!list.empty() && list[kRevokeTokenExtensionOffset].is_string()) {
+    extension_id = args->GetList()[kRevokeTokenExtensionOffset].GetString();
+  }
+  if (list.size() > kRevokeTokenTokenOffset &&
+      list[kRevokeTokenTokenOffset].is_string()) {
+    access_token = args->GetList()[kRevokeTokenTokenOffset].GetString();
+  }
 
-  args->GetString(kRevokeTokenExtensionOffset, &extension_id);
-  args->GetString(kRevokeTokenTokenOffset, &access_token);
   token_revokers_.push_back(std::make_unique<IdentityInternalsTokenRevoker>(
       extension_id, access_token, callback_id, Profile::FromWebUI(web_ui()),
       this));

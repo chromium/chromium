@@ -4,10 +4,4 @@
 
 // clang-format off
 
-// <include src="../screens/login/gaia_password_changed.js">
-// <include src="../screens/login/management_transition.js">
-// <include src="../screens/login/active_directory_password_change.js">
-// <include src="../screens/login/encryption_migration.js">
 // <include src="../screens/login/update_required_card.js">
-// <include src="../screens/login/offline_login.js">
-// <include src="../screens/login/lacros_data_migration.js">

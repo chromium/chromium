@@ -11,13 +11,9 @@ assert(is_android)
 cast_shell_android_manifest =
     "$root_gen_dir/cast_shell_manifest/AndroidManifest.xml"
 
-manifest_variables = [ "is_android_appliance=$is_android_appliance" ]
-
 jinja_template("cast_shell_manifest") {
   input = "apk/AndroidManifest.xml.jinja2"
   output = cast_shell_android_manifest
-
-  variables = manifest_variables
 }
 
 java_cpp_template("cast_shell_build_config_gen") {
@@ -26,10 +22,6 @@ java_cpp_template("cast_shell_build_config_gen") {
   defines = []
   if (display_web_contents_in_service) {
     defines += [ "_DISPLAY_WEB_CONTENTS_IN_SERVICE" ]
-  }
-
-  if (enable_cast_fragment) {
-    defines += [ "_ENABLE_CAST_FRAGMENT" ]
   }
 
   if (use_remote_service_logcat) {
@@ -57,10 +49,6 @@ android_resources("cast_shell_android_resources") {
               "apk/res/drawable-xxhdpi/ic_settings_cast.png",
               "apk/res/drawable-xxxhdpi/ic_settings_cast.png",
               "apk/res/layout/cast_web_contents_activity.xml",
-              "apk/res/mipmap-hdpi/app_icon.png",
-              "apk/res/mipmap-mdpi/app_icon.png",
-              "apk/res/mipmap-xhdpi/app_icon.png",
-              "apk/res/mipmap-xxhdpi/app_icon.png",
             ]
 }
 
@@ -133,7 +121,6 @@ android_library("cast_shell_java") {
     "$java_src_dir/org/chromium/chromecast/shell/CastSysInfoAndroid.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsActivity.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsComponent.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsFragment.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsIntentUtils.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsScopes.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsService.java",
@@ -183,10 +170,6 @@ android_library("cast_shell_java") {
     "//ui/android:ui_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-
-  if (is_android_appliance) {
-    deps += [ "//chromecast/internal/assistant/ui:boot_parameters_java" ]
-  }
 }
 
 junit_binary("cast_shell_junit_tests") {

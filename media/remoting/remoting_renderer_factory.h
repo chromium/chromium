@@ -7,8 +7,8 @@
 
 #include "media/base/renderer_factory.h"
 #include "media/mojo/mojom/remoting.mojom.h"
-#include "media/remoting/rpc_broker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
 namespace media {
 namespace remoting {
@@ -42,18 +42,18 @@ class RemotingRendererFactory : public RendererFactory {
   // Indicates whether RPC_ACQUIRE_RENDERER_DONE is sent or not.
   bool is_acquire_renderer_done_sent_ = false;
 
-  ReceiverController* receiver_controller_;
+  ReceiverController* const receiver_controller_;
 
-  RpcBroker* rpc_broker_;  // Outlives this class.
+  openscreen::cast::RpcMessenger* const rpc_messenger_;
 
   // The RPC handle used by all Receiver instances created by |this|. Sent only
   // once to the sender side, through RPC_ACQUIRE_RENDERER_DONE, regardless of
   // how many times CreateRenderer() is called."
-  const int renderer_handle_ = RpcBroker::kInvalidHandle;
+  const int renderer_handle_ = openscreen::cast::RpcMessenger::kInvalidHandle;
 
   // The RPC handle of the CourierRenderer on the sender side. Will be received
   // once, via an RPC_ACQUIRE_RENDERER message"
-  int remote_renderer_handle_ = RpcBroker::kInvalidHandle;
+  int remote_renderer_handle_ = openscreen::cast::RpcMessenger::kInvalidHandle;
 
   // Used to set remote handle if receiving RPC_ACQUIRE_RENDERER after
   // CreateRenderer() is called.

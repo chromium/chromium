@@ -24,11 +24,17 @@
 namespace {
 
 constexpr CGFloat kDefaultMargin = 16;
+constexpr CGFloat kEnterpriseIconBorderWidth = 1;
+constexpr CGFloat kEnterpriseIconCornerRadius = 7.0;
+constexpr CGFloat kEnterpriseIconContainerLength = 30;
 
 // URL for the terms of service text.
 NSString* const kTermsOfServiceUrl = @"internal://terms-of-service";
 
 NSString* const kEnterpriseIconImageName = @"enterprise_icon";
+
+NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
+    @"kMetricsConsentCheckboxAccessibilityIdentifier";
 
 }  // namespace
 
@@ -59,6 +65,8 @@ NSString* const kEnterpriseIconImageName = @"enterprise_icon";
   self.bannerImage = [UIImage imageNamed:@"welcome_screen_banner"];
   self.isTallBanner = YES;
   self.scrollToEndMandatory = YES;
+  self.readMoreString =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_ACCEPT_BUTTON);
 
@@ -87,11 +95,9 @@ NSString* const kEnterpriseIconImageName = @"enterprise_icon";
 
   if ([self isBrowserManaged]) {
     UILabel* managedLabel = [self createManagedLabel];
-    UIImage* image = [UIImage imageNamed:kEnterpriseIconImageName];
-    UIImageView* imageView = [[UIImageView alloc] initWithImage:image];
-    imageView.translatesAutoresizingMaskIntoConstraints = NO;
+    UIView* managedIcon = [self createManagedIcon];
     [self.specificContentView addSubview:managedLabel];
-    [self.specificContentView addSubview:imageView];
+    [self.specificContentView addSubview:managedIcon];
 
     [NSLayoutConstraint activateConstraints:@[
       [managedLabel.topAnchor
@@ -102,13 +108,13 @@ NSString* const kEnterpriseIconImageName = @"enterprise_icon";
           constraintLessThanOrEqualToAnchor:self.specificContentView
                                                 .widthAnchor],
 
-      [imageView.topAnchor constraintEqualToAnchor:managedLabel.bottomAnchor
-                                          constant:kDefaultMargin],
-      [imageView.centerXAnchor
+      [managedIcon.topAnchor constraintEqualToAnchor:managedLabel.bottomAnchor
+                                            constant:kDefaultMargin],
+      [managedIcon.centerXAnchor
           constraintEqualToAnchor:self.specificContentView.centerXAnchor],
 
       [self.metricsConsentButton.topAnchor
-          constraintGreaterThanOrEqualToAnchor:imageView.bottomAnchor
+          constraintGreaterThanOrEqualToAnchor:managedIcon.bottomAnchor
                                       constant:kDefaultMargin],
     ]];
   } else {
@@ -118,6 +124,13 @@ NSString* const kEnterpriseIconImageName = @"enterprise_icon";
   }
 
   [super viewDidLoad];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.titleLabel);
 }
 
 #pragma mark - Accessors
@@ -162,9 +175,41 @@ NSString* const kEnterpriseIconImageName = @"enterprise_icon";
   return label;
 }
 
+// Creates and configures the icon indicating that the browser is managed.
+- (UIView*)createManagedIcon {
+  UIView* iconContainer = [[UIView alloc] init];
+  iconContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  iconContainer.layer.cornerRadius = kEnterpriseIconCornerRadius;
+  iconContainer.layer.borderWidth = kEnterpriseIconBorderWidth;
+  iconContainer.layer.borderColor = [UIColor colorNamed:kGrey200Color].CGColor;
+
+  UIImage* image = [[UIImage imageNamed:kEnterpriseIconImageName]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  UIImageView* imageView = [[UIImageView alloc] initWithImage:image];
+  imageView.tintColor = [UIColor colorNamed:kGrey500Color];
+  imageView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [iconContainer addSubview:imageView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [iconContainer.widthAnchor
+        constraintEqualToConstant:kEnterpriseIconContainerLength],
+    [iconContainer.heightAnchor
+        constraintEqualToAnchor:iconContainer.widthAnchor],
+    [imageView.centerXAnchor
+        constraintEqualToAnchor:iconContainer.centerXAnchor],
+    [imageView.centerYAnchor
+        constraintEqualToAnchor:iconContainer.centerYAnchor],
+  ]];
+
+  return iconContainer;
+}
+
 // Creates and configures the UMA consent checkbox button.
 - (CheckboxButton*)createMetricsConsentButton {
   CheckboxButton* button = [[CheckboxButton alloc] initWithFrame:CGRectZero];
+  button.accessibilityIdentifier =
+      kMetricsConsentCheckboxAccessibilityIdentifier;
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.labelText =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRICS_CONSENT);
@@ -173,10 +218,8 @@ NSString* const kEnterpriseIconImageName = @"enterprise_icon";
                 action:@selector(didTapMetricsButton)
       forControlEvents:UIControlEventTouchUpInside];
 
-  if (@available(iOS 13.4, *)) {
-    button.pointerInteractionEnabled = YES;
-    button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
-  }
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
 
   return button;
 }
@@ -201,7 +244,7 @@ NSString* const kEnterpriseIconImageName = @"enterprise_icon";
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
     NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1],
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
     NSParagraphStyleAttributeName : paragraphStyle
   };
   NSDictionary* linkAttributes =

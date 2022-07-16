@@ -38,6 +38,12 @@ class TestMessageView : public MessageView {
 class NotificationControlButtonsTest : public testing::Test {
  public:
   NotificationControlButtonsTest() = default;
+
+  NotificationControlButtonsTest(const NotificationControlButtonsTest&) =
+      delete;
+  NotificationControlButtonsTest& operator=(
+      const NotificationControlButtonsTest&) = delete;
+
   ~NotificationControlButtonsTest() override = default;
 
   // testing::Test
@@ -74,8 +80,6 @@ class NotificationControlButtonsTest : public testing::Test {
 
  private:
   std::unique_ptr<TestMessageView> message_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationControlButtonsTest);
 };
 
 TEST_F(NotificationControlButtonsTest, TestShowAndHideButtons) {

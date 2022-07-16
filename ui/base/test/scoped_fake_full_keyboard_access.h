@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace base {
 namespace mac {
 class ScopedObjCClassSwizzler;
@@ -23,6 +21,11 @@ namespace test {
 class ScopedFakeFullKeyboardAccess {
  public:
   ScopedFakeFullKeyboardAccess();
+
+  ScopedFakeFullKeyboardAccess(const ScopedFakeFullKeyboardAccess&) = delete;
+  ScopedFakeFullKeyboardAccess& operator=(const ScopedFakeFullKeyboardAccess&) =
+      delete;
+
   ~ScopedFakeFullKeyboardAccess();
 
   // Returns the ScopedFakeFullKeyboardAccess singleton or null if one hasn't
@@ -41,8 +44,6 @@ class ScopedFakeFullKeyboardAccess {
  private:
   bool full_keyboard_access_state_;
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFakeFullKeyboardAccess);
 };
 
 }  // namespace test

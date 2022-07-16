@@ -17,6 +17,10 @@ class COMPONENT_EXPORT(VULKAN_X11) VulkanImplementationX11
     : public VulkanImplementation {
  public:
   explicit VulkanImplementationX11(bool use_swiftshader = false);
+
+  VulkanImplementationX11(const VulkanImplementationX11&) = delete;
+  VulkanImplementationX11& operator=(const VulkanImplementationX11&) = delete;
+
   ~VulkanImplementationX11() override;
 
   // VulkanImplementation:
@@ -51,8 +55,6 @@ class COMPONENT_EXPORT(VULKAN_X11) VulkanImplementationX11
  private:
   bool using_surface_ = true;
   VulkanInstance vulkan_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanImplementationX11);
 };
 
 }  // namespace gpu

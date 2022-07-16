@@ -16,6 +16,10 @@ namespace policy {
 class SANDBOX_POLICY_EXPORT CrosArmGpuProcessPolicy : public GpuProcessPolicy {
  public:
   explicit CrosArmGpuProcessPolicy(bool allow_shmat);
+
+  CrosArmGpuProcessPolicy(const CrosArmGpuProcessPolicy&) = delete;
+  CrosArmGpuProcessPolicy& operator=(const CrosArmGpuProcessPolicy&) = delete;
+
   ~CrosArmGpuProcessPolicy() override;
 
   bpf_dsl::ResultExpr EvaluateSyscall(int system_call_number) const override;
@@ -24,7 +28,6 @@ class SANDBOX_POLICY_EXPORT CrosArmGpuProcessPolicy : public GpuProcessPolicy {
 #if defined(__arm__) || defined(__aarch64__)
   const bool allow_shmat_;  // Allow shmat(2).
 #endif
-  DISALLOW_COPY_AND_ASSIGN(CrosArmGpuProcessPolicy);
 };
 
 }  // namespace policy

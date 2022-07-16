@@ -65,79 +65,79 @@ using SessionState = session_manager::SessionState;
 using ShelfWidgetTest = AshTestBase;
 
 TEST_F(ShelfWidgetTest, TestAlignment) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("401x400");
   const int bottom_inset = 400 - ShelfConfig::Get()->shelf_size();
   {
     SCOPED_TRACE("Single Bottom");
     TestLauncherAlignment(Shell::GetPrimaryRootWindow(),
                           ShelfAlignment::kBottom,
-                          gfx::Rect(0, 0, 400, bottom_inset));
+                          gfx::Rect(0, 0, 401, bottom_inset));
   }
   {
     SCOPED_TRACE("Single Locked");
     TestLauncherAlignment(Shell::GetPrimaryRootWindow(),
                           ShelfAlignment::kBottomLocked,
-                          gfx::Rect(0, 0, 400, bottom_inset));
+                          gfx::Rect(0, 0, 401, bottom_inset));
   }
   {
     SCOPED_TRACE("Single Right");
     TestLauncherAlignment(Shell::GetPrimaryRootWindow(), ShelfAlignment::kRight,
-                          gfx::Rect(0, 0, bottom_inset, 400));
+                          gfx::Rect(0, 0, bottom_inset + 1, 400));
   }
   {
     SCOPED_TRACE("Single Left");
     TestLauncherAlignment(
         Shell::GetPrimaryRootWindow(), ShelfAlignment::kLeft,
-        gfx::Rect(ShelfConfig::Get()->shelf_size(), 0, bottom_inset, 400));
+        gfx::Rect(ShelfConfig::Get()->shelf_size(), 0, bottom_inset + 1, 400));
   }
 }
 
 TEST_F(ShelfWidgetTest, TestAlignmentForMultipleDisplays) {
-  UpdateDisplay("300x300,500x500");
+  UpdateDisplay("301x300,501x500");
   const int shelf_inset_first = 300 - ShelfConfig::Get()->shelf_size();
   const int shelf_inset_second = 500 - ShelfConfig::Get()->shelf_size();
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   {
     SCOPED_TRACE("Primary Bottom");
     TestLauncherAlignment(root_windows[0], ShelfAlignment::kBottom,
-                          gfx::Rect(0, 0, 300, shelf_inset_first));
+                          gfx::Rect(0, 0, 301, shelf_inset_first));
   }
   {
     SCOPED_TRACE("Primary Locked");
     TestLauncherAlignment(root_windows[0], ShelfAlignment::kBottomLocked,
-                          gfx::Rect(0, 0, 300, shelf_inset_first));
+                          gfx::Rect(0, 0, 301, shelf_inset_first));
   }
   {
     SCOPED_TRACE("Primary Right");
     TestLauncherAlignment(root_windows[0], ShelfAlignment::kRight,
-                          gfx::Rect(0, 0, shelf_inset_first, 300));
+                          gfx::Rect(0, 0, shelf_inset_first + 1, 300));
   }
   {
     SCOPED_TRACE("Primary Left");
-    TestLauncherAlignment(
-        root_windows[0], ShelfAlignment::kLeft,
-        gfx::Rect(ShelfConfig::Get()->shelf_size(), 0, shelf_inset_first, 300));
+    TestLauncherAlignment(root_windows[0], ShelfAlignment::kLeft,
+                          gfx::Rect(ShelfConfig::Get()->shelf_size(), 0,
+                                    shelf_inset_first + 1, 300));
   }
   {
     SCOPED_TRACE("Secondary Bottom");
     TestLauncherAlignment(root_windows[1], ShelfAlignment::kBottom,
-                          gfx::Rect(300, 0, 500, shelf_inset_second));
+                          gfx::Rect(301, 0, 501, shelf_inset_second));
   }
   {
     SCOPED_TRACE("Secondary Locked");
     TestLauncherAlignment(root_windows[1], ShelfAlignment::kBottomLocked,
-                          gfx::Rect(300, 0, 500, shelf_inset_second));
+                          gfx::Rect(301, 0, 501, shelf_inset_second));
   }
   {
     SCOPED_TRACE("Secondary Right");
     TestLauncherAlignment(root_windows[1], ShelfAlignment::kRight,
-                          gfx::Rect(300, 0, shelf_inset_second, 500));
+                          gfx::Rect(301, 0, shelf_inset_second + 1, 500));
   }
   {
     SCOPED_TRACE("Secondary Left");
     TestLauncherAlignment(root_windows[1], ShelfAlignment::kLeft,
-                          gfx::Rect(300 + ShelfConfig::Get()->shelf_size(), 0,
-                                    shelf_inset_second, 500));
+                          gfx::Rect(301 + ShelfConfig::Get()->shelf_size(), 0,
+                                    shelf_inset_second + 1, 500));
   }
 }
 
@@ -333,7 +333,7 @@ TEST_F(ShelfWidgetTest, HiddenShelfHitTestTouch) {
 // Tests that the shelf lets mouse-events close to the edge fall through to the
 // window underneath.
 TEST_F(ShelfWidgetTest, ShelfEdgeOverlappingWindowHitTestMouse) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   ShelfWidget* shelf_widget = GetShelfWidget();
   gfx::Rect shelf_bounds = shelf_widget->GetWindowBoundsInScreen();
 
@@ -452,7 +452,7 @@ TEST_F(ShelfWidgetTest, OpaqueBackgroundAndDragHandleTransition) {
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
 
   ASSERT_FALSE(GetShelfWidget()->GetDragHandle()->GetVisible());
   ASSERT_FALSE(GetShelfWidget()->GetOpaqueBackground()->visible());
@@ -469,7 +469,7 @@ TEST_F(ShelfWidgetTest, OpaqueBackgroundAndDragHandleTransition) {
   // Ensure the ShelfWidget and drag handle have the correct bounds and
   // visibility for in-app shelf.
   EXPECT_EQ(GetShelfWidget()->GetWindowBoundsInScreen(),
-            gfx::Rect(0, 760, 800, 40));
+            gfx::Rect(0, 660, 800, 40));
   EXPECT_EQ(GetShelfWidget()->GetDragHandle()->bounds(),
             gfx::Rect(360, 18, 80, 4));
   ASSERT_TRUE(GetShelfWidget()->GetDragHandle()->GetVisible());
@@ -484,7 +484,7 @@ TEST_F(ShelfWidgetTest, OpaqueBackgroundAndDragHandleTransition) {
 // Tests the shelf widget does not animate for hotseat transitions during tablet
 // mode start.
 TEST_F(ShelfWidgetTest, NoAnimatingBackgroundDuringTabletModeStartToInApp) {
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
   // Create a window so tablet mode uses in-app shelf.
   auto window = AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 800, 800));
 
@@ -511,7 +511,7 @@ TEST_F(ShelfWidgetTest, NoAnimatingBackgroundDuringTabletModeStartToInApp) {
 // Tests the shelf widget does not animate for hotseat transitions during tablet
 // mode end.
 TEST_F(ShelfWidgetTest, NoAnimatingBackgroundDuringTabletModeEndFromInApp) {
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   // Create a window so tablet mode uses in-app shelf.
@@ -541,7 +541,7 @@ TEST_F(ShelfWidgetTest, NoAnimatingBackgroundDuringTabletModeEndFromInApp) {
 // Tests the shelf widget does not animate for hotseat transitions during tablet
 // mode start with no app windows.
 TEST_F(ShelfWidgetTest, NoAnimatingBackgroundDuringTabletModeStartToHome) {
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
 
   EXPECT_TRUE(GetShelfWidget()->GetOpaqueBackground()->visible());
   EXPECT_FALSE(GetShelfWidget()->GetDragHandle()->GetVisible());
@@ -567,7 +567,7 @@ TEST_F(ShelfWidgetTest, NoAnimatingBackgroundDuringTabletModeStartToHome) {
 // Tests the shelf widget does not animate for hotseat transitions during tablet
 // mode end with no app windows.
 TEST_F(ShelfWidgetTest, NoAnimatingBackgroundDuringTabletModeEndFromHome) {
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   EXPECT_FALSE(GetShelfWidget()->GetOpaqueBackground()->visible());
@@ -595,7 +595,7 @@ TEST_F(ShelfWidgetTest, NoAnimatingBackgroundDuringTabletModeEndFromHome) {
 // is locked.
 TEST_F(ShelfWidgetTest, NoAnimatingBackgroundOnLockScreen) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
 
   ASSERT_FALSE(GetShelfWidget()->GetDragHandle()->GetVisible());
   ASSERT_FALSE(GetShelfWidget()->GetOpaqueBackground()->visible());
@@ -645,7 +645,7 @@ TEST_F(ShelfWidgetTest, NoAnimatingBackgroundOnLockScreen) {
 // the screen is locked.
 TEST_F(ShelfWidgetTest, ScreenLockStopsHotseatTransitionAnimation) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
 
   ASSERT_FALSE(GetShelfWidget()->GetDragHandle()->GetVisible());
   ASSERT_FALSE(GetShelfWidget()->GetOpaqueBackground()->visible());
@@ -682,7 +682,7 @@ TEST_F(ShelfWidgetTest, ScreenLockStopsHotseatTransitionAnimation) {
   ASSERT_TRUE(GetShelfWidget()->GetOpaqueBackground()->visible());
   ASSERT_FALSE(GetShelfWidget()->GetAnimatingBackground()->visible());
   EXPECT_EQ(GetShelfWidget()->GetWindowBoundsInScreen(),
-            gfx::Rect(0, 760, 800, 40));
+            gfx::Rect(0, 660, 800, 40));
   EXPECT_EQ(GetShelfWidget()->GetDragHandle()->bounds(),
             gfx::Rect(360, 18, 80, 4));
 }
@@ -692,7 +692,7 @@ TEST_F(ShelfWidgetTest, ScreenLockStopsHotseatTransitionAnimation) {
 TEST_F(ShelfWidgetTest,
        OpaqueBackgroundReshownAfterTransitionFromHomeChangesBackToHome) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
 
   ASSERT_FALSE(GetShelfWidget()->GetDragHandle()->GetVisible());
   ASSERT_FALSE(GetShelfWidget()->GetOpaqueBackground()->visible());
@@ -753,6 +753,11 @@ TEST_F(ShelfWidgetTest,
 class ShelfWidgetAfterLoginTest : public AshTestBase {
  public:
   ShelfWidgetAfterLoginTest() { set_start_session(false); }
+
+  ShelfWidgetAfterLoginTest(const ShelfWidgetAfterLoginTest&) = delete;
+  ShelfWidgetAfterLoginTest& operator=(const ShelfWidgetAfterLoginTest&) =
+      delete;
+
   ~ShelfWidgetAfterLoginTest() override = default;
 
   void TestShelf(ShelfAlignment alignment,
@@ -775,9 +780,6 @@ class ShelfWidgetAfterLoginTest : public AshTestBase {
     EXPECT_EQ(expected_shelf_visibility_state, shelf->GetVisibilityState());
     EXPECT_EQ(expected_shelf_auto_hide_state, shelf->GetAutoHideState());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfWidgetAfterLoginTest);
 };
 
 TEST_F(ShelfWidgetAfterLoginTest, InitialValues) {
@@ -834,6 +836,12 @@ TEST_F(ShelfWidgetAfterLoginTest, CreateLockedShelf) {
 class ShelfWidgetViewsVisibilityTest : public AshTestBase {
  public:
   ShelfWidgetViewsVisibilityTest() { set_start_session(false); }
+
+  ShelfWidgetViewsVisibilityTest(const ShelfWidgetViewsVisibilityTest&) =
+      delete;
+  ShelfWidgetViewsVisibilityTest& operator=(
+      const ShelfWidgetViewsVisibilityTest&) = delete;
+
   ~ShelfWidgetViewsVisibilityTest() override = default;
 
   enum ShelfVisibility {
@@ -879,8 +887,6 @@ class ShelfWidgetViewsVisibilityTest : public AshTestBase {
  private:
   ShelfWidget* primary_shelf_widget_ = nullptr;
   ShelfWidget* secondary_shelf_widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfWidgetViewsVisibilityTest);
 };
 
 TEST_F(ShelfWidgetViewsVisibilityTest, LoginViewsLockViews) {

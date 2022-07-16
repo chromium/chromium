@@ -10,9 +10,9 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -85,7 +85,9 @@ void HttpServer::SendOverWebSocket(
   if (connection == NULL)
     return;
   DCHECK(connection->web_socket());
-  connection->web_socket()->Send(data, traffic_annotation);
+  connection->web_socket()->Send(
+      data, net::WebSocketFrameHeader::OpCodeEnum::kOpCodeText,
+      traffic_annotation);
 }
 
 void HttpServer::SendRaw(int connection_id,
@@ -275,7 +277,8 @@ void HttpServer::HandleReadResult(HttpConnection* connection, MojoResult rv) {
         Close(connection->id());
         return;
       }
-      delegate_->OnWebSocketMessage(connection->id(), std::move(message));
+      if (result == WebSocket::FRAME_OK_FINAL)
+        delegate_->OnWebSocketMessage(connection->id(), std::move(message));
       if (HasClosedConnection(connection)) {
         return;
       }

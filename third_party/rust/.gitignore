@@ -1,0 +1,5 @@
+# These would be ignored by parent .gitignore rules,
+# but are relatively common in Rust crates so we want git to add
+# and remove these files in the normal fashion.
+!Cargo.lock
+!Cargo.toml.orig

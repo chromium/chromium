@@ -21,9 +21,15 @@ namespace media {
 class CAPTURE_EXPORT Camera3AController final
     : public CaptureMetadataDispatcher::ResultMetadataObserver {
  public:
+  Camera3AController() = delete;
+
   Camera3AController(const cros::mojom::CameraMetadataPtr& static_metadata,
                      CaptureMetadataDispatcher* capture_metadata_dispatcher,
                      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  Camera3AController(const Camera3AController&) = delete;
+  Camera3AController& operator=(const Camera3AController&) = delete;
+
   ~Camera3AController() final;
 
   // Trigger the camera to start exposure, focus, and white-balance metering and
@@ -150,8 +156,6 @@ class CAPTURE_EXPORT Camera3AController final
   base::CancelableOnceClosure delayed_ae_unlock_callback_;
 
   base::WeakPtrFactory<Camera3AController> weak_ptr_factory_{this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Camera3AController);
 };
 
 }  // namespace media

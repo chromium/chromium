@@ -9,14 +9,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/arc/arc_features.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
+#include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -208,6 +209,12 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
                 (const absl::optional<std::string>& package_name),
                 (override));
     MOCK_METHOD(void, OnPreferredAppsChanged, (), (override));
+    MOCK_METHOD(
+        void,
+        OnArcSupportedLinksChanged,
+        (const std::vector<arc::mojom::SupportedLinksPtr>& added_packages,
+         const std::vector<arc::mojom::SupportedLinksPtr>& removed_packages),
+        (override));
   };
 
   // Create and add observer.
@@ -244,7 +251,15 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
   {
     // Observer should be called when preferred apps change.
     EXPECT_CALL(observer, OnPreferredAppsChanged);
-    instance_->OnPreferredAppsChanged(/*added=*/{}, /*deleted=*/{});
+    instance_->OnPreferredAppsChangedDeprecated(/*added=*/{}, /*deleted=*/{});
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
+
+  {
+    // Observer should be called when supported links change.
+    EXPECT_CALL(observer, OnArcSupportedLinksChanged);
+    instance_->OnSupportedLinksChanged(/*added_packages=*/{},
+                                       /*removed_packages=*/{});
     testing::Mock::VerifyAndClearExpectations(&observer);
   }
 
@@ -253,7 +268,9 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
   instance_->OnDownloadAdded(/*relative_path=*/"Download/foo/bar.pdf",
                              /*owner_package_name=*/"owner_package_name");
   instance_->OnIntentFiltersUpdated(/*filters=*/{});
-  instance_->OnPreferredAppsChanged(/*added=*/{}, /*removed=*/{});
+  instance_->OnPreferredAppsChangedDeprecated(/*added=*/{}, /*removed=*/{});
+  instance_->OnSupportedLinksChanged(/*added_packages=*/{},
+                                     /*removed_packages=*/{});
 }
 
 // Tests that ShouldChromeHandleUrl returns true by default.
@@ -416,59 +433,33 @@ TEST_F(ArcIntentHelperTest, TestOnOpenUrl_ChromeScheme) {
 
 // Tests that OnOpenAppWithIntents opens only HTTPS URLs.
 TEST_F(ArcIntentHelperTest, TestOnOpenAppWithIntent) {
-  {
-    // When the feature is enabled, open the Intent through the delegate.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(arc::kEnableWebAppShareFeature);
-    base::HistogramTester histograms;
+  base::HistogramTester histograms;
 
-    auto intent = mojom::LaunchIntent::New();
-    intent->action = arc::kIntentActionSend;
-    intent->extra_text = "Foo";
-    instance_->OnOpenAppWithIntent(GURL("https://www.google.com"),
-                                   std::move(intent));
-    EXPECT_EQ(GURL("https://www.google.com"),
-              test_open_url_delegate_->TakeLastOpenedUrl());
-    EXPECT_EQ("Foo",
-              test_open_url_delegate_->TakeLastOpenedIntent()->extra_text);
-    histograms.ExpectBucketCount("Arc.IntentHelper.OpenAppWithIntentAction",
-                                 2 /* OpenIntentAction::kSend */, 1);
+  auto intent = mojom::LaunchIntent::New();
+  intent->action = arc::kIntentActionSend;
+  intent->extra_text = "Foo";
+  instance_->OnOpenAppWithIntent(GURL("https://www.google.com"),
+                                 std::move(intent));
+  EXPECT_EQ(GURL("https://www.google.com"),
+            test_open_url_delegate_->TakeLastOpenedUrl());
+  EXPECT_EQ("Foo", test_open_url_delegate_->TakeLastOpenedIntent()->extra_text);
+  histograms.ExpectBucketCount("Arc.IntentHelper.OpenAppWithIntentAction",
+                               2 /* OpenIntentAction::kSend */, 1);
 
-    instance_->OnOpenAppWithIntent(GURL("http://www.google.com"),
-                                   mojom::LaunchIntent::New());
-    EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
-    EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
+  instance_->OnOpenAppWithIntent(GURL("http://www.google.com"),
+                                 mojom::LaunchIntent::New());
+  EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
+  EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
 
-    instance_->OnOpenAppWithIntent(GURL("http://localhost:8000/foo"),
-                                   mojom::LaunchIntent::New());
-    EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
-    EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
+  instance_->OnOpenAppWithIntent(GURL("http://localhost:8000/foo"),
+                                 mojom::LaunchIntent::New());
+  EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
+  EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
 
-    instance_->OnOpenAppWithIntent(GURL("chrome://settings"),
-                                   mojom::LaunchIntent::New());
-    EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
-    EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
-  }
-  {
-    // When the feature is disabled, open the Intent's URL through the delegate.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(arc::kEnableWebAppShareFeature);
-
-    auto intent = mojom::LaunchIntent::New();
-    intent->data = GURL("https://www.google.com/maps");
-    instance_->OnOpenAppWithIntent(GURL("https://www.google.com"),
-                                   std::move(intent));
-    EXPECT_EQ(GURL("https://www.google.com/maps"),
-              test_open_url_delegate_->TakeLastOpenedUrl());
-    EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
-
-    intent = mojom::LaunchIntent::New();
-    intent->data = GURL("chrome://settings");
-    instance_->OnOpenAppWithIntent(GURL("https://www.google.com"),
-                                   std::move(intent));
-    EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
-    EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
-  }
+  instance_->OnOpenAppWithIntent(GURL("chrome://settings"),
+                                 mojom::LaunchIntent::New());
+  EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
+  EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
 }
 
 // Tests that AppendStringToIntentHelperPackageName works.

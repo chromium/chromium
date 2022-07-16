@@ -272,10 +272,9 @@ if (!is_ios) {
 
     if (is_posix || is_fuchsia) {
       sources += [ "ipc_message_attachment_set_posix_unittest.cc" ]
-    }
-
-    if (!is_ios) {
-      sources += [ "ipc_send_fds_test.cc" ]
+      if (!is_ios) {
+        sources += [ "ipc_send_fds_test.cc" ]
+      }
     }
 
     deps = [
@@ -287,6 +286,7 @@ if (!is_ios) {
       "//base",
       "//base:i18n",
       "//base/test:test_support",
+      "//build:os_buildflags",
       "//crypto",
       "//mojo/core/test:test_support",
       "//testing/gtest",

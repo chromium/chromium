@@ -18,8 +18,7 @@ namespace data_snapshotd {
 namespace {
 
 // Interval between successful connection attempts.
-constexpr base::TimeDelta kConnectionAttemptInterval =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kConnectionAttemptInterval = base::Seconds(1);
 
 // The maximum number of consecutive connection attempts before giving up.
 constexpr int kMaxConnectionAttemptCount = 5;

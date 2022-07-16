@@ -40,7 +40,15 @@ struct App {
   array<Permission> permissions;
 
   // Whether the app was installed by sync, policy or as a default app.
+  InstallReason install_reason;
+
+  // Where the app was installed from, e.g. from play sstore, from chrome web
+  // store, etc.
   InstallSource install_source;
+
+  // An optional ID used for policy to identify the app.
+  // For web apps, it contains the install URL.
+  string? policy_id;
 
   // Whether the app is an extensions::Extensions where is_platform_app()
   // returns true.
@@ -54,6 +62,13 @@ struct App {
   OptionalBool show_in_shelf;
   OptionalBool show_in_search;
   OptionalBool show_in_management;
+
+  // kTrue if the app is able to handle intents and should be shown in intent
+  // surfaces.
+  OptionalBool handles_intents;
+
+  // Whether the app publisher allows the app to be uninstalled.
+  OptionalBool allow_uninstall;
 
   // Whether the app icon should add the notification badging.
   OptionalBool has_badge;
@@ -80,15 +95,22 @@ struct App {
 };
 
 struct Permission {
-  // An AppType-specific value, opaque to the App Service.
-  // Different publishers (with different AppType's) can
-  // re-use the same numerical value to mean different things.
-  uint32 permission_id;
-  PermissionValueType value_type;
-  // The semantics of value depends on the value_type.
-  uint32 value;
+  PermissionType permission_type;
+  PermissionValue value;
   // If the permission is managed by an enterprise policy.
   bool is_managed;
+};
+
+// The types of permissions in App Service.
+enum PermissionType {
+  kUnknown         = 0,
+  kCamera          = 1,
+  kLocation        = 2,
+  kMicrophone      = 3,
+  kNotifications   = 4,
+  kContacts        = 5,
+  kStorage         = 6,
+  kPrinting        = 7,
 };
 
 // The types of apps available in the registry.
@@ -109,6 +131,8 @@ enum AppType {
 };
 
 // Whether an app is ready to launch, i.e. installed.
+// Note the enumeration is used in UMA histogram so entries should not be
+// re-ordered or removed. New entries should be added at the bottom.
 enum Readiness {
   kUnknown = 0,
   kReady,                // Installed and launchable.
@@ -130,7 +154,7 @@ enum Readiness {
 // enums.xml.
 // Note the enumeration is used in UMA histogram so entries should not be
 // re-ordered or removed. New entries should be added at the bottom.
-enum InstallSource {
+enum InstallReason {
   kUnknown = 0,
   kSystem,     // Installed with the system and is considered a part of the OS.
   kPolicy,     // Installed by policy.
@@ -138,9 +162,23 @@ enum InstallSource {
   kDefault,    // Preinstalled by default, but is not considered a system app.
   kSync,       // Installed by sync.
   kUser,       // Installed by user action.
+  kSubApp,     // Installed by the SubApp API call.
+};
+
+// Where the app was installed from.
+enum InstallSource {
+  kUnknown = 0,
+  kSystem,          // Installed as part of Chrome OS.
+  kSync,            // Installed from sync.
+  kPlayStore,       // Installed from Play store.
+  kChromeWebStore,  // Installed from Chrome web store.
+  kBrowser,         // Installed from browser.
 };
 
 // What caused the app to be uninstalled.
+// This should be kept in sync with UninstallSource in enums.xml, so entries
+// should not be re-ordered or removed. New entries should be added at the
+// bottom.
 enum UninstallSource {
   kUnknown = 0,
   kAppList,       // Uninstall by the user from the App List (Launcher)
@@ -210,7 +248,7 @@ struct IconValue {
 };
 
 // Enumeration of possible app launch sources.
-// This should be kept in sync with histogram_suffixes_list.xml, and
+// This should be kept in sync with metadata/apps/histograms.xml, and
 // LaunchSource in enums.xml.
 // Note the enumeration is used in UMA histogram so entries should not be
 // re-ordered or removed. New entries should be added at the bottom.
@@ -226,7 +264,7 @@ enum LaunchSource {
                                       // Per App time notification.
   kFromShelf = 7,                     // Shelf.
   kFromFileManager = 8,               // FileManager.
-  kFromLink = 9,                      // Left-licking on links in the browser.
+  kFromLink = 9,                      // Left-clicking on links in the browser.
   kFromOmnibox = 10,                  // Enter URL in the Omnibox in the
                                       // browser.
   kFromChromeInternal = 11,           // Chrome internal call.
@@ -241,6 +279,15 @@ enum LaunchSource {
   kFromFullRestore = 20,              // Full restore.
   kFromSmartTextContextMenu = 21,     // Smart text selection context menu.
   kFromDiscoverTabNotification = 22,  // Discover Tab Notification.
+  kFromManagementApi = 23,            // Management API.
+  kFromKiosk = 24,                    // Kiosk.
+  kFromCommandLine = 25,              // Command line.
+  kFromBackgroundMode = 26,           // Background mode.
+  kFromNewTabPage = 27,               // New tab page.
+  kFromIntentUrl = 28,                // Intent URL.
+  kFromOsLogin = 29,                  // Run on OS login.
+  kFromProtocolHandler = 30,          // Protocol handler.
+  kFromUrlHandler = 31,               // Url handler.
 };
 
 enum TriState {
@@ -249,9 +296,9 @@ enum TriState {
   kAsk,
 };
 
-enum PermissionValueType {
-  kBool,                       // Permission.value is a Bool (either 0 or 1).
-  kTriState,                   // Permission.value is a TriState.
+union PermissionValue {
+  bool bool_value;
+  TriState tristate_value;
 };
 
 // MenuItems are used to populate context menus, e.g. in the app list or shelf.
@@ -270,14 +317,33 @@ struct MenuItems {
 };
 
 struct MenuItem {
-  MenuItemType type;                 // The type of the menu item.
-  int32 command_id;                  // The menu item command id.
-  int32 string_id;                   // The id of the menu item label.
-  array<MenuItem> submenu;           // The optional nested submenu item list.
-  int32 radio_group_id;              // The radio group id.
-  string shortcut_id;                // The shortcut id, may be empty.
-  string label;                      // The string label, may be empty.
-  gfx.mojom.ImageSkia? image;        // The image icon, may be null.
+  // The type of the menu item.
+  MenuItemType type;
+
+  // The menu item command id. Used to identify the command when the menu item
+  // is executed.
+  int32 command_id;
+
+  // The grit id of the menu item label. Used when the menu item's type is
+  // kCommand, kRadio, or kSubmenu.
+  int32 string_id;
+
+  // The optional nested submenu item list.
+  array<MenuItem> submenu;
+
+  // The radio group id. All MenuItems with type kRadio will be grouped by this
+  // ID value in the menu.
+  int32 radio_group_id;
+
+  // Publisher-specific shortcut id. May be empty if not required.
+  string shortcut_id;
+
+  // The string label for this menu item. Used when the menu item's type is
+  // kPublisherCommand.
+  string label;
+
+  // The icon for the menu item. May be null if the item doesn't have an icon.
+  gfx.mojom.ImageSkia? image;
 };
 
 // The types of menu items shown in the app list or shelf.
@@ -297,11 +363,12 @@ enum MenuType {
 
 // The intent filter matching condition types.
 enum ConditionType {
-  kScheme,    // Matches the URL scheme (e.g. https, tel).
-  kHost,      // Matches the URL host (e.g. www.google.com).
-  kPattern,   // Matches the URL pattern (e.g. /abc/*).
-  kAction,    // Matches the action type (e.g. view, send).
-  kMimeType,  // Matches the data mime type (e.g. image/jpeg).
+  kScheme,         // Matches the URL scheme (e.g. https, tel).
+  kHost,           // Matches the URL host (e.g. www.google.com).
+  kPattern,        // Matches the URL pattern (e.g. /abc/*).
+  kAction,         // Matches the action type (e.g. view, send).
+  kMimeType,       // Matches the top-level mime type (e.g. text/plain).
+  kFile,           // Matches against all files.
 };
 
 // The pattern match type for intent filter pattern condition.
@@ -311,6 +378,8 @@ enum PatternMatchType {
   kPrefix,
   kGlob,
   kMimeType,
+  kFileExtension,
+  kIsDirectory,
 };
 
 // For pattern type of condition, the value match will be based on the pattern
@@ -336,7 +405,7 @@ struct IntentFilter {
   array<Condition> conditions;
 
   // Activity which registered this filter. We only fill this field for ARC
-  // share intent filters.
+  // share intent filters and Web App file_handlers.
   string? activity_name;
 
   // The label shown to the user for this activity.
@@ -354,16 +423,18 @@ struct IntentFile {
   // difficult or expensive.
 
   string? mime_type;  // File MIME type.
+  // TODO(crbug.com/1238215): Use BaseName instead, when available.
   string? file_name;  // Human readable file name, including extension. Should
                       // not contain path separators.
   uint64 file_size;   // File size in bytes.
+  OptionalBool is_directory; // Whether this is a directory or not.
 };
 
 // Action and resource handling request. This should
 // be kept in sync with ConvertIntentToValue and ConvertValueToIntent in
 // components/services/app_service/public/cpp/intent_util.*
 struct Intent {
-  string? action; // Intent action. e.g. view, send.
+  string action; // Intent action. e.g. view, send.
   url.mojom.Url? url; // The URL of the intent. e.g. https://www.google.com/.
   string? mime_type; // MIME type. e.g. text/plain, image/*.
   array<IntentFile>? files; // The files to share.
@@ -387,6 +458,13 @@ struct ReplacedAppPreferences {
   map<string, array<IntentFilter>> replaced_preference;
 };
 
+// Represents changes which have been made to the preferred apps list, both
+// adding new filters and removing existing filters.
+struct PreferredAppChanges {
+  map<string, array<IntentFilter>> added_filters;
+  map<string, array<IntentFilter>> removed_filters;
+};
+
 // The preferred app represents by |app_id| for |intent_fitler|.
 struct PreferredApp {
   IntentFilter intent_filter;
@@ -395,40 +473,6 @@ struct PreferredApp {
 
 struct FilePaths {
   array<mojo_base.mojom.FilePath> file_paths;
-};
-
-// Enumeration of possible app launch sources.
-// This should be kept in sync with LaunchSource in
-// extensions/common/api/app_runtime.idl, and GetLaunchSourceEnum() in
-// extensions/browser/api/app_runtime/app_runtime_api.cc.
-// Note the enumeration is used in UMA histogram so entries
-// should not be re-ordered or removed.
-enum AppLaunchSource {
-  kSourceNone = 0,
-  kSourceUntracked = 1,
-  kSourceAppLauncher = 2,
-  kSourceNewTabPage = 3,
-  kSourceReload = 4,
-  kSourceRestart = 5,
-  kSourceLoadAndLaunch = 6,
-  kSourceCommandLine = 7,
-  kSourceFileHandler = 8,
-  kSourceUrlHandler = 9,
-  kSourceSystemTray = 10,
-  kSourceAboutPage = 11,
-  kSourceKeyboard = 12,
-  kSourceExtensionsPage = 13,
-  kSourceManagementApi = 14,
-  kSourceEphemeralAppDeprecated = 15,
-  kSourceBackground = 16,
-  kSourceKiosk = 17,
-  kSourceChromeInternal = 18,
-  kSourceTest = 19,
-  kSourceInstalledNotification = 20,
-  kSourceContextMenu = 21,
-  kSourceArc = 22,
-  kSourceIntentUrl = 23,  // App launch triggered by a URL.
-  kSourceRunOnOsLogin = 24,  // App launched during OS login.
 };
 
 // Don't remove items or change the order of this enum.  It's used in

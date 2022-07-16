@@ -79,7 +79,7 @@ void ShowFeedbackDialogForWebUI(WebUIFeedbackSource webui_source,
   std::string category;
   switch (webui_source) {
     case WebUIFeedbackSource::kConnectivityDiagnostics:
-      source = FeedbackSource::kFeedbackSourceNetworkHealthPage;
+      source = FeedbackSource::kFeedbackSourceConnectivityDiagnostics;
       category = "connectivity-diagnostics";
       break;
   }

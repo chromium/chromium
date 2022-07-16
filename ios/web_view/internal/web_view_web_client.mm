@@ -166,8 +166,8 @@ void WebViewWebClient::PrepareErrorPage(
   }
 }
 
-bool WebViewWebClient::EnableLongPressAndForceTouchHandling() const {
-  return CWVWebView.chromeLongPressAndForceTouchHandlingEnabled;
+bool WebViewWebClient::EnableLongPressUIContextMenu() const {
+  return CWVWebView.chromeContextMenuEnabled;
 }
 
 }  // namespace ios_web_view

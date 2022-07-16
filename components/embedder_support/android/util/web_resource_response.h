@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 
 namespace net {
 class HttpResponseHeaders;
@@ -26,6 +25,10 @@ class WebResourceResponse {
   // org.chromium.components.embedder_support.util.WebResourceResponseInfo
   // class.
   explicit WebResourceResponse(const base::android::JavaRef<jobject>& obj);
+
+  WebResourceResponse(const WebResourceResponse&) = delete;
+  WebResourceResponse& operator=(const WebResourceResponse&) = delete;
+
   ~WebResourceResponse();
 
   bool HasInputStream(JNIEnv* env) const;
@@ -43,8 +46,6 @@ class WebResourceResponse {
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 
   bool input_stream_transferred_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebResourceResponse);
 };
 
 }  // namespace embedder_support

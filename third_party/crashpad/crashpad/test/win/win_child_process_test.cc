@@ -17,7 +17,6 @@
 #include <windows.h>
 #include <stdlib.h>
 
-#include "base/macros.h"
 #include "gtest/gtest.h"
 
 namespace crashpad {
@@ -43,6 +42,9 @@ class TestWinChildProcess final : public WinChildProcess {
  public:
   TestWinChildProcess() : WinChildProcess() {}
 
+  TestWinChildProcess(const TestWinChildProcess&) = delete;
+  TestWinChildProcess& operator=(const TestWinChildProcess&) = delete;
+
   ~TestWinChildProcess() {}
 
  private:
@@ -52,8 +54,6 @@ class TestWinChildProcess final : public WinChildProcess {
     WriteInt(WritePipeHandle(), value);
     return testing::Test::HasFailure() ? EXIT_FAILURE : EXIT_SUCCESS;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestWinChildProcess);
 };
 
 TEST(WinChildProcessTest, WinChildProcess) {

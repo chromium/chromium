@@ -132,7 +132,7 @@ void VideoFramePool::PoolImpl::FrameReleased(scoped_refptr<VideoFrame> frame) {
   // After this loop, |stale_index| is the index of the oldest non-stale frame.
   // Such an index must exist because |frame| is never stale.
   int stale_index = -1;
-  constexpr base::TimeDelta kStaleFrameLimit = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kStaleFrameLimit = base::Seconds(10);
   while (now - frames_[++stale_index].last_use_time > kStaleFrameLimit) {
     // Last frame should never be included since we just added it.
     DCHECK_LE(static_cast<size_t>(stale_index), frames_.size());

@@ -29,9 +29,6 @@ public interface NativePageNavigationDelegate {
     /** @return Whether context menus should allow the option to open a link in a new window. */
     boolean isOpenInNewWindowEnabled();
 
-    /** Opens the help page in the current tab. */
-    default void navigateToHelpPage() {} // Does nothing.
-
     /**
      * Opens an URL with the desired disposition.
      * @return The tab where the URL is being loaded, if it is accessible. Cases where no tab is

@@ -68,4 +68,8 @@ cjxl 3x3a_gbr.png 3x3a_gbr_lossy.jxl -d 0.1 -s 3
 cjxl 3x3a_gbr.png 3x3a_gbr_lossless.jxl -d 0
 
 cjxl animated.gif animated.jxl
+
+for i in $(seq 0 9); do J=$(printf '%03d' $i); convert -fill black -size 500x500 -font 'Courier' -pointsize 72 -gravity center label:$J $J.png; done
+convert -delay 20 *.png count.gif
+cjxl count.gif count.jxl
 ```

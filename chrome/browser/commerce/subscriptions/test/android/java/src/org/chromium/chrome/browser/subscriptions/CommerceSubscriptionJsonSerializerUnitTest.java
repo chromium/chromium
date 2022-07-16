@@ -32,17 +32,23 @@ public class CommerceSubscriptionJsonSerializerUnitTest {
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final String FAKE_OFFER_ID = "100";
+    private static final String FAKE_PRODUCT_CLUSTER_ID = "300";
 
     private static final String FAKE_SUBSCRIPTION_JSON_STRING = "{ \"type\": \"PRICE_TRACK\","
             + "\"managementType\": \"CHROME_MANAGED\", "
             + "\"identifierType\": \"OFFER_ID\", \"identifier\": \"100\","
             + "\"eventTimestampMicros\": \"200\" }";
 
-    private static final CommerceSubscription FAKE_PRICE_TRACK_SUBSCRIPTION =
+    private static final CommerceSubscription FAKE_CHROME_MANAGED_SUBSCRIPTION =
             new CommerceSubscription(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK,
                     FAKE_OFFER_ID, CommerceSubscription.SubscriptionManagementType.CHROME_MANAGED,
                     CommerceSubscription.TrackingIdType.OFFER_ID, 200L);
 
+    private static final CommerceSubscription FAKE_USER_MANAGED_SUBSCRIPTION =
+            new CommerceSubscription(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK,
+                    FAKE_PRODUCT_CLUSTER_ID,
+                    CommerceSubscription.SubscriptionManagementType.USER_MANAGED,
+                    CommerceSubscription.TrackingIdType.PRODUCT_CLUSTER_ID, 200L);
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -56,7 +62,7 @@ public class CommerceSubscriptionJsonSerializerUnitTest {
     @Test
     public void testSerialize() throws JSONException {
         JSONObject subscriptionJson =
-                CommerceSubscriptionJsonSerializer.serialize(FAKE_PRICE_TRACK_SUBSCRIPTION);
+                CommerceSubscriptionJsonSerializer.serialize(FAKE_CHROME_MANAGED_SUBSCRIPTION);
         assertThat(subscriptionJson.getString("type"),
                 equalTo(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK));
         assertThat(subscriptionJson.getString("identifierType"),
@@ -65,18 +71,30 @@ public class CommerceSubscriptionJsonSerializerUnitTest {
     }
 
     @Test
+    public void testSerialize_ClusterId() throws JSONException {
+        JSONObject subscriptionJson =
+                CommerceSubscriptionJsonSerializer.serialize(FAKE_USER_MANAGED_SUBSCRIPTION);
+        assertThat(subscriptionJson.getString("type"),
+                equalTo(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK));
+        assertThat(subscriptionJson.getString("identifierType"),
+                equalTo(CommerceSubscription.TrackingIdType.PRODUCT_CLUSTER_ID));
+        assertThat(subscriptionJson.getString("identifier"), equalTo(FAKE_PRODUCT_CLUSTER_ID));
+    }
+
+    @Test
     public void testDeserialize() throws JSONException {
         JSONObject fakeSubscription = new JSONObject(FAKE_SUBSCRIPTION_JSON_STRING);
         CommerceSubscription actual =
                 CommerceSubscriptionJsonSerializer.deserialize(fakeSubscription);
 
-        assertThat(actual.getType(), equalTo(FAKE_PRICE_TRACK_SUBSCRIPTION.getType()));
-        assertThat(actual.getTimestamp(), equalTo(FAKE_PRICE_TRACK_SUBSCRIPTION.getTimestamp()));
-        assertThat(actual.getTrackingId(), equalTo(FAKE_PRICE_TRACK_SUBSCRIPTION.getTrackingId()));
+        assertThat(actual.getType(), equalTo(FAKE_CHROME_MANAGED_SUBSCRIPTION.getType()));
+        assertThat(actual.getTimestamp(), equalTo(FAKE_CHROME_MANAGED_SUBSCRIPTION.getTimestamp()));
+        assertThat(
+                actual.getTrackingId(), equalTo(FAKE_CHROME_MANAGED_SUBSCRIPTION.getTrackingId()));
         assertThat(actual.getTrackingIdType(),
-                equalTo(FAKE_PRICE_TRACK_SUBSCRIPTION.getTrackingIdType()));
+                equalTo(FAKE_CHROME_MANAGED_SUBSCRIPTION.getTrackingIdType()));
         assertThat(actual.getManagementType(),
-                equalTo(FAKE_PRICE_TRACK_SUBSCRIPTION.getManagementType()));
+                equalTo(FAKE_CHROME_MANAGED_SUBSCRIPTION.getManagementType()));
     }
 
     @Test
@@ -130,5 +148,19 @@ public class CommerceSubscriptionJsonSerializerUnitTest {
                         + "\"eventTimestampMicros\": \"lkjasdf\" }");
         assertNull(
                 CommerceSubscriptionJsonSerializer.deserialize(fakeSubscriptionInvalidTimestamp));
+    }
+
+    @Test
+    public void testDeserialize_ProductClusterId() throws JSONException {
+        JSONObject subscriptionJson =
+                new JSONObject("{ \"type\": \"PRICE_TRACK\", \"managementType\": \"USER_MANAGED\", "
+                        + "\"identifierType\": \"PRODUCT_CLUSTER_ID\", \"identifier\": \"100\", "
+                        + "\"eventTimestampMicros\": \"200\" }");
+        CommerceSubscription actual =
+                CommerceSubscriptionJsonSerializer.deserialize(subscriptionJson);
+        assertThat(actual.getTrackingIdType(),
+                equalTo(CommerceSubscription.TrackingIdType.PRODUCT_CLUSTER_ID));
+        assertThat(actual.getManagementType(),
+                equalTo(CommerceSubscription.SubscriptionManagementType.USER_MANAGED));
     }
 }

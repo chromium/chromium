@@ -36,6 +36,10 @@ class GPU final : public ScriptWrappable,
   static GPU* gpu(NavigatorBase&);
 
   explicit GPU(NavigatorBase&);
+
+  GPU(const GPU&) = delete;
+  GPU& operator=(const GPU&) = delete;
+
   ~GPU() override;
 
   // ScriptWrappable overrides
@@ -69,8 +73,6 @@ class GPU final : public ScriptWrappable,
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   HeapHashSet<WeakMember<GPUBuffer>> mappable_buffers_;
-
-  DISALLOW_COPY_AND_ASSIGN(GPU);
 };
 
 }  // namespace blink

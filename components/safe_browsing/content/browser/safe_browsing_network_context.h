@@ -24,12 +24,17 @@ namespace safe_browsing {
 // All methods are called on the UI thread.
 class SafeBrowsingNetworkContext {
  public:
-  // |user_data_dir| and |network_context_params_factory| are used
-  // to construct a URLRequestContext through the network service.
+  // `user_data_dir` and `network_context_params_factory` are used to construct
+  // a URLRequestContext through the network service. `trigger_migration`
+  // determines whether or not to migrate the Safe Browsing network context
+  // data. See the documentation for this in network_context.mojom.
+  // `trigger_migration` should be set to true if the Safe Browsing network
+  // context will be hosted in a sandboxed network service.
   using NetworkContextParamsFactory =
       base::RepeatingCallback<network::mojom::NetworkContextParamsPtr()>;
   SafeBrowsingNetworkContext(
       const base::FilePath& user_data_dir,
+      bool trigger_migration,
       NetworkContextParamsFactory network_context_params_factory);
   ~SafeBrowsingNetworkContext();
 

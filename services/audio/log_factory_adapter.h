@@ -27,6 +27,10 @@ namespace audio {
 class LogFactoryAdapter final : public media::AudioLogFactory {
  public:
   LogFactoryAdapter();
+
+  LogFactoryAdapter(const LogFactoryAdapter&) = delete;
+  LogFactoryAdapter& operator=(const LogFactoryAdapter&) = delete;
+
   ~LogFactoryAdapter() final;
 
   void SetLogFactory(
@@ -42,8 +46,6 @@ class LogFactoryAdapter final : public media::AudioLogFactory {
   mojo::Remote<media::mojom::AudioLogFactory> log_factory_;
   base::queue<PendingLogRequest> pending_requests_;
   media::FakeAudioLogFactory fake_log_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogFactoryAdapter);
 };
 
 }  // namespace audio

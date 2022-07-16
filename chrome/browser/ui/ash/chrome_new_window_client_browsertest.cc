@@ -19,10 +19,10 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/account_id/account_id.h"
@@ -93,7 +93,9 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
   Profile* profile1 = ProfileManager::GetActiveUserProfile();
   Browser* browser1 = CreateBrowser(profile1);
   // The newly created window should be created for the current active profile.
-  ChromeNewWindowClient::Get()->NewWindow(/*incognito=*/false);
+  ChromeNewWindowClient::Get()->NewWindow(
+      /*incognito=*/false,
+      /*should_trigger_session_restore=*/true);
   EXPECT_EQ(GetLastActiveBrowser()->profile(), profile1);
 
   // Login another user and make sure the current active user changes.
@@ -105,26 +107,32 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
   Browser* browser2 = CreateBrowser(profile2);
   // The newly created window should be created for the current active window's
   // profile, which is |profile2|.
-  ChromeNewWindowClient::Get()->NewWindow(/*incognito=*/false);
+  ChromeNewWindowClient::Get()->NewWindow(
+      /*incognito=*/false,
+      /*should_trigger_session_restore=*/true);
   EXPECT_EQ(GetLastActiveBrowser()->profile(), profile2);
 
   // After activating |browser1|, the newly created window should be created
   // against |browser1|'s profile.
   browser1->window()->Show();
-  ChromeNewWindowClient::Get()->NewWindow(/*incognito=*/false);
+  ChromeNewWindowClient::Get()->NewWindow(
+      /*incognito=*/false,
+      /*should_trigger_session_restore=*/true);
   EXPECT_EQ(GetLastActiveBrowser()->profile(), profile1);
 
   // Test for incognito windows.
   // The newly created incognito window should be created against the current
   // active |browser1|'s profile.
   browser1->window()->Show();
-  ChromeNewWindowClient::Get()->NewWindow(/*incognito=*/true);
+  ChromeNewWindowClient::Get()->NewWindow(
+      /*incognito=*/true, /*should_trigger_session_restore=*/true);
   EXPECT_EQ(GetLastActiveBrowser()->profile()->GetOriginalProfile(), profile1);
 
   // The newly created incognito window should be created against the current
   // active |browser2|'s profile.
   browser2->window()->Show();
-  ChromeNewWindowClient::Get()->NewWindow(/*incognito=*/true);
+  ChromeNewWindowClient::Get()->NewWindow(
+      /*incognito=*/true, /*should_trigger_session_restore=*/true);
   EXPECT_EQ(GetLastActiveBrowser()->profile()->GetOriginalProfile(), profile2);
 }
 
@@ -135,15 +143,17 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoDisabled) {
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Disabling incognito mode disables creation of new incognito windows.
-  IncognitoModePrefs::SetAvailability(profile->GetPrefs(),
-                                      IncognitoModePrefs::DISABLED);
-  ChromeNewWindowClient::Get()->NewWindow(/*incognito=*/true);
+  IncognitoModePrefs::SetAvailability(
+      profile->GetPrefs(), IncognitoModePrefs::Availability::kDisabled);
+  ChromeNewWindowClient::Get()->NewWindow(
+      /*incognito=*/true, /*should_trigger_session_restore=*/true);
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Enabling incognito mode enables creation of new incognito windows.
-  IncognitoModePrefs::SetAvailability(profile->GetPrefs(),
-                                      IncognitoModePrefs::ENABLED);
-  ChromeNewWindowClient::Get()->NewWindow(/*incognito=*/true);
+  IncognitoModePrefs::SetAvailability(
+      profile->GetPrefs(), IncognitoModePrefs::Availability::kEnabled);
+  ChromeNewWindowClient::Get()->NewWindow(
+      /*incognito=*/true, /*should_trigger_session_restore=*/true);
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_TRUE(GetLastActiveBrowser()->profile()->IsIncognitoProfile());
 }
@@ -191,7 +201,7 @@ void TestOpenSettingFromArc(Browser* browser,
                             const GURL& expected_url,
                             size_t expected_setting_window_count) {
   // Install the Settings App.
-  web_app::WebAppProvider::Get(browser->profile())
+  web_app::WebAppProvider::GetForTest(browser->profile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
 
@@ -247,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientWebAppBrowserTest,
   web_app_info->scope =
       https_server().GetURL(GetAppUrlHost(), GetAppScopePath());
   web_app_info->title = base::UTF8ToUTF16(GetAppName());
-  web_app_info->open_as_window = true;
+  web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
   apps::ShareTarget share_target;
   share_target.method = apps::ShareTarget::Method::kGet;
   share_target.action = app_url;
@@ -386,7 +396,7 @@ void TestAllOSSettingPages(const GURL& base_url) {
   TestOpenOSSettingsChromePage(
       ChromePage::ACCOUNTS,
       base_url.Resolve(
-          chromeos::settings::mojom::kManageOtherPeopleSubpagePath));
+          chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2));
   TestOpenOSSettingsChromePage(
       ChromePage::BLUETOOTHDEVICES,
       base_url.Resolve(
@@ -409,7 +419,7 @@ void TestAllOSSettingPages(const GURL& base_url) {
   TestOpenOSSettingsChromePage(
       ChromePage::LOCKSCREEN,
       base_url.Resolve(
-          chromeos::settings::mojom::kSecurityAndSignInSubpagePath));
+          chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2));
   TestOpenOSSettingsChromePage(
       ChromePage::MANAGEACCESSIBILITY,
       base_url.Resolve(
@@ -420,6 +430,9 @@ void TestAllOSSettingPages(const GURL& base_url) {
   TestOpenOSSettingsChromePage(
       ChromePage::POINTEROVERLAY,
       base_url.Resolve(chromeos::settings::mojom::kPointersSubpagePath));
+  TestOpenOSSettingsChromePage(
+      ChromePage::SMARTPRIVACY,
+      base_url.Resolve(chromeos::settings::mojom::kSmartPrivacySubpagePath));
   TestOpenOSSettingsChromePage(
       ChromePage::STORAGE,
       base_url.Resolve(chromeos::settings::mojom::kStorageSubpagePath));
@@ -465,7 +478,7 @@ void TestAllAboutPages() {
 
 IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, TestOpenChromePage) {
   // Install the Settings App.
-  web_app::WebAppProvider::Get(browser()->profile())
+  web_app::WebAppProvider::GetForTest(browser()->profile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
 

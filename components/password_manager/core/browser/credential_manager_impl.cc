@@ -66,9 +66,8 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
 
   // Create a custom form fetcher without HTTP->HTTPS migration as the API is
   // only available on HTTPS origins.
-  std::unique_ptr<FormFetcherImpl> form_fetcher =
-      FormFetcherImpl::CreateFormFetcherImpl(
-          observed_digest, client_, /*should_migrate_http_passwords=*/false);
+  auto form_fetcher = std::make_unique<FormFetcherImpl>(
+      observed_digest, client_, /*should_migrate_http_passwords=*/false);
   form_manager_ = std::make_unique<CredentialManagerPasswordFormManager>(
       client_, std::move(form), this, nullptr, std::move(form_fetcher));
 }

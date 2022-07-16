@@ -21,14 +21,12 @@ namespace performance_manager {
 namespace {
 
 // The default process metrics refresh interval.
-constexpr base::TimeDelta kDefaultRefreshTimerPeriod =
-    base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kDefaultRefreshTimerPeriod = base::Minutes(2);
 
 #if !defined(OS_ANDROID)
 // The fast process metrics refresh interval. Used in certain situations, see
 // the comment in ProcessMetricsDecorator::StartTimer for more details.
-constexpr base::TimeDelta kFastRefreshTimerPeriod =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kFastRefreshTimerPeriod = base::Seconds(20);
 #endif
 
 }  // namespace

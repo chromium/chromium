@@ -9,6 +9,8 @@
 
 #include <string>
 
+#include "components/sync/protocol/bookmark_specifics.pb.h"
+
 namespace base {
 class GUID;
 }  // namespace base
@@ -19,8 +21,8 @@ class BookmarkNode;
 }  // namespace bookmarks
 
 namespace sync_pb {
-class BookmarkSpecifics;
 class EntitySpecifics;
+class UniquePosition;
 }  // namespace sync_pb
 
 namespace syncer {
@@ -47,6 +49,7 @@ bool IsBookmarkEntityReuploadNeeded(
 sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
     const bookmarks::BookmarkNode* node,
     bookmarks::BookmarkModel* model,
+    const sync_pb::UniquePosition& unique_position,
     bool force_favicon_load);
 
 // Creates a bookmark node under the given parent node from the given specifics.
@@ -56,7 +59,6 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
     const sync_pb::BookmarkSpecifics& specifics,
     const bookmarks::BookmarkNode* parent,
     size_t index,
-    bool is_folder,
     bookmarks::BookmarkModel* model,
     favicon::FaviconService* favicon_service);
 
@@ -68,6 +70,12 @@ void UpdateBookmarkNodeFromSpecifics(
     bookmarks::BookmarkModel* model,
     favicon::FaviconService* favicon_service);
 
+// Convnience function that returns BookmarkSpecifics::URL or
+// BookmarkSpecifics::FOLDER based on whether the input node is a folder. |node|
+// must not be null.
+sync_pb::BookmarkSpecifics::Type GetProtoTypeFromBookmarkNode(
+    const bookmarks::BookmarkNode* node);
+
 // Replaces |node| with a BookmarkNode of equal properties and original node
 // creation timestamp but a different GUID, set to |guid|, which must be a
 // valid version 4 GUID. Intended to be used in cases where the GUID must be
@@ -78,12 +86,10 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
     const base::GUID& guid,
     bookmarks::BookmarkModel* model);
 
-// Checks if a bookmark specifics represents a valid bookmark. |is_folder| is
-// whether this specifics is for a folder. Valid specifics must not be empty,
-// non-folders must contains a valid url, and all keys in the meta_info must be
-// unique.
-bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics,
-                              bool is_folder);
+// Checks if a bookmark specifics represents a valid bookmark. Valid specifics
+// must not be empty, non-folders must contains a valid url, and all keys in the
+// meta_info must be unique.
+bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics);
 
 // Returns the inferred GUID for given remote update's originator information.
 base::GUID InferGuidFromLegacyOriginatorId(

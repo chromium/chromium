@@ -97,10 +97,12 @@ void BeginFrameObserverBase::OnBeginFrame(const BeginFrameArgs& args) {
 }
 
 void BeginFrameObserverBase::AsProtozeroInto(
+    perfetto::EventContext& ctx,
     perfetto::protos::pbzero::BeginFrameObserverState* state) const {
   state->set_dropped_begin_frame_args(dropped_begin_frame_args_);
 
-  last_begin_frame_args_.AsProtozeroInto(state->set_last_begin_frame_args());
+  last_begin_frame_args_.AsProtozeroInto(ctx,
+                                         state->set_last_begin_frame_args());
 }
 
 BeginFrameArgs
@@ -113,6 +115,17 @@ BeginFrameSource::BeginFrameArgsGenerator::GenerateBeginFrameArgs(
       next_sequence_number_ +
       EstimateTickCountsBetween(frame_time, next_expected_frame_time_,
                                 vsync_interval);
+  // This is utilized by ExternalBeginFrameSourceAndroid,
+  // GpuVSyncBeginFrameSource, and DelayBasedBeginFrameSource. Which covers the
+  // main Viz use cases. BackToBackBeginFrameSource is not relevenant. We also
+  // are not looking to adjust ExternalBeginFrameSourceMojo which is used in
+  // headless.
+  if (dynamic_begin_frame_deadline_offset_source_) {
+    base::TimeDelta deadline_offset =
+        dynamic_begin_frame_deadline_offset_source_->GetDeadlineOffset(
+            vsync_interval);
+    next_frame_time -= deadline_offset;
+  }
   next_expected_frame_time_ = next_frame_time;
   next_sequence_number_ = sequence_number + 1;
   return BeginFrameArgs::Create(BEGINFRAME_FROM_HERE, source_id,
@@ -186,10 +199,15 @@ bool BeginFrameSource::RequestCallbackOnGpuAvailable() {
 }
 
 void BeginFrameSource::AsProtozeroInto(
+    perfetto::EventContext&,
     perfetto::protos::pbzero::BeginFrameSourceState* state) const {
   // The lower 32 bits of source_id are the interesting piece of |source_id_|.
   state->set_source_id(static_cast<uint32_t>(source_id_));
 }
+
+void BeginFrameSource::SetDynamicBeginFrameDeadlineOffsetSource(
+    DynamicBeginFrameDeadlineOffsetSource*
+        dynamic_begin_frame_deadline_offset_source) {}
 
 // StubBeginFrameSource ---------------------------------------------------
 StubBeginFrameSource::StubBeginFrameSource()
@@ -334,6 +352,13 @@ void DelayBasedBeginFrameSource::OnGpuNoLongerBusy() {
   OnTimerTick();
 }
 
+void DelayBasedBeginFrameSource::SetDynamicBeginFrameDeadlineOffsetSource(
+    DynamicBeginFrameDeadlineOffsetSource*
+        dynamic_begin_frame_deadline_offset_source) {
+  begin_frame_args_generator_.set_dynamic_begin_frame_deadline_offset_source(
+      dynamic_begin_frame_deadline_offset_source);
+}
+
 void DelayBasedBeginFrameSource::OnTimerTick() {
   if (RequestCallbackOnGpuAvailable())
     return;
@@ -375,12 +400,14 @@ ExternalBeginFrameSource::~ExternalBeginFrameSource() {
 }
 
 void ExternalBeginFrameSource::AsProtozeroInto(
+    perfetto::EventContext& ctx,
     perfetto::protos::pbzero::BeginFrameSourceState* state) const {
-  BeginFrameSource::AsProtozeroInto(state);
+  BeginFrameSource::AsProtozeroInto(ctx, state);
 
   state->set_paused(paused_);
   state->set_num_observers(observers_.size());
-  last_begin_frame_args_.AsProtozeroInto(state->set_last_begin_frame_args());
+  last_begin_frame_args_.AsProtozeroInto(ctx,
+                                         state->set_last_begin_frame_args());
 }
 
 void ExternalBeginFrameSource::AddObserver(BeginFrameObserver* obs) {

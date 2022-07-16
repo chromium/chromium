@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -72,6 +71,9 @@ class DirectOutputSurface : public viz::OutputSurface {
     capabilities_.output_surface_origin =
         context_provider->ContextCapabilities().surface_origin;
   }
+
+  DirectOutputSurface(const DirectOutputSurface&) = delete;
+  DirectOutputSurface& operator=(const DirectOutputSurface&) = delete;
 
   ~DirectOutputSurface() override {}
 
@@ -140,8 +142,6 @@ class DirectOutputSurface : public viz::OutputSurface {
 
   viz::OutputSurfaceClient* client_ = nullptr;
   base::WeakPtrFactory<DirectOutputSurface> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DirectOutputSurface);
 };
 
 }  // namespace
@@ -189,6 +189,7 @@ class InProcessContextFactory::PerCompositorData
   void SetSupportedRefreshRates(
       const std::vector<float>& refresh_rates) override {}
   void PreserveChildSurfaceControls() override {}
+  void SetSwapCompletionCallbackEnabled(bool enabled) override {}
 #endif
 
   void SetDelegatedInkPointRenderer(
@@ -358,8 +359,7 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
         compositor->task_runner().get());
     time_source->SetTimebaseAndInterval(
         base::TimeTicks(),
-        base::TimeDelta::FromMicroseconds(base::Time::kMicrosecondsPerSecond /
-                                          refresh_rate_));
+        base::Microseconds(base::Time::kMicrosecondsPerSecond / refresh_rate_));
     begin_frame_source = std::make_unique<viz::DelayBasedBeginFrameSource>(
         std::move(time_source), viz::BeginFrameSource::kNotRestartableId);
   }

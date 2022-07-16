@@ -18,13 +18,14 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -42,10 +43,11 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/css/page_orientation.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
+#include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
@@ -331,6 +333,9 @@ void ComputeWebKitPrintParamsInDesiredDpi(
     // See https://crbug.com/943462
     webkit_print_params->printer_dpi = kDefaultPdfDpi;
 #endif
+
+    if (print_params.rasterize_pdf && print_params.rasterize_pdf_dpi > 0)
+      webkit_print_params->printer_dpi = print_params.rasterize_pdf_dpi;
   }
   webkit_print_params->rasterize_pdf = print_params.rasterize_pdf;
   webkit_print_params->print_scaling_option = print_params.print_scaling_option;
@@ -704,6 +709,7 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
       /*client=*/nullptr,
       /*is_hidden=*/false, /*is_prerendering=*/false,
       /*is_inside_portal=*/false,
+      /*is_fenced_frame=*/false,
       /*compositing_enabled=*/false, /*widgets_never_composited=*/false,
       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
       *source_frame.GetAgentGroupScheduler(),
@@ -852,7 +858,7 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
       const blink::WebString& fallback_name,
       const blink::FramePolicy& frame_policy,
       const blink::WebFrameOwnerProperties& frame_owner_properties,
-      blink::mojom::FrameOwnerElementType owner_type,
+      blink::FrameOwnerElementType owner_type,
       blink::WebPolicyContainerBindParams policy_container_bind_params)
       override;
   void FrameDetached() override;
@@ -984,6 +990,7 @@ void PrepareFrameAndViewForPrint::CopySelection(
       /*is_hidden=*/false,
       /*is_prerendering=*/false,
       /*is_inside_portal=*/false,
+      /*is_fenced_frame=*/false,
       /*compositing_enabled=*/false,
       /*widgets_never_composited=*/false,
       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
@@ -1052,7 +1059,7 @@ blink::WebLocalFrame* PrepareFrameAndViewForPrint::CreateChildFrame(
     const blink::WebString& fallback_name,
     const blink::FramePolicy& frame_policy,
     const blink::WebFrameOwnerProperties& frame_owner_properties,
-    blink::mojom::FrameOwnerElementType frame_owner_type,
+    blink::FrameOwnerElementType frame_owner_type,
     blink::WebPolicyContainerBindParams policy_container_bind_params) {
   // This is called when printing a selection and when this selection contains
   // an iframe. This is not supported yet. An empty rectangle will be displayed
@@ -1260,8 +1267,8 @@ void PrintRenderFrameHelper::PrintRequestedPages() {
   if (render_frame_gone_)
     return;
 
-  // If we are printing a PDF extension frame, find the plugin node and print
-  // that instead.
+  // If we are printing a frame with an internal PDF plugin element, find the
+  // plugin node and print that instead.
   auto plugin = delegate_->GetPdfElement(frame);
 
   Print(frame, plugin, PrintRequestType::kRegular);
@@ -1324,8 +1331,8 @@ void PrintRenderFrameHelper::InitiatePrintPreview(
 
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
 
-  // If we are printing a PDF extension frame, find the plugin node and print
-  // that instead.
+  // If we are printing a frame with an internal PDF plugin element, find the
+  // plugin node and print that instead.
   auto plugin = delegate_->GetPdfElement(frame);
   if (!plugin.IsNull()) {
     PrintNode(plugin);
@@ -2285,14 +2292,16 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
   }
 
   // Validate expected print preview settings.
+  absl::optional<bool> is_first_request =
+      job_settings->FindBoolKey(kIsFirstRequest);
   if (!job_settings->GetInteger(kPreviewRequestID,
                                 &settings->params->preview_request_id) ||
-      !job_settings->GetBoolean(kIsFirstRequest,
-                                &settings->params->is_first_request)) {
+      !is_first_request.has_value()) {
     NOTREACHED();
     print_preview_context_.set_error(PREVIEW_ERROR_BAD_SETTING);
     return false;
   }
+  settings->params->is_first_request = is_first_request.value();
 
   settings->params->print_to_pdf = IsPrintToPdfRequested(*job_settings);
   UpdateFrameMarginsCssInfo(*job_settings);

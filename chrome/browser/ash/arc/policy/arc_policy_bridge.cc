@@ -387,22 +387,21 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
 void UpdateFirstComplianceSinceSignInTiming(
     const base::TimeDelta& elapsed_time) {
   UMA_HISTOGRAM_CUSTOM_TIMES("Arc.FirstComplianceReportTime.SinceSignIn",
-                             elapsed_time, base::TimeDelta::FromSeconds(1),
-                             base::TimeDelta::FromMinutes(10), 50);
+                             elapsed_time, base::Seconds(1), base::Minutes(10),
+                             50);
 }
 
 void UpdateFirstComplianceSinceStartupTiming(
     const base::TimeDelta& elapsed_time) {
   UMA_HISTOGRAM_CUSTOM_TIMES("Arc.FirstComplianceReportTime.SinceStartup",
-                             elapsed_time, base::TimeDelta::FromSeconds(1),
-                             base::TimeDelta::FromMinutes(10), 50);
+                             elapsed_time, base::Seconds(1), base::Minutes(10),
+                             50);
 }
 
 void UpdateComplianceSinceUpdateTiming(const base::TimeDelta& elapsed_time) {
   UMA_HISTOGRAM_CUSTOM_TIMES("Arc.ComplianceReportSinceUpdateNotificationTime",
-                             elapsed_time,
-                             base::TimeDelta::FromMilliseconds(100),
-                             base::TimeDelta::FromMinutes(10), 50);
+                             elapsed_time, base::Milliseconds(100),
+                             base::Minutes(10), 50);
 }
 
 // Returns the SHA-256 hash of the JSON dump of the ARC policies, in the textual

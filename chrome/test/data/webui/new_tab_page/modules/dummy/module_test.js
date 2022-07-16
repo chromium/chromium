@@ -2,19 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {dummyDescriptor, FooProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {isVisible} from 'chrome://test/test_util.m.js';
+import {$$, dummyDescriptor, FooProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {installMock} from 'chrome://test/new_tab_page/test_support.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
+import {isVisible} from 'chrome://test/test_util.js';
 
 suite('NewTabPageModulesDummyModuleTest', () => {
-  let testProxy;
+  /** @type {!TestBrowserProxy} */
+  let handler;
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
-    testProxy = FooProxy.getInstance();
-    testProxy.handler = TestBrowserProxy.fromClass(foo.mojom.FooHandlerRemote);
-    testProxy.handler.setResultFor('getData', Promise.resolve({data: []}));
+    handler = installMock(foo.mojom.FooHandlerRemote, FooProxy.setHandler);
+    handler.setResultFor('getData', Promise.resolve({data: []}));
   });
 
   test('creates module with data', async () => {
@@ -36,10 +39,11 @@ suite('NewTabPageModulesDummyModuleTest', () => {
         imageUrl: 'baz.com',
       },
     ];
-    testProxy.handler.setResultFor('getData', Promise.resolve({data}));
-    const module = await dummyDescriptor.initialize();
+    handler.setResultFor('getData', Promise.resolve({data}));
+    const module = await dummyDescriptor.initialize(0);
+    assert(module);
     document.body.append(module);
-    module.$.tileList.render();
+    $$(module, '#tileList').render();
 
     // Assert.
     assertTrue(isVisible(module.$.tiles));
@@ -52,9 +56,10 @@ suite('NewTabPageModulesDummyModuleTest', () => {
 
   test('creates module without data', async () => {
     // Act.
-    const module = await dummyDescriptor.initialize();
+    const module = await dummyDescriptor.initialize(0);
+    assert(module);
     document.body.append(module);
-    module.$.tileList.render();
+    $$(module, '#tileList').render();
 
     // Assert.
     assertFalse(isVisible(module.$.tiles));

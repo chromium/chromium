@@ -23,10 +23,10 @@ AppHistoryNavigateEvent::AppHistoryNavigateEvent(
       ExecutionContextClient(context),
       navigation_type_(init->navigationType()),
       destination_(init->destination()),
-      can_respond_(init->canRespond()),
+      can_transition_(init->canTransition()),
       user_initiated_(init->userInitiated()),
       hash_change_(init->hashChange()),
-      signal_(MakeGarbageCollected<AbortSignal>(context)),
+      signal_(init->signal()),
       form_data_(init->formData()),
       info_(init->hasInfo()
                 ? init->info()
@@ -35,45 +35,43 @@ AppHistoryNavigateEvent::AppHistoryNavigateEvent(
   DCHECK(IsA<LocalDOMWindow>(context));
 }
 
-void AppHistoryNavigateEvent::respondWith(ScriptState* script_state,
-                                          ScriptPromise newNavigationAction,
-                                          ExceptionState& exception_state) {
+void AppHistoryNavigateEvent::transitionWhile(ScriptState* script_state,
+                                              ScriptPromise newNavigationAction,
+                                              ExceptionState& exception_state) {
   if (!DomWindow()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "respondWith may not be called in a "
-                                      "detached window");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "transitionWhile() may not be called in a "
+        "detached window");
     return;
   }
 
   if (!isTrusted()) {
     exception_state.ThrowSecurityError(
-        "respondWith may only be called on a "
+        "transitionWhile() may only be called on a "
         "trusted event during event dispatch");
     return;
   }
 
-  if (!can_respond_) {
+  if (!can_transition_) {
     exception_state.ThrowSecurityError(
         "A navigation with URL '" + url_.ElidedString() +
-        "' cannot be intercepted by respondWith in a window with origin '" +
+        "' cannot be intercepted by transitionWhile() in a window with origin "
+        "'" +
         DomWindow()->GetSecurityOrigin()->ToString() + "' and URL '" +
         DomWindow()->Url().ElidedString() + "'.");
     return;
   }
 
   if (!IsBeingDispatched() || defaultPrevented()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "respondWith may only be called during "
-                                      "the first dispatch of this event");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "transitionWhile() may only be called during "
+        "the first dispatch of this event");
     return;
   }
 
-  preventDefault();
-  navigation_action_promise_ = newNavigationAction;
-}
-
-void AppHistoryNavigateEvent::ClearNavigationActionPromise() {
-  navigation_action_promise_ = ScriptPromise();
+  navigation_action_promises_list_.push_back(newNavigationAction);
 }
 
 const AtomicString& AppHistoryNavigateEvent::InterfaceName() const {
@@ -87,7 +85,7 @@ void AppHistoryNavigateEvent::Trace(Visitor* visitor) const {
   visitor->Trace(signal_);
   visitor->Trace(form_data_);
   visitor->Trace(info_);
-  visitor->Trace(navigation_action_promise_);
+  visitor->Trace(navigation_action_promises_list_);
 }
 
 }  // namespace blink

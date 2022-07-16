@@ -1282,7 +1282,7 @@ TEST_F(OfflinePageModelTaskifiedTest, MAYBE_StartupMaintenanceTaskExecuted) {
   base::MockCallback<MultipleOfflinePageItemCallback> callback;
   model()->GetAllPages(callback.Get());
   FastForwardBy(OfflinePageModelTaskified::kMaintenanceTasksDelay +
-                base::TimeDelta::FromMilliseconds(1));
+                base::Milliseconds(1));
 
   EXPECT_EQ(2LL, store_test_util()->GetPageCount());
   EXPECT_EQ(0UL, test_utils::GetFileCountInDirectory(temporary_dir_path()));
@@ -1293,7 +1293,7 @@ TEST_F(OfflinePageModelTaskifiedTest, MAYBE_StartupMaintenanceTaskExecuted) {
 TEST_F(OfflinePageModelTaskifiedTest, ClearStorage) {
   // The ClearStorage task should not be executed based on time delays after
   // launch (aka the model being built).
-  FastForwardBy(base::TimeDelta::FromDays(1));
+  FastForwardBy(base::Days(1));
   EXPECT_EQ(base::Time(), last_maintenance_tasks_schedule_time());
 
   // GetAllPages should schedule a delayed task that will eventually run
@@ -1310,8 +1310,7 @@ TEST_F(OfflinePageModelTaskifiedTest, ClearStorage) {
   // After the delay (plus 1 millisecond just in case) ClearStorage should be
   // enqueued and executed.
   const base::TimeDelta run_delay =
-      OfflinePageModelTaskified::kMaintenanceTasksDelay +
-      base::TimeDelta::FromMilliseconds(1);
+      OfflinePageModelTaskified::kMaintenanceTasksDelay + base::Milliseconds(1);
   FastForwardBy(run_delay);
   EXPECT_EQ(last_scheduling_time, last_maintenance_tasks_schedule_time());
   // Check that CleanupVisualsTask ran.
@@ -1336,7 +1335,7 @@ TEST_F(OfflinePageModelTaskifiedTest, ClearStorage) {
   // Forwarding by the full interval (plus 1 second just in case) should allow
   // the task to be enqueued again.
   FastForwardBy(OfflinePageModelTaskified::kClearStorageInterval / 2 +
-                base::TimeDelta::FromSeconds(1));
+                base::Seconds(1));
   // Saving a page should also immediately enqueue the ClearStorage task.
   const GURL kTestUrl("http://example.com");
   auto archiver = BuildArchiver(kTestUrl, ArchiverResult::SUCCESSFULLY_CREATED);
@@ -1368,10 +1367,11 @@ TEST_F(OfflinePageModelTaskifiedTest, ClearStorage) {
 #define MAYBE_PersistentPageConsistencyCheckExecuted \
   PersistentPageConsistencyCheckExecuted
 #endif
-TEST_F(OfflinePageModelTaskifiedTest, PersistentPageConsistencyCheckExecuted) {
+TEST_F(OfflinePageModelTaskifiedTest,
+       MAYBE_PersistentPageConsistencyCheckExecuted) {
   // The PersistentPageConsistencyCheckTask should not be executed based on time
   // delays after launch (aka the model being built).
-  FastForwardBy(base::TimeDelta::FromDays(1));
+  FastForwardBy(base::Days(1));
   histogram_tester()->ExpectTotalCount(
       "OfflinePages.ConsistencyCheck.Persistent.Result", 0);
 
@@ -1396,8 +1396,7 @@ TEST_F(OfflinePageModelTaskifiedTest, PersistentPageConsistencyCheckExecuted) {
   // After the delay (plus 1 millisecond just in case), the consistency check
   // should be enqueued and executed.
   const base::TimeDelta run_delay =
-      OfflinePageModelTaskified::kMaintenanceTasksDelay +
-      base::TimeDelta::FromMilliseconds(1);
+      OfflinePageModelTaskified::kMaintenanceTasksDelay + base::Milliseconds(1);
   FastForwardBy(run_delay);
   // But nothing should change.
   EXPECT_EQ(1UL,
@@ -1426,7 +1425,7 @@ TEST_F(OfflinePageModelTaskifiedTest, PersistentPageConsistencyCheckExecuted) {
   // the task to be enqueued again and call GetAllPages again to enqueue the
   // task.
   FastForwardBy(OfflinePageModelTaskified::kClearStorageInterval / 2 +
-                base::TimeDelta::FromSeconds(1));
+                base::Seconds(1));
   model()->GetAllPages(callback.Get());
   // And advance the delay too.
   FastForwardBy(run_delay);
@@ -1443,7 +1442,7 @@ TEST_F(OfflinePageModelTaskifiedTest, PersistentPageConsistencyCheckExecuted) {
 
   // Forwarding by a long time that is enough for the page with missing file to
   // get expired.
-  FastForwardBy(base::TimeDelta::FromDays(400));
+  FastForwardBy(base::Days(400));
   // Saving a page should also immediately enqueue the consistency check task.
   const GURL kTestUrl("http://example.com");
   auto archiver = BuildArchiver(kTestUrl, ArchiverResult::SUCCESSFULLY_CREATED);
@@ -1480,7 +1479,7 @@ TEST_F(OfflinePageModelTaskifiedTest, MaintenanceTasksAreDisabled) {
   EXPECT_EQ(base::Time(), last_maintenance_tasks_schedule_time());
 
   // Advance the clock considerably and confirm no runs happened.
-  FastForwardBy(base::TimeDelta::FromDays(1));
+  FastForwardBy(base::Days(1));
   EXPECT_EQ(base::Time(), last_maintenance_tasks_schedule_time());
   histogram_tester()->ExpectTotalCount(
       "OfflinePages.ClearTemporaryPages.Result", 0);

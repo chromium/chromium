@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
@@ -59,6 +58,10 @@ class AboutSigninInternals : public KeyedService,
                        signin::AccountConsistencyMethod account_consistency,
                        SigninClient* client,
                        AccountReconcilor* account_reconcilor);
+
+  AboutSigninInternals(const AboutSigninInternals&) = delete;
+  AboutSigninInternals& operator=(const AboutSigninInternals&) = delete;
+
   ~AboutSigninInternals() override;
 
   // Registers the preferences used by AboutSigninInternals.
@@ -219,9 +222,10 @@ class AboutSigninInternals : public KeyedService,
   void OnErrorChanged() override;
 
   // content_settings::Observer implementation.
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   // AccountReconcilor::Observer implementation.
   void OnBlockReconcile() override;
@@ -248,8 +252,6 @@ class AboutSigninInternals : public KeyedService,
   signin::AccountConsistencyMethod account_consistency_;
 
   base::ObserverList<Observer>::Unchecked signin_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AboutSigninInternals);
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_ABOUT_SIGNIN_INTERNALS_H_

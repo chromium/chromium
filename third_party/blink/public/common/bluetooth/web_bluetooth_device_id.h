@@ -24,6 +24,15 @@ class BLINK_COMMON_EXPORT WebBluetoothDeviceId {
 
   // CHECKS that |device_id| is valid.
   explicit WebBluetoothDeviceId(std::string device_id);
+
+  // Copyable.
+  WebBluetoothDeviceId(const WebBluetoothDeviceId& other) = default;
+  WebBluetoothDeviceId& operator=(const WebBluetoothDeviceId& other) = default;
+
+  // Moveable.
+  WebBluetoothDeviceId(WebBluetoothDeviceId&& other) = default;
+  WebBluetoothDeviceId& operator=(WebBluetoothDeviceId&& other) = default;
+
   ~WebBluetoothDeviceId();
 
   // Returns the string that represents this WebBluetoothDeviceId.

@@ -333,9 +333,8 @@ initWithLargeIconService:(favicon::LargeIconService*)largeIconService
   NSDate* endOfReindexing = [NSDate date];
   NSTimeInterval indexingDuration =
       [endOfReindexing timeIntervalSinceDate:startOfReindexing];
-  UMA_HISTOGRAM_TIMES(
-      "IOS.Spotlight.BookmarksIndexingDuration",
-      base::TimeDelta::FromMillisecondsD(1000 * indexingDuration));
+  UMA_HISTOGRAM_TIMES("IOS.Spotlight.BookmarksIndexingDuration",
+                      base::Milliseconds(1000 * indexingDuration));
   UMA_HISTOGRAM_COUNTS_1000("IOS.Spotlight.BookmarksInitialIndexSize",
                             [self pendingLargeIconTasksCount]);
   [[NSUserDefaults standardUserDefaults]

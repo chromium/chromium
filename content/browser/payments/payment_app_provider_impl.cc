@@ -47,31 +47,6 @@ using payments::mojom::PaymentHandlerStatus;
 using payments::mojom::PaymentMethodDataPtr;
 using payments::mojom::PaymentRequestEventDataPtr;
 
-void DidUpdatePaymentAppIconOnCoreThread(
-    PaymentAppProvider::UpdatePaymentAppIconCallback callback,
-    PaymentHandlerStatus status) {
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), status));
-}
-
-void UpdatePaymentAppIconOnCoreThread(
-    scoped_refptr<PaymentAppContextImpl> payment_app_context,
-    int64_t registration_id,
-    const std::string& instrument_key,
-    const std::string& name,
-    const std::string& string_encoded_icon,
-    const std::string& method_name,
-    const SupportedDelegations& supported_delegations,
-    PaymentAppProvider::UpdatePaymentAppIconCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  payment_app_context->payment_app_database()
-      ->SetPaymentAppInfoForRegisteredServiceWorker(
-          registration_id, instrument_key, name, string_encoded_icon,
-          method_name, supported_delegations,
-          base::BindOnce(&DidUpdatePaymentAppIconOnCoreThread,
-                         std::move(callback)));
-}
-
 void AddMethodDataToMap(const std::vector<PaymentMethodDataPtr>& method_data,
                         std::map<std::string, std::string>* out) {
   for (size_t i = 0; i < method_data.size(); ++i) {
@@ -154,13 +129,10 @@ void PaymentAppProviderImpl::InvokePaymentApp(
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
       partition->GetServiceWorkerContext();
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(
-          &ServiceWorkerCoreThreadEventDispatcher::InvokePaymentOnCoreThread,
-          event_dispatcher_->GetWeakPtr(), registration_id, sw_origin,
-          std::move(dev_tools), std::move(service_worker_context),
-          std::move(event_data), std::move(callback)));
+  event_dispatcher_->InvokePayment(registration_id, sw_origin,
+                                   std::move(dev_tools),
+                                   std::move(service_worker_context),
+                                   std::move(event_data), std::move(callback));
 }
 
 void PaymentAppProviderImpl::InstallAndInvokePaymentApp(
@@ -240,11 +212,10 @@ void PaymentAppProviderImpl::UpdatePaymentAppIcon(
   scoped_refptr<PaymentAppContextImpl> payment_app_context =
       partition->GetPaymentAppContext();
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(&UpdatePaymentAppIconOnCoreThread, payment_app_context,
-                     registration_id, instrument_key, name, string_encoded_icon,
-                     method_name, supported_delegations, std::move(callback)));
+  payment_app_context->payment_app_database()
+      ->SetPaymentAppInfoForRegisteredServiceWorker(
+          registration_id, instrument_key, name, string_encoded_icon,
+          method_name, supported_delegations, std::move(callback));
 }
 
 void PaymentAppProviderImpl::CanMakePayment(
@@ -263,10 +234,6 @@ void PaymentAppProviderImpl::CanMakePayment(
         {"Merchant Top Origin", event_data->top_origin.spec()},
         {"Merchant Payment Request Origin",
          event_data->payment_request_origin.spec()}};
-    if (event_data->currency &&
-        base::FeatureList::IsEnabled(features::kWebPaymentsMinimalUI)) {
-      data["Currency"] = *event_data->currency;
-    }
     AddMethodDataToMap(event_data->method_data, &data);
     AddModifiersToMap(event_data->modifiers, &data);
     dev_tools->LogBackgroundServiceEvent(
@@ -281,14 +248,10 @@ void PaymentAppProviderImpl::CanMakePayment(
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
       partition->GetServiceWorkerContext();
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(
-          &ServiceWorkerCoreThreadEventDispatcher::CanMakePaymentOnCoreThread,
-          event_dispatcher_->GetWeakPtr(), registration_id, sw_origin,
-          payment_request_id, std::move(dev_tools),
-          std::move(service_worker_context), std::move(event_data),
-          std::move(callback)));
+  event_dispatcher_->CanMakePayment(registration_id, sw_origin,
+                                    payment_request_id, std::move(dev_tools),
+                                    std::move(service_worker_context),
+                                    std::move(event_data), std::move(callback));
 }
 
 void PaymentAppProviderImpl::AbortPayment(int64_t registration_id,
@@ -313,13 +276,9 @@ void PaymentAppProviderImpl::AbortPayment(int64_t registration_id,
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
       partition->GetServiceWorkerContext();
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(
-          &ServiceWorkerCoreThreadEventDispatcher::AbortPaymentOnCoreThread,
-          event_dispatcher_->GetWeakPtr(), registration_id, sw_origin,
-          payment_request_id, std::move(dev_tools),
-          std::move(service_worker_context), std::move(callback)));
+  event_dispatcher_->AbortPayment(
+      registration_id, sw_origin, payment_request_id, std::move(dev_tools),
+      std::move(service_worker_context), std::move(callback));
 }
 
 void PaymentAppProviderImpl::SetOpenedWindow(
@@ -330,15 +289,14 @@ void PaymentAppProviderImpl::SetOpenedWindow(
   CloseOpenedWindow();
   DCHECK(!payment_handler_window_);
 
-  payment_handler_window_ = std::make_unique<PaymentHandlerWindowObserver>(
-      payment_handler_web_contents);
+  payment_handler_window_ = payment_handler_web_contents->GetWeakPtr();
 }
 
 void PaymentAppProviderImpl::CloseOpenedWindow() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (payment_handler_window_ && payment_handler_window_->web_contents()) {
-    payment_handler_window_->web_contents()->Close();
+  if (payment_handler_window_) {
+    payment_handler_window_->Close();
   }
 
   payment_handler_window_.reset();
@@ -348,11 +306,7 @@ void PaymentAppProviderImpl::OnClosingOpenedWindow(
     PaymentEventResponseType reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(&ServiceWorkerCoreThreadEventDispatcher::
-                         OnClosingOpenedWindowOnCoreThread,
-                     event_dispatcher_->GetWeakPtr(), reason));
+  event_dispatcher_->OnClosingOpenedWindow(reason);
 }
 
 scoped_refptr<DevToolsBackgroundServicesContextImpl>
@@ -377,8 +331,7 @@ PaymentAppProviderImpl::GetDevTools(const url::Origin& sw_origin) {
 
 void PaymentAppProviderImpl::StartServiceWorkerForDispatch(
     int64_t registration_id,
-    ServiceWorkerCoreThreadEventDispatcher::ServiceWorkerStartCallback
-        callback) {
+    PaymentEventDispatcher::ServiceWorkerStartCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
@@ -387,12 +340,8 @@ void PaymentAppProviderImpl::StartServiceWorkerForDispatch(
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
       partition->GetServiceWorkerContext();
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(
-          &ServiceWorkerCoreThreadEventDispatcher::FindRegistrationOnCoreThread,
-          event_dispatcher_->GetWeakPtr(), std::move(service_worker_context),
-          registration_id, std::move(callback)));
+  event_dispatcher_->FindRegistration(std::move(service_worker_context),
+                                      registration_id, std::move(callback));
 }
 
 void PaymentAppProviderImpl::OnInstallPaymentApp(
@@ -431,18 +380,11 @@ void PaymentAppProviderImpl::OnInstallPaymentApp(
 PaymentAppProviderImpl::PaymentAppProviderImpl(
     WebContents* payment_request_web_contents)
     : payment_request_web_contents_(payment_request_web_contents),
-      event_dispatcher_(
-          std::make_unique<ServiceWorkerCoreThreadEventDispatcher>()) {
+      event_dispatcher_(std::make_unique<PaymentEventDispatcher>()) {
   event_dispatcher_->set_payment_app_provider(weak_ptr_factory_.GetWeakPtr());
 }
 
 PaymentAppProviderImpl::~PaymentAppProviderImpl() = default;
 
-PaymentAppProviderImpl::PaymentHandlerWindowObserver::
-    PaymentHandlerWindowObserver(WebContents* payment_handler_web_contents)
-    : WebContentsObserver(payment_handler_web_contents) {}
-PaymentAppProviderImpl::PaymentHandlerWindowObserver::
-    ~PaymentHandlerWindowObserver() = default;
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PaymentAppProviderImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PaymentAppProviderImpl);
 }  // namespace content

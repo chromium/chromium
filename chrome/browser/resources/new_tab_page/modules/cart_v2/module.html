@@ -41,7 +41,9 @@
 
   #consentCard,
   .cart-item {
-    margin: 0 15px 24px 15px;
+    margin-bottom: 24px;
+    margin-top: 0;
+    width: 328px;
   }
 
   .cart-item {
@@ -49,9 +51,9 @@
     display: flex;
     flex-direction: row;
     height: 83px;
+    padding-inline: 15px 15px;
     position: relative;
     text-decoration: none;
-    width: 329px;
   }
 
   #consentCard {
@@ -62,7 +64,7 @@
     display: flex;
     flex-direction: column;
     height: 106px;
-    width: 329px;
+    margin-inline: 15px;
   }
 
   #consentContent {
@@ -144,6 +146,7 @@
     align-items: center;
     display: flex;
     height: 83px;
+    margin-inline-start: 16px;
     overflow-x: hidden;
     text-align: center;
   }
@@ -276,7 +279,8 @@
                                     'modulesDisableButtonText',
                                     'modulesCartLower')]]"
       show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
-      on-disable-button-click="onDisableButtonClick_">
+      on-disable-button-click="onDisableButtonClick_"
+      icon-src="modules/cart/icons/cart_logo.svg">
     [[i18n('modulesCartSentenceV2')]]
   </ntp-module-header>
   <div id="moduleContent">
@@ -316,7 +320,16 @@
             </div>
             <template is="dom-if" if="[[item.productImageUrls.length]]">
               <span class="item-count">
-                &nbsp•&nbsp[[item.productImageUrls.length]]
+                <template is="dom-if"
+                    if="[[isOne_(item.productImageUrls.length)]]">
+                  [[i18n('modulesCartItemCountSingular',
+                    item.productImageUrls.length)]]
+                </template>
+                <template is="dom-if"
+                    if="[[!isOne_(item.productImageUrls.length)]]">
+                  [[i18n('modulesCartItemCountMultiple',
+                    item.productImageUrls.length)]]
+                </template>
               </span>
             </template>
             <template is="dom-if" if="[[item.discountText]]">
@@ -364,11 +377,9 @@
     </cr-action-menu>
   </div>
   <div id="moduleFooter">
-    <div id="leftScrollShadow" class="side-scroll-shadow"></div>
     <cr-icon-button id="leftScrollButton" class="side-scroll-button"
         disabled="[[!showLeftScrollButton_]]" on-click="onLeftScrollClick_">
     </cr-icon-button>
-    <div id="rightScrollShadow" class="side-scroll-shadow"> </div>
     <cr-icon-button id="rightScrollButton" class="side-scroll-button"
         disabled="[[!showRightScrollButton_]]" on-click="onRightScrollClick_">
     </cr-icon-button>

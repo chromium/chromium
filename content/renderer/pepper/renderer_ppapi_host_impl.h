@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/content_renderer_pepper_host_factory.h"
 #include "ppapi/host/ppapi_host.h"
@@ -33,6 +32,9 @@ class PluginModule;
 // This class is attached to a PluginModule which manages our lifetime.
 class RendererPpapiHostImpl : public RendererPpapiHost {
  public:
+  RendererPpapiHostImpl(const RendererPpapiHostImpl&) = delete;
+  RendererPpapiHostImpl& operator=(const RendererPpapiHostImpl&) = delete;
+
   ~RendererPpapiHostImpl() override;
 
   // Factory functions to create in process or out-of-process host impls. The
@@ -149,8 +151,6 @@ class RendererPpapiHostImpl : public RendererPpapiHost {
 
   // The scale between the viewport and dip.
   float viewport_to_dip_scale_ = 1.0f;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererPpapiHostImpl);
 };
 
 }  // namespace content

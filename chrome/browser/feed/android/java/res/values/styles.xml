@@ -20,8 +20,8 @@
     </style>
 
     <style name="MenuFooterChipInverse" parent="MenuFooterChip">
-        <item name="chipColor">@color/default_bg_color</item>
-        <item name="chipStrokeColor">@color/hairline_stroke_color</item>
+        <item name="chipColor">@color/menu_item_bg_color</item>
+        <item name="chipStrokeColor">@color/chip_hairline_color</item>
         <item name="solidColorChip">false</item>
     </style>
 </resources>

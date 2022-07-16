@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
@@ -32,8 +31,12 @@ class PaymentRequestDisplayManager : public KeyedService {
  public:
   class DisplayHandle {
    public:
-    DisplayHandle(PaymentRequestDisplayManager* display_manager,
-                  ContentPaymentRequestDelegate* delegate);
+    DisplayHandle(base::WeakPtr<PaymentRequestDisplayManager> display_manager,
+                  base::WeakPtr<ContentPaymentRequestDelegate> delegate);
+
+    DisplayHandle(const DisplayHandle&) = delete;
+    DisplayHandle& operator=(const DisplayHandle&) = delete;
+
     ~DisplayHandle();
     void Show(base::WeakPtr<PaymentRequest> request);
     void Retry();
@@ -46,14 +49,22 @@ class PaymentRequestDisplayManager : public KeyedService {
     // Returns true after Show() was called.
     bool was_shown() const { return was_shown_; }
 
+    base::WeakPtr<DisplayHandle> GetWeakPtr();
+
    private:
-    PaymentRequestDisplayManager* display_manager_;
-    ContentPaymentRequestDelegate* delegate_;
+    base::WeakPtr<PaymentRequestDisplayManager> display_manager_;
+    base::WeakPtr<ContentPaymentRequestDelegate> delegate_;
     bool was_shown_ = false;
-    DISALLOW_COPY_AND_ASSIGN(DisplayHandle);
+
+    base::WeakPtrFactory<DisplayHandle> weak_ptr_factory_{this};
   };
 
   PaymentRequestDisplayManager();
+
+  PaymentRequestDisplayManager(const PaymentRequestDisplayManager&) = delete;
+  PaymentRequestDisplayManager& operator=(const PaymentRequestDisplayManager&) =
+      delete;
+
   ~PaymentRequestDisplayManager() override;
 
   // If no PaymentRequest is currently showing, returns a unique_ptr to a
@@ -62,16 +73,20 @@ class PaymentRequestDisplayManager : public KeyedService {
   // called with true if the window is finished opening successfully, false if
   // opening it failed.
   std::unique_ptr<DisplayHandle> TryShow(
-      ContentPaymentRequestDelegate* delegate);
+      base::WeakPtr<ContentPaymentRequestDelegate> delegate);
   void ShowPaymentHandlerWindow(const GURL& url,
                                 PaymentHandlerOpenWindowCallback callback);
 
+  base::WeakPtr<PaymentRequestDisplayManager> GetWeakPtr();
+
  private:
-  void set_current_handle(DisplayHandle* handle) { current_handle_ = handle; }
+  void set_current_handle(base::WeakPtr<DisplayHandle> handle) {
+    current_handle_ = handle;
+  }
 
-  DisplayHandle* current_handle_;
+  base::WeakPtr<DisplayHandle> current_handle_;
 
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestDisplayManager);
+  base::WeakPtrFactory<PaymentRequestDisplayManager> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

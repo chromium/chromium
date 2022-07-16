@@ -22,6 +22,8 @@
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/overlay_plane_data.h"
+#include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 #include "ui/gl/dc_renderer_layer_params.h"
 #include "ui/gl/gl_utils.h"
@@ -538,6 +540,10 @@ error::Error GLES2DecoderPassthroughImpl::DoBindTexture(GLenum target,
   RemovePendingBindingTexture(target, active_texture_unit_);
 
   if (service_id != 0) {
+    // Label the texture with additional context info
+    const char* label = ContextTypeToLabel(feature_info_->context_type());
+    api()->glObjectLabelFn(GL_TEXTURE, service_id, strlen(label), label);
+
     // Create a new texture object to track this texture
     if (!resources_->texture_object_map.GetServiceID(texture,
                                                      &texture_passthrough) ||
@@ -4855,10 +4861,15 @@ error::Error GLES2DecoderPassthroughImpl::DoScheduleOverlayPlaneCHROMIUM(
   }
 
   if (!surface_->ScheduleOverlayPlane(
-          plane_z_order, transform, image,
-          gfx::Rect(bounds_x, bounds_y, bounds_width, bounds_height),
-          gfx::RectF(uv_x, uv_y, uv_width, uv_height), enable_blend,
-          std::move(gpu_fence))) {
+          image, std::move(gpu_fence),
+          gfx::OverlayPlaneData(
+              plane_z_order, transform,
+              gfx::Rect(bounds_x, bounds_y, bounds_width, bounds_height),
+              gfx::RectF(uv_x, uv_y, uv_width, uv_height), enable_blend,
+              /*damage_rect=*/gfx::Rect(), /*opacity=*/1.0f,
+              gfx::OverlayPriorityHint::kNone,
+              /*rounded_corners*/ gfx::RRectF(), image->color_space(),
+              /*hdr_metadata=*/absl::nullopt))) {
     InsertError(GL_INVALID_OPERATION, "failed to schedule overlay");
     return error::kNoError;
   }

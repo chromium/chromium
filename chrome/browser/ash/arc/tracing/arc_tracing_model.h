@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/tracing/arc_system_model.h"
 
@@ -31,6 +30,10 @@ class ArcTracingModel {
   using TracingEventPtrs = std::vector<const ArcTracingEvent*>;
 
   ArcTracingModel();
+
+  ArcTracingModel(const ArcTracingModel&) = delete;
+  ArcTracingModel& operator=(const ArcTracingModel&) = delete;
+
   ~ArcTracingModel();
 
   // Limits events by the requested interval. All events outside of this
@@ -88,8 +91,6 @@ class ArcTracingModel {
 
   uint64_t min_timestamp_ = 0;
   uint64_t max_timestamp_ = std::numeric_limits<uint64_t>::max();
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTracingModel);
 };
 
 }  // namespace arc

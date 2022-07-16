@@ -52,9 +52,9 @@ class CallTrackingTestWebLocalFrameClient
     TestWebFrameClient::RunScriptsAtDocumentElementAvailable();
   }
 
-  void DidFinishDocumentLoad() override {
-    calls_.push_back("DidFinishDocumentLoad");
-    TestWebFrameClient::DidFinishDocumentLoad();
+  void DidDispatchDOMContentLoadedEvent() override {
+    calls_.push_back("DidDispatchDOMContentLoadedEvent");
+    TestWebFrameClient::DidDispatchDOMContentLoadedEvent();
   }
 
   void RunScriptsAtDocumentReady() override {
@@ -98,18 +98,18 @@ TEST(WebLocalFrameClientTest, Basic) {
   frame_test_helpers::LoadHTMLString(web_view_helper.LocalMainFrame(),
                                      "<p>Hello world!</p>",
                                      ToKURL("https://example.com/"));
-  EXPECT_THAT(
-      client.TakeCalls(),
-      testing::ElementsAre(
-          // TODO(https://crbug.com/1057229): RunScriptsAtDocumentIdle really
-          // should not be here, but there might be a bug where a truly empty
-          // initial document doesn't fire document_idle due to an early return
-          // in FrameLoader::FinishedParsing()...
-          "RunScriptsAtDocumentIdle", "DidCreateDocumentLoader",
-          "DidCommitNavigation", "DidCreateDocumentElement",
-          "RunScriptsAtDocumentElementAvailable", "DidFinishDocumentLoad",
-          "RunScriptsAtDocumentReady", "RunScriptsAtDocumentIdle",
-          "DidHandleOnloadEvents", "DidFinishLoad"));
+  EXPECT_THAT(client.TakeCalls(),
+              testing::ElementsAre(
+                  // TODO(https://crbug.com/1057229): RunScriptsAtDocumentIdle
+                  // really should not be here, but there might be a bug where a
+                  // truly empty initial document doesn't fire document_idle due
+                  // to an early return in FrameLoader::FinishedParsing()...
+                  "RunScriptsAtDocumentIdle", "DidCreateDocumentLoader",
+                  "DidCommitNavigation", "DidCreateDocumentElement",
+                  "RunScriptsAtDocumentElementAvailable",
+                  "DidDispatchDOMContentLoadedEvent",
+                  "RunScriptsAtDocumentReady", "RunScriptsAtDocumentIdle",
+                  "DidHandleOnloadEvents", "DidFinishLoad"));
 }
 
 // TODO(dcheng): Add test cases for iframes (i.e. iframe with no source, iframe

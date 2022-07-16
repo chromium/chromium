@@ -1,3 +1,1 @@
-monorail {
-  component: "Blink>Storage>FontAccess"
-}
+mixins: "//content/browser/font_access/COMMON_METADATA"

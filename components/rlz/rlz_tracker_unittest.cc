@@ -42,6 +42,9 @@ class TestRLZTrackerDelegate : public RLZTrackerDelegate {
       : request_context_getter_(new net::TestURLRequestContextGetter(
             base::ThreadTaskRunnerHandle::Get())) {}
 
+  TestRLZTrackerDelegate(const TestRLZTrackerDelegate&) = delete;
+  TestRLZTrackerDelegate& operator=(const TestRLZTrackerDelegate&) = delete;
+
   void set_brand(const char* brand) { brand_override_ = brand; }
 
   void set_reactivation_brand(const char* reactivation_brand) {
@@ -115,8 +118,6 @@ class TestRLZTrackerDelegate : public RLZTrackerDelegate {
   std::string reactivation_brand_override_;
   base::OnceClosure on_omnibox_search_callback_;
   base::OnceClosure on_homepage_search_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRLZTrackerDelegate);
 };
 
 // Dummy RLZ string for the access points.
@@ -173,6 +174,9 @@ class TestRLZTracker : public RLZTracker {
   using RLZTracker::DelayedInit;
 
   TestRLZTracker() : assume_not_ui_thread_(true) { set_tracker(this); }
+
+  TestRLZTracker(const TestRLZTracker&) = delete;
+  TestRLZTracker& operator=(const TestRLZTracker&) = delete;
 
   ~TestRLZTracker() override { set_tracker(nullptr); }
 
@@ -234,8 +238,6 @@ class TestRLZTracker : public RLZTracker {
 
   std::set<std::string> pinged_brands_;
   bool assume_not_ui_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRLZTracker);
 };
 
 class RlzLibTest : public testing::Test {
@@ -465,7 +467,7 @@ const char* OmniboxFirstSearch() {
 #endif
 }
 
-const base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(20);
+const base::TimeDelta kDelay = base::Milliseconds(20);
 
 TEST_F(RlzLibTest, RecordProductEvent) {
   RLZTracker::RecordProductEvent(rlz_lib::CHROME, RLZTracker::ChromeOmnibox(),

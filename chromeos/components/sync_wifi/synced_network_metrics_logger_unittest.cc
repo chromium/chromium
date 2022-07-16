@@ -30,6 +30,12 @@ class SyncedNetworkMetricsLoggerTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     network_test_helper_ = std::make_unique<NetworkTestHelper>();
   }
+
+  SyncedNetworkMetricsLoggerTest(const SyncedNetworkMetricsLoggerTest&) =
+      delete;
+  SyncedNetworkMetricsLoggerTest& operator=(
+      const SyncedNetworkMetricsLoggerTest&) = delete;
+
   ~SyncedNetworkMetricsLoggerTest() override = default;
 
   void SetUp() override {
@@ -99,15 +105,11 @@ class SyncedNetworkMetricsLoggerTest : public testing::Test {
   }
 
   // Skips the system clock ahead by 10 seconds.
-  void SkipAhead() {
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
-  }
+  void SkipAhead() { task_environment_.FastForwardBy(base::Seconds(10)); }
 
  private:
   std::unique_ptr<NetworkTestHelper> network_test_helper_;
   std::unique_ptr<SyncedNetworkMetricsLogger> synced_network_metrics_logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedNetworkMetricsLoggerTest);
 };
 
 TEST_F(SyncedNetworkMetricsLoggerTest,

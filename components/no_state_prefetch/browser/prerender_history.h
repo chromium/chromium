@@ -9,10 +9,9 @@
 
 #include <list>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "url/gurl.h"
 
@@ -59,6 +58,10 @@ class PrerenderHistory {
 
   // Creates a history with capacity for |max_items| entries.
   explicit PrerenderHistory(size_t max_items);
+
+  PrerenderHistory(const PrerenderHistory&) = delete;
+  PrerenderHistory& operator=(const PrerenderHistory&) = delete;
+
   ~PrerenderHistory();
 
   // Adds |entry| to the history. If at capacity, the oldest entry is dropped.
@@ -75,8 +78,6 @@ class PrerenderHistory {
   size_t max_items_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PrerenderHistory);
 };
 
 }  // namespace prerender

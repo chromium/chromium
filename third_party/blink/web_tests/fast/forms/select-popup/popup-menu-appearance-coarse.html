@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script>
-window.enablePixelTesting = true;
-</script>
-<script src="../../../resources/js-test.js"></script>
+<script src="../resources/common.js"></script>
 <script src="../resources/picker-common.js"></script>
 </head>
 <body>
@@ -18,16 +15,41 @@ window.enablePixelTesting = true;
     <option>Item 6</option>
   </optgroup>
 </select>
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
+
+<style>
+select {
+  appearance: none;
+  padding: 1px 16px 1px 4px;
+}
+select:focus-visible {
+  outline: none;
+}
+</style>
 <script>
-internals.settings.setAvailablePointerTypes('fine,coarse');
-internals.settings.setPrimaryPointerType('fine')
-var menu = document.getElementById('menu');
-openPicker(menu, finishJSTest, function () {
-    testFailed('picker didn\'t open')
-    finishJSTest();
-});
+function touchOn(selector) {
+  return new Promise((resolve, reject) => {
+    let pos = elementCenterPosition(document.querySelector(selector));
+    chrome.gpuBenchmarking.pointerActionSequence([{source:'touch', actions: [
+        {name:'pointerDown', x:pos[0], y:pos[1]},
+        {name:'pointerUp'}]}], resolve);
+  });
+}
+
+function popup() {
+  return new Promise((resolve, reject) => {
+    popupWindow = internals.pagePopupWindow;
+    setPopupOpenCallback(resolve);
+  });
+}
+
+async function openPickerByTouch() {
+  testRunner.waitUntilDone();
+  await touchOn('#menu');
+  await popup();
+  testRunner.notifyDone();
+}
+
+openPickerByTouch();
 </script>
 </body>
 </html>

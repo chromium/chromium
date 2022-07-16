@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/zip.gni")
 import("//build/util/process_version.gni")
 import("//chrome/process_version_rc_template.gni")
 import("//chrome/updater/branding.gni")
@@ -11,9 +12,10 @@ import("//testing/test.gni")
 # This target builds the updater executable, its installer, and unittests.
 group("win") {
   deps = [
+    ":signing",
     ":updater",
+    ":updater_zip",
     "//chrome/updater/win/installer:installer",
-    "//chrome/updater/win/signing",
   ]
 }
 
@@ -38,7 +40,7 @@ executable("updater") {
     "//build/win:default_exe_manifest",
     "//chrome/updater:base",
     "//chrome/updater:constants_prod",
-    "//chrome/updater/win/ui:ui_resources",
+    "//chrome/updater/win/ui/resources",
   ]
 
   data_deps = [ ":uninstall.cmd" ]
@@ -58,10 +60,33 @@ executable("updater_test") {
     "//build/win:default_exe_manifest",
     "//chrome/updater:base",
     "//chrome/updater:constants_test",
-    "//chrome/updater/win/ui:ui_resources",
+    "//chrome/updater/win/ui/resources",
   ]
 
   data_deps = [ ":uninstall.cmd" ]
+}
+
+copy("signing") {
+  sources = [
+    "$root_out_dir/certificate_tag.exe",
+    "//chrome/tools/build/win/resedit.py",
+    "//third_party/lzma_sdk/7zr.exe",
+    "signing/sign.py",
+  ]
+
+  deps = [ "//chrome/updater/tools:certificate_tag" ]
+
+  outputs = [ "$root_out_dir/UpdaterSigning/{{source_file_part}}" ]
+}
+
+zip("updater_zip") {
+  output = "$root_build_dir/updater.zip"
+  inputs =
+      [ "$root_build_dir/UpdaterSetup.exe" ] + get_target_outputs(":signing")
+  deps = [
+    ":signing",
+    "//chrome/updater/win/installer",
+  ]
 }
 
 process_version("uninstall.cmd") {
@@ -79,24 +104,6 @@ process_version("uninstall.cmd") {
 process_version_rc_template("version_resources") {
   sources = [ "updater.ver" ]
   output = "$target_gen_dir/updater_exe.rc"
-}
-
-# This build target is defined to minimize the impact of -Wno-missing-braces
-# compiler switch. In the future it might be possible to isolate the
-# dependency of ATL in the UI so ATL headers are not visible in the
-# compilation units outside the UI itself.
-# TODO(sorin): https://crbug.com/1014311
-source_set("app_install_controller") {
-  cflags_cc = [ "-Wno-missing-braces" ]
-
-  sources = [ "app_install_controller.cc" ]
-
-  deps = [
-    "//base",
-    "//base:i18n",
-    "//chrome/updater:version_header",
-    "//chrome/updater/win/ui",
-  ]
 }
 
 source_set("tag_extractor") {

@@ -5,6 +5,7 @@
 #include "extensions/test/test_extension_dir.h"
 
 #include "base/files/file_util.h"
+#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "extensions/browser/extension_creator.h"

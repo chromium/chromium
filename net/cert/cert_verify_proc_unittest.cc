@@ -99,6 +99,10 @@ class MockCertVerifyProc : public CertVerifyProc {
  public:
   explicit MockCertVerifyProc(const CertVerifyResult& result)
       : result_(result) {}
+
+  MockCertVerifyProc(const MockCertVerifyProc&) = delete;
+  MockCertVerifyProc& operator=(const MockCertVerifyProc&) = delete;
+
   // CertVerifyProc implementation:
   bool SupportsAdditionalTrustAnchors() const override { return false; }
 
@@ -117,8 +121,6 @@ class MockCertVerifyProc : public CertVerifyProc {
                      const NetLogWithSource& net_log) override;
 
   const CertVerifyResult result_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCertVerifyProc);
 };
 
 int MockCertVerifyProc::VerifyInternal(
@@ -2581,9 +2583,8 @@ TEST_P(CertVerifyProcInternalTest, ValidityDayPlus5MinutesBeforeNotBefore) {
   std::unique_ptr<CertBuilder> leaf, intermediate, root;
   CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
   ASSERT_TRUE(leaf && intermediate && root);
-  base::Time not_before = base::Time::Now() + base::TimeDelta::FromDays(1) +
-                          base::TimeDelta::FromMinutes(5);
-  base::Time not_after = base::Time::Now() + base::TimeDelta::FromDays(30);
+  base::Time not_before = base::Time::Now() + base::Days(1) + base::Minutes(5);
+  base::Time not_after = base::Time::Now() + base::Days(30);
   leaf->SetValidity(not_before, not_after);
 
   // Trust the root and build a chain to verify that includes the intermediate.
@@ -2605,8 +2606,8 @@ TEST_P(CertVerifyProcInternalTest, ValidityDayBeforeNotBefore) {
   std::unique_ptr<CertBuilder> leaf, intermediate, root;
   CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
   ASSERT_TRUE(leaf && intermediate && root);
-  base::Time not_before = base::Time::Now() + base::TimeDelta::FromDays(1);
-  base::Time not_after = base::Time::Now() + base::TimeDelta::FromDays(30);
+  base::Time not_before = base::Time::Now() + base::Days(1);
+  base::Time not_after = base::Time::Now() + base::Days(30);
   leaf->SetValidity(not_before, not_after);
 
   // Trust the root and build a chain to verify that includes the intermediate.
@@ -2628,8 +2629,8 @@ TEST_P(CertVerifyProcInternalTest, ValidityJustBeforeNotBefore) {
   std::unique_ptr<CertBuilder> leaf, intermediate, root;
   CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
   ASSERT_TRUE(leaf && intermediate && root);
-  base::Time not_before = base::Time::Now() + base::TimeDelta::FromMinutes(5);
-  base::Time not_after = base::Time::Now() + base::TimeDelta::FromDays(30);
+  base::Time not_before = base::Time::Now() + base::Minutes(5);
+  base::Time not_after = base::Time::Now() + base::Days(30);
   leaf->SetValidity(not_before, not_after);
 
   // Trust the root and build a chain to verify that includes the intermediate.
@@ -2651,8 +2652,8 @@ TEST_P(CertVerifyProcInternalTest, ValidityJustAfterNotBefore) {
   std::unique_ptr<CertBuilder> leaf, intermediate, root;
   CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
   ASSERT_TRUE(leaf && intermediate && root);
-  base::Time not_before = base::Time::Now() - base::TimeDelta::FromSeconds(1);
-  base::Time not_after = base::Time::Now() + base::TimeDelta::FromDays(30);
+  base::Time not_before = base::Time::Now() - base::Seconds(1);
+  base::Time not_after = base::Time::Now() + base::Days(30);
   leaf->SetValidity(not_before, not_after);
 
   // Trust the root and build a chain to verify that includes the intermediate.
@@ -2674,8 +2675,8 @@ TEST_P(CertVerifyProcInternalTest, ValidityJustBeforeNotAfter) {
   std::unique_ptr<CertBuilder> leaf, intermediate, root;
   CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
   ASSERT_TRUE(leaf && intermediate && root);
-  base::Time not_before = base::Time::Now() - base::TimeDelta::FromDays(30);
-  base::Time not_after = base::Time::Now() + base::TimeDelta::FromMinutes(5);
+  base::Time not_before = base::Time::Now() - base::Days(30);
+  base::Time not_after = base::Time::Now() + base::Minutes(5);
   leaf->SetValidity(not_before, not_after);
 
   // Trust the root and build a chain to verify that includes the intermediate.
@@ -2697,8 +2698,8 @@ TEST_P(CertVerifyProcInternalTest, ValidityJustAfterNotAfter) {
   std::unique_ptr<CertBuilder> leaf, intermediate, root;
   CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
   ASSERT_TRUE(leaf && intermediate && root);
-  base::Time not_before = base::Time::Now() - base::TimeDelta::FromDays(30);
-  base::Time not_after = base::Time::Now() - base::TimeDelta::FromSeconds(1);
+  base::Time not_before = base::Time::Now() - base::Days(30);
+  base::Time not_after = base::Time::Now() - base::Seconds(1);
   leaf->SetValidity(not_before, not_after);
 
   // Trust the root and build a chain to verify that includes the intermediate.
@@ -3422,6 +3423,16 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
     }
   } else {
     EXPECT_NE(OK, error);
+    if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID &&
+        error == ERR_CERT_AUTHORITY_INVALID) {
+      // Newer Android versions reject the chain due to the SHA1 intermediate,
+      // but do not build the correct chain by AIA. Since only the partial
+      // chain is returned, CertVerifyProc does not mark it as SHA1 as it does
+      // not examine the last cert in the chain. Therefore, if
+      // ERR_CERT_AUTHORITY_INVALID is returned, don't check the rest of the
+      // statuses. See https://crbug.com/1191795.
+      return;
+    }
     EXPECT_TRUE(verify_result.cert_status &
                 CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
     EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_SHA1_SIGNATURE_PRESENT);

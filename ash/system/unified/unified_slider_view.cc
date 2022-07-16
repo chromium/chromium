@@ -5,6 +5,7 @@
 #include "ash/system/unified/unified_slider_view.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/element_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
@@ -95,7 +96,6 @@ UnifiedSliderButton::UnifiedSliderButton(PressedCallback callback,
     SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
 
   SetVectorIcon(icon);
-  SetBorder(views::CreateEmptyBorder(kUnifiedCircularButtonFocusPadding));
 
   // Focus ring is around the whole view's bounds, but the ink drop should be
   // the same size as the content.
@@ -128,8 +128,7 @@ void UnifiedSliderButton::PaintButtonContents(gfx::Canvas* canvas) {
           : AshColorProvider::ControlsLayerType::
                 kControlBackgroundColorInactive));
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), kTrayItemCornerRadius,
-                     flags);
+  canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), rect.width() / 2, flags);
 
   views::ImageButton::PaintButtonContents(canvas);
 }
@@ -145,11 +144,6 @@ const char* UnifiedSliderButton::GetClassName() const {
   return "UnifiedSliderButton";
 }
 
-gfx::Size UnifiedSliderButton::CalculatePreferredSize() const {
-  return gfx::Size(kTrayItemSize + kUnifiedCircularButtonFocusPadding.width(),
-                   kTrayItemSize + kUnifiedCircularButtonFocusPadding.height());
-}
-
 void UnifiedSliderButton::OnThemeChanged() {
   views::ImageButton::OnThemeChanged();
   UpdateVectorIcon();
@@ -163,8 +157,8 @@ void UnifiedSliderButton::UpdateVectorIcon() {
   if (!icon_)
     return;
 
-  AshColorProvider::Get()->DecorateIconButton(
-      this, *icon_, toggled_, GetDefaultSizeOfVectorIcon(*icon_));
+  element_style::DecorateSmallIconButton(this, *icon_, toggled_,
+                                         /*has_border=*/true);
 }
 
 UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,

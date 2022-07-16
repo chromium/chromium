@@ -76,7 +76,10 @@ class TasksSurfaceViewBinder {
     private static void setBottomBarHeight(ViewHolder viewHolder, int height) {
         MarginLayoutParams layoutParams =
                 (MarginLayoutParams) viewHolder.tasksSurfaceView.getLayoutParams();
-        if (layoutParams != null) layoutParams.bottomMargin = height;
+        if (layoutParams != null) {
+            layoutParams.bottomMargin = height;
+            viewHolder.tasksSurfaceView.setLayoutParams(layoutParams);
+        }
     }
 
     private static void setTopBarHeight(ViewHolder viewHolder, int height) {

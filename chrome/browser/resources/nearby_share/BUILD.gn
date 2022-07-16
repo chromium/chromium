@@ -45,7 +45,12 @@ generate_grd("build_grd") {
     "$target_gen_dir/nearby_share_mojo_resources.grdp",
     "$target_gen_dir/shared/nearby_share_resources_v3.grdp",
   ]
-  input_files = [ "nearby_share_pulse_animation.json" ]
+  input_files = [
+    "nearby_share_progress_bar_dark.json",
+    "nearby_share_progress_bar_light.json",
+    "nearby_share_pulse_animation_dark.json",
+    "nearby_share_pulse_animation_light.json",
+  ]
   input_files_base_dir = rebase_path("shared", "//")
   manifest_files = [
     "$target_gen_dir/$preprocess_src_manifest",
@@ -134,6 +139,7 @@ js_library("app") {
     "./shared:nearby_onboarding_page.m",
     "./shared:nearby_share_settings_behavior.m",
     "./shared:nearby_visibility_page.m",
+    "./shared:types.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
   ]
@@ -151,6 +157,7 @@ js_library("nearby_confirmation_page") {
   deps = [
     "./shared:nearby_preview.m",
     "./shared:nearby_progress.m",
+    "./shared:types.m",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
     "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

@@ -46,6 +46,9 @@ class ScopedFeatureListTest : public testing::Test {
     FeatureList::SetInstance(std::move(feature_list));
   }
 
+  ScopedFeatureListTest(const ScopedFeatureListTest&) = delete;
+  ScopedFeatureListTest& operator=(const ScopedFeatureListTest&) = delete;
+
   ~ScopedFeatureListTest() override {
     // Restore feature list.
     if (original_feature_list_) {
@@ -57,8 +60,6 @@ class ScopedFeatureListTest : public testing::Test {
  private:
   // Save the present FeatureList and restore it after test finish.
   std::unique_ptr<FeatureList> original_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFeatureListTest);
 };
 
 TEST_F(ScopedFeatureListTest, BasicScoped) {

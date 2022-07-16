@@ -50,6 +50,9 @@ class CursorManagerTest : public testing::Test {
  public:
   CursorManagerTest() = default;
 
+  CursorManagerTest(const CursorManagerTest&) = delete;
+  CursorManagerTest& operator=(const CursorManagerTest&) = delete;
+
   void SetUp() override {
     browser_context_ = std::make_unique<TestBrowserContext>();
     process_host_ =
@@ -91,9 +94,6 @@ class CursorManagerTest : public testing::Test {
   MockRenderWidgetHostViewForCursors* top_view_;
 
   MockRenderWidgetHostDelegate delegate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CursorManagerTest);
 };
 
 }  // namespace

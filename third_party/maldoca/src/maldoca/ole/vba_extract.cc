@@ -25,7 +25,9 @@
 #include "absl/base/casts.h"
 #include "absl/container/flat_hash_set.h"
 #include "absl/container/node_hash_map.h"
-#include "absl/flags/flag.h"
+#ifndef MALDOCA_IN_CHROMIUM
+#include "absl/flags/flag.h"  // nogncheck
+#endif
 #include "absl/status/status.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_cat.h"
@@ -64,9 +66,8 @@ static const uint32_t kSupportAllInputType =
     (kSupportAllButOOXMLInputType | TRY_OOXML);
 
 #ifdef MALDOCA_IN_CHROMIUM
-static const int32_t try_input_type = -1;
-static bool extract_malformed_content = true;
-static bool ignore_archive_reader_warning = true;
+static const int32_t flag_input_type = -1;
+static const bool extract_malformed_content = true;
 #else
 ABSL_FLAG(int32_t, input_type, -1,
           "This flag is a bitwise combination of TRY_* enum values and "
@@ -79,13 +80,7 @@ ABSL_FLAG(int32_t, input_type, -1,
 ABSL_FLAG(bool, extract_malformed_content, true,
           "This flag specifies whether VBA code should be extracted from "
           "orphaned directory entries or otherwise malformed files.");
-
-ABSL_FLAG(bool, ignore_archive_reader_warning, true,
-          "This flag specifies whether to ignore warning from libarchive. "
-          "For instance, ignore when there is a mismatch between number of "
-          "decompressed bytes specified vs actual.");
 #endif
-
 namespace maldoca {
 
 // Forward-declare this function, as it is used before being declared.
@@ -282,7 +277,6 @@ absl::Status ExtractFromOLE2String(absl::string_view content,
   absl::Status status = ExtractFromOLE2StringInternal(
       content, &header, &fat, &root, &dir_entries, &extracted_indices,
       &directory_stream, &code_modules, dir, code_chunks);
-
   if (!extract_malformed_content) {
     return status;
   } else if (!status.ok()) {
@@ -327,14 +321,15 @@ static absl::Status ExtractFromOLEContentInternal(
 static absl::Status ExtractFromOOXMLContentInternal(
     const std::string &original_filename, absl::string_view content,
     OLEDirectoryMessage *directory, VBACodeChunks *code_chunks) {
-  maldoca::utils::ArchiveHandler handler(content, "zip");
+  auto handler_or = ::maldoca::utils::GetArchiveHandler(
+      content, "zip", "" /*dummy location since zip uses in-memory libarchive*/,
+      false, false);
 
-  if (!handler.Initialized()) {
+  if (!handler_or.ok() || !handler_or.value()->Initialized()) {
     return absl::FailedPreconditionError(
         "Cannot initialize zip ArchiveHandler");
   }
-
-  handler.SetIgnoreWarning(ignore_archive_reader_warning);
+  auto handler = handler_or.value().get();
 
   DLOG(INFO) << "Evaluating " << original_filename << " (" << content.length()
              << " bytes) as a OOXML file";
@@ -343,7 +338,8 @@ static absl::Status ExtractFromOOXMLContentInternal(
   int64_t size;
   std::string error;
   std::string archive_content;
-  while (handler.GetNextGoodContent(&archive_member, &size, &archive_content)) {
+  while (
+      handler->GetNextGoodContent(&archive_member, &size, &archive_content)) {
     if (!IsOLE2Content(absl::string_view(archive_content))) {
       archive_content.clear();
       continue;
@@ -575,7 +571,7 @@ void ExtractDirectoryAndVBAFromString(absl::string_view content,
                                       std::string *error) {
   error->clear();
   uint32_t input_type =
-      (try_input_type == -1 ? kSupportAllInputType : try_input_type);
+      flag_input_type == -1 ? kSupportAllInputType : flag_input_type;
   auto status = ExtractFromStringInternal(input_type, "", content, directory,
                                           code_chunks);
   error->assign(std::string(status.message()));
@@ -587,12 +583,12 @@ void ExtractVBAFromString(absl::string_view content, VBACodeChunks *code_chunks,
 }
 
 void ExtractVBAFromFile(const std::string &filename, VBACodeChunks *code_chunks,
-                        std::string *error) {
+                        std::string *error, bool xor_decode_file) {
   error->clear();
   // Fail nicely if the file can't be read. ReadFileToString will also log
   // some details about the error.
   std::string content;
-  if (!utils::ReadFileToString(filename, &content, true)) {
+  if (!utils::ReadFileToString(filename, &content, true, xor_decode_file)) {
     *error = absl::StrFormat("Can not get content for '%s'", filename);
     return;
   }

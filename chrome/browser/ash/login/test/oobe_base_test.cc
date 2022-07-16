@@ -12,21 +12,20 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
-#include "chrome/browser/ash/login/test/https_forwarder.h"
+#include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
@@ -38,17 +37,13 @@
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/user_manager/fake_user_manager.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/dns/mock_host_resolver.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 class GaiaPageEventWaiter : public test::TestConditionWaiter {
@@ -90,14 +85,6 @@ class GaiaPageEventWaiter : public test::TestConditionWaiter {
 }  // namespace
 
 OobeBaseTest::OobeBaseTest() {
-  // Skip the EDU Coexistence Screen, because many OOBE tests don't expect
-  // the EDU coexistence screen after signin and fail if it isn't disabled.
-  // TODO(https://crbug.com/1175215): Make those tests work with this feature
-  // enabled.
-  scoped_feature_list_.InitWithFeatures(
-      {} /** enabled */,
-      {supervised_users::kEduCoexistenceFlowV2} /** disabled */);
-
   set_exit_when_last_browser_closes(false);
 }
 
@@ -111,13 +98,13 @@ void OobeBaseTest::SetUp() {
 }
 
 void OobeBaseTest::SetUpCommandLine(base::CommandLine* command_line) {
-  command_line->AppendSwitch(chromeos::switches::kLoginManager);
-  command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+  command_line->AppendSwitch(switches::kLoginManager);
+  command_line->AppendSwitch(switches::kForceLoginManagerInTests);
   command_line->AppendSwitch(
-      chromeos::switches::kDisableOOBEChromeVoxHintTimerForTesting);
+      switches::kDisableOOBEChromeVoxHintTimerForTesting);
   if (!needs_background_networking_)
     command_line->AppendSwitch(::switches::kDisableBackgroundNetworking);
-  command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "user");
+  command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
 
   // Blink features are controlled via a command line switch. Disable HTML
   // imports which are deprecated. OOBE uses a polyfill for imports that will
@@ -133,9 +120,7 @@ void OobeBaseTest::CreatedBrowserMainParts(
   // If the test initially shows views login screen, this notification might
   // come before SetUpOnMainThread(), so the observer has to be set up early.
   login_screen_load_observer_ =
-      std::make_unique<content::WindowedNotificationObserver>(
-          chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-          content::NotificationService::AllSources());
+      std::make_unique<LoginOrLockScreenVisibleWaiter>();
 
   MixinBasedInProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
 }
@@ -164,7 +149,7 @@ void OobeBaseTest::SetUpOnMainThread() {
   LoginDisplayHostWebUI::DisableRestrictiveProxyCheckForTest();
 
   if (ShouldWaitForOobeUI()) {
-    WaitForOobeUI();
+    MaybeWaitForLoginScreenLoad();
   }
   MixinBasedInProcessBrowserTest::SetUpOnMainThread();
 }
@@ -181,17 +166,12 @@ void OobeBaseTest::WaitForOobeUI() {
   // Wait for notification first. Otherwise LoginDisplayHost might not be
   // created yet.
   MaybeWaitForLoginScreenLoad();
-
-  // Wait for OobeUI to finish loading.
-  base::RunLoop run_loop;
-  if (!LoginDisplayHost::default_host()->GetOobeUI()->IsJSReady(
-          run_loop.QuitClosure())) {
-    run_loop.Run();
-  }
+  test::WaitForOobeJSReady();
 }
 
 void OobeBaseTest::WaitForGaiaPageLoad() {
   WaitForSigninScreen();
+  test::WaitForOobeJSReady();
   WaitForGaiaPageReload();
 }
 
@@ -201,7 +181,7 @@ void OobeBaseTest::WaitForGaiaPageLoadAndPropertyUpdate() {
   // 'ready' event arrives.  To ensure that these properties are updated before
   // they are checked, use WaitForGaiaPageBackButtonUpdate() instead of
   // WaitForGaiaPageLoad().
-  WaitForSigninScreen();
+  WaitForGaiaPageLoad();
   WaitForGaiaPageBackButtonUpdate();
 }
 
@@ -242,7 +222,7 @@ test::JSChecker OobeBaseTest::SigninFrameJS() {
 // static
 OobeScreenId OobeBaseTest::GetFirstSigninScreen() {
   bool isEnterpriseManaged = !g_browser_process->platform_part()
-                                  ->browser_policy_connector_chromeos()
+                                  ->browser_policy_connector_ash()
                                   ->IsDeviceEnterpriseManaged();
   return isEnterpriseManaged ? UserCreationView::kScreenId
                              : GaiaView::kScreenId;
@@ -255,4 +235,4 @@ void OobeBaseTest::MaybeWaitForLoginScreenLoad() {
   login_screen_load_observer_.reset();
 }
 
-}  // namespace chromeos
+}  // namespace ash

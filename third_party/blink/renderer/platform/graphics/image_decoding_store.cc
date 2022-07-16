@@ -320,7 +320,7 @@ void ImageDecodingStore::RemoveCacheIndexedByGeneratorInternal(
   CopyToVector(iter->value, cache_identifier_list);
 
   // For each cache identifier find the corresponding CacheEntry and remove it.
-  for (size_t i = 0; i < cache_identifier_list.size(); ++i) {
+  for (wtf_size_t i = 0; i < cache_identifier_list.size(); ++i) {
     DCHECK(cache_map->Contains(cache_identifier_list[i]));
     const auto& cache_entry = cache_map->at(cache_identifier_list[i]);
     DCHECK(!cache_entry->UseCount());
@@ -332,8 +332,8 @@ void ImageDecodingStore::RemoveCacheIndexedByGeneratorInternal(
 void ImageDecodingStore::RemoveFromCacheListInternal(
     const Vector<std::unique_ptr<CacheEntry>>& deletion_list) {
   mutex_.AssertAcquired();
-  for (size_t i = 0; i < deletion_list.size(); ++i)
-    ordered_cache_list_.Remove(deletion_list[i].get());
+  for (const auto& entry : deletion_list)
+    ordered_cache_list_.Remove(entry.get());
 }
 
 }  // namespace blink

@@ -6,6 +6,7 @@ module chromeos.local_search_service.mojom;
 
 import "chromeos/components/local_search_service/public/mojom/index.mojom";
 import "chromeos/components/local_search_service/public/mojom/types.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 enum IndexId {
   kCrosSettings = 0,
@@ -26,6 +27,7 @@ interface SearchMetricsReporter {
 };
 
 // The main service interface.
+[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
 interface LocalSearchService {
   // Call this function to request an Index as specified by |index_id| and
   // |backend|.

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-namespace chromeos {
+namespace ash {
 
 ScopedUserPolicyUpdate::ScopedUserPolicyUpdate(
     policy::UserPolicyBuilder* policy_builder,
@@ -26,4 +26,4 @@ ScopedDevicePolicyUpdate::~ScopedDevicePolicyUpdate() {
   std::move(callback_).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

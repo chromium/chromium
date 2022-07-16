@@ -1,0 +1,33 @@
+<style include="diagnostics-shared">
+  #troubleshootingText {
+    @apply --diagnostics-troubleshooting-font;
+    line-height: 20px;
+  }
+
+  #troubleshootingContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 20px 0;
+    padding-bottom: 20px;
+    padding-top: 16px;
+  }
+
+  #troubleshootingLinkText {
+    @apply --diagnostics-connecting-link-font;
+    line-height: 20px;
+    margin-top: 8px;
+  }
+</style>
+
+<div id="troubleshootingContainer" class="grey-container">
+  <span id="troubleshootingText">
+    [[troubleshootingInfo.header]]
+  </span>
+  <span id="troubleshootingLinkText" class="link-text"
+      hidden$="[[!isLoggedIn_]]"
+      on-click="onLinkTextClicked_">
+    [[troubleshootingInfo.linkText]]
+  </span>
+</div>

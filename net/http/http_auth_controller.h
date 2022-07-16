@@ -118,8 +118,6 @@ class NET_EXPORT_PRIVATE HttpAuthController
 
   bool HaveAuth() const;
 
-  bool HaveValidIdentity() const;
-
   // Return whether the authentication scheme is incompatible with HTTP/2
   // and thus the server would presumably reject a request on HTTP/2 anyway.
   bool NeedsHTTP11() const;

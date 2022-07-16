@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/power/cpu_data_collector.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::TimeDelta;
 
 namespace ash {
 namespace {
@@ -66,12 +65,15 @@ class CpuDataCollectorTest : public testing::Test {
  public:
   CpuDataCollectorTest()
       : kExpectedCpuFreqStateNames({"20", "60", "100"}),
-        kExpectedTimeInStateCpu0({TimeDelta::FromMilliseconds(300000000),
-                                  TimeDelta::FromMilliseconds(900000),
-                                  TimeDelta::FromMilliseconds(500000)}),
-        kExpectedTimeInStateCpu1({TimeDelta::FromMilliseconds(310000000),
-                                  TimeDelta::FromMilliseconds(910000),
-                                  TimeDelta::FromMilliseconds(510000)}) {}
+        kExpectedTimeInStateCpu0({base::Milliseconds(300000000),
+                                  base::Milliseconds(900000),
+                                  base::Milliseconds(500000)}),
+        kExpectedTimeInStateCpu1({base::Milliseconds(310000000),
+                                  base::Milliseconds(910000),
+                                  base::Milliseconds(510000)}) {}
+
+  CpuDataCollectorTest(const CpuDataCollectorTest&) = delete;
+  CpuDataCollectorTest& operator=(const CpuDataCollectorTest&) = delete;
 
   // testing::Test:
   void SetUp() override {
@@ -91,18 +93,15 @@ class CpuDataCollectorTest : public testing::Test {
   const std::vector<std::string> kExpectedCpuFreqStateNames;
 
   // Expected time_in_state of sample for cpu0.
-  const std::vector<TimeDelta> kExpectedTimeInStateCpu0;
+  const std::vector<base::TimeDelta> kExpectedTimeInStateCpu0;
 
   // Expected time_in_state of sample for cpu1.
-  const std::vector<TimeDelta> kExpectedTimeInStateCpu1;
+  const std::vector<base::TimeDelta> kExpectedTimeInStateCpu1;
 
   base::ScopedTempDir temp_dir_;
   base::FilePath time_in_state_path_cpu0_;
   base::FilePath time_in_state_path_cpu1_;
   base::FilePath all_time_in_state_path_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CpuDataCollectorTest);
 };
 
 TEST_F(CpuDataCollectorTest, ReadCpuFreqTimeInState) {

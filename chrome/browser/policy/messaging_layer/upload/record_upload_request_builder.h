@@ -7,7 +7,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "components/reporting/proto/record.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
@@ -80,10 +80,7 @@ class UploadEncryptedReportingRequestBuilder {
       bool attach_encryption_settings = false);
   ~UploadEncryptedReportingRequestBuilder();
 
-  // TODO(chromium:1165908) Have AddRecord take ownership of the record that is
-  // passed in.
-  UploadEncryptedReportingRequestBuilder& AddRecord(
-      const EncryptedRecord& record);
+  UploadEncryptedReportingRequestBuilder& AddRecord(EncryptedRecord record);
 
   absl::optional<base::Value> Build();
 
@@ -99,14 +96,14 @@ class UploadEncryptedReportingRequestBuilder {
 // proto.
 class EncryptedRecordDictionaryBuilder {
  public:
-  explicit EncryptedRecordDictionaryBuilder(const EncryptedRecord& record);
+  explicit EncryptedRecordDictionaryBuilder(EncryptedRecord record);
   ~EncryptedRecordDictionaryBuilder();
 
   absl::optional<base::Value> Build();
 
   static base::StringPiece GetEncryptedWrappedRecordPath();
-  static base::StringPiece GetUnsignedSequencingInformationKeyPath();
-  static base::StringPiece GetSequencingInformationKeyPath();
+  static base::StringPiece GetUnsignedSequenceInformationKeyPath();
+  static base::StringPiece GetSequenceInformationKeyPath();
   static base::StringPiece GetEncryptionInfoPath();
   static base::StringPiece GetCompressionInformationPath();
 
@@ -114,13 +111,13 @@ class EncryptedRecordDictionaryBuilder {
   absl::optional<base::Value> result_;
 };
 
-// Builds a |base::Value| dictionary from a |SequencingInformation|
+// Builds a |base::Value| dictionary from a |SequenceInformation|
 // proto.
-class SequencingInformationDictionaryBuilder {
+class SequenceInformationDictionaryBuilder {
  public:
-  explicit SequencingInformationDictionaryBuilder(
-      const SequencingInformation& sequencing_information);
-  ~SequencingInformationDictionaryBuilder();
+  explicit SequenceInformationDictionaryBuilder(
+      const SequenceInformation& sequence_information);
+  ~SequenceInformationDictionaryBuilder();
 
   absl::optional<base::Value> Build();
 

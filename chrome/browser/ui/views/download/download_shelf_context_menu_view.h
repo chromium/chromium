@@ -62,6 +62,10 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
 
   // Time the menu was closed.
   base::TimeTicks close_time_;
+
+  // Determines whether we should record if a DownloadCommand was executed.
+  bool download_commands_executed_recorded_[DownloadCommands::MAX + 1] = {
+      false};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_CONTEXT_MENU_VIEW_H_

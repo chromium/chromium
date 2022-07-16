@@ -1,0 +1,18 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("shared_storage") {
+  sources = [
+    "shared_storage.cc",
+    "shared_storage.h",
+    "shared_storage_worklet.cc",
+    "shared_storage_worklet.h",
+    "window_shared_storage.cc",
+    "window_shared_storage.h",
+  ]
+
+  public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]
+}

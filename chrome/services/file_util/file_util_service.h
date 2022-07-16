@@ -17,6 +17,10 @@ class FileUtilService : public chrome::mojom::FileUtilService {
  public:
   explicit FileUtilService(
       mojo::PendingReceiver<chrome::mojom::FileUtilService> receiver);
+
+  FileUtilService(const FileUtilService&) = delete;
+  FileUtilService& operator=(const FileUtilService&) = delete;
+
   ~FileUtilService() override;
 
  private:
@@ -38,8 +42,6 @@ class FileUtilService : public chrome::mojom::FileUtilService {
 #endif
 
   mojo::Receiver<chrome::mojom::FileUtilService> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileUtilService);
 };
 
 #endif  // CHROME_SERVICES_FILE_UTIL_FILE_UTIL_SERVICE_H_

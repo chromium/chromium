@@ -55,14 +55,6 @@ GetDisplayZoomFactors(const ManagedDisplayMode& mode);
 // applied to them.
 std::vector<float> DISPLAY_MANAGER_EXPORT GetDisplayZoomFactorForDsf(float dsf);
 
-// This function adds |dsf| to the vector of |zoom_values| by replacing
-// the element it is closest to in the list. It also ensures that it never
-// replaces the default zoom value of 1.0 from the list and that the size of the
-// list never changes.
-// TODO(crbug.com/1203004): Remove this after a few milestones.
-void DISPLAY_MANAGER_EXPORT InsertDsfIntoList(std::vector<float>* zoom_values,
-                                              float dsf);
-
 }  // namespace display
 
 #endif  // UI_DISPLAY_MANAGER_DISPLAY_UTIL_H_

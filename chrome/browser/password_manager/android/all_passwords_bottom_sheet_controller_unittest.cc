@@ -7,19 +7,21 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
-#include "components/password_manager/core/browser/mock_biometric_authenticator.h"
+#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/mock_biometric_authenticator.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,9 +36,9 @@ using ::testing::UnorderedElementsAre;
 
 using autofill::mojom::FocusedFieldType;
 using base::test::RunOnceCallback;
-using password_manager::BiometricAuthRequester;
-using password_manager::BiometricsAvailability;
-using password_manager::MockBiometricAuthenticator;
+using device_reauth::BiometricAuthRequester;
+using device_reauth::BiometricsAvailability;
+using device_reauth::MockBiometricAuthenticator;
 using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
 using password_manager::UiCredential;
@@ -80,7 +82,7 @@ class MockPasswordManagerClient
  public:
   MOCK_METHOD(void, OnPasswordSelected, (const std::u16string&), (override));
 
-  MOCK_METHOD(scoped_refptr<password_manager::BiometricAuthenticator>,
+  MOCK_METHOD(scoped_refptr<device_reauth::BiometricAuthenticator>,
               GetBiometricAuthenticator,
               (),
               (override));
@@ -119,6 +121,9 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
  protected:
   AllPasswordsBottomSheetControllerTest() {
     createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
+
+    scoped_feature_list_.InitAndEnableFeature(
+        password_manager::features::kBiometricTouchToFill);
   }
 
   void createAllPasswordsController(
@@ -152,7 +157,7 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
     return *mock_pwd_manager_client_.get();
   }
 
-  scoped_refptr<password_manager::MockBiometricAuthenticator> authenticator() {
+  scoped_refptr<MockBiometricAuthenticator> authenticator() {
     return mock_authenticator_;
   }
 
@@ -169,6 +174,7 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
       std::make_unique<MockPasswordManagerClient>();
   scoped_refptr<MockBiometricAuthenticator> mock_authenticator_ =
       base::MakeRefCounted<MockBiometricAuthenticator>();
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AllPasswordsBottomSheetControllerTest, Show) {

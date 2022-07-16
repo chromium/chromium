@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.bottomsheet;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -98,6 +99,10 @@ public class BottomSheetTestSupport {
         mController.forceDismissAllContent();
     }
 
+    public void forceClickOutsideTheSheet() {
+        getBottomSheet().setSheetState(SheetState.HIDDEN, false, StateChangeReason.TAP_SCRIM);
+    }
+
     /** @return The bottom sheet view. */
     private BottomSheet getBottomSheet() {
         return (BottomSheet) mController.getBottomSheetViewForTesting();
@@ -117,21 +122,66 @@ public class BottomSheetTestSupport {
      * @param state The state to wait for.
      */
     public static void waitForState(BottomSheetController controller, @SheetState int state) {
-        if (controller.getSheetState() == state) return;
         CallbackHelper stateChangeHelper = new CallbackHelper();
-        BottomSheetObserver observer = new EmptyBottomSheetObserver() {
+        final BottomSheetObserver observer = new EmptyBottomSheetObserver() {
             @Override
-            public void onSheetStateChanged(int newState) {
+            public void onSheetStateChanged(int newState, int reason) {
                 if (state == newState) stateChangeHelper.notifyCalled();
             }
         };
-        controller.addObserver(observer);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (controller.getSheetState() == state) {
+                stateChangeHelper.notifyCalled();
+            } else {
+                controller.addObserver(observer);
+            }
+        });
+
         try {
             stateChangeHelper.waitForFirst();
         } catch (TimeoutException ex) {
             assert false : "Bottom sheet state never changed to " + sheetStateToString(state);
         }
-        controller.removeObserver(observer);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> controller.removeObserver(observer));
+    }
+
+    /**
+     * Wait for the bottom sheet to enter the half or full state. If the sheet is already in either
+     * state, this method returns immediately.
+     * @param controller The controller for the bottom sheet.
+     */
+    public static void waitForOpen(BottomSheetController controller) {
+        CallbackHelper stateChangeHelper = new CallbackHelper();
+
+        final BottomSheetObserver observer = new EmptyBottomSheetObserver() {
+            @Override
+            public void onSheetStateChanged(int newState, int reason) {
+                if (newState == BottomSheetController.SheetState.HALF
+                        || newState == SheetState.FULL) {
+                    stateChangeHelper.notifyCalled();
+                }
+            }
+        };
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (controller.getSheetState() == BottomSheetController.SheetState.HALF
+                    || controller.getSheetState() == BottomSheetController.SheetState.FULL) {
+                stateChangeHelper.notifyCalled();
+            } else {
+                controller.addObserver(observer);
+            }
+        });
+
+        try {
+            stateChangeHelper.waitForFirst();
+        } catch (TimeoutException ex) {
+            assert false : "Bottom sheet state never half or full. Current State: "
+                           + sheetStateToString(controller.getSheetState());
+        }
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> controller.removeObserver(observer));
     }
 
     /**

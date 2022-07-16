@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_controller.h"
@@ -33,6 +32,9 @@ class SecFetchBrowserTest : public ContentBrowserTest {
  public:
   SecFetchBrowserTest()
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  SecFetchBrowserTest(const SecFetchBrowserTest&) = delete;
+  SecFetchBrowserTest& operator=(const SecFetchBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -67,8 +69,6 @@ class SecFetchBrowserTest : public ContentBrowserTest {
  private:
   net::EmbeddedTestServer https_test_server_;
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecFetchBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SecFetchBrowserTest, TypedNavigation) {

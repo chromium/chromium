@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <list>
 
-#include "base/macros.h"
+#include "base/containers/circular_deque.h"
 #include "media/filters/h264_bitstream_buffer.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
@@ -30,25 +30,13 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   struct EncodeParams {
     EncodeParams();
 
-    // Produce an IDR at least once per this many frames.
-    // Must be >= 16 (per spec).
-    size_t idr_period_frames;
-
-    // Produce an I frame at least once per this many frames.
-    size_t i_period_frames;
-
-    // How often do we need to have either an I or a P frame in the stream.
-    // A period of 1 implies no B frames.
-    size_t ip_period_frames;
-
-    // Bitrate in bps.
-    uint32_t bitrate_bps;
+    VideoBitrateAllocation bitrate_allocation;
 
     // Framerate in FPS.
     uint32_t framerate;
 
     // Bitrate window size in ms.
-    unsigned int cpb_window_size_ms;
+    uint32_t cpb_window_size_ms;
 
     // Bitrate window size in bits.
     unsigned int cpb_size_bits;
@@ -63,13 +51,15 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
     // Maximum size of reference picture list 0.
     size_t max_ref_pic_list0_size;
-
-    // Maximum size of reference picture list 1.
-    size_t max_ref_pic_list1_size;
   };
 
   H264VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
                                 base::RepeatingClosure error_cb);
+
+  H264VaapiVideoEncoderDelegate(const H264VaapiVideoEncoderDelegate&) = delete;
+  H264VaapiVideoEncoderDelegate& operator=(
+      const H264VaapiVideoEncoderDelegate&) = delete;
+
   ~H264VaapiVideoEncoderDelegate() override;
 
   // VaapiVideoEncoderDelegate implementation.
@@ -80,10 +70,15 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   gfx::Size GetCodedSize() const override;
   size_t GetMaxNumOfRefFrames() const override;
   std::vector<gfx::Size> GetSVCLayerResolutions() override;
-  bool PrepareEncodeJob(EncodeJob* encode_job) override;
 
  private:
+  class TemporalLayers;
+
   friend class H264VaapiVideoEncoderDelegateTest;
+
+  bool PrepareEncodeJob(EncodeJob& encode_job) override;
+  BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
+                                      size_t payload_size) override;
 
   // Fill current_sps_ and current_pps_ with current encoding state parameters.
   void UpdateSPS();
@@ -94,27 +89,35 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   void GeneratePackedSPS();
   void GeneratePackedPPS();
 
+  // Generate packed slice header from |pic_param|, |slice_param| and |pic|.
+  scoped_refptr<H264BitstreamBuffer> GeneratePackedSliceHeader(
+      const VAEncPictureParameterBufferH264& pic_param,
+      const VAEncSliceParameterBufferH264& sliice_param,
+      const H264Picture& pic);
+
   // Check if |bitrate| and |framerate| and current coded size are supported by
   // current profile and level.
   bool CheckConfigValidity(uint32_t bitrate, uint32_t framerate);
 
   // Submits a H264BitstreamBuffer |buffer| to the driver.
-  void SubmitH264BitstreamBuffer(scoped_refptr<H264BitstreamBuffer> buffer);
+  bool SubmitH264BitstreamBuffer(const H264BitstreamBuffer& buffer);
+  // Submits a VAEncMiscParameterBuffer |data| whose size and type are |size|
+  // and |type| to the driver.
+  bool SubmitVAEncMiscParamBuffer(VAEncMiscParameterType type,
+                                  const void* data,
+                                  size_t size);
 
-  scoped_refptr<H264Picture> GetPicture(EncodeJob* job);
-
-  bool SubmitPackedHeaders(EncodeJob* job,
-                           scoped_refptr<H264BitstreamBuffer> packed_sps,
+  bool SubmitPackedHeaders(scoped_refptr<H264BitstreamBuffer> packed_sps,
                            scoped_refptr<H264BitstreamBuffer> packed_pps);
 
   bool SubmitFrameParameters(
-      EncodeJob* job,
+      EncodeJob& job,
       const H264VaapiVideoEncoderDelegate::EncodeParams& encode_params,
       const H264SPS& sps,
       const H264PPS& pps,
       scoped_refptr<H264Picture> pic,
-      const std::list<scoped_refptr<H264Picture>>& ref_pic_list0,
-      const std::list<scoped_refptr<H264Picture>>& ref_pic_list1);
+      const base::circular_deque<scoped_refptr<H264Picture>>& ref_pic_list0,
+      const absl::optional<size_t>& ref_frame_index);
 
   // Current SPS, PPS and their packed versions. Packed versions are NALUs
   // in AnnexB format *without* emulation prevention three-byte sequences
@@ -123,6 +126,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   scoped_refptr<H264BitstreamBuffer> packed_sps_;
   H264PPS current_pps_;
   scoped_refptr<H264BitstreamBuffer> packed_pps_;
+  bool submit_packed_headers_;
 
   // Current encoding parameters being used.
   EncodeParams curr_params_;
@@ -141,7 +145,9 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   unsigned int mb_width_ = 0;
   unsigned int mb_height_ = 0;
 
-  // frame_num (spec section 7.4.3) to be used for the next frame.
+  // The number of encoded frames. Resets to 0 on IDR frame.
+  unsigned int num_encoded_frames_ = 0;
+  // frame_num (spec section 7.4.3).
   unsigned int frame_num_ = 0;
 
   // idr_pic_id (spec section 7.4.3) to be used for the next frame.
@@ -153,9 +159,13 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   // Currently active reference frames.
   // RefPicList0 per spec (spec section 8.2.4.2).
-  std::list<scoped_refptr<H264Picture>> ref_pic_list0_;
+  base::circular_deque<scoped_refptr<H264Picture>> ref_pic_list0_;
 
-  DISALLOW_COPY_AND_ASSIGN(H264VaapiVideoEncoderDelegate);
+  // Sets true if and only if testing.
+  // TODO(b/199487660): Remove once all drivers support temporal layers.
+  bool supports_temporal_layer_for_testing_ = false;
+
+  uint8_t num_temporal_layers_ = 1;
 };
 
 }  // namespace media

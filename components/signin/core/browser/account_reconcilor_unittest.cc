@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,6 +20,8 @@
 #include "base/timer/mock_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/content_settings/core/browser/content_settings_observer.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
@@ -95,7 +96,7 @@ class SpyReconcilorDelegate : public signin::AccountReconcilorDelegate {
 
   base::TimeDelta GetReconcileTimeout() const override {
     // Does not matter as long as it is different from base::TimeDelta::Max().
-    return base::TimeDelta::FromMinutes(100);
+    return base::Minutes(100);
   }
 
   void OnReconcileError(const GoogleServiceAuthError& error) override {
@@ -112,15 +113,12 @@ class DummyAccountReconcilorWithDelegate : public AccountReconcilor {
   DummyAccountReconcilorWithDelegate(
       signin::IdentityManager* identity_manager,
       SigninClient* client,
-      signin::AccountConsistencyMethod account_consistency,
-      bool dice_migration_completed)
+      signin::AccountConsistencyMethod account_consistency)
       : AccountReconcilor(
             identity_manager,
             client,
-            CreateAccountReconcilorDelegate(client,
-                                            identity_manager,
-                                            account_consistency,
-                                            dice_migration_completed)) {
+            CreateAccountReconcilorDelegate(identity_manager,
+                                            account_consistency)) {
     Initialize(false /* start_reconcile_if_tokens_available */);
   }
 
@@ -139,10 +137,8 @@ class DummyAccountReconcilorWithDelegate : public AccountReconcilor {
 
   static std::unique_ptr<signin::AccountReconcilorDelegate>
   CreateAccountReconcilorDelegate(
-      SigninClient* signin_client,
       signin::IdentityManager* identity_manager,
-      signin::AccountConsistencyMethod account_consistency,
-      bool dice_migration_completed) {
+      signin::AccountConsistencyMethod account_consistency) {
     switch (account_consistency) {
       case signin::AccountConsistencyMethod::kMirror:
         return std::make_unique<signin::MirrorAccountReconcilorDelegate>(
@@ -151,8 +147,7 @@ class DummyAccountReconcilorWithDelegate : public AccountReconcilor {
         return std::make_unique<signin::AccountReconcilorDelegate>();
       case signin::AccountConsistencyMethod::kDice:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-        return std::make_unique<signin::DiceAccountReconcilorDelegate>(
-            signin_client, dice_migration_completed);
+        return std::make_unique<signin::DiceAccountReconcilorDelegate>();
 #else
         NOTREACHED();
         return nullptr;
@@ -168,8 +163,7 @@ class MockAccountReconcilor
  public:
   MockAccountReconcilor(signin::IdentityManager* identity_manager,
                         SigninClient* client,
-                        signin::AccountConsistencyMethod account_consistency,
-                        bool dice_migration_completed);
+                        signin::AccountConsistencyMethod account_consistency);
 
   MockAccountReconcilor(
       signin::IdentityManager* identity_manager,
@@ -184,13 +178,11 @@ class MockAccountReconcilor
 MockAccountReconcilor::MockAccountReconcilor(
     signin::IdentityManager* identity_manager,
     SigninClient* client,
-    signin::AccountConsistencyMethod account_consistency,
-    bool dice_migration_completed)
+    signin::AccountConsistencyMethod account_consistency)
     : testing::StrictMock<DummyAccountReconcilorWithDelegate>(
           identity_manager,
           client,
-          account_consistency,
-          dice_migration_completed) {}
+          account_consistency) {}
 
 MockAccountReconcilor::MockAccountReconcilor(
     signin::IdentityManager* identity_manager,
@@ -228,6 +220,10 @@ gaia::ListedAccount ListedAccountFromCookieParams(
 }  // namespace
 
 class AccountReconcilorTest : public ::testing::Test {
+ public:
+  AccountReconcilorTest(const AccountReconcilorTest&) = delete;
+  AccountReconcilorTest& operator=(const AccountReconcilorTest&) = delete;
+
  protected:
   AccountReconcilorTest();
   ~AccountReconcilorTest() override;
@@ -265,9 +261,6 @@ class AccountReconcilorTest : public ::testing::Test {
 
   void SetAccountConsistency(signin::AccountConsistencyMethod method);
 
-  // Should never be called before |SetAccountConsistency|.
-  void SetDiceMigrationCompleted(bool dice_migration_completed);
-
   PrefService* pref_service() { return &pref_service_; }
 
   void DeleteReconcilor() {
@@ -281,14 +274,11 @@ class AccountReconcilorTest : public ::testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   signin::AccountConsistencyMethod account_consistency_;
-  bool dice_migration_completed_ = false;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   TestSigninClient test_signin_client_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<MockAccountReconcilor> mock_reconcilor_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorTest);
 };
 
 class AccountReconcilorMirrorTest : public AccountReconcilorTest {
@@ -297,8 +287,9 @@ class AccountReconcilorMirrorTest : public AccountReconcilorTest {
     SetAccountConsistency(signin::AccountConsistencyMethod::kMirror);
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorMirrorTest);
+  AccountReconcilorMirrorTest(const AccountReconcilorMirrorTest&) = delete;
+  AccountReconcilorMirrorTest& operator=(const AccountReconcilorMirrorTest&) =
+      delete;
 };
 
 // For tests that must be run with multiple account consistency methods.
@@ -308,8 +299,10 @@ class AccountReconcilorMethodParamTest
  public:
   AccountReconcilorMethodParamTest() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorMethodParamTest);
+  AccountReconcilorMethodParamTest(const AccountReconcilorMethodParamTest&) =
+      delete;
+  AccountReconcilorMethodParamTest& operator=(
+      const AccountReconcilorMethodParamTest&) = delete;
 };
 
 INSTANTIATE_TEST_SUITE_P(Dice_Mirror,
@@ -340,7 +333,7 @@ MockAccountReconcilor* AccountReconcilorTest::GetMockReconcilor() {
   if (!mock_reconcilor_) {
     mock_reconcilor_ = std::make_unique<MockAccountReconcilor>(
         identity_test_env_.identity_manager(), &test_signin_client_,
-        account_consistency_, dice_migration_completed_);
+        account_consistency_);
   }
 
   return mock_reconcilor_.get();
@@ -390,22 +383,14 @@ void AccountReconcilorTest::SimulateLogOutFromCookieCompleted(
 void AccountReconcilorTest::SimulateCookieContentSettingsChanged(
     content_settings::Observer* observer,
     const ContentSettingsPattern& primary_pattern) {
-  observer->OnContentSettingChanged(primary_pattern,
-                                    ContentSettingsPattern::Wildcard(),
-                                    ContentSettingsType::COOKIES);
+  observer->OnContentSettingChanged(
+      primary_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsTypeSet(ContentSettingsType::COOKIES));
 }
 
 void AccountReconcilorTest::SetAccountConsistency(
     signin::AccountConsistencyMethod method) {
   account_consistency_ = method;
-  dice_migration_completed_ =
-      account_consistency_ == signin::AccountConsistencyMethod::kDice;
-}
-
-void AccountReconcilorTest::SetDiceMigrationCompleted(
-    bool dice_migration_completed) {
-  DCHECK_EQ(signin::AccountConsistencyMethod::kDice, account_consistency_);
-  dice_migration_completed_ = dice_migration_completed;
 }
 
 TEST_F(AccountReconcilorTest, Basic) {
@@ -447,14 +432,6 @@ std::vector<AccountReconcilorTestTableParam> GenerateTestCasesFromParams(
   }
   return return_params;
 }
-
-struct ForceDiceMigrationTestTableParam {
-  const char* tokens;
-  const char* cookies;
-  const char* gaia_api_calls;
-  const char* tokens_after_reconcile;
-  const char* cookies_after_reconcile;
-};
 
 // Pretty prints a AccountReconcilorTestTableParam. Used by gtest.
 void PrintTo(const AccountReconcilorTestTableParam& param, ::std::ostream* os) {
@@ -895,184 +872,16 @@ const std::vector<AccountReconcilorTestTableParam> kDiceParams = {
 };
 // clang-format on
 
-class AccountReconcilorTestForceDiceMigration
-    : public BaseAccountReconcilorTestTable,
-      public ::testing::WithParamInterface<ForceDiceMigrationTestTableParam> {
- public:
-  AccountReconcilorTestForceDiceMigration() = default;
-
-  void RunReconcile() {
-    // Setup cookies.
-    std::vector<Cookie> cookies = ParseCookieString(GetParam().cookies);
-    ConfigureCookieManagerService(cookies);
-    std::vector<Cookie> cookies_after_reconcile = cookies;
-
-    // Call list accounts now so that the next call completes synchronously.
-    identity_test_env()->identity_manager()->GetAccountsInCookieJar();
-    base::RunLoop().RunUntilIdle();
-
-    // Setup tokens. This triggers listing cookies so we need to setup cookies
-    // before that.
-    SetupTokens(GetParam().tokens);
-
-    // Setup expectations.
-    testing::InSequence mock_sequence;
-    bool should_logout;
-    if (GetParam().gaia_api_calls[0] != '\0') {
-      gaia::MultiloginMode mode =
-          GetParam().gaia_api_calls[0] == 'U'
-              ? gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER
-              : gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER;
-      // Generate expected array of accounts in cookies and set fake gaia
-      // response.
-      std::vector<CoreAccountId> accounts_to_send;
-      for (int i = 1; GetParam().gaia_api_calls[i] != '\0'; ++i) {
-        accounts_to_send.push_back(
-            CoreAccountId(accounts_[GetParam().gaia_api_calls[i]].gaia_id));
-      }
-      const signin::MultiloginParameters params(mode, accounts_to_send);
-      cookies_after_reconcile = FakeSetAccountsInCookie(params, cookies);
-      should_logout =
-          accounts_to_send.empty() &&
-          (mode ==
-           gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER);
-      if (should_logout) {
-        EXPECT_CALL(*GetMockReconcilor(), PerformLogoutAllAccountsAction())
-            .Times(1);
-      } else {
-        EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params))
-            .Times(1);
-      }
-    }
-    // Reconcile.
-    AccountReconcilor* reconcilor = GetMockReconcilor();
-    ASSERT_TRUE(reconcilor);
-    ASSERT_TRUE(reconcilor->first_execution_);
-    reconcilor->first_execution_ = true;
-    reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
-    if (GetParam().gaia_api_calls[0] != '\0') {
-      if (should_logout) {
-        SimulateLogOutFromCookieCompleted(
-            reconcilor, GoogleServiceAuthError::AuthErrorNone());
-      } else {
-        SimulateSetAccountsInCookieCompleted(
-            reconcilor, signin::SetAccountsInCookieResult::kSuccess);
-      }
-    }
-
-    ASSERT_FALSE(reconcilor->is_reconcile_started_);
-    if (GetParam().tokens == GetParam().tokens_after_reconcile) {
-      EXPECT_EQ(signin_metrics::ACCOUNT_RECONCILOR_OK, reconcilor->GetState());
-    } else {
-      // If the tokens were changed by the reconcile, a new reconcile should be
-      // scheduled.
-      EXPECT_EQ(signin_metrics::ACCOUNT_RECONCILOR_SCHEDULED,
-                reconcilor->GetState());
-    }
-    VerifyCurrentTokens(ParseTokenString(GetParam().tokens_after_reconcile));
-
-    std::vector<Cookie> cookies_after =
-        ParseCookieString(GetParam().cookies_after_reconcile);
-    EXPECT_EQ(cookies_after, cookies_after_reconcile);
-
-    testing::Mock::VerifyAndClearExpectations(GetMockReconcilor());
-
-    // Another reconcile is sometimes triggered if Chrome accounts have
-    // changed. Allow it to finish.
-    EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(testing::_))
-        .WillRepeatedly(testing::Return());
-    ConfigureCookieManagerService({});
-    base::RunLoop().RunUntilIdle();
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorTestForceDiceMigration);
-};
-
-// clang-format off
-const std::vector<ForceDiceMigrationTestTableParam> kForceDiceParams = {
-    {"*A",   "AB",   "UA", "*A",    "A"   },
-    {"*AxB", "AB",   "UA", "*A",    "A"   },
-    {"AxB",  "AB",   "UA", "A",     "A"   },
-    {"xAxB", "AB",   "U",  "",      ""    },
-    {"*A",   "",     "",   "*xA",   ""    },
-    {"*A",   "B",    "U",  "*xA",   ""    },
-    {"*AB",  "B",    "",   "*xAB",  "B"   },
-    {"*AxB", "B",    "U",  "*xA",   ""    },
-    {"*ABC", "CB",   "",   "*xABC", "CB"  },
-    {"*AB",  "A",    "",   "*A",    "A"   },
-    {"AB",   "A",    "",   "A",     "A"   },
-    {"AB",   "",     "",   "",      ""    },
-    {"xAB",  "",     "",   "",      ""    },
-    {"xAB",  "A",    "U",  "",      ""    },
-    {"xAB",  "xA",   "",   "",      "xA"  },
-    {"xAB",  "B",    "",   "B",     "B"   },
-    {"AxB",  "B",    "U",  "",      ""    },
-    {"AxB",  "",     "",   "",      ""    },
-    {"xAxB", "",     "",   "",      ""    },
-    {"B",    "xA",   "",   "",      "xA"  },
-    {"AB",   "xAB",  "",   "B",     "xAB" },
-    {"xAB",  "xAC",  "U",  "",      ""    },
-    {"xAB",  "AxC",  "U",  "",      ""    },
-    {"AB",   "BC",   "UB", "B",     "B"   },
-    {"*AB",  "",     "",   "*xA",   ""    },
-    {"*xAB", "",     "",   "*xA",   ""    },
-    {"*AxB", "",     "",   "*xA",   ""    },
-    {"*AB",  "xBxA", "",   "*xA",   "xBxA"}
-  };
-// clang-format on
-
-TEST_P(AccountReconcilorTestForceDiceMigration, TableRowTest) {
-  SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
-  EXPECT_FALSE(test_signin_client()->is_dice_migration_completed());
-  SetDiceMigrationCompleted(false);
-  RunReconcile();
-  EXPECT_TRUE(test_signin_client()->is_dice_migration_completed());
-  EXPECT_FALSE(
-      GetMockReconcilor()->delegate_->ShouldRevokeTokensNotInCookies());
-}
-
-// Check that the result state of the reconcile is in a final state (reconcile
-// started from this state is a no-op).
-TEST_P(AccountReconcilorTestForceDiceMigration, TableRowTestCheckNoOp) {
-  SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
-  // Setup cookies.
-  std::vector<Cookie> cookies =
-      ParseCookieString(GetParam().cookies_after_reconcile);
-  ConfigureCookieManagerService(cookies);
-
-  // Call list accounts now so that the next call completes synchronously.
-  identity_test_env()->identity_manager()->GetAccountsInCookieJar();
-  base::RunLoop().RunUntilIdle();
-
-  // Setup tokens. This triggers listing cookies so we need to setup cookies
-  // before that.
-  SetupTokens(GetParam().tokens_after_reconcile);
-
-  EXPECT_CALL(*GetMockReconcilor(), PerformLogoutAllAccountsAction()).Times(0);
-  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(testing::_))
-      .Times(0);
-
-  AccountReconcilor* reconcilor = GetMockReconcilor();
-  EXPECT_FALSE(reconcilor->delegate_->ShouldRevokeTokensNotInCookies());
-  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(reconcilor->is_reconcile_started_);
-  ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_OK, reconcilor->GetState());
-}
-
-INSTANTIATE_TEST_SUITE_P(DiceMigrationTable,
-                         AccountReconcilorTestForceDiceMigration,
-                         ::testing::ValuesIn(kForceDiceParams));
-
 // Parameterized version of AccountReconcilorTest that tests Dice
 // implementation with Multilogin endpoint.
 class AccountReconcilorTestDiceMultilogin : public AccountReconcilorTestTable {
  public:
   AccountReconcilorTestDiceMultilogin() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorTestDiceMultilogin);
+  AccountReconcilorTestDiceMultilogin(
+      const AccountReconcilorTestDiceMultilogin&) = delete;
+  AccountReconcilorTestDiceMultilogin& operator=(
+      const AccountReconcilorTestDiceMultilogin&) = delete;
 };
 
 // Checks one row of the kDiceParams table above.
@@ -1175,8 +984,9 @@ class AccountReconcilorDiceTest : public AccountReconcilorTest {
     SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorDiceTest);
+  AccountReconcilorDiceTest(const AccountReconcilorDiceTest&) = delete;
+  AccountReconcilorDiceTest& operator=(const AccountReconcilorDiceTest&) =
+      delete;
 };
 
 // Tests that the AccountReconcilor is always registered.
@@ -1517,8 +1327,10 @@ class AccountReconcilorTestMirrorMultilogin
  public:
   AccountReconcilorTestMirrorMultilogin() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorTestMirrorMultilogin);
+  AccountReconcilorTestMirrorMultilogin(
+      const AccountReconcilorTestMirrorMultilogin&) = delete;
+  AccountReconcilorTestMirrorMultilogin& operator=(
+      const AccountReconcilorTestMirrorMultilogin&) = delete;
 };
 
 // Checks one row of the kDiceParams table above.
@@ -1550,12 +1362,12 @@ TEST_P(AccountReconcilorTestMirrorMultilogin, TableRowTest) {
     }
     if (GetParam().gaia_api_calls[i] == 'U') {
       std::vector<CoreAccountId> accounts_to_send;
-      for (int i = 0; GetParam().cookies_after_reconcile[i] != '\0'; ++i) {
-        char cookie = GetParam().cookies_after_reconcile[i];
+      for (int j = 0; GetParam().cookies_after_reconcile[j] != '\0'; ++j) {
+        char cookie = GetParam().cookies_after_reconcile[j];
         std::string account_to_send = GaiaIdForAccountKey(cookie);
         accounts_to_send.push_back(PickAccountIdForAccount(
             account_to_send,
-            accounts_[GetParam().cookies_after_reconcile[i]].email));
+            accounts_[GetParam().cookies_after_reconcile[j]].email));
       }
       const signin::MultiloginParameters ml_params(
           gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
@@ -1606,6 +1418,11 @@ class AccountReconcilorTestActiveDirectory : public AccountReconcilorTestTable {
  public:
   AccountReconcilorTestActiveDirectory() = default;
 
+  AccountReconcilorTestActiveDirectory(
+      const AccountReconcilorTestActiveDirectory&) = delete;
+  AccountReconcilorTestActiveDirectory& operator=(
+      const AccountReconcilorTestActiveDirectory&) = delete;
+
   void SetUp() override {
     SetAccountConsistency(signin::AccountConsistencyMethod::kMirror);
   }
@@ -1615,8 +1432,6 @@ class AccountReconcilorTestActiveDirectory : public AccountReconcilorTestTable {
       chromeos::StubInstallAttributes::CreateActiveDirectoryManaged(
           "realm.com",
           "device_id")};
-
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorTestActiveDirectory);
 };
 
 // clang-format off
@@ -1850,7 +1665,7 @@ TEST_F(AccountReconcilorMirrorTest, GetAccountsFromCookieFailure) {
   ASSERT_EQ(0u, accounts_in_cookie_jar_info.signed_out_accounts.size());
   // List accounts retries once on |UNEXPECTED_SERVICE_RESPONSE| errors with
   // backoff protection.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_ERROR, reconcilor->GetState());
 }
 
@@ -1990,7 +1805,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileContentSettingsNonGaiaUrl) {
 }
 
 TEST_F(AccountReconcilorMirrorTest,
-       StartReconcileContentSettingsInvalidPattern) {
+       StartReconcileContentSettingsWildcardPattern) {
   const CoreAccountId account_id =
       ConnectProfileToAccount("user@gmail.com").account_id;
   identity_test_env()->SetRefreshTokenForAccount(account_id);
@@ -1998,11 +1813,8 @@ TEST_F(AccountReconcilorMirrorTest,
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
 
-  std::unique_ptr<ContentSettingsPattern::BuilderInterface> builder =
-      ContentSettingsPattern::CreateBuilder();
-  builder->Invalid();
-
-  SimulateCookieContentSettingsChanged(reconcilor, builder->Build());
+  SimulateCookieContentSettingsChanged(reconcilor,
+                                       ContentSettingsPattern::Wildcard());
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
 }
 
@@ -2767,6 +2579,11 @@ class AccountReconcilorThrottlerTest : public AccountReconcilorTest {
         1 / AccountReconcilorThrottler::kRefillRequestsBucketRatePerMinute;
   }
 
+  AccountReconcilorThrottlerTest(const AccountReconcilorThrottlerTest&) =
+      delete;
+  AccountReconcilorThrottlerTest& operator=(
+      const AccountReconcilorThrottlerTest&) = delete;
+
   void ConsumeRequests(size_t number_of_requests,
                        const signin::MultiloginParameters& expected_params) {
     AccountReconcilor* reconcilor = GetMockReconcilor();
@@ -2799,13 +2616,12 @@ class AccountReconcilorThrottlerTest : public AccountReconcilorTest {
   }
 
   void FastForwadTimeToRefillRequests(size_t number_of_requests) {
-    task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(
-        minutes_to_refill_per_request_ * number_of_requests));
+    task_environment()->FastForwardBy(
+        base::Minutes(minutes_to_refill_per_request_ * number_of_requests));
   }
 
  private:
   size_t minutes_to_refill_per_request_;
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorThrottlerTest);
 };
 
 TEST_F(AccountReconcilorThrottlerTest, RefillOneRequest) {

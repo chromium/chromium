@@ -13,14 +13,10 @@
 
 namespace url {
 
-#ifdef WIN32
-
 // We allow both "c:" and "c|" as drive identifiers.
 inline bool IsWindowsDriveSeparator(char16_t ch) {
   return ch == ':' || ch == '|';
 }
-
-#endif  // WIN32
 
 // Returns the index of the next slash in the input after the given index, or
 // spec_len if the end of the input is reached.
@@ -31,8 +27,6 @@ inline int FindNextSlash(const CHAR* spec, int begin_index, int spec_len) {
     idx++;
   return idx;
 }
-
-#ifdef WIN32
 
 // DoesContainWindowsDriveSpecUntil returns the least number between
 // start_offset and max_offset such that the spec has a valid drive
@@ -73,6 +67,8 @@ inline bool DoesBeginWindowsDriveSpec(const CHAR* spec,
   return DoesContainWindowsDriveSpecUntil(spec, start_offset, start_offset,
                                           spec_len) == start_offset;
 }
+
+#ifdef WIN32
 
 // Returns true if the start_offset in the given text looks like it begins a
 // UNC path, for example "\\". This function explicitly handles start_offset

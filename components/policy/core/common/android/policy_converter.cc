@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
@@ -182,6 +181,11 @@ absl::optional<base::Value> PolicyConverter::ConvertValueToSchema(
 
   NOTREACHED();
   return absl::nullopt;
+}
+
+void PolicyConverter::SetPolicyValueForTesting(const std::string& key,
+                                               base::Value value) {
+  PolicyConverter::SetPolicyValue(key, std::move(value));
 }
 
 void PolicyConverter::SetPolicyValue(const std::string& key,

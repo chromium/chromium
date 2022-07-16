@@ -195,17 +195,16 @@ TEST(FieldTrialParamConversionsTest, SurfaceSetEquivalentClassesList) {
   EXPECT_EQ(original_classes, decoded);
 }
 
-TEST(FieldTrialParamConversionsTest, IdentifiableSurfaceGroupList) {
-  const IdentifiableSurfaceGroupList original_classes = {
+TEST(FieldTrialParamConversionsTest, IdentifiableSurfaceBlocks) {
+  const IdentifiableSurfaceBlocks original_classes = {
       {kSurface1, kSurface2, kSurface3}, {kSurface3, kSurface2, kSurface1}};
   auto encoded =
-      EncodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceGroupList>(
+      EncodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceBlocks>(
           original_classes);
   EXPECT_EQ(std::string("100;257;36028797018963968,36028797018963968;257;100"),
             encoded);
   auto decoded =
-      DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceGroupList>(
-          encoded);
+      DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceBlocks>(encoded);
   EXPECT_EQ(original_classes, decoded);
 }
 

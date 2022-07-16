@@ -30,6 +30,10 @@ class SocketReader {
       ReadResultCallback;
 
   SocketReader();
+
+  SocketReader(const SocketReader&) = delete;
+  SocketReader& operator=(const SocketReader&) = delete;
+
   ~SocketReader();
 
   // Starts reading from |socket|. |read_result_callback| is called for each
@@ -48,8 +52,6 @@ class SocketReader {
   scoped_refptr<net::IOBuffer> read_buffer_;
 
   base::WeakPtrFactory<SocketReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SocketReader);
 };
 
 }  // namespace remoting

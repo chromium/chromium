@@ -20,7 +20,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/exception_snapshot.h"
@@ -37,6 +36,10 @@ namespace internal {
 class ExceptionSnapshotLinux final : public ExceptionSnapshot {
  public:
   ExceptionSnapshotLinux();
+
+  ExceptionSnapshotLinux(const ExceptionSnapshotLinux&) = delete;
+  ExceptionSnapshotLinux& operator=(const ExceptionSnapshotLinux&) = delete;
+
   ~ExceptionSnapshotLinux() override;
 
   //! \brief Initializes the object.
@@ -93,8 +96,6 @@ class ExceptionSnapshotLinux final : public ExceptionSnapshot {
   uint32_t signal_number_;
   uint32_t signal_code_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionSnapshotLinux);
 };
 
 }  // namespace internal

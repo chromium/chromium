@@ -5,12 +5,14 @@
 #ifndef ASH_AMBIENT_TEST_TEST_AMBIENT_CLIENT_H_
 #define ASH_AMBIENT_TEST_TEST_AMBIENT_CLIENT_H_
 
-#include <string>
-
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
+
+namespace network {
+class TestURLLoaderFactory;
+}  // namespace network
 
 namespace ash {
 
@@ -21,23 +23,35 @@ class ASH_PUBLIC_EXPORT TestAmbientClient : public AmbientClient {
   explicit TestAmbientClient(device::TestWakeLockProvider* wake_lock_provider);
   ~TestAmbientClient() override;
 
+  static const char* kTestGaiaId;
+  static const char* kTestAccessToken;
+
   // AmbientClient:
   bool IsAmbientModeAllowed() override;
   void RequestAccessToken(GetAccessTokenCallback callback) override;
+  void DownloadImage(const std::string& url,
+                     ash::ImageDownloader::DownloadCallback callback) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   void RequestWakeLockProvider(
       mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) override;
   bool ShouldUseProdServer() override;
 
   // Simulate to issue an |access_token|.
-  // If |with_error| is true, will return an empty access token.
-  void IssueAccessToken(const std::string& access_token, bool with_error);
+  // If |is_empty| is true, will return empty gaia id and access token,
+  // otherwise returns |kTestGaiaId| and |kTestAccessToken|.
+  void IssueAccessToken(bool is_empty);
+  // If |is_automatic| is true, will automatically issue access token to all
+  // requests. This helps simplify tests that do not care about auth tokens.
+  void SetAutomaticalyIssueToken(bool is_automatic);
 
   bool IsAccessTokenRequestPending() const;
 
- private:
-  GetAccessTokenCallback pending_callback_;
+  network::TestURLLoaderFactory& test_url_loader_factory();
 
+ private:
+  bool is_automatic_ = false;
+  GetAccessTokenCallback pending_callback_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   device::TestWakeLockProvider* const wake_lock_provider_;
 };
 

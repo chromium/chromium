@@ -32,6 +32,9 @@ public class BottomSheetToolbarViewBinder {
                     model.get(BottomSheetToolbarProperties.CLOSE_BUTTON_ON_CLICK_CALLBACK));
         } else if (BottomSheetToolbarProperties.FAVICON_ICON == propertyKey) {
             view.setFaviconIcon(model.get(BottomSheetToolbarProperties.FAVICON_ICON));
+        } else if (BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE == propertyKey) {
+            view.setFaviconIconDrawable(
+                    model.get(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE));
         } else if (BottomSheetToolbarProperties.FAVICON_ICON_VISIBLE == propertyKey) {
             view.setFaviconIconVisible(
                     model.get(BottomSheetToolbarProperties.FAVICON_ICON_VISIBLE));

@@ -7,14 +7,11 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/singleton.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen_input_methods_controller.h"
-#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -38,35 +35,6 @@ class UserAddingScreenImpl : public UserAddingScreen {
  private:
   friend struct base::DefaultSingletonTraits<UserAddingScreenImpl>;
 
-  class LoadTimeReporter : public LoginScreenShownObserver {
-   public:
-    LoadTimeReporter() : start_time_(base::TimeTicks::Now()) {
-      LoginScreenClientImpl::Get()->AddLoginScreenShownObserver(this);
-    }
-    LoadTimeReporter(const LoadTimeReporter&) = delete;
-    LoadTimeReporter& operator=(const LoadTimeReporter&) = delete;
-
-    ~LoadTimeReporter() override {
-      // In tests, LoginScreenClientImpl's instance may be destroyed before
-      // LoadTimeReporterMojo's destructor is called.
-      if (LoginScreenClientImpl::HasInstance())
-        LoginScreenClientImpl::Get()->RemoveLoginScreenShownObserver(this);
-    }
-
-    // LoginScreenShownObserver:
-    void OnLoginScreenShown() override {
-      const base::TimeDelta load_time = base::TimeTicks::Now() - start_time_;
-      UmaHistogramTimes("ChromeOS.UserAddingScreen.LoadTimeViewsBased",
-                        load_time);
-      LoginScreenClientImpl::Get()->RemoveLoginScreenShownObserver(this);
-    }
-
-   private:
-    const base::TimeTicks start_time_;
-  };
-
-  std::unique_ptr<LoadTimeReporter> reporter_;
-
   void OnDisplayHostCompletion();
 
   UserAddingScreenImpl();
@@ -81,7 +49,6 @@ class UserAddingScreenImpl : public UserAddingScreen {
 void UserAddingScreenImpl::Start() {
   CHECK(!IsRunning());
   display_host_ = new LoginDisplayHostMojo(DisplayedScreen::USER_ADDING_SCREEN);
-  reporter_ = std::make_unique<LoadTimeReporter>();
 
   // This triggers input method manager to filter login screen methods. This
   // should happen before setting user input method, which happens when focusing
@@ -97,7 +64,6 @@ void UserAddingScreenImpl::Start() {
 
 void UserAddingScreenImpl::Cancel() {
   CHECK(IsRunning());
-  reporter_.reset();
 
   display_host_->CancelUserAdding();
 

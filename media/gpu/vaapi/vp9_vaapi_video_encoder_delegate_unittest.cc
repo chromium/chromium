@@ -8,6 +8,8 @@
 #include <numeric>
 #include <tuple>
 
+#include <va/va.h>
+
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
@@ -16,8 +18,8 @@
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#include "media/gpu/vaapi/vp9_rate_control.h"
 #include "media/gpu/vaapi/vp9_svc_layers.h"
+#include "media/gpu/vaapi/vpx_rate_control.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -46,8 +48,8 @@ constexpr int kSpatialLayersResolutionScaleDenom[][3] = {
 };
 constexpr double kTemporalLayersBitrateScaleFactors[][3] = {
     {1.00, 0.00, 0.00},  // For one temporal layer.
-    {0.50, 0.50, 0.00},  // For two temporal layers.
-    {0.25, 0.25, 0.50},  // For three temporal layers.
+    {0.60, 0.40, 0.00},  // For two temporal layers.
+    {0.50, 0.20, 0.30},  // For three temporal layers.
 };
 constexpr uint8_t kTemporalLayerPattern[][4] = {
     {0, 0, 0, 0},
@@ -56,8 +58,10 @@ constexpr uint8_t kTemporalLayerPattern[][4] = {
 };
 
 VaapiVideoEncoderDelegate::Config kDefaultVaapiVideoEncoderDelegateConfig{
-    kDefaultMaxNumRefFrames,
-    VaapiVideoEncoderDelegate::BitrateControl::kConstantQuantizationParameter};
+    .max_num_ref_frames = kDefaultMaxNumRefFrames,
+    .native_input_mode = false,
+    .bitrate_control = VaapiVideoEncoderDelegate::BitrateControl::
+        kConstantQuantizationParameter};
 
 VideoEncodeAccelerator::Config kDefaultVideoEncodeAcceleratorConfig(
     PIXEL_FORMAT_I420,
@@ -254,15 +258,24 @@ MATCHER_P3(MatchFrameParam,
          arg.spatial_layer_id == spatial_layer_id;
 }
 
+MATCHER_P2(MatchVABufferDescriptor, va_buffer_type, va_buffer_size, "") {
+  return arg.type == va_buffer_type && arg.size == va_buffer_size &&
+         arg.data != nullptr;
+}
+
 class MockVaapiWrapper : public VaapiWrapper {
  public:
   MockVaapiWrapper() : VaapiWrapper(kEncodeConstantQuantizationParameter) {}
+  MOCK_METHOD1(SubmitBuffer_Locked, bool(const VABufferDescriptor&));
 
  protected:
   ~MockVaapiWrapper() override = default;
 };
 
-class MockVP9RateControl : public VP9RateControl {
+class MockVP9RateControl
+    : public VPXRateControl<libvpx::VP9RateControlRtcConfig,
+                            libvpx::VP9RateControlRTC,
+                            libvpx::VP9FrameParamsQpRTC> {
  public:
   MockVP9RateControl() = default;
   ~MockVP9RateControl() override = default;
@@ -356,8 +369,7 @@ VP9VaapiVideoEncoderDelegateTest::CreateEncodeJob(
       kDefaultVideoEncodeAcceleratorConfig.input_visible_size.GetArea());
 
   return std::make_unique<VaapiVideoEncoderDelegate::EncodeJob>(
-      input_frame, keyframe, base::DoNothing(), va_surface, picture,
-      std::move(scoped_va_buffer));
+      input_frame, keyframe, va_surface, picture, std::move(scoped_va_buffer));
 }
 
 void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
@@ -437,9 +449,18 @@ void VP9VaapiVideoEncoderDelegateTest::
   EXPECT_CALL(*mock_rate_ctrl_, GetLoopfilterLevel())
       .WillOnce(Return(kDefaultLoopFilterLevel));
 
-  // TODO(mcasas): Consider setting expectations on MockVaapiWrapper calls.
+  EXPECT_CALL(*mock_vaapi_wrapper_,
+              SubmitBuffer_Locked(MatchVABufferDescriptor(
+                  VAEncSequenceParameterBufferType,
+                  sizeof(VAEncSequenceParameterBufferVP9))))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_vaapi_wrapper_,
+              SubmitBuffer_Locked(MatchVABufferDescriptor(
+                  VAEncPictureParameterBufferType,
+                  sizeof(VAEncPictureParameterBufferVP9))))
+      .WillOnce(Return(true));
 
-  EXPECT_TRUE(encoder_->PrepareEncodeJob(encode_job.get()));
+  EXPECT_TRUE(encoder_->PrepareEncodeJob(*encode_job.get()));
 
   // TODO(hiroh): Test for encoder_->reference_frames_.
 
@@ -727,7 +748,7 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, FailsWithInvalidSpatialLayers) {
 
   const uint32_t kFramerate =
       *kDefaultVideoEncodeAcceleratorConfig.initial_framerate;
-  for (const auto& bitrate_allocation : invalid_bitrate_allocations) {
+  for (const auto& invalid_allocation : invalid_bitrate_allocations) {
     InitializeVP9VaapiVideoEncoderDelegate(num_spatial_layers,
                                            num_temporal_layers);
 
@@ -735,7 +756,7 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, FailsWithInvalidSpatialLayers) {
     // expected_temporal_layers and expected_temporal_layer_id are meaningless
     // because UpdateRatesAndEncode will returns before checking them due to the
     // invalid VideoBitrateAllocation request.
-    UpdateRatesAndEncode(bitrate_allocation, kFramerate,
+    UpdateRatesAndEncode(invalid_allocation, kFramerate,
                          /*valid_rates_request=*/false,
                          /*is_key_pic=*/true,
                          /*expected_spatial_layer_resolutions=*/{},

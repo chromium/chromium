@@ -20,8 +20,7 @@
 namespace net {
 
 // SOCKSConnectJobs will time out if the SOCKS handshake takes longer than this.
-static constexpr base::TimeDelta kSOCKSConnectJobTimeout =
-    base::TimeDelta::FromSeconds(30);
+static constexpr base::TimeDelta kSOCKSConnectJobTimeout = base::Seconds(30);
 
 SOCKSSocketParams::SOCKSSocketParams(
     scoped_refptr<TransportSocketParams> proxy_server_params,

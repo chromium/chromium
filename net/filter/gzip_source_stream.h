@@ -28,6 +28,9 @@ class IOBuffer;
 //
 class NET_EXPORT_PRIVATE GzipSourceStream : public FilterSourceStream {
  public:
+  GzipSourceStream(const GzipSourceStream&) = delete;
+  GzipSourceStream& operator=(const GzipSourceStream&) = delete;
+
   ~GzipSourceStream() override;
 
   // Creates a GzipSourceStream. Return nullptr if initialization fails.
@@ -107,8 +110,6 @@ class NET_EXPORT_PRIVATE GzipSourceStream : public FilterSourceStream {
 
   // Used when replaying data.
   InputState replay_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(GzipSourceStream);
 };
 
 }  // namespace net

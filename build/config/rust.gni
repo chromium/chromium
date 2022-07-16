@@ -1,0 +1,147 @@
+# Copyright 2021 The Chromium Project. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/compiler/compiler.gni")
+import("//build/toolchain/toolchain.gni")
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+}
+
+declare_args() {
+  # Whether to allow Rust code to be part of the Chromium *build process*.
+  # This can be used to create Rust test binaries, even if the flag below
+  # is false.
+  enable_rust = false
+
+  # Use unverified, untrusted, Rust toolchains from the internet
+  # (which support more platforms and options than those we trust for real
+  # builds).
+  use_unverified_rust_toolchain = false
+
+  # The version string returned by rustc -V.
+  rustc_version = "rustc 1.55.0-dev"
+
+  # If using an unverified Rust toolchain, use this prefix for where to find
+  # the binaries.
+  rust_bin_dir = ""
+
+  # Any extra std rlibs in your Rust toolchain, relative to the standard
+  # Rust toolchain. Typically used with 'use_unverified_rust_toolchain' = true
+  added_rust_stdlib_libs = []
+
+  # Any removed std rlibs in your Rust toolchain, relative to the standard
+  # Rust toolchain. Typically used with 'use_unverified_rust_toolchain' = true
+  removed_rust_stdlib_libs = []
+
+  # Use LTO when using rustc to link binaries. Experimental. Currently incompatible
+  # with the options we use in our C++ toolchain to split LTO units.
+  # This has no effect on the production of normal Chrome binaries, which are
+  # linked by clang/lld rather than rustc.
+  # https://crbug.com/1229419
+  use_lto_in_rustc_linking = false
+
+  # Use goma for Rust builds. Experimental. The only known problem is
+  # b/193072381, but then again, we don't expect a build speedup before much
+  # more work is done.
+  use_goma_rust = false
+
+  # Rust code may end up being linked into a final executable by:
+  # * rustc (which calls lld)
+  # * our pre-existing C++ linker invocations
+  # At the moment, this first pipeline is incompatible with the ldflags we use
+  # for thin LTO, due to some problem in escaping gn rules. There's a further
+  # problem with -lunwind on Android.
+  # However, Rust code is still useful if it's contributing to our existing
+  # C++ linker invocations, so this doesn't disable Rust entirely. It does
+  # disable Rust unit test executables, so we do need to fix this.
+  # https://crbug.com/1229423
+  # NB this may be overridden by individual toolchains
+  rustc_can_link = !use_thin_lto && !is_android
+}
+
+# Has a Rust toolchain available in the build by default.
+toolchain_has_official_rust =
+    (!is_nacl &&
+     (is_android && (current_cpu == "arm" || current_cpu == "arm64" ||
+                     current_cpu == "x64" || current_cpu == "x86"))) ||
+    (is_linux && current_cpu == "x64")
+
+toolchain_has_rust = enable_rust && (toolchain_has_official_rust ||
+                                     use_unverified_rust_toolchain)
+
+# We use the Rust linker for building test executables, so we only build them
+# if we're able to use the Rust linker. We could use the C++ linker for this
+# too, we've just not set up GN to do so at the moment.
+build_rust_unit_tests = rustc_can_link
+
+if (use_unverified_rust_toolchain) {
+  assert(rust_bin_dir != "")
+  rust_prefix = "$rust_bin_dir/"
+} else if (toolchain_has_official_rust) {
+  if (host_os != "linux") {
+    assert(false,
+           "Attempt to use standard Rust toolchain on an unsupported platform")
+  }
+  rust_prefix =
+      rebase_path("//third_party/android_rust_toolchain/toolchain/bin/")
+}
+
+assert(!toolchain_has_rust || defined(rust_prefix))
+
+# Figure out the Rust target triple (aka 'rust_abi_target')
+#
+# This is here rather than in the toolchain files because it's used
+# also by //build/rust/std to find the Rust standard library.
+#
+# The list of architectures supported by Rust is here:
+# https://doc.rust-lang.org/nightly/rustc/platform-support.html
+# Although most of these are not yet supported by our limited
+# official Rust toolchain (see 'toolchain_has_official_rust' above)
+# it's useful to be able to experiment with our other platforms,
+# so we try to be comprehensive here.
+#
+# It's OK if rust_abi_target is blank. That means we're building for the host
+# and the host stdlib will be used.
+rust_abi_target = ""
+if (is_android) {
+  import("//build/config/android/abi.gni")
+  rust_abi_target = android_abi_target
+  if (rust_abi_target == "arm-linux-androideabi") {
+    # Android clang target specifications mostly match Rust, but this
+    # is an exception
+    rust_abi_target = "armv7-linux-androideabi"
+  }
+} else if (is_fuchsia) {
+  if (current_cpu == "arm64") {
+    rust_abi_target = "aarch64-fuchsia"
+  } else if (current_cpu == "x64") {
+    rust_abi_target = "x86_64-fuchsia"
+  } else {
+    assert(false, "Architecture not supported")
+  }
+} else if (is_ios) {
+  if (current_cpu == "arm64") {
+    rust_abi_target = "aarch64-apple-ios"
+  } else if (current_cpu == "arm") {
+    # There's also an armv7s-apple-ios, which targets a more recent ARMv7
+    # generation CPU found in later iPhones. We'll go with the older one for
+    # maximal compatibility. As we come to support all the different platforms
+    # with Rust, we might want to be more precise here.
+    rust_abi_target = "armv7-apple-ios"
+  } else if (current_cpu == "x64") {
+    rust_abi_target = "x86_64-apple-ios"
+  } else if (current_cpu == "x86") {
+    rust_abi_target = "i386-apple-ios"
+  } else {
+    assert(false, "Architecture not supported")
+  }
+}
+
+# Arguments for Rust invocation.
+# This is common between gcc/clang, Mac and Windows toolchains so specify once,
+# here. This is not the complete command-line: toolchains should add -o
+# and probably --emit arguments too.
+rustc_common_args = "--crate-name {{crate_name}} {{source}} --crate-type {{crate_type}} {{rustflags}} {{rustdeps}} {{externs}}"

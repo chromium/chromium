@@ -191,14 +191,14 @@ URLID URLDatabase::AddURLInternal(const URLRow& info, bool is_temporary) {
 }
 
 bool URLDatabase::URLTableContainsAutoincrement() {
-  // sqlite_master has columns:
+  // sqlite_schema has columns:
   //   type - "index" or "table".
   //   name - name of created element.
   //   tbl_name - name of element, or target table in case of index.
   //   rootpage - root page of the element in database file.
   //   sql - SQL to create the element.
   sql::Statement statement(GetDB().GetUniqueStatement(
-      "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'urls'"));
+      "SELECT sql FROM sqlite_schema WHERE type = 'table' AND name = 'urls'"));
 
   // urls table does not exist.
   if (!statement.Step())
@@ -786,11 +786,10 @@ const int kLowQualityMatchVisitLimit = 4;
 const int kLowQualityMatchAgeLimitInDays = 3;
 
 const base::TimeDelta kAutocompleteDuplicateVisitIntervalThreshold =
-    base::TimeDelta::FromMinutes(5);
+    base::Minutes(5);
 
 base::Time AutocompleteAgeThreshold() {
-  return (base::Time::Now() -
-          base::TimeDelta::FromDays(kLowQualityMatchAgeLimitInDays));
+  return (base::Time::Now() - base::Days(kLowQualityMatchAgeLimitInDays));
 }
 
 bool RowQualifiesAsSignificant(const URLRow& row,

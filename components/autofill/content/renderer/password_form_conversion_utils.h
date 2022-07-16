@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/strings/string_piece.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"

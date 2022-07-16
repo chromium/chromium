@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,28 +14,21 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "chrome/browser/browser_switcher/ieem_sitelist_parser.h"
 #include "components/prefs/pref_service.h"
-#include "url/gurl.h"
-
+#include "components/url_formatter/url_fixer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "url/gurl.h"
+#include "url/url_util.h"
 
 namespace browser_switcher {
 
 namespace {
-
-// This type is cheap and lives on the stack, which can be faster compared to
-// calling |GURL::host()| multiple times.
-struct NoCopyUrl {
-  base::StringPiece host_and_port;
-  base::StringPiece spec;
-  base::StringPiece spec_without_port;
-};
 
 // Find the position of |token| inside |input|, if present. Ignore case for
 // ASCII characters.
@@ -49,56 +43,6 @@ const char* StringFindInsensitiveASCII(base::StringPiece input,
                      });
 }
 
-// Find the position of |token| inside |input|, much like StringPiece::find().
-// Search case-sensitively if |case_sensitive_ascii| is true, or
-// case-insensitively otherwise.
-//
-// Returns StringPiece::npos if not found.
-size_t StringFind(base::StringPiece input,
-                  base::StringPiece token,
-                  bool case_sensitive_ascii) {
-  if (case_sensitive_ascii) {
-    return input.find(token);
-  } else {
-    const char* pos = StringFindInsensitiveASCII(input, token);
-    if (pos == input.end())
-      return base::StringPiece::npos;
-    return pos - input.data();
-  }
-}
-
-// Case-insensitively compare the hostname of |host_and_port| with the hostname
-// pattern |pattern|. Only matches if |pattern| is at the end of the string AND
-// at a domain name boundary.
-bool MatchesHostNameAtEnd(base::StringPiece host_and_port,
-                          base::StringPiece pattern) {
-  // Use reverse_iterator to search from the *end* of the string.
-  std::reverse_iterator<const char*> found =
-      std::search(host_and_port.rbegin(), host_and_port.rend(),
-                  pattern.rbegin(), pattern.rend(), [](char a, char b) {
-                    return base::ToLowerASCII(a) == base::ToLowerASCII(b);
-                  });
-  if (found == host_and_port.rend())
-    return false;
-
-  const char* beginning = found.base() - pattern.size();
-  const char* end = found.base();
-
-  // The match should be at a domain boundary, i.e. preceded by:
-  //   (a) the beginning of the string, or
-  //   (b) a dot.
-  if (beginning != host_and_port.begin() && *(beginning - 1) != '.')
-    return false;
-
-  // The match should be at the end, i.e. followed by:
-  //   (a) the end of the string, or
-  //   (b) a port number.
-  if (*end != '\0' && *end != ':')
-    return false;
-
-  return true;
-}
-
 // Checks if the omitted prefix for a non-fully specific prefix is one of the
 // expected parts that are allowed to be omitted (e.g. "https://").
 bool IsValidPrefix(base::StringPiece prefix) {
@@ -107,145 +51,321 @@ bool IsValidPrefix(base::StringPiece prefix) {
   return (prefix.empty() || re2::RE2::FullMatch(converted_prefix, *re));
 }
 
-bool IsInverted(base::StringPiece pattern) {
-  return (!pattern.empty() && pattern[0] == '!');
-}
-
-bool UrlMatchesPattern(const NoCopyUrl& url,
-                       base::StringPiece pattern,
-                       ParsingMode parsing_mode) {
-  if (pattern == "*") {
-    // Wildcard, always match.
-    return true;
-  }
-  if (pattern.find('/') != base::StringPiece::npos) {
-    // Check that the prefix is valid. The URL's hostname/scheme have already
-    // been case-normalized, so that part of the URL is always case-insensitive.
-    bool case_sensitive = parsing_mode == ParsingMode::kDefault;
-    size_t pos = StringFind(url.spec, pattern, case_sensitive);
-    if (pos != base::StringPiece::npos &&
-        IsValidPrefix(base::StringPiece(url.spec.data(), pos))) {
-      return true;
-    }
-    if (!url.spec_without_port.empty()) {
-      pos = StringFind(url.spec_without_port, pattern, case_sensitive);
-      return pos != base::StringPiece::npos &&
-             IsValidPrefix(
-                 base::StringPiece(url.spec_without_port.data(), pos));
-    }
-    return false;
-  }
-
-  // Compare hosts and ports, case-insensitive.
-  switch (parsing_mode) {
-    case ParsingMode::kIESiteListMode:
-      return MatchesHostNameAtEnd(url.host_and_port, pattern);
-
-    case ParsingMode::kDefault: {
-      // Simple substring search.
-      const char* it = StringFindInsensitiveASCII(url.host_and_port, pattern);
-      return it != url.host_and_port.end();
-    }
-
-    default:
-      // This should've been caught in
-      // BrowserSwitcherPrefs::ParsingModeChanged().
-      NOTREACHED();
-      return false;
-  }
-}
-
 // Checks whether |patterns| contains a pattern that matches |url|, and returns
 // the longest matching pattern. If there are no matches, an empty pattern is
 // returned.
 //
 // If |contains_inverted_matches| is true, treat patterns that start with "!" as
 // inverted matches.
-base::StringPiece MatchUrlToList(const NoCopyUrl& url,
-                                 const std::vector<std::string>& patterns,
-                                 bool contains_inverted_matches,
-                                 ParsingMode parsing_mode) {
-  base::StringPiece reason;
-  for (const std::string& pattern : patterns) {
-    if (pattern.size() <= reason.size())
+const Rule* MatchUrlToList(const NoCopyUrl& url,
+                           const std::vector<std::unique_ptr<Rule>>& rules,
+                           bool contains_inverted_matches) {
+  const Rule* reason = nullptr;
+  for (const std::unique_ptr<Rule>& rule : rules) {
+    DCHECK(rule);
+    if (reason && rule->priority() <= reason->priority())
       continue;
-    bool inverted = IsInverted(pattern);
-    if (inverted && !contains_inverted_matches)
+    if (rule->inverted() && !contains_inverted_matches)
       continue;
-    if (UrlMatchesPattern(url, (inverted ? pattern.substr(1) : pattern),
-                          parsing_mode)) {
-      reason = pattern;
-    }
+    if (rule->Matches(url))
+      reason = rule.get();
   }
   return reason;
 }
 
-bool StringSizeCompare(const base::StringPiece& a, const base::StringPiece& b) {
-  return a.size() < b.size();
+bool RulePriorityCompare(const Rule* a, const Rule* b) {
+  if (!a)
+    return true;
+  if (!b)
+    return false;
+  return a->priority() < b->priority();
 }
+
+// Rules that are just an "*" are the most simple: they just return true all the
+// time, regardless of ParsingMode.
+class WildcardRule : public Rule {
+ public:
+  WildcardRule() : Rule("*") {}
+  ~WildcardRule() override = default;
+
+  bool Matches(const NoCopyUrl& url) const override { return true; }
+
+  bool IsValid() const override { return true; }
+
+  std::string ToString() const override { return "*"; }
+};
+
+// Rules with ParsingMode::kDefault. They treat rules with/without a '/'
+// separately. They do some pre-processing to come up with a |canonical_| rule
+// string, then some simple string searches.
+class DefaultModeRule : public Rule {
+ public:
+  explicit DefaultModeRule(base::StringPiece original_rule)
+      : Rule(original_rule) {
+    canonical_ = std::string(original_rule);
+
+    // Drop the leading "!", if present.
+    if (inverted())
+      canonical_ = canonical_.substr(1);
+
+    if (canonical_.find("/") == std::string::npos) {
+      // No "/" in the string. It's a hostnmae or wildcard, so just convert to
+      // lowercase.
+      canonical_ = base::ToLowerASCII(canonical_);
+      return;
+    }
+
+    // The string has a "/" in it. It could be:
+    // - "//example.com/abc", convert hostname to lowercase
+    // - "example.com/abc", treat same as "//example.com/abc"
+    // - "http://example.com/abc", convert hostname and scheme to lowercase
+    // - "/abc", keep capitalization
+
+    if (base::StartsWith(canonical_, "/") &&
+        !base::StartsWith(canonical_, "//")) {
+      // Rule starts with a single slash, e.g. "/abc". Don't change case.
+      return;
+    }
+
+    if (canonical_.find("/") != 0 &&
+        canonical_.find("://") == std::string::npos) {
+      // Transform "example.com/abc" => "//example.com/abc".
+      canonical_.insert(0, "//");
+    }
+
+    // For patterns that include a "/": parse the URL to get the proper
+    // capitalization (for scheme/hostname).
+    //
+    // To properly parse URLs with no scheme, we need a valid base URL. We use
+    // "ftp://XXX/", which is a valid URL with an unsupported scheme. That
+    // way, parsing still succeeds, and we can easily know when the scheme
+    // isn't part of the original pattern (and omit it from the output).
+    const char* placeholder_scheme = "ftp:";
+    std::string placeholder = base::StrCat({placeholder_scheme, "//XXX/"});
+    GURL base_url(placeholder);
+
+    GURL relative_url = base_url.Resolve(canonical_);
+    base::StringPiece spec = relative_url.possibly_invalid_spec();
+
+    // The parsed URL might start with "ftp://XXX/" or "ftp://". Remove that
+    // prefix.
+    if (base::StartsWith(spec, placeholder,
+                         base::CompareCase::INSENSITIVE_ASCII)) {
+      spec = spec.substr(placeholder.size());
+    }
+    if (base::StartsWith(spec, placeholder_scheme,
+                         base::CompareCase::INSENSITIVE_ASCII)) {
+      spec = spec.substr(strlen(placeholder_scheme));
+    }
+
+    canonical_ = std::string(spec);
+  }
+
+  ~DefaultModeRule() override = default;
+
+  bool Matches(const NoCopyUrl& url) const override {
+    base::StringPiece pattern = canonical_;
+
+    if (pattern.find('/') != base::StringPiece::npos) {
+      // Check that the prefix is valid. The URL's hostname/scheme have
+      // already been case-normalized, so that part of the URL is always
+      // case-insensitive.
+      size_t pos = url.spec().find(pattern);
+      if (pos != base::StringPiece::npos &&
+          IsValidPrefix(base::StringPiece(url.spec().data(), pos))) {
+        return true;
+      }
+      if (!url.spec_without_port().empty()) {
+        pos = url.spec_without_port().find(pattern);
+        return pos != base::StringPiece::npos &&
+               IsValidPrefix(
+                   base::StringPiece(url.spec_without_port().data(), pos));
+      }
+      return false;
+    }
+
+    // Compare hosts and ports, case-insensitive.
+    const char* it = StringFindInsensitiveASCII(url.host_and_port(), pattern);
+    return it != url.host_and_port().end();
+  }
+
+  bool IsValid() const override { return true; }
+
+  std::string ToString() const override {
+    if (inverted())
+      return "!" + canonical_;
+    return canonical_;
+  }
+
+ private:
+  // The canonical version of the rule, with the leading "!" removed if it's
+  // inverted.
+  std::string canonical_;
+};
+
+// Rules with ParsingMode::kIESiteListMode. They treat rules the same regardless
+// of whether a '/' is present. They parse the rule as a URL, then split it
+// into scheme, host, port, and path parts. They compare each of these parts
+// with the URL to be matched.
+class IESiteListModeRule : public Rule {
+ public:
+  explicit IESiteListModeRule(base::StringPiece original_rule)
+      : Rule(original_rule) {
+    // Parse the string as a URL and extract its parts.
+    //
+    // Some parts of the URL will be dropped, to match IE/Edge behavior:
+    //   - username
+    //   - password
+    //   - query
+    //   - fragment
+
+    // Drop the leading "!", if present.
+    if (inverted())
+      original_rule = original_rule.substr(1);
+
+    // Rules with leading slashes are interpreted as file:// URLs on POSIX
+    // systems. To make it more consistent with Windows, remove the leading
+    // slashes.
+    //
+    // Only remove the first leading slash, to be consistent with Edge (which
+    // *does* parse it as a file:// URL if there are 2 slashes).
+    if (base::StartsWith(original_rule, "/"))
+      original_rule = original_rule.substr(1);
+
+    // Parse as a URL. This is more relaxed than GURL's constructor, e.g. it
+    // adds http:// if the scheme is missing.
+    //
+    // This lets us parse strings like "example.com", even though they're not
+    // fully-specified URLs (missing scheme and path).
+    GURL url = url_formatter::FixupURL(std::string(original_rule), "");
+
+    if (!url.is_valid() ||
+        (!url.SchemeIsHTTPOrHTTPS() && !url.SchemeIsFile())) {
+      // The rule is invalid, so it won't match anything. Continue parsing it,
+      // in case we want to print it later for debugging/troubleshooting.
+      valid_ = false;
+    }
+
+    // If it starts with http:// or https://, preserve the scheme. Otherwise,
+    // use a wildcard ("*") as the scheme.
+    //
+    // "http://" may have been added by FixupUrl(), so look for it in the
+    // original string instead.
+    if (valid_ && (StringFindInsensitiveASCII(original_rule, "http://") ==
+                       original_rule.begin() ||
+                   StringFindInsensitiveASCII(original_rule, "https://") ==
+                       original_rule.begin() ||
+                   url.SchemeIsFile())) {
+      scheme_ = url.scheme();
+    }
+
+    if (url.has_host())
+      host_ = url.host();
+
+    if (url.has_port())
+      port_ = url.IntPort();
+
+    // Make sure |path_| always has at least the leading slash.
+    if (url.has_path() && !url.path_piece().empty())
+      path_ = base::ToLowerASCII(url.path());
+    else
+      path_ = "/";
+  }
+
+  ~IESiteListModeRule() override = default;
+
+  bool Matches(const NoCopyUrl& no_copy_url) const override {
+    DCHECK(valid_);
+
+    const GURL& url = no_copy_url.original();
+    // Compare schemes, if present in the rule.
+    if (scheme_ && url.scheme_piece() != *scheme_) {
+      return false;
+    }
+
+    // Compare hosts.
+    if (!url::DomainIs(url.host_piece(), host_))
+      return false;
+
+    // Compare ports, if present in the rule.
+    if (port_ && url.IntPort() != *port_)
+      return false;
+
+    // Compare paths, case-insensitively. They must match at the beginning.
+    const char* pos = StringFindInsensitiveASCII(url.path_piece(), path_);
+    if (pos != url.path_piece().begin())
+      return false;
+
+    return true;
+  }
+
+  bool IsValid() const override { return valid_; }
+
+  // Typical return value looks like "*://example.com:8000/path".
+  std::string ToString() const override {
+    DCHECK(valid_);
+
+    std::ostringstream out;
+
+    if (inverted())
+      out << "!";
+
+    // <scheme>://
+    if (scheme_)
+      out << *scheme_;
+    else
+      out << "*";
+    out << "://";
+
+    // <host>:<port>
+    out << host_;
+    if (port_)
+      out << ":" << *port_;
+
+    // <path>
+    out << path_;
+
+    return out.str();
+  }
+
+ private:
+  absl::optional<std::string> scheme_;
+  std::string host_;
+  absl::optional<int> port_;
+  // Always at least a "/".
+  std::string path_;
+
+  bool valid_ = true;
+};
 
 }  // namespace
 
-void CanonicalizeRule(std::string* pattern) {
-  if (*pattern == "*" || pattern->find("/") == std::string::npos) {
-    // No "/" in the string. It's a hostnmae or wildcard, convert to lowercase.
-    *pattern = base::ToLowerASCII(*pattern);
-    return;
+std::unique_ptr<Rule> CanonicalizeRule(base::StringPiece original_rule,
+                                       ParsingMode parsing_mode) {
+  std::unique_ptr<Rule> rule;
+
+  if (original_rule == "*") {
+    rule = std::make_unique<WildcardRule>();
+  } else {
+    switch (parsing_mode) {
+      case ParsingMode::kDefault:
+        rule = std::make_unique<DefaultModeRule>(original_rule);
+        break;
+      case ParsingMode::kIESiteListMode:
+        rule = std::make_unique<IESiteListModeRule>(original_rule);
+        break;
+      default:
+        NOTREACHED();
+    }
   }
 
-  // The string has a "/" in it. It could be:
-  // - "//example.com/abc", convert hostname to lowercase
-  // - "example.com/abc", treat same as "//example.com/abc"
-  // - "http://example.com/abc", convert hostname and scheme to lowercase
-  // - "/abc", keep capitalization
-
-  const char* prefix = "";
-  base::StringPiece pattern_strpiece(*pattern);
-  if (IsInverted(*pattern)) {
-    prefix = "!";
-    *pattern = pattern->substr(1);
-  }
-
-  if (base::StartsWith(*pattern, "/", base::CompareCase::SENSITIVE) &&
-      !base::StartsWith(*pattern, "//", base::CompareCase::SENSITIVE)) {
-    // Rule starts with a single slash, e.g. "/abc". Don't change case.
-    pattern->insert(0, prefix);
-    return;
-  }
-
-  if (pattern->find("/") != 0 && pattern->find("://") == std::string::npos) {
-    // Transform "example.com/abc" => "//example.com/abc".
-    pattern->insert(0, "//");
-  }
-
-  // For patterns that include a "/": parse the URL to get the proper
-  // capitalization (for scheme/hostname).
-  //
-  // To properly parse URLs with no scheme, we need a valid base URL. We use
-  // "ftp://XXX/", which is a valid URL with an unsupported scheme. That way,
-  // parsing still succeeds, and we can easily know when the scheme isn't part
-  // of the original pattern (and omit it from the output).
-  const char* placeholder_scheme = "ftp:";
-  std::string placeholder = base::StrCat({placeholder_scheme, "//XXX/"});
-  GURL base_url(placeholder);
-
-  GURL relative_url = base_url.Resolve(*pattern);
-  base::StringPiece spec = relative_url.possibly_invalid_spec();
-
-  // The parsed URL might start with "ftp://XXX/" or "ftp://". Remove that
-  // prefix.
-  if (base::StartsWith(spec, placeholder, base::CompareCase::INSENSITIVE_ASCII))
-    spec = spec.substr(placeholder.size());
-  if (base::StartsWith(spec, placeholder_scheme,
-                       base::CompareCase::INSENSITIVE_ASCII))
-    spec = spec.substr(strlen(placeholder_scheme));
-
-  *pattern = base::StrCat({prefix, spec});
+  if (!rule || !rule->IsValid())
+    return nullptr;
+  else
+    return rule;
 }
 
-Decision::Decision(Action action_,
-                   Reason reason_,
-                   base::StringPiece matching_rule_)
+Decision::Decision(Action action_, Reason reason_, const Rule* matching_rule_)
     : action(action_), reason(reason_), matching_rule(matching_rule_) {}
 
 Decision::Decision() = default;
@@ -253,8 +373,13 @@ Decision::Decision(Decision&) = default;
 Decision::Decision(Decision&&) = default;
 
 bool Decision::operator==(const Decision& that) const {
-  return (action == that.action && reason == that.reason &&
-          matching_rule == that.matching_rule);
+  if (action != that.action || reason != that.reason)
+    return false;
+  if (matching_rule == that.matching_rule)
+    return true;
+  if (!matching_rule || !that.matching_rule)
+    return false;
+  return matching_rule->ToString() == that.matching_rule->ToString();
 }
 
 BrowserSwitcherSitelist::~BrowserSwitcherSitelist() = default;
@@ -264,15 +389,19 @@ bool BrowserSwitcherSitelist::ShouldSwitch(const GURL& url) const {
 }
 
 BrowserSwitcherSitelistImpl::BrowserSwitcherSitelistImpl(
-    const BrowserSwitcherPrefs* prefs)
-    : prefs_(prefs) {}
+    BrowserSwitcherPrefs* prefs)
+    : prefs_(prefs) {
+  prefs_changed_subscription_ = prefs_->RegisterPrefsChangedCallback(
+      base::BindRepeating(&BrowserSwitcherSitelistImpl::OnPrefsChanged,
+                          base::Unretained(this)));
+}
 
 BrowserSwitcherSitelistImpl::~BrowserSwitcherSitelistImpl() = default;
 
 Decision BrowserSwitcherSitelistImpl::GetDecision(const GURL& url) const {
   // Don't record metrics for LBS non-users.
   if (!IsActive())
-    return {kStay, kDisabled, ""};
+    return {kStay, kDisabled, nullptr};
 
   Decision decision = GetDecisionImpl(url);
   UMA_HISTOGRAM_BOOLEAN("BrowserSwitcher.Decision", decision.action == kGo);
@@ -283,55 +412,37 @@ Decision BrowserSwitcherSitelistImpl::GetDecisionImpl(const GURL& url) const {
   SCOPED_UMA_HISTOGRAM_TIMER("BrowserSwitcher.DecisionTime");
 
   if (!url.SchemeIsHTTPOrHTTPS() && !url.SchemeIsFile()) {
-    return {kStay, kProtocol, ""};
+    return {kStay, kProtocol, nullptr};
   }
 
-  int int_port = url.IntPort();
-  std::string port;
-  std::string spec_without_port;
-  if (int_port != url::PORT_UNSPECIFIED) {
-    port = base::StrCat({":", base::NumberToString(int_port)});
-    spec_without_port = url.spec();
-    base::ReplaceSubstringsAfterOffset(&spec_without_port, 0, port,
-                                       base::StringPiece());
-  }
-  std::string host_and_port = base::StrCat({url.host(), port});
-  NoCopyUrl no_copy_url = {host_and_port, url.spec(), spec_without_port};
+  NoCopyUrl no_copy_url(url);
 
-  ParsingMode parsing_mode = prefs_->GetParsingMode();
-
-  base::StringPiece reason_to_go = std::max(
+  const Rule* reason_to_go = std::max(
       {
-          MatchUrlToList(no_copy_url, prefs_->GetRules().sitelist, true,
-                         parsing_mode),
-          MatchUrlToList(no_copy_url, ieem_sitelist_.sitelist, true,
-                         parsing_mode),
-          MatchUrlToList(no_copy_url, external_sitelist_.sitelist, true,
-                         parsing_mode),
+          MatchUrlToList(no_copy_url, prefs_->GetRules().sitelist, true),
+          MatchUrlToList(no_copy_url, ieem_sitelist_.sitelist, true),
+          MatchUrlToList(no_copy_url, external_sitelist_.sitelist, true),
       },
-      StringSizeCompare);
+      RulePriorityCompare);
 
   // If sitelists don't match, no need to check the greylists.
-  if (reason_to_go.empty())
-    return {kStay, kDefault, ""};
-  if (IsInverted(reason_to_go))
+  if (!reason_to_go)
+    return {kStay, kDefault, nullptr};
+  if (reason_to_go->inverted())
     return {kStay, kSitelist, reason_to_go};
 
-  base::StringPiece reason_to_stay = std::max(
+  const Rule* reason_to_stay = std::max(
       {
-          MatchUrlToList(no_copy_url, prefs_->GetRules().greylist, false,
-                         parsing_mode),
-          MatchUrlToList(no_copy_url, ieem_sitelist_.greylist, false,
-                         parsing_mode),
-          MatchUrlToList(no_copy_url, external_sitelist_.greylist, false,
-                         parsing_mode),
+          MatchUrlToList(no_copy_url, prefs_->GetRules().greylist, false),
+          MatchUrlToList(no_copy_url, ieem_sitelist_.greylist, false),
+          MatchUrlToList(no_copy_url, external_sitelist_.greylist, false),
       },
-      StringSizeCompare);
+      RulePriorityCompare);
 
-  if (reason_to_go == "*" && !reason_to_stay.empty())
+  if (reason_to_go->priority() <= 1 && reason_to_stay)
     return {kStay, kGreylist, reason_to_stay};
 
-  if (reason_to_go.size() >= reason_to_stay.size())
+  if (!reason_to_stay || reason_to_go->priority() >= reason_to_stay->priority())
     return {kGo, kSitelist, reason_to_go};
   else
     return {kStay, kGreylist, reason_to_stay};
@@ -343,7 +454,8 @@ void BrowserSwitcherSitelistImpl::SetIeemSitelist(ParsedXml&& parsed_xml) {
   UMA_HISTOGRAM_COUNTS_100000("BrowserSwitcher.IeemSitelistSize",
                               parsed_xml.rules.size());
 
-  ieem_sitelist_.sitelist = std::move(parsed_xml.rules);
+  StoreRules(&ieem_sitelist_.sitelist, parsed_xml.rules);
+  original_ieem_sitelist_ = std::move(parsed_xml.rules);
 }
 
 void BrowserSwitcherSitelistImpl::SetExternalSitelist(ParsedXml&& parsed_xml) {
@@ -352,7 +464,8 @@ void BrowserSwitcherSitelistImpl::SetExternalSitelist(ParsedXml&& parsed_xml) {
   UMA_HISTOGRAM_COUNTS_100000("BrowserSwitcher.ExternalSitelistSize",
                               parsed_xml.rules.size());
 
-  external_sitelist_.sitelist = std::move(parsed_xml.rules);
+  StoreRules(&external_sitelist_.sitelist, parsed_xml.rules);
+  original_external_sitelist_ = std::move(parsed_xml.rules);
 }
 
 void BrowserSwitcherSitelistImpl::SetExternalGreylist(ParsedXml&& parsed_xml) {
@@ -361,7 +474,8 @@ void BrowserSwitcherSitelistImpl::SetExternalGreylist(ParsedXml&& parsed_xml) {
   UMA_HISTOGRAM_COUNTS_100000("BrowserSwitcher.ExternalGreylistSize",
                               parsed_xml.rules.size());
 
-  external_sitelist_.greylist = std::move(parsed_xml.rules);
+  StoreRules(&external_sitelist_.greylist, parsed_xml.rules);
+  original_external_greylist_ = std::move(parsed_xml.rules);
 }
 
 const RuleSet* BrowserSwitcherSitelistImpl::GetIeemSitelist() const {
@@ -370,6 +484,30 @@ const RuleSet* BrowserSwitcherSitelistImpl::GetIeemSitelist() const {
 
 const RuleSet* BrowserSwitcherSitelistImpl::GetExternalSitelist() const {
   return &external_sitelist_;
+}
+
+void BrowserSwitcherSitelistImpl::StoreRules(
+    std::vector<std::unique_ptr<Rule>>* dst,
+    const std::vector<std::string>& src) {
+  dst->clear();
+  ParsingMode parsing_mode = prefs_->GetParsingMode();
+  for (const std::string& original_rule : src) {
+    std::unique_ptr<Rule> rule = CanonicalizeRule(original_rule, parsing_mode);
+    if (rule)
+      dst->push_back(std::move(rule));
+  }
+}
+
+void BrowserSwitcherSitelistImpl::OnPrefsChanged(
+    BrowserSwitcherPrefs* prefs,
+    const std::vector<std::string>& changed_prefs) {
+  auto it = base::ranges::find(changed_prefs, prefs::kParsingMode);
+  if (it != changed_prefs.end()) {
+    // ParsingMode changed, re-canonicalize rules.
+    StoreRules(&ieem_sitelist_.sitelist, original_ieem_sitelist_);
+    StoreRules(&external_sitelist_.sitelist, original_external_sitelist_);
+    StoreRules(&external_sitelist_.greylist, original_external_greylist_);
+  }
 }
 
 bool BrowserSwitcherSitelistImpl::IsActive() const {

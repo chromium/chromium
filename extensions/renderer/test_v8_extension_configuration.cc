@@ -9,7 +9,8 @@
 
 #include "base/lazy_instance.h"
 #include "extensions/renderer/safe_builtins.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-extension.h"
 
 namespace extensions {
 

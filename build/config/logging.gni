@@ -9,4 +9,5 @@ declare_args() {
   # Use LogErrorNotReached() for NOTREACHED().
   enable_log_error_not_reached =
       is_chromeos_ash && !(is_debug || dcheck_always_on)
+  enable_stack_trace_line_numbers = false
 }

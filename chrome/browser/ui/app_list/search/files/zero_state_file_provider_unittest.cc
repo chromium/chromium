@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -82,7 +83,7 @@ TEST_F(ZeroStateFileProviderTest, NoResultsWithQuery) {
 TEST_F(ZeroStateFileProviderTest, ResultsProvided) {
   // Disable flag.
   scoped_feature_list_.InitWithFeatures(
-      {}, {app_list_features::kEnableSuggestedFiles});
+      {}, {app_list_features::kEnableSuggestedLocalFiles});
 
   WriteFile("exists_1.txt");
   WriteFile("exists_2.png");
@@ -104,7 +105,7 @@ TEST_F(ZeroStateFileProviderTest, ResultsProvidedWithChips) {
   // Enable flag - with flag enabled, we expect to receive the chip
   // results for each file as well, so each file should be listed twice.
   scoped_feature_list_.InitWithFeatures(
-      {app_list_features::kEnableSuggestedFiles}, {});
+      {app_list_features::kEnableSuggestedLocalFiles}, {});
 
   WriteFile("exists_1.txt");
   WriteFile("exists_2.png");

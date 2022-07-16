@@ -1,0 +1,4 @@
+CONSOLE MESSAGE: Blink Test Plugin: initializing
+Test 2/2 for rdar://problem/7398987 Assertion failure in Layer::updateClipRects when a plugin’s enclosing layer is enclosed by a transformed layer.
+
+This test should not cause an assertion faliure.

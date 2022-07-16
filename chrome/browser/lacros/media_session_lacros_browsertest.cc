@@ -26,8 +26,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionLacrosBrowserTest, CheckServiceWorks) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to a test page with some media on it.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/media/autoplay_iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/media/autoplay_iframe.html")));
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 

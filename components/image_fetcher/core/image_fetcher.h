@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -134,6 +133,10 @@ class ImageFetcherParams {
 class ImageFetcher {
  public:
   ImageFetcher() {}
+
+  ImageFetcher(const ImageFetcher&) = delete;
+  ImageFetcher& operator=(const ImageFetcher&) = delete;
+
   virtual ~ImageFetcher() {}
 
   // Fetch an image and optionally decode it. |image_data_callback| is called
@@ -167,9 +170,6 @@ class ImageFetcher {
   }
 
   virtual ImageDecoder* GetImageDecoder() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcher);
 };
 
 }  // namespace image_fetcher

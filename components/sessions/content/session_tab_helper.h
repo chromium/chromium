@@ -6,7 +6,6 @@
 #define COMPONENTS_SESSIONS_CONTENT_SESSION_TAB_HELPER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/sessions_export.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -23,6 +22,9 @@ class SESSIONS_EXPORT SessionTabHelper
  public:
   using DelegateLookup =
       base::RepeatingCallback<SessionTabHelperDelegate*(content::WebContents*)>;
+
+  SessionTabHelper(const SessionTabHelper&) = delete;
+  SessionTabHelper& operator=(const SessionTabHelper&) = delete;
 
   ~SessionTabHelper() override;
 
@@ -79,8 +81,6 @@ class SESSIONS_EXPORT SessionTabHelper
   SessionID window_id_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SessionTabHelper);
 };
 
 }  // namespace sessions

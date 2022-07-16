@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {dom, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {invokePolymerMethod} from '../../display_manager.m.js';
+// clang-format on
+
 /**
  * @fileoverview
  * 'MultiStepBehavior' is a behavior that simplifies defining and handling
@@ -33,7 +38,7 @@
  */
 
 /** @polymerBehavior */
-var MultiStepBehavior = {
+/* #export */ var MultiStepBehavior = {
   properties: {
     uiStep: {
       type: String,
@@ -188,3 +193,13 @@ var MultiStepBehavior = {
  * }}
  */
 MultiStepBehavior.Proto;
+
+/** @interface */
+/* #export */ class MultiStepBehaviorInterface {
+  setUIStep(step) {}
+  /** @return {string} */
+  defaultUIStep() {}
+
+  /** @return {string} */
+  get uiStep() {}
+}

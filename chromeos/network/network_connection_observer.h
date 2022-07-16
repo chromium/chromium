@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace chromeos {
 
@@ -16,6 +15,10 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionObserver {
  public:
   NetworkConnectionObserver();
+
+  NetworkConnectionObserver(const NetworkConnectionObserver&) = delete;
+  NetworkConnectionObserver& operator=(const NetworkConnectionObserver&) =
+      delete;
 
   // Called when a connection to network |service_path| is requested by
   // calling NetworkConnectionHandler::ConnectToNetwork.
@@ -37,9 +40,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionObserver {
 
  protected:
   virtual ~NetworkConnectionObserver();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectionObserver);
 };
 
 }  // namespace chromeos

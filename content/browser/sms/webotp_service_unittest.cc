@@ -14,8 +14,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -37,14 +37,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/sms/webotp_service_destroyed_reason.h"
 #include "third_party/blink/public/common/sms/webotp_service_outcome.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-shared.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom.h"
 
 using base::BindLambdaForTesting;
 using absl::optional;
-using blink::WebOTPServiceDestroyedReason;
 using blink::mojom::SmsStatus;
 using blink::mojom::WebOTPService;
 using std::string;
@@ -134,17 +132,15 @@ class Service {
 };
 
 class WebOTPServiceTest : public RenderViewHostTestHarness {
+ public:
+  WebOTPServiceTest(const WebOTPServiceTest&) = delete;
+  WebOTPServiceTest& operator=(const WebOTPServiceTest&) = delete;
+
  protected:
   WebOTPServiceTest() {
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
   ~WebOTPServiceTest() override = default;
-
-  void ExpectDestroyedReasonCount(WebOTPServiceDestroyedReason bucket,
-                                  int32_t count) {
-    histogram_tester_.ExpectBucketCount("Blink.Sms.Receive.DestroyedReason",
-                                        bucket, count);
-  }
 
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
@@ -293,8 +289,6 @@ class WebOTPServiceTest : public RenderViewHostTestHarness {
  private:
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebOTPServiceTest);
 };
 
 }  // namespace
@@ -513,33 +507,6 @@ TEST_F(WebOTPServiceTest, CleansUp) {
   ASSERT_FALSE(fetcher.HasSubscribers());
 }
 
-TEST_F(WebOTPServiceTest, CancelForNoDelegate) {
-  NavigateAndCommit(GURL(kTestUrl));
-
-  NiceMock<MockSmsProvider> provider;
-  SmsFetcherImpl fetcher(&provider);
-  mojo::Remote<blink::mojom::WebOTPService> service;
-  EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
-                                    service.BindNewPipeAndPassReceiver()));
-
-  base::RunLoop loop;
-
-  service->Receive(base::BindLambdaForTesting(
-      [&loop](SmsStatus status, const optional<string>& otp) {
-        EXPECT_EQ(SmsStatus::kCancelled, status);
-        EXPECT_EQ(absl::nullopt, otp);
-        loop.Quit();
-      }));
-
-  loop.Run();
-
-  ASSERT_FALSE(fetcher.HasSubscribers());
-
-  // Explicitly delete contents to ensure the invariant that the fetcher
-  // lifetime is longer than service.
-  DeleteContents();
-}
-
 TEST_F(WebOTPServiceTest, Abort) {
   NavigateAndCommit(GURL(kTestUrl));
 
@@ -559,87 +526,6 @@ TEST_F(WebOTPServiceTest, Abort) {
   loop.Run();
 
   ASSERT_FALSE(service.fetcher()->HasSubscribers());
-}
-
-TEST_F(WebOTPServiceTest, RecordMetricsForNewPage) {
-  // This test depends on the page being destroyed on navigation.
-  web_contents()->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
-  NavigateAndCommit(GURL(kTestUrl));
-  NiceMock<MockSmsWebContentsDelegate> delegate;
-  WebContentsImpl* web_contents_impl =
-      static_cast<WebContentsImpl*>(web_contents());
-  web_contents_impl->SetDelegate(&delegate);
-
-  NiceMock<MockSmsProvider> provider;
-  SmsFetcherImpl fetcher(&provider);
-  mojo::Remote<blink::mojom::WebOTPService> service;
-  EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
-                                    service.BindNewPipeAndPassReceiver()));
-
-  base::RunLoop navigate;
-
-  EXPECT_CALL(provider, Retrieve(_, _)).WillOnce(Invoke([&navigate]() {
-    navigate.Quit();
-  }));
-
-  base::RunLoop reload;
-
-  service->Receive(base::BindLambdaForTesting(
-      [&reload](SmsStatus status, const optional<string>& otp) {
-        EXPECT_EQ(SmsStatus::kUnhandledRequest, status);
-        EXPECT_EQ(absl::nullopt, otp);
-        reload.Quit();
-      }));
-
-  navigate.Run();
-
-  // Simulates the user navigating to a new page.
-  NavigateAndCommit(GURL("https://www.example.com"));
-
-  reload.Run();
-
-  ExpectDestroyedReasonCount(WebOTPServiceDestroyedReason::kNavigateNewPage, 1);
-}
-
-TEST_F(WebOTPServiceTest, RecordMetricsForSamePage) {
-  NavigateAndCommit(GURL(kTestUrl));
-  NiceMock<MockSmsWebContentsDelegate> delegate;
-  WebContentsImpl* web_contents_impl =
-      static_cast<WebContentsImpl*>(web_contents());
-  web_contents_impl->SetDelegate(&delegate);
-
-  NiceMock<MockSmsProvider> provider;
-  SmsFetcherImpl fetcher(&provider);
-  mojo::Remote<blink::mojom::WebOTPService> service;
-  EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
-                                    service.BindNewPipeAndPassReceiver()));
-
-  base::RunLoop navigate;
-
-  EXPECT_CALL(provider, Retrieve(_, _)).WillOnce(Invoke([&navigate]() {
-    navigate.Quit();
-  }));
-
-  base::RunLoop reload;
-
-  service->Receive(base::BindLambdaForTesting(
-      [&reload](SmsStatus status, const optional<string>& otp) {
-        EXPECT_EQ(SmsStatus::kUnhandledRequest, status);
-        EXPECT_EQ(absl::nullopt, otp);
-        reload.Quit();
-      }));
-
-  navigate.Run();
-
-  // Simulates the user re-navigating to the same page through the omni-box.
-  NavigateAndCommit(GURL(kTestUrl));
-
-  reload.Run();
-
-  // Such converted reloads are classified as NAVIGATION_TYPE_EXISTING_ENTRY.
-  ExpectDestroyedReasonCount(
-      WebOTPServiceDestroyedReason::kNavigateExistingPage, 1);
 }
 
 // Following tests exercise parts of sms service logic that depend on user
@@ -926,50 +812,6 @@ TEST_F(WebOTPServiceTest, RecordMetricsForCancelOnSuccess) {
   histogram_tester().ExpectTotalCount("Blink.Sms.Receive.TimeCancelOnSuccess",
                                       1);
   histogram_tester().ExpectTotalCount("Blink.Sms.Receive.TimeSmsReceive", 1);
-}
-
-TEST_F(WebOTPServiceTest, RecordMetricsForExistingPage) {
-  // This test depends on the page being destroyed on navigation.
-  web_contents()->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
-  NavigateAndCommit(GURL(kTestUrl));  // Add to history.
-  NavigateAndCommit(GURL("https://example.com"));
-
-  NiceMock<MockSmsWebContentsDelegate> delegate;
-  WebContentsImpl* web_contents_impl =
-      static_cast<WebContentsImpl*>(web_contents());
-  web_contents_impl->SetDelegate(&delegate);
-
-  NiceMock<MockSmsProvider> provider;
-  SmsFetcherImpl fetcher(&provider);
-  mojo::Remote<blink::mojom::WebOTPService> service;
-  EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
-                                    service.BindNewPipeAndPassReceiver()));
-
-  base::RunLoop navigate;
-
-  EXPECT_CALL(provider, Retrieve(_, _)).WillOnce(Invoke([&navigate]() {
-    navigate.Quit();
-  }));
-
-  base::RunLoop reload;
-
-  service->Receive(base::BindLambdaForTesting(
-      [&reload](SmsStatus status, const optional<string>& otp) {
-        EXPECT_EQ(SmsStatus::kUnhandledRequest, status);
-        EXPECT_EQ(absl::nullopt, otp);
-        reload.Quit();
-      }));
-
-  navigate.Run();
-
-  // Simulates the user re-navigating to an existing history page.
-  NavigationSimulator::GoBack(web_contents());
-
-  reload.Run();
-
-  ExpectDestroyedReasonCount(
-      WebOTPServiceDestroyedReason::kNavigateExistingPage, 1);
 }
 
 TEST_F(WebOTPServiceTest, RecordTimeoutAsOutcomeWithoutFailure) {

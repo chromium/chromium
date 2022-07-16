@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/ble_scanner.h"
@@ -49,6 +48,9 @@ class BleScannerImpl : public BleScanner,
    private:
     static Factory* test_factory_;
   };
+
+  BleScannerImpl(const BleScannerImpl&) = delete;
+  BleScannerImpl& operator=(const BleScannerImpl&) = delete;
 
   ~BleScannerImpl() override;
 
@@ -114,8 +116,6 @@ class BleScannerImpl : public BleScanner,
       discovery_session_weak_ptr_factory_;
 
   base::WeakPtrFactory<BleScannerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BleScannerImpl);
 };
 
 }  // namespace secure_channel

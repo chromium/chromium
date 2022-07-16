@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
@@ -101,6 +100,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   };
 
   explicit ShillPropertyHandler(Listener* listener);
+
+  ShillPropertyHandler(const ShillPropertyHandler&) = delete;
+  ShillPropertyHandler& operator=(const ShillPropertyHandler&) = delete;
+
   ~ShillPropertyHandler() override;
 
   // Sets up the observer and calls UpdateManagerProperties().
@@ -161,7 +164,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   // Requests traffic counters for a Service denoted by |service_path|.
   // Traffic counters are returned via |callback|.
   void RequestTrafficCounters(const std::string& service_path,
-                              ShillServiceClient::ListValueCallback callback);
+                              DBusMethodCallback<base::Value> callback);
 
   // Resets traffic counters for a Service denoted by |service_path|.
   void ResetTrafficCounters(const std::string& service_path);
@@ -274,8 +277,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   std::set<std::string> disabling_technologies_;
   std::set<std::string> prohibited_technologies_;
   std::set<std::string> uninitialized_technologies_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShillPropertyHandler);
 };
 
 }  // namespace internal

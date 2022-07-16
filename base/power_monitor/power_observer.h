@@ -48,6 +48,8 @@ class BASE_EXPORT PowerThermalObserver {
     kSerious,
     kCritical,
   };
+  // The maximum speed limit in the system.
+  static constexpr int kSpeedLimitMax = 100;
 
   // Notification of a change in the thermal status of the system, such as
   // entering a critical temperature range. Depending on the severity, the SoC
@@ -57,6 +59,11 @@ class BASE_EXPORT PowerThermalObserver {
   // notifying the user. The same |new_state| might be received repeatedly.
   // TODO(crbug.com/1071431): implemented on MacOS, extend to Linux/CrOs.
   virtual void OnThermalStateChange(DeviceThermalState new_state) = 0;
+
+  // Notification of a change in the operating system's advertised speed limit
+  // for CPUs in percent. Values below kSpeedLimitMax indicate that the system
+  // is impairing processing power due to thermal management.
+  virtual void OnSpeedLimitChange(int speed_limit) = 0;
 
  protected:
   virtual ~PowerThermalObserver() = default;

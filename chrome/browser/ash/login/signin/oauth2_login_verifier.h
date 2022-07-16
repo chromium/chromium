@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -43,6 +42,10 @@ class OAuth2LoginVerifier : public signin::IdentityManager::Observer {
                       signin::IdentityManager* identity_manager,
                       const CoreAccountId& primary_account_id,
                       const std::string& oauthlogin_access_token);
+
+  OAuth2LoginVerifier(const OAuth2LoginVerifier&) = delete;
+  OAuth2LoginVerifier& operator=(const OAuth2LoginVerifier&) = delete;
+
   ~OAuth2LoginVerifier() override;
 
   // Initiates verification of GAIA cookies in the cookie jar.
@@ -67,8 +70,6 @@ class OAuth2LoginVerifier : public signin::IdentityManager::Observer {
   const std::string access_token_;
 
   base::WeakPtrFactory<OAuth2LoginVerifier> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2LoginVerifier);
 };
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
+#include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/external_metrics.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/storage.pb.h"
@@ -31,8 +32,7 @@ constexpr int kExternalMetricsIntervalMins = 10;
 // to the metrics service via ProvideIndependentMetrics. This is set carefully:
 // metrics logs are stored in a queue of limited size, and are uploaded roughly
 // every 30 minutes.
-constexpr base::TimeDelta kMinIndependentMetricsInterval =
-    base::TimeDelta::FromMinutes(45);
+constexpr base::TimeDelta kMinIndependentMetricsInterval = base::Minutes(45);
 
 // Directory containing serialized event protos to read.
 constexpr char kExternalMetricsDir[] = "/var/lib/metrics/structured/events";
@@ -56,14 +56,6 @@ StructuredMetricsProvider::StructuredMetricsProvider() {
 StructuredMetricsProvider::~StructuredMetricsProvider() {
   Recorder::GetInstance()->RemoveObserver(this);
   DCHECK(!IsInObserverList());
-}
-
-void StructuredMetricsProvider::OnExternalMetricsCollected(
-    const EventsProto& events) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  events_.get()->get()->mutable_uma_events()->MergeFrom(events.uma_events());
-  events_.get()->get()->mutable_non_uma_events()->MergeFrom(
-      events.non_uma_events());
 }
 
 void StructuredMetricsProvider::OnKeyDataInitialized() {
@@ -111,6 +103,21 @@ void StructuredMetricsProvider::OnWrite(const WriteStatus status) {
   }
 }
 
+void StructuredMetricsProvider::OnExternalMetricsCollected(
+    const EventsProto& events) {
+  DCHECK(base::CurrentUIThread::IsSet());
+  events_.get()->get()->mutable_uma_events()->MergeFrom(events.uma_events());
+  events_.get()->get()->mutable_non_uma_events()->MergeFrom(
+      events.non_uma_events());
+}
+
+void StructuredMetricsProvider::Purge() {
+  DCHECK(events_ && profile_key_data_ && device_key_data_);
+  events_->Purge();
+  profile_key_data_->Purge();
+  device_key_data_->Purge();
+}
+
 void StructuredMetricsProvider::OnProfileAdded(
     const base::FilePath& profile_path) {
   DCHECK(base::CurrentUIThread::IsSet());
@@ -123,7 +130,7 @@ void StructuredMetricsProvider::OnProfileAdded(
     return;
   init_state_ = InitState::kProfileAdded;
 
-  const auto save_delay = base::TimeDelta::FromMilliseconds(kSaveDelayMs);
+  const auto save_delay = base::Milliseconds(kSaveDelayMs);
 
   profile_key_data_ = std::make_unique<KeyData>(
       profile_path.Append(kProfileKeyDataPath), save_delay,
@@ -149,14 +156,15 @@ void StructuredMetricsProvider::OnProfileAdded(
 
   external_metrics_ = std::make_unique<ExternalMetrics>(
       base::FilePath(kExternalMetricsDir),
-      base::TimeDelta::FromMinutes(kExternalMetricsIntervalMins),
+      base::Minutes(kExternalMetricsIntervalMins),
       base::BindRepeating(
           &StructuredMetricsProvider::OnExternalMetricsCollected,
           weak_factory_.GetWeakPtr()));
 
   // See OnRecordingDisabled for more information.
-  if (wipe_events_on_init_) {
-    events_->Wipe();
+  if (purge_state_on_init_) {
+    Purge();
+    purge_state_on_init_ = false;
   }
 }
 
@@ -196,7 +204,7 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
   // kUmaId events should go in the UMA upload, and all others in the non-UMA
   // upload.
   StructuredEventProto* event_proto;
-  if (event.id_type() == EventBase::IdType::kUmaId ||
+  if (event.id_type() == IdType::kUmaId ||
       !IsIndependentMetricsUploadEnabled()) {
     event_proto = events_.get()->get()->add_uma_events();
   } else {
@@ -206,10 +214,10 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
   // Choose which KeyData to use for this event.
   KeyData* key_data;
   switch (event.id_scope()) {
-    case EventBase::IdScope::kPerProfile:
+    case IdScope::kPerProfile:
       key_data = profile_key_data_.get();
       break;
-    case EventBase::IdScope::kPerDevice:
+    case IdScope::kPerDevice:
       key_data = device_key_data_.get();
       break;
     default:
@@ -219,14 +227,14 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
 
   // Set the ID for this event, if any.
   switch (event.id_type()) {
-    case EventBase::IdType::kProjectId:
+    case IdType::kProjectId:
       event_proto->set_profile_event_id(
           key_data->Id(event.project_name_hash()));
       break;
-    case EventBase::IdType::kUmaId:
+    case IdType::kUmaId:
       // TODO(crbug.com/1148168): Unimplemented.
       break;
-    case EventBase::IdType::kUnidentified:
+    case IdType::kUnidentified:
       // Do nothing.
       break;
     default:
@@ -235,24 +243,59 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
       break;
   }
 
+  // Set the event type. Do this with a switch statement to catch when the event
+  // type is UNKNOWN or uninitialized.
+  switch (event.event_type()) {
+    case StructuredEventProto_EventType_REGULAR:
+    case StructuredEventProto_EventType_RAW_STRING:
+      event_proto->set_event_type(event.event_type());
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
   event_proto->set_event_name_hash(event.name_hash());
+
+  // Set each metric's name hash and value.
   for (const auto& metric : event.metrics()) {
     auto* metric_proto = event_proto->add_metrics();
     metric_proto->set_name_hash(metric.name_hash);
 
     switch (metric.type) {
+      case EventBase::MetricType::kHmac:
+        metric_proto->set_value_hmac(key_data->HmacMetric(
+            event.project_name_hash(), metric.name_hash, metric.hmac_value));
+        break;
       case EventBase::MetricType::kInt:
         metric_proto->set_value_int64(metric.int_value);
         break;
-      case EventBase::MetricType::kString:
-        const int64_t hmac = key_data->HmacMetric(
-            event.project_name_hash(), metric.name_hash, metric.string_value);
-        metric_proto->set_value_hmac(hmac);
+      case EventBase::MetricType::kRawString:
+        metric_proto->set_value_string(metric.string_value);
         break;
     }
   }
 
   events_->QueueWrite();
+}
+
+absl::optional<int> StructuredMetricsProvider::LastKeyRotation(
+    const uint64_t project_name_hash) {
+  DCHECK(base::CurrentUIThread::IsSet());
+  if (init_state_ != InitState::kInitialized)
+    return absl::nullopt;
+  DCHECK(profile_key_data_->is_initialized());
+  DCHECK(device_key_data_->is_initialized());
+
+  // |project_name_hash| could store its keys in either the profile or device
+  // key data, so check both. As they cannot both contain the same name hash, at
+  // most one will return a non-nullopt value.
+  absl::optional<int> profile_day =
+      profile_key_data_->LastKeyRotation(project_name_hash);
+  absl::optional<int> device_day =
+      device_key_data_->LastKeyRotation(project_name_hash);
+  DCHECK(!(profile_day && device_day));
+  return profile_day ? profile_day : device_day;
 }
 
 void StructuredMetricsProvider::OnRecordingEnabled() {
@@ -264,22 +307,36 @@ void StructuredMetricsProvider::OnRecordingEnabled() {
 void StructuredMetricsProvider::OnRecordingDisabled() {
   DCHECK(base::CurrentUIThread::IsSet());
   recording_enabled_ = false;
+}
 
-  // Delete the cache of unsent logs. We need to handle two cases:
+void StructuredMetricsProvider::OnReportingStateChanged(bool enabled) {
+  DCHECK(base::CurrentUIThread::IsSet());
+
+  // When reporting is enabled, OnRecordingEnabled is also called. Let that
+  // handle enabling.
+  if (enabled) {
+    return;
+  }
+
+  // When reporting is disabled, OnRecordingDisabled is also called. Disabling
+  // here is redundant but done for clarity.
+  recording_enabled_ = false;
+
+  // Delete keys and unsent logs. We need to handle two cases:
   //
-  // 1. A profile has been added and so |events_| has been constructed. In this
-  //    case just call Wipe.
+  // 1. A profile hasn't been added yet and we can't delete the files
+  //    immediately. In this case set |purge_state_on_init_| and let
+  //    OnProfileAdded call Purge after initialization.
   //
-  // 2. A profile hasn't been added and |events_| is nullptr. In this case set
-  //    |wipe_events_on_init_| and let OnProfileAdded call Wipe after |events_|
-  //    is initialized.
+  // 2. A profile has been added and so the backing PersistentProtos have been
+  //    constructed. In this case just call Purge directly.
   //
-  // Note that Wipe will ensure the events are deleted from disk even if the
-  // PersistentProto hasn't itself finished initializing.
-  if (events_) {
-    events_->Wipe();
+  // Note that Purge will ensure the events are deleted from disk even if the
+  // PersistentProto hasn't itself finished being read.
+  if (init_state_ == InitState::kUninitialized) {
+    purge_state_on_init_ = true;
   } else {
-    wipe_events_on_init_ = true;
+    Purge();
   }
 }
 
@@ -349,7 +406,7 @@ void StructuredMetricsProvider::WriteNowForTest() {
 void StructuredMetricsProvider::SetExternalMetricsDirForTest(
     const base::FilePath& dir) {
   external_metrics_ = std::make_unique<ExternalMetrics>(
-      dir, base::TimeDelta::FromMinutes(kExternalMetricsIntervalMins),
+      dir, base::Minutes(kExternalMetricsIntervalMins),
       base::BindRepeating(
           &StructuredMetricsProvider::OnExternalMetricsCollected,
           weak_factory_.GetWeakPtr()));

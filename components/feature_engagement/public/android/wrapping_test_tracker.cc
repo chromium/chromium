@@ -34,6 +34,11 @@ bool WrappingTestTracker::ShouldTriggerHelpUI(const base::Feature& feature) {
       base::android::AttachCurrentThread(), java_tracker_, jfeature);
 }
 
+Tracker::TriggerDetails WrappingTestTracker::ShouldTriggerHelpUIWithSnooze(
+    const base::Feature& feature) {
+  return Tracker::TriggerDetails(false, false);
+}
+
 bool WrappingTestTracker::WouldTriggerHelpUI(
     const base::Feature& feature) const {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -69,6 +74,17 @@ void WrappingTestTracker::Dismissed(const base::Feature& feature) {
       base::android::ConvertUTF8ToJavaString(env, feature.name));
   Java_CppWrappedTestTracker_dismissed(base::android::AttachCurrentThread(),
                                        java_tracker_, jfeature);
+}
+
+void WrappingTestTracker::DismissedWithSnooze(
+    const base::Feature& feature,
+    absl::optional<SnoozeAction> snooze_action) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring> jfeature(
+      base::android::ConvertUTF8ToJavaString(env, feature.name));
+  Java_CppWrappedTestTracker_dismissedWithSnooze(
+      base::android::AttachCurrentThread(), java_tracker_, jfeature,
+      static_cast<int>(snooze_action.value()));
 }
 
 std::unique_ptr<DisplayLockHandle> WrappingTestTracker::AcquireDisplayLock() {

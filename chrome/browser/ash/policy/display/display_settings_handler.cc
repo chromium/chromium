@@ -6,16 +6,16 @@
 
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/public/ash_interfaces.h"
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace policy {

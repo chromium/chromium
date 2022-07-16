@@ -54,12 +54,15 @@ class ModuleDatabase : public ModuleDatabaseEventSource {
 
   // The Module Database becomes idle after this timeout expires without any
   // module events.
-  static constexpr base::TimeDelta kIdleTimeout =
-      base::TimeDelta::FromSeconds(10);
+  static constexpr base::TimeDelta kIdleTimeout = base::Seconds(10);
 
   // Creates the ModuleDatabase. Must be created and set on the sequence
   // returned by GetTaskRunner().
   explicit ModuleDatabase(bool third_party_blocking_policy_enabled);
+
+  ModuleDatabase(const ModuleDatabase&) = delete;
+  ModuleDatabase& operator=(const ModuleDatabase&) = delete;
+
   ~ModuleDatabase() override;
 
   // Returns the SequencedTaskRunner on which the ModuleDatabase lives. Can be
@@ -278,8 +281,6 @@ class ModuleDatabase : public ModuleDatabaseEventSource {
   ThirdPartyMetricsRecorder third_party_metrics_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleDatabase);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_MODULE_DATABASE_H_

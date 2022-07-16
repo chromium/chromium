@@ -4,11 +4,14 @@
 
 #include "media/cdm/win/media_foundation_cdm.h"
 
+#include <mferror.h>
+
 #include <stdlib.h>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_propvariant.h"
@@ -272,19 +275,24 @@ bool MediaFoundationCdm::IsAvailable() {
 }
 
 MediaFoundationCdm::MediaFoundationCdm(
+    const std::string& uma_prefix,
     const CreateMFCdmCB& create_mf_cdm_cb,
     const IsTypeSupportedCB& is_type_supported_cb,
+    const StoreClientTokenCB& store_client_token_cb,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb)
-    : create_mf_cdm_cb_(create_mf_cdm_cb),
+    : uma_prefix_(uma_prefix),
+      create_mf_cdm_cb_(create_mf_cdm_cb),
       is_type_supported_cb_(is_type_supported_cb),
+      store_client_token_cb_(store_client_token_cb),
       session_message_cb_(session_message_cb),
       session_closed_cb_(session_closed_cb),
       session_keys_change_cb_(session_keys_change_cb),
       session_expiration_update_cb_(session_expiration_update_cb) {
   DVLOG_FUNC(1);
+  DCHECK(!uma_prefix_.empty());
   DCHECK(create_mf_cdm_cb_);
   DCHECK(is_type_supported_cb_);
   DCHECK(session_message_cb_);
@@ -320,8 +328,11 @@ void MediaFoundationCdm::SetServerCertificate(
     return;
   }
 
-  if (FAILED(mf_cdm_->SetServerCertificate(certificate.data(),
-                                           certificate.size()))) {
+  auto hr =
+      mf_cdm_->SetServerCertificate(certificate.data(), certificate.size());
+  base::UmaHistogramSparse(uma_prefix_ + "SetServerCertificate", hr);
+
+  if (FAILED(hr)) {
     promise->reject(Exception::NOT_SUPPORTED_ERROR, 0, "Failed to set cert");
     return;
   }
@@ -369,7 +380,7 @@ void MediaFoundationCdm::CreateSessionAndGenerateRequest(
 
   // TODO(xhwang): Implement session expiration update.
   auto session = std::make_unique<MediaFoundationCdmSession>(
-      session_message_cb_, session_keys_change_cb_,
+      uma_prefix_, session_message_cb_, session_keys_change_cb_,
       session_expiration_update_cb_);
 
   if (FAILED(session->Initialize(mf_cdm_.Get(), session_type))) {
@@ -432,6 +443,10 @@ void MediaFoundationCdm::UpdateSession(
     promise->reject(Exception::INVALID_STATE_ERROR, 0, "Update failed");
     return;
   }
+
+  // Failure to store the client token will not prevent the CDM from correctly
+  // functioning.
+  StoreClientTokenIfNeeded();
 
   promise->resolve();
 }
@@ -605,6 +620,42 @@ void MediaFoundationCdm::OnIsTypeSupportedResult(
   } else {
     promise->resolve(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED);
   }
+}
+
+void MediaFoundationCdm::StoreClientTokenIfNeeded() {
+  DVLOG_FUNC(1);
+
+  ComPtr<IMFAttributes> attributes;
+  if (FAILED(mf_cdm_.As(&attributes))) {
+    DLOG(ERROR) << "Failed to access the CDM's IMFAttribute store";
+    return;
+  }
+
+  base::win::ScopedCoMem<uint8_t> client_token;
+  uint32_t client_token_size;
+
+  HRESULT hr = attributes->GetAllocatedBlob(
+      EME_CONTENTDECRYPTIONMODULE_CLIENT_TOKEN.fmtid, &client_token,
+      &client_token_size);
+  if (FAILED(hr)) {
+    if (hr != MF_E_ATTRIBUTENOTFOUND)
+      DLOG(ERROR) << "Failed to get the client token blob. hr=" << hr;
+    return;
+  }
+
+  DVLOG(2) << "Got client token of size " << client_token_size;
+
+  std::vector<uint8_t> client_token_vector;
+  client_token_vector.assign(client_token.get(),
+                             client_token.get() + client_token_size);
+
+  // The store operation is cross-process so only run it if we have a new
+  // client token.
+  if (client_token_vector == cached_client_token_)
+    return;
+
+  cached_client_token_ = client_token_vector;
+  store_client_token_cb_.Run(cached_client_token_);
 }
 
 }  // namespace media

@@ -11,8 +11,7 @@
 
 namespace {
 // Timeout amount for |discovery_timer_|.
-const constexpr base::TimeDelta kDiscoveryTimeout =
-    base::TimeDelta::FromSeconds(3);
+const constexpr base::TimeDelta kDiscoveryTimeout = base::Seconds(3);
 }  // namespace
 
 namespace media_router {

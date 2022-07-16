@@ -9,7 +9,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 
 namespace download {
 
@@ -21,6 +20,11 @@ namespace download {
 class NetworkStatusListenerAndroid : public NetworkStatusListener {
  public:
   NetworkStatusListenerAndroid();
+
+  NetworkStatusListenerAndroid(const NetworkStatusListenerAndroid&) = delete;
+  NetworkStatusListenerAndroid& operator=(const NetworkStatusListenerAndroid&) =
+      delete;
+
   ~NetworkStatusListenerAndroid() override;
 
   // NetworkStatusListener implementation.
@@ -39,8 +43,6 @@ class NetworkStatusListenerAndroid : public NetworkStatusListener {
  private:
   // The Java side object owned by this class.
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkStatusListenerAndroid);
 };
 
 }  // namespace download

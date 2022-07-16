@@ -64,6 +64,7 @@ bool DecodeIdentifiabilityType(base::StringPiece s, V* result) {
 std::string EncodeIdentifiabilityType(const blink::IdentifiableSurface&);
 std::string EncodeIdentifiabilityType(const blink::IdentifiableSurface::Type&);
 std::string EncodeIdentifiabilityType(const unsigned int&);
+std::string EncodeIdentifiabilityType(const double&);
 template <typename T, typename U>
 std::string EncodeIdentifiabilityType(const std::pair<T, U>& v) {
   return base::StrCat({EncodeIdentifiabilityType(v.first), ";",
@@ -119,9 +120,10 @@ template <typename T,
               privacy_budget_internal::EncodeIdentifiabilityType>
 std::string EncodeIdentifiabilityFieldTrialParam(const T& source) {
   std::vector<std::string> encoded_elements;
-  std::transform(source.begin(), source.end(),
-                 std::back_inserter(encoded_elements),
-                 [](auto& v) { return ElementEncoder(v); });
+  encoded_elements.reserve(source.size());
+  for (const auto& v : source) {
+    encoded_elements.emplace_back(ElementEncoder(v));
+  }
   if (privacy_budget_internal::SortWhenSerializing<
           typename std::remove_cv<T>::type>::value) {
     base::ranges::sort(encoded_elements);

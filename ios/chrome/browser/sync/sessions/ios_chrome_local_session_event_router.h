@@ -33,6 +33,12 @@ class IOSChromeLocalSessionEventRouter
       ChromeBrowserState* browser_state,
       sync_sessions::SyncSessionsClient* sessions_client_,
       const syncer::SyncableService::StartSyncFlare& flare);
+
+  IOSChromeLocalSessionEventRouter(const IOSChromeLocalSessionEventRouter&) =
+      delete;
+  IOSChromeLocalSessionEventRouter& operator=(
+      const IOSChromeLocalSessionEventRouter&) = delete;
+
   ~IOSChromeLocalSessionEventRouter() override;
 
   // LocalEventRouter:
@@ -104,8 +110,6 @@ class IOSChromeLocalSessionEventRouter
   // Track the number of WebStateList we are observing that are in a batch
   // operation.
   int batch_in_progress_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeLocalSessionEventRouter);
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_SESSIONS_IOS_CHROME_LOCAL_SESSION_EVENT_ROUTER_H_

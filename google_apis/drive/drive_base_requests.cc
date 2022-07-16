@@ -16,18 +16,18 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "google_apis/common/request_sender.h"
+#include "google_apis/common/task_util.h"
+#include "google_apis/common/time_util.h"
 #include "google_apis/drive/drive_api_parser.h"
-#include "google_apis/drive/request_sender.h"
 #include "google_apis/drive/request_util.h"
-#include "google_apis/drive/task_util.h"
-#include "google_apis/drive/time_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/mime_util.h"
 #include "net/http/http_util.h"
@@ -178,8 +178,8 @@ DriveUrlFetchRequestBase::DriveUrlFetchRequestBase(
 
 DriveUrlFetchRequestBase::~DriveUrlFetchRequestBase() = default;
 
-google_apis::ApiErrorCode DriveUrlFetchRequestBase::MapReasonToError(
-    google_apis::ApiErrorCode code,
+ApiErrorCode DriveUrlFetchRequestBase::MapReasonToError(
+    ApiErrorCode code,
     const std::string& reason) {
   return MapDriveReasonToError(code, reason);
 }
@@ -356,18 +356,6 @@ void UploadRangeRequestBase::OnDataParsed(ApiErrorCode code,
 void UploadRangeRequestBase::RunCallbackOnPrematureFailure(ApiErrorCode code) {
   OnRangeRequestComplete(UploadRangeResponse(code, 0, 0),
                          std::unique_ptr<base::Value>());
-}
-
-UploadRangeRequestBase::DownloadData::DownloadData(
-    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
-    : blocking_task_runner_(blocking_task_runner) {}
-
-UploadRangeRequestBase::DownloadData::~DownloadData() {
-  if (output_file.IsValid()) {
-    blocking_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce([](base::File file) {}, std::move(output_file)));
-  }
 }
 
 //========================== ResumeUploadRequestBase =========================

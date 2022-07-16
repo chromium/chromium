@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_ANDROID_URLS_DATABASE_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_ANDROID_URLS_DATABASE_H_
 
-#include "base/macros.h"
 #include "components/history/core/browser/android/android_history_types.h"
 
 namespace sql {
@@ -28,6 +27,10 @@ namespace history {
 class AndroidURLsDatabase {
  public:
   AndroidURLsDatabase();
+
+  AndroidURLsDatabase(const AndroidURLsDatabase&) = delete;
+  AndroidURLsDatabase& operator=(const AndroidURLsDatabase&) = delete;
+
   virtual ~AndroidURLsDatabase();
 
   // Creates the android_urls table if it doesn't exist. Returns true if the
@@ -68,9 +71,6 @@ class AndroidURLsDatabase {
   // Returns the database for the functions in this interface. The decendent of
   // this class implements these functions to return its objects.
   virtual sql::Database& GetDB() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AndroidURLsDatabase);
 };
 
 }  // namespace history

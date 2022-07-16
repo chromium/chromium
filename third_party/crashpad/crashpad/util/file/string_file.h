@@ -19,7 +19,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/numerics/safe_math.h"
 #include "util/file/file_io.h"
 #include "util/file/file_reader.h"
@@ -37,6 +36,10 @@ namespace crashpad {
 class StringFile : public FileReaderInterface, public FileWriterInterface {
  public:
   StringFile();
+
+  StringFile(const StringFile&) = delete;
+  StringFile& operator=(const StringFile&) = delete;
+
   ~StringFile() override;
 
   //! \brief Returns a string containing the virtual file’s contents.
@@ -72,8 +75,6 @@ class StringFile : public FileReaderInterface, public FileWriterInterface {
   //!     report file offsets. The implementation must take care when converting
   //!     between these distinct types.
   base::CheckedNumeric<size_t> offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringFile);
 };
 
 }  // namespace crashpad

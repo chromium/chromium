@@ -54,10 +54,13 @@ const load = {
     document.head.removeChild(link);
   },
 
-  // Returns a promise that settles once the given path has been fetched as an
-  // iframe.
-  iframe: async (path, validator) => {
+  iframe_with_attrs: async (path, attribute_map, validator) => {
     const frame = document.createElement("iframe");
+    if (attribute_map instanceof Object) {
+      for (const [key, value] of Object.entries(attribute_map)) {
+        frame[key] = value;
+      }
+    }
     const loaded = new Promise(resolve => {
       frame.onload = frame.onerror = resolve;
     });
@@ -68,6 +71,12 @@ const load = {
       validator(frame);
     }
     document.body.removeChild(frame);
+  },
+
+  // Returns a promise that settles once the given path has been fetched as an
+  // iframe.
+  iframe: async (path, validator) => {
+    return load.iframe_with_attrs(path, undefined, validator);
   },
 
   // Returns a promise that settles once the given path has been fetched as a
@@ -83,11 +92,42 @@ const load = {
     document.body.removeChild(script);
   },
 
+  // Returns a promise that settles once the given path has been fetched as an
+  // object.
+  object: async (path, type) => {
+    const object = document.createElement("object");
+    const loaded = new Promise(resolve => {
+      object.onload = object.onerror = resolve;
+    });
+    object.data = load.cache_bust(path);
+    if (type) {
+      object.type = type;
+    }
+    object.style = "width: 0px; height: 0px";
+    document.body.appendChild(object);
+    await loaded;
+    document.body.removeChild(object);
+  },
+
   // Returns a promise that settles once the given path has been fetched
   // through a synchronous XMLHttpRequest.
-  xhr_sync: async path => {
+  xhr_sync: async (path, headers) => {
     const xhr = new XMLHttpRequest;
     xhr.open("GET", path, /* async = */ false);
+    if (headers instanceof Object) {
+      for (const [key, value] of Object.entries(headers)) {
+        xhr.setRequestHeader(key, value);
+      }
+    }
     xhr.send();
+  },
+
+  xhr_async: path => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", path)
+    xhr.send();
+    return new Promise(resolve => {
+      xhr.onload = xhr.onerror = resolve;
+    });
   }
 };

@@ -63,6 +63,10 @@ class VpnService : public KeyedService,
              NetworkConfigurationHandler* network_configuration_handler,
              NetworkProfileHandler* network_profile_handler,
              NetworkStateHandler* network_state_handler);
+
+  VpnService(const VpnService&) = delete;
+  VpnService& operator=(const VpnService&) = delete;
+
   ~VpnService() override;
 
   void SendShowAddDialogToExtension(const std::string& extension_id);
@@ -240,8 +244,6 @@ class VpnService : public KeyedService,
   StringToConfigurationMap service_path_to_configuration_map_;
 
   base::WeakPtrFactory<VpnService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VpnService);
 };
 
 }  // namespace chromeos

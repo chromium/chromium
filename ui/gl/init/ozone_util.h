@@ -5,7 +5,6 @@
 #ifndef UI_GL_INIT_OZONE_UTIL_H_
 #define UI_GL_INIT_OZONE_UTIL_H_
 
-#include "base/macros.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/ozone/public/gl_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"

@@ -7,11 +7,9 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -61,6 +59,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream
  public:
   VideoRtpStream(std::unique_ptr<media::cast::VideoSender> video_sender,
                  base::WeakPtr<RtpStreamClient> client);
+
+  VideoRtpStream(const VideoRtpStream&) = delete;
+  VideoRtpStream& operator=(const VideoRtpStream&) = delete;
+
   ~VideoRtpStream();
 
   // Called by VideoCaptureClient when a video frame is received.
@@ -85,8 +87,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream
   // Set to true when a request for a refresh frame has been made.  This is
   // cleared once the next frame is received.
   bool expecting_a_refresh_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoRtpStream);
 };
 
 // Receives audio data and submits the data to media::cast::AudioSender.
@@ -95,6 +95,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) AudioRtpStream
  public:
   AudioRtpStream(std::unique_ptr<media::cast::AudioSender> audio_sender,
                  base::WeakPtr<RtpStreamClient> client);
+
+  AudioRtpStream(const AudioRtpStream&) = delete;
+  AudioRtpStream& operator=(const AudioRtpStream&) = delete;
+
   ~AudioRtpStream();
 
   // Called by AudioCaptureClient when new audio data is available.
@@ -106,8 +110,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) AudioRtpStream
  private:
   const std::unique_ptr<media::cast::AudioSender> audio_sender_;
   const base::WeakPtr<RtpStreamClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioRtpStream);
 };
 
 }  // namespace mirroring

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -8,16 +8,14 @@
 
 import argparse
 import os
-import runner_logs
 import sys
+import tempfile
 
 from common_args import AddCommonArgs, AddTargetSpecificArgs, \
                         ConfigureLogging, GetDeploymentTargetForArgs
 from net_test_server import SetupTestServer
-from run_test_package import RunTestPackage, RunTestPackageArgs, SystemLogReader
+from run_test_package import RunTestPackage, RunTestPackageArgs
 from runner_exceptions import HandleExceptionAndReturnExitCode
-from runner_logs import RunnerLogManager
-from symbolizer import BuildIdsPaths
 
 DEFAULT_TEST_SERVER_CONCURRENCY = 4
 
@@ -70,8 +68,8 @@ def AddTestExecutionArgs(arg_parser):
   test_args.add_argument(
       '--test-launcher-filter-file',
       default=None,
-      help='Override default filter file passed to target test '
-      'process. Set an empty path to disable filtering.')
+      help='Filter file(s) passed to target test process. Use ";" to separate '
+      'multiple filter files ')
   test_args.add_argument('--test-launcher-jobs',
                          type=int,
                          help='Sets the number of parallel test jobs.')
@@ -92,11 +90,12 @@ def AddTestExecutionArgs(arg_parser):
   test_args.add_argument(
       '--isolated-script-test-perf-output',
       help='If present, store chartjson results on this path.')
-  test_args.add_argument('--use-run-test-component',
-                         default=False,
-                         action='store_true',
-                         help='Run the test package hermetically using '
-                         'run-test-component, rather than run.')
+  test_args.add_argument('--use-run',
+                         dest='use_run_test_component',
+                         default=True,
+                         action='store_false',
+                         help='Run the test package using run rather than '
+                         'hermetically using run-test-component.')
   test_args.add_argument(
       '--code-coverage',
       default=False,
@@ -111,6 +110,10 @@ def AddTestExecutionArgs(arg_parser):
   test_args.add_argument('--child-arg',
                          action='append',
                          help='Arguments for the test process.')
+  test_args.add_argument('--gtest_also_run_disabled_tests',
+                         default=False,
+                         action='store_true',
+                         help='Run tests prefixed with DISABLED_')
   test_args.add_argument('child_args',
                          nargs='*',
                          help='Arguments for the test process.')
@@ -127,9 +130,9 @@ def main():
   if not args.out_dir:
     raise ValueError("out-dir must be specified.")
 
-  # Code coverage uses runtests, which calls run_test_component.
-  if args.code_coverage:
-    args.use_run_test_component = True
+  if args.code_coverage and not args.use_run_test_component:
+    raise ValueError('Collecting code coverage info requires using '
+                     'run-test-component.')
 
   ConfigureLogging(args)
 
@@ -181,6 +184,8 @@ def main():
   if args.isolated_script_test_perf_output:
     child_args.append('--isolated-script-test-perf-output=' +
                       TEST_PERF_RESULT_PATH)
+  if args.gtest_also_run_disabled_tests:
+    child_args.append('--gtest_also_run_disabled_tests')
 
   if args.child_arg:
     child_args.extend(args.child_arg)
@@ -192,20 +197,22 @@ def main():
     test_realms = [TEST_REALM_NAME]
 
   try:
-    with GetDeploymentTargetForArgs(args) as target, \
-         SystemLogReader() as system_logger, \
-         RunnerLogManager(args.runner_logs_dir, BuildIdsPaths(args.package)):
+    with GetDeploymentTargetForArgs(args) as target:
       target.Start()
-
-      if args.system_log_file and args.system_log_file != '-':
-        system_logger.Start(target, args.package, args.system_log_file)
+      target.StartSystemLog(args.package)
 
       if args.test_launcher_filter_file:
-        target.PutFile(args.test_launcher_filter_file,
-                       TEST_FILTER_PATH,
-                       for_package=args.package_name,
-                       for_realms=test_realms)
-        child_args.append('--test-launcher-filter-file=' + TEST_FILTER_PATH)
+        test_launcher_filter_files = args.test_launcher_filter_file.split(';')
+        with tempfile.NamedTemporaryFile('a+b') as combined_filter_file:
+          for filter_file in test_launcher_filter_files:
+            with open(filter_file, 'rb') as f:
+              combined_filter_file.write(f.read())
+          combined_filter_file.seek(0)
+          target.PutFile(combined_filter_file.name,
+                         TEST_FILTER_PATH,
+                         for_package=args.package_name,
+                         for_realms=test_realms)
+          child_args.append('--test-launcher-filter-file=' + TEST_FILTER_PATH)
 
       test_server = None
       if args.enable_test_server:

@@ -14,8 +14,7 @@ template <>
 class StructTraits<blink::mojom::MobileFriendlinessDataView,
                    blink::MobileFriendliness> {
  public:
-  static blink::mojom::ViewportStatus viewport_device_width(
-      const blink::MobileFriendliness& mf) {
+  static bool viewport_device_width(const blink::MobileFriendliness& mf) {
     return mf.viewport_device_width;
   }
   static double viewport_initial_scale_x10(
@@ -25,8 +24,7 @@ class StructTraits<blink::mojom::MobileFriendlinessDataView,
   static int viewport_hardcoded_width(const blink::MobileFriendliness& mf) {
     return mf.viewport_hardcoded_width;
   }
-  static blink::mojom::ViewportStatus allow_user_zoom(
-      const blink::MobileFriendliness& mf) {
+  static bool allow_user_zoom(const blink::MobileFriendliness& mf) {
     return mf.allow_user_zoom;
   }
   static int small_text_ratio(const blink::MobileFriendliness& mf) {

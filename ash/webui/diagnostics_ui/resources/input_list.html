@@ -1,33 +1,24 @@
+<style include="diagnostics-shared">
+  #inputListContainer {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+</style>
 <div id="inputListContainer">
-  <p>Keyboards:</p>
-  <ul id="keyboardList">
-    <dom-repeat items="[[keyboards_]]" as="keyboard">
-      <template>
-        <li>
-          [[keyboard.name]]
-          ([[keyboard.physicalLayout]],
-          [[keyboard.mechanicalLayout]])
-          <template is="dom-if" if="[[keyboard.hasAssistantKey]]">
-            (with Assistant key)
-          </template>
-        </li>
-      </template>
-    </dom-repeat>
-  </ul>
-  <p>Touchpads:</p>
-  <ul id="touchpadList">
-    <dom-repeat items="[[touchpads_]]" as="touchpad">
-      <template>
-        <li>[[touchpad.name]]</li>
-      </template>
-    </dom-repeat>
-  </ul>
-  <p>Touchscreens:</p>
-  <ul id="touchscreenList">
-    <dom-repeat items="[[touchscreens_]]" as="touchscreen">
-      <template>
-        <li>[[touchscreen.name]]</li>
-      </template>
-    </dom-repeat>
-  </ul>
+  <div class="diagnostics-cards-container">
+    <div class="card-width">
+      <input-card device-type="keyboard" devices="[[keyboards_]]"
+          on-test-button-click="handleKeyboardTestButtonClick_">
+        <div slot="title">[[i18n('inputCategoryKeyboard')]]</div>
+      </input-card>
+      <input-card device-type="touchpad" devices="[[touchpads_]]">
+        <div slot="title">[[i18n('inputCategoryTouchpad')]]</div>
+      </input-card>
+      <input-card device-type="touchscreen" devices="[[touchscreens_]]">
+        <div slot="title">[[i18n('inputCategoryTouchscreen')]]</div>
+      </input-card>
+    </div>
+  </div>
 </div>

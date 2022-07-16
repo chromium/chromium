@@ -15,10 +15,11 @@ class ProxyConfigServiceIOS : public PollingProxyConfigService {
   // Constructs a ProxyConfigService that watches the iOS system proxy settings.
   explicit ProxyConfigServiceIOS(
       const NetworkTrafficAnnotationTag& traffic_annotation);
-  ~ProxyConfigServiceIOS() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyConfigServiceIOS);
+  ProxyConfigServiceIOS(const ProxyConfigServiceIOS&) = delete;
+  ProxyConfigServiceIOS& operator=(const ProxyConfigServiceIOS&) = delete;
+
+  ~ProxyConfigServiceIOS() override;
 };
 
 }  // namespace net

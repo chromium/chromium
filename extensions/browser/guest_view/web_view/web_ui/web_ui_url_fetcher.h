@@ -31,6 +31,10 @@ class WebUIURLFetcher {
                   int render_frame_id,
                   const GURL& url,
                   WebUILoadFileCallback callback);
+
+  WebUIURLFetcher(const WebUIURLFetcher&) = delete;
+  WebUIURLFetcher& operator=(const WebUIURLFetcher&) = delete;
+
   ~WebUIURLFetcher();
 
   void Start();
@@ -43,8 +47,6 @@ class WebUIURLFetcher {
   GURL url_;
   WebUILoadFileCallback callback_;
   std::unique_ptr<network::SimpleURLLoader> fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIURLFetcher);
 };
 
 #endif  // EXTENSIONS_BROWSER_GUEST_VIEW_WEB_VIEW_WEB_UI_WEB_UI_URL_FETCHER_H_

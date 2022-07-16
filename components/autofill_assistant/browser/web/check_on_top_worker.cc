@@ -4,6 +4,8 @@
 
 #include "components/autofill_assistant/browser/web/check_on_top_worker.h"
 
+#include <vector>
+
 #include "base/logging.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 

@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/ui/views/status_icons/status_icon_win.h"
@@ -21,6 +20,10 @@
 class StatusTrayStateChangerWinTest : public testing::Test {
  public:
   StatusTrayStateChangerWinTest() {}
+
+  StatusTrayStateChangerWinTest(const StatusTrayStateChangerWinTest&) = delete;
+  StatusTrayStateChangerWinTest& operator=(
+      const StatusTrayStateChangerWinTest&) = delete;
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -82,8 +85,6 @@ class StatusTrayStateChangerWinTest : public testing::Test {
   Microsoft::WRL::ComPtr<StatusTrayStateChangerWin> tray_watcher_;
 
   StatusIconWin* status_icon_win_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusTrayStateChangerWinTest);
 };
 
 // Test is disabled due to multiple COM initialization errors.  See

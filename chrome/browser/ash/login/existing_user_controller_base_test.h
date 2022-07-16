@@ -5,21 +5,18 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_EXISTING_USER_CONTROLLER_BASE_TEST_H_
 #define CHROME_BROWSER_ASH_LOGIN_EXISTING_USER_CONTROLLER_BASE_TEST_H_
 
-// TODO(https://crbug.com/1164001): move to forward declaration when migrated
-// to ash namespace
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-
 namespace user_manager {
 class ScopedUserManager;
 }
 
-namespace chromeos {
+namespace ash {
+class MockUserManager;
+
 namespace {
 
 const char kFirstSAMLUserId[] = "12345";
@@ -61,6 +58,6 @@ class ExistingUserControllerBaseTest : public ::testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EXISTING_USER_CONTROLLER_BASE_TEST_H_

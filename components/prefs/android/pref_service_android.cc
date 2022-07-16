@@ -38,6 +38,13 @@ void PrefServiceAndroid::ClearPref(JNIEnv* env,
       base::android::ConvertJavaStringToUTF8(env, j_preference));
 }
 
+jboolean PrefServiceAndroid::HasPrefPath(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& j_preference) {
+  return pref_service_->HasPrefPath(
+      base::android::ConvertJavaStringToUTF8(env, j_preference));
+}
+
 jboolean PrefServiceAndroid::GetBoolean(
     JNIEnv* env,
     const JavaParamRef<jstring>& j_preference) {

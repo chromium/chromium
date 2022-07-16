@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_DBUS_DBUS_CLIENT_H_
 #define CHROMEOS_DBUS_DBUS_CLIENT_H_
 
-#include "base/macros.h"
-
 namespace dbus {
 class Bus;
 }  // namespace dbus
@@ -17,6 +15,9 @@ namespace chromeos {
 // access to the Init function to DBusThreadManager only to prevent
 // incorrect calls. Stub clients may lift that restriction however.
 class DBusClient {
+ public:
+  DBusClient& operator=(const DBusClient&) = delete;
+
  protected:
   virtual ~DBusClient() {}
 
@@ -27,8 +28,6 @@ class DBusClient {
 
  private:
   friend class DBusClientsBrowser;
-
-  DISALLOW_ASSIGN(DBusClient);
 };
 
 }  // namespace chromeos

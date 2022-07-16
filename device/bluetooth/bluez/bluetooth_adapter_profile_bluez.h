@@ -48,6 +48,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
       ProfileRegisteredCallback success_callback,
       bluez::BluetoothProfileManagerClient::ErrorCallback error_callback);
 
+  BluetoothAdapterProfileBlueZ(const BluetoothAdapterProfileBlueZ&) = delete;
+  BluetoothAdapterProfileBlueZ& operator=(const BluetoothAdapterProfileBlueZ&) =
+      delete;
+
   ~BluetoothAdapterProfileBlueZ() override;
 
   // The object path of the profile.
@@ -106,8 +110,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdapterProfileBlueZ> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterProfileBlueZ);
 };
 
 }  // namespace bluez

@@ -67,7 +67,7 @@ std::vector<FileSearchProvider::PathInfo> SearchFilesByPattern(
       base::FileEnumerator::DIRECTORIES | base::FileEnumerator::FILES,
       CreateFnmatchQuery(query), base::FileEnumerator::FolderSearchPolicy::ALL);
 
-  const auto time_limit = base::TimeDelta::FromMilliseconds(kSearchTimeoutMs);
+  const auto time_limit = base::Milliseconds(kSearchTimeoutMs);
   bool timed_out = false;
   std::vector<FileSearchProvider::PathInfo> matched_paths;
   for (base::FilePath path = enumerator.Next(); !path.empty();
@@ -91,6 +91,7 @@ std::vector<FileSearchProvider::PathInfo> SearchFilesByPattern(
 
 FileSearchProvider::FileSearchProvider(Profile* profile)
     : profile_(profile),
+      thumbnail_loader_(profile),
       root_path_(file_manager::util::GetMyFilesFolderForProfile(profile)) {
   DCHECK(profile_);
   DCHECK(!root_path_.empty());
@@ -156,9 +157,11 @@ std::unique_ptr<FileResult> FileSearchProvider::MakeResult(
     const double relevance) {
   const auto type = path.is_directory ? FileResult::Type::kDirectory
                                       : FileResult::Type::kFile;
-  return std::make_unique<FileResult>(kFileSearchSchema, path.path,
-                                      ash::AppListSearchResultType::kFileSearch,
-                                      last_query_, relevance, type, profile_);
+  auto result = std::make_unique<FileResult>(
+      kFileSearchSchema, path.path, ash::AppListSearchResultType::kFileSearch,
+      last_query_, relevance, type, profile_);
+  result->RequestThumbnail(&thumbnail_loader_);
+  return result;
 }
 
 }  // namespace app_list

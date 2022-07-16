@@ -10,6 +10,8 @@
 
 const CGFloat kAuthenticationHeaderImageHeight = 180.;
 
+const CGFloat kAccountProfilePhotoDimension = 40.;
+
 const UIFontTextStyle kAuthenticationTitleFontStyle = UIFontTextStyleTitle1;
 const UIFontTextStyle kAuthenticationTextFontStyle = UIFontTextStyleSubheadline;
 
@@ -20,3 +22,6 @@ const CGFloat kAuthenticationSeparatorColorAlpha = 0.12;
 const CGFloat kAuthenticationSeparatorHeight = 1;
 
 NSString* const kAuthenticationHeaderImageName = @"unified_consent_header";
+
+NSString* const kSigninSyncScreenAccessibilityIdentifier =
+    @"kSigninSyncScreenAccessibilityIdentifier";

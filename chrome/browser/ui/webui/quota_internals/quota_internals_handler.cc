@@ -41,10 +41,10 @@ QuotaInternalsHandler::~QuotaInternalsHandler() {
 }
 
 void QuotaInternalsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestInfo", base::BindRepeating(&QuotaInternalsHandler::OnRequestInfo,
                                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "triggerStoragePressure",
       base::BindRepeating(&QuotaInternalsHandler::OnTriggerStoragePressure,
                           base::Unretained(this)));
@@ -83,7 +83,7 @@ void QuotaInternalsHandler::ReportPerOriginInfo(
 void QuotaInternalsHandler::ReportStatistics(const Statistics& stats) {
   base::DictionaryValue dict;
   for (auto itr(stats.begin()); itr != stats.end(); ++itr) {
-    dict.SetString(itr->first, itr->second);
+    dict.SetStringKey(itr->first, itr->second);
   }
 
   FireWebUIListener("StatisticsUpdated", dict);
@@ -109,9 +109,8 @@ void QuotaInternalsHandler::OnRequestInfo(const base::ListValue*) {
 void QuotaInternalsHandler::OnTriggerStoragePressure(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetSize());
-  std::string origin_string;
-  CHECK(args->GetString(0, &origin_string));
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& origin_string = args->GetList()[0].GetString();
   GURL url(origin_string);
 
   if (!proxy_.get())

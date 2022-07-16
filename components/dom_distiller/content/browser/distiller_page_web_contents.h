@@ -103,6 +103,8 @@ class DistillerPageWebContents : public DistillerPage,
                                      const base::TimeTicks& javascript_start,
                                      base::Value value);
 
+  content::RenderFrameHost& TargetRenderFrameHost();
+
   // The current state of the |DistillerPage|, initially |IDLE|.
   State state_;
 

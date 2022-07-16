@@ -15,6 +15,10 @@ namespace policies {
 // feature.
 class WorkingSetTrimmerPolicyWin : public WorkingSetTrimmerPolicy {
  public:
+  WorkingSetTrimmerPolicyWin(const WorkingSetTrimmerPolicyWin&) = delete;
+  WorkingSetTrimmerPolicyWin& operator=(const WorkingSetTrimmerPolicyWin&) =
+      delete;
+
   ~WorkingSetTrimmerPolicyWin() override;
   WorkingSetTrimmerPolicyWin();
 
@@ -22,9 +26,6 @@ class WorkingSetTrimmerPolicyWin : public WorkingSetTrimmerPolicy {
   // Windows this will check that the appropriate flags are set for working set
   // trim.
   static bool PlatformSupportsWorkingSetTrim();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WorkingSetTrimmerPolicyWin);
 };
 
 }  // namespace policies

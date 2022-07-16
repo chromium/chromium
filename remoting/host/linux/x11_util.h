@@ -22,12 +22,14 @@ namespace remoting {
 class ScopedXGrabServer {
  public:
   explicit ScopedXGrabServer(x11::Connection* connection);
+
+  ScopedXGrabServer(const ScopedXGrabServer&) = delete;
+  ScopedXGrabServer& operator=(const ScopedXGrabServer&) = delete;
+
   ~ScopedXGrabServer();
 
  private:
   x11::Connection* connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedXGrabServer);
 };
 
 // Make a connection to the X Server impervious to X Server grabs. Returns

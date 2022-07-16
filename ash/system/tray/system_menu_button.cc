@@ -9,6 +9,7 @@
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -54,8 +55,13 @@ SystemMenuButton::SystemMenuButton(PressedCallback callback,
 }
 
 void SystemMenuButton::SetVectorIcon(const gfx::VectorIcon& icon) {
-  AshColorProvider::Get()->DecorateIconButton(this, icon, /*toggled=*/false,
-                                              GetDefaultSizeOfVectorIcon(icon));
+  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor);
+  SetImage(views::Button::STATE_NORMAL,
+           gfx::CreateVectorIcon(icon, icon_color));
+  SetImage(views::Button::STATE_DISABLED,
+           gfx::CreateVectorIcon(
+               icon, AshColorProvider::GetDisabledColor(icon_color)));
 }
 
 SystemMenuButton::~SystemMenuButton() = default;

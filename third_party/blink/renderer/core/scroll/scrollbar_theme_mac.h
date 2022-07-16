@@ -37,7 +37,7 @@ namespace blink {
 
 class Pattern;
 
-class PLATFORM_EXPORT ScrollbarThemeMac : public ScrollbarTheme {
+class CORE_EXPORT ScrollbarThemeMac : public ScrollbarTheme {
  public:
   ScrollbarThemeMac();
   ~ScrollbarThemeMac() override;

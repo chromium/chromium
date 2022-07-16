@@ -27,6 +27,7 @@ ReportingReport::ReportingReport(
     int attempts)
     : reporting_source(reporting_source),
       network_isolation_key(network_isolation_key),
+      id(base::UnguessableToken::Create()),
       url(url),
       user_agent(user_agent),
       group(group),
@@ -39,6 +40,9 @@ ReportingReport::ReportingReport(
   DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
 }
 
+ReportingReport::ReportingReport() = default;
+ReportingReport::ReportingReport(ReportingReport&& other) = default;
+ReportingReport& ReportingReport::operator=(ReportingReport&& other) = default;
 ReportingReport::~ReportingReport() = default;
 
 ReportingEndpointGroupKey ReportingReport::GetGroupKey() const {
@@ -47,7 +51,8 @@ ReportingEndpointGroupKey ReportingReport::GetGroupKey() const {
 }
 
 bool ReportingReport::IsUploadPending() const {
-  return status == Status::PENDING || status == Status::DOOMED;
+  return status == Status::PENDING || status == Status::DOOMED ||
+         status == Status::SUCCESS;
 }
 
 }  // namespace net

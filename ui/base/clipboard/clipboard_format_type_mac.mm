@@ -6,6 +6,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
@@ -58,15 +61,27 @@ bool ClipboardFormatType::operator<(const ClipboardFormatType& other) const {
 }
 
 // static
-// TODO(crbug.com/106449): Support custom formats.
-ClipboardFormatType ClipboardFormatType::GetCustomPlatformType(
-    const std::string& format_string) {
-  return ClipboardFormatType::Deserialize(format_string);
+std::string ClipboardFormatType::WebCustomFormatName(int index) {
+  return base::StrCat({"com.web.custom.format", base::NumberToString(index)});
 }
 
-// TODO(crbug.com/106449): Support custom formats.
-std::string ClipboardFormatType::GetCustomPlatformName() const {
-  return Serialize();
+// static
+std::string ClipboardFormatType::WebCustomFormatMapName() {
+  return "com.web.custom.format.map";
+}
+
+// static
+const ClipboardFormatType& ClipboardFormatType::WebCustomFormatMap() {
+  static base::NoDestructor<ClipboardFormatType> type(
+      base::SysUTF8ToNSString(ClipboardFormatType::WebCustomFormatMapName()));
+  return *type;
+}
+
+// static
+ClipboardFormatType ClipboardFormatType::CustomPlatformType(
+    const std::string& format_string) {
+  DCHECK(base::IsStringASCII(format_string));
+  return ClipboardFormatType::Deserialize(format_string);
 }
 
 // Various predefined ClipboardFormatTypes.

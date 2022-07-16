@@ -23,16 +23,28 @@ namespace {
 #include "net/data/ssl/chrome_root_store/chrome-root-store-inc.cc"
 }  // namespace
 
-TrustStoreChrome::TrustStoreChrome() : TrustStoreChrome(kChromeRootCertList) {}
+TrustStoreChrome::TrustStoreChrome()
+    : TrustStoreChrome(kChromeRootCertList, /*certs_are_static=*/true) {}
 
-TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs) {
+TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
+                                   bool certs_are_static) {
   // TODO(hchao, sleevi): Explore keeping a CRYPTO_BUFFER of just the DER
   // certificate and subject name. This would hopefully save memory compared
   // to keeping the full parsed representation in memory, especially when
   // there are multiple instances of TrustStoreChrome.
   for (const auto& cert_info : certs) {
-    bssl::UniquePtr<CRYPTO_BUFFER> cert = x509_util::CreateCryptoBuffer(
-        cert_info.root_cert_der.data(), cert_info.root_cert_der.size());
+    bssl::UniquePtr<CRYPTO_BUFFER> cert;
+    if (certs_are_static) {
+      // TODO(mattm,hchao): When the component updater is implemented, ensure
+      // the static data crypto_buffers for the compiled-in roots are kept
+      // alive, so that roots from the component updater data will de-dupe
+      // against them.
+      cert = x509_util::CreateCryptoBufferFromStaticDataUnsafe(
+          cert_info.root_cert_der);
+    } else {
+      cert = x509_util::CreateCryptoBuffer(cert_info.root_cert_der.data(),
+                                           cert_info.root_cert_der.size());
+    }
     CertErrors errors;
     auto parsed = ParsedCertificate::Create(
         std::move(cert), x509_util::DefaultParseCertificateOptions(), &errors);
@@ -50,10 +62,10 @@ void TrustStoreChrome::SyncGetIssuersOf(const ParsedCertificate* cert,
   trust_store_.SyncGetIssuersOf(cert, issuers);
 }
 
-void TrustStoreChrome::GetTrust(const scoped_refptr<ParsedCertificate>& cert,
-                                CertificateTrust* trust,
-                                base::SupportsUserData* debug_data) const {
-  trust_store_.GetTrust(cert, trust, debug_data);
+CertificateTrust TrustStoreChrome::GetTrust(
+    const ParsedCertificate* cert,
+    base::SupportsUserData* debug_data) const {
+  return trust_store_.GetTrust(cert, debug_data);
 }
 
 bool TrustStoreChrome::Contains(const ParsedCertificate* cert) const {
@@ -64,7 +76,8 @@ bool TrustStoreChrome::Contains(const ParsedCertificate* cert) const {
 std::unique_ptr<TrustStoreChrome> TrustStoreChrome::CreateTrustStoreForTesting(
     base::span<const ChromeRootCertInfo> certs) {
   // Note: wrap_unique is used because the constructor is private.
-  return base::WrapUnique(new TrustStoreChrome(certs));
+  return base::WrapUnique(
+      new TrustStoreChrome(certs, /*certs_are_static=*/false));
 }
 
 }  // namespace net

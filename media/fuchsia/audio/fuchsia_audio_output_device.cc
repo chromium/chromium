@@ -30,8 +30,7 @@ constexpr size_t kNumBuffers = 4;
 // TODO(crbug.com/1153909): It may be possible to reduce this value to reduce
 // total latency, but that requires that an elevated scheduling profile is
 // applied to this thread.
-constexpr base::TimeDelta kLeadTimeExtra =
-    base::TimeDelta::FromMilliseconds(20);
+constexpr base::TimeDelta kLeadTimeExtra = base::Milliseconds(20);
 
 class DefaultAudioThread {
  public:
@@ -337,13 +336,13 @@ void FuchsiaAudioOutputDevice::OnAudioConsumerStatusChanged(
     return;
   }
 
-  min_lead_time_ = base::TimeDelta::FromNanoseconds(status.min_lead_time());
+  min_lead_time_ = base::Nanoseconds(status.min_lead_time());
 
   if (status.has_presentation_timeline()) {
     timeline_reference_time_ = base::TimeTicks::FromZxTime(
         status.presentation_timeline().reference_time);
-    timeline_subject_time_ = base::TimeDelta::FromNanoseconds(
-        status.presentation_timeline().subject_time);
+    timeline_subject_time_ =
+        base::Nanoseconds(status.presentation_timeline().subject_time);
     timeline_reference_delta_ = status.presentation_timeline().reference_delta;
     timeline_subject_delta_ = status.presentation_timeline().subject_delta;
   } else {

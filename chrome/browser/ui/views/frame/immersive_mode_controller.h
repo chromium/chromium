@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 class BrowserView;
@@ -64,6 +63,10 @@ class ImmersiveModeController {
   };
 
   ImmersiveModeController();
+
+  ImmersiveModeController(const ImmersiveModeController&) = delete;
+  ImmersiveModeController& operator=(const ImmersiveModeController&) = delete;
+
   virtual ~ImmersiveModeController();
 
   // Must initialize after browser view has a Widget and native window.
@@ -125,9 +128,6 @@ class ImmersiveModeController {
 
  protected:
   base::ObserverList<Observer>::Unchecked observers_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeController);
 };
 
 namespace chrome {

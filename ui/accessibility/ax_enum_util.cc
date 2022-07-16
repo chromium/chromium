@@ -382,6 +382,50 @@ const char* ToString(ax::mojom::Role role) {
       return "marquee";
     case ax::mojom::Role::kMath:
       return "math";
+    case ax::mojom::Role::kMathMLFraction:
+      return "mathMLFraction";
+    case ax::mojom::Role::kMathMLIdentifier:
+      return "mathMLIdentifier";
+    case ax::mojom::Role::kMathMLMath:
+      return "mathMLMath";
+    case ax::mojom::Role::kMathMLMultiscripts:
+      return "mathMLMultiscripts";
+    case ax::mojom::Role::kMathMLNoneScript:
+      return "mathMLNoneScript";
+    case ax::mojom::Role::kMathMLNumber:
+      return "mathMLNumber";
+    case ax::mojom::Role::kMathMLOperator:
+      return "mathMLOperator";
+    case ax::mojom::Role::kMathMLOver:
+      return "mathMLOver";
+    case ax::mojom::Role::kMathMLPrescriptDelimiter:
+      return "mathMLPrescriptDelimiter";
+    case ax::mojom::Role::kMathMLRoot:
+      return "mathMLRoot";
+    case ax::mojom::Role::kMathMLRow:
+      return "mathMLRow";
+    case ax::mojom::Role::kMathMLSquareRoot:
+      return "mathMLSquareRoot";
+    case ax::mojom::Role::kMathMLStringLiteral:
+      return "mathMLStringLiteral";
+    case ax::mojom::Role::kMathMLSub:
+      return "mathMLSub";
+    case ax::mojom::Role::kMathMLSubSup:
+      return "mathMLSubSup";
+    case ax::mojom::Role::kMathMLSup:
+      return "mathMLSup";
+    case ax::mojom::Role::kMathMLTable:
+      return "mathMLTable";
+    case ax::mojom::Role::kMathMLTableCell:
+      return "mathMLTableCell";
+    case ax::mojom::Role::kMathMLTableRow:
+      return "mathMLTableRow";
+    case ax::mojom::Role::kMathMLText:
+      return "mathMLText";
+    case ax::mojom::Role::kMathMLUnder:
+      return "mathMLUnder";
+    case ax::mojom::Role::kMathMLUnderOver:
+      return "mathMLUnderOver";
     case ax::mojom::Role::kMenu:
       return "menu";
     case ax::mojom::Role::kMenuBar:
@@ -442,8 +486,12 @@ const char* ToString(ax::mojom::Role role) {
       return "section";
     case ax::mojom::Role::kStrong:
       return "strong";
+    case ax::mojom::Role::kSubscript:
+      return "subscript";
     case ax::mojom::Role::kSuggestion:
       return "suggestion";
+    case ax::mojom::Role::kSuperscript:
+      return "superscript";
     case ax::mojom::Role::kSvgRoot:
       return "svgRoot";
     case ax::mojom::Role::kScrollBar:
@@ -962,6 +1010,8 @@ const char* ToString(ax::mojom::FloatAttribute float_attribute) {
       return "fontWeight";
     case ax::mojom::FloatAttribute::kTextIndent:
       return "textIndent";
+    case ax::mojom::FloatAttribute::kChildTreeScale:
+      return "childTreeScale";
   }
 
   return "";
@@ -1040,10 +1090,20 @@ const char* ToString(ax::mojom::IntListAttribute int_list_attribute) {
       return "markerStarts";
     case ax::mojom::IntListAttribute::kMarkerEnds:
       return "markerEnds";
+    case ax::mojom::IntListAttribute::kHighlightTypes:
+      return "highlightTypes";
+    case ax::mojom::IntListAttribute::kCaretBounds:
+      return "caretBounds";
     case ax::mojom::IntListAttribute::kCharacterOffsets:
       return "characterOffsets";
-    case ax::mojom::IntListAttribute::kCachedLineStarts:
-      return "cachedLineStarts";
+    case ax::mojom::IntListAttribute::kLineStarts:
+      return "lineStarts";
+    case ax::mojom::IntListAttribute::kLineEnds:
+      return "lineEnds";
+    case ax::mojom::IntListAttribute::kSentenceStarts:
+      return "sentenceStarts";
+    case ax::mojom::IntListAttribute::kSentenceEnds:
+      return "sentenceEnds";
     case ax::mojom::IntListAttribute::kWordStarts:
       return "wordStarts";
     case ax::mojom::IntListAttribute::kWordEnds:
@@ -1101,9 +1161,24 @@ const char* ToString(ax::mojom::MarkerType marker_type) {
       return "activeSuggestion";
     case ax::mojom::MarkerType::kSuggestion:
       return "suggestion";
+    case ax::mojom::MarkerType::kHighlight:
+      return "highlight";
   }
 
   return "";
+}
+
+const char* ToString(ax::mojom::HighlightType highlight_type) {
+  switch (highlight_type) {
+    case ax::mojom::HighlightType::kNone:
+      return "none";
+    case ax::mojom::HighlightType::kHighlight:
+      return "highlight";
+    case ax::mojom::HighlightType::kSpellingError:
+      return "spelling-error";
+    case ax::mojom::HighlightType::kGrammarError:
+      return "grammar-error";
+  }
 }
 
 const char* ToString(ax::mojom::MoveDirection move_direction) {
@@ -1239,8 +1314,12 @@ const char* ToString(ax::mojom::TextBoundary text_boundary) {
       return "none";
     case ax::mojom::TextBoundary::kCharacter:
       return "character";
-    case ax::mojom::TextBoundary::kFormat:
-      return "format";
+    case ax::mojom::TextBoundary::kFormatEnd:
+      return "formatEnd";
+    case ax::mojom::TextBoundary::kFormatStart:
+      return "formatStart";
+    case ax::mojom::TextBoundary::kFormatStartOrEnd:
+      return "formatStartOrEnd";
     case ax::mojom::TextBoundary::kLineEnd:
       return "lineEnd";
     case ax::mojom::TextBoundary::kLineStart:
@@ -1259,6 +1338,8 @@ const char* ToString(ax::mojom::TextBoundary text_boundary) {
       return "paragraphEnd";
     case ax::mojom::TextBoundary::kParagraphStart:
       return "paragraphStart";
+    case ax::mojom::TextBoundary::kParagraphStartSkippingEmptyParagraphs:
+      return "paragraphStartSkippingEmptyParagraphs";
     case ax::mojom::TextBoundary::kParagraphStartOrEnd:
       return "paragraphStartOrEnd";
     case ax::mojom::TextBoundary::kSentenceEnd:
@@ -1417,8 +1498,6 @@ const char* ToString(ax::mojom::InvalidState invalid_state) {
       return "false";
     case ax::mojom::InvalidState::kTrue:
       return "true";
-    case ax::mojom::InvalidState::kOther:
-      return "other";
   }
 
   return "";
@@ -1508,6 +1587,8 @@ const char* ToString(ax::mojom::DescriptionFrom description_from) {
       return "relatedElement";
     case ax::mojom::DescriptionFrom::kRubyAnnotation:
       return "rubyAnnotation";
+    case ax::mojom::DescriptionFrom::kSvgDescElement:
+      return "svgDescElement";
     case ax::mojom::DescriptionFrom::kSummary:
       return "summary";
     case ax::mojom::DescriptionFrom::kTableCaption:

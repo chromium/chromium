@@ -82,6 +82,9 @@ class MockPrefHashStore : public PrefHashStore {
         transactions_performed_(0),
         transaction_active_(false) {}
 
+  MockPrefHashStore(const MockPrefHashStore&) = delete;
+  MockPrefHashStore& operator=(const MockPrefHashStore&) = delete;
+
   ~MockPrefHashStore() override { EXPECT_FALSE(transaction_active_); }
 
   // Set the result that will be returned when |path| is passed to
@@ -159,6 +162,10 @@ class MockPrefHashStore : public PrefHashStore {
     explicit MockPrefHashStoreTransaction(MockPrefHashStore* outer)
         : outer_(outer) {}
 
+    MockPrefHashStoreTransaction(const MockPrefHashStoreTransaction&) = delete;
+    MockPrefHashStoreTransaction& operator=(
+        const MockPrefHashStoreTransaction&) = delete;
+
     ~MockPrefHashStoreTransaction() override {
       outer_->transaction_active_ = false;
       ++outer_->transactions_performed_;
@@ -184,8 +191,6 @@ class MockPrefHashStore : public PrefHashStore {
 
    private:
     MockPrefHashStore* outer_;
-
-    DISALLOW_COPY_AND_ASSIGN(MockPrefHashStoreTransaction);
   };
 
   // Records a call to this mock's CheckValue/CheckSplitValue methods.
@@ -213,8 +218,6 @@ class MockPrefHashStore : public PrefHashStore {
   // Whether a transaction is currently active (only one transaction should be
   // active at a time).
   bool transaction_active_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPrefHashStore);
 };
 
 void MockPrefHashStore::SetCheckResult(const std::string& path,
@@ -365,6 +368,9 @@ class MockHashStoreContents : public HashStoreContents {
  public:
   MockHashStoreContents() {}
 
+  MockHashStoreContents(const MockHashStoreContents&) = delete;
+  MockHashStoreContents& operator=(const MockHashStoreContents&) = delete;
+
   // Returns the number of hashes stored.
   size_t stored_hashes_count() const { return dictionary_.DictSize(); }
 
@@ -424,8 +430,6 @@ class MockHashStoreContents : public HashStoreContents {
   // of the copy, we make it forward calls to the mock it was created from.
   // Once set, |origin_mock_| must outlive this instance.
   MockHashStoreContents* origin_mock_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockHashStoreContents);
 };
 
 std::string MockHashStoreContents::GetStoredMac(const std::string& path) const {
@@ -548,6 +552,9 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
         validation_delegate_receiver_(&mock_validation_delegate_),
         reset_recorded_(false) {}
 
+  PrefHashFilterTest(const PrefHashFilterTest&) = delete;
+  PrefHashFilterTest& operator=(const PrefHashFilterTest&) = delete;
+
   void SetUp() override {
     Reset();
   }
@@ -649,8 +656,6 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
   mojo::ReceiverSet<prefs::mojom::ResetOnLoadObserver>
       reset_on_load_observer_receivers_;
   bool reset_recorded_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefHashFilterTest);
 };
 
 TEST_P(PrefHashFilterTest, EmptyAndUnchanged) {

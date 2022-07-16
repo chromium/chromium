@@ -9,21 +9,21 @@
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#define EXPECT_MOCK_FAILURE(statement)                            \
-  do {                                                            \
-    class GTestExpectMockFailureHelper {                          \
-     public:                                                      \
-      static void Execute() { statement; }                        \
-    };                                                            \
-    ::testing::TestPartResultArray gtest_failures;                \
-    {                                                             \
-      ::testing::ScopedFakeTestPartResultReporter gtest_reporter( \
-          ::testing::ScopedFakeTestPartResultReporter::           \
-              INTERCEPT_ONLY_CURRENT_THREAD,                      \
-          &gtest_failures);                                       \
-      GTestExpectMockFailureHelper::Execute();                    \
-    }                                                             \
-    EXPECT_GT(gtest_failures.size(), 0);                          \
+#define EXPECT_MOCK_FAILURE(statement)                                   \
+  do {                                                                   \
+    class GTestExpectMockFailureHelper {                                 \
+     public:                                                             \
+      static void Execute() { statement; }                               \
+    };                                                                   \
+    ::testing::TestPartResultArray gtest_failure_array;                  \
+    {                                                                    \
+      ::testing::ScopedFakeTestPartResultReporter gtest_result_reporter( \
+          ::testing::ScopedFakeTestPartResultReporter::                  \
+              INTERCEPT_ONLY_CURRENT_THREAD,                             \
+          &gtest_failure_array);                                         \
+      GTestExpectMockFailureHelper::Execute();                           \
+    }                                                                    \
+    EXPECT_GT(gtest_failure_array.size(), 0);                            \
   } while (::testing::internal::AlwaysFalse())
 
 #endif  // COMPONENTS_VIZ_TEST_MOCK_HELPER_H_

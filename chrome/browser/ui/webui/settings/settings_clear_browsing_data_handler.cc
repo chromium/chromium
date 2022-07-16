@@ -91,17 +91,17 @@ ClearBrowsingDataHandler::~ClearBrowsingDataHandler() {
 }
 
 void ClearBrowsingDataHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getInstalledApps",
       base::BindRepeating(
           &ClearBrowsingDataHandler::GetRecentlyLaunchedInstalledApps,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "clearBrowsingData",
       base::BindRepeating(&ClearBrowsingDataHandler::HandleClearBrowsingData,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializeClearBrowsingData",
       base::BindRepeating(&ClearBrowsingDataHandler::HandleInitialize,
                           base::Unretained(this)));
@@ -218,14 +218,14 @@ ClearBrowsingDataHandler::ProcessInstalledApps(
     CHECK(site->GetBoolean(kIsCheckedField, &is_checked));
     std::string domain;
     CHECK(site->GetString(kRegisterableDomainField, &domain));
-    int domain_reason = -1;
-    CHECK(site->GetInteger(kReasonBitfieldField, &domain_reason));
+    absl::optional<int> domain_reason = site->FindIntKey(kReasonBitfieldField);
+    CHECK(domain_reason);
     if (is_checked) {  // Selected installed apps should be deleted.
       ignored_domains.push_back(domain);
-      ignored_domain_reasons.push_back(domain_reason);
+      ignored_domain_reasons.push_back(*domain_reason);
     } else {  // Unselected sites should be kept.
       excluded_domains.push_back(domain);
-      excluded_domain_reasons.push_back(domain_reason);
+      excluded_domain_reasons.push_back(*domain_reason);
     }
   }
   if (!excluded_domains.empty() || !ignored_domains.empty()) {
@@ -419,8 +419,7 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
 
 void ClearBrowsingDataHandler::HandleInitialize(const base::ListValue* args) {
   AllowJavascript();
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
   // Needed because WebUI doesn't handle renderer crashes. See crbug.com/610450.
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -432,7 +431,7 @@ void ClearBrowsingDataHandler::HandleInitialize(const base::ListValue* args) {
   for (const auto& counter : counters_)
     counter->Restart();
 
-  ResolveJavascriptCallback(*callback_id, base::Value() /* Promise<void> */);
+  ResolveJavascriptCallback(callback_id, base::Value() /* Promise<void> */);
 }
 
 void ClearBrowsingDataHandler::OnStateChanged(syncer::SyncService* sync) {

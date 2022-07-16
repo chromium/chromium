@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_FILE_UTIL_SERVICE_H_
 #define CHROME_BROWSER_FILE_UTIL_SERVICE_H_
 
-#include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
+#include "chrome/services/file_util/public/mojom/file_util_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 // Launches a new instance of the FileUtil service in an isolated, sandboxed

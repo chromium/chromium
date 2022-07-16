@@ -61,7 +61,7 @@ scoped_refptr<Image> CSSPaintImageGeneratorImpl::Paint(
 }
 
 bool CSSPaintImageGeneratorImpl::HasDocumentDefinition() const {
-  return paint_worklet_->GetDocumentDefinitionMap().at(name_);
+  return paint_worklet_->GetDocumentDefinitionMap().Contains(name_);
 }
 
 bool CSSPaintImageGeneratorImpl::GetValidDocumentDefinition(

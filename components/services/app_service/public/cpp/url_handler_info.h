@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/values.h"
 #include "url/origin.h"
 
@@ -35,7 +36,7 @@ struct UrlHandlerInfo {
   ~UrlHandlerInfo();
 
   // Reset the url handler to its default state.
-  void Reset();
+  REINITIALIZES_AFTER_MOVE void Reset();
 
   base::Value AsDebugValue() const;
 

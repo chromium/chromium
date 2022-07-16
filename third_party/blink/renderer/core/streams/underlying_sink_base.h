@@ -6,16 +6,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_UNDERLYING_SINK_BASE_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
 class ExceptionState;
-class ScriptValue;
 class ScriptState;
+class WritableStreamDefaultController;
 
 class CORE_EXPORT UnderlyingSinkBase : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -38,12 +38,8 @@ class CORE_EXPORT UnderlyingSinkBase : public ScriptWrappable {
                               ScriptValue reason,
                               ExceptionState&) = 0;
 
-  ScriptPromise start(ScriptState* script_state,
-                      ScriptValue controller,
-                      ExceptionState& exception_state) {
-    controller_ = WritableStreamDefaultController::From(controller);
-    return start(script_state, controller_, exception_state);
-  }
+  ScriptPromise start(ScriptState*, ScriptValue controller, ExceptionState&);
+
   ScriptPromise write(ScriptState* script_state,
                       ScriptValue chunk,
                       ScriptValue controller,
@@ -52,10 +48,11 @@ class CORE_EXPORT UnderlyingSinkBase : public ScriptWrappable {
     return write(script_state, chunk, controller_, exception_state);
   }
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(controller_);
-    ScriptWrappable::Trace(visitor);
-  }
+  // Returns a JavaScript "undefined" value. This is required by the
+  // WritableStream Create() method.
+  ScriptValue type(ScriptState*) const;
+
+  void Trace(Visitor*) const override;
 
  protected:
   WritableStreamDefaultController* Controller() const { return controller_; }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {pending, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
+import {getCaller, pending, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -16,17 +16,32 @@ testcase.holdingSpaceWelcomeBanner = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
+  let holdingSpaceBannerShown = '.holding-space-welcome:not([hidden][style])';
+  let holdingSpaceBannerDismissButton =
+      '.holding-space-welcome cr-button.text-button';
+  let holdingSpaceBannerHidden = '.holding-space-welcome[hidden]';
+  if (await sendTestMessage({name: 'isBannersFrameworkEnabled'}) === 'true') {
+    await remoteCall.isolateBannerForTesting(
+        appId, 'holding-space-welcome-banner');
+    holdingSpaceBannerShown =
+        '#banners > holding-space-welcome-banner:not([hidden])';
+    holdingSpaceBannerDismissButton = [
+      '#banners > holding-space-welcome-banner', 'educational-banner',
+      '#dismiss-button'
+    ];
+    holdingSpaceBannerHidden =
+        '#banners > holding-space-welcome-banner[hidden]';
+  }
+
   // Check: the holding space welcome banner should appear. Note that inline
   // styles are removed once dynamic styles have finished loading.
-  await remoteCall.waitForElement(
-      appId, '.holding-space-welcome:not([hidden][style])');
+  await remoteCall.waitForElement(appId, holdingSpaceBannerShown);
 
   // Dismiss the holding space welcome banner.
-  await remoteCall.waitAndClickElement(
-      appId, '.holding-space-welcome cr-button.text-button');
+  await remoteCall.waitAndClickElement(appId, holdingSpaceBannerDismissButton);
 
   // Check: the holding space welcome banner should be hidden.
-  await remoteCall.waitForElement(appId, '.holding-space-welcome[hidden]');
+  await remoteCall.waitForElement(appId, holdingSpaceBannerHidden);
 };
 
 /**
@@ -52,39 +67,8 @@ testcase.holdingSpaceWelcomeBannerWontShowAfterBeingDismissed = async () => {
   await navigateWithDirectoryTree(appId, '/My files');
 
   // Check: the holding space welcome banner should still be hidden.
+  await remoteCall.waitForElementLost(appId, '.holding-space-welcome[style]');
   await remoteCall.waitForElement(appId, '.holding-space-welcome[hidden]');
-};
-
-/**
- * Tests that the holding space welcome banner will not continue to show after
- * having been shown enough times to reach the limit.
- */
-testcase.holdingSpaceWelcomeBannerWontShowAfterReachingLimit = async () => {
-  // Open Files app on Downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
-
-  // Check: the holding space welcome banner should appear.
-  await remoteCall.waitForElement(
-      appId, '.holding-space-welcome:not([hidden])');
-
-  // Open two new windows on Downloads.
-  const windowIds = await Promise.all(
-      [openNewWindow(RootPath.DOWNLOADS), openNewWindow(RootPath.DOWNLOADS)]);
-
-  // Check: the holding space welcome banner should appear for both windows.
-  await Promise.all([
-    remoteCall.waitForElement(
-        windowIds[0], '.holding-space-welcome:not([hidden])'),
-    remoteCall.waitForElement(
-        windowIds[1], '.holding-space-welcome:not([hidden])')
-  ]);
-
-  // Open a fourth window on Downloads.
-  windowIds.push(await openNewWindow(RootPath.DOWNLOADS));
-
-  // Check: the holding space welcome banner should be hidden.
-  await remoteCall.waitForElement(
-      windowIds[2], '.holding-space-welcome[hidden]');
 };
 
 /**
@@ -100,6 +84,27 @@ testcase.holdingSpaceWelcomeBannerWontShowForModalDialogs = async () => {
 
   // Check: the holding space welcome banner should be hidden.
   await remoteCall.waitForElement(appId, '.holding-space-welcome[hidden]');
+};
+
+/**
+ * Tests that the holding space welcome banner will show for modal dialogs when
+ * using the new banners framework.
+ */
+testcase.holdingSpaceWelcomeBannerWillShowForModalDialogs = async () => {
+  // Open Save as dialog.
+  chrome.fileSystem.chooseEntry({type: 'saveFile'}, entry => {});
+  const appId = await waitForDialog();
+
+  // Ensure the Holding space welcome banner is the only banner prioritised.
+  await remoteCall.isolateBannerForTesting(
+      appId, 'holding-space-welcome-banner');
+
+  // Wait to finish initial load.
+  await remoteCall.waitFor('isFileManagerLoaded', appId, true);
+
+  // Check: the holding space welcome banner should be visible.
+  await remoteCall.waitForElement(
+      appId, '#banners > holding-space-welcome-banner:not([hidden])');
 };
 
 /**
@@ -135,22 +140,41 @@ testcase.holdingSpaceWelcomeBannerOnTabletModeChanged = async () => {
   // Async function which repeats until the element matching the specified
   // `query` has a calculated display matching the specified `displayValue`.
   async function waitForElementWithDisplay(query, displayValue) {
-    repeatUntil(() => {
-      const el = awaitRemoteCall.waitForElementStyles(appId, query, 'display');
-      if (el && el.display === displayValue) {
+    await repeatUntil(async () => {
+      const caller = getCaller();
+      const el =
+          await remoteCall.waitForElementStyles(appId, query, ['display']);
+      if (el && el.styles && el.styles.display === displayValue) {
         return el;
       }
-      return test.pending(
-          'Element `%s` with display `%s` is not found.', query, displayValue);
+      return pending(
+          caller, 'Element `%s` with display `%s` is not found.', query,
+          displayValue);
     });
   }
 
-  // Cache queries for `text` and `textInTabletMode`.
-  const text = '.holding-space-welcome-text:not(.tablet-mode-enabled)';
-  const textInTabletMode = '.holding-space-welcome-text.tablet-mode-enabled';
+  const isBannersFrameworkEnabled =
+      await sendTestMessage({name: 'isBannersFrameworkEnabled'}) === 'true';
 
+  // Cache queries for `text` and `textInTabletMode`.
+  let text = '.holding-space-welcome-text:not(.tablet-mode-enabled)';
+  let textInTabletMode = '.holding-space-welcome-text.tablet-mode-enabled';
+  let expectedTextDisplayValue = 'block';
+  if (isBannersFrameworkEnabled) {
+    await remoteCall.isolateBannerForTesting(
+        appId, 'holding-space-welcome-banner');
+    text = [
+      '#banners > holding-space-welcome-banner:not([hidden])',
+      'educational-banner > span[slot="subtitle"].tablet-mode-disabled'
+    ];
+    textInTabletMode = [
+      '#banners > holding-space-welcome-banner:not([hidden])',
+      'educational-banner > span[slot="subtitle"].tablet-mode-enabled'
+    ];
+    expectedTextDisplayValue = 'inline';
+  }
   // Check: `text` should be displayed but `textInTabletMode` should not.
-  await waitForElementWithDisplay(text, 'inline');
+  await waitForElementWithDisplay(text, expectedTextDisplayValue);
   await waitForElementWithDisplay(textInTabletMode, 'none');
 
   // Perform and check: enable tablet mode.
@@ -160,7 +184,7 @@ testcase.holdingSpaceWelcomeBannerOnTabletModeChanged = async () => {
 
   // Check: `textInTabletMode` should be displayed but `text` should not.
   await waitForElementWithDisplay(text, 'none');
-  await waitForElementWithDisplay(textInTabletMode, 'inline');
+  await waitForElementWithDisplay(textInTabletMode, 'block');
 
   // Perform and check: disable tablet mode.
   await sendTestMessage({name: 'disableTabletMode'}).then((result) => {
@@ -168,6 +192,6 @@ testcase.holdingSpaceWelcomeBannerOnTabletModeChanged = async () => {
   });
 
   // Check: `text` should be displayed but `textInTabletMode` should not.
-  await waitForElementWithDisplay(text, 'inline');
+  await waitForElementWithDisplay(text, expectedTextDisplayValue);
   await waitForElementWithDisplay(textInTabletMode, 'none');
 };

@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">Буде видалено <ph name="DATASIZE" /> даних і файлів cookie сайтів або додатків на головному екрані.</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Видалити</translation>
-<translation id="1195941046451948919">Скинути всі дозволи для цього веб-сайту?</translation>
 <translation id="1201402288615127009">Далі</translation>
 <translation id="1242008676835033345">Вбудовано на сайті <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Зупинити</translation>
@@ -19,7 +18,6 @@
 <translation id="1384959399684842514">Завантаження призупинено</translation>
 <translation id="1415402041810619267">URL-адресу скорочено</translation>
 <translation id="1446450296470737166">Повний контроль пристроїв MIDI</translation>
-<translation id="1509960214886564027">Функції на багатьох сайтах можуть не працювати</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1644574205037202324">Історія</translation>
 <translation id="1647582022260550163">Скинути дозволи й очистити файли cookie та дані сайту?</translation>
@@ -31,6 +29,7 @@
 <translation id="1743802530341753419">Запитувати, перш ніж дозволяти сайтам підключатися до пристрою (рекомендовано)</translation>
 <translation id="1779089405699405702">Декодер зображень</translation>
 <translation id="1818308510395330587">Щоб дозволити додатку <ph name="APP_NAME" /> використовувати доповнену реальність, увімкніть камеру в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">Джерело: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">На цьому пристрої вимкнено доступ до геоданих. Увімкніть його в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Оголошення</translation>
 <translation id="1919950603503897840">Виберіть контакти</translation>
@@ -38,10 +37,11 @@
 <translation id="1984937141057606926">Заборонено лише сторонні файли cookie</translation>
 <translation id="1989112275319619282">Переглянути</translation>
 <translation id="1994173015038366702">URL-адреса сайту</translation>
+<translation id="2004697686368036666">Функції на деяких сайтах можуть не працювати</translation>
 <translation id="2025115093177348061">Доповнена реальність</translation>
 <translation id="2030769033451695672">Натисніть, щоб повернутися на сторінку <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Відмінити</translation>
-<translation id="2091887806945687916">Сигнал</translation>
+<translation id="2091887806945687916">Звук</translation>
 <translation id="2107397443965016585">Запитувати, перш ніж дозволяти сайтам відтворювати захищений вміст (рекомендовано)</translation>
 <translation id="2146738493024040262">Відкрити додаток із миттєвим запуском</translation>
 <translation id="2148716181193084225">Сьогодні</translation>
@@ -52,9 +52,11 @@
 <translation id="2289270750774289114">Запитувати, коли сайт хоче шукати пристрої Bluetooth поблизу (рекомендовано)</translation>
 <translation id="2315043854645842844">Операційна система не підтримує сертифікат, вибраний на стороні клієнта.</translation>
 <translation id="2359808026110333948">Продовжити</translation>
+<translation id="2379925928934107488">Якщо у веб-перекладачі Chrome активовано темну тему, вона використовуватиметься для сайтів, коли це можливо.</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}one{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}few{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}many{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}other{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Завантажено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Завжди запитувати версію сайту для комп’ютера</translation>
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="2485422356828889247">Видалити</translation>
 <translation id="2490684707762498678">Адміністратор сімейної групи: <ph name="APP_NAME" /></translation>
@@ -64,12 +66,14 @@
 <translation id="2570922361219980984">На цьому пристрої також вимкнено доступ до геоданих. Увімкніть його в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Розгорнуто – натисніть, щоб згорнути.</translation>
 <translation id="2586657967955657006">Буфер обміну</translation>
+<translation id="2597457036804169544">Не використовувати темну тему для сайтів</translation>
 <translation id="2621115761605608342">Увімкнути JavaScript на певному сайті.</translation>
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2677748264148917807">Вийти</translation>
 <translation id="2687403674020088961">Блокувати всі файли cookie (не рекомендовано)</translation>
 <translation id="2704606927547763573">Скопійов.</translation>
 <translation id="2717722538473713889">Електронні адреси</translation>
+<translation id="2785051990912111074">Буде видалено файли cookie для веб-сайту <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Скинути всі дозволи сайту <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2874939134665556319">Попередня композиція</translation>
@@ -101,6 +105,7 @@
 <translation id="3600792891314830896">Вимкнути звук на сайтах, які відтворюють його</translation>
 <translation id="3744111561329211289">Фонова синхронізація</translation>
 <translation id="3763247130972274048">Двічі торкніться відео ліворуч або праворуч, щоб пропустити 10 с</translation>
+<translation id="3797520601150691162">Не використовувати темну тему для певного сайту</translation>
 <translation id="381841723434055211">Номери телефонів</translation>
 <translation id="3835233591525155343">Дані про активний стан пристрою</translation>
 <translation id="385051799172605136">Назад</translation>
@@ -121,7 +126,7 @@
 <translation id="42981349822642051">Розгорнути</translation>
 <translation id="4336434711095810371">Видалити всі дані</translation>
 <translation id="4402755511846832236">Блокувати сайтам інформацію про те, чи ви активно використовуєте цей пристрій</translation>
-<translation id="4434045419905280838">Спливаючі вікна й переадресація</translation>
+<translation id="4434045419905280838">Спливаючі вікна/переспрямування</translation>
 <translation id="445467742685312942">Дозволити сайтам відтворювати захищений вміст</translation>
 <translation id="4468959413250150279">Вимкнути звук для певного сайту.</translation>
 <translation id="4479647676395637221">Запитувати, перш ніж дозволити сайтам використовувати камеру (рекомендується)</translation>
@@ -130,7 +135,6 @@
 <translation id="4570913071927164677">Деталі</translation>
 <translation id="4645575059429386691">Керується одним із батьків</translation>
 <translation id="4670064810192446073">Віртуальна реальність</translation>
-<translation id="4708011789095599544">Очистити файли cookie й інші дані для цього веб-сайту?</translation>
 <translation id="4751476147751820511">Датчики руху та світла</translation>
 <translation id="4836046166855586901">Запитувати, коли сайт хоче дізнатися, чи ви активно використовуєте цей пристрій</translation>
 <translation id="4883854917563148705">Налаштування, якими керує адміністратор, не можна скинути</translation>
@@ -140,6 +144,7 @@
 <translation id="4976702386844183910">Останнє відвідування: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Немає контактів</translation>
 <translation id="4996978546172906250">Надіслати</translation>
+<translation id="5014906230196386306">Видалити файли cookie?</translation>
 <translation id="5039804452771397117">Дозволити</translation>
 <translation id="5048398596102334565">Надати сайтам доступ до датчиків руху (рекомендовано)</translation>
 <translation id="5050380848339752099">Цей сайт збирається надіслати інформацію зовнішньому додатку, поки ви в режимі анонімного перегляду.</translation>
@@ -157,15 +162,16 @@
 <translation id="5335288049665977812">Дозволити сайтам запускати JavaScript (рекомендується)</translation>
 <translation id="534295439873310000">Пристрої NFC</translation>
 <translation id="5354152178998424783">Буде видалено <ph name="DATASIZE" /> даних і файлів cookie сайтів.</translation>
-<translation id="5391532827096253100">Ваше з’єднання з цим сайтом незахищене. Інформація про сайт</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ ще 1)}one{(+ ще #)}few{(+ ще #)}many{(+ ще #)}other{(+ ще #)}}</translation>
 <translation id="5403592356182871684">Імена</translation>
+<translation id="5438097262470833822">Буде скинуто дозволи для веб-сайту <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Минуло часу: <ph name="ELAPSED_TIME" /> з <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Блокувати рекламу на сайтах, які показують нав’язливі чи оманливі оголошення</translation>
 <translation id="5502860503640766021">Дозволено: "<ph name="PERMISSION_1" />". Заблоковано: "<ph name="PERMISSION_2" />".</translation>
 <translation id="5505264765875738116">Сайти не можуть просити дозвіл надсилати сповіщення</translation>
 <translation id="5516455585884385570">Відкрити налаштування сповіщень</translation>
 <translation id="5527111080432883924">Запитувати, перш ніж дозволяти сайтам переглядати тексти й зображення в буфері обміну (рекомендовано)</translation>
+<translation id="5553374991681107062">Останні</translation>
 <translation id="5556459405103347317">Перезавантажити</translation>
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="5649053991847567735">Автоматичні завантаження</translation>
@@ -190,10 +196,10 @@
 <translation id="6064125863973209585">Завершені завантаження</translation>
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6177111841848151710">Заблоковано для поточної пошукової системи</translation>
+<translation id="6177128806592000436">Ваше з’єднання з цим сайтом не захищене</translation>
 <translation id="6181444274883918285">Додати сайт у список винятків</translation>
 <translation id="6192792657125177640">Винятки</translation>
 <translation id="6196640612572343990">Блокувати сторонні файли cookie</translation>
-<translation id="6206551242102657620">З’єднання безпечне. Інформація про сайт</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />: опції</translation>
 <translation id="6231752747840485235">Видалити додаток <ph name="APP_NAME" />?</translation>
 <translation id="6262279340360821358">Заблоковано: "<ph name="PERMISSION_1" />" і "<ph name="PERMISSION_2" />"</translation>
@@ -202,14 +208,14 @@
 <translation id="6320088164292336938">Вібросигнал</translation>
 <translation id="6388207532828177975">Очистити та скинути</translation>
 <translation id="6398765197997659313">Вийти з повноекранного режиму</translation>
-<translation id="6423924377271166037">Видалити файли cookie</translation>
 <translation id="6439114592976064011">Заборонити сайтам доступ до даних і пристрою віртуальної реальності</translation>
-<translation id="6447842834002726250">Cookie-файли</translation>
+<translation id="6447842834002726250">Файли cookie</translation>
 <translation id="6527303717912515753">Надіслати</translation>
 <translation id="6545864417968258051">Пошук пристроїв Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблоковано: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}one{Заблоковано: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}few{Заблоковано: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}many{Заблоковано: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}other{Заблоковано: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Останнє відвідування: <ph name="NUM_DAYS" /> дн. тому</translation>
 <translation id="6561560012278703671">Показувати лише значок повідомлення (блокувати сповіщення)</translation>
+<translation id="6593061639179217415">Версія для комп’ютера</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Захищений контент</translation>
 <translation id="662080504995468778">Залишитися</translation>
@@ -217,6 +223,7 @@
 <translation id="6689172468748959065">Фотографії профілів</translation>
 <translation id="6697925417670533197">Активні завантаження</translation>
 <translation id="6746124502594467657">Вниз</translation>
+<translation id="6749077623962119521">Скинути дозволи?</translation>
 <translation id="6766622839693428701">Проведіть пальцем униз, щоб закрити.</translation>
 <translation id="6790428901817661496">Відтворити</translation>
 <translation id="6818926723028410516">Виберіть елементи</translation>
@@ -224,15 +231,14 @@
 <translation id="6910211073230771657">Видалено</translation>
 <translation id="6912998170423641340">Не дозволяти сайтам переглядати тексти й зображення в буфері обміну</translation>
 <translation id="6945221475159498467">Вибрати</translation>
-<translation id="6963642900430330478">Ця сторінка небезпечна. Інформація про сайт</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6992289844737586249">Запитувати, перш ніж дозволити сайтам використовувати мікрофон (рекомендується)</translation>
 <translation id="7000754031042624318">Вимкнено в налаштуваннях Android</translation>
 <translation id="7016516562562142042">Дозволено для поточної пошукової системи</translation>
 <translation id="7053983685419859001">Блокувати</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Вибрано 1}one{Вибрано #}few{Вибрано #}many{Вибрано #}other{Вибрано #}}</translation>
+<translation id="7070090581017165256">Про цей сайт</translation>
 <translation id="7087918508125750058">Вибрано <ph name="ITEM_COUNT" />. Панель інструментів розташовано вгорі екрана</translation>
-<translation id="7128222689758636196">Дозволити поточній пошуковій системі</translation>
 <translation id="7141896414559753902">Блокувати спливаючі вікна та переадресацію на сайтах (рекомендовано)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="723171743924126238">Вибрати зображення</translation>
@@ -242,12 +248,12 @@
 <translation id="7302486331832100261">Зазвичай ви блокуєте сповіщення. Щоб дозволити, натисніть "Деталі".</translation>
 <translation id="7423098979219808738">Спершу запитувати</translation>
 <translation id="7423538860840206698">Заборонено переглядати буфер обміну</translation>
+<translation id="7425915948813553151">Темна тема для сайтів</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Сайт використовує мікрофон</translation>
 <translation id="7561196759112975576">Завжди</translation>
 <translation id="7572498721684305250">Заборонити сайтам обмінюватися даними з іншими пристроями через NFC</translation>
 <translation id="757524316907819857">Заборонити сайтам відтворювати захищений вміст</translation>
-<translation id="7589445247086920869">Заблокувати для поточної пошукової системи</translation>
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7781829728241885113">Учора</translation>
@@ -261,19 +267,23 @@
 <translation id="7846076177841592234">Скасувати вибір</translation>
 <translation id="7846621471902887024">Ви вийдете з облікового запису на всіх сайтах.</translation>
 <translation id="7882806643839505685">Увімкнути звук для певного сайту.</translation>
+<translation id="7940722705963108451">Нагадати мені</translation>
 <translation id="7986741934819883144">Виберіть контакт</translation>
-<translation id="7993619969781047893">Функції на деяких сайтах можуть не працювати</translation>
 <translation id="7999064672810608036">Видалити всі локальні дані, зокрема файли cookie, і скинути всі дозволи для цього веб-сайту?</translation>
 <translation id="8007176423574883786">Вимкнено для цього пристрою</translation>
 <translation id="802154636333426148">Не вдалося завантажити</translation>
+<translation id="8042586301629853791">Порядок сортування:</translation>
 <translation id="8067883171444229417">Дивитися відео</translation>
 <translation id="8068648041423924542">Не вдалося вибрати сертифікат.</translation>
 <translation id="8087000398470557479">Це вміст із сайту <ph name="DOMAIN_NAME" />, який доставляє Google.</translation>
 <translation id="8116925261070264013">Звук вимкнено</translation>
+<translation id="813082847718468539">Перегляд інформації про сайт</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
+<translation id="8154912474061769055">Функції на багатьох сайтах можуть не працювати</translation>
 <translation id="8197286292360124385">Дозволено: "<ph name="PERMISSION_1" />"</translation>
 <translation id="8200772114523450471">Відновити</translation>
 <translation id="8206354486702514201">Це налаштування застосовується вашим адміністратором.</translation>
+<translation id="8211406090763984747">З’єднання безпечне</translation>
 <translation id="8249310407154411074">На початок</translation>
 <translation id="8261506727792406068">Видалити</translation>
 <translation id="8300705686683892304">Керуються додатком</translation>
@@ -289,6 +299,7 @@
 <translation id="8447861592752582886">Скасувати доступ до пристрою</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Використовується 1 файл cookie}one{Використовується # файл cookie}few{Використовуються # файли cookie}many{Використовуються # файлів cookie}other{Використовуються # файлу cookie}}</translation>
 <translation id="8487700953926739672">Доступ у режимі офлайн</translation>
+<translation id="848952951823693243">Завжди запитувати мобільний сайт</translation>
 <translation id="851751545965956758">Заборонити сайтам підключатися до пристроїв</translation>
 <translation id="8525306231823319788">На весь екран</translation>
 <translation id="857943718398505171">Дозволено (рекомендується)</translation>
@@ -296,6 +307,7 @@
 <translation id="8676374126336081632">Видалити введений текст</translation>
 <translation id="868929229000858085">Пошук у контактах</translation>
 <translation id="8702612070107455751">Усі дані, збережені офлайн, буде видалено.</translation>
+<translation id="8712637175834984815">Виконано</translation>
 <translation id="8719283222052720129">Увімкніть дозвіл для додатка <ph name="APP_NAME" /> у <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Повторити спробу</translation>
 <translation id="8730621377337864115">Готово</translation>
@@ -315,7 +327,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}one{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}few{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}many{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}other{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Увімкніть дозволи для додатка <ph name="APP_NAME" /> у <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">Ця сторінка небезпечна</translation>
 <translation id="930525582205581608">Забути цей сайт?</translation>
-<translation id="965817943346481315">Блокувати, якщо сайт показує нав’язливі чи оманливі оголошення (рекомендовано)</translation>
 <translation id="967624055006145463">Збережені дані</translation>
 </translationbundle>

@@ -81,7 +81,8 @@ class MimeHandlerStreamManager::EmbedderObserver
  private:
   // WebContentsObserver overrides.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void WebContentsDestroyed() override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -200,8 +201,8 @@ void MimeHandlerStreamManager::EmbedderObserver::RenderFrameDeleted(
   AbortStream();
 }
 
-void MimeHandlerStreamManager::EmbedderObserver::RenderProcessGone(
-    base::TerminationStatus status) {
+void MimeHandlerStreamManager::EmbedderObserver::
+    PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) {
   AbortStream();
 }
 

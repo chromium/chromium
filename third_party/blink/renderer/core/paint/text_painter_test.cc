@@ -53,7 +53,7 @@ class TextPainterTest : public RenderingTest {
     ASSERT_EQ("Hello world", layout_text_->GetText());
   }
 
-  LayoutText* layout_text_;
+  Persistent<LayoutText> layout_text_;
   std::unique_ptr<PaintController> paint_controller_;
   GraphicsContext context_;
 };

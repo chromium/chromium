@@ -83,12 +83,12 @@ class MockDRTPortTest(port_testcase.PortTestCase):
 
 class MockDRTTest(unittest.TestCase):
     def input_line(self, port, test_name, checksum=None):
-        url = port.create_driver(0).test_to_uri(test_name)
-        if url.startswith('file://'):
-            url = url[len('file://'):]
+        url = port.create_driver(0).test_to_uri(test_name).encode('utf8')
+        if url.startswith(b'file://'):
+            url = url[len(b'file://'):]
         if checksum:
-            url += "'" + checksum
-        return url + '\n'
+            url += b"'" + checksum
+        return url + b'\n'
 
     def make_drt(self, options, args, host, stdin, stdout, stderr):
         return mock_drt.MockDRT(options, args, host, stdin, stdout, stderr)
@@ -112,17 +112,16 @@ class MockDRTTest(unittest.TestCase):
         return (drt_input, drt_output)
 
     def expected_output(self, port, test_name, text_output, expected_checksum):
-        output = ['#READY\n', 'Content-Type: text/plain\n']
+        output = [b'#READY\n', b'Content-Type: text/plain\n']
         if text_output:
             output.append(text_output)
-        output.append('#EOF\n')
+        output.append(b'#EOF\n')
         if expected_checksum:
             output.extend([
-                '\n',
-                'ActualHash: %s\n' % expected_checksum,
-                'ExpectedHash: %s\n' % expected_checksum
+                b'\n', b'ActualHash: ' + expected_checksum + b'\n',
+                b'ExpectedHash: ' + expected_checksum + b'\n'
             ])
-        output.append('#EOF\n')
+        output.append(b'#EOF\n')
         return output
 
     def assertTest(self,
@@ -154,8 +153,8 @@ class MockDRTTest(unittest.TestCase):
 
         self.assertEqual(res, 0)
 
-        self.assertEqual(stdout.getvalue(), ''.join(drt_output))
-        self.assertEqual(stderr.getvalue(), '#EOF\n')
+        self.assertEqual(stdout.getvalue(), b''.join(drt_output))
+        self.assertEqual(stderr.getvalue(), b'#EOF\n')
 
     def test_main(self):
         host = MockSystemHost()
@@ -166,8 +165,8 @@ class MockDRTTest(unittest.TestCase):
         res = mock_drt.main(['--run-web-tests', '--platform', 'test', '-'],
                             host, stdin, stdout, stderr)
         self.assertEqual(res, 0)
-        self.assertEqual(stdout.getvalue(), '#READY\n')
-        self.assertEqual(stderr.getvalue(), '')
+        self.assertEqual(stdout.getvalue(), b'#READY\n')
+        self.assertEqual(stderr.getvalue(), b'')
         self.assertEqual(host.filesystem.written_files, {})
 
     def test_pixeltest_passes(self):
@@ -175,19 +174,18 @@ class MockDRTTest(unittest.TestCase):
         self.assertTest('http/tests/passes/text.html')
 
     def test_pixeltest__fails(self):
-        self.assertTest(
-            'failures/expected/image_checksum.html',
-            expected_checksum='image_checksum-checksum',
-            drt_output=[
-                '#READY\n',
-                'Content-Type: text/plain\n',
-                'image_checksum-txt',
-                '#EOF\n',
-                '\n',
-                'ActualHash: image_checksum-checksum\n',
-                'ExpectedHash: image_checksum-checksum\n',
-                '#EOF\n',
-            ])
+        self.assertTest('failures/expected/image_checksum.html',
+                        expected_checksum=b'image_checksum-checksum',
+                        drt_output=[
+                            b'#READY\n',
+                            b'Content-Type: text/plain\n',
+                            b'image_checksum-txt',
+                            b'#EOF\n',
+                            b'\n',
+                            b'ActualHash: image_checksum-checksum\n',
+                            b'ExpectedHash: image_checksum-checksum\n',
+                            b'#EOF\n',
+                        ])
 
     def test_textonly(self):
         self.assertTest('passes/image.html')
@@ -196,29 +194,26 @@ class MockDRTTest(unittest.TestCase):
         self.assertTest('passes/checksum_in_image.html')
 
     def test_reftest_match(self):
-        self.assertTest(
-            'passes/reftest.html',
-            expected_checksum='mock-checksum',
-            expected_text='reference text\n')
+        self.assertTest('passes/reftest.html',
+                        expected_checksum=b'mock-checksum',
+                        expected_text=b'reference text\n')
 
     def test_reftest_mismatch(self):
-        self.assertTest(
-            'passes/mismatch.html',
-            expected_checksum='mock-checksum',
-            expected_text='reference text\n')
+        self.assertTest('passes/mismatch.html',
+                        expected_checksum=b'mock-checksum',
+                        expected_text=b'reference text\n')
 
     def test_audio(self):
-        self.assertTest(
-            'passes/audio.html',
-            drt_output=[
-                '#READY\n',
-                'Content-Type: audio/wav\n',
-                'Content-Transfer-Encoding: base64\n',
-                'YXVkaW8td2F2',
-                '\n',
-                '#EOF\n',
-                '#EOF\n',
-            ])
+        self.assertTest('passes/audio.html',
+                        drt_output=[
+                            b'#READY\n',
+                            b'Content-Type: audio/wav\n',
+                            b'Content-Transfer-Encoding: base64\n',
+                            b'YXVkaW8td2F2',
+                            b'\n',
+                            b'#EOF\n',
+                            b'#EOF\n',
+                        ])
 
     def test_virtual(self):
         self.assertTest('virtual/passes/text.html')

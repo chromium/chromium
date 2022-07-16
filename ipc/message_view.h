@@ -23,6 +23,10 @@ class COMPONENT_EXPORT(IPC_MOJOM) MessageView {
       base::span<const uint8_t> bytes,
       absl::optional<std::vector<mojo::native::SerializedHandlePtr>> handles);
   MessageView(MessageView&&);
+
+  MessageView(const MessageView&) = delete;
+  MessageView& operator=(const MessageView&) = delete;
+
   ~MessageView();
 
   MessageView& operator=(MessageView&&);
@@ -33,8 +37,6 @@ class COMPONENT_EXPORT(IPC_MOJOM) MessageView {
  private:
   base::span<const uint8_t> bytes_;
   absl::optional<std::vector<mojo::native::SerializedHandlePtr>> handles_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageView);
 };
 
 }  // namespace IPC

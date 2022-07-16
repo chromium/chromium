@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "media/base/media_export.h"
+
 namespace media {
 
 enum class DeviceType { kInput, kOutput };
@@ -22,6 +24,7 @@ struct CrasDevice {
   DeviceType type;
   uint64_t id;
   uint32_t dev_idx;
+  uint32_t max_supported_channels;
   bool plugged;
   bool active;
   std::string node_type;
@@ -29,21 +32,28 @@ struct CrasDevice {
   std::string dev_name;
 };
 
-// Enumerates all devices of |type|.
-std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type);
+class MEDIA_EXPORT CrasUtil {
+ public:
+  CrasUtil();
 
-// Returns if there is a keyboard mic in CRAS.
-bool CrasHasKeyboardMic();
+  virtual ~CrasUtil();
 
-// Returns if system AEC is supported in CRAS.
-int CrasGetAecSupported();
+  // Enumerates all devices of |type|.
+  virtual std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type);
 
-// Returns the system AEC group ID. If no group ID is specified, -1 is
-// returned.
-int CrasGetAecGroupId();
+  // Returns if there is a keyboard mic in CRAS.
+  virtual bool CrasHasKeyboardMic();
 
-// Returns the default output buffer size.
-int CrasGetDefaultOutputBufferSize();
+  // Returns if system AEC is supported in CRAS.
+  virtual int CrasGetAecSupported();
+
+  // Returns the system AEC group ID. If no group ID is specified, -1 is
+  // returned.
+  virtual int CrasGetAecGroupId();
+
+  // Returns the default output buffer size.
+  virtual int CrasGetDefaultOutputBufferSize();
+};
 
 }  // namespace media
 

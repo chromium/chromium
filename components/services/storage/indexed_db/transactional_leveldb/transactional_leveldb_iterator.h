@@ -34,6 +34,10 @@ class LevelDBSnapshot;
 // OnDatabaseRangeModified are called.
 class TransactionalLevelDBIterator {
  public:
+  TransactionalLevelDBIterator(const TransactionalLevelDBIterator&) = delete;
+  TransactionalLevelDBIterator& operator=(const TransactionalLevelDBIterator&) =
+      delete;
+
   virtual ~TransactionalLevelDBIterator();
 
   virtual bool IsValid() const;
@@ -101,8 +105,6 @@ class TransactionalLevelDBIterator {
   std::unique_ptr<LevelDBSnapshot> snapshot_;
 
   const leveldb::Comparator* const comparator_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransactionalLevelDBIterator);
 };
 
 }  // namespace content

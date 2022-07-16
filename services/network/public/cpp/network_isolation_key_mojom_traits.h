@@ -12,6 +12,10 @@
 #include "services/network/public/mojom/network_isolation_key.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class UnguessableToken;
+}  // namespace base
+
 namespace mojo {
 
 template <>
@@ -28,8 +32,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return input.GetFrameSite();
   }
 
-  static bool opaque_and_non_transient(const net::NetworkIsolationKey& input) {
-    return input.opaque_and_non_transient_;
+  static const absl::optional<base::UnguessableToken>& nonce(
+      const net::NetworkIsolationKey& input) {
+    return input.GetNonce();
   }
 
   static bool Read(network::mojom::NetworkIsolationKeyDataView data,

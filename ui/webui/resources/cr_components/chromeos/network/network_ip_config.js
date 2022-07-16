@@ -150,14 +150,6 @@ Polymer({
       value: true,
       computed: 'computeShouldShowAutoIpConfigToggle_(managedProperties)',
     },
-
-    /** @private */
-    isUpdatedCellularUiEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('updatedCellularActivationUi');
-      }
-    },
   },
 
   /**
@@ -409,8 +401,7 @@ Polymer({
    */
   computeShouldShowAutoIpConfigToggle_() {
     if (this.managedProperties.type ===
-            chromeos.networkConfig.mojom.NetworkType.kCellular &&
-        this.isUpdatedCellularUiEnabled_) {
+        chromeos.networkConfig.mojom.NetworkType.kCellular) {
       return false;
     }
     return true;

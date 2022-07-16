@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_HISTORY_NAVIGATION_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace base {
@@ -19,6 +18,10 @@ namespace webui {
 class NavigationHandler : public content::WebUIMessageHandler {
  public:
   NavigationHandler();
+
+  NavigationHandler(const NavigationHandler&) = delete;
+  NavigationHandler& operator=(const NavigationHandler&) = delete;
+
   ~NavigationHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -26,8 +29,6 @@ class NavigationHandler : public content::WebUIMessageHandler {
 
  private:
   void HandleNavigateToUrl(const base::ListValue* args);
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationHandler);
 };
 
 }  // namespace webui

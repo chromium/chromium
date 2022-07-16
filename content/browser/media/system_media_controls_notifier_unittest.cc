@@ -32,6 +32,12 @@ using testing::Expectation;
 class SystemMediaControlsNotifierTest : public testing::Test {
  public:
   SystemMediaControlsNotifierTest() = default;
+
+  SystemMediaControlsNotifierTest(const SystemMediaControlsNotifierTest&) =
+      delete;
+  SystemMediaControlsNotifierTest& operator=(
+      const SystemMediaControlsNotifierTest&) = delete;
+
   ~SystemMediaControlsNotifierTest() override = default;
 
   void SetUp() override {
@@ -96,8 +102,6 @@ class SystemMediaControlsNotifierTest : public testing::Test {
   std::unique_ptr<SystemMediaControlsNotifier> notifier_;
   system_media_controls::testing::MockSystemMediaControls
       mock_system_media_controls_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMediaControlsNotifierTest);
 };
 
 TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesPlaybackState) {

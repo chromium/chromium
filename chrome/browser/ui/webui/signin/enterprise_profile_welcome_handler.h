@@ -103,6 +103,7 @@ class EnterpriseProfileWelcomeHandler
 
   Browser* browser_ = nullptr;
   const EnterpriseProfileWelcomeUI::ScreenType type_;
+  const std::u16string email_;
   const std::string domain_name_;
   const CoreAccountId account_id_;
   absl::optional<SkColor> profile_color_;

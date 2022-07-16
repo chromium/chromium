@@ -30,8 +30,7 @@ const char kSAMLUserEmail1[] = "alice@corp.example.com";
 const char kSAMLUserId2[] = "67891";
 const char kSAMLUserEmail2[] = "bob@corp.example.com";
 
-constexpr base::TimeDelta kSamlOnlineShortDelay =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kSamlOnlineShortDelay = base::Seconds(10);
 
 const char kFakeToken[] = "fake-token";
 

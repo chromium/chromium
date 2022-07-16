@@ -142,6 +142,30 @@ TEST(LookalikeUrlUtilTest, EditDistanceExcludesCommonFalsePositives) {
   }
 }
 
+TEST(LookalikeUrlUtilTest, CharacterSwapExcludesCommonFalsePositives) {
+  const struct TestCase {
+    const char* domain;
+    const char* top_domain;
+    bool is_likely_false_positive;
+  } kTestCases[] = {
+      {"abcde.com", "abced.com", false},
+      // Only differs by registry:
+      {"abcde.sr", "abcde.rs", true},
+  };
+  for (const TestCase& test_case : kTestCases) {
+    auto navigated =
+        GetDomainInfo(GURL(std::string(url::kHttpsScheme) +
+                           url::kStandardSchemeSeparator + test_case.domain));
+    auto matched = GetDomainInfo(GURL(std::string(url::kHttpsScheme) +
+                                      url::kStandardSchemeSeparator +
+                                      test_case.top_domain));
+    bool result = IsLikelyCharacterSwapFalsePositive(navigated, matched);
+    EXPECT_EQ(test_case.is_likely_false_positive, result)
+        << "when comparing " << test_case.domain << " with "
+        << test_case.top_domain;
+  }
+}
+
 bool IsGoogleScholar(const std::string& hostname) {
   return hostname == "scholar.google.com";
 }
@@ -259,6 +283,11 @@ TEST(LookalikeUrlUtilTest, TargetEmbedding) {
        TargetEmbeddingType::kInterstitial},
       {"foo.highengagement-co-uk.foo.com", "highengagement.co.uk",
        TargetEmbeddingType::kInterstitial},
+
+      // Cross-TLD matches should not trigger, even when they're embedding
+      // another domain, even when using a de-facto public eTLD.
+      {"google.com.mx", "", TargetEmbeddingType::kNone},  // public
+      {"google.com.de", "", TargetEmbeddingType::kNone},  // de-facto public
 
       // Engaged sites should trigger as specifically as possible, and should
       // trigger preferentially to top sites when possible.
@@ -393,5 +422,48 @@ TEST(LookalikeUrlUtilTest, GetETLDPlusOneHandlesSpecialRegistries) {
 
   for (auto& test_case : kTestCases) {
     EXPECT_EQ(GetETLDPlusOne(test_case.hostname), test_case.expected_etldp1);
+  }
+}
+
+// Tests for the character swap heuristic.
+TEST(LookalikeUrlUtilTest, HasOneCharacterSwap) {
+  const struct TestCase {
+    const wchar_t* str1;
+    const wchar_t* str2;
+    bool expected;
+  } kTestCases[] = {{L"", L"", false},
+                    {L"", L"a", false},
+                    {L"", L"ab", false},
+                    {L"a", L"ab", false},
+                    {L"a", L"ba", false},
+                    {L"abc.com", L"abc.com", false},
+                    {L"abc.com", L"abcd.com", false},
+                    {L"domain.com", L"nomaid.com", false},
+                    // Two swaps (ab to ba, ba to ab):
+                    {L"abba", L"baab", false},
+
+                    {L"ab", L"ba", true},
+                    {L"abba", L"baba", true},
+
+                    {L"abaaa", L"baaaa", true},
+                    {L"abcaa", L"bacaa", true},
+
+                    {L"aaaab", L"aaaba", true},
+                    {L"aacab", L"aacba", true},
+
+                    {L"aabaa", L"abaaa", true},
+                    {L"aabcc", L"abacc", true},
+
+                    {L"aabaa", L"aaaba", true},
+                    {L"ccbaa", L"ccaba", true},
+
+                    {L"domain.com", L"doamin.com", true},
+                    {L"gmail.com", L"gmailc.om", true},
+                    {L"gmailc.om", L"gmail.com", true}};
+  for (const TestCase& test_case : kTestCases) {
+    bool result = HasOneCharacterSwap(base::WideToUTF16(test_case.str1),
+                                      base::WideToUTF16(test_case.str2));
+    EXPECT_EQ(test_case.expected, result)
+        << "when comparing " << test_case.str1 << " with " << test_case.str2;
   }
 }

@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
 <translation id="1036550831858290950">தற்போதைய தாவலை புக்மார்க்காகச் சேமிக்கும்</translation>
-<translation id="104962181688258143">கோப்புகள் பயன்பாட்டைத் திறக்கும்</translation>
+<translation id="104962181688258143">ஃபைல்கள்  பயன்பாட்டைத் திறக்கும்</translation>
 <translation id="1122869341872663659"><ph name="QUERY" />க்கான <ph name="N" /> தேடல் முடிவுகளைக் காட்டுகிறது</translation>
 <translation id="1195667586424773550">தாவலின் முகவரிப் பட்டிக்கு இணைப்பை இழுக்கவும்</translation>
 <translation id="1251638888133819822">முழுத்திரைப் பெரிதாக்கியை இயக்கும்/முடக்கும்</translation>
@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">புதிய மறைநிலைச் சாளரத்தைத் திறக்கும்</translation>
 <translation id="152892567002884378">ஒலியளவை அதிகரிக்கும்</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, பின்னர் <ph name="ESC" />ஐ அழுத்தவும்</translation>
-<translation id="1633761758045565086">உதவி உரையாடலுக்கு ஃபோகஸை நகர்த்தும்</translation>
 <translation id="1652741121070700329">முந்தைய சொல்லின் தொடக்கத்திற்கு நகர்த்தும்</translation>
 <translation id="1679841710523778799">ஒளிர்வை அதிகரிக்கும்</translation>
 <translation id="168356808214100546"><ph name="ALT" />ஐ அழுத்திப் பிடித்து, நீங்கள் திறக்க விரும்பும் சாளரத்திற்குச் செல்லும் வரை <ph name="TAB" />ஐத் தட்டி, பின்னர் விடுவிக்கவும்.</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">இணையப் பக்கத்தில் கீழே செல்லும்</translation>
 <translation id="2530896289327917474">சுட்டி உலாவலை இயக்க/முடக்க</translation>
 <translation id="2574014812750545982">பக்கத்தில், இயல்பான அளவிற்குக் காட்சியை மீட்டமைக்கும்</translation>
-<translation id="2596078834055697711">சாளரத்தை ஸ்கிரீன்ஷாட் எடுக்கும்</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, பின்னர் <ph name="TAB" /> அல்லது <ph name="RIGHT" />ஐ அழுத்தவும்</translation>
 <translation id="2750942583782703988">உங்கள் தற்போதைய பக்கத்தை மீண்டும் ஏற்றும்</translation>
 <translation id="2764005613199379871">தேடல் முகவரிப் பட்டியில் ஃபோகஸ் செய்யும்</translation>
@@ -68,15 +66,15 @@
 <translation id="3020183492814296499">ஷார்ட்கட்கள்</translation>
 <translation id="3084301071537457911">உங்கள் ஷெல்ஃபில் அடுத்த உருப்படியைத் தனிப்படுத்தும்</translation>
 <translation id="309173601632226815">உங்கள் ஷெல்ஃபில் தொடக்கிப் பொத்தானைத் தனிப்படுத்தும்</translation>
-<translation id="3105917916468784889">ஸ்கிரீன் ஷாட்டை எடுக்கும்</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">முகவரிப் பட்டியைக் கவனித்திடுங்கள்</translation>
 <translation id="3256109297135787951">உங்கள் ஷெல்ஃபில் உருப்படியைத் தனிப்படுத்தியதை அகற்றும்</translation>
 <translation id="3288816184963444640">தற்போதைய சாளரத்தை மூடும்</translation>
+<translation id="3350805006883559974">தற்போது பார்க்கும் சாளரத்தை மேலே பின் செய்தல்</translation>
 <translation id="3407560819924487926">செயல் நிர்வாகியைத் திறக்கும்</translation>
 <translation id="3417835166382867856">தாவல்களைத் தேடும்</translation>
 <translation id="3422679037938588196">உங்கள் தேடலுக்கான முந்தைய பொருத்தத்திற்குச் செல்லும்</translation>
-<translation id="353037708190149633">உங்கள் தற்போதைய சாளரத்தில் உள்ள எல்லா திறந்த பக்கங்களையும் புக்மார்க்குகளாக புதிய கோப்புறையில் சேமிக்கும்</translation>
+<translation id="353037708190149633">உங்கள் தற்போதைய சாளரத்தில் உள்ள எல்லா திறந்த பக்கங்களையும் புக்மார்க்குகளாக புதிய ஃபோல்டரில் சேமிக்கும்</translation>
 <translation id="355103131818127604">இணைப்பை புதிய தாவலாகப் பின்புலத்தில் திறக்கும்</translation>
 <translation id="3622741593887335780">பெரிதாக்கும் (டாக் செய்யப்பட்டிருக்கும்போது அல்லது முழுத்திரைப் பெரிதாக்கிகள் இயக்கப்பட்டிருக்கும்போது)</translation>
 <translation id="3633851487917460983">கிளிப்போர்டைத் திறக்கும்</translation>
@@ -104,13 +102,12 @@
 <translation id="4148761611071495477"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="G" /> அல்லது <ph name="ENTER" /></translation>
 <translation id="4240486403425279990">மேலோட்டப் பயன்முறை</translation>
 <translation id="4382340674111381977">முந்தைய பக்கத்திற்குச் செல்லும்</translation>
-<translation id="4458670250301149821">ஆப்ஸ் கட்டத்தில் உள்ள கோப்புறைக்கு உள்ளே/வெளியே ஆப்ஸ் ஐகானை நகர்த்தும்</translation>
+<translation id="4458670250301149821">ஆப்ஸ் கட்டத்தில் உள்ள ஃபோல்டருக்கு உள்ளே/வெளியே ஆப்ஸ் ஐகானை நகர்த்தும்</translation>
 <translation id="4472417192667361414">கம்ப்யூட்டர் &amp; காட்சி அமைப்புகள்</translation>
 <translation id="449214506787633354"><ph name="CTRL" />, பிறகு <ph name="LEFT" /> அல்லது <ph name="RIGHT" /> அல்லது <ph name="UP" /> அல்லது <ph name="DOWN" /></translation>
 <translation id="4556221320735744018">கீபோர்டு ஷார்ட்கட் உதவியைக் காட்டும்</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> அல்லது <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">உங்கள் கணக்கின் படம் தோன்றக்கூடிய நிலைப் பகுதியைத் திறக்கும்</translation>
-<translation id="4642092649622328492">பகுதியளவு ஸ்கிரீன்ஷாட்டை எடுக்கும்</translation>
 <translation id="4698850295812410683">ஸ்டைலஸ் கருவிகளைக் காட்டும்</translation>
 <translation id="4801989101741319327">அடுத்த சொல்லின் முடிவுக்கு நகர்த்தும்</translation>
 <translation id="4866066940972151697">வலதுபுறத்தில் உள்ள டெஸ்க்கை செயல்படுத்தும்</translation>
@@ -164,7 +161,7 @@
 <translation id="6671538777808758331">உங்கள் தேடலுக்கான அடுத்த பொருத்தத்திற்குச் செல்லும்</translation>
 <translation id="6681606577947445973"><ph name="REFRESH" /> அல்லது <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="R" /></translation>
 <translation id="6690765639083431875">சாளரத்தை இடதுபுறத்தில் டாக் செய்யும்</translation>
-<translation id="6692847073476874842">கோப்புகள் பயன்பாட்டில் ஃபைலின் மாதிரிக்காட்சியைக் காட்டும்</translation>
+<translation id="6692847073476874842">ஃபைல்கள்  பயன்பாட்டில் ஃபைலின் மாதிரிக்காட்சியைக் காட்டும்</translation>
 <translation id="671928215901716392">திரையைப் பூட்டு</translation>
 <translation id="6727005317916125192">முந்தைய பலகம்</translation>
 <translation id="6740781404993465795">அடுத்த சொல் அல்லது எழுத்தைத் தேர்ந்தெடுக்கும்</translation>
@@ -204,13 +201,14 @@
 <translation id="8537650670971624753">தேடல் பயன்முறையிலிருந்து வெளியேறவும்</translation>
 <translation id="85690795166292698">இணைப்பை புதிய தாவலில் திறக்கும்</translation>
 <translation id="8609384513243082612">புதிய தாவலைத் திறக்கும்</translation>
-<translation id="8644639153978066712">கோப்புகள் ஆப்ஸில் உள்ள மறைக்கப்பட்ட கோப்புகளைக் காண்பிக்கும்</translation>
+<translation id="8644639153978066712">ஃபைல்கள்  ஆப்ஸில் உள்ள மறைக்கப்பட்ட கோப்புகளைக் காண்பிக்கும்</translation>
 <translation id="8717459106217102612">முந்தைய சொல்லை அல்லது எழுத்தைத் தேர்ந்தெடுக்கும்</translation>
 <translation id="8727232706774971183">உங்கள் அறிவிப்புகளைக் காட்டும்</translation>
 <translation id="8855885154700222542">முழுத்திரை விசை</translation>
 <translation id="8881584919399569791">செயலிலுள்ள சாளரத்தை இடதுபுறத்தில் உள்ள டெஸ்க்கிற்கு நகர்த்தும்</translation>
 <translation id="88986195241502842">பக்கத்தின் கீழே</translation>
 <translation id="8924883688469390268">முந்தைய பயனருக்குச் செல்லும்</translation>
+<translation id="8941626538514548667">உலாவியில் உள்ள இணைய உள்ளடக்கத்தை மையப்படுத்தும்</translation>
 <translation id="8977648847395357314">முகவரிப் பட்டியில் உள்ள உள்ளடக்கத்தைத் தேர்ந்தெடுக்கும்</translation>
 <translation id="8982190978301344584">கிடைக்கக்கூடிய IMEகளின் பட்டியலைக் காட்டும் மெனுவைக் காட்டும்</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 முதல் 8 வரை</translation>

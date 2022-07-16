@@ -33,13 +33,12 @@ base::TimeDelta CalculateEventTimeout(double event_time,
   DCHECK_NE(media_element.playbackRate(), 0);
 
   auto const timeout =
-      base::TimeDelta::FromSecondsD((event_time - media_element.currentTime()) /
-                                    media_element.playbackRate());
+      base::Seconds((event_time - media_element.currentTime()) /
+                    media_element.playbackRate());
 
   // Only allow timeouts of multiples of 1ms to prevent "polling-by-timer"
   // and excessive calls to `TimeMarchesOn`.
-  constexpr base::TimeDelta kMinTimeoutInterval =
-      base::TimeDelta::FromMilliseconds(1);
+  constexpr base::TimeDelta kMinTimeoutInterval = base::Milliseconds(1);
   return std::max(timeout.CeilToMultiple(kMinTimeoutInterval),
                   kMinTimeoutInterval);
 }

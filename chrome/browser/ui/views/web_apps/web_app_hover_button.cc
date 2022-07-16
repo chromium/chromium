@@ -12,22 +12,25 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/elide_url.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -39,11 +42,9 @@ WebAppHoverButton::WebAppHoverButton(views::Button::PressedCallback callback,
     : HoverButton(std::move(callback),
                   std::make_unique<NonAccessibleImageView>(),
                   display_name,
-                  l10n_util::GetStringFUTF16(
-                      IDS_PROTOCOL_HANDLER_INTENT_PICKER_APP_ORIGIN_LABEL,
-                      url_formatter::FormatUrlForSecurityDisplay(
-                          url,
-                          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)),
+                  url_formatter::FormatUrlForSecurityDisplay(
+                      url,
+                      url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS),
                   /*secondary_view=*/nullptr,
                   /*resize_row_for_secondary_view=*/false,
                   /*secondary_view_can_process_events=*/false),
@@ -54,10 +55,7 @@ WebAppHoverButton::WebAppHoverButton(views::Button::PressedCallback callback,
       base::BindOnce(&WebAppHoverButton::OnIconsRead,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
-  subtitle()->SetFontList(base_font_list.Derive(
-      /*font size delta=*/-1, gfx::Font::NORMAL, gfx::Font::Weight::NORMAL));
-  subtitle()->SetTextStyle(views::style::TextStyle::STYLE_HINT);
+  title()->SetDefaultTextStyle(STYLE_EMPHASIZED);
   Layout();
 }
 
@@ -93,3 +91,6 @@ void WebAppHoverButton::OnIconsRead(
                                   image_size);
   SetImage(views::Button::ButtonState::STATE_NORMAL, imageSkia);
 }
+
+BEGIN_METADATA(WebAppHoverButton, HoverButton)
+END_METADATA

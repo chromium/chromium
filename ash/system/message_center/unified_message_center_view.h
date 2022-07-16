@@ -25,11 +25,11 @@ class Notification;
 
 namespace views {
 class ScrollView;
+class ScrollBar;
 }  // namespace views
 
 namespace ash {
 
-class MessageCenterScrollBar;
 class StackedNotificationBar;
 class UnifiedMessageCenterBubble;
 class UnifiedSystemTrayModel;
@@ -64,7 +64,15 @@ class ASH_EXPORT UnifiedMessageCenterView
   UnifiedMessageCenterView(UnifiedSystemTrayView* parent,
                            UnifiedSystemTrayModel* model,
                            UnifiedMessageCenterBubble* bubble);
+
+  UnifiedMessageCenterView(const UnifiedMessageCenterView&) = delete;
+  UnifiedMessageCenterView& operator=(const UnifiedMessageCenterView&) = delete;
+
   ~UnifiedMessageCenterView() override;
+
+  // Initializes the `UnifiedMessageListView` with existing notifications.
+  // Should be called after ctor.
+  void Init();
 
   // Sets the maximum height that the view can take.
   // TODO(tengs): The layout of this view is heavily dependant on this max
@@ -87,8 +95,15 @@ class ASH_EXPORT UnifiedMessageCenterView
   // UnifiedMessageListView.
   void ConfigureMessageView(message_center::MessageView* message_view);
 
-  // Count number of notifications that are above visible area.
+  // Count number of notifications that are still in the MessageCenter that are
+  // above visible area. NOTE: views may be in the view hierarchy, but no longer
+  // in the message center.
   std::vector<message_center::Notification*> GetStackedNotifications() const;
+
+  // Count the number of notifications that are not visible in the scrollable
+  // window, but still in the view hierarchy, with no checks for whether they
+  // are in the message center.
+  std::vector<std::string> GetNonVisibleNotificationIdsInViewHierarchy() const;
 
   // Relinquish focus and transfer it to the quick settings widget.
   void FocusOut(bool reverse);
@@ -112,7 +127,7 @@ class ASH_EXPORT UnifiedMessageCenterView
   void ExpandMessageCenter();
 
   // Returns true if the notification bar is visible.
-  bool IsNotificationBarVisible();
+  bool IsNotificationBarVisible() const;
 
   // views::View:
   void AddedToWidget() override;
@@ -133,6 +148,7 @@ class ASH_EXPORT UnifiedMessageCenterView
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
 
+  UnifiedMessageListView* message_list_view() { return message_list_view_; }
   bool collapsed() { return collapsed_; }
 
  private:
@@ -165,12 +181,14 @@ class ASH_EXPORT UnifiedMessageCenterView
   UnifiedSystemTrayModel* const model_;
   UnifiedMessageCenterBubble* const message_center_bubble_;
   StackedNotificationBar* const notification_bar_;
-  MessageCenterScrollBar* const scroll_bar_;
+  views::ScrollBar* scroll_bar_;
   views::ScrollView* const scroller_;
   UnifiedMessageListView* const message_list_view_;
 
   // Position from the bottom of scroll contents in dip.
   int last_scroll_position_from_bottom_;
+
+  const bool is_notifications_refresh_enabled_;
 
   // The height available to the message center view. This is the remaining
   // height of the system tray excluding the system menu (which can be expanded
@@ -188,8 +206,6 @@ class ASH_EXPORT UnifiedMessageCenterView
   const std::unique_ptr<views::FocusSearch> focus_search_;
 
   views::FocusManager* focus_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedMessageCenterView);
 };
 
 }  // namespace ash

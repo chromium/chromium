@@ -66,6 +66,11 @@ void SetBooleanUserPref(ChromeBrowserState* browser_state,
                         const char* pref_name,
                         bool value);
 
+// Sets the value of an integer user pref in the given browser state.
+void SetIntegerUserPref(ChromeBrowserState* browser_state,
+                        const char* pref_name,
+                        int value);
+
 // Sets the state of using cellular network.
 void SetWWANStateTo(bool value);
 

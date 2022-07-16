@@ -44,6 +44,10 @@ class GCM_EXPORT ConnectionHandlerImpl : public ConnectionHandler {
                         const ProtoReceivedCallback& read_callback,
                         const ProtoSentCallback& write_callback,
                         const ConnectionChangedCallback& connection_callback);
+
+  ConnectionHandlerImpl(const ConnectionHandlerImpl&) = delete;
+  ConnectionHandlerImpl& operator=(const ConnectionHandlerImpl&) = delete;
+
   ~ConnectionHandlerImpl() override;
 
   // ConnectionHandler implementation.
@@ -135,8 +139,6 @@ class GCM_EXPORT ConnectionHandlerImpl : public ConnectionHandler {
   std::vector<uint8_t> payload_input_buffer_;
 
   base::WeakPtrFactory<ConnectionHandlerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionHandlerImpl);
 };
 
 }  // namespace gcm

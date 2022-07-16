@@ -65,7 +65,7 @@ class DevtoolsNetworkResourceLoaderTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* current_frame_host() {
-    return web_contents()->GetFrameTree()->root()->current_frame_host();
+    return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
   mojo::Remote<network::mojom::URLLoaderFactory> CreateURLLoaderFactory() {

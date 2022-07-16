@@ -26,6 +26,9 @@ class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
       ShowSystemPrintSettingsCallback callback) override;
   void CreatePrintJob(crosapi::mojom::PrintJobPtr job,
                       CreatePrintJobCallback callback) override;
+  void CancelPrintJob(const std::string& printer_id,
+                      unsigned int job_id,
+                      CancelPrintJobCallback callback) override;
   void GetPrintServersConfig(GetPrintServersConfigCallback callback) override;
   void ChoosePrintServers(const std::vector<std::string>& print_server_ids,
                           ChoosePrintServersCallback callback) override;
@@ -35,6 +38,10 @@ class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
   void GetPolicies(GetPoliciesCallback callback) override;
   void GetUsernamePerPolicy(GetUsernamePerPolicyCallback callback) override;
   void GetPrinterTypeDenyList(GetPrinterTypeDenyListCallback callback) override;
+  void AddPrintJobObserver(
+      mojo::PendingRemote<crosapi::mojom::PrintJobObserver> remote,
+      crosapi::mojom::PrintJobSource source,
+      AddPrintJobObserverCallback callback) override;
 };
 
 #endif  // CHROME_TEST_CHROMEOS_PRINTING_FAKE_LOCAL_PRINTER_CHROMEOS_H_

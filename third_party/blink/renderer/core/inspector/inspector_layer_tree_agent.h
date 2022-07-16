@@ -33,8 +33,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/LayerTree.h"
-#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
+#include "third_party/blink/renderer/core/inspector/protocol/layer_tree.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -112,9 +111,7 @@ class CORE_EXPORT InspectorLayerTreeAgent final
                                      const PictureSnapshot*&);
   void GatherLayers(
       const cc::Layer*,
-      std::unique_ptr<protocol::Array<protocol::LayerTree::Layer>>&,
-      bool has_wheel_event_handlers,
-      CompositorElementId outer_viewport_scroll_element_id);
+      std::unique_ptr<protocol::Array<protocol::LayerTree::Layer>>&);
 
   Member<InspectedFrames> inspected_frames_;
   Client* client_;

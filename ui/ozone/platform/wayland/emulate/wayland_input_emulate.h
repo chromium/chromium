@@ -118,7 +118,8 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   // WaylandProxy::Delegate.
   void OnWindowAdded(gfx::AcceleratedWidget widget) override;
   void OnWindowRemoved(gfx::AcceleratedWidget widget) override;
-  void OnWindowConfigured(gfx::AcceleratedWidget widget) override;
+  void OnWindowConfigured(gfx::AcceleratedWidget widget,
+                          bool is_configured) override;
 
   // weston_test_listener.
   static void HandlePointerPosition(void* data,

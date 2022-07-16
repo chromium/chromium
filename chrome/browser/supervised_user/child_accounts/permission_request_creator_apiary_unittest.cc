@@ -56,8 +56,7 @@ class PermissionRequestCreatorApiaryTest : public testing::Test {
  protected:
   void IssueAccessTokens() {
     identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-        account_id_, "access_token",
-        base::Time::Now() + base::TimeDelta::FromHours(1));
+        account_id_, "access_token", base::Time::Now() + base::Hours(1));
   }
 
   void IssueAccessTokenErrors() {

@@ -24,6 +24,10 @@ class TranslateCompactInfoBar
  public:
   explicit TranslateCompactInfoBar(
       std::unique_ptr<translate::TranslateInfoBarDelegate> delegate);
+
+  TranslateCompactInfoBar(const TranslateCompactInfoBar&) = delete;
+  TranslateCompactInfoBar& operator=(const TranslateCompactInfoBar&) = delete;
+
   ~TranslateCompactInfoBar() override;
 
   // JNI method specific to string settings in translate.
@@ -94,8 +98,6 @@ class TranslateCompactInfoBar
     FLAG_NEVER_SITE = 1 << 4,
     FLAG_EXPAND_MENU = 1 << 5,
   };
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateCompactInfoBar);
 };
 
 }  // namespace weblayer

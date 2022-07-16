@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
@@ -25,9 +24,7 @@ class WebContents;
 }
 
 // Base class for desktop media picker UI. It's used by Desktop Media API, and
-// by ARC to let user choose a desktop media source. It is also used by
-// getCurrentBrowsingContextMedia API to request user's permission to share the
-// current browser context.
+// by ARC to let user choose a desktop media source.
 //
 // TODO(crbug.com/987001): Rename this class.
 class DesktopMediaPicker {
@@ -69,6 +66,10 @@ class DesktopMediaPicker {
     // user select a desktop, the desktop picker also serves to prevent the
     // screen screen from being shared without the user's explicit consent.
     bool select_only_screen = false;
+    // Indicates that the caller of this picker is subject to enterprise
+    // policies that may restrict the available choices, and a suitable warning
+    // should be shown to the user.
+    bool restricted_by_policy = false;
   };
 
   // Creates a picker dialog/confirmation box depending on the value of
@@ -78,6 +79,10 @@ class DesktopMediaPicker {
       const content::MediaStreamRequest* request = nullptr);
 
   DesktopMediaPicker() = default;
+
+  DesktopMediaPicker(const DesktopMediaPicker&) = delete;
+  DesktopMediaPicker& operator=(const DesktopMediaPicker&) = delete;
+
   virtual ~DesktopMediaPicker() = default;
 
   // Shows dialog with list of desktop media sources (screens, windows, tabs)
@@ -87,9 +92,6 @@ class DesktopMediaPicker {
   virtual void Show(const Params& params,
                     std::vector<std::unique_ptr<DesktopMediaList>> source_lists,
                     DoneCallback done_callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaPicker);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_H_

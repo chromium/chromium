@@ -5,17 +5,17 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  deps = [ "//chromeos/services/network_health/public/mojom" ]
   sources = [
     "cros_healthd.mojom",
     "cros_healthd_diagnostics.mojom",
     "cros_healthd_events.mojom",
     "cros_healthd_probe.mojom",
     "nullable_primitives.mojom",
+    "wilco_ec.mojom",
   ]
 
   public_deps = [
-    "//chromeos/services/network_health/public/mojom",
+    "//ash/services/network_health/public/mojom",
     "//mojo/public/mojom/base",
   ]
 

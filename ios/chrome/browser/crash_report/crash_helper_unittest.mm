@@ -6,9 +6,9 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
+#include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
-#include "ios/chrome/browser/crash_report/crash_reporter_breadcrumb_observer.h"
 #include "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
 #include "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/test/ocmock/OCMockObject+BreakpadControllerTesting.h"
@@ -86,7 +86,8 @@ TEST_F(BreakpadHelperTest, CrashReportUserApplicationStateAllKeys) {
 
   // Set a max-length breadcrumbs string.
   std::string breadcrumbs(breadcrumbs::kMaxDataLength, 'A');
-  crash_keys::SetBreadcrumbEvents(base::SysUTF8ToNSString(breadcrumbs));
+  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+      .SetPreviousSessionEvents({breadcrumbs});
 }
 
 TEST_F(BreakpadHelperTest, GetCrashReportCount) {

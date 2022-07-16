@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace gpu {
@@ -19,18 +18,22 @@ GpuMemoryBufferConfigurationSet GetNativeGpuMemoryBufferConfigurations(
 
 #if defined(USE_OZONE) || defined(OS_MAC) || defined(OS_WIN) || \
     defined(OS_ANDROID)
-#if defined(USE_OZONE)
-  if (!features::IsUsingOzonePlatform())
-    return configurations;
-#endif
   const gfx::BufferFormat kBufferFormats[] = {
-      gfx::BufferFormat::R_8,          gfx::BufferFormat::R_16,
-      gfx::BufferFormat::RG_88,        gfx::BufferFormat::BGR_565,
-      gfx::BufferFormat::RGBA_4444,    gfx::BufferFormat::RGBX_8888,
-      gfx::BufferFormat::RGBA_8888,    gfx::BufferFormat::BGRX_8888,
-      gfx::BufferFormat::BGRA_1010102, gfx::BufferFormat::RGBA_1010102,
-      gfx::BufferFormat::BGRA_8888,    gfx::BufferFormat::RGBA_F16,
-      gfx::BufferFormat::YVU_420,      gfx::BufferFormat::YUV_420_BIPLANAR,
+      gfx::BufferFormat::R_8,
+      gfx::BufferFormat::R_16,
+      gfx::BufferFormat::RG_88,
+      gfx::BufferFormat::RG_1616,
+      gfx::BufferFormat::BGR_565,
+      gfx::BufferFormat::RGBA_4444,
+      gfx::BufferFormat::RGBX_8888,
+      gfx::BufferFormat::RGBA_8888,
+      gfx::BufferFormat::BGRX_8888,
+      gfx::BufferFormat::BGRA_1010102,
+      gfx::BufferFormat::RGBA_1010102,
+      gfx::BufferFormat::BGRA_8888,
+      gfx::BufferFormat::RGBA_F16,
+      gfx::BufferFormat::YVU_420,
+      gfx::BufferFormat::YUV_420_BIPLANAR,
       gfx::BufferFormat::P010};
 
   const gfx::BufferUsage kUsages[] = {

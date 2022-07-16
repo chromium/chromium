@@ -10,14 +10,12 @@
 
 #include "ash/public/cpp/network_config_service.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_dialog_launcher.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/common/url_constants.h"
@@ -53,15 +51,15 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         kAddNetwork,
         base::BindRepeating(&NetworkConfigMessageHandler::AddNetwork,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         kShowNetworkDetails,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkDetails,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         kShowNetworkConfig,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkConfig,
                             base::Unretained(this)));
@@ -69,24 +67,23 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
 
  private:
   void ShowNetworkDetails(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetSize());
-    std::string guid;
-    CHECK(arg_list->GetString(0, &guid));
+    CHECK_EQ(1u, arg_list->GetList().size());
+    std::string guid = arg_list->GetList()[0].GetString();
 
     InternetDetailDialog::ShowDialog(guid);
   }
 
   void ShowNetworkConfig(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetSize());
-    std::string guid;
-    CHECK(arg_list->GetString(0, &guid));
+    CHECK_EQ(1u, arg_list->GetList().size());
+    std::string guid = arg_list->GetList()[0].GetString();
 
     InternetConfigDialog::ShowDialogForNetworkId(guid);
   }
 
   void AddNetwork(const base::ListValue* args) {
-    std::string onc_type;
-    args->GetString(0, &onc_type);
+    CHECK_EQ(1u, args->GetList().size());
+    std::string onc_type = args->GetList()[0].GetString();
+
     InternetConfigDialog::ShowDialogForNetworkType(onc_type);
   }
 

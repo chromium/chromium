@@ -32,11 +32,27 @@ for your project is clear, e.g., a design doc has been circulated.
 ## Get the code
 
 There are two common ways to depend on third-party code: you can reference a
-Git repo directly (via entries in the DEPS file), or you can check in a
-snapshot. The former is preferable if you are actively developing in it or need
-access to the history; the latter is better if you don't need the full history
-of the repo or don't need to pick up every single change. And, of course, if
-the code you need isn't in a Git repo, you have to do the latter.
+Git repo directly (via entries in the DEPS file) or you can check in a
+snapshot. The former is preferable in most cases:
+
+1. If you are actively developing in the upstream repo, then having the DEPS
+   file include the upstream (that's been mirrored to GoB, see below) can be a
+   way to include those changes into Chromium at a particular revision. The
+   DEPS file will be updated to a new revision when you are ready to "roll" the
+   new version into Chromium. This also avoids duplicate copies of the code
+   showing up in multiple repos leading to contributor confusion.
+1. This interacts favorably with our upstream tracking automation. We
+   automatically consume the upstream Git hashes and match them against a
+   database of known upstreams to tracking drift between Chromium and upstream
+   sources.
+1. This makes adding deps that don't need local changes easier. E.g. some of
+   our automation automatically converts non-GN build rules into GN build rules
+   without any additional CLs.
+
+Checking in a snapshot is useful if this is effectively taking on maintenance
+of an unmaintained project (e.g. an ancient library that we're going to GN-ify
+that hasn't been updated in years). And, of course, if the code you need isn't
+in a Git repo, then you have to snapshot.
 
 ### Node packages
 
@@ -52,7 +68,7 @@ If the code is in a Git repo that you want to mirror, please file an [infra git
 ticket](https://bugs.chromium.org/p/chromium/issues/entry?template=Infra-Git)
 to get the repo mirrored onto chromium.googlesource.com; we don't allow direct
 dependencies on non-Google-hosted repositories, so that we can still build
-if an external repository goes down..
+if an external repository goes down.
 
 Once the mirror is set up, add an entry to [//DEPS](../DEPS) so that gclient
 will pull it in. If the code is only needed on some platforms, add a condition

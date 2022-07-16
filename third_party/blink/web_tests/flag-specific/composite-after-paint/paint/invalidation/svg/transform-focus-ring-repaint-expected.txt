@@ -22,6 +22,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV",
       "bounds": [440, 300],
       "contentsOpaqueForText": true,
+      "backfaceVisibility": "hidden",
       "backgroundColor": "#0000FF",
       "transform": 3
     }

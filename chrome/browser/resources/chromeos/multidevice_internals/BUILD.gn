@@ -34,6 +34,7 @@ generate_grd("build_grdp") {
   input_files = [
     "browser_tabs_metadata_form.js",
     "browser_tabs_model_form.js",
+    "camera_roll_manager_form.js",
     "logging_tab.js",
     "log_object.js",
     "multidevice_internals.js",
@@ -67,6 +68,7 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
     ":browser_tabs_metadata_form",
+    ":camera_roll_manager_form",
     ":log_object",
     ":logging_tab",
     ":multidevice_internals",
@@ -107,6 +109,13 @@ js_library("browser_tabs_model_form") {
 
 js_library("browser_tabs_metadata_form") {
   deps = [ ":types" ]
+}
+
+js_library("camera_roll_manager_form") {
+  deps = [
+    ":multidevice_phonehub_browser_proxy",
+    ":types",
+  ]
 }
 
 js_library("i18n_setup") {
@@ -178,6 +187,7 @@ js_library("quick_action_controller_form") {
 js_library("phonehub_tab") {
   deps = [
     ":browser_tabs_model_form",
+    ":camera_roll_manager_form",
     ":i18n_setup",
     ":multidevice_phonehub_browser_proxy",
     ":notification_manager",
@@ -209,5 +219,6 @@ html_to_js("web_components") {
     "browser_tabs_model_form.js",
     "notification_form.js",
     "notification_manager.js",
+    "camera_roll_manager_form.js",
   ]
 }

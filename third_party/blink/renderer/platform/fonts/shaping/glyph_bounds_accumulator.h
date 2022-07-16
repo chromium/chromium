@@ -64,12 +64,12 @@ struct GlyphBoundsAccumulator {
     // All positions in hb_glyph_position_t are relative to the current point.
     // https://behdad.github.io/harfbuzz/harfbuzz-Buffers.html#hb-glyph-position-t-struct
     if (is_horizontal_run)
-      bounds_for_glyph.SetX(bounds_for_glyph.X() + origin);
+      bounds_for_glyph.set_x(bounds_for_glyph.x() + origin);
     else
-      bounds_for_glyph.SetY(bounds_for_glyph.Y() + origin);
-    bounds_for_glyph.Move(glyph_offset);
+      bounds_for_glyph.set_y(bounds_for_glyph.y() + origin);
+    bounds_for_glyph.Offset(glyph_offset);
 
-    bounds.Unite(bounds_for_glyph);
+    bounds.Union(bounds_for_glyph);
   }
 
   // Non-template version of |Unite()|, see above.
@@ -93,7 +93,7 @@ struct GlyphBoundsAccumulator {
     // https://drafts.csswg.org/css-writing-modes-3/#intro-baselines
     int baseline_adjust = font_metrics.Ascent(kCentralBaseline) -
                           font_metrics.Ascent(kAlphabeticBaseline);
-    bounds.SetY(bounds.Y() + baseline_adjust);
+    bounds.set_y(bounds.y() + baseline_adjust);
   }
 };
 

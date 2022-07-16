@@ -7,7 +7,6 @@
 
 #include <deque>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
@@ -43,6 +42,9 @@ class BleSynchronizer : public BleSynchronizerBase {
    private:
     static Factory* test_factory_;
   };
+
+  BleSynchronizer(const BleSynchronizer&) = delete;
+  BleSynchronizer& operator=(const BleSynchronizer&) = delete;
 
   ~BleSynchronizer() override;
 
@@ -106,8 +108,6 @@ class BleSynchronizer : public BleSynchronizerBase {
   scoped_refptr<base::TaskRunner> task_runner_;
   base::Time last_command_end_timestamp_;
   base::WeakPtrFactory<BleSynchronizer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BleSynchronizer);
 };
 
 }  // namespace secure_channel

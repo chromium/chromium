@@ -89,4 +89,4 @@ views::FocusManager* ChromeWebContentsViewFocusHelper::GetFocusManager() {
   return toplevel_widget ? toplevel_widget->GetFocusManager() : NULL;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeWebContentsViewFocusHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeWebContentsViewFocusHelper);

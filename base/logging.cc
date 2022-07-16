@@ -21,11 +21,14 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
+#include "base/debug/crash_logging.h"
+#include "base/macros.h"
 #include "base/pending_task.h"
 #include "base/strings/string_piece.h"
 #include "base/task/common/task_annotator.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
+#include "build/os_buildflags.h"
 
 #if defined(OS_WIN)
 #include <io.h>
@@ -70,10 +73,7 @@ typedef HANDLE FileHandle;
 #endif
 
 #if defined(OS_FUCHSIA)
-#include <lib/syslog/global.h>
-#include <lib/syslog/logger.h>
-#include <zircon/process.h>
-#include <zircon/syscalls.h>
+#include "base/fuchsia/scoped_fx_logger.h"
 #endif
 
 #if defined(OS_ANDROID)
@@ -162,6 +162,14 @@ uint32_t g_logging_destination = LOG_DEFAULT;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Specifies the format of log header for chrome os.
 LogFormat g_log_format = LogFormat::LOG_FORMAT_SYSLOG;
+#endif
+
+#if defined(OS_FUCHSIA)
+// Retains system logging structures.
+base::ScopedFxLogger& GetScopedFxLogger() {
+  static base::NoDestructor<base::ScopedFxLogger> logger;
+  return *logger;
+}
 #endif
 
 // For LOGGING_ERROR and above, always print to stderr.
@@ -347,27 +355,26 @@ void CloseLogFileUnlocked() {
 }
 
 #if defined(OS_FUCHSIA)
-
-inline fx_log_severity_t LogSeverityToFuchsiaLogSeverity(LogSeverity severity) {
+inline FuchsiaLogSeverity LogSeverityToFuchsiaLogSeverity(
+    LogSeverity severity) {
   switch (severity) {
     case LOGGING_INFO:
-      return FX_LOG_INFO;
+      return FUCHSIA_LOG_INFO;
     case LOGGING_WARNING:
-      return FX_LOG_WARNING;
+      return FUCHSIA_LOG_WARNING;
     case LOGGING_ERROR:
-      return FX_LOG_ERROR;
+      return FUCHSIA_LOG_ERROR;
     case LOGGING_FATAL:
       // Don't use FX_LOG_FATAL, otherwise fx_logger_log() will abort().
-      return FX_LOG_ERROR;
+      return FUCHSIA_LOG_ERROR;
   }
   if (severity > -3) {
     // LOGGING_VERBOSE levels 1 and 2.
-    return FX_LOG_DEBUG;
+    return FUCHSIA_LOG_DEBUG;
   }
   // LOGGING_VERBOSE levels 3 and higher, or incorrect levels.
-  return FX_LOG_TRACE;
+  return FUCHSIA_LOG_TRACE;
 }
-
 #endif  // defined (OS_FUCHSIA)
 
 }  // namespace
@@ -418,19 +425,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
 
 #if defined(OS_FUCHSIA)
   if (g_logging_destination & LOG_TO_SYSTEM_DEBUG_LOG) {
-    std::string log_tag = base::CommandLine::ForCurrentProcess()
-                              ->GetProgram()
-                              .BaseName()
-                              .AsUTF8Unsafe();
-    const char* log_tag_data = log_tag.data();
-
-    fx_logger_config_t config = {
-        .min_severity = g_vlog_info ? FX_LOG_TRACE : FX_LOG_INFO,
-        .console_fd = -1,
-        .tags = &log_tag_data,
-        .num_tags = 1,
-    };
-    fx_log_reconfigure(&config);
+    GetScopedFxLogger() = base::ScopedFxLogger::CreateForProcess();
   }
 #endif
 
@@ -489,8 +484,11 @@ bool ShouldCreateLogMessage(int severity) {
 bool ShouldLogToStderr(int severity) {
   if (g_logging_destination & LOG_TO_STDERR)
     return true;
+#if !BUILDFLAG(IS_FUCHSIA)
+  // High-severity logs go to stderr by default, except on Fuchsia.
   if (severity >= kAlwaysPrintErrorLevel)
     return (g_logging_destination & ~LOG_TO_FILE) == LOG_NONE;
+#endif
   return false;
 }
 
@@ -600,6 +598,9 @@ LogMessage::~LogMessage() {
       stream_ << "IPC message handler context: "
               << base::StringPrintf("0x%08X", task->ipc_hash) << std::endl;
     }
+
+    // Include the crash keys, if any.
+    base::debug::OutputCrashKeysToStream(stream_);
   }
 #endif
   stream_ << std::endl;
@@ -802,16 +803,10 @@ LogMessage::~LogMessage() {
     __android_log_write(priority, kAndroidLogTag, str_newline.c_str());
 #endif
 #elif defined(OS_FUCHSIA)
-    fx_logger_t* logger = fx_log_get_logger();
-    if (logger) {
-      // Temporarily remove the trailing newline from |str_newline|'s C-string
-      // representation, since fx_logger will add a newline of its own.
-      str_newline.pop_back();
-      fx_logger_log_with_source(
-          logger, LogSeverityToFuchsiaLogSeverity(severity_), nullptr, file_,
-          line_, str_newline.c_str() + message_start_);
-      str_newline.push_back('\n');
-    }
+    // LogMessage() will silently drop the message if the logger is not valid.
+    GetScopedFxLogger().LogMessage(
+        file_, line_, base::StringPiece(str_newline).substr(message_start_),
+        LogSeverityToFuchsiaLogSeverity(severity_));
 #endif  // OS_FUCHSIA
   }
 
@@ -1133,7 +1128,7 @@ void RawLog(int level, const char* message) {
   }
 
   if (level == LOGGING_FATAL)
-    base::debug::BreakDebugger();
+    base::debug::BreakDebuggerAsyncSafe();
 }
 
 // This was defined at the beginning of this file.

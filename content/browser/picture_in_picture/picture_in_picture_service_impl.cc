@@ -51,7 +51,7 @@ void PictureInPictureServiceImpl::StartSession(
     // picture-in-picture continues to be displayed while the page is in the
     // cache instead of closing.
     static_cast<RenderFrameHostImpl*>(render_frame_host())
-        ->OnSchedulerTrackedFeatureUsed(
+        ->OnBackForwardCacheDisablingStickyFeatureUsed(
             blink::scheduler::WebSchedulerTrackedFeature::kPictureInPicture);
   }
 
@@ -61,7 +61,7 @@ void PictureInPictureServiceImpl::StartSession(
 PictureInPictureServiceImpl::PictureInPictureServiceImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::PictureInPictureService> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)) {}
+    : DocumentService(render_frame_host, std::move(receiver)) {}
 
 PictureInPictureServiceImpl::~PictureInPictureServiceImpl() {
   // If the service is destroyed because the frame was destroyed, the session

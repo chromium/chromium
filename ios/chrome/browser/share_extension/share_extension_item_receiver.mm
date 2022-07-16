@@ -11,10 +11,10 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -250,9 +250,9 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
     return NO;
   }
 
-  UMA_HISTOGRAM_TIMES("IOS.ShareExtension.ReceivedEntryDelay",
-                      base::TimeDelta::FromSecondsD(
-                          [[NSDate date] timeIntervalSinceDate:entryDate]));
+  UMA_HISTOGRAM_TIMES(
+      "IOS.ShareExtension.ReceivedEntryDelay",
+      base::Seconds([[NSDate date] timeIntervalSinceDate:entryDate]));
 
   UMA_HISTOGRAM_ENUMERATION("IOS.ShareExtension.Source",
                             SourceIDFromSource(entrySource),

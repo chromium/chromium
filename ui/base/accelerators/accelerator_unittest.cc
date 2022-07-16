@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
@@ -30,8 +31,7 @@ TEST(AcceleratorTest, TimeStamp) {
   const Accelerator accelerator_a(VKEY_A, EF_NONE);
   EXPECT_EQ(base::TimeTicks(), accelerator_a.time_stamp());
 
-  const base::TimeTicks event_time =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(1);
+  const base::TimeTicks event_time = base::TimeTicks() + base::Milliseconds(1);
   KeyEvent keyevent(ET_KEY_PRESSED, VKEY_SPACE, EF_NONE, event_time);
 
   const Accelerator accelerator_b(keyevent);
@@ -77,13 +77,50 @@ TEST(AcceleratorTest, ShortcutTextForUnknownKey) {
 }
 
 TEST(AcceleratorTest, ConversionFromKeyEvent) {
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_F,
-                         ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+  ui::KeyEvent key_event(
+      ui::ET_KEY_PRESSED, ui::VKEY_F,
+      ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_FUNCTION_DOWN);
   Accelerator accelerator(key_event);
 
   EXPECT_EQ(accelerator.key_code(), ui::VKEY_F);
-  EXPECT_EQ(accelerator.modifiers(), ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+  EXPECT_EQ(accelerator.modifiers(),
+            ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_FUNCTION_DOWN);
 }
+
+#if defined(OS_MAC)
+class AcceleratorTestMac : public testing::Test {
+ public:
+  AcceleratorTestMac() = default;
+  ~AcceleratorTestMac() override = default;
+
+  // Returns a "short" string representation of the modifier flags in
+  // |modifier_mask|.
+  std::u16string ShortFormStringForModifiers(int modifier_flags) {
+    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_F, modifier_flags);
+    Accelerator accelerator(key_event);
+
+    // Passing the empty string causes the method to return just the string
+    // representation of the modifier flags.
+    return accelerator.ApplyShortFormModifiers(std::u16string());
+  }
+};
+
+// Checks that a string representation exists for all modifier masks that make
+// sense on the Mac.
+TEST_F(AcceleratorTestMac, ModifierFlagsShortFormRepresentation) {
+  int modifier_flag = 1 << 0;
+  while (modifier_flag) {
+    // If |modifier_flag| is a valid modifier flag and it's not EF_ALTGR_DOWN
+    // (the Linux Alt key on the right side of the keyboard), confirm that
+    // a string representation for the modifier flag exists.
+    if (Accelerator::MaskOutKeyEventFlags(modifier_flag) &&
+        modifier_flag != EF_ALTGR_DOWN) {
+      EXPECT_GT(this->ShortFormStringForModifiers(modifier_flag).size(), 0UL);
+    }
+    modifier_flag <<= 1;
+  }
+}
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(AcceleratorTest, ConversionFromKeyEvent_Ash) {

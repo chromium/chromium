@@ -17,7 +17,7 @@
 namespace device {
 
 class DeviceService;
-class GeolocationManager;
+class FakeGeolocationManager;
 
 const char kTestGeolocationApiKey[] = "FakeApiKeyForTest";
 
@@ -25,6 +25,10 @@ const char kTestGeolocationApiKey[] = "FakeApiKeyForTest";
 class DeviceServiceTestBase : public testing::Test {
  public:
   DeviceServiceTestBase();
+
+  DeviceServiceTestBase(const DeviceServiceTestBase&) = delete;
+  DeviceServiceTestBase& operator=(const DeviceServiceTestBase&) = delete;
+
   ~DeviceServiceTestBase() override;
 
   // NOTE: It's important to do service instantiation within SetUp instead of
@@ -49,7 +53,7 @@ class DeviceServiceTestBase : public testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
 #if defined(OS_MAC)
-  std::unique_ptr<GeolocationManager> fake_geolocation_manager_;
+  std::unique_ptr<FakeGeolocationManager> fake_geolocation_manager_;
 #endif
 
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -59,8 +63,6 @@ class DeviceServiceTestBase : public testing::Test {
       network_connection_tracker_;
   std::unique_ptr<DeviceService> service_;
   mojo::Remote<mojom::DeviceService> service_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceServiceTestBase);
 };
 
 }  // namespace device

@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/button.h"
 
@@ -27,6 +26,9 @@ class ASH_EXPORT ActionableView : public views::Button {
   static const char kViewClassName[];
 
   explicit ActionableView(TrayPopupInkDropStyle ink_drop_style);
+
+  ActionableView(const ActionableView&) = delete;
+  ActionableView& operator=(const ActionableView&) = delete;
 
   ~ActionableView() override;
 
@@ -59,8 +61,6 @@ class ASH_EXPORT ActionableView : public views::Button {
 
   // Defines the flavor of ink drop ripple/highlight that should be constructed.
   const TrayPopupInkDropStyle ink_drop_style_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActionableView);
 };
 
 }  // namespace ash

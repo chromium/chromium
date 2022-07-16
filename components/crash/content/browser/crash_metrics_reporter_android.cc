@@ -294,32 +294,6 @@ void CrashMetricsReporter::ChildProcessExited(
                      &reported_counts);
   }
 
-  if (app_foreground && android_oom_kill &&
-      info.binding_state == base::android::ChildBindingState::STRONG) {
-    const bool has_waived = info.remaining_process_with_waived_binding > 0;
-    const bool has_moderate = info.remaining_process_with_moderate_binding > 0;
-    const bool has_strong = info.remaining_process_with_strong_binding > 0;
-    BindingStateCombo combo;
-    if (has_waived && has_moderate) {
-      combo = has_strong ? BindingStateCombo::kHasWaivedHasModerateHasStrong
-                         : BindingStateCombo::kHasWaivedHasModerateNoStrong;
-    } else if (has_waived) {
-      combo = has_strong ? BindingStateCombo::kHasWaivedNoModerateHasStrong
-                         : BindingStateCombo::kHasWaivedNoModerateNoStrong;
-    } else if (has_moderate) {
-      combo = has_strong ? BindingStateCombo::kNoWaivedHasModerateHasStrong
-                         : BindingStateCombo::kNoWaivedHasModerateNoStrong;
-    } else {
-      combo = has_strong ? BindingStateCombo::kNoWaivedNoModerateHasStrong
-                         : BindingStateCombo::kNoWaivedNoModerateNoStrong;
-    }
-    UMA_HISTOGRAM_ENUMERATION(
-        "Stability.Android.StrongBindingOomRemainingBindingState", combo);
-    UMA_HISTOGRAM_EXACT_LINEAR(
-        "Stability.Android.StrongBindingOomRemainingStrongBindingCount",
-        info.remaining_process_with_strong_binding, 20);
-  }
-
   if (android_oom_kill) {
     if (info.best_effort_reverse_rank >= 0) {
       UMA_HISTOGRAM_EXACT_LINEAR("Stability.Android.OomKillReverseRank",

@@ -58,6 +58,8 @@ int main(int argc, char** argv) {
   CHECK(cr_fuchsia::InitLoggingFromCommandLine(*command_line))
       << "Failed to initialize logging.";
 
+  cr_fuchsia::LogComponentStartWithVersion("cast_runner");
+
   cr_fuchsia::RegisterFuchsiaDirScheme();
 
   sys::OutgoingDirectory* const outgoing_directory =

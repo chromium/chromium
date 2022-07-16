@@ -23,6 +23,10 @@ namespace device {
 class UsbContext::UsbEventHandler : public base::SimpleThread {
  public:
   explicit UsbEventHandler(libusb_context* context);
+
+  UsbEventHandler(const UsbEventHandler&) = delete;
+  UsbEventHandler& operator=(const UsbEventHandler&) = delete;
+
   ~UsbEventHandler() override;
 
   // base::SimpleThread
@@ -33,7 +37,6 @@ class UsbContext::UsbEventHandler : public base::SimpleThread {
  private:
   base::subtle::Atomic32 running_;
   libusb_context* context_;
-  DISALLOW_COPY_AND_ASSIGN(UsbEventHandler);
 };
 
 UsbContext::UsbEventHandler::UsbEventHandler(libusb_context* context)

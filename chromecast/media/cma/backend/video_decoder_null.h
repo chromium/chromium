@@ -17,6 +17,10 @@ namespace media {
 class VideoDecoderNull : public VideoDecoderForMixer {
  public:
   VideoDecoderNull();
+
+  VideoDecoderNull(const VideoDecoderNull&) = delete;
+  VideoDecoderNull& operator=(const VideoDecoderNull&) = delete;
+
   ~VideoDecoderNull() override;
 
   // MediaPipelineBackend::VideoDecoder implementation:
@@ -46,8 +50,6 @@ class VideoDecoderNull : public VideoDecoderForMixer {
   Delegate* delegate_;
   Observer* observer_;
   base::WeakPtrFactory<VideoDecoderNull> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderNull);
 };
 
 }  // namespace media

@@ -123,7 +123,7 @@ HeadlessBrowserPolicyConnector::CreatePlatformProvider() {
   std::unique_ptr<AsyncPolicyLoader> loader(PolicyLoaderWin::Create(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-      kRegistryChromePolicyKey));
+      &platform_management_service_, kRegistryChromePolicyKey));
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
 #elif defined(OS_MAC)

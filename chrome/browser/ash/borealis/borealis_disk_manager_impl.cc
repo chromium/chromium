@@ -285,10 +285,14 @@ class BorealisDiskManagerImpl::ResizeDisk
       }
       if (original_disk_info_.disk_size + space_delta_ <=
           original_disk_info_.min_size) {
-        Fail(Described<BorealisResizeDiskResult>(
-            BorealisResizeDiskResult::kViolatesMinimumSize,
-            "cannot shrink the disk below its minimum size"));
-        return;
+        if (original_disk_info_.disk_size < original_disk_info_.min_size) {
+          Fail(Described<BorealisResizeDiskResult>(
+              BorealisResizeDiskResult::kViolatesMinimumSize,
+              "cannot shrink the disk below its minimum size"));
+          return;
+        }
+        space_delta_ = original_disk_info_.min_size -
+                       original_disk_info_.disk_size + kDiskRoundingBytes;
       }
     }
     vm_tools::concierge::ResizeDiskImageRequest request;
@@ -530,6 +534,7 @@ void BorealisDiskManagerImpl::BuildGetDiskInfoResponse(
     // can only make use of what it has available.
     response.available_bytes = disk_info_or_error.Value()->available_space;
     response.expandable_bytes = 0;
+    response.disk_size = 0;
   } else {
     if (disk_info_or_error.Value()->has_fixed_size) {
       response.available_bytes =
@@ -542,6 +547,7 @@ void BorealisDiskManagerImpl::BuildGetDiskInfoResponse(
       response.available_bytes = 0;
     }
     response.expandable_bytes = disk_info_or_error.Value()->expandable_space;
+    response.disk_size = disk_info_or_error.Value()->disk_size;
   }
   RecordBorealisDiskClientGetDiskInfoResultHistogram(
       BorealisGetDiskInfoResult::kSuccess);

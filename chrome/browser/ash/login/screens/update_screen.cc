@@ -36,17 +36,14 @@ constexpr const char kUserActionRejectUpdateOverCellular[] =
 constexpr const char kUserActionCancelUpdateShortcut[] = "cancel-update";
 
 // Time in seconds after which we initiate reboot.
-constexpr const base::TimeDelta kWaitBeforeRebootTime =
-    base::TimeDelta::FromSeconds(2);
+constexpr const base::TimeDelta kWaitBeforeRebootTime = base::Seconds(2);
 
 // Delay before showing error message if captive portal is detected.
 // We wait for this delay to let captive portal to perform redirect and show
 // its login page before error message appears.
-constexpr const base::TimeDelta kDelayErrorMessage =
-    base::TimeDelta::FromSeconds(10);
+constexpr const base::TimeDelta kDelayErrorMessage = base::Seconds(10);
 
-constexpr const base::TimeDelta kShowDelay =
-    base::TimeDelta::FromMicroseconds(400);
+constexpr const base::TimeDelta kShowDelay = base::Microseconds(400);
 
 // When battery percent is lower and DISCHARGING warn user about it.
 const double kInsufficientBatteryPercent = 50;

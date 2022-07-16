@@ -65,6 +65,10 @@ class TestDevToolsDataSource : public DevToolsDataSource {
 };
 
 class DevToolsUIDataSourceTest : public testing::Test {
+ public:
+  DevToolsUIDataSourceTest(const DevToolsUIDataSourceTest&) = delete;
+  DevToolsUIDataSourceTest& operator=(const DevToolsUIDataSourceTest&) = delete;
+
  protected:
   DevToolsUIDataSourceTest() {}
   ~DevToolsUIDataSourceTest() override = default;
@@ -107,8 +111,6 @@ class DevToolsUIDataSourceTest : public testing::Test {
   std::unique_ptr<TestDevToolsDataSource> devtools_data_source_;
   bool data_received_ = false;
   std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsUIDataSourceTest);
 };
 
 // devtools/bundled path.

@@ -76,6 +76,12 @@ public class AccessibilityContentShellTestUtils {
     static AccessibilityNodeInfoMatcher<String> sRangeInfoMatcher =
             (node, element) -> node.getRangeInfo() != null;
 
+    static AccessibilityNodeInfoMatcher<String> sViewIdResourceNameMatcher = (node, text) -> {
+        if (node.getViewIdResourceName() == null) return false;
+
+        return node.getViewIdResourceName().equals(text);
+    };
+
     /**
      * Main AccessibilityDelegate for accessibility content shell tests.
      *

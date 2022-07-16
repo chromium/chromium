@@ -10,8 +10,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,7 +22,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
 
 #if defined(OS_WIN)
 #include "base/win/shortcut.h"
@@ -61,7 +61,8 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     Profile* profile,
     const extensions::Extension* app,
     base::OnceCallback<void(bool)> close_callback)
-    : CreateChromeApplicationShortcutView(profile, std::move(close_callback)) {
+    : CreateChromeApplicationShortcutView(profile->GetPrefs(),
+                                          std::move(close_callback)) {
   // Get shortcut and icon information; needed for creating the shortcut.
   web_app::GetShortcutInfoForApp(
       app, profile,
@@ -73,8 +74,10 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     Profile* profile,
     const std::string& web_app_id,
     base::OnceCallback<void(bool)> close_callback)
-    : CreateChromeApplicationShortcutView(profile, std::move(close_callback)) {
-  web_app::WebAppProvider* provider = web_app::WebAppProvider::Get(profile);
+    : CreateChromeApplicationShortcutView(profile->GetPrefs(),
+                                          std::move(close_callback)) {
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
   provider->os_integration_manager().GetShortcutInfoForApp(
       web_app_id,
       base::BindRepeating(&CreateChromeApplicationShortcutView::OnAppInfoLoaded,
@@ -82,9 +85,9 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
 }
 
 CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
-    Profile* profile,
+    PrefService* prefs,
     base::OnceCallback<void(bool)> close_callback)
-    : profile_(profile), close_callback_(std::move(close_callback)) {
+    : prefs_(prefs), close_callback_(std::move(close_callback)) {
   SetModalType(ui::MODAL_TYPE_WINDOW);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_COMMIT));
@@ -148,46 +151,15 @@ void CreateChromeApplicationShortcutView::InitControls() {
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
-  // Layout controls
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  static const int kHeaderColumnSetId = 0;
-  views::ColumnSet* column_set = layout->AddColumnSet(kHeaderColumnSetId);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER, 1.0,
-                        views::GridLayout::ColumnSize::kFixed, 0, 0);
-
-  static const int kTableColumnSetId = 1;
-  column_set = layout->AddColumnSet(kTableColumnSetId);
-  column_set->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      provider->GetDistanceMetric(DISTANCE_SUBSECTION_HORIZONTAL_INDENT));
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  layout->StartRow(views::GridLayout::kFixedSize, kHeaderColumnSetId);
-  layout->AddView(std::move(create_shortcuts_label));
-
-  layout->AddPaddingRow(
-      views::GridLayout::kFixedSize,
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL));
-  layout->StartRow(views::GridLayout::kFixedSize, kTableColumnSetId);
-  desktop_check_box_ = layout->AddView(std::move(desktop_check_box));
-
-  const int vertical_spacing =
-      provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
-  if (menu_check_box) {
-    layout->AddPaddingRow(views::GridLayout::kFixedSize, vertical_spacing);
-    layout->StartRow(views::GridLayout::kFixedSize, kTableColumnSetId);
-    menu_check_box_ = layout->AddView(std::move(menu_check_box));
-  }
-
-  if (quick_launch_check_box) {
-    layout->AddPaddingRow(views::GridLayout::kFixedSize, vertical_spacing);
-    layout->StartRow(views::GridLayout::kFixedSize, kTableColumnSetId);
-    quick_launch_check_box_ =
-        layout->AddView(std::move(quick_launch_check_box));
-  }
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  AddChildView(std::move(create_shortcuts_label));
+  desktop_check_box_ = AddChildView(std::move(desktop_check_box));
+  if (menu_check_box)
+    menu_check_box_ = AddChildView(std::move(menu_check_box));
+  if (quick_launch_check_box)
+    quick_launch_check_box_ = AddChildView(std::move(quick_launch_check_box));
 }
 
 gfx::Size CreateChromeApplicationShortcutView::CalculatePreferredSize() const {
@@ -254,14 +226,14 @@ CreateChromeApplicationShortcutView::AddCheckbox(const std::u16string& text,
   checkbox->SetCallback(base::BindRepeating(
       &CreateChromeApplicationShortcutView::CheckboxPressed,
       base::Unretained(this), pref_path, base::Unretained(checkbox.get())));
-  checkbox->SetChecked(profile_->GetPrefs()->GetBoolean(pref_path));
+  checkbox->SetChecked(prefs_->GetBoolean(pref_path));
   return checkbox;
 }
 
 void CreateChromeApplicationShortcutView::CheckboxPressed(
     std::string pref_path,
     views::Checkbox* checkbox) {
-  profile_->GetPrefs()->SetBoolean(pref_path, checkbox->GetChecked());
+  prefs_->SetBoolean(pref_path, checkbox->GetChecked());
   DialogModelChanged();
 }
 

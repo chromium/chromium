@@ -128,7 +128,7 @@ void NavigationBodyLoader::SetDefersLoading(WebLoaderFreezeMode mode) {
 
 void NavigationBodyLoader::StartLoadingBody(
     WebNavigationBodyLoader::Client* client,
-    mojom::CodeCacheHost* code_cache_host) {
+    CodeCacheHost* code_cache_host) {
   TRACE_EVENT1("loading", "NavigationBodyLoader::StartLoadingBody", "url",
                original_url_.GetString().Utf8());
   client_ = client;
@@ -138,32 +138,58 @@ void NavigationBodyLoader::StartLoadingBody(
       std::move(response_head_), PreviewsTypes::PREVIEWS_OFF);
 
   if (code_cache_host) {
-    code_cache_loader_ = WebCodeCacheLoader::Create(code_cache_host);
-    code_cache_loader_->FetchFromCodeCache(
-        mojom::CodeCacheType::kJavascript, original_url_,
-        base::BindOnce(&NavigationBodyLoader::CodeCacheReceived,
-                       weak_factory_.GetWeakPtr(), base::TimeTicks::Now(),
-                       response_head_response_time));
+    if (code_cache_data_) {
+      ContinueWithCodeCache(base::TimeTicks::Now(),
+                            response_head_response_time);
+      return;
+    }
+
+    // Save these for when the code cache is ready.
+    code_cache_wait_start_time_ = base::TimeTicks::Now();
+    response_head_response_time_ = response_head_response_time;
+
+    // If the code cache loader hasn't been created yet the request hasn't
+    // started, so start it now.
+    if (!code_cache_loader_)
+      StartLoadingCodeCache(code_cache_host);
     return;
   }
 
   BindURLLoaderAndStartLoadingResponseBodyIfPossible();
 }
 
-void NavigationBodyLoader::CodeCacheReceived(
+void NavigationBodyLoader::StartLoadingCodeCache(
+    CodeCacheHost* code_cache_host) {
+  code_cache_loader_ = WebCodeCacheLoader::Create(code_cache_host);
+  code_cache_loader_->FetchFromCodeCache(
+      mojom::CodeCacheType::kJavascript, original_url_,
+      base::BindOnce(&NavigationBodyLoader::CodeCacheReceived,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void NavigationBodyLoader::CodeCacheReceived(base::Time response_time,
+                                             mojo_base::BigBuffer data) {
+  code_cache_data_ = std::move(data);
+  code_cache_response_time_ = response_time;
+  if (!code_cache_wait_start_time_.is_null()) {
+    ContinueWithCodeCache(code_cache_wait_start_time_,
+                          response_head_response_time_);
+  }
+}
+
+void NavigationBodyLoader::ContinueWithCodeCache(
     base::TimeTicks start_time,
-    base::Time response_head_response_time,
-    base::Time response_time,
-    mojo_base::BigBuffer data) {
+    base::Time response_head_response_time) {
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.CodeCacheTime.",
                     is_main_frame_ ? "MainFrame" : "Subframe"}),
       base::TimeTicks::Now() - start_time);
+
   // Check that the times match to ensure that the code cache data is for this
   // response. See https://crbug.com/1099587.
-  if (response_head_response_time == response_time && client_) {
+  if (response_head_response_time == code_cache_response_time_ && client_) {
     base::WeakPtr<NavigationBodyLoader> weak_self = weak_factory_.GetWeakPtr();
-    client_->BodyCodeCacheReceived(std::move(data));
+    client_->BodyCodeCacheReceived(std::move(*code_cache_data_));
     if (!weak_self)
       return;
   }
@@ -233,7 +259,7 @@ void NavigationBodyLoader::ReadFromDataPipe() {
       NotifyCompletionIfAppropriate();
       return;
     }
-    uint32_t chunk_size = network::features::GetLoaderChunkSize();
+    const uint32_t chunk_size = network::features::GetLoaderChunkSize();
     DCHECK_LE(num_bytes_consumed, chunk_size);
     available = std::min(available, chunk_size - num_bytes_consumed);
     if (available == 0) {
@@ -320,14 +346,7 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
       request_id, url,
       !commit_params->original_method.empty() ? commit_params->original_method
                                               : common_params->method,
-      common_params->referrer->url,
-      // TODO(kinuko): This should use the same value as in the request that
-      // was used in browser process, i.e. what CreateResourceRequest in
-      // content/browser/loader/navigation_url_loader_impl.cc gives.
-      // (Currently we don't propagate the value from the browser on
-      // navigation commit.)
-      is_main_frame ? network::mojom::RequestDestination::kDocument
-                    : network::mojom::RequestDestination::kIframe,
+      common_params->referrer->url, common_params->request_destination,
       is_main_frame ? net::HIGHEST : net::LOWEST);
   size_t redirect_count = commit_params->redirect_response.size();
 

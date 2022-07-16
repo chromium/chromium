@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS Basic
+FAIL Basic + child cross_origin assert_equals: expected "false" but got "blocked"
+PASS Parent coep_require-corp
+FAIL Parent coep_require-corp + cross_origin assert_equals: expected "false" but got "blocked"
+PASS Parent COI
+FAIL Parent COI + child cross-origin assert_equals: expected "false" but got "blocked"
+FAIL Parent COI + child cross-origin COEP/CORP assert_equals: expected "false" but got "blocked"
+FAIL Parent COI allow + child cross_origin assert_equals: expected "true" but got "blocked"
+FAIL Parent COI allow + child cross-origin COEP/CORP assert_equals: expected "true" but got "blocked"
+Harness: the test ran to completion.
+

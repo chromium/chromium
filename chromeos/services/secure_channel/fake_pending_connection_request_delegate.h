@@ -8,7 +8,6 @@
 #include <unordered_map>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/pending_connection_request_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -21,6 +20,12 @@ class FakePendingConnectionRequestDelegate
     : public PendingConnectionRequestDelegate {
  public:
   FakePendingConnectionRequestDelegate();
+
+  FakePendingConnectionRequestDelegate(
+      const FakePendingConnectionRequestDelegate&) = delete;
+  FakePendingConnectionRequestDelegate& operator=(
+      const FakePendingConnectionRequestDelegate&) = delete;
+
   ~FakePendingConnectionRequestDelegate() override;
 
   const absl::optional<FailedConnectionReason>& GetFailedConnectionReasonForId(
@@ -42,8 +47,6 @@ class FakePendingConnectionRequestDelegate
       request_id_to_failed_connection_reason_map_;
 
   base::OnceClosure closure_for_next_delegate_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePendingConnectionRequestDelegate);
 };
 
 }  // namespace secure_channel

@@ -1,9 +1,11 @@
 # Please consult components/viz/README.md about allowable dependencies.
 
 include_rules = [
+  "+cc/test/pixel_test_utils.h",
   "+components/viz",
   "+gpu/command_buffer/client/context_support.h",
   "+gpu/command_buffer/client/gles2_implementation.h",
+  "+gpu/command_buffer/client/gles2_interface.h",
   "+gpu/command_buffer/client/gles2_interface_stub.h",
   "+gpu/command_buffer/client/raster_implementation_gles.h",
   "+gpu/command_buffer/client/shared_image_interface.h",

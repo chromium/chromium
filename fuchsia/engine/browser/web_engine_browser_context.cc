@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/base_paths_fuchsia.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -50,10 +49,11 @@ class WebEngineBrowserContext::ResourceContext
     : public content::ResourceContext {
  public:
   ResourceContext() = default;
-  ~ResourceContext() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceContext);
+  ResourceContext(const ResourceContext&) = delete;
+  ResourceContext& operator=(const ResourceContext&) = delete;
+
+  ~ResourceContext() override = default;
 };
 
 // static
@@ -114,6 +114,11 @@ content::BrowserPluginGuestManager* WebEngineBrowserContext::GetGuestManager() {
 
 storage::SpecialStoragePolicy*
 WebEngineBrowserContext::GetSpecialStoragePolicy() {
+  return nullptr;
+}
+
+content::PlatformNotificationService*
+WebEngineBrowserContext::GetPlatformNotificationService() {
   return nullptr;
 }
 

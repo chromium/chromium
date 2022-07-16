@@ -107,7 +107,6 @@ int AXPlatformRelationWin::EnumerateRelationships(
     const std::wstring& desired_ia2_relation,
     std::wstring* out_ia2_relation,
     std::set<AXPlatformNode*>* out_targets) {
-  const AXNodeData& node_data = node->GetData();
   AXPlatformNodeDelegate* delegate = node->GetDelegate();
 
   // The first time this is called, populate vectors with all of the
@@ -148,21 +147,22 @@ int AXPlatformRelationWin::EnumerateRelationships(
   // requested that particular relation by index, and return it.
   // Otherwise we build up and return the total number of relations found.
   int total_count = 0;
+  const AXNodeID node_id = node->GetData().id;
 
   // Iterate over all int attributes on this node to check the ones
   // that correspond to IAccessible2 relations.
-  for (size_t i = 0; i < node_data.int_attributes.size(); ++i) {
-    ax::mojom::IntAttribute int_attribute = node_data.int_attributes[i].first;
+  for (const auto& attribute_value_pair : node->GetIntAttributes()) {
+    ax::mojom::IntAttribute int_attribute = attribute_value_pair.first;
     std::wstring relation = GetIA2RelationFromIntAttr(int_attribute);
     if (!relation.empty() &&
         (desired_ia2_relation.empty() || desired_ia2_relation == relation)) {
       // Skip reflexive relations
-      if (node_data.int_attributes[i].second == node_data.id)
+      if (attribute_value_pair.second == node_id)
         continue;
       if (desired_index == total_count) {
         *out_ia2_relation = relation;
-        out_targets->insert(
-            delegate->GetFromNodeID(node_data.int_attributes[i].second));
+        out_targets->insert(delegate->GetFromNodeID(
+            static_cast<AXNodeID>(attribute_value_pair.second)));
         return 1;
       }
       total_count++;
@@ -193,19 +193,19 @@ int AXPlatformRelationWin::EnumerateRelationships(
 
   // Iterate over all intlist attributes on this node to check the ones
   // that correspond to IAccessible2 relations.
-  for (size_t i = 0; i < node_data.intlist_attributes.size(); ++i) {
-    ax::mojom::IntListAttribute intlist_attribute =
-        node_data.intlist_attributes[i].first;
+  for (const auto& attribute_value_pair : node->GetIntListAttributes()) {
+    ax::mojom::IntListAttribute intlist_attribute = attribute_value_pair.first;
     std::wstring relation = GetIA2RelationFromIntListAttr(intlist_attribute);
     if (!relation.empty() &&
         (desired_ia2_relation.empty() || desired_ia2_relation == relation)) {
       if (desired_index == total_count) {
         *out_ia2_relation = relation;
-        for (int32_t target_id : node_data.intlist_attributes[i].second) {
+        for (int32_t target_id : attribute_value_pair.second) {
           // Skip reflexive relations
-          if (target_id == node_data.id)
+          if (static_cast<AXNodeID>(target_id) == node_id)
             continue;
-          out_targets->insert(delegate->GetFromNodeID(target_id));
+          out_targets->insert(
+              delegate->GetFromNodeID(static_cast<AXNodeID>(target_id)));
         }
         if (out_targets->size() == 0)
           continue;

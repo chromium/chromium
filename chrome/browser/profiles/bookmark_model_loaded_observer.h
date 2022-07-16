@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PROFILES_BOOKMARK_MODEL_LOADED_OBSERVER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 
 class Profile;
@@ -16,6 +15,10 @@ class BookmarkModelLoadedObserver
  public:
   explicit BookmarkModelLoadedObserver(Profile* profile);
 
+  BookmarkModelLoadedObserver(const BookmarkModelLoadedObserver&) = delete;
+  BookmarkModelLoadedObserver& operator=(const BookmarkModelLoadedObserver&) =
+      delete;
+
  private:
   void BookmarkModelChanged() override;
   void BookmarkModelLoaded(bookmarks::BookmarkModel* model,
@@ -23,8 +26,6 @@ class BookmarkModelLoadedObserver
   void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
 
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkModelLoadedObserver);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_BOOKMARK_MODEL_LOADED_OBSERVER_H_

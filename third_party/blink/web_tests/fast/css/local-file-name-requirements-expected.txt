@@ -1,5 +1,0 @@
-CONSOLE WARNING: line 5: CSS cannot be loaded from `file:` URLs unless they end in a `.css` file extension.
-This is a testharness.js-based test.
-PASS `red.not-css` should not load
-Harness: the test ran to completion.
-

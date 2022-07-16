@@ -31,6 +31,7 @@
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/federated/federated_client.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
+#include "chromeos/dbus/hps/hps_dbus_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/ip_peripheral/ip_peripheral_service_client.h"
 #include "chromeos/dbus/kerberos/kerberos_client.h"
@@ -45,6 +46,7 @@
 #include "chromeos/dbus/rmad/rmad_client.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/dbus/spaced/spaced_client.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "chromeos/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -58,6 +60,8 @@
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
+#include "device/bluetooth/floss/floss_dbus_manager.h"
+#include "device/bluetooth/floss/floss_features.h"
 
 #if BUILDFLAG(PLATFORM_CFM)
 #include "chromeos/components/chromebox_for_meetings/features/features.h"
@@ -128,6 +132,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::ResourcedClient>(bus);
   InitializeDBusClient<chromeos::SeneschalClient>(bus);
   InitializeDBusClient<chromeos::SessionManagerClient>(bus);
+  InitializeDBusClient<chromeos::SpacedClient>(bus);
   InitializeDBusClient<chromeos::SystemClockClient>(bus);
   InitializeDBusClient<chromeos::SystemProxyClient>(bus);
   InitializeDBusClient<chromeos::TpmManagerClient>(bus);
@@ -147,7 +152,11 @@ void InitializeFeatureListDependentDBus() {
   using chromeos::InitializeDBusClient;
 
   dbus::Bus* bus = chromeos::DBusThreadManager::Get()->GetSystemBus();
-  InitializeDBusClient<bluez::BluezDBusManager>(bus);
+  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+    InitializeDBusClient<floss::FlossDBusManager>(bus);
+  } else {
+    InitializeDBusClient<bluez::BluezDBusManager>(bus);
+  }
 #if BUILDFLAG(PLATFORM_CFM)
   if (base::FeatureList::IsEnabled(chromeos::cfm::features::kMojoServices)) {
     InitializeDBusClient<chromeos::CfmHotlineClient>(bus);
@@ -157,19 +166,29 @@ void InitializeFeatureListDependentDBus() {
     InitializeDBusClient<chromeos::RmadClient>(bus);
   }
   InitializeDBusClient<chromeos::WilcoDtcSupportdClient>(bus);
+
+  if (ash::features::IsSnoopingProtectionEnabled()) {
+    InitializeDBusClient<chromeos::HpsDBusClient>(bus);
+  }
 }
 
 void ShutdownDBus() {
   // Feature list-dependent D-Bus clients are shut down first because we try to
   // shut down in reverse order of initialization (in case of dependencies).
+  if (ash::features::IsSnoopingProtectionEnabled()) {
+    chromeos::HpsDBusClient::Shutdown();
+  }
   chromeos::WilcoDtcSupportdClient::Shutdown();
 #if BUILDFLAG(PLATFORM_CFM)
   if (base::FeatureList::IsEnabled(chromeos::cfm::features::kMojoServices)) {
     chromeos::CfmHotlineClient::Shutdown();
   }
 #endif
-  bluez::BluezDBusManager::Shutdown();
-
+  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+    floss::FlossDBusManager::Shutdown();
+  } else {
+    bluez::BluezDBusManager::Shutdown();
+  }
   // Other D-Bus clients are shut down, also in reverse order of initialization.
   chromeos::UpstartClient::Shutdown();
   chromeos::UserDataAuthClient::Shutdown();
@@ -178,6 +197,7 @@ void ShutdownDBus() {
   chromeos::TpmManagerClient::Shutdown();
   chromeos::SystemProxyClient::Shutdown();
   chromeos::SystemClockClient::Shutdown();
+  chromeos::SpacedClient::Shutdown();
   chromeos::SessionManagerClient::Shutdown();
   chromeos::SeneschalClient::Shutdown();
   chromeos::ResourcedClient::Shutdown();

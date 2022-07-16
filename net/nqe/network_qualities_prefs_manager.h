@@ -45,6 +45,11 @@ class NET_EXPORT NetworkQualitiesPrefsManager
   // |pref_delegate| is taken by this class.
   explicit NetworkQualitiesPrefsManager(
       std::unique_ptr<PrefDelegate> pref_delegate);
+
+  NetworkQualitiesPrefsManager(const NetworkQualitiesPrefsManager&) = delete;
+  NetworkQualitiesPrefsManager& operator=(const NetworkQualitiesPrefsManager&) =
+      delete;
+
   ~NetworkQualitiesPrefsManager() override;
 
   // Initialize on the Network thread. Must be called after pref service has
@@ -82,8 +87,6 @@ class NET_EXPORT NetworkQualitiesPrefsManager
   ParsedPrefs read_prefs_startup_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualitiesPrefsManager);
 };
 
 }  // namespace net

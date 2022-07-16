@@ -7,8 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
-#include "base/macros.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -23,6 +22,10 @@ class ASH_EXPORT PageIndicatorView : public views::View,
  public:
   PageIndicatorView(UnifiedSystemTrayController* controller,
                     bool initially_expanded);
+
+  PageIndicatorView(const PageIndicatorView&) = delete;
+  PageIndicatorView& operator=(const PageIndicatorView&) = delete;
+
   ~PageIndicatorView() override;
 
   // Change the expanded state. 0.0 if collapsed, and 1.0 if expanded.
@@ -60,8 +63,6 @@ class ASH_EXPORT PageIndicatorView : public views::View,
 
   // Owned by views hierarchy.
   views::View* buttons_container_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageIndicatorView);
 };
 
 }  // namespace ash

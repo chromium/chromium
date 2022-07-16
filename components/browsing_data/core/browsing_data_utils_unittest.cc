@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -55,8 +56,7 @@ class BrowsingDataUtilsTest : public testing::Test {
 
 // Tests the complex output of the Autofill counter.
 TEST_F(BrowsingDataUtilsTest, AutofillCounterResult) {
-  AutofillCounter counter(
-      scoped_refptr<FakeWebDataService>(new FakeWebDataService()), nullptr);
+  AutofillCounter counter(base::MakeRefCounted<FakeWebDataService>(), nullptr);
 
   // Test all configurations of zero and nonzero partial results for datatypes.
   // Test singular and plural for each datatype.
@@ -101,10 +101,11 @@ TEST_F(BrowsingDataUtilsTest, AutofillCounterResult) {
 
 // Tests the output of the Passwords counter.
 TEST_F(BrowsingDataUtilsTest, PasswordsCounterResult) {
-  scoped_refptr<password_manager::TestPasswordStore> store(
-      new password_manager::TestPasswordStore());
+  auto store = base::MakeRefCounted<password_manager::TestPasswordStore>();
+  store->Init(prefs(), /*affiliated_match_helper=*/nullptr);
   PasswordsCounter counter(
-      scoped_refptr<password_manager::PasswordStore>(store), nullptr, nullptr);
+      scoped_refptr<password_manager::PasswordStoreInterface>(store), nullptr,
+      nullptr);
 
   // Use a separate struct for input to make test cases easier to read after
   // auto formatting.

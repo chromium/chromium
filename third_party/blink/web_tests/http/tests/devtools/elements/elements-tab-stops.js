@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests what elements have focus after pressing tab.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <span id="node-to-select"></span>

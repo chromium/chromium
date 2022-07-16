@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "components/prefs/pref_store.h"
@@ -111,6 +110,10 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
                  PrefStore* default_prefs,
                  PrefNotifier* pref_notifier,
                  std::unique_ptr<Delegate> delegate = nullptr);
+
+  PrefValueStore(const PrefValueStore&) = delete;
+  PrefValueStore& operator=(const PrefValueStore&) = delete;
+
   virtual ~PrefValueStore();
 
   // Creates a clone of this PrefValueStore with PrefStores overwritten
@@ -194,6 +197,10 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   class PrefStoreKeeper : public PrefStore::Observer {
    public:
     PrefStoreKeeper();
+
+    PrefStoreKeeper(const PrefStoreKeeper&) = delete;
+    PrefStoreKeeper& operator=(const PrefStoreKeeper&) = delete;
+
     ~PrefStoreKeeper() override;
 
     // Takes ownership of |pref_store|.
@@ -217,8 +224,6 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
 
     // Type of the pref store.
     PrefStoreType type_;
-
-    DISALLOW_COPY_AND_ASSIGN(PrefStoreKeeper);
   };
 
   typedef std::map<std::string, base::Value::Type> PrefTypeMap;
@@ -301,8 +306,6 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
 
   // Might be null.
   std::unique_ptr<Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefValueStore);
 };
 
 namespace std {

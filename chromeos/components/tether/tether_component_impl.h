@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/tether/tether_component.h"
@@ -94,6 +93,9 @@ class TetherComponentImpl : public TetherComponent {
     static Factory* factory_instance_;
   };
 
+  TetherComponentImpl(const TetherComponentImpl&) = delete;
+  TetherComponentImpl& operator=(const TetherComponentImpl&) = delete;
+
   ~TetherComponentImpl() override;
 
   // TetherComponent:
@@ -130,8 +132,6 @@ class TetherComponentImpl : public TetherComponent {
   ShutdownReason shutdown_reason_;
 
   base::WeakPtrFactory<TetherComponentImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TetherComponentImpl);
 };
 
 }  // namespace tether

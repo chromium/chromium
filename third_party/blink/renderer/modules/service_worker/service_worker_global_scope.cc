@@ -46,7 +46,6 @@
 #include "services/network/public/mojom/cookie_manager.mojom-blink.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom-blink.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-blink.h"
@@ -361,60 +360,11 @@ ServiceWorkerGlobalScope::GetInstalledScriptsManager() {
   return installed_scripts_manager_.get();
 }
 
-void ServiceWorkerGlobalScope::CountWorkerScript(size_t script_size,
-                                                 size_t cached_metadata_size) {
-  DCHECK_EQ(GetScriptType(), mojom::blink::ScriptType::kClassic);
-  base::UmaHistogramCustomCounts(
-      "ServiceWorker.ScriptSize",
-      base::saturated_cast<base::Histogram::Sample>(script_size), 1000, 5000000,
-      50);
-
-  if (cached_metadata_size) {
-    base::UmaHistogramCustomCounts(
-        "ServiceWorker.ScriptCachedMetadataSize",
-        base::saturated_cast<base::Histogram::Sample>(cached_metadata_size),
-        1000, 50000000, 50);
-  }
-
-  CountScriptInternal(script_size, cached_metadata_size);
-}
-
-void ServiceWorkerGlobalScope::CountImportedScript(
-    size_t script_size,
-    size_t cached_metadata_size) {
-  DCHECK_EQ(GetScriptType(), mojom::blink::ScriptType::kClassic);
-  CountScriptInternal(script_size, cached_metadata_size);
-}
-
 void ServiceWorkerGlobalScope::DidEvaluateScript() {
   DCHECK(!did_evaluate_script_);
   did_evaluate_script_ = true;
 
   event_queue_->Start();
-
-  // Skip recording UMAs for module scripts because there're no ways to get the
-  // number of static-imported scripts and the total size of the imported
-  // scripts.
-  if (GetScriptType() == mojom::blink::ScriptType::kModule) {
-    return;
-  }
-
-  // TODO(asamidoi,nhiroki): Record the UMAs for module scripts, or remove them
-  // if they're no longer used.
-  base::UmaHistogramCounts1000(
-      "ServiceWorker.ScriptCount",
-      base::saturated_cast<base::Histogram::Sample>(script_count_));
-  base::UmaHistogramCustomCounts(
-      "ServiceWorker.ScriptTotalSize",
-      base::saturated_cast<base::Histogram::Sample>(script_total_size_), 1000,
-      5000000, 50);
-  if (script_cached_metadata_total_size_) {
-    base::UmaHistogramCustomCounts(
-        "ServiceWorker.ScriptCachedMetadataTotalSize",
-        base::saturated_cast<base::Histogram::Sample>(
-            script_cached_metadata_total_size_),
-        1000, 50000000, 50);
-  }
 }
 
 void ServiceWorkerGlobalScope::DidReceiveResponseForClassicScript(
@@ -489,8 +439,7 @@ void ServiceWorkerGlobalScope::Initialize(
     network::mojom::ReferrerPolicy response_referrer_policy,
     network::mojom::IPAddressSpace response_address_space,
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
-    const Vector<String>* response_origin_trial_tokens,
-    int64_t appcache_id) {
+    const Vector<String>* response_origin_trial_tokens) {
   // Step 4.5. "Set workerGlobalScope's url to serviceWorker's script url."
   InitializeURL(response_url);
 
@@ -529,9 +478,6 @@ void ServiceWorkerGlobalScope::Initialize(
   // This should be called after OriginTrialContext::AddTokens() to install
   // origin trial features in JavaScript's global object.
   ScriptController()->PrepareForEvaluation();
-
-  // Service Workers don't use application cache.
-  DCHECK_EQ(appcache_id, mojom::blink::kAppCacheNoCacheId);
 }
 
 void ServiceWorkerGlobalScope::LoadAndRunInstalledClassicScript(
@@ -581,22 +527,13 @@ void ServiceWorkerGlobalScope::RunClassicScript(
     const v8_inspector::V8StackTraceId& stack_id) {
   // Step 4.5-4.11 are implemented in Initialize().
   Initialize(response_url, response_referrer_policy, response_address_space,
-             std::move(response_csp), response_origin_trial_tokens,
-             mojom::blink::kAppCacheNoCacheId);
+             std::move(response_csp), response_origin_trial_tokens);
 
   // Step 4.12. "Let evaluationStatus be the result of running the classic
   // script script if script is a classic script, otherwise, the result of
   // running the module script script if script is a module script."
   EvaluateClassicScript(response_url, source_code, std::move(cached_meta_data),
                         stack_id);
-}
-
-void ServiceWorkerGlobalScope::CountScriptInternal(
-    size_t script_size,
-    size_t cached_metadata_size) {
-  ++script_count_;
-  script_total_size_ += script_size;
-  script_cached_metadata_total_size_ += cached_metadata_size;
 }
 
 ServiceWorkerClients* ServiceWorkerGlobalScope::clients() {
@@ -707,12 +644,15 @@ ServiceWorker* ServiceWorkerGlobalScope::GetOrCreateServiceWorker(
     WebServiceWorkerObjectInfo info) {
   if (info.version_id == mojom::blink::kInvalidServiceWorkerVersionId)
     return nullptr;
-  ::blink::ServiceWorker* worker = service_worker_objects_.at(info.version_id);
-  if (!worker) {
-    const int64_t version_id = info.version_id;
-    worker = ::blink::ServiceWorker::Create(this, std::move(info));
-    service_worker_objects_.Set(version_id, worker);
-  }
+
+  auto it = service_worker_objects_.find(info.version_id);
+  if (it != service_worker_objects_.end())
+    return it->value;
+
+  const int64_t version_id = info.version_id;
+  ::blink::ServiceWorker* worker =
+      ::blink::ServiceWorker::Create(this, std::move(info));
+  service_worker_objects_.Set(version_id, worker);
   return worker;
 }
 
@@ -818,6 +758,13 @@ bool ServiceWorkerGlobalScope::HasRelatedFetchEvent(
     const KURL& request_url) const {
   auto it = unresponded_fetch_event_counts_.find(request_url);
   return it != unresponded_fetch_event_counts_.end();
+}
+
+bool ServiceWorkerGlobalScope::HasRangeFetchEvent(
+    const KURL& request_url) const {
+  auto it = unresponded_fetch_event_counts_.find(request_url);
+  return it != unresponded_fetch_event_counts_.end() &&
+         it->value.range_count > 0;
 }
 
 int ServiceWorkerGlobalScope::GetOutstandingThrottledLimit() const {
@@ -991,6 +938,7 @@ void ServiceWorkerGlobalScope::DidHandleExtendableMessageEvent(
 void ServiceWorkerGlobalScope::RespondToFetchEventWithNoResponse(
     int fetch_event_id,
     const KURL& request_url,
+    bool range_request,
     base::TimeTicks event_dispatch_time,
     base::TimeTicks respond_with_settled_time) {
   DCHECK(IsContextThread());
@@ -1011,7 +959,7 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithNoResponse(
   timing->dispatch_event_time = event_dispatch_time;
   timing->respond_with_settled_time = respond_with_settled_time;
 
-  NoteRespondedToFetchEvent(request_url);
+  NoteRespondedToFetchEvent(request_url, range_request);
 
   response_callback->OnFallback(std::move(timing));
 }
@@ -1019,6 +967,7 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithNoResponse(
 void ServiceWorkerGlobalScope::RespondToFetchEvent(
     int fetch_event_id,
     const KURL& request_url,
+    bool range_request,
     mojom::blink::FetchAPIResponsePtr response,
     base::TimeTicks event_dispatch_time,
     base::TimeTicks respond_with_settled_time) {
@@ -1040,7 +989,7 @@ void ServiceWorkerGlobalScope::RespondToFetchEvent(
   timing->dispatch_event_time = event_dispatch_time;
   timing->respond_with_settled_time = respond_with_settled_time;
 
-  NoteRespondedToFetchEvent(request_url);
+  NoteRespondedToFetchEvent(request_url, range_request);
 
   response_callback->OnResponse(std::move(response), std::move(timing));
 }
@@ -1048,6 +997,7 @@ void ServiceWorkerGlobalScope::RespondToFetchEvent(
 void ServiceWorkerGlobalScope::RespondToFetchEventWithResponseStream(
     int fetch_event_id,
     const KURL& request_url,
+    bool range_request,
     mojom::blink::FetchAPIResponsePtr response,
     mojom::blink::ServiceWorkerStreamHandlePtr body_as_stream,
     base::TimeTicks event_dispatch_time,
@@ -1070,7 +1020,7 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithResponseStream(
   timing->dispatch_event_time = event_dispatch_time;
   timing->respond_with_settled_time = respond_with_settled_time;
 
-  NoteRespondedToFetchEvent(request_url);
+  NoteRespondedToFetchEvent(request_url, range_request);
 
   response_callback->OnResponseStream(
       std::move(response), std::move(body_as_stream), std::move(timing));
@@ -1511,11 +1461,12 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
       params->request->url.ElidedString().Utf8());
 
   // Set up for navigation preload (FetchEvent#preloadResponse) if needed.
-  const bool navigation_preload_sent = !!params->preload_handle;
+  bool navigation_preload_sent = !!params->preload_url_loader_client_receiver;
   if (navigation_preload_sent) {
     To<ServiceWorkerGlobalScopeProxy>(ReportingProxy())
-        .SetupNavigationPreload(event_id, params->request->url,
-                                std::move(params->preload_handle));
+        .SetupNavigationPreload(
+            event_id, params->request->url,
+            std::move(params->preload_url_loader_client_receiver));
   }
 
   ScriptState::Scope scope(ScriptController()->GetScriptState());
@@ -1534,6 +1485,9 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
 
   mojom::blink::FetchAPIRequest& fetch_request = *params->request;
   auto stack_string = fetch_request.devtools_stack_id;
+
+  NoteNewFetchEvent(fetch_request);
+
   Request* request = Request::Create(
       ScriptController()->GetScriptState(), std::move(params->request),
       Request::ForServiceWorkerFetchEvent::kTrue);
@@ -1554,8 +1508,6 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
     // onNavigationPreloadError() will be called.
     pending_preload_fetch_events_.insert(event_id, fetch_event);
   }
-
-  NoteNewFetchEvent(request->url());
 
   RequestDebugHeaderScope debug_header_scope(this, stack_string);
   DispatchExtendableEventWithRespondWith(fetch_event, wait_until_observer,
@@ -1991,7 +1943,7 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForMainResource(
                   /*corp_checker=*/nullptr, absl::nullopt),
         WTF::Bind(&ServiceWorkerGlobalScope::AbortCallbackForFetchEvent,
                   WrapWeakPersistent(this)),
-        base::TimeDelta::FromSeconds(kCustomTimeoutForOfflineEvent.Get()));
+        base::Seconds(kCustomTimeoutForOfflineEvent.Get()));
   } else {
     event_queue_->EnqueueNormal(
         event_id,
@@ -2102,7 +2054,7 @@ void ServiceWorkerGlobalScope::DispatchPushEvent(
       WTF::Bind(&ServiceWorkerGlobalScope::StartPushEvent,
                 WrapWeakPersistent(this), std::move(payload)),
       CreateAbortCallback(&push_event_callbacks_),
-      base::TimeDelta::FromSeconds(mojom::blink::kPushEventTimeoutSeconds));
+      base::Seconds(mojom::blink::kPushEventTimeoutSeconds));
 }
 
 void ServiceWorkerGlobalScope::StartPushEvent(
@@ -2136,7 +2088,7 @@ void ServiceWorkerGlobalScope::DispatchPushSubscriptionChangeEvent(
                 WrapWeakPersistent(this), std::move(old_subscription),
                 std::move(new_subscription)),
       CreateAbortCallback(&push_subscription_change_event_callbacks_),
-      base::TimeDelta::FromSeconds(mojom::blink::kPushEventTimeoutSeconds));
+      base::Seconds(mojom::blink::kPushEventTimeoutSeconds));
 }
 
 void ServiceWorkerGlobalScope::StartPushSubscriptionChangeEvent(
@@ -2513,21 +2465,30 @@ void ServiceWorkerGlobalScope::AddMessageToConsole(
                               /* column_number= */ 0)));
 }
 
-void ServiceWorkerGlobalScope::NoteNewFetchEvent(const KURL& request_url) {
-  auto it = unresponded_fetch_event_counts_.find(request_url);
+void ServiceWorkerGlobalScope::NoteNewFetchEvent(
+    const mojom::blink::FetchAPIRequest& request) {
+  int range_increment = request.headers.Contains(http_names::kRange) ? 1 : 0;
+  auto it = unresponded_fetch_event_counts_.find(request.url);
   if (it == unresponded_fetch_event_counts_.end()) {
-    unresponded_fetch_event_counts_.insert(request_url, 1);
+    unresponded_fetch_event_counts_.insert(
+        request.url, FetchEventCounts(1, range_increment));
   } else {
-    it->value += 1;
+    it->value.total_count += 1;
+    it->value.range_count += range_increment;
   }
 }
 
 void ServiceWorkerGlobalScope::NoteRespondedToFetchEvent(
-    const KURL& request_url) {
+    const KURL& request_url,
+    bool range_request) {
   auto it = unresponded_fetch_event_counts_.find(request_url);
-  DCHECK_GE(it->value, 1);
-  it->value -= 1;
-  if (it->value == 0)
+  DCHECK_GE(it->value.total_count, 1);
+  it->value.total_count -= 1;
+  if (range_request) {
+    DCHECK_GE(it->value.range_count, 1);
+    it->value.range_count -= 1;
+  }
+  if (it->value.total_count == 0)
     unresponded_fetch_event_counts_.erase(it);
 }
 

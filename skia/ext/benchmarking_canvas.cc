@@ -387,7 +387,7 @@ BenchmarkingCanvas::BenchmarkingCanvas(SkCanvas* canvas)
 BenchmarkingCanvas::~BenchmarkingCanvas() = default;
 
 size_t BenchmarkingCanvas::CommandCount() const {
-  return op_records_.GetSize();
+  return op_records_.GetList().size();
 }
 
 const base::ListValue& BenchmarkingCanvas::Commands() const {
@@ -395,15 +395,10 @@ const base::ListValue& BenchmarkingCanvas::Commands() const {
 }
 
 double BenchmarkingCanvas::GetTime(size_t index) {
-  const base::DictionaryValue* op;
-  if (!op_records_.GetDictionary(index, &op))
+  const base::Value& op = op_records_.GetList()[index];
+  if (!op.is_dict())
     return 0;
-
-  double t;
-  if (!op->GetDouble("cmd_time", &t))
-    return 0;
-
-  return t;
+  return op.FindDoubleKey("cmd_time").value_or(0);
 }
 
 void BenchmarkingCanvas::willSave() {

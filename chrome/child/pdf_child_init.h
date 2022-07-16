@@ -11,7 +11,7 @@
 #error "PDF must be enabled"
 #endif
 
-// Initializes child-process specific code for the PDF module.
-void MaybeInitializeGDI();
+// Possibly patches GDI's `GetFontData()` for use by PDFium.
+void MaybePatchGdiGetFontData();
 
 #endif  // CHROME_CHILD_PDF_CHILD_INIT_H_

@@ -32,7 +32,7 @@ class ScopedChannelOverride {
     kStable,
     kBeta,
     kDev,
-#if defined(OS_WIN) || defined(OS_MAC)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_FUCHSIA)
     kCanary,
 #endif  // defined(OS_WIN) || defined(OS_MAC)
   };

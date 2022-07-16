@@ -14,17 +14,19 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/storage_partition.h"
 #include "extensions/browser/app_sorting.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/browser/task_queue_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -42,6 +44,11 @@ ExtensionRegistrar::ExtensionRegistrar(content::BrowserContext* browser_context,
       registry_(ExtensionRegistry::Get(browser_context)),
       renderer_helper_(
           RendererStartupHelperFactory::GetForBrowserContext(browser_context)) {
+  // ExtensionRegistrar is created by ExtensionSystem via ExtensionService, and
+  // ExtensionSystemFactory depends on ProcessManager, so this should be safe.
+  auto* process_manager = ProcessManager::Get(browser_context_);
+  DCHECK(process_manager);
+  process_manager_observation_.Observe(process_manager);
 }
 
 ExtensionRegistrar::~ExtensionRegistrar() = default;
@@ -50,13 +57,11 @@ void ExtensionRegistrar::AddExtension(
     scoped_refptr<const Extension> extension) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  bool is_extension_upgrade = false;
   bool is_extension_loaded = false;
   const Extension* old = registry_->GetInstalledExtension(extension->id());
   if (old) {
     is_extension_loaded = true;
     int version_compare_result = extension->version().CompareTo(old->version());
-    is_extension_upgrade = version_compare_result > 0;
     // Other than for unpacked extensions, we should not be downgrading.
     if (!Manifest::IsUnpackedLocation(extension->location()) &&
         version_compare_result < 0) {
@@ -82,10 +87,6 @@ void ExtensionRegistrar::AddExtension(
   // If the extension was disabled for a reload, we will enable it.
   bool was_reloading = reloading_extensions_.erase(extension->id()) > 0;
 
-  // Set the upgraded bit; we consider reloads upgrades.
-  extension_system_->runtime_data()->SetBeingUpgraded(
-      extension->id(), is_extension_upgrade || was_reloading);
-
   // The extension is now loaded; remove its data from unloaded extension map.
   unloaded_extension_paths_.erase(extension->id());
 
@@ -107,13 +108,12 @@ void ExtensionRegistrar::AddExtension(
     }
     AddNewExtension(extension);
   }
-
-  extension_system_->runtime_data()->SetBeingUpgraded(extension->id(), false);
 }
 
 void ExtensionRegistrar::AddNewExtension(
     scoped_refptr<const Extension> extension) {
-  if (extension_prefs_->IsExtensionBlocklisted(extension->id())) {
+  if (blocklist_prefs::IsExtensionBlocklisted(extension->id(),
+                                              extension_prefs_)) {
     DCHECK(!Manifest::IsComponentLocation(extension->location()));
     // Only prefs is checked for the blocklist. We rely on callers to check the
     // blocklist before calling into here, e.g. CrxInstaller checks before
@@ -183,11 +183,6 @@ void ExtensionRegistrar::RemoveExtension(const ExtensionId& extension_id,
     registry_->RemoveEnabled(extension_id);
     DeactivateExtension(extension.get(), reason);
   }
-
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_EXTENSION_REMOVED,
-      content::Source<content::BrowserContext>(browser_context_),
-      content::Details<const Extension>(extension.get()));
 }
 
 void ExtensionRegistrar::EnableExtension(const ExtensionId& extension_id) {
@@ -200,7 +195,7 @@ void ExtensionRegistrar::EnableExtension(const ExtensionId& extension_id) {
 
   // First, check that the extension can be enabled.
   if (IsExtensionEnabled(extension_id) ||
-      extension_prefs_->IsExtensionBlocklisted(extension_id) ||
+      blocklist_prefs::IsExtensionBlocklisted(extension_id, extension_prefs_) ||
       registry_->blocked_extensions().Contains(extension_id)) {
     return;
   }
@@ -282,6 +277,36 @@ void ExtensionRegistrar::DisableExtension(const ExtensionId& extension_id,
   }
 }
 
+namespace {
+std::vector<scoped_refptr<DevToolsAgentHost>> GetDevToolsAgentHostsFor(
+    ProcessManager* process_manager,
+    const Extension* extension) {
+  std::vector<scoped_refptr<DevToolsAgentHost>> result;
+  if (!BackgroundInfo::IsServiceWorkerBased(extension)) {
+    ExtensionHost* host =
+        process_manager->GetBackgroundHostForExtension(extension->id());
+    if (host && content::DevToolsAgentHost::HasFor(host->host_contents())) {
+      result.push_back(
+          content::DevToolsAgentHost::GetOrCreateFor(host->host_contents()));
+    }
+  } else {
+    content::ServiceWorkerContext* context =
+        util::GetStoragePartitionForExtensionId(
+            extension->id(), process_manager->browser_context())
+            ->GetServiceWorkerContext();
+    std::vector<WorkerId> service_worker_ids =
+        process_manager->GetServiceWorkersForExtension(extension->id());
+    for (const auto& worker_id : service_worker_ids) {
+      auto devtools_host =
+          DevToolsAgentHost::GetForServiceWorker(context, worker_id.version_id);
+      if (devtools_host)
+        result.push_back(std::move(devtools_host));
+    }
+  }
+  return result;
+}
+}  // namespace
+
 void ExtensionRegistrar::ReloadExtension(
     const ExtensionId extension_id,  // Passed by value because reloading can
                                      // invalidate a reference to the ID.
@@ -327,19 +352,20 @@ void ExtensionRegistrar::ReloadExtension(
     // later.
     // TODO(yoz): this is not incognito-safe!
     ProcessManager* manager = ProcessManager::Get(browser_context_);
-    ExtensionHost* host = manager->GetBackgroundHostForExtension(extension_id);
-    if (host && content::DevToolsAgentHost::HasFor(host->host_contents())) {
-      // Look for an open inspector for the background page.
-      scoped_refptr<content::DevToolsAgentHost> agent_host =
-          content::DevToolsAgentHost::GetOrCreateFor(host->host_contents());
-      agent_host->DisconnectWebContents();
-      orphaned_dev_tools_[extension_id] = agent_host;
+    auto agent_hosts = GetDevToolsAgentHostsFor(manager, enabled_extension);
+    if (!agent_hosts.empty()) {
+      for (auto& host : agent_hosts) {
+        // Let DevTools know we'll be back once extension is reloaded.
+        // TODO(caseq): this should rather be called Disconnect().
+        host->DisconnectWebContents();
+      }
+      // Retain DevToolsAgentHosts for the extension being reloaded to prevent
+      // client disconnecting. We will re-attach later, when the extension is
+      // loaded.
+      // TODO(crbug.com/1246530): clean up upon failure to reload.
+      orphaned_dev_tools_[extension_id] = std::move(agent_hosts);
     }
-
     path = enabled_extension->path();
-    // BeingUpgraded is set back to false when the extension is added.
-    extension_system_->runtime_data()->SetBeingUpgraded(enabled_extension->id(),
-                                                        true);
     DisableExtension(extension_id, disable_reason::DISABLE_RELOAD);
     DCHECK(registry_->disabled_extensions().Contains(extension_id));
     reloading_extensions_.insert(extension_id);
@@ -390,14 +416,6 @@ void ExtensionRegistrar::UntrackTerminatedExtension(
     return;
 
   registry_->RemoveTerminated(extension_id);
-
-  // TODO(michaelpg): This notification was already sent when the extension was
-  // unloaded as part of being terminated. But we send it again as observers
-  // may be tracking the terminated extension. See crbug.com/708230.
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_EXTENSION_REMOVED,
-      content::Source<content::BrowserContext>(browser_context_),
-      content::Details<const Extension>(extension.get()));
 }
 
 bool ExtensionRegistrar::IsExtensionEnabled(
@@ -419,7 +437,8 @@ bool ExtensionRegistrar::IsExtensionEnabled(
   // If the extension hasn't been loaded yet, check the prefs for it. Assume
   // enabled unless otherwise noted.
   return !extension_prefs_->IsExtensionDisabled(extension_id) &&
-         !extension_prefs_->IsExtensionBlocklisted(extension_id) &&
+         !blocklist_prefs::IsExtensionBlocklisted(extension_id,
+                                                  extension_prefs_) &&
          !extension_prefs_->IsExternalExtensionUninstalled(extension_id);
 }
 
@@ -433,7 +452,10 @@ void ExtensionRegistrar::DidCreateMainFrameForBackgroundPage(
   ProcessManager::Get(browser_context_)
       ->IncrementLazyKeepaliveCount(host->extension(), Activity::DEV_TOOLS,
                                     std::string());
-  iter->second->ConnectWebContents(host->host_contents());
+  DCHECK_GE(1u, iter->second.size());
+  // TODO(caseq): do we need to handle the case when the extension changed
+  // from SW-based to WC-based during reload?
+  iter->second[0]->ConnectWebContents(host->host_contents());
   orphaned_dev_tools_.erase(iter);
 }
 
@@ -544,6 +566,14 @@ void ExtensionRegistrar::MaybeSpinUpLazyBackgroundPage(
   // Wake up the event page by posting a dummy task.
   const LazyContextId context_id(browser_context_, extension->id());
   context_id.GetTaskQueue()->AddPendingTask(context_id, base::DoNothing());
+}
+
+void ExtensionRegistrar::OnServiceWorkerRegistered(const WorkerId& worker_id) {
+  // Just release the host. We only get here when the new worker has been
+  // attached and resumed by the DevTools, and all we need in case of service
+  // worker-based extensions is to keep the host around for the target
+  // auto-attacher to do its job.
+  orphaned_dev_tools_.erase(worker_id.extension_id);
 }
 
 }  // namespace extensions

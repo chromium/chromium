@@ -32,13 +32,11 @@ scoped_refptr<DecoderBuffer> ConvertProtoToDecoderBuffer(
   }
 
   if (buffer_message.has_timestamp_usec()) {
-    buffer->set_timestamp(
-        base::TimeDelta::FromMicroseconds(buffer_message.timestamp_usec()));
+    buffer->set_timestamp(base::Microseconds(buffer_message.timestamp_usec()));
   }
 
   if (buffer_message.has_duration_usec()) {
-    buffer->set_duration(
-        base::TimeDelta::FromMicroseconds(buffer_message.duration_usec()));
+    buffer->set_duration(base::Microseconds(buffer_message.duration_usec()));
   }
   VLOG(3) << "timestamp:" << buffer_message.timestamp_usec()
           << " duration:" << buffer_message.duration_usec();
@@ -50,14 +48,12 @@ scoped_refptr<DecoderBuffer> ConvertProtoToDecoderBuffer(
   base::TimeDelta front_discard;
   if (buffer_message.has_front_discard_usec()) {
     has_discard = true;
-    front_discard =
-        base::TimeDelta::FromMicroseconds(buffer_message.front_discard_usec());
+    front_discard = base::Microseconds(buffer_message.front_discard_usec());
   }
   base::TimeDelta back_discard;
   if (buffer_message.has_back_discard_usec()) {
     has_discard = true;
-    back_discard =
-        base::TimeDelta::FromMicroseconds(buffer_message.back_discard_usec());
+    back_discard = base::Microseconds(buffer_message.back_discard_usec());
   }
 
   if (has_discard) {
@@ -198,7 +194,7 @@ bool ConvertProtoToAudioDecoderConfig(
       std::vector<uint8_t>(audio_message.extra_data().begin(),
                            audio_message.extra_data().end()),
       EncryptionScheme::kUnencrypted,
-      base::TimeDelta::FromMicroseconds(audio_message.seek_preroll_usec()),
+      base::Microseconds(audio_message.seek_preroll_usec()),
       audio_message.codec_delay());
   return audio_config->IsValidConfig();
 }
@@ -335,8 +331,8 @@ void ConvertProtoToPipelineStatistics(
     stats->video_pipeline_info.encryption_type = EncryptionType::kClear;
   }
   if (stats_message.has_video_frame_duration_average_usec()) {
-    stats->video_frame_duration_average = base::TimeDelta::FromMicroseconds(
-        stats_message.video_frame_duration_average_usec());
+    stats->video_frame_duration_average =
+        base::Microseconds(stats_message.video_frame_duration_average_usec());
   }
 }
 

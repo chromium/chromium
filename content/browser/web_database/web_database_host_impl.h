@@ -8,7 +8,9 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -18,6 +20,10 @@
 namespace url {
 class Origin;
 }  // namespace url
+
+namespace storage {
+struct BucketInfo;
+}  // namespace storage
 
 namespace content {
 
@@ -35,6 +41,7 @@ class CONTENT_EXPORT WebDatabaseHostImpl
       mojo::PendingReceiver<blink::mojom::WebDatabaseHost> receiver);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WebDatabaseHostImplTest, OpenFileCreatesBucket);
   FRIEND_TEST_ALL_PREFIXES(WebDatabaseHostImplTest, BadMessagesUnauthorized);
   FRIEND_TEST_ALL_PREFIXES(WebDatabaseHostImplTest, BadMessagesInvalid);
   FRIEND_TEST_ALL_PREFIXES(WebDatabaseHostImplTest, ProcessShutdown);
@@ -95,6 +102,12 @@ class CONTENT_EXPORT WebDatabaseHostImpl
   void OpenFileValidated(const std::u16string& vfs_file_name,
                          int32_t desired_flags,
                          OpenFileCallback callback);
+
+  void OpenFileWithBucketCreated(
+      const std::u16string& vfs_file_name,
+      int32_t desired_flags,
+      OpenFileCallback callback,
+      storage::QuotaErrorOr<storage::BucketInfo> bucket);
 
   void GetFileAttributesValidated(const std::u16string& vfs_file_name,
                                   GetFileAttributesCallback callback);

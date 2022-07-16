@@ -41,7 +41,8 @@ bool UserContext::operator==(const UserContext& context) const {
          context.auth_flow_ == auth_flow_ && context.user_type_ == user_type_ &&
          context.public_session_locale_ == public_session_locale_ &&
          context.public_session_input_method_ == public_session_input_method_ &&
-         context.login_input_method_used_ == login_input_method_used_;
+         context.login_input_method_id_used_ == login_input_method_id_used_ &&
+         context.authsession_id_ == authsession_id_;
 }
 
 bool UserContext::operator!=(const UserContext& context) const {
@@ -136,6 +137,10 @@ const std::string& UserContext::GetDeviceId() const {
 
 const std::string& UserContext::GetGAPSCookie() const {
   return gaps_cookie_;
+}
+
+const std::string& UserContext::GetReauthProofToken() const {
+  return reauth_proof_token_;
 }
 
 const absl::optional<password_manager::PasswordHashData>&
@@ -235,6 +240,10 @@ void UserContext::SetGAPSCookie(const std::string& gaps_cookie) {
   gaps_cookie_ = gaps_cookie;
 }
 
+void UserContext::SetReauthProofToken(const std::string& reauth_proof_token) {
+  reauth_proof_token_ = reauth_proof_token;
+}
+
 void UserContext::SetSyncPasswordData(
     const password_manager::PasswordHashData& sync_password_data) {
   sync_password_data_ = {sync_password_data};
@@ -261,13 +270,23 @@ void UserContext::SetManagedGuestSessionLaunchExtensionId(
       managed_guest_session_launch_extension_id;
 }
 
-void UserContext::SetLoginInputMethodUsed(const std::string& input_method_id) {
-  DCHECK(login_input_method_used_.empty());
-  login_input_method_used_ = input_method_id;
+void UserContext::SetLoginInputMethodIdUsed(
+    const std::string& input_method_id) {
+  DCHECK(login_input_method_id_used_.empty());
+  login_input_method_id_used_ = input_method_id;
 }
 
-const std::string& UserContext::GetLoginInputMethodUsed() const {
-  return login_input_method_used_;
+const std::string& UserContext::GetLoginInputMethodIdUsed() const {
+  return login_input_method_id_used_;
+}
+
+void UserContext::SetAuthSessionId(const std::string& authsession_id) {
+  DCHECK(authsession_id_.empty());
+  authsession_id_ = authsession_id;
+}
+
+const std::string& UserContext::GetAuthSessionId() const {
+  return authsession_id_;
 }
 
 void UserContext::ClearSecrets() {
@@ -276,6 +295,7 @@ void UserContext::ClearSecrets() {
   auth_code_.clear();
   refresh_token_.clear();
   sync_trusted_vault_keys_.reset();
+  authsession_id_.clear();
 }
 
 }  // namespace chromeos

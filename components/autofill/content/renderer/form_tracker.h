@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -62,6 +63,10 @@ class FormTracker : public content::RenderFrameObserver {
   };
 
   FormTracker(content::RenderFrame* render_frame);
+
+  FormTracker(const FormTracker&) = delete;
+  FormTracker& operator=(const FormTracker&) = delete;
+
   ~FormTracker() override;
 
   void AddObserver(Observer* observer);
@@ -131,8 +136,6 @@ class FormTracker : public content::RenderFrameObserver {
   SEQUENCE_CHECKER(form_tracker_sequence_checker_);
 
   base::WeakPtrFactory<FormTracker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FormTracker);
 };
 
 }  // namespace autofill

@@ -29,7 +29,7 @@
                     readability-redundant-member-init'
   CheckOptions:
     - key:          bugprone-dangling-handle.HandleClasses
-      value:        ::std::basic_string_view;::std::span;::base::BasicStringPiece;::base::span
+      value:        ::std::basic_string_view;::std::span;::absl::string_view;::base::BasicStringPiece;::base::span
     - key:          bugprone-string-constructor.StringNames
       value:        ::std::basic_string;::std::basic_string_view;::base::BasicStringPiece
     - key:          modernize-use-default-member-init.UseAssignment

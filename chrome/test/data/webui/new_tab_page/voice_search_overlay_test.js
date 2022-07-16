@@ -7,12 +7,12 @@ import 'chrome://new-tab-page/lazy_load.js';
 import {$$, NewTabPageProxy, VoiceAction as Action, VoiceError as Error, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {flushTasks, isVisible} from 'chrome://test/test_util.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
+import {flushTasks, isVisible} from 'chrome://test/test_util.js';
 
 import {assertEquals} from '../chai_assert.js';
 
-import {assertNotStyle, assertStyle, keydown} from './test_support.js';
+import {assertNotStyle, assertStyle, installMock, keydown} from './test_support.js';
 
 function createResults(n) {
   return {
@@ -52,16 +52,10 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
   /** @type {!VoiceSearchOverlayElement} */
   let voiceSearchOverlay;
 
-  /**
-   * @implements {WindowProxy}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let windowProxy;
 
-  /**
-   * @implements {newTabPage.mojom.PageHandlerRemote}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let handler;
 
   /** @type {!MetricsTracker} */
@@ -72,12 +66,12 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
 
     window.webkitSpeechRecognition = MockSpeechRecognition;
 
-    windowProxy = TestBrowserProxy.fromClass(WindowProxy);
+    windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('setTimeout', 0);
-    WindowProxy.setInstance(windowProxy);
-    handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
-    NewTabPageProxy.setInstance(
-        handler, new newTabPage.mojom.PageCallbackRouter());
+    handler = installMock(
+        newTabPage.mojom.PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(
+            mock, new newTabPage.mojom.PageCallbackRouter()));
 
     metrics = fakeMetricsPrivate();
 

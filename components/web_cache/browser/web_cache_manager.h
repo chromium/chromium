@@ -16,7 +16,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
@@ -61,6 +60,9 @@ class WebCacheManager : public content::RenderProcessHostCreationObserver,
   // is called, a WebCacheManager object is constructed and returned.
   // Subsequent calls will return the same object.
   static WebCacheManager* GetInstance();
+
+  WebCacheManager(const WebCacheManager&) = delete;
+  WebCacheManager& operator=(const WebCacheManager&) = delete;
 
   // When a render process is created, it registers itself with the cache
   // manager host, causing the renderer to be allocated cache resources.
@@ -252,8 +254,6 @@ class WebCacheManager : public content::RenderProcessHostCreationObserver,
       rph_observations_{this};
 
   base::WeakPtrFactory<WebCacheManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebCacheManager);
 };
 
 }  // namespace web_cache

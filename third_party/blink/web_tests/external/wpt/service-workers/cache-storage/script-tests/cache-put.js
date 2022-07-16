@@ -144,7 +144,14 @@ cache_test(function(cache, test) {
               'Test framework error: The status code should be 0 for an ' +
               ' opaque-filtered response. This is actually HTTP 206.');
           response = fetch_result.clone();
-          return promise_rejects_js(test, TypeError, cache.put(request, fetch_result));
+          return cache.put(request, fetch_result);
+        })
+      .then(function() {
+          return cache.match(test_url);
+        })
+      .then(function(result) {
+          assert_not_equals(result, undefined,
+              'Cache.put should store an entry for the opaque response');
         });
   }, 'Cache.put with opaque-filtered HTTP 206 response');
 

@@ -7,7 +7,6 @@
 # https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md
 
 accessibility/aria-labelledby-on-input.html
-accessibility/aria-link-supports-press.html
 accessibility/insert-adjacent-html-causes-crash.xhtml
 animations/animation-shorthand-overriding.html
 animations/stability/empty-keyframes.html
@@ -778,7 +777,6 @@ html/sections/article-element.html
 html/sections/body-offset-properties.html
 html/tabular_data/tbody_insertrow_default_argument.html
 html/text_level_semantics/q-empty-crash.html
-http/tests/appcache/abort-cache-onchecking-resource-404.html
 http/tests/canvas/philip/tests/security.pattern.canvas.fillStyle.html
 http/tests/dom/create-contextual-fragment-from-svg-document-range.html
 http/tests/dom/location-stringify.html

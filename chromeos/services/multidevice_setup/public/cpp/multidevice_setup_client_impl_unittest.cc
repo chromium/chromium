@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_initializer.h"
@@ -62,6 +62,12 @@ class TestMultiDeviceSetupClientObserver
     : public MultiDeviceSetupClient::Observer {
  public:
   TestMultiDeviceSetupClientObserver() = default;
+
+  TestMultiDeviceSetupClientObserver(
+      const TestMultiDeviceSetupClientObserver&) = delete;
+  TestMultiDeviceSetupClientObserver& operator=(
+      const TestMultiDeviceSetupClientObserver&) = delete;
+
   ~TestMultiDeviceSetupClientObserver() override = default;
 
   const std::vector<MultiDeviceSetupClient::HostStatusWithDevice>&
@@ -89,8 +95,6 @@ class TestMultiDeviceSetupClientObserver
   std::vector<MultiDeviceSetupClient::HostStatusWithDevice>
       host_status_updates_;
   std::vector<MultiDeviceSetupClient::FeatureStatesMap> feature_state_updates_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMultiDeviceSetupClientObserver);
 };
 
 absl::optional<multidevice::RemoteDevice> GetRemoteDeviceFromRef(
@@ -104,6 +108,12 @@ absl::optional<multidevice::RemoteDevice> GetRemoteDeviceFromRef(
 }  // namespace
 
 class MultiDeviceSetupClientImplTest : public testing::Test {
+ public:
+  MultiDeviceSetupClientImplTest(const MultiDeviceSetupClientImplTest&) =
+      delete;
+  MultiDeviceSetupClientImplTest& operator=(
+      const MultiDeviceSetupClientImplTest&) = delete;
+
  protected:
   MultiDeviceSetupClientImplTest()
       : test_remote_device_list_(
@@ -135,7 +145,8 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
           host_status_with_device =
               MultiDeviceSetupClient::GenerateDefaultHostStatusWithDevice(),
       const MultiDeviceSetupClient::FeatureStatesMap& feature_states_map =
-          MultiDeviceSetupClient::GenerateDefaultFeatureStatesMap()) {
+          MultiDeviceSetupClient::GenerateDefaultFeatureStatesMap(
+              mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady)) {
     mojo::PendingRemote<mojom::MultiDeviceSetup> remote_setup;
     service_->BindMultiDeviceSetup(
         remote_setup.InitWithNewPipeAndPassReceiver());
@@ -421,8 +432,6 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
       get_feature_states_result_;
   absl::optional<bool> retry_set_host_now_success_;
   absl::optional<bool> trigger_event_for_debugging_success_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupClientImplTest);
 };
 
 TEST_F(MultiDeviceSetupClientImplTest, GetHostStatus) {

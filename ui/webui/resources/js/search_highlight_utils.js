@@ -55,12 +55,12 @@ export function findAndRemoveHighlights(node) {
  * @param {!Node} node The text node to be highlighted. |node| ends up
  *     being hidden.
  * @param {!Array<!Range>} ranges
- * @return {!Node} The new highlight wrapper.
+ * @return {!HTMLElement} The new highlight wrapper.
  */
 export function highlight(node, ranges) {
   assert(ranges.length > 0);
 
-  const wrapper = document.createElement('span');
+  const wrapper = /** @type {!HTMLElement} */ (document.createElement('span'));
   wrapper.classList.add(WRAPPER_CSS_CLASS);
   // Use existing node as placeholder to determine where to insert the
   // replacement content.
@@ -112,8 +112,8 @@ export function highlight(node, ranges) {
  * @param {!Node} node The node to be highlighted.
  * @param {boolean=} horizontallyCenter Whether or not to horizontally center
  *     the shown search bubble (if any) based on |node|'s left and width.
- * @return {!Node} The search bubble that was added, or null if no new bubble
- *     was added.
+ * @return {!HTMLElement} The search bubble that was added, or null if no new
+ *     bubble was added.
  */
 export function createEmptySearchBubble(node, horizontallyCenter) {
   let anchor = node;
@@ -124,14 +124,15 @@ export function createEmptySearchBubble(node, horizontallyCenter) {
     anchor = anchor.host.parentNode;
   }
 
-  let searchBubble = anchor.querySelector(`.${SEARCH_BUBBLE_CSS_CLASS}`);
+  let searchBubble = /** @type {?HTMLElement} */ (
+      anchor.querySelector(`.${SEARCH_BUBBLE_CSS_CLASS}`));
   // If the node has already been highlighted, there is no need to do
   // anything.
   if (searchBubble) {
     return searchBubble;
   }
 
-  searchBubble = document.createElement('div');
+  searchBubble = /** @type {!HTMLElement} */ (document.createElement('div'));
   searchBubble.classList.add(SEARCH_BUBBLE_CSS_CLASS);
   const innards = document.createElement('div');
   innards.classList.add('search-bubble-innards');

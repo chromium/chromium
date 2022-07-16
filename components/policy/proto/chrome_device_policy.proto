@@ -10,6 +10,8 @@ import "policy_common_definitions.proto";
 
 package enterprise_management;
 
+option go_package="chromium/policy/enterprise_management_proto";
+
 // Everything below this comment will be synchronized between client and server
 // repos ( go/cros-proto-sync ).
 
@@ -151,11 +153,22 @@ message DeviceReportingProto {
   optional bool report_audio_status = 28 [default = true];
   optional bool report_network_configuration = 29 [default = true];
   optional bool report_network_status = 30 [default = true];
+  optional bool report_security_status = 31 [default = false];
 
   // Frequency to report device status, default to 3 hours.
   // If changed, the default value has to be updated in
-  // chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.cc.
+  // chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.cc.
   optional int64 device_status_frequency = 9 [default = 10800000];
+
+  // This is a internal flag that will be used to control whether enable
+  // granular device reporting is enabled
+  optional bool enable_granular_reporting = 32 [default = true];
+
+  // Network telemetry policies.
+  optional int64 report_network_telemetry_collection_rate_ms = 33
+      [default = 600000];
+  optional int64 report_network_telemetry_event_checking_rate_ms = 34
+      [default = 60000];
 }
 
 message EphemeralUsersEnabledProto {
@@ -357,6 +370,11 @@ message AutoUpdateSettingsProto {
   // Specifies what should happen if the device channel is downgraded.
   optional ChannelDowngradeBehavior channel_downgrade_behavior = 16
       [default = WAIT_FOR_VERSION_CATCH_UP];
+
+  // |target_version_selector| is forwarded as the "targetversionselector"
+  // attribute to Omaha and is used by it if for minor version pinning. The
+  // field is not and shall not be processed by the client.
+  optional string target_version_selector = 17;
 }
 
 message OBSOLETE_StartUpUrlsProto {
@@ -1813,6 +1831,12 @@ message DeviceRestrictedManagedGuestSessionEnabledProto {
   optional bool enabled = 1 [default = false];
 }
 
+// Setting that controls whether keyboard shortcuts mapping are consistent
+// across all international keyboard layouts.
+message DeviceI18nShortcutsEnabledProto {
+  optional bool enabled = 1 [default = true];
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -1976,4 +2000,8 @@ message ChromeDeviceSettingsProto {
   optional DeviceRestrictedManagedGuestSessionEnabledProto
       device_restricted_managed_guest_session_enabled = 124;
   optional HostnameUserConfigurableProto hostname_user_configurable = 125;
+  optional BooleanPolicyProto
+      login_screen_prompt_on_multiple_matching_certificates = 126;
+  optional BooleanPolicyProto kiosk_crx_manifest_update_url_ignored = 127;
+  optional DeviceI18nShortcutsEnabledProto device_i18n_shortcuts_enabled = 128;
 }

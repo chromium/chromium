@@ -34,6 +34,10 @@
     outline: none;
   }
 
+  #imageDoodle[tabindex='-1'] {
+    cursor: auto;
+  }
+
   :host([doodle-boxed_]) #imageDoodle {
     background-color: var(--ntp-logo-box-color);
     border-radius: 20px;
@@ -109,7 +113,8 @@
 <template is="dom-if" if="[[showDoodle_]]" restamp>
   <div id="doodle" title="[[doodle_.description]]">
     <div id="imageDoodle" hidden="[[!imageDoodle_]]"
-        tabindex="0" on-click="onImageClick_" on-keydown="onImageKeydown_">
+        tabindex$="[[imageDoodleTabIndex_]]" on-click="onImageClick_"
+        on-keydown="onImageKeydown_">
       <div id="imageContainer">
         <!-- The static image is always visible and the animated image is
              stacked on top of the static image so that there is no flicker

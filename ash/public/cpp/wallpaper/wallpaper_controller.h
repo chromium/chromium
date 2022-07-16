@@ -31,6 +31,9 @@ class WallpaperControllerClient;
 // Used by Chrome to set the wallpaper displayed by ash.
 class ASH_PUBLIC_EXPORT WallpaperController {
  public:
+  WallpaperController();
+  virtual ~WallpaperController();
+
   static WallpaperController* Get();
 
   // Sets the client interface, used to show the wallpaper picker, etc.
@@ -49,7 +52,6 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // Sets wallpaper from a local file and updates the saved wallpaper info for
   // the user.
   // |account_id|: The user's account id.
-  // |wallpaper_files_id|: The file id for |account_id|.
   // |file_path|: The path of the image file to read.
   // |layout|: The layout of the wallpaper, used for wallpaper resizing.
   // |preview_mode|: If true, show the wallpaper immediately but doesn't change
@@ -58,7 +60,6 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // |callback|: called when the image is read from file and decoded.
   using SetCustomWallpaperCallback = base::OnceCallback<void(bool success)>;
   virtual void SetCustomWallpaper(const AccountId& account_id,
-                                  const std::string& wallpaper_files_id,
                                   const base::FilePath& file_path,
                                   WallpaperLayout layout,
                                   bool preview_mode,
@@ -67,7 +68,6 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // Sets wallpaper from a local file and updates the saved wallpaper info for
   // the user.
   // |account_id|: The user's account id.
-  // |wallpaper_files_id|: The file id for |account_id|.
   // |file_name|: The name of the wallpaper file.
   // |layout|: The layout of the wallpaper, used for wallpaper resizing.
   // |image|: The wallpaper image.
@@ -75,7 +75,6 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   //                 the user wallpaper info until |ConfirmPreviewWallpaper| is
   //                 called.
   virtual void SetCustomWallpaper(const AccountId& account_id,
-                                  const std::string& wallpaper_files_id,
                                   const std::string& file_name,
                                   WallpaperLayout layout,
                                   const gfx::ImageSkia& image,
@@ -121,11 +120,9 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // Sets the user's wallpaper to be the default wallpaper. Note: different user
   // types may have different default wallpapers.
   // |account_id|: The user's account id.
-  // |wallpaper_files_id|: The file id for |account_id|.
   // |show_wallpaper|: If false, don't show the new wallpaper now but only
   //                   update cache.
   virtual void SetDefaultWallpaper(const AccountId& account_id,
-                                   const std::string& wallpaper_files_id,
                                    bool show_wallpaper) = 0;
 
   // Sets the paths of the customized default wallpaper to be used wherever a
@@ -145,10 +142,8 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // next time |ShowUserWallpaper| is called. Note: it is different from device
   // policy.
   // |account_id|: The user's account id.
-  // |wallpaper_files_id|: The file id for |account_id|.
   // |data|: The data used to decode the image.
   virtual void SetPolicyWallpaper(const AccountId& account_id,
-                                  const std::string& wallpaper_files_id,
                                   const std::string& data) = 0;
 
   // Sets the path of device policy wallpaper.
@@ -169,7 +164,6 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // 1) the user is not permitted to change wallpaper, or
   // 2) updating the on-screen wallpaper is not allowed at the given moment.
   virtual bool SetThirdPartyWallpaper(const AccountId& account_id,
-                                      const std::string& wallpaper_files_id,
                                       const std::string& file_name,
                                       WallpaperLayout layout,
                                       const gfx::ImageSkia& image) = 0;
@@ -220,9 +214,7 @@ class ASH_PUBLIC_EXPORT WallpaperController {
 
   // Removes all of the user's saved wallpapers and related info.
   // |account_id|: The user's account id.
-  // |wallpaper_files_id|: The file id for |account_id|.
-  virtual void RemoveUserWallpaper(const AccountId& account_id,
-                                   const std::string& wallpaper_files_id) = 0;
+  virtual void RemoveUserWallpaper(const AccountId& account_id) = 0;
 
   // Removes all of the user's saved wallpapers and related info if the
   // wallpaper was set by |SetPolicyWallpaper|. In addition, sets the user's
@@ -230,9 +222,7 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // wallpaper immediately, otherwise, the default wallpaper will be shown the
   // next time |ShowUserWallpaper| is called.
   // |account_id|: The user's account id.
-  // |wallpaper_files_id|: The file id for |account_id|.
-  virtual void RemovePolicyWallpaper(const AccountId& account_id,
-                                     const std::string& wallpaper_files_id) = 0;
+  virtual void RemovePolicyWallpaper(const AccountId& account_id) = 0;
 
   // Returns the urls of the wallpapers that exist in local file system (i.e.
   // |SetOnlineWallpaperFromData| was called earlier). The url is used as id
@@ -288,10 +278,12 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // Set and store the collection id used to update refreshable wallpapers.
   // Empty if daily refresh is not enabled.
   virtual void SetDailyRefreshCollectionId(
+      const AccountId& account_id,
       const std::string& collection_id) = 0;
 
   // Get the daily refresh collection id. Empty if daily refresh is not enabled;
-  virtual std::string GetDailyRefreshCollectionId() const = 0;
+  virtual std::string GetDailyRefreshCollectionId(
+      const AccountId& account_id) const = 0;
 
   // With daily refresh enabled, this updates the wallpaper by asking for a
   // wallpaper from within the user specified collection.
@@ -299,15 +291,13 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   virtual void UpdateDailyRefreshWallpaper(
       RefreshWallpaperCallback callback = base::DoNothing()) = 0;
 
-  // DriveFS is available for the active user.
-  virtual void OnGoogleDriveMounted() = 0;
+  // Sync wallpaper infos and images..
+  // |account_id|: The account id of the user.
+  virtual void SyncLocalAndRemotePrefs(const AccountId& account_id) = 0;
 
   // Returns a suffix to be appended to the base url of Backdrop (online)
   // wallpapers.
   static std::string GetBackdropWallpaperSuffix();
-
- protected:
-  static WallpaperController* g_instance_;
 };
 
 }  // namespace ash

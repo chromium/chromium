@@ -128,15 +128,15 @@ void VideoCaptureDeviceWin::GetPinCapabilityList(
   ComPtr<IAMVideoControl> video_control;
   hr = capture_filter.As(&video_control);
 
-  int count = 0, size = 0;
-  hr = stream_config->GetNumberOfCapabilities(&count, &size);
+  int count = 0, byte_size = 0;
+  hr = stream_config->GetNumberOfCapabilities(&count, &byte_size);
   if (FAILED(hr)) {
     DLOG(ERROR) << "GetNumberOfCapabilities failed: "
                 << logging::SystemErrorCodeToString(hr);
     return;
   }
 
-  std::unique_ptr<BYTE[]> caps(new BYTE[size]);
+  std::unique_ptr<BYTE[]> caps(new BYTE[byte_size]);
   for (int i = 0; i < count; ++i) {
     VideoCaptureDeviceWin::ScopedMediaType media_type;
     hr = stream_config->GetStreamCaps(i, media_type.Receive(), caps.get());

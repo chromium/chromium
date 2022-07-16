@@ -89,6 +89,9 @@ class V4L2VP8Picture : public VP8Picture {
   explicit V4L2VP8Picture(scoped_refptr<V4L2DecodeSurface> dec_surface)
       : dec_surface_(std::move(dec_surface)) {}
 
+  V4L2VP8Picture(const V4L2VP8Picture&) = delete;
+  V4L2VP8Picture& operator=(const V4L2VP8Picture&) = delete;
+
   V4L2VP8Picture* AsV4L2VP8Picture() override { return this; }
   scoped_refptr<V4L2DecodeSurface> dec_surface() { return dec_surface_; }
 
@@ -96,8 +99,6 @@ class V4L2VP8Picture : public VP8Picture {
   ~V4L2VP8Picture() override {}
 
   scoped_refptr<V4L2DecodeSurface> dec_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2VP8Picture);
 };
 
 V4L2VideoDecoderDelegateVP8Legacy::V4L2VideoDecoderDelegateVP8Legacy(

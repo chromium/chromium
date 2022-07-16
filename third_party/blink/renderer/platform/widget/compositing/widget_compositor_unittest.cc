@@ -40,13 +40,13 @@ class StubWidgetBaseClient : public WidgetBaseClient {
   void FocusChanged(bool) override {}
   void UpdateVisualProperties(
       const VisualProperties& visual_properties) override {}
-  const display::ScreenInfo& GetOriginalScreenInfo() override {
-    return screen_info_;
+  const display::ScreenInfos& GetOriginalScreenInfos() override {
+    return screen_infos_;
   }
   gfx::Rect ViewportVisibleRect() override { return gfx::Rect(); }
 
  private:
-  display::ScreenInfo screen_info_;
+  display::ScreenInfos screen_infos_;
 };
 
 class FakeWidgetCompositor : public WidgetCompositor {

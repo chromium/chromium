@@ -22,8 +22,10 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/sync/base/unique_position.h"
 #include "components/sync/engine/entity_data.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync_bookmarks/switches.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "ui/gfx/favicon_size.h"
@@ -50,8 +52,11 @@ enum class InvalidBookmarkSpecificsError {
   kInvalidIconURL = 3,
   kNonUniqueMetaInfoKeys = 4,
   kInvalidGUID = 5,
+  kInvalidParentGUID = 6,
+  kInvalidUniquePosition = 7,
+  kBannedGUID = 8,
 
-  kMaxValue = kInvalidGUID,
+  kMaxValue = kBannedGUID,
 };
 
 void LogInvalidSpecifics(InvalidBookmarkSpecificsError error) {
@@ -200,6 +205,36 @@ std::u16string NodeTitleFromSpecifics(
   return base::UTF8ToUTF16(node_title);
 }
 
+void MoveAllChildren(bookmarks::BookmarkModel* model,
+                     const bookmarks::BookmarkNode* old_parent,
+                     const bookmarks::BookmarkNode* new_parent) {
+  DCHECK(old_parent && old_parent->is_folder());
+  DCHECK(new_parent && new_parent->is_folder());
+  DCHECK(old_parent != new_parent);
+  DCHECK(new_parent->children().empty());
+
+  if (old_parent->children().empty()) {
+    return;
+  }
+
+  // This code relies on the underlying type to store children in the
+  // BookmarkModel which is vector. It moves the last child from |old_parent| to
+  // the end of |new_parent| step by step (which reverses the order of
+  // children). After that all children must be reordered to keep the original
+  // order in |new_parent|.
+  // This algorithm is used because of performance reasons.
+  std::vector<const bookmarks::BookmarkNode*> children_order(
+      old_parent->children().size(), nullptr);
+  for (size_t i = old_parent->children().size(); i > 0; --i) {
+    const size_t old_index = i - 1;
+    const bookmarks::BookmarkNode* child_to_move =
+        old_parent->children()[old_index].get();
+    children_order[old_index] = child_to_move;
+    model->Move(child_to_move, new_parent, new_parent->children().size());
+  }
+  model->ReorderChildren(new_parent, children_order);
+}
+
 }  // namespace
 
 std::string FullTitleToLegacyCanonicalizedTitle(const std::string& node_title) {
@@ -219,21 +254,25 @@ bool IsBookmarkEntityReuploadNeeded(
   if (remote_entity_data.is_deleted()) {
     return false;
   }
+
   DCHECK(remote_entity_data.specifics.has_bookmark());
-  if (remote_entity_data.specifics.bookmark().has_full_title() &&
-      !remote_entity_data.is_bookmark_guid_in_specifics_preprocessed) {
+  if (!remote_entity_data
+           .is_bookmark_unique_position_in_specifics_preprocessed) {
     return false;
   }
-  return base::FeatureList::IsEnabled(
-      switches::kSyncReuploadBookmarkFullTitles);
+
+  return base::FeatureList::IsEnabled(switches::kSyncReuploadBookmarks);
 }
 
 sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
     const bookmarks::BookmarkNode* node,
     bookmarks::BookmarkModel* model,
+    const sync_pb::UniquePosition& unique_position,
     bool force_favicon_load) {
   sync_pb::EntitySpecifics specifics;
   sync_pb::BookmarkSpecifics* bm_specifics = specifics.mutable_bookmark();
+
+  bm_specifics->set_type(GetProtoTypeFromBookmarkNode(node));
   if (!node->is_folder()) {
     bm_specifics->set_url(node->url().spec());
   }
@@ -241,12 +280,17 @@ sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
   DCHECK(node->guid().is_valid()) << "Actual: " << node->guid();
   bm_specifics->set_guid(node->guid().AsLowercaseString());
 
+  DCHECK(node->parent()->guid().is_valid())
+      << "Actual: " << node->parent()->guid();
+  bm_specifics->set_parent_guid(node->parent()->guid().AsLowercaseString());
+
   const std::string node_title = base::UTF16ToUTF8(node->GetTitle());
   bm_specifics->set_legacy_canonicalized_title(
       FullTitleToLegacyCanonicalizedTitle(node_title));
   bm_specifics->set_full_title(node_title);
   bm_specifics->set_creation_time_us(
       node->date_added().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  *bm_specifics->mutable_unique_position() = unique_position;
 
   if (node->GetMetaInfoMap()) {
     UpdateBookmarkSpecificsMetaInfo(node->GetMetaInfoMap(), bm_specifics);
@@ -282,12 +326,12 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
     const sync_pb::BookmarkSpecifics& specifics,
     const bookmarks::BookmarkNode* parent,
     size_t index,
-    bool is_folder,
     bookmarks::BookmarkModel* model,
     favicon::FaviconService* favicon_service) {
   DCHECK(parent);
   DCHECK(model);
   DCHECK(favicon_service);
+  DCHECK(IsValidBookmarkSpecifics(specifics));
 
   base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
   DCHECK(guid.is_valid());
@@ -299,19 +343,26 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
   const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
       // Use FromDeltaSinceWindowsEpoch because creation_time_us has
       // always used the Windows epoch.
-      base::TimeDelta::FromMicroseconds(creation_time_us));
+      base::Microseconds(creation_time_us));
 
-  if (is_folder) {
-    return model->AddFolder(parent, index, NodeTitleFromSpecifics(specifics),
-                            &metainfo, creation_time, guid);
+  switch (specifics.type()) {
+    case sync_pb::BookmarkSpecifics::UNSPECIFIED:
+      NOTREACHED();
+      break;
+    case sync_pb::BookmarkSpecifics::URL: {
+      const bookmarks::BookmarkNode* node =
+          model->AddURL(parent, index, NodeTitleFromSpecifics(specifics),
+                        GURL(specifics.url()), &metainfo, creation_time, guid);
+      SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
+      return node;
+    }
+    case sync_pb::BookmarkSpecifics::FOLDER:
+      return model->AddFolder(parent, index, NodeTitleFromSpecifics(specifics),
+                              &metainfo, creation_time, guid);
   }
 
-  const bookmarks::BookmarkNode* node =
-      model->AddURL(parent, index, NodeTitleFromSpecifics(specifics),
-                    GURL(specifics.url()), &metainfo, creation_time, guid);
-  SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
-
-  return node;
+  NOTREACHED();
+  return nullptr;
 }
 
 void UpdateBookmarkNodeFromSpecifics(
@@ -337,6 +388,23 @@ void UpdateBookmarkNodeFromSpecifics(
   }
 }
 
+sync_pb::BookmarkSpecifics::Type GetProtoTypeFromBookmarkNode(
+    const bookmarks::BookmarkNode* node) {
+  DCHECK(node);
+
+  switch (node->type()) {
+    case bookmarks::BookmarkNode::URL:
+      DCHECK(!node->is_folder());
+      return sync_pb::BookmarkSpecifics::URL;
+    case bookmarks::BookmarkNode::FOLDER:
+    case bookmarks::BookmarkNode::BOOKMARK_BAR:
+    case bookmarks::BookmarkNode::OTHER_NODE:
+    case bookmarks::BookmarkNode::MOBILE:
+      DCHECK(node->is_folder());
+      return sync_pb::BookmarkSpecifics::FOLDER;
+  }
+}
+
 const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
     const bookmarks::BookmarkNode* node,
     const base::GUID& guid,
@@ -353,52 +421,84 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
     new_node = model->AddFolder(
         node->parent(), node->parent()->GetIndexOf(node), node->GetTitle(),
         node->GetMetaInfoMap(), node->date_added(), guid);
+    MoveAllChildren(model, node, new_node);
   } else {
     new_node = model->AddURL(node->parent(), node->parent()->GetIndexOf(node),
                              node->GetTitle(), node->url(),
                              node->GetMetaInfoMap(), node->date_added(), guid);
   }
-  for (size_t i = node->children().size(); i > 0; --i) {
-    model->Move(node->children()[i - 1].get(), new_node, 0);
-  }
+
   model->Remove(node);
 
   return new_node;
 }
 
-bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics,
-                              bool is_folder) {
+bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
   bool is_valid = true;
   if (specifics.ByteSize() == 0) {
     DLOG(ERROR) << "Invalid bookmark: empty specifics.";
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kEmptySpecifics);
     is_valid = false;
   }
-  base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
+  const base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
+
   if (!guid.is_valid()) {
-    DLOG(ERROR) << "Invalid bookmark: invalid GUID in the specifics.";
+    DLOG(ERROR) << "Invalid bookmark: invalid GUID in specifics.";
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidGUID);
     is_valid = false;
+  } else if (guid.AsLowercaseString() ==
+             bookmarks::BookmarkNode::kBannedGuidDueToPastSyncBug) {
+    DLOG(ERROR) << "Invalid bookmark: banned GUID in specifics.";
+    LogInvalidSpecifics(InvalidBookmarkSpecificsError::kBannedGUID);
+    is_valid = false;
   }
-  if (!is_folder) {
-    if (!GURL(specifics.url()).is_valid()) {
-      DLOG(ERROR) << "Invalid bookmark: invalid url in the specifics.";
-      LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidURL);
+  if (specifics.has_parent_guid()) {
+    const base::GUID parent_guid =
+        base::GUID::ParseLowercase(specifics.parent_guid());
+    if (!parent_guid.is_valid()) {
+      DLOG(ERROR) << "Invalid bookmark: invalid parent GUID in specifics.";
+      LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidParentGUID);
       is_valid = false;
     }
-    if (specifics.favicon().empty() && !specifics.icon_url().empty()) {
-      DLOG(ERROR) << "Invalid bookmark: specifics cannot have an icon_url "
-                     "without having a favicon.";
-      LogInvalidSpecifics(
-          InvalidBookmarkSpecificsError::kIconURLWithoutFavicon);
+  }
+
+  switch (specifics.type()) {
+    case sync_pb::BookmarkSpecifics::UNSPECIFIED:
+      // Note that old data doesn't run into this because ModelTypeWorker takes
+      // care of backfilling the field.
+      DLOG(ERROR) << "Invalid bookmark: invalid type in specifics.";
       is_valid = false;
-    }
-    if (!specifics.icon_url().empty() &&
-        !GURL(specifics.icon_url()).is_valid()) {
-      DLOG(ERROR) << "Invalid bookmark: invalid icon_url in specifics.";
-      LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidIconURL);
-      is_valid = false;
-    }
+      break;
+    case sync_pb::BookmarkSpecifics::URL:
+      if (!GURL(specifics.url()).is_valid()) {
+        DLOG(ERROR) << "Invalid bookmark: invalid url in the specifics.";
+        LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidURL);
+        is_valid = false;
+      }
+      if (specifics.favicon().empty() && !specifics.icon_url().empty()) {
+        DLOG(ERROR) << "Invalid bookmark: specifics cannot have an icon_url "
+                       "without having a favicon.";
+        LogInvalidSpecifics(
+            InvalidBookmarkSpecificsError::kIconURLWithoutFavicon);
+        is_valid = false;
+      }
+      if (!specifics.icon_url().empty() &&
+          !GURL(specifics.icon_url()).is_valid()) {
+        DLOG(ERROR) << "Invalid bookmark: invalid icon_url in specifics.";
+        LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidIconURL);
+        is_valid = false;
+      }
+      break;
+    case sync_pb::BookmarkSpecifics::FOLDER:
+      break;
+  }
+
+  if (!syncer::UniquePosition::FromProto(specifics.unique_position())
+           .IsValid()) {
+    // Ignore updates with invalid positions.
+    DLOG(ERROR) << "Invalid bookmark: invalid unique position.";
+    LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidUniquePosition);
+    is_valid = false;
   }
 
   // Verify all keys in meta_info are unique.
@@ -489,7 +589,6 @@ void MaybeFixGuidInSpecificsDueToPastBug(const SyncedBookmarkTracker& tracker,
 
   update_entity->specifics.mutable_bookmark()->set_guid(
       local_guid.AsLowercaseString());
-  update_entity->is_bookmark_guid_in_specifics_preprocessed = true;
 }
 
 }  // namespace sync_bookmarks

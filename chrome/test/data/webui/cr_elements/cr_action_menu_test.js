@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 
-import {AnchorAlignment, ShowAtPositionConfig} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {AnchorAlignment, CrActionMenuElement, ShowAtPositionConfig} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
@@ -13,7 +13,7 @@ import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
-import {eventToPromise, flushTasks} from '../test_util.m.js';
+import {eventToPromise, flushTasks} from '../test_util.js';
 // clang-format on
 
 /**
@@ -576,8 +576,10 @@ suite('CrActionMenu', function() {
     // overridden so that no scrolling happens.
     test('onscreen forces anchor change', function() {
       const rect = dots.getBoundingClientRect();
-      document.body.scrollLeft = rect.right - document.body.clientWidth + 10;
-      document.body.scrollTop = rect.bottom - document.body.clientHeight + 10;
+      document.documentElement.scrollLeft =
+          rect.right - document.documentElement.clientWidth + 10;
+      document.documentElement.scrollTop =
+          rect.bottom - document.documentElement.clientHeight + 10;
 
       menu.showAt(dots, {anchorAlignmentX: AnchorAlignment.AFTER_START});
       const buttonWidth = dots.offsetWidth;
@@ -590,8 +592,8 @@ suite('CrActionMenu', function() {
     });
 
     test('scroll position maintained for showAtPosition', function() {
-      document.body.scrollLeft = 500;
-      document.body.scrollTop = 1000;
+      document.documentElement.scrollLeft = 500;
+      document.documentElement.scrollTop = 1000;
       menu.showAtPosition({top: 50, left: 50});
       assertEquals(550, dialog.offsetLeft);
       assertEquals(1050, dialog.offsetTop);

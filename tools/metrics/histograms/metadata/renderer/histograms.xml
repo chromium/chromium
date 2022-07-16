@@ -1,0 +1,888 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Renderer histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="ProcessLifetimeResolution">
+  <variant name="HighResolution" summary="Tops out at 5 minutes."/>
+  <variant name="LowResolution" summary="Tops out at 24 hours"/>
+</variants>
+
+<variants name="RendererLifetime">
+  <variant name="" summary="Applies to all lifetimes."/>
+  <variant name=".LongLived"
+      summary="Renderer process was alive for more than a minute."/>
+  <variant name=".ShortLived"
+      summary="Renderer process was alive for up to one minute."/>
+</variants>
+
+<histogram name="Renderer.CompositedScrolling" enum="CompositedScrolling"
+    expires_after="M85">
+  <obsolete>
+    Expired in M86.
+  </obsolete>
+  <owner>hartmanng@chromium.org</owner>
+  <summary>
+    Total count of the number of RenderLayers which are scrollable areas, need
+    to be promoted to stacking containers, and will use composited scrolling.
+    Each bucket is sampled at most once per RenderLayer, when the RenderLayer
+    first becomes scrollable, first needs to become a stacking container, and
+    first uses composited scrolling, respectively.
+  </summary>
+</histogram>
+
+<histogram
+    name="Renderer.DelegatedInkTrail.LatencyImprovement.{Renderer}.{Prediction}"
+    units="ms" expires_after="M108">
+  <owner>jonross@chromium.org</owner>
+  <owner>joalmei@microsoft.com</owner>
+  <summary>
+    The latency improvement provided by the delegated ink trail API, both with
+    and without prediction, in milliseconds. This latency improvement is the
+    difference between the timestamp of the pointerevent provided to the API,
+    and the final point of the trail that is drawn. Points are forwarded from
+    the browser to viz when this API is being used, so viz will have points
+    ahead of what the app provided the API, and they are used to draw the trail.
+  </summary>
+  <token key="Renderer">
+    <variant name="Skia"/>
+  </token>
+  <token key="Prediction">
+    <variant name="WithoutPrediction"/>
+    <variant name="WithPrediction"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Renderer.DelegatedInkTrail.LatencyImprovementWithPrediction.Experiment{Number}"
+    units="ms" expires_after="M108">
+  <owner>jonross@chromium.org</owner>
+  <owner>joalmei@microsoft.com</owner>
+  <summary>
+    The latency improvement provided by predicting extra delegated ink points
+    when using the delegated ink trail API with SkiaRenderer in milliseconds.
+    The improvement is the difference between the timestamp of the final real
+    point and the final predicted point.
+
+    Part of a series of predicted point experimentation histograms. This
+    experiment predicts {Number} in the future.
+  </summary>
+  <token key="Number">
+    <variant name="0" summary="1 predicted point, 12ms"/>
+    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
+    <variant name="2" summary="1 predicted point, 6ms"/>
+    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
+  </token>
+</histogram>
+
+<histogram name="Renderer.DelegatedInkTrail.Prediction.WrongDirection"
+    enum="BooleanDirection" expires_after="M108">
+  <owner>jonross@chromium.org</owner>
+  <owner>joalmei@microsoft.com</owner>
+  <summary>
+    Boolean that indicates whether the prediction is in the same direction as
+    the real trajectory at the same prediction time. True means the direction is
+    not the same (wrong direction).
+
+    Temporarily not logged in favor of
+    Renderer.DelegatedInkTrail.PredictionExperiment*.WrongDirection since 02-26.
+    Will be reenabled in M95, after experimentation.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.DelegatedInkTrail.Prediction.{Direction}Prediction"
+    units="pixels" expires_after="M108">
+  <owner>jonross@chromium.org</owner>
+  <owner>joalmei@microsoft.com</owner>
+  <summary>
+    {Direction}shoot distance in pixels between a predicted point and the
+    corresponding interpolated real point that occurred at the prediction time.
+
+    Temporarily not logged in favor of
+    Renderer.DelegatedInkTrail.PredictionExperiment*.{Direction}Prediction since
+    02-26. Will be reenabled in M95, after experimentation.
+  </summary>
+  <token key="Direction">
+    <variant name="Over"/>
+    <variant name="Under"/>
+  </token>
+</histogram>
+
+<histogram name="Renderer.DelegatedInkTrail.Prediction.{Type}Jitter"
+    units="pixels" expires_after="M108">
+  <owner>jonross@chromium.org</owner>
+  <owner>joalmei@microsoft.com</owner>
+  <summary>
+    Euclidean distance in pixels between two successive variations of delegated
+    ink trail deltas which are the difference beween a predicted delegated ink
+    point and its corresponding interpolated real position that occurred at
+    {Type} time.
+
+    Temporarily not logged in favor of
+    Renderer.DelegatedInkTrail.PredictionExperiment*.{Type}Jitter since 02-26.
+    Will be reenabled in M95, after experimentation.
+  </summary>
+  <token key="Type">
+    <variant name="Prediction" summary="prediction"/>
+    <variant name="Visual" summary="frame"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.Frame{ScoreType}"
+    units="pixels" expires_after="M108">
+  <owner>jonross@chromium.org</owner>
+  <owner>joalmei@microsoft.com</owner>
+  <summary>
+    Distance in pixels between a predicted point and the corresponding
+    interpolated real point that occurred at the prediction time.
+
+    The difference between {ScoreType} and Frame{ScoreType} is that the former
+    uses prediction time and the later uses frame time.
+
+    Part of a series of predicted point experimentation histograms. This
+    experiment predicts {Number} in the future.
+  </summary>
+  <token key="Number">
+    <variant name="0" summary="1 predicted point, 12ms"/>
+    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
+    <variant name="2" summary="1 predicted point, 6ms"/>
+    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
+  </token>
+  <token key="ScoreType">
+    <variant name="OverPrediction" summary="Positive score values"/>
+    <variant name="PredictionScore" summary="Score abolute value"/>
+    <variant name="UnderPrediction" summary="Negative score values"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.WrongDirection"
+    enum="BooleanDirection" expires_after="M108">
+  <owner>jonross@chromium.org</owner>
+  <owner>joalmei@microsoft.com</owner>
+  <summary>
+    Whether the prediction is in the same direction as the real trajectory at
+    the same prediction time.
+
+    Part of a series of predicted point experimentation histograms. This
+    experiment predicts {Number} in the future.
+  </summary>
+  <token key="Number">
+    <variant name="0" summary="1 predicted point, 12ms"/>
+    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
+    <variant name="2" summary="1 predicted point, 6ms"/>
+    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.{ScoreType}"
+    units="pixels" expires_after="M108">
+  <owner>jonross@chromium.org</owner>
+  <owner>joalmei@microsoft.com</owner>
+  <summary>
+    Distance in pixels between a predicted point and the corresponding
+    interpolated real point that occurred at the prediction time.
+
+    Part of a series of predicted point experimentation histograms. This
+    experiment predicts {Number} in the future.
+  </summary>
+  <token key="Number">
+    <variant name="0" summary="1 predicted point, 12ms"/>
+    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
+    <variant name="2" summary="1 predicted point, 6ms"/>
+    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
+  </token>
+  <token key="ScoreType">
+    <variant name="OverPrediction" summary="Positive score values"/>
+    <variant name="PredictionScore" summary="Score abolute value"/>
+    <variant name="UnderPrediction" summary="Negative score values"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.{Type}Jitter"
+    units="pixels" expires_after="M108">
+  <owner>jonross@chromium.org</owner>
+  <owner>joalmei@microsoft.com</owner>
+  <summary>
+    Euclidean distance in pixels between two successive variations of delegated
+    ink trail deltas which are the difference beween a predicted delegated ink
+    point and its corresponding interpolated real position that occurred at
+    {Type} time.
+
+    Part of a series of predicted point experimentation histograms. This
+    experiment predicts {Number} in the future.
+  </summary>
+  <token key="Number">
+    <variant name="0" summary="1 predicted point, 12ms"/>
+    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
+    <variant name="2" summary="1 predicted point, 6ms"/>
+    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
+  </token>
+  <token key="Type">
+    <variant name="Prediction" summary="prediction"/>
+    <variant name="Visual" summary="frame"/>
+  </token>
+</histogram>
+
+<histogram name="Renderer.Font.PrimaryFont.DomContentLoaded" units="ms"
+    expires_after="2022-04-24">
+  <owner>kojii@chromium.org</owner>
+  <owner>tkent@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time spent acquiring the primary font consumed in the main tread before
+    DomContentLoaded. On Windows, this includes IPC roundtrip to browser process
+    and DirectWriteFontProxy and DirectWrite calls.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Font.PrimaryFont.DomContentLoaded.Style" units="ms"
+    expires_after="2022-05-01">
+  <owner>kojii@chromium.org</owner>
+  <owner>tkent@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time spent acquiring the primary font consumed in style recalc, in the
+    main tread before DomContentLoaded. On Windows, this includes IPC roundtrip
+    to browser process and DirectWriteFontProxy and DirectWrite calls.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Font.PrimaryFont.FCP" units="ms"
+    expires_after="2022-04-03">
+  <owner>kojii@chromium.org</owner>
+  <owner>tkent@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time spent acquiring the primary font consumed in the main tread before
+    FCP. On Windows, this includes IPC roundtrip to browser process and
+    DirectWriteFontProxy and DirectWrite calls.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Font.PrimaryFont.FCP.Style" units="ms"
+    expires_after="2022-04-03">
+  <owner>kojii@chromium.org</owner>
+  <owner>tkent@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time spent acquiring the primary font consumed in style recalc, in the
+    main tread before FCP. On Windows, this includes IPC roundtrip to browser
+    process and DirectWriteFontProxy and DirectWrite calls.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Font.Shaping.DomContentLoaded" units="ms"
+    expires_after="2022-04-18">
+  <owner>tkent@chromium.org</owner>
+  <owner>kojii@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time spent shaping font before DOMContentLoaded event. This would be
+    helpful for evaluating performance of the &quot;deferred shaping&quot;
+    feature.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Font.Shaping.FCP" units="ms"
+    expires_after="2022-04-18">
+  <owner>tkent@chromium.org</owner>
+  <owner>kojii@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time spent shaping font before FCP. This would be helpful for evaluating
+    performance of the &quot;deferred shaping&quot; feature.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Font.SystemFallback.DomContentLoaded" units="ms"
+    expires_after="2022-01-31">
+  <owner>kojii@chromium.org</owner>
+  <owner>tkent@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time spent finding the system fallback font consumed in the main tread
+    before DomContentLoaded. On Windows, this includes IPC roundtrip to browser
+    process and DirectWriteFontProxy and DirectWrite calls.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Font.SystemFallback.FCP" units="ms"
+    expires_after="2022-04-10">
+  <owner>kojii@chromium.org</owner>
+  <owner>tkent@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time spent finding the system fallback font consumed in the main tread
+    before FCP. On Windows, this includes IPC roundtrip to browser process and
+    DirectWriteFontProxy and DirectWrite calls.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Hung.Duration" units="ms" expires_after="M85">
+  <obsolete>
+    Expired in M85, removed in M88.
+  </obsolete>
+  <owner>avi@chromium.org</owner>
+  <summary>
+    The length of time render processes are hung, in milliseconds. Note that
+    because technically speaking render processes are &quot;hung&quot; from the
+    moment an input event is sent to them until the moment that they return an
+    ACK, only hangs of minimum length 5s are recorded. Note that this combines
+    measurements from both renderer processes that recover on their own, and
+    render processes that are killed.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Hung.MobileInfoBar.UserEvent"
+    enum="MobileHungRendererInfoBarEvent" expires_after="M85">
+  <owner>dfalcantara@chromium.org</owner>
+  <summary>
+    Android: Records the terminal event associated with a hung renderer infobar.
+    This includes both the explicit user actions as well as implicit dismissals,
+    e.g., when the renderer regains responsiveness before the infobar is
+    interactively dismissed.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.OnReceiveResponseToOnStartLoadingResponseBody"
+    units="ms" expires_after="M85">
+  <obsolete>
+    Removed September 2021.
+  </obsolete>
+  <owner>falken@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Time between the two messages OnReceiveResponse and
+    OnStartLoadingResponseBody as observed by the renderer process in
+    URLLoaderClientImpl. The idea is to see whether there is a performance cost
+    in having two separate messages, as the plan is to combine them into one.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.PaintPreview.Capture.MainFrameBlinkCaptureDuration"
+    units="ms" expires_after="2022-04-10">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>mahmoudi@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    Records the number of milliseconds spent blocking Blink's main thread while
+    capturing the main frame.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.PaintPreview.Capture.MainFrameSuccess"
+    enum="BooleanSuccess" expires_after="2022-01-02">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>mahmoudi@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    Records a boolean indicating whether a capture for the main frame succeeded.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.PaintPreview.Capture.SubframeBlinkCaptureDuration"
+    units="ms" expires_after="2022-05-08">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>mahmoudi@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    Records the number of milliseconds spent blocking Blink's main thread while
+    capturing a subframe.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.PaintPreview.Capture.SubframeSuccess"
+    enum="BooleanSuccess" expires_after="2022-04-24">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>mahmoudi@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    Records a boolean indicating whether a capture for a subframe succeeded.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.ProcessLifetime.{Resolution}" units="ms"
+    expires_after="2021-08-29">
+  <obsolete>
+    Replaced by Renderer.ProcessLifetime2* in 06/2021 because the metric was not
+    specific to renderer processes.
+  </obsolete>
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The total time for which a renderer process was live. Recorded when the
+    browser identifies the process as having gone away.
+  </summary>
+  <token key="Resolution" variants="ProcessLifetimeResolution"/>
+</histogram>
+
+<histogram name="Renderer.ProcessLifetime2.{Resolution}" units="ms"
+    expires_after="2022-02-28">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The total time for which a renderer process was live. Recorded when the
+    browser identifies the process as having gone away.
+  </summary>
+  <token key="Resolution" variants="ProcessLifetimeResolution"/>
+</histogram>
+
+<histogram name="Renderer.TotalCPUUse2{Lifetime}" units="ms"
+    expires_after="2022-05-06">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Total CPU utilization of a renderer, read just before the process is about
+    to go away. Total CPU time can exceed the total process lifetime. This is
+    because CPU use of N seconds can be spread out over M threads. Example: A
+    Renderer having 4 threads active for a period of 1 minute in parallel will
+    use 4 minutes of CPU time. Not recorded on Android.
+  </summary>
+  <token key="Lifetime" variants="RendererLifetime"/>
+</histogram>
+
+<histogram name="Renderer.TotalCPUUse{Lifetime}" units="ms"
+    expires_after="2022-05-06">
+  <obsolete>
+    Replaced by Renderer.TotalCPUUse2* in 06/2021 because the metric was not
+    specific to renderer processes.
+  </obsolete>
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Total CPU utilization of a renderer, read just before the process is about
+    to go away. Total CPU time can exceed the total process lifetime. This is
+    because CPU use of N seconds can be spread out over M threads. Example: A
+    Renderer having 4 threads active for a period of 1 minute in parallel will
+    use 4 minutes of CPU time. Not recorded on Android.
+  </summary>
+  <token key="Lifetime" variants="RendererLifetime"/>
+</histogram>
+
+<histogram name="Renderer.ViewportZoomBugCount" enum="BooleanHit"
+    expires_after="M77">
+  <owner>kkhorimoto@chromium.org</owner>
+  <summary>
+    [iOS] A boolean that is used to indicate that the WebKit rendering bug in
+    http://crbug.com/583231 has occurred. This occurs when a page with no
+    viewport tag is rendered with an unusable zoom scale. Only logged on iOS.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.IPC.FrameVisibility" enum="Boolean"
+    expires_after="M85">
+  <owner>altimin@chromium.org</owner>
+  <owner>lpy@chromium.org</owner>
+  <summary>
+    This boolean keeps track the count of the visibility change of a frame.
+    Recorded every time when the visibility of a frame is changed.
+  </summary>
+</histogram>
+
+<histogram base="true" name="RendererScheduler.QueueingDurationPerQueueType"
+    units="ms" expires_after="2021-10-10">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+<!-- Name completed by histogram_suffixes name="RendererScheduler.QueueType" -->
+
+  <owner>kdillon@chromium.org</owner>
+  <owner>shaseley@chromium.org</owner>
+  <summary>
+    Tracks the queueing time of tasks on the main thread of the renderer broken
+    down by queue type. Reported when the task is completed.
+
+    Note that this metric is only recorded when a renderer is not backgrounded.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.RendererMainThreadLoad5" units="%"
+    expires_after="2022-04-17">
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Renderer main thread load (percentage of time spent in tasks), reported in
+    one second chunks.
+
+    See http://bit.ly/chromium-renderer-main-thread-load-metric for details.
+
+    This metric is emitted when the renderer main thread task is completed or
+    renderer is backgrounded or foregrounded, at most once per second per
+    renderer amortized.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.ResourceLoadingTaskCountPerNetPriority"
+    enum="NetRequestPriority" expires_after="M77">
+  <owner>farahcharab@chromium.org</owner>
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Used to track the number of resource loading tasks split by net priority.
+    Recorded each time the resource's request priority is changed.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.ResourceLoadingTaskCountPerPriority"
+    enum="TaskQueuePriority" expires_after="M77">
+  <owner>farahcharab@chromium.org</owner>
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Used to track the number of resource loading tasks split by execution
+    priority. Recorded each time a task is executed.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.TaskCountPerFrameType"
+    enum="RendererSchedulerFrameType2" expires_after="M85">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    The number of completed renderer tasks split per frame type. Used to monitor
+    usage of each type of frame. Reported each time when task is completed.
+
+    Note that this metric discards tasks longer than 30 seconds because they are
+    considered to be a result of measurement glitch.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.TaskCountPerFrameType.HasSafePoint"
+    enum="RendererSchedulerFrameType2" expires_after="2021-04-01">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
+  <owner>altimin@chromium.org</owner>
+  <owner>tasak@google.com</owner>
+  <summary>
+    The number of completed renderer tasks which have safepoints, split per
+    frame type. Used to monitor usage of each type of frame. Reported each time
+    when task is completed.
+
+    Note that this metric discards tasks longer than 30 seconds because they are
+    considered to be a result of measurement glitch.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.TaskCountPerQueueType"
+    enum="RendererSchedulerTaskQueueType" expires_after="M77">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    The number of completed renderer tasks split per task queue type. Used to
+    monitor usage of each type of task queue. Reported each time when task is
+    completed.
+
+    Note that this metric discards tasks longer than 30 seconds because they are
+    considered to be a result of measurement glitch.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.TaskCPUDurationPerTaskType2.DedicatedWorker"
+    enum="RendererSchedulerTaskType" expires_after="M85">
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Total duration (reported in full seconds) of dedicated worker tasks (thread
+    time) split by per thread type. Note that partial seconds are rounded
+    up/down so that they average to the correct value when many reports are
+    added. For more details, check base::ScaledLinearHistogram.
+
+    This is reported each time a task is completed.
+
+    Note that this metric discards tasks longer than 30 seconds because they are
+    considered to be a result of measurement glitch.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.TaskCPUDurationPerThreadType2"
+    enum="RendererSchedulerThreadType" expires_after="M85">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Total cpu time (reported in full seconds) of renderer tasks split by per
+    thread type. Note that partial seconds are rounded up/down so that they
+    average to the correct value when many reports are added. For more details,
+    check base::ScaledLinearHistogram.
+
+    Wall time is tracked by RendererScheduler.TaskDurationPerThreadType
+    histogram. This histogram is used to compare CPU usage of tasks from
+    different threads.
+
+    Only 1% of randomly sampled tasks have cpu time measured and report duration
+    for this histogram.
+
+    Note that this metric discards tasks longer than 30 seconds because they are
+    considered to be a result of measurement glitch.
+  </summary>
+</histogram>
+
+<histogram base="true" name="RendererScheduler.TaskDurationPerFrameOriginType2"
+    enum="RendererSchedulerFrameOriginType" expires_after="M85">
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Total cpu time (reported in full seconds) of renderer tasks split by per
+    frame origin type (main frame vs same-origin frame vs cross-origin frame).
+    Note that partial seconds are rounded up/down so that they average to the
+    correct value when many reports are added. For more details, check
+    base::ScaledLinearHistogram.
+
+    Note that this metric discards tasks longer than 30 seconds because they are
+    considered to be a result of measurement glitch.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.TaskDurationPerFrameType3"
+    enum="RendererSchedulerFrameType2" expires_after="M85">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Total duration (reported in full seconds) of renderer per-frame tasks split
+    per frame type. Note that partial seconds are rounded up/down so that they
+    average to the correct value when many reports are added. For more details,
+    check base::ScaledLinearHistogram.
+
+    Used to monitor workload coming from different frames. Reported each time a
+    task is completed.
+
+    This metric is susceptible to problematic outliers and should be analyzed
+    with custom scripts accounting for that rather than from a dashboard.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.TaskDurationPerQueueType3"
+    enum="RendererSchedulerTaskQueueType" expires_after="M85">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>altimin@chromium.org</owner>
+  <owner>scheduler-dev@chromium.org</owner>
+  <summary>
+    Total duration (reported in full seconds) of renderer tasks split per task
+    queue type. Note that partial seconds are rounded up/down so that they
+    average to the correct value when many reports are added. For more details,
+    check base::ScaledLinearHistogram.
+
+    Used to monitor usage of each type of task queues. Reported each time a task
+    is completed.
+
+    This metric is susceptible to problematic outliers and should be analyzed
+    with custom scripts accounting for that rather than from a dashboard.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.TaskDurationPerTaskType2"
+    enum="RendererSchedulerTaskType" expires_after="2021-12-12">
+  <owner>altimin@chromium.org</owner>
+  <owner>hajimehoshi@chromium.org</owner>
+  <summary>
+    Total duration (reported in full seconds) of renderer per-frame tasks split
+    per task type. Note that partial seconds are rounded up/down so that they
+    average to the correct value when many reports are added. For more details,
+    check base::ScaledLinearHistogram.
+
+    Used to monitor usage of each task type. Reported each time a task is
+    completed.
+
+    This metric is susceptible to problematic outliers and should be analyzed
+    with custom scripts accounting for that rather than from a dashboard.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.TaskDurationPerTaskType2.DedicatedWorker"
+    enum="RendererSchedulerTaskType" expires_after="M77">
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Total duration (repored in full seconds) of dedicated worker tasks (wall
+    time) split by per thread type. Note that partial seconds are rounded
+    up/down so that they average to the correct value when many reports are
+    added. For more details, check base::ScaledLinearHistogram.
+
+    Reported each time a task is completed.
+
+    Note that this metric discards tasks longer than 30 seconds because they are
+    considered to be a result of measurement glitch.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.TaskDurationPerThreadType2"
+    enum="RendererSchedulerThreadType" expires_after="M85">
+  <owner>altimin@chromium.org</owner>
+  <owner>lpy@chromium.org</owner>
+  <summary>
+    Total duration (reported in full seconds) of renderer tasks split by per
+    thread type. Note that partial seconds are rounded up/down so that they
+    average to the correct value when many reports are added. For more details,
+    check base::ScaledLinearHistogram.
+
+    Used to compare CPU usage of tasks from different threads. Reported each
+    time a task is completed.
+
+    Note that this metric discards tasks longer than 30 seconds because they are
+    considered to be a result of measurement glitch.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.TaskDurationPerUseCase2"
+    enum="RendererSchedulerTaskUseCase" expires_after="M77">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>altimin@chromium.org</owner>
+  <owner>farahcharab@chromium.org</owner>
+  <summary>
+    Total duration (reported in full seconds) of renderer main thread tasks
+    split by scheduler use case. Note that partial seconds are rounded up/down
+    so that they average to the correct value when many reports are added. For
+    more details, check base::ScaledLinearHistogram.
+
+    Use case is a scheduler's educated guess of the current state of the world.
+    See renderer/use_case.h and
+
+    RendererSchedulerImpl::UpdatePolicy for more details.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.TasksWithSafepoints.SafepointCount"
+    units="count" expires_after="2021-04-01">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
+  <owner>tasak@google.com</owner>
+  <owner>keishi@chromium.org</owner>
+  <summary>
+    Number of safepoints (defined by cooperative scheduling manager) inside a
+    single non-nested task executed on the main thread of a renderer process.
+    This is recorded when each non-nested task stops executing.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.TasksWithSafepoints.TaskSliceTime"
+    units="ms" expires_after="2021-04-01">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
+  <owner>tasak@google.com</owner>
+  <owner>keishi@chromium.org</owner>
+  <summary>
+    The duration of every task slices. The non-nested task executed in main
+    thread of the renderer process scheduler is split into slices by the
+    safepoints defined by cooperative scheduling manager. This metrics doesn't
+    record the duration of task without any safepoints. This is recorded both
+    inside a safepoint and when the tasak finishes.
+
+    Note that this metric discards tasks longer than 30 seconds because they are
+    considered to be a result of measurement glitch.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.TasksWithSafepoints.TaskTime"
+    units="microseconds" expires_after="2021-04-01">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
+  <owner>tasak@google.com</owner>
+  <owner>keishi@chromium.org</owner>
+  <summary>
+    The duration of every non-nested task executed in main thread of the
+    renderer process which has more than one safepoint. This is recorded when
+    the task finishes.
+
+    Note that this metric discards tasks longer than 30 seconds because they are
+    considered to be a result of measurement glitch.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.TaskTime2" units="microseconds"
+    expires_after="never">
+  <owner>sunyunjia@chromium.org</owner>
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    The duration of every task queued in the _renderer_ scheduler to see the
+    distribution of the task duration.
+
+    Note that this metric discards tasks longer than 30 seconds because they are
+    considered to be a result of measurement glitch.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.UpdateForSameDocumentNavigationCount"
+    enum="SinglePageAppNavigationType" expires_after="M85">
+  <owner>npm@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The count of same-document-navigations split by whether it is the
+    same-document backward/forward navigation, history API navigation, or other
+    fragment navigation.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.WebFramesPerScheduler" units="web frames"
+    expires_after="M77">
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Number of web frame schedulers per renderer scheduler. Recorded once per
+    navigation.
+  </summary>
+</histogram>
+
+<histogram name="RendererScheduler.WebViewsPerScheduler" units="web views"
+    expires_after="M77">
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Number of web view schedulers per renderer scheduler. Recorded once per
+    navigation.
+  </summary>
+</histogram>
+
+<histogram name="RendererSyncIPC.ElapsedTime" units="ms" expires_after="M85">
+  <owner>ppi@chromium.org</owner>
+  <summary>
+    Roundtrip times for synchronous IPC calls from the renderer to browser.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

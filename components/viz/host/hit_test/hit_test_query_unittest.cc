@@ -15,6 +15,10 @@ namespace test {
 class HitTestQueryTest : public testing::Test {
  public:
   HitTestQueryTest() = default;
+
+  HitTestQueryTest(const HitTestQueryTest&) = delete;
+  HitTestQueryTest& operator=(const HitTestQueryTest&) = delete;
+
   ~HitTestQueryTest() override = default;
 
   void SendHitTestData() {
@@ -28,8 +32,6 @@ class HitTestQueryTest : public testing::Test {
 
  private:
   HitTestQuery hit_test_query_;
-
-  DISALLOW_COPY_AND_ASSIGN(HitTestQueryTest);
 };
 
 // One surface.

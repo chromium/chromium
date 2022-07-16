@@ -28,10 +28,6 @@ PasswordForm CreateForm(base::StringPiece signon_realm,
   form.signon_realm = std::string(signon_realm);
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   return form;
 }
 
@@ -84,7 +80,7 @@ TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForTheRightFormAdd) {
       CreateForm("http://example.com", u"username2"),
   };
   PasswordForm expected_form = forms[0];
-  expected_form.password_issues.value()[InsecureType::kPhished] =
+  expected_form.password_issues[InsecureType::kPhished] =
       InsecurityMetadata(base::Time::Now(), IsMuted(false));
   ExpectGetLogins("http://example.com");
   AddPhishedCredentials(store(),
@@ -98,7 +94,7 @@ TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForTheRightFormRemove) {
       CreateForm("http://example.com", u"username1"),
       CreateForm("http://example.com", u"username2"),
   };
-  forms.at(0).password_issues.value()[InsecureType::kPhished] =
+  forms.at(0).password_issues[InsecureType::kPhished] =
       InsecurityMetadata(base::Time::Now(), IsMuted(false));
 
   ExpectGetLogins("http://example.com");
@@ -117,9 +113,9 @@ TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForAllMatchingFormsAdd) {
   ExpectGetLogins("http://example.com");
   AddPhishedCredentials(store(),
                         MakeCredential("http://example.com", u"username"));
-  forms.at(0).password_issues.value()[InsecureType::kPhished] =
+  forms.at(0).password_issues[InsecureType::kPhished] =
       InsecurityMetadata(base::Time::Now(), IsMuted(false));
-  forms.at(1).password_issues.value()[InsecureType::kPhished] =
+  forms.at(1).password_issues[InsecureType::kPhished] =
       InsecurityMetadata(base::Time::Now(), IsMuted(false));
   EXPECT_CALL(*store(), UpdateLogin(forms[1]));
   EXPECT_CALL(*store(), UpdateLogin(forms[0]));
@@ -138,10 +134,8 @@ TEST_F(InsecureCredentialsHelperTest,
   ExpectGetLogins("http://example.com");
   RemovePhishedCredentials(store(),
                            MakeCredential("http://example.com", u"username"));
-  forms.at(0).password_issues.value()[InsecureType::kPhished] =
-      InsecurityMetadata();
-  forms.at(1).password_issues.value()[InsecureType::kPhished] =
-      InsecurityMetadata();
+  forms.at(0).password_issues[InsecureType::kPhished] = InsecurityMetadata();
+  forms.at(1).password_issues[InsecureType::kPhished] = InsecurityMetadata();
   EXPECT_CALL(*store(), UpdateLogin(CreateForm("http://example.com",
                                                u"username", u"password2")));
   EXPECT_CALL(*store(), UpdateLogin(CreateForm("http://example.com",
@@ -159,8 +153,7 @@ TEST_F(InsecureCredentialsHelperTest,
   ExpectGetLogins("http://example.com");
   AddPhishedCredentials(store(),
                         MakeCredential("http://example.com", u"username1"));
-  forms.at(0).password_issues.value()[InsecureType::kPhished] =
-      InsecurityMetadata();
+  forms.at(0).password_issues[InsecureType::kPhished] = InsecurityMetadata();
   EXPECT_CALL(*store(), UpdateLogin).Times(0);
   SimulateStoreRepliedWithResults(forms);
 }

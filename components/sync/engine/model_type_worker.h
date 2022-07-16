@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -28,7 +27,10 @@
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/update_handler.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+
+namespace sync_pb {
+class SyncEntity;
+}
 
 namespace syncer {
 
@@ -84,6 +86,10 @@ class ModelTypeWorker : public UpdateHandler,
                   PassphraseType passphrase_type,
                   NudgeHandler* nudge_handler,
                   CancelationSignal* cancelation_signal);
+
+  ModelTypeWorker(const ModelTypeWorker&) = delete;
+  ModelTypeWorker& operator=(const ModelTypeWorker&) = delete;
+
   ~ModelTypeWorker() override;
 
   // Public for testing.
@@ -150,8 +156,8 @@ class ModelTypeWorker : public UpdateHandler,
 
   bool HasLocalChangesForTest() const;
 
-  void SetMinGuResponsesToIgnoreKeyForTest(int min_gu_responses_to_ignore_key) {
-    min_gu_responses_to_ignore_key_ = min_gu_responses_to_ignore_key;
+  void SetMinGetUpdatesToIgnoreKeyForTest(int min_get_updates_to_ignore_key) {
+    min_get_updates_to_ignore_key_ = min_get_updates_to_ignore_key;
   }
 
   bool IsEncryptionEnabledForTest() const { return encryption_enabled_; }
@@ -160,7 +166,7 @@ class ModelTypeWorker : public UpdateHandler,
   struct UnknownEncryptionKeyInfo {
     // Not increased if the cryptographer knows it's in a pending state
     // (cf. Cryptographer::CanEncrypt()).
-    int gu_responses_while_should_have_been_known = 0;
+    int get_updates_while_should_have_been_known = 0;
   };
 
   // Sends |pending_updates_| and |model_type_state_| to the processor if there
@@ -223,7 +229,7 @@ class ModelTypeWorker : public UpdateHandler,
 
   // Returns true for keys that have remained unknown for so long that they are
   // not expected to arrive anytime soon. The worker ignores incoming updates
-  // encrypted with them, and drops pending ones on the next GetUpdatesResponse.
+  // encrypted with them, and drops pending ones on the next GetUpdates.
   // Those keys remain in |unknown_encryption_keys_by_name_|.
   bool ShouldIgnoreUpdatesEncryptedWith(const std::string& key_name);
 
@@ -283,15 +289,13 @@ class ModelTypeWorker : public UpdateHandler,
   HasLocalChangesState has_local_changes_state_ = kNoNudgedLocalChanges;
 
   // Remains constant in production code. Can be overridden in tests.
-  // |UnknownEncryptionKeyInfo::gu_responses_while_should_have_been_known| must
+  // |UnknownEncryptionKeyInfo::get_updates_while_should_have_been_known| must
   // be above this value before updates encrypted with the key are ignored.
-  int min_gu_responses_to_ignore_key_;
+  int min_get_updates_to_ignore_key_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ModelTypeWorker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModelTypeWorker);
 };
 
 // GetLocalChangesRequest is a container for GetLocalChanges call response. It
@@ -314,6 +318,9 @@ class GetLocalChangesRequest
       public CancelationSignal::Observer {
  public:
   explicit GetLocalChangesRequest(CancelationSignal* cancelation_signal);
+
+  GetLocalChangesRequest(const GetLocalChangesRequest&) = delete;
+  GetLocalChangesRequest& operator=(const GetLocalChangesRequest&) = delete;
 
   // CancelationSignal::Observer implementation.
   void OnCancelationSignalReceived() override;
@@ -341,8 +348,6 @@ class GetLocalChangesRequest
   CancelationSignal* cancelation_signal_;
   base::WaitableEvent response_accepted_;
   CommitRequestDataList response_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetLocalChangesRequest);
 };
 
 }  // namespace syncer

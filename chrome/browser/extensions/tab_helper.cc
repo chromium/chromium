@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -28,7 +27,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -83,76 +82,6 @@ namespace {
 
 // User data key for caching if bfcache is disabled.
 const char kIsBFCacheDisabledKey[] = "extensions.backforward.browsercontext";
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ExtensionPermissionsOnLoad {
-  kTotal,
-  kContentScriptAccess,
-  kPageAccess,
-  kWebNavigation,
-  kWebRequest,
-  kDeclarativeNetRequest,
-  kHistory,
-  kMaxValue = kHistory
-};
-
-void RecordPermission(ExtensionPermissionsOnLoad permission) {
-  UMA_HISTOGRAM_ENUMERATION("Extensions.Navigation.Permissions", permission);
-}
-
-// Record permissions for features that may be influence by BFCache shipping.
-// Details in
-// https://docs.google.com/document/d/11rdAEFyS1DEky_LRE_SfthHZHZa2DtC156U-ZK1zyQk/edit#heading=h.h3agt9njihgd
-void RecordExtensionPermissionsPerNavigation(
-    const ExtensionSet& enabled_extensions,
-    content::BrowserContext* context,
-    int tab_id,
-    const GURL& url) {
-  // This is just the set of permissions we want to look for.
-  const std::pair<mojom::APIPermissionID, ExtensionPermissionsOnLoad>
-      kPermissions[] = {{mojom::APIPermissionID::kWebNavigation,
-                         ExtensionPermissionsOnLoad::kWebNavigation},
-                        {mojom::APIPermissionID::kHistory,
-                         ExtensionPermissionsOnLoad::kHistory},
-                        {mojom::APIPermissionID::kWebRequest,
-                         ExtensionPermissionsOnLoad::kWebRequest},
-                        {mojom::APIPermissionID::kWebRequestBlocking,
-                         ExtensionPermissionsOnLoad::kWebRequest},
-                        {mojom::APIPermissionID::kDeclarativeNetRequest,
-                         ExtensionPermissionsOnLoad::kDeclarativeNetRequest}};
-
-  // We put the values into a set so we only will count them once for a set of
-  // extensions per navigation.
-  std::set<ExtensionPermissionsOnLoad> permissions_discovered;
-
-  for (const auto& extension : enabled_extensions) {
-    if (util::IsExtensionVisibleToContext(*extension, context)) {
-      // Determine if the extension can access the page.
-      if (extension->permissions_data()->GetContentScriptAccess(
-              url, tab_id, nullptr) == PermissionsData::PageAccess::kAllowed) {
-        permissions_discovered.insert(
-            ExtensionPermissionsOnLoad::kContentScriptAccess);
-      }
-      if (extension->permissions_data()->GetPageAccess(url, tab_id, nullptr) ==
-          PermissionsData::PageAccess::kAllowed) {
-        permissions_discovered.insert(ExtensionPermissionsOnLoad::kPageAccess);
-      }
-
-      for (auto permission : kPermissions) {
-        if (extension->permissions_data()->HasAPIPermission(permission.first)) {
-          permissions_discovered.insert(permission.second);
-        }
-      }
-    }
-  }
-
-  for (auto permission : permissions_discovered) {
-    RecordPermission(permission);
-  }
-  // kTotal is used as the total navigations denominator.
-  RecordPermission(ExtensionPermissionsOnLoad::kTotal);
-}
 
 bool AreAllExtensionsAllowedForBFCache() {
   // If back forward cache is disabled, indicate we accept everything.
@@ -382,11 +311,6 @@ void TabHelper::DidFinishNavigation(
   ExtensionRegistry* registry = ExtensionRegistry::Get(context);
   const ExtensionSet& enabled_extensions = registry->enabled_extensions();
 
-  RecordExtensionPermissionsPerNavigation(
-      enabled_extensions, context,
-      sessions::SessionTabHelper::IdForTab(web_contents()).id(),
-      navigation_handle->GetURL());
-
   DisableBackForwardCacheIfNecessary(enabled_extensions, context,
                                      navigation_handle);
 
@@ -517,6 +441,6 @@ void TabHelper::SetTabId(content::RenderFrameHost* render_frame_host) {
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabHelper);
 
 }  // namespace extensions

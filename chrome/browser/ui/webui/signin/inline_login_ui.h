@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_UI_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
@@ -15,11 +14,14 @@
 class InlineLoginUI : public ui::WebDialogUI {
  public:
   explicit InlineLoginUI(content::WebUI* web_ui);
+
+  InlineLoginUI(const InlineLoginUI&) = delete;
+  InlineLoginUI& operator=(const InlineLoginUI&) = delete;
+
   ~InlineLoginUI() override;
 
  private:
   base::WeakPtrFactory<InlineLoginUI> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(InlineLoginUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_UI_H_

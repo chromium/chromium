@@ -22,6 +22,11 @@ class ScreenCaptureInfoBarDelegateAndroid : public ConfirmInfoBarDelegate {
                      const content::MediaStreamRequest& request,
                      content::MediaResponseCallback callback);
 
+  ScreenCaptureInfoBarDelegateAndroid(
+      const ScreenCaptureInfoBarDelegateAndroid&) = delete;
+  ScreenCaptureInfoBarDelegateAndroid& operator=(
+      const ScreenCaptureInfoBarDelegateAndroid&) = delete;
+
  private:
   ScreenCaptureInfoBarDelegateAndroid(
       content::WebContents* web_contents,
@@ -45,8 +50,6 @@ class ScreenCaptureInfoBarDelegateAndroid : public ConfirmInfoBarDelegate {
   content::WebContents* web_contents_;
   const content::MediaStreamRequest request_;
   content::MediaResponseCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenCaptureInfoBarDelegateAndroid);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_SCREEN_CAPTURE_INFOBAR_DELEGATE_ANDROID_H_

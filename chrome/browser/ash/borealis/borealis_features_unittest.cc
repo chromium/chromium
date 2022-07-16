@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/borealis/borealis_features.h"
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,7 +54,7 @@ TEST_F(BorealisFeaturesTest, CanDisableByDevicePolicy) {
   EXPECT_TRUE(BorealisFeatures(&profile_).IsAllowed());
 
   profile_.ScopedCrosSettingsTestHelper()->GetStubbedProvider()->SetBoolean(
-      chromeos::kBorealisAllowedForDevice, false);
+      ash::kBorealisAllowedForDevice, false);
 
   EXPECT_FALSE(BorealisFeatures(&profile_).IsAllowed());
 }

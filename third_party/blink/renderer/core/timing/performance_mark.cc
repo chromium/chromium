@@ -58,8 +58,8 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
       // GetTimeOrigin() returns seconds from the monotonic clock's origin..
       // Trace events timestamps accept seconds (as a double) based on
       // CurrentTime::monotonicallyIncreasingTime().
-      unsafe_start_for_traces = performance->GetTimeOriginInternal() +
-                                base::TimeDelta::FromMillisecondsD(start);
+      unsafe_start_for_traces =
+          performance->GetTimeOriginInternal() + base::Milliseconds(start);
     } else {
       start = performance->now();
       unsafe_start_for_traces = base::TimeTicks::Now();
@@ -73,7 +73,7 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
   }
 
   if (!is_worker_global_scope &&
-      PerformanceTiming::GetAttributeMapping().Contains(mark_name)) {
+      PerformanceTiming::IsAttributeName(mark_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "'" + mark_name +
@@ -119,9 +119,9 @@ ScriptValue PerformanceMark::detail(ScriptState* script_state) {
   TraceWrapperV8Reference<v8::Value>& relevant_data =
       result.stored_value->value;
   if (!result.is_new_entry)
-    return ScriptValue(isolate, relevant_data.NewLocal(isolate));
+    return ScriptValue(isolate, relevant_data.Get(isolate));
   v8::Local<v8::Value> value = serialized_detail_->Deserialize(isolate);
-  relevant_data.Set(isolate, value);
+  relevant_data.Reset(isolate, value);
   return ScriptValue(isolate, value);
 }
 

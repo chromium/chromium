@@ -36,10 +36,9 @@ class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
   void OnEncoderReady() override;
   void OnKeyFrameRequested() override;
   void OnTargetBitrateChanged(int bitrate_kbps) override;
-  void OnRttUpdate(base::TimeDelta rtt) override;
-  void OnTopOffActive(bool active) override;
-  void OnFrameEncoded(WebrtcVideoEncoder::EncodeResult encode_result,
-                      WebrtcVideoEncoder::EncodedFrame* encoded_frame) override;
+  void OnFrameEncoded(
+      WebrtcVideoEncoder::EncodeResult encode_result,
+      const WebrtcVideoEncoder::EncodedFrame* encoded_frame) override;
   void OnEncodedFrameSent(
       webrtc::EncodedImageCallback::Result result,
       const WebrtcVideoEncoder::EncodedFrame& frame) override;
@@ -47,9 +46,8 @@ class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
   // WebrtcFrameScheduler implementation.
   void Start(const base::RepeatingClosure& capture_callback) override;
   void Pause(bool pause) override;
-  bool OnFrameCaptured(const webrtc::DesktopFrame* frame,
-                       WebrtcVideoEncoder::FrameParams* params_out) override;
-  void GetSchedulerStats(HostFrameStats& frame_stats_out) const override;
+  void OnFrameCaptured(const webrtc::DesktopFrame* frame) override;
+  void SetMaxFramerateFps(int max_framerate_fps) override;
 
   // Allows unit-tests to provide a mock clock.
   void SetTickClockForTest(const base::TickClock* tick_clock);
@@ -73,31 +71,14 @@ class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
 
   base::TimeTicks last_capture_started_time_;
 
-  // Set in OnFrameCaptured() whenever a (non-null) frame (possibly with an
-  // empty updated region) is sent to the encoder. Empty frames are still sent,
-  // but at a throttled rate.
-  base::TimeTicks latest_frame_encode_start_time_;
-
   LeakyBucket pacing_bucket_;
 
   // Set to true when a frame is being captured.
   bool frame_pending_ = false;
 
-  base::TimeDelta rtt_estimate_{base::TimeDelta::Max()};
-
-  // An estimate, set by OnFrameEncoded(), of the delay before WebRTC will send
-  // the encoded frame.
-  base::TimeDelta send_pending_delay_{base::TimeDelta::Max()};
-
-  // Set to true when encoding unchanged frames for top-off.
-  bool top_off_is_active_ = false;
-
   // Accumulator for capture and encoder delay history, as well as the transit
   // time.
   FrameProcessingTimeEstimator processing_time_estimator_;
-
-  // Accumulator for updated region area in the previously encoded frames.
-  RunningSamples updated_region_area_;
 
   base::OneShotTimer capture_timer_;
 

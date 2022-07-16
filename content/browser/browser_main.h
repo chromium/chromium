@@ -11,7 +11,7 @@ namespace content {
 
 struct MainFunctionParams;
 
-CONTENT_EXPORT int BrowserMain(const content::MainFunctionParams& parameters);
+CONTENT_EXPORT int BrowserMain(content::MainFunctionParams parameters);
 
 }  // namespace content
 

@@ -25,6 +25,9 @@ class CookieSettingsFactory : public RefcountedBrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state);
   static CookieSettingsFactory* GetInstance();
 
+  CookieSettingsFactory(const CookieSettingsFactory&) = delete;
+  CookieSettingsFactory& operator=(const CookieSettingsFactory&) = delete;
+
  private:
   friend class base::NoDestructor<CookieSettingsFactory>;
 
@@ -38,8 +41,6 @@ class CookieSettingsFactory : public RefcountedBrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieSettingsFactory);
 };
 
 }  // namespace ios

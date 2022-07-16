@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 
 namespace feature_engagement {
@@ -19,6 +18,9 @@ class EventStore {
   using OnLoadedCallback =
       base::OnceCallback<void(bool success,
                               std::unique_ptr<std::vector<Event>>)>;
+
+  EventStore(const EventStore&) = delete;
+  EventStore& operator=(const EventStore&) = delete;
 
   virtual ~EventStore() = default;
 
@@ -39,9 +41,6 @@ class EventStore {
 
  protected:
   EventStore() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventStore);
 };
 
 }  // namespace feature_engagement

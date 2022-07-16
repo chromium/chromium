@@ -131,6 +131,13 @@ TEST_F(FontUniqueNameLookupTest, TestHandleFailedRead) {
 }
 
 TEST_F(FontUniqueNameLookupTest, TestMatchPostScriptName) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SdkVersion::SDK_VERSION_S) {
+    // TODO(https://crbug.com/1264649): Fonts identified by
+    // kRobotoCondensedBoldItalicNames do not seem to be available on Android
+    // 12, SDK level 31, Android S.
+    return;
+  }
   ASSERT_TRUE(font_unique_name_lookup_->UpdateTable());
   blink::FontTableMatcher matcher(
       font_unique_name_lookup_->DuplicateMemoryRegion().Map());
@@ -185,6 +192,13 @@ TEST_F(FontUniqueNameLookupTest, TestMatchPostScriptNameTtc) {
 }
 
 TEST_F(FontUniqueNameLookupTest, TestMatchFullFontName) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SdkVersion::SDK_VERSION_S) {
+    // TODO(https://crbug.com/1264649): Fonts identified by
+    // kRobotoCondensedBoldItalicNames do not seem to be available on Android
+    // 12, SDK level 31, Android S.
+    return;
+  }
   ASSERT_TRUE(font_unique_name_lookup_->UpdateTable());
   blink::FontTableMatcher matcher(
       font_unique_name_lookup_->DuplicateMemoryRegion().Map());

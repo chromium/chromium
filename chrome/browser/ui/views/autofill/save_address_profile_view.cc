@@ -9,7 +9,10 @@
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
@@ -19,8 +22,10 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_combobox_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -55,8 +60,8 @@ int ComboboxIconSize() {
 std::unique_ptr<views::ImageView> CreateAddressSectionIcon(
     const gfx::VectorIcon& icon) {
   auto icon_view = std::make_unique<views::ImageView>();
-  icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-      icon, ui::NativeTheme::kColorId_SecondaryIconColor, kIconSize));
+  icon_view->SetImage(
+      ui::ImageModel::FromVectorIcon(icon, ui::kColorIconSecondary, kIconSize));
   return icon_view;
 }
 
@@ -171,8 +176,7 @@ std::unique_ptr<views::EditableCombobox> CreateNicknameEditableCombobox() {
       /*text=*/u"Home",
       /*dropdown_secondary_text=*/std::u16string(),
       /*icon=*/
-      ui::ImageModel::FromVectorIcon(kNavigateHomeIcon,
-                                     ui::NativeTheme::kColorId_DefaultIconColor,
+      ui::ImageModel::FromVectorIcon(kNavigateHomeIcon, ui::kColorIcon,
                                      ComboboxIconSize()));
 
   ui::SimpleComboboxModel::Item work(
@@ -180,8 +184,7 @@ std::unique_ptr<views::EditableCombobox> CreateNicknameEditableCombobox() {
       /*dropdown_secondary_text=*/std::u16string(),
       /*icon=*/
       ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
-                                     ui::NativeTheme::kColorId_DefaultIconColor,
-                                     ComboboxIconSize()));
+                                     ui::kColorIcon, ComboboxIconSize()));
 
   std::vector<ui::SimpleComboboxModel::Item> nicknames{std::move(home),
                                                        std::move(work)};
@@ -308,6 +311,14 @@ SaveAddressProfileView::SaveAddressProfileView(
                       CreateAddressSectionIcon(vector_icons::kExtensionIcon),
                       CreateNicknameEditableCombobox());
   }
+
+  Profile* browser_profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  HatsService* hats_service = HatsServiceFactory::GetForProfile(
+      browser_profile, /*create_if_necessary=*/true);
+  CHECK(hats_service);
+  hats_service->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerAutofillAddress, web_contents, 10000);
 }
 
 SaveAddressProfileView::~SaveAddressProfileView() = default;

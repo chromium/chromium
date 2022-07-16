@@ -52,8 +52,13 @@
         var invalidatedObjects = {};
         for (var layer of JSON.parse(layerTree).layers) {
             if (layer.invalidations) {
-                for (var invalidation of layer.invalidations)
+                for (var invalidation of layer.invalidations) {
+                    // Ok to invalidate the IFC of block-in-inline.
+                    // See |LayoutBox::ForegroundIsKnownToBeOpaqueInRect|.
+                    if (invalidation.object.includes("id='target4'"))
+                        continue;
                     invalidatedObjects[invalidation.object] = true;
+                }
             }
         }
         // Passes if there is no invalidations other than imgForAdvanceImageAnimation.

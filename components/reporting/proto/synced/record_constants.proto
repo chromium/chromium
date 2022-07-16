@@ -1,0 +1,128 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package reporting;
+
+// |Destination| indicates which handler a |Record| should be delivered to.
+enum Destination {
+  UNDEFINED_DESTINATION = 0;
+
+  // |UPLOAD_EVENTS| handler sends records to the Eventing pipeline.
+  UPLOAD_EVENTS = 1;
+
+  // |MEET_DEVICE_TELEMETRY| handler is for telemetry data sent by Meet
+  // Devices. For more information, see go/reliable-meet-device-telemetry.
+  MEET_DEVICE_TELEMETRY = 2;
+
+  // |WEB_PROTECT| legacy web protect event handler
+  WEB_PROTECT = 3;
+
+  // |ARC_INSTALL| legacy arc app installation event handler
+  ARC_INSTALL = 4;
+
+  // |POLICY_VALIDATION| legacy policy validation event handler
+  POLICY_VALIDATION = 5;
+
+  // |EXTENSION_INSTALL| legacy extension installation event handler
+  EXTENSION_INSTALL = 6;
+
+  // |REPORTING_RECORD| Temporary group for Encrypted Reporting Pipeline
+  REPORTING_RECORD = 7;
+
+  // |DEVICE_TRUST_REPORTS| handler is for reporting data updates related to the
+  // Device Trust connector, sent by Chrome browsers for Chrome Browser Cloud
+  // Management (CBCM).
+  DEVICE_TRUST_REPORTS = 8;
+
+  // |PRINT_JOBS| handler is for print jobs.
+  PRINT_JOBS = 9;
+
+  // |EXTENSIONS_WORKFLOW| handler is for sending extension requests events,
+  // sent for Chrome Browser Cloud Management (CBCM).
+  EXTENSIONS_WORKFLOW = 10;
+
+  // |DLP_EVENTS| events send from data leakage protection for Chrome OS
+  DLP_EVENTS = 11;
+
+  // |LOGIN_LOGOUT_EVENTS| is for login/logout events.
+  LOGIN_LOGOUT_EVENTS = 12;
+
+  // |HEARTBEAT_EVENT| event used with manual and integration tests to ensure
+  // that messages are being uploaded and processed correctly.
+  HEARTBEAT_EVENTS = 13;
+
+  // |INFO_METRIC| handler for device info which is sent by ChromeOS devices.
+  INFO_METRIC = 14;
+
+  // |TELEMETRY_METRIC| handler for device telemetry which is sent by ChromeOS
+  // devices.
+  TELEMETRY_METRIC = 15;
+
+  // |EVENT_METRIC| handler for device event which is sent by ChromeOS devices.
+  EVENT_METRIC = 16;
+
+  // |ADDED_REMOVED_EVENTS| is for events when a user is added or removed.
+  ADDED_REMOVED_EVENTS = 17;
+
+  // |CRD_EVENTS| are sent for Chrome remote desktop connect and disconnect.
+  CRD_EVENTS = 18;
+}
+
+// |Priority| is used to determine when items from the queue should be rate
+// limited or shed. Rate limiting indicates that fewer records will be sent due
+// to message volume, records of the lowest priority are limited first. Shedding
+// records occurs when disk space is at or near the limt, records of the lowest
+// priority are shed first.
+enum Priority {
+  UNDEFINED_PRIORITY = 0;
+
+  // |IMMEDIATE| queues should transfer small amounts of immediately necessary
+  // information. These are the events that will be rate limited before
+  // |SECURITY| records. |IMMEDIATE| records are shed before |SECURITY| records.
+  IMMEDIATE = 1;
+
+  // |FAST_BATCH| queues should transfer small amounts of information that may
+  // be critical for administrative experience. These records will be rate
+  // limited before |IMMEDIATE| records.
+  // |FAST_BATCH| records are shed before |IMMEDIATE| records.
+  // Resource utilization and failed application installation are perfect
+  // examples of records that need to be |FAST_BATCH|.
+  FAST_BATCH = 2;
+
+  // |SLOW_BATCH| queues should transfer small amounts of non-immediate data.
+  // These records will be rate limited before |FAST_BATCH| records.
+  // |SLOW_BATCH| records are shed before |FAST_BATCH| records.
+  // Application metrics are a good example of records that should be
+  // |SLOW_BATCH|.
+  SLOW_BATCH = 3;
+
+  // |BACKGROUND_BATCH| queues transfer large amounts of non-immediate data.
+  // These records will be rate limited before |SLOW_BATCH| records.
+  // |BACKGROUND_BATCH| records are shed before |SLOW_BATCH| records.
+  // Log files are a perfect examples of records that need to be
+  // |BACKGROUND_BATCH|.
+  BACKGROUND_BATCH = 4;
+
+  // |MANUAL_BATCH| queues transfer data only on explicit request.
+  // Note that since a queue can hold records submitted by multiple clients,
+  // one client requesting to transfer data will do so for all collected
+  // records of the same priority, including those enqueued by other clients.
+  // |MANUAL_BATCH| records are the first to be rate limited, and since there
+  // is no automatic transfer, it is important to explicitly flush them often
+  // enough to avoid loss of data.
+  // |MANUAL_BATCH| records are the first to be shed.
+  MANUAL_BATCH = 5;
+
+  // |SECURITY| queues should transfer information indicating potential security
+  // issue; like |IMMEDIATE| they are uploaded right after recording.
+  // The difference from |IMMEDIATE| is that any sequencing breach (record
+  // digest mismatch, lost events, generation switch) in |SECURITY| queue will
+  // be exposed to the domain admin. These are the events that will be rate
+  // limited last. |SECURITY| records are the last ones to be shed.
+  SECURITY = 6;
+}

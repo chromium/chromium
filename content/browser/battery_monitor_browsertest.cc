@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "content/browser/browser_interface_binders.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/public/browser/web_contents.h"
@@ -29,6 +28,10 @@ namespace {
 class MockBatteryMonitor : public device::mojom::BatteryMonitor {
  public:
   MockBatteryMonitor() = default;
+
+  MockBatteryMonitor(const MockBatteryMonitor&) = delete;
+  MockBatteryMonitor& operator=(const MockBatteryMonitor&) = delete;
+
   ~MockBatteryMonitor() override = default;
 
   void Bind(mojo::PendingReceiver<device::mojom::BatteryMonitor> receiver) {
@@ -67,8 +70,6 @@ class MockBatteryMonitor : public device::mojom::BatteryMonitor {
   device::mojom::BatteryStatus status_;
   bool status_to_report_ = false;
   mojo::Receiver<device::mojom::BatteryMonitor> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockBatteryMonitor);
 };
 
 class BatteryMonitorTest : public ContentBrowserTest {
@@ -83,6 +84,9 @@ class BatteryMonitorTest : public ContentBrowserTest {
                             base::Unretained(mock_battery_monitor_.get())));
   }
 
+  BatteryMonitorTest(const BatteryMonitorTest&) = delete;
+  BatteryMonitorTest& operator=(const BatteryMonitorTest&) = delete;
+
   ~BatteryMonitorTest() override {
     OverrideBatteryMonitorBinderForTesting(base::NullCallback());
   }
@@ -94,8 +98,6 @@ class BatteryMonitorTest : public ContentBrowserTest {
 
  private:
   std::unique_ptr<MockBatteryMonitor> mock_battery_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryMonitorTest);
 };
 
 IN_PROC_BROWSER_TEST_F(BatteryMonitorTest, NavigatorGetBatteryInfo) {

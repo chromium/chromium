@@ -22,6 +22,10 @@ namespace media {
 class VolumeControlAndroid : SystemVolumeTableAccessApi {
  public:
   VolumeControlAndroid();
+
+  VolumeControlAndroid(const VolumeControlAndroid&) = delete;
+  VolumeControlAndroid& operator=(const VolumeControlAndroid&) = delete;
+
   ~VolumeControlAndroid() override;
 
   void AddVolumeObserver(VolumeObserver* observer);
@@ -83,8 +87,6 @@ class VolumeControlAndroid : SystemVolumeTableAccessApi {
 
   base::Thread thread_;
   base::WaitableEvent initialize_complete_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(VolumeControlAndroid);
 };
 
 }  // namespace media

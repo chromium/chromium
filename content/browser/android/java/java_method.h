@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "content/browser/android/java/java_type.h"
 #include "content/common/content_export.h"
 
@@ -21,7 +20,13 @@ namespace content {
 // thread only.
 class CONTENT_EXPORT JavaMethod {
  public:
+  JavaMethod() = delete;
+
   explicit JavaMethod(const base::android::JavaRef<jobject>& method);
+
+  JavaMethod(const JavaMethod&) = delete;
+  JavaMethod& operator=(const JavaMethod&) = delete;
+
   ~JavaMethod();
 
   const std::string& name() const { return name_; }
@@ -43,8 +48,6 @@ class CONTENT_EXPORT JavaMethod {
   mutable JavaType return_type_;
   mutable bool is_static_;
   mutable jmethodID id_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(JavaMethod);
 };
 
 }  // namespace content

@@ -15,6 +15,7 @@
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/blob/blob_transport_strategy.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 
@@ -74,6 +75,9 @@ class BlobRegistryImpl::BlobUnderConstruction {
   // deleting |this| by removing it from the blobs_under_construction_
   // collection in the blob service.
   void StartTransportation(base::WeakPtr<BlobImpl> blob_impl);
+
+  BlobUnderConstruction(const BlobUnderConstruction&) = delete;
+  BlobUnderConstruction& operator=(const BlobUnderConstruction&) = delete;
 
   ~BlobUnderConstruction() = default;
 
@@ -208,7 +212,6 @@ class BlobRegistryImpl::BlobUnderConstruction {
   size_t ready_dependent_blob_count_ = 0;
 
   base::WeakPtrFactory<BlobUnderConstruction> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(BlobUnderConstruction);
 };
 
 void BlobRegistryImpl::BlobUnderConstruction::StartTransportation(
@@ -553,8 +556,13 @@ void BlobRegistryImpl::Register(
         return;
       }
     } else if (entry.element->is_file_filesystem()) {
-      entry.filesystem_url = file_system_context_->CrackURL(
-          entry.element->get_file_filesystem()->url);
+      const GURL crack_url = entry.element->get_file_filesystem()->url;
+      // TODO(https://crbug.com/1221308): determine whether StorageKey should be
+      // replaced with a more meaningful value
+      const blink::StorageKey crack_storage_key =
+          blink::StorageKey(url::Origin::Create(crack_url));
+      entry.filesystem_url =
+          file_system_context_->CrackURL(crack_url, crack_storage_key);
       if (!entry.filesystem_url.is_valid() ||
           !file_system_context_->GetFileSystemBackend(
               entry.filesystem_url.type()) ||
@@ -634,13 +642,14 @@ void BlobRegistryImpl::GetBlobFromUUID(
 void BlobRegistryImpl::URLStoreForOrigin(
     const url::Origin& origin,
     mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver) {
-  // TODO(mek): Pass origin on to BlobURLStoreImpl so it can use it to generate
-  // Blob URLs, and verify at this point that the renderer can create URLs for
-  // that origin.
   Delegate* delegate = receivers_.current_context().get();
   DCHECK(delegate);
+  if (!origin.opaque() && !delegate->CanCommitURL(origin.GetURL())) {
+    mojo::ReportBadMessage(
+        "Non committable origin passed to BlobRegistryImpl::URLStoreForOrigin");
+  }
   auto self_owned_associated_receiver = mojo::MakeSelfOwnedAssociatedReceiver(
-      std::make_unique<BlobURLStoreImpl>(url_registry_, delegate),
+      std::make_unique<BlobURLStoreImpl>(origin, url_registry_),
       std::move(receiver));
   if (g_url_store_creation_hook)
     g_url_store_creation_hook->Run(self_owned_associated_receiver);

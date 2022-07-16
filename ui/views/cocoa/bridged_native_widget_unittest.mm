@@ -13,7 +13,6 @@
 #import "base/mac/foundation_util.h"
 #import "base/mac/mac_util.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -298,6 +297,10 @@ class MockNativeWidgetMac : public NativeWidgetMac {
  public:
   explicit MockNativeWidgetMac(internal::NativeWidgetDelegate* delegate)
       : NativeWidgetMac(delegate) {}
+
+  MockNativeWidgetMac(const MockNativeWidgetMac&) = delete;
+  MockNativeWidgetMac& operator=(const MockNativeWidgetMac&) = delete;
+
   using NativeWidgetMac::GetInProcessNSWindowBridge;
   using NativeWidgetMac::GetNSWindowHost;
 
@@ -330,9 +333,6 @@ class MockNativeWidgetMac : public NativeWidgetMac {
   void ReorderNativeViews() override {
     // Called via Widget::Init to set the content view. No-op in these tests.
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNativeWidgetMac);
 };
 
 // Helper test base to construct a NativeWidgetNSWindowBridge with a valid
@@ -347,6 +347,10 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
 
   explicit BridgedNativeWidgetTestBase(SkipInitialization tag)
       : native_widget_mac_(nullptr) {}
+
+  BridgedNativeWidgetTestBase(const BridgedNativeWidgetTestBase&) = delete;
+  BridgedNativeWidgetTestBase& operator=(const BridgedNativeWidgetTestBase&) =
+      delete;
 
   remote_cocoa::NativeWidgetNSWindowBridge* bridge() {
     return native_widget_mac_->GetInProcessNSWindowBridge();
@@ -420,8 +424,6 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
 
  private:
   TestViewsDelegate test_views_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(BridgedNativeWidgetTestBase);
 };
 
 class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
@@ -431,6 +433,10 @@ class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
       base::RepeatingCallback<bool(Textfield*, const ui::KeyEvent& key_event)>;
 
   BridgedNativeWidgetTest();
+
+  BridgedNativeWidgetTest(const BridgedNativeWidgetTest&) = delete;
+  BridgedNativeWidgetTest& operator=(const BridgedNativeWidgetTest&) = delete;
+
   ~BridgedNativeWidgetTest() override;
 
   // Install a textfield with input type |text_input_type| in the view hierarchy
@@ -510,9 +516,6 @@ class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BridgedNativeWidgetTest);
 };
 
 // Class that counts occurrences of a VKEY_RETURN accelerator, marking them
@@ -543,7 +546,7 @@ Textfield* BridgedNativeWidgetTest::InstallTextField(
   textfield->SetText(text);
   textfield->SetTextInputType(text_input_type);
   textfield->set_controller(this);
-  view_->RemoveAllChildViews(true);
+  view_->RemoveAllChildViews();
   view_->AddChildView(textfield);
   textfield->SetBoundsRect(bounds_);
 
@@ -860,6 +863,10 @@ class BridgedNativeWidgetInitTest : public BridgedNativeWidgetTestBase {
   BridgedNativeWidgetInitTest()
       : BridgedNativeWidgetTestBase(SkipInitialization()) {}
 
+  BridgedNativeWidgetInitTest(const BridgedNativeWidgetInitTest&) = delete;
+  BridgedNativeWidgetInitTest& operator=(const BridgedNativeWidgetInitTest&) =
+      delete;
+
   // Prepares a new |window_| and |widget_| for a call to PerformInit().
   void CreateNewWidgetToInit() {
     widget_ = std::make_unique<Widget>();
@@ -876,9 +883,6 @@ class BridgedNativeWidgetInitTest : public BridgedNativeWidgetTestBase {
     init_params.shadow_type = shadow_type_;
     widget_->Init(std::move(init_params));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BridgedNativeWidgetInitTest);
 };
 
 // Test that NativeWidgetNSWindowBridge remains sane if Init() is never called.

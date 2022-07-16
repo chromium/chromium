@@ -28,18 +28,54 @@ class PasswordStoreAndroidBackendBridgeImpl
       const PasswordStoreAndroidBackendBridgeImpl&) = delete;
   ~PasswordStoreAndroidBackendBridgeImpl() override;
 
-  // Called via JNI. Called when the api call with `task_id` finished and
+  // Called via JNI. Called when the api call with `job_id` finished and
   // provides the resulting `passwords`.
-  void OnCompleteWithLogins(JNIEnv* env, jint task_id, jobjectArray passwords);
+  void OnCompleteWithLogins(
+      JNIEnv* env,
+      jint job_id,
+      const base::android::JavaParamRef<jbyteArray>& passwords);
+
+  // Called via JNI. Called when the api call with `job_id` finished and
+  // provides serialized PasswordWithLocalData identifying the added 'login'.
+  void OnLoginAdded(JNIEnv* env,
+                    jint job_id,
+                    const base::android::JavaParamRef<jbyteArray>& login);
+
+  // Called via JNI. Called when the api call with `job_id` finished and
+  // provides serialized PasswordWithLocalData identifying the updated 'login'.
+  void OnLoginUpdated(JNIEnv* env,
+                      jint job_id,
+                      const base::android::JavaParamRef<jbyteArray>& login);
+
+  // Called via JNI. Called when the api call with `job_id` finished and
+  // provides Serialized PasswordSpecificsData identifying the deleted 'login'.
+  void OnLoginDeleted(JNIEnv* env,
+                      jint job_id,
+                      const base::android::JavaParamRef<jbyteArray>& login);
+
+  // Called via JNI. Called when the api call with `job_id` finished with
+  // an exception.
+  void OnError(JNIEnv* env, jint job_id, jint error_type, jint api_error_code);
 
  private:
   // Implements PasswordStoreAndroidBackendBridge interface.
-  TaskId GetAllLogins() override WARN_UNUSED_RESULT;
+  void SetConsumer(base::WeakPtr<Consumer> consumer) override;
+  JobId GetAllLogins() override WARN_UNUSED_RESULT;
+  JobId AddLogin(const password_manager::PasswordForm& form) override
+      WARN_UNUSED_RESULT;
+  JobId UpdateLogin(const password_manager::PasswordForm& form) override
+      WARN_UNUSED_RESULT;
+  JobId RemoveLogin(const password_manager::PasswordForm& form) override
+      WARN_UNUSED_RESULT;
 
-  TaskId GetNextTaskId() WARN_UNUSED_RESULT;
+  JobId GetNextJobId() WARN_UNUSED_RESULT;
 
   // This member stores the unique ID last used for an API request.
-  TaskId last_task_id_{0};
+  JobId last_job_id_{0};
+
+  // Weak reference to the `Consumer` that is notified when a job completes. It
+  // outlives this bridge but tasks may be posted to it.
+  base::WeakPtr<Consumer> consumer_ = nullptr;
 
   // This object is an instance of PasswordStoreAndroidBackendBridgeImpl, i.e.
   // the Java counterpart to this class.

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that removed Elements logged in the Console are properly formatted.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   TestRunner.addResult(`Adding element`);
@@ -15,7 +15,7 @@
     document.body.appendChild(el);
     undefined;
   `);
-  const nodePromise = TestRunner.addSnifferPromise(Console.ConsoleViewMessage.prototype, '_formattedParameterAsNodeForTest');
+  const nodePromise = TestRunner.addSnifferPromise(Console.ConsoleViewMessage.prototype, 'formattedParameterAsNodeForTest');
   TestRunner.evaluateInPagePromise(`console.log(el)`);
   await nodePromise;
   await ConsoleTestRunner.waitForPendingViewportUpdates();

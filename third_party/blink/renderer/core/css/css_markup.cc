@@ -29,6 +29,9 @@
 #include "third_party/blink/renderer/core/css/css_markup.h"
 
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
+#include "third_party/blink/renderer/platform/font_family_names.h"
+#include "third_party/blink/renderer/platform/fonts/font_family.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -36,7 +39,7 @@
 namespace blink {
 
 // "ident" from the CSS tokenizer, minus backslash-escape sequences
-static bool IsCSSTokenizerIdentifier(const String& string) {
+static bool IsCSSTokenizerIdentifier(const StringView& string) {
   unsigned length = string.length();
 
   if (!length)
@@ -135,15 +138,23 @@ void SerializeString(const String& string, StringBuilder& append_to) {
 String SerializeString(const String& string) {
   StringBuilder builder;
   SerializeString(string, builder);
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 String SerializeURI(const String& string) {
   return "url(" + SerializeString(string) + ")";
 }
 
-String SerializeFontFamily(const String& string) {
-  return IsCSSTokenizerIdentifier(string) ? string : SerializeString(string);
+String SerializeFontFamily(const AtomicString& string) {
+  // Some <font-family> values are serialized without quotes.
+  // See https://github.com/w3c/csswg-drafts/issues/5846
+  return (css_parsing_utils::IsCSSWideKeyword(string) ||
+          css_parsing_utils::IsDefaultKeyword(string) ||
+          FontFamily::InferredTypeFor(string) ==
+              FontFamily::Type::kGenericFamily ||
+          !IsCSSTokenizerIdentifier(string))
+             ? SerializeString(string)
+             : string;
 }
 
 }  // namespace blink

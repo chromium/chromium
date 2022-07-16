@@ -1,16 +1,8 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /** @fileoverview Tests the direct transport. */
 
@@ -87,7 +79,7 @@ testSuite({
     // Show debug log
     debugDiv = dom.createElement(TagName.DIV);
     const logger = log.getLogger('goog.net.xpc');
-    logger.setLevel(Level.ALL);
+    log.setLevel(logger, Level.ALL);
     log.addHandler(logger, (logRecord) => {
       const msgElm = dom.createDom(TagName.DIV);
       msgElm.innerHTML = logRecord.getMessage();
@@ -114,6 +106,10 @@ testSuite({
       innerXpc.dispose();
       innerXpc = null;
     }
+    /**
+     * @suppress {strictMissingProperties,checkTypes} suppression added to
+     * enable type checking
+     */
     window.iframeLoadHandler = null;
     channelName = null;
     messageIsSync = false;
@@ -150,6 +146,10 @@ testSuite({
       outerXpc.send(ECHO_SERVICE_NAME, MESSAGE_PAYLOAD_1);
     });
     // inner_peer.html calls this method at end of html.
+    /**
+     * @suppress {strictMissingProperties,missingProperties} suppression added
+     * to enable type checking
+     */
     window.iframeLoadHandler = () => {
       peerIframe.contentWindow.instantiateChannel(
           getConfiguration(CrossPageChannelRole.INNER));
@@ -211,6 +211,10 @@ testSuite({
     channelName = xpc.getRandomString(10);
 
     const cfg = getConfiguration(CrossPageChannelRole.OUTER, PEER_IFRAME_ID);
+    /**
+     * @suppress {strictPrimitiveOperators} suppression added to enable type
+     * checking
+     */
     cfg[CfgFields.DIRECT_TRANSPORT_SYNC_MODE] = true;
 
     outerXpc = new CrossPageChannel(cfg);
@@ -233,8 +237,16 @@ testSuite({
       messageIsSync = false;
     });
     // inner_peer.html calls this method at end of html.
+    /**
+     * @suppress {strictMissingProperties,missingProperties} suppression added
+     * to enable type checking
+     */
     window.iframeLoadHandler = () => {
       const cfg = getConfiguration(CrossPageChannelRole.INNER);
+      /**
+       * @suppress {strictPrimitiveOperators} suppression added to enable type
+       * checking
+       */
       cfg[CfgFields.DIRECT_TRANSPORT_SYNC_MODE] = true;
       peerIframe.contentWindow.instantiateChannel(cfg);
     };

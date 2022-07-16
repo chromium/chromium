@@ -25,6 +25,11 @@ class WaylandTouchStylusDelegate : public TouchStylusDelegate {
       : resource_(resource), touch_(touch) {
     touch_->SetStylusDelegate(this);
   }
+
+  WaylandTouchStylusDelegate(const WaylandTouchStylusDelegate&) = delete;
+  WaylandTouchStylusDelegate& operator=(const WaylandTouchStylusDelegate&) =
+      delete;
+
   ~WaylandTouchStylusDelegate() override {
     if (touch_ != nullptr)
       touch_->SetStylusDelegate(nullptr);
@@ -56,8 +61,6 @@ class WaylandTouchStylusDelegate : public TouchStylusDelegate {
  private:
   wl_resource* resource_;
   Touch* touch_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandTouchStylusDelegate);
 };
 
 void touch_stylus_destroy(wl_client* client, wl_resource* resource) {
@@ -83,7 +86,7 @@ class WaylandPointerStylusDelegate : public PointerStylusDelegate {
     if (pointer_ != nullptr)
       pointer_->SetStylusDelegate(nullptr);
   }
-  void OnPointerDestroying(Pointer* pointer_) override { pointer_ = nullptr; }
+  void OnPointerDestroying(Pointer* pointer) override { pointer_ = nullptr; }
   void OnPointerToolChange(ui::EventPointerType type) override {
     uint wayland_type = ZCR_POINTER_STYLUS_V2_TOOL_TYPE_NONE;
     if (type == ui::EventPointerType::kTouch)
